@@ -239,7 +239,6 @@
 <translation id="188237709236611317">Traka menija pametnog sortiranja</translation>
 <translation id="1883255238294161206">Skupi listu</translation>
 <translation id="1888854257756214946">Izaberi lozinku…</translation>
-<translation id="1889872080060107187">Prijavićete se na <ph name="URL" /></translation>
 <translation id="1890237935065108104">Ovo podešavanje nije dostupno.</translation>
 <translation id="1894023287452300670">Pratite cenu ovde</translation>
 <translation id="189531189292803889">Sadržaj iPad-a je nedavno vraćen, zbog čega je podrazumevani pregledač možda promenjen.</translation>
@@ -278,7 +277,7 @@
 <translation id="199425419756152024">Prikaži lozinku</translation>
 <translation id="1996318269856535896">I dalje možete da koristite postojeće podatke pregledanja na ovom uređaju. Da biste ih koristili, odjavite se sa upravljanog naloga.</translation>
 <translation id="2010008505735295285">Ponovo učitaj</translation>
-<translation id="2012723204723845092">Dobro došli nazad!</translation>
+<translation id="2012723204723845092">Dobro nam došli ponovo.</translation>
 <translation id="2015722694326466240">Da biste videli lozinke, prvo morate da podesite šifru na uređaju.</translation>
 <translation id="201759455285471444">Proširite grupu kartica.</translation>
 <translation id="202070562065520783">Objasni mi ovo</translation>
@@ -1003,7 +1002,7 @@
 <translation id="4894963374040315706">Ovo vam omogućava da pretražujete pomoću glasa</translation>
 <translation id="4895540042460820904">Poslednje otvaranje</translation>
 <translation id="4896467949657706481">Kartice su zatvorene; odjavljeni ste</translation>
-<translation id="4911042367886397055">Dobro nam došli ponovo, <ph name="USER_NAME" />!</translation>
+<translation id="4911042367886397055">Dobro nam došli ponovo, <ph name="USER_NAME" />.</translation>
 <translation id="4913626501929406101">Možete bezbedno da delite kopiju lozinke sa nekim u grupi za porodicu. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="4917025507570489430">Možete da koristite postojeće podatke pregledanja kada ste prijavljeni kao <ph name="USER_EMAIL" />. Vaša organizacija može da vidi ove podatke.</translation>
 <translation id="4918086044614829423">Prihvati</translation>
@@ -1126,7 +1125,7 @@
 <translation id="537853552771686272">Upravljajte temama i sajtovima koji vas interesuju</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} zatvorena}one{{count} zatvorena}few{{count} zatvorene}other{{count} zatvorenih}}</translation>
 <translation id="5394975111793637642">Sakrijte karticu Recenzije proizvoda za vas</translation>
-<translation id="5407806496954700135">Želite li da primenite prilagođavanja stranice nove kartice sa drugog uređaja?</translation>
+<translation id="5407806496954700135">Želite da primenite prilagođavanja stranice nove kartice sa drugog uređaja?</translation>
 <translation id="5414763847370083940">Dobićete obaveštenje ako se cena snizi na bilo kom sajtu.</translation>
 <translation id="5415289094036440596">Pristupni ključevi ne mogu da se dele</translation>
 <translation id="5416455648658732408">Premesti u grupu kartica</translation>
@@ -1427,7 +1426,6 @@ Handoff treba da se omogući u odeljku General (Opšte) u meniju Settings (Pode
 <translation id="6418346271604475326">Priprema PDF datoteke</translation>
 <translation id="6421038304268477484">Prevedeni tekst</translation>
 <translation id="6429213933892582367">Otvorite Opcije lozinki</translation>
-<translation id="6434591244308415567">Došlo je do greške. Probajte ponovo kasnije.</translation>
 <translation id="6435236283694032571">Dodaj na Listu za čitanje</translation>
 <translation id="6435307030888827407">Ostanite odjavljeni</translation>
 <translation id="6436318499800111867">Deljeno sa mnom <ph name="SHARED_WITH_ME_DATE" /></translation>

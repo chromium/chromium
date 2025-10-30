@@ -7440,6 +7440,7 @@
 <translation id="6160290816917599257">Код буруу байна. Таны оролт <ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+ хаяг<ph name="LPA_2" />$<ph name="LPA_3" />нэмэлт таарах ID<ph name="LPA_4" /> гэсэн форматтай байх ёстой</translation>
 <translation id="6160625263637492097">Нотолгоонд зориулсан сертификат олгох</translation>
 <translation id="6160887111111841751">Хадгалсан мэдээлэл энд харагдана</translation>
+<translation id="616290554291007512">Gemini-д таны өмнөөс нэвтрэхийг бүү зөвшөөр</translation>
 <translation id="6163363155248589649">&amp;Хэвийн</translation>
 <translation id="6163376401832887457">Kerberos-н тохиргоо</translation>
 <translation id="6163522313638838258">Бүгдийг өргөтгөх...</translation>
@@ -7752,6 +7753,7 @@
 <translation id="6379228010899751161"><ph name="ACCOUNT_EMAIL" /> бүртгэлдээ нууц үгийг үргэлж ашиглах боломжтойг баталгаажуулахын тулд та өөрийгөө мөн болохыг баталгаажуулна уу</translation>
 <translation id="6379827283296619736">Үгүй, энэ профайлд ажлаа үргэлжлүүлэн хийнэ</translation>
 <translation id="6380143666419481200">Хүлээн аваад, үргэлжлүүл</translation>
+<translation id="6380618366311601172">Gemini <ph name="DOMAIN" />-д нэвтрэхийг шаарддаг ажил гүйцэтгэх боломжгүй болно.</translation>
 <translation id="6383382161803538830">Энэ хуудсан дээр Уншлагын горим боломжгүй байна</translation>
 <translation id="638418309848716977">Дэмжсэн холбооснууд</translation>
 <translation id="6384275966486438344">Таны хайлтын тохиргоог <ph name="SEARCH_HOST" /> рүү өөрчлөх</translation>
@@ -9458,6 +9460,7 @@
 <translation id="7585106857920830898">Танай байгууллагын аюулгүй байдлын бодлогод нийцэх эсэхийг шалгаж байна...</translation>
 <translation id="7585490016012953607">Сэргээх нууц үг — 3 хүртэлх сар түр зуур хадгалдаг</translation>
 <translation id="7586498138629385861">Chrome-г хэрэглээний программыг нээсэн байгаа тохиолдолд Chrome нь ачаалласан хэвээр байна.</translation>
+<translation id="7587297195142686341">Gemini таны өмнөөс нэвтрэх боломжтой</translation>
 <translation id="7587806318633605613">Зөвлөмжийн түүх</translation>
 <translation id="7589448773774086276">Одоогийн табтай шинэ хуваасан харагдах байдал</translation>
 <translation id="7589461650300748890">Харж байгаа биз. Болгоомжтой байгаарай.</translation>
@@ -10812,6 +10815,7 @@
 <translation id="849488240089599592">Саяхны татаж авсан файл руу буцах</translation>
 <translation id="8496717697661868878">Энэ нэмэлт өргөтгөлийг ажиллуул</translation>
 <translation id="8497219075884839166">Windows хэрэгсэл</translation>
+<translation id="8497819894150712946">Chrome-с хадгалсан</translation>
 <translation id="8498214519255567734">Дэлгэцээ бүдэг гэрэлтэй үед харах эсвэл уншихад илүү хялбар болгоно</translation>
 <translation id="8499083585497694743">Микрофоны дууг нээх</translation>
 <translation id="8500044868721690197">Энэ сайтыг таны MIDI төхөөрөмжүүдийг хянаж, дахин программчлахыг блоклосон</translation>
@@ -11666,6 +11670,7 @@
 <translation id="9069417381769492963">Таны хайлттай таарах ямар ч хавчуурга байхгүй байна</translation>
 <translation id="9070231741075992882">Таны <ph name="APP_NAME" />-д зөвшөөрсөн зөвшөөрлүүдийг мөн үүний суулгасан болон дамжуулсан аппуудад зөвшөөрнө.</translation>
 <translation id="9070342919388027491">Табыг зүүн тийш зөөсөн</translation>
+<translation id="9072918088200875065">Та Gemini-д таны өмнөөс ажил гүйцэтгэхийн тулд эдгээр сайтад нэвтрэх зөвшөөрөл өгсөн</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9074836595010225693">USB хулгана холбогдсон</translation>
 <translation id="9075413375877487220">Энэ өргөтгөлд Сайжруулсан аюулгүй хөтөч итгэдэггүй.</translation>

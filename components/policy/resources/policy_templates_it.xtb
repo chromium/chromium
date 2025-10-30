@@ -1974,6 +1974,7 @@ Se la policy non viene configurata, gli utenti possono modificare l'elenco di ap
 <translation id="2306505001667207184">Richiedi all'utente di selezionare il certificato client quando la policy di selezione automatica corrisponde a più certificati.</translation>
 <translation id="230713790688681130">Attiva il layout Hindi Inscript</translation>
 <translation id="2307496301287881990">Segnala stati del display e della grafica</translation>
+<translation id="2308084581803907194">Complessità alta</translation>
 <translation id="2308899582897965249">Disattiva stampa silenziosa</translation>
 <translation id="2309284543927494965">Blocca aggiornamenti</translation>
 <translation id="2309341709647905294">Non segnalare informazioni sulle periferiche collegate al dispositivo</translation>
@@ -2796,6 +2797,19 @@ comportamento dei tasti funzione e questa impostazione non sarà modificabile da
       Se non viene configurata, questa policy viene disattivata per i dispositivi gestiti e attivato per i dispositivi di proprietà del consumatore.
       Tieni presente che l'impostazione di questa policy su Disattivata comporta soltanto la disattivazione della raccolta dei dati di rilevamento a livello di sistema. Questa policy non ha effetto sulla raccolta dei dati di rilevamento del browser.</translation>
 <translation id="2922511125678964398">Consenti all'autenticazione captive portal di ignorare le impostazioni del proxy</translation>
+<translation id="2923126158151236068">Questa policy configura i requisiti di complessità minimi per i fattori di autenticazione locali (PIN e password locali) impostati dagli utenti su <ph name="PRODUCT_OS_NAME" />.
+
+Se non si configura questa policy, per impostazione predefinita il livello di complessità sarà Nessuno.
+
+I requisiti di questa policy si applicano durante la creazione o la modifica da parte di un utente del PIN o della password locale.
+
+I livelli di complessità si basano sulle metriche di qualità delle password di Android (https://developers.google.com/android/management/reference/rest/v1/PasswordRequirements), adattate per <ph name="PRODUCT_OS_NAME" />:
+- 1 = Nessuno: è richiesto un PIN/una password, ma non ci sono prescrizioni su contenuti o lunghezza.
+- 2 = Basso: requisiti di complessità di base.
+- 3 = Medio: requisiti più rigorosi per lunghezza e tipo di carattere.
+- 4 = Alta: requisiti di complessità massima, che richiedono caratteri di vario tipo.
+
+Consulta l'articolo del Centro assistenza per spiegazioni dettagliate su cosa comporta ogni livello di complessità per PIN e password.</translation>
 <translation id="2926813071464307947">Disabilita la sandbox del container dell'app del renderer</translation>
 <translation id="2931888116345994552">Se questa policy non viene configurata o se viene impostata su Attivata, consente gli aggiornamenti di tutti i componenti di <ph name="PRODUCT_NAME" />.
 
@@ -6068,6 +6082,7 @@ I domini con formato errato verranno ignorati.</translation>
 <translation id="5163889437570441600">Consenti la trasmissione di contenuti al dispositivo usando <ph name="PRODUCT_NAME" />.
 
           Se questa policy viene impostata su false, gli utenti non possono trasmettere contenuti al proprio dispositivo. Se viene impostata su true, gli utenti possono trasmettere contenuti. Se non viene configurata, gli utenti non possono trasmettere contenuti a dispositivi ChromeOS registrati, ma possono trasmetterli a dispositivi non registrati.</translation>
+<translation id="5166766992668636906">Complessità media</translation>
 <translation id="5168529971295111207">Questa norma è obsoleta, al suo posto usa ProxyMode.
 
           Consente di specificare il server proxy utilizzato da <ph name="PRODUCT_NAME" /> e impedisce agli utenti di modificare le impostazioni proxy.
@@ -7656,6 +7671,7 @@ Tieni presente che altre limitazioni, come quelle imposte dalle policy ArcEnable
 <translation id="6144046700495610112">Se la policy viene impostata su Attivata, i dati di compilazione automatica dei moduli nel precedente browser predefinito verranno importati alla prima esecuzione. Se la policy viene impostata su Disattivata o se non viene configurata, nessun dato di compilazione automatica dei moduli verrà importato alla prima esecuzione.
 
       Gli utenti possono attivare una finestra di dialogo per l'importazione e la casella di controllo dei dati di compilazione automatica dei moduli verrà selezionata o deselezionata in modo che corrisponda al valore della policy.</translation>
+<translation id="6144246313478615705">Imposta la complessità minima per PIN e password locali</translation>
 <translation id="614551633868957694">App ed estensioni di Chrome</translation>
 <translation id="614616930188030377">I pattern di questo elenco verranno confrontati con l'origine di sicurezza dell'URL richiedente.
       Se viene trovata una corrispondenza o se chrome://flags/#enable-webrtc-hide-local-ips-with-mdns è disattivato, gli indirizzi IP locali vengono mostrati nei candidati ICE WebRTC.
@@ -9169,6 +9185,25 @@ Sono consentite solo origini HTTPS valide. I caratteri jolly non sono supportati
 Le voci non valide vengono ignorate.</translation>
 <translation id="7044883996351280650">Controlla il servizio backup e ripristino di Android</translation>
 <translation id="7045221780834308118">Se la policy viene impostata su Enabled, le applicazioni web di terze parti possono usare l'API Desk per controllare le scrivanie di <ph name="PRODUCT_OS_NAME" />. Se la policy non viene configurata o se viene disattivata, <ph name="DESK_API_NAME" /> non sarà disponibile. La policy verrà applicata soltanto sui dispositivi registrati.</translation>
+<translation id="704591686761455167">Questa policy consente di stabilire se gli URL dei blob vengono partizionati durante il recupero e la navigazione.
+Se questa policy viene attivata o se non viene configurata, gli URL dei blob verranno partizionati.
+Se questa policy viene disattivata, gli URL dei blob non verranno partizionati.
+
+Se il partizionamento dello spazio di archiviazione viene disattivato per una determinata origine di primo livello da
+<ph name="THIRD_PARTY_STORAGE_PARTITIONING_BLOCKED_FOR_ORIGINS_POLICY_NAME" />
+o <ph name="DEFAULT_THIRD_PARTY_STORAGE_PARTITIONING_SETTING_POLICY_NAME" />,
+anche gli URL dei BLOB non verranno partizionati.
+
+Se devi usare la policy, invia una segnalazione di bug all'indirizzo
+<ph name="BUG_URL" />
+spiegando il tuo caso d'uso. La policy sarà valida fino alla versione 146 di
+<ph name="PRODUCT_NAME" />,
+dopodiché la vecchia implementazione verrà rimossa.
+
+NOTA: le modifiche apportate a questa policy mentre il browser è in esecuzione verranno applicate soltanto ai processi del renderer avviati dopo le modifiche.
+
+Visita la pagina https://developers.google.com/privacy-sandbox/cookies/storage-partitioning
+per informazioni dettagliate sul partizionamento dello spazio di archiviazione di terze parti.</translation>
 <translation id="7046113122884041950">Non consentire Smart Lock</translation>
 <translation id="7046997898355294677">Mostra le notifiche sulla privacy finché non vengono ignorate dagli utenti</translation>
 <translation id="7047495632846973438">Specifica se le policy relative alle autorizzazioni dell'acquisizione del display vengono controllate o saltate.</translation>
@@ -9874,6 +9909,7 @@ Se la policy viene lasciata vuota, non sono consentite eccezioni a <ph name="FLO
 
       Se il dispositivo dell'utente non è gestito, la disponibilità di questa funzionalità dipende anche dal fatto che l'utente sia o meno il proprietario del dispositivo.</translation>
 <translation id="7570291542739287032">Solo Google Cloud</translation>
+<translation id="7572641760104970905">Nessuna complessità</translation>
 <translation id="757395965347379751">Quando questa impostazione è attivata, <ph name="PRODUCT_NAME" /> consente l'utilizzo dei certificati SHA-1 firmati che sono convalidati e concatenati a certificati CA installati localmente.
 
       Considera che questa norma dipende dallo stack di verifica dei certificati del sistema operativo che autorizza le firme SHA-1. Se un aggiornamento del sistema operativo modifica la gestione dei certificati SHA-1 da parte del sistema operativo, la norma potrebbe non essere più valida. Inoltre, questa norma è da considerarsi come soluzione alternativa temporanea per concedere alle aziende più tempo per l'abbandono della crittografia SHA-1. Questa norma verrà rimossa il 1° gennaio 2019 o intorno a quella data.
@@ -9968,6 +10004,7 @@ Se configuri questa policy, la policy <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_P
 <translation id="7648907905084499629">Usa il comportamento <ph name="FEATURE_NAME_SAMESITE_BY_DEFAULT_COOKIES" /> per i cookie su tutti i siti</translation>
 <translation id="7657261947024629645">Ottimizza per ottenere il massimo rendimento.</translation>
 <translation id="76580522298425324">Consenti acquisizione schermo senza gesto dell'utente precedente</translation>
+<translation id="7661379728107156839">Complessità bassa</translation>
 <translation id="7666228839913571182">Consenti cookie di terze parti</translation>
 <translation id="7666782560345386904">Impostazioni per la compilazione automatica avanzata</translation>
 <translation id="7669630878711068277">Se la policy viene impostata su Attivata o se non viene configurata, gli utenti possono stampare in <ph name="PRODUCT_NAME" /> e non possono modificare questa impostazione.
@@ -10399,7 +10436,7 @@ Questa policy è stata pensata per essere temporanea e verrà rimossa in futuro.
 <translation id="7976157349247117979">Nome della destinazione di <ph name="PRODUCT_NAME" /></translation>
 <translation id="7985242821674907985"><ph name="PRODUCT_NAME" /></translation>
 <translation id="7985781946183471651">Glanceables su <ph name="PRODUCT_OS_NAME" /></translation>
-<translation id="7986473886676689183">Attiva la generazione di report Android</translation>
+<translation id="7986473886676689183">Attiva la creazione di report Android</translation>
 <translation id="798671159602573821">Specifica se disattivare (temporaneamente) le limitazioni di accesso alla rete locale</translation>
 <translation id="7990280274626154329">Attiva <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /></translation>
 <translation id="7991022023019679916">Tieni presente che questa policy è obsoleta e verrà rimossa nella versione 85 di <ph name="PRODUCT_OS_NAME" />. Usa la policy <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />.

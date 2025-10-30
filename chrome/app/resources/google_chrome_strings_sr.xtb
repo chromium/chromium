@@ -368,7 +368,7 @@
 Неке функције су можда недоступне. Наведите други директоријум профила или користите новију верзију Chrome-а.</translation>
 <translation id="5174969993834422967">Обично блокирате обавештења. Да бисте дозволили овом сајту да вас обавештава, кликните на икону обавештења у десном углу траке за локацију.</translation>
 <translation id="5174983315706567306">Нема довољно простора на диску.</translation>
-<translation id="5190467473654176081">Прилагодите Chrome да бисте прешли на нов изглед</translation>
+<translation id="5190467473654176081">Прилагодите Chrome да бисте му дали нов изглед</translation>
 <translation id="5201744974236816379">Ажурирање за Chrome</translation>
 <translation id="521447420733633466">Ако делите уређај, пријатељи и породица могу засебно да прегледају и да подесе Chrome баш онако како желе</translation>
 <translation id="5234764350956374838">Одбаци</translation>
@@ -392,7 +392,7 @@ Google Chrome не може да врати подешавања.</translation>
 <translation id="5510398294750420479">Преузмите Chrome на телефон да бисте додали још један ниво заштите када сте у покрету</translation>
 <translation id="5524890928877629608">горњи леви угао области претраге: улево <ph name="LEFT" />%, нагоре <ph name="TOP" />%</translation>
 <translation id="5530733413481476019">Убрзајте Chrome</translation>
-<translation id="5550137307985173298">Кликните на дугме Прилагоди Chrome на страници Нова картица да бисте Chrome-у дали нов изглед</translation>
+<translation id="5550137307985173298">Кликните на дугме Прилагоди Chrome на страници нове картице да бисте Chrome-у дали нов изглед</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5579324208890605088">Грешка при покретању: покрените програм за инсталацију као редован корисник, а не као администратор.</translation>
 <translation id="5596627076506792578">Још опција</translation>
@@ -522,7 +522,7 @@ Google Chrome не може да врати подешавања.</translation>
 <translation id="6800285125190089494">Брже се пријављујте на сајтове помоћу сачуваних лозинки за Chrome на iOS-у</translation>
 <translation id="6831043979455480757">Преведи</translation>
 <translation id="683440813066116847">Правило за долазни саобраћај за Google Chrome Canary да бисте омогућили mDNS саобраћај.</translation>
-<translation id="6841242485723266823">Chrome профили вам помажу да раздвојите различите аспекте живота. Додајте нов профил.</translation>
+<translation id="6841242485723266823">Chrome профили вам помажу да раздвојите различите делове живота. Додајте нов профил.</translation>
 <translation id="684888714667046800">Повезивање са интернетом није успело. Ако користите заштитни зид, проверите да ли се <ph name="PRODUCT_EXE_NAME" /> налази на листи дозвољених.</translation>
 <translation id="6877155553248388166">доњи десни угао области претраге: удесно <ph name="RIGHT" />%, надоле <ph name="BOTTOM" />%</translation>
 <translation id="6881299373831449287">Ажурирамо Chrome</translation>
@@ -680,14 +680,13 @@ Google Chrome не може да врати подешавања.</translation>
 <translation id="8533056045953418157">Подесите Google Chrome као подразумевани PDF прегледач</translation>
 <translation id="8555465886620020932">Грешка у услузи: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="856656450041460113">Претражите листу језика</translation>
-<translation id="8575047640889685742">Користите <ph name="BEGIN_LINK" />сопствену приступну фразу<ph name="END_LINK" /> да бисте шифровали све Chrome податке на Google налогу. Начини плаћања и адресе из Google Pay-а се неће шифровати. Историја прегледања из Chrome-а се неће синхронизовати.</translation>
 <translation id="8601359445272098721">Ново. Можете да преводите и текст и слике на екрану тако што ћете изабрати дугме „Преведи екран“</translation>
 <translation id="8614913330719544658">Google Chrome не реагује. Желите ли да га одмах поново покренете?</translation>
 <translation id="861702415419836452">Chrome тражи дозволу да приступи камери да би направио 3D мапу окружења</translation>
 <translation id="8625237574518804553">{0,plural, =1{Поново ћемо покренути Chrome за 1 минут}one{Поново ћемо покренути Chrome за # минут}few{Поново ћемо покренути Chrome за # минута}other{Поново ћемо покренути Chrome за # минута}}</translation>
 <translation id="8637932705841171563">Да бисте делили прозор, дозволите снимање екрана за Chrome у подешавањима система</translation>
 <translation id="8641606876632989680">Chrome ће вас обавестити када се пријавите помоћу угрожене лозинке</translation>
-<translation id="8647930742055103497">Чувај све у Chrome-у</translation>
+<translation id="8647930742055103497">Чувајте све у Chrome-у</translation>
 <translation id="8656634243791296665">Отворите Gemini у Chrome Dev-у</translation>
 <translation id="8669527147644353129">Google Chrome помоћник</translation>
 <translation id="8677922833187616101">Увек приказуј пречицу за Google AI режим</translation>

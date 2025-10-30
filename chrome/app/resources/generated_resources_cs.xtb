@@ -7431,6 +7431,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="6160290816917599257">Neplatný kód. Záznam by měl mít formát <ph name="LPA_0" />$<ph name="LPA_1" />adresa SM-DP+<ph name="LPA_2" />$<ph name="LPA_3" />volitelné odpovídající ID<ph name="LPA_4" /></translation>
 <translation id="6160625263637492097">Poskytovat certifikáty k oveření</translation>
 <translation id="6160887111111841751">Tady se budou zobrazovat uložené informace</translation>
+<translation id="616290554291007512">Nepovolit Gemini přihlašovat se za vás</translation>
 <translation id="6163363155248589649">Normální</translation>
 <translation id="6163376401832887457">Nastavení protokolu Kerberos</translation>
 <translation id="6163522313638838258">Rozbalit vše...</translation>
@@ -7743,6 +7744,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="6379228010899751161">Pokud chcete mít vždy možnost používat hesla ve svém účtu <ph name="ACCOUNT_EMAIL" />, ověřte svou totožnost</translation>
 <translation id="6379827283296619736">Ne, pokračovat v práci v tomhle profilu</translation>
 <translation id="6380143666419481200">Přijmout a pokračovat</translation>
+<translation id="6380618366311601172">Gemini nebude moct provádět úkoly, které vyžadují přihlášení na webu <ph name="DOMAIN" />.</translation>
 <translation id="6383382161803538830">Režim čtení není na této stránce k dispozici</translation>
 <translation id="638418309848716977">Podporované odkazy</translation>
 <translation id="6384275966486438344">Změnit nastavení vyhledávání na: <ph name="SEARCH_HOST" /></translation>
@@ -9455,6 +9457,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7585106857920830898">Kontroluje se, zda soubor odpovídá bezpečnostním zásadám organizace…</translation>
 <translation id="7585490016012953607">Heslo pro obnovení – dočasně uloženo až na 3 měsíce</translation>
 <translation id="7586498138629385861">Pokud jsou otevřeny aplikace Chrome, zůstane Chrome spuštěný.</translation>
+<translation id="7587297195142686341">Gemini se může přihlásit za vás</translation>
 <translation id="7587806318633605613">Historie návrhů</translation>
 <translation id="7589448773774086276">Nové rozdělené zobrazení s aktuální kartou</translation>
 <translation id="7589461650300748890">Pozor, buďte opatrní!</translation>
@@ -10811,6 +10814,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="849488240089599592">Zpět na nedávná stažení</translation>
 <translation id="8496717697661868878">Spustit plugin</translation>
 <translation id="8497219075884839166">Nástroje Windows</translation>
+<translation id="8497819894150712946">Uloženo z Chromu</translation>
 <translation id="8498214519255567734">Usnadnit čtení a sledování obrazovky při tlumeném osvětlení</translation>
 <translation id="8499083585497694743">Zapnout mikrofon</translation>
 <translation id="8500044868721690197">Na tomto webu bylo zablokováno ovládání a přeprogramování vašich zařízení MIDI</translation>
@@ -11671,6 +11675,7 @@ Informace o tom, jaká data Google shromažďuje a proč je shromažďuje, naj
 <translation id="9069417381769492963">Hledání neodpovídají žádné záložky</translation>
 <translation id="9070231741075992882">Oprávnění, která povolíte pro aplikaci <ph name="APP_NAME" />, budou povolena také pro přidružené nainstalované a streamované aplikace.</translation>
 <translation id="9070342919388027491">Karta se přesunula vlevo</translation>
+<translation id="9072918088200875065">Povolili jste Gemini přihlašovat se za účelem dokončení úkolů za vás k těmto webům</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9074836595010225693">Myš s konektorem USB byla připojena</translation>
 <translation id="9075413375877487220">Vylepšené Bezpečné prohlížení tomuto rozšíření nedůvěřuje.</translation>

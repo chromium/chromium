@@ -7427,6 +7427,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6160290816917599257">Codice non valido. Il formato dell'elemento dovrebbe essere <ph name="LPA_0" />$<ph name="LPA_1" />indirizzo SM-DP+<ph name="LPA_2" />$<ph name="LPA_3" />ID corrispondenza facoltativo<ph name="LPA_4" /></translation>
 <translation id="6160625263637492097">Fornisci certificati per l'autenticazione</translation>
 <translation id="6160887111111841751">Le informazioni salvate verranno visualizzate qui</translation>
+<translation id="616290554291007512">Non consentire a Gemini di accedere per te</translation>
 <translation id="6163363155248589649">&amp;Normale</translation>
 <translation id="6163376401832887457">Impostazioni Kerberos</translation>
 <translation id="6163522313638838258">Espandi tutto...</translation>
@@ -7739,6 +7740,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6379228010899751161">Verifica la tua identità per assicurarti di poter usare sempre le password nel tuo account, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="6379827283296619736">No, continua a usare questo profilo per il lavoro</translation>
 <translation id="6380143666419481200">Accetta e continua</translation>
+<translation id="6380618366311601172">Gemini non sarà in grado di completare le attività che richiedono l'accesso a <ph name="DOMAIN" />.</translation>
 <translation id="6383382161803538830">Modalità Lettura non disponibile in questa pagina</translation>
 <translation id="638418309848716977">Link supportati</translation>
 <translation id="6384275966486438344">Modifica delle impostazioni di ricerca per: <ph name="SEARCH_HOST" /></translation>
@@ -9446,6 +9448,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7585106857920830898">Controllo della conformità alle norme di sicurezza della tua organizzazione in corso…</translation>
 <translation id="7585490016012953607">Password di recupero: salvata temporaneamente per un massimo di 3 mesi</translation>
 <translation id="7586498138629385861">Chrome rimane in esecuzione se ci sono app di Chrome aperte.</translation>
+<translation id="7587297195142686341">Gemini può accedere per te</translation>
 <translation id="7587806318633605613">Cronologia dei suggerimenti</translation>
 <translation id="7589448773774086276">Nuova visualizzazione divisa con la scheda corrente</translation>
 <translation id="7589461650300748890">Attenzione.</translation>
@@ -10802,6 +10805,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="849488240089599592">Torna a Download recenti</translation>
 <translation id="8496717697661868878">Esegui questo plug-in</translation>
 <translation id="8497219075884839166">Utilità Windows</translation>
+<translation id="8497819894150712946">Contenuti salvati da Chrome</translation>
 <translation id="8498214519255567734">Potrai guardare lo schermo senza sforzare la vista o leggere in condizioni di luce attenuata</translation>
 <translation id="8499083585497694743">Riattiva microfono</translation>
 <translation id="8500044868721690197">A questo sito è stato impedito il controllo e la riprogrammazione dei tuoi dispositivi MIDI</translation>
@@ -11658,6 +11662,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser, si
 <translation id="9069417381769492963">Non è presente nessun preferito corrispondente alla ricerca</translation>
 <translation id="9070231741075992882">Le autorizzazioni consentite per <ph name="APP_NAME" /> saranno consentite anche per le relative app installate e in streaming.</translation>
 <translation id="9070342919388027491">Scheda spostata a sinistra</translation>
+<translation id="9072918088200875065">Hai concesso a Gemini l'autorizzazione ad accedere a questi siti e completare le attività per tuo conto</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9074836595010225693">Mouse USB collegato</translation>
 <translation id="9075413375877487220">Questa estensione non è ritenuta attendibile da Navigazione sicura avanzata.</translation>

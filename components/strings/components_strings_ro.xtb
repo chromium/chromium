@@ -20,6 +20,7 @@
 <translation id="1035509598913574970">Cyan 3</translation>
 <translation id="1035709686865413354">Filtre și purificatoare de apă</translation>
 <translation id="1036348656032585052">Dezactivează</translation>
+<translation id="1036436692654972538">Salvează pe dispozitiv</translation>
 <translation id="1036881361735705143">Plic C4</translation>
 <translation id="1038842779957582377">nume necunoscut</translation>
 <translation id="1041998700806130099">Mesajul din foaia sarcinii</translation>
@@ -2831,6 +2832,7 @@
 <translation id="5617949217645503996"><ph name="HOST_NAME" /> te-a redirecționat de prea multe ori.</translation>
 <translation id="5619721953841297650">Presetare</translation>
 <translation id="5624120631404540903">Gestionați parolele</translation>
+<translation id="5628060911499153873">Salvează-ți informațiile pentru a lucra mai productiv în produsele Google. Informațiile tale sunt salvate în <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> pentru <ph name="ACCOUNT" />.</translation>
 <translation id="5629630648637658800">Setările pentru politică nu au putut fi încărcate</translation>
 <translation id="5630981295558454585">Butonul Întreabă Google despre această pagină, activează pentru a întreba Google despre această pagină</translation>
 <translation id="5631439013527180824">Indicativ nevalid pentru gestionarea gadgetului</translation>

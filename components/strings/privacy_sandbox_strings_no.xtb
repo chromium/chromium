@@ -8,10 +8,8 @@
 <translation id="1281098210028343866">Hjelp oss med å gjøre Chromium bedre ved å fortelle oss hvorfor du satte sporingsbeskyttelsene på pause</translation>
 <translation id="1297285729613779935">Foreslåtte annonser bidrar til å beskytte nettleserloggen og identiteten din samtidig som nettsteder kan vise deg relevante annonser. Basert på aktiviteten din – for eksempel hvordan du bruker tiden på nettsteder du besøker – kan andre nettsteder foreslå relaterte annonser. Du kan se en liste over slike nettsteder og blokkere dem du ikke vil se, i innstillingene.</translation>
 <translation id="132963621759063786">Chromium sletter alle aktivitetsdata du har delt med nettsteder, etter 30 dager. Hvis du går til et nettsted på nytt, kan det havne på listen igjen. Finn ut hvordan du <ph name="BEGIN_LINK1" />administrerer annonsepersonvernet ditt i Chrome<ph name="LINK_END1" />.</translation>
-<translation id="1432306053064625042">Åpnes i et vanlig Chrome-vindu</translation>
 <translation id="1472807065399636739">Nettsteder du besøker, kan bygge inn innhold og tjenester fra andre nettsteder (for eksempel bilder, annonser og tekst), som kan brukes for å finne ut mer om deg. Finn ut mer om hvordan du administrerer <ph name="BEGIN_LINK" />sporingsbeskyttelse for inkognitomodus<ph name="END_LINK" /></translation>
 <translation id="1472928714075596993"><ph name="BEGIN_BOLD" />Disse dataene brukes:<ph name="END_BOLD" /> Annonseemnene dine er basert på den nylige nettleserloggen din, som er en liste over nettsteder du har gått til i Chrome på denne enheten.</translation>
-<translation id="1529201733207295376">Informasjonskapsler fra tredjeparter er blokkert. Inkognitomodus har også funksjoner som kan begrense informasjonen som er tilgjengelig for bedrifter som har innhold innebygd på nettsteder du besøker. Du kan administrere sporingsbeskyttelse i inkognitomodus i <ph name="START_LINK" />Innstillinger<ph name="END_LINK" />.</translation>
 <translation id="1559726735555610004">Google krever at bedrifter offentlig erklærer at de ikke bruker disse dataene for å spore deg på ulike nettsteder. Noen nettsteder kan bruke aktiviteten din for å gi opplevelsen din et personlig preg for andre ting enn bare annonser. De kan også kombinere den med annen informasjon de allerede har om deg. Bedrifter har et ansvar om å informere deg om hvordan de bruker dataene dine. Finn ut mer om hvordan Google beskytter dataene dine, i <ph name="BEGIN_LINK" />personvernreglene våre<ph name="END_LINK" />.</translation>
 <translation id="1569440020357229235">Når du er i inkognitomodus, kan ikke nettsteder bruke informasjonskapsler fra tredjeparter. Hvis et nettsted som er avhengig av slike informasjonskapsler, ikke fungerer, kan du <ph name="BEGIN_LINK" />prøve å gi det midlertidig tilgang til informasjonskapsler fra tredjeparter<ph name="END_LINK" />.</translation>
 <translation id="1617293350324746198">Informasjonskapsler fra tredjeparter er blokkert. Inkognito kan også gi ekstra sporingsbeskyttelse.</translation>
@@ -103,7 +101,6 @@
 <translation id="6195163219142236913">Informasjonskapsler fra tredjeparter er begrenset</translation>
 <translation id="6196640612572343990">Blokker informasjonskapsler fra tredjeparter</translation>
 <translation id="6205593033237791753">Begrens tilgangen til IP-adressen din. Denne innstillingen er på.</translation>
-<translation id="6272892028045906139">Innstillinger for sporingsbeskyttelse i inkognitomodus</translation>
 <translation id="6282129116202535093">Foreslåtte annonser bidrar til å beskytte nettleserloggen og identiteten din samtidig som nettsteder kan vise deg relevante annonser. Basert på aktiviteten din kan andre nettsteder foreslå relaterte annonser. Du kan se en liste over slike nettsteder og blokkere dem du ikke vil se, i innstillingene.</translation>
 <translation id="6291177244430967858">Sporingsbeskyttelsene er gjenopptatt</translation>
 <translation id="6308169245546905162">Nettsteder kan bruke informasjonskapsler fra tredjeparter for å finne ut hva du gjør på andre nettsteder</translation>
@@ -124,7 +121,6 @@
 <translation id="7315780377187123731">Mer om alternativet for å blokkere informasjonskapsler fra tredjeparter</translation>
 <translation id="737025278945207416">Noen nettsteder kan bruke aktiviteten din for å gi opplevelsen din et personlig preg for andre ting enn bare annonser. De kan også lagre annonseemner i mer enn fire uker og kombinere dem med annen informasjon de har om deg allerede</translation>
 <translation id="7374493521304367420">Nettsteder kan fortsatt bruke informasjonskapsler for å se nettleseraktivitet på sitt eget nettsted</translation>
-<translation id="7379649202155190245">Sporingsbeskyttelse i inkognitomodus</translation>
 <translation id="7419391859099619574">Google krever at bedrifter offentlig erklærer at de ikke bruker disse dataene for å spore deg på ulike nettsteder. Noen nettsteder kan bruke aktiviteten din for å gi opplevelsen din et personlig preg for andre ting enn bare annonser. De kan også lagre annonseemner i mer enn fire uker og kombinere dem med annen informasjon de har om deg allerede. Bedrifter har et ansvar om å informere deg om hvordan de bruker dataene dine. <ph name="BEGIN_LINK1" />Finn ut mer i personvernreglene våre<ph name="LINK_END1" />.</translation>
 <translation id="7442413018273927857">Chrome sletter alle aktivitetsdata du har delt med nettsteder, etter 30 dager. Hvis du går til et nettsted på nytt, kan det havne på listen igjen. Finn ut hvordan du <ph name="BEGIN_LINK1" />administrerer annonsepersonvernet ditt i Chrome<ph name="LINK_END1" />.</translation>
 <translation id="7446815120569226585">Chrome blokkerer informasjonskapsler fra tredjeparter i Inkognito, men administratoren din har tillatt informasjonskapsler fra tredjeparter for dette nettstedet. Inkognito kan også gi ekstra sporingsbeskyttelse.</translation>
@@ -152,7 +148,6 @@
 <translation id="839994149685752920">Nettsteder kan bruke informasjonskapsler fra tredjeparter for å tilpasse innhold og annonser</translation>
 <translation id="8428213095426709021">Innstillinger</translation>
 <translation id="8430082659493731737">Bare tilgjengelig når Inkognito åpnes fra en Chrome-fane du er logget på</translation>
-<translation id="8442977418416307640">Åpnes i et vanlig Chromium-vindu</translation>
 <translation id="8578320000709741352">Nettsteder du besøker, kan bygge inn innhold og tjenester fra andre nettsteder (for eksempel bilder, annonser og tekst), som kan brukes for å finne ut mer om deg. Finn ut mer om hvordan du administrerer <ph name="START_LINK" />sporingsbeskyttelse for inkognitomodus<ph name="END_LINK" /></translation>
 <translation id="859369389161884405">Åpner personvernreglene i en ny fane</translation>
 <translation id="8712637175834984815">Greit</translation>

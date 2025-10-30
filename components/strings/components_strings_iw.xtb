@@ -20,6 +20,7 @@
 <translation id="1035509598913574970">ציאן 3</translation>
 <translation id="1035709686865413354">מסנני מים ומטהרי מים</translation>
 <translation id="1036348656032585052">כיבוי</translation>
+<translation id="1036436692654972538">הפרטים נשמרים במכשיר</translation>
 <translation id="1036881361735705143">‏מעטפה – C4</translation>
 <translation id="1038842779957582377">שם לא ידוע</translation>
 <translation id="1041998700806130099">הודעה לגבי גיליון עבודות</translation>
@@ -2836,6 +2837,7 @@ Del</translation>
 <translation id="5617949217645503996"><ph name="HOST_NAME" /> הפנה אותך מחדש פעמים רבות מדי.</translation>
 <translation id="5619721953841297650">הגדרה קבועה מראש</translation>
 <translation id="5624120631404540903">ניהול סיסמאות</translation>
+<translation id="5628060911499153873">‏כדי לבצע פעולות מהר יותר בכל מוצרי Google, כדאי לשמור את הפרטים. הפרטים נשמרו ב-<ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> בחשבון <ph name="ACCOUNT" />.</translation>
 <translation id="5629630648637658800">טעינת הגדרות המדיניות נכשלה</translation>
 <translation id="5630981295558454585">‏אפשר להפעיל את הכפתור "שאלה ל-Google לגבי הדף הזה", כדי לשאול את Google לגבי הדף הזה</translation>
 <translation id="5631439013527180824">טוקן ניהול המכשיר אינו חוקי</translation>

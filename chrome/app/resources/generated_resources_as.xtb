@@ -7441,6 +7441,7 @@
 <translation id="6160290816917599257">অমান্য ক’ড। আপোনাৰ প্ৰৱিষ্টিটোত <ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+ ঠিকনা<ph name="LPA_2" />$<ph name="LPA_3" />ঐচ্ছিক মিলৰ আইডি<ph name="LPA_4" /> ফৰ্মেটটো থকা উচিত</translation>
 <translation id="6160625263637492097">বিশ্বাসযোগ্যতা প্ৰমাণীকৰণৰ বাবে প্ৰমাণপত্ৰ দিয়ক</translation>
 <translation id="6160887111111841751">ছেভ কৰা তথ্য ইয়াত ওলাব</translation>
+<translation id="616290554291007512">Geminiক আপোনাৰ বাবে ছাইন ইন কৰিবলৈ অনুমতি নিদিব</translation>
 <translation id="6163363155248589649">&amp;সাধাৰণ</translation>
 <translation id="6163376401832887457">Kerberosৰ ছেটিংসমূহ</translation>
 <translation id="6163522313638838258">সকলো বিস্তাৰ কৰক...</translation>
@@ -7753,6 +7754,7 @@
 <translation id="6379228010899751161">আপুনি নিজৰ একাউণ্টত পাছৱর্ডসমূহ ব্যৱহাৰ কৰিব পৰাটো নিশ্চিত কৰিবলৈ নিজৰ পৰিচয় সত্যাপন কৰক, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="6379827283296619736">নাই, এই প্ৰ’ফাইলটোত কাম কৰি থাকক</translation>
 <translation id="6380143666419481200">গ্ৰহণ কৰি অব্যাহত ৰাখক</translation>
+<translation id="6380618366311601172">Geminiএ <ph name="DOMAIN" />ত ছাইন ইন কৰাৰ প্ৰয়োজন হোৱা কাৰ্যসমূহ সম্পূৰ্ণ কৰিব নোৱাৰিব।</translation>
 <translation id="6383382161803538830">এই পৃষ্ঠাখনত পঢ়াৰ ম’ড উপলব্ধ নহয়</translation>
 <translation id="638418309848716977">সমৰ্থিত লিংক</translation>
 <translation id="6384275966486438344">আপোনাৰ সন্ধানৰ ছেটিংসমূহ ইয়ালৈ সলনি কৰক: <ph name="SEARCH_HOST" /></translation>
@@ -9461,6 +9463,7 @@
 <translation id="7585106857920830898">আপোনাৰ প্ৰতিষ্ঠানৰ সুৰক্ষা নীতিসমূহৰ জৰিয়তে পৰীক্ষা কৰি থকা হৈছে...</translation>
 <translation id="7585490016012953607">পুনৰুদ্ধাৰৰ পাছৱৰ্ড — অস্থায়ীভাৱে ৩ মাহলৈকে ছেভ কৰা হয়</translation>
 <translation id="7586498138629385861">Chromeৰ এপ্‌সমূহ খোলা থাকিলে Chrome চলি থাকিব।</translation>
+<translation id="7587297195142686341">Geminiএ আপোনাৰ বাবে ছাইন ইন কৰিব পাৰে</translation>
 <translation id="7587806318633605613">পৰামৰ্শৰ ইতিহাস</translation>
 <translation id="7589448773774086276">বৰ্তমানৰ টেবৰ সৈতে নতুন বিভাজিত ভিউ</translation>
 <translation id="7589461650300748890">অহ অলপ সাৱধান হওক।</translation>
@@ -10816,6 +10819,7 @@
 <translation id="849488240089599592">শেহতীয়া ডাউনল’ডলৈ উভতি যাওক</translation>
 <translation id="8496717697661868878">এই প্লেগইন চলাওক</translation>
 <translation id="8497219075884839166">Windows সুবিধা</translation>
+<translation id="8497819894150712946">Chromeৰ পৰা ছেভ কৰা</translation>
 <translation id="8498214519255567734">আপোনাৰ স্ক্ৰীনৰ পোহৰ কমাই থোৱা অৱস্থাত স্ক্ৰীন চাব বা পঢ়িবলৈ সহজসাধ্য কৰি তোলে</translation>
 <translation id="8499083585497694743">মাইক্ৰ’ফ’ন আনমিউট কৰক</translation>
 <translation id="8500044868721690197">এই ছাইটটোৱে আপোনাৰ MIDI ডিভাইচ নিয়ন্ত্ৰণ আৰু ৰিপ্ৰ’গ্ৰাম কৰাটো অৱৰোধ কৰা হৈছে</translation>
@@ -11673,6 +11677,7 @@
 <translation id="9069417381769492963">আপোনাৰ সন্ধানৰ সৈতে মিলা কোনো বুকমাৰ্ক নাই</translation>
 <translation id="9070231741075992882">আপুনি <ph name="APP_NAME" />ক দিয়া অনুমতিসমূহ ইয়াৰ ইনষ্টল কৰি থোৱা আৰু ষ্ট্ৰীম কৰা এপ্‌সমূহৰ বাবেও প্ৰযোজ্য হ'ব।</translation>
 <translation id="9070342919388027491">টেবটো বাওঁফালে নিয়া হ'ল</translation>
+<translation id="9072918088200875065">আপোনাৰ বাবে কাৰ্য সম্পূৰ্ণ কৰিবলৈ আপুনি Geminiক এই ছাইটসমূহত ছাইন ইন কৰাৰ অনুমতি দিছে</translation>
 <translation id="9074739597929991885">ব্লুটুথ</translation>
 <translation id="9074836595010225693">USB মাউছ সংযোগ কৰা হৈছে</translation>
 <translation id="9075413375877487220">এই এক্সটেনশ্বনটো বৰ্ধিত সুৰক্ষিত ব্ৰাউজিঙৰ সুবিধাটোৱে বিশ্বাস নকৰে।</translation>

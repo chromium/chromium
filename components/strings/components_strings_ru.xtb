@@ -20,6 +20,7 @@
 <translation id="1035509598913574970">Бирюзовый 3</translation>
 <translation id="1035709686865413354">Фильтры для воды и водоочистители</translation>
 <translation id="1036348656032585052">Отключить</translation>
+<translation id="1036436692654972538">На устройстве будет сохранена следующая информация:</translation>
 <translation id="1036881361735705143">Конверт C4</translation>
 <translation id="1038842779957582377">неизвестное имя</translation>
 <translation id="1041998700806130099">Сообщение на листе задания</translation>
@@ -2830,6 +2831,7 @@
 <translation id="5617949217645503996">Сайт <ph name="HOST_NAME" /> выполнил переадресацию слишком много раз.</translation>
 <translation id="5619721953841297650">Набор настроек</translation>
 <translation id="5624120631404540903">Настройки паролей</translation>
+<translation id="5628060911499153873">Сохраните свои данные, чтобы быстрее выполнять действия в продуктах Google. Ваша информация сохранена в сервисе "<ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />" для аккаунта <ph name="ACCOUNT" />.</translation>
 <translation id="5629630648637658800">Не удалось применить настройки политики</translation>
 <translation id="5630981295558454585">Кнопка "Спросите Google об этой странице". Нажмите, чтобы задать Google вопрос об этой странице.</translation>
 <translation id="5631439013527180824">Токен устройства недействителен</translation>

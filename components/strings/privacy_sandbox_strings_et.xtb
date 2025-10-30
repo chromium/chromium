@@ -8,10 +8,8 @@
 <translation id="1281098210028343866">Aidake meil Chromiumi täiustada, andes teada, miks te jälgimiskaitse peatasite.</translation>
 <translation id="1297285729613779935">Saidi soovitatavad reklaamid aitavad kaitsta teie sirvimisajalugu ja identiteeti, võimaldades samas saitidel esitada teile asjakohaseid reklaame. Teie tegevuse kohta kogutud andmed, näiteks saitidel veedetud aja andmed, võivad aidata hiljem külastatavatel teistel saitidel reklaame valida. Seadetes saate nende saitide loendit vaadata ja soovimatud saidid blokeerida.</translation>
 <translation id="132963621759063786">Chromium kustutab saitidega jagatud tegevusandmed 30 päeva järel. Kui külastate saiti uuesti, võib see uuesti loendis ilmuda. Lugege lisaks <ph name="BEGIN_LINK1" />reklaamide privaatsuse haldamise kohta Chromiumis<ph name="LINK_END1" />.</translation>
-<translation id="1432306053064625042">Avaneb tavalises Chrome’i aknas</translation>
 <translation id="1472807065399636739">Teie külastatavatele saitidele võib olla manustatud muude saitide sisu ja teenuseid (nt pilte, reklaami ja teksti), mille abil saab teie kohta teavet koguda. Lisateave <ph name="BEGIN_LINK" />inkognito režiimi jälgimiskaitse<ph name="END_LINK" /> haldamise kohta</translation>
 <translation id="1472928714075596993"><ph name="BEGIN_BOLD" />Milliseid andmeid kasutatakse?<ph name="END_BOLD" /> Teie reklaamiteemad põhinevad teie hiljutisel sirvimisajalool (saitide loend, mida olete selles seadmes Chrome'iga külastanud).</translation>
-<translation id="1529201733207295376">Kolmanda osapoole küpsisefailid on blokeeritud. Inkognito režiim pakub ka funktsioone, mis võivad piirata nende ettevõtete jaoks saadaolevat teavet, kelle sisu on teie külastatavale saidile manustatud. Saate inkognito režiimi jälgimiskaitset hallata <ph name="START_LINK" />seadetes<ph name="END_LINK" />.</translation>
 <translation id="1559726735555610004">Google nõuab, et ettevõtted teataksid avalikult, et ei kasuta neid andmeid teie saitidevaheliseks jälgimiseks. Mõned saidid võivad kasutada teie tegevust peale reklaamide ka muu kasutuskogemuse isikupärastamiseks. Ühtlasi võivad nad seda kombineerida muu teabega, mis neil teie kohta on. Ettevõtted on kohustatud teid teavitama sellest, kuidas nad teie andmeid kasutavad. Lisateave selle kohta, kuidas Google teie andmeid kaitseb, on leitav meie <ph name="BEGIN_LINK" />privaatsuseeskirjadest<ph name="END_LINK" />.</translation>
 <translation id="1569440020357229235">Kui olete inkognito režiimis, ei saa saidid kolmanda osapoole küpsisefaile kasutada. Kui nendele küpsisefailidele tuginev sait ei tööta, võite <ph name="BEGIN_LINK" />proovida anda sellele saidile ajutise juurdepääsu kolmanda osapoole küpsisefailidele<ph name="END_LINK" />.</translation>
 <translation id="1617293350324746198">Kolmanda osapoole küpsisefailid on blokeeritud. Inkognito režiim võib pakkuda ka täiendavat jälgimiskaitset.</translation>
@@ -103,7 +101,6 @@
 <translation id="6195163219142236913">Kolmanda osapoole küpsisefailid on piiratud</translation>
 <translation id="6196640612572343990">Blokeeri kolmanda osapoole küpsisefailid</translation>
 <translation id="6205593033237791753">Piirake juurdepääsu oma IP-aadressile. See seade on sisse lülitatud.</translation>
-<translation id="6272892028045906139">Inkognito režiimi jälgimiskaitse seaded</translation>
 <translation id="6282129116202535093">Saidi soovitatavad reklaamid aitavad kaitsta teie sirvimisajalugu ja identiteeti, võimaldades samas saitidel esitada teile asjakohaseid reklaame. Hiljem külastatavad saidid võivad teie tegevusandmete põhjal teile reklaame näidata. Seadetes saate nende saitide loendit vaadata ja soovimatud saidid blokeerida.</translation>
 <translation id="6291177244430967858">Jälgimiskaitset jätkatakse</translation>
 <translation id="6308169245546905162">Saidid võivad kasutada kolmanda osapoole küpsisefaile, et saada teavet teie toimingute kohta teistel saitidel</translation>
@@ -124,7 +121,6 @@
 <translation id="7315780377187123731">Lisateave valiku „Blokeeri kolmanda osapoole küpsisefailid” kohta</translation>
 <translation id="737025278945207416">Mõned saidid võivad kasutada teie tegevust peale reklaamide ka muu kasutuskogemuse isikupärastamiseks. Samuti võivad need talletada reklaamiteemasid kauemaks kui 4 nädalaks ja kombineerida neid teabega, mis neil teie kohta juba olemas on.</translation>
 <translation id="7374493521304367420">Saidid võivad endiselt kasutada küpsisefaile, et näha oma saidil teie sirvimistegevust</translation>
-<translation id="7379649202155190245">Jälgimiskaitse inkognito režiimis</translation>
 <translation id="7419391859099619574">Google nõuab, et ettevõtted teataksid avalikult, et ei kasuta neid andmeid teie saitidevaheliseks jälgimiseks. Mõned saidid võivad kasutada teie tegevust peale reklaamide ka muu kasutuskogemuse isikupärastamiseks. Samuti võivad need talletada reklaamiteemasid kauemaks kui neljaks nädalaks ja kombineerida neid teabega, mis neil teie kohta juba olemas on. Ettevõtted on kohustatud teid teavitama sellest, kuidas nad teie andmeid kasutavad. <ph name="BEGIN_LINK1" />Lisateavet leiate meie privaatsuseeskirjadest.<ph name="LINK_END1" /></translation>
 <translation id="7442413018273927857">Chrome kustutab saitidega jagatud tegevusandmed 30 päeva järel. Kui külastate saiti uuesti, võib see uuesti loendis ilmuda. Lugege lisaks <ph name="BEGIN_LINK1" />reklaamide privaatsuse haldamise kohta Chrome'is<ph name="LINK_END1" />.</translation>
 <translation id="7446815120569226585">Chrome blokeerib inkognito režiimis kolmanda osapoole küpsisefailid, kuid teie administraator lubas selle saidi jaoks kolmanda osapoole küpsisefailid. Inkognito režiim võib pakkuda ka täiendavat jälgimiskaitset.</translation>
@@ -152,7 +148,6 @@
 <translation id="839994149685752920">Saidid võivad sisu ja reklaamide isikupärastamiseks kasutada kolmanda osapoole küpsisefaile</translation>
 <translation id="8428213095426709021">Seaded</translation>
 <translation id="8430082659493731737">Saadaval ainult juhul, kui inkognito režiim avatakse sisselogitud Chrome’i vahekaardilt.</translation>
-<translation id="8442977418416307640">Avaneb tavalises Chromiumi aknas</translation>
 <translation id="8578320000709741352">Teie külastatavatele saitidele võib olla manustatud muude saitide sisu ja teenuseid (nt pilte, reklaami ja teksti), mille abil saab teie kohta teavet koguda. Lisateave <ph name="START_LINK" />inkognito režiimi jälgimiskaitse<ph name="END_LINK" /> haldamise kohta</translation>
 <translation id="859369389161884405">Avab privaatsuseeskirjad uuel vahekaardil</translation>
 <translation id="8712637175834984815">Selge</translation>

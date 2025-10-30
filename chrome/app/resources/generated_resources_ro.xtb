@@ -5753,7 +5753,7 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="4961318399572185831">Proiectează ecranul</translation>
 <translation id="4961594008939394243">Cumpără, tradu și identifică ceea ce vezi cu camera foto din mers</translation>
 <translation id="496185450405387901">Aplicația a fost instalată de administrator.</translation>
-<translation id="4963068409841400707">Află cum să începi să folosești <ph name="BEGIN_LINK_ANDROID" />Android<ph name="END_LINK_ANDROID" /> și <ph name="BEGIN_LINK_IOS" />iOS<ph name="END_LINK_IOS" /></translation>
+<translation id="4963068409841400707">Află cum să folosești <ph name="BEGIN_LINK_ANDROID" />Android<ph name="END_LINK_ANDROID" /> și <ph name="BEGIN_LINK_IOS" />iOS<ph name="END_LINK_IOS" /></translation>
 <translation id="4963603093937263654">Asigură-te că notificările sunt activate pe <ph name="DEVICE_NAME" /></translation>
 <translation id="4963789650715167449">Elimină fila actuală</translation>
 <translation id="4964455510556214366">Aranjare</translation>
@@ -7435,6 +7435,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="6160290816917599257">Cod nevalid. Intrarea trebuie să aibă formatul <ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+address<ph name="LPA_2" />$<ph name="LPA_3" />cod opțional corespunzător<ph name="LPA_4" /></translation>
 <translation id="6160625263637492097">Oferă certificate pentru autentificare</translation>
 <translation id="6160887111111841751">Informațiile salvate vor apărea aici</translation>
+<translation id="616290554291007512">Nu permite ca Gemini să se conecteze pentru tine</translation>
 <translation id="6163363155248589649">&amp;Normal</translation>
 <translation id="6163376401832887457">Setări pentru Kerberos</translation>
 <translation id="6163522313638838258">Extinde-le pe toate...</translation>
@@ -7747,6 +7748,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="6379228010899751161">Confirmă-ți identitatea pentru a te asigura că poți folosi oricând parolele din contul <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="6379827283296619736">Nu, continuă să lucrezi în acest profil</translation>
 <translation id="6380143666419481200">Acceptați și continuați</translation>
+<translation id="6380618366311601172">Gemini nu va putea finaliza activități care necesită conectarea la <ph name="DOMAIN" />.</translation>
 <translation id="6383382161803538830">Modul de lectură nu este disponibil pe această pagină</translation>
 <translation id="638418309848716977">Linkuri acceptate</translation>
 <translation id="6384275966486438344">Schimbați setările de căutare la: <ph name="SEARCH_HOST" /></translation>
@@ -9458,6 +9460,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7585106857920830898">Se verifică în conformitate cu politicile de securitate ale organizației…</translation>
 <translation id="7585490016012953607">Parola de recuperare – salvată temporar timp de până la trei luni</translation>
 <translation id="7586498138629385861">Chrome va rula în continuare când sunt deschise aplicații Chrome.</translation>
+<translation id="7587297195142686341">Gemini poate să se conecteze pentru tine</translation>
 <translation id="7587806318633605613">Istoricul sugestiilor</translation>
 <translation id="7589448773774086276">Noua afișare împărțită cu fila actuală</translation>
 <translation id="7589461650300748890">Ușurel. Fiți atent(ă).</translation>
@@ -10814,6 +10817,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="849488240089599592">Înapoi la descărcările recente</translation>
 <translation id="8496717697661868878">Rulează acest plugin</translation>
 <translation id="8497219075884839166">Utilitare Windows</translation>
+<translation id="8497819894150712946">Salvate din Chrome</translation>
 <translation id="8498214519255567734">Mai multă comoditate când privești ecranul sau citești într-o lumină slabă</translation>
 <translation id="8499083585497694743">Activează sunetul microfonului</translation>
 <translation id="8500044868721690197">Acest site a fost blocat, astfel că nu poate controla și reprograma dispozitivele MIDI</translation>
@@ -11674,6 +11678,7 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser, 
 <translation id="9069417381769492963">Nu există marcaje care să corespundă căutării tale</translation>
 <translation id="9070231741075992882">Permisiunile pe care le acorzi pentru <ph name="APP_NAME" /> vor fi acordate și pentru aplicațiile instalate și redate în stream.</translation>
 <translation id="9070342919388027491">Fila a fost mutată spre stânga</translation>
+<translation id="9072918088200875065">Ai acordat serviciului Gemini permisiunea de a se conecta la aceste site-uri ca să finalizeze activități pentru tine</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9074836595010225693">Mouse USB conectat</translation>
 <translation id="9075413375877487220">Navigarea sigură îmbunătățită nu are încredere în această extensie.</translation>

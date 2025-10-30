@@ -8,10 +8,8 @@
 <translation id="1281098210028343866">Ajude-nos a melhorar o Chromium indicando-nos o motivo pelo qual pausou as proteções antirrastreio</translation>
 <translation id="1297285729613779935">Os anúncios sugeridos por sites ajudam a proteger o seu histórico de navegação e identidade, ao mesmo tempo que permitem que os sites lhe mostrem anúncios relevantes. Com base na sua atividade, como o tempo que passa nos sites que visita, outros sites podem sugerir anúncios relacionados à medida que continua a navegar. Pode ver uma lista destes sites e bloquear os que não quer nas definições.</translation>
 <translation id="132963621759063786">O Chromium elimina todos os dados de atividade que partilhou com sites após 30 dias. Se visitar um site novamente, este pode reaparecer na lista. Saiba mais sobre a <ph name="BEGIN_LINK1" />gestão da privacidade dos anúncios no Chromium<ph name="LINK_END1" />.</translation>
-<translation id="1432306053064625042">Abre numa janela normal do Chrome</translation>
 <translation id="1472807065399636739">Os sites que visita podem incorporar conteúdo e serviços de outros sites (como imagens, anúncios e texto), que podem ser usados para saber mais sobre si. Saiba como gerir as <ph name="BEGIN_LINK" />proteções antirrastreio da Navegação anónima<ph name="END_LINK" /></translation>
 <translation id="1472928714075596993"><ph name="BEGIN_BOLD" />Que dados são usados?<ph name="END_BOLD" /> Os tópicos de anúncios baseiam-se no seu histórico de navegação recente, uma lista dos sites que visitou através do Chrome neste dispositivo.</translation>
-<translation id="1529201733207295376">Os cookies de terceiros estão bloqueados. A Navegação anónima também oferece funcionalidades que podem limitar as informações disponíveis para as empresas cujo conteúdo está incorporado num site que visita. Pode gerir as proteções antirrastreio da Navegação anónima nas <ph name="START_LINK" />Definições<ph name="END_LINK" />.</translation>
 <translation id="1559726735555610004">A Google exige que as empresas declarem publicamente que não vão usar estes dados para monitorizar a sua navegação em sites. Alguns sites podem usar a sua atividade para personalizar a sua experiência para mais do que apenas anúncios. Também podem combiná-la com outras informações que já conhecem sobre si. As empresas são responsáveis por lhe indicar como usam os seus dados. Saiba como a Google protege os seus dados na nossa <ph name="BEGIN_LINK" />Política de Privacidade<ph name="END_LINK" />.</translation>
 <translation id="1569440020357229235">Quando está no Modo de navegação anónima, os sites não podem usar cookies de terceiros. Se um site que depende destes cookies não estiver a funcionar, pode <ph name="BEGIN_LINK" />experimentar dar a esse site acesso temporário a cookies de terceiros<ph name="END_LINK" />.</translation>
 <translation id="1617293350324746198">Os cookies de terceiros estão bloqueados. A Navegação anónima também pode oferecer proteções antirrastreio adicionais.</translation>
@@ -103,7 +101,6 @@
 <translation id="6195163219142236913">Cookies de terceiros limitados</translation>
 <translation id="6196640612572343990">Bloquear cookies de terceiros</translation>
 <translation id="6205593033237791753">Limitar o acesso ao seu endereço IP. Esta definição está ativada.</translation>
-<translation id="6272892028045906139">Definições das proteções antirrastreio da Navegação anónima</translation>
 <translation id="6282129116202535093">Os anúncios sugeridos por sites ajudam a proteger o seu histórico de navegação e identidade, ao mesmo tempo que permitem que os sites lhe mostrem anúncios relevantes. Com base na sua atividade, outros sites podem sugerir anúncios relacionados à medida que continua a navegar. Pode ver uma lista destes sites e bloquear os que não quer nas definições.</translation>
 <translation id="6291177244430967858">Proteções antirrastreio retomadas</translation>
 <translation id="6308169245546905162">Os sites podem usar cookies de terceiros para saber mais sobre as ações que realiza noutros sites</translation>
@@ -124,7 +121,6 @@
 <translation id="7315780377187123731">Mais informações sobre a opção Bloquear cookies de terceiros</translation>
 <translation id="737025278945207416">Alguns sites podem usar a sua atividade para personalizar a sua experiência para mais do que apenas anúncios. Também podem armazenar tópicos de anúncios durante mais de 4 semanas e combiná-los com outras informações que já conhecem sobre si</translation>
 <translation id="7374493521304367420">Os sites continuam a poder usar cookies para ver a atividade de navegação no respetivo site</translation>
-<translation id="7379649202155190245">Proteções antirrastreio na Navegação anónima</translation>
 <translation id="7419391859099619574">A Google exige que as empresas declarem publicamente que não vão usar estes dados para monitorizar a sua navegação em sites. Alguns sites podem usar a sua atividade para personalizar a sua experiência para mais do que apenas anúncios. Também podem armazenar tópicos de anúncios durante mais de 4 semanas e combiná-los com outras informações que já conhecem sobre si. As empresas são responsáveis por lhe indicar como usam os seus dados. <ph name="BEGIN_LINK1" />Saiba mais na nossa Política de Privacidade<ph name="LINK_END1" /></translation>
 <translation id="7442413018273927857">O Chrome elimina todos os dados de atividade que partilhou com sites após 30 dias. Se visitar um site novamente, este pode reaparecer na lista. Saiba mais sobre a <ph name="BEGIN_LINK1" />gestão da privacidade dos anúncios no Chrome<ph name="LINK_END1" />.</translation>
 <translation id="7446815120569226585">O Chrome bloqueia cookies de terceiros na Navegação anónima, mas o seu administrador permitiu cookies de terceiros para este site. A Navegação anónima também pode oferecer proteções antirrastreio adicionais.</translation>
@@ -152,7 +148,6 @@
 <translation id="839994149685752920">Os sites podem usar cookies de terceiros para personalizar conteúdo e anúncios</translation>
 <translation id="8428213095426709021">Definições</translation>
 <translation id="8430082659493731737">Só está disponível quando a Navegação anónima é aberta a partir de um separador do Chrome com sessão iniciada</translation>
-<translation id="8442977418416307640">Abre numa janela normal do Chromium</translation>
 <translation id="8578320000709741352">Os sites que visita podem incorporar conteúdo e serviços de outros sites (como imagens, anúncios e texto), que podem ser usados para saber mais sobre si. Saiba como gerir as <ph name="START_LINK" />proteções antirrastreio da Navegação anónima<ph name="END_LINK" /></translation>
 <translation id="859369389161884405">Abre a Política de Privacidade num novo separador</translation>
 <translation id="8712637175834984815">OK</translation>

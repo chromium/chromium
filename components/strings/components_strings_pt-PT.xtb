@@ -1844,6 +1844,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4014895360827978999">Serviços para comerciantes e sistemas de pagamento</translation>
 <translation id="4018819349042761761">Chave pública</translation>
 <translation id="4023431997072828269">Uma vez que este formulário está a ser enviado através de uma ligação insegura, as suas informações vão ficar visíveis para outras pessoas.</translation>
+<translation id="4024673763872230929">Guarde as suas informações e preencha formulários mais rapidamente. Guarda no seu dispositivo.</translation>
 <translation id="4025325634010721551">Políticas atualizadas</translation>
 <translation id="4025338605225449265">Câmbios e moedas estrangeiras</translation>
 <translation id="4025777154208238692">Ordem inversa</translation>
@@ -2277,6 +2278,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4732860731866514038">A transferir o pacote de idiomas <ph name="LANGUAGE" />… <ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992"><ph name="URL" /> quer utilizar a localização do seu dispositivo.</translation>
 <translation id="473414950835101501">Usar as suas câmaras</translation>
+<translation id="4734343956394152985"><ph name="BEGIN_BOLD" />Predefinição atual<ph name="END_BOLD" /> · <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="4736825316280949806">Reiniciar o Chromium</translation>
 <translation id="4736934858538408121">Cartão virtual</translation>
 <translation id="473775607612524610">Atualizar</translation>
@@ -3385,6 +3387,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6521745193039995384">Não ativa</translation>
 <translation id="6522682797352430154">Música clássica</translation>
 <translation id="6524830701589638230">Botão Gerir definições de acessibilidade; ative para personalizar as ferramentas de acessibilidade nas definições do Chrome</translation>
+<translation id="6525222262307262764">Mantenha a predefinição atual</translation>
 <translation id="6527049834925947126">Produção de alimentos</translation>
 <translation id="6529173248185917884">Sétimo rolo</translation>
 <translation id="6529602333819889595">&amp;Refazer eliminação</translation>
@@ -3405,6 +3408,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6567832540451970450">O seu administrador permite o acesso ao(à) <ph name="PERMISSION" /> para este site</translation>
 <translation id="6568793038316600992">Botão Gerir métodos de pagamento; ative para gerir as suas informações de cartões de crédito e pagamentos nas definições do Chrome</translation>
 <translation id="6569060085658103619">Está a ver a página de uma extensão</translation>
+<translation id="6571992525120410251">Pergunte o que quiser ao <ph name="ENGINE_NAME" /></translation>
 <translation id="6572867903637058088">Isto é útil?</translation>
 <translation id="6573200754375280815">Perfuração dupla à direita</translation>
 <translation id="6575408526598156416">Guarde na conta</translation>
@@ -3454,6 +3458,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="666259744093848177">(x86_64 traduzido)</translation>
 <translation id="6665553082534466207">Perfuração tripla à direita</translation>
 <translation id="6668389483194953109">Foi encontrado o nome do tamanho do papel "personalizado", mas a propriedade "custom_size" está vazia ou é inválida.</translation>
+<translation id="6670729408462528018">Galeria</translation>
 <translation id="6671169470640320959">Financiamento automóvel</translation>
 <translation id="6671697161687535275">Remover a sugestão do formulário do Chromium?</translation>
 <translation id="6675846980676550611">RA não permitida</translation>

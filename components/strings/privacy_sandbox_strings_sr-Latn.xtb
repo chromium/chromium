@@ -8,10 +8,8 @@
 <translation id="1281098210028343866">Pomozite nam da poboljšamo Chromium tako što ćete nam reći zašto ste pauzirali zaštitu od praćenja</translation>
 <translation id="1297285729613779935">Oglasi koje predlažu sajtovi vam pomažu da zaštitite istoriju pregledanja i identitet dok istovremeno dozvoljavate sajtovima da vam prikazuju relevantne oglase. Na osnovu aktivnosti, kao što je to kako provodite vreme na sajtovima koje posećujete, drugi sajtovi mogu da vam predlažu srodne oglase dok nastavljate da pregledate sadržaj. U podešavanjima možete da vidite listu tih sajtova i da blokirate one koje ne želite.</translation>
 <translation id="132963621759063786">Chromium briše sve podatke o aktivnostima koje delite sa sajtovima posle 30 dana. Ako ponovo posetite sajt, on može ponovo da se prikaže na listi. Saznajte više o <ph name="BEGIN_LINK1" />upravljanju privatnošću sa oglasima u Chromium-u<ph name="LINK_END1" />.</translation>
-<translation id="1432306053064625042">Otvara se u običnom Chrome prozoru</translation>
 <translation id="1472807065399636739">Sajtovi koje posećujete mogu da ugrade sadržaj i usluge sa drugih sajtova (poput slika, oglasa i teksta) koji može da se koristi da bi se saznalo više o vama. Saznajte više o upravljanju <ph name="BEGIN_LINK" />zaštitama od praćenja u režimu bez arhiviranja<ph name="END_LINK" /></translation>
 <translation id="1472928714075596993"><ph name="BEGIN_BOLD" />Koji podaci se koriste?<ph name="END_BOLD" /> Teme oglasa su zasnovane na nedavnoj istoriji pregledanja, listi sajtova koje ste posetili pomoću Chrome-a na ovom uređaju.</translation>
-<translation id="1529201733207295376">Kolačići trećih strana su blokirani. Režim bez arhiviranja pruža i funkcije koje mogu da ograniče informacije dostupne preduzećima čiji je sadržaj ugrađen na sajt koji posećujete. Zaštitom od praćenja u režimu bez arhiviranja možete da upravljate u <ph name="START_LINK" />Podešavanjima<ph name="END_LINK" />.</translation>
 <translation id="1559726735555610004">Google zahteva od preduzeća da javno navedu da neće koristiti ove podatke za praćenje na sajtovima. Neki sajtovi mogu da koriste aktivnosti kako bi personalizovali doživljaj, a ne samo oglase. Mogu i da ih kombinuju sa drugim informacijama koje već znaju o vama. Preduzeća su odgovorna za to da vas obaveste kako koriste vaše podatke. U <ph name="BEGIN_LINK" />Politici privatnosti<ph name="END_LINK" /> saznajte više o tome kako Google štiti podatke.</translation>
 <translation id="1569440020357229235">Kada ste u režimu bez arhiviranja, sajtovi ne mogu da koriste kolačiće trećih strana. Ako sajt koji se oslanja na ove kolačiće ne radi, možete da <ph name="BEGIN_LINK" />probate da date tom sajtu privremeni pristup kolačićima trećih strana<ph name="END_LINK" />.</translation>
 <translation id="1617293350324746198">Kolačići trećih strana su blokirani. Režim bez arhiviranja može da pruži i dodatnu zaštitu od praćenja.</translation>
@@ -103,7 +101,6 @@
 <translation id="6195163219142236913">Kolačići treće strane su ograničeni</translation>
 <translation id="6196640612572343990">Blokiraj kolačiće trećih strana</translation>
 <translation id="6205593033237791753">Ograničite pristup IP adresi. Ovo podešavanje je uključeno.</translation>
-<translation id="6272892028045906139">Podešavanja zaštite od praćenja u režimu bez arhiviranja</translation>
 <translation id="6282129116202535093">Oglasi koje predlažu sajtovi vam pomažu da zaštitite istoriju pregledanja i identitet dok istovremeno dozvoljavate sajtovima da vam prikazuju relevantne oglase. Na osnovu aktivnosti, drugi sajtovi mogu da vam predlažu srodne oglase dok i dalje pregledate sadržaj. U podešavanjima možete da vidite listu tih sajtova i da blokirate one koje ne želite.</translation>
 <translation id="6291177244430967858">Zaštita od praćenja je nastavljena</translation>
 <translation id="6308169245546905162">Sajtovi mogu da koriste kolačiće trećih strana da bi saznali nešto o radnjama koje preduzimate na drugim sajtovima</translation>
@@ -124,7 +121,6 @@
 <translation id="7315780377187123731">Više o opciji Blokiraj kolačiće trećih strana</translation>
 <translation id="737025278945207416">Neki sajtovi mogu da koriste aktivnosti kako bi personalizovali doživljaj, a ne samo oglase. Mogu i da čuvaju teme oglasa duže od 4 nedelje i da ih kombinuju sa drugim informacijama koje već znaju o vama</translation>
 <translation id="7374493521304367420">Sajtovi i dalje mogu da koriste kolačiće da bi videli aktivnosti pregledanja na svom sajtu</translation>
-<translation id="7379649202155190245">Zaštite od praćenja u režimu bez arhiviranja</translation>
 <translation id="7419391859099619574">Google zahteva od preduzeća da javno navedu da neće koristiti ove podatke za praćenje na sajtovima. Neki sajtovi mogu da koriste aktivnosti kako bi personalizovali doživljaj, a ne samo oglase. Mogu i da čuvaju teme oglasa duže od 4 nedelje i da ih kombinuju sa drugim informacijama koje već znaju o vama. Preduzeća su odgovorna za to da vas obaveste kako koriste vaše podatke. <ph name="BEGIN_LINK1" />Saznajte više u Politici privatnosti<ph name="LINK_END1" /></translation>
 <translation id="7442413018273927857">Chrome briše sve podatke o aktivnostima koje ste delili sa sajtovima posle 30 dana. Ako ponovo posetite sajt, on može ponovo da se prikaže na listi. Saznajte više o <ph name="BEGIN_LINK1" />upravljanju privatnošću sa oglasima u Chrome-u<ph name="LINK_END1" />.</translation>
 <translation id="7446815120569226585">Chrome blokira kolačiće trećih strana u režimu bez arhiviranja, ali je administrator dozvolio kolačiće treće strane za ovaj sajt. Režim bez arhiviranja može da pruži i dodatnu zaštitu od praćenja.</translation>
@@ -152,7 +148,6 @@
 <translation id="839994149685752920">Sajtovi mogu da koriste kolačiće trećih strana za personalizaciju sadržaja i oglasa</translation>
 <translation id="8428213095426709021">Podešavanja</translation>
 <translation id="8430082659493731737">Dostupno samo kada se režim bez arhiviranja otvori sa Chrome kartice na kojoj ste prijavljeni</translation>
-<translation id="8442977418416307640">Otvara se u običnom Chromium prozoru</translation>
 <translation id="8578320000709741352">Sajtovi koje posećujete mogu da ugrade sadržaj i usluge sa drugih sajtova (poput slika, oglasa i teksta) koji može da se koristi da bi se saznalo više o vama. Saznajte više o upravljanju <ph name="START_LINK" />zaštitama od praćenja u režimu bez arhiviranja<ph name="END_LINK" /></translation>
 <translation id="859369389161884405">Otvara politiku privatnosti na novoj kartici</translation>
 <translation id="8712637175834984815">Važi</translation>

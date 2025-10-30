@@ -7424,6 +7424,7 @@
 <translation id="6160290816917599257">ଅବୈଧ କୋଡ୍। ଆପଣଙ୍କ ଏଣ୍ଟ୍ରି <ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+ address<ph name="LPA_2" />$<ph name="LPA_3" />optional matching id<ph name="LPA_4" /> ଫର୍ମାଟରେ ହେବା ଉଚିତ</translation>
 <translation id="6160625263637492097">ପ୍ରାମାଣିକତା ପାଇଁ ସାର୍ଟିଫିକେଟ୍ ପ୍ରଦାନ କରନ୍ତୁ</translation>
 <translation id="6160887111111841751">ସେଭ କରାଯାଇଥିବା ସୂଚନା ଏଠାରେ ଦେଖାଯିବ</translation>
+<translation id="616290554291007512">ଆପଣଙ୍କ ପାଇଁ ସାଇନ ଇନ କରିବାକୁ Geminiକୁ ଅନୁମତି ଦିଅନ୍ତୁ ନାହିଁ</translation>
 <translation id="6163363155248589649">&amp;ସାଧାରଣ</translation>
 <translation id="6163376401832887457">Kerberos ସେଟିଂସ୍</translation>
 <translation id="6163522313638838258">ସବୁ ପ୍ରସାରିତ କରନ୍ତୁ ...</translation>
@@ -7736,6 +7737,7 @@
 <translation id="6379228010899751161">ଆପଣ ସର୍ବଦା ଆପଣଙ୍କ <ph name="ACCOUNT_EMAIL" /> ଆକାଉଣ୍ଟରେ ପାସୱାର୍ଡଗୁଡ଼ିକୁ ବ୍ୟବହାର କରିପାରିବେ ବୋଲି ସୁନିଶ୍ଚିତ କରିବା ପାଇଁ ଏହା ଆପଣ ବୋଲି ଯାଞ୍ଚ କରନ୍ତୁ</translation>
 <translation id="6379827283296619736">ନା, ଏହି ପ୍ରୋଫାଇଲରେ ୱାର୍କ ପାଇଁ ଜାରି ରଖନ୍ତୁ</translation>
 <translation id="6380143666419481200">ସ୍ୱୀକାର କରନ୍ତୁ ଏବଂ ଜାରି ରଖନ୍ତୁ</translation>
+<translation id="6380618366311601172"><ph name="DOMAIN" />ରେ ସାଇନ ଇନ କରିବା ଆବଶ୍ୟକ କରୁଥିବା ଟାସ୍କଗୁଡ଼ିକୁ ସମ୍ପୂର୍ଣ୍ଣ କରିବା ପାଇଁ Gemini ସକ୍ଷମ ହେବ ନାହିଁ।</translation>
 <translation id="6383382161803538830">ଏହି ପୃଷ୍ଠାରେ ରିଡିଂ ମୋଡ ଉପଲବ୍ଧ ନାହିଁ</translation>
 <translation id="638418309848716977">ସମର୍ଥିତ ଲିଙ୍କଗୁଡ଼ିକ</translation>
 <translation id="6384275966486438344">ଆପଣଙ୍କ ସର୍ଚ୍ଚ ସେଟିଂସକୁ ଏଠାକୁ ପରିବର୍ତ୍ତନ କରନ୍ତୁ: <ph name="SEARCH_HOST" /></translation>
@@ -9444,6 +9446,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="7585106857920830898">ଆପଣଙ୍କ ସଂସ୍ଥାର ସୁରକ୍ଷା ନୀତିଗୁଡ଼ିକ ଅନୁସାରେ ଯାଞ୍ଚ କରାଯାଉଛି...</translation>
 <translation id="7585490016012953607">ରିକଭରି ପାସୱାର୍ଡ — ଅସ୍ଥାୟୀ ଭାବେ 3 ମାସ ପର୍ଯ୍ୟନ୍ତ ସେଭ କରାଯାଇଛି</translation>
 <translation id="7586498138629385861">Chrome ଆପ୍ସ ଖୋଲାଥିବା ସମୟରେ Chrome ଚାଲୁ ସ୍ଥିତିରେ ରହିବ।</translation>
+<translation id="7587297195142686341">Gemini ଆପଣଙ୍କ ପାଇଁ ସାଇନ ଇନ କରିପାରିବ</translation>
 <translation id="7587806318633605613">ପରାମର୍ଶ ଇତିହାସ</translation>
 <translation id="7589448773774086276">ବର୍ତ୍ତମାନ ଟାବ ସହ ନୂଆ ସ୍ପ୍ଲିଟ ଭ୍ୟୁ</translation>
 <translation id="7589461650300748890">ୱାହୋ, ସେଠାରେ ଅଛି। ସତର୍କ ରୁହନ୍ତୁ।</translation>
@@ -10798,6 +10801,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="849488240089599592">ବର୍ତ୍ତମାନର ଡାଉନଲୋଡଗୁଡ଼ିକୁ ଫେରନ୍ତୁ</translation>
 <translation id="8496717697661868878">ଏହି ପ୍ଲଗଇନ୍ ଚଲାନ୍ତୁ</translation>
 <translation id="8497219075884839166">Windows ଉପଯୋଗିତା</translation>
+<translation id="8497819894150712946">Chromeରୁ ସେଭ କରାଯାଇଛି</translation>
 <translation id="8498214519255567734">ନିଜ ସ୍କ୍ରିନ୍‌କୁ ଦେଖିବା କିମ୍ବା କମ୍ ଆଲୋକରେ ପଢିବାକୁ ସହଜ କରନ୍ତୁ</translation>
 <translation id="8499083585497694743">ମାଇକ୍ରୋଫୋନକୁ ଅନମ୍ୟୁଟ୍ କରନ୍ତୁ</translation>
 <translation id="8500044868721690197">ଆପଣଙ୍କ MIDI ଡିଭାଇସଗୁଡ଼ିକୁ ନିୟନ୍ତ୍ରଣ କରି ପୁଣି ପ୍ରୋଗ୍ରାମ କରିବାରୁ ଏହି ସାଇଟକୁ ବ୍ଲକ କରାଯାଇଛି।</translation>
@@ -11654,6 +11658,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="9069417381769492963">ଆପଣଙ୍କ ସର୍ଚ୍ଚ ସହ ମେଳ ହେଉଥିବା କୌଣସି ବୁକମାର୍କ ନାହିଁ</translation>
 <translation id="9070231741075992882"><ph name="APP_NAME" /> ପାଇଁ ଆପଣ ଦେଇଥିବା ଅନୁମତିଗୁଡ଼ିକୁ ଏହାର ଇନଷ୍ଟଲ ଏବଂ ଷ୍ଟ୍ରିମ କରାଯାଇଥିବା ଆପ୍ସ ପାଇଁ ମଧ୍ୟ ଦିଆଯିବ।</translation>
 <translation id="9070342919388027491">ବାମକୁ ଟାବ୍ ମୁଭ୍ କରାଯାଇଛି</translation>
+<translation id="9072918088200875065">ଆପଣଙ୍କ ପାଇଁ ଟାସ୍କଗୁଡ଼ିକୁ ସମ୍ପୂର୍ଣ୍ଣ କରିବାକୁ ଏହି ସାଇଟଗୁଡ଼ିକରେ ସାଇନ ଇନ କରିବା ପାଇଁ ଆପଣ Geminiକୁ ଅନୁମତି ଦେଇଛନ୍ତି</translation>
 <translation id="9074739597929991885">ବ୍ଲୁଟୁଥ୍</translation>
 <translation id="9074836595010225693">USB ମାଉସ୍ ସଂଯୁକ୍ତ କରାଗଲା</translation>
 <translation id="9075413375877487220">ଉନ୍ନତ ସୁରକ୍ଷିତ ବ୍ରାଉଜିଂ ପାଇଁ ଏହି ଏକ୍ସଟେନସନ୍ ବିଶ୍ୱସନୀୟ ନୁହେଁ।</translation>

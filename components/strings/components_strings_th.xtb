@@ -20,6 +20,7 @@
 <translation id="1035509598913574970">เขียวแกมน้ำเงิน 3</translation>
 <translation id="1035709686865413354">เครื่องกรองน้ำ</translation>
 <translation id="1036348656032585052">ปิด</translation>
+<translation id="1036436692654972538">บันทึกลงในอุปกรณ์</translation>
 <translation id="1036881361735705143">Envelope C4</translation>
 <translation id="1038842779957582377">ไม่ทราบชื่อ</translation>
 <translation id="1041998700806130099">ข้อความแผ่นงาน</translation>
@@ -2830,6 +2831,7 @@
 <translation id="5617949217645503996"><ph name="HOST_NAME" /> เปลี่ยนเส้นทางของคุณบ่อยเกินไป</translation>
 <translation id="5619721953841297650">ค่าที่กำหนดล่วงหน้า</translation>
 <translation id="5624120631404540903">จัดการรหัสผ่าน</translation>
+<translation id="5628060911499153873">บันทึกข้อมูลเพื่อทำสิ่งต่างๆ ให้เสร็จเร็วขึ้นในผลิตภัณฑ์ต่างๆ ของ Google ระบบจะบันทึกข้อมูลของคุณลงใน <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> สำหรับ <ph name="ACCOUNT" /></translation>
 <translation id="5629630648637658800">ไม่สามารถโหลดการตั้งค่านโยบาย</translation>
 <translation id="5630981295558454585">เปิดใช้งานปุ่ม "ถาม Google เกี่ยวกับหน้านี้" เพื่อถาม Google เกี่ยวกับหน้านี้</translation>
 <translation id="5631439013527180824">โทเค็นการจัดการอุปกรณ์ไม่ถูกต้อง</translation>

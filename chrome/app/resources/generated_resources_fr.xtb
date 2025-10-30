@@ -7429,6 +7429,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6160290816917599257">Code non valide. Il devrait se présenter comme suit : <ph name="LPA_0" />$<ph name="LPA_1" />Adresse SM-DP+<ph name="LPA_2" />$<ph name="LPA_3" />identifiant de mise en correspondance facultatif<ph name="LPA_4" /></translation>
 <translation id="6160625263637492097">Fournir des certificats pour l'authentification</translation>
 <translation id="6160887111111841751">Les informations enregistrées s'afficheront ici</translation>
+<translation id="616290554291007512">Ne pas autoriser Gemini à se connecter pour vous</translation>
 <translation id="6163363155248589649">&amp;Normal</translation>
 <translation id="6163376401832887457">Paramètres Kerberos</translation>
 <translation id="6163522313638838258">Tout développer...</translation>
@@ -7741,6 +7742,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6379228010899751161">Confirmez votre identité pour toujours pouvoir utiliser les mots de passe de votre compte <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="6379827283296619736">Non, continuer à travailler dans ce profil</translation>
 <translation id="6380143666419481200">Accepter et continuer</translation>
+<translation id="6380618366311601172">Gemini ne pourra pas effectuer les tâches qui nécessitent de se connecter sur <ph name="DOMAIN" />.</translation>
 <translation id="6383382161803538830">Mode Lecture non disponible sur cette page</translation>
 <translation id="638418309848716977">Liens compatibles</translation>
 <translation id="6384275966486438344">Modifier les paramètres de la recherche pour utiliser l'adresse <ph name="SEARCH_HOST" />.</translation>
@@ -9450,6 +9452,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7585106857920830898">Vérification de la conformité du fichier avec les règles de sécurité de votre organisation…</translation>
 <translation id="7585490016012953607">Mot de passe de récupération — Enregistré temporairement pendant trois mois au maximum</translation>
 <translation id="7586498138629385861">Chrome continuera à fonctionner tant que des applications Chrome sont ouvertes.</translation>
+<translation id="7587297195142686341">Gemini peut se connecter pour vous</translation>
 <translation id="7587806318633605613">Historique des suggestions</translation>
 <translation id="7589448773774086276">Nouvelle vue fractionnée avec l'onglet actuel</translation>
 <translation id="7589461650300748890">Attention !</translation>
@@ -10806,6 +10809,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="849488240089599592">Retour aux téléchargements récents</translation>
 <translation id="8496717697661868878">Exécuter ce plug-in</translation>
 <translation id="8497219075884839166">Utilitaires Windows</translation>
+<translation id="8497819894150712946">Enregistré depuis Chrome</translation>
 <translation id="8498214519255567734">Facilite la lecture à l'écran lorsque l'éclairage est faible</translation>
 <translation id="8499083585497694743">Réactiver le micro</translation>
 <translation id="8500044868721690197">Le contrôle et la reprogrammation de vos appareils MIDI ont été bloqués pour ce site</translation>
@@ -11663,6 +11667,7 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="9069417381769492963">Aucun favori ne correspond à votre recherche</translation>
 <translation id="9070231741075992882">Les autorisations que vous accordez à <ph name="APP_NAME" /> le seront également pour ses applis installées et diffusées en streaming.</translation>
 <translation id="9070342919388027491">Onglet déplacé vers la gauche</translation>
+<translation id="9072918088200875065">Vous avez autorisé Gemini à se connecter sur ces sites pour effectuer des tâches pour vous</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9074836595010225693">Souris USB connectée.</translation>
 <translation id="9075413375877487220">Extension non approuvée par la navigation sécurisée avec protection renforcée</translation>

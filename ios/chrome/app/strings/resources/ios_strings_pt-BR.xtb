@@ -239,7 +239,6 @@
 <translation id="188237709236611317">Barra de menus da ordenação inteligente</translation>
 <translation id="1883255238294161206">Recolher lista</translation>
 <translation id="1888854257756214946">Selecionar senha…</translation>
-<translation id="1889872080060107187">Você vai fazer login em <ph name="URL" /></translation>
 <translation id="1890237935065108104">Esta configuração não está disponível.</translation>
 <translation id="1894023287452300670">Monitore o preço aqui</translation>
 <translation id="189531189292803889">Seu iPad foi restaurado recentemente. Isso pode ter mudado seu navegador padrão.</translation>
@@ -278,7 +277,7 @@
 <translation id="199425419756152024">Ver senha</translation>
 <translation id="1996318269856535896">Você ainda pode usar os dados de navegação neste dispositivo. Para isso, saia da conta gerenciada.</translation>
 <translation id="2010008505735295285">Atualizar</translation>
-<translation id="2012723204723845092">Que bom que você voltou!</translation>
+<translation id="2012723204723845092">Que bom ver você de novo!</translation>
 <translation id="2015722694326466240">Para acessar as senhas, defina uma senha no dispositivo primeiro.</translation>
 <translation id="201759455285471444">Abrir grupo de guias.</translation>
 <translation id="202070562065520783">Explique isso</translation>
@@ -649,7 +648,7 @@
 <translation id="3530024057633834563">Não há senhas ou chaves de acesso salvas, mas você pode excluir a lista de sites e apps em que escolheu nunca salvar informações de login. As contas que você criou em sites e apps não serão excluídas.</translation>
 <translation id="3530206579861815432">Encontre com rapidez as guias abertas e fechadas recentemente nos seus dispositivos sincronizados.</translation>
 <translation id="3530767473765895035">Gerenciar contas neste dispositivo…</translation>
-<translation id="353340646084395154">Preferências da página "Nova guia" removidas</translation>
+<translation id="353340646084395154">As preferências da página "Nova guia" foram removidas</translation>
 <translation id="3533436815740441613">Nova guia</translation>
 <translation id="3540141921715814660">Adicionar aos favoritos</translation>
 <translation id="3546122170015471515">Maps Previews no Google.com</translation>
@@ -1003,7 +1002,7 @@
 <translation id="4894963374040315706">Isso permite que você pesquise usando a voz</translation>
 <translation id="4895540042460820904">Aberto pela última vez</translation>
 <translation id="4896467949657706481">As guias foram fechadas e sua conta foi desconectada</translation>
-<translation id="4911042367886397055">Bem-vindo novamente, <ph name="USER_NAME" />!</translation>
+<translation id="4911042367886397055">Que bom ver você de novo, <ph name="USER_NAME" />!</translation>
 <translation id="4913626501929406101">Você pode compartilhar uma cópia da sua senha de forma segura com alguém do grupo familiar. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="4917025507570489430">Você pode usar os dados de navegação atuais quando fizer login como <ph name="USER_EMAIL" />. Sua organização pode visualizar esses dados.</translation>
 <translation id="4918086044614829423">Aceitar</translation>
@@ -1055,7 +1054,7 @@
 <translation id="508645147179720015">A observação tem mais de 1.000 caracteres</translation>
 <translation id="5087098519049306025">Monitoramento de preços</translation>
 <translation id="5090832849094901128">Remover a senha não excluirá a conta em <ph name="WEBSITE" />.</translation>
-<translation id="5113960131843706315">Buscando seus itens…</translation>
+<translation id="5113960131843706315">Buscando seus dados…</translation>
 <translation id="5118462200606189584">Adicionar conta…</translation>
 <translation id="5118764316110575523">Desativado</translation>
 <translation id="5119329531859909472">Para monitorar o produto, toque em "Monitorar"</translation>
@@ -1126,7 +1125,7 @@
 <translation id="537853552771686272">Gerencie os temas e os sites do seu interesse</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} guia fechada}one{{count} guia fechada}other{{count} guias fechadas}}</translation>
 <translation id="5394975111793637642">Ocultar o card "Avaliações de produtos para você"</translation>
-<translation id="5407806496954700135">Quer aplicar as personalizações da página "Nova guia" de outro dispositivo?</translation>
+<translation id="5407806496954700135">Quer aplicar as suas personalizações da página "Nova guia" de outro dispositivo?</translation>
 <translation id="5414763847370083940">Você vai receber um alerta se houver uma redução no preço em algum site.</translation>
 <translation id="5415289094036440596">Chaves de acesso não podem ser compartilhadas</translation>
 <translation id="5416455648658732408">Mover para grupo de guias</translation>
@@ -1427,7 +1426,6 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="6418346271604475326">Preparando PDF</translation>
 <translation id="6421038304268477484">Texto traduzido</translation>
 <translation id="6429213933892582367">Abra "Opções de senha"</translation>
-<translation id="6434591244308415567">Ocorreu um erro. Tente novamente mais tarde.</translation>
 <translation id="6435236283694032571">Adicionar à Lista de leitura</translation>
 <translation id="6435307030888827407">Continuar sem fazer login</translation>
 <translation id="6436318499800111867">Compartilhado comigo em <ph name="SHARED_WITH_ME_DATE" /></translation>

@@ -382,7 +382,6 @@
 <translation id="2739887572830526131">Διατηρήστε αυτή την ομάδα, για να προσθέσετε καρτέλες αργότερα, ή διαγράψτε την, αν δεν τη χρειάζεστε πλέον.</translation>
 <translation id="2742373789128106053">Το <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> δεν είναι διαθέσιμο αυτή τη στιγμή.</translation>
 <translation id="2760805590727089264">MM / ΕΕ</translation>
-<translation id="2760989362628427051">Να ενεργοποιείται το σκούρο θέμα όταν το σκούρο θέμα ή η Εξοικονόμηση μπαταρίας της συσκευής σας έχουν ενεργοποιηθεί.</translation>
 <translation id="2762000892062317888">μόλις τώρα</translation>
 <translation id="276969039800130567">Συνδεδεμένος ως <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="2777555524387840389">Απομένουν <ph name="SECONDS" /> δευτερόλεπτα</translation>
@@ -612,6 +611,7 @@
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> λήψεις διαγράφηκαν</translation>
 <translation id="3819183753496523827">Είστε εκτός σύνδεσης. Ελέγξτε τη σύνδεσή σας στο διαδίκτυο και δοκιμάστε ξανά.</translation>
 <translation id="3823019343150397277">IBAN</translation>
+<translation id="3824259034819781947">Επισύναψη αρχείων</translation>
 <translation id="38243391581572867">Το Lens δεν είναι διαθέσιμο σε αυτόν τον λογαριασμό.</translation>
 <translation id="38258275871320156">Διατίθεται μόνο για μικρά παράθυρα</translation>
 <translation id="3845098929839618392">Άνοιγμα σε ανών. περιήγ.</translation>
@@ -1503,7 +1503,6 @@
 <translation id="7581273696622423628">Συμμετοχή σε έρευνα</translation>
 <translation id="7583262514280211622">Εδώ θα βρείτε τη λίστα ανάγνωσής σας.</translation>
 <translation id="758603037873046260">Συνδεθείτε για να αποθηκεύσετε αυτή τη σελίδα</translation>
-<translation id="7588219262685291874">Ενεργοποιήστε το σκούρο θέμα όταν η λειτουργία εξοικονόμησης μπαταρίας της συσκευής σας είναι ενεργοποιημένη.</translation>
 <translation id="7594687499944811403">Επιτρέψτε στο <ph name="EMBEDDED_ORIGIN" /> να επαληθεύσει την ταυτότητά σας για το <ph name="TOP_ORIGIN" /></translation>
 <translation id="7596558890252710462">Λειτουργικό σύστημα</translation>
 <translation id="7597601275223325603">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> τυπική καρτέλα}other{<ph name="TABS_COUNT_MANY" /> τυπικές καρτέλες}}</translation>

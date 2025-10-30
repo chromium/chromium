@@ -20,6 +20,7 @@
 <translation id="1035509598913574970">Cyan 3</translation>
 <translation id="1035709686865413354">Water Filters and Purifiers</translation>
 <translation id="1036348656032585052">Turn off</translation>
+<translation id="1036436692654972538">Saves to your device</translation>
 <translation id="1036881361735705143">Envelope C4</translation>
 <translation id="1038842779957582377">unknown name</translation>
 <translation id="1041998700806130099">Job sheet message</translation>
@@ -2831,6 +2832,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5617949217645503996"><ph name="HOST_NAME" /> redirected you too many times.</translation>
 <translation id="5619721953841297650">Preset</translation>
 <translation id="5624120631404540903">Manage passwords</translation>
+<translation id="5628060911499153873">Save your info to get things done faster, across Google products. Your info is saved to <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> for <ph name="ACCOUNT" />.</translation>
 <translation id="5629630648637658800">Failed to load policy settings</translation>
 <translation id="5630981295558454585">Ask Google about this page button, activate to ask Google about this page</translation>
 <translation id="5631439013527180824">Invalid device management token</translation>
@@ -4142,7 +4144,7 @@ Additional details:
 <translation id="7755287808199759310">Your parent can unblock it for you</translation>
 <translation id="7755624218968747854">Primary roll</translation>
 <translation id="7758069387465995638">Firewall or antivirus software may have blocked the connection.</translation>
-<translation id="7759147511335618829">MIDI device control and reprogramme.</translation>
+<translation id="7759147511335618829">MIDI device control and reprogramming</translation>
 <translation id="7759809451544302770">Optional</translation>
 <translation id="776110834126722255">Deprecated</translation>
 <translation id="7761159795823346334">Allow camera?</translation>

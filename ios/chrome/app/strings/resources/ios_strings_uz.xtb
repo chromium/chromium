@@ -239,7 +239,6 @@
 <translation id="188237709236611317">Smart saralash menyu paneli</translation>
 <translation id="1883255238294161206">Ro‘yxatni yig‘ish</translation>
 <translation id="1888854257756214946">Parolni tanlash…</translation>
-<translation id="1889872080060107187"><ph name="URL" /> hisobiga kirasiz</translation>
 <translation id="1890237935065108104">Bu sozlama ishlamaydi.</translation>
 <translation id="1894023287452300670">Narxni shu yerdan kuzating</translation>
 <translation id="189531189292803889">iPad yaqinda asliga qaytarilgani uchun undagi asosiy brauzer oʻzgargan boʻlishi mumkin.</translation>
@@ -1003,7 +1002,7 @@
 <translation id="4894963374040315706">Ovoz bilan qidirish imkonini beradi</translation>
 <translation id="4895540042460820904">Oxirgi ochish</translation>
 <translation id="4896467949657706481">Varaqlar yopiladi va hisobingizdan chiqasiz</translation>
-<translation id="4911042367886397055">Qaytib kelganingizdan xursandmiz, <ph name="USER_NAME" />!</translation>
+<translation id="4911042367886397055">Qaytganingizdan mamnunmiz, <ph name="USER_NAME" /></translation>
 <translation id="4913626501929406101">Parolingiz nusxasini oilaviy guruhingizdagilarga xavfsiz ulashishingiz mumkin. <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
 <translation id="4917025507570489430"><ph name="USER_EMAIL" /> hisobiga kirilganda mavjud brauzer maʼlumotlaridan foydalanish mumkin. Tashkilotingiz bu maʼlumotlarni koʻrishi mumkin.</translation>
 <translation id="4918086044614829423">Qabul qilish</translation>
@@ -1055,7 +1054,7 @@
 <translation id="508645147179720015">Qayd 1000 ta belgidan oshib ketdi</translation>
 <translation id="5087098519049306025">Narx kuzatuvi</translation>
 <translation id="5090832849094901128">Bu parol olib tashlangani bilan <ph name="WEBSITE" /> hisobingiz oʻchib ketmaydi.</translation>
-<translation id="5113960131843706315">Fayllaringiz olinmoqda…</translation>
+<translation id="5113960131843706315">Maʼlumotlar sinxronlanmoqda…</translation>
 <translation id="5118462200606189584">Hisob kiritish…</translation>
 <translation id="5118764316110575523">Oʻchiq</translation>
 <translation id="5119329531859909472">Mahsulot narxini kuzatish uchun Kuzatish ustiga bosing</translation>
@@ -1126,7 +1125,7 @@
 <translation id="537853552771686272">Qiziq boʻlgan mavzu va saytlarni boshqarish</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} ta varaq yopildi}other{{count} ta varaq yopildi}}</translation>
 <translation id="5394975111793637642">“Siz uchun mahsulot sharhlari” bildirgisi chiqmasin</translation>
-<translation id="5407806496954700135">Yangi varaq sahifasi sozlamalarini boshqa qurilmadan tatbiq qilasizmi?</translation>
+<translation id="5407806496954700135">Yangi varaq sahifasi sozlamalari boshqa qurilmadan tatbiq etilsinmi?</translation>
 <translation id="5414763847370083940">Istalgan saytda narx tushganda ogohlantirish olasiz.</translation>
 <translation id="5415289094036440596">Kirish kalitlari ulashilmaydi</translation>
 <translation id="5416455648658732408">Varaqlar guruhiga koʻchirish</translation>
@@ -1427,7 +1426,6 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="6418346271604475326">PDF tayyorlanmoqda</translation>
 <translation id="6421038304268477484">Tarjima qilingan matn</translation>
 <translation id="6429213933892582367">Parol sozlamalarini oching</translation>
-<translation id="6434591244308415567">Xatolik yuz berdi. Keyinroq urining.</translation>
 <translation id="6435236283694032571">Saqlangan sahifalarga kiritish</translation>
 <translation id="6435307030888827407">Hisobga kirilmasin</translation>
 <translation id="6436318499800111867">Menga ulashilgan: <ph name="SHARED_WITH_ME_DATE" /></translation>

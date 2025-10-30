@@ -1042,7 +1042,7 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="169341880170235617">Agora, seus grupos de guias são salvos automaticamente</translation>
 <translation id="1695487653372841667">Você pode controlar quais dados são compartilhados com o Google. É possível mudar isso a qualquer momento nas Configurações.</translation>
 <translation id="1695510246756136088">Não foi possível se conectar à internet. Tente novamente.</translation>
-<translation id="1696214930320482113">Com os perfis, você separa o trabalho, a vida pessoal e o lazer sem precisar mudar de navegador. Adicione um novo perfil agora.</translation>
+<translation id="1696214930320482113">Com os perfis, você separa o trabalho, a vida pessoal e o lazer sem ter que mudar de navegador. Adicione um perfil agora.</translation>
 <translation id="1696555181932908973">Há outras maneiras de continuar no <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="169675691788639886">O dispositivo tem um servidor SSH configurado. Não faça login usando contas confidenciais.</translation>
 <translation id="1697122132646041614">O botão "Não gostei" abre um formulário para enviar comentários detalhados sobre o motivo de você não ter gostado desses resultados.</translation>
@@ -1284,7 +1284,7 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="1851551847729706116">Compartilhando <ph name="TAB_NAME" /> com esta guia</translation>
 <translation id="1854180393107901205">Parar transmissão</translation>
 <translation id="1856715684130786728">Adicionar local...</translation>
-<translation id="1857044401921988155">Quando você clicar em "Salvar", este grupo de guias vai se tornar uma pasta de favoritos e será removido dos seus grupos em todos os dispositivos</translation>
+<translation id="1857044401921988155">Quando você clicar em "Salvar", este grupo de guias vai se transformar em uma pasta de favoritos e ser removido dos seus grupos em todos os dispositivos</translation>
 <translation id="185766080319917408">A tecla de acesso rápido fica à esquerda da tecla Alt esquerda</translation>
 <translation id="1859294693760125695">Não tenho mais interesse</translation>
 <translation id="1859339856433307593">Uma senha para essa conta já foi salva no <ph name="BRAND" /> (<ph name="USER_EMAIL" />)</translation>
@@ -3793,7 +3793,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3605156246402033687">{COUNT,plural, =1{{COUNT} conta usando a mesma senha}one{{COUNT} conta usando a mesma senha}other{{COUNT} contas usando a mesma senha}}</translation>
 <translation id="3605515937536882518">Valores do formulário atualizados</translation>
 <translation id="3605780360466892872">Esporte fino</translation>
-<translation id="3607338234983711865">Você compartilha o computador?</translation>
+<translation id="3607338234983711865">Você divide o computador com mais alguém?</translation>
 <translation id="3607671391978830431">Para uma criança</translation>
 <translation id="3607799000129481474"><ph name="SITE" /> quer confirmar sua identidade</translation>
 <translation id="3608460311600621471">Informe um motivo para imprimir esses dados:</translation>
@@ -7216,7 +7216,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="5989497858237037960">Quando você navega em sites, o conteúdo das páginas é criptografado e salvo no seu dispositivo. Isso pode afetar o desempenho do Chrome</translation>
 <translation id="5990266201903445068">Somente Wi-Fi</translation>
 <translation id="5990386583461751448">Traduzida</translation>
-<translation id="5990557145969487183">Separe o trabalho da vida pessoal</translation>
+<translation id="5990557145969487183">Pessoal e profissional, cada coisa em seu lugar</translation>
 <translation id="5992225669837656567">Todos os mouses foram desconectados</translation>
 <translation id="5992652489368666106">Sem borda</translation>
 <translation id="5993508466487156420">{NUM_SITES,plural, =1{Revisão concluída para um site}one{Revisão concluída para {NUM_SITES} site}other{Revisão concluída para {NUM_SITES} sites}}</translation>
@@ -11161,7 +11161,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8719472795285728850">Ouvindo atividades da extensão...</translation>
 <translation id="8719665168401479425">Usar gestos faciais para realizar ações</translation>
 <translation id="8720200012906404956">Procurando rede móvel. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
-<translation id="8720285645560721666">Mantenha seus favoritos, senhas e configurações separados. Adicione um novo perfil agora.</translation>
+<translation id="8720285645560721666">Organize seus favoritos, senhas e configurações em perfis separados. Adicione um agora.</translation>
 <translation id="8720816553731218127">A inicialização dos atributos de tempo de instalação expirou.</translation>
 <translation id="8721093493695533465">Essa ação vai excluir <ph name="TOTAL_USAGE" /> de dados armazenados pelos sites mostrados e apps instalados</translation>
 <translation id="8724405322205516354">Sempre que vir este ícone, use sua impressão digital para se identificar ou aprovar compras.</translation>
@@ -11923,7 +11923,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="934244546219308557">Dê um nome para este grupo</translation>
 <translation id="93480724622239549">Bug ou erro</translation>
 <translation id="9354763467503131">Podem pedir para instalar apps da Web no dispositivo</translation>
-<translation id="935514554385170926">Separe as tarefas escolares, projetos paralelos e outras atividades</translation>
+<translation id="935514554385170926">Separe estudo, hobbies e suas outras atividades</translation>
 <translation id="936646668635477464">Câmera e microfone</translation>
 <translation id="936801553271523408">Dados de diagnóstico do sistema</translation>
 <translation id="93766956588638423">Reparar extensão</translation>

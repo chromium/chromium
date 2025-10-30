@@ -20,6 +20,7 @@
 <translation id="1035509598913574970">Cijan 3</translation>
 <translation id="1035709686865413354">Filtri i uređaji za pročišćavanje vode</translation>
 <translation id="1036348656032585052">Isključi</translation>
+<translation id="1036436692654972538">Spremljeno na vaš uređaj</translation>
 <translation id="1036881361735705143">Omotnica C4</translation>
 <translation id="1038842779957582377">nepoznati naziv</translation>
 <translation id="1041998700806130099">Poruka o radnom listu</translation>
@@ -2830,6 +2831,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="5617949217645503996">Host <ph name="HOST_NAME" /> preusmjerio vas je previše puta.</translation>
 <translation id="5619721953841297650">Unaprijed definirana postavka</translation>
 <translation id="5624120631404540903">Upravljanje zaporkama</translation>
+<translation id="5628060911499153873">Spremite svoje podatke da biste brže obavljali zadatke u Googleovim proizvodima. Vaši se podaci spremaju na uslugu <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> za <ph name="ACCOUNT" />.</translation>
 <translation id="5629630648637658800">Učitavanje postavki pravila nije uspjelo</translation>
 <translation id="5630981295558454585">Gumb Postavite pitanje Googleu o ovoj stranici, aktivirajte ga da biste Googleu postavili pitanje o ovoj stranici</translation>
 <translation id="5631439013527180824">Token za upravljanje uređajem nije važeći</translation>

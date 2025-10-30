@@ -3668,9 +3668,9 @@ Se a política for deixada sem definição, a navegação no navegador será blo
 
       Se a política for definida como "Desativada" ou deixada sem definição, o DTC será desativado. Não será possível coletar, processar ou gerar relatórios de dados de diagnóstico e telemetria pelo dispositivo.</translation>
 <translation id="3442589735857147823">Permitir que os usuários usem máquinas virtuais necessárias para os apps Linux</translation>
-<translation id="34476328503285475">A definição da política pré-configura até 10 atalhos personalizados na página "Nova guia" do <ph name="PRODUCT_NAME" />.
+<translation id="34476328503285475">Definir a política pré-configura até 10 atalhos personalizados na página "Nova guia" do <ph name="PRODUCT_NAME" />.
 
-Se essa opção for definida, os usuários verão esses atalhos por padrão, além dos pessoais. Os usuários podem controlar a visibilidade dos atalhos da organização no painel "Personalizar o Chrome".
+Com a definição, eles vão aparecer por padrão, além dos atalhos pessoais dos usuários. As pessoas podem controlar a visibilidade dos atalhos da organização no painel "Personalizar o Chrome".
 
 Os URLs de atalho precisam ser exclusivos.
 

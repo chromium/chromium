@@ -7455,6 +7455,7 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="6160290816917599257">Neveljavna koda. Vnos mora biti v obliki <ph name="LPA_0" />$<ph name="LPA_1" />naslov SM-DP+<ph name="LPA_2" />$<ph name="LPA_3" />izbirni ujemajoči se ID<ph name="LPA_4" /></translation>
 <translation id="6160625263637492097">Navajanje potrdil za preverjanje pristnosti</translation>
 <translation id="6160887111111841751">Shranjeni podatki bodo prikazani tukaj</translation>
+<translation id="616290554291007512">Ne dovolite, da se Gemini prijavi v vašem imenu</translation>
 <translation id="6163363155248589649">&amp;Navadno</translation>
 <translation id="6163376401832887457">Nastavitve za Kerberos</translation>
 <translation id="6163522313638838258">Razširi vse ...</translation>
@@ -7767,6 +7768,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="6379228010899751161">Potrdite, da ste to vi, da boste lahko vedno uporabljali gesla v računu, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="6379827283296619736">Ne, nadaljuj delo v tem profilu</translation>
 <translation id="6380143666419481200">Sprejmite in nadaljujte</translation>
+<translation id="6380618366311601172">Gemini ne bo mogel dokončati opravil, ki zahtevajo prijavo v <ph name="DOMAIN" />.</translation>
 <translation id="6383382161803538830">Način za branje na tej strani ni na voljo</translation>
 <translation id="638418309848716977">Podprte povezave</translation>
 <translation id="6384275966486438344">Sprememba nastavitev iskanja na: <ph name="SEARCH_HOST" /></translation>
@@ -9482,6 +9484,7 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="7585106857920830898">Preverjamo, ali je datoteka v skladu z varnostnimi pravilniki organizacije …</translation>
 <translation id="7585490016012953607">Geslo za obnovitev – začasno shranjeno za največ 3 mesece</translation>
 <translation id="7586498138629385861">Chrome se izvaja naprej, dokler so odprte aplikacije za Chrome.</translation>
+<translation id="7587297195142686341">Gemini se lahko prijavi v vašem imenu</translation>
 <translation id="7587806318633605613">Zgodovina predlogov</translation>
 <translation id="7589448773774086276">Novi razdeljeni pogled s trenutnim zavihkom</translation>
 <translation id="7589461650300748890">Počasi. Previdno.</translation>
@@ -10838,6 +10841,7 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="849488240089599592">Nazaj na nedavne prenose</translation>
 <translation id="8496717697661868878">Zaženi ta vtičnik</translation>
 <translation id="8497219075884839166">Orodja sistema Windows</translation>
+<translation id="8497819894150712946">Shranjeno iz Chroma</translation>
 <translation id="8498214519255567734">Olajšanje gledanja na zaslon ali branja pri šibki svetlobi</translation>
 <translation id="8499083585497694743">Vklopi mikrofon</translation>
 <translation id="8500044868721690197">Temu spletnemu mestu ste preprečili upravljanje in reprogramiranje naprav MIDI</translation>
@@ -11700,6 +11704,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="9069417381769492963">Ni zaznamkov, ki bi se ujemali z iskanjem</translation>
 <translation id="9070231741075992882">Dovoljenja, ki jih omogočite za aplikacijo <ph name="APP_NAME" />, bodo omogočena tudi za njene nameščene in pretočno predvajane aplikacije.</translation>
 <translation id="9070342919388027491">Zavihek je premaknjen levo.</translation>
+<translation id="9072918088200875065">Geminiju ste odobrili dovoljenje za prijavo na teh spletnih mestih, da lahko za vas dokonča opravila</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9074836595010225693">Miška USB je povezana</translation>
 <translation id="9075413375877487220">Izboljšano varno brskanje ne zaupa tej razširitvi.</translation>

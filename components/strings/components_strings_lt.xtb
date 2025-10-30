@@ -1845,6 +1845,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="4014895360827978999">Prekiautojų paslaugos ir mokėjimo sistemos</translation>
 <translation id="4018819349042761761">Viešasis raktas</translation>
 <translation id="4023431997072828269">Kadangi ši forma teikiama naudojant nesaugų ryšį, jūsų informacija bus matoma kitiems.</translation>
+<translation id="4024673763872230929">Išsaugokite informaciją ir sparčiau užpildykite formas. Išsaugoma įrenginyje.</translation>
 <translation id="4025325634010721551">Politika įkelta iš naujo</translation>
 <translation id="4025338605225449265">Valiuta ir užsienio valiutos keitimas</translation>
 <translation id="4025777154208238692">Atvirkštinė tvarka</translation>
@@ -2278,6 +2279,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="4732860731866514038">Atsisiunčiamas <ph name="LANGUAGE" /> k. paketas... <ph name="PERCENT" /> proc.</translation>
 <translation id="4733082559415072992"><ph name="URL" /> nori naudoti įrenginio vietovę</translation>
 <translation id="473414950835101501">Naudoti jūsų vaizdo kameras</translation>
+<translation id="4734343956394152985"><ph name="BEGIN_BOLD" />Dabartinis numatytasis<ph name="END_BOLD" /> · <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="4736825316280949806">Iš naujo paleiskite „Chromium“</translation>
 <translation id="4736934858538408121">Virtuali kortelė</translation>
 <translation id="473775607612524610">Atnaujinti</translation>
@@ -3386,6 +3388,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="6521745193039995384">Neaktyvi</translation>
 <translation id="6522682797352430154">Klasikinė muzika</translation>
 <translation id="6524830701589638230">Mygtukas „Tvarkyti pritaikomumo nustatymus“; suaktyvinkite, kad suasmenintumėte pritaikomumo įrankius „Chrome“ nustatymuose</translation>
+<translation id="6525222262307262764">Palikti dabartinį numatytąjį</translation>
 <translation id="6527049834925947126">Maisto gamyba</translation>
 <translation id="6529173248185917884">Septintas ritinėlis</translation>
 <translation id="6529602333819889595">&amp;Ištrinti dar kartą</translation>
@@ -3406,6 +3409,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="6567832540451970450">Administratorius leidžia šioje svetainėje: <ph name="PERMISSION" /></translation>
 <translation id="6568793038316600992">Mygtukas „Tvarkyti mokėjimo metodus“; suaktyvinkite, kad būtų galima tvarkyti mokėjimų ir kredito kortelės informaciją „Chrome“ nustatymuose</translation>
 <translation id="6569060085658103619">Peržiūrite plėtinio puslapį</translation>
+<translation id="6571992525120410251">Klauskite „<ph name="ENGINE_NAME" />“ bet ko</translation>
 <translation id="6572867903637058088">Ar tai naudinga?</translation>
 <translation id="6573200754375280815">Dvi skylės dešinėje</translation>
 <translation id="6575408526598156416">Išsaugojimas paskyroje</translation>
@@ -3455,6 +3459,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="666259744093848177">(x86_64 išversta)</translation>
 <translation id="6665553082534466207">Trys skylės dešinėje</translation>
 <translation id="6668389483194953109">Rastas popieriaus dydžio pavadinimas „custom“, bet ypatybės „custom_size“ laukas tuščias arba netinkamas.</translation>
+<translation id="6670729408462528018">Galerija</translation>
 <translation id="6671169470640320959">Lėšos automobiliams</translation>
 <translation id="6671697161687535275">Pašalinti formos pasiūlymą iš „Chromium“?</translation>
 <translation id="6675846980676550611">AR neleidžiama</translation>

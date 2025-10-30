@@ -239,7 +239,6 @@
 <translation id="188237709236611317">Трака менија паметног сортирања</translation>
 <translation id="1883255238294161206">Скупи листу</translation>
 <translation id="1888854257756214946">Изабери лозинку…</translation>
-<translation id="1889872080060107187">Пријавићете се на <ph name="URL" /></translation>
 <translation id="1890237935065108104">Ово подешавање није доступно.</translation>
 <translation id="1894023287452300670">Пратите цену овде</translation>
 <translation id="189531189292803889">Садржај iPad-а је недавно враћен, због чега је подразумевани прегледач можда промењен.</translation>
@@ -278,7 +277,7 @@
 <translation id="199425419756152024">Прикажи лозинку</translation>
 <translation id="1996318269856535896">И даље можете да користите постојеће податке прегледања на овом уређају. Да бисте их користили, одјавите се са управљаног налога.</translation>
 <translation id="2010008505735295285">Поново учитај</translation>
-<translation id="2012723204723845092">Добро дошли назад!</translation>
+<translation id="2012723204723845092">Добро нам дошли поново.</translation>
 <translation id="2015722694326466240">Да бисте видели лозинке, прво морате да подесите шифру на уређају.</translation>
 <translation id="201759455285471444">Проширите групу картица.</translation>
 <translation id="202070562065520783">Објасни ми ово</translation>
@@ -1003,7 +1002,7 @@
 <translation id="4894963374040315706">Ово вам омогућава да претражујете помоћу гласа</translation>
 <translation id="4895540042460820904">Последње отварање</translation>
 <translation id="4896467949657706481">Картице су затворене; одјављени сте</translation>
-<translation id="4911042367886397055">Добро нам дошли поново, <ph name="USER_NAME" />!</translation>
+<translation id="4911042367886397055">Добро нам дошли поново, <ph name="USER_NAME" />.</translation>
 <translation id="4913626501929406101">Можете безбедно да делите копију лозинке са неким у групи за породицу. <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
 <translation id="4917025507570489430">Можете да користите постојеће податке прегледања када сте пријављени као <ph name="USER_EMAIL" />. Ваша организација може да види ове податке.</translation>
 <translation id="4918086044614829423">Прихвати</translation>
@@ -1126,7 +1125,7 @@
 <translation id="537853552771686272">Управљајте темама и сајтовима који вас интересују</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} затворена}one{{count} затворена}few{{count} затворене}other{{count} затворених}}</translation>
 <translation id="5394975111793637642">Сакријте картицу Рецензије производа за вас</translation>
-<translation id="5407806496954700135">Желите ли да примените прилагођавања странице нове картице са другог уређаја?</translation>
+<translation id="5407806496954700135">Желите да примените прилагођавања странице нове картице са другог уређаја?</translation>
 <translation id="5414763847370083940">Добићете обавештење ако се цена снизи на било ком сајту.</translation>
 <translation id="5415289094036440596">Приступни кључеви не могу да се деле</translation>
 <translation id="5416455648658732408">Премести у групу картица</translation>
@@ -1427,7 +1426,6 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="6418346271604475326">Припрема PDF датотеке</translation>
 <translation id="6421038304268477484">Преведени текст</translation>
 <translation id="6429213933892582367">Отворите Опције лозинки</translation>
-<translation id="6434591244308415567">Дошло је до грешке. Пробајте поново касније.</translation>
 <translation id="6435236283694032571">Додај на Листу за читање</translation>
 <translation id="6435307030888827407">Останите одјављени</translation>
 <translation id="6436318499800111867">Дељено са мном <ph name="SHARED_WITH_ME_DATE" /></translation>

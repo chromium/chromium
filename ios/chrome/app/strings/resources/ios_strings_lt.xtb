@@ -239,7 +239,6 @@
 <translation id="188237709236611317">Išmaniojo rūšiavimo meniu juosta</translation>
 <translation id="1883255238294161206">Sutraukti sąrašą</translation>
 <translation id="1888854257756214946">Pasirinkite slaptažodį…</translation>
-<translation id="1889872080060107187">Prisijungsite prie svetainės <ph name="URL" /></translation>
 <translation id="1890237935065108104">Šis nustatymas nepasiekiamas.</translation>
 <translation id="1894023287452300670">Čia stebėkite kainą</translation>
 <translation id="189531189292803889">„iPad“ neseniai atkurtas, todėl galėjo būti pakeista numatytoji naršyklė.</translation>
@@ -678,6 +677,7 @@
 <translation id="3642060527569456384">Skirtukų grupės automatiškai išsaugomos ir atnaujinamos visuose įrenginiuose.</translation>
 <translation id="3643338347976071250">{count,plural, =1{{count} slaptažodis išsaugotas tik šiame įrenginyje. Jei norite jį naudoti kituose įrenginiuose, išsaugokite „Google“ paskyroje ({email}).}one{{count} slaptažodis išsaugotas tik šiame įrenginyje. Jei norite juos naudoti kituose įrenginiuose, išsaugokite „Google“ paskyroje {email}.}few{{count} slaptažodžiai išsaugoti tik šiame įrenginyje. Jei norite juos naudoti kituose įrenginiuose, išsaugokite „Google“ paskyroje {email}.}many{{count} slaptažodžio išsaugota tik šiame įrenginyje. Jei norite juos naudoti kituose įrenginiuose, išsaugokite „Google“ paskyroje {email}.}other{{count} slaptažodžių išsaugota tik šiame įrenginyje. Jei norite juos naudoti kituose įrenginiuose, išsaugokite „Google“ paskyroje {email}.}}</translation>
 <translation id="3659297405161482746">Nerasta jokių mokėjimo metodų</translation>
+<translation id="3662966164093827811">{count,plural, =1{Pasirinkta 1}one{Pasirinkta: #}few{Pasirinkta: #}many{Pasirinkta: #}other{Pasirinkta: #}}</translation>
 <translation id="3668816008081204991">Skaitymo sąrašas paslėptas</translation>
 <translation id="3670030362669914947">Numeris</translation>
 <translation id="3679163990085797665">Ištrinti skaitytus</translation>
@@ -1003,7 +1003,7 @@
 <translation id="4894963374040315706">Galite ieškoti balsu</translation>
 <translation id="4895540042460820904">Paskutinį kartą atidaryta</translation>
 <translation id="4896467949657706481">Skirtukai buvo uždaryti, buvote atjungti</translation>
-<translation id="4911042367886397055">Sveiki sugrįžę, „<ph name="USER_NAME" />“!</translation>
+<translation id="4911042367886397055">Sveiki sugrįžę, <ph name="USER_NAME" />!</translation>
 <translation id="4913626501929406101">Galite saugiai bendrinti slaptažodžio kopiją su kitu šeimos grupės nariu. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
 <translation id="4917025507570489430">Esamus naršymo duomenis galite naudoti, kai esate prisijungę kaip <ph name="USER_EMAIL" />. Jūsų organizacija gali peržiūrėti šiuos duomenis.</translation>
 <translation id="4918086044614829423">Priimti</translation>
@@ -1427,7 +1427,6 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="6418346271604475326">Ruošiamas PDF</translation>
 <translation id="6421038304268477484">Išverstas tekstas</translation>
 <translation id="6429213933892582367">Atidarykite slaptažodžio parinktis</translation>
-<translation id="6434591244308415567">Įvyko klaida. Vėliau bandykite dar kartą.</translation>
 <translation id="6435236283694032571">Pridėti prie skaitymo sąrašo</translation>
 <translation id="6435307030888827407">Likti atsijungus</translation>
 <translation id="6436318499800111867">Bendrinama su manimi <ph name="SHARED_WITH_ME_DATE" /></translation>

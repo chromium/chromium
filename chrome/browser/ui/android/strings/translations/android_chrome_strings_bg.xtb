@@ -382,7 +382,6 @@
 <translation id="2739887572830526131">Запазете тази група, за да добавяте раздели по-късно, или я изтрийте, ако вече не ви е нужна.</translation>
 <translation id="2742373789128106053">В момента <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> не е налице.</translation>
 <translation id="2760805590727089264">ММ/ГГ</translation>
-<translation id="2760989362628427051">Включване на тъмната тема, когато тъмната тема на устройството или режимът за запазване на батерията в него са включени</translation>
 <translation id="2762000892062317888">току-що</translation>
 <translation id="276969039800130567">Влезли сте като <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="2777555524387840389">Остават <ph name="SECONDS" /> сек</translation>
@@ -612,6 +611,7 @@
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> изтегляния бяха изтрити</translation>
 <translation id="3819183753496523827">Офлайн сте. Проверете връзката си с интернет и опитайте отново.</translation>
 <translation id="3823019343150397277">IBAN</translation>
+<translation id="3824259034819781947">Прикачване на файлове</translation>
 <translation id="38243391581572867">Обектив не е налице за този профил.</translation>
 <translation id="38258275871320156">Налице само за малки прозорци</translation>
 <translation id="3845098929839618392">Отваряне в раздел „инкогнито“</translation>
@@ -1503,7 +1503,6 @@
 <translation id="7581273696622423628">Участие в анкетата</translation>
 <translation id="7583262514280211622">Тук ще се показва списъкът ви за четене</translation>
 <translation id="758603037873046260">Влезте в профила си, за да запазите тази страница</translation>
-<translation id="7588219262685291874">Включване на тъмната тема, когато режимът за запазване на батерията на устройството ви е включен</translation>
 <translation id="7594687499944811403">Разрешете на <ph name="EMBEDDED_ORIGIN" /> да потвърди самоличността ви за <ph name="TOP_ORIGIN" /></translation>
 <translation id="7596558890252710462">Операционна система</translation>
 <translation id="7597601275223325603">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> стандартен раздел}other{<ph name="TABS_COUNT_MANY" /> стандартни раздела}}</translation>

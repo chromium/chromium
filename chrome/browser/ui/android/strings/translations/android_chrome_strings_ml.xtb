@@ -382,7 +382,6 @@
 <translation id="2739887572830526131">പിന്നീട് ടാബുകൾ ചേർക്കാൻ ഈ ഗ്രൂപ്പ് നിലനിർത്തുക, അല്ലെങ്കിൽ നിങ്ങൾക്ക് ഇനി ഗ്രൂപ്പ് ആവശ്യമില്ലെങ്കിൽ അത് ഇല്ലാതാക്കുക.</translation>
 <translation id="2742373789128106053"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ഇപ്പോൾ ലഭ്യമല്ല.</translation>
 <translation id="2760805590727089264">MM / YY</translation>
-<translation id="2760989362628427051">നിങ്ങളുടെ ഉപകരണത്തിന്റെ ഡാർക്ക് തീമോ ബാറ്ററി ലാഭിക്കലോ ഓണായിരിക്കുമ്പോൾ ഡാർക്ക് തീം ഓണാക്കുക</translation>
 <translation id="2762000892062317888">ഇപ്പോൾ</translation>
 <translation id="276969039800130567"><ph name="USER_EMAIL_ADDRESS" /> എന്നായി സൈൻ ഇൻ ചെയ്‌തു.</translation>
 <translation id="2777555524387840389"><ph name="SECONDS" /> സെക്കൻഡ് ശേഷിക്കുന്നു</translation>
@@ -612,6 +611,7 @@
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> ഡൗൺലോഡുകൾ ഇല്ലാതാക്കി</translation>
 <translation id="3819183753496523827">നിങ്ങൾ ഓഫ്‌ലൈനാണ്. നിങ്ങളുടെ ഇന്റർനെറ്റ് കണക്ഷൻ പരിശോധിച്ച് വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="3823019343150397277">IBAN</translation>
+<translation id="3824259034819781947">ഫയലുകൾ അറ്റാച്ച് ചെയ്യുക</translation>
 <translation id="38243391581572867">ഈ അക്കൗണ്ടിൽ ലെൻസ് ലഭ്യമല്ല.</translation>
 <translation id="38258275871320156">ചെറിയ വിൻഡോകൾക്ക് മാത്രമേ ലഭ്യമാകൂ</translation>
 <translation id="3845098929839618392">അദൃശ്യ ടാബിൽ തുറക്കുക</translation>
@@ -728,6 +728,7 @@
 <translation id="4355272626458588338">ബുക്ക്‌മാർക്ക് ചേർക്കുന്നതിലൂടെ, നിങ്ങൾക്ക് പ്രധാനപ്പെട്ട പേജിലേക്ക് മടങ്ങാനാകും</translation>
 <translation id="4356503491090073318">കാർഡ് നമ്പർ*</translation>
 <translation id="4357206670025518404">+<ph name="COUNT_NUMBER" /></translation>
+<translation id="4358630185957185589">Google Lens തുറക്കുക</translation>
 <translation id="4359809482106103048">ഒറ്റനോട്ടത്തിൽ സുരക്ഷയെ കുറിച്ച്</translation>
 <translation id="4378154925671717803">ഫോൺ</translation>
 <translation id="4380055775103003110">ഈ പ്രശ്‌നം നിലനിൽക്കുകയാണെങ്കിൽ, <ph name="SITE_ETLD_PLUS_ONE" /> എന്നതിൽ തുടരാൻ നിങ്ങൾക്ക് മറ്റ് മാർഗ്ഗങ്ങൾ പരീക്ഷിക്കാവുന്നതാണ്.</translation>
@@ -1502,7 +1503,6 @@
 <translation id="7581273696622423628">സർവേയിൽ പങ്കെടുക്കുക</translation>
 <translation id="7583262514280211622">നിങ്ങളുടെ വായനാ ലിസ്‌റ്റ് ഇവിടെ കാണാം</translation>
 <translation id="758603037873046260">ഈ പേജ് സംരക്ഷിക്കാൻ സൈൻ ഇൻ ചെയ്യുക</translation>
-<translation id="7588219262685291874">ഉപകരണത്തിന്റെ ബാറ്ററി സേവർ ഓണായിരിക്കുമ്പോൾ ഡാർക്ക് തീം ഓണാക്കുക</translation>
 <translation id="7594687499944811403"><ph name="TOP_ORIGIN" /> ഉപയോഗിക്കുന്നതിന് ഇത് നിങ്ങൾ തന്നെയാണെന്ന് പരിശോധിച്ചുറപ്പിക്കാൻ <ph name="EMBEDDED_ORIGIN" /> -നെ അനുവദിക്കുക</translation>
 <translation id="7596558890252710462">ഓപ്പറേറ്റിംഗ് സിസ്റ്റം</translation>
 <translation id="7597601275223325603">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> സ്റ്റാൻഡേർഡ് ടാബ്}other{<ph name="TABS_COUNT_MANY" /> സ്റ്റാൻഡേർഡ് ടാബുകൾ}}</translation>
@@ -1511,6 +1511,7 @@
 <translation id="7612619742409846846">ഇനി പറയുന്നതിൽ നിന്നും Google-ലേക്ക് സൈൻ ഇൻ ചെയ്‌തു</translation>
 <translation id="7612989789287281429">നിങ്ങളെ സൈൻ ഇൻ ചെയ്യിക്കുന്നു…</translation>
 <translation id="7619072057915878432">നെറ്റ്‌വർക്ക് പരാജയം കാരണം <ph name="FILE_NAME" /> ഡൗൺലോഡ് ചെയ്യാനായില്ല.</translation>
+<translation id="7620958983792650214">{NUM_REVOKED_PERMISSIONS,plural, =1{ഒരു സൈറ്റിൽ നിന്ന് വരിക്കാരല്ലാതായി}other{# സൈറ്റുകളിൽ നിന്ന് വരിക്കാരല്ലാതായി}}</translation>
 <translation id="7626032353295482388">Chrome-ലേക്ക് സ്വാഗതം</translation>
 <translation id="7628417132421583481">Password Manager-ലേക്ക് പോകുക</translation>
 <translation id="7630202231528827509">ദാതാവിന്റെ URL</translation>

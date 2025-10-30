@@ -382,7 +382,6 @@
 <translation id="2739887572830526131">Вы сможете пользоваться ей в дальнейшем. Если группа больше не нужна, удалите ее.</translation>
 <translation id="2742373789128106053">Сервис "<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />" сейчас недоступен.</translation>
 <translation id="2760805590727089264">ММ/ГГ</translation>
-<translation id="2760989362628427051">Использовать тёмную тему, когда на устройстве включена тёмная тема или режим энергосбережения</translation>
 <translation id="2762000892062317888">только что</translation>
 <translation id="276969039800130567">Вы вошли как <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="2777555524387840389">Осталось <ph name="SECONDS" /> сек.</translation>
@@ -612,6 +611,7 @@
 <translation id="3819178904835489326">Удаленные скачивания: <ph name="NUMBER_OF_DOWNLOADS" /></translation>
 <translation id="3819183753496523827">Нет подключения к интернету. Проверьте соединение и повторите попытку.</translation>
 <translation id="3823019343150397277">Код IBAN</translation>
+<translation id="3824259034819781947">Прикрепить файлы</translation>
 <translation id="38243391581572867">Объектив недоступен в этом аккаунте.</translation>
 <translation id="38258275871320156">Доступно только для маленьких окон.</translation>
 <translation id="3845098929839618392">Открыть в режиме инкогнито</translation>
@@ -1503,7 +1503,6 @@
 <translation id="7581273696622423628">Пройти опрос</translation>
 <translation id="7583262514280211622">Здесь вы найдете свой список для чтения</translation>
 <translation id="758603037873046260">Чтобы сохранить страницу, войдите в аккаунт</translation>
-<translation id="7588219262685291874">Использовать тёмную тему, когда включен режим энергосбережения</translation>
 <translation id="7594687499944811403">Сайт <ph name="EMBEDDED_ORIGIN" /> подтвердит вашу личность для <ph name="TOP_ORIGIN" />.</translation>
 <translation id="7596558890252710462">Операционная система</translation>
 <translation id="7597601275223325603">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> стандартная вкладка}one{<ph name="TABS_COUNT_MANY" /> стандартная вкладка}few{<ph name="TABS_COUNT_MANY" /> стандартные вкладки}many{<ph name="TABS_COUNT_MANY" /> стандартных вкладок}other{<ph name="TABS_COUNT_MANY" /> стандартной вкладки}}</translation>

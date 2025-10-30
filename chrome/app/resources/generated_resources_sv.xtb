@@ -1041,7 +1041,7 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="169341880170235617">Dina flikgrupper sparas nu automatiskt</translation>
 <translation id="1695487653372841667">Du styr vilken data som delas med Google. Du kan när som helst ändra detta i inställningarna.</translation>
 <translation id="1695510246756136088">Det gick inte att ansluta till internet. Försök igen.</translation>
-<translation id="1696214930320482113">Med profiler kan du hålla isär jobb, privatliv och nöjen utan att byta till en annan webbläsare. Lägg till en ny profil nu.</translation>
+<translation id="1696214930320482113">Med profiler kan du hålla isär jobb, privatliv och underhållning utan att behöva byta webbläsare. Lägg till en ny profil nu.</translation>
 <translation id="1696555181932908973">Du kan testa andra sätt att fortsätta på <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="169675691788639886">Det har konfigurerats en SSH-server på enheten. Logga inte in med känsliga konton.</translation>
 <translation id="1697122132646041614">En Gillar inte-markering öppnar ett formulär där du kan ange detaljerad feedback om varför du inte gillar dessa resultat.</translation>
@@ -1283,7 +1283,7 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="1851551847729706116"><ph name="TAB_NAME" /> delas på den här fliken</translation>
 <translation id="1854180393107901205">Sluta casta</translation>
 <translation id="1856715684130786728">Lägg till plats ...</translation>
-<translation id="1857044401921988155">När du klickar på Spara blir den här flikgruppen en mapp med bokmärken och tas bort från dina grupper på alla enheter</translation>
+<translation id="1857044401921988155">När du klickar på Spara förvandlas flikgruppen till en mapp med bokmärken och tas bort från dina grupper på alla enheter</translation>
 <translation id="185766080319917408">Appstartartangenten finns till vänster om den vänstra Alt-tangenten</translation>
 <translation id="1859294693760125695">Inte intresserad längre</translation>
 <translation id="1859339856433307593">Ett lösenord för det här kontot har redan sparats i <ph name="BRAND" /> (<ph name="USER_EMAIL" />)</translation>
@@ -3153,7 +3153,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3152356229013609796">Visa, ignorera eller svara på aviseringar från telefonen</translation>
 <translation id="3154754096046236400">Personlig kontext</translation>
 <translation id="3155163173539279776">Starta om Chromium</translation>
-<translation id="3155394504825881014">Konvertera flikgrupp till bokmärkesmapp</translation>
+<translation id="3155394504825881014">Gör om en flikgrupp till en bokmärkesmapp</translation>
 <translation id="3156511682997763015">Spola framåt 10 sekunder</translation>
 <translation id="3157330780336267229">Om du vill dela eller gå med i flikgrupper måste du aktivera synkronisering</translation>
 <translation id="3157387275655328056">Lägg till i läslistan</translation>
@@ -7450,6 +7450,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="6160290816917599257">Ogiltig kod. Posten ska ha formatet <ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+-adress<ph name="LPA_2" />$<ph name="LPA_3" />valfritt matchnings-id<ph name="LPA_4" /></translation>
 <translation id="6160625263637492097">Tillhandahåll certifikat för autentisering</translation>
 <translation id="6160887111111841751">Sparade uppgifter visas här</translation>
+<translation id="616290554291007512">Tillåt inte att Gemini loggar in åt dig</translation>
 <translation id="6163363155248589649">&amp;Normalt</translation>
 <translation id="6163376401832887457">Inställningar för Kerberos</translation>
 <translation id="6163522313638838258">Visa alla...</translation>
@@ -7762,6 +7763,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="6379228010899751161">Verifiera din identitet så att du alltid kan använda lösenorden i ditt konto, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="6379827283296619736">Nej, fortsätt arbeta i den här profilen</translation>
 <translation id="6380143666419481200">Godkänn och fortsätt</translation>
+<translation id="6380618366311601172">Gemini kan inte utföra uppgifter som kräver inloggning på <ph name="DOMAIN" />.</translation>
 <translation id="6383382161803538830">Läsläget är inte tillgängligt på den här sidan</translation>
 <translation id="638418309848716977">Länkar som stöds</translation>
 <translation id="6384275966486438344">Ändra sökinställningarna till: <ph name="SEARCH_HOST" /></translation>
@@ -8822,7 +8824,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7127286300357471051">När du väljer att dela den aktuella fliken med Gemini skickas flikens fullständiga innehåll och webbadress till Google.</translation>
 <translation id="7127980134843952133">Nedladdningshistorik</translation>
 <translation id="7128151990937044829">Visa en indikator i adressfältet när en avisering blockeras</translation>
-<translation id="7128842673552234514">Har du ett annat Google-konto?</translation>
+<translation id="7128842673552234514">Har du fler Google-konton?</translation>
 <translation id="7130438335435247835">Åtkomstpunktens namn (APN)</translation>
 <translation id="7130680050151101667">Visa inte det här kortet</translation>
 <translation id="7131040479572660648">Läsa din data på <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> och <ph name="WEBSITE_3" /></translation>
@@ -8881,7 +8883,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7174199383876220879">Nyhet! Styr uppspelningen av musik, videor med mera.</translation>
 <translation id="7175037578838465313">Konfigurera <ph name="NAME" /></translation>
 <translation id="7175353351958621980">Överförd från:</translation>
-<translation id="7177659256878428843">Konvertera flikgrupp till bokmärkesmapp</translation>
+<translation id="7177659256878428843">Gör om en flikgrupp till en bokmärkesmapp</translation>
 <translation id="7180611975245234373">Uppdatera</translation>
 <translation id="7180865173735832675">Anpassa</translation>
 <translation id="7181117767881540376">Dölj bokmärkesfältet</translation>
@@ -9471,6 +9473,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7585106857920830898">Kontrollerar utifrån organisationens säkerhetspolicy …</translation>
 <translation id="7585490016012953607">Återställningslösenord sparas tillfälligt i upp till tre månader</translation>
 <translation id="7586498138629385861">Chrome fortsätter köras när Chrome-appar är öppna.</translation>
+<translation id="7587297195142686341">Gemini kan logga in åt dig</translation>
 <translation id="7587806318633605613">Förslagshistorik</translation>
 <translation id="7589448773774086276">Ny delad vy med aktuell flik</translation>
 <translation id="7589461650300748890">Ta det försiktigt.</translation>
@@ -10827,6 +10830,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="849488240089599592">Tillbaka till Senaste nedladdningarna</translation>
 <translation id="8496717697661868878">Kör det här plugin-programmet</translation>
 <translation id="8497219075884839166">Fönsterverktyg</translation>
+<translation id="8497819894150712946">Sparat från Chrome</translation>
 <translation id="8498214519255567734">Gör det behagligare för ögonen att titta på skärmen eller läsa i svag belysning</translation>
 <translation id="8499083585497694743">Slå på mikrofonen</translation>
 <translation id="8500044868721690197">Den här webbplatsen har blockerats från att styra och omprogrammera dina MIDI-enheter</translation>
@@ -11153,7 +11157,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8719472795285728850">Lyssnar efter aktivitet i tillägg …</translation>
 <translation id="8719665168401479425">Utföra åtgärder med ansiktsrörelser</translation>
 <translation id="8720200012906404956">Söker efter ett mobilnätverk. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
-<translation id="8720285645560721666">Håll dina bokmärken, lösenord och inställningar separata. Lägg till en ny profil nu.</translation>
+<translation id="8720285645560721666">Håll isär dina bokmärken, lösenord och inställningar. Lägg till en ny profil nu.</translation>
 <translation id="8720816553731218127">Tidsgränsen överskreds för initieringen av attribut för installationstid.</translation>
 <translation id="8721093493695533465">Då raderas <ph name="TOTAL_USAGE" /> data som har lagrats av webbplatserna som visas och installerade appar</translation>
 <translation id="8724405322205516354">När du ser den här ikonen kan du identifiera dig eller godkänna köp med hjälp av ditt fingeravtryck.</translation>
@@ -11686,6 +11690,7 @@ Detta kan omfatta information om installerad mjukvara, filer, webbläsaren, enhe
 <translation id="9069417381769492963">Det finns inga bokmärken som matchar sökningen</translation>
 <translation id="9070231741075992882">Behörigheter som du tillåter för <ph name="APP_NAME" /> tillåts även för installerade och streamade appar.</translation>
 <translation id="9070342919388027491">Fliken flyttades åt vänster</translation>
+<translation id="9072918088200875065">Du har gett Gemini behörighet att logga in på dessa webbplatser för att utföra uppgifter åt dig</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9074836595010225693">USB-mus har anslutits</translation>
 <translation id="9075413375877487220">Det här tillägget är inte betrott i Förbättrad säker webbsökning.</translation>
@@ -11913,7 +11918,7 @@ Detta kan omfatta information om installerad mjukvara, filer, webbläsaren, enhe
 <translation id="934244546219308557">Namnge den här gruppen</translation>
 <translation id="93480724622239549">Problem eller fel</translation>
 <translation id="9354763467503131">Får begära att installera webbappar på enheten</translation>
-<translation id="935514554385170926">Håll isär skolarbete, sidoprojekt och andra uppgifter</translation>
+<translation id="935514554385170926">Håll isär skolarbeten, privata projekt och andra uppgifter</translation>
 <translation id="936646668635477464">Kamera och mikrofon</translation>
 <translation id="936801553271523408">Systemets diagnostikresultat</translation>
 <translation id="93766956588638423">Reparera tillägg</translation>

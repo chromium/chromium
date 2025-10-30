@@ -20,6 +20,7 @@
 <translation id="1035509598913574970">Ciano 3</translation>
 <translation id="1035709686865413354">Filtros de água e purificadores</translation>
 <translation id="1036348656032585052">Desativar</translation>
+<translation id="1036436692654972538">Salvo no seu dispositivo</translation>
 <translation id="1036881361735705143">Envelope C4</translation>
 <translation id="1038842779957582377">nome desconhecido</translation>
 <translation id="1041998700806130099">Mensagem de página de tarefa</translation>
@@ -2831,6 +2832,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5617949217645503996">Redirecionamento em excesso por <ph name="HOST_NAME" /></translation>
 <translation id="5619721953841297650">Predefinição</translation>
 <translation id="5624120631404540903">Gerenciar senhas</translation>
+<translation id="5628060911499153873">Salve suas informações para agilizar o dia a dia nos produtos do Google. Os dados são salvos na <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> para <ph name="ACCOUNT" />.</translation>
 <translation id="5629630648637658800">Falha ao carregar as configurações da política</translation>
 <translation id="5630981295558454585">Botão "Perguntar ao Google sobre esta página". Ative para fazer uma pergunta</translation>
 <translation id="5631439013527180824">Token de gerenciamento de dispositivo inválido</translation>

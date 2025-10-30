@@ -975,6 +975,7 @@
 <translation id="1646045728251578877">সফ্টওয়্যার আপডেট উপলভ্য আছে</translation>
 <translation id="1647408325348388858">এই ওয়েব অ্যাপে <ph name="FILE_NAME" /> খুলবেন এবং এডিট করবেন?</translation>
 <translation id="1647986356840967552">আগের পৃষ্ঠা</translation>
+<translation id="1648401604841225489">আপনার পাসকী আনলক করুন</translation>
 <translation id="1648439345221797326">ctrl + shift + <ph name="TOP_ROW_KEY" /></translation>
 <translation id="1648528859488547844">লোকেশন নির্ধারণ করার জন্য ওয়াই-ফাই অথবা মোবাইল নেটওয়ার্ক ব্যবহার করুন</translation>
 <translation id="164936512206786300">ব্লুটুথ ডিভাইস আনপেয়ার করুন</translation>
@@ -2271,6 +2272,7 @@
 <translation id="2523184218357549926">আপনার দেখা পৃষ্ঠাগুলির ইউআরএল Google-এ পাঠায়</translation>
 <translation id="2524093372979370955">এটি সমস্ত সিস্টেম জুড়ে নতুন USB পেরিফেরালের জন্য বিজ্ঞপ্তি বন্ধ করবে। তারপরও আপনি কি চালিয়ে যেতে চান?</translation>
 <translation id="252418934079508528"><ph name="DEVICE_OS" /> ইনস্টল করুন</translation>
+<translation id="252513908494776481">এই ট্যাব সম্পর্কে জিজ্ঞাসা করুন</translation>
 <translation id="2526590354069164005">ডেস্কটপ</translation>
 <translation id="2526619973349913024">আপডেট চেক করুন</translation>
 <translation id="2527167509808613699">যেকোনও প্রকারের কানেকশন</translation>
@@ -2499,6 +2501,7 @@
 <translation id="2692901429679246677">অ্যাকোয়া</translation>
 <translation id="2693134906590795721">চার্জ হওয়ার সময় সাউন্ড</translation>
 <translation id="2695943520968279338">এক্সটেনশন ডিসকভার করুন</translation>
+<translation id="2696675923413008404">এই সাইটের URL সহ কন্টেন্ট Google-এ পাঠানো হয় এবং এই ফিচার উন্নত করার জন্য হিউম্যান রিভিউয়ার এগুলি দেখতে পারেন</translation>
 <translation id="2698147581454716013">এটি একটি বান্ডেল ডিভাইস এবং 'কিয়স্ক' ও 'সাইনেজ' আপগ্রেডের মাধ্যমে নথিভুক্ত করা যাবে না।</translation>
 <translation id="2699911226086014512">পিন ভিত্তিক কাজটি সঠিকভাবে করা যায়নি, সমস্যার কোড <ph name="RETRIES" />।</translation>
 <translation id="2701330563083355633"><ph name="DEVICE_NAME" /> থেকে শেয়ার করা হয়েছে</translation>
@@ -2921,6 +2924,7 @@
 <translation id="2983818520079887040">সেটিংস...</translation>
 <translation id="2984384421572259426">অব্যবহৃত ট্যাব ক্লিন-আপ করুন</translation>
 <translation id="2984727013951557074">ফাইল এখনও Drive-এ সিঙ্ক করা হচ্ছে।</translation>
+<translation id="2984923316661218534">Google Password Manager-এর মাধ্যমে এই ডিভাইসে আপনার পাসকী পান</translation>
 <translation id="2985348301114641460">আপনার অ্যাডমিনিস্ট্রেটরকে "<ph name="EXTENSION_NAME" />" ইনস্টল করবার জন্য অনুরোধ পাঠাবেন?</translation>
 <translation id="2985476671756533899">{NUM_SUB_APPS,plural, =1{<ph name="APP_NAME" /> একটি অ্যাপ আনইনস্টল করেছে}one{<ph name="APP_NAME" /> #টি অ্যাপ আনইনস্টল করেছে}other{<ph name="APP_NAME" /> #টি অ্যাপ আনইনস্টল করেছে}}</translation>
 <translation id="2987620471460279764">অন্য ডিভাইস থেকে টেক্সট শেয়ার করা হয়েছে</translation>
@@ -3144,6 +3148,7 @@
 <translation id="3143515551205905069">সিঙ্ক বাতিল করুন</translation>
 <translation id="3143754809889689516">শুরু থেকে চালান</translation>
 <translation id="3144647712221361880">এই হিসেবে লিঙ্ক খুলুন</translation>
+<translation id="3147878021189006333">Omnibox</translation>
 <translation id="3149510190863420837">Chrome অ্যাপগুলি</translation>
 <translation id="3150927491400159470">কঠিন রিলোড</translation>
 <translation id="315116470104423982">মোবাইল ডেটা</translation>
@@ -3982,6 +3987,7 @@
 <translation id="372722114124766626">মাত্র একবার</translation>
 <translation id="3727332897090187514">কোনও নোট যোগ করা হয়নি</translation>
 <translation id="3727473233247516571">ব্যাক-ফরোয়ার্ড ক্যাশেতে স্টোর করা সাবফ্রেম: <ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
+<translation id="3727558469988088200">পাসকী পান</translation>
 <translation id="3727843212509629024">ভুল পিন দিয়েছেন। আবার চেষ্টা করুন</translation>
 <translation id="3727850735097852673">MacOS Keychain-এর মাধ্যমে Password Manager ব্যবহার করতে, Chrome আবার লঞ্চ করুন ও Keychain অ্যাক্সেস করার অনুমতি দিন। আবার চালু করার পরে আপনার ট্যাব আবার খোলা হবে।</translation>
 <translation id="3728188878314831180">আপনার ফোনের মিরর বিজ্ঞপ্তি</translation>
@@ -4703,6 +4709,7 @@
 <translation id="4213918571089943508">বাচ্চার Google অ্যাকাউন্ট</translation>
 <translation id="4214192212360095377">এখনই বন্ধ করুন</translation>
 <translation id="4214313983951846766">{NUM_TABS,plural, =0{কোনও ইনঅ্যাক্টিভ ট্যাব}=1{১টি ইনঅ্যাক্টিভ ট্যাব পর্যালোচনা করুন}one{#টি ইনঅ্যাক্টিভ ট্যাব পর্যালোচনা করুন}other{#টি ইনঅ্যাক্টিভ ট্যাব পর্যালোচনা করুন}}</translation>
+<translation id="4216407171061541111">আপনার সংস্থা Google অ্যাকাউন্টে ট্যাব সেভ করার সুবিধা বন্ধ করে দিয়েছে</translation>
 <translation id="4217571870635786043">ডিক্টেশন</translation>
 <translation id="4218081191298393750">এই ট্যাব মিউট করতে স্পিকার আইকনে ক্লিক করুন</translation>
 <translation id="4220157655212610908">এক্সটার্নাল 'নিরাপত্তা কী' ব্যবহার করুন</translation>
@@ -4942,6 +4949,7 @@
 <translation id="4378589147979399051">আপনার প্রাইমারি কীবোর্ডের সাহায্যে মাউসের কার্সর নিয়ন্ত্রণ করুন</translation>
 <translation id="4379097572583973456">কোনও সাইট অন্যান্য সাইট থেকে কন্টেন্ট এম্বেড করতে পারে, যেমন ছবি, বিজ্ঞাপন ও টেক্সট। এছাড়াও এইসব অন্যান্য সাইট ডেটা সেভ করতে পারে।</translation>
 <translation id="4379281552162875326">"<ph name="APP_NAME" />" আনইনস্টল করতে চান?</translation>
+<translation id="4379623957571212011">ঝটপট থিম প্রয়োগ করার জন্য ছবি বেছে নিন</translation>
 <translation id="4380055775103003110">এই সমস্যা থেকে গেলে, আপনি <ph name="SITE_ETLD_PLUS_ONE" />-এ চালিয়ে যেতে অন্য উপায় চেষ্টা করে দেখতে পারেন।</translation>
 <translation id="4380648069038809855">ফুল-স্ক্রিনে ঢোকা হয়েছে</translation>
 <translation id="4381902252848068865">ডেটা সেভ করার জন্য সাইটকে অনুমতি দেবেন না</translation>
@@ -5210,6 +5218,7 @@
 <translation id="4570201855944865395">এই এক্সটেনশনের জন্য অনুরোধ করার কারণ:</translation>
 <translation id="4572779512957829735">আপনার নিরাপত্তা কীয়ের পিনটি লিখুন</translation>
 <translation id="4573098337225168831"><ph name="DEVICE_NAME" /> কাস্ট করার অনুরোধ গ্রহণ করছেন কিনা তা নিশ্চিত করুন</translation>
+<translation id="4573494901102723760">আপনার পাসকী পান</translation>
 <translation id="457386861538956877">আরও...</translation>
 <translation id="4574741712540401491">•  <ph name="LIST_ITEM_TEXT" /></translation>
 <translation id="4575614183318795561"><ph name="FEATURE_NAME" /> সেট আপ করুন</translation>
@@ -5381,6 +5390,7 @@
 <translation id="4689235506267737042">আপনার ডেমো পছন্দগুলি বেছে নিন</translation>
 <translation id="4689421377817139245">এই বুকমার্কটি আপনার iPhone এর সাথে সিঙ্ক করুন</translation>
 <translation id="4690091457710545971">&lt;Intel Wi-Fi ফার্মওয়্যার চারটি ফাইল তৈরী করেছে: csr.lst, fh_regs.lst, radio_reg.lst, monitor.lst.sysmon.  প্রথম তিনটি হচ্ছে রেজিস্টার ডাম্প সম্বলিত বাইনারি ফাইল, যেগুলির মধ্যে কোনও ব্যক্তিগত বা ডিভাইস শনাক্তকারী তথ্য থাকে না বলে Intel দাবি করে।  শেষ ফাইলটি Intel ফার্মওয়্যার চালানোর সময় তৈরি ট্রেস; এটির মধ্যে থাকা কোনও ব্যক্তিগত বা ডিভাইস শনাক্তকারী তথ্য মুছে ফেলা হয়েছে, কিন্তু এখানে দেখানোর ক্ষেত্রে এটি খুবই বড়।  আপনার ডিভাইসের সাম্প্রতিক Wi-Fi সমস্যাগুলির জন্য এই ফাইলগুলি তৈরি করা হয়েছিল এবং এই সমস্যাগুলির সমাধান করার জন্য Intel-এর সাথে শেয়ার করা হবে।&gt;</translation>
+<translation id="4691995778017338841">ফটোর নতুন রূপ দিন</translation>
 <translation id="4692342362587775867">এই সাইট থেকে পাওয়া বিজ্ঞপ্তি হয়ত বিঘ্ন সৃষ্টি করতে পারে</translation>
 <translation id="4692530924160500770">{MEMBER_COUNT,plural, =1{গ্রুপে # জন সদস্য আছেন}one{গ্রুপে # জন সদস্য আছেন}other{গ্রুপে # জন সদস্য আছেন}}</translation>
 <translation id="4692623383562244444">সার্চ ইঞ্জিনসমূহ</translation>
@@ -5407,6 +5417,7 @@
 <translation id="4711638718396952945">সেটিংস পুনরুদ্ধার করুন</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4713409221649555176">সমস্ত উইন্ডো বন্ধ করার সময় মুছুন</translation>
+<translation id="4714414859110184926">পাসকী পান</translation>
 <translation id="4715631922189108923">ব্যবহারকারীর নাম এডিট করুন</translation>
 <translation id="47158868804223727">গ্রুপের নাম বড় করার বা আড়াল করার জন্য তাতে ক্লিক করুন</translation>
 <translation id="4716483597559580346">অতিরিক্ত নিরাপত্তার জন্য পাওয়ারওয়াশ</translation>
@@ -6192,6 +6203,7 @@
 <translation id="5265797726250773323">ইনস্টল করার সময় সমস্যা</translation>
 <translation id="526622169288322445"><ph name="ADDRESS_SUMMARY" />-এর জন্য আরও অ্যাকশন</translation>
 <translation id="5267572070504076962">বিপজ্জনক সাইট থেকে সুরক্ষার জন্য Safe Browsing চালু করুন</translation>
+<translation id="5269659747698455324">আপনার পাসকী আনলক করুন</translation>
 <translation id="5269977353971873915">প্রিন্ট করা যায়নি</translation>
 <translation id="5271578170655641944">Google Drive-এর অ্যাক্সেস সরিয়ে দেবেন?</translation>
 <translation id="5272198173084686007">অন্য ডিভাইস থেকে কোনও ট্যাব নেই</translation>
@@ -6794,6 +6806,7 @@
 <translation id="5695184138696833495">Linux Android অ্যাপ ADB</translation>
 <translation id="5696143504434933566">"<ph name="EXTENSION_NAME" />" অপব্যবহারের বিষয়ে অভিযোগ করুন</translation>
 <translation id="5696679855467848181">বর্তমানে ব্যবহার করা পিডিএফ ফাইল: <ph name="PPD_NAME" /></translation>
+<translation id="5697664819730124632">ছবি যোগ করে সেটির নতুন রূপ দিন</translation>
 <translation id="5697832193891326782">ইমোজি চয়নকারী</translation>
 <translation id="5698136107297470317">আপনি নিজের <ph name="BRAND" /> ডেটা মুছে দিতে চলেছেন</translation>
 <translation id="5698878456427040674">বেছে নেওয়া অ্যাকাউন্ট কাজ করছে কিনা তা চেক করে দেখে নিন।</translation>
@@ -6804,6 +6817,7 @@
 <translation id="5701080607174488915">সার্ভার থেকে নীতি ফেচ করার সময় সমস্যা হয়েছে।</translation>
 <translation id="5701212929149679556">মোবাইল রোমিং</translation>
 <translation id="5701786609538182967"><ph name="APP_NAME" />-এর মতো অন্যান্য অ্যাপ একই লিঙ্ক খোলার জন্য সেট করা আছে। এটি <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />, <ph name="APP_NAME_4" /> এবং আরও অন্য ১টি অ্যাপের সহায়ক লিঙ্ক খুলতে দেবে না।</translation>
+<translation id="5702161882524398150">আগের ট্যাব সম্পর্কে জিজ্ঞাসা করুন</translation>
 <translation id="5702749864074810610">সাজেশন বাতিল হয়েছে</translation>
 <translation id="5703716265115423771">ভলিউম কমান</translation>
 <translation id="5704875434923668958">এতে সিঙ্ক হচ্ছে</translation>
@@ -7109,6 +7123,7 @@
 <translation id="5919486630433391408">আপনার অ্যাডমিনিস্ট্রেটর ফার্মওয়্যার আপডেট বন্ধ করেছেন।</translation>
 <translation id="5920543303088087579">এই নেটওয়ার্কের সাথে সংযোগ আপনার প্রশাসক দ্বারা অক্ষম করা হয়েছে</translation>
 <translation id="5922493635960054020">নতুন ভিজিট করা সাইটে JavaScript অপ্টিমাইজারের অ্যাক্সেস ব্লক করুন। Safe Browsing প্রয়োজন</translation>
+<translation id="5922854266885514646">"Chrome কাস্টমাইজ করুন" বিকল্পে ক্লিক করুন</translation>
 <translation id="5922963926582976524">ইনস্ট্যান্ট হটস্পট নেটওয়ার্ক ডিসকানেক্ট করুন</translation>
 <translation id="5924047253200400718">সাহায্য পান<ph name="SCANNING_STATUS" /></translation>
 <translation id="5924438086390153180">Google Drive-এ Microsoft-এর ফাইল কপি করা বা সরানোর আগে জিজ্ঞেস করুন</translation>
@@ -7341,6 +7356,7 @@
 <translation id="6086846494333236931">আপনার প্রশাসক দ্বারা ইনস্টল করা হয়েছে</translation>
 <translation id="6087286598828478206">ব্লক করে গ্রুপ ছেড়ে বেরিয়ে যেতে চান?</translation>
 <translation id="6087960857463881712">দুর্দান্ত চেহারা</translation>
+<translation id="608819668983150122">এই ডিভাইসে আপনার পাসকী সেভ ও ব্যবহার করতে, নিজের পরিচয় যাচাই করুন</translation>
 <translation id="6088475950266477163">সেটিংস</translation>
 <translation id="608912389580139775">আপনার পড়ার তালিকায় এই পৃষ্ঠাটি যোগ করতে বুকমার্ক আইকনে ক্লিক করুন</translation>
 <translation id="6089289670051481345">ট্রিট্যানোম্যালি</translation>
@@ -8383,6 +8399,7 @@
 <translation id="6814754908910736855">ওয়াই ফাই ডাইরেক্ট ক্লায়েন্ট সংক্রান্ত তথ্য:</translation>
 <translation id="6815376457351236663">যাই হোক, খুলতে চাই</translation>
 <translation id="6815787852028615386">এটি প্রতারণামূলক ফাইল এবং এর জন্য আপনার ডিভাইসে অপ্রত্যাশিত পরিবর্তন হতে পারে</translation>
+<translation id="6815861164669871832">কোনও ট্যাব সম্পর্কে জিজ্ঞাসা করুন</translation>
 <translation id="6816097980753839617">নীল-হলুদ রঙ যাতে বুঝতে সমস্যা না হয় (ট্রিট্যানোম্যালি)</translation>
 <translation id="6816443526270499804">উপলভ্য থাকা ই-সিম প্রোফাইল খোঁজা হচ্ছে</translation>
 <translation id="6818198425579322765">অনুবাদ করার জন্য পৃষ্ঠার ভাষা</translation>
@@ -8702,6 +8719,7 @@
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> - সিরিয়াল পোর্ট কানেক্ট করা হয়েছে</translation>
 <translation id="7033616203784997570">৬২টির বেশি অক্ষর লেখা যাবে না</translation>
 <translation id="7034692021407794547">বিলিং নিয়ন্ত্রণ সহ অ্যাডমিনিস্ট্রেটরদের প্রথমে অ্যাডমিন কনসোলের Google Meet হার্ডওয়্যার বিভাগে Google Meet হার্ডওয়্যারের পরিষেবার শর্তাবলী মেনে নিতে হবে।</translation>
+<translation id="70356134210715500">আপনার পাসকী পান</translation>
 <translation id="7036550011779986598"><ph name="RP_ID" /> আপনার অ্যাকাউন্টের জন্য কোনও একটি পাসকী তৈরি করেছে। সাইন-ইন করতে পাসকী আরও দ্রুত ও নিরাপদ পদ্ধতি অফার করে এবং <ph name="USER" />-এর জন্য Google Password Manager-এ সেভ হয়। <ph name="LEARN_MORE" /></translation>
 <translation id="7036706669646341689">Linux-এর জন্য <ph name="DISK_SIZE" /> জায়গা খালি রাখার জন্য সাজেস্ট করা হয়েছে। খালি জায়গা বাড়াতে, আপনার ডিভাইস থেকে ফাইল মুছে দিন।</translation>
 <translation id="7036833812387983071">DevTools-এ দেখুন</translation>
@@ -8747,6 +8765,7 @@
 <translation id="7067725467529581407">এটি আর কখনো দেখাবেন না।</translation>
 <translation id="7067779359472606732">আপনার <ph name="DEVICE_TYPE" />-এ রিমাইন্ডার পাঠানো হয়েছে</translation>
 <translation id="7068279399556423026">অন্যান্য ডিভাইস থেকে 'ট্যাব' দেখতে সাইন-ইন করুন</translation>
+<translation id="7068539819344620805">আপনি এখন 'Chrome কাস্টমাইজ করুন' মেনু থেকে যেকোনও সময় ব্রাউজারের একটি নতুন লুক দিতে পারবেন</translation>
 <translation id="7068591156533195518">আপনার <ph name="DEVICE_TYPE" />-এ <ph name="APP_NAME" /> এবং আরও কিছু অ্যাপ ব্লক করা হয়েছে</translation>
 <translation id="706949303827219454">নতুন ট্যাবে সুরক্ষা সেটিংস পৃষ্ঠা খুলুন</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{এই সাইটের জন্য নতুন পাসওয়ার্ড}one{এই সাইটের জন্য নতুন পাসওয়ার্ড}other{এই সাইটের জন্য নতুন পাসওয়ার্ড}}</translation>
@@ -10532,6 +10551,7 @@
 <translation id="8291415872436043161">Chrome ডাউনলোড করুন</translation>
 <translation id="8291942417224950075">ব্যক্তিগতভাবে ব্যবহারের জন্য</translation>
 <translation id="8293206222192510085">বুকমার্ক যুক্ত করুন</translation>
+<translation id="8293957715257389063">কোনও ট্যাবে গভীরভাবে সার্চ করুন</translation>
 <translation id="8294431847097064396">উৎস</translation>
 <translation id="8294476140219241086">ট্যাব সাজানোর সুবিধা</translation>
 <translation id="8295449579927246485">লাইভ অনুবাদ</translation>
@@ -10571,6 +10591,7 @@
 <translation id="8320212361750431956">সাম্প্রতিক অ্যাক্টিভিটি</translation>
 <translation id="8321476692217554900">বিজ্ঞপ্তি</translation>
 <translation id="8321837372750396788">এই <ph name="DEVICE_TYPE" />, <ph name="MANAGER" />-এর মাধ্যমে ম্যানেজ করা হবে।</translation>
+<translation id="8322000044173139239">এই ডিভাইসে পাসকী ব্যবহার করতে নিজের পরিচয় যাচাই করুন</translation>
 <translation id="8322814362483282060">এই পৃষ্ঠাটিকে আপনার মাইক্রোফোন অ্যাক্সেস করা থেকে অবরুদ্ধ করা হয়েছে৷</translation>
 <translation id="8323167517179506834">URL লিখুন</translation>
 <translation id="8323317289166663449">আপনার কম্পিউটার ও সমস্ত ওয়েবসাইটের সব ডেটা পড়তে ও পরিবর্তন করতে পারে</translation>
@@ -11794,6 +11815,7 @@
 <translation id="9137916601698928395"><ph name="USER" /> হিসেবে লিঙ্ক খুলুন</translation>
 <translation id="9138978632494473300">নিম্নল্লিখিত স্থানগুলিতে শর্টকাটগুলি যোগ করুন:</translation>
 <translation id="9139988741193276691">Linux কনফিগার করা হচ্ছে</translation>
+<translation id="9140050311673642960">নতুন কিছু সম্পর্কে খুঁটিয়ে জানুন</translation>
 <translation id="9140067245205650184">আপনি যে ফিচার ফ্ল্যাগটি ব্যবহার করছেন সেটি সমর্থিত নয়: <ph name="BAD_FLAG" />। স্থিতিশীলতা এবং নিরাপত্তা ব্যাহত হতে পারে।</translation>
 <translation id="914031120300235526">প্রোফাইল আনলক করা যায়নি</translation>
 <translation id="9142637293078737510">ইমেজের উপনাম</translation>

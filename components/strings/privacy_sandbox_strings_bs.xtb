@@ -8,10 +8,8 @@
 <translation id="1281098210028343866">Da nam pomognete da poboljšamo Chromium, recite nam zašto ste pauzirali zaštite od praćenja</translation>
 <translation id="1297285729613779935">Oglasi koje predlažu web lokacije pomažu u zaštiti vaše historije pregledanja i identiteta te dozvoljavaju web lokacijama da vam prikazuju relevantne oglase. Koristeći vašu aktivnost, kao što je način na koji provodite vrijeme na web lokacijama koje posjećujete, druge web lokacije mogu predložiti povezane oglase dok nastavljate preglédati. U postavkama možete vidjeti listu ovih web lokacija i blokirati web lokacije koje ne želite.</translation>
 <translation id="132963621759063786">Chromium briše sve podatke o aktivnosti koje ste podijelili s web lokacijama nakon 30 dana. Ako ponovo posjetite web lokaciju, može se ponovo pojaviti na listi. Saznajte više o <ph name="BEGIN_LINK1" />upravljanju privatnošću pri izloženosti oglasima u Chromiumu<ph name="LINK_END1" />.</translation>
-<translation id="1432306053064625042">Otvara se u običnom prozoru Chromea</translation>
 <translation id="1472807065399636739">Web lokacije koje posjećujete će možda ugraditi sadržaj i usluge s drugih web lokacija (poput slika, oglasa i teksta) koji mogu koristiti da saznaju više o vama. Saznajte više o upravljanju <ph name="BEGIN_LINK" />zaštitama od praćenja u anonimnom načinu rada<ph name="END_LINK" /></translation>
 <translation id="1472928714075596993"><ph name="BEGIN_BOLD" />Koji se podaci koriste?<ph name="END_BOLD" /> Vaše teme oglasa se zasnivaju na nedavnoj historiji pregledanja, listi web lokacija koje ste posjetili putem Chromea na uređaju.</translation>
-<translation id="1529201733207295376">Kolačići treće strane su blokirani. Anonimni način rada pruža i funkcije koje mogu ograničiti informacije koje su dostupne kompanijama čiji je sadržaj ugrađen na web lokaciji koju posjećujete. U <ph name="START_LINK" />Postavkama<ph name="END_LINK" /> možete upravljati zaštitama od praćenja u anonimnom načinu rada.</translation>
 <translation id="1559726735555610004">Google zahtijeva od kompanija da javno navedu da neće koristiti ove podatke da vas prate na web lokacijama. Određene web lokacije mogu koristiti vašu aktivnost da personaliziraju vaše iskustvo i u druge svrhe osim oglašavanja. Mogu ih i kombinirati s drugim informacijama koje već znaju o vama. Kompanije su odgovorne za to da vas obavijeste o načinu na koji koriste vaše podatke. Saznajte više o tome kako Google štiti vaše podatke u našim <ph name="BEGIN_LINK" />Pravilima privatnosti<ph name="END_LINK" />.</translation>
 <translation id="1569440020357229235">Kada ste u anonimnom načinu rada, web lokacije ne mogu koristiti kolačiće treće strane. Ako web lokacija koja se oslanja na te kolačiće ne funkcionira, <ph name="BEGIN_LINK" />pokušajte dati toj web lokaciji privremeni pristup kolačićima treće strane<ph name="END_LINK" />.</translation>
 <translation id="1617293350324746198">Kolačići treće strane su blokirani. Anonimni način rada može pružiti i dodatne zaštite od praćenja.</translation>
@@ -103,7 +101,6 @@
 <translation id="6195163219142236913">Kolačići treće strane su ograničeni</translation>
 <translation id="6196640612572343990">Blokiraj kolačiće treće strane</translation>
 <translation id="6205593033237791753">Ograničite pristup IP adresi. Ova postavka je uključena.</translation>
-<translation id="6272892028045906139">Postavke za zaštite od praćenja u anonimnom načinu rada</translation>
 <translation id="6282129116202535093">Oglasi koje predlažu web lokacije pomažu u zaštiti vaše historije pregledanja i identiteta te dozvoljavaju web lokacijama da vam prikazuju relevantne oglase. Koristeći vašu aktivnost, druge web lokacije mogu predložiti povezane oglase dok nastavljate preglédati. U postavkama možete vidjeti listu ovih web lokacija i blokirati web lokacije koje ne želite.</translation>
 <translation id="6291177244430967858">Zaštite od praćenja su nastavljene</translation>
 <translation id="6308169245546905162">Web lokacije mogu koristiti kolačiće treće strane da saznaju više o radnjama koje poduzimate na drugim web lokacijama</translation>
@@ -124,7 +121,6 @@
 <translation id="7315780377187123731">Više o opciji Blokiraj kolačiće treće strane</translation>
 <translation id="737025278945207416">Određene web lokacije mogu koristiti vašu aktivnost da personaliziraju vaše iskustvo i u druge svrhe osim oglašavanja. Također će možda pohranjivati teme oglasa duže od 4 sedmice i kombinirati ih s drugim informacijama koje već znaju o vama</translation>
 <translation id="7374493521304367420">Web lokacije i dalje mogu koristiti kolačiće da vide aktivnost pregledanja na svojoj web lokaciji</translation>
-<translation id="7379649202155190245">Zaštite od praćenja u anonimnom načinu rada</translation>
 <translation id="7419391859099619574">Google zahtijeva od kompanija da javno navedu da neće koristiti ove podatke da vas prate na web lokacijama. Određene web lokacije mogu koristiti vašu aktivnost da personaliziraju vaše iskustvo i u druge svrhe osim oglašavanja. Također će možda pohranjivati teme oglasa duže od 4 sedmice i kombinirati ih s drugim informacijama koje već znaju o vama. Kompanije su odgovorne za to da vas obavijeste o načinu na koji koriste vaše podatke. <ph name="BEGIN_LINK1" />Saznajte više u našim Pravilima privatnosti<ph name="LINK_END1" /></translation>
 <translation id="7442413018273927857">Chrome briše sve podatke o aktivnosti koje ste podijelili s web lokacijama nakon 30 dana. Ako ponovo posjetite web lokaciju, može se ponovo pojaviti na listi. Saznajte više o <ph name="BEGIN_LINK1" />upravljanju privatnošću pri izloženosti oglasima u Chromeu<ph name="LINK_END1" />.</translation>
 <translation id="7446815120569226585">Chrome blokira kolačiće treće strane u anonimnom načinu rada, ali je administrator dozvolio kolačiće treće strane za ovu web lokaciju. Anonimni način rada može pružiti i dodatne zaštite od praćenja.</translation>
@@ -152,7 +148,6 @@
 <translation id="839994149685752920">Web lokacije mogu koristiti kolačiće treće strane da personaliziraju sadržaj i oglase</translation>
 <translation id="8428213095426709021">Postavke</translation>
 <translation id="8430082659493731737">Dostupno je samo kada je anonimni način rada otvoren s kartice Chromea na kojoj ste prijavljeni</translation>
-<translation id="8442977418416307640">Otvara se u običnom prozoru Chromiuma</translation>
 <translation id="8578320000709741352">Web lokacije koje posjećujete će možda ugraditi sadržaj i usluge s drugih web lokacija (poput slika, oglasa i teksta) koji mogu koristiti da saznaju više o vama. Saznajte više o upravljanju <ph name="START_LINK" />zaštitama od praćenja u anonimnom načinu rada<ph name="END_LINK" /></translation>
 <translation id="859369389161884405">Otvaranje Pravila privatnosti na novoj kartici</translation>
 <translation id="8712637175834984815">Razumijem</translation>

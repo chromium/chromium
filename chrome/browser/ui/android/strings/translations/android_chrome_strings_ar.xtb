@@ -382,7 +382,6 @@
 <translation id="2739887572830526131">يمكنك الاحتفاظ بهذه المجموعة لإضافة علامات تبويب إليها لاحقًا، أو حذفها إذا لم تعُد بحاجة إليها.</translation>
 <translation id="2742373789128106053">"<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />" غير متوفّر الآن.</translation>
 <translation id="2760805590727089264">MM/YY</translation>
-<translation id="2760989362628427051">تفعيل المظهر الداكن عند تفعيل المظهر الداكن للجهاز أو ميزة "توفير شحن البطارية"</translation>
 <translation id="2762000892062317888">الآن</translation>
 <translation id="276969039800130567">تم تسجيل الدخول بحساب <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="2777555524387840389">عدد الثواني المتبقية: <ph name="SECONDS" /></translation>
@@ -613,6 +612,7 @@
 <translation id="3819178904835489326">تم إلغاء <ph name="NUMBER_OF_DOWNLOADS" /> من عمليات التنزيل</translation>
 <translation id="3819183753496523827">لا يتوفّر اتصال بالإنترنت. يُرجى التحقّق من الاتصال بالإنترنت ثم إعادة المحاولة.</translation>
 <translation id="3823019343150397277">‏رقم الحساب بصيغة IBAN</translation>
+<translation id="3824259034819781947">إرفاق ملفات</translation>
 <translation id="38243391581572867">‏لا تتوفّر ميزة "عدسة Google" في هذا الحساب.</translation>
 <translation id="38258275871320156">لا يتوفّر هذا الخيار إلا للنوافذ الصغيرة</translation>
 <translation id="3845098929839618392">فتح في علامة تبويب تصفّح متخفي</translation>
@@ -1505,7 +1505,6 @@
 <translation id="7581273696622423628">المشاركة في استطلاع الرأي</translation>
 <translation id="7583262514280211622">ستظهر لك قائمة القراءة هنا</translation>
 <translation id="758603037873046260">سجِّل الدخول لحفظ هذه الصفحة</translation>
-<translation id="7588219262685291874">تفعيل "المظهر الداكن" عند تفعيل ميزة "توفير شحن البطارية" للجهاز</translation>
 <translation id="7594687499944811403">السماح للموقع الإلكتروني <ph name="EMBEDDED_ORIGIN" /> بإثبات هويّتك في <ph name="TOP_ORIGIN" /></translation>
 <translation id="7596558890252710462">نظام التشغيل</translation>
 <translation id="7597601275223325603">{NUMBER_OF_TABS,plural, =1{علامة تبويب عادية واحدة (<ph name="TABS_COUNT_ONE" />)}zero{‫<ph name="TABS_COUNT_MANY" /> علامة تبويب عادية}two{علامتا تبويب عاديتان (<ph name="TABS_COUNT_MANY" />)}few{‫<ph name="TABS_COUNT_MANY" /> علامات تبويب عادية}many{‫<ph name="TABS_COUNT_MANY" /> علامة تبويب عادية}other{‫<ph name="TABS_COUNT_MANY" /> علامة تبويب عادية}}</translation>

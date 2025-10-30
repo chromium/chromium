@@ -3761,7 +3761,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3605156246402033687">{COUNT,plural, =1{{COUNT} konto używa tego samego hasła}few{{COUNT} konta używają tego samego hasła}many{{COUNT} kont używa tego samego hasła}other{{COUNT} konta używa tego samego hasła}}</translation>
 <translation id="3605515937536882518">Wartości w formularzu zostały zaktualizowane</translation>
 <translation id="3605780360466892872">Garnitur</translation>
-<translation id="3607338234983711865">Współdzielisz komputer?</translation>
+<translation id="3607338234983711865">Udostępniasz komputer?</translation>
 <translation id="3607671391978830431">Dla dziecka</translation>
 <translation id="3607799000129481474"><ph name="SITE" /> chce potwierdzić Twoją tożsamość</translation>
 <translation id="3608460311600621471">Wpisz uzasadnienie wydrukowania tych danych:</translation>

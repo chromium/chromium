@@ -20,6 +20,7 @@
 <translation id="1035509598913574970">Camgöbeği 3</translation>
 <translation id="1035709686865413354">Su Filtreleri ve Arıtıcılar</translation>
 <translation id="1036348656032585052">Kapat</translation>
+<translation id="1036436692654972538">Cihazınıza kaydedilir</translation>
 <translation id="1036881361735705143">Zarf C4</translation>
 <translation id="1038842779957582377">bilinmeyen ad</translation>
 <translation id="1041998700806130099">İş sayfası mesajı</translation>
@@ -2831,6 +2832,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="5617949217645503996"><ph name="HOST_NAME" /> sizi çok fazla kez yönlendirdi.</translation>
 <translation id="5619721953841297650">Ön ayarlı</translation>
 <translation id="5624120631404540903">Şifreleri yönetin</translation>
+<translation id="5628060911499153873">Google ürünlerinde işlerinizi daha hızlı halletmek için bilgilerinizi kaydedin. <ph name="ACCOUNT" /> hesabı için bilgileriniz <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> uygulamasına kaydedilir.</translation>
 <translation id="5629630648637658800">Politika ayarları yüklenemedi</translation>
 <translation id="5630981295558454585">Google'a bu sayfa hakkında soru sorun düğmesi, Google'a bu sayfa hakkında soru sormak için etkinleştirin</translation>
 <translation id="5631439013527180824">Geçersiz cihaz yönetimi jetonu</translation>

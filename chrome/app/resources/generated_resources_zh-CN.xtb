@@ -7421,6 +7421,7 @@
 <translation id="6160290816917599257">代码无效。所输入代码的格式应为：<ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+ 地址<ph name="LPA_2" />$<ph name="LPA_3" />可选匹配 ID<ph name="LPA_4" /></translation>
 <translation id="6160625263637492097">提供用于验证身份的证书</translation>
 <translation id="6160887111111841751">已保存的信息将显示在此处</translation>
+<translation id="616290554291007512">不允许 Gemini 代您登录</translation>
 <translation id="6163363155248589649">正常(&amp;N)</translation>
 <translation id="6163376401832887457">Kerberos 设置</translation>
 <translation id="6163522313638838258">全部展开...</translation>
@@ -7733,6 +7734,7 @@
 <translation id="6379228010899751161">请验证您的身份，以确保您可以一直使用账号 <ph name="ACCOUNT_EMAIL" /> 中的密码</translation>
 <translation id="6379827283296619736">否，继续在工作时使用此资料</translation>
 <translation id="6380143666419481200">接受并继续</translation>
+<translation id="6380618366311601172">Gemini 将无法完成需要在 <ph name="DOMAIN" /> 上登录的任务。</translation>
 <translation id="6383382161803538830">此页面不支持朗读模式</translation>
 <translation id="638418309848716977">支持的链接</translation>
 <translation id="6384275966486438344">将您的搜索设置更改为：<ph name="SEARCH_HOST" /></translation>
@@ -9442,6 +9444,7 @@
 <translation id="7585106857920830898">正在检查是否符合贵组织的安全政策…</translation>
 <translation id="7585490016012953607">恢复密码 - 最多临时保存 3 个月</translation>
 <translation id="7586498138629385861">Chrome应用处于打开状态时，Chrome将持续运行。</translation>
+<translation id="7587297195142686341">Gemini 可以代您登录</translation>
 <translation id="7587806318633605613">建议历史记录</translation>
 <translation id="7589448773774086276">使用当前标签页创建新的拆分视图</translation>
 <translation id="7589461650300748890">注意！</translation>
@@ -10798,6 +10801,7 @@
 <translation id="849488240089599592">返回至近期的下载内容</translation>
 <translation id="8496717697661868878">运行此插件</translation>
 <translation id="8497219075884839166">Windows 实用程序</translation>
+<translation id="8497819894150712946">通过 Chrome 保存</translation>
 <translation id="8498214519255567734">可让您更舒适地在黯淡的光线下查看屏幕或阅读文字</translation>
 <translation id="8499083585497694743">将麦克风取消静音</translation>
 <translation id="8500044868721690197">此网站已被禁止控制您的 MIDI 设备以及为其重新编程</translation>
@@ -11657,6 +11661,7 @@
 <translation id="9069417381769492963">没有任何与您的搜索条件相符的书签</translation>
 <translation id="9070231741075992882">您向“<ph name="APP_NAME" />”授予的权限也会授给它安装的应用和流式传输的应用。</translation>
 <translation id="9070342919388027491">此标签页已移至左侧</translation>
+<translation id="9072918088200875065">您已授权 Gemini 登录这些网站，代您完成任务</translation>
 <translation id="9074739597929991885">蓝牙</translation>
 <translation id="9074836595010225693">USB鼠标已连接</translation>
 <translation id="9075413375877487220">增强型安全浏览功能不信任此扩展程序。</translation>

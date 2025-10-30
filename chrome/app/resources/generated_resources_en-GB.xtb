@@ -7444,6 +7444,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="6160290816917599257">Invalid code. Your entry should have the format <ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+ address<ph name="LPA_2" />$<ph name="LPA_3" />optional matching id<ph name="LPA_4" /></translation>
 <translation id="6160625263637492097">Provide certificates for authentication</translation>
 <translation id="6160887111111841751">Saved information will appear here</translation>
+<translation id="616290554291007512">Don't allow Gemini to sign in for you</translation>
 <translation id="6163363155248589649">&amp;Normal</translation>
 <translation id="6163376401832887457">Kerberos settings</translation>
 <translation id="6163522313638838258">Expand all...</translation>
@@ -7756,6 +7757,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="6379228010899751161">Verify that it's you to make sure that you can always use the passwords in your account, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="6379827283296619736">No, continue to work in this profile</translation>
 <translation id="6380143666419481200">Accept and continue</translation>
+<translation id="6380618366311601172">Gemini won't be able to complete tasks that require signing in on <ph name="DOMAIN" />.</translation>
 <translation id="6383382161803538830">Reading mode isn’t available on this page</translation>
 <translation id="638418309848716977">Supported links</translation>
 <translation id="6384275966486438344">Change your search settings to: <ph name="SEARCH_HOST" /></translation>
@@ -9463,6 +9465,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7585106857920830898">Checking with your organisation's security policies…</translation>
 <translation id="7585490016012953607">Recovery password – temporarily saved for up to 3 months</translation>
 <translation id="7586498138629385861">Chrome will keep running while Chrome Apps are open.</translation>
+<translation id="7587297195142686341">Gemini can sign in for you</translation>
 <translation id="7587806318633605613">Suggestion history</translation>
 <translation id="7589448773774086276">New split view with current tab</translation>
 <translation id="7589461650300748890">Whoa, there. Be careful.</translation>
@@ -10819,6 +10822,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="849488240089599592">Back to Recent downloads</translation>
 <translation id="8496717697661868878">Run This Plug-in</translation>
 <translation id="8497219075884839166">Windows Utilities</translation>
+<translation id="8497819894150712946">Saved from Chrome</translation>
 <translation id="8498214519255567734">Make it easier to look at your screen or read in dim light</translation>
 <translation id="8499083585497694743">Unmute microphone</translation>
 <translation id="8500044868721690197">This site has been blocked from controlling and reprogramming your MIDI devices</translation>
@@ -11675,6 +11679,7 @@ This can include information about installed software, files, your browser, the 
 <translation id="9069417381769492963">There are no bookmarks that match your search</translation>
 <translation id="9070231741075992882">Permissions that you allow for <ph name="APP_NAME" /> will also be allowed for its installed and streamed apps.</translation>
 <translation id="9070342919388027491">Tab moved left</translation>
+<translation id="9072918088200875065">You gave Gemini permission to sign in to these sites to complete tasks for you</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9074836595010225693">USB mouse connected</translation>
 <translation id="9075413375877487220">This extension is not trusted by Enhanced Safe Browsing.</translation>

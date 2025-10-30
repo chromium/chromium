@@ -20,6 +20,7 @@
 <translation id="1035509598913574970">Ciānzila 3</translation>
 <translation id="1035709686865413354">Ūdens filtri un attīrītāji</translation>
 <translation id="1036348656032585052">Izslēgt</translation>
+<translation id="1036436692654972538">Jūsu ierīcē saglabātie dati</translation>
 <translation id="1036881361735705143">Aploksne C4</translation>
 <translation id="1038842779957582377">nezināms nosaukums</translation>
 <translation id="1041998700806130099">Uzdevuma lapas ziņojums</translation>
@@ -2829,6 +2830,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="5617949217645503996"><ph name="HOST_NAME" /> novirzīja pārāk daudz reižu.</translation>
 <translation id="5619721953841297650">Pirmsiestatījums</translation>
 <translation id="5624120631404540903">Pārvaldīt paroles</translation>
+<translation id="5628060911499153873">Saglabājiet savu informāciju, lai ātrāk veiktu darbu Google produktos. Jūsu informācija tiek saglabāta lietotnē <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> kontam <ph name="ACCOUNT" />.</translation>
 <translation id="5629630648637658800">Neizdevās ielādēt politikas iestatījumus.</translation>
 <translation id="5630981295558454585">Poga “Jautāt Google par šo lapu”; aktivizējiet, lai jautātu Google par šo lapu</translation>
 <translation id="5631439013527180824">Ierīces pārvaldības marķieris nav derīgs.</translation>

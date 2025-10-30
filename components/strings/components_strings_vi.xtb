@@ -20,6 +20,7 @@
 <translation id="1035509598913574970">Xanh lơ 3</translation>
 <translation id="1035709686865413354">Thiết bị lọc và máy lọc nước</translation>
 <translation id="1036348656032585052">Tắt</translation>
+<translation id="1036436692654972538">Lưu vào thiết bị của bạn</translation>
 <translation id="1036881361735705143">Phong bì C4</translation>
 <translation id="1038842779957582377">tên không biết</translation>
 <translation id="1041998700806130099">Thông báo tờ công việc</translation>
@@ -2831,6 +2832,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="5617949217645503996"><ph name="HOST_NAME" /> đã chuyển hướng bạn quá nhiều lần.</translation>
 <translation id="5619721953841297650">Giá trị đặt trước</translation>
 <translation id="5624120631404540903">Quản lý mật khẩu</translation>
+<translation id="5628060911499153873">Lưu thông tin của bạn để hoàn thành công việc nhanh hơn trên các sản phẩm của Google. Thông tin của bạn được lưu vào <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> của tài khoản <ph name="ACCOUNT" />.</translation>
 <translation id="5629630648637658800">Không thể tải cài đặt chính sách</translation>
 <translation id="5630981295558454585">Nút Hỏi Google về trang này, hãy nhấn nút này để hỏi Google về trang này</translation>
 <translation id="5631439013527180824">Mã thông báo quản lý thiết bị không hợp lệ</translation>

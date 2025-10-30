@@ -1841,6 +1841,7 @@
 <translation id="4014895360827978999">ವ್ಯಾಪಾರಿ ಸೇವೆಗಳು ಮತ್ತು ಪಾವತಿ ಸಿಸ್ಟಂಗಳು</translation>
 <translation id="4018819349042761761">ಸಾರ್ವಜನಿಕ ಕೀ</translation>
 <translation id="4023431997072828269">ಸುರಕ್ಷಿತವಲ್ಲದ ಕನೆಕ್ಷನ್ ಅನ್ನು ಬಳಸಿ ಈ ಫಾರ್ಮ್ ಅನ್ನು ಸಲ್ಲಿಸುತ್ತಿರುವುದರಿಂದ, ನಿಮ್ಮ ಮಾಹಿತಿಯು ಇತರರಿಗೆ ಗೋಚರಿಸುತ್ತದೆ.</translation>
+<translation id="4024673763872230929">ನಿಮ್ಮ ಮಾಹಿತಿಯನ್ನು ಸೇವ್ ಮಾಡಿ ಮತ್ತು ಫಾರ್ಮ್‌ಗಳನ್ನು ತ್ವರಿತವಾಗಿ ಭರ್ತಿ ಮಾಡಿ. ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ಸೇವ್ ಮಾಡುತ್ತದೆ.</translation>
 <translation id="4025325634010721551">ನೀತಿಗಳನ್ನು ಪುನಃ ಲೋಡ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="4025338605225449265">ಕರೆನ್ಸಿಗಳು ಮತ್ತು ವಿದೇಶಿ ವಿನಿಮಯ</translation>
 <translation id="4025777154208238692">ಹಿಮ್ಮುಖ ಕ್ರಮವಾಗಿ</translation>
@@ -2274,6 +2275,7 @@
 <translation id="4732860731866514038"><ph name="LANGUAGE" /> ಭಾಷೆಯ ಪ್ಯಾಕ್ ಅನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಲಾಗುತ್ತಿದೆ...<ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992"><ph name="URL" /> ನಿಮ್ಮ ಸಾಧನದ ಸ್ಥಳವನ್ನು ಬಳಸಲು ಬಯಸುತ್ತದೆ</translation>
 <translation id="473414950835101501">ನಿಮ್ಮ ಕ್ಯಾಮರಾಗಳನ್ನು ಬಳಸಿ</translation>
+<translation id="4734343956394152985"><ph name="BEGIN_BOLD" />ಪ್ರಸ್ತುತ ಡೀಫಾಲ್ಟ್<ph name="END_BOLD" /> · <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="4736825316280949806">Chromium ಮರುಪ್ರಾರಂಭಿಸಿ</translation>
 <translation id="4736934858538408121">ವರ್ಚುವಲ್ ಕಾರ್ಡ್</translation>
 <translation id="473775607612524610">ಅಪ್‌ಡೇಟ್‌‌</translation>
@@ -3381,6 +3383,7 @@
 <translation id="6521745193039995384">ಸಕ್ರಿಯವಾಗಿಲ್ಲ</translation>
 <translation id="6522682797352430154">ಶಾಸ್ತ್ರೀಯ ಸಂಗೀತ</translation>
 <translation id="6524830701589638230">ಆ್ಯಕ್ಸೆಸ್ಸಿಬಿಲಿಟಿ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಿ ಬಟನ್, Chrome ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ನಿಮ್ಮ ಆ್ಯಕ್ಸೆಸ್ಸಿಬಿಲಿಟಿ ಟೂಲ್‌ಗಳನ್ನು ವೈಯಕ್ತೀಕರಿಸಲು ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
+<translation id="6525222262307262764">ಪ್ರಸ್ತುತ ಡೀಫಾಲ್ಟ್ ಅನ್ನು ಇರಿಸಿಕೊಳ್ಳಿ</translation>
 <translation id="6527049834925947126">ಆಹಾರ ಉತ್ಪಾದನೆ</translation>
 <translation id="6529173248185917884">ಏಳನೇ ರೋಲ್</translation>
 <translation id="6529602333819889595">&amp;ಅಳಿಸುವುದನ್ನು ಮತ್ತೆಮಾಡು</translation>
@@ -3401,6 +3404,7 @@
 <translation id="6567832540451970450">ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ಈ ಸೈಟ್‌ಗೆ <ph name="PERMISSION" /> ಅನ್ನು ಅನುಮತಿಸುತ್ತಾರೆ</translation>
 <translation id="6568793038316600992">ಪಾವತಿ ವಿಧಾನಗಳನ್ನು ನಿರ್ವಹಿಸಿ ಬಟನ್, Chrome ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ನಿಮ್ಮ ಪಾವತಿಗಳು ಮತ್ತು ಕ್ರೆಡಿಟ್ ಕಾರ್ಡ್ ಮಾಹಿತಿಯನ್ನು ನಿರ್ವಹಿಸಲು ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="6569060085658103619">ನೀವು ವಿಸ್ತರಣೆ ಪುಟವನ್ನು ವೀಕ್ಷಿಸುತ್ತಿರುವಿರಿ</translation>
+<translation id="6571992525120410251"><ph name="ENGINE_NAME" /> ಗೆ ಏನು ಬೇಕಾದರೂ ಕೇಳಿ</translation>
 <translation id="6572867903637058088">ಇದು ಸಹಾಯಕಾರಿಯಾಗಿದೆಯೇ?</translation>
 <translation id="6573200754375280815">ಬಲಭಾಗದಲ್ಲಿ ಎರಡು ತೂತುಗಳನ್ನು ಮಾಡಿ</translation>
 <translation id="6575408526598156416">ಖಾತೆಯಲ್ಲಿ ಸೇವ್‌ ಮಾಡಿ</translation>
@@ -3450,6 +3454,7 @@
 <translation id="666259744093848177">(x86_64 ಅನುವಾದಿಸಲಾಗಿದೆ)</translation>
 <translation id="6665553082534466207">ಬಲಭಾಗದಲ್ಲಿ ಮೂರು ತೂತುಗಳನ್ನು ಮಾಡಿ</translation>
 <translation id="6668389483194953109">ಕಾಗದದ ಗಾತ್ರದ ಹೆಸರು "custom" ಎಂದು ಕಂಡುಬಂದಿದೆ, ಆದರೆ "custom_size" ಪ್ರಾಪರ್ಟಿ ಖಾಲಿಯಾಗಿದೆ ಅಥವಾ ಅಮಾನ್ಯವಾಗಿದೆ.</translation>
+<translation id="6670729408462528018">ಗ್ಯಾಲರಿ</translation>
 <translation id="6671169470640320959">ಆಟೋಮೋಟಿವ್ ಹಣಕಾಸು</translation>
 <translation id="6671697161687535275">Chromium ನಿಂದ ಫಾರ್ಮ್ ಸಲಹೆಯನ್ನು ತೆಗೆದುಹಾಕುವುದೇ?</translation>
 <translation id="6675846980676550611">AR ಅನ್ನು ಅನುಮತಿಸಲಾಗುವುದಿಲ್ಲ</translation>

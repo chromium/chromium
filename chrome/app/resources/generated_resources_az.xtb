@@ -7430,6 +7430,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="6160290816917599257">Yanlış kod. Daxiletmə formatı belə olmalıdır: <ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+ ünvanı<ph name="LPA_2" />$<ph name="LPA_3" />könüllü uyğunlaşdırma id-si<ph name="LPA_4" /></translation>
 <translation id="6160625263637492097">Doğrulamaq üçün sertifikatla təmin edin</translation>
 <translation id="6160887111111841751">Yadda saxlanmış məlumatlar burada görünəcək</translation>
+<translation id="616290554291007512">Gemini-ın sizin üçün hesaba daxil olmasına icazə verməyin</translation>
 <translation id="6163363155248589649">&amp;Normal</translation>
 <translation id="6163376401832887457">Kerberos ayarları</translation>
 <translation id="6163522313638838258">Hamısını genişləndirin...</translation>
@@ -7742,6 +7743,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="6379228010899751161">Hesabınızdakı (<ph name="ACCOUNT_EMAIL" />) parollardan hər zaman istifadə edə bilmək üçün kimliyinizi doğrulayın</translation>
 <translation id="6379827283296619736">Xeyr, bu profildə işləməyə davam edin</translation>
 <translation id="6380143666419481200">Qəbul edin və davam edin</translation>
+<translation id="6380618366311601172">Gemini <ph name="DOMAIN" /> ünvanına daxil olmağı tələb edən tapşırıqları yerinə yetirə bilməyəcək.</translation>
 <translation id="6383382161803538830">Oxu rejimi bu səhifədə əlçatan deyil</translation>
 <translation id="638418309848716977">Dəstəklənən keçidlər</translation>
 <translation id="6384275966486438344">Axtarış parametrlərini dəyişdirmək: <ph name="SEARCH_HOST" /></translation>
@@ -9448,6 +9450,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7585106857920830898">Təşkilatınızın Güvənlik siyasətlərinə əsasən yoxlanılır...</translation>
 <translation id="7585490016012953607">Bərpa parolu — müvəqqəti olaraq 3 aya qədər saxlanılır</translation>
 <translation id="7586498138629385861">Chrome Tətbiqlər açıq olan zaman Chrome işləməyə davam edəcək.</translation>
+<translation id="7587297195142686341">Gemini sizin üçün daxil ola bilər</translation>
 <translation id="7587806318633605613">Təklif tarixçəsi</translation>
 <translation id="7589448773774086276">Cari tab ilə yeni bölünmüş görünüş</translation>
 <translation id="7589461650300748890">Ehtiyatlı olun.</translation>
@@ -10803,6 +10806,7 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="849488240089599592">Son Endirmələrə qayıdın</translation>
 <translation id="8496717697661868878">Bu plagini işə salın</translation>
 <translation id="8497219075884839166">Windows Vasitələri</translation>
+<translation id="8497819894150712946">Chrome-dan yadda saxlanılanlar</translation>
 <translation id="8498214519255567734">Zəif işıqda ekrana baxmağı və ya oxumağı asanlaşdırın</translation>
 <translation id="8499083585497694743">Mikrofonu səssiz rejimdən çıxarın</translation>
 <translation id="8500044868721690197">Bu saytın MIDI cihazlarını idarə etməsi və təkrar proqramlaşdırması bloklanıb</translation>
@@ -11657,6 +11661,7 @@ Buraya quraşdırılmış proqram təminatı, fayllar, brauzeriniz, cihazın əm
 <translation id="9069417381769492963">Axtarışa uyğun əlfəcin yoxdur</translation>
 <translation id="9070231741075992882"><ph name="APP_NAME" /> üçün verdiyiniz icazələr quraşdırılmış və yayımlanmış tətbiqlərə də aid ediləcək.</translation>
 <translation id="9070342919388027491">Tab sola köçürüldü</translation>
+<translation id="9072918088200875065">Gemini-a sizin üçün tapşırıqları tamamlamaq məqsədilə bu saytlara daxil olmaq icazəsi verdiniz</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9074836595010225693">USB mausu qoşuldu</translation>
 <translation id="9075413375877487220">Qabaqcıl Güvənli Baxış bu artırmaya etibar etmir.</translation>

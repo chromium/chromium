@@ -1999,6 +1999,7 @@ Si no estableces la política, los usuarios podrán cambiar la lista de apps fij
 <translation id="2306505001667207184">Solicitarle al usuario que seleccione el certificado de cliente cada vez que la política de selección automática coincida con múltiples certificados</translation>
 <translation id="230713790688681130">Habilitar el diseño InScript Hindi</translation>
 <translation id="2307496301287881990">Informa los estados de la tarjeta gráfica y la pantalla</translation>
+<translation id="2308084581803907194">Complejidad alta</translation>
 <translation id="2308899582897965249">Inhabilitar la impresión silenciosa</translation>
 <translation id="2309284543927494965">Bloquear las actualizaciones</translation>
 <translation id="2309341709647905294">No informar datos sobre los periféricos que están conectados al dispositivo</translation>
@@ -2863,6 +2864,19 @@ comportamiento de las teclas de función, y los usuarios no podrán cambiar esta
       Si no la estableces, se inhabilitará esta política para los dispositivos administrados y se habilitará para los dispositivos que pertenezcan a los usuarios.
       Ten en cuenta que, si inhabilitas esta política, solo se inhabilitará el registro del sistema, pero no afectará el registro del navegador.</translation>
 <translation id="2922511125678964398">Permitir que la autenticación de portales cautivos ignore la configuración de proxy</translation>
+<translation id="2923126158151236068">Esta política configura los requisitos de complejidad mínimos para los factores de autenticación local (PIN y contraseñas locales) que establecen los usuarios en <ph name="PRODUCT_OS_NAME" />.
+
+Si no estableces esta política, se usará el nivel de complejidad Ninguno de forma predeterminada.
+
+Los requisitos de esta política se aplican cuando un usuario configura un nuevo PIN o contraseña local, o bien cambia uno existente.
+
+Los niveles de complejidad se basan en las métricas de calidad de contraseñas de Android (https://developers.google.com/android/management/reference/rest/v1/PasswordRequirements), adaptadas para <ph name="PRODUCT_OS_NAME" />:
+- 1 = Ninguno: Se requiere un PIN o una contraseña, pero no hay restricciones en cuanto a su contenido o longitud.
+- 2 = Bajo: Requisitos de complejidad básicos.
+- 3 = Medio: Requisitos más estrictos de longitud y tipo de carácter.
+- 4 = Alto: Requisitos de complejidad más estrictos, que exigen varios tipos de caracteres.
+
+Consulta el artículo del Centro de ayuda para obtener explicaciones detalladas de lo que implica cada nivel para los PIN y las contraseñas.</translation>
 <translation id="2926813071464307947">Inhabilitar la zona de pruebas del contenedor de la app del renderizador</translation>
 <translation id="2931888116345994552">Si habilitas la política o no la estableces, se permitirán las actualizaciones de todos los componentes de <ph name="PRODUCT_NAME" />.
 
@@ -6214,6 +6228,7 @@ Se ignorarán los dominios que tengan un formato incorrecto.</translation>
 <translation id="5163889437570441600">Permite que se transmita contenido al dispositivo que esté usando <ph name="PRODUCT_NAME" />.
 
           Si estableces esta política como falsa, los usuarios no podrán transmitir contenido al dispositivo. Si la estableces como verdadera, los usuarios podrán transmitir contenido. Si no la estableces, los usuarios no podrán transmitir contenido a dispositivos con ChromeOS, pero sí podrán hacerlo a otros dispositivos.</translation>
+<translation id="5166766992668636906">Complejidad media</translation>
 <translation id="5168529971295111207">Esta política es obsoleta. Usa la política ProxyMode en su lugar.
 
           Te permite especificar el servidor proxy que utiliza <ph name="PRODUCT_NAME" /> y evita que los usuarios cambien la configuración del proxy.
@@ -7836,6 +7851,7 @@ Ten en cuenta que se seguirán respetando otras restricciones, como las impuesta
 <translation id="6144046700495610112">Si habilitas la política, se importarán los datos para autocompletar formularios del navegador predeterminado anterior en la primera ejecución. Si la inhabilitas o no la estableces, no se importará ningún dato para autocompletar formularios en la primera ejecución.
 
       Los usuarios podrán activar un diálogo de importación; la casilla de verificación correspondiente a los datos para autocompletar formularios estará marcada o desmarcada en función del valor de esta política.</translation>
+<translation id="6144246313478615705">Establece la complejidad mínima para los PIN y las contraseñas locales</translation>
 <translation id="614551633868957694">Apps y extensiones de Chrome</translation>
 <translation id="614616930188030377">Se compararán los patrones de esta lista con el origen de seguridad de la URL solicitante.
       Si se encuentra una coincidencia o se inhabilita la opción chrome://flags/#enable-webrtc-hide-local-ips-with-mdns, se mostrarán las direcciones IP locales en los candidatos ICE de WebRTC.
@@ -9406,6 +9422,25 @@ Solo se permiten orígenes HTTPS válidos. Los comodines no son compatibles.
 Se ignoran las entradas no válidas.</translation>
 <translation id="7044883996351280650">Controlar el servicio de restablecimiento y copias de seguridad</translation>
 <translation id="7045221780834308118">Si habilitas la política, las apps web de terceros podrán usar la API de Desk para controlar los escritorios de <ph name="PRODUCT_OS_NAME" />. Si no la estableces o la inhabilitas, la <ph name="DESK_API_NAME" /> no estará disponible. La política solo tendrá efecto en los dispositivos inscritos.</translation>
+<translation id="704591686761455167">Esta política controla si las URLs de BLOB se particionan durante la recuperación y la navegación.
+Si habilitas esta política o no la estableces, se particionarán las URLs de BLOB.
+Si la inhabilitas, las URLs de Blob no se particionarán.
+
+Si se inhabilita la partición de almacenamiento para un origen de nivel superior determinado a través de
+<ph name="THIRD_PARTY_STORAGE_PARTITIONING_BLOCKED_FOR_ORIGINS_POLICY_NAME" />
+o <ph name="DEFAULT_THIRD_PARTY_STORAGE_PARTITIONING_SETTING_POLICY_NAME" />,
+las URLs de BLOB tampoco se particionarán.
+
+Si tienes que utilizar la política, informa un error en
+<ph name="BUG_URL" />
+en el que expliques tu caso de uso. La política está programada para ofrecerse a través de la versión 146 de <ph name="PRODUCT_NAME" />, después de lo cual
+se quitará la implementación anterior.
+
+NOTA: Solo los procesos del renderizado recién iniciados reflejarán los cambios de esta
+política mientras se esté ejecutando el navegador.
+
+Para obtener información detallada sobre la partición de almacenamiento de terceros, consulta
+https://developers.google.com/privacy-sandbox/cookies/storage-partitioning.</translation>
 <translation id="7046113122884041950">No permitir Smart Lock</translation>
 <translation id="7046997898355294677">Mostrar las notificaciones de privacidad hasta que el usuario las descarte</translation>
 <translation id="7047495632846973438">Especificar si se marca o se omite la política de permisos para la captura de pantalla</translation>
@@ -10136,6 +10171,7 @@ Si dejas la política vacía, no se permitirán excepciones a <ph name="FLOATING
 
       Si el dispositivo no está administrado, la disponibilidad de esta funcionalidad también depende de si el usuario es el propietario del dispositivo.</translation>
 <translation id="7570291542739287032">Solo en la nube</translation>
+<translation id="7572641760104970905">Sin complejidad</translation>
 <translation id="757395965347379751">Cuando se habilita esta configuración, <ph name="PRODUCT_NAME" /> permite los certificados firmados por SHA-1 siempre que estén validados correctamente y vinculados a certificados de CA instalados de forma local.
 
       Ten en cuenta que esta política depende de la pila de verificación de certificado del sistema operativo que permite las firmas SHA-1. Si una actualización del sistema operativo cambia la forma en la que este maneja los certificados con firma SHA-1, esta política ya no tendrá efecto. Además, se trata de una solución temporal para que las empresas tengan más tiempo para dejar las firmas SHA-1. Esta política se quitará el 1 de enero de 2019 o cerca de esta fecha.
@@ -10233,6 +10269,7 @@ Para establecer esta política, se debe inhabilitar la política <ph name="PRIVA
 <translation id="7648907905084499629">Usar el atributo <ph name="FEATURE_NAME_SAMESITE_BY_DEFAULT_COOKIES" /> para el comportamiento de las cookies en todos los sitios</translation>
 <translation id="7657261947024629645">Optimiza el rendimiento.</translation>
 <translation id="76580522298425324">Permitir la captura de pantalla sin gestos previos del usuario</translation>
+<translation id="7661379728107156839">Complejidad baja</translation>
 <translation id="7666228839913571182">Permite cookies de terceros</translation>
 <translation id="7666782560345386904">Configuración del autocompletado mejorado</translation>
 <translation id="7669630878711068277">Si habilitas la política o no la estableces, los usuarios podrán realizar impresiones en <ph name="PRODUCT_NAME" />. Los usuarios no podrán cambiar esta configuración.

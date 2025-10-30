@@ -20,6 +20,7 @@
 <translation id="1035509598913574970">Сино-зелена 3</translation>
 <translation id="1035709686865413354">Филтри и пречистувачи на вода</translation>
 <translation id="1036348656032585052">Исклучи</translation>
+<translation id="1036436692654972538">Зачувано на уредот</translation>
 <translation id="1036881361735705143">Плик C4</translation>
 <translation id="1038842779957582377">непознато име</translation>
 <translation id="1041998700806130099">Порака на работниот лист</translation>
@@ -2831,6 +2832,7 @@
 <translation id="5617949217645503996"><ph name="HOST_NAME" /> ве пренасочи премногу пати.</translation>
 <translation id="5619721953841297650">Зададена вредност</translation>
 <translation id="5624120631404540903">Управувај со лозинки</translation>
+<translation id="5628060911499153873">Зачувајте ги вашите податоци за да ги завршувате работите побрзо, во производите на Google. Вашите податоци се зачувани во <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> за <ph name="ACCOUNT" />.</translation>
 <translation id="5629630648637658800">Не успеаја да се вчитаат поставките за политика</translation>
 <translation id="5630981295558454585">Копче „Прашајте го Google за страницава“, активирајте за да го прашате Google за страницава</translation>
 <translation id="5631439013527180824">Невалиден токен за управување со уреди</translation>

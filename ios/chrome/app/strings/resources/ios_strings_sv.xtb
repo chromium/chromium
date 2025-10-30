@@ -239,7 +239,6 @@
 <translation id="188237709236611317">Menyrad med smart sortering</translation>
 <translation id="1883255238294161206">Komprimera lista</translation>
 <translation id="1888854257756214946">Välj lösenord …</translation>
-<translation id="1889872080060107187">Du loggar in på <ph name="URL" /></translation>
 <translation id="1890237935065108104">Inställningen är inte tillgänglig.</translation>
 <translation id="1894023287452300670">Bevaka pris här</translation>
 <translation id="189531189292803889">Din iPad återställdes nyligen. Detta kan ha ändrat standardwebbläsaren.</translation>
@@ -1055,7 +1054,7 @@
 <translation id="508645147179720015">Anteckningen är längre än 1 000 tecken</translation>
 <translation id="5087098519049306025">Prisbevakning</translation>
 <translation id="5090832849094901128">Att ta bort det här lösenordet innebär inte att ditt konto på <ph name="WEBSITE" /> raderas.</translation>
-<translation id="5113960131843706315">Hämtar ditt innehåll …</translation>
+<translation id="5113960131843706315">Hämtar dina grejer …</translation>
 <translation id="5118462200606189584">Lägg till konto …</translation>
 <translation id="5118764316110575523">Av</translation>
 <translation id="5119329531859909472">Tryck på Bevaka för att bevaka produkten</translation>
@@ -1126,7 +1125,7 @@
 <translation id="537853552771686272">Hantera ämnen och webbplatser som du är intresserad av</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} har stängts}other{{count} har stängts}}</translation>
 <translation id="5394975111793637642">Dölj kortet Produktrecensioner för dig</translation>
-<translation id="5407806496954700135">Vill du tillämpa anpassningarna av sidan Ny flik från en annan enhet?</translation>
+<translation id="5407806496954700135">Vill du tillämpa dina anpassningar av sidan Ny flik från en annan enhet?</translation>
 <translation id="5414763847370083940">Du får en avisering om priset sänks på en webbplats.</translation>
 <translation id="5415289094036440596">Det går inte att dela nycklar</translation>
 <translation id="5416455648658732408">Flytta till flikgrupp</translation>
@@ -1427,7 +1426,6 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="6418346271604475326">Förbereder PDF</translation>
 <translation id="6421038304268477484">Översatt text</translation>
 <translation id="6429213933892582367">Öppna Lösenordsalternativ</translation>
-<translation id="6434591244308415567">Ett fel uppstod. Försök igen senare.</translation>
 <translation id="6435236283694032571">Lägg till i läslistan</translation>
 <translation id="6435307030888827407">Förbli utloggad</translation>
 <translation id="6436318499800111867">Delades med mig <ph name="SHARED_WITH_ME_DATE" /></translation>

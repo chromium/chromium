@@ -239,7 +239,6 @@
 <translation id="188237709236611317">Ibha yemenyu yokuhlunga esmathi</translation>
 <translation id="1883255238294161206">Goqa uhlu</translation>
 <translation id="1888854257756214946">Khetha iphasiwedi…</translation>
-<translation id="1889872080060107187">Uzongena ngemvume ku-<ph name="URL" /></translation>
 <translation id="1890237935065108104">Le sethingi ayitholakali.</translation>
 <translation id="1894023287452300670">Landelela intengo lapha</translation>
 <translation id="189531189292803889">I-iPade yakho isanda kubuyiselwa, okungenzeka iguqule ibhrawuza yakho yokuzenzakalelayo.</translation>
@@ -649,7 +648,7 @@
 <translation id="3530024057633834563">Awunawo amaphasiwedi alondoloziwe noma okhiye bokudlula, kodwa ungasula uhlu lwamasayithi kanye nama-app okhetha ukungalokothi ulondoloze ulwazi lokungena kuwo ngemvume. Noma iyiphi i-akhawunti oyisungulile yamasayithi nama-app ngeke isulwe.</translation>
 <translation id="3530206579861815432">Thola ngokushesha amathebhu avuliwe nasanda kuvalwa kuwo wonke amadivayisi akho avunyelanisiwe.</translation>
 <translation id="3530767473765895035">Phatha ama-akhawunti kule divayisi…</translation>
-<translation id="353340646084395154">Kususiwe okuncanyelwayo kwekhasi lethebhu entsha</translation>
+<translation id="353340646084395154">Kususiwe okuncamelayo kwekhasi lethebhu entsha</translation>
 <translation id="3533436815740441613">Ithebhu entsha</translation>
 <translation id="3540141921715814660">Engeza kumabhukhimakhi</translation>
 <translation id="3546122170015471515">Umbukisokuqala Wamamephu kokuthi Google.com</translation>
@@ -1003,7 +1002,7 @@
 <translation id="4894963374040315706">Lokhu kukuvumela ukuthi useshe usebenzisa izwi lakho</translation>
 <translation id="4895540042460820904">Kugcinwe ukuvulwa</translation>
 <translation id="4896467949657706481">Amathebhu avaliwe; ukhishwe ngemvume</translation>
-<translation id="4911042367886397055">Siyakwamukela futhi, <ph name="USER_NAME" /></translation>
+<translation id="4911042367886397055">Siyakwamukela futhi, <ph name="USER_NAME" />!</translation>
 <translation id="4913626501929406101">Ungakwazi ukwabelana ngokuphephile nekhophi yephasiwedi yakho nomuntu othile eqenjini lomndeni wakho. <ph name="BEGIN_LINK" />Funda kabanzi<ph name="END_LINK" /></translation>
 <translation id="4917025507570489430">Ungasebenzisa idatha yopheqululo ekhona lapho ungene ngemvume njengo-<ph name="USER_EMAIL" />. Inhlangano yakho ingase ikwazi ukubona le datha.</translation>
 <translation id="4918086044614829423">Yamukela</translation>
@@ -1126,7 +1125,7 @@
 <translation id="537853552771686272">Lawula izihloko namasayithi onentshisekelo kuwo</translation>
 <translation id="5390458669633674385">{count,plural, =1{Kuvalwe okungu-{count}}one{Kuvalwe okungu-{count}}other{Kuvalwe okungu-{count}}}</translation>
 <translation id="5394975111793637642">Fihla izibuyekezo zomkhiqizo zekhadi lakho</translation>
-<translation id="5407806496954700135">Ungathanda ukusebenzisa ukwenza ngokwezifiso kwekhasi lakho lethebhu entsha kusuka kwenye idivayisi?</translation>
+<translation id="5407806496954700135">Ungathanda ukusebenzisa ukwenza ngokwesifiso sakho okufake ekhasini lakho lethebhu entsha lenye idivayisi?</translation>
 <translation id="5414763847370083940">Uzothola isexwayiso uma intengo yehla kunoma yiliphi isayithi.</translation>
 <translation id="5415289094036440596">Okhiye bokudlula abakwazi ukwabiwa</translation>
 <translation id="5416455648658732408">Hambisa Eqenjini Lethebhu</translation>
@@ -1427,7 +1426,6 @@ I-Handoff futhi kufanele inikwe amandla esigabeni sokuvamile zezilungiselelo, fu
 <translation id="6418346271604475326">Ilungisela i-PDF</translation>
 <translation id="6421038304268477484">Umbhalo ohunyushiwe</translation>
 <translation id="6429213933892582367">Vula Ongakukhetha Kwephasiwedi</translation>
-<translation id="6434591244308415567">Kuvele iphutha. Zama futhi ngemuva kwesikhathi.</translation>
 <translation id="6435236283694032571">Engeza ohlwini lokufunda</translation>
 <translation id="6435307030888827407">Hlala uphume ngemvume</translation>
 <translation id="6436318499800111867">Kwabelenwe nami ngomhla ka-<ph name="SHARED_WITH_ME_DATE" /></translation>

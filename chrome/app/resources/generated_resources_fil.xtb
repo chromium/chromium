@@ -7451,6 +7451,7 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="6160290816917599257">Invalid ang code. Ang format ng iyong entry ay dapat <ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+ address<ph name="LPA_2" />$<ph name="LPA_3" />opsyonal na katugmang id<ph name="LPA_4" /></translation>
 <translation id="6160625263637492097">Magbigay ng mga certificate para sa pagpapatotoo</translation>
 <translation id="6160887111111841751">Lalabas dito ang naka-save na impormasyon</translation>
+<translation id="616290554291007512">Huwag payagan ang Gemini na mag-sign in para sa iyo</translation>
 <translation id="6163363155248589649">&amp;Normal</translation>
 <translation id="6163376401832887457">Mga setting ng Kerberos</translation>
 <translation id="6163522313638838258">Palawakin lahat...</translation>
@@ -7763,6 +7764,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="6379228010899751161">I-verify na ikaw ito para matiyak na magagamit mo sa anumang oras ang mga password sa iyong account, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="6379827283296619736">Hindi, patuloy na magtrabaho sa profile na ito</translation>
 <translation id="6380143666419481200">Tanggapin at magpatuloy</translation>
+<translation id="6380618366311601172">Hindi makukumpleto ng Gemini ang mga gawaing nagre-require ng pag-sign in sa <ph name="DOMAIN" />.</translation>
 <translation id="6383382161803538830">Hindi available ang reading mode sa page na ito</translation>
 <translation id="638418309848716977">Mga sinusuportahang link</translation>
 <translation id="6384275966486438344">Gawing ito ang iyong mga setting ng paghahanap: <ph name="SEARCH_HOST" /></translation>
@@ -9474,6 +9476,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="7585106857920830898">Sinusuri gamit ang mga patakaran sa seguridad ng iyong organisasyon...</translation>
 <translation id="7585490016012953607">Password sa pag-recover — pansamantalang naka-save nang hanggang 3 buwan</translation>
 <translation id="7586498138629385861">Patuloy na tatakbo ang Chrome habang nakabukas ang Chrome Apps.</translation>
+<translation id="7587297195142686341">Puwedeng mag-sign in ang Gemini para sa iyo</translation>
 <translation id="7587806318633605613">History ng suhestyon</translation>
 <translation id="7589448773774086276">Bagong Split View sa Kasalukuyang Tab</translation>
 <translation id="7589461650300748890">Naku. Mag-ingat.</translation>
@@ -10831,6 +10834,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="849488240089599592">Bumalik sa Mga Kamakailang Download</translation>
 <translation id="8496717697661868878">Patakbuhin ang Plugin na Ito</translation>
 <translation id="8497219075884839166">Mga Utility ng Windows</translation>
+<translation id="8497819894150712946">Na-save mula sa Chrome</translation>
 <translation id="8498214519255567734">Pinapadali nitong tumingin sa iyong screen o magbasa sa dilim</translation>
 <translation id="8499083585497694743">I-unmute ang mikropono</translation>
 <translation id="8500044868721690197">Na-block ang site na ito sa pagkontrol at pag-reprogram ng iyong mga MIDI device</translation>
@@ -11692,6 +11696,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="9069417381769492963">Walang bookmark na tumutugma sa iyong paghahanap</translation>
 <translation id="9070231741075992882">Ang mga pahintulot na pinayagan mo para sa <ph name="APP_NAME" /> ay papayagan din para sa mga app nitong naka-install at sini-stream.</translation>
 <translation id="9070342919388027491">Inilipat sa kaliwa ang Tab</translation>
+<translation id="9072918088200875065">Binigyan mo ng pahintulot ang Gemini na mag-sign in sa mga site na ito para kumpletuhin ang mga gawain para sa iyo</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9074836595010225693">Nakakonekta ang USB mouse</translation>
 <translation id="9075413375877487220">Hindi pinagkakatiwalaan ng Pinahusay na Ligtas na Pag-browse ang extension na ito.</translation>

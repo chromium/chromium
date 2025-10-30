@@ -7430,6 +7430,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="6160290816917599257">O código non é válido. Os datos introducidos deberían ter o formato <ph name="LPA_0" />$<ph name="LPA_1" />enderezo de SM-DP+<ph name="LPA_2" />$<ph name="LPA_3" />código de coincidencia opcional<ph name="LPA_4" /></translation>
 <translation id="6160625263637492097">Proporcionar certificados para autenticación</translation>
 <translation id="6160887111111841751">A información gardada mostrarase aquí</translation>
+<translation id="616290554291007512">Non permitir que Gemini inicie sesión por ti</translation>
 <translation id="6163363155248589649">&amp;Normal</translation>
 <translation id="6163376401832887457">Configuración de Kerberos</translation>
 <translation id="6163522313638838258">Ampliar todo...</translation>
@@ -7742,6 +7743,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="6379228010899751161">Verifica a túa identidade para asegurarte de poder usar sempre os contrasinais na túa conta (<ph name="ACCOUNT_EMAIL" />)</translation>
 <translation id="6379827283296619736">Non, continuar usando datos do traballo neste perfil</translation>
 <translation id="6380143666419481200">Aceptar e continuar</translation>
+<translation id="6380618366311601172">Gemini non poderá completar as tarefas para as que sexa necesario iniciar sesión en <ph name="DOMAIN" />.</translation>
 <translation id="6383382161803538830">O modo de lectura non se pode usar nesta páxina</translation>
 <translation id="638418309848716977">Ligazóns compatibles</translation>
 <translation id="6384275966486438344">Cambiar a túa configuración de busca a: <ph name="SEARCH_HOST" /></translation>
@@ -9448,6 +9450,7 @@ Quédanche # máis. O xestor de contrasinais de Google recomenda que comprobes e
 <translation id="7585106857920830898">Estase comprobando o cumprimento das políticas de seguranza da túa organización…</translation>
 <translation id="7585490016012953607">Contrasinal de recuperación gardado temporalmente (ata 3 meses)</translation>
 <translation id="7586498138629385861">Chrome continuará funcionando mentres as aplicacións de Chrome estean abertas.</translation>
+<translation id="7587297195142686341">Gemini pode iniciar sesión por ti</translation>
 <translation id="7587806318633605613">Historial de suxestións</translation>
 <translation id="7589448773774086276">Nova vista dividida coa pestana actual</translation>
 <translation id="7589461650300748890">Ten coidado.</translation>
@@ -10803,6 +10806,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="849488240089599592">Volver a Descargas recentes</translation>
 <translation id="8496717697661868878">Executar este plugin</translation>
 <translation id="8497219075884839166">Utilidades de Windows</translation>
+<translation id="8497819894150712946">Gardado desde Chrome</translation>
 <translation id="8498214519255567734">Fai que sexa máis fácil mirar a pantalla ou ler con pouca luz</translation>
 <translation id="8499083585497694743">Activar son do micro</translation>
 <translation id="8500044868721690197">Denegóuselle a este sitio o permiso para controlar e volver programar os teus dispositivos MIDI</translation>
@@ -11659,6 +11663,7 @@ Consulta máis información sobre os datos que recompila Google e por que o fai 
 <translation id="9069417381769492963">Non hai ningún marcador que coincida coa túa busca</translation>
 <translation id="9070231741075992882">Os permisos que lle concedas a <ph name="APP_NAME" /> tamén se concederán ás súas aplicacións instaladas e de acceso en remoto.</translation>
 <translation id="9070342919388027491">A pestana moveuse á esquerda</translation>
+<translation id="9072918088200875065">Concedícheslle permiso a Gemini para iniciar sesión nestes sitios e completar tarefas por ti</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9074836595010225693">Rato USB conectado</translation>
 <translation id="9075413375877487220">A función Navegación segura mellorada non confía nesta extensión.</translation>

@@ -7451,6 +7451,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6160290816917599257">Ongeldige kode. Jou inskrywing se formaat moet <ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+ adres<ph name="LPA_2" />$<ph name="LPA_3" />opsionele passende ID<ph name="LPA_4" /> wees</translation>
 <translation id="6160625263637492097">Verskaf sertifikate vir stawing</translation>
 <translation id="6160887111111841751">Gestoorde inligting sal hier verskyn</translation>
+<translation id="616290554291007512">Moenie Gemini toelaat om vir jou aan te meld nie</translation>
 <translation id="6163363155248589649">Normaal</translation>
 <translation id="6163376401832887457">Kerberos-instellings</translation>
 <translation id="6163522313638838258">Vou alles uit …</translation>
@@ -7763,6 +7764,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6379228010899751161">Verifieer dat dit jy is om seker te maak dat jy altyd die wagwoorde in jou rekening, <ph name="ACCOUNT_EMAIL" />, kan gebruik</translation>
 <translation id="6379827283296619736">Nee, gaan voort om in hierdie profiel te werk</translation>
 <translation id="6380143666419481200">Aanvaar en gaan voort</translation>
+<translation id="6380618366311601172">Gemini sal nie take kan voltooi wat aanmelding op <ph name="DOMAIN" /> vereis nie.</translation>
 <translation id="6383382161803538830">Leesmodus is nie op hierdie bladsy beskikbaar nie</translation>
 <translation id="638418309848716977">Gesteunde skakels</translation>
 <translation id="6384275966486438344">Verander jou soektoginstellings na: <ph name="SEARCH_HOST" /></translation>
@@ -9471,6 +9473,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7585106857920830898">Kontroleer tans met jou organisasie se sekuriteitbeleid …</translation>
 <translation id="7585490016012953607">Terugstellingwagwoord – tydelik gestoor vir tot 3 maande</translation>
 <translation id="7586498138629385861">Chrome sal aanhou werk terwyl Chrome-programme oop is.</translation>
+<translation id="7587297195142686341">Gemini kan vir jou aanmeld</translation>
 <translation id="7587806318633605613">Voorstelgeskiedenis</translation>
 <translation id="7589448773774086276">Nuwe verdeelde aansig met huidige oortjie</translation>
 <translation id="7589461650300748890">Hokaai daar. Wees versigtig.</translation>
@@ -10826,6 +10829,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="849488240089599592">Terug na onlangse aflaaie</translation>
 <translation id="8496717697661868878">Gebruik hierdie inprop</translation>
 <translation id="8497219075884839166">Windows-nutsgoed</translation>
+<translation id="8497819894150712946">Gestoor vanaf Chrome</translation>
 <translation id="8498214519255567734">Maak dit makliker om in dowwe lig na jou skerm te kyk of dit te lees</translation>
 <translation id="8499083585497694743">Ontdemp mikrofoon</translation>
 <translation id="8500044868721690197">Hierdie werf word gekeer om jou MIDI-toestelle te beheer en te herprogrammeer.</translation>
@@ -11685,6 +11689,7 @@ Dit kan inligting oor geïnstalleerde sagteware, lêers, jou blaaier, die toeste
 <translation id="9069417381769492963">Geen boekmerke pas by jou soektog nie</translation>
 <translation id="9070231741075992882">Toestemmings wat jy vir <ph name="APP_NAME" /> gee, sal ook vir die geïnstalleerde en stroomapps daarvan gegee word.</translation>
 <translation id="9070342919388027491">Oortjie is na links geskuif</translation>
+<translation id="9072918088200875065">Jy het Gemini toestemming gegee om by hierdie werwe aan te meld om take vir jou te voltooi</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9074836595010225693">USB-muis gekoppel</translation>
 <translation id="9075413375877487220">Hierdie uitbreiding word nie deur Verbeterde Veiligblaai vertrou nie.</translation>

@@ -8,10 +8,8 @@
 <translation id="1281098210028343866">Bantu kami meningkatkan Chromium dengan memberi tahu kami alasan Anda menjeda fitur anti-pelacakan</translation>
 <translation id="1297285729613779935">Iklan yang disarankan situs membantu melindungi histori penjelajahan dan identitas Anda sekaligus memungkinkan situs menampilkan iklan yang relevan kepada Anda. Dengan menggunakan aktivitas Anda, seperti cara Anda menghabiskan waktu di situs yang Anda buka, situs lain dapat menyarankan iklan terkait saat Anda melanjutkan penjelajahan. Anda dapat melihat daftar situs tersebut dan memblokir situs yang tidak Anda inginkan di setelan.</translation>
 <translation id="132963621759063786">Chromium menghapus semua data aktivitas yang telah Anda bagikan ke situs setelah 30 hari. Jika Anda membuka situs lagi, situs tersebut mungkin muncul kembali di daftar. Pelajari lebih lanjut <ph name="BEGIN_LINK1" />cara mengelola privasi iklan Anda di Chromium<ph name="LINK_END1" />.</translation>
-<translation id="1432306053064625042">Dibuka di jendela Chrome biasa</translation>
 <translation id="1472807065399636739">Situs yang Anda buka mungkin menyematkan konten dan layanan dari situs lain (seperti gambar, iklan, dan teks) yang dapat digunakan untuk mempelajari informasi tentang Anda. Pelajari lebih lanjut cara mengelola <ph name="BEGIN_LINK" />fitur anti-pelacakan mode Samaran<ph name="END_LINK" /></translation>
 <translation id="1472928714075596993"><ph name="BEGIN_BOLD" />Data apa yang digunakan?<ph name="END_BOLD" /> Topik iklan Anda didasarkan pada histori penjelajahan terbaru, yaitu daftar situs yang telah Anda buka menggunakan Chrome di perangkat ini.</translation>
-<translation id="1529201733207295376">Cookie pihak ketiga diblokir. Mode samaran juga menyediakan fitur yang dapat membatasi informasi yang dapat diakses oleh perusahaan yang kontennya disematkan di situs yang Anda kunjungi. Anda dapat mengelola fitur anti-pelacakan mode Samaran di <ph name="START_LINK" />Setelan<ph name="END_LINK" />.</translation>
 <translation id="1559726735555610004">Google mewajibkan perusahaan menyatakan secara publik bahwa mereka tidak akan menggunakan data ini untuk melacak Anda lintas situs. Beberapa situs mungkin menggunakan aktivitas Anda untuk mempersonalisasi pengalaman Anda selain untuk iklan. Mereka juga mungkin menggabungkannya dengan informasi lain tentang Anda yang sudah mereka ketahui. Perusahaan bertanggung jawab memberi tahu Anda terkait penggunaan data Anda. Pelajari lebih lanjut cara Google melindungi data Anda di <ph name="BEGIN_LINK" />Kebijakan Privasi<ph name="END_LINK" /> kami.</translation>
 <translation id="1569440020357229235">Jika Anda menggunakan mode Samaran, situs tidak dapat menggunakan cookie pihak ketiga. Jika situs yang mengandalkan cookie ini tidak berfungsi, Anda dapat <ph name="BEGIN_LINK" />mencoba memberi situs tersebut akses sementara ke cookie pihak ketiga<ph name="END_LINK" />.</translation>
 <translation id="1617293350324746198">Cookie pihak ketiga diblokir. Mode Samaran juga dapat memberikan fitur anti-pelacakan tambahan.</translation>
@@ -103,7 +101,6 @@
 <translation id="6195163219142236913">Cookie pihak ketiga dibatasi</translation>
 <translation id="6196640612572343990">Blokir cookie pihak ketiga</translation>
 <translation id="6205593033237791753">Batasi akses ke alamat IP Anda. Setelan ini aktif.</translation>
-<translation id="6272892028045906139">Setelan fitur anti-pelacakan mode Samaran</translation>
 <translation id="6282129116202535093">Iklan yang disarankan situs membantu melindungi histori penjelajahan dan identitas Anda sekaligus memungkinkan situs menampilkan iklan yang relevan kepada Anda. Dengan menggunakan aktivitas Anda, situs lain dapat menyarankan iklan terkait saat Anda melanjutkan penjelajahan. Anda dapat melihat daftar situs tersebut dan memblokir situs yang tidak Anda inginkan di setelan.</translation>
 <translation id="6291177244430967858">Fitur anti-pelacakan dilanjutkan</translation>
 <translation id="6308169245546905162">Situs dapat menggunakan cookie pihak ketiga untuk mempelajari tindakan yang Anda lakukan di situs lain</translation>
@@ -124,7 +121,6 @@
 <translation id="7315780377187123731">Selengkapnya tentang opsi Blokir cookie pihak ketiga</translation>
 <translation id="737025278945207416">Beberapa situs mungkin menggunakan aktivitas Anda untuk mempersonalisasi pengalaman Anda selain iklan. Mereka juga mungkin menyimpan topik iklan selama lebih dari 4 minggu dan mungkin menggabungkannya dengan informasi lain tentang Anda yang sudah mereka ketahui</translation>
 <translation id="7374493521304367420">Situs masih dapat menggunakan cookie untuk melihat aktivitas penjelajahan di situsnya sendiri</translation>
-<translation id="7379649202155190245">Fitur anti-pelacakan dalam mode Samaran</translation>
 <translation id="7419391859099619574">Google mewajibkan perusahaan menyatakan secara publik bahwa mereka tidak akan menggunakan data ini untuk melacak Anda lintas situs. Beberapa situs mungkin menggunakan aktivitas Anda untuk mempersonalisasi pengalaman Anda selain untuk iklan. Mereka juga mungkin menyimpan topik iklan selama lebih dari 4 minggu dan menggabungkannya dengan informasi lain tentang Anda yang sudah mereka ketahui. Perusahaan bertanggung jawab memberi tahu Anda terkait penggunaan data Anda. <ph name="BEGIN_LINK1" />Pelajari lebih lanjut di Kebijakan Privasi kami<ph name="LINK_END1" /></translation>
 <translation id="7442413018273927857">Chrome menghapus semua data aktivitas yang telah Anda bagikan ke situs setelah 30 hari. Jika Anda membuka situs lagi, situs tersebut mungkin muncul kembali di daftar. Pelajari lebih lanjut <ph name="BEGIN_LINK1" />cara mengelola privasi iklan Anda di Chrome<ph name="LINK_END1" />.</translation>
 <translation id="7446815120569226585">Chrome memblokir cookie pihak ketiga dalam mode Samaran, tetapi administrator Anda mengizinkan cookie pihak ketiga untuk situs ini. Mode Samaran juga dapat memberikan fitur anti-pelacakan tambahan.</translation>
@@ -152,7 +148,6 @@
 <translation id="839994149685752920">Situs dapat menggunakan cookie pihak ketiga untuk mempersonalisasi konten dan iklan</translation>
 <translation id="8428213095426709021">Setelan</translation>
 <translation id="8430082659493731737">Hanya tersedia saat mode Samaran dibuka dari tab Chrome yang login</translation>
-<translation id="8442977418416307640">Dibuka di jendela Chromium biasa</translation>
 <translation id="8578320000709741352">Situs yang Anda buka mungkin menyematkan konten dan layanan dari situs lain (seperti gambar, iklan, dan teks) yang dapat digunakan untuk mempelajari informasi tentang Anda. Pelajari lebih lanjut cara mengelola <ph name="START_LINK" />fitur anti-pelacakan mode Samaran<ph name="END_LINK" /></translation>
 <translation id="859369389161884405">Membuka Kebijakan Privasi di tab baru</translation>
 <translation id="8712637175834984815">Oke</translation>

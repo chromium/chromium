@@ -7431,6 +7431,7 @@
 <translation id="6160290816917599257">Կոդն անվավեր է։ Մուտքագրումը պետք է լինի <ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+ address<ph name="LPA_2" />$<ph name="LPA_3" />optional matching id<ph name="LPA_4" /> ձևաչափով</translation>
 <translation id="6160625263637492097">Տրամադրել վկայագրեր իսկորոշման համար</translation>
 <translation id="6160887111111841751">Պահված տեղեկությունները կցուցադրվեն այստեղ</translation>
+<translation id="616290554291007512">Չթույլատրել Gemini-ին մուտք գործել ձեր փոխարեն</translation>
 <translation id="6163363155248589649">&amp;Սովորական</translation>
 <translation id="6163376401832887457">Kerberos-ի կարգավորումներ</translation>
 <translation id="6163522313638838258">Ընդլայնել բոլորը…</translation>
@@ -7743,6 +7744,7 @@
 <translation id="6379228010899751161">Հաստատեք ձեր ինքնությունը, որպեսզի միշտ կարողանաք օգտագործել ձեր <ph name="ACCOUNT_EMAIL" /> հաշվում պահված գաղտնաբառերը</translation>
 <translation id="6379827283296619736">Ոչ, շարունակել աշխատել այս պրոֆիլում</translation>
 <translation id="6380143666419481200">Ընդունել և շարունակել</translation>
+<translation id="6380618366311601172">Gemini-ը չի կարողանա կատարել առաջադրանքներ, որոնց համար անհրաժեշտ է մուտք գործել <ph name="DOMAIN" />։</translation>
 <translation id="6383382161803538830">Ընթերցման ռեժիմն այս էջում հասանելի չէ</translation>
 <translation id="638418309848716977">Աջակցվող հղումներ</translation>
 <translation id="6384275966486438344">Օգտագործել <ph name="SEARCH_HOST" /> որոնիչը</translation>
@@ -9453,6 +9455,7 @@
 <translation id="7585106857920830898">Ստուգվում է՝ արդյոք ֆայլը համապատասխանում է ձեր կազմակերպության անվտանգության կանոններին...</translation>
 <translation id="7585490016012953607">Վերականգնման գաղտնաբառը ժամանակավորապես պահվել է մինչև 3 ամսով</translation>
 <translation id="7586498138629385861">Chrome-ը կշարունակի աշխատել, երբ հավելվածները բաց են:</translation>
+<translation id="7587297195142686341">Gemini-ը կարող է մուտք գործել ձեր փոխարեն</translation>
 <translation id="7587806318633605613">Հուշումների պատմություն</translation>
 <translation id="7589448773774086276">Տրոհված նոր էկրան ընթացիկ ներդիրով</translation>
 <translation id="7589461650300748890">Զգո՛ւյշ եղեք:</translation>
@@ -10808,6 +10811,7 @@
 <translation id="849488240089599592">Վերադառնալ վերջին ներբեռնումներին</translation>
 <translation id="8496717697661868878">Գործարկել այս փլագինը</translation>
 <translation id="8497219075884839166">Windows-ի օժանդակ ծրագրեր</translation>
+<translation id="8497819894150712946">Պահվել է Chrome-ից</translation>
 <translation id="8498214519255567734">Թույլ է տալիս ավելի հանգիստ նայել էկրանին և կարդալ թույլ լուսավորության պայմաններում</translation>
 <translation id="8499083585497694743">Միացնել խոսափողը</translation>
 <translation id="8500044868721690197">Այս կայքին արգելված է կառավարել և վերածրագրավորել ձեր MIDI սարքերը</translation>
@@ -11668,6 +11672,7 @@
 <translation id="9069417381769492963">Ձեր որոնմանը համապատասխանող էջանիշներ չկան</translation>
 <translation id="9070231741075992882">Թույլտվությունները, որոնք տրամադրում եք <ph name="APP_NAME" /> հավելվածին, նաև կգործեն այդ հավելվածի կողմից տեղադրված և հեռարձակվող հավելվածների համար։</translation>
 <translation id="9070342919388027491">Ներդիրը տեղափոխվեց ձախ</translation>
+<translation id="9072918088200875065">Դուք թույլատրել եք Gemini-ին մուտք գործել այս կայքեր՝ ձեր առաջադրանքները կատարելու համար</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9074836595010225693">USB մկնիկը միացված է</translation>
 <translation id="9075413375877487220">Այս ընդլայնումը վստահելի չէ բարելավված Ապահով դիտարկման համար։</translation>

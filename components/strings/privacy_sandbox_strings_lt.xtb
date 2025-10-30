@@ -8,10 +8,8 @@
 <translation id="1281098210028343866">Padėkite mums tobulinti „Chromium“ nurodydami, kodėl pristabdėte stebėjimo apsaugą</translation>
 <translation id="1297285729613779935">Svetainių siūlomi skelbimai padeda apsaugoti jūsų naršymo istoriją bei tapatybę ir leidžia svetainėms rodyti jums aktualius skelbimus. Naudojant jūsų veiklą, pvz., kaip leidžiate laiką svetainėse, kuriose lankotės, kitos svetainės gali siūlyti susijusius skelbimus, kai toliau naršote. Galite peržiūrėti šių svetainių sąrašą ir užblokuoti nepageidaujamas svetaines nustatymuose.</translation>
 <translation id="132963621759063786">„Chromium“ ištrina visus veiklos duomenis, kuriuos bendrinote su svetainėmis, po trisdešimt dienų. Jei dar kartą apsilankysite svetainėje, ji gali vėl atsirasti sąraše. Sužinokite daugiau apie <ph name="BEGIN_LINK1" />su skelbimais susijusio privatumo tvarkymą naršyklėje „Chromium“<ph name="LINK_END1" />.</translation>
-<translation id="1432306053064625042">Atidaroma įprastame „Chrome“ lange</translation>
 <translation id="1472807065399636739">Svetainėse, kuriose lankotės, gali būti įterpta turinio ir paslaugų iš kitų svetainių (pvz., vaizdų, skelbimų ir teksto), kurie gali būti naudojami siekiant sužinoti apie jus. Sužinokite daugiau apie <ph name="BEGIN_LINK" />inkognito režimo stebėjimo apsaugos priemonių<ph name="END_LINK" /> tvarkymą</translation>
 <translation id="1472928714075596993"><ph name="BEGIN_BOLD" />Kokie duomenys naudojami?<ph name="END_BOLD" /> Skelbimų temos yra pagrįstos jūsų naujausia naršymo istorija, svetainių, kuriose lankėtės naudodami „Chrome“ šiame įrenginyje, sąrašu.</translation>
-<translation id="1529201733207295376">Trečiųjų šalių slapukai užblokuoti. Inkognito režimu taip pat teikiamos funkcijos, kurios gali apriboti informaciją, pasiekiamą įmonėms, kurių turinys yra įterptas jūsų lankomoje svetainėje. Inkognito režimo stebėjimo apsaugą galite tvarkyti skiltyje <ph name="START_LINK" />„Nustatymai“<ph name="END_LINK" />.</translation>
 <translation id="1559726735555610004">„Google“ reikalauja, kad įmonės viešai pareikštų, jog nenaudos šių duomenų jums stebėti svetainėse. Kai kurios svetainės gali naudoti jūsų veiklą ne tik skelbimams suasmeninti. Be to, jos gali ją sujungti su kita informacija, kurią jau žino apie jus. Įmonės yra atsakingos už tai, kad praneštų jums, kaip naudoja jūsų duomenis. Sužinokite daugiau, kaip „Google“ apsaugo jūsų duomenis, peržiūrėję <ph name="BEGIN_LINK" />privatumo politiką<ph name="END_LINK" />.</translation>
 <translation id="1569440020357229235">Kai naršote inkognito režimu, svetainės negali naudoti trečiųjų šalių slapukų. Jei svetainė, kuri naudoja šiuos slapukus, neveikia, galite <ph name="BEGIN_LINK" />pabandyti suteikti šiai svetainei laikiną prieigą prie trečiųjų šalių slapukų<ph name="END_LINK" />.</translation>
 <translation id="1617293350324746198">Trečiųjų šalių slapukai užblokuoti. Inkognito režimas taip pat gali suteikti papildomą stebėjimo apsaugą.</translation>
@@ -103,7 +101,6 @@
 <translation id="6195163219142236913">Trečiųjų šalių slapukai apriboti</translation>
 <translation id="6196640612572343990">Blokuoti trečiosios šalies slapukus</translation>
 <translation id="6205593033237791753">Apribokite prieigą prie IP adreso. Šis nustatymas įjungtas.</translation>
-<translation id="6272892028045906139">Inkognito režimo stebėjimo apsaugos nustatymai</translation>
 <translation id="6282129116202535093">Svetainių siūlomi skelbimai padeda apsaugoti jūsų naršymo istoriją bei tapatybę ir leidžia svetainėms rodyti jums aktualius skelbimus. Naudodamos jūsų veiklą, kitos svetainės gali siūlyti susijusius skelbimus, kai toliau naršote. Galite peržiūrėti šių svetainių sąrašą ir užblokuoti nepageidaujamas svetaines nustatymuose.</translation>
 <translation id="6291177244430967858">Stebėjimo apsauga atnaujinta</translation>
 <translation id="6308169245546905162">Svetainės gali naudoti trečiųjų šalių slapukus, kad sužinotų apie veiksmus, kuriuos atliekate kitose svetainėse</translation>
@@ -124,7 +121,6 @@
 <translation id="7315780377187123731">Daugiau apie parinktį „Blokuoti trečiųjų šalių slapukus“</translation>
 <translation id="737025278945207416">Kai kurios svetainės gali naudoti jūsų veiklą ne tik skelbimams suasmeninti. Be to, jos gali saugoti skelbimų temas ilgiau nei keturias savaites ir gali sujungti jas su kita informacija, kurią jau žino apie jus</translation>
 <translation id="7374493521304367420">Svetainės vis tiek gali naudoti slapukus, kad peržiūrėtų naršymo veiklą savo svetainėje</translation>
-<translation id="7379649202155190245">Stebėjimo apsauga inkognito režimu</translation>
 <translation id="7419391859099619574">„Google“ reikalauja, kad įmonės viešai pareikštų, jog nenaudos šių duomenų jums stebėti svetainėse. Kai kurios svetainės gali naudoti jūsų veiklą ne tik skelbimams suasmeninti. Be to, jos gali saugoti skelbimų temas ilgiau nei keturias savaites ir gali sujungti jas su kita informacija, kurią jau žino apie jus. Įmonės yra atsakingos už tai, kad praneštų jums, kaip naudoja jūsų duomenis. <ph name="BEGIN_LINK1" />Sužinokite daugiau privatumo politikoje<ph name="LINK_END1" />.</translation>
 <translation id="7442413018273927857">„Chrome“ ištrina visus veiklos duomenis, kuriuos bendrinote su svetainėmis, po trisdešimt dienų. Jei dar kartą apsilankysite svetainėje, ji gali vėl atsirasti sąraše. Sužinokite daugiau apie <ph name="BEGIN_LINK1" />su skelbimais susijusio privatumo tvarkymą naršyklėje „Chrome“<ph name="LINK_END1" />.</translation>
 <translation id="7446815120569226585">„Chrome“ blokuoja trečiųjų šalių slapukus inkognito režimu, bet administratorius leido trečiųjų šalių slapukus šioje svetainėje. Inkognito režimas taip pat gali suteikti papildomą stebėjimo apsaugą.</translation>
@@ -152,7 +148,6 @@
 <translation id="839994149685752920">Svetainės gali naudoti trečiųjų šalių slapukus, kad suasmenintų turinį ir skelbimus</translation>
 <translation id="8428213095426709021">Nustatymai</translation>
 <translation id="8430082659493731737">Pasiekiama tik tada, kai inkognito režimas atidaromas iš „Chrome“ skirtuko, kuriame esate prisijungę</translation>
-<translation id="8442977418416307640">Atidaroma įprastame „Chromium“ lange</translation>
 <translation id="8578320000709741352">Svetainėse, kuriose lankotės, gali būti įterpta turinio ir paslaugų iš kitų svetainių (pvz., vaizdų, skelbimų ir teksto), kurie gali būti naudojami siekiant sužinoti apie jus. Sužinokite daugiau apie <ph name="START_LINK" />inkognito režimo stebėjimo apsaugos priemonių<ph name="END_LINK" /> tvarkymą</translation>
 <translation id="859369389161884405">Atidaroma privatumo politika naujame skirtuke</translation>
 <translation id="8712637175834984815">Supratau</translation>

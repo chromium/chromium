@@ -7418,6 +7418,7 @@
 <translation id="6160290816917599257">代碼無效。輸入的內容應採用以下格式：<ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+ &lt;位址&gt;<ph name="LPA_2" />$<ph name="LPA_3" />&lt;選填的相符 ID&gt;<ph name="LPA_4" /></translation>
 <translation id="6160625263637492097">提供驗證所需的憑證</translation>
 <translation id="6160887111111841751">儲存的資訊會顯示在這裡</translation>
+<translation id="616290554291007512">不允許 Gemini 替你登入</translation>
 <translation id="6163363155248589649">一般(&amp;N)</translation>
 <translation id="6163376401832887457">Kerberos 設定</translation>
 <translation id="6163522313638838258">全部展開...</translation>
@@ -7730,6 +7731,7 @@
 <translation id="6379228010899751161">請驗證身分，確保你隨時可以使用帳戶 (<ph name="ACCOUNT_EMAIL" />) 中的密碼</translation>
 <translation id="6379827283296619736">否，繼續在工作時使用這個設定檔</translation>
 <translation id="6380143666419481200">接受並繼續</translation>
+<translation id="6380618366311601172">Gemini 將無法完成需要登入「<ph name="DOMAIN" />」的工作。</translation>
 <translation id="6383382161803538830">這個頁面上無法使用閱讀模式</translation>
 <translation id="638418309848716977">支援的連結</translation>
 <translation id="6384275966486438344">將你的搜尋設定變更為：<ph name="SEARCH_HOST" /></translation>
@@ -9436,6 +9438,7 @@
 <translation id="7585106857920830898">正在檢查下載內容是否符合貴機構的安全性政策...</translation>
 <translation id="7585490016012953607">備援密碼：最多可暫時儲存 3 個月</translation>
 <translation id="7586498138629385861">在 Chrome 應用程式開啟的狀態下保持 Chrome 繼續執行。</translation>
+<translation id="7587297195142686341">Gemini 可以替你登入</translation>
 <translation id="7587806318633605613">建議字詞記錄</translation>
 <translation id="7589448773774086276">使用目前分頁建立新的分割檢視畫面</translation>
 <translation id="7589461650300748890">哎唷，請注意！</translation>
@@ -10792,6 +10795,7 @@
 <translation id="849488240089599592">返回近期下載內容</translation>
 <translation id="8496717697661868878">執行這個外掛程式</translation>
 <translation id="8497219075884839166">Windows 公用程式</translation>
+<translation id="8497819894150712946">透過 Chrome 儲存</translation>
 <translation id="8498214519255567734">讓你在光線昏暗的環境下更容易看清畫面內容或閱讀文字</translation>
 <translation id="8499083585497694743">將麥克風取消靜音</translation>
 <translation id="8500044868721690197">這個網站無法控制 MIDI 裝置及重設程式</translation>
@@ -11648,6 +11652,7 @@
 <translation id="9069417381769492963">找不到與搜尋字詞相符的書籤</translation>
 <translation id="9070231741075992882">如果你將權限授予「<ph name="APP_NAME" />」，該應用程式的已安裝串流應用程式也會取得同樣的權限。</translation>
 <translation id="9070342919388027491">分頁已移動到左側</translation>
+<translation id="9072918088200875065">你已授予 Gemini 權限，替你登入這些網站完成工作</translation>
 <translation id="9074739597929991885">藍牙</translation>
 <translation id="9074836595010225693">已連接 USB 滑鼠</translation>
 <translation id="9075413375877487220">安全瀏覽強化防護功能不信任這個擴充功能。</translation>

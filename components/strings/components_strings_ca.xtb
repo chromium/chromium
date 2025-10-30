@@ -20,6 +20,7 @@
 <translation id="1035509598913574970">Cian 3</translation>
 <translation id="1035709686865413354">Purificadors i filtres d'aigua</translation>
 <translation id="1036348656032585052">Desactiva</translation>
+<translation id="1036436692654972538">Es desa al dispositiu</translation>
 <translation id="1036881361735705143">Sobre C4</translation>
 <translation id="1038842779957582377">nom desconegut</translation>
 <translation id="1041998700806130099">Missatge del full de treball</translation>
@@ -2831,6 +2832,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="5617949217645503996"><ph name="HOST_NAME" /> us ha redirigit massa vegades.</translation>
 <translation id="5619721953841297650">Valors predefinits</translation>
 <translation id="5624120631404540903">Gestiona les contrasenyes</translation>
+<translation id="5628060911499153873">Desa la informació per enllestir tasques més ràpidament en tots els productes de Google. La teva informació es desa a <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> per a <ph name="ACCOUNT" />.</translation>
 <translation id="5629630648637658800">No s'ha pogut carregar la configuració de la política</translation>
 <translation id="5630981295558454585">Botó Pregunta a Google sobre aquesta pàgina. Activa'l per preguntar a Google sobre aquesta pàgina.</translation>
 <translation id="5631439013527180824">Testimoni de gestió del dispositiu no vàlid</translation>

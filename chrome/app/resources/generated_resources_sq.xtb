@@ -7425,6 +7425,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="6160290816917599257">Kod i pavlefshëm. Hyrja jote duhet të jetë në formatin <ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+ address<ph name="LPA_2" />$<ph name="LPA_3" />dokument opsional identifikimi i përputhshëm<ph name="LPA_4" /></translation>
 <translation id="6160625263637492097">Ofron certifikata për vërtetimin</translation>
 <translation id="6160887111111841751">Informacionet e ruajtura do të shfaqen këtu</translation>
+<translation id="616290554291007512">Mos lejo që Gemini të identifikohet për ty</translation>
 <translation id="6163363155248589649">&amp;Normale</translation>
 <translation id="6163376401832887457">Cilësimet e Kerberos</translation>
 <translation id="6163522313638838258">Zgjeroji të gjitha...</translation>
@@ -7737,6 +7738,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="6379228010899751161">Verifiko që je ti për t'u siguruar që mund të përdorësh gjithmonë fjalëkalimet në llogarinë tënde <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="6379827283296619736">Jo, vazhdo të punosh në këtë profil</translation>
 <translation id="6380143666419481200">Prano dhe vazhdo</translation>
+<translation id="6380618366311601172">Gemini nuk do të mund të përfundojë detyrat që kërkojnë identifikimin në <ph name="DOMAIN" />.</translation>
 <translation id="6383382161803538830">Modaliteti i leximit nuk ofrohet në këtë faqe</translation>
 <translation id="638418309848716977">Lidhjet e mbështetura</translation>
 <translation id="6384275966486438344">Ndryshoji cilësimet e kërkimit në: <ph name="SEARCH_HOST" /></translation>
@@ -9443,6 +9445,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7585106857920830898">Po kontrollohet me politikat e sigurisë së organizatës sate...</translation>
 <translation id="7585490016012953607">Fjalëkalimi i rikuperimit - ruhet përkohësisht për deri në 3 muaj</translation>
 <translation id="7586498138629385861">Chrome do të vazhdojë të ekzekutohet gjatë kohës që aplikacionet e Chrome janë të hapura.</translation>
+<translation id="7587297195142686341">Gemini mund të identifikohet për ty</translation>
 <translation id="7587806318633605613">Historiku i sugjerimeve</translation>
 <translation id="7589448773774086276">Pamja e re e ndarë me skedën aktuale</translation>
 <translation id="7589461650300748890">Ki kujdes!</translation>
@@ -10798,6 +10801,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="849488240089599592">Kthehu prapa te shkarkimet e fundit</translation>
 <translation id="8496717697661868878">Ekzekuto këtë përbërës shtesë</translation>
 <translation id="8497219075884839166">Programet ndihmëse të Windows</translation>
+<translation id="8497819894150712946">Ruajtur nga Chrome</translation>
 <translation id="8498214519255567734">Bëje më të lehtë shikimin e ekranit ose leximin në dritë të zbehtë</translation>
 <translation id="8499083585497694743">Aktivizo mikrofonin</translation>
 <translation id="8500044868721690197">Ky sajt është bllokuar që të mos kontrollojë dhe të mos riprogramojë pajisjet e tua MIDI.</translation>
@@ -11654,6 +11658,7 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="9069417381769492963">Nuk ka faqeshënues që përputhen me kërkimin tënd</translation>
 <translation id="9070231741075992882">Lejet që lejon për <ph name="APP_NAME" /> do të lejohen po ashtu për aplikacionet e instaluara dhe të transmetuara nga ai.</translation>
 <translation id="9070342919388027491">Skeda u zhvendos majtas</translation>
+<translation id="9072918088200875065">I ke dhënë Gemini leje që të identifikohet në këto sajte për të përfunduar detyra për ty</translation>
 <translation id="9074739597929991885">Bluetooth-i</translation>
 <translation id="9074836595010225693">Miu me USB u lidh</translation>
 <translation id="9075413375877487220">Kjo shtesë nuk është e besuar nga "Shfletimi i sigurt i përmirësuar"</translation>

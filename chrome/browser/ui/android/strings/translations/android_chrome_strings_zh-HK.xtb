@@ -382,7 +382,6 @@
 <translation id="2739887572830526131">如果保留群組，你之後可新增分頁；如果不再使用，則可刪除群組。</translation>
 <translation id="2742373789128106053">目前無法使用「<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />」。</translation>
 <translation id="2760805590727089264">MM / YY</translation>
-<translation id="2760989362628427051">在裝置啟用深色主題背景或開啟「慳電模式」後啟用深色主題背景</translation>
 <translation id="2762000892062317888">剛剛</translation>
 <translation id="276969039800130567">以 <ph name="USER_EMAIL_ADDRESS" /> 的身分登入。</translation>
 <translation id="2777555524387840389">尚餘 <ph name="SECONDS" /> 秒</translation>
@@ -612,6 +611,7 @@
 <translation id="3819178904835489326">已刪除 <ph name="NUMBER_OF_DOWNLOADS" /> 個下載項目</translation>
 <translation id="3819183753496523827">您已離線。請檢查您的互聯網連線，然後再試一次。</translation>
 <translation id="3823019343150397277">IBAN</translation>
+<translation id="3824259034819781947">附加檔案</translation>
 <translation id="38243391581572867">此帳戶無法使用「智能鏡頭」。</translation>
 <translation id="38258275871320156">只適用於小視窗</translation>
 <translation id="3845098929839618392">在無痕式分頁中開啟</translation>
@@ -1503,7 +1503,6 @@
 <translation id="7581273696622423628">填寫問卷調查</translation>
 <translation id="7583262514280211622">這裡會顯示您的閱讀清單</translation>
 <translation id="758603037873046260">登入即可儲存此頁面</translation>
-<translation id="7588219262685291874">在裝置開啟「慳電模式」後啟用深色主題背景</translation>
 <translation id="7594687499944811403">讓 <ph name="EMBEDDED_ORIGIN" /> 為 <ph name="TOP_ORIGIN" /> 驗證您的身份</translation>
 <translation id="7596558890252710462">作業系統</translation>
 <translation id="7597601275223325603">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> 個標準分頁}other{<ph name="TABS_COUNT_MANY" /> 個標準分頁}}</translation>

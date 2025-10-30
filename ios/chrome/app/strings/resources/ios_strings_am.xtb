@@ -239,7 +239,6 @@
 <translation id="188237709236611317">የዘመናዊ ድርድር የምናሌ አሞሌ</translation>
 <translation id="1883255238294161206">ዝርዝር ሰብስብ</translation>
 <translation id="1888854257756214946">የይለፍ ቃል ይምረጡ…</translation>
-<translation id="1889872080060107187">በመለያ ወደ <ph name="URL" /> ይገባሉ</translation>
 <translation id="1890237935065108104">ይህ ቅንብር አይገኝም።</translation>
 <translation id="1894023287452300670">ዋጋን እዚህ ይከታተሉ</translation>
 <translation id="189531189292803889">የእርስዎ iPad በቅርቡ ወደነበረበት ተመልሷል፣ ይህም ነባሪ አሳሽዎን ቀይሮ ሊሆን ይችላል።</translation>
@@ -649,7 +648,7 @@
 <translation id="3530024057633834563">ምንም የተቀመጡ የይለፍ ቃላት ወይም የይለፍ ቁልፎች የሉዎትም፣ ነገር ግን በመለያ መግቢያ መረጃን መቼም ላለማስቀመጥ የመረጧቸውን ጣቢያዎች እና መተግበሪያዎች ዝርዝር መሰረዝ ይችላሉ። ለጣቢያዎች እና ለመተግበሪያዎች የፈጠሩት ማንኛውም መለያ አይሰረዝም።</translation>
 <translation id="3530206579861815432">በመላው የእርስዎ የሰመሩ መሣሪያዎች ላይ ክፍት እና በቅርቡ የተዘጉ ትሮችን በፍጥነት ያግኙ።</translation>
 <translation id="3530767473765895035">በዚህ መሣሪያ ላይ ያሉ መለያዎችን ያስተዳድሩ…</translation>
-<translation id="353340646084395154">የአዲስ የትር ገፅ ምርጫዎች ተወግደዋል</translation>
+<translation id="353340646084395154">የአዲስ የትር ገጽ ምርጫዎች ተወግደዋል</translation>
 <translation id="3533436815740441613">አዲስ ትር</translation>
 <translation id="3540141921715814660">ወደ እልባቶች አክል</translation>
 <translation id="3546122170015471515">Google.com ላይ ያሉ የካርታዎች ቅድመ እይታዎች</translation>
@@ -1126,7 +1125,7 @@
 <translation id="537853552771686272">የሚፈልጓቸውን ርዕሶች እና ጣቢያዎች በሚከተለው ያስተዳድሩ</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} ተዘግቷል}one{{count} ተዘግቷል}other{{count} ተዘግተዋል}}</translation>
 <translation id="5394975111793637642">ለእርስዎ ካርድ የምርት ግምገማዎችን ይደብቁ</translation>
-<translation id="5407806496954700135">ከሌላ መሣሪያ የአዲስ ትር ገፅ ማበጀቶችዎን መተግበር ይፈልጋሉ?</translation>
+<translation id="5407806496954700135">ከሌላ መሣሪያ ላይ የአዲስ ትር ገጽ ማበጀቶችዎን መተግበር ይፈልጋሉ?</translation>
 <translation id="5414763847370083940">በማንኛውም ጣቢያ ላይ ዋጋው ከቀነሰ ማንቂያ ያገኛሉ።</translation>
 <translation id="5415289094036440596">የይለፍ ቁልፍች ሊጋሩ አይችሉም</translation>
 <translation id="5416455648658732408">ወደ ትር ቡድን ውሰድ</translation>
@@ -1427,7 +1426,6 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="6418346271604475326">ፒዲኤፍ በመዘጋጀት ላይ</translation>
 <translation id="6421038304268477484">የተተረጎመ ጽሑፍ</translation>
 <translation id="6429213933892582367">የይለፍ ቃል አማራጮችን ይክፈቱ</translation>
-<translation id="6434591244308415567">አንድ ስህተት አጋጥሟል። ቆይተው እንደገና ይሞክሩ።</translation>
 <translation id="6435236283694032571">ወደ የንባብ ዝርዝር አክል</translation>
 <translation id="6435307030888827407">ዘግተው እንደወጡ ይቆዩ</translation>
 <translation id="6436318499800111867">ከእኔ ጋር የተጋራ <ph name="SHARED_WITH_ME_DATE" /></translation>
@@ -1762,7 +1760,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="7696316012653762532">ገፁን የመተርጎም አማራጮች</translation>
 <translation id="7700527812567437847">በGoogle ሌንስ ማያ ገፅ ውስጥ ይፈልጉ</translation>
 <translation id="7701040980221191251">ምንም</translation>
-<translation id="7708668404222666001">የአዲስ ትር ገፅ ምርጫዎችዎን ተተግብረዋል</translation>
+<translation id="7708668404222666001">የአዲስ ትር ገጽ ምርጫዎችዎ ተተግብረዋል</translation>
 <translation id="7708994397325774423">ሁሉንም የይለፍ ቃላትዎን ያግኙ</translation>
 <translation id="7711440461521638739">ምንም የይለፍ ቃላትን ዳግም እየተጠቀሙ አይደለም</translation>
 <translation id="7712361583414030698">ከመስመር ውጭ ሥሪቱን በመመልከት ላይ</translation>

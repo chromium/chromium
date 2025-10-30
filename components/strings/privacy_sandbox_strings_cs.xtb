@@ -8,10 +8,8 @@
 <translation id="1281098210028343866">Pomozte nám Chromium vylepšit tím, že nám sdělíte, proč jste ochrany před sledováním pozastavili.</translation>
 <translation id="1297285729613779935">Reklamy navrhované weby pomáhají chránit vaši historii prohlížení a identitu a zároveň webům umožňují zobrazovat relevantní reklamy. Na základě vaší aktivity (například toho, jak trávíte čas na navštívených webech), mohou jiné weby navrhovat související reklamy při dalším prohlížení webů. V nastavení můžete zobrazit seznam těchto webů a zablokovat weby, které nechcete.</translation>
 <translation id="132963621759063786">Veškerá data o aktivitě, které jste s weby sdíleli, Chromium po 30 dnech maže. Pokud web navštívíte znovu, může se v seznamu zase objevit. Přečtěte si další informace o <ph name="BEGIN_LINK1" />správě ochrany soukromí v reklamách v Chromu<ph name="LINK_END1" />.</translation>
-<translation id="1432306053064625042">Otevře se v běžném okně Chromu</translation>
 <translation id="1472807065399636739">Na navštívených webech mohou být vložené služby a obsah z jiných webů (například obrázky, reklamy a text), které lze použít k získání informací o vás. <ph name="BEGIN_LINK" />Další informace o správě ochran před sledováním v anonymním režimu<ph name="END_LINK" /></translation>
 <translation id="1472928714075596993"><ph name="BEGIN_BOLD" />Jaké údaje jsou používány?<ph name="END_BOLD" /> Témata reklam vycházejí z historie prohlížení, což je seznam webů, které jste navštívili v Chromu na tomto zařízení.</translation>
-<translation id="1529201733207295376">Soubory cookie třetích stran jsou blokovány. Anonymní režim nabízí také funkce, které mohou omezit informace dostupné společnostem, jejichž obsah je na navštíveném webu vložen. Ochrany před sledováním v anonymním režimu můžete spravovat v <ph name="START_LINK" />Nastavení<ph name="END_LINK" />.</translation>
 <translation id="1559726735555610004">Google vyžaduje, aby společnosti veřejně prohlásily, že vás pomocí těchto dat nebudou na webech sledovat. Některé weby mohou vaši aktivitu využívat k tomu, aby vaše prostředí přizpůsobily i jinak, nejen pro reklamy. Mohou ji také kombinovat s dalšími informacemi, které o vás už vědí. Společnosti mají odpovědnost informovat vás o tom, jak vaše data používají. Další informace o tom, jak Google chrání vaše data, najdete v našich <ph name="BEGIN_LINK" />zásadách ochrany soukromí<ph name="END_LINK" />.</translation>
 <translation id="1569440020357229235">V anonymním režimu nemůžou weby používat soubory cookie třetích stran. Pokud web, který se spoléhá na tyhle soubory cookie, ​​nefunguje, můžete mu <ph name="BEGIN_LINK" />zkusit udělit dočasný přístup k souborům cookie třetích stran<ph name="END_LINK" />.</translation>
 <translation id="1617293350324746198">Soubory cookie třetích stran jsou blokovány. Anonymní režim může poskytovat také další ochranu před sledováním.</translation>
@@ -103,7 +101,6 @@
 <translation id="6195163219142236913">Soubory cookie třetích stran jsou omezeny</translation>
 <translation id="6196640612572343990">Blokovat soubory cookie třetích stran</translation>
 <translation id="6205593033237791753">Omezit přístup k vaší IP adrese. Toto nastavení je zapnuté.</translation>
-<translation id="6272892028045906139">Nastavení ochrany před sledováním v anonymním režimu</translation>
 <translation id="6282129116202535093">Reklamy navrhované weby pomáhají chránit vaši historii prohlížení a identitu a zároveň webům umožňují zobrazovat relevantní reklamy. Na základě vaší aktivity mohou při dalším prohlížení webů jiné weby navrhovat související reklamy. V nastavení můžete zobrazit seznam těchto webů a zablokovat weby, které nechcete.</translation>
 <translation id="6291177244430967858">Ochrany před sledováním obnoveny</translation>
 <translation id="6308169245546905162">Weby můžou pomocí souborů cookie třetích stran sledovat, co provádíte na jiných webech</translation>
@@ -124,7 +121,6 @@
 <translation id="7315780377187123731">Další informace o možnosti Blokovat soubory cookie třetích stran</translation>
 <translation id="737025278945207416">Některé weby můžou aktivitu využívat k přizpůsobení prostředí nejen pro reklamy. Mohou také uchovávat témata reklam déle než čtyři týdny a mohou je kombinovat s dalšími informacemi, které o vás už vědí</translation>
 <translation id="7374493521304367420">Weby můžou dál používat soubory cookie ke sledování aktivity procházení na svých stránkách</translation>
-<translation id="7379649202155190245">Ochrany před sledováním v anonymním režimu</translation>
 <translation id="7419391859099619574">Google vyžaduje, aby společnosti veřejně prohlásily, že vás pomocí těchto dat nebudou na webech sledovat. Některé weby mohou vaši aktivitu využívat k tomu, aby vaše prostředí přizpůsobily i jinak, nejen pro reklamy. Mohou také uchovávat témata reklam déle než čtyři týdny a mohou je kombinovat s dalšími informacemi, které o vás už vědí. Společnosti mají odpovědnost informovat vás o tom, jak vaše data používají. Další informace najdete v našich <ph name="BEGIN_LINK1" />zásadách ochrany soukromí<ph name="LINK_END1" />.</translation>
 <translation id="7442413018273927857">Veškerá data o aktivitě, které jste s weby sdíleli, Chrome po 30 dnech maže. Pokud web navštívíte znovu, může se v seznamu zase objevit. Přečtěte si další informace o <ph name="BEGIN_LINK1" />správě ochrany soukromí v reklamách v Chromu<ph name="LINK_END1" />.</translation>
 <translation id="7446815120569226585">Soubory cookie třetích stran Chrome v anonymním režimu blokuje, ale pro tento web je váš administrátor povolil. Anonymní režim může poskytovat také další ochranu před sledováním.</translation>
@@ -152,7 +148,6 @@
 <translation id="839994149685752920">Weby můžou používat soubory cookie třetích stran k personalizaci obsahu a reklam</translation>
 <translation id="8428213095426709021">Nastavení</translation>
 <translation id="8430082659493731737">K dispozici pouze při otevření anonymního režimu z karty Chromu, na které jste přihlášeni</translation>
-<translation id="8442977418416307640">Otevře se v běžném okně prohlížeče Chromium</translation>
 <translation id="8578320000709741352">Na navštívených webech mohou být vložené služby a obsah z jiných webů (například obrázky, reklamy a text), které lze použít k získání informací o vás. <ph name="START_LINK" />Další informace o správě ochran před sledováním v anonymním režimu<ph name="END_LINK" /></translation>
 <translation id="859369389161884405">Otevře na nové kartě zásady ochrany soukromí</translation>
 <translation id="8712637175834984815">Rozumím</translation>

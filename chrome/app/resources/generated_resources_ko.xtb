@@ -7451,6 +7451,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6160290816917599257">잘못된 코드입니다. 입력되는 내용은 <ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+ 주소<ph name="LPA_2" />$<ph name="LPA_3" />일치 ID(선택사항)<ph name="LPA_4" /> 형식이어야 합니다.</translation>
 <translation id="6160625263637492097">인증에 사용할 인증서 제공</translation>
 <translation id="6160887111111841751">저장된 정보가 여기에 표시됩니다.</translation>
+<translation id="616290554291007512">Gemini가 자동으로 로그인하도록 허용하지 않습니다</translation>
 <translation id="6163363155248589649">보통(&amp;N)</translation>
 <translation id="6163376401832887457">Kerberos 설정</translation>
 <translation id="6163522313638838258">모두 펼치기...</translation>
@@ -7763,6 +7764,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6379228010899751161"><ph name="ACCOUNT_EMAIL" /> 계정에서 언제든지 비밀번호를 사용할 수 있도록 본인 인증을 완료하세요</translation>
 <translation id="6379827283296619736">아니요, 이 프로필에서 계속 작업</translation>
 <translation id="6380143666419481200">동의 및 계속</translation>
+<translation id="6380618366311601172"><ph name="DOMAIN" />에 로그인해야 하는 작업은 Gemini가 완료할 수 없습니다.</translation>
 <translation id="6383382161803538830">이 페이지에서는 읽기 모드를 사용할 수 없음</translation>
 <translation id="638418309848716977">지원되는 링크</translation>
 <translation id="6384275966486438344">다음으로 검색 설정 변경: <ph name="SEARCH_HOST" /></translation>
@@ -9471,6 +9473,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7585106857920830898">조직 보안 정책을 준수하는지 확인 중</translation>
 <translation id="7585490016012953607">복구 비밀번호 - 최대 3개월 동안 임시로 저장됨</translation>
 <translation id="7586498138629385861">Chrome 앱이 열려 있을 때 Chrome이 계속 실행됩니다.</translation>
+<translation id="7587297195142686341">Gemini가 자동으로 로그인할 수 있습니다</translation>
 <translation id="7587806318633605613">추천 기록</translation>
 <translation id="7589448773774086276">현재 탭이 포함된 새 분할 보기</translation>
 <translation id="7589461650300748890">주의하세요.</translation>
@@ -10828,6 +10831,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="849488240089599592">최근 다운로드로 돌아가기</translation>
 <translation id="8496717697661868878">이 플러그인 실행</translation>
 <translation id="8497219075884839166">Windows 유틸리티</translation>
+<translation id="8497819894150712946">Chrome에서 저장됨</translation>
 <translation id="8498214519255567734">어두운 곳에서 화면을 보거나 읽기 편하도록 설정합니다.</translation>
 <translation id="8499083585497694743">마이크 음소거 해제</translation>
 <translation id="8500044868721690197">이 사이트는 MIDI 기기를 제어하고 다시 프로그래밍하지 못하도록 차단되었습니다</translation>
@@ -11687,6 +11691,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="9069417381769492963">검색어와 일치하는 북마크가 없습니다.</translation>
 <translation id="9070231741075992882"><ph name="APP_NAME" />에 허용하는 권한은 설치된 앱 및 스트리밍된 앱에도 허용됩니다.</translation>
 <translation id="9070342919388027491">왼쪽으로 탭을 이동함</translation>
+<translation id="9072918088200875065">Gemini가 이러한 사이트에 자동으로 로그인하여 작업을 완료할 수 있도록 허용했습니다.</translation>
 <translation id="9074739597929991885">블루투스</translation>
 <translation id="9074836595010225693">USB 마우스 연결됨</translation>
 <translation id="9075413375877487220">향상된 세이프 브라우징에서 신뢰하지 않는 확장 프로그램입니다.</translation>

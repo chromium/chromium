@@ -382,7 +382,6 @@
 <translation id="2739887572830526131">این گروه را نگه دارید تا بعداً به آن برگه اضافه کنید یا اگر دیگر به آن نیاز ندارید، آن را حذف کنید.</translation>
 <translation id="2742373789128106053"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> فعلاً دردسترس نیست.</translation>
 <translation id="2760805590727089264">ماه/سال</translation>
-<translation id="2760989362628427051">روشن شدن زمینه تاریک وقتی زمینه تاریک دستگاه یا «بهینه‌سازی باتری» روشن است</translation>
 <translation id="2762000892062317888">هم‌اکنون</translation>
 <translation id="276969039800130567">با <ph name="USER_EMAIL_ADDRESS" /> وارد سیستم شد.</translation>
 <translation id="2777555524387840389"><ph name="SECONDS" /> ثانیه باقی‌مانده است</translation>
@@ -612,6 +611,7 @@
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> بارگیری حذف شد</translation>
 <translation id="3819183753496523827">آفلاین هستید. اتصال اینترنت را بررسی کنید و دوباره امتحان کنید.</translation>
 <translation id="3823019343150397277">IBAN</translation>
+<translation id="3824259034819781947">پیوست فایل</translation>
 <translation id="38243391581572867">«لنز» در این حساب دردسترس نیست.</translation>
 <translation id="38258275871320156">فقط برای پنجره‌های کوچک دردسترس است</translation>
 <translation id="3845098929839618392">بازکردن در زبانه ناشناس</translation>
@@ -1503,7 +1503,6 @@
 <translation id="7581273696622423628">در نظرسنجی شرکت کنید</translation>
 <translation id="7583262514280211622">فهرست خواندن را اینجا خواهید دید</translation>
 <translation id="758603037873046260">برای ذخیره کردن این صفحه، به سیستم وارد شوید</translation>
-<translation id="7588219262685291874">روشن شدن زمینه تاریک وقتی «بهینه‌سازی باتری» دستگاه روشن است</translation>
 <translation id="7594687499944811403"><ph name="EMBEDDED_ORIGIN" /> مجاز می‌شود هویت شما را برای <ph name="TOP_ORIGIN" /> تأیید کند</translation>
 <translation id="7596558890252710462">سیستم‌عامل</translation>
 <translation id="7597601275223325603">{NUMBER_OF_TABS,plural, =1{‫<ph name="TABS_COUNT_ONE" /> زبانه استاندارد}one{‫<ph name="TABS_COUNT_MANY" /> زبانه استاندارد}other{‫<ph name="TABS_COUNT_MANY" /> زبانه استاندارد}}</translation>

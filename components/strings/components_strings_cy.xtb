@@ -20,6 +20,7 @@
 <translation id="1035509598913574970">Gwyrddlas 3</translation>
 <translation id="1035709686865413354">Hidlau Dŵr a Phurwyr</translation>
 <translation id="1036348656032585052">Diffodd</translation>
+<translation id="1036436692654972538">Yn cadw i'ch dyfais</translation>
 <translation id="1036881361735705143">Amlen C4</translation>
 <translation id="1038842779957582377">enw anhysbys</translation>
 <translation id="1041998700806130099">Neges taflen swyddi</translation>
@@ -2831,6 +2832,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="5617949217645503996">Gwnaeth <ph name="HOST_NAME" /> eich ailgyfeirio gormod o weithiau.</translation>
 <translation id="5619721953841297650">Rhagosodedig</translation>
 <translation id="5624120631404540903">Rheoli cyfrineiriau</translation>
+<translation id="5628060911499153873">Cadwch eich gwybodaeth i gyflawni pethau'n gyflymach, ar draws cynhyrchion Google. Mae eich gwybodaeth wedi'i chadw i <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> ar gyfer <ph name="ACCOUNT" />.</translation>
 <translation id="5629630648637658800">Methwyd â llwytho gosodiadau polisi</translation>
 <translation id="5630981295558454585">Botwm Gofyn i Google ynglŷn â'r dudalen hon, rhowch ar waith i ofyn i Google am y dudalen hon</translation>
 <translation id="5631439013527180824">Tocyn rheoli dyfais annilys</translation>
