@@ -22,6 +22,11 @@ source_set("ios") {
   ]
 }
 
+source_set("passkey_types") {
+  sources = [ "passkey_types.h" ]
+  deps = [ "//base" ]
+}
+
 optimize_ts("passkey_controller_js") {
   visibility = [
     ":ios",

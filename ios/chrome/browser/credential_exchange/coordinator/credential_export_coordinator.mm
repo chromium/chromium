@@ -108,8 +108,7 @@
                             credential:nil
                                // TODO(crbug.com/449701042): Consider adding new
                                // reauth purpose.
-                               purpose:PasskeyKeychainProvider::
-                                           ReauthenticatePurpose::kEncrypt
+                               purpose:webauthn::ReauthenticatePurpose::kEncrypt
                             completion:^(
                                 NSArray<NSData*>* securityDomainSecrets) {
                               [weakSelf startExportWithSecurityDomainSecrets:

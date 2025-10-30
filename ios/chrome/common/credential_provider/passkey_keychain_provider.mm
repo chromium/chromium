@@ -30,8 +30,8 @@ void PasskeyKeychainProvider::Enroll(
 
 void PasskeyKeychainProvider::FetchKeys(
     NSString* gaia,
-    PasskeyKeychainProvider::ReauthenticatePurpose purpose,
-    KeysFetchedCallback callback) {
+    webauthn::ReauthenticatePurpose purpose,
+    webauthn::KeysFetchedCallback callback) {
   if (!callback.is_null()) {
     std::move(callback).Run({});
   }
@@ -49,8 +49,8 @@ void PasskeyKeychainProvider::Reauthenticate(
     NSString* gaia,
     UINavigationController* navigation_controller,
     UIView* navigation_item_title_view,
-    PasskeyKeychainProvider::ReauthenticatePurpose purpose,
-    KeysFetchedCallback callback) {
+    webauthn::ReauthenticatePurpose purpose,
+    webauthn::KeysFetchedCallback callback) {
   if (!callback.is_null()) {
     std::move(callback).Run({});
   }

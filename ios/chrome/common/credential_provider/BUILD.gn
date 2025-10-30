@@ -83,7 +83,10 @@ source_set("passkey_keychain_provider_extension") {
 
 source_set("passkey_keychain_provider_header") {
   sources = [ "passkey_keychain_provider.h" ]
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//components/webauthn/ios:passkey_types",
+  ]
   assert_no_deps = [ "//ios/chrome/browser/*" ]
   frameworks = [ "Foundation.framework" ]
 }

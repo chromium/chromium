@@ -14,13 +14,12 @@
 typedef void (^CheckEnrolledCompletionBlock)(BOOL is_enrolled, NSError* error);
 typedef void (^ErrorCompletionBlock)(NSError* error);
 typedef void (^FetchKeysCompletionBlock)(
-    const PasskeyKeychainProvider::SharedKeyList& key_list);
+    const webauthn::SharedKeyList& key_list);
 
 namespace {
 
 // Returns an array of security domain secrets from the vault keys.
-NSArray<NSData*>* GetSecurityDomainSecret(
-    const PasskeyKeychainProvider::SharedKeyList keys) {
+NSArray<NSData*>* GetSecurityDomainSecret(const webauthn::SharedKeyList keys) {
   NSMutableArray<NSData*>* security_domain_secrets =
       [NSMutableArray arrayWithCapacity:keys.size()];
   for (const auto& key : keys) {
@@ -31,7 +30,7 @@ NSArray<NSData*>* GetSecurityDomainSecret(
 }
 
 // Returns whether there's at least one valid key in the keys array.
-bool ContainsValidKey(const PasskeyKeychainProvider::SharedKeyList keys,
+bool ContainsValidKey(const webauthn::SharedKeyList keys,
                       id<Credential> credential) {
   for (NSData* security_domain_secret in GetSecurityDomainSecret(keys)) {
     sync_pb::WebauthnCredentialSpecifics_Encrypted credential_secrets;
@@ -80,13 +79,12 @@ bool ContainsValidKey(const PasskeyKeychainProvider::SharedKeyList keys,
   }
 }
 
-- (void)fetchSecurityDomainSecretForGaia:(NSString*)gaia
-                              credential:(id<Credential>)credential
-                                 purpose:(PasskeyKeychainProvider::
-                                              ReauthenticatePurpose)purpose
-                              completion:
-                                  (FetchSecurityDomainSecretCompletionBlock)
-                                      fetchSecurityDomainSecretCompletion {
+- (void)
+    fetchSecurityDomainSecretForGaia:(NSString*)gaia
+                          credential:(id<Credential>)credential
+                             purpose:(webauthn::ReauthenticatePurpose)purpose
+                          completion:(FetchSecurityDomainSecretCompletionBlock)
+                                         fetchSecurityDomainSecretCompletion {
   if (_navigationController) {
     __weak __typeof(self) weakSelf = self;
     auto checkEnrolledCompletion = ^(BOOL is_enrolled, NSError* error) {
@@ -137,8 +135,7 @@ bool ContainsValidKey(const PasskeyKeychainProvider::SharedKeyList keys,
 // account.
 - (void)onIsEnrolledForGaia:(NSString*)gaia
                  credential:(id<Credential>)credential
-                    purpose:
-                        (PasskeyKeychainProvider::ReauthenticatePurpose)purpose
+                    purpose:(webauthn::ReauthenticatePurpose)purpose
                  completion:(FetchSecurityDomainSecretCompletionBlock)
                                 fetchSecurityDomainSecretCompletion
                  isEnrolled:(BOOL)isEnrolled
@@ -193,7 +190,7 @@ bool ContainsValidKey(const PasskeyKeychainProvider::SharedKeyList keys,
 - (void)fetchKeysForGaia:(NSString*)gaia
               credential:(id<Credential>)credential
       canMarkKeysAsStale:(BOOL)canMarkKeysAsStale
-                 purpose:(PasskeyKeychainProvider::ReauthenticatePurpose)purpose
+                 purpose:(webauthn::ReauthenticatePurpose)purpose
        canReauthenticate:(BOOL)canReauthenticate
               completion:(FetchSecurityDomainSecretCompletionBlock)
                              fetchSecurityDomainSecretCompletion
@@ -205,27 +202,25 @@ bool ContainsValidKey(const PasskeyKeychainProvider::SharedKeyList keys,
   }
 
   __weak __typeof(self) weakSelf = self;
-  auto fetchKeysCompletion =
-      ^(const PasskeyKeychainProvider::SharedKeyList& key_list) {
-        [weakSelf onKeysFetchedForGaia:gaia
-                            credential:credential
-                    canMarkKeysAsStale:canMarkKeysAsStale
-                               purpose:purpose
-                            completion:fetchSecurityDomainSecretCompletion
-                               keyList:key_list
-                     canReauthenticate:canReauthenticate];
-      };
+  auto fetchKeysCompletion = ^(const webauthn::SharedKeyList& key_list) {
+    [weakSelf onKeysFetchedForGaia:gaia
+                        credential:credential
+                canMarkKeysAsStale:canMarkKeysAsStale
+                           purpose:purpose
+                        completion:fetchSecurityDomainSecretCompletion
+                           keyList:key_list
+                 canReauthenticate:canReauthenticate];
+  };
   [self fetchKeysForGaia:gaia purpose:purpose completion:fetchKeysCompletion];
 }
 
 // Fetches the security domain secret vault keys for the account associated with
 // the provided gaia ID and calls the completion block.
 - (void)fetchKeysForGaia:(NSString*)gaia
-                 purpose:(PasskeyKeychainProvider::ReauthenticatePurpose)purpose
+                 purpose:(webauthn::ReauthenticatePurpose)purpose
               completion:(FetchKeysCompletionBlock)completion {
   _passkeyKeychainProvider->FetchKeys(
-      gaia, purpose,
-      base::BindOnce(^(const PasskeyKeychainProvider::SharedKeyList& key_list) {
+      gaia, purpose, base::BindOnce(^(const webauthn::SharedKeyList& key_list) {
         completion(key_list);
       }));
 }
@@ -233,17 +228,17 @@ bool ContainsValidKey(const PasskeyKeychainProvider::SharedKeyList keys,
 // Handles the outcome of the key fetch process.
 // If `sharedKeys` is empty, triggers the reauthentication process.
 // If not, triggers the `completion`.
-- (void)
-    onKeysFetchedForGaia:(NSString*)gaia
-              credential:(id<Credential>)credential
-      canMarkKeysAsStale:(BOOL)canMarkKeysAsStale
-                 purpose:(PasskeyKeychainProvider::ReauthenticatePurpose)purpose
-              completion:(FetchSecurityDomainSecretCompletionBlock)completion
-                 keyList:(const PasskeyKeychainProvider::SharedKeyList&)keyList
-       canReauthenticate:(BOOL)canReauthenticate {
+- (void)onKeysFetchedForGaia:(NSString*)gaia
+                  credential:(id<Credential>)credential
+          canMarkKeysAsStale:(BOOL)canMarkKeysAsStale
+                     purpose:(webauthn::ReauthenticatePurpose)purpose
+                  completion:
+                      (FetchSecurityDomainSecretCompletionBlock)completion
+                     keyList:(const webauthn::SharedKeyList&)keyList
+           canReauthenticate:(BOOL)canReauthenticate {
   __weak __typeof(self) weakSelf = self;
   if (!keyList.empty()) {
-    if (purpose == PasskeyKeychainProvider::ReauthenticatePurpose::kDecrypt &&
+    if (purpose == webauthn::ReauthenticatePurpose::kDecrypt &&
         canMarkKeysAsStale && credential &&
         !ContainsValidKey(keyList, credential)) {
       // Mark keys as stale and try again. `canMarkKeysAsStale` is set to `NO`
@@ -261,7 +256,7 @@ bool ContainsValidKey(const PasskeyKeychainProvider::SharedKeyList keys,
       return;
     }
 
-    const PasskeyKeychainProvider::SharedKeyList keys = std::move(keyList);
+    const webauthn::SharedKeyList keys = std::move(keyList);
     // On success, check degraded recoverability.
     auto degradedRecoverabilityCompletion = ^(NSError* error) {
       if (error) {
@@ -298,14 +293,13 @@ bool ContainsValidKey(const PasskeyKeychainProvider::SharedKeyList keys,
 - (void)reauthenticateForGaia:(NSString*)gaia
                    credential:(id<Credential>)credential
            canMarkKeysAsStale:(BOOL)canMarkKeysAsStale
-                      purpose:(PasskeyKeychainProvider::ReauthenticatePurpose)
-                                  purpose
+                      purpose:(webauthn::ReauthenticatePurpose)purpose
                    completion:
                        (FetchSecurityDomainSecretCompletionBlock)completion {
   __weak __typeof(self) weakSelf = self;
   _passkeyKeychainProvider->Reauthenticate(
       gaia, _navigationController, _navigationItemTitleView, purpose,
-      base::BindOnce(^(const PasskeyKeychainProvider::SharedKeyList& key_list) {
+      base::BindOnce(^(const webauthn::SharedKeyList& key_list) {
         // If we got nonempty keys, that means the reauthentication was a
         // success. Report this back to the delegate.
         if (!key_list.empty()) {
@@ -364,7 +358,7 @@ bool ContainsValidKey(const PasskeyKeychainProvider::SharedKeyList keys,
 // completion block.
 - (void)
     performUserVerificationIfNeededAndCallCompletionWithKeys:
-        (const PasskeyKeychainProvider::SharedKeyList)keys
+        (const webauthn::SharedKeyList)keys
                                                   completion:
                                                       (FetchSecurityDomainSecretCompletionBlock)
                                                           completion {
