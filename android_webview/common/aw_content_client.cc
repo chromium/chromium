@@ -140,9 +140,13 @@ bool AwContentClient::ShouldAllowDefaultSiteInstanceGroup() {
   return false;
 }
 
-bool AwContentClient::ShouldIgnoreDuplicateNavs() {
-  return base::FeatureList::IsEnabled(features::kWebViewIgnoreDuplicateNavs) &&
-         base::FeatureList::IsEnabled(::features::kIgnoreDuplicateNavs);
+bool AwContentClient::ShouldIgnoreDuplicateNavs(
+    const GURL& url,
+    bool is_renderer_initiated) const {
+  if (!base::FeatureList::IsEnabled(features::kWebViewIgnoreDuplicateNavs)) {
+    return false;
+  }
+  return ContentClient::ShouldIgnoreDuplicateNavs(url, is_renderer_initiated);
 }
 
 bool IsDisableOriginTrialsSafeModeActionOn() {

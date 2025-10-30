@@ -228,7 +228,8 @@ class CONTENT_EXPORT ContentClient {
   virtual bool ShouldAllowDefaultSiteInstanceGroup();
 
   // Returns whether duplicate navigations should be ignored.
-  virtual bool ShouldIgnoreDuplicateNavs();
+  virtual bool ShouldIgnoreDuplicateNavs(const GURL& url,
+                                         bool is_renderer_initiated) const;
 
  private:
   // For SetBrowserClientAlwaysAllowForTesting().
