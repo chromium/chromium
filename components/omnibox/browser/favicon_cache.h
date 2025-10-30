@@ -87,9 +87,9 @@ class FaviconCache : public history::HistoryServiceObserver {
   FRIEND_TEST_ALL_PREFIXES(FaviconCacheTest, ObserveFaviconsChanged);
 
   enum class RequestType {
-    BY_PAGE_URL,
-    BY_ICON_URL,
-    RAW_BY_PAGE_URL,
+    kByPageUrl,
+    kByIconUrl,
+    kRawByPageUrl,
   };
 
   struct Request {
