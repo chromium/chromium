@@ -51,7 +51,7 @@ crypto::obsolete::Md5 MakeMd5HasherForCachetools();
 }
 
 namespace content {
-std::string Md5OfPixelsAsHexForWebTests(base::span<const uint8_t> pixels);
+std::string Md5AsHexForWebTestPixels(base::span<const uint8_t> pixels);
 }
 
 namespace content_suggestions_tile_saver {
@@ -172,7 +172,7 @@ class CRYPTO_EXPORT Md5 {
   friend uint32_t blink::MD5Hash32ForBackgroundTracingHelper(
       std::string_view str);
   friend Md5 cachetool::MakeMd5HasherForCachetools();
-  friend std::string content::Md5OfPixelsAsHexForWebTests(
+  friend std::string content::Md5AsHexForWebTestPixels(
       base::span<const uint8_t> pixels);
   friend Md5 drive::MakeMd5HasherForDriveFsAccount();
   friend Md5 drive::util::MakeMd5HasherForDriveApi();

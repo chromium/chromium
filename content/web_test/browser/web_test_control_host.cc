@@ -124,11 +124,6 @@
 
 namespace content {
 
-std::string Md5OfPixelsAsHexForWebTests(base::span<const uint8_t> pixels) {
-  return base::ToLowerASCII(
-      base::HexEncode(crypto::obsolete::Md5::Hash(pixels)));
-}
-
 namespace {
 
 // The URL used in between two web tests.
@@ -1453,7 +1448,7 @@ void WebTestControlHost::ReportResults() {
         base::span(static_cast<const uint8_t*>(pixel_dump_->getPixels()),
                    pixel_dump_->computeByteSize()));
 
-    OnImageDump(Md5OfPixelsAsHexForWebTests(bytes), *pixel_dump_);
+    OnImageDump(Md5AsHexForWebTestPixels(bytes), *pixel_dump_);
   } else if (!renderer_dump_result_->actual_pixel_hash.empty()) {
     OnImageDump(renderer_dump_result_->actual_pixel_hash,
                 renderer_dump_result_->pixels);
