@@ -102,6 +102,97 @@ TEST(ProxyConfigTest, Equals) {
   EXPECT_TRUE(config2.Equals(config1));
 }
 
+enum class TestCondition {
+  kDefault,
+  kHostMatches,
+  kResultMatches,
+  kNoConditions,
+};
+
+class ProxyConfigOverrideRulesTest
+    : public testing::TestWithParam<testing::tuple<bool, bool, TestCondition>> {
+ public:
+  ProxyConfig::ProxyOverrideRule CreateOverrideRule(
+      bool include_matchers,
+      bool include_proxy_list,
+      TestCondition test_condition) {
+    ProxyConfig::ProxyOverrideRule rule;
+
+    if (include_matchers) {
+      rule.destination_matchers.AddRuleFromString("192.168.1.1");
+      rule.destination_matchers.AddRuleFromString(
+          "[3ffe:2a00:100:7031:0:0::1]");
+      rule.destination_matchers.AddRuleFromString("*.org:443");
+      rule.destination_matchers.AddRuleFromString("www.google.com");
+      rule.destination_matchers.AddRuleFromString("http://www.google.com");
+    }
+
+    if (include_proxy_list) {
+      rule.proxy_list.SetFromPacString("HTTPS foo:333; DIRECT");
+    }
+
+    auto condition = ProxyConfig::ProxyOverrideRule::DnsProbeCondition{
+        .host = url::SchemeHostPort("http", "ads.corps", 321),
+        .result = ProxyConfig::ProxyOverrideRule::DnsProbeCondition::Result::
+            kNotFound,
+    };
+    // Only one condition is changed in the non `kDefault` cases to validate the
+    // entire array is evaluated for equality.
+    switch (test_condition) {
+      case TestCondition::kDefault:
+        break;
+      case TestCondition::kHostMatches:
+        condition.result = ProxyConfig::ProxyOverrideRule::DnsProbeCondition::
+            Result::kResolves;
+        break;
+      case TestCondition::kResultMatches:
+        condition.host = url::SchemeHostPort("http", "other.corps", 321);
+        break;
+      case TestCondition::kNoConditions:
+        return rule;
+    }
+    rule.dns_conditions = {
+        ProxyConfig::ProxyOverrideRule::DnsProbeCondition{
+            .host = url::SchemeHostPort("https", "corp.ads", 123),
+            .result = ProxyConfig::ProxyOverrideRule::DnsProbeCondition::
+                Result::kResolves,
+        },
+        condition};
+
+    return rule;
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ProxyConfigOverrideRulesTest,
+    testing::Combine(testing::Bool(),
+                     testing::Bool(),
+                     testing::Values(TestCondition::kDefault,
+                                     TestCondition::kHostMatches,
+                                     TestCondition::kResultMatches,
+                                     TestCondition::kNoConditions)));
+
+TEST_P(ProxyConfigOverrideRulesTest, Equals) {
+  ProxyConfig config1;
+  ProxyConfig config2;
+
+  config1.set_proxy_override_rules(
+      {CreateOverrideRule(true, true, TestCondition::kDefault)});
+  config2.set_proxy_override_rules(
+      {CreateOverrideRule(std::get<0>(GetParam()), std::get<1>(GetParam()),
+                          std::get<2>(GetParam()))});
+
+  if (std::get<0>(GetParam()) && std::get<1>(GetParam()) &&
+      std::get<2>(GetParam()) == TestCondition::kDefault) {
+    EXPECT_TRUE(config1.Equals(config2));
+    EXPECT_TRUE(config2.Equals(config1));
+  } else {
+    EXPECT_FALSE(config1.Equals(config2));
+    EXPECT_FALSE(config2.Equals(config1));
+  }
+}
+
 #if BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS)
 TEST(ProxyConfigTest, EqualsMultiProxyChains) {
   ProxyConfig config1;

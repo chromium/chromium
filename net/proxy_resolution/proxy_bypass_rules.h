@@ -17,6 +17,11 @@
 
 namespace net {
 
+// TODO(crbug.com/419548922): Rename this class to something more generic like
+// ProxyHostMatchingRules. Its original purpose was solely for proxy bypass
+// logic, but it is now also used for ProxyOverrideRules, making the current
+// name misleading.
+//
 // ProxyBypassRules describes the set of URLs that should bypass the use of a
 // proxy.
 //

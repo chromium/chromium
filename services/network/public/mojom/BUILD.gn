@@ -410,6 +410,7 @@ mojom("mojom_proxy_config") {
   public_deps = [
     ":mojom_network_param",
     "//mojo/public/mojom/base",
+    "//url/mojom:url_mojom_scheme_host_port",
   ]
 
   shared_cpp_typemaps = [

@@ -19,6 +19,7 @@
 #include "net/proxy_resolution/proxy_list.h"
 #include "services/network/public/cpp/network_param_mojom_traits.h"
 #include "services/network/public/mojom/proxy_config.mojom-shared.h"
+#include "url/mojom/scheme_host_port_mojom_traits.h"
 
 // This file handles the serialization of net::ProxyConfig.
 
@@ -54,6 +55,18 @@ struct COMPONENT_EXPORT(NETWORK_CPP_PROXY_CONFIG)
       net::ProxyConfig::ProxyRules::Type net_proxy_rules_type);
   static bool FromMojom(network::mojom::ProxyRulesType mojo_proxy_rules_type,
                         net::ProxyConfig::ProxyRules::Type* out);
+};
+
+template <>
+struct COMPONENT_EXPORT(NETWORK_CPP_PROXY_CONFIG)
+    EnumTraits<network::mojom::ProxyOverrideRuleResult,
+               net::ProxyConfig::ProxyOverrideRule::DnsProbeCondition::Result> {
+ public:
+  static network::mojom::ProxyOverrideRuleResult ToMojom(
+      net::ProxyConfig::ProxyOverrideRule::DnsProbeCondition::Result result);
+  static bool FromMojom(
+      network::mojom::ProxyOverrideRuleResult mojom_result,
+      net::ProxyConfig::ProxyOverrideRule::DnsProbeCondition::Result* out);
 };
 
 template <>
@@ -99,6 +112,45 @@ struct COMPONENT_EXPORT(NETWORK_CPP_PROXY_CONFIG)
 
 template <>
 struct COMPONENT_EXPORT(NETWORK_CPP_PROXY_CONFIG)
+    StructTraits<network::mojom::DnsProbeConditionDataView,
+                 net::ProxyConfig::ProxyOverrideRule::DnsProbeCondition> {
+  static const url::SchemeHostPort& host(
+      const net::ProxyConfig::ProxyOverrideRule::DnsProbeCondition& r) {
+    return r.host;
+  }
+  static net::ProxyConfig::ProxyOverrideRule::DnsProbeCondition::Result result(
+      const net::ProxyConfig::ProxyOverrideRule::DnsProbeCondition& r) {
+    return r.result;
+  }
+
+  static bool Read(network::mojom::DnsProbeConditionDataView data,
+                   net::ProxyConfig::ProxyOverrideRule::DnsProbeCondition* out);
+};
+
+template <>
+struct COMPONENT_EXPORT(NETWORK_CPP_PROXY_CONFIG)
+    StructTraits<network::mojom::ProxyOverrideRuleDataView,
+                 net::ProxyConfig::ProxyOverrideRule> {
+  static net::ProxyBypassRules destination_matchers(
+      const net::ProxyConfig::ProxyOverrideRule& r) {
+    return r.destination_matchers;
+  }
+  static const std::vector<
+      net::ProxyConfig::ProxyOverrideRule::DnsProbeCondition>&
+  dns_conditions(const net::ProxyConfig::ProxyOverrideRule& r) {
+    return r.dns_conditions;
+  }
+  static const net::ProxyList& proxy_list(
+      const net::ProxyConfig::ProxyOverrideRule& r) {
+    return r.proxy_list;
+  }
+
+  static bool Read(network::mojom::ProxyOverrideRuleDataView data,
+                   net::ProxyConfig::ProxyOverrideRule* out);
+};
+
+template <>
+struct COMPONENT_EXPORT(NETWORK_CPP_PROXY_CONFIG)
     StructTraits<network::mojom::ProxyConfigDataView, net::ProxyConfig> {
  public:
   static bool auto_detect(const net::ProxyConfig& r) { return r.auto_detect(); }
@@ -112,6 +164,10 @@ struct COMPONENT_EXPORT(NETWORK_CPP_PROXY_CONFIG)
   static const net::ProxyConfig::ProxyRules& proxy_rules(
       const net::ProxyConfig& r) {
     return r.proxy_rules();
+  }
+  static const std::vector<net::ProxyConfig::ProxyOverrideRule>&
+  proxy_override_rules(const net::ProxyConfig& r) {
+    return r.proxy_override_rules();
   }
   static bool Read(network::mojom::ProxyConfigDataView data,
                    net::ProxyConfig* out_proxy_config);

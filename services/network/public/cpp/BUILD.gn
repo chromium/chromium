@@ -351,6 +351,7 @@ component("proxy_config_mojom_support") {
     "//mojo/public/mojom/base",
     "//net",
     "//services/network/public/mojom:mojom_proxy_config_shared",
+    "//url/mojom:mojom_traits",
   ]
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
   defines = [ "IS_NETWORK_CPP_PROXY_CONFIG_IMPL" ]

@@ -8,6 +8,7 @@
 #include "mojo/public/cpp/bindings/scoped_message_error_crash_key.h"
 #include "net/base/proxy_chain.h"
 #include "net/base/proxy_string_util.h"
+#include "net/proxy_resolution/proxy_bypass_rules.h"
 #include "services/network/public/cpp/network_param_mojom_traits.h"
 #include "url/gurl.h"
 
@@ -86,6 +87,38 @@ bool EnumTraits<network::mojom::ProxyRulesType,
   return false;
 }
 
+network::mojom::ProxyOverrideRuleResult
+EnumTraits<network::mojom::ProxyOverrideRuleResult,
+           net::ProxyConfig::ProxyOverrideRule::DnsProbeCondition::Result>::
+    ToMojom(
+        net::ProxyConfig::ProxyOverrideRule::DnsProbeCondition::Result result) {
+  switch (result) {
+    case net::ProxyConfig::ProxyOverrideRule::DnsProbeCondition::kNotFound:
+      return network::mojom::ProxyOverrideRuleResult::kNotFound;
+    case net::ProxyConfig::ProxyOverrideRule::DnsProbeCondition::kResolves:
+      return network::mojom::ProxyOverrideRuleResult::kResolves;
+  }
+}
+
+bool EnumTraits<
+    network::mojom::ProxyOverrideRuleResult,
+    net::ProxyConfig::ProxyOverrideRule::DnsProbeCondition::Result>::
+    FromMojom(
+        network::mojom::ProxyOverrideRuleResult mojom_result,
+        net::ProxyConfig::ProxyOverrideRule::DnsProbeCondition::Result* out) {
+  switch (mojom_result) {
+    case network::mojom::ProxyOverrideRuleResult::kNotFound:
+      *out = net::ProxyConfig::ProxyOverrideRule::DnsProbeCondition::Result::
+          kNotFound;
+      return true;
+    case network::mojom::ProxyOverrideRuleResult::kResolves:
+      *out = net::ProxyConfig::ProxyOverrideRule::DnsProbeCondition::Result::
+          kResolves;
+      return true;
+  }
+  return false;
+}
+
 bool StructTraits<network::mojom::ProxyRulesDataView,
                   net::ProxyConfig::ProxyRules>::
     Read(network::mojom::ProxyRulesDataView data,
@@ -100,10 +133,33 @@ bool StructTraits<network::mojom::ProxyRulesDataView,
          data.ReadFallbackProxies(&out_proxy_rules->fallback_proxies);
 }
 
+bool StructTraits<network::mojom::DnsProbeConditionDataView,
+                  net::ProxyConfig::ProxyOverrideRule::DnsProbeCondition>::
+    Read(network::mojom::DnsProbeConditionDataView data,
+         net::ProxyConfig::ProxyOverrideRule::DnsProbeCondition* out) {
+  return data.ReadHost(&out->host) && data.ReadResult(&out->result);
+}
+
+bool StructTraits<network::mojom::ProxyOverrideRuleDataView,
+                  net::ProxyConfig::ProxyOverrideRule>::
+    Read(network::mojom::ProxyOverrideRuleDataView data,
+         net::ProxyConfig::ProxyOverrideRule* out) {
+  return data.ReadDestinationMatchers(&out->destination_matchers) &&
+         data.ReadProxyList(&out->proxy_list) &&
+         data.ReadDnsConditions(&out->dns_conditions) &&
+         !out->destination_matchers.rules().empty() &&
+         !out->proxy_list.IsEmpty();
+}
 
 bool StructTraits<network::mojom::ProxyConfigDataView, net::ProxyConfig>::Read(
     network::mojom::ProxyConfigDataView data,
     net::ProxyConfig* out_proxy_config) {
+  std::vector<net::ProxyConfig::ProxyOverrideRule> proxy_override_rules;
+  if (!data.ReadProxyOverrideRules(&proxy_override_rules)) {
+    return false;
+  }
+  out_proxy_config->set_proxy_override_rules(std::move(proxy_override_rules));
+
   std::string pac_url;
   if (!data.ReadPacUrl(&pac_url) ||
       !data.ReadProxyRules(&out_proxy_config->proxy_rules())) {

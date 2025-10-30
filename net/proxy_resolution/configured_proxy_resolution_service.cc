@@ -969,6 +969,13 @@ int ConfiguredProxyResolutionService::ResolveProxy(
   if (current_state_ == STATE_NONE)
     ApplyProxyConfigIfAvailable();
 
+  // TODO(crbug.com/419548922): Remove this once override rules are supported.
+  // This is just to ensure nothing starts relying on these override rule APIs
+  // until they are fully implemented.
+  if (fetched_config_) {
+    CHECK(fetched_config_->value().proxy_override_rules().empty());
+  }
+
   // Sanitize the URL before passing it on to the proxy resolver (i.e. PAC
   // script). The goal is to remove sensitive data (like embedded user names
   // and password), and local data (i.e. reference fragment) which does not need

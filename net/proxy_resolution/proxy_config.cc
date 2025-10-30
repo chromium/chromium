@@ -241,6 +241,29 @@ const ProxyList* ProxyConfig::ProxyRules::GetProxyListForWebSocketScheme()
   return nullptr;
 }
 
+ProxyConfig::ProxyOverrideRule::ProxyOverrideRule() = default;
+ProxyConfig::ProxyOverrideRule::ProxyOverrideRule(
+    const ProxyConfig::ProxyOverrideRule& other) = default;
+ProxyConfig::ProxyOverrideRule& ProxyConfig::ProxyOverrideRule::operator=(
+    const ProxyOverrideRule& other) = default;
+ProxyConfig::ProxyOverrideRule::ProxyOverrideRule(ProxyOverrideRule&& other) =
+    default;
+ProxyConfig::ProxyOverrideRule& ProxyConfig::ProxyOverrideRule::operator=(
+    ProxyOverrideRule&& other) = default;
+ProxyConfig::ProxyOverrideRule::~ProxyOverrideRule() = default;
+
+bool ProxyConfig::ProxyOverrideRule::operator==(
+    const ProxyOverrideRule& other) const {
+  return destination_matchers == other.destination_matchers &&
+         dns_conditions == other.dns_conditions &&
+         proxy_list.Equals(other.proxy_list);
+}
+
+bool ProxyConfig::ProxyOverrideRule::DnsProbeCondition::operator==(
+    const DnsProbeCondition& other) const {
+  return host == other.host && result == other.result;
+}
+
 ProxyConfig::ProxyConfig() = default;
 
 ProxyConfig::ProxyConfig(const ProxyConfig& config) = default;
@@ -254,7 +277,8 @@ ProxyConfig& ProxyConfig::operator=(ProxyConfig&& config) = default;
 ProxyConfig::~ProxyConfig() = default;
 
 bool ProxyConfig::Equals(const ProxyConfig& other) const {
-  return auto_detect_ == other.auto_detect_ && pac_url_ == other.pac_url_ &&
+  return proxy_override_rules_ == other.proxy_override_rules_ &&
+         auto_detect_ == other.auto_detect_ && pac_url_ == other.pac_url_ &&
          pac_mandatory_ == other.pac_mandatory_ &&
          from_system_ == other.from_system_ &&
          proxy_rules_.Equals(other.proxy_rules());
