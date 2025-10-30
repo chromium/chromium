@@ -7,6 +7,7 @@
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/widget_promo_instructions/widget_promo_instructions_constants.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_view_controller.h"
 #import "ios/chrome/common/ui/instruction_view/instruction_view.h"
@@ -91,7 +92,7 @@
   instructionsViewController.subtitleString =
       l10n_util::GetNSString(IDS_IOS_WIDGET_PROMO_INSTRUCTIONS_SUBTITLE);
   instructionsViewController.subtitleTextStyle = UIFontTextStyleBody;
-  instructionsViewController.secondaryActionString =
+  instructionsViewController.configuration.secondaryActionString =
       l10n_util::GetNSString(IDS_CLOSE);
   instructionsViewController.showDismissBarButton = NO;
   instructionsViewController.topAlignedLayout = YES;

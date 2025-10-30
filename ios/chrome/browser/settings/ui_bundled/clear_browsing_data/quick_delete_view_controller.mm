@@ -26,6 +26,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/content_configuration/table_view_cell_content_configuration.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -130,10 +131,11 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
   self.titleTextStyle = UIFontTextStyleTitle2;
   self.titleString = l10n_util::GetNSString(IDS_IOS_CLEAR_BROWSING_DATA_TITLE);
   self.customSpacing = kTitleVerticalPadding;
-  self.primaryActionString =
+  self.configuration.primaryActionString =
       l10n_util::GetNSString(IDS_IOS_DELETE_BROWSING_DATA_BUTTON);
-  self.secondaryActionString =
+  self.configuration.secondaryActionString =
       l10n_util::GetNSString(IDS_IOS_DELETE_BROWSING_DATA_CANCEL);
+  self.configuration.primaryButtonStyle = ChromeButtonStylePrimaryDestructive;
 
   self.underTitleView = _tableView;
 
@@ -142,7 +144,6 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
   self.topAlignedLayout = YES;
   self.customContentBottomInset = 0;
   self.actionHandler = self;
-  self.destructiveAction = YES;
 
   [super viewDidLoad];
 
@@ -374,8 +375,7 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
 - (void)deletionInProgress {
   self.primaryActionButton.accessibilityLabel =
       l10n_util::GetNSString(IDS_IOS_DELETE_BROWSING_DATA_IN_PROGRESS_NOTICE);
-  self.isLoading = YES;
-  self.isConfirmed = NO;
+  [self setLoading:YES];
 
   self.view.window.userInteractionEnabled = NO;
   // Disable accessibility elements on entire window to avoid Voiceover focusing
@@ -392,8 +392,8 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
   self.view.window.userInteractionEnabled = YES;
   self.view.window.accessibilityElementsHidden = NO;
 
-  self.isLoading = NO;
-  self.isConfirmed = YES;
+  [self setLoading:NO];
+  [self setConfirmed:YES];
   TriggerHapticFeedbackForNotification(UINotificationFeedbackTypeSuccess);
 
   // If Voiceover is enabled, inform users that their browsing data has been
