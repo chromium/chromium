@@ -151,6 +151,14 @@ void DwaService::Purge() {
   reporting_service_.unsent_log_store()->Purge();
 }
 
+void DwaService::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void DwaService::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
 void DwaService::RefreshEncryptionPublicKey() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -208,6 +216,9 @@ void DwaService::HandleEncryptionPublicKeyRefresh(
     }
 
     encryption_public_key_ = encryption_public_key;
+    for (Observer& observer : observers_) {
+      observer.OnEncryptionPublicKeyChanged(*cwt);
+    }
   }
 }
 
