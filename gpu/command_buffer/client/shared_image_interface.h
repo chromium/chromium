@@ -265,16 +265,6 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT SharedImageInterface
   virtual scoped_refptr<ClientSharedImage> ImportSharedImage(
       ExportedSharedImage exported_shared_image) = 0;
 
-  struct GPU_COMMAND_BUFFER_CLIENT_EXPORT SwapChainSharedImages {
-    SwapChainSharedImages(scoped_refptr<gpu::ClientSharedImage> front_buffer,
-                          scoped_refptr<gpu::ClientSharedImage> back_buffer);
-    SwapChainSharedImages(const SwapChainSharedImages& shared_images);
-    ~SwapChainSharedImages();
-
-    scoped_refptr<gpu::ClientSharedImage> front_buffer;
-    scoped_refptr<gpu::ClientSharedImage> back_buffer;
-  };
-
 #if BUILDFLAG(IS_FUCHSIA)
   // Registers a sysmem buffer collection. `service_handle` contains a handle
   // for the eventpair that controls the lifetime of the collection. The
