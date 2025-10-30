@@ -39,6 +39,8 @@
 
 namespace blink {
 namespace {
+using PacketSendParameters = webrtc::DatagramConnection::PacketSendParameters;
+
 // Maximum known size (SHA-512). See
 // third_party/webrtc/rtc_base/message_digest.h
 const size_t kMaxDigestSize = 64;
@@ -216,9 +218,12 @@ class AsyncDatagramConnectionImpl : public AsyncDatagramConnection {
             [](webrtc::scoped_refptr<webrtc::DatagramConnection>
                    datagram_connection,
                std::unique_ptr<Vector<Vector<uint8_t>>> packet_payloads) {
+              std::vector<PacketSendParameters> send_params;
+              send_params.reserve(packet_payloads->size());
               for (const Vector<uint8_t>& payload : *packet_payloads) {
-                datagram_connection->SendPacket(payload);
+                send_params.push_back(PacketSendParameters{.payload = payload});
               }
+              datagram_connection->SendPackets(send_params);
             },
             datagram_connection_, std::move(packet_payloads)));
   }
@@ -481,6 +486,7 @@ void RtcTransport::sendPackets(
     return;
   }
   auto packet_payloads = std::make_unique<Vector<Vector<uint8_t>>>();
+  packet_payloads->reserve(packets.size());
   for (const auto& packet : packets) {
     packet_payloads->emplace_back(packet->data()->ByteSpan());
   }

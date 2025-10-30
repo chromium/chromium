@@ -484,13 +484,16 @@ TEST_F(RtcTransportMultithreadedTest, SendPackets) {
 
   size_t packets_sent = 0;
   base::RunLoop run_loop;
-  EXPECT_CALL(*mock_sync_connection_, SendPacket(_))
-      .WillRepeatedly(testing::InvokeWithoutArgs([&]() {
-        if (++packets_sent == kPacketCount) {
+  EXPECT_CALL(*mock_sync_connection_, SendPackets(_))
+      .WillRepeatedly([&](webrtc::ArrayView<
+                          webrtc::DatagramConnection::PacketSendParameters>
+                              packet_payloads) {
+        packets_sent += packet_payloads.size();
+        if (packets_sent == kPacketCount) {
           run_loop.Quit();
         }
         return true;
-      }));
+      });
 
   HeapVector<Member<RtcSendPacketParameters>> packets;
   for (size_t i = 0; i < kPacketCount; i++) {

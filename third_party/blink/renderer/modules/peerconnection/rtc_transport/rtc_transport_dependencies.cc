@@ -156,7 +156,7 @@ RtcTransportDependencies::RtcTransportDependencies(ExecutionContext& context,
                 std::make_unique<IpcPacketSocketFactory>(
                     CrossThreadBindRepeating(devtools_token_getter),
                     p2p_socket_dispatcher, kRtcTransportTrafficAnnotation,
-                    /*batch_udp_packets=*/false);
+                    /*batch_udp_packets=*/true);
 
             PostCrossThreadTask(
                 *task_runner, FROM_HERE,
