@@ -721,7 +721,7 @@ bool WASAPIAudioInputStream::UpdateFormats() {
   sample_format_ = kSampleFormatS16;
   input_format_.SubFormat = KSDATAFORMAT_SUBTYPE_PCM;
   output_format_.wFormatTag = WAVE_FORMAT_PCM;
-  if (base::FeatureList::IsEnabled(kWasapiInputUseDeviceSampleFormat)) {
+  if (use_device_sample_format_) {
     // Get the format the audio engine uses.
     WAVEFORMATEXTENSIBLE mix_format;
     HRESULT hr =
