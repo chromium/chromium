@@ -135,6 +135,13 @@ void SidePanelCoordinator::Show(
     SetOpenedTimestamp(entry->type(), base::TimeTicks::Now());
     SidePanelUtil::RecordSidePanelOpen(entry->type(), open_trigger);
 
+    // If opening the toolbar height side panel, make sure the content height
+    // side panel is closed.
+    if (entry->type() == SidePanelEntry::PanelType::kToolbar &&
+        IsSidePanelShowing(SidePanelEntry::PanelType::kContent)) {
+      Close(/*suppress_animations=*/true, SidePanelEntry::PanelType::kContent);
+    }
+
     if (entry->type() == SidePanelEntry::PanelType::kContent) {
       // Record usage for side panel promo.
       feature_engagement::TrackerFactory::GetForBrowserContext(
