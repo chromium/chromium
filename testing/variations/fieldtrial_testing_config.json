@@ -23733,14 +23733,14 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_WithMenu",
+                    "name": "Enabled_WithClose",
                     "params": {
                         "drop_target_nudge_to_full_max_width": "360",
                         "drop_target_nudge_to_full_min_width": "120",
                         "drop_target_nudge_to_full_width_percentage": "15",
                         "drop_target_show_delay": "1400ms",
                         "drop_target_width_percentage": "15",
-                        "mini_toolbar_active_config": "showmenu"
+                        "mini_toolbar_active_config": "showclose"
                     },
                     "enable_features": [
                         "CloseActiveTabInSplitViewViaHotkey",
