@@ -18,8 +18,10 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
 #include "pdf/paint_ready_rect.h"
 #include "pdf/pdf_features.h"
 #include "third_party/skia/include/core/SkCanvas.h"
@@ -197,9 +199,6 @@ void PaintManager::EnsureCallbackPending() {
 void PaintManager::DoPaint() {
   base::AutoReset<bool> auto_reset_in_paint(&in_paint_, true);
 
-  std::vector<PaintReadyRect> ready_rects;
-  std::vector<gfx::Rect> pending_rects;
-
   DCHECK(aggregator_.HasPendingUpdate());
 
   // Apply any pending resize. Setting the graphics to this class must happen
@@ -247,6 +246,13 @@ void PaintManager::DoPaint() {
   }
 
   PaintAggregator::PaintUpdate update = aggregator_.GetPendingUpdate();
+
+  // Set a timer here to check how long it takes to do all the paint operations
+  // below, except for the flush.
+  const base::TimeTicks begin_time = base::TimeTicks::Now();
+
+  std::vector<PaintReadyRect> ready_rects;
+  std::vector<gfx::Rect> pending_rects;
   client_->OnPaint(update.paint_rects, ready_rects, pending_rects);
 
   if (ready_rects.empty() && pending_rects.empty()) {
@@ -311,7 +317,13 @@ void PaintManager::DoPaint() {
         SkCanvas::kStrict_SrcRectConstraint);
   }
 
+  base::UmaHistogramMediumTimes("PDF.RenderAndPaintTime",
+                                base::TimeTicks::Now() - begin_time);
+
   Flush();
+
+  base::UmaHistogramMediumTimes("PDF.RenderPaintAndFlushTime",
+                                base::TimeTicks::Now() - begin_time);
 
   first_paint_ = false;
 }

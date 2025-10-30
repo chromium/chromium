@@ -9,6 +9,7 @@
 
 #include "base/files/file_path.h"
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "cc/test/pixel_comparator.h"
 #include "cc/test/pixel_test_utils.h"
 #include "pdf/paint_ready_rect.h"
@@ -33,6 +34,9 @@ namespace {
 
 using ::testing::_;
 using ::testing::NiceMock;
+
+constexpr char kRenderAndPaintTimeMetric[] = "PDF.RenderAndPaintTime";
+constexpr char kRenderPaintAndFlushTimeMetric[] = "PDF.RenderPaintAndFlushTime";
 
 base::FilePath GetTestDataFilePath(std::string_view filename) {
   return base::FilePath(FILE_PATH_LITERAL("paint_manager"))
@@ -261,6 +265,8 @@ TEST_F(PaintManagerTest, ClearTransform) {
 }
 
 TEST_F(PaintManagerTest, DoPaintFirst) {
+  base::HistogramTester histograms;
+
   paint_manager_.SetSize({400, 300}, 2.0f);
 
   sk_sp<SkImage> snapshot =
@@ -272,9 +278,14 @@ TEST_F(PaintManagerTest, DoPaintFirst) {
   ASSERT_TRUE(snapshot);
   EXPECT_TRUE(
       MatchesPngFile(*snapshot, GetTestDataFilePath("do_paint_first.png")));
+
+  histograms.ExpectTotalCount(kRenderAndPaintTimeMetric, 1);
+  histograms.ExpectTotalCount(kRenderPaintAndFlushTimeMetric, 1);
 }
 
 TEST_F(PaintManagerTest, PaintImage) {
+  base::HistogramTester histograms;
+
   // Painted area is within the plugin area and the source image.
   TestPaintImage(/*plugin_size=*/{20, 20}, /*source_size=*/{15, 15},
                  /*paint_rect=*/{0, 0, 10, 10},
@@ -294,9 +305,14 @@ TEST_F(PaintManagerTest, PaintImage) {
   TestPaintImage(/*plugin_size=*/{15, 15}, /*source_size=*/{5, 5},
                  /*paint_rect=*/{10, 10, 5, 5},
                  /*overlapped_rect=*/{0, 0, 0, 0});
+
+  histograms.ExpectTotalCount(kRenderAndPaintTimeMetric, 4);
+  histograms.ExpectTotalCount(kRenderPaintAndFlushTimeMetric, 4);
 }
 
 TEST_F(PaintManagerTest, Scroll) {
+  base::HistogramTester histograms;
+
   paint_manager_.SetSize({4, 5}, 1.0f);
 
   TestScroll(/*scroll_amount=*/{1, 0}, /*expected_paint_rect=*/{0, 0, 1, 5},
@@ -307,9 +323,14 @@ TEST_F(PaintManagerTest, Scroll) {
              "scroll_down.png");
   TestScroll(/*scroll_amount=*/{0, -3}, /*expected_paint_rect=*/{0, 2, 4, 3},
              "scroll_up.png");
+
+  histograms.ExpectTotalCount(kRenderAndPaintTimeMetric, 8);
+  histograms.ExpectTotalCount(kRenderPaintAndFlushTimeMetric, 8);
 }
 
 TEST_F(PaintManagerTest, ScrollIgnored) {
+  base::HistogramTester histograms;
+
   paint_manager_.SetSize({4, 5}, 1.0f);
 
   // Scroll to the edge of the plugin area.
@@ -331,6 +352,9 @@ TEST_F(PaintManagerTest, ScrollIgnored) {
              "scroll_ignored.png");
   TestScroll(/*scroll_amount=*/{0, -9}, /*expected_paint_rect=*/{0, 0, 4, 5},
              "scroll_ignored.png");
+
+  histograms.ExpectTotalCount(kRenderAndPaintTimeMetric, 16);
+  histograms.ExpectTotalCount(kRenderPaintAndFlushTimeMetric, 16);
 }
 
 }  // namespace

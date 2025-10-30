@@ -260,13 +260,34 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PDF.RenderAndPaintTime" units="ms" expires_after="2026-03-22">
+  <owner>thestig@chromium.org</owner>
+  <owner>ask@chromium.org</owner>
+  <summary>
+    Time used for a full paint operation cycle in the PDF viewer, sans time
+    spent to flush afterwards. This encompasses multiple
+    PDF.RenderAndPaintVisiblePagesTime records.
+  </summary>
+</histogram>
+
 <histogram name="PDF.RenderAndPaintVisiblePagesTime" units="ms"
     expires_after="2026-03-22">
-  <owner>nigi@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
+  <owner>ask@chromium.org</owner>
   <summary>
-    Time used for rendering and painting all the visible pages in the PDF
-    viewer.
+    Time used for rendering and painting all the visible pages in the PDF viewer
+    that require repainting because they intersect a damaged rect.
+  </summary>
+</histogram>
+
+<histogram name="PDF.RenderPaintAndFlushTime" units="ms"
+    expires_after="2026-03-22">
+  <owner>thestig@chromium.org</owner>
+  <owner>ask@chromium.org</owner>
+  <summary>
+    Time used for a full paint operation cycle in the PDF viewer, including time
+    spent to flush afterwards. This encompasses multiple
+    PDF.RenderAndPaintVisiblePagesTime records.
   </summary>
 </histogram>
 
