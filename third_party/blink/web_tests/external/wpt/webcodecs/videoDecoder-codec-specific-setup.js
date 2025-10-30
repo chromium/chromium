@@ -85,9 +85,9 @@ const H264_SEI_AVC_DATA = {
     displayAspectHeight: 240,
   },
   chunks: [
-    {offset: 48, size: 4229}, {offset: 4277, size: 1114},
+    {offset: 48, size: 4229, key: true}, {offset: 4277, size: 1114},
     {offset: 5391, size: 320}, {offset: 5711, size: 188},
-    {offset: 5899, size: 173}, {offset: 6072, size: 3694},
+    {offset: 5899, size: 173}, {offset: 6072, size: 3694, key: true},
     {offset: 9766, size: 936}, {offset: 10702, size: 345},
     {offset: 11047, size: 213}, {offset: 11260, size: 210}
   ]
@@ -121,9 +121,9 @@ const H264_SEI_ANNEXB_DATA = {
     displayAspectHeight: 240,
   },
   chunks: [
-    {offset: 0, size: 4264}, {offset: 4264, size: 1112},
+    {offset: 0, size: 4264, key: true}, {offset: 4264, size: 1112},
     {offset: 5376, size: 318}, {offset: 5694, size: 186},
-    {offset: 5880, size: 171}, {offset: 6051, size: 3729},
+    {offset: 5880, size: 171}, {offset: 6051, size: 3729, key: true},
     {offset: 9780, size: 934}, {offset: 10714, size: 343},
     {offset: 11057, size: 211}, {offset: 11268, size: 208}
   ]
@@ -242,7 +242,11 @@ promise_setup(async () => {
 
   CHUNK_DATA = data.chunks.map((chunk, i) => view(buf, chunk));
 
-  CHUNKS = CHUNK_DATA.map(
-      (data, i) => new EncodedVideoChunk(
-          {type: i == 0 ? 'key' : 'delta', timestamp: i, duration: 1, data}));
+  CHUNKS =
+      CHUNK_DATA.map((encoded_data, i) => new EncodedVideoChunk({
+                       type: (i == 0 || data.chunks[i].key) ? 'key' : 'delta',
+                       timestamp: i,
+                       duration: 1,
+                       data: encoded_data
+                     }));
 });
