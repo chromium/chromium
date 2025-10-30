@@ -13,6 +13,7 @@ mod pack;
 mod parse_messages;
 mod parse_primitives;
 mod parse_values;
+mod parsing_trait;
 
 pub use crate::ast::*;
 pub use crate::deparse_values::*;
@@ -20,3 +21,4 @@ pub use crate::pack::*;
 pub use crate::parse_messages::*;
 pub use crate::parse_primitives::ParserData;
 pub use crate::parse_values::*;
+pub use crate::parsing_trait::*;
