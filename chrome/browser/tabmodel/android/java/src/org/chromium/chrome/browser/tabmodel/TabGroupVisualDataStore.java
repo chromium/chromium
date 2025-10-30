@@ -15,9 +15,12 @@ import org.chromium.base.Token;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabGroupCollectionData;
 import org.chromium.components.tab_groups.TabGroupColorId;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -36,6 +39,7 @@ public class TabGroupVisualDataStore {
     private static final String COLOR_INITIAL_MIGRATION_CHECK = "migration_check";
     private static final int COLOR_INITIAL_MIGRATION_NOT_DONE = 0;
     private static final int COLOR_INITIAL_MIGRATION_DONE = 1;
+    private static final Map<Token, TabGroupCollectionData> sGroupsCache = new HashMap<>();
 
     /**
      * Deletes all the data for keys not in {@code tabGroupTokenIdStrings}. This should only be
@@ -255,9 +259,14 @@ public class TabGroupVisualDataStore {
      * This method fetches a tab group title with the related tab group ID.
      *
      * @param tabGroupId The tab group ID whose related tab group title will be fetched.
-     * @return The stored title of the target tab group, default value is null.
+     * @return The stored title of the target tab group, default value is null. If the group is
+     *     present in the cache, data will be read from there first.
      */
     /* package */ static @Nullable String getTabGroupTitle(Token tabGroupId) {
+        if (sGroupsCache.containsKey(tabGroupId)) {
+            TabGroupCollectionData groupCollectionData = sGroupsCache.get(tabGroupId);
+            return groupCollectionData.getTitle();
+        }
         return getTokenTitleSharedPreferences().getString(tabGroupId.toString(), null);
     }
 
@@ -289,9 +298,13 @@ public class TabGroupVisualDataStore {
      * This method fetches a tab group color for the related tab group ID.
      *
      * @param tabGroupId The tab group ID whose related tab group color will be fetched.
-     * @return The stored color of the target tab group, default value is -1 (INVALID_COLOR_ID).
+     * @return The stored color of the target tab group, default value is -1 (INVALID_COLOR_ID). If
+     *     the group is present in the cache, data will be read from there first.
      */
     /* package */ static int getTabGroupColor(Token tabGroupId) {
+        if (sGroupsCache.containsKey(tabGroupId)) {
+            return sGroupsCache.get(tabGroupId).getColor();
+        }
         return getTokenColorSharedPreferences()
                 .getInt(tabGroupId.toString(), TabGroupColorUtils.INVALID_COLOR_ID);
     }
@@ -331,9 +344,13 @@ public class TabGroupVisualDataStore {
      * This method fetches the collapsed state of a tab group with reference to {@code tabGroupId}.
      *
      * @param tabGroupId The tab group ID whose related group's collapsed state will be fetched.
-     * @return Whether the tab group is collapsed or expanded.
+     * @return Whether the tab group is collapsed or expanded. If the group is present in the cache,
+     *     data will be read from there first.
      */
     /* package */ static boolean getTabGroupCollapsed(Token tabGroupId) {
+        if (sGroupsCache.containsKey(tabGroupId)) {
+            return sGroupsCache.get(tabGroupId).isCollapsed();
+        }
         return getTokenCollapsedSharedPreferences().getBoolean(tabGroupId.toString(), false);
     }
 
@@ -351,6 +368,31 @@ public class TabGroupVisualDataStore {
         deleteTabGroupTitle(tabGroupId);
         deleteTabGroupColor(tabGroupId);
         deleteTabGroupCollapsed(tabGroupId);
+    }
+
+    /**
+     * Caches a list of tab group visual data. This data is higher priority to, and will be fetched
+     * prior to data in SharedPrefs.
+     *
+     * @param groups An array of {@link TabGroupCollectionData} objects representing the tab groups
+     *     to cache.
+     */
+    public static void cacheGroups(TabGroupCollectionData[] groups) {
+        for (TabGroupCollectionData data : groups) {
+            sGroupsCache.put(data.getTabGroupId(), data);
+        }
+    }
+
+    /**
+     * Removes the associated tab group data from the list of cached groups, if present.
+     *
+     * @param groups An array of {@link TabGroupCollectionData} objects representing the cached tab
+     *     groups to remove.
+     */
+    public static void removeCachedGroups(TabGroupCollectionData[] groups) {
+        for (TabGroupCollectionData data : groups) {
+            sGroupsCache.remove(data.getTabGroupId());
+        }
     }
 
     // Migration methods.

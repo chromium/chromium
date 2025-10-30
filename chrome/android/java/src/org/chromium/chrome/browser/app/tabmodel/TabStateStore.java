@@ -19,6 +19,7 @@ import org.chromium.chrome.browser.tab.CollectionSaveForwarder;
 import org.chromium.chrome.browser.tab.StorageLoadedData;
 import org.chromium.chrome.browser.tab.StorageLoadedData.LoadedTabState;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabGroupCollectionData;
 import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tab.TabStateAttributes;
@@ -27,6 +28,7 @@ import org.chromium.chrome.browser.tab.TabStateStorageService;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterObserver;
+import org.chromium.chrome.browser.tabmodel.TabGroupVisualDataStore;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -342,12 +344,18 @@ public class TabStateStore implements TabPersistentStore {
 
     private void onDataLoaded(StorageLoadedData data, long loadStartTime) {
         LoadedTabState[] loadedTabStates = data.getLoadedTabStates();
+        TabGroupCollectionData[] groupsData = data.getGroupsData();
+
         long duration = SystemClock.elapsedRealtime() - loadStartTime;
         RecordHistogram.recordTimesHistogram("Tabs.TabStateStore.LoadAllTabsDuration", duration);
 
         mRestoredTabCount = loadedTabStates.length;
         for (TabPersistentStoreObserver observer : mObservers) {
             observer.onInitialized(mRestoredTabCount);
+        }
+
+        if (ChromeFeatureList.sTabStorageSqlitePrototypeAuthoritativeReadSource.getValue()) {
+            TabGroupVisualDataStore.cacheGroups(groupsData);
         }
 
         for (int i = 0; i < loadedTabStates.length; i++) {
@@ -373,6 +381,10 @@ public class TabStateStore implements TabPersistentStore {
                         /* isIncognito= */ false,
                         /* fromMerge= */ false);
             }
+        }
+
+        if (ChromeFeatureList.sTabStorageSqlitePrototypeAuthoritativeReadSource.getValue()) {
+            TabGroupVisualDataStore.removeCachedGroups(groupsData);
         }
 
         for (TabPersistentStoreObserver observer : mObservers) {

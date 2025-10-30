@@ -4,12 +4,12 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
-import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
-
-import static org.hamcrest.CoreMatchers.equalTo;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -17,6 +17,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.tab.TabGroupCollectionData;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -33,7 +34,7 @@ public class TabGroupVisualDataStoreUnitTest {
     @Test
     public void testStoreAndGetTabGroupTitle() {
         TabGroupVisualDataStore.storeTabGroupTitle(TAB_ID, TAB_TITLE);
-        assertThat(TabGroupVisualDataStore.getTabGroupTitle(TAB_ID), equalTo(TAB_TITLE));
+        assertEquals(TAB_TITLE, TabGroupVisualDataStore.getTabGroupTitle(TAB_ID));
     }
 
     @Test
@@ -51,7 +52,7 @@ public class TabGroupVisualDataStoreUnitTest {
     @Test
     public void testDeleteTabGroupTitle() {
         TabGroupVisualDataStore.storeTabGroupTitle(TAB_ID, TAB_TITLE);
-        assertThat(TabGroupVisualDataStore.getTabGroupTitle(TAB_ID), equalTo(TAB_TITLE));
+        assertEquals(TAB_TITLE, TabGroupVisualDataStore.getTabGroupTitle(TAB_ID));
 
         TabGroupVisualDataStore.deleteTabGroupTitle(TAB_ID);
         assertNull(TabGroupVisualDataStore.getTabGroupTitle(TAB_ID));
@@ -60,18 +61,18 @@ public class TabGroupVisualDataStoreUnitTest {
     @Test
     public void testStoreAndGetTabGroupColor() {
         TabGroupVisualDataStore.storeTabGroupColor(TAB_ID, TAB_COLOR);
-        assertThat(TabGroupVisualDataStore.getTabGroupColor(TAB_ID), equalTo(TAB_COLOR));
+        assertEquals(TAB_COLOR, TabGroupVisualDataStore.getTabGroupColor(TAB_ID));
     }
 
     @Test
     public void testDeleteTabGroupColor() {
         TabGroupVisualDataStore.storeTabGroupColor(TAB_ID, TAB_COLOR);
-        assertThat(TabGroupVisualDataStore.getTabGroupColor(TAB_ID), equalTo(TAB_COLOR));
+        assertEquals(TAB_COLOR, TabGroupVisualDataStore.getTabGroupColor(TAB_ID));
 
         TabGroupVisualDataStore.deleteTabGroupColor(TAB_ID);
-        assertThat(
-                TabGroupVisualDataStore.getTabGroupColor(TAB_ID),
-                equalTo(TabGroupColorUtils.INVALID_COLOR_ID));
+        assertEquals(
+                TabGroupColorUtils.INVALID_COLOR_ID,
+                TabGroupVisualDataStore.getTabGroupColor(TAB_ID));
     }
 
     @Test
@@ -102,7 +103,7 @@ public class TabGroupVisualDataStoreUnitTest {
     @Test
     public void testStoreAndGetTabGroupTitle_Token() {
         TabGroupVisualDataStore.storeTabGroupTitle(TOKEN_ID, TAB_TITLE);
-        assertThat(TabGroupVisualDataStore.getTabGroupTitle(TOKEN_ID), equalTo(TAB_TITLE));
+        assertEquals(TAB_TITLE, TabGroupVisualDataStore.getTabGroupTitle(TOKEN_ID));
     }
 
     @Test
@@ -120,7 +121,7 @@ public class TabGroupVisualDataStoreUnitTest {
     @Test
     public void testDeleteTabGroupTitle_Token() {
         TabGroupVisualDataStore.storeTabGroupTitle(TOKEN_ID, TAB_TITLE);
-        assertThat(TabGroupVisualDataStore.getTabGroupTitle(TOKEN_ID), equalTo(TAB_TITLE));
+        assertEquals(TAB_TITLE, TabGroupVisualDataStore.getTabGroupTitle(TOKEN_ID));
 
         TabGroupVisualDataStore.deleteTabGroupTitle(TOKEN_ID);
         assertNull(TabGroupVisualDataStore.getTabGroupTitle(TOKEN_ID));
@@ -129,18 +130,18 @@ public class TabGroupVisualDataStoreUnitTest {
     @Test
     public void testStoreAndGetTabGroupColor_Token() {
         TabGroupVisualDataStore.storeTabGroupColor(TOKEN_ID, TAB_COLOR);
-        assertThat(TabGroupVisualDataStore.getTabGroupColor(TOKEN_ID), equalTo(TAB_COLOR));
+        assertEquals(TAB_COLOR, TabGroupVisualDataStore.getTabGroupColor(TOKEN_ID));
     }
 
     @Test
     public void testDeleteTabGroupColor_Token() {
         TabGroupVisualDataStore.storeTabGroupColor(TOKEN_ID, TAB_COLOR);
-        assertThat(TabGroupVisualDataStore.getTabGroupColor(TOKEN_ID), equalTo(TAB_COLOR));
+        assertEquals(TAB_COLOR, TabGroupVisualDataStore.getTabGroupColor(TOKEN_ID));
 
         TabGroupVisualDataStore.deleteTabGroupColor(TOKEN_ID);
-        assertThat(
-                TabGroupVisualDataStore.getTabGroupColor(TOKEN_ID),
-                equalTo(TabGroupColorUtils.INVALID_COLOR_ID));
+        assertEquals(
+                TabGroupColorUtils.INVALID_COLOR_ID,
+                TabGroupVisualDataStore.getTabGroupColor(TOKEN_ID));
     }
 
     @Test
@@ -167,16 +168,16 @@ public class TabGroupVisualDataStoreUnitTest {
         TabGroupVisualDataStore.storeTabGroupColor(TOKEN_ID, TAB_COLOR);
         TabGroupVisualDataStore.storeTabGroupCollapsed(TOKEN_ID, true);
 
-        assertThat(TabGroupVisualDataStore.getTabGroupTitle(TOKEN_ID), equalTo(TAB_TITLE));
-        assertThat(TabGroupVisualDataStore.getTabGroupColor(TOKEN_ID), equalTo(TAB_COLOR));
+        assertEquals(TAB_TITLE, TabGroupVisualDataStore.getTabGroupTitle(TOKEN_ID));
+        assertEquals(TAB_COLOR, TabGroupVisualDataStore.getTabGroupColor(TOKEN_ID));
         assertTrue(TabGroupVisualDataStore.getTabGroupCollapsed(TOKEN_ID));
 
         TabGroupVisualDataStore.deleteAllVisualDataForGroup(TOKEN_ID);
 
         assertNull(TabGroupVisualDataStore.getTabGroupTitle(TOKEN_ID));
-        assertThat(
-                TabGroupVisualDataStore.getTabGroupColor(TOKEN_ID),
-                equalTo(TabGroupColorUtils.INVALID_COLOR_ID));
+        assertEquals(
+                TabGroupColorUtils.INVALID_COLOR_ID,
+                TabGroupVisualDataStore.getTabGroupColor(TOKEN_ID));
         assertFalse(TabGroupVisualDataStore.getTabGroupCollapsed(TOKEN_ID));
     }
 
@@ -189,13 +190,13 @@ public class TabGroupVisualDataStoreUnitTest {
         TabGroupVisualDataStore.migrateToTokenKeyedStorage(TAB_ID, TOKEN_ID);
 
         assertNull(TabGroupVisualDataStore.getTabGroupTitle(TAB_ID));
-        assertThat(
-                TabGroupVisualDataStore.getTabGroupColor(TAB_ID),
-                equalTo(TabGroupColorUtils.INVALID_COLOR_ID));
+        assertEquals(
+                TabGroupColorUtils.INVALID_COLOR_ID,
+                TabGroupVisualDataStore.getTabGroupColor(TAB_ID));
         assertFalse(TabGroupVisualDataStore.getTabGroupCollapsed(TAB_ID));
 
-        assertThat(TabGroupVisualDataStore.getTabGroupTitle(TOKEN_ID), equalTo(TAB_TITLE));
-        assertThat(TabGroupVisualDataStore.getTabGroupColor(TOKEN_ID), equalTo(TAB_COLOR));
+        assertEquals(TAB_TITLE, TabGroupVisualDataStore.getTabGroupTitle(TOKEN_ID));
+        assertEquals(TAB_COLOR, TabGroupVisualDataStore.getTabGroupColor(TOKEN_ID));
         assertTrue(TabGroupVisualDataStore.getTabGroupCollapsed(TOKEN_ID));
     }
 
@@ -208,13 +209,13 @@ public class TabGroupVisualDataStoreUnitTest {
         TabGroupVisualDataStore.migrateFromTokenKeyedStorage(TOKEN_ID, TAB_ID);
 
         assertNull(TabGroupVisualDataStore.getTabGroupTitle(TOKEN_ID));
-        assertThat(
-                TabGroupVisualDataStore.getTabGroupColor(TOKEN_ID),
-                equalTo(TabGroupColorUtils.INVALID_COLOR_ID));
+        assertEquals(
+                TabGroupColorUtils.INVALID_COLOR_ID,
+                TabGroupVisualDataStore.getTabGroupColor(TOKEN_ID));
         assertFalse(TabGroupVisualDataStore.getTabGroupCollapsed(TOKEN_ID));
 
-        assertThat(TabGroupVisualDataStore.getTabGroupTitle(TAB_ID), equalTo(TAB_TITLE));
-        assertThat(TabGroupVisualDataStore.getTabGroupColor(TAB_ID), equalTo(TAB_COLOR));
+        assertEquals(TAB_TITLE, TabGroupVisualDataStore.getTabGroupTitle(TAB_ID));
+        assertEquals(TAB_COLOR, TabGroupVisualDataStore.getTabGroupColor(TAB_ID));
         assertTrue(TabGroupVisualDataStore.getTabGroupCollapsed(TAB_ID));
     }
 
@@ -250,19 +251,19 @@ public class TabGroupVisualDataStoreUnitTest {
 
         // 3. Verify that the data for the excluded token IDs is deleted.
         assertNull(TabGroupVisualDataStore.getTabGroupTitle(tokenId2));
-        assertThat(
-                TabGroupVisualDataStore.getTabGroupColor(tokenId2),
-                equalTo(TabGroupColorUtils.INVALID_COLOR_ID));
+        assertEquals(
+                TabGroupColorUtils.INVALID_COLOR_ID,
+                TabGroupVisualDataStore.getTabGroupColor(tokenId2));
         assertFalse(TabGroupVisualDataStore.getTabGroupCollapsed(tokenId2));
         assertNull(TabGroupVisualDataStore.getTabGroupTitle(tokenId3));
-        assertThat(
-                TabGroupVisualDataStore.getTabGroupColor(tokenId3),
-                equalTo(TabGroupColorUtils.INVALID_COLOR_ID));
+        assertEquals(
+                TabGroupColorUtils.INVALID_COLOR_ID,
+                TabGroupVisualDataStore.getTabGroupColor(tokenId3));
         assertFalse(TabGroupVisualDataStore.getTabGroupCollapsed(tokenId3));
 
         // 4. Verify that the data for the token IDs passed to the method is not deleted.
-        assertThat(TabGroupVisualDataStore.getTabGroupTitle(tokenId1), equalTo(title1));
-        assertThat(TabGroupVisualDataStore.getTabGroupColor(tokenId1), equalTo(color1));
+        assertEquals(title1, TabGroupVisualDataStore.getTabGroupTitle(tokenId1));
+        assertEquals(color1, TabGroupVisualDataStore.getTabGroupColor(tokenId1));
         assertTrue(TabGroupVisualDataStore.getTabGroupCollapsed(tokenId1));
     }
 
@@ -282,9 +283,9 @@ public class TabGroupVisualDataStoreUnitTest {
 
         // 3. Verify that all data is deleted.
         assertNull(TabGroupVisualDataStore.getTabGroupTitle(tokenId1));
-        assertThat(
-                TabGroupVisualDataStore.getTabGroupColor(tokenId1),
-                equalTo(TabGroupColorUtils.INVALID_COLOR_ID));
+        assertEquals(
+                TabGroupColorUtils.INVALID_COLOR_ID,
+                TabGroupVisualDataStore.getTabGroupColor(tokenId1));
         assertFalse(TabGroupVisualDataStore.getTabGroupCollapsed(tokenId1));
     }
 
@@ -313,11 +314,90 @@ public class TabGroupVisualDataStoreUnitTest {
         TabGroupVisualDataStore.deleteTabGroupDataExcluding(tokensToKeep);
 
         // 3. Verify that no data is deleted.
-        assertThat(TabGroupVisualDataStore.getTabGroupTitle(tokenId1), equalTo(title1));
-        assertThat(TabGroupVisualDataStore.getTabGroupColor(tokenId1), equalTo(color1));
+        assertEquals(title1, TabGroupVisualDataStore.getTabGroupTitle(tokenId1));
+        assertEquals(color1, TabGroupVisualDataStore.getTabGroupColor(tokenId1));
         assertTrue(TabGroupVisualDataStore.getTabGroupCollapsed(tokenId1));
-        assertThat(TabGroupVisualDataStore.getTabGroupTitle(tokenId2), equalTo(title2));
-        assertThat(TabGroupVisualDataStore.getTabGroupColor(tokenId2), equalTo(color2));
+        assertEquals(title2, TabGroupVisualDataStore.getTabGroupTitle(tokenId2));
+        assertEquals(color2, TabGroupVisualDataStore.getTabGroupColor(tokenId2));
         assertTrue(TabGroupVisualDataStore.getTabGroupCollapsed(tokenId2));
+    }
+
+    @Test
+    public void testCacheData() {
+        Token tokenId = new Token(1L, 1L);
+        String title = "Cached Group";
+        int color = 5;
+        boolean collapsed = true;
+
+        TabGroupCollectionData data = createData(tokenId, title, color, collapsed);
+        TabGroupCollectionData[] groups = {data};
+
+        TabGroupVisualDataStore.cacheGroups(groups);
+
+        assertEquals(title, TabGroupVisualDataStore.getTabGroupTitle(tokenId));
+        assertEquals(color, TabGroupVisualDataStore.getTabGroupColor(tokenId));
+        assertTrue(TabGroupVisualDataStore.getTabGroupCollapsed(tokenId));
+
+        TabGroupVisualDataStore.removeCachedGroups(groups);
+    }
+
+    @Test
+    public void testRemoveCachedData() {
+        Token tokenId = new Token(1L, 1L);
+        String title = "Cached Group";
+        int color = 5;
+        boolean collapsed = true;
+
+        TabGroupCollectionData data = createData(tokenId, title, color, collapsed);
+        TabGroupCollectionData[] groups = {data};
+
+        TabGroupVisualDataStore.cacheGroups(groups);
+        TabGroupVisualDataStore.removeCachedGroups(groups);
+
+        assertNull(TabGroupVisualDataStore.getTabGroupTitle(tokenId));
+        assertEquals(
+                TabGroupColorUtils.INVALID_COLOR_ID,
+                TabGroupVisualDataStore.getTabGroupColor(tokenId));
+        assertFalse(TabGroupVisualDataStore.getTabGroupCollapsed(tokenId));
+    }
+
+    @Test
+    public void testCachedDataPriority() {
+        Token tokenId = new Token(1L, 1L);
+        String cachedTitle = "Cached Title";
+        int cachedColor = 10;
+        boolean cachedCollapsed = true;
+
+        String storedTitle = "Stored Title";
+        int storedColor = 20;
+        boolean storedCollapsed = false;
+
+        TabGroupVisualDataStore.storeTabGroupTitle(tokenId, storedTitle);
+        TabGroupVisualDataStore.storeTabGroupColor(tokenId, storedColor);
+        TabGroupVisualDataStore.storeTabGroupCollapsed(tokenId, storedCollapsed);
+
+        TabGroupCollectionData cachedData =
+                createData(tokenId, cachedTitle, cachedColor, cachedCollapsed);
+        TabGroupCollectionData[] cachedGroups = {cachedData};
+        TabGroupVisualDataStore.cacheGroups(cachedGroups);
+
+        assertEquals(cachedTitle, TabGroupVisualDataStore.getTabGroupTitle(tokenId));
+        assertEquals(cachedColor, TabGroupVisualDataStore.getTabGroupColor(tokenId));
+        assertTrue(TabGroupVisualDataStore.getTabGroupCollapsed(tokenId));
+
+        TabGroupVisualDataStore.removeCachedGroups(cachedGroups);
+        assertEquals(storedTitle, TabGroupVisualDataStore.getTabGroupTitle(tokenId));
+        assertEquals(storedColor, TabGroupVisualDataStore.getTabGroupColor(tokenId));
+        assertFalse(TabGroupVisualDataStore.getTabGroupCollapsed(tokenId));
+    }
+
+    private TabGroupCollectionData createData(
+            Token tokenId, String title, int color, boolean collapsed) {
+        TabGroupCollectionData data = mock(TabGroupCollectionData.class);
+        when(data.getTabGroupId()).thenReturn(tokenId);
+        when(data.getTitle()).thenReturn(title);
+        when(data.getColor()).thenReturn(color);
+        when(data.isCollapsed()).thenReturn(collapsed);
+        return data;
     }
 }
