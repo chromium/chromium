@@ -66,7 +66,6 @@ class SidePanel : public views::AccessiblePaneView,
   // border area grows to accommodate the additional height of the header,
   // pushing the other side panel content down.
   void AddHeaderView(std::unique_ptr<views::View> view);
-
   void RemoveHeaderView();
 
   void SetOutlineVisibility(bool visible);
@@ -84,6 +83,8 @@ class SidePanel : public views::AccessiblePaneView,
   // Log UMA data for the side panel resize feature. Will only log if the side
   // panel has been resized since metrics were last logged.
   void RecordMetricsIfResized();
+
+  SidePanelEntry::PanelType type() const { return type_; }
 
   // Reflects the current state of the visibility of the side panel.
   enum class State { kClosed, kOpening, kOpen, kClosing };

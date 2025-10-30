@@ -37,10 +37,10 @@
 #include "ui/views/view.h"
 
 SidePanelCoordinator::SidePanelCoordinator(BrowserView* browser_view)
-    : SidePanelUIBase(browser_view->browser()), browser_view_(browser_view) {
-  side_panel_toolbar_pinning_controller_ =
-      std::make_unique<SidePanelToolbarPinningController>(browser_view_);
-}
+    : SidePanelUIBase(browser_view->browser()),
+      browser_view_(browser_view),
+      side_panel_toolbar_pinning_controller_(
+          std::make_unique<SidePanelToolbarPinningController>(browser_view_)) {}
 
 SidePanelCoordinator::~SidePanelCoordinator() = default;
 
@@ -109,10 +109,9 @@ content::WebContents* SidePanelCoordinator::GetWebContentsForTest(
 }
 
 void SidePanelCoordinator::DisableAnimationsForTesting() {
-  browser_view_->toolbar_height_side_panel()
-      ->DisableAnimationsForTesting();  // IN-TEST
-  browser_view_->contents_height_side_panel()
-      ->DisableAnimationsForTesting();  // IN-TEST
+  for (auto panel_type : SidePanelEntry::PanelTypes::All()) {
+    GetSidePanelFor(panel_type)->DisableAnimationsForTesting();  // IN-TEST
+  }
 }
 
 SidePanelEntry* SidePanelCoordinator::GetLoadingEntryForTesting(
@@ -291,8 +290,7 @@ void SidePanelCoordinator::PopulateSidePanel(
       content_view.has_value() ? std::move(content_view.value())
                                : entry->GetContent());
   if (auto* contextual_registry = GetActiveContextualRegistry()) {
-    contextual_registry->ResetActiveEntryFor(
-        SidePanelEntry::PanelType::kContent);
+    contextual_registry->ResetActiveEntryFor(entry->type());
   }
   SetCurrentKey(entry->type(), unique_key);
   if (browser_view_->toolbar()->pinned_toolbar_actions_container()) {
@@ -379,8 +377,9 @@ void SidePanelCoordinator::MaybeShowEntryOnTabStripModelChanged(
 }
 
 void SidePanelCoordinator::SetNoDelaysForTesting(bool no_delays_for_testing) {
-  waiter(SidePanelEntry::PanelType::kContent)
-      ->SetNoDelaysForTesting(no_delays_for_testing);  // IN-TEST
+  for (auto type : SidePanelEntry::PanelTypes::All()) {
+    waiter(type)->SetNoDelaysForTesting(no_delays_for_testing);  // IN-TEST
+  }
 }
 
 void SidePanelCoordinator::OnViewVisibilityChanged(views::View* observed_view,
@@ -388,11 +387,6 @@ void SidePanelCoordinator::OnViewVisibilityChanged(views::View* observed_view,
                                                    bool visible) {
   SidePanel* side_panel = views::AsViewClass<SidePanel>(observed_view);
   CHECK(side_panel);
-
-  SidePanelEntry::PanelType type =
-      side_panel == browser_view_->contents_height_side_panel()
-          ? SidePanelEntry::PanelType::kContent
-          : SidePanelEntry::PanelType::kToolbar;
 
   // This method is called in 3 situations:
   //   (1) The SidePanel was previously invisible, and Show() is called. This is
@@ -404,7 +398,7 @@ void SidePanelCoordinator::OnViewVisibilityChanged(views::View* observed_view,
   //   becomes visible).
   //   We currently only take action on (2). We use `current_key()` to
   //   distinguish (3) from (2). We use visibility to distinguish (1) from (2).
-  if (observed_view->GetVisible() || !IsSidePanelShowing(type)) {
+  if (observed_view->GetVisible() || !IsSidePanelShowing(side_panel->type())) {
     return;
   }
 
@@ -412,8 +406,9 @@ void SidePanelCoordinator::OnViewVisibilityChanged(views::View* observed_view,
   // from calling multiple times. This could happen in the edge cases when
   // callback inside current_entry->OnEntryHidden() is calling Close() to
   // trigger race condition.
-  SidePanelEntry* previous_entry = GetEntryForUniqueKey(*current_key(type));
-  SetCurrentKey(type, std::nullopt);
+  SidePanelEntry* previous_entry =
+      GetEntryForUniqueKey(*current_key(side_panel->type()));
+  SetCurrentKey(side_panel->type(), std::nullopt);
   if (previous_entry) {
     previous_entry->OnEntryHidden();
   }
@@ -422,10 +417,10 @@ void SidePanelCoordinator::OnViewVisibilityChanged(views::View* observed_view,
   // everything except remaining active entries (i.e. if another tab has an
   // active contextual entry).
   if (auto* contextual_registry = GetActiveContextualRegistry()) {
-    contextual_registry->ResetActiveEntryFor(type);
+    contextual_registry->ResetActiveEntryFor(side_panel->type());
   }
-  window_registry_->ResetActiveEntryFor(type);
-  ClearCachedEntryViews(type);
+  window_registry_->ResetActiveEntryFor(side_panel->type());
+  ClearCachedEntryViews(side_panel->type());
 
   // `OnEntryWillDeregister` (triggered by calling `OnEntryHidden`) may
   // already have deleted the content container, so check that it still
@@ -435,7 +430,8 @@ void SidePanelCoordinator::OnViewVisibilityChanged(views::View* observed_view,
     content_wrapper->RemoveChildViewT(content_wrapper->children().front());
   }
   side_panel->RemoveHeaderView();
-  SidePanelUtil::RecordSidePanelClosed(type, opened_timestamp(type));
+  SidePanelUtil::RecordSidePanelClosed(side_panel->type(),
+                                       opened_timestamp(side_panel->type()));
 }
 
 void SidePanelCoordinator::ClosePromoAndMaybeNotifyUsed(

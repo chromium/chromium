@@ -42,11 +42,9 @@ SidePanelUIBase::PanelData::~PanelData() = default;
 SidePanelUIBase::SidePanelUIBase(Browser* browser)
     : browser_(browser),
       window_registry_(std::make_unique<SidePanelRegistry>(browser)) {
-  panel_data_[SidePanelEntry::PanelType::kContent] =
-      std::make_unique<PanelData>();
-  panel_data_[SidePanelEntry::PanelType::kToolbar] =
-      std::make_unique<PanelData>();
-
+  for (auto panel_type : SidePanelEntry::PanelTypes::All()) {
+    panel_data_[panel_type] = std::make_unique<PanelData>();
+  }
   browser_->tab_strip_model()->AddObserver(this);
 }
 
@@ -182,8 +180,6 @@ SidePanelEntry* SidePanelUIBase::GetActiveContextualEntryForKey(
 std::optional<SidePanelUIBase::UniqueKey>
 SidePanelUIBase::GetNewActiveKeyOnTabChanged(SidePanelEntry::PanelType type) {
   // This function should only be called when the side panel view is shown.
-  // TODO(crbug.com/445442616): update IsSidePanelShowing to use a passed in
-  // PanelType param once it is added.
   CHECK(IsSidePanelShowing(type));
 
   // Attempt to return an entry in the following fallback order:
@@ -209,11 +205,9 @@ SidePanelUIBase::GetNewActiveKeyOnTabChanged(SidePanelEntry::PanelType type) {
         (*active_contextual_registry->GetActiveEntryFor(type))->key()};
   }
 
-  if (current_key(SidePanelEntry::PanelType::kContent) &&
-      window_registry_->GetEntryForKey(
-          current_key(SidePanelEntry::PanelType::kContent)->key)) {
-    return GetUniqueKeyForKey(
-        current_key(SidePanelEntry::PanelType::kContent)->key);
+  std::optional<UniqueKey> current_key = this->current_key(type);
+  if (current_key && window_registry_->GetEntryForKey(current_key->key)) {
+    return GetUniqueKeyForKey(current_key->key);
   }
 
   if (auto entry = window_registry_->GetActiveEntryFor(type)) {
