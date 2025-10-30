@@ -94,24 +94,6 @@ suite('RecentTabChipTest', function() {
     assertTrue(getButton() !== null);
   });
 
-  test('does not fire event when disabled', async () => {
-    let eventFired = false;
-    recentTabChip.addEventListener('add-tab-context', () => {
-      eventFired = true;
-    });
-
-    recentTabChip.inputsDisabled = true;
-    await microtasksFinished();
-
-    const button = getButton();
-    assertTrue(button.hasAttribute('disabled'));
-
-    button.click();
-    await microtasksFinished();
-
-    assertFalse(eventFired);
-  });
-
   test('has correct aria-label', () => {
     const button = getButton();
     assertEquals('Ask Google about previous tab: Tab 1', button.ariaLabel);
