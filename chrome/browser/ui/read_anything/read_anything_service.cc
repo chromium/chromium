@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/read_anything/read_anything_service_factory.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_id.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_entry_key.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_prefs.h"
 #include "chrome/common/extensions/extension_constants.h"
@@ -179,7 +180,8 @@ void ReadAnythingService::OnBrowserSetLastActive(Browser* browser) {
   // tests.
   // TODO(https://crbug.com/358191922): Remove this code.
   auto* side_panel_ui = browser->GetFeatures().side_panel_ui();
-  if (side_panel_ui->GetCurrentEntryId() != SidePanelEntryId::kReadAnything) {
+  if (!side_panel_ui->IsSidePanelEntryShowing(
+          SidePanelEntryKey(SidePanelEntryId::kReadAnything))) {
     side_panel_ui->SetNoDelaysForTesting(true);  // IN-TEST
     side_panel_ui->Show(SidePanelEntryId::kReadAnything);
   }

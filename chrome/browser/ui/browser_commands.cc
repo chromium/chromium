@@ -109,6 +109,7 @@
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_entry_key.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
@@ -1789,9 +1790,8 @@ void MoveTabsToReadLater(Browser* browser,
 #if !BUILDFLAG(IS_ANDROID)
   if (toast_features::IsEnabled(toast_features::kReadingListToast)) {
     // Don't show the reading list toast if the side panel is visible.
-    std::optional<SidePanelEntry::Id> id =
-        browser->GetFeatures().side_panel_ui()->GetCurrentEntryId();
-    if (id.has_value() && id.value() == SidePanelEntryId::kReadingList) {
+    if (browser->GetFeatures().side_panel_ui()->IsSidePanelEntryShowing(
+            SidePanelEntryKey(SidePanelEntryId::kReadingList))) {
       return;
     }
 

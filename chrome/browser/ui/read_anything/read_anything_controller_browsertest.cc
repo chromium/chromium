@@ -66,9 +66,6 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingControllerBrowserTest,
     return side_panel_ui->IsSidePanelEntryShowing(
         SidePanelEntryKey(SidePanelEntryId::kReadAnything));
   }));
-
-  EXPECT_EQ(side_panel_ui->GetCurrentEntryId(),
-            SidePanelEntryId::kReadAnything);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

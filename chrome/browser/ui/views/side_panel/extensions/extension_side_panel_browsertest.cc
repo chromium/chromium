@@ -2607,8 +2607,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionOnClosedEventSidePanelBrowserTest,
     waiter.WaitForEntryHidden();
   }
 
-  ASSERT_NE(side_panel_coordinator()->GetCurrentEntryId(),
-            GetKey(extension->id()).id());
+  ASSERT_FALSE(side_panel_coordinator()->IsSidePanelEntryShowing(
+      GetKey(extension->id())));
   ASSERT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
 }
 

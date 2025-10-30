@@ -65,6 +65,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_entry_key.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_util.h"
@@ -2004,8 +2005,8 @@ float LensOverlayController::GetUiScaleFactor() {
 }
 
 void LensOverlayController::OnSidePanelDidOpen() {
-  if (side_panel_coordinator_->GetCurrentEntryId() ==
-      SidePanelEntry::Id::kLensOverlayResults) {
+  if (side_panel_coordinator_->IsSidePanelEntryShowing(
+          SidePanelEntryKey(SidePanelEntry::Id::kLensOverlayResults))) {
     SetOverlayRoundedCorner();
   } else {
     // If a side panel opens that is not ours, we must close the overlay.

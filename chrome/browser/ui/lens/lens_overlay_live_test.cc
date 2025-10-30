@@ -186,6 +186,11 @@ class LensOverlayLiveTest : public signin::test::LiveTest {
     return signin::test::sync_service(browser());
   }
 
+  bool IsLensOverlaySidePanelShowing() {
+    return side_panel_coordinator()->IsSidePanelEntryShowing(
+        SidePanelEntryKey(SidePanelEntryId::kLensOverlayResults));
+  }
+
   signin::test::SignInFunctions sign_in_functions =
       signin::test::SignInFunctions(
           base::BindLambdaForTesting(
@@ -325,7 +330,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayLiveTest, ClickObject_SignedInAndSynced) {
   ASSERT_EQ(controller->state(), State::kScreenshot);
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kOverlay; }));
-  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), std::nullopt);
+  ASSERT_FALSE(IsLensOverlaySidePanelShowing());
   ASSERT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
 
   // Confirm that the WebUI has reported that it is ready. This means the local
@@ -372,7 +377,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayLiveTest, ClickObject_SignedInNotSynced) {
   ASSERT_EQ(controller->state(), State::kScreenshot);
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kOverlay; }));
-  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), std::nullopt);
+  ASSERT_FALSE(IsLensOverlaySidePanelShowing());
   ASSERT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
 
   // Confirm that the WebUI has reported that it is ready. This means the local
@@ -412,7 +417,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayLiveTest, ClickObject_SignedOut) {
   ASSERT_EQ(controller->state(), State::kScreenshot);
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kOverlay; }));
-  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), std::nullopt);
+  ASSERT_FALSE(IsLensOverlaySidePanelShowing());
   ASSERT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
 
   // Confirm that the WebUI has reported that it is ready. This means the local
@@ -497,7 +502,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayTranslateLiveTest,
   ASSERT_EQ(controller->state(), State::kScreenshot);
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kOverlay; }));
-  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), std::nullopt);
+  ASSERT_FALSE(IsLensOverlaySidePanelShowing());
   ASSERT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
 
   // Confirm that the WebUI has reported that it is ready. This means the local
@@ -541,7 +546,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayTranslateLiveTest,
   ASSERT_EQ(controller->state(), State::kScreenshot);
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kOverlay; }));
-  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), std::nullopt);
+  ASSERT_FALSE(IsLensOverlaySidePanelShowing());
   ASSERT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
 
   // Confirm that the WebUI has reported that it is ready. This means the local
@@ -578,7 +583,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayTranslateLiveTest,
   ASSERT_EQ(controller->state(), State::kScreenshot);
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kOverlay; }));
-  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), std::nullopt);
+  ASSERT_FALSE(IsLensOverlaySidePanelShowing());
   ASSERT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
 
   // Confirm that the WebUI has reported that i1t is ready. This means the local

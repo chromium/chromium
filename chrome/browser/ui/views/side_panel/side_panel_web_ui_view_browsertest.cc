@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_entry_key.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -126,7 +127,8 @@ IN_PROC_BROWSER_TEST_F(SidePanelWebUIViewTest,
   // Register and show a window scoped side panel.
   RegisterBrowserSidePanelEntry();
   GetSidePanelCoordinator()->Show(kTestGlobalEntryId);
-  EXPECT_EQ(GetSidePanelCoordinator()->GetCurrentEntryId(), kTestGlobalEntryId);
+  EXPECT_TRUE(GetSidePanelCoordinator()->IsSidePanelEntryShowing(
+      SidePanelEntryKey(kTestGlobalEntryId)));
   content::WebContents* side_panel_webui_contents =
       GetSidePanelCoordinator()->GetWebContentsForTest(kTestGlobalEntryId);
   EXPECT_TRUE(side_panel_webui_contents);
@@ -142,7 +144,8 @@ IN_PROC_BROWSER_TEST_F(SidePanelWebUIViewTest,
   // Register and show a tab scoped side panel.
   RegisterTabSidePanelEntry();
   GetSidePanelCoordinator()->Show(kTestTabEntryId);
-  EXPECT_EQ(GetSidePanelCoordinator()->GetCurrentEntryId(), kTestTabEntryId);
+  EXPECT_TRUE(GetSidePanelCoordinator()->IsSidePanelEntryShowing(
+      SidePanelEntryKey(kTestTabEntryId)));
   content::WebContents* side_panel_webui_contents =
       GetSidePanelCoordinator()->GetWebContentsForTest(kTestTabEntryId);
   EXPECT_TRUE(side_panel_webui_contents);
@@ -170,7 +173,8 @@ IN_PROC_BROWSER_TEST_F(
   // Register and show a tab scoped side panel.
   RegisterTabSidePanelEntry();
   GetSidePanelCoordinator()->Show(kTestTabEntryId);
-  EXPECT_EQ(GetSidePanelCoordinator()->GetCurrentEntryId(), kTestTabEntryId);
+  EXPECT_TRUE(GetSidePanelCoordinator()->IsSidePanelEntryShowing(
+      SidePanelEntryKey(kTestTabEntryId)));
   content::WebContents* side_panel_webui_contents =
       GetSidePanelCoordinator()->GetWebContentsForTest(kTestTabEntryId);
   EXPECT_TRUE(side_panel_webui_contents);

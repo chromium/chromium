@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_entry_key.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
@@ -47,11 +48,8 @@ IN_PROC_BROWSER_TEST_F(AppearanceHandlerTest,
                             std::move(args));
   EXPECT_TRUE(content::WaitForLoadStop(
       browser()->tab_strip_model()->GetActiveWebContents()));
-
-  const std::optional<SidePanelEntryId> current_entry =
-      browser()->GetFeatures().side_panel_ui()->GetCurrentEntryId();
-  EXPECT_TRUE(current_entry.has_value());
-  EXPECT_EQ(SidePanelEntryId::kCustomizeChrome, current_entry.value());
+  EXPECT_TRUE(browser()->GetFeatures().side_panel_ui()->IsSidePanelEntryShowing(
+      SidePanelEntryKey(SidePanelEntryId::kCustomizeChrome)));
 }
 
 IN_PROC_BROWSER_TEST_F(AppearanceHandlerTest, ResetPinnedToolbarActions) {

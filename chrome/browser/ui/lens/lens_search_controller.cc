@@ -32,6 +32,7 @@
 #include "chrome/browser/ui/promos/ios_promo_trigger_service_factory.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_entry_key.h"
 #include "chrome/browser/ui/webui/util/image_util.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/grit/branded_strings.h"
@@ -371,8 +372,9 @@ void LensSearchController::CloseLensAsync(
   auto* side_panel_coordinator =
       tab_->GetBrowserWindowInterface()->GetFeatures().side_panel_coordinator();
   CHECK(side_panel_coordinator);
-  if (state_ == State::kActive && side_panel_coordinator->GetCurrentEntryId() ==
-                                      SidePanelEntry::Id::kLensOverlayResults) {
+  if (state_ == State::kActive &&
+      side_panel_coordinator->IsSidePanelEntryShowing(
+          SidePanelEntryKey(SidePanelEntry::Id::kLensOverlayResults))) {
     // If a close was triggered while the Lens side panel is showing, instead of
     // just immediately closing all UI, the side panel should close to show a
     // smooth closing animation. Once the side panel deregisters, it will

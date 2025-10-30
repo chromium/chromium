@@ -109,8 +109,8 @@ void MerchantTrustSidePanelCoordinator::RegisterEntryAndShow(
     web_view_side_panel_view_->OpenUrl(last_url_info_->url_params);
   }
 
-  if (side_panel_ui->GetCurrentEntryId() !=
-      SidePanelEntry::Id::kMerchantTrust) {
+  if (!side_panel_ui->IsSidePanelEntryShowing(
+          SidePanelEntryKey(SidePanelEntry::Id::kMerchantTrust))) {
     side_panel_ui->Show(SidePanelEntry::Id::kMerchantTrust);
   }
 }
@@ -181,8 +181,9 @@ void MerchantTrustSidePanelCoordinator::DidFinishNavigation(
 
   // Update the SidePanel when a user navigates to another url with the
   // correct reviews URL.
-  if (web_view_side_panel_view_ && side_panel_ui->GetCurrentEntryId() ==
-                                       SidePanelEntry::Id::kMerchantTrust) {
+  if (web_view_side_panel_view_ &&
+      side_panel_ui->IsSidePanelEntryShowing(
+          SidePanelEntryKey(SidePanelEntry::Id::kMerchantTrust))) {
     GetMerchantTrustInfo(
         navigation_handle->GetURL(),
         base::BindOnce(
@@ -192,8 +193,8 @@ void MerchantTrustSidePanelCoordinator::DidFinishNavigation(
 
   // If the merchant trust side panel is no longer being shown and the view is
   // cached, then we will remove the cached view since it shows the wrong page.
-  if (side_panel_ui->GetCurrentEntryId() !=
-          SidePanelEntry::Id::kMerchantTrust &&
+  if (!side_panel_ui->IsSidePanelEntryShowing(
+          SidePanelEntryKey(SidePanelEntry::Id::kMerchantTrust)) &&
       web_view_side_panel_view_) {
     auto* entry = registry->GetEntryForKey(
         SidePanelEntry::Key(SidePanelEntry::Id::kMerchantTrust));
