@@ -190,11 +190,8 @@ void TileDisplayLayerImpl::AppendQuadsSpecialization(
     const AppendQuadsContext& context,
     viz::CompositorRenderPass* render_pass,
     AppendQuadsData* append_quads_data) {
-  if (tilings_.empty()) {
-    return;
-  }
-
-  const float max_contents_scale = tilings_.front()->contents_scale_key();
+  const float max_contents_scale =
+      tilings_.empty() ? 1.0 : tilings_.front()->contents_scale_key();
 
   viz::SharedQuadState* shared_quad_state =
       render_pass->CreateAndAppendSharedQuadState();

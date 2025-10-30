@@ -18,13 +18,16 @@ namespace cc {
 class TileDisplayLayerImplTest : public TestLayerTreeHostBase {};
 
 TEST_F(TileDisplayLayerImplTest, NoQuadAppendedByDefault) {
-  TileDisplayLayerImpl layer(CHECK_DEREF(host_impl()->active_tree()),
-                             /*id=*/42);
+  auto layer = std::make_unique<TileDisplayLayerImpl>(
+      CHECK_DEREF(host_impl()->active_tree()), /*id=*/42);
+  auto* raw_layer = layer.get();
+  host_impl()->active_tree()->AddLayer(std::move(layer));
+  SetupRootProperties(host_impl()->active_tree()->root_layer());
 
   auto render_pass = viz::CompositorRenderPass::Create();
   AppendQuadsData data;
-  layer.AppendQuads(AppendQuadsContext{DRAW_MODE_SOFTWARE, {}, false},
-                    render_pass.get(), &data);
+  raw_layer->AppendQuads(AppendQuadsContext{DRAW_MODE_SOFTWARE, {}, false},
+                         render_pass.get(), &data);
 
   EXPECT_EQ(render_pass->quad_list.size(), 0u);
 }
