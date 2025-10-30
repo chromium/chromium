@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "cc/input/touch_action.h"
 #include "content/browser/renderer_host/cross_process_frame_connector_base.h"
 #include "content/public/browser/guest_frame.h"
@@ -134,7 +135,7 @@ class GuestFrameImpl : public GuestFrame,
   std::unique_ptr<Observer> observer_;
   raw_ptr<GuestFrame::Delegate> delegate_ = nullptr;
 
-  raw_ptr<WebContents> guest_web_contents_ = nullptr;
+  base::WeakPtr<WebContents> guest_web_contents_ = nullptr;
   raw_ptr<RenderWidgetHostViewChildFrame> view_ = nullptr;
 
   // This is here rather than in the implementation class so that

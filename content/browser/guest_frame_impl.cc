@@ -59,7 +59,8 @@ std::unique_ptr<GuestFrame> GuestFrame::Create(WebContents* guest_web_contents,
 
 GuestFrameImpl::GuestFrameImpl(WebContents* guest_web_contents,
                                GuestFrame::Delegate* delegate)
-    : delegate_(delegate), guest_web_contents_(guest_web_contents) {
+    : delegate_(delegate),
+      guest_web_contents_(guest_web_contents->GetWeakPtr()) {
   observer_ = std::make_unique<Observer>(this, guest_web_contents);
 
   // TODO(secure-embed): There may not be a view yet, depending on if the
@@ -105,6 +106,10 @@ void GuestFrameImpl::ForwardKeyboardEvent(
 
 void GuestFrameImpl::SetFocus(bool focused,
                               blink::mojom::FocusType focus_type) {
+  if (!guest_web_contents_) {
+    return;
+  }
+
   view_->host()->SetPageFocus(focused);
   if (focused && (focus_type == blink::mojom::FocusType::kForward ||
                   focus_type == blink::mojom::FocusType::kBackward)) {
@@ -163,6 +168,9 @@ void GuestFrameImpl::SetView(RenderWidgetHostViewChildFrame* view,
 }
 
 RenderWidgetHostViewBase* GuestFrameImpl::GetParentRenderWidgetHostView() {
+  if (!guest_web_contents_) {
+    return nullptr;
+  }
   return static_cast<RenderWidgetHostViewBase*>(
       guest_web_contents_->GetSecureEmbedDelegate()
           ->GetEmbedderWebContents()
@@ -499,6 +507,10 @@ bool GuestFrameImpl::IsVisible() {
 }
 
 Visibility GuestFrameImpl::EmbedderVisibility() {
+  if (!guest_web_contents_) {
+    return Visibility::HIDDEN;
+  }
+
   // TODO(secure-embed): Need to get the embedder visibility rather than the
   // embedded visibility. Embedder = SecureEmbed. May need to add a method to
   // SecureEmbedDelegate for this or ensure that visibility state is pushed to
@@ -511,6 +523,10 @@ Visibility GuestFrameImpl::EmbedderVisibility() {
 
 void GuestFrameImpl::OnSynchronizeVisualProperties(
     const blink::FrameVisualProperties& visual_properties) {
+  if (!guest_web_contents_) {
+    return;
+  }
+
   // If the |rect_in_local_root| or current ScreenInfo of the frame has
   // changed, then the viz::LocalSurfaceId must also change.
   if ((last_received_local_frame_size_ != visual_properties.local_frame_size ||
@@ -553,6 +569,8 @@ void GuestFrameImpl::OnRenderFrameHostChanged(RenderFrameHost* old_host,
 }
 
 void GuestFrameImpl::UpdateViewForCurrentRenderFrameHost() {
+  CHECK(guest_web_contents_);  // Should not get here w/o WebContents.
+
   // Get the current RenderWidgetHostView for the guest WebContents.
   auto* base_view = static_cast<RenderWidgetHostViewBase*>(
       guest_web_contents_->GetRenderWidgetHostView());
@@ -606,7 +624,10 @@ void GuestFrameImpl::UpdateViewportIntersectionInternal(
 }
 
 RenderFrameHostImpl* GuestFrameImpl::current_child_frame_host() const {
-  return static_cast<WebContentsImpl*>(guest_web_contents_)
+  if (!guest_web_contents_) {
+    return nullptr;
+  }
+  return static_cast<WebContentsImpl*>(guest_web_contents_.get())
       ->GetPrimaryMainFrame();
 }
 

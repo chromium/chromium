@@ -100,7 +100,7 @@ void SecureEmbedHost::Attach(int64_t content_id) {
     guest_contents_->RemoveUserData(SecureEmbedHostUserData::kKey);
   }
   know_have_focus_ = false;
-  guest_contents_ = web_contents_to_attach;
+  guest_contents_ = web_contents_to_attach->GetWeakPtr();
   guest_contents_->SetUserData(SecureEmbedHostUserData::kKey,
                                std::make_unique<SecureEmbedHostUserData>(this));
   guest_frame_ = content::GuestFrame::Create(web_contents_to_attach, this);

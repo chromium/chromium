@@ -6,6 +6,7 @@
 #define COMPONENTS_SECURE_EMBED_BROWSER_SECURE_EMBED_HOST_H_
 
 #include "base/component_export.h"
+#include "base/memory/weak_ptr.h"
 #include "components/secure_embed/common/secure_embed.mojom.h"
 #include "content/public/browser/guest_frame.h"
 #include "content/public/browser/secure_embed_delegate.h"
@@ -72,7 +73,7 @@ class COMPONENT_EXPORT(SECURE_EMBED) SecureEmbedHost
   // Count of all alive instances for testing.
   static size_t instance_count_for_testing_;
 
-  raw_ptr<content::WebContents> guest_contents_ = nullptr;
+  base::WeakPtr<content::WebContents> guest_contents_ = nullptr;
   std::unique_ptr<content::GuestFrame> guest_frame_;
   bool know_have_focus_ = false;
 
