@@ -333,7 +333,7 @@ public class NavigationSheetTest {
         CriteriaHelper.pollUiThread(
                 () -> {
                     boolean doesNewTabItemPresent = false;
-                    boolean doesShowFullHisotryItemPresent = false;
+                    boolean doesShowFullHistoryItemPresent = false;
                     for (int i = 0; i < controller.mHistory.getEntryCount(); i++) {
                         ListItem item = (ListItem) listview.getAdapter().getItem(i);
                         String label = item.model.get(ItemProperties.LABEL);
@@ -350,11 +350,11 @@ public class NavigationSheetTest {
                         if (label.equals(regularNtpText)) {
                             doesNewTabItemPresent = true;
                         } else if (label.equals(fullHistoryText)) {
-                            doesShowFullHisotryItemPresent = true;
+                            doesShowFullHistoryItemPresent = true;
                         }
                     }
                     Assert.assertTrue(doesNewTabItemPresent);
-                    Assert.assertTrue(doesShowFullHisotryItemPresent);
+                    Assert.assertTrue(doesShowFullHistoryItemPresent);
                 });
     }
 

@@ -517,7 +517,7 @@ OffTheRecordProfileImpl::GetReduceAcceptLanguageControllerDelegate() {
 
 std::unique_ptr<media::VideoDecodePerfHistory>
 OffTheRecordProfileImpl::CreateVideoDecodePerfHistory() {
-  // Use the original profile's DB to seed the OTR VideoDecodePerfHisotry. The
+  // Use the original profile's DB to seed the OTR VideoDecodePerfHistory. The
   // original DB is treated as read-only, while OTR playbacks will write stats
   // to the InMemory version (cleared on profile destruction). Guest profiles
   // don't have a root profile like incognito, meaning they don't have a seed
