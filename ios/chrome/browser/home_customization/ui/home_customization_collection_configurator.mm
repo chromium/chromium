@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/home_customization/ui/home_customization_collection_configurator.h"
 
-#import <algorithm>
+#import <cmath>
 
 #import "ios/chrome/browser/home_customization/ui/home_customization_view_controller_protocol.h"
 #import "ios/chrome/browser/home_customization/utils/home_customization_helper.h"
@@ -122,14 +122,13 @@ const CGFloat kSpacingBelowHeader = 10;
     CGFloat cellHeight = kPortraitBackgroundCellHeight;
     CGFloat cellWidth = cellHeight / windowSize.height * windowSize.width;
     cellSize = CGSizeMake(
-        std::max<CGFloat>(cellWidth, kPortraitBackgroundCellMinimumWidth),
-        cellHeight);
+        std::fmax(cellWidth, kPortraitBackgroundCellMinimumWidth), cellHeight);
   } else {
     CGFloat cellWidth = kLandscapeBackgroundCellWidth;
     CGFloat cellHeight = cellWidth / windowSize.width * windowSize.height;
     cellSize = CGSizeMake(
         cellWidth,
-        std::max<CGFloat>(cellHeight, kLandscapeBackgroundCellMinimumHeight));
+        std::fmax(cellHeight, kLandscapeBackgroundCellMinimumHeight));
   }
 
   NSCollectionLayoutSize* itemSize = [NSCollectionLayoutSize
