@@ -608,6 +608,14 @@ BASE_FEATURE_PARAM(bool,
                    "CheckWellKnown",
                    true);
 
+BASE_FEATURE(kDeviceBoundSessionProactiveRefresh,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kDeviceBoundSessionProactiveRefreshThreshold,
+                   &kDeviceBoundSessionProactiveRefresh,
+                   "Threshold",
+                   base::Seconds(120));
+
 BASE_FEATURE(kSpdySessionForProxyAdditionalChecks,
              base::FEATURE_ENABLED_BY_DEFAULT);
 

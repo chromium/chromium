@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/containers/contains.h"
+#include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "components/unexportable_keys/background_task_priority.h"
@@ -253,8 +254,8 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
       RegistrationCompleteCallback callback) override {
     // Using mock fetcher for testing.
     if (g_mock_fetcher) {
+      g_mock_fetcher->Run(std::move(callback));
       // `this` may be deleted.
-      std::move(callback).Run(nullptr, g_mock_fetcher->Run());
       return;
     }
 
@@ -278,8 +279,8 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
       RegistrationCompleteCallback callback) override {
     // Using mock fetcher for testing.
     if (g_mock_fetcher) {
+      g_mock_fetcher->Run(std::move(callback));
       // `this` may be deleted.
-      std::move(callback).Run(nullptr, g_mock_fetcher->Run());
       return;
     }
 
@@ -320,7 +321,7 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
       RegistrationCompleteCallback callback) override {
     // Using mock fetcher for testing.
     if (g_mock_fetcher) {
-      std::move(callback).Run(nullptr, g_mock_fetcher->Run());
+      g_mock_fetcher->Run(std::move(callback));
       // `this` may be deleted.
       return;
     }

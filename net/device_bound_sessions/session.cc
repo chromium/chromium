@@ -372,9 +372,11 @@ base::TimeDelta Session::MinimumBoundCookieLifetime(
       // but there might be similar cases.
       if (cookie_craving.IsSatisfiedBy(request_cookie.cookie)) {
         satisfied = true;
-        minimum_remaining_lifetime =
-            std::min(minimum_remaining_lifetime,
-                     request_cookie.cookie.ExpiryDate() - current_timestamp);
+        if (!request_cookie.cookie.ExpiryDate().is_null()) {
+          minimum_remaining_lifetime =
+              std::min(minimum_remaining_lifetime,
+                       request_cookie.cookie.ExpiryDate() - current_timestamp);
+        }
         break;
       }
     }
@@ -466,7 +468,8 @@ bool Session::ShouldBackoff() const {
   return backoff_.ShouldRejectRequest();
 }
 
-void Session::InformOfRefreshResult(SessionError::ErrorType error_type) {
+void Session::InformOfRefreshResult(bool was_proactive,
+                                    SessionError::ErrorType error_type) {
   using enum SessionError::ErrorType;
 
   switch (error_type) {
@@ -547,6 +550,14 @@ void Session::InformOfRefreshResult(SessionError::ErrorType error_type) {
     case kEmptySessionConfig:
     case kRegistrationAttemptedChallenge:
       NOTREACHED();
+  }
+
+  if (error_type == kSuccess) {
+    attempted_proactive_refresh_since_last_success_ = false;
+  }
+
+  if (was_proactive && error_type != kSuccess) {
+    attempted_proactive_refresh_since_last_success_ = true;
   }
 }
 

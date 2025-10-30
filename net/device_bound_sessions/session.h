@@ -88,6 +88,10 @@ class NET_EXPORT Session {
 
   const std::vector<CookieCraving>& cookies() const { return cookie_cravings_; }
 
+  bool attempted_proactive_refresh_since_last_success() const {
+    return attempted_proactive_refresh_since_last_success_;
+  }
+
   bool IsEqualForTesting(const Session& other) const;
 
   void set_cached_challenge(std::string challenge) {
@@ -114,8 +118,9 @@ class NET_EXPORT Session {
   bool ShouldBackoff() const;
 
   // Inform the session about a refresh so it can decide whether to
-  // enter backoff mode.
-  void InformOfRefreshResult(SessionError::ErrorType error_type);
+  // ignore future opportunities to refresh.
+  void InformOfRefreshResult(bool was_proactive,
+                             SessionError::ErrorType error_type);
 
   // Returns whether `request` would be allowed to set any bound
   // cookies. This is a prerequisite for certain kinds of changes to
@@ -198,6 +203,8 @@ class NET_EXPORT Session {
   std::optional<base::Time> last_proactive_refresh_opportunity_;
   std::optional<base::TimeDelta>
       last_proactive_refresh_opportunity_minimum_cookie_lifetime_;
+
+  bool attempted_proactive_refresh_since_last_success_ = false;
 };
 
 }  // namespace net::device_bound_sessions
