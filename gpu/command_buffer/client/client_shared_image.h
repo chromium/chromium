@@ -384,10 +384,12 @@ class GPU_EXPORT ClientSharedImage
   uint32_t texture_target_ = 0;
 
   // The number of active scoped read accesses.
-  unsigned int num_readers_ = 0;
+  unsigned int num_readers_ GUARDED_BY(lock_) = 0;
 
   // Whether there exists an active scoped write access.
-  bool has_writer_ = false;
+  bool has_writer_ GUARDED_BY(lock_) = false;
+
+  base::Lock lock_;
 };
 
 struct GPU_EXPORT ExportedSharedImage {
