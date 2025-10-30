@@ -162,9 +162,6 @@ std::vector<WebFeature> AllAddressSpaceFeatures() {
       WebFeature::kPrivateNetworkAccessFetchedSubFrame,
       WebFeature::kPrivateNetworkAccessFetchedTopFrame,
       WebFeature::kPrivateNetworkAccessWithinWorker,
-      WebFeature::kPrivateNetworkAccessPreflightError,
-      WebFeature::kPrivateNetworkAccessPreflightSuccess,
-      WebFeature::kPrivateNetworkAccessPreflightWarning,
   };
 }
 
@@ -825,7 +822,6 @@ IN_PROC_BROWSER_TEST_P(PrivateNetworkAccessWithFeatureEnabledWorkerBrowserTest,
       AllZeroFeatureCounts(AllAddressSpaceFeatures()),
       {
           {WebFeature::kPrivateNetworkAccessFetchedWorkerScript, 1},
-          {WebFeature::kPrivateNetworkAccessPreflightWarning, 1},
       }));
 }
 
@@ -917,7 +913,6 @@ IN_PROC_BROWSER_TEST_P(PrivateNetworkAccessWithFeatureEnabledWorkerBrowserTest,
       AllZeroFeatureCounts(AllAddressSpaceFeatures()),
       {
           {WebFeature::kPrivateNetworkAccessFetchedWorkerScript, 1},
-          {WebFeature::kPrivateNetworkAccessPreflightWarning, 1},
       }));
 }
 

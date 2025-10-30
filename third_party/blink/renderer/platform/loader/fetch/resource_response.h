@@ -327,15 +327,6 @@ class PLATFORM_EXPORT ResourceResponse final {
     client_address_space_ = value;
   }
 
-  network::mojom::PrivateNetworkAccessPreflightResult
-  PrivateNetworkAccessPreflightResult() const {
-    return private_network_access_preflight_result_;
-  }
-  void SetPrivateNetworkAccessPreflightResult(
-      network::mojom::PrivateNetworkAccessPreflightResult result) {
-    private_network_access_preflight_result_ = result;
-  }
-
   bool WasAlpnNegotiated() const { return was_alpn_negotiated_; }
   void SetWasAlpnNegotiated(bool was_alpn_negotiated) {
     was_alpn_negotiated_ = was_alpn_negotiated;
@@ -527,12 +518,6 @@ class PLATFORM_EXPORT ResourceResponse final {
   // https://wicg.github.io/private-network-access/#policy-container-ip-address-space
   network::mojom::IPAddressSpace client_address_space_ =
       network::mojom::IPAddressSpace::kUnknown;
-
-  // The result of any PNA preflight sent for this request, if any.
-  // TODO(https://crbug.com/1268378): Remove this once preflights are enforced.
-  network::mojom::PrivateNetworkAccessPreflightResult
-      private_network_access_preflight_result_ =
-          network::mojom::PrivateNetworkAccessPreflightResult::kNone;
 
   network::mojom::DeviceBoundSessionUsage device_bound_session_usage_ =
       network::mojom::DeviceBoundSessionUsage::kUnknown;

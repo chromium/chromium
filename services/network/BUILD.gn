@@ -441,7 +441,6 @@ source_set("tests") {
     "cookie_manager_unittest.cc",
     "cookie_settings_unittest.cc",
     "cors/cors_url_loader_factory_unittest.cc",
-    "cors/cors_url_loader_private_network_access_unittest.cc",
     "cors/cors_url_loader_shared_dictionary_unittest.cc",
     "cors/cors_url_loader_tao_unittest.cc",
     "cors/cors_url_loader_test_util.cc",

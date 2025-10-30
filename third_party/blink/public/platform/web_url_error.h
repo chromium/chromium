@@ -104,10 +104,6 @@ struct BLINK_PLATFORM_EXPORT WebURLError {
   const std::optional<network::CorsErrorStatus> cors_error_status() const {
     return cors_error_status_;
   }
-  network::mojom::PrivateNetworkAccessPreflightResult
-  private_network_access_preflight_result() const {
-    return private_network_access_preflight_result_;
-  }
   const std::optional<network::mojom::BlockedByResponseReason>
   blocked_by_response_reason() const {
     return blocked_by_response_reason_;
@@ -141,11 +137,6 @@ struct BLINK_PLATFORM_EXPORT WebURLError {
 
   // Optional CORS error details.
   std::optional<network::CorsErrorStatus> cors_error_status_;
-
-  // Details about any Private Network Access preflight.
-  network::mojom::PrivateNetworkAccessPreflightResult
-      private_network_access_preflight_result_ =
-          network::mojom::PrivateNetworkAccessPreflightResult::kNone;
 
   // True if the initiator of this request should be collapsed.
   bool should_collapse_initiator_ = false;

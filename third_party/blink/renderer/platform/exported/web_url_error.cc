@@ -52,10 +52,7 @@ WebURLError WebURLError::Create(
     const network::URLLoaderCompletionStatus& status,
     const WebURL& url) {
   DCHECK_NE(net::OK, status.error_code);
-  WebURLError error = CreateInternal(status, url);
-  error.private_network_access_preflight_result_ =
-      status.private_network_access_preflight_result;
-  return error;
+  return CreateInternal(status, url);
 }
 
 WebURLError::WebURLError(int reason, const WebURL& url)

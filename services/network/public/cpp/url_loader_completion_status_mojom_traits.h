@@ -79,12 +79,6 @@ class COMPONENT_EXPORT(NETWORK_CPP_BASE)
     return status.cors_error_status;
   }
 
-  static network::mojom::PrivateNetworkAccessPreflightResult
-  private_network_access_preflight_result(
-      const network::URLLoaderCompletionStatus& status) {
-    return status.private_network_access_preflight_result;
-  }
-
   static network::mojom::TrustTokenOperationStatus trust_token_operation_status(
       const network::URLLoaderCompletionStatus& status) {
     return status.trust_token_operation_status;

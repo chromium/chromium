@@ -689,9 +689,6 @@ void CorsURLLoader::OnReceiveResponse(
   response_head->has_authorization_covered_by_wildcard_on_preflight =
       has_authorization_covered_by_wildcard_;
 
-  response_head->private_network_access_preflight_result =
-      TakePrivateNetworkAccessPreflightResult();
-
   forwarding_client_->OnReceiveResponse(
       std::move(response_head), std::move(body), std::move(cached_metadata));
 }
@@ -713,9 +710,6 @@ void CorsURLLoader::OnReceiveRedirect(const net::RedirectInfo& redirect_info,
   DCHECK(network_loader_);
   DCHECK(forwarding_client_);
   DCHECK(!deferred_redirect_url_);
-
-  response_head->private_network_access_preflight_result =
-      TakePrivateNetworkAccessPreflightResult();
 
   // If `CORS flag` is set and a CORS check for `request` and `response` returns
   // failure, then return a network error.
@@ -1250,9 +1244,6 @@ void CorsURLLoader::HandleComplete(URLLoaderCompletionStatus status) {
     // safety if this ever happens in production.
     DUMP_WILL_BE_NOTREACHED();
   }
-
-  status.private_network_access_preflight_result =
-      TakePrivateNetworkAccessPreflightResult();
 
   net_log_.EndEvent(net::NetLogEventType::CORS_REQUEST);
   forwarding_client_->OnComplete(std::move(status));
