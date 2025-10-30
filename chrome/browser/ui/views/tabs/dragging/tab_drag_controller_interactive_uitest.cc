@@ -4236,11 +4236,16 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   EXPECT_FALSE(target_browser->window()->IsMaximized());
 }
 
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
+// Flaky on ChromeOS.
+#define MAYBE_DragDirectlyToSecondWindow DISABLED_DragDirectlyToSecondWindow
+#else
+#define MAYBE_DragDirectlyToSecondWindow DragDirectlyToSecondWindow
+#endif
 // Creates two browsers, drags from first into the second in such a way that
 // no detaching should happen.
-// TODO(crbug.com/41482323): Reenable flaky test.
 IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
-                       DISABLED_DragDirectlyToSecondWindow) {
+                       MAYBE_DragDirectlyToSecondWindow) {
   // TODO(pkasting): Crashes when detaching browser.  https://crbug.com/918733
   if (input_source() == InputSource::INPUT_SOURCE_TOUCH) {
     VLOG(1) << "Test is DISABLED for touch input.";
