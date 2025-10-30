@@ -69,9 +69,6 @@ void TestPageBroadcast::SetPageAttributionSupport(
 void TestPageBroadcast::UpdateColorProviders(
     const blink::ColorProviderColorMaps& color_provider_colors) {}
 
-void TestPageBroadcast::UpdateCanvasNoiseToken(
-    std::optional<blink::NoiseToken> canvas_noise_token) {}
-
 void TestPageBroadcast::SetSupportsDraggableRegions(
     bool supports_draggable_regions) {}
 

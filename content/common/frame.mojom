@@ -32,7 +32,6 @@ import "third_party/blink/public/mojom/conversions/conversions.mojom";
 import "third_party/blink/public/mojom/devtools/console_message.mojom";
 import "third_party/blink/public/mojom/fenced_frame/fenced_frame.mojom";
 import "third_party/blink/public/mojom/fenced_frame/fenced_frame_config.mojom";
-import "third_party/blink/public/mojom/fingerprinting_protection/noise_token.mojom";
 import "third_party/blink/public/mojom/frame/frame_owner_properties.mojom";
 import "third_party/blink/public/mojom/frame/frame_policy.mojom";
 import "third_party/blink/public/mojom/frame/frame_replication_state.mojom";
@@ -182,10 +181,6 @@ struct CreateViewParams {
   // A snapshot of the history information when this view was created.
   int32 history_index = -1;
   int32 history_length = 0;
-
-  // The 64 bit hash value for canvas noising from the current page. A nullopt
-  // indicates canvas noising should be disabled for this page.
-  blink.mojom.NoiseToken? canvas_noise_token;
 };
 
 // A union to distinguish between parameters specific to local main frame

@@ -324,10 +324,6 @@ void FocusWebContentsOnFrame(WebContents* web_contents, RenderFrameHost* rfh) {
       node, node->current_frame_host()->GetSiteInstance()->group());
 }
 
-std::optional<blink::NoiseToken> GetCanvasNoiseTokenForPage(const Page& page) {
-  return static_cast<const PageImpl&>(page).canvas_noise_token();
-}
-
 MessageLoopRunner::MessageLoopRunner(QuitMode quit_mode)
     : quit_mode_(quit_mode) {}
 

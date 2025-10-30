@@ -164,11 +164,6 @@ class MockPageBroadcast : public blink::mojom::PageBroadcast {
               (override));
 
   MOCK_METHOD(void,
-              UpdateCanvasNoiseToken,
-              (std::optional<blink::NoiseToken> canvas_noise_token),
-              (override));
-
-  MOCK_METHOD(void,
               SetSupportsDraggableRegions,
               (bool supports_draggable_regions),
               (override));

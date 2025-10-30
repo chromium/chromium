@@ -27,12 +27,6 @@ void RenderFrameTestHelper::GetDocumentToken(
   std::move(callback).Run(render_frame()->GetWebFrame()->GetDocument().Token());
 }
 
-void RenderFrameTestHelper::GetCanvasNoiseToken(
-    GetCanvasNoiseTokenCallback callback) {
-  std::move(callback).Run(
-      render_frame()->GetWebView()->CanvasNoiseTokenForTesting());
-}
-
 void RenderFrameTestHelper::OnDestruct() {
   delete this;
 }

@@ -51,8 +51,6 @@ class TestPageBroadcast : public blink::mojom::PageBroadcast {
       network::mojom::AttributionSupport support) override;
   void UpdateColorProviders(
       const blink::ColorProviderColorMaps& color_provider_colors) override;
-  void UpdateCanvasNoiseToken(
-      std::optional<blink::NoiseToken> canvas_noise_token) override;
   void SetSupportsDraggableRegions(bool supports_draggable_regions) override;
 
   mojo::AssociatedReceiver<blink::mojom::PageBroadcast> receiver_;

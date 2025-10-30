@@ -8,7 +8,6 @@ import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "services/network/public/mojom/attribution.mojom";
 import "skia/public/mojom/skcolor.mojom";
-import "third_party/blink/public/mojom/fingerprinting_protection/noise_token.mojom";
 import "third_party/blink/public/mojom/frame/frame_replication_state.mojom";
 import "third_party/blink/public/mojom/frame/remote_frame.mojom";
 import "third_party/blink/public/mojom/frame/view_transition_state.mojom";
@@ -177,11 +176,6 @@ interface PageBroadcast {
   // 2. The ColorProvider associated with the WebContents changes as a result
   // of theme changes.
   UpdateColorProviders(ColorProviderColorMaps color_provider_colors);
-
-  // Update the page's canvas noise token. This allows the browser to compute
-  // the noise token at ReadyToCommit time and update blink::WebViews that
-  // were made at request time.
-  UpdateCanvasNoiseToken(blink.mojom.NoiseToken? canvas_noise_token);
 
   // Indicates that the page's main frame should collect draggable regions set
   // using the app-region CSS property.

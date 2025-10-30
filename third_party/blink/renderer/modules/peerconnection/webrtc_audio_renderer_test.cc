@@ -243,8 +243,7 @@ class WebRtcAudioRendererTest : public testing::Test {
             /*color_provider_colors=*/nullptr,
             /*partitioned_popin_params=*/nullptr,
             /*history_index=*/-1,
-            /*history_length=*/0,
-            /*canvas_noise_token=*/std::nullopt)),
+            /*history_length=*/0)),
         web_local_frame_(blink::WebLocalFrame::CreateMainFrame(
             web_view_,
             &web_local_frame_client_,

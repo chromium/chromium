@@ -84,14 +84,6 @@ class CONTENT_EXPORT PageImpl : public Page {
   // Setter for the `window.setResizable(bool)` API's value defining whether the
   // window can be resized or not. `std::nullopt` means the value is not set.
   void SetResizable(std::optional<bool> resizable);
-
-  std::optional<blink::NoiseToken> canvas_noise_token() const {
-    return canvas_noise_token_;
-  }
-  void set_canvas_noise_token(std::optional<blink::NoiseToken> token) {
-    canvas_noise_token_ = token;
-  }
-
   base::WeakPtr<PageImpl> GetWeakPtrImpl();
 
   virtual void UpdateManifestUrl(const GURL& manifest_url);

@@ -25,8 +25,7 @@ TEST(PageTest, CreateOrdinaryBrowsingContextGroup) {
   Page* page =
       Page::CreateOrdinary(*client, /*opener=*/nullptr, *scheduler, bcg_token,
                            /*color_provider_colors=*/nullptr,
-                           /*partitioned_popin_params=*/nullptr,
-                           /*canvas_noise_token=*/std::nullopt);
+                           /*partitioned_popin_params=*/nullptr);
 
   EXPECT_EQ(page->BrowsingContextGroupToken(), bcg_token);
 }
@@ -51,8 +50,7 @@ TEST(PageTest, BrowsingContextGroupUpdate) {
   Page* page = Page::CreateOrdinary(*client, /*opener=*/nullptr, *scheduler,
                                     initial_bcg_token,
                                     /*color_provider_colors=*/nullptr,
-                                    /*partitioned_popin_params=*/nullptr,
-                                    /*canvas_noise_token=*/std::nullopt);
+                                    /*partitioned_popin_params=*/nullptr);
 
   EXPECT_EQ(page->BrowsingContextGroupToken(), initial_bcg_token);
 
@@ -76,8 +74,7 @@ TEST(PageTest, BrowsingContextGroupUpdateWithPauser) {
   Page* page1 =
       Page::CreateOrdinary(*client, /*opener=*/nullptr, *scheduler, group_a,
                            /*color_provider_colors=*/nullptr,
-                           /*partitioned_popin_params=*/nullptr,
-                           /*canvas_noise_token=*/std::nullopt);
+                           /*partitioned_popin_params=*/nullptr);
 
   auto pauser_for_group_a =
       std::make_unique<ScopedBrowsingContextGroupPauser>(*page1);
@@ -90,8 +87,7 @@ TEST(PageTest, BrowsingContextGroupUpdateWithPauser) {
   Page* page2 =
       Page::CreateOrdinary(*client, /*opener=*/nullptr, *scheduler, group_b,
                            /*color_provider_colors=*/nullptr,
-                           /*partitioned_popin_params=*/nullptr,
-                           /*canvas_noise_token=*/std::nullopt);
+                           /*partitioned_popin_params=*/nullptr);
   ASSERT_FALSE(page2->Paused());
 
   page2->UpdateBrowsingContextGroup(group_a);
@@ -110,8 +106,7 @@ TEST(PageTest, CreateOrdinaryColorProviders) {
 
   Page* page = Page::CreateOrdinary(*client, /*opener=*/nullptr, *scheduler,
                                     bcg_token, &color_provider_colors,
-                                    /*partitioned_popin_params=*/nullptr,
-                                    /*canvas_noise_token=*/std::nullopt);
+                                    /*partitioned_popin_params=*/nullptr);
 
   const ui::ColorProvider* light_color_provider =
       page->GetColorProviderForPainting(

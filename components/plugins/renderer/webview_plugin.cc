@@ -282,8 +282,7 @@ WebViewPlugin::WebViewHelper::WebViewHelper(
       /*color_provider_colors=*/nullptr,
       /*partitioned_popin_params=*/nullptr,
       /*history_index=*/-1,
-      /*history_length=*/0,
-      /*canvas_noise_token=*/std::nullopt);
+      /*history_length=*/0);
   // ApplyWebPreferences before making a WebLocalFrame so that the frame sees a
   // consistent view of our preferences.
   blink::WebView::ApplyWebPreferences(parent_web_preferences, web_view_);
