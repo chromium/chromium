@@ -228,29 +228,17 @@ Actions MakeType(TabHandle tab_handle,
   return actions;
 }
 
-Actions MakeScroll(RenderFrameHost& rfh,
-                   std::optional<int> content_node_id,
-                   float scroll_offset_x,
-                   float scroll_offset_y) {
+ScrollAction* MakeScrollHelper(RenderFrameHost& rfh,
+                               Actions& actions,
+                               float scroll_offset_x,
+                               float scroll_offset_y) {
   CHECK(!scroll_offset_x || !scroll_offset_y)
       << "Scroll action supports only one axis at a time.";
-  Actions actions;
+
   ScrollAction* scroll = actions.add_actions()->mutable_scroll();
   auto* tab = TabInterface::GetFromContents(
       content::WebContents::FromRenderFrameHost(&rfh));
   scroll->set_tab_id(tab->GetHandle().raw_value());
-
-  if (content_node_id.has_value()) {
-    scroll->mutable_target()->set_content_node_id(content_node_id.value());
-    scroll->mutable_target()
-        ->mutable_document_identifier()
-        ->set_serialized_token(
-            *DocumentIdentifierUserData::GetDocumentIdentifier(
-                rfh.GetGlobalFrameToken()));
-  } else {
-    CHECK(rfh.IsInPrimaryMainFrame())
-        << "Empty target is only used to scroll the main frame";
-  }
 
   if (scroll_offset_x > 0) {
     scroll->set_direction(ScrollAction::RIGHT);
@@ -266,6 +254,45 @@ Actions MakeScroll(RenderFrameHost& rfh,
     scroll->set_direction(ScrollAction::UP);
     scroll->set_distance(-scroll_offset_y);
   }
+
+  return scroll;
+}
+
+Actions MakeScroll(RenderFrameHost& rfh,
+                   std::optional<int> content_node_id,
+                   float scroll_offset_x,
+                   float scroll_offset_y) {
+  Actions actions;
+  ScrollAction* scroll =
+      MakeScrollHelper(rfh, actions, scroll_offset_x, scroll_offset_y);
+
+  if (content_node_id.has_value()) {
+    scroll->mutable_target()->set_content_node_id(content_node_id.value());
+    scroll->mutable_target()
+        ->mutable_document_identifier()
+        ->set_serialized_token(
+            *DocumentIdentifierUserData::GetDocumentIdentifier(
+                rfh.GetGlobalFrameToken()));
+  } else {
+    CHECK(rfh.IsInPrimaryMainFrame())
+        << "Empty target is only used to scroll the main frame";
+  }
+
+  return actions;
+}
+
+Actions MakeScroll(RenderFrameHost& rfh,
+                   const gfx::Point& scroll_point,
+                   float scroll_offset_x,
+                   float scroll_offset_y) {
+  Actions actions;
+  ScrollAction* scroll =
+      MakeScrollHelper(rfh, actions, scroll_offset_x, scroll_offset_y);
+
+  Coordinate* coordinate = scroll->mutable_target()->mutable_coordinate();
+  coordinate->set_x(scroll_point.x());
+  coordinate->set_y(scroll_point.y());
+
   return actions;
 }
 
@@ -498,11 +525,13 @@ std::unique_ptr<ToolRequest> MakeScrollRequest(
   return std::make_unique<ScrollToolRequest>(
       GetTabHandleForFrame(rfh), MakeTarget(rfh, node_id), direction, distance);
 }
+
 std::unique_ptr<ToolRequest> MakeScrollToRequest(content::RenderFrameHost& rfh,
                                                  int content_node_id) {
   return std::make_unique<ScrollToToolRequest>(
       GetTabHandleForFrame(rfh), MakeTarget(rfh, content_node_id));
 }
+
 std::unique_ptr<ToolRequest> MakeDragAndReleaseRequest(
     TabInterface& tab,
     const gfx::Point& from_point,

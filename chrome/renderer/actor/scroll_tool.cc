@@ -6,12 +6,14 @@
 
 #include <optional>
 
+#include "base/feature_list.h"
 #include "base/notimplemented.h"
 #include "base/strings/to_string.h"
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/actor/actor_constants.h"
 #include "chrome/common/actor/actor_logging.h"
 #include "chrome/common/actor/journal_details_builder.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/renderer/actor/tool_utils.h"
 #include "content/public/renderer/render_frame.h"
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
@@ -28,6 +30,17 @@ namespace actor {
 using ::blink::WebElement;
 using ::blink::WebLocalFrame;
 using ::blink::WebNode;
+
+bool IsTargetUserScrollable(const blink::WebNode& node,
+                            const gfx::Vector2dF& offset) {
+  if (!node.IsElementNode()) {
+    return false;
+  }
+
+  WebElement element = node.To<WebElement>();
+  return (!offset.x() || element.IsUserScrollableX()) &&
+         (!offset.y() || element.IsUserScrollableY());
+}
 
 ScrollTool::ScrollTool(content::RenderFrame& frame,
                        TaskId task_id,
@@ -93,25 +106,60 @@ ScrollTool::ValidatedResult ScrollTool::Validate() const {
                    /*requires_page_stabilization=*/false, "Negative Distance"));
   }
 
-  if (target_->is_coordinate_dip()) {
-    NOTIMPLEMENTED() << "Coordinate-based target not yet supported.";
-    return base::unexpected(MakeErrorResult());
-  }
+  // This is the existing code path when `kGlicActorCoordinateScrollTool` is
+  // disabled and can be removed once the flag lands safely.
+  if (!base::FeatureList::IsEnabled(features::kGlicActorCoordinateScrollTool)) {
+    if (target_->is_coordinate_dip()) {
+      NOTIMPLEMENTED() << "Coordinate-based target not yet supported.";
+      return base::unexpected(MakeErrorResult());
+    }
 
-  WebElement scrolling_element;
-  int32_t dom_node_id = target_->get_dom_node_id();
-  if (dom_node_id == kRootElementDomNodeId) {
-    scrolling_element = web_frame->GetDocument().ScrollingElement();
-    if (scrolling_element.IsNull()) {
+    WebElement scrolling_element;
+    int32_t dom_node_id = target_->get_dom_node_id();
+    if (dom_node_id == kRootElementDomNodeId) {
+      scrolling_element = web_frame->GetDocument().ScrollingElement();
+      if (scrolling_element.IsNull()) {
+        return base::unexpected(
+            MakeResult(mojom::ActionResultCode::kScrollNoScrollingElement));
+      }
+    } else {
+      auto resolved_target = ValidateAndResolveTarget();
+      if (!resolved_target.has_value()) {
+        return base::unexpected(std::move(resolved_target.error()));
+      }
+      scrolling_element = resolved_target->node.DynamicTo<WebElement>();
+    }
+
+    gfx::Vector2dF offset_physical;
+    switch (action_->direction) {
+      case mojom::ScrollAction::ScrollDirection::kLeft: {
+        offset_physical.set_x(-action_->distance);
+        break;
+      }
+      case mojom::ScrollAction::ScrollDirection::kRight: {
+        offset_physical.set_x(action_->distance);
+        break;
+      }
+      case mojom::ScrollAction::ScrollDirection::kUp: {
+        offset_physical.set_y(-action_->distance);
+        break;
+      }
+      case mojom::ScrollAction::ScrollDirection::kDown: {
+        offset_physical.set_y(action_->distance);
+        break;
+      }
+    }
+
+    if ((offset_physical.x() && !scrolling_element.IsUserScrollableX()) ||
+        (offset_physical.y() && !scrolling_element.IsUserScrollableY())) {
       return base::unexpected(
-          MakeResult(mojom::ActionResultCode::kScrollNoScrollingElement));
+          MakeResult(mojom::ActionResultCode::kScrollTargetNotUserScrollable,
+                     /*requires_page_stabilization=*/false,
+                     absl::StrFormat("ScrollingElement [%s]",
+                                     base::ToString(scrolling_element))));
     }
-  } else {
-    auto resolved_target = ValidateAndResolveTarget();
-    if (!resolved_target.has_value()) {
-      return base::unexpected(std::move(resolved_target.error()));
-    }
-    scrolling_element = resolved_target->node.DynamicTo<WebElement>();
+
+    return ScrollerAndDistance{scrolling_element, offset_physical};
   }
 
   gfx::Vector2dF offset_physical;
@@ -134,13 +182,70 @@ ScrollTool::ValidatedResult ScrollTool::Validate() const {
     }
   }
 
-  if ((offset_physical.x() && !scrolling_element.IsUserScrollableX()) ||
-      (offset_physical.y() && !scrolling_element.IsUserScrollableY())) {
-    return base::unexpected(
-        MakeResult(mojom::ActionResultCode::kScrollTargetNotUserScrollable,
-                   /*requires_page_stabilization=*/false,
-                   absl::StrFormat("ScrollingElement [%s]",
-                                   base::ToString(scrolling_element))));
+  WebElement scrolling_element;
+  if (target_->is_coordinate_dip()) {
+    // We don't do a TimeOfUse check for coordinate based targets,
+    // because the intended target is determined by bubbling up to
+    // ancestors and only the `observed_target_` node is provided from
+    // the browser.
+    ToolBase::ResolveResult resolved_target = ResolveTarget(*target_);
+    if (!resolved_target.has_value()) {
+      return base::unexpected(std::move(resolved_target.error()));
+    }
+
+    blink::WebNode& node = resolved_target->node;
+    WebElement root_scroller = web_frame->GetDocument().ScrollingElement();
+
+    while (!node.IsNull()) {
+      // If we reach the root scroller, we check if it is a scrollable target.
+      if (node.IsDocumentNode() && !root_scroller.IsNull() &&
+          IsTargetUserScrollable(root_scroller, offset_physical)) {
+        node = root_scroller;
+        break;
+      }
+
+      if (IsTargetUserScrollable(node, offset_physical)) {
+        break;
+      }
+
+      node = node.ParentOrShadowHostNode();
+    }
+
+    if (node.IsNull()) {
+      return base::unexpected(
+          MakeResult(mojom::ActionResultCode::kScrollTargetNotUserScrollable,
+                     /*requires_page_stabilization=*/false,
+                     "No scrollable ancestor found by coordinate"));
+    }
+
+    scrolling_element = node.To<WebElement>();
+
+    // At this point, `scrolling_element` is guaranteed to be a scrollable
+    // element. Otherwise, we would have returned the error above.
+    CHECK(IsTargetUserScrollable(scrolling_element, offset_physical));
+  } else {
+    int32_t dom_node_id = target_->get_dom_node_id();
+    if (dom_node_id == kRootElementDomNodeId) {
+      scrolling_element = web_frame->GetDocument().ScrollingElement();
+      if (scrolling_element.IsNull()) {
+        return base::unexpected(
+            MakeResult(mojom::ActionResultCode::kScrollNoScrollingElement));
+      }
+    } else {
+      ToolBase::ResolveResult resolved_target = ValidateAndResolveTarget();
+      if (!resolved_target.has_value()) {
+        return base::unexpected(std::move(resolved_target.error()));
+      }
+      scrolling_element = resolved_target->node.DynamicTo<WebElement>();
+    }
+
+    if (!IsTargetUserScrollable(scrolling_element, offset_physical)) {
+      return base::unexpected(
+          MakeResult(mojom::ActionResultCode::kScrollTargetNotUserScrollable,
+                     /*requires_page_stabilization=*/false,
+                     absl::StrFormat("ScrollingElement [%s]",
+                                     base::ToString(scrolling_element))));
+    }
   }
 
   return ScrollerAndDistance{scrolling_element, offset_physical};

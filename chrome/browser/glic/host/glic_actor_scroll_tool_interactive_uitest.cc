@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/feature_list.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/glic/host/glic_actor_interactive_uitest_common.h"
 #include "chrome/browser/ui/zoom/chrome_zoom_level_prefs.h"
 #include "chrome/common/actor/actor_constants.h"
+#include "chrome/common/chrome_features.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "content/public/test/browser_test.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
@@ -21,49 +23,67 @@ using MultiStep = GlicActorUiTest::MultiStep;
 
 class GlicActorScrollToolUiTest : public GlicActorUiTest {
  public:
+  // Scrolls by the given offsets with optional `label`. If `label` is not
+  // provided, the viewport is scrolled.
   MultiStep ScrollAction(std::optional<std::string_view> label,
                          float offset_x,
                          float offset_y,
                          actor::TaskId& task_id,
                          tabs::TabHandle& tab_handle,
-                         ExpectedErrorResult expected_result = {});
+                         ExpectedErrorResult expected_result = {}) {
+    auto scroll_provider = base::BindLambdaForTesting(
+        [this, &task_id, &tab_handle, label, offset_x, offset_y]() {
+          std::optional<int32_t> node_id;
+          if (label) {
+            node_id = SearchAnnotatedPageContent(*label);
+          }
+          content::RenderFrameHost* frame =
+              tab_handle.Get()->GetContents()->GetPrimaryMainFrame();
+          Actions action =
+              actor::MakeScroll(*frame, node_id, offset_x, offset_y);
+          action.set_task_id(task_id.value());
+          return EncodeActionProto(action);
+        });
+    return ExecuteAction(std::move(scroll_provider),
+                         std::move(expected_result));
+  }
 
   MultiStep ScrollAction(std::optional<std::string_view> label,
                          float offset_x,
                          float offset_y,
-                         ExpectedErrorResult expected_result = {});
+                         ExpectedErrorResult expected_result = {}) {
+    return ScrollAction(label, offset_x, offset_y, task_id_, tab_handle_,
+                        std::move(expected_result));
+  }
+
+  // Scrolls by the given offsets at the given `click_point`.
+  MultiStep ScrollActionAtPoint(const gfx::Point& click_point,
+                                float offset_x,
+                                float offset_y,
+                                actor::TaskId& task_id,
+                                tabs::TabHandle& tab_handle,
+                                ExpectedErrorResult expected_result = {}) {
+    auto scroll_provider = base::BindLambdaForTesting(
+        [&task_id, &tab_handle, click_point, offset_x, offset_y]() {
+          content::RenderFrameHost* frame =
+              tab_handle.Get()->GetContents()->GetPrimaryMainFrame();
+          Actions action =
+              actor::MakeScroll(*frame, click_point, offset_x, offset_y);
+          action.set_task_id(task_id.value());
+          return EncodeActionProto(action);
+        });
+    return ExecuteAction(std::move(scroll_provider),
+                         std::move(expected_result));
+  }
+
+  MultiStep ScrollActionAtPoint(const gfx::Point& click_point,
+                                float offset_x,
+                                float offset_y,
+                                ExpectedErrorResult expected_result = {}) {
+    return ScrollActionAtPoint(click_point, offset_x, offset_y, task_id_,
+                               tab_handle_, std::move(expected_result));
+  }
 };
-
-MultiStep GlicActorScrollToolUiTest::ScrollAction(
-    std::optional<std::string_view> label,
-    float offset_x,
-    float offset_y,
-    actor::TaskId& task_id,
-    tabs::TabHandle& tab_handle,
-    ExpectedErrorResult expected_result) {
-  auto scroll_provider = base::BindLambdaForTesting(
-      [this, &task_id, &tab_handle, label, offset_x, offset_y]() {
-        std::optional<int32_t> node_id;
-        if (label) {
-          node_id = SearchAnnotatedPageContent(*label);
-        }
-        content::RenderFrameHost* frame =
-            tab_handle.Get()->GetContents()->GetPrimaryMainFrame();
-        Actions action = actor::MakeScroll(*frame, node_id, offset_x, offset_y);
-        action.set_task_id(task_id.value());
-        return EncodeActionProto(action);
-      });
-  return ExecuteAction(std::move(scroll_provider), std::move(expected_result));
-}
-
-MultiStep GlicActorScrollToolUiTest::ScrollAction(
-    std::optional<std::string_view> label,
-    float offset_x,
-    float offset_y,
-    ExpectedErrorResult expected_result) {
-  return ScrollAction(label, offset_x, offset_y, task_id_, tab_handle_,
-                      std::move(expected_result));
-}
 
 // Test scrolling the viewport vertically.
 IN_PROC_BROWSER_TEST_F(GlicActorScrollToolUiTest, ScrollPageVertical) {
@@ -77,7 +97,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorScrollToolUiTest, ScrollPageVertical) {
       StartActorTaskInNewTab(task_url, kNewActorTabId),
       GetPageContextFromFocusedTab(),
       ScrollAction(/*label=*/std::nullopt, /*offset_x=*/0, kScrollOffsetY),
-      WaitForJsResult(kNewActorTabId, "() => window.scrollY", kScrollOffsetY));
+      CheckJsResult(kNewActorTabId, "() => window.scrollY", kScrollOffsetY));
 }
 
 // Test scrolling the viewport horizontally.
@@ -92,7 +112,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorScrollToolUiTest, ScrollPageHorizontal) {
       StartActorTaskInNewTab(task_url, kNewActorTabId),
       GetPageContextFromFocusedTab(),
       ScrollAction(/*label=*/std::nullopt, kScrollOffsetX, /*offset_y=*/0),
-      WaitForJsResult(kNewActorTabId, "() => window.scrollX", kScrollOffsetX));
+      CheckJsResult(kNewActorTabId, "() => window.scrollX", kScrollOffsetX));
 }
 
 IN_PROC_BROWSER_TEST_F(GlicActorScrollToolUiTest, FailOnInvalidNodeId) {
@@ -116,11 +136,11 @@ IN_PROC_BROWSER_TEST_F(GlicActorScrollToolUiTest, FailOnInvalidNodeId) {
             return EncodeActionProto(action);
           }),
           actor::mojom::ActionResultCode::kInvalidDomNodeId),
-      WaitForJsResult(kNewActorTabId, "() => window.scrollY", 0));
+      CheckJsResult(kNewActorTabId, "() => window.scrollY", 0));
 }
 
 // Test scrolling in a sub-scroller on the page.
-IN_PROC_BROWSER_TEST_F(GlicActorScrollToolUiTest, ScrollElement) {
+IN_PROC_BROWSER_TEST_F(GlicActorScrollToolUiTest, ScrollElementWithNodeId) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
   const GURL task_url =
       embedded_test_server()->GetURL("/actor/scrollable_page.html");
@@ -133,13 +153,13 @@ IN_PROC_BROWSER_TEST_F(GlicActorScrollToolUiTest, ScrollElement) {
       StartActorTaskInNewTab(task_url, kNewActorTabId),
       GetPageContextFromFocusedTab(),
       ScrollAction(kElementLabel, /*offset_x=*/0, kScrollOffsetY),
-      WaitForJsResult(kNewActorTabId,
-                      "() => document.getElementById('scroller').scrollTop",
-                      kScrollOffsetY),
+      CheckJsResult(kNewActorTabId,
+                    "() => document.getElementById('scroller').scrollTop",
+                    kScrollOffsetY),
       ScrollAction(kElementLabel, kScrollOffsetX, /*offset_y=*/0),
-      WaitForJsResult(kNewActorTabId,
-                      "() => document.getElementById('scroller').scrollLeft",
-                      kScrollOffsetX));
+      CheckJsResult(kNewActorTabId,
+                    "() => document.getElementById('scroller').scrollLeft",
+                    kScrollOffsetX));
 }
 
 // Test scrolling over a non-scrollable element returns failure.
@@ -157,10 +177,10 @@ IN_PROC_BROWSER_TEST_F(GlicActorScrollToolUiTest, ScrollNonScrollable) {
       ScrollAction(
           kElementLabel, /*offset_x=*/0, kScrollOffsetY,
           actor::mojom::ActionResultCode::kScrollTargetNotUserScrollable),
-      WaitForJsResult(kNewActorTabId,
-                      "() => document.getElementById('nonscroll').scrollTop",
-                      /*value=*/0),
-      WaitForJsResult(kNewActorTabId, "() => window.scrollY", /*value=*/0));
+      CheckJsResult(kNewActorTabId,
+                    "() => document.getElementById('nonscroll').scrollTop",
+                    /*value=*/0),
+      CheckJsResult(kNewActorTabId, "() => window.scrollY", /*value=*/0));
 }
 
 // Test scrolling a scroller that's currently offscreen. It will first be
@@ -176,13 +196,13 @@ IN_PROC_BROWSER_TEST_F(GlicActorScrollToolUiTest, OffscreenScrollable) {
       InitializeWithOpenGlicWindow(),
       StartActorTaskInNewTab(task_url, kNewActorTabId),
       GetPageContextFromFocusedTab(),
-      WaitForJsResult(kNewActorTabId, "()=>{ return window.scrollY == 0 }"),
+      CheckJsResult(kNewActorTabId, "()=>{ return window.scrollY == 0 }"),
       ScrollAction(kElementLabel, /*offset_x=*/0, kScrollOffsetY),
-      WaitForJsResult(
+      CheckJsResult(
           kNewActorTabId,
           "() => document.getElementById('offscreenscroller').scrollTop",
           kScrollOffsetY),
-      WaitForJsResult(kNewActorTabId, "()=>{ return window.scrollY > 0 }"));
+      CheckJsResult(kNewActorTabId, "()=>{ return window.scrollY > 0 }"));
 }
 
 // Test that a scrolling over a scroller with overflow in one axis only works
@@ -201,20 +221,20 @@ IN_PROC_BROWSER_TEST_F(GlicActorScrollToolUiTest, OneAxisScroller) {
       ScrollAction(
           kElementLabel, /*offset_x=*/0, kScrollOffset,
           actor::mojom::ActionResultCode::kScrollTargetNotUserScrollable),
-      WaitForJsResult(
+      CheckJsResult(
           kNewActorTabId,
           "() => document.getElementById('horizontalscroller').scrollTop",
           /*value=*/0),
-      WaitForJsResult(kNewActorTabId, "() => window.scrollY", /*value=*/0),
+      CheckJsResult(kNewActorTabId, "() => window.scrollY", /*value=*/0),
       ScrollAction(kElementLabel, kScrollOffset, /*offset_y=*/0),
-      WaitForJsResult(
+      CheckJsResult(
           kNewActorTabId,
           "() => document.getElementById('horizontalscroller').scrollLeft",
           kScrollOffset));
 }
 
 // Ensure scroll distances are correctly scaled when browser zoom is applied.
-IN_PROC_BROWSER_TEST_F(GlicActorScrollToolUiTest, BrowserZoom) {
+IN_PROC_BROWSER_TEST_F(GlicActorScrollToolUiTest, BrowserZoomWithNodeId) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
   const GURL task_url =
       embedded_test_server()->GetURL("/actor/scrollable_page.html");
@@ -233,14 +253,14 @@ IN_PROC_BROWSER_TEST_F(GlicActorScrollToolUiTest, BrowserZoom) {
       StartActorTaskInNewTab(task_url, kNewActorTabId),
       GetPageContextFromFocusedTab(),
       ScrollAction(kElementLabel, /*offset_x=*/0, kScrollOffsetPhysical),
-      WaitForJsResult(kNewActorTabId,
-                      "() => document.getElementById('scroller').scrollTop",
-                      kExpectedOffsetCss));
+      CheckJsResult(kNewActorTabId,
+                    "() => document.getElementById('scroller').scrollTop",
+                    kExpectedOffsetCss));
 }
 
 // Ensure scroll distances are correctly scaled when applied to a CSS zoomed
 // scroller.
-IN_PROC_BROWSER_TEST_F(GlicActorScrollToolUiTest, CssZoom) {
+IN_PROC_BROWSER_TEST_F(GlicActorScrollToolUiTest, CssZoomWithNodeId) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
   const GURL task_url =
       embedded_test_server()->GetURL("/actor/scrollable_page.html");
@@ -256,10 +276,9 @@ IN_PROC_BROWSER_TEST_F(GlicActorScrollToolUiTest, CssZoom) {
       StartActorTaskInNewTab(task_url, kNewActorTabId),
       GetPageContextFromFocusedTab(),
       ScrollAction(kElementLabel, /*offset_x=*/0, kScrollOffsetPhysical),
-      WaitForJsResult(
-          kNewActorTabId,
-          "() => document.getElementById('zoomedscroller').scrollTop",
-          kExpectedOffsetCss));
+      CheckJsResult(kNewActorTabId,
+                    "() => document.getElementById('zoomedscroller').scrollTop",
+                    kExpectedOffsetCss));
 }
 
 // Test that a scroll on a page with scroll-behavior:smooth returns success if
@@ -276,10 +295,9 @@ IN_PROC_BROWSER_TEST_F(GlicActorScrollToolUiTest, SmoothScrollSucceeds) {
       StartActorTaskInNewTab(task_url, kNewActorTabId),
       GetPageContextFromFocusedTab(),
       ScrollAction(kElementLabel, /*offset_x=*/0, kScrollOffsetY),
-      WaitForJsResult(
-          kNewActorTabId,
-          "() => document.getElementById('smoothscroller').scrollTop",
-          kScrollOffsetY));
+      CheckJsResult(kNewActorTabId,
+                    "() => document.getElementById('smoothscroller').scrollTop",
+                    kScrollOffsetY));
 }
 
 // Test that a scroll on a page with scroll-behavior:smooth returns failure if
@@ -325,7 +343,288 @@ IN_PROC_BROWSER_TEST_F(GlicActorScrollToolUiTest, ZeroIdTargetsViewport) {
         action.set_task_id(task_id_.value());
         return EncodeActionProto(action);
       })),
-      WaitForJsResult(kNewActorTabId, "() => window.scrollY", kScrollOffsetY));
+      CheckJsResult(kNewActorTabId, "() => window.scrollY", kScrollOffsetY));
+}
+
+// This is testing flag-guard code and to remove the test suite once the change
+// lands safely.
+class GlicActorCoordinateScrollToolUiTest : public GlicActorScrollToolUiTest {
+ public:
+  GlicActorCoordinateScrollToolUiTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kGlicActorCoordinateScrollTool);
+  }
+  ~GlicActorCoordinateScrollToolUiTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Test targeting a subscroller for scrolling using a coordinate.
+IN_PROC_BROWSER_TEST_F(GlicActorCoordinateScrollToolUiTest,
+                       ScrollElementWithCoordinate) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
+  constexpr std::string_view kScrollerId = "scroller";
+  const GURL task_url =
+      embedded_test_server()->GetURL("/actor/scrollable_page.html");
+  gfx::Rect scroller_bound;
+  const int kScrollOffsetY = 50;
+  const int kScrollOffsetX = 20;
+
+  auto scroller_x_provider =
+      base::BindLambdaForTesting([&scroller_bound, this]() {
+        gfx::Point coordinate = scroller_bound.CenterPoint();
+        content::RenderFrameHost* frame =
+            tab_handle_.Get()->GetContents()->GetPrimaryMainFrame();
+        apc::Actions action = actor::MakeScroll(
+            *frame, coordinate, kScrollOffsetX, /*scroll_offset_y=*/0);
+
+        action.set_task_id(task_id_.value());
+        return EncodeActionProto(action);
+      });
+
+  auto scroller_y_provider =
+      base::BindLambdaForTesting([&scroller_bound, this]() {
+        gfx::Point coordinate = scroller_bound.CenterPoint();
+        content::RenderFrameHost* frame =
+            tab_handle_.Get()->GetContents()->GetPrimaryMainFrame();
+        apc::Actions action = actor::MakeScroll(
+            *frame, coordinate, /*scroll_offset_x=*/0, kScrollOffsetY);
+
+        action.set_task_id(task_id_.value());
+        return EncodeActionProto(action);
+      });
+
+  RunTestSequence(
+      InitializeWithOpenGlicWindow(),
+      StartActorTaskInNewTab(task_url, kNewActorTabId),
+      GetPageContextFromFocusedTab(),
+      GetClientRect(kNewActorTabId, kScrollerId, scroller_bound),
+      ExecuteAction(std::move(scroller_y_provider)),
+      CheckJsResult(kNewActorTabId,
+                    "() => document.getElementById('scroller').scrollTop",
+                    kScrollOffsetY),
+      ExecuteAction(std::move(scroller_x_provider)),
+      CheckJsResult(kNewActorTabId,
+                    "() => document.getElementById('scroller').scrollLeft",
+                    kScrollOffsetX));
+}
+
+// Test scrolling in a non-scrollable element on the page with coordinate.
+// This will result scrolling the root page scroller.
+IN_PROC_BROWSER_TEST_F(GlicActorCoordinateScrollToolUiTest,
+                       ScrollNonScrollableElementWithCoordinate) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
+  constexpr std::string_view kNonScrollerId = "nonscroll";
+  const GURL task_url =
+      embedded_test_server()->GetURL("/actor/scrollable_page.html");
+  gfx::Rect non_scroller_bound;
+  const int kScrollOffsetY = 50;
+
+  auto non_scroller_provider =
+      base::BindLambdaForTesting([&non_scroller_bound, this]() {
+        gfx::Point coordinate = non_scroller_bound.CenterPoint();
+        content::RenderFrameHost* frame =
+            tab_handle_.Get()->GetContents()->GetPrimaryMainFrame();
+        apc::Actions action = actor::MakeScroll(
+            *frame, coordinate, /*scroll_offset_x=*/0, kScrollOffsetY);
+
+        action.set_task_id(task_id_.value());
+        return EncodeActionProto(action);
+      });
+
+  RunTestSequence(
+      InitializeWithOpenGlicWindow(),
+      StartActorTaskInNewTab(task_url, kNewActorTabId),
+      GetPageContextFromFocusedTab(),
+      GetClientRect(kNewActorTabId, kNonScrollerId, non_scroller_bound),
+      ExecuteAction(std::move(non_scroller_provider)),
+      CheckJsResult(kNewActorTabId, "() => window.scrollY", kScrollOffsetY));
+}
+
+// Test scrolling on the page with invalid coordinate.
+IN_PROC_BROWSER_TEST_F(GlicActorCoordinateScrollToolUiTest,
+                       ScrollInvalidCoordinateFails) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
+  const GURL task_url =
+      embedded_test_server()->GetURL("/actor/scrollable_page.html");
+  const gfx::Point kPoint(-1, -1);
+  const int kScrollOffsetY = 50;
+
+  RunTestSequence(InitializeWithOpenGlicWindow(),
+                  StartActorTaskInNewTab(task_url, kNewActorTabId),
+                  GetPageContextFromFocusedTab(),
+                  ScrollActionAtPoint(
+                      kPoint, /*offset_x=*/0, kScrollOffsetY,
+                      actor::mojom::ActionResultCode::kCoordinatesOutOfBounds));
+}
+
+// Test scrolling a scroller that's currently offscreen with coordinate.
+// This is expected to fail because offscreen actuation supports only DOMNodeId
+// targeting.
+IN_PROC_BROWSER_TEST_F(GlicActorCoordinateScrollToolUiTest,
+                       OffscreenScrollableWithCoordinate) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
+  constexpr std::string_view kOffScreenScrollerId = "offscreenscroller";
+  const GURL task_url =
+      embedded_test_server()->GetURL("/actor/scrollable_page.html");
+  gfx::Rect off_screen_scrolle_bound;
+  const int kScrollOffsetY = 50;
+
+  auto off_screen_scroller_provider =
+      base::BindLambdaForTesting([&off_screen_scrolle_bound, this]() {
+        gfx::Point coordinate = off_screen_scrolle_bound.CenterPoint();
+        content::RenderFrameHost* frame =
+            tab_handle_.Get()->GetContents()->GetPrimaryMainFrame();
+        apc::Actions action = actor::MakeScroll(
+            *frame, coordinate, /*scroll_offset_x=*/0, kScrollOffsetY);
+
+        action.set_task_id(task_id_.value());
+        return EncodeActionProto(action);
+      });
+
+  RunTestSequence(
+      InitializeWithOpenGlicWindow(),
+      StartActorTaskInNewTab(task_url, kNewActorTabId),
+      GetPageContextFromFocusedTab(),
+      GetClientRect(kNewActorTabId, kOffScreenScrollerId,
+                    off_screen_scrolle_bound),
+      ExecuteAction(std::move(off_screen_scroller_provider),
+                    actor::mojom::ActionResultCode::kCoordinatesOutOfBounds));
+}
+
+// Test scrolling in a non-scrollable element on the page with coordinate.
+IN_PROC_BROWSER_TEST_F(GlicActorCoordinateScrollToolUiTest,
+                       ScrollNonScrollableElementAndPageWithCoordinate) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
+  constexpr std::string_view kNonScrollerId = "nonscroll";
+  const GURL task_url =
+      embedded_test_server()->GetURL("/actor/non_scrollable_page.html");
+  gfx::Rect non_scroller_bound;
+  const int kScrollOffsetY = 50;
+
+  auto non_scroller_provider =
+      base::BindLambdaForTesting([&non_scroller_bound, this]() {
+        gfx::Point coordinate = non_scroller_bound.CenterPoint();
+        content::RenderFrameHost* frame =
+            tab_handle_.Get()->GetContents()->GetPrimaryMainFrame();
+        apc::Actions action = actor::MakeScroll(
+            *frame, coordinate, /*scroll_offset_x=*/0, kScrollOffsetY);
+
+        action.set_task_id(task_id_.value());
+        return EncodeActionProto(action);
+      });
+
+  RunTestSequence(
+      InitializeWithOpenGlicWindow(),
+      StartActorTaskInNewTab(task_url, kNewActorTabId),
+      GetPageContextFromFocusedTab(),
+      GetClientRect(kNewActorTabId, kNonScrollerId, non_scroller_bound),
+      ExecuteAction(
+          std::move(non_scroller_provider),
+          actor::mojom::ActionResultCode::kScrollTargetNotUserScrollable),
+      CheckJsResult(kNewActorTabId,
+                    "() => document.getElementById('nonscroll').scrollTop",
+                    /*value=*/0),
+      CheckJsResult(kNewActorTabId, "() => window.scrollY", /*value=*/0));
+}
+
+// Test for scrolling using a coordinate at a subscroller which has a button
+// overlapping its center area. Because scroll tool with coordinate does not use
+// toctou check, this test case will still succeed and will not throw a
+// kObservedTargetElementDestroyed error.
+IN_PROC_BROWSER_TEST_F(GlicActorCoordinateScrollToolUiTest,
+                       ScrollBubblesFromNonScrollingElement) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
+  constexpr std::string_view kButtonId = "button";
+  const GURL task_url =
+      embedded_test_server()->GetURL("/actor/scrollable_page.html");
+  gfx::Rect button_bound;
+  const int kScrollOffsetY = 50;
+  const int kScrollOffsetX = 20;
+
+  auto scroller_x_provider =
+      base::BindLambdaForTesting([&button_bound, this]() {
+        gfx::Point coordinate = button_bound.CenterPoint();
+        content::RenderFrameHost* frame =
+            tab_handle_.Get()->GetContents()->GetPrimaryMainFrame();
+        apc::Actions action = actor::MakeScroll(
+            *frame, coordinate, kScrollOffsetX, /*scroll_offset_y=*/0);
+
+        action.set_task_id(task_id_.value());
+        return EncodeActionProto(action);
+      });
+
+  auto scroller_y_provider =
+      base::BindLambdaForTesting([&button_bound, this]() {
+        gfx::Point coordinate = button_bound.CenterPoint();
+        content::RenderFrameHost* frame =
+            tab_handle_.Get()->GetContents()->GetPrimaryMainFrame();
+        apc::Actions action = actor::MakeScroll(
+            *frame, coordinate, /*scroll_offset_x=*/0, kScrollOffsetY);
+
+        action.set_task_id(task_id_.value());
+        return EncodeActionProto(action);
+      });
+
+  RunTestSequence(
+      InitializeWithOpenGlicWindow(),
+      StartActorTaskInNewTab(task_url, kNewActorTabId),
+      GetPageContextFromFocusedTab(),
+      GetClientRect(kNewActorTabId, kButtonId, button_bound),
+      ExecuteAction(std::move(scroller_y_provider)),
+      CheckJsResult(kNewActorTabId,
+                    "() => document.getElementById('buttonscroller').scrollTop",
+                    kScrollOffsetY),
+      ExecuteAction(std::move(scroller_x_provider)),
+      CheckJsResult(
+          kNewActorTabId,
+          "() => document.getElementById('buttonscroller').scrollLeft",
+          kScrollOffsetX));
+}
+
+// This is testing flag-guard disabled code and to remove the test once the flag
+// lands safely.
+class GlicActorCoordinateDisabledScrollToolUiTest
+    : public GlicActorScrollToolUiTest {
+ public:
+  GlicActorCoordinateDisabledScrollToolUiTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        features::kGlicActorCoordinateScrollTool);
+  }
+  ~GlicActorCoordinateDisabledScrollToolUiTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(GlicActorCoordinateDisabledScrollToolUiTest,
+                       ScrollWithCoordinateExpectToFail) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
+  constexpr std::string_view kScrollerId = "scroller";
+  const GURL task_url =
+      embedded_test_server()->GetURL("/actor/scrollable_page.html");
+  gfx::Rect scroller_bound;
+  const int kScrollOffsetY = 50;
+
+  auto scroller_y_provider =
+      base::BindLambdaForTesting([&scroller_bound, this]() {
+        gfx::Point coordinate = scroller_bound.CenterPoint();
+        content::RenderFrameHost* frame =
+            tab_handle_.Get()->GetContents()->GetPrimaryMainFrame();
+        apc::Actions action = actor::MakeScroll(
+            *frame, coordinate, /*scroll_offset_x=*/0, kScrollOffsetY);
+
+        action.set_task_id(task_id_.value());
+        return EncodeActionProto(action);
+      });
+
+  RunTestSequence(InitializeWithOpenGlicWindow(),
+                  StartActorTaskInNewTab(task_url, kNewActorTabId),
+                  GetPageContextFromFocusedTab(),
+                  GetClientRect(kNewActorTabId, kScrollerId, scroller_bound),
+                  ExecuteAction(std::move(scroller_y_provider),
+                                actor::mojom::ActionResultCode::kError));
 }
 
 }  // namespace
