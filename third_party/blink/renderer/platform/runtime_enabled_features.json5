@@ -3373,10 +3373,10 @@
       status: "stable",
     },
     {
-      // Experimental support for Multicast in Direct Sockets API.
-      // https://github.com/explainers-by-googlers/multicast-in-direct-sockets
+      // Multicast in Direct Sockets API.
+      // https://github.com/WICG/direct-sockets/blob/main/docs/multicast-explainer.md
       name: "MulticastInDirectSockets",
-      status: "test",
+      status: "stable",
       depends_on: ["DirectSockets"]
     },
     {

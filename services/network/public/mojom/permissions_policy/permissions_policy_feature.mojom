@@ -342,7 +342,7 @@ enum PermissionsPolicyFeature {
   kDigitalCredentialsCreate = 141,
 
   // Controls access to Multicast in Direct Sockets.
-  // See https://github.com/explainers-by-googlers/multicast-in-direct-sockets.
+  // See https://github.com/WICG/direct-sockets/blob/main/docs/multicast-explainer.md.
   kMulticastInDirectSockets = 142,
 
   // Don't change assigned numbers of any item, and don't reuse removed slots.

@@ -2762,7 +2762,8 @@ inline constexpr char kMulticastInDirectSocketsName[] =
     "Multicast in Direct Sockets API";
 inline constexpr char kMulticastInDirectSocketsDescription[] =
     "Enables access Multicast in Direct Sockets API. See "
-    "https://github.com/explainers-by-googlers/multicast-in-direct-sockets for "
+    "https://github.com/WICG/direct-sockets/blob/main/docs/"
+    "multicast-explainer.md for "
     "details.";
 
 inline constexpr char kCanvas2DLayersName[] =
