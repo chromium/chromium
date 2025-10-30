@@ -376,6 +376,7 @@ source_set("profiles_extra_parts_impl") {
       "//chrome/browser/badging",
       "//chrome/browser/contextual_cueing",
       "//chrome/browser/contextual_tasks:ui",
+      "//chrome/browser/device_api",
       "//chrome/browser/devtools",
       "//chrome/browser/feedback",
       "//chrome/browser/hid",
