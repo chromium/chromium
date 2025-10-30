@@ -370,8 +370,7 @@ void ShadowRoot::ProcessAdoptedStylesheetAttribute(
     AtomicString value) {
   CHECK(RuntimeEnabledFeatures::DeclarativeCSSModulesEnabled());
   if (!value.empty()) {
-    auto sheets = GetFetchedStyleSheetsFromModuleMap(value);
-    AppendAdoptedStyleSheets(sheets);
+    AppendAdoptedStyleSheets(GetFetchedStyleSheetsFromModuleMap(value));
   }
 }
 

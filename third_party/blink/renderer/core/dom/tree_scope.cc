@@ -480,7 +480,7 @@ void TreeScope::ClearAdoptedStyleSheets() {
 }
 
 void TreeScope::AppendAdoptedStyleSheets(
-    HeapVector<Member<CSSStyleSheet>>& adopted_style_sheets) {
+    HeapVector<Member<CSSStyleSheet>>&& adopted_style_sheets) {
   EnsureAdoptedStyleSheets();
   for (const auto& sheet : adopted_style_sheets) {
     DCHECK(sheet->IsConstructed());
@@ -491,9 +491,9 @@ void TreeScope::AppendAdoptedStyleSheets(
 }
 
 void TreeScope::SetAdoptedStyleSheetsForTesting(
-    HeapVector<Member<CSSStyleSheet>>& adopted_style_sheets) {
+    HeapVector<Member<CSSStyleSheet>> adopted_style_sheets) {
   ClearAdoptedStyleSheets();
-  AppendAdoptedStyleSheets(adopted_style_sheets);
+  AppendAdoptedStyleSheets(std::move(adopted_style_sheets));
 }
 
 DOMSelection* TreeScope::GetSelection() const {
