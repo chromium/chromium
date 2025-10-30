@@ -54,6 +54,7 @@
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
 #include "third_party/webrtc/modules/desktop_capture/fake_desktop_capturer.h"
 #include "third_party/webrtc/modules/desktop_capture/mouse_cursor_monitor.h"
+#include "third_party/webrtc_overrides/rtc_base/diagnostic_logging.h"
 #include "ui/gfx/icc_profile.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -205,6 +206,35 @@ class ScopedHighResolutionTimer {
 #endif
 };
 
+// Helper class to temporarily hook webrtc RTC_LOG macro to
+// DesktopCaptureDevice::Client::OnLog
+// With this RTC_LOG messages in webrtc code for desktop capturers
+// will be forwarded to webrtc log, as they already do in the renderer
+// process where webrtc is running.
+// This is not thread safe and can't be used in other places.
+class ScopedWebrtcDebugLogging {
+ public:
+  explicit ScopedWebrtcDebugLogging(DesktopCaptureDevice::Client* client) {
+    g_client_ = client;
+    webrtc::InitDiagnosticLoggingDelegateFunction(
+        &ScopedWebrtcDebugLogging::OnLog);
+  }
+
+  static void OnLog(const std::string& s) {
+    CHECK(g_client_);
+    g_client_->OnLog(s);
+  }
+
+  ~ScopedWebrtcDebugLogging() {
+    g_client_ = nullptr;
+    webrtc::ResetDiagnosticLoggingDelegateFunction();
+  }
+
+ private:
+  static DesktopCaptureDevice::Client* g_client_;
+};
+
+DesktopCaptureDevice::Client* ScopedWebrtcDebugLogging::g_client_ = nullptr;
 }  // namespace
 
 media::VideoPixelFormat FourCCToVideoPixelFormat(webrtc::FourCC fourcc) {
@@ -904,6 +934,7 @@ base::TimeTicks DesktopCaptureDevice::Core::NowTicks() const {
 std::unique_ptr<media::VideoCaptureDevice> DesktopCaptureDevice::Create(
     const DesktopMediaID& source,
     Client* device_client) {
+  ScopedWebrtcDebugLogging enable_webrtc_logging(device_client);
   CHECK(source.type == DesktopMediaID::TYPE_WINDOW ||
         source.type == DesktopMediaID::TYPE_SCREEN);
 
