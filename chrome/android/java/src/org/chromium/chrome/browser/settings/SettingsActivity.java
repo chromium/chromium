@@ -30,6 +30,8 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.window.layout.WindowMetricsCalculator;
 
+import com.google.android.material.appbar.AppBarLayout;
+
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackUtils;
 import org.chromium.base.DeviceInfo;
@@ -251,7 +253,7 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
         // If savedInstanceState is non-null, then the activity is being
         // recreated and super.onCreate() has already recreated the fragment.
         if (savedInstanceState == null) {
-            if (ChromeFeatureList.sSettingsMultiColumn.isEnabled()) {
+            if (isMultiColumnSettingEnabled()) {
                 // Do NOT set MAIN_FRAGMENT_TAG in this case, so page-title updating,
                 // setting the padding depending on window size, and metrics are temporarily
                 // disabled for development.
@@ -278,7 +280,7 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
         }
 
         if (!mStandalone) {
-            if (ChromeFeatureList.sSettingsMultiColumn.isEnabled()) {
+            if (isMultiColumnSettingEnabled()) {
                 assert mMultiColumnSettings != null;
                 mMultiColumnTitleUpdater =
                         new MultiColumnTitleUpdater(
@@ -304,6 +306,11 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
             int backgroundColor = SemanticColorUtils.getSettingsBackgroundColor(this);
             findViewById(R.id.content).setBackgroundColor(backgroundColor);
             findViewById(R.id.app_bar_layout).setBackgroundColor(backgroundColor);
+        }
+        if (isContainmentEnabled() || isMultiColumnSettingEnabled()) {
+            AppBarLayout appBarLayout = findViewById(R.id.app_bar_layout);
+            appBarLayout.setElevation(0);
+            appBarLayout.setStateListAnimator(null);
         }
     }
 
@@ -334,7 +341,7 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
      * multi-column mode.
      */
     private boolean getUseMultiColumn() {
-        if (!ChromeFeatureList.sSettingsMultiColumn.isEnabled()) return false;
+        if (!isMultiColumnSettingEnabled()) return false;
 
         var windowMetrics = WindowMetricsCalculator.getOrCreate().computeCurrentWindowMetrics(this);
         return windowMetrics.getBounds().width()
@@ -345,6 +352,11 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
     /** Returns true if the AndroidSettingsContainment feature is enabled. */
     private static boolean isContainmentEnabled() {
         return ChromeFeatureList.sAndroidSettingsContainment.isEnabled();
+    }
+
+    /** Returns true if the AndroidSettingsContainment feature is enabled. */
+    private static boolean isMultiColumnSettingEnabled() {
+        return ChromeFeatureList.sSettingsMultiColumn.isEnabled();
     }
 
     @Override
