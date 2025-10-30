@@ -186,9 +186,9 @@ void StreamModel::Update(
   for (feedstore::StreamSharedState& shared_state :
        update_request->shared_states) {
     std::string id = ContentIdString(shared_state.content_id());
-    if (!shared_states_.contains(id)) {
-      shared_states_[id].data =
-          std::move(*shared_state.mutable_shared_state_data());
+    auto [it, updated] = shared_states_.try_emplace(std::move(id));
+    if (updated) {
+      it->second.data = std::move(*shared_state.mutable_shared_state_data());
     }
   }
 
