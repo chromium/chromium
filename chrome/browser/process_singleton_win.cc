@@ -284,14 +284,14 @@ ProcessSingleton::NotifyResult ProcessSingleton::NotifyOtherProcess() {
   }
 
   switch (AttemptToNotifyRunningChrome(remote_window_)) {
-    case NotifyChromeResult::NOTIFY_SUCCESS:
+    case NotifyChromeResult::kSuccess:
       return PROCESS_NOTIFIED;
-    case NotifyChromeResult::NOTIFY_FAILED:
+    case NotifyChromeResult::kFailed:
       remote_window_ = NULL;
       internal::SendRemoteProcessInteractionResultHistogram(
           RUNNING_PROCESS_NOTIFY_ERROR);
       return PROCESS_NONE;
-    case NotifyChromeResult::NOTIFY_WINDOW_HUNG:
+    case NotifyChromeResult::kWindowHung:
       // Fall through and potentially terminate the hung browser.
       break;
   }
