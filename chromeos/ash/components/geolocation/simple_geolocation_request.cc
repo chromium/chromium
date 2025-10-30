@@ -22,8 +22,8 @@
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
 #include "chromeos/ash/components/geolocation/simple_geolocation_request_test_monitor.h"
+#include "chromeos/ash/components/geolocation/system_location_provider.h"
 #include "google_apis/google_api_keys.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_response_headers.h"
@@ -147,13 +147,14 @@ void RecordUmaResult(SimpleGeolocationRequestResult result, size_t retries) {
 void RecordUmaNetworkLocationRequestSource() {
   base::UmaHistogramEnumeration(
       "Geolocation.NetworkLocationRequest.Source",
-      device::NetworkLocationRequestSource::kSimpleGeolocationProvider);
+      device::NetworkLocationRequestSource::kSystemLocationProvider);
 }
 
 // Creates the request url to send to the server.
 GURL GeolocationRequestURL(const GURL& url) {
-  if (url != SimpleGeolocationProvider::DefaultGeolocationProviderURL())
+  if (url != SystemLocationProvider::DefaultGeolocationProviderURL()) {
     return url;
+  }
 
   std::string api_key;
   if (features::IsCrosSeparateGeoApiKeyEnabled()) {
@@ -178,9 +179,9 @@ void PrintGeolocationError(const GURL& server_url,
                            Geoposition* position) {
   position->status = Geoposition::STATUS_SERVER_ERROR;
   position->error_message = base::StringPrintf(
-      "SimpleGeolocation provider at '%s' : %s.",
+      "SystemLocationProvider at '%s' : %s.",
       server_url.DeprecatedGetOriginAsURL().spec().c_str(), message.c_str());
-  VLOG(1) << "SimpleGeolocationRequest::GetGeolocationFromResponse() : "
+  VLOG(1) << "SystemLocationProvider::GetGeolocationFromResponse() : "
           << position->error_message;
 }
 

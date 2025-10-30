@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chromeos/ash/components/geolocation/system_location_provider.h"
+
 #include <stddef.h>
 
 #include <memory>
@@ -19,7 +21,6 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/dbus/shill/shill_manager_client.h"
-#include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
 #include "chromeos/ash/components/geolocation/simple_geolocation_request_test_monitor.h"
 #include "chromeos/ash/components/network/geolocation_handler.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
@@ -129,8 +130,7 @@ class TestGeolocationAPILoaderFactory : public network::TestURLLoaderFactory {
     EXPECT_EQ(url_.ReplaceComponents(replacements),
               request.url.ReplaceComponents(replacements));
 
-    SimpleGeolocationProvider* provider =
-        SimpleGeolocationProvider::GetInstance();
+    SystemLocationProvider* provider = SystemLocationProvider::GetInstance();
     EXPECT_NE(nullptr, provider);
     EXPECT_EQ(provider->requests_.size(), 1U);
 
@@ -144,8 +144,9 @@ class TestGeolocationAPILoaderFactory : public network::TestURLLoaderFactory {
     geolocation_request->set_retry_sleep_on_bad_response_for_testing(
         base_retry_interval);
 
-    if (++attempts_ > require_retries_)
+    if (++attempts_ > require_retries_) {
       AddResponse(url_.spec(), response_, http_status_);
+    }
   }
 
   size_t attempts() const { return attempts_; }
@@ -212,60 +213,60 @@ class WirelessTestMonitor : public SimpleGeolocationRequestTestMonitor {
   unsigned int requests_count_ = 0;
 };
 
-class SimpleGeolocationTestBase {
+class SystemLocationProviderTestBase {
  public:
-  SimpleGeolocationTestBase()
+  SystemLocationProviderTestBase()
       : url_factory_(GURL(kTestGeolocationProviderUrl),
                      net::HTTP_OK,
                      kSimpleResponseBody,
                      0 /* require_retries */) {}
 
-  ~SimpleGeolocationTestBase() = default;
+  ~SystemLocationProviderTestBase() = default;
 
   void EnableGeolocationUsage() {
-    SimpleGeolocationProvider::GetInstance()->SetGeolocationAccessLevel(
+    SystemLocationProvider::GetInstance()->SetGeolocationAccessLevel(
         GeolocationAccessLevel::kAllowed);
   }
 
   void DisableGeolocatioUsage() {
-    SimpleGeolocationProvider::GetInstance()->SetGeolocationAccessLevel(
+    SystemLocationProvider::GetInstance()->SetGeolocationAccessLevel(
         GeolocationAccessLevel::kDisallowed);
   }
 
  protected:
   void SetUp() {
-    SimpleGeolocationProvider::Initialize(
+    SystemLocationProvider::Initialize(
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &url_factory_));
-    SimpleGeolocationProvider::GetInstance()
-        ->SetGeolocationProviderUrlForTesting(kTestGeolocationProviderUrl);
+    SystemLocationProvider::GetInstance()->SetGeolocationProviderUrlForTesting(
+        kTestGeolocationProviderUrl);
   }
 
-  void TearDown() { SimpleGeolocationProvider::DestroyForTesting(); }
+  void TearDown() { SystemLocationProvider::DestroyForTesting(); }
   TestGeolocationAPILoaderFactory url_factory_;
 };
 
-class SimpleGeolocationTest : public SimpleGeolocationTestBase,
-                              public testing::Test {
+class SystemLocationProviderTest : public SystemLocationProviderTestBase,
+                                   public testing::Test {
  protected:
-  void SetUp() override { SimpleGeolocationTestBase::SetUp(); }
+  void SetUp() override { SystemLocationProviderTestBase::SetUp(); }
 
-  void TearDown() override { SimpleGeolocationTestBase::TearDown(); }
+  void TearDown() override { SystemLocationProviderTestBase::TearDown(); }
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
 };
 
-TEST_F(SimpleGeolocationTest, ResponseOK) {
+TEST_F(SystemLocationProviderTest, ResponseOK) {
   // Set user permission to granted.
   EnableGeolocationUsage();
 
   GeolocationReceiver receiver;
-  SimpleGeolocationProvider::GetInstance()->RequestGeolocation(
+  SystemLocationProvider::GetInstance()->RequestGeolocation(
       base::Seconds(1), false, false,
       base::BindOnce(&GeolocationReceiver::OnRequestDone,
                      base::Unretained(&receiver)),
-      SimpleGeolocationProvider::ClientId::kForTesting);
+      SystemLocationProvider::ClientId::kForTesting);
   receiver.WaitUntilRequestDone();
 
   EXPECT_EQ(kExpectedPosition, receiver.position().ToString());
@@ -273,7 +274,7 @@ TEST_F(SimpleGeolocationTest, ResponseOK) {
   EXPECT_EQ(1U, url_factory_.attempts());
 }
 
-TEST_F(SimpleGeolocationTest, ResponseOKWithRetries) {
+TEST_F(SystemLocationProviderTest, ResponseOKWithRetries) {
   url_factory_.Configure(GURL(kTestGeolocationProviderUrl), net::HTTP_OK,
                          kSimpleResponseBody, 3 /* require_retries */);
 
@@ -281,18 +282,19 @@ TEST_F(SimpleGeolocationTest, ResponseOKWithRetries) {
   EnableGeolocationUsage();
 
   GeolocationReceiver receiver;
-  SimpleGeolocationProvider::GetInstance()->RequestGeolocation(
+  SystemLocationProvider::GetInstance()->RequestGeolocation(
       base::Seconds(1), false, false,
       base::BindOnce(&GeolocationReceiver::OnRequestDone,
                      base::Unretained(&receiver)),
-      SimpleGeolocationProvider::ClientId::kForTesting);
+      SystemLocationProvider::ClientId::kForTesting);
   receiver.WaitUntilRequestDone();
   EXPECT_EQ(kExpectedPosition, receiver.position().ToString());
   EXPECT_FALSE(receiver.server_error());
   EXPECT_EQ(4U, url_factory_.attempts());
 }
 
-TEST_F(SimpleGeolocationTest, ResponseWithErrorTooManyRequestsIsNotRetried) {
+TEST_F(SystemLocationProviderTest,
+       ResponseWithErrorTooManyRequestsIsNotRetried) {
   url_factory_.Configure(GURL(kTestGeolocationProviderUrl),
                          net::HTTP_TOO_MANY_REQUESTS, kSimpleResponseBody,
                          0 /* require_retries */);
@@ -301,11 +303,11 @@ TEST_F(SimpleGeolocationTest, ResponseWithErrorTooManyRequestsIsNotRetried) {
   EnableGeolocationUsage();
 
   GeolocationReceiver receiver;
-  SimpleGeolocationProvider::GetInstance()->RequestGeolocation(
+  SystemLocationProvider::GetInstance()->RequestGeolocation(
       base::Seconds(1), false, false,
       base::BindOnce(&GeolocationReceiver::OnRequestDone,
                      base::Unretained(&receiver)),
-      SimpleGeolocationProvider::ClientId::kForTesting);
+      SystemLocationProvider::ClientId::kForTesting);
   receiver.WaitUntilRequestDone();
 
   // Check that Geoposition is not populated.
@@ -316,7 +318,7 @@ TEST_F(SimpleGeolocationTest, ResponseWithErrorTooManyRequestsIsNotRetried) {
   EXPECT_EQ(1U, url_factory_.attempts());
 }
 
-TEST_F(SimpleGeolocationTest, InvalidResponse) {
+TEST_F(SystemLocationProviderTest, InvalidResponse) {
   url_factory_.Configure(GURL(kTestGeolocationProviderUrl), net::HTTP_OK,
                          "invalid JSON string", 0 /* require_retries */);
   EnableGeolocationUsage();
@@ -327,37 +329,37 @@ TEST_F(SimpleGeolocationTest, InvalidResponse) {
   ASSERT_GE(expected_retries, 2U);
 
   GeolocationReceiver receiver;
-  SimpleGeolocationProvider::GetInstance()->RequestGeolocation(
+  SystemLocationProvider::GetInstance()->RequestGeolocation(
       base::Seconds(timeout_seconds), false, false,
       base::BindOnce(&GeolocationReceiver::OnRequestDone,
                      base::Unretained(&receiver)),
-      SimpleGeolocationProvider::ClientId::kForTesting);
+      SystemLocationProvider::ClientId::kForTesting);
   receiver.WaitUntilRequestDone();
 
   std::string receiver_position = receiver.position().ToString();
   EXPECT_TRUE(base::Contains(
       receiver_position,
       "latitude=200.000000, longitude=200.000000, accuracy=-1.000000, "
-      "error_code=0, error_message='SimpleGeolocation provider at "
+      "error_code=0, error_message='SystemLocationProvider at "
       "'https://localhost/' : JSONReader failed:"));
   EXPECT_TRUE(base::Contains(receiver_position, "status=4 (TIMEOUT)"));
   EXPECT_TRUE(receiver.server_error());
   EXPECT_GE(url_factory_.attempts(), 2U);
   if (url_factory_.attempts() > expected_retries + 1) {
     LOG(WARNING)
-        << "SimpleGeolocationTest::InvalidResponse: Too many attempts ("
+        << "SystemLocationProviderTest::InvalidResponse: Too many attempts ("
         << url_factory_.attempts() << "), no more than " << expected_retries + 1
         << " expected.";
   }
   if (url_factory_.attempts() < expected_retries - 1) {
     LOG(WARNING)
-        << "SimpleGeolocationTest::InvalidResponse: Too little attempts ("
+        << "SystemLocationProviderTest::InvalidResponse: Too little attempts ("
         << url_factory_.attempts() << "), greater than " << expected_retries - 1
         << " expected.";
   }
 }
 
-TEST_F(SimpleGeolocationTest, NoWiFi) {
+TEST_F(SystemLocationProviderTest, NoWiFi) {
   NetworkHandlerTestHelper network_handler_test_helper;
 
   WirelessTestMonitor requests_monitor;
@@ -368,11 +370,11 @@ TEST_F(SimpleGeolocationTest, NoWiFi) {
   EnableGeolocationUsage();
 
   GeolocationReceiver receiver;
-  SimpleGeolocationProvider::GetInstance()->RequestGeolocation(
+  SystemLocationProvider::GetInstance()->RequestGeolocation(
       base::Seconds(1), true, false,
       base::BindOnce(&GeolocationReceiver::OnRequestDone,
                      base::Unretained(&receiver)),
-      SimpleGeolocationProvider::ClientId::kForTesting);
+      SystemLocationProvider::ClientId::kForTesting);
   receiver.WaitUntilRequestDone();
   EXPECT_EQ(kIPOnlyRequestBody, requests_monitor.last_request_body());
 
@@ -381,9 +383,9 @@ TEST_F(SimpleGeolocationTest, NoWiFi) {
   EXPECT_EQ(1U, url_factory_.attempts());
 }
 
-// Test SimpleGeolocationProvider when the system geolocation permission is
+// Test SystemLocationProvider when the system geolocation permission is
 // denied. System shall not send out any geolocation request.
-TEST_F(SimpleGeolocationTest, SystemGeolocationPermissionDenied) {
+TEST_F(SystemLocationProviderTest, SystemGeolocationPermissionDenied) {
   NetworkHandlerTestHelper network_handler_test_helper;
   GeolocationReceiver receiver;
   WirelessTestMonitor requests_monitor;
@@ -398,11 +400,11 @@ TEST_F(SimpleGeolocationTest, SystemGeolocationPermissionDenied) {
   // Test for every request type.
   for (bool send_wifi : {false, true}) {
     for (bool send_cell : {false, true}) {
-      SimpleGeolocationProvider::GetInstance()->RequestGeolocation(
+      SystemLocationProvider::GetInstance()->RequestGeolocation(
           base::Seconds(1), send_wifi, send_cell,
           base::BindOnce(&GeolocationReceiver::OnRequestDone,
                          base::Unretained(&receiver)),
-          SimpleGeolocationProvider::ClientId::kForTesting);
+          SystemLocationProvider::ClientId::kForTesting);
 
       // Waiting is not needed, requests are dropped, thus nothing is pending.
       EXPECT_EQ(0U, requests_monitor.requests_count());
@@ -430,10 +432,12 @@ namespace override_geo_api_keys {
 
 }  // namespace override_geo_api_keys
 
-class SimpleGeolocationAPIKeyTest : public SimpleGeolocationTest,
-                                    public testing::WithParamInterface<bool> {
+class SystemLocationProviderAPIKeyTest
+    : public SystemLocationProviderTest,
+      public testing::WithParamInterface<bool> {
  public:
-  SimpleGeolocationAPIKeyTest() : is_separate_api_keys_enabled_(GetParam()) {
+  SystemLocationProviderAPIKeyTest()
+      : is_separate_api_keys_enabled_(GetParam()) {
     if (is_separate_api_keys_enabled_) {
       feature_list_.InitAndEnableFeature(features::kCrosSeparateGeoApiKey);
     } else {
@@ -442,18 +446,15 @@ class SimpleGeolocationAPIKeyTest : public SimpleGeolocationTest,
   }
 
   void SetUp() override {
-    SimpleGeolocationTest::SetUp();
+    SystemLocationProviderTest::SetUp();
 
     // Set URL to the production value to let the `SimpleGeolocationRequest`
     // extend it with the API keys.
-    SimpleGeolocationProvider::GetInstance()
-        ->SetGeolocationProviderUrlForTesting(
-            SimpleGeolocationProvider::DefaultGeolocationProviderURL()
-                .spec()
-                .c_str());
+    SystemLocationProvider::GetInstance()->SetGeolocationProviderUrlForTesting(
+        SystemLocationProvider::DefaultGeolocationProviderURL().spec().c_str());
     url_factory_.Configure(
-        SimpleGeolocationProvider::DefaultGeolocationProviderURL(),
-        net::HTTP_OK, kSimpleResponseBody, 0);
+        SystemLocationProvider::DefaultGeolocationProviderURL(), net::HTTP_OK,
+        kSimpleResponseBody, 0);
   }
 
   const bool is_separate_api_keys_enabled_;
@@ -462,7 +463,7 @@ class SimpleGeolocationAPIKeyTest : public SimpleGeolocationTest,
   base::test::ScopedFeatureList feature_list_;
 };
 
-TEST_P(SimpleGeolocationAPIKeyTest, TestCorrectAPIKeysAreUsed) {
+TEST_P(SystemLocationProviderAPIKeyTest, TestCorrectAPIKeysAreUsed) {
   GeolocationReceiver receiver;
   WirelessTestMonitor requests_monitor;
   SimpleGeolocationRequest::SetTestMonitor(&requests_monitor);
@@ -477,11 +478,11 @@ TEST_P(SimpleGeolocationAPIKeyTest, TestCorrectAPIKeysAreUsed) {
 
   // Request geolocation and wait for the response.
   EnableGeolocationUsage();
-  SimpleGeolocationProvider::GetInstance()->RequestGeolocation(
+  SystemLocationProvider::GetInstance()->RequestGeolocation(
       base::Seconds(1), false, false,
       base::BindOnce(&GeolocationReceiver::OnRequestDone,
                      base::Unretained(&receiver)),
-      SimpleGeolocationProvider::ClientId::kForTesting);
+      SystemLocationProvider::ClientId::kForTesting);
   receiver.WaitUntilRequestDone();
 
   // Check that the appropriate API key was used depending on the
@@ -497,20 +498,24 @@ TEST_P(SimpleGeolocationAPIKeyTest, TestCorrectAPIKeysAreUsed) {
 }
 
 // GetParam() - `ash::features::kCrosSeparateGeoApiKey` feature state.
-INSTANTIATE_TEST_SUITE_P(All, SimpleGeolocationAPIKeyTest, testing::Bool());
+INSTANTIATE_TEST_SUITE_P(All,
+                         SystemLocationProviderAPIKeyTest,
+                         testing::Bool());
 
 // Test sending of WiFi Access points and Cell Towers.
 // (This is mostly derived from GeolocationHandlerTest.)
-class SimpleGeolocationWirelessTest : public SimpleGeolocationTestBase,
-                                      public ::testing::TestWithParam<bool> {
+class SystemLocationProviderWirelessTest
+    : public SystemLocationProviderTestBase,
+      public ::testing::TestWithParam<bool> {
  public:
-  SimpleGeolocationWirelessTest() : manager_test_(nullptr) {}
+  SystemLocationProviderWirelessTest() : manager_test_(nullptr) {}
 
-  SimpleGeolocationWirelessTest(const SimpleGeolocationWirelessTest&) = delete;
-  SimpleGeolocationWirelessTest& operator=(
-      const SimpleGeolocationWirelessTest&) = delete;
+  SystemLocationProviderWirelessTest(
+      const SystemLocationProviderWirelessTest&) = delete;
+  SystemLocationProviderWirelessTest& operator=(
+      const SystemLocationProviderWirelessTest&) = delete;
 
-  ~SimpleGeolocationWirelessTest() override = default;
+  ~SystemLocationProviderWirelessTest() override = default;
 
   void SetUp() override {
     // Get the test interface for manager / device.
@@ -518,12 +523,12 @@ class SimpleGeolocationWirelessTest : public SimpleGeolocationTestBase,
     ASSERT_TRUE(manager_test_);
     geolocation_handler_.reset(new GeolocationHandler());
     geolocation_handler_->Init();
-    SimpleGeolocationTestBase::SetUp();
+    SystemLocationProviderTestBase::SetUp();
     base::RunLoop().RunUntilIdle();
   }
 
   void TearDown() override {
-    SimpleGeolocationTestBase::TearDown();
+    SystemLocationProviderTestBase::TearDown();
     geolocation_handler_.reset();
   }
 
@@ -580,7 +585,7 @@ class SimpleGeolocationWirelessTest : public SimpleGeolocationTestBase,
 };
 
 // Parameter - (bool) enable/disable sending of WiFi data.
-TEST_P(SimpleGeolocationWirelessTest, WiFiExists) {
+TEST_P(SystemLocationProviderWirelessTest, WiFiExists) {
   bool send_wifi_access_points = GetParam();
 
   WirelessTestMonitor requests_monitor;
@@ -592,15 +597,15 @@ TEST_P(SimpleGeolocationWirelessTest, WiFiExists) {
   // separately.
   EnableGeolocationUsage();
 
-  SimpleGeolocationProvider::GetInstance()->set_geolocation_handler(
+  SystemLocationProvider::GetInstance()->set_geolocation_handler(
       geolocation_handler_.get());
   {
     GeolocationReceiver receiver;
-    SimpleGeolocationProvider::GetInstance()->RequestGeolocation(
+    SystemLocationProvider::GetInstance()->RequestGeolocation(
         base::Seconds(1), send_wifi_access_points, false,
         base::BindOnce(&GeolocationReceiver::OnRequestDone,
                        base::Unretained(&receiver)),
-        SimpleGeolocationProvider::ClientId::kForTesting);
+        SystemLocationProvider::ClientId::kForTesting);
     receiver.WaitUntilRequestDone();
     EXPECT_EQ(kIPOnlyRequestBody, requests_monitor.last_request_body());
 
@@ -624,11 +629,11 @@ TEST_P(SimpleGeolocationWirelessTest, WiFiExists) {
 
   {
     GeolocationReceiver receiver;
-    SimpleGeolocationProvider::GetInstance()->RequestGeolocation(
+    SystemLocationProvider::GetInstance()->RequestGeolocation(
         base::Seconds(1), send_wifi_access_points, false,
         base::BindOnce(&GeolocationReceiver::OnRequestDone,
                        base::Unretained(&receiver)),
-        SimpleGeolocationProvider::ClientId::kForTesting);
+        SystemLocationProvider::ClientId::kForTesting);
     receiver.WaitUntilRequestDone();
     if (send_wifi_access_points) {
       // Sending WiFi data is enabled.
@@ -646,7 +651,7 @@ TEST_P(SimpleGeolocationWirelessTest, WiFiExists) {
 }
 
 // Parameter - (bool) enable/disable sending of WiFi data.
-TEST_P(SimpleGeolocationWirelessTest, CellularExists) {
+TEST_P(SystemLocationProviderWirelessTest, CellularExists) {
   bool send_cell_towers = GetParam();
 
   WirelessTestMonitor requests_monitor;
@@ -657,15 +662,15 @@ TEST_P(SimpleGeolocationWirelessTest, CellularExists) {
   // Enable system permission for geolocation usage.
   EnableGeolocationUsage();
 
-  SimpleGeolocationProvider::GetInstance()->set_geolocation_handler(
+  SystemLocationProvider::GetInstance()->set_geolocation_handler(
       geolocation_handler_.get());
   {
     GeolocationReceiver receiver;
-    SimpleGeolocationProvider::GetInstance()->RequestGeolocation(
+    SystemLocationProvider::GetInstance()->RequestGeolocation(
         base::Seconds(1), false, send_cell_towers,
         base::BindOnce(&GeolocationReceiver::OnRequestDone,
                        base::Unretained(&receiver)),
-        SimpleGeolocationProvider::ClientId::kForTesting);
+        SystemLocationProvider::ClientId::kForTesting);
     receiver.WaitUntilRequestDone();
     EXPECT_EQ(kIPOnlyRequestBody, requests_monitor.last_request_body());
 
@@ -687,11 +692,11 @@ TEST_P(SimpleGeolocationWirelessTest, CellularExists) {
 
   {
     GeolocationReceiver receiver;
-    SimpleGeolocationProvider::GetInstance()->RequestGeolocation(
+    SystemLocationProvider::GetInstance()->RequestGeolocation(
         base::Seconds(1), false, send_cell_towers,
         base::BindOnce(&GeolocationReceiver::OnRequestDone,
                        base::Unretained(&receiver)),
-        SimpleGeolocationProvider::ClientId::kForTesting);
+        SystemLocationProvider::ClientId::kForTesting);
     receiver.WaitUntilRequestDone();
     if (send_cell_towers) {
       // Sending Cellular data is enabled.
@@ -711,7 +716,7 @@ TEST_P(SimpleGeolocationWirelessTest, CellularExists) {
 // This test verifies that WiFi and Cell tower  data is sent only if sending was
 // requested. System geolocation permission is enabled.
 INSTANTIATE_TEST_SUITE_P(EnableDisableSendingWifiData,
-                         SimpleGeolocationWirelessTest,
+                         SystemLocationProviderWirelessTest,
                          testing::Bool());
 
 }  // namespace ash

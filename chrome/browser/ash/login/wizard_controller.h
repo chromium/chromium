@@ -105,7 +105,7 @@ class DemoSetupController;
 class ErrorScreen;
 struct Geoposition;
 class KioskApp;
-class SimpleGeolocationProvider;
+class SystemLocationProvider;
 class TimeZoneProvider;
 struct TimeZoneResponseData;
 enum class KioskAppType;
@@ -544,7 +544,7 @@ class WizardController : public OobeUI::Observer {
   void OnTimezoneResolved(std::unique_ptr<TimeZoneResponseData> timezone,
                           bool server_error);
 
-  // Called from SimpleGeolocationProvider when location is resolved.
+  // Called from SystemLocationProvider when location is resolved.
   void OnLocationResolved(const Geoposition& position,
                           bool server_error,
                           const base::TimeDelta elapsed);

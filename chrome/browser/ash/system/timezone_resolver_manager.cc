@@ -22,7 +22,7 @@
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
+#include "chromeos/ash/components/geolocation/system_location_provider.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -141,7 +141,7 @@ ServiceConfiguration GetServiceConfigurationForSigninScreen() {
 }  // anonymous namespace.
 
 TimeZoneResolverManager::TimeZoneResolverManager(
-    SimpleGeolocationProvider* geolocation_provider,
+    SystemLocationProvider* geolocation_provider,
     session_manager::SessionManager* session_manager)
     : geolocation_provider_(geolocation_provider) {
   switch (g_browser_process->local_state()->GetInitializationStatus()) {

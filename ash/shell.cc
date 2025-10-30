@@ -1391,7 +1391,7 @@ void Shell::Init(
   // `ScheduledFeature` ctor will access `geolocation_controller_` from
   // `Shell`.
   geolocation_controller_ = std::make_unique<GeolocationController>(
-      SimpleGeolocationProvider::GetInstance());
+      SystemLocationProvider::GetInstance());
 
   // Night Light depends on the display manager, the display color manager,
   // aura::Env, and geolocation controller, so initialize it after all have

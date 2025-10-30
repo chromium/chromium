@@ -18,7 +18,7 @@
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_metrics.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_utils.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
+#include "chromeos/ash/components/geolocation/system_location_provider.h"
 #include "chromeos/ash/components/settings/timezone_settings.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/pref_service.h"

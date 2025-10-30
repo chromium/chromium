@@ -26,7 +26,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
-#include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
+#include "chromeos/ash/components/geolocation/system_location_provider.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 
@@ -77,11 +77,11 @@ BirchModel::BirchModel()
     coral_provider_ = std::move(coral_provider);
   }
   Shell::Get()->session_controller()->AddObserver(this);
-  SimpleGeolocationProvider::GetInstance()->AddObserver(this);
+  SystemLocationProvider::GetInstance()->AddObserver(this);
 }
 
 BirchModel::~BirchModel() {
-  SimpleGeolocationProvider::GetInstance()->RemoveObserver(this);
+  SystemLocationProvider::GetInstance()->RemoveObserver(this);
   Shell::Get()->session_controller()->RemoveObserver(this);
 }
 

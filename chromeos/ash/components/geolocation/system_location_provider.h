@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_ASH_COMPONENTS_GEOLOCATION_SIMPLE_GEOLOCATION_PROVIDER_H_
-#define CHROMEOS_ASH_COMPONENTS_GEOLOCATION_SIMPLE_GEOLOCATION_PROVIDER_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_GEOLOCATION_SYSTEM_LOCATION_PROVIDER_H_
+#define CHROMEOS_ASH_COMPONENTS_GEOLOCATION_SYSTEM_LOCATION_PROVIDER_H_
 
 #include <memory>
 #include <vector>
@@ -32,13 +32,16 @@ namespace ash {
 
 class GeolocationHandler;
 
-// `SimpleGeolocationProvider` watches geolocation permissions and serves
-// geolocation requests to its clients by implementing Google Maps Geolocation
-// API. All system services need to use this class to get geolocation data and
-// subscribe to it for permission updates.
-// Note: Arc++ and PWAs have different pipelines for retrieving geolocation.
+// Serves as the central authority and access point for all geolocation-related
+// matters for ChromeOS system services
+//
+// All system services MUST use this class for:
+// (1) Obtaining geographical coordinates.
+// (2) Querying system location permission status and subscribing to updates.
+//
+// Note: ARC++ and PWAs handle geolocation retrieval separately.
 class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GEOLOCATION)
-    SimpleGeolocationProvider {
+    SystemLocationProvider {
  public:
   class Observer : public base::CheckedObserver {
    public:
@@ -53,17 +56,16 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GEOLOCATION)
     kMaxValue = kForTesting,
   };
 
-  SimpleGeolocationProvider(const SimpleGeolocationProvider&) = delete;
-  SimpleGeolocationProvider& operator=(const SimpleGeolocationProvider&) =
-      delete;
+  SystemLocationProvider(const SystemLocationProvider&) = delete;
+  SystemLocationProvider& operator=(const SystemLocationProvider&) = delete;
 
-  virtual ~SimpleGeolocationProvider();
+  virtual ~SystemLocationProvider();
 
-  // This function has to be called first thing before using other members.
+  // NOTE: Must be called before accessing other members.
   static void Initialize(
       scoped_refptr<network::SharedURLLoaderFactory> factory);
 
-  static SimpleGeolocationProvider* GetInstance();
+  static SystemLocationProvider* GetInstance();
 
   static GURL DefaultGeolocationProviderURL() {
     return GURL(kGeolocationProviderUrl);
@@ -80,13 +82,18 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GEOLOCATION)
   void AddObserver(Observer* obs);
   void RemoveObserver(Observer* obs);
 
-  // Initiates new request. If |send_wifi_access_points|, WiFi AP information
-  // will be added to the request, similarly for |send_cell_towers| and Cell
-  // Tower information. See `SimpleGeolocationRequest` for the description of
-  // the other parameters.
+  // Asynchronous request for device geolocation.
+  //
+  // If 'use_wifi_scan' is true, the returned location was based on available
+  // WiFi scan data, to improve accuracy.
+  // If 'use_cellular_scan' is true, the returned location was based on
+  // available Cellular scan data, to improve accuracy.
+  //
+  // If the location request is not successfully resolved within the `timeout`
+  // duration, callback is invoked with Geolocation::STATUS_TIMEOUT status.
   void RequestGeolocation(base::TimeDelta timeout,
-                          bool send_wifi_access_points,
-                          bool send_cell_towers,
+                          bool use_wifi_scan,
+                          bool use_cellular_scan,
                           SimpleGeolocationRequest::ResponseCallback callback,
                           ClientId client_id);
 
@@ -104,12 +111,12 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GEOLOCATION)
       "https://www.googleapis.com/geolocation/v1/geolocate?";
 
   // This class is a singleton.
-  explicit SimpleGeolocationProvider(
+  explicit SystemLocationProvider(
       scoped_refptr<network::SharedURLLoaderFactory> factory);
 
   friend class TestGeolocationAPILoaderFactory;
-  FRIEND_TEST_ALL_PREFIXES(SimpleGeolocationWirelessTest, CellularExists);
-  FRIEND_TEST_ALL_PREFIXES(SimpleGeolocationWirelessTest, WiFiExists);
+  FRIEND_TEST_ALL_PREFIXES(SystemLocationProviderWirelessTest, CellularExists);
+  FRIEND_TEST_ALL_PREFIXES(SystemLocationProviderWirelessTest, WiFiExists);
 
   // Geolocation response callback. Deletes request from requests_.
   void OnGeolocationResponse(
@@ -146,7 +153,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GEOLOCATION)
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
 
   // Requests in progress.
-  // `SimpleGeolocationProvider` owns all requests, so this vector is deleted
+  // `SystemLocationProvider` owns all requests, so this vector is deleted
   // on destroy.
   std::vector<std::unique_ptr<SimpleGeolocationRequest>> requests_;
 
@@ -164,4 +171,4 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GEOLOCATION)
 
 }  // namespace ash
 
-#endif  // CHROMEOS_ASH_COMPONENTS_GEOLOCATION_SIMPLE_GEOLOCATION_PROVIDER_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_GEOLOCATION_SYSTEM_LOCATION_PROVIDER_H_

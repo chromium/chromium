@@ -62,7 +62,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) GeolocationHandler
  private:
   friend class NetworkHandler;
   friend class GeolocationHandlerTest;
-  friend class SimpleGeolocationWirelessTest;
+  friend class SystemLocationProviderWirelessTest;
 
   GeolocationHandler();
 

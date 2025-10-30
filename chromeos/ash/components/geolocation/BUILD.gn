@@ -18,12 +18,12 @@ component("geolocation") {
   sources = [
     "geoposition.cc",
     "geoposition.h",
-    "simple_geolocation_provider.cc",
-    "simple_geolocation_provider.h",
     "simple_geolocation_request.cc",
     "simple_geolocation_request.h",
     "simple_geolocation_request_test_monitor.cc",
     "simple_geolocation_request_test_monitor.h",
+    "system_location_provider.cc",
+    "system_location_provider.h",
   ]
 }
 
@@ -42,5 +42,5 @@ source_set("unit_tests") {
     "//services/network/public/cpp",
     "//testing/gtest",
   ]
-  sources = [ "simple_geolocation_unittest.cc" ]
+  sources = [ "system_location_provider_unittest.cc" ]
 }

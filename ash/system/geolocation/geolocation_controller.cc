@@ -18,7 +18,7 @@
 #include "base/logging.h"
 #include "base/time/clock.h"
 #include "chromeos/ash/components/geolocation/geoposition.h"
-#include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
+#include "chromeos/ash/components/geolocation/system_location_provider.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -47,7 +47,7 @@ constexpr int kDefaultSunriseTimeOffsetMinutes = 6 * 60;
 }  // namespace
 
 GeolocationController::GeolocationController(
-    SimpleGeolocationProvider* const geolocation_provider)
+    SystemLocationProvider* const geolocation_provider)
     : geolocation_provider_(geolocation_provider),
       backoff_delay_(kMinimumDelayAfterFailure),
       timer_(std::make_unique<base::OneShotTimer>()),
@@ -264,7 +264,7 @@ void GeolocationController::RequestGeoposition() {
       /*send_cell_towers=*/false,
       base::BindOnce(&GeolocationController::OnGeoposition,
                      weak_ptr_factory_.GetWeakPtr()),
-      SimpleGeolocationProvider::ClientId::kGeolocationController);
+      SystemLocationProvider::ClientId::kGeolocationController);
 }
 
 base::expected<SunRiseSetTime, SunRiseSetError>

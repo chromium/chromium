@@ -238,9 +238,9 @@ class ScheduledFeatureTest : public NoSessionAshTestBase,
   const base::OneShotTimer* timer_ptr() const { return timer_ptr_; }
 
   TestGeolocationUrlLoaderFactory* factory() const {
-    CHECK(SimpleGeolocationProvider::GetInstance());
+    CHECK(SystemLocationProvider::GetInstance());
     return static_cast<TestGeolocationUrlLoaderFactory*>(
-        SimpleGeolocationProvider::GetInstance()
+        SystemLocationProvider::GetInstance()
             ->GetSharedURLLoaderFactoryForTesting());
   }
 

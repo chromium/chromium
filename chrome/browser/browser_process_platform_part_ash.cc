@@ -60,7 +60,7 @@
 #include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_flusher.h"
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
-#include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
+#include "chromeos/ash/components/geolocation/system_location_provider.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/ash/components/policy/restriction_schedule/device_restriction_schedule_controller.h"
 #include "chromeos/ash/components/scheduler_config/scheduler_configuration_manager.h"
@@ -371,7 +371,7 @@ BrowserProcessPlatformPart::GetTimezoneResolverManager() {
   if (!timezone_resolver_manager_.get()) {
     timezone_resolver_manager_ =
         std::make_unique<ash::system::TimeZoneResolverManager>(
-            ash::SimpleGeolocationProvider::GetInstance(),
+            ash::SystemLocationProvider::GetInstance(),
             session_manager::SessionManager::Get());
   }
   return timezone_resolver_manager_.get();

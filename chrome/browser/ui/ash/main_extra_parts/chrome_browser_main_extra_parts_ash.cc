@@ -109,7 +109,7 @@
 #include "chromeos/ash/components/dbus/resourced/resourced_client.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/components/game_mode/game_mode_controller.h"
-#include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
+#include "chromeos/ash/components/geolocation/system_location_provider.h"
 #include "chromeos/ash/components/heatmap/heatmap_palm_detector_impl.h"
 #include "chromeos/ash/components/login/readahead/login_readahead_performer.h"
 #include "chromeos/ash/components/network/network_connect.h"

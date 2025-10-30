@@ -27,7 +27,7 @@
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "base/timer/mock_timer.h"
-#include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
+#include "chromeos/ash/components/geolocation/system_location_provider.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "components/prefs/pref_service.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -99,7 +99,7 @@ base::Time ToUTCTime(std::string_view utc_time_str) {
 class FakeGeolocationController : public GeolocationController {
  public:
   explicit FakeGeolocationController(
-      SimpleGeolocationProvider* geolocation_provider)
+      SystemLocationProvider* geolocation_provider)
       : GeolocationController(geolocation_provider) {}
 
   // Proxy method to call the `OnGeoposition()` callback directly, without
@@ -135,9 +135,9 @@ class GeolocationControllerTest : public NoSessionAshTestBase {
   void SetUp() override {
     NoSessionAshTestBase::SetUp();
     CreateTestUserSessions();
-    // `SimpleGeolocationProvider` is initialized by `AshTestHelper`.
+    // `SystemLocationProvider` is initialized by `AshTestHelper`.
     controller_ = std::make_unique<FakeGeolocationController>(
-        SimpleGeolocationProvider::GetInstance());
+        SystemLocationProvider::GetInstance());
 
     test_clock_.SetNow(base::Time::Now());
     controller_->SetClockForTesting(&test_clock_);
@@ -204,14 +204,14 @@ class GeolocationControllerTest : public NoSessionAshTestBase {
   void SetServerPosition(const Geoposition& position) {
     position_ = position;
     auto* factory = static_cast<TestGeolocationUrlLoaderFactory*>(
-        SimpleGeolocationProvider::GetInstance()
+        SystemLocationProvider::GetInstance()
             ->GetSharedURLLoaderFactoryForTesting());
     factory->ClearResponses();
     factory->set_position(position_);
   }
 
   void UpdateUserGeolocationPermission(GeolocationAccessLevel access_level) {
-    SimpleGeolocationProvider::GetInstance()->SetGeolocationAccessLevel(
+    SystemLocationProvider::GetInstance()->SetGeolocationAccessLevel(
         access_level);
   }
 

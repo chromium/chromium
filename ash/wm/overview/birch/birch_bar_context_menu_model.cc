@@ -14,7 +14,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/wm/overview/overview_utils.h"
 #include "base/types/cxx23_to_underlying.h"
-#include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
+#include "chromeos/ash/components/geolocation/system_location_provider.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/menu_separator_types.h"
@@ -26,7 +26,7 @@ namespace {
 // Returns whether the weather item should be enabled based on the geolocation
 // permission. See BirchWeatherProvider.
 bool IsWeatherAllowedByGeolocation() {
-  return SimpleGeolocationProvider::GetInstance()
+  return SystemLocationProvider::GetInstance()
       ->IsGeolocationUsageAllowedForSystem();
 }
 

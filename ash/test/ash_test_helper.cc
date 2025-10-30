@@ -157,9 +157,9 @@ AshTestHelper::AshTestHelper(ui::ContextFactory* context_factory)
   // default state.
   shell::ToplevelWindow::ClearSavedStateForTest();
 
-  // SimpleGeolocationProvider has to be initialized before
+  // SystemLocationProvider has to be initialized before
   // GeolocationController, which is constructed during Shell::Init().
-  SimpleGeolocationProvider::Initialize(
+  SystemLocationProvider::Initialize(
       base::MakeRefCounted<TestGeolocationUrlLoaderFactory>());
 }
 
@@ -168,7 +168,7 @@ AshTestHelper::~AshTestHelper() {
     TearDown();
   }
 
-  SimpleGeolocationProvider::DestroyForTesting();
+  SystemLocationProvider::DestroyForTesting();
 
   if (destroy_screen_) {
     // Ensure the next test starts with a null display::Screen.  This must be

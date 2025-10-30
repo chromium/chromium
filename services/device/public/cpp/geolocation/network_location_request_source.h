@@ -16,8 +16,8 @@ namespace device {
 enum class NetworkLocationRequestSource {
   kNetworkLocationProvider = 0,
   kPublicIpAddressGeolocator = 1,
-  kSimpleGeolocationProvider = 2,
-  kMaxValue = kSimpleGeolocationProvider,
+  kSystemLocationProvider = 2,
+  kMaxValue = kSystemLocationProvider,
 };
 
 }  // namespace device

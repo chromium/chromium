@@ -43,7 +43,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chromeos/ash/components/geolocation/geoposition.h"
-#include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
+#include "chromeos/ash/components/geolocation/system_location_provider.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "content/public/common/isolated_world_ids.h"
 #include "content/public/test/browser_test.h"
@@ -167,8 +167,8 @@ class PersonalizationAppTimeOfDayBrowserTest
         geolocation_url_loader_factory =
             base::MakeRefCounted<TestGeolocationUrlLoaderFactory>();
     geolocation_url_loader_factory->set_position(GetGeoposition());
-    SimpleGeolocationProvider::GetInstance()
-        ->SetSharedUrlLoaderFactoryForTesting(geolocation_url_loader_factory);
+    SystemLocationProvider::GetInstance()->SetSharedUrlLoaderFactoryForTesting(
+        geolocation_url_loader_factory);
     // Request immediate geoposition to fetch and broadcast the fixed
     // geoposition set by TestSharedUrlLoaderFactory above.
     GeolocationController::Get()->RequestImmediateGeopositionForTesting();

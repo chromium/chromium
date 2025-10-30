@@ -119,7 +119,7 @@ chromium-metrics-reviews@google.com.
 <enum name="NetworkLocationRequestSource">
   <int value="0" label="kNetworkLocationProvider"/>
   <int value="1" label="kPublicIpAddressGeolocator"/>
-  <int value="2" label="kSimpleGeolocationProvider"/>
+  <int value="2" label="kSystemLocationProvider"/>
 </enum>
 
 <enum name="WindowsDevicesGeolocationPositionSource">

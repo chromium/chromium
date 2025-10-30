@@ -116,7 +116,7 @@
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/ash/components/dbus/shill/fake_shill_manager_client.h"
 #include "chromeos/ash/components/dbus/system_clock/system_clock_client.h"
-#include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
+#include "chromeos/ash/components/geolocation/system_location_provider.h"
 #include "chromeos/ash/components/http_auth_dialog/http_auth_dialog.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "chromeos/ash/components/network/network_state.h"
@@ -535,9 +535,8 @@ class WizardControllerFlowTest : public WizardControllerTest {
     WaitForOobeUI();
     wizard_controller->SetSharedURLLoaderFactoryForTesting(
         test_url_loader_factory_.GetSafeWeakWrapper());
-    SimpleGeolocationProvider::GetInstance()
-        ->SetSharedUrlLoaderFactoryForTesting(
-            test_url_loader_factory_.GetSafeWeakWrapper());
+    SystemLocationProvider::GetInstance()->SetSharedUrlLoaderFactoryForTesting(
+        test_url_loader_factory_.GetSafeWeakWrapper());
 
     // Set up the mocks for all screens.
     mock_welcome_screen_ =
@@ -698,7 +697,7 @@ class WizardControllerFlowTest : public WizardControllerTest {
         [&](const network::ResourceRequest& request) {
           if (base::StartsWith(
                   request.url.spec(),
-                  SimpleGeolocationProvider::DefaultGeolocationProviderURL()
+                  SystemLocationProvider::DefaultGeolocationProviderURL()
                       .spec(),
                   base::CompareCase::SENSITIVE)) {
             test_url_loader_factory_.AddResponse(request.url.spec(),
@@ -725,7 +724,7 @@ class WizardControllerFlowTest : public WizardControllerTest {
     EXPECT_CALL(*mock_update_screen_, ShowImpl()).Times(1);
     mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED);
 
-    EXPECT_NE(SimpleGeolocationProvider::GetInstance(), nullptr);
+    EXPECT_NE(SystemLocationProvider::GetInstance(), nullptr);
 
     // Let update screen smooth time process (time = 0ms).
     content::RunAllPendingInMessageLoop();
@@ -2124,9 +2123,8 @@ class WizardControllerOobeResumeTest : public WizardControllerTest {
     WaitForOobeUI();
     wizard_controller->SetSharedURLLoaderFactoryForTesting(
         test_url_loader_factory_.GetSafeWeakWrapper());
-    SimpleGeolocationProvider::GetInstance()
-        ->SetSharedUrlLoaderFactoryForTesting(
-            test_url_loader_factory_.GetSafeWeakWrapper());
+    SystemLocationProvider::GetInstance()->SetSharedUrlLoaderFactoryForTesting(
+        test_url_loader_factory_.GetSafeWeakWrapper());
 
     mock_auto_enrollment_check_screen_view_ =
         std::make_unique<MockAutoEnrollmentCheckScreenView>();

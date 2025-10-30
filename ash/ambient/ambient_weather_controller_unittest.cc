@@ -10,7 +10,7 @@
 #include "ash/public/cpp/ambient/fake_ambient_backend_controller_impl.h"
 #include "ash/shell.h"
 #include "base/run_loop.h"
-#include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
+#include "chromeos/ash/components/geolocation/system_location_provider.h"
 #include "components/prefs/pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -82,7 +82,7 @@ TEST_F(AmbientWeatherControllerTest, RespectsSystemLocationPermission) {
 
   // Disable location permission and check the weather model will not get
   // updated. This should clear the weather model cache.
-  SimpleGeolocationProvider::GetInstance()->SetGeolocationAccessLevel(
+  SystemLocationProvider::GetInstance()->SetGeolocationAccessLevel(
       GeolocationAccessLevel::kDisallowed);
   EXPECT_FALSE(IsGeolocationUsageAllowed());
 
@@ -101,7 +101,7 @@ TEST_F(AmbientWeatherControllerTest, RespectsSystemLocationPermission) {
 
   // Enable location permission for system services and check the weather model
   // will get updated.
-  SimpleGeolocationProvider::GetInstance()->SetGeolocationAccessLevel(
+  SystemLocationProvider::GetInstance()->SetGeolocationAccessLevel(
       GeolocationAccessLevel::kOnlyAllowedForSystem);
   EXPECT_TRUE(IsGeolocationUsageAllowed());
 
@@ -112,7 +112,7 @@ TEST_F(AmbientWeatherControllerTest, RespectsSystemLocationPermission) {
 
   // Enable location for all clients and check it's continued fetching new
   // weather models.
-  SimpleGeolocationProvider::GetInstance()->SetGeolocationAccessLevel(
+  SystemLocationProvider::GetInstance()->SetGeolocationAccessLevel(
       GeolocationAccessLevel::kAllowed);
   EXPECT_TRUE(IsGeolocationUsageAllowed());
 

@@ -22,7 +22,7 @@
 #include "ash/test/ash_test_base.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time_override.h"
-#include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
+#include "chromeos/ash/components/geolocation/system_location_provider.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_names.h"
 
@@ -173,7 +173,7 @@ TEST_F(BirchWeatherProviderTest, WeatherNotFetchedWhenGeolocationDisabled) {
   ambient_backend_controller_->SetWeatherInfo(info);
 
   // Disable geolocation.
-  SimpleGeolocationProvider::GetInstance()->SetGeolocationAccessLevel(
+  SystemLocationProvider::GetInstance()->SetGeolocationAccessLevel(
       GeolocationAccessLevel::kDisallowed);
 
   // Fetch birch data.

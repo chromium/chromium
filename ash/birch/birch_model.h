@@ -20,7 +20,7 @@
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
+#include "chromeos/ash/components/geolocation/system_location_provider.h"
 #include "components/prefs/pref_change_registrar.h"
 
 class PrefRegistrySimple;
@@ -36,7 +36,7 @@ class CoralItemRemover;
 // different providers. Both data and prefs are associated with the primary user
 // account.
 class ASH_EXPORT BirchModel : public SessionObserver,
-                              public SimpleGeolocationProvider::Observer,
+                              public SystemLocationProvider::Observer,
                               public BirchCoralProvider::Observer {
  public:
   // The callback for lost media data changes. The argument is the updated lost
@@ -149,7 +149,7 @@ class ASH_EXPORT BirchModel : public SessionObserver,
   // SessionObserver:
   void OnActiveUserSessionChanged(const AccountId& account_id) override;
 
-  // SimpleGeolocationProvider::Observer:
+  // SystemLocationProvider::Observer:
   void OnGeolocationPermissionChanged(bool enabled) override;
 
   // BirchCoralProvider::Observer:

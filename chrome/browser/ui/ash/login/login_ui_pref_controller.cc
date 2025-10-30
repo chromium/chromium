@@ -13,7 +13,7 @@
 #include "chrome/browser/ash/system/input_device_settings.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
+#include "chromeos/ash/components/geolocation/system_location_provider.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 
@@ -78,8 +78,8 @@ void LoginUIPrefController::UpdateTapToClickEnabled() {
 
 void LoginUIPrefController::UpdateGeolocationUsageAllowed() {
   // Set the log-in screen geolocation access permission to the
-  // `SimpleGeolocationProvider` global instance.
-  SimpleGeolocationProvider::GetInstance()->SetGeolocationAccessLevel(
+  // `SystemLocationProvider` global instance.
+  SystemLocationProvider::GetInstance()->SetGeolocationAccessLevel(
       static_cast<GeolocationAccessLevel>(
           g_browser_process->local_state()->GetInteger(
               ash::prefs::kDeviceGeolocationAllowed)));

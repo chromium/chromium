@@ -241,7 +241,7 @@
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
-#include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
+#include "chromeos/ash/components/geolocation/system_location_provider.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/language_packs/language_pack_manager.h"
 #include "chromeos/ash/components/network/network_state.h"
@@ -3034,13 +3034,13 @@ void WizardController::StartTimezoneResolve() {
     return;
   }
 
-  SimpleGeolocationProvider::GetInstance()->RequestGeolocation(
+  SystemLocationProvider::GetInstance()->RequestGeolocation(
       base::Seconds(kResolveTimeZoneTimeoutSeconds),
       false /* send_wifi_geolocation_data */,
       false /* send_cellular_geolocation_data */,
       base::BindOnce(&WizardController::OnLocationResolved,
                      weak_factory_.GetWeakPtr()),
-      SimpleGeolocationProvider::ClientId::kWizardController);
+      SystemLocationProvider::ClientId::kWizardController);
 }
 
 void WizardController::PerformPostNetworkScreenActions() {

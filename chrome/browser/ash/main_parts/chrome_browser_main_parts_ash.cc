@@ -214,7 +214,7 @@
 #include "chromeos/ash/components/disks/disk_mount_manager.h"
 #include "chromeos/ash/components/drivefs/fake_drivefs_launcher_client.h"
 #include "chromeos/ash/components/fwupd/firmware_update_manager.h"
-#include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
+#include "chromeos/ash/components/geolocation/system_location_provider.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/language_preferences/language_preferences.h"
 #include "chromeos/ash/components/local_search_service/public/cpp/local_search_service_proxy_factory.h"
@@ -1047,8 +1047,8 @@ void ChromeBrowserMainPartsAsh::PreProfileInit() {
     WizardController::SetZeroDelays();
   }
 
-  // Initialize `SimpleGeolocationProvider` for the system parts.
-  SimpleGeolocationProvider::Initialize(
+  // Initialize `SystemLocationProvider` for the system parts.
+  SystemLocationProvider::Initialize(
       g_browser_process->shared_url_loader_factory());
 
   // Instantiate TImeZoneResolverManager here, so it subscribes to

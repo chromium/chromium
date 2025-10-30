@@ -29,7 +29,7 @@ class SimpleGeolocationRequestTestMonitor;
 
 // Sends request to a server to get local geolocation information.
 // It performs formatting of the request and interpretation of the response.
-// Request is owned and destroyed by caller (usually SimpleGeolocationProvider).
+// Request is owned and destroyed by caller (usually SystemLocationProvider).
 // - If error occurs, request is retried until timeout.
 // - On successul response, callback is called.
 // - On timeout, callback with last (failed) position is called.

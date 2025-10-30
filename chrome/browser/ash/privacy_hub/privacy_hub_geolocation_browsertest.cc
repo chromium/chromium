@@ -23,7 +23,7 @@
 #include "chrome/browser/ui/webui/ash/settings/pages/privacy/privacy_hub_handler.h"
 #include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
-#include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
+#include "chromeos/ash/components/geolocation/system_location_provider.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
@@ -93,8 +93,7 @@ class PrivacyHubGeolocationBrowsertestMultiUserSession
 
 IN_PROC_BROWSER_TEST_P(PrivacyHubGeolocationBrowsertestMultiUserSession,
                        SecondUserCanNotChangeGeolocationSetting) {
-  SimpleGeolocationProvider* provider =
-      SimpleGeolocationProvider::GetInstance();
+  SystemLocationProvider* provider = SystemLocationProvider::GetInstance();
   CHECK(provider);
 
   // Log in primary user.
@@ -135,8 +134,7 @@ IN_PROC_BROWSER_TEST_P(PrivacyHubGeolocationBrowsertestMultiUserSession,
 
 IN_PROC_BROWSER_TEST_P(PrivacyHubGeolocationBrowsertestMultiUserSession,
                        SecondaryUsersCanNotChangeGeolocationSetting) {
-  SimpleGeolocationProvider* provider =
-      SimpleGeolocationProvider::GetInstance();
+  SystemLocationProvider* provider = SystemLocationProvider::GetInstance();
   CHECK(provider);
 
   // Log in primary user.
@@ -204,8 +202,7 @@ class MockPrivacyHubHandler : public settings::PrivacyHubHandler {
 
 IN_PROC_BROWSER_TEST_P(PrivacyHubGeolocationBrowsertestMultiUserSession,
                        CheckCorrectSystemUICallbackIsCalled) {
-  SimpleGeolocationProvider* provider =
-      SimpleGeolocationProvider::GetInstance();
+  SystemLocationProvider* provider = SystemLocationProvider::GetInstance();
   CHECK(provider);
 
   // Log in primary user.

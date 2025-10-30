@@ -11,7 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/threading/thread_checker.h"
-#include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
+#include "chromeos/ash/components/geolocation/system_location_provider.h"
 
 class PrefRegistrySimple;
 class PrefService;
@@ -58,7 +58,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_TIMEZONE) TimeZoneResolver {
   static const char kLastTimeZoneRefreshTime[];
 
   TimeZoneResolver(Delegate* delegate,
-                   SimpleGeolocationProvider* geolocation_provider_,
+                   SystemLocationProvider* geolocation_provider_,
                    scoped_refptr<network::SharedURLLoaderFactory> factory,
                    const ApplyTimeZoneCallback& apply_timezone,
                    const DelayNetworkCallClosure& delay_network_call,
@@ -108,9 +108,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_TIMEZONE) TimeZoneResolver {
   bool is_running_ = false;
   const raw_ptr<const Delegate> delegate_;
 
-  // Points to the `SimpleGeolocationProvider::GetInstance()` throughout the
+  // Points to the `SystemLocationProvider::GetInstance()` throughout the
   // object lifecycle. Overridden in unit tests.
-  raw_ptr<SimpleGeolocationProvider> geolocation_provider_ = nullptr;
+  raw_ptr<SystemLocationProvider> geolocation_provider_ = nullptr;
 
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
 

@@ -20,7 +20,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/geolocation/geoposition.h"
-#include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
+#include "chromeos/ash/components/geolocation/system_location_provider.h"
 #include "chromeos/ash/components/timezone/timezone_provider.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -106,7 +106,7 @@ class TimeZoneResolver::TimeZoneResolverImpl
   void CreateNewRequest();
 
   // Called by TZRequest.
-  SimpleGeolocationProvider* geolocation_provider() {
+  SystemLocationProvider* geolocation_provider() {
     return resolver_->geolocation_provider_;
   }
   TimeZoneProvider* timezone_provider() { return &timezone_provider_; }
@@ -167,7 +167,7 @@ class TZRequest {
   // Starts request after specified delay.
   void Start();
 
-  // Called from SimpleGeolocationProvider when location is resolved.
+  // Called from SystemLocationProvider when location is resolved.
   void OnLocationResolved(const Geoposition& position,
                           bool server_error,
                           const base::TimeDelta elapsed);
@@ -196,7 +196,7 @@ void TZRequest::StartRequestOnNetworkAvailable() {
       resolver_->ShouldSendWiFiGeolocationData(),
       resolver_->ShouldSendCellularGeolocationData(),
       base::BindOnce(&TZRequest::OnLocationResolved, AsWeakPtr()),
-      SimpleGeolocationProvider::ClientId::kTimezoneResolver);
+      SystemLocationProvider::ClientId::kTimezoneResolver);
 }
 
 void TZRequest::Start() {
@@ -390,7 +390,7 @@ TimeZoneResolver::TimeZoneResolverImpl::AsWeakPtr() {
 
 TimeZoneResolver::TimeZoneResolver(
     Delegate* delegate,
-    SimpleGeolocationProvider* geolocation_provider,
+    SystemLocationProvider* geolocation_provider,
     scoped_refptr<network::SharedURLLoaderFactory> factory,
     const ApplyTimeZoneCallback& apply_timezone,
     const DelayNetworkCallClosure& delay_network_call,

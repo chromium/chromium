@@ -488,9 +488,8 @@ IN_PROC_BROWSER_TEST_F(TimeZoneResolverManagerUnenrolledDeviceTest,
       system::TimeZoneResolverManager::TimeZoneResolveMethod::IP_ONLY);
 
   // Check the permission is granted and timezone resolver is actually running.
-  EXPECT_EQ(
-      SimpleGeolocationProvider::GetInstance()->GetGeolocationAccessLevel(),
-      GeolocationAccessLevel::kAllowed);
+  EXPECT_EQ(SystemLocationProvider::GetInstance()->GetGeolocationAccessLevel(),
+            GeolocationAccessLevel::kAllowed);
   EXPECT_TRUE(tz_resolver_manager->TimeZoneResolverShouldBeRunning());
   EXPECT_TRUE(tz_resolver->IsRunning());
 

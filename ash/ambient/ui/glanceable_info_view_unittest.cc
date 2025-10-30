@@ -11,7 +11,7 @@
 #include "ash/constants/geolocation_access_level.h"
 #include "ash/public/cpp/ambient/fake_ambient_backend_controller_impl.h"
 #include "base/run_loop.h"
-#include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
+#include "chromeos/ash/components/geolocation/system_location_provider.h"
 #include "ui/aura/window.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
@@ -54,9 +54,8 @@ class GlanceableInfoViewTest : public AmbientAshTestBase {
 
 TEST_F(GlanceableInfoViewTest, WeatherInfoIsShown) {
   // Geolocation should be allowed by default.
-  ASSERT_EQ(
-      GeolocationAccessLevel::kAllowed,
-      SimpleGeolocationProvider::GetInstance()->GetGeolocationAccessLevel());
+  ASSERT_EQ(GeolocationAccessLevel::kAllowed,
+            SystemLocationProvider::GetInstance()->GetGeolocationAccessLevel());
 
   // Wait for the initial weather fetch and check the weather model is updated.
   FastForwardByWeatherRefreshInterval();
@@ -77,9 +76,8 @@ TEST_F(GlanceableInfoViewTest, WeatherInfoIsShown) {
 
 TEST_F(GlanceableInfoViewTest, WeatherInfoIsHiddenWhenGeolocationIsOff) {
   // Geolocation should be allowed by default.
-  ASSERT_EQ(
-      GeolocationAccessLevel::kAllowed,
-      SimpleGeolocationProvider::GetInstance()->GetGeolocationAccessLevel());
+  ASSERT_EQ(GeolocationAccessLevel::kAllowed,
+            SystemLocationProvider::GetInstance()->GetGeolocationAccessLevel());
 
   // Wait for the initial weather fetch and check the weather model is updated.
   FastForwardByWeatherRefreshInterval();
@@ -98,14 +96,14 @@ TEST_F(GlanceableInfoViewTest, WeatherInfoIsHiddenWhenGeolocationIsOff) {
   EXPECT_TRUE(weather_info_view->IsTemperatureSetForTesting());
 
   // Disable geolocation and check the weather info has disappeared.
-  SimpleGeolocationProvider::GetInstance()->SetGeolocationAccessLevel(
+  SystemLocationProvider::GetInstance()->SetGeolocationAccessLevel(
       GeolocationAccessLevel::kDisallowed);
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(weather_info_view->IsWeatherConditionIconSetForTesting());
   EXPECT_FALSE(weather_info_view->IsTemperatureSetForTesting());
 
   // Re-enable geolocation permission and check that weather is shown again.
-  SimpleGeolocationProvider::GetInstance()->SetGeolocationAccessLevel(
+  SystemLocationProvider::GetInstance()->SetGeolocationAccessLevel(
       GeolocationAccessLevel::kAllowed);
   base::RunLoop().RunUntilIdle();
   FastForwardByWeatherRefreshInterval();

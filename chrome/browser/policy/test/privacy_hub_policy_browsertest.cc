@@ -8,7 +8,7 @@
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
+#include "chromeos/ash/components/geolocation/system_location_provider.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
@@ -27,9 +27,9 @@ IN_PROC_BROWSER_TEST_F(PrivacyHubPolicyTest, CheckDefault) {
       prefs->IsManagedPreference(ash::prefs::kUserGeolocationAccessLevel));
   EXPECT_EQ(static_cast<int>(ash::GeolocationAccessLevel::kAllowed),
             prefs->GetInteger(ash::prefs::kUserGeolocationAccessLevel));
-  EXPECT_EQ(ash::GeolocationAccessLevel::kAllowed,
-            ash::SimpleGeolocationProvider::GetInstance()
-                ->GetGeolocationAccessLevel());
+  EXPECT_EQ(
+      ash::GeolocationAccessLevel::kAllowed,
+      ash::SystemLocationProvider::GetInstance()->GetGeolocationAccessLevel());
 }
 
 IN_PROC_BROWSER_TEST_P(PrivacyHubPolicyTest, CheckPolicyToPrefMapping) {

@@ -28,7 +28,7 @@ chromium-metrics-reviews@google.com.
   <owner>deviceapi-team@google.com</owner>
   <summary>
     Records which client requested geolocation from the
-    `SimpleGeolocationProvider`. This helps track the usage of the geolocation
+    `SystemLocationProvider`. This helps track the usage of the geolocation
     provider across different parts of the system.
   </summary>
 </histogram>
