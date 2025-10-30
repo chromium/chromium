@@ -1721,14 +1721,7 @@ split_tabs::SplitTabData* TabStripModel::GetSplitData(
 }
 
 std::set<split_tabs::SplitTabId> TabStripModel::ListSplits() const {
-  std::set<split_tabs::SplitTabId> splits;
-  for (tabs::TabInterface* tab : *contents_data_) {
-    if (tab->IsSplit()) {
-      splits.insert(tab->GetSplit().value());
-    }
-  }
-
-  return splits;
+  return contents_data_->ListSplits();
 }
 
 bool TabStripModel::ContainsSplit(split_tabs::SplitTabId split_id) const {

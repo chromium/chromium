@@ -1047,8 +1047,7 @@ class SessionRestoreImpl : public BrowserListObserver {
 
     for (const std::unique_ptr<sessions::SessionSplitTab>& session_split_tab :
          split_tabs) {
-      if (!browser->tab_strip_model()->ListSplits().contains(
-              session_split_tab->id_)) {
+      if (!browser->tab_strip_model()->ContainsSplit(session_split_tab->id_)) {
         continue;
       }
 

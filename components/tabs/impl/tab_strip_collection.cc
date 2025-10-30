@@ -485,6 +485,14 @@ void TabStripCollection::Unsplit(split_tabs::SplitTabId split_id) {
   RemoveTabCollectionImpl(split);
 }
 
+std::set<split_tabs::SplitTabId> TabStripCollection::ListSplits() const {
+  std::set<split_tabs::SplitTabId> splits;
+  for (const auto& [split_id, _] : split_mapping_) {
+    splits.insert(split_id);
+  }
+  return splits;
+}
+
 void TabStripCollection::ValidateData() const {
   for (const auto& [_, group] : group_mapping_) {
     CHECK(group->ChildCount() > 0);

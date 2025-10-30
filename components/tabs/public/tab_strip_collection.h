@@ -108,6 +108,8 @@ class TabStripCollection : public TabCollection {
                    const std::vector<TabInterface*>& tabs,
                    split_tabs::SplitTabVisualData visual_data);
   void Unsplit(split_tabs::SplitTabId split_id);
+  std::set<split_tabs::SplitTabId> ListSplits() const;
+
   void ValidateData() const;
 
   std::optional<const tab_groups::TabGroupId> FindGroupIdFor(
