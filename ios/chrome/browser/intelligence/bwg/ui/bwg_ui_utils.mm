@@ -47,7 +47,7 @@
 #if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
   return CustomSymbolWithPointSize(kGeminiBrandedLogoImage, pointSize);
 #else
-  return CustomSymbolWithPointSize(kGeminiNonBrandedLogoImage, pointSize);
+  return DefaultSymbolWithPointSize(kGeminiNonBrandedLogoImage, pointSize);
 #endif
 }
 
