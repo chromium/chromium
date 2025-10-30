@@ -35,9 +35,15 @@ class Rect;
 
 namespace autofill {
 
+class AddressDataManager;
 class AutofillDriver;
 class BrowserAutofillManager;
 class CreditCard;
+
+// Retrieves a copy of the profile that the `payload` refers to.
+std::optional<AutofillProfile> GetProfileFromPayload(
+    const AddressDataManager& adm,
+    const Suggestion::AutofillProfilePayload& payload);
 
 // Delegate for in-browser Autocomplete and Autofill display and selection.
 class AutofillExternalDelegate : public AutofillSuggestionDelegate {
@@ -128,6 +134,12 @@ class AutofillExternalDelegate : public AutofillSuggestionDelegate {
   }
 
  private:
+  // Returns the `AutofillProfile` that an address suggestion contains as
+  // payload or `std::nullopt` if the profile cannot be found. Assumes that
+  // `suggestion` has an `AutofillProfilePayload`.
+  std::optional<AutofillProfile> GetProfileFromAddressSuggestion(
+      const Suggestion& suggestion) const;
+
   // Tries to display `suggestions` in the suggestions UI. If `is_update` is
   // true, then `AutofillClient::UpdateAutofillSuggestions` is called, which
   // means that suggestions will only be shown if there is currently suggestion
