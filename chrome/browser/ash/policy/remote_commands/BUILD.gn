@@ -61,6 +61,7 @@ static_library("remote_commands") {
     "//chrome/browser/ash/policy/scheduled_task_handler",
     "//chrome/browser/ash/policy/uploading",
     "//chrome/browser/ash/system",
+    "//chrome/browser/device_identity",
     "//chrome/browser/policy/messaging_layer/proto:log_upload_event_proto",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/support_tool:support_tool_proto",

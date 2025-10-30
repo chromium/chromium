@@ -913,6 +913,7 @@ source_set("extensions") {
       "//chrome/browser/apps:user_type_filter",
       "//chrome/browser/apps/app_service:constants",
       "//chrome/browser/chooser_controller",
+      "//chrome/browser/device_identity",
       "//chrome/browser/feedback",
       "//chrome/browser/importer",
       "//chrome/browser/lifetime:termination_notification",

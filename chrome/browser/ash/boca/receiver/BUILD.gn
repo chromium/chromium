@@ -16,6 +16,7 @@ static_library("receiver") {
     "//base",
     "//chrome/browser/ash/app_mode",
     "//chrome/browser/ash/boca/spotlight",
+    "//chrome/browser/device_identity",
     "//chrome/browser/profiles:profile",
     "//chromeos/ash/components/boca:invalidation_delegate",
     "//chromeos/ash/components/boca:invalidations",

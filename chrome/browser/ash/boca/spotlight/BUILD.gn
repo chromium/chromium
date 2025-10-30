@@ -22,6 +22,7 @@ static_library("spotlight") {
     "//base",
     "//chrome/browser/ash/policy/remote_commands/crd/public",
     "//chrome/browser/ash/policy/remote_commands/crd/public:interface",
+    "//chrome/browser/device_identity",
     "//chromeos/ash/components/boca:spotlight",
     "//chromeos/ash/components/boca:spotlight_lib",
   ]

@@ -41,6 +41,7 @@ static_library("crd") {
     "//chrome/browser/ash/app_mode/isolated_web_app",
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/ash/policy/remote_commands/crd/public:interface",
+    "//chrome/browser/device_identity",
     "//chrome/common:constants",
     "//chromeos/ash/components/dbus/userdataauth",
     "//chromeos/ash/services/network_config:in_process_instance",

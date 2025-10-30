@@ -49,6 +49,7 @@ source_set("feedback") {
     public_deps += [
       "//base",
       "//build/config/chromebox_for_meetings:buildflags",
+      "//chrome/browser/device_identity",
       "//chrome/browser/feedback:feedback_enum",
       "//components/feedback",
       "//components/feedback/content:factory",
@@ -99,6 +100,7 @@ source_set("feedback_impl") {
       "//base",
       "//chrome/browser:browser_process",
       "//chrome/browser/crash_upload_list",
+      "//chrome/browser/device_identity",
       "//chrome/browser/devtools",
       "//chrome/browser/extensions",
       "//chrome/browser/first_party_sets",
