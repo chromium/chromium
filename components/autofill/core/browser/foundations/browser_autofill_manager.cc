@@ -1049,8 +1049,8 @@ void BrowserAutofillManager::LogSubmissionMetrics(
 
   if (client().IsAutofillProfileEnabled()) {
     metrics_->address_form_event_logger.OnFormSubmitted(*submitted_form);
-    metrics_->address_form_event_logger
-        .LogAutofillAddressOnTypingCorrectnessMetrics(*submitted_form);
+    address_on_typing_manager_.LogAddressOnTypingCorrectnessMetrics(
+        *submitted_form);
   }
   if (client().IsAutofillPaymentMethodsEnabled()) {
     metrics_->credit_card_form_event_logger.set_signin_state_for_metrics(
@@ -1908,10 +1908,8 @@ void BrowserAutofillManager::OnDidFillAddressOnTypingSuggestion(
     const std::u16string& value,
     FieldType field_type_used_to_build_suggestion,
     const std::string& profile_used_guid) {
-  metrics_->address_form_event_logger.OnDidAcceptAddressOnTyping(
-      field_id, value, field_type_used_to_build_suggestion, profile_used_guid);
   address_on_typing_manager_.OnDidAcceptAddressOnTyping(
-      field_type_used_to_build_suggestion);
+      field_id, value, field_type_used_to_build_suggestion, profile_used_guid);
 }
 
 void BrowserAutofillManager::UndoAutofill(
@@ -2311,10 +2309,9 @@ void BrowserAutofillManager::DidShowSuggestions(
     }
     FieldTypeSet triggering_field_types =
         autofill_field ? autofill_field->Type().GetTypes() : FieldTypeSet{};
-    metrics_->address_form_event_logger.OnDidShowAddressOnTyping(
+    address_on_typing_manager_.OnDidShowAddressOnTyping(
         field_id, field_types_used, triggering_field_types,
         profile_last_used_time_per_guid);
-    address_on_typing_manager_.OnDidShowAddressOnTyping(field_types_used);
     return;
   }
 

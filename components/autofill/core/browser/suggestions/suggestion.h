@@ -552,8 +552,9 @@ struct Suggestion {
   std::optional<std::u16string> acceptance_a11y_announcement;
 
   // When `type` is
-  // `SuggestionType::k(Address|CreditCard)FieldByFieldFilling`, specifies the
-  // `FieldType` used to build the suggestion's `main_text`.
+  // `SuggestionType::k(Address|CreditCard)FieldByFieldFilling` or
+  // `SuggestionType::kAddressEntryOnTyping`, specifies the `FieldType` used to
+  // build the suggestion's `main_text`.
   std::optional<FieldType> field_by_field_filling_type_used;
 
   // How the suggestion should be handled by the filtration logic, see the enum
