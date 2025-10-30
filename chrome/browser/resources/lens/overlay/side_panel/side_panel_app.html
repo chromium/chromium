@@ -310,7 +310,23 @@
     inset-inline: 0;
     height: var(--aim-header-height);
     background-color: var(--search-background-color);
+    z-index: 5;
   }
+
+  #aimHeader::after {
+  content: "";
+  background: linear-gradient(
+    180deg,
+    var(--search-background-color) 1%,
+    transparent 10px
+  );
+  inset-block: 0 0;
+  position: absolute;
+  inline-size: 100%;
+  margin-block-start: var(--aim-header-height);
+  block-size: 52px;
+  pointer-events: none;
+}
 
   #aimHeaderLogo {
     position: absolute;
@@ -417,10 +433,6 @@
     transform: translateY(calc(-1 * (var(--composebox-height) + 30px)));
   }
 
-  :host(:not([enable-lens-aim-suggestions])) #composebox::part(dropdown),
-  #composebox:not([expanded_])::part(dropdown) {
-    display: none;
-  }
 
   :host(:not([show-upload-progress])) #uploadProgressBarContainer,
   :host([is-error-page-visible]) #uploadProgressBarContainer {
