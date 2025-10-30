@@ -106,6 +106,11 @@ namespace safe_browsing {
 std::string Md5AsHexForBodyDigest(std::string_view data);
 }
 
+namespace segmentation_platform {
+std::array<uint8_t, crypto::obsolete::kMd5Size> Md5ForUrlId(
+    std::string_view data);
+}
+
 namespace shell_util {
 std::string Md5AsBase32ForUserSpecificRegistrySuffix(std::string_view str);
 }
@@ -217,6 +222,10 @@ class CRYPTO_EXPORT Md5 {
   // TODO(https://crbug.com/454946840): get rid of this.
   friend std::string reading_list::Md5AsHexForOfflineUrlUtils(
       std::string_view url);
+
+  // TODO(crbug.com/455854083): get rid of this.
+  friend std::array<uint8_t, kSize> segmentation_platform::Md5ForUrlId(
+      std::string_view data);
 
   // TODO(https://crbug.com/425990763): get rid of this.
   friend std::string trusted_vault::MD5StringForTrustedVault(

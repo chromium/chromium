@@ -3,5 +3,6 @@ include_rules = [
   "+components/sync/base/features.h",
   "+components/sync/protocol/sync_enums.pb.h",
   "+components/ukm/test_ukm_recorder.h",
+  "+crypto",
   "+services/metrics/public/cpp", 
 ]
