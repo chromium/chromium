@@ -1273,7 +1273,6 @@ ci.builder(
             "release_builder",
             "x86",
             "win",
-            "remoteexec",
         ],
     ),
     targets = targets.bundle(
