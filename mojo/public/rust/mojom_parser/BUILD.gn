@@ -52,7 +52,8 @@ rust_static_library("mojom_parser_unittests") {
   crate_root = "test.rs"
   sources = [ "test.rs" ]
   deps = [
-    ":mojom_parser",
+    ":mojom_parser_core",
+    ":parsing_attribute",
     "//testing/rust_gtest_interop",
     "//third_party/rust/anyhow/v1:lib",
   ]

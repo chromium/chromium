@@ -4,8 +4,103 @@
 
 //! FOR_RELEASE: Docs
 
+use quote::quote;
+use syn::{parse_macro_input, DeriveInput};
+
 #[proc_macro_derive(MojomParse)]
-pub fn derive(_input: proc_macro::TokenStream) -> proc_macro::TokenStream {
-    // FOR_RELEASE: Do this
-    proc_macro::TokenStream::new()
+pub fn derive(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
+    let input = parse_macro_input!(input as DeriveInput);
+    let name = input.ident;
+
+    let struct_fields = match input.data {
+        syn::Data::Struct(syn::DataStruct { fields, .. }) => match fields {
+            syn::Fields::Named(syn::FieldsNamed { named, .. }) => named,
+            _ => todo!("Gotta have named fields, give an error message"),
+        },
+        _ => todo!("Only structs supported at the moment"),
+    };
+
+    let num_fields = struct_fields.len();
+
+    // As far as I know, quote can only iterate over vectors of things that can
+    // be directly converted to tokens. Notably, this means they have to be
+    // single values. So if we want to write something like #name = #val, in a
+    // loop, we first have to combine each pair of names and values into a single
+    // token stream, and then can we iterate over that in the quote.
+
+    // The names of the fields in the struct.
+    let field_idents: Vec<&syn::Ident> =
+        struct_fields.iter().map(|field| field.ident.as_ref().unwrap()).collect();
+
+    // A bunch of entries for a MojomType::Struct
+    let mojom_type_fields: Vec<proc_macro2::TokenStream> = struct_fields
+        .iter()
+        .map(|field| {
+            let ty = &field.ty;
+            let name = field.ident.as_ref().unwrap().to_string();
+            quote! { (#name.to_string(), #ty::mojom_type()) }
+        })
+        .collect();
+
+    // A bunch of entries for a MojomValue::Struct
+    let to_mojom_value_fields: Vec<proc_macro2::TokenStream> = struct_fields
+        .iter()
+        .map(|field| {
+            let name = field.ident.as_ref().unwrap();
+            let name_str = name.to_string();
+            quote! { (#name_str.to_string(), self.#name.to_mojom_value()) }
+        })
+        .collect();
+
+    // The body of a struct value, converting each field from a MojomValue with
+    // the same name as the field.
+    let from_mojom_value_fields: Vec<proc_macro2::TokenStream> = struct_fields
+        .iter()
+        .map(|field| {
+            let ty = &field.ty;
+            let name = field.ident.as_ref().unwrap();
+            quote! { #name: #ty::from_mojom_value(#name)? }
+        })
+        .collect();
+
+    let quoted = quote! {
+        impl MojomParse for #name {
+            fn mojom_type() -> MojomType {
+                let fields = vec![
+                    #(#mojom_type_fields),*
+                ];
+                MojomType::Struct { fields }
+            }
+
+            fn to_mojom_value(self) -> MojomValue {
+                let fields = vec![
+                    #(#to_mojom_value_fields),*
+                ];
+                MojomValue::Struct ( fields )
+            }
+
+            fn from_mojom_value(v : MojomValue) -> Option<Self> {
+                if let MojomValue::Struct(fields) = v {
+                    // Drop the strings, we don't care about them here
+                    let fields : Vec<MojomValue> = fields.into_iter().map(|field| field.1).collect();
+                    let fields : [MojomValue; #num_fields] = fields.try_into().ok()?;
+                    // Try to extract all the field values at once
+                    if let [#(#field_idents),*] = fields {
+                        return Some(Self {
+                            #(#from_mojom_value_fields),*
+                        })
+                    }
+                    else {
+                        return None;
+                    }
+                } else {
+                    return None;
+                }
+            }
+        }
+    };
+
+    // Excellent for debugging, prints out the entire generated code
+    // println!("{}", &quoted);
+    return proc_macro::TokenStream::from(quoted);
 }

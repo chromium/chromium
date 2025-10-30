@@ -14,13 +14,15 @@
 //! function, and comparing against an expected output.
 
 chromium::import! {
-    "//mojo/public/rust/mojom_parser";
+    "//mojo/public/rust/mojom_parser:mojom_parser_core";
+    "//mojo/public/rust/mojom_parser:parsing_attribute";
 }
 
 use rust_gtest_interop::prelude::*;
 
 use anyhow::Result;
-use mojom_parser::*;
+use mojom_parser_core::*;
+use parsing_attribute::*;
 
 /// Represents a type defined in a Mojom file.
 ///
@@ -82,6 +84,36 @@ impl TestType {
 
 #[gtest(MojomParserTestSuit, BoolTest)]
 fn test_bools() {
+    #[derive(MojomParse, Debug, PartialEq, Copy, Clone)]
+    struct TenBoolsAndAByte {
+        e0: bool,
+        e1: bool,
+        e2: bool,
+        e3: bool,
+        e4: bool,
+        e5: u8,
+        e6: bool,
+        e7: bool,
+        e8: bool,
+        e9: bool,
+        e10: bool,
+    }
+
+    #[derive(MojomParse, Debug, PartialEq, Copy, Clone)]
+    struct TenBoolsAndTwoBytes {
+        e0: bool,
+        e1: bool,
+        e2: bool,
+        e3: bool,
+        e4: bool,
+        e5: u16,
+        e6: bool,
+        e7: bool,
+        e8: bool,
+        e9: bool,
+        e10: bool,
+    }
+
     // Used for probing how bools are packed. We should see the first 8 bools in a
     // bitfield, then the uint8, then another bitfield with the remaining two
     // bools.
@@ -89,22 +121,24 @@ fn test_bools() {
         type_name: "TenBoolsAndAByte",
         base_type: MojomType::Struct {
             fields: vec![
-                ("".to_string(), MojomType::Bool),
-                ("".to_string(), MojomType::Bool),
-                ("".to_string(), MojomType::Bool),
-                ("".to_string(), MojomType::Bool),
-                ("".to_string(), MojomType::Bool),
-                ("".to_string(), MojomType::UInt8),
-                ("".to_string(), MojomType::Bool),
-                ("".to_string(), MojomType::Bool),
-                ("".to_string(), MojomType::Bool),
-                ("".to_string(), MojomType::Bool),
-                ("".to_string(), MojomType::Bool),
+                ("e0".to_string(), MojomType::Bool),
+                ("e1".to_string(), MojomType::Bool),
+                ("e2".to_string(), MojomType::Bool),
+                ("e3".to_string(), MojomType::Bool),
+                ("e4".to_string(), MojomType::Bool),
+                ("e5".to_string(), MojomType::UInt8),
+                ("e6".to_string(), MojomType::Bool),
+                ("e7".to_string(), MojomType::Bool),
+                ("e8".to_string(), MojomType::Bool),
+                ("e9".to_string(), MojomType::Bool),
+                ("e10".to_string(), MojomType::Bool),
             ],
         },
+        // The names are wonky because packing drops the name of all but the
+        // first boolean.
         expected_packed_fields: vec![
             (
-                "".to_string(),
+                "e0".to_string(),
                 MojomWireType::Bitfield {
                     ordinals: [
                         Some(0),
@@ -118,9 +152,12 @@ fn test_bools() {
                     ],
                 },
             ),
-            ("".to_string(), MojomWireType::Leaf { ordinal: 5, leaf_type: PackedLeafType::UInt8 }),
             (
-                "".to_string(),
+                "e5".to_string(),
+                MojomWireType::Leaf { ordinal: 5, leaf_type: PackedLeafType::UInt8 },
+            ),
+            (
+                "e9".to_string(),
                 MojomWireType::Bitfield {
                     ordinals: [Some(9), Some(10), None, None, None, None, None, None],
                 },
@@ -142,17 +179,17 @@ fn test_bools() {
         e10: bool,
     ) -> MojomValue {
         MojomValue::Struct(vec![
-            ("".to_string(), MojomValue::Bool(e0)),
-            ("".to_string(), MojomValue::Bool(e1)),
-            ("".to_string(), MojomValue::Bool(e2)),
-            ("".to_string(), MojomValue::Bool(e3)),
-            ("".to_string(), MojomValue::Bool(e4)),
-            ("".to_string(), MojomValue::UInt8(e5)),
-            ("".to_string(), MojomValue::Bool(e6)),
-            ("".to_string(), MojomValue::Bool(e7)),
-            ("".to_string(), MojomValue::Bool(e8)),
-            ("".to_string(), MojomValue::Bool(e9)),
-            ("".to_string(), MojomValue::Bool(e10)),
+            ("e0".to_string(), MojomValue::Bool(e0)),
+            ("e1".to_string(), MojomValue::Bool(e1)),
+            ("e2".to_string(), MojomValue::Bool(e2)),
+            ("e3".to_string(), MojomValue::Bool(e3)),
+            ("e4".to_string(), MojomValue::Bool(e4)),
+            ("e5".to_string(), MojomValue::UInt8(e5)),
+            ("e6".to_string(), MojomValue::Bool(e6)),
+            ("e7".to_string(), MojomValue::Bool(e7)),
+            ("e8".to_string(), MojomValue::Bool(e8)),
+            ("e9".to_string(), MojomValue::Bool(e9)),
+            ("e10".to_string(), MojomValue::Bool(e10)),
         ])
     }
 
@@ -162,22 +199,22 @@ fn test_bools() {
         type_name: "TenBoolsAndTwoBytes",
         base_type: MojomType::Struct {
             fields: vec![
-                ("".to_string(), MojomType::Bool),
-                ("".to_string(), MojomType::Bool),
-                ("".to_string(), MojomType::Bool),
-                ("".to_string(), MojomType::Bool),
-                ("".to_string(), MojomType::Bool),
-                ("".to_string(), MojomType::UInt16),
-                ("".to_string(), MojomType::Bool),
-                ("".to_string(), MojomType::Bool),
-                ("".to_string(), MojomType::Bool),
-                ("".to_string(), MojomType::Bool),
-                ("".to_string(), MojomType::Bool),
+                ("e0".to_string(), MojomType::Bool),
+                ("e1".to_string(), MojomType::Bool),
+                ("e2".to_string(), MojomType::Bool),
+                ("e3".to_string(), MojomType::Bool),
+                ("e4".to_string(), MojomType::Bool),
+                ("e5".to_string(), MojomType::UInt16),
+                ("e6".to_string(), MojomType::Bool),
+                ("e7".to_string(), MojomType::Bool),
+                ("e8".to_string(), MojomType::Bool),
+                ("e9".to_string(), MojomType::Bool),
+                ("e10".to_string(), MojomType::Bool),
             ],
         },
         expected_packed_fields: vec![
             (
-                "".to_string(),
+                "e0".to_string(),
                 MojomWireType::Bitfield {
                     ordinals: [
                         Some(0),
@@ -192,12 +229,15 @@ fn test_bools() {
                 },
             ),
             (
-                "".to_string(),
+                "e9".to_string(),
                 MojomWireType::Bitfield {
                     ordinals: [Some(9), Some(10), None, None, None, None, None, None],
                 },
             ),
-            ("".to_string(), MojomWireType::Leaf { ordinal: 5, leaf_type: PackedLeafType::UInt16 }),
+            (
+                "e5".to_string(),
+                MojomWireType::Leaf { ordinal: 5, leaf_type: PackedLeafType::UInt16 },
+            ),
         ],
     };
 
@@ -215,26 +255,42 @@ fn test_bools() {
         e10: bool,
     ) -> MojomValue {
         MojomValue::Struct(vec![
-            ("".to_string(), MojomValue::Bool(e0)),
-            ("".to_string(), MojomValue::Bool(e1)),
-            ("".to_string(), MojomValue::Bool(e2)),
-            ("".to_string(), MojomValue::Bool(e3)),
-            ("".to_string(), MojomValue::Bool(e4)),
-            ("".to_string(), MojomValue::UInt16(e5)),
-            ("".to_string(), MojomValue::Bool(e6)),
-            ("".to_string(), MojomValue::Bool(e7)),
-            ("".to_string(), MojomValue::Bool(e8)),
-            ("".to_string(), MojomValue::Bool(e9)),
-            ("".to_string(), MojomValue::Bool(e10)),
+            ("e0".to_string(), MojomValue::Bool(e0)),
+            ("e1".to_string(), MojomValue::Bool(e1)),
+            ("e2".to_string(), MojomValue::Bool(e2)),
+            ("e3".to_string(), MojomValue::Bool(e3)),
+            ("e4".to_string(), MojomValue::Bool(e4)),
+            ("e5".to_string(), MojomValue::UInt16(e5)),
+            ("e6".to_string(), MojomValue::Bool(e6)),
+            ("e7".to_string(), MojomValue::Bool(e7)),
+            ("e8".to_string(), MojomValue::Bool(e8)),
+            ("e9".to_string(), MojomValue::Bool(e9)),
+            ("e10".to_string(), MojomValue::Bool(e10)),
         ])
     }
 
+    // Test MojomParse trait derivation for mojom_type()
+    assert_eq!(TenBoolsAndAByte::mojom_type(), ten_bools_and_a_byte_ty.base_type);
+    assert_eq!(TenBoolsAndTwoBytes::mojom_type(), ten_bools_and_two_bytes_ty.base_type);
+
+    // Test packing algorithm
     ten_bools_and_a_byte_ty.validate();
     ten_bools_and_two_bytes_ty.validate();
 
-    // Test parsing and deparsing
-
     // 87 cd 02
+    let one_byte_rust_val = TenBoolsAndAByte {
+        e0: true,
+        e1: true,
+        e2: true,
+        e3: false,
+        e4: false,
+        e5: 0xcd,
+        e6: false,
+        e7: false,
+        e8: true,
+        e9: false,
+        e10: true,
+    };
     let one_byte_val =
         ten_bools_and_a_byte(true, true, true, false, false, 0xcd, false, false, true, false, true);
 
@@ -248,6 +304,19 @@ fn test_bools() {
     ];
 
     // ad 03 ef cd
+    let two_byte_rust_val = TenBoolsAndTwoBytes {
+        e0: true,
+        e1: false,
+        e2: true,
+        e3: true,
+        e4: false,
+        e5: 0xcdef,
+        e6: true,
+        e7: false,
+        e8: true,
+        e9: true,
+        e10: true,
+    };
     let two_byte_val = ten_bools_and_two_bytes(
         true, false, true, true, false, 0xcdef, true, false, true, true, true,
     );
@@ -260,8 +329,26 @@ fn test_bools() {
         0x00, 0x00, 0x00, 0x00, // Padding
     ];
 
+    // Test MojomParse derivation for to_mojom_value()
+    assert_eq!(one_byte_rust_val.to_mojom_value(), one_byte_val);
+    assert_eq!(two_byte_rust_val.to_mojom_value(), two_byte_val);
+
+    // Test MojomParse derivation for from_mojom_value()
+    assert_eq!(TenBoolsAndAByte::from_mojom_value(one_byte_val).unwrap(), one_byte_rust_val);
+    assert_eq!(TenBoolsAndTwoBytes::from_mojom_value(two_byte_val).unwrap(), two_byte_rust_val);
+
     // FOR RELEASE: there's gotta be a better way to hand things that return a
     // result in a way that gtest will catch.
-    assert_eq!(one_byte_val, ten_bools_and_a_byte_ty.parse(&one_byte_data).unwrap());
-    assert_eq!(two_byte_val, ten_bools_and_two_bytes_ty.parse(&two_byte_data).unwrap())
+    assert_eq!(
+        one_byte_rust_val,
+        TenBoolsAndAByte::from_mojom_value(ten_bools_and_a_byte_ty.parse(&one_byte_data).unwrap())
+            .unwrap()
+    );
+    assert_eq!(
+        two_byte_rust_val,
+        TenBoolsAndTwoBytes::from_mojom_value(
+            ten_bools_and_two_bytes_ty.parse(&two_byte_data).unwrap()
+        )
+        .unwrap()
+    );
 }
