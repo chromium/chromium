@@ -7,9 +7,11 @@
 #include <memory>
 
 #include "base/files/file_util.h"
-#include "base/hash/md5.h"
 #include "base/json/json_reader.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/values.h"
+#include "crypto/obsolete/md5.h"
 #include "media/base/test_data_util.h"
 #include "media/gpu/macros.h"
 
@@ -95,9 +97,9 @@ bool Image::Load() {
   }
 
   // Verify that the image's checksum matches the checksum in the metadata.
-  base::MD5Digest digest;
-  base::MD5Sum(mapped_file_.bytes(), &digest);
-  if (base::MD5DigestToBase16(digest) != checksum_) {
+  const std::string actual_checksum = base::ToLowerASCII(base::HexEncode(
+      crypto::obsolete::Md5::HashForTesting(mapped_file_.bytes())));
+  if (actual_checksum != checksum_) {
     LOG(ERROR) << "Image checksum not matching metadata";
     return false;
   }

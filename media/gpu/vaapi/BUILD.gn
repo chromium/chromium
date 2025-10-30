@@ -336,6 +336,7 @@ executable("decode_test") {
     ":libva_stubs",
     "//base",
     "//build/config/linux/libdrm",
+    "//crypto",
     "//media",
     "//media:test_support",
     "//media/gpu:common",

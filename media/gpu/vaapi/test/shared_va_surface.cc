@@ -6,9 +6,11 @@
 
 #include "base/compiler_specific.h"
 #include "base/files/file_util.h"
-#include "base/hash/md5.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/types/pass_key.h"
+#include "crypto/obsolete/md5.h"
 #include "media/base/video_types.h"
 #include "media/gpu/vaapi/test/macros.h"
 #include "media/gpu/vaapi/test/vaapi_device.h"
@@ -285,9 +287,8 @@ std::string SharedVASurface::GetMD5Sum(FetchPolicy fetch_policy) const {
   res = vaDestroyImage(va_device_->display(), image.image_id);
   VA_LOG_ASSERT(res, "vaDestroyImage");
 
-  base::MD5Digest md5_digest;
-  base::MD5Sum(i420_data, &md5_digest);
-  return MD5DigestToBase16(md5_digest);
+  return base::ToLowerASCII(
+      base::HexEncode(crypto::obsolete::Md5::HashForTesting(i420_data)));
 }
 
 }  // namespace vaapi_test

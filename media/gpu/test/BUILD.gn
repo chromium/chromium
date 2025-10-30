@@ -131,6 +131,7 @@ source_set("helpers") {
     "//base",
     "//base/test:test_config",
     "//base/test:test_support",
+    "//crypto",
     "//gpu:test_support",
     "//gpu/ipc/common",
     "//media:test_support",
