@@ -25,15 +25,13 @@
 #include "ui/base/l10n/l10n_util.h"
 
 namespace speech {
-namespace {
-
 // If `language_name` is Chinese variant, then return the master locale.
 // Otherwise, return `language_name`.
 const std::string MaybeMapToChineseLocale(const std::string& language_name) {
   const base::flat_map<std::string, std::string> chinese_locale_map = {
-      {"cmn-hans-cn", "cmn-hans-cn"}, {"cmn-hant-tw", "cmn-hant-tw"},
-      {"zh-cn", "cmn-hans-cn"},       {"zh-hans-cn", "cmn-hans-cn"},
-      {"zh-hant-tw", "cmn-hant-tw"},  {"zh-tw", "cmn-hant-tw"},
+      {"cmn-hans-cn", "cmn-Hans-CN"}, {"cmn-hant-tw", "cmn-Hant-TW"},
+      {"zh-cn", "cmn-Hans-CN"},       {"zh-hans-cn", "cmn-Hans-CN"},
+      {"zh-hant-tw", "cmn-Hant-TW"},  {"zh-tw", "cmn-Hant-TW"},
   };
   auto chinese_locale =
       chinese_locale_map.find(base::ToLowerASCII(language_name));
@@ -44,7 +42,6 @@ const std::string MaybeMapToChineseLocale(const std::string& language_name) {
   return language_name;
 }
 
-}  // namespace
 const char kUsEnglishLocale[] = "en-US";
 
 const char kEnglishLocaleNoCountry[] = "en";

@@ -346,6 +346,10 @@ const std::string GetDefaultLiveCaptionLanguage(
     const std::string& application_locale,
     PrefService* profile_prefs);
 
+// If `language_name` is Chinese variant, then return the master locale.
+// Otherwise, return `language_name`.
+const std::string MaybeMapToChineseLocale(const std::string& language_name);
+
 }  // namespace speech
 
 #endif  // COMPONENTS_SODA_CONSTANTS_H_

@@ -210,7 +210,8 @@ base::FilePath SodaInstallerImplChromeOS::GetSodaBinaryPath() const {
 
 base::FilePath SodaInstallerImplChromeOS::GetLanguagePath(
     const std::string& language) const {
-  auto available_it = available_languages_.find(language);
+  auto available_it =
+      available_languages_.find(MaybeMapToChineseLocale(language));
   if (available_it == available_languages_.end()) {
     LOG(DFATAL) << "Asked for unavailable language " << language;
     return base::FilePath();
@@ -276,7 +277,8 @@ void SodaInstallerImplChromeOS::InstallLanguage(const std::string& language,
 }
 void SodaInstallerImplChromeOS::InstallLanguageInternal(
     const std::string& language) {
-  auto language_info = available_languages_.find(language);
+  auto language_info =
+      available_languages_.find(MaybeMapToChineseLocale(language));
   if (language_info == available_languages_.end()) {
     LOG(DFATAL)
         << "Language " << language
@@ -303,7 +305,8 @@ void SodaInstallerImplChromeOS::InstallLanguageInternal(
 void SodaInstallerImplChromeOS::UninstallLanguage(const std::string& language,
                                                   PrefService* global_prefs) {
   SodaInstaller::UnregisterLanguage(language, global_prefs);
-  const auto& language_info = available_languages_.find(language);
+  const auto& language_info =
+      available_languages_.find(MaybeMapToChineseLocale(language));
   // Remove from retry list in case it's in there.
   retry_languages_to_install_.erase(language);
   if (language_info == available_languages_.end()) {
@@ -344,7 +347,8 @@ SodaInstallerImplChromeOS::GetLiveCaptionEnabledLanguages() const {
 
 std::string SodaInstallerImplChromeOS::GetLanguageDlcNameForLocale(
     const std::string& locale) const {
-  const auto& language_info = available_languages_.find(locale);
+  const auto& language_info =
+      available_languages_.find(MaybeMapToChineseLocale(locale));
   if (language_info == available_languages_.end()) {
     LOG(DFATAL) << "Asked for unavailable language " << locale;
     return std::string();
