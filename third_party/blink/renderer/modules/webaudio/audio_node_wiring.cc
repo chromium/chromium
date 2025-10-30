@@ -7,7 +7,6 @@
 #include "base/memory/raw_ref.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_node_input.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_node_output.h"
-#include "third_party/blink/renderer/modules/webaudio/deferred_task_handler.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 
 namespace blink {
@@ -48,7 +47,7 @@ FindOutputResult FindOutput(AudioNodeOutput& output,
 }  // namespace
 
 void AudioNodeWiring::Connect(AudioNodeOutput& output, AudioNodeInput& input) {
-  input.GetDeferredTaskHandler().AssertGraphOwner();
+  input.AssertGraphOwner();
 
   const bool input_connected_to_output =
       input.outputs_.Contains(&output) ||
@@ -78,7 +77,7 @@ void AudioNodeWiring::Connect(AudioNodeOutput& output, AudioNodeInput& input) {
 
 void AudioNodeWiring::Connect(AudioNodeOutput& output,
                               AudioParamHandler& param) {
-  param.GetDeferredTaskHandler().AssertGraphOwner();
+  param.AssertGraphOwner();
 
   const bool param_connected_to_output = param.outputs_.Contains(&output);
   const bool output_connected_to_param = output.params_.Contains(&param);
@@ -98,7 +97,7 @@ void AudioNodeWiring::Connect(AudioNodeOutput& output,
 
 void AudioNodeWiring::Disconnect(AudioNodeOutput& output,
                                  AudioNodeInput& input) {
-  input.GetDeferredTaskHandler().AssertGraphOwner();
+  input.AssertGraphOwner();
 
   // These must be connected.
   DCHECK(output.inputs_.Contains(&input));
@@ -126,7 +125,7 @@ void AudioNodeWiring::Disconnect(AudioNodeOutput& output,
 
 void AudioNodeWiring::Disconnect(AudioNodeOutput& output,
                                  AudioParamHandler& param) {
-  param.GetDeferredTaskHandler().AssertGraphOwner();
+  param.AssertGraphOwner();
 
   DCHECK(param.outputs_.Contains(&output));
   DCHECK(output.params_.Contains(&param));
@@ -140,7 +139,7 @@ void AudioNodeWiring::Disconnect(AudioNodeOutput& output,
 }
 
 void AudioNodeWiring::Disable(AudioNodeOutput& output, AudioNodeInput& input) {
-  input.GetDeferredTaskHandler().AssertGraphOwner();
+  input.AssertGraphOwner();
 
   // These must be connected.
   DCHECK(output.inputs_.Contains(&input));
@@ -168,7 +167,7 @@ void AudioNodeWiring::Disable(AudioNodeOutput& output, AudioNodeInput& input) {
 }
 
 void AudioNodeWiring::Enable(AudioNodeOutput& output, AudioNodeInput& input) {
-  input.GetDeferredTaskHandler().AssertGraphOwner();
+  input.AssertGraphOwner();
 
   // These must be connected.
   DCHECK(output.inputs_.Contains(&input));
@@ -197,7 +196,7 @@ void AudioNodeWiring::Enable(AudioNodeOutput& output, AudioNodeInput& input) {
 
 bool AudioNodeWiring::IsConnected(AudioNodeOutput& output,
                                   AudioNodeInput& input) {
-  input.GetDeferredTaskHandler().AssertGraphOwner();
+  input.AssertGraphOwner();
 
   bool is_connected = output.inputs_.Contains(&input);
   DCHECK_EQ(is_connected, input.outputs_.Contains(&output) ||
@@ -207,7 +206,7 @@ bool AudioNodeWiring::IsConnected(AudioNodeOutput& output,
 
 bool AudioNodeWiring::IsConnected(AudioNodeOutput& output,
                                   AudioParamHandler& param) {
-  param.GetDeferredTaskHandler().AssertGraphOwner();
+  param.AssertGraphOwner();
 
   bool is_connected = output.params_.Contains(&param);
   DCHECK_EQ(is_connected, param.outputs_.Contains(&output));
@@ -223,7 +222,7 @@ void AudioNodeWiring::WillBeDestroyed(AudioNodeInput& input) {
   // What does matter, however, is ensuring that no AudioNodeOutput holds a
   // dangling pointer to `input`.
 
-  input.GetDeferredTaskHandler().AssertGraphOwner();
+  input.AssertGraphOwner();
 
   for (AudioNodeOutput* output : input.outputs_) {
     output->inputs_.erase(&input);

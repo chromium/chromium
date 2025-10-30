@@ -42,11 +42,6 @@ class AudioSummingJunction {
  public:
   virtual ~AudioSummingJunction();
 
-  // Can be called from any thread.
-  DeferredTaskHandler& GetDeferredTaskHandler() const {
-    return *deferred_task_handler_;
-  }
-
   // This must be called whenever we modify `outputs_`.
   void ChangedOutputs();
 
@@ -64,8 +59,13 @@ class AudioSummingJunction {
 
   virtual void DidUpdate() = 0;
 
+  void AssertGraphOwner() const;
+
  protected:
   explicit AudioSummingJunction(DeferredTaskHandler&);
+
+  bool IsAudioThread() const;
+  uint32_t RenderQuantumFrames() const;
 
   scoped_refptr<DeferredTaskHandler> deferred_task_handler_;
 

@@ -38,8 +38,7 @@ AudioNodeInput::AudioNodeInput(AudioHandler& handler)
     : AudioSummingJunction(handler.Context()->GetDeferredTaskHandler()),
       handler_(handler) {
   // Set to mono by default.
-  internal_summing_bus_ =
-      AudioBus::Create(1, GetDeferredTaskHandler().RenderQuantumFrames());
+  internal_summing_bus_ = AudioBus::Create(1, RenderQuantumFrames());
 }
 
 AudioNodeInput::~AudioNodeInput() {
@@ -51,8 +50,8 @@ void AudioNodeInput::DidUpdate() {
 }
 
 void AudioNodeInput::UpdateInternalBus() {
-  DCHECK(GetDeferredTaskHandler().IsAudioThread());
-  GetDeferredTaskHandler().AssertGraphOwner();
+  DCHECK(IsAudioThread());
+  AssertGraphOwner();
 
   unsigned number_of_input_channels = NumberOfChannels();
 
@@ -60,8 +59,8 @@ void AudioNodeInput::UpdateInternalBus() {
     return;
   }
 
-  internal_summing_bus_ = AudioBus::Create(
-      number_of_input_channels, GetDeferredTaskHandler().RenderQuantumFrames());
+  internal_summing_bus_ =
+      AudioBus::Create(number_of_input_channels, RenderQuantumFrames());
 }
 
 unsigned AudioNodeInput::NumberOfChannels() const {
@@ -90,7 +89,7 @@ unsigned AudioNodeInput::NumberOfChannels() const {
 }
 
 scoped_refptr<AudioBus> AudioNodeInput::Bus() {
-  DCHECK(GetDeferredTaskHandler().IsAudioThread());
+  DCHECK(IsAudioThread());
 
   // Handle single connection specially to allow for in-place processing.
   if (NumberOfRenderingConnections() == 1 &&
@@ -103,14 +102,14 @@ scoped_refptr<AudioBus> AudioNodeInput::Bus() {
 }
 
 scoped_refptr<AudioBus> AudioNodeInput::InternalSummingBus() {
-  DCHECK(GetDeferredTaskHandler().IsAudioThread());
+  DCHECK(IsAudioThread());
 
   return internal_summing_bus_;
 }
 
 void AudioNodeInput::SumAllConnections(scoped_refptr<AudioBus> summing_bus,
                                        uint32_t frames_to_process) {
-  DCHECK(GetDeferredTaskHandler().IsAudioThread());
+  DCHECK(IsAudioThread());
 
   // We shouldn't be calling this method if there's only one connection, since
   // it's less efficient.
@@ -138,7 +137,7 @@ void AudioNodeInput::SumAllConnections(scoped_refptr<AudioBus> summing_bus,
 
 scoped_refptr<AudioBus> AudioNodeInput::Pull(AudioBus* in_place_bus,
                                              uint32_t frames_to_process) {
-  DCHECK(GetDeferredTaskHandler().IsAudioThread());
+  DCHECK(IsAudioThread());
 
   // Handle single connection case.
   if (NumberOfRenderingConnections() == 1 &&

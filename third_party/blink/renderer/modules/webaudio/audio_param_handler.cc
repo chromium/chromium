@@ -206,10 +206,7 @@ AudioParamHandler::AudioParamHandler(BaseAudioContext& context,
       rate_mode_(rate_mode),
       min_value_(min_value),
       max_value_(max_value),
-      summing_bus_(
-          AudioBus::Create(1,
-                           GetDeferredTaskHandler().RenderQuantumFrames(),
-                           false)) {
+      summing_bus_(AudioBus::Create(1, RenderQuantumFrames(), false)) {
   // An AudioParam needs the destination handler to run the timeline.  But the
   // destination may have been destroyed (e.g. page gone), so the destination is
   // null.  However, if the destination is gone, the AudioParam will never get
@@ -306,10 +303,9 @@ String AudioParamHandler::GetParamName() const {
 float AudioParamHandler::Value() {
   // Update value for timeline.
   float v = IntrinsicValue();
-  if (GetDeferredTaskHandler().IsAudioThread()) {
-    auto [has_value, timeline_value] =
-        ValueForContextTime(DestinationHandler(), v, MinValue(), MaxValue(),
-                            GetDeferredTaskHandler().RenderQuantumFrames());
+  if (IsAudioThread()) {
+    auto [has_value, timeline_value] = ValueForContextTime(
+        DestinationHandler(), v, MinValue(), MaxValue(), RenderQuantumFrames());
 
     if (has_value) {
       v = timeline_value;
@@ -333,7 +329,7 @@ float AudioParamHandler::FinalValue() {
 
 void AudioParamHandler::CalculateSampleAccurateValues(
     base::span<float> values) {
-  DCHECK(GetDeferredTaskHandler().IsAudioThread());
+  DCHECK(IsAudioThread());
   DCHECK(!values.empty());
 
   CalculateFinalValues(values, IsAudioRate());
@@ -341,7 +337,7 @@ void AudioParamHandler::CalculateSampleAccurateValues(
 
 void AudioParamHandler::CalculateFinalValues(base::span<float> values,
                                              bool sample_accurate) {
-  DCHECK(GetDeferredTaskHandler().IsAudioThread());
+  DCHECK(IsAudioThread());
   DCHECK(!values.empty());
 
   // The calculated result will be the "intrinsic" value summed with all
@@ -355,7 +351,7 @@ void AudioParamHandler::CalculateFinalValues(base::span<float> values,
     float value = IntrinsicValue();
     auto [has_value, timeline_value] =
         ValueForContextTime(DestinationHandler(), value, MinValue(), MaxValue(),
-                            GetDeferredTaskHandler().RenderQuantumFrames());
+                            RenderQuantumFrames());
 
     if (has_value) {
       value = timeline_value;
@@ -369,7 +365,7 @@ void AudioParamHandler::CalculateFinalValues(base::span<float> values,
   // together (unity-gain summing junction).  Note that connections would
   // normally be mono, but we mix down to mono if necessary.
   if (NumberOfRenderingConnections() > 0) {
-    DCHECK_LE(values.size(), GetDeferredTaskHandler().RenderQuantumFrames());
+    DCHECK_LE(values.size(), RenderQuantumFrames());
 
     // If we're not sample accurate, we only need one value, so make the summing
     // bus have length 1.  When the connections are added in, only the first
@@ -382,8 +378,7 @@ void AudioParamHandler::CalculateFinalValues(base::span<float> values,
       DCHECK(output);
 
       // Render audio from this output.
-      AudioBus* connection_bus =
-          output->Pull(nullptr, GetDeferredTaskHandler().RenderQuantumFrames());
+      AudioBus* connection_bus = output->Pull(nullptr, RenderQuantumFrames());
 
       // Sum, with unity-gain.
       summing_bus_->SumFrom(*connection_bus);
@@ -417,7 +412,7 @@ void AudioParamHandler::CalculateFinalValues(base::span<float> values,
 void AudioParamHandler::CalculateTimelineValues(base::span<float> values) {
   // Calculate values for this render quantum.  Normally
   // `number_of_values` will equal to
-  // GetDeferredTaskHandler().RenderQuantumFrames() (the render quantum size).
+  // RenderQuantumFrames() (the render quantum size).
   double sample_rate = DestinationHandler().SampleRate();
   size_t start_frame = DestinationHandler().CurrentSampleFrame();
   size_t end_frame = start_frame + values.size();
@@ -426,7 +421,7 @@ void AudioParamHandler::CalculateTimelineValues(base::span<float> values) {
   // Pass in the current value as default value.
   SetValue(ValuesForFrameRange(start_frame, end_frame, IntrinsicValue(), values,
                                sample_rate, sample_rate, MinValue(), MaxValue(),
-                               GetDeferredTaskHandler().RenderQuantumFrames()));
+                               RenderQuantumFrames()));
 }
 
 double AudioParamHandler::ClampedToCurrentTime(double time) {
@@ -1008,8 +1003,7 @@ bool AudioParamHandler::HasSampleAccurateValues() const {
 
     const size_t current_frame = destination_handler_->CurrentSampleFrame();
     const double sample_rate = destination_handler_->SampleRate();
-    const unsigned render_quantum_frames =
-        GetDeferredTaskHandler().RenderQuantumFrames();
+    const unsigned render_quantum_frames = RenderQuantumFrames();
 
     // Handle the case where the first event (of certain types) is in the
     // future.  Then, no sample-accurate processing is needed because the event
