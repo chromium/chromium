@@ -9,6 +9,7 @@
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
+#include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -46,6 +47,12 @@ LowDiskNotification::LowDiskNotification()
 
 LowDiskNotification::~LowDiskNotification() {
   DCHECK(UserDataAuthClient::Get());
+  if (auto* message_center = message_center::MessageCenter::Get()) {
+    message_center->RemoveNotification(kLowDiskId, /*by_user=*/false);
+  } else {
+    // TODO(crbug.com/454766826): Fix shutdown order so this isn't needed.
+    CHECK_IS_TEST();
+  }
   UserDataAuthClient::Get()->RemoveObserver(this);
 }
 

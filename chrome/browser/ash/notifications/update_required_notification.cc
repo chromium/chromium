@@ -6,6 +6,7 @@
 
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
+#include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/i18n/message_formatter.h"
 #include "base/strings/utf_string_conversions.h"
@@ -114,7 +115,14 @@ message_center::SystemNotificationWarningLevel GetWarningLevel(
 
 UpdateRequiredNotification::UpdateRequiredNotification() = default;
 
-UpdateRequiredNotification::~UpdateRequiredNotification() = default;
+UpdateRequiredNotification::~UpdateRequiredNotification() {
+  if (message_center::MessageCenter::Get()) {
+    Hide();
+  } else {
+    // TODO(crbug.com/454766826): Fix shutdown order so this isn't needed.
+    CHECK_IS_TEST();
+  }
+}
 
 void UpdateRequiredNotification::Show(NotificationType type,
                                       base::TimeDelta warning_time,

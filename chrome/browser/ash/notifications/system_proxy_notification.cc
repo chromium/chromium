@@ -8,6 +8,7 @@
 
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
+#include "base/check_is_test.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/grit/generated_resources.h"
@@ -34,7 +35,14 @@ SystemProxyNotification::SystemProxyNotification(
       on_click_callback_(std::move(callback)),
       weak_ptr_factory_(this) {}
 
-SystemProxyNotification::~SystemProxyNotification() = default;
+SystemProxyNotification::~SystemProxyNotification() {
+  if (message_center::MessageCenter::Get()) {
+    Close();
+  } else {
+    // TODO(crbug.com/454766826): Fix shutdown order so this isn't needed.
+    CHECK_IS_TEST();
+  }
+}
 
 void SystemProxyNotification::Show() {
   const std::u16string title =

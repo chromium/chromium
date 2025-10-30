@@ -8,6 +8,7 @@
 
 #include "ash/public/cpp/message_center/oobe_notification_constants.h"
 #include "ash/public/cpp/notification_utils.h"
+#include "base/check_is_test.h"
 #include "base/location.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/dbus/gnubby/gnubby_client.h"
@@ -31,6 +32,12 @@ GnubbyNotification::GnubbyNotification()
 
 GnubbyNotification::~GnubbyNotification() {
   DCHECK(GnubbyClient::Get());
+  if (message_center::MessageCenter::Get()) {
+    DismissNotification();
+  } else {
+    // TODO(crbug.com/454766826): Fix shutdown order so this isn't needed.
+    CHECK_IS_TEST();
+  }
   GnubbyClient::Get()->RemoveObserver(this);
 }
 
