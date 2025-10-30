@@ -8,12 +8,14 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.content.res.XmlResourceParser;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Xml;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
+import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
 
 import java.io.IOException;
@@ -31,6 +33,8 @@ public class PreferenceParser {
     public static final String METADATA_TITLE = "title";
     public static final String METADATA_SUMMARY = "summary";
     public static final String METADATA_FRAGMENT = "fragment";
+
+    private static final String TAG = "PreferenceParser";
 
     /**
      * Parses a {@link androidx.preference.PreferenceScreen} XML resource to extract key attributes
@@ -99,5 +103,41 @@ public class PreferenceParser {
         }
         parser.close();
         return preferenceBundles;
+    }
+
+    /**
+     * Parses a preference XML resource and adds its entries to the provided SettingsIndexData.
+     *
+     * @param context The application context.
+     * @param xmlRes The XML resource to parse.
+     * @param indexData The SettingsIndexData object to populate.
+     * @param prefFragment The class name of the fragment this XML belongs to.
+     */
+    public static void parseAndPopulate(
+            Context context, int xmlRes, SettingsIndexData indexData, String prefFragment) {
+        if (indexData.isDisabledFragment(prefFragment)) {
+            return;
+        }
+
+        try {
+            List<Bundle> metadata = parsePreferences(context, xmlRes);
+            for (Bundle bundle : metadata) {
+                String key = bundle.getString(METADATA_KEY);
+                String title = bundle.getString(METADATA_TITLE);
+                if (TextUtils.isEmpty(key) || TextUtils.isEmpty(title)) continue;
+
+                indexData.addEntry(
+                        key,
+                        new SettingsIndexData.Entry(
+                                key,
+                                title,
+                                bundle.getString(METADATA_HEADER),
+                                bundle.getString(METADATA_SUMMARY),
+                                bundle.getString(METADATA_FRAGMENT),
+                                prefFragment));
+            }
+        } catch (IOException | XmlPullParserException e) {
+            Log.e(TAG, "Failed to parse preference xml for getting controllers", e);
+        }
     }
 }
