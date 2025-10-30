@@ -481,6 +481,22 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="{PreloadServingMetricsPrefix}.PrefetchMatchMetrics.PotentialMatchThen.PotentialCandidateServingResult.Last"
+    enum="PrefetchPotentialCandidateServingResult" expires_after="2026-03-22">
+  <owner>kenoss@chromium.org</owner>
+  <owner>chrome-prerendering@google.com</owner>
+  <summary>
+    `PrefetchPotentialCandidateServingResult` of the last candidate in the first
+    prefetch matching.
+
+    Recorded when {PreloadServingMetricsPrefix} and the first prefetch matching
+    started as a potential match.
+  </summary>
+  <token key="PreloadServingMetricsPrefix"
+      variants="PreloadServingMetricsPrefix"/>
+</histogram>
+
+<histogram
     name="{PreloadServingMetricsPrefix}.PrefetchMatchMetrics.PotentialMatchThen.WithAheadOfPrerender.PotentialCandidateServingResult"
     enum="PrefetchPotentialCandidateServingResult" expires_after="2026-03-22">
   <owner>kenoss@chromium.org</owner>

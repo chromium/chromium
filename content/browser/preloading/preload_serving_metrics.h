@@ -95,14 +95,21 @@ struct CONTENT_EXPORT PrefetchMatchMetrics final {
   // Otherwise null.
   std::unique_ptr<PrefetchContainerMetrics> prefetch_container_metrics =
       nullptr;
+  // The last serving result. Non null iff `n_initial_candidates > 0`.
+  //
+  // Note that `n_initial_candidates` is 0 or 1 in almost all cases. For more
+  // details, see
+  // https://docs.google.com/document/d/1ITMr_qyysUPIMZpLkmpQABwtVseMBduRqxHGZxIJ1R0/edit?resourcekey=0-ccZ-G6JV4WO-1bP4TiNvjQ&tab=t.x99jls7s2xug
+  std::optional<PrefetchPotentialCandidateServingResult>
+      prefetch_potential_candidate_serving_result_last = std::nullopt;
   // The information of the prefetch-ahead-prerender `PrefetchContainer`
   // candidate, if any. Otherwise null. More precisely, this is non-null iff:
   //
   // - `PrefetchMatchResolver::navigation_request_for_metrics_` is for a
   //   prerender initial navigation; and
   // - The `PrefetchContainer` of the prefetch-ahead-of-prerender of the
-  // prerendering
-  //   (if any) is potentially matching with the `PrefetchMatchResolver`.
+  //   prerendering (if any) is potentially matching with the
+  //   `PrefetchMatchResolver`.
   std::optional<PrefetchPotentialCandidateServingResult>
       prefetch_potential_candidate_serving_result_ahead_of_prerender =
           std::nullopt;
