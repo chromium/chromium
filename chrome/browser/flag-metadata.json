@@ -3625,24 +3625,6 @@
     "expiry_milestone": 144
   },
   {
-    "name": "enable-fingerprinting-protection-blocklist",
-    "owners": [
-      "rizvis@google.com",
-      "bcl@google.com",
-      "thesalsa@google.com"
-    ],
-    "expiry_milestone": 145
-  },
-  {
-    "name": "enable-fingerprinting-protection-blocklist-incognito",
-    "owners": [
-      "rizvis@google.com",
-      "bcl@google.com",
-      "thesalsa@google.com"
-    ],
-    "expiry_milestone": 145
-  },
-  {
     "name": "enable-force-dark",
     "owners": [ "beverloo@chromium.org", "pdr@chromium.org" ],
     // This flag enables an automatic dark mode for sites that do not support
