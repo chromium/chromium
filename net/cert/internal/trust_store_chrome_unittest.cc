@@ -51,8 +51,8 @@ FindParsedCertificateInCertificateList(const std::string& hash,
   for (const auto& cert : certs) {
     std::shared_ptr<const bssl::ParsedCertificate> parsed =
         ToParsedCertificate(*cert);
-    std::string sha256_hex = base::ToLowerASCII(
-        base::HexEncode(crypto::SHA256Hash(parsed->der_cert())));
+    std::string sha256_hex =
+        base::HexEncodeLower(crypto::SHA256Hash(parsed->der_cert()));
     if (sha256_hex == hash) {
       return parsed;
     }
@@ -169,8 +169,8 @@ TEST(TrustStoreChromeTestNoFixture, Constraints) {
   for (const auto& cert : certs) {
     std::shared_ptr<const bssl::ParsedCertificate> parsed =
         ToParsedCertificate(*cert);
-    std::string sha256_hex = base::ToLowerASCII(
-        base::HexEncode(crypto::SHA256Hash(parsed->der_cert())));
+    std::string sha256_hex =
+        base::HexEncodeLower(crypto::SHA256Hash(parsed->der_cert()));
     if (sha256_hex == kConstrainedCertHash) {
       constrained_cert = parsed;
     } else if (sha256_hex == kUnconstrainedCertHash) {
@@ -347,8 +347,8 @@ TEST(TrustStoreChromeTestNoFixture,
     }
 
     certs_with_tai++;
-    std::string hash = base::ToLowerASCII(
-        base::HexEncode(crypto::SHA256Hash(cert.root_cert_der)));
+    std::string hash =
+        base::HexEncodeLower(crypto::SHA256Hash(cert.root_cert_der));
     bool is_additional_cert =
         expected_additional_certificate_trust_by_hash.contains(hash);
     bssl::CertificateTrust expected_trust =

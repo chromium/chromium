@@ -119,6 +119,10 @@ BASE_EXPORT std::string HexEncode(std::string_view chars);
 // TODO(crbug.com/40284755): The pointer-based overload should be removed.
 BASE_EXPORT std::string HexEncode(const void* bytes, size_t size);
 
+// Behaves like the above, but returns the hex string in lower case.
+BASE_EXPORT std::string HexEncodeLower(base::span<const uint8_t> bytes);
+BASE_EXPORT std::string HexEncodeLower(std::string_view chars);
+
 // Appends a hex representation of `byte`, as two uppercase (by default)
 // characters, to `output`. This is a useful primitive in larger conversion
 // routines.

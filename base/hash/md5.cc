@@ -16,7 +16,7 @@
 
 namespace base {
 std::string MD5DigestToBase16(const MD5Digest& digest) {
-  return ToLowerASCII(HexEncode(digest.a));
+  return HexEncodeLower(digest.a);
 }
 
 void MD5Sum(base::span<const uint8_t> data, MD5Digest* digest) {

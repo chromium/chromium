@@ -1321,7 +1321,7 @@ X509CertificateModel::~X509CertificateModel() = default;
 std::string X509CertificateModel::HashCertSHA256() const {
   auto hash =
       crypto::SHA256Hash(net::x509_util::CryptoBufferAsSpan(cert_data_.get()));
-  return base::ToLowerASCII(base::HexEncode(hash));
+  return base::HexEncodeLower(hash);
 }
 
 std::string X509CertificateModel::GetTitle() const {
@@ -1602,7 +1602,7 @@ std::string X509CertificateModel::ProcessSubjectPublicKeyInfo() const {
 std::string X509CertificateModel::HashSpkiSHA256() const {
   DCHECK(parsed_successfully_);
   auto hash = crypto::SHA256Hash(tbs_.spki_tlv);
-  return base::ToLowerASCII(base::HexEncode(hash));
+  return base::HexEncodeLower(hash);
 }
 
 std::string X509CertificateModel::ProcessRawBitsSignatureWrap() const {

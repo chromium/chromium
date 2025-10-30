@@ -540,7 +540,7 @@ std::unique_ptr<HttpResponse> HandleAuthBasic(const HttpRequest& request) {
 }
 
 std::string Sha256String(std::string_view input) {
-  return base::ToLowerASCII(base::HexEncode(crypto::hash::Sha256(input)));
+  return base::HexEncodeLower(crypto::hash::Sha256(input));
 }
 
 // /auth-digest

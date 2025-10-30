@@ -148,6 +148,21 @@ std::string HexEncode(std::string_view chars) {
   return HexEncode(base::as_byte_span(chars));
 }
 
+std::string HexEncodeLower(base::span<const uint8_t> bytes) {
+  // Each input byte creates two output hex characters.
+  std::string ret;
+  ret.reserve(bytes.size() * 2);
+
+  for (uint8_t byte : bytes) {
+    AppendHexEncodedByte(byte, ret, /*uppercase=*/false);
+  }
+  return ret;
+}
+
+std::string HexEncodeLower(std::string_view chars) {
+  return HexEncodeLower(base::as_byte_span(chars));
+}
+
 bool HexStringToInt(std::string_view input, int* output) {
   return internal::HexStringToIntImpl(input, *output);
 }

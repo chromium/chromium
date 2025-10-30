@@ -405,7 +405,7 @@ std::string GetMD5ForResponseBody(disk_cache::Entry* entry) {
     }
 
     if (rv == 0) {
-      return base::ToLowerASCII(base::HexEncode(hasher.Finish()));
+      return base::HexEncodeLower(hasher.Finish());
     }
 
     bytes_read += rv;

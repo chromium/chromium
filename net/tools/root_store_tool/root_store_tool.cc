@@ -79,7 +79,7 @@ std::optional<std::map<std::string, std::string>> DecodeCerts(
     std::string_view cert_view(reinterpret_cast<const char*>(data),
                                base::checked_cast<size_t>(len));
     const std::string sha256_hex =
-        base::ToLowerASCII(base::HexEncode(crypto::hash::Sha256(cert_view)));
+        base::HexEncodeLower(crypto::hash::Sha256(cert_view));
     certs[sha256_hex] = std::string(cert_view);
   }
   return std::move(certs);
