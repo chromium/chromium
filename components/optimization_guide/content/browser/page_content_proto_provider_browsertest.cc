@@ -1675,8 +1675,8 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
   EXPECT_FALSE(button.content_attributes().interaction_info().is_clickable());
 }
 
-// Popups may be rendered as native OS-level widgets on Android and MacOS.
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_MAC)
+// Popups may be rendered as native OS-level widgets on Android, MacOS, and iOS.
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_IOS)
 class PageContentProtoProviderPopupBrowserTest
     : public PageContentProtoProviderBrowserTest {
  public:
