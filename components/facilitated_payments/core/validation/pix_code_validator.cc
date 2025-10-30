@@ -83,6 +83,7 @@ mojom::PixQrCodeType PixCodeValidator::GetPixQrCodeType(std::string_view code) {
     return mojom::PixQrCodeType::kInvalid;
   }
 
+  std::optional<mojom::PixQrCodeType> type;
   while (!code.empty()) {
     if (!ParseNextSection(&code, &section_info)) {
       return mojom::PixQrCodeType::kInvalid;
@@ -109,10 +110,14 @@ mojom::PixQrCodeType PixCodeValidator::GetPixQrCodeType(std::string_view code) {
                        &pix_qr_code_type_section_info);
       if (pix_qr_code_type_section_info.section_id ==
           kMerchantAccountInformationDynamicUrlSectionId) {
-        return mojom::PixQrCodeType::kDynamic;
+        if (!type) {
+          type.emplace(mojom::PixQrCodeType::kDynamic);
+        }
       } else if (pix_qr_code_type_section_info.section_id ==
                  kMerchantAccountInformationStaticKeySectionId) {
-        return mojom::PixQrCodeType::kStatic;
+        if (!type) {
+          type.emplace(mojom::PixQrCodeType::kStatic);
+        }
       } else {
         return mojom::PixQrCodeType::kInvalid;
       }
@@ -129,7 +134,7 @@ mojom::PixQrCodeType PixCodeValidator::GetPixQrCodeType(std::string_view code) {
     }
   }
 
-  return mojom::PixQrCodeType::kInvalid;
+  return type.value_or(mojom::PixQrCodeType::kInvalid);
 }
 
 // static

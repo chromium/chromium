@@ -37,7 +37,7 @@ TEST(PixCodeValidatorTest, LastSectionLengthTooLong) {
   // Code is invalid because the last section 63051D3D has the length specified
   // as 05 which is longer than the string succeeding it (1D3D).
   EXPECT_EQ(PixCodeValidator::GetPixQrCodeType(
-                "00020126370014br.gov.bcb.pix2514www.example.com63051D3D"),
+                "00020126370014br.gov.bcb.pix2515www.example.com63051D3D"),
             mojom::PixQrCodeType::kInvalid);
 }
 
@@ -45,7 +45,7 @@ TEST(PixCodeValidatorTest, SectionHeaderIsNotADigit) {
   // Code is invalid because the section 000A01 does not have the first 4
   // characters as digits.
   EXPECT_EQ(PixCodeValidator::GetPixQrCodeType(
-                "000A0126370014br.gov.bcb.pix2514www.example.com6304EA3F"),
+                "000A0126370014br.gov.bcb.pix2515www.example.com6304EA3F"),
             mojom::PixQrCodeType::kInvalid);
 }
 
@@ -53,7 +53,7 @@ TEST(PixCodeValidatorTest, LastSectionLengthTooShort) {
   // Code is invalid because the last section 63021D3 has the length specified
   // as 02 which is shorter than the length of the string succeeding it (1D3).
   EXPECT_EQ(PixCodeValidator::GetPixQrCodeType(
-                "00020126370014br.gov.bcb.pix2514www.example.com63021D3"),
+                "00020126370014br.gov.bcb.pix2515www.example.com63021D3"),
             mojom::PixQrCodeType::kInvalid);
 }
 
@@ -61,7 +61,7 @@ TEST(PixCodeValidatorTest, SectionHeaderTruncatedTooShort) {
   // Code is invalid because the last section 630 doesn't have the minimum
   // length of 4 characters.
   EXPECT_EQ(PixCodeValidator::GetPixQrCodeType(
-                "00020126370014br.gov.bcb.pix2514www.example.com630"),
+                "00020126370014br.gov.bcb.pix2515www.example.com630"),
             mojom::PixQrCodeType::kInvalid);
 }
 
@@ -72,10 +72,10 @@ TEST(PixCodeValidatorTest, MerchantAccountInformationIsEmpty) {
 }
 
 TEST(PixCodeValidatorTest, MerchantAccountInformationIsNotValid) {
-  // Code is invalid because the merchant account information section 2603001
+  // Code is invalid because the merchant account information section 2629
   // does not contain the Pix code indicator 0014br.gov.bcb.pix.
   EXPECT_EQ(PixCodeValidator::GetPixQrCodeType(
-                "00020126030014br.gov.bcb.pix2514www.example.com6304EA3F"),
+                "00020126292515www.example.com6304EA3F"),
             mojom::PixQrCodeType::kInvalid);
 }
 
@@ -83,7 +83,7 @@ TEST(PixCodeValidatorTest, InvalidPixCodeIndicator) {
   // Code is invalid because the Pix code indicator is 0014br.gov.bcb.pxi
   // instead 0014br.gov.bcb.pix.
   EXPECT_EQ(PixCodeValidator::GetPixQrCodeType(
-                "00020126370014br.gov.bcb.pxi2514www.example.com6304EA3F"),
+                "00020126370014br.gov.bcb.pxi2515www.example.com6304EA3F"),
             mojom::PixQrCodeType::kInvalid);
 }
 
@@ -91,15 +91,15 @@ TEST(PixCodeValidatorTest, EmptyAdditionalDataSection) {
   // Code is invalid because the additional data section 6200 has a length of
   // 00.
   EXPECT_EQ(PixCodeValidator::GetPixQrCodeType(
-                "00020126370014br.gov.bcb.pix2514www.example.com620063041D3D"),
+                "00020126370014br.gov.bcb.pix2515www.example.com620063041D3D"),
             mojom::PixQrCodeType::kInvalid);
 }
 
 TEST(PixCodeValidatorTest, LastSectionIdIsNotCrc16) {
   // Code is invalid because the last section 64041D3D has an id 64 instead
-  // of 64.
+  // of 63.
   EXPECT_EQ(PixCodeValidator::GetPixQrCodeType(
-                "00020126370014br.gov.bcb.pix2514www.example.com64041D3D"),
+                "00020126370014br.gov.bcb.pix2515www.example.com64041D3D"),
             mojom::PixQrCodeType::kInvalid);
 }
 
@@ -107,7 +107,7 @@ TEST(PixCodeValidatorTest, FirstSectionIsNotPayloadIndicator) {
   // Code is invalid because the first section 010201 has an id 01 instead of
   // 00.
   EXPECT_EQ(PixCodeValidator::GetPixQrCodeType(
-                "01020126370014br.gov.bcb.pix2514www.example.com6304EA3F"),
+                "01020126370014br.gov.bcb.pix2515www.example.com6304EA3F"),
             mojom::PixQrCodeType::kInvalid);
 }
 
@@ -127,17 +127,17 @@ TEST(PixCodeValidatorTest, NoPixCodeIndicator) {
 }
 
 TEST(PixCodeValidatorTest, ContainsPixCodeIdentifier) {
-  std::string pixCodeIndicatorLowercase = "0014br.gov.bcb.pix";
+  constexpr char kPixCodeIndicatorLowercase[] = "0014br.gov.bcb.pix";
   EXPECT_TRUE(PixCodeValidator::ContainsPixIdentifier(
-      base::StrCat({"0002012637", pixCodeIndicatorLowercase,
-                    "2514www.example.com64041D3D"})));
+      base::StrCat({"0002012637", kPixCodeIndicatorLowercase,
+                    "2515www.example.com64041D3D"})));
 }
 
 TEST(PixCodeValidatorTest, ContainsPixCodeIdentifier_MixedCase) {
-  std::string pixCodeIndicatorLowercase = "0014BR.GoV.Bcb.PIX";
+  constexpr char kPixCodeIndicatorLowercase[] = "0014BR.GoV.Bcb.PIX";
   EXPECT_TRUE(PixCodeValidator::ContainsPixIdentifier(
-      base::StrCat({"0002012637", pixCodeIndicatorLowercase,
-                    "2514www.example.com64041D3D"})));
+      base::StrCat({"0002012637", kPixCodeIndicatorLowercase,
+                    "2515www.example.com64041D3D"})));
 }
 
 TEST(PixCodeValidatorTest, DoesNotContainsPixCodeIdentifier) {
