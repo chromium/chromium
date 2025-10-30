@@ -541,6 +541,30 @@ TEST_F(InputTransferHandlerTest, DoNotRetryTransferIfNoActiveSequence) {
   }
 }
 
+TEST_F(InputTransferHandlerTest, DetachResetsActiveSequence) {
+  base::TimeTicks event_time = base::TimeTicks::Now();
+
+  auto down_event = GetMotionEventAndroid(
+      ui::MotionEvent::Action::DOWN, event_time, event_time, finger_pointer_);
+
+  EXPECT_CALL(*mock_, MaybeTransferInputToViz(_))
+      .WillOnce(Return(kSuccessfullyTransferred));
+  EXPECT_CALL(*input_transfer_handler_client_,
+              SendStateOnTouchTransfer(_, /*browser_would_have_handled=*/false))
+      .Times(1);
+  EXPECT_TRUE(transfer_handler_->OnTouchEvent(*down_event));
+
+  // Touch end notification hasn't came in yet, sequence is probably active on
+  // Viz.
+  EXPECT_TRUE(transfer_handler_->IsTouchSequencePotentiallyActiveOnViz());
+
+  // Emulate a detach call. This should reset the state tracking active touch
+  // sequence on Viz.
+  transfer_handler_->OnDetachedFromWindow();
+
+  EXPECT_FALSE(transfer_handler_->IsTouchSequencePotentiallyActiveOnViz());
+}
+
 class DownTimeAfterEventTimeTest
     : public InputTransferHandlerTest,
       public ::testing::WithParamInterface<std::string> {
