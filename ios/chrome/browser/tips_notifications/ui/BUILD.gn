@@ -33,6 +33,7 @@ source_set("lens_promo") {
     ":shared",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/tips_notifications/ui/resources",
+    "//ios/chrome/common/ui/button_stack",
     "//ui/base",
   ]
   frameworks = [ "UIKit.framework" ]
@@ -49,6 +50,7 @@ source_set("enhanced_safe_browsing_promo") {
     ":shared",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/tips_notifications/ui/resources",
+    "//ios/chrome/common/ui/button_stack",
     "//ui/base",
   ]
   frameworks = [ "UIKit.framework" ]
@@ -67,6 +69,7 @@ source_set("search_what_you_see_promo") {
   ]
   deps = [
     "//ios/chrome/app/strings",
+    "//ios/chrome/common/ui/button_stack",
     "//ui/base",
   ]
   frameworks = [ "UIKit.framework" ]
