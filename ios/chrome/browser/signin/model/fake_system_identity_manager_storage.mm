@@ -2,14 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager_storage.h"
 
+#import <iterator>
+#import <ranges>
+
 #import "base/check.h"
+#import "base/containers/span.h"
 #import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity_details.h"
@@ -85,21 +84,30 @@
     state->mutationsPtr = &_mutations;  // Detect mutations.
   }
 
+  // SAFETY: -countByEnumaratingWithState:objects:count: is called by the
+  // Objective-C runtime to implement fast enumeration (i.e. the "for in"
+  // loop of Objective-C) and guarantee that `buffer` can store at least
+  // `len` values.
+  base::span<id __unsafe_unretained> output =
+      UNSAFE_BUFFERS(base::span(buffer, len));
+
   // Iterate over as many object as possible, starting from
   // previously recorded position.
-  NSUInteger index;
+  NSUInteger count = 0;
   NSUInteger start = state->extra[0];
-  NSUInteger count = _orderedKeys.size();
-  for (index = 0; index < len && start + index < count; ++index) {
-    const GaiaId& key = _orderedKeys[start + index];
-    buffer[index] = _details[key];
+  if (start < _orderedKeys.size()) {
+    count = std::min(len, _orderedKeys.size() - start);
+
+    base::span<GaiaId> view = base::span(_orderedKeys).subspan(start, count);
+    std::ranges::transform(view, output.begin(),
+                           [&](GaiaId key) { return _details[key]; });
   }
 
   // Update iteration state.
-  state->extra[0] = start + index;
+  state->extra[0] = start + count;
   state->itemsPtr = buffer;
 
-  return index;
+  return count;
 }
 
 @end
