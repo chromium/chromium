@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_dialogs.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -77,12 +78,6 @@ void BookmarkNavigationWrapper::SetInstanceForTesting(
   g_nav_wrapper_test_instance = instance;
 }
 
-std::optional<bool> override_connected_group_for_testing = std::nullopt;
-
-void SetOverrideConnectedGroupForTesting(bool value) {
-  override_connected_group_for_testing = value;
-}
-
 namespace {
 // Represents a reference set of web contents opened by OpenAllHelper() so that
 // the actual web contents and what browsers they are located in can be
@@ -103,8 +98,12 @@ enum class OpenGroupMessageBoxResult {
   // User chooses to replace the old group with bookmarks in the folder.
   kReplaceOldGroup = 2,
 
-  // User cancels the action by pressing Esc key. Do nothing.
-  kCancel = 3,
+  // User presses OK button, still need to determine whether user has checked
+  // the replace old group checkbox later.
+  kUserConfirm = 3,
+
+  // User presses cancel button. Do nothing.
+  kUserCancel = 4,
 };
 
 // Opens all of the URLs in `bookmark_urls` using `navigator` and
@@ -329,12 +328,22 @@ void DoOpen(Browser* browser,
             page_load_metrics::NavigationHandleUserData::InitiatorLocation
                 navigation_type,
             std::optional<BookmarkLaunchAction> launch_action,
-            OpenGroupMessageBoxResult result) {
-  if (result == OpenGroupMessageBoxResult::kCancel) {
+            OpenGroupMessageBoxResult result,
+            ui::DialogModelDelegate* delegate) {
+  if (result == OpenGroupMessageBoxResult::kUserCancel) {
     base::RecordAction(
         base::UserMetricsAction("BookmarkTabGroupConversion_UserSelectCancel"));
     return;
   }
+
+  if (delegate) {
+    result = delegate->dialog_model()
+                     ->GetCheckboxByUniqueId(kBookmarkReplaceOldGroupCheckboxId)
+                     ->is_checked()
+                 ? OpenGroupMessageBoxResult::kReplaceOldGroup
+                 : OpenGroupMessageBoxResult::kCreateNewGroup;
+  }
+
   const auto opened_web_contents = OpenAllHelper(
       browser, std::move(url_and_ids_to_open), initial_disposition,
       navigation_type, std::move(launch_action));
@@ -473,51 +482,38 @@ void DoOpenPromptConfirm(
                                                bookmark_folder_node_id);
   if (features::IsBookmarkTabGroupConversionEnabled() &&
       folder_title.has_value() && connected_group_id.has_value()) {
-    if (override_connected_group_for_testing.has_value()) {
-      DoOpen(browser, std::move(url_and_ids_to_open), initial_disposition,
-             bookmark_folder_node_id, folder_title, add_to_split,
-             navigation_type, launch_action,
-             override_connected_group_for_testing.value()
-                 ? OpenGroupMessageBoxResult::kReplaceOldGroup
-                 : OpenGroupMessageBoxResult::kCreateNewGroup);
-    } else {
       // Show UI dialog for user selection.
-      auto on_create_new_group = base::BindOnce(
+      std::unique_ptr<ui::DialogModelDelegate> delegate =
+          std::make_unique<ui::DialogModelDelegate>();
+      ui::DialogModelDelegate* delegate_ptr = delegate.get();
+      auto on_ok = base::BindOnce(
           DoOpen, browser, url_and_ids_to_open, initial_disposition,
           bookmark_folder_node_id, folder_title, add_to_split, navigation_type,
-          launch_action, OpenGroupMessageBoxResult::kCreateNewGroup);
-      auto on_replace_old_group = base::BindOnce(
-          DoOpen, browser, url_and_ids_to_open, initial_disposition,
-          bookmark_folder_node_id, folder_title, add_to_split, navigation_type,
-          launch_action, OpenGroupMessageBoxResult::kReplaceOldGroup);
+          launch_action, OpenGroupMessageBoxResult::kUserConfirm, delegate_ptr);
       auto on_cancel = base::BindOnce(
           DoOpen, browser, std::move(url_and_ids_to_open), initial_disposition,
           bookmark_folder_node_id, folder_title, add_to_split, navigation_type,
-          launch_action, OpenGroupMessageBoxResult::kCancel);
+          launch_action, OpenGroupMessageBoxResult::kUserCancel, delegate_ptr);
 
-      auto dialog_model_builder = ui::DialogModel::Builder();
-      dialog_model_builder.SetTitle(l10n_util::GetStringUTF16(IDS_PRODUCT_NAME))
+      auto dialog_model_builder = ui::DialogModel::Builder(std::move(delegate));
+      dialog_model_builder.SetInternalName(kReplaceOrCreateGroupDialogName)
+          .SetTitle(l10n_util::GetStringUTF16(
+              IDS_BOOKMARK_BAR_REPLACE_OR_CREATE_NEW_GROUP_TITLE))
           .AddParagraph(ui::DialogModelLabel(l10n_util::GetStringUTF16(
               IDS_BOOKMARK_BAR_ALREADY_CREATED_GROUP)))
-          .AddOkButton(std::move(on_replace_old_group),
-                       ui::DialogModel::Button::Params().SetLabel(
-                           l10n_util::GetStringUTF16(
-                               IDS_BOOKMARK_BAR_REPLACE_OLD_GROUP_BUTTON)))
-          .AddCancelButton(std::move(on_create_new_group),
-                           ui::DialogModel::Button::Params().SetLabel(
-                               l10n_util::GetStringUTF16(
-                                   IDS_BOOKMARK_BAR_CREATE_NEW_GROUP_BUTTON)))
-          .SetCloseActionCallback(std::move(on_cancel));
+          .AddCheckbox(kBookmarkReplaceOldGroupCheckboxId,
+                       ui::DialogModelLabel(l10n_util::GetStringUTF16(
+                           IDS_BOOKMARK_BAR_REPLACE_OLD_GROUP_BUTTON)))
+          .AddOkButton(std::move(on_ok))
+          .AddCancelButton(std::move(on_cancel));
 
       chrome::ShowBrowserModal(browser, dialog_model_builder.Build());
       base::RecordAction(base::UserMetricsAction(
           "BookmarkTabGroupConversion_ShowGroupAlreadyCreatedDialog"));
-    }
-
   } else {
     DoOpen(browser, std::move(url_and_ids_to_open), initial_disposition,
            bookmark_folder_node_id, folder_title, add_to_split, navigation_type,
-           launch_action, OpenGroupMessageBoxResult::kNoMessage);
+           launch_action, OpenGroupMessageBoxResult::kNoMessage, nullptr);
   }
 }
 

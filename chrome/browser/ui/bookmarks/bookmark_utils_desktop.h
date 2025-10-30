@@ -32,6 +32,9 @@ class TabGroupSyncService;
 namespace bookmarks {
 class BookmarkNode;
 
+inline constexpr char kReplaceOrCreateGroupDialogName[] =
+    "ReplaceOrCreateGroupDialog";
+
 enum OpenAllBookmarksContext {
   kNone = 0,     // Open all bookmarks as separate tabs.
   kInGroup = 1,  // Open all bookmarks in a tab group.
@@ -51,9 +54,6 @@ class BookmarkNavigationWrapper {
   // Provide an instance for use in testing.
   static void SetInstanceForTesting(BookmarkNavigationWrapper* instance);
 };
-
-// Set whether to override connected group to skip UI for testing.
-void SetOverrideConnectedGroupForTesting(bool value);
 
 using TabGroupData =
     std::pair<std::optional<tab_groups::TabGroupId>, std::u16string>;

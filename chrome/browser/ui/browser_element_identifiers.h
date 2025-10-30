@@ -24,6 +24,7 @@ DECLARE_ELEMENT_IDENTIFIER_VALUE(
     kAnonymizedUrlCollectionPersonalizationSettingId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kAppUninstallDialogOkButtonId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kBookmarkBarElementId);
+DECLARE_ELEMENT_IDENTIFIER_VALUE(kBookmarkReplaceOldGroupCheckboxId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kBookmarkSidePanelWebViewElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kBookmarkStarViewElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kBrowserViewElementId);

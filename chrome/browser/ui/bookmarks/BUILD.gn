@@ -123,6 +123,7 @@ source_set("browser_tests") {
     "//ui/base:features",
     "//ui/base/dragdrop/mojom",
     "//ui/gfx",
+    "//ui/views:test_support",
   ]
 }
 
