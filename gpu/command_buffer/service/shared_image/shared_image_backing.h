@@ -216,10 +216,6 @@ class GPU_GLES2_EXPORT SharedImageBacking {
   virtual void CopyToGpuMemoryBufferAsync(
       base::OnceCallback<void(bool)> callback);
 
-  // Present the swap chain corresponding to this backing. Presents only if the
-  // backing is the back buffer of the swap chain. Returns true on success.
-  virtual bool PresentSwapChain();
-
   virtual void MarkForDestruction() {}
 
   // Called when secondary reference is added to the SharedImage. Used by

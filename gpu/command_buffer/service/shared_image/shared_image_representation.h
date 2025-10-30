@@ -206,7 +206,6 @@ class SharedImageRepresentationFactoryRef : public SharedImageRepresentation {
     handle = backing()->GetGpuMemoryBufferHandle();
     buffer_usage = backing()->buffer_usage();
   }
-  bool PresentSwapChain() { return backing()->PresentSwapChain(); }
   void SetSharedImagePoolId(SharedImagePoolId pool_id) {
     backing()->SetSharedImagePoolId(std::move(pool_id));
   }

@@ -119,7 +119,6 @@ class GPU_GLES2_EXPORT D3DImageBacking final
   bool ReadbackToMemory(const std::vector<SkPixmap>& pixmaps) override;
   void ReadbackToMemoryAsync(const std::vector<SkPixmap>& pixmaps,
                              base::OnceCallback<void(bool)> callback) override;
-  bool PresentSwapChain() override;
   std::unique_ptr<DawnImageRepresentation> ProduceDawn(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker,
@@ -295,6 +294,8 @@ class GPU_GLES2_EXPORT D3DImageBacking final
 
   // Helper to retrieve internal EGLImage for WebGPU GLES compat backend.
   void* GetEGLImage() const;
+
+  bool PresentSwapChain();
 
   // Returns a staging texture for CPU uploads/readback, creating one if needed.
   ID3D11Texture2D* GetOrCreateStagingTexture() EXCLUSIVE_LOCKS_REQUIRED(lock_);

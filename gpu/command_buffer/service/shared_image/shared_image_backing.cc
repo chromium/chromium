@@ -142,10 +142,6 @@ void SharedImageBacking::ReadbackToMemoryAsync(
   std::move(callback).Run(ReadbackToMemory(pixmaps));
 }
 
-bool SharedImageBacking::PresentSwapChain() {
-  return false;
-}
-
 base::trace_event::MemoryAllocatorDump* SharedImageBacking::OnMemoryDump(
     const std::string& dump_name,
     base::trace_event::MemoryAllocatorDumpGuid client_guid,
