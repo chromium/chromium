@@ -961,12 +961,6 @@ inline constexpr char kAutofillEnableSupportForNameAndEmailDescription[] =
     "When enabled, a name and email profile with data comming from the account "
     "will be created for autofilling.";
 
-inline constexpr char kAutofillEnableSyncingOfPixBankAccountsName[] =
-    "Sync Pix bank accounts from Google Payments";
-inline constexpr char kAutofillEnableSyncingOfPixBankAccountsDescription[] =
-    "When enabled, Pix bank accounts are synced from Google Payments backend. "
-    "These bank account will show up in Chrome settings.";
-
 inline constexpr char kAutofillEnableVcn3dsAuthenticationName[] =
     "Enable 3DS authentication for virtual cards";
 inline constexpr char kAutofillEnableVcn3dsAuthenticationDescription[] =

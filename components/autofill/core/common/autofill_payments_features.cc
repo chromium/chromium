@@ -218,11 +218,6 @@ BASE_FEATURE(kAutofillEnableSaveAndFill, base::FEATURE_DISABLED_BY_DEFAULT);
 // bundling them together with the non-card payment preference menu item.
 BASE_FEATURE(kAutofillEnableSeparatePixPreferenceItem,
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// When enabled, Pix bank accounts are synced from Chrome Sync backend and
-// stored in the local db.
-BASE_FEATURE(kAutofillEnableSyncingOfPixBankAccounts,
-             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // When enabled, Chrome will trigger 3DS authentication during a virtual card

@@ -1970,27 +1970,7 @@ TEST_F(PaymentsDataManagerTest, GetExpiredCreditCardBenefits) {
 }
 
 #if BUILDFLAG(IS_ANDROID)
-TEST_F(PaymentsDataManagerTest, HasMaskedBankAccounts_ExpOff) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      features::kAutofillEnableSyncingOfPixBankAccounts);
-  BankAccount bank_account1 = test::CreatePixBankAccount(1234L);
-  BankAccount bank_account2 = test::CreatePixBankAccount(5678L);
-  ASSERT_TRUE(GetServerDataTable()->SetMaskedBankAccounts(
-      {bank_account1, bank_account2}));
-  // Refresh the PaymentsDataManager. Under normal circumstances with the flag
-  // on, this step would load the bank accounts from the WebDatabase.
-  payments_data_manager().Refresh();
-  WaitForOnPaymentsDataChanged();
-
-  // Verify that no bank accounts are loaded into PaymentsDataManager because
-  // the experiment is turned off.
-  EXPECT_FALSE(payments_data_manager().HasMaskedBankAccounts());
-}
-
 TEST_F(PaymentsDataManagerTest, HasMaskedBankAccounts_PaymentMethodsDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      features::kAutofillEnableSyncingOfPixBankAccounts);
   BankAccount bank_account1 = test::CreatePixBankAccount(1234L);
   BankAccount bank_account2 = test::CreatePixBankAccount(5678L);
   ASSERT_TRUE(GetServerDataTable()->SetMaskedBankAccounts(
@@ -2009,9 +1989,6 @@ TEST_F(PaymentsDataManagerTest, HasMaskedBankAccounts_PaymentMethodsDisabled) {
 }
 
 TEST_F(PaymentsDataManagerTest, HasMaskedBankAccounts_NoMaskedBankAccounts) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      features::kAutofillEnableSyncingOfPixBankAccounts);
-
   // If the user doesn't have any masked bank accounts, or if the masked bank
   // accounts are not synced to PaymentsDatamanager, HasMaskedBankAccounts
   // should return false.
@@ -2019,8 +1996,6 @@ TEST_F(PaymentsDataManagerTest, HasMaskedBankAccounts_NoMaskedBankAccounts) {
 }
 
 TEST_F(PaymentsDataManagerTest, HasMaskedBankAccounts_MaskedBankAccountsExist) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      features::kAutofillEnableSyncingOfPixBankAccounts);
   BankAccount bank_account1 = test::CreatePixBankAccount(1234L);
   BankAccount bank_account2 = test::CreatePixBankAccount(5678L);
   ASSERT_TRUE(GetServerDataTable()->SetMaskedBankAccounts(
@@ -2034,35 +2009,7 @@ TEST_F(PaymentsDataManagerTest, HasMaskedBankAccounts_MaskedBankAccountsExist) {
   EXPECT_TRUE(payments_data_manager().HasMaskedBankAccounts());
 }
 
-TEST_F(PaymentsDataManagerTest, GetMaskedBankAccounts_ExpOff) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      features::kAutofillEnableSyncingOfPixBankAccounts);
-  BankAccount bank_account1 = test::CreatePixBankAccount(1234L);
-  BankAccount bank_account2 = test::CreatePixBankAccount(5678L);
-  ASSERT_TRUE(GetServerDataTable()->SetMaskedBankAccounts(
-      {bank_account1, bank_account2}));
-  base::span<const BankAccount> bank_accounts =
-      payments_data_manager().GetMaskedBankAccounts();
-  // Since the PaymentsDataManager was initialized before adding the masked
-  // bank accounts to the WebDatabase, we expect GetMaskedBankAccounts to return
-  // an empty list.
-  EXPECT_EQ(0u, bank_accounts.size());
-
-  // Refresh the PaymentsDataManager. Under normal circumstances with the flag
-  // on, this step would load the bank accounts from the WebDatabase.
-  payments_data_manager().Refresh();
-  WaitForOnPaymentsDataChanged();
-
-  // Verify that no bank accounts are loaded into PaymentsDataManager because
-  // the experiment is turned off.
-  bank_accounts = payments_data_manager().GetMaskedBankAccounts();
-  EXPECT_EQ(0u, bank_accounts.size());
-}
-
 TEST_F(PaymentsDataManagerTest, GetMaskedBankAccounts_PaymentMethodsDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      features::kAutofillEnableSyncingOfPixBankAccounts);
   BankAccount bank_account1 = test::CreatePixBankAccount(1234L);
   BankAccount bank_account2 = test::CreatePixBankAccount(5678L);
   ASSERT_TRUE(GetServerDataTable()->SetMaskedBankAccounts(
@@ -2082,8 +2029,6 @@ TEST_F(PaymentsDataManagerTest, GetMaskedBankAccounts_PaymentMethodsDisabled) {
 }
 
 TEST_F(PaymentsDataManagerTest, GetMaskedBankAccounts_DatabaseUpdated) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      features::kAutofillEnableSyncingOfPixBankAccounts);
   BankAccount bank_account1 = test::CreatePixBankAccount(1234L);
   BankAccount bank_account2 = test::CreatePixBankAccount(5678L);
   ASSERT_TRUE(GetServerDataTable()->SetMaskedBankAccounts(
@@ -2107,8 +2052,6 @@ TEST_F(PaymentsDataManagerTest, GetMaskedBankAccounts_DatabaseUpdated) {
 
 TEST_F(PaymentsDataManagerTest,
        MaskedBankAccountsIconsFetched_DatabaseUpdated) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      features::kAutofillEnableSyncingOfPixBankAccounts);
   MockAutofillImageFetcher mock_image_fetcher;
   test_api(payments_data_manager()).SetImageFetcher(&mock_image_fetcher);
 

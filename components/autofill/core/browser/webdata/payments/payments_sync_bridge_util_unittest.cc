@@ -1184,8 +1184,6 @@ TEST_F(PaymentsSyncBridgeUtilTest,
 #if BUILDFLAG(IS_ANDROID)
 // Tests that PopulateWalletTypesFromSyncData populates BankAccounts.
 TEST_F(PaymentsSyncBridgeUtilTest, PopulateBankAccountFromSyncData) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      features::kAutofillEnableSyncingOfPixBankAccounts);
   syncer::EntityChangeList entity_data;
   std::string bank_account_id = "payment_instrument:123545";
   sync_pb::AutofillWalletSpecifics payment_instrument_bank_account_specifics =
@@ -1221,44 +1219,6 @@ TEST_F(PaymentsSyncBridgeUtilTest, PopulateBankAccountFromSyncData) {
 
   ASSERT_EQ(1u, bank_accounts.size());
   EXPECT_EQ(expected_bank_account, bank_accounts.at(0));
-}
-
-// Tests that PopulateWalletTypesFromSyncData does not BankAccounts if Pix
-// experiment flag is disabled.
-TEST_F(PaymentsSyncBridgeUtilTest,
-       PopulateBankAccountFromSyncDataExperimentOff) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      features::kAutofillEnableSyncingOfPixBankAccounts);
-  syncer::EntityChangeList entity_data;
-  std::string bank_account_id = "payment_instrument:123545";
-  sync_pb::AutofillWalletSpecifics payment_instrument_bank_account_specifics =
-      CreateAutofillWalletSpecificsForBankAccount(
-          /*client_tag=*/bank_account_id, /*nickname=*/"Pix bank account",
-          /*display_icon_url=*/GURL("http://www.google.com"),
-          /*bank_name=*/"ABC Bank",
-          /*account_number_suffix=*/"1234",
-          sync_pb::BankAccountDetails_AccountType_CHECKING);
-  entity_data.push_back(EntityChange::CreateAdd(
-      bank_account_id,
-      SpecificsToEntity(payment_instrument_bank_account_specifics,
-                        /*client_tag=*/"bank_account")));
-
-  std::vector<CreditCard> wallet_cards;
-  std::vector<Iban> wallet_ibans;
-  std::vector<PaymentsCustomerData> customer_data;
-  std::vector<CreditCardCloudTokenData> cloud_token_data;
-  std::vector<BankAccount> bank_accounts;
-  std::vector<CreditCardBenefit> benefits;
-  std::vector<sync_pb::PaymentInstrument> payment_instruments;
-  std::vector<sync_pb::PaymentInstrumentCreationOption>
-      payment_instrument_creation_options;
-  PopulateWalletTypesFromSyncData(entity_data, wallet_cards, wallet_ibans,
-                                  customer_data, cloud_token_data,
-                                  bank_accounts, benefits, payment_instruments,
-                                  payment_instrument_creation_options);
-
-  EXPECT_EQ(0u, bank_accounts.size());
 }
 
 TEST_F(PaymentsSyncBridgeUtilTest, BankAccountFromWalletSpecifics) {

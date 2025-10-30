@@ -2122,8 +2122,7 @@ bool PaymentsDataManager::HasPendingPaymentQueries() const {
 
 bool PaymentsDataManager::AreBankAccountsSupported() const {
 #if BUILDFLAG(IS_ANDROID)
-  return base::FeatureList::IsEnabled(
-      features::kAutofillEnableSyncingOfPixBankAccounts);
+  return true;
 #else
   return false;
 #endif  // BUILDFLAG(IS_ANDROID)
