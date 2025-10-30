@@ -635,9 +635,6 @@ using html_names::kTypeAttr;
 using html_names::kValueAttr;
 using mojom::blink::FormControlType;
 
-// In ARIA 1.1, default value of aria-level was changed to 2.
-const int kDefaultHeadingLevel = 2;
-
 // When an AXNodeObject is created with a Node instead of a LayoutObject it
 // means that the LayoutObject is purposely being set to null, as it is not
 // relevant for this object in the AX tree.
@@ -3388,8 +3385,21 @@ bool AXNodeObject::IsRequired() const {
   if (form_control && form_control->IsRequired())
     return true;
 
-  if (IsAriaAttributeTrue(html_names::kAriaRequiredAttr)) {
-    return true;
+  if (RoleSupportsAriaAttribute(RoleValue(), html_names::kAriaRequiredAttr)) {
+    if (IsAriaAttributeTrue(html_names::kAriaRequiredAttr)) {
+      return true;
+    }
+  }
+
+  // TODO(accessibility): The ARIA spec says aria-required is supported on
+  // radiogroup, not individual radio buttons. However, the
+  // `aria-required-changed.html` test uses aria-required directly on a radio
+  // button and expects it to be supported.
+  // See https://github.com/w3c/aria/issues/2669.
+  if (RoleValue() == ax::mojom::blink::Role::kRadioButton) {
+    if (IsAriaAttributeTrue(html_names::kAriaRequiredAttr)) {
+      return true;
+    }
   }
 
   return false;
@@ -3439,8 +3449,10 @@ int AXNodeObject::HeadingLevel() const {
   if (element->HasTagName(html_names::kH6Tag))
     return 6 + element->GetComputedHeadingOffset(/*max_offset=*/3);
 
-  if (RoleValue() == ax::mojom::blink::Role::kHeading)
-    return kDefaultHeadingLevel;
+  if (RoleValue() == ax::mojom::blink::Role::kHeading) {
+    const String& implicit_value = GetImplicitAriaLevel(RoleValue());
+    return implicit_value.empty() ? 0 : implicit_value.ToInt();
+  }
 
   // TODO(accessibility) For kDisclosureTriangle, kDisclosureTriangleGrouping,
   // if IsAccessibilityExposeSummaryAsHeadingEnabled(), we should expose
@@ -4781,9 +4793,14 @@ ax::mojom::blink::HasPopup AXNodeObject::HasPopup() const {
     return *has_popup_from_attribute;
   }
 
-  // ARIA 1.1 default value of haspopup for combobox is "listbox".
-  if (RoleValue() == ax::mojom::blink::Role::kComboBoxMenuButton ||
-      RoleValue() == ax::mojom::blink::Role::kTextFieldWithComboBox) {
+  // Native HTML <select> elements use kMenu, not the ARIA combobox implicit
+  // value of kListbox.
+  if (RoleValue() == ax::mojom::blink::Role::kComboBoxSelect) {
+    return ax::mojom::blink::HasPopup::kMenu;
+  }
+
+  const String& implicit_value = GetImplicitAriaHaspopup(RoleValue());
+  if (implicit_value == "listbox") {
     return ax::mojom::blink::HasPopup::kListbox;
   }
 
