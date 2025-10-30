@@ -215,8 +215,7 @@ GpuFeatureStatus GetWebGPUOnVulkanViaGLInterop(
     return kGpuFeatureStatusDisabled;
   }
 #if BUILDFLAG(USE_WEBGPU_ON_VULKAN_VIA_GL_INTEROP)
-  // Switch to Enabled after commit.
-  return kGpuFeatureStatusDisabled;
+  return kGpuFeatureStatusEnabled;
 #else
   return kGpuFeatureStatusDisabled;
 #endif
