@@ -316,6 +316,19 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//content/browser/indexed_db/instance/sqlite/database_connection.h:SpecificEvent) -->
 
+<!-- LINT.IfChange(IndexedDbStatusType) -->
+
+<enum name="IndexedDbStatusType">
+  <int value="0" label="OK"/>
+  <int value="1" label="Not found"/>
+  <int value="2" label="Corrupted or inconsistent database state"/>
+  <int value="3" label="Invalid argument"/>
+  <int value="4" label="IO error"/>
+  <int value="5" label="Database engine detected and reported an error"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/browser/indexed_db/status.h:Type) -->
+
 <!-- LINT.IfChange(InterestGroupStorageInitializationResult) -->
 
 <enum name="InterestGroupStorageInitializationResult">

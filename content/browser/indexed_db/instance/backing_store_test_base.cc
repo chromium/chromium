@@ -92,7 +92,7 @@ void BackingStoreTestBase::CreateFactoryAndBackingStore() {
       quota_manager_proxy_, std::move(blob_storage_context),
       std::move(fsa_context));
   std::tie(std::ignore, std::ignore, data_loss_info_) =
-      bucket_context_->InitBackingStoreIfNeeded(/*create_if_missing=*/true);
+      bucket_context_->InitBackingStore(/*create_if_missing=*/true);
 
   backing_store_ = bucket_context_->backing_store();
 }

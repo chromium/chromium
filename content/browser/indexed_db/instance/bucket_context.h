@@ -358,8 +358,8 @@ class CONTENT_EXPORT BucketContext
   // Removes all readers for this file path.
   void RemoveBoundReaders(const base::FilePath& path);
 
-  std::tuple<Status, DatabaseError, IndexedDBDataLossInfo>
-  InitBackingStoreIfNeeded(bool create_if_missing);
+  std::tuple<Status, DatabaseError, IndexedDBDataLossInfo> InitBackingStore(
+      bool create_if_missing);
 
   // Destroys `backing_store_` and all associated state. If there are no
   // receivers remaining, it will also destroy `this`.

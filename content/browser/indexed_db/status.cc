@@ -98,6 +98,10 @@ bool Status::IsInvalidArgument() const {
   return type_ == Type::kInvalidArgument;
 }
 
+void Status::Log(std::string_view histogram_name) const {
+  base::UmaHistogramEnumeration(histogram_name, type_);
+}
+
 std::string Status::ToString() const {
   if (leveldb_status_) {
     return leveldb_status_->ToString();
@@ -109,31 +113,30 @@ bool Status::IndicatesDiskFull() const {
   return leveldb_status_ && leveldb_env::IndicatesDiskFull(*leveldb_status_);
 }
 
-void Status::Log(std::string_view histogram_name) const {
-  base::UmaHistogramEnumeration(
-      histogram_name,
-      static_cast<leveldb_env::LevelDBStatusValue>(GetTypeForLegacyLogging()),
-      leveldb_env::LEVELDB_STATUS_MAX);
-}
-
-int Status::GetTypeForLegacyLogging() const {
+void Status::LogLevelDbStatus(std::string_view histogram_name) const {
+  leveldb_env::LevelDBStatusValue value;
   switch (type_) {
     case Type::kOk:
-      return leveldb_env::LEVELDB_STATUS_OK;
+      value = leveldb_env::LEVELDB_STATUS_OK;
+      break;
     case Type::kNotFound:
-      return leveldb_env::LEVELDB_STATUS_NOT_FOUND;
+      value = leveldb_env::LEVELDB_STATUS_NOT_FOUND;
+      break;
     case Type::kCorruption:
-      return leveldb_env::LEVELDB_STATUS_CORRUPTION;
-    case Type::kNotSupported:
-      return leveldb_env::LEVELDB_STATUS_NOT_SUPPORTED;
+      value = leveldb_env::LEVELDB_STATUS_CORRUPTION;
+      break;
     case Type::kInvalidArgument:
-      return leveldb_env::LEVELDB_STATUS_INVALID_ARGUMENT;
+      value = leveldb_env::LEVELDB_STATUS_INVALID_ARGUMENT;
+      break;
     case Type::kIoError:
-      return leveldb_env::LEVELDB_STATUS_IO_ERROR;
+      value = leveldb_env::LEVELDB_STATUS_IO_ERROR;
+      break;
     case Type::kDatabaseEngine:
-      return leveldb_env::GetLevelDBStatusUMAValue(*leveldb_status_);
+      value = leveldb_env::GetLevelDBStatusUMAValue(*leveldb_status_);
+      break;
   }
-  NOTREACHED();
+  base::UmaHistogramEnumeration(histogram_name, value,
+                                leveldb_env::LEVELDB_STATUS_MAX);
 }
 
 }  // namespace content::indexed_db

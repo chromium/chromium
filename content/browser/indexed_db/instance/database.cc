@@ -38,6 +38,7 @@
 #include "components/services/storage/privileged/mojom/indexed_db_client_state_checker.mojom.h"
 #include "components/services/storage/privileged/mojom/indexed_db_internals_types.mojom.h"
 #include "content/browser/indexed_db/indexed_db_external_object.h"
+#include "content/browser/indexed_db/indexed_db_reporting.h"
 #include "content/browser/indexed_db/indexed_db_value.h"
 #include "content/browser/indexed_db/instance/backing_store.h"
 #include "content/browser/indexed_db/instance/bucket_context.h"
@@ -1045,7 +1046,9 @@ void Database::CallUpgradeTransactionStartedForTesting(int64_t old_version) {
 }
 
 Status Database::OpenInternal() {
-  auto result = backing_store()->CreateOrOpenDatabase(name_);
+  auto result = LOG_RESULT(backing_store()->CreateOrOpenDatabase(name_),
+                           "IndexedDB.BackingStore.CreateOrOpenDatabase",
+                           bucket_context_->in_memory());
   if (result.has_value()) {
     backing_store_db_ = std::move(result.value());
     return Status::OK();

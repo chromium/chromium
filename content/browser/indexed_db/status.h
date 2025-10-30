@@ -53,6 +53,9 @@ class CONTENT_EXPORT Status {
   bool IsIOError() const;
   bool IsInvalidArgument() const;
 
+  // Logs the `Type` of `this` to `histogram_name`.
+  void Log(std::string_view histogram_name) const;
+
   // Return a string representation of this status suitable for printing.
   // Returns the string "OK" for success.
   std::string ToString() const;
@@ -65,36 +68,40 @@ class CONTENT_EXPORT Status {
     return sqlite_code_;
   }
 
+  // Legacy methods applicable only to the LevelDB backing store.
   bool IndicatesDiskFull() const;
-  void Log(std::string_view histogram_name) const;
+  void LogLevelDbStatus(std::string_view histogram_name) const;
 
  private:
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
+  // LINT.IfChange(Type)
   enum class Type {
     kOk = 0,
 
     // Something wasn't found.
-    kNotFound,
+    kNotFound = 1,
 
     // The database is in an inconsistent state.
-    kCorruption,
-
-    kNotSupported,
+    kCorruption = 2,
 
     // Generally speaking, indicates a programming error or unexpected state in
     // Chromium. For example, an invalid object store ID is sent as a parameter
     // over IPC.
-    kInvalidArgument,
+    kInvalidArgument = 3,
 
     // Possibly transient read or write error.
-    kIoError,
+    kIoError = 4,
 
     // An error reported by the database engine, e.g. LevelDB.
-    kDatabaseEngine,
+    kDatabaseEngine = 5,
+
+    kMaxValue = kDatabaseEngine,
   };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/storage/enums.xml:IndexedDbStatusType)
 
   Status(Type type, std::string_view msg);
-
-  int GetTypeForLegacyLogging() const;
 
   // The specific type of error. Note that the treatment of this is quite
   // inconsistent:

@@ -326,7 +326,7 @@ class DatabaseTest : public ::testing::Test,
         /*blob_storage_context=*/std::move(blob_storage_context),
         /*file_system_access_context=*/std::move(fsa_context));
 
-    bucket_context_->InitBackingStoreIfNeeded(true);
+    bucket_context_->InitBackingStore(true);
     db_ = bucket_context_->CreateAndAddDatabase(u"db");
   }
 

@@ -92,7 +92,7 @@ class TransactionTestBase : public testing::Test {
         std::move(blob_storage_context),
         /*file_system_access_context=*/mojo::NullRemote());
 
-    bucket_context_->InitBackingStoreIfNeeded(true);
+    bucket_context_->InitBackingStore(true);
     SetDatabaseUnderTest(u"db");
   }
 
