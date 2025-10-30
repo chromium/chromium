@@ -101,6 +101,20 @@ void ContextualTasksSidePanelCoordinator::Show() {
       SidePanelEntry::Key(SidePanelEntry::Id::kContextualTasks));
 }
 
+void ContextualTasksSidePanelCoordinator::Close() {
+  side_panel_coordinator_->Close(SidePanelEntry::PanelType::kToolbar);
+}
+
+bool ContextualTasksSidePanelCoordinator::IsSidePanelOpen() {
+  return side_panel_coordinator_->IsSidePanelShowing(
+      SidePanelEntry::PanelType::kToolbar);
+}
+
+bool ContextualTasksSidePanelCoordinator::IsSidePanelOpenForContextualTask() {
+  return side_panel_coordinator_->IsSidePanelEntryShowing(
+      SidePanelEntry::Key(SidePanelEntry::Id::kContextualTasks));
+}
+
 content::WebContents*
 ContextualTasksSidePanelCoordinator::GetActiveWebContentsForTesting() {
   return web_view_ ? web_view_->web_contents() : nullptr;

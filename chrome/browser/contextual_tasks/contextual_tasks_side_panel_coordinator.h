@@ -45,7 +45,18 @@ class ContextualTasksSidePanelCoordinator {
 
   void CreateAndRegisterEntry(SidePanelRegistry* global_registry);
 
+  // Show the side panel.
   void Show();
+
+  // Close the side panel.
+  void Close();
+
+  // Check if the side panel is currently showing
+  bool IsSidePanelOpen();
+
+  // Check if the side panel is currently opening for ContextualTask as other
+  // feature might also show side panel.
+  bool IsSidePanelOpenForContextualTask();
 
   content::WebContents* GetActiveWebContentsForTesting();
 
