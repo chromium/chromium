@@ -238,6 +238,7 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
   // function and the webview permission manager cannot support it.
   aw_feature_overrides.DisableFeature(blink::features::kPermissionElement);
   aw_feature_overrides.DisableFeature(blink::features::kGeolocationElement);
+  aw_feature_overrides.DisableFeature(blink::features::kInstallElement);
 
   // |kBtmTtl| in the testing config json.
   {

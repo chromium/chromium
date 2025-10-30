@@ -280,6 +280,11 @@
       interfaceName: "HTMLModElement",
     },
     {
+      name: "install",
+      interfaceName: "HTMLInstallElement",
+      runtimeEnabled: "InstallElement",
+    },
+    {
       name: "kbd",
       interfaceName: "HTMLElement",
     },

@@ -19248,6 +19248,12 @@ RenderFrameHostImpl::GetCachedPermissionStatuses() {
       std::to_array<std::pair<PermissionName, PermissionType>>(
           {{PermissionName::VIDEO_CAPTURE, PermissionType::VIDEO_CAPTURE},
            {PermissionName::AUDIO_CAPTURE, PermissionType::AUDIO_CAPTURE},
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+           // `WEB_APP_INSTALLATION` is only registered for desktop platforms
+           // via `WebsiteSettingsRegistry::DESKTOP`.
+           {PermissionName::WEB_APP_INSTALLATION,
+            PermissionType::WEB_APP_INSTALLATION},
+#endif
            {PermissionName::GEOLOCATION, PermissionType::GEOLOCATION}});
 
   base::flat_map<PermissionName, PermissionStatus> permission_map;

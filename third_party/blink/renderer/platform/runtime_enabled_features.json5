@@ -2960,6 +2960,10 @@
       base_feature: "none",
     },
     {
+      name: "InstallElement",
+      status: "experimental"
+    },
+    {
       name: "InstallOnDeviceSpeechRecognition",
       status: "stable",
     },
@@ -3795,7 +3799,7 @@
       public: true,
       base_feature_status: "enabled",
       copied_from_base_feature_if: "overridden",
-      implied_by: ["GeolocationElement"],
+      implied_by: ["GeolocationElement", "InstallElement"],
     },
     {
       // Tracking bug for the implementation: crbug.com/352249547

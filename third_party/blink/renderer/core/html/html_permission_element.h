@@ -168,6 +168,7 @@ class CORE_EXPORT HTMLPermissionElement
   friend class HTMLPermissionElementIntersectionTest;
   friend class HTMLPermissionElementLayoutChangeTest;
   friend class HTMLGeolocationElementIntersectionTest;
+  friend class HTMLInstallElementTestBase;
 
   FRIEND_TEST_ALL_PREFIXES(HTMLGeolocationElementTestBase, GetTypeAttribute);
   FRIEND_TEST_ALL_PREFIXES(HTMLGeolocationElementTest,
@@ -198,6 +199,7 @@ class CORE_EXPORT HTMLPermissionElement
                            BadContrastDisablesElement);
   FRIEND_TEST_ALL_PREFIXES(HTMLGeolocationElementIntersectionTest,
                            IntersectionChanged);
+  FRIEND_TEST_ALL_PREFIXES(HTMLInstallElementTestBase, RenderedText);
   FRIEND_TEST_ALL_PREFIXES(HTMLPermissionElementClickingEnabledTest,
                            UnclickableBeforeRegistered);
   FRIEND_TEST_ALL_PREFIXES(HTMLPermissionElementIntersectionTest,

@@ -56,6 +56,13 @@ const String& MicrophoneIconSVG() {
   return kMicrophoneIconSVG;
 }
 
+const String& InstallIconSVG() {
+  DEFINE_STATIC_LOCAL(
+      const String, kInstallIconSVG,
+      (UncompressResourceAsASCIIString(IDR_PERMISSION_ICON_INSTALL_SVG)));
+  return kInstallIconSVG;
+}
+
 }  // namespace
 
 using mojom::blink::PermissionName;
@@ -103,6 +110,10 @@ void HTMLPermissionIconElement::SetIconImpl(PermissionName permission_type,
     }
     case PermissionName::AUDIO_CAPTURE: {
       SetInnerHTMLWithoutTrustedTypes(MicrophoneIconSVG());
+      break;
+    }
+    case PermissionName::WEB_APP_INSTALLATION: {
+      SetInnerHTMLWithoutTrustedTypes(InstallIconSVG());
       break;
     }
     default:

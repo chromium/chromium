@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect.h"
+#include "third_party/blink/renderer/core/html/html_permission_element_test_helper.h"
 #include "third_party/blink/renderer/core/html/html_span_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
@@ -79,117 +80,6 @@ class LocalePlatformSupport : public TestingPlatformSupport {
   }
 };
 
-// Helper class used to wait until receiving a permission status change event.
-class PermissionStatusChangeWaiter : public PermissionObserver {
- public:
-  explicit PermissionStatusChangeWaiter(
-      mojo::PendingReceiver<PermissionObserver> receiver,
-      base::OnceClosure callback)
-      : receiver_(this, std::move(receiver)), callback_(std::move(callback)) {}
-
-  // PermissionObserver override
-  void OnPermissionStatusChange(MojoPermissionStatus status) override {
-    if (callback_) {
-      std::move(callback_).Run();
-    }
-  }
-
- private:
-  mojo::Receiver<PermissionObserver> receiver_;
-  base::OnceClosure callback_;
-};
-
-class TestPermissionService : public PermissionService {
- public:
-  explicit TestPermissionService() = default;
-  ~TestPermissionService() override = default;
-
-  void BindHandle(mojo::ScopedMessagePipeHandle handle) {
-    receivers_.Add(this,
-                   mojo::PendingReceiver<PermissionService>(std::move(handle)));
-  }
-
-  // mojom::blink::PermissionService implementation
-  void HasPermission(PermissionDescriptorPtr permission,
-                     HasPermissionCallback) override {}
-  void RegisterPageEmbeddedPermissionControl(
-      Vector<PermissionDescriptorPtr> permissions,
-      mojom::blink::EmbeddedPermissionRequestDescriptorPtr descriptor,
-      mojo::PendingRemote<mojom::blink::EmbeddedPermissionControlClient>
-          pending_client) override {
-    Vector<MojoPermissionStatus> statuses =
-        initial_statuses_.empty()
-            ? Vector<MojoPermissionStatus>(permissions.size(),
-                                           MojoPermissionStatus::ASK)
-            : initial_statuses_;
-    client_ = mojo::Remote<mojom::blink::EmbeddedPermissionControlClient>(
-        std::move(pending_client));
-    client_->OnEmbeddedPermissionControlRegistered(/*allowed=*/true,
-                                                   std::move(statuses));
-  }
-
-  void RequestPageEmbeddedPermission(
-      Vector<PermissionDescriptorPtr> permissions,
-      mojom::blink::EmbeddedPermissionRequestDescriptorPtr descriptors,
-      RequestPageEmbeddedPermissionCallback callback) override {
-    std::move(callback).Run(
-        mojom::blink::EmbeddedPermissionControlResult::kGranted);
-  }
-  void RequestPermission(PermissionDescriptorPtr permission,
-                         bool user_gesture,
-                         RequestPermissionCallback) override {}
-  void RequestPermissions(Vector<PermissionDescriptorPtr> permissions,
-                          bool user_gesture,
-                          RequestPermissionsCallback) override {}
-  void RevokePermission(PermissionDescriptorPtr permission,
-                        RevokePermissionCallback) override {}
-  void AddPermissionObserver(
-      PermissionDescriptorPtr permission,
-      MojoPermissionStatus last_known_status,
-      mojo::PendingRemote<PermissionObserver> observer) override {}
-  void AddPageEmbeddedPermissionObserver(
-      PermissionDescriptorPtr permission,
-      MojoPermissionStatus last_known_status,
-      mojo::PendingRemote<PermissionObserver> observer) override {
-    observers_.emplace_back(permission->name, mojo::Remote<PermissionObserver>(
-                                                  std::move(observer)));
-  }
-
-  void NotifyEventListener(PermissionDescriptorPtr permission,
-                           const String& event_type,
-                           bool is_added) override {}
-
-  void NotifyPermissionStatusChange(PermissionName name,
-                                    MojoPermissionStatus status) {
-    for (const auto& observer : observers_) {
-      if (observer.first == name) {
-        observer.second->OnPermissionStatusChange(status);
-      }
-    }
-    WaitForPermissionStatusChange(status);
-  }
-
-  void WaitForPermissionStatusChange(MojoPermissionStatus status) {
-    mojo::Remote<PermissionObserver> observer;
-    base::RunLoop run_loop;
-    auto waiter = std::make_unique<PermissionStatusChangeWaiter>(
-        observer.BindNewPipeAndPassReceiver(), run_loop.QuitClosure());
-    observer->OnPermissionStatusChange(status);
-    run_loop.Run();
-  }
-
-  void set_initial_statuses(const Vector<MojoPermissionStatus>& statuses) {
-    initial_statuses_ = statuses;
-  }
-
- private:
-  mojo::ReceiverSet<PermissionService> receivers_;
-  Vector<std::pair<PermissionName, mojo::Remote<PermissionObserver>>>
-      observers_;
-  Vector<MojoPermissionStatus> initial_statuses_;
-  mojo::Remote<mojom::blink::EmbeddedPermissionControlClient> client_;
-};
-
 }  // namespace
 
 class HTMLGeolocationElementTestBase : public PageTestBase {
@@ -229,8 +119,9 @@ class HTMLGeolocationElementTest : public HTMLGeolocationElementTestBase {
     HTMLGeolocationElementTestBase::SetUp();
     GetFrame().GetBrowserInterfaceBroker().SetBinderForTesting(
         PermissionService::Name_,
-        base::BindRepeating(&TestPermissionService::BindHandle,
-                            base::Unretained(&permission_service_)));
+        blink::BindRepeating(
+            &PermissionElementTestPermissionService::BindHandle,
+            base::Unretained(&permission_service_)));
   }
 
   void TearDown() override {
@@ -239,7 +130,9 @@ class HTMLGeolocationElementTest : public HTMLGeolocationElementTestBase {
     HTMLGeolocationElementTestBase::TearDown();
   }
 
-  TestPermissionService* permission_service() { return &permission_service_; }
+  PermissionElementTestPermissionService* permission_service() {
+    return &permission_service_;
+  }
 
   HTMLGeolocationElement* CreateGeolocationElement(
       bool precise_accuracy_mode = false) {
@@ -289,7 +182,7 @@ class HTMLGeolocationElementTest : public HTMLGeolocationElementTestBase {
  private:
   ScopedBypassPepcSecurityForTestingForTest bypass_pepc_security_for_testing_{
       /*enabled=*/true};
-  TestPermissionService permission_service_;
+  PermissionElementTestPermissionService permission_service_;
   ScopedTestingPlatformSupport<LocalePlatformSupport> support_;
 };
 
@@ -731,8 +624,9 @@ class HTMLGeolocationElementSimTest : public SimTest {
     feature_list_.InitAndEnableFeature(features::kGeolocationElement);
     MainFrame().GetFrame()->GetBrowserInterfaceBroker().SetBinderForTesting(
         PermissionService::Name_,
-        base::BindRepeating(&TestPermissionService::BindHandle,
-                            base::Unretained(&permission_service_)));
+        blink::BindRepeating(
+            &PermissionElementTestPermissionService::BindHandle,
+            base::Unretained(&permission_service_)));
   }
 
   void TearDown() override {
@@ -741,7 +635,9 @@ class HTMLGeolocationElementSimTest : public SimTest {
     SimTest::TearDown();
   }
 
-  TestPermissionService* permission_service() { return &permission_service_; }
+  PermissionElementTestPermissionService* permission_service() {
+    return &permission_service_;
+  }
 
   HTMLGeolocationElement* CreateGeolocationElement(Document& document) {
     HTMLGeolocationElement* geolocation_element =
@@ -753,7 +649,7 @@ class HTMLGeolocationElementSimTest : public SimTest {
   }
 
  private:
-  TestPermissionService permission_service_;
+  PermissionElementTestPermissionService permission_service_;
   ScopedTestingPlatformSupport<LocalePlatformSupport> support;
   base::test::ScopedFeatureList feature_list_;
   ScopedGeolocationElementForTest scoped_feature_{true};

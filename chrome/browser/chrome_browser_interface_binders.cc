@@ -507,7 +507,8 @@ void PopulateChromeFrameBinders(
   if (base::FeatureList::IsEnabled(features::kWebPayments)) {
     map->Add<payments::mojom::PaymentRequest>(&payments::CreatePaymentRequest);
   }
-  if (base::FeatureList::IsEnabled(blink::features::kWebAppInstallation) &&
+  if ((base::FeatureList::IsEnabled(blink::features::kWebAppInstallation) ||
+       base::FeatureList::IsEnabled(blink::features::kInstallElement)) &&
       !render_frame_host->GetParentOrOuterDocument()) {
     map->Add<blink::mojom::WebInstallService>(
         &web_app::WebInstallServiceImpl::CreateIfAllowed);

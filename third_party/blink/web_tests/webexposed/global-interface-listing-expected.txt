@@ -4560,6 +4560,11 @@ interface HTMLInputElement : HTMLElement
     setter valueAsNumber
     setter webkitdirectory
     setter width
+interface HTMLInstallElement : HTMLPermissionElement
+    attribute @@toStringTag
+    getter manifest
+    method constructor
+    setter manifest
 interface HTMLLIElement : HTMLElement
     attribute @@toStringTag
     getter type

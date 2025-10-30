@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect.h"
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
+#include "third_party/blink/renderer/core/html/html_permission_element_test_helper.h"
 #include "third_party/blink/renderer/core/html/html_span_element.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/script/classic_script.h"
@@ -227,26 +228,7 @@ TEST_F(HTMLPermissionElementTestBase, ParsePermissionDescriptorsFromType) {
   }
 }
 
-// Helper class used to wait until receiving a permission status change event.
-class PermissionStatusChangeWaiter : public PermissionObserver {
- public:
-  explicit PermissionStatusChangeWaiter(
-      mojo::PendingReceiver<PermissionObserver> receiver,
-      base::OnceClosure callback)
-      : receiver_(this, std::move(receiver)), callback_(std::move(callback)) {}
-
-  // PermissionObserver override
-  void OnPermissionStatusChange(MojoPermissionStatus status) override {
-    if (callback_) {
-      std::move(callback_).Run();
-    }
-  }
-
- private:
-  mojo::Receiver<PermissionObserver> receiver_;
-  base::OnceClosure callback_;
-};
-
+// TODO(mkwst): Merge this with `PermissionElementTestPermissionService`.
 class TestPermissionService : public PermissionService {
  public:
   explicit TestPermissionService() = default;

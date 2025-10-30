@@ -792,7 +792,7 @@ PermissionControllerImpl::GetPermissionResultForEmbeddedRequester(
 PermissionStatus PermissionControllerImpl::GetCombinedPermissionAndDeviceStatus(
     const blink::mojom::PermissionDescriptorPtr& permission,
     RenderFrameHost* render_frame_host) {
-  CHECK(PermissionUtil::IsDevicePermission(permission));
+  CHECK(PermissionUtil::IsDevicePermission(permission)) << permission->name;
   return GetPermissionResultForCurrentDocumentInternal(
              permission, render_frame_host,
              /*should_include_device_status=*/true)

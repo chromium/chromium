@@ -136,7 +136,7 @@ Vector<PermissionDescriptorPtr> ParsePermissionDescriptorsFromString(
   Vector<PermissionDescriptorPtr> permission_descriptors;
 
   // TODO(crbug.com/1462930): For MVP, we only support:
-  // - Single permission: geolocation, camera, microphone.
+  // - Single permission: geolocation, camera, microphone, installation.
   // - Group of 2 permissions: camera and microphone (order does not matter).
   // - Repeats are *not* allowed: "camera camera" is invalid.
   for (unsigned i = 0; i < permissions.size(); i++) {
@@ -149,6 +149,9 @@ Vector<PermissionDescriptorPtr> ParsePermissionDescriptorsFromString(
     } else if (permissions[i] == "microphone") {
       permission_descriptors.push_back(
           CreatePermissionDescriptor(PermissionName::AUDIO_CAPTURE));
+    } else if (permissions[i] == "install") {
+      permission_descriptors.push_back(
+          CreatePermissionDescriptor(PermissionName::WEB_APP_INSTALLATION));
     } else {
       return Vector<PermissionDescriptorPtr>();
     }
@@ -218,6 +221,8 @@ PermissionNameToPermissionsPolicyFeature(PermissionName permission_name) {
       return network::mojom::PermissionsPolicyFeature::kCamera;
     case PermissionName::GEOLOCATION:
       return network::mojom::PermissionsPolicyFeature::kGeolocation;
+    case PermissionName::WEB_APP_INSTALLATION:
+      return network::mojom::PermissionsPolicyFeature::kWebAppInstallation;
     default:
       NOTREACHED() << "Not supported permission " << permission_name;
   }
@@ -233,6 +238,8 @@ String PermissionNameToString(PermissionName permission_name) {
       return "audio_capture";
     case PermissionName::VIDEO_CAPTURE:
       return "video_capture";
+    case PermissionName::WEB_APP_INSTALLATION:
+      return "web_app_installation";
     default:
       NOTREACHED() << "Not supported permission " << permission_name;
   }

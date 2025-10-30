@@ -852,6 +852,18 @@ html element input
 html element ins
     property cite
     property dateTime
+html element install
+    property initialPermissionStatus
+    property invalidReason
+    property isValid
+    property manifest
+    property ondismiss
+    property onpromptaction
+    property onpromptdismiss
+    property onresolve
+    property onvalidationstatuschange
+    property permissionStatus
+    property type
 html element kbd
 html element label
     property control
