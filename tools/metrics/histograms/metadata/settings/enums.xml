@@ -422,8 +422,8 @@ chromium-metrics-reviews@google.com.
   <int value="21" label="Third-party cookies block in incognito radio"/>
   <int value="22" label="Third-party cookies block all radio"/>
   <int value="23" label="Block all third-party cookies toggle"/>
-  <int value="24" label="IP protection toggle"/>
-  <int value="25" label="Fingerprinting protection toggle"/>
+  <int value="24" label="IP protection toggle (obsolete)"/>
+  <int value="25" label="Fingerprinting protection toggle (obsolete)"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/resources/settings/metrics_browser_proxy.ts:PrivacyElementInteractions) -->
