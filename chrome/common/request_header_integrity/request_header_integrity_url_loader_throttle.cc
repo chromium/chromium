@@ -24,7 +24,6 @@
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #include "chrome/common/request_header_integrity/internal/google_header_names.h"
-#include "chrome/common/request_header_integrity/internal/integrity_seed_internal.h"
 #endif
 
 #if !defined(CHANNEL_NAME_HEADER_NAME)
@@ -49,11 +48,6 @@ namespace {
 
 BASE_FEATURE(kRequestHeaderIntegrity, base::FEATURE_ENABLED_BY_DEFAULT);
 
-#if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
-// Seed for header integrity (empty for unbranded builds).
-constexpr char kIntegritySeed[] = "";
-#endif
-
 // Returns extended, stable, beta, dev, or canary if a channel is available,
 // otherwise the empty string.
 std::string GetChannelName() {
@@ -77,8 +71,7 @@ std::string GetChannelName() {
 void AddRequestIntegrityHeaders(net::HttpRequestHeaders* headers) {
   const std::string digest =
       base::Base64Encode(base::SHA1Hash(base::as_byte_span(
-          std::string(kIntegritySeed) + google_apis::GetAPIKey() +
-          embedder_support::GetUserAgent())));
+          google_apis::GetAPIKey() + embedder_support::GetUserAgent())));
   const std::string channel_name = GetChannelName();
   if (!channel_name.empty()) {
     headers->SetHeader(CHANNEL_NAME_HEADER_NAME, channel_name);
