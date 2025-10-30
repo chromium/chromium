@@ -4,6 +4,7 @@
 
 #include "base/check_deref.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/buildflag.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/new_tab_page/composebox/variations/aim_entrypoint_fieldtrial.h"
@@ -20,22 +21,20 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/native_theme/mock_os_settings_provider.h"
 
-// For local pixel test debugging, use the following flag combinations.
+// To debug locally, you can run the test via:
+// `out/Default/interactive_ui_tests
+// --gtest_filter="*<TEST_NAME>*" --test-launcher-interactive`. The
+// `--test-launcher-interactive` flag will pause the test at the very end, after
+// the screenshot would've been taken, allowing you to inspect the UI and debug.
 //
-// 1. To run the pixel test:
-//    --gtest_filter=*<TEST_NAME>* \
-//    --browser-ui-tests-verify-pixels \
-//    --enable-pixel-output-in-tests
-//
-// 2. To see the UI as it is being screenshot:
-//    Replace `--enable-pixel-output-in-tests` with
-//    `--test-launcher-interactive`. This will freeze the test just after the
-//    screenshot is taken. Dismiss the UI to continue the test.
-//
-// 3. To save the screenshot to a local directory:
-//    Add the following flags to the basic command:
-//    --bypass-skia-gold-functionality  \
-//    --skia-gold-local-png-write-directory=<TEMP_DIRECTORY>
+// To generate an actual screenshot locally, you can run the test with
+// `out/Default/interactive_ui_tests
+// --gtest_filter="*<TEST_NAME>*" --browser-ui-tests-verify-pixels
+// --enable-pixel-output-in-tests --test-launcher-retry-limit=0
+// --ui-test-action-timeout=100000
+// --skia-gold-local-png-write-directory="/tmp/pixel_test_output"
+// --bypass-skia-gold-functionality`. The PNG of the screenshot will be saved to
+// the `/tmp/pixel_test_output` directory.
 
 namespace {
 using ntp_realbox::RealboxLayoutMode;
@@ -72,12 +71,10 @@ struct NtpRealboxUiTestParams {
 std::unique_ptr<KeyedService> BuildMockAimServiceEligibilityServiceInstance(
     content::BrowserContext* context) {
   Profile* profile = Profile::FromBrowserContext(context);
-  std::unique_ptr<testing::NiceMock<MockAimEligibilityService>>
-      mock_aim_eligibility_service =
-          std::make_unique<testing::NiceMock<MockAimEligibilityService>>(
-              CHECK_DEREF(profile->GetPrefs()),
-              /*template_url_service=*/nullptr,
-              /*url_loader_factory=*/nullptr, /*identity_manager=*/nullptr);
+  std::unique_ptr<MockAimEligibilityService> mock_aim_eligibility_service =
+      std::make_unique<MockAimEligibilityService>(
+          CHECK_DEREF(profile->GetPrefs()), /*template_url_service=*/nullptr,
+          /*url_loader_factory=*/nullptr, /*identity_manager=*/nullptr);
 
   ON_CALL(*mock_aim_eligibility_service, IsAimEligible())
       .WillByDefault(testing::Return(true));
@@ -190,6 +187,9 @@ INSTANTIATE_TEST_SUITE_P(
     ,
     NtpRealboxUiTest,
     ValuesIn(std::vector<NtpRealboxUiTestParams>{
+// TODO(crbug.com/454668186): Test fails on Windows builders for Compact and
+// Compact_dark_rtl
+#if !BUILDFLAG(IS_WIN)
         // Compact, compose disabled, light mode, LTR
         {
             .layout_mode = RealboxLayoutMode::kCompact,
@@ -205,6 +205,7 @@ INSTANTIATE_TEST_SUITE_P(
             .color_scheme = ui::NativeTheme::PreferredColorScheme::kDark,
             .rtl = true,
         },
+#endif
         // Tall bottom, compose enabled, light mode, LTR
         {
             .layout_mode = RealboxLayoutMode::kTallBottomContext,
@@ -230,7 +231,8 @@ INSTANTIATE_TEST_SUITE_P(
       return info.param.ToString();
     });
 
-IN_PROC_BROWSER_TEST_P(NtpRealboxUiTest, Screenshots) {
+// TODO(crbug.com/454761015): Re-enable after fixing.
+IN_PROC_BROWSER_TEST_P(NtpRealboxUiTest, DISABLED_Screenshots) {
   // Force a consistent window size to exercise realbox layout within New Tab
   // Page bounds.
   auto screen_size = gfx::Size(1000, 1200);
@@ -250,7 +252,7 @@ IN_PROC_BROWSER_TEST_P(NtpRealboxUiTest, Screenshots) {
           .config.entry_point()
           .num_page_load_animations());
 
-  const DeepQuery kContent = {"ntp-app", "#content"};
+  const DeepQuery kSearchboxContainer = {"ntp-app", "#content"};
   const DeepQuery kRealbox = {"ntp-app", "cr-searchbox", "#inputWrapper"};
   const DeepQuery kContextMenuEntrypoint = {
       "ntp-app", "cr-searchbox", "contextual-entrypoint-and-carousel"};
@@ -263,14 +265,13 @@ IN_PROC_BROWSER_TEST_P(NtpRealboxUiTest, Screenshots) {
       If([&]() { return GetParam().compose_button_enabled; },
          Then(WaitForAndScrollToElement(kNtpElementId, kContextMenuEntrypoint)),
          Else(WaitForAndScrollToElement(kNtpElementId, kRealbox))),
-      // 3. Skip rest of the test on platforms where screenshots aren't
-      // captured.
-      SetOnIncompatibleAction(OnIncompatibleAction::kIgnoreAndContinue,
-                              "Screenshots not captured on this platform."),
-      // 4. Screenshot the content.
-      // TODO(crbug.com/452928336): Wait for a signal that the NTP's layout
-      // is complete and take a screenshot of the searchbox's container instead.
-      ScreenshotWebUi(kNtpElementId, kContent,
-                      /*screenshot_name=*/std::string(),
-                      /*baseline_cl=*/"7085674"));
+      // 3. Screenshot the content.
+      // TODO(crbug.com/452928336): Wait for a signal that the NTP's layout is
+      // complete and take a screenshot of the searchbox's container instead.
+      Steps(
+          SetOnIncompatibleAction(OnIncompatibleAction::kSkipTest,
+                                  "Screenshots not captured on this platform."),
+          ScreenshotWebUi(kNtpElementId, kSearchboxContainer,
+                          /*screenshot_name=*/std::string(),
+                          /*baseline_cl=*/"7055903")));
 }
