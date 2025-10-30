@@ -250,6 +250,10 @@ jint TabModelJniBridge::GetSessionIdForTesting(JNIEnv* env) {
   return GetSessionId().id();
 }
 
+ActivityType TabModelJniBridge::GetActivityTypeForTesting(JNIEnv* env) {
+  return activity_type();
+}
+
 void TabModelJniBridge::AddTabListInterfaceObserver(
     TabListInterfaceObserver* observer) {
   // If a first observer is being added then instantiate an observer bridge.

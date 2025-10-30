@@ -287,4 +287,10 @@ public interface TabModel extends SupportsTabModelObserver, TabList {
      * collections are enabled. Otherwise, returns null.
      */
     @Nullable TabStripCollection getTabStripCollection();
+
+    /** Returns {@link ActivityType} of the this tab model. */
+    default int getActivityTypeForTesting() {
+        // Return an invalid type for the implementation to fail tests by default.
+        return -1;
+    }
 }
