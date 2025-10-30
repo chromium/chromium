@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/synced_set_up/ui/synced_set_up_view_controller.h"
 
+#import "base/functional/bind.h"
+#import "base/task/sequenced_task_runner.h"
 #import "base/time/time.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -27,12 +29,18 @@ const CGFloat kSubtitleMinTopMargin = 10.0;
 const CGFloat kSubtitlePreferredTopMargin = 122.0;
 // Padding on the left and right sides of the main content view.
 const CGFloat kHorizontalPadding = 20.0;
-// The vertical translation offset for the subtitle's entrance animation.
-const CGFloat kSubtitleAnimationTranslateY = 10.0;
-// The duration of the subtitle's fade-in and slide animation.
-constexpr base::TimeDelta kSubtitleAnimationDuration = base::Seconds(0.8);
+// The vertical translation offset for the entrance animations.
+const CGFloat kEntranceAnimationTranslateY = 10.0;
+// The duration of the entrance fade-in and slide animations.
+constexpr base::TimeDelta kEntranceAnimationDuration = base::Seconds(0.5);
 // The delay before the subtitle animation begins.
-constexpr base::TimeDelta kSubtitleAnimationDelay = base::Seconds(1.5);
+constexpr base::TimeDelta kSubtitleAnimationDelay = base::Seconds(0.15);
+// The vertical translation offset for the exit animation.
+const CGFloat kFadeOutAnimationTranslateY = 10.0;
+// The delay before the fade-out animation begins.
+constexpr base::TimeDelta kFadeOutAnimationDelay = base::Seconds(3.25);
+// The duration of the fade-out animation.
+constexpr base::TimeDelta kFadeOutAnimationDuration = base::Seconds(0.25);
 // Accessibility identifier for the avatar image view.
 NSString* const kSyncedSetUpAvatarAccessibilityID =
     @"kSyncedSetUpAvatarAccessibilityID";
@@ -75,8 +83,8 @@ static void ConfigureCommonLabelProperties(UILabel* label) {
   // The avatar image to display. Stored in case it is set before the view
   // loads.
   UIImage* _avatarImage;
-  // Tracks if the subtitle has been animated.
-  BOOL _subtitleHasAnimated;
+  // Tracks if the animations have been started.
+  BOOL _hasStartedAnimations;
   // The Lottie animation that plays to reveal the avatar.
   id<LottieAnimation> _spinAnimation;
 }
@@ -93,11 +101,12 @@ static void ConfigureCommonLabelProperties(UILabel* label) {
   [self setupViews];
   [self setupConstraints];
 
-  // Set the initial state for the subtitle animation.
+  // Sets the initial state for animations.
+  _titleLabel.alpha = 0.0;
   _subtitleLabel.alpha = 0.0;
-  _subtitleHasAnimated = NO;
+  _hasStartedAnimations = NO;
 
-  // Update the UI elements with the current state (which may have been set
+  // Updates the UI elements with the current state (which may have been set
   // before `-viewDidLoad`).
   [self updateTitleLabel];
   [self updateAvatarImageView];
@@ -106,9 +115,21 @@ static void ConfigureCommonLabelProperties(UILabel* label) {
 - (void)viewDidAppear:(BOOL)animated {
   [super viewDidAppear:animated];
 
-  if (!_subtitleHasAnimated) {
-    [self animateSubtitleIn];
+  if (!_hasStartedAnimations) {
+    __weak __typeof(self) weakSelf = self;
+    [self animateTitleIn];
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE, base::BindOnce(^{
+          [weakSelf animateSubtitleIn];
+        }),
+        kSubtitleAnimationDelay);
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE, base::BindOnce(^{
+          [weakSelf animateAllElementsOut];
+        }),
+        kFadeOutAnimationDelay);
     [_spinAnimation play];
+    _hasStartedAnimations = YES;
   }
 }
 
@@ -293,32 +314,56 @@ static void ConfigureCommonLabelProperties(UILabel* label) {
   ]];
 }
 
+// Animates the title label with a fade-in and upward slide effect.
+- (void)animateTitleIn {
+  // A slight downward translation is applied to create the upward animation.
+  _titleLabel.transform =
+      CGAffineTransformMakeTranslation(0, kEntranceAnimationTranslateY);
+
+  __weak __typeof(_titleLabel) weakTitleLabel = _titleLabel;
+  [UIView animateWithDuration:kEntranceAnimationDuration.InSecondsF()
+                   animations:^{
+                     weakTitleLabel.alpha = 1.0;
+                     weakTitleLabel.transform = CGAffineTransformIdentity;
+                   }];
+}
+
 // Animates the subtitle label with a fade-in and upward slide effect.
 - (void)animateSubtitleIn {
   // A slight downward translation is applied to create the upward animation.
   _subtitleLabel.transform =
-      CGAffineTransformMakeTranslation(0, kSubtitleAnimationTranslateY);
+      CGAffineTransformMakeTranslation(0, kEntranceAnimationTranslateY);
 
   __weak __typeof(_subtitleLabel) weakSubtitleLabel = _subtitleLabel;
-  __weak __typeof(self) weakSelf = self;
-  [UIView animateWithDuration:kSubtitleAnimationDuration.InSecondsF()
-      delay:kSubtitleAnimationDelay.InSecondsF()
-      options:UIViewAnimationOptionCurveEaseInOut
-      animations:^{
-        weakSubtitleLabel.alpha = 1.0;
-        weakSubtitleLabel.transform = CGAffineTransformIdentity;
-      }
-      completion:^(BOOL finished) {
-        if (finished) {
-          [weakSelf markSubtitleAnimationAsCompleted];
-        }
-      }];
+  [UIView animateWithDuration:kEntranceAnimationDuration.InSecondsF()
+                   animations:^{
+                     weakSubtitleLabel.alpha = 1.0;
+                     weakSubtitleLabel.transform = CGAffineTransformIdentity;
+                   }];
 }
 
-// Updates `_subtitleHasAnimated` to indicate the initial subtitle animation has
-// finished.
-- (void)markSubtitleAnimationAsCompleted {
-  _subtitleHasAnimated = YES;
+// Animates the avatar, title, and subtitle out with a fade and downward slide.
+- (void)animateAllElementsOut {
+  __weak __typeof(_spinAnimation.animationView) weakAnimationView =
+      _spinAnimation.animationView;
+  __weak __typeof(_avatarImageView) weakAvatarImageView = _avatarImageView;
+  __weak __typeof(_titleLabel) weakTitleLabel = _titleLabel;
+  __weak __typeof(_subtitleLabel) weakSubtitleLabel = _subtitleLabel;
+
+  [UIView animateWithDuration:kFadeOutAnimationDuration.InSecondsF()
+                   animations:^{
+                     CGAffineTransform downwardTransform =
+                         CGAffineTransformMakeTranslation(
+                             0, kFadeOutAnimationTranslateY);
+                     weakAnimationView.alpha = 0.0;
+                     weakAnimationView.transform = downwardTransform;
+                     weakAvatarImageView.alpha = 0.0;
+                     weakAvatarImageView.transform = downwardTransform;
+                     weakTitleLabel.alpha = 0.0;
+                     weakTitleLabel.transform = downwardTransform;
+                     weakSubtitleLabel.alpha = 0.0;
+                     weakSubtitleLabel.transform = downwardTransform;
+                   }];
 }
 
 @end
