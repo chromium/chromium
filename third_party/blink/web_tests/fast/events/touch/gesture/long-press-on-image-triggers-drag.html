@@ -1,0 +1,30 @@
+<!doctype html>
+<html>
+<head>
+<script src="../../../../resources/testharness.js"></script>
+<script src="../../../../resources/testharnessreport.js"></script>
+<script src="../../../../resources/gesture-util.js"></script>
+<script src="../../../../resources/testdriver.js"></script>
+<script src="../../../../resources/testdriver-actions.js"></script>
+<script src="../../../../resources/testdriver-vendor.js"></script>
+</head>
+<body onload="runTest()">
+<p>This test checks that a long press gesture on an image triggers the dragstart
+event when touch drag and drop is enabled.</p>
+<div>
+  <img id="dragImg" src="resources/circle.png" alt="PNG circle" draggable="true"/>
+</div>
+<script>
+function runTest() {
+  if (window.internals)
+    internals.settings.setTouchDragDropEnabled(true);
+
+  promise_test(async t => {
+    preventContextMenu(t);
+    const target = document.getElementById("dragImg");
+    await touchLongPressAndDragElement(target);
+  }, 'Touch and drag an image when touch drag and drop is enabled');
+}
+</script>
+</body>
+</html>

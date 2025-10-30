@@ -9867,3 +9867,8 @@ crbug.com/455803699 [ Mac ] http/tests/accessibility/slow-document-load.html [ P
 crbug.com/455696391 [ Mac ] virtual/view-transition-wide-gamut/inspector-protocol/css/css-get-styles-for-view-transition.js [ Pass Failure ]
 crbug.com/455808926 [ Linux ] images/color-profile-image-object-fit.html [ Pass Failure ]
 crbug.com/455817545 [ Mac ] virtual/threaded/wpt_internal/view-transition/browser-controls-root-offset-new.html [ Pass Failure ]
+
+# Touch drag and drop is not enabled on Linux. The tests will remain disabled until then. The linked crbug was open to decide on the future
+# of the feature on Linux. If enabling the feature, please check `TouchDragEndContextMenu` works as expected.
+crbug.com/451651623 [ Linux ] fast/events/touch/gesture/long-press-on-image-triggers-drag.html [ Failure ]
+crbug.com/451651623 [ Linux ] fast/events/touch/gesture/long-press-on-link-triggers-drag.html [ Failure ]

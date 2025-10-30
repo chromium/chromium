@@ -1130,6 +1130,60 @@ function touchLongPressElement(target, options) {
   return actionPromise.then(pointerPromise);
 }
 
+// Long press on the target element and drag to move. This function will check
+// the dragstart event. The options are of the form:
+// {
+//    x: horizontal offset of longpress from midpoint of the target element (default 0)
+//    y: vertical offset of longpress from the midpoint of the target element (default 0)
+//    dragDeltaX: horizontal distance to drag (default 100)
+//    dragDeltaY: vertical distance to drag (default 0)
+//    duration: duration of the press in milliseconds (default 800)
+// }
+//
+// Be sure to call preventContextMenu during test setup to avoid a memory leak
+// before calling this method. If event handling is permitted to transfer to the
+// browser process, we are unable to fully tear down the test resulting in a
+// leak.
+function touchLongPressAndDragElement(target, options) {
+  // Conservative long-press duration based on the default duration for a long
+  // press gesture, defined in: ui/events/gesture_detection/gesture_detector.h
+  // Some long-press operations require longer.
+  const LONG_PRESS_DURATION = 800;
+  const x = (options && options.x) ? options.x : 0;
+  const y = (options && options.y) ? options.y : 0;
+  const duration = (options && options.duration !== undefined)
+    ? options.duration
+    : LONG_PRESS_DURATION;
+  const dragDeltaX = (options && options.dragDeltaX) ? options.dragDeltaX : 100;
+  const dragDeltaY = (options && options.dragDeltaY) ? options.dragDeltaY : 0;
+  verifyTestDriverLoaded();
+
+  return new Promise((resolve, reject) => {
+    let dragStarted = false;
+    const dragStartListener = () => {
+      dragStarted = true;
+      target.removeEventListener('dragstart', dragStartListener);
+      resolve('dragstart');
+    };
+    target.addEventListener('dragstart', dragStartListener);
+
+    new test_driver.Actions()
+      .addPointer('pointer1', 'touch')
+      .pointerMove(x, y, {origin: target})
+      .pointerDown()
+      .pause(duration)
+      .pointerMove(x + dragDeltaX, y + dragDeltaY, {origin: target})
+      .pointerUp()
+      .send()
+      .then(() => {
+        if (!dragStarted) {
+          target.removeEventListener('dragstart', dragStartListener);
+          reject('No dragstart event detected');
+        }
+      });
+  });
+}
+
 function preventContextMenu(test) {
   const listener = (event) => {
     event.preventDefault();

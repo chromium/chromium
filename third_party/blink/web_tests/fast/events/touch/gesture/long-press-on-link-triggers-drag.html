@@ -1,0 +1,30 @@
+<!doctype html>
+<html>
+<head>
+<script src="../../../../resources/testharness.js"></script>
+<script src="../../../../resources/testharnessreport.js"></script>
+<script src="../../../../resources/gesture-util.js"></script>
+<script src="../../../../resources/testdriver.js"></script>
+<script src="../../../../resources/testdriver-actions.js"></script>
+<script src="../../../../resources/testdriver-vendor.js"></script>
+</head>
+<body onload="runTest()">
+<p>This test checks that a long press gesture on a link triggers the dragstart
+event when touch drag and drop is enabled.</p>
+<div>
+  <a id="dragLink" href="#" draggable="true">Draggable link</a>
+</div>
+<script>
+function runTest() {
+  if (window.internals)
+    internals.settings.setTouchDragDropEnabled(true);
+
+  promise_test(async t => {
+    preventContextMenu(t);
+    const target = document.getElementById("dragLink");
+    await touchLongPressAndDragElement(target);
+  }, 'Touch and drag a link when touch drag and drop is enabled');
+}
+</script>
+</body>
+</html>
