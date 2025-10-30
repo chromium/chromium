@@ -209,7 +209,6 @@ void TextPaintTimingDetector::ReportLargestIgnoredText() {
   DCHECK(document);
   PaintTiming::From(*document).MarkFirstContentfulPaint();
 
-  record->SetFrameIndex(frame_index_);
   QueueToMeasurePaintTime(*record->GetNode()->GetLayoutObject(), record);
 }
 
@@ -242,11 +241,9 @@ void LargestTextPaintManager::MaybeUpdateLargestIgnoredText(
     const gfx::RectF& root_visual_rect) {
   if (size && (!largest_ignored_text_ ||
                size > largest_ignored_text_->RecordedSize())) {
-    // Create the largest ignored text with a |frame_index_| of 0. When it is
-    // queued for paint, we'll set the appropriate |frame_index_|.
     largest_ignored_text_ = MakeGarbageCollected<TextRecord>(
         object.GetNode(), size, gfx::RectF(), frame_visual_rect,
-        root_visual_rect, 0u, /*is_needed_for_timing=*/false,
+        root_visual_rect, /*is_needed_for_timing=*/false,
         /*soft_navigation_context=*/nullptr);
   }
 }
@@ -318,14 +315,14 @@ TextRecord* TextPaintTimingDetector::MaybeRecordTextRecord(
   if (visual_size == 0u) {
     record = MakeGarbageCollected<TextRecord>(
         node, visual_size, gfx::RectF(), gfx::Rect(), gfx::RectF(),
-        frame_index_, is_needed_for_element_timing, context);
+        is_needed_for_element_timing, context);
   } else {
     record = MakeGarbageCollected<TextRecord>(
         node, visual_size,
         TextElementTiming::ComputeIntersectionRect(
             object, frame_visual_rect, property_tree_state, frame_view_),
-        frame_visual_rect, root_visual_rect, frame_index_,
-        is_needed_for_element_timing, context);
+        frame_visual_rect, root_visual_rect, is_needed_for_element_timing,
+        context);
   }
   QueueToMeasurePaintTime(object, record);
   return record;

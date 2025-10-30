@@ -88,7 +88,6 @@ class CORE_EXPORT TextRecord final : public PaintTimingRecord {
              const gfx::RectF& element_timing_rect,
              const gfx::Rect& frame_visual_rect,
              const gfx::RectF& root_visual_rect,
-             uint32_t frame_index,
              bool is_needed_for_element_timing,
              SoftNavigationContext* soft_navigation_context);
 
