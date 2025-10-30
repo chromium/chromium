@@ -451,7 +451,7 @@ builder(
             "x64",
         ],
     ),
-    os = os.WINDOWS_DEFAULT,
+    os = os.WINDOWS_ANY,
 )
 
 builder(
@@ -489,7 +489,7 @@ builder(
             "remoting_unittests",
         ],
     ),
-    os = os.WINDOWS_DEFAULT,
+    os = os.WINDOWS_ANY,
 )
 
 builder(
@@ -519,7 +519,7 @@ builder(
             "win11",
         ],
     ),
-    os = os.WINDOWS_DEFAULT,
+    os = os.WINDOWS_ANY,
 )
 
 # Builders run on the default Mac OS version offered
