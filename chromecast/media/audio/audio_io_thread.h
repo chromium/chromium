@@ -5,7 +5,7 @@
 #ifndef CHROMECAST_MEDIA_AUDIO_AUDIO_IO_THREAD_H_
 #define CHROMECAST_MEDIA_AUDIO_AUDIO_IO_THREAD_H_
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/threading/thread.h"
 
 namespace base {

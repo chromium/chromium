@@ -6,7 +6,7 @@
 #define CHROMECAST_BASE_SYSTEM_TIME_CHANGE_NOTIFIER_H_
 
 #include "base/functional/callback.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list_threadsafe.h"
 #include "base/time/time.h"

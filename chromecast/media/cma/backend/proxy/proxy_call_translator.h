@@ -8,7 +8,7 @@
 #include <memory>
 #include <optional>
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "chromecast/media/api/decoder_buffer_base.h"
 #include "chromecast/media/cma/backend/proxy/buffer_id_manager.h"
 #include "chromecast/media/cma/backend/proxy/cast_runtime_audio_channel_broker.h"
