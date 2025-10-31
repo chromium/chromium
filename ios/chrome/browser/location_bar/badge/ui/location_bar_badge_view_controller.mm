@@ -31,16 +31,10 @@
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
 
 @implementation LocationBarBadgeViewController {
-  /// Whether the contextual panel entrypoint should be visible. The placeholder
+  /// Whether the contextual panel badge should be visible. The placeholder
   /// view trumps the entrypoint when kLensOverlayPriceInsightsCounterfactual is
   /// enabled.
   BOOL _contextualPanelEntrypointShouldBeVisible;
-  /// Whether the incognito badge view should be visible.
-  BOOL _incognitoBadgeViewShouldBeVisible;
-  /// Whether the badge view should be visible.
-  BOOL _badgeViewShouldBeVisible;
-  /// Whether the reader mode chip should be visible.
-  BOOL _readerModeChipShouldBeVisible;
   // Whether the location bar badge should be visible.
   BOOL _locationBarBadgeShouldBeVisible;
 
@@ -160,29 +154,6 @@
 
 #pragma mark - LocationBarBadgeConsumer
 
-- (void)setBadge:(LocationBarBadgeType)badge hidden:(BOOL)hidden {
-  switch (badge) {
-    case LocationBarBadgeType::kNone:
-      break;
-    case LocationBarBadgeType::kBadgeView:
-      [self setBadgeViewHidden:hidden];
-      break;
-    case LocationBarBadgeType::kIncognito:
-      [self setIncognitoBadgeViewHidden:hidden];
-      break;
-    case LocationBarBadgeType::kContextualPanel:
-      [self setContextualPanelEntrypointHidden:hidden];
-      break;
-    case LocationBarBadgeType::kReaderMode:
-      // Reader chip coordinator isn't needed for setting visibility.
-      [self readerModeChipCoordinator:nil didSetReaderModeChipHidden:hidden];
-      break;
-    case LocationBarBadgeType::kAskGeminiChip:
-      [self setLocationBarBadgeHidden:hidden];
-      break;
-  }
-}
-
 // TODO(crbug.com/448422022): Trigger visibility refresh when a new badge comes
 // in and store the badge for multi-badge setup.
 - (void)setBadgeConfig:(LocationBarBadgeConfiguration*)config {
@@ -202,34 +173,11 @@
   _badgeIcon.image = config.badgeImage;
   _badgeConfig = config;
 }
-
-#pragma mark - IncognitoBadgeViewVisibilityDelegate
-
-- (void)setIncognitoBadgeViewHidden:(BOOL)hidden {
-  _incognitoBadgeViewShouldBeVisible = !hidden;
-  [self updateViewsVisibility];
-}
-
-#pragma mark - BadgeViewVisibilityDelegate
-
-- (void)setBadgeViewHidden:(BOOL)hidden {
-  _badgeViewShouldBeVisible = !hidden;
-  [self updateViewsVisibility];
-}
-
 #pragma mark - ContextualPanelEntrypointVisibilityDelegate
 
 - (void)setContextualPanelEntrypointHidden:(BOOL)hidden {
   _contextualPanelEntrypointShouldBeVisible = !hidden;
   [self setLocationBarBadgeHidden:hidden];
-}
-
-#pragma mark - ReaderModeChipVisibilityDelegate
-
-- (void)readerModeChipCoordinator:(ReaderModeChipCoordinator*)coordinator
-       didSetReaderModeChipHidden:(BOOL)hidden {
-  _readerModeChipShouldBeVisible = !hidden;
-  [self updateViewsVisibility];
 }
 
 #pragma mark - Private
@@ -242,9 +190,7 @@
 
   // Whether the default/placeholder badge should show. Only shown if no other
   // badge or chip is shown.
-  BOOL placeholderHidden =
-      self.view && !_contextualPanelEntrypointShouldBeVisible &&
-      !_badgeViewShouldBeVisible && !_readerModeChipShouldBeVisible;
+  BOOL placeholderHidden = self.view && !_badgeConfig;
 
   if (!self.view || placeholderHidden == self.view.hidden) {
     return;
@@ -259,9 +205,9 @@
       // TODO(crbug.com/454072799): Adapt to record hiding badges for any badge
       // that goes through LocationBarBadge.
       RecordLensEntrypointHidden(IOSLocationBarLeadingIconType::kPriceTracking);
-    } else if (_badgeViewShouldBeVisible) {
+    } else if (_badgeConfig.badgeType == LocationBarBadgeType::kBadgeView) {
       RecordLensEntrypointHidden(IOSLocationBarLeadingIconType::kMessage);
-    } else if (_readerModeChipShouldBeVisible) {
+    } else if (_badgeConfig.badgeType == LocationBarBadgeType::kReaderMode) {
       RecordLensEntrypointHidden(IOSLocationBarLeadingIconType::kReaderMode);
     }
   }
@@ -515,14 +461,14 @@
 
 // Applies the correct color to the badge (highlighted blue when the
 // in-product help is present), otherwise back to the normal colorset.
-- (void)updateBadgeHighlight:(BOOL)higlighted {
-  _badgeIcon.tintColor = higlighted ? [UIColor colorNamed:kBackgroundColor]
-                                    : [UIColor colorNamed:kBlue600Color];
+- (void)updateBadgeHighlight:(BOOL)highlighted {
+  _badgeIcon.tintColor = highlighted ? [UIColor colorNamed:kBackgroundColor]
+                                     : [UIColor colorNamed:kBlue600Color];
 
   // Update entrypoint container background.
   UIColor* buttonContainerBackgroundColor =
-      higlighted ? [UIColor colorNamed:kBlue600Color]
-                 : [UIColor colorNamed:kBackgroundColor];
+      highlighted ? [UIColor colorNamed:kBlue600Color]
+                  : [UIColor colorNamed:kBackgroundColor];
   _buttonContainer.configuration = [self
       buttonConfigurationWithBackgroundColor:buttonContainerBackgroundColor];
 }

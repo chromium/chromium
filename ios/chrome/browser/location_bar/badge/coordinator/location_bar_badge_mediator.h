@@ -7,10 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-#import "ios/chrome/browser/badges/ui_bundled/badge_view_visibility_delegate.h"
-#import "ios/chrome/browser/badges/ui_bundled/incognito_badge_view_visibility_delegate.h"
 #import "ios/chrome/browser/location_bar/badge/ui/location_bar_badge_mutator.h"
-#import "ios/chrome/browser/reader_mode/ui/reader_mode_chip_visibility_delegate.h"
 #import "ios/chrome/browser/shared/public/commands/location_bar_badge_commands.h"
 
 @protocol BWGCommands;
@@ -20,11 +17,7 @@ class WebStateList;
 
 // Mediator for the location bar badge.
 @interface LocationBarBadgeMediator
-    : NSObject <BadgeViewVisibilityDelegate,
-                IncognitoBadgeViewVisibilityDelegate,
-                ReaderModeChipVisibilityDelegate,
-                LocationBarBadgeCommands,
-                LocationBarBadgeMutator>
+    : NSObject <LocationBarBadgeCommands, LocationBarBadgeMutator>
 
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList
     NS_DESIGNATED_INITIALIZER;

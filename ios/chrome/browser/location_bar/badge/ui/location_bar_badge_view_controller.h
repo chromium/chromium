@@ -21,11 +21,8 @@
 
 // View controller for the location bar badge.
 @interface LocationBarBadgeViewController
-    : UIViewController <BadgeViewVisibilityDelegate,
-                        ContextualPanelEntrypointVisibilityDelegate,
-                        IncognitoBadgeViewVisibilityDelegate,
+    : UIViewController <ContextualPanelEntrypointVisibilityDelegate,
                         LocationBarBadgeConsumer,
-                        ReaderModeChipVisibilityDelegate,
                         ContextualPanelEntrypointConsumer,
                         FullscreenUIElement>
 

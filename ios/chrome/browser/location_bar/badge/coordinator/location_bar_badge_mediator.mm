@@ -70,25 +70,6 @@ const int kTransitionTimeInSeconds = 2;
   }
 }
 
-#pragma mark - BadgeViewVisibilityDelegate
-
-- (void)setBadgeViewHidden:(BOOL)hidden {
-  [self.consumer setBadge:LocationBarBadgeType::kBadgeView hidden:hidden];
-}
-
-#pragma mark - IncognitoBadgeViewVisibilityDelegate
-
-- (void)setIncognitoBadgeViewHidden:(BOOL)hidden {
-  [self.consumer setBadge:LocationBarBadgeType::kIncognito hidden:hidden];
-}
-
-#pragma mark - ReaderModeChipVisibilityDelegate
-
-- (void)readerModeChipCoordinator:(ReaderModeChipCoordinator*)coordinator
-       didSetReaderModeChipHidden:(BOOL)hidden {
-  [self.consumer setBadge:LocationBarBadgeType::kReaderMode hidden:hidden];
-}
-
 #pragma mark - WebStateListObserving
 
 - (void)didChangeWebStateList:(WebStateList*)webStateList

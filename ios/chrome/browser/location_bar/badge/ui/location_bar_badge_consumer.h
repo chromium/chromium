@@ -13,9 +13,6 @@ enum class LocationBarBadgeType;
 // Consumer for the location bar badge mediator.
 @protocol LocationBarBadgeConsumer
 
-// Shows/hides badge.
-- (void)setBadge:(LocationBarBadgeType)badge hidden:(BOOL)hidden;
-
 // Update the consumer with a new badge configuration.
 - (void)setBadgeConfig:(LocationBarBadgeConfiguration*)config;
 
