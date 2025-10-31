@@ -153,12 +153,6 @@ NavigateToURLWithDispositionBlockUntilNavigationsComplete(
     WindowOpenDisposition disposition,
     int browser_test_flags);
 
-// Generate the URL for testing a particular test.
-// HTML for the tests is all located in
-// test_root_directory/dir/<file>
-// The returned path is GURL format.
-GURL GetTestUrl(const base::FilePath& dir, const base::FilePath& file);
-
 // Generate the path of the build directory, relative to the source root.
 bool GetRelativeBuildDirectory(base::FilePath* build_dir);
 

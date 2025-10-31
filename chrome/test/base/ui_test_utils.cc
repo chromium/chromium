@@ -337,10 +337,6 @@ content::RenderFrameHost* NavigateToURLBlockUntilNavigationsComplete(
       BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 }
 
-GURL GetTestUrl(const base::FilePath& dir, const base::FilePath& file) {
-  return chrome_test_utils::GetTestUrl(dir, file);
-}
-
 bool GetRelativeBuildDirectory(base::FilePath* build_dir) {
   base::ScopedAllowBlockingForTesting allow_blocking;
   // This function is used to find the build directory so TestServer can serve
