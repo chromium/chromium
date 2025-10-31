@@ -1161,7 +1161,6 @@ void AmbientController::OnUiLauncherInitialized(bool success) {
     // Success = false denotes a case where the screensaver is in a permanent
     // error state and such that the UI and any further attempts to launch the
     // UI will also result in this failure.
-    // TODO (b/175142676) Add metrics for cases where success = false.
     LOG(ERROR) << "AmbientUiLauncher failed to initialize";
     SetUiVisibilityClosed();
     return;
