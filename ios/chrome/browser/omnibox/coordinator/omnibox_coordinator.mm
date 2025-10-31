@@ -189,6 +189,7 @@
   _omniboxMetricsRecorder =
       [[OmniboxMetricsRecorder alloc] initWithClient:_client.get()
                                            textModel:_omniboxTextModel.get()];
+  viewController.metricsRecorder = _omniboxMetricsRecorder;
   [_omniboxMetricsRecorder
       setAutocompleteController:[_omniboxAutocompleteController
                                     autocompleteController]];

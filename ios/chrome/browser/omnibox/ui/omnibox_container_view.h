@@ -12,6 +12,7 @@
 
 @class LayoutGuideCenter;
 @protocol OmniboxTextInput;
+@class OmniboxMetricsRecorder;
 
 /// The omnibox container view is the view that is shown in the location bar's
 /// edit state. It contains the omnibox textfield and the buttons on the left
@@ -20,6 +21,9 @@
 
 /// The contained omnibox textfield.
 @property(nonatomic, strong, readonly) id<OmniboxTextInput> textInput;
+
+/// The metrics recorder.
+@property(nonatomic, weak) OmniboxMetricsRecorder* metricsRecorder;
 
 /// The contained clear button. Hide with `setClearButtonHidden`.
 @property(nonatomic, strong, readonly) UIButton* clearButton;
