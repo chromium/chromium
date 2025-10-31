@@ -127,7 +127,6 @@ android_library("test_support_java") {
   testonly = true
   sources = [
     "java/src/org/chromium/components/webauthn/Fido2ApiTestHelper.java",
-    "java/src/org/chromium/components/webauthn/MockFido2CredentialRequest.java",
   ]
   deps = [
     ":java",

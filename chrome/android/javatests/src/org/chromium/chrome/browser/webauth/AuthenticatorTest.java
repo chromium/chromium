@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.webauth;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doAnswer;
+
 import androidx.test.filters.MediumTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
@@ -13,6 +16,9 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
@@ -20,6 +26,7 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
+import org.chromium.blink.mojom.AuthenticatorStatus;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
@@ -27,8 +34,10 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.transit.page.WebPageStation;
+import org.chromium.components.webauthn.AuthenticatorErrorResponseCallback;
 import org.chromium.components.webauthn.AuthenticatorImpl;
-import org.chromium.components.webauthn.MockFido2CredentialRequest;
+import org.chromium.components.webauthn.Fido2CredentialRequest;
+import org.chromium.components.webauthn.IsUvpaaResponseCallback;
 import org.chromium.components.webauthn.WebauthnMode;
 import org.chromium.components.webauthn.WebauthnModeProvider;
 import org.chromium.content_public.common.ContentSwitches;
@@ -52,13 +61,15 @@ public class AuthenticatorTest {
     public FreshCtaTransitTestRule mActivityTestRule =
             ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     private static final String TEST_FILE = "/content/test/data/android/authenticator.html";
     private EmbeddedTestServer mTestServer;
     private String mUrl;
     private WebPageStation mPage;
     private Tab mTab;
     private AuthenticatorUpdateWaiter mUpdateWaiter;
-    private MockFido2CredentialRequest mMockCredentialRequest;
+    @Mock private Fido2CredentialRequest mMockCredentialRequest;
 
     /** Waits until the JavaScript code supplies a result. */
     private class AuthenticatorUpdateWaiter extends EmptyTabObserver {
@@ -97,7 +108,33 @@ public class AuthenticatorTest {
         mUpdateWaiter = new AuthenticatorUpdateWaiter();
         ThreadUtils.runOnUiThreadBlocking(() -> mTab.addObserver(mUpdateWaiter));
         WebauthnModeProvider.getInstance().setGlobalWebauthnMode(WebauthnMode.CHROME);
-        mMockCredentialRequest = new MockFido2CredentialRequest();
+        doAnswer(
+                        invocation -> {
+                            AuthenticatorErrorResponseCallback errorCallback =
+                                    invocation.getArgument(6);
+                            errorCallback.onError(AuthenticatorStatus.NOT_IMPLEMENTED);
+                            return null;
+                        })
+                .when(mMockCredentialRequest)
+                .handleMakeCredentialRequest(
+                        any(), any(), any(), any(), any(), any(), any(), any());
+        doAnswer(
+                        invocation -> {
+                            AuthenticatorErrorResponseCallback errorCallback =
+                                    invocation.getArgument(5);
+                            errorCallback.onError(AuthenticatorStatus.NOT_IMPLEMENTED);
+                            return null;
+                        })
+                .when(mMockCredentialRequest)
+                .handleGetCredentialRequest(any(), any(), any(), any(), any(), any(), any());
+        doAnswer(
+                        invocation -> {
+                            IsUvpaaResponseCallback callback = invocation.getArgument(0);
+                            callback.onIsUserVerifyingPlatformAuthenticatorAvailableResponse(false);
+                            return null;
+                        })
+                .when(mMockCredentialRequest)
+                .handleIsUserVerifyingPlatformAuthenticatorAvailableRequest(any());
         AuthenticatorImpl.overrideFido2CredentialRequestForTesting(mMockCredentialRequest);
     }
 
