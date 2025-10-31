@@ -10,6 +10,7 @@
 
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/test_capture_mode_delegate.h"
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/capture_mode/capture_mode_api.h"
@@ -51,13 +52,15 @@ constexpr char kOverlayClassName[] = "HomeButtonTapOverlay";
 
 enum TestVariant { kClamshell, kTablet, kTabletWithBackButton };
 
-// TODO(crbug.com/454136569)
-class DISABLED_HomeButtonTapOverlayTest
+class HomeButtonTapOverlayTest
     : public AshTestBase,
       public testing::WithParamInterface<TestVariant> {
  public:
-  DISABLED_HomeButtonTapOverlayTest()
-      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+  HomeButtonTapOverlayTest()
+      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
+    // Explicitly enable Sunfish so the Home Button has a long-press action.
+    scoped_feature_list_.InitAndEnableFeature(features::kSunfishFeature);
+  }
 
   void SetUp() override {
     // In Tablet mode, home button is shown if a board has kAshEnableTabletMode
@@ -73,10 +76,18 @@ class DISABLED_HomeButtonTapOverlayTest
     auto* capture_mode_controller = CaptureModeController::Get();
     auto* test_capture_mode_delegate = static_cast<TestCaptureModeDelegate*>(
         capture_mode_controller->delegate_for_testing());
-    test_capture_mode_delegate->set_is_search_allowed_by_policy(false);
+
+    // Allow Sunfish via enterprise policy.
+    // Previously this was set to 'false', disabling the only remaining
+    // long-press action.
+    test_capture_mode_delegate->set_is_search_allowed_by_policy(true);
+
+    // Scanner can remain disabled if Sunfish is enough to trigger the
+    // animation.
     prefs->SetInteger(prefs::kScannerEnterprisePolicyAllowed,
                       static_cast<int>(ScannerEnterprisePolicy::kDisallowed));
-    ASSERT_FALSE(CanShowSunfishOrScannerUi());
+
+    ASSERT_TRUE(CanShowSunfishOrScannerUi());
 
     const TestVariant test_variant = GetParam();
     switch (test_variant) {
@@ -148,10 +159,11 @@ class DISABLED_HomeButtonTapOverlayTest
   }
 
   std::unique_ptr<aura::Window> window_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
-                         DISABLED_HomeButtonTapOverlayTest,
+                         HomeButtonTapOverlayTest,
                          testing::Values(TestVariant::kClamshell,
                                          TestVariant::kTablet,
                                          TestVariant::kTabletWithBackButton));
@@ -166,7 +178,7 @@ INSTANTIATE_TEST_SUITE_P(All,
 //   after the animation)
 // - EventType::kGestureTapCancel: Nothing should happen
 // - EventType::kGestureLongTap: Nothing should happen
-TEST_P(DISABLED_HomeButtonTapOverlayTest, BurstAnimationWithLongPress) {
+TEST_P(HomeButtonTapOverlayTest, BurstAnimationWithLongPress) {
   const views::View* tap_overlay = GetTapOverlay();
   ASSERT_THAT(tap_overlay, testing::NotNull());
 
@@ -204,7 +216,7 @@ TEST_P(DISABLED_HomeButtonTapOverlayTest, BurstAnimationWithLongPress) {
 
 // HomeButtonTapOverlay renders a ripple animation with a tap, which goes beyond
 // the size of home button.
-TEST_P(DISABLED_HomeButtonTapOverlayTest, RippleAnimationWithTap) {
+TEST_P(HomeButtonTapOverlayTest, RippleAnimationWithTap) {
   const views::View* tap_overlay = GetTapOverlay();
   ASSERT_THAT(tap_overlay, testing::NotNull());
 
@@ -240,7 +252,7 @@ TEST_P(DISABLED_HomeButtonTapOverlayTest, RippleAnimationWithTap) {
 
 // HomeButtonTapOverlay renders a ripple animation with a tap, which goes beyond
 // the size of home button.
-TEST_P(DISABLED_HomeButtonTapOverlayTest,
+TEST_P(HomeButtonTapOverlayTest,
        RippleAnimationWithAssistantDisabledDuringTap) {
   const views::View* tap_overlay = GetTapOverlay();
   ASSERT_THAT(tap_overlay, testing::NotNull());
