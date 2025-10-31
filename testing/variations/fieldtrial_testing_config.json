@@ -24615,22 +24615,6 @@
             ]
         }
     ],
-    "SupervisedUserBlockInterstitialV3": [
-        {
-            "platforms": [
-                "android",
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SupervisedUserBlockInterstitialV3"
-                    ]
-                }
-            ]
-        }
-    ],
     "SupportOpeningDraggedLinksInSameTab": [
         {
             "platforms": [
