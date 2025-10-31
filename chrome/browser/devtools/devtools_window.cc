@@ -34,6 +34,8 @@
 #include "chrome/browser/devtools/process_sharing_infobar_delegate.h"
 #include "chrome/browser/file_select_helper.h"
 #include "chrome/browser/infobars/confirm_infobar_creator.h"
+#include "chrome/browser/policy/developer_tools_policy_checker.h"
+#include "chrome/browser/policy/developer_tools_policy_checker_factory.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
@@ -1244,11 +1246,40 @@ DevToolsWindow::DevToolsWindow(FrontendType frontend_type,
       language::prefs::kAcceptLanguages,
       base::BindRepeating(&DevToolsWindow::OnLocaleChanged,
                           base::Unretained(this)));
+  pref_change_registrar_.Add(
+      prefs::kDeveloperToolsAvailabilityAllowlist,
+      base::BindRepeating(&DevToolsWindow::OnDevToolsPolicyChanged,
+                          base::Unretained(this)));
+  pref_change_registrar_.Add(
+      prefs::kDeveloperToolsAvailabilityBlocklist,
+      base::BindRepeating(&DevToolsWindow::OnDevToolsPolicyChanged,
+                          base::Unretained(this)));
 
   int64_t now_timestamp =
       base::Time::Now().ToDeltaSinceWindowsEpoch().InMilliseconds();
   profile_->GetPrefs()->SetInt64(prefs::kDevToolsLastOpenTimestamp,
                                  now_timestamp);
+
+  policy::DeveloperToolsPolicyChecker* checker =
+      policy::DeveloperToolsPolicyCheckerFactory::GetForBrowserContext(
+          profile_);
+  if (checker) {
+    policy_checker_callback_subscription_ =
+        checker->AddObserver(base::BindRepeating(
+            &DevToolsWindow::OnDevToolsPolicyChanged, base::Unretained(this)));
+  }
+}
+
+void DevToolsWindow::OnDevToolsPolicyChanged() {
+  if (!AllowDevToolsFor(profile_, GetInspectedWebContents())) {
+    CloseWindow();
+  }
+}
+
+void DevToolsWindow::OnPolicyUpdated(const policy::PolicyNamespace& ns,
+                                     const policy::PolicyMap& previous,
+                                     const policy::PolicyMap& current) {
+  OnDevToolsPolicyChanged();
 }
 
 // static
@@ -2119,6 +2150,19 @@ void DevToolsWindow::OnInfoBarRemoved(infobars::InfoBar* infobar,
   if (sharing_infobar_ == infobar) {
     infobar->owner()->RemoveObserver(this);
     sharing_infobar_ = nullptr;
+  }
+}
+
+void DevToolsWindow::DidFinishNavigation(
+    content::NavigationHandle* navigation_handle) {
+  if (!navigation_handle->HasCommitted() ||
+      navigation_handle->IsSameDocument() ||
+      !navigation_handle->IsInPrimaryMainFrame()) {
+    return;
+  }
+
+  if (!AllowDevToolsFor(profile_, web_contents())) {
+    main_web_contents_->ClosePage();
   }
 }
 

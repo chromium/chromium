@@ -27,8 +27,16 @@ class DeveloperToolsPolicyChecker : public KeyedService {
   // Returns true if the given |url| matches the Allowlisted URL patterns.
   bool IsUrlAllowedByPolicy(const GURL& url) const;
 
+  base::CallbackListSubscription AddObserver(base::RepeatingClosure callback);
+
   // Returns true if the given |url| matches the Blocklisted URL patterns.
   bool IsUrlBlockedByPolicy(const GURL& url) const;
+
+  // Returns true if the given |url| matches the Allowlisted URL patterns,
+  // false if it matches the Blocklisted URL patterns, or std::nullopt if the
+  // URL is not covered by the policies. The Allowlist takes precedence
+  // over the Blocklist if a URL matches patterns in both.
+  std::optional<bool> CheckDevToolsAvailabilityForUrl(const GURL& url) const;
 
  private:
   URLBlocklistManager url_blocklist_manager_;

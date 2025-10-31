@@ -29,4 +29,23 @@ bool DeveloperToolsPolicyChecker::IsUrlBlockedByPolicy(const GURL& url) const {
          URLBlocklist::URLBlocklistState::URL_IN_BLOCKLIST;
 }
 
+base::CallbackListSubscription DeveloperToolsPolicyChecker::AddObserver(
+    base::RepeatingClosure callback) {
+  return url_blocklist_manager_.AddObserver(std::move(callback));
+}
+
+std::optional<bool>
+DeveloperToolsPolicyChecker::CheckDevToolsAvailabilityForUrl(
+    const GURL& url) const {
+  URLBlocklist::URLBlocklistState url_state =
+      url_blocklist_manager_.GetURLBlocklistState(url);
+  if (url_state == URLBlocklist::URLBlocklistState::URL_IN_ALLOWLIST) {
+    return true;
+  }
+  if (url_state == URLBlocklist::URLBlocklistState::URL_IN_BLOCKLIST) {
+    return false;
+  }
+  return std::nullopt;
+}
+
 }  // namespace policy

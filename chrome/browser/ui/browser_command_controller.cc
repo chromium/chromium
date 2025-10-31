@@ -240,6 +240,14 @@ BrowserCommandController::BrowserCommandController(BrowserWindowInterface* bwi)
       base::BindRepeating(&BrowserCommandController::UpdateCommandsForDevTools,
                           base::Unretained(this)));
   profile_pref_registrar_.Add(
+      prefs::kDeveloperToolsAvailabilityAllowlist,
+      base::BindRepeating(&BrowserCommandController::UpdateCommandsForDevTools,
+                          base::Unretained(this)));
+  profile_pref_registrar_.Add(
+      prefs::kDeveloperToolsAvailabilityBlocklist,
+      base::BindRepeating(&BrowserCommandController::UpdateCommandsForDevTools,
+                          base::Unretained(this)));
+  profile_pref_registrar_.Add(
       bookmarks::prefs::kEditBookmarksEnabled,
       base::BindRepeating(
           &BrowserCommandController::UpdateCommandsForBookmarkEditing,
@@ -1898,6 +1906,7 @@ void BrowserCommandController::UpdateCommandsForTabState() {
   // Update the zoom commands when an active tab is selected.
   UpdateCommandsForZoomState();
   UpdateCommandsForTabKeyboardFocus(GetKeyboardFocusedTabIndex(browser_));
+  UpdateCommandsForDevTools();
 
   // Disable the add to comparison table menu when the page is not a standard
   // webpage.

@@ -345,10 +345,17 @@ void URLBlocklistManager::Update() {
                      ui_weak_ptr_factory_.GetWeakPtr()));
 }
 
+base::CallbackListSubscription URLBlocklistManager::AddObserver(
+    base::RepeatingClosure callback) {
+  DCHECK(ui_task_runner_->RunsTasksInCurrentSequence());
+  return observer_list_.Add(std::move(callback));
+}
+
 void URLBlocklistManager::SetBlocklist(
     std::unique_ptr<URLBlocklist> blocklist) {
   DCHECK(ui_task_runner_->RunsTasksInCurrentSequence());
   blocklist_ = std::move(blocklist);
+  observer_list_.Notify();
 }
 
 bool URLBlocklistManager::IsURLBlocked(const GURL& url) const {

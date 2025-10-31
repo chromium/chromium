@@ -51,8 +51,8 @@ DeveloperToolsPolicyCheckerFactory::BuildServiceInstanceForBrowserContext(
 
 void DeveloperToolsPolicyCheckerFactory::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
-  // TODO(mickaczmarczyk): Remove this pref registration. This will be resolved
-  // in next CLs.
+  // Prefs are registered here on all platforms, but used only on Desktop.
+  // TODO(crbug.com/442892562) Add implementation for mobile.
   registry->RegisterIntegerPref(
       prefs::kDevToolsAvailability,
       static_cast<int>(DeveloperToolsPolicyHandler::Availability::

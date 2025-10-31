@@ -331,28 +331,8 @@ bool ChromeDevToolsManagerDelegate::AllowInspectingRenderFrameHost(
     content::RenderFrameHost* rfh) {
   Profile* profile =
       Profile::FromBrowserContext(rfh->GetProcess()->GetBrowserContext());
-  auto* process_manager = extensions::ProcessManager::Get(profile);
-  auto* extension = process_manager
-                        ? process_manager->GetExtensionForRenderFrameHost(rfh)
-                        : nullptr;
-  if (extension || !web_app::AreWebAppsEnabled(profile)) {
-    return IsInspectionAllowed(profile, extension);
-  }
-
-  if (auto* web_app_provider =
-          web_app::WebAppProvider::GetForWebApps(profile)) {
-    std::optional<webapps::AppId> app_id =
-        web_app_provider->registrar_unsafe().FindBestAppWithUrlInScope(
-            rfh->GetMainFrame()->GetLastCommittedURL(),
-            web_app::WebAppFilter::InstalledInChrome());
-    if (app_id) {
-      const auto* web_app =
-          web_app_provider->registrar_unsafe().GetAppById(app_id.value());
-      return IsInspectionAllowed(profile, web_app);
-    }
-  }
-  // |extension| is always nullptr here.
-  return IsInspectionAllowed(profile, extension);
+  return IsInspectionAllowed(profile,
+                             content::WebContents::FromRenderFrameHost(rfh));
 }
 
 void ChromeDevToolsManagerDelegate::ClientAttached(

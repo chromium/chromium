@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -15,6 +16,7 @@
 #include "chrome/browser/devtools/devtools_contents_resizing_strategy.h"
 #include "chrome/browser/devtools/devtools_toggle_action.h"
 #include "chrome/browser/devtools/devtools_ui_bindings.h"
+#include "components/policy/core/common/policy_service.h"
 #include "content/public/browser/child_process_host.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -94,7 +96,8 @@ class DevToolsWindow : public DevToolsUIBindings::Delegate,
 #if !BUILDFLAG(IS_ANDROID)
                        public BrowserListObserver,
 #endif
-                       public infobars::InfoBarManager::Observer {
+                       public infobars::InfoBarManager::Observer,
+                       public policy::PolicyService::Observer {
  public:
   static const char kDevToolsApp[];
 
@@ -469,6 +472,8 @@ class DevToolsWindow : public DevToolsUIBindings::Delegate,
   // content::WebContentsObserver
   using content::WebContentsObserver::BeforeUnloadFired;
   void PrimaryPageChanged(content::Page& page) override;
+  void DidFinishNavigation(
+      content::NavigationHandle* navigation_handle) override;
 
 #if !BUILDFLAG(IS_ANDROID)
   // BrowserListObserver:
@@ -501,6 +506,12 @@ class DevToolsWindow : public DevToolsUIBindings::Delegate,
   // a very short period of time (until this handler has reset it again).
   void OnLocaleChanged();
   void OverrideAndSyncDevToolsRendererPrefs();
+  void OnDevToolsPolicyChanged();
+
+  // policy::PolicyService::Observer:
+  void OnPolicyUpdated(const policy::PolicyNamespace& ns,
+                       const policy::PolicyMap& previous,
+                       const policy::PolicyMap& current) override;
 
   void MaybeShowSharedProcessInfobar();
 
@@ -581,6 +592,8 @@ class DevToolsWindow : public DevToolsUIBindings::Delegate,
   PrefChangeRegistrar pref_change_registrar_;
 
   base::ScopedClosureRunner capture_handle_;
+
+  base::CallbackListSubscription policy_checker_callback_subscription_;
 
   friend class DevToolsEventForwarder;
 
