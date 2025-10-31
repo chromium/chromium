@@ -99,7 +99,7 @@ class UrlBarViewBinder {
             view.setPaddingRelative(
                     view.getPaddingStart(), verticalPadding, view.getPaddingEnd(), verticalPadding);
             view.setUseSmallTextHeight(useSmallText);
-            view.setHint(getHintForTextSize(model));
+            view.setHint(getHintForModelState(model));
             ConstraintLayout.LayoutParams layoutParams =
                     (ConstraintLayout.LayoutParams) view.getLayoutParams();
             layoutParams.width =
@@ -133,8 +133,9 @@ class UrlBarViewBinder {
             view.setSelectAllOnFocus(model.get(UrlBarProperties.SELECT_ALL_ON_FOCUS));
         } else if (UrlBarProperties.LONG_CLICK_LISTENER.equals(propertyKey)) {
             view.setOnLongClickListener(model.get(UrlBarProperties.LONG_CLICK_LISTENER));
-        } else if (UrlBarProperties.HINT_TEXT.equals(propertyKey)) {
-            view.setHint(getHintForTextSize(model));
+        } else if (UrlBarProperties.HINT_TEXT.equals(propertyKey)
+                || UrlBarProperties.SHOW_HINT_TEXT.equals(propertyKey)) {
+            view.setHint(getHintForModelState(model));
         }
     }
 
@@ -176,11 +177,15 @@ class UrlBarViewBinder {
         textSelectHandleRight.mutate().setTint(color);
     }
 
-    private static @Nullable String getHintForTextSize(PropertyModel model) {
-        // Android TextView's set a desired size based on the max of the hint text width and the
-        // "regular" width. In small text mode, where we don't intend to show the hint, we set it to
+    private static @Nullable String getHintForModelState(PropertyModel model) {
+        // Android TextView's set a desired size based on the max of the hint text size and the
+        // "regular" size. In small text mode, where we don't intend to show the hint, we set it to
         // null to avoid over-allocating space for text that will never be shown.
+        // Similarly, we set SHOW_HINT_TEXT to false in other cases when we don't intend to show the
+        // hint and wish to avoid over-allocating space, e.g. when entering text in the focused
+        // state where the hint could cause premature wrapping to another line.
         return model.get(UrlBarProperties.USE_SMALL_TEXT)
+                        || !model.get(UrlBarProperties.SHOW_HINT_TEXT)
                 ? null
                 : model.get(UrlBarProperties.HINT_TEXT);
     }
