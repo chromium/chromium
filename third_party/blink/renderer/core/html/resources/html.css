@@ -2108,7 +2108,7 @@ dialog:where(:modal) {
 }
 @supports blink-feature(CustomizableSelectInPage) {
   select option::checkmark {
-    content: '\2713' / '';
+    content: '\2713';
   }
 }
 
