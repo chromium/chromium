@@ -976,6 +976,10 @@ TEST_F(BookmarkCodecTest, CanonicalizeUuid) {
 // This test checks that a corrupted SHA256 value does not match the stored
 // SHA256 value.
 TEST_F(BookmarkCodecTest, ShouldRecordSHA256DigestMismatchWhenReadingFile) {
+  if (!base::FeatureList::IsEnabled(kEnableBookmarkCodecSHA256)) {
+    // Return early if SHA256 not enabled
+    return;
+  }
   std::unique_ptr<BookmarkModel> model(CreateTestModel1());
   std::string enc_checksum;
   base::Value::Dict value = EncodeModel(
