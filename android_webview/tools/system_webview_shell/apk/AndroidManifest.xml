@@ -48,6 +48,10 @@
         <intent>
             <action android:name="org.chromium.intent.action.UPDATE_PAYMENT_DETAILS"/>
         </intent>
+        <intent>
+            <action android:name="android.intent.action.PROCESS_TEXT" />
+            <data android:mimeType="text/plain" />
+        </intent>
     </queries>
 
     <application
