@@ -91,8 +91,8 @@ IN_PROC_BROWSER_TEST_F(WebUIPageLoadMetricsObserverBrowserTest,
   NavigateAndWaitForMetrics(GURL("chrome://version"));
   // Verify that WebUI metrics ARE recorded for version WebUI but are not
   // recorded for previous WebUI navigation. If aggregate metrics fail, omnibox
-  // is no longer an internal debug WebUI or the PLMO recorded metrics
-  // incorrectly.
+  // is no longer an internal debug WebUI or WebUIPageLoadMetricsObserver
+  // recorded metrics incorrectly.
   histogram_tester_->ExpectTotalCount(
       "PageLoad.PaintTiming.NavigationToFirstContentfulPaint.WebUI", 1);
   histogram_tester_->ExpectTotalCount(
