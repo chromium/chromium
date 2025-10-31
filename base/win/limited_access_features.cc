@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/win/limited_access_features.h"
+#include "base/win/limited_access_features.h"
 
 #include <inspectable.h>
 #include <roapi.h>
@@ -25,16 +25,21 @@ using ABI::Windows::ApplicationModel::LimitedAccessFeatureStatus;
 using ABI::Windows::ApplicationModel::LimitedAccessFeatureStatus_Available;
 using ABI::Windows::ApplicationModel::
     LimitedAccessFeatureStatus_AvailableWithoutToken;
-using base::win::HStringReference;
 using Microsoft::WRL::ComPtr;
+
+namespace {
 
 // Microsoft provided these values. They are used to unlock and access limited
 // access features.
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-const wchar_t kLimitedAccessFeatureIdentity[] = L"0qgpfzgh1edfy";
+constexpr wchar_t kLimitedAccessFeatureIdentity[] = L"0qgpfzgh1edfy";
 #else
-const wchar_t kLimitedAccessFeatureIdentity[] = L"b06a12530me7r";
+constexpr wchar_t kLimitedAccessFeatureIdentity[] = L"b06a12530me7r";
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
+}  // namespace
+
+namespace base::win {
 
 bool TryToUnlockLimitedAccessFeature(const std::wstring& feature,
                                      const std::wstring& token) {
@@ -52,9 +57,9 @@ bool TryToUnlockLimitedAccessFeature(const std::wstring& feature,
   }
 
   // Required to unlock feature.
-  const std::wstring attestation = base::StrCat(
-      {kLimitedAccessFeatureIdentity, L" has registered their use of ", feature,
-       L" with Microsoft and agrees to the terms of use."});
+  const std::wstring attestation =
+      StrCat({kLimitedAccessFeatureIdentity, L" has registered their use of ",
+              feature, L" with Microsoft and agrees to the terms of use."});
 
   hr = limited_access_features->TryUnlockFeature(
       HStringReference(feature.c_str()).Get(),
@@ -77,3 +82,5 @@ bool TryToUnlockLimitedAccessFeature(const std::wstring& feature,
   }
   return true;
 }
+
+}  // namespace base::win

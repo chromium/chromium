@@ -18,9 +18,9 @@
 #include "base/win/com_init_util.h"
 #include "base/win/core_winrt_util.h"
 #include "base/win/hstring_reference.h"
+#include "base/win/limited_access_features.h"
 #include "base/win/post_async_results.h"
 #include "build/branding_buildflags.h"
-#include "chrome/browser/win/limited_access_features.h"
 #include "chrome/installer/util/shell_util.h"
 #include "content/public/browser/browser_thread.h"
 #include "windows.ui.shell.h"
@@ -47,8 +47,8 @@ bool PinLimitedAccessFeatureAvailable() {
 #else
       L"ILzQYl3daXqTIyjmNj5xwg==";
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  return TryToUnlockLimitedAccessFeature(L"com.microsoft.windows.taskbar.pin",
-                                         taskbar_api_token);
+  return base::win::TryToUnlockLimitedAccessFeature(
+      L"com.microsoft.windows.taskbar.pin", taskbar_api_token);
 }
 
 // Returns whether pinning is allowed or not. If it returns std::nullopt, an
