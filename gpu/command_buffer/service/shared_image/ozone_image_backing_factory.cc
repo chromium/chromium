@@ -92,8 +92,6 @@ OzoneImageBackingFactory::CreateGpuMemoryBufferHandle(
     viz::SharedImageFormat format,
     gfx::BufferUsage usage) {
   CHECK(viz::HasEquivalentBufferFormat(format));
-  gfx::BufferFormat buffer_format =
-      viz::SharedImageFormatToBufferFormat(format);
   scoped_refptr<gfx::NativePixmap> pixmap =
       ui::OzonePlatform::GetInstance()
           ->GetSurfaceFactoryOzone()
@@ -101,7 +99,7 @@ OzoneImageBackingFactory::CreateGpuMemoryBufferHandle(
                                vulkan_context_provider
                                    ? vulkan_context_provider->GetDeviceQueue()
                                    : nullptr,
-                               size, buffer_format, usage, size);
+                               size, format, usage, size);
 
   if (!pixmap.get()) {
     DLOG(ERROR) << "Failed to create pixmap " << size.ToString() << ",  "
@@ -130,8 +128,6 @@ OzoneImageBackingFactory::CreateSharedImageInternal(
     SharedImageUsageSet usage,
     std::string debug_label,
     std::optional<gfx::BufferUsage> buffer_usage) {
-  gfx::BufferFormat buffer_format =
-      viz::SharedImageFormatToBufferFormat(format);
   VulkanDeviceQueue* device_queue = nullptr;
 #if BUILDFLAG(ENABLE_VULKAN)
   DCHECK(shared_context_state_);
@@ -146,13 +142,12 @@ OzoneImageBackingFactory::CreateSharedImageInternal(
   // Note that when |buffer_usage| is passed as a parameter and is not null, it
   // should be used instead of converting |usage| to it via GetBufferUsage().
   scoped_refptr<gfx::NativePixmap> pixmap = surface_factory->CreateNativePixmap(
-      surface_handle, device_queue, size, buffer_format,
+      surface_handle, device_queue, size, format,
       buffer_usage.value_or(GetBufferUsage(usage)));
   // Fallback to GPU_READ if cannot create pixmap with SCANOUT
   if (!pixmap) {
-    pixmap = surface_factory->CreateNativePixmap(surface_handle, device_queue,
-                                                 size, buffer_format,
-                                                 gfx::BufferUsage::GPU_READ);
+    pixmap = surface_factory->CreateNativePixmap(
+        surface_handle, device_queue, size, format, gfx::BufferUsage::GPU_READ);
   }
   if (!pixmap) {
     DLOG(ERROR) << "Failed to create native pixmap";
