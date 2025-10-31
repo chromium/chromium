@@ -136,6 +136,13 @@ void SaveAndFillDialog::OnDidChangeFocus(views::View* before,
     card_number_data_.GetInputTextField().SetText(
         GetFormattedCardNumberForDisplay(
             card_number_data_.GetInputTextField().GetText()));
+    card_number_data_.MaybeAnnounceError();
+  } else if (before == &cvc_data_.GetInputTextField()) {
+    cvc_data_.MaybeAnnounceError();
+  } else if (before == &name_on_card_data_.GetInputTextField()) {
+    name_on_card_data_.MaybeAnnounceError();
+  } else if (before == &expiration_date_data_.GetInputTextField()) {
+    expiration_date_data_.MaybeAnnounceError();
   }
 }
 

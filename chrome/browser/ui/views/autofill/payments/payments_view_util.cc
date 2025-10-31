@@ -156,13 +156,17 @@ void LabeledTextfieldWithErrorMessage::SetErrorState(bool is_valid) {
   is_valid_input = is_valid;
   input->SetInvalid(!is_valid);
   if (error_label) {
-    if (!is_valid) {
-      error_label->GetViewAccessibility().AnnounceAlert(error_label->GetText());
-    }
     error_label->SetVisible(!is_valid);
   }
   if (error_label_placeholder) {
     error_label_placeholder->SetVisible(is_valid);
+  }
+}
+
+void LabeledTextfieldWithErrorMessage::MaybeAnnounceError() {
+  if (!GetInputTextField().GetText().empty() && !is_valid_input) {
+    error_label->GetViewAccessibility().AnnouncePolitely(
+        error_label->GetText());
   }
 }
 
