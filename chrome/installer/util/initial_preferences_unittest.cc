@@ -80,7 +80,6 @@ TEST_F(InitialPreferencesTest, ParseDistroParams) {
       "do_not_create_quick_launch_shortcut": true,
       "do_not_create_taskbar_shortcut": true,
       "do_not_launch_chrome": true,
-      "make_chrome_default": true,
       "make_chrome_default_for_user": true,
       "program_files_dir": "c:\\bar",
       "system_level": true,
@@ -102,7 +101,6 @@ TEST_F(InitialPreferencesTest, ParseDistroParams) {
       installer::initial_preferences::kDoNotCreateQuickLaunchShortcut,
       installer::initial_preferences::kDoNotCreateTaskbarShortcut,
       installer::initial_preferences::kDoNotLaunchChrome,
-      installer::initial_preferences::kMakeChromeDefault,
       installer::initial_preferences::kMakeChromeDefaultForUser,
       installer::initial_preferences::kSystemLevel,
       installer::initial_preferences::kVerboseLogging,
@@ -155,7 +153,6 @@ TEST_F(InitialPreferencesTest, ParseMissingDistroParams) {
 
   const char* const missing_bools[] = {
       installer::initial_preferences::kDoNotRegisterForUpdateLaunch,
-      installer::initial_preferences::kMakeChromeDefault,
       installer::initial_preferences::kMakeChromeDefaultForUser,
   };
 

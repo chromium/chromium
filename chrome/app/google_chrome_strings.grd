@@ -688,9 +688,6 @@ Google Chrome is unable to recover your settings.
         <message name="IDS_UNINSTALL_DELETE_PROFILE" desc="Text to show user to ask whether to delete all the profile data also during uninstallation.">
           Also delete your browsing data?
         </message>
-        <message name="IDS_UNINSTALL_SET_DEFAULT_BROWSER" desc="Text to ask whether to set another browser as default when Chromium is uninstalled.">
-          Change default browser to:
-        </message>
         <message name="IDS_UNINSTALL_BUTTON_TEXT" desc="Label for uninstall button on Uninstall confirmation dialog.">
           Uninstall
         </message>

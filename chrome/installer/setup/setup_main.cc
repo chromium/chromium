@@ -777,20 +777,15 @@ installer::InstallStatus RegisterDevChrome(
 
   installer::InstallStatus status = installer::FIRST_INSTALL_SUCCESS;
   if (base::PathExists(chrome_exe)) {
-    // Create the Start menu shortcut and pin it to the Win7+ taskbar.
+    // Create the Start menu shortcut and pin it to the taskbar.
     ShellUtil::ShortcutProperties shortcut_properties(ShellUtil::CURRENT_USER);
     ShellUtil::AddDefaultShortcutProperties(chrome_exe, &shortcut_properties);
     shortcut_properties.set_pin_to_taskbar(true);
     ShellUtil::CreateOrUpdateShortcut(
         ShellUtil::SHORTCUT_LOCATION_START_MENU_ROOT, shortcut_properties,
         ShellUtil::SHELL_SHORTCUT_CREATE_ALWAYS);
-
-    // Register Chrome at user-level and make it default.
-    if (ShellUtil::CanMakeChromeDefaultUnattended()) {
-      ShellUtil::MakeChromeDefault(ShellUtil::CURRENT_USER, chrome_exe, true);
-    } else {
-      ShellUtil::ShowMakeChromeDefaultSystemUI(chrome_exe);
-    }
+    // Register Chrome at user-level.
+    ShellUtil::ShowMakeChromeDefaultSystemUI(chrome_exe);
   } else {
     LOG(ERROR) << "Path not found: " << chrome_exe.value();
     status = installer::INSTALL_FAILED;
@@ -1482,8 +1477,7 @@ int SetupMain() {
   // Some switches only apply for modes that can be made the user's default
   // browser.
   if (!install_static::SupportsSetAsDefaultBrowser() &&
-      (cmd_line.HasSwitch(installer::switches::kMakeChromeDefault) ||
-       cmd_line.HasSwitch(installer::switches::kRegisterChromeBrowser))) {
+      cmd_line.HasSwitch(installer::switches::kRegisterChromeBrowser)) {
     return installer::SXS_OPTION_NOT_SUPPORTED;
   }
   // Some command line options are no longer supported and must error out.

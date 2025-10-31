@@ -34,7 +34,6 @@ namespace installer {
 //      "create_all_shortcuts": true,
 //      "do_not_launch_chrome": false,
 //      "import_bookmarks_from_file": "c:\\path",
-//      "make_chrome_default": false,
 //      "make_chrome_default_for_user": true,
 //      "ping_delay": 40,
 //      "require_eula": true,

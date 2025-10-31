@@ -38,7 +38,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/platform_thread.h"
-#include "base/threading/scoped_blocking_call.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/win/registry.h"
@@ -653,49 +652,11 @@ std::wstring GetHttpSchemeUserChoiceProgId() {
 }  // namespace
 
 bool SetAsDefaultBrowser() {
-  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
-                                                base::BlockingType::MAY_BLOCK);
-
-  base::FilePath chrome_exe;
-  if (!base::PathService::Get(base::FILE_EXE, &chrome_exe)) {
-    LOG(ERROR) << "Error getting app exe path";
-    return false;
-  }
-
-  // From UI currently we only allow setting default browser for current user.
-  if (!ShellUtil::MakeChromeDefault(ShellUtil::CURRENT_USER, chrome_exe,
-                                    true /* elevate_if_not_admin */)) {
-    LOG(ERROR) << "Chrome could not be set as default browser.";
-    return false;
-  }
-
-  VLOG(1) << "Chrome registered as default browser.";
-  return true;
+  return false;
 }
 
 bool SetAsDefaultClientForScheme(const std::string& scheme) {
-  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
-                                                base::BlockingType::MAY_BLOCK);
-
-  if (scheme.empty()) {
-    return false;
-  }
-
-  base::FilePath chrome_exe;
-  if (!base::PathService::Get(base::FILE_EXE, &chrome_exe)) {
-    LOG(ERROR) << "Error getting app exe path";
-    return false;
-  }
-
-  std::wstring wscheme(base::UTF8ToWide(scheme));
-  if (!ShellUtil::MakeChromeDefaultProtocolClient(chrome_exe, wscheme)) {
-    LOG(ERROR) << "Chrome could not be set as default handler for " << scheme
-               << ".";
-    return false;
-  }
-
-  VLOG(1) << "Chrome registered as default handler for " << scheme << ".";
-  return true;
+  return false;
 }
 
 std::u16string GetApplicationNameForScheme(const GURL& url) {
@@ -759,11 +720,7 @@ DefaultWebClientSetPermission GetPlatformSpecificDefaultWebClientSetPermission(
   if (!install_static::SupportsSetAsDefaultBrowser()) {
     return SET_DEFAULT_NOT_ALLOWED;
   }
-  if (ShellUtil::CanMakeChromeDefaultUnattended()) {
-    return SET_DEFAULT_UNATTENDED;
-  }
-  // Setting the default web client generally requires user interaction in
-  // Windows 8+ with permitted exceptions above.
+  // Setting the default web client generally requires user interaction.
   return SET_DEFAULT_INTERACTIVE;
 }
 

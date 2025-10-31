@@ -51,8 +51,6 @@ inline constexpr char kDoNotRegisterForUpdateLaunch[] =
     "do_not_register_for_update_launch";
 // String.  Specifies the file path to write logging info to.
 inline constexpr char kLogFile[] = "log_file";
-// Boolean. Register Chrome as default browser. Cmd line override present.
-inline constexpr char kMakeChromeDefault[] = "make_chrome_default";
 // Boolean. Register Chrome as default browser for the current user.
 inline constexpr char kMakeChromeDefaultForUser[] =
     "make_chrome_default_for_user";

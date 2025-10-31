@@ -139,8 +139,6 @@ void InitialPreferences::InitializeFromCommandLine(
        installer::initial_preferences::kDoNotRegisterForUpdateLaunch},
       {installer::switches::kDoNotLaunchChrome,
        installer::initial_preferences::kDoNotLaunchChrome},
-      {installer::switches::kMakeChromeDefault,
-       installer::initial_preferences::kMakeChromeDefault},
       {installer::switches::kSystemLevel,
        installer::initial_preferences::kSystemLevel},
       {installer::switches::kVerboseLogging,

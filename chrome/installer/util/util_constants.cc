@@ -94,12 +94,6 @@ const char kInstallLevel[] = "install-level";
 // If present, specify file path to write logging info.
 const char kLogFile[] = "log-file";
 
-// Register Chrome as default browser on the system. Usually this will require
-// that setup is running as admin. If running as admin we try to register
-// as default browser at system level, if running as non-admin we try to
-// register as default browser only for the current user.
-const char kMakeChromeDefault[] = "make-chrome-default";
-
 // Tells installer to expect to be run as a subsidiary to an MSI.
 const char kMsi[] = "msi";
 

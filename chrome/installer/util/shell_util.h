@@ -12,7 +12,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <map>
 #include <memory>
 #include <optional>
 #include <set>
@@ -445,15 +444,6 @@ class ShellUtil {
   static std::wstring GetChromeDelegateCommand(
       const base::FilePath& chrome_exe);
 
-  // Gets a mapping of all registered browser names (excluding the current
-  // browser) and their reinstall command (which usually sets browser as
-  // default).
-  // Given browsers can be registered in HKCU (as of Win7) and/or in HKLM, this
-  // method looks in both and gives precedence to values in HKCU as per the msdn
-  // standard: http://goo.gl/xjczJ.
-  static void GetRegisteredBrowsers(
-      std::map<std::wstring, std::wstring>* browsers);
-
   // Returns the suffix this user's Chrome install is registered with.
   // Always returns the empty string on system-level installs.
   //
@@ -487,11 +477,6 @@ class ShellUtil {
   static std::wstring BuildAppUserModelId(
       const std::vector<std::wstring>& components);
 
-  // Returns true if Chrome can make itself the default browser without relying
-  // on the Windows shell to prompt the user. This is the case for versions of
-  // Windows prior to Windows 8.
-  static bool CanMakeChromeDefaultUnattended();
-
   // Returns the DefaultState of Chrome for HTTP and HTTPS and updates the
   // default browser beacons as appropriate.
   static DefaultState GetChromeDefaultState();
@@ -510,27 +495,6 @@ class ShellUtil {
   static DefaultState GetChromeDefaultFileHandlerState(
       base::wcstring_view file_extension);
 
-  // Make Chrome the default browser. This function works by going through
-  // the url protocols and file associations that are related to general
-  // browsing, e.g. http, https, .html etc., and requesting to become the
-  // default handler for each. If any of these fails the operation will return
-  // false to indicate failure, which is consistent with the return value of
-  // shell_integration::GetDefaultBrowser.
-  //
-  // In the case of failure any successful changes will be left, however no
-  // more changes will be attempted.
-  // TODO(benwells): Attempt to undo any changes that were successfully made.
-  // http://crbug.com/83970
-  //
-  // shell_change: Defined whether to register as default browser at system
-  //               level or user level. If value has ShellChange::SYSTEM_LEVEL
-  //               we should be running as admin user.
-  // chrome_exe: The chrome.exe path to register as default browser.
-  // elevate_if_not_admin: On Vista if user is not admin, try to elevate for
-  //                       Chrome registration.
-  static bool MakeChromeDefault(int shell_change,
-                                const base::FilePath& chrome_exe,
-                                bool elevate_if_not_admin);
 
   // Opens the Apps & Features page in the Windows settings in branded builds.
   //
@@ -562,12 +526,6 @@ class ShellUtil {
       const base::FilePath& chrome_exe,
       base::wcstring_view file_extension,
       HWND parent_hwnd);
-
-  // Make Chrome the default application for a protocol.
-  // chrome_exe: The chrome.exe path to register as default browser.
-  // protocol: The protocol to register as the default handler for.
-  static bool MakeChromeDefaultProtocolClient(const base::FilePath& chrome_exe,
-                                              const std::wstring& protocol);
 
   // Shows and waits for the Windows 8 "How do you want to open links of this
   // type?" dialog if Chrome is not already the default |protocol|

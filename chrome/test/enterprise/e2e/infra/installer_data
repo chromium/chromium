@@ -1,6 +1,5 @@
 {
   "distribution":{
-     "make_chrome_default":true,
      "system_level":true,
      "verbose_logging":true,
      "chrome":true,
