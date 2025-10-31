@@ -11,6 +11,9 @@
 
 namespace net {
 
+static constexpr char kErrorHistogramName[] =
+    "Net.TcpSocketPoolLimitRandomization.Error";
+
 // These values are persisted to logs, entries should not be renumbered.
 // LINT.IfChange(SocketPoolAdditionalCapacityError)
 enum class SocketPoolAdditionalCapacityError {
@@ -92,26 +95,24 @@ SocketPoolAdditionalCapacity::SocketPoolAdditionalCapacity(double base,
   bool is_invalid = false;
   if (base_ < 0.0 || base_ > 1.0 || std::isnan(base_)) {
     base::UmaHistogramEnumeration(
-        "Net.TcpSocketPoolLimitRandomization.Error",
-        SocketPoolAdditionalCapacityError::kInvalidBase);
+        kErrorHistogramName, SocketPoolAdditionalCapacityError::kInvalidBase);
     is_invalid = true;
   }
   if (capacity_ < 0 || capacity_ > 256) {
     base::UmaHistogramEnumeration(
-        "Net.TcpSocketPoolLimitRandomization.Error",
+        kErrorHistogramName,
         SocketPoolAdditionalCapacityError::kInvalidCapacity);
     is_invalid = true;
   }
   if (minimum_ < 0.0 || minimum_ > 1.0 || std::isnan(minimum_)) {
     base::UmaHistogramEnumeration(
-        "Net.TcpSocketPoolLimitRandomization.Error",
+        kErrorHistogramName,
         SocketPoolAdditionalCapacityError::kInvalidMinimum);
     is_invalid = true;
   }
   if (noise_ < 0.0 || noise_ > 1.0 || std::isnan(noise_)) {
     base::UmaHistogramEnumeration(
-        "Net.TcpSocketPoolLimitRandomization.Error",
-        SocketPoolAdditionalCapacityError::kInvalidNoise);
+        kErrorHistogramName, SocketPoolAdditionalCapacityError::kInvalidNoise);
     is_invalid = true;
   }
   // If any part of the config is invalid we should prevent use of additional
@@ -178,22 +179,39 @@ std::optional<SocketPoolState>
 SocketPoolAdditionalCapacity::NextStateCommonImpl(int sockets_in_use,
                                                   int socket_soft_cap) const {
   // We don't want to throw in this code, so for range errors we simply log and
-  // use the default options for each case.
+  // cap the pool to prevent overallocation of sockets.
   if (socket_soft_cap < 0) {
     base::UmaHistogramEnumeration(
-        "Net.TcpSocketPoolLimitRandomization.Error",
+        kErrorHistogramName,
         SocketPoolAdditionalCapacityError::kSocketSoftCapInvalid);
-    return SocketPoolState::kUncapped;
+    return SocketPoolState::kCapped;
+  }
+  if (!base::IsValueInRangeForNumericType<int16_t>(socket_soft_cap)) {
+    base::UmaHistogramEnumeration(
+        kErrorHistogramName,
+        SocketPoolAdditionalCapacityError::kSocketSoftCapInvalid);
+    return SocketPoolState::kCapped;
   }
   if (sockets_in_use < 0) {
     base::UmaHistogramEnumeration(
-        "Net.TcpSocketPoolLimitRandomization.Error",
+        kErrorHistogramName,
         SocketPoolAdditionalCapacityError::kSocketAllocationUnderflow);
-    return SocketPoolState::kUncapped;
+    return SocketPoolState::kCapped;
   }
+  if (!base::IsValueInRangeForNumericType<int16_t>(sockets_in_use)) {
+    base::UmaHistogramEnumeration(
+        kErrorHistogramName,
+        SocketPoolAdditionalCapacityError::kSocketAllocationOverflow);
+    return SocketPoolState::kCapped;
+  }
+
+  // At this point we know all three numbers are below an int16_t, so there's no
+  // risk doing math with them.
+
+  // We cannot allow more sockets than the maximum allowed to be in use.
   if (sockets_in_use > (socket_soft_cap + capacity_)) {
     base::UmaHistogramEnumeration(
-        "Net.TcpSocketPoolLimitRandomization.Error",
+        kErrorHistogramName,
         SocketPoolAdditionalCapacityError::kSocketAllocationOverflow);
     return SocketPoolState::kCapped;
   }

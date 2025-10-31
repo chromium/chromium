@@ -99,14 +99,14 @@ TEST(SocketPoolAdditionalCapacityTest, NextStateBeforeAllocation) {
       SocketPoolAdditionalCapacity::CreateForTest(0.0, 2, 0.5, 0.0);
 
   // Test out of bounds cases
-  EXPECT_EQ(SocketPoolState::kUncapped, pool_capacity.NextStateBeforeAllocation(
-                                            SocketPoolState::kUncapped, -2, 2));
-  EXPECT_EQ(SocketPoolState::kUncapped, pool_capacity.NextStateBeforeAllocation(
-                                            SocketPoolState::kCapped, -2, 2));
-  EXPECT_EQ(SocketPoolState::kUncapped, pool_capacity.NextStateBeforeAllocation(
-                                            SocketPoolState::kUncapped, 2, -2));
-  EXPECT_EQ(SocketPoolState::kUncapped, pool_capacity.NextStateBeforeAllocation(
-                                            SocketPoolState::kCapped, 2, -2));
+  EXPECT_EQ(SocketPoolState::kCapped, pool_capacity.NextStateBeforeAllocation(
+                                          SocketPoolState::kUncapped, -2, 2));
+  EXPECT_EQ(SocketPoolState::kCapped, pool_capacity.NextStateBeforeAllocation(
+                                          SocketPoolState::kCapped, -2, 2));
+  EXPECT_EQ(SocketPoolState::kCapped, pool_capacity.NextStateBeforeAllocation(
+                                          SocketPoolState::kUncapped, 2, -2));
+  EXPECT_EQ(SocketPoolState::kCapped, pool_capacity.NextStateBeforeAllocation(
+                                          SocketPoolState::kCapped, 2, -2));
   EXPECT_EQ(SocketPoolState::kCapped, pool_capacity.NextStateBeforeAllocation(
                                           SocketPoolState::kUncapped, 5, 2));
   EXPECT_EQ(SocketPoolState::kCapped, pool_capacity.NextStateBeforeAllocation(
@@ -159,14 +159,14 @@ TEST(SocketPoolAdditionalCapacityTest, NextStateAfterRelease) {
       SocketPoolAdditionalCapacity::CreateForTest(0.0, 2, 0.5, 0.0);
 
   // Test out of bounds cases
-  EXPECT_EQ(SocketPoolState::kUncapped, pool_capacity.NextStateAfterRelease(
-                                            SocketPoolState::kUncapped, -2, 2));
-  EXPECT_EQ(SocketPoolState::kUncapped, pool_capacity.NextStateAfterRelease(
-                                            SocketPoolState::kCapped, -2, 2));
-  EXPECT_EQ(SocketPoolState::kUncapped, pool_capacity.NextStateAfterRelease(
-                                            SocketPoolState::kUncapped, 2, -2));
-  EXPECT_EQ(SocketPoolState::kUncapped, pool_capacity.NextStateAfterRelease(
-                                            SocketPoolState::kCapped, 2, -2));
+  EXPECT_EQ(SocketPoolState::kCapped, pool_capacity.NextStateAfterRelease(
+                                          SocketPoolState::kUncapped, -2, 2));
+  EXPECT_EQ(SocketPoolState::kCapped, pool_capacity.NextStateAfterRelease(
+                                          SocketPoolState::kCapped, -2, 2));
+  EXPECT_EQ(SocketPoolState::kCapped, pool_capacity.NextStateAfterRelease(
+                                          SocketPoolState::kUncapped, 2, -2));
+  EXPECT_EQ(SocketPoolState::kCapped, pool_capacity.NextStateAfterRelease(
+                                          SocketPoolState::kCapped, 2, -2));
   EXPECT_EQ(SocketPoolState::kCapped, pool_capacity.NextStateAfterRelease(
                                           SocketPoolState::kUncapped, 5, 2));
   EXPECT_EQ(SocketPoolState::kCapped, pool_capacity.NextStateAfterRelease(
@@ -343,6 +343,8 @@ FUZZ_TEST(SocketPoolAdditionalCapacityTest, ValidateRandomizedInputs)
         {0.3, 64, 0.1, 0.1, false, 96, 64},
         {0.6, 128, 0.2, 0.2, true, 192, 128},
         {1.0, 256, 1.0, 1.0, true, 320, 256},
+        {1.0, 256, 1.0, 1.0, true, std::numeric_limits<int32_t>::max(),
+         std::numeric_limits<int32_t>::max()},
     });
 
 }  // namespace
