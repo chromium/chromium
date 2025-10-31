@@ -379,15 +379,6 @@ void PermissionControllerImpl::NotifyChangedSubscriptions(
   }
 }
 
-void PermissionControllerImpl::GrantOverridesForDevTools(
-    base::optional_ref<const url::Origin> requesting_origin,
-    base::optional_ref<const url::Origin> embedding_origin,
-    const std::vector<PermissionType>& permissions,
-    base::OnceCallback<void(OverrideStatus)> callback) {
-  GrantPermissionOverrides(requesting_origin, embedding_origin, permissions,
-                           std::move(callback));
-}
-
 void PermissionControllerImpl::SetPermissionOverride(
     base::optional_ref<const url::Origin> requesting_origin,
     base::optional_ref<const url::Origin> embedding_origin,

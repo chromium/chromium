@@ -502,7 +502,7 @@ void BrowserHandler::GrantPermissions(
     }
   }
 
-  permission_controller->GrantOverridesForDevTools(
+  permission_controller->GrantPermissionOverrides(
       overridden_origin, overridden_origin, internal_permissions,
       base::BindOnce(
           [](base::WeakPtr<BrowserHandler> browser_handler,

@@ -263,12 +263,12 @@ class PermissionControllerImplTest : public ::testing::Test {
     return future.Get();
   }
 
-  OverrideStatus GrantDevtoolsPermissionsOverrideAndWait(
+  OverrideStatus GrantPermissionOverridesAndWait(
       const std::optional<url::Origin>& requesting_origin,
       const std::optional<url::Origin>& embedding_origin,
       const std::vector<PermissionType>& permissions) {
     base::test::TestFuture<OverrideStatus> future;
-    permission_controller()->GrantOverridesForDevTools(
+    permission_controller()->GrantPermissionOverrides(
         requesting_origin, embedding_origin, permissions, future.GetCallback());
 
     return future.Get();
@@ -574,7 +574,7 @@ TEST_F(PermissionControllerImplTest,
 
   // Since one cannot be overridden, none are overridden.
   EXPECT_EQ(OverrideStatus::kOverrideNotSet,
-            GrantDevtoolsPermissionsOverrideAndWait(
+            GrantPermissionOverridesAndWait(
                 kTestOrigin, kTestOrigin,
                 {PermissionType::MIDI, PermissionType::GEOLOCATION,
                  PermissionType::BACKGROUND_SYNC}));
@@ -606,7 +606,7 @@ TEST_F(PermissionControllerImplTest,
       .WillOnce(testing::Return(true));
   // If all can be set, overrides will be stored.
   EXPECT_EQ(OverrideStatus::kOverrideSet,
-            GrantDevtoolsPermissionsOverrideAndWait(
+            GrantPermissionOverridesAndWait(
                 kTestOrigin, kTestOrigin,
                 {PermissionType::MIDI, PermissionType::GEOLOCATION,
                  PermissionType::BACKGROUND_SYNC}));
@@ -696,12 +696,12 @@ TEST_F(PermissionControllerImplTest, GrantOverridesCrashesOnSingleOrigin) {
 
   // Granting overrides should crash if only one origin is provided.
   EXPECT_DEATH_IF_SUPPORTED(
-      permission_controller()->GrantOverridesForDevTools(
+      permission_controller()->GrantPermissionOverrides(
           kTestOrigin, std::nullopt, {PermissionType::GEOLOCATION},
           base::DoNothing()),
       "");
   EXPECT_DEATH_IF_SUPPORTED(
-      permission_controller()->GrantOverridesForDevTools(
+      permission_controller()->GrantPermissionOverrides(
           std::nullopt, kTestOrigin, {PermissionType::GEOLOCATION},
           base::DoNothing()),
       "");
