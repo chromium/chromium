@@ -173,6 +173,10 @@ IOSPasswordManagerDriver::GetPasswordAutofillManager() {
   return nullptr;
 }
 
+bool IOSPasswordManagerDriver::IsDirectChildOfPrimaryMainFrame() const {
+  NOTREACHED();
+}
+
 bool IOSPasswordManagerDriver::IsInPrimaryMainFrame() const {
   return is_in_main_frame_;
 }

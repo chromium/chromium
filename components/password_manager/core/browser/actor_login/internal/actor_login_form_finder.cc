@@ -55,6 +55,28 @@ bool IsFormOriginSupported(const url::Origin& form_origin,
   return form_origin.IsSameOriginWith(main_frame_origin);
 }
 
+bool IsValidFrameAndOriginToFill(
+    base::WeakPtr<password_manager::PasswordManagerDriver> driver,
+    const url::Origin& main_frame_origin) {
+  if (driver->IsNestedWithinFencedFrame()) {
+    // Fenced frames should not be filled.
+    return false;
+  }
+
+  if (!IsFormOriginSupported(driver->GetLastCommittedOrigin(),
+                             main_frame_origin)) {
+    return false;
+  }
+
+  bool is_same_origin =
+      driver->GetLastCommittedOrigin().IsSameOriginWith(main_frame_origin);
+  // We can fill a form if its frame context is considered safe and not overly
+  // nested. A "fillable context" is either the primary main frame itself, or
+  // a direct child of the primary main frame that is not a fenced frame.
+  return is_same_origin || driver->IsInPrimaryMainFrame() ||
+         driver->IsDirectChildOfPrimaryMainFrame();
+}
+
 }  // namespace
 
 ActorLoginFormFinder::ActorLoginFormFinder(
@@ -108,12 +130,7 @@ ActorLoginFormFinder::GetEligibleLoginFormManagers(const url::Origin& origin) {
       continue;
     }
 
-    if (manager->GetDriver()->IsNestedWithinFencedFrame()) {
-      continue;
-    }
-
-    if (!IsFormOriginSupported(manager->GetDriver()->GetLastCommittedOrigin(),
-                               origin)) {
+    if (!IsValidFrameAndOriginToFill(manager->GetDriver(), origin)) {
       continue;
     }
 

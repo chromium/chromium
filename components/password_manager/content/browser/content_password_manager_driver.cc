@@ -385,6 +385,14 @@ bool ContentPasswordManagerDriver::IsNestedWithinFencedFrame() const {
   return render_frame_host_->IsNestedWithinFencedFrame();
 }
 
+bool ContentPasswordManagerDriver::IsDirectChildOfPrimaryMainFrame() const {
+  // If it has no parent, returns `false` by default.
+  if (!render_frame_host_->GetParent()) {
+    return false;
+  }
+  return render_frame_host_->GetParent()->IsInPrimaryMainFrame();
+}
+
 bool ContentPasswordManagerDriver::CanShowAutofillUi() const {
   // Don't show AutofillUi for inactive RenderFrameHost.
   return render_frame_host_->IsActive();

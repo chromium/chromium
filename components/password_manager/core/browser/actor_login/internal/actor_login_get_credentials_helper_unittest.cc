@@ -15,6 +15,7 @@
 #include "components/password_manager/core/browser/actor_login/actor_login_types.h"
 #include "components/password_manager/core/browser/actor_login/test/actor_login_test_util.h"
 #include "components/password_manager/core/browser/fake_form_fetcher.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/form_fetcher.h"
 #include "components/password_manager/core/browser/mock_password_form_cache.h"
 #include "components/password_manager/core/browser/mock_password_manager.h"
@@ -85,6 +86,7 @@ class MockPasswordManagerDriver
               (),
               (const, override));
   MOCK_METHOD(bool, IsInPrimaryMainFrame, (), (const, override));
+  MOCK_METHOD(bool, IsDirectChildOfPrimaryMainFrame, (), (const, override));
   MOCK_METHOD(bool, IsNestedWithinFencedFrame, (), (const, override));
   MOCK_METHOD(password_manager::PasswordManagerInterface*,
               GetPasswordManager,
@@ -305,6 +307,153 @@ TEST_F(ActorLoginGetCredentialsHelperTest, IgnoresFormInFencedFrame) {
   EXPECT_EQ(credentials[0].username, u"foo_username");
   EXPECT_FALSE(credentials[0].immediatelyAvailableToLogin);
   EXPECT_FALSE(credentials[0].has_persistent_permission);
+}
+
+TEST_F(ActorLoginGetCredentialsHelperTest,
+       SameSiteDirectChildOfFrameFormAvailable) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {password_manager::features::kActorLoginSameSiteIframeSupport}, {});
+  const GURL same_site_url = GURL("https://login.foo.com");
+  const url::Origin same_site_origin = url::Origin::Create(same_site_url);
+  PasswordForm saved_form =
+      CreatePasswordForm(same_site_url.spec(), u"user", u"pass");
+  client()->profile_store()->AddLogin(saved_form);
+  AddFormManager(
+      CreateFormManager(same_site_origin,
+                        /*is_in_main_frame=*/false,
+                        actor_login::CreateSigninFormData(same_site_url),
+                        client(), driver(), form_fetcher()));
+  SetBestMatches({saved_form});
+
+  ON_CALL(driver(), IsDirectChildOfPrimaryMainFrame)
+      .WillByDefault(Return(true));
+
+  base::test::TestFuture<CredentialsOrError> future;
+  ActorLoginGetCredentialsHelper helper(kOrigin, client(), password_manager(),
+                                        future.GetCallback());
+  form_fetcher()->NotifyFetchCompleted();
+
+  ASSERT_TRUE(future.Get().has_value());
+  const auto& credentials = future.Get().value();
+  ASSERT_EQ(credentials.size(), 1u);
+  EXPECT_TRUE(credentials[0].immediatelyAvailableToLogin);
+}
+
+TEST_F(ActorLoginGetCredentialsHelperTest,
+       SameSiteDirectChildOfPrimaryMainFrame_FeatureOff) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {}, {password_manager::features::kActorLoginSameSiteIframeSupport});
+  const GURL same_site_url = GURL("https://login.foo.com");
+  const url::Origin same_site_origin = url::Origin::Create(same_site_url);
+  PasswordForm saved_form =
+      CreatePasswordForm(same_site_url.spec(), u"user", u"pass");
+  client()->profile_store()->AddLogin(saved_form);
+  AddFormManager(
+      CreateFormManager(same_site_origin,
+                        /*is_in_main_frame=*/false,
+                        actor_login::CreateSigninFormData(same_site_url),
+                        client(), driver(), form_fetcher()));
+  SetBestMatches({saved_form});
+
+  ON_CALL(driver(), IsDirectChildOfPrimaryMainFrame)
+      .WillByDefault(Return(true));
+
+  base::test::TestFuture<CredentialsOrError> future;
+  ActorLoginGetCredentialsHelper helper(kOrigin, client(), password_manager(),
+                                        future.GetCallback());
+  form_fetcher()->NotifyFetchCompleted();
+
+  ASSERT_TRUE(future.Get().has_value());
+  const auto& credentials = future.Get().value();
+  ASSERT_EQ(credentials.size(), 1u);
+  EXPECT_FALSE(credentials[0].immediatelyAvailableToLogin);
+}
+
+TEST_F(ActorLoginGetCredentialsHelperTest, NestedFrameWithSameOrigin) {
+  const GURL same_origin_url = GURL("https://foo.com/login");
+  const url::Origin same_origin = url::Origin::Create(same_origin_url);
+  PasswordForm saved_form =
+      CreatePasswordForm(same_origin_url.spec(), u"user", u"pass");
+  client()->profile_store()->AddLogin(saved_form);
+  AddFormManager(
+      CreateFormManager(same_origin,
+                        /*is_in_main_frame=*/false,
+                        actor_login::CreateSigninFormData(same_origin_url),
+                        client(), driver(), form_fetcher()));
+  SetBestMatches({saved_form});
+
+  ON_CALL(driver(), IsDirectChildOfPrimaryMainFrame)
+      .WillByDefault(Return(false));
+
+  base::test::TestFuture<CredentialsOrError> future;
+  ActorLoginGetCredentialsHelper helper(kOrigin, client(), password_manager(),
+                                        future.GetCallback());
+  form_fetcher()->NotifyFetchCompleted();
+
+  ASSERT_TRUE(future.Get().has_value());
+  const auto& credentials = future.Get().value();
+  ASSERT_EQ(credentials.size(), 1u);
+  EXPECT_TRUE(credentials[0].immediatelyAvailableToLogin);
+}
+
+TEST_F(ActorLoginGetCredentialsHelperTest, IgnoresSameSiteNestedFrame) {
+  const GURL same_site_url = GURL("https://login.foo.com");
+  const url::Origin same_site_origin = url::Origin::Create(same_site_url);
+  PasswordForm saved_form =
+      CreatePasswordForm(same_site_url.spec(), u"user", u"pass");
+  client()->profile_store()->AddLogin(saved_form);
+  AddFormManager(
+      CreateFormManager(same_site_origin,
+                        /*is_in_main_frame=*/false,
+                        actor_login::CreateSigninFormData(same_site_url),
+                        client(), driver(), form_fetcher()));
+  SetBestMatches({saved_form});
+
+  ON_CALL(driver(), IsDirectChildOfPrimaryMainFrame)
+      .WillByDefault(Return(false));
+
+  base::test::TestFuture<CredentialsOrError> future;
+  ActorLoginGetCredentialsHelper helper(kOrigin, client(), password_manager(),
+                                        future.GetCallback());
+  form_fetcher()->NotifyFetchCompleted();
+
+  ASSERT_TRUE(future.Get().has_value());
+  const auto& credentials = future.Get().value();
+  ASSERT_EQ(credentials.size(), 1u);
+  EXPECT_FALSE(credentials[0].immediatelyAvailableToLogin);
+}
+
+TEST_F(ActorLoginGetCredentialsHelperTest,
+       IgnoresSameSiteNestedFrame_FeatureOff) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {}, {password_manager::features::kActorLoginSameSiteIframeSupport});
+  const GURL same_site_url = GURL("https://login.foo.com");
+  const url::Origin same_site_origin = url::Origin::Create(same_site_url);
+  PasswordForm saved_form =
+      CreatePasswordForm(same_site_url.spec(), u"user", u"pass");
+  client()->profile_store()->AddLogin(saved_form);
+  AddFormManager(
+      CreateFormManager(same_site_origin,
+                        /*is_in_main_frame=*/false,
+                        actor_login::CreateSigninFormData(same_site_url),
+                        client(), driver(), form_fetcher()));
+  SetBestMatches({saved_form});
+
+  ON_CALL(driver(), IsDirectChildOfPrimaryMainFrame)
+      .WillByDefault(Return(false));
+
+  base::test::TestFuture<CredentialsOrError> future;
+  ActorLoginGetCredentialsHelper helper(kOrigin, client(), password_manager(),
+                                        future.GetCallback());
+  form_fetcher()->NotifyFetchCompleted();
+
+  ASSERT_TRUE(future.Get().has_value());
+  const auto& credentials = future.Get().value();
+  ASSERT_EQ(credentials.size(), 1u);
+  EXPECT_FALSE(credentials[0].immediatelyAvailableToLogin);
 }
 
 TEST_F(ActorLoginGetCredentialsHelperTest, GetCredentialsPrefersExactMatch) {

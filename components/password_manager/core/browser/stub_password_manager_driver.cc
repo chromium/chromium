@@ -84,6 +84,10 @@ StubPasswordManagerDriver::GetPasswordAutofillManager() {
   return nullptr;
 }
 
+bool StubPasswordManagerDriver::IsDirectChildOfPrimaryMainFrame() const {
+  return false;
+}
+
 bool StubPasswordManagerDriver::IsInPrimaryMainFrame() const {
   return true;
 }

@@ -119,6 +119,7 @@ class ContentPasswordManagerDriver final
   PasswordManagerInterface* GetPasswordManager() override;
   PasswordAutofillManager* GetPasswordAutofillManager() override;
   void SendLoggingAvailability() override;
+  bool IsDirectChildOfPrimaryMainFrame() const override;
   bool IsInPrimaryMainFrame() const override;
   bool IsNestedWithinFencedFrame() const override;
   bool CanShowAutofillUi() const override;
