@@ -5,7 +5,6 @@
 module gfx.mojom;
 
 // See ui/gfx/transform.h.
-[Stable]
 struct Transform {
   // Column major order.
   // The identity matrix is considered null and will not be serialized. This
