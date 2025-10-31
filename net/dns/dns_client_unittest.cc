@@ -8,10 +8,12 @@
 
 #include "base/functional/bind.h"
 #include "base/rand_util.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
 #include "net/dns/dns_config.h"
+#include "net/dns/dns_config_service.h"
 #include "net/dns/dns_session.h"
 #include "net/dns/dns_test_util.h"
 #include "net/dns/public/dns_over_https_config.h"
@@ -77,6 +79,16 @@ class DnsClientTest : public TestWithTaskEnvironment {
     config.nameservers.emplace({IPEndPoint(IPAddress(1, 2, 3, 4), 123)});
     return config;
   }
+
+  IPEndPoint Loopbackv4() { return IPEndPoint(IPAddress::IPv4Localhost(), 53); }
+
+  IPEndPoint Loopbackv6() { return IPEndPoint(IPAddress::IPv6Localhost(), 53); }
+
+  IPAddress PublicDnsIp() { return IPAddress(1, 2, 3, 4); }
+
+  IPAddress GooglePublicDnsIp() { return IPAddress(8, 8, 8, 8); }
+
+  IPAddress PrivateDnsIp() { return IPAddress(192, 168, 1, 1); }
 
   std::unique_ptr<URLRequestContext> request_context_;
   std::unique_ptr<ResolveContext> resolve_context_;
@@ -397,6 +409,76 @@ TEST_F(DnsClientTest, ReplaceCurrentSession_NoSession) {
   client_->ReplaceCurrentSession();
 
   EXPECT_FALSE(client_->GetCurrentSession());
+}
+
+TEST_F(DnsClientTest, AutoUpgradeSucceeds) {
+  base::HistogramTester histogram_tester;
+  DnsConfig config;
+  config.nameservers = {IPEndPoint(GooglePublicDnsIp(), 53)};
+  config.secure_dns_mode = SecureDnsMode::kAutomatic;
+  config.allow_dns_over_https_upgrade = true;
+
+  EXPECT_FALSE(client_->CanUseSecureDnsTransactions());
+  client_->SetSystemConfig(std::move(config));
+  EXPECT_TRUE(client_->CanUseSecureDnsTransactions());
+
+  histogram_tester.ExpectUniqueSample(
+      "Net.DNS.UpgradeConfig.InsecureUpgradeSucceeded", true, 1);
+  histogram_tester.ExpectTotalCount(
+      "Net.DNS.UpgradeConfigFailed.LocalNameserverState", 0);
+}
+
+TEST_F(DnsClientTest, AutoUpgradeFails_NoLocalNameservers) {
+  base::HistogramTester histogram_tester;
+  DnsConfig config;
+  config.nameservers = {IPEndPoint(PublicDnsIp(), 53)};
+  config.secure_dns_mode = SecureDnsMode::kAutomatic;
+  config.allow_dns_over_https_upgrade = true;
+  client_->SetSystemConfig(std::move(config));
+
+  histogram_tester.ExpectUniqueSample(
+      "Net.DNS.UpgradeConfigFailed.LocalNameserverState",
+      net::DnsConfigLocalNameserverState::kNoLocal, 1);
+}
+
+TEST_F(DnsClientTest, AutoUpgradeFails_OnlyLoopbackNameservers) {
+  base::HistogramTester histogram_tester;
+  DnsConfig config;
+  config.nameservers = {Loopbackv4(), Loopbackv6(),
+                        IPEndPoint(PublicDnsIp(), 53)};
+  config.secure_dns_mode = SecureDnsMode::kAutomatic;
+  config.allow_dns_over_https_upgrade = true;
+  client_->SetSystemConfig(std::move(config));
+
+  histogram_tester.ExpectUniqueSample(
+      "Net.DNS.UpgradeConfigFailed.LocalNameserverState",
+      net::DnsConfigLocalNameserverState::kOnlyLoopback, 1);
+}
+
+TEST_F(DnsClientTest, AutoUpgradeFails_OnlyNonLoopbackLocalNameservers) {
+  base::HistogramTester histogram_tester;
+  DnsConfig config;
+  config.nameservers = {IPEndPoint(PrivateDnsIp(), 53)};
+  config.secure_dns_mode = SecureDnsMode::kAutomatic;
+  config.allow_dns_over_https_upgrade = true;
+  client_->SetSystemConfig(std::move(config));
+
+  histogram_tester.ExpectUniqueSample(
+      "Net.DNS.UpgradeConfigFailed.LocalNameserverState",
+      net::DnsConfigLocalNameserverState::kOnlyNonLoopbackLocal, 1);
+}
+
+TEST_F(DnsClientTest, AutoUpgradeFails_LoopbackAndNonLoopbackLocalNameservers) {
+  base::HistogramTester histogram_tester;
+  DnsConfig config;
+  config.nameservers = {Loopbackv4(), IPEndPoint(PrivateDnsIp(), 53)};
+  config.secure_dns_mode = SecureDnsMode::kAutomatic;
+  config.allow_dns_over_https_upgrade = true;
+  client_->SetSystemConfig(std::move(config));
+
+  histogram_tester.ExpectUniqueSample(
+      "Net.DNS.UpgradeConfigFailed.LocalNameserverState",
+      net::DnsConfigLocalNameserverState::kLoopbackAndNonLoopback, 1);
 }
 
 }  // namespace

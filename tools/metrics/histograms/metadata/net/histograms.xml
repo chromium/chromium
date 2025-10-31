@@ -3058,6 +3058,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.DNS.UpgradeConfigFailed.LocalNameserverState"
+    enum="DnsConfigLocalNameserverState" expires_after="2026-10-24">
+  <owner>kaklilu@chromium.org</owner>
+  <owner>awillia@chromium.org</owner>
+  <owner>src/net/dns/OWNERS</owner>
+  <summary>
+    Breaks down what kinds of local nameservers (if any) are on the DNS config
+    when Chrome has tried and failed to upgrade it to DoH from insecure DNS.
+  </summary>
+</histogram>
+
 <histogram name="Net.DNS_Resolution_And_TCP_Connection_Latency2" units="ms"
     expires_after="never">
 <!-- expires-never: Core network stack health metric -->
