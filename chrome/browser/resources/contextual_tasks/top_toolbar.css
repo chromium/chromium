@@ -9,21 +9,13 @@
  * #css_wrapper_metadata_end */
 
 :host {
+  align-items: center;
+  background-color: var(--cr-fallback-color-primary-container);
   display: flex;
-  flex-direction: column;
+  justify-content: space-between;
+  padding: 16px;
 }
 
-#threadFrame {
-  border: none;
-  flex-grow: 1;
-  overflow: hidden;
-}
-
-#composeboxContainer {
-  background-color: var(--google-grey-50);
-  height: 64px;
-  inset-block-end: 0;
-  min-height: var(--composebox-collapsed-height);
-  position: absolute;
-  width: 100%;
+#rightButtonContainer {
+  float: right;
 }
