@@ -1094,15 +1094,18 @@ public class ToolbarPositionControllerTest {
     }
 
     @Test
-    @Config(qualifiers = "sw400dp")
+    @Config(qualifiers = "sw400dp", sdk = 30)
     @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_TOOLBAR_V2)
     public void testBottomAnchoredFocusedOmnibox() {
         doReturn(mDisplayAndroid).when(mWindowAndroid).getDisplay();
         doReturn(1000).when(mDisplayAndroid).getDisplayHeight();
         doReturn(mRootView).when(mControlContainerView).getRootView();
+        int statusBarHeight = 10;
         WindowInsets rootViewInsets =
                 new WindowInsets.Builder()
                         .setInsets(WindowInsets.Type.ime(), Insets.of(0, 0, 0, 400))
+                        .setInsets(
+                                WindowInsets.Type.statusBars(), Insets.of(0, statusBarHeight, 0, 0))
                         .build();
         doReturn(rootViewInsets).when(mControlContainerView).getRootWindowInsets();
 
@@ -1117,7 +1120,7 @@ public class ToolbarPositionControllerTest {
         // the toolbar should be translated up to the top of the screen but no further.
         doReturn(430).when(mDisplayAndroid).getDisplayHeight();
         mKeyboardHeightSupplier.set(401);
-        verify(mControlContainerView).setTranslationY(-(430f - TOOLBAR_HEIGHT));
+        verify(mControlContainerView).setTranslationY(-(430f - TOOLBAR_HEIGHT - statusBarHeight));
         verify(mControlContainer, atLeast(1)).setMaxHeight(30);
     }
 
