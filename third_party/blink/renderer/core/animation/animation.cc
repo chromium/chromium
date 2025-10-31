@@ -1699,7 +1699,6 @@ void Animation::PlayInternal(AutoRewind auto_rewind,
 
   bool aborted_pause = pending_pause_;
   bool has_pending_ready_promise = false;
-  std::optional<AnimationTimeDelta> seek_time;
   bool has_finite_timeline =
       timeline_ && !timeline_->IsMonotonicallyIncreasing();
   bool enable_seek =
@@ -1810,7 +1809,7 @@ void Animation::PlayInternal(AutoRewind auto_rewind,
   // the start time or playback rate, then we can abort early as there is no
   // need for a ready promise. The remaining steps are for setting up and
   // resolving the ready promise.
-  if (!hold_time_ && !seek_time && !has_finite_timeline && !aborted_pause &&
+  if (!hold_time_ && !has_finite_timeline && !aborted_pause &&
       !pending_playback_rate_) {
     return;
   }
