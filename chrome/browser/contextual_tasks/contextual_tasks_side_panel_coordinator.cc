@@ -49,6 +49,20 @@ namespace contextual_tasks {
 
 DEFINE_USER_DATA(ContextualTasksSidePanelCoordinator);
 
+class ContextualTasksWebView : public views::WebView {
+ public:
+  explicit ContextualTasksWebView(content::BrowserContext* browser_context)
+      : views::WebView(browser_context) {}
+  ~ContextualTasksWebView() override = default;
+
+  base::WeakPtr<ContextualTasksWebView> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+ private:
+  base::WeakPtrFactory<ContextualTasksWebView> weak_ptr_factory_{this};
+};
+
 ContextualTasksSidePanelCoordinator::ContextualTasksSidePanelCoordinator(
     BrowserWindowInterface* browser_window,
     SidePanelCoordinator* side_panel_coordinator)
@@ -141,8 +155,8 @@ void ContextualTasksSidePanelCoordinator::OnActiveTabChanged(
 std::unique_ptr<views::View>
 ContextualTasksSidePanelCoordinator::CreateSidePanelView(
     SidePanelEntryScope& scope) {
-  std::unique_ptr<views::WebView> web_view =
-      std::make_unique<views::WebView>(browser_window_->GetProfile());
+  std::unique_ptr<ContextualTasksWebView> web_view =
+      std::make_unique<ContextualTasksWebView>(browser_window_->GetProfile());
 
   content::WebContents* web_contents =
       MaybeGetOrCreateSidePanelWebContentsForActiveTab();
@@ -150,7 +164,7 @@ ContextualTasksSidePanelCoordinator::CreateSidePanelView(
     web_view->SetWebContents(web_contents);
   }
 
-  web_view_ = web_view.get();
+  web_view_ = web_view->GetWeakPtr();
   web_view->SetProperty(views::kElementIdentifierKey,
                         kContextualTasksSidePanelWebViewElementId);
   return web_view;

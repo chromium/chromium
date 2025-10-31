@@ -2173,9 +2173,14 @@ void CloseTabSearch(Browser* browser) {
 }
 
 void ShowContextualTasksSidePanel(BrowserWindowInterface* browser) {
-  CHECK_DEREF(
-      contextual_tasks::ContextualTasksSidePanelCoordinator::From(browser))
-      .Show();
+  auto* coordinator =
+      contextual_tasks::ContextualTasksSidePanelCoordinator::From(browser);
+  CHECK(coordinator);
+  if (coordinator->IsSidePanelOpenForContextualTask()) {
+    coordinator->Close();
+  } else {
+    coordinator->Show();
+  }
 }
 
 void ToggleVerticalTabs(Browser* browser) {

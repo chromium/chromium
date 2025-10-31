@@ -5,6 +5,7 @@
 #define CHROME_BROWSER_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_SIDE_PANEL_COORDINATOR_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
@@ -26,6 +27,7 @@ class WebView;
 namespace contextual_tasks {
 
 class ContextualTasksContextController;
+class ContextualTasksWebView;
 
 class ContextualTasksSidePanelCoordinator {
  public:
@@ -85,9 +87,10 @@ class ContextualTasksSidePanelCoordinator {
   // Context controller to query task information.
   const raw_ptr<ContextualTasksContextController> context_controller_;
 
-  // WebView for the current side panel. The WebContents in the WebView is owned
-  // by the cache and can change based on active task change.
-  raw_ptr<views::WebView> web_view_ = nullptr;
+  // WebView of the current side panel. It's owned by side panel framework so
+  // weak pointer is needed in case it's destroyed. The WebContents in the
+  // WebView is owned by the cache and can change based on active task change.
+  base::WeakPtr<ContextualTasksWebView> web_view_ = nullptr;
 
   // WebContents cache for each task.
   // It's okay to assume there is only 1 WebContents per task per window.
