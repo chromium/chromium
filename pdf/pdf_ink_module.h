@@ -245,6 +245,14 @@ class PdfInkModule {
     // select text from page A to page B. Strokes will be drawn to cover any
     // selected text and stored in the page index of the page they are on.
     std::map<int, std::vector<ink::Stroke>> highlight_strokes;
+
+    // Details from the last input. Used to compensate for missed events, such
+    // as a missed move event, or an end event that was consumed by a different
+    // view and detected afterwards when PdfInkModule finally sees input events
+    // again. Not wrapped in an `std::optional` because this state is only
+    // active when the user is actively selecting text. The event time is
+    // unused.
+    EventDetails input_last_event;
   };
 
   // Drawing brush state changes that are pending the completion of an

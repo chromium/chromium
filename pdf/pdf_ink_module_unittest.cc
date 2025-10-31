@@ -4021,10 +4021,7 @@ TEST_P(PdfInkModuleTextHighlightTest,
   SetSelectionRectsOnFirstPage(base::span_from_ref(gfx::Rect(9, 14, 5, 10)));
   EXPECT_CALL(client(), IsSelectableTextOrLinkArea(_))
       .WillRepeatedly(Return(true));
-
-  // There should not be any text selection extension after the miss, as the
-  // initial text selection has been terminated.
-  EXPECT_CALL(client(), ExtendSelectionByPoint(_)).Times(0);
+  EXPECT_CALL(client(), ExtendSelectionByPoint(kMouseUpPoint));
 
   RunStrokeMissedEndEventThenMouseMoveTest();
 }

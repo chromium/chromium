@@ -448,10 +448,11 @@ bool PdfInkModule::OnMouseMove(const blink::WebMouseEvent& event) {
   }
 
   if (features::kPdfInk2TextHighlighting.Get() && is_text_highlighting()) {
-    // Mouse up event does not modify the text selection, so the position does
-    // not matter here.
-    return OnMouseUp(
-        GenerateLeftMouseUpEvent(gfx::PointF(), base::TimeTicks::Now()));
+    // Text highlighting is not sensitive to particular timestamps, just use
+    // current time.
+    return OnMouseUp(GenerateLeftMouseUpEvent(
+        text_highlight_state().input_last_event.position,
+        base::TimeTicks::Now()));
   }
 
   CHECK(is_erasing_stroke());
@@ -921,6 +922,9 @@ bool PdfInkModule::StartTextHighlight(const gfx::PointF& position,
   client_->StrokeStarted();
 
   current_tool_state_.emplace<TextHighlightState>();
+  // Text highlighting does not need the timestamp of the event.
+  text_highlight_state().input_last_event =
+      EventDetails{.position = position, .tool_type = tool_type};
 
   bool is_double_click = click_count == 2;
   bool is_triple_click = click_count == 3;
@@ -959,8 +963,14 @@ bool PdfInkModule::ContinueTextHighlight(const gfx::PointF& position) {
     return true;
   }
 
+  if (state.input_last_event.position == position) {
+    // Position did not change, so do nothing.
+    return true;
+  }
+
   client_->ExtendSelectionByPoint(position);
   state.highlight_strokes = GetTextSelectionAsStrokes();
+  state.input_last_event.position = position;
   return true;
 }
 
@@ -968,6 +978,10 @@ bool PdfInkModule::FinishTextHighlight(const gfx::PointF& position,
                                        bool is_multi_click,
                                        ink::StrokeInput::ToolType tool_type) {
   CHECK(is_text_highlighting());
+
+  // Process `position` as though it was the last point of movement first, in
+  // case a move event was missed.
+  ContinueTextHighlight(position);
 
   auto& state = text_highlight_state();
   if (!state.finished_multi_click) {
