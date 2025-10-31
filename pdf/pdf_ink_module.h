@@ -150,19 +150,19 @@ class PdfInkModule {
   // Like DocumentStrokesMap, but for PageV2InkPathShapes.
   using DocumentV2InkPathShapesMap = std::map<int, PageV2InkPathShapes>;
 
+  struct EventDetails {
+    // The event position.  Coordinates match the screen-based position that
+    // are provided during stroking from `blink::WebMouseEvent` positions.
+    gfx::PointF position;
+
+    // The event time.
+    base::TimeTicks timestamp;
+
+    // The type of tool used to generate the input.
+    ink::StrokeInput::ToolType tool_type;
+  };
+
   struct DrawingStrokeState {
-    struct EventDetails {
-      // The event position.  Coordinates match the screen-based position that
-      // are provided during stroking from `blink::WebMouseEvent` positions.
-      gfx::PointF position;
-
-      // The event time.
-      base::TimeTicks timestamp;
-
-      // The type of tool used to generate the input.
-      ink::StrokeInput::ToolType tool_type;
-    };
-
     DrawingStrokeState();
     DrawingStrokeState(const DrawingStrokeState&) = delete;
     DrawingStrokeState& operator=(const DrawingStrokeState&) = delete;

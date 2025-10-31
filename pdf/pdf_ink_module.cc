@@ -442,8 +442,7 @@ bool PdfInkModule::OnMouseMove(const blink::WebMouseEvent& event) {
       return false;
     }
 
-    const DrawingStrokeState::EventDetails& input_last_event =
-        state.input_last_event.value();
+    const EventDetails& input_last_event = state.input_last_event.value();
     return OnMouseUp(GenerateLeftMouseUpEvent(input_last_event.position,
                                               input_last_event.timestamp));
   }
@@ -548,8 +547,7 @@ void PdfInkModule::MaybeFinishStrokeForMissingMouseUpEvent() {
   }
 
   CHECK(state.input_last_event.has_value());
-  const DrawingStrokeState::EventDetails& input_last_event =
-      state.input_last_event.value();
+  const EventDetails& input_last_event = state.input_last_event.value();
   bool mouse_up_result = OnMouseUp(GenerateLeftMouseUpEvent(
       input_last_event.position, input_last_event.timestamp));
   CHECK(mouse_up_result);
@@ -596,8 +594,7 @@ bool PdfInkModule::StartStroke(const gfx::PointF& position,
   // area between this location and the next position, and to possibly
   // compensate for missed input events.
   CHECK(!state.input_last_event.has_value());
-  state.input_last_event =
-      DrawingStrokeState::EventDetails{position, timestamp, tool_type};
+  state.input_last_event = EventDetails{position, timestamp, tool_type};
 
   return true;
 }
@@ -629,8 +626,7 @@ bool PdfInkModule::ContinueStroke(const gfx::PointF& position,
   if (page_index != state.page_index && last_page_index != state.page_index) {
     // If `position` is outside the page, and so was `last_position`, then just
     // update `last_input_event` and treat the event as handled.
-    state.input_last_event =
-        DrawingStrokeState::EventDetails{position, timestamp, tool_type};
+    state.input_last_event = EventDetails{position, timestamp, tool_type};
     return true;
   }
 
@@ -652,8 +648,7 @@ bool PdfInkModule::ContinueStroke(const gfx::PointF& position,
 
     // Remember `position` and `timestamp` for use in the next event and treat
     // event as handled.
-    state.input_last_event =
-        DrawingStrokeState::EventDetails{position, timestamp, tool_type};
+    state.input_last_event = EventDetails{position, timestamp, tool_type};
     return true;
   }
 
@@ -682,8 +677,7 @@ bool PdfInkModule::ContinueStroke(const gfx::PointF& position,
   }
 
   // Remember `position` and `timestamp` for use in the next event.
-  state.input_last_event =
-      DrawingStrokeState::EventDetails{position, timestamp, tool_type};
+  state.input_last_event = EventDetails{position, timestamp, tool_type};
 
   return true;
 }
@@ -1223,8 +1217,7 @@ void PdfInkModule::HandleSetAnnotationBrushMessage(
         // PdfInkModule is currently drawing a stroke.  Finish that before
         // transitioning, using the last known input.
         CHECK(state.input_last_event.has_value());
-        const DrawingStrokeState::EventDetails& input_last_event =
-            state.input_last_event.value();
+        const EventDetails& input_last_event = state.input_last_event.value();
         FinishStroke(input_last_event.position, input_last_event.timestamp,
                      input_last_event.tool_type);
       }
