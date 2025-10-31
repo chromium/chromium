@@ -63,6 +63,7 @@ import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthManager;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthSettingUtils;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -157,21 +158,20 @@ public class PrivacySettingsFragmentTest {
     }
 
     private View getIncognitoReauthSettingView(PrivacySettings privacySettings) {
-        String incognito_lock_title =
-                mSettingsActivityTestRule
-                        .getActivity()
-                        .getString(R.string.settings_incognito_tab_lock_title);
+        int titleResId =
+                IncognitoUtils.shouldOpenIncognitoAsWindow()
+                        ? R.string.settings_incognito_window_lock_title
+                        : R.string.settings_incognito_tab_lock_title;
+        String incognitoLockTitle = mSettingsActivityTestRule.getActivity().getString(titleResId);
         onView(withId(R.id.recycler_view))
-                .perform(
-                        RecyclerViewActions.scrollTo(
-                                hasDescendant(withText(incognito_lock_title))));
-        onView(withText(incognito_lock_title)).check(matches(isDisplayed()));
+                .perform(RecyclerViewActions.scrollTo(hasDescendant(withText(incognitoLockTitle))));
+        onView(withText(incognitoLockTitle)).check(matches(isDisplayed()));
         for (int i = 0; i < privacySettings.getListView().getChildCount(); ++i) {
             View view = privacySettings.getListView().getChildAt(i);
             TextView titleView = view.findViewById(android.R.id.title);
             if (titleView != null) {
                 String title = titleView.getText().toString();
-                if (TextUtils.equals(incognito_lock_title, title)) {
+                if (TextUtils.equals(incognitoLockTitle, title)) {
                     return view;
                 }
             }

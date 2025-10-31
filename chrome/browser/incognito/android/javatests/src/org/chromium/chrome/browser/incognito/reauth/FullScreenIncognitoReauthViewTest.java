@@ -38,6 +38,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.incognito.R;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -105,16 +106,20 @@ public class FullScreenIncognitoReauthViewTest {
         onView(withId(R.id.incognito_reauth_unlock_incognito_button)).check(matches(isDisplayed()));
         onView(withText(R.string.incognito_reauth_page_unlock_incognito_button_label))
                 .check(matches(isDisplayed()));
-
-        onView(withId(R.id.incognito_reauth_see_other_tabs_label)).check(matches(isDisplayed()));
-        onView(withText(R.string.incognito_reauth_page_see_other_tabs_label))
-                .check(matches(isDisplayed()));
+        if (!IncognitoUtils.shouldOpenIncognitoAsWindow()) {
+            onView(withId(R.id.incognito_reauth_see_other_tabs_label))
+                    .check(matches(isDisplayed()));
+            onView(withText(R.string.incognito_reauth_page_see_other_tabs_label))
+                    .check(matches(isDisplayed()));
+        }
 
         onView(withId(R.id.incognito_reauth_unlock_incognito_button)).perform(click());
         verify(mUnlockIncognitoRunnableMock).run();
 
-        onView(withId(R.id.incognito_reauth_see_other_tabs_label)).perform(click());
-        verify(mSeeOtherTabsRunnableMock).run();
+        if (!IncognitoUtils.shouldOpenIncognitoAsWindow()) {
+            onView(withId(R.id.incognito_reauth_see_other_tabs_label)).perform(click());
+            verify(mSeeOtherTabsRunnableMock).run();
+        }
     }
 
     @Test
