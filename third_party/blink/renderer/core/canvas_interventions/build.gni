@@ -3,8 +3,6 @@
 # found in the LICENSE file.
 
 blink_core_sources_canvas_interventions = [
-  "canvas_interventions_helper.cc",
-  "canvas_interventions_helper.h",
   "noise_hash.cc",
   "noise_hash.h",
   "noise_helper.cc",

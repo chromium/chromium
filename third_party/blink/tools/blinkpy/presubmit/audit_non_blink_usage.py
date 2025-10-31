@@ -2757,15 +2757,6 @@ _CONFIG = [
     },
     {
         'paths': [
-            'third_party/blink/renderer/modules/canvas/canvas_noise_test_util.h',
-            'third_party/blink/renderer/modules/canvas/canvas_noise_test_util.cc',
-        ],
-        'allowed': [
-            'viz::TestRasterInterface',
-        ]
-    },
-    {
-        'paths': [
             'third_party/blink/renderer/core/inspector/thread_debugger_common_impl.cc',
         ],
         'allowed': [

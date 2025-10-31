@@ -25,7 +25,6 @@
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
 #include "third_party/blink/renderer/core/offscreencanvas/offscreen_canvas.h"
-#include "third_party/blink/renderer/modules/canvas/canvas_noise_test_util.h"
 #include "third_party/blink/renderer/modules/canvas/offscreencanvas2d/offscreen_canvas_rendering_context_2d.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/test/gpu_memory_buffer_test_platform.h"
@@ -143,44 +142,6 @@ TEST_F(HTMLCanvasElementModuleTest,
   const TextDirection direction = offscreen_canvas->GetTextDirection(
       /*conputed_style=*/nullptr);
   EXPECT_EQ(direction, TextDirection::kRtl);
-}
-
-TEST_F(HTMLCanvasElementModuleTest, CanvasNoisedAfterTransferToOffscreen) {
-  V8TestingScope scope;
-  NonThrowableExceptionState exception_state;
-  ScopedTestingPlatformSupport<GpuMemoryBufferTestPlatform> platform;
-  scoped_refptr<viz::TestContextProvider> test_context_provider =
-      viz::TestContextProvider::CreateRaster(
-          CreateCanvasNoiseTestRasterInterface());
-  InitializeSharedGpuContextRaster(test_context_provider.get());
-  GetDocument().GetSettings()->SetAcceleratedCompositingEnabled(true);
-  canvas_element().SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
-
-  OffscreenCanvas* offscreen_canvas =
-      HTMLCanvasElementModule::transferControlToOffscreen(
-          scope.GetScriptState(), canvas_element(), exception_state);
-  OffscreenCanvasRenderingContext2D* context =
-      static_cast<OffscreenCanvasRenderingContext2D*>(
-          offscreen_canvas->GetCanvasRenderingContext(
-              offscreen_canvas->GetExecutionContext(),
-              CanvasRenderingContext::CanvasRenderingAPI::k2D,
-              CanvasContextCreationAttributesCore()));
-  context->fillText("CanvasNoiseTest", 20, 20);
-
-  offscreen_canvas->GetOrCreateResourceDispatcher()->OnBeginFrame(
-      /*begin_frame_args=*/{}, /*timing details*/ {},
-      /*resources=*/{});
-  test::RunPendingTasks();
-
-  String data_url_no_interventions =
-      canvas_element().toDataURL("image/png", exception_state);
-  GetDocument().GetExecutionContext()->SetCanvasNoiseToken(
-      NoiseToken(0x1234567890123456));
-  String data_url_with_interventions =
-      canvas_element().toDataURL("image/png", exception_state);
-  EXPECT_NE(data_url_no_interventions, data_url_with_interventions);
-
-  SharedGpuContext::Reset();
 }
 
 // Verifies that a desynchronized canvas has the appropriate opacity/blending

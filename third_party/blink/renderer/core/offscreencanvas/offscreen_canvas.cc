@@ -15,7 +15,6 @@
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
-#include "third_party/blink/renderer/core/canvas_interventions/canvas_interventions_helper.h"
 #include "third_party/blink/renderer/core/css/css_font_selector.h"
 #include "third_party/blink/renderer/core/css/offscreen_font_selector.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
@@ -360,14 +359,6 @@ ScriptPromise<Blob> OffscreenCanvas::convertToBlob(
   scoped_refptr<StaticBitmapImage> image_bitmap =
       context_->GetImage(FlushReason::kToBlob);
   if (image_bitmap) {
-    auto intervention_type =
-        CanvasInterventionsHelper::CanvasInterventionType::kNone;
-    if (CanvasInterventionsHelper::MaybeNoiseSnapshot(GetExecutionContext(),
-                                                      image_bitmap)) {
-      intervention_type =
-          CanvasInterventionsHelper::CanvasInterventionType::kNoise;
-    };
-
     auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<Blob>>(
         script_state, exception_state.GetContext());
     CanvasAsyncBlobCreator::ToBlobFunctionType function_type =
@@ -379,7 +370,7 @@ ScriptPromise<Blob> OffscreenCanvas::convertToBlob(
             IdentifiableSurface::Type::kCanvasReadback)
             ? IdentifiabilityInputDigest(context_)
             : 0,
-        intervention_type, resolver);
+        resolver);
     async_creator->ScheduleAsyncBlobCreation(options->quality());
     return resolver->Promise();
   }

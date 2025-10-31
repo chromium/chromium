@@ -347,11 +347,6 @@ class CORE_EXPORT HTMLCanvasElement final
   void RemovedFrom(ContainerNode& insertion_point) override;
 
  private:
-  enum class ReadbackType {
-    kWebExposed,
-    kNotWebExposed,
-  };
-
   void Dispose();
 
   void ColorSchemeMayHaveChanged();
@@ -384,11 +379,9 @@ class CORE_EXPORT HTMLCanvasElement final
 
   bool PaintsIntoCanvasBuffer() const;
 
-  String ToDataURLInternal(
-      const String& mime_type,
-      const double& quality,
-      SourceDrawingBuffer,
-      ReadbackType readback_type = ReadbackType::kWebExposed) const;
+  String ToDataURLInternal(const String& mime_type,
+                           const double& quality,
+                           SourceDrawingBuffer) const;
 
   // Returns the transparent image resource for this canvas.
   scoped_refptr<StaticBitmapImage> GetTransparentImage();
