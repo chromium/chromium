@@ -9304,6 +9304,8 @@ from previous Chrome versions.
   <int value="-1765998205"
       label="AccessibilityPopulateSupplementalDescriptionApi:disabled"/>
   <int value="-1765921578" label="BlinkExtensionDiagnostics:enabled"/>
+  <int value="-1765313360"
+      label="AutofillDisableBnplCountryCheckForTesting:enabled"/>
   <int value="-1765004425"
       label="CertificateTransparency2022PolicyAllCerts:disabled"/>
   <int value="-1764447174" label="UseNAT64ForIPv4Literal:disabled"/>
@@ -16368,6 +16370,8 @@ from previous Chrome versions.
   <int value="728550541"
       label="BoundaryEventDispatchTracksNodeRemoval:enabled"/>
   <int value="728656094" label="PasswordForceSaving:disabled"/>
+  <int value="728925040"
+      label="AutofillDisableBnplCountryCheckForTesting:disabled"/>
   <int value="728937354" label="ShutdownSupportForKeepalive:disabled"/>
   <int value="729082677" label="ShimlessRMAComplianceCheck:disabled"/>
   <int value="729726508" label="NtpModulesFirstRunExperience:disabled"/>

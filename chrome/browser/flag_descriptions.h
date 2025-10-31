@@ -727,6 +727,11 @@ inline constexpr char
         "field is not a username/password field and does not have any autofill "
         "suggestions. ";
 
+inline constexpr char kAutofillDisableBnplCountryCheckForTestingName[] =
+    "Disable the country check for BNPL testing";
+inline constexpr char kAutofillDisableBnplCountryCheckForTestingDescription[] =
+    "Enables testing BNPL in countries where it would otherwise be disabled.";
+
 inline constexpr char kAutofillEnableAiBasedAmountExtractionName[] =
     "Enable AI-based checkout amount extraction on Chrome";
 inline constexpr char kAutofillEnableAiBasedAmountExtractionDescription[] =
