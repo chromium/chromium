@@ -14,6 +14,10 @@ import statistics
 from typing import Any, Dict, List, Mapping, Optional, Set, Tuple
 from core import path_util
 
+path_util.AddTracingToPath()
+path_util.AddDashboardToPath()
+from dashboard.common import histogram_helpers  # pylint: disable=import-error
+
 import json_constants
 
 # The source of truth for public perf builders, which is extracted from
@@ -396,7 +400,7 @@ class JsonUtil:
     return merged_results, links, key
 
   def process(
-      self, builder_details: PerfBuilderDetails, benchmark_name: str=""
+      self, builder_details: PerfBuilderDetails, benchmark_name: str=''
       ) -> Dict[str, Any]:
     """Processes the result2 jsons and returns a skia json.
 
@@ -409,8 +413,8 @@ class JsonUtil:
     """
     output = {
         json_constants.VERSION: 1,
-        json_constants.GIT_HASH: (builder_details.git_hash if builder_details
-                                  else ""),
+        json_constants.GIT_HASH: (builder_details.git_hash if builder_details else
+                                  ''),
         json_constants.KEY: collections.defaultdict(str),
         json_constants.RESULTS: [],
     }
@@ -430,46 +434,17 @@ class JsonUtil:
 
     output[json_constants.KEY] = key
     output[json_constants.LINKS] = links
-    measurements = self.measurements_from_results(merged_results)
+    measurements = self.measurements_from_results(merged_results,
+                                                  key[json_constants.BENCHMARK])
 
     output[json_constants.RESULTS] = measurements
 
     return output
 
-  def _generate_synthetic_measurements(
-      self,
-      value_measurements: List[Tuple[str, float]],
-      keys: Dict[str, str],
-  ) -> List[Dict[str, Any]]:
-    """Generates synthetic measurements."""
-    synthetic_measurements = []
-    for value, measurement in value_measurements:
-      synthetic_measurements.append({
-          json_constants.VALUE: value,
-          json_constants.MEASUREMENT: measurement,
-      })
-    synthetic_result = {
-        json_constants.MEASUREMENTS: {
-            json_constants.STAT: synthetic_measurements
-        },
-        json_constants.KEY: {
-            json_constants.IMPROVEMENT_DIRECTION: (
-                keys[json_constants.IMPROVEMENT_DIRECTION]),
-            json_constants.UNIT: keys[json_constants.UNIT],
-            json_constants.TEST: keys[json_constants.TEST],
-        },
-    }
-    if keys.get(json_constants.SUBTEST_1, ""):
-      synthetic_result[json_constants.KEY][json_constants.SUBTEST_1] = (
-          keys[json_constants.SUBTEST_1])
-    if keys.get(json_constants.SUBTEST_2, ""):
-      synthetic_result[json_constants.KEY][json_constants.SUBTEST_2] = (
-          keys[json_constants.SUBTEST_2])
-    return synthetic_result
-
   def measurements_from_results(
       self,
       data: Mapping[List[Any], List[Any]],
+      benchmark_name: str,
   ) -> List[Dict[str, Any]]:
     """Calculates the measurements for each test."""
     results = []
@@ -481,6 +456,7 @@ class JsonUtil:
         subtest_1, subtest_2 = None, None
       else:
         test_name, unit, improvement_direction, subtest_1, subtest_2 = key
+
       avg, std_err, count, max_val, min_val, sum_val = calculate_stats(values)
       measurements = [
           {
@@ -523,85 +499,114 @@ class JsonUtil:
       if subtest_2:
         result[json_constants.KEY][json_constants.SUBTEST_2] = subtest_2
       results.append(result)
+
       # Generate a synthetic measurement that ends with "_avg", "_min", "_max",
       # and "_sum" to support the data parity with the chromeperf.
-      if self.generate_synthetic_measurements:
-        synthetic_result_avg = self._generate_synthetic_measurements(
-            value_measurements=[
-                (json_constants.AVERAGE, avg),
-            ],
-            keys={
-                json_constants.IMPROVEMENT_DIRECTION: improvement_direction,
-                json_constants.UNIT: unit,
-                json_constants.TEST: test_name + "_avg",
-                json_constants.SUBTEST_1: subtest_1,
-                json_constants.SUBTEST_2: subtest_2,
-            },
-        )
-        synthetic_result_min = self._generate_synthetic_measurements(
-            value_measurements=[
-                (json_constants.MIN, min_val),
-            ],
-            keys={
-                json_constants.IMPROVEMENT_DIRECTION: improvement_direction,
-                json_constants.UNIT: unit,
-                json_constants.TEST: test_name + "_min",
-                json_constants.SUBTEST_1: subtest_1,
-                json_constants.SUBTEST_2: subtest_2,
-            },
-        )
-        synthetic_result_max = self._generate_synthetic_measurements(
-            value_measurements=[
-                (json_constants.MAX, max_val),
-            ],
-            keys={
-                json_constants.IMPROVEMENT_DIRECTION: improvement_direction,
-                json_constants.UNIT: unit,
-                json_constants.TEST: test_name + "_max",
-                json_constants.SUBTEST_1: subtest_1,
-                json_constants.SUBTEST_2: subtest_2,
-            },
-        )
-        synthetic_result_sum = self._generate_synthetic_measurements(
-            value_measurements=[
-                (json_constants.SUM, sum_val),
-            ],
-            keys={
-                json_constants.IMPROVEMENT_DIRECTION: improvement_direction,
-                json_constants.UNIT: unit,
-                json_constants.TEST: test_name + "_sum",
-                json_constants.SUBTEST_1: subtest_1,
-                json_constants.SUBTEST_2: subtest_2,
-            },
-        )
-        synthetic_result_count = self._generate_synthetic_measurements(
-            value_measurements=[
-                (json_constants.COUNT, count),
-            ],
-            keys={
-                json_constants.IMPROVEMENT_DIRECTION: "up",
-                json_constants.UNIT: "unitless_biggerIsBetter",
-                json_constants.TEST: test_name + "_count",
-                json_constants.SUBTEST_1: subtest_1,
-                json_constants.SUBTEST_2: subtest_2,
-            },
-        )
-        synthetic_result_std = self._generate_synthetic_measurements(
-            value_measurements=[
-                (json_constants.STD_DEV, std_err),
-            ],
-            keys={
-                json_constants.IMPROVEMENT_DIRECTION: "down",
-                json_constants.UNIT: unit,
-                json_constants.TEST: test_name + "_std",
-                json_constants.SUBTEST_1: subtest_1,
-                json_constants.SUBTEST_2: subtest_2,
-            },
-        )
-        results.append(synthetic_result_avg)
-        results.append(synthetic_result_min)
-        results.append(synthetic_result_max)
-        results.append(synthetic_result_sum)
-        results.append(synthetic_result_count)
-        results.append(synthetic_result_std)
+      if self.generate_synthetic_measurements and not self._is_legacy_benchmark(
+          benchmark_name):
+        synthetic_keys_base = {
+            json_constants.IMPROVEMENT_DIRECTION: improvement_direction,
+            json_constants.UNIT: unit,
+            json_constants.SUBTEST_1: subtest_1,
+            json_constants.SUBTEST_2: subtest_2,
+        }
+
+        synthetic_stats_to_generate = [
+            ('avg', (json_constants.VALUE, avg), None, None),
+            ('min', (json_constants.VALUE, min_val), None, None),
+            ('max', (json_constants.VALUE, max_val), None, None),
+            ('sum', (json_constants.VALUE, sum_val), None, None),
+            ('count', (json_constants.VALUE, count), "up",
+             "unitless_biggerIsBetter"),
+            ('std', (json_constants.VALUE, std_err), "down", None),
+        ]
+
+        # Loop through the definitions and generate measurements
+        for suffix, (
+            value, measurement
+        ), dir_override, unit_override in synthetic_stats_to_generate:
+          if not self._should_filter_statistic(test_name, benchmark_name,
+                                               suffix):
+
+            # Start with the base keys and add the specific test name
+            keys = {
+                **synthetic_keys_base, json_constants.TEST:
+                f'{test_name}_{suffix}'
+            }
+
+            # Apply overrides if they exist
+            if dir_override:
+              keys[json_constants.IMPROVEMENT_DIRECTION] = dir_override
+            if unit_override:
+              keys[json_constants.UNIT] = unit_override
+
+            synthetic_measurements = [{
+                json_constants.VALUE: value,
+                json_constants.MEASUREMENT: measurement,
+            }]
+
+            synthetic_result = {
+                json_constants.MEASUREMENTS: {
+                    json_constants.STAT: synthetic_measurements
+                },
+                json_constants.KEY: {
+                    json_constants.IMPROVEMENT_DIRECTION:
+                    (keys[json_constants.IMPROVEMENT_DIRECTION]),
+                    json_constants.UNIT:
+                    keys[json_constants.UNIT],
+                    json_constants.TEST:
+                    keys[json_constants.TEST],
+                },
+            }
+            if keys.get(json_constants.SUBTEST_1, ''):
+              synthetic_result[json_constants.KEY][json_constants.SUBTEST_1] = (
+                  keys[json_constants.SUBTEST_1])
+            if keys.get(json_constants.SUBTEST_2, ''):
+              synthetic_result[json_constants.KEY][json_constants.SUBTEST_2] = (
+                  keys[json_constants.SUBTEST_2])
+
+            results.append(synthetic_result)
+
     return results
+
+  def _should_add_media_value(self, value_name: str) -> bool:
+    """Port of the media value filtering logic."""
+    media_re = re.compile(
+        r'(?<!dump)(?<!process)_(std|count|max|min|sum|pct_\d{4}(_\d+)?)$')
+    return not media_re.search(value_name)
+
+  def _should_add_memory_long_running_value(self, value_name: str) -> bool:
+    """Port of the memory.long_running value filtering logic."""
+    v8_re = re.compile(
+        r'renderer_processes:'
+        r'(reported_by_chrome:v8|reported_by_os:system_memory:[^:]+$)')
+    if 'memory:chrome' in value_name:
+      return ('renderer:subsystem:v8' in value_name
+              or 'renderer:vmstats:overall' in value_name
+              or bool(v8_re.search(value_name)))
+    return 'v8' in value_name
+
+  def _should_filter_statistic(self, test_name: str, benchmark_name: str,
+                               stat_name: str) -> bool:
+    """A complete port of ShouldFilterStatistic from histogram_helpers."""
+
+    if test_name == 'benchmark_total_duration':
+      return True
+    if benchmark_name.startswith(
+        'memory') and not benchmark_name.startswith('memory.long_running'):
+      if 'memory:' in test_name and stat_name in histogram_helpers._STATS_BLACKLIST:  # pylint: disable=protected-access
+        return True
+    if benchmark_name.startswith('memory.long_running'):
+      value_name = '%s_%s' % (test_name, stat_name)
+      return not self._should_add_memory_long_running_value(value_name)
+    if benchmark_name in ('media.desktop', 'media.mobile'):
+      value_name = '%s_%s' % (test_name, stat_name)
+      return not self._should_add_media_value(value_name)
+    if benchmark_name.startswith('system_health'):
+      if stat_name in histogram_helpers._STATS_BLACKLIST:  # pylint: disable=protected-access
+        return True
+    return False
+
+  def _is_legacy_benchmark(self, benchmark_name: str) -> bool:
+    """Port of the IsLegacyBenchmark logic."""
+    return benchmark_name in histogram_helpers._LEGACY_BENCHMARKS  # pylint: disable=protected-access

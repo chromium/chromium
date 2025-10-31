@@ -52,6 +52,9 @@
 ../../third_party/catapult/common/py_vulcanize/py_vulcanize/resource_loader.py
 ../../third_party/catapult/common/py_vulcanize/py_vulcanize/strip_js_comments.py
 ../../third_party/catapult/common/py_vulcanize/py_vulcanize/style_sheet.py
+../../third_party/catapult/dashboard/dashboard/__init__.py
+../../third_party/catapult/dashboard/dashboard/common/__init__.py
+../../third_party/catapult/dashboard/dashboard/common/histogram_helpers.py
 ../../third_party/catapult/dependency_manager/dependency_manager/__init__.py
 ../../third_party/catapult/dependency_manager/dependency_manager/archive_info.py
 ../../third_party/catapult/dependency_manager/dependency_manager/base_config.py
