@@ -43,7 +43,6 @@ void OnGifMediaDownloaded(base::WeakPtr<const network::SimpleURLLoader> loader,
     std::move(callback).Run(*response_body);
     return;
   }
-  // TODO: b/325368650 - Determine how network errors should be handled.
   std::move(callback).Run(std::string());
 }
 
