@@ -740,7 +740,7 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="3940195383040445971">Realizar seguimiento de precios en las pestañas</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{Cerrar {COUNT} pestaña}other{Cerrar {COUNT} pestañas}}</translation>
 <translation id="3948600256434252210">Puedes deslizar el dedo hacia la derecha para navegar en modo Incógnito.</translation>
-<translation id="3949712484278252781">Tus conversaciones con Gemini y tus <ph name="GOOGLE_WORKSPACE_DATA" /> no serán analizados por revisores humanos ni se usarán para mejorar modelos de IA generativa.</translation>
+<translation id="3949712484278252781">Tus conversaciones con Gemini y tus <ph name="GOOGLE_WORKSPACE_DATA" /> no se usarán para mejorar modelos de IA generativa y ningún revisor humano los analizará.</translation>
 <translation id="3950479158728806902">Crear automáticamente una llave de acceso para acceder más rápido</translation>
 <translation id="3950820424414687140">Acceder</translation>
 <translation id="3955740319737378355">Listo</translation>

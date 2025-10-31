@@ -24,7 +24,7 @@
 <translation id="1076421457278169141">สแกนโค้ดแล้ว</translation>
 <translation id="1081114897601629648">ระบบไม่ได้นำเข้ารหัสผ่านต่อไปนี้ไปยังเครื่องมือจัดการรหัสผ่านบน Google เนื่องจากไม่ตรงตามข้อกำหนด</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} แท็บ}other{{count} แท็บ}}</translation>
-<translation id="1082554859195167538">รีวิวผลิตภัณฑ์สำหรับคุณ</translation>
+<translation id="1082554859195167538">รีวิวสินค้าสำหรับคุณ</translation>
 <translation id="1084365883616172403">โพสต์ใน Facebook แล้ว</translation>
 <translation id="1085677983426914530">เปิด <ph name="FILENAME" /> ไม่ได้</translation>
 <translation id="1096992026380844478">ระบบจะกู้คืนการตั้งค่าการซิงค์ตามการสำรองข้อมูลครั้งล่าสุด <ph name="BEGIN_LINK" />ดูสิ่งที่คุณซิงค์ได้<ph name="END_LINK" /></translation>
@@ -38,7 +38,7 @@
 <translation id="1122068467107743258">งาน</translation>
 <translation id="1126696498560056882">จัดการบัญชีในอุปกรณ์เครื่องนี้</translation>
 <translation id="1126809382673880764">ไม่ปกป้องคุณจากเว็บไซต์ การดาวน์โหลด และส่วนขยายที่เป็นอันตราย คุณจะยังคงได้รับการปกป้องจาก Google Safe Browsing ในบริการอื่นๆ ของ Google ที่มีฟีเจอร์นี้ เช่น Gmail และ Search</translation>
-<translation id="1136104150802877429">แสดงรีวิวผลิตภัณฑ์</translation>
+<translation id="1136104150802877429">แสดงรีวิวสินค้า</translation>
 <translation id="1142371195993008685">ปิดการแจ้งเตือนสำหรับ<ph name="FEATURE_NAME" /></translation>
 <translation id="1147031633655575115">ลงชื่อเข้าใช้ด้วย <ph name="USER" /></translation>
 <translation id="1149401351239820326">เดือนที่หมดอายุ</translation>
@@ -118,7 +118,7 @@
 <translation id="1445276840641906250">แท็บทั้งหมดของคุณในเบราว์เซอร์เดียว</translation>
 <translation id="1450170672351507823">การปกป้องแบบมาตรฐานเปิดอยู่ ใช้การปกป้องที่ดียิ่งขึ้นเพื่อเพิ่มความปลอดภัยให้มากขึ้น</translation>
 <translation id="1455660774629812862">ไม่ต้องซ่อน</translation>
-<translation id="1456545332132818232">รีวิวผลิตภัณฑ์ใน <ph name="PRODUCT_NAME" />, <ph name="STARS" /> จาก <ph name="MAX_STARS" /> ดาว, <ph name="DOMAIN" /></translation>
+<translation id="1456545332132818232">รีวิวสินค้าใน <ph name="PRODUCT_NAME" />, <ph name="STARS" /> จาก <ph name="MAX_STARS" /> ดาว, <ph name="DOMAIN" /></translation>
 <translation id="1460751212339734034">ประหยัดเวลาด้วยการพิมพ์น้อยลง</translation>
 <translation id="1469381646033328562">บัญชีของคุณได้รับการจัดการโดยผู้ปกครอง
 <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
@@ -637,7 +637,7 @@
 <translation id="35083190962747987">เปิด ${url}</translation>
 <translation id="3511519535430890904">เพิ่มการปกป้องขณะท่องเว็บ</translation>
 <translation id="3517216995152707259">การลบข้อมูลการท่องเว็บไม่ได้เป็นการออกจากระบบบัญชี Google หากต้องการออกจากระบบบัญชี Google ให้<ph name="BEGIN_LINK" />ออกจากระบบ Chrome<ph name="END_LINK" /></translation>
-<translation id="3519792890877853853">การ์ดนี้แสดงรีวิวผลิตภัณฑ์ในแท็บที่เปิดอยู่</translation>
+<translation id="3519792890877853853">การ์ดนี้แสดงรีวิวสินค้าในแท็บที่เปิดอยู่</translation>
 <translation id="3519905498307021260">{count,plural, =1{เปิดแท็บ}other{เปิด {count} แท็บ}}</translation>
 <translation id="3523513363815970085">ซ่อน "เว็บไซต์อันดับสูงสุดของคุณ"</translation>
 <translation id="3523789730715594198">คุณหยุดการซิงค์ได้ทุกเมื่อในการตั้งค่า Google อาจปรับเปลี่ยน Search และบริการอื่นๆ ให้เหมาะกับคุณโดยอิงจากประวัติการเข้าชม</translation>
@@ -730,7 +730,7 @@
 <translation id="3909222758573607742">บันทึกรหัสผ่านและรายการอื่นๆ ในบัญชี</translation>
 <translation id="3913463964270756493">ซ่อนหน้าจอ Search ด้วย Google Lens</translation>
 <translation id="3914640181019354363">ตรวจหาที่อยู่</translation>
-<translation id="391904960191284041">รีวิวผลิตภัณฑ์</translation>
+<translation id="391904960191284041">รีวิวสินค้า</translation>
 <translation id="3921585859122905677">ตำแหน่งของแถบที่อยู่</translation>
 <translation id="3922185497376658606">โหลดหน้าเว็บล่วงหน้า</translation>
 <translation id="3922395466317605522">ปรับแต่งเมนู</translation>
@@ -794,7 +794,7 @@
 <translation id="4152011295694446843">คุณจะเห็นบุ๊กมาร์กที่นี่</translation>
 <translation id="4154753961803534698">ค้นหาด้วยกล้อง</translation>
 <translation id="4158491215857439601">เครื่องมือจัดการรหัสผ่าน</translation>
-<translation id="4159430626587776301">อ่านรีวิวผลิตภัณฑ์ที่คุณเพิ่งเรียกดู</translation>
+<translation id="4159430626587776301">อ่านรีวิวสินค้าที่คุณเพิ่งเรียกดู</translation>
 <translation id="4161488339191275792">สร้างกลุ่มแท็บเพื่อจัดระเบียบแท็บที่เปิดอยู่</translation>
 <translation id="4163699139741158298">{count,plural, =1{บันทึกบุ๊กมาร์กไปยัง "{title}" แล้ว โดยจะบันทึกไว้ในอุปกรณ์นี้เท่านั้น}other{บันทึกบุ๊กมาร์ก {count} รายการไปยัง "{title}" แล้ว โดยจะบันทึกไว้ในอุปกรณ์นี้เท่านั้น}}</translation>
 <translation id="4164514562270305824">ลบการดาวน์โหลดอัตโนมัติ</translation>
@@ -1109,7 +1109,7 @@
 <translation id="5371112366564891538">เพิ่มขนาดข้อความ</translation>
 <translation id="537853552771686272">จัดการหัวข้อและเว็บไซต์ที่คุณสนใจ</translation>
 <translation id="5390458669633674385">{count,plural, =1{ปิดไปแล้ว {count} แท็บ}other{ปิดไปแล้ว {count} แท็บ}}</translation>
-<translation id="5394975111793637642">ซ่อนการ์ดรีวิวผลิตภัณฑ์สำหรับคุณ</translation>
+<translation id="5394975111793637642">ซ่อนการ์ดรีวิวสินค้าสำหรับคุณ</translation>
 <translation id="5414763847370083940">คุณจะได้รับการแจ้งเตือนหากราคาลดลงในเว็บไซต์ใดก็ตาม</translation>
 <translation id="5415289094036440596">แชร์พาสคีย์ไม่ได้</translation>
 <translation id="5416455648658732408">ย้ายไปที่กลุ่มแท็บ</translation>
@@ -1663,7 +1663,7 @@
 <translation id="7460314822154045102">ใช้กล้องถ่ายรูป</translation>
 <translation id="7460698861522306757">ขอเว็บไซต์เวอร์ชันมือถือ</translation>
 <translation id="7464143666517313304">การดำเนินการนี้จะลบที่อยู่ที่บันทึกไว้ในอุปกรณ์นี้</translation>
-<translation id="7468373585447318060">ติดตามการลดราคาของผลิตภัณฑ์ทั้งหมดที่คุณติดตาม</translation>
+<translation id="7468373585447318060">ติดตามการลดราคาของสินค้าทั้งหมดที่คุณติดตาม</translation>
 <translation id="746872191028309255">เลือกซื้อสิ่งที่คุณเห็นโดยใช้กล้องหรือแกลเลอรีรูปภาพ</translation>
 <translation id="7471557245617580330">สร้างแท็บใหม่</translation>
 <translation id="7476548258282096076">การ์ดนี้แสดงเว็บไซต์ที่คุณเข้าชมบ่อยที่สุด</translation>
@@ -2009,7 +2009,7 @@
 <translation id="8717864919010420084">คัดลอกลิงก์</translation>
 <translation id="8722229818691036192">บัญชีในอุปกรณ์นี้</translation>
 <translation id="8722649775263832315">แตะหรือไฮไลต์เพื่อค้นหาทุกสิ่งได้ด้วย Google Lens</translation>
-<translation id="8723088494871522141">ซ่อน "รีวิวผลิตภัณฑ์สำหรับคุณ"</translation>
+<translation id="8723088494871522141">ซ่อน "รีวิวสินค้าสำหรับคุณ"</translation>
 <translation id="872371143724482722">{COUNT,plural, =1{{COUNT} แท็บ}other{{COUNT} แท็บ}}</translation>
 <translation id="8725066075913043281">ลองอีกครั้ง</translation>
 <translation id="8726523474917941818">ช่วยเตือน</translation>

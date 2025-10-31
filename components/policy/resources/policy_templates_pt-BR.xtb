@@ -5970,7 +5970,7 @@ Esta política só é eficaz quando a máquina está registrada na <ph name="CLO
 <translation id="5025239932007658691">Se a política for definida como "Ativada" ou não for definida, o <ph name="PRODUCT_NAME" /> enviará consultas ocasionais a um servidor do Google para recuperar um carimbo de data/hora preciso.
 
       Se ela for definida como "Desativada", o <ph name="PRODUCT_NAME" /> não enviará essas consultas.</translation>
-<translation id="5028273030085046969">Apresentações Google (compatível desde a versão 135)</translation>
+<translation id="5028273030085046969">Google Slides (compatível desde a versão 135)</translation>
 <translation id="5030415914668947893">Permitir a coleta de métricas inseridas no URL</translation>
 <translation id="5033070732967197381">Permitir solicitações da API WebAuthn em sites com certificados TLS corrompidos.</translation>
 <translation id="5034504101537897433">Ativar relatórios de erros do dispositivo</translation>

@@ -2474,7 +2474,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="2677748264148917807">Verlassen</translation>
 <translation id="2678063897982469759">Wieder aktivieren</translation>
 <translation id="267829273183481634">{NUM_GROUPS,plural, =1{Tabgruppe beibehalten?}other{Tabgruppen beibehalten?}}</translation>
-<translation id="2678801466438589151">Google Lens-Schaltfläche auswählen</translation>
+<translation id="2678801466438589151">Google Lens-Button auswählen</translation>
 <translation id="268053382412112343">Ve&amp;rlauf</translation>
 <translation id="2681124317993121768">Gastprofile werden nicht unterstützt</translation>
 <translation id="2682498795777673382">Deine Eltern haben etwas geändert</translation>
@@ -3095,7 +3095,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3112292765614504292">App-Größe: <ph name="APP_SIZE" /></translation>
 <translation id="311347022006935575">Tab wurde hinzugefügt</translation>
 <translation id="311394601889664316">Websites dürfen keine Dateien oder Ordner auf meinem Gerät bearbeiten</translation>
-<translation id="3113970906450647715">Schaltfläche losgelöst</translation>
+<translation id="3113970906450647715">Button losgelöst</translation>
 <translation id="3115147772012638511">Warten auf den Cache...</translation>
 <translation id="3115580024857770654">Alle ausblenden</translation>
 <translation id="3115743155098198207">Sprache des Google-Kontos verwalten</translation>
@@ -7360,7 +7360,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6130887916931372608">Taste</translation>
 <translation id="6131511889181741773">Spritz­ma­le­rei</translation>
 <translation id="6132188132833716741">⇥ Tabulator- und dann Eingabetaste drücken, um im KI-Modus zu fragen</translation>
-<translation id="6132251717264923430">Schaltfläche angepinnt</translation>
+<translation id="6132251717264923430">Button angepinnt</translation>
 <translation id="6132714462430777655">Registrierung bei einer Bildungseinrichtung überspringen?</translation>
 <translation id="6134418895482326458">Fußzeile auf der Seite „Neuer Tab“ ausblenden</translation>
 <translation id="6134428719487602109">Entfernt alle Nutzerkonten und setzt Chromebook auf die Werkseinstellungen zurück.</translation>
