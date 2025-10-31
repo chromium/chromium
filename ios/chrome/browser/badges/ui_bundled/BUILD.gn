@@ -73,6 +73,7 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/infobars/model:public",
     "//ios/chrome/browser/infobars/model/overlays",
     "//ios/chrome/browser/infobars/model/overlays:util",
+    "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/browser/location_bar/ui_bundled:constants",
     "//ios/chrome/browser/overlays/model",
     "//ios/chrome/browser/overlays/model/public/common/infobars",

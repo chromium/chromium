@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/badges/ui_bundled/badge_delegate.h"
 #import "ios/chrome/browser/badges/ui_bundled/badge_overflow_menu_util.h"
 #import "ios/chrome/browser/infobars/model/infobar_ios.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -176,6 +177,11 @@ const CGFloat kSymbolIncognitoFullScreenPointSize = 14.;
 - (BadgeButton*)overflowBadgeButton {
   UIImage* image = DefaultSymbolWithPointSize(kEllipsisCircleFillSymbol,
                                               kInfobarSymbolPointSize);
+  if (IsProactiveSuggestionsFrameworkEnabled()) {
+    image = [image imageWithTintColor:[UIColor whiteColor]
+                        renderingMode:UIImageRenderingModeAlwaysOriginal];
+  }
+
   BadgeButton* button = [self createButtonForType:kBadgeTypeOverflow
                                             image:image];
   button.accessibilityIdentifier = kBadgeButtonOverflowAccessibilityIdentifier;
