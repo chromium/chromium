@@ -30,6 +30,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/debug/crash_logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/system/sys_info.h"
@@ -171,6 +172,69 @@ String ToBlinkString(v8::Local<v8::Context> context,
 // the size is exceeded (see uses of the constant), which use the human-friendly
 // "8MB" text.
 const size_t kWasmWireBytesLimit = 1 << 23;
+
+void AddCrashKey(v8::CrashKeyId id, const std::string& value) {
+  using base::debug::AllocateCrashKeyString;
+  using base::debug::CrashKeySize;
+  using base::debug::SetCrashKeyString;
+
+  switch (id) {
+    case v8::CrashKeyId::kIsolateAddress:
+      static auto* const isolate_address =
+          AllocateCrashKeyString("v8_isolate_address", CrashKeySize::Size32);
+      SetCrashKeyString(isolate_address, value);
+      break;
+    case v8::CrashKeyId::kReadonlySpaceFirstPageAddress:
+      static auto* const ro_space_firstpage_address = AllocateCrashKeyString(
+          "v8_ro_space_firstpage_address", CrashKeySize::Size32);
+      SetCrashKeyString(ro_space_firstpage_address, value);
+      break;
+    case v8::CrashKeyId::kMapSpaceFirstPageAddress:
+      static auto* const map_space_firstpage_address = AllocateCrashKeyString(
+          "v8_map_space_firstpage_address", CrashKeySize::Size32);
+      SetCrashKeyString(map_space_firstpage_address, value);
+      break;
+    case v8::CrashKeyId::kCodeSpaceFirstPageAddress:
+      static auto* const code_space_firstpage_address = AllocateCrashKeyString(
+          "v8_code_space_firstpage_address", CrashKeySize::Size32);
+      SetCrashKeyString(code_space_firstpage_address, value);
+      break;
+    case v8::CrashKeyId::kDumpType:
+      static auto* const dump_type =
+          AllocateCrashKeyString("dump-type", CrashKeySize::Size32);
+      SetCrashKeyString(dump_type, value);
+      break;
+    default:
+      // Doing nothing for new keys is a valid option. Having this case allows
+      // to introduce new CrashKeyId's without triggering a build break.
+      break;
+  }
+}
+
+base::debug::CrashKeySize ToCrashKeySize(v8::CrashKeySize size) {
+  using base::debug::CrashKeySize;
+
+  switch (size) {
+    case v8::CrashKeySize::Size32:
+      return CrashKeySize::Size32;
+    case v8::CrashKeySize::Size64:
+      return CrashKeySize::Size64;
+    case v8::CrashKeySize::Size256:
+      return CrashKeySize::Size256;
+    case v8::CrashKeySize::Size1024:
+      return CrashKeySize::Size1024;
+    default:
+      NOTREACHED();
+  }
+}
+
+v8::CrashKey AllocateCrashKeyString(const char key[], v8::CrashKeySize size) {
+  return AllocateCrashKeyString(key, ToCrashKeySize(size));
+}
+
+void SetCrashKeyString(v8::CrashKey key, std::string_view value) {
+  SetCrashKeyString(reinterpret_cast<base::debug::CrashKeyString*>(key), value);
+}
 
 }  // namespace
 
@@ -996,6 +1060,11 @@ v8::Isolate* V8Initializer::InitializeMainThread() {
     // the isolate is in background. This reduces memory usage.
     isolate->SetPriority(v8::Isolate::Priority::kBestEffort);
   }
+
+  // Crash key API is not thread-safe, so we only set it up on the main thread.
+  isolate->SetAddCrashKeyCallback(AddCrashKey);
+  isolate->SetCrashKeyStringCallbacks(AllocateCrashKeyString,
+                                      SetCrashKeyString);
 
   return isolate;
 }
