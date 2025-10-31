@@ -30,7 +30,11 @@ class OmniboxContextMenu : public views::MenuDelegate {
   void RunMenuAt(const gfx::Point& point,
                  ui::mojom::MenuSourceType source_type);
 
+  // views::MenuDelegate:
   void ExecuteCommand(int command_id, int event_flags) override;
+  const gfx::FontList* GetLabelFontList(int command_id) const override;
+  std::optional<SkColor> GetLabelColor(int command_id) const override;
+  bool IsCommandEnabled(int command_id) const override;
 
  private:
   const raw_ptr<views::Widget> parent_widget_;

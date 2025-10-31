@@ -596,6 +596,12 @@
 // Show contextual tasks side panel.
 #define IDC_SHOW_CONTEXTUAL_TASKS_SIDE_PANEL                  54000
 
+// Omnibox context menu
+#define IDC_OMNIBOX_CONTEXT_ADD_IMAGE                         54010
+#define IDC_OMNIBOX_CONTEXT_ADD_FILE                          54011
+#define IDC_OMNIBOX_CONTEXT_CREATE_IMAGES                     54012
+#define IDC_OMNIBOX_CONTEXT_DEEP_RESEARCH                     54013
+
 // NOTE: The last valid command value is 57343 (0xDFFF)
 // See http://msdn.microsoft.com/en-us/library/t2zechd4(VS.71).aspx
 
