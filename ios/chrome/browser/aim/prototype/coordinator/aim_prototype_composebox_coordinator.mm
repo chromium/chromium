@@ -297,6 +297,12 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
   [_tabPickerCoordinator start];
 }
 
+- (void)aimPrototypeViewController:
+            (AIMPrototypeComposeboxViewController*)composeboxViewController
+                  didTapSendButton:(UIButton*)button {
+  [_omniboxCoordinator acceptInput];
+}
+
 #pragma mark - PHPickerViewControllerDelegate
 
 - (void)picker:(PHPickerViewController*)picker

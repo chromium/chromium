@@ -872,8 +872,9 @@ CreateInputDataFromAnnotatedPageContent(
                isSearchQuery:(BOOL)isSearchQuery
          userInputInProgress:(BOOL)userInputInProgress {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  // Update lens and mic button visibility.
+  // Update send, lens and mic button visibility.
   [self.consumer hideLensAndMicButton:text.length()];
+  [self.consumer hideSendButton:!text.length()];
 }
 
 #pragma mark - Private helpers

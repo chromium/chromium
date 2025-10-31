@@ -22,6 +22,9 @@
 // Updates the mic and lens button visibility.
 - (void)hideLensAndMicButton:(BOOL)hidden;
 
+// Updates the send button visibility.
+- (void)hideSendButton:(BOOL)hidden;
+
 // Sets whether the "Attach current tab" action is enabled.
 - (void)setCanAttachTabAction:(BOOL)canAttachTabAction;
 

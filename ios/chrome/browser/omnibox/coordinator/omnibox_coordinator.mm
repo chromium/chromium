@@ -307,6 +307,10 @@
   [_omniboxTextController endEditing];
 }
 
+- (void)acceptInput {
+  [self.mediator acceptInput];
+}
+
 - (void)insertTextToOmnibox:(NSString*)text {
   [_omniboxTextController insertTextToOmnibox:text];
 }

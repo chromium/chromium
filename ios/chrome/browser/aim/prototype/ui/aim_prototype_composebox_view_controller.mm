@@ -70,13 +70,6 @@ const CGFloat kGlowEffectDuration = 1.0f;
 /// The width of the glow effect border.
 const CGFloat kGlowEffectWidth = 40.0f;
 
-/// The top padding between the omnibox container and the mic and lens button.
-const CGFloat kMicLensButtonTopPadding = 2.0f;
-/// The padding between the mic and lens buttons.
-const CGFloat kMicLensButtonHorizontalPadding = 10.0f;
-/// The trailing padding between the omnibox container and the mic button.
-const CGFloat kLensButtonTrailingPadding = 5.0f;
-
 /// The fade view width.
 const CGFloat kFadeViewWidth = 30.0f;
 /// The duration for the AIM button animation.
@@ -121,6 +114,8 @@ const CGFloat kAIMButtonAnimationDuration = 0.25f;
   UIButton* _micButton;
   /// The lens button.
   UIButton* _lensButton;
+  /// The send button.
+  UIButton* _sendButton;
   /// The fade view for the carousel's leading edge.
   UIView* _leadingCarouselFadeView;
   /// The fade view for the carousel's trailing edge.
@@ -131,8 +126,6 @@ const CGFloat kAIMButtonAnimationDuration = 0.25f;
   BOOL _canAttachCurrentTab;
   /// Container for the omnibox.
   UIView* _omniboxContainer;
-  /// A spacer view used in the stack view.
-  UIView* _spacerView;
 
   /// The cancellable callback for updating the glow effect.
   base::CancelableOnceClosure _updateGlowCallback;
@@ -179,39 +172,9 @@ const CGFloat kAIMButtonAnimationDuration = 0.25f;
   }
 
   _omniboxContainer.translatesAutoresizingMaskIntoConstraints = NO;
-  _micButton = [self
-      createButtonWithImage:DefaultSymbolWithPointSize(kMicrophoneSymbol,
-                                                       kSymbolActionPointSize)];
-  [_micButton addTarget:self
-                 action:@selector(micButtonTapped)
-       forControlEvents:UIControlEventTouchUpInside];
-  [_omniboxContainer addSubview:_micButton];
 
-  _lensButton = [self
-      createButtonWithImage:CustomSymbolWithPointSize(kCameraLensSymbol,
-                                                      kSymbolActionPointSize)];
-  [_lensButton addTarget:self
-                  action:@selector(lensButtonTapped)
-        forControlEvents:UIControlEventTouchUpInside];
-  [_omniboxContainer addSubview:_lensButton];
-
-  AddSizeConstraints(_lensButton,
-                     CGSizeMake(kGenericButtonWidth, kGenericButtonHeight));
-  AddSizeConstraints(_micButton,
-                     CGSizeMake(kGenericButtonWidth, kGenericButtonHeight));
-
-  [NSLayoutConstraint activateConstraints:@[
-    [_lensButton.topAnchor constraintEqualToAnchor:_omniboxContainer.topAnchor
-                                          constant:kMicLensButtonTopPadding],
-    [_lensButton.trailingAnchor
-        constraintEqualToAnchor:_omniboxContainer.trailingAnchor
-                       constant:-kLensButtonTrailingPadding],
-    [_micButton.topAnchor constraintEqualToAnchor:_omniboxContainer.topAnchor
-                                         constant:kMicLensButtonTopPadding],
-    [_micButton.trailingAnchor
-        constraintEqualToAnchor:_lensButton.leadingAnchor
-                       constant:-kMicLensButtonHorizontalPadding],
-  ]];
+  _micButton = [self createMicrophoneButton];
+  _lensButton = [self createLensButton];
 
   // Carousel view
   UICollectionViewFlowLayout* layout =
@@ -277,92 +240,8 @@ const CGFloat kAIMButtonAnimationDuration = 0.25f;
   ]];
 
   // Action buttons
-  UIButton* plusButton =
-      [ExtendedTouchTargetButton buttonWithType:UIButtonTypeSystem];
-  [plusButton
-      setImage:DefaultSymbolWithPointSize(kPlusSymbol, kSymbolActionPointSize)
-      forState:UIControlStateNormal];
-  plusButton.translatesAutoresizingMaskIntoConstraints = NO;
-  plusButton.backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
-  plusButton.layer.cornerRadius = kAIMButtonHeight / 2.0;
-  plusButton.tintColor = [UIColor colorNamed:kTextSecondaryColor];
-
-  [plusButton.widthAnchor constraintEqualToConstant:kAIMButtonHeight].active =
-      YES;
-  [plusButton.heightAnchor constraintEqualToConstant:kAIMButtonHeight].active =
-      YES;
-
-  [plusButton addTarget:self
-                 action:@selector(plusButtonTouchDown)
-       forControlEvents:UIControlEventTouchDown];
-  plusButton.showsMenuAsPrimaryAction = YES;
-
-  __weak __typeof__(self) weakSelf = self;
-  UIAction* galleryAction = [UIAction
-      // TODO(crbug.com/40280872): Localize this string.
-
-      actionWithTitle:@"Gallery"
-                image:DefaultSymbolWithPointSize(kPhotoSymbol,
-                                                 kSymbolActionPointSize)
-           identifier:nil
-              handler:^(UIAction* action) {
-                [weakSelf.delegate
-                    aimPrototypeViewControllerDidTapGalleryButton:weakSelf];
-              }];
-  UIAction* cameraAction = [UIAction
-      // TODO(crbug.com/40280872): Localize this string.
-
-      actionWithTitle:@"Camera"
-                image:DefaultSymbolWithPointSize(@"camera",
-                                                 kSymbolActionPointSize)
-           identifier:nil
-              handler:^(UIAction* action) {
-                [weakSelf.delegate
-                    aimPrototypeViewControllerDidTapCameraButton:weakSelf];
-              }];
-
-  UIAction* fileAction = [UIAction
-      // TODO(crbug.com/40280872): Localize this string.
-      actionWithTitle:@"File"
-                image:DefaultSymbolWithPointSize(@"doc", kSymbolActionPointSize)
-           identifier:nil
-              handler:^(UIAction* action) {
-                [weakSelf.delegate
-                    aimPrototypeViewControllerDidTapFileButton:weakSelf];
-              }];
-
-  UIAction* attachCurrentTabAction = [UIAction
-      // TODO(crbug.com/40280872): Localize this string.
-      actionWithTitle:@"Attach current tab"
-                image:DefaultSymbolWithPointSize(kNewTabGroupActionSymbol,
-                                                 kSymbolActionPointSize)
-           identifier:nil
-              handler:^(UIAction* action) {
-                [weakSelf.mutator attachCurrentTabContent];
-              }];
-
-  NSMutableArray* menuItems = [NSMutableArray
-      arrayWithObjects:fileAction, galleryAction, cameraAction, nil];
-
-  if (base::FeatureList::IsEnabled(kAIMPrototypeTabPicker)) {
-    UIAction* selectTabsAction = [UIAction
-        // TODO(crbug.com/40280872): Localize this string.
-        actionWithTitle:@"Attach tabs"
-                  image:DefaultSymbolWithPointSize(kNewTabGroupActionSymbol,
-                                                   kSymbolActionPointSize)
-             identifier:nil
-                handler:^(UIAction* action) {
-                  [weakSelf handleAttachTabs];
-                }];
-    [menuItems addObject:selectTabsAction];
-  }
-
-  if (_canAttachCurrentTab &&
-      !base::FeatureList::IsEnabled(kAIMPrototypeTabPicker)) {
-    [menuItems addObject:attachCurrentTabAction];
-  }
-
-  plusButton.menu = [UIMenu menuWithTitle:@"" children:menuItems];
+  UIButton* plusButton = [self createPlusButton];
+  _sendButton = [self createSendButton];
 
   _aimButton = [UIButton buttonWithType:UIButtonTypeSystem];
   _aimButton.translatesAutoresizingMaskIntoConstraints = NO;
@@ -378,12 +257,13 @@ const CGFloat kAIMButtonAnimationDuration = 0.25f;
   self.aimButtonWidthConstraint.active = YES;
 
   // Horizontal stack view for buttons
-  _spacerView = [[UIView alloc] init];
-  [_spacerView setContentHuggingPriority:UILayoutPriorityFittingSizeLevel
-                                 forAxis:UILayoutConstraintAxisHorizontal];
+  UIView* spacerView = [[UIView alloc] init];
+  [spacerView setContentHuggingPriority:UILayoutPriorityFittingSizeLevel
+                                forAxis:UILayoutConstraintAxisHorizontal];
   UIStackView* buttonsStackView =
       [[UIStackView alloc] initWithArrangedSubviews:@[
-        plusButton, _carouselContainer, _spacerView, _aimButton
+        plusButton, _aimButton, _carouselContainer, spacerView, _sendButton,
+        _micButton, _lensButton
       ]];
   buttonsStackView.translatesAutoresizingMaskIntoConstraints = NO;
   buttonsStackView.axis = UILayoutConstraintAxisHorizontal;
@@ -498,6 +378,10 @@ const CGFloat kAIMButtonAnimationDuration = 0.25f;
   _lensButton.hidden = hidden;
 }
 
+- (void)hideSendButton:(BOOL)hidden {
+  _sendButton.hidden = hidden;
+}
+
 #pragma mark - Actions
 
 - (void)galleryButtonTapped {
@@ -522,6 +406,10 @@ const CGFloat kAIMButtonAnimationDuration = 0.25f;
 
 - (void)lensButtonTapped {
   [self.delegate aimPrototypeViewController:self didTapLensButton:_lensButton];
+}
+
+- (void)sendButtonTapped {
+  [self.delegate aimPrototypeViewController:self didTapSendButton:_sendButton];
 }
 
 - (void)stopGlowEffect {
@@ -691,6 +579,10 @@ const CGFloat kAIMButtonAnimationDuration = 0.25f;
                 }];
 }
 
+#pragma mark - Private helpers
+
+/// Updates the AIM button taking into account if the button should be minimize
+/// or not or if the mode is enable or not.
 - (void)updateAIMButtonAppearance {
   UIButtonConfiguration* config =
       [UIButtonConfiguration plainButtonConfiguration];
@@ -727,6 +619,7 @@ const CGFloat kAIMButtonAnimationDuration = 0.25f;
   _aimButton.configuration = config;
 }
 
+/// Creates an extended touch target button with the given image.
 - (UIButton*)createButtonWithImage:(UIImage*)image {
   UIButton* button =
       [ExtendedTouchTargetButton buttonWithType:UIButtonTypeSystem];
@@ -739,6 +632,146 @@ const CGFloat kAIMButtonAnimationDuration = 0.25f;
       YES;
   button.tintColor = [UIColor colorNamed:kTextSecondaryColor];
   return button;
+}
+
+/// Creates the plus button that contains the menu.
+- (UIButton*)createPlusButton {
+  UIButton* plusButton =
+      [ExtendedTouchTargetButton buttonWithType:UIButtonTypeSystem];
+  [plusButton
+      setImage:DefaultSymbolWithPointSize(kPlusSymbol, kSymbolActionPointSize)
+      forState:UIControlStateNormal];
+  plusButton.translatesAutoresizingMaskIntoConstraints = NO;
+  plusButton.backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
+  plusButton.layer.cornerRadius = kAIMButtonHeight / 2.0;
+  plusButton.tintColor = [UIColor colorNamed:kTextSecondaryColor];
+
+  [plusButton.widthAnchor constraintEqualToConstant:kAIMButtonHeight].active =
+      YES;
+  [plusButton.heightAnchor constraintEqualToConstant:kAIMButtonHeight].active =
+      YES;
+
+  [plusButton addTarget:self
+                 action:@selector(plusButtonTouchDown)
+       forControlEvents:UIControlEventTouchDown];
+  plusButton.showsMenuAsPrimaryAction = YES;
+
+  __weak __typeof__(self) weakSelf = self;
+  UIAction* galleryAction = [UIAction
+      // TODO(crbug.com/40280872): Localize this string.
+
+      actionWithTitle:@"Gallery"
+                image:DefaultSymbolWithPointSize(kPhotoSymbol,
+                                                 kSymbolActionPointSize)
+           identifier:nil
+              handler:^(UIAction* action) {
+                [weakSelf.delegate
+                    aimPrototypeViewControllerDidTapGalleryButton:weakSelf];
+              }];
+  UIAction* cameraAction = [UIAction
+      // TODO(crbug.com/40280872): Localize this string.
+
+      actionWithTitle:@"Camera"
+                image:DefaultSymbolWithPointSize(kSystemCameraSymbol,
+                                                 kSymbolActionPointSize)
+           identifier:nil
+              handler:^(UIAction* action) {
+                [weakSelf.delegate
+                    aimPrototypeViewControllerDidTapCameraButton:weakSelf];
+              }];
+
+  UIAction* fileAction = [UIAction
+      // TODO(crbug.com/40280872): Localize this string.
+      actionWithTitle:@"File"
+                image:DefaultSymbolWithPointSize(kDocSymbol,
+                                                 kSymbolActionPointSize)
+           identifier:nil
+              handler:^(UIAction* action) {
+                [weakSelf.delegate
+                    aimPrototypeViewControllerDidTapFileButton:weakSelf];
+              }];
+
+  UIAction* attachCurrentTabAction = [UIAction
+      // TODO(crbug.com/40280872): Localize this string.
+      actionWithTitle:@"Attach current tab"
+                image:DefaultSymbolWithPointSize(kNewTabGroupActionSymbol,
+                                                 kSymbolActionPointSize)
+           identifier:nil
+              handler:^(UIAction* action) {
+                [weakSelf.mutator attachCurrentTabContent];
+              }];
+
+  NSMutableArray* menuItems = [NSMutableArray
+      arrayWithObjects:fileAction, galleryAction, cameraAction, nil];
+
+  if (base::FeatureList::IsEnabled(kAIMPrototypeTabPicker)) {
+    UIAction* selectTabsAction = [UIAction
+        // TODO(crbug.com/40280872): Localize this string.
+        actionWithTitle:@"Attach tabs"
+                  image:DefaultSymbolWithPointSize(kNewTabGroupActionSymbol,
+                                                   kSymbolActionPointSize)
+             identifier:nil
+                handler:^(UIAction* action) {
+                  [weakSelf handleAttachTabs];
+                }];
+    [menuItems addObject:selectTabsAction];
+  }
+
+  if (_canAttachCurrentTab &&
+      !base::FeatureList::IsEnabled(kAIMPrototypeTabPicker)) {
+    [menuItems addObject:attachCurrentTabAction];
+  }
+
+  plusButton.menu = [UIMenu menuWithTitle:@"" children:menuItems];
+  return plusButton;
+}
+
+/// Returns the send button.
+- (UIButton*)createSendButton {
+  UIButton* sendButton =
+      [ExtendedTouchTargetButton buttonWithType:UIButtonTypeSystem];
+  UIImageSymbolConfiguration* config = [UIImageSymbolConfiguration
+      configurationWithPointSize:24
+                          weight:UIImageSymbolWeightSemibold];
+  UIImage* image = SymbolWithPalette(
+      DefaultSymbolWithConfiguration(kRightArrowCircleFillSymbol, config),
+      @[ [UIColor whiteColor], [UIColor colorNamed:kBlue500Color] ]);
+  [sendButton setImage:image forState:UIControlStateNormal];
+
+  [sendButton addTarget:self
+                 action:@selector(sendButtonTapped)
+       forControlEvents:UIControlEventTouchUpInside];
+
+  return sendButton;
+}
+
+/// Returns the microphone button.
+- (UIButton*)createMicrophoneButton {
+  UIButton* micButton = [self
+      createButtonWithImage:DefaultSymbolWithPointSize(kMicrophoneSymbol,
+                                                       kSymbolActionPointSize)];
+  [micButton addTarget:self
+                action:@selector(micButtonTapped)
+      forControlEvents:UIControlEventTouchUpInside];
+  micButton.tintColor = [UIColor blackColor];
+  AddSizeConstraints(micButton,
+                     CGSizeMake(kGenericButtonWidth, kGenericButtonHeight));
+  return micButton;
+}
+
+/// Returns the lens button.
+- (UIButton*)createLensButton {
+  UIButton* lensButton = [self
+      createButtonWithImage:CustomSymbolWithPointSize(kCameraLensSymbol,
+                                                      kSymbolActionPointSize)];
+  [lensButton addTarget:self
+                 action:@selector(lensButtonTapped)
+       forControlEvents:UIControlEventTouchUpInside];
+  lensButton.tintColor = [UIColor blackColor];
+
+  AddSizeConstraints(lensButton,
+                     CGSizeMake(kGenericButtonWidth, kGenericButtonHeight));
+  return lensButton;
 }
 
 @end

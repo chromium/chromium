@@ -40,6 +40,10 @@
 /// Informs the delegate that a user did tap on the attach tabs button.
 - (void)aimPrototypeViewControllerDidTapAttachTabsButton:
     (AIMPrototypeComposeboxViewController*)composeboxViewController;
+/// Informs the delegate that a user did tap on the lens button.
+- (void)aimPrototypeViewController:
+            (AIMPrototypeComposeboxViewController*)composeboxViewController
+                  didTapSendButton:(UIButton*)button;
 @end
 
 /// View controller for the AIM prototype composebox.
