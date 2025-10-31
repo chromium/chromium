@@ -746,7 +746,11 @@ class BlinkPerfWebGL(_BlinkPerfBenchmark):
                 documentation_url='https://bit.ly/blink-perf-benchmarks')
 class BlinkPerfWebGPU(_BlinkPerfBenchmark):
   SUBDIR = 'webgpu'
-  SUPPORTED_PLATFORMS = [story.expectations.WIN_10, story.expectations.ALL_MAC]
+  SUPPORTED_PLATFORMS = [
+      story.expectations.WIN_10,
+      story.expectations.ALL_MAC,
+      story.expectations.ALL_ANDROID,
+  ]
 
   @classmethod
   def Name(cls):
