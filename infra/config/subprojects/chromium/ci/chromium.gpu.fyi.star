@@ -1507,7 +1507,8 @@ ci.thin_tester(
     ),
     targets = targets.bundle(
         targets = [
-            "gpu_noop_sleep_telemetry_test",
+            "gpu_fyi_linux_release_gtests",
+            "gpu_fyi_linux_release_vulkan_telemetry_tests",
         ],
         mixins = [
             "linux_nvidia_rtx_4070_super_stable",

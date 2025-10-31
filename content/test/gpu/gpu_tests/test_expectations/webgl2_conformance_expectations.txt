@@ -808,6 +808,7 @@ crbug.com/444250724 [ mac angle-metal graphite-enabled intel-0x3e9b ] conformanc
 ## Linux NVIDIA ##
 
 crbug.com/1115314 [ linux nvidia-0x2184 angle-opengl passthrough ] deqp/functional/gles3/fbocompleteness.html [ Failure ]
+crbug.com/40144307 [ linux nvidia-0x2783 angle-opengl passthrough ] deqp/functional/gles3/fbocompleteness.html [ Failure ]
 
 ## Linux AMD RX 5500 XT ##
 
