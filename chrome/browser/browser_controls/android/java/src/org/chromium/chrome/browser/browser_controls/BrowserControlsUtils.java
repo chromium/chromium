@@ -31,6 +31,12 @@ public class BrowserControlsUtils {
                 && ChromeFeatureList.sTopControlsRefactor.isEnabled();
     }
 
+    /** Whether use TopControlsStacker to drive the y offset for top control layers. */
+    public static boolean isTopControlsRefactorOffsetEnabled() {
+        return ChromeFeatureList.sTopControlsRefactor.isEnabled()
+                && ChromeFeatureList.sTopControlsRefactorV2.isEnabled();
+    }
+
     /**
      * @return True if the browser controls are completely off screen.
      */

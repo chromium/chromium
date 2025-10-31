@@ -9,6 +9,7 @@ import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
+import android.view.ViewGroup.MarginLayoutParams;
 import android.widget.ImageButton;
 
 import androidx.annotation.ColorInt;
@@ -856,5 +857,33 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
         // If this layer is at the bottom of the stacker, the hairline should be visible.
         boolean isToolbarAtTheBottom = mTopControlsStacker.isLayerAtBottom(getTopControlType());
         mToolbarLayout.setHairlineVisibility(isToolbarAtTheBottom);
+    }
+
+    @Override
+    public void onBrowserControlsOffsetUpdate(int layerYOffset, boolean reachRestingPosition) {
+        if (mBrowserControls.getControlsPosition() != ControlsPosition.TOP) {
+            return;
+        }
+
+        // In Android view, tab strip and toolbar lives together in control container. The toolbar
+        // applies a top margin so it can leave enough space for the tab strip to show.
+        int tabStripHeight = getTabStripHeight();
+
+        // In compositor, the position of the toolbar depends on the capture. As for Oct 2025, the
+        // capture includes everything in control container, including the top margin, which
+        // represents the size of the tab strip.
+        // To place the toolbar at its desired position, we have to subtract the top margin
+        // from layerYOffset.
+        if (mOverlayCoordinator != null) {
+            mOverlayCoordinator.setYOffset(layerYOffset - tabStripHeight);
+        }
+
+        // Skip the layout params in non-resting position to avoid trigger layout during browser
+        // controls reposition.
+        if (reachRestingPosition) {
+            MarginLayoutParams lp = (MarginLayoutParams) mToolbarLayout.getLayoutParams();
+            lp.topMargin = tabStripHeight;
+            mToolbarLayout.setLayoutParams(lp);
+        }
     }
 }

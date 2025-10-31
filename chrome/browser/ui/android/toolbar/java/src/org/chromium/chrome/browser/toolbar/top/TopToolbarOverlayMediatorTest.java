@@ -504,4 +504,47 @@ public class TopToolbarOverlayMediatorTest {
         assertEquals(
                 captureResourceId, mModel.get(TopToolbarOverlayProperties.CAPTURE_RESOURCE_ID));
     }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.TOP_CONTROLS_REFACTOR,
+        ChromeFeatureList.TOP_CONTROLS_REFACTOR_V2
+    })
+    public void testContentOffset_topControlsRefactorEnabled() {
+        int offset = -10;
+        int height = 150;
+        doReturn(offset).when(mBrowserControlsStateProvider).getContentOffset();
+        doReturn(height).when(mBrowserControlsStateProvider).getTopControlsHeight();
+        doReturn(ControlsPosition.TOP).when(mBrowserControlsStateProvider).getControlsPosition();
+        mBrowserControlsObserverCaptor.getValue().onControlsPositionChanged(ControlsPosition.TOP);
+
+        mBrowserControlsObserverCaptor
+                .getValue()
+                .onControlsOffsetChanged(0, 0, false, 0, 0, false, false, false);
+        assertEquals(
+                TopToolbarOverlayMediator.INVALID_CONTENT_OFFSET,
+                mModel.get(TopToolbarOverlayProperties.LEGACY_CONTENT_OFFSET),
+                MathUtils.EPSILON);
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.TOP_CONTROLS_REFACTOR,
+        ChromeFeatureList.TOP_CONTROLS_REFACTOR_V2
+    })
+    public void testContentOffset_topControlsRefactorEnabled_ControlsAtBottom() {
+
+        float height = 700.0f;
+        mMediator.setViewportHeight(height);
+        mBottomToolbarControlsOffsetSupplier.set(0);
+        doReturn(ControlsPosition.BOTTOM).when(mBrowserControlsStateProvider).getControlsPosition();
+
+        mBrowserControlsObserverCaptor
+                .getValue()
+                .onControlsOffsetChanged(0, 0, false, 0, 0, false, false, false);
+        assertEquals(
+                700.0f,
+                mModel.get(TopToolbarOverlayProperties.LEGACY_CONTENT_OFFSET),
+                MathUtils.EPSILON);
+    }
 }

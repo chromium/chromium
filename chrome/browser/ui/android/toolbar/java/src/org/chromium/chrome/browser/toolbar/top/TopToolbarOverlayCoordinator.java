@@ -115,7 +115,14 @@ public class TopToolbarOverlayCoordinator implements SceneOverlay {
         mMediator.setXOffset(xOffset);
     }
 
-    /** @param anonymize Whether the URL should be hidden when the layer is rendered. */
+    /** Set the yOffset */
+    public void setYOffset(float yOffset) {
+        mMediator.setYOffset(yOffset);
+    }
+
+    /**
+     * @param anonymize Whether the URL should be hidden when the layer is rendered.
+     */
     public void setAnonymize(boolean anonymize) {
         mMediator.setAnonymize(anonymize);
     }

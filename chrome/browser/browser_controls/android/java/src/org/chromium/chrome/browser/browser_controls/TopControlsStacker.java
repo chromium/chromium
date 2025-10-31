@@ -318,8 +318,7 @@ public class TopControlsStacker implements BrowserControlsStateProvider.Observer
             int initialTopControlsMinHeightOffset,
             boolean requestNewFrame,
             boolean offsetsAppliedByBrowser) {
-        if (!ChromeFeatureList.sTopControlsRefactor.isEnabled()
-                || !ChromeFeatureList.sTopControlsRefactorV2.isEnabled()) return;
+        if (!BrowserControlsUtils.isTopControlsRefactorOffsetEnabled()) return;
 
         if (sDumpStatusForTesting) {
             Log.d(

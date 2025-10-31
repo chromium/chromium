@@ -20,6 +20,12 @@
 #include "ui/android/resources/resource_manager.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 
+namespace {
+// LINT.IfChange(InvalidContentOffset)
+const float kInvalidContentOffset = -10001.f;
+// LINT.ThenChange(//chrome/browser/ui/android/toolbar/java/src/org/chromium/chrome/browser/toolbar/top/TopToolbarOverlayMediator.java:InvalidContentOffset)
+}  // namespace
+
 namespace android {
 
 // static
@@ -122,7 +128,12 @@ void ToolbarLayer::PushResource(int toolbar_resource_id,
   // always at the bottom of the browser controls. This is no longer the case
   // as for 2025.
   // TODO(https://crbug.com/454338286): Rename / remove in favor of y_Offset.
-  y_offset = legacy_content_offset - layer_->bounds().height();
+  if (!base::FeatureList::IsEnabled(chrome::android::kTopControlsRefactor) ||
+      !base::FeatureList::IsEnabled(chrome::android::kTopControlsRefactorV2) ||
+      kInvalidContentOffset != legacy_content_offset) {
+    y_offset = legacy_content_offset - layer_->bounds().height();
+  }
+
   layer_->SetPosition(gfx::PointF(x_offset, y_offset));
 
   if (features::IsAndroidAnimatedProgressBarInVizEnabled()) {

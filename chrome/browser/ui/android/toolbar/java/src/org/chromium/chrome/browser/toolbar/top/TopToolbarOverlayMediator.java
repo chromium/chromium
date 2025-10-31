@@ -43,6 +43,10 @@ import java.util.function.Supplier;
 /** The business logic for controlling the top toolbar's cc texture. */
 @NullMarked
 public class TopToolbarOverlayMediator {
+    // LINT.IfChange(InvalidContentOffset)
+    static final float INVALID_CONTENT_OFFSET = -10001.f;
+    // LINT.ThenChange(//chrome/browser/android/compositor/layer/toolbar_layer.cc:InvalidContentOffset)
+
     // Forced testing params.
     private static @Nullable Boolean sIsTabletForTesting;
     private static @Nullable Integer sToolbarBackgroundColorForTesting;
@@ -256,11 +260,9 @@ public class TopToolbarOverlayMediator {
                                             ? getBookmarkBarAdjustedContentOffset()
                                             : mBrowserControlsStateProvider.getTopControlsHeight();
                             if (getControlsPosition() == ControlsPosition.TOP) {
-                                mModel.set(
-                                        TopToolbarOverlayProperties.LEGACY_CONTENT_OFFSET, height);
+                                applyContentOffsetToModel(height);
                             } else if (getControlsPosition() == ControlsPosition.BOTTOM) {
-                                mModel.set(
-                                        TopToolbarOverlayProperties.LEGACY_CONTENT_OFFSET,
+                                applyContentOffsetToModel(
                                         mBottomToolbarControlsOffsetSupplier.get()
                                                 + mViewportHeight);
                             }
@@ -291,8 +293,7 @@ public class TopToolbarOverlayMediator {
                             mBottomControlsOffsetTag = offsetTagsInfo.getBottomControlsOffsetTag();
                             updateOffsetTag();
                             if (shouldUpdateOffsets) {
-                                mModel.set(
-                                        TopToolbarOverlayProperties.LEGACY_CONTENT_OFFSET,
+                                applyContentOffsetToModel(
                                         mBrowserControlsStateProvider.getContentOffset());
                             }
                         }
@@ -533,7 +534,17 @@ public class TopToolbarOverlayMediator {
         mModel.set(TopToolbarOverlayProperties.X_OFFSET, xOffset);
     }
 
-    /** @param anonymize Whether the URL should be hidden when the layer is rendered. */
+    /**
+     * @param yOffset The Y offset of the toolbar.
+     */
+    void setYOffset(float yOffset) {
+        assert BrowserControlsUtils.isTopControlsRefactorOffsetEnabled();
+        mModel.set(TopToolbarOverlayProperties.Y_OFFSET, yOffset);
+    }
+
+    /**
+     * @param anonymize Whether the URL should be hidden when the layer is rendered.
+     */
     void setAnonymize(boolean anonymize) {
         mModel.set(TopToolbarOverlayProperties.ANONYMIZE, anonymize);
     }
@@ -587,12 +598,12 @@ public class TopToolbarOverlayMediator {
 
         if (getControlsPosition() == ControlsPosition.BOTTOM) {
             contentOffset = (int) (mBottomToolbarControlsOffsetSupplier.get() + mViewportHeight);
-            mModel.set(TopToolbarOverlayProperties.LEGACY_CONTENT_OFFSET, contentOffset);
+            applyContentOffsetToModel(contentOffset);
             return;
         }
 
         if (!ChromeFeatureList.sBrowserControlsInViz.isEnabled()) {
-            mModel.set(TopToolbarOverlayProperties.LEGACY_CONTENT_OFFSET, contentOffset);
+            applyContentOffsetToModel(contentOffset);
             return;
         }
 
@@ -607,6 +618,14 @@ public class TopToolbarOverlayMediator {
             contentOffset = Math.min(getBookmarkBarAdjustedContentOffset(), contentOffset);
         }
 
+        applyContentOffsetToModel(contentOffset);
+    }
+
+    private void applyContentOffsetToModel(float contentOffset) {
+        if (BrowserControlsUtils.isTopControlsRefactorOffsetEnabled()
+                && getControlsPosition() == ControlsPosition.TOP) {
+            contentOffset = INVALID_CONTENT_OFFSET;
+        }
         mModel.set(TopToolbarOverlayProperties.LEGACY_CONTENT_OFFSET, contentOffset);
     }
 
