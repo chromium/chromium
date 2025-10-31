@@ -157,12 +157,6 @@ mojom::IPAddressSpace PrivateNetworkAccessChecker::ClientAddressSpace() const {
   return client_security_state_->ip_address_space;
 }
 
-bool PrivateNetworkAccessChecker::IsPolicyPreflightWarn() const {
-  return client_security_state_ &&
-         client_security_state_->private_network_request_policy ==
-             mojom::PrivateNetworkRequestPolicy::kPreflightWarn;
-}
-
 Result PrivateNetworkAccessChecker::CheckInternal(
     mojom::IPAddressSpace resource_address_space) {
   // If we are connecting to a local IP endpoint over HTTP without a target IP
@@ -202,10 +196,6 @@ Result PrivateNetworkAccessChecker::CheckInternal(
       return Result::kAllowedByTargetIpAddressSpace;
     }
 
-    if (policy == mojom::PrivateNetworkRequestPolicy::kPreflightWarn) {
-      return Result::kAllowedByPolicyPreflightWarn;
-    }
-
     return Result::kBlockedByTargetIpAddressSpace;
   }
 
@@ -220,15 +210,6 @@ Result PrivateNetworkAccessChecker::CheckInternal(
   // should be performed).
   if (response_address_space_.has_value() &&
       resource_address_space != *response_address_space_) {
-    // If the policy is `kWarn` or `kPreflightWarn`, the request should not fail
-    // just because of this check - PNA checks are only experimentally turned on
-    // for this request. Further checks should not be run, otherwise we might
-    // return `kBlockedByPolicyPreflightWarn` and trigger a new preflight to be
-    // sent, thus causing https://crbug.com/1279376 all over again.
-    if (policy == mojom::PrivateNetworkRequestPolicy::kPreflightWarn) {
-      return Result::kAllowedByPolicyPreflightWarn;
-    }
-
     // See also https://crbug.com/1334689.
     if (policy == mojom::PrivateNetworkRequestPolicy::kWarn) {
       return Result::kAllowedByPolicyWarn;
@@ -273,10 +254,6 @@ Result PrivateNetworkAccessChecker::CheckInternal(
       return Result::kAllowedByPolicyWarn;
     case Policy::kBlock:
       return Result::kBlockedByPolicyBlock;
-    case Policy::kPreflightWarn:
-      return Result::kBlockedByPolicyPreflightWarn;
-    case Policy::kPreflightBlock:
-      return Result::kBlockedByPolicyPreflightBlock;
     case Policy::kPermissionBlock:
       return Result::kLNAPermissionRequired;
     case Policy::kPermissionWarn:

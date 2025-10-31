@@ -137,10 +137,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) PrivateNetworkAccessChecker {
   mojom::IPAddressSpace ClientAddressSpace() const;
 
  private:
-  // Returns whether this instance has a client security state containing a
-  // policy set to `kPreflightWarn`.
-  bool IsPolicyPreflightWarn() const;
-
   // Helper for `Check()`.
   PrivateNetworkAccessCheckResult CheckInternal(
       mojom::IPAddressSpace resource_address_space);

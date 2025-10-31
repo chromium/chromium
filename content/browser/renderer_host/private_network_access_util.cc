@@ -202,8 +202,6 @@ Policy ApplyFeatureStateToPolicy(FeatureState feature_state,
         case Policy::kBlock:
           return local_network_access_checks_enabled ? Policy::kPermissionWarn
                                                      : Policy::kWarn;
-        case Policy::kPreflightBlock:
-          return Policy::kPreflightWarn;
         case Policy::kPermissionBlock:
           return Policy::kPermissionWarn;
         default:
@@ -275,8 +273,8 @@ network::mojom::ClientSecurityStatePtr DeriveClientSecurityState(
 // This means a couple of things:
 // - They cannot embed anything private or loopback without being secure
 // contexts
-//   and triggering a CORS preflight.
-// - Private Network Access does not prevent them being embedded by less private
+//   and triggering a permission prompt.
+// - Local Network Access does not prevent them being embedded by less private
 //   content.
 // - It pollutes metrics since kUnknown could also mean a missed edge case.
 // To address these issues we list here a number of schemes that should be
@@ -349,13 +347,10 @@ network::mojom::PrivateNetworkRequestPolicy OverrideToBlockInsteadOfWarn(
   switch (policy) {
     case network::mojom::PrivateNetworkRequestPolicy::kWarn:
       return network::mojom::PrivateNetworkRequestPolicy::kBlock;
-    case network::mojom::PrivateNetworkRequestPolicy::kPreflightWarn:
-      return network::mojom::PrivateNetworkRequestPolicy::kPreflightBlock;
     case network::mojom::PrivateNetworkRequestPolicy::kPermissionWarn:
       return network::mojom::PrivateNetworkRequestPolicy::kPermissionBlock;
     case network::mojom::PrivateNetworkRequestPolicy::kAllow:
     case network::mojom::PrivateNetworkRequestPolicy::kBlock:
-    case network::mojom::PrivateNetworkRequestPolicy::kPreflightBlock:
     case network::mojom::PrivateNetworkRequestPolicy::kPermissionBlock:
       return policy;
   }
@@ -366,13 +361,10 @@ network::mojom::PrivateNetworkRequestPolicy OverrideToWarnInsteadOfBlock(
   switch (policy) {
     case network::mojom::PrivateNetworkRequestPolicy::kBlock:
       return network::mojom::PrivateNetworkRequestPolicy::kWarn;
-    case network::mojom::PrivateNetworkRequestPolicy::kPreflightBlock:
-      return network::mojom::PrivateNetworkRequestPolicy::kPreflightWarn;
     case network::mojom::PrivateNetworkRequestPolicy::kPermissionBlock:
       return network::mojom::PrivateNetworkRequestPolicy::kPermissionWarn;
     case network::mojom::PrivateNetworkRequestPolicy::kAllow:
     case network::mojom::PrivateNetworkRequestPolicy::kWarn:
-    case network::mojom::PrivateNetworkRequestPolicy::kPreflightWarn:
     case network::mojom::PrivateNetworkRequestPolicy::kPermissionWarn:
       return policy;
   }

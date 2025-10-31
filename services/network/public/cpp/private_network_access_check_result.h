@@ -50,18 +50,11 @@ enum class PrivateNetworkAccessCheckResult {
   // resource address space. This may be indicative of a DNS rebinding attack.
   kBlockedByTargetIpAddressSpace = 7,
 
-  // Private network request: blocked because `target_ip_address_space` is
-  // `kUnknown` and policy is `kPreflightWarn`.
-  kBlockedByPolicyPreflightWarn = 8,
-
-  // Private network request: blocked because `target_ip_address_space` is
-  // `kUnknown` and policy is `kPreflightBlock`.
-  kBlockedByPolicyPreflightBlock = 9,
-
-  // The result should have instead been `kBlockedByTargetIpAddressSpace` or
-  // `kBlockedByInconsistentIpAddressSpace`, but the policy is `kPreflightWarn`
-  // so the request was allowed.
-  kAllowedByPolicyPreflightWarn = 10,
+  // Deleted
+  //
+  // kBlockedByPolicyPreflightWarn = 8,
+  // kBlockedByPolicyPreflightBlock = 9,
+  // kAllowedByPolicyPreflightWarn = 10,
 
   // Request connected to two different IP address spaces for the same response.
   kBlockedByInconsistentIpAddressSpace = 11,
