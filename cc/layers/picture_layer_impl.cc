@@ -1682,10 +1682,27 @@ void PictureLayerImpl::CleanUpTilingsOnActiveLayer(
          twin->ideal_contents_scale_key()});
   }
 
-  PictureLayerTilingSet* twin_set = twin ? twin->tilings_.get() : nullptr;
-  tilings_->CleanUpTilings(min_acceptable_high_res_scale,
-                           max_acceptable_high_res_scale, used_tilings,
-                           twin_set);
+  std::vector<PictureLayerTiling*> to_remove;
+  for (size_t i = 0; i < tilings_->num_tilings(); ++i) {
+    PictureLayerTiling* tiling = tilings_->tiling_at(i);
+    // Keep all tilings within the min/max scales.
+    if (tiling->contents_scale_key() >= min_acceptable_high_res_scale &&
+        tiling->contents_scale_key() <= max_acceptable_high_res_scale) {
+      continue;
+    }
+
+    // Don't remove tilings that are required.
+    if (base::Contains(used_tilings, tiling)) {
+      continue;
+    }
+
+    to_remove.push_back(tiling);
+  }
+
+  for (auto* tiling : to_remove) {
+    DCHECK_NE(HIGH_RESOLUTION, tiling->resolution());
+    tilings_->Remove(tiling);
+  }
 }
 
 float PictureLayerImpl::MinimumRasterContentsScaleForWillChangeTransform()
