@@ -16,11 +16,14 @@
 #include "chrome/browser/enterprise/browser_management/browser_management_service.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
+#include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
@@ -29,19 +32,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace actor {
-namespace {
-
-int ToInt(glic::prefs::GlicActuationOnWebPolicyState state) {
-  return base::to_underlying(state);
-}
-
-base::Value GetActuationOnWebPrefValue(bool enabled) {
-  return base::Value(
-      enabled ? ToInt(glic::prefs::GlicActuationOnWebPolicyState::kEnabled)
-              : ToInt(glic::prefs::GlicActuationOnWebPolicyState::kDisabled));
-}
-
-}  // namespace
 
 class ActorPolicyCheckerBrowserTestBase : public ActorToolsTest {
  public:
@@ -54,24 +44,6 @@ class ActorPolicyCheckerBrowserTestBase : public ActorToolsTest {
     ASSERT_TRUE(embedded_test_server()->Start());
     ASSERT_TRUE(embedded_https_test_server().Start());
   }
-
-  void SetUpInProcessBrowserTestFixture() override {
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        switches::kNoErrorDialogs);
-    policy_provider_.SetDefaultReturns(
-        /*is_initialization_complete_return=*/true,
-        /*is_first_policy_load_complete_return=*/true);
-    policy::BrowserPolicyConnector::SetPolicyProviderForTesting(
-        &policy_provider_);
-  }
-
-  void UpdateProviderPolicy(const policy::PolicyMap& policy) {
-    policy::PolicyMap policy_with_defaults = policy.Clone();
-    policy_provider_.UpdateChromePolicy(policy_with_defaults);
-  }
-
- private:
-  ::testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
 };
 
 // Tests that exercise the policy checker for non-managed clients.
@@ -92,38 +64,48 @@ class ActorPolicyCheckerBrowserTestNonManaged
   }
 };
 
+IN_PROC_BROWSER_TEST_F(ActorPolicyCheckerBrowserTestNonManaged,
+                       AlwaysHaveActuationCapability) {
+  EXPECT_TRUE(ActorKeyedService::Get(browser()->profile())
+                  ->GetPolicyChecker()
+                  .can_act_on_web());
+
+  // Toggle the pref to kDisabled, but won't change the capability for
+  // non-managed clients.
+  PrefService* prefs = browser()->profile()->GetPrefs();
+  prefs->SetInteger(glic::prefs::kGlicActuationOnWeb,
+                    base::to_underlying(
+                        glic::prefs::GlicActuationOnWebPolicyState::kDisabled));
+
+  // Non-managed clients always have the capability.
+  EXPECT_TRUE(ActorKeyedService::Get(browser()->profile())
+                  ->GetPolicyChecker()
+                  .can_act_on_web());
+}
+
 // Tests that exercise the policy checker for managed clients.
 class ActorPolicyCheckerBrowserTestManaged
-    : public ActorPolicyCheckerBrowserTestBase,
-      public ::testing::WithParamInterface<bool> {
+    : public ActorPolicyCheckerBrowserTestBase {
  public:
-  ActorPolicyCheckerBrowserTestManaged() = default;
+  ActorPolicyCheckerBrowserTestManaged() {
+    // If the default value is kForcedDisabled, the capability won't be changed
+    // by the policy value.
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kGlicActor,
+        {{features::kGlicActorEnterprisePrefDefault.name,
+          features::kGlicActorEnterprisePrefDefault.GetName(
+              features::GlicActorEnterprisePrefDefault::kDisabledByDefault)}});
+  }
   ~ActorPolicyCheckerBrowserTestManaged() override = default;
 
   void SetUpOnMainThread() override {
-    const base::Version version = version_info::GetVersion();
-    bool enable_policy = GetParam();
-    // TODO(crbug.com/452629096): Remove this condition once we can enable the
-    // capability via the policy, after M145.
-    if (version.IsValid() && version < base::Version("145") && enable_policy) {
-      GTEST_SKIP() << "Between now to M145, act-on-web capability is strictly "
-                      "disabled on managed clients, and not even controllable "
-                      "via the policy. Skip those tests where we want to "
-                      "enable the policy.";
-    }
-    // Set up the policy so the profile becomes managed.
-    //
-    // Note we need to set up the policy before calling the base class's
-    // `SetUpOnMainThread()`. The base class's `SetUpOnMainThread()` will create
-    // a Task. We don't want to change the policy value after the Task is
-    // created, because that will cause the task to be cancelled with
-    // `ActionResultCode::kTaskWentAway`.
-    policy::PolicyMap policies;
-    policies.Set(policy::key::kGeminiActOnWebSettings,
-                 policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
-                 policy::POLICY_SOURCE_ENTERPRISE_DEFAULT,
-                 GetActuationOnWebPrefValue(GetParam()), nullptr);
-    UpdateProviderPolicy(policies);
+    policy_provider_.SetupPolicyServiceForPolicyUpdates(
+        browser()->profile()->GetProfilePolicyConnector()->policy_service());
+    scoped_management_service_override_ =
+        std::make_unique<policy::ScopedManagementServiceOverrideForTesting>(
+            policy::ManagementServiceFactory::GetForProfile(GetProfile()),
+            policy::EnterpriseManagementAuthority::CLOUD);
+
     ActorPolicyCheckerBrowserTestBase::SetUpOnMainThread();
 
     auto* management_service_factory =
@@ -134,22 +116,52 @@ class ActorPolicyCheckerBrowserTestManaged
     ASSERT_TRUE(browser_management_service->IsManaged());
   }
 
-  static std::string DescribeParam(const ::testing::TestParamInfo<bool>& info) {
-    return info.param ? "ActuationOnWebEnabled" : "ActuationOnWebDisabled";
+  void TearDownOnMainThread() override {
+    policy_provider_.SetupPolicyServiceForPolicyUpdates(nullptr);
+    // `scoped_management_service_override_` points to the profile-scoped
+    // `ManagementService`. Destroying it before the profile.
+    scoped_management_service_override_.reset();
+    ActorPolicyCheckerBrowserTestBase::TearDownOnMainThread();
   }
+
+  void SetUpInProcessBrowserTestFixture() override {
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        switches::kNoErrorDialogs);
+    policy_provider_.SetDefaultReturns(
+        /*is_initialization_complete_return=*/true,
+        /*is_first_policy_load_complete_return=*/true);
+    policy::BrowserPolicyConnector::SetPolicyProviderForTesting(
+        &policy_provider_);
+  }
+
+  void UpdateGeminiActOnWebPolicy(
+      std::optional<glic::prefs::GlicActuationOnWebPolicyState> value) {
+    policy::PolicyMap policies;
+    std::optional<base::Value> value_to_set;
+    if (value.has_value()) {
+      value_to_set = base::Value(base::to_underlying(*value));
+    }
+    policies.Set(policy::key::kGeminiActOnWebSettings,
+                 policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+                 policy::POLICY_SOURCE_ENTERPRISE_DEFAULT,
+                 std::move(value_to_set), nullptr);
+    policy_provider_.UpdateChromePolicy(policies);
+  }
+
+ private:
+  ::testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
+  std::unique_ptr<policy::ScopedManagementServiceOverrideForTesting>
+      scoped_management_service_override_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(
-    /* no prefix */,
-    ActorPolicyCheckerBrowserTestManaged,
-    ::testing::Bool(),
-    ActorPolicyCheckerBrowserTestManaged::DescribeParam);
-
-IN_PROC_BROWSER_TEST_F(ActorPolicyCheckerBrowserTestNonManaged,
+IN_PROC_BROWSER_TEST_F(ActorPolicyCheckerBrowserTestManaged,
                        TasksDroppedWhenActuationCapabilityIsDisabled) {
-  PrefService* prefs = browser()->profile()->GetPrefs();
-  ASSERT_EQ(prefs->GetInteger(glic::prefs::kGlicActuationOnWeb),
-            ToInt(glic::prefs::GlicActuationOnWebPolicyState::kEnabled));
+  UpdateGeminiActOnWebPolicy(
+      glic::prefs::GlicActuationOnWebPolicyState::kEnabled);
+  EXPECT_TRUE(ActorKeyedService::Get(browser()->profile())
+                  ->GetPolicyChecker()
+                  .can_act_on_web());
 
   GURL url = embedded_test_server()->GetURL("/empty.html");
   std::unique_ptr<ToolRequest> action =
@@ -159,13 +171,13 @@ IN_PROC_BROWSER_TEST_F(ActorPolicyCheckerBrowserTestNonManaged,
   actor_task().Pause(/*from_actor=*/true);
   EXPECT_EQ(actor_task().GetState(), ActorTask::State::kPausedByActor);
 
-  // Since the profile is not managed, we can change the capability by changing
-  // the pref.
-  prefs->SetInteger(
-      glic::prefs::kGlicActuationOnWeb,
-      ToInt(glic::prefs::GlicActuationOnWebPolicyState::kDisabled));
-  EXPECT_EQ(prefs->GetInteger(glic::prefs::kGlicActuationOnWeb),
-            ToInt(glic::prefs::GlicActuationOnWebPolicyState::kDisabled));
+  // Since the profile is managed, we can disable the capability by changing
+  // the policy.
+  UpdateGeminiActOnWebPolicy(
+      glic::prefs::GlicActuationOnWebPolicyState::kDisabled);
+  EXPECT_FALSE(ActorKeyedService::Get(browser()->profile())
+                   ->GetPolicyChecker()
+                   .can_act_on_web());
 
   // Note: because we explicitly paused the task, the result will be
   // `ActionResultCode::kError` instead of `ActionResultCode::kTaskWentAway`.
@@ -173,69 +185,115 @@ IN_PROC_BROWSER_TEST_F(ActorPolicyCheckerBrowserTestNonManaged,
   ExpectErrorResult(result, mojom::ActionResultCode::kError);
 }
 
-IN_PROC_BROWSER_TEST_F(ActorPolicyCheckerBrowserTestNonManaged,
-                       ActOnTabWithActOnWebCapabilityDisabled) {
-  PrefService* prefs = browser()->profile()->GetPrefs();
-  prefs->SetInteger(
-      glic::prefs::kGlicActuationOnWeb,
-      ToInt(glic::prefs::GlicActuationOnWebPolicyState::kDisabled));
-  EXPECT_EQ(prefs->GetInteger(glic::prefs::kGlicActuationOnWeb),
-            ToInt(glic::prefs::GlicActuationOnWebPolicyState::kDisabled));
+IN_PROC_BROWSER_TEST_F(ActorPolicyCheckerBrowserTestManaged,
+                       CannotCreateTaskWhenActOnWebCapabilityIsDisabled) {
+  UpdateGeminiActOnWebPolicy(
+      glic::prefs::GlicActuationOnWebPolicyState::kDisabled);
+  EXPECT_FALSE(ActorKeyedService::Get(browser()->profile())
+                   ->GetPolicyChecker()
+                   .can_act_on_web());
 
   auto null_task_id =
       ActorKeyedService::Get(browser()->profile())->CreateTask();
   EXPECT_EQ(null_task_id, TaskId());
 }
 
-// Exercise `MayActOnUrl`, which is called by the `ActorNavigationThrottle`.
-IN_PROC_BROWSER_TEST_P(ActorPolicyCheckerBrowserTestManaged, NavigateOnTab) {
-  const bool has_actuation_capability = GetParam();
-  ASSERT_EQ(ActorKeyedService::Get(browser()->profile())
-                ->GetPolicyChecker()
-                .can_act_on_web(),
-            has_actuation_capability);
+class ActorPolicyCheckerBrowserTestManagedWithForcedDisabledDefaultPref
+    : public ActorPolicyCheckerBrowserTestManaged {
+ public:
+  ActorPolicyCheckerBrowserTestManagedWithForcedDisabledDefaultPref() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kGlicActor,
+        {{features::kGlicActorEnterprisePrefDefault.name,
+          features::kGlicActorEnterprisePrefDefault.GetName(
+              features::GlicActorEnterprisePrefDefault::kForcedDisabled)}});
+  }
+  ~ActorPolicyCheckerBrowserTestManagedWithForcedDisabledDefaultPref()
+      override = default;
 
-  // Redirect to a cross-origin URL.
-  GURL redirect =
-      embedded_test_server()->GetURL("/cross-site/b.com/empty.html");
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
 
-  std::unique_ptr<ToolRequest> action =
-      MakeNavigateRequest(*active_tab(), redirect.spec());
-  ActResultFuture result;
-  actor_task().Act(ToRequestList(action), result.GetCallback());
-  auto expected_result =
-      has_actuation_capability
-          ? mojom::ActionResultCode::kOk
-          : mojom::ActionResultCode::kTriggeredNavigationBlocked;
-  ExpectErrorResult(result, expected_result);
+IN_PROC_BROWSER_TEST_F(
+    ActorPolicyCheckerBrowserTestManagedWithForcedDisabledDefaultPref,
+    CapabilityIsDisabled) {
+  UpdateGeminiActOnWebPolicy(
+      glic::prefs::GlicActuationOnWebPolicyState::kDisabled);
+
+  // If the default pref is kForcedDisabled, the policy value is discarded.
+  EXPECT_FALSE(ActorKeyedService::Get(browser()->profile())
+                   ->GetPolicyChecker()
+                   .can_act_on_web());
 }
 
-// Exercise `MayActOnTab`, which is called by the `ExecutionEngine::Act`.
-IN_PROC_BROWSER_TEST_P(ActorPolicyCheckerBrowserTestManaged, ActOnTab) {
-  const bool has_actuation_capability = GetParam();
-  ASSERT_EQ(ActorKeyedService::Get(browser()->profile())
-                ->GetPolicyChecker()
-                .can_act_on_web(),
-            has_actuation_capability);
+class ActorPolicyCheckerBrowserTestManagedPolicyNotSet
+    : public ActorPolicyCheckerBrowserTestManaged {
+ public:
+  ActorPolicyCheckerBrowserTestManagedPolicyNotSet() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kGlicActor,
+        {{features::kGlicActorEnterprisePrefDefault.name,
+          features::kGlicActorEnterprisePrefDefault.GetName(
+              features::GlicActorEnterprisePrefDefault::kDisabledByDefault)}});
+  }
+  ~ActorPolicyCheckerBrowserTestManagedPolicyNotSet() override = default;
 
-  const GURL url =
-      embedded_test_server()->GetURL("/actor/scrollable_page.html");
-  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+  void SetUpOnMainThread() override {
+    ActorPolicyCheckerBrowserTestManaged::SetUpOnMainThread();
+    // Since the default policy value is unset, unset->unset won't trigger the
+    // pref observer. Explicitly set the policy value here.
+    UpdateGeminiActOnWebPolicy(
+        glic::prefs::GlicActuationOnWebPolicyState::kEnabled);
+  }
 
-  int scroll_offset_x = 50;
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
 
-  std::unique_ptr<ToolRequest> action =
-      MakeScrollRequest(*main_frame(),
-                        /*content_node_id=*/std::nullopt, scroll_offset_x,
-                        /*scroll_offset_y=*/0);
-  auto expected_result = has_actuation_capability
-                             ? mojom::ActionResultCode::kOk
-                             : mojom::ActionResultCode::kUrlBlocked;
-  ActResultFuture result;
-  actor_task().Act(ToRequestList(action), result.GetCallback());
-  ExpectErrorResult(result, expected_result);
-  EXPECT_EQ(has_actuation_capability ? scroll_offset_x : 0,
-            EvalJs(web_contents(), "window.scrollX"));
+IN_PROC_BROWSER_TEST_F(ActorPolicyCheckerBrowserTestManagedPolicyNotSet,
+                       FallbackToDefaultPref) {
+  UpdateGeminiActOnWebPolicy(std::nullopt);
+
+  // Policy is unset. Fallback to the default pref value.
+  EXPECT_FALSE(ActorKeyedService::Get(browser()->profile())
+                   ->GetPolicyChecker()
+                   .can_act_on_web());
+}
+
+class ActorPolicyCheckerBrowserTestManagedPolicyChangesCapability
+    : public ActorPolicyCheckerBrowserTestManaged {
+ public:
+  ActorPolicyCheckerBrowserTestManagedPolicyChangesCapability() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kGlicActor,
+        {{features::kGlicActorEnterprisePrefDefault.name,
+          features::kGlicActorEnterprisePrefDefault.GetName(
+              features::GlicActorEnterprisePrefDefault::kDisabledByDefault)}});
+  }
+  ~ActorPolicyCheckerBrowserTestManagedPolicyChangesCapability() override =
+      default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    ActorPolicyCheckerBrowserTestManagedPolicyChangesCapability,
+    FallbackToDefaultPref) {
+  UpdateGeminiActOnWebPolicy(
+      glic::prefs::GlicActuationOnWebPolicyState::kEnabled);
+
+  EXPECT_TRUE(ActorKeyedService::Get(browser()->profile())
+                  ->GetPolicyChecker()
+                  .can_act_on_web());
+
+  UpdateGeminiActOnWebPolicy(
+      glic::prefs::GlicActuationOnWebPolicyState::kDisabled);
+
+  EXPECT_FALSE(ActorKeyedService::Get(browser()->profile())
+                   ->GetPolicyChecker()
+                   .can_act_on_web());
 }
 
 }  // namespace actor

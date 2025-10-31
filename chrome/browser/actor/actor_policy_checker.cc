@@ -6,8 +6,6 @@
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "base/version.h"
-#include "base/version_info/version_info.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/aggregated_journal.h"
 #include "chrome/browser/actor/site_policy.h"
@@ -25,6 +23,32 @@ namespace actor {
 
 namespace {
 
+#if BUILDFLAG(ENABLE_GLIC)
+std::string GlicActorEnterprisePrefDefaultToString(
+    features::GlicActorEnterprisePrefDefault value) {
+  switch (value) {
+    case features::GlicActorEnterprisePrefDefault::kEnabledByDefault:
+      return "enabled_by_default";
+    case features::GlicActorEnterprisePrefDefault::kDisabledByDefault:
+      return "disabled_by_default";
+    case features::GlicActorEnterprisePrefDefault::kForcedDisabled:
+      return "forced_disabled";
+  }
+}
+
+std::string GlicActuationOnWebPrefToString(int value) {
+  if (value == base::to_underlying(
+                   glic::prefs::GlicActuationOnWebPolicyState::kEnabled)) {
+    return "kEnabled";
+  } else if (value ==
+             base::to_underlying(
+                 glic::prefs::GlicActuationOnWebPolicyState::kDisabled)) {
+    return "kDisabled";
+  }
+  NOTREACHED();
+}
+#endif  // BUILDFLAG(ENABLE_GLIC)
+
 bool HasActuationCapability(Profile* profile) {
   CHECK(profile);
   CHECK(profile->GetPrefs());
@@ -40,37 +64,31 @@ bool HasActuationCapability(Profile* profile) {
 
   const bool is_managed =
       browser_management_service && browser_management_service->IsManaged();
-  const bool is_managed_trial = base::FeatureList::IsEnabled(
-      features::kGlicActOnWebCapabilityForManagedTrials);
-  // M143-M145: Managed clients do not have the capability. The policy cannot be
-  // enabled the capability for managed clients.
-  if (!is_managed || is_managed_trial) {
-    // Non-managed clients or trial participants have the capability by
-    // default.
-    return profile->GetPrefs()->GetInteger(glic::prefs::kGlicActuationOnWeb) !=
-           static_cast<int>(
-               glic::prefs::GlicActuationOnWebPolicyState::kDisabled);
+  const features::GlicActorEnterprisePrefDefault default_pref =
+      features::kGlicActorEnterprisePrefDefault.Get();
+  const int capability_pref =
+      profile->GetPrefs()->GetInteger(glic::prefs::kGlicActuationOnWeb);
+
+  VLOG(1) << "Is browser managed: " << is_managed;
+  VLOG(1) << "kGlicActorEnterprisePrefDefault value: "
+          << GlicActorEnterprisePrefDefaultToString(default_pref);
+  VLOG(1) << "kGlicActuationOnWeb is_managed: "
+          << profile->GetPrefs()->IsManagedPreference(
+                 glic::prefs::kGlicActuationOnWeb)
+          << " value: " << GlicActuationOnWebPrefToString(capability_pref);
+
+  if (!is_managed) {
+    return true;
   }
 
-  const base::Version version = version_info::GetVersion();
-  if (version.IsValid() && version < base::Version("145")) {
+  if (default_pref ==
+      features::GlicActorEnterprisePrefDefault::kForcedDisabled) {
     return false;
   }
 
-  // M145-M147: Managed clients defaults to no capability, but can be enabled by
-  // the policy.
-  if (version.IsValid() && version < base::Version("147")) {
-    return profile->GetPrefs()->GetInteger(glic::prefs::kGlicActuationOnWeb) ==
-           static_cast<int>(
-               glic::prefs::GlicActuationOnWebPolicyState::kEnabled);
-  }
-
-  // M147: Managed clients have the capability by default. The policy can be
-  // used to disable the capability for managed clients.
-  // Invalid version also defaults to enabled.
-  return profile->GetPrefs()->GetInteger(glic::prefs::kGlicActuationOnWeb) !=
-         static_cast<int>(
-             glic::prefs::GlicActuationOnWebPolicyState::kDisabled);
+  return capability_pref ==
+         base::to_underlying(
+             glic::prefs::GlicActuationOnWebPolicyState::kEnabled);
 #endif  // !BUILDFLAG(ENABLE_GLIC)
 }
 
@@ -117,6 +135,7 @@ void ActorPolicyChecker::MayActOnUrl(const GURL& url,
                                      AggregatedJournal& journal,
                                      TaskId task_id,
                                      DecisionCallback callback) {
+  // TODO(http://crbug.com/455645486): This may be turned into a CHECK.
   if (!can_act_on_web_) {
     journal.Log(url, task_id, "MayActOnUrl",
                 JournalDetailsBuilder()

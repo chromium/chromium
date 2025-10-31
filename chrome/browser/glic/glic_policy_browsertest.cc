@@ -650,10 +650,24 @@ IN_PROC_BROWSER_TEST_F(GlicPolicyTest,
             browser()->tab_strip_model()->GetActiveWebContents()->GetURL());
 }
 
-using GlicActuationOnWebPolicyTest = GlicPolicyTest;
+class GlicActuationOnWebPolicyTest : public GlicPolicyTest {
+ public:
+  GlicActuationOnWebPolicyTest() {
+    // The default pref value kForcedDisabled does not allow the policy to
+    // change the pref value.
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kGlicActor,
+        {{features::kGlicActorEnterprisePrefDefault.name,
+          features::kGlicActorEnterprisePrefDefault.GetName(
+              features::GlicActorEnterprisePrefDefault::kEnabledByDefault)}});
+  }
+  ~GlicActuationOnWebPolicyTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
 
 IN_PROC_BROWSER_TEST_F(GlicActuationOnWebPolicyTest, DefaultToEnabled) {
-  // By default the pref should start off unmanaged and defaulted to kEnabled.
   PrefService* prefs = browser()->profile()->GetPrefs();
   EXPECT_FALSE(prefs->IsManagedPreference(kGlicActuationOnWeb));
   EXPECT_EQ(prefs->GetInteger(kGlicActuationOnWeb),

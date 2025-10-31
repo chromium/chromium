@@ -4,14 +4,27 @@
 
 #include "chrome/browser/glic/glic_pref_names.h"
 
+#include "base/types/cxx23_to_underlying.h"
 #include "chrome/browser/background/glic/glic_launcher_configuration.h"
 #include "chrome/browser/glic/widget/local_hotkey_manager.h"
+#include "chrome/common/chrome_features.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "ui/base/accelerators/command.h"
 
 namespace glic::prefs {
+
+GlicActuationOnWebPolicyState GetGlicActuationOnWebPolicyState() {
+  auto default_pref_value = features::kGlicActorEnterprisePrefDefault.Get();
+  switch (default_pref_value) {
+    case features::GlicActorEnterprisePrefDefault::kForcedDisabled:
+    case features::GlicActorEnterprisePrefDefault::kDisabledByDefault:
+      return GlicActuationOnWebPolicyState::kDisabled;
+    case features::GlicActorEnterprisePrefDefault::kEnabledByDefault:
+      return GlicActuationOnWebPolicyState::kEnabled;
+  }
+}
 
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(kGlicPinnedToTabstrip, true);
@@ -41,7 +54,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
 
   registry->RegisterIntegerPref(
       prefs::kGlicActuationOnWeb,
-      static_cast<int>(prefs::GlicActuationOnWebPolicyState::kEnabled));
+      base::to_underlying(GetGlicActuationOnWebPolicyState()));
 
   registry->RegisterBooleanPref(prefs::kGlicUserEnabledActuationOnWeb, false);
 }
