@@ -178,7 +178,6 @@ QuickInsertSearchAggregator::QuickInsertSearchAggregator(
   current_callback_ = std::move(callback);
   CHECK(!current_callback_.is_null());
 
-  // TODO: b/324154537 - Show a loading animation while waiting for results.
   burn_in_timer_.Start(FROM_HERE, burn_in_period, this,
                        &QuickInsertSearchAggregator::PublishBurnInResults);
 }
