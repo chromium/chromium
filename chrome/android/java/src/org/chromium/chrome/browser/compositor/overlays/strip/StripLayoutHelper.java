@@ -1681,7 +1681,10 @@ public class StripLayoutHelper
      * @param newIndex The new index of the tab in the {@link TabModel}.
      */
     public void tabMoved(int id, int oldIndex, int newIndex) {
-        finishAnimations();
+        // See crbug.com/455498650. When re-parenting a tab group, the sequence of events is such
+        // that we move a tab (out of the group), then attempt to close it. The delayed close
+        // animations need to be completed between each event to avoid interacting with stale state.
+        if (mCloseAnimationsRequested) finishAnimations();
         StripLayoutTab tab = findTabById(id);
         if (tab == null || oldIndex == newIndex) return;
 
