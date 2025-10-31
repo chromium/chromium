@@ -28,6 +28,14 @@ BrowserLayoutExclusionArea ShrinkBy(const BrowserLayoutExclusionArea& area,
 
 }  // namespace
 
+gfx::SizeF BrowserLayoutExclusionArea::ContentWithPaddingAndInsets(
+    float horizontal_inset,
+    float vertical_inset) const {
+  return gfx::SizeF(
+      content.width() + std::max(0.f, horizontal_padding - horizontal_inset),
+      content.height() + std::max(0.f, vertical_padding - vertical_inset));
+}
+
 bool BrowserLayoutParams::IsEmpty() const {
   return visual_client_area.IsEmpty();
 }

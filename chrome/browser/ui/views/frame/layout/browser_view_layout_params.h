@@ -44,6 +44,11 @@ struct BrowserLayoutExclusionArea {
                       content.height() + vertical_padding);
   }
 
+  // As ContentWithPadding(), but subtracts the insets `horizontal_inset` and
+  // `vertical_inset` from the margins, with a minimum margin of zero.
+  gfx::SizeF ContentWithPaddingAndInsets(float horizontal_inset,
+                                         float vertical_inset) const;
+
   // Returns true if there is no exclusion area.
   bool IsEmpty() const { return ContentWithPadding().IsEmpty(); }
 };

@@ -15,6 +15,7 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
 #include "chrome/browser/ui/views/frame/browser_frame_view.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
@@ -59,9 +60,17 @@ void Inset(views::Span& span, int amount, bool leading) {
 // Gets the bounds for a `view`, placed between the exclusion zones in `params`
 // if they are present.
 gfx::Rect GetBoundsWithExclusion(const BrowserLayoutParams& params,
-                                 const views::View* view) {
-  const auto leading = params.leading_exclusion.ContentWithPadding();
-  const auto trailing = params.trailing_exclusion.ContentWithPadding();
+                                 const views::View* view,
+                                 int leading_margin = 0,
+                                 int trailing_margin = 0) {
+  const auto leading =
+      leading_margin ? params.leading_exclusion.ContentWithPaddingAndInsets(
+                           leading_margin, 0.f)
+                     : params.leading_exclusion.ContentWithPadding();
+  const auto trailing =
+      trailing_margin ? params.trailing_exclusion.ContentWithPaddingAndInsets(
+                            trailing_margin, 0.f)
+                      : params.trailing_exclusion.ContentWithPadding();
   int height = base::ClampCeil(std::max(leading.height(), trailing.height()));
   if (height) {
     height = std::max(height, view->GetMinimumSize().height());
@@ -314,8 +323,14 @@ BrowserViewLayoutImpl::CalculateProposedLayout(
     gfx::Rect tabstrip_bounds;
     const bool tabstrip_visible = delegate().ShouldDrawTabStrip();
     if (tabstrip_visible) {
+      // Inset the leading edge of the tabstrip by the size of the swoop of the
+      // first tab; this is especially important for Mac, where the negative
+      // space of the caption button margins and the edge of the tabstrip should
+      // overlap. The trailing edge receives the usual treatment, as it is the
+      // new tab button and not a tab.
       tabstrip_bounds =
-          GetBoundsWithExclusion(params, views().tab_strip_region_view);
+          GetBoundsWithExclusion(params, views().tab_strip_region_view,
+                                 TabStyle::Get()->GetBottomCornerRadius());
       // TODO(https://crbug.com/454583671): Figure out if we always want to
       // apply TABSTRIP_TOOLBAR_OVERLAP, or whether it should not apply to
       // toolbar height side panel.
@@ -558,9 +573,15 @@ gfx::Rect BrowserViewLayoutImpl::CalculateTopContainerLayout(
     gfx::Rect tabstrip_bounds;
     const bool tabstrip_visible = delegate().ShouldDrawTabStrip();
     if (tabstrip_visible) {
+      // When there is an exclusion, inset the leading edge of the tabstrip by
+      // the size of the swoop of the first tab; this is especially important
+      // for Mac, where the negative space of the caption button margins and the
+      // edge of the tabstrip should overlap. The trailing edge receives the
+      // usual treatment, as it is the new tab button and not a tab.
       tabstrip_bounds =
           needs_exclusion
-              ? GetBoundsWithExclusion(params, views().tab_strip_region_view)
+              ? GetBoundsWithExclusion(params, views().tab_strip_region_view,
+                                       TabStyle::Get()->GetBottomCornerRadius())
               : gfx::Rect(
                     params.visual_client_area.x(), y,
                     params.visual_client_area.width(),
