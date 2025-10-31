@@ -9,6 +9,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
 #include "chrome/browser/contextual_tasks/mock_contextual_tasks_context_controller.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/test/browser_task_environment.h"
@@ -89,9 +90,8 @@ TEST_F(ContextualTasksUiServiceTest, IsAiUrl_InvalidUrl) {
 }
 
 TEST_F(ContextualTasksUiServiceTest, LinkFromWebUiIntercepted) {
-  std::string webui_url = "chrome://" + std::string(kContextualTasksUiHost);
   GURL navigated_url(kTestUrl);
-  GURL host_web_content_url("chrome://" + std::string(kContextualTasksUiHost));
+  GURL host_web_content_url(chrome::kChromeUIContextualTasksURL);
 
   EXPECT_CALL(*service_for_nav_, OnThreadLinkClicked(navigated_url, _))
       .Times(1);
@@ -147,13 +147,13 @@ TEST_F(ContextualTasksUiServiceTest, AiPageIntercepted_FromOmnibox) {
 
 // The AI page is allowed to load as long as it is part of the WebUI.
 TEST_F(ContextualTasksUiServiceTest, AiPageNotIntercepted) {
-  std::string webui_url = "chrome://" + std::string(kContextualTasksUiHost);
+  GURL webui_url(chrome::kChromeUIContextualTasksURL);
 
   EXPECT_CALL(*service_for_nav_, OnThreadLinkClicked(_, _)).Times(0);
   EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
       .Times(0);
-  EXPECT_FALSE(service_for_nav_->HandleNavigation(
-      GURL(kAiPageUrl), GURL(webui_url), nullptr, false));
+  EXPECT_FALSE(service_for_nav_->HandleNavigation(GURL(kAiPageUrl), webui_url,
+                                                  nullptr, false));
   task_environment()->RunUntilIdle();
 }
 

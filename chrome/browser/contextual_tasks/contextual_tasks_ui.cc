@@ -13,6 +13,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/searchbox/searchbox_handler.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/contextual_tasks_resources.h"
 #include "chrome/grit/contextual_tasks_resources_map.h"
@@ -35,7 +36,8 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
       nav_observer_(
           std::make_unique<FrameNavObserver>(web_ui->GetWebContents(), this)) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
-      web_ui->GetWebContents()->GetBrowserContext(), kContextualTasksUiHost);
+      web_ui->GetWebContents()->GetBrowserContext(),
+      chrome::kChromeUIContextualTasksHost);
   webui::SetupWebUIDataSource(source, kContextualTasksResources,
                               IDR_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_HTML);
 

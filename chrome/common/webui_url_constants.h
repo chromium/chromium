@@ -83,6 +83,9 @@ inline constexpr char kChromeUIConnectorsInternalsHost[] =
     "connectors-internals";
 inline constexpr char kChromeUIConstrainedHTMLTestURL[] =
     "chrome://constrained-test/";
+inline constexpr char kChromeUIContextualTasksHost[] = "contextual-tasks";
+inline constexpr char kChromeUIContextualTasksURL[] =
+    "chrome://contextual-tasks/";
 inline constexpr char kChromeUIContentSettingsURL[] =
     "chrome://settings/content";
 inline constexpr char16_t kChromeUIContentSettingsURL16[] =

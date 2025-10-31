@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/common/webui_url_constants.h"
 #include "components/contextual_tasks/public/contextual_task.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/sessions/content/session_tab_helper.h"
@@ -39,7 +40,7 @@ constexpr char kTaskQueryParam[] = "task";
 
 bool IsContextualTasksHost(const GURL& url) {
   return url.scheme() == content::kChromeUIScheme &&
-         url.host() == kContextualTasksUiHost;
+         url.host() == chrome::kChromeUIContextualTasksHost;
 }
 
 GURL AppendCommonUrlParams(GURL url) {
@@ -100,8 +101,7 @@ void ContextualTasksUiService::OnNavigationToAiPageIntercepted(
   }
   task_id_to_creation_url_[task.GetTaskId()] = stripped_query_url;
 
-  // Build a URL for contextual tasks that includes the task ID.
-  GURL ui_url(kContextualTasksUiUrl);
+    GURL ui_url(chrome::kChromeUIContextualTasksURL);
   ui_url = net::AppendQueryParameter(ui_url, kTaskQueryParam,
                                      task.GetTaskId().AsLowercaseString());
 

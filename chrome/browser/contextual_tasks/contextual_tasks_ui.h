@@ -13,6 +13,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_page_handler.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_config.h"
+#include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_ui_controller.h"
@@ -29,9 +30,6 @@ class WebContentsObserver;
 namespace contextual_tasks {
 class ContextualTasksUiService;
 }  // namespace contextual_tasks
-
-inline constexpr char kContextualTasksUiHost[] = "contextual-tasks";
-inline constexpr char kContextualTasksUiUrl[] = "chrome://contextual-tasks/";
 
 class ContextualTasksComposeboxHandler;
 
@@ -123,7 +121,7 @@ class ContextualTasksUIConfig
  public:
   ContextualTasksUIConfig()
       : DefaultTopChromeWebUIConfig(content::kChromeUIScheme,
-                                    kContextualTasksUiHost) {}
+                                    chrome::kChromeUIContextualTasksHost) {}
 
   bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
 

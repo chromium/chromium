@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_scope.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_web_ui_view.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/strings/grit/components_strings.h"
@@ -29,7 +30,6 @@ BEGIN_TEMPLATE_METADATA(SidePanelWebUIViewT_ContextualTasksUI,
 END_METADATA
 
 namespace {
-inline constexpr char kContextualTasksUrl[] = "chrome://contextual-tasks/";
 inline constexpr int kSidePanelPreferredDefaultWidth = 440;
 
 std::unique_ptr<content::WebContents> CreateWebContents(
@@ -38,7 +38,7 @@ std::unique_ptr<content::WebContents> CreateWebContents(
   std::unique_ptr<content::WebContents> web_contents =
       content::WebContents::Create(create_params);
   web_contents->GetController().LoadURL(
-      GURL(kContextualTasksUrl), content::Referrer(),
+      GURL(chrome::kChromeUIContextualTasksURL), content::Referrer(),
       ui::PAGE_TRANSITION_AUTO_TOPLEVEL, std::string());
   return web_contents;
 }
