@@ -150,6 +150,7 @@ def _get_tests_to_run(
     shard_index: int | None,
     total_shards: int | None,
     test_filter: str | None,
+    tag_filter: str | None = None,
 ) -> list[eval_config.TestConfig]:
     """Retrieves which tests should be run for this invocation.
 
@@ -161,6 +162,7 @@ def _get_tests_to_run(
         total_shards: The swarming shard total parsed from arguments.
         test_filter: The test filter parsed from arguments. Should be a string
             containing a ::-separated list of globs to use for filtering.
+        tag_filter: A comma-separated string of tags to filter tests by.
 
     Returns:
         A potentially empty list of TestConfigs, each pointing to a valid test
@@ -173,6 +175,11 @@ def _get_tests_to_run(
         filters = test_filter.split('::')
         configs_to_run = [
             c for c in configs_to_run if c.matches_filter(filters)
+        ]
+    if tag_filter:
+        tag_list = tag_filter.split(',')
+        configs_to_run = [
+            c for c in configs_to_run if any(tag in c.tags for tag in tag_list)
         ]
     configs_to_run.sort()
     configs_to_run = configs_to_run[shard_index::total_shards]
@@ -278,7 +285,7 @@ def _run_prompt_eval_tests(args: argparse.Namespace) -> int:
         0 on success, a non-zero value on failure.
     """
     configs_to_run = _get_tests_to_run(args.shard_index, args.total_shards,
-                                       args.filter)
+                                       args.filter, args.tag_filter)
     configs_to_run = configs_to_run * (args.isolated_script_test_repeat + 1)
     if len(configs_to_run) == 0:
         logging.info('No tests to run after filtering and sharding')
@@ -481,6 +488,10 @@ def _parse_args() -> argparse.Namespace:
               'is set.'))
 
     group = parser.add_argument_group('Test Selection Arguments')
+    group.add_argument(
+        '--tag-filter',
+        help='A comma-separated list of tags to filter tests by. Only tests '
+        'with at least one of these tags will be run.')
     filter_group = group.add_mutually_exclusive_group()
     filter_group.add_argument(
         '--filter', help='A ::-separated list of globs of tests to run.')

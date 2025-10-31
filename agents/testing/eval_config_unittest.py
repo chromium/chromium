@@ -77,6 +77,28 @@ tests:
         self.assertEqual(config.pass_k_threshold, 3)
         self.assertEqual(config.precompile_targets, ["target1", "target2"])
 
+    def test_with_tags(self):
+        """Tests that tags are read correctly."""
+        yaml_with_tags = """
+tests:
+  - metadata:
+      tags: ['tag1', 'tag2']
+"""
+        self.fs.create_file('test.yaml', contents=yaml_with_tags)
+        config = eval_config.TestConfig.from_file(pathlib.Path('test.yaml'))
+        self.assertEqual(config.tags, ['tag1', 'tag2'])
+
+    def test_empty_tags_list(self):
+        """Tests that an empty tags list is handled correctly."""
+        yaml_empty_tags = """
+tests:
+  - metadata:
+      tags: []
+"""
+        self.fs.create_file('test.yaml', contents=yaml_empty_tags)
+        config = eval_config.TestConfig.from_file(pathlib.Path('test.yaml'))
+        self.assertEqual(config.tags, [])
+
     def test_first_test_has_settings(self):
         """Tests that settings are read from the first test with metadata."""
         yaml_first_test_has_settings = """
@@ -251,6 +273,12 @@ class TestConfigValidationTest(unittest.TestCase):
                 test_file=pathlib.Path('/src/test.yaml'),
                 runs_per_test=1,
                 pass_k_threshold=2)
+            config.validate()
+
+    def test_invalid_tags_type(self):
+        with self.assertRaisesRegex(ValueError, 'must be a list of strings'):
+            config = eval_config.TestConfig(
+                test_file=pathlib.Path('/src/test.yaml'), tags=['valid', 123])
             config.validate()
 
 

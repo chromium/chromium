@@ -17,6 +17,19 @@ By default, it will build promptfoo from ToT, but specific behavior can be
 configured via command line arguments, including use of stable releases via npm
 which will likely result in faster setup.
 
+### Filtering by tags
+
+Tests can be filtered by tags by passing the `--tag-filter` argument,
+followed by a comma-separated list of tags. Only tests that have at least one
+of the given tags will be run. Tags can be added to tests by adding a `tags`
+field to the test's metadata in its `promptfoo.yaml` file.
+
+```yaml
+tests:
+  - metadata:
+    tags: ['my-tag']
+```
+
 ### Running without a container runtime
 
 If you are running `eval_prompts.py` on a system without a container runtime
@@ -121,6 +134,7 @@ tests:
       - foo_unittests
       runs_per_test: 10 # The number of iterations to run
       pass_k_threshold: 5 # The number of iterations that must pass
+      tags: ['my-tag']
 ```
 
 ### Example Patch File
