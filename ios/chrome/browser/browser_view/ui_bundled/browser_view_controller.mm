@@ -1323,6 +1323,12 @@ const CGFloat kMultilineOmniboxAnimationDuration = 0.3f;
   if (omnibox::ForceBottomOmniboxInEditState() ||
       omnibox::ShouldFocusedOmniboxFollowSteadyStatePosition()) {
     if ([self.toolbarCoordinator inEditState]) {
+      if (IsMultilineBrowserOmniboxEnabled() &&
+          [self.toolbarCoordinator omniboxPosition] ==
+              ToolbarType::kSecondary) {
+        return self.secondaryToolbarKeyboardHeight +
+               self.toolbarCoordinator.keyboardAttachedBottomOmniboxHeight;
+      }
       CGFloat safeAreaBottom = self.view.safeAreaInsets.bottom;
       CGFloat locationBarDisplayHeight =
           self.toolbarCoordinator.locationBarCompactDisplayHeight;
@@ -1337,11 +1343,7 @@ const CGFloat kMultilineOmniboxAnimationDuration = 0.3f;
   if (IsDiamondPrototypeEnabled()) {
     return kDiamondToolbarHeight;
   }
-  if (IsMultilineBrowserOmniboxEnabled() &&
-      self.secondaryToolbarKeyboardHeight) {
-    return self.secondaryToolbarKeyboardHeight +
-           self.toolbarCoordinator.keyboardAttachedBottomOmniboxHeight;
-  }
+
   // Add the safe area inset to the toolbar height.
   CGFloat unsafeHeight = self.rootSafeAreaInsets.bottom;
   return height + unsafeHeight;
