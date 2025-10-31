@@ -345,6 +345,11 @@ class CORE_EXPORT HTMLSelectElement final
   // elements.
   String MultipleOptionsSelectedText(unsigned selected_count) const;
 
+  // Returns true if the provided element's descendants should be skipped during
+  // traversals which look for option elements inside of a select, such as <hr>
+  // and <datalist> elements.
+  static bool ShouldIgnoreDescendantsForOptionTraversals(Element* element);
+
  private:
   mojom::blink::FormControlType FormControlType() const override;
   const AtomicString& FormControlTypeAsString() const override;

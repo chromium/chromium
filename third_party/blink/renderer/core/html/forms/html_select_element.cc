@@ -678,11 +678,13 @@ void HTMLSelectElement::RecalcListItems() const {
         current_ancestor_optgroup = current_optgroup;
         list_items_.push_back(current_html_element);
       }
-    } else if (IsA<HTMLOptionElement>(*current_html_element) ||
-               IsA<HTMLHRElement>(*current_html_element)) {
-      // Don't look for nested <option>s to match other option element
-      // traversals.
+    } else if (ShouldIgnoreDescendantsForOptionTraversals(
+                   current_html_element)) {
       skip_children = true;
+    }
+
+    if (IsA<HTMLHRElement>(current_html_element) ||
+        IsA<HTMLOptionElement>(current_html_element)) {
       list_items_.push_back(current_html_element);
     }
 
@@ -1941,6 +1943,10 @@ HTMLSelectElement::AssociatedSelectAndOptgroup(const Element& element) {
     } else if (IsA<HTMLHRElement>(ancestor)) {
       // Descendants of <hr> elements are not <select> associated.
       return std::make_pair(nullptr, ancestor_optgroup);
+    } else if (RuntimeEnabledFeatures::SelectDisallowDatalistEnabled() &&
+               IsA<HTMLDataListElement>(ancestor)) {
+      // Descendants of <datalist> elements are not <select> associated.
+      return std::make_pair(nullptr, ancestor_optgroup);
     } else if (auto* select = DynamicTo<HTMLSelectElement>(ancestor)) {
       return std::make_pair(select, ancestor_optgroup);
     }
@@ -1996,6 +2002,19 @@ bool HTMLSelectElement::SupportsBaseAppearanceInternal(
     return !UsesMenuList();
   }
   return false;
+}
+
+// static
+bool HTMLSelectElement::ShouldIgnoreDescendantsForOptionTraversals(
+    Element* element) {
+  // Nested <optgroup>s also should be ignored in places that call this, but
+  // this method doesn't have enough context to handle that case.
+  if (RuntimeEnabledFeatures::SelectDisallowDatalistEnabled() &&
+      IsA<HTMLDataListElement>(element)) {
+    return true;
+  }
+  return IsA<HTMLSelectElement>(element) || IsA<HTMLOptionElement>(element) ||
+         IsA<HTMLHRElement>(element);
 }
 
 }  // namespace blink
