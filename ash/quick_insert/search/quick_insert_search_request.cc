@@ -121,7 +121,6 @@ std::vector<QuickInsertSearchResult> ConvertGifResponse(
     base::expected<tenor::mojom::PaginatedGifResponsesPtr,
                    GifTenorApiFetcher::Error> response) {
   if (!response.has_value()) {
-    // TODO: b/325368650 - Add better handling of errors.
     return {};
   }
 
