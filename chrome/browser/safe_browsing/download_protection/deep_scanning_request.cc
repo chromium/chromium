@@ -126,8 +126,8 @@ enterprise_connectors::EventResult GetEventResult(
     case DownloadCheckResult::SENSITIVE_CONTENT_WARNING:
       return enterprise_connectors::EventResult::WARNED;
 
-    // TODO(alshawwa): Add force save to drive EventResult, for reporting.
     case DownloadCheckResult::FORCE_SAVE_TO_GDRIVE:
+      return enterprise_connectors::EventResult::FORCED_SAVE_TO_CLOUD;
     case DownloadCheckResult::BLOCKED_PASSWORD_PROTECTED:
     case DownloadCheckResult::BLOCKED_TOO_LARGE:
     case DownloadCheckResult::SENSITIVE_CONTENT_BLOCK:
@@ -167,6 +167,9 @@ GetFinalAction(enterprise_connectors::EventResult event_result) {
       final_action =
           enterprise_connectors::ContentAnalysisAcknowledgement::WARN;
       break;
+    // TODO(alshawwa): handle FORCE_SAVE_TO_CLOUD case. Currently defaults to
+    // BLOCKED behaviour.
+    case enterprise_connectors::EventResult::FORCED_SAVE_TO_CLOUD:
     case enterprise_connectors::EventResult::BLOCKED:
       final_action =
           enterprise_connectors::ContentAnalysisAcknowledgement::BLOCK;

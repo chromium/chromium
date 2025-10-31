@@ -303,6 +303,10 @@ enum class EventResult {
   // The user has chosen to use the data even though it violated enterprise
   // rules.
   BYPASSED,
+
+  // The user was not allowed to download the file locally. Download will
+  // proceed directly to cloud storage, if the user is logged in.
+  FORCED_SAVE_TO_CLOUD,
 };
 
 // Helper function to convert a EventResult to a string that.  The format of

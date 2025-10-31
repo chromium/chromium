@@ -79,6 +79,8 @@ ProtoEventResult GetEventResult(EventResult event_result) {
       return proto::EventResult::EVENT_RESULT_BLOCKED;
     case EventResult::BYPASSED:
       return proto::EventResult::EVENT_RESULT_BYPASSED;
+    case EventResult::FORCED_SAVE_TO_CLOUD:
+      return proto::EventResult::EVENT_RESULT_FORCED_SAVE_TO_CLOUD;
   }
 }
 
