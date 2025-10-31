@@ -22593,7 +22593,7 @@ Called by update_net_error_codes.py.-->
 
 <enum name="PipelineStatus">
   <int value="0" label="PIPELINE_OK"/>
-  <int value="1" label="PIPELINE_ERROR_URL_NOT_FOUND"/>
+  <int value="1" label="(Deprecated) PIPELINE_ERROR_URL_NOT_FOUND"/>
   <int value="2" label="PIPELINE_ERROR_NETWORK"/>
   <int value="3" label="PIPELINE_ERROR_DECODE"/>
   <int value="5" label="PIPELINE_ERROR_ABORT"/>
@@ -22601,7 +22601,7 @@ Called by update_net_error_codes.py.-->
   <int value="7" label="PIPELINE_ERROR_REQUIRED_FILTER_MISSING"/>
   <int value="8" label="PIPELINE_ERROR_COULD_NOT_RENDER"/>
   <int value="9" label="PIPELINE_ERROR_READ"/>
-  <int value="10" label="PIPELINE_ERROR_OPERATION_PENDING"/>
+  <int value="10" label="(Deprecated) PIPELINE_ERROR_OPERATION_PENDING"/>
   <int value="11" label="PIPELINE_ERROR_INVALID_STATE"/>
   <int value="12" label="DEMUXER_ERROR_COULD_NOT_OPEN"/>
   <int value="13" label="DEMUXER_ERROR_COULD_NOT_PARSE"/>
@@ -22611,13 +22611,14 @@ Called by update_net_error_codes.py.-->
   <int value="17" label="CHUNK_DEMUXER_ERROR_EOS_STATUS_DECODE_ERROR"/>
   <int value="18" label="CHUNK_DEMUXER_ERROR_EOS_STATUS_NETWORK_ERROR"/>
   <int value="19" label="AUDIO_RENDERER_ERROR"/>
-  <int value="20" label="AUDIO_RENDERER_ERROR_SPLICE_FAILED"/>
+  <int value="20" label="(Deprecated) AUDIO_RENDERER_ERROR_SPLICE_FAILED"/>
   <int value="21" label="PIPELINE_ERROR_EXTERNAL_RENDERER_FAILED"/>
   <int value="22" label="DEMUXER_ERROR_DETECTED_HLS"/>
   <int value="23" label="PIPELINE_ERROR_HARDWARE_CONTEXT_RESET"/>
   <int value="24" label="PIPELINE_ERROR_DISCONNECTED"/>
   <int value="25" label="DEMUXER_ERROR_BITSTREAM_CONVERSION_FAILED"/>
   <int value="26" label="PIPELINE_ERROR_OUT_OF_MEMORY"/>
+  <int value="27" label="DEMUXER_ERROR_PROGRESSIVE_DISABLED"/>
 </enum>
 
 <enum name="PlatformFileError">
