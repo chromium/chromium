@@ -773,6 +773,11 @@ void PreinstalledWebAppManager::LoadAndSynchronizeForTesting(
   LoadAndSynchronize(std::move(callback));
 }
 
+void PreinstalledWebAppManager::SetPreinstalledAppForUpdatingForTesting(
+    PreinstalledAppForUpdating preinstalled_app_for_updating) {
+  preinstalled_app_for_updating_ = preinstalled_app_for_updating;
+}
+
 void PreinstalledWebAppManager::LoadAndSynchronize(
     SynchronizeCallback callback) {
   base::OnceClosure load_and_synchronize = base::BindOnce(

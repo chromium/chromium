@@ -15,7 +15,9 @@
 #include "base/types/pass_key.h"
 #include "build/build_config.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/webapps/common/manifest_id_constants.h"
 #include "components/webapps/common/web_app_id.h"
+#include "url/gurl.h"
 
 class Profile;
 

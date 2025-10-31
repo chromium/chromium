@@ -653,8 +653,7 @@ class PreinstalledWebAppManagerBasicTest : public WebAppTest {
         /*install_source=*/ExternalInstallSource::kExternalDefault);
 
     options.user_type_allowlist = {"unmanaged", "managed", "child"};
-    options.expected_app_id =
-        GenerateAppIdFromManifestId(webapps::ManifestId(kManifestId));
+    options.expected_app_id = GenerateAppIdFromManifestId(manifest_id);
     options.app_info_factory = base::BindRepeating(
         [](webapps::ManifestId manifest_id, GURL start_url, GURL scope,
            GURL install_url) {
@@ -675,20 +674,6 @@ class PreinstalledWebAppManagerBasicTest : public WebAppTest {
     return options;
   }
 
-  static ExternalInstallOptions GetInstallOptionsFromManifest(
-      GURL install_url = GURL(kInstallUrl)) {
-    ExternalInstallOptions options(
-        /*install_url=*/install_url,
-        /*user_display_mode=*/
-        mojom::UserDisplayMode::kBrowser,
-        /*install_source=*/ExternalInstallSource::kExternalDefault);
-
-    options.user_type_allowlist = {"unmanaged", "managed", "child"};
-    options.expected_app_id =
-        GenerateAppIdFromManifestId(webapps::ManifestId(kManifestId));
-    return options;
-  }
-
   PreinstalledWebAppManagerBasicTest()
       : app_id_(GenerateAppIdFromManifestId(GURL(kManifestId))) {}
   ~PreinstalledWebAppManagerBasicTest() override = default;
@@ -705,6 +690,11 @@ class PreinstalledWebAppManagerBasicTest : public WebAppTest {
     preinstalled_app_override_ =
         std::make_unique<ScopedTestingPreinstalledAppData>();
     fake_provider().SetSynchronizePreinstalledAppsOnStartup(true);
+    fake_provider()
+        .preinstalled_web_app_manager()
+        .SetPreinstalledAppForUpdatingForTesting(
+            PreinstalledAppForUpdating{.manifest_id = GURL(kManifestId),
+                                       .install_url = GURL(kInstallUrl)});
     auto fake_extensions_manager = std::make_unique<FakeExtensionsManager>();
     fake_extensions_manager->SetExtensionsSytemReady(true);
     fake_provider().SetExtensionsManager(std::move(fake_extensions_manager));
@@ -750,34 +740,7 @@ class PreinstalledWebAppManagerBasicTest : public WebAppTest {
   const webapps::AppId app_id_;
 };
 
-TEST_F(PreinstalledWebAppManagerBasicTest, PreinstallWorksViaFactory) {
-  preinstalled_app_override_->apps = {GetInstallOptionsWithFactory()};
-  test::AwaitStartWebAppProviderAndSubsystems(profile());
-
-  EXPECT_TRUE(provider().registrar_unsafe().AppMatches(
-      GenerateAppIdFromManifestId(GURL(kManifestId)),
-      WebAppFilter::InstalledInChrome()));
-  EXPECT_TRUE(provider().registrar_unsafe().AppMatches(
-      GenerateAppIdFromManifestId(GURL(kManifestId)),
-      WebAppFilter::OpensInBrowserTab()));
-
-  // State matches.
-  EXPECT_EQ(provider().registrar_unsafe().GetAppShortName(app_id_),
-            base::UTF16ToUTF8(kAppName));
-  WebAppIconManager::WebAppBitmaps bitmaps;
-  base::test::TestFuture<WebAppIconManager::WebAppBitmaps> icons;
-  provider().icon_manager().ReadAllIcons(app_id_, icons.GetCallback());
-  ASSERT_TRUE(icons.Wait());
-  ASSERT_TRUE(base::Contains(icons.Get().trusted_icons.any, 144));
-  EXPECT_THAT(
-      icons.Get().trusted_icons.any.at(144),
-      gfx::test::EqualsBitmap(gfx::test::CreateBitmap(144, SK_ColorGREEN)));
-}
-
-TEST_F(PreinstalledWebAppManagerBasicTest, PreinstallWorksViaManifest) {
-  // TODO(crbug.com/454861476): This should be GetInstallOptionsWithManifest(),
-  // but that does not seem to work here, because the
-  // DCHECK(options.app_info_factory) fails.
+TEST_F(PreinstalledWebAppManagerBasicTest, PreinstallWorks) {
   preinstalled_app_override_->apps = {GetInstallOptionsWithFactory()};
   test::AwaitStartWebAppProviderAndSubsystems(profile());
 
@@ -804,6 +767,15 @@ TEST_F(PreinstalledWebAppManagerBasicTest, PreinstallWorksViaManifest) {
 class PreinstalledWebAppManagerChatUpdate
     : public PreinstalledWebAppManagerBasicTest {
  public:
+  void SetUp() override {
+    PreinstalledWebAppManagerBasicTest::SetUp();
+    fake_provider()
+        .preinstalled_web_app_manager()
+        .SetPreinstalledAppForUpdatingForTesting(
+            PreinstalledAppForUpdating{.manifest_id = GetChatManifestId(),
+                                       .install_url = GetChatInstallUrl()});
+  }
+
   GURL GetChatInstallUrl() const {
     return GURL(webapps::kMailGoogleChatInstallUrl);
   }

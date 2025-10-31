@@ -541,22 +541,24 @@ void WebAppProvider::CheckIsConnected() const {
 }
 
 void WebAppProvider::DoDelayedPostStartupWork() {
-  webapps::ManifestId old_chat_manifest_id =
-      webapps::ManifestId(webapps::kMailGoogleChatManifestId);
   WebAppPrefGuardrails guardrails =
       WebAppPrefGuardrails::GetForDefaultAppUpdateOnStartup(
           *profile_->GetPrefs());
-  webapps::AppId app_id = GenerateAppIdFromManifestId(old_chat_manifest_id);
+
+  const std::optional<PreinstalledAppForUpdating>& app_to_update =
+      preinstalled_web_app_manager().preinstalled_app_for_updating();
+  webapps::AppId preinstalled_app_id = GenerateAppIdFromManifestId(
+      app_to_update.value_or(PreinstalledAppForUpdating()).manifest_id);
   if (base::FeatureList::IsEnabled(features::kWebAppPeriodicPreinstallUpdate) &&
-      !guardrails.IsBlockedByGuardrails(app_id)) {
-    GURL install_url = GURL(webapps::kMailGoogleChatInstallUrl);
+      app_to_update.has_value() &&
+      !guardrails.IsBlockedByGuardrails(preinstalled_app_id)) {
     GURL::Replacements add_query;
     add_query.SetQueryStr("usp=chrome_preinstall_update");
-    install_url = install_url.ReplaceComponents(add_query);
+    GURL install_url = app_to_update->install_url.ReplaceComponents(add_query);
     scheduler().FetchManifestAndUpdate(
-        install_url, webapps::ManifestId(webapps::kMailGoogleChatManifestId),
+        install_url, app_to_update->manifest_id,
         base::BindOnce(&WebAppProvider::OnDefaultAppUpdateComplete,
-                       weak_ptr_factory_.GetWeakPtr(), app_id));
+                       weak_ptr_factory_.GetWeakPtr(), preinstalled_app_id));
   }
 #if BUILDFLAG(IS_MAC)
   if (base::FeatureList::IsEnabled(kDiyAppIconsMaskedOnMacUpdate)) {
