@@ -339,7 +339,7 @@ std::vector<base::FilePath> GetTestFiles() {
       base::FileEnumerator::FolderSearchPolicy::ALL);
   std::vector<base::FilePath> files;
   input_files.ForEach(
-      [&files](const base::FilePath& item) { files.push_back(item); });
+      [&files](const base::FilePath& item) { files.emplace_back(item); });
   std::sort(files.begin(), files.end());
 
 #if BUILDFLAG(IS_MAC)
@@ -411,7 +411,7 @@ FormFieldData ParseFieldFromJsonDict(const base::Value::Dict& field_dict,
       const base::Value::Dict& option_dict = option.GetDict();
       const std::string* value = option_dict.FindString("value");
       const std::string* label = option_dict.FindString("label");
-      options.push_back(
+      options.emplace_back(
           SelectOption{.value = value ? base::UTF8ToUTF16(*value) : u"",
                        .text = label ? base::UTF8ToUTF16(*label) : u""});
     }
@@ -588,6 +588,32 @@ void HeuristicClassificationTests::SetUp() {
   }
 }
 
+// Returns a list of work in progress features and whether they should be
+// enabled or disabled.
+std::vector<std::pair<base::test::FeatureRef, bool>> GetWipFeatures(
+    const std::string_view country) {
+  std::vector<std::pair<base::test::FeatureRef, bool>> features = {
+      // Support for new field types.
+      {features::kAutofillUseINAddressModel, true},
+      {features::kAutofillSupportPhoneticNameForJP, true},
+      {features::kAutofillEnableExpirationDateImprovements, true},
+      {features::kAutofillSupportLastNamePrefix, true},
+      {features::kAutofillSupportSplitZipCode, true},
+      // Other improvements.
+      {features::kAutofillEnableSupportForParsingWithSharedLabels, true},
+      {features::kAutofillUseNegativePatternForAllAttributes, true},
+      {features::kAutofillDisallowMoreHyphenLikeLabels, true},
+      // TODO(crbug.com/320965828): Understand the changes to the expectations
+      // caused by this feature.
+      {features::kAutofillBetterLocalHeuristicPlaceholderSupport, false},
+  };
+  bool should_disable_address_lines =
+      (country == "BR" || country == "MX" || country == "IN");
+  features.emplace_back(features::kAutofillStructuredFieldsDisableAddressLines,
+                        should_disable_address_lines);
+  return features;
+}
+
 TEST_P(HeuristicClassificationTests, EndToEnd) {
   base::FilePath input_file = GetParam();
   SCOPED_TRACE(::testing::Message() << input_file);
@@ -632,44 +658,8 @@ TEST_P(HeuristicClassificationTests, EndToEnd) {
   command_line.GetProcessCommandLine()->AppendSwitchASCII(
       variations::switches::kVariationsOverrideCountry, *country);
 
-  std::vector<base::test::FeatureRef> enabled_features = {
-      // Support for new field types.
-      features::kAutofillUseINAddressModel,
-      features::kAutofillSupportPhoneticNameForJP,
-      features::kAutofillEnableExpirationDateImprovements,
-      features::kAutofillSupportLastNamePrefix,
-      features::kAutofillEnableLoyaltyCardsFilling,
-      features::kAutofillEnableEmailOrLoyaltyCardsFilling,
-      features::kAutofillSupportSplitZipCode,
-      // Other improvements.
-      features::kAutofillEnableCacheForRegexMatching,
-      features::kAutofillEnableSupportForParsingWithSharedLabels,
-      features::kAutofillImproveCityFieldClassification,
-      features::kAutofillUseNegativePatternForAllAttributes,
-      features::kAutofillDisallowMoreHyphenLikeLabels,
-  };
-  std::vector<base::test::FeatureRef> disabled_features = {
-      // TODO(crbug.com/320965828): Understand the changes to the expectations
-      // caused by this feature.
-      features::kAutofillBetterLocalHeuristicPlaceholderSupport,
-  };
-
-  auto init_feature_to_value = [&](base::test::FeatureRef feature, bool value) {
-    if (value) {
-      enabled_features.push_back(feature);
-    } else {
-      disabled_features.push_back(feature);
-    }
-  };
-
-  std::vector<std::string> structured_fields_disable_address_lines = {
-      "BR", "MX", "IN"};
-  init_feature_to_value(
-      features::kAutofillStructuredFieldsDisableAddressLines,
-      base::Contains(structured_fields_disable_address_lines, *country));
-
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(enabled_features, disabled_features);
+  scoped_feature_list.InitWithFeatureStates(GetWipFeatures(*country));
 
   base::test::ScopedFeatureList ml_scoped_feature_list;
   if (EnableMLClassification()) {
@@ -695,7 +685,7 @@ TEST_P(HeuristicClassificationTests, EndToEnd) {
   std::vector<std::string> fields_in_scope;
   for (const base::Value& field : *fields_in_scope_json) {
     ASSERT_TRUE(field.is_string());
-    fields_in_scope.push_back(field.GetString());
+    fields_in_scope.emplace_back(field.GetString());
   }
 
   // Test all sites.
