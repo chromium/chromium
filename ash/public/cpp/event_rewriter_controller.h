@@ -44,7 +44,6 @@ class ASH_EXPORT EventRewriterController {
   virtual void SetArrowToTabRewritingEnabled(bool enabled) = 0;
 
   // Continue dispatch of key events that were unhandled by ChromeVox.
-  // TODO(crbug.com/41386990): ChromeVox should not repost unhandled events.
   virtual void OnUnhandledSpokenFeedbackEvent(
       std::unique_ptr<ui::Event> event) = 0;
 
