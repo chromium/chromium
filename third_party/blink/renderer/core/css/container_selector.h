@@ -50,6 +50,22 @@ class CORE_EXPORT ContainerSelector {
         has_anchored_query_(anchored_query) {}
   ContainerSelector(AtomicString name, const ConditionalExpNode&);
 
+  enum FeatureFlag {
+    kFeatureUnknown = 1 << 1,
+    kFeatureWidth = 1 << 2,
+    kFeatureHeight = 1 << 3,
+    kFeatureInlineSize = 1 << 4,
+    kFeatureBlockSize = 1 << 5,
+    kFeatureStyle = 1 << 6,
+    kFeatureSticky = 1 << 7,
+    kFeatureSnap = 1 << 8,
+    kFeatureScrollable = 1 << 9,
+    kFeatureScrolled = 1 << 10,
+    kFeatureAnchored = 1 << 11,
+  };
+  using FeatureFlags = unsigned;
+  static FeatureFlags CollectFeatureFlags(const ConditionalExpNode& root);
+
   bool IsHashTableDeletedValue() const {
     return HashTraits<AtomicString>::IsDeletedValue(name_);
   }

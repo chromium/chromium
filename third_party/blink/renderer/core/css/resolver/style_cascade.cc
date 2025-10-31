@@ -2644,7 +2644,7 @@ bool StyleCascade::EvalIfCondition(CSSParserTokenStream& stream,
   DCHECK_EQ(stream.Peek().GetType(), kColonToken);
   stream.ConsumeIncludingWhitespace();
 
-  class Handler : public ConditionalLeafExpressionHandler {
+  class Handler : public ConditionalExpNodeVisitor {
     STACK_ALLOCATED();
 
    public:

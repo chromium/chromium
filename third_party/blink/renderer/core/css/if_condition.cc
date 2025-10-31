@@ -11,9 +11,8 @@ void IfTestMedia::Trace(Visitor* visitor) const {
   ConditionalExpNode::Trace(visitor);
 }
 
-KleeneValue IfTestMedia::Evaluate(
-    ConditionalLeafExpressionHandler& leaf_handler) const {
-  return leaf_handler.EvaluateMediaQuerySet(*media_test_);
+KleeneValue IfTestMedia::Evaluate(ConditionalExpNodeVisitor& visitor) const {
+  return visitor.EvaluateMediaQuerySet(*media_test_);
 }
 
 void IfTestMedia::SerializeTo(StringBuilder& builder) const {
@@ -25,7 +24,7 @@ void IfTestSupports::Trace(Visitor* visitor) const {
   ConditionalExpNode::Trace(visitor);
 }
 
-KleeneValue IfTestSupports::Evaluate(ConditionalLeafExpressionHandler&) const {
+KleeneValue IfTestSupports::Evaluate(ConditionalExpNodeVisitor&) const {
   return result_ ? KleeneValue::kTrue : KleeneValue::kFalse;
 }
 
@@ -38,7 +37,7 @@ void IfConditionElse::Trace(Visitor* visitor) const {
   ConditionalExpNode::Trace(visitor);
 }
 
-KleeneValue IfConditionElse::Evaluate(ConditionalLeafExpressionHandler&) const {
+KleeneValue IfConditionElse::Evaluate(ConditionalExpNodeVisitor&) const {
   return KleeneValue::kTrue;
 }
 

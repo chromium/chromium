@@ -7,7 +7,6 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/kleene_value.h"
-#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
@@ -15,21 +14,30 @@
 
 namespace blink {
 
-class MediaQueryExp;
+class ConditionalExpNodeFunction;
+class ConditionalExpNodeUnknown;
 class MediaQueryFeatureExpNode;
 class MediaQuerySet;
 
-// Evaluation handler for leaf expression nodes, such as media feature
-// expression nodes, or style() functions.
-class ConditionalLeafExpressionHandler {
+// Visitor and evaluation handler for leaf expression nodes, and contents of
+// such leaves, and functions. Will visit in tree order. Ancestor compound
+// expression nodes ("and" / "or" operators) may decide to short-circuit and
+// skip expression subtrees based on the evaluation of the leftmost operand. To
+// prevent this (i.e. for full traversal), return KleeneValue::kUnknown from the
+// overrides.
+class ConditionalExpNodeVisitor {
  public:
   virtual KleeneValue EvaluateMediaQueryFeatureExpNode(
       const MediaQueryFeatureExpNode&) {
-    return KleeneValue::kFalse;
+    return KleeneValue::kUnknown;
   }
   virtual KleeneValue EvaluateMediaQuerySet(const MediaQuerySet&) {
-    return KleeneValue::kFalse;
+    return KleeneValue::kUnknown;
   }
+  virtual KleeneValue EvaluateUnknown(const ConditionalExpNodeUnknown&) {
+    return KleeneValue::kUnknown;
+  }
+  virtual void EnterFunction(const ConditionalExpNodeFunction&) {}
 };
 
 // Forms a tree of expression nodes, to evaluate conditional queries such as
@@ -42,33 +50,11 @@ class CORE_EXPORT ConditionalExpNode
   virtual void Trace(Visitor*) const {}
 
   // Evaluate this expression (and descendant expressions) and return the
-  // result.
-  virtual KleeneValue Evaluate(ConditionalLeafExpressionHandler&) const = 0;
+  // result. ConditionalExpNodeVisitor will be invoked on leaf nodes.
+  virtual KleeneValue Evaluate(ConditionalExpNodeVisitor&) const = 0;
 
   // Serialize the expression and descendant expressions.
   virtual void SerializeTo(StringBuilder&) const = 0;
-
-  // Only used inside media queries.
-  virtual void CollectExpressions(HeapVector<MediaQueryExp>&) const {
-    NOTREACHED();
-  }
-
-  // Only used inside container queries.
-  enum FeatureFlag {
-    kFeatureUnknown = 1 << 1,
-    kFeatureWidth = 1 << 2,
-    kFeatureHeight = 1 << 3,
-    kFeatureInlineSize = 1 << 4,
-    kFeatureBlockSize = 1 << 5,
-    kFeatureStyle = 1 << 6,
-    kFeatureSticky = 1 << 7,
-    kFeatureSnap = 1 << 8,
-    kFeatureScrollable = 1 << 9,
-    kFeatureScrolled = 1 << 10,
-    kFeatureAnchored = 1 << 11,
-  };
-  using FeatureFlags = unsigned;
-  virtual FeatureFlags CollectFeatureFlags() const { NOTREACHED(); }
 
   String Serialize() const;
 
@@ -90,9 +76,7 @@ class CORE_EXPORT ConditionalExpNodeUnary : public ConditionalExpNode {
 
   void Trace(Visitor*) const override;
 
-  KleeneValue Evaluate(ConditionalLeafExpressionHandler&) const override;
-  void CollectExpressions(HeapVector<MediaQueryExp>&) const override;
-  FeatureFlags CollectFeatureFlags() const override;
+  KleeneValue Evaluate(ConditionalExpNodeVisitor&) const override;
 
  protected:
   Member<const ConditionalExpNode> operand_;
@@ -106,9 +90,6 @@ class CORE_EXPORT ConditionalExpNodeCompound : public ConditionalExpNode {
 
   void Trace(Visitor*) const override;
 
-  void CollectExpressions(HeapVector<MediaQueryExp>&) const override;
-  FeatureFlags CollectFeatureFlags() const override;
-
  protected:
   Member<const ConditionalExpNode> left_;
   Member<const ConditionalExpNode> right_;
@@ -120,7 +101,7 @@ class CORE_EXPORT ConditionalExpNodeAnd : public ConditionalExpNodeCompound {
                         const ConditionalExpNode* right)
       : ConditionalExpNodeCompound(left, right) {}
 
-  KleeneValue Evaluate(ConditionalLeafExpressionHandler&) const override;
+  KleeneValue Evaluate(ConditionalExpNodeVisitor&) const override;
   void SerializeTo(StringBuilder&) const override;
 };
 
@@ -130,7 +111,7 @@ class CORE_EXPORT ConditionalExpNodeOr : public ConditionalExpNodeCompound {
                        const ConditionalExpNode* right)
       : ConditionalExpNodeCompound(left, right) {}
 
-  KleeneValue Evaluate(ConditionalLeafExpressionHandler&) const override;
+  KleeneValue Evaluate(ConditionalExpNodeVisitor&) const override;
   void SerializeTo(StringBuilder&) const override;
 };
 
@@ -139,7 +120,7 @@ class CORE_EXPORT ConditionalExpNodeNot : public ConditionalExpNodeUnary {
   explicit ConditionalExpNodeNot(const ConditionalExpNode* operand)
       : ConditionalExpNodeUnary(operand) {}
 
-  KleeneValue Evaluate(ConditionalLeafExpressionHandler&) const override;
+  KleeneValue Evaluate(ConditionalExpNodeVisitor&) const override;
   void SerializeTo(StringBuilder&) const override;
 };
 
@@ -157,8 +138,10 @@ class CORE_EXPORT ConditionalExpNodeFunction : public ConditionalExpNodeUnary {
                                       const AtomicString& name)
       : ConditionalExpNodeUnary(operand), name_(name) {}
 
+  const AtomicString& GetName() const { return name_; }
+
+  KleeneValue Evaluate(ConditionalExpNodeVisitor&) const override;
   void SerializeTo(StringBuilder&) const override;
-  FeatureFlags CollectFeatureFlags() const override;
 
  private:
   AtomicString name_;
@@ -168,10 +151,8 @@ class CORE_EXPORT ConditionalExpNodeUnknown : public ConditionalExpNode {
  public:
   explicit ConditionalExpNodeUnknown(const String& string) : string_(string) {}
 
-  KleeneValue Evaluate(ConditionalLeafExpressionHandler&) const override;
+  KleeneValue Evaluate(ConditionalExpNodeVisitor&) const override;
   void SerializeTo(StringBuilder&) const override;
-  void CollectExpressions(HeapVector<MediaQueryExp>&) const override;
-  FeatureFlags CollectFeatureFlags() const override;
 
  private:
   String string_;

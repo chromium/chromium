@@ -800,50 +800,12 @@ bool MediaQueryFeatureExpNode::IsBlockSizeDependent() const {
 }
 
 KleeneValue MediaQueryFeatureExpNode::Evaluate(
-    ConditionalLeafExpressionHandler& leaf_handler) const {
-  return leaf_handler.EvaluateMediaQueryFeatureExpNode(*this);
+    ConditionalExpNodeVisitor& visitor) const {
+  return visitor.EvaluateMediaQueryFeatureExpNode(*this);
 }
 
 void MediaQueryFeatureExpNode::SerializeTo(StringBuilder& builder) const {
   builder.Append(exp_.Serialize());
-}
-
-void MediaQueryFeatureExpNode::CollectExpressions(
-    HeapVector<MediaQueryExp>& result) const {
-  result.push_back(exp_);
-}
-
-ConditionalExpNode::FeatureFlags MediaQueryFeatureExpNode::CollectFeatureFlags()
-    const {
-  if (exp_.HasMediaFeature()) {
-    if (exp_.MediaFeature() == media_feature_names::kStuckMediaFeature) {
-      return kFeatureSticky;
-    } else if (exp_.MediaFeature() ==
-               media_feature_names::kSnappedMediaFeature) {
-      return kFeatureSnap;
-    } else if (exp_.MediaFeature() ==
-               media_feature_names::kScrollableMediaFeature) {
-      return kFeatureScrollable;
-    } else if (exp_.MediaFeature() ==
-               media_feature_names::kScrolledMediaFeature) {
-      return kFeatureScrolled;
-    } else if (exp_.MediaFeature() ==
-               media_feature_names::kFallbackMediaFeature) {
-      return kFeatureAnchored;
-    } else if (exp_.IsInlineSizeDependent()) {
-      return kFeatureInlineSize;
-    } else if (exp_.IsBlockSizeDependent()) {
-      return kFeatureBlockSize;
-    }
-  }
-  FeatureFlags flags = 0;
-  if (exp_.IsWidthDependent()) {
-    flags |= kFeatureWidth;
-  }
-  if (exp_.IsHeightDependent()) {
-    flags |= kFeatureHeight;
-  }
-  return flags;
 }
 
 void MediaQueryFeatureExpNode::Trace(Visitor* visitor) const {

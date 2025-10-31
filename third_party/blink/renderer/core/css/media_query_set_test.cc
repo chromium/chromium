@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/css/media_query.h"
-
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/core/css/container_selector.h"
 #include "third_party/blink/renderer/core/css/media_list.h"
+#include "third_party/blink/renderer/core/css/media_query.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -25,7 +25,9 @@ static void TestMediaQuery(const char* input,
   wtf_size_t j = 0;
   while (j < query_set.QueryVector().size()) {
     const MediaQuery& query = *query_set.QueryVector()[j];
-    if (!unknown_substitute.IsNull() && query.HasUnknown()) {
+    if (!unknown_substitute.IsNull() && query.ExpNode() &&
+        (ContainerSelector::CollectFeatureFlags(*query.ExpNode()) &
+         ContainerSelector::kFeatureUnknown)) {
       actual.Append(unknown_substitute);
     } else {
       actual.Append(query.CssText());

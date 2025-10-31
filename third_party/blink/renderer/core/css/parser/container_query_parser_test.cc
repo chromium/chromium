@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/css/parser/container_query_parser.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/core/css/container_selector.h"
 #include "third_party/blink/renderer/core/css/media_query_exp.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_stream.h"
@@ -25,7 +26,8 @@ class ContainerQueryParserTest : public PageTestBase {
     if (!node) {
       return g_null_atom;
     }
-    if (node->CollectFeatureFlags() & ConditionalExpNode::kFeatureUnknown) {
+    if (ContainerSelector::CollectFeatureFlags(*node) &
+        ContainerSelector::kFeatureUnknown) {
       return "<unknown>";
     }
     StringBuilder builder;

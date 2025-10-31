@@ -23,7 +23,7 @@ class CORE_EXPORT IfTestMedia : public ConditionalExpNode {
   }
   void Trace(Visitor*) const override;
 
-  KleeneValue Evaluate(ConditionalLeafExpressionHandler&) const override;
+  KleeneValue Evaluate(ConditionalExpNodeVisitor&) const override;
   void SerializeTo(StringBuilder&) const override;
 
  private:
@@ -35,7 +35,7 @@ class CORE_EXPORT IfTestSupports : public ConditionalExpNode {
   explicit IfTestSupports(bool result) : result_(result) {}
   void Trace(Visitor*) const override;
 
-  KleeneValue Evaluate(ConditionalLeafExpressionHandler&) const override;
+  KleeneValue Evaluate(ConditionalExpNodeVisitor&) const override;
   void SerializeTo(StringBuilder&) const override;
 
  private:
@@ -47,7 +47,7 @@ class CORE_EXPORT IfConditionElse : public ConditionalExpNode {
   explicit IfConditionElse() = default;
   void Trace(Visitor*) const override;
 
-  KleeneValue Evaluate(ConditionalLeafExpressionHandler&) const override;
+  KleeneValue Evaluate(ConditionalExpNodeVisitor&) const override;
   void SerializeTo(StringBuilder&) const override;
 };
 

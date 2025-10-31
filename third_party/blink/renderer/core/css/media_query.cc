@@ -81,21 +81,39 @@ MediaQuery::MediaQuery(RestrictorType restrictor,
                        const ConditionalExpNode* exp_node)
     : media_type_(AttemptStaticStringCreation(media_type.LowerASCII())),
       exp_node_(exp_node),
-      restrictor_(restrictor),
-      has_unknown_(exp_node_ && (exp_node_->CollectFeatureFlags() &
-                                 ConditionalExpNode::kFeatureUnknown)) {}
+      restrictor_(restrictor) {}
 
 MediaQuery::MediaQuery(const MediaQuery& o)
     : media_type_(o.media_type_),
       serialization_cache_(o.serialization_cache_),
       exp_node_(o.exp_node_),
-      restrictor_(o.restrictor_),
-      has_unknown_(o.has_unknown_) {}
+      restrictor_(o.restrictor_) {}
 
 MediaQuery::~MediaQuery() = default;
 
 void MediaQuery::Trace(Visitor* visitor) const {
   visitor->Trace(exp_node_);
+}
+
+void MediaQuery::CollectExpressions(const ConditionalExpNode& root,
+                                    HeapVector<MediaQueryExp>& expressions) {
+  class ExpressionCollector : public ConditionalExpNodeVisitor {
+   public:
+    explicit ExpressionCollector(HeapVector<MediaQueryExp>& expressions)
+        : expressions_(expressions) {}
+
+   private:
+    KleeneValue EvaluateMediaQueryFeatureExpNode(
+        const MediaQueryFeatureExpNode& node) override {
+      expressions_.push_back(node.GetMediaQueryExp());
+      return KleeneValue::kUnknown;
+    }
+
+    HeapVector<MediaQueryExp>& expressions_;
+  };
+
+  ExpressionCollector collector(expressions);
+  root.Evaluate(collector);
 }
 
 MediaQuery::RestrictorType MediaQuery::Restrictor() const {

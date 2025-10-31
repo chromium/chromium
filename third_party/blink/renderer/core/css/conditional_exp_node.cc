@@ -63,18 +63,8 @@ void ConditionalExpNodeUnary::Trace(Visitor* v) const {
 }
 
 KleeneValue ConditionalExpNodeUnary::Evaluate(
-    ConditionalLeafExpressionHandler& leaf_handler) const {
-  return operand_->Evaluate(leaf_handler);
-}
-
-void ConditionalExpNodeUnary::CollectExpressions(
-    HeapVector<MediaQueryExp>& expressions) const {
-  return operand_->CollectExpressions(expressions);
-}
-
-ConditionalExpNode::FeatureFlags ConditionalExpNodeUnary::CollectFeatureFlags()
-    const {
-  return operand_->CollectFeatureFlags();
+    ConditionalExpNodeVisitor& visitor) const {
+  return operand_->Evaluate(visitor);
 }
 
 void ConditionalExpNodeCompound::Trace(Visitor* v) const {
@@ -83,25 +73,14 @@ void ConditionalExpNodeCompound::Trace(Visitor* v) const {
   v->Trace(right_);
 }
 
-void ConditionalExpNodeCompound::CollectExpressions(
-    HeapVector<MediaQueryExp>& expressions) const {
-  left_->CollectExpressions(expressions);
-  right_->CollectExpressions(expressions);
-}
-
-ConditionalExpNode::FeatureFlags
-ConditionalExpNodeCompound::CollectFeatureFlags() const {
-  return left_->CollectFeatureFlags() | right_->CollectFeatureFlags();
-}
-
 KleeneValue ConditionalExpNodeAnd::Evaluate(
-    ConditionalLeafExpressionHandler& leaf_handler) const {
-  KleeneValue left_result = left_->Evaluate(leaf_handler);
+    ConditionalExpNodeVisitor& visitor) const {
+  KleeneValue left_result = left_->Evaluate(visitor);
   if (left_result == KleeneValue::kFalse) {
     /// Short-circuit.
     return left_result;
   }
-  return KleeneAnd(left_result, right_->Evaluate(leaf_handler));
+  return KleeneAnd(left_result, right_->Evaluate(visitor));
 }
 
 void ConditionalExpNodeAnd::SerializeTo(StringBuilder& builder) const {
@@ -111,13 +90,13 @@ void ConditionalExpNodeAnd::SerializeTo(StringBuilder& builder) const {
 }
 
 KleeneValue ConditionalExpNodeOr::Evaluate(
-    ConditionalLeafExpressionHandler& leaf_handler) const {
-  KleeneValue left_result = left_->Evaluate(leaf_handler);
+    ConditionalExpNodeVisitor& visitor) const {
+  KleeneValue left_result = left_->Evaluate(visitor);
   if (left_result == KleeneValue::kTrue) {
     /// Short-circuit.
     return left_result;
   }
-  return KleeneOr(left_result, right_->Evaluate(leaf_handler));
+  return KleeneOr(left_result, right_->Evaluate(visitor));
 }
 
 void ConditionalExpNodeOr::SerializeTo(StringBuilder& builder) const {
@@ -127,8 +106,8 @@ void ConditionalExpNodeOr::SerializeTo(StringBuilder& builder) const {
 }
 
 KleeneValue ConditionalExpNodeNot::Evaluate(
-    ConditionalLeafExpressionHandler& leaf_handler) const {
-  return KleeneNot(operand_->Evaluate(leaf_handler));
+    ConditionalExpNodeVisitor& visitor) const {
+  return KleeneNot(operand_->Evaluate(visitor));
 }
 
 void ConditionalExpNodeNot::SerializeTo(StringBuilder& builder) const {
@@ -149,30 +128,19 @@ void ConditionalExpNodeFunction::SerializeTo(StringBuilder& builder) const {
   builder.Append(")");
 }
 
-ConditionalExpNode::FeatureFlags
-ConditionalExpNodeFunction::CollectFeatureFlags() const {
-  FeatureFlags flags = ConditionalExpNodeUnary::CollectFeatureFlags();
-  if (name_ == AtomicString("style")) {
-    flags |= kFeatureStyle;
-  }
-  return flags;
+KleeneValue ConditionalExpNodeFunction::Evaluate(
+    ConditionalExpNodeVisitor& visitor) const {
+  visitor.EnterFunction(*this);
+  return ConditionalExpNodeUnary::Evaluate(visitor);
 }
 
 KleeneValue ConditionalExpNodeUnknown::Evaluate(
-    ConditionalLeafExpressionHandler& leaf_handler) const {
-  return KleeneValue::kUnknown;
+    ConditionalExpNodeVisitor& visitor) const {
+  return visitor.EvaluateUnknown(*this);
 }
 
 void ConditionalExpNodeUnknown::SerializeTo(StringBuilder& builder) const {
   builder.Append(string_);
-}
-
-void ConditionalExpNodeUnknown::CollectExpressions(
-    HeapVector<MediaQueryExp>&) const {}
-
-ConditionalExpNode::FeatureFlags
-ConditionalExpNodeUnknown::CollectFeatureFlags() const {
-  return kFeatureUnknown;
 }
 
 }  // namespace blink

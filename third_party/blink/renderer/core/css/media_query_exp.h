@@ -375,10 +375,10 @@ class CORE_EXPORT MediaQueryFeatureExpNode : public ConditionalExpNode {
   bool IsInlineSizeDependent() const;
   bool IsBlockSizeDependent() const;
 
-  KleeneValue Evaluate(ConditionalLeafExpressionHandler&) const override;
+  KleeneValue Evaluate(ConditionalExpNodeVisitor&) const override;
   void SerializeTo(StringBuilder&) const override;
-  void CollectExpressions(HeapVector<MediaQueryExp>&) const override;
-  FeatureFlags CollectFeatureFlags() const override;
+
+  const MediaQueryExp& GetMediaQueryExp() const { return exp_; }
 
  private:
   MediaQueryExp exp_;

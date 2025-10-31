@@ -179,6 +179,12 @@ const ConditionalExpNode* UnknownNode(String string) {
   return MakeGarbageCollected<ConditionalExpNodeUnknown>(string);
 }
 
+HeapVector<MediaQueryExp> CollectExpressions(const ConditionalExpNode& root) {
+  HeapVector<MediaQueryExp> expressions;
+  MediaQuery::CollectExpressions(root, expressions);
+  return expressions;
+}
+
 }  // namespace
 
 TEST(MediaQueryExpTest, ValuesType) {
@@ -363,17 +369,16 @@ TEST(MediaQueryExpTest, CollectExpressions) {
 
   // (width < 10px)
   {
-    HeapVector<MediaQueryExp> expressions;
-    EnclosedFeatureNode(width_lt10)->CollectExpressions(expressions);
+    HeapVector<MediaQueryExp> expressions =
+        CollectExpressions(*EnclosedFeatureNode(width_lt10));
     ASSERT_EQ(1u, expressions.size());
     EXPECT_EQ(width_lt10, expressions[0]);
   }
 
   // (width < 10px) and (height < 10px)
   {
-    HeapVector<MediaQueryExp> expressions;
-    AndNode(EnclosedFeatureNode(width_lt10), EnclosedFeatureNode(height_lt10))
-        ->CollectExpressions(expressions);
+    HeapVector<MediaQueryExp> expressions = CollectExpressions(*AndNode(
+        EnclosedFeatureNode(width_lt10), EnclosedFeatureNode(height_lt10)));
     ASSERT_EQ(2u, expressions.size());
     EXPECT_EQ(width_lt10, expressions[0]);
     EXPECT_EQ(height_lt10, expressions[1]);
@@ -381,9 +386,8 @@ TEST(MediaQueryExpTest, CollectExpressions) {
 
   // (width < 10px) or (height < 10px)
   {
-    HeapVector<MediaQueryExp> expressions;
-    OrNode(EnclosedFeatureNode(width_lt10), EnclosedFeatureNode(height_lt10))
-        ->CollectExpressions(expressions);
+    HeapVector<MediaQueryExp> expressions = CollectExpressions(*OrNode(
+        EnclosedFeatureNode(width_lt10), EnclosedFeatureNode(height_lt10)));
     ASSERT_EQ(2u, expressions.size());
     EXPECT_EQ(width_lt10, expressions[0]);
     EXPECT_EQ(height_lt10, expressions[1]);
@@ -391,25 +395,24 @@ TEST(MediaQueryExpTest, CollectExpressions) {
 
   // ((width < 10px))
   {
-    HeapVector<MediaQueryExp> expressions;
-    NestedNode(EnclosedFeatureNode(width_lt10))
-        ->CollectExpressions(expressions);
+    HeapVector<MediaQueryExp> expressions =
+        CollectExpressions(*NestedNode(EnclosedFeatureNode(width_lt10)));
     ASSERT_EQ(1u, expressions.size());
     EXPECT_EQ(width_lt10, expressions[0]);
   }
 
   // not (width < 10px)
   {
-    HeapVector<MediaQueryExp> expressions;
-    NotNode(EnclosedFeatureNode(width_lt10))->CollectExpressions(expressions);
+    HeapVector<MediaQueryExp> expressions =
+        CollectExpressions(*NotNode(EnclosedFeatureNode(width_lt10)));
     ASSERT_EQ(1u, expressions.size());
     EXPECT_EQ(width_lt10, expressions[0]);
   }
 
   // unknown
   {
-    HeapVector<MediaQueryExp> expressions;
-    UnknownNode("foo")->CollectExpressions(expressions);
+    HeapVector<MediaQueryExp> expressions =
+        CollectExpressions(*UnknownNode("foo"));
     EXPECT_EQ(0u, expressions.size());
   }
 }

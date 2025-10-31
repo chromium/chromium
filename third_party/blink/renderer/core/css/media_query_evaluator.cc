@@ -216,7 +216,7 @@ KleeneValue MediaQueryEvaluator::Eval(const ConditionalExpNode& node) const {
 KleeneValue MediaQueryEvaluator::Eval(
     const ConditionalExpNode& node,
     MediaQueryResultFlags* result_flags) const {
-  class Handler : public ConditionalLeafExpressionHandler {
+  class Handler : public ConditionalExpNodeVisitor {
    public:
     using EvaluateMediaFunc =
         base::FunctionRef<KleeneValue(const MediaQueryFeatureExpNode&)>;

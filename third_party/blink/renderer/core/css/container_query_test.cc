@@ -8,6 +8,7 @@
 
 #include "third_party/blink/renderer/core/animation/document_animations.h"
 #include "third_party/blink/renderer/core/animation/element_animations.h"
+#include "third_party/blink/renderer/core/css/container_selector.h"
 #include "third_party/blink/renderer/core/css/css_container_rule.h"
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
 #include "third_party/blink/renderer/core/css/media_query_exp.h"
@@ -31,8 +32,9 @@ namespace blink {
 class ContainerQueryTest : public PageTestBase {
  public:
   bool HasUnknown(StyleRuleContainer* rule) {
-    return rule && (rule->GetContainerQuery().Query().CollectFeatureFlags() &
-                    ConditionalExpNode::kFeatureUnknown);
+    return rule && (ContainerSelector::CollectFeatureFlags(
+                        rule->GetContainerQuery().Query()) &
+                    ContainerSelector::kFeatureUnknown);
   }
 
   enum class UnknownHandling {
@@ -64,14 +66,14 @@ class ContainerQueryTest : public PageTestBase {
     return &container->GetContainerQuery();
   }
 
-  std::optional<ConditionalExpNode::FeatureFlags> FeatureFlagsFrom(
+  std::optional<ContainerSelector::FeatureFlags> FeatureFlagsFrom(
       String query_string) {
     ContainerQuery* query =
         ParseContainerQuery(query_string, UnknownHandling::kAllow);
     if (!query) {
       return std::nullopt;
     }
-    return GetInnerQuery(*query).CollectFeatureFlags();
+    return ContainerSelector::CollectFeatureFlags(GetInnerQuery(*query));
   }
 
   ContainerSelector ContainerSelectorFrom(String query_string) {
@@ -211,34 +213,34 @@ TEST_F(ContainerQueryTest, ValidFeatures) {
 }
 
 TEST_F(ContainerQueryTest, FeatureFlags) {
-  EXPECT_EQ(ConditionalExpNode::kFeatureUnknown,
+  EXPECT_EQ(ContainerSelector::kFeatureUnknown,
             FeatureFlagsFrom("(width: 100gil)"));
-  EXPECT_EQ(ConditionalExpNode::kFeatureWidth,
+  EXPECT_EQ(ContainerSelector::kFeatureWidth,
             FeatureFlagsFrom("(width: 100px)"));
-  EXPECT_EQ(ConditionalExpNode::kFeatureWidth,
+  EXPECT_EQ(ContainerSelector::kFeatureWidth,
             FeatureFlagsFrom("test_name (width: 100px)"));
-  EXPECT_EQ(ConditionalExpNode::kFeatureHeight,
+  EXPECT_EQ(ContainerSelector::kFeatureHeight,
             FeatureFlagsFrom("(height < 100px)"));
-  EXPECT_EQ(ConditionalExpNode::kFeatureInlineSize,
+  EXPECT_EQ(ContainerSelector::kFeatureInlineSize,
             FeatureFlagsFrom("(100px >= inline-size)"));
-  EXPECT_EQ(ConditionalExpNode::kFeatureBlockSize,
+  EXPECT_EQ(ContainerSelector::kFeatureBlockSize,
             FeatureFlagsFrom("(100px = block-size)"));
-  EXPECT_EQ(static_cast<ConditionalExpNode::FeatureFlags>(
-                ConditionalExpNode::kFeatureWidth |
-                ConditionalExpNode::kFeatureBlockSize),
+  EXPECT_EQ(static_cast<ContainerSelector::FeatureFlags>(
+                ContainerSelector::kFeatureWidth |
+                ContainerSelector::kFeatureBlockSize),
             FeatureFlagsFrom("((width) and (100px = block-size))"));
-  EXPECT_EQ(static_cast<ConditionalExpNode::FeatureFlags>(
-                ConditionalExpNode::kFeatureUnknown |
-                ConditionalExpNode::kFeatureBlockSize),
+  EXPECT_EQ(static_cast<ContainerSelector::FeatureFlags>(
+                ContainerSelector::kFeatureUnknown |
+                ContainerSelector::kFeatureBlockSize),
             FeatureFlagsFrom("((unknown) and (100px = block-size))"));
-  EXPECT_EQ(static_cast<ConditionalExpNode::FeatureFlags>(
-                ConditionalExpNode::kFeatureWidth |
-                ConditionalExpNode::kFeatureHeight |
-                ConditionalExpNode::kFeatureInlineSize),
-            FeatureFlagsFrom("((width) or (height) or (inline-size))"));
-  EXPECT_EQ(ConditionalExpNode::kFeatureWidth,
+  EXPECT_EQ(
+      static_cast<ContainerSelector::FeatureFlags>(
+          ContainerSelector::kFeatureWidth | ContainerSelector::kFeatureHeight |
+          ContainerSelector::kFeatureInlineSize),
+      FeatureFlagsFrom("((width) or (height) or (inline-size))"));
+  EXPECT_EQ(ContainerSelector::kFeatureWidth,
             FeatureFlagsFrom("((width: 100px))"));
-  EXPECT_EQ(ConditionalExpNode::kFeatureWidth,
+  EXPECT_EQ(ContainerSelector::kFeatureWidth,
             FeatureFlagsFrom("(not (width: 100px))"));
 }
 
