@@ -302,6 +302,29 @@ void DwaService::RecordCoarseSystemInformation(
 }
 
 // static
+std::optional<::private_metrics::PrivateMetricEndpointPayload>
+DwaService::BuildPrivateMetricEndpointPayloadFromEncryptedReport(
+    ::private_metrics::EncryptedPrivateMetricReport encrypted_report) {
+  ::private_metrics::PrivateMetricEndpointPayload::ReportType report_type;
+  switch (encrypted_report.report_type()) {
+    case ::private_metrics::EncryptedPrivateMetricReport::DWA:
+      report_type = ::private_metrics::PrivateMetricEndpointPayload::DWA;
+      break;
+    case ::private_metrics::EncryptedPrivateMetricReport::DKM:
+      report_type = ::private_metrics::PrivateMetricEndpointPayload::DKM;
+      break;
+    case ::private_metrics::EncryptedPrivateMetricReport::REPORT_TYPE_INVALID:
+      return std::nullopt;
+  }
+
+  ::private_metrics::PrivateMetricEndpointPayload payload;
+  payload.set_report_type(report_type);
+  payload.mutable_encrypted_private_metric_report()->Swap(
+      &encrypted_report);
+  return payload;
+}
+
+// static
 uint64_t DwaService::GetEphemeralClientId(PrefService& local_state) {
   // We want to update the client id once a day (measured in UTC), so our date
   // should only contain information up to day level.
@@ -545,9 +568,19 @@ void DwaService::BuildPrivateMetricReportAndStoreLog(
     // metrics encryption fails.
     return;
   }
+  auto encrypted_report_payload =
+      BuildPrivateMetricEndpointPayloadFromEncryptedReport(
+          std::move(encrypted_report.value()));
+  if (!encrypted_report_payload.has_value()) {
+    // The encrypted report should be dropped in the unexpected event that
+    // the private metric endpoint payload could not be built.
+    // TODO(crbug.com/444681539): Add UMA histogram to check when private
+    // metrics endpoint payload build fails.
+    return;
+  }
 
   std::string serialized_log;
-  if (!encrypted_report.value().SerializeToString(&serialized_log)) {
+  if (!encrypted_report_payload.value().SerializeToString(&serialized_log)) {
     // The encrypted report should be dropped in the unexpected event that
     // private metrics report serialization fails.
     // TODO(crbug.com/444681539): Add UMA histogram to check when private

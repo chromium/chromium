@@ -143,6 +143,16 @@ class DwaService {
       std::string_view public_key,
       const fcp::confidential_compute::OkpCwt& decoded_public_key);
 
+  // Builds a PrivateMetricEndpointPayload from an
+  // EncryptedPrivateMetricReport. This function is used to wrap the encrypted
+  // DWAs in a PrivateMetricEndpointPayload before uploading to the Private
+  // Metrics Collector (PMC) endpoint. The param is passed by value using
+  // std::move() to avoid a copy. An empty optional is returned if the
+  // report type is invalid.
+  static std::optional<::private_metrics::PrivateMetricEndpointPayload>
+  BuildPrivateMetricEndpointPayloadFromEncryptedReport(
+      ::private_metrics::EncryptedPrivateMetricReport encrypted_report);
+
   // Returns false if the public key `cwt` is expired or should not be used.
   // Otherwise, returns true.
   static bool ValidateEncryptionPublicKey(
