@@ -2954,8 +2954,7 @@ Status ExecuteSetPermission(Session* session,
     return Status(kInvalidArgument, "unrecognized permission state");
 
   auto dict = std::make_unique<base::Value::Dict>(descriptor->Clone());
-  return session->chrome->SetPermission(std::move(dict), valid_state, web_view,
-                                        session->GetCurrentFrameId());
+  return session->chrome->SetPermission(std::move(dict), valid_state, web_view);
 }
 
 Status ExecuteSetDevicePosture(Session* session,

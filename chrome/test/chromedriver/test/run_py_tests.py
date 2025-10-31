@@ -3807,53 +3807,6 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
     self.CheckPermission(self.GetPermission('background-sync'), 'denied')
     self.CheckPermission(self.GetPermission('geolocation'), status)
 
-  def testNonOriginPermission(self):
-    """ Confirm that permissions use the current frame's URL appropriately. """
-    is_headless = _BROWSER_NAME == 'chrome-headless-shell'
-    # We need a page with a cross-site iframe. We use "localhost" as the other
-    # site, since the default host is 127.0.0.1.
-    self._driver.Load(self._http_server.GetUrl('localhost')
-                      + '/chromedriver/empty.html')
-    self._driver.Load(self.GetHttpUrlForFile(
-        '/chromedriver/cross_domain_iframe.html'))
-    frame = self._driver.FindElement('tag name', 'iframe')
-    self._driver.SwitchToFrame(frame)
-
-    # The `storage-access` permission's key is a {site, site} tuple. Use that
-    # permission type to verify support, by checking that setting the permission
-    # status in the iframe doesn't affect the main frame's permission status.
-    self._driver.SetPermission({
-      'descriptor': { 'name': 'storage-access' },
-      'state': 'denied'
-    })
-    self.CheckPermission(self.GetPermission('storage-access'), 'denied')
-    self._driver.SwitchToMainFrame()
-    # Chrome always returns "granted" for the top-level frame.
-    self.CheckPermission(self.GetPermission('storage-access'),
-                         'prompt' if is_headless else 'granted')
-    self._driver.SwitchToFrame(frame)
-
-    self._driver.SetPermission({
-      'descriptor': { 'name': 'storage-access' },
-      'state': 'granted'
-    })
-    self.CheckPermission(self.GetPermission('storage-access'), 'granted')
-    self._driver.SwitchToMainFrame()
-    self.CheckPermission(self.GetPermission('storage-access'),
-                         'prompt' if is_headless else 'granted')
-    self._driver.SwitchToFrame(frame)
-
-    self._driver.SetPermission({
-      'descriptor': { 'name': 'storage-access' },
-      'state': 'prompt'
-    })
-    self.CheckPermission(self.GetPermission('storage-access'), 'prompt')
-    self._driver.SwitchToMainFrame()
-    self.CheckPermission(self.GetPermission('storage-access'),
-                         'prompt' if is_headless else 'granted')
-    self._driver.SwitchToFrame(frame)
-
-
   def testMultiplePermissions(self):
     """ Confirms multiple custom permissions can be set simultaneously. """
     self._driver.Load(self.GetHttpUrlForFile('/chromedriver/empty.html'))

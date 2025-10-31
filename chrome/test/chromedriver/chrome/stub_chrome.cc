@@ -96,8 +96,7 @@ Status StubChrome::SetAcceptInsecureCerts() {
 Status StubChrome::SetPermission(
     std::unique_ptr<base::Value::Dict> permission_descriptor,
     Chrome::PermissionState desired_state,
-    WebView* current_view,
-    const std::string& current_frame_id) {
+    WebView* current_view) {
   return Status(kOk);
 }
 

@@ -801,27 +801,12 @@ Status ChromeImpl::SetAcceptInsecureCerts() {
 Status ChromeImpl::SetPermission(
     std::unique_ptr<base::Value::Dict> permission_descriptor,
     PermissionState desired_state,
-    WebView* current_view,
-    const std::string& current_frame_id) {
+    WebView* current_view) {
   // Process URL.
-  std::string top_frame_url;
-  Status status = current_view->GetUrl(&top_frame_url);
-  if (status.IsError())
-    top_frame_url = "";
-
   std::string current_url;
-  {
-    std::unique_ptr<base::Value> frame_url_result;
-    Status frame_status = current_view->EvaluateScript(
-        current_frame_id, "self.location.href", /*await_promise=*/false,
-        &frame_url_result);
-    if (frame_status.IsError() || !frame_url_result ||
-        !frame_url_result->is_string()) {
-      current_url = top_frame_url;
-    } else {
-      current_url = frame_url_result->GetString();
-    }
-  }
+  Status status = current_view->GetUrl(&current_url);
+  if (status.IsError())
+    current_url = "";
 
   std::string permission_setting;
   if (desired_state == PermissionState::kGranted)
@@ -834,8 +819,7 @@ Status ChromeImpl::SetPermission(
     return Status(kInvalidArgument, "unsupported PermissionState");
 
   base::Value::Dict args;
-  args.Set("origin", top_frame_url);
-  args.Set("embeddedOrigin", current_url);
+  args.Set("origin", current_url);
   args.Set("permission", std::move(*permission_descriptor));
   args.Set("setting", permission_setting);
   return devtools_websocket_client_->SendCommand("Browser.setPermission", args);
