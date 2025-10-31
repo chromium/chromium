@@ -537,7 +537,16 @@ void HTMLOptionElement::RemovedFrom(ContainerNode& insertion_point) {
     CHECK(!new_ancestor_select);
     CHECK(old_ancestor_select);
     SetOwnerSelectElement(new_ancestor_select);
-    old_ancestor_select->OptionRemoved(*this);
+    const bool should_skip_option_removed =
+        !parentNode() && insertion_point == old_ancestor_select;
+    if (!RuntimeEnabledFeatures::SelectChildrenRemovedFixEnabled() ||
+        !should_skip_option_removed) {
+      // If this option was removed from a select element as a direct child,
+      // then let HTMLSelectElement::ChildrenChanged make the call to
+      // OptionRemoved in order to avoid
+      // https://issues.chromium.org/issues/444330901
+      old_ancestor_select->OptionRemoved(*this);
+    }
   }
 }
 
