@@ -10,8 +10,10 @@
 #import "ios/chrome/browser/badges/ui_bundled/badge_view_visibility_delegate.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/contextual_panel/entrypoint/ui/contextual_panel_entrypoint_visibility_delegate.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/badges_container_view.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_constants.h"
+#import "ios/chrome/browser/shared/public/commands/page_action_menu_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/elements/extended_touch_target_button.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -234,7 +236,6 @@ const CGFloat kSmallerLocationLabelFontMultiplier = 0.75;
   // container view.
   _badgesContainerView = [[LocationBarBadgesContainerView alloc] init];
   _badgesContainerView.translatesAutoresizingMaskIntoConstraints = NO;
-
   [_locationButton addSubview:_badgesContainerView];
 }
 
@@ -493,6 +494,14 @@ const CGFloat kSmallerLocationLabelFontMultiplier = 0.75;
     _badgesContainerView.placeholderView = placeholderView;
   }
   [self updateAccessibility];
+}
+
+- (void)setPageActionMenuHandler:
+    (id<PageActionMenuCommands>)pageActionMenuHandler {
+  if (IsProactiveSuggestionsFrameworkEnabled()) {
+    _pageActionMenuHandler = pageActionMenuHandler;
+    _badgesContainerView.pageActionMenuHandler = pageActionMenuHandler;
+  }
 }
 
 - (void)setFullScreenCollapsedMode:(BOOL)isFullScreenCollapsed {
