@@ -6,6 +6,7 @@
 
 #include "base/check_deref.h"
 #include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/metrics_hashes.h"
@@ -18,6 +19,8 @@
 namespace content {
 
 namespace {
+
+BASE_FEATURE(kReportStuckThrottle, base::FEATURE_DISABLED_BY_DEFAULT);
 
 NavigationThrottle::ThrottleCheckResult ExecuteNavigationEvent(
     NavigationThrottle* throttle,
@@ -140,6 +143,7 @@ void NavigationThrottleRunner::ResumeProcessingNavigationEvent(
   }
   base::UmaHistogramEnumeration("Navigation.ThrottleDeferredEvent",
                                 current_event_);
+  report_stuck_throttle_timer_ = nullptr;
   RecordDeferTimeUKM();
   ProcessInternal();
 }
@@ -203,6 +207,13 @@ void NavigationThrottleRunner::ProcessInternal() {
         next_index_ = i + 1;
         defer_start_time_ = base::Time::Now();
         event_process_execution_time_ += base::Time::Now() - start_time;
+        if (base::FeatureList::IsEnabled(kReportStuckThrottle)) {
+          report_stuck_throttle_timer_ = std::make_unique<base::OneShotTimer>();
+          report_stuck_throttle_timer_->Start(
+              FROM_HERE, base::Seconds(30),
+              base::BindOnce(&NavigationThrottleRunner::ReportStuckThrottle,
+                             weak_factory_.GetWeakPtr()));
+        }
         return;
     }
   }
@@ -251,6 +262,16 @@ void NavigationThrottleRunner::RecordDeferTimeUKM() {
   builder.SetNavigationThrottleNameHash(base::HashMetricName(
       (*registry_->GetDeferringThrottles().cbegin())->GetNameForLogging()));
   builder.Record(ukm::UkmRecorder::Get());
+}
+
+void NavigationThrottleRunner::ReportStuckThrottle() {
+  CHECK(next_index_ > 0);
+  std::unique_ptr<NavigationThrottle>& running_throttle =
+      registry_->GetThrottles()[next_index_ - 1];
+  ;
+  SCOPED_CRASH_KEY_STRING32("Bug", "stuck_throttle_name",
+                            running_throttle->GetNameForLogging());
+  base::debug::DumpWithoutCrashing();
 }
 
 }  // namespace content

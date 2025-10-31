@@ -14,6 +14,7 @@
 #include "base/memory/safety_checks.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "content/browser/renderer_host/navigation_throttle_registry_impl.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/navigation_throttle.h"
@@ -54,6 +55,8 @@ class CONTENT_EXPORT NavigationThrottleRunner
   // Records UKM about the deferring throttle when the navigation is resumed.
   void RecordDeferTimeUKM();
 
+  void ReportStuckThrottle();
+
   const raw_ref<NavigationThrottleRegistryBase> registry_;
 
   // The index of the next throttle to check.
@@ -87,6 +90,9 @@ class CONTENT_EXPORT NavigationThrottleRunner
 
   // Whether the navigation is in the primary main frame.
   bool is_primary_main_frame_ = false;
+
+  // A timer to detect throttles blocking the navigation for extra long time.
+  std::unique_ptr<base::OneShotTimer> report_stuck_throttle_timer_;
 
   base::WeakPtrFactory<NavigationThrottleRunner> weak_factory_{this};
 };

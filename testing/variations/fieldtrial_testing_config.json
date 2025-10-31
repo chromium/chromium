@@ -21292,6 +21292,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
+                        "ReportStuckThrottle",
                         "ResumeNavigationWithSpeculativeRFHProcessGone"
                     ]
                 }
