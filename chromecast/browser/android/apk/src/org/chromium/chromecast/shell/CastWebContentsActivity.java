@@ -318,17 +318,16 @@ public class CastWebContentsActivity extends Activity {
                 .map(Both::getFirst)
                 .map(CastWebContentsIntentUtils::getSessionId)
                 .subscribe(
-                        Observer.onOpen(
-                                sessionId -> {
-                                    TaskRemovedMonitorService.start(mRootSessionId, sessionId);
-                                }));
+                        sessionId -> {
+                            TaskRemovedMonitorService.start(mRootSessionId, sessionId);
+                            return () -> TaskRemovedMonitorService.stop();
+                        });
 
         mIsFinishingState.subscribe(
                 Observer.onOpen(
                         (String reason) -> {
                             Log.d(TAG, "Finishing activity: " + reason);
                             mSurfaceHelperState.reset();
-                            TaskRemovedMonitorService.stop();
                             finishAndRemoveTask();
                         }));
 
