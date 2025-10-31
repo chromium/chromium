@@ -8,7 +8,6 @@
 
 #include "ipc/mojo_param_traits.h"
 #include "ipc/param_traits_utils.h"
-#include "ipc/platform_file_for_transit.h"
 #include "net/base/hash_value.h"
 #include "net/cert/cert_verify_result.h"
 #include "net/http/http_response_headers.h"

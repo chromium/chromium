@@ -41,7 +41,6 @@
 #include <tchar.h>
 
 #include "ipc/handle_win.h"
-#include "ipc/platform_file_for_transit.h"
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 #include "base/file_descriptor_posix.h"
 #include "ipc/ipc_platform_file_attachment_posix.h"
@@ -965,38 +964,6 @@ bool ParamTraits<base::subtle::PlatformSharedMemoryRegion::Mode>::Read(
   *p = static_cast<param_type>(value);
   return true;
 }
-
-#if BUILDFLAG(IS_WIN)
-void ParamTraits<PlatformFileForTransit>::Write(base::Pickle* m,
-                                                const param_type& p) {
-  m->WriteBool(p.IsValid());
-  if (p.IsValid()) {
-    HandleWin handle_win(p.GetHandle());
-    ParamTraits<HandleWin>::Write(m, handle_win);
-    ::CloseHandle(p.GetHandle());
-  }
-}
-
-bool ParamTraits<PlatformFileForTransit>::Read(const base::Pickle* m,
-                                               base::PickleIterator* iter,
-                                               param_type* r) {
-  bool is_valid;
-  if (!iter->ReadBool(&is_valid)) {
-    return false;
-  }
-  if (!is_valid) {
-    *r = PlatformFileForTransit();
-    return true;
-  }
-
-  HandleWin handle_win;
-  if (!ParamTraits<HandleWin>::Read(m, iter, &handle_win)) {
-    return false;
-  }
-  *r = PlatformFileForTransit(handle_win.get_handle());
-  return true;
-}
-#endif  // BUILDFLAG(IS_WIN)
 
 void ParamTraits<base::FilePath>::Write(base::Pickle* m, const param_type& p) {
   p.WriteToPickle(m);

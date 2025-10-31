@@ -59,7 +59,6 @@
 #include "content/public/common/content_switches.h"
 #include "ipc/ipc_channel_factory.h"
 #include "ipc/ipc_sync_channel.h"
-#include "ipc/platform_file_for_transit.h"
 #include "mojo/core/embedder/scoped_ipc_support.h"
 #include "mojo/public/cpp/bindings/binder_map.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"

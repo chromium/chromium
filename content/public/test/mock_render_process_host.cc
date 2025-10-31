@@ -266,8 +266,6 @@ bool MockRenderProcessHost::FastShutdownStarted() {
 }
 
 const base::Process& MockRenderProcessHost::GetProcess() {
-  // Return the current-process handle for the IPC::GetPlatformFileForTransit
-  // function.
   if (process.IsValid())
     return process;
 

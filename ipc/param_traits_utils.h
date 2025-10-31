@@ -65,10 +65,6 @@ namespace IPC {
 
 class Message;
 
-#if BUILDFLAG(IS_WIN)
-class PlatformFileForTransit;
-#endif
-
 // A dummy struct to place first just to allow leading commas for all
 // members in the macro-generated constructor initializer lists.
 struct NoParams {};
@@ -624,17 +620,6 @@ struct COMPONENT_EXPORT(IPC)
                    base::PickleIterator* iter,
                    param_type* r);
 };
-
-#if BUILDFLAG(IS_WIN)
-template <>
-struct COMPONENT_EXPORT(IPC) ParamTraits<PlatformFileForTransit> {
-  typedef PlatformFileForTransit param_type;
-  static void Write(base::Pickle* m, const param_type& p);
-  static bool Read(const base::Pickle* m,
-                   base::PickleIterator* iter,
-                   param_type* r);
-};
-#endif  // BUILDFLAG(IS_WIN)
 
 template <>
 struct COMPONENT_EXPORT(IPC) ParamTraits<base::FilePath> {

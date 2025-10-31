@@ -7,24 +7,9 @@
 #include <windows.h>
 
 #include "base/files/file.h"
-#include "ipc/platform_file_for_transit.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace IPC {
-
-TEST(IpcHandleTest, InvalidPlatformFile) {
-  // Validate empty and unrepresentable values.
-  PlatformFileForTransit pfft = PlatformFileForTransit(::GetCurrentProcess());
-  EXPECT_FALSE(pfft.IsValid());
-  EXPECT_EQ(pfft.GetHandle(), nullptr);
-  pfft = GetPlatformFileForTransit(::GetCurrentThread(), true);
-  EXPECT_FALSE(pfft.IsValid());
-  EXPECT_EQ(pfft.GetHandle(), nullptr);
-  base::File unopened_file;
-  pfft = TakePlatformFileForTransit(std::move(unopened_file));
-  EXPECT_FALSE(pfft.IsValid());
-  EXPECT_EQ(pfft.GetHandle(), nullptr);
-}
 
 TEST(IpcHandleTest, InvalidHandleWin) {
   // Validate empty and unrepresentable values.

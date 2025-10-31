@@ -79,8 +79,6 @@ component("message_support") {
     "ipc_mojo_handle_attachment.h",
     "ipc_mojo_message_helper.cc",
     "ipc_mojo_message_helper.h",
-    "platform_file_for_transit.cc",
-    "platform_file_for_transit.h",
   ]
 
   if (is_win) {
