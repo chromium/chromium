@@ -141,14 +141,14 @@ class IsolatedWebAppsOpenedTabsCounterServiceBrowserTest
       content::WebContents* opener_contents,
       const GURL& child_url,
       const webapps::AppId& app_id,
-      int expected_tabs_count_in_notification,
+      int expected_window_count_in_notification,
       base::test::TestFuture<void>& notification_added_future,
       std::string app_display_name = kIsolatedApp1DefaultName) {
     content::WebContents* child_contents =
         OpenChildWindowFromIwaBrowser(opener_contents, child_url);
 
     EXPECT_TRUE(notification_added_future.Wait());
-    CheckNotificationContents(app_id, expected_tabs_count_in_notification,
+    CheckNotificationContents(app_id, expected_window_count_in_notification,
                               app_display_name);
 
     notification_added_future.Clear();
@@ -164,7 +164,7 @@ class IsolatedWebAppsOpenedTabsCounterServiceBrowserTest
 
   void CheckNotificationContents(
       const webapps::AppId& app_id,
-      int opened_tabs_count,
+      int opened_window_count,
       std::string app_display_name = kIsolatedApp1DefaultName) {
     std::optional<message_center::Notification> notification =
         display_service_tester_->GetNotification(
@@ -176,7 +176,7 @@ class IsolatedWebAppsOpenedTabsCounterServiceBrowserTest
     EXPECT_EQ(notification->title(), expected_title);
 
     std::u16string expected_message =
-        base::NumberToString16(opened_tabs_count) +
+        base::NumberToString16(opened_window_count) +
         u" new Chrome tabs have been opened by this app. You "
         u"can manage this behavior under \"Pop-ups and Redirects\" permission.";
     EXPECT_EQ(notification->message(), expected_message);
@@ -207,28 +207,33 @@ IN_PROC_BROWSER_TEST_F(
   display_service_tester_->SetNotificationAddedClosure(
       notification_added_future.GetRepeatingCallback());
 
-  OpenChildWindowFromIwaBrowser(iwa_opener_web_contents,
-                                GURL("https://example.com/app1/child1"));
-  OpenChildWindowFromIwaBrowser(iwa_opener_web_contents,
-                                GURL("https://example.com/app1/child2"));
-
+  content::WebContents* iwa_child_browser1_contents =
+      OpenChildWindowFromIwaBrowser(iwa_opener_web_contents,
+                                    GURL("https://example.com/app1/child1"));
   ASSERT_FALSE(notification_added_future.IsReady());
 
-  OpenChildWindowFromIwaBrowser(iwa_opener_web_contents,
-                                GURL("https://example.com/app1/child3"));
+  content::WebContents* iwa_child_browser2_contents =
+      OpenChildWindowAndExpectNotificationContents(
+          iwa_opener_web_contents, GURL("https://example.com/app1/child2"),
+          app_id,
+          /*expected_window_count_in_notification=*/2,
+          notification_added_future, kIsolatedApp1DefaultName);
 
-  EXPECT_TRUE(notification_added_future.Wait());
-  CheckNotificationContents(app_id, /*opened_tabs_count=*/3,
-                            kIsolatedApp1DefaultName);
+  OpenChildWindowAndExpectNotificationContents(
+      iwa_opener_web_contents, GURL("https://example.com/app1/child3"), app_id,
+      /*expected_window_count_in_notification=*/3, notification_added_future,
+      kIsolatedApp1DefaultName);
 
-  notification_added_future.Clear();
+  base::test::TestFuture<void> notification_closed_future;
+  display_service_tester_->SetNotificationClosedClosure(
+      notification_closed_future.GetRepeatingCallback());
 
-  OpenChildWindowFromIwaBrowser(iwa_opener_web_contents,
-                                GURL("https://example.com/app1/child4"));
-
-  EXPECT_TRUE(notification_added_future.Wait());
-  CheckNotificationContents(app_id, /*opened_tabs_count=*/4,
-                            kIsolatedApp1DefaultName);
+  iwa_child_browser1_contents->Close();
+  CheckNotificationContents(app_id, /*opened_window_count=*/2);
+  iwa_child_browser2_contents->Close();
+  ASSERT_TRUE(notification_closed_future.Wait());
+  notification_closed_future.Clear();
+  EXPECT_EQ(0u, GetNotificationCount());
 }
 
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppsOpenedTabsCounterServiceBrowserTest,
@@ -239,6 +244,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppsOpenedTabsCounterServiceBrowserTest,
   Browser* iwa1_browser = OpenIwaWindow(app1_id);
   Browser* iwa2_browser = OpenIwaWindow(app2_id);
 
+  // Child WebContents of the first app.
   base::test::TestFuture<void> notification_added_future;
   display_service_tester_->SetNotificationAddedClosure(
       notification_added_future.GetRepeatingCallback());
@@ -246,30 +252,24 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppsOpenedTabsCounterServiceBrowserTest,
   OpenChildWindowFromIwaBrowser(
       iwa1_browser->tab_strip_model()->GetActiveWebContents(),
       GURL("https://example.com/app1/child1"));
-  OpenChildWindowFromIwaBrowser(
-      iwa1_browser->tab_strip_model()->GetActiveWebContents(),
-      GURL("https://example.com/app1/child2"));
   ASSERT_FALSE(notification_added_future.IsReady());
 
   OpenChildWindowAndExpectNotificationContents(
       iwa1_browser->tab_strip_model()->GetActiveWebContents(),
-      GURL("https://example.com/app1/child3"), app1_id,
-      /*expected_tabs_count_in_notification=*/3, notification_added_future,
+      GURL("https://example.com/app1/child2"), app1_id,
+      /*expected_window_count_in_notification=*/2, notification_added_future,
       kIsolatedApp1DefaultName);
-  EXPECT_EQ(1u, GetNotificationCount());
 
+  // Child WebContents of the second app.
   OpenChildWindowFromIwaBrowser(
       iwa2_browser->tab_strip_model()->GetActiveWebContents(),
       GURL("https://example.com/app2/child1"));
-  OpenChildWindowFromIwaBrowser(
-      iwa2_browser->tab_strip_model()->GetActiveWebContents(),
-      GURL("https://example.com/app2/child2"));
   ASSERT_FALSE(notification_added_future.IsReady());
 
   OpenChildWindowAndExpectNotificationContents(
       iwa2_browser->tab_strip_model()->GetActiveWebContents(),
-      GURL("https://example.com/app2/child3"), app2_id,
-      /*expected_tabs_count_in_notification=*/3, notification_added_future,
+      GURL("https://example.com/app2/child2"), app2_id,
+      /*expected_window_count_in_notification=*/2, notification_added_future,
       kIsolatedApp2DefaultName);
   EXPECT_EQ(2u, GetNotificationCount());
 
@@ -286,26 +286,47 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppsOpenedTabsCounterServiceBrowserTest,
   content::WebContents* iwa1_opener_contents =
       OpenIwaWindow(app1_id)->tab_strip_model()->GetActiveWebContents();
 
+  webapps::AppId app2_id = InstallIsolatedWebApp(kIsolatedApp2DefaultName);
+  content::WebContents* iwa2_opener_contents =
+      OpenIwaWindow(app2_id)->tab_strip_model()->GetActiveWebContents();
+
   base::test::TestFuture<void> notification_added_future;
   display_service_tester_->SetNotificationAddedClosure(
       notification_added_future.GetRepeatingCallback());
 
+  // Open two child windows from IWA 1.
+  // This should trigger a notification for IWA 1.
   content::WebContents* app1_child1_contents = OpenChildWindowFromIwaBrowser(
       iwa1_opener_contents, GURL("https://example.com/app1/child1"));
-  OpenChildWindowFromIwaBrowser(iwa1_opener_contents,
-                                GURL("https://example.com/app1/child2"));
   ASSERT_FALSE(notification_added_future.IsReady());
 
   OpenChildWindowAndExpectNotificationContents(
-      iwa1_opener_contents, GURL("https://example.com/app1/child3"), app1_id,
-      /*expected_tabs_count_in_notification=*/3, notification_added_future,
+      iwa1_opener_contents, GURL("https://example.com/app1/child2"), app1_id,
+      /*expected_window_count_in_notification=*/2, notification_added_future,
       kIsolatedApp1DefaultName);
   EXPECT_EQ(1u, GetNotificationCount());
 
+  // Open two child windows from IWA 2.
+  // This should trigger a notification for IWA 2.
+  OpenChildWindowFromIwaBrowser(iwa2_opener_contents,
+                                GURL("https://example.com/app2/child1"));
+  ASSERT_FALSE(notification_added_future.IsReady());
+
+  OpenChildWindowAndExpectNotificationContents(
+      iwa2_opener_contents, GURL("https://example.com/app2/child2"), app2_id,
+      /*expected_window_count_in_notification=*/2, notification_added_future,
+      kIsolatedApp2DefaultName);
+  EXPECT_EQ(2u, GetNotificationCount());
+
+  ASSERT_TRUE(display_service_tester_->GetNotification(
+      GetNotificationIdForApp(app1_id)));
+  ASSERT_TRUE(display_service_tester_->GetNotification(
+      GetNotificationIdForApp(app2_id)));
+
   Browser* another_browser = CreateBrowser(profile());
 
-  // Move one of IWA 1's child windows (app1_child1_contents) to another
-  // browser.
+  // Move one of IWA 1's child windows (app1_child1_contents) to the
+  // regular_browser.
   tabs::TabInterface* tab =
       tabs::TabInterface::GetFromContents(app1_child1_contents);
   Browser* original_app1_child1_browser =
@@ -326,9 +347,13 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppsOpenedTabsCounterServiceBrowserTest,
       another_browser->tab_strip_model()->GetActiveWebContents()->GetURL(),
       GURL("https://example.com/app1/child1"));
 
-  EXPECT_EQ(1u, GetNotificationCount());
-  CheckNotificationContents(app1_id, /*opened_tabs_count=*/3,
+  // No WebContents were destroyed, so no notification change events should
+  // fire.
+  EXPECT_EQ(2u, GetNotificationCount());
+  CheckNotificationContents(app1_id, /*opened_window_count=*/2,
                             kIsolatedApp1DefaultName);
+  CheckNotificationContents(app2_id, /*opened_window_count=*/2,
+                            kIsolatedApp2DefaultName);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -345,17 +370,23 @@ IN_PROC_BROWSER_TEST_F(
 
   OpenChildWindowFromIwaBrowser(iwa_opener_web_contents,
                                 GURL("https://example.com/child1"));
-  OpenChildWindowFromIwaBrowser(iwa_opener_web_contents,
-                                GURL("https://example.com/child2"));
+  EXPECT_FALSE(notification_added_future.IsReady());
+  EXPECT_EQ(0u, GetNotificationCount());
+
   OpenChildWindowAndExpectNotificationContents(
-      iwa_opener_web_contents, GURL("https://example.com/child3"), app_id,
-      /*expected_tabs_count_in_notification=*/3, notification_added_future,
+      iwa_opener_web_contents, GURL("https://example.com/child2"), app_id,
+      /*expected_window_count_in_notification=*/2, notification_added_future,
       kIsolatedApp1DefaultName);
+
   EXPECT_EQ(1u, GetNotificationCount());
 
   std::optional<message_center::Notification> notification =
       display_service_tester_->GetNotification(GetNotificationIdForApp(app_id));
   ASSERT_TRUE(notification.has_value());
+
+  EXPECT_EQ(isolated_web_apps_opened_tabs_counter_service_->app_tab_counts_.at(
+                app_id),
+            2);
 
   base::test::TestFuture<void> notification_closed_future;
   display_service_tester_->SetNotificationClosedClosure(
@@ -365,9 +396,13 @@ IN_PROC_BROWSER_TEST_F(
   notification->delegate()->Click(/*button_index=*/1,
                                   /*reply=*/std::nullopt);
 
-  // Clicking the button closes the child windows and the
+  // Clicking the button asynchronously closes the child windows and the
   // notification itself.
   ASSERT_TRUE(notification_closed_future.Wait());
+
+  ASSERT_FALSE(base::Contains(
+      isolated_web_apps_opened_tabs_counter_service_->app_tab_counts_, app_id));
+
   EXPECT_EQ(0u, GetNotificationCount());
   ASSERT_FALSE(iwa_browser->capabilities()->IsAttemptingToCloseBrowser());
 }
@@ -384,23 +419,26 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppsOpenedTabsCounterServiceBrowserTest,
     display_service_tester_->SetNotificationAddedClosure(
         notification_added_future.GetRepeatingCallback());
 
-    OpenChildWindowFromIwaBrowser(iwa_opener_web_contents,
-                                  GURL("https://example.com/s1/child1"));
-    OpenChildWindowFromIwaBrowser(iwa_opener_web_contents,
-                                  GURL("https://example.com/s1/child2"));
-    OpenChildWindowFromIwaBrowser(iwa_opener_web_contents,
-                                  GURL("https://example.com/s1/child3"));
+    // Open 2 windows to trigger the notification.
+    content::WebContents* child1 = OpenChildWindowFromIwaBrowser(
+        iwa_opener_web_contents, GURL("https://example.com/s1/child1"));
+    content::WebContents* child2 = OpenChildWindowFromIwaBrowser(
+        iwa_opener_web_contents, GURL("https://example.com/s1/child2"));
 
     // Check notification was shown.
     ASSERT_TRUE(notification_added_future.Wait());
+    EXPECT_TRUE(display_service_tester_->GetNotification(notification_id));
 
-    std::optional<message_center::Notification> notification =
-        display_service_tester_->GetNotification(notification_id);
-    EXPECT_TRUE(notification.has_value());
+    // Close those 2 windows.
+    base::test::TestFuture<void> notification_closed_future;
+    display_service_tester_->SetNotificationClosedClosure(
+        notification_closed_future.GetRepeatingCallback());
+    child1->Close();
+    child2->Close();
 
-    notification->delegate()->Click(/*button_index=*/1,
-                                    /*reply=*/std::nullopt);
-    EXPECT_EQ(0u, GetNotificationCount());
+    // Check no notification is present after windows are closed.
+    ASSERT_TRUE(notification_closed_future.Wait());
+    EXPECT_FALSE(display_service_tester_->GetNotification(notification_id));
   }
 
   // Notification should be suppressed after 3 show ups.
@@ -409,8 +447,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppsOpenedTabsCounterServiceBrowserTest,
                                   GURL("https://example.com/s4/child1"));
     OpenChildWindowFromIwaBrowser(iwa_opener_web_contents,
                                   GURL("https://example.com/s4/child2"));
-    OpenChildWindowFromIwaBrowser(iwa_opener_web_contents,
-                                  GURL("https://example.com/s4/child3"));
+
     // Check that no notification appears this time.
     EXPECT_EQ(0u, GetNotificationCount());
   }
@@ -422,19 +459,23 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppsOpenedTabsCounterServiceBrowserTest,
       "IWA1", web_package::test::GetDefaultEd25519KeyPair());
   content::WebContents* iwa_opener_web_contents =
       OpenIwaWindow(app_id)->tab_strip_model()->GetActiveWebContents();
+  const std::string notification_id = GetNotificationIdForApp(app_id);
 
   base::test::TestFuture<void> notification_added_future;
   display_service_tester_->SetNotificationAddedClosure(
       notification_added_future.GetRepeatingCallback());
-
-  OpenChildWindowFromIwaBrowser(iwa_opener_web_contents,
-                                GURL("https://example.com/s1/child1"));
-  OpenChildWindowFromIwaBrowser(iwa_opener_web_contents,
-                                GURL("https://example.com/s1/child2"));
-  OpenChildWindowFromIwaBrowser(iwa_opener_web_contents,
-                                GURL("https://example.com/s1/child3"));
+  content::WebContents* child1 = OpenChildWindowFromIwaBrowser(
+      iwa_opener_web_contents, GURL("https://example.com/s1/child1"));
+  content::WebContents* child2 = OpenChildWindowFromIwaBrowser(
+      iwa_opener_web_contents, GURL("https://example.com/s1/child2"));
   ASSERT_TRUE(notification_added_future.Wait());
 
+  base::test::TestFuture<void> notification_closed_future;
+  display_service_tester_->SetNotificationClosedClosure(
+      notification_closed_future.GetRepeatingCallback());
+  child1->Close();
+  child2->Close();
+  ASSERT_TRUE(notification_closed_future.Wait());
 }
 
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppsOpenedTabsCounterServiceBrowserTest,
@@ -460,10 +501,10 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppsOpenedTabsCounterServiceBrowserTest,
             std::optional<IsolationData::OpenedTabsCounterNotificationState>(
                 std::nullopt));
 
-    EXPECT_TRUE(future.Wait());
+    ASSERT_TRUE(future.Wait());
     auto state = future.Take();
 
-    EXPECT_TRUE(state.has_value());
+    ASSERT_TRUE(state.has_value());
     EXPECT_EQ(state->times_shown(), expected_times_shown);
     EXPECT_EQ(state->acknowledged(), expected_acknowledged);
   };
@@ -475,34 +516,33 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppsOpenedTabsCounterServiceBrowserTest,
     base::test::TestFuture<void> notification_added_future;
     display_service_tester_->SetNotificationAddedClosure(
         notification_added_future.GetRepeatingCallback());
-    OpenChildWindowFromIwaBrowser(iwa_opener_web_contents,
-                                  GURL("https://example.com/s2/child1"));
-    OpenChildWindowFromIwaBrowser(iwa_opener_web_contents,
-                                  GURL("https://example.com/s2/child2"));
-    OpenChildWindowFromIwaBrowser(iwa_opener_web_contents,
-                                  GURL("https://example.com/s2/child3"));
+    content::WebContents* child1 = OpenChildWindowFromIwaBrowser(
+        iwa_opener_web_contents, GURL("https://example.com/s2/child1"));
+    content::WebContents* child2 = OpenChildWindowFromIwaBrowser(
+        iwa_opener_web_contents, GURL("https://example.com/s2/child2"));
     ASSERT_TRUE(notification_added_future.Wait());
 
     std::optional<message_center::Notification> notification =
         display_service_tester_->GetNotification(notification_id);
-    EXPECT_TRUE(notification.has_value());
+    ASSERT_TRUE(notification.has_value());
 
     // Acknowledge the notification by closing it as a user.
     // This should set the 'acknowledged' flag to true.
     notification->delegate()->Close(/*by_user=*/true);
+
+    // Clean up the opened windows.
+    child1->Close();
+    child2->Close();
   }
 
   check_persisted_state(/*expected_times_shown=*/2,
                         /*expected_acknowledged=*/true);
 
-  // Triggering again should not show a notification.
   {
     OpenChildWindowFromIwaBrowser(iwa_opener_web_contents,
                                   GURL("https://example.com/s3/child1"));
     OpenChildWindowFromIwaBrowser(iwa_opener_web_contents,
                                   GURL("https://example.com/s3/child2"));
-    OpenChildWindowFromIwaBrowser(iwa_opener_web_contents,
-                                  GURL("https://example.com/s3/child3"));
     EXPECT_EQ(0u, GetNotificationCount());
   }
 }
@@ -518,13 +558,10 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppsOpenedTabsCounterServiceBrowserTest,
   base::test::TestFuture<void> notification_added_future;
   display_service_tester_->SetNotificationAddedClosure(
       notification_added_future.GetRepeatingCallback());
-
-  OpenChildWindowFromIwaBrowser(iwa_opener_web_contents,
-                                GURL("https://example.com/s1/child1"));
-  OpenChildWindowFromIwaBrowser(iwa_opener_web_contents,
-                                GURL("https://example.com/s1/child2"));
-  OpenChildWindowFromIwaBrowser(iwa_opener_web_contents,
-                                GURL("https://example.com/s1/child3"));
+  content::WebContents* child1 = OpenChildWindowFromIwaBrowser(
+      iwa_opener_web_contents, GURL("https://example.com/s1/child1"));
+  content::WebContents* child2 = OpenChildWindowFromIwaBrowser(
+      iwa_opener_web_contents, GURL("https://example.com/s1/child2"));
   ASSERT_TRUE(notification_added_future.Wait());
   EXPECT_TRUE(display_service_tester_->GetNotification(notification_id));
 
@@ -541,6 +578,9 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppsOpenedTabsCounterServiceBrowserTest,
 
   ASSERT_TRUE(notification_closed_future.Wait());
 
+  // Clean up the opened windows.
+  child1->Close();
+  child2->Close();
 
   EXPECT_FALSE(display_service_tester_->GetNotification(notification_id));
 }
@@ -582,8 +622,6 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppsOpenedTabsCounterServiceBrowserTest,
                                 GURL("https://example.com/s2/child1"));
   OpenChildWindowFromIwaBrowser(iwa_opener_web_contents,
                                 GURL("https://example.com/s2/child2"));
-  OpenChildWindowFromIwaBrowser(iwa_opener_web_contents,
-                                GURL("https://example.com/s2/child3"));
 
   // Because the notification has been acknowledged previously, it should not
   // be shown again.
@@ -608,18 +646,21 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppsOpenedTabsCounterServiceBrowserTest,
   OpenChildWindowFromIwaBrowser(iwa_opener_web_contents,
                                 GURL("https://example.com/app1/child1"),
                                 "_blank", "noopener");
-  OpenChildWindowFromIwaBrowser(iwa_opener_web_contents,
-                                GURL("https://example.com/app1/child2"));
   ASSERT_FALSE(notification_added_future.IsReady());
 
   OpenChildWindowAndExpectNotificationContents(
+      iwa_opener_web_contents, GURL("https://example.com/app1/child2"), app_id,
+      /*expected_window_count_in_notification=*/2, notification_added_future,
+      kIsolatedApp1DefaultName);
+
+  OpenChildWindowAndExpectNotificationContents(
       iwa_opener_web_contents, GURL("https://example.com/app1/child3"), app_id,
-      /*expected_tabs_count_in_notification=*/3, notification_added_future,
+      /*expected_window_count_in_notification=*/3, notification_added_future,
       kIsolatedApp1DefaultName);
 }
 
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppsOpenedTabsCounterServiceBrowserTest,
-                       SelfTargetIsCountedAsOpenedByIwa) {
+                       SelfTargetDoesNotAffectCounters) {
   webapps::AppId app_id = InstallIsolatedWebApp();
 
   content::WebContents* iwa_opener_web_contents =
@@ -628,18 +669,19 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppsOpenedTabsCounterServiceBrowserTest,
   base::test::TestFuture<void> notification_added_future;
   display_service_tester_->SetNotificationAddedClosure(
       notification_added_future.GetRepeatingCallback());
-
   OpenChildWindowFromIwaBrowser(iwa_opener_web_contents,
                                 GURL("https://example.com/app1/child1"),
                                 "_self");
   ASSERT_FALSE(notification_added_future.IsReady());
 
-  OpenChildWindowFromIwaBrowser(
-      iwa_opener_web_contents, GURL("https://example.com/app1/child2"), app_id);
+  OpenChildWindowAndExpectNotificationContents(
+      iwa_opener_web_contents, GURL("https://example.com/app1/child2"), app_id,
+      /*expected_window_count_in_notification=*/2, notification_added_future,
+      kIsolatedApp1DefaultName);
 
   OpenChildWindowAndExpectNotificationContents(
       iwa_opener_web_contents, GURL("https://example.com/app1/child3"), app_id,
-      /*expected_tabs_count_in_notification=*/3, notification_added_future,
+      /*expected_window_count_in_notification=*/3, notification_added_future,
       kIsolatedApp1DefaultName);
 }
 
@@ -650,13 +692,22 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppsOpenedTabsCounterServiceBrowserTest,
   content::WebContents* iwa_opener_web_contents =
       OpenIwaWindow(app_id)->tab_strip_model()->GetActiveWebContents();
 
-  // Open multiple child windows, which should trigger a notification.
+  base::test::TestFuture<void> notification_added_future;
+  display_service_tester_->SetNotificationAddedClosure(
+      notification_added_future.GetRepeatingCallback());
+
+  // Open multiple child windows, which would normally trigger a notification.
   OpenChildWindowFromIwaBrowser(iwa_opener_web_contents,
                                 GURL("https://example.com/child1"));
   OpenChildWindowFromIwaBrowser(iwa_opener_web_contents,
                                 GURL("https://example.com/child2"));
   OpenChildWindowFromIwaBrowser(iwa_opener_web_contents,
                                 GURL("https://example.com/child3"));
+
+  EXPECT_FALSE(notification_added_future.IsReady());
   EXPECT_EQ(0u, GetNotificationCount());
+  EXPECT_FALSE(base::Contains(
+      isolated_web_apps_opened_tabs_counter_service_->app_tab_counts_, app_id));
 }
+
 }  // namespace web_app

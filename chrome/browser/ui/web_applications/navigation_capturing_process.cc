@@ -8,7 +8,6 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_split.h"
-#include "base/time/clock.h"
 #include "base/types/optional_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -876,8 +875,7 @@ void NavigationCapturingProcess::MaybeNotifyIwaTabCounterService(
     return;
   }
 
-  counter_service->OnWebContentsCreated(*iwa_opener_app_id, &web_contents,
-                                        provider->clock().Now());
+  counter_service->OnWebContentsCreated(*iwa_opener_app_id, &web_contents);
 }
 
 // static

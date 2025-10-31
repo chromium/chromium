@@ -31,21 +31,20 @@ namespace web_app {
 // permission by default upon installation. As a result,
 // these apps can open multiple new windows/tabs programmatically.
 // To mitigate potential abuse of this permission and to not confuse the user,
-// this service tracks `WebContents` (tabs or windows) opened by each
-// non-policy-installed IWA to detect a burst of activity.
+// this service tracks the number of active `WebContents` (tabs or windows)
+// opened by each non-policy-installed IWA.
 //
 // The service works by:
-// 1. Being notified via the `OnWebContentsCreated` method when an IWA creates a
-//    new `WebContents`. It records the creation timestamp for that tab.
-// 2. Attaching an observer to the new `WebContents` to monitor its lifecycle.
-// 3. Each time a new tab is opened, it checks how many tabs were opened by the
-//    same app within a short time window (7 seconds). If the count
-//    reaches a certain threshold (currently equal to 3), a notification is
+// 1. Being notified directly by the navigation system (via the
+//    `OnWebContentsCreated` method) when an IWA creates a new `WebContents`.
+// 2. Incrementing a counter for that IWA and attaching an observer to the new
+//    `WebContents` to monitor its lifecycle.
+// 3. When the count of opened windows for an IWA exceeds 1, a notification is
 //    displayed.
-// 4. The notification informs the user and provides actions to either close all
-//    tabs opened by the app or manage its "Pop-ups and Redirects" permission.
-// 5. When a tracked `WebContents` is destroyed, its timestamp is removed. The
-//    notification remains visible
+// 4. The notification informs the user and provides an action to manage the
+//    app's content settings.
+// 5. When a tracked `WebContents` is destroyed, the observer notifies the
+//    service to decrement the count and update or remove the notification.
 class IsolatedWebAppsOpenedTabsCounterService : public KeyedService {
  public:
   using CloseWebContentsCallback =
@@ -63,8 +62,7 @@ class IsolatedWebAppsOpenedTabsCounterService : public KeyedService {
   // Called by the `web_app::NavigationCapturingProcess` when a new WebContents
   // is created by an IWA.
   void OnWebContentsCreated(const webapps::AppId& opener_app_id,
-                            content::WebContents* new_contents,
-                            base::Time navigation_start_time);
+                            content::WebContents* new_contents);
 
   void OnNotificationAcknowledged(const webapps::AppId& app_id);
   void CloseNotification(const webapps::AppId& app_id);
@@ -99,13 +97,10 @@ class IsolatedWebAppsOpenedTabsCounterService : public KeyedService {
   // Called by `TabObserver` when a tracked WebContents is destroyed.
   void HandleTabClosure(content::WebContents* contents);
 
-  void AddTabTimestampForApp(const webapps::AppId& app_id,
-                             base::Time timestamp);
-  void RemoveTabTimestampForApp(const webapps::AppId& app_id,
-                                base::Time timestamp);
+  void IncrementTabCountForApp(const webapps::AppId& app_id);
+  void DecrementTabCountForApp(const webapps::AppId& app_id);
 
   void UpdateOrRemoveNotificationForOpener(const webapps::AppId& app_id);
-  void RegisterFirstTimeActiveAppNotification(const webapps::AppId& app_id);
   void CreateAndDisplayNotification(const webapps::AppId& app_id,
                                     int current_tab_count);
   void CloseAllWebContentsOpenedByApp(const webapps::AppId& app_id);
@@ -116,7 +111,7 @@ class IsolatedWebAppsOpenedTabsCounterService : public KeyedService {
 
   const raw_ref<Profile> profile_;
 
-  base::flat_map<webapps::AppId, std::vector<base::Time>> app_tab_timestamps_;
+  base::flat_map<webapps::AppId, int> app_tab_counts_;
 
   // Tracks WebContents opened by IWAs, mapping each to its opener's AppId
   // and an observer that handles its destruction.
