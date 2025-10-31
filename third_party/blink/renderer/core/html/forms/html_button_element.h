@@ -50,15 +50,7 @@ class CORE_EXPORT HTMLButtonElement final : public HTMLFormControlElement {
   // child of a <select>.
   HTMLSelectElement* OwnerSelect() const;
 
-  // Invoker Commands (https://github.com/whatwg/html/pull/9841)
-  Element* commandForElement() const;
-  AtomicString command() const;
-  void setCommand(const AtomicString& type);
-
-  static CommandEventType GetCommandEventType(
-      const AtomicString& type,
-      ExecutionContext* execution_context);
-  static void HandleCommandForActivation(Event& event, HTMLElement& element);
+  bool CanBeCommandInvoker() const override;
 
  private:
   // The type attribute of HTMLButtonElement is an enumerated attribute:

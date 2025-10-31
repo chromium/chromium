@@ -186,6 +186,7 @@
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/skia/include/core/SkImage.h"
@@ -3319,32 +3320,18 @@ AccessibilityExpanded AXNodeObject::IsExpanded() const {
     return is_expanded ? kExpandedExpanded : kExpandedCollapsed;
   }
 
-  HTMLElement* command_for_element = nullptr;
-  if (auto* button = DynamicTo<HTMLButtonElement>(element)) {
-    command_for_element = DynamicTo<HTMLElement>(button->commandForElement());
-  } else if (auto* menuitem = DynamicTo<HTMLMenuItemElement>(element)) {
-    DCHECK(RuntimeEnabledFeatures::MenuElementsEnabled());
-    command_for_element = DynamicTo<HTMLElement>(menuitem->commandForElement());
-  }
-
-  // For menuitem and button elements that act as commandFor triggers,
-  // aria-expanded may be set depending on the command type. This results in the
-  // same mapping as popovertarget, but takes precedence in the case of
-  // conflicting markup as the HTML spec invokers commandfor functionality
-  // first, and only.
-  if (command_for_element) {
-    const AtomicString& action =
-        element->FastGetAttribute(html_names::kCommandAttr);
-    bool is_valid_popover_command =
-        command_for_element->IsValidBuiltinPopoverCommand(
-            *DynamicTo<HTMLElement>(element),
-            HTMLButtonElement::GetCommandEventType(
-                action,
-                command_for_element->GetDocument().GetExecutionContext()));
-    bool is_child =
-        element->IsDescendantOrShadowDescendantOf(command_for_element);
-    // Popover invokers should indicate the expanded/collapsed state.
-    if (is_valid_popover_command && !is_child) {
+  // For commandFor triggers, aria-expanded may be set depending on the command
+  // type. This results in the same mapping as popovertarget, but takes
+  // precedence over popovertarget.
+  if (auto* html_element = DynamicTo<HTMLElement>(element)) {
+    HTMLElement* command_for_element =
+        DynamicTo<HTMLElement>(html_element->commandForElement());
+    CommandEventType command = command_for_element->GetCommandEventType(
+        html_element->command(), html_element->GetExecutionContext());
+    bool is_popover_command = command_for_element->IsValidBuiltinPopoverCommand(
+        *html_element, command);
+    if (command_for_element && is_popover_command &&
+        !element->IsDescendantOrShadowDescendantOf(command_for_element)) {
       return command_for_element->popoverOpen() ? kExpandedExpanded
                                                 : kExpandedCollapsed;
     }
