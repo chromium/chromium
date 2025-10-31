@@ -224,6 +224,11 @@ public interface Observable<T> {
         return observable.count().filter(n -> n == 0).opaque();
     }
 
+    /** Returns an Observable that is activated when the input has at least one activation. */
+    static Observable<Unit> any(Observable<?> observable) {
+        return not(not(observable));
+    }
+
     /** A degenerate Observable that has no data. */
     static <T> Observable<T> empty() {
         return observer -> Scope.NO_OP;
