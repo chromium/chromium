@@ -251,7 +251,7 @@ ScopedIOSurface CreateIOSurface(const gfx::Size& size,
         IOSurfaceAlignProperty(kIOSurfaceAllocSize, total_bytes_alloc);
     AddIntegerValue(properties.get(), kIOSurfaceAllocSize, total_bytes_alloc);
   } else {
-    const size_t bytes_per_element = format.BitsPerPixel() / 8;
+    const size_t bytes_per_element = format.BytesPerPixel();
     const size_t bytes_per_row = IOSurfaceAlignProperty(
         kIOSurfaceBytesPerRow,
         base::bits::AlignUp(static_cast<size_t>(size.width()), size_t{2}) *

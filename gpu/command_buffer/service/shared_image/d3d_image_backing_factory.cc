@@ -662,14 +662,8 @@ std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
         return nullptr;
       }
 
-      int bits_per_element = format.BitsPerPixel();
-      if (bits_per_element % 8 != 0) {
-        LOG(ERROR) << "Shared image format for tensor is invalid.";
-        return nullptr;
-      }
-
       int element_count = size.width() * size.height();
-      int bytes_per_element = bits_per_element / 8;
+      int bytes_per_element = format.BytesPerPixel();
       if (element_count > std::numeric_limits<int>::max() / bytes_per_element) {
         LOG(ERROR) << "Shared image size for tensor is invalid.";
         return nullptr;
@@ -767,7 +761,7 @@ std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
     }
 
     initial_data.pSysMem = pixel_data.data();
-    initial_data.SysMemPitch = format.BitsPerPixel() * size.width() / 8;
+    initial_data.SysMemPitch = format.BytesPerPixel() * size.width();
     initial_data.SysMemSlicePitch = 0;
   }
 

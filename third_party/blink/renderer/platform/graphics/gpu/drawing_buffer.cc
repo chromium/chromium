@@ -104,16 +104,12 @@ void FlipVertically(base::span<uint8_t> framebuffer,
 
 sk_sp<SkData> TryAllocateSkDataForBitmap(viz::SharedImageFormat format,
                                          gfx::Size size) {
-  CHECK_EQ(format.BitsPerPixel() % 8, 0);
-  base::CheckedNumeric<size_t> data_size = format.BitsPerPixel() / 8;
-  data_size *= size.width();
-  data_size *= size.height();
-
-  if (!data_size.IsValid()) {
+  auto data_size = format.MaybeEstimatedSizeInBytes(size);
+  if (!data_size) {
     return nullptr;
   }
 
-  return TryAllocateSkData(data_size.ValueOrDie());
+  return TryAllocateSkData(data_size.value());
 }
 
 class ScopedDrawBuffer {

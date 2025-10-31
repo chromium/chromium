@@ -55,9 +55,7 @@ size_t GetBytesPerPixel(viz::SharedImageFormat format) {
           format == viz::MultiPlaneFormat::kYV12);
     return 1U;
   }
-  auto bits_per_pixel = format.BitsPerPixel();
-  CHECK_EQ(bits_per_pixel % 8, 0);
-  return bits_per_pixel / 8;
+  return format.BytesPerPixel();
 }
 
 bool IsYuvVkFormat(VkFormat format) {

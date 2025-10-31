@@ -246,7 +246,7 @@ wgpu::Buffer IOSurfaceImageBacking::DawnBufferCopyRepresentation::BeginAccess(
 
   // 1. Create a temporary staging buffer with the required alignment for
   // CopyTextureToBuffer
-  uint32_t bytes_per_pixel = format().BitsPerPixel() / 8;
+  uint32_t bytes_per_pixel = format().BytesPerPixel();
   uint32_t packed_bytes_per_row = bytes_per_pixel * size().width();
   uint32_t aligned_bytes_per_row =
       base::bits::AlignUp(packed_bytes_per_row, kTextureBytesPerRowAlignment);
@@ -308,7 +308,7 @@ void IOSurfaceImageBacking::DawnBufferCopyRepresentation::EndAccess() {
 
   // Create a staging buffer with the required alignment for
   // CopyBufferToTexture.
-  uint32_t bytes_per_pixel = format().BitsPerPixel() / 8;
+  uint32_t bytes_per_pixel = format().BytesPerPixel();
   uint32_t packed_bytes_per_row = bytes_per_pixel * size().width();
 
   uint32_t aligned_bytes_per_row =
@@ -2104,7 +2104,7 @@ bool IOSurfaceImageBacking::InitializePixels(
   size_t dst_stride = IOSurfaceGetBytesPerRowOfPlane(io_surface_.get(), 0);
 
   const uint8_t* src_data = pixel_data.data();
-  const size_t src_stride = (format().BitsPerPixel() / 8) * size().width();
+  const size_t src_stride = format().BytesPerPixel() * size().width();
   const size_t height = size().height();
 
   if (pixel_data.size() != src_stride * height) {

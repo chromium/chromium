@@ -372,35 +372,6 @@ bool SharedImageFormat::IsCompressed() const {
          singleplanar_format() == mojom::SingleplanarFormat::ETC1;
 }
 
-int SharedImageFormat::BitsPerPixel() const {
-  CHECK(is_single_plane());
-  switch (singleplanar_format()) {
-    case mojom::SingleplanarFormat::RGBA_F16:
-      return 64;
-    case mojom::SingleplanarFormat::BGRA_8888:
-    case mojom::SingleplanarFormat::RGBA_8888:
-    case mojom::SingleplanarFormat::RGBX_8888:
-    case mojom::SingleplanarFormat::BGRX_8888:
-    case mojom::SingleplanarFormat::RGBA_1010102:
-    case mojom::SingleplanarFormat::BGRA_1010102:
-    case mojom::SingleplanarFormat::RG_1616:
-      return 32;
-    case mojom::SingleplanarFormat::RGBA_4444:
-    case mojom::SingleplanarFormat::LUMINANCE_F16:
-    case mojom::SingleplanarFormat::R_F16:
-    case mojom::SingleplanarFormat::R_16:
-    case mojom::SingleplanarFormat::BGR_565:
-    case mojom::SingleplanarFormat::RG_88:
-      return 16;
-    case mojom::SingleplanarFormat::ALPHA_8:
-    case mojom::SingleplanarFormat::R_8:
-      return 8;
-    case mojom::SingleplanarFormat::ETC1:
-      return 4;
-  }
-  NOTREACHED();
-}
-
 int SharedImageFormat::BytesPerPixel() const {
   CHECK(is_single_plane());
   switch (singleplanar_format()) {

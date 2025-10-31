@@ -84,7 +84,7 @@ intptr_t CanvasRenderingContext::AllocatedBufferSize() const {
   int buffer_count = AllocatedBufferCountPerPixel();
 
   // NOTE: All formats used by canvas are either 8-bit or 16-bit.
-  const int bytes_per_pixel = GetSharedImageFormat().BitsPerPixel() / 8;
+  const int bytes_per_pixel = GetSharedImageFormat().BytesPerPixel();
 
   // Recomputation of externally memory usage computation is carried out
   // in all cases.

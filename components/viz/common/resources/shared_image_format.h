@@ -183,9 +183,6 @@ class COMPONENT_EXPORT(VIZ_SHARED_IMAGE_FORMAT) SharedImageFormat final {
   // Returns true if the format is ETC1 compressed.
   bool IsCompressed() const;
 
-  // NOTE: Supported only for true single-plane formats.
-  int BitsPerPixel() const;
-
   // NOTE: Supported only for true single-plane formats that have a fixed number
   // of bytes per pixel, eg. not ETC1.
   int BytesPerPixel() const;
