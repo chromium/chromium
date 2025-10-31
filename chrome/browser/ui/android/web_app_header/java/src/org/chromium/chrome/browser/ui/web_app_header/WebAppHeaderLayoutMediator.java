@@ -68,7 +68,7 @@ class WebAppHeaderLayoutMediator
     private int mButtonBottomInset;
     private final @DisplayMode.EnumType int mDisplayMode;
     private final Callback<@Nullable Tab> mOnTabUpdate;
-    private final String mClientPackageName;
+    private final @Nullable String mClientPackageName;
 
     private int mDisabledControlsToken = TokenHolder.INVALID_TOKEN;
     private boolean mIsFirstAppHeaderStateUpdate = true;
@@ -99,7 +99,7 @@ class WebAppHeaderLayoutMediator
             int headerButtonHeight,
             int displayMode,
             Callback<Boolean> setHeaderAsOverlayCallback,
-            String clientPackageName) {
+            @Nullable String clientPackageName) {
         mThemeColorProvider = themeColorProvider;
         mWebAppMinHeaderHeight = webAppHeaderMinHeightFromResources;
         mHeaderDelegate = headerDelegate;
@@ -148,22 +148,28 @@ class WebAppHeaderLayoutMediator
 
         SharedPreferencesManager prefs = ChromeSharedPreferences.getInstance();
         mUserToggleHeaderAsOverlay =
-                prefs.readStringSet(ChromePreferenceKeys.WINDOW_CONTROLS_OVERLAY_ENABLED_PACKAGES)
-                        .contains(mClientPackageName);
+                mClientPackageName == null
+                        ? false
+                        : prefs.readStringSet(
+                                        ChromePreferenceKeys
+                                                .WINDOW_CONTROLS_OVERLAY_ENABLED_PACKAGES)
+                                .contains(mClientPackageName);
     }
 
     public void setUserToggleHeaderAsOverlay(boolean userToggleHeaderAsOverlay) {
         if (mUserToggleHeaderAsOverlay == userToggleHeaderAsOverlay) return;
         mUserToggleHeaderAsOverlay = userToggleHeaderAsOverlay;
         SharedPreferencesManager prefs = ChromeSharedPreferences.getInstance();
-        if (mUserToggleHeaderAsOverlay) {
-            prefs.addToStringSet(
-                    ChromePreferenceKeys.WINDOW_CONTROLS_OVERLAY_ENABLED_PACKAGES,
-                    mClientPackageName);
-        } else {
-            prefs.removeFromStringSet(
-                    ChromePreferenceKeys.WINDOW_CONTROLS_OVERLAY_ENABLED_PACKAGES,
-                    mClientPackageName);
+        if (mClientPackageName != null) {
+            if (mUserToggleHeaderAsOverlay) {
+                prefs.addToStringSet(
+                        ChromePreferenceKeys.WINDOW_CONTROLS_OVERLAY_ENABLED_PACKAGES,
+                        mClientPackageName);
+            } else {
+                prefs.removeFromStringSet(
+                        ChromePreferenceKeys.WINDOW_CONTROLS_OVERLAY_ENABLED_PACKAGES,
+                        mClientPackageName);
+            }
         }
         updateHeaderAsOverlay();
     }

@@ -102,7 +102,7 @@ public class WebAppHeaderLayoutCoordinator
     private final ObservableSupplierImpl<MenuButtonState> mMenuButtonStateSupplier =
             new ObservableSupplierImpl<>();
     private @Nullable View mMenuButtonContainer;
-    private final String mClientPackageName;
+    private final @Nullable String mClientPackageName;
     private @Nullable ChromeImageButton mToggleButtonView;
 
     /**
@@ -156,7 +156,6 @@ public class WebAppHeaderLayoutCoordinator
         buttonState.adaptiveBadgeIcon = R.drawable.badge_update;
         mMenuButtonStateSupplier.set(buttonState);
 
-        assert clientPackageName != null;
         mClientPackageName = clientPackageName;
 
         mViewStub = viewStub;
