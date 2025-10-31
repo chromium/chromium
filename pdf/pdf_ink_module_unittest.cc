@@ -4303,6 +4303,76 @@ TEST_P(PdfInkModuleTextHighlightTest, IgnoreVerySmallTextSelection) {
   EXPECT_TRUE(CollectVisibleStrokes().empty());
 }
 
+TEST_P(PdfInkModuleTextHighlightTest,
+       TextHighlightMissedEndEventThenMouseDown) {
+  EnableDrawAnnotationMode();
+  InitializeSimpleSinglePageBasicLayout();
+
+  SelectBrushTool(PdfInkBrush::Type::kHighlighter, kOrangeBrushParams);
+
+  SetSelectionRectsOnFirstPage(base::span_from_ref(kHorizontalSelection));
+  SetTextAreaPoints(base::span_from_ref(kStartPointInsidePage0));
+
+  EXPECT_CALL(client(), OnTextOrLinkAreaClick(kStartPointInsidePage0,
+                                              /*click_count=*/1))
+      .Times(2);
+  EXPECT_CALL(client(), ExtendSelectionByPoint(kEndPointInsidePage0));
+
+  blink::WebMouseEvent mouse_down_event =
+      MouseEventBuilder()
+          .CreateLeftClickAtPosition(kStartPointInsidePage0)
+          .Build();
+  EXPECT_TRUE(ink_module().HandleInputEvent(mouse_down_event));
+
+  blink::WebMouseEvent mouse_move_event =
+      CreateMouseMoveWithLeftButtonEventAtPoint(kEndPointInsidePage0);
+  EXPECT_TRUE(ink_module().HandleInputEvent(mouse_move_event));
+
+  // If the mouse up event went missing during stroking, the next mouse down
+  // event should not cause a crash.
+  EXPECT_TRUE(ink_module().HandleInputEvent(mouse_down_event));
+
+  EXPECT_EQ(2, client().stroke_started_count());
+  EXPECT_EQ(1, client().modified_stroke_finished_count());
+  EXPECT_EQ(0, client().unmodified_stroke_finished_count());
+}
+
+TEST_P(PdfInkModuleTextHighlightTest,
+       TextHighlightWithNoEndEventThenTouchStart) {
+  EnableDrawAnnotationMode();
+  InitializeSimpleSinglePageBasicLayout();
+
+  SelectBrushTool(PdfInkBrush::Type::kHighlighter, kOrangeBrushParams);
+
+  SetSelectionRectsOnFirstPage(base::span_from_ref(kHorizontalSelection));
+  SetTextAreaPoints(base::span_from_ref(kStartPointInsidePage0));
+
+  EXPECT_CALL(client(), OnTextOrLinkAreaClick(kStartPointInsidePage0,
+                                              /*click_count=*/1))
+      .Times(2);
+  EXPECT_CALL(client(), ExtendSelectionByPoint(kEndPointInsidePage0));
+
+  blink::WebMouseEvent mouse_down_event =
+      MouseEventBuilder()
+          .CreateLeftClickAtPosition(kStartPointInsidePage0)
+          .Build();
+  EXPECT_TRUE(ink_module().HandleInputEvent(mouse_down_event));
+
+  blink::WebMouseEvent mouse_move_event =
+      CreateMouseMoveWithLeftButtonEventAtPoint(kEndPointInsidePage0);
+  EXPECT_TRUE(ink_module().HandleInputEvent(mouse_move_event));
+
+  // If the mouse up event has yet to happen, the next touch start event
+  // should not cause a crash.
+  EXPECT_TRUE(ink_module().HandleInputEvent(
+      CreateTouchEvent(blink::WebInputEvent::Type::kTouchStart,
+                       base::span_from_ref(kStartPointInsidePage0))));
+
+  EXPECT_EQ(2, client().stroke_started_count());
+  EXPECT_EQ(1, client().modified_stroke_finished_count());
+  EXPECT_EQ(0, client().unmodified_stroke_finished_count());
+}
+
 class PdfInkModuleTextHighlightMetricsTest
     : public PdfInkModuleMetricsTestBase,
       public PdfInkModuleTextHighlightTest {
