@@ -111,8 +111,8 @@ IN_PROC_BROWSER_TEST_F(FedCmCUJTest, MAYBE_BubbleHidesWhenModalUIShown) {
       WaitForShow(kFedCmAccountChooserDialogAccountElementId));
 }
 
-// TODO(https://crbug.com/387473078): Fix this on Windows & MacOS.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+// TODO(https://crbug.com/387473078): Fix this on Windows.
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_OneClickOutsideBubble DISABLED_OneClickOutsideBubble
 #else
 #define MAYBE_OneClickOutsideBubble OneClickOutsideBubble
