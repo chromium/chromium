@@ -853,6 +853,11 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    &kExtendQuicHandshakeTimeout,
                    "QuicHandshakeTimeout",
                    base::Seconds(quic::kMaxTimeForCryptoHandshakeSecs));
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kMaxIdleTimeBeforeCryptoHandshake,
+                   &kExtendQuicHandshakeTimeout,
+                   "MaxIdleTimeBeforeCryptoHandshake",
+                   base::Seconds(quic::kInitialIdleTimeoutSecs));
 
 BASE_FEATURE(kQuicLongerIdleConnectionTimeout,
              base::FEATURE_DISABLED_BY_DEFAULT);
