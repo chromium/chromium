@@ -18287,6 +18287,7 @@
                         "ReloadTabUiResourcesIfChanged",
                         "RemoveCancelledScriptedIdleTasks",
                         "ScreenWinDisplayLookupByHMONITOR",
+                        "SlimDirectReceiverIpc",
                         "TerminationTargetPolicy",
                         "UpdateDirectManipulationHelperOnParentChange"
                     ]
