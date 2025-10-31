@@ -1,0 +1,27 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("eg_app_support+eg2") {
+  testonly = true
+  sources = [
+    "data_controls_app_interface.h",
+    "data_controls_app_interface.mm",
+  ]
+  deps = [
+    "//components/enterprise/data_controls/core/browser",
+    "//components/enterprise/data_controls/core/browser:test_support",
+    "//components/prefs",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/test/app:test_support",
+  ]
+}
+
+source_set("eg_test_support+eg2") {
+  testonly = true
+  sources = [
+    "data_controls_app_interface.h",
+    "data_controls_app_interface_stub.mm",
+  ]
+  deps = [ "//ios/testing/earl_grey:eg_test_support+eg2" ]
+}
