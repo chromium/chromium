@@ -239,6 +239,9 @@ public final class ProductionSupportedFlagList {
                 BlinkFeatures.WIDTH_AND_HEIGHT_AS_PRESENTATION_ATTRIBUTES_ON_NESTED_SVG,
                 "Enables width and height as presentation attributes on nested svg."),
         Flag.baseFeature(
+                BlinkFeatures.PAINT_OFFSET_TRANSLATION_FOR_COMPOSITED,
+                "Creates a paint offset translation for composited objects."),
+        Flag.baseFeature(
                 AndroidAutofillFeatures.ANDROID_AUTOFILL_LAZY_FRAMEWORK_WRAPPER_NAME,
                 "Enable lazily initializing framework Autofill wrapper."),
         Flag.baseFeature(
