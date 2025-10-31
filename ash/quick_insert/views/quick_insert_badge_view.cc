@@ -37,7 +37,6 @@ constexpr int kBadgeCornerRadius = 4;
 }  // namespace
 
 QuickInsertBadgeView::QuickInsertBadgeView() {
-  // TODO: b/342478227 - Ensure this works with tall text.
   views::Builder<views::BoxLayoutView>(this)
       .SetOrientation(views::LayoutOrientation::kHorizontal)
       .SetMainAxisAlignment(views::LayoutAlignment::kStart)
