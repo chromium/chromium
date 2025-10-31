@@ -422,7 +422,7 @@ class SupervisedUserIframeFilterTest
   bool IsRemoteApprovalsButtonBeingShown(content::FrameTreeNodeId frame_id);
   bool IsLocalApprovalsButtonBeingShown(content::FrameTreeNodeId frame_id);
   bool IsBlockReasonBeingShown(content::FrameTreeNodeId frame_id);
-  bool IsDetailsLinkBeingShown(content::FrameTreeNodeId frame_id);
+  bool IsDetailsLinkAvailable(content::FrameTreeNodeId frame_id);
   void CheckPreferredApprovalButton(content::FrameTreeNodeId frame_id);
   bool IsLocalApprovalsInsteadButtonBeingShown(
       content::FrameTreeNodeId frame_id);
@@ -518,11 +518,10 @@ bool SupervisedUserIframeFilterTest::IsBlockReasonBeingShown(
   return RunCommandAndGetBooleanFromFrame(frame_id, command);
 }
 
-bool SupervisedUserIframeFilterTest::IsDetailsLinkBeingShown(
+bool SupervisedUserIframeFilterTest::IsDetailsLinkAvailable(
     content::FrameTreeNodeId frame_id) {
   std::string command =
-      "getComputedStyle(document.getElementById('block-reason-show-details-"
-      "link')).display !== \"none\"";
+      "!!document.getElementById('block-reason-show-details-link')";
   return RunCommandAndGetBooleanFromFrame(frame_id, command);
 }
 
@@ -1031,8 +1030,11 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserNarrowWidthIframeFilterTest,
   // Expect that the local approvals button is shown if the flag is enabled.
   EXPECT_EQ(IsLocalWebApprovalsEnabled(),
             IsLocalApprovalsButtonBeingShown(blocked_frames[0]));
-  // Expect that the "Details" link is shown.
-  EXPECT_TRUE(IsDetailsLinkBeingShown(blocked_frames[0]));
+  // Expect that the "Details" link is no longer available for the new
+  // interstitial UI.
+  EXPECT_NE(IsDetailsLinkAvailable(blocked_frames[0]),
+            base::FeatureList::IsEnabled(
+                supervised_user::kSupervisedUserBlockInterstitialV3));
 
   // Delay approval/denial by parent.
   permission_creator()->SetPermissionResult(true);
@@ -1061,8 +1063,6 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserNarrowWidthIframeFilterTest,
   // flag is enabled.
   EXPECT_EQ(IsLocalWebApprovalsEnabled(),
             IsLocalApprovalsInsteadButtonBeingShown(blocked_frames[0]));
-  // "Details" link is not shown.
-  EXPECT_FALSE(IsDetailsLinkBeingShown(blocked_frames[0]));
 
   content::WebContents* active_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
