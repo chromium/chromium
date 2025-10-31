@@ -8,6 +8,7 @@
 #include "base/types/expected.h"
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/actor/actor_logging.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/renderer/actor/tool_utils.h"
 #include "content/public/renderer/render_frame.h"
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
@@ -173,6 +174,21 @@ bool DragAndReleaseTool::InjectMouseEvent(WebWidget& widget,
   if (type == WebInputEvent::Type::kMouseDown ||
       type == WebInputEvent::Type::kMouseUp) {
     mouse_event.click_count = 1;
+  }
+
+  if (base::FeatureList::IsEnabled(features::kGlicActorUseDragModifiers)) {
+    mouse_event.UpdateEventModifiersToMatchButton();
+    if (type == WebInputEvent::Type::kMouseMove) {
+      switch (button) {
+        case blink::WebMouseEvent::Button::kNoButton:
+          break;
+        case blink::WebMouseEvent::Button::kLeft:
+          mouse_event.SetModifiers(WebInputEvent::Modifiers::kLeftButtonDown);
+          break;
+        default:
+          NOTREACHED();
+      }
+    }
   }
 
   WebInputEventResult result = widget.HandleInputEvent(
