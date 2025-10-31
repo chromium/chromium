@@ -271,7 +271,7 @@
         chromium
       </message>
       <message name="IDS_IOS_CREDENTIAL_BOTTOM_SHEET_TITLE" desc="Title of the credential bottom sheet. [iOS only]">
-          Google Password Manager
+          Password Manager
       </message>
       <message name="IDS_IOS_CREDENTIAL_PROVIDER_PROMO_INSTRUCTIONS_SUBTITLE" desc="Subitle text of the instructions page on how to set up Chromium as the Credential Provider. [iOS only]">
         From "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM">$1<ex>Password Options</ex></ph>" settings, toggle "Chromium" on
