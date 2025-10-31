@@ -872,15 +872,10 @@ class SharedDictionaryBrowserTest
   }
 
   bool HasPreloadedSharedDictionaryInfo() {
-    bool result = false;
-    base::RunLoop run_loop;
+    base::test::TestFuture<bool> future;
     GetTargetNetworkContext()->HasPreloadedSharedDictionaryInfoForTesting(
-        base::BindLambdaForTesting([&](bool value) {
-          result = value;
-          run_loop.Quit();
-        }));
-    run_loop.Run();
-    return result;
+        future.GetCallback());
+    return future.Get();
   }
 
   void SendMemoryPressureToNetworkService() {
