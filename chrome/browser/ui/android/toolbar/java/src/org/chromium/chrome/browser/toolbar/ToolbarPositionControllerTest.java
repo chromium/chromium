@@ -663,20 +663,6 @@ public class ToolbarPositionControllerTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_TOOLBAR)
-    public void testGetToolbarPositionResId() {
-        setUserToolbarAnchorPreference(/* showToolbarOnTop= */ true);
-        assertEquals(
-                R.string.address_bar_settings_top,
-                ToolbarPositionController.getToolbarPositionResId());
-
-        setUserToolbarAnchorPreference(/* showToolbarOnTop= */ false);
-        assertEquals(
-                R.string.address_bar_settings_bottom,
-                ToolbarPositionController.getToolbarPositionResId());
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_TOOLBAR)
     @DisableFeatures({
         ChromeFeatureList.MINI_ORIGIN_BAR,
         ChromeFeatureList.ANDROID_BOTTOM_TOOLBAR_V2

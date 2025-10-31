@@ -430,21 +430,6 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
                 && !DeviceFormFactor.isNonMultiDisplayContextOnTablet(context);
     }
 
-    /**
-     * Returns the resource ID of a string representing the toolbar's position..
-     *
-     * <p>This method returns the resource ID for a string that indicates the toolbar's position
-     * within the UI. The string value corresponding to the returned resource ID will typically be
-     * "Top" or "Bottom", representing the toolbar's placement.
-     *
-     * @return The resource ID of the string indicating the toolbar's position.
-     */
-    public static int getToolbarPositionResId() {
-        return isToolbarConfiguredToShowOnTop()
-                ? R.string.address_bar_settings_top
-                : R.string.address_bar_settings_bottom;
-    }
-
     @Override
     public void onSharedPreferenceChanged(
             SharedPreferences sharedPreferences, @Nullable String key) {
