@@ -206,10 +206,10 @@ public class FullscreenVideoPictureInPictureControllerUnitTest {
         verify(mWebContents).addObserver(mWebContentsObserverCaptor.capture());
 
         // Stash while media is playing.
-        mWebContentsObserverCaptor.getValue().mediaStartedPlaying();
+        mWebContentsObserverCaptor.getValue().mediaStartedPlaying(0, true, true);
         mController.onStashReported(true);
         verify(mMediaSession, times(1)).suspend();
-        mWebContentsObserverCaptor.getValue().mediaStoppedPlaying();
+        mWebContentsObserverCaptor.getValue().mediaStoppedPlaying(0);
 
         // Un-stash while media is still paused.
         mController.onStashReported(false);
@@ -229,7 +229,7 @@ public class FullscreenVideoPictureInPictureControllerUnitTest {
         mController.onEnteredPictureInPictureMode();
         verify(mWebContents).addObserver(mWebContentsObserverCaptor.capture());
         // Make sure that the video is paused.
-        mWebContentsObserverCaptor.getValue().mediaStoppedPlaying();
+        mWebContentsObserverCaptor.getValue().mediaStoppedPlaying(0);
 
         // Stashing paused video should do nothing.
         mController.onStashReported(true);
@@ -250,13 +250,13 @@ public class FullscreenVideoPictureInPictureControllerUnitTest {
         mController.onEnteredPictureInPictureMode();
         verify(mWebContents).addObserver(mWebContentsObserverCaptor.capture());
         // Stash normally.
-        mWebContentsObserverCaptor.getValue().mediaStartedPlaying();
+        mWebContentsObserverCaptor.getValue().mediaStartedPlaying(0, true, true);
         mController.onStashReported(true);
         verify(mMediaSession, times(1)).suspend();
-        mWebContentsObserverCaptor.getValue().mediaStoppedPlaying();
+        mWebContentsObserverCaptor.getValue().mediaStoppedPlaying(0);
 
         // Restart playback while still stashed.
-        mWebContentsObserverCaptor.getValue().mediaStartedPlaying();
+        mWebContentsObserverCaptor.getValue().mediaStartedPlaying(1, true, true);
 
         // Un-stash should do nothing since there's nothing to do.
         mController.onStashReported(false);
@@ -271,7 +271,7 @@ public class FullscreenVideoPictureInPictureControllerUnitTest {
     public void pictureInPictureDoesNotHideIfScreenIsOff() {
         enterPip();
         verify(mWebContents).addObserver(mWebContentsObserverCaptor.capture());
-        mWebContentsObserverCaptor.getValue().mediaStartedPlaying();
+        mWebContentsObserverCaptor.getValue().mediaStartedPlaying(0, true, true);
         when(mPowerManager.isInteractive()).thenReturn(false);
 
         // Expect that there will be no attempt to exit pip yet, because the screen is off.

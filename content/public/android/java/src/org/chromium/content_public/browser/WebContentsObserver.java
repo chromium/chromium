@@ -132,6 +132,7 @@ public abstract class WebContentsObserver {
 
     /**
      * Called when an error occurs while loading a document that fails to load.
+     *
      * @param isInPrimaryMainFrame Whether the navigation occurred in the primary main frame.
      * @param errorCode Error code for the occurring error.
      * @param failingUrl The url that was loading when the error occurred.
@@ -217,19 +218,31 @@ public abstract class WebContentsObserver {
     public void onBackgroundColorChanged() {}
 
     /**
-     * Called when media started playing. Unlike the native version, this does not identify which
-     * player because we don't have a type for it, but nothing currently needs it anyway.
+     * Called when media started playing.
+     *
+     * <p>There may be multiple media elements in a single {@code Webcontents}, each of which has a
+     * unique session id. The id can be used to keep track of independent sessions from the same
+     * page.
+     *
+     * <p>See also: {@code WebContentsObserver::MediaPlayerInfo} in {@code web_contents_observer.h}.
+     *
+     * @param id a session id, also passed to {@code mediaStoppedPlaying()} when the session stops.
+     * @param hasAudio whether the session has audio.
+     * @param hasVideo whether the session has video.
      */
-    public void mediaStartedPlaying() {}
+    public void mediaStartedPlaying(int id, boolean hasAudio, boolean hasVideo) {}
 
     /**
-     * Called when media stopped playing.  Unlike the native version, this does not identify which
-     * player because we don't have a type for it, but nothing currently needs it anyway.
+     * Called when media stopped playing.
+     *
+     * @param id the session id that was passed to {@code mediaStartedPlaying()} for this session
+     *     when playback started.
      */
-    public void mediaStoppedPlaying() {}
+    public void mediaStoppedPlaying(int id) {}
 
     /**
      * Called when Media in the Web Contents leaves or enters fullscreen mode.
+     *
      * @param isFullscreen whether fullscreen is being entered or left.
      */
     public void hasEffectivelyFullscreenVideoChange(boolean isFullscreen) {}

@@ -743,7 +743,7 @@ public class FullscreenVideoPictureInPictureController {
         }
 
         @Override
-        public void mediaStartedPlaying() {
+        public void mediaStartedPlaying(int id, boolean hasAudio, boolean hasVideo) {
             // We have no idea if the effectively fullscreen video started playing, but this will
             // check if we have an active one.
             updateAutoPictureInPictureStatusIfNeeded();
@@ -754,7 +754,7 @@ public class FullscreenVideoPictureInPictureController {
         }
 
         @Override
-        public void mediaStoppedPlaying() {
+        public void mediaStoppedPlaying(int id) {
             // As above, we don't know if it was the effectively fullscreen video that stopped. Even
             // if it is, note that this won't cause us to exit Picture in Picture mode if we're in
             // it.

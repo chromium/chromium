@@ -421,22 +421,22 @@ class WebContentsObserverProxy extends WebContentsObserver {
 
     @Override
     @CalledByNative
-    public void mediaStartedPlaying() {
+    public void mediaStartedPlaying(int id, boolean hasAudio, boolean hasVideo) {
         handleObserverCall();
         Iterator<WebContentsObserver> observersIterator = mObservers.iterator();
         for (; observersIterator.hasNext(); ) {
-            observersIterator.next().mediaStartedPlaying();
+            observersIterator.next().mediaStartedPlaying(id, hasAudio, hasVideo);
         }
         finishObserverCall();
     }
 
     @Override
     @CalledByNative
-    public void mediaStoppedPlaying() {
+    public void mediaStoppedPlaying(int id) {
         handleObserverCall();
         Iterator<WebContentsObserver> observersIterator = mObservers.iterator();
         for (; observersIterator.hasNext(); ) {
-            observersIterator.next().mediaStoppedPlaying();
+            observersIterator.next().mediaStoppedPlaying(id);
         }
         finishObserverCall();
     }

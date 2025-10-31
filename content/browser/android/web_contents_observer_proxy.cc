@@ -20,6 +20,7 @@
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/focused_node_details.h"
+#include "content/public/browser/media_player_id.h"
 #include "content/public/browser/navigation_details.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
@@ -30,10 +31,10 @@
 #include "content/public/android/content_jni_headers/WebContentsObserverProxy_jni.h"
 
 using base::android::AttachCurrentThread;
+using base::android::ConvertUTF16ToJavaString;
+using base::android::ConvertUTF8ToJavaString;
 using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;
-using base::android::ConvertUTF8ToJavaString;
-using base::android::ConvertUTF16ToJavaString;
 
 namespace content {
 
@@ -49,8 +50,7 @@ WebContentsObserverProxy::WebContentsObserverProxy(
   java_observer_.Reset(env, obj);
 }
 
-WebContentsObserverProxy::~WebContentsObserverProxy() {
-}
+WebContentsObserverProxy::~WebContentsObserverProxy() {}
 
 jlong JNI_WebContentsObserverProxy_Init(
     JNIEnv* env,
@@ -267,7 +267,9 @@ void WebContentsObserverProxy::MediaStartedPlaying(
     const MediaPlayerInfo& video_type,
     const MediaPlayerId& id) {
   JNIEnv* env = AttachCurrentThread();
-  Java_WebContentsObserverProxy_mediaStartedPlaying(env, java_observer_);
+  Java_WebContentsObserverProxy_mediaStartedPlaying(
+      env, java_observer_, id.player_id, video_type.has_audio,
+      video_type.has_video);
 }
 
 void WebContentsObserverProxy::MediaStoppedPlaying(
@@ -275,7 +277,8 @@ void WebContentsObserverProxy::MediaStoppedPlaying(
     const MediaPlayerId& id,
     WebContentsObserver::MediaStoppedReason reason) {
   JNIEnv* env = AttachCurrentThread();
-  Java_WebContentsObserverProxy_mediaStoppedPlaying(env, java_observer_);
+  Java_WebContentsObserverProxy_mediaStoppedPlaying(env, java_observer_,
+                                                    id.player_id);
 }
 
 void WebContentsObserverProxy::MediaEffectivelyFullscreenChanged(
@@ -309,8 +312,7 @@ void WebContentsObserverProxy::OnVisibilityChanged(
 void WebContentsObserverProxy::TitleWasSet(NavigationEntry* entry) {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jstring> jstring_title = ConvertUTF8ToJavaString(
-      env,
-      base::UTF16ToUTF8(web_contents()->GetTitle()));
+      env, base::UTF16ToUTF8(web_contents()->GetTitle()));
   Java_WebContentsObserverProxy_titleWasSet(env, java_observer_, jstring_title);
 }
 
