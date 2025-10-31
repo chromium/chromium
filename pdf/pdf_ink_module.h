@@ -309,7 +309,6 @@ class PdfInkModule {
   // Return values have the same semantics as On{Mouse,Touch}*() above.
   bool StartTextHighlight(const gfx::PointF& position,
                           int click_count,
-                          base::TimeTicks timestamp,
                           ink::StrokeInput::ToolType tool_type);
   bool ContinueTextHighlight(const gfx::PointF& position);
   bool FinishTextHighlight(const gfx::PointF& position,

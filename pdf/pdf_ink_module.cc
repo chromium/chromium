@@ -373,7 +373,7 @@ bool PdfInkModule::OnMouseDown(const blink::WebMouseEvent& event) {
     MaybeFinishStrokeForMissingMouseUpEvent();
 
     if (IsHighlightingTextAtPosition(position)) {
-      return StartTextHighlight(position, event.ClickCount(), event.TimeStamp(),
+      return StartTextHighlight(position, event.ClickCount(),
                                 ink::StrokeInput::ToolType::kMouse);
     }
 
@@ -487,8 +487,7 @@ bool PdfInkModule::OnTouchStart(const blink::WebTouchEvent& event) {
 
     if (IsHighlightingTextAtPosition(position)) {
       // Multi-click text selection for touch is not supported.
-      return StartTextHighlight(position, /*click_count=*/1, event.TimeStamp(),
-                                tool_type);
+      return StartTextHighlight(position, /*click_count=*/1, tool_type);
     }
     return StartStroke(position, event.TimeStamp(), tool_type);
   }
@@ -924,7 +923,6 @@ void PdfInkModule::EraseHelper(const gfx::PointF& position, int page_index) {
 
 bool PdfInkModule::StartTextHighlight(const gfx::PointF& position,
                                       int click_count,
-                                      base::TimeTicks timestamp,
                                       ink::StrokeInput::ToolType tool_type) {
   client_->StrokeStarted();
 
