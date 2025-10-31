@@ -22,9 +22,9 @@ class HeadlessWindowManager;
 
 class HeadlessWindow : public PlatformWindow {
  public:
-  explicit HeadlessWindow(PlatformWindowDelegate* delegate,
-                          HeadlessWindowManager* manager,
-                          const gfx::Rect& bounds);
+  HeadlessWindow(PlatformWindowDelegate* delegate,
+                 HeadlessWindowManager* manager,
+                 const gfx::Rect& bounds);
 
   HeadlessWindow(const HeadlessWindow&) = delete;
   HeadlessWindow& operator=(const HeadlessWindow&) = delete;
