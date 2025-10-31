@@ -1445,13 +1445,6 @@ bool CompositorFrameSinkSupport::ShouldSendBeginFrame(
     BeginFrameId frame_id,
     base::TimeTicks frame_time,
     base::TimeDelta vsync_interval) {
-  if (base::FeatureList::IsEnabled(features::kNoCompositorFrameAcks)) {
-    const int pending_frames_limit =
-        features::kNumberPendingFramesUntilThrottle.Get();
-    if (pending_frames_ >= pending_frames_limit) {
-      return RecordShouldSendBeginFrame("PendingAck", false);
-    }
-  }
   // Don't send the same BeginFrameId to a client twice. This could otherwise
   // happen if the client removes and then immediately re-adds a
   // BeginFrameObserver before the next BeginFrame arrives. See
@@ -1508,6 +1501,14 @@ bool CompositorFrameSinkSupport::ShouldSendBeginFrame(
   if (!frame_timing_details_.empty() && !should_throttle_as_requested &&
       (!should_throttle_undrawn_frames || !frame_timing_details_all_failed)) {
     return RecordShouldSendBeginFrame("SendFrameTiming", true);
+  }
+
+  if (base::FeatureList::IsEnabled(features::kNoCompositorFrameAcks)) {
+    const int pending_frames_limit =
+        features::kNumberPendingFramesUntilThrottle.Get();
+    if (pending_frames_ >= pending_frames_limit) {
+      return RecordShouldSendBeginFrame("PendingAck", false);
+    }
   }
 
   if (!client_needs_begin_frame_ && !layer_context_wants_begin_frames_) {
