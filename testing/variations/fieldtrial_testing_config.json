@@ -13603,6 +13603,21 @@
             ]
         }
     ],
+    "IOSProactiveSuggestionsFramework": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "IOSProactiveSuggestionsFramework"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSReaderMode": [
         {
             "platforms": [
