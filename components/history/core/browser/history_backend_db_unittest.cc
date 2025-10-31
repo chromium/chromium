@@ -3339,12 +3339,10 @@ TEST_F(HistoryBackendDBTest, RazeDatabaseIfNoMetaTable) {
 
   // Razes the database and recreates it at current version.
   EXPECT_TRUE(CreateBackendAndDatabase());
-  EXPECT_THAT(
-      histogram_tester.GetAllSamplesForPrefix("History"),
-      IsSupersetOf({
-          Pair("History.DatabaseVersion", BucketsAre(Bucket(0, /*count=*/1))),
-          Pair("History.DatabaseTooOld", BucketsAre(Bucket(0, /*count=*/1))),
-      }));
+  DeleteBackend();  // Waits for `DatabaseErrorCallback` to run, if scheduled.
+
+  EXPECT_THAT(histogram_tester.GetAllSamples("History.MetaTableExists"),
+              BucketsAre(Bucket(false, /*count=*/1)));
   EXPECT_EQ(GetDatabaseVersion(), HistoryDatabase::GetCurrentVersion());
 }
 
@@ -3391,6 +3389,25 @@ TEST_F(HistoryBackendDBTest, CantRazeOldDatabaseIfLocked) {
   EXPECT_EQ(GetDatabaseVersion(), 10);
 }
 
+// If the database exists but is empty, it's re-initialized as if brand new.
+TEST_F(HistoryBackendDBTest, RazedDatabaseIsRecreated) {
+  base::HistogramTester histogram_tester;
+  ASSERT_NO_FATAL_FAILURE(
+      CreateDBVersion(HistoryDatabase::GetCurrentVersion()));
+  {
+    sql::Database db(sql::test::kTestTag);
+    ASSERT_TRUE(db.Open(history_dir_.Append(kHistoryFilename)));
+    db.Raze();
+  }
+
+  EXPECT_TRUE(CreateBackendAndDatabase());
+  DeleteBackend();  // Waits for `DatabaseErrorCallback` to run, if scheduled.
+
+  EXPECT_THAT(histogram_tester.GetAllSamples("History.MetaTableMissing"),
+              IsEmpty());
+  EXPECT_EQ(GetDatabaseVersion(), HistoryDatabase::GetCurrentVersion());
+}
+
 TEST_F(HistoryBackendDBTest, Version43WithoutVisitsTableRazesDatabase) {
   ASSERT_NO_FATAL_FAILURE(CreateDBVersion(43));
 
@@ -3403,17 +3420,11 @@ TEST_F(HistoryBackendDBTest, Version43WithoutVisitsTableRazesDatabase) {
 
   // Migration fails, database is razed.
   EXPECT_FALSE(CreateBackendAndDatabase());
-
-  // Database errors queue a `KillHistoryDatabase` task holding a reference on
-  // the `HistoryBackend`. Wait for that task to finish and the backend deleted.
-  base::RunLoop loop;
-  backend_->SetOnBackendDestroyTask(
-      base::SingleThreadTaskRunner::GetCurrentDefault(), loop.QuitClosure());
   DeleteBackend();
-  loop.Run();
 
   // Creates a new database.
   EXPECT_TRUE(CreateBackendAndDatabase());
+  DeleteBackend();  // Waits for `DatabaseErrorCallback` to run, if scheduled.
   EXPECT_EQ(GetDatabaseVersion(), HistoryDatabase::GetCurrentVersion());
 }
 
@@ -3430,17 +3441,11 @@ TEST_F(HistoryBackendDBTest,
 
   // Migration fails, database is razed.
   EXPECT_FALSE(CreateBackendAndDatabase());
-
-  // Database errors queue a `KillHistoryDatabase` task holding a reference on
-  // the `HistoryBackend`. Wait for that task to finish and the backend deleted.
-  base::RunLoop loop;
-  backend_->SetOnBackendDestroyTask(
-      base::SingleThreadTaskRunner::GetCurrentDefault(), loop.QuitClosure());
   DeleteBackend();
-  loop.Run();
 
   // Creates a new database.
   EXPECT_TRUE(CreateBackendAndDatabase());
+  DeleteBackend();  // Waits for `DatabaseErrorCallback` to run, if scheduled.
   EXPECT_EQ(GetDatabaseVersion(), HistoryDatabase::GetCurrentVersion());
 }
 
