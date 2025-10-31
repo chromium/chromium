@@ -61,6 +61,9 @@ GlicFloatingUi::~GlicFloatingUi() {
   PictureInPictureOcclusionTracker* tracker =
       PictureInPictureWindowManager::GetInstance()->GetOcclusionTracker();
   tracker->RemovePictureInPictureWidget(glic_widget_.get());
+  if (auto* glic_view = GetGlicView()) {
+    glic_view->SetWebContents(nullptr);
+  }
 }
 
 Host::EmbedderDelegate* GlicFloatingUi::GetHostEmbedderDelegate() {
