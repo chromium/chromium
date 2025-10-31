@@ -194,7 +194,7 @@ class CC_EXPORT PictureLayerImpl
   // to be re-wired to viz.
   TileUpdateSet TakeAllTiles();
 
-  bool IsDirectlyCompositedImage() const;
+  bool IsDirectlyCompositedImage() const override;
   bool nearest_neighbor() const { return nearest_neighbor_; }
 
   void set_should_batch_updated_tiles() { should_batch_updated_tiles_ = true; }

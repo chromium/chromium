@@ -193,31 +193,6 @@ void TileDisplayLayerImpl::AppendQuadsSpecialization(
     viz::SharedQuadState* shared_quad_state) {
   const float max_contents_scale = GetMaximumContentsScaleForUseInAppendQuads();
 
-  if (is_directly_composited_image_) {
-    // Directly composited images should be clipped to the layer's content rect.
-    // When a PictureLayerTiling is created for a directly composited image, the
-    // layer bounds are multiplied by the raster scale in order to compute the
-    // tile size. If the aspect ratio of the layer doesn't match that of the
-    // image, it's possible that one of the dimensions of the resulting size
-    // (layer bounds * raster scale) is a fractional number, as raster scale
-    // does not scale x and y independently.
-    // When this happens, the ToEnclosingRect() operation in
-    // |PictureLayerTiling::EnclosingContentsRectFromLayer()| will
-    // create a tiling that, when scaled by |max_contents_scale| above, is
-    // larger than the layer bounds by a fraction of a pixel.
-    gfx::Rect bounds_in_target_space = MathUtil::MapEnclosingClippedRect(
-        draw_properties().target_space_transform, gfx::Rect(bounds()));
-    if (is_clipped()) {
-      bounds_in_target_space.Intersect(draw_properties().clip_rect);
-    }
-
-    if (shared_quad_state->clip_rect) {
-      bounds_in_target_space.Intersect(*shared_quad_state->clip_rect);
-    }
-
-    shared_quad_state->clip_rect = bounds_in_target_space;
-  }
-
   const Occlusion scaled_occlusion =
       draw_properties()
           .occlusion_in_content_space.GetOcclusionWithGivenDrawTransform(
@@ -329,6 +304,10 @@ void TileDisplayLayerImpl::AppendQuadsSpecialization(
 
 float TileDisplayLayerImpl::GetMaximumContentsScaleForUseInAppendQuads() {
   return tilings_.empty() ? 1.0 : tilings_.front()->contents_scale_key();
+}
+
+bool TileDisplayLayerImpl::IsDirectlyCompositedImage() const {
+  return is_directly_composited_image_;
 }
 
 void TileDisplayLayerImpl::GetContentsResourceId(

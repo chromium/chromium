@@ -29,10 +29,9 @@ class TestTileBasedLayerImpl : public TileBasedLayerImpl {
       const AppendQuadsContext& context,
       viz::CompositorRenderPass* render_pass,
       AppendQuadsData* append_quads_data,
-      viz::SharedQuadState* shared_quad_state) override {
-    NOTREACHED();
-  }
-  float GetMaximumContentsScaleForUseInAppendQuads() override { NOTREACHED(); }
+      viz::SharedQuadState* shared_quad_state) override {}
+  float GetMaximumContentsScaleForUseInAppendQuads() override { return 1.f; }
+  bool IsDirectlyCompositedImage() const override { return false; }
 };
 
 class TileBasedLayerImplTest : public TestLayerTreeHostBase {};
@@ -226,6 +225,63 @@ TEST_F(TileBasedLayerImplTest, SettingSolidColorResultsInSolidColorQuad) {
       viz::SolidColorDrawQuad::MaterialCast(render_pass->quad_list.front())
           ->color,
       kLayerColor);
+}
+
+TEST_F(TileBasedLayerImplTest,
+       AppendQuadsDoesNotSetClipRectWhenNotDirectlyCompositedImage) {
+  constexpr gfx::Size kLayerBounds(100, 200);
+  constexpr gfx::Rect kLayerRect(kLayerBounds);
+
+  auto layer = std::make_unique<TestTileBasedLayerImpl>(
+      host_impl()->active_tree(), /*id=*/1);
+  auto* raw_layer = layer.get();
+  host_impl()->active_tree()->AddLayer(std::move(layer));
+
+  raw_layer->SetBounds(kLayerBounds);
+  raw_layer->draw_properties().visible_layer_rect = kLayerRect;
+
+  SetupRootProperties(host_impl()->active_tree()->root_layer());
+
+  auto render_pass = viz::CompositorRenderPass::Create();
+  AppendQuadsData data;
+  raw_layer->AppendQuads(AppendQuadsContext{DRAW_MODE_SOFTWARE, {}, false},
+                         render_pass.get(), &data);
+
+  ASSERT_EQ(render_pass->shared_quad_state_list.size(), 1u);
+  EXPECT_FALSE(render_pass->shared_quad_state_list.front()->clip_rect);
+}
+
+class DirectlyCompositedTileBasedLayerImpl : public TestTileBasedLayerImpl {
+ public:
+  DirectlyCompositedTileBasedLayerImpl(LayerTreeImpl* tree_impl, int id)
+      : TestTileBasedLayerImpl(tree_impl, id) {}
+
+ private:
+  bool IsDirectlyCompositedImage() const override { return true; }
+};
+
+TEST_F(TileBasedLayerImplTest,
+       AppendQuadsSetsClipRectForDirectlyCompositedImage) {
+  constexpr gfx::Size kLayerBounds(100, 200);
+  constexpr gfx::Rect kLayerRect(kLayerBounds);
+
+  auto layer = std::make_unique<DirectlyCompositedTileBasedLayerImpl>(
+      host_impl()->active_tree(), /*id=*/1);
+  auto* raw_layer = layer.get();
+  host_impl()->active_tree()->AddLayer(std::move(layer));
+
+  raw_layer->SetBounds(kLayerBounds);
+  raw_layer->draw_properties().visible_layer_rect = kLayerRect;
+
+  SetupRootProperties(host_impl()->active_tree()->root_layer());
+
+  auto render_pass = viz::CompositorRenderPass::Create();
+  AppendQuadsData data;
+  raw_layer->AppendQuads(AppendQuadsContext{DRAW_MODE_SOFTWARE, {}, false},
+                         render_pass.get(), &data);
+
+  ASSERT_EQ(render_pass->shared_quad_state_list.size(), 1u);
+  EXPECT_EQ(render_pass->shared_quad_state_list.front()->clip_rect, kLayerRect);
 }
 
 }  // namespace

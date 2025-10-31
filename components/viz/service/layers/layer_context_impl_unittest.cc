@@ -1790,7 +1790,7 @@ TEST_F(LayerContextImplUpdateDisplayTreeTileDisplayLayerPropertiesTest,
   auto* tile_display_layer_impl =
       static_cast<cc::TileDisplayLayerImpl*>(layer_impl_base);
 
-  EXPECT_FALSE(tile_display_layer_impl->is_directly_composited_image());
+  EXPECT_FALSE(tile_display_layer_impl->IsDirectlyCompositedImage());
 
   // Second update: Set is_directly_composited_image to true.
   auto update2 = CreateDefaultUpdate();
@@ -1805,7 +1805,7 @@ TEST_F(LayerContextImplUpdateDisplayTreeTileDisplayLayerPropertiesTest,
   EXPECT_TRUE(
       layer_context_impl_->DoUpdateDisplayTree(std::move(update2)).has_value());
 
-  EXPECT_TRUE(tile_display_layer_impl->is_directly_composited_image());
+  EXPECT_TRUE(tile_display_layer_impl->IsDirectlyCompositedImage());
 
   // Third update: Set is_directly_composited_image to false.
   auto update3 = CreateDefaultUpdate();
@@ -1820,7 +1820,7 @@ TEST_F(LayerContextImplUpdateDisplayTreeTileDisplayLayerPropertiesTest,
   EXPECT_TRUE(
       layer_context_impl_->DoUpdateDisplayTree(std::move(update3)).has_value());
 
-  EXPECT_FALSE(tile_display_layer_impl->is_directly_composited_image());
+  EXPECT_FALSE(tile_display_layer_impl->IsDirectlyCompositedImage());
 }
 
 TEST_F(LayerContextImplUpdateDisplayTreeTileDisplayLayerPropertiesTest,

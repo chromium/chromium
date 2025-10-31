@@ -53,6 +53,8 @@ class CC_EXPORT TileBasedLayerImpl : public LayerImpl {
 
   virtual float GetMaximumContentsScaleForUseInAppendQuads() = 0;
 
+  virtual bool IsDirectlyCompositedImage() const = 0;
+
   // Appends a solid-color quad with color `color`.
   void AppendSolidQuad(viz::CompositorRenderPass* render_pass,
                        AppendQuadsData* append_quads_data,

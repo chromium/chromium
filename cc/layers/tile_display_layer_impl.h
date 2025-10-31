@@ -148,9 +148,7 @@ class CC_EXPORT TileDisplayLayerImpl : public TileBasedLayerImpl {
     nearest_neighbor_ = nearest_neighbor;
   }
   void SetRecordedBounds(const gfx::Rect& bounds) { recorded_bounds_ = bounds; }
-  bool is_directly_composited_image() const {
-    return is_directly_composited_image_;
-  }
+  bool IsDirectlyCompositedImage() const override;
   bool nearest_neighbor() const { return nearest_neighbor_; }
 
   // LayerImpl overrides:
