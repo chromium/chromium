@@ -14211,13 +14211,15 @@
                         "AdditionalDelay": "100ms",
                         "DelayMainJobWithAvailableSpdySession": "false",
                         "QuicHandshakeTimeout": "15s",
-                        "mtu": "1230"
+                        "mtu": "1230",
+                        "quic_options": "ORIG"
                     },
                     "enable_features": [
                         "AdditionalDelayMainJob",
                         "ConfigureQuicHints",
                         "ExtendQuicHandshakeTimeout",
-                        "LowerQuicMaxPacketSize"
+                        "LowerQuicMaxPacketSize",
+                        "TryQuicByDefault"
                     ]
                 }
             ]
