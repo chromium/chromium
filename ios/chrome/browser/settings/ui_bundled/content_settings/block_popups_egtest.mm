@@ -174,16 +174,15 @@ class ScopedBlockPopupsException {
 
 // Tests that the "exceptions" section on the settings page is hidden and
 // revealed properly when the preference switch is toggled.
-// TODO(crbug.com/447098101): Test is flaky.
-- (void)FLAKY_testSettingsPageWithExceptions {
+- (void)testSettingsPageWithExceptions {
   std::string allowedPattern = "[*.]example.com";
   ScopedBlockPopupsPref prefSetter(CONTENT_SETTING_BLOCK);
   ScopedBlockPopupsException exceptionSetter(allowedPattern);
 
   [ChromeEarlGreyUI openSettingsMenu];
+  [ChromeEarlGreyUI tapSettingsMenuButton:ContentSettingsButton()];
   {
     ScopedDisableTimerTracking timerTrackingDisabler;
-    [ChromeEarlGreyUI tapSettingsMenuButton:ContentSettingsButton()];
     [[EarlGrey selectElementWithMatcher:BlockPopupsSettingsButton()]
         performAction:grey_tap()];
 
