@@ -55,6 +55,7 @@
 #include "services/network/public/cpp/features.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/test/test_event.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/test/button_test_api.h"
 
@@ -96,6 +97,10 @@ class BookmarkBarNavigationTestBase : public InProcessBrowserTest,
 
   views::LabelButton* GetBookmarkButton(size_t index) {
     return test_helper_->GetBookmarkButton(index);
+  }
+
+  views::LabelButton* GetAppsPageShortCut() {
+    return test_helper_->apps_page_shortcut();
   }
 
   BrowserView* browser_view() {
@@ -420,6 +425,16 @@ class PreloadBookmarkBarNavigationTestBase
     bookmarks::test::WaitForBookmarkModelToLoad(model);
     model->DisableWritesToDiskForTest();
     model->AddURL(model->bookmark_bar_node(), 0, u"Example", preload_url);
+    RunScheduledLayouts();
+  }
+
+  void CreateBookmarkFolder() {
+    // Populate bookmark bar with a single folder.
+    bookmarks::BookmarkModel* model =
+        BookmarkModelFactory::GetForBrowserContext(browser()->profile());
+    bookmarks::test::WaitForBookmarkModelToLoad(model);
+    model->DisableWritesToDiskForTest();
+    model->AddFolder(model->bookmark_bar_node(), 0, u"Example");
     RunScheduledLayouts();
   }
 
@@ -895,4 +910,57 @@ IN_PROC_BROWSER_TEST_F(
   histogram_tester.ExpectUniqueSample(
       "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_BookmarkBar",
       kPrerenderFailedDuringPrefetch, 1);
+}
+
+class BookmarkBarContextMenuTest : public PreloadBookmarkBarNavigationTestBase {
+ public:
+  void TestContextMenuHighlight(views::View* view) {
+    ASSERT_TRUE(!!view);
+    ASSERT_EQ(views::InkDropState::HIDDEN,
+              views::InkDrop::Get(view)->GetInkDrop()->GetTargetInkDropState());
+
+    gfx::Point point;
+    views::View::ConvertPointToScreen(view, &point);
+
+    bookmark_bar()->ShowContextMenuForViewImpl(
+        view, point, ui::mojom::MenuSourceType::kMouse);
+    EXPECT_EQ(views::InkDropState::ACTIVATED,
+              views::InkDrop::Get(view)->GetInkDrop()->GetTargetInkDropState());
+
+    bookmark_bar()->OnContextMenuClosed();
+#if BUILDFLAG(IS_MAC)
+    // On Mac, the ink drop ripple is destroyed after we call
+    // AnimateToState(InkDropState::DEACTIVATED), so GetTargetInkDropState()
+    // will return InkDropState::HIDDEN instead.
+    EXPECT_EQ(views::InkDropState::HIDDEN,
+              views::InkDrop::Get(view)->GetInkDrop()->GetTargetInkDropState());
+#else
+    EXPECT_EQ(views::InkDropState::DEACTIVATED,
+              views::InkDrop::Get(view)->GetInkDrop()->GetTargetInkDropState());
+#endif
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(BookmarkBarContextMenuTest,
+                       AllBookmarksButtonHighlight) {
+  TestContextMenuHighlight(bookmark_bar()->all_bookmarks_button());
+}
+
+IN_PROC_BROWSER_TEST_F(BookmarkBarContextMenuTest, BookmarkButtonHighlight) {
+  StartServers();
+  GURL url = https_test_server()->GetURL("/empty.html");
+  CreateBookmarkButton(url);
+
+  TestContextMenuHighlight(GetBookmarkButton(0));
+}
+
+IN_PROC_BROWSER_TEST_F(BookmarkBarContextMenuTest,
+                       BookmarkFolderButtonHighlight) {
+  CreateBookmarkFolder();
+
+  TestContextMenuHighlight(GetBookmarkButton(0));
+}
+
+IN_PROC_BROWSER_TEST_F(BookmarkBarContextMenuTest, AppsPageShortcutHighlight) {
+  TestContextMenuHighlight(GetAppsPageShortCut());
 }
