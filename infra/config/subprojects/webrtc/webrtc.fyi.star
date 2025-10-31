@@ -516,7 +516,7 @@ builder(
         ],
         mixins = [
             "x86-64",
-            "win11",
+            "win11-any",
         ],
     ),
     os = os.WINDOWS_ANY,
