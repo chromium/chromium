@@ -76,7 +76,6 @@ void CastContentWindowAndroid::CreateWindow(
 
   Java_CastContentWindowAndroid_createWindowForWebContents(
       env, java_window_, java_web_contents,
-      ConvertUTF8ToJavaString(env, params_->activity_id),
       ShouldRequestAudioFocus(params_->is_remote_control_mode,
                               cast_web_contents()->media_blocker()));
   web_contents_attached_ = true;

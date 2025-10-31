@@ -36,12 +36,10 @@ public class CastWebContentsComponent {
     /** Params to start WebContents in activity or service. */
     static class StartParams {
         public final WebContents webContents;
-        public final String appId;
         public final boolean shouldRequestAudioFocus;
 
-        public StartParams(WebContents webContents, String appId, boolean shouldRequestAudioFocus) {
+        public StartParams(WebContents webContents, boolean shouldRequestAudioFocus) {
             this.webContents = webContents;
-            this.appId = appId;
             this.shouldRequestAudioFocus = shouldRequestAudioFocus;
         }
 
@@ -56,7 +54,8 @@ public class CastWebContentsComponent {
             }
 
             StartParams params = (StartParams) other;
-            return params.webContents == this.webContents && params.appId.equals(this.appId);
+            return params.webContents == this.webContents
+                    && params.shouldRequestAudioFocus == this.shouldRequestAudioFocus;
         }
     }
 
@@ -171,9 +170,8 @@ public class CastWebContentsComponent {
     public void start(StartParams params) {
         Log.d(
                 TAG,
-                "Starting Cast activity: sessionId=%s, appId=%s, audioFocus=%b",
+                "Starting Cast activity: sessionId=%s, audioFocus=%b",
                 mSessionId,
-                params.appId,
                 params.shouldRequestAudioFocus);
 
         mHasWebContentsState.set(params.webContents);

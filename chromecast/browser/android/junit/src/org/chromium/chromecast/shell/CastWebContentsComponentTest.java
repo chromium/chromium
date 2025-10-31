@@ -18,10 +18,6 @@ import android.content.IntentFilter;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.test.core.app.ApplicationProvider;
 
-import org.chromium.base.ContextUtils;
-import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chromecast.shell.CastWebContentsComponent.StartParams;
-import org.chromium.content_public.browser.WebContents;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -37,13 +33,16 @@ import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowApplication;
 
+import org.chromium.base.ContextUtils;
+import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chromecast.shell.CastWebContentsComponent.StartParams;
+import org.chromium.content_public.browser.WebContents;
+
 /** Tests for CastWebContentsComponent. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class CastWebContentsComponentTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-
-    private static final String APP_ID = "app";
 
     private static final String SESSION_ID = "123456789";
 
@@ -59,7 +58,7 @@ public class CastWebContentsComponentTest {
         mApplication = ApplicationProvider.getApplicationContext();
         ContextUtils.initApplicationContextForTests(mApplication);
         mShadowApplication = Shadows.shadowOf(mApplication);
-        mStartParams = new StartParams(mWebContents, APP_ID, false);
+        mStartParams = new StartParams(mWebContents, false);
     }
 
     @Test
@@ -185,7 +184,7 @@ public class CastWebContentsComponentTest {
         Assert.assertEquals(
                 activity.getComponent().getClassName(), CastWebContentsActivity.class.getName());
 
-        StartParams params2 = new StartParams(mWebContents, "test", true);
+        StartParams params2 = new StartParams(mWebContents, true);
         component.start(params2);
         Assert.assertTrue(component.isStarted());
         activity = mShadowApplication.getNextStartedActivity();
@@ -243,7 +242,7 @@ public class CastWebContentsComponentTest {
         CastWebContentsComponent component =
                 new CastWebContentsComponent(SESSION_ID, null, null, false, true, true);
         CastWebContentsComponent.StartParams startParams =
-                new StartParams(mWebContents, APP_ID, true /* shouldRequestAudioFocus */);
+                new StartParams(mWebContents, true /* shouldRequestAudioFocus */);
         component.start(startParams);
         Intent intent = mShadowApplication.getNextStartedActivity();
         Assert.assertTrue(CastWebContentsIntentUtils.shouldRequestAudioFocus(intent));
@@ -254,7 +253,7 @@ public class CastWebContentsComponentTest {
         CastWebContentsComponent component =
                 new CastWebContentsComponent(SESSION_ID, null, null, false, true, true);
         CastWebContentsComponent.StartParams startParams =
-                new StartParams(mWebContents, APP_ID, false /* shouldRequestAudioFocus */);
+                new StartParams(mWebContents, false /* shouldRequestAudioFocus */);
         component.start(startParams);
         Intent intent = mShadowApplication.getNextStartedActivity();
         Assert.assertFalse(CastWebContentsIntentUtils.shouldRequestAudioFocus(intent));
