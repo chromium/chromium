@@ -705,8 +705,8 @@ public class AndroidShareSheetControllerUnitTest {
 
         Intent shareIntent = intent.getParcelableExtra(Intent.EXTRA_INTENT);
         Assert.assertEquals(
-                "Sharing text should be the URL.",
-                JUnitTestGURLs.EXAMPLE_URL.getSpec(),
+                "Sharing text should be the URL and Text.",
+                "text" + " " + JUnitTestGURLs.EXAMPLE_URL.getSpec(),
                 shareIntent.getStringExtra(Intent.EXTRA_TEXT));
 
         // Attempt to do the copy image action.
@@ -723,7 +723,7 @@ public class AndroidShareSheetControllerUnitTest {
         Uri testImageUri = Uri.parse("content://test.image.uri");
         ShareParams params =
                 new ShareParams.Builder(mWindow, "title", "")
-                        .setText("text")
+                        .setText("")
                         .setBypassFixingDomDistillerUrl(true)
                         .setSingleImageUri(testImageUri)
                         .setFileContentType("image/png")
@@ -737,8 +737,9 @@ public class AndroidShareSheetControllerUnitTest {
         assertCustomActions(intent, R.string.sharing_copy_image, R.string.sharing_send_tab_to_self);
 
         Intent shareIntent = intent.getParcelableExtra(Intent.EXTRA_INTENT);
-        Assert.assertNull(
-                "Sharing text should be empty.", shareIntent.getStringExtra(Intent.EXTRA_TEXT));
+        Assert.assertTrue(
+                "Sharing text should be empty.",
+                TextUtils.isEmpty(shareIntent.getStringExtra(Intent.EXTRA_TEXT)));
     }
 
     @Test

@@ -373,8 +373,8 @@ public class ShareHelper {
             ContentResolver resolver = ContextUtils.getApplicationContext().getContentResolver();
             intent.setType(resolver.getType(imageUri));
             intent.setClipData(ClipData.newUri(resolver, null, imageUri));
-            if (!TextUtils.isEmpty(params.getUrl())) {
-                intent.putExtra(Intent.EXTRA_TEXT, params.getUrl());
+            if (!TextUtils.isEmpty(params.getTextAndUrl())) {
+                intent.putExtra(Intent.EXTRA_TEXT, params.getTextAndUrl());
             }
             if (!TextUtils.isEmpty(params.getImageAltText())) {
                 intent.putExtra(EXTRA_STREAM_ALT_TEXT, params.getImageAltText());
