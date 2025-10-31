@@ -1475,8 +1475,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             return null;
         }
 
-        int tabStripHeightFromResourcePx =
-                activity.getResources().getDimensionPixelSize(R.dimen.tab_strip_height);
         return new AppHeaderCoordinator(
                 activity,
                 activity.getWindow().getDecorView().getRootView(),
@@ -1484,8 +1482,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 insetObserver,
                 activityLifecycleDispatcher,
                 savedInstanceState,
-                edgeToEdgeStateProvider,
-                tabStripHeightFromResourcePx);
+                edgeToEdgeStateProvider);
     }
 
     private void initCollaborationDelegatesOnProfile(Profile profile) {

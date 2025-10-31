@@ -125,7 +125,7 @@ public class AppHeaderCoordinatorUnitTest {
     public void notEnabledWithNoTopInsets() {
         var watcher =
                 HistogramWatcher.newSingleRecordWatcher(
-                        "Android.DesktopWindowHeuristicResult5",
+                        "Android.DesktopWindowHeuristicResult4",
                         DesktopWindowHeuristicResult.CAPTION_BAR_TOP_INSETS_ABSENT);
         // Bottom insets with height = 30
         Insets bottomInsets = Insets.of(0, 0, 0, 30);
@@ -152,7 +152,7 @@ public class AppHeaderCoordinatorUnitTest {
     public void notEnabledWithBoundingRectsWithPartialHeight() {
         var watcher =
                 HistogramWatcher.newSingleRecordWatcher(
-                        "Android.DesktopWindowHeuristicResult5",
+                        "Android.DesktopWindowHeuristicResult4",
                         DesktopWindowHeuristicResult.CAPTION_BAR_BOUNDING_RECT_INVALID_HEIGHT);
         // Bottom insets with height = 30
         Insets insets = Insets.of(0, 30, 0, 0);
@@ -176,7 +176,7 @@ public class AppHeaderCoordinatorUnitTest {
     public void notEnabledWhenWidestUnoccludedRectIsEmpty() {
         var watcher =
                 HistogramWatcher.newSingleRecordWatcher(
-                        "Android.DesktopWindowHeuristicResult5",
+                        "Android.DesktopWindowHeuristicResult4",
                         DesktopWindowHeuristicResult.WIDEST_UNOCCLUDED_RECT_EMPTY);
         setupInsetsRectProvider(Insets.NONE, List.of(), new Rect(), WINDOW_RECT);
         notifyInsetsRectConsumer();
@@ -191,7 +191,7 @@ public class AppHeaderCoordinatorUnitTest {
     public void notEnabledWhenUnoccludedRegionIsComplex() {
         var watcher =
                 HistogramWatcher.newSingleRecordWatcher(
-                        "Android.DesktopWindowHeuristicResult5",
+                        "Android.DesktopWindowHeuristicResult4",
                         DesktopWindowHeuristicResult.COMPLEX_UNOCCLUDED_REGION);
         // Top insets with height of 30.
         Insets insets = Insets.of(0, HEADER_HEIGHT, 0, 0);
@@ -212,7 +212,7 @@ public class AppHeaderCoordinatorUnitTest {
     public void notEnabledOnExternalDisplayWhenDisallowed() {
         var watcher =
                 HistogramWatcher.newSingleRecordWatcher(
-                        "Android.DesktopWindowHeuristicResult5",
+                        "Android.DesktopWindowHeuristicResult4",
                         DesktopWindowHeuristicResult.DISALLOWED_ON_EXTERNAL_DISPLAY);
         DisplayUtil.setIsOnDefaultDisplayForTesting(false);
         updateFeatureParams(/* enableOnExternalDisplay= */ false, /* oemDenylist= */ "");
@@ -230,7 +230,7 @@ public class AppHeaderCoordinatorUnitTest {
         ReflectionHelpers.setStaticField(Build.class, "MANUFACTURER", "samsung");
         var watcher =
                 HistogramWatcher.newSingleRecordWatcher(
-                        "Android.DesktopWindowHeuristicResult5",
+                        "Android.DesktopWindowHeuristicResult4",
                         DesktopWindowHeuristicResult.DISALLOWED_ON_EXTERNAL_DISPLAY);
         // Assume external display support is enabled but denylisted for "samsung".
         DisplayUtil.setIsOnDefaultDisplayForTesting(false);
@@ -267,34 +267,11 @@ public class AppHeaderCoordinatorUnitTest {
     }
 
     @Test
-    public void notEnabledWhenAppHeaderHeightIsBelowMinHeightThreshold() {
-        var watcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "Android.DesktopWindowHeuristicResult5",
-                        DesktopWindowHeuristicResult.BELOW_MIN_HEIGHT_THRESHOLD);
-        int smallHeaderHeight = HEADER_HEIGHT - 10;
-        Insets insets = Insets.of(0, smallHeaderHeight, 0, 0);
-        List<Rect> blockedRects =
-                List.of(
-                        new Rect(0, 0, LEFT_BLOCK, smallHeaderHeight),
-                        new Rect(WINDOW_WIDTH - RIGHT_BLOCK, 0, WINDOW_WIDTH, smallHeaderHeight));
-        Rect widestUnoccludedRect =
-                new Rect(LEFT_BLOCK, 0, WINDOW_WIDTH - RIGHT_BLOCK, smallHeaderHeight);
-        setupInsetsRectProvider(insets, blockedRects, widestUnoccludedRect, WINDOW_RECT);
-        notifyInsetsRectConsumer();
-
-        verifyDesktopWindowingDisabled(
-                /* error= */ "Desktop windowing should not be enabled when the header height is"
-                        + " below min height threshold for customization.");
-        watcher.assertExpected();
-    }
-
-    @Test
     public void enableDesktopWindowing() {
         var watcher =
                 HistogramWatcher.newBuilder()
                         .expectIntRecordTimes(
-                                "Android.DesktopWindowHeuristicResult5",
+                                "Android.DesktopWindowHeuristicResult4",
                                 DesktopWindowHeuristicResult.IN_DESKTOP_WINDOW,
                                 1)
                         .expectIntRecordTimes(
@@ -320,7 +297,7 @@ public class AppHeaderCoordinatorUnitTest {
     public void desktopWindowHeuristicResultHistogramNotRecordedWithSameValues() {
         var watcher =
                 HistogramWatcher.newBuilder()
-                        .expectAnyRecordTimes("Android.DesktopWindowHeuristicResult5", 1)
+                        .expectAnyRecordTimes("Android.DesktopWindowHeuristicResult4", 1)
                         .build();
         setupWithLeftAndRightBoundingRect();
         // Override the last seen raw insets so there's a bottom nav bar insets.
@@ -922,8 +899,7 @@ public class AppHeaderCoordinatorUnitTest {
                         mInsetObserver,
                         mActivityLifecycleDispatcher,
                         mSavedInstanceStateBundle,
-                        mEdgeToEdgeStateProvider,
-                        HEADER_HEIGHT);
+                        mEdgeToEdgeStateProvider);
         mAppHeaderCoordinator.addObserver(mObserver);
     }
 
