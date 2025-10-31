@@ -369,19 +369,26 @@ bool PdfInkModule::OnMouseDown(const blink::WebMouseEvent& event) {
   }
 
   gfx::PointF position = normalized_event.PositionInWidget();
-  if (is_drawing_stroke()) {
-    MaybeFinishStrokeForMissingMouseUpEvent();
-
-    if (IsHighlightingTextAtPosition(position)) {
-      return StartTextHighlight(position, event.ClickCount(),
-                                ink::StrokeInput::ToolType::kMouse);
-    }
-
-    return StartStroke(position, event.TimeStamp(),
-                       ink::StrokeInput::ToolType::kMouse);
+  if (is_erasing_stroke()) {
+    return StartEraseStroke(position, ink::StrokeInput::ToolType::kMouse);
   }
 
-  return StartEraseStroke(position, ink::StrokeInput::ToolType::kMouse);
+  if (is_drawing_stroke()) {
+    MaybeFinishStrokeForMissingMouseUpEvent();
+  } else if (features::kPdfInk2TextHighlighting.Get() &&
+             is_text_highlighting()) {
+    const EventDetails& event_details = text_highlight_state().input_last_event;
+    FinishTextHighlight(event_details.position,
+                        /*is_multi_click=*/false, event_details.tool_type);
+  }
+
+  if (IsHighlightingTextAtPosition(position)) {
+    return StartTextHighlight(position, event.ClickCount(),
+                              ink::StrokeInput::ToolType::kMouse);
+  }
+
+  return StartStroke(position, event.TimeStamp(),
+                     ink::StrokeInput::ToolType::kMouse);
 }
 
 bool PdfInkModule::OnMouseUp(const blink::WebMouseEvent& event) {
@@ -482,17 +489,25 @@ bool PdfInkModule::OnTouchStart(const blink::WebTouchEvent& event) {
   }
 
   gfx::PointF position = event.touches[0].PositionInWidget();
-  if (is_drawing_stroke()) {
-    MaybeFinishStrokeForMissingMouseUpEvent();
-
-    if (IsHighlightingTextAtPosition(position)) {
-      // Multi-click text selection for touch is not supported.
-      return StartTextHighlight(position, /*click_count=*/1, tool_type);
-    }
-    return StartStroke(position, event.TimeStamp(), tool_type);
+  if (is_erasing_stroke()) {
+    return StartEraseStroke(position, tool_type);
   }
 
-  return StartEraseStroke(position, tool_type);
+  if (is_drawing_stroke()) {
+    MaybeFinishStrokeForMissingMouseUpEvent();
+  } else if (features::kPdfInk2TextHighlighting.Get() &&
+             is_text_highlighting()) {
+    const EventDetails& event_details = text_highlight_state().input_last_event;
+    FinishTextHighlight(event_details.position,
+                        /*is_multi_click=*/false, event_details.tool_type);
+  }
+
+  if (IsHighlightingTextAtPosition(position)) {
+    // Multi-click text selection for touch is not supported.
+    return StartTextHighlight(position, /*click_count=*/1, tool_type);
+  }
+
+  return StartStroke(position, event.TimeStamp(), tool_type);
 }
 
 bool PdfInkModule::OnTouchEnd(const blink::WebTouchEvent& event) {
@@ -1029,11 +1044,15 @@ bool PdfInkModule::FinishTextHighlight(const gfx::PointF& position,
     return true;
   }
 
-  // Reset state back to a drawing highlighter brush.
+  // Reset state back to a drawing highlighter brush. `position` may reference a
+  // field in `TextHighlightState`, which would be destroyed after resetting, so
+  // check for selectable text or link area first.
+  const bool is_text_or_link_area =
+      client_->IsSelectableTextOrLinkArea(position);
   current_tool_state_.emplace<DrawingStrokeState>();
   drawing_stroke_state().brush_type = PdfInkBrush::Type::kHighlighter;
 
-  if (!client_->IsSelectableTextOrLinkArea(position)) {
+  if (!is_text_or_link_area) {
     MaybeSetCursor();
   }
   return true;
