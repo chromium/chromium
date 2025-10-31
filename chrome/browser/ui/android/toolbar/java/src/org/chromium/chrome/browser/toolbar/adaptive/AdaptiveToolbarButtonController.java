@@ -10,7 +10,7 @@ import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.ADAPT
 import static org.chromium.chrome.browser.toolbar.adaptive.settings.AdaptiveToolbarSettingsFragment.ARG_UI_STATE_AUTO_BUTTON_CAPTION;
 import static org.chromium.chrome.browser.toolbar.adaptive.settings.AdaptiveToolbarSettingsFragment.ARG_UI_STATE_CAN_SHOW_UI;
 import static org.chromium.chrome.browser.toolbar.adaptive.settings.AdaptiveToolbarSettingsFragment.ARG_UI_STATE_PREFERENCE_SELECTION;
-import static org.chromium.chrome.browser.toolbar.adaptive.settings.AdaptiveToolbarSettingsFragment.ARG_UI_STATE_TOOLBAR_BUTTON_STATE;
+import static org.chromium.chrome.browser.toolbar.adaptive.settings.AdaptiveToolbarSettingsFragment.ARG_UI_STATE_RANKED_TOOLBAR_BUTTON_STATES;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -137,9 +137,13 @@ public class AdaptiveToolbarButtonController
         mCallbackController = new CallbackController();
         mUiStateCallback =
                 uiState -> {
+                    assert mAdaptiveToolbarStatePredictor != null;
+                    int topSegmentationResult =
+                            mAdaptiveToolbarStatePredictor.filterSegmentationResults(
+                                    uiState.rankedToolbarButtonStates);
                     mSessionButtonVariant =
                             uiState.canShowUi
-                                    ? uiState.toolbarButtonState
+                                    ? topSegmentationResult
                                     : AdaptiveToolbarButtonVariant.UNKNOWN;
                     setSingleProvider(mSessionButtonVariant);
                     notifyObservers(uiState.canShowUi);
@@ -159,7 +163,8 @@ public class AdaptiveToolbarButtonController
     private void startSettings(UiState uiState) {
         Bundle args = new Bundle();
         args.putBoolean(ARG_UI_STATE_CAN_SHOW_UI, uiState.canShowUi);
-        args.putInt(ARG_UI_STATE_TOOLBAR_BUTTON_STATE, uiState.toolbarButtonState);
+        args.putIntegerArrayList(
+                ARG_UI_STATE_RANKED_TOOLBAR_BUTTON_STATES, uiState.rankedToolbarButtonStates);
         args.putInt(ARG_UI_STATE_PREFERENCE_SELECTION, uiState.preferenceSelection);
         args.putInt(ARG_UI_STATE_AUTO_BUTTON_CAPTION, uiState.autoButtonCaption);
         SettingsNavigationFactory.createSettingsNavigation()

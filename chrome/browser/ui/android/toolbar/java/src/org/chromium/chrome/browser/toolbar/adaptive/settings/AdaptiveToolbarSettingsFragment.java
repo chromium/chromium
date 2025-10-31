@@ -28,6 +28,7 @@ import org.chromium.ui.permissions.ActivityAndroidPermissionDelegate;
 import org.chromium.ui.permissions.AndroidPermissionDelegate;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 
 /** Fragment that allows the user to configure toolbar shortcut preferences. */
 @NullMarked
@@ -43,7 +44,8 @@ public class AdaptiveToolbarSettingsFragment extends ChromeBaseSettingsFragment 
     /** Bundle arguments to pass {@link UiState} to this settings fragment. */
     public static final String ARG_UI_STATE_CAN_SHOW_UI = "can_show_ui";
 
-    public static final String ARG_UI_STATE_TOOLBAR_BUTTON_STATE = "toolbar_button_state";
+    public static final String ARG_UI_STATE_RANKED_TOOLBAR_BUTTON_STATES =
+            "ranked_toolbar_button_states";
     public static final String ARG_UI_STATE_PREFERENCE_SELECTION = "preference_selection";
     public static final String ARG_UI_STATE_AUTO_BUTTON_CAPTION = "auto_button_caption";
 
@@ -95,10 +97,16 @@ public class AdaptiveToolbarSettingsFragment extends ChromeBaseSettingsFragment 
 
         boolean defaultCanShow = AdaptiveToolbarFeatures.isCustomizationEnabled();
         int defaultVariant = AdaptiveToolbarButtonVariant.UNKNOWN;
+        @Nullable ArrayList<Integer> rankedToolbarButtonStates =
+                args.getIntegerArrayList(ARG_UI_STATE_RANKED_TOOLBAR_BUTTON_STATES);
+        if (rankedToolbarButtonStates == null) {
+            rankedToolbarButtonStates = new ArrayList<>();
+            rankedToolbarButtonStates.add(AdaptiveToolbarButtonVariant.UNKNOWN);
+        }
         mRadioButtonGroup.initButtonsFromUiState(
                 new UiState(
                         args.getBoolean(ARG_UI_STATE_CAN_SHOW_UI, defaultCanShow),
-                        args.getInt(ARG_UI_STATE_TOOLBAR_BUTTON_STATE, defaultVariant),
+                        rankedToolbarButtonStates,
                         args.getInt(ARG_UI_STATE_PREFERENCE_SELECTION, defaultVariant),
                         args.getInt(ARG_UI_STATE_AUTO_BUTTON_CAPTION, defaultVariant)));
     }
