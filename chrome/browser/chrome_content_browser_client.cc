@@ -4648,7 +4648,8 @@ void ChromeContentBrowserClient::OverrideWebPreferences(
           web_prefs->web_app_scope = registrar.GetAppScope(app_id);
         }
 
-        // IWA can close windows with window management permission.
+        // IWA with window management permission can close windows and
+        // focus windows without user gesture.
         if (browser->app_controller()->IsIsolatedWebApp() &&
             profile->GetPermissionController()
                     ->GetPermissionStatusForCurrentDocument(
@@ -4658,6 +4659,7 @@ void ChromeContentBrowserClient::OverrideWebPreferences(
                         web_contents->GetPrimaryMainFrame()) ==
                 blink::mojom::PermissionStatus::GRANTED) {
           web_prefs->allow_scripts_to_close_windows = true;
+          web_prefs->allow_window_focus_without_user_gesture = true;
         }
 #if BUILDFLAG(IS_CHROMEOS)
         auto* system_app = browser->app_controller()->system_app();

@@ -184,6 +184,10 @@
       name: "allowScriptsToCloseWindows",
       initial: false,
     },
+    {
+      name: "allowWindowFocusWithoutUserGesture",
+      initial: false,
+    },
 
     // FIXME: This should really be disabled by default as it makes platforms that
     // don't support the feature download files they can't use by.

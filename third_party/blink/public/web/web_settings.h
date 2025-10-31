@@ -101,6 +101,7 @@ class WebSettings {
   // value set by this method.
   virtual void SetAllowRunningOfInsecureContent(bool) = 0;
   virtual void SetAllowScriptsToCloseWindows(bool) = 0;
+  virtual void SetAllowWindowFocusWithoutUserGesture(bool) = 0;
   virtual void SetAllowUniversalAccessFromFileURLs(bool) = 0;
   virtual void SetAccessibilityFontWeightAdjustment(int) = 0;
   virtual void SetAlwaysShowContextMenuOnTouch(bool) = 0;
