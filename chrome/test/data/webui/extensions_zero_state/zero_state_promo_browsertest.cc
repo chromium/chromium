@@ -15,46 +15,25 @@ class ZeroStatePromoBrowserTest : public WebUIMochaBrowserTest {
   }
 };
 
-class ZeroStatePromoChipsUiV1Test : public ZeroStatePromoBrowserTest {
+class ZeroStatePromoChipsUiTest : public ZeroStatePromoBrowserTest {
  protected:
-  ZeroStatePromoChipsUiV1Test() {
+  ZeroStatePromoChipsUiTest() {
     feature_list_.InitAndEnableFeatureWithParameters(
         feature_engagement::kIPHExtensionsZeroStatePromoFeature,
         {{feature_engagement::kIPHExtensionsZeroStatePromoVariantParam.name,
           feature_engagement::kIPHExtensionsZeroStatePromoVariantParam.GetName(
               feature_engagement::IPHExtensionsZeroStatePromoVariant::
-                  kCustomUiChipIphV1)}});
+                  kCustomUiChipIph)}});
   }
 
  private:
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(ZeroStatePromoChipsUiV1Test, AllTests) {
+IN_PROC_BROWSER_TEST_F(ZeroStatePromoChipsUiTest, AllTests) {
   ZeroStatePromoBrowserTest::RunTest(
       "extensions_zero_state/zero_state_promo_app_test.js",
-      "runMochaSuite('ChipsUiV1Test');");
-}
-
-class ZeroStatePromoChipsUiV2Test : public ZeroStatePromoBrowserTest {
- protected:
-  ZeroStatePromoChipsUiV2Test() {
-    feature_list_.InitAndEnableFeatureWithParameters(
-        feature_engagement::kIPHExtensionsZeroStatePromoFeature,
-        {{feature_engagement::kIPHExtensionsZeroStatePromoVariantParam.name,
-          feature_engagement::kIPHExtensionsZeroStatePromoVariantParam.GetName(
-              feature_engagement::IPHExtensionsZeroStatePromoVariant::
-                  kCustomUiChipIphV2)}});
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(ZeroStatePromoChipsUiV2Test, AllTests) {
-  ZeroStatePromoBrowserTest::RunTest(
-      "extensions_zero_state/zero_state_promo_app_test.js",
-      "runMochaSuite('ChipsUiV2Test');");
+      "runMochaSuite('ChipsUiTest');");
 }
 
 class ZeroStatePromoPlainLinkUiTest : public ZeroStatePromoBrowserTest {
