@@ -60,7 +60,9 @@
 #include "components/password_manager/core/browser/webauthn_credentials_delegate.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/sync/test/test_sync_service.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "device/fido/features.h"
 #include "manage_passwords_referrer.h"
@@ -202,6 +204,10 @@ class TestPasswordManagerClient : public StubPasswordManagerClient {
     return identity_test_env_.identity_manager();
   }
 
+  const syncer::SyncService* GetSyncService() const override {
+    return &test_sync_service_;
+  }
+
   signin::IdentityTestEnvironment& identity_test_env() {
     return identity_test_env_;
   }
@@ -245,6 +251,7 @@ class TestPasswordManagerClient : public StubPasswordManagerClient {
  private:
   MockPasswordManagerDriver driver_;
   signin::IdentityTestEnvironment identity_test_env_;
+  syncer::TestSyncService test_sync_service_;
   std::unique_ptr<MockPasswordFeatureManager> feature_manager_{
       new NiceMock<MockPasswordFeatureManager>};
   GURL main_frame_url_;
@@ -668,6 +675,108 @@ TEST_F(PasswordAutofillManagerTest, ExtractSuggestions) {
           Suggestion::Text(GetManagePasswordsTitle(),
                            Suggestion::Text::IsPrimary(true))));
 }
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+// Test that `ShowSuggestions` correctly matches the given FormFieldData to the
+// known PasswordFormFillData, and extracts the right suggestions in
+// SigninPending state.
+TEST_F(PasswordAutofillManagerTest, ExtractSuggestionsInSigninPending) {
+  base::HistogramTester histogram_tester;
+  TestPasswordManagerClient client;
+  NiceMock<MockAutofillClient> autofill_client;
+  InitializePasswordAutofillManager(&client, &autofill_client);
+
+  // Signing and simulating SigninPending state.
+  signin::MakePrimaryAccountAvailable(client.GetIdentityManager(),
+                                      "test@gmail.com",
+                                      signin::ConsentLevel::kSignin);
+  signin::SetInvalidRefreshTokenForPrimaryAccount(client.GetIdentityManager());
+
+  autofill::PasswordFormFillData data = CreateTestFormFillData();
+
+  autofill::PasswordAndMetadata additional;
+  additional.realm = "https://foobarrealm.org";
+  additional.username_value = u"John Foo";
+  data.additional_logins.push_back(additional);
+
+  autofill::PasswordAndMetadata additional1;
+  additional1.realm = "https://foobarrealm.org";
+  additional1.username_value = u"Kohn Foo";
+  data.additional_logins.push_back(std::move(additional1));
+
+  password_autofill_manager_->OnAddPasswordFillData(data);
+
+  // First, simulate displaying suggestions matching an empty prefix. Also
+  // verify that both the values and labels are filled correctly. The 'value'
+  // should be the user name; the 'label' should be the realm.
+  autofill::AutofillClient::PopupOpenArgs open_args;
+  EXPECT_CALL(autofill_client, ShowAutofillSuggestions)
+      .WillOnce(SavePopupOpenArgs(open_args));
+  autofill::TriggeringField field = kTriggeringField;
+  password_autofill_manager_->ShowSuggestions(field);
+  EXPECT_THAT(
+      open_args.suggestions,
+      SuggestionVectorMainTextsAre(
+          Suggestion::Text(test_username_, Suggestion::Text::IsPrimary(true)),
+          Suggestion::Text(u"John Foo", Suggestion::Text::IsPrimary(true)),
+          Suggestion::Text(u"Kohn Foo", Suggestion::Text::IsPrimary(true)),
+          kSeparatorEntry,
+          Suggestion::Text(
+              l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_PENDING_STATE),
+              Suggestion::Text::IsPrimary(true)),
+          kSeparatorEntry,
+          Suggestion::Text(GetManagePasswordsTitle(),
+                           Suggestion::Text::IsPrimary(true))));
+  EXPECT_THAT(open_args.suggestions,
+              SuggestionAdditionalLabelsContains(u"foo.com"));
+  EXPECT_THAT(open_args.suggestions,
+              SuggestionAdditionalLabelsContains(u"foobarrealm.org"));
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SigninPending.Offered",
+      signin_metrics::AccessPoint::kAutofillDropdown, 1);
+
+  // Now simulate displaying suggestions matching "John".
+  EXPECT_CALL(autofill_client, ShowAutofillSuggestions)
+      .WillOnce(SavePopupOpenArgs(open_args));
+  field.typed_username = u"John";
+  password_autofill_manager_->ShowSuggestions(field);
+  EXPECT_THAT(open_args.suggestions,
+              SuggestionVectorMainTextsAre(
+                  Suggestion::Text(additional.username_value,
+                                   Suggestion::Text::IsPrimary(true)),
+                  kSeparatorEntry,
+                  Suggestion::Text(l10n_util::GetStringUTF16(
+                                       IDS_PASSWORD_MANAGER_PENDING_STATE),
+                                   Suggestion::Text::IsPrimary(true)),
+                  kSeparatorEntry,
+                  Suggestion::Text(GetManagePasswordsTitle(),
+                                   Suggestion::Text::IsPrimary(true))));
+  // This value should still be recorded only once, despite opening the
+  // suggestions a second time, since it was already present in the last
+  // suggestions.
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SigninPending.Offered",
+      signin_metrics::AccessPoint::kAutofillDropdown, 1);
+
+  // Resolve the pending state.
+  signin::SetRefreshTokenForPrimaryAccount(client.GetIdentityManager());
+
+  // Finally, simulate displaying all suggestions, without any prefix matching.
+  EXPECT_CALL(autofill_client, ShowAutofillSuggestions)
+      .WillOnce(SavePopupOpenArgs(open_args));
+  field.typed_username = u"";
+  password_autofill_manager_->ShowSuggestions(field);
+  EXPECT_THAT(
+      open_args.suggestions,
+      SuggestionVectorMainTextsAre(
+          Suggestion::Text(test_username_, Suggestion::Text::IsPrimary(true)),
+          Suggestion::Text(u"John Foo", Suggestion::Text::IsPrimary(true)),
+          Suggestion::Text(u"Kohn Foo", Suggestion::Text::IsPrimary(true)),
+          kSeparatorEntry,
+          Suggestion::Text(GetManagePasswordsTitle(),
+                           Suggestion::Text::IsPrimary(true))));
+}
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 // Verify that, for Android application credentials, the prettified realms of
 // applications are displayed as the labels of suggestions on the UI (for
