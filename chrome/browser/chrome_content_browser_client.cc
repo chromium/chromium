@@ -4328,7 +4328,8 @@ bool ChromeContentBrowserClient::CanCreateWindow(
   if (base::FeatureList::IsEnabled(contextual_tasks::kContextualTasks) &&
       contextual_tasks_ui_service &&
       contextual_tasks_ui_service->HandleNavigation(
-          target_url, web_contents->GetLastCommittedURL(), web_contents,
+          target_url, web_contents->GetLastCommittedURL(),
+          opener->GetFrameTreeNodeId(),
           /*is_to_new_tab=*/true)) {
     return false;
   }

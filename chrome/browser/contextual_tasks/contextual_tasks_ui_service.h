@@ -10,6 +10,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "content/public/browser/frame_tree_node_id.h"
 #include "url/gurl.h"
 
 namespace base {
@@ -40,13 +41,14 @@ class ContextualTasksUiService : public KeyedService {
   // should be processed by this method.
   virtual void OnNavigationToAiPageIntercepted(
       const GURL& url,
-      content::WebContents* source_contents,
+      const content::FrameTreeNodeId& source_frame_tree_node_id,
       bool is_to_new_tab);
 
   // A notification to this service that a link in the AI thread was clicked by
   // the user. This will open a tab and associate it with the visible thread.
-  virtual void OnThreadLinkClicked(const GURL& url,
-                                   content::WebContents* source_contents);
+  virtual void OnThreadLinkClicked(
+      const GURL& url,
+      const content::FrameTreeNodeId& source_frame_tree_node_id);
 
   // A notification that a navigation is occurring. This method gives the
   // service the opportunity to prevent the navigation from happening in order
@@ -55,10 +57,11 @@ class ContextualTasksUiService : public KeyedService {
   // WebContents the navigation originated from is provided along with
   // `is_to_new_tab` which indicates whether the navigation would open in a
   // new tab or window.
-  virtual bool HandleNavigation(const GURL& navigation_url,
-                                const GURL& responsible_web_contents_url,
-                                content::WebContents* navigating_contents,
-                                bool is_to_new_tab);
+  virtual bool HandleNavigation(
+      const GURL& navigation_url,
+      const GURL& responsible_web_contents_url,
+      const content::FrameTreeNodeId& source_frame_tree_node_id,
+      bool is_to_new_tab);
 
   // Returns the URL that a task was created for. Once this is retrieved, the
   // entry is removed from the cache.

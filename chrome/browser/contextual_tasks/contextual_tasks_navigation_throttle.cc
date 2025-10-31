@@ -46,7 +46,8 @@ void ContextualTasksNavigationThrottle::MaybeCreateAndAdd(
       ui_service->HandleNavigation(
           registry.GetNavigationHandle().GetURL(),
           web_contents->GetResponsibleWebContents()->GetLastCommittedURL(),
-          web_contents, /*is_to_new_tab=*/false)) {
+          registry.GetNavigationHandle().GetFrameTreeNodeId(),
+          /*is_to_new_tab=*/false)) {
     registry.AddThrottle(
         std::make_unique<ContextualTasksNavigationThrottle>(registry));
   }

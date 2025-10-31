@@ -47,12 +47,13 @@ class MockUiServiceForUrlIntercept : public ContextualTasksUiService {
   MOCK_METHOD(void,
               OnNavigationToAiPageIntercepted,
               (const GURL& url,
-               content::WebContents* source_contents,
+               const content::FrameTreeNodeId& source_frame_tree_node_id,
                bool is_to_new_tab),
               (override));
   MOCK_METHOD(void,
               OnThreadLinkClicked,
-              (const GURL& url, content::WebContents* source_contents),
+              (const GURL& url,
+               const content::FrameTreeNodeId& source_frame_tree_node_id),
               (override));
 };
 
@@ -98,7 +99,7 @@ TEST_F(ContextualTasksUiServiceTest, LinkFromWebUiIntercepted) {
   EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
       .Times(0);
   EXPECT_TRUE(service_for_nav_->HandleNavigation(
-      navigated_url, host_web_content_url, nullptr, false));
+      navigated_url, host_web_content_url, content::FrameTreeNodeId(), false));
   task_environment()->RunUntilIdle();
 }
 
@@ -109,7 +110,8 @@ TEST_F(ContextualTasksUiServiceTest, NormalLinkNotIntercepted) {
   EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
       .Times(0);
   EXPECT_FALSE(service_for_nav_->HandleNavigation(
-      GURL(kTestUrl), GURL("https://example.com/foo"), nullptr, false));
+      GURL(kTestUrl), GURL("https://example.com/foo"),
+      content::FrameTreeNodeId(), false));
   task_environment()->RunUntilIdle();
 }
 
@@ -118,7 +120,8 @@ TEST_F(ContextualTasksUiServiceTest, AiHostNotIntercepted_BadPath) {
   EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
       .Times(0);
   EXPECT_FALSE(service_for_nav_->HandleNavigation(
-      GURL(kTestUrl), GURL("https://google.com/maps?udm=50"), nullptr, false));
+      GURL(kTestUrl), GURL("https://google.com/maps?udm=50"),
+      content::FrameTreeNodeId(), false));
   task_environment()->RunUntilIdle();
 }
 
@@ -129,8 +132,8 @@ TEST_F(ContextualTasksUiServiceTest, AiPageIntercepted_FromTab) {
   EXPECT_CALL(*service_for_nav_, OnThreadLinkClicked(_, _)).Times(0);
   EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(ai_url, _, _))
       .Times(1);
-  EXPECT_TRUE(
-      service_for_nav_->HandleNavigation(ai_url, tab_url, nullptr, false));
+  EXPECT_TRUE(service_for_nav_->HandleNavigation(
+      ai_url, tab_url, content::FrameTreeNodeId(), false));
   task_environment()->RunUntilIdle();
 }
 
@@ -140,8 +143,8 @@ TEST_F(ContextualTasksUiServiceTest, AiPageIntercepted_FromOmnibox) {
   EXPECT_CALL(*service_for_nav_, OnThreadLinkClicked(_, _)).Times(0);
   EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(ai_url, _, _))
       .Times(1);
-  EXPECT_TRUE(
-      service_for_nav_->HandleNavigation(ai_url, GURL(), nullptr, false));
+  EXPECT_TRUE(service_for_nav_->HandleNavigation(
+      ai_url, GURL(), content::FrameTreeNodeId(), false));
   task_environment()->RunUntilIdle();
 }
 
@@ -152,8 +155,8 @@ TEST_F(ContextualTasksUiServiceTest, AiPageNotIntercepted) {
   EXPECT_CALL(*service_for_nav_, OnThreadLinkClicked(_, _)).Times(0);
   EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
       .Times(0);
-  EXPECT_FALSE(service_for_nav_->HandleNavigation(GURL(kAiPageUrl), webui_url,
-                                                  nullptr, false));
+  EXPECT_FALSE(service_for_nav_->HandleNavigation(
+      GURL(kAiPageUrl), webui_url, content::FrameTreeNodeId(), false));
   task_environment()->RunUntilIdle();
 }
 
@@ -238,8 +241,9 @@ TEST_F(ContextualTasksUiServiceTest, OnNavigationToAiPageIntercepted_SameTab) {
                   sessions::SessionTabHelper::IdForTab(web_contents.get())))
       .Times(1);
 
-  service.OnNavigationToAiPageIntercepted(intercepted_url, web_contents.get(),
-                                          false);
+  service.OnNavigationToAiPageIntercepted(
+      intercepted_url,
+      web_contents->GetPrimaryMainFrame()->GetFrameTreeNodeId(), false);
 
   GURL expected_initial_url(
       "https://www.google.com/search?udm=50&gsc=2&gl=us&q=test+query");

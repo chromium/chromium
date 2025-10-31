@@ -82,9 +82,15 @@ ContextualTasksUiService::~ContextualTasksUiService() = default;
 
 void ContextualTasksUiService::OnNavigationToAiPageIntercepted(
     const GURL& url,
-    content::WebContents* source_contents,
+    const content::FrameTreeNodeId& source_frame_tree_node_id,
     bool is_to_new_tab) {
   CHECK(context_controller_);
+
+  content::WebContents* source_contents =
+      content::WebContents::FromFrameTreeNodeId(source_frame_tree_node_id);
+  if (!source_contents) {
+    return;
+  }
 
   // Create a task for the URL that was just intercepted.
   ContextualTask task = context_controller_->CreateTaskFromUrl(url);
@@ -127,8 +133,9 @@ void ContextualTasksUiService::OnNavigationToAiPageIntercepted(
 
 void ContextualTasksUiService::OnThreadLinkClicked(
     const GURL& url,
-    content::WebContents* source_contents) {
-  CHECK(source_contents);
+    const content::FrameTreeNodeId& source_frame_tree_node_id) {
+  content::WebContents* source_contents =
+      content::WebContents::FromFrameTreeNodeId(source_frame_tree_node_id);
 
   tabs::TabInterface* tab_interface =
       tabs::TabInterface::MaybeGetFromContents(source_contents);
@@ -193,7 +200,7 @@ void ContextualTasksUiService::OnThreadLinkClicked(
 bool ContextualTasksUiService::HandleNavigation(
     const GURL& navigation_url,
     const GURL& responsible_web_contents_url,
-    content::WebContents* source_contents,
+    const content::FrameTreeNodeId& source_frame_tree_node_id,
     bool is_to_new_tab) {
   // Allow any navigation to the contextual tasks host.
   if (IsContextualTasksHost(navigation_url)) {
@@ -221,7 +228,7 @@ bool ContextualTasksUiService::HandleNavigation(
         FROM_HERE,
         base::BindOnce(&ContextualTasksUiService::OnThreadLinkClicked,
                        weak_ptr_factory_.GetWeakPtr(), navigation_url,
-                       source_contents));
+                       source_frame_tree_node_id));
     return true;
   }
 
@@ -234,8 +241,8 @@ bool ContextualTasksUiService::HandleNavigation(
         FROM_HERE,
         base::BindOnce(
             &ContextualTasksUiService::OnNavigationToAiPageIntercepted,
-            weak_ptr_factory_.GetWeakPtr(), navigation_url, source_contents,
-            is_to_new_tab));
+            weak_ptr_factory_.GetWeakPtr(), navigation_url,
+            source_frame_tree_node_id, is_to_new_tab));
     return true;
   }
 
