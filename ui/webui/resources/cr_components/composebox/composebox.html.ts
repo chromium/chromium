@@ -103,15 +103,18 @@ export function getHtml(this: ComposeboxElement) {
     <!-- A seperate container is needed for the submit button so the
        expand/collapse animation can be applied without affecting the submit
        button enabled/disabled state. -->
-    <div id="submitContainer" class="icon-fade" part="submit">
+    <div id="submitContainer" class="icon-fade" part="submit"
+         tabindex="0"
+         title="${this.i18n('composeboxSubmitButtonTitle')}"
+         @click="${this.submitQuery_}"
+         ?disabled="${!this.submitEnabled_}"
+         @focusin="${this.handleSubmitFocusIn_}">
+      <div id="submitOverlay"></div>
       <cr-icon-button
         class="action-icon icon-arrow-upward"
         id="submitIcon"
         part="action-icon submit-icon"
-        title="${this.i18n('composeboxSubmitButtonTitle')}"
-        @click="${this.submitQuery_}"
-        ?disabled="${!this.submitEnabled_}"
-        @focusin="${this.handleSubmitFocusIn_}">
+        tabindex="-1">
       </cr-icon-button>
     </div>
   </div>
