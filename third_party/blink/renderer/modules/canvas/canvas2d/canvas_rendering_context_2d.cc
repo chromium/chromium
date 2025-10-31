@@ -1242,10 +1242,12 @@ CanvasRenderingContext2D::CreateCanvasResourceProvider() {
     if (!provider) {
       gpu::SharedImageUsageSet shared_image_usage_flags =
           gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
-      if (SharedGpuContext::MaySupportImageChromium() &&
+      bool can_use_concurrent_read_write =
+          SharedGpuContext::MaySupportImageChromium() &&
           (RuntimeEnabledFeatures::Canvas2dImageChromiumEnabled() ||
            base::FeatureList::IsEnabled(
-               features::kLowLatencyCanvas2dImageChromium))) {
+               features::kLowLatencyCanvas2dImageChromium));
+      if (can_use_concurrent_read_write) {
         shared_image_usage_flags |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
         shared_image_usage_flags |=
             gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE;
