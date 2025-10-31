@@ -600,9 +600,6 @@ void AppsContainerView::TransitionStarted() {
 }
 
 void AppsContainerView::TransitionEnded() {
-  // TODO(crbug.com/1285184): Sometimes gradient mask is not removed because
-  // this function does not get called in some cases.
-
   // Gradient mask is no longer necessary once transition is finished.
   MaybeRemoveGradientMask();
 }
