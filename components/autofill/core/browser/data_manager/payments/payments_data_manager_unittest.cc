@@ -4079,6 +4079,27 @@ TEST_F(PaymentsDataManagerTest,
   EXPECT_TRUE(payments_data_manager().GetLinkedBnplIssuers().empty());
 }
 
+// Tests that Buy-now-pay-later issuer getters returns issuers if
+// `experiment_country_code` is not "US", and the disable country check flag is
+// enabled.
+TEST_F(
+    PaymentsDataManagerTest,
+    BnplIssuerGetters_AutofillBnplCountryNotSupported_DisableCountryCheckFlagTurnedOn) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kAutofillDisableBnplCountryCheckForTesting};
+
+  ResetPaymentsDataManager(false, "en-US", "CA");
+
+  test_api(payments_data_manager())
+      .AddBnplIssuer(test::GetTestLinkedBnplIssuer());
+  test_api(payments_data_manager())
+      .AddBnplIssuer(test::GetTestUnlinkedBnplIssuer());
+
+  EXPECT_FALSE(payments_data_manager().GetBnplIssuers().empty());
+  EXPECT_FALSE(payments_data_manager().GetUnlinkedBnplIssuers().empty());
+  EXPECT_FALSE(payments_data_manager().GetLinkedBnplIssuers().empty());
+}
+
 // Tests that `SetAutofillHasSeenBnpl()` sets the pref to `true` regardless of
 // its current value.
 TEST_F(PaymentsDataManagerTest, SetAutofillHasSeenBnpl) {

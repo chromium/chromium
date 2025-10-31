@@ -12,6 +12,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/i18n/timezone.h"
@@ -2142,7 +2143,9 @@ bool PaymentsDataManager::AreBnplIssuersSupported() const {
     BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
   return (app_locale_ == "en-US" || app_locale_ == "en-GB" ||
           app_locale_ == "en-CA") &&
-         GetCountryCodeForExperimentGroup() == "US" &&
+         (GetCountryCodeForExperimentGroup() == "US" ||
+          base::FeatureList::IsEnabled(
+              features::kAutofillDisableBnplCountryCheckForTesting)) &&
          base::FeatureList::IsEnabled(
              features::kAutofillEnableBuyNowPayLaterSyncing);
 #else
