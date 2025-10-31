@@ -428,6 +428,12 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
   [_sharingCoordinator stop];
   _sharingCoordinator = nil;
 
+  if (IsAskGeminiChipEnabled() || IsProactiveSuggestionsFrameworkEnabled() ||
+      IsLocationBarBadgeMigrationEnabled()) {
+    [self.locationBarBadgeCoordinator stop];
+    self.locationBarBadgeCoordinator = nil;
+  }
+
   [self.contextualPanelEntrypointCoordinator stop];
   self.contextualPanelEntrypointCoordinator.delegate = nil;
   self.contextualPanelEntrypointCoordinator = nil;
