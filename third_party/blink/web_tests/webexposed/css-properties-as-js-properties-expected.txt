@@ -138,6 +138,10 @@ columnHeight
 columnRule
 columnRuleBreak
 columnRuleColor
+columnRuleEdgeEndOutset
+columnRuleEdgeStartOutset
+columnRuleInteriorEndOutset
+columnRuleInteriorStartOutset
 columnRuleOutset
 columnRuleStyle
 columnRuleVisibilityItems
@@ -422,6 +426,10 @@ rowGap
 rowRule
 rowRuleBreak
 rowRuleColor
+rowRuleEdgeEndOutset
+rowRuleEdgeStartOutset
+rowRuleInteriorEndOutset
+rowRuleInteriorStartOutset
 rowRuleOutset
 rowRuleStyle
 rowRuleVisibilityItems

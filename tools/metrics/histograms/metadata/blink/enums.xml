@@ -8147,6 +8147,14 @@ Called by update_use_counter_css.py.-->
   <int value="888" label="rule-outset"/>
   <int value="889" label="column-rule-visibility-items"/>
   <int value="890" label="row-rule-visibility-items"/>
+  <int value="891" label="column-rule-edge-start-outset"/>
+  <int value="892" label="column-rule-edge-end-outset"/>
+  <int value="893" label="column-rule-interior-start-outset"/>
+  <int value="894" label="column-rule-interior-end-outset"/>
+  <int value="895" label="row-rule-edge-start-outset"/>
+  <int value="896" label="row-rule-edge-end-outset"/>
+  <int value="897" label="row-rule-interior-start-outset"/>
+  <int value="898" label="row-rule-interior-end-outset"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/css_property_id.mojom:CSSSampleId) -->

@@ -139,6 +139,10 @@ column-gap: normal
 column-height: auto
 column-rule-break: spanning-item
 column-rule-color: rgb(0, 0, 0)
+column-rule-edge-end-outset: 0px
+column-rule-edge-start-outset: 0px
+column-rule-interior-end-outset: 50%
+column-rule-interior-start-outset: 50%
 column-rule-outset: 50%
 column-rule-style: none
 column-rule-visibility-items: all
@@ -336,6 +340,10 @@ rotate: none
 row-gap: normal
 row-rule-break: spanning-item
 row-rule-color: rgb(0, 0, 0)
+row-rule-edge-end-outset: 0px
+row-rule-edge-start-outset: 0px
+row-rule-interior-end-outset: 50%
+row-rule-interior-start-outset: 50%
 row-rule-outset: 50%
 row-rule-style: none
 row-rule-visibility-items: all
