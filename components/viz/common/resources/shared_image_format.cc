@@ -18,15 +18,6 @@ namespace {
 
 using PlaneConfig = SharedImageFormat::PlaneConfig;
 
-static size_t ConvertBitsToBytes(size_t bits) {
-  size_t bytes = bits / 8;
-  // Don't add anything to `bits` to avoid potential overflow.
-  if ((bits & 7) != 0) {
-    ++bytes;
-  }
-  return bytes;
-}
-
 const char* SinglePlaneFormatToString(SharedImageFormat format) {
   CHECK(format.is_single_plane());
   if (format == SinglePlaneFormat::kRGBA_8888) {
@@ -186,14 +177,8 @@ std::optional<size_t> SharedImageFormat::MaybeEstimatedPlaneSizeInBytes(
       return estimated_bytes.ValueOrDie();
     }
 
-    base::CheckedNumeric<size_t> bits_per_row = BitsPerPixel();
-    bits_per_row *= size.width();
-    if (!bits_per_row.IsValid()) {
-      return std::nullopt;
-    }
-
-    base::CheckedNumeric<size_t> estimated_bytes =
-        ConvertBitsToBytes(bits_per_row.ValueOrDie());
+    base::CheckedNumeric<size_t> estimated_bytes = BytesPerPixel();
+    estimated_bytes *= size.width();
     estimated_bytes *= size.height();
     if (!estimated_bytes.IsValid()) {
       return std::nullopt;
@@ -412,6 +397,37 @@ int SharedImageFormat::BitsPerPixel() const {
       return 8;
     case mojom::SingleplanarFormat::ETC1:
       return 4;
+  }
+  NOTREACHED();
+}
+
+int SharedImageFormat::BytesPerPixel() const {
+  CHECK(is_single_plane());
+  switch (singleplanar_format()) {
+    case mojom::SingleplanarFormat::RGBA_F16:
+      return 8;
+    case mojom::SingleplanarFormat::BGRA_8888:
+    case mojom::SingleplanarFormat::RGBA_8888:
+    case mojom::SingleplanarFormat::RGBX_8888:
+    case mojom::SingleplanarFormat::BGRX_8888:
+    case mojom::SingleplanarFormat::RGBA_1010102:
+    case mojom::SingleplanarFormat::BGRA_1010102:
+    case mojom::SingleplanarFormat::RG_1616:
+      return 4;
+    case mojom::SingleplanarFormat::RGBA_4444:
+    case mojom::SingleplanarFormat::LUMINANCE_F16:
+    case mojom::SingleplanarFormat::R_F16:
+    case mojom::SingleplanarFormat::R_16:
+    case mojom::SingleplanarFormat::BGR_565:
+    case mojom::SingleplanarFormat::RG_88:
+      return 2;
+    case mojom::SingleplanarFormat::ALPHA_8:
+    case mojom::SingleplanarFormat::R_8:
+      return 1;
+    case mojom::SingleplanarFormat::ETC1:
+      // ETC compression is blocked based and can't be expressed as bytes per
+      // pixel.
+      break;
   }
   NOTREACHED();
 }

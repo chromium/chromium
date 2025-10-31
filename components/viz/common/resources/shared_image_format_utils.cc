@@ -12,6 +12,7 @@
 #include "base/check_op.h"
 #include "base/logging.h"
 #include "base/notreached.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "third_party/skia/include/core/SkColorType.h"
 #include "ui/gfx/buffer_types.h"
 
@@ -286,13 +287,10 @@ std::optional<size_t> SharedMemoryRowSizeForSharedImageFormat(
   }
 
   if (format.is_single_plane()) {
+    CHECK_NE(format, SinglePlaneFormat::kETC1);
     DCHECK_EQ(plane_index, 0);
 
-    auto bits_per_row = format.BitsPerPixel();
-    // This should work as this code should not be called for ETC1 formats.
-    CHECK_EQ(bits_per_row % 8, 0);
-
-    base::CheckedNumeric<size_t> bytes_per_row = bits_per_row / 8;
+    base::CheckedNumeric<size_t> bytes_per_row = format.BytesPerPixel();
     bytes_per_row *= width;
 
     // Row size must be aligned to 4 bytes.
