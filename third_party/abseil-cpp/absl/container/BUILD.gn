@@ -259,7 +259,6 @@ absl_source_set("hash_function_defaults") {
 
 absl_source_set("hash_container_defaults") {
   public = [ "hash_container_defaults.h" ]
-  visibility = [ "//third_party/abseil-cpp/absl/container:*" ]
   deps = [
     ":hash_function_defaults",
     "//third_party/abseil-cpp/absl/base:config",
