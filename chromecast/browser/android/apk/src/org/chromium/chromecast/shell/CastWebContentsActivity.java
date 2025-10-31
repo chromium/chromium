@@ -128,7 +128,8 @@ public class CastWebContentsActivity extends Activity {
     // SessionId provided in the original Intent used to start the Activity.
     private String mRootSessionId;
 
-    private boolean mAllowPictureInPicture;
+    private boolean mAudioIsPlaying;
+    private boolean mVideoIsPlaying;
     private boolean mIsInPictureInPictureMode;
 
     {
@@ -212,9 +213,9 @@ public class CastWebContentsActivity extends Activity {
                                         TAG,
                                         "ACTION_USER_PRESENT received. canUsePictureInPicture: "
                                                 + canUsePictureInPicture()
-                                                + " mAllowPictureInPicture: "
-                                                + mAllowPictureInPicture);
-                                if (canUsePictureInPicture() && mAllowPictureInPicture) {
+                                                + " mVideoIsPlaying: "
+                                                + mVideoIsPlaying);
+                                if (canUsePictureInPicture() && mVideoIsPlaying) {
                                     enterPictureInPictureMode(
                                             new PictureInPictureParams.Builder().build());
                                 }
@@ -294,11 +295,20 @@ public class CastWebContentsActivity extends Activity {
 
         videoPlaying.subscribe(
                 x -> {
-                    Log.i(TAG, "video playing; picture-in-picture enabled");
-                    mAllowPictureInPicture = true;
+                    Log.i(TAG, "video playing");
+                    mVideoIsPlaying = true;
                     return () -> {
-                        Log.i(TAG, "video stopped; picture-in-picture disabled");
-                        mAllowPictureInPicture = false;
+                        Log.i(TAG, "video stopped");
+                        mVideoIsPlaying = false;
+                    };
+                });
+        audioPlaying.subscribe(
+                x -> {
+                    Log.i(TAG, "audio playing");
+                    mAudioIsPlaying = true;
+                    return () -> {
+                        Log.i(TAG, "audio stopped");
+                        mAudioIsPlaying = false;
                     };
                 });
 
@@ -456,10 +466,16 @@ public class CastWebContentsActivity extends Activity {
     @Override
     public void onUserLeaveHint() {
         Log.d(TAG, "onUserLeaveHint");
-        if (canUsePictureInPicture() && mAllowPictureInPicture) {
+        if (canUsePictureInPicture() && mVideoIsPlaying) {
+            Log.i(TAG, "entering picture-in-picture mode");
             enterPictureInPictureMode(new PictureInPictureParams.Builder().build());
+        } else if (canPlayBackgroundAudio() && mAudioIsPlaying) {
+            Log.i(TAG, "entering background audio mode");
         } else {
             mSurfaceAvailable.reset();
+            CastWebContentsComponent.onComponentClosed(
+                    CastWebContentsIntentUtils.getSessionId(getIntent()));
+            mIsFinishingState.set("User exit while backgroundable media is not playing");
         }
     }
 
@@ -496,6 +512,19 @@ public class CastWebContentsActivity extends Activity {
                 && !DeviceInfo.isTV();
     }
 
+    private boolean canPlayBackgroundAudio() {
+        return !DeviceInfo.isTV();
+    }
+
+    private static boolean isDocked(Intent intent) {
+        if (intent == null || !Intent.ACTION_DOCK_EVENT.equals(intent.getAction())) {
+            Log.w(TAG, "Invalid dock intent:" + intent);
+            return false;
+        }
+        int dockState = intent.getIntExtra(Intent.EXTRA_DOCK_STATE, -1);
+        return dockState != Intent.EXTRA_DOCK_STATE_UNDOCKED;
+    }
+
     // Sends the specified visibility change event to the current app (as reported by getIntent()).
     private void sendVisibilityChanged(String sessionId, @VisibilityType int visibilityType) {
         Context ctx = getApplicationContext();
@@ -513,14 +542,5 @@ public class CastWebContentsActivity extends Activity {
 
     public void setSurfaceHelperForTesting(CastWebContentsSurfaceHelper surfaceHelper) {
         mSurfaceHelperState.set(surfaceHelper);
-    }
-
-    private static boolean isDocked(Intent intent) {
-        if (intent == null || !Intent.ACTION_DOCK_EVENT.equals(intent.getAction())) {
-            Log.w(TAG, "Invalid dock intent:" + intent);
-            return false;
-        }
-        int dockState = intent.getIntExtra(Intent.EXTRA_DOCK_STATE, -1);
-        return dockState != Intent.EXTRA_DOCK_STATE_UNDOCKED;
     }
 }

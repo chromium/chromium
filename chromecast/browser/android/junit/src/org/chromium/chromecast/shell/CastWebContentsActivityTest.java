@@ -24,11 +24,13 @@ import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.Application;
 import android.app.PictureInPictureParams;
+import android.app.UiModeManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.os.PatternMatcher;
@@ -64,6 +66,7 @@ import org.robolectric.shadow.api.Shadow;
 import org.robolectric.shadows.ShadowActivity;
 import org.robolectric.shadows.ShadowActivityManager;
 import org.robolectric.shadows.ShadowPackageManager;
+import org.robolectric.shadows.ShadowUIModeManager;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -148,6 +151,7 @@ public class CastWebContentsActivityTest {
     private int mNextMediaId;
     private Application mApplication;
     private ShadowActivityManager mShadowActivityManager;
+    private ShadowUIModeManager mShadowUIModeManager;
     private ShadowPackageManager mShadowPackageManager;
     private ActivityController<CastWebContentsActivity> mActivityLifecycle;
     private CastWebContentsActivity mActivity;
@@ -172,6 +176,11 @@ public class CastWebContentsActivityTest {
                         (ActivityManager)
                                 RuntimeEnvironment.application.getSystemService(
                                         Context.ACTIVITY_SERVICE));
+        mShadowUIModeManager =
+                Shadows.shadowOf(
+                        (UiModeManager)
+                                RuntimeEnvironment.application.getSystemService(
+                                        Context.UI_MODE_SERVICE));
         mShadowPackageManager =
                 Shadows.shadowOf(RuntimeEnvironment.application.getPackageManager());
         mActivityLifecycle =
@@ -442,6 +451,7 @@ public class CastWebContentsActivityTest {
         Window window = mock(Window.class);
         mActivityLifecycle.create().start().resume();
         shadowActivity.setWindow(window);
+        updateMediaState(true, true);
         MotionEvent event = mock(MotionEvent.class);
         when(event.getAction()).thenReturn(MotionEvent.ACTION_DOWN);
         when(window.superDispatchTouchEvent(event)).thenReturn(true);
@@ -474,9 +484,11 @@ public class CastWebContentsActivityTest {
 
     @Test
     @Config(shadows = {ExtendedShadowActivity.class})
-    public void testStopWhileInPipModeDoesNotClosesActivity() {
+    public void testStopWhileInPipModeDoesNotCloseActivity() {
+        mShadowPackageManager.setSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE, true);
         mShadowActivityManager.setLockTaskModeState(ActivityManager.LOCK_TASK_MODE_NONE);
         mActivityLifecycle.create().start().resume();
+        updateMediaState(true, true);
         mActivity.onUserLeaveHint();
         mActivity.onPictureInPictureModeChanged(true, null);
         verifyBroadcastedIntent(
@@ -486,6 +498,50 @@ public class CastWebContentsActivityTest {
                     assertFalse(mActivity.isFinishing());
                 },
                 false);
+    }
+
+    @Test
+    public void testStopWhileNoMediaPlayingClosesActivity() {
+        mShadowActivityManager.setLockTaskModeState(ActivityManager.LOCK_TASK_MODE_NONE);
+        mActivityLifecycle.create().start().resume();
+        updateMediaState(false, false);
+        verifyBroadcastedIntent(
+                filterFor(CastWebContentsIntentUtils.ACTION_ACTIVITY_STOPPED),
+                () -> {
+                    mActivity.onUserLeaveHint();
+                    assertTrue(mActivity.isFinishing());
+                },
+                true);
+    }
+
+    @Test
+    public void testStopWhileAudioIsPlayingOnNonTvDoesNotCloseActivity() {
+        mShadowUIModeManager.setCurrentModeType(Configuration.UI_MODE_TYPE_NORMAL);
+        mShadowActivityManager.setLockTaskModeState(ActivityManager.LOCK_TASK_MODE_NONE);
+        mActivityLifecycle.create().start().resume();
+        updateMediaState(true, false);
+        verifyBroadcastedIntent(
+                filterFor(CastWebContentsIntentUtils.ACTION_ACTIVITY_STOPPED),
+                () -> {
+                    mActivity.onUserLeaveHint();
+                    assertFalse(mActivity.isFinishing());
+                },
+                false);
+    }
+
+    @Test
+    public void testStopWhileAudioIsPlayingOnTvClosesActivity() {
+        mShadowUIModeManager.setCurrentModeType(Configuration.UI_MODE_TYPE_TELEVISION);
+        mShadowActivityManager.setLockTaskModeState(ActivityManager.LOCK_TASK_MODE_NONE);
+        mActivityLifecycle.create().start().resume();
+        updateMediaState(true, false);
+        verifyBroadcastedIntent(
+                filterFor(CastWebContentsIntentUtils.ACTION_ACTIVITY_STOPPED),
+                () -> {
+                    mActivity.onUserLeaveHint();
+                    assertTrue(mActivity.isFinishing());
+                },
+                true);
     }
 
     @Test
