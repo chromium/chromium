@@ -38,6 +38,10 @@ class PLATFORM_EXPORT WidgetScheduler
     // Controls whether or not BeginMainFrameNotExpected messages are sent from
     // the compositor to the `WidgetScheduler`.
     virtual void RequestBeginMainFrameNotExpected(bool new_state) = 0;
+
+    // Returns true if main frames updates are paused or deferred for any reason
+    // and false otherwise.
+    virtual bool AreMainFramesPausedOrDeferred() const = 0;
   };
 
   virtual ~WidgetScheduler() = default;

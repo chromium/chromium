@@ -208,6 +208,7 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
 
   // scheduler::WidgetScheduler::Delegate overrides:
   void RequestBeginMainFrameNotExpected(bool) override;
+  bool AreMainFramesPausedOrDeferred() const override;
 
   cc::AnimationHost* AnimationHost() const;
   cc::AnimationTimeline* ScrollAnimationTimeline() const;

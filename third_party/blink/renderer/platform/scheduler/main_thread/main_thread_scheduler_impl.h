@@ -251,7 +251,7 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
       const WebInputEventAttribution& web_input_event_attribution);
   void DidHandleInputEventOnMainThread(const WebInputEvent& web_input_event,
                                        WebInputEventResult result,
-                                       bool frame_requested);
+                                       bool is_frame_expected);
 
   // Use a separate task runner so that IPC tasks are not logged via the same
   // task queue that executes them. Otherwise this would result in an infinite
@@ -765,8 +765,8 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
     // the next frame should be prioritized.
     bool is_current_task_discrete_input = false;
     // Set when a frame is known to be requested when handling an input event on
-    // the main thread.
-    bool is_frame_requested_after_discrete_input = false;
+    // the main thread and rendering is not paused or deferred.
+    bool is_frame_expected_after_discrete_input = false;
     // Cumulative non-continuous time spent running render-blocking tasks since
     // the last frame.
     base::TimeDelta rendering_blocking_duration_since_last_frame;

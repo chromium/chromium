@@ -1918,4 +1918,10 @@ void WidgetBase::RequestBeginMainFrameNotExpected(bool requested) {
   LayerTreeHost()->RequestBeginMainFrameNotExpected(requested);
 }
 
+bool WidgetBase::AreMainFramesPausedOrDeferred() const {
+  cc::LayerTreeHost* host = LayerTreeHost();
+  CHECK(host);
+  return host->MainFrameUpdatesAreDeferred() || host->IsRenderingPaused();
+}
+
 }  // namespace blink
