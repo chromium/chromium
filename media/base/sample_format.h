@@ -33,7 +33,7 @@ enum SampleFormat {
   kSampleFormatDtse,        // Compressed DTS Express audio bitstream.
 
   // Must always be equal to largest value ever logged.
-  kSampleFormatMax = kSampleFormatDtse,
+  kMaxValue = kSampleFormatDtse,
 };
 
 // Returns the number of bytes used per channel for the specified

@@ -220,7 +220,8 @@ TypeConverter<scoped_refptr<media::AudioBuffer>, media::mojom::AudioBufferPtr>::
     return media::AudioBuffer::CreateEOSBuffer();
 
   if (input->frame_count <= 0 ||
-      static_cast<size_t>(input->sample_format) > media::kSampleFormatMax ||
+      static_cast<size_t>(input->sample_format) >
+          media::SampleFormat::kMaxValue ||
       static_cast<size_t>(input->channel_layout) > media::CHANNEL_LAYOUT_MAX ||
       ChannelLayoutToChannelCount(input->channel_layout) !=
           input->channel_count) {

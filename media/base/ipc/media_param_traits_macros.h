@@ -112,7 +112,7 @@ IPC_ENUM_TRAITS_MAX_VALUE(media::OutputDeviceStatus,
 IPC_ENUM_TRAITS_MAX_VALUE(media::PipelineStatusCodes,
                           media::PipelineStatusCodes::PIPELINE_STATUS_MAX)
 
-IPC_ENUM_TRAITS_MAX_VALUE(media::SampleFormat, media::kSampleFormatMax)
+IPC_ENUM_TRAITS_MAX_VALUE(media::SampleFormat, media::SampleFormat::kMaxValue)
 
 IPC_ENUM_TRAITS_MAX_VALUE(media::VideoCodec, media::VideoCodec::kMaxValue)
 
