@@ -144,6 +144,16 @@ ul, ol {
     margin: 0;
 }
 
+ul.distilled-content-list {
+  list-style-type: disc;
+  padding-inline-start: 2.5em;
+}
+
+ol.distilled-content-list {
+  list-style-type: decimal;
+  padding-inline-start: 2.5em;
+}
+
 /* Table styling. */
 
 /* Styles for scrollable containers, e.g., for wide tables. */

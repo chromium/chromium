@@ -11,6 +11,7 @@
 //components/test/data/dom_distiller/identify_empty_svgs_tester.js
 //components/test/data/dom_distiller/image_classifier_tester.js
 //components/test/data/dom_distiller/invisible_style.html
+//components/test/data/dom_distiller/list_classifier_tester.js
 //components/test/data/dom_distiller/markup_article.html
 //components/test/data/dom_distiller/non_og_article.html
 //components/test/data/dom_distiller/og_article.html
