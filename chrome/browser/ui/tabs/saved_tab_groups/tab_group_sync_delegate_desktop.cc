@@ -317,8 +317,7 @@ std::u16string TabGroupSyncDelegateDesktop::GetTabTitle(
 
         if (const TabStripModel* const tab_strip_model =
                 browser->GetTabStripModel()) {
-          for (int i = 0; i < tab_strip_model->count(); ++i) {
-            tabs::TabInterface* tab = tab_strip_model->GetTabAtIndex(i);
+          for (tabs::TabInterface* tab : *tab_strip_model) {
             if (tab->GetHandle().raw_value() == local_tab_id) {
               result = tab->GetContents() ? tab->GetContents()->GetTitle()
                                           : std::u16string();
@@ -365,11 +364,11 @@ TabGroupId TabGroupSyncDelegateDesktop::AddOpenedTabsToGroup(
     const std::map<tabs::TabInterface*, base::Uuid>& tab_guid_mapping,
     const SavedTabGroup& saved_group) {
   std::vector<int> tab_indices;
-  for (int i = 0; i < tab_strip_model->count(); ++i) {
-    if (base::Contains(tab_guid_mapping, tab_strip_model->GetTabAtIndex(i)) &&
-        !tab_strip_model->GetTabGroupForTab(i).has_value()) {
+  for (int i = 0; tabs::TabInterface* tab : *tab_strip_model) {
+    if (base::Contains(tab_guid_mapping, tab) && !tab->GetGroup().has_value()) {
       tab_indices.push_back(i);
     }
+    ++i;
   }
 
   TabGroupId tab_group_id = TabGroupId::GenerateNew();

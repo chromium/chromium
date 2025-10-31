@@ -54,9 +54,10 @@ void BrowserTabStripTracker::MaybeTrackBrowser(
   tab_strip_model->AddObserver(tab_strip_model_observer_);
 
   TabStripModelChange::Insert insert;
-  for (int i = 0; i < tab_strip_model->count(); ++i) {
-    insert.contents.push_back({tab_strip_model->GetTabAtIndex(i),
-                               tab_strip_model->GetWebContentsAt(i), i});
+  insert.contents.reserve(tab_strip_model->count());
+  for (int i = 0; tabs::TabInterface* tab : *tab_strip_model) {
+    insert.contents.push_back({tab, tab->GetContents(), i});
+    ++i;
   }
 
   TabStripModelChange change(std::move(insert));

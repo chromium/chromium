@@ -126,8 +126,8 @@ std::vector<tabs::TabInterface*> TabListBridge::GetAllTabs() {
   std::vector<tabs::TabInterface*> all_tabs;
   size_t tab_count = tab_strip_->count();
   all_tabs.reserve(tab_count);
-  for (size_t i = 0; i < tab_count; ++i) {
-    all_tabs.push_back(tab_strip_->GetTabAtIndex(i));
+  for (tabs::TabInterface* tab : *tab_strip_) {
+    all_tabs.push_back(tab);
   }
   return all_tabs;
 }

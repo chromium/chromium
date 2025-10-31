@@ -64,8 +64,8 @@ void DesktopTabModelURLVisitDataFetcher::FetchURLVisitData(
         }
 
         TabStripModel* const tab_strip_model = browser->GetTabStripModel();
-        for (int i = 0; i < tab_strip_model->GetTabCount(); ++i) {
-          auto* web_contents = tab_strip_model->GetWebContentsAt(i);
+        for (tabs::TabInterface* tab : *tab_strip_model) {
+          auto* web_contents = tab->GetContents();
           auto* last_entry =
               web_contents->GetController().GetLastCommittedEntry();
           if (!last_entry || last_entry->GetTimestamp() < options.begin_time) {
@@ -100,8 +100,6 @@ void DesktopTabModelURLVisitDataFetcher::FetchURLVisitData(
             }
             tab_data.tab_count += 1;
           }
-
-          tabs::TabInterface* tab = tab_strip_model->GetTabAtIndex(i);
 
           tab_data.pinned = tab_data.pinned || tab->IsPinned();
           tab_data.in_group = tab_data.in_group || tab->GetGroup().has_value();

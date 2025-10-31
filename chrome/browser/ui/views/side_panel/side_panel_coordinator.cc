@@ -321,9 +321,7 @@ void SidePanelCoordinator::ClearCachedEntryViews(
     SidePanelEntry::PanelType type) {
   window_registry_->ClearCachedEntryViews(type);
   TabStripModel* model = browser_view_->browser()->tab_strip_model();
-  for (int index = 0; index < model->count(); ++index) {
-    auto* tab =
-        browser_view_->browser()->tab_strip_model()->GetTabAtIndex(index);
+  for (tabs::TabInterface* tab : *model) {
     tab->GetTabFeatures()->side_panel_registry()->ClearCachedEntryViews(type);
   }
 }

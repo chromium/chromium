@@ -1238,8 +1238,9 @@ const web_app::AppBrowserController* Browser::GetAppBrowserController() const {
 
 std::vector<tabs::TabInterface*> Browser::GetAllTabInterfaces() {
   std::vector<tabs::TabInterface*> results;
-  for (int index = 0; index < tab_strip_model_->count(); ++index) {
-    results.push_back(tab_strip_model_->GetTabAtIndex(index));
+  results.reserve(tab_strip_model_->count());
+  for (tabs::TabInterface* tab : *tab_strip_model_) {
+    results.push_back(tab);
   }
   return results;
 }

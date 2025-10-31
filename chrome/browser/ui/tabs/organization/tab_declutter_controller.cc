@@ -121,10 +121,7 @@ TabDeclutterController::GetDuplicateTabs() {
   std::map<GURL, std::vector<tabs::TabInterface*>> duplicate_tabs;
   CHECK(features::IsTabstripDedupeEnabled());
 
-  for (int tab_index = 0; tab_index < tab_strip_model_->GetTabCount();
-       tab_index++) {
-    tabs::TabInterface* tab = tab_strip_model_->GetTabAtIndex(tab_index);
-
+  for (tabs::TabInterface* tab : *tab_strip_model_) {
     if (IsTabExcluded(tab)) {
       continue;
     }
@@ -162,10 +159,7 @@ std::vector<tabs::TabInterface*> TabDeclutterController::GetStaleTabs() {
   std::vector<tabs::TabInterface*> tabs;
 
   const base::Time now = base::Time::Now();
-  for (int tab_index = 0; tab_index < tab_strip_model_->GetTabCount();
-       tab_index++) {
-    tabs::TabInterface* tab = tab_strip_model_->GetTabAtIndex(tab_index);
-
+  for (tabs::TabInterface* tab : *tab_strip_model_) {
     if (IsTabExcluded(tab)) {
       continue;
     }
@@ -247,10 +241,7 @@ void TabDeclutterController::DeclutterTabs(
     // close all the tabs except the oldest tab.
     std::vector<std::pair<tabs::TabInterface*, base::Time>> url_matching_tabs;
 
-    for (int tab_index = 0; tab_index < tab_strip_model_->GetTabCount();
-         ++tab_index) {
-      tabs::TabInterface* tab = tab_strip_model_->GetTabAtIndex(tab_index);
-
+    for (tabs::TabInterface* tab : *tab_strip_model_) {
       if (tab->GetContents()->GetLastCommittedURL().GetWithoutRef() != url) {
         continue;
       }

@@ -130,8 +130,7 @@ TabOrganizationSession::CreateSessionForBrowser(
 
   // iterate through the tabstripmodel building the tab data.
   TabStripModel* tab_strip_model = browser->tab_strip_model();
-  for (int index = 0; index < tab_strip_model->count(); index++) {
-    tabs::TabInterface* tab = tab_strip_model->GetTabAtIndex(index);
+  for (tabs::TabInterface* tab : *tab_strip_model) {
     std::unique_ptr<TabData> tab_data = std::make_unique<TabData>(tab);
     if (!tab_data->IsValidForOrganizing()) {
       continue;
