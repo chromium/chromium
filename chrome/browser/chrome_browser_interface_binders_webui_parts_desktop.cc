@@ -249,9 +249,8 @@ void PopulateChromeWebUIFrameBindersPartsDesktop(
 #endif
       NewTabPageUI, OmniboxPopupUI, BookmarksSidePanelUI, CustomizeChromeUI,
       ColorPipelineInternalsUI, UserEducationInternalsUI, ReadingListUI,
-      TabSearchUI, WebuiGalleryUI, HistoryClustersSidePanelUI,
-      ShoppingInsightsSidePanelUI, media_router::AccessCodeCastUI,
-      commerce::ProductSpecificationsUI>(map);
+      WebuiGalleryUI, HistoryClustersSidePanelUI, ShoppingInsightsSidePanelUI,
+      media_router::AccessCodeCastUI, commerce::ProductSpecificationsUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
       customize_buttons::mojom::CustomizeButtonsHandlerFactory, NewTabPageUI>(
@@ -467,9 +466,6 @@ void PopulateChromeWebUIFrameBindersPartsDesktop(
       read_anything::mojom::UntrustedPageHandlerFactory,
       ReadAnythingUntrustedUI>(map);
 
-  RegisterWebUIControllerInterfaceBinder<tab_search::mojom::PageHandlerFactory,
-                                         TabSearchUI>(map);
-
   RegisterWebUIControllerInterfaceBinder<
       ::mojom::user_education_internals::UserEducationInternalsPageHandler,
       UserEducationInternalsUI>(map);
@@ -563,6 +559,14 @@ void PopulateChromeWebUIFrameBindersPartsDesktop(
 
 void PopulateChromeWebUIFrameInterfaceBrokersTrustedPartsDesktop(
     content::WebUIBrowserInterfaceBrokerRegistry& registry) {
+  // Note: The MetricsReporterService is available to all WebUIs in the registry
+  registry.AddGlobal<metrics_reporter::mojom::PageMetricsHost>(
+      base::BindRepeating(&BindMetricsReporterService));
+
+  registry.ForWebUI<TabSearchUI>()
+      .Add<color_change_listener::mojom::PageHandler>()
+      .Add<tab_search::mojom::PageHandlerFactory>();
+
   if (base::FeatureList::IsEnabled(ntp_features::kNtpFooter)) {
     registry.ForWebUI<NewTabFooterUI>()
         .Add<color_change_listener::mojom::PageHandler>()
@@ -628,7 +632,6 @@ void PopulateChromeWebUIFrameInterfaceBrokersUntrustedPartsDesktop(
         .Add<bookmark_bar::mojom::PageHandlerFactory>()
         .Add<extensions_bar::mojom::PageHandlerFactory>()
         .Add<searchbox::mojom::PageHandler>()
-        .Add<metrics_reporter::mojom::PageMetricsHost>()
         .Add<tabs_api::mojom::TabStripService>()
         .Add<tracked_element::mojom::TrackedElementHandler>();
   }

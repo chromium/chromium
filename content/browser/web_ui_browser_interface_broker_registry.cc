@@ -20,11 +20,16 @@ std::unique_ptr<PerWebUIBrowserInterfaceBroker>
 WebUIBrowserInterfaceBrokerRegistry::CreateInterfaceBroker(
     WebUIController& controller) {
   auto iter = binder_initializers_.find(controller.GetType());
-  if (iter == binder_initializers_.end())
+  if (iter == binder_initializers_.end()) {
     return nullptr;
+  }
+
+  std::vector<BinderInitializer> binder_initializers =
+      global_binder_initializers_;
+  std::ranges::copy(iter->second, std::back_inserter(binder_initializers));
 
   return std::make_unique<PerWebUIBrowserInterfaceBroker>(controller,
-                                                          iter->second);
+                                                          binder_initializers);
 }
 
 }  // namespace content

@@ -143,11 +143,6 @@ void WebUIBrowserUI::BindInterface(
 }
 
 void WebUIBrowserUI::BindInterface(
-    mojo::PendingReceiver<metrics_reporter::mojom::PageMetricsHost> receiver) {
-  metrics_reporter_.BindInterface(std::move(receiver));
-}
-
-void WebUIBrowserUI::BindInterface(
     mojo::PendingReceiver<guest_contents::mojom::GuestContentsHost> receiver) {
   guest_contents::GuestContentsHostImpl::Create(web_ui()->GetWebContents(),
                                                 std::move(receiver));
