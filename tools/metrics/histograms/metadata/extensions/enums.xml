@@ -3330,6 +3330,7 @@ Called by update_extension_permission.py.-->
 <enum name="ExtensionUsageAction">
   <int value="0" label="Extension Pinned"/>
   <int value="1" label="Extension Unpinned"/>
+  <int value="2" label="Extension Context Menu Init"/>
 </enum>
 
 <enum name="ExternalItemState">

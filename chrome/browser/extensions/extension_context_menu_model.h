@@ -106,6 +106,7 @@ class ExtensionContextMenuModel : public ui::SimpleMenuModel,
   enum class ExtensionUsageAction {
     kPinned,
     kUnpinned,
+    kContextMenuInit,
   };
 
   // Delegate to handle showing an ExtensionAction popup.

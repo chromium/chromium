@@ -389,6 +389,9 @@ void ExtensionContextMenuModel::Init(const Extension* extension,
   } else {
     InitMenu(extension, can_show_icon_in_toolbar);
   }
+
+  RecordUkmForExtension(extension->url(),
+                        ExtensionUsageAction::kContextMenuInit);
 }
 
 bool ExtensionContextMenuModel::IsCommandIdChecked(int command_id) const {

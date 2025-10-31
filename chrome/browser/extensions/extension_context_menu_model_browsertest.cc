@@ -294,6 +294,11 @@ class ExtensionContextMenuModelTest : public ExtensionBrowserTest {
 
   ukm::TestAutoSetUkmRecorder& ukm_recorder() { return *ukm_recorder_; }
 
+  void ResetUkmRecorder() {
+    ukm_recorder_.reset();
+    ukm_recorder_.emplace();
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
   testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
@@ -778,6 +783,14 @@ IN_PROC_BROWSER_TEST_F(ExtensionContextMenuModelTest,
     std::optional<size_t> index = menu.GetIndexOfCommandId(visibility_command);
     ASSERT_TRUE(index.has_value());
     EXPECT_EQ(unpin_string, menu.GetLabelAt(index.value()));
+
+    auto ukm_entries = ukm_recorder().GetEntriesByName(
+        ukm::builders::Extensions_ExtensionUsage::kEntryName);
+    auto* entry = ukm_entries.front().get();
+    ukm_recorder().ExpectEntryMetric(
+        entry, ukm::builders::Extensions_ExtensionUsage::kActionName,
+        static_cast<int64_t>(
+            ExtensionContextMenuModel::ExtensionUsageAction::kContextMenuInit));
   }
 
   {
@@ -788,6 +801,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionContextMenuModelTest,
     ASSERT_TRUE(index.has_value());
     EXPECT_EQ(unpin_string, menu.GetLabelAt(index.value()));
 
+    ResetUkmRecorder();
     // Pin before unpinning.
     ToolbarActionsModel::Get(profile())->SetActionVisibility(
         browser_action->id(), true);
@@ -818,14 +832,15 @@ IN_PROC_BROWSER_TEST_F(ExtensionContextMenuModelTest,
     ExtensionContextMenuModel menu(browser_action, browser_window,
                                    /*is_pinned=*/false, nullptr, true,
                                    ContextMenuSource::kToolbarAction);
+    ResetUkmRecorder();
     // Pin the extension
     menu.ExecuteCommand(visibility_command, 0);
 
     auto ukm_entries = ukm_recorder().GetEntriesByName(
         ukm::builders::Extensions_ExtensionUsage::kEntryName);
 
-    ASSERT_EQ(2u, ukm_entries.size());
-    auto* entry = ukm_entries.at(1).get();
+    ASSERT_EQ(1u, ukm_entries.size());
+    auto* entry = ukm_entries.front().get();
     ukm_recorder().ExpectEntryMetric(
         entry, ukm::builders::Extensions_ExtensionUsage::kActionName,
         static_cast<int64_t>(
