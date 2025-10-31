@@ -29,6 +29,8 @@ class GlicWebClientAccess {
   virtual void PanelStateChanged(
       const glic::mojom::PanelState& panel_state) = 0;
 
+  virtual void NotifyInstanceActivationChanged(bool is_active) = 0;
+
   // Informs the web client when the user starts and finishes dragging to resize
   // the panel.
   virtual void ManualResizeChanged(bool resizing) = 0;

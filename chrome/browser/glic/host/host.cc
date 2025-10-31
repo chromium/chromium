@@ -435,6 +435,12 @@ void Host::SendViewChangeRequest(mojom::ViewChangeRequestPtr change_request) {
   }
 }
 
+void Host::NotifyInstanceActivationChanged(bool is_active) {
+  if (handler_info_ && handler_info_->web_client) {
+    handler_info_->web_client->NotifyInstanceActivationChanged(is_active);
+  }
+}
+
 void Host::NotifyAdditionalContext(mojom::AdditionalContextPtr context) {
   if (auto* client = GetPrimaryWebClient()) {
     client->NotifyAdditionalContext(std::move(context));

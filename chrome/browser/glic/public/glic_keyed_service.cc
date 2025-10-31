@@ -728,4 +728,13 @@ void GlicKeyedService::OnInteractionModeChange(mojom::WebClientMode new_mode) {
   // Unused in single instance mode.
 }
 
+bool GlicKeyedService::IsActive() {
+  // The `browser_is_active` signal was changed to `instance_is_active`. This
+  // the logic that originally backed `browser_is_active` for single-instance.
+  // This function will only be called from `GlicPageHandler` when in
+  // single-instance, and should be deleted when single-instance is deleted and
+  // GKS no longer implements `Host::InstanceDelegate`.
+  return sharing_manager().GetFocusedBrowser();
+}
+
 }  // namespace glic

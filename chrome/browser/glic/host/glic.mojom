@@ -288,7 +288,7 @@ struct WebClientInitialState {
   // Whether the panel is active. See `NotifyPanelActiveChange`.
   bool panel_is_active;
   bool browser_is_open;
-  bool browser_is_active;
+  bool instance_is_active;
   // Reflects the enabling state of always-detached mode.
   bool always_detached_mode;
   bool enable_zero_state_suggestions;
@@ -1024,7 +1024,6 @@ enum WebUseCounter {
 };
 
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicWebUseCounter)
-
 [Stable, Extensible]
 enum ResponseStopCause {
   [Default] kUnknown = 0,
@@ -1134,11 +1133,10 @@ interface WebClient {
   // True if the browser has at least one open window.
   NotifyBrowserIsOpenChanged(bool browser_is_open);
 
-  // The browser (or at least, some browser window which is potentially
-  // relevant to this glic panel) has become active or inactive (in the sense
-  // of visibility and focus). Some activity, such as responsiveness checks,
-  // may be paused or resumed accordingly.
-  NotifyBrowserIsActiveChanged(bool browser_active);
+  // The window holding the glic panel has become active or inactive (in the
+  // sense of visibility and focus). Some activity, such as responsiveness
+  // checks, may be paused or resumed accordingly.
+  NotifyInstanceActivationChanged(bool instance_active);
 
   // Notify that the closed captioning setting has changed.
   NotifyClosedCaptioningSettingChanged(bool enabled);
@@ -1192,7 +1190,7 @@ interface WebClient {
   // Selections for multiple forms can be requested by populating multiple
   // FormFillingRequest objects.
   RequestToShowAutofillSuggestionsDialog(
-    actor.webui.mojom.SelectAutofillSuggestionsDialogRequest request)
+      actor.webui.mojom.SelectAutofillSuggestionsDialogRequest request)
       => (actor.webui.mojom.SelectAutofillSuggestionsDialogResponse response);
 
   // Requests the web client to show a dialog for deterministic user
@@ -1366,6 +1364,7 @@ enum CaptureRegionErrorReason {
   // There is no focused tab that can be used for region capture.
   kNoFocusableTab = 1,
 };
+
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:CaptureRegionErrorReason)
 
 // Observer for the capture region process.

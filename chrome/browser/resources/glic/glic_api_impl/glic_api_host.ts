@@ -291,10 +291,10 @@ class WebClientImpl implements WebClientInterface {
         'glicWebClientBrowserIsOpenChanged', {browserIsOpen});
   }
 
-  notifyBrowserIsActiveChanged(browserIsActive: boolean): void {
+  notifyInstanceActivationChanged(instanceIsActive: boolean): void {
     // This isn't forwarded to the actual web client yet, as it's currently
     // only needed for the responsiveness logic, which is here.
-    this.host.setBrowserIsActive(browserIsActive);
+    this.host.setInstanceIsActive(instanceIsActive);
   }
 
   notifyOsHotkeyStateChanged(hotkey: string): void {
@@ -588,7 +588,7 @@ class HostMessageHandler implements HostMessageHandlerInterface {
     this.host.setInitialState(initialState);
     const chromeVersion = initialState.chromeVersion.components;
     const hostCapabilities = initialState.hostCapabilities;
-    this.host.setBrowserIsActive(initialState.browserIsActive);
+    this.host.setInstanceIsActive(initialState.instanceIsActive);
 
     // If the panel isn't active, don't send the focused tab until later.
     if (initialState.enableApiActivationGating && !initialState.panelIsActive) {
@@ -1336,7 +1336,7 @@ export class GlicApiHost implements PostMessageRequestHandler {
   private waitingOnPanelWillOpenValue = false;
   private clientActiveObs = ObservableValue.withValue(false);
   private panelOpenState = PanelOpenState.CLOSED;
-  private browserIsActive = true;
+  private instanceIsActive = true;
   private hasShownDebuggerAttachedWarning = false;
   detailedWebClientState = DetailedWebClientState.BOOTSTRAP_PENDING;
   // Present while the client is monitoring pin candidates.
@@ -1440,8 +1440,8 @@ export class GlicApiHost implements PostMessageRequestHandler {
     }
   }
 
-  setBrowserIsActive(browserIsActive: boolean) {
-    this.browserIsActive = browserIsActive;
+  setInstanceIsActive(instanceIsActive: boolean) {
+    this.instanceIsActive = instanceIsActive;
     this.clientActiveObs.assignAndSignal(this.isClientActive());
   }
 
@@ -1451,7 +1451,7 @@ export class GlicApiHost implements PostMessageRequestHandler {
   private isClientActive() {
     return this.panelOpenState === PanelOpenState.OPEN &&
         this.webClientState.getCurrentValue() !== WebClientState.ERROR &&
-        this.browserIsActive;
+        this.instanceIsActive;
   }
 
   // Called when the web client is initialized.
