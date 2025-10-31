@@ -117,8 +117,9 @@ bool SurfacelessSkiaGlRenderer::BufferWrapper::Initialize(
     const gfx::Size& size) {
   glGenTextures(1, &gl_tex_);
 
-  gfx::BufferFormat format = viz::SinglePlaneSharedImageFormatToBufferFormat(
-      display::DisplaySnapshot::PrimaryFormat());
+  auto format = display::DisplaySnapshot::PrimaryFormat();
+  gfx::BufferFormat buffer_format =
+      viz::SinglePlaneSharedImageFormatToBufferFormat(format);
 
   pixmap_ = OzonePlatform::GetInstance()
                 ->GetSurfaceFactoryOzone()
@@ -129,7 +130,8 @@ bool SurfacelessSkiaGlRenderer::BufferWrapper::Initialize(
       OzonePlatform::GetInstance()
           ->GetSurfaceFactoryOzone()
           ->GetCurrentGLOzone()
-          ->ImportNativePixmap(pixmap_, format, gfx::BufferPlane::DEFAULT, size,
+          ->ImportNativePixmap(pixmap_, buffer_format,
+                               gfx::BufferPlane::DEFAULT, size,
                                gfx::ColorSpace(), GL_TEXTURE_2D, gl_tex_);
 
   if (!pixmap_gl_binding_) {
