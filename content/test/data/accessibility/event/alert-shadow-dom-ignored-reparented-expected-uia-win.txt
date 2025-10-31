@@ -1,0 +1,1 @@
+LiveRegionChanged on role=alert

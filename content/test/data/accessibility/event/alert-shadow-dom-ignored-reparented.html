@@ -1,0 +1,68 @@
+<!--
+Tests alert events when host visibility change causes shadow content to be
+reparented (ignored subtree becomes accessible) while gaining role="alert".
+
+Key steps:
+- Host element visibility:hidden → entire shadow subtree IGNORED/omitted
+- Host becomes visible (via :host([open]) CSS) → shadow subtree reparented into tree
+- Shadow content gains role="alert" simultaneously
+- OnIgnoredChanged (or subtree creation) fires Event::ALERT
+
+@UIA-WIN-DENY:*
+@UIA-WIN-ALLOW:SystemAlert*
+@UIA-WIN-ALLOW:LiveRegion*
+-->
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Add Alert with Shadow DOM Test</title>
+  <style>
+    /* No CSS rules - element manages its own shadow DOM styles */
+  </style>
+</head>
+<body>
+  <!-- Custom element mimicking cr-toast with shadow DOM -->
+  <test-alert id="alert"></test-alert>
+
+  <script>
+    class TestAlert extends HTMLElement {
+      constructor() {
+        super();
+        this.attachShadow({ mode: 'open' });
+        this.shadowRoot.innerHTML = `
+          <style>
+            :host {
+              display: block;
+              visibility: hidden;
+            }
+            :host([open]) {
+              visibility: visible;
+            }
+          </style>
+          <div id="container">
+            <slot></slot>
+            Settings saved successfully!
+          </div>
+        `;
+      }
+
+      show() {
+        // Mimic cr-toast.show() sequence:
+        // 1. Set open attribute (triggers visibility via CSS on host)
+        this.setAttribute('open', '');
+        // 2. Set role="alert" on the shadow container that's transitioning
+        const container = this.shadowRoot.getElementById('container');
+        container.setAttribute('role', 'alert');
+      }
+    }
+
+    customElements.define('test-alert', TestAlert);
+
+    function go() {
+      const alert = document.getElementById('alert');
+      alert.show();
+      return false;
+    }
+  </script>
+</body>
+</html>
