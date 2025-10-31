@@ -722,6 +722,8 @@ void UpdateTileDisplayLayerExtra(const mojom::TileDisplayLayerExtraPtr& extra,
   layer.SetNearestNeighbor(extra->nearest_neighbor);
   layer.SetContentColorUsage(extra->content_color_usage);
   layer.SetRecordedBounds(extra->recorded_bounds);
+  layer.SetProposedTilingScalesForDeletion(
+      extra->proposed_tiling_scales_for_deletion);
 }
 
 base::expected<void, std::string> UpdateLayer(const mojom::Layer& wire,
@@ -1994,11 +1996,32 @@ void LayerContextImpl::DoDrawInternal(
   frame.origin_begin_main_frame_args = begin_frame_args;
   stage_breakdown.start_prepare_to_draw = base::TimeTicks::Now();
   host_impl_->PrepareToDraw(&frame);
+
+  // Notifies the client which of the tilings it nominated for deletion are
+  // actually safe to delete. This is done after PrepareToDraw() so that we have
+  // the most up-to-date information on which tilings were used for the current
+  // frame.
+  SendTilingsCleanupNotificationToClient();
+
   stage_breakdown.start_draw_layers = base::TimeTicks::Now();
   frame.set_trees_in_viz_timestamps(std::move(stage_breakdown));
   host_impl_->DrawLayers(&frame);
   host_impl_->DidDrawAllLayers(frame);
   host_impl_->DidFinishImplFrame(begin_frame_args);
+}
+
+void LayerContextImpl::SendTilingsCleanupNotificationToClient() {
+  for (cc::LayerImpl* layer : *host_impl_->active_tree()) {
+    if (layer->GetLayerType() == cc::mojom::LayerType::kTileDisplay) {
+      auto* tile_layer = static_cast<cc::TileDisplayLayerImpl*>(layer);
+      std::vector<float> scales_to_remove =
+          tile_layer->GetSafeToDeleteTilings();
+      if (!scales_to_remove.empty()) {
+        client_->get()->OnTilingsReadyForCleanup(tile_layer->id(),
+                                                 scales_to_remove);
+      }
+    }
+  }
 }
 
 void LayerContextImpl::UpdateDisplayTiling(mojom::TilingPtr tiling,

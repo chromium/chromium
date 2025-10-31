@@ -127,6 +127,9 @@ struct TileDisplayLayerExtra {
   // This is also used during AppendQuads to decide if a quad needs to be
   // drawn.
   gfx.mojom.Rect recorded_bounds;
+
+  // Scales of tilings that the renderer proposes can be deleted.
+  array<float> proposed_tiling_scales_for_deletion;
 };
 
 // Extra fields in a cc::ScrollbarLayerImplBase that has been added

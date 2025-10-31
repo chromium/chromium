@@ -952,6 +952,8 @@ void SerializeLayer(LayerImpl& layer,
           picture_layer.GetContentColorUsage();
       tile_display_extra->recorded_bounds =
           picture_layer.GetRasterSource()->recorded_bounds();
+      tile_display_extra->proposed_tiling_scales_for_deletion =
+          picture_layer.TakeProposedTilingScalesForDeletion();
       wire.layer_extra = viz::mojom::LayerExtra::NewTileDisplayLayerExtra(
           std::move(tile_display_extra));
       SerializePictureLayerTileUpdates(picture_layer, resource_provider,
@@ -1494,6 +1496,10 @@ void VizLayerContext::UpdateDisplayTile(
 
 void VizLayerContext::OnRequestCommitForFrame(const viz::BeginFrameArgs& args) {
 }
+
+void VizLayerContext::OnTilingsReadyForCleanup(
+    int32_t layer_id,
+    const std::vector<float>& tiling_scales_to_clean_up) {}
 
 void VizLayerContext::SerializeAnimationUpdates(
     LayerTreeImpl& tree,

@@ -207,6 +207,10 @@ void TileDisplayLayerImpl::AppendQuadsSpecialization(
     quad_offset = gfx::Vector2d(-visible_rect.x(), -visible_rect.y());
   }
 
+  // Keep track of the tilings that were used so that tilings that are
+  // unused can be considered for removal.
+  last_append_quads_scales_.clear();
+
   // TODO(crbug.com/40902346): Use scaled_cull_rect to set
   // append_quads_data->checkerboarded_needs_record.
   std::optional<gfx::Rect> scaled_cull_rect;
@@ -288,6 +292,14 @@ void TileDisplayLayerImpl::AppendQuadsSpecialization(
           render_pass->CreateAndAppendDrawQuad<viz::SolidColorDrawQuad>();
       quad->SetNew(shared_quad_state, offset_geometry_rect,
                    offset_visible_geometry_rect, color, false);
+      continue;
+    }
+
+    if (last_append_quads_scales_.empty() ||
+        last_append_quads_scales_.back() !=
+            iter.CurrentTiling()->contents_scale_key()) {
+      last_append_quads_scales_.push_back(
+          iter.CurrentTiling()->contents_scale_key());
     }
   }
 
@@ -369,6 +381,23 @@ void TileDisplayLayerImpl::RecordDamage(const gfx::Rect& damage_rect) {
 void TileDisplayLayerImpl::DiscardResource(viz::ResourceId resource) {
   layer_tree_impl()->host_impl()->resource_provider()->RemoveImportedResource(
       std::move(resource));
+}
+
+std::vector<float> TileDisplayLayerImpl::GetSafeToDeleteTilings() {
+  std::vector<float> safe_to_delete_scales;
+  for (float scale : proposed_tiling_scales_for_deletion_) {
+    // Check if a tiling corresponding to the candidate scale is present in
+    // |last_append_quads_scales_|.
+    auto it = std::find(last_append_quads_scales_.begin(),
+                        last_append_quads_scales_.end(), scale);
+    if (it == last_append_quads_scales_.end()) {
+      // If a tiling corresponding to the candidate scale is not present in
+      // |last_append_quads_scales_|, then its safe to delete.
+      safe_to_delete_scales.push_back(scale);
+    }
+  }
+  proposed_tiling_scales_for_deletion_.clear();
+  return safe_to_delete_scales;
 }
 
 }  // namespace cc

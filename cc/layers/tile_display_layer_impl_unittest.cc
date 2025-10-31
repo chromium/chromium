@@ -4,6 +4,8 @@
 
 #include "cc/layers/tile_display_layer_impl.h"
 
+#include <algorithm>
+
 #include "base/check_deref.h"
 #include "cc/layers/append_quads_context.h"
 #include "cc/layers/append_quads_data.h"
@@ -11,7 +13,10 @@
 #include "components/viz/client/client_resource_provider.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/common/quads/tile_draw_quad.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "ui/gfx/geometry/rect.h"
+
+using testing::ElementsAre;
 
 namespace cc {
 
@@ -792,6 +797,166 @@ TEST_F(TileDisplayLayerImplTest,
   EXPECT_NE(tile, nullptr);
   EXPECT_TRUE(std::holds_alternative<TileDisplayLayerImpl::NoContents>(
       tile->contents()));
+}
+
+// Verifies that last_append_quads_scales_ is correctly updated after
+// AppendQuads.
+TEST_F(TileDisplayLayerImplTest, LastAppendQuadsScalesUpdated) {
+  constexpr gfx::Size kLayerBounds(1300, 1900);
+  constexpr gfx::Rect kLayerRect(kLayerBounds);
+
+  auto layer = std::make_unique<TileDisplayLayerImpl>(
+      CHECK_DEREF(host_impl()->active_tree()), /*id=*/42);
+  auto* raw_layer = layer.get();
+  host_impl()->active_tree()->AddLayer(std::move(layer));
+
+  raw_layer->SetBounds(kLayerBounds);
+  raw_layer->SetRecordedBounds(kLayerRect);
+  raw_layer->draw_properties().visible_layer_rect = kLayerRect;
+  raw_layer->draw_properties().opacity = 1.0;
+
+  // Create two tilings with different scales.
+  auto& low_res_tiling = raw_layer->GetOrCreateTilingFromScaleKey(1.0);
+  low_res_tiling.SetTileSize(kLayerBounds);
+  low_res_tiling.SetTilingRect(kLayerRect);
+  auto& high_res_tiling = raw_layer->GetOrCreateTilingFromScaleKey(2.0);
+  high_res_tiling.SetTileSize(kLayerBounds);
+  high_res_tiling.SetTilingRect(kLayerRect);
+
+  // Set content for both tilings.
+  auto low_res_resource_id = host_impl()->resource_provider()->ImportResource(
+      viz::TransferableResource::Make(
+          gpu::ClientSharedImage::CreateForTesting(),
+          viz::TransferableResource::ResourceSource::kTest, gpu::SyncToken()),
+      base::DoNothing());
+  TileDisplayLayerImpl::TileContents low_res_contents =
+      TileDisplayLayerImpl::TileResource(low_res_resource_id, kLayerBounds,
+                                         /*is_checkered=*/false);
+  low_res_tiling.SetTileContents(TileIndex{0, 0}, low_res_contents,
+                                 /*update_damage=*/true);
+
+  auto high_res_resource_id = host_impl()->resource_provider()->ImportResource(
+      viz::TransferableResource::Make(
+          gpu::ClientSharedImage::CreateForTesting(),
+          viz::TransferableResource::ResourceSource::kTest, gpu::SyncToken()),
+      base::DoNothing());
+  TileDisplayLayerImpl::TileContents high_res_contents =
+      TileDisplayLayerImpl::TileResource(high_res_resource_id, kLayerBounds,
+                                         /*is_checkered=*/false);
+  high_res_tiling.SetTileContents(TileIndex{0, 0}, high_res_contents,
+                                  /*update_damage=*/true);
+
+  SetupRootProperties(host_impl()->active_tree()->root_layer());
+
+  auto render_pass = viz::CompositorRenderPass::Create();
+  AppendQuadsData data;
+  raw_layer->AppendQuads(AppendQuadsContext{DRAW_MODE_SOFTWARE, {}, false},
+                         render_pass.get(), &data);
+
+  // AppendQuads should use the ideal resolution tiling (1.0), so
+  // last_append_quads_scales_ should contain 1.0.
+  const auto& last_append_scales = raw_layer->LastAppendQuadsScalesForTesting();
+  ASSERT_EQ(last_append_scales.size(), 1u);
+  EXPECT_EQ(last_append_scales[0], 1.0f);
+}
+
+// Verifies that GetSafeToDeleteTilings returns the correct set of scales for
+// tilings that are safe to delete.
+TEST_F(TileDisplayLayerImplTest, GetSafeToDeleteTilingsBasic) {
+  auto layer = std::make_unique<TileDisplayLayerImpl>(
+      CHECK_DEREF(host_impl()->active_tree()), /*id=*/42);
+  auto* raw_layer = layer.get();
+  host_impl()->active_tree()->AddLayer(std::move(layer));
+
+  // Case 1: Basic scenario - some tilings used, some not.
+  raw_layer->LastAppendQuadsScalesForTesting() = {2.0f};
+  raw_layer->SetProposedTilingScalesForDeletion({1.0f, 2.0f, 3.0f});
+
+  std::vector<float> safe_to_delete = raw_layer->GetSafeToDeleteTilings();
+  EXPECT_THAT(safe_to_delete, ElementsAre(1.0f, 3.0f));
+
+  // Case 2: No tilings were used in the last frame.
+  raw_layer->LastAppendQuadsScalesForTesting().clear();
+  raw_layer->SetProposedTilingScalesForDeletion({1.0f, 2.0f, 3.0f});
+
+  safe_to_delete = raw_layer->GetSafeToDeleteTilings();
+  EXPECT_THAT(safe_to_delete, ElementsAre(1.0f, 2.0f, 3.0f));
+
+  // Case 3: All proposed tilings were used in the last frame.
+  raw_layer->LastAppendQuadsScalesForTesting() = {1.0f, 2.0f, 3.0f};
+  raw_layer->SetProposedTilingScalesForDeletion({1.0f, 2.0f, 3.0f});
+
+  safe_to_delete = raw_layer->GetSafeToDeleteTilings();
+  EXPECT_TRUE(safe_to_delete.empty());
+
+  // Case 4: Proposed tilings include some that don't exist in
+  // last_append_quads_scales_.
+  raw_layer->LastAppendQuadsScalesForTesting() = {2.0f};
+
+  // 4.0 is not in last_append_quads_scales_
+  raw_layer->SetProposedTilingScalesForDeletion({1.0f, 4.0f});
+
+  safe_to_delete = raw_layer->GetSafeToDeleteTilings();
+  EXPECT_THAT(safe_to_delete, ElementsAre(1.0f, 4.0f));
+}
+
+// Verifies that CleanUpTilings returns the correct set of scales for tilings
+// that are safe to delete. This is similar to above but more of an integration
+// style test since we are using ::AppendQuad() here and not directly using
+// LastAppendQuadsScalesForTesting().
+TEST_F(TileDisplayLayerImplTest, GetSafeToDeleteTilingsIntegration) {
+  constexpr gfx::Size kLayerBounds(100, 100);
+  constexpr gfx::Rect kLayerRect(kLayerBounds);
+
+  auto layer = std::make_unique<TileDisplayLayerImpl>(
+      CHECK_DEREF(host_impl()->active_tree()), /*id=*/42);
+  auto* raw_layer = layer.get();
+  host_impl()->active_tree()->AddLayer(std::move(layer));
+
+  raw_layer->SetBounds(kLayerBounds);
+  raw_layer->SetRecordedBounds(kLayerRect);
+  raw_layer->draw_properties().visible_layer_rect = kLayerRect;
+  raw_layer->draw_properties().opacity = 1.0;
+
+  // Create three tilings.
+  auto& tiling_1 = raw_layer->GetOrCreateTilingFromScaleKey(1.0);
+  tiling_1.SetTileSize(kLayerBounds);
+  tiling_1.SetTilingRect(kLayerRect);
+  tiling_1.SetTileContents(TileIndex{0, 0}, SkColors::kRed, true);
+
+  auto& tiling_2 = raw_layer->GetOrCreateTilingFromScaleKey(2.0);
+  tiling_2.SetTileSize(kLayerBounds);
+  tiling_2.SetTilingRect(kLayerRect);
+  tiling_2.SetTileContents(TileIndex{0, 0}, SkColors::kGreen, true);
+
+  auto& tiling_3 = raw_layer->GetOrCreateTilingFromScaleKey(3.0);
+  tiling_3.SetTileSize(kLayerBounds);
+  tiling_3.SetTilingRect(kLayerRect);
+  tiling_3.SetTileContents(TileIndex{0, 0}, SkColors::kBlue, true);
+
+  SetupRootProperties(host_impl()->active_tree()->root_layer());
+
+  auto render_pass = viz::CompositorRenderPass::Create();
+  AppendQuadsData data;
+  raw_layer->AppendQuads(AppendQuadsContext{DRAW_MODE_SOFTWARE, {}, false},
+                         render_pass.get(), &data);
+
+  // By default, the ideal resolution tiling (1.0) is used.
+  raw_layer->SetProposedTilingScalesForDeletion({1.0, 2.0});
+  std::vector<float> safe_to_delete = raw_layer->GetSafeToDeleteTilings();
+  EXPECT_THAT(safe_to_delete, ElementsAre(2.0f));
+
+  raw_layer->SetProposedTilingScalesForDeletion({1.0, 3.0});
+  safe_to_delete = raw_layer->GetSafeToDeleteTilings();
+  EXPECT_THAT(safe_to_delete, ElementsAre(3.0f));
+
+  raw_layer->SetProposedTilingScalesForDeletion({3.0});
+  safe_to_delete = raw_layer->GetSafeToDeleteTilings();
+  EXPECT_THAT(safe_to_delete, ElementsAre(3.0f));
+
+  raw_layer->SetProposedTilingScalesForDeletion({1.0, 2.0, 3.0});
+  safe_to_delete = raw_layer->GetSafeToDeleteTilings();
+  EXPECT_THAT(safe_to_delete, ElementsAre(2.0f, 3.0f));
 }
 
 }  // namespace cc

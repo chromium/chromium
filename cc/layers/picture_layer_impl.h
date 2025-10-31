@@ -14,6 +14,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
@@ -190,6 +191,8 @@ class CC_EXPORT PictureLayerImpl
   using TileUpdateSet = std::map<float, std::set<TileIndex>>;
   TileUpdateSet TakeUpdatedTiles();
 
+  std::vector<float> TakeProposedTilingScalesForDeletion();
+
   // This is called in TreesInViz mode after context lost and all tiles need
   // to be re-wired to viz.
   TileUpdateSet TakeAllTiles();
@@ -276,6 +279,11 @@ class CC_EXPORT PictureLayerImpl
 
   // Tracks tiles changed since the last call to TakeUpdatedTiles().
   TileUpdateSet updated_tiles_;
+
+  // Tracks all tiling contents-scale keys that this PictureLayerImpl has
+  // proposed for deletion since last call to TakeUpdatedScaleKeysToDelete().
+  // Used only in TreesInViz mode.
+  base::flat_set<float> proposed_tiling_scales_for_deletion_;
 
   // When true, tile updates for this layer are batched in |updated_tiles_|
   // instead of being sent to Viz immediately. This is necessary to prevent a

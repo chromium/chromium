@@ -236,6 +236,12 @@ interface LayerContextClient {
   // the client had previously indicated that it wants an opporunity to make
   // changes to the tree before that frame is drawn.
   OnRequestCommitForFrame(BeginFrameArgs args);
+
+  // Notifies the client(Renderer) that tilings corresponding to
+  // |tiling_scales_to_clean_up| in the given layer can be safely deleted by
+  // the client.
+  OnTilingsReadyForCleanup(int32 layer_id,
+      array<float> tiling_scales_to_clean_up);
 };
 
 // Parameters needed to bind a LayerContext endpoint via a CompositorFrameSink.

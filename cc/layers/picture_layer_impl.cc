@@ -2176,6 +2176,13 @@ PictureLayerImpl::TileUpdateSet PictureLayerImpl::TakeUpdatedTiles() {
   return updates;
 }
 
+std::vector<float> PictureLayerImpl::TakeProposedTilingScalesForDeletion() {
+  std::vector<float> updates(proposed_tiling_scales_for_deletion_.begin(),
+                             proposed_tiling_scales_for_deletion_.end());
+  proposed_tiling_scales_for_deletion_.clear();
+  return updates;
+}
+
 PictureLayerImpl::TileUpdateSet PictureLayerImpl::TakeAllTiles() {
   DCHECK(layer_tree_impl()->settings().TreesInVizInClientProcess());
   DCHECK(layer_tree_impl()->IsActiveTree());

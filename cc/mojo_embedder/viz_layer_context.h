@@ -9,6 +9,7 @@
 #include <map>
 #include <set>
 #include <string>
+#include <vector>
 
 #include "base/memory/raw_ref.h"
 #include "cc/mojo_embedder/mojo_embedder_export.h"
@@ -55,6 +56,9 @@ class CC_MOJO_EMBEDDER_EXPORT VizLayerContext
 
   // viz::mojom::LayerContextClient:
   void OnRequestCommitForFrame(const viz::BeginFrameArgs& args) override;
+  void OnTilingsReadyForCleanup(
+      int32_t layer_id,
+      const std::vector<float>& tiling_scales_to_clean_up) override;
 
  private:
   // Serializes any changes to animation state on `tree` since the last push to
