@@ -579,7 +579,7 @@ class TabStripViewController: UIViewController, TabStripConsumer, TabStripNewTab
       cell.isLastTabInGroup = itemData?.isLastTabInGroup == true
       cell.loading = item.showsActivity
       cell.delegate = self
-      cell.accessibilityIdentifier = self.tabTripTabCellAccessibilityIdentifier(
+      cell.accessibilityIdentifier = self.tabStripTabCellAccessibilityIdentifier(
         index: indexPath.item)
       cell.item = item
       cell.hasBlueDot = itemData?.hasNotificationDot == true
@@ -641,7 +641,7 @@ class TabStripViewController: UIViewController, TabStripConsumer, TabStripNewTab
       cell.delegate = self
       cell.groupStrokeColor = itemData?.groupStrokeColor
       cell.hasNotificationDot = itemData?.hasNotificationDot == true && item.collapsed
-      cell.accessibilityIdentifier = self.tabTripGroupCellAccessibilityIdentifier(
+      cell.accessibilityIdentifier = self.tabStripGroupCellAccessibilityIdentifier(
         index: indexPath.item)
     }
   }
@@ -673,10 +673,10 @@ class TabStripViewController: UIViewController, TabStripConsumer, TabStripNewTab
     for indexPath in collectionView.indexPathsForVisibleItems {
       switch collectionView.cellForItem(at: indexPath) {
       case let tabCell as TabStripTabCell:
-        tabCell.accessibilityIdentifier = tabTripTabCellAccessibilityIdentifier(
+        tabCell.accessibilityIdentifier = tabStripTabCellAccessibilityIdentifier(
           index: indexPath.item)
       case let groupCell as TabStripGroupCell:
-        groupCell.accessibilityIdentifier = tabTripGroupCellAccessibilityIdentifier(
+        groupCell.accessibilityIdentifier = tabStripGroupCellAccessibilityIdentifier(
           index: indexPath.item)
       default:
         continue
@@ -732,13 +732,13 @@ class TabStripViewController: UIViewController, TabStripConsumer, TabStripNewTab
 
   // Returns the accessibility identifier to set on a TabStripTabCell when
   // positioned at the given index.
-  func tabTripTabCellAccessibilityIdentifier(index: Int) -> String {
+  func tabStripTabCellAccessibilityIdentifier(index: Int) -> String {
     return "\(TabStripConstants.CollectionView.tabStripTabCellPrefixIdentifier)\(index)"
   }
 
   // Returns the accessibility identifier to set on a TabStripGroupCell when
   // positioned at the given index.
-  func tabTripGroupCellAccessibilityIdentifier(index: Int) -> String {
+  func tabStripGroupCellAccessibilityIdentifier(index: Int) -> String {
     return "\(TabStripConstants.CollectionView.tabStripGroupCellPrefixIdentifier)\(index)"
   }
 
