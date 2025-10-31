@@ -297,6 +297,26 @@ void ExtensionsMenuViewPlatformDelegateViews::OnActionAdded(
   InsertMenuItemMainPage(main_page, action_id, index);
 }
 
+void ExtensionsMenuViewPlatformDelegateViews::OnActionRemoved(
+    const ToolbarActionsModel::ActionId& action_id) {
+  CHECK(current_page_);
+
+  auto* site_permissions_page = GetSitePermissionsPage(current_page_.view());
+  if (site_permissions_page) {
+    // Return to the main page if site permissions page belongs to the extension
+    // removed.
+    if (site_permissions_page->extension_id() == action_id) {
+      OpenMainPage();
+    }
+    return;
+  }
+
+  // Remove the menu item for the extension when main page is opened.
+  auto* main_page = GetMainPage(current_page_.view());
+  CHECK(main_page);
+  main_page->RemoveMenuItem(action_id);
+}
+
 void ExtensionsMenuViewPlatformDelegateViews::OnPermissionsSettingsChanged() {
   CHECK(current_page_);
 
@@ -636,24 +656,7 @@ void ExtensionsMenuViewPlatformDelegateViews::OnToolbarActionAdded(
     const ToolbarActionsModel::ActionId& action_id) {}
 
 void ExtensionsMenuViewPlatformDelegateViews::OnToolbarActionRemoved(
-    const ToolbarActionsModel::ActionId& action_id) {
-  DCHECK(current_page_);
-
-  auto* site_permissions_page = GetSitePermissionsPage(current_page_.view());
-  if (site_permissions_page) {
-    // Return to the main page if site permissions page belongs to the extension
-    // removed.
-    if (site_permissions_page->extension_id() == action_id) {
-      OpenMainPage();
-    }
-    return;
-  }
-
-  // Remove the menu item for the extension when main page is opened.
-  auto* main_page = GetMainPage(current_page_.view());
-  DCHECK(main_page);
-  main_page->RemoveMenuItem(action_id);
-}
+    const ToolbarActionsModel::ActionId& action_id) {}
 
 void ExtensionsMenuViewPlatformDelegateViews::OnToolbarActionUpdated(
     const ToolbarActionsModel::ActionId& action_id) {

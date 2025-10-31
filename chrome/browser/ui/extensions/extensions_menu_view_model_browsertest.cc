@@ -48,6 +48,8 @@ class TestPlatformDelegate : public ExtensionsMenuViewPlatformDelegate {
       bool can_show_requests) override {}
   void OnPermissionsSettingsChanged() override {}
   void OnActionAdded(const ToolbarActionsModel::ActionId& action_id) override {}
+  void OnActionRemoved(
+      const ToolbarActionsModel::ActionId& action_id) override {}
 };
 
 }  // namespace

@@ -56,6 +56,13 @@ class ExtensionsMenuViewPlatformDelegate {
   virtual void OnActionAdded(
       const ToolbarActionsModel::ActionId& action_id) = 0;
 
+  // Notifies the delegate that toolbar action with `action_id` was removed.
+  // TODO(crbug.com/449814184): Rename to `OnToolbarActionRemoved` after we
+  // finish migrating all ToolbarActionsModel::Observer method from the platform
+  // delegate to the model, since same name causes parameter type mismatch.
+  virtual void OnActionRemoved(
+      const ToolbarActionsModel::ActionId& action_id) = 0;
+
   // Notifies the delegate that the user permissions settings changed on the
   // current site.
   // TODO(crbug.com/449814184): Rename to `OnUserPermissionsSettingsChanged`

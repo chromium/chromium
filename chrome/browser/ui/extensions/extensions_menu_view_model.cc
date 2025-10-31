@@ -485,8 +485,7 @@ void ExtensionsMenuViewModel::OnToolbarActionAdded(
 
 void ExtensionsMenuViewModel::OnToolbarActionRemoved(
     const ToolbarActionsModel::ActionId& action_id) {
-  // TODO(crbug.com/449814184): implement and remove observer from
-  // ExtensionsMenuViewPlatformDelegateViews.
+  platform_delegate_->OnActionRemoved(action_id);
 }
 
 void ExtensionsMenuViewModel::OnToolbarActionUpdated(
