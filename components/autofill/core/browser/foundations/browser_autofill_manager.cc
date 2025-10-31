@@ -810,11 +810,7 @@ BrowserAutofillManager::BrowserAutofillManager(AutofillDriver* driver)
           driver->GetAutofillClient().GetOneTimeTokenService())),
       account_name_email_strike_manager_(
           std::make_unique<AccountNameEmailStrikeManager>(*this)),
-      address_on_typing_manager_(
-          client()
-              .GetPersonalDataManager()
-              .address_data_manager()
-              .GetAddressOnTypingSuggestionStrikeDatabase()) {}
+      address_on_typing_manager_(client()) {}
 
 BrowserAutofillManager::~BrowserAutofillManager() {
   // Process log events and record into UKM when the FormStructure is destroyed.
@@ -2286,30 +2282,8 @@ void BrowserAutofillManager::DidShowSuggestions(
                                     SuggestionType::kSeparator,
                                     SuggestionType::kManageAddress})
               .contains_all(shown_suggestion_types));
-    FieldTypeSet field_types_used;
-    std::map<std::string, base::TimeDelta> profile_last_used_time_per_guid;
-    const base::Time now = base::Time::Now();
-    for (const Suggestion& suggestion : client().GetAutofillSuggestions()) {
-      if (suggestion.type != SuggestionType::kAddressEntryOnTyping) {
-        continue;
-      }
-      const Suggestion::AutofillProfilePayload& profile_used_payload =
-          std::get<Suggestion::AutofillProfilePayload>(suggestion.payload);
-      const AutofillProfile* profile_used =
-          client()
-              .GetPersonalDataManager()
-              .address_data_manager()
-              .GetProfileByGUID(profile_used_payload.guid.value());
-
-      profile_last_used_time_per_guid[profile_used_payload.guid.value()] =
-          now - profile_used->usage_history().use_date();
-      field_types_used.insert(*suggestion.field_by_field_filling_type_used);
-    }
-    FieldTypeSet triggering_field_types =
-        autofill_field ? autofill_field->Type().GetTypes() : FieldTypeSet{};
-    address_on_typing_manager_.OnDidShowAddressOnTyping(
-        field_id, field_types_used, triggering_field_types,
-        profile_last_used_time_per_guid);
+    address_on_typing_manager_.OnDidShowAddressOnTyping(field_id,
+                                                        autofill_field);
     return;
   }
 

@@ -1205,6 +1205,7 @@ static_library("test_support") {
     "geo/mock_alternative_state_name_map_updater.h",
     "geo/test_region_data_loader.cc",
     "geo/test_region_data_loader.h",
+    "integrators/address_on_typing/address_on_typing_manager_test_api.h",
     "integrators/autofill_ai/autofill_ai_manager_test_api.h",
     "integrators/autofill_ai/mock_autofill_ai_manager.cc",
     "integrators/autofill_ai/mock_autofill_ai_manager.h",

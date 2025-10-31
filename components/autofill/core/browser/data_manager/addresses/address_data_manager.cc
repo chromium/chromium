@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <iterator>
 #include <memory>
+#include <optional>
 
 #include "base/check_deref.h"
 #include "base/check_is_test.h"
