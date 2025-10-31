@@ -42,11 +42,23 @@ ActorUiContentsContainerController::~ActorUiContentsContainerController() =
 
 void ActorUiContentsContainerController::OnViewBoundsChanged(
     views::View* observed_view) {
-  if (auto* tab = tabs::TabInterface::GetFromContents(
-          contents_container_view_->web_contents())) {
-    if (auto* tab_controller = ActorUiTabControllerInterface::From(tab)) {
-      tab_controller->OnViewBoundsChanged();
-    }
+  CHECK(observed_view == contents_container_view_);
+  content::WebContents* contents = contents_container_view_->web_contents();
+  if (!contents) {
+    return;
+  }
+
+  tabs::TabInterface* tab = tabs::TabInterface::MaybeGetFromContents(
+      contents_container_view_->web_contents());
+
+  // There are some cases where a webcontents may no longer be associated with
+  // a tab.
+  if (!tab) {
+    return;
+  }
+
+  if (auto* tab_controller = ActorUiTabControllerInterface::From(tab)) {
+    tab_controller->OnViewBoundsChanged();
   }
 }
 
