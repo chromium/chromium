@@ -63,13 +63,6 @@ constexpr auto kPageActionProperties =
             },
         },
         {
-            kActionSidePanelShowReadAnything,
-            {
-                .histogram_name = "ReadingMode",
-                .type = PageActionIconType::kReadingMode,
-            },
-        },
-        {
             kActionOffersAndRewardsForPage,
             {
                 .histogram_name = "PaymentsOfferNotification",

@@ -12,7 +12,6 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/views/page_action/page_action_triggers.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -62,46 +61,6 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingControllerBrowserTest,
       SidePanelEntryKey(SidePanelEntryId::kReadAnything)));
 
   chrome::ExecuteCommand(browser(), IDC_SHOW_READING_MODE_SIDE_PANEL);
-
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return side_panel_ui->IsSidePanelEntryShowing(
-        SidePanelEntryKey(SidePanelEntryId::kReadAnything));
-  }));
-}
-
-IN_PROC_BROWSER_TEST_P(ReadAnythingControllerBrowserTest,
-                       ShowSidePanelFromOmnibox) {
-  auto* side_panel_ui = browser()->GetFeatures().side_panel_ui();
-  ASSERT_FALSE(side_panel_ui->IsSidePanelEntryShowing(
-      SidePanelEntryKey(SidePanelEntryId::kReadAnything)));
-  actions::ActionInvocationContext context;
-  context.SetProperty(page_actions::kPageActionTriggerKey, 1);
-
-  browser()
-      ->GetActiveTabInterface()
-      ->GetTabFeatures()
-      ->read_anything_controller()
-      ->InvokePageAction(browser(), context);
-
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return side_panel_ui->IsSidePanelEntryShowing(
-        SidePanelEntryKey(SidePanelEntryId::kReadAnything));
-  }));
-}
-
-IN_PROC_BROWSER_TEST_P(ReadAnythingControllerBrowserTest,
-                       ShowSidePanelFromPinned) {
-  auto* side_panel_ui = browser()->GetFeatures().side_panel_ui();
-  ASSERT_FALSE(side_panel_ui->IsSidePanelEntryShowing(
-      SidePanelEntryKey(SidePanelEntryId::kReadAnything)));
-  actions::ActionInvocationContext context;
-  context.SetProperty(page_actions::kPageActionTriggerKey, -1);
-
-  browser()
-      ->GetActiveTabInterface()
-      ->GetTabFeatures()
-      ->read_anything_controller()
-      ->InvokePageAction(browser(), context);
 
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return side_panel_ui->IsSidePanelEntryShowing(

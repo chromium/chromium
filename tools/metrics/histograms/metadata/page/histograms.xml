@@ -641,10 +641,8 @@ chromium-metrics-reviews@google.com.
     <variant name="ProductSpecifications"/>
     <variant name="PWAInstall"/>
     <variant name="QRCodeGenerator"/>
-    <variant name="ReadAnything"
-        summary="ReadAnything (Obsolete, Deprecated Jun 06, 2024)"/>
+    <variant name="ReadAnything"/>
     <variant name="ReaderMode"/>
-    <variant name="ReadingMode"/>
     <variant name="SaveAutofillAddress"/>
     <variant name="SaveCard"/>
     <variant name="SaveIban"/>

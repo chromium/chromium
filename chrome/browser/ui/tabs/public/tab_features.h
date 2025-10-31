@@ -185,10 +185,6 @@ class TabFeatures {
     return read_anything_side_panel_controller_.get();
   }
 
-  ReadAnythingController* read_anything_controller() {
-    return read_anything_controller_.get();
-  }
-
   commerce::CommerceUiTabHelper* commerce_ui_tab_helper() {
     return commerce_ui_tab_helper_.get();
   }
