@@ -8970,8 +8970,45 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
   ASSERT_EQ(false, EvalJs(child_ftn, "document.hasFocus();"));
 }
 
-IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
-                       RecordPageLifecycleMetricsOnNewPageCommit) {
+class PageLifecycleMetricsOnNewPageCommitBrowserTest
+    : public NavigationBrowserTest,
+      public testing::WithParamInterface<std::pair<std::string, std::string>> {
+ public:
+  PageLifecycleMetricsOnNewPageCommitBrowserTest() {
+    feature_list_.InitFromCommandLine(GetParam().first, GetParam().second);
+  }
+
+  void AddSlowPagehideEventHandlerToCurrentWebContents(
+      const base::Location location = FROM_HERE) {
+    // Wait for 1 second in the pagehide event handler as we want to measure the
+    // slow pagehide's callback case of 300 ms.
+    EXPECT_TRUE(ExecJs(web_contents(), R"(
+      window.addEventListener('pagehide', function() {
+        const start = Date.now();
+        while (Date.now() - start <= 300) {
+        }
+      });
+    )")) << location.ToString();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    PageLifecycleMetricsOnNewPageCommitBrowserTest,
+    testing::Values(
+        std::make_pair(/*enable_features=*/"BackForwardCache,RenderDocument",
+                       /*disable_features=*/""),
+        std::make_pair(/*enable_features=*/"RenderDocument",
+                       /*disable_features=*/"BackForwardCache"),
+        std::make_pair(
+            /*enable_features=*/"",
+            /*disable_features=*/"BackForwardCache,RenderDocument")));
+
+IN_PROC_BROWSER_TEST_P(PageLifecycleMetricsOnNewPageCommitBrowserTest,
+                       RecordUkm) {
   const std::string_view kTargetUkmEntryName =
       ukm::builders::PageLifecycleMetricsOnNewPageCommit::kEntryName;
   const std::string_view kTargetUkmMetricName =
@@ -8992,18 +9029,11 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
     const ukm::mojom::UkmEntry* entry = entries[0];
     ukm_recorder.ExpectEntrySourceHasUrl(entry, url_1);
     // The previous page doesn't have pagehide.
-    EXPECT_LE(*ukm_recorder.GetEntryMetric(entry, kTargetUkmMetricName),
-              ukm::GetExponentialBucketMinForFineUserTiming(100u));
+    EXPECT_NEAR(*ukm_recorder.GetEntryMetric(entry, kTargetUkmMetricName), 0u,
+                100u);
   }
 
-  EXPECT_TRUE(ExecJs(web_contents(), R"(
-    window.addEventListener('pagehide', function() {
-      const start = Date.now();
-      // Wait for 1 second.
-      while (Date.now() - start <= 1000) {
-      }
-    });
-  )"));
+  AddSlowPagehideEventHandlerToCurrentWebContents();
 
   {
     GURL url_2(embedded_test_server()->GetURL("a.test", "/title2.html"));
@@ -9017,9 +9047,9 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
     EXPECT_EQ(2u, entries.size());
     const ukm::mojom::UkmEntry* entry = entries[1];
     ukm_recorder.ExpectEntrySourceHasUrl(entry, url_2);
-    // The previous page's pagehide will take over 1000 ms.
-    EXPECT_GE(*ukm_recorder.GetEntryMetric(entry, kTargetUkmMetricName),
-              ukm::GetExponentialBucketMinForFineUserTiming(1000u));
+    // The previous page's pagehide will take over 300 ms.
+    EXPECT_NEAR(*ukm_recorder.GetEntryMetric(entry, kTargetUkmMetricName),
+                ukm::GetExponentialBucketMinForFineUserTiming(300u), 100u);
   }
 
   {
@@ -9035,18 +9065,11 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
     const ukm::mojom::UkmEntry* entry = entries[2];
     ukm_recorder.ExpectEntrySourceHasUrl(entry, url_3);
     // The previous page doesn't have pagehide.
-    EXPECT_LE(*ukm_recorder.GetEntryMetric(entry, kTargetUkmMetricName),
-              ukm::GetExponentialBucketMinForFineUserTiming(100u));
+    EXPECT_NEAR(*ukm_recorder.GetEntryMetric(entry, kTargetUkmMetricName), 0u,
+                100u);
   }
 
-  EXPECT_TRUE(ExecJs(web_contents(), R"(
-    window.addEventListener('pagehide', function() {
-      const start = Date.now();
-      // Wait for 1 second.
-      while (Date.now() - start <= 1000) {
-      }
-    });
-  )"));
+  AddSlowPagehideEventHandlerToCurrentWebContents();
 
   {
     GURL url_4(embedded_test_server()->GetURL("b.test", "/title1.html"));
@@ -9062,8 +9085,8 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
     ukm_recorder.ExpectEntrySourceHasUrl(entry, url_4);
     // The previous page's pagehide event runs in a different renderer process,
     // so this navigation is not blocked.
-    EXPECT_LE(*ukm_recorder.GetEntryMetric(entry, kTargetUkmMetricName),
-              ukm::GetExponentialBucketMinForFineUserTiming(100u));
+    EXPECT_NEAR(*ukm_recorder.GetEntryMetric(entry, kTargetUkmMetricName), 0u,
+                100u);
   }
 }
 

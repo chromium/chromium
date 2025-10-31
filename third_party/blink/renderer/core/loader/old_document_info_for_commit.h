@@ -34,6 +34,9 @@ struct OldDocumentInfoForCommit : GarbageCollected<OldDocumentInfoForCommit> {
   bool was_focused_frame = false;
   // The overlay color used by the previous LocalFrame, if it has an overlay.
   std::optional<SkColor> overlay_color;
+  // The total processing time spent in the previous page's lifecycle events
+  // (e.g. pagehide, visibilitychange) on navigation commit.
+  base::TimeDelta total_lifecycle_events_processing_time_on_commit;
 };
 
 // Owns the OldDocumentInfoForCommit and exposes it through `info_`
