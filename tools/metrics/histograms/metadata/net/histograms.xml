@@ -1995,6 +1995,21 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Net.DeviceBoundSessions.ProactiveRefreshAttempt"
+    enum="DeviceBoundSessionProactiveRefreshAttempt" expires_after="2026-04-19">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    This records the outcome of attempting to proactively refresh a Device Bound
+    Session
+    (https://github.com/w3c/webappsec-dbsc/blob/main/README.md#refresh-procedure).
+    It records the reasons we may not have attempted to refresh despite a bound
+    cookie expiring soon. This is logged every time a request is made with a
+    bound cookie expiring soon. For the final result of proactive refresh, see
+    Net.DeviceBoundSessions.RefreshResult.Proactive.
+  </summary>
+</histogram>
+
 <histogram
     name="Net.DeviceBoundSessions.ProactiveRefreshCandidateDeferredCount.{Threshold}"
     units="requests" expires_after="2026-02-18">
@@ -2033,7 +2048,19 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Net.DeviceBoundSessions.RefreshResult"
+<histogram name="Net.DeviceBoundSessions.ProactiveRefreshDuration" units="ms"
+    expires_after="2026-04-19">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    This records the duration of a proactive refresh of a Device Bound Session
+    (https://github.com/w3c/webappsec-dbsc/blob/main/README.md#refresh-procedure).
+    This is logged every time a proactive refresh is done, which is triggered by
+    a request with a bound cookie expiring soon.
+  </summary>
+</histogram>
+
+<histogram name="Net.DeviceBoundSessions.RefreshResult{RefreshType}"
     enum="DeviceBoundSessionError" expires_after="2026-04-19">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
@@ -2041,8 +2068,13 @@ chromium-metrics-reviews@google.com.
     This records the outcome of refreshing a Device Bound Session
     (https://github.com/w3c/webappsec-dbsc/blob/main/README.md#refresh-procedure).
     This is logged every time we attempt to refresh the cookies bound by a
-    session.
+    session due to {RefreshType}.
   </summary>
+  <token key="RefreshType">
+    <variant name="" summary="any refresh trigger"/>
+    <variant name=".MissingCookie" summary="a missing cookie"/>
+    <variant name=".Proactive" summary="the proactive refresh heuristics"/>
+  </token>
 </histogram>
 
 <histogram name="Net.DeviceBoundSessions.RegistrationResult"

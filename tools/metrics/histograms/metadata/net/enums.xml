@@ -322,6 +322,20 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//net/device_bound_sessions/session_error.h:DeviceBoundSessionError) -->
 
+<!-- LINT.IfChange(DeviceBoundSessionProactiveRefreshAttempt) -->
+
+<enum name="DeviceBoundSessionProactiveRefreshAttempt">
+  <int value="0" label="Existing deferring refresh"/>
+  <int value="1" label="Existing proactive refresh"/>
+  <int value="2" label="Session key not restored"/>
+  <int value="3" label="Attempted"/>
+  <int value="4" label="Previous failed proactive refresh"/>
+  <int value="5" label="Refresh quota exceeded"/>
+  <int value="6" label="Session in backoff"/>
+</enum>
+
+<!-- LINT.ThenChange(//net/device_bound_sessions/session_service_impl.h:ProactiveRefreshAttempt) -->
+
 <!-- LINT.IfChange(DeviceBoundSessionRefreshResult) -->
 
 <enum name="DeviceBoundSessionRefreshResult">

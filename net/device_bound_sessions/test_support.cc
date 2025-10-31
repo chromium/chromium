@@ -345,18 +345,21 @@ ScopedTestRegistrationFetcher ScopedTestRegistrationFetcher::CreateWithSuccess(
     std::string_view origin_string) {
   return ScopedTestRegistrationFetcher(base::BindRepeating(
       [](const std::string& session_id, const std::string& refresh_url_string,
-         const std::string& origin_string) {
+         const std::string& origin_string,
+         RegistrationFetcher::RegistrationCompleteCallback callback) {
         std::vector<SessionParams::Credential> cookie_credentials;
         cookie_credentials.push_back(
             SessionParams::Credential{"test_cookie", "secure"});
         SessionParams::Scope scope;
         scope.include_site = true;
         scope.origin = origin_string;
-        return RegistrationResult(Session::CreateIfValid(SessionParams(
-            session_id, GURL(refresh_url_string), refresh_url_string,
-            std::move(scope), std::move(cookie_credentials),
-            unexportable_keys::UnexportableKeyId(),
-            /*allowed_refresh_initiators=*/{})));
+        std::move(callback).Run(
+            nullptr,
+            RegistrationResult(Session::CreateIfValid(SessionParams(
+                session_id, GURL(refresh_url_string), refresh_url_string,
+                std::move(scope), std::move(cookie_credentials),
+                unexportable_keys::UnexportableKeyId(),
+                /*allowed_refresh_initiators=*/{}))));
       },
       std::string(session_id), std::string(refresh_url_string),
       std::string(origin_string)));
@@ -367,8 +370,10 @@ ScopedTestRegistrationFetcher ScopedTestRegistrationFetcher::CreateWithFailure(
     SessionError::ErrorType error_type,
     std::string_view refresh_url_string) {
   return ScopedTestRegistrationFetcher(base::BindRepeating(
-      [](SessionError::ErrorType error_type, const GURL& refresh_url) {
-        return RegistrationResult(SessionError{error_type});
+      [](SessionError::ErrorType error_type, const GURL& refresh_url,
+         RegistrationFetcher::RegistrationCompleteCallback callback) {
+        return std::move(callback).Run(
+            nullptr, RegistrationResult(SessionError{error_type}));
       },
       error_type, GURL(refresh_url_string)));
 }
@@ -379,9 +384,11 @@ ScopedTestRegistrationFetcher::CreateWithTermination(
     std::string_view session_id,
     std::string_view refresh_url_string) {
   return ScopedTestRegistrationFetcher(base::BindRepeating(
-      [](const std::string& session_id, const std::string& refresh_url_string) {
-        return RegistrationResult(
-            SessionError{SessionError::kServerRequestedTermination});
+      [](const std::string& session_id, const std::string& refresh_url_string,
+         RegistrationFetcher::RegistrationCompleteCallback callback) {
+        return std::move(callback).Run(
+            nullptr, RegistrationResult(SessionError{
+                         SessionError::kServerRequestedTermination}));
       },
       std::string(session_id), std::string(refresh_url_string)));
 }

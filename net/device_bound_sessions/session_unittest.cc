@@ -1044,7 +1044,7 @@ TEST_F(SessionTest, Backoff) {
                                               : " should not backoff"));
     // Reset the backoff state
     for (size_t i = 0; i < 4; i++) {
-      session->InformOfRefreshResult(kSuccess);
+      session->InformOfRefreshResult(/*was_proactive=*/false, kSuccess);
     }
     FastForwardBy(base::Seconds(1));
     EXPECT_TRUE(session->IsInScope(request.get()));
@@ -1055,11 +1055,51 @@ TEST_F(SessionTest, Backoff) {
 
     // Four errors in a row will enter backoff, if necessary
     for (size_t i = 0; i < 4; i++) {
-      session->InformOfRefreshResult(test_case.error_type);
+      session->InformOfRefreshResult(/*was_proactive=*/false,
+                                     test_case.error_type);
     }
 
     EXPECT_EQ(session->ShouldBackoff(), test_case.expect_backoff);
   }
+}
+
+TEST_F(SessionTest, ProactiveBackoff) {
+  using enum SessionError::ErrorType;
+
+  auto params = CreateValidParams();
+  auto session_or_error = Session::CreateIfValid(params);
+  ASSERT_TRUE(session_or_error.has_value());
+  std::unique_ptr<Session> session = std::move(*session_or_error);
+  ASSERT_TRUE(session);
+
+  net::TestDelegate delegate;
+  std::unique_ptr<URLRequest> request =
+      context_->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
+  request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
+
+  // Proactive refreshes can be followed up with other proactive refreshes
+  session->InformOfRefreshResult(/*was_proactive=*/true, kSuccess);
+  EXPECT_FALSE(session->attempted_proactive_refresh_since_last_success());
+
+  // Deferring refreshes can be followed up with proactive refresh
+  session->InformOfRefreshResult(/*was_proactive=*/false, kSuccess);
+  EXPECT_FALSE(session->attempted_proactive_refresh_since_last_success());
+
+  // A failed deferring refresh does not block proactive refresh
+  session->InformOfRefreshResult(/*was_proactive=*/false, kNetError);
+  EXPECT_FALSE(session->attempted_proactive_refresh_since_last_success());
+
+  // A failed praoctive refresh blocks future proactive refreshes
+  session->InformOfRefreshResult(/*was_proactive=*/true, kNetError);
+  EXPECT_TRUE(session->attempted_proactive_refresh_since_last_success());
+
+  // We're still blocked while deferring refreshes fail
+  session->InformOfRefreshResult(/*was_proactive=*/false, kNetError);
+  EXPECT_TRUE(session->attempted_proactive_refresh_since_last_success());
+
+  // We only become unblocked when a deferring refresh succeeds
+  session->InformOfRefreshResult(/*was_proactive=*/true, kSuccess);
+  EXPECT_FALSE(session->attempted_proactive_refresh_since_last_success());
 }
 
 TEST_F(SessionTest, RefreshInitiators) {

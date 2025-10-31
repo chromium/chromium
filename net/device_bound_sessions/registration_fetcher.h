@@ -45,7 +45,8 @@ class NET_EXPORT RegistrationFetcher {
   using RegistrationCompleteCallback =
       base::OnceCallback<void(RegistrationFetcher*, RegistrationResult)>;
 
-  using FetcherType = base::RepeatingCallback<RegistrationResult()>;
+  using FetcherType =
+      base::RepeatingCallback<void(RegistrationCompleteCallback)>;
 
   using RegistrationToken = std::string;
 

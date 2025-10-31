@@ -22,11 +22,12 @@ namespace net::device_bound_sessions {
 
 namespace {
 
-// Parameters for the refresh quota. We currently allow 2 refreshes in 5
-// minutes. This allows sites to refresh every 5 minutes with some error
-// tolerance (e.g. a failed refresh or user cookie clearing).
+// Parameters for the refresh quota. We currently allow 2 refreshes in 3
+// minutes. This allows sites to refresh every 5 minutes, accounting for
+// proactive refreshes 2 minutes before expiry, and with some error tolerance
+// (e.g. a failed refresh or user cookie clearing).
 constexpr size_t kRefreshQuota = 2;
-constexpr base::TimeDelta kRefreshQuotaInterval = base::Minutes(5);
+constexpr base::TimeDelta kRefreshQuotaInterval = base::Minutes(3);
 
 bool SessionMatchesFilter(
     const SchemefulSite& site,
@@ -127,6 +128,12 @@ bool IsProactiveRefreshCandidate(
   }
 
   return minimum_lifetime >= current_time - *last_proactive_refresh_opportunity;
+}
+
+void LogProactiveRefreshAttempt(
+    SessionServiceImpl::ProactiveRefreshAttempt attempt) {
+  base::UmaHistogramEnumeration(
+      "Net.DeviceBoundSessions.ProactiveRefreshAttempt", attempt);
 }
 
 }  // namespace
@@ -363,10 +370,10 @@ std::optional<SessionService::DeferralParams> SessionServiceImpl::ShouldDefer(
       continue;
     }
 
+    SessionKey session_key{site, session->id()};
     base::TimeDelta minimum_lifetime =
         session->MinimumBoundCookieLifetime(request, first_party_set_metadata);
     if (minimum_lifetime.is_zero()) {
-      SessionKey session_key{site, session->id()};
       auto previous_deferrals_it = previous_deferrals.find(session_key);
       if (previous_deferrals_it != previous_deferrals.end()) {
         debug_header_builder.AddSkippedSession(previous_deferrals_it->first,
@@ -379,6 +386,9 @@ std::optional<SessionService::DeferralParams> SessionServiceImpl::ShouldDefer(
                           *session);
       return DeferralParams(session->id());
     }
+
+    MaybeStartProactiveRefresh(request->device_bound_session_access_callback(),
+                               request, session_key, minimum_lifetime);
   }
 
   std::optional<std::string> debug_header = debug_header_builder.Build();
@@ -429,6 +439,9 @@ void SessionServiceImpl::DeferRequestForRefresh(
   if (!inserted) {
     return;
   }
+  if (proactive_requests_.find(session_key) != proactive_requests_.end()) {
+    return;
+  }
 
   if (RefreshQuotaExceeded(session_key.site)) {
     UnblockDeferredRequests(session_key, RefreshResult::kQuotaExceeded);
@@ -459,10 +472,12 @@ void SessionServiceImpl::DeferRequestForRefresh(
     return;
   }
 
-  RefreshSessionInternal(request, session_key, session, *key_id);
+  RefreshSessionInternal(RefreshTrigger::kMissingCookie, request, session_key,
+                         session, *key_id);
 }
 
 void SessionServiceImpl::OnRefreshRequestCompletion(
+    RefreshTrigger trigger,
     OnAccessCallback on_access_callback,
     SessionKey session_key,
     RegistrationFetcher* fetcher,
@@ -473,11 +488,22 @@ void SessionServiceImpl::OnRefreshRequestCompletion(
 
   Session* session = GetSession(session_key);
   if (session) {
-    session->InformOfRefreshResult(result);
+    session->InformOfRefreshResult(
+        /*was_proactive=*/trigger == RefreshTrigger::kProactive, result);
   }
 
-  base::UmaHistogramEnumeration("Net.DeviceBoundSessions.RefreshResult",
-                                result);
+  std::string histogram_base = "Net.DeviceBoundSessions.RefreshResult";
+  std::string suffix;
+  switch (trigger) {
+    case RefreshTrigger::kProactive:
+      suffix = ".Proactive";
+      break;
+    case RefreshTrigger::kMissingCookie:
+      suffix = ".MissingCookie";
+      break;
+  }
+  base::UmaHistogramEnumeration(histogram_base, result);
+  base::UmaHistogramEnumeration(histogram_base + suffix, result);
 }
 
 // Continue or restart all deferred requests for the session and remove the
@@ -487,6 +513,13 @@ void SessionServiceImpl::UnblockDeferredRequests(
     RefreshResult result,
     std::optional<bool> is_proactive_refresh_candidate,
     std::optional<base::TimeDelta> minimum_proactive_refresh_threshold) {
+  if (auto it = proactive_requests_.find(session_key);
+      it != proactive_requests_.end()) {
+    base::UmaHistogramTimes("Net.DeviceBoundSessions.ProactiveRefreshDuration",
+                            it->second.Elapsed());
+    proactive_requests_.erase(it);
+  }
+
   auto it = deferred_requests_.find(session_key);
   if (it == deferred_requests_.end()) {
     return;
@@ -892,10 +925,12 @@ void SessionServiceImpl::OnSessionKeyRestored(
 
   session->set_unexportable_key_id(key_id_or_error);
 
-  RefreshSessionInternal(request.get(), session_key, session, *key_id_or_error);
+  RefreshSessionInternal(RefreshTrigger::kMissingCookie, request.get(),
+                         session_key, session, *key_id_or_error);
 }
 
 void SessionServiceImpl::RefreshSessionInternal(
+    RefreshTrigger trigger,
     URLRequest* request,
     const SessionKey& session_key,
     Session* session,
@@ -912,7 +947,7 @@ void SessionServiceImpl::RefreshSessionInternal(
 
   auto callback = base::BindOnce(
       &SessionServiceImpl::OnRefreshRequestCompletion,
-      weak_factory_.GetWeakPtr(),
+      weak_factory_.GetWeakPtr(), trigger,
       request->device_bound_session_access_callback(), session_key);
   std::unique_ptr<RegistrationFetcher> fetcher =
       RegistrationFetcher::CreateFetcher(
@@ -960,6 +995,77 @@ void SessionServiceImpl::RemoveFetcher(RegistrationFetcher* fetcher) {
     return;
   }
   registration_fetchers_.erase(it);
+}
+
+void SessionServiceImpl::MaybeStartProactiveRefresh(
+    SessionService::OnAccessCallback per_request_callback,
+    URLRequest* request,
+    const SessionKey& session_key,
+    base::TimeDelta minimum_cookie_lifetime) {
+  if (!base::FeatureList::IsEnabled(
+          features::kDeviceBoundSessionProactiveRefresh)) {
+    return;
+  }
+
+  if (minimum_cookie_lifetime >
+      features::kDeviceBoundSessionProactiveRefreshThreshold.Get()) {
+    return;
+  }
+
+  if (deferred_requests_.find(session_key) != deferred_requests_.end()) {
+    // It's not a proactive refresh if we're in the middle of a regular refresh.
+    LogProactiveRefreshAttempt(
+        ProactiveRefreshAttempt::kExistingDeferringRefresh);
+    return;
+  }
+
+  auto* session = GetSession(session_key);
+  CHECK(session);
+
+  if (RefreshQuotaExceeded(session_key.site)) {
+    LogProactiveRefreshAttempt(ProactiveRefreshAttempt::kRefreshQuota);
+    return;
+  }
+
+  if (session->ShouldBackoff()) {
+    LogProactiveRefreshAttempt(ProactiveRefreshAttempt::kBackoff);
+    return;
+  }
+
+  if (session->attempted_proactive_refresh_since_last_success()) {
+    // We only do one proactive refresh attempt before a deferral. If we
+    // did not do this, every refresh due to missing cookies would be
+    // skipped due to the refresh quota. Instead, we allow the refresh
+    // due to missing cookies, which will communicate its reason for
+    // failure in the Secure-Session-Skipped header.
+    LogProactiveRefreshAttempt(
+        ProactiveRefreshAttempt::kPreviousFailedProactiveRefresh);
+    return;
+  }
+
+  if (!session->unexportable_key_id().has_value()) {
+    // TODO(crbug.com/358137054): If we're otherwise ready for a proactive
+    // refresh, we could start restoring the key. This is lower priority
+    // than regular proactive refresh, since some amount of startup
+    // latency is unavoidable with DBSC.
+    LogProactiveRefreshAttempt(ProactiveRefreshAttempt::kMissingKey);
+    return;
+  }
+
+  auto [_, inserted] = proactive_requests_.try_emplace(session_key);
+  if (!inserted) {
+    // Do not proactively refresh if we've already started one proactive
+    // refresh.
+    LogProactiveRefreshAttempt(
+        ProactiveRefreshAttempt::kExistingProactiveRefresh);
+    return;
+  }
+
+  NotifySessionAccess(per_request_callback, SessionAccess::AccessType::kUpdate,
+                      session_key, *session);
+  LogProactiveRefreshAttempt(ProactiveRefreshAttempt::kAttempted);
+  RefreshSessionInternal(RefreshTrigger::kProactive, request, session_key,
+                         session, *session->unexportable_key_id());
 }
 
 }  // namespace net::device_bound_sessions
