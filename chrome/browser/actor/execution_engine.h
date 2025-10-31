@@ -210,17 +210,26 @@ class ExecutionEngine : public ToolDelegate {
   size_t InProgressActionIndex() const;
   const ToolRequest& GetInProgressAction() const;
 
-  bool ShouldGateNavigationInternal(
+  // `std::nullopt` is returned when the decision to gate the navigation is done
+  // async.
+  std::optional<bool> ShouldGateNavigationInternal(
       content::NavigationHandle& navigation_handle,
       NavigationDecisionCallback callback);
-  void LogNavigationGating(content::NavigationHandle& navigation_handle,
+  void LogNavigationGating(const std::optional<url::Origin>& initiator_origin,
+                           const GURL& navigation_url,
                            bool applied_gate);
 
-  void CheckNavigationBlocklist(const GURL& navigation_url,
-                                NavigationDecisionCallback callback);
-  void OnNavigationBlocklistDecision(url::Origin navigation_origin,
-                                     NavigationDecisionCallback callback,
-                                     bool may_continue);
+  void CheckNavigationBlocklist(
+      const std::optional<url::Origin>& initiator_origin,
+      const GURL& navigation_url,
+      bool skip_prompt,
+      NavigationDecisionCallback callback);
+  void OnNavigationBlocklistDecision(
+      const std::optional<url::Origin> initiator_origin,
+      const GURL navigation_url,
+      bool skip_prompt,
+      NavigationDecisionCallback callback,
+      bool not_on_blocklist);
 
   // Called when the browser detects the actor needs to confirm a
   // client-side-initiated navigation to a novel origin. The web client should
