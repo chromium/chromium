@@ -44,6 +44,7 @@ import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
+import org.chromium.chrome.browser.tasks.tab_management.TabActionListener;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListItemSizeChangedObserver;
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel;
@@ -150,6 +151,23 @@ public class PinnedTabStripMediatorTest {
         View view = new View(mActivity);
         int tabId = 123123;
         mMediator.onLongPress(tabId, view);
+        verify(mMenuCoordinator).showMenu(any(ViewRectProvider.class), eq(tabId));
+    }
+
+    @Test
+    public void testContextClickListener() {
+        int tabId = 123123;
+        mTabListModel.add(createTabListItem(tabId, true));
+        when(mLayoutManager.findFirstVisibleItemPosition()).thenReturn(1);
+        mMediator.onScrolled();
+        assertThat(mPinnedTabsModelList.size()).isEqualTo(1);
+
+        PropertyModel model = mPinnedTabsModelList.get(0).model;
+        TabActionListener listener = model.get(TabProperties.TAB_CONTEXT_CLICK_LISTENER);
+        Assert.assertNotNull(listener);
+
+        View view = new View(mActivity);
+        listener.run(view, tabId, null);
         verify(mMenuCoordinator).showMenu(any(ViewRectProvider.class), eq(tabId));
     }
 
