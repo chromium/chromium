@@ -2714,7 +2714,26 @@ TEST_F(DownloadTargetDeterminerTest, TestSanitizeEnvVariable) {
        DownloadItem::TARGET_DISPOSITION_PROMPT,
 
        EXPECT_CRDOWNLOAD},
-      {// 3: File name is an env var.
+      {// 3: Double extension bug leading to dangerous extensions after removing env var.
+       SAVE_AS, download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
+       DownloadFileType::NOT_DANGEROUS, "http://example.com/foo2.lnk %%",
+       "application/octet-stream", FILE_PATH_LITERAL(""),
+
+       FILE_PATH_LITERAL("foo2.download"),
+       DownloadItem::TARGET_DISPOSITION_PROMPT,
+
+       EXPECT_CRDOWNLOAD},
+      {// 4: Unicode char bug leading to dangerous extensions after removing env var.
+       // NOTE: The space before "%%" is a non-breaking space (U+00A0), not a normal space.
+       SAVE_AS, download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
+       DownloadFileType::NOT_DANGEROUS, "http://example.com/foo2.lnk %%",
+       "application/octet-stream", FILE_PATH_LITERAL(""),
+
+       FILE_PATH_LITERAL("foo2.download"),
+       DownloadItem::TARGET_DISPOSITION_PROMPT,
+
+       EXPECT_CRDOWNLOAD},
+      {// 5: File name is an env var.
        SAVE_AS, download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
        DownloadFileType::NOT_DANGEROUS, "http://example.com/%foo.txt%",
        "text/plain", FILE_PATH_LITERAL(""),
