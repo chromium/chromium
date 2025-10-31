@@ -72,6 +72,7 @@ declare_args() {
 # ubsan_vptr_ignorelist_path = "path/to/ubsan/vptr_ignorelist.txt"
 # ubsan_security_ignorelist_path = "path/to/ubsan/security_ignorelist.txt"
 # cfi_ignorelist_path = "path/to/cfi/ignores.txt"
+ubsan_array_bounds_ignorelist_path = "//tools/ubsan/array_bounds_ignorelist.txt"
 
 if (host_os == "mac" || is_apple) {
   # Needed for is_apple when targeting macOS or iOS, independent of host.

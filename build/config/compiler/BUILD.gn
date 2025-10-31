@@ -1856,6 +1856,11 @@ config("sanitize_c_array_bounds") {
       "-fsanitize=array-bounds",
       "-fsanitize-trap=array-bounds",
     ]
+
+    if (defined(ubsan_array_bounds_ignorelist_path)) {
+      rebased = rebase_path(ubsan_array_bounds_ignorelist_path, root_build_dir)
+      cflags += [ "-fsanitize-ignorelist=$rebased" ]
+    }
   }
 }
 
