@@ -1766,21 +1766,12 @@ void HttpStreamPool::AttemptManager::CreateTextBasedStreamAndNotify(
 
   std::unique_ptr<HttpStream> http_stream = group_->CreateTextBasedStream(
       std::move(stream_socket), reuse_type, std::move(connect_timing));
-  // TODO(crbug.com/383606724): Change this `if` to CHECK() once we stabilize
-  // the implementation.
-  if (ShouldRespectLimits() && group_->ActiveStreamSocketCount() >
-                                   pool()->max_stream_sockets_per_group()) {
-    const size_t active_count = group_->ActiveStreamSocketCount();
-    const size_t handed_out_count = group_->HandedOutStreamSocketCount();
-    const size_t connecting_count = group_->ConnectingStreamSocketCount();
-    base::debug::Alias(&active_count);
-    base::debug::Alias(&handed_out_count);
-    base::debug::Alias(&connecting_count);
-    NOTREACHED() << "active=" << active_count
-                 << ", handed_out=" << handed_out_count
-                 << ", connecting=" << connecting_count
-                 << ", limit=" << pool()->max_stream_sockets_per_group();
-  }
+  CHECK(!ShouldRespectLimits() || group_->ActiveStreamSocketCount() <=
+                                      pool()->max_stream_sockets_per_group())
+      << "active=" << group_->ActiveStreamSocketCount()
+      << ", handed_out=" << group_->HandedOutStreamSocketCount()
+      << ", connecting=" << group_->ConnectingStreamSocketCount()
+      << ", limit=" << pool()->max_stream_sockets_per_group();
 
   NotifyStreamReady(std::move(http_stream), negotiated_protocol,
                     /*session_source=*/std::nullopt);
