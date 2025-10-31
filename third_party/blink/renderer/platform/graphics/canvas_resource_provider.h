@@ -171,9 +171,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
       gpu::SharedImageUsageSet shared_image_usage_flags = {},
       Delegate* delegate = nullptr);
 
-  static bool CanUseSharedImageSwapChainCapability(
-      base::WeakPtr<WebGraphicsContext3DProviderWrapper>);
-
   static std::unique_ptr<CanvasResourceProvider> CreateBitmapProvider(
       gfx::Size size,
       const Canvas2DColorParams& color_params,

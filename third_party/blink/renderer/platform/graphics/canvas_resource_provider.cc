@@ -1207,24 +1207,6 @@ CanvasResourceProvider::CreateWebGPUImageProvider(
       delegate);
 }
 
-// static
-bool CanvasResourceProvider::CanUseSharedImageSwapChainCapability(
-    base::WeakPtr<WebGraphicsContext3DProviderWrapper>
-        context_provider_wrapper) {
-  // SharedGpuContext::IsGpuCompositingEnabled can potentially replace the
-  // context_provider_wrapper, so it's important to call that first as it can
-  // invalidate the weak pointer.
-  if (!SharedGpuContext::IsGpuCompositingEnabled() || !context_provider_wrapper)
-    return false;
-
-  const auto& shared_image_capabilities =
-      context_provider_wrapper->ContextProvider()
-          .SharedImageInterface()
-          ->GetCapabilities();
-
-  return shared_image_capabilities.shared_image_swap_chain;
-}
-
 CanvasResourceProvider::CanvasImageProvider::CanvasImageProvider(
     cc::ImageDecodeCache* cache_n32,
     cc::ImageDecodeCache* cache_f16,
