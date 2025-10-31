@@ -22,6 +22,9 @@ struct WebNavigationTimings {
   blink::mojom::SystemEntropy system_entropy_at_navigation_start =
       blink::mojom::SystemEntropy::kEmpty;
   base::TimeTicks critical_ch_restart;
+  // The total time spent in the previous page's lifecycle events (e.g.
+  // pagehide, visibilitychange) on navigation commit.
+  base::TimeDelta total_lifecycle_events_processing_time_on_commit;
 };
 
 }  // namespace blink

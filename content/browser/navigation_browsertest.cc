@@ -105,6 +105,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "net/test/url_request/url_request_failed_job.h"
+#include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
@@ -8967,6 +8968,103 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
   // After navigation, the child document should no longer have focus.
   ASSERT_TRUE(NavigateFrameToURL(child_ftn, url_2));
   ASSERT_EQ(false, EvalJs(child_ftn, "document.hasFocus();"));
+}
+
+IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
+                       RecordPageLifecycleMetricsOnNewPageCommit) {
+  const std::string_view kTargetUkmEntryName =
+      ukm::builders::PageLifecycleMetricsOnNewPageCommit::kEntryName;
+  const std::string_view kTargetUkmMetricName =
+      ukm::builders::PageLifecycleMetricsOnNewPageCommit::
+          kPageLifecycleEventsTotalProcessingTimeName;
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
+  {
+    GURL url_1(embedded_test_server()->GetURL("a.test", "/title1.html"));
+    base::RunLoop ukm_loop;
+    ukm_recorder.SetOnAddEntryCallback(kTargetUkmEntryName,
+                                       ukm_loop.QuitClosure());
+    EXPECT_TRUE(NavigateToURL(shell(), url_1));
+    EXPECT_TRUE(WaitForLoadStop(web_contents()));
+    ukm_loop.Run();
+    auto entries = ukm_recorder.GetEntriesByName(kTargetUkmEntryName);
+    EXPECT_EQ(1u, entries.size());
+    const ukm::mojom::UkmEntry* entry = entries[0];
+    ukm_recorder.ExpectEntrySourceHasUrl(entry, url_1);
+    // The previous page doesn't have pagehide.
+    EXPECT_LE(*ukm_recorder.GetEntryMetric(entry, kTargetUkmMetricName),
+              ukm::GetExponentialBucketMinForFineUserTiming(100u));
+  }
+
+  EXPECT_TRUE(ExecJs(web_contents(), R"(
+    window.addEventListener('pagehide', function() {
+      const start = Date.now();
+      // Wait for 1 second.
+      while (Date.now() - start <= 1000) {
+      }
+    });
+  )"));
+
+  {
+    GURL url_2(embedded_test_server()->GetURL("a.test", "/title2.html"));
+    base::RunLoop ukm_loop;
+    ukm_recorder.SetOnAddEntryCallback(kTargetUkmEntryName,
+                                       ukm_loop.QuitClosure());
+    EXPECT_TRUE(NavigateToURL(shell(), url_2));
+    EXPECT_TRUE(WaitForLoadStop(web_contents()));
+    ukm_loop.Run();
+    auto entries = ukm_recorder.GetEntriesByName(kTargetUkmEntryName);
+    EXPECT_EQ(2u, entries.size());
+    const ukm::mojom::UkmEntry* entry = entries[1];
+    ukm_recorder.ExpectEntrySourceHasUrl(entry, url_2);
+    // The previous page's pagehide will take over 1000 ms.
+    EXPECT_GE(*ukm_recorder.GetEntryMetric(entry, kTargetUkmMetricName),
+              ukm::GetExponentialBucketMinForFineUserTiming(1000u));
+  }
+
+  {
+    GURL url_3(embedded_test_server()->GetURL("a.test", "/title3.html"));
+    base::RunLoop ukm_loop;
+    ukm_recorder.SetOnAddEntryCallback(kTargetUkmEntryName,
+                                       ukm_loop.QuitClosure());
+    EXPECT_TRUE(NavigateToURL(shell(), url_3));
+    EXPECT_TRUE(WaitForLoadStop(web_contents()));
+    ukm_loop.Run();
+    auto entries = ukm_recorder.GetEntriesByName(kTargetUkmEntryName);
+    EXPECT_EQ(3u, entries.size());
+    const ukm::mojom::UkmEntry* entry = entries[2];
+    ukm_recorder.ExpectEntrySourceHasUrl(entry, url_3);
+    // The previous page doesn't have pagehide.
+    EXPECT_LE(*ukm_recorder.GetEntryMetric(entry, kTargetUkmMetricName),
+              ukm::GetExponentialBucketMinForFineUserTiming(100u));
+  }
+
+  EXPECT_TRUE(ExecJs(web_contents(), R"(
+    window.addEventListener('pagehide', function() {
+      const start = Date.now();
+      // Wait for 1 second.
+      while (Date.now() - start <= 1000) {
+      }
+    });
+  )"));
+
+  {
+    GURL url_4(embedded_test_server()->GetURL("b.test", "/title1.html"));
+    base::RunLoop ukm_loop;
+    ukm_recorder.SetOnAddEntryCallback(kTargetUkmEntryName,
+                                       ukm_loop.QuitClosure());
+    EXPECT_TRUE(NavigateToURL(shell(), url_4));
+    EXPECT_TRUE(WaitForLoadStop(web_contents()));
+    ukm_loop.Run();
+    auto entries = ukm_recorder.GetEntriesByName(kTargetUkmEntryName);
+    EXPECT_EQ(4u, entries.size());
+    const ukm::mojom::UkmEntry* entry = entries[3];
+    ukm_recorder.ExpectEntrySourceHasUrl(entry, url_4);
+    // The previous page's pagehide event runs in a different renderer process,
+    // so this navigation is not blocked.
+    EXPECT_LE(*ukm_recorder.GetEntryMetric(entry, kTargetUkmMetricName),
+              ukm::GetExponentialBucketMinForFineUserTiming(100u));
+  }
 }
 
 class NavigationWithPageSwapBrowserTest : public NavigationBrowserTest {

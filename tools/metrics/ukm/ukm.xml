@@ -17857,6 +17857,29 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="PageLifecycleMetricsOnNewPageCommit" singular="True">
+  <owner>chikamune@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Metrics for the previous page's PageLifecycle events on the new page's
+    commit. This event is saved on the new page that is about to commit.
+  </summary>
+  <metric name="PageLifecycleEventsTotalProcessingTime">
+    <summary>
+      Measures the total duration in milliseconds to run event handlers for the
+      previous page's lifecycle events (e.g., pagehide, visibilitychange) upon
+      the new page's commit.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
 <event name="PageLoad" singular="True">
   <owner>sullivan@chromium.org</owner>
   <owner>chrome-metrics-team@google.com</owner>

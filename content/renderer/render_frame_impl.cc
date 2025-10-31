@@ -2623,8 +2623,11 @@ void RenderFrameImpl::CommitNavigation(
   AssertNavigationCommits assert_navigation_commits(
       this, kMayReplaceInitialEmptyDocument);
 
+  base::ElapsedTimer elapsed_timer;
   SetOldPageLifecycleStateFromNewPageCommitIfNeeded(
       commit_params->old_page_info.get(), common_params->url);
+  base::TimeDelta total_lifecycle_events_processing_time_on_commit =
+      elapsed_timer.Elapsed();
 
   bool was_initiated_in_this_frame =
       navigation_client_impl_ &&
@@ -2655,6 +2658,9 @@ void RenderFrameImpl::CommitNavigation(
       ToWebPolicyContainer(std::move(policy_container));
   navigation_params->view_transition_state =
       std::move(commit_params->view_transition_state);
+  navigation_params->navigation_timings
+      .total_lifecycle_events_processing_time_on_commit =
+      total_lifecycle_events_processing_time_on_commit;
 
   if (frame_->IsOutermostMainFrame() && permissions_policy) {
     navigation_params->permissions_policy_override = permissions_policy;

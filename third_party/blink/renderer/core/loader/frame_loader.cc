@@ -1154,6 +1154,7 @@ void FrameLoader::CommitNavigation(
   ScopedOldDocumentInfoForCommitCapturer scoped_old_document_info(
       MakeGarbageCollected<OldDocumentInfoForCommit>(url_origin));
 
+  base::TimeDelta total_lifecycle_events_processing_time_on_commit;
   FrameSwapScope frame_swap_scope(frame_owner);
   {
     base::AutoReset<bool> scoped_committing(&committing_navigation_, true);
@@ -1185,6 +1186,7 @@ void FrameLoader::CommitNavigation(
       return;
     }
 
+    base::ElapsedTimer elapsed_timer;
     // If the frame is provisional, swap it in now. However, if `SwapIn()`
     // returns false, JS caused `frame_` to be removed, so just return. In case
     // this triggers a local RenderFrame swap, it might trigger the unloading
@@ -1195,6 +1197,7 @@ void FrameLoader::CommitNavigation(
     // the provisional frame's document isn't the one that gets used.
     if (is_provisional && !frame_->SwapIn())
       return;
+    total_lifecycle_events_processing_time_on_commit = elapsed_timer.Elapsed();
   }
 
   tls_version_warning_origins_.clear();
@@ -1237,6 +1240,12 @@ void FrameLoader::CommitNavigation(
         std::move(navigation_params->policy_container));
   }
 
+  // Read the value before `navigation_params` is moved below. This value is
+  // recorded in UKM after CommitDocumentLoader() creates a new document.
+  total_lifecycle_events_processing_time_on_commit +=
+      navigation_params->navigation_timings
+          .total_lifecycle_events_processing_time_on_commit;
+
   // TODO(dgozman): get rid of provisional document loader and most of the code
   // below. We should probably call DocumentLoader::CommitNavigation directly.
   DocumentLoader* new_document_loader = MakeGarbageCollected<DocumentLoader>(
@@ -1249,6 +1258,16 @@ void FrameLoader::CommitNavigation(
       commit_reason);
 
   RestoreScrollPositionAndViewState();
+
+  if (!frame_->IsDetached() && frame_->IsOutermostMainFrame()) {
+    ukm::builders::PageLifecycleMetricsOnNewPageCommit(
+        frame_->GetDocument()->UkmSourceID())
+        .SetPageLifecycleEventsTotalProcessingTime(
+            ukm::GetExponentialBucketMinForFineUserTiming(
+                total_lifecycle_events_processing_time_on_commit
+                    .InMilliseconds()))
+        .Record(frame_->GetDocument()->UkmRecorder());
+  }
 
   TakeObjectSnapshot();
 }
