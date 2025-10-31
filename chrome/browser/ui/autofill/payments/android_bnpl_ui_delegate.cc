@@ -33,9 +33,9 @@ void AndroidBnplUiDelegate::ShowSelectBnplIssuerUi(
                                       std::move(cancel_callback));
 }
 
-void AndroidBnplUiDelegate::DismissSelectBnplIssuerUi() {
-  // TODO(crbug.com/438783909): Add JNI call to dismiss the TouchToFill bottom
-  // sheet with the BNPL issuer selection screen.
+void AndroidBnplUiDelegate::RemoveSelectBnplIssuerOrProgressUi() {
+  // TODO(crbug.com/438783909): Add JNI call to hide the TouchToFill bottom
+  // sheet with the progress UI.
 }
 
 void AndroidBnplUiDelegate::ShowBnplTosUi(BnplTosModel bnpl_tos_model,

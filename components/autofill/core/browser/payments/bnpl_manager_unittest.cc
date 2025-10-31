@@ -154,7 +154,7 @@ class MockBnplUiDelegate : public BnplUiDelegate {
                base::OnceCallback<void(BnplIssuer)> selected_issuer_callback,
                base::OnceClosure cancel_callback),
               (override));
-  MOCK_METHOD(void, DismissSelectBnplIssuerUi, (), (override));
+  MOCK_METHOD(void, RemoveSelectBnplIssuerOrProgressUi, (), (override));
   MOCK_METHOD(void,
               ShowBnplTosUi,
               (BnplTosModel bnpl_tos_model,
@@ -1160,10 +1160,10 @@ TEST_F(BnplManagerTest, ShowSelectBnplIssuerUi_UserCancelled) {
   EXPECT_EQ(test_api(*bnpl_manager_).GetOngoingFlowState(), nullptr);
 }
 
-// Tests that `OnDidGetLegalMessageFromServer` will dismiss the showing issuer
-// selection UI.
+// Tests that `OnDidGetLegalMessageFromServer` will remove the issuer selection
+// UI or progress throbber UI.
 TEST_F(BnplManagerTest,
-       OnDidGetLegalMessageFromServer_DismissSelectBnplIssuerUi) {
+       OnDidGetLegalMessageFromServer_RemoveSelectBnplIssuerOrProgressUi) {
   const BnplIssuer unlinked_issuer = test::GetTestUnlinkedBnplIssuer();
 
   InSequence s;
@@ -1174,7 +1174,8 @@ TEST_F(BnplManagerTest,
       .WillOnce(base::test::RunOnceCallback<1>(
           PaymentsAutofillClient::PaymentsRpcResult::kSuccess, kContextToken,
           GetExpectedLegalMessageLines()));
-  EXPECT_CALL(GetBnplUiDelegate(), DismissSelectBnplIssuerUi);
+  EXPECT_CALL(GetBnplUiDelegate(), RemoveSelectBnplIssuerOrProgressUi())
+      .Times(ShouldCloseViewBeforeSwitching() ? 1 : 0);
 
   bnpl_manager_->OnDidAcceptBnplSuggestion(kAmount, base::DoNothing());
 
@@ -1266,10 +1267,10 @@ TEST_F(BnplManagerTest, OnBnplPaymentInstrumentUpdated_Failure) {
   EXPECT_EQ(test_api(*bnpl_manager_).GetOngoingFlowState(), nullptr);
 }
 
-// Tests that `OnRedirectUrlFetched` will dismiss the showing issuer selection
-// UI.
+// Tests that `OnRedirectUrlFetched` will remove the issuer selection UI or
+// progress throbber UI
 TEST_F(BnplManagerTest,
-       OnRedirectUrlFetched_LinkedIssuer_DismissSelectBnplIssuerUi) {
+       OnRedirectUrlFetched_LinkedIssuer_RemoveSelectBnplIssuerOrProgressUi) {
   BnplFetchUrlResponseDetails response;
   response.redirect_url = kRedirectUrl;
   response.success_url_prefix = GURL("success");
@@ -1284,7 +1285,8 @@ TEST_F(BnplManagerTest,
               GetBnplPaymentInstrumentForFetchingUrl)
       .WillOnce(base::test::RunOnceCallback<1>(
           PaymentsAutofillClient::PaymentsRpcResult::kSuccess, response));
-  EXPECT_CALL(GetBnplUiDelegate(), DismissSelectBnplIssuerUi);
+  EXPECT_CALL(GetBnplUiDelegate(), RemoveSelectBnplIssuerOrProgressUi())
+      .Times(ShouldCloseViewBeforeSwitching() ? 1 : 0);
 
   bnpl_manager_->OnDidAcceptBnplSuggestion(kAmount, base::DoNothing());
 }

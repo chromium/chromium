@@ -406,10 +406,24 @@ void BnplManager::OnDidGetLegalMessageFromServer(
     PaymentsAutofillClient::PaymentsRpcResult result,
     std::string context_token,
     LegalMessageLines legal_message) {
-  // Dismiss the loading throbber in the issuer selection UI after the server
-  // call completion to show the next UI.
+  // Dismiss the loading throbber in the issuer selection UI or progress
+  // throbber UI after the server call completion to show the next UI.
   CHECK(payments_autofill_client().GetBnplUiDelegate());
-  payments_autofill_client().GetBnplUiDelegate()->DismissSelectBnplIssuerUi();
+  CHECK(payments_autofill_client().GetBnplStrategy());
+  using enum BnplStrategy::BeforeSwitchingViewAction;
+
+  switch (payments_autofill_client()
+              .GetBnplStrategy()
+              ->GetBeforeViewSwitchAction()) {
+    case kDoNothing:
+      // The `kDoNothing` case is for platforms where the view is flipped to the
+      // ToS or error UI within the same view, so removing it is not necessary.
+      break;
+    case kCloseCurrentUi:
+      payments_autofill_client()
+          .GetBnplUiDelegate()
+          ->RemoveSelectBnplIssuerOrProgressUi();
+  }
 
   if (result == payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess) {
     ongoing_flow_state_->context_token = std::move(context_token);
@@ -507,8 +521,10 @@ void BnplManager::OnRedirectUrlFetched(
   if (ongoing_flow_state_->issuer.payment_instrument().has_value() &&
       !AcceptTosActionRequired()) {
     // If the BNPL issuer selected is linked and doesn't require ToS acceptance,
-    // then the issuer selection UI must be showing, so close it.
-    payments_autofill_client().GetBnplUiDelegate()->DismissSelectBnplIssuerUi();
+    // then the issuer selection UI or progress UI must be showing, so close it.
+    payments_autofill_client()
+        .GetBnplUiDelegate()
+        ->RemoveSelectBnplIssuerOrProgressUi();
   } else {
     // If the BNPL issuer selected is unlinked, or is linked but requires ToS
     // acceptance, then the ToS/progress UI must be showing, so remove it.

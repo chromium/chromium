@@ -67,6 +67,7 @@ class DesktopBnplUiDelegateBrowserTest
   void RemoveUi() {
     switch (GetParam().dialog) {
       case DialogEnum::kSelectBnplIssuer: {
+        GetDesktopBnplUiDelegate()->RemoveSelectBnplIssuerOrProgressUi();
         break;
       }
       case DialogEnum::kBnplTos: {

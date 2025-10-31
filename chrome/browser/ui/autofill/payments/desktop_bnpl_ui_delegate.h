@@ -41,7 +41,7 @@ class DesktopBnplUiDelegate : public BnplUiDelegate {
       std::string app_locale,
       base::OnceCallback<void(BnplIssuer)> selected_issuer_callback,
       base::OnceClosure cancel_callback) override;
-  void DismissSelectBnplIssuerUi() override;
+  void RemoveSelectBnplIssuerOrProgressUi() override;
   void ShowBnplTosUi(BnplTosModel bnpl_tos_model,
                      base::OnceClosure accept_callback,
                      base::OnceClosure cancel_callback) override;
