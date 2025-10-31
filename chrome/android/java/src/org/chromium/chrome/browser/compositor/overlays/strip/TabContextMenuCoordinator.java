@@ -368,8 +368,7 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
         if (shouldShowMoveToWindowItem(tabs)) {
             itemList.add(createMoveToWindowItem(anchorInfo, isIncognito));
         }
-        List<ListItem> reorderItems =
-                createReorderItems(anchorInfo, R.string.move_tab_left, R.string.move_tab_right);
+        List<ListItem> reorderItems = createReorderItems(anchorInfo);
         // Need to check list is non-empty before calling addAll; otherwise we get assertion error.
         if (!reorderItems.isEmpty()) itemList.addAll(reorderItems);
         itemList.add(buildMenuDivider(isIncognito));
@@ -395,6 +394,8 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
         if (shouldShowMoveToWindowItem(tabs)) {
             itemList.add(createMoveToWindowItem(anchorInfo, isIncognito));
         }
+        List<ListItem> reorderItems = createReorderItems(anchorInfo);
+        if (!reorderItems.isEmpty()) itemList.addAll(reorderItems);
         itemList.add(buildMenuDivider(isIncognito));
         if (isTabPinningFromStripEnabled()) {
             itemList.add(createPinUnpinTabItem(tabs, isIncognito));
@@ -742,6 +743,17 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
         recordMenuAction(R.id.move_to_other_window_sub_menu_id, tabs.size() > 1);
         assumeNonNull(mMultiInstanceManager)
                 .moveTabsToWindow(instanceInfo, tabs, TabList.INVALID_TAB_INDEX);
+    }
+
+    private List<ListItem> createReorderItems(AnchorInfo anchorInfo) {
+        return createReorderItems(
+                anchorInfo,
+                mContext.getResources()
+                        .getQuantityString(
+                                R.plurals.move_tabs_left, anchorInfo.getAllTabIds().size()),
+                mContext.getResources()
+                        .getQuantityString(
+                                R.plurals.move_tabs_right, anchorInfo.getAllTabIds().size()));
     }
 
     /** Ungroups any tabs in {@param tabs} which are currently in a group. */

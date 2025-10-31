@@ -1555,19 +1555,19 @@ public class TabContextMenuCoordinatorUnitTest {
 
         // Items are: add to group, move to window, move left, move right, divider, share, close.
         ListItem moveStartItem = modelList.get(2);
-        int moveStartTitleId = moveStartItem.model.get(ListMenuItemProperties.TITLE_ID);
+        String moveStartTitle =
+                String.valueOf(moveStartItem.model.get(ListMenuItemProperties.TITLE));
         assertEquals(
-                "Move toward start item has wrong title, was "
-                        + mActivity.getString(moveStartTitleId),
-                R.string.move_tab_left,
-                moveStartTitleId);
+                "Move toward start item has wrong title",
+                mActivity.getResources().getQuantityString(R.plurals.move_tabs_left, 1),
+                moveStartTitle);
 
         ListItem moveEndItem = modelList.get(3);
-        int moveEndTitleId = moveEndItem.model.get(ListMenuItemProperties.TITLE_ID);
+        String moveEndTitle = String.valueOf(moveEndItem.model.get(ListMenuItemProperties.TITLE));
         assertEquals(
-                "Move toward end item has wrong title, was " + mActivity.getString(moveEndTitleId),
-                R.string.move_tab_right,
-                moveEndTitleId);
+                "Move toward end item has wrong title",
+                mActivity.getResources().getQuantityString(R.plurals.move_tabs_right, 1),
+                moveEndTitle);
     }
 
     @Test
@@ -1587,19 +1587,19 @@ public class TabContextMenuCoordinatorUnitTest {
 
         // Items are: add to group, move to window, move start, move end, divider, share, close.
         ListItem moveStartItem = modelList.get(2);
-        int moveStartTitleId = moveStartItem.model.get(ListMenuItemProperties.TITLE_ID);
+        String moveStartTitle =
+                String.valueOf(moveStartItem.model.get(ListMenuItemProperties.TITLE));
         assertEquals(
-                "Move toward start item has wrong title, was "
-                        + mActivity.getString(moveStartTitleId),
-                R.string.move_tab_right,
-                moveStartTitleId);
+                "Move toward start item has wrong title",
+                mActivity.getResources().getQuantityString(R.plurals.move_tabs_right, 1),
+                moveStartTitle);
 
         ListItem moveEndItem = modelList.get(3);
-        int moveEndTitleId = moveEndItem.model.get(ListMenuItemProperties.TITLE_ID);
+        String moveEndTitle = String.valueOf(moveEndItem.model.get(ListMenuItemProperties.TITLE));
         assertEquals(
-                "Move toward end item has wrong title, was " + mActivity.getString(moveEndTitleId),
-                R.string.move_tab_left,
-                moveEndTitleId);
+                "Move toward end item has wrong title",
+                mActivity.getResources().getQuantityString(R.plurals.move_tabs_left, 1),
+                moveEndTitle);
     }
 
     @Test
@@ -1632,11 +1632,11 @@ public class TabContextMenuCoordinatorUnitTest {
                 modelList, new AnchorInfo(TAB_ID, Collections.singletonList(TAB_ID)));
 
         for (ListItem listItem : modelList) {
-            if (!listItem.model.containsKey(TITLE_ID)) continue;
+            if (!listItem.model.containsKey(TITLE)) continue;
             assertNotEquals(
                     "Did not expect any item to have 'Move left' title",
-                    R.string.move_tab_left,
-                    listItem.model.get(TITLE_ID));
+                    mActivity.getResources().getQuantityString(R.plurals.move_tabs_left, 1),
+                    listItem.model.get(TITLE));
         }
     }
 
@@ -1670,11 +1670,11 @@ public class TabContextMenuCoordinatorUnitTest {
                 modelList, new AnchorInfo(TAB_ID, Collections.singletonList(TAB_ID)));
 
         for (ListItem listItem : modelList) {
-            if (!listItem.model.containsKey(TITLE_ID)) continue;
+            if (!listItem.model.containsKey(TITLE)) continue;
             assertNotEquals(
-                    "Did not expect any item to have 'Move left' title",
-                    R.string.move_tab_right,
-                    listItem.model.get(TITLE_ID));
+                    "Did not expect any item to have 'Move right' title",
+                    mActivity.getResources().getQuantityString(R.plurals.move_tabs_right, 1),
+                    listItem.model.get(TITLE));
         }
     }
 
@@ -1713,11 +1713,11 @@ public class TabContextMenuCoordinatorUnitTest {
         // In RTL, moving toward the start is "Move right". This option should not be available for
         // the first tab.
         for (ListItem listItem : modelList) {
-            if (!listItem.model.containsKey(TITLE_ID)) continue;
+            if (!listItem.model.containsKey(TITLE)) continue;
             assertNotEquals(
                     "Did not expect any item to have 'Move right' title",
-                    R.string.move_tab_right,
-                    listItem.model.get(TITLE_ID));
+                    mActivity.getResources().getQuantityString(R.plurals.move_tabs_right, 1),
+                    listItem.model.get(TITLE));
         }
     }
 
@@ -1757,11 +1757,11 @@ public class TabContextMenuCoordinatorUnitTest {
         // In RTL, moving toward the end is "Move left". This option should not be available for
         // the last tab.
         for (ListItem listItem : modelList) {
-            if (!listItem.model.containsKey(TITLE_ID)) continue;
+            if (!listItem.model.containsKey(TITLE)) continue;
             assertNotEquals(
                     "Did not expect any item to have 'Move left' title",
-                    R.string.move_tab_left,
-                    listItem.model.get(TITLE_ID));
+                    mActivity.getResources().getQuantityString(R.plurals.move_tabs_left, 1),
+                    listItem.model.get(TITLE));
         }
     }
 
@@ -1779,11 +1779,11 @@ public class TabContextMenuCoordinatorUnitTest {
                 modelList, new AnchorInfo(TAB_ID, Collections.singletonList(TAB_ID)));
 
         for (ListItem listItem : modelList) {
-            if (!listItem.model.containsKey(TITLE_ID)) continue;
+            if (!listItem.model.containsKey(TITLE)) continue;
             assertNotEquals(
                     "Expected no 'Move left' title if tab to the left is pinned",
-                    R.string.move_tab_left,
-                    listItem.model.get(TITLE_ID));
+                    mActivity.getResources().getQuantityString(R.plurals.move_tabs_left, 1),
+                    listItem.model.get(TITLE));
         }
     }
 
@@ -1801,15 +1801,15 @@ public class TabContextMenuCoordinatorUnitTest {
                 modelList, new AnchorInfo(TAB_ID, Collections.singletonList(TAB_ID)));
 
         for (ListItem listItem : modelList) {
-            if (!listItem.model.containsKey(TITLE_ID)) continue;
+            if (!listItem.model.containsKey(TITLE)) continue;
             assertNotEquals(
                     "Did not expect pinned tab menu to have 'Move left' title",
-                    R.string.move_tab_left,
-                    listItem.model.get(TITLE_ID));
+                    mActivity.getResources().getQuantityString(R.plurals.move_tabs_left, 1),
+                    listItem.model.get(TITLE));
             assertNotEquals(
                     "Did not expect pinned tab menu to have 'Move right' title",
-                    R.string.move_tab_right,
-                    listItem.model.get(TITLE_ID));
+                    mActivity.getResources().getQuantityString(R.plurals.move_tabs_right, 1),
+                    listItem.model.get(TITLE));
         }
     }
 
@@ -1829,6 +1829,84 @@ public class TabContextMenuCoordinatorUnitTest {
         modelList.get(2).model.get(CLICK_LISTENER).onClick(mView);
 
         verify(mReorderFunction, times(1)).accept(new AnchorInfo(TAB_ID, List.of(TAB_ID)), true);
+    }
+
+    @Test
+    @Feature("Tab Strip Context Menu")
+    @EnableFeatures({
+        ChromeFeatureList.SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP,
+        ChromeFeatureList.ANDROID_TAB_HIGHLIGHTING
+    })
+    public void testListMenuItems_moveTabsItems_accessibilityOn() {
+        mTabContextMenuCoordinator.setIsGesturesEnabledForTesting(true);
+
+        var modelList = new ModelList();
+        when(mTabModel.indexOf(mTab1)).thenReturn(1);
+        when(mTabModel.indexOf(mTab2)).thenReturn(2);
+        when(mTabModel.getCount()).thenReturn(4);
+        mTabContextMenuCoordinator.configureMenuItemsForTesting(
+                modelList, new AnchorInfo(TAB_ID, List.of(TAB_ID, TAB_ID_2)));
+        assertEquals("Number of items in the list menu is incorrect", 6, modelList.size());
+
+        // Items are: add to group, move to window, move left, move right, divider, pin, close.
+        ListItem moveStartItem = modelList.get(2);
+        String moveStartTitle =
+                String.valueOf(moveStartItem.model.get(ListMenuItemProperties.TITLE));
+        assertEquals(
+                "Move toward start item has wrong title",
+                mActivity.getResources().getQuantityString(R.plurals.move_tabs_left, 2),
+                moveStartTitle);
+
+        ListItem moveEndItem = modelList.get(3);
+        String moveEndTitle = String.valueOf(moveEndItem.model.get(ListMenuItemProperties.TITLE));
+        assertEquals(
+                "Move toward end item has wrong title",
+                mActivity.getResources().getQuantityString(R.plurals.move_tabs_right, 2),
+                moveEndTitle);
+    }
+
+    @Test
+    @Feature("Tab Strip Context Menu")
+    @EnableFeatures({
+        ChromeFeatureList.SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP,
+        ChromeFeatureList.ANDROID_TAB_HIGHLIGHTING
+    })
+    public void testMoveTabsLeft() {
+        mTabContextMenuCoordinator.setIsGesturesEnabledForTesting(true);
+        when(mTabModel.indexOf(mTab1)).thenReturn(1);
+        when(mTabModel.indexOf(mTab2)).thenReturn(2);
+        when(mTabModel.getCount()).thenReturn(4);
+
+        var modelList = new ModelList();
+        mTabContextMenuCoordinator.configureMenuItemsForTesting(
+                modelList, new AnchorInfo(TAB_ID, List.of(TAB_ID, TAB_ID_2)));
+
+        modelList.get(2).model.get(CLICK_LISTENER).onClick(mView);
+
+        verify(mReorderFunction, times(1))
+                .accept(new AnchorInfo(TAB_ID, List.of(TAB_ID, TAB_ID_2)), true);
+    }
+
+    @Test
+    @Feature("Tab Strip Context Menu")
+    @EnableFeatures({
+        ChromeFeatureList.SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP,
+        ChromeFeatureList.ANDROID_TAB_HIGHLIGHTING
+    })
+    public void testMoveTabsRight() {
+        mTabContextMenuCoordinator.setIsGesturesEnabledForTesting(true);
+        when(mTabModel.indexOf(mTab1)).thenReturn(1);
+        when(mTabModel.indexOf(mTab2)).thenReturn(2);
+        when(mTabModel.getCount()).thenReturn(4);
+
+        var modelList = new ModelList();
+        mTabContextMenuCoordinator.configureMenuItemsForTesting(
+                modelList, new AnchorInfo(TAB_ID, List.of(TAB_ID, TAB_ID_2)));
+
+        modelList.get(3).model.get(CLICK_LISTENER).onClick(mView);
+
+        verify(mReorderFunction, times(1))
+                .accept(new AnchorInfo(TAB_ID, List.of(TAB_ID, TAB_ID_2)), false);
     }
 
     @Test

@@ -2429,8 +2429,6 @@ public class StripLayoutHelper
                             mWindowAndroid,
                             mContext,
                             (ids, toLeft) -> {
-                                assert ids.getAllTabIds().size() == 1
-                                        : "Expected to only be able to reorder individual tabs";
                                 // Don't use anchorTab here, since that will be the anchor of the
                                 // first-opened tab context menu (it won't change when a new context
                                 // menu is opened).

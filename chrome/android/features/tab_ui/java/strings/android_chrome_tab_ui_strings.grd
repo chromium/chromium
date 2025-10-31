@@ -1074,11 +1074,15 @@
           =1 {Move tab to new window}
           other {Move tab to another window}}
       </message>
-      <message name="IDS_MOVE_TAB_LEFT" desc="Menu item for moving a tab to the left in the tab strip order.">
-        Move tab left
+      <message name="IDS_MOVE_TABS_LEFT" desc="Menu item for moving tab(s) to the left in the tab strip order.">
+        {TAB_COUNT, plural,
+          =1 {Move tab left}
+          other {Move tabs left}}
       </message>
-      <message name="IDS_MOVE_TAB_RIGHT" desc="Menu item for moving a tab to the right in the tab strip order.">
-        Move tab right
+      <message name="IDS_MOVE_TABS_RIGHT" desc="Menu item for moving tab(s) to the right in the tab strip order.">
+        {TAB_COUNT, plural,
+          =1 {Move tab right}
+          other {Move tabs right}}
       </message>
       <message name="IDS_MOVE_TAB_GROUP_LEFT" desc="Menu item for moving a tab group to the left in the tab strip order.">
         Move tab group left

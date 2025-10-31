@@ -7,12 +7,11 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import static org.chromium.ui.listmenu.ListItemType.MENU_ITEM;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.CLICK_LISTENER;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.ENABLED;
-import static org.chromium.ui.listmenu.ListMenuItemProperties.TITLE_ID;
+import static org.chromium.ui.listmenu.ListMenuItemProperties.TITLE;
 
 import android.content.Context;
 
 import androidx.annotation.LayoutRes;
-import androidx.annotation.StringRes;
 
 import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
@@ -97,20 +96,20 @@ public abstract class TabStripReorderingHelper<T> extends TabOverflowMenuCoordin
      * <p>If there are no list items, an empty list is returned.
      *
      * @param id The ID of the item of interest.
-     * @param moveLeftStringId The string resource ID for moving an item of this type to the left.
-     *     Note: this is truly left, not "start", so it is still left in RTL.
-     * @param moveRightStringId The string resource ID for moving an item of this type to the right.
+     * @param moveLeftString The string for moving an item of this type to the left. Note: this is
+     *     truly left, not "start", so it is still left in RTL.
+     * @param moveRightString The string for moving an item of this type to the right.
      * @return A list of menu list items for reordering the item with id {@param id}.
      */
     protected List<ListItem> createReorderItems(
-            T id, @StringRes int moveLeftStringId, @StringRes int moveRightStringId) {
+            T id, String moveLeftString, String moveRightString) {
         if (!isGesturesEnabled()) return List.of();
         boolean isRtl = LocalizationUtils.isLayoutRtl();
         ListItem moveTowardsStartItem =
                 new ListItem(
                         MENU_ITEM,
                         new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
-                                .with(TITLE_ID, isRtl ? moveRightStringId : moveLeftStringId)
+                                .with(TITLE, isRtl ? moveRightString : moveLeftString)
                                 .with(ENABLED, true)
                                 .with(
                                         CLICK_LISTENER,
@@ -120,7 +119,7 @@ public abstract class TabStripReorderingHelper<T> extends TabOverflowMenuCoordin
                 new ListItem(
                         MENU_ITEM,
                         new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
-                                .with(TITLE_ID, isRtl ? moveLeftStringId : moveRightStringId)
+                                .with(TITLE, isRtl ? moveLeftString : moveRightString)
                                 .with(ENABLED, true)
                                 .with(
                                         CLICK_LISTENER,

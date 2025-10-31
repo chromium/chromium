@@ -94,8 +94,8 @@ import java.util.function.Supplier;
  */
 @NullMarked
 public class TabGroupContextMenuCoordinator extends TabStripReorderingHelper<Token> {
+    private final Context mContext;
     private @MonotonicNonNull View mContentView;
-    private @MonotonicNonNull Context mContext;
     private @MonotonicNonNull EditText mGroupTitleEditText;
     private @MonotonicNonNull ColorPickerCoordinator mColorPickerCoordinator;
     private TabGroupModelFilter mTabGroupModelFilter;
@@ -154,6 +154,7 @@ public class TabGroupContextMenuCoordinator extends TabStripReorderingHelper<Tok
                 reorderFunction);
         mTabGroupModelFilter = tabGroupModelFilter;
         mWindowAndroid = windowAndroid;
+        mContext = windowAndroid.getActivity().get();
         mKeyboardVisibilityListener =
                 isShowing -> {
                     if (!isShowing) updateTabGroupTitle();
@@ -319,7 +320,6 @@ public class TabGroupContextMenuCoordinator extends TabStripReorderingHelper<Tok
     @Override
     protected void buildCustomView(View contentView, boolean isIncognito) {
         mContentView = contentView;
-        mContext = contentView.getContext();
 
         buildTitleEditor(mContentView, mContext, isIncognito);
 
@@ -380,7 +380,10 @@ public class TabGroupContextMenuCoordinator extends TabStripReorderingHelper<Tok
                             R.id.move_to_other_window_menu_id));
         }
         List<MVCListAdapter.ListItem> reorderItems =
-                createReorderItems(id, R.string.move_tab_group_left, R.string.move_tab_group_right);
+                createReorderItems(
+                        id,
+                        assumeNonNull(mContext).getString(R.string.move_tab_group_left),
+                        mContext.getString(R.string.move_tab_group_right));
         // Need to check list is non-empty before calling addAll; otherwise we get assertion error.
         if (!reorderItems.isEmpty()) itemList.addAll(reorderItems);
 
