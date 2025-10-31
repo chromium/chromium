@@ -1234,10 +1234,6 @@ CanvasResourceProvider::CreateSwapChainProvider(
     ShouldInitialize should_initialize,
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
     Delegate* delegate) {
-  if (!CanUseSharedImageSwapChainCapability(context_provider_wrapper)) {
-    return nullptr;
-  }
-
   gpu::SharedImageUsageSet shared_image_usage_flags =
       gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT |
       gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE;
