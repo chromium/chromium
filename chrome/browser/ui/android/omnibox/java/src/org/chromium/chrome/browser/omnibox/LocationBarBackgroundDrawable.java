@@ -222,6 +222,10 @@ public class LocationBarBackgroundDrawable extends Drawable {
         invalidateSelf();
     }
 
+    public GradientDrawable getBackgroundGradient() {
+        return mBackgroundGradient;
+    }
+
     /**
      * Sets whether the rainbow hairline should be drawn.
      *
