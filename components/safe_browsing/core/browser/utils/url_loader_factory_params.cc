@@ -4,6 +4,8 @@
 
 #include "components/safe_browsing/core/browser/utils/url_loader_factory_params.h"
 
+#include "services/network/public/mojom/network_context.mojom.h"
+
 namespace safe_browsing {
 
 network::mojom::URLLoaderFactoryParamsPtr GetUrlLoaderFactoryParams() {

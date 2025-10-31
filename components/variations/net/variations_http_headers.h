@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "components/variations/variations.mojom.h"
-#include "services/network/public/mojom/network_context.mojom.h"
+#include "services/network/public/mojom/network_context.mojom-forward.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
 
 namespace net {

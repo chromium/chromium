@@ -18,7 +18,7 @@
 #include "content/browser/btm/btm_state.h"
 #include "content/browser/btm/btm_utils.h"
 #include "content/common/content_export.h"
-#include "services/network/public/mojom/network_context.mojom.h"
+#include "services/network/public/mojom/clear_data_filter.mojom-forward.h"
 
 class GURL;
 

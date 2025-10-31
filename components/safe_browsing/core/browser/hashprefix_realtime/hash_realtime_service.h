@@ -23,7 +23,7 @@
 #include "components/safe_browsing/core/browser/utils/backoff_operator.h"
 #include "components/safe_browsing/core/common/proto/safebrowsingv5.pb.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
-#include "services/network/public/mojom/network_context.mojom.h"
+#include "services/network/public/mojom/network_context.mojom-forward.h"
 #include "services/network/public/mojom/oblivious_http_request.mojom-forward.h"
 #include "url/gurl.h"
 

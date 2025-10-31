@@ -15,6 +15,7 @@
 #include "net/storage_access_api/status.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 
 namespace device::enclave {
 namespace {
