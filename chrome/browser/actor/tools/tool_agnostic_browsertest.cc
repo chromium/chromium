@@ -399,6 +399,29 @@ IN_PROC_BROWSER_TEST_F(ActorToolAgnosticBrowserTest,
   EXPECT_EQ(EvalJs(web_contents(), "obstruction_button_clicked"), false);
 }
 
+IN_PROC_BROWSER_TEST_F(ActorToolAgnosticBrowserTest,
+                       ToolFailingValidationAddsTab) {
+  const GURL url_start =
+      embedded_https_test_server().GetURL("/actor/blank.html?start");
+  const GURL url_target = embedded_https_test_server().GetURL(
+      "blocked.example.com", "/actor/blank.html?target");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url_start));
+
+  // A navigation to a blocked URL fails in the Validation phase.
+  std::unique_ptr<ToolRequest> action =
+      MakeNavigateRequest(*active_tab(), url_target.spec());
+  ActResultFuture result;
+
+  ASSERT_TRUE(actor_task().GetLastActedTabs().empty());
+
+  actor_task().Act(ToRequestList(action), result.GetCallback());
+  ExpectErrorResult(result, mojom::ActionResultCode::kUrlBlocked);
+
+  // Ensure the tab was added to the tab set even though the tool failed before
+  // invoking.
+  EXPECT_FALSE(actor_task().GetLastActedTabs().empty());
+}
+
 class ActorToolAgnosticBrowserTestWithCustomDelay
     : public ActorToolAgnosticBrowserTest {
  public:

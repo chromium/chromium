@@ -141,7 +141,22 @@ void ToolController::CreateToolAndValidate(
 
 void ToolController::PostValidate(mojom::ActionResultPtr result) {
   if (!IsOk(*result)) {
-    CompleteToolRequest(std::move(result));
+    // TODO(b/455139841): Ensure that even if a tool fails validation it gets
+    // the change to update the controlled tab set so an observation can be
+    // removed. This is band-aid fix but we'll need to rethink how tab-adding
+    // works since clients rely on observations always being available.
+    active_state_->tool->UpdateTaskBeforeInvoke(
+        *task_, base::BindOnce(
+                    [](base::WeakPtr<ToolController> tool_controller_this,
+                       mojom::ActionResultPtr validate_result,
+                       mojom::ActionResultPtr update_task_result_unused) {
+                      if (!tool_controller_this) {
+                        return;
+                      }
+                      tool_controller_this->CompleteToolRequest(
+                          std::move(validate_result));
+                    },
+                    weak_ptr_factory_.GetWeakPtr(), std::move(result)));
     return;
   }
   SetState(State::kPostValidate);
