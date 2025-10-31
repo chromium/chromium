@@ -35,6 +35,8 @@
 #include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/lens_server_proto/aim_communication.pb.h"
 #include "ui/base/unowned_user_data/user_data_factory.h"
@@ -385,6 +387,16 @@ IN_PROC_BROWSER_TEST_F(LensComposeboxControllerBrowserTest,
       GetLensComposeboxController()->composebox_handler_for_testing();
   ASSERT_TRUE(composebox_handler);
 
+  // Verify the side panel has opened and contents have finished loading.
+  // This is needed to prevent the handshake from being reset.
+  auto* test_side_panel_coordinator = GetLensSidePanelCoordinator();
+  ASSERT_TRUE(test_side_panel_coordinator);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return test_side_panel_coordinator->GetSidePanelWebContents() != nullptr;
+  }));
+  ASSERT_TRUE(content::WaitForLoadStop(
+      test_side_panel_coordinator->GetSidePanelWebContents()));
+
   // Mock a focus of the composebox. Should be logged.
   composebox_handler->FocusChanged(true);
   histogram_tester.ExpectBucketCount("Lens.Composebox.UserAction",
@@ -421,6 +433,11 @@ IN_PROC_BROWSER_TEST_F(LensComposeboxControllerBrowserTest,
       "Lens.Composebox.UserAction",
       lens::LensComposeboxUserAction::kQueryIssued, 1);
 
+  // Also need to wait for the overlay controller to hide to prevent
+  // race conditions with `CloseLensSync`.
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return overlay_controller->state() == State::kHidden; }));
+
   // Send another query.
   GetLensComposeboxController()->composebox_handler_for_testing()->SubmitQuery(
       "test query 2", /*mouse_button=*/0, /*alt_key=*/false, /*ctrl_key=*/false,
@@ -436,8 +453,7 @@ IN_PROC_BROWSER_TEST_F(LensComposeboxControllerBrowserTest,
   // Close the overlay to trigger session end metrics.
   lens_controller->CloseLensSync(
       lens::LensOverlayDismissalSource::kOverlayCloseButton);
-  ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return overlay_controller->state() == State::kOff; }));
+  ASSERT_TRUE(base::test::RunUntil([&]() { return lens_controller->IsOff(); }));
 
   // Verify session end metrics are logged once.
   histogram_tester.ExpectUniqueSample("Lens.Composebox.ShownInSession", true,
@@ -485,8 +501,7 @@ IN_PROC_BROWSER_TEST_F(LensComposeboxControllerBrowserTest,
   // Close the overlay to trigger session end metrics again.
   lens_controller->CloseLensSync(
       lens::LensOverlayDismissalSource::kSidePanelCloseButton);
-  ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return overlay_controller->state() == State::kOff; }));
+  ASSERT_TRUE(base::test::RunUntil([&]() { return lens_controller->IsOff(); }));
 
   // Verify session end metrics totals.
   histogram_tester.ExpectUniqueSample("Lens.Composebox.ShownInSession", true,
@@ -1055,4 +1070,46 @@ IN_PROC_BROWSER_TEST_F(LensComposeboxControllerBrowserTest,
   ASSERT_FALSE(overlay_controller->HasRegionSelection());
   ASSERT_FALSE(
       composebox_controller->vsc_image_data_id_for_testing().has_value());
+}
+
+IN_PROC_BROWSER_TEST_F(LensComposeboxControllerBrowserTest,
+                       IssueComposeboxQueryHidesOverlay) {
+  WaitForPaint();
+
+  auto* lens_controller = GetLensSearchController();
+  ASSERT_TRUE(lens_controller);
+
+  // Open the overlay directly to the side panel so composebox is visible.
+  SkBitmap initial_bitmap = CreateNonEmptyBitmap(100, 100);
+  lens_controller->OpenLensOverlayWithPendingRegion(
+      lens::LensOverlayInvocationSource::kContentAreaContextMenuImage,
+      kTestRegion->Clone(), initial_bitmap);
+  auto* overlay_controller = GetLensOverlayController();
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return overlay_controller->state() == State::kOverlayAndResults;
+  }));
+
+  // Wait for the composebox handler to be set.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return GetLensComposeboxController()->composebox_handler_for_testing() !=
+           nullptr;
+  }));
+
+  // Mock a handshake call so the composebox controller can send query messages.
+  lens::AimToClientMessage aim_to_client_message;
+  aim_to_client_message.mutable_handshake_response()->add_capabilities(
+      lens::FeatureCapability::DEFAULT);
+  MockAimToClientMessage(aim_to_client_message);
+
+  // Verify overlay is showing.
+  ASSERT_TRUE(overlay_controller->IsOverlayShowing());
+
+  // Send a query.
+  GetLensComposeboxController()->composebox_handler_for_testing()->SubmitQuery(
+      "test query", /*mouse_button=*/0, /*alt_key=*/false, /*ctrl_key=*/false,
+      /*meta_key=*/false, /*shift_key=*/false);
+
+  // Verify overlay is hidden.
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return overlay_controller->state() == State::kHidden; }));
 }

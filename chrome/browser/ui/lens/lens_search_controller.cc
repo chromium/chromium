@@ -429,7 +429,7 @@ void LensSearchController::HideOverlay(
 }
 
 void LensSearchController::HideOverlay() {
-  if (state() == State::kOff) {
+  if (state() == State::kOff || !lens_overlay_controller_->IsOverlayShowing()) {
     return;
   }
 
