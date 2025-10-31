@@ -33,6 +33,16 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
+// Wrapper class for user-uploaded images.
+@interface HomeCustomizationUserUploadedThumbnailData : NSObject
+@property(nonatomic, strong) UIImage* preparedImage;
+@property(nonatomic, strong)
+    HomeCustomizationFramingCoordinates* framingCoordinates;
+@end
+
+@implementation HomeCustomizationUserUploadedThumbnailData
+@end
+
 @interface HomeCustomizationMainViewController () <
     HomeCustomizationViewControllerProtocol,
     UICollectionViewDelegate>
@@ -40,6 +50,11 @@
 // Contains the types of HomeCustomizationToggleCells that should be shown, with
 // a BOOL indicating if each one is enabled.
 @property(nonatomic, assign) std::map<CustomizationToggleType, BOOL> toggleMap;
+
+// Cache for prepared user-uploaded thumbnails.
+@property(nonatomic, strong)
+    NSCache<NSString*, HomeCustomizationUserUploadedThumbnailData*>*
+        userThumbnailCache;
 
 @end
 
@@ -87,6 +102,7 @@
   self = [super init];
   if (self) {
     self.backgroundCustomizationUserInteractionEnabled = YES;
+    _userThumbnailCache = [[NSCache alloc] init];
   }
   return self;
 }
@@ -458,6 +474,15 @@
                                            completion:imageHandler];
   } else if (backgroundConfiguration.backgroundStyle ==
              HomeCustomizationBackgroundStyle::kUserUploaded) {
+    NSString* imagePath = backgroundConfiguration.userUploadedImagePath;
+    HomeCustomizationUserUploadedThumbnailData* cachedData =
+        [self.userThumbnailCache objectForKey:imagePath];
+    if (cachedData) {
+      [backgroundCell updateBackgroundImage:cachedData.preparedImage
+                         framingCoordinates:cachedData.framingCoordinates];
+      return;
+    }
+
     HomeCustomizationFramingCoordinates* framingCoordinates =
         backgroundConfiguration.userUploadedFramingCoordinates;
     __weak __typeof(self) weakSelf = self;
@@ -465,7 +490,8 @@
         UIImage* image, UserUploadedImageError error) {
       [weakSelf handleLoadedUserUploadedImage:image
                            framingCoordinates:framingCoordinates
-                               backgroundCell:backgroundCell];
+                               backgroundCell:backgroundCell
+                                    imagePath:imagePath];
       if (!image) {
         base::UmaHistogramEnumeration(
             "IOS.HomeCustomization.Background.RecentlyUsed."
@@ -590,6 +616,29 @@
 
 #pragma mark - Private
 
+// Helper method to crop a UIImage based on a rectangle in pixel coordinates.
+- (UIImage*)cropImage:(UIImage*)originalImage toPixelRect:(CGRect)pixelRect {
+  CGImageRef imageRef = originalImage.CGImage;
+  if (!imageRef) {
+    return nil;
+  }
+
+  // Perform the crop. CGImageCreateWithImageInRect handles clipping.
+  CGImageRef croppedImageRef =
+      CGImageCreateWithImageInRect(imageRef, pixelRect);
+  if (!croppedImageRef) {
+    return nil;
+  }
+
+  UIImage* croppedImage =
+      [UIImage imageWithCGImage:croppedImageRef
+                          scale:originalImage.scale
+                    orientation:originalImage.imageOrientation];
+  CGImageRelease(croppedImageRef);
+
+  return croppedImage;
+}
+
 // Configures a `HomeCustomizationBackgroundCell` with the provided background
 // configuration and logo view, and selects it if it matches the currently
 // selected background ID.
@@ -644,44 +693,85 @@
 
 // Handles a loaded user-uploaded image, including optimizations for displaying
 // large images in the small menu thumbnails.
-//
-// TODO(crbug.com/441181385): Improve optimization logic. Some possible options:
-// - Cache prepared image so scrolling the carousel doesn't take time to re-load
-// image.
-// - pre-crop larger images, possibly to a square around the framing
-// coordinates, as highly zoomed in images look even worse when made into a low
-// resolution thumbnail.
-// - pick thumbnail sized based on a combination of view size and frame size.
 - (void)handleLoadedUserUploadedImage:(UIImage*)image
                    framingCoordinates:
                        (HomeCustomizationFramingCoordinates*)framingCoordinates
                        backgroundCell:
-                           (HomeCustomizationBackgroundCell*)backgroundCell {
-  // This thumnail size gives a good balance between quality and responsiveness.
-  CGFloat thumbnailDimension =
-      3 * MAX(self.view.bounds.size.width, self.view.bounds.size.height);
-  CGSize thumbnailSize = CGSize(thumbnailDimension, thumbnailDimension);
-  CGFloat originalImageHeight = image.size.height;
+                           (HomeCustomizationBackgroundCell*)backgroundCell
+                            imagePath:(NSString*)imagePath {
+  UIImage* imageToPrepare = image;
+  CGRect visibleRect = framingCoordinates.visibleRect;
 
+  // Crop to a square centered on the visible rect to avoid losing data on
+  // rotation.
+  CGFloat side = MAX(visibleRect.size.width, visibleRect.size.height);
+  CGRect squareCropRect =
+      CGRectMake(CGRectGetMidX(visibleRect) - side / 2,
+                 CGRectGetMidY(visibleRect) - side / 2, side, side);
+
+  // `CGImageCreateWithImageInRect` has undefined behavior if the crop rect
+  // extends beyond the image bounds. To be safe, intersect the desired crop
+  // rect with the image's bounds.
+  CGImageRef cgImage = image.CGImage;
+  if (!cgImage) {
+    return;
+  }
+  CGRect imagePixelBounds =
+      CGRectMake(0, 0, CGImageGetWidth(cgImage), CGImageGetHeight(cgImage));
+  CGRect cropPixelRect = CGRectIntersection(squareCropRect, imagePixelBounds);
+
+  UIImage* croppedImage = [self cropImage:image toPixelRect:cropPixelRect];
+
+  if (croppedImage) {
+    // If cropping succeeds, update the image to use and keep visibleRect in
+    // sync with the updated image.
+    imageToPrepare = croppedImage;
+    visibleRect = CGRectMake((visibleRect.origin.x - cropPixelRect.origin.x),
+                             (visibleRect.origin.y - cropPixelRect.origin.y),
+                             visibleRect.size.width, visibleRect.size.height);
+  }
+
+  CGFloat screenScale = [UIScreen mainScreen].scale;
+  // Calculate the maximum pixel dimension needed for the cell's display.
+  CGFloat thumbnailDimension =
+      MAX(backgroundCell.bounds.size.width, backgroundCell.bounds.size.height) *
+      screenScale;
+  CGSize thumbnailSize = CGSizeMake(thumbnailDimension, thumbnailDimension);
+
+  __weak __typeof(self) weakSelf = self;
   void (^thumbnailHandler)(UIImage*) = ^(UIImage* preparedImage) {
     dispatch_async(dispatch_get_main_queue(), ^{
-      // Scale the framing coordinates down to the size of the prepared image.
-      CGFloat scale = preparedImage.size.height / originalImageHeight;
-      CGRect visibleRect = framingCoordinates.visibleRect;
-      CGRect scaledVisibleRect = CGRectMake(
+      if (!preparedImage) {
+        return;
+      }
+
+      // Calculate the new framing rect for the user's selection within the
+      // prepared square thumbnail so the preview accurately represent the
+      // user's selection.
+      CGFloat scale = preparedImage.size.width / cropPixelRect.size.width;
+      CGRect finalVisibleRect = CGRectMake(
           visibleRect.origin.x * scale, visibleRect.origin.y * scale,
           visibleRect.size.width * scale, visibleRect.size.height * scale);
-      HomeCustomizationFramingCoordinates* newFramingCoordinates =
-          [[HomeCustomizationFramingCoordinates alloc]
-              initWithVisibleRect:scaledVisibleRect];
 
+      HomeCustomizationFramingCoordinates* finalFraming =
+          [[HomeCustomizationFramingCoordinates alloc]
+              initWithVisibleRect:finalVisibleRect];
+
+      // Cache the prepared thumbnail and its framing.
+      HomeCustomizationUserUploadedThumbnailData* cachedData =
+          [[HomeCustomizationUserUploadedThumbnailData alloc] init];
+      cachedData.preparedImage = preparedImage;
+      cachedData.framingCoordinates = finalFraming;
+      [weakSelf.userThumbnailCache setObject:cachedData forKey:imagePath];
+
+      // Update the cell with the thumbnail.
       [backgroundCell updateBackgroundImage:preparedImage
-                         framingCoordinates:newFramingCoordinates];
+                         framingCoordinates:finalFraming];
     });
   };
 
-  [image prepareThumbnailOfSize:thumbnailSize
-              completionHandler:thumbnailHandler];
+  [imageToPrepare prepareThumbnailOfSize:thumbnailSize
+                       completionHandler:thumbnailHandler];
 }
 
 // Selects the initially selected item when new data is loaded.
