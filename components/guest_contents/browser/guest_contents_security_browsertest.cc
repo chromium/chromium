@@ -435,3 +435,26 @@ IN_PROC_BROWSER_TEST_F(GuestContentsSecurityBrowsertest,
   // Verify the outer webcontents still did NOT navigate.
   EXPECT_EQ(outer_webcontents->GetLastCommittedURL(), outer_url);
 }
+
+// Test that document.referrer in the inner webcontents does not leak the
+// embedder's URL.
+IN_PROC_BROWSER_TEST_F(GuestContentsSecurityBrowsertest,
+                       DocumentReferrerIndependent) {
+  content::WebContents* inner_webcontents = GetInnerWebContents();
+
+  // The inner webcontents should not have a referrer since it acts as a
+  // top-level browsing context, not as an embedded frame.
+  EXPECT_EQ("", EvalJs(inner_webcontents, "document.referrer"));
+}
+
+// Navigating the outer should always navigate the outer.
+IN_PROC_BROWSER_TEST_F(GuestContentsSecurityBrowsertest,
+                       NavigateOuterWithWindowLocation) {
+  content::WebContents* outer_webcontents = GetOuterWebContents();
+
+  GURL url = embedded_https_test_server().GetURL("outer.com", "/simple.html");
+  EXPECT_TRUE(ExecJs(outer_webcontents,
+                     content::JsReplace("window.location.href = $1", url)));
+  EXPECT_TRUE(content::WaitForLoadStop(outer_webcontents));
+  EXPECT_EQ(outer_webcontents->GetLastCommittedURL(), url);
+}
