@@ -461,8 +461,7 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
                         mAnchoredPopupWindow.dismiss();
                     }
                 },
-                ListMenuUtils.createHierarchicalMenuController(
-                        mActivity, /* flyoutHandler= */ null, /* drillDownOverrideValue= */ true));
+                ListMenuUtils.createHierarchicalMenuController(mActivity));
 
         View popupContentView = popupListMenu.getContentView();
         // This is needed because list_menu_layout.xml already sets a background, and we want to

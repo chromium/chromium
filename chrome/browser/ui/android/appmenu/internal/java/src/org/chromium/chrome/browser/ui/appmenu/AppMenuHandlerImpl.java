@@ -302,12 +302,9 @@ class AppMenuHandlerImpl
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.SUBMENUS_IN_APP_MENU)) {
             mHierarchicalMenuController =
                     new HierarchicalMenuController(
-                            mContext,
-                            new AppMenuUtil.AppMenuKeyProvider(),
-                            mSubmenuHeaderFactory,
-                            /* flyoutHandler= */ null,
-                            /* drillDownOverrideValue= */ true);
-            mHierarchicalMenuController.setupCallbacksRecursively(null, mModelList, () -> {});
+                            mContext, new AppMenuUtil.AppMenuKeyProvider(), mSubmenuHeaderFactory);
+            mHierarchicalMenuController.setupCallbacksRecursively(
+                    /* headerModelList= */ null, mModelList, () -> {});
         }
 
         AppMenuAdapter adapter = new AppMenuAdapter(mModelList);

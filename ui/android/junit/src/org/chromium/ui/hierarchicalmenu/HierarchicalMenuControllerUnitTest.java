@@ -97,13 +97,7 @@ public class HierarchicalMenuControllerUnitTest {
                     return new ListItem(MENU_ITEM_SUBMENU_HEADER, builder.build());
                 };
 
-        mController =
-                new HierarchicalMenuController(
-                        context,
-                        keyProvider,
-                        headerFactory,
-                        /* flyoutHandler= */ null,
-                        /* drillDownOverrideValue= */ true);
+        mController = new HierarchicalMenuController(context, keyProvider, headerFactory);
 
         mListItemWithModelClickCallback =
                 new ListItem(

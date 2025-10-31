@@ -283,9 +283,7 @@ public abstract class TabOverflowMenuCoordinator<T> {
         mContext = context;
 
         // TODO(crbug.com/433410990): Implement flyoutHandler.
-        mHierarchicalMenuController =
-                ListMenuUtils.createHierarchicalMenuController(
-                        context, /* flyoutHandler= */ null, /* drillDownOverrideValue= */ true);
+        mHierarchicalMenuController = ListMenuUtils.createHierarchicalMenuController(context);
     }
 
     /**

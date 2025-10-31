@@ -108,10 +108,9 @@ public class ListMenuHost
         mPopupMenus = new ArrayList<>();
 
         mHierarchicalMenuController =
-                ListMenuUtils.createHierarchicalMenuController(
-                        mView.getContext(),
-                        /* flyoutHandler= */ this,
-                        /* drillDownOverrideValue= */ null);
+                ListMenuUtils.createHierarchicalMenuController(mView.getContext());
+        mHierarchicalMenuController.setupFlyoutController(
+                /* flyoutHandler= */ this, /* drillDownOverrideValue= */ null);
     }
 
     /**

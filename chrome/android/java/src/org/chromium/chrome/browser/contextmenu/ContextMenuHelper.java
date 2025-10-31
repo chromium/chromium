@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.contextmenu;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
+import android.app.Activity;
 import android.view.View;
 
 import org.jni_zero.CalledByNative;
@@ -114,11 +115,13 @@ public class ContextMenuHelper {
             return;
         }
 
+        Activity activity = windowAndroid.getActivity().get();
+
         mCurrentNativeDelegate =
                 new ContextMenuNativeDelegateImpl(mWebContents, renderFrameHost, params);
         mCurrentPopulator =
                 mPopulatorFactory.createContextMenuPopulator(
-                        windowAndroid.getActivity().get(), params, mCurrentNativeDelegate);
+                        activity, params, mCurrentNativeDelegate);
         mCurrentContextMenuParams = params;
         mWindow = windowAndroid;
         mOnMenuShown =
@@ -151,7 +154,7 @@ public class ContextMenuHelper {
                     ContextMenuHelperJni.get().onContextMenuClosed(mNativeContextMenuHelper);
                 };
 
-        displayContextMenu(topContentOffsetPx);
+        displayContextMenu(activity, topContentOffsetPx);
     }
 
     @CalledByNative
@@ -171,7 +174,7 @@ public class ContextMenuHelper {
                 mWebContents != null);
     }
 
-    private void displayContextMenu(float topContentOffsetPx) {
+    private void displayContextMenu(Activity activity, float topContentOffsetPx) {
         List<ModelList> items = assumeNonNull(mCurrentPopulator).buildContextMenu();
         assert mOnMenuClosed != null;
         if (items.isEmpty()) {
@@ -194,7 +197,7 @@ public class ContextMenuHelper {
 
         final ContextMenuCoordinator menuCoordinator =
                 new ContextMenuCoordinator(
-                        topContentOffsetPx, mCurrentNativeDelegate, isCustomItemPresent);
+                        activity, topContentOffsetPx, mCurrentNativeDelegate, isCustomItemPresent);
         mCurrentContextMenu = menuCoordinator;
         mChipDelegate = mCurrentPopulator.getChipDelegate();
 

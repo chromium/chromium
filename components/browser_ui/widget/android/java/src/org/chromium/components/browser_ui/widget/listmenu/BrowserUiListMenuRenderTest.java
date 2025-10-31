@@ -100,10 +100,7 @@ public class BrowserUiListMenuRenderTest {
                             BrowserUiListMenuUtils.getBasicListMenu(activity, data, delegate);
                     listMenu.setupCallbacksRecursively(
                             /* dismissDialog= */ () -> {},
-                            ListMenuUtils.createHierarchicalMenuController(
-                                    activity,
-                                    /* flyoutHandler= */ null,
-                                    /* drillDownOverrideValue= */ null));
+                            ListMenuUtils.createHierarchicalMenuController(activity));
 
                     mView = listMenu.getContentView();
                     mView.setBackground(

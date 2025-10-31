@@ -138,9 +138,7 @@ public class ContextMenuMediatorTest {
                                 .with(MENU_ITEM_ID, TEST_MENU_ITEM_ID)
                                 .build());
 
-        mHierarchicalMenuController =
-                ListMenuUtils.createHierarchicalMenuController(
-                        mActivity, /* flyoutHandler= */ null, /* drillDownOverrideValue= */ true);
+        mHierarchicalMenuController = ListMenuUtils.createHierarchicalMenuController(mActivity);
     }
 
     @Test

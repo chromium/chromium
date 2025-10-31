@@ -65,16 +65,17 @@ public class HierarchicalMenuController<T> {
     }
 
     private final Context mContext;
-
-    private final @Nullable FlyoutController<T> mFlyoutController;
     private final HierarchicalMenuKeyProvider mKeyProvider;
 
-    private List<ListItem> mLastHighlightedPath = new ArrayList<ListItem>();
     private @Nullable Handler mHoverExitDelayHandler;
     private @Nullable Runnable mPendingHoverExitRunnable;
 
-    private final @Nullable Boolean mDrillDownOverrideValue;
+    private @Nullable Boolean mDrillDownOverrideValue;
+
     private final SubmenuHeaderFactory mSubmenuHeaderFactory;
+
+    private @Nullable FlyoutController<T> mFlyoutController;
+    private List<ListItem> mLastHighlightedPath = new ArrayList<ListItem>();
 
     /**
      * Creates an instance of the controller.
@@ -82,24 +83,31 @@ public class HierarchicalMenuController<T> {
      * @param context The application's {@link Context} to retrieve resources.
      * @param submenuHeaderFactory The {@link SubmenuHeaderFactory} to use.
      * @param keyProvider The {@link HierarchicalMenuKeyProvider} for the controller to use.
+     */
+    public HierarchicalMenuController(
+            Context context,
+            HierarchicalMenuKeyProvider keyProvider,
+            SubmenuHeaderFactory submenuHeaderFactory) {
+        mContext = context;
+        mSubmenuHeaderFactory = submenuHeaderFactory;
+        mKeyProvider = keyProvider;
+
+        // To use flyout, call {@link setupFlyoutController}.
+        mFlyoutController = null;
+        mDrillDownOverrideValue = true;
+    }
+
+    /**
+     * Creates and initializes the {@link FlyoutController}.
+     *
      * @param flyoutHandler The {@link FlyoutHandler} for the controller to use for displaying
      *     flyout popups.
      * @param drillDownOverrideValue If not null, forces the menu behavior to be drill-down ({@code
      *     true}) or flyout ({@code false}), overriding the default.
      */
-    public HierarchicalMenuController(
-            Context context,
-            HierarchicalMenuKeyProvider keyProvider,
-            SubmenuHeaderFactory submenuHeaderFactory,
-            @Nullable FlyoutHandler<T> flyoutHandler,
-            @Nullable Boolean drillDownOverrideValue) {
-        mContext = context;
-        mSubmenuHeaderFactory = submenuHeaderFactory;
-        mFlyoutController =
-                flyoutHandler != null
-                        ? new FlyoutController<T>(flyoutHandler, keyProvider, this)
-                        : null;
-        mKeyProvider = keyProvider;
+    public void setupFlyoutController(
+            FlyoutHandler<T> flyoutHandler, @Nullable Boolean drillDownOverrideValue) {
+        mFlyoutController = new FlyoutController<T>(flyoutHandler, mKeyProvider, this);
         mDrillDownOverrideValue = drillDownOverrideValue;
     }
 

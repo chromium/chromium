@@ -162,7 +162,8 @@ public class ContextMenuCoordinatorTest {
     @Before
     public void setUpTest() {
         mActivityScenarioRule.getScenario().onActivity((activity) -> mActivity = activity);
-        mCoordinator = new ContextMenuCoordinator(TOP_CONTENT_OFFSET_PX, mNativeDelegate);
+        mCoordinator =
+                new ContextMenuCoordinator(mActivity, TOP_CONTENT_OFFSET_PX, mNativeDelegate);
         ShadowProfile.sProfileFromWebContents = mProfile;
         ContextMenuHeaderCoordinator.setDisableForTesting(true);
     }

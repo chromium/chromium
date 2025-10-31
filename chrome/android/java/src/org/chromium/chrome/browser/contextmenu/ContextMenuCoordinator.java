@@ -76,7 +76,7 @@ public class ContextMenuCoordinator implements ContextMenuUi, FlyoutHandler<Cont
         int CONTEXT_MENU_ITEM_WITH_ICON_BUTTON = 7;
     }
 
-    private Activity mActivity;
+    private final Activity mActivity;
     private WindowAndroid mWindowAndroid;
     private WebContents mWebContents;
     private WebContentsObserver mWebContentsObserver;
@@ -90,6 +90,8 @@ public class ContextMenuCoordinator implements ContextMenuUi, FlyoutHandler<Cont
     // A list of dialogs, paired with the parent `ListItem` if the dialog is a flyout.
     private final List<FlyoutPopupEntry<ContextMenuDialog>> mDialogs;
 
+    private final HierarchicalMenuController mHierarchicalMenuController;
+
     private Runnable mOnMenuClosed;
     private final ContextMenuNativeDelegate mNativeDelegate;
     private final boolean mIsCustomItemPresent;
@@ -99,29 +101,35 @@ public class ContextMenuCoordinator implements ContextMenuUi, FlyoutHandler<Cont
     /**
      * Constructor that also sets the content offset.
      *
+     * @param activity The {@link Activity} for the application.
      * @param topContentOffsetPx content offset from the top.
      * @param nativeDelegate The {@link ContextMenuNativeDelegate} to retrieve the thumbnail from
      *     native.
      */
-    ContextMenuCoordinator(float topContentOffsetPx, ContextMenuNativeDelegate nativeDelegate) {
-        this(topContentOffsetPx, nativeDelegate, false);
+    ContextMenuCoordinator(
+            Activity activity, float topContentOffsetPx, ContextMenuNativeDelegate nativeDelegate) {
+        this(activity, topContentOffsetPx, nativeDelegate, /* isCustomItemPresent= */ false);
     }
 
     /**
+     * @param activity The {@link Activity} for the application.
      * @param topContentOffsetPx content offset from the top.
      * @param nativeDelegate The {@link ContextMenuNativeDelegate} to retrieve the thumbnail from
      *     native.
      * @param isCustomItemPresent Whether a custom item is present in the context menu.
      */
     ContextMenuCoordinator(
+            Activity activity,
             float topContentOffsetPx,
             ContextMenuNativeDelegate nativeDelegate,
             boolean isCustomItemPresent) {
+        mActivity = activity;
         mTopContentOffsetPx = topContentOffsetPx;
         mNativeDelegate = nativeDelegate;
         mIsCustomItemPresent = isCustomItemPresent;
         mDialogs = new ArrayList<>();
         mListViews = new ArrayList<>();
+        mHierarchicalMenuController = ListMenuUtils.createHierarchicalMenuController(mActivity);
     }
 
     @Override
@@ -216,10 +224,6 @@ public class ContextMenuCoordinator implements ContextMenuUi, FlyoutHandler<Cont
         mParams = params;
         mWindowAndroid = window;
         mOnMenuClosed = onMenuClosed;
-
-        Activity activity = window.getActivity().get();
-        assert activity != null;
-        mActivity = activity;
 
         final boolean isDragDropEnabled = ContextMenuUtils.isDragDropEnabled(mActivity);
         mUsePopupWindow = isDragDropEnabled || ContextMenuUtils.isMouseOrHighlightPopup(params);
@@ -330,11 +334,9 @@ public class ContextMenuCoordinator implements ContextMenuUi, FlyoutHandler<Cont
                 new ContextMenuMediator(
                         mActivity, mHeaderCoordinator, onItemClicked, this::dismiss);
 
-        HierarchicalMenuController hierarchicalMenuController =
-                ListMenuUtils.createHierarchicalMenuController(
-                        mActivity,
-                        /* flyoutHandler= */ this,
-                        /* drillDownOverrideValue= */ mUsePopupWindow ? null : true);
+        mHierarchicalMenuController.setupFlyoutController(
+                /* flyoutHandler= */ this,
+                /* drillDownOverrideValue= */ mUsePopupWindow ? null : true);
 
         // The Integer here specifies the {@link ListItemType}.
         ModelList listItems =
@@ -344,7 +346,7 @@ public class ContextMenuCoordinator implements ContextMenuUi, FlyoutHandler<Cont
                         // preview the page before initiating any actions. This is not needed for
                         // actions performed on the current page.
                         /* hasHeader= */ !params.getOpenedFromHighlight() && !params.isPage(),
-                        hierarchicalMenuController);
+                        mHierarchicalMenuController);
 
         ModelListAdapter adapter = createAdapter(listItems);
 
@@ -364,7 +366,7 @@ public class ContextMenuCoordinator implements ContextMenuUi, FlyoutHandler<Cont
         mListViews.add(listView);
 
         listItems.addObserver(
-                hierarchicalMenuController
+                mHierarchicalMenuController
                 .new AccessibilityListObserver(
                         listView,
                         /* headerView= */ null,

@@ -364,9 +364,7 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
 
         // TODO(crbug.com/433410990): Implement flyouts for selected text context menu.
         assumeNonNull(mContext);
-        mHierarchicalMenuController =
-                ListMenuUtils.createHierarchicalMenuController(
-                        mContext, /* flyoutHandler= */ null, /* drillDownOverrideValue= */ true);
+        mHierarchicalMenuController = ListMenuUtils.createHierarchicalMenuController(mContext);
     }
 
     private void reset() {

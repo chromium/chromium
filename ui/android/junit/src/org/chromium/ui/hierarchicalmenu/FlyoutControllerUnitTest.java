@@ -92,12 +92,7 @@ public class FlyoutControllerUnitTest {
                 };
 
         mHierarchicalMenuController =
-                new HierarchicalMenuController(
-                        mContext,
-                        keyProvider,
-                        headerFactory,
-                        /* flyoutHandler= */ null,
-                        /* drillDownOverrideValue= */ false);
+                new HierarchicalMenuController(mContext, keyProvider, headerFactory);
 
         mFlyoutController =
                 new FlyoutController(

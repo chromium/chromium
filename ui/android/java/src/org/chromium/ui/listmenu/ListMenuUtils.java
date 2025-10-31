@@ -21,7 +21,6 @@ import android.widget.ListView;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.R;
-import org.chromium.ui.hierarchicalmenu.FlyoutController.FlyoutHandler;
 import org.chromium.ui.hierarchicalmenu.HierarchicalMenuController;
 import org.chromium.ui.hierarchicalmenu.HierarchicalMenuController.SubmenuHeaderFactory;
 import org.chromium.ui.hierarchicalmenu.HierarchicalMenuKeyProvider;
@@ -148,14 +147,8 @@ public class ListMenuUtils {
      * Creates an instance of {@link HierarchicalMenuController} for {@link ListMenu}.
      *
      * @param context The {@link Context} for the controller to use.
-     * @param flyoutHandler The {@link FlyoutHandler} for the controller to use.
-     * @param drillDownOverrideValue If not null, forces the menu behavior to be drill-down ({@code
-     *     true}) or flyout ({@code false}), overriding the default.
      */
-    public static HierarchicalMenuController createHierarchicalMenuController(
-            Context context,
-            @Nullable FlyoutHandler flyoutHandler,
-            @Nullable Boolean drillDownOverrideValue) {
+    public static HierarchicalMenuController createHierarchicalMenuController(Context context) {
         HierarchicalMenuKeyProvider keyProvider = new ListMenuUtils.ListMenuKeyProvider();
         SubmenuHeaderFactory headerFactory =
                 (clickedItem, backRunnable) -> {
@@ -168,8 +161,7 @@ public class ListMenuUtils {
                             backRunnable);
                     return new ListItem(ListItemType.SUBMENU_HEADER, builder.build());
                 };
-        return new HierarchicalMenuController(
-                context, keyProvider, headerFactory, flyoutHandler, drillDownOverrideValue);
+        return new HierarchicalMenuController(context, keyProvider, headerFactory);
     }
 
     public static class ListMenuKeyProvider implements HierarchicalMenuKeyProvider {
