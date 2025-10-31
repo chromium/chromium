@@ -11,6 +11,7 @@
 #import "build/branding_buildflags.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/chrome/common/app_group/app_group_utils.h"
+#import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/elements/branded_navigation_item_title_view.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -88,8 +89,8 @@ CGFloat const kUpdatedMainViewCornerRadius = 32.0;
 
 - (void)viewDidLoad {
   self.actionHandler = self;
-  self.primaryActionString = _primaryString;
-  self.secondaryActionString = _secondaryString;
+  self.configuration.primaryActionString = _primaryString;
+  self.configuration.secondaryActionString = _secondaryString;
 
   self.scrollEnabled = NO;
   self.showDismissBarButton = YES;

@@ -60,6 +60,7 @@ source_set("share") {
     ]
     deps += [
       "//build:branding_buildflags",
+      "//ios/chrome/common/ui/button_stack",
       "//ios/chrome/common/ui/confirmation_alert",
       "//ios/chrome/common/ui/elements:branded_navigation_item_title_view",
       "//ios/chrome/share_extension/resources",
