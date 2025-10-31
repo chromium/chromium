@@ -265,6 +265,7 @@ const char* GetUpdaterCommand(const base::CommandLine* command_line) {
       kHandoffSwitch,
       kNetWorkerSwitch,
       kUnzipWorkerSwitch,
+      kPatchWorkerSwitch,
   };
   const auto it = std::ranges::find_if(commands, [command_line](auto cmd) {
     return command_line->HasSwitch(cmd);
