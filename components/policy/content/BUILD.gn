@@ -32,10 +32,17 @@ source_set("safe_sites_navigation_throttle") {
 }
 
 source_set("content") {
-  sources = [
-    "policy_blocklist_navigation_throttle.cc",
-    "policy_blocklist_navigation_throttle.h",
-  ]
+  # TODO(crbug.com/452575535): Disable policy_blocklist_navigation_throttle.cc/h
+  # until the iOS-specific implementation of PolicyBlocklistService is resolved.
+  # The PolicyBlocklistService is currently duplicated in
+  # `ios/chrome/browser/policy_url_blocking/model/policy_url_blocking_service.h`.
+  if (!is_ios) {
+    sources = [
+      "policy_blocklist_navigation_throttle.cc",
+      "policy_blocklist_navigation_throttle.h",
+    ]
+  }
+
   if (is_win || is_mac || is_linux || is_chromeos) {
     sources += [
       "password_manager_blocklist_policy.cc",
@@ -54,10 +61,15 @@ source_set("content") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "policy_blocklist_navigation_throttle_unittest.cc",
-    "proceed_until_response_navigation_throttle_unittest.cc",
-  ]
+  sources = [ "proceed_until_response_navigation_throttle_unittest.cc" ]
+
+  # TODO(crbug.com/452575535): Disable policy_blocklist_navigation_throttle_unittests.cc
+  # as well until the iOS-specific implementation of PolicyBlocklistService is
+  # resolved. The PolicyBlocklistService is currently duplicated in
+  # `ios/chrome/browser/policy_url_blocking/model/policy_url_blocking_service.h`.
+  if (!is_ios) {
+    sources += [ "policy_blocklist_navigation_throttle_unittest.cc" ]
+  }
 
   deps = [
     ":content",
