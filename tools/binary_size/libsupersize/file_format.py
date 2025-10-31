@@ -39,18 +39,16 @@ _SECTION_SORT_ORDER = {
     models.SECTION_TDATA: 0,
     models.SECTION_TDATA_REL_RO: 0,
     models.SECTION_TEXT: 0,
-    models.SECTION_BSS: 1,
-    models.SECTION_BSS_REL_RO: 1,
-    models.SECTION_PART_END: 1,
-    models.SECTION_RELRO_PADDING: 1,
-    models.SECTION_TBSS: 1,
+}
+_SECTION_SORT_ORDER.update((k, 1) for k in models.BSS_SECTIONS)
+_SECTION_SORT_ORDER.update({
     models.SECTION_DEX: 2,
     models.SECTION_DEX_METHOD: 3,
     models.SECTION_PAK_NONTRANSLATED: 4,
     models.SECTION_PAK_TRANSLATIONS: 5,
     models.SECTION_ARSC: 6,
     models.SECTION_OTHER: 7,
-}
+})
 
 # Keys in build config for old .size files.
 _LEGACY_METADATA_BUILD_CONFIG_KEYS = (models.BUILD_CONFIG_GIT_REVISION,
