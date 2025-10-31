@@ -20,7 +20,7 @@
 
 - (void)animateInWithCompletion:(ProceduralBlock)completion {
   UIBlurEffect* blurEffect =
-      [UIBlurEffect effectWithStyle:UIBlurEffectStyleExtraLight];
+      [UIBlurEffect effectWithStyle:UIBlurEffectStyleRegular];
   __weak UIVisualEffectView* blurView = _blurView;
   [UIView animateWithDuration:0.25
       animations:^{
