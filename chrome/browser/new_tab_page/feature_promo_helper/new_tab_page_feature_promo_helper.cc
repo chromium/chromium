@@ -196,10 +196,10 @@ bool NewTabPageFeaturePromoHelper::IsSigninModalDialogOpen(
 void NewTabPageFeaturePromoHelper::MaybeTriggerAutomaticCustomizeChromePromo(
     content::WebContents* web_contents) {
   auto* browser_interface = webui::GetBrowserWindowInterface(web_contents);
-  if (browser_interface->GetFeatures()
-          .side_panel_coordinator()
-          ->IsSidePanelEntryShowing(
-              SidePanelEntry::Key(SidePanelEntry::Id::kCustomizeChrome))) {
+  if (!browser_interface || browser_interface->GetFeatures()
+                                .side_panel_coordinator()
+                                ->IsSidePanelEntryShowing(SidePanelEntry::Key(
+                                    SidePanelEntry::Id::kCustomizeChrome))) {
     return;
   }
 
