@@ -258,7 +258,7 @@ const base::FeatureParam<bool> kAutofillAiServerModelUseCacheResults{
 // on file, <input type=text value=CX12> uploads a format string "4".
 // TODO(crbug.com/429704303): Clean up when launched.
 BASE_FEATURE(kAutofillAiVoteForFormatStringsForAffixes,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, votes for the format of flight number fields are uploaded. For
 // example, if there is a flight number "LH89" on file, a submitted value of
