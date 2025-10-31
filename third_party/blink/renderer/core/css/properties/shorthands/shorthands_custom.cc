@@ -4062,9 +4062,7 @@ const CSSValue* TextDecoration::CSSValueFromComputedStyleInternal(
           continue;
         }
       }
-    } else if (RuntimeEnabledFeatures::
-                   TextDecorationOmitCurrentColorEnabled() &&
-               property_id == CSSPropertyID::kTextDecorationColor) {
+    } else if (property_id == CSSPropertyID::kTextDecorationColor) {
       // Skip currentColor, which is the initial value.
       if (style.TextDecorationColor().IsCurrentColor()) {
         continue;

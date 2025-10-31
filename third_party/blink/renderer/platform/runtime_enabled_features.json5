@@ -5074,11 +5074,6 @@
       depends_on: ["TextareaLineEndingsAsBr"],
     },
     {
-      // crbug.com/435186193
-      name: "TextDecorationOmitCurrentColor",
-      status: "stable",
-    },
-    {
       name: "TextDetector",
       status: "experimental",
     },
