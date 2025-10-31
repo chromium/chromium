@@ -110,7 +110,6 @@
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/feature_list.h"
 #include "components/feed/feed_feature_list.h"
-#include "components/fingerprinting_protection_filter/interventions/common/interventions_features.h"
 #include "components/heavy_ad_intervention/heavy_ad_features.h"
 #include "components/history/core/browser/features.h"
 #include "components/history_clusters/core/config.h"
@@ -4377,12 +4376,6 @@ const FeatureEntry::FeatureVariation
          std::size(
              kStandardBoundSessionCredentialsFederatedSessionsForDevelopers),
          nullptr}};
-
-const FeatureEntry::FeatureParam kEnableCanvasNoiseInAllModes[] = {
-    {"enable_in_regular_mode", "true"}};
-const FeatureEntry::FeatureVariation kEnableCanvasNoiseVariations[] = {
-    {" - In all browsing modes", kEnableCanvasNoiseInAllModes,
-     std::size(kEnableCanvasNoiseInAllModes), nullptr}};
 
 // LINT.IfChange(AutofillVcnEnrollStrikeExpiryTime)
 const FeatureEntry::FeatureParam kAutofillVcnEnrollStrikeExpiryTime_120Days[] =
@@ -12196,13 +12189,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kNotebookLmAppPreinstallDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kNotebookLmAppPreinstall)},
 #endif  // BUILDFLAG(IS_CHROMEOS)
-
-    {"enable-canvas-noise", flag_descriptions::kEnableCanvasNoiseName,
-     flag_descriptions::kEnableCanvasNoiseDescription, kOsAll,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         fingerprinting_protection_interventions::features::kCanvasNoise,
-         kEnableCanvasNoiseVariations,
-         "EnableCanvasNoise")},
 
 #if !BUILDFLAG(IS_ANDROID)
     {"tab-capture-infobar-links",

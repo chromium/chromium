@@ -2005,12 +2005,6 @@ ContentBrowserClient::GetClipboardTypesIfPolicyApplied(
   return std::nullopt;
 }
 
-bool ContentBrowserClient::ShouldEnableCanvasNoise(
-    BrowserContext* browser_context,
-    const GURL& origin) {
-  return false;
-}
-
 bool ContentBrowserClient::UsePrefetchPrerenderIntegration() {
   return false;
 }

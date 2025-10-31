@@ -1199,9 +1199,6 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   std::optional<std::vector<std::u16string>> GetClipboardTypesIfPolicyApplied(
       const ui::ClipboardSequenceNumberToken& seqno) override;
 
-  bool ShouldEnableCanvasNoise(content::BrowserContext* browser_context,
-                               const GURL& origin) override;
-
   bool UsePrefetchPrerenderIntegration() override;
   bool UsePreloadServingMetrics() override;
 #if !BUILDFLAG(IS_ANDROID)

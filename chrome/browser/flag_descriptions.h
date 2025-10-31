@@ -1734,12 +1734,6 @@ inline constexpr char kEnableControlledFrameDescription[] =
     "https://github.com/WICG/controlled-frame/blob/main/EXPLAINER.md "
     "for more information.";
 
-inline constexpr char kEnableCanvasNoiseName[] =
-    "Enable noise for canvas readbacks in Incognito";
-inline constexpr char kEnableCanvasNoiseDescription[] =
-    "Enable noising pixels when the contents of a canvas are read back by a "
-    "script.";
-
 inline constexpr char kEnablePeripheralCustomizationName[] =
     "Enable peripheral customization";
 inline constexpr char kEnablePeripheralCustomizationDescription[] =

@@ -3343,12 +3343,6 @@ class CONTENT_EXPORT ContentBrowserClient {
   GetClipboardTypesIfPolicyApplied(
       const ui::ClipboardSequenceNumberToken& seqno);
 
-  // Returns true if CanvasNoise should be enabled for `origin`'s navigation.
-  // Enablement depends on corresponding feature flag values, and whether the
-  // origin has an exception from Canvas noising. Default returns false.
-  virtual bool ShouldEnableCanvasNoise(BrowserContext* browser_context,
-                                       const GURL& origin);
-
   // Returns true if PrefetchPrerenderIntegration should be allowed, this
   // allows a prerender fall back to prefetch if available.
   virtual bool UsePrefetchPrerenderIntegration();

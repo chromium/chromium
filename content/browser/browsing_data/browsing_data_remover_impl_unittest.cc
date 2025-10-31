@@ -35,12 +35,10 @@
 #include "base/test/test_future.h"
 #include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
-#include "components/fingerprinting_protection_filter/interventions/common/interventions_features.h"
 #include "content/browser/btm/btm_service_impl.h"
 #include "content/browser/btm/btm_storage.h"
 #include "content/browser/btm/btm_test_utils.h"
 #include "content/browser/btm/btm_utils.h"
-#include "content/browser/fingerprinting_protection/canvas_noise_token_data.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -2259,28 +2257,6 @@ TEST_F(BrowsingDataRemoverImplBtmTest, RemoveBtmEventsByType) {
     EXPECT_FALSE(state_val3->bounce_times.has_value());
     EXPECT_TRUE(state_val3->user_activation_times.has_value());
   }
-}
-
-TEST_F(BrowsingDataRemoverImplTest,
-       RemoveBrowsingHistoryRegeneratesNoiseToken) {
-  base::test::ScopedFeatureList features(
-      fingerprinting_protection_interventions::features::kCanvasNoise);
-
-  url::Origin origin = url::Origin::Create(GURL("https://example.test"));
-  blink::NoiseToken original_token =
-      content::CanvasNoiseTokenData::GetToken(GetBrowserContext(), origin);
-
-  BlockUntilBrowsingDataRemoved(base::Time(), base::Time::Max(),
-                                content::BrowsingDataRemover::DATA_TYPE_COOKIES,
-                                false);
-
-  EXPECT_EQ(content::BrowsingDataRemover::DATA_TYPE_COOKIES, GetRemovalMask());
-  EXPECT_EQ(content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB,
-            GetOriginTypeMask());
-
-  blink::NoiseToken updated_token =
-      content::CanvasNoiseTokenData::GetToken(GetBrowserContext(), origin);
-  EXPECT_NE(original_token, updated_token);
 }
 
 }  // namespace content
