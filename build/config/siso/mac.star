@@ -2,7 +2,7 @@
 # Copyright 2023 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-"""Siso configuration for macOS."""
+"""Siso configuration for macOS/iOS."""
 
 load("@builtin//path.star", "path")
 load("@builtin//struct.star", "module")
@@ -48,9 +48,14 @@ def __package_framework(ctx, cmd):
             flag = arg
     ctx.actions.fix(outputs = cmd.outputs + outputs)
 
+def __download_from_google_storage(ctx, cmd):
+    # download_from_google_storage will replace output dir.
+    ctx.actions.fix(reconcile_outputdirs = [path.dir(cmd.outputs[0])])
+
 __handlers = {
     "codesign": __codesign,
     "package_framework": __package_framework,
+    "download_from_google_storage": __download_from_google_storage,
 }
 __handlers.update(clang.handlers)
 __handlers.update(typescript.handlers)
@@ -69,6 +74,11 @@ def __step_config(ctx, step_config):
             "name": "package_framework",
             "command_prefix": "python3 ../../build/config/mac/package_framework.py ",
             "handler": "package_framework",
+        },
+        {
+            "name": "download_from_google_storage",
+            "command_prefix": "python3 ../../third_party/depot_tools/download_from_google_storage.py ",
+            "handler": "download_from_google_storage",
         },
     ])
     return step_config
