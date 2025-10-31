@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.settings.search;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
+import android.content.Context;
 import android.text.TextUtils;
 
 import org.chromium.build.annotations.NullMarked;
@@ -173,6 +174,25 @@ public class SettingsIndexData {
      */
     public boolean isDisabledFragment(String fragment) {
         return mDisabledFragments.contains(fragment);
+    }
+
+    /**
+     * Initializes the in-memory search index for all settings. It uses the providers found in
+     * {@link SearchIndexProviderRegistry.ALL_PROVIDERS}.
+     */
+    public void initIndex(Context context) {
+        // This is done to avoid duplicate entries when parsing XML.
+        mEntries.clear();
+        mDisabledFragments.clear();
+
+        for (SearchIndexProvider provider : SearchIndexProviderRegistry.ALL_PROVIDERS) {
+            // This handles both the default "dumb" parsers and our custom "smart" override in
+            // MainSettings.
+            provider.initPreferenceXml(context, this);
+            // This handles dynamic text updates (e.g., TabArchiveSettings) and code-only entries
+            // (e.g., AboutChromeSettings).
+            provider.updateDynamicPreferences(context, this);
+        }
     }
 
     /**

@@ -993,6 +993,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/settings/search/EmptyFragment.java",
   "java/src/org/chromium/chrome/browser/settings/search/PreferenceParser.java",
   "java/src/org/chromium/chrome/browser/settings/search/SearchIndexProvider.java",
+  "java/src/org/chromium/chrome/browser/settings/search/SearchIndexProviderRegistry.java",
   "java/src/org/chromium/chrome/browser/settings/search/SearchResultsPreferenceFragment.java",
   "java/src/org/chromium/chrome/browser/settings/search/SettingsIndexData.java",
   "java/src/org/chromium/chrome/browser/settings/search/SettingsSearchCoordinator.java",

@@ -73,6 +73,7 @@ public class SettingsSearchCoordinator {
 
     // Set to {@code true} after queries are entered. Used to conditionally clear up the screen.
     private boolean mQueryEntered;
+    private SettingsIndexData mIndexData;
 
     // Interface to communite with search backend and receive results asynchronously.
     public interface SearchCallback {
@@ -144,7 +145,20 @@ public class SettingsSearchCoordinator {
         }
     }
 
+    @Initializer
+    @EnsuresNonNull("mIndexData")
+    private void initIndex() {
+        if (mIndexData == null) {
+            mIndexData = new SettingsIndexData();
+        } else {
+            // (crbug.com/456817438): Index only when stale.
+            mIndexData.initIndex(mActivity);
+        }
+    }
+
     private void enterSearchState() {
+        initIndex();
+
         if (mMultiColumnSettings != null && !mMultiColumnSettingsBackActionHandlerSet) {
             mActivity
                     .getOnBackPressedDispatcher()
@@ -295,7 +309,8 @@ public class SettingsSearchCoordinator {
                         String query = s.toString().trim();
                         if (query.length() > 0) {
                             mQueryEntered = true;
-                            performSearch(SettingsSearchCoordinator.this::displayResultsFragment);
+                            performSearch(
+                                    query, SettingsSearchCoordinator.this::displayResultsFragment);
                         } else {
                             if (mQueryEntered) clearFragment(/* addToBackStack= */ false);
                         }
@@ -306,10 +321,11 @@ public class SettingsSearchCoordinator {
     /**
      * Performs search by sending the query to search backend.
      *
+     * @param query The search query the user entered.
      * @param callback The callback function to be executed when results are available.
      */
     @EnsuresNonNull("mSearchRunnable")
-    private void performSearch(SearchCallback callback) {
+    private void performSearch(String query, SearchCallback callback) {
         if (mSearchRunnable != null) {
             // Debouncing to avoid initiating search for each keystroke entered fast.
             // We sets some delay before initiating search (see postDelayed() below) so that
@@ -317,9 +333,7 @@ public class SettingsSearchCoordinator {
             mHandler.removeCallbacks(mSearchRunnable);
         }
 
-        // TODO(jinsukkim): Connect to real search backend. For now, get a canned result
-        //    to let the UI journey proceed.
-        mSearchRunnable = () -> callback.onSearchResults(new SearchResults());
+        mSearchRunnable = () -> callback.onSearchResults(mIndexData.search(query));
         mHandler.postDelayed(mSearchRunnable, 200);
     }
 

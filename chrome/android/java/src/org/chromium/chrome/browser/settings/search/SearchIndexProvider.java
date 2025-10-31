@@ -21,4 +21,13 @@ public interface SearchIndexProvider {
      * @param indexData The central {@link SettingsIndexData} object to be populated.
      */
     void initPreferenceXml(Context context, SettingsIndexData indexData);
+
+    /**
+     * Update the search index with the preference information provided dynamically or
+     * programmatically.
+     *
+     * @param context The {@link Context} used to access application resources.
+     * @param indexData The central {@link SettingsIndexData} object to be populated.
+     */
+    default void updateDynamicPreferences(Context context, SettingsIndexData indexData) {}
 }
