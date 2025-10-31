@@ -51,6 +51,8 @@ class ZeroStateSuggestionsRequest {
   // Returns the tabs that were requested to get suggestions for.
   std::vector<content::WebContents*> GetRequestedTabs() const;
 
+  base::WeakPtr<ZeroStateSuggestionsRequest> AsWeakPtr();
+
  private:
   friend class ContextualCueingServiceTestZeroStateSuggestions;
 

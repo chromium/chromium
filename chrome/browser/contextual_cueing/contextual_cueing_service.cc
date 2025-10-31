@@ -459,7 +459,8 @@ bool ContextualCueingService::
   pinned_tabs_zero_state_suggestions_request_->AddCallback(base::BindOnce(
       &ContextualCueingService::OnPinnedTabsSuggestionsReceived,
       weak_ptr_factory_.GetWeakPtr(), is_fre, base::TimeTicks::Now(),
-      pinned_tabs_zero_state_suggestions_request_.get(), std::move(callback)));
+      pinned_tabs_zero_state_suggestions_request_->AsWeakPtr(),
+      std::move(callback)));
   return true;
 #else
   std::move(callback).Run({});
@@ -470,7 +471,7 @@ bool ContextualCueingService::
 void ContextualCueingService::OnPinnedTabsSuggestionsReceived(
     bool is_fre,
     base::TimeTicks fetch_begin_time,
-    ZeroStateSuggestionsRequest* pinned_tabs_request,
+    base::WeakPtr<ZeroStateSuggestionsRequest> pinned_tabs_request,
     GlicSuggestionsCallback callback,
     std::vector<std::string> suggestions) {
 #if BUILDFLAG(ENABLE_GLIC)
@@ -478,8 +479,9 @@ void ContextualCueingService::OnPinnedTabsSuggestionsReceived(
                         std::move(suggestions));
 
   // Only destroy the outstanding pinned tabs request if it is the same.
-  if (pinned_tabs_request ==
-      pinned_tabs_zero_state_suggestions_request_.get()) {
+  if (pinned_tabs_request &&
+      pinned_tabs_request.get() ==
+          pinned_tabs_zero_state_suggestions_request_.get()) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostNonNestableTask(
         FROM_HERE,
         base::BindOnce(&ZeroStateSuggestionsRequest::Destroy,

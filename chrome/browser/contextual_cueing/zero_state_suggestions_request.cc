@@ -222,4 +222,9 @@ void ZeroStateSuggestionsRequest::CacheFocusedTabSuggestions(
       suggestions_to_cache);
 }
 
+base::WeakPtr<ZeroStateSuggestionsRequest>
+ZeroStateSuggestionsRequest::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 }  // namespace contextual_cueing
