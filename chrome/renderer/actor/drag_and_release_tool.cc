@@ -8,6 +8,7 @@
 #include "base/types/expected.h"
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/actor/actor_logging.h"
+#include "chrome/common/actor/journal_details_builder.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/renderer/actor/tool_utils.h"
 #include "content/public/renderer/render_frame.h"
@@ -57,6 +58,12 @@ void DragAndReleaseTool::Execute(ToolFinishedCallback callback) {
 
   ResolvedTarget from_target = validated_result->from;
   ResolvedTarget to_target = validated_result->to;
+
+  journal_->Log(task_id_, "DragAndReleaseTool::Execute",
+                JournalDetailsBuilder()
+                    .Add("from", from_target.widget_point)
+                    .Add("to", to_target.widget_point)
+                    .Build());
 
   WebWidget* widget = from_target.GetWidget(*this);
   CHECK(widget);
