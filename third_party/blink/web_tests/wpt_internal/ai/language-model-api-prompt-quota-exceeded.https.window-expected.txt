@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Language Model Prompt Quota Exceeded
-  Test bug: unrecognized DOMException code name or name "QuotaExceededError" passed to assert_throws_dom()
-Harness: the test ran to completion.
-
