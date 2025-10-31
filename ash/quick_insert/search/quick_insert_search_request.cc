@@ -174,8 +174,6 @@ QuickInsertSearchRequest::QuickInsertSearchRequest(
   }
 
   if (!cros_search_sources.empty()) {
-    // TODO: b/326166751 - Use `available_categories_` to decide what searches
-    // to do.
     for (QuickInsertSearchSource source : cros_search_sources) {
       MarkSearchStarted(source);
     }
