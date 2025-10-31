@@ -605,10 +605,9 @@ class AvatarToolbarButtonBaseBrowserTest {
               syncer::SyncService::UserActionableError::kNeedsClientUpgrade);
   }
 
-  void SetSyncServiceInitializedState(bool initialized) {
-    GetTestSyncService()->SetMaxTransportState(
-        initialized ? syncer::SyncService::TransportState::ACTIVE
-                    : syncer::SyncService::TransportState::INITIALIZING);
+  void SetSyncServiceTransportState(
+      syncer::SyncService::TransportState transport_state) {
+    GetTestSyncService()->SetMaxTransportState(transport_state);
     GetTestSyncService()->FireStateChanged();
   }
 
@@ -3180,18 +3179,24 @@ TEST_WITH_SIGNED_IN_FROM_PRE(
       primary_account_gaia_id.ToString());
   batch_upload_test_helper().SetReturnDescriptions(syncer::BOOKMARKS,
                                                    /*item_count=*/5);
-  SetSyncServiceInitializedState(/*initialized=*/false);
+  SetSyncServiceTransportState(
+      syncer::SyncService::TransportState::INITIALIZING);
 
   AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
   ASSERT_EQ(avatar->GetText(),
             l10n_util::GetStringFUTF16(IDS_AVATAR_BUTTON_GREETING,
                                        test_given_name()));
   avatar->ClearActiveStateForTesting();
-
-  // No Promo shown as long as the sync service is not ready.
+  // No Promo shown as long as the sync service is not active.
   ASSERT_EQ(avatar->GetText(), std::u16string());
-  SetSyncServiceInitializedState(/*initialized=*/true);
 
+  // Check crbug.com/454927990.
+  SetSyncServiceTransportState(
+      syncer::SyncService::TransportState::CONFIGURING);
+  // No Promo shown as long as the sync service is not active.
+  ASSERT_EQ(avatar->GetText(), std::u16string());
+
+  SetSyncServiceTransportState(syncer::SyncService::TransportState::ACTIVE);
   ASSERT_EQ(
       avatar->GetText(),
       l10n_util::GetStringUTF16(
