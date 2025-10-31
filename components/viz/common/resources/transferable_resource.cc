@@ -72,8 +72,34 @@ std::vector<ReturnedResource> TransferableResource::ReturnResources(
 
 void TransferableResource::AsValueInto(
     base::trace_event::TracedValue* value) const {
-  // TODO(zmo): Include all fields.
+  // Skip |id| because it's different between client and viz.
+  value->SetBoolean("is_software", is_software);
   value->SetString("memory_buffer_id", memory_buffer_id_.ToDebugString());
+  value->SetString("sync_token", sync_token_.ToDebugString());
+  value->SetInteger("texture_target", texture_target_);
+  value->SetString("size", size.ToString());
+  value->SetString("format", format.ToString());
+  value->SetString("color_space", color_space.ToString());
+  value->SetString("hdr_metadata", hdr_metadata.ToString());
+  value->SetBoolean("is_overlay_candidate", is_overlay_candidate);
+  value->SetBoolean("is_low_latency_rendering", is_low_latency_rendering);
+  value->SetInteger("synchronization_type",
+                    static_cast<int>(synchronization_type));
+#if BUILDFLAG(IS_ANDROID)
+  if (ycbcr_info) {
+    value->BeginDictionary("ycbcr_info");
+    ycbcr_info->AsValueInto(value);
+    value->EndDictionary();
+  }
+  value->SetBoolean("is_backed_by_surface_view", is_backed_by_surface_view);
+#endif
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
+  value->SetBoolean("wants_promotion_hint", wants_promotion_hint);
+#endif
+  value->SetBoolean("needs_detiling", needs_detiling);
+  value->SetInteger("origin", static_cast<int>(origin));
+  value->SetInteger("alpha_type", static_cast<int>(alpha_type));
+  value->SetInteger("resource_source", static_cast<int>(resource_source));
 }
 
 }  // namespace viz

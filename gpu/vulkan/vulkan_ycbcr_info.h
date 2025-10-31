@@ -9,6 +9,10 @@
 
 #include "base/component_export.h"
 
+namespace base::trace_event {
+class TracedValue;
+}  // namespace base::trace_event
+
 namespace gpu {
 
 // Sampler Ycbcr conversion information.
@@ -21,6 +25,8 @@ struct COMPONENT_EXPORT(VULKAN) VulkanYCbCrInfo {
                   uint32_t suggested_xchroma_offset,
                   uint32_t suggested_ychroma_offset,
                   uint32_t format_features);
+
+  void AsValueInto(base::trace_event::TracedValue* value) const;
 
   // Source image format.
   // Corresponds to vulkan type: VkFormat.
