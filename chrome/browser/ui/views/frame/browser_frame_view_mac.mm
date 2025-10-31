@@ -458,96 +458,9 @@ void BrowserFrameViewMac::PaintChildren(const views::PaintInfo& info) {
 }
 
 BrowserFrameViewMac::BoundsAndMargins
-BrowserFrameViewMac::GetCaptionButtonBoundsNative() const {
+BrowserFrameViewMac::GetCaptionButtonBounds() const {
   BoundsAndMargins result;
 
-  // Verify that this is not an out-of-process window.
-  const auto native_window = GetWidget()->GetNativeWindow();
-  if (auto* const host =
-          views::NativeWidgetMacNSWindowHost::GetFromNativeWindow(
-              native_window);
-      host && host->application_host()) {
-    return result;
-  }
-
-  // Verify that there is a valid NSWindow.
-  NSWindow* ns_window = native_window.GetNativeNSWindow();
-  if (!ns_window) {
-    return result;
-  }
-
-  // Build a list of caption button bounds.
-  std::vector<gfx::RectF> button_rects;
-
-  // Also track some other data that will be useful for calculating the visual
-  // margins of the buttons against the window border.
-  float min_x = width();
-  float max_x = 0;
-  float min_y = height();
-
-  // Chrome coordinates are reversed in RTL but not in the Mac API, so we might
-  // have to flip them.
-  const bool is_rtl = base::i18n::IsRTL();
-
-  // Build the list. If any of the buttons are not present or are zero size,
-  // abort (this will fall back to previous hard-coded values).
-  for (NSButton* button :
-       {[ns_window standardWindowButton:NSWindowCloseButton],
-        [ns_window standardWindowButton:NSWindowMiniaturizeButton],
-        [ns_window standardWindowButton:NSWindowZoomButton]}) {
-    if (!button) {
-      return result;
-    }
-    NSRect ns_rect = [button convertRect:[button bounds] toView:nil];
-
-    // When converting from Mac to Chrome coordinates:
-    //  - Y axis is inverted (Mac coordinates start at bottom-left).
-    //  - X axis is inverted in RTL mode only (Mac coordinates are invariant
-    //    while Chrome reverses them).
-    button_rects.emplace_back(
-        is_rtl ? width() - (ns_rect.origin.x + ns_rect.size.width)
-               : ns_rect.origin.x,
-        height() - (ns_rect.origin.y + ns_rect.size.height), ns_rect.size.width,
-        ns_rect.size.height);
-    const auto& rect = button_rects.back();
-    if (rect.IsEmpty()) {
-      return result;
-    }
-    min_x = std::min(min_x, rect.x());
-    max_x = std::max(max_x, rect.right());
-    min_y = std::min(min_y, rect.y());
-  }
-
-  // Calculate the margins that the buttons are using.
-  const float block_margin = min_y;
-  const float inline_margin =
-      CaptionButtonsOnLeadingEdge() ? min_x : width() - max_x;
-
-  // Accumulate the button bounds.
-  for (const auto& rect : button_rects) {
-    result.bounds.Union(rect);
-  }
-
-  // Apply the margins on the exterior of the region, so that the padding around
-  // the buttons appears visually symmetrical.
-  result.margins = gfx::OutsetsF::VH(block_margin, inline_margin);
-
-  return result;
-}
-
-BrowserFrameViewMac::BoundsAndMargins
-BrowserFrameViewMac::GetCaptionButtonBounds() const {
-  BoundsAndMargins result = GetCaptionButtonBoundsNative();
-  if (!result.bounds.IsEmpty()) {
-    return result;
-  }
-
-  // If that doesn't work, fall back to some hard-coded constants. These will
-  // apply for app windows, since the app is out of process and the caption
-  // buttons can't be retrieved. Note that the app window actually positions its
-  // buttons slightly differently from a standard browser window (it's unclear
-  // why).
-  //
   // These are empirically determined; feel free to change them if they're
   // not precise.
   if (@available(macOS 26, *)) {
