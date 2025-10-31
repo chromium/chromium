@@ -72,7 +72,8 @@ import {nothing} from '//resources/lit/v3_0/lit.rollup.js';
       </ntp-lens-upload-dialog>
     ` : ''}
   </div>
-  ${this.lazyRender_ && this.ntpNextFeaturesEnabled_ ? html`
+  ${this.lazyRender_
+    && this.ntpNextFeaturesEnabled_ && this.isActionChipsVisible_ ? html`
     <ntp-action-chips
         @action-chip-click="${this.onActionChipClick_}">
     </ntp-action-chips>

@@ -186,6 +186,8 @@ export class AppElement extends AppElementBase {
 
       showWallpaperSearch_: {type: Boolean},
 
+      isActionChipsVisible_: {type: Boolean},
+
       isFooterVisible_: {type: Boolean},
 
       selectedCustomizeDialogPage_: {type: String},
@@ -372,6 +374,8 @@ export class AppElement extends AppElementBase {
       loadTimeData.getBoolean('composeboxCloseByClickOutside');
   accessor composeboxEnabled: boolean =
       loadTimeData.getBoolean('searchboxShowComposebox');
+  protected accessor isActionChipsVisible_: boolean =
+      loadTimeData.getBoolean('actionChipsEnabled');
   protected accessor isFooterVisible_: boolean = false;
   protected accessor ntpRealboxNextEnabled_: boolean =
       loadTimeData.getBoolean('ntpRealboxNextEnabled');
@@ -395,6 +399,7 @@ export class AppElement extends AppElementBase {
   private setThemeListenerId_: number|null = null;
   private setCustomizeChromeSidePanelVisibilityListener_: number|null = null;
   private setWallpaperSearchButtonVisibilityListener_: number|null = null;
+  private setActionChipsVisibilityListenerId_: number|null = null;
   private footerVisibilityUpdatedListener_: number|null = null;
   private eventTracker_: EventTracker = new EventTracker();
   private shouldPrintPerformance_: boolean = false;
@@ -508,6 +513,10 @@ export class AppElement extends AppElementBase {
               }
             });
 
+    this.setActionChipsVisibilityListenerId_ =
+        this.callbackRouter_.setActionChipsVisibility.addListener(
+            (isVisible: boolean) => this.isActionChipsVisible_ = isVisible);
+
     this.footerVisibilityUpdatedListener_ =
         this.callbackRouter_.footerVisibilityUpdated.addListener(
             (visible: boolean) => {
@@ -575,6 +584,8 @@ export class AppElement extends AppElementBase {
         this.setWallpaperSearchButtonVisibilityListener_!);
     this.customizeButtonsCallbackRouter_.removeListener(
         this.setCustomizeChromeSidePanelVisibilityListener_!);
+    this.callbackRouter_.removeListener(
+        this.setActionChipsVisibilityListenerId_!);
     this.callbackRouter_.removeListener(this.footerVisibilityUpdatedListener_!);
     this.eventTracker_.removeAll();
   }

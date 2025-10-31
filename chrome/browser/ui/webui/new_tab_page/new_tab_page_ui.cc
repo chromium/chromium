@@ -617,6 +617,12 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
 
   source->AddBoolean("composeboxShowSubmit", ntp_composebox::kShowSubmit.Get());
 
+  // Action Chips LoadTimeData
+  bool show_action_chips =
+      aim_eligibility_service && aim_eligibility_service->IsAimEligible() &&
+      profile->GetPrefs()->GetBoolean(prefs::kNtpToolChipsVisible);
+  source->AddBoolean("actionChipsEnabled", show_action_chips);
+
   // User education browser promos.
   int browser_promo_limit = 0;
   int browser_completed_promo_limit = 0;

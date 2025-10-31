@@ -65,6 +65,7 @@ class MockPage : public new_tab_page::mojom::Page {
               SetDisabledModules,
               (bool, const std::vector<std::string>&));
   MOCK_METHOD(void, SetModulesLoadable, ());
+  MOCK_METHOD(void, SetActionChipsVisibility, (bool));
   MOCK_METHOD(void, SetModulesFreVisibility, (bool));
   MOCK_METHOD(void, SetCustomizeChromeSidePanelVisibility, (bool));
   MOCK_METHOD(void, SetPromo, (new_tab_page::mojom::PromoPtr));
