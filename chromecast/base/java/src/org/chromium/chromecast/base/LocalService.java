@@ -12,9 +12,6 @@ import android.content.ServiceConnection;
 import android.os.Binder;
 import android.os.IBinder;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * Base class for services that are only bound to by other clients in the same application, running
  * in the same process.
@@ -29,8 +26,17 @@ import java.util.Map;
  * @param <T> Data type to observe.
  */
 public abstract class LocalService<T> extends Service {
-    private static final Map<Intent, IBinder> sIntentMap = new HashMap<>();
-    private static final Map<IBinder, Observable<?>> sBinderMap = new HashMap<>();
+    private static class BinderObservable<T> extends Binder {
+        private final Observable<T> mSrc;
+
+        BinderObservable(Observable<T> src) {
+            mSrc = src;
+        }
+
+        static <T> Observable<T> from(IBinder binder) {
+            return ((BinderObservable<T>) binder).mSrc;
+        }
+    }
 
     /**
      * Returns an Observable that is notified when the service is bound, and is closed when the
@@ -93,22 +99,16 @@ public abstract class LocalService<T> extends Service {
      */
     protected static <T> SharedObservable<T> connect(
             Class<T> clazz, Context context, Intent intent) {
-        return connect(context, intent).flatMap(sBinderMap::get).map(clazz::cast).share();
+        return connect(context, intent).flatMap(BinderObservable::<T>from).share();
     }
 
     @Override
     public final IBinder onBind(Intent intent) {
-        IBinder binder = new Binder();
-        Observable<T> observable = bind(intent);
-        sIntentMap.put(intent, binder);
-        sBinderMap.put(binder, observable);
-        return binder;
+        return new BinderObservable(bind(intent));
     }
 
     @Override
     public final boolean onUnbind(Intent intent) {
-        IBinder binder = sIntentMap.remove(intent);
-        sBinderMap.remove(binder);
         return false;
     }
 }
