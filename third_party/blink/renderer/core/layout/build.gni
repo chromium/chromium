@@ -33,8 +33,6 @@ blink_core_sources_layout = [
   "anchor_position_scroll_data.h",
   "anchor_position_visibility_observer.cc",
   "anchor_position_visibility_observer.h",
-  "anchor_query_map.cc",
-  "anchor_query_map.h",
   "anchor_scope.cc",
   "anchor_scope.h",
   "background_bleed_avoidance.h",

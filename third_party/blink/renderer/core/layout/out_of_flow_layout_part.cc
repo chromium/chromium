@@ -19,7 +19,6 @@
 #include "third_party/blink/renderer/core/layout/absolute_utils.h"
 #include "third_party/blink/renderer/core/layout/anchor_position_scroll_data.h"
 #include "third_party/blink/renderer/core/layout/anchor_position_visibility_observer.h"
-#include "third_party/blink/renderer/core/layout/anchor_query_map.h"
 #include "third_party/blink/renderer/core/layout/column_layout_algorithm.h"
 #include "third_party/blink/renderer/core/layout/constraint_space_builder.h"
 #include "third_party/blink/renderer/core/layout/disable_layout_side_effects_scope.h"
@@ -410,8 +409,7 @@ const Element* GetPositionAnchorElement(
     // the actual (CSS) containing block in such cases, in order to determine
     // which anchors in the list are acceptable.
     const LayoutObject* actual_containing_block = nullptr;
-    if (anchored_box.MightBeInsideFragmentationContext() &&
-        RuntimeEnabledFeatures::CSSAnchorSimplifiedFragmentationEnabled()) {
+    if (anchored_box.MightBeInsideFragmentationContext()) {
       actual_containing_block = anchored_box.Container();
     }
 
@@ -1512,12 +1510,6 @@ void OutOfFlowLayoutPart::LayoutOOFsInMulticol(
 
   // Layout the OOF positioned elements inside the inner multicol.
   OutOfFlowLayoutPart inner_part(&limited_multicol_container_builder);
-  if (!RuntimeEnabledFeatures::CSSAnchorSimplifiedFragmentationEnabled()) {
-    // TODO(crbug.com/436305267): Remove `outer_oof_layout_part_` when the
-    // runtime flag is removed.
-    inner_part.outer_oof_layout_part_ =
-        outer_oof_layout_part_ ? outer_oof_layout_part_ : this;
-  }
   inner_part.LayoutFragmentainerDescendants(
       &oof_nodes_to_layout, fragmentainer_progression,
       multicol_info->fixedpos_containing_block.Fragment(), &multicol_children);
@@ -1605,39 +1597,6 @@ void OutOfFlowLayoutPart::LayoutFragmentainerDescendants(
   outer_context_has_fixedpos_container_ = outer_context_has_fixedpos_container;
   DCHECK(multicol_children_ || !outer_context_has_fixedpos_container_);
 
-  OutOfFlowLayoutPart* layout_part_for_anchor_query = this;
-  std::optional<StitchedAnchorQueries> stitched_anchor_queries;
-  if (!RuntimeEnabledFeatures::CSSAnchorSimplifiedFragmentationEnabled()) {
-    if (outer_oof_layout_part_) {
-      // If this is an inner layout of the nested block fragmentation, and if
-      // this block fragmentation context is block fragmented,
-      // |multicol_children| doesn't have correct block offsets of
-      // fragmentainers anchor query needs.  Calculate the anchor query from the
-      // outer block fragmentation context instead in order to get the correct
-      // offsets.
-      for (const MulticolChildInfo& multicol_child : *multicol_children) {
-        if (multicol_child.parent_break_token) {
-          layout_part_for_anchor_query = outer_oof_layout_part_;
-          break;
-        }
-      }
-    }
-
-    BoxFragmentBuilder* builder_for_anchor_query =
-        layout_part_for_anchor_query->container_builder_;
-    stitched_anchor_queries.emplace(
-        *builder_for_anchor_query->Node().GetLayoutBox(),
-        builder_for_anchor_query->SizeForAnchorQueries(),
-        layout_part_for_anchor_query->FragmentationContextChildren(),
-        builder_for_anchor_query->GetWritingDirection());
-  }
-
-  const bool may_have_anchors_on_oof =
-      std::any_of(descendants->begin(), descendants->end(),
-                  [](const LogicalOofPositionedNode& node) {
-                    return node.box->MayHaveAnchorQuery();
-                  });
-
   HeapVector<HeapVector<NodeToLayout>> descendants_to_layout;
   ClearCollectionScope<HeapVector<HeapVector<NodeToLayout>>>
       descendants_to_layout_scope(&descendants_to_layout);
@@ -1707,11 +1666,9 @@ void OutOfFlowLayoutPart::LayoutFragmentainerDescendants(
 
         NodeInfo node_info = SetupNodeInfo(descendant);
         NodeToLayout node_to_layout = {
-            node_info, CalculateOffset(node_info,
-                                       /*is_inside_fragmentation_context=*/true,
-                                       stitched_anchor_queries
-                                           ? &stitched_anchor_queries.value()
-                                           : nullptr)};
+            node_info,
+            CalculateOffset(node_info,
+                            /*is_inside_fragmentation_context=*/true)};
         node_to_layout.containing_block_fragment =
             descendant.containing_block.Fragment();
         node_to_layout.offset_info.original_offset =
@@ -1832,13 +1789,6 @@ void OutOfFlowLayoutPart::LayoutFragmentainerDescendants(
 
       if (!has_new_descendants_span)
         break;
-      // If laying out by containing blocks and there are more containing blocks
-      // to be laid out, move on to the next containing block. Before laying
-      // them out, if OOFs have anchors, update the anchor queries.
-      if (stitched_anchor_queries && may_have_anchors_on_oof) {
-        stitched_anchor_queries->SetChildren(
-            layout_part_for_anchor_query->FragmentationContextChildren());
-      }
     }
 
     // Sweep any descendants that might have been bubbled up from the fragment
@@ -1869,8 +1819,7 @@ void OutOfFlowLayoutPart::LayoutFragmentainerDescendants(
 AnchorEvaluatorImpl OutOfFlowLayoutPart::CreateAnchorEvaluator(
     const ContainingBlockInfo& container_info,
     const BlockNode& candidate,
-    bool is_inside_fragmentation_context,
-    const StitchedAnchorQueries* anchor_queries) const {
+    bool is_inside_fragmentation_context) const {
   const LayoutObject* implicit_anchor = nullptr;
   const LayoutBox& candidate_layout_box = *candidate.GetLayoutBox();
   if (const Element* element =
@@ -1892,23 +1841,9 @@ AnchorEvaluatorImpl OutOfFlowLayoutPart::CreateAnchorEvaluator(
                 container_converter.ToPhysical(*container_info.scroll_rect))
           : std::nullopt;
 
-  if (anchor_queries) {
-    DCHECK(!RuntimeEnabledFeatures::CSSAnchorSimplifiedFragmentationEnabled());
-    // When the containing block is block-fragmented, the |container_builder_|
-    // is the fragmentainer, not the containing block, and the coordinate system
-    // is stitched. Use the given |anchor_query|.
-    const LayoutObject* css_containing_block = candidate_layout_box.Container();
-    CHECK(css_containing_block);
-    return AnchorEvaluatorImpl(candidate_layout_box, *anchor_queries,
-                               implicit_anchor, *css_containing_block,
-                               container_info.writing_direction, container_rect,
-                               scroll_rect);
-  }
-
   const PhysicalAnchorQuery* anchor_query = nullptr;
   const LayoutObject* actual_containing_block = nullptr;
-  if (is_inside_fragmentation_context &&
-      RuntimeEnabledFeatures::CSSAnchorSimplifiedFragmentationEnabled()) {
+  if (is_inside_fragmentation_context) {
     // The containing block of the OOF is part of the fragmentation context
     // established by this container. Imagine that fragmentainers are stitched
     // together, for the purpose of calculating the bounding box of anchors.
@@ -2242,8 +2177,7 @@ void SortNonOverflowingCandidates(
 
 OutOfFlowLayoutPart::OffsetInfo OutOfFlowLayoutPart::CalculateOffset(
     const NodeInfo& node_info,
-    bool is_inside_fragmentation_context,
-    const StitchedAnchorQueries* anchor_queries) {
+    bool is_inside_fragmentation_context) {
   // See non_overflowing_scroll_range.h for documentation.
   HeapVector<NonOverflowingScrollRange> non_overflowing_scroll_ranges;
 
@@ -2251,7 +2185,7 @@ OutOfFlowLayoutPart::OffsetInfo OutOfFlowLayoutPart::CalculateOffset(
   // writing-mode/position-anchor.
   AnchorEvaluatorImpl anchor_evaluator =
       CreateAnchorEvaluator(node_info.base_container_info, node_info.node,
-                            is_inside_fragmentation_context, anchor_queries);
+                            is_inside_fragmentation_context);
 
   const ComputedStyle& current_style = node_info.node.Style();
   bool has_try_fallbacks = !!current_style.GetPositionTryFallbacks();

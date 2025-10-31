@@ -10,7 +10,6 @@
 #include "third_party/blink/renderer/core/css/anchor_query.h"
 #include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
 #include "third_party/blink/renderer/core/layout/anchor_position_scroll_data.h"
-#include "third_party/blink/renderer/core/layout/anchor_query_map.h"
 #include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/transform_utils.h"
@@ -378,28 +377,6 @@ void PhysicalAnchorQuery::SetFromChild(
   }
 }
 
-const PhysicalAnchorQuery* AnchorEvaluatorImpl::AnchorQuery() const {
-  // TODO(crbug.com/436305267): Remove these two members when
-  // StitchedAnchorQueries is removed.
-  DCHECK((!anchor_queries_ && !containing_block_) ||
-         !RuntimeEnabledFeatures::CSSAnchorSimplifiedFragmentationEnabled());
-
-  if (anchor_query_)
-    return anchor_query_;
-  if (anchor_queries_) {
-    DCHECK(containing_block_);
-    anchor_query_ = anchor_queries_->AnchorQuery(*containing_block_);
-    if (!anchor_query_) {
-      // The above operation is expensive. If there were no anchors for the
-      // containing block, make sure that we don't try again every time this
-      // function is called.
-      anchor_queries_ = nullptr;
-    }
-    return anchor_query_;
-  }
-  return nullptr;
-}
-
 std::optional<LayoutUnit> AnchorEvaluatorImpl::Evaluate(
     const class AnchorQuery& anchor_query,
     const ScopedCSSName* position_anchor,
@@ -422,23 +399,20 @@ const PhysicalAnchorReference* AnchorEvaluatorImpl::ResolveAnchorReference(
   if (!anchor_specifier.IsNamed() && !position_anchor && !implicit_anchor_) {
     return nullptr;
   }
-  const PhysicalAnchorQuery* anchor_query = AnchorQuery();
-  if (!anchor_query) {
+  if (!anchor_query_) {
     return nullptr;
   }
-  DCHECK(RuntimeEnabledFeatures::CSSAnchorSimplifiedFragmentationEnabled() ||
-         !query_box_actual_containing_block_);
   if (anchor_specifier.IsNamed()) {
-    return anchor_query->AnchorReference(
+    return anchor_query_->AnchorReference(
         *query_box_, query_box_actual_containing_block_,
         ToAnchorScopedName(anchor_specifier.GetName(), *query_box_));
   }
   if (anchor_specifier.IsDefault() && position_anchor) {
-    return anchor_query->AnchorReference(
+    return anchor_query_->AnchorReference(
         *query_box_, query_box_actual_containing_block_,
         ToAnchorScopedName(*position_anchor, *query_box_));
   }
-  return anchor_query->AnchorReference(
+  return anchor_query_->AnchorReference(
       *query_box_, query_box_actual_containing_block_,
       To<Element>(implicit_anchor_->GetNode()));
 }

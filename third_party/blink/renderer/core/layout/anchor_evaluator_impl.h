@@ -27,7 +27,6 @@ class AnchorSpecifierValue;
 class Element;
 class LayoutBox;
 class LayoutObject;
-class StitchedAnchorQueries;
 class PaintLayer;
 class PhysicalFragment;
 
@@ -260,28 +259,6 @@ class CORE_EXPORT AnchorEvaluatorImpl : public AnchorEvaluator {
     DCHECK(anchor_query_);
   }
 
-  // This constructor takes |StitchedAnchorQueries| and |containing_block|
-  // instead of |PhysicalAnchorQuery|.
-  AnchorEvaluatorImpl(const LayoutBox& query_box,
-                      const StitchedAnchorQueries& anchor_queries,
-                      const LayoutObject* implicit_anchor,
-                      const LayoutObject& containing_block,
-                      WritingDirectionMode container_writing_direction,
-                      const PhysicalRect& container_rect,
-                      const std::optional<PhysicalRect>& scroll_rect)
-      : query_box_(&query_box),
-        anchor_queries_(&anchor_queries),
-        implicit_anchor_(implicit_anchor),
-        containing_block_(&containing_block),
-        container_writing_direction_(container_writing_direction),
-        container_rect_(container_rect),
-        scroll_rect_(scroll_rect),
-        display_locks_affected_by_anchors_(
-            MakeGarbageCollected<GCedHeapHashSet<Member<Element>>>()) {
-    DCHECK(anchor_queries_);
-    DCHECK(containing_block_);
-  }
-
   // Returns true if any anchor reference in the axis is in the same scroll
   // container as the default anchor, in which case we need scroll adjustment in
   // the axis after layout.
@@ -306,7 +283,7 @@ class CORE_EXPORT AnchorEvaluatorImpl : public AnchorEvaluator {
   std::optional<PhysicalOffset> ComputeAnchorCenterOffsets(
       const ComputedStyleBuilder&) override;
 
-  const PhysicalAnchorQuery* AnchorQuery() const;
+  const PhysicalAnchorQuery* AnchorQuery() const { return anchor_query_; }
 
   // Given the computed value of `position-anchor`, returns the default anchor.
   const LayoutObject* DefaultAnchor(const ScopedCSSName* position_anchor) const;
@@ -378,12 +355,7 @@ class CORE_EXPORT AnchorEvaluatorImpl : public AnchorEvaluator {
 
   const LayoutBox* query_box_ = nullptr;
   mutable const PhysicalAnchorQuery* anchor_query_ = nullptr;
-  mutable const StitchedAnchorQueries* anchor_queries_ = nullptr;
   const LayoutObject* implicit_anchor_ = nullptr;
-
-  // TODO(crbug.com/436305267): Remove this when StitchedAnchorQueries is
-  // removed.
-  const LayoutObject* containing_block_ = nullptr;
 
   // The (CSS) containing block of the querying element. This should only be set
   // if the containing block in the physical fragment tree is not the same as
