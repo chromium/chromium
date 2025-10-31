@@ -34,8 +34,7 @@ void AndroidBnplUiDelegate::ShowSelectBnplIssuerUi(
 }
 
 void AndroidBnplUiDelegate::RemoveSelectBnplIssuerOrProgressUi() {
-  // TODO(crbug.com/438783909): Add JNI call to hide the TouchToFill bottom
-  // sheet with the progress UI.
+  client_->SetTouchToFillVisible(/*visible=*/false);
 }
 
 void AndroidBnplUiDelegate::ShowBnplTosUi(BnplTosModel bnpl_tos_model,

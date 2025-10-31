@@ -35,7 +35,7 @@ class MockPaymentsAutofillClient : public payments::TestPaymentsAutofillClient {
               (const AutofillErrorDialogContext& context),
               (override));
   MOCK_METHOD(void, HideTouchToFillPaymentMethod, (), (override));
-  MOCK_METHOD(void, SetTouchToFillVisible, (bool), (override));
+  MOCK_METHOD(void, SetTouchToFillVisible, (bool visible), (override));
 };
 
 class AndroidBnplUiDelegateTest : public ChromeRenderViewHostTestHarness {
@@ -112,6 +112,15 @@ TEST_F(AndroidBnplUiDelegateTest, RemoveBnplTosOrProgressUi) {
   EXPECT_CALL(payments_autofill_client(), SetTouchToFillVisible(false));
 
   delegate_->RemoveBnplTosOrProgressUi();
+}
+
+// Tests that RemoveSelectBnplIssuerOrProgressUi calls the client's
+// SetTouchToFillVisible.
+TEST_F(AndroidBnplUiDelegateTest, RemoveSelectBnplIssuerOrProgressUi) {
+  EXPECT_CALL(payments_autofill_client(),
+              SetTouchToFillVisible(/*visible=*/false));
+
+  delegate_->RemoveSelectBnplIssuerOrProgressUi();
 }
 
 }  // namespace autofill::payments
