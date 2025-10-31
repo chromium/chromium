@@ -153,7 +153,7 @@ void ParseServerInfo(const CHAR* spec,
 // filled into the given *port variable, or -1 if there is no port number or it
 // is invalid.
 template <typename CHAR>
-void DoParseAuthority(const CHAR* spec,
+void DoParseAuthority(std::basic_string_view<CHAR> spec,
                       const Component& auth,
                       ParserMode parser_mode,
                       Component* username,
@@ -188,15 +188,15 @@ void DoParseAuthority(const CHAR* spec,
 
   if (spec[i] == '@') {
     // Found user info: <user-info>@<server-info>
-    ParseUserInfo(spec, Component(auth.begin, i - auth.begin), username,
+    ParseUserInfo(spec.data(), Component(auth.begin, i - auth.begin), username,
                   password);
-    ParseServerInfo(spec, MakeRange(i + 1, auth.begin + auth.len), hostname,
-                    port_num);
+    ParseServerInfo(spec.data(), MakeRange(i + 1, auth.begin + auth.len),
+                    hostname, port_num);
   } else {
     // No user info, everything is server info.
     username->reset();
     password->reset();
-    ParseServerInfo(spec, auth, hostname, port_num);
+    ParseServerInfo(spec.data(), auth, hostname, port_num);
   }
 }
 
@@ -333,11 +333,11 @@ bool DoExtractScheme(std::basic_string_view<CharT> url, Component* scheme) {
 // canonicalizer handles them, meaning if you've been to the corresponding
 // "http://foo.com/" link, it will be colored.
 template <typename CHAR>
-void DoParseAfterSpecialScheme(const CHAR* spec,
-                               int spec_len,
+void DoParseAfterSpecialScheme(std::basic_string_view<CHAR> spec,
                                int after_scheme,
                                Parsed* parsed) {
-  int num_slashes = CountConsecutiveSlashes(spec, after_scheme, spec_len);
+  int spec_len = base::checked_cast<int>(spec.length());
+  int num_slashes = CountConsecutiveSlashesOrBackslashes(spec, after_scheme);
   int after_slashes = after_scheme + num_slashes;
 
   // First split into two main parts, the authority (username, password, host,
@@ -346,8 +346,8 @@ void DoParseAfterSpecialScheme(const CHAR* spec,
   // Treat everything from `after_slashes` to the next slash (or end of spec) to
   // be the authority. Note that we ignore the number of slashes and treat it as
   // the authority.
-  int end_auth = FindNextAuthorityTerminator(spec, after_slashes, spec_len,
-                                             ParserMode::kSpecialURL);
+  int end_auth = FindNextAuthorityTerminator(spec.data(), after_slashes,
+                                             spec_len, ParserMode::kSpecialURL);
 
   Component authority(after_slashes, end_auth - after_slashes);
   // Everything starting from the slash to the end is the path.
@@ -356,7 +356,8 @@ void DoParseAfterSpecialScheme(const CHAR* spec,
   // Now parse those two sub-parts.
   DoParseAuthority(spec, authority, ParserMode::kSpecialURL, &parsed->username,
                    &parsed->password, &parsed->host, &parsed->port);
-  ParsePath(spec, full_path, &parsed->path, &parsed->query, &parsed->ref);
+  ParsePath(spec.data(), full_path, &parsed->path, &parsed->query,
+            &parsed->ref);
 }
 
 // The main parsing function for standard URLs. Standard URLs have a scheme,
@@ -370,7 +371,8 @@ Parsed DoParseStandardURL(std::basic_string_view<CharT> url) {
 
   int after_scheme;
   Parsed parsed;
-  if (DoExtractScheme(url.substr(0, url_len), &parsed.scheme)) {
+  url = url.substr(0, url_len);
+  if (DoExtractScheme(url, &parsed.scheme)) {
     after_scheme = parsed.scheme.end() + 1;  // Skip past the colon.
   } else {
     // Say there's no scheme when there is no colon. We could also say that
@@ -379,21 +381,21 @@ Parsed DoParseStandardURL(std::basic_string_view<CharT> url) {
     parsed.scheme.reset();
     after_scheme = begin;
   }
-  DoParseAfterSpecialScheme(url.data(), url_len, after_scheme, &parsed);
+  DoParseAfterSpecialScheme(url, after_scheme, &parsed);
   return parsed;
 }
 
 template <typename CHAR>
-void DoParseAfterNonSpecialScheme(const CHAR* spec,
-                                  int spec_len,
+void DoParseAfterNonSpecialScheme(std::basic_string_view<CHAR> spec,
                                   int after_scheme,
                                   Parsed* parsed) {
   // The implementation is similar to `DoParseAfterSpecialScheme()`, but there
   // are many subtle differences. So we have a different function for parsing
   // non-special URLs.
 
+  int spec_len = base::checked_cast<int>(spec.length());
   int num_slashes = CountConsecutiveSlashesButNotCountBackslashes(
-      spec, after_scheme, spec_len);
+      spec.data(), after_scheme, spec_len);
 
   if (num_slashes >= 2) {
     // Found "//<some data>", looks like an authority section.
@@ -418,8 +420,8 @@ void DoParseAfterNonSpecialScheme(const CHAR* spec,
     // Treat everything from there to the next slash (or end of spec) to be the
     // authority. Note that we ignore the number of slashes and treat it as the
     // authority.
-    int end_auth = FindNextAuthorityTerminator(spec, after_slashes, spec_len,
-                                               ParserMode::kNonSpecialURL);
+    int end_auth = FindNextAuthorityTerminator(
+        spec.data(), after_slashes, spec_len, ParserMode::kNonSpecialURL);
     Component authority(after_slashes, end_auth - after_slashes);
 
     // Now parse those two sub-parts.
@@ -429,7 +431,8 @@ void DoParseAfterNonSpecialScheme(const CHAR* spec,
 
     // Everything starting from the slash to the end is the path.
     Component full_path(end_auth, spec_len - end_auth);
-    ParsePath(spec, full_path, &parsed->path, &parsed->query, &parsed->ref);
+    ParsePath(spec.data(), full_path, &parsed->path, &parsed->query,
+              &parsed->ref);
     return;
   }
 
@@ -467,7 +470,8 @@ void DoParseAfterNonSpecialScheme(const CHAR* spec,
 
   // Everything starting after scheme to the end is the path.
   Component full_path(after_scheme, spec_len - after_scheme);
-  ParsePath(spec, full_path, &parsed->path, &parsed->query, &parsed->ref);
+  ParsePath(spec.data(), full_path, &parsed->path, &parsed->query,
+            &parsed->ref);
 }
 
 // The main parsing function for non-special scheme URLs.
@@ -481,7 +485,8 @@ Parsed DoParseNonSpecialURL(std::basic_string_view<CharT> url,
 
   int after_scheme;
   Parsed parsed;
-  if (DoExtractScheme(url.substr(0, url_len), &parsed.scheme)) {
+  url = url.substr(0, url_len);
+  if (DoExtractScheme(url, &parsed.scheme)) {
     after_scheme = parsed.scheme.end() + 1;  // Skip past the colon.
   } else {
     // Say there's no scheme when there is no colon. We could also say that
@@ -490,7 +495,7 @@ Parsed DoParseNonSpecialURL(std::basic_string_view<CharT> url,
     parsed.scheme.reset();
     after_scheme = 0;
   }
-  DoParseAfterNonSpecialScheme(url.data(), url_len, after_scheme, &parsed);
+  DoParseAfterNonSpecialScheme(url, after_scheme, &parsed);
   return parsed;
 }
 
@@ -993,21 +998,13 @@ void ParseAuthority(const char* spec,
                     Component* password,
                     Component* hostname,
                     Component* port_num) {
-  DoParseAuthority(spec, auth, ParserMode::kSpecialURL, username, password,
-                   hostname, port_num);
+  size_t length = auth.is_valid() ? auth.end() : 0;
+  DoParseAuthority(std::string_view(spec, length), auth,
+                   ParserMode::kSpecialURL, username, password, hostname,
+                   port_num);
 }
 
-void ParseAuthority(const char16_t* spec,
-                    const Component& auth,
-                    Component* username,
-                    Component* password,
-                    Component* hostname,
-                    Component* port_num) {
-  DoParseAuthority(spec, auth, ParserMode::kSpecialURL, username, password,
-                   hostname, port_num);
-}
-
-void ParseAuthority(const char* spec,
+void ParseAuthority(std::string_view spec,
                     const Component& auth,
                     ParserMode parser_mode,
                     Component* username,
@@ -1018,7 +1015,7 @@ void ParseAuthority(const char* spec,
                    port_num);
 }
 
-void ParseAuthority(const char16_t* spec,
+void ParseAuthority(std::u16string_view spec,
                     const Component& auth,
                     ParserMode parser_mode,
                     Component* username,
@@ -1133,27 +1130,25 @@ void ParsePathInternal(const char16_t* spec,
 void ParseAfterSpecialScheme(std::string_view spec,
                              int after_scheme,
                              Parsed* parsed) {
-  DoParseAfterSpecialScheme(spec.data(), spec.length(), after_scheme, parsed);
+  DoParseAfterSpecialScheme(spec, after_scheme, parsed);
 }
 
 void ParseAfterSpecialScheme(std::u16string_view spec,
                              int after_scheme,
                              Parsed* parsed) {
-  DoParseAfterSpecialScheme(spec.data(), spec.length(), after_scheme, parsed);
+  DoParseAfterSpecialScheme(spec, after_scheme, parsed);
 }
 
 void ParseAfterNonSpecialScheme(std::string_view spec,
                                 int after_scheme,
                                 Parsed* parsed) {
-  DoParseAfterNonSpecialScheme(spec.data(), spec.length(), after_scheme,
-                               parsed);
+  DoParseAfterNonSpecialScheme(spec, after_scheme, parsed);
 }
 
 void ParseAfterNonSpecialScheme(std::u16string_view spec,
                                 int after_scheme,
                                 Parsed* parsed) {
-  DoParseAfterNonSpecialScheme(spec.data(), spec.length(), after_scheme,
-                               parsed);
+  DoParseAfterNonSpecialScheme(spec, after_scheme, parsed);
 }
 
 }  // namespace url

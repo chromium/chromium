@@ -206,11 +206,9 @@ bool ParseHostAndPort(std::string_view input, std::string* host, int* port) {
   url::Component hostname_component;
   url::Component port_component;
 
-  // `input` is not NUL-terminated, so `input.data()` must be accompanied by a
-  // length. In these calls, `url::Component` provides an offset and length.
-  url::ParseAuthority(input.data(), auth_component, &username_component,
-                      &password_component, &hostname_component,
-                      &port_component);
+  url::ParseAuthority(input, auth_component, url::ParserMode::kSpecialURL,
+                      &username_component, &password_component,
+                      &hostname_component, &port_component);
 
   // There shouldn't be a username/password.
   if (username_component.is_valid() || password_component.is_valid())

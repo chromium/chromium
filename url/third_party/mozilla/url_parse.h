@@ -389,20 +389,13 @@ void ParseAuthority(const char* spec,
                     Component* password,
                     Component* hostname,
                     Component* port_num);
-COMPONENT_EXPORT(URL)
-void ParseAuthority(const char16_t* spec,
-                    const Component& auth,
-                    Component* username,
-                    Component* password,
-                    Component* hostname,
-                    Component* port_num);
 
 // Does a best effort parse of input `spec`, in range `auth`. If a particular
 // component is not found, it will be set to invalid. `ParserMode` is used to
 // determine the appropriate authority terminator. See `IsAuthorityTerminator`
 // for details.
 COMPONENT_EXPORT(URL)
-void ParseAuthority(const char* spec,
+void ParseAuthority(std::string_view spec,
                     const Component& auth,
                     ParserMode parser_mode,
                     Component* username,
@@ -410,7 +403,7 @@ void ParseAuthority(const char* spec,
                     Component* hostname,
                     Component* port_num);
 COMPONENT_EXPORT(URL)
-void ParseAuthority(const char16_t* spec,
+void ParseAuthority(std::u16string_view spec,
                     const Component& auth,
                     ParserMode parser_mode,
                     Component* username,
