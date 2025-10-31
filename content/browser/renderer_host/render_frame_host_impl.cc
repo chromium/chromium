@@ -2975,8 +2975,13 @@ void RenderFrameHostImpl::DidEnterBackForwardCache() {
   for (FrameTreeNode* node : FrameTree::SubtreeAndInnerTreeNodes(
            this,
            /*include_delegate_nodes_for_inner_frame_trees=*/true)) {
-    if (RenderFrameHostImpl* rfh = node->current_frame_host()) {
-      rfh->DidEnterBackForwardCacheInternal();
+    RenderFrameHostImpl* subframe = node->current_frame_host();
+    // The subframe can be pending deletion if the unload handlers or the
+    // cleanup didn't complete by the time the main frame enters the BFCache. If
+    // the rfh is not deleted by the time the main frame is getting restored
+    // it will be skipped from transitioning back to active.
+    if (subframe && !subframe->IsPendingDeletion()) {
+      subframe->DidEnterBackForwardCacheInternal();
     }
   }
 }
@@ -3009,7 +3014,7 @@ void RenderFrameHostImpl::DidEnterBackForwardCacheInternal() {
   }
 }
 
-// The frame as been restored from the BackForwardCache.
+// The frame being restored from the BackForwardCache.
 void RenderFrameHostImpl::WillLeaveBackForwardCache() {
   TRACE_EVENT0("navigation", "RenderFrameHostImpl::LeaveBackForwardCache");
   DCHECK(IsBackForwardCacheEnabled());
@@ -3022,8 +3027,9 @@ void RenderFrameHostImpl::WillLeaveBackForwardCache() {
   for (FrameTreeNode* node : FrameTree::SubtreeAndInnerTreeNodes(
            this,
            /*include_delegate_nodes_for_inner_frame_trees=*/true)) {
-    if (RenderFrameHostImpl* rfh = node->current_frame_host()) {
-      rfh->WillLeaveBackForwardCacheInternal();
+    RenderFrameHostImpl* subframe = node->current_frame_host();
+    if (subframe && !subframe->IsPendingDeletion()) {
+      subframe->WillLeaveBackForwardCacheInternal();
     }
   }
 }
@@ -12265,14 +12271,16 @@ void RenderFrameHostImpl::PendingDeletionCheckCompletedOnSubtree() {
 void RenderFrameHostImpl::PendingDeletionCheckCompletedOnSubtreeNowOrLater() {
   if (base::FeatureList::IsEnabled(
           features::kDelayRfhDestructionsOnUnloadAndDetach)) {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(
-                       [](auto rfh) {
-                         if (rfh) {
-                           rfh->PendingDeletionCheckCompletedOnSubtree();
-                         }
-                       },
-                       GetWeakPtr()));
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(
+            [](auto rfh) {
+              if (rfh) {
+                rfh->PendingDeletionCheckCompletedOnSubtree();
+              }
+            },
+            GetWeakPtr()),
+        features::kRfhDestructionsOnUnloadAndDetachTaskDelay.Get());
   } else {
     // Some children with no unload handler may be eligible for deletion. Cut
     // the dead branches now. This is a performance optimization.
@@ -18496,9 +18504,15 @@ void RenderFrameHostImpl::SetLifecycleState(LifecycleStateImpl new_state) {
         // We should not encounter an Inner WebContents.
         CHECK(!ftn->IsOutermostMainFrame());
 
-        RenderFrameHostImpl* rfh = ftn->current_frame_host();
-        DCHECK_EQ(rfh->lifecycle_state(), lifecycle_state_);
-        rfh->SetLifecycleState(new_state);
+        RenderFrameHostImpl* subframe = ftn->current_frame_host();
+        // Do not reset the subframe lifecycle state back to active if it's
+        // pending deletion. This can happen if an unload handler didn't finish
+        // or subframe cleanup didn't run by the time parent frame enters or is
+        // getting restored from the BFCache.
+        if (!subframe->IsPendingDeletion()) {
+          DCHECK_EQ(subframe->lifecycle_state(), lifecycle_state_);
+          subframe->SetLifecycleState(new_state);
+        }
         ++node_iter;
       }
     }

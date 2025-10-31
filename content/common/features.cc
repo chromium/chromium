@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/time/time.h"
 #include "third_party/blink/public/common/features.h"
 
 namespace features {
@@ -157,6 +158,10 @@ BASE_FEATURE(kCriticalClientHint, base::FEATURE_ENABLED_BY_DEFAULT);
 // PendingDeletionCheckCompletedOnSubTree.
 BASE_FEATURE(kDelayRfhDestructionsOnUnloadAndDetach,
              base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<base::TimeDelta>
+    kRfhDestructionsOnUnloadAndDetachTaskDelay{
+        &kDelayRfhDestructionsOnUnloadAndDetach, "task_delay",
+        base::TimeDelta()};
 
 // Enable document policy negotiation mechanism.
 BASE_FEATURE(kDocumentPolicyNegotiation, base::FEATURE_DISABLED_BY_DEFAULT);
