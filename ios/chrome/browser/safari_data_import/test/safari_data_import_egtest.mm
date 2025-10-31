@@ -22,7 +22,7 @@
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
-#import "ios/chrome/test/scoped_eg_synchronization_disabler.h"
+#import "ios/chrome/test/earl_grey/scoped_disable_timer_tracking.h"
 #import "ios/testing/earl_grey/app_launch_configuration.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
@@ -150,7 +150,7 @@ NSString* const kInvalidPasswordUsername = @"Superman";
 /// Settings.
 - (void)testShowEntryPointInSettings {
   if (@available(iOS 18.2, *)) {
-    ScopedSynchronizationDisabler disabler;
+    ScopedDisableTimerTracking disabler;
     /// Clean restart without experimental settings.
     [[AppLaunchManager sharedManager]
         ensureAppLaunchedWithConfiguration:
