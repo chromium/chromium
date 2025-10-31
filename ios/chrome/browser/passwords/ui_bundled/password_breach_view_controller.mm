@@ -6,6 +6,7 @@
 
 #import "ios/chrome/browser/passwords/ui_bundled/password_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/create_password_manager_title_view.h"
+#import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 #import "ios/chrome/common/ui/elements/branded_navigation_item_title_view.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -43,8 +44,9 @@
     secondaryActionString:(NSString*)secondaryActionString {
   self.titleString = titleString;
   self.subtitleString = subtitleString;
-  self.primaryActionString = primaryActionString;
-  self.secondaryActionString = secondaryActionString;
+  self.configuration.primaryActionString = primaryActionString;
+  self.configuration.secondaryActionString = secondaryActionString;
+  [self reloadConfiguration];
 }
 
 #pragma mark - Private methods

@@ -8,6 +8,7 @@
 
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/youtube_incognito/ui/youtube_incognito_sheet_delegate.h"
+#import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -36,9 +37,9 @@ CGFloat const kIconSize = 32;
   self.secondaryTitleString =
       l10n_util::GetNSString(IDS_IOS_YOUTUBE_INCOGNITO_ENTERPRISE_SUBTITLE);
   self.subtitleString = self.URLText;
-  self.primaryActionString = l10n_util::GetNSString(
+  self.configuration.primaryActionString = l10n_util::GetNSString(
       IDS_IOS_YOUTUBE_INCOGNITO_ENTERPRISE_PRIMARY_BUTTON_TITLE);
-  self.secondaryActionString = l10n_util::GetNSString(
+  self.configuration.secondaryActionString = l10n_util::GetNSString(
       IDS_IOS_YOUTUBE_INCOGNITO_ENTERPRISE_SECONDARY_BUTTON_TITLE);
   self.customSpacing = kVerticalSpacing;
   self.titleTextStyle = UIFontTextStyleTitle3;

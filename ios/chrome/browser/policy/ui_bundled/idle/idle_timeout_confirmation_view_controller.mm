@@ -29,15 +29,17 @@ constexpr CGFloat kCustomSpacingAfterImage = 1.0;
 - (instancetype)initWithIdleTimeoutTitleId:(int)titleId
                      idleTimeoutSubtitleId:(int)subtitleId
                       idleTimeoutThreshold:(int)threshold {
-  self = [super initWithConfiguration:[[ButtonStackConfiguration alloc] init]];
+  ButtonStackConfiguration* configuration =
+      [[ButtonStackConfiguration alloc] init];
+  configuration.primaryActionString =
+      l10n_util::GetNSString(IDS_IOS_IDLE_TIMEOUT_CONTINUE_USING_CHROME);
+  self = [super initWithConfiguration:configuration];
   if (self) {
     self.titleString = l10n_util::GetNSString(titleId);
     self.subtitleString = base::SysUTF16ToNSString(
         l10n_util::GetPluralStringFUTF16(subtitleId, threshold));
     _timeRemainingTextView = [self createUnderTitleViewTextView];
     self.underTitleView = _timeRemainingTextView;
-    self.primaryActionString =
-        l10n_util::GetNSString(IDS_IOS_IDLE_TIMEOUT_CONTINUE_USING_CHROME);
   }
   return self;
 }

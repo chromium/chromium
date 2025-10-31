@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/settings/ui_bundled/password/password_sharing/family_promo_action_handler.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_sharing/password_sharing_constants.h"
 #import "ios/chrome/common/string_util.h"
+#import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
@@ -28,7 +29,7 @@
   self.showDismissBarButton = NO;
   self.titleTextStyle = UIFontTextStyleTitle2;
   self.topAlignedLayout = YES;
-  self.primaryActionString =
+  self.configuration.primaryActionString =
       l10n_util::GetNSString(IDS_IOS_PASSWORD_SHARING_FAMILY_PROMO_BUTTON);
   self.view.accessibilityIdentifier = kFamilyPromoViewID;
 

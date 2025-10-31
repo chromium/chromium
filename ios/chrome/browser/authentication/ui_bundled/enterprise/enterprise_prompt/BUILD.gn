@@ -17,6 +17,7 @@ source_set("enterprise_prompt") {
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/common/ui/button_stack",
     "//ios/chrome/common/ui/confirmation_alert",
     "//ui/base",
   ]
