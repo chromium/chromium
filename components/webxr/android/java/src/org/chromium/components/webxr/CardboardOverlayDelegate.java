@@ -130,7 +130,11 @@ public class CardboardOverlayDelegate
     }
 
     @Override
-    public void configureSurfaceView(SurfaceView surfaceView) {}
+    public void configureSurfaceView(SurfaceView surfaceView) {
+        // Chrome compositor SurfaceView has setZOrderMediaOverlay set to true, but this should be
+        // above Chrome compositor SurfaceView, so needs to setZOrderMediaOverlay as well.
+        surfaceView.setZOrderMediaOverlay(true);
+    }
 
     @Override
     public void parentAndShowSurfaceView(SurfaceView surfaceView) {
