@@ -35,6 +35,9 @@ BASE_DECLARE_FEATURE(kGlicCrossOriginNavigationGating);
 // TODO(crbug.com/427815202): Remove this once the front end is wired up.
 BASE_DECLARE_FEATURE(kGlicEnableAutoLoginDialogs);
 
+// Kill switch for selecting previously selected credentials.
+BASE_DECLARE_FEATURE(kGlicEnableAutoLoginPersistedPermissions);
+
 // Enables the Paint Preview backend for taking screenshots.
 BASE_DECLARE_FEATURE(kGlicTabScreenshotPaintPreviewBackend);
 
