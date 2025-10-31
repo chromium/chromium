@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/command_line.h"
+#include "build/build_config.h"
 #include "chrome/browser/local_network_access/local_network_access_browsertest_base.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -83,8 +84,15 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessDeprecationBrowserTest,
             0);
 }
 
+#if BUILDFLAG(IS_LINUX) && defined(ADDRESS_SANITIZER) && defined(LEAK_SANITIZER)
+#define MAYBE_DeprecationTrialAllowsForLNAOnNonSecureSite \
+  DISABLED_DeprecationTrialAllowsForLNAOnNonSecureSite
+#else
+#define MAYBE_DeprecationTrialAllowsForLNAOnNonSecureSite \
+  DeprecationTrialAllowsForLNAOnNonSecureSite
+#endif
 IN_PROC_BROWSER_TEST_F(LocalNetworkAccessDeprecationBrowserTest,
-                       DeprecationTrialAllowsForLNAOnNonSecureSite) {
+                       MAYBE_DeprecationTrialAllowsForLNAOnNonSecureSite) {
   content::DeprecationTrialURLLoaderInterceptor interceptor;
   WebFeatureHistogramTester feature_histogram_tester;
 
@@ -109,8 +117,13 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessDeprecationBrowserTest,
                                    https_server().GetURL("b.com", kLnaPath))));
 }
 
+#if BUILDFLAG(IS_LINUX) && defined(ADDRESS_SANITIZER) && defined(LEAK_SANITIZER)
+#define MAYBE_DeprecationTrialIframe DISABLED_DeprecationTrialIframe
+#else
+#define MAYBE_DeprecationTrialIframe DeprecationTrialIframe
+#endif
 IN_PROC_BROWSER_TEST_F(LocalNetworkAccessDeprecationBrowserTest,
-                       DeprecationTrialIframe) {
+                       MAYBE_DeprecationTrialIframe) {
   content::DeprecationTrialURLLoaderInterceptor interceptor;
   WebFeatureHistogramTester feature_histogram_tester;
 
