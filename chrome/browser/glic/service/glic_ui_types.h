@@ -31,6 +31,7 @@ struct SidePanelShowOptions {
   explicit SidePanelShowOptions(tabs::TabInterface& bound_tab)
       : tab(bound_tab) {}
   base::raw_ref<tabs::TabInterface> tab;
+  bool suppress_opening_animation = false;
 };
 
 struct FloatingShowOptions {

@@ -76,7 +76,7 @@ void GlicSidePanelCoordinator::CreateAndRegisterEntry() {
   side_panel_registry_->Register(std::move(entry));
 }
 
-void GlicSidePanelCoordinator::Show() {
+void GlicSidePanelCoordinator::Show(bool suppress_animations) {
   auto* window_side_panel_coordinator = GetWindowSidePanelCoordinator();
   if (!window_side_panel_coordinator || !entry_) {
     return;
@@ -90,7 +90,11 @@ void GlicSidePanelCoordinator::Show() {
     }
     return;
   }
-  window_side_panel_coordinator->Show(SidePanelEntry::Id::kGlic);
+  SidePanelUIBase::UniqueKey unique_key{
+      .tab_handle = tab_->GetHandle(),
+      .key = SidePanelEntry::Key(SidePanelEntry::Id::kGlic)};
+  window_side_panel_coordinator->Show(unique_key, std::nullopt,
+                                      suppress_animations);
 }
 
 void GlicSidePanelCoordinator::Close() {

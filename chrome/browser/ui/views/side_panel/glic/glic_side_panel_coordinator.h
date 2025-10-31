@@ -53,7 +53,7 @@ class GlicSidePanelCoordinator : public SidePanelEntryObserver {
   };
 
   // Show the Glic side panel.
-  void Show();
+  void Show(bool suppress_animations = false);
 
   // Close the Glic side panel.
   void Close();
