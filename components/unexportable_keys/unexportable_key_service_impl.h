@@ -6,7 +6,7 @@
 #define COMPONENTS_UNEXPORTABLE_KEYS_UNEXPORTABLE_KEY_SERVICE_IMPL_H_
 
 #include <algorithm>
-#include <map>
+#include <functional>
 
 #include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
@@ -20,6 +20,8 @@
 #include "components/unexportable_keys/unexportable_key_service.h"
 #include "crypto/signature_verifier.h"
 #include "crypto/unexportable_key.h"
+#include "third_party/abseil-cpp/absl/container/hash_container_defaults.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace unexportable_keys {
 
@@ -73,21 +75,20 @@ class COMPONENT_EXPORT(UNEXPORTABLE_KEYS) UnexportableKeyServiceImpl
       UnexportableKeyId key_id) const override;
 
  private:
-  // Comparator object that allows comparing containers of different types that
+  // Hasher object that allows comparing containers of different types that
   // are convertible to base::span<const uint8_t>.
-  struct WrappedKeyCmp {
+  struct WrappedKeyHash
+      : absl::DefaultHashContainerHash<base::span<const uint8_t>> {
     using is_transparent = void;
-    bool operator()(base::span<const uint8_t> lhs,
-                    base::span<const uint8_t> rhs) const {
-      return std::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(),
-                                          rhs.end());
-    }
   };
 
-  using WrappedKeyMap = std::
-      map<std::vector<uint8_t>, MaybePendingUnexportableKeyId, WrappedKeyCmp>;
-  using KeyIdMap = std::map<UnexportableKeyId,
-                            scoped_refptr<RefCountedUnexportableSigningKey>>;
+  using WrappedKeyMap = absl::flat_hash_map<std::vector<uint8_t>,
+                                            MaybePendingUnexportableKeyId,
+                                            WrappedKeyHash,
+                                            std::ranges::equal_to>;
+  using KeyIdMap =
+      absl::flat_hash_map<UnexportableKeyId,
+                          scoped_refptr<RefCountedUnexportableSigningKey>>;
 
   // Callback for `GenerateSigningKeySlowlyAsync()`.
   void OnKeyGenerated(
@@ -98,7 +99,7 @@ class COMPONENT_EXPORT(UNEXPORTABLE_KEYS) UnexportableKeyServiceImpl
 
   // Callback for `FromWrappedSigningKeySlowlyAsync()`.
   void OnKeyCreatedFromWrappedKey(
-      WrappedKeyMap::iterator pending_entry_it,
+      std::vector<uint8_t> wrapped_key,
       ServiceErrorOr<scoped_refptr<RefCountedUnexportableSigningKey>>
           key_or_error);
 
