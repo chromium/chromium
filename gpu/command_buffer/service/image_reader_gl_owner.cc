@@ -26,8 +26,6 @@
 #include "ui/gfx/android/android_surface_control_compat.h"
 #include "ui/gl/gl_fence_android_native_fence_sync.h"
 #include "ui/gl/gl_utils.h"
-#include "ui/gl/scoped_binders.h"
-#include "ui/gl/scoped_make_current.h"
 
 namespace gpu {
 
@@ -131,12 +129,7 @@ ImageReaderGLOwner::ImageReaderGLOwner(
     TextureOwnerCodecType type_for_metrics)
     : TextureOwner(std::move(context_state)),
       RefCountedLockHelperDrDc(std::move(drdc_lock)),
-      context_(gl::GLContext::GetCurrent()),
-      surface_(gl::GLSurface::GetCurrent()),
       type_for_metrics_(type_for_metrics) {
-  DCHECK(context_);
-  DCHECK(surface_);
-
   // Set the width, height and format to some default value. This parameters
   // are/maybe overriden by the producer sending buffers to this imageReader's
   // Surface.

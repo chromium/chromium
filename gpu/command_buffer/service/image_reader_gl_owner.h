@@ -142,9 +142,6 @@ class GPU_GLES2_EXPORT ImageReaderGLOwner : public TextureOwner,
   AImageRefMap image_refs_ GUARDED_BY(lock_);
   std::atomic<size_t> total_estimated_size_in_bytes_ = 0;
 
-  // The context and surface that were used to create |texture_id_|.
-  scoped_refptr<gl::GLContext> context_;
-  scoped_refptr<gl::GLSurface> surface_;
   int32_t max_images_ = 0;
 
   // Frame available callback handling. ImageListener registered with

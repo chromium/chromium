@@ -15,9 +15,6 @@
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/gpu_gles2_export.h"
 #include "ui/gl/android/scoped_java_surface.h"
-#include "ui/gl/gl_bindings.h"
-#include "ui/gl/gl_context.h"
-#include "ui/gl/gl_surface.h"
 
 namespace base {
 namespace android {
