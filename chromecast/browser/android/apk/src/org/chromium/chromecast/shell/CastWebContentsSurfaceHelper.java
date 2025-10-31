@@ -77,6 +77,22 @@ class CastWebContentsSurfaceHelper {
             return false;
         }
 
+        @Override
+        public String toString() {
+            return "StartParams{uri="
+                    + uri
+                    + ", shouldRequestAudioFocus="
+                    + shouldRequestAudioFocus
+                    + ", touchInputEnabled="
+                    + touchInputEnabled
+                    + "}";
+        }
+
+        @Override
+        public int hashCode() {
+            return uri.hashCode();
+        }
+
         public static StartParams fromBundle(Bundle bundle) {
             final String uriString = CastWebContentsIntentUtils.getUriString(bundle);
             if (uriString == null) {
