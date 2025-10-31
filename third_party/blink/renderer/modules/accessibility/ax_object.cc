@@ -5592,26 +5592,32 @@ const AtomicString& AXObject::LiveRegionStatus() const {
   DEFINE_STATIC_LOCAL(const AtomicString, live_region_status_polite,
                       ("polite"));
   DEFINE_STATIC_LOCAL(const AtomicString, live_region_status_off, ("off"));
+  DEFINE_STATIC_LOCAL(const AtomicString, live_region_status_undefined,
+                      ("undefined"));
 
   const AtomicString& live_region_status =
       AriaTokenAttribute(html_names::kAriaLiveAttr);
-  // These roles have implicit live region status.
-  if (live_region_status.empty()) {
-    switch (RoleValue()) {
-      case ax::mojom::blink::Role::kAlert:
-        return live_region_status_assertive;
-      case ax::mojom::blink::Role::kLog:
-      case ax::mojom::blink::Role::kStatus:
-        return live_region_status_polite;
-      case ax::mojom::blink::Role::kTimer:
-      case ax::mojom::blink::Role::kMarquee:
-        return live_region_status_off;
-      default:
-        break;
-    }
+  if (!live_region_status.empty()) {
+    return live_region_status;
   }
 
-  return live_region_status;
+  const AtomicString& implicit_value = GetImplicitAriaLive(RoleValue());
+  // "undefined" means this element is not a live region.
+  // See: https://github.com/w3c/aria/issues/2653
+  if (implicit_value == live_region_status_undefined) {
+    return g_null_atom;
+  }
+  if (implicit_value == live_region_status_assertive) {
+    return live_region_status_assertive;
+  }
+  if (implicit_value == live_region_status_polite) {
+    return live_region_status_polite;
+  }
+  if (implicit_value == live_region_status_off) {
+    return live_region_status_off;
+  }
+
+  return g_null_atom;
 }
 
 const AtomicString& AXObject::LiveRegionRelevant() const {
@@ -5907,10 +5913,8 @@ bool AXObject::LiveRegionAtomic() const {
     return atomic;
   }
 
-  // ARIA roles "alert" and "status" should have an implicit aria-atomic value
-  // of true.
-  return RoleValue() == ax::mojom::blink::Role::kAlert ||
-         RoleValue() == ax::mojom::blink::Role::kStatus;
+  const String& implicit_value = GetImplicitAriaAtomic(RoleValue());
+  return implicit_value == "true";
 }
 
 const AtomicString& AXObject::ContainerLiveRegionStatus() const {
