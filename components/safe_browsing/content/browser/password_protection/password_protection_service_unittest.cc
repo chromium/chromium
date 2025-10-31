@@ -1651,6 +1651,14 @@ TEST_P(PasswordProtectionServiceBaseTest,
   EXPECT_FALSE(
       password_protection_service_->ShouldRunOtpPhishingVerdictCallback(
           LoginReputationClientRequest::ONE_TIME_PASSWORD_FIELD_DETECTED));
+
+  // Case 4: Trigger type is ONE_TIME_PASSWORD_FIELD_DETECTED and callback is
+  // set, but the callback itself is null.
+  password_protection_service_->otp_phishing_verdict_callback_.emplace(
+      base::OnceCallback<void(bool)>());
+  EXPECT_FALSE(
+      password_protection_service_->ShouldRunOtpPhishingVerdictCallback(
+          LoginReputationClientRequest::ONE_TIME_PASSWORD_FIELD_DETECTED));
 }
 
 TEST_P(PasswordProtectionServiceBaseTest, VerifyContentTypeIsPopulated) {
