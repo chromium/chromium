@@ -344,6 +344,35 @@ TEST_P(IOWatcherFdTest, Write) {
   WriteToSocket(b.get(), "x");
 }
 
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
+TEST_P(IOWatcherFdTest, WatchSameFdForWriteSignal) {
+  // Tests that the same FD can be watched twice for the write signal. We can
+  // fall back to OS transports during IPC. Then, if sockets are too small or
+  // messages being sent are too large we can set up an FdWatcher for the same
+  // FD write signal during OnFdWritable callbacks due to multiple consecutive
+  // EAGAINs in channel_posix.
+  auto [a, b] = CreateSocketPair();
+  FillSocket(b.get());
+  auto first_watcher = CreateWatcher();
+  first_watcher->Watch(b, IOWatcher::FdWatchDuration::kOneShot,
+                       IOWatcher::FdWatchMode::kWrite);
+  // A watcher already exists for `fd` b waiting on a write signal, try to watch
+  // it again.
+  auto second_watcher = CreateWatcher();
+  second_watcher->Watch(b, IOWatcher::FdWatchDuration::kOneShot,
+                        IOWatcher::FdWatchMode::kWrite);
+  // A new FdWatcher has been made. Stop the current one to mimic current
+  // channel_posix behaviour.
+  first_watcher->Stop();
+  MakePeerReadableAndWritableFromIOThread(a.get());
+  // Ensure watcher still gets notified and socket is writable.
+  second_watcher->WaitForWritable();
+  EXPECT_EQ(1, second_watcher->num_events());
+  EXPECT_EQ(0, first_watcher->num_events());
+  WriteToSocket(b.get(), "x");
+}
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
+
 TEST_P(IOWatcherFdTest, ReadWriteUnifiedOneShot) {
   // Tests that a one-shot read-write watch will observe at most one event
   // even if the watched object becomes both readable and writable.
