@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/autofill/autofill_popup_controller_impl_test_api.h"
 #include "chrome/browser/ui/autofill/autofill_suggestion_controller_test_base.h"
 #include "chrome/browser/ui/autofill/test_autofill_popup_controller_autofill_client.h"
+#include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/browser/ui/popup_interaction.h"
@@ -869,8 +870,15 @@ TEST_F(AutofillPopupControllerImplTest,
 TEST_F(AutofillPopupControllerImplTest,
        RemoveAddressSuggestion_MetricsEmittedOnSuccess) {
   base::HistogramTester histogram_tester;
-  ShowSuggestions(manager(), {SuggestionType::kAddressEntry});
+
+  AutofillProfile profile = AutofillProfile(AddressCountryCode("US"));
+  personal_data().address_data_manager().AddProfile(profile);
+  Suggestion suggestion(SuggestionType::kAddressEntry);
+  suggestion.payload =
+      Suggestion::AutofillProfilePayload(Suggestion::Guid(profile.guid()));
+  ShowSuggestions(manager(), {suggestion});
   test::GenerateTestAutofillPopup(&manager().external_delegate());
+
   EXPECT_CALL(
       manager().external_delegate(),
       RemoveSuggestion(Field(&Suggestion::type, SuggestionType::kAddressEntry)))
@@ -880,16 +888,28 @@ TEST_F(AutofillPopupControllerImplTest,
       0, SingleEntryRemovalMethod::kKeyboardShiftDeletePressed));
   histogram_tester.ExpectUniqueSample("Autofill.ProfileDeleted.Any.Total", 1,
                                       1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.ProfileDeleted.Any.LocalOrSyncable", 1, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.ProfileDeleted.Any.LocalOrSyncable", 1, 1);
   if constexpr (BUILDFLAG(IS_ANDROID)) {
     histogram_tester.ExpectUniqueSample("Autofill.ProfileDeleted.Popup.Total",
                                         1, 0);
     histogram_tester.ExpectUniqueSample(
+        "Autofill.ProfileDeleted.Popup.LocalOrSyncable", 1, 0);
+    histogram_tester.ExpectUniqueSample(
         "Autofill.ProfileDeleted.KeyboardAccessory.Total", 1, 1);
+    histogram_tester.ExpectUniqueSample(
+        "Autofill.ProfileDeleted.KeyboardAccessory.LocalOrSyncable", 1, 1);
   } else {
     histogram_tester.ExpectUniqueSample("Autofill.ProfileDeleted.Popup.Total",
                                         1, 1);
     histogram_tester.ExpectUniqueSample(
+        "Autofill.ProfileDeleted.Popup.LocalOrSyncable", 1, 1);
+    histogram_tester.ExpectUniqueSample(
         "Autofill.ProfileDeleted.KeyboardAccessory.Total", 1, 0);
+    histogram_tester.ExpectUniqueSample(
+        "Autofill.ProfileDeleted.KeyboardAccessory.LocalOrSyncable", 1, 0);
   }
   // No autocomplete deletion metrics are emitted.
   histogram_tester.ExpectUniqueSample(

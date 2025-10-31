@@ -1509,13 +1509,23 @@ std::string AutofillMetrics::GetHistogramStringForCardType(
 }
 
 // static
-void AutofillMetrics::LogDeleteAddressProfileFromPopup() {
+void AutofillMetrics::LogDeleteAddressProfileFromPopup(
+    AutofillProfile::RecordType record_type) {
   // Only the "confirmed" bucket can be recorded, as the user cannot cancel this
   // type of deletion.
   base::UmaHistogramBoolean("Autofill.ProfileDeleted.Popup.Total",
                             /*delete_confirmed=*/true);
   base::UmaHistogramBoolean("Autofill.ProfileDeleted.Any.Total",
                             /*delete_confirmed=*/true);
+
+  base::UmaHistogramBoolean(
+      base::StrCat({"Autofill.ProfileDeleted.Popup.",
+                    autofill_metrics::GetProfileRecordTypeSuffix(record_type)}),
+      /*delete_confirmed=*/true);
+  base::UmaHistogramBoolean(
+      base::StrCat({"Autofill.ProfileDeleted.Any.",
+                    autofill_metrics::GetProfileRecordTypeSuffix(record_type)}),
+      /*delete_confirmed=*/true);
 }
 
 // static

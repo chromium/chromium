@@ -893,8 +893,10 @@ class AutofillMetrics {
       base::TimeTicks form_submitted_timestamp);
 
   // This metric is recorded when an address is deleted from a first-level popup
-  // using shift+delete.
-  static void LogDeleteAddressProfileFromPopup();
+  // using shift+delete. `record_type` holds the record
+  // type of the profile that was deleted.
+  static void LogDeleteAddressProfileFromPopup(
+      AutofillProfile::RecordType record_type);
 
   // Records the outcome of an address profile deletion initiated from the
   // keyboard accessory. `delete_confirmed` is true if the user confirmed the
