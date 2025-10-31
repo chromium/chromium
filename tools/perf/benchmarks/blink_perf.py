@@ -380,7 +380,11 @@ class _BlinkPerfBenchmark(perf_benchmark.PerfBenchmark):
                                   extra_tags=self.TAGS)
 
 
-@benchmark.Info(emails=['aleventhal@chromium.org'],
+@benchmark.Info(emails=[
+                    'aleventhal@chromium.org',
+                    'gregoryd@google.com',
+                    'lucasradaelli@google.com'
+                ],
                 component='Blink>Accessibility',
                 documentation_url='https://bit.ly/blink-perf-benchmarks')
 class BlinkPerfAccessibility(_BlinkPerfBenchmark):
