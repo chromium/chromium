@@ -82,7 +82,7 @@ TEST(RemoteInputFilterTest, MismatchedLocalActivity) {
   for (int i = 0; i < 10; ++i) {
     input_filter.InjectMouseEvent(MouseMoveEvent(0, 0));
     if (i == 4) {
-      input_filter.LocalPointerMoved(webrtc::DesktopVector(1, 1),
+      input_filter.LocalPointerMoved(webrtc::DesktopVector(10, 10),
                                      ui::EventType::kMouseMoved);
     }
   }
@@ -112,7 +112,8 @@ TEST(RemoteInputFilterTest, LocalEchoesOfRemoteActivity) {
 
   for (int i = 0; i < 10; ++i) {
     input_filter.InjectMouseEvent(MouseMoveEvent(0, 0));
-    input_filter.LocalPointerMoved(webrtc::DesktopVector(0, 0),
+    // Echoes can be off by one pixel in each dimension.
+    input_filter.LocalPointerMoved(webrtc::DesktopVector(1, 1),
                                    ui::EventType::kMouseMoved);
   }
 }
@@ -127,10 +128,11 @@ TEST(RemoteInputFilterTest, LocalEchosAndLocalActivity) {
 
   for (int i = 0; i < 10; ++i) {
     input_filter.InjectMouseEvent(MouseMoveEvent(0, 0));
-    input_filter.LocalPointerMoved(webrtc::DesktopVector(0, 0),
+    // Echoes can be off by one pixel in each dimension.
+    input_filter.LocalPointerMoved(webrtc::DesktopVector(1, 1),
                                    ui::EventType::kMouseMoved);
     if (i == 4) {
-      input_filter.LocalPointerMoved(webrtc::DesktopVector(1, 1),
+      input_filter.LocalPointerMoved(webrtc::DesktopVector(10, 10),
                                      ui::EventType::kMouseMoved);
     }
   }
@@ -213,10 +215,11 @@ TEST(RemoteInputFilterTest, LocalActivityReleasesAll) {
 
   for (int i = 0; i < 10; ++i) {
     input_filter.InjectMouseEvent(MouseMoveEvent(0, 0));
-    input_filter.LocalPointerMoved(webrtc::DesktopVector(0, 0),
+    // Echoes can be off by one pixel in each dimension.
+    input_filter.LocalPointerMoved(webrtc::DesktopVector(1, 1),
                                    ui::EventType::kMouseMoved);
     if (i == 4) {
-      input_filter.LocalPointerMoved(webrtc::DesktopVector(1, 1),
+      input_filter.LocalPointerMoved(webrtc::DesktopVector(10, 10),
                                      ui::EventType::kMouseMoved);
     }
   }

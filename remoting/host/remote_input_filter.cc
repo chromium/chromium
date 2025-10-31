@@ -27,6 +27,21 @@ const unsigned int kNumRemoteKeyPresses = 20;
 // is received.
 const int64_t kRemoteBlockTimeoutMillis = 2000;
 
+// In GNOME Wayland, the echoed cursor position can be off by one pixel in each
+// dimension, probably due to some rounding errors when converting between
+// physical pixels and DIPs, so we need this function for fuzzy comparisons.
+// Note that with this fuzzy comparison logic, an observed position may be
+// matched to a previously injected position that has been skipped, causing
+// `injected_mouse_positions_` to be undertrimmed. This is fine, since its
+// corresponding injected position can be considered skipped, and it will be
+// eventually trimmed. Overtrimming cannot happen, since an observed position
+// will always be matched to its corresponding injected position before it has a
+// chance to be matched to a later position.
+bool PositionsRoughlyEqual(const webrtc::DesktopVector& a,
+                           const webrtc::DesktopVector& b) {
+  return abs(a.x() - b.x()) < 2 && abs(a.y() - b.y()) < 2;
+}
+
 }  // namespace
 
 namespace remoting {
@@ -47,7 +62,7 @@ bool RemoteInputFilter::LocalPointerMoved(const webrtc::DesktopVector& pos,
   if (expect_local_echo_ && type == ui::EventType::kMouseMoved) {
     auto found_position = injected_mouse_positions_.begin();
     while (found_position != injected_mouse_positions_.end() &&
-           !pos.equals(*found_position)) {
+           !PositionsRoughlyEqual(*found_position, pos)) {
       ++found_position;
     }
     if (found_position != injected_mouse_positions_.end()) {
