@@ -47,7 +47,6 @@ GlicFocusedBrowserManager::GlicFocusedBrowserManager(
     GlicInstance::UIDelegate* window_controller,
     Profile* profile)
     : window_controller_(*window_controller), profile_(profile) {
-  BrowserList::GetInstance()->AddObserver(this);
   if (!GlicEnabling::IsMultiInstanceEnabledByFlags()) {
     GlicWindowControllerImpl* window_controller_impl =
         static_cast<GlicWindowControllerImpl*>(window_controller);
@@ -57,7 +56,6 @@ GlicFocusedBrowserManager::GlicFocusedBrowserManager(
                 &GlicFocusedBrowserManager::OnGlicWindowActivationChanged,
                 base::Unretained(this)));
   }
-  window_controller->AddStateObserver(this);
 }
 
 GlicFocusedBrowserManager::~GlicFocusedBrowserManager() {
@@ -65,6 +63,19 @@ GlicFocusedBrowserManager::~GlicFocusedBrowserManager() {
   widget_observation_.Reset();
   BrowserList::GetInstance()->RemoveObserver(this);
   window_controller_->RemoveStateObserver(this);
+}
+
+void GlicFocusedBrowserManager::Initialize() {
+  BrowserList::GetInstance()->AddObserver(this);
+  window_controller_->AddStateObserver(this);
+  for (Browser* browser : *BrowserList::GetInstance()) {
+    OnBrowserAdded(browser);
+    if (browser->IsActive()) {
+      OnBrowserBecameActive(browser);
+    }
+  }
+  MaybeUpdateFocusedBrowser();
+  is_initialized_ = true;
 }
 
 BrowserWindowInterface* GlicFocusedBrowserManager::GetFocusedBrowser() const {
@@ -82,12 +93,18 @@ BrowserWindowInterface* GlicFocusedBrowserManager::GetActiveBrowser() const {
 base::CallbackListSubscription
 GlicFocusedBrowserManager::AddFocusedBrowserChangedCallback(
     FocusedBrowserChangedCallback callback) {
+  if (!is_initialized_) {
+    Initialize();
+  }
   return focused_browser_callback_list_.Add(std::move(callback));
 }
 
 base::CallbackListSubscription
 GlicFocusedBrowserManager::AddActiveBrowserChangedCallback(
     base::RepeatingCallback<void(BrowserWindowInterface*)> callback) {
+  if (!is_initialized_) {
+    Initialize();
+  }
   return active_browser_callback_list_.Add(std::move(callback));
 }
 
@@ -128,6 +145,9 @@ void GlicFocusedBrowserManager::OnBrowserBecameInactive(
 }
 
 void GlicFocusedBrowserManager::OnGlicWindowActivationChanged(bool active) {
+  if (!is_initialized_) {
+    Initialize();
+  }
   // Debounce updates when Glic Window becomes inactive in case a browser window
   // is about to become active.
   MaybeUpdateFocusedBrowser(/*debounce=*/!active);

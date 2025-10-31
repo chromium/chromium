@@ -31,7 +31,7 @@ class GlicSharingManagerImpl : public GlicSharingManager {
       std::unique_ptr<GlicFocusedTabManagerInterface> focused_tab_manager,
       std::unique_ptr<GlicFocusedBrowserManagerInterface>
           focused_browser_manager,
-      std::unique_ptr<GlicPinnedTabManager> pinned_tab_manager,
+      GlicPinnedTabManager* pinned_tab_manager,
       Profile* profile,
       GlicMetrics* metrics);
   ~GlicSharingManagerImpl() override;
@@ -117,9 +117,13 @@ class GlicSharingManagerImpl : public GlicSharingManager {
       const mojom::GetTabContextOptions& options,
       base::OnceCallback<void(GlicGetContextResult)> callback);
 
+  GlicPinnedTabManager* pinned_tab_manager() const;
+
   std::unique_ptr<GlicFocusedBrowserManagerInterface> focused_browser_manager_;
   std::unique_ptr<GlicFocusedTabManagerInterface> focused_tab_manager_;
-  std::unique_ptr<GlicPinnedTabManager> pinned_tab_manager_;
+  std::variant<std::unique_ptr<GlicPinnedTabManager>,
+               raw_ptr<GlicPinnedTabManager>>
+      pinned_tab_manager_;
 
   // The profile for which to manage sharing.
   raw_ptr<Profile> profile_;
