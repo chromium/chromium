@@ -13,4 +13,13 @@ const InteractiveBrowserTestApi::DeepQuery kPathToMockGlicCloseButton = {
 const InteractiveBrowserTestApi::DeepQuery kPathToGuestPanel = {
     ".panel#guestPanel"};
 
+std::ostream& operator<<(std::ostream& os, const TargetWebContents& value) {
+  switch (value) {
+    case TargetWebContents::kGlicWebUi:
+      return os << "GlicWebUi";
+    case TargetWebContents::kGlicClient:
+      return os << "GlicClient";
+  }
+}
+
 }  // namespace glic::test
