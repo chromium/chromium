@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/read_anything/read_anything_service.h"
 #include "chrome/browser/ui/read_anything/read_anything_side_panel_web_view.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "chrome/browser/ui/views/page_action/page_action_controller.h"
@@ -294,7 +295,8 @@ void ReadAnythingSidePanelController::DidStopLoading() {
 
 void ReadAnythingSidePanelController::UpdatePageActionVisibility(
     bool should_show) {
-  if (!features::IsReadAnythingOmniboxChipEnabled()) {
+  if (!base::FeatureList::IsEnabled(features::kPageActionsMigration) ||
+      !features::IsReadAnythingOmniboxChipEnabled()) {
     return;
   }
 
