@@ -11,6 +11,8 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/feature_engagement/public/feature_constants.h"
+#include "components/feature_engagement/test/scoped_iph_feature_list.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/common/extension_urls.h"
@@ -25,7 +27,16 @@ struct WebStoreLinkTestCase {
 
 class ZeroStatePromoPageHandlerTest : public InProcessBrowserTest {
  public:
-  ZeroStatePromoPageHandlerTest() {}
+  ZeroStatePromoPageHandlerTest() {
+    feature_list_.InitAndEnableFeaturesWithParameters(
+        {base::test::FeatureRefAndParams(
+            feature_engagement::kIPHExtensionsZeroStatePromoFeature,
+            {{feature_engagement::kIPHExtensionsZeroStatePromoVariantParam.name,
+              feature_engagement::kIPHExtensionsZeroStatePromoVariantParam
+                  .GetName(
+                      feature_engagement::IPHExtensionsZeroStatePromoVariant::
+                          kCustomUiChipIphV2)}})});
+  }
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
@@ -58,7 +69,7 @@ class ZeroStatePromoPageHandlerTest : public InProcessBrowserTest {
  protected:
   GURL GetExpectedUrlWithUtm(std::string_view base_url) {
     return extension_urls::AppendUtmSource(
-        GURL(base_url), extension_urls::kCustomUiPlainLinkIphUtmSource);
+        GURL(base_url), extension_urls::kCustomUiChipIphV2UtmSource);
   }
 
   void TestWebStoreLink(const WebStoreLinkTestCase& test_case) {
@@ -75,6 +86,9 @@ class ZeroStatePromoPageHandlerTest : public InProcessBrowserTest {
 
   std::unique_ptr<ZeroStatePromoPageHandler> handler_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
+
+ private:
+  feature_engagement::test::ScopedIphFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(ZeroStatePromoPageHandlerTest,

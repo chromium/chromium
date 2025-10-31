@@ -58,6 +58,8 @@ ZeroStatePromoController::ZeroStatePromoController(content::WebUI* web_ui)
        IDS_EXTENSIONS_ZERO_STATE_IPH_PRODUCTIVITY_CATEGORY_LINK},
       {"extensionsZeroStateIphAiProductivityCollectionLink",
        IDS_EXTENSIONS_ZERO_STATE_IPH_AI_PRODUCTIVITY_COLLECTION_LINK},
+      {"extensionsZeroStateIphWebStoreLink",
+       IDS_EXTENSIONS_ZERO_STATE_IPH_WEB_STORE_LINK},
       {"extensionsZeroStateIphCloseButtonLabel",
        IDS_EXTENSIONS_ZERO_STATE_IPH_DISMISS_BUTTON_TEXT},
       {"extensionsZeroStateIphCustomActionButtonLabel",
@@ -67,9 +69,15 @@ ZeroStatePromoController::ZeroStatePromoController(content::WebUI* web_ui)
 
   feature_engagement::IPHExtensionsZeroStatePromoVariant promoVariant =
       feature_engagement::kIPHExtensionsZeroStatePromoVariantParam.Get();
-  source->AddBoolean("showChipsUi",
+  source->AddBoolean("showPlainLinksUi",
                      feature_engagement::IPHExtensionsZeroStatePromoVariant::
-                             kCustomUiChipIph == promoVariant);
+                             kCustomUIPlainLinkIph == promoVariant);
+  source->AddBoolean("showChipsUiV1",
+                     feature_engagement::IPHExtensionsZeroStatePromoVariant::
+                             kCustomUiChipIphV1 == promoVariant);
+  source->AddBoolean("showChipsUiV2",
+                     feature_engagement::IPHExtensionsZeroStatePromoVariant::
+                             kCustomUiChipIphV2 == promoVariant);
 
   webui::SetupWebUIDataSource(
       source, kExtensionsZeroStatePromoResources,
