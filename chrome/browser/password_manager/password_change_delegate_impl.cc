@@ -360,7 +360,7 @@ void PasswordChangeDelegateImpl::StartPasswordChangeFlow() {
   UpdateState(State::kWaitingForChangePasswordForm);
   logs_uploader_ = std::make_unique<ModelQualityLogsUploader>(
       originator_.get(), change_password_url_);
-  logs_uploader_->SetPasswordFormInfo(password_form_info_);
+  logs_uploader_->SetLoginPasswordFormInfo(password_form_info_);
   if (base::FeatureList::IsEnabled(
           password_manager::features::kCheckLoginStateBeforePasswordChange)) {
     login_state_checker_ = std::make_unique<LoginStateChecker>(

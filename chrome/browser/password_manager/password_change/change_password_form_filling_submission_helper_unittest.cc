@@ -845,3 +845,17 @@ TEST_F(ChangePasswordFormFillingSubmissionHelperTest,
   task_environment()->RunUntilIdle();
   testing::Mock::VerifyAndClearExpectations(&driver());
 }
+
+TEST_F(ChangePasswordFormFillingSubmissionHelperTest,
+       PasswordChangeFormInfoIsLogged) {
+  auto form_manager = CreateFormManager(/*credentials_to_seed=*/{});
+
+  base::test::TestFuture<bool> completion_future;
+  auto verifier =
+      CreateVerifier(form_manager.get(), completion_future.GetCallback());
+  FillChangePasswordForm(form_manager.get(), verifier.get());
+
+  optimization_guide::proto::PasswordChangeQuality quality =
+      logs_uploader()->GetFinalLog().password_change_submission().quality();
+  EXPECT_TRUE(quality.has_change_password_form_data());
+}

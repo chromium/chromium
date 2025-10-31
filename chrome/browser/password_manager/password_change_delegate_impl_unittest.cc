@@ -378,3 +378,16 @@ TEST_F(PasswordChangeDelegateImplTest, OnPasswordChangeDeclined) {
 
   task_environment()->RunUntilIdle();
 }
+
+TEST_F(PasswordChangeDelegateImplTest, LoginPasswordFormIsLogged) {
+  CreateDelegate();
+  delegate()->StartPasswordChangeFlow();
+
+  optimization_guide::proto::PasswordChangeQuality quality =
+      static_cast<PasswordChangeDelegateImpl*>(delegate())
+          ->logs_uploader()
+          ->GetFinalLog()
+          .password_change_submission()
+          .quality();
+  EXPECT_TRUE(quality.has_login_form_data());
+}

@@ -12,7 +12,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
-#include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -29,6 +28,11 @@ using PasswordChangeOutcome = optimization_guide::proto ::
 using PageType = optimization_guide::proto::OpenFormResponseData_PageType;
 using LoginPasswordType =
     optimization_guide::proto::LoginAttemptOutcome_PasswordType;
+using FormData = optimization_guide::proto::PasswordChangeQuality_FormData;
+using FieldData =
+    optimization_guide::proto::PasswordChangeQuality_FormData_FieldData;
+using FieldType = optimization_guide::proto::
+    PasswordChangeQuality_FormData_FieldData_FieldType;
 
 namespace {
 int64_t ComputeRequestLatencyMs(base::Time server_request_start_time) {
@@ -187,6 +191,52 @@ ModelQualityLogsUploader::QualityStatus GetStepStatus(
     default:
       return ModelQualityLogsUploader::QualityStatus::
           PasswordChangeQuality_StepQuality_SubmissionStatus_UNEXPECTED_STATE;
+  }
+}
+
+FieldType GetFieldType(const autofill::FormFieldData& field,
+                       const password_manager::PasswordForm& form) {
+  autofill::FieldRendererId field_id = field.renderer_id();
+  if (field_id == form.username_element_renderer_id) {
+    return optimization_guide::proto::
+        PasswordChangeQuality_FormData_FieldData_FieldType_USERNAME;
+  } else if (field_id == form.password_element_renderer_id) {
+    return optimization_guide::proto::
+        PasswordChangeQuality_FormData_FieldData_FieldType_PASSWORD;
+  } else if (field_id == form.new_password_element_renderer_id) {
+    return optimization_guide::proto::
+        PasswordChangeQuality_FormData_FieldData_FieldType_NEW_PASSWORD;
+  } else if (field_id == form.confirmation_password_element_renderer_id) {
+    return optimization_guide::proto::
+        PasswordChangeQuality_FormData_FieldData_FieldType_CONFIRMATION_PASSWORD;
+  }
+  return optimization_guide::proto::
+      PasswordChangeQuality_FormData_FieldData_FieldType_UNKNOWN;
+}
+
+void SetFormData(FormData& form_data_proto,
+                 const password_manager::PasswordForm& form) {
+  form_data_proto.set_form_signature(
+      autofill::CalculateFormSignature(form.form_data).value());
+  form_data_proto.set_form_id(base::UTF16ToUTF8(form.form_data.id_attribute()));
+  form_data_proto.set_form_name(
+      base::UTF16ToUTF8(form.form_data.name_attribute()));
+  form_data_proto.set_url(form.url.spec());
+  for (const auto& button : form.form_data.button_titles()) {
+    form_data_proto.add_button_text(base::UTF16ToUTF8(button.first));
+  }
+  for (const auto& field : form.form_data.fields()) {
+    FieldData field_data;
+    field_data.set_signature(
+        autofill::CalculateFieldSignatureForField(field).value());
+    field_data.set_id(base::UTF16ToUTF8(field.id_attribute()));
+    field_data.set_name(base::UTF16ToUTF8(field.name_attribute()));
+    field_data.set_label(base::UTF16ToUTF8(field.label()));
+    field_data.set_html_type(
+        autofill::FormControlTypeToString(field.form_control_type()));
+    field_data.set_placeholder(base::UTF16ToUTF8(field.placeholder()));
+    field_data.set_field_type(GetFieldType(field, form));
+    *form_data_proto.add_field_data() = field_data;
   }
 }
 
@@ -404,10 +454,20 @@ void ModelQualityLogsUploader::LoginCheckSkipped() {
       ->set_classification_overridden_by_user(true);
 }
 
-void ModelQualityLogsUploader::SetPasswordFormInfo(
+void ModelQualityLogsUploader::SetLoginPasswordFormInfo(
     const password_manager::PasswordForm& password_form) {
-  // TODO(crbug.com/454561194): Implement logging information about the password
-  // form.
+  optimization_guide::proto::PasswordChangeQuality* quality =
+      final_log_data_.mutable_password_change_submission()->mutable_quality();
+  quality->set_was_password_stored(
+      password_form.in_store != password_manager::PasswordForm::Store::kNotSet);
+  SetFormData(*quality->mutable_login_form_data(), password_form);
+}
+
+void ModelQualityLogsUploader::SetChangePasswordFormData(
+    const password_manager::PasswordForm& password_form) {
+  optimization_guide::proto::PasswordChangeQuality* quality =
+      final_log_data_.mutable_password_change_submission()->mutable_quality();
+  SetFormData(*quality->mutable_change_password_form_data(), password_form);
 }
 
 // static
