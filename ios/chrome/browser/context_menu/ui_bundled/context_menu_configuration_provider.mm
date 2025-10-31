@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/context_menu/ui_bundled/context_menu_configuration_provider.h"
 
+#import "base/ios/block_types.h"
 #import "base/ios/ios_util.h"
 #import "base/memory/weak_ptr.h"
 #import "base/metrics/histogram_functions.h"
@@ -72,6 +73,7 @@
 #import "ios/web/public/js_image_transcoder/java_script_image_transcoder.h"
 #import "ios/web/public/ui/context_menu_params.h"
 #import "ios/web/public/web_state.h"
+#import "ios/web/public/web_state_delegate.h"
 #import "net/base/apple/url_conversions.h"
 #import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -505,14 +507,7 @@ NSString* const kAlertAccessibilityIdentifier = @"AlertAccessibilityIdentifier";
 
   // Copy Image.
   UIAction* copyImage = [actionFactory actionCopyImageWithBlock:^{
-    ContextMenuConfigurationProvider* strongSelf = weakSelf;
-    if (!strongSelf || !strongSelf.baseViewController) {
-      return;
-    }
-    [strongSelf.imageCopier copyImageAtURL:imageURL
-                                  referrer:referrer
-                                  webState:strongSelf.webState
-                        baseViewController:strongSelf.baseViewController];
+    [weakSelf copyImageAtURL:imageURL referrer:referrer];
   }];
   [imageMenuElements addObject:copyImage];
 
@@ -950,6 +945,39 @@ NSString* const kAlertAccessibilityIdentifier = @"AlertAccessibilityIdentifier";
       return kMenuScenarioHistogramContextMenuLink;
     }
   }
+}
+
+- (void)copyImageAtURL:(GURL)imageURL referrer:(web::Referrer)referrer {
+  if (!self.webState) {
+    return;
+  }
+
+  __weak __typeof(self) weakSelf = self;
+  ProceduralBlock finishCopyImage = ^{
+    ContextMenuConfigurationProvider* strongSelf = weakSelf;
+    if (!strongSelf || !strongSelf.baseViewController) {
+      return;
+    }
+    [weakSelf.imageCopier copyImageAtURL:imageURL
+                                referrer:referrer
+                                webState:strongSelf.webState
+                      baseViewController:strongSelf.baseViewController];
+  };
+
+  web::WebStateDelegate* webStateDelegate = self.webState->GetDelegate();
+  if (!webStateDelegate) {
+    finishCopyImage();
+    return;
+  }
+
+  // Check if copying content from the current web page is allowed by
+  // policies.
+  webStateDelegate->ShouldAllowCopy(self.webState,
+                                    base::BindOnce(^(bool allowed) {
+                                      if (allowed) {
+                                        finishCopyImage();
+                                      }
+                                    }));
 }
 
 @end
