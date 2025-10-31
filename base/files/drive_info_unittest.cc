@@ -16,14 +16,14 @@ namespace {
 using ::testing::Optional;
 
 void TestForReasonableDriveInfo(const std::optional<DriveInfo>& info) {
-  ASSERT_TRUE(info.has_value());
+  ASSERT_NE(info, std::nullopt);
 
   // `has_seek_penalty` may or may not be true but should be ascertainable.
-  EXPECT_TRUE(info->has_seek_penalty.has_value());
+  EXPECT_NE(info->has_seek_penalty, std::nullopt);
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // `is_removable` may or may not be true but should be ascertainable.
-  EXPECT_TRUE(info->is_removable.has_value());
+  EXPECT_NE(info->is_removable, std::nullopt);
 
   // Expect more than 10MB for the media size.
   EXPECT_THAT(info->size_bytes, Optional(testing::Ge(10'000'000)));
@@ -31,7 +31,7 @@ void TestForReasonableDriveInfo(const std::optional<DriveInfo>& info) {
 
 #if BUILDFLAG(IS_WIN)
   // `is_usb` may or may not be true but should be ascertainable.
-  EXPECT_TRUE(info->is_usb.has_value());
+  EXPECT_NE(info->is_usb, std::nullopt);
 
   // `sector_size` should have a value.
   EXPECT_NE(info->bytes_per_sector, std::nullopt);
