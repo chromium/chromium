@@ -20,7 +20,7 @@ export type {LineSpacingMenuElement} from './menus/line_spacing_menu.js';
 export {MenuStateItem} from './menus/menu_util.js';
 export type {RateMenuElement} from './menus/rate_menu.js';
 export type {SimpleActionMenuElement} from './menus/simple_action_menu.js';
-export {MetricsBrowserProxy, MetricsBrowserProxyImpl, ReadAloudHighlightState, ReadAloudSettingsChange, ReadAnythingNewPage, ReadAnythingSettingsChange, ReadAnythingSpeechError, ReadAnythingVoiceType} from './metrics_browser_proxy.js';
+export {MetricsBrowserProxy, MetricsBrowserProxyImpl, ReadAloudSettingsChange, ReadAnythingNewPage, ReadAnythingSettingsChange, ReadAnythingSpeechError, ReadAnythingVoiceType} from './metrics_browser_proxy.js';
 export {ESTIMATED_WORDS_PER_MS, MIN_MS_TO_READ, NodeStore} from './node_store.js';
 export {ReadAloudHighlighter} from './read_aloud/highlighter.js';
 export type {LanguageMenuElement} from './read_aloud/language_menu.js';

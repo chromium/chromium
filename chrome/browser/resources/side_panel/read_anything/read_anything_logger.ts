@@ -80,11 +80,6 @@ export class ReadAnythingLogger {
                    this.metrics.recordNewPage();
   }
 
-  logHighlightState(highlightOn: boolean) {
-    highlightOn ? this.metrics.recordHighlightOn() :
-                  this.metrics.recordHighlightOff();
-  }
-
   logHighlightGranularity(highlight: number) {
     this.metrics.recordHighlightGranularity(highlight);
   }

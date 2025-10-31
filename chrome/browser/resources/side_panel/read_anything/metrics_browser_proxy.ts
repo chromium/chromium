@@ -7,7 +7,6 @@ enum UmaName {
   LANGUAGE = 'Accessibility.ReadAnything.ReadAloud.Language',
   VOICE = 'Accessibility.ReadAnything.ReadAloud.Voice',
   TEXT_SETTINGS_CHANGE = 'Accessibility.ReadAnything.SettingsChange',
-  HIGHLIGHT_STATE = 'Accessibility.ReadAnything.ReadAloud.HighlightState',
   HIGHLIGHT_GRANULARITY =
       'Accessibility.ReadAnything.ReadAloud.HighlightGranularity',
   VOICE_SPEED = 'Accessibility.ReadAnything.ReadAloud.VoiceSpeed',
@@ -65,21 +64,6 @@ export enum ReadAnythingSettingsChange {
   COUNT = 7,
 }
 // LINT.ThenChange(/tools/metrics/histograms/metadata/accessibility/enums.xml:ReadAnythingSettingsChange)
-
-// Enum for logging the reading highlight state.
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-//
-// LINT.IfChange(ReadAloudHighlightState)
-export enum ReadAloudHighlightState {
-  HIGHLIGHT_ON = 0,
-  HIGHLIGHT_OFF = 1,
-
-  // Must be last.
-  COUNT = 2,
-}
-// LINT.ThenChange(/tools/metrics/histograms/metadata/accessibility/enums.xml:ReadAnythingHighlightState)
-
 
 // Enum for logging the reading highlight granularity.
 // These values are persisted to logs. Entries should not be renumbered and
@@ -139,8 +123,6 @@ export enum ReadAnythingSpeechError {
 export interface MetricsBrowserProxy {
   incrementMetricCount(action: string): void;
   recordEmptyState(): void;
-  recordHighlightOff(): void;
-  recordHighlightOn(): void;
   recordHighlightGranularity(highlight: number): void;
   recordLanguage(lang: string): void;
   recordNewPage(): void;
@@ -188,18 +170,6 @@ export class MetricsBrowserProxyImpl implements MetricsBrowserProxy {
     chrome.metricsPrivate.recordEnumerationValue(
         UmaName.NEW_PAGE, ReadAnythingNewPage.SPEECH_PLAYED_ON_NEW_PAGE,
         ReadAnythingNewPage.COUNT);
-  }
-
-  recordHighlightOn() {
-    chrome.metricsPrivate.recordEnumerationValue(
-        UmaName.HIGHLIGHT_STATE, ReadAloudHighlightState.HIGHLIGHT_ON,
-        ReadAloudHighlightState.COUNT);
-  }
-
-  recordHighlightOff() {
-    chrome.metricsPrivate.recordEnumerationValue(
-        UmaName.HIGHLIGHT_STATE, ReadAloudHighlightState.HIGHLIGHT_OFF,
-        ReadAloudHighlightState.COUNT);
   }
 
   recordHighlightGranularity(highlight: ReadAloudHighlightGranularity): void {
