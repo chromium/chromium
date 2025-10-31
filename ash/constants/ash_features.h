@@ -570,8 +570,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::FeatureParam<bool>
     kLanguagePacksFontsLoadAfterDownloadDuringLogin;
 COMPONENT_EXPORT(ASH_CONSTANTS)
-BASE_DECLARE_FEATURE(kLanguagePacksInOobe);
-COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kLanguagePacksInSettings);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kLauncherContinueSectionWithRecents);
@@ -1230,7 +1228,6 @@ bool IsInternalServerSideSpeechRecognitionControlEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsJupiterScreensaverEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsKerberosRememberPasswordByDefaultEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS) bool IsLanguagePacksInOobeEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsLauncherContinueSectionWithRecentsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsLauncherNudgeShortIntervalEnabled();

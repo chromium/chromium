@@ -1232,12 +1232,6 @@ BASE_FEATURE(kLanguagePacksFonts, base::FEATURE_ENABLED_BY_DEFAULT);
 const base::FeatureParam<bool> kLanguagePacksFontsLoadAfterDownloadDuringLogin =
     {&kLanguagePacksFonts, "load_after_download_during_login", true};
 
-// If enabled, the Language Pack corresponding to the application locale is
-// downloaded and installed during OOBE. This pre-fetching is aimed at improving
-// user experience so that they have language resources available as early as
-// possible.
-BASE_FEATURE(kLanguagePacksInOobe, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables the UI and relative logic to manage Language Packs in Settings.
 // This feature allows users to install/remove languages and input methods
 // via the corresponding Settings page.
@@ -3030,10 +3024,6 @@ bool IsJupiterScreensaverEnabled() {
 
 bool IsKerberosRememberPasswordByDefaultEnabled() {
   return base::FeatureList::IsEnabled(kKerberosRememberPasswordByDefault);
-}
-
-bool IsLanguagePacksInOobeEnabled() {
-  return base::FeatureList::IsEnabled(kLanguagePacksInOobe);
 }
 
 bool IsLauncherContinueSectionWithRecentsEnabled() {

@@ -2216,11 +2216,9 @@ void WizardController::OnUpdateScreenExit(UpdateScreen::Result result) {
 
 void WizardController::OnUpdateCompleted() {
   // Install language packs based on the user selected language.
-  if (ash::features::IsLanguagePacksInOobeEnabled()) {
-    const std::string locale = GetApplicationLocale();
-    language_packs::LanguagePackManager::UpdatePacksForOobe(locale,
-                                                            base::DoNothing());
-  }
+  const std::string locale = GetApplicationLocale();
+  language_packs::LanguagePackManager::UpdatePacksForOobe(locale,
+                                                          base::DoNothing());
 
   if (demo_setup_controller_) {
     ShowConsolidatedConsentScreen();
