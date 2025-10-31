@@ -1715,9 +1715,16 @@ enum class OnAcceptCHFrameReceivedReturnLocation {
 // LINT.ThenChange(//tools/metrics/histograms/metadata/navigation/enums.xml:OnAcceptCHFrameReceivedReturnLocation)
 
 void RecordOnAcceptCHFrameReceivedReturnLocation(
-    OnAcceptCHFrameReceivedReturnLocation location) {
+    OnAcceptCHFrameReceivedReturnLocation location,
+    bool is_off_the_record) {
   base::UmaHistogramEnumeration(
       "Navigation.URLLoader.OnAcceptCHFrameReceived.ReturnLocation", location);
+  if (is_off_the_record) {
+    base::UmaHistogramEnumeration(
+        "Navigation.URLLoader.OnAcceptCHFrameReceived.ReturnLocation."
+        "OffTheRecord",
+        location);
+  }
 }
 
 void RecordCriticalHintsMissingStatus(CriticalHintsMissingStatus status) {
@@ -1739,10 +1746,11 @@ void NavigationURLLoaderImpl::OnAcceptCHFrameReceived(
       base::ScopedUmaHistogramTimer::ScopedHistogramTiming::kMicrosecondTimes);
   TRACE_EVENT("navigation", "NavigationURLLoaderImpl::OnAcceptCHFrameReceived");
   received_accept_ch_frame_ = true;
+  const bool is_off_the_record = browser_context_->IsOffTheRecord();
   if (!base::FeatureList::IsEnabled(network::features::kAcceptCHFrame)) {
     std::move(callback).Run(net::OK);
     RecordOnAcceptCHFrameReceivedReturnLocation(
-        OnAcceptCHFrameReceivedReturnLocation::kNotEnabled);
+        OnAcceptCHFrameReceivedReturnLocation::kNotEnabled, is_off_the_record);
     return;
   }
 
@@ -1768,7 +1776,8 @@ void NavigationURLLoaderImpl::OnAcceptCHFrameReceived(
   if (!client_hint_delegate) {
     std::move(callback).Run(net::OK);
     RecordOnAcceptCHFrameReceivedReturnLocation(
-        OnAcceptCHFrameReceivedReturnLocation::kNoClientHintDelegate);
+        OnAcceptCHFrameReceivedReturnLocation::kNoClientHintDelegate,
+        is_off_the_record);
     return;
   }
 
@@ -1800,7 +1809,8 @@ void NavigationURLLoaderImpl::OnAcceptCHFrameReceived(
     // hints are not missing, meaning either all critical hints were already
     // present, or some were not allowed by the permissions policy.
     RecordOnAcceptCHFrameReceivedReturnLocation(
-        OnAcceptCHFrameReceivedReturnLocation::kNoCriticalHintsMissing);
+        OnAcceptCHFrameReceivedReturnLocation::kNoCriticalHintsMissing,
+        is_off_the_record);
     return;
   }
 
@@ -1833,7 +1843,7 @@ void NavigationURLLoaderImpl::OnAcceptCHFrameReceived(
   if (!restart) {
     std::move(callback).Run(net::OK);
     RecordOnAcceptCHFrameReceivedReturnLocation(
-        OnAcceptCHFrameReceivedReturnLocation::kNoRestart);
+        OnAcceptCHFrameReceivedReturnLocation::kNoRestart, is_off_the_record);
     return;
   }
 
@@ -1846,7 +1856,8 @@ void NavigationURLLoaderImpl::OnAcceptCHFrameReceived(
         net::ERR_TOO_MANY_ACCEPT_CH_RESTARTS));
     std::move(callback).Run(net::ERR_TOO_MANY_ACCEPT_CH_RESTARTS);
     RecordOnAcceptCHFrameReceivedReturnLocation(
-        OnAcceptCHFrameReceivedReturnLocation::kTooManyRestart);
+        OnAcceptCHFrameReceivedReturnLocation::kTooManyRestart,
+        is_off_the_record);
     return;
   }
 
@@ -1858,13 +1869,15 @@ void NavigationURLLoaderImpl::OnAcceptCHFrameReceived(
     OnComplete(network::URLLoaderCompletionStatus(net::ERR_ABORTED));
     std::move(callback).Run(net::ERR_ABORTED);
     RecordOnAcceptCHFrameReceivedReturnLocation(
-        OnAcceptCHFrameReceivedReturnLocation::kDuringExclusiveTask);
+        OnAcceptCHFrameReceivedReturnLocation::kDuringExclusiveTask,
+        is_off_the_record);
     return;
   }
 
   std::move(callback).Run(net::ERR_ABORTED);
   RecordOnAcceptCHFrameReceivedReturnLocation(
-      OnAcceptCHFrameReceivedReturnLocation::kSendingErrorAborted);
+      OnAcceptCHFrameReceivedReturnLocation::kSendingErrorAborted,
+      is_off_the_record);
 
   // If the request is restarted, all of the client hints should be replaced
   // the "original"/non-edited values.
