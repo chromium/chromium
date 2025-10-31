@@ -158,7 +158,7 @@ TEST_F(SharedCrdSessionImplTest, RunsConsumerCallbackOnCrdSessionEnd) {
                                     error_callback_future.GetCallback(),
                                     session_finished_future.GetCallback());
 
-  delegate().TerminateCrdSession(base::Seconds(0));
+  delegate().TerminateCrdSession();
   EXPECT_TRUE(session_finished_future.Wait());
 }
 

@@ -22,7 +22,7 @@ class StartCrdSessionJobDelegate {
   using ErrorCallback =
       base::OnceCallback<void(ExtendedStartCrdSessionResultCode,
                               const std::string&)>;
-  using SessionEndCallback = base::OnceCallback<void(base::TimeDelta)>;
+  using SessionEndCallback = base::OnceClosure;
 
   // The caller who initiated the request.
   enum class RequestOrigin {

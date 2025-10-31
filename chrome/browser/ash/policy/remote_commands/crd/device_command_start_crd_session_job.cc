@@ -15,6 +15,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/memory/raw_ref.h"
@@ -172,13 +173,6 @@ CrdSessionType ToCrdSessionTypeOrDefault(std::optional<int> int_value,
     return default_value;
   }
   return static_cast<CrdSessionType>(int_value.value());
-}
-
-void OnCrdSessionFinished(CrdSessionType crd_session_type,
-                          UserSessionType user_session_type,
-                          base::TimeDelta session_duration) {
-  // TODO(b:446670622): Remove redundant `OnCrdSessionFinished`'s method
-  // usage.
 }
 
 bool IsKioskSession(UserSessionType session_type) {
@@ -341,8 +335,7 @@ void DeviceCommandStartCrdSessionJob::StartCrdHostAndGetCode(
                      weak_factory_.GetWeakPtr()),
       base::BindOnce(&DeviceCommandStartCrdSessionJob::FinishWithError,
                      weak_factory_.GetWeakPtr()),
-      base::BindOnce(&OnCrdSessionFinished, GetCrdSessionType(),
-                     GetCurrentUserSessionType()));
+      /*session_finished_callback=*/base::DoNothing());
 }
 
 void DeviceCommandStartCrdSessionJob::FinishWithSuccess(
