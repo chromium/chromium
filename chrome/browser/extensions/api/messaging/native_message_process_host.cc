@@ -214,8 +214,6 @@ void NativeMessageProcessHost::Start(Client* client) {
   DCHECK(task_runner_->BelongsToCurrentThread());
   DCHECK(!client_);
   client_ = client;
-  // It's safe to use base::Unretained() here because NativeMessagePort always
-  // deletes us on the IO thread.
   task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&NativeMessageProcessHost::LaunchHostProcess,
                                 weak_factory_.GetWeakPtr()));
