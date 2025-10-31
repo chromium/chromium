@@ -990,8 +990,8 @@ DeserializeTileResource(cc::LayerTreeHostImpl* host_impl,
       /*main_thread_release_callback=*/base::NullCallback(),
       /*evicted_callback=*/base::NullCallback());
 
-  return cc::TileDisplayLayerImpl::TileResource(resource_id, wire.resource.size,
-                                                wire.is_checkered);
+  return cc::TileDisplayLayerImpl::TileResource(
+      resource_id, wire.resource.GetSize(), wire.is_checkered);
 }
 
 base::expected<cc::TileDisplayLayerImpl::TileContents, std::string>
@@ -1892,8 +1892,8 @@ base::expected<void, std::string> LayerContextImpl::DoUpdateDisplayTree(
         return base::unexpected(
             "Invalid transferable resource in UI resource creation");
       }
-      if (ui_resource_request->transferable_resource->size.width() <= 0 ||
-          ui_resource_request->transferable_resource->size.height() <= 0) {
+      if (ui_resource_request->transferable_resource->GetSize().width() <= 0 ||
+          ui_resource_request->transferable_resource->GetSize().height() <= 0) {
         return base::unexpected(
             "Invalid dimensions for transferable UI resource.");
       }

@@ -86,9 +86,9 @@ bool DisplayResourceProvider::OnMemoryDump(
 
     // Texture resources may not come with a size, in which case don't report
     // one.
-    if (!resource.transferable.size.IsEmpty()) {
+    if (!resource.transferable.GetSize().IsEmpty()) {
       uint64_t total_bytes = resource.transferable.format.EstimatedSizeInBytes(
-          resource.transferable.size);
+          resource.transferable.GetSize());
       dump->AddScalar(base::trace_event::MemoryAllocatorDump::kNameSize,
                       base::trace_event::MemoryAllocatorDump::kUnitsBytes,
                       static_cast<uint64_t>(total_bytes));
@@ -175,7 +175,7 @@ bool DisplayResourceProvider::IsResourceSoftwareBacked(ResourceId id) const {
 
 const gfx::Size DisplayResourceProvider::GetResourceBackedSize(
     ResourceId id) const {
-  return GetResource(id)->transferable.size;
+  return GetResource(id)->transferable.GetSize();
 }
 
 SharedImageFormat DisplayResourceProvider::GetSharedImageFormat(

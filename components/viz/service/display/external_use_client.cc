@@ -29,7 +29,7 @@ ExternalUseClient::ImageContext::ImageContext(
     : mailbox_(resource.mailbox()),
       sync_token_(resource.sync_token()),
       texture_target_(resource.texture_target()),
-      size_(resource.size),
+      size_(resource.GetSize()),
       format_(resource.format),
       // SkColorSpace covers only RGB portion of the gfx::ColorSpace, YUV
       // portion is handled via SkYuvColorSpace at places where we create YUV

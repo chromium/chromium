@@ -153,7 +153,7 @@ TEST_P(ClientResourceProviderTest, TransferableResourceSendToParent) {
   verified_sync_token.SetVerifyFlush();
   EXPECT_EQ(exported[0].id, id);
   EXPECT_EQ(exported[0].is_software, tran.is_software);
-  EXPECT_EQ(exported[0].size, tran.size);
+  EXPECT_EQ(exported[0].GetSize(), tran.GetSize());
   EXPECT_EQ(exported[0].mailbox(), tran.mailbox());
   EXPECT_EQ(exported[0].sync_token(), verified_sync_token);
   EXPECT_EQ(exported[0].texture_target(), tran.texture_target());

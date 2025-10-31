@@ -489,8 +489,8 @@ void ClientResourceProvider::HandleEviction() {
     if (!imported.marked_for_deletion) {
       ++locked;
       auto resource_source = imported.resource.resource_source;
-      size_t resource_mem =
-          imported.resource.format.EstimatedSizeInBytes(imported.resource.size);
+      size_t resource_mem = imported.resource.format.EstimatedSizeInBytes(
+          imported.resource.GetSize());
       total_mem += resource_mem;
       mem_per_source[resource_source] += resource_mem;
 
