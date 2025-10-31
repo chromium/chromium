@@ -111,7 +111,7 @@
 
 - (void)stop {
   [super stop];
-  DCHECK(_navigationController);
+  CHECK(_navigationController, base::NotFatalUntil::M150);
   [_mediator disconnect];
   [self dismissActionSheetCoordinator];
   _mediator.consumer = nil;
@@ -121,9 +121,7 @@
   _viewController.mutator = nil;
   _viewController = nil;
   _snackbarCommandsHandler = nil;
-  [_folderChooserCoordinator stop];
-  _folderChooserCoordinator.delegate = nil;
-  _folderChooserCoordinator = nil;
+  [self stopFolderChooserCoordinator];
 
   // animatedDismissal should have been explicitly set before calling stop.
   [_navigationController dismissViewControllerAnimated:self.animatedDismissal
@@ -133,7 +131,7 @@
 }
 
 - (void)dealloc {
-  DCHECK(!_navigationController);
+  CHECK(!_navigationController, base::NotFatalUntil::M150);
 }
 
 - (BOOL)canDismiss {
@@ -265,21 +263,17 @@
             (BookmarksFolderChooserCoordinator*)coordinator
                                  withSelectedFolder:
                                      (const bookmarks::BookmarkNode*)folder {
-  DCHECK(_folderChooserCoordinator);
-  DCHECK(folder);
-  [_folderChooserCoordinator stop];
-  _folderChooserCoordinator.delegate = nil;
-  _folderChooserCoordinator = nil;
+  CHECK(_folderChooserCoordinator, base::NotFatalUntil::M150);
+  CHECK(folder, base::NotFatalUntil::M150);
+  [self stopFolderChooserCoordinator];
 
   [_mediator manuallyChangeFolder:folder];
 }
 
 - (void)bookmarksFolderChooserCoordinatorDidCancel:
     (BookmarksFolderChooserCoordinator*)coordinator {
-  DCHECK(_folderChooserCoordinator);
-  [_folderChooserCoordinator stop];
-  _folderChooserCoordinator.delegate = nil;
-  _folderChooserCoordinator = nil;
+  CHECK(_folderChooserCoordinator, base::NotFatalUntil::M150);
+  [self stopFolderChooserCoordinator];
   if (!_navigationController.presentingViewController) {
     // In this case the `_navigationController` itself was dismissed.
     // TODO(crbug.com/40251259): Remove this if block when dismiss handling
@@ -294,6 +288,12 @@
 - (void)dismissActionSheetCoordinator {
   [self.actionSheetCoordinator stop];
   self.actionSheetCoordinator = nil;
+}
+
+- (void)stopFolderChooserCoordinator {
+  [_folderChooserCoordinator stop];
+  _folderChooserCoordinator.delegate = nil;
+  _folderChooserCoordinator = nil;
 }
 
 @end
