@@ -89,8 +89,10 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
 
         // Assert.
         assertNotNull(task);
-        assertNotNull(task.getPendingId());
-        assertNotNull(mChromeAndroidTaskTracker.getPendingTaskForTesting(task.getPendingId()));
+        assertNotNull(task.getPendingTaskInfo());
+        assertNotNull(
+                mChromeAndroidTaskTracker.getPendingTaskForTesting(
+                        task.getPendingTaskInfo().mPendingTaskId));
         assertEquals(1, mChromeAndroidTaskTracker.getAllNativeBrowserWindowPtrs().length);
         assertNull(task.getId());
         assertEquals(mockParams.getProfile(), task.getProfile());
@@ -224,7 +226,7 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
                 ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams();
         var pendingTask =
                 assertNonNull(mChromeAndroidTaskTracker.createPendingTask(mockParams, null));
-        int pendingId = assertNonNull(pendingTask.getPendingId());
+        int pendingId = assertNonNull(pendingTask.getPendingTaskInfo()).mPendingTaskId;
 
         int taskId = 123;
         var activityScopedObjects =
@@ -241,7 +243,7 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
         assertEquals(activityScopedObjects.mActivityWindowAndroid, task.getActivityWindowAndroid());
         assertEquals("The pending task should be adopted.", pendingTask, task);
         assertEquals("Task ID should be updated.", taskId, (int) assertNonNull(task.getId()));
-        assertNull("Pending ID should be cleared.", task.getPendingId());
+        assertNull("PendingTaskInfo should be cleared.", task.getPendingTaskInfo());
     }
 
     @Test
@@ -253,7 +255,7 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
         var pendingTask =
                 assertNonNull(
                         mChromeAndroidTaskTracker.createPendingTask(mockParams, mockCallback));
-        int pendingId = assertNonNull(pendingTask.getPendingId());
+        int pendingId = assertNonNull(pendingTask.getPendingTaskInfo()).mPendingTaskId;
 
         int taskId = 123;
         var activityScopedObjects =
@@ -659,7 +661,7 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
                         mChromeAndroidTaskTracker.obtainTask(
                                 BrowserWindowType.NORMAL,
                                 newActivityScopedObjects,
-                                pendingTask.getPendingId());
+                                assumeNonNull(pendingTask.getPendingTaskInfo()).mPendingTaskId);
         newTask.onTopResumedActivityChangedWithNative(true);
 
         // Assert: Penultimately activated task gets activated.

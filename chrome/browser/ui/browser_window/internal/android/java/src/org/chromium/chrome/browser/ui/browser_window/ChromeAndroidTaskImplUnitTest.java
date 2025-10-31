@@ -49,7 +49,6 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.FakeTimeTestRule;
-import org.chromium.base.JniOnceCallback;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcherProvider;
@@ -168,19 +167,20 @@ public class ChromeAndroidTaskImplUnitTest {
     }
 
     @Test
-    public void constructor_withCreateParams_pendingState() {
+    public void constructor_withPendingTaskInfo_pendingState() {
         // Arrange.
-        var mockParams =
-                ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams();
+        var pendingTaskInfo = ChromeAndroidTaskUnitTestSupport.createPendingTaskInfo();
 
         // Act.
-        var task = new ChromeAndroidTaskImpl(/* pendingId= */ 1, mockParams);
+        var task = new ChromeAndroidTaskImpl(pendingTaskInfo);
 
         // Assert.
-        assertEquals(mockParams.getWindowType(), task.getBrowserWindowType());
-        assertEquals(mockParams.getProfile(), task.getProfile());
+        var actualPendingTaskInfo = task.getPendingTaskInfo();
+        assertNotNull(actualPendingTaskInfo);
+        assertEquals(pendingTaskInfo.mPendingTaskId, actualPendingTaskInfo.mPendingTaskId);
+        assertEquals(pendingTaskInfo.mCreateParams.getWindowType(), task.getBrowserWindowType());
+        assertEquals(pendingTaskInfo.mCreateParams.getProfile(), task.getProfile());
         assertEquals(State.PENDING_CREATE, task.getState());
-        assertEquals(1, (int) task.getPendingId());
         assertNull(task.getId());
         assertNull(task.getActivityScopedObjectsForTesting());
     }
@@ -261,7 +261,7 @@ public class ChromeAndroidTaskImplUnitTest {
 
         // Assert.
         assertEquals(taskId, (int) pendingTask.getId());
-        assertNull(pendingTask.getPendingId());
+        assertNull(pendingTask.getPendingTaskInfo());
         assertEquals(activityScopedObjects, pendingTask.getActivityScopedObjectsForTesting());
     }
 
@@ -510,9 +510,8 @@ public class ChromeAndroidTaskImplUnitTest {
     public void getOrCreateNativeBrowserWindowPtr_returnsPtrValueForPendingTask() {
         // Arrange.
         ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowNatives();
-        var mockParams =
-                ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams();
-        var chromeAndroidTask = new ChromeAndroidTaskImpl(/* pendingId= */ 1, mockParams);
+        var pendingTaskInfo = ChromeAndroidTaskUnitTestSupport.createPendingTaskInfo();
+        var chromeAndroidTask = new ChromeAndroidTaskImpl(pendingTaskInfo);
 
         // Act.
         long nativeBrowserWindowPtr = chromeAndroidTask.getOrCreateNativeBrowserWindowPtr();
@@ -1079,9 +1078,8 @@ public class ChromeAndroidTaskImplUnitTest {
     @Test
     public void show_whenPendingCreate_enqueuesPendingAction() {
         // Arrange.
-        var mockParams =
-                ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams();
-        var task = new ChromeAndroidTaskImpl(/* pendingId= */ 1, mockParams);
+        var task =
+                new ChromeAndroidTaskImpl(ChromeAndroidTaskUnitTestSupport.createPendingTaskInfo());
 
         // Act.
         task.show();
@@ -1095,9 +1093,8 @@ public class ChromeAndroidTaskImplUnitTest {
     @Test
     public void showInactive_whenPendingCreate_enqueuesPendingAction() {
         // Arrange.
-        var mockParams =
-                ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams();
-        var task = new ChromeAndroidTaskImpl(/* pendingId= */ 1, mockParams);
+        var task =
+                new ChromeAndroidTaskImpl(ChromeAndroidTaskUnitTestSupport.createPendingTaskInfo());
 
         // Act.
         task.showInactive();
@@ -1111,9 +1108,8 @@ public class ChromeAndroidTaskImplUnitTest {
     @Test
     public void close_whenPendingCreate_enqueuesPendingAction() {
         // Arrange.
-        var mockParams =
-                ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams();
-        var task = new ChromeAndroidTaskImpl(/* pendingId= */ 1, mockParams);
+        var task =
+                new ChromeAndroidTaskImpl(ChromeAndroidTaskUnitTestSupport.createPendingTaskInfo());
 
         // Act.
         task.close();
@@ -1127,9 +1123,8 @@ public class ChromeAndroidTaskImplUnitTest {
     @Test
     public void activate_whenPendingCreate_enqueuesPendingAction() {
         // Arrange.
-        var mockParams =
-                ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams();
-        var task = new ChromeAndroidTaskImpl(/* pendingId= */ 1, mockParams);
+        var task =
+                new ChromeAndroidTaskImpl(ChromeAndroidTaskUnitTestSupport.createPendingTaskInfo());
 
         // Act.
         task.activate();
@@ -1143,9 +1138,8 @@ public class ChromeAndroidTaskImplUnitTest {
     @Test
     public void deactivate_whenPendingCreate_enqueuesPendingAction() {
         // Arrange.
-        var mockParams =
-                ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams();
-        var task = new ChromeAndroidTaskImpl(/* pendingId= */ 1, mockParams);
+        var task =
+                new ChromeAndroidTaskImpl(ChromeAndroidTaskUnitTestSupport.createPendingTaskInfo());
 
         // Act.
         task.deactivate();
@@ -1159,9 +1153,8 @@ public class ChromeAndroidTaskImplUnitTest {
     @Test
     public void maximize_whenPendingCreate_enqueuesPendingAction() {
         // Arrange.
-        var mockParams =
-                ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams();
-        var task = new ChromeAndroidTaskImpl(/* pendingId= */ 1, mockParams);
+        var task =
+                new ChromeAndroidTaskImpl(ChromeAndroidTaskUnitTestSupport.createPendingTaskInfo());
 
         // Act.
         task.maximize();
@@ -1175,9 +1168,8 @@ public class ChromeAndroidTaskImplUnitTest {
     @Test
     public void minimize_whenPendingCreate_enqueuesPendingAction() {
         // Arrange.
-        var mockParams =
-                ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams();
-        var task = new ChromeAndroidTaskImpl(/* pendingId= */ 1, mockParams);
+        var task =
+                new ChromeAndroidTaskImpl(ChromeAndroidTaskUnitTestSupport.createPendingTaskInfo());
 
         // Act.
         task.minimize();
@@ -1192,9 +1184,8 @@ public class ChromeAndroidTaskImplUnitTest {
     @Config(sdk = Build.VERSION_CODES.BAKLAVA)
     public void restore_whenPendingCreate_enqueuesPendingAction() {
         // Arrange.
-        var mockParams =
-                ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams();
-        var task = new ChromeAndroidTaskImpl(/* pendingId= */ 1, mockParams);
+        var task =
+                new ChromeAndroidTaskImpl(ChromeAndroidTaskUnitTestSupport.createPendingTaskInfo());
 
         // Act.
         task.restore();
@@ -1208,9 +1199,8 @@ public class ChromeAndroidTaskImplUnitTest {
     @Test
     public void setBounds_whenPendingCreate_nonEmptyBounds_enqueuesPendingAction() {
         // Arrange.
-        var mockParams =
-                ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams();
-        var task = new ChromeAndroidTaskImpl(/* pendingId= */ 1, mockParams);
+        var task =
+                new ChromeAndroidTaskImpl(ChromeAndroidTaskUnitTestSupport.createPendingTaskInfo());
         var taskBounds = new Rect(0, 0, 800, 600);
 
         // Act.
@@ -1226,9 +1216,8 @@ public class ChromeAndroidTaskImplUnitTest {
     @Test
     public void setBounds_whenPendingCreate_emptyBounds_ignoresPendingAction() {
         // Arrange.
-        var mockParams =
-                ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams();
-        var task = new ChromeAndroidTaskImpl(/* pendingId= */ 1, mockParams);
+        var task =
+                new ChromeAndroidTaskImpl(ChromeAndroidTaskUnitTestSupport.createPendingTaskInfo());
 
         // Act.
         task.setBoundsInDp(new Rect());
@@ -1242,9 +1231,8 @@ public class ChromeAndroidTaskImplUnitTest {
     @Test
     public void isActive_whenPendingCreate_withNoPendingShowOrActivate_returnsFalse() {
         // Arrange.
-        var mockParams =
-                ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams();
-        var task = new ChromeAndroidTaskImpl(/* pendingId= */ 1, mockParams);
+        var task =
+                new ChromeAndroidTaskImpl(ChromeAndroidTaskUnitTestSupport.createPendingTaskInfo());
 
         // Act and Assert.
         assertFalse(task.isActive());
@@ -1253,9 +1241,8 @@ public class ChromeAndroidTaskImplUnitTest {
     @Test
     public void isActive_whenPendingCreate_withPendingShow_returnsTrue() {
         // Arrange.
-        var mockParams =
-                ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams();
-        var task = new ChromeAndroidTaskImpl(/* pendingId= */ 1, mockParams);
+        var task =
+                new ChromeAndroidTaskImpl(ChromeAndroidTaskUnitTestSupport.createPendingTaskInfo());
         // Request SHOW in pending state.
         task.show();
 
@@ -1266,9 +1253,8 @@ public class ChromeAndroidTaskImplUnitTest {
     @Test
     public void isActive_whenPendingCreate_withPendingActivate_returnsTrue() {
         // Arrange.
-        var mockParams =
-                ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams();
-        var task = new ChromeAndroidTaskImpl(/* pendingId= */ 1, mockParams);
+        var task =
+                new ChromeAndroidTaskImpl(ChromeAndroidTaskUnitTestSupport.createPendingTaskInfo());
         // Request ACTIVATE in pending state.
         task.activate();
 
@@ -1308,9 +1294,8 @@ public class ChromeAndroidTaskImplUnitTest {
     @Test
     public void isMaximized_whenPendingCreate_withPendingMaximize_returnsTrue() {
         // Arrange.
-        var mockParams =
-                ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams();
-        var task = new ChromeAndroidTaskImpl(/* pendingId= */ 1, mockParams);
+        var task =
+                new ChromeAndroidTaskImpl(ChromeAndroidTaskUnitTestSupport.createPendingTaskInfo());
         // Request MAXIMIZE in pending state.
         task.maximize();
 
@@ -1324,7 +1309,9 @@ public class ChromeAndroidTaskImplUnitTest {
         var mockParams =
                 ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams(
                         BrowserWindowType.NORMAL, new Rect(), WindowShowState.MAXIMIZED);
-        var task = new ChromeAndroidTaskImpl(/* pendingId= */ 1, mockParams);
+        var task =
+                new ChromeAndroidTaskImpl(
+                        ChromeAndroidTaskUnitTestSupport.createPendingTaskInfo(mockParams));
 
         // Act and Assert.
         assertTrue(task.isMaximized());
@@ -1334,9 +1321,8 @@ public class ChromeAndroidTaskImplUnitTest {
     public void
             isMaximized_whenPendingCreate_withDefaultStateInCreateParams_withoutPendingMaximize_returnsFalse() {
         // Arrange.
-        var mockParams =
-                ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams();
-        var task = new ChromeAndroidTaskImpl(/* pendingId= */ 1, mockParams);
+        var task =
+                new ChromeAndroidTaskImpl(ChromeAndroidTaskUnitTestSupport.createPendingTaskInfo());
 
         // Act and Assert.
         assertFalse(task.isMaximized());
@@ -1345,9 +1331,9 @@ public class ChromeAndroidTaskImplUnitTest {
     @Test
     public void isMinimized_whenPendingCreate_withPendingMinimize_returnsTrue() {
         // Arrange.
-        var mockParams =
-                ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams();
-        var task = new ChromeAndroidTaskImpl(/* pendingId= */ 1, mockParams);
+        var task =
+                new ChromeAndroidTaskImpl(ChromeAndroidTaskUnitTestSupport.createPendingTaskInfo());
+
         // Request MINIMIZE in pending state.
         task.minimize();
 
@@ -1361,7 +1347,9 @@ public class ChromeAndroidTaskImplUnitTest {
         var mockParams =
                 ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams(
                         BrowserWindowType.NORMAL, new Rect(), WindowShowState.MINIMIZED);
-        var task = new ChromeAndroidTaskImpl(/* pendingId= */ 1, mockParams);
+        var task =
+                new ChromeAndroidTaskImpl(
+                        ChromeAndroidTaskUnitTestSupport.createPendingTaskInfo(mockParams));
 
         // Act and Assert.
         assertTrue(task.isMinimized());
@@ -1371,9 +1359,8 @@ public class ChromeAndroidTaskImplUnitTest {
     public void
             isMinimized_whenPendingCreate_withDefaultStateInCreateParams_withoutPendingMinimize_returnsFalse() {
         // Arrange.
-        var mockParams =
-                ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams();
-        var task = new ChromeAndroidTaskImpl(/* pendingId= */ 1, mockParams);
+        var task =
+                new ChromeAndroidTaskImpl(ChromeAndroidTaskUnitTestSupport.createPendingTaskInfo());
 
         // Act and Assert.
         assertFalse(task.isMinimized());
@@ -1382,9 +1369,8 @@ public class ChromeAndroidTaskImplUnitTest {
     @Test
     public void isFullscreen_whenPendingCreate_returnsFalse() {
         // Arrange.
-        var mockParams =
-                ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams();
-        var task = new ChromeAndroidTaskImpl(/* pendingId= */ 1, mockParams);
+        var task =
+                new ChromeAndroidTaskImpl(ChromeAndroidTaskUnitTestSupport.createPendingTaskInfo());
 
         // Act and Assert.
         assertFalse(task.isFullscreen());
@@ -1393,9 +1379,9 @@ public class ChromeAndroidTaskImplUnitTest {
     @Test
     public void getRestoredBoundsInDp_whenPendingCreate_withNonEmptyBounds_returnsPendingBounds() {
         // Arrange.
-        var mockParams =
-                ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams();
-        var task = new ChromeAndroidTaskImpl(/* pendingId= */ 1, mockParams);
+        var task =
+                new ChromeAndroidTaskImpl(ChromeAndroidTaskUnitTestSupport.createPendingTaskInfo());
+
         // Request SET_BOUNDS in pending state.
         var bounds = new Rect(100, 100, 600, 800);
         task.setBoundsInDp(bounds);
@@ -1408,9 +1394,9 @@ public class ChromeAndroidTaskImplUnitTest {
     public void
             getRestoredBoundsInDp_whenPendingCreate_withNonEmptyRestoredBounds_returnsPendingRestoredBounds() {
         // Arrange.
-        var mockParams =
-                ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams();
-        var task = new ChromeAndroidTaskImpl(/* pendingId= */ 1, mockParams);
+        var task =
+                new ChromeAndroidTaskImpl(ChromeAndroidTaskUnitTestSupport.createPendingTaskInfo());
+
         // Request SET_BOUNDS, MAXIMIZE, and RESTORE in pending state.
         var bounds = new Rect(100, 100, 600, 800);
         task.setBoundsInDp(bounds);
@@ -1429,11 +1415,14 @@ public class ChromeAndroidTaskImplUnitTest {
         var mockParams =
                 ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams(
                         BrowserWindowType.NORMAL, bounds, WindowShowState.DEFAULT);
-        var task = new ChromeAndroidTaskImpl(/* pendingId= */ 1, mockParams);
-        // Request RESTORE in pending state.
+        var task =
+                new ChromeAndroidTaskImpl(
+                        ChromeAndroidTaskUnitTestSupport.createPendingTaskInfo(mockParams));
+
+        // Act: Request RESTORE in pending state.
         task.restore();
 
-        // Act and Assert.
+        // Assert.
         assertEquals(bounds, task.getRestoredBoundsInDp());
     }
 
@@ -1445,7 +1434,9 @@ public class ChromeAndroidTaskImplUnitTest {
         var mockParams =
                 ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams(
                         BrowserWindowType.NORMAL, bounds, WindowShowState.DEFAULT);
-        var task = new ChromeAndroidTaskImpl(/* pendingId= */ 1, mockParams);
+        var task =
+                new ChromeAndroidTaskImpl(
+                        ChromeAndroidTaskUnitTestSupport.createPendingTaskInfo(mockParams));
 
         // Act and Assert.
         assertEquals(bounds, task.getRestoredBoundsInDp());
@@ -1455,9 +1446,8 @@ public class ChromeAndroidTaskImplUnitTest {
     public void
             getRestoredBoundsInDp_whenPendingCreate_withDefaultStateInCreateParams_withoutPendingSetBounds_returnsEmptyRect() {
         // Arrange.
-        var mockParams =
-                ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams();
-        var task = new ChromeAndroidTaskImpl(/* pendingId= */ 1, mockParams);
+        var task =
+                new ChromeAndroidTaskImpl(ChromeAndroidTaskUnitTestSupport.createPendingTaskInfo());
 
         // Act and Assert.
         assertTrue(task.getRestoredBoundsInDp().isEmpty());
@@ -1466,9 +1456,9 @@ public class ChromeAndroidTaskImplUnitTest {
     @Test
     public void getBoundsInDp_whenPendingCreate_withPendingSetBounds_returnsPendingBounds() {
         // Arrange.
-        var mockParams =
-                ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams();
-        var task = new ChromeAndroidTaskImpl(/* pendingId= */ 1, mockParams);
+        var task =
+                new ChromeAndroidTaskImpl(ChromeAndroidTaskUnitTestSupport.createPendingTaskInfo());
+
         // Request SET_BOUNDS in pending state.
         var bounds = new Rect(100, 100, 600, 800);
         task.setBoundsInDp(bounds);
@@ -1485,7 +1475,9 @@ public class ChromeAndroidTaskImplUnitTest {
         var mockParams =
                 ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams(
                         BrowserWindowType.NORMAL, bounds, WindowShowState.DEFAULT);
-        var task = new ChromeAndroidTaskImpl(/* pendingId= */ 1, mockParams);
+        var task =
+                new ChromeAndroidTaskImpl(
+                        ChromeAndroidTaskUnitTestSupport.createPendingTaskInfo(mockParams));
 
         // Act and Assert.
         assertEquals(bounds, task.getBoundsInDp());
@@ -1495,9 +1487,8 @@ public class ChromeAndroidTaskImplUnitTest {
     public void
             getBoundsInDp_whenPendingCreate_withDefaultStateInCreateParams_withoutPendingSetBounds_returnsEmptyRect() {
         // Arrange.
-        var mockParams =
-                ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams();
-        var task = new ChromeAndroidTaskImpl(/* pendingId= */ 1, mockParams);
+        var task =
+                new ChromeAndroidTaskImpl(ChromeAndroidTaskUnitTestSupport.createPendingTaskInfo());
 
         // Act and Assert.
         assertTrue(task.getBoundsInDp().isEmpty());
@@ -1509,7 +1500,9 @@ public class ChromeAndroidTaskImplUnitTest {
         var mockParams =
                 ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams(
                         BrowserWindowType.NORMAL, new Rect(), WindowShowState.MINIMIZED);
-        var task = new ChromeAndroidTaskImpl(/* pendingId= */ 1, mockParams);
+        var task =
+                new ChromeAndroidTaskImpl(
+                        ChromeAndroidTaskUnitTestSupport.createPendingTaskInfo(mockParams));
 
         // Act and Assert.
         assertFalse(task.isVisible());
@@ -1518,9 +1511,8 @@ public class ChromeAndroidTaskImplUnitTest {
     @Test
     public void isVisible_whenPendingCreate_withNonMinimizedStateInCreateParams_returnsTrue() {
         // Arrange.
-        var mockParams =
-                ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams();
-        var task = new ChromeAndroidTaskImpl(/* pendingId= */ 1, mockParams);
+        var task =
+                new ChromeAndroidTaskImpl(ChromeAndroidTaskUnitTestSupport.createPendingTaskInfo());
 
         // Act and Assert.
         assertTrue(task.isVisible());
@@ -1750,10 +1742,9 @@ public class ChromeAndroidTaskImplUnitTest {
     public void setActivityScopedObjects_fromPendingState_invokesCallback() {
         // Arrange: Create pending task with a callback.
         ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowNatives();
-        JniOnceCallback<Long> mockCallback = mock();
-        var mockParams =
-                ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams();
-        var task = new ChromeAndroidTaskImpl(/* pendingId= */ 1, mockParams, mockCallback);
+        var pendingTaskInfo = ChromeAndroidTaskUnitTestSupport.createPendingTaskInfo();
+        var task = new ChromeAndroidTaskImpl(pendingTaskInfo);
+
         // Arrange: Setup ActivityScopedObjects.
         int taskId = 2;
         var activityScopedObjects = createActivityScopedObjects(taskId);
@@ -1762,10 +1753,7 @@ public class ChromeAndroidTaskImplUnitTest {
         task.setActivityScopedObjects(activityScopedObjects);
 
         // Assert.
-        var ptrCaptor = ArgumentCaptor.forClass(Long.class);
-        verify(mockCallback).onResult(ptrCaptor.capture());
-        assertEquals(
-                ChromeAndroidTaskUnitTestSupport.FAKE_NATIVE_ANDROID_BROWSER_WINDOW_PTR,
-                (long) ptrCaptor.getValue());
+        verify(pendingTaskInfo.mTaskCreationCallbackForNative)
+                .onResult(ChromeAndroidTaskUnitTestSupport.FAKE_NATIVE_ANDROID_BROWSER_WINDOW_PTR);
     }
 }

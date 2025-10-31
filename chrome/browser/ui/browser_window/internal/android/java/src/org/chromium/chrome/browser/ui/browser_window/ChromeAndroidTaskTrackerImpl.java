@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.ui.browser_window;
 
-import static org.chromium.build.NullUtil.assertNonNull;
-
 import android.app.Activity;
 import android.app.ActivityOptions;
 import android.content.Intent;
@@ -21,6 +19,7 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
+import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask.PendingTaskInfo;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.mojom.WindowShowState;
 
@@ -37,6 +36,15 @@ final class ChromeAndroidTaskTrackerImpl implements ChromeAndroidTaskTracker {
     private static @Nullable ChromeAndroidTaskTrackerImpl sInstance;
 
     private static boolean sPausePendingTaskActivityCreationForTesting;
+
+    /**
+     * Maps pending {@link ChromeAndroidTask} IDs to their {@link PendingTaskInfo}s.
+     *
+     * <p>Used only for testing and for when {@link #sPausePendingTaskActivityCreationForTesting} is
+     * {@code true}.
+     */
+    private static final Map<Integer, PendingTaskInfo>
+            sPendingTasksAwaitingActivityCreationForTesting = new ArrayMap<>();
 
     /**
      * Maps {@link ChromeAndroidTask} IDs to their instances. This reflects the {@link
@@ -115,7 +123,9 @@ final class ChromeAndroidTaskTrackerImpl implements ChromeAndroidTaskTracker {
             int pendingId = IdSequencer.next();
             newWindowIntent.putExtra(EXTRA_PENDING_BROWSER_WINDOW_TASK_ID, pendingId);
 
-            var pendingTask = new ChromeAndroidTaskImpl(pendingId, createParams, callback);
+            var pendingTaskInfo =
+                    new PendingTaskInfo(pendingId, createParams, newWindowIntent, callback);
+            var pendingTask = new ChromeAndroidTaskImpl(pendingTaskInfo);
             mPendingTasks.put(pendingId, pendingTask);
 
             // Apply a non-default initial show state if needed.
@@ -124,6 +134,8 @@ final class ChromeAndroidTaskTrackerImpl implements ChromeAndroidTaskTracker {
             // Launch the required Activity based on |createParams|.
             if (!sPausePendingTaskActivityCreationForTesting) {
                 launchNewWindowIntent(newWindowIntent, createParams.getInitialBounds());
+            } else {
+                sPendingTasksAwaitingActivityCreationForTesting.put(pendingId, pendingTaskInfo);
             }
             return pendingTask;
         }
@@ -272,16 +284,22 @@ final class ChromeAndroidTaskTrackerImpl implements ChromeAndroidTaskTracker {
 
     static void pausePendingTaskActivityCreationForTesting() {
         sPausePendingTaskActivityCreationForTesting = true;
-        ResettersForTesting.register(() -> sPausePendingTaskActivityCreationForTesting = false);
+        ResettersForTesting.register(
+                () -> {
+                    sPausePendingTaskActivityCreationForTesting = false;
+                    sPendingTasksAwaitingActivityCreationForTesting.clear();
+                });
     }
 
-    static void resumePendingTaskActivityCreationForTesting(
-            AndroidBrowserWindowCreateParams createParams, int pendingId) {
+    static void resumePendingTaskActivityCreationForTesting(int pendingTaskId) {
         sPausePendingTaskActivityCreationForTesting = false;
-        Intent newWindowIntent = createNewWindowIntent(createParams);
-        assertNonNull(newWindowIntent);
-        newWindowIntent.putExtra(EXTRA_PENDING_BROWSER_WINDOW_TASK_ID, pendingId);
-        launchNewWindowIntent(newWindowIntent, createParams.getInitialBounds());
+        PendingTaskInfo pendingTaskInfo =
+                sPendingTasksAwaitingActivityCreationForTesting.get(pendingTaskId);
+        assert pendingTaskInfo != null
+                : "Unable to resume Activity creation for pending task with ID: " + pendingTaskId;
+
+        launchNewWindowIntent(
+                pendingTaskInfo.mIntent, pendingTaskInfo.mCreateParams.getInitialBounds());
     }
 
     @GuardedBy("mTasksLock")

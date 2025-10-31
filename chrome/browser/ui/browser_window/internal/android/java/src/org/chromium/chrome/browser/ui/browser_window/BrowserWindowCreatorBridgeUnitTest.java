@@ -70,7 +70,7 @@ public class BrowserWindowCreatorBridgeUnitTest {
         var pendingTask = (ChromeAndroidTaskImpl) pendingTasks.values().iterator().next();
         assertEquals(ChromeAndroidTaskImpl.State.PENDING_CREATE, pendingTask.getState());
         assertNull(pendingTask.getId());
-        assertNotNull(pendingTask.getPendingId());
+        assertNotNull(pendingTask.getPendingTaskInfo());
 
         // Act: simulate activity attachment.
         int taskId = 123;
@@ -81,7 +81,7 @@ public class BrowserWindowCreatorBridgeUnitTest {
         // Assert final state.
         assertEquals(ChromeAndroidTaskImpl.State.IDLE, pendingTask.getState());
         assertEquals(taskId, pendingTask.getId().intValue());
-        assertNull(pendingTask.getPendingId());
+        assertNull(pendingTask.getPendingTaskInfo());
         verify(activityScopedObjects.mTabModel).addObserver(pendingTask);
         verify(mockCallback)
                 .onResult(ChromeAndroidTaskUnitTestSupport.FAKE_NATIVE_ANDROID_BROWSER_WINDOW_PTR);

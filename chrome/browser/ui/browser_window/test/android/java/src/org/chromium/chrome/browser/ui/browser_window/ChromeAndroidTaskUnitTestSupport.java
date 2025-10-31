@@ -15,6 +15,7 @@ import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityManager.AppTask;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Insets;
 import android.graphics.Rect;
 import android.os.Build.VERSION_CODES;
@@ -28,6 +29,7 @@ import androidx.annotation.RequiresApi;
 import androidx.core.view.WindowInsetsControllerCompat;
 
 import org.chromium.base.AconfigFlaggedApiDelegate;
+import org.chromium.base.JniOnceCallback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -192,16 +194,11 @@ public final class ChromeAndroidTaskUnitTestSupport {
         var mockAndroidBrowserWindowNatives =
                 mockNatives ? createMockAndroidBrowserWindowNatives() : null;
 
-        ChromeAndroidTask chromeAndroidTask;
-        if (isPendingTask) {
-            chromeAndroidTask =
-                    new ChromeAndroidTaskImpl(
-                            /* pendingId= */ IdSequencer.next(),
-                            createMockAndroidBrowserWindowCreateParams());
-        } else {
-            chromeAndroidTask =
-                    new ChromeAndroidTaskImpl(BrowserWindowType.NORMAL, activityScopedObjects);
-        }
+        ChromeAndroidTask chromeAndroidTask =
+                isPendingTask
+                        ? new ChromeAndroidTaskImpl(createPendingTaskInfo())
+                        : new ChromeAndroidTaskImpl(
+                                BrowserWindowType.NORMAL, activityScopedObjects);
 
         var mockAppTask = mock(AppTask.class);
         AndroidTaskUtils.setAppTaskForTesting(mockAppTask);
@@ -323,6 +320,18 @@ public final class ChromeAndroidTaskUnitTestSupport {
         AndroidBrowserWindowJni.setInstanceForTesting(mockAndroidBrowserWindowNatives);
 
         return mockAndroidBrowserWindowNatives;
+    }
+
+    static ChromeAndroidTask.PendingTaskInfo createPendingTaskInfo() {
+        return createPendingTaskInfo(createMockAndroidBrowserWindowCreateParams());
+    }
+
+    static ChromeAndroidTask.PendingTaskInfo createPendingTaskInfo(
+            AndroidBrowserWindowCreateParams createParams) {
+        JniOnceCallback<Long> mockCallback = mock();
+
+        return new ChromeAndroidTask.PendingTaskInfo(
+                IdSequencer.next(), createParams, new Intent(), mockCallback);
     }
 
     /**

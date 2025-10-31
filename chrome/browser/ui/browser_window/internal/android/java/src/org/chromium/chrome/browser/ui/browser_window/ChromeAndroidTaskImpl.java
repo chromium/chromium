@@ -93,15 +93,6 @@ final class ChromeAndroidTaskImpl
     private final @BrowserWindowType int mBrowserWindowType;
 
     private @Nullable Integer mId;
-    private @Nullable Integer mPendingId;
-
-    /**
-     * Callback for native callers of {@link BrowserWindowCreatorBridge#createBrowserWindowAsync} to
-     * be aware of when a native {@code AndroidBrowserWindow} is created and fully initialized.
-     *
-     * <p>The type of the callback is the address of the native {@code AndroidBrowserWindow}.
-     */
-    private @Nullable JniOnceCallback<Long> mCreationCallbackForNative;
 
     private final AndroidBrowserWindow mAndroidBrowserWindow;
     private final Profile mInitialProfile;
@@ -117,6 +108,8 @@ final class ChromeAndroidTaskImpl
 
     private final Object mActivityScopedObjectsLock = new Object();
     private final Object mFeaturesLock = new Object();
+
+    private @Nullable PendingTaskInfo mPendingTaskInfo;
 
     /**
      * The {@link ActivityScopedObjects} in this Task.
@@ -138,8 +131,6 @@ final class ChromeAndroidTaskImpl
     /** Non-maximized bounds of the task even when currently maximized or minimized. */
     @GuardedBy("mActivityScopedObjectsLock")
     private @Nullable Rect mRestoredBoundsInPx;
-
-    private @Nullable AndroidBrowserWindowCreateParams mCreateParams;
 
     private boolean mShouldDispatchPendingDeactivate;
 
@@ -211,8 +202,6 @@ final class ChromeAndroidTaskImpl
             @BrowserWindowType int browserWindowType, ActivityScopedObjects activityScopedObjects) {
         mBrowserWindowType = browserWindowType;
         mId = getActivity(activityScopedObjects.mActivityWindowAndroid).getTaskId();
-        mPendingId = null;
-        mCreationCallbackForNative = null;
         mAndroidBrowserWindow = new AndroidBrowserWindow(/* chromeAndroidTask= */ this);
 
         Profile initialProfile = activityScopedObjects.mTabModel.getProfile();
@@ -224,22 +213,13 @@ final class ChromeAndroidTaskImpl
         setActivityScopedObjectsInternal(activityScopedObjects);
     }
 
-    ChromeAndroidTaskImpl(int pendingId, AndroidBrowserWindowCreateParams createParams) {
-        this(pendingId, createParams, null);
-    }
+    ChromeAndroidTaskImpl(PendingTaskInfo pendingTaskInfo) {
+        mPendingTaskInfo = pendingTaskInfo;
 
-    ChromeAndroidTaskImpl(
-            int pendingId,
-            AndroidBrowserWindowCreateParams createParams,
-            @Nullable JniOnceCallback<Long> callback) {
-        mCreateParams = createParams;
-        mBrowserWindowType = createParams.getWindowType();
-        mId = null;
-        mPendingId = pendingId;
+        mBrowserWindowType = pendingTaskInfo.mCreateParams.getWindowType();
         mAndroidBrowserWindow = new AndroidBrowserWindow(/* chromeAndroidTask= */ this);
-        mInitialProfile = createParams.getProfile();
+        mInitialProfile = pendingTaskInfo.mCreateParams.getProfile();
         mState.set(State.PENDING_CREATE);
-        mCreationCallbackForNative = callback;
     }
 
     @Override
@@ -248,8 +228,8 @@ final class ChromeAndroidTaskImpl
     }
 
     @Override
-    public @Nullable Integer getPendingId() {
-        return mPendingId;
+    public @Nullable PendingTaskInfo getPendingTaskInfo() {
+        return mPendingTaskInfo;
     }
 
     @Override
@@ -306,9 +286,9 @@ final class ChromeAndroidTaskImpl
             return;
         }
 
-        if (mCreationCallbackForNative != null) {
-            mCreationCallbackForNative.destroy();
-            mCreationCallbackForNative = null;
+        if (mPendingTaskInfo != null) {
+            mPendingTaskInfo.destroy();
+            mPendingTaskInfo = null;
         }
 
         clearActivityScopedObjectsInternal();
@@ -349,7 +329,7 @@ final class ChromeAndroidTaskImpl
 
         if (mState.get() == State.PENDING_CREATE) {
             return mPendingActionManager.isActionRequested(PendingAction.MAXIMIZE)
-                    || assumeNonNull(mCreateParams).getInitialShowState()
+                    || assumeNonNull(mPendingTaskInfo).mCreateParams.getInitialShowState()
                             == WindowShowState.MAXIMIZED;
         }
 
@@ -364,7 +344,7 @@ final class ChromeAndroidTaskImpl
     public boolean isMinimized() {
         if (mState.get() == State.PENDING_CREATE) {
             return mPendingActionManager.isActionRequested(PendingAction.MINIMIZE)
-                    || assumeNonNull(mCreateParams).getInitialShowState()
+                    || assumeNonNull(mPendingTaskInfo).mCreateParams.getInitialShowState()
                             == WindowShowState.MINIMIZED;
         }
 
@@ -396,7 +376,7 @@ final class ChromeAndroidTaskImpl
     @Override
     public Rect getRestoredBoundsInDp() {
         if (mState.get() == State.PENDING_CREATE) {
-            var initialBounds = assumeNonNull(mCreateParams).getInitialBounds();
+            var initialBounds = assumeNonNull(mPendingTaskInfo).mCreateParams.getInitialBounds();
             if (mPendingActionManager.isActionRequested(PendingAction.SET_BOUNDS)) {
                 return assertNonNull(mPendingActionManager.getPendingBoundsInDp());
             } else if (mPendingActionManager.isActionRequested(PendingAction.RESTORE)) {
@@ -440,7 +420,7 @@ final class ChromeAndroidTaskImpl
             if (mPendingActionManager.isActionRequested(PendingAction.SET_BOUNDS)) {
                 return assertNonNull(mPendingActionManager.getPendingBoundsInDp());
             }
-            return assumeNonNull(mCreateParams).getInitialBounds();
+            return assumeNonNull(mPendingTaskInfo).mCreateParams.getInitialBounds();
         }
 
         synchronized (mActivityScopedObjectsLock) {
@@ -469,7 +449,8 @@ final class ChromeAndroidTaskImpl
     @Override
     public boolean isVisible() {
         if (mState.get() == State.PENDING_CREATE) {
-            return assumeNonNull(mCreateParams).getInitialShowState() != WindowShowState.MINIMIZED;
+            return assumeNonNull(mPendingTaskInfo).mCreateParams.getInitialShowState()
+                    != WindowShowState.MINIMIZED;
         } else if (mState.get() == State.PENDING_UPDATE) {
             Boolean isVisible = mPendingActionManager.isVisibleFuture();
             if (isVisible != null) return isVisible;
@@ -697,10 +678,10 @@ final class ChromeAndroidTaskImpl
             switch (getState()) {
                 case PENDING_CREATE:
                     assert mId == null;
-                    assert mPendingId != null;
+                    assert mPendingTaskInfo != null;
                     break;
                 case IDLE:
-                    assert mPendingId == null;
+                    assert mPendingTaskInfo == null;
                     assert mId != null;
                     assert mId == getActivity(activityWindowAndroid).getTaskId()
                             : "The new ActivityWindowAndroid doesn't belong to this Task.";
@@ -724,17 +705,21 @@ final class ChromeAndroidTaskImpl
             activityScopedObjects.mTabModel.associateWithBrowserWindow(
                     mAndroidBrowserWindow.getOrCreateNativePtr());
 
-            // Transition from PENDING to ALIVE.
+            // Transition from PENDING_CREATE to IDLE.
             if (mState.get() == State.PENDING_CREATE) {
                 mId = getActivity(activityWindowAndroid).getTaskId();
-                mPendingId = null;
+
                 mState.set(State.IDLE);
                 dispatchPendingActionsLocked(activityWindowAndroid);
-                if (mCreationCallbackForNative != null) {
-                    mCreationCallbackForNative.onResult(
+
+                JniOnceCallback<Long> taskCreationCallbackForNative =
+                        assertNonNull(mPendingTaskInfo).mTaskCreationCallbackForNative;
+                if (taskCreationCallbackForNative != null) {
+                    taskCreationCallbackForNative.onResult(
                             mAndroidBrowserWindow.getOrCreateNativePtr());
-                    mCreationCallbackForNative = null;
                 }
+
+                mPendingTaskInfo = null;
             }
         }
     }

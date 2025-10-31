@@ -781,13 +781,13 @@ public class ChromeAndroidTaskIntegrationTest {
                         chromeAndroidTaskTracker.createPendingTask(
                                 createParams, /* callback= */ null);
         assertNotNull(task);
-        assertNotNull(task.getPendingId());
+        assertNotNull(task.getPendingTaskInfo());
         task.maximize();
         task.deactivate();
 
         // Act and Assert: Launch pending task activity, verify that pending actions are dispatched.
         ChromeAndroidTaskTrackerImpl.resumePendingTaskActivityCreationForTesting(
-                createParams, task.getPendingId());
+                task.getPendingTaskInfo().mPendingTaskId);
 
         var newActivity = waitForNewTabbedActivity(currentTaskIds);
         CriteriaHelper.pollUiThread(
@@ -828,7 +828,7 @@ public class ChromeAndroidTaskIntegrationTest {
                         chromeAndroidTaskTracker.createPendingTask(
                                 createParams, /* callback= */ null);
         assertNotNull(task);
-        assertNotNull(task.getPendingId());
+        assertNotNull(task.getPendingTaskInfo());
         task.maximize();
         task.deactivate();
         task.minimize();
@@ -837,7 +837,7 @@ public class ChromeAndroidTaskIntegrationTest {
         // dispatched.
         ChromeTabbedActivity.interceptMoveTaskToBackForTesting();
         ChromeAndroidTaskTrackerImpl.resumePendingTaskActivityCreationForTesting(
-                createParams, task.getPendingId());
+                task.getPendingTaskInfo().mPendingTaskId);
         var newActivity = waitForNewTabbedActivity(currentTaskIds);
         CriteriaHelper.pollUiThread(
                 ChromeTabbedActivity::wasMoveTaskToBackInterceptedForTesting,
@@ -868,14 +868,14 @@ public class ChromeAndroidTaskIntegrationTest {
                         chromeAndroidTaskTracker.createPendingTask(
                                 createParams, /* callback= */ null);
         assertNotNull(task);
-        assertNotNull(task.getPendingId());
+        assertNotNull(task.getPendingTaskInfo());
         task.close();
         task.show();
 
         // Act and Assert: Launch pending task activity, verify that pending CLOSE action is
         // dispatched.
         ChromeAndroidTaskTrackerImpl.resumePendingTaskActivityCreationForTesting(
-                createParams, task.getPendingId());
+                task.getPendingTaskInfo().mPendingTaskId);
         CriteriaHelper.pollUiThread(
                 () -> {
                     Set<Integer> newTaskIds = getTabbedActivityTaskIds();

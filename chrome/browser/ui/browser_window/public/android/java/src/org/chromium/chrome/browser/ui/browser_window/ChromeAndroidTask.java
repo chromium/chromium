@@ -4,8 +4,10 @@
 
 package org.chromium.chrome.browser.ui.browser_window;
 
+import android.content.Intent;
 import android.graphics.Rect;
 
+import org.chromium.base.JniOnceCallback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
@@ -71,19 +73,71 @@ public interface ChromeAndroidTask {
     }
 
     /**
+     * Information used to create a pending {@link ChromeAndroidTask}.
+     *
+     * @see ChromeAndroidTaskTracker#createPendingTask
+     */
+    final class PendingTaskInfo {
+        /**
+         * Unique ID of the pending {@link ChromeAndroidTask}.
+         *
+         * <p>Note that this is not the same as {@link ChromeAndroidTask#getId()}. A pending ID is
+         * only for when {@link ChromeAndroidTask} isn't associated with an {@code Activity}. {@link
+         * ChromeAndroidTaskTracker} uses pending IDs to track pending Tasks, and the {@code
+         * Activity} will be launched with the pending ID in its {@link Intent} Extra. This allows
+         * {@link ChromeAndroidTaskTracker} to pair a pending Task and a live {@code Activity} and
+         * turn the pending Task into a fully initialized Task.
+         */
+        final int mPendingTaskId;
+
+        /** Parameters used to create the pending {@link ChromeAndroidTask}. */
+        final AndroidBrowserWindowCreateParams mCreateParams;
+
+        /**
+         * Intent used to launch the root {@code Activity} for the pending {@link
+         * ChromeAndroidTask}.
+         */
+        final Intent mIntent;
+
+        /**
+         * Callback to notify native callers when a native {@code AndroidBrowserWindow} is created
+         * and fully initialized.
+         *
+         * <p>The type of the callback is the address of the native {@code AndroidBrowserWindow}.
+         */
+        final @Nullable JniOnceCallback<Long> mTaskCreationCallbackForNative;
+
+        PendingTaskInfo(
+                int pendingTaskId,
+                AndroidBrowserWindowCreateParams createParams,
+                Intent intent,
+                @Nullable JniOnceCallback<Long> callback) {
+            mPendingTaskId = pendingTaskId;
+            mCreateParams = createParams;
+            mIntent = intent;
+            mTaskCreationCallbackForNative = callback;
+        }
+
+        void destroy() {
+            if (mTaskCreationCallbackForNative != null) {
+                mTaskCreationCallbackForNative.destroy();
+            }
+        }
+    }
+
+    /**
      * Returns an {@link Integer} holding the the ID of this {@link ChromeAndroidTask}, which is the
      * same as defined by {@link android.app.TaskInfo#taskId}, if the {@link Integer} is non-null.
-     * The {@link Integer} will be null for a {@code State.PENDING} {@link ChromeAndroidTask} that
-     * is not yet associated with a live {@code ChromeActivity}.
+     * The {@link Integer} will be null for a {@code State.PENDING_CREATE} {@link ChromeAndroidTask}
+     * that is not yet associated with a live {@code ChromeActivity}.
      */
     @Nullable Integer getId();
 
     /**
-     * Returns an {@link Integer} holding the the pending task ID of this {@link ChromeAndroidTask}.
-     * The {@link Integer} will be null for a {@link ChromeAndroidTask} that is not in a {@code
-     * State.PENDING} state.
+     * Returns {@link PendingTaskInfo} if {@link ChromeAndroidTask} is in the {@code PENDING_CREATE}
+     * state, otherwise {@code null}.
      */
-    @Nullable Integer getPendingId();
+    @Nullable PendingTaskInfo getPendingTaskInfo();
 
     /**
      * Returns the browser window type of this {@link ChromeAndroidTask}.
