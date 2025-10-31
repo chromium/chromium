@@ -263,17 +263,6 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/ash/login/smart_lock/smart_lock_metrics.h:SmartLockAuthEvent) -->
 
-<enum name="EasyUnlockDeviceModelHash">
-  <int value="-1829584143" label="Motorola XT1097"/>
-  <int value="-1429808627" label="HTC One"/>
-  <int value="-1168032746" label="Motorola Nexus 6"/>
-  <int value="-617422855" label="LGE Nexus 4"/>
-  <int value="684891985" label="Motorola Moto X"/>
-  <int value="1286382027" label="Motorola XT1095"/>
-  <int value="1412446710" label="Motorola XT1096"/>
-  <int value="1881443083" label="LGE Nexus 5"/>
-</enum>
-
 <enum name="EasyUnlockDidUserManuallyUnlockPhone">
   <int value="0" label="Never locked"/>
   <int value="1" label="Manually unlocked"/>

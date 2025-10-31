@@ -1105,19 +1105,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="EasyUnlock.AuthProximity.RemoteDeviceModelHash"
-    enum="EasyUnlockDeviceModelHash" expires_after="2026-05-05">
-  <owner>hansberry@chromium.org</owner>
-  <owner>chromeos-cross-device-eng@google.com</owner>
-  <summary>
-    The hash of the phone model used to successfully sign in or unlock using
-    Smart Lock.
-
-    This hash is calculated by taking the first 4 bytes of the MD5 hash of the
-    device model.
-  </summary>
-</histogram>
-
 <histogram name="EasyUnlock.AuthProximity.RollingRssi" units="dBm"
     expires_after="2026-05-05">
   <owner>hansberry@chromium.org</owner>
