@@ -312,8 +312,9 @@ public class CastWebContentsActivity extends Activity {
                     };
                 });
 
-        shouldKeepScreenOn
-                .or(anyMediaPlaying.and(isDocked).opaque())
+        any(shouldKeepScreenOn
+                        .or(anyMediaPlaying.and(isDocked).opaque())
+                        .or(audioPlaying.filter(x -> !canPlayBackgroundAudio()).opaque()))
                 .subscribe(
                         (x) -> {
                             getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);

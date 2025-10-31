@@ -742,6 +742,38 @@ public class CastWebContentsActivityTest {
         assertWakeLockFlags(true, true);
         updateDockState(false);
         updateMediaState(false, false);
+        assertWakeLockFlags(true, false);
+    }
+
+    @Test
+    public void testKeepsScreenOnWhenAudioIsPlayingOnTv() {
+        mShadowUIModeManager.setCurrentModeType(Configuration.UI_MODE_TYPE_TELEVISION);
+        mActivityLifecycle =
+                Robolectric.buildActivity(
+                        CastWebContentsActivity.class,
+                        CastWebContentsIntentUtils.requestStartCastActivity(
+                                mWebContents, true, false, true, /* keepScreenOn= */ false, "0"));
+        mActivity = mActivityLifecycle.get();
+        mActivity.testingModeForTesting();
+        mActivityLifecycle.create();
+        updateDockState(false);
+        updateMediaState(true, false);
+        assertWakeLockFlags(true, false);
+    }
+
+    @Test
+    public void testDoesNotKeepScreenOnWhenAudioIsPlayingOnNonTv() {
+        mShadowUIModeManager.setCurrentModeType(Configuration.UI_MODE_TYPE_NORMAL);
+        mActivityLifecycle =
+                Robolectric.buildActivity(
+                        CastWebContentsActivity.class,
+                        CastWebContentsIntentUtils.requestStartCastActivity(
+                                mWebContents, true, false, true, /* keepScreenOn= */ false, "0"));
+        mActivity = mActivityLifecycle.get();
+        mActivity.testingModeForTesting();
+        mActivityLifecycle.create();
+        updateDockState(false);
+        updateMediaState(true, false);
         assertWakeLockFlags(false, false);
     }
 
