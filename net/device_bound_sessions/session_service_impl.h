@@ -118,8 +118,7 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
   // session id.
   using SessionsMap = std::map<SessionKey, std::unique_ptr<Session>>;
   using DeferredRequestsMap =
-      std::unordered_map<Session::Id,
-                         absl::InlinedVector<DeferredURLRequest, 1>>;
+      std::map<SessionKey, absl::InlinedVector<DeferredURLRequest, 1>>;
 
   struct Observer {
     Observer(const GURL& url,
