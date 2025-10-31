@@ -4060,12 +4060,6 @@ inline constexpr char kSmoothScrollingName[] = "Smooth Scrolling";
 inline constexpr char kSmoothScrollingDescription[] =
     "Animate smoothly when scrolling page content.";
 
-inline constexpr char kStorageAccessApiFollowsSameOriginPolicyName[] =
-    "Storage Access API follows Same Origin Policy";
-inline constexpr char kStorageAccessApiFollowsSameOriginPolicyDescription[] =
-    "Modifies the Storage Access API to follow the Same Origin Policy with "
-    "respect to security.";
-
 inline constexpr char kStrictOriginIsolationName[] = "Strict-Origin-Isolation";
 inline constexpr char kStrictOriginIsolationDescription[] =
     "Experimental security mode that strengthens the site isolation policy. "

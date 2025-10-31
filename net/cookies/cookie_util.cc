@@ -1195,6 +1195,10 @@ bool ShouldAddInitialStorageAccessApiOverride(
 
   const url::Origin origin = url::Origin::Create(url);
 
+  if (!emit_metrics) {
+    return request_initiator->IsSameOriginWith(origin);
+  }
+
   using enum StorageAccessNetRequestKind;
   StorageAccessNetRequestKind kind = kCrossSite;
   if (request_initiator->IsSameOriginWith(origin)) {
@@ -1208,11 +1212,7 @@ bool ShouldAddInitialStorageAccessApiOverride(
     RecordStorageAccessNetRequestMetric(kind);
   }
 
-  if (base::FeatureList::IsEnabled(
-          features::kStorageAccessApiFollowsSameOriginPolicy)) {
-    return kind == kSameOrigin;
-  }
-  return kind != kCrossSite;
+  return kind == kSameOrigin;
 }
 
 }  // namespace net::cookie_util

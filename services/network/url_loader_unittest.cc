@@ -5522,17 +5522,9 @@ TEST_F(StorageAccessHeaderURLLoaderTest,
 class URLLoaderCookieSettingOverridesTest
     : public URLLoaderTest,
       public ::testing::WithParamInterface<
-          std::tuple<bool,
-                     bool,
-                     net::StorageAccessApiStatus,
-                     std::string,
-                     bool>> {
+          std::tuple<bool, bool, net::StorageAccessApiStatus, std::string>> {
  public:
-  URLLoaderCookieSettingOverridesTest() {
-    features_.InitWithFeatureState(
-        net::features::kStorageAccessApiFollowsSameOriginPolicy,
-        storage_access_api_follows_same_origin_policy());
-  }
+  URLLoaderCookieSettingOverridesTest() = default;
 
   ~URLLoaderCookieSettingOverridesTest() override = default;
 
@@ -5559,10 +5551,7 @@ class URLLoaderCookieSettingOverridesTest
       case net::StorageAccessApiStatus::kNone:
         break;
       case net::StorageAccessApiStatus::kAccessViaAPI:
-        if (Initiator().IsSameOriginWith(request.url) ||
-            (!storage_access_api_follows_same_origin_policy() &&
-             net::SchemefulSite(Initiator()) ==
-                 net::SchemefulSite(request.url))) {
+        if (Initiator().IsSameOriginWith(request.url)) {
           overrides.Put(
               net::CookieSettingOverride::kStorageAccessGrantEligible);
         }
@@ -5576,9 +5565,7 @@ class URLLoaderCookieSettingOverridesTest
       const ResourceRequest& request) const {
     net::CookieSettingOverrides overrides =
         ExpectedCookieSettingOverrides(request);
-    if (storage_access_api_follows_same_origin_policy()) {
-      overrides.Remove(net::CookieSettingOverride::kStorageAccessGrantEligible);
-    }
+    overrides.Remove(net::CookieSettingOverride::kStorageAccessGrantEligible);
     return overrides;
   }
 
@@ -5600,9 +5587,6 @@ class URLLoaderCookieSettingOverridesTest
   url::Origin Initiator() const {
     return url::Origin::Create(
         test_server()->GetURL(std::get<3>(GetParam()), "/"));
-  }
-  bool storage_access_api_follows_same_origin_policy() const {
-    return std::get<4>(GetParam());
   }
 
  private:
@@ -5768,8 +5752,7 @@ INSTANTIATE_TEST_SUITE_P(
             // Same-site cross-origin initiator
             "example.test",
             // Cross-site initiator
-            "other-origin.test"),
-        testing::Bool()));
+            "other-origin.test")));
 
 namespace {
 
