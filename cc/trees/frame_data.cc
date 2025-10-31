@@ -17,32 +17,19 @@ namespace cc {
 FrameData::FrameData() = default;
 FrameData::~FrameData() = default;
 
-// Dump verbose log with
-// --vmodule=layer_tree_host_impl=3 for renderer only, or
-// --vmodule=layer_tree_host_impl=4 for all clients.
-bool VerboseLogEnabled() {
-  if (!VLOG_IS_ON(3)) {
-    return false;
-  }
-  if (VLOG_IS_ON(4)) {
-    return true;
-  }
-  const char* client_name = GetClientNameForMetrics();
-  return client_name && UNSAFE_TODO(strcmp(client_name, "Renderer")) == 0;
-}
-
 void FrameData::AsValueInto(base::trace_event::TracedValue* value) const {
   value->SetBoolean("has_no_damage", has_no_damage);
+  const char* client_name = GetClientNameForMetrics();
+  bool is_renderer =
+      client_name && UNSAFE_TODO(strcmp(client_name, "Renderer")) == 0;
 
-  // Quad data can be quite large, so only dump render passes if we are
-  // logging verbosely or viz.quads tracing category is enabled.
-  bool quads_enabled = VerboseLogEnabled();
-  if (!quads_enabled) {
-    TRACE_EVENT_CATEGORY_GROUP_ENABLED(TRACE_DISABLED_BY_DEFAULT("viz.quads"),
-                                       &quads_enabled);
-  }
-  if (quads_enabled) {
-    // TODO(zmo): Improve this mapping for FrameData.
+  bool quads_enabled;
+  TRACE_EVENT_CATEGORY_GROUP_ENABLED(TRACE_DISABLED_BY_DEFAULT("viz.quads"),
+                                     &quads_enabled);
+
+  // Quad data can be quite large, so only dump render passes from the renderer
+  // if viz.quads tracing category is enabled.
+  if (is_renderer && quads_enabled) {
     std::unordered_map<viz::ResourceId, size_t> resource_id_to_index_map;
     value->BeginArray("render_passes");
     for (const auto& render_pass : render_passes) {
