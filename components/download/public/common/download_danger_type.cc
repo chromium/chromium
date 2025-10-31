@@ -57,6 +57,8 @@ const char* GetDownloadDangerTypeString(const DownloadDangerType& danger_type) {
       return "AsyncLocalPasswordScanning";
     case download::DOWNLOAD_DANGER_TYPE_BLOCKED_SCAN_FAILED:
       return "BlockedScanFailed";
+    case download::DOWNLOAD_DANGER_TYPE_FORCE_SAVE_TO_GDRIVE:
+      return "ForceSaveToGDrive";
     case download::DOWNLOAD_DANGER_TYPE_MAX:
       break;
   }

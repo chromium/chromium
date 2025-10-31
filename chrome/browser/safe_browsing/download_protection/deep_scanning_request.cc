@@ -292,9 +292,8 @@ DownloadCheckResult ResponseToDownloadCheckResult(
     }
   } else {
     switch (dlp_action) {
-      // TODO(alshawwa): Update this branch when
-      // `DownloadCheckResult::FORCE_SAVE_TO_CLOUD` is added.
       case enterprise_connectors::TriggeredRule::FORCE_SAVE_TO_CLOUD:
+        return DownloadCheckResult::FORCE_SAVE_TO_GDRIVE;
       case enterprise_connectors::TriggeredRule::BLOCK:
         return DownloadCheckResult::SENSITIVE_CONTENT_BLOCK;
       case enterprise_connectors::TriggeredRule::WARN:

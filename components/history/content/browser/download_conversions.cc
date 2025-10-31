@@ -137,6 +137,9 @@ DownloadDangerType ToHistoryDownloadDangerType(
       return DownloadDangerType::BLOCKED_TOO_LARGE;
     case download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_WARNING:
       return DownloadDangerType::SENSITIVE_CONTENT_WARNING;
+    // TODO(alshawwa): Add new history DownloadDangerType for
+    // FORCE_SAVE_TO_GDRIVE
+    case download::DOWNLOAD_DANGER_TYPE_FORCE_SAVE_TO_GDRIVE:
     case download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_BLOCK:
       return DownloadDangerType::SENSITIVE_CONTENT_BLOCK;
     case download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_SAFE:
