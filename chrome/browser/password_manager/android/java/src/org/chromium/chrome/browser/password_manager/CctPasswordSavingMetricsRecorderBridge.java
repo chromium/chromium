@@ -20,7 +20,7 @@ import java.lang.ref.WeakReference;
 @NullMarked
 public class CctPasswordSavingMetricsRecorderBridge implements WindowAndroid.ActivityStateObserver {
     public static final UnownedUserDataKey<CctPasswordSavingMetricsRecorderBridge> KEY =
-            new UnownedUserDataKey<>(CctPasswordSavingMetricsRecorderBridge.class);
+            new UnownedUserDataKey<>();
 
     static final String SUBMISSION_TO_REDIRECT_TIME_HISTOGRAM =
             "PasswordManager.CctFormSubmissionToRedirectTime";

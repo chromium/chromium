@@ -19,7 +19,7 @@ public class MessageDispatcherProvider {
     interface Unowned extends MessageDispatcher {}
 
     /** The key used to bind the MessageDispatcher to the unowned data host. */
-    private static final UnownedUserDataKey<Unowned> KEY = new UnownedUserDataKey<>(Unowned.class);
+    private static final UnownedUserDataKey<Unowned> KEY = new UnownedUserDataKey<>();
 
     /**
      * Retrieves the shared MessageDispatcher from the provided WindowAndroid. Returns null if

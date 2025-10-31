@@ -25,7 +25,7 @@ import org.chromium.ui.base.WindowAndroid;
 @NullMarked
 public class MediaCaptureOverlayController {
     private static final UnownedUserDataKey<MediaCaptureOverlayController> KEY =
-            new UnownedUserDataKey<>(MediaCaptureOverlayController.class);
+            new UnownedUserDataKey<>();
 
     private final CaptureOverlayTabObserver mTabObserver = new CaptureOverlayTabObserver();
 

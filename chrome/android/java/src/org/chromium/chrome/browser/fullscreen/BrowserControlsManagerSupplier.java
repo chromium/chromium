@@ -19,7 +19,7 @@ import org.chromium.ui.base.WindowAndroid;
 public class BrowserControlsManagerSupplier
         extends UnownedUserDataSupplier<BrowserControlsManager> {
     private static final UnownedUserDataKey<BrowserControlsManagerSupplier> KEY =
-            new UnownedUserDataKey<>(BrowserControlsManagerSupplier.class);
+            new UnownedUserDataKey<>();
 
     /** Return {@link TabModelSelector} supplier associated with the given {@link WindowAndroid}. */
     public static @Nullable ObservableSupplier<BrowserControlsManager> from(

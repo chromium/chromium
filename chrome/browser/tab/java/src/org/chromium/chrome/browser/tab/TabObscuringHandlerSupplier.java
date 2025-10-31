@@ -18,7 +18,7 @@ import org.chromium.ui.base.WindowAndroid;
 @NullMarked
 public class TabObscuringHandlerSupplier extends UnownedUserDataSupplier<TabObscuringHandler> {
     private static final UnownedUserDataKey<TabObscuringHandlerSupplier> KEY =
-            new UnownedUserDataKey<>(TabObscuringHandlerSupplier.class);
+            new UnownedUserDataKey<>();
 
     /**
      * Retrieves an {@link ObservableSupplier} from the given host. Real implementations should use

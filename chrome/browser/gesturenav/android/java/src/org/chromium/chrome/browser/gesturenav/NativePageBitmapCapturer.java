@@ -34,7 +34,7 @@ public class NativePageBitmapCapturer {
     // Share SoftwareDraw in order to share a single java Bitmap across all tabs in a window
     // as the tab size won't change inside one single window.
     private static final UnownedUserDataKey<NativePageBitmapCapturer> CAPTURER_KEY =
-            new UnownedUserDataKey<>(NativePageBitmapCapturer.class);
+            new UnownedUserDataKey<>();
     private static final float SCALE = 1;
 
     private static boolean sIgnoreCurrentUrlCheck;

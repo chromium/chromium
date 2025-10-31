@@ -22,7 +22,7 @@ import org.chromium.ui.base.WindowAndroid;
 public class ActivityDisplayCutoutModeSupplier extends UnownedUserDataSupplier<Integer> {
     /** The key for accessing this object on an {@link org.chromium.base.UnownedUserDataHost}. */
     private static final UnownedUserDataKey<ActivityDisplayCutoutModeSupplier> KEY =
-            new UnownedUserDataKey<>(ActivityDisplayCutoutModeSupplier.class);
+            new UnownedUserDataKey<>();
 
     private static @Nullable ObservableSupplierImpl<Integer> sInstanceForTesting;
 

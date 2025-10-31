@@ -19,7 +19,7 @@ import org.chromium.ui.base.WindowAndroid;
 public class StartupPaintPreviewHelperSupplier
         extends UnownedUserDataSupplier<StartupPaintPreviewHelper> {
     private static final UnownedUserDataKey<StartupPaintPreviewHelperSupplier> KEY =
-            new UnownedUserDataKey<>(StartupPaintPreviewHelperSupplier.class);
+            new UnownedUserDataKey<>();
 
     /**
      * Return {@link StartupPaintPreviewHelper} supplier associated with the given {@link

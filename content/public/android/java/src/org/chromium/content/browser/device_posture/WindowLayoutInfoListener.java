@@ -28,8 +28,7 @@ import org.chromium.window.WindowUtil;
 @NullMarked
 public class WindowLayoutInfoListener {
     private static final UnownedUserDataKey<WindowLayoutInfoListener> KEY =
-            new UnownedUserDataKey<>(
-                    WindowLayoutInfoListener.class, WindowLayoutInfoListener::onDetachedFromHost);
+            new UnownedUserDataKey<>(WindowLayoutInfoListener::onDetachedFromHost);
     private final Consumer<WindowLayoutInfo> mWindowLayoutInfoChangedCallback;
     private @Nullable WindowAndroid mWindowAndroid;
     private final ObserverList<DevicePosturePlatformProviderAndroid> mObservers =

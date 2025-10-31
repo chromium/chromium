@@ -71,7 +71,7 @@ public class SyncErrorMessage implements SyncService.SyncStateChangedListener {
     private static @Nullable MessageDispatcher sMessageDispatcherForTesting;
 
     private static final UnownedUserDataKey<SyncErrorMessage> SYNC_ERROR_MESSAGE_KEY =
-            new UnownedUserDataKey<>(SyncErrorMessage.class);
+            new UnownedUserDataKey<>();
     private static final String PASSWORDS_SYNC_ERROR_MESSAGE_VERSION_PARAM_NAME = "version";
     private static final String TAG = "SyncErrorMessage";
 

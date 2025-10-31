@@ -164,8 +164,7 @@ public class ShareHelper {
     /** BroadcastReceiver to record the chosen component when sharing an Intent. */
     public static class TargetChosenReceiver extends BroadcastReceiver implements IntentCallback {
         private static final UnownedUserDataKey<TargetChosenReceiver> TARGET_CHOSEN_RECEIVER_KEY =
-                new UnownedUserDataKey<>(
-                        TargetChosenReceiver.class, TargetChosenReceiver::onDetachedFromHost);
+                new UnownedUserDataKey<>(TargetChosenReceiver::onDetachedFromHost);
         private @Nullable TargetChosenCallback mCallback;
         private WeakReference<Context> mAttachedContext;
         private WeakReference<WindowAndroid> mAttachedWindow;

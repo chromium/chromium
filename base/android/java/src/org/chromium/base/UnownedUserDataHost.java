@@ -71,7 +71,7 @@ import java.util.List;
  * public class Foo {
  *     // Keeping KEY private enforces acquisition by calling #from(), therefore Foo is in control
  *     // of getting the instance.
- *     private static final UnownedUserDataKey<Foo> KEY = new UnownedUserDataKey<>(Foo.class);
+ *     private static final UnownedUserDataKey<Foo> KEY = new UnownedUserDataKey<>();
  *
  *     // The UnownedUserData framework enables this method in particular.
  *     public static Foo from(HolderClass holder) {
@@ -163,7 +163,7 @@ public final class UnownedUserDataHost {
     private @Nullable Handler mHandler;
 
     /** The core data structure within this host. */
-    private @Nullable HashMap<UnownedUserDataKey<?>, WeakReference<?>> mUnownedUserDataMap =
+    private @Nullable HashMap<UnownedUserDataKey<?>, WeakReference<Object>> mUnownedUserDataMap =
             new HashMap<>();
 
     public UnownedUserDataHost() {
@@ -202,19 +202,24 @@ public final class UnownedUserDataHost {
      * @param key the key to use for the object.
      * @return the stored version or {@code null} if it is not stored or has been garbage collected.
      */
-
+    @SuppressWarnings("Unchecked")
     /* package */ <T> @Nullable T get(UnownedUserDataKey<T> key) {
+        if (mUnownedUserDataMap == null) {
+            // After being destroyed, many things still query for their value, so just return null
+            // in this case.
+            return null;
+        }
         checkState();
 
         WeakReference<?> valueWeakRef = mUnownedUserDataMap.get(key);
         if (valueWeakRef == null) return null;
-        T value = key.getValueClass().cast(valueWeakRef.get());
+        Object value = valueWeakRef.get();
         if (value == null) {
             // The object the entry referenced has now been GCed, so remove the entry.
             key.detachFromHost(this);
             return null;
         }
-        return value;
+        return (T) value;
     }
 
     /**
@@ -222,17 +227,22 @@ public final class UnownedUserDataHost {
      *
      * @param key the key to use for the object.
      */
+    @SuppressWarnings("Unchecked")
     /* package */ <T> void remove(UnownedUserDataKey<T> key) {
+        if (mUnownedUserDataMap == null) {
+            // Ensure it is safe for detach listeners to call remove() after onDestroy().
+            return;
+        }
         checkState();
 
-        WeakReference<?> valueWeakRef = mUnownedUserDataMap.remove(key);
+        WeakReference<Object> valueWeakRef = mUnownedUserDataMap.remove(key);
         if (valueWeakRef == null) return;
-        T value = key.getValueClass().cast(valueWeakRef.get());
+        Object value = valueWeakRef.get();
 
         if (value != null) {
             UnownedUserDataListener<T> listener = key.getListener();
             if (listener != null) {
-                mHandler.post(() -> listener.onDetachedFromHost(value, this));
+                mHandler.post(() -> listener.onDetachedFromHost((T) value, this));
             }
         }
     }

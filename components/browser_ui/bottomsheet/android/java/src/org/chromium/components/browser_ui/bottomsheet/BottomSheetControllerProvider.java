@@ -21,7 +21,7 @@ public class BottomSheetControllerProvider {
     interface Unowned extends BottomSheetController {}
 
     /** The key used to bind the controller to the unowned data host. */
-    private static final UnownedUserDataKey<Unowned> KEY = new UnownedUserDataKey<>(Unowned.class);
+    private static final UnownedUserDataKey<Unowned> KEY = new UnownedUserDataKey<>();
 
     /**
      * Get the shared {@link BottomSheetController} from the provided {@link WindowAndroid}.

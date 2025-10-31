@@ -30,7 +30,7 @@ import java.util.WeakHashMap;
  *
  * <pre>{@code
  * public class Foo {
- *     private static final UnownedUserDataKey<Foo> KEY = new UnownedUserDataKey<>(Foo.class);
+ *     private static final UnownedUserDataKey<Foo> KEY = new UnownedUserDataKey<>();
  *     ...
  * }
  * }</pre>
@@ -62,27 +62,17 @@ import java.util.WeakHashMap;
  */
 @NullMarked
 public final class UnownedUserDataKey<T> {
-    private final Class<T> mClazz;
     private final @Nullable UnownedUserDataListener<T> mListener;
     private final Set<UnownedUserDataHost> mWeakHostAttachments =
             Collections.newSetFromMap(new WeakHashMap<>());
 
-    /**
-     * Constructs a key to use for attaching to a particular {@link UnownedUserDataHost}.
-     *
-     * @param clazz The particular class.
-     */
-    public UnownedUserDataKey(Class<T> clazz) {
-        this(clazz, /* listener= */ null);
+    /** Constructs a key to use for attaching to a particular {@link UnownedUserDataHost}. */
+    public UnownedUserDataKey() {
+        this(null);
     }
 
-    public UnownedUserDataKey(Class<T> clazz, @Nullable UnownedUserDataListener<T> listener) {
-        mClazz = clazz;
+    public UnownedUserDataKey(@Nullable UnownedUserDataListener<T> listener) {
         mListener = listener;
-    }
-
-    /* package */ Class<T> getValueClass() {
-        return mClazz;
     }
 
     /* package */ @Nullable UnownedUserDataListener<T> getListener() {
@@ -113,13 +103,12 @@ public final class UnownedUserDataKey<T> {
      * @return The current stored in the {@code host}, or {@code null}.
      */
     public @Nullable T retrieveDataFromHost(UnownedUserDataHost host) {
-        assertNoDestroyedAttachments();
-        for (UnownedUserDataHost attachedHost : mWeakHostAttachments) {
-            if (host == attachedHost) {
-                return host.get(this);
-            }
+        if (BuildConfig.IS_FOR_TEST && host == null) {
+            // Happens when tests use "@Mock WebContents".
+            return null;
         }
-        return null;
+        assertNoDestroyedAttachments();
+        return host.get(this);
     }
 
     /**
@@ -130,11 +119,8 @@ public final class UnownedUserDataKey<T> {
      */
     public void detachFromHost(UnownedUserDataHost host) {
         assertNoDestroyedAttachments();
-        for (UnownedUserDataHost attachedHost : new ArrayList<>(mWeakHostAttachments)) {
-            if (host == attachedHost) {
-                removeHostAttachment(attachedHost);
-            }
-        }
+        host.remove(this);
+        mWeakHostAttachments.remove(host);
     }
 
     /**
@@ -145,9 +131,9 @@ public final class UnownedUserDataKey<T> {
      */
     public void detachFromAllHosts(T object) {
         assertNoDestroyedAttachments();
-        for (UnownedUserDataHost attachedHost : new ArrayList<>(mWeakHostAttachments)) {
-            if (object.equals(attachedHost.get(this))) {
-                removeHostAttachment(attachedHost);
+        for (UnownedUserDataHost host : new ArrayList<>(mWeakHostAttachments)) {
+            if (object.equals(host.get(this))) {
+                detachFromHost(host);
             }
         }
     }
@@ -180,11 +166,6 @@ public final class UnownedUserDataKey<T> {
             }
         }
         return ret;
-    }
-
-    private void removeHostAttachment(UnownedUserDataHost host) {
-        host.remove(this);
-        mWeakHostAttachments.remove(host);
     }
 
     private void assertNoDestroyedAttachments() {

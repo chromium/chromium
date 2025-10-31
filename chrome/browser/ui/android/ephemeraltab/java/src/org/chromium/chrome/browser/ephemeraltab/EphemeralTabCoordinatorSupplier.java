@@ -21,7 +21,7 @@ import org.chromium.ui.base.WindowAndroid;
 public class EphemeralTabCoordinatorSupplier
         extends UnownedUserDataSupplier<EphemeralTabCoordinator> {
     private static final UnownedUserDataKey<EphemeralTabCoordinatorSupplier> KEY =
-            new UnownedUserDataKey<>(EphemeralTabCoordinatorSupplier.class);
+            new UnownedUserDataKey<>();
     private static @Nullable ObservableSupplierImpl<EphemeralTabCoordinator> sInstanceForTesting;
 
     /**

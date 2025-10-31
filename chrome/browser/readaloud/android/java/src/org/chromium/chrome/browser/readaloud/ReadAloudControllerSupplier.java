@@ -18,7 +18,7 @@ import org.chromium.ui.base.WindowAndroid;
 @NullMarked
 public class ReadAloudControllerSupplier extends UnownedUserDataSupplier<ReadAloudController> {
     private static final UnownedUserDataKey<ReadAloudControllerSupplier> KEY =
-            new UnownedUserDataKey<>(ReadAloudControllerSupplier.class);
+            new UnownedUserDataKey<>();
 
     /**
      * Return {@link ReadAloudController} supplier associated with the given {@link WindowAndroid}.

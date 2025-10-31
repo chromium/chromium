@@ -16,8 +16,7 @@ import org.chromium.ui.base.WindowAndroid;
 @NullMarked
 public class SnackbarManagerProvider {
     /** The key for accessing this object on an {@link org.chromium.base.UnownedUserDataHost}. */
-    private static final UnownedUserDataKey<SnackbarManager> KEY =
-            new UnownedUserDataKey<>(SnackbarManager.class);
+    private static final UnownedUserDataKey<SnackbarManager> KEY = new UnownedUserDataKey<>();
 
     /**
      * Get the activity's main {@link SnackbarManager} from the provided {@link WindowAndroid}.

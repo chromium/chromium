@@ -19,7 +19,7 @@ import org.chromium.ui.base.WindowAndroid;
 public class DeviceLockActivityLauncherSupplier
         extends UnownedUserDataSupplier<DeviceLockActivityLauncher> {
     private static final UnownedUserDataKey<DeviceLockActivityLauncherSupplier> KEY =
-            new UnownedUserDataKey<>(DeviceLockActivityLauncherSupplier.class);
+            new UnownedUserDataKey<>();
 
     /**
      * Return {@link DeviceLockActivityLauncher} supplier associated with the given {@link

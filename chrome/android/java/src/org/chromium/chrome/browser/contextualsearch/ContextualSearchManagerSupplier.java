@@ -19,7 +19,7 @@ import org.chromium.ui.base.WindowAndroid;
 public class ContextualSearchManagerSupplier
         extends UnownedUserDataSupplier<ContextualSearchManager> {
     private static final UnownedUserDataKey<ContextualSearchManagerSupplier> KEY =
-            new UnownedUserDataKey<>(ContextualSearchManagerSupplier.class);
+            new UnownedUserDataKey<>();
 
     /**
      * Return {@link ContextualSearchManager} supplier associated with the given {@link

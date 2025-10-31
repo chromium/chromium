@@ -19,10 +19,11 @@ public class LayoutManagerProvider {
     interface Unowned extends LayoutManager {}
 
     /** The key used to bind the LayoutManager to the unowned data host. */
-    private static final UnownedUserDataKey<Unowned> KEY = new UnownedUserDataKey<>(Unowned.class);
+    private static final UnownedUserDataKey<Unowned> KEY = new UnownedUserDataKey<>();
 
     /**
      * Get the shared {@link LayoutManager} from the provided {@link WindowAndroid}.
+     *
      * @param windowAndroid The window to pull the LayoutManager from.
      * @return A shared instance of a {@link LayoutManager}.
      */

@@ -32,8 +32,7 @@ public class TrustedCdn extends TabWebContentsUserData {
      */
     public interface PublisherUrlVisibility {
         /** The key for accessing this object on an {@link UnownedUserDataHost}. */
-        UnownedUserDataKey<PublisherUrlVisibility> KEY =
-                new UnownedUserDataKey<>(PublisherUrlVisibility.class);
+        UnownedUserDataKey<PublisherUrlVisibility> KEY = new UnownedUserDataKey<>();
 
         /**
          * Get the Activity's {@link PublisherUrlVisibility} from the provided {@link

@@ -113,7 +113,7 @@ public class NotificationPermissionController {
     }
 
     private static final UnownedUserDataKey<NotificationPermissionController> KEY =
-            new UnownedUserDataKey<>(NotificationPermissionController.class);
+            new UnownedUserDataKey<>();
 
     private final AndroidPermissionDelegate mAndroidPermissionDelegate;
     private final Supplier<RationaleDelegate> mRationaleDelegateSupplier;

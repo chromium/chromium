@@ -19,7 +19,7 @@ import org.chromium.ui.base.WindowAndroid;
 public class ManualFillingComponentSupplier
         extends UnownedUserDataSupplier<ManualFillingComponent> {
     private static final UnownedUserDataKey<ManualFillingComponentSupplier> KEY =
-            new UnownedUserDataKey<>(ManualFillingComponentSupplier.class);
+            new UnownedUserDataKey<>();
 
     /**
      * Return {@link ManualFillingComponent} supplier associated with the given {@link

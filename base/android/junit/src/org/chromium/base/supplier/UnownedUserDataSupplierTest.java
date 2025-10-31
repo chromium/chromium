@@ -24,8 +24,7 @@ public class UnownedUserDataSupplierTest {
     /** Serves as an example concrete class for {@link UnownedUserDataSupplier}. */
     static class TestUnownedUserDataSupplier extends UnownedUserDataSupplier<String> {
         private static final UnownedUserDataKey<TestUnownedUserDataSupplier> KEY =
-                new UnownedUserDataKey<TestUnownedUserDataSupplier>(
-                        TestUnownedUserDataSupplier.class);
+                new UnownedUserDataKey<TestUnownedUserDataSupplier>();
 
         /** Use this pattern to mock the {@link UnownedUserDataSupplier} for testing. */
         private static TestUnownedUserDataSupplier sInstanceForTesting;

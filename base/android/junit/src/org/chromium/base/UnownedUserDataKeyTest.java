@@ -80,12 +80,10 @@ public class UnownedUserDataKeyTest {
     }
 
     private static final UnownedUserDataKey<TestUnownedUserData> KEY1 =
-            new UnownedUserDataKey<>(
-                    TestUnownedUserData.class, TestUnownedUserData::onDetachedFromHost);
+            new UnownedUserDataKey<>(TestUnownedUserData::onDetachedFromHost);
 
     private static final UnownedUserDataKey<TestUnownedUserData> KEY2 =
-            new UnownedUserDataKey<>(
-                    TestUnownedUserData.class, TestUnownedUserData::onDetachedFromHost);
+            new UnownedUserDataKey<>(TestUnownedUserData::onDetachedFromHost);
 
     private final TestUnownedUserData mFoo = new TestUnownedUserData();
     private final TestUnownedUserData mBar = new TestUnownedUserData();
@@ -175,11 +173,9 @@ public class UnownedUserDataKeyTest {
     @Test
     public void testSingleItemSingleHost_differentKeys() {
         UnownedUserDataKey<TestUnownedUserData> extraKey =
-                new UnownedUserDataKey<>(
-                        TestUnownedUserData.class, TestUnownedUserData::onDetachedFromHost);
+                new UnownedUserDataKey<>(TestUnownedUserData::onDetachedFromHost);
         UnownedUserDataKey<TestUnownedUserData> anotherExtraKey =
-                new UnownedUserDataKey<>(
-                        TestUnownedUserData.class, TestUnownedUserData::onDetachedFromHost);
+                new UnownedUserDataKey<>(TestUnownedUserData::onDetachedFromHost);
 
         KEY1.attachToHost(mHost1, mFoo);
         extraKey.attachToHost(mHost1, mFoo);

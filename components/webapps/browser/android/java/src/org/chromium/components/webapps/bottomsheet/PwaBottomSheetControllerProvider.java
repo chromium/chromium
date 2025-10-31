@@ -25,7 +25,7 @@ import org.chromium.ui.base.WindowAndroid;
 public class PwaBottomSheetControllerProvider {
     /** The key used to bind the controller to the unowned data host. */
     private static final UnownedUserDataKey<PwaBottomSheetController> KEY =
-            new UnownedUserDataKey<>(PwaBottomSheetController.class);
+            new UnownedUserDataKey<>();
 
     /**
      * Get the shared {@link PwaBottomSheetController} from the provided {@link WindowAndroid}.

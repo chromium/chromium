@@ -12,8 +12,7 @@ import org.chromium.ui.base.WindowAndroid;
 /** Provides the {@link NewDownloadTab} attached to a given {@link WindowAndroid}. */
 @NullMarked
 public class NewDownloadTabProvider {
-    private static final UnownedUserDataKey<NewDownloadTab> KEY =
-            new UnownedUserDataKey<>(NewDownloadTab.class);
+    private static final UnownedUserDataKey<NewDownloadTab> KEY = new UnownedUserDataKey<>();
 
     /**
      * @param windowAndroid The {@link WindowAndroid} the {@link NewDownloadTab} is attached to.

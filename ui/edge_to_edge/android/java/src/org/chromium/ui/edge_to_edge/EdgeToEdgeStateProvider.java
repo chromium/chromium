@@ -26,7 +26,7 @@ import org.chromium.ui.util.TokenHolder;
 @NullMarked
 public class EdgeToEdgeStateProvider extends ObservableSupplierImpl<Boolean> {
     private static final UnownedUserDataKey<EdgeToEdgeStateProvider> KEY =
-            new UnownedUserDataKey<>(EdgeToEdgeStateProvider.class);
+            new UnownedUserDataKey<>();
     private final TokenHolder mTokenHolder = new TokenHolder(this::onTokenUpdate);
     private final Window mWindow;
 
