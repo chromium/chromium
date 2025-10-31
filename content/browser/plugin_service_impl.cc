@@ -177,18 +177,6 @@ void PluginServiceImpl::RegisterPlugins() {
     RegisterInternalPlugin(plugin.ToWebPluginInfo(), /*add_at_beginning=*/true);
 }
 
-// There should generally be very few plugins so a brute-force search is fine.
-const ContentPluginInfo* PluginServiceImpl::GetRegisteredPluginInfo(
-    const base::FilePath& plugin_path) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  for (auto& plugin : plugins_) {
-    if (plugin.path == plugin_path)
-      return &plugin;
-  }
-  return nullptr;
-}
-
 void PluginServiceImpl::SetFilter(PluginServiceFilter* filter) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   filter_ = filter;

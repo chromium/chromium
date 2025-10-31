@@ -56,8 +56,6 @@ class CONTENT_EXPORT PluginServiceImpl : public PluginService {
       const base::FilePath& path) override;
   void GetPlugins(GetPluginsCallback callback) override;
   std::vector<WebPluginInfo> GetPluginsSynchronous() override;
-  const ContentPluginInfo* GetRegisteredPluginInfo(
-      const base::FilePath& plugin_path) override;
   void SetFilter(PluginServiceFilter* filter) override;
   PluginServiceFilter* GetFilter() override;
   bool IsPluginUnstable(const base::FilePath& plugin_path) override;
@@ -70,16 +68,8 @@ class CONTENT_EXPORT PluginServiceImpl : public PluginService {
   // Used to monitor plugin stability.
   void RegisterPluginCrash(const base::FilePath& plugin_path);
 
-  // For testing without creating many, many processes.
-  void SetMaxPpapiProcessesPerProfileForTesting(int number) {
-    max_ppapi_processes_per_profile_ = number;
-  }
-
  private:
   friend struct base::DefaultSingletonTraits<PluginServiceImpl>;
-
-  // Pulled out of the air, seems reasonable.
-  static constexpr int kDefaultMaxPpapiProcessesPerProfile = 15;
 
   // Creates the PluginServiceImpl object, but doesn't actually build the plugin
   // list yet.  It's generated lazily.
@@ -89,8 +79,6 @@ class CONTENT_EXPORT PluginServiceImpl : public PluginService {
   void RegisterPlugins();
 
   std::vector<ContentPluginInfo> plugins_;
-
-  int max_ppapi_processes_per_profile_ = kDefaultMaxPpapiProcessesPerProfile;
 
   // Weak pointer; set during the startup and must outlive us.
   raw_ptr<PluginServiceFilter, DanglingUntriaged> filter_ = nullptr;

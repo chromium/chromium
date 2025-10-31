@@ -27,7 +27,6 @@ namespace content {
 
 class BrowserContext;
 class PluginServiceFilter;
-struct ContentPluginInfo;
 struct WebPluginInfo;
 
 // This class lives on the UI thread.
@@ -91,12 +90,6 @@ class CONTENT_EXPORT PluginService {
   // Synchronously loads plugins if necessary and returns the list of plugin
   // infos.
   virtual std::vector<WebPluginInfo> GetPluginsSynchronous() = 0;
-
-  // Returns information about a plugin if it exists, otherwise `nullptr`. The
-  // caller does not own the pointer, and it's not guaranteed to live past the
-  // call stack.
-  virtual const ContentPluginInfo* GetRegisteredPluginInfo(
-      const base::FilePath& plugin_path) = 0;
 
   virtual void SetFilter(PluginServiceFilter* filter) = 0;
   virtual PluginServiceFilter* GetFilter() = 0;
