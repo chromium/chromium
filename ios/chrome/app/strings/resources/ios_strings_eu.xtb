@@ -2129,7 +2129,7 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="9066097352053395362">Ezkutatu "Editatu laster-marka"</translation>
 <translation id="9070824521421603770">Zure saioa amaituko da, eta fitxak itxiko dira</translation>
 <translation id="9072837124205571418">Gailu guztietako fitxa taldeak</translation>
-<translation id="9075970015528364598">Google-ren AA hobetzeko berrikusiko eta erabiliko dira txatak. <ph name="LEARN_ABOUT_CHOICES" /> <ph name="INFO_ABOUT_LOCATION" /> ere gordetzen da zure jarduerekin batera.</translation>
+<translation id="9075970015528364598">Elkarrizketak berrikusiko dira, eta Google-ren AA hobetzeko erabiliko dira. <ph name="LEARN_ABOUT_CHOICES" /> <ph name="INFO_ABOUT_LOCATION" /> ere gordetzen da zure jarduerekin batera.</translation>
 <translation id="9081058212938299310"><ph name="USERNAME" /> erabiltzailearen pasahitza eguneratu nahi duzu?</translation>
 <translation id="9083838294503912307">Gailu guztiak sinkronizatu eta pertsonalizatzeko, aktibatu sinkronizazioa.</translation>
 <translation id="9084367296493549256">{count,plural, =1{Segurua ez den {count} pasahitz daukazu, eta baliteke horrek segurtasunari eragitea. Segurtasuna bermatzeko, alda ezazu.}other{Seguruak ez diren {count} pasahitz dauzkazu, eta baliteke horrek segurtasunari eragitea. Segurtasuna bermatzeko, alda itzazu.}}</translation>

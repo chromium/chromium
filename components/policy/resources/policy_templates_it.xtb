@@ -10388,7 +10388,7 @@ Questa policy è stata pensata per essere temporanea e verrà rimossa in futuro.
 <translation id="7976157349247117979">Nome della destinazione di <ph name="PRODUCT_NAME" /></translation>
 <translation id="7985242821674907985"><ph name="PRODUCT_NAME" /></translation>
 <translation id="7985781946183471651">Glanceables su <ph name="PRODUCT_OS_NAME" /></translation>
-<translation id="7986473886676689183">Attiva la generazione di report Android</translation>
+<translation id="7986473886676689183">Attiva la creazione di report Android</translation>
 <translation id="798671159602573821">Specifica se disattivare (temporaneamente) le limitazioni di accesso alla rete locale</translation>
 <translation id="7990280274626154329">Attiva <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /></translation>
 <translation id="7991022023019679916">Tieni presente che questa policy è obsoleta e verrà rimossa nella versione 85 di <ph name="PRODUCT_OS_NAME" />. Usa la policy <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />.

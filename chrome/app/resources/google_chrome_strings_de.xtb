@@ -298,7 +298,7 @@
 <translation id="4343195214584226067"><ph name="EXTENSION_NAME" /> wurde zu Chrome hinzugefügt</translation>
 <translation id="4348548358339558429">Für die Personalisierung musst du Chrome in die Web- &amp; App-Aktivitäten aufnehmen</translation>
 <translation id="436060642166082913">Chrome hat diesen Download blockiert, weil die Datei deine privaten Konten sowie Konten in sozialen Netzwerken schädigen kann</translation>
-<translation id="4367027658822022112">Du kannst Google Lens anpinnen, um leichter darauf zuzugreifen. Klicke dazu oben in der Seitenleiste auf die Schaltfläche „Anpinnen“.</translation>
+<translation id="4367027658822022112">Du kannst Google Lens anpinnen, um leichter darauf zuzugreifen. Klicke dazu oben in der Seitenleiste auf den Button „Anpinnen“.</translation>
 <translation id="4389991535395284064">Wenn du im Inkognitomodus surfst, warnt Chrome dich, bevor eine Website über eine unsichere Verbindung geladen wird</translation>
 <translation id="4427306783828095590">Besserer Schutz vor Phishing und Malware durch erweitertes Safe Browsing</translation>
 <translation id="4434353761996769206">Installationsfehler: <ph name="INSTALLER_ERROR" /></translation>
@@ -431,7 +431,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, gespeicherte Passwörter und den 
 <translation id="6022659036123304283">Chrome personalisieren</translation>
 <translation id="6025087594896450715">Google Chrome wird in <ph name="REMAINING_TIME" /> neu gestartet</translation>
 <translation id="6040143037577758943">Schließen</translation>
-<translation id="604424701295382420">Angepinnt! Über die neue Schaltfläche in der Symbolleiste kannst du wieder auf Google Lens zugreifen.</translation>
+<translation id="604424701295382420">Angepinnt! Über den neuen Button in der Symbolleiste kannst du wieder auf Google Lens zugreifen.</translation>
 <translation id="6069027071882229820">Als Bild kopieren</translation>
 <translation id="6070348360322141662">Zur Erhöhung der Sicherheit verschlüsselt Google Chrome deine Daten</translation>
 <translation id="6075300983329039771">Deine Organisation (<ph name="MANAGER" />) verlangt, dass du dich in Chrome anmeldest</translation>
@@ -660,7 +660,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, gespeicherte Passwörter und den 
 <translation id="8555465886620020932">Dienstfehler: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="856656450041460113">In Liste mit Sprachen suchen</translation>
 <translation id="8575047640889685742">Verwende deine <ph name="BEGIN_LINK" />eigene Passphrase<ph name="END_LINK" /> für die Verschlüsselung aller Chrome-Daten in deinem Google-Konto. Zahlungsmethoden und Adressen bei Google Pay werden nicht verschlüsselt. Der Chrome-Browserverlauf wird nicht synchronisiert.</translation>
-<translation id="8601359445272098721">Neu! Du kannst sowohl Text als auch Bilder auf deinem Bildschirm übersetzen, indem du die Schaltfläche „Bildschirm übersetzen“ auswählst</translation>
+<translation id="8601359445272098721">Neu! Du kannst sowohl Text als auch Bilder auf deinem Bildschirm übersetzen, indem du den Button „Bildschirm übersetzen“ auswählst</translation>
 <translation id="8614913330719544658">Google Chrome reagiert nicht. Jetzt neu starten?</translation>
 <translation id="861702415419836452">Chrome benötigt Zugriff auf die Kamera, um eine 3D-Karte deiner Umgebung zu erstellen</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome wird in einer Minute neu gestartet}other{Chrome wird in # Minuten neu gestartet}}</translation>

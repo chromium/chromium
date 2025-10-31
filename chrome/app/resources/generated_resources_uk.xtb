@@ -403,7 +403,7 @@
 <translation id="1256588359404100567">Налаштування синхронізовано з попереднього пристрою.</translation>
 <translation id="1257336506558170607">Експортувати вибраний сертифікат</translation>
 <translation id="1258491128795710625">Що нового</translation>
-<translation id="1260451001046713751">Завжди дозволяти спливаючі вікна та переспрямування з хосту <ph name="HOST" /></translation>
+<translation id="1260451001046713751">Завжди дозволяти спливаючі вікна й переспрямування з хосту <ph name="HOST" /></translation>
 <translation id="1260810365552581339">Можливо, на диску Linux недостатньо місця. Можете збільшити його та повторити спробу відновлення в <ph name="LINK_START" />налаштуваннях<ph name="LINK_END" />.</translation>
 <translation id="1261380933454402672">Помірне</translation>
 <translation id="126156426083987769">Виникла проблема з ліцензіями пристрою в демо-режимі.</translation>
@@ -1810,7 +1810,7 @@
 <translation id="2224444042887712269">Це налаштування встановив користувач <ph name="OWNER_EMAIL" />.</translation>
 <translation id="2224551243087462610">Редагувати ім’я папки</translation>
 <translation id="2225927550500503913">Віртуальну картку ввімкнено</translation>
-<translation id="2226826835915474236">Неактивні ярлики</translation>
+<translation id="2226826835915474236">Неактивні швидкі команди</translation>
 <translation id="2226907662744526012">Розблоковувати автоматично, коли хтось вводить PIN-код</translation>
 <translation id="2227179592712503583">Видалити пропозицію</translation>
 <translation id="2229161054156947610">Залишилося більше 1 год.</translation>

@@ -837,7 +837,7 @@ Beide haben den gleichen Effekt auf das Browserverhalten.</translation>
 <translation id="1561424797596341174">Überschreiben von Richtlinien für Fehlerbehebungs-Builds des Hosts für den Remote-Zugriff</translation>
 <translation id="1561967320164410511">U2F plus Erweiterungen zur individuellen Bestätigung</translation>
 <translation id="1562846754315919408">Benachrichtigen, wenn USB-Geräte erkannt werden</translation>
-<translation id="1563745847791078494">Ist die Richtlinie konfiguriert, wird die standardmäßige Startseiten-URL in <ph name="PRODUCT_NAME" /> festgelegt. Die Startseite wird über die Schaltfläche „Startseite“ geöffnet. Auf dem Computer werden die Seiten, die beim Hochfahren geöffnet werden, über die „<ph name="RESTORE_ON_STARTUP_POLICY_NAME" />“-Richtlinien gesteuert.
+<translation id="1563745847791078494">Ist die Richtlinie konfiguriert, wird die standardmäßige Startseiten-URL in <ph name="PRODUCT_NAME" /> festgelegt. Die Startseite wird über den Button „Startseite“ geöffnet. Auf dem Computer werden die Seiten, die beim Hochfahren geöffnet werden, über die „<ph name="RESTORE_ON_STARTUP_POLICY_NAME" />“-Richtlinien gesteuert.
 
 Wenn die „Neuer Tab“-Seite durch den Nutzer oder „<ph name="HOMEPAGE_IS_NEW_TAB_PAGE_POLICY_NAME" />“ als Startseite festgelegt ist, hat diese Richtlinie keine Auswirkung.
 
@@ -883,13 +883,13 @@ Wenn die Richtlinie nicht konfiguriert ist, gilt „<ph name="DEFAULT_DIRECT_SOC
 URL-Muster dürfen nicht im Konflikt mit „<ph name="DIRECT_SOCKETS_BLOCKED_FOR_URLS_POLICY_NAME" />“ stehen. Keine Richtlinie hat Vorrang, falls eine URL mit beiden übereinstimmt.
 
 Ausführliche Informationen zu gültigen URL-Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> ist kein akzeptierter Wert für diese Richtlinie.</translation>
-<translation id="1578495851351913403">Wenn du diese Richtlinie konfigurierst, wird in den Displayeinstellungen unter jedem Display eine neue Ein/Aus-Schaltfläche angezeigt. Im normalen Spiegelmodus werden alle Displays auf ein Display gespiegelt, aber mit der neuen Ein/Aus-Schaltfläche können Nutzer ein Display von der Spiegelung ausschließen und als erweitertes Display anzeigen lassen.
+<translation id="1578495851351913403">Wenn du diese Richtlinie konfigurierst, wird in den Displayeinstellungen unter jedem Display ein neuer Ein/Aus-Button angezeigt. Im normalen Spiegelmodus werden alle Displays auf ein Display gespiegelt, aber mit dem neuen Ein/Aus-Button können Nutzer ein Display von der Spiegelung ausschließen und als erweitertes Display anzeigen lassen.
 
 Wenn die Richtlinie aktiviert ist, wird für jedes Display die Option angezeigt, es vom Spiegelmodus auszuschließen. Der Nutzer kann dann auswählen, welches Display aktiviert werden soll.
 
-Wenn die Richtlinie nicht konfiguriert oder deaktiviert ist, wird die Ein/Aus-Schaltfläche ausgeblendet.
+Wenn die Richtlinie nicht konfiguriert oder deaktiviert ist, wird der Ein/Aus-Button ausgeblendet.
 
-Hinweis: Diese Richtlinie wirkt sich nur auf die Benutzeroberfläche aus. Die vorhandenen Einstellungen werden unter ChromeOS beibehalten, wenn die Ein/Aus-Schaltfläche ausgeblendet ist.</translation>
+Hinweis: Diese Richtlinie wirkt sich nur auf die Benutzeroberfläche aus. Die vorhandenen Einstellungen werden unter ChromeOS beibehalten, wenn der Ein/Aus-Button ausgeblendet ist.</translation>
 <translation id="1579027593897822029">Liste der Aktionen, die ausgeführt werden sollen, wenn das Zeitlimit in der Richtlinie „<ph name="IDLE_TIMEOUT_POLICY_NAME" />“ erreicht ist.
 
 Warnung: Das Festlegen dieser Richtlinie kann sich auf lokale private Daten auswirken und diese dauerhaft entfernen. Wir empfehlen, die Einstellungen vor der Bereitstellung zu testen, um das versehentliche Löschen von privaten Daten zu verhindern.
@@ -6189,7 +6189,7 @@ Ist die Richtlinie nicht konfiguriert, wird der Standardwert von 0 Grad verwend
 <translation id="5258445772095084618">Zulassen, dass nicht verknüpfte Nutzer virtuelle Maschinen verwenden, die für Linux-Apps benötigt werden</translation>
 <translation id="5258651513421638932">Isolierten Apps erlauben, eine Verbindung zu Smartcards herzustellen</translation>
 <translation id="5262320080678421295">Zertifikaten nicht vertrauen, die von der Legacy-PKI der Symantec Corporation ausgestellt wurden</translation>
-<translation id="5265613843467285323">Ein/Aus-Schaltfläche für „Display im Spiegelmodus ausschließen“ anzeigen.</translation>
+<translation id="5265613843467285323">Ein/Aus-Button für „Display im Spiegelmodus ausschließen“ anzeigen.</translation>
 <translation id="5270408671043421978">Vorabladen von <ph name="ARC_VM" />-Bildern deaktivieren</translation>
 <translation id="5272332743749468542">Nutzern Zugriff auf „Display im Spiegelmodus ausschließen“ gewähren</translation>
 <translation id="5273744932022326215">Hiermit wird die Bedienungshilfe "Mauszeiger hervorheben" auf dem Anmeldebildschirm aktiviert.
@@ -6289,7 +6289,7 @@ Ist die Richtlinie deaktiviert, können der Browser‑ und der Downloadverlauf n
 <translation id="5323271643727095577">Dialogfeld zum Abbrechen nicht anzeigen, wenn „event.preventDefault()“ für ein „beforeunload“-Ereignis aufgerufen wird. Dialogfeld zum Abbrechen anzeigen, wenn „beforeunload event.returnValue“ der leere String für ein „beforeunload“-Ereignis ist.</translation>
 <translation id="5324430722441910403">Einstellungen für die Websitesuche</translation>
 <translation id="5326431956495937408">Wenn die Richtlinie aktiviert ist, können Nutzer ihre Passwörter gemäß den Familiendiensten an Familienmitglieder senden und von ihnen empfangen.
-Ist sie aktiviert oder nicht konfiguriert, gibt es im Passwortmanager eine Schaltfläche, über die ein Passwort gesendet werden kann.
+Ist sie aktiviert oder nicht konfiguriert, gibt es im Passwortmanager einen Button, über die ein Passwort gesendet werden kann.
 Empfangene Passwörter werden im Konto des Nutzers gespeichert und sind im Passwortmanager verfügbar.
 
 Ist die Richtlinie deaktiviert, können Nutzer keine Passwörter vom Passwortmanager aus an andere Nutzer senden und auch keine Passwörter von anderen Nutzern empfangen.

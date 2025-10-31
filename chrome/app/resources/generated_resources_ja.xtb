@@ -2482,7 +2482,7 @@
 <translation id="2691385045260836588">機種</translation>
 <translation id="2692503699962701720">要素タイプと書式付きテキストを読み上げるときにピッチを変更する</translation>
 <translation id="2692901429679246677">アクア</translation>
-<translation id="2693134906590795721">充電時の音</translation>
+<translation id="2693134906590795721">充電開始の音</translation>
 <translation id="2695943520968279338">拡張機能を見る</translation>
 <translation id="2698147581454716013">これはバンドルされたデバイスです。Kiosk &amp; Signage Upgrade に登録することはできません。</translation>
 <translation id="2699911226086014512">PIN の操作に失敗しました。コード: <ph name="RETRIES" /></translation>
@@ -5241,7 +5241,7 @@
 <translation id="4606933160360542263">カスタムキーの組み合わせ: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{タブグループを削除しますか？}other{タブグループを削除しますか？}}</translation>
 <translation id="4608500690299898628">検索(&amp;F)...</translation>
-<translation id="4609164937357979319">アカウントの選択</translation>
+<translation id="4609164937357979319">アカウントを選択</translation>
 <translation id="4610162781778310380"><ph name="PLUGIN_NAME" /> でエラーが発生しました</translation>
 <translation id="4610493438923139095">信頼不可</translation>
 <translation id="4610637590575890427">もしかして: <ph name="SITE" /></translation>

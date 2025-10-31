@@ -1152,7 +1152,7 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="5511959326926949696">Optionaler Extremschutz für deinen Browser. Diese Funktion sollte nur verwendet werden, wenn du glaubst, dass du von einem ausgeklügelten Cyberangriff betroffen sein könntest.</translation>
 <translation id="5513681519188741830">Vor <ph name="TIME" /> h</translation>
 <translation id="5520668942302483373">Gruppe verlassen</translation>
-<translation id="5524590039848017563">Schaltfläche für die minimierte Toolbar in der primären Toolbar</translation>
+<translation id="5524590039848017563">Button für die minimierte Toolbar in der primären Toolbar</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} schwaches Passwort}other{{COUNT} schwache Passwörter}}</translation>
 <translation id="5532545557415295622">Dialogfeld für Zeitüberschreitung bei Inaktivität</translation>
 <translation id="5547868626772433490">Gemini fragen</translation>
@@ -1958,7 +1958,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="8473863474539038330">Adressen und andere Daten</translation>
 <translation id="8474378002946546633">Benachrichtigungen zulassen</translation>
 <translation id="8477178913400731244">Daten löschen</translation>
-<translation id="8481184073299279701">Tippe auf die Schaltfläche „Protokollierung starten“, um künftig Protokolle und Fehler von allen Tabs der JavaScript-Konsole zu erheben. Protokolle werden erfasst und ausschließlich im Speicher aufbewahrt, bis die Seite geschlossen oder auf „Protokoll anhalten“ getippt wird.</translation>
+<translation id="8481184073299279701">Tippe auf den Button „Protokollierung starten“, um künftig Protokolle und Fehler von allen Tabs der JavaScript-Konsole zu erheben. Protokolle werden erfasst und ausschließlich im Speicher aufbewahrt, bis die Seite geschlossen oder auf „Protokoll anhalten“ getippt wird.</translation>
 <translation id="8487667956631253959">An</translation>
 <translation id="8487700953926739672">Offline verfügbar</translation>
 <translation id="8488923644885757471">Neues Fenster</translation>
