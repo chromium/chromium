@@ -154,8 +154,8 @@ class MediaCodecVideoDecoderTest : public testing::TestWithParam<VideoCodec> {
         std::make_unique<NiceMock<MockAndroidVideoSurfaceChooser>>();
     surface_chooser_ = surface_chooser.get();
 
-    auto texture_owner = base::MakeRefCounted<NiceMock<gpu::MockTextureOwner>>(
-        0, nullptr, nullptr);
+    auto texture_owner =
+        base::MakeRefCounted<NiceMock<gpu::MockTextureOwner>>();
     texture_owner_ = texture_owner.get();
 
     auto video_frame_factory =

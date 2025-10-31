@@ -23,10 +23,7 @@ namespace gpu {
 // This is a mock with a small amount of fake functionality too.
 class MockTextureOwner : public TextureOwner {
  public:
-  MockTextureOwner(GLuint fake_texture_id,
-                   gl::GLContext* fake_context,
-                   gl::GLSurface* fake_surface,
-                   bool binds_texture_on_update = false);
+  MockTextureOwner();
 
   MOCK_CONST_METHOD0(CreateJavaSurface, gl::ScopedJavaSurface());
   MOCK_METHOD1(UpdateTexImage, bool(bool));

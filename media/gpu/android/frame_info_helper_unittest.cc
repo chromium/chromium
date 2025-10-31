@@ -98,8 +98,7 @@ TEST_F(FrameInfoHelperTest, NoBufferRenderer) {
 }
 
 TEST_F(FrameInfoHelperTest, TextureOwner) {
-  auto texture_owner = base::MakeRefCounted<NiceMock<gpu::MockTextureOwner>>(
-      0, nullptr, nullptr, true);
+  auto texture_owner = base::MakeRefCounted<NiceMock<gpu::MockTextureOwner>>();
 
   // Return CodedSize when GetCodedSizeAndVisibleRect is called.
   ON_CALL(*texture_owner, GetCodedSizeAndVisibleRect(_, _, _))
@@ -136,8 +135,7 @@ TEST_F(FrameInfoHelperTest, TextureOwner) {
 }
 
 TEST_F(FrameInfoHelperTest, TextureOwnerGuessCodedSize) {
-  auto texture_owner = base::MakeRefCounted<NiceMock<gpu::MockTextureOwner>>(
-      0, nullptr, nullptr, true);
+  auto texture_owner = base::MakeRefCounted<NiceMock<gpu::MockTextureOwner>>();
 
   // Return CodedSize when GetCodedSizeAndVisibleRect is called.
   ON_CALL(*texture_owner, GetCodedSizeAndVisibleRect(_, _, _))
@@ -188,8 +186,7 @@ TEST_F(FrameInfoHelperTest, TextureOwnerGuessCodedSize) {
 }
 
 TEST_F(FrameInfoHelperTest, TextureOwnerGuessCodedSizeFailRender) {
-  auto texture_owner = base::MakeRefCounted<NiceMock<gpu::MockTextureOwner>>(
-      0, nullptr, nullptr, true);
+  auto texture_owner = base::MakeRefCounted<NiceMock<gpu::MockTextureOwner>>();
 
   // Return CodedSize when GetCodedSizeAndVisibleRect is called.
   ON_CALL(*texture_owner, GetCodedSizeAndVisibleRect(_, _, _))
@@ -257,8 +254,7 @@ TEST_F(FrameInfoHelperTest, TextureOwnerGuessCodedSizeFailRender) {
 }
 
 TEST_F(FrameInfoHelperTest, TextureOwnerGuessedWrongCodedSize) {
-  auto texture_owner = base::MakeRefCounted<NiceMock<gpu::MockTextureOwner>>(
-      0, nullptr, nullptr, true);
+  auto texture_owner = base::MakeRefCounted<NiceMock<gpu::MockTextureOwner>>();
 
   // Return CodedSize when GetCodedSizeAndVisibleRect is called.
   ON_CALL(*texture_owner, GetCodedSizeAndVisibleRect(_, _, _))
@@ -288,8 +284,7 @@ TEST_F(FrameInfoHelperTest, Overlay) {
 }
 
 TEST_F(FrameInfoHelperTest, SwitchBetweenOverlayAndTextureOwner) {
-  auto texture_owner = base::MakeRefCounted<NiceMock<gpu::MockTextureOwner>>(
-      0, nullptr, nullptr, true);
+  auto texture_owner = base::MakeRefCounted<NiceMock<gpu::MockTextureOwner>>();
 
   // Return CodedSize when GetCodedSizeAndVisibleRect is called.
   ON_CALL(*texture_owner, GetCodedSizeAndVisibleRect(_, _, _))
@@ -333,8 +328,7 @@ TEST_F(FrameInfoHelperTest, SwitchBetweenOverlayAndTextureOwner) {
 }
 
 TEST_F(FrameInfoHelperTest, OrderingTest) {
-  auto texture_owner = base::MakeRefCounted<NiceMock<gpu::MockTextureOwner>>(
-      0, nullptr, nullptr, true);
+  auto texture_owner = base::MakeRefCounted<NiceMock<gpu::MockTextureOwner>>();
 
   // Return CodedSize when GetCodedSizeAndVisibleRect is called.
   ON_CALL(*texture_owner, GetCodedSizeAndVisibleRect(_, _, _))
@@ -372,8 +366,7 @@ TEST_F(FrameInfoHelperTest, OrderingTest) {
 }
 
 TEST_F(FrameInfoHelperTest, FailedGetCodedSize) {
-  auto texture_owner = base::MakeRefCounted<NiceMock<gpu::MockTextureOwner>>(
-      0, nullptr, nullptr, true);
+  auto texture_owner = base::MakeRefCounted<NiceMock<gpu::MockTextureOwner>>();
 
   // Return CodedSize when GetCodedSizeAndVisibleRect is called.
   ON_CALL(*texture_owner, GetCodedSizeAndVisibleRect(_, _, _))
@@ -403,8 +396,7 @@ TEST_F(FrameInfoHelperTest, FailedGetCodedSize) {
 }
 
 TEST_F(FrameInfoHelperTest, TextureOwnerBufferNotAvailable) {
-  auto texture_owner = base::MakeRefCounted<NiceMock<gpu::MockTextureOwner>>(
-      0, nullptr, nullptr, true);
+  auto texture_owner = base::MakeRefCounted<NiceMock<gpu::MockTextureOwner>>();
 
   // Return CodedSize when GetCodedSizeAndVisibleRect is called.
   ON_CALL(*texture_owner, GetCodedSizeAndVisibleRect(_, _, _))

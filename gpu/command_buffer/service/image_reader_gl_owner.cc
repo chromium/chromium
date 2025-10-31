@@ -22,7 +22,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/bind_post_task.h"
-#include "gpu/command_buffer/service/abstract_texture_android.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "ui/gfx/android/android_surface_control_compat.h"
 #include "ui/gl/gl_fence_android_native_fence_sync.h"
@@ -126,14 +125,11 @@ class ImageReaderGLOwner::ScopedHardwareBufferImpl
 };
 
 ImageReaderGLOwner::ImageReaderGLOwner(
-    std::unique_ptr<AbstractTextureAndroid> texture,
     Mode mode,
     scoped_refptr<SharedContextState> context_state,
     scoped_refptr<RefCountedLock> drdc_lock,
     TextureOwnerCodecType type_for_metrics)
-    : TextureOwner(false /* binds_texture_on_image_update */,
-                   std::move(texture),
-                   std::move(context_state)),
+    : TextureOwner(std::move(context_state)),
       RefCountedLockHelperDrDc(std::move(drdc_lock)),
       context_(gl::GLContext::GetCurrent()),
       surface_(gl::GLSurface::GetCurrent()),
