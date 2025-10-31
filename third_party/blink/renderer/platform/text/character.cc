@@ -40,6 +40,7 @@
 #include "base/synchronization/lock.h"
 #include "third_party/abseil-cpp/absl/strings/ascii.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/text/character_break_iterator.h"
 #include "third_party/blink/renderer/platform/text/character_property_data.h"
 #include "third_party/blink/renderer/platform/text/icu_error.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
@@ -167,19 +168,77 @@ unsigned Character::ExpansionOpportunityCount(
     base::span<const UChar> characters,
     TextDirection direction,
     bool& is_after_expansion) {
+  if (characters.size() == 0) {
+    return 0;
+  }
   unsigned count = 0;
+
+  if (!RuntimeEnabledFeatures::EmojiJustificationEnabled()) {
+    if (direction == TextDirection::kLtr) {
+      for (size_t i = 0; i < characters.size(); ++i) {
+        UChar32 character = characters[i];
+        if (TreatAsSpace(character)) {
+          count++;
+          is_after_expansion = true;
+          continue;
+        }
+        if (U16_IS_LEAD(character) && i + 1 < characters.size() &&
+            U16_IS_TRAIL(characters[i + 1])) {
+          character = U16_GET_SUPPLEMENTARY(character, characters[i + 1]);
+          i++;
+        }
+        if (IsCJKIdeographOrSymbol(character)) {
+          if (!is_after_expansion) {
+            count++;
+          }
+          count++;
+          is_after_expansion = true;
+          continue;
+        } else if (!IsDefaultIgnorable(character)) {
+          is_after_expansion = false;
+        }
+      }
+    } else {
+      for (size_t i = characters.size(); i > 0; --i) {
+        UChar32 character = characters[i - 1];
+        if (TreatAsSpace(character)) {
+          count++;
+          is_after_expansion = true;
+          continue;
+        }
+        if (U16_IS_TRAIL(character) && i > 1 &&
+            U16_IS_LEAD(characters[i - 2])) {
+          character = U16_GET_SUPPLEMENTARY(characters[i - 2], character);
+          i--;
+        }
+        if (IsCJKIdeographOrSymbol(character)) {
+          if (!is_after_expansion) {
+            count++;
+          }
+          count++;
+          is_after_expansion = true;
+          continue;
+        } else if (!IsDefaultIgnorable(character)) {
+          is_after_expansion = false;
+        }
+      }
+    }
+    return count;
+  }
+  CharacterBreakIterator iter(characters);
   if (direction == TextDirection::kLtr) {
-    for (size_t i = 0; i < characters.size(); ++i) {
+    for (int i = 0; static_cast<size_t>(i) < characters.size();
+         i = iter.Next()) {
       UChar32 character = characters[i];
       if (TreatAsSpace(character)) {
         count++;
         is_after_expansion = true;
         continue;
       }
-      if (U16_IS_LEAD(character) && i + 1 < characters.size() &&
+      if (U16_IS_LEAD(character) &&
+          static_cast<size_t>(i + 1) < characters.size() &&
           U16_IS_TRAIL(characters[i + 1])) {
         character = U16_GET_SUPPLEMENTARY(character, characters[i + 1]);
-        i++;
       }
       if (IsCJKIdeographOrSymbol(character)) {
         if (!is_after_expansion)
@@ -192,16 +251,18 @@ unsigned Character::ExpansionOpportunityCount(
       }
     }
   } else {
-    for (size_t i = characters.size(); i > 0; --i) {
-      UChar32 character = characters[i - 1];
+    for (int i = iter.Preceding(characters.size()); i != kTextBreakDone;
+         i = iter.Preceding(i)) {
+      UChar32 character = characters[i];
       if (TreatAsSpace(character)) {
         count++;
         is_after_expansion = true;
         continue;
       }
-      if (U16_IS_TRAIL(character) && i > 1 && U16_IS_LEAD(characters[i - 2])) {
-        character = U16_GET_SUPPLEMENTARY(characters[i - 2], character);
-        i--;
+      if (U16_IS_LEAD(character) &&
+          static_cast<size_t>(i + 1) < characters.size() &&
+          U16_IS_TRAIL(characters[i + 1])) {
+        character = U16_GET_SUPPLEMENTARY(character, characters[i + 1]);
       }
       if (IsCJKIdeographOrSymbol(character)) {
         if (!is_after_expansion)

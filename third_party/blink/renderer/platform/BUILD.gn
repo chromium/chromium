@@ -2373,6 +2373,7 @@ source_set("blink_platform_unittests_sources") {
     "storage/blink_storage_key_test.cc",
     "text/bidi_paragraph_test.cc",
     "text/capitalize_test.cc",
+    "text/character_break_iterator_test.cc",
     "text/character_test.cc",
     "text/date_time_format_test.cc",
     "text/hyphenation_test.cc",

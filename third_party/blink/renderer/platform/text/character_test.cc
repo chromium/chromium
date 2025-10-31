@@ -747,6 +747,21 @@ TEST(CharacterTest, TestEastAsianSpacingPropertyRule) {
   }
 }
 
+TEST(CharacterTest, ExpansionOpportunityEmoji) {
+  bool is_after_expansion = true;
+  // a, an emoji ZWJ sequence, z
+  // We should count both side of the emoji sequence.
+  StringView source(u"a\U0001F635\u200d\U0001f4ABz");
+  EXPECT_EQ(2u, Character::ExpansionOpportunityCount(
+                    source.Span16(), TextDirection::kLtr, is_after_expansion));
+  EXPECT_FALSE(is_after_expansion);
+
+  is_after_expansion = true;
+  EXPECT_EQ(2u, Character::ExpansionOpportunityCount(
+                    source.Span16(), TextDirection::kRtl, is_after_expansion));
+  EXPECT_FALSE(is_after_expansion);
+}
+
 static struct CanReceiveTextEmphasisTestData {
   const UChar32 character;
   bool expected;
