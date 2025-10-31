@@ -9647,7 +9647,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerReinvocationBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerReinvocationBrowserTest,
-                       FollowUpRegionSearchDoesNotLoadInSidePanel) {
+                       AimQueryRegionSearchDoesNotLoadInSidePanel) {
   WaitForPaint();
   auto* controller = GetLensOverlayController();
   ASSERT_EQ(controller->state(), State::kOff);
@@ -9698,8 +9698,11 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerReinvocationBrowserTest,
   ASSERT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
 
   // Simulate a region search.
+  content::TestNavigationObserver search_observer(
+      controller->GetSidePanelWebContentsForTesting());
   controller->IssueLensRegionRequestForTesting(kTestRegion->Clone(),
                                                /*is_click=*/false);
+  search_observer.WaitForNavigationFinished();
 
   // Wait for the region search to be processed.
   ASSERT_TRUE(base::test::RunUntil(
@@ -9720,47 +9723,4 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerReinvocationBrowserTest,
   }));
   EXPECT_EQ(url_before_region_search,
             side_panel_web_contents->GetLastCommittedURL());
-}
-
-IN_PROC_BROWSER_TEST_F(LensOverlayControllerReinvocationBrowserTest,
-                       RegionSearchLoadsInSidePanel) {
-  // State should start in off.
-  auto* controller = GetLensOverlayController();
-  ASSERT_EQ(controller->state(), State::kOff);
-
-  // Showing UI should change the state to screenshot and eventually to overlay.
-  SkBitmap initial_bitmap = CreateNonEmptyBitmap(100, 100);
-  OpenLensOverlayWithPendingRegion(LensOverlayInvocationSource::kAppMenu,
-                                   kTestRegion->Clone(), initial_bitmap);
-  ASSERT_EQ(controller->state(), State::kScreenshot);
-  ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return controller->state() == State::kOverlayAndResults; }));
-  auto* coordinator = browser()->GetFeatures().side_panel_coordinator();
-  // Expect the Lens Overlay results panel to open.
-  ASSERT_TRUE(coordinator->IsSidePanelEntryShowing(
-      SidePanelEntryKey(SidePanelEntryId::kLensOverlayResults)));
-
-  // Verify region was passed to WebUI.
-  auto* fake_controller = static_cast<LensOverlayControllerFake*>(controller);
-  ASSERT_TRUE(fake_controller);
-  EXPECT_EQ(kTestRegion,
-            fake_controller->fake_overlay_page_.post_region_selection_);
-  fake_controller->FlushForTesting();
-  ASSERT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
-
-  // The selection type should be INJECTED_IMAGE at this point.
-  auto* query_controller = static_cast<lens::TestLensOverlayQueryController*>(
-      controller->get_lens_overlay_query_controller_for_testing());
-  EXPECT_EQ(query_controller->last_lens_selection_type(), lens::INJECTED_IMAGE);
-
-  // Simulate a region search. This should trigger a navigation in the side
-  // panel.
-  content::TestNavigationObserver search_observer(
-      controller->GetSidePanelWebContentsForTesting());
-  controller->IssueLensRegionRequestForTesting(kTestRegion->Clone(),
-                                               /*is_click=*/false);
-
-  // Verify that the navigation occurred.
-  search_observer.WaitForNavigationFinished();
-  EXPECT_EQ(query_controller->last_lens_selection_type(), lens::REGION_SEARCH);
 }

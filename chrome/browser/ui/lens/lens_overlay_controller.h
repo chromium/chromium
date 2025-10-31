@@ -1186,9 +1186,6 @@ class LensOverlayController : public lens::mojom::LensPageHandler,
   // horizontal alignment pref.
   PrefChangeRegistrar pref_change_registrar_;
 
-  // Whether to use AIM for visual searches.
-  bool use_aim_for_visual_search_ = false;
-
   // --------------------Browser window scoped state: END---------------------
 
   // Must be the last member.
