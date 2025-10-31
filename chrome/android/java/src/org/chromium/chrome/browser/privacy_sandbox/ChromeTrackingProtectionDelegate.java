@@ -37,16 +37,6 @@ public class ChromeTrackingProtectionDelegate implements TrackingProtectionDeleg
     }
 
     @Override
-    public boolean isDoNotTrackEnabled() {
-        return UserPrefs.get(mProfile).getBoolean(Pref.ENABLE_DO_NOT_TRACK);
-    }
-
-    @Override
-    public void setDoNotTrack(boolean enabled) {
-        UserPrefs.get(mProfile).setBoolean(Pref.ENABLE_DO_NOT_TRACK, enabled);
-    }
-
-    @Override
     public boolean isIpProtectionUxEnabled() {
         return ChromeFeatureList.isEnabled(ChromeFeatureList.IP_PROTECTION_UX);
     }

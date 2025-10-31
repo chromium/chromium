@@ -22,14 +22,6 @@ public interface TrackingProtectionDelegate {
     void setBlockAll3pc(boolean enabled);
 
     /**
-     * @return whether the Do Not Track pref is enabled.
-     */
-    boolean isDoNotTrackEnabled();
-
-    /** Set the value of the Do Not Track Pref. */
-    void setDoNotTrack(boolean enabled);
-
-    /**
      * @return whether the IP protection UX is enabled.
      */
     boolean isIpProtectionUxEnabled();

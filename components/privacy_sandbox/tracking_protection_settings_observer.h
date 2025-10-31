@@ -21,9 +21,6 @@ class TrackingProtectionSettingsObserver {
 
   virtual ~TrackingProtectionSettingsObserver() = default;
 
-  // For observation of DNT.
-  virtual void OnDoNotTrackEnabledChanged() {}
-
   // For observation of IP protection.
   virtual void OnIpProtectionEnabledChanged() {}
 

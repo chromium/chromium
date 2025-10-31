@@ -15,7 +15,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/net/convert_explicitly_allowed_network_ports_pref.h"
-#include "chrome/browser/privacy_sandbox/tracking_protection_settings_factory.h"
 #include "content/public/browser/reduce_accept_language_utils.h"
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
@@ -26,7 +25,6 @@
 #include "components/language/core/browser/language_prefs.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_service.h"
-#include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "content/public/browser/renderer_preferences_util.h"
 #include "media/media_buildflags.h"
 #include "third_party/blink/public/common/peerconnection/webrtc_ip_handling_policy.h"
@@ -143,8 +141,7 @@ void UpdateFromSystemSettings(blink::RendererPreferences* prefs,
       ui::NativeTheme::GetInstanceForNativeUi()->caret_blink_interval();
   prefs->enable_referrers = pref_service->GetBoolean(prefs::kEnableReferrers);
   prefs->enable_do_not_track =
-      TrackingProtectionSettingsFactory::GetForProfile(profile)
-          ->IsDoNotTrackEnabled();
+      pref_service->GetBoolean(prefs::kEnableDoNotTrack);
   prefs->enable_encrypted_media =
       pref_service->GetBoolean(prefs::kEnableEncryptedMedia);
   prefs->webrtc_ip_handling_policy = blink::ToWebRTCIPHandlingPolicy(

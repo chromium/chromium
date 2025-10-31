@@ -14,7 +14,6 @@
 #include "base/memory/singleton.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/privacy_sandbox/tracking_protection_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile_selections.h"
@@ -89,13 +88,7 @@ const char* const kWebPrefsToObserve[] = {
 // Watching all these settings per tab is slow when a user has a lot of tabs and
 // and they use session restore. So watch them once per profile.
 // http://crbug.com/452693
-PrefWatcher::PrefWatcher(Profile* profile)
-    : profile_(profile),
-      tracking_protection_settings_(
-          TrackingProtectionSettingsFactory::GetForProfile(profile)) {
-  CHECK(tracking_protection_settings_);
-  tracking_protection_settings_observation_.Observe(
-      tracking_protection_settings_);
+PrefWatcher::PrefWatcher(Profile* profile) : profile_(profile) {
   native_theme_observation_.Observe(ui::NativeTheme::GetInstanceForWeb());
 
   profile_pref_change_registrar_.Init(profile_->GetPrefs());
@@ -117,6 +110,8 @@ PrefWatcher::PrefWatcher(Profile* profile)
   profile_pref_change_registrar_.Add(prefs::kWebRTCUDPPortRange,
                                      renderer_callback);
   profile_pref_change_registrar_.Add(prefs::kCaretBrowsingEnabled,
+                                     renderer_callback);
+  profile_pref_change_registrar_.Add(prefs::kEnableDoNotTrack,
                                      renderer_callback);
 
 #if !BUILDFLAG(IS_MAC)
@@ -159,17 +154,11 @@ void PrefWatcher::RegisterRendererPreferenceWatcher(
 }
 
 void PrefWatcher::Shutdown() {
-  tracking_protection_settings_ = nullptr;
-  tracking_protection_settings_observation_.Reset();
   profile_pref_change_registrar_.RemoveAll();
   local_state_pref_change_registrar_.RemoveAll();
 }
 
 void PrefWatcher::OnNativeThemeUpdated(ui::NativeTheme* observed_theme) {
-  UpdateRendererPreferences();
-}
-
-void PrefWatcher::OnDoNotTrackEnabledChanged() {
   UpdateRendererPreferences();
 }
 
@@ -214,7 +203,6 @@ PrefWatcherFactory::PrefWatcherFactory()
               // Ash Internals.
               .WithAshInternals(ProfileSelection::kOwnInstance)
               .Build()) {
-  DependsOn(TrackingProtectionSettingsFactory::GetInstance());
 }
 
 PrefWatcherFactory::~PrefWatcherFactory() = default;

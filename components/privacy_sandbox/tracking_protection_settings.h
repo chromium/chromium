@@ -68,9 +68,6 @@ class TrackingProtectionSettings : public KeyedService,
   void AddObserver(TrackingProtectionSettingsObserver* observer);
   void RemoveObserver(TrackingProtectionSettingsObserver* observer);
 
-  // Returns whether "do not track" is enabled.
-  bool IsDoNotTrackEnabled() const;
-
   // Returns whether tracking protection for 3PCD (prefs + UX) is enabled.
   bool IsTrackingProtection3pcdEnabled() const;
 
@@ -116,7 +113,6 @@ class TrackingProtectionSettings : public KeyedService,
   void OnEnterpriseControlForPrefsChanged();
 
   // Callbacks for pref observation.
-  void OnDoNotTrackEnabledPrefChanged();
   void OnBlockAllThirdPartyCookiesPrefChanged();
   void OnTrackingProtection3pcdPrefChanged();
   void OnIpProtectionPrefChanged();

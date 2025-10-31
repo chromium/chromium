@@ -105,9 +105,6 @@ inline constexpr char kIpProtectionInitializedByDogfood[] =
 inline constexpr char kFingerprintingProtectionEnabled[] =
     "tracking_protection.fingerprinting_protection_enabled";
 
-// Whether to send the DNT header.
-inline constexpr char kEnableDoNotTrack[] = "enable_do_not_track";
-
 // Whether User Bypass 3PC exceptions have been migrated to Tracking Protection
 // exceptions.
 inline constexpr char kUserBypass3pcExceptionsMigrated[] =

@@ -45,11 +45,6 @@ TrackingProtectionSettings::TrackingProtectionSettings(
 
   pref_change_registrar_.Init(pref_service_);
   pref_change_registrar_.Add(
-      prefs::kEnableDoNotTrack,
-      base::BindRepeating(
-          &TrackingProtectionSettings::OnDoNotTrackEnabledPrefChanged,
-          base::Unretained(this)));
-  pref_change_registrar_.Add(
       prefs::kIpProtectionEnabled,
       base::BindRepeating(
           &TrackingProtectionSettings::OnIpProtectionPrefChanged,
@@ -136,10 +131,6 @@ bool TrackingProtectionSettings::IsFpProtectionEnabled() const {
          base::FeatureList::IsEnabled(kFingerprintingProtectionUx);
 }
 
-bool TrackingProtectionSettings::IsDoNotTrackEnabled() const {
-  return pref_service_->GetBoolean(prefs::kEnableDoNotTrack);
-}
-
 void TrackingProtectionSettings::AddTrackingProtectionException(
     const GURL& first_party_url) {
   host_content_settings_map_->SetContentSettingCustomScope(
@@ -210,12 +201,6 @@ void TrackingProtectionSettings::OnEnterpriseControlForPrefsChanged() {
       pref_service_->IsManagedPreference(
           prefs::kPrivacySandboxRelatedWebsiteSetsEnabled)) {
     pref_service_->SetBoolean(prefs::kTrackingProtection3pcdEnabled, false);
-  }
-}
-
-void TrackingProtectionSettings::OnDoNotTrackEnabledPrefChanged() {
-  for (auto& observer : observers_) {
-    observer.OnDoNotTrackEnabledChanged();
   }
 }
 

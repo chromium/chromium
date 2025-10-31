@@ -64,19 +64,6 @@ public class ChromeTrackingProtectionDelegateTest {
     @Test
     @UiThreadTest
     @MediumTest
-    public void doNotTrack() {
-        UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
-                .setBoolean(Pref.ENABLE_DO_NOT_TRACK, false);
-        assertFalse(mDelegate.isDoNotTrackEnabled());
-        mDelegate.setDoNotTrack(true);
-        assertTrue(mDelegate.isDoNotTrackEnabled());
-        mDelegate.setDoNotTrack(false);
-        assertFalse(mDelegate.isDoNotTrackEnabled());
-    }
-
-    @Test
-    @UiThreadTest
-    @MediumTest
     public void ipProtection() {
         UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
                 .setBoolean(Pref.IP_PROTECTION_ENABLED, false);

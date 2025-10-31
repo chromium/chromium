@@ -39,7 +39,6 @@ MATCHER_P(IsSameSite, site, "") {
 class MockTrackingProtectionSettingsObserver
     : public TrackingProtectionSettingsObserver {
  public:
-  MOCK_METHOD(void, OnDoNotTrackEnabledChanged, (), (override));
   MOCK_METHOD(void, OnIpProtectionEnabledChanged, (), (override));
   MOCK_METHOD(void, OnFpProtectionEnabledChanged, (), (override));
   MOCK_METHOD(void, OnBlockAllThirdPartyCookiesChanged, (), (override));
@@ -111,12 +110,6 @@ class TrackingProtectionSettingsTest : public testing::Test {
 };
 
 // Gets prefs
-
-TEST_F(TrackingProtectionSettingsTest, ReturnsDoNotTrackStatus) {
-  EXPECT_FALSE(tracking_protection_settings()->IsDoNotTrackEnabled());
-  prefs()->SetBoolean(prefs::kEnableDoNotTrack, true);
-  EXPECT_TRUE(tracking_protection_settings()->IsDoNotTrackEnabled());
-}
 
 TEST_F(TrackingProtectionSettingsTest, ReturnsIpProtectionStatus) {
   prefs()->SetBoolean(prefs::kIpProtectionEnabled, false);
@@ -273,19 +266,6 @@ TEST_F(TrackingProtectionSettingsTest,
 }
 
 // Calls observers
-
-TEST_F(TrackingProtectionSettingsTest, CorrectlyCallsObserversForDoNotTrack) {
-  MockTrackingProtectionSettingsObserver observer;
-  tracking_protection_settings()->AddObserver(&observer);
-
-  EXPECT_CALL(observer, OnDoNotTrackEnabledChanged());
-  prefs()->SetBoolean(prefs::kEnableDoNotTrack, true);
-  testing::Mock::VerifyAndClearExpectations(&observer);
-
-  EXPECT_CALL(observer, OnDoNotTrackEnabledChanged());
-  prefs()->SetBoolean(prefs::kEnableDoNotTrack, false);
-  testing::Mock::VerifyAndClearExpectations(&observer);
-}
 
 TEST_F(TrackingProtectionSettingsTest, CorrectlyCallsObserversForIpProtection) {
   MockTrackingProtectionSettingsObserver observer;
