@@ -16,6 +16,34 @@
 // `primaryActionString`, `secondaryActionString`, `tertiaryActionString`.
 // Setting those properties will make those buttons be added to the view
 // controller.
+//
+// The layout is structured as follows:
+//
+// +--------------------------------+
+// |          navigationBar         |
+// |  +--------------------------+  |
+// |  |        titleView         |  |
+// |  +--------------------------+  |
+// +--------------------------------+
+// |           scrollView           |
+// |  +--------------------------+  |
+// |  |      aboveTitleView      |  |
+// |  +--------------------------+  |
+// |  |          image           |  |
+// |  +--------------------------+  |
+// |  |         titleString      |  |
+// |  +--------------------------+  |
+// |  |        subtitleString    |  |
+// |  +--------------------------+  |
+// |  |      underTitleView      |  |
+// |  +--------------------------+  |
+// +--------------------------------+
+// |      tertiaryActionButton      |
+// +--------------------------------+
+// |      primaryActionButton       |
+// +--------------------------------+
+// |     secondaryActionButton      |
+// +--------------------------------+
 @interface ConfirmationAlertViewController : ButtonStackViewController
 
 // The background color to apply to the main view. If needed, must be set before
@@ -57,18 +85,6 @@
 // The color of the text for the subtitle. If nil, will default to
 // kTextSecondaryColor.
 @property(nonatomic, copy) UIColor* subtitleTextColor;
-
-// The text for the primary action. Must be set before the view is loaded.
-@property(nonatomic, copy) NSString* primaryActionString;
-
-// The text for the secondary action. Must be set before the view is loaded.
-@property(nonatomic, copy) NSString* secondaryActionString;
-
-// The icon for the secondary action. Must be set before the view is loaded.
-@property(nonatomic, strong) UIImage* secondaryActionImage;
-
-// The text for the tertiary action. Must be set before the view is loaded.
-@property(nonatomic, copy) NSString* tertiaryActionString;
 
 // The image. May be updated after the view is loaded.
 @property(nonatomic, strong) UIImage* image;
@@ -149,18 +165,6 @@
 // Indicates whether information stack view items should horizontally fill the
 // space.
 @property(nonatomic) BOOL shouldFillInformationStack;
-
-// Whether this sheet is presenting a destructive action. Default is NO.
-@property(nonatomic, assign) BOOL destructiveAction;
-
-// Indicates whether this view shows itself in a loading state: The primary
-// button is disabled and shows an activity indicator instead of the primary
-// action string; and other action buttons are disabled.
-@property(nonatomic, assign) BOOL isLoading;
-
-// Shows a checkmark on the primary action button instead of the primary action
-// text, and shows the primary action button in a disabled state.
-@property(nonatomic, assign) BOOL isConfirmed;
 
 // Can be overridden by subclasses to customize the secondary title, e.g. set a
 // different style, or a UITextViewDelegate. The default implementation does

@@ -221,50 +221,6 @@ const CGFloat kFaviconBadgeSideLength = 24;
   }
 }
 
-#pragma mark - Property Setters
-
-- (void)setPrimaryActionString:(NSString*)primaryActionString {
-  _primaryActionString = primaryActionString;
-  self.configuration.primaryActionString = primaryActionString;
-  [self reloadConfiguration];
-}
-
-- (void)setSecondaryActionString:(NSString*)secondaryActionString {
-  _secondaryActionString = secondaryActionString;
-  self.configuration.secondaryActionString = secondaryActionString;
-  [self reloadConfiguration];
-}
-
-- (void)setSecondaryActionImage:(UIImage*)secondaryActionImage {
-  _secondaryActionImage = secondaryActionImage;
-  self.configuration.secondaryActionImage = secondaryActionImage;
-  [self reloadConfiguration];
-}
-
-- (void)setTertiaryActionString:(NSString*)tertiaryActionString {
-  _tertiaryActionString = tertiaryActionString;
-  self.configuration.tertiaryActionString = tertiaryActionString;
-  [self reloadConfiguration];
-}
-
-- (void)setDestructiveAction:(BOOL)destructiveAction {
-  _destructiveAction = destructiveAction;
-  self.configuration.primaryButtonStyle =
-      destructiveAction ? ChromeButtonStylePrimaryDestructive
-                        : ChromeButtonStylePrimary;
-  [self reloadConfiguration];
-}
-
-- (void)setIsLoading:(BOOL)isLoading {
-  _isLoading = isLoading;
-  [super setLoading:isLoading];
-}
-
-- (void)setIsConfirmed:(BOOL)isConfirmed {
-  _isConfirmed = isConfirmed;
-  [super setConfirmed:isConfirmed];
-}
-
 - (void)viewSafeAreaInsetsDidChange {
   [super viewSafeAreaInsetsDidChange];
   [self.view setNeedsUpdateConstraints];
