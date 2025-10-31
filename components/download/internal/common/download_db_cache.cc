@@ -10,6 +10,7 @@
 #include "components/download/database/download_db_conversions.h"
 #include "components/download/database/download_db_entry.h"
 #include "components/download/public/common/download_features.h"
+#include "components/download/public/common/download_item_impl.h"
 #include "components/download/public/common/download_stats.h"
 #include "components/download/public/common/download_utils.h"
 
