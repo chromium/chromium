@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/feature_list.h"
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
@@ -19,6 +20,11 @@
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
+
+namespace {
+BASE_FEATURE(kTextPaintTimingFrameIndexInitializationFix,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+}  // namespace
 
 TextPaintTimingDetector::TextPaintTimingDetector(
     LocalFrameView* frame_view,
@@ -209,6 +215,9 @@ void TextPaintTimingDetector::ReportLargestIgnoredText() {
   DCHECK(document);
   PaintTiming::From(*document).MarkFirstContentfulPaint();
 
+  // TODO(crbug.com/455791378): Move this to `QueueToMeasurePaintTime` once
+  // `kTextPaintTimingFrameIndexInitializationFix` is removed.
+  record->SetFrameIndex(frame_index_);
   QueueToMeasurePaintTime(*record->GetNode()->GetLayoutObject(), record);
 }
 
@@ -323,6 +332,13 @@ TextRecord* TextPaintTimingDetector::MaybeRecordTextRecord(
             object, frame_visual_rect, property_tree_state, frame_view_),
         frame_visual_rect, root_visual_rect, is_needed_for_element_timing,
         context);
+  }
+
+  if (base::FeatureList::IsEnabled(
+          kTextPaintTimingFrameIndexInitializationFix)) {
+    // TODO(crbug.com/455791378): Move this to `QueueToMeasurePaintTime` once
+    // `kTextPaintTimingFrameIndexInitializationFix` is removed.
+    record->SetFrameIndex(frame_index_);
   }
   QueueToMeasurePaintTime(object, record);
   return record;
