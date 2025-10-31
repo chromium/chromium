@@ -231,11 +231,47 @@ public class KeyboardAccessoryChipViewRenderTest {
                         .setSuggestionType(SuggestionType.AUTOCOMPLETE_ENTRY)
                         .build();
 
+        AutofillSuggestion creditCardSuggestion =
+                new AutofillSuggestion.Builder()
+                        .setLabel("Homer Simpson")
+                        .setSubLabel("** 1234")
+                        .setSuggestionType(SuggestionType.CREDIT_CARD_ENTRY)
+                        .setIconId(R.drawable.mc_card)
+                        .build();
+
+        AutofillSuggestion offerSuggestion =
+                new AutofillSuggestion.Builder()
+                        .setLabel("Offer suggestion")
+                        .setSubLabel("")
+                        .setSuggestionType(SuggestionType.CREDIT_CARD_ENTRY)
+                        .setIconId(R.drawable.ic_offer_tag)
+                        .build();
+
+        AutofillSuggestion otpSuggestion =
+                new AutofillSuggestion.Builder()
+                        .setLabel("Otp code")
+                        .setSubLabel("")
+                        .setSuggestionType(SuggestionType.ONE_TIME_PASSWORD_ENTRY)
+                        .setIconId(R.drawable.ic_android_messages_icon)
+                        .build();
+
+        AutofillSuggestion passwordHistorySuggestion =
+                new AutofillSuggestion.Builder()
+                        .setLabel("email.address@gmail.com")
+                        .setSubLabel("Recover password *********")
+                        .setSuggestionType(SuggestionType.BACKUP_PASSWORD_ENTRY)
+                        .setIconId(R.drawable.ic_history_24dp)
+                        .build();
+
         return List.of(
                 addressSuggestion,
                 loyaltyCardSuggestion,
                 homeAndWorkSuggestion,
-                autocompleteSuggestion);
+                autocompleteSuggestion,
+                creditCardSuggestion,
+                offerSuggestion,
+                otpSuggestion,
+                passwordHistorySuggestion);
     }
 
     private ChipView createChipViewFromSuggestion(AutofillSuggestion suggestion) {
