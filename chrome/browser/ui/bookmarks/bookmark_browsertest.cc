@@ -31,6 +31,8 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -516,18 +518,19 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, OpenAllBookmarks) {
       close_all_tabs_except_first(incognito_browser);
       bookmarks::OpenAllIfAllowed(regular_browser, {bbar},
                                   WindowOpenDisposition::NEW_WINDOW);
-      Browser* regular_browser2 = nullptr;
-      for (Browser* browser_instance : *BrowserList::GetInstance()) {
-        if (browser_instance != incognito_browser &&
-            browser_instance != regular_browser) {
-          regular_browser2 = browser_instance;
-        }
-      }
+      BrowserWindowInterface* regular_browser2 = nullptr;
+      ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+          [&](BrowserWindowInterface* browser) {
+            if (browser != incognito_browser && browser != regular_browser) {
+              regular_browser2 = browser;
+            }
+            return !regular_browser2;
+          });
       // new browser needs to be opened
       EXPECT_NE(regular_browser2, nullptr);
       int num_tabs_regular = regular_browser->tab_strip_model()->GetTabCount();
       int num_tabs_regular2 =
-          regular_browser2->tab_strip_model()->GetTabCount();
+          regular_browser2->GetTabStripModel()->GetTabCount();
       EXPECT_EQ(num_tabs_regular, 1);
       EXPECT_EQ(num_tabs_regular2, 4);
       CloseBrowserSynchronously(regular_browser2);
@@ -568,20 +571,21 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, OpenAllBookmarks) {
       close_all_tabs_except_first(incognito_browser);
       bookmarks::OpenAllIfAllowed(incognito_browser, {incognito_bbar},
                                   WindowOpenDisposition::NEW_WINDOW);
-      Browser* incognito_browser2 = nullptr;
-      for (Browser* browser_instance : *BrowserList::GetInstance()) {
-        if (browser_instance != incognito_browser &&
-            browser_instance != regular_browser) {
-          incognito_browser2 = browser_instance;
-        }
-      }
+      BrowserWindowInterface* incognito_browser2 = nullptr;
+      ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+          [&](BrowserWindowInterface* browser) {
+            if (browser != incognito_browser && browser != regular_browser) {
+              incognito_browser2 = browser;
+            }
+            return !incognito_browser2;
+          });
       // new browser needs to be opened
       EXPECT_NE(incognito_browser2, nullptr);
       int num_tabs_regular = regular_browser->tab_strip_model()->GetTabCount();
       int num_tabs_incognito =
           incognito_browser->tab_strip_model()->GetTabCount();
       int num_tabs_incognito2 =
-          incognito_browser2->tab_strip_model()->GetTabCount();
+          incognito_browser2->GetTabStripModel()->GetTabCount();
       EXPECT_EQ(num_tabs_regular, 3);
       EXPECT_EQ(num_tabs_incognito, 1);
       EXPECT_EQ(num_tabs_incognito2, 2);

@@ -72,6 +72,7 @@
 #include "chrome/browser/ui/browser_ui_prefs.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/search/search_tab_helper.h"
@@ -1287,6 +1288,8 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, ShouldShowLocationBar) {
   const Extension* extension_app = GetExtension();
 
   // Launch it in a window, as AppLauncherHandler::HandleLaunchApp() would.
+  auto browser_created_observer =
+      std::make_optional<ui_test_utils::BrowserCreatedObserver>();
   WebContents* app_window =
       apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
           ->BrowserAppLauncher()
@@ -1296,25 +1299,16 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, ShouldShowLocationBar) {
               WindowOpenDisposition::NEW_WINDOW,
               apps::LaunchSource::kFromTest));
   ASSERT_TRUE(app_window);
+  Browser* const app_browser = browser_created_observer->Wait();
 
+  browser_created_observer.emplace();
   DevToolsWindow* devtools_window =
       DevToolsWindowTesting::OpenDevToolsWindowSync(browser(), false);
+  Browser* const dev_tools_browser = browser_created_observer->Wait();
 
   // The launch should have created a new app browser and a dev tools browser.
   ASSERT_EQ(3u, chrome::GetBrowserCount(browser()->profile()));
 
-  // Find the new browsers.
-  Browser* app_browser = nullptr;
-  Browser* dev_tools_browser = nullptr;
-  for (Browser* b : *BrowserList::GetInstance()) {
-    if (b == browser()) {
-      continue;
-    } else if (b->app_name() == DevToolsWindow::kDevToolsApp) {
-      dev_tools_browser = b;
-    } else {
-      app_browser = b;
-    }
-  }
   ASSERT_TRUE(dev_tools_browser);
   ASSERT_TRUE(app_browser);
   ASSERT_TRUE(app_browser != browser());
@@ -1468,6 +1462,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, OpenAppWindowLikeNtp) {
   ASSERT_TRUE(extension_app);
 
   // Launch it in a window, as AppLauncherHandler::HandleLaunchApp() would.
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
   WebContents* app_window =
       apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
           ->BrowserAppLauncher()
@@ -1477,6 +1472,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, OpenAppWindowLikeNtp) {
               WindowOpenDisposition::NEW_WINDOW,
               apps::LaunchSource::kFromTest));
   ASSERT_TRUE(app_window);
+  Browser* const new_browser = browser_created_observer.Wait();
 
   // Apps launched in a window from the NTP have an extensions tab helper with
   // extension_app set.
@@ -1488,13 +1484,6 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, OpenAppWindowLikeNtp) {
   // The launch should have created a new browser.
   ASSERT_EQ(2u, chrome::GetBrowserCount(browser()->profile()));
 
-  // Find the new browser.
-  Browser* new_browser = nullptr;
-  for (Browser* b : *BrowserList::GetInstance()) {
-    if (b != browser()) {
-      new_browser = b;
-    }
-  }
   ASSERT_TRUE(new_browser);
   ASSERT_TRUE(new_browser != browser());
 

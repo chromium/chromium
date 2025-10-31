@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/tab_contents/tab_contents_iterator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -63,14 +64,8 @@ bool IsRepeatedlyCrashing() {
 }
 
 bool AreOtherTabsOpen() {
-  size_t tab_count = 0;
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    tab_count += browser->tab_strip_model()->count();
-    if (tab_count > 1U) {
-      break;
-    }
-  }
-  return (tab_count > 1U);
+  return std::distance(AllTabContentses().begin(), AllTabContentses().end()) >
+         1;
 }
 
 }  // namespace

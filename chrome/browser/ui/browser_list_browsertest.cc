@@ -86,24 +86,21 @@ class BrowserObserverChild : public BrowserListObserver, TabStripModelObserver {
  public:
   explicit BrowserObserverChild(Browser* created_for_browser)
       : created_for_browser_(created_for_browser) {
-    BrowserList* browser_list = BrowserList::GetInstance();
-    for (Browser* browser : *browser_list) {
-      EXPECT_FALSE(base::Contains(observed_browsers_, browser));
-      observed_browsers_.insert(browser);
-      browser->tab_strip_model()->AddObserver(this);
-    }
+    ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+        [this](BrowserWindowInterface* browser) {
+          EXPECT_FALSE(base::Contains(observed_browsers_, browser));
+          observed_browsers_.insert(browser);
+          // TODO(crbug.com/452120900): TabStripModelObserver auto-unregisters
+          // in dtor
+          browser->GetTabStripModel()->AddObserver(this);
+          return true;
+        });
     EXPECT_TRUE(base::Contains(observed_browsers_, created_for_browser_));
-    browser_list->AddObserver(this);
+    BrowserList::GetInstance()->AddObserver(this);
   }
 
   ~BrowserObserverChild() override {
-    BrowserList* browser_list = BrowserList::GetInstance();
-    for (Browser* browser : *browser_list) {
-      EXPECT_TRUE(base::Contains(observed_browsers_, browser));
-      observed_browsers_.erase(browser);
-      browser->tab_strip_model()->RemoveObserver(this);
-    }
-    browser_list->RemoveObserver(this);
+    BrowserList::GetInstance()->RemoveObserver(this);
   }
 
   void OnBrowserAdded(Browser* browser) override {
@@ -120,7 +117,7 @@ class BrowserObserverChild : public BrowserListObserver, TabStripModelObserver {
   }
 
  private:
-  std::set<raw_ptr<Browser, SetExperimental>> observed_browsers_;
+  std::set<raw_ptr<BrowserWindowInterface, SetExperimental>> observed_browsers_;
   raw_ptr<Browser, DanglingUntriaged> created_for_browser_;
 };
 

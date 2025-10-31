@@ -15,6 +15,9 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/desktop_browser_window_capabilities.h"
 #import "chrome/browser/ui/cocoa/applescript/bookmark_folder_applescript.h"
 #import "chrome/browser/ui/cocoa/applescript/browsercrapplication+applescript.h"
 #import "chrome/browser/ui/cocoa/applescript/constants_applescript.h"
@@ -27,15 +30,18 @@ using bookmarks::BookmarkModel;
 @implementation BrowserCrApplication (AppleScriptAdditions)
 
 - (NSArray*)appleScriptWindows {
-  std::map<NSWindow*, Browser*> browsers;
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    if (browser->IsAttemptingToCloseBrowser()) {
-      continue;
-    }
+  std::map<NSWindow*, BrowserWindowInterface*> browsers;
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [&](BrowserWindowInterface* browser) {
+        if (browser->capabilities()->IsAttemptingToCloseBrowser()) {
+          return true;
+        }
 
-    browsers.emplace(browser->window()->GetNativeWindow().GetNativeNSWindow(),
-                     browser);
-  }
+        browsers.emplace(
+            browser->GetWindow()->GetNativeWindow().GetNativeNSWindow(),
+            browser);
+        return true;
+      });
 
   NSMutableArray* result = [NSMutableArray array];
   for (NSWindow* window in NSApp.orderedWindows) {

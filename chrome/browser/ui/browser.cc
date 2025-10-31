@@ -346,22 +346,23 @@ const extensions::Extension* GetExtensionForOrigin(
 std::pair<bool, bool> IsLastWindow(const Browser& browser) {
   bool last_window = true;
   bool last_window_for_profile = true;
-  for (Browser* other_browser : *BrowserList::GetInstance()) {
-    // Don't count this browser window or any other in the process of closing.
-    // Window closing may be delayed, and windows that are in the process of
-    // closing don't count against our totals.
-    if (other_browser == &browser ||
-        other_browser->IsAttemptingToCloseBrowser()) {
-      continue;
-    }
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [&](BrowserWindowInterface* other_browser) {
+        // Don't count this browser window or any other in the process of
+        // closing. Window closing may be delayed, and windows that are in the
+        // process of closing don't count against our totals.
+        if (other_browser == &browser ||
+            other_browser->capabilities()->IsAttemptingToCloseBrowser()) {
+          return true;
+        }
 
-    last_window = false;
+        last_window = false;
 
-    if (other_browser->profile() == browser.profile()) {
-      last_window_for_profile = false;
-      break;
-    }
-  }
+        if (other_browser->GetProfile() == browser.profile()) {
+          last_window_for_profile = false;
+        }
+        return last_window_for_profile;
+      });
 
   return {last_window, last_window_for_profile};
 }
@@ -447,12 +448,15 @@ bool HasActorTask(Profile* profile, content::RenderFrameHost* rfh) {
 
 BrowserWindowInterface* BrowserWindowInterface::FromSessionID(
     const SessionID& session_id) {
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    if (browser->GetSessionID() == session_id) {
-      return browser;
-    }
-  }
-  return nullptr;
+  BrowserWindowInterface* found = nullptr;
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [&](BrowserWindowInterface* browser) {
+        if (browser->GetSessionID() == session_id) {
+          found = browser;
+        }
+        return !found;
+      });
+  return found;
 }
 
 Browser::CreateParams::CreateParams(Profile* profile, bool user_gesture)
