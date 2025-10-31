@@ -26,11 +26,16 @@
 #include "chrome/browser/ui/views/infobars/infobar_container_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_view.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/proposed_layout.h"
 
 namespace {
+
+// The insets for main region and its containing views when the
+// toolbar_height_side_panel is visible.
+constexpr int kContainerInsetPadding = 8 + views::Separator::kThickness;
 
 // Shorthand for validating both `child` and `parent` and checking that one is
 // parented to the other. Ignores child visibility.
@@ -347,23 +352,40 @@ BrowserViewLayoutImpl::CalculateProposedLayout(
   // Lay out toolbar-height side panel.
   if (IsParentedToAndVisible(views().toolbar_height_side_panel,
                              views().browser_view)) {
+    const gfx::Rect main_region_bounds(
+        x, std::max(y, params.visual_client_area.y()),
+        params.visual_client_area.width(),
+        params.visual_client_area.bottom() - params.visual_client_area.y());
+    layout.AddChild(views().main_region, main_region_bounds, true);
+
     const int width =
         views().toolbar_height_side_panel->GetPreferredSize().width();
     const int visible_width = base::ClampFloor(
         width * views().toolbar_height_side_panel->GetAnimationValue());
     const int top = std::max(
-        y, params.visual_client_area.y() +
-               base::ClampCeil(
-                   params.leading_exclusion.ContentWithPadding().height()));
+        y + kContainerInsetPadding,
+        params.visual_client_area.y() +
+            base::ClampCeil(
+                params.leading_exclusion.ContentWithPadding().height()));
     gfx::Rect toolbar_height_bounds(x - (width - visible_width), top, width,
                                     params.visual_client_area.bottom() - top);
     x = toolbar_height_bounds.right();
     layout.AddChild(views().toolbar_height_side_panel, toolbar_height_bounds);
+  } else {
+    // Set the main_region bounds to 0 since it should only be visible when
+    // toolbar height side panel is visible.
+    layout.AddChild(views().main_region, gfx::Rect(), false);
   }
 
   // Layout the main container.
-  const gfx::Rect main_bounds(x, y, params.visual_client_area.width() - x,
-                              params.visual_client_area.height() - y);
+  gfx::Rect main_bounds(x, y, params.visual_client_area.width() - x,
+                        params.visual_client_area.height() - y);
+
+  if (IsParentedToAndVisible(views().toolbar_height_side_panel,
+                             views().browser_view)) {
+    main_bounds.Inset(kContainerInsetPadding);
+  }
+
   const BrowserLayoutParams main_params =
       params.InLocalCoordinates(main_bounds);
   ProposedLayout& main_layout =

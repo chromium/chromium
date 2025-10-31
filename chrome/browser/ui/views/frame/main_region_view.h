@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_FRAME_MAIN_REGION_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_FRAME_MAIN_REGION_VIEW_H_
 
+#include "base/memory/raw_ptr.h"
+#include "ui/gfx/canvas.h"
 #include "ui/views/view.h"
 
 // This wrapper view primarily serves to hold the MainContainer and
@@ -13,10 +15,15 @@ class MainRegionView : public views::View {
   METADATA_HEADER(MainRegionView, views::View)
 
  public:
-  MainRegionView();
+  explicit MainRegionView(BrowserView& browser_view);
   MainRegionView(const MainRegionView&) = delete;
   MainRegionView& operator=(const MainRegionView&) = delete;
   ~MainRegionView() override;
+
+  void OnPaint(gfx::Canvas* canvas) override;
+
+ private:
+  raw_ref<BrowserView> browser_view_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_MAIN_REGION_VIEW_H_

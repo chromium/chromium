@@ -4,10 +4,16 @@
 
 #include "chrome/browser/ui/views/frame/main_region_view.h"
 
+#include "chrome/browser/ui/views/frame/top_container_background.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/gfx/canvas.h"
 
-MainRegionView::MainRegionView() = default;
+MainRegionView::MainRegionView(BrowserView& browser_view)
+    : browser_view_(browser_view) {}
 MainRegionView::~MainRegionView() = default;
 
-BEGIN_METADATA(MainRegionView)
-END_METADATA
+void MainRegionView::OnPaint(gfx::Canvas* canvas) {
+  TopContainerBackground::PaintBackground(canvas, this, &browser_view_.get());
+}
+
+BEGIN_METADATA(MainRegionView) END_METADATA

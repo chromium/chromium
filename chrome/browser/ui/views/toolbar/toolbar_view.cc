@@ -69,6 +69,7 @@
 #include "chrome/browser/ui/views/page_action/page_action_view.h"
 #include "chrome/browser/ui/views/performance_controls/battery_saver_button.h"
 #include "chrome/browser/ui/views/performance_controls/performance_intervention_button.h"
+#include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
 #include "chrome/browser/ui/views/toolbar/app_menu.h"
@@ -182,7 +183,6 @@ auto& GetViewCommandMap() {
 
 constexpr int kBrowserAppMenuRefreshExpandedMargin = 5;
 constexpr int kBrowserAppMenuRefreshCollapsedMargin = 2;
-
 // Draws background akin to the tabstrip.
 class TabstripLikeBackground : public views::Background {
  public:
@@ -194,10 +194,18 @@ class TabstripLikeBackground : public views::Background {
   void Paint(gfx::Canvas* canvas, views::View* view) const override {
     bool painted = TopContainerBackground::PaintThemeCustomImage(canvas, view,
                                                                  browser_view_);
+
     if (!painted) {
-      SkColor frame_color =
-          browser_view_->browser_widget()->GetFrameView()->GetFrameColor(
-              BrowserFrameActiveState::kUseCurrent);
+      SkColor frame_color;
+      // If the toolbar height side panel is visible, background should be
+      // painted the same as the toolbar rather than tab strip.
+      if (browser_view_->toolbar_height_side_panel()->GetVisible()) {
+        frame_color = view->GetColorProvider()->GetColor(kColorToolbar);
+      } else {
+        frame_color =
+            browser_view_->browser_widget()->GetFrameView()->GetFrameColor(
+                BrowserFrameActiveState::kUseCurrent);
+      }
       canvas->DrawColor(frame_color);
     }
   }

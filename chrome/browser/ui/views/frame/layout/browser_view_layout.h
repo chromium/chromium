@@ -48,6 +48,7 @@ struct BrowserViewLayoutViews {
   // NOTE: If you add a view, try to add it as a views::View, which makes
   // testing much easier.
   raw_ptr<views::View> window_scrim = nullptr;
+  raw_ptr<views::View> main_region = nullptr;
   raw_ptr<views::View> main_container = nullptr;
   raw_ptr<views::View> top_container = nullptr;
   raw_ptr<WebAppFrameToolbarView> web_app_frame_toolbar = nullptr;
