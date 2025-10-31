@@ -3915,7 +3915,8 @@
     {
       name: "PrerenderUntilScript",
       public: true,
-      status: "test",
+      origin_trial_feature_name: "PrerenderUntilScript",
+      status: "experimental",
     },
     {
       name: "Presentation",

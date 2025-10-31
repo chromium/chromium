@@ -405,7 +405,11 @@ void HTMLParserScriptRunner::UnblockForPrerenderActivation() {
   // Should be aligned with `ExecuteScriptsWaitingForResources`.
   CHECK(document_);
   CHECK(!IsExecutingScript());
-  CHECK(RuntimeEnabledFeatures::PrerenderUntilScriptEnabled());
+  // We cannot check if the RuntimeEnabledFeature of PrerenderUntilScript is
+  // enabled or not here, because the OriginTrial token may attached to the
+  // initiator page only.
+  // TODO(crbug.com/428500219): Bring the check back after the feature is
+  // shipped.
   CHECK(!document_->IsScriptBlockedUntilPrerenderActivation());
   ExecuteParsingBlockingScripts();
 }

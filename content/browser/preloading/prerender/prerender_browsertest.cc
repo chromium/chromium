@@ -395,7 +395,7 @@ class PrerenderBrowserTest : public ContentBrowserTest,
     pagehide_event_receiver_ =
         std::make_unique<net::test_server::ControllableHttpResponse>(
             &ssl_server_, kPagehideEventPath);
-    ASSERT_TRUE(ssl_server_.Start());
+    ASSERT_TRUE(ssl_server_.Start(port_));
     WebContentsObserver::Observe(shell()->web_contents());
 
     ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
@@ -976,6 +976,11 @@ class PrerenderBrowserTest : public ContentBrowserTest,
     PointerUpToAnchor(url);
   }
 
+  void set_port(int port) {
+    ASSERT_FALSE(ssl_server_.Started());
+    port_ = port;
+  }
+
  private:
   void DidStartNavigation(NavigationHandle* handle) override {
     navigation_ids_.push_back(handle->GetNavigationId());
@@ -1020,6 +1025,9 @@ class PrerenderBrowserTest : public ContentBrowserTest,
 
     return gfx::ToFlooredPoint(gfx::PointF(x, y));
   }
+
+  // Allows tests to specify port for the test server.
+  int port_ = 0;
 
   base::ScopedMockElapsedTimersForTest scoped_test_timer_;
 
@@ -15779,12 +15787,9 @@ IN_PROC_BROWSER_TEST_F(PrerenderProcessReuseBrowserTest,
   EXPECT_NE(new_window_process, prerender_process);
 }
 
-class PrerenderUntilScriptBrowserTest : public PrerenderTargetHintBrowserTest {
+class PrerenderUntilScriptBaseBrowserTest
+    : public PrerenderTargetHintBrowserTest {
  public:
-  PrerenderUntilScriptBrowserTest() {
-    feature_list_.InitAndEnableFeature(blink::features::kPrerenderUntilScript);
-  }
-
   void StartPrerenderUntilScript(const GURL& prerender_url) {
     test::PrerenderHostRegistryObserver observer(*web_contents_impl());
     prerender_helper()->AddPrerenderUntilScriptAsync(prerender_url);
@@ -15797,6 +15802,45 @@ class PrerenderUntilScriptBrowserTest : public PrerenderTargetHintBrowserTest {
                                         ->FindNonReservedHostById(host_id);
     ASSERT_TRUE(prerender_host);
     EXPECT_TRUE(prerender_host->should_pause_javascript_execution());
+  }
+
+ protected:
+  // Allows derived tests to reuse duplicate code for testing basic
+  // functionalities.
+  void RunBasicFunctionalityCheck() {
+    // Start prerender-until-script.
+    GURL prerender_url = GetUrl("/prerender/inline_script.html");
+    StartPrerenderUntilScript(prerender_url);
+
+    // Verify after stylesheet is loaded, the parser continues.
+    GURL before_script_element_url = GetUrl("/image.jpg");
+    prerender_helper()->WaitForRequest(before_script_element_url, 1);
+    // Though the parser is paused due to delayed script execution, preloader
+    // should fetch external subresources.
+    GURL image_url = GetUrl("/blank.jpg");
+    prerender_helper()->WaitForRequest(image_url, 1);
+
+    // Activate.
+    NavigatePrimaryPage(prerender_url);
+
+    // A script in the prerendered page sends the beacon request. Since its
+    // execution should be deferred until activation, we can verify the script
+    // execution is resumed automatically by checking the server's log.
+    GURL beacon_url = GetUrl("/activation-beacon");
+    prerender_helper()->WaitForRequest(beacon_url, 1);
+
+    // Make sure the deferred script runs after activation.
+    ASSERT_EQ(false, EvalJs(web_contents_impl(), "document.prerendering"));
+    EXPECT_EQ(false,
+              EvalJs(web_contents_impl(), "executed_during_prerendering"));
+  }
+};
+
+class PrerenderUntilScriptBrowserTest
+    : public PrerenderUntilScriptBaseBrowserTest {
+ public:
+  PrerenderUntilScriptBrowserTest() {
+    feature_list_.InitAndEnableFeature(blink::features::kPrerenderUntilScript);
   }
 
  private:
@@ -15812,30 +15856,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderUntilScriptBrowserTest, InlineScript) {
   GURL url = GetUrl("/empty.html");
   ASSERT_TRUE(NavigateToURL(web_contents(), url));
 
-  // Start prerender-until-script.
-  GURL prerender_url = GetUrl("/prerender/inline_script.html");
-  StartPrerenderUntilScript(prerender_url);
-
-  // Verify after stylesheet is loaded, the parser continues.
-  GURL before_script_element_url = GetUrl("/image.jpg");
-  prerender_helper()->WaitForRequest(before_script_element_url, 1);
-  // Though the parser is paused due to delayed script execution, preloader
-  // should fetch external subresources.
-  GURL image_url = GetUrl("/blank.jpg");
-  prerender_helper()->WaitForRequest(image_url, 1);
-
-  // Activate.
-  NavigatePrimaryPage(prerender_url);
-
-  // A script in the prerendered page sends the beacon request. Since its
-  // execution should be deferred until activation, we can verify the script
-  // execution is resumed automatically by checking the server's log.
-  GURL beacon_url = GetUrl("/activation-beacon");
-  prerender_helper()->WaitForRequest(beacon_url, 1);
-
-  // Make sure the deferred script runs after activation.
-  ASSERT_EQ(false, EvalJs(web_contents_impl(), "document.prerendering"));
-  EXPECT_EQ(false, EvalJs(web_contents_impl(), "executed_during_prerendering"));
+  RunBasicFunctionalityCheck();
 }
 
 // Tests that external sync scripts will be deferred until activation.
@@ -16045,6 +16066,51 @@ IN_PROC_BROWSER_TEST_F(PrerenderUntilScriptBrowserTest, TargetBlank) {
   EXPECT_EQ(false, EvalJs(prerender_web_contents, "document.prerendering"));
   EXPECT_EQ(false,
             EvalJs(prerender_web_contents, "executed_during_prerendering"));
+}
+
+class PrerenderUntilScriptOriginTrialBrowserTest
+    : public PrerenderUntilScriptBaseBrowserTest {
+ public:
+  PrerenderUntilScriptOriginTrialBrowserTest() {
+    // Specifies the prefixed port number encoded in the origin trial token
+    // below.
+    set_port(45324);
+  }
+
+ protected:
+  static std::string GetOriginTrialToken() {
+    // Generated by tools/origin_trials/generate_token.py https://a.test:45324/
+    // PrerenderUntilScript --expire-timestamp=2000000000
+    static const std::string token =
+        "A73nhliKkuPv6mhHxW3dx37TH9rtTamsxp+UZG+YbCSvxxUTFRHUd5bkRdnxrahQ0WL/"
+        "Wu1neptJrBPf1Mu64QEAAABbeyJvcmlnaW4iOiAiaHR0cHM6Ly9hLnRlc3Q6NDUzMjQiLC"
+        "AiZmVhdHVyZSI6ICJQcmVyZW5kZXJVbnRpbFNjcmlwdCIsICJleHBpcnkiOiAyMDAwMDAw"
+        "MDAwfQ==";
+    return token;
+  }
+};
+
+// Ensures that origin trial token can enable this feature within the execution
+// context.
+IN_PROC_BROWSER_TEST_F(PrerenderUntilScriptOriginTrialBrowserTest, Basic) {
+  const GURL url = GetUrl("/empty.html");
+  URLLoaderInterceptor interceptor(base::BindLambdaForTesting(
+      [&](URLLoaderInterceptor::RequestParams* params) {
+        if (params->url_request.url != url) {
+          return false;
+        }
+        URLLoaderInterceptor::WriteResponse(
+            "HTTP/1.1 200 OK\n"
+            "Content-type: text/html\n"
+            "Origin-Trial: " +
+                GetOriginTrialToken() + "\n\n",
+            "", params->client.get());
+        return true;
+      }));
+
+  // Navigate to an initial page.
+  ASSERT_TRUE(NavigateToURL(shell(), url));
+  RunBasicFunctionalityCheck();
 }
 
 }  // namespace content

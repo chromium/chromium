@@ -1095,7 +1095,6 @@ Document::Document(const DocumentInit& initializer,
   }
   if (is_prerendering_ &&
       GetPage()->ShouldPauseJavaScriptExecutionOnPrerender()) {
-    DCHECK(RuntimeEnabledFeatures::PrerenderUntilScriptEnabled());
     prerender_script_runner_delayer_ =
         MakeGarbageCollected<ScriptRunnerDelayer>(
             script_runner_, ScriptRunner::DelayReason::kPausedForPrerender);
@@ -5266,9 +5265,6 @@ void Document::ExecuteScriptsWaitingForResources() {
 }
 
 void Document::UnblockScriptExecutionForPrerenderActivation() {
-  if (!RuntimeEnabledFeatures::PrerenderUntilScriptEnabled()) {
-    return;
-  }
   CHECK(!IsScriptBlockedUntilPrerenderActivation());
   if (ScriptableDocumentParser* parser = GetScriptableDocumentParser()) {
     parser->ExecuteScriptsWaitingForPrerenderActivation();

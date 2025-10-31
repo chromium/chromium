@@ -1370,7 +1370,6 @@ void HTMLDocumentParser::ExecuteScriptsWaitingForResources() {
 }
 
 void HTMLDocumentParser::ExecuteScriptsWaitingForPrerenderActivation() {
-  CHECK(RuntimeEnabledFeatures::PrerenderUntilScriptEnabled());
   CHECK(!GetDocument()->IsScriptBlockedUntilPrerenderActivation());
   if (IsStopped()) {
     return;

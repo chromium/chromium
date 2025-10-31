@@ -725,7 +725,8 @@ void DocumentSpeculationRules::UpdateSpeculationCandidates() {
     push_candidates(mojom::blink::SpeculationAction::kPrerender, rule_set,
                     rule_set->prerender_rules());
 
-    if (RuntimeEnabledFeatures::PrerenderUntilScriptEnabled()) {
+    if (RuntimeEnabledFeatures::PrerenderUntilScriptEnabled(
+            document.domWindow())) {
       push_candidates(mojom::blink::SpeculationAction::kPrerenderUntilScript,
                       rule_set, rule_set->prerender_until_script_rules());
     }
@@ -905,7 +906,8 @@ void DocumentSpeculationRules::AddLinkBasedSpeculationCandidates(
       push_link_candidates(mojom::blink::SpeculationAction::kPrerender,
                            rule_set, rule_set->prerender_rules());
 
-      if (RuntimeEnabledFeatures::PrerenderUntilScriptEnabled()) {
+      if (RuntimeEnabledFeatures::PrerenderUntilScriptEnabled(
+              document.domWindow())) {
         push_link_candidates(
             mojom::blink::SpeculationAction::kPrerenderUntilScript, rule_set,
             rule_set->prerender_until_script_rules());
