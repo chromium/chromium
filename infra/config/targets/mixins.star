@@ -1186,6 +1186,21 @@ targets.mixin(
 )
 
 targets.mixin(
+    name = "gpu_win11_intel_arc_b570_experimental",
+    # We always need this entry to be generated since it is used by
+    # //content/test/gpu/find_bad_machines.py.
+    generate_pyl_entry = targets.IGNORE_UNUSED,
+    swarming = targets.swarming(
+        dimensions = {
+            "display_attached": "1",
+            "gpu": "8086:e20c-32.0.101.8132",
+            "os": "Windows-11-26100",
+            "pool": "chromium.tests.gpu.experimental",
+        },
+    ),
+)
+
+targets.mixin(
     name = "gpu_intel_arc_140v_linux_experimental",
     # We always need this entry to be generated since it is used by
     # //content/test/gpu/find_bad_machines.py.
@@ -1601,6 +1616,21 @@ targets.mixin(
             "os": "Ubuntu-24.04",
             "display_attached": "1",
             "pool": "chromium.tests.gpu",
+        },
+    ),
+)
+
+targets.mixin(
+    name = "linux_intel_arc_b570_experimental",
+    # We always need this entry to be generated since it is used by
+    # //content/test/gpu/find_bad_machines.py.
+    generate_pyl_entry = targets.IGNORE_UNUSED,
+    swarming = targets.swarming(
+        dimensions = {
+            "gpu": "8086:e20c-25.0.7",
+            "os": "Ubuntu-22.04",
+            "display_attached": "1",
+            "pool": "chromium.tests.gpu.experimental",
         },
     ),
 )

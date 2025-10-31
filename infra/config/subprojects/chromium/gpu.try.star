@@ -246,6 +246,16 @@ gpu_linux_builder(
 )
 
 gpu_linux_builder(
+    name = "gpu-fyi-try-linux-intel-arc-b570-exp",
+    mirrors = [
+        "ci/GPU FYI Linux Builder",
+        "ci/Linux FYI Experimental Release (Intel Arc B570)",
+    ],
+    gn_args = "ci/GPU FYI Linux Builder",
+    execution_timeout = 12 * time.hour,
+)
+
+gpu_linux_builder(
     name = "gpu-fyi-try-linux-intel-exp",
     mirrors = [
         "ci/GPU FYI Linux Builder",
@@ -647,6 +657,16 @@ gpu_win_builder(
     mirrors = [
         "ci/GPU FYI Win x64 Builder",
         "ci/Win11 FYI x64 Experimental Release (Intel Arc 140V)",
+    ],
+    gn_args = "ci/GPU FYI Win x64 Builder",
+    execution_timeout = 12 * time.hour,
+)
+
+gpu_win_builder(
+    name = "gpu-fyi-try-win11-x64-intel-arc-b570-exp",
+    mirrors = [
+        "ci/GPU FYI Win x64 Builder",
+        "ci/Win11 FYI x64 Experimental Release (Intel Arc B570)",
     ],
     gn_args = "ci/GPU FYI Win x64 Builder",
     execution_timeout = 12 * time.hour,

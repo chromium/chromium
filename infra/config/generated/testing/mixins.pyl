@@ -437,6 +437,17 @@
       },
     },
   },
+  'gpu_win11_intel_arc_b570_experimental': {
+    'fail_if_unused': False,
+    'swarming': {
+      'dimensions': {
+        'display_attached': '1',
+        'gpu': '8086:e20c-32.0.101.8132',
+        'os': 'Windows-11-26100',
+        'pool': 'chromium.tests.gpu.experimental',
+      },
+    },
+  },
   'has_native_resultdb_integration': {
     'resultdb': {
       'enable': True,
@@ -515,6 +526,17 @@
         'os': 'Ubuntu-24.04',
         'display_attached': '1',
         'pool': 'chromium.tests.gpu',
+      },
+    },
+  },
+  'linux_intel_arc_b570_experimental': {
+    'fail_if_unused': False,
+    'swarming': {
+      'dimensions': {
+        'gpu': '8086:e20c-25.0.7',
+        'os': 'Ubuntu-22.04',
+        'display_attached': '1',
+        'pool': 'chromium.tests.gpu.experimental',
       },
     },
   },

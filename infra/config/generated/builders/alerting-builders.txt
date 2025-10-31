@@ -524,6 +524,7 @@ try/gpu-fyi-try-linux-amd-890m-exp
 try/gpu-fyi-try-linux-amd-rel
 try/gpu-fyi-try-linux-amd-rx-7600-rel
 try/gpu-fyi-try-linux-intel-arc-140v-exp
+try/gpu-fyi-try-linux-intel-arc-b570-exp
 try/gpu-fyi-try-linux-intel-exp
 try/gpu-fyi-try-linux-intel-rel
 try/gpu-fyi-try-linux-intel-uhd770-rel
@@ -566,6 +567,7 @@ try/gpu-fyi-try-win11-qualcomm-snapdragon-x-elite-rel-64
 try/gpu-fyi-try-win11-x64-amd-780m-exp
 try/gpu-fyi-try-win11-x64-amd-890m-exp
 try/gpu-fyi-try-win11-x64-intel-arc-140v-exp
+try/gpu-fyi-try-win11-x64-intel-arc-b570-exp
 try/gpu-try-android-pixel-2-64
 try/gpu-try-linux-nvidia-rel
 try/gpu-try-mac-amd-retina-dbg

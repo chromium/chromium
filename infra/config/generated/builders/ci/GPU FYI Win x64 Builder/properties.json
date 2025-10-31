@@ -293,6 +293,35 @@
           {
             "builder_id": {
               "bucket": "ci",
+              "builder": "Win11 FYI x64 Experimental Release (Intel Arc B570)",
+              "project": "chromium"
+            },
+            "builder_spec": {
+              "builder_group": "chromium.gpu.fyi",
+              "execution_mode": "TEST",
+              "legacy_chromium_config": {
+                "apply_configs": [
+                  "mb"
+                ],
+                "build_config": "Release",
+                "config": "chromium",
+                "target_bits": 64,
+                "target_platform": "win"
+              },
+              "legacy_gclient_config": {
+                "config": "chromium"
+              },
+              "parent": {
+                "bucket": "ci",
+                "builder": "GPU FYI Win x64 Builder",
+                "project": "chromium"
+              },
+              "run_tests_serially": true
+            }
+          },
+          {
+            "builder_id": {
+              "bucket": "ci",
               "builder": "Win11 FYI x64 Experimental Release (NVIDIA RTX 4070 Super)",
               "project": "chromium"
             },
@@ -434,6 +463,11 @@
         },
         {
           "bucket": "ci",
+          "builder": "Win11 FYI x64 Experimental Release (Intel Arc B570)",
+          "project": "chromium"
+        },
+        {
+          "bucket": "ci",
           "builder": "Win11 FYI x64 Experimental Release (NVIDIA RTX 4070 Super)",
           "project": "chromium"
         },
@@ -495,6 +529,10 @@
         },
         {
           "builder": "gpu-fyi-try-win11-x64-intel-arc-140v-exp",
+          "group": "tryserver.chromium.win"
+        },
+        {
+          "builder": "gpu-fyi-try-win11-x64-intel-arc-b570-exp",
           "group": "tryserver.chromium.win"
         }
       ],
