@@ -9,6 +9,7 @@
 #include <set>
 #include <utility>
 
+#include "components/passage_embeddings/passage_embeddings_features.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/web_contents.h"
 
@@ -210,7 +211,7 @@ void PageEmbeddingsService::OnPageContentExtracted(
   }
 
   web_contents_state_[web_contents].pending_passages =
-      candidates_generator_.Run(page_content, 10);
+      candidates_generator_.Run(page_content, kMaxPassagesPerPage.Get());
 
   if (web_contents_state_[web_contents].observer->IsWebContentsHidden()) {
     // The WebContents may have transitioned from visible to hidden by the time

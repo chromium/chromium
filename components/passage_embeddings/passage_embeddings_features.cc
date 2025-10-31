@@ -50,7 +50,7 @@ const base::FeatureParam<int> kMaxWordsPerAggregatePassage(
 
 const base::FeatureParam<int> kMaxPassagesPerPage(&kPassageEmbedder,
                                                   "MaxPassagesPerPage",
-                                                  30);
+                                                  10);
 
 const base::FeatureParam<int> kMinWordsPerPassage(&kPassageEmbedder,
                                                   "MinWordsPerPassage",

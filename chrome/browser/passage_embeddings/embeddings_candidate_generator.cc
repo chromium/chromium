@@ -74,7 +74,8 @@ int CountWords(std::string_view s) {
 // simple and not intended to be a full fidelity representation.
 std::vector<std::string> CreatePassagesFromAnnotatedPageContent(
     const optimization_guide::proto::AnnotatedPageContent&
-        annotated_page_content) {
+        annotated_page_content,
+    int max_passages_per_page) {
   std::vector<std::string> text;
   CollectTextForContentNodesRecursively(annotated_page_content.root_node(),
                                         text);
@@ -100,7 +101,6 @@ std::vector<std::string> CreatePassagesFromAnnotatedPageContent(
   const int max_words_per_aggregate_passage =
       kMaxWordsPerAggregatePassage.Get();
   const int min_words_per_passage = kMinWordsPerPassage.Get();
-  const int max_passages_per_page = kMaxPassagesPerPage.Get();
 
   std::vector<std::string> passages;
   passages.push_back("");
@@ -142,13 +142,9 @@ std::vector<std::pair<std::string, PassageType>> GenerateEmbeddingsCandidates(
   std::vector<std::pair<std::string, PassageType>> candidates;
 
   // Push back passage candidates.
-  std::vector<std::string> passages =
-      CreatePassagesFromAnnotatedPageContent(apc);
+  std::vector<std::string> passages = CreatePassagesFromAnnotatedPageContent(
+      apc, page_content_passages_to_generate);
   for (const auto& passage : passages) {
-    if (static_cast<int>(candidates.size()) >=
-        page_content_passages_to_generate) {
-      break;
-    }
     candidates.emplace_back(passage, PassageType::kPageContent);
   }
 
