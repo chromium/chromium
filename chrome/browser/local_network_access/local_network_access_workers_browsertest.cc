@@ -56,8 +56,16 @@ class LocalNetworkAccessWorkersWebTransportBrowserTest
 
 // Tests that a script tag that is included in the main page HTML (and thus
 // load blocking) correctly triggers the LNA permission prompt.
+
+// TODO(crbug.com/456821852): Re-enable this test.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_DedicatedWorkerDenyPermission \
+  DISABLED_DedicatedWorkerDenyPermission
+#else
+#define MAYBE_DedicatedWorkerDenyPermission DedicatedWorkerDenyPermission
+#endif
 IN_PROC_BROWSER_TEST_F(LocalNetworkAccessWorkersBrowserTest,
-                       DedicatedWorkerDenyPermission) {
+                       MAYBE_DedicatedWorkerDenyPermission) {
   ASSERT_TRUE(content::NavigateToURL(
       web_contents(), https_server().GetURL("a.com", kWorkerHtmlPath)));
 
