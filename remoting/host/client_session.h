@@ -328,6 +328,11 @@ class ClientSession : public protocol::HostStub,
   // Tracker used to release pressed keys and buttons when disconnecting.
   protocol::InputEventTracker input_tracker_;
 
+  // Filter used to detect transitions into and out of client-side pointer lock,
+  // and to monitor local input to determine whether or not to include the mouse
+  // cursor in the desktop image.
+  DesktopAndCursorComposerNotifier desktop_and_cursor_composer_notifier_;
+
   // Filter used to disable remote inputs during local input activity.
   RemoteInputFilter remote_input_filter_;
 
@@ -340,11 +345,6 @@ class ClientSession : public protocol::HostStub,
 
   // Filter used to notify listeners when remote input events are received.
   protocol::ObservingInputFilter observing_input_filter_;
-
-  // Filter used to detect transitions into and out of client-side pointer lock,
-  // and to monitor local input to determine whether or not to include the mouse
-  // cursor in the desktop image.
-  DesktopAndCursorComposerNotifier desktop_and_cursor_composer_notifier_;
 
   // Filter to used to stop clipboard items sent from the client being echoed
   // back to it.  It is the final element in the clipboard (client -> host)

@@ -46,8 +46,11 @@ bool PositionsRoughlyEqual(const webrtc::DesktopVector& a,
 
 namespace remoting {
 
-RemoteInputFilter::RemoteInputFilter(protocol::InputEventTracker* event_tracker)
-    : event_tracker_(event_tracker), expect_local_echo_(true) {}
+RemoteInputFilter::RemoteInputFilter(InputStub* input_stub,
+                                     base::RepeatingClosure release_all)
+    : InputFilter(input_stub),
+      release_all_(std::move(release_all)),
+      expect_local_echo_(true) {}
 
 RemoteInputFilter::~RemoteInputFilter() = default;
 
@@ -98,7 +101,7 @@ bool RemoteInputFilter::LocalKeyPressed(uint32_t usb_keycode) {
 }
 
 void RemoteInputFilter::LocalInputDetected() {
-  event_tracker_->ReleaseAll();
+  release_all_.Run();
   latest_local_input_time_ = base::TimeTicks::Now();
 }
 
@@ -120,14 +123,14 @@ void RemoteInputFilter::InjectKeyEvent(const protocol::KeyEvent& event) {
       injected_key_presses_.clear();
     }
   }
-  event_tracker_->InjectKeyEvent(event);
+  InputFilter::InjectKeyEvent(event);
 }
 
 void RemoteInputFilter::InjectTextEvent(const protocol::TextEvent& event) {
   if (ShouldIgnoreInput()) {
     return;
   }
-  event_tracker_->InjectTextEvent(event);
+  InputFilter::InjectTextEvent(event);
 }
 
 void RemoteInputFilter::InjectMouseEvent(const protocol::MouseEvent& event) {
@@ -142,14 +145,14 @@ void RemoteInputFilter::InjectMouseEvent(const protocol::MouseEvent& event) {
       injected_mouse_positions_.pop_front();
     }
   }
-  event_tracker_->InjectMouseEvent(event);
+  InputFilter::InjectMouseEvent(event);
 }
 
 void RemoteInputFilter::InjectTouchEvent(const protocol::TouchEvent& event) {
   if (ShouldIgnoreInput()) {
     return;
   }
-  event_tracker_->InjectTouchEvent(event);
+  InputFilter::InjectTouchEvent(event);
 }
 
 bool RemoteInputFilter::ShouldIgnoreInput() const {
