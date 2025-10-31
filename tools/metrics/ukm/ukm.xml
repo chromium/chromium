@@ -8982,6 +8982,28 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Extensions.ExtensionUsage">
+  <owner>howardcha@google.com</owner>
+  <owner>webstore-eng@google.com</owner>
+  <summary>
+    Records user actions related to an extension, providing usage metrics for
+    the Chrome Web Store. Tracked actions include pinning, unpinning, enabling,
+    disabling, context menu access, and toolbar icon clicks.
+  </summary>
+  <metric name="Action" enum="ExtensionUsageAction">
+    <summary>
+      The action the user took on the extension.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
 <event name="Extensions.MV2ExtensionHandledInSoftDisable">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>emiliapaz@chromium.org</owner>

@@ -15,6 +15,7 @@
 #include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/types/pass_key.h"
 #include "chrome/browser/extensions/context_menu_matcher.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
@@ -58,6 +59,8 @@
 #include "extensions/common/manifest_url_handlers.h"
 #include "extensions/common/permissions/api_permission.h"
 #include "extensions/common/permissions/permissions_data.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
 #include "ui/base/base_window.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
@@ -489,6 +492,16 @@ bool ExtensionContextMenuModel::IsCommandIdEnabled(int command_id) const {
   }
 }
 
+void ExtensionContextMenuModel::RecordUkmForExtension(
+    const GURL& extension_url,
+    ExtensionUsageAction action) {
+  ukm::builders::Extensions_ExtensionUsage(
+      ukm::UkmRecorder::GetSourceIdForExtensionUrl(
+          base::PassKey<ExtensionContextMenuModel>(), extension_url))
+      .SetAction(static_cast<int64_t>(action))
+      .Record(ukm::UkmRecorder::Get());
+}
+
 void ExtensionContextMenuModel::ExecuteCommand(int command_id,
                                                int event_flags) {
   const Extension* extension = GetExtension();
@@ -520,6 +533,9 @@ void ExtensionContextMenuModel::ExecuteCommand(int command_id,
       ToolbarActionsModel::Get(profile_)->SetActionVisibility(extension->id(),
                                                               visible);
       LogToggleVisibility(visible);
+      RecordUkmForExtension(extension->url(),
+                            visible ? ExtensionUsageAction::kPinned
+                                    : ExtensionUsageAction::kUnpinned);
       break;
     }
     case UNINSTALL: {

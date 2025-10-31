@@ -34,6 +34,7 @@
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/policy_constants.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -56,6 +57,8 @@
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/test/permissions_manager_waiter.h"
 #include "net/dns/mock_host_resolver.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/origin.h"
@@ -289,9 +292,12 @@ class ExtensionContextMenuModelTest : public ExtensionBrowserTest {
   void SetUpOnMainThread() override;
   void SetUpInProcessBrowserTestFixture() override;
 
+  ukm::TestAutoSetUkmRecorder& ukm_recorder() { return *ukm_recorder_; }
+
  private:
   base::test::ScopedFeatureList feature_list_;
   testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
+  std::optional<ukm::TestAutoSetUkmRecorder> ukm_recorder_;
 };
 
 ExtensionContextMenuModelTest::ExtensionContextMenuModelTest() {
@@ -457,6 +463,7 @@ void ExtensionContextMenuModelTest::ForcePinExtension(
 void ExtensionContextMenuModelTest::SetUpOnMainThread() {
   ExtensionBrowserTest::SetUpOnMainThread();
   host_resolver()->AddRule("*", "127.0.0.1");
+  ukm_recorder_.emplace();
   ASSERT_TRUE(embedded_test_server()->Start());
 }
 
@@ -785,6 +792,16 @@ IN_PROC_BROWSER_TEST_F(ExtensionContextMenuModelTest,
     ToolbarActionsModel::Get(profile())->SetActionVisibility(
         browser_action->id(), true);
     menu.ExecuteCommand(visibility_command, 0);
+
+    auto ukm_entries = ukm_recorder().GetEntriesByName(
+        ukm::builders::Extensions_ExtensionUsage::kEntryName);
+
+    ASSERT_EQ(1u, ukm_entries.size());
+    auto* entry = ukm_entries.front().get();
+    ukm_recorder().ExpectEntryMetric(
+        entry, ukm::builders::Extensions_ExtensionUsage::kActionName,
+        static_cast<int64_t>(
+            ExtensionContextMenuModel::ExtensionUsageAction::kUnpinned));
   }
 
   {
@@ -795,6 +812,24 @@ IN_PROC_BROWSER_TEST_F(ExtensionContextMenuModelTest,
     std::optional<size_t> index = menu.GetIndexOfCommandId(visibility_command);
     ASSERT_TRUE(index.has_value());
     EXPECT_EQ(pin_string, menu.GetLabelAt(index.value()));
+  }
+
+  {
+    ExtensionContextMenuModel menu(browser_action, browser_window,
+                                   /*is_pinned=*/false, nullptr, true,
+                                   ContextMenuSource::kToolbarAction);
+    // Pin the extension
+    menu.ExecuteCommand(visibility_command, 0);
+
+    auto ukm_entries = ukm_recorder().GetEntriesByName(
+        ukm::builders::Extensions_ExtensionUsage::kEntryName);
+
+    ASSERT_EQ(2u, ukm_entries.size());
+    auto* entry = ukm_entries.at(1).get();
+    ukm_recorder().ExpectEntryMetric(
+        entry, ukm::builders::Extensions_ExtensionUsage::kActionName,
+        static_cast<int64_t>(
+            ExtensionContextMenuModel::ExtensionUsageAction::kPinned));
   }
 }
 
