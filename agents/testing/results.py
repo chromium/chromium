@@ -106,17 +106,20 @@ def report_result(result_sink_client: result_sink.ResultSinkClient,
     relative_path = test_result.config.test_file.relative_to(
         constants.CHROMIUM_SRC)
     posix_path = relative_path.as_posix()
-    result_sink_client.Post(
-        test_id=str(posix_path),
-        status=result_types.PASS if test_result.success else result_types.FAIL,
-        duration=test_result.total_duration * 1000,
-        test_log=test_result.combined_logs,
-        test_id_structured={
-            'coarseName': '',  # Leave blank for scheme 'flat'.
-            'fineName': '',  # Leave blank for scheme 'flat'.
-            'caseNameComponents': [str(posix_path)],
-        },
-        test_file=f'//{str(posix_path)}')
+    for iteration_result in test_result.iteration_results:
+        result_sink_client.Post(
+            test_id=str(posix_path),
+            status=(result_types.PASS
+                    if iteration_result.success else result_types.FAIL),
+            duration=iteration_result.duration * 1000,
+            test_log=iteration_result.test_log,
+            test_id_structured={
+                'coarseName': '',  # Leave blank for scheme 'flat'.
+                'fineName': '',  # Leave blank for scheme 'flat'.
+                'caseNameComponents': [str(posix_path)],
+            },
+            test_file=f'//{str(posix_path)}')
+
 
 
 class ResultThread(threading.Thread):
