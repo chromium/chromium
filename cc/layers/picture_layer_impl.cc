@@ -228,6 +228,9 @@ void PictureLayerImpl::AppendQuadsSpecialization(
   float device_scale_factor = layer_tree_impl()->device_scale_factor();
   float max_contents_scale = GetMaximumContentsScaleForUseInAppendQuads();
 
+  // `DRAW_MODE_RESOURCELESS_SOFTWARE` is a renderer-only software draw mode,
+  // and its handling is thus specific to PictureLayerImpl rather than being
+  // done in TileBasedLayerImpl.
   if (context.draw_mode == DRAW_MODE_RESOURCELESS_SOFTWARE) {
     DCHECK(shared_quad_state->quad_layer_rect.origin() == gfx::Point(0, 0));
     AppendDebugBorderQuad(
