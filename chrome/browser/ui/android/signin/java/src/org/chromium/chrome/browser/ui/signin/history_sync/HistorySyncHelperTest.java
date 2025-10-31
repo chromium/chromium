@@ -178,6 +178,24 @@ public class HistorySyncHelperTest {
 
     @Test
     @SmallTest
+    public void testEnablingHistoryAndTabsSync() {
+        mHistorySyncHelper.setHistoryAndTabsSync(true);
+
+        verify(mSyncServiceMock).setSelectedType(UserSelectableType.HISTORY, true);
+        verify(mSyncServiceMock).setSelectedType(UserSelectableType.TABS, true);
+    }
+
+    @Test
+    @SmallTest
+    public void testClearingHistoryAndTabsSync() {
+        mHistorySyncHelper.setHistoryAndTabsSync(false);
+
+        verify(mSyncServiceMock).setSelectedType(UserSelectableType.HISTORY, false);
+        verify(mSyncServiceMock).setSelectedType(UserSelectableType.TABS, false);
+    }
+
+    @Test
+    @SmallTest
     public void testRecordHistorySyncNotShown_userAlreadyOptedIn() {
         when(mSyncServiceMock.getSelectedTypes())
                 .thenReturn(Set.of(UserSelectableType.HISTORY, UserSelectableType.TABS));

@@ -13,15 +13,13 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
-import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncHelper;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SignoutReason;
-import org.chromium.components.sync.SyncService;
-import org.chromium.components.sync.UserSelectableType;
 
 /**
  * Shows a snackbar after a successful sign-in, which allows the user to undo the sign-in. This
@@ -48,19 +46,19 @@ class SigninSnackbarController implements SnackbarManager.SnackbarController {
 
     private final ComponentActivity mActivity;
     private final Profile mProfile;
-    private final SyncService mSyncService;
+    private final HistorySyncHelper mHistorySyncHelper;
     private final SnackbarManager mSnackbarManager;
     private @Nullable Listener mListener;
 
     private SigninSnackbarController(
             ComponentActivity activity,
             Profile profile,
-            SyncService syncService,
+            HistorySyncHelper historySyncHelper,
             SnackbarManager snackbarManager,
             Listener listener) {
         mActivity = activity;
         mProfile = profile;
-        mSyncService = syncService;
+        mHistorySyncHelper = historySyncHelper;
         mSnackbarManager = snackbarManager;
         mListener = listener;
     }
@@ -76,8 +74,7 @@ class SigninSnackbarController implements SnackbarManager.SnackbarController {
         if (result.hasOptedInHistorySync) {
             // We disable history sync only if the user explicitly opted into it during the flow.
             // This ensure we don't interfere with sticky settings from prior sessions.
-            mSyncService.setSelectedType(UserSelectableType.HISTORY, /* isTypeOn= */ false);
-            mSyncService.setSelectedType(UserSelectableType.TABS, /* isTypeOn= */ false);
+            mHistorySyncHelper.setHistoryAndTabsSync(false);
         }
 
         SignOutCoordinator.undoSignInWithSnackbar(
@@ -120,7 +117,7 @@ class SigninSnackbarController implements SnackbarManager.SnackbarController {
                             new SigninSnackbarController(
                                     activity,
                                     profile,
-                                    assumeNonNull(SyncServiceFactory.getForProfile(profile)),
+                                    HistorySyncHelper.getForProfile(profile),
                                     snackbarManager,
                                     assertNonNull(listener)),
                             Snackbar.TYPE_ACTION,

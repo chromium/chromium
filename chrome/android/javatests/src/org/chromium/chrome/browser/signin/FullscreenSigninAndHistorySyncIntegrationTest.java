@@ -18,7 +18,9 @@ import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -76,6 +78,8 @@ import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.metrics.AccountConsistencyPromoAction;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.test.util.TestAccounts;
+import org.chromium.components.sync.SyncService;
+import org.chromium.components.sync.UserSelectableType;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.DeviceRestriction;
@@ -125,6 +129,20 @@ public class FullscreenSigninAndHistorySyncIntegrationTest {
         mSigninTestRule.addAccount(TestAccounts.AADC_ADULT_ACCOUNT);
         HistorySyncHelper.setInstanceForTesting(mHistorySyncHelperMock);
         DeviceLockActivityLauncherImpl.setInstanceForTesting(mDeviceLockActivityLauncher);
+        // Simulate the real HistorySyncHelper's interaction with SyncService to ensure
+        // UserSelectableType.HISTORY and UserSelectableType.TABS are correctly set.
+        lenient()
+                .doAnswer(
+                        invocation -> {
+                            boolean isTypeOn = invocation.getArgument(0);
+                            SyncService syncService =
+                                    SyncTestUtil.getSyncServiceForLastUsedProfile();
+                            syncService.setSelectedType(UserSelectableType.HISTORY, isTypeOn);
+                            syncService.setSelectedType(UserSelectableType.TABS, isTypeOn);
+                            return null;
+                        })
+                .when(mHistorySyncHelperMock)
+                .setHistoryAndTabsSync(anyBoolean());
     }
 
     @Test

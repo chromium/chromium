@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.privacy_guide;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.privacy_guide.PrivacyGuideUtils.canUpdateHistorySyncValue;
 
 import android.os.Bundle;
@@ -16,17 +15,15 @@ import android.widget.TextView;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.sync.SyncServiceFactory;
+import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncHelper;
 import org.chromium.components.browser_ui.widget.MaterialSwitchWithText;
-import org.chromium.components.sync.SyncService;
-import org.chromium.components.sync.UserSelectableType;
 
 /** Controls the behavior of the History Sync privacy guide page. */
 @NullMarked
 public class HistorySyncFragment extends PrivacyGuideBasePage
         implements CompoundButton.OnCheckedChangeListener {
-    private @Nullable SyncService mSyncService;
     private MaterialSwitchWithText mHistorySyncSwitch;
+    private HistorySyncHelper mHistorySyncHelper;
 
     @Override
     public View onCreateView(
@@ -38,9 +35,8 @@ public class HistorySyncFragment extends PrivacyGuideBasePage
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        mSyncService = SyncServiceFactory.getForProfile(getProfile());
-
         mHistorySyncSwitch = view.findViewById(R.id.history_sync_switch);
+        mHistorySyncHelper = HistorySyncHelper.getForProfile(getProfile());
         setHistorySyncSwitchState();
 
         mHistorySyncSwitch.setOnCheckedChangeListener(this);
@@ -60,7 +56,7 @@ public class HistorySyncFragment extends PrivacyGuideBasePage
     }
 
     private void setHistorySyncSwitchState() {
-        boolean newState = PrivacyGuideUtils.isHistorySyncEnabled(getProfile());
+        boolean newState = mHistorySyncHelper.isHistorySyncEnabled();
         boolean currentState = mHistorySyncSwitch.isChecked();
         if (newState != currentState) {
             mHistorySyncSwitch.setChecked(newState);
@@ -74,9 +70,6 @@ public class HistorySyncFragment extends PrivacyGuideBasePage
         }
 
         PrivacyGuideMetricsDelegate.recordMetricsOnHistorySyncChange(isChecked);
-
-        assumeNonNull(mSyncService);
-        mSyncService.setSelectedType(UserSelectableType.HISTORY, isChecked);
-        mSyncService.setSelectedType(UserSelectableType.TABS, isChecked);
+        mHistorySyncHelper.setHistoryAndTabsSync(isChecked);
     }
 }

@@ -6,9 +6,6 @@ package org.chromium.chrome.browser.ui.signin;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
-import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -32,10 +29,10 @@ import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncHelper;
 import org.chromium.components.signin.test.util.FakeIdentityManager;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.components.sync.SyncService;
-import org.chromium.components.sync.UserSelectableType;
 
 /** Unit tests for {@link SigninSnackbarController}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -55,6 +52,7 @@ public class SigninSnackbarControllerTest {
     @Mock private SnackbarManager mSnackbarManager;
     @Mock private SigninSnackbarController.Listener mListener;
     @Mock private SyncService mSyncService;
+    @Mock private HistorySyncHelper mHistorySyncHelper;
     @Mock private SigninManager mSigninManager;
 
     private final FakeIdentityManager mIdentityManager = new FakeIdentityManager();
@@ -65,6 +63,7 @@ public class SigninSnackbarControllerTest {
         mActivity = Robolectric.buildActivity(ComponentActivity.class).setup().get();
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
         SyncServiceFactory.setInstanceForTesting(mSyncService);
+        HistorySyncHelper.setInstanceForTesting(mHistorySyncHelper);
         mIdentityManager.setPrimaryAccount(TestAccounts.ACCOUNT1);
     }
 
@@ -106,7 +105,7 @@ public class SigninSnackbarControllerTest {
         SigninSnackbarController.showUndoSnackbarIfNeeded(
                 mActivity, mProfile, mSnackbarManager, mListener, SIGN_IN_ONLY);
         clickSnackbarUndoButton();
-        verify(mSyncService, never()).setSelectedType(anyInt(), anyBoolean());
+        verifyNoInteractions(mHistorySyncHelper);
     }
 
     @Test
@@ -117,8 +116,7 @@ public class SigninSnackbarControllerTest {
         SigninSnackbarController.showUndoSnackbarIfNeeded(
                 mActivity, mProfile, mSnackbarManager, mListener, SIGN_IN_AND_HISTORY_SYNC);
         clickSnackbarUndoButton();
-        verify(mSyncService).setSelectedType(UserSelectableType.HISTORY, false);
-        verify(mSyncService).setSelectedType(UserSelectableType.TABS, false);
+        verify(mHistorySyncHelper).setHistoryAndTabsSync(false);
     }
 
     private void clickSnackbarUndoButton() {

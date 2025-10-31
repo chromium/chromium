@@ -12,6 +12,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
+import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncHelper;
 import org.chromium.components.content_settings.CookieControlsMode;
 
 /**
@@ -27,6 +28,7 @@ class PrivacyGuideMetricsDelegate {
     private static final String INITIAL_AD_TOPICS_STATE = "INITIAL_AD_TOPICS_STATE";
 
     private final Profile mProfile;
+    private final HistorySyncHelper mHistorySyncHelper;
 
     /** Initial state of the MSBB when {@link MSBBFragment} is created. */
     private @Nullable Boolean mInitialMsbbState;
@@ -45,6 +47,7 @@ class PrivacyGuideMetricsDelegate {
 
     PrivacyGuideMetricsDelegate(Profile profile) {
         mProfile = profile;
+        mHistorySyncHelper = HistorySyncHelper.getForProfile(profile);
     }
 
     /** A method to persist the initial state of all Fragments on Activity destruction. */
@@ -120,7 +123,7 @@ class PrivacyGuideMetricsDelegate {
     private void recordMetricsOnNextForHistorySyncCard() {
         assert mInitialHistorySyncState != null : "Initial state of History Sync not set.";
 
-        boolean currentValue = PrivacyGuideUtils.isHistorySyncEnabled(mProfile);
+        boolean currentValue = mHistorySyncHelper.isHistorySyncEnabled();
         @PrivacyGuideSettingsStates int stateChange;
 
         if (mInitialHistorySyncState && currentValue) {
@@ -268,7 +271,7 @@ class PrivacyGuideMetricsDelegate {
                 }
             case PrivacyGuideFragment.FragmentType.HISTORY_SYNC:
                 {
-                    mInitialHistorySyncState = PrivacyGuideUtils.isHistorySyncEnabled(mProfile);
+                    mInitialHistorySyncState = mHistorySyncHelper.isHistorySyncEnabled();
                     break;
                 }
             case PrivacyGuideFragment.FragmentType.SAFE_BROWSING:

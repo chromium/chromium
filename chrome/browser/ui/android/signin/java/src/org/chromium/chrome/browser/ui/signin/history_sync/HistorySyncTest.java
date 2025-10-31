@@ -13,7 +13,9 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.Matchers.allOf;
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
@@ -56,7 +58,6 @@ import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.metrics.SyncButtonsType;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.components.sync.SyncService;
-import org.chromium.components.sync.UserSelectableType;
 import org.chromium.content_public.browser.test.ContentJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.ui.test.util.BlankUiTestActivity;
@@ -155,8 +156,7 @@ public class HistorySyncTest {
         onView(withText(R.string.history_sync_primary_action)).perform(click());
 
         histogramWatcher.assertExpected();
-        verify(mSyncServiceMock).setSelectedType(UserSelectableType.HISTORY, true);
-        verify(mSyncServiceMock).setSelectedType(UserSelectableType.TABS, true);
+        verify(mHistorySyncHelperMock).setHistoryAndTabsSync(true);
         verify(mHistorySyncDelegateMock)
                 .recordHistorySyncOptIn(SIGNIN_ACCESS_POINT, /* isHistorySyncAccepted= */ true);
         verify(mHistorySyncDelegateMock)
@@ -179,6 +179,7 @@ public class HistorySyncTest {
 
         histogramWatcher.assertExpected();
         verifyNoInteractions(mSyncServiceMock);
+        verify(mHistorySyncHelperMock, never()).setHistoryAndTabsSync(anyBoolean());
         verify(mHistorySyncDelegateMock)
                 .recordHistorySyncOptIn(SIGNIN_ACCESS_POINT, /* isHistorySyncAccepted= */ false);
         verify(mHistorySyncDelegateMock)
@@ -200,8 +201,7 @@ public class HistorySyncTest {
         onView(withText(R.string.history_sync_primary_action)).perform(click());
 
         histogramWatcher.assertExpected();
-        verify(mSyncServiceMock).setSelectedType(UserSelectableType.HISTORY, true);
-        verify(mSyncServiceMock).setSelectedType(UserSelectableType.TABS, true);
+        verify(mHistorySyncHelperMock).setHistoryAndTabsSync(true);
         verify(mHistorySyncDelegateMock)
                 .recordHistorySyncOptIn(SIGNIN_ACCESS_POINT, /* isHistorySyncAccepted= */ true);
         verify(mHistorySyncDelegateMock)
@@ -223,6 +223,7 @@ public class HistorySyncTest {
 
         histogramWatcher.assertExpected();
         verifyNoInteractions(mSyncServiceMock);
+        verify(mHistorySyncHelperMock, never()).setHistoryAndTabsSync(anyBoolean());
         verify(mHistorySyncDelegateMock)
                 .recordHistorySyncOptIn(SIGNIN_ACCESS_POINT, /* isHistorySyncAccepted= */ false);
         verify(mHistorySyncDelegateMock)
@@ -241,6 +242,7 @@ public class HistorySyncTest {
         onView(withText(R.string.history_sync_secondary_action)).perform(click());
 
         verifyNoInteractions(mSyncServiceMock);
+        verify(mHistorySyncHelperMock, never()).setHistoryAndTabsSync(anyBoolean());
         verify(mHistorySyncDelegateMock)
                 .recordHistorySyncOptIn(SIGNIN_ACCESS_POINT, /* isHistorySyncAccepted= */ false);
         verify(mHistorySyncDelegateMock, atLeastOnce())

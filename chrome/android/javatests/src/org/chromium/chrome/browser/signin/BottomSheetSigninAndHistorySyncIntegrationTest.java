@@ -127,6 +127,20 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
                     FirstRunStatus.setFirstRunFlowComplete(true);
                 });
         HistorySyncHelper.setInstanceForTesting(mHistorySyncHelperMock);
+        // Simulate the real HistorySyncHelper's interaction with SyncService to ensure
+        // UserSelectableType.HISTORY and UserSelectableType.TABS are correctly set.
+        doAnswer(
+                        invocation -> {
+                            boolean isTypeOn = invocation.getArgument(0);
+                            SyncService syncService =
+                                    SyncTestUtil.getSyncServiceForLastUsedProfile();
+                            syncService.setSelectedType(UserSelectableType.HISTORY, isTypeOn);
+                            syncService.setSelectedType(UserSelectableType.TABS, isTypeOn);
+                            return null;
+                        })
+                .when(mHistorySyncHelperMock)
+                .setHistoryAndTabsSync(anyBoolean());
+        // By default, history sync dialog should be displayed and not yet disabled.
         when(mHistorySyncHelperMock.didAlreadyOptIn()).thenReturn(false);
         when(mHistorySyncHelperMock.isHistorySyncDisabledByCustodian()).thenReturn(false);
         when(mHistorySyncHelperMock.isHistorySyncDisabledByPolicy()).thenReturn(false);

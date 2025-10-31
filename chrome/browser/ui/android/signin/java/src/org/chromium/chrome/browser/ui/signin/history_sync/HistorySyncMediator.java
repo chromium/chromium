@@ -17,7 +17,6 @@ import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.signin.services.SigninManager;
-import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.ui.signin.MinorModeHelper;
 import org.chromium.chrome.browser.ui.signin.R;
 import org.chromium.components.signin.base.CoreAccountInfo;
@@ -25,8 +24,6 @@ import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.metrics.SignoutReason;
-import org.chromium.components.sync.SyncService;
-import org.chromium.components.sync.UserSelectableType;
 import org.chromium.ui.modelutil.PropertyModel;
 
 @NullMarked
@@ -35,7 +32,6 @@ class HistorySyncMediator implements ProfileDataCache.Observer, SigninManager.Si
     private final String mAccountEmail;
     private final HistorySyncCoordinator.HistorySyncDelegate mDelegate;
     private final SigninManager mSigninManager;
-    private final SyncService mSyncService;
     private final ProfileDataCache mProfileDataCache;
     private final HistorySyncConfig mConfig;
     private final @SigninAccessPoint int mAccessPoint;
@@ -58,7 +54,6 @@ class HistorySyncMediator implements ProfileDataCache.Observer, SigninManager.Si
         IdentityManager identityManager = mSigninManager.getIdentityManager();
         mProfileDataCache =
                 ProfileDataCache.createWithDefaultImageSizeAndNoBadge(context, identityManager);
-        mSyncService = assumeNonNull(SyncServiceFactory.getForProfile(profile));
         mHistorySyncHelper = HistorySyncHelper.getForProfile(profile);
         mProfileDataCache.addObserver(this);
         mSigninManager.addSignInStateObserver(this);
@@ -117,8 +112,7 @@ class HistorySyncMediator implements ProfileDataCache.Observer, SigninManager.Si
 
     private void onAcceptClicked(View view) {
         mDelegate.recordHistorySyncOptIn(mAccessPoint, /* isHistorySyncAccepted= */ true);
-        mSyncService.setSelectedType(UserSelectableType.HISTORY, /* isTypeOn= */ true);
-        mSyncService.setSelectedType(UserSelectableType.TABS, /* isTypeOn= */ true);
+        mHistorySyncHelper.setHistoryAndTabsSync(true);
         mHistorySyncHelper.clearHistorySyncDeclinedPrefs();
         mDelegate.dismissHistorySync(/* didSignOut= */ false, /* isHistorySyncAccepted= */ true);
     }
