@@ -597,4 +597,10 @@ std::ostream& operator<<(std::ostream& os, const ActorTask::State& state) {
   return os << ToString(state);
 }
 
+void ActorTask::SetExecutionEngineForTesting(
+    std::unique_ptr<ExecutionEngine> engine) {
+  execution_engine_.reset(std::move(engine.release()));
+  execution_engine_->SetOwner(this);
+}
+
 }  // namespace actor

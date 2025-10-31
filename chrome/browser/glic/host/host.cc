@@ -524,6 +524,50 @@ mojom::PanelState Host::GetPanelState(GlicWebClientAccess* client) const {
   return glic_instance_ ? glic_instance_->GetPanelState() : mojom::PanelState();
 }
 
+void Host::RequestToShowCredentialSelectionDialog(
+    actor::TaskId task_id,
+    const base::flat_map<std::string, gfx::Image>& icons,
+    const std::vector<actor_login::Credential>& credentials,
+    actor::ActorTaskDelegate::CredentialSelectedCallback callback) {
+  if (!IsReady()) {
+    std::move(callback).Run(
+        actor::webui::mojom::SelectCredentialDialogResponse::New());
+    return;
+  }
+  handler_info_->web_client->RequestToShowCredentialSelectionDialog(
+      task_id, icons, credentials, std::move(callback));
+}
+
+void Host::RequestToShowUserConfirmationDialog(
+    actor::TaskId task_id,
+    const url::Origin& navigation_origin,
+    actor::ActorTaskDelegate::UserConfirmationDialogCallback callback) {
+  if (!IsReady()) {
+    std::move(callback).Run(
+        actor::webui::mojom::UserConfirmationDialogResponse::New(
+            actor::webui::mojom::ConfirmationRequestResult::
+                NewPermissionGranted(/*value=*/false)));
+    return;
+  }
+  handler_info_->web_client->RequestToShowUserConfirmationDialog(
+      task_id, navigation_origin, std::move(callback));
+}
+
+void Host::RequestToConfirmNavigation(
+    actor::TaskId task_id,
+    const url::Origin& navigation_origin,
+    actor::ActorTaskDelegate::NavigationConfirmationCallback callback) {
+  if (!IsReady()) {
+    std::move(callback).Run(
+        actor::webui::mojom::NavigationConfirmationResponse::New(
+            actor::webui::mojom::ConfirmationRequestResult::
+                NewPermissionGranted(/*value=*/false)));
+    return;
+  }
+  handler_info_->web_client->RequestToConfirmNavigation(
+      task_id, navigation_origin, std::move(callback));
+}
+
 HostManager::HostManager(Profile* profile,
                          base::WeakPtr<GlicWindowController> window_controller)
     : profile_(profile),

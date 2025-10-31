@@ -737,4 +737,38 @@ bool GlicKeyedService::IsActive() {
   return sharing_manager().GetFocusedBrowser();
 }
 
+void GlicKeyedService::RequestToShowCredentialSelectionDialog(
+    actor::TaskId task_id,
+    const base::flat_map<std::string, gfx::Image>& icons,
+    const std::vector<actor_login::Credential>& credentials,
+    actor::ActorTaskDelegate::CredentialSelectedCallback callback) {
+  CHECK(UseDefaultWindowController());
+  auto* window_controller_impl =
+      static_cast<GlicWindowControllerImpl*>(window_controller_.get());
+  window_controller_impl->host().RequestToShowCredentialSelectionDialog(
+      task_id, icons, credentials, std::move(callback));
+}
+
+void GlicKeyedService::RequestToShowUserConfirmationDialog(
+    actor::TaskId task_id,
+    const url::Origin& navigation_origin,
+    actor::ActorTaskDelegate::UserConfirmationDialogCallback callback) {
+  CHECK(UseDefaultWindowController());
+  auto* window_controller_impl =
+      static_cast<GlicWindowControllerImpl*>(window_controller_.get());
+  window_controller_impl->host().RequestToShowUserConfirmationDialog(
+      task_id, navigation_origin, std::move(callback));
+}
+
+void GlicKeyedService::RequestToConfirmNavigation(
+    actor::TaskId task_id,
+    const url::Origin& navigation_origin,
+    actor::ActorTaskDelegate::NavigationConfirmationCallback callback) {
+  CHECK(UseDefaultWindowController());
+  auto* window_controller_impl =
+      static_cast<GlicWindowControllerImpl*>(window_controller_.get());
+  window_controller_impl->host().RequestToConfirmNavigation(
+      task_id, navigation_origin, std::move(callback));
+}
+
 }  // namespace glic

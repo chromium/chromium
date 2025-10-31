@@ -116,11 +116,6 @@ class ExecutionEngine : public ToolDelegate {
   const std::optional<CredentialWithPermission> GetUserSelectedCredential(
       const url::Origin& request_origin) const override;
 
-  // Callback for when a credential is selected, in response to
-  // `ToolDelegate::PromptToSelectCredential()`.
-  void OnCredentialSelected(
-      webui::mojom::SelectCredentialDialogResponsePtr response);
-
   void AddWritableMainframeOrigins(
       const absl::flat_hash_set<url::Origin>& added_writable_mainframe_origins);
 
@@ -134,14 +129,6 @@ class ExecutionEngine : public ToolDelegate {
   // navigation until the decision callback is invoked.
   bool ShouldGateNavigation(content::NavigationHandle& navigation_handle,
                             NavigationDecisionCallback callback);
-
-  // Callback for when the user responds to a confirmation dialog.
-  void OnUserConfirmationDialogResponse(
-      webui::mojom::UserConfirmationDialogResponsePtr response);
-
-  // Callback when the server responds when asked to confirm navigation.
-  void OnNavigationConfirmationResponse(
-      webui::mojom::NavigationConfirmationResponsePtr response);
 
   static std::string StateToString(State state);
 
@@ -287,13 +274,6 @@ class ExecutionEngine : public ToolDelegate {
   // without prompting the user. This is applied to all navigations, including
   // those initiated by the renderer with web content.
   absl::flat_hash_set<url::Origin> allowed_navigation_origins_;
-
-  ToolDelegate::CredentialSelectedCallback credential_selected_callback_;
-
-  base::OnceCallback<void(webui::mojom::UserConfirmationDialogResponsePtr)>
-      user_confirmation_callback_;
-  base::OnceCallback<void(webui::mojom::NavigationConfirmationResponsePtr)>
-      navigation_confirmation_callback_;
 
   // For multi-step login, this is the credential that the user has chosen to
   // allow the actor to use. The key is the

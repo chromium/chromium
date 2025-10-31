@@ -73,6 +73,7 @@ class ActorTask {
   void SetIdForTesting(int id);
 
   const std::string& title() const { return title_; }
+  base::WeakPtr<ActorTaskDelegate> delegate() const { return delegate_; }
 
   // Once `state_` leaves kCreated it should never go back. Once `state_` enters
   // kFinished or kCancelled it should never change. These states are granular,
@@ -162,6 +163,8 @@ class ActorTask {
 
   // The set of tabs that were acted on by the last call to Act.
   TabHandleSet GetLastActedTabs() const;
+
+  void SetExecutionEngineForTesting(std::unique_ptr<ExecutionEngine> engine);
 
  private:
   class ActorControlledTabState : public content::WebContentsObserver {

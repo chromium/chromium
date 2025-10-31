@@ -313,24 +313,14 @@ void ExecutionEngine::OnNavigationBlocklistDecision(
 void ExecutionEngine::SendNavigationConfirmationRequest(
     const url::Origin& navigation_origin,
     ExecutionEngine::NavigationDecisionCallback callback) {
-  if (navigation_confirmation_callback_) {
-    std::move(navigation_confirmation_callback_)
-        .Run(webui::mojom::NavigationConfirmationResponse::New(
-            webui::mojom::ConfirmationRequestResult::NewErrorReason(
-                webui::mojom::ConfirmationRequestErrorReason::
-                    kPreemptedByNewRequest)));
+  if (!task_->delegate()) {
+    std::move(callback).Run(/*may_continue=*/false);
+    return;
   }
-  navigation_confirmation_callback_ =
+  task_->delegate()->RequestToConfirmNavigation(
+      task_->id(), navigation_origin,
       base::BindOnce(&ExecutionEngine::OnNavigationConfirmationDecision,
-                     GetWeakPtr(), navigation_origin, std::move(callback));
-  ActorKeyedService::Get(profile_)->NotifyRequestToConfirmNavigation(
-      task_->id(), navigation_origin);
-}
-
-void ExecutionEngine::OnNavigationConfirmationResponse(
-    webui::mojom::NavigationConfirmationResponsePtr response) {
-  CHECK(navigation_confirmation_callback_);
-  std::move(navigation_confirmation_callback_).Run(std::move(response));
+                     GetWeakPtr(), navigation_origin, std::move(callback)));
 }
 
 void ExecutionEngine::OnNavigationConfirmationDecision(
@@ -357,24 +347,14 @@ void ExecutionEngine::OnNavigationConfirmationDecision(
 void ExecutionEngine::SendUserConfirmationDialogRequest(
     const url::Origin& navigation_origin,
     ExecutionEngine::NavigationDecisionCallback callback) {
-  if (user_confirmation_callback_) {
-    std::move(user_confirmation_callback_)
-        .Run(webui::mojom::UserConfirmationDialogResponse::New(
-            webui::mojom::ConfirmationRequestResult::NewErrorReason(
-                webui::mojom::ConfirmationRequestErrorReason::
-                    kPreemptedByNewRequest)));
+  if (!task_->delegate()) {
+    std::move(callback).Run(/*may_continue=*/false);
+    return;
   }
-  user_confirmation_callback_ =
+  task_->delegate()->RequestToShowUserConfirmationDialog(
+      task_->id(), navigation_origin,
       base::BindOnce(&ExecutionEngine::OnPromptUserToConfirmNavigationDecision,
-                     GetWeakPtr(), navigation_origin, std::move(callback));
-  ActorKeyedService::Get(profile_)->NotifyRequestToShowUserConfirmationDialog(
-      task_->id(), navigation_origin);
-}
-
-void ExecutionEngine::OnUserConfirmationDialogResponse(
-    webui::mojom::UserConfirmationDialogResponsePtr response) {
-  CHECK(user_confirmation_callback_);
-  std::move(user_confirmation_callback_).Run(std::move(response));
+                     GetWeakPtr(), navigation_origin, std::move(callback)));
 }
 
 void ExecutionEngine::OnPromptUserToConfirmNavigationDecision(
@@ -743,19 +723,14 @@ void ExecutionEngine::PromptToSelectCredential(
   TRACE_EVENT0("actor", "ExecutionEngine::PromptToSelectCredential");
   CHECK(!credentials.empty());
 
-  // In the same task, another login attempt is made before the previous one
-  // responds. Cancel the previous one.
-  if (credential_selected_callback_) {
+  if (!task_->delegate()) {
     // TODO(crbug.com/427817882): Explicit error reason (kNewLonginAttempt).
-    std::move(credential_selected_callback_)
-        .Run(/*selected_credential=*/webui::mojom::
-                 SelectCredentialDialogResponse::New());
+    std::move(callback).Run(/*selected_credential=*/webui::mojom::
+                                SelectCredentialDialogResponse::New());
+    return;
   }
-  credential_selected_callback_ = std::move(callback);
-
-  ActorKeyedService::Get(profile_)
-      ->NotifyRequestToShowCredentialSelectionDialog(task_->id(), icons,
-                                                     credentials);
+  task_->delegate()->RequestToShowCredentialSelectionDialog(
+      task_->id(), icons, credentials, std::move(callback));
 }
 
 void ExecutionEngine::SetUserSelectedCredential(
@@ -772,14 +747,6 @@ ExecutionEngine::GetUserSelectedCredential(
     return std::nullopt;
   }
   return it->second;
-}
-
-void ExecutionEngine::OnCredentialSelected(
-    webui::mojom::SelectCredentialDialogResponsePtr response) {
-  TRACE_EVENT0("actor", "ExecutionEngine::OnCredentialSelected");
-  if (credential_selected_callback_) {
-    std::move(credential_selected_callback_).Run(std::move(response));
-  }
 }
 
 void ExecutionEngine::AddWritableMainframeOrigins(

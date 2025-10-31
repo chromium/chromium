@@ -697,13 +697,6 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
         // when this object is destructed.
         // TODO(crbug.com/445224605): Right now this code assumes that
         //   ActorKeyedService only owns a single Execution engine instance.
-        request_to_show_credential_selection_dialog_subscription_ =
-            actor_service
-                ->AddRequestToShowCredentialSelectionDialogSubscriberCallback(
-                    base::BindRepeating(
-                        &GlicWebClientHandler::
-                            RequestToShowCredentialSelectionDialog,
-                        base::Unretained(this)));
         request_to_show_autofill_suggestions_dialog_subscription_ =
             actor_service
                 ->AddRequestToShowAutofillSuggestionsDialogSubscriberCallback(
@@ -711,17 +704,6 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
                         &GlicWebClientHandler::
                             RequestToShowAutofillSuggestionsDialog,
                         base::Unretained(this)));
-        request_to_show_user_confirmation_dialog_subscription_ =
-            actor_service
-                ->AddRequestToShowUserConfirmationDialogSubscriberCallback(
-                    base::BindRepeating(&GlicWebClientHandler::
-                                            RequestToShowUserConfirmationDialog,
-                                        base::Unretained(this)));
-        request_to_confirm_navigation_subscription_ =
-            actor_service->AddRequestToConfirmNavigationSubscriberCallback(
-                base::BindRepeating(
-                    &GlicWebClientHandler::RequestToConfirmNavigation,
-                    base::Unretained(this)));
         act_on_web_capability_changed_subscription_ =
             actor_service->AddActOnWebCapabilityChangedCallback(
                 base::BindRepeating(
@@ -1649,10 +1631,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     focus_changed_subscription_ = {};
     pinned_tabs_changed_subscription_ = {};
     pinned_tab_data_changed_subscription_ = {};
-    request_to_show_credential_selection_dialog_subscription_ = {};
     request_to_show_autofill_suggestions_dialog_subscription_ = {};
-    request_to_show_user_confirmation_dialog_subscription_ = {};
-    request_to_confirm_navigation_subscription_ = {};
     browser_attach_observation_.reset();
     if (glic_service_->zero_state_suggestions_manager()) {
       glic_service_->zero_state_suggestions_manager()->Reset();
@@ -1782,8 +1761,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
       actor::TaskId task_id,
       const base::flat_map<std::string, gfx::Image>& icons,
       const std::vector<actor_login::Credential>& credentials,
-      actor::ActorKeyedService::CredentialSelectedCallback
-          on_credential_selected) {
+      actor::ActorTaskDelegate::CredentialSelectedCallback callback) override {
     // Note: mojom::<Type>Ptr is not copyable, meaning it can't be passed to the
     // argument of base::RepeatingCallbackList::Notify (who makes a copy of the
     // argument). All of the mojom::<Type>Ptr will be constructed locally before
@@ -1808,12 +1786,14 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
             std::move(mojo_icons));
 
     web_client_->RequestToShowCredentialSelectionDialog(
-        std::move(dialog_request), std::move(on_credential_selected));
+        std::move(dialog_request), std::move(callback));
   }
 
   void RequestToShowUserConfirmationDialog(
+      actor::TaskId task_id,
       const url::Origin& navigation_origin,
-      actor::ActorKeyedService::UserConfirmationDialogCallback callback) {
+      actor::ActorTaskDelegate::UserConfirmationDialogCallback callback)
+      override {
     actor::webui::mojom::UserConfirmationDialogPayloadPtr payload = nullptr;
     payload =
         actor::webui::mojom::UserConfirmationDialogPayload::NewNavigationOrigin(
@@ -1825,9 +1805,10 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   }
 
   void RequestToConfirmNavigation(
-      const actor::TaskId& task_id,
+      actor::TaskId task_id,
       const url::Origin& navigation_origin,
-      actor::ActorKeyedService::NavigationConfirmationCallback callback) {
+      actor::ActorTaskDelegate::NavigationConfirmationCallback callback)
+      override {
     web_client_->RequestToConfirmNavigation(
         actor::webui::mojom::NavigationConfirmationRequest::New(
             task_id.value(), navigation_origin),
@@ -1852,12 +1833,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   base::CallbackListSubscription active_browser_changed_subscription_;
   base::CallbackListSubscription actor_task_state_changed_subscription_;
   base::CallbackListSubscription
-      request_to_show_credential_selection_dialog_subscription_;
-  base::CallbackListSubscription
       request_to_show_autofill_suggestions_dialog_subscription_;
-  base::CallbackListSubscription
-      request_to_show_user_confirmation_dialog_subscription_;
-  base::CallbackListSubscription request_to_confirm_navigation_subscription_;
   base::CallbackListSubscription act_on_web_capability_changed_subscription_;
   mojo::Receiver<glic::mojom::WebClientHandler> receiver_;
   mojo::Remote<glic::mojom::WebClient> web_client_;
