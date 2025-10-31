@@ -3414,6 +3414,17 @@ chromium-metrics-reviews@google.com.
       variants="ActivityIndexMismatchAssignmentState"/>
 </histogram>
 
+<histogram name="Android.MultiWindowMode.CloseWindow.AppSource"
+    enum="CloseWindowAppSource" expires_after="2026-10-28">
+  <owner>aishwaryarj@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    Records the source of instance closure, emitted when permanent instance
+    state deletion is requested. Note that this does not account for Android
+    system-initiated closures or closures due to user actions on system UI.
+  </summary>
+</histogram>
+
 <histogram name="Android.MultiWindowMode.Configuration" enum="WindowingMode"
     expires_after="2026-04-05">
   <owner>aishwaryarj@google.com</owner>

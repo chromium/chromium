@@ -87,6 +87,7 @@ import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.CloseWindowAppSource;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
 import org.chromium.chrome.browser.multiwindow.UiUtils.NameWindowDialogSource;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -679,7 +680,7 @@ public class MultiInstanceManagerApi31UnitTest {
         MultiWindowUtils.setMaxInstancesForTesting(2);
 
         // Simulate deletion of instance0, so id=0 becomes available.
-        MultiInstanceManagerApi31.removeInstanceInfo(0);
+        MultiInstanceManagerApi31.removeInstanceInfo(0, CloseWindowAppSource.OTHER);
 
         // Trying to allocate a new instance with preferNew should fail.
         when(mActivityTask59.getSystemService(Context.ACTIVITY_SERVICE))
@@ -756,7 +757,7 @@ public class MultiInstanceManagerApi31UnitTest {
         assertEquals(3, mMultiInstanceManager.getInstanceInfo().size());
 
         // Closing an instance removes the entry.
-        mMultiInstanceManager.closeInstance(1, TASK_ID_57);
+        mMultiInstanceManager.closeInstance(1, CloseWindowAppSource.OTHER);
         assertEquals(2, mMultiInstanceManager.getInstanceInfo().size());
     }
 
@@ -1115,7 +1116,15 @@ public class MultiInstanceManagerApi31UnitTest {
         String profileTypeKey = MultiInstanceManagerApi31.profileTypeKey(index);
         ChromeSharedPreferences.getInstance().writeInt(profileTypeKey, 1);
 
-        MultiInstanceManagerApi31.removeInstanceInfo(index);
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                MultiInstanceManager.CLOSE_WINDOW_APP_SOURCE_HISTOGRAM,
+                                CloseWindowAppSource.OTHER)
+                        .build();
+
+        MultiInstanceManagerApi31.removeInstanceInfo(index, CloseWindowAppSource.OTHER);
+        histogramWatcher.assertExpected();
         assertFalse(
                 "Shared preference key should be removed.",
                 ChromeSharedPreferences.getInstance().contains(urlKey));
@@ -1721,7 +1730,8 @@ public class MultiInstanceManagerApi31UnitTest {
                 "Chrome instance should be closed.",
                 mMultiInstanceManager.closeChromeWindowIfEmpty(INSTANCE_ID_1));
 
-        verify(mMultiInstanceManager, times(1)).closeInstance(anyInt(), eq(INVALID_TASK_ID));
+        verify(mMultiInstanceManager, times(1))
+                .closeInstance(anyInt(), eq(CloseWindowAppSource.NO_TABS_IN_WINDOW));
     }
 
     @Test
@@ -1739,7 +1749,8 @@ public class MultiInstanceManagerApi31UnitTest {
                 "Chrome instance should be closed.",
                 mMultiInstanceManager.closeChromeWindowIfEmpty(INSTANCE_ID_1));
 
-        verify(mMultiInstanceManager, times(1)).closeInstance(anyInt(), eq(INVALID_TASK_ID));
+        verify(mMultiInstanceManager, times(1))
+                .closeInstance(anyInt(), eq(CloseWindowAppSource.NO_TABS_IN_WINDOW));
     }
 
     @Test

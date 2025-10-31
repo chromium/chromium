@@ -41,6 +41,10 @@ public abstract class MultiInstanceManager {
     public static final String NEW_WINDOW_APP_SOURCE_HISTOGRAM =
             "Android.MultiWindowMode.NewWindow.AppSource";
 
+    @VisibleForTesting
+    static final String CLOSE_WINDOW_APP_SOURCE_HISTOGRAM =
+            "Android.MultiWindowMode.CloseWindow.AppSource";
+
     // These values are persisted to logs. Entries should not be renumbered and numeric values
     // should never be reused.
     @IntDef({
@@ -56,6 +60,24 @@ public abstract class MultiInstanceManager {
         int KEYBOARD_SHORTCUT = 3;
 
         // Be sure to also update enums.xml when updating these values.
+        int NUM_ENTRIES = 4;
+    }
+
+    // These values are persisted to logs. Entries should not be renumbered and
+    // numeric values should never be reused.
+    @IntDef({
+        CloseWindowAppSource.WINDOW_MANAGER,
+        CloseWindowAppSource.RETENTION_PERIOD_EXPIRATION,
+        CloseWindowAppSource.NO_TABS_IN_WINDOW
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface CloseWindowAppSource {
+        int OTHER = 0;
+        int WINDOW_MANAGER = 1;
+        int RETENTION_PERIOD_EXPIRATION = 2;
+        int NO_TABS_IN_WINDOW = 3;
+
+        // Update enums.xml when updating these values.
         int NUM_ENTRIES = 4;
     }
 

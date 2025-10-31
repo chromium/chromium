@@ -30,6 +30,7 @@ import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.CloseWindowAppSource;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -113,13 +114,11 @@ public class MultiInstanceManagerApi31Test {
                                             .getActivity()
                                             .getMultiInstanceMangerForTesting();
                     multiInstanceManager.closeInstance(
-                            otherActivities[0].getWindowIdForTesting(),
-                            otherActivities[0].getTaskId());
+                            otherActivities[0].getWindowIdForTesting(), CloseWindowAppSource.OTHER);
                     multiInstanceManager.closeInstance(
-                            otherActivities[1].getWindowIdForTesting(),
-                            otherActivities[1].getTaskId());
+                            otherActivities[1].getWindowIdForTesting(), CloseWindowAppSource.OTHER);
                     multiInstanceManager.closeInstance(
-                            newActivity.getWindowIdForTesting(), newActivity.getTaskId());
+                            newActivity.getWindowIdForTesting(), CloseWindowAppSource.OTHER);
                 });
     }
 
@@ -167,10 +166,9 @@ public class MultiInstanceManagerApi31Test {
                                             .getActivity()
                                             .getMultiInstanceMangerForTesting();
                     multiInstanceManager.closeInstance(
-                            otherActivities[0].getWindowIdForTesting(),
-                            otherActivities[0].getTaskId());
+                            otherActivities[0].getWindowIdForTesting(), CloseWindowAppSource.OTHER);
                     multiInstanceManager.closeInstance(
-                            newActivity.getWindowIdForTesting(), newActivity.getTaskId());
+                            newActivity.getWindowIdForTesting(), CloseWindowAppSource.OTHER);
                 });
     }
 

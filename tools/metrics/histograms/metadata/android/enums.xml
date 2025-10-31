@@ -920,6 +920,13 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Disallow"/>
 </enum>
 
+<enum name="CloseWindowAppSource">
+  <int value="0" label="Other"/>
+  <int value="1" label="Window manager"/>
+  <int value="2" label="Instance retention period expiration"/>
+  <int value="3" label="No tabs in window"/>
+</enum>
+
 <enum name="ContactsPickerDialogAction">
   <int value="0" label="Cancel"/>
   <int value="1" label="Contact(s) selected"/>
