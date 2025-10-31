@@ -12,7 +12,7 @@ chromium::import! {
 use texture_compressor::{interleave_etc1, load_input_block};
 
 #[gtest(TextureCompressorTest, InterleaveEtc1)]
-fn test_interleave_etc1() {
+fn test() {
     let input =
         [Simd::splat(0x1234), Simd::splat(0x5678), Simd::splat(0x9ABC), Simd::splat(0xDEF0)];
     let expected = [Simd::splat(0x3412_7856_BC9A_F0DE); 4];
@@ -21,7 +21,7 @@ fn test_interleave_etc1() {
 }
 
 #[gtest(TextureCompressorTest, LoadInputMirror)]
-fn test_load_input_mirror() {
+fn test() {
     // Skip rustfmt to keep this formatted as a 6x2 image.
     #[rustfmt::skip]
     let input = [
@@ -48,7 +48,7 @@ fn test_load_input_mirror() {
 }
 
 #[gtest(TextureCompressorTest, LoadInputMirror1x1)]
-fn test_load_input_mirror_1x1() {
+fn test() {
     let input = [0x999999];
     let expected = 0x99;
     let result = load_input_block(&input, 1, 1, 1, 0, 0);

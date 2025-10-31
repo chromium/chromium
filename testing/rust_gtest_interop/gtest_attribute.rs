@@ -87,10 +87,14 @@ impl Parse for CppPrefixArgs {
 /// test will fail when run. If the return type is a `Result`, then an `Err` is
 /// treated as a test failure.
 ///
+/// The `gtest` macro will hide the test function in an ad-hoc `mod`, so the
+/// original function name doesn't matter.  By convention, the function is
+/// just named `fn test`.
+///
 /// # Examples
 /// ```
 /// #[gtest(MathTest, Addition)]
-/// fn my_test() {
+/// fn test() {
 ///   expect_eq!(1 + 1, 2);
 /// }
 /// ```
@@ -105,7 +109,7 @@ impl Parse for CppPrefixArgs {
 /// fail if the test returns an `Err`, and print the resulting error string:
 /// ```
 /// #[gtest(ResultTest, CheckThingWithResult)]
-/// fn my_test() -> std::result::Result<(), String> {
+/// fn test() -> std::result::Result<(), String> {
 ///   call_thing_with_result()?;
 /// }
 /// ```

@@ -14,7 +14,7 @@ use texture_compressor::selectors::{
 };
 
 #[gtest(TextureCompressorTest, FlipPixels)]
-fn test_flip_pixels() {
+fn test() {
     #[rustfmt::skip]
     let input = [
         [ 0,  1,  2,  3],
@@ -35,7 +35,7 @@ fn test_flip_pixels() {
 }
 
 #[gtest(TextureCompressorTest, FlipSelectors)]
-fn test_flip_selectors() {
+fn test() {
     #[rustfmt::skip]
     let input = [
          0,  1,  2,  3,
@@ -58,7 +58,7 @@ fn test_flip_selectors() {
 }
 
 #[gtest(TextureCompressorTest, SearchTableAndSelectors)]
-fn test_search_table_and_selectors() {
+fn test() {
     for (table_idx, table) in TABLES.iter().enumerate() {
         let (sm, lg) = (table[0], table[1]);
         let input = [[sm, lg, -sm, -lg], [-lg, -sm, lg, sm]]
@@ -74,7 +74,7 @@ fn test_search_table_and_selectors() {
 }
 
 #[gtest(TextureCompressorTest, SearchTableAndSelectorsMax)]
-fn test_search_table_and_selectors_max() {
+fn test() {
     // Test for overflow handling of the error function.
     // The base color is set to an arbitrarily far value rather than being the
     // average. In this case, table 7 has the smallest but non-zero error value.

@@ -9,6 +9,6 @@ chromium::import! {
 }
 
 #[gtest(MyRustTestSuite, MyAdditionTest)]
-fn test_addition() {
+fn test() {
     expect_eq!(library::add_numbers(2, 2), 4);
 }

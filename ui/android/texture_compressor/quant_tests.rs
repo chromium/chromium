@@ -12,7 +12,7 @@ chromium::import! {
 use texture_compressor::quant::{fast_div_255_round, prepare_averages, quantize_averages};
 
 #[gtest(TextureCompressorTest, FastDiv255)]
-fn test_fast_div_255() {
+fn test() {
     let multipliers = [15, 31];
     for m in multipliers {
         for i in 0..255 {
@@ -23,7 +23,7 @@ fn test_fast_div_255() {
 }
 
 #[gtest(TextureCompressorTest, Averages)]
-fn test_average() {
+fn test() {
     let values = [[0, 255, 0, 255]; 4].map(|row| row.map(|x| [Simd::splat(x); 3]));
     let result = prepare_averages(&values);
     for i in 0..4 {
@@ -35,7 +35,7 @@ fn test_average() {
 
 #[gtest(TextureCompressorTest, AveragesMax)]
 // Check that the maximum value doesn't overflow.
-fn test_average_max() {
+fn test() {
     let values = [[255; 4]; 4].map(|row| row.map(|x| [Simd::splat(x); 3]));
     let result = prepare_averages(&values);
     for i in 0..4 {
@@ -46,7 +46,7 @@ fn test_average_max() {
 }
 
 #[gtest(TextureCompressorTest, QuantDiff)]
-fn test_quant_diff() {
+fn test() {
     // Test input colors that are perfectly quantizable in diff mode.
     // We don't strictly require diff mode to be selected however, because it is
     // possible for a value to be perfectly quantizable in both modes.
@@ -60,7 +60,7 @@ fn test_quant_diff() {
 }
 
 #[gtest(TextureCompressorTest, QuantIndiv)]
-fn test_quant_indiv() {
+fn test() {
     let c1 = [0, 0, 0].map(|x| Simd::splat(x));
     let c2 = [255, 255, 255].map(|x| Simd::splat(x));
     let values = [[c1, c1, c2, c2]; 4];

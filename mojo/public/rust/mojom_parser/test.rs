@@ -83,7 +83,7 @@ impl TestType {
 // lost during packing. So for now we'll just put in empty strings as dummies.
 
 #[gtest(MojomParserTestSuit, BoolTest)]
-fn test_bools() {
+fn test() {
     use anyhow::Error;
 
     #[derive(MojomParse, Debug, PartialEq, Copy, Clone)]
