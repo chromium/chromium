@@ -122,14 +122,6 @@ struct ProfileWithText {
   std::u16string text;
 };
 
-// Used to hold the relevant data for address on typing suggestions between
-// fetching and generating phases of the suggestion generation.
-struct AddressOnTypingSuggestionData {
-  std::u16string suggestion_text;
-  FieldType type;
-  std::string guid;
-};
-
 Suggestion CreateUndoOrClearFormSuggestion() {
 #if BUILDFLAG(IS_IOS)
   std::u16string value =
@@ -700,9 +692,19 @@ SuggestionType GetSuggestionType(FormFieldData trigger_field) {
              : SuggestionType::kAddressEntry;
 }
 
-std::vector<AddressOnTypingSuggestionData> GetAddressOnTypingSuggestionData(
+// Returns a vector of `AddressOnTypingSuggestionData` that will be suggested
+// on a prefix matched `trigger_field`. Can be empty if there is no data
+// available for filling or the filling conditions were not met.
+std::vector<AddressOnTypingSuggestionData>
+MaybeFetchAddressOnTypingSuggestionData(
     const AddressDataManager& address_data_manager,
-    const std::u16string& field_contents) {
+    const FormFieldData& trigger_field) {
+  if (!trigger_field.should_autocomplete() ||
+      !base::FeatureList::IsEnabled(
+          features::kAutofillAddressSuggestionsOnTyping)) {
+    return {};
+  }
+
   // Get the profiles to suggest, which are already sorted by relevance.
   std::vector<const AutofillProfile*> profiles =
       address_data_manager.GetProfilesToSuggest();
@@ -755,7 +757,7 @@ std::vector<AddressOnTypingSuggestionData> GetAddressOnTypingSuggestionData(
         continue;
       }
       const std::u16string normalized_field_contents =
-          NormalizeForComparisonForType(field_contents, type);
+          NormalizeForComparisonForType(trigger_field.value(), type);
       if (normalized_field_contents.size() <
           min_number_of_characters_to_match) {
         // Sometimes normalizing the string makes it shorter because of trimming
@@ -799,27 +801,56 @@ std::vector<AddressOnTypingSuggestionData> GetAddressOnTypingSuggestionData(
   return suggestion_data;
 }
 
-}  // namespace
-
-// TODO(crbug.com/409962888): Handle address suggestions on typing.
-std::vector<Suggestion> GetSuggestionsOnTypingForProfile(
-    const AddressDataManager& address_data_manager,
-    const std::u16string& field_contents) {
+std::vector<Suggestion> GenerateAddressOnTypingSuggestions(
+    base::span<const AddressOnTypingSuggestionData> addresses_to_suggest) {
   std::vector<Suggestion> suggestions;
-
-  for (const AddressOnTypingSuggestionData& data :
-       GetAddressOnTypingSuggestionData(address_data_manager, field_contents)) {
+  for (const AddressOnTypingSuggestionData& data : addresses_to_suggest) {
     suggestions.emplace_back(data.suggestion_text,
                              SuggestionType::kAddressEntryOnTyping);
     suggestions.back().field_by_field_filling_type_used = data.type;
     suggestions.back().payload =
         Suggestion::AutofillProfilePayload(Suggestion::Guid(data.guid));
   }
-  if (suggestions.size() > 0) {
-    // TODO(crbug.com/381994105): Consider adding undo.
-    std::ranges::move(GetAddressFooterSuggestions(/*is_autofilled=*/false),
-                      std::back_inserter(suggestions));
-  }
+  // TODO(crbug.com/381994105): Consider adding undo.
+  base::Extend(suggestions,
+               GetAddressFooterSuggestions(/*is_autofilled=*/false));
+  return suggestions;
+}
+
+}  // namespace
+
+std::vector<Suggestion> GetSuggestionsOnTypingForProfile(
+    const AutofillClient& client,
+    const FormData& form,
+    const FormFieldData& trigger_field) {
+  std::vector<Suggestion> suggestions;
+  AddressSuggestionGenerator address_suggestion_generator(
+      /*plus_address_email_override=*/std::nullopt,
+      /*log_manager=*/nullptr);
+
+  auto on_suggestions_generated =
+      [&suggestions](
+          SuggestionGenerator::ReturnedSuggestions returned_suggestions) {
+        suggestions = std::move(returned_suggestions.second);
+      };
+
+  auto on_suggestion_data_returned =
+      [&on_suggestions_generated, &form, &trigger_field, &client,
+       &address_suggestion_generator](
+          std::pair<SuggestionGenerator::SuggestionDataSource,
+                    std::vector<SuggestionGenerator::SuggestionData>>
+              suggestion_data) {
+        address_suggestion_generator.GenerateSuggestions(
+            form, trigger_field, /*form_structure=*/nullptr,
+            /*trigger_autofill_field=*/nullptr, client,
+            {std::move(suggestion_data)}, on_suggestions_generated);
+      };
+
+  // Since regular address suggestions require trigger_autofill_field to exists,
+  // it is guaranteed that only AddressOnTyping suggestions can be generated.
+  address_suggestion_generator.FetchSuggestionData(
+      form, trigger_field, /*form_structure=*/nullptr,
+      /*trigger_autofill_field=*/nullptr, client, on_suggestion_data_returned);
   return suggestions;
 }
 
@@ -940,8 +971,16 @@ void AddressSuggestionGenerator::FetchSuggestionData(
     return;
   }
 
-  // TODO(crbug.com/409962888): Handle address suggestions on typing.
-  callback({SuggestionDataSource::kAddress, {}});
+  // Handling `kAddressOnTyping` suggestions.
+  std::vector<SuggestionGenerator::SuggestionData> suggestion_data =
+      base::ToVector(
+          MaybeFetchAddressOnTypingSuggestionData(
+              client.GetPersonalDataManager().address_data_manager(),
+              trigger_field),
+          [](AddressOnTypingSuggestionData& data) {
+            return SuggestionGenerator::SuggestionData(std::move(data));
+          });
+  callback({SuggestionDataSource::kAddressOnTyping, suggestion_data});
 }
 
 void AddressSuggestionGenerator::GenerateSuggestions(
@@ -971,8 +1010,23 @@ void AddressSuggestionGenerator::GenerateSuggestions(
     return;
   }
 
-  // TODO(crbug.com/409962888): Handle address suggestions on typing.
-  callback({FillingProduct::kAddress, {}});
+  // Handling `kAddressOnTyping` suggestions.
+  it = all_suggestion_data.find(SuggestionDataSource::kAddressOnTyping);
+  address_suggestion_data = it != all_suggestion_data.end()
+                                ? it->second
+                                : std::vector<SuggestionData>();
+  if (address_suggestion_data.empty()) {
+    callback({FillingProduct::kAddress, {}});
+    return;
+  }
+  std::vector<AddressOnTypingSuggestionData> addresses_to_suggest =
+      base::ToVector(std::move(address_suggestion_data),
+                     [](SuggestionData& suggestion_data) {
+                       return std::get<AddressOnTypingSuggestionData>(
+                           std::move(suggestion_data));
+                     });
+  callback({FillingProduct::kAddress,
+            GenerateAddressOnTypingSuggestions(addresses_to_suggest)});
 }
 
 std::vector<AutofillProfile>

@@ -1603,8 +1603,8 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase3(
           OnGeneratedPlusAddressAndSingleFieldFillSuggestions,
       weak_ptr_factory_.GetWeakPtr(),
       AutofillPlusAddressDelegate::SuggestionContext::kAutocomplete,
-      password_form_classification.type, form.global_id(), field,
-      std::move(callback), std::move(plus_address_suggestions));
+      password_form_classification.type, form, field, std::move(callback),
+      std::move(plus_address_suggestions));
 
   // Generating single field suggestions.
   auto on_suggestions_returned = base::BindOnce(
@@ -1645,7 +1645,7 @@ void BrowserAutofillManager::
     OnGeneratedPlusAddressAndSingleFieldFillSuggestions(
         AutofillPlusAddressDelegate::SuggestionContext suggestions_context,
         PasswordFormClassification::Type password_form_type,
-        const FormGlobalId& form_id,
+        const FormData& form,
         const FormFieldData& field,
         OnGenerateSuggestionsCallback callback,
         std::vector<Suggestion> plus_address_suggestions,
@@ -1673,9 +1673,7 @@ void BrowserAutofillManager::
       // Note that these suggestions are always displayed on their own.
       std::move(callback).Run(
           /*show_suggestions=*/true,
-          GetSuggestionsOnTypingForProfile(
-              client().GetPersonalDataManager().address_data_manager(),
-              field.value()));
+          GetSuggestionsOnTypingForProfile(client(), form, field));
     } else {
       std::move(callback).Run(/*show_suggestions=*/true, {});
     }
@@ -1684,7 +1682,7 @@ void BrowserAutofillManager::
 
   if (!plus_address_suggestions.empty()) {
     client().GetPlusAddressDelegate()->OnPlusAddressSuggestionShown(
-        *this, form_id, field.global_id(), suggestions_context,
+        *this, form.global_id(), field.global_id(), suggestions_context,
         password_form_type, suggestions[0].type);
 
     // Include ManagePlusAddressSuggestion item.

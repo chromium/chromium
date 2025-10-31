@@ -681,6 +681,7 @@ static_library("browser") {
     "studies/autofill_ablation_study.h",
     "studies/autofill_experiments.cc",
     "studies/autofill_experiments.h",
+    "suggestions/addresses/address_on_typing_suggestion_data.h",
     "suggestions/addresses/address_suggestion_generator.cc",
     "suggestions/addresses/address_suggestion_generator.h",
     "suggestions/autocomplete_suggestion_generator.cc",

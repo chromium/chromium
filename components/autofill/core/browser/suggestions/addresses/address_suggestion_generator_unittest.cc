@@ -164,7 +164,19 @@ class AddressSuggestionGeneratorTest : public testing::Test {
     return suggestions;
   }
 
+  std::vector<Suggestion> GetSuggestionsOnTypingWithPrefix(
+      const std::u16string& prefix) {
+    FormFieldData field;
+    field.set_value(prefix);
+    FormData form;
+    test_api(form).Append(field);
+
+    return GetSuggestionsOnTypingForProfile(autofill_client_, form, field);
+  }
+
  private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kAutofillAddressSuggestionsOnTyping};
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::SYSTEM_TIME};
   test::AutofillUnitTestEnvironment autofill_test_environment_;
@@ -195,18 +207,18 @@ TEST_F(AddressSuggestionGeneratorTest,
   // Expects that no suggestion is returned if the field content matches
   // `NAME_FULL` prefix from the top profile but the field content
   // has only 1 character.
-  EXPECT_EQ(GetSuggestionsOnTypingForProfile(address_data(), u"W").size(), 0u);
+  EXPECT_EQ(GetSuggestionsOnTypingWithPrefix(u"W").size(), 0u);
   // Expects that no suggestion is returned if the field content matches
   // `NAME_FULL` prefix from the top profile but the field content
   // has only 2 characters.
-  EXPECT_EQ(GetSuggestionsOnTypingForProfile(address_data(), u"Su").size(), 0u);
+  EXPECT_EQ(GetSuggestionsOnTypingWithPrefix(u"Su").size(), 0u);
   // Expects that suggestions are returned if the field content matches
   // prefix data from the top profile, even when the field content
   // has more than 3 characters. Note that a suggestion for `FIRST_NAME` is not
   // returned because the string value it would fill in the field and the typed
   // data is not large enough.
   EXPECT_THAT(
-      GetSuggestionsOnTypingForProfile(address_data(), u"Sund"),
+      GetSuggestionsOnTypingWithPrefix(u"Sund"),
       ElementsAre(EqualsSuggestion(SuggestionType::kAddressEntryOnTyping,
                                    u"Sundar pichai"),
                   EqualsSuggestion(SuggestionType::kSeparator),
@@ -215,7 +227,7 @@ TEST_F(AddressSuggestionGeneratorTest,
   // prefix data from the second profile when the field content
   // has more than 3 characters.
   EXPECT_THAT(
-      GetSuggestionsOnTypingForProfile(address_data(), u"Larr"),
+      GetSuggestionsOnTypingWithPrefix(u"Larr"),
       ElementsAre(EqualsSuggestion(SuggestionType::kAddressEntryOnTyping,
                                    u"Larry page"),
                   EqualsSuggestion(SuggestionType::kSeparator),
@@ -223,11 +235,10 @@ TEST_F(AddressSuggestionGeneratorTest,
   // Expects NO suggestions are returned if the field content matches
   // prefix data from the third profile, even when the field content
   // has more than 3 characters.
-  EXPECT_EQ(GetSuggestionsOnTypingForProfile(address_data(), u"Jef").size(),
-            0u);
+  EXPECT_EQ(GetSuggestionsOnTypingWithPrefix(u"Jef").size(), 0u);
   // Test that suggestions are created for different field types as well.
   EXPECT_THAT(
-      GetSuggestionsOnTypingForProfile(address_data(), u"439"),
+      GetSuggestionsOnTypingWithPrefix(u"439"),
       ElementsAre(EqualsSuggestion(SuggestionType::kAddressEntryOnTyping,
                                    u"4398125123"),
                   EqualsSuggestion(SuggestionType::kSeparator),
@@ -256,23 +267,21 @@ TEST_F(
 
   // Expects that no suggestion is returned if the field content matches
   // `NAME_FULL` prefix but the field content has less than 4 characters.
-  EXPECT_EQ(GetSuggestionsOnTypingForProfile(address_data(), u"S").size(), 0u);
-  EXPECT_EQ(GetSuggestionsOnTypingForProfile(address_data(), u"Su").size(), 0u);
-  EXPECT_EQ(GetSuggestionsOnTypingForProfile(address_data(), u"Sun").size(),
-            0u);
+  EXPECT_EQ(GetSuggestionsOnTypingWithPrefix(u"S").size(), 0u);
+  EXPECT_EQ(GetSuggestionsOnTypingWithPrefix(u"Su").size(), 0u);
+  EXPECT_EQ(GetSuggestionsOnTypingWithPrefix(u"Sun").size(), 0u);
 
   // Expects that a suggestion is returned if the field content has 4 characters
   // and matches the `NAME_FULL` prefix.
   EXPECT_THAT(
-      GetSuggestionsOnTypingForProfile(address_data(), u"Sund"),
+      GetSuggestionsOnTypingWithPrefix(u"Sund"),
       ElementsAre(EqualsSuggestion(SuggestionType::kAddressEntryOnTyping,
                                    u"Sundar pichai"),
                   EqualsSuggestion(SuggestionType::kSeparator),
                   EqualsSuggestion(SuggestionType::kManageAddress)));
   // The available field types to build Autofill on type suggestions (from the
   // feature param) was overridden and does not contain ZIP_CODE.
-  EXPECT_TRUE(
-      GetSuggestionsOnTypingForProfile(address_data(), u"4398").empty());
+  EXPECT_TRUE(GetSuggestionsOnTypingWithPrefix(u"4398").empty());
 }
 
 // Tests that overring the possible Autofill on typing types via feature params
@@ -296,7 +305,7 @@ TEST_F(
 
   // Expects that a suggestion is returned if the field content has 4 characters
   // and matches the `NAME_FULL` prefix.
-  EXPECT_TRUE(GetSuggestionsOnTypingForProfile(address_data(), u"Sun").empty());
+  EXPECT_TRUE(GetSuggestionsOnTypingWithPrefix(u"Sun").empty());
 }
 
 // Tests that special characters will be used while prefix matching the user's

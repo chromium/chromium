@@ -19,6 +19,7 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/metrics/log_event.h"
+#include "components/autofill/core/browser/suggestions/addresses/address_on_typing_suggestion_data.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_generator.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
@@ -35,9 +36,12 @@ class FormFieldData;
 // profile data whose prefix matches what the user has typed. As for now, only
 // use the top profile to generate suggestions.
 // `field_contents` is the string contained in the triggering field.
+// TODO(crbug.com/409962888): Remove once the new suggestion generation logic is
+// launched.
 std::vector<Suggestion> GetSuggestionsOnTypingForProfile(
-    const AddressDataManager& adress_data_manager,
-    const std::u16string& field_contents);
+    const AutofillClient& client,
+    const FormData& form,
+    const FormFieldData& trigger_field);
 
 // Generates a footer suggestion "Manage addresses..." menu item which will
 // redirect to Chrome address settings page.
