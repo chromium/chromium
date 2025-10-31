@@ -56,8 +56,6 @@ std::string_view ConvertIconToPrintableString(Suggestion::Icon icon) {
       return "kAccount";
     case Suggestion::Icon::kClear:
       return "kClear";
-    case Suggestion::Icon::kCreate:
-      return "kCreate";
     case Suggestion::Icon::kCode:
       return "kCode";
     case Suggestion::Icon::kDelete:
@@ -88,10 +86,6 @@ std::string_view ConvertIconToPrintableString(Suggestion::Icon icon) {
       return "kGoogleWalletMonochrome";
     case Suggestion::Icon::kHome:
       return "kHome";
-    case Suggestion::Icon::kHttpWarning:
-      return "kHttpWarning";
-    case Suggestion::Icon::kHttpsInvalid:
-      return "kHttpsInvalid";
     case Suggestion::Icon::kIdCard:
       return "kIdCard";
     case Suggestion::Icon::kKey:
@@ -116,8 +110,6 @@ std::string_view ConvertIconToPrintableString(Suggestion::Icon icon) {
       return "kScanCreditCard";
     case Suggestion::Icon::kSettings:
       return "kSettings";
-    case Suggestion::Icon::kSettingsAndroid:
-      return "kSettingsAndroid";
     case Suggestion::Icon::kUndo:
       return "kUndo";
     case Suggestion::Icon::kVehicle:

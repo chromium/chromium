@@ -48,7 +48,8 @@ import java.util.concurrent.TimeUnit;
 @Config(shadows = {ShadowLooper.class, ShadowDrawable.class})
 @LooperMode(Mode.PAUSED)
 public class BrandingSecurityButtonAnimationDelegateUnitTest {
-    private static final @DrawableRes int ICON_16_DP = R.drawable.ic_warning_red_16dp;
+    private static final @DrawableRes int ICON_16_DP =
+            R.drawable.focused_outline_overlay_corners_16dp;
     private static final @DrawableRes int ICON_24_DP = R.drawable.ic_globe_24dp;
 
     @Rule

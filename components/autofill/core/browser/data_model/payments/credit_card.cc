@@ -325,7 +325,6 @@ int CreditCard::IconResourceId(Suggestion::Icon icon) {
     case Suggestion::Icon::kAccount:
     case Suggestion::Icon::kClear:
     case Suggestion::Icon::kCode:
-    case Suggestion::Icon::kCreate:
     case Suggestion::Icon::kDelete:
     case Suggestion::Icon::kDevice:
     case Suggestion::Icon::kVehicle:
@@ -339,8 +338,6 @@ int CreditCard::IconResourceId(Suggestion::Icon icon) {
     case Suggestion::Icon::kGooglePasswordManager:
     case Suggestion::Icon::kGooglePay:
     case Suggestion::Icon::kHome:
-    case Suggestion::Icon::kHttpsInvalid:
-    case Suggestion::Icon::kHttpWarning:
     case Suggestion::Icon::kIdCard:
     case Suggestion::Icon::kIban:
     case Suggestion::Icon::kKey:
@@ -357,7 +354,6 @@ int CreditCard::IconResourceId(Suggestion::Icon icon) {
     case Suggestion::Icon::kSaveAndFill:
     case Suggestion::Icon::kScanCreditCard:
     case Suggestion::Icon::kSettings:
-    case Suggestion::Icon::kSettingsAndroid:
     case Suggestion::Icon::kUndo:
     case Suggestion::Icon::kBnpl:
     case Suggestion::Icon::kGoogleWallet:
