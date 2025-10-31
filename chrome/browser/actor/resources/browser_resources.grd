@@ -37,5 +37,9 @@
         Give task back
       </message>
     </messages>
+
+    <includes>
+      <include name="IDR_ACTOR_OVERLAY_MAGIC_CURSOR" file="magic_cursor.svg" type="BINDATA" compress="brotli" />
+    </includes>
   </release>
 </grit>

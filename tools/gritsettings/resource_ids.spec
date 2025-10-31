@@ -97,18 +97,22 @@
     "includes": [2200],
     "structures": [2220],
   },
+  # Both browser_resources.grd for chrome/browser/actor/resources and
+  # chrome/browser/actor/resources/internal start with the same ids because only
+  # one of them is built depending on if is_chrome_branded is true.
   "chrome/browser/actor/resources/internal/browser_resources.grd": {
     "structures": [2230],
     "messages": [2235],
-    "includes": [2250],
+    "includes": [2240],
   },
   "chrome/browser/actor/resources/browser_resources.grd": {
     "structures": [2230],
     "messages": [2235],
-    "includes": [2250],
+    "includes": [2240],
   },
   "chrome/browser/dev_ui_browser_resources.grd": {
-    "includes": [2240],
+    "META": {"join": 2},
+    "includes": [2250],
   },
   "chrome/browser/nearby_sharing/internal/nearby_share_internal_icons.grd": {
     "includes": [2260],

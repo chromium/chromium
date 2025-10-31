@@ -9,11 +9,7 @@ assert(!is_android)
 build_webui("build") {
   grd_prefix = "actor_overlay"
 
-  # TODO(crbug.com/422539773): Move svg to actor resources
-  static_files = [
-    "actor_overlay.html",
-    "magic_cursor.svg",
-  ]
+  static_files = [ "actor_overlay.html" ]
 
   ts_files = [
     "app.html.ts",

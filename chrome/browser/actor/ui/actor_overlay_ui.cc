@@ -4,6 +4,7 @@
 
 #include "chrome/browser/actor/ui/actor_overlay_ui.h"
 
+#include "chrome/browser/actor/resources/grit/actor_browser_resources.h"
 #include "chrome/browser/actor/ui/actor_overlay_handler.h"
 #include "chrome/browser/actor/ui/actor_ui_tab_controller.h"
 #include "chrome/browser/actor/ui/actor_ui_tab_controller_interface.h"
@@ -34,6 +35,7 @@ ActorOverlayUI::ActorOverlayUI(content::WebUI* web_ui)
                      features::kGlicActorUiOverlayMagicCursor.Get());
   source->AddBoolean("isStandaloneBorderGlowEnabled",
                      features::kGlicActorUiStandaloneBorderGlow.Get());
+  source->AddResourcePath("magic_cursor.svg", IDR_ACTOR_OVERLAY_MAGIC_CURSOR);
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(ActorOverlayUI)
