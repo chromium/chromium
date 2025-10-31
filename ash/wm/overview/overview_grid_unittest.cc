@@ -312,9 +312,12 @@ TEST_F(OverviewGridTest, SnappedWindow) {
   VerifyAnimationStates({true, false}, {});
 }
 
-TEST_F(OverviewGridTest, DISABLED_RecordsDelayedDeskBarPresentationMetric) {
+TEST_F(OverviewGridTest, RecordsDelayedDeskBarPresentationMetric) {
+  // Use SLOW_DURATION to ensure the enter animation doesn't complete too
+  // quickly (within one frame), which causes the metric to be recorded earlier
+  // than expected by this test's intermediate check.
   ui::ScopedAnimationDurationScaleMode animation_scale(
-      ui::ScopedAnimationDurationScaleMode::FAST_DURATION);
+      ui::ScopedAnimationDurationScaleMode::SLOW_DURATION);
 
   // Since the windows are not maximized, the desk bar should open after
   // the overview animation is complete, causing
