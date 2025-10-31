@@ -271,7 +271,8 @@ LikelyFormFilling SendFillInformationToRenderer(
   } else if (observed_form.IsSingleUsername()) {
     wait_for_username_reason = WaitForUsernameReason::kSingleUsernameForm;
   } else if (client->IsActorTaskActive() &&
-             base::FeatureList::IsEnabled(features::kActorLogin)) {
+             base::FeatureList::IsEnabled(
+                 features::kActorActiveDisablesFillingOnPageLoad)) {
     wait_for_username_reason = WaitForUsernameReason::kActorTaskOngoing;
   } else if (client->IsPasswordChangeOngoing() ||
              IsEligibleForPasswordChange(preferred_match)) {
