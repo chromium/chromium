@@ -33,18 +33,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Scanning.DiscoverySession.MaxInterval" units="ms"
-    expires_after="2026-01-11">
-  <owner>bmgordon@chromium.org</owner>
-  <owner>project-bolton@google.com</owner>
-  <summary>
-    Records the maximum interval between events during a discovery session.
-    Intended to be used for tuning session monitor timeouts.
-  </summary>
-</histogram>
-
 <histogram name="Scanning.DiscoverySession.NumScanners" units="scanners"
-    expires_after="2025-11-30">
+    expires_after="2026-05-30">
   <owner>bmgordon@chromium.org</owner>
   <owner>project-bolton@google.com</owner>
   <summary>
@@ -54,7 +44,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Scanning.DiscoverySession.Result"
-    enum="ScannerOperationResult" expires_after="2025-11-30">
+    enum="ScannerOperationResult" expires_after="2026-05-30">
   <owner>bmgordon@chromium.org</owner>
   <owner>project-bolton@google.com</owner>
   <summary>
