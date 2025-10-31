@@ -197,6 +197,8 @@ OmniboxPopupSelection::GetAllAvailableSelectionsSorted(
         //   `associated_keyword` suffices though it also catches the case where
         //   before the user has tabbed into keyword mode; but that's ok since
         //   `FOCUSED_BUTTON_AIM` is ordered after `KEYWORD_MODE` anyways.
+        // - The match does not have other actions, e.g. switch to tab, to avoid
+        //   disrupting muscle memory and for consistency with keyword chips.
         // - The 2nd match isn't an instant keyword to avoid disrupting muscle
         //   memory e.g. '@gemini<tab>'. Don't have to similarly consider
         //   non-instant keywords since same-line `KEYWORD_MODE` is ordered
@@ -208,6 +210,7 @@ OmniboxPopupSelection::GetAllAvailableSelectionsSorted(
         if (aim_button_visible && line_number == 0 &&
             !result.match_at(0).from_keyword &&
             result.match_at(0).associated_keyword.empty() &&
+            result.match_at(0).actions.size() == 0 &&
             !second_match_has_instant_keyword && !input.IsZeroSuggest()) {
           available_selections.emplace_back(line_number, line_state);
         }
