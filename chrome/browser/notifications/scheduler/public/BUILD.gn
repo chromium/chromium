@@ -38,12 +38,15 @@ source_set("public") {
     "throttle_config.h",
     "tips_agent.cc",
     "tips_agent.h",
+    "tips_utils.cc",
+    "tips_utils.h",
     "user_action_handler.h",
   ]
 
   public_deps = [ "//base" ]
   deps = [
     "//chrome/app:generated_resources",
+    "//chrome/common",
     "//components/keyed_service/core",
     "//skia",
     "//ui/base",
@@ -58,7 +61,10 @@ if (is_android) {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "schedule_service_utils_unittest.cc" ]
+  sources = [
+    "schedule_service_utils_unittest.cc",
+    "tips_utils_unittest.cc",
+  ]
 
   deps = [
     "//chrome/app:generated_resources",

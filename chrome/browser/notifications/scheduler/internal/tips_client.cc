@@ -10,17 +10,35 @@
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/notifications/scheduler/public/notification_scheduler_constant.h"
 #include "chrome/browser/notifications/scheduler/public/tips_agent.h"
+#include "chrome/browser/notifications/scheduler/public/tips_utils.h"
 
 namespace notifications {
 
-TipsClient::TipsClient(std::unique_ptr<TipsAgent> tips_agent)
-    : tips_agent_(std::move(tips_agent)) {}
+TipsClient::TipsClient(std::unique_ptr<TipsAgent> tips_agent,
+                       PrefService* pref_service)
+    : tips_agent_(std::move(tips_agent)), pref_service_(pref_service) {}
 
 TipsClient::~TipsClient() = default;
 
 void TipsClient::BeforeShowNotification(
     std::unique_ptr<NotificationData> notification_data,
     NotificationDataCallback callback) {
+#if BUILDFLAG(IS_ANDROID)
+  // Check that there is a valid feature type for the tip.
+  auto it = notification_data->custom_data.find(kTipsNotificationsFeatureType);
+  if (it != notification_data->custom_data.end()) {
+    std::string feature_type = it->second;
+    int type_int;
+    base::StringToInt(feature_type, &type_int);
+    TipsNotificationsFeatureType type =
+        static_cast<TipsNotificationsFeatureType>(type_int);
+
+    // Set a pref to mark that a notification for this feature type has shown.
+    std::string pref = GetFeatureTypePref(type);
+    pref_service_->SetBoolean(pref, true);
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
+
   std::move(callback).Run(std::move(notification_data));
 }
 

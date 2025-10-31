@@ -164,7 +164,8 @@ class NotificationScheduleServiceTest : public InProcessBrowserTest {
     service_ = CreateNotificationScheduleService(
         std::move(client_registrar), std::move(background_task_scheduler),
         std::move(display_agent), std::move(tips_agent), db_provider,
-        tmp_dir_.GetPath().Append(kTestDir), profile->IsOffTheRecord());
+        tmp_dir_.GetPath().Append(kTestDir), profile->IsOffTheRecord(),
+        profile->GetPrefs());
   }
 
   // Helper function to schedule a notification immediately to show.

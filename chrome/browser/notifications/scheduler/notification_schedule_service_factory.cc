@@ -71,7 +71,7 @@ NotificationScheduleServiceFactory::BuildServiceInstanceFor(
   return notifications::CreateNotificationScheduleService(
       std::move(client_registrar), std::move(background_task_scheduler),
       std::move(display_agent), std::move(tips_agent), db_provider, storage_dir,
-      profile_key->IsOffTheRecord());
+      profile_key->IsOffTheRecord(), profile_key->GetPrefs());
 }
 
 SimpleFactoryKey* NotificationScheduleServiceFactory::GetKeyToUse(

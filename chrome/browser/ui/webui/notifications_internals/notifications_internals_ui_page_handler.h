@@ -9,6 +9,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/notifications/scheduler/public/notification_schedule_service.h"
 #include "chrome/browser/ui/webui/notifications_internals/notifications_internals.mojom.h"
+#include "components/prefs/pref_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
@@ -19,7 +20,8 @@ class NotificationsInternalsUIPageHandler
   NotificationsInternalsUIPageHandler(
       mojo::PendingReceiver<notifications_internals::mojom::PageHandler>
           receiver,
-      notifications::NotificationScheduleService* service);
+      notifications::NotificationScheduleService* service,
+      PrefService* pref_service);
 
   NotificationsInternalsUIPageHandler(
       const NotificationsInternalsUIPageHandler&) = delete;
@@ -35,6 +37,8 @@ class NotificationsInternalsUIPageHandler
   mojo::Receiver<notifications_internals::mojom::PageHandler> receiver_;
 
   raw_ptr<notifications::NotificationScheduleService> service_;
+
+  raw_ptr<PrefService> pref_service_;
 
   base::WeakPtrFactory<NotificationsInternalsUIPageHandler> weak_ptr_factory_{
       this};

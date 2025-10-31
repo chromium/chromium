@@ -9,7 +9,7 @@
 #include "base/values.h"
 #include "chrome/browser/notifications/scheduler/public/notification_params.h"
 #include "chrome/browser/notifications/scheduler/public/notification_scheduler_types.h"
-#include "chrome/browser/notifications/scheduler/public/schedule_service_utils.h"
+#include "chrome/browser/notifications/scheduler/public/tips_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/ui/webui/notifications_internals/notifications_internals.mojom.h"
@@ -19,8 +19,11 @@
 
 NotificationsInternalsUIPageHandler::NotificationsInternalsUIPageHandler(
     mojo::PendingReceiver<notifications_internals::mojom::PageHandler> receiver,
-    notifications::NotificationScheduleService* service)
-    : receiver_(this, std::move(receiver)), service_(service) {}
+    notifications::NotificationScheduleService* service,
+    PrefService* pref_service)
+    : receiver_(this, std::move(receiver)),
+      service_(service),
+      pref_service_(pref_service) {}
 
 NotificationsInternalsUIPageHandler::~NotificationsInternalsUIPageHandler() =
     default;
@@ -51,4 +54,7 @@ void NotificationsInternalsUIPageHandler::ScheduleNotification(
       notifications::SchedulerClientType::kTips, std::move(data),
       std::move(schedule_params));
   service_->Schedule(std::move(params));
+
+  std::string pref = notifications::GetFeatureTypePref(type);
+  pref_service_->SetBoolean(pref, false);
 }

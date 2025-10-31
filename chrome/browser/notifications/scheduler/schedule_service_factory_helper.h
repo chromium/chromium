@@ -8,7 +8,11 @@
 #include <memory>
 
 #include "base/files/file_path.h"
+#include "chrome/browser/notifications/scheduler/internal/icon_store.h"
+#include "chrome/browser/notifications/scheduler/internal/impression_store.h"
+#include "chrome/browser/notifications/scheduler/internal/notification_store.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/prefs/pref_service.h"
 
 namespace leveldb_proto {
 class ProtoDatabaseProvider;
@@ -32,7 +36,8 @@ std::unique_ptr<KeyedService> CreateNotificationScheduleService(
     std::unique_ptr<TipsAgent> tips_agent,
     leveldb_proto::ProtoDatabaseProvider* db_provider,
     const base::FilePath& storage_dir,
-    bool off_the_record);
+    bool off_the_record,
+    PrefService* pref_service);
 
 }  // namespace notifications
 

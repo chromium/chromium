@@ -44,5 +44,6 @@ void NotificationsInternalsUI::BindInterface(
         receiver) {
   page_handler_ = std::make_unique<NotificationsInternalsUIPageHandler>(
       std::move(receiver),
-      NotificationScheduleServiceFactory::GetForKey(profile_->GetProfileKey()));
+      NotificationScheduleServiceFactory::GetForKey(profile_->GetProfileKey()),
+      profile_->GetPrefs());
 }

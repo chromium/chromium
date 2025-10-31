@@ -2309,6 +2309,15 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
                                 true);
 
   registry->RegisterBooleanPref(ntp_tiles::prefs::kTipsHomeModuleEnabled, true);
+
+#if BUILDFLAG(IS_ANDROID)
+  registry->RegisterBooleanPref(prefs::kAndroidTipNotificationShownESB, false);
+  registry->RegisterBooleanPref(prefs::kAndroidTipNotificationShownQuickDelete,
+                                false);
+  registry->RegisterBooleanPref(prefs::kAndroidTipNotificationShownLens, false);
+  registry->RegisterBooleanPref(
+      prefs::kAndroidTipNotificationShownBottomOmnibox, false);
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 void RegisterUserProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {

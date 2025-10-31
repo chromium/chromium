@@ -12,14 +12,11 @@
 #include "base/time/default_clock.h"
 #include "chrome/browser/notifications/scheduler/internal/background_task_coordinator.h"
 #include "chrome/browser/notifications/scheduler/internal/display_decider.h"
-#include "chrome/browser/notifications/scheduler/internal/icon_store.h"
 #include "chrome/browser/notifications/scheduler/internal/impression_history_tracker.h"
-#include "chrome/browser/notifications/scheduler/internal/impression_store.h"
 #include "chrome/browser/notifications/scheduler/internal/init_aware_scheduler.h"
 #include "chrome/browser/notifications/scheduler/internal/noop_notification_schedule_service.h"
 #include "chrome/browser/notifications/scheduler/internal/notification_schedule_service_impl.h"
 #include "chrome/browser/notifications/scheduler/internal/notification_scheduler_context.h"
-#include "chrome/browser/notifications/scheduler/internal/notification_store.h"
 #include "chrome/browser/notifications/scheduler/internal/png_icon_converter_impl.h"
 #include "chrome/browser/notifications/scheduler/internal/scheduled_notification_manager.h"
 #include "chrome/browser/notifications/scheduler/internal/scheduler_config.h"
@@ -51,7 +48,8 @@ std::unique_ptr<KeyedService> CreateNotificationScheduleService(
     std::unique_ptr<TipsAgent> tips_agent,
     leveldb_proto::ProtoDatabaseProvider* db_provider,
     const base::FilePath& storage_dir,
-    bool off_the_record) {
+    bool off_the_record,
+    PrefService* pref_service) {
   if (!base::FeatureList::IsEnabled(features::kNotificationScheduleService) ||
       off_the_record)
     return std::make_unique<NoopNotificationScheduleService>();
@@ -63,7 +61,7 @@ std::unique_ptr<KeyedService> CreateNotificationScheduleService(
                                    std::make_unique<WebUIClient>());
   client_registrar->RegisterClient(
       SchedulerClientType::kTips,
-      std::make_unique<TipsClient>(std::move(tips_agent)));
+      std::make_unique<TipsClient>(std::move(tips_agent), pref_service));
 
   // Build icon store.
   base::FilePath icon_store_dir = storage_dir.Append(kIconDBName);

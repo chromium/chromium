@@ -4320,6 +4320,18 @@ inline constexpr char kNonMilestoneUpdateToastVersion[] =
     "toast.non_milestone_update_toast_version";
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_ANDROID)
+// Boolean prefs indicating whether a tip notification has already been shown.
+inline constexpr char kAndroidTipNotificationShownESB[] =
+    "android.tips.notifications.esb_shown";
+inline constexpr char kAndroidTipNotificationShownQuickDelete[] =
+    "android.tips.notifications.quick_delete_shown";
+inline constexpr char kAndroidTipNotificationShownLens[] =
+    "android.tips.notifications.lens_shown";
+inline constexpr char kAndroidTipNotificationShownBottomOmnibox[] =
+    "android.tips.notifications.bottom_omnibox_shown";
+#endif  // BUILDFLAG(IS_ANDROID)
+
 }  // namespace prefs
 
 #endif  // CHROME_COMMON_PREF_NAMES_H_
