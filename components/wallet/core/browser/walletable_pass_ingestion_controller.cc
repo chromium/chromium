@@ -59,7 +59,7 @@ void WalletablePassIngestionController::StartWalletablePassDetectionFlow(
   }
 
   // TODO(crbug.com/444148314): Request user consent if not consented yet.
-  ShowConsentBubble(url);
+  ShowConsentBubble(url, *pass_category);
 }
 
 std::optional<PassCategory>
@@ -83,22 +83,25 @@ WalletablePassIngestionController::GetPassCategoryForURL(
   return std::nullopt;
 }
 
-void WalletablePassIngestionController::ShowConsentBubble(const GURL& url) {
+void WalletablePassIngestionController::ShowConsentBubble(
+    const GURL& url,
+    PassCategory pass_category) {
   // TODO(crbug.com/444147446): Check strike before showing the consent bubble.
   client_->ShowWalletablePassConsentBubble(base::BindOnce(
       &WalletablePassIngestionController::OnGetConsentBubbleResult,
-      weak_ptr_factory_.GetWeakPtr(), url));
+      weak_ptr_factory_.GetWeakPtr(), url, pass_category));
 }
 
 void WalletablePassIngestionController::OnGetConsentBubbleResult(
     const GURL& url,
+    PassCategory pass_category,
     WalletablePassClient::WalletablePassBubbleResult result) {
   switch (result) {
     case kAccepted:
       // TODO(crbug.com/444148314): Write consent result to local storage
       GetAnnotatedPageContent(base::BindOnce(
           &WalletablePassIngestionController::OnGetAnnotatedPageContent,
-          weak_ptr_factory_.GetWeakPtr(), url));
+          weak_ptr_factory_.GetWeakPtr(), url, pass_category));
       break;
     case kDeclined:
     case kClosed:
@@ -114,6 +117,7 @@ void WalletablePassIngestionController::OnGetConsentBubbleResult(
 
 void WalletablePassIngestionController::OnGetAnnotatedPageContent(
     const GURL& url,
+    PassCategory pass_category,
     std::optional<optimization_guide::proto::AnnotatedPageContent>
         annotated_page_content) {
   if (!annotated_page_content) {
@@ -122,14 +126,16 @@ void WalletablePassIngestionController::OnGetAnnotatedPageContent(
     return;
   }
 
-  ExtractWalletablePass(url, std::move(*annotated_page_content));
+  ExtractWalletablePass(url, pass_category, std::move(*annotated_page_content));
 }
 
 void WalletablePassIngestionController::ExtractWalletablePass(
     const GURL& url,
+    PassCategory pass_category,
     optimization_guide::proto::AnnotatedPageContent annotated_page_content) {
   // Construct request
   optimization_guide::proto::WalletablePassExtractionRequest request;
+  request.set_pass_category(pass_category);
   request.mutable_page_context()->set_url(url.spec());
   request.mutable_page_context()->set_title(GetPageTitle());
   *request.mutable_page_context()->mutable_annotated_page_content() =

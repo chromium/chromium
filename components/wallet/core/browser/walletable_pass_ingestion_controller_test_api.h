@@ -32,17 +32,21 @@ class WalletablePassIngestionControllerTestApi {
 
   void ExtractWalletablePass(
       const GURL& url,
+      optimization_guide::proto::PassCategory pass_category,
       const optimization_guide::proto::AnnotatedPageContent&
           annotated_page_content) {
-    controller_->ExtractWalletablePass(url, annotated_page_content);
+    controller_->ExtractWalletablePass(url, pass_category,
+                                       annotated_page_content);
   }
 
   void StartWalletablePassDetectionFlow(const GURL& url) {
     controller_->StartWalletablePassDetectionFlow(url);
   }
 
-  void ShowConsentBubble(const GURL& url) {
-    controller_->ShowConsentBubble(url);
+  void ShowConsentBubble(
+      const GURL& url,
+      optimization_guide::proto::PassCategory pass_category) {
+    controller_->ShowConsentBubble(url, pass_category);
   }
 
   void ShowSaveBubble(std::unique_ptr<optimization_guide::proto::WalletablePass>

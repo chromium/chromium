@@ -176,11 +176,20 @@ TEST_F(WalletablePassIngestionControllerTest,
   optimization_guide::proto::AnnotatedPageContent content;
   content.set_tab_id(123);
 
+  optimization_guide::proto::WalletablePassExtractionRequest expected_request;
+  expected_request.set_pass_category(PASS_CATEGORY_LOYALTY_CARD);
+  expected_request.mutable_page_context()->set_url(url.spec());
+  expected_request.mutable_page_context()->set_title("title");
+  *expected_request.mutable_page_context()->mutable_annotated_page_content() =
+      content;
+
   EXPECT_CALL(*controller(), GetPageTitle()).WillOnce(Return("title"));
   EXPECT_CALL(mock_model_executor(),
-              ExecuteModel(kWalletablePassExtraction, _, _, _));
+              ExecuteModel(kWalletablePassExtraction,
+                           EqualsProto(expected_request), _, _));
 
-  test_api(controller()).ExtractWalletablePass(url, content);
+  test_api(controller())
+      .ExtractWalletablePass(url, PASS_CATEGORY_LOYALTY_CARD, content);
 }
 
 TEST_F(WalletablePassIngestionControllerTest,
@@ -246,7 +255,7 @@ TEST_F(WalletablePassIngestionControllerTest,
               WalletablePassClient::WalletablePassBubbleResultCallback
                   callback) { consent_callback = std::move(callback); }));
 
-  test_api(controller()).ShowConsentBubble(url);
+  test_api(controller()).ShowConsentBubble(url, PASS_CATEGORY_LOYALTY_CARD);
   ASSERT_TRUE(consent_callback);
 
   // Expect GetAnnotatedPageContent to be called when consent is accepted.
@@ -269,7 +278,7 @@ TEST_F(WalletablePassIngestionControllerTest,
               WalletablePassClient::WalletablePassBubbleResultCallback
                   callback) { consent_callback = std::move(callback); }));
 
-  test_api(controller()).ShowConsentBubble(url);
+  test_api(controller()).ShowConsentBubble(url, PASS_CATEGORY_LOYALTY_CARD);
   ASSERT_TRUE(consent_callback);
 
   // Expect GetAnnotatedPageContent NOT to be called when consent is declined.

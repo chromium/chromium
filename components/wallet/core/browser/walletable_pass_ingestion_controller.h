@@ -21,9 +21,6 @@ class GURL;
 namespace optimization_guide {
 class ModelQualityLogEntry;
 struct OptimizationGuideModelExecutionResult;
-namespace proto {
-class WalletablePass;
-}  // namespace proto
 }  // namespace optimization_guide
 
 namespace wallet {
@@ -76,11 +73,13 @@ class WalletablePassIngestionController {
   // invokes the Optimization Guide's model executor to perform the extraction.
   void ExtractWalletablePass(
       const GURL& url,
+      optimization_guide::proto::PassCategory pass_category,
       optimization_guide::proto::AnnotatedPageContent annotated_page_content);
 
   // Shows the "Consent" bubble to the user, allowing them to agree to use the
   // feature.
-  void ShowConsentBubble(const GURL& url);
+  void ShowConsentBubble(const GURL& url,
+                         optimization_guide::proto::PassCategory pass_category);
 
   // Shows the "Save" bubble to the user, allowing them to save the provided
   // pass.
@@ -93,6 +92,7 @@ class WalletablePassIngestionController {
   // Callback for when the annotated page content is available.
   void OnGetAnnotatedPageContent(
       const GURL& url,
+      optimization_guide::proto::PassCategory pass_category,
       std::optional<optimization_guide::proto::AnnotatedPageContent>
           annotated_page_content);
 
@@ -105,6 +105,7 @@ class WalletablePassIngestionController {
   // accepts, declines, or dismisses).
   void OnGetConsentBubbleResult(
       const GURL& url,
+      optimization_guide::proto::PassCategory pass_category,
       WalletablePassClient::WalletablePassBubbleResult result);
 
   // Callback invoked when the user interacts with the save bubble (e.g.,
