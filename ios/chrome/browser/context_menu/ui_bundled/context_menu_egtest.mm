@@ -14,6 +14,7 @@
 #import "components/strings/grit/components_strings.h"
 #import "components/url_formatter/url_formatter.h"
 #import "ios/chrome/browser/context_menu/ui_bundled/constants.h"
+#import "ios/chrome/browser/enterprise/data_controls/test/data_controls_app_interface.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/test/fullscreen_app_interface.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/popup_menu/ui_bundled/popup_menu_constants.h"
@@ -30,6 +31,7 @@
 #import "ios/chrome/test/earl_grey/chrome_xcui_actions.h"
 #import "ios/chrome/test/earl_grey/scoped_block_popups_pref.h"
 #import "ios/chrome/test/scoped_eg_synchronization_disabler.h"
+#import "ios/components/enterprise/data_controls/features.h"
 #import "ios/testing/earl_grey/app_launch_configuration.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/disabled_test_macros.h"
@@ -334,6 +336,14 @@ void RelaunchApp() {
       data_sharing::features::kDataSharingFeature);
   config.features_enabled.push_back(kEnableReaderMode);
   config.features_disabled.push_back(web::features::kSmoothScrollingDefault);
+
+  if ([self isRunningTest:@selector(testCopyImageBlockedByPolicy)] ||
+      [self isRunningTest:@selector(testCopyImageWarnByPolicyProceed)] ||
+      [self isRunningTest:@selector(testCopyImageWarnByPolicyCancel)]) {
+    config.features_enabled.push_back(
+        data_controls::kEnableClipboardDataControlsIOS);
+  }
+
   return config;
 }
 
@@ -380,6 +390,87 @@ void RelaunchApp() {
   // Wait for the image to be copied.
   GREYAssertTrue([copyCondition waitWithTimeout:5], @"Copying image failed");
   [ChromeEarlGrey clearPasteboard];
+}
+
+// Tests that copying an image is blocked when the DataControlsRule policy is
+// set to do so.
+- (void)testCopyImageBlockedByPolicy {
+  [DataControlsAppInterface setBlockCopyRule];
+
+  [ChromeEarlGrey clearPasteboard];
+  [ChromeEarlGrey loadURL:self.testServer->GetURL(kLogoPagePath)];
+  [ChromeEarlGrey waitForWebStateContainingText:kLogoPageText];
+
+  [ChromeEarlGreyUI
+      longPressElementOnWebView:LogoPageChromiumImageIdSelector()];
+
+  TapOnContextMenuButton(CopyImageButton());
+
+  // Check that the snackbar is shown.
+  id<GREYMatcher> snackbarMessage = grey_text(
+      l10n_util::GetNSString(IDS_POLICY_ACTION_BLOCKED_BY_ORGANIZATION));
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:snackbarMessage];
+
+  // Check that the image was not copied.
+  GREYAssertFalse([ChromeEarlGrey pasteboardHasImages],
+                  @"Image should not have been copied");
+  [DataControlsAppInterface clearDataControlRules];
+}
+
+// Tests that copying an image is allowed after the user proceeds through the
+// warning triggered by DataControlRules policy.
+- (void)testCopyImageWarnByPolicyProceed {
+  [DataControlsAppInterface setWarnCopyRule];
+
+  [ChromeEarlGrey clearPasteboard];
+  [ChromeEarlGrey loadURL:self.testServer->GetURL(kLogoPagePath)];
+  [ChromeEarlGrey waitForWebStateContainingText:kLogoPageText];
+
+  [ChromeEarlGreyUI
+      longPressElementOnWebView:LogoPageChromiumImageIdSelector()];
+
+  TapOnContextMenuButton(CopyImageButton());
+
+  // Tap the "Copy anyways" button on the warning dialog.
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::AlertItemWithAccessibilityLabelId(
+                     IDS_DATA_CONTROLS_COPY_WARN_CONTINUE_BUTTON)]
+      performAction:grey_tap()];
+
+  // Check that the image was copied.
+  GREYCondition* copyCondition =
+      [GREYCondition conditionWithName:@"Image copied condition"
+                                 block:^BOOL {
+                                   return [ChromeEarlGrey pasteboardHasImages];
+                                 }];
+  GREYAssertTrue([copyCondition waitWithTimeout:5], @"Copying image failed");
+  [ChromeEarlGrey clearPasteboard];
+  [DataControlsAppInterface clearDataControlRules];
+}
+
+// Tests that copying an image is cancelled when the user cancels on the warning
+// triggered by DataControlRules policy.
+- (void)testCopyImageWarnByPolicyCancel {
+  [DataControlsAppInterface setWarnCopyRule];
+
+  [ChromeEarlGrey clearPasteboard];
+  [ChromeEarlGrey loadURL:self.testServer->GetURL(kLogoPagePath)];
+  [ChromeEarlGrey waitForWebStateContainingText:kLogoPageText];
+
+  [ChromeEarlGreyUI
+      longPressElementOnWebView:LogoPageChromiumImageIdSelector()];
+
+  TapOnContextMenuButton(CopyImageButton());
+
+  // Tap the "cancel" button on the warning dialog.
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::AlertItemWithAccessibilityLabelId(
+                     IDS_DATA_CONTROLS_COPY_WARN_CANCEL_BUTTON)]
+      performAction:grey_tap()];
+  // Check that the image was not copied.
+  GREYAssertFalse([ChromeEarlGrey pasteboardHasImages],
+                  @"Image should not have been copied");
+  [DataControlsAppInterface clearDataControlRules];
 }
 
 // Tests that selecting "Open Image" from the context menu properly opens the
