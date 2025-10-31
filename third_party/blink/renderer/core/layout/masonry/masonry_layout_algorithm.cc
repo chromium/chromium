@@ -856,17 +856,12 @@ LayoutUnit MasonryLayoutAlgorithm::ComputeMasonryItemBlockContribution(
   const LayoutResult* result = nullptr;
   if (space_for_measure.AvailableSize().inline_size == kIndefiniteSize) {
     // If we are orthogonal virtual item, resolving against an indefinite
-    // size, set our inline size to our min-content or max-content contribution
-    // size depending on the `sizing_contraint`.
+    // size, set our inline size to our max-content contribution.
     const MinMaxSizes sizes = ComputeMinAndMaxContentContributionForSelf(
                                   masonry_item->node, space_for_measure)
                                   .sizes;
     const auto fallback_space = CreateConstraintSpaceForMeasure(
-        *masonry_item,
-        /*opt_fixed_inline_size=*/sizing_constraint ==
-                SizingConstraint::kMinContent
-            ? sizes.min_size
-            : sizes.max_size);
+        *masonry_item, /*opt_fixed_inline_size=*/sizes.max_size);
 
     result = LayoutMasonryItemForMeasure(*masonry_item, fallback_space,
                                          sizing_constraint);

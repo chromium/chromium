@@ -1110,7 +1110,6 @@ crbug.com/1076027 external/wpt/css/css-grid/masonry/tentative/fragmentation/* [ 
 crbug.com/1076027 external/wpt/css/css-grid/masonry/tentative/masonry-grid-template-columns-computed-withcontent.html [ Failure ]
 crbug.com/1076027 external/wpt/css/css-grid/masonry/tentative/subgrid/* [ Failure ]
 # Masonry sizing test failures
-crbug.com/1076027 external/wpt/css/css-grid/masonry/tentative/intrinsic-sizing/masonry-intrinsic-sizing-cols-005.html [ Failure Crash ]
 crbug.com/1076027 external/wpt/css/css-grid/masonry/tentative/intrinsic-sizing/masonry-intrinsic-sizing-cols-006.html [ Failure ]
 crbug.com/1076027 external/wpt/css/css-grid/masonry/tentative/intrinsic-sizing/masonry-intrinsic-sizing-rows-003-auto.html [ Failure Crash ]
 crbug.com/1076027 external/wpt/css/css-grid/masonry/tentative/intrinsic-sizing/masonry-intrinsic-sizing-rows-003-fr.html [ Failure Crash ]
