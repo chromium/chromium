@@ -830,10 +830,17 @@ def main():
   if not args.run_changed and not args.files and not args.name:
     parser.error('Specify a file to test or use --run-changed')
 
+  # Cog is almost unusable with local search, so turn on remote_search.
+  use_remote_search = args.remote_search
+  if not use_remote_search and SRC_DIR.parts[:3] == ('/', 'google', 'cog'):
+    if DEBUG:
+      print('Detected cog, turning on remote-search.')
+    use_remote_search = True
+
   gtest_filter = args.gtest_filter
 
   # Don't try to search if rg is not installed, and use the old behavior.
-  if not args.remote_search and not shutil.which('rg'):
+  if not use_remote_search and not shutil.which('rg'):
     if not args.quiet:
       print(
           'rg command not found. Install ripgrep to enable running tests by name.'
@@ -848,7 +855,7 @@ def main():
     test_names.extend(args.name)
   if test_names:
     files, filter = SearchForTestsByName(test_names, args.quiet,
-                                         args.remote_search)
+                                         use_remote_search)
     if not gtest_filter:
       gtest_filter = filter
     files_to_test.extend(files)
@@ -860,7 +867,8 @@ def main():
 
   filenames = []
   for file in files_to_test:
-    filenames.extend(FindMatchingTestFiles(file, args.remote_search, args.path_index))
+    filenames.extend(
+        FindMatchingTestFiles(file, use_remote_search, args.path_index))
 
   if not filenames:
     ExitWithMessage('No associated test files found.')
