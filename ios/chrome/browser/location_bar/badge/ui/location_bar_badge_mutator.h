@@ -22,6 +22,10 @@ enum class LocationBarBadgeType;
 // "absolute" center.
 - (void)setLocationBarLabelCenteredBetweenContent:(BOOL)centered;
 
+// Handles collapse of badge container. Can be used to handle FET dismissal.
+// Only called if the badge container was expanded and finished collapsing.
+- (void)handleBadgeContainerCollapse:(LocationBarBadgeType)badgeType;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_LOCATION_BAR_BADGE_UI_LOCATION_BAR_BADGE_MUTATOR_H_

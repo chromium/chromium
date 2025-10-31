@@ -419,6 +419,8 @@
   if (_badgeConfig.badgeType == LocationBarBadgeType::kContextualPanel) {
     [self.contextualPanelEntryPointMutator
             didCompleteTransitionToSmallEntrypoint];
+  } else {
+    [self.mutator handleBadgeContainerCollapse:_badgeConfig.badgeType];
   }
 
   if (_badgeConfig.shouldHideBadgeAfterChipCollapse) {
@@ -774,6 +776,10 @@
                    completion:^(BOOL completed) {
                      [weakSelf refreshVoiceOverBoundingBoxIfFocused];
                    }];
+}
+
+- (BOOL)isBadgeVisible {
+  return _locationBarBadgeShouldBeVisible;
 }
 
 #pragma mark FullscreenUIElement

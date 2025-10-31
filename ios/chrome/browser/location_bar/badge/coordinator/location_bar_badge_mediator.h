@@ -13,13 +13,23 @@
 @protocol BWGCommands;
 @protocol LocationBarBadgeConsumer;
 @protocol LocationBarBadgeMediatorDelegate;
+class PrefService;
 class WebStateList;
+class BwgService;
+
+namespace feature_engagement {
+class Tracker;
+}  // namespace feature_engagement
 
 // Mediator for the location bar badge.
 @interface LocationBarBadgeMediator
     : NSObject <LocationBarBadgeCommands, LocationBarBadgeMutator>
 
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList
+                             tracker:(feature_engagement::Tracker*)tracker
+                         prefService:(PrefService*)prefService
+                       geminiService:(BwgService*)geminiService
+
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

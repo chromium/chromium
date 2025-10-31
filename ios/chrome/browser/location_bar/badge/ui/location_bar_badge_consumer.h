@@ -34,6 +34,9 @@ enum class LocationBarBadgeType;
 // badge animates to blue, otherwise it animates back to its default color.
 - (void)highlightBadge:(BOOL)highlight;
 
+// Checks if the badge is visible.
+- (BOOL)isBadgeVisible;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_LOCATION_BAR_BADGE_UI_LOCATION_BAR_BADGE_CONSUMER_H_

@@ -6,11 +6,18 @@
 
 #import "base/memory/raw_ptr.h"
 #import "base/timer/timer.h"
+#import "components/feature_engagement/public/event_constants.h"
+#import "components/feature_engagement/public/feature_constants.h"
+#import "components/feature_engagement/public/feature_list.h"
+#import "components/feature_engagement/public/tracker.h"
+#import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/intelligence/bwg/model/bwg_service.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/bwg_constants.h"
 #import "ios/chrome/browser/location_bar/badge/coordinator/location_bar_badge_mediator_delegate.h"
 #import "ios/chrome/browser/location_bar/badge/model/badge_type.h"
 #import "ios/chrome/browser/location_bar/badge/model/location_bar_badge_configuration.h"
 #import "ios/chrome/browser/location_bar/badge/ui/location_bar_badge_consumer.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/shared/public/commands/bwg_commands.h"
@@ -42,9 +49,18 @@ const int kTransitionTimeInSeconds = 2;
   raw_ptr<web::WebState> _activeWebState;
   // The observer for the WebState.
   std::unique_ptr<web::WebStateObserverBridge> _webStateObserver;
+  // Tracker for feature events.
+  raw_ptr<feature_engagement::Tracker> _tracker;
+  // Pref service.
+  raw_ptr<PrefService> _prefService;
+  // Gemini service
+  raw_ptr<BwgService> _geminiService;
 }
 
-- (instancetype)initWithWebStateList:(WebStateList*)webStateList {
+- (instancetype)initWithWebStateList:(WebStateList*)webStateList
+                             tracker:(feature_engagement::Tracker*)tracker
+                         prefService:(PrefService*)prefService
+                       geminiService:(BwgService*)geminiService {
   self = [super init];
   if (self) {
     _webStateList = webStateList;
@@ -55,6 +71,9 @@ const int kTransitionTimeInSeconds = 2;
     if (_activeWebState) {
       _activeWebState->AddObserver(_webStateObserver.get());
     }
+    _tracker = tracker;
+    _prefService = prefService;
+    _geminiService = geminiService;
   }
   return self;
 }
@@ -68,6 +87,12 @@ const int kTransitionTimeInSeconds = 2;
     _webStateList->RemoveObserver(_webStateListObserver.get());
     _webStateList = nullptr;
   }
+
+  _promoStartTimer = nullptr;
+  _promoEndTimer = nullptr;
+  _tracker = nil;
+  _prefService = nil;
+  _geminiService = nil;
 }
 
 #pragma mark - WebStateListObserving
@@ -97,10 +122,20 @@ const int kTransitionTimeInSeconds = 2;
 #pragma mark - LocationBarBadgeCommands
 
 - (void)updateBadgeConfig:(LocationBarBadgeConfiguration*)config {
+  // If another badge update is sent while an initial badge is still displayed,
+  // ignore the update.
+  if (![self shouldShowBadge:config.badgeType] ||
+      [self.consumer isBadgeVisible]) {
+    // TODO (crbug.com/445719031): Store badge updates in consumer instead of
+    // ignoring the update.
+    return;
+  }
+
   [self resetTimersAndUIStateAnimated:NO];
   [self.consumer setBadgeConfig:config];
   [self.consumer collapseBadgeContainer];
   [self.consumer showBadge];
+  [self logBadgeShown:config.badgeType];
 
   if (config.badgeText) {
     [self startPromoTimer];
@@ -121,15 +156,27 @@ const int kTransitionTimeInSeconds = 2;
   // Cancel any pending transition timers since user interacted with the badge.
   [self resetTimersAndUIStateAnimated:YES];
 
-  if (badgeType == LocationBarBadgeType::kAskGeminiChip) {
+  if (badgeType == LocationBarBadgeType::kGeminiContextualCueChip) {
     [self.BWGCommandHandler
         startBWGFlowWithEntryPoint:bwg::EntryPoint::OmniboxChip];
+    _tracker->NotifyEvent(
+        feature_engagement::events::kIOSGeminiContextualCueChipUsed);
   }
 }
 
 - (void)setLocationBarLabelCenteredBetweenContent:(BOOL)centered {
   [self.delegate setLocationBarLabelCenteredBetweenContent:self
                                                   centered:centered];
+}
+
+- (void)handleBadgeContainerCollapse:(LocationBarBadgeType)badgeType {
+  switch (badgeType) {
+    case LocationBarBadgeType::kGeminiContextualCueChip:
+      _tracker->Dismissed(feature_engagement::kIPHiOSGeminiContextualCueChip);
+      break;
+    default:
+      break;
+  }
 }
 
 #pragma mark - Private
@@ -194,6 +241,56 @@ const int kTransitionTimeInSeconds = 2;
   if (_activeWebState) {
     _activeWebState->AddObserver(_webStateObserver.get());
   }
+}
+
+// Checks FET (Feature Engagement Tracker) criteria for a given `badgeType`. By
+// default, returns YES as badges should show given no other criteria.
+- (BOOL)shouldShowBadge:(LocationBarBadgeType)badgeType {
+  switch (badgeType) {
+    case LocationBarBadgeType::kGeminiContextualCueChip:
+      if ([self shouldShowGeminiContextualChip] &&
+          _tracker->ShouldTriggerHelpUI(
+              feature_engagement::kIPHiOSGeminiContextualCueChip)) {
+        return YES;
+      }
+      return NO;
+    default:
+      return YES;
+  }
+}
+
+// Logs metrics or preferences for a specific `badgeType` being shown.
+- (void)logBadgeShown:(LocationBarBadgeType)badgeType {
+  switch (badgeType) {
+    case LocationBarBadgeType::kGeminiContextualCueChip:
+      _tracker->NotifyEvent(
+          feature_engagement::events::kIOSGeminiContextualCueChipTriggered);
+      _prefService->SetTime(prefs::kLastGeminiContextualChipDisplayedTimestamp,
+                            base::Time::Now());
+      break;
+    default:
+      break;
+  }
+}
+
+// Whether to show Gemini contextual chip. Checks if the page is eligible for
+// Gemini, a user has consented, and checks if two hours has passed since the
+// last chip display.
+- (BOOL)shouldShowGeminiContextualChip {
+  BOOL isPageEligible =
+      _geminiService->IsBwgAvailableForWebState(_activeWebState);
+  BOOL isUserConsented = _prefService->GetBoolean(prefs::kIOSBwgConsent);
+
+  // Checks if an eligible amount of time has passed since the last chip
+  // display.
+  base::Time lastDisplayedChipTime =
+      _prefService->GetTime(prefs::kLastGeminiContextualChipDisplayedTimestamp);
+  base::TimeDelta timeSinceLastShown =
+      base::Time::Now() - lastDisplayedChipTime;
+  BOOL eligibleTimeWindow =
+      timeSinceLastShown >= base::Hours(kGeminiContextualCueChipSlidingWindow);
+
+  return isPageEligible && isUserConsented && eligibleTimeWindow;
 }
 
 @end

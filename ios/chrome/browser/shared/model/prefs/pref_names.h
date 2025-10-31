@@ -798,6 +798,10 @@ inline constexpr char kLastGeminiInteractionTimestamp[] =
 inline constexpr char kLastGeminiInteractionURL[] =
     "ios.gemini.last_interaction_url";
 
+// Timestamp tracking the last time the Gemini contextual chip was displayed.
+inline constexpr char kLastGeminiContextualChipDisplayedTimestamp[] =
+    "ios.gemini.last_contextual_chip_displayed";
+
 // A string specifying the active conversation ID.
 inline constexpr char kGeminiConversationId[] = "ios.gemini.conversation_id";
 

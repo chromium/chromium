@@ -1056,6 +1056,8 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterIntegerPref(prefs::kIOSBWGPromoImpressionCount, 0);
   registry->RegisterTimePref(prefs::kLastGeminiInteractionTimestamp,
                              base::Time());
+  registry->RegisterTimePref(prefs::kLastGeminiContextualChipDisplayedTimestamp,
+                             base::Time());
   registry->RegisterStringPref(prefs::kLastGeminiInteractionURL, std::string());
   registry->RegisterStringPref(prefs::kGeminiConversationId, std::string());
 

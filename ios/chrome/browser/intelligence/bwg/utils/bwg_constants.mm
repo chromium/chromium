@@ -48,3 +48,5 @@ NSString* const kBwgSecondBoxLink1ActionNonManagedAccount =
     @"secondBoxLink1ActionNonManagedAccount";
 NSString* const kBwgSecondBoxLink2ActionNonManagedAccount =
     @"secondBoxLink2ActionNonManagedAccount";
+
+const int kGeminiContextualCueChipSlidingWindow = 2;

@@ -477,7 +477,7 @@ void BwgTabHelper::OnOptimizationGuideDecision(
               .cue_label());
       LocationBarBadgeConfiguration* badge_config =
           [[LocationBarBadgeConfiguration alloc]
-               initWithBadgeType:LocationBarBadgeType::kAskGeminiChip
+               initWithBadgeType:LocationBarBadgeType::kGeminiContextualCueChip
               accessibilityLabel:cue_label
                       badgeImage:badge_image];
 
