@@ -10,6 +10,7 @@
       ".vpython",
       "build/check_gn_headers.py",
       "build/check_gn_headers_allowlist.txt",
+      "build/config/siso/.*",
       "build/get_landmines.py",
       "build/gn_helpers.py",
       "build/mac_toolchain.py",
@@ -38,7 +39,6 @@
   "chromium": {
     "exclusions": [
       ".*/README.chromium",
-      "build/config/siso/.*",
       "buildtools/checkdeps/.*",
       "chrome/android/profiles/newest.txt",
       "chrome/browser/resources/.*(css|html|js)",
