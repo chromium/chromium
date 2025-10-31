@@ -5,10 +5,12 @@
 #ifndef SERVICES_WEBNN_PUBLIC_CPP_OPERAND_DESCRIPTOR_H_
 #define SERVICES_WEBNN_PUBLIC_CPP_OPERAND_DESCRIPTOR_H_
 
+#include <numeric>
 #include <vector>
 
 #include "base/component_export.h"
 #include "base/containers/span.h"
+#include "base/numerics/checked_math.h"
 #include "base/types/expected.h"
 #include "mojo/public/cpp/bindings/default_construct_tag.h"
 
@@ -34,6 +36,62 @@ struct ContextProperties;
 
 class COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) OperandDescriptor {
  public:
+  // Validates the tensor size limit and returns the byte length of the tensor.
+  // The `T` must be an integral type. The `bits_per_element` should be the bit
+  // size of the data type, such as from `GetBitsPerElement`.
+  template <typename T>
+  static base::expected<uint64_t, std::string> ValidateAndGetByteLength(
+      size_t bits_per_element,
+      base::span<const T> shape) {
+    static_assert(std::is_integral_v<T>,
+                  "Shape type must be an integral type.");
+    // TODO(crbug.com/329482489): Specify the max rank of an operand. Consider
+    // exposing different ranks for different backends (e.g. Core ML supports
+    // only up to rank 5).
+    if (shape.size() > 8) {
+      return base::unexpected(
+          "Invalid descriptor: The maximum rank of an operand is 8.");
+    }
+
+    // Enforce dimension range according to
+    // https://www.w3.org/TR/webnn/#valid-dimension.
+    if (std::ranges::any_of(shape, [](T dimension) {
+          return !base::CheckedNumeric<int32_t>(dimension).IsValid();
+        })) {
+      return base::unexpected(
+          "Invalid descriptor: All dimensions must be in the range of "
+          "int32_t.");
+    }
+
+    base::CheckedNumeric<size_t> checked_number_of_elements =
+        std::accumulate(shape.begin(), shape.end(),
+                        base::CheckedNumeric<size_t>(1), std::multiplies());
+    if (!checked_number_of_elements.IsValid()) {
+      return base::unexpected(
+          "Invalid descriptor: The number of elements is too large.");
+    }
+
+    // Since the data stored in memory are in 8-bits bytes, here we need to make
+    // up an integer multiple of 8 to calculate the `checked_number_of_bytes`.
+    base::CheckedNumeric<uint64_t> checked_number_of_bytes =
+        (checked_number_of_elements.Cast<uint64_t>() * bits_per_element + 7) /
+        8;
+
+    size_t number_of_bytes;
+    if (!checked_number_of_bytes.AssignIfValid(&number_of_bytes)) {
+      return base::unexpected(
+          "Invalid descriptor: The byte length is too large.");
+    }
+
+    if (number_of_bytes == 0) {
+      // TODO(crbug.com/329471677): Consider supporting size 0 dimensions.
+      return base::unexpected(
+          "Invalid descriptor: All dimensions should be positive.");
+    }
+
+    return number_of_bytes;
+  }
+
   // Creates a valid `OperandDescriptor` or returns an error message which may
   // be returned to script if the inputs are not valid.
   static base::expected<OperandDescriptor, std::string> Create(

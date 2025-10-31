@@ -38,6 +38,7 @@
 #include "services/webnn/webnn_utils.h"
 #include "third_party/fp16/src/include/fp16.h"
 #include "third_party/tflite/src/tensorflow/compiler/mlir/lite/schema/schema_generated.h"
+#include "third_party/tflite/src/tensorflow/compiler/mlir/lite/schema/schema_utils.h"
 #include "third_party/tflite/src/tensorflow/compiler/mlir/lite/tools/optimize/reduced_precision_metadata.h"
 
 namespace webnn::tflite {
@@ -143,6 +144,15 @@ base::expected<std::vector<int32_t>, std::string> ToSignedDimensions(
     case OperandDataType::kUint4:
     default:
       NOTREACHED() << "Unsupported data type.";
+  }
+}
+
+size_t GetBitsPerTensorType(::tflite::TensorType data_type) {
+  switch (data_type) {
+    case ::tflite::TensorType_INT4:
+      return 4;
+    default:
+      return ::tflite::TensorTypeGetSize(data_type) * 8;
   }
 }
 
@@ -941,8 +951,10 @@ GraphBuilderTflite::SerializeInputTensorInfo(
       input_tensor_info.data_type == ::tflite::TensorType_FLOAT16) {
     // TODO(crbug.com/365168170): Associate the dequantized tensor with the
     // operand.
-    const TensorIndex temporary_tensor_index = SerializeTemporaryTensor(
-        input_tensor_info.dimensions, ::tflite::TensorType_FLOAT32);
+    ASSIGN_OR_RETURN(
+        const TensorIndex temporary_tensor_index,
+        SerializeTemporaryTensorWithByteSizeCheck(
+            input_tensor_info.dimensions, ::tflite::TensorType_FLOAT32));
     const mojom::Operand& operand = GetOperand(operand_id);
     operators_.emplace_back(SerializeCastOperation(
         input_tensor_info.index, ::tflite::TensorType_FLOAT16,
@@ -2916,6 +2928,20 @@ GraphBuilderTflite::TensorIndex GraphBuilderTflite::SerializeTemporaryTensor(
       /*buffer=*/0, /*name=*/0, quantize_params));
 
   return temporary_tensor_index;
+}
+
+base::expected<GraphBuilderTflite::TensorIndex, std::string>
+GraphBuilderTflite::SerializeTemporaryTensorWithByteSizeCheck(
+    base::span<const int32_t> dimensions,
+    ::tflite::TensorType tensor_type,
+    QuantizateParametersOffset quantize_params) {
+  ASSIGN_OR_RETURN(uint64_t byte_length,
+                   OperandDescriptor::ValidateAndGetByteLength(
+                       GetBitsPerTensorType(tensor_type), dimensions));
+  if (byte_length > context_properties_.tensor_byte_length_limit) {
+    return base::unexpected("The tensor byte length is over the limit.");
+  }
+  return SerializeTemporaryTensor(dimensions, tensor_type, quantize_params);
 }
 
 GraphBuilderTflite::OperatorCodeIndex GraphBuilderTflite::GetOperatorCodeIndex(

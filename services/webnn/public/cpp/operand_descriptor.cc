@@ -22,57 +22,6 @@ namespace {
     return ErrorWithLabel(label, error);                              \
   });
 
-base::expected<uint64_t, std::string> ValidateAndGetByteLength(
-    OperandDataType data_type,
-    base::span<const uint32_t> shape) {
-  // TODO(crbug.com/329482489): Specify the max rank of an operand. Consider
-  // exposing different ranks for different backends (e.g. Core ML supports only
-  // up to rank 5).
-  if (shape.size() > 8) {
-    return base::unexpected(
-        "Invalid descriptor: The maximum rank of an operand is 8.");
-  }
-
-  // Enforce dimension range according to
-  // https://www.w3.org/TR/webnn/#valid-dimension.
-  if (std::ranges::any_of(shape, [](uint32_t dimension) {
-        return !base::CheckedNumeric<int32_t>(dimension).IsValid();
-      })) {
-    return base::unexpected(
-        "Invalid descriptor: All dimensions must be in the range of int32_t.");
-  }
-
-  base::CheckedNumeric<size_t> checked_number_of_elements =
-      std::accumulate(shape.begin(), shape.end(),
-                      base::CheckedNumeric<size_t>(1), std::multiplies());
-  if (!checked_number_of_elements.IsValid()) {
-    return base::unexpected(
-        "Invalid descriptor: The number of elements is too large.");
-  }
-
-  // Since the data stored in memory are in 8-bits bytes, here we need to make
-  // up an integer multiple of 8 to calculate the `checked_number_of_bytes`.
-  base::CheckedNumeric<uint64_t> checked_number_of_bytes =
-      (checked_number_of_elements.Cast<uint64_t>() *
-           OperandDescriptor::GetBitsPerElement(data_type) +
-       7) /
-      8;
-
-  size_t number_of_bytes;
-  if (!checked_number_of_bytes.AssignIfValid(&number_of_bytes)) {
-    return base::unexpected(
-        "Invalid descriptor: The byte length is too large.");
-  }
-
-  if (number_of_bytes == 0) {
-    // TODO(crbug.com/329471677): Consider supporting size 0 dimensions.
-    return base::unexpected(
-        "Invalid descriptor: All dimensions should be positive.");
-  }
-
-  return number_of_bytes;
-}
-
 base::expected<void, std::string> IsValidPermutation(
     base::span<const uint32_t> permutation,
     OperandDataType data_type,
@@ -107,7 +56,10 @@ base::expected<OperandDescriptor, std::string> OperandDescriptor::Create(
     base::span<const uint32_t> shape,
     std::string_view label) {
   ASSIGN_OR_RETURN_ERROR_WITH_LABEL_IF_ERROR(
-      uint64_t byte_length, ValidateAndGetByteLength(data_type, shape), label);
+      uint64_t byte_length,
+      ValidateAndGetByteLength(OperandDescriptor::GetBitsPerElement(data_type),
+                               shape),
+      label);
 
   if (byte_length > context_properties.tensor_byte_length_limit) {
     return base::unexpected(ErrorWithLabel(
@@ -123,7 +75,8 @@ OperandDescriptor::CreateForDeserialization(
     OperandDataType data_type,
     base::span<const uint32_t> shape,
     base::span<const uint32_t> pending_permutation) {
-  RETURN_IF_ERROR(ValidateAndGetByteLength(data_type, shape));
+  RETURN_IF_ERROR(ValidateAndGetByteLength(
+      OperandDescriptor::GetBitsPerElement(data_type), shape));
   if (!pending_permutation.empty()) {
     RETURN_IF_ERROR(IsValidPermutation(pending_permutation, data_type, shape));
   }

@@ -220,6 +220,15 @@ class GraphBuilderTflite final {
       ::tflite::TensorType tensor_type,
       QuantizateParametersOffset quantize_params = 0);
 
+  // Same as `SerializeTemporaryTensor`, but this function checks the
+  // serialized temp tensor size and returns error if the tensor size is larger
+  // than the limit.
+  base::expected<TensorIndex, std::string>
+  SerializeTemporaryTensorWithByteSizeCheck(
+      base::span<const int32_t> dimensions,
+      ::tflite::TensorType tensor_type,
+      QuantizateParametersOffset quantize_params = 0);
+
   OperatorCodeIndex GetOperatorCodeIndex(::tflite::BuiltinOperator code,
                                          int32_t version = 1);
 
