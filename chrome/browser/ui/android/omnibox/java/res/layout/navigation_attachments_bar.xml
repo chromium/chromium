@@ -83,6 +83,7 @@ found in the LICENSE file.
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/location_bar_attachments"
         app:buttonColor="@color/gm3_baseline_surface_container"
+        app:buttonBorderStyle="dashed"
         app:drawableTint="?attr/colorPrimary"
         app:buttonTextColor="@null"/>
 

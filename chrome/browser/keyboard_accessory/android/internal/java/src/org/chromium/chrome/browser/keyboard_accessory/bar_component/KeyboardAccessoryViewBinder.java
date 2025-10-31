@@ -272,7 +272,7 @@ class KeyboardAccessoryViewBinder {
                 // required UI.
                 chipView.setBorder(
                         chipView.getResources().getDimensionPixelSize(R.dimen.chip_border_width),
-                        chipView.getContext().getColor(R.color.black_alpha_12));
+                        chipView.getContext().getColorStateList(R.color.black_alpha_12));
             } else {
                 chipView.setEnabled(true);
                 iconAlpha = COMPLETE_OPACITY_ALPHA;

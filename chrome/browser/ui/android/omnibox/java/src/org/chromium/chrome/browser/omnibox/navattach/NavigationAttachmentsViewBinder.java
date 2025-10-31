@@ -14,6 +14,7 @@ import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.widget.RippleBackgroundHelper;
 
 /** Binds the Navigation Attachments properties to the view and component. */
 @NullMarked
@@ -115,6 +116,11 @@ class NavigationAttachmentsViewBinder {
                 isAiModeEnabled
                         ? res.getColorStateList(R.color.gm3_baseline_surface_container)
                         : res.getColorStateList(android.R.color.transparent));
+
+        views.requestType.setBorderStyle(
+                isAiModeEnabled
+                        ? RippleBackgroundHelper.BorderType.SOLID
+                        : RippleBackgroundHelper.BorderType.DASHED);
 
         views.requestType.setCompoundDrawablesRelativeWithIntrinsicBounds(
                 res.getDrawable(R.drawable.search_spark_black_24dp),

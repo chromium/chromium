@@ -19,27 +19,25 @@ import androidx.appcompat.widget.AppCompatButton;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.R;
+import org.chromium.ui.widget.RippleBackgroundHelper.BorderType;
 
 /**
  * A Material-styled button with a customizable background color. On L devices, this is a true
  * Material button. On earlier devices, the button is similar but lacks ripples and a shadow.
  *
- * Create a button in Java:
+ * <p>Create a button in Java:
  *
- *   new ButtonCompat(context, R.style.TextButtonThemeOverlay);
+ * <p>new ButtonCompat(context, R.style.TextButtonThemeOverlay);
  *
- * Create a button in XML:
+ * <p>Create a button in XML:
  *
- *   <org.chromium.ui.widget.ButtonCompat
- *       android:layout_width="wrap_content"
- *       android:layout_height="wrap_content"
- *       android:text="Click me"
- *       style="@style/TextButton" />
+ * <p><org.chromium.ui.widget.ButtonCompat android:layout_width="wrap_content"
+ * android:layout_height="wrap_content" android:text="Click me" style="@style/TextButton" />
  *
- * Note: To ensure the button's shadow is fully visible, you may need to set
+ * <p>Note: To ensure the button's shadow is fully visible, you may need to set
  * android:clipToPadding="false" on the button's parent view.
  *
- * See {@link R.styleable#ButtonCompat ButtonCompat Attributes}.
+ * <p>See {@link R.styleable#ButtonCompat ButtonCompat Attributes}.
  */
 @NullMarked
 public class ButtonCompat extends AppCompatButton {
@@ -95,6 +93,10 @@ public class ButtonCompat extends AppCompatButton {
                 a.getDimensionPixelSize(
                         R.styleable.ButtonCompat_verticalInset,
                         getResources().getDimensionPixelSize(R.dimen.button_bg_vertical_inset));
+
+        // Border style attribute
+        @BorderType
+        int borderStyle = a.getInt(R.styleable.ButtonCompat_buttonBorderStyle, BorderType.SOLID);
 
         final int defaultRadius =
                 getResources().getDimensionPixelSize(R.dimen.button_compat_corner_radius);
@@ -157,10 +159,21 @@ public class ButtonCompat extends AppCompatButton {
                         borderColorId,
                         borderWidthId,
                         verticalInset);
+
+        setBorderStyle(borderStyle);
     }
 
     /** Sets the background color of the button. */
     public void setButtonColor(ColorStateList buttonColorList) {
         mRippleBackgroundHelper.setBackgroundColor(buttonColorList);
+    }
+
+    /**
+     * Sets the border style for the button.
+     *
+     * @param borderType The type of border (SOLID or DASHED).
+     */
+    public void setBorderStyle(@BorderType int borderType) {
+        mRippleBackgroundHelper.setBorderStyle(borderType);
     }
 }

@@ -35,6 +35,10 @@ found in the LICENSE file.
         0.50
     </item>
 
+    <!-- Border styles -->
+    <dimen name="dashed_border_dash_width">6dp</dimen>
+    <dimen name="dashed_border_gap_width">6dp</dimen>
+
     <!-- Minimum height/width for a touchable item -->
     <dimen name="min_touch_target_size">48dp</dimen>
     <!-- Minimum height/width for a clickable item -->
@@ -45,13 +49,13 @@ found in the LICENSE file.
     <dimen name="button_bg_vertical_inset">4dp</dimen>
     <dimen name="button_outlined_border_width">1dp</dimen>
 
-    <!-- Menu footer chip measures-->
+    <!-- Menu footer chip measures -->
     <!-- ( listPreferredItemHeightSmall(40dp) - text size(12sp) - top and bottom padding(12dp) ) / 2 -->
     <dimen name="menu_footer_chip_end_padding">8dp</dimen>
     <dimen name="menu_footer_chip_icon_size">16dp</dimen>
     <dimen name="menu_footer_chip_vertical_inset">8dp</dimen>
 
-    <!-- Custom menu-->
+    <!-- Custom menu -->
     <dimen name="menu_negative_software_vertical_offset">0dp</dimen>
 
     <!-- Dropdown default measures -->
@@ -62,7 +66,7 @@ found in the LICENSE file.
     <dimen name="dropdown_elevation">2dp</dimen>
 
     <!-- Use arbitrary high number so that if the button text spans multiple
-     lines with XL text, the corners will still look fully rounded
+    lines with XL text, the corners will still look fully rounded
      TODO(crbug.com/40770875): Determine the corner radius based on button height-->
     <dimen name="button_compat_corner_radius">500dp</dimen>
 
@@ -85,9 +89,9 @@ found in the LICENSE file.
     <dimen name="popup_bg_corner_radius_16dp">16dp</dimen>
 
     <!--
-         Fallback values if the corresponding com.android.internal.R dimensions
-         cannot be retrieved by name.
-         Note: Constants taken directly from Android's core/res/values/config.xml.
+    Fallback values if the corresponding com.android.internal.R dimensions
+    cannot be retrieved by name.
+    Note: Constants taken directly from Android's core/res/values/config.xml.
     -->
     <!-- TODO(crbug.com/40600572): Fix and remove lint ignore -->
     <dimen name="config_min_scaling_span" tools:ignore="InOrMmUsage">12.0mm</dimen>
@@ -122,10 +126,10 @@ found in the LICENSE file.
     <!-- Hierarchical menu -->
     <dimen name="hierarchical_menu_flyout_popup_horizontal_overlap">8dp</dimen>
     <!--
-         min_spacing is the minimum non-overlapping width of the main popup
-         and the flyout popup.
-         min_margin is the minimum margin between flyout popup and the edge
-         of the window.
+    min_spacing is the minimum non-overlapping width of the main popup
+    and the flyout popup.
+    min_margin is the minimum margin between flyout popup and the edge
+    of the window.
     -->
     <dimen name="hierarchical_menu_min_spacing_for_flyout">48dp</dimen>
     <dimen name="hierarchical_menu_min_margin_for_flyout">48dp</dimen>
@@ -142,7 +146,7 @@ found in the LICENSE file.
     <dimen name="span_background_horizontal_padding">4dp</dimen>
 
     <!-- Keyboard focus outline -->
-    <!-- The size between outline and the view outer bound-->
+    <!-- The size between outline and the view outer bound -->
     <dimen name="focused_outline_offset">2dp</dimen>
     <dimen name="focused_outline_stroke_width">2dp</dimen>
     <dimen name="focused_outline_corner_radius_card">16dp</dimen>

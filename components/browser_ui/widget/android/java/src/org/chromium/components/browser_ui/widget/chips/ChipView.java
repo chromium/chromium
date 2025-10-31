@@ -37,6 +37,7 @@ import org.chromium.ui.widget.ChromeImageView;
 import org.chromium.ui.widget.LoadingView;
 import org.chromium.ui.widget.RectProvider;
 import org.chromium.ui.widget.RippleBackgroundHelper;
+import org.chromium.ui.widget.RippleBackgroundHelper.BorderType;
 import org.chromium.ui.widget.ViewRectProvider;
 
 /**
@@ -525,8 +526,8 @@ public class ChipView extends LinearLayout {
      * @param width of the border in pixels.
      * @param color of the border.
      */
-    public void setBorder(int width, @ColorInt int color) {
-        mRippleBackgroundHelper.setBorder(width, color);
+    public void setBorder(int width, @Nullable ColorStateList color) {
+        mRippleBackgroundHelper.setBorder(width, color, BorderType.SOLID);
     }
 
     @Override

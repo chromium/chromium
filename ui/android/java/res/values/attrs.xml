@@ -22,17 +22,23 @@ found in the LICENSE file.
         <!-- The vertical inset of the button background drawable. -->
         <attr name="verticalInset"/>
 
+        <!-- Border style variants -->
+        <attr name="buttonBorderStyle" format="enum">
+            <enum name="solid" value="0"/>
+            <enum name="dashed" value="1"/>
+        </attr>
+
         <!--  The ripple corner radius of ripple effect. If not specified,
           @dimen/button_compat_corner_radius is default. -->
-        <attr name="rippleCornerRadiusTopStart" format="reference|dimension" />
-        <attr name="rippleCornerRadiusTopEnd" format="reference|dimension" />
-        <attr name="rippleCornerRadiusBottomStart" format="reference|dimension" />
-        <attr name="rippleCornerRadiusBottomEnd" format="reference|dimension" />
+        <attr name="rippleCornerRadiusTopStart" format="reference|dimension"/>
+        <attr name="rippleCornerRadiusTopEnd" format="reference|dimension"/>
+        <attr name="rippleCornerRadiusBottomStart" format="reference|dimension"/>
+        <attr name="rippleCornerRadiusBottomEnd" format="reference|dimension"/>
     </declare-styleable>
 
     <!-- The attributes prefixed with 'global' are used to control the button, link and URL colors
-         throughout the app and are defined in the activity theme. This enables us to apply
-         dynamic colors to the mentioned UI elements. These attributes may not be set in some
+    throughout the app and are defined in the activity theme. This enables us to apply
+    dynamic colors to the mentioned UI elements. These attributes may not be set in some
          contexts, e.g. WebView, so the code dealing with them should handle their absence. -->
     <attr name="globalFilledButtonBgColor" format="color"/>
     <attr name="globalFilledButtonTextColor" format="reference"/>
@@ -47,26 +53,26 @@ found in the LICENSE file.
     <declare-styleable name="TextViewWithLeading">
         <attr name="leading" format="reference|dimension"/>
         <!-- The name must match what [AppCompat]TextView uses. -->
-        <attr name="android:textAppearance" />
+        <attr name="android:textAppearance"/>
     </declare-styleable>
 
     <declare-styleable name="AsyncViewStub">
         <!-- Supply an identifier for the layout resource to inflate when the AsyncViewStub
-             becomes visible or when forced to do so. The layout resource must be a
+        becomes visible or when forced to do so. The layout resource must be a
              valid reference to a layout. -->
-        <attr name="layout" format="reference" />
+        <attr name="layout" format="reference"/>
     </declare-styleable>
 
     <declare-styleable name="ListMenuButton">
-        <attr name="menuMaxWidth" format="reference|dimension" />
-        <attr name="menuVerticalOverlapAnchor" format="boolean" />
-        <attr name="menuHorizontalOverlapAnchor" format="boolean" />
+        <attr name="menuMaxWidth" format="reference|dimension"/>
+        <attr name="menuVerticalOverlapAnchor" format="boolean"/>
+        <attr name="menuHorizontalOverlapAnchor" format="boolean"/>
         <!-- Used to specify if a menu button is positioned at the start or at the end of a layout
-             so the correct menu popup anim file can be applied. If none is set, the menu will be
-             positioned based on the space available around the anchor; if one of menuPositionedAt*
+        so the correct menu popup anim file can be applied. If none is set, the menu will be
+        positioned based on the space available around the anchor; if one of menuPositionedAt*
              is set, menu will be forced to position as setting. Cannot be set to True together. -->
-        <attr name="menuPositionedAtStart" format="boolean" />
-        <attr name="menuPositionedAtEnd" format="boolean" />
+        <attr name="menuPositionedAtStart" format="boolean"/>
+        <attr name="menuPositionedAtEnd" format="boolean"/>
     </declare-styleable>
 
     <declare-styleable name="TextViewWithClickableSpans">
@@ -74,22 +80,22 @@ found in the LICENSE file.
     </declare-styleable>
 
     <!-- Density related attributes -->
-    <attr name="minInteractTargetSize" format="dimension" />
+    <attr name="minInteractTargetSize" format="dimension"/>
 
-    <attr name="listItemHeight" format="dimension" />
-    <attr name="listItemHeightLarge" format="dimension" />
-    <attr name="listItemIconSize" format="dimension" />
-    <attr name="listItemIconPadding" format="dimension" />
+    <attr name="listItemHeight" format="dimension"/>
+    <attr name="listItemHeightLarge" format="dimension"/>
+    <attr name="listItemIconSize" format="dimension"/>
+    <attr name="listItemIconPadding" format="dimension"/>
     <!-- For views that contain a control icon, e.g. checkbox, which includes built-in padding. -->
-    <attr name="listItemControlPadding" format="dimension" />
-    <attr name="listItemIconTextSpacing" format="dimension" />
-    <attr name="listDividerHeight" format="dimension" />
+    <attr name="listItemControlPadding" format="dimension"/>
+    <attr name="listItemIconTextSpacing" format="dimension"/>
+    <attr name="listDividerHeight" format="dimension"/>
 
-    <attr name="popupBg" format="reference" />
-    <attr name="popupBgCornerRadius" format="dimension" />
+    <attr name="popupBg" format="reference"/>
+    <attr name="popupBgCornerRadius" format="dimension"/>
     <!-- This attr is only ever set to 0 to work around an issue in shape drawables where hardcoded
          or @dimen radius values are ignored when used in combination with attrs. -->
-    <attr name="zeroRadius" format="dimension" />
+    <attr name="zeroRadius" format="dimension"/>
 
     <attr name="textLargeSize" format="dimension"/>
     <attr name="textLargeLeading" format="dimension"/>
