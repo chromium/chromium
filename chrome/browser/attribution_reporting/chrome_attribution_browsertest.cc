@@ -239,6 +239,33 @@ IN_PROC_BROWSER_TEST_F(ChromeAttributionBrowserTest,
                    blink::mojom::WebFeature::kPrivacySandboxAdsAPIs);
 }
 
+IN_PROC_BROWSER_TEST_F(ChromeAttributionBrowserTest, XhrUseCounterRecorded) {
+  base::HistogramTester histogram_tester;
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  page_load_metrics::PageLoadMetricsTestWaiter waiter(web_contents);
+  waiter.AddWebFeatureExpectation(
+      blink::mojom::WebFeature::kAttributionReportingXhr);
+
+  ASSERT_TRUE(server_.Start());
+
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      server_.GetURL("a.test", "/page_with_conversion_redirect.html")));
+
+  GURL register_source_url =
+      server_.GetURL("c.test", "/register_source_headers.html");
+  EXPECT_TRUE(
+      ExecJs(web_contents, content::JsReplace("doAttributionEligibleXHR($1);",
+                                              register_source_url)));
+
+  waiter.Wait();
+
+  ExpectUseCounter(histogram_tester,
+                   blink::mojom::WebFeature::kAttributionReportingXhr);
+}
+
 class ChromeAttributionTriggerUseCounterBrowserTest
     : public ChromeAttributionBrowserTest,
       public ::testing::WithParamInterface<std::string_view> {
