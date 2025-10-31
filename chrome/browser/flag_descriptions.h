@@ -2489,6 +2489,10 @@ inline constexpr char kIgnoreGpuBlocklistDescription[] =
     "Overrides the built-in software rendering list and enables "
     "GPU-acceleration on unsupported system configurations.";
 
+inline constexpr char kInfobarRefreshName[] = "Infobar Refresh";
+inline constexpr char kInfobarRefreshDescription[] =
+    "Renders infobars with a refreshed UI.";
+
 inline constexpr char kIncognitoScreenshotName[] = "Incognito Screenshot";
 inline constexpr char kIncognitoScreenshotDescription[] =
     "Enables Incognito screenshots on Android. It will also make Incognito "

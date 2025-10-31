@@ -5958,6 +5958,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "infobar-refresh",
+    "owners": [ "top-chrome-desktop-ui@google.com","musalmaan@chromium.org","koretadaniel@chromium.org" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "input-on-viz",
     "owners": [ "woa-performance-team@google.com", "amanvr@google.com", "jonross@chromium.org", "kartarsingh@google.com", "nuskos@chromium.org" ],
     "expiry_milestone": 150

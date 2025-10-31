@@ -13378,6 +13378,10 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillDisableBnplCountryCheckForTesting)},
 
+    {"infobar-refresh", flag_descriptions::kInfobarRefreshName,
+     flag_descriptions::kInfobarRefreshDescription, kOsAll,
+     FEATURE_VALUE_TYPE(features::kInfobarRefresh)},
+
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

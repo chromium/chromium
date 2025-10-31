@@ -8292,6 +8292,7 @@ from previous Chrome versions.
   <int value="-2111196530" label="EnableAssistantLauncherUI:disabled"/>
   <int value="-2110507629" label="ButterOnDesktopFollowup:disabled"/>
   <int value="-2109981927" label="ReadAloudTapToSeek:disabled"/>
+  <int value="-2109523292" label="InfobarRefresh:enabled"/>
   <int value="-2108866112" label="FeedHeaderStickToTop:enabled"/>
   <int value="-2108836417" label="ArcvmSwapoutKeyboardShortcut:enabled"/>
   <int value="-2108564200" label="AutofillUpstream:disabled"/>
@@ -10026,6 +10027,7 @@ from previous Chrome versions.
   <int value="-1508852757" label="CreditCardAutofillTouchBar:disabled"/>
   <int value="-1508837668" label="VCPortraitRelighting:enabled"/>
   <int value="-1507722271" label="ImprovedDesksKeyboardShortcuts:enabled"/>
+  <int value="-1507277117" label="InfobarRefresh:disabled"/>
   <int value="-1506880454"
       label="SupervisedUserCommittedInterstitials:disabled"/>
   <int value="-1506664186"
@@ -11136,6 +11138,7 @@ from previous Chrome versions.
       label="AutofillEnableSurfacingServerCardNickname:enabled"/>
   <int value="-1127996427" label="enable-files-details-panel"/>
   <int value="-1127963300" label="CrostiniUsername:enabled"/>
+  <int value="-1126819878" label="infobar-refresh:disabled"/>
   <int value="-1126242237" label="DriveFsShowCSEFiles:disabled"/>
   <int value="-1126217973" label="IdleTimeSpellChecking:disabled"/>
   <int value="-1125840399" label="ViewsBrowserWindows:enabled"/>
@@ -11663,6 +11666,7 @@ from previous Chrome versions.
   <int value="-943223021"
       label="FeatureNotificationGuideSkipCheckForLowEngagedUsers:disabled"/>
   <int value="-942935700" label="FastPairKeyboards:disabled"/>
+  <int value="-941752665" label="infobar-refresh:enabled"/>
   <int value="-941056354" label="CdmStorageDatabase:enabled"/>
   <int value="-940931658" label="UseDMSAAForTilesAndroidGL:disabled"/>
   <int value="-940915510" label="IgnoreCSPInWebPaymentAPI:disabled"/>
