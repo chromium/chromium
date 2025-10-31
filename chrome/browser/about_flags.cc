@@ -13368,6 +13368,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kInfobarRefreshDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kInfobarRefresh)},
 
+#if BUILDFLAG(IS_ANDROID)
+    {"recently-closed-tabs-and-windows",
+     flag_descriptions::kRecentlyClosedTabsAndWindowsName,
+     flag_descriptions::kRecentlyClosedTabsAndWindowsDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kRecentlyClosedTabsAndWindows)},
+#endif
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

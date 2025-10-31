@@ -12132,6 +12132,7 @@ from previous Chrome versions.
   <int value="-765531607"
       label="ReadAnythingReadAloudTSTextSegmentation:disabled"/>
   <int value="-765417607" label="KeyboardLockPrompt:disabled"/>
+  <int value="-764767578" label="RecentlyClosedTabsAndWindows:disabled"/>
   <int value="-764463072" label="WebViewMixedContentAutoupgrades:disabled"/>
   <int value="-764363697" label="OmniboxForceAllowedToBeDefault:disabled"/>
   <int value="-764164329" label="UiaProvider:disabled"/>
@@ -18092,6 +18093,7 @@ from previous Chrome versions.
   <int value="1330264457" label="OmniboxUIExperimentVerticalLayout:disabled"/>
   <int value="1330592192" label="FedCmLightweightMode:enabled"/>
   <int value="1330600806" label="enable-hls-playback:enabled"/>
+  <int value="1330624706" label="RecentlyClosedTabsAndWindows:enabled"/>
   <int value="1331098784" label="ReducedReferrerGranularity:enabled"/>
   <int value="1332120969" label="ChromeDuet:disabled"/>
   <int value="1332891404"

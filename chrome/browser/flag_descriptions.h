@@ -5577,6 +5577,12 @@ inline constexpr char kOmniboxShortcutsAndroidDescription[] =
     "Enables storing successful query/match in the omnibox shortcut database "
     "on Android";
 
+inline constexpr char kRecentlyClosedTabsAndWindowsName[] =
+    "Recently Closed Tabs And Windows";
+inline constexpr char kRecentlyClosedTabsAndWindowsDescription[] =
+    "Enables the new Recently Closed feature to restore both closed tabs and "
+    "windows from the Recent Tabs surface, or via a keyboard shortcut.";
+
 inline constexpr char kRefreshFeedOnRestartName[] =
     "Enable refreshing feed on restart";
 inline constexpr char kRefreshFeedOnRestartDescription[] =

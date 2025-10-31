@@ -8727,6 +8727,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "recently-closed-tabs-and-windows",
+    "owners": ["aishwaryarj@google.com", "zheliooo@google.com", "clank-large-form-factors@google.com"],
+    "expiry_milestone": 148
+  },
+  {
     "name": "record-web-app-debug-info",
     "owners": [ "pwa-team@google.com" ],
     // This flag is used for in-the-field debugging of preinstalled web apps on
