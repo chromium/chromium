@@ -4076,13 +4076,14 @@ void BrowserView::ReparentTopContainerForEndOfImmersive() {
   overlay_view_tracker_.view()->SetVisible(false);
   top_container()->DestroyLayer();
 
-  AddChildView(tab_strip_region_view_);
-  if (web_app_frame_toolbar_) {
-    AddChildView(web_app_frame_toolbar_);
-  }
   if (web_app_window_title_) {
-    AddChildView(web_app_window_title_);
+    AddChildViewAt(web_app_window_title_.get(), 0);
   }
+  if (web_app_frame_toolbar_) {
+    AddChildViewAt(web_app_frame_toolbar_.get(), 0);
+  }
+
+  AddChildViewAt(tab_strip_region_view_.get(), 0);
 
   main_container_->AddChildViewAt(top_container(), 0);
   EnsureFocusOrder();
