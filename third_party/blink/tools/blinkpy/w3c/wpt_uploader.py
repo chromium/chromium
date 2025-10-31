@@ -6,16 +6,19 @@
 import argparse
 import base64
 import gzip
-import json
 import logging
-import os
 import requests
-import tempfile
 
 from blinkpy.common.net.rpc import BuildbucketClient
 from blinkpy.common.system.log_utils import configure_logging
 
 _log = logging.getLogger(__name__)
+
+
+# See https://requests.readthedocs.io/en/latest/user/advanced/#post-multiple-multipart-encoded-files
+# for semantics.
+FileInfo = tuple[str, bytes, str]
+FileFormData = list[tuple[str, FileInfo]]
 
 
 class WptReportUploader(object):
@@ -64,16 +67,12 @@ class WptReportUploader(object):
                         continue
                     # Ignore retry results on subsequent lines.
                     initial_report, _, _ = body.partition(b'\n')
-                    reports.append(json.loads(initial_report))
-            merged_report = self.merge_reports(reports)
-            if merged_report is None:
-                _log.error("No result to upload, skip...")
+                    reports.append(initial_report)
+            if reports:
+                files = self.encode_result_files(reports)
+                rv = rv | self.upload_results(files)
             else:
-                with tempfile.TemporaryDirectory() as tmpdir:
-                    path = os.path.join(tmpdir, "reports.json.gz")
-                    with gzip.open(path, 'wt', encoding="utf-8") as zipfile:
-                        json.dump(merged_report, zipfile)
-                    rv = rv | self.upload_report(path)
+                _log.error("No result to upload, skip...")
             _log.info(" ")
 
         return rv
@@ -137,53 +136,43 @@ class WptReportUploader(object):
             raise Exception('The response received from the server was corrupted in-transit.')
         return decrypt_response.plaintext.decode('utf-8')
 
-    def upload_report(self, path_to_report):
-        """Upload the wpt report to wpt.fyi
+    def encode_result_files(self, reports: list[bytes]) -> FileFormData:
+        files = []
+        for shard, report in enumerate(reports):
+            file_info = (f'result_{shard}.json.gz', gzip.compress(report),
+                         'application/gzip')
+            files.append(('result_file', file_info))
+        return files
 
-        The Api is defined at:
-        https://github.com/web-platform-tests/wpt.fyi/tree/main/api#results-creation
+    def upload_results(self, files: FileFormData) -> int:
+        """Upload the test results to wpt.fyi
+
+        The API is defined at:
+        https://github.com/web-platform-tests/wpt.fyi/blob/main/api/README.md#apiresultsupload
         """
         username = "chromium-ci-results-uploader"
         fqdn = "wpt.fyi"
         url = "https://%s/api/results/upload" % fqdn
+        params = {'labels': 'master'}
 
-        with open(path_to_report, 'rb') as fp:
-            params = {'labels': 'master'}
-            files = {'result_file': fp}
-            if self._dry_run:
-                _log.info("Dry run, no report uploaded.")
-                return 0
-            session = requests.Session()
-            password = self.get_password()
-            session.auth = (username, password)
-            res = session.post(url=url, params=params, files=files)
-            if res.status_code == 200:
-                _log.info("Successfully uploaded wpt report with response: " + res.text.strip())
-                report_id = res.text.split()[1]
-                _log.info("Report uploaded to https://%s/results?run_id=%s" % (fqdn, report_id))
-                return 0
-            else:
-                _log.error("Upload wpt report failed with status code: %d", res.status_code)
-                return 1
-
-    def merge_reports(self, reports):
-        if not reports:
-            return None
-
-        merged_report = {}
-        merged_report['run_info'] = reports[0]['run_info']
-        merged_report['time_start'] = reports[0]['time_start']
-        merged_report['results'] = []
-        merged_report['time_end'] = reports[0]['time_end']
-        for report in reports:
-            merged_report['time_start'] = min(merged_report['time_start'],
-                                              report['time_start'])
-            merged_report['results'].extend(report['results'])
-            merged_report['time_end'] = max(merged_report['time_end'],
-                                            report['time_end'])
-        if not merged_report['results']:
-            return None
-        return merged_report
+        if self._dry_run:
+            _log.info("Dry run, no report uploaded.")
+            return 0
+        session = requests.Session()
+        password = self.get_password()
+        session.auth = (username, password)
+        res = session.post(url=url, params=params, files=files)
+        if res.status_code == 200:
+            _log.info("Successfully uploaded wpt report with response: " +
+                      res.text.strip())
+            report_id = res.text.split()[1]
+            _log.info("Report uploaded to https://%s/results?run_id=%s" %
+                      (fqdn, report_id))
+            return 0
+        else:
+            _log.error("Upload wpt report failed with status code: %d",
+                       res.status_code)
+            return 1
 
     def parse_args(self, argv):
         parser = argparse.ArgumentParser(description=__doc__)
