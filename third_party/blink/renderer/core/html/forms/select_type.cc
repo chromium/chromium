@@ -493,7 +493,7 @@ bool MenuListSelectType::DefaultEventHandler(const Event& event) {
           // Keep track of the mouse pixel location, so that when the mouseup
           // happens, we can see whether there was a mouse drag to pick an
           // option.
-          select_->GetDocument().SetCustomizableSelectMousedownLocation(
+          select_->GetDocument().SetPopoverPickerMousedownLocation(
               mouse_event->AbsoluteLocation());
         }
         ShowPopup(mouse_event->FromTouch() ? PopupMenu::kTouch
@@ -506,7 +506,7 @@ bool MenuListSelectType::DefaultEventHandler(const Event& event) {
       mouse_event->button() ==
           static_cast<int16_t>(WebPointerProperties::Button::kLeft) &&
       PickerIsPopover() && !mouse_event->FromTouch()) {
-    select_->GetDocument().SetCustomizableSelectMousedownLocation(std::nullopt);
+    select_->GetDocument().SetPopoverPickerMousedownLocation(std::nullopt);
   }
   return false;
 }

@@ -8748,9 +8748,9 @@ void Document::SetPopoverPointerdownTarget(const HTMLElement* popover) {
   popover_pointerdown_target_ = popover;
 }
 
-void Document::SetCustomizableSelectMousedownLocation(
+void Document::SetPopoverPickerMousedownLocation(
     std::optional<gfx::PointF> point) {
-  customizable_select_mousedown_location_ = point;
+  popover_picker_mousedown_location_ = point;
 }
 
 const HTMLDialogElement* Document::DialogPointerdownTarget() const {

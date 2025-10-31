@@ -602,7 +602,7 @@ void HTMLOptionElement::DefaultEventHandlerInternal(Event& event) {
       //     (post zoom, page-relative) of the location of the mousedown. I.e.
       //     the mouse was not dragged between mousedown and mouseup.
       std::optional<gfx::PointF> mouse_down_loc =
-          GetDocument().CustomizableSelectMousedownLocation();
+          GetDocument().PopoverPickerMousedownLocation();
       constexpr float kEpsilon = 5;  // 5 pixels in any direction
       bool mouse_moved = !mouse_down_loc.has_value() ||
                          !mouse_down_loc->IsWithinDistance(
@@ -610,10 +610,10 @@ void HTMLOptionElement::DefaultEventHandlerInternal(Event& event) {
       if (mouse_moved) {
         ChooseOption(event);
       }
-      GetDocument().SetCustomizableSelectMousedownLocation(std::nullopt);
+      GetDocument().SetPopoverPickerMousedownLocation(std::nullopt);
       return;
     } else if (event.type() == event_type_names::kMousedown) {
-      GetDocument().SetCustomizableSelectMousedownLocation(std::nullopt);
+      GetDocument().SetPopoverPickerMousedownLocation(std::nullopt);
     }
   }
 

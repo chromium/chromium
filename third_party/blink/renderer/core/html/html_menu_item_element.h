@@ -47,9 +47,8 @@ class CORE_EXPORT HTMLMenuItemElement final : public HTMLElement {
   bool IsKeyboardFocusableSlow(
       UpdateBehavior update_behavior =
           UpdateBehavior::kStyleAndLayout) const override;
-  void DefaultEventHandler(Event&) override;
 
-  void SetDirty(bool);
+  void DefaultEventHandler(Event&) override;
 
  private:
   bool MatchesDefaultPseudoClass() const override;
@@ -59,6 +58,16 @@ class CORE_EXPORT HTMLMenuItemElement final : public HTMLElement {
   int DefaultTabIndex() const override;
   FocusableState SupportsFocus(UpdateBehavior update_behavior) const override;
   bool ShouldHaveFocusAppearance() const override;
+
+  HTMLMenuListElement* InvokesSubmenu() const;
+  // This is generally used when a menuitem has been selected, and the "tree" of
+  // menus should now close. It finds the innermost (nearest ancestor) menulist
+  // containing this menuitem, and then walks the tree of command invokers up
+  // to find any nested containing menulist's. It then closes the outermost
+  // such menulist, which (via popover close behavior) closes the tree.
+  HTMLMenuListElement* CloseOutermostContainingMenuList(
+      Element** invoker = nullptr);
+  void HandleMenuKeyboardEvents(Event&);
 
   // Traverse ancestors to find the nearest menubar or menulist ancestor.
   void ResetNearestAncestorMenuBarOrMenuList();
@@ -73,9 +82,6 @@ class CORE_EXPORT HTMLMenuItemElement final : public HTMLElement {
 
   // Represents 'checkedness'.
   bool is_checked_;
-  // Represents 'dirty checkness flag'. This controls whether changing the
-  // checked attribute has any effect on whether the element is checked or not.
-  bool is_dirty_ = false;
 
   friend class HTMLMenuItemElementTest;
 };
