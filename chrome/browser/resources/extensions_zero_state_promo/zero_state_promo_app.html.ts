@@ -10,9 +10,7 @@ export function getHtml(this: ZeroStatePromoAppElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
 <div id="headerContainer">
-  ${this.showChipsV2_ || this.showChipsV3_ ?
-    html`<h3 id="title">$i18n{extensionsZeroStateIphHeaderV2}</h3>` :
-    html`<h3 id="title">$i18n{extensionsZeroStateIphHeader}</h3>`}
+  <h3 id="title">$i18n{extensionsZeroStateIphHeader}</h3>
   <cr-icon-button id="dismissButton"
       class="icon-clear"
       title="$i18n{extensionsZeroStateIphDismissButtonTitle}"
@@ -48,10 +46,10 @@ ${this.showPlainLinksUi_ ? html`
       $i18n{extensionsZeroStateIphCustomActionButtonLabel}
     </cr-button>
   </div>` : html`
-  ${this.showChipsV1_ ? html`
   <div id="sectionHeaderContainer">
     $i18nRaw{extensionsZeroStateChipsIphDesc}
   </div>
+  ${this.showChipsV1_ ? html`
   <div id='labelContainer'>
     <div class="v1Chip">
       <cr-chip id="couponsButton" chip-role="link"
@@ -81,10 +79,7 @@ ${this.showPlainLinksUi_ ? html`
         $i18n{extensionsZeroStateIphAiProductivityCollectionLabel}
       </cr-chip>
     </div>
-  </div>` : this.showChipsV2_ ? html`
-  <div id="sectionHeaderContainer">
-    $i18nRaw{extensionsZeroStateChipsIphDesc}
-  </div>
+  </div>` : html`
   <div id='labelContainer'>
     <div class="v2Chip">
       <cr-chip id="aiButton"
@@ -112,40 +107,6 @@ ${this.showPlainLinksUi_ ? html`
           @click="${this.onChromeWebStoreButtonClick_}">
         <cr-icon icon="zero-state-promo:webstore"></cr-icon>
         $i18n{extensionsZeroStateIphWebStoreLink}
-      </cr-chip>
-    </div>
-  </div>` : html`
-  <div id="sectionHeaderContainer">
-    <a class="extensionIphLink" href="https://chromewebstore.google.com/">$i18nRaw{extensionsZeroStateChipsWithLinkIphLinkLabel}</a>
-    $i18nRaw{extensionsZeroStateChipsWithLinkIphDesc}
-  </div>
-  <div id='labelContainer'>
-    <div class="v3Chip">
-      <cr-chip id="aiButton"
-          @click="${this.onAiButtonClick_}">
-        <cr-icon icon="zero-state-promo:ai"></cr-icon>
-        $i18n{extensionsZeroStateIphAiProductivityCollectionLabel}
-      </cr-chip>
-    </div>
-    <div class="v3Chip">
-      <cr-chip id="couponsButton" chip-role="link"
-          @click="${this.onCouponsButtonClick_}">
-        <cr-icon icon="zero-state-promo:coupons"></cr-icon>
-        $i18n{extensionsZeroStateIphShoppingCategoryLabel}
-      </cr-chip>
-    </div>
-    <div class="v3Chip">
-      <cr-chip id="writingButton" chip-role="link"
-          @click="${this.onWritingButtonClick_}">
-        <cr-icon icon="zero-state-promo:writing"></cr-icon>
-        $i18n{extensionsZeroStateIphWritingHelpCollectionLabel}
-      </cr-chip>
-    </div>
-    <div class="v3Chip">
-      <cr-chip id="productivityButton"
-          @click="${this.onProductivityButtonClick_}">
-        <cr-icon icon="zero-state-promo:productivity"></cr-icon>
-        $i18n{extensionsZeroStateIphProductivityCategoryLabel}
       </cr-chip>
     </div>
   </div>` }
