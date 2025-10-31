@@ -47,6 +47,7 @@
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
 #include "chrome/browser/ui/performance_controls/memory_saver_bubble_controller.h"
 #include "chrome/browser/ui/qrcode_generator/qrcode_generator_bubble_controller.h"
+#include "chrome/browser/ui/read_anything/read_anything_entry_point_controller.h"
 #include "chrome/browser/ui/search/omnibox_utils.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_bubble.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_toolbar_icon_controller.h"
@@ -272,11 +273,38 @@ void BrowserActions::InitializeBrowserActions() {
             .Build());
   }
 
-  root_action_item_->AddChild(
-      SidePanelAction(SidePanelEntryId::kReadAnything, IDS_READING_MODE_TITLE,
-                      IDS_READING_MODE_TITLE, kMenuBookChromeRefreshIcon,
-                      kActionSidePanelShowReadAnything, bwi, true)
-          .Build());
+  if (features::IsReadAnythingOmniboxChipEnabled()) {
+    actions::ActionItem::InvokeActionCallback read_anything_callback =
+        base::BindRepeating(
+            [](BrowserWindowInterface* bwi, actions::ActionItem* item,
+               actions::ActionInvocationContext context) {
+              if (!bwi) {
+                return;
+              }
+              read_anything::ReadAnythingEntryPointController::InvokePageAction(
+                  bwi, context);
+            },
+            bwi);
+    root_action_item_->AddChild(
+        actions::ActionItem::Builder(read_anything_callback)
+            .SetActionId(kActionSidePanelShowReadAnything)
+            .SetText(l10n_util::GetStringUTF16(IDS_READING_MODE_TITLE))
+            .SetTooltipText(l10n_util::GetStringUTF16(IDS_READING_MODE_TITLE))
+            .SetImage(ui::ImageModel::FromVectorIcon(kMenuBookChromeRefreshIcon,
+                                                     ui::kColorIcon))
+            .SetProperty(
+                actions::kActionItemPinnableKey,
+                static_cast<
+                    std::underlying_type_t<actions::ActionPinnableState>>(
+                    actions::ActionPinnableState::kPinnable))
+            .Build());
+  } else {
+    root_action_item_->AddChild(
+        SidePanelAction(SidePanelEntryId::kReadAnything, IDS_READING_MODE_TITLE,
+                        IDS_READING_MODE_TITLE, kMenuBookChromeRefreshIcon,
+                        kActionSidePanelShowReadAnything, bwi, true)
+            .Build());
+  }
 
   if (lens::features::IsLensOverlayEnabled()) {
     actions::ActionItem::InvokeActionCallback callback = base::BindRepeating(

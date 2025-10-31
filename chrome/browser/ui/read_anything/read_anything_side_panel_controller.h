@@ -116,6 +116,9 @@ class ReadAnythingSidePanelController : public SidePanelEntryObserver,
   // visibility and background tabs do nothing.
   void UpdateIphVisibility();
 
+  // Show or hide the omnibox entry point.
+  void OnReadabilityResult(bool should_show);
+
   std::string default_language_code_;
 
   base::ObserverList<ReadAnythingSidePanelController::Observer> observers_;

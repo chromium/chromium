@@ -1192,6 +1192,7 @@ const FeatureEntry::FeatureParam kPageActionsMigrationParams[] = {
     {"price_insights", "true"},
     {"price_tracking", "true"},
     {"pwa_install", "true"},
+    {"reading_mode", "true"},
     {"sharing_hub", "true"},
     {"translate", "true"},
     {"zoom", "true"},

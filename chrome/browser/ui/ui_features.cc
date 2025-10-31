@@ -610,6 +610,12 @@ BASE_FEATURE_PARAM(bool,
                    "filled_card_information",
                    false);
 
+BASE_FEATURE_PARAM(bool,
+                   kPageActionsMigrationReadingMode,
+                   &kPageActionsMigration,
+                   "reading_mode",
+                   true);
+
 BASE_FEATURE(kSavePasswordsContextualUi, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCompositorLoadingAnimations, base::FEATURE_DISABLED_BY_DEFAULT);

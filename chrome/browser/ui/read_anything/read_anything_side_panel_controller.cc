@@ -11,6 +11,7 @@
 
 #include "base/check_is_test.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/dom_distiller/tab_utils.h"
 #include "chrome/browser/language/language_model_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -34,6 +35,7 @@
 #include "components/language/core/common/locale_util.h"
 #include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "content/public/browser/render_frame_host.h"
+#include "read_anything_entry_point_controller.h"
 #include "read_anything_side_panel_controller.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
@@ -273,6 +275,24 @@ void ReadAnythingSidePanelController::DidStopLoading() {
   // The page finished loading.
   loading_ = false;
   UpdateIphVisibility();
+
+  if (!features::IsReadAnythingOmniboxChipEnabled()) {
+    return;
+  }
+
+  // Readability will callback with whether or not the current contents are a
+  // good candidate for distillation.
+  // TODO(crbug.com/c/455640523): Show this entrypoint max 3 times in 3 days if
+  // it's not clicked.
+  RunReadabilityHeuristicsOnWebContents(
+      tab_->GetContents(),
+      base::BindOnce(&ReadAnythingSidePanelController::OnReadabilityResult,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void ReadAnythingSidePanelController::OnReadabilityResult(bool should_show) {
+  read_anything::ReadAnythingEntryPointController::UpdatePageActionVisibility(
+      should_show, tab_->GetBrowserWindowInterface());
 }
 
 void ReadAnythingSidePanelController::PrimaryPageChanged(content::Page& page) {

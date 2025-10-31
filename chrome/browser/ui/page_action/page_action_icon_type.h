@@ -49,7 +49,8 @@ enum class PageActionIconType {
   // DEPRECATED: kChangePassword = 33,
   kLensOverlayHomework = 34,
   kAiMode = 35,
-  kMaxValue = kAiMode,
+  kReadingMode = 36,
+  kMaxValue = kReadingMode,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/page/enums.xml:PageActionIconType)
 
@@ -86,6 +87,7 @@ static_assert(static_cast<int>(PageActionIconType::kCollaborationMessaging) ==
               32);
 static_assert(static_cast<int>(PageActionIconType::kLensOverlayHomework) == 34);
 static_assert(static_cast<int>(PageActionIconType::kAiMode) == 35);
+static_assert(static_cast<int>(PageActionIconType::kReadingMode) == 36);
 
 // Returns a bool indicating whether the given page action type has been
 // migrated to the new framework, which is based on ActionItems instead of

@@ -15,12 +15,13 @@ namespace page_actions {
 // All ActionIds associated with a page action.
 // For now, the order of the page actions will be based on their position in
 // the array.
-inline constexpr std::array<actions::ActionId, 19> kActionIds = {
+inline constexpr std::array<actions::ActionId, 20> kActionIds = {
     kActionAiMode,
     kActionSidePanelShowLensOverlayResults,
     kActionShowTranslate,
     kActionShowMemorySaverChip,
     kActionShowIntentPicker,
+    kActionSidePanelShowReadAnything,
     kActionZoomNormal,
     kActionOffersAndRewardsForPage,
     kActionShowFileSystemAccess,
