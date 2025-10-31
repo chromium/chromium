@@ -72,7 +72,6 @@
 <translation id="1896836275755235458">Chromium fondagi amallar hamda ravon varaqlash va video freyming kabi vizual effektlarni cheklash orqali batareya quvvatini tejashni boshlaydi. <ph name="BEGIN_LINK" />Quvvat tejash haqida batafsil<ph name="END_LINK" /></translation>
 <translation id="1898804291554630487">Bu sahifa haqida savol bering</translation>
 <translation id="1900969832270057921">Chromium Updater xizmati</translation>
-<translation id="1911666947158375684">Chromiumda hisobdan chiqmasangiz, Google hisobingizdagi parollar va boshqa maʼlumotlardan foydalana olasiz. Buni istalgan vaqtda sozlamalardan oʻzgartirish mumkin.</translation>
 <translation id="1911763535808217981">Agar bu faolsizlantirilsa, Gmail kabi Google saytlarida hisobingizga kirganingizda Chromium hisobingizga kirilmaydi</translation>
 <translation id="1929939181775079593">Chromium javob bermayapti. Qaytadan ishga tushirilsinmi?</translation>
 <translation id="1933341829955786215">Tashkilotingiz (<ph name="MANAGER" />) Chromium hisobiga kirishni talab qiladi</translation>
@@ -379,6 +378,7 @@
 <translation id="5605834417512968703">Rasm orqali qidirish uchun istalgan obyektni tanlang yoki yopish uchun Espace tugmasini bosing</translation>
 <translation id="5618818588972826921">Rasm orqali qidirish uchun undagi istalgan matn yoki rasmni tanlang yoki Esc tugmasini bosib, qidiruvni yoping</translation>
 <translation id="5623402015214259806">{0,plural, =0{Chromium uchun yangilanish mavjud}=1{Chromium uchun yangilanish mavjud}other{Chromium uchun yangilanish mavjud (# kun)}}</translation>
+<translation id="5633450273457573375">Google hisobingizdagi barcha Chromium maʼlumotlarini <ph name="BEGIN_LINK" />shaxsiy kodli ibora<ph name="END_LINK" /> yordamida shifrlang. Google Walletga saqlangan har qanday manzillar va maʼlumotlar kodli iborangiz bilan shifrlanmaydi. Chromium brauzer tarixi sinxronlanmaydi.</translation>
 <translation id="5643865575100044307">Chromium yopilganda har doim qurilmadan sayt maʼlumotlarini oʻchirib tashlash</translation>
 <translation id="5653831366781983928">Chromiumni hozir qayta ishga tushiring</translation>
 <translation id="5690427481109656848">Google LLC</translation>

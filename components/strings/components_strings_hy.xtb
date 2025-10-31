@@ -2941,6 +2941,7 @@
 <translation id="5813119285467412249">&amp;Վերարկել հավելումը</translation>
 <translation id="5813753398265398978">Ֆիզիկա</translation>
 <translation id="5817918615728894473">Զուգակցել</translation>
+<translation id="5820625124144807242">Ձեր պատվերը ստուգելուց հետո դուք պետք է մուտք գործեք <ph name="BNPL_ISSUER_NAME" /> հաշիվ կամ ստեղծեք նորը։ Այդ հաշիվն ավտոմատ կկապվի Google Pay-ի հետ։</translation>
 <translation id="5826507051599432481">Ընդհանուր անուն (CN)</translation>
 <translation id="5830698870816298009">տեսախցիկի օգտագործում և տեղաշարժում</translation>
 <translation id="5831217499016131155">Google Wallet</translation>
@@ -3453,7 +3454,6 @@
 <translation id="6649510485211003056">195 x 270 մմ</translation>
 <translation id="6651270836885078973">Կառավարիչ՝</translation>
 <translation id="6652101503459149953">Օգտագործել Windows Hello</translation>
-<translation id="6653684225271066234"><ph name="BNPL_ISSUER_NAME" /> ծառայությունը կստուգի ձեր համապատասխանությունը պահանջներին (դա չի ազդի ձեր վարկային վարկանիշի վրա)։ Եթե համապատասխանեք չափանիշներին, <ph name="BNPL_ISSUER_NAME" /> ծառայությունը կտրամադրի ձեր վճարային պլան(ներ)ը՝ գնումն ավարտելու համար։</translation>
 <translation id="6654224358955673568">Պաշտոնականացնել</translation>
 <translation id="6654244995031366386">Ապակի (հյուսվածքավորված)</translation>
 <translation id="6657585470893396449">Գաղտնաբառ</translation>
@@ -3616,7 +3616,6 @@
 <translation id="6925267999184670015">B+ (Հյուսիսային Ամերիկա)</translation>
 <translation id="6926216138694948720">Բոդի արտ</translation>
 <translation id="692638818576287323">Կոմերցիոն փոխադրամիջոցներ</translation>
-<translation id="6927057753277044239">Ձեր պատվերը ստուգելուց հետո դուք պետք է մուտք գործեք <ph name="BNPL_ISSUER_NAME" /> հաշիվ կամ ստեղծեք նորը։ Այդ հաշիվն ավտոմատ կկապվի ձեր Google հաշվի հետ։</translation>
 <translation id="6930607614725241390">Որոնեք կողային վահանակում</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Կանխադրված որոնողական համակարգը թույլ է տալիս որոնել համացանցում և աջակցում է Chrome-ի այնպիսի գործառույթներ<ph name="END_BOLD" />, ինչպիսիք են որոնումը հասցեագոտուց և պատկերների միջոցով վեբ էջերում։ Գործառույթը կարող է հասանելի չլինել, եթե ձեր որոնողական համակարգը չի աջակցում այն։</translation>
 <translation id="6934672428414710184">Այս անունը վերցված է ձեր Google հաշվից</translation>
@@ -3969,6 +3968,7 @@
 <translation id="7485085230273446323">Բիզնես և արդյունաբերություն</translation>
 <translation id="7485870689360869515">Տվյալներ չեն գտնվել:</translation>
 <translation id="7486880426035242089">OneDrive-ում</translation>
+<translation id="7489255442002627311"><ph name="BNPL_ISSUER_NAME" /> ծառայությունը կստուգի ձեր համապատասխանությունը պահանջներին (դա չի ազդի ձեր վարկային վարկանիշի վրա)։ Հաստատման դեպքում <ph name="BNPL_ISSUER_NAME" /> ծառայությունը կառաջարկի ձեզ ընտրել վճարային պլան՝ գնումն ավարտելու համար։</translation>
 <translation id="7489392576326061356">Շամպուններ և կոնդիցիոներներ</translation>
 <translation id="7489919936111034362">Google Drive-ում ազատ տարածք չկա</translation>
 <translation id="7495528107193238112">Այս բովանդակությունն արգելափակված է։ Խնդիրը վերացնելու համար դիմեք կայքի սեփականատիրոջը։</translation>

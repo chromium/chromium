@@ -521,7 +521,6 @@
 <translation id="6885412569789873916">Chromen betaversion sovellukset</translation>
 <translation id="6893363893008038481">Poista tili Chromesta</translation>
 <translation id="6896758677409633944">Kopioi</translation>
-<translation id="6927941417289800361">Kun olet kirjautunut sisään, voit käyttää esimerkiksi Google-tilin salasanoja Chromessa. Voit muuttaa valintasi milloin tahansa asetuksista.</translation>
 <translation id="6930294499209825">Pitää Google-ohjelmiston ajan tasalla. Jos palvelu on poistettu käytöstä tai lopetettu, Google-ohjelmistoa ei pidetä ajan tasalla. Tämä tarkoittaa, että mahdollisia tietoturvahaavoittuvuuksia ei voida korjata ja ominaisuudet eivät välttämättä toimi. Tämän palvelun asennus poistetaan automaattisesti, kun sitä ei käytä mikään Google-ohjelmisto.</translation>
 <translation id="6933858244219479645">ChromeOS</translation>
 <translation id="6938166777909186039">Jotta saat tulevia Google Chromen päivityksiä, sinulla on oltava Windows 10 tai uudempi. Tietokoneen käyttöjärjestelmä on Windows 8.1.</translation>
@@ -646,6 +645,7 @@
 <translation id="8255190535488645436">Google Chrome käyttää kameraasi ja mikrofoniasi.</translation>
 <translation id="8267953129876836456">Chrome on löytänyt turvallisuussuosituksia, jotka sinun täytyy tarkistaa</translation>
 <translation id="8286862437124483331">Google Chrome yrittää näyttää salasanoja. Salli tämä kirjoittamalla Windows-salasanasi.</translation>
+<translation id="8289399803055125418">Salaa kaikki Google-tilisi Chrome-data <ph name="BEGIN_LINK" />omalla tunnuslauseella<ph name="END_LINK" />. Osoitteita ja Google Walletiin tallennettua dataa ei salata tunnuslauseella. Chromen selaushistoriaa ei synkronoida.</translation>
 <translation id="829923460755755423">Lisää pikakuvake Google Salasanoihin</translation>
 <translation id="8313851650939857356">Käynnistysvirhe: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8321888067342493336">Tallenna kuvana</translation>

@@ -33,6 +33,7 @@
 <translation id="1111673857033749125">તમારા અન્ય ડિવાઇસ પર સાચવેલા બુકમાર્ક અહીં દેખાશે.</translation>
 <translation id="1126696498560056882">આ ડિવાઇસ પરના એકાઉન્ટ મેનેજ કરો</translation>
 <translation id="1135018701024399762">છૂપો મોડ, તમારા ડિવાઇસનો ઉપયોગ કરતા અન્ય લોકોથી તમારા બ્રાઉઝિંગને ખાનગી રાખે છે</translation>
+<translation id="113752097246673894">તમારા બધા ડિવાઇસ પર તમારા બુકમાર્ક અને બીજું ઘણું મેળવવા માટે, Chromeમાં <ph name="EMAIL" /> તરીકે સાઇન ઇન કરો</translation>
 <translation id="1138458427267715730">સમગ્ર વેબ પર કોઈપણ સાઇટ પર કિંમતમાં ઘટાડો થાય ત્યારે અલર્ટ મેળવો</translation>
 <translation id="1140317858355046628">જો તમે તેને ડિલીટ કરશો, તો દરેક વ્યક્તિ તરત જ "<ph name="GROUP_NAME" />" ટૅબના ગ્રૂપનો ઍક્સેસ ગુમાવશે અને તેને બધા ડિવાઇસમાંથી ડિલીટ કરવામાં આવશે.</translation>
 <translation id="1142732900304639782">આ સાઇટનો અનુવાદ કરવાનું ઑફર કરશો નહીં</translation>
@@ -381,6 +382,7 @@
 <translation id="2723001399770238859">ઑડિઓ</translation>
 <translation id="2739887572830526131">પછીથી ટૅબ ઉમેરવા માટે આ ગ્રૂપ રાખો અથવા જો તમને હવે તેની જરૂર ન હોય, તો તેને ડિલીટ કરો.</translation>
 <translation id="2742373789128106053"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> અત્યારે ઉપલબ્ધ નથી.</translation>
+<translation id="2751271371269891762">તમારા બધા ડિવાઇસ પર તમારા બુકમાર્ક અને બીજું ઘણું મેળવવા માટે, <ph name="EMAIL" /> તરીકે સાઇન ઇન કરો</translation>
 <translation id="2760805590727089264">MM / YY</translation>
 <translation id="2762000892062317888">હમણાં જ</translation>
 <translation id="276969039800130567"><ph name="USER_EMAIL_ADDRESS" /> તરીકે સાઇન ઇન કરો.</translation>
@@ -390,6 +392,7 @@
 <translation id="2789486458103222910">બરાબર, સમજાઇ ગયું</translation>
 <translation id="2791129728587938169">{NUM_PASSWORDS,plural, =1{Chromeને ફરીથી ઉપયોગમાં લેવાયેલો કોઈ પાસવર્ડ મળી આવ્યો છે જેને તમે બહેતર બનાવી શકો છો}one{Chromeને ફરીથી ઉપયોગમાં લેવાયેલો એવો # પાસવર્ડ મળી આવ્યો છે જેને તમે બહેતર બનાવી શકો છો}other{Chromeને ફરીથી ઉપયોગમાં લેવાયેલા એવા # પાસવર્ડ મળી આવ્યા છે જેમને તમે બહેતર બનાવી શકો છો}}</translation>
 <translation id="2800066122460699237"><ph name="TAB_TITLE" /> ટૅબ બંધ કરવામાં આવશે</translation>
+<translation id="2805210243313393104">તમારા બધા ડિવાઇસ પર તમારા બુકમાર્ક અને બીજું ઘણું મેળવો</translation>
 <translation id="2805756323405976993">ઍપ</translation>
 <translation id="2819849308549746319">બધું અનસબ્સ્ક્રાઇબ કરો</translation>
 <translation id="2820047235535485532">તમારા Google એકાઉન્ટ <ph name="ACCOUNT_EMAIL" />માં સાચવવા માટેના ડેટાની પસંદગી તમે કરી શકો છો.\nતમે આ આઇટમને તમારા બુકમાર્ક, વાંચન સૂચિ કે પાસવર્ડ મેનેજરમાં પણ જોઈ અને સાચવી શકો છો.</translation>
@@ -651,6 +654,7 @@
 <translation id="4000670338830950598">હાઇલાઇટ કરેલી આઇટમ વડે Google Chromeને કસ્ટમાઇઝ અને નિયંત્રિત કરો</translation>
 <translation id="4015643064997321279">{NUM_PASSWORDS,plural, =1{તમારા Google એકાઉન્ટમાં ચેડાં કરાયેલો 1 પાસવર્ડ}one{તમારા Google એકાઉન્ટમાં ચેડાં કરાયેલો # પાસવર્ડ}other{તમારા Google એકાઉન્ટમાં ચેડાં કરાયેલા # પાસવર્ડ}}</translation>
 <translation id="4016425174436051808">ફૉલો કરી શકતા નથી. કંઈક ખોટું થયું.</translation>
+<translation id="4023638601467301498">તમારા બધા ડિવાઇસ પર તમારા બુકમાર્ક અને બીજું ઘણું મેળવવા માટે, Chromeમાં સાઇન ઇન કરો</translation>
 <translation id="4024768890073681126">તમારા માતાપિતા દ્વારા તમારું બ્રાઉઝર મેનેજ કરવામાં આવે છે</translation>
 <translation id="4027569221211770437"><ph name="FOLDER_TITLE" /> ફોલ્ડર</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# કલાક}one{# કલાક}other{# કલાક}}</translation>
@@ -728,6 +732,7 @@
 <translation id="4355272626458588338">તમે કોઈ બુકમાર્ક ઉમેરીને તમારા માટે મહત્ત્વપૂર્ણ હોય એવા પેજ પર પાછા જઈ શકો છો</translation>
 <translation id="4356503491090073318">કાર્ડ નંબર*</translation>
 <translation id="4357206670025518404">+<ph name="COUNT_NUMBER" /></translation>
+<translation id="4358630185957185589">Google Lens ખોલો</translation>
 <translation id="4359809482106103048">સલામતી, એક નજરમાં</translation>
 <translation id="4378154925671717803">ફોન</translation>
 <translation id="4380055775103003110">જો આ સમસ્યા આવવાનું ચાલુ રહે, તો તમે <ph name="SITE_ETLD_PLUS_ONE" /> પર ચાલુ રાખવા માટે અન્ય રીતો અજમાવી શકો છો.</translation>
@@ -1222,6 +1227,7 @@
 <translation id="6473086018775716761">શેરિંગના વિકલ્પોની સૂચિ અડધી ઊંચાઈએ ખોલી છે.</translation>
 <translation id="6475951671322991020">વીડિયો ડાઉનલોડ કરો</translation>
 <translation id="6477928892249167417">આ સાઇટ તમારા માટે મહત્ત્વની લાગી રહી છે:</translation>
+<translation id="6479881432656947268">Chrome વેબ સ્ટોરની મુલાકાત લો</translation>
 <translation id="6481963882741794338">મનગમતું બનાવવા અને અન્ય હેતુઓ માટે, Chrome અને Googleની અન્ય સેવાઓ લિંક કરો</translation>
 <translation id="6482749332252372425">સ્ટોરેજ સ્થાનના અભાવના કારણે <ph name="FILE_NAME" /> ડાઉનલોડ નિષ્ફળ થયું.</translation>
 <translation id="6486420406192123355">આ PDF ફાઇલ અસુરક્ષિત કનેક્શનનો ઉપયોગ કરતી સાઇટમાંથી છે</translation>
@@ -1341,6 +1347,7 @@
 <translation id="6908998565271542516">કોઈ વેબસાઇટને પૂરી ઊંચાઈ સુધી ખોલવાની મંજૂરી આપવાનો અથવા ન આપવાનો વિકલ્પ</translation>
 <translation id="6909589135458168665">પહેલેથી લોડ કરેલા પેજ</translation>
 <translation id="6910211073230771657">કાઢી નાખ્યું</translation>
+<translation id="6916590542764765824">એક્સ્ટેન્શન મેનેજ કરો</translation>
 <translation id="6918398787259831832">જો આ સમસ્યા આવવાનું ચાલુ રહે, તો <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />માંથી <ph name="BEGIN_LINK" />વધુ માહિતી મેળવો<ph name="END_LINK" />.</translation>
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> Chrome દ્વારા આ પરવાનગીઓ કાઢી નાખવામાં આવી કારણ કે તમે તાજેતરમાં મુલાકાત લીધી ન હતી</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 ટૅબ}one{<ph name="NUMBER_OF_TABS" /> ટૅબ}other{<ph name="NUMBER_OF_TABS" /> ટૅબ}}</translation>
@@ -1510,6 +1517,7 @@
 <translation id="7612619742409846846">Google પર આ તરીકે સાઇન ઇન કરો</translation>
 <translation id="7612989789287281429">તમને સાઇન ઇન કરી રહ્યાં છીએ…</translation>
 <translation id="7619072057915878432">નેટવર્ક નિષ્ફળતાને કારણે <ph name="FILE_NAME" /> ડાઉનલોડ નિષ્ફળ થયું.</translation>
+<translation id="7620958983792650214">{NUM_REVOKED_PERMISSIONS,plural, =1{એક સાઇટમાંથી અનસબ્સ્ક્રાઇબ કર્યું}one{# સાઇટમાંથી અનસબ્સ્ક્રાઇબ કર્યું}other{# સાઇટમાંથી અનસબ્સ્ક્રાઇબ કર્યું}}</translation>
 <translation id="7626032353295482388">Chrome પર આપનું સ્વાગત છે</translation>
 <translation id="7628417132421583481">Password Managerમાં જાઓ</translation>
 <translation id="7630202231528827509">પ્રદાતા URL</translation>

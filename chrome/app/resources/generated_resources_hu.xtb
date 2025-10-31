@@ -1041,7 +1041,7 @@ Az alkalmazások számára már megadott engedélyek erre a fiókra is érvénye
 <translation id="169341880170235617">A lapcsoportokat mostantól automatikusan menti a rendszer</translation>
 <translation id="1695487653372841667">Beállíthatja, hogy milyen adatokat oszt meg a Google-lal. A Beállításokban ezt bármikor módosíthatja.</translation>
 <translation id="1695510246756136088">Nem lehet csatlakozni az internethez. Próbálja újra.</translation>
-<translation id="1696214930320482113">A profilok segítségével különválaszthatja a munkahelyi, a személyes és a játéktevékenységeket anélkül, hogy másik böngészőre kellene váltania. Új profil hozzáadása most.</translation>
+<translation id="1696214930320482113">A profilok segítségével különválaszthatja a munkahelyi, a személyes és a játéktevékenységeket anélkül, hogy másik böngészőre kellene váltania. Adjon hozzá új profilt most.</translation>
 <translation id="1696555181932908973">Más módon is próbálkozhat a(z) <ph name="SITE_ETLD_PLUS_ONE" /> webhelyen való folytatással.</translation>
 <translation id="169675691788639886">Az eszközön SSH-szerver van konfigurálva. Ne jelentkezzen be bizalmas fiókkal.</translation>
 <translation id="1697122132646041614">A „Nem tetszik” értékelésre kattintva megnyit egy űrlapot, amelyen részletes visszajelzést adhat arról, hogy miért nem tetszenek Önnek ezek a találatok.</translation>
@@ -1283,7 +1283,7 @@ Az alkalmazások számára már megadott engedélyek erre a fiókra is érvénye
 <translation id="1851551847729706116"><ph name="TAB_NAME" /> megosztása erre a lapra</translation>
 <translation id="1854180393107901205">Átküldés leállítása</translation>
 <translation id="1856715684130786728">Hely hozzáadása...</translation>
-<translation id="1857044401921988155">A Mentés gombra kattintva ez a lapcsoport könyvjelzőmappává alakul, és minden eszközön eltávolításra kerül a csoportok közül</translation>
+<translation id="1857044401921988155">A Mentés gombra kattintva ez a lapcsoport könyvjelzőmappává alakul, és minden eszközön kikerül a csoportok közül</translation>
 <translation id="185766080319917408">Az Indító billentyű a bal oldali Alt billentyű bal oldalán található</translation>
 <translation id="1859294693760125695">Már nem érdekel</translation>
 <translation id="1859339856433307593">Ehhez a fiókhoz (<ph name="USER_EMAIL" />) már tartozik mentett jelszó a(z) <ph name="BRAND" /> szolgáltatásban</translation>
@@ -3791,7 +3791,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3605156246402033687">{COUNT,plural, =1{{COUNT} fiók használja ugyanazt a jelszót}other{{COUNT} fiók használja ugyanazt a jelszót}}</translation>
 <translation id="3605515937536882518">Űrlapértékek frissítve</translation>
 <translation id="3605780360466892872">Üzletember</translation>
-<translation id="3607338234983711865">Megosztott számítógépet használ?</translation>
+<translation id="3607338234983711865">Közös számítógépet használ?</translation>
 <translation id="3607671391978830431">Gyermeknek</translation>
 <translation id="3607799000129481474">A(z) <ph name="SITE" /> ellenőrizni akarja az Ön személyazonosságát</translation>
 <translation id="3608460311600621471">Adja meg az adat nyomtatásának okát:</translation>
@@ -8823,7 +8823,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="7127286300357471051">Amikor úgy dönt, hogy megosztja az aktuális lapot a Geminivel, a rendszer lap teljes tartalmát és URL-jét elküldi a Google-nak.</translation>
 <translation id="7127980134843952133">Letöltési előzmények</translation>
 <translation id="7128151990937044829">Jelzés megjelenítése a címsávon, ha a böngésző letiltott értesítéseket</translation>
-<translation id="7128842673552234514">Van másik Google-fiókod?</translation>
+<translation id="7128842673552234514">Másik Google-fiókja is van?</translation>
 <translation id="7130438335435247835">Hozzáférési pont neve (APN)</translation>
 <translation id="7130680050151101667">Ne jelenjen meg ez a kártya</translation>
 <translation id="7131040479572660648">Adatok beolvasása a következő webhelyeken: <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> és <ph name="WEBSITE_3" /></translation>
@@ -11155,7 +11155,7 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8719472795285728850">Bővítménytevékenységek figyelése…</translation>
 <translation id="8719665168401479425">Arckifejezések használata műveletek végrehajtásához</translation>
 <translation id="8720200012906404956">Mobilhálózat keresése folyamatban van. <ph name="BEGIN_LINK" />További információ.<ph name="END_LINK" /></translation>
-<translation id="8720285645560721666">Elkülönítheti könyvjelzőit, jelszavait és beállításait. Új profil hozzáadása most.</translation>
+<translation id="8720285645560721666">Elkülönítheti könyvjelzőit, jelszavait és beállításait. Adjon hozzá új profilt most.</translation>
 <translation id="8720816553731218127">A telepítés alatti attribútumok inicializálásakor időtúllépés történt.</translation>
 <translation id="8721093493695533465">Ezzel törli a megjelenített webhelyek és a telepített alkalmazások által tárolt, összesen <ph name="TOTAL_USAGE" />-nyi adatot</translation>
 <translation id="8724405322205516354">Ha ezt az ikont látja, akkor ujjlenyomata használatával azonosítsa magát vagy engedélyezze a vásárlást.</translation>
@@ -11227,7 +11227,7 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8762886931014513155"><ph name="DEVICE_TYPE" /> eszközét frissíteni kell</translation>
 <translation id="8763170551806710928">Szelvények megjelenítése</translation>
 <translation id="8763927697961133303">USB-eszköz</translation>
-<translation id="8766156860774051068">Ön válogatta</translation>
+<translation id="8766156860774051068">Az Ön saját válogatása</translation>
 <translation id="8766796754185931010">Kotoeri</translation>
 <translation id="8767069439158587614">Összes keresés megjelenítése erre: <ph name="QUERY_CLUSTER_NAME" /></translation>
 <translation id="8767621466733104912">A Chrome automatikus frissítése az összes felhasználó számára</translation>
@@ -11428,7 +11428,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="8902059453911237649">{NUM_DAYS,plural, =1{A(z) <ph name="MANAGER" /> megköveteli, hogy készítsen biztonsági másolatot az adatairól, és küldje vissza ezt az eszközt (<ph name="DEVICE_TYPE" />) a mai napon.}other{A(z) <ph name="MANAGER" /> megköveteli, hogy készítsen biztonsági másolatot az adatairól, és küldje vissza ezt az eszközt (<ph name="DEVICE_TYPE" />) a határidő előtt.}}</translation>
 <translation id="8902667442496790482">Felolvasási beállítások megnyitása</translation>
 <translation id="8903733144777177139">A mikrofonhoz való hozzáférés le van tiltva</translation>
-<translation id="8905253417215700291">A(z) <ph name="GOOGLE_PASSWORD_MANAGER" /> erős jelszót hozott létre ehhez a webhelyhez</translation>
+<translation id="8905253417215700291">A <ph name="GOOGLE_PASSWORD_MANAGER" /> erős jelszót hozott létre ehhez a webhelyhez</translation>
 <translation id="890616557918890486">Forrás módosítása</translation>
 <translation id="8907701755790961703">Válasszon országot</translation>
 <translation id="8908420399006197927">Lap kizárása a javasolt csoportból</translation>

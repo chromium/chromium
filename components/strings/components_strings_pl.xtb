@@ -2932,6 +2932,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5813119285467412249">&amp;Ponów dodanie</translation>
 <translation id="5813753398265398978">Fizyka</translation>
 <translation id="5817918615728894473">Sparuj</translation>
+<translation id="5820625124144807242">Po sprawdzeniu zamówienia musisz zalogować się na konto <ph name="BNPL_ISSUER_NAME" /> lub je utworzyć. To konto zostanie automatycznie połączone z Google Pay.</translation>
 <translation id="5826507051599432481">Nazwa pospolita (CN)</translation>
 <translation id="5830698870816298009">używanie kamery i poruszanie nią</translation>
 <translation id="5831217499016131155">Portfel Google</translation>
@@ -3444,7 +3445,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6649510485211003056">195 x 270 mm</translation>
 <translation id="6651270836885078973">Zarządzane przez:</translation>
 <translation id="6652101503459149953">Używaj Windows Hello</translation>
-<translation id="6653684225271066234"><ph name="BNPL_ISSUER_NAME" /> sprawdzi, czy spełniasz wymagania (nie wpłynie to na Twój scoring kredytowy). Jeśli spełniasz kryteria kwalifikacji, <ph name="BNPL_ISSUER_NAME" /> udostępni Ci potencjalne abonamenty, aby umożliwić Ci dokończenie zakupu.</translation>
 <translation id="6654224358955673568">Zastosuj bardziej oficjalny ton</translation>
 <translation id="6654244995031366386">Szkło (teksturowane)</translation>
 <translation id="6657585470893396449">Hasło</translation>
@@ -3607,7 +3607,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6925267999184670015">B+ (Ameryka Północna)</translation>
 <translation id="6926216138694948720">Zdobienie ciała</translation>
 <translation id="692638818576287323">Samochody dla firm</translation>
-<translation id="6927057753277044239">Po sprawdzeniu zamówienia musisz zalogować się na konto <ph name="BNPL_ISSUER_NAME" /> lub je utworzyć. To konto zostanie automatycznie połączone z Twoim kontem Google.</translation>
 <translation id="6930607614725241390">Szukaj w panelu bocznym</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Domyślna wyszukiwarka umożliwia wyszukiwanie w internecie i obsługuje funkcje Chrome<ph name="END_BOLD" />, takie jak wyszukiwanie na pasku adresu i wyszukiwanie za pomocą obrazów na stronach internetowych. Funkcja może być niedostępna, jeśli Twoja wyszukiwarka jej nie obsługuje.</translation>
 <translation id="6934672428414710184">To imię i nazwisko pochodzi z Twojego konta Google</translation>
@@ -3961,6 +3960,7 @@ Dodatkowe informacje:
 <translation id="7485085230273446323">Biznes i przemysł</translation>
 <translation id="7485870689360869515">Nie znaleziono danych.</translation>
 <translation id="7486880426035242089">w usłudze OneDrive</translation>
+<translation id="7489255442002627311"><ph name="BNPL_ISSUER_NAME" /> sprawdzi, czy spełniasz wymagania (nie wpłynie to na Twój scoring kredytowy). Jeśli prośba zostanie zatwierdzona, <ph name="BNPL_ISSUER_NAME" /> udostępni Ci dostępne plany spłaty, z których możesz wybrać jeden, aby sfinalizować zakup.</translation>
 <translation id="7489392576326061356">Szampony i odżywki</translation>
 <translation id="7489919936111034362">Brak wolnego miejsca na Dysku Google</translation>
 <translation id="7495528107193238112">Ta zawartość jest zablokowana. Aby rozwiązać problem, skontaktuj się z właścicielem witryny.</translation>

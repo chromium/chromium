@@ -831,7 +831,7 @@ Beide haben den gleichen Effekt auf das Browserverhalten.</translation>
 <translation id="1561424797596341174">Überschreiben von Richtlinien für Fehlerbehebungs-Builds des Hosts für den Remote-Zugriff</translation>
 <translation id="1561967320164410511">U2F plus Erweiterungen zur individuellen Bestätigung</translation>
 <translation id="1562846754315919408">Benachrichtigen, wenn USB-Geräte erkannt werden</translation>
-<translation id="1563745847791078494">Ist die Richtlinie konfiguriert, wird die standardmäßige Startseiten-URL in <ph name="PRODUCT_NAME" /> festgelegt. Die Startseite wird über die Schaltfläche „Startseite“ geöffnet. Auf dem Computer werden die Seiten, die beim Hochfahren geöffnet werden, über die „<ph name="RESTORE_ON_STARTUP_POLICY_NAME" />“-Richtlinien gesteuert.
+<translation id="1563745847791078494">Ist die Richtlinie konfiguriert, wird die standardmäßige Startseiten-URL in <ph name="PRODUCT_NAME" /> festgelegt. Die Startseite wird über den Button „Startseite“ geöffnet. Auf dem Computer werden die Seiten, die beim Hochfahren geöffnet werden, über die „<ph name="RESTORE_ON_STARTUP_POLICY_NAME" />“-Richtlinien gesteuert.
 
 Wenn die „Neuer Tab“-Seite durch den Nutzer oder „<ph name="HOMEPAGE_IS_NEW_TAB_PAGE_POLICY_NAME" />“ als Startseite festgelegt ist, hat diese Richtlinie keine Auswirkung.
 
@@ -877,13 +877,13 @@ Wenn die Richtlinie nicht konfiguriert ist, gilt „<ph name="DEFAULT_DIRECT_SOC
 URL-Muster dürfen nicht im Konflikt mit „<ph name="DIRECT_SOCKETS_BLOCKED_FOR_URLS_POLICY_NAME" />“ stehen. Keine Richtlinie hat Vorrang, falls eine URL mit beiden übereinstimmt.
 
 Ausführliche Informationen zu gültigen URL-Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> ist kein akzeptierter Wert für diese Richtlinie.</translation>
-<translation id="1578495851351913403">Wenn du diese Richtlinie konfigurierst, wird in den Displayeinstellungen unter jedem Display eine neue Ein/Aus-Schaltfläche angezeigt. Im normalen Spiegelmodus werden alle Displays auf ein Display gespiegelt, aber mit der neuen Ein/Aus-Schaltfläche können Nutzer ein Display von der Spiegelung ausschließen und als erweitertes Display anzeigen lassen.
+<translation id="1578495851351913403">Wenn du diese Richtlinie konfigurierst, wird in den Displayeinstellungen unter jedem Display ein neuer Ein/Aus-Button angezeigt. Im normalen Spiegelmodus werden alle Displays auf ein Display gespiegelt, aber mit dem neuen Ein/Aus-Button können Nutzer ein Display von der Spiegelung ausschließen und als erweitertes Display anzeigen lassen.
 
 Wenn die Richtlinie aktiviert ist, wird für jedes Display die Option angezeigt, es vom Spiegelmodus auszuschließen. Der Nutzer kann dann auswählen, welches Display aktiviert werden soll.
 
-Wenn die Richtlinie nicht konfiguriert oder deaktiviert ist, wird die Ein/Aus-Schaltfläche ausgeblendet.
+Wenn die Richtlinie nicht konfiguriert oder deaktiviert ist, wird der Ein/Aus-Button ausgeblendet.
 
-Hinweis: Diese Richtlinie wirkt sich nur auf die Benutzeroberfläche aus. Die vorhandenen Einstellungen werden unter ChromeOS beibehalten, wenn die Ein/Aus-Schaltfläche ausgeblendet ist.</translation>
+Hinweis: Diese Richtlinie wirkt sich nur auf die Benutzeroberfläche aus. Die vorhandenen Einstellungen werden unter ChromeOS beibehalten, wenn der Ein/Aus-Button ausgeblendet ist.</translation>
 <translation id="1579027593897822029">Liste der Aktionen, die ausgeführt werden sollen, wenn das Zeitlimit in der Richtlinie „<ph name="IDLE_TIMEOUT_POLICY_NAME" />“ erreicht ist.
 
 Warnung: Das Festlegen dieser Richtlinie kann sich auf lokale private Daten auswirken und diese dauerhaft entfernen. Wir empfehlen, die Einstellungen vor der Bereitstellung zu testen, um das versehentliche Löschen von privaten Daten zu verhindern.
@@ -3504,6 +3504,15 @@ Wenn die Richtlinie nicht konfiguriert ist, wird die Browsernavigation verhinder
 
       Ist die Richtlinie deaktiviert oder nicht konfiguriert, wird DTC ausgeschaltet und kann keine Telemetrie- und Diagnosedaten von dem Gerät erheben, verarbeiten oder melden.</translation>
 <translation id="3442589735857147823">Zulassen, dass Nutzer virtuelle Maschinen verwenden, die für Linux-Apps benötigt werden</translation>
+<translation id="34476328503285475">Wenn du diese Richtlinie festlegst, werden in <ph name="PRODUCT_NAME" /> auf der Seite „Neuer Tab“ bis zu 10 benutzerdefinierte Verknüpfungen vorkonfiguriert.
+
+Wenn diese Richtlinie festgelegt ist, sehen Nutzer diese Verknüpfungen standardmäßig zusätzlich zu ihren persönlichen Verknüpfungen. Nutzer können die Sichtbarkeit der Verknüpfungen ihrer Organisation im Bereich „Chrome anpassen“ steuern.
+
+URLs von Verknüpfungen müssen eindeutig sein.
+
+Wenn die Richtlinie „<ph name="NTP_SHORTCUTS_ALLOW_USER_EDIT_NAME" />“ auf „true“ festgelegt ist, können Nutzer den Namen der Verknüpfung ändern. Wenn die Richtlinie auf „false“ oder nicht festgelegt ist, können Nutzer den Namen nicht bearbeiten.
+
+Wenn die Richtlinie „<ph name="NTP_SHORTCUTS_ALLOW_USER_DELETE_NAME" />“ auf „true“ festgelegt ist, können Nutzer die Verknüpfung entfernen. Wenn die Richtlinie auf „false“ oder nicht festgelegt ist, können Nutzer die Verknüpfung nicht entfernen.</translation>
 <translation id="3450649825886735618">Rechtschreibfehler nicht mithilfe von Google-Webdiensten korrigieren</translation>
 <translation id="3451422488938880786"> Ermöglicht das Aktivieren/Deaktivieren der Neuzuordnung von internationalen Tastenkürzeln</translation>
 <translation id="3451901387456196887">Nutzer erhalten im <ph name="PRODUCT_NAME" />-Menü die Option, Übertragungsgeräte mithilfe eines Zugriffscodes oder durch Scannen eines QR-Codes auszuwählen.</translation>
@@ -4753,6 +4762,7 @@ Hinweis: Diese Richtlinie ersetzt die Richtlinie „<ph name="ARC_GLS_POLICY_NAM
 <translation id="4341199399451274159">Wenn "<ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" />" aktiviert ist, gibt "<ph name="DEFAULT_SEARCH_PROVIDER_ENCODINGS_POLICY_NAME" />" die Zeichencodierungen an, die vom Suchanbieter unterstützt werden. Dazu werden Codeseiten-Namen wie "UTF-8", "GB2312" oder "ISO-8859-1" verwendet. Sie werden in der angegebenen Reihenfolge ausprobiert
 
       Wenn "<ph name="DEFAULT_SEARCH_PROVIDER_ENCODINGS_POLICY_NAME" />" nicht konfiguriert ist, wird "UTF-8" verwendet.</translation>
+<translation id="4346542905412554336">Proxy-Überschreibungsregeln</translation>
 <translation id="4347908978527632940">Wenn "true" eingestellt ist und der Nutzer ein betreuter Nutzer ist, können andere Android-Apps die Webeinschränkungen des Nutzers über einen Contentanbieter abfragen.
 
           Wenn "false" oder nichts eingestellt ist, gibt der Contentanbieter keine Informationen zurück.</translation>
@@ -6176,7 +6186,7 @@ Ist die Richtlinie nicht konfiguriert, wird der Standardwert von 0 Grad verwend
 <translation id="5258445772095084618">Zulassen, dass nicht verknüpfte Nutzer virtuelle Maschinen verwenden, die für Linux-Apps benötigt werden</translation>
 <translation id="5258651513421638932">Isolierten Apps erlauben, eine Verbindung zu Smartcards herzustellen</translation>
 <translation id="5262320080678421295">Zertifikaten nicht vertrauen, die von der Legacy-PKI der Symantec Corporation ausgestellt wurden</translation>
-<translation id="5265613843467285323">Ein/Aus-Schaltfläche für „Display im Spiegelmodus ausschließen“ anzeigen.</translation>
+<translation id="5265613843467285323">Ein/Aus-Button für „Display im Spiegelmodus ausschließen“ anzeigen.</translation>
 <translation id="5270408671043421978">Vorabladen von <ph name="ARC_VM" />-Bildern deaktivieren</translation>
 <translation id="5272332743749468542">Nutzern Zugriff auf „Display im Spiegelmodus ausschließen“ gewähren</translation>
 <translation id="5273744932022326215">Hiermit wird die Bedienungshilfe "Mauszeiger hervorheben" auf dem Anmeldebildschirm aktiviert.
@@ -6276,7 +6286,7 @@ Ist die Richtlinie deaktiviert, können der Browser‑ und der Downloadverlauf n
 <translation id="5323271643727095577">Dialogfeld zum Abbrechen nicht anzeigen, wenn „event.preventDefault()“ für ein „beforeunload“-Ereignis aufgerufen wird. Dialogfeld zum Abbrechen anzeigen, wenn „beforeunload event.returnValue“ der leere String für ein „beforeunload“-Ereignis ist.</translation>
 <translation id="5324430722441910403">Einstellungen für die Websitesuche</translation>
 <translation id="5326431956495937408">Wenn die Richtlinie aktiviert ist, können Nutzer ihre Passwörter gemäß den Familiendiensten an Familienmitglieder senden und von ihnen empfangen.
-Ist sie aktiviert oder nicht konfiguriert, gibt es im Passwortmanager eine Schaltfläche, über die ein Passwort gesendet werden kann.
+Ist sie aktiviert oder nicht konfiguriert, gibt es im Passwortmanager einen Button, über die ein Passwort gesendet werden kann.
 Empfangene Passwörter werden im Konto des Nutzers gespeichert und sind im Passwortmanager verfügbar.
 
 Ist die Richtlinie deaktiviert, können Nutzer keine Passwörter vom Passwortmanager aus an andere Nutzer senden und auch keine Passwörter von anderen Nutzern empfangen.
@@ -10346,6 +10356,21 @@ Ist die Richtlinie deaktiviert, wird die Funktion für den komprimierten Wörter
 
       Ist diese Richtlinie festgelegt, kann der Nutzer sie weder ändern noch überschreiben.</translation>
 <translation id="8080200590486938727">Plug-in-Suchfunktion deaktivieren</translation>
+<translation id="8082268442825947283">Wenn du diese Richtlinie festlegst, werden Regeln konfiguriert, über die der vom Browser verwendete Proxy je nach der Ziel-URL und anderen Bedingungen ausgewählt wird. Diese Richtlinie hat Vorrang vor den Proxy-Einstellungen, die über die Richtlinie „<ph name="PROXY_SETTINGS_POLICY_NAME" />“, die Erweiterungs-API „<ph name="PROXY_SETTINGS_EXTENSION_API" />“ oder manuelle Nutzereinstellungen festgelegt werden, sofern vorhanden.
+
+Wenn die Richtlinie nicht festgelegt ist, hat dies keine Auswirkungen auf andere Proxy-Richtlinien oder Nutzereinstellungen.
+
+Wenn die Proxy-Auswahl über den Browser getroffen wird, werden die Einträge der Richtlinie „<ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" />“ der Reihe nach ausgewertet, bis ein Eintrag eine Übereinstimmung mit mindestens einem der URL-Hosts in <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" /> hat und alle Einträge in <ph name="PROXY_OVERRIDE_RULES_CONDITIONS" /> erfüllt sind. Der Wert in <ph name="PROXY_OVERRIDE_RULES_PROXY_CHAIN" /> wird als Proxy für eine solche Übereinstimmung verwendet. Wenn keine Übereinstimmung gefunden wird, werden die Proxy-Einstellungen auf die in der Richtlinie „<ph name="PROXY_SETTINGS_POLICY_NAME" />“ festgelegten Werte zurückgesetzt.
+
+Die Einträge im Feld „<ph name="PROXY_OVERRIDE_RULES_PROXY_CHAIN" />“ entsprechen Stringwerten von PAC-Dateien wie:
+  * DIRECT
+  * PROXY host:port
+  * HTTPS host:port
+Der erste erreichbare Eintrag wird als Proxy verwendet.
+
+Das Feld „<ph name="PROXY_OVERRIDE_RULES_CONDITIONS" />“ enthält eine Liste von Bedingungen, die alle erfüllt sein müssen, damit die Überschreibungsregel zur Auswahl des zu verwendenden Proxys genutzt wird. Bei Nichtfestlegung wird der Eintrag verwendet, solange mindestens ein Host in <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" /> übereinstimmt.
+
+Die Bedingung „<ph name="PROXY_OVERRIDE_RULES_DNS_PROBE" />“ prüft, ob das angegebene DNS „<ph name="PROXY_OVERRIDE_RULES_HOST" />“ in eine IP-Adresse aufgelöst werden kann. Wenn der Wert von <ph name="PROXY_OVERRIDE_RULES_RESULT" /> „<ph name="PROXY_OVERRIDE_RULES_RESOLVES" />“ ist, gilt die Bedingung als erfüllt. Wenn der Wert stattdessen auf „<ph name="PROXY_OVERRIDE_RULES_NOT_FOUND" />“ festgelegt ist, gilt die Bedingung als erfüllt, wenn die Auflösung fehlgeschlagen ist.</translation>
 <translation id="8086746212954621799">Bei Festlegung auf „true“ werden automatische Updates deaktiviert.
 
 Ist diese Einstellung nicht konfiguriert oder auf „false“ gesetzt, suchen <ph name="PRODUCT_OS_NAME" />-Geräte automatisch nach Updates.

@@ -1002,7 +1002,7 @@
 <translation id="4894963374040315706">Això et permet fer cerques amb la veu</translation>
 <translation id="4895540042460820904">Darrera obertura</translation>
 <translation id="4896467949657706481">Les pestanyes s'han tancat; se t'ha tancat la sessió</translation>
-<translation id="4911042367886397055">Benvingut de nou, <ph name="USER_NAME" />,</translation>
+<translation id="4911042367886397055">Et donem la benvinguda de nou, <ph name="USER_NAME" />!</translation>
 <translation id="4913626501929406101">Pots compartir de manera segura una còpia de la teva contrasenya amb algú del teu grup familiar. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="4917025507570489430">Podràs utilitzar les dades de navegació existents quan tinguis la sessió iniciada com a <ph name="USER_EMAIL" />. És possible que la teva organització pugui veure aquestes dades.</translation>
 <translation id="4918086044614829423">Accepta</translation>
@@ -1760,7 +1760,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="7696316012653762532">Opcions per traduir la pàgina</translation>
 <translation id="7700527812567437847">Cerca a la pantalla amb Google Lens</translation>
 <translation id="7701040980221191251">Cap</translation>
-<translation id="7708668404222666001">S'han aplicat les preferències de la pàgina Pestanya nova</translation>
+<translation id="7708668404222666001">S'han aplicat les teves preferències de la pàgina Pestanya nova</translation>
 <translation id="7708994397325774423">Obtén totes les teves contrasenyes</translation>
 <translation id="7711440461521638739">No estàs reutilitzant cap contrasenya</translation>
 <translation id="7712361583414030698">S'està mostrant la versió sense connexió</translation>

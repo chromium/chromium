@@ -2927,6 +2927,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="5813119285467412249">&amp;Qo‘shish amaliga qaytish</translation>
 <translation id="5813753398265398978">Fizika</translation>
 <translation id="5817918615728894473">Ulanish</translation>
+<translation id="5820625124144807242">Buyurtmani tekshirib, <ph name="BNPL_ISSUER_NAME" /> bilan hisobga kiring yoki yangi hisob yarating. Bu hisob avtomatik ravishda Google Pay xizmatiga ulanadi.</translation>
 <translation id="5826507051599432481">Umumiy Ism (CN)</translation>
 <translation id="5830698870816298009">kameradan foydalanish va siljitish</translation>
 <translation id="5831217499016131155">Google Wallet</translation>
@@ -3438,7 +3439,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="6649510485211003056">195 x 270 mm</translation>
 <translation id="6651270836885078973">Boshqaruvchi:</translation>
 <translation id="6652101503459149953">Windows Hello ishlatish</translation>
-<translation id="6653684225271066234"><ph name="BNPL_ISSUER_NAME" /> muvofiqligingizni tekshiradi (bu kredit balliga taʼsir qilmaydi). Muvofiqlik mezonlariga javob bersangiz, <ph name="BNPL_ISSUER_NAME" /> xaridni yakunlash uchun ehtimoliy toʻlov rejalaringizni taqdim etadi.</translation>
 <translation id="6654224358955673568">Rasmiy</translation>
 <translation id="6654244995031366386">Shisha (teksturali)</translation>
 <translation id="6657585470893396449">Parol</translation>
@@ -3601,7 +3601,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="6925267999184670015">Shimoliy Amerika B+</translation>
 <translation id="6926216138694948720">Bodi-art</translation>
 <translation id="692638818576287323">Tijoriy avtomobillar</translation>
-<translation id="6927057753277044239">Buyurtmani tekshirib, <ph name="BNPL_ISSUER_NAME" /> bilan hisobga kiring yoki yangi hisob yarating. Bu hisob Google hisobingizga avtomatik ulanadi.</translation>
 <translation id="6930607614725241390">Yon panelda qidirish</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Asosiy qidiruv vositangiz internetda qidirish imkonini beradi<ph name="END_BOLD" /> hamda manzil qatoridan va veb-sahifalardagi rasmlardan qidirish kabi Chrome funksiyalarini yoqadi. Qidiruv vositangiz dastaklamaydigan funksiyalar ishlamasligi mumkin.</translation>
 <translation id="6934672428414710184">Bu nom Google hisobingizga biriktirilgan</translation>
@@ -3954,6 +3953,7 @@ Batafsil axborot:
 <translation id="7485085230273446323">Biznes va sanoat</translation>
 <translation id="7485870689360869515">Ma‘lumotlar topilmadi.</translation>
 <translation id="7486880426035242089">OneDrive</translation>
+<translation id="7489255442002627311"><ph name="BNPL_ISSUER_NAME" /> muvofiqligingizni tekshiradi (bu kredit balliga taʼsir qilmaydi). Tasdiqlansa, <ph name="BNPL_ISSUER_NAME" /> tanlash va xaridni yakunlash uchun toʻlov rejalarini taqdim etadi.</translation>
 <translation id="7489392576326061356">Shampun va konditsionerlar</translation>
 <translation id="7489919936111034362">Google Drive xotira omboringizda joy qolmadi</translation>
 <translation id="7495528107193238112">Bu kontent bloklandi. Muammoni yechish uchun sayt egasiga murojaat qiling.</translation>

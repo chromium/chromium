@@ -1844,6 +1844,7 @@
 <translation id="4014895360827978999">خدمات بازرگانی و سیستم‌های پرداخت</translation>
 <translation id="4018819349042761761">کلید عمومی</translation>
 <translation id="4023431997072828269">از آنجایی‌که این فرم درحال ارسال ازطریق اتصال ناامنی است، دیگران می‌توانند اطلاعات شما را ببینند.</translation>
+<translation id="4024673763872230929">اطلاعاتتان را ذخیره کنید و فرم‌ها را سریع‌تر پر کنید. در دستگاهتان ذخیره می‌شود.</translation>
 <translation id="4025325634010721551">خط‌مشی‌ها مجدد بار شد</translation>
 <translation id="4025338605225449265">تبادل خارجی و ارز</translation>
 <translation id="4025777154208238692">ترتیب معکوس</translation>
@@ -2277,6 +2278,7 @@
 <translation id="4732860731866514038">درحال بارگیری بسته زبان <ph name="LANGUAGE" />… ‏<ph name="PERCENT" />٪</translation>
 <translation id="4733082559415072992"><ph name="URL" /> می‌خواهد از مکان دستگاهتان استفاده کند</translation>
 <translation id="473414950835101501">استفاده از دوربین‌های شما</translation>
+<translation id="4734343956394152985"><ph name="BEGIN_BOLD" />پیش‌فرض فعلی<ph name="END_BOLD" /> · <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="4736825316280949806">‏Chromium را راه‌اندازی مجدد کنید</translation>
 <translation id="4736934858538408121">کارت مجازی</translation>
 <translation id="473775607612524610">به‌روزرسانی</translation>
@@ -2932,6 +2934,7 @@
 <translation id="5813119285467412249">&amp;انجام مجدد افزودن</translation>
 <translation id="5813753398265398978">فیزیک</translation>
 <translation id="5817918615728894473">مرتبط‌سازی</translation>
+<translation id="5820625124144807242">‏پس‌از بررسی سفارشتان، باید به سیستم وارد شوید یا با <ph name="BNPL_ISSUER_NAME" /> حساب ایجاد کنید. این حساب به‌طور خودکار به Google Pay پیوند داده خواهد شد.</translation>
 <translation id="5826507051599432481">‏نام مشترک (CN)</translation>
 <translation id="5830698870816298009">استفاده و حرکت دوربین</translation>
 <translation id="5831217499016131155">Google Wallet</translation>
@@ -3385,6 +3388,7 @@
 <translation id="6521745193039995384">غیرفعال</translation>
 <translation id="6522682797352430154">موسیقی کلاسیک</translation>
 <translation id="6524830701589638230">‏دکمه «مدیریت تنظیمات دسترس‌پذیری»؛ برای شخصی کردن ابزارهای دسترس‌پذیری در تنظیمات Chrome، آن را فعال کنید</translation>
+<translation id="6525222262307262764">پیش‌فرض فعلی حفظ شود</translation>
 <translation id="6527049834925947126">تولید مواد غذایی</translation>
 <translation id="6529173248185917884">رول هفتم</translation>
 <translation id="6529602333819889595">&amp;انجام مجدد حذف</translation>
@@ -3405,6 +3409,7 @@
 <translation id="6567832540451970450">سرپرست شما <ph name="PERMISSION" /> را برای این سایت مجاز کرده است</translation>
 <translation id="6568793038316600992">‏دکمه «مدیریت روش‌های پرداخت»؛ برای مدیریت اطلاعات کارت اعتباری و پرداخت‌ها در تنظیمات Chrome، آن را فعال کنید</translation>
 <translation id="6569060085658103619">درحال مشاهده یک صفحه افزونه هستید</translation>
+<translation id="6571992525120410251">هرچه می‌خواهید از <ph name="ENGINE_NAME" /> بپرسید</translation>
 <translation id="6572867903637058088">آیا مفید است؟</translation>
 <translation id="6573200754375280815">دو سوراخ در راست</translation>
 <translation id="6575408526598156416">ذخیره کردن در حساب</translation>
@@ -3444,7 +3449,6 @@
 <translation id="6649510485211003056">۲۷۰ × ۱۹۵ میلی‌متر</translation>
 <translation id="6651270836885078973">مدیریت توسط:</translation>
 <translation id="6652101503459149953">‏استفاده از Windows Hello</translation>
-<translation id="6653684225271066234">‫<ph name="BNPL_ISSUER_NAME" /> واجدشرایط بودن شما را بررسی خواهد کرد (این کار تأثیری بر امتیاز اعتباری‌تان نخواهد داشت). اگر از معیارهای واجدشرایط بودن برخوردار باشید، <ph name="BNPL_ISSUER_NAME" /> طرح(های) پرداخت احتمالی را ارائه می‌کند تا خریدتان تکمیل شود.</translation>
 <translation id="6654224358955673568">رسمی کردن</translation>
 <translation id="6654244995031366386">شیشه (مشجر)</translation>
 <translation id="6657585470893396449">گذرواژه</translation>
@@ -3454,6 +3458,7 @@
 <translation id="666259744093848177">‏(x86_64 ترجمه‌شده)</translation>
 <translation id="6665553082534466207">سه سوراخ در راست</translation>
 <translation id="6668389483194953109">‏نام اندازه کاغذ «custom» پیدا شد، اما خصوصیت «custom_size» خالی یا نامعتبر است.</translation>
+<translation id="6670729408462528018">گالری</translation>
 <translation id="6671169470640320959">خودرو اقساطی</translation>
 <translation id="6671697161687535275">‏پیشنهاد فرم از Chromium پاک شود؟</translation>
 <translation id="6675846980676550611">«واقعیت افزوده» مجاز نشد</translation>
@@ -3607,7 +3612,6 @@
 <translation id="6925267999184670015">‏B+‎ آمریکای شمالی</translation>
 <translation id="6926216138694948720">هنر بدن</translation>
 <translation id="692638818576287323">خودروهای تجاری</translation>
-<translation id="6927057753277044239">‏پس‌از بررسی سفارشتان، باید به سیستم وارد شوید یا با <ph name="BNPL_ISSUER_NAME" /> حساب ایجاد کنید. این حساب به‌طور خودکار به «حساب Google» شما پیوند داده خواهد شد.</translation>
 <translation id="6930607614725241390">جستجو در پانل کناری</translation>
 <translation id="6934236486840930310">‏<ph name="BEGIN_BOLD" />موتور جستجوی پیش‌فرض به شما امکان می‌دهد در وب جستجو کنید و ویژگی‌های Chrome را تقویت می‌کند<ph name="END_BOLD" />، مثلاً جستجو از نوار نشانی و از تصاویر موجود در صفحه‌های وب. اگر موتور جستجوی شما از ویژگی‌ای پشتیبانی نکند، شاید آن ویژگی دردسترس نباشد.</translation>
 <translation id="6934672428414710184">‏این نام از حساب Google شما گرفته شده است</translation>
@@ -3961,6 +3965,7 @@
 <translation id="7485085230273446323">کسب‌وکار و صنعت</translation>
 <translation id="7485870689360869515">هیچ داده‌ای یافت نشد.</translation>
 <translation id="7486880426035242089">OneDrive</translation>
+<translation id="7489255442002627311">‫<ph name="BNPL_ISSUER_NAME" /> واجدشرایط بودن شما را بررسی خواهد کرد (این کار تأثیری بر امتیاز اعتباری‌تان نخواهد داشت). درصورت تأیید شدن، <ph name="BNPL_ISSUER_NAME" /> چند طرح پرداختی به شما ارائه خواهد کرد تا از بین آن‌ها انتخاب کنید و خریدتان را تکمیل کنید.</translation>
 <translation id="7489392576326061356">شامپو و نرم‌کننده</translation>
 <translation id="7489919936111034362">‏فضای ذخیره‌سازی‌تان در Google Drive پر شده است</translation>
 <translation id="7495528107193238112">این محتوا مسدود شده است. برای برطرف کردن مشکل با مالک سایت تماس بگیرید.</translation>

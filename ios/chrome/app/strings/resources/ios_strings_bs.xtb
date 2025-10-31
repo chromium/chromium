@@ -648,7 +648,7 @@
 <translation id="3530024057633834563">Nemate sačuvane lozinke ni pristupne ključeve, ali možete izbrisati listu web lokacija i aplikacija za koje ste odabrali da nikada ne pohranjuju podatke za prijavu. Račun kreiran za web lokacije ili aplikacije se neće izbrisati.</translation>
 <translation id="3530206579861815432">Brzo pronađite otvorene i nedavno zatvorene kartice na svim svojim sinhroniziranim uređajima.</translation>
 <translation id="3530767473765895035">Upravljanje računima na uređaju…</translation>
-<translation id="353340646084395154">Uklonjene su postavke stranice nove kartice</translation>
+<translation id="353340646084395154">Uklonjene su postavke stranice Nova kartica</translation>
 <translation id="3533436815740441613">Nova kartica</translation>
 <translation id="3540141921715814660">Dodavanje u oznake</translation>
 <translation id="3546122170015471515">Pregled Mapa na Google.com</translation>
@@ -677,6 +677,7 @@
 <translation id="3642060527569456384">Grupe kartica se automatski pohranjuju i ažuriraju na svim uređajima.</translation>
 <translation id="3643338347976071250">{count,plural, =1{{count} lozinka je sačuvana samo na ovom uređaju. Da je koristite na drugim uređajima, sačuvajte je na Google računu, {email}.}one{{count} lozinka je sačuvana samo na ovom uređaju. Da ih koristite na drugim uređajima, sačuvajte ih na Google računu, {email}.}few{{count} lozinke su sačuvane samo na ovom uređaju. Da ih koristite na drugim uređajima, sačuvajte ih na Google računu, {email}.}other{{count} lozinki je sačuvano samo na ovom uređaju. Da ih koristite na drugim uređajima, sačuvajte ih na Google računu, {email}.}}</translation>
 <translation id="3659297405161482746">Nije pronađen nijedan način plaćanja</translation>
+<translation id="3662966164093827811">{count,plural, =1{Odabrana je 1 stavka}one{Odabrana je # stavka}few{Odabrane su # stavke}other{Odabrano je # stavki}}</translation>
 <translation id="3668816008081204991">Lista za čitanje je sakrivena</translation>
 <translation id="3670030362669914947">Broj</translation>
 <translation id="3679163990085797665">Izbriši pročitano</translation>
@@ -1125,7 +1126,7 @@
 <translation id="537853552771686272">Upravljajte temama i web lokacijama koje vas zanimaju</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} kartica je zatvorena}one{{count} kartica je zatvorena}few{{count} kartice su zatvorene}other{{count} kartica je zatvoreno}}</translation>
 <translation id="5394975111793637642">Sakrivanje kartice recenzija proizvoda za vas</translation>
-<translation id="5407806496954700135">Želite li primijeniti prilagođavanja stranice nove kartice s drugog uređaja?</translation>
+<translation id="5407806496954700135">Želite li primijeniti prilagođavanja stranice Nova kartica s drugog uređaja?</translation>
 <translation id="5414763847370083940">Dobit ćete obavještenje ako cijena padne na bilo kojoj web lokaciji.</translation>
 <translation id="5415289094036440596">Pristupni ključevi se ne mogu dijeliti</translation>
 <translation id="5416455648658732408">Premjestite u grupu kartica</translation>
@@ -1760,7 +1761,7 @@ Također, Handoff mora biti omogućen u odjeljku Opće u Postavkama, a vaši ure
 <translation id="7696316012653762532">Opcije prevoda stranice</translation>
 <translation id="7700527812567437847">Pretražite ekran Google Objektivom</translation>
 <translation id="7701040980221191251">Nema</translation>
-<translation id="7708668404222666001">Primijenjene su postavke stranice nove kartice</translation>
+<translation id="7708668404222666001">Primijenjene su postavke stranice Nova kartica</translation>
 <translation id="7708994397325774423">Dobijte sve svoje lozinke</translation>
 <translation id="7711440461521638739">Ne koristite ponovo nijednu lozinku</translation>
 <translation id="7712361583414030698">Prikaz offline verzije</translation>

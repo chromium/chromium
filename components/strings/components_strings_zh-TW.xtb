@@ -2930,6 +2930,7 @@
 <translation id="5813119285467412249">重做新增(&amp;R)</translation>
 <translation id="5813753398265398978">物理學</translation>
 <translation id="5817918615728894473">配對</translation>
+<translation id="5820625124144807242">確認訂單後，你必須登入「<ph name="BNPL_ISSUER_NAME" />」或建立帳戶。這個帳戶會自動連結至 Google Pay。</translation>
 <translation id="5826507051599432481">一般名稱 (CN)</translation>
 <translation id="5830698870816298009">使用及調整攝影機</translation>
 <translation id="5831217499016131155">Google 電子錢包</translation>
@@ -3442,7 +3443,6 @@
 <translation id="6649510485211003056">195 x 270 公釐</translation>
 <translation id="6651270836885078973">管理網域/帳戶：</translation>
 <translation id="6652101503459149953">使用 Windows Hello</translation>
-<translation id="6653684225271066234">「<ph name="BNPL_ISSUER_NAME" />」會確認資格，這不會影響你的信用評分。如果你符合資格條件，「<ph name="BNPL_ISSUER_NAME" />」會提供可行的付款方案，方便你完成購買交易。</translation>
 <translation id="6654224358955673568">使用正式語氣</translation>
 <translation id="6654244995031366386">玻璃 (紋理)</translation>
 <translation id="6657585470893396449">密碼</translation>
@@ -3605,7 +3605,6 @@
 <translation id="6925267999184670015">North American B+</translation>
 <translation id="6926216138694948720">人體藝術</translation>
 <translation id="692638818576287323">商用車</translation>
-<translation id="6927057753277044239">確認訂單後，你必須登入「<ph name="BNPL_ISSUER_NAME" />」或建立帳戶。這個帳戶會自動連結到你的 Google 帳戶。</translation>
 <translation id="6930607614725241390">在側邊面板中搜尋</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />預設搜尋引擎可提供網路搜尋服務並支援 Chrome 的各項功能<ph name="END_BOLD" />，例如透過網址列和運用網頁上的圖片進行搜尋。請注意，如果搜尋引擎不支援某項功能，你可能就無法使用該功能。</translation>
 <translation id="6934672428414710184">這是你在 Google 帳戶中設定的名稱</translation>
@@ -3959,6 +3958,7 @@
 <translation id="7485085230273446323">工商業</translation>
 <translation id="7485870689360869515">找不到任何資料。</translation>
 <translation id="7486880426035242089">OneDrive</translation>
+<translation id="7489255442002627311">「<ph name="BNPL_ISSUER_NAME" />」會確認資格，這不會影響你的信用評分。如果核准，「<ph name="BNPL_ISSUER_NAME" />」就會提供付款方案供你選擇，讓你完成購買程序。</translation>
 <translation id="7489392576326061356">洗髮精與潤髮乳</translation>
 <translation id="7489919936111034362">Google 雲端硬碟儲存空間已滿</translation>
 <translation id="7495528107193238112">這項內容已遭到封鎖，請聯絡網站擁有者以修正問題。</translation>

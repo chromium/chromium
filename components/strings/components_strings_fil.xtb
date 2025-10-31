@@ -2430,6 +2430,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="4961708452830821006">Para gamitin ang iyong mikropono, bigyan ng access ang Chrome sa <ph name="LINK" />.</translation>
 <translation id="4963413887558778009">Pagdidisenyo ng Landscape</translation>
 <translation id="4967366744630699583">I-edit ang address</translation>
+<translation id="4968046291688599384">Napunan ang one-time na numero ng virtual card ng <ph name="BNPL_ISSUER_NAME" />.</translation>
 <translation id="4968522289500246572">Idinisenyo ang app na ito para sa mobile at posibleng hindi ma-resize nang maayos. Posibleng makaranas ng mga isyu o mag-restart ang app.</translation>
 <translation id="4968665849807487749">Puwedeng magtanong para pamahalaan ang mga window sa lahat ng iyong display</translation>
 <translation id="4969341057194253438">I-delete ang recording</translation>
@@ -2932,6 +2933,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="5813119285467412249">&amp;Gawing Muli ang Pagdagdag</translation>
 <translation id="5813753398265398978">Physics</translation>
 <translation id="5817918615728894473">Ipares</translation>
+<translation id="5820625124144807242">Kapag nasuri mo na ang iyong order, dapat kang mag-sign in o gumawa ng account sa <ph name="BNPL_ISSUER_NAME" />. Awtomatikong ili-link ang account na ito sa Google Pay.</translation>
 <translation id="5826507051599432481">Common Name (CN)</translation>
 <translation id="5830698870816298009">paggamit at paggalaw ng camera</translation>
 <translation id="5831217499016131155">Google Wallet</translation>
@@ -3444,7 +3446,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="6649510485211003056">195 x 270 mm</translation>
 <translation id="6651270836885078973">Pinapamahalaan ng:</translation>
 <translation id="6652101503459149953">Gamitin ang Windows Hello</translation>
-<translation id="6653684225271066234">Titingnan ng <ph name="BNPL_ISSUER_NAME" /> ang pagiging kwalipikado mo (hindi ito makakaapekto sa iyong credit score). Kung matutugunan mo ang mga pamantayan sa pagiging kwalipikado, ibibigay ng <ph name="BNPL_ISSUER_NAME" /> ang iyong (mga) potensyal na plan sa pagbabayad para makumpleto ang pagbili mo.</translation>
 <translation id="6654224358955673568">Gawing pormal</translation>
 <translation id="6654244995031366386">Glass (May Texture)</translation>
 <translation id="6657585470893396449">Password</translation>
@@ -3607,7 +3608,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="6925267999184670015">North American B+</translation>
 <translation id="6926216138694948720">Body Art</translation>
 <translation id="692638818576287323">Mga Sasakyang Pang-negosyo</translation>
-<translation id="6927057753277044239">Kapag nasuri mo na ang iyong order, dapat kang mag-sign in o gumawa ng account sa <ph name="BNPL_ISSUER_NAME" />. Awtomatikong ili-link ang account na ito sa iyong Google account.</translation>
 <translation id="6930607614725241390">Maghanap sa panel sa gilid</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Magbibigay-daan ang iyong default na search engine para makapaghanap ka sa web at pagaganahin nito ang mga feature ng Chrome<ph name="END_BOLD" /> gaya ng paghahanap mula sa address bar at mula sa mga larawan sa mga web page. Posibleng hindi maging available ang isang feature kung hindi ito sinusuportahan ng iyong search engine.</translation>
 <translation id="6934672428414710184">Nagmula ang pangalang ito sa iyong Google Account</translation>
@@ -3961,6 +3961,7 @@ Mga karagdagang detalye:
 <translation id="7485085230273446323">Negosyo at Industriya</translation>
 <translation id="7485870689360869515">Walang nahanap na data.</translation>
 <translation id="7486880426035242089">OneDrive</translation>
+<translation id="7489255442002627311">Titingnan ng <ph name="BNPL_ISSUER_NAME" /> ang pagiging kwalipikado mo (hindi ito makakaapekto sa iyong credit score). Kung maaaprubahan, magbibigay ang <ph name="BNPL_ISSUER_NAME" /> ng mga plan sa pagbabayad na mapagpipilian mo at para makumpleto ang iyong pagbili.</translation>
 <translation id="7489392576326061356">Mga Shampoo at Conditioner</translation>
 <translation id="7489919936111034362">Puno na ang storage ng Google Drive mo</translation>
 <translation id="7495528107193238112">Naka-block ang content na ito. Makipag-ugnayan sa may-ari ng site para maayos ang isyu.</translation>

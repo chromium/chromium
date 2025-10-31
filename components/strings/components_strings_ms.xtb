@@ -1845,6 +1845,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="4014895360827978999">Sistem Perkhidmatan &amp; Pembayaran Pedagang</translation>
 <translation id="4018819349042761761">Kekunci Umum</translation>
 <translation id="4023431997072828269">Oleh sebab borang ini diserahkan menggunakan sambungan yang tidak selamat, maklumat anda akan dapat dilihat oleh orang lain.</translation>
+<translation id="4024673763872230929">Simpan maklumat anda dan isi borang dengan lebih pantas. Disimpan pada peranti anda.</translation>
 <translation id="4025325634010721551">Dasar dimuatkan semula</translation>
 <translation id="4025338605225449265">Mata Wang &amp; Pertukaran Asing</translation>
 <translation id="4025777154208238692">Tertib terbalik</translation>
@@ -2278,6 +2279,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="4732860731866514038">Memuat turun pek bahasa <ph name="LANGUAGE" />... <ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992"><ph name="URL" /> mahu menggunakan lokasi peranti anda</translation>
 <translation id="473414950835101501">Gunakan kamera anda</translation>
+<translation id="4734343956394152985"><ph name="BEGIN_BOLD" />Lalai semasa<ph name="END_BOLD" /> · <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="4736825316280949806">Mulakan semula Chromium</translation>
 <translation id="4736934858538408121">Kad maya</translation>
 <translation id="473775607612524610">Kemas kini</translation>
@@ -2933,6 +2935,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="5813119285467412249">&amp;Buat Semula Tambahkan</translation>
 <translation id="5813753398265398978">Fizik</translation>
 <translation id="5817918615728894473">Gandingkan</translation>
+<translation id="5820625124144807242">Selepas anda menyemak pesanan anda, anda mestilah log masuk atau membuat akaun dengan <ph name="BNPL_ISSUER_NAME" />. Akaun ini akan dipautkan kepada Google Pay secara automatik.</translation>
 <translation id="5826507051599432481">Nama Biasa (CN)</translation>
 <translation id="5830698870816298009">penggunaan &amp; pergerakan kamera</translation>
 <translation id="5831217499016131155">Google Wallet</translation>
@@ -3386,6 +3389,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="6521745193039995384">Tidak aktif</translation>
 <translation id="6522682797352430154">Muzik Klasik</translation>
 <translation id="6524830701589638230">Urus butang tetapan kebolehaksesan, aktifkan untuk memeribadikan alatan kebolehaksesan anda dalam tetapan Chrome</translation>
+<translation id="6525222262307262764">Kekalkan lalai semasa</translation>
 <translation id="6527049834925947126">Pengeluaran Makanan</translation>
 <translation id="6529173248185917884">Gulungan Ketujuh</translation>
 <translation id="6529602333819889595">&amp;Buat Semula Pemadaman</translation>
@@ -3406,6 +3410,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="6567832540451970450">Pentadbir anda membenarkan <ph name="PERMISSION" /> untuk laman ini</translation>
 <translation id="6568793038316600992">Butang urus kaedah pembayaran, aktifkan untuk mengurus maklumat pembayaran dan kad kredit anda dalam tetapan Chrome</translation>
 <translation id="6569060085658103619">Anda sedang melihat halaman sambungan</translation>
+<translation id="6571992525120410251">Tanya <ph name="ENGINE_NAME" /> apa-apa sahaja</translation>
 <translation id="6572867903637058088">Adakah maklumat ini membantu?</translation>
 <translation id="6573200754375280815">Dua tebukan kanan</translation>
 <translation id="6575408526598156416">Simpan dalam akaun</translation>
@@ -3445,7 +3450,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="6649510485211003056">195 x 270 mm</translation>
 <translation id="6651270836885078973">Diurus oleh:</translation>
 <translation id="6652101503459149953">Gunakan Windows Hello</translation>
-<translation id="6653684225271066234"><ph name="BNPL_ISSUER_NAME" /> akan menyemak kelayakan anda (hal ini tidak akan menjejaskan skor kredit anda). Jika anda memenuhi kriteria kelayakan, <ph name="BNPL_ISSUER_NAME" /> akan memberikan pelan pembayaran yang berpotensi untuk melengkapkan pembelian anda.</translation>
 <translation id="6654224358955673568">Jadikan bahasa baku</translation>
 <translation id="6654244995031366386">Kaca (Bertekstur)</translation>
 <translation id="6657585470893396449">Kata laluan</translation>
@@ -3455,6 +3459,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="666259744093848177">(x86_64 diterjemah)</translation>
 <translation id="6665553082534466207">Tiga tebukan kanan</translation>
 <translation id="6668389483194953109">Nama saiz kertas "custom" ditemukan, tetapi sifat "custom_size" kosong atau tidak sah.</translation>
+<translation id="6670729408462528018">Galeri</translation>
 <translation id="6671169470640320959">Pembiayaan Auto</translation>
 <translation id="6671697161687535275">Alih keluar cadangan borang daripada Chromium?</translation>
 <translation id="6675846980676550611">AR tidak dibenarkan</translation>
@@ -3608,7 +3613,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="6925267999184670015">Amerika Utara B+</translation>
 <translation id="6926216138694948720">Seni Badan</translation>
 <translation id="692638818576287323">Kenderaan Komersil</translation>
-<translation id="6927057753277044239">Selepas anda menyemak pesanan anda, anda mestilah log masuk atau membuat akaun dengan <ph name="BNPL_ISSUER_NAME" />. Akaun ini akan dipautkan kepada Google Account anda secara automatik.</translation>
 <translation id="6930607614725241390">Cari dalam panel sisi</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Enjin carian lalai anda membolehkan anda membuat carian pada web dan menguasakan ciri Chrome<ph name="END_BOLD" /> seperti membuat carian daripada bar alamat dan imej pada halaman web. Ciri mungkin tidak tersedia jika enjin carian anda tidak menyokong ciri tersebut.</translation>
 <translation id="6934672428414710184">Nama ini daripada Google Account anda</translation>
@@ -3962,6 +3966,7 @@ Butiran tambahan:
 <translation id="7485085230273446323">Perniagaan &amp; Industri</translation>
 <translation id="7485870689360869515">Tiada data dijumpai.</translation>
 <translation id="7486880426035242089">OneDrive</translation>
+<translation id="7489255442002627311"><ph name="BNPL_ISSUER_NAME" /> akan menyemak kelayakan anda (hal ini tidak akan menjejaskan skor kredit anda). Jika diluluskan, <ph name="BNPL_ISSUER_NAME" /> akan menyediakan beberapa pelan pembayaran yang boleh anda pilih dan melengkapkan pembelian anda.</translation>
 <translation id="7489392576326061356">Syampu &amp; Perapi</translation>
 <translation id="7489919936111034362">Storan Google Drive anda sudah penuh</translation>
 <translation id="7495528107193238112">Kandungan ini disekat. Hubungi pemilik tapak untuk menyelesaikan isu ini.</translation>

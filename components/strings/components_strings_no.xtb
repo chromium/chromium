@@ -2932,6 +2932,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="5813119285467412249">&amp;Legg til likevel</translation>
 <translation id="5813753398265398978">Fysikk</translation>
 <translation id="5817918615728894473">Koble sammen</translation>
+<translation id="5820625124144807242">Når du har gjennomgått bestillingen, må du logge på eller opprette en konto med <ph name="BNPL_ISSUER_NAME" />. Denne kontoen knyttes automatisk til Google Pay.</translation>
 <translation id="5826507051599432481">Vanlig navn (CN)</translation>
 <translation id="5830698870816298009">kamerabruk og -bevegelse</translation>
 <translation id="5831217499016131155">Google Wallet</translation>
@@ -3444,7 +3445,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6649510485211003056">195 x 270 mm</translation>
 <translation id="6651270836885078973">Administreres av:</translation>
 <translation id="6652101503459149953">Bruk Windows Hello</translation>
-<translation id="6653684225271066234"><ph name="BNPL_ISSUER_NAME" /> sjekker om du er kvalifisert (dette påvirker ikke kredittvurderingen din). Hvis du oppfyller kvalifikasjonskriteriene, sender <ph name="BNPL_ISSUER_NAME" /> deg betalingsavtalen(e) du kan velge for å fullføre kjøpet.</translation>
 <translation id="6654224358955673568">Formaliser</translation>
 <translation id="6654244995031366386">Glass (teksturert)</translation>
 <translation id="6657585470893396449">Passord</translation>
@@ -3607,7 +3607,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6925267999184670015">North American B+</translation>
 <translation id="6926216138694948720">Kroppsutsmykning</translation>
 <translation id="692638818576287323">Kommersielle kjøretøy</translation>
-<translation id="6927057753277044239">Når du har gjennomgått bestillingen, må du logge på eller opprette en konto med <ph name="BNPL_ISSUER_NAME" />. Denne kontoen knyttes automatisk til Google-kontoen din.</translation>
 <translation id="6930607614725241390">Søk i sidepanelet</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Med standardsøkemotoren din kan du søke på nettet og dra nytte av Chrome-funksjoner<ph name="END_BOLD" /> som søk i adressefeltet og via bilder på nettsider. Det kan hende at enkelte funksjoner ikke er tilgjengelige hvis søkemotoren din ikke støtter dem.</translation>
 <translation id="6934672428414710184">Dette navnet er fra Google-kontoen din</translation>
@@ -3960,6 +3959,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7485085230273446323">Forretning og industri</translation>
 <translation id="7485870689360869515">Ingen data ble funnet.</translation>
 <translation id="7486880426035242089">OneDrive</translation>
+<translation id="7489255442002627311"><ph name="BNPL_ISSUER_NAME" /> sjekker om du er kvalifisert (dette påvirker ikke kredittvurderingen din). Hvis du godkjennes, gir <ph name="BNPL_ISSUER_NAME" /> deg forslag til betalingsavtaler du kan velge mellom for å fullføre kjøpet.</translation>
 <translation id="7489392576326061356">Sjampo og balsam</translation>
 <translation id="7489919936111034362">Du har brukt opp lagringsplassen din i Google Disk</translation>
 <translation id="7495528107193238112">Dette innholdet er blokkert. Kontakt nettstedseieren for å løse problemet.</translation>

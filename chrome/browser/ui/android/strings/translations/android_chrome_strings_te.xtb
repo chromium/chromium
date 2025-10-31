@@ -1221,6 +1221,7 @@
 <translation id="6473086018775716761">షేరింగ్ ఆప్షన్‌ల లిస్ట్ స్క్రీన్ పూర్తిగా తెరవబడింది.</translation>
 <translation id="6475951671322991020">వీడియోను డౌన్‌లోడ్ చేయి</translation>
 <translation id="6477928892249167417">ఈ సైట్‌లు మీకు ముఖ్యమైనవిగా అనిపిస్తున్నాయి:</translation>
+<translation id="6479881432656947268">Chrome వెబ్ స్టోర్‌కు వెళ్లండి</translation>
 <translation id="6481963882741794338">వ్యక్తిగతీకరణ, ఇతర ప్రయోజనాల కోసం Chrome, ఇతర Google సర్వీస్‌లను లింక్ చేయండి</translation>
 <translation id="6482749332252372425">స్టోరేజ్‌ స్థలం లేనందున <ph name="FILE_NAME" /> డౌన్‌లోడ్ విఫలమైంది.</translation>
 <translation id="6486420406192123355">ఈ PDF ఫైల్ సురక్షితం కాని కనెక్షన్‌ను ఉపయోగించే సైట్ నుండి అందించబడింది</translation>
@@ -1340,6 +1341,7 @@
 <translation id="6908998565271542516">ఏదైనా వెబ్‌సైట్‌ను ఆమోదించాలా లేదా వద్దా అని నిర్ణయించే ఆప్షన్ పూర్తి ఎత్తులో తెరవబడింది</translation>
 <translation id="6909589135458168665">పేజీలను ప్రీ - లోడ్ చేయండి</translation>
 <translation id="6910211073230771657">తొలగించబడింది</translation>
+<translation id="6916590542764765824">ఎక్స్‌టెన్షన్‌లను నిర్వహించండి</translation>
 <translation id="6918398787259831832">ఈ సమస్య అలాగే కొనసాగుతూ ఉంటే <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> నుండి <ph name="BEGIN_LINK" />మరింత సమాచారాన్ని పొందండి<ph name="END_LINK" />.</translation>
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> మీరు ఇటీవల వెబ్‌సైట్‌ను చూసిన కారణంగా Chrome ఈ అనుమతులను తీసివేసింది</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 ట్యాబ్}other{<ph name="NUMBER_OF_TABS" /> ట్యాబ్‌లు}}</translation>

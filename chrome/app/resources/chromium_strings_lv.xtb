@@ -72,7 +72,6 @@
 <translation id="1896836275755235458">Pārlūkā Chromium tiek taupīta akumulatora enerģija, ierobežojot darbības fonā un vizuālos efektus, piemēram, vienmērīgu ritināšanu un video kadru nomaiņas ātrumu. Varat <ph name="BEGIN_LINK" />uzzināt vairāk par enerģijas taupīšanas režīmu<ph name="END_LINK" />.</translation>
 <translation id="1898804291554630487">Jautājiet par šo lapu</translation>
 <translation id="1900969832270057921">Chromium atjauninātāja pakalpojums</translation>
-<translation id="1911666947158375684">Kamēr esat pierakstījies, pārlūkā Chromium varat izmantot savas paroles un citu saturu no Google konta. Iestatījumos varat jebkurā laikā mainīt šo iespēju.</translation>
 <translation id="1911763535808217981">Ja izslēgsiet šo iestatījumu, varēsiet pierakstīties Google vietnēs, piemēram, pakalpojumā Gmail, nepierakstoties pārlūkā Chromium.</translation>
 <translation id="1929939181775079593">Chromium nereaģē. Vai restartēt to tūlīt?</translation>
 <translation id="1933341829955786215">Saskaņā ar jūsu organizācijas (<ph name="MANAGER" />) politiku jums ir jāpierakstās pārlūkā Chromium.</translation>
@@ -171,7 +170,7 @@
 <translation id="2933336679234709858">Jūsu dati ir šifrēti, izmantojot ieejas frāzi. Ievadiet ieejas frāzi, lai izmantotu un saglabātu Chromium datus savā Google kontā.</translation>
 <translation id="2945997411976714835">Instalēšanas kļūda: neizdevās palaist instalēšanas programmu.</translation>
 <translation id="2948852018303413228">Ātrāk pierakstieties vietnēs, izmantojot saglabātās paroles pārlūkam Chromium operētājsistēmā iOS.</translation>
-<translation id="2966959524256557996">Pievienojiet jaunu Chromium profilu, lai grāmatzīmes, paroles un iestatījumi būtu atsevišķi.</translation>
+<translation id="2966959524256557996">Pievienojiet jaunu Chromium profilu, lai atsevišķi saglabātu savas grāmatzīmes, paroles un iestatījumus.</translation>
 <translation id="2970426615109535079">Pārlūku Chromium pārvalda jūsu organizācija</translation>
 <translation id="2977470724722393594">Chromium ir atjaunināts</translation>
 <translation id="2977506796191543575">Ja kādā vietnē tiek mēģināts nozagt jūsu paroli vai ja jūs lejupielādējat kaitīgu failu, Chromium var arī nosūtīt attiecīgos URL, tostarp lapas satura fragmentus, uz funkciju Droša pārlūkošana.</translation>
@@ -386,7 +385,7 @@
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Rādīt Chromium šajā valodā</translation>
 <translation id="569897634095159764">Nevar izveidot savienojumu ar internetu. Starpniekserverī ir nepieciešama autentifikācija.</translation>
-<translation id="5713518899297503106">Izmantojot Chromium profilus, varat nodalīt personīgo un darba pārlūkošanu. Pievienojiet jaunu profilu tūlīt.</translation>
+<translation id="5713518899297503106">Izmantojot Chromium profilus, varat nošķirt pārlūkošanu darba un personīgajām vajadzībām. Pievienojiet jaunu profilu tūlīt.</translation>
 <translation id="5768371961535086509">Pārlūkā Chromium neaktīvās cilnēs tiek atbrīvota atmiņa. Tādējādi aktīvajām cilnēm un citām lietotnēm tiek nodrošināts vairāk datora resursu un tiek uzlabots Chromium darbības ātrums. Neaktīvās cilnes atkal tiek automātiski aktivizētas, kad tās atverat. Varat <ph name="BEGIN_LINK" />uzzināt vairāk par atmiņas taupīšanas režīmu<ph name="END_LINK" />.</translation>
 <translation id="5775198138441669627">Ja aizmirsāt ieejas frāzi vai vēlaties mainīt šo iestatījumu, varat <ph name="SETTINGS_LINK" /> Chromium datus savā kontā.</translation>
 <translation id="5800158606660203929">Pielāgojiet un kontrolējiet pārlūku Chromium. Iestatiet Chromium kā noklusējuma pārlūku.</translation>

@@ -2932,6 +2932,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="5813119285467412249">Eklemeyi &amp;Yeniden Yap</translation>
 <translation id="5813753398265398978">Fizik</translation>
 <translation id="5817918615728894473">Eşle</translation>
+<translation id="5820625124144807242">Siparişinizi inceledikten sonra bir <ph name="BNPL_ISSUER_NAME" /> hesabında oturum açmanız veya hesap oluşturmanız gerekir. Bu hesap, Google Pay'e otomatik olarak bağlanır.</translation>
 <translation id="5826507051599432481">Genel Ad (CN)</translation>
 <translation id="5830698870816298009">kamera kullanma ve hareket ettirme</translation>
 <translation id="5831217499016131155">Google Cüzdan</translation>
@@ -3444,7 +3445,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6649510485211003056">195 x 270 mm</translation>
 <translation id="6651270836885078973">Yöneten:</translation>
 <translation id="6652101503459149953">Windows Hello'yu kullan</translation>
-<translation id="6653684225271066234"><ph name="BNPL_ISSUER_NAME" />, uygunluk durumunuzu kontrol edecek. (Kredi notunuz bu işlemden etkilenmez.) Uygunluk ölçütlerini karşılıyorsanız <ph name="BNPL_ISSUER_NAME" />, satın alma işleminizi tamamlamak için yararlanabileceğiniz ödeme planlarını paylaşacak.</translation>
 <translation id="6654224358955673568">Resmi dille yaz</translation>
 <translation id="6654244995031366386">Cam (Dokulu)</translation>
 <translation id="6657585470893396449">Şifre</translation>
@@ -3607,7 +3607,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6925267999184670015">Kuzey Amerika B+</translation>
 <translation id="6926216138694948720">Beden Sanatı</translation>
 <translation id="692638818576287323">Ticari Araçlar</translation>
-<translation id="6927057753277044239">Siparişinizi inceledikten sonra bir <ph name="BNPL_ISSUER_NAME" /> hesabında oturum açmanız veya hesap oluşturmanız gerekir. Bu hesap, Google Hesabınıza otomatik olarak bağlanacak.</translation>
 <translation id="6930607614725241390">Yan panelde ara</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Varsayılan arama motorunuz web'de arama yapmanızı sağlar, ayrıca adres çubuğundan ve web sayfalarındaki görsellerden arama gibi Chrome özelliklerini destekler<ph name="END_BOLD" />. Arama motorunuzun desteklemediği özellikler kullanılamayabilir.</translation>
 <translation id="6934672428414710184">Bu ad Google Hesabınızdan gelmektedir</translation>
@@ -3961,6 +3960,7 @@ Ek ayrıntılar:
 <translation id="7485085230273446323">Ticari ve Endüstriyel Hizmetler</translation>
 <translation id="7485870689360869515">Hiçbir veri bulunamadı.</translation>
 <translation id="7486880426035242089">OneDrive</translation>
+<translation id="7489255442002627311"><ph name="BNPL_ISSUER_NAME" />, uygunluk durumunuzu kontrol edecek. (Kredi notunuz bu işlemden etkilenmez.) Onaylanmanız durumunda <ph name="BNPL_ISSUER_NAME" />, satın alma işleminizi tamamlamak için aralarından seçim yapabileceğiniz ödeme planları sunar.</translation>
 <translation id="7489392576326061356">Şampuanlar ve Saç Kremleri</translation>
 <translation id="7489919936111034362">Google Drive depolama alanınız doldu</translation>
 <translation id="7495528107193238112">Bu içerik engellenmiştir. Sorunu gidermek için site sahibiyle iletişime geçin.</translation>

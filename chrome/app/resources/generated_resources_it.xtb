@@ -1040,6 +1040,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="169341880170235617">I gruppi di schede vengono salvati automaticamente</translation>
 <translation id="1695487653372841667">Puoi controllare quali dati vengono condivisi con Google. Puoi modificare questa preferenza in qualsiasi momento nelle Impostazioni.</translation>
 <translation id="1695510246756136088">Impossibile connettersi a Internet. Riprova.</translation>
+<translation id="1696214930320482113">I profili ti consentono di separare lavoro, vita privata e divertimento senza passare a un altro browser. Aggiungi subito un nuovo profilo.</translation>
 <translation id="1696555181932908973">Puoi provare altri metodi per continuare su <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="169675691788639886">Sul dispositivo è stato configurato un server SSH. Non accedere con account sensibili.</translation>
 <translation id="1697122132646041614">Non mi piace apre un modulo per inviare un feedback dettagliato sul motivo per cui non ti piacciono questi risultati.</translation>
@@ -1273,6 +1274,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1851551847729706116">Condivisione di <ph name="TAB_NAME" /> con questa scheda in corso…</translation>
 <translation id="1854180393107901205">Interrompi trasmissione</translation>
 <translation id="1856715684130786728">Aggiungi posizione...</translation>
+<translation id="1857044401921988155">Quando fai clic su Salva, questo gruppo di schede diventerà una cartella di segnalibri e verrà rimosso dai tuoi gruppi su tutti i dispositivi</translation>
 <translation id="185766080319917408">Il tasto Avvio app si trova a sinistra del tasto Alt sinistro</translation>
 <translation id="1859294693760125695">Non mi interessa più</translation>
 <translation id="1859339856433307593">Una password per questo account è già salvata nel tuo <ph name="BRAND" /> (<ph name="USER_EMAIL" />)</translation>
@@ -3138,6 +3140,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3152356229013609796">Visualizza, ignora e rispondi alle notifiche del tuo telefono</translation>
 <translation id="3154754096046236400">Suggerimenti su misura</translation>
 <translation id="3155163173539279776">Riavvia Chromium</translation>
+<translation id="3155394504825881014">Converti un gruppo di schede in una cartella di preferiti</translation>
 <translation id="3156511682997763015">Avanti di 10 secondi</translation>
 <translation id="3157330780336267229">Per partecipare a gruppi di schede o condividerli, devi attivare la sincronizzazione</translation>
 <translation id="3157387275655328056">Aggiungi all'elenco di lettura</translation>
@@ -3776,6 +3779,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3605156246402033687">{COUNT,plural, =1{{COUNT} account utilizza la stessa password}other{{COUNT} account utilizzano la stessa password}}</translation>
 <translation id="3605515937536882518">Valori del modulo aggiornati</translation>
 <translation id="3605780360466892872">Ventiquattrore</translation>
+<translation id="3607338234983711865">Condividi un computer?</translation>
 <translation id="3607671391978830431">Per un bambino</translation>
 <translation id="3607799000129481474"><ph name="SITE" /> vuole verificare la tua identità</translation>
 <translation id="3608460311600621471">Inserisci un motivo per voler stampare questi dati:</translation>
@@ -7193,6 +7197,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="5989497858237037960">Quando navighi nei siti, i contenuti delle pagine vengono criptati e salvati sul tuo dispositivo. Questa operazione potrebbe influire sulle prestazioni di Chrome</translation>
 <translation id="5990266201903445068">Solo Wi-Fi</translation>
 <translation id="5990386583461751448">Tradotta</translation>
+<translation id="5990557145969487183">Mantieni separati lavoro e vita privata</translation>
 <translation id="5992225669837656567">Tutti i mouse sono stati disconnessi</translation>
 <translation id="5992652489368666106">Senza bordo</translation>
 <translation id="5993508466487156420">{NUM_SITES,plural, =1{Controllo completo di 1 sito}other{Controllo completo di {NUM_SITES} siti}}</translation>
@@ -7352,6 +7357,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6104929924898022309">Utilizza il tasto Ricerca per modificare il comportamento dei tasti funzione</translation>
 <translation id="6106167152849320869">Se hai anche scelto di inviare dati diagnostici e sull'utilizzo nel passaggio precedente, questi dati verranno raccolti per le app installate.</translation>
 <translation id="6108952804512516814">Crea con l'AI</translation>
+<translation id="6110794992500777605">Le mie scorciatoie e i miei siti</translation>
 <translation id="6111718295497931251">Rimuovi l'accesso a Google Drive</translation>
 <translation id="6112727384379533756">Aggiungi una richiesta</translation>
 <translation id="6112931163620622315">Controlla il tuo telefono</translation>
@@ -8801,6 +8807,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7127286300357471051">Quando scegli di condividere la scheda corrente con Gemini, i contenuti completi e l'URL della scheda vengono inviati a Google.</translation>
 <translation id="7127980134843952133">Cronologia download</translation>
 <translation id="7128151990937044829">Mostra un indicatore nella barra degli indirizzi quando le notifiche sono bloccate</translation>
+<translation id="7128842673552234514">Hai un altro Account Google?</translation>
 <translation id="7130438335435247835">Nome punto di accesso (APN)</translation>
 <translation id="7130680050151101667">Non mostrare questa scheda</translation>
 <translation id="7131040479572660648">Lettura dei dati su <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> e <ph name="WEBSITE_3" /></translation>
@@ -8859,6 +8866,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7174199383876220879">Novità! Gestisci la tua musica, i tuoi video e altro ancora.</translation>
 <translation id="7175037578838465313">Configura <ph name="NAME" /></translation>
 <translation id="7175353351958621980">Caricamento da:</translation>
+<translation id="7177659256878428843">Converti un gruppo di schede in una cartella di preferiti</translation>
 <translation id="7180611975245234373">Aggiorna</translation>
 <translation id="7180865173735832675">Personalizza</translation>
 <translation id="7181117767881540376">&amp;Nascondi barra dei preferiti</translation>
@@ -11132,6 +11140,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8719472795285728850">In ascolto di attività estensione…</translation>
 <translation id="8719665168401479425">Usa le espressioni facciali per eseguire azioni</translation>
 <translation id="8720200012906404956">Ricerca di una rete mobile in corso. <ph name="BEGIN_LINK" />Ulteriori informazioni<ph name="END_LINK" /></translation>
+<translation id="8720285645560721666">Mantieni separati preferiti, password e impostazioni. Aggiungi subito un nuovo profilo.</translation>
 <translation id="8720816553731218127">L'inizializzazione degli attributi installation-time è scaduta.</translation>
 <translation id="8721093493695533465">Questa operazione comporterà l'eliminazione di <ph name="TOTAL_USAGE" /> di dati memorizzati dai siti visualizzati e dalle app installate</translation>
 <translation id="8724405322205516354">Quando vedi questa icona, usa l'impronta per identificarti o approvare gli acquisti.</translation>
@@ -11203,6 +11212,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8762886931014513155">Il dispositivo <ph name="DEVICE_TYPE" /> richiede un aggiornamento</translation>
 <translation id="8763170551806710928">Mostra chip</translation>
 <translation id="8763927697961133303">Dispositivo USB</translation>
+<translation id="8766156860774051068">Selezionati da te</translation>
 <translation id="8766796754185931010">Kotoeri</translation>
 <translation id="8767069439158587614">Mostra tutte le ricerche per <ph name="QUERY_CLUSTER_NAME" /></translation>
 <translation id="8767621466733104912">Aggiorna automaticamente Chrome per tutti gli utenti</translation>
@@ -11403,6 +11413,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser, si
 <translation id="8902059453911237649">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> richiede di effettuare il backup dei dati e di restituire questo <ph name="DEVICE_TYPE" /> oggi stesso.}other{<ph name="MANAGER" /> richiede di effettuare il backup dei dati e di restituire questo <ph name="DEVICE_TYPE" /> prima della scadenza.}}</translation>
 <translation id="8902667442496790482">Apri le impostazioni Seleziona per ascoltare</translation>
 <translation id="8903733144777177139">Accesso al microfono bloccato</translation>
+<translation id="8905253417215700291"><ph name="GOOGLE_PASSWORD_MANAGER" /> ha creato una password efficace per questo sito web</translation>
 <translation id="890616557918890486">Cambia origine</translation>
 <translation id="8907701755790961703">Seleziona un Paese</translation>
 <translation id="8908420399006197927">Escludi la scheda dal gruppo suggerito</translation>
@@ -11890,6 +11901,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser, si
 <translation id="934244546219308557">Assegna un nome a questo gruppo</translation>
 <translation id="93480724622239549">Bug o errore</translation>
 <translation id="9354763467503131">Possono chiedere di installare le app web sul tuo dispositivo</translation>
+<translation id="935514554385170926">Tieni separati il profilo della scuola, i progetti secondari e altre attività</translation>
 <translation id="936646668635477464">Videocamera e microfono</translation>
 <translation id="936801553271523408">Dati diagnostica di sistema</translation>
 <translation id="93766956588638423">Ripara estensione</translation>

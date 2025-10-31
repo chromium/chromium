@@ -1223,6 +1223,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="6473086018775716761">Бөлүшүү параметрлеринин тизмеси экрандын жарымына чейин ачылды.</translation>
 <translation id="6475951671322991020">Видеону жүктөп алуу</translation>
 <translation id="6477928892249167417">Бул сайттар сиз үчүн маанилүү окшойт:</translation>
+<translation id="6479881432656947268">Chrome Web Store'го баш багуу</translation>
 <translation id="6481963882741794338">Chrome жана башка Google кызматтарын жекелештирүү жана башка максаттар үчүн байланыштырыңыз</translation>
 <translation id="6482749332252372425"><ph name="FILE_NAME" /> кампада орун жоктугуна байланыштуу жүктөлбөй калды.</translation>
 <translation id="6486420406192123355">Бул PDF файлы корголбогон байланышты колдонгон сайттан алынды</translation>
@@ -1342,6 +1343,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="6908998565271542516">Вебсайтты ырастоо же ырастабоо параметри толук экранда ачылды</translation>
 <translation id="6909589135458168665">Барактарды алдын ала жүктөө</translation>
 <translation id="6910211073230771657">Жок кылынды</translation>
+<translation id="6916590542764765824">Кеңейтүүлөрдү башкаруу</translation>
 <translation id="6918398787259831832">Эгер бул маселе кайталана берсе, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> камсыздоочусунан <ph name="BEGIN_LINK" />көбүрөөк маалымат алыңыз<ph name="END_LINK" />.</translation>
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> Акыркы убакта сайтка кирбегениңизден улам, Chrome бул уруксаттарды өчүрдү</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 өтмөк}other{<ph name="NUMBER_OF_TABS" /> өтмөк}}</translation>
@@ -1511,7 +1513,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="7612619742409846846">Google'га төмөнкү аркылуу кирип турасыз</translation>
 <translation id="7612989789287281429">Кирип жатасыз…</translation>
 <translation id="7619072057915878432"><ph name="FILE_NAME" /> тармак жөндөмсүздүгүнө байланыштуу жүктөлбөй калды.</translation>
-<translation id="7620958983792650214">{NUM_REVOKED_PERMISSIONS,plural, =1{Бир сайтка жазылуу токтотулду}other{# сайтка жазылуу токтотулду}}</translation>
+<translation id="7620958983792650214">{NUM_REVOKED_PERMISSIONS,plural, =1{Бир сайтка жазылуу токтотулду}other{# сайттарга жазылуу токтотулду}}</translation>
 <translation id="7626032353295482388">Chrome'го кош келиңиз</translation>
 <translation id="7628417132421583481">Сырсөздөрдү башкаргычка өтүү</translation>
 <translation id="7630202231528827509">Провайдердин URL дареги</translation>

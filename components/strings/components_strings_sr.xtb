@@ -1844,6 +1844,7 @@
 <translation id="4014895360827978999">Трговачке услуге и системи плаћања</translation>
 <translation id="4018819349042761761">Јавни кључ</translation>
 <translation id="4023431997072828269">Овај образац се шаље помоћу везе која није безбедна, па ће информације бити видљиве другима.</translation>
+<translation id="4024673763872230929">Сачувајте информације и брже попуњавајте обрасце. Подаци се чувају на уређају.</translation>
 <translation id="4025325634010721551">Смернице су поново учитане</translation>
 <translation id="4025338605225449265">Валуте и мењачки послови</translation>
 <translation id="4025777154208238692">Обрнути редослед</translation>
@@ -2277,6 +2278,7 @@
 <translation id="4732860731866514038">Преузима се језички пакет за језик <ph name="LANGUAGE" />… <ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992"><ph name="URL" /> жели да користи локацију уређаја</translation>
 <translation id="473414950835101501">Користите камере</translation>
+<translation id="4734343956394152985"><ph name="BEGIN_BOLD" />Тренутно подразумевана<ph name="END_BOLD" /> · <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="4736825316280949806">Поново покрените Chromium</translation>
 <translation id="4736934858538408121">Виртуелна картица</translation>
 <translation id="473775607612524610">Ажурирај</translation>
@@ -2933,6 +2935,7 @@
 <translation id="5813119285467412249">&amp;Понови додавање</translation>
 <translation id="5813753398265398978">Физика</translation>
 <translation id="5817918615728894473">Упари</translation>
+<translation id="5820625124144807242">Када прегледате поруџбину, морате да се пријавите на <ph name="BNPL_ISSUER_NAME" /> налог или да га отворите. Тај налог ће се аутоматски повезати са Google Pay-ом.</translation>
 <translation id="5826507051599432481">Опште име (CN)</translation>
 <translation id="5830698870816298009">коришћење и кретање камере</translation>
 <translation id="5831217499016131155">Google новчаник</translation>
@@ -3385,6 +3388,7 @@
 <translation id="6521745193039995384">Нису активне</translation>
 <translation id="6522682797352430154">Класична музика</translation>
 <translation id="6524830701589638230">Дугме Прилагоди подешавања приступачности, активирајте га да бисте персонализовали алатке за приступачност у подешавањима Chrome-а</translation>
+<translation id="6525222262307262764">Задржи актуелно подразумевано подешавање</translation>
 <translation id="6527049834925947126">Производња хране</translation>
 <translation id="6529173248185917884">Седми котур</translation>
 <translation id="6529602333819889595">&amp;Понови брисање</translation>
@@ -3405,6 +3409,7 @@
 <translation id="6567832540451970450">Администратор дозвољава ставку <ph name="PERMISSION" /> за овај сајт</translation>
 <translation id="6568793038316600992">Дугме Управљај начинима плаћања, активирајте га да бисте управљали плаћањима и информацијама о кредитним картицама у подешавањима Chrome-а</translation>
 <translation id="6569060085658103619">Прегледате страницу додатка.</translation>
+<translation id="6571992525120410251">Питајте <ph name="ENGINE_NAME" /> било шта</translation>
 <translation id="6572867903637058088">Да ли је ово корисно?</translation>
 <translation id="6573200754375280815">Двоструко бушење на десној страни</translation>
 <translation id="6575408526598156416">Сачувајте на налогу</translation>
@@ -3444,7 +3449,6 @@
 <translation id="6649510485211003056">195×270 mm</translation>
 <translation id="6651270836885078973">Овим управља:</translation>
 <translation id="6652101503459149953">Користи Windows Hello</translation>
-<translation id="6653684225271066234"><ph name="BNPL_ISSUER_NAME" /> ће проверити да ли испуњавате услове (то неће утицати на ваш кредитни рејтинг). Ако испуњавате критеријуме, <ph name="BNPL_ISSUER_NAME" /> ће вам понудити потенцијалне пакете за плаћање да бисте довршили куповину.</translation>
 <translation id="6654224358955673568">Формално</translation>
 <translation id="6654244995031366386">Стакло (са текстуром)</translation>
 <translation id="6657585470893396449">Лозинка</translation>
@@ -3454,6 +3458,7 @@
 <translation id="666259744093848177">(x86_64 преведено)</translation>
 <translation id="6665553082534466207">Троструко бушење на десној страни</translation>
 <translation id="6668389483194953109">Пронађен је назив величине папира „прилагођено“, али је својство „custom_size“ празно или неважеће.</translation>
+<translation id="6670729408462528018">Галерија</translation>
 <translation id="6671169470640320959">Зајмови за куповину аутомобила</translation>
 <translation id="6671697161687535275">Желите ли да уклоните предлог из Chromium-а?</translation>
 <translation id="6675846980676550611">ПР није дозвољен</translation>
@@ -3607,7 +3612,6 @@
 <translation id="6925267999184670015">North American B+</translation>
 <translation id="6926216138694948720">Боди арт</translation>
 <translation id="692638818576287323">Комерцијална возила</translation>
-<translation id="6927057753277044239">Када прегледате поруџбину, морате да се пријавите на <ph name="BNPL_ISSUER_NAME" /> налог или да га отворите. Овај налог ће се аутоматски повезати са Google налогом.</translation>
 <translation id="6930607614725241390">Претрага на бочној табли</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Подразумевани претраживач вам омогућава да претражујете веб и омогућава Chrome функције<ph name="END_BOLD" /> попут претраживања из траке за адресу и слика на веб-страницама. Функција можда није доступна ако је претраживач не подржава.</translation>
 <translation id="6934672428414710184">То је име са вашег Google налога</translation>
@@ -3961,6 +3965,7 @@
 <translation id="7485085230273446323">Врсте пословања и индустрија</translation>
 <translation id="7485870689360869515">Нису пронађени подаци.</translation>
 <translation id="7486880426035242089">OneDrive</translation>
+<translation id="7489255442002627311"><ph name="BNPL_ISSUER_NAME" /> ће проверити да ли испуњавате услове (то неће утицати на ваш кредитни рејтинг). Ако се пријава одобри, <ph name="BNPL_ISSUER_NAME" /> ће вам обезбедити пакете за плаћање које можете да одаберете и довршите куповину.</translation>
 <translation id="7489392576326061356">Шампони и регенератори</translation>
 <translation id="7489919936111034362">Меморијски простор Google диска је пун</translation>
 <translation id="7495528107193238112">Овај садржај је блокиран. Обратите се власнику сајта да бисте решили проблем.</translation>

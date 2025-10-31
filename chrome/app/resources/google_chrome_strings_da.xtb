@@ -89,6 +89,7 @@
 <translation id="2018528049276128029">Hver profil har sine egne Chrome-oplysninger som f.eks. bogmærker, historik, adgangskoder m.m.</translation>
 <translation id="2018879682492276940">Installationen mislykkedes. Prøv igen.</translation>
 <translation id="2024959665595762054">Verificer din identitet for at bruge og gemme Chrome-data på din Google-konto</translation>
+<translation id="2026377840141807639">Chrome-profiler giver dig mulighed for at holde personlig browsing og arbejde adskilt. Tilføj en ny profil nu.</translation>
 <translation id="2034233344106846793">Chrome opgraderer automatisk usikre forbindelser til HTTPS, når det er muligt</translation>
 <translation id="2039417478970545937">Indstillinger.</translation>
 <translation id="2091012649849228750">Hvis du vil have fremtidige Google Chrome-opdateringer, skal du have Windows 10 eller nyere. Denne computer har Windows 8.</translation>
@@ -361,6 +362,7 @@
 <translation id="5170938038195470297">Din profil kan ikke bruges, fordi den stammer fra en nyere version af Google Chrome. Nogle funktioner er muligvis ikke tilgængelige. Angiv en anden profilmappe, eller brug en nyere version af Chrome.</translation>
 <translation id="5174969993834422967">Du blokerer som regel notifikationer. Klik på notifikationsikonet i højre hjørne af din adresselinje for at give websitet tilladelse til at sende notifikationer.</translation>
 <translation id="5174983315706567306">Der er ikke nok diskplads.</translation>
+<translation id="5190467473654176081">Tilpas Chrome for at give browseren et nyt udseende</translation>
 <translation id="5201744974236816379">Chrome-opdatering</translation>
 <translation id="521447420733633466">Hvis du deler en enhed, kan venner og familie browse individuelt og konfigurere Chrome hver især</translation>
 <translation id="5234764350956374838">Luk</translation>
@@ -382,6 +384,7 @@
 <translation id="5510398294750420479">Download Chrome på din telefon for at tilføje et ekstra lag beskyttelse, når du er på farten</translation>
 <translation id="5524890928877629608">øverste venstre hjørne af søgeområdet: venstre <ph name="LEFT" /> %, øverste <ph name="TOP" /> %</translation>
 <translation id="5530733413481476019">Gør Chrome hurtigere</translation>
+<translation id="5550137307985173298">Klik på knappen Tilpas Chrome på siden Ny fane for at give Chrome et nyt udseende</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5579324208890605088">Opstartsfejl: Kør installationsprogrammet som almindelig bruger, ikke som administrator.</translation>
 <translation id="5596627076506792578">Flere valgmuligheder</translation>
@@ -410,6 +413,7 @@
 <translation id="5736850870166430177">Hvis et website forsøger at stjæle din adgangskode, eller hvis du downloader en skadelig fil, sender Chrome muligvis også webadresser, bl.a. mindre mængder sideindhold, til Beskyttet browsing</translation>
 <translation id="5756509061973259733">Der findes allerede en Chrome-profil med denne konto på enheden</translation>
 <translation id="5759947850379142561">Vælg den tekst eller det billede, du vil søge efter med Google Lens, eller tryk på Escape for at lukke Google Lens</translation>
+<translation id="5762867845020858790">Tilføj en ny Chrome-profil for at holde bogmærker, adgangskoder og indstillinger adskilt.</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> – Google Chrome Canary</translation>
 <translation id="5804318322022881572">Chrome kunne ikke startes. Prøv igen.</translation>
 <translation id="5809516625706423866">Der kan ikke oprettes forbindelse til internettet. HTTP 401 (uautoriseret). Tjek din proxykonfiguration.</translation>
@@ -510,13 +514,13 @@
 <translation id="6800285125190089494">Log hurtigere ind på websites ved hjælp af gemte adgangskoder til Chrome i iOS</translation>
 <translation id="6831043979455480757">Oversæt</translation>
 <translation id="683440813066116847">Indgående regel for Google Chrome Canary om at tillade mDNS-trafik.</translation>
+<translation id="6841242485723266823">Chrome-profiler hjælper dig med at adskille forskellige dele af dit liv. Tilføj en ny profil nu.</translation>
 <translation id="684888714667046800">Der kunne ikke oprettes forbindelse til internettet. Hvis du bruger en firewall, skal du angive <ph name="PRODUCT_EXE_NAME" /> på tilladelseslisten.</translation>
 <translation id="6877155553248388166">nederste højre hjørne af søgeområdet: højre <ph name="RIGHT" /> %, nederste <ph name="BOTTOM" /> %</translation>
 <translation id="6881299373831449287">Opdaterer Chrome</translation>
 <translation id="6885412569789873916">Apps i Chrome beta</translation>
 <translation id="6893363893008038481">Fjern kontoen fra Chrome</translation>
 <translation id="6896758677409633944">Kopiér</translation>
-<translation id="6927941417289800361">Mens du er logget ind, kan du bruge dine adgangskoder m.m. fra din Google-konto i Chrome. Du kan til enhver tid ændre dette i indstillingerne.</translation>
 <translation id="6930294499209825">Holder din Google-software opdateret. Hvis denne tjeneste deaktiveres eller stoppes, bliver din Google-software ikke opdateret. Dette betyder, at eventuelle sikkerhedsbrister ikke kan rettes, og at funktioner muligvis ikke fungerer. Denne tjeneste afinstallerer sig selv, når den ikke bruges af nogen Google-software.</translation>
 <translation id="6933858244219479645">ChromeOS-system</translation>
 <translation id="6938166777909186039">Hvis du vil have fremtidige Google Chrome-opdateringer, skal du have Windows 10 eller nyere. Denne computer anvender Windows 8.1.</translation>
@@ -673,6 +677,7 @@
 <translation id="8625237574518804553">{0,plural, =1{Chrome genstarter om 1 minut}one{Chrome genstarter om # minut}other{Chrome genstarter om # minutter}}</translation>
 <translation id="8637932705841171563">Tillad skærmoptagelse for Chrome under Systemindstillinger for at dele dit vindue.</translation>
 <translation id="8641606876632989680">Chrome giver dig besked, når du logger ind med en kompromitteret adgangskode</translation>
+<translation id="8647930742055103497">Hold alting samlet i Chrome</translation>
 <translation id="8656634243791296665">Åbn Gemini i Chrome Dev</translation>
 <translation id="8669527147644353129">Hjælp til Google Chrome</translation>
 <translation id="8677922833187616101">Vis altid genvejen til Google AI-tilstand</translation>

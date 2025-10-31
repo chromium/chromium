@@ -1040,7 +1040,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="169341880170235617">Ara els grups de pestanyes es desen automàticament</translation>
 <translation id="1695487653372841667">Pots controlar les dades que es comparteixen amb Google. Pots canviar aquesta opció en qualsevol moment a Configuració.</translation>
 <translation id="1695510246756136088">No es pot connectar a Internet. Torna-ho a provar.</translation>
-<translation id="1696214930320482113">Els perfils et permeten separar la feina, la vida personal i l'entreteniment sense haver de canviar a un altre navegador. Afegeix un perfil nou ara.</translation>
+<translation id="1696214930320482113">Els perfils et permeten separar la feina, la vida personal i l'entreteniment sense haver de canviar de navegador. Afegeix un perfil nou ara.</translation>
 <translation id="1696555181932908973">Pots provar altres maneres de continuar a <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="169675691788639886">El dispositiu té configurat un servidor SSH. No iniciïs la sessió amb comptes relacionats amb informació sensible.</translation>
 <translation id="1697122132646041614">El botó No m'agrada obre un formulari per enviar comentaris detallats sobre per què no t'agraden aquests resultats.</translation>
@@ -1274,7 +1274,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1851551847729706116">S'està compartint <ph name="TAB_NAME" /> en aquesta pestanya</translation>
 <translation id="1854180393107901205">Atura l'emissió</translation>
 <translation id="1856715684130786728">Afegeix una ubicació...</translation>
-<translation id="1857044401921988155">Quan facis clic a Desa, aquest grup de pestanyes es convertirà en una carpeta d'adreces d'interès i se suprimirà dels teus grups en tots els dispositius</translation>
+<translation id="1857044401921988155">Si fas clic a Desa, aquest grup de pestanyes es convertirà en una carpeta d'adreces d'interès i se suprimirà dels teus grups en tots els dispositius</translation>
 <translation id="185766080319917408">La tecla del menú d'aplicacions es troba a l'esquerra de la tecla Alt de l'esquerra</translation>
 <translation id="1859294693760125695">Ja no m'interessa</translation>
 <translation id="1859339856433307593">Ja hi ha una contrasenya d'aquest compte desada a <ph name="BRAND" /> (<ph name="USER_EMAIL" />)</translation>
@@ -7195,7 +7195,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="5989497858237037960">A mesura que navegues pels llocs web, el contingut de les pàgines s'encripta i es desa al dispositiu. Això pot afectar el rendiment de Chrome.</translation>
 <translation id="5990266201903445068">Només Wi‑Fi</translation>
 <translation id="5990386583461751448">Traduïda</translation>
-<translation id="5990557145969487183">Mantén separades la feina i la vida</translation>
+<translation id="5990557145969487183">Mantén separades la feina i la vida personal</translation>
 <translation id="5992225669837656567">S'han desconnectat tots els ratolins</translation>
 <translation id="5992652489368666106">Sense vores</translation>
 <translation id="5993508466487156420">{NUM_SITES,plural, =1{S'ha completat la revisió d'1 lloc web}other{S'ha completat la revisió de {NUM_SITES} llocs web}}</translation>
@@ -11211,7 +11211,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8762886931014513155">S'ha d'actualitzar <ph name="DEVICE_TYPE" /></translation>
 <translation id="8763170551806710928">Mostra les etiquetes</translation>
 <translation id="8763927697961133303">Dispositiu USB</translation>
-<translation id="8766156860774051068">Seleccionat per tu</translation>
+<translation id="8766156860774051068">Seleccionats per tu</translation>
 <translation id="8766796754185931010">Kotoeri</translation>
 <translation id="8767069439158587614">Mostra totes les cerques per a <ph name="QUERY_CLUSTER_NAME" /></translation>
 <translation id="8767621466733104912">Actualitza Chrome automàticament per a tots els usuaris</translation>

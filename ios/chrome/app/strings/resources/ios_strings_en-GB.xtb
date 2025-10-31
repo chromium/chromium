@@ -277,6 +277,7 @@
 <translation id="199425419756152024">View password</translation>
 <translation id="1996318269856535896">You can still use your existing browsing data on this device. To use it, sign out of your managed account.</translation>
 <translation id="2010008505735295285">Reload</translation>
+<translation id="2012723204723845092">Welcome back!</translation>
 <translation id="2015722694326466240">To see passwords, you must first set a passcode on your device.</translation>
 <translation id="201759455285471444">Expand tab group.</translation>
 <translation id="202070562065520783">Explain this to me</translation>
@@ -647,6 +648,7 @@
 <translation id="3530024057633834563">You don't have any saved passwords or passkeys, but you can delete the list of sites and apps for which you chose to never save sign-in info. Any account that you created for sites and apps won't be deleted.</translation>
 <translation id="3530206579861815432">Quickly find open and recently closed tabs across your synced devices.</translation>
 <translation id="3530767473765895035">Manage accounts on this device…</translation>
+<translation id="353340646084395154">Removed new tab page preferences</translation>
 <translation id="3533436815740441613">New tab</translation>
 <translation id="3540141921715814660">Add to Bookmarks</translation>
 <translation id="3546122170015471515">Maps Preview on Google.com</translation>
@@ -675,6 +677,7 @@
 <translation id="3642060527569456384">Tab groups automatically save and update across all your devices.</translation>
 <translation id="3643338347976071250">{count,plural, =1{{count} password is saved only to this device. To use it on your other devices, save it in your Google Account, {email}.}other{{count} passwords are saved only to this device. To use them on your other devices, save them in your Google Account, {email}.}}</translation>
 <translation id="3659297405161482746">No payment methods found</translation>
+<translation id="3662966164093827811">{count,plural, =1{1 selected}other{# selected}}</translation>
 <translation id="3668816008081204991">Reading list is hidden</translation>
 <translation id="3670030362669914947">Number</translation>
 <translation id="3679163990085797665">Delete read</translation>
@@ -1000,6 +1003,7 @@
 <translation id="4894963374040315706">This lets you search using your voice</translation>
 <translation id="4895540042460820904">Last opened</translation>
 <translation id="4896467949657706481">Tabs were closed; you were signed out</translation>
+<translation id="4911042367886397055">Welcome back, <ph name="USER_NAME" />!</translation>
 <translation id="4913626501929406101">You can securely share a copy of your password with someone in your family group. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="4917025507570489430">You can use existing browsing data when you’re signed in as <ph name="USER_EMAIL" />. Your organisation may be able to view this data.</translation>
 <translation id="4918086044614829423">Accept</translation>
@@ -1051,6 +1055,7 @@
 <translation id="508645147179720015">Note is more than 1,000 characters</translation>
 <translation id="5087098519049306025">Price tracking</translation>
 <translation id="5090832849094901128">Deleting this password will not delete your account on <ph name="WEBSITE" />.</translation>
+<translation id="5113960131843706315">Getting your stuff…</translation>
 <translation id="5118462200606189584">Add account…</translation>
 <translation id="5118764316110575523">Off</translation>
 <translation id="5119329531859909472">To track the product, tap Track</translation>
@@ -1121,6 +1126,7 @@
 <translation id="537853552771686272">Manage the topics and sites that you're interested in</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} closed}other{{count} closed}}</translation>
 <translation id="5394975111793637642">Hide product reviews for you card</translation>
+<translation id="5407806496954700135">Would you like to apply your new tab page customisations from another device?</translation>
 <translation id="5414763847370083940">You'll get an alert if the price drops on any site.</translation>
 <translation id="5415289094036440596">Passkeys can't be shared</translation>
 <translation id="5416455648658732408">Move to tab group</translation>
@@ -1755,6 +1761,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="7696316012653762532">Options to translate the page</translation>
 <translation id="7700527812567437847">Search screen with Google Lens</translation>
 <translation id="7701040980221191251">None</translation>
+<translation id="7708668404222666001">Applied your new tab page preferences</translation>
 <translation id="7708994397325774423">Get all your passwords</translation>
 <translation id="7711440461521638739">You're not reusing any passwords</translation>
 <translation id="7712361583414030698">Viewing offline version</translation>

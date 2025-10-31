@@ -33,6 +33,7 @@
 <translation id="1111673857033749125">Dito lalabas ang mga naka-save na bookmark sa iba mo pang mga device.</translation>
 <translation id="1126696498560056882">Pamahalaan ang mga account sa device na ito</translation>
 <translation id="1135018701024399762">Pinapanatiling pribado ng Incognito mode ang pag-browse mo sa ibang taong gumagamit ng iyong device</translation>
+<translation id="113752097246673894">Para makuha ang iyong mga password at higit pa sa lahat ng device mo, mag-sign in sa Chrome bilang <ph name="EMAIL" /></translation>
 <translation id="1138458427267715730">Makatanggap ng mga alerto kapag bumaba ang presyo sa anumang site sa buong web</translation>
 <translation id="1140317858355046628">Kung ide-delete mo ito, mawawalan kaagad ang lahat ng access sa grupo ng tab na "<ph name="GROUP_NAME" />," at made-delete ito sa lahat ng device.</translation>
 <translation id="1142732900304639782">Huwag mag-alok na isalin ang mga site na ito</translation>
@@ -381,6 +382,7 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="2723001399770238859">audio</translation>
 <translation id="2739887572830526131">Panatilihin ang grupong ito para magdagdag ng mga tab dito sa ibang pagkakataon, o i-delete ito kung hindi mo na ito kailangan.</translation>
 <translation id="2742373789128106053">Hindi available ang <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> sa ngayon.</translation>
+<translation id="2751271371269891762">Para makuha ang iyong mga bookmark at higit pa sa lahat ng device mo, mag-sign in bilang <ph name="EMAIL" /></translation>
 <translation id="2760805590727089264">MM / YY</translation>
 <translation id="2762000892062317888">ngayon lang</translation>
 <translation id="276969039800130567">Naka-sign in bilang <ph name="USER_EMAIL_ADDRESS" />.</translation>
@@ -390,6 +392,7 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="2789486458103222910">Okay</translation>
 <translation id="2791129728587938169">{NUM_PASSWORDS,plural, =1{Nakakita ang Chrome ng password na ginamit ulit na puwede mo pang palakasin}one{Nakakita ang Chrome ng # password na ginamit ulit na puwede mo pang palakasin}other{Nakakita ang Chrome ng # na password na ginamit ulit na puwede mo pang palakasin}}</translation>
 <translation id="2800066122460699237">Isasara ang tab na <ph name="TAB_TITLE" /></translation>
+<translation id="2805210243313393104">Makuha ang iyong mga bookmark at higit pa sa lahat ng device mo</translation>
 <translation id="2805756323405976993">Mga App</translation>
 <translation id="2819849308549746319">Mag-unsubscribe sa lahat</translation>
 <translation id="2820047235535485532">Puwede mong piliin kung anong data ang ise-save sa iyong Google Account na <ph name="ACCOUNT_EMAIL" />.\nPuwede mo ring tingnan at pamahalaan ang mga item na ito sa iyong mga bookmark, listahan ng babasahin, o password manager.</translation>
@@ -651,6 +654,7 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="4000670338830950598">I-customize at kontrolin ang Google Chrome gamit ang naka-highlight na item</translation>
 <translation id="4015643064997321279">{NUM_PASSWORDS,plural, =1{1 nakompromisong password sa iyong Google Account}one{# nakompromisong password sa iyong Google Account}other{# na nakompromisong password sa iyong Google Account}}</translation>
 <translation id="4016425174436051808">Hindi masubaybayan. Nagkaproblema.</translation>
+<translation id="4023638601467301498">Para makuha ang iyong mga bookmark at higit pa sa lahat ng device mo, mag-sign in sa Chrome</translation>
 <translation id="4024768890073681126">Pinapamahalaan ng iyong magulang ang browser mo</translation>
 <translation id="4027569221211770437">Folder na <ph name="FOLDER_TITLE" /></translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# oras}one{# oras}other{# na oras}}</translation>
@@ -1223,6 +1227,7 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="6473086018775716761">Nakabukas nang kalahati ang taas ang listahan ng mga opsyon sa pagbabahagi.</translation>
 <translation id="6475951671322991020">I-download ang video</translation>
 <translation id="6477928892249167417">Mukhang mahalaga sa iyo ang mga site na ito:</translation>
+<translation id="6479881432656947268">Bisitahin ang Chrome Web Store</translation>
 <translation id="6481963882741794338">I-link ang Chrome at iba pang serbisyo ng Google para sa pag-personalize at iba pang layunin</translation>
 <translation id="6482749332252372425">Hindi na-download ang <ph name="FILE_NAME" /> dahil kulang ang espasyo sa storage.</translation>
 <translation id="6486420406192123355">Ang PDF file na ito ay mula sa site na gumagamit ng hindi secure na koneksyon</translation>
@@ -1342,6 +1347,7 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="6908998565271542516">Opsyong aprubahan o huwag aprubahan ang isang website na binuksan nang buo ang taas</translation>
 <translation id="6909589135458168665">Mag-preload ng Mga Page</translation>
 <translation id="6910211073230771657">Na-delete</translation>
+<translation id="6916590542764765824">Pamahalaan ang Mga Extension</translation>
 <translation id="6918398787259831832">Kung patuloy na nangyayari ang isyung ito, <ph name="BEGIN_LINK" />kumuha ng higit pang impormasyon<ph name="END_LINK" /> mula sa <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> Inalis ng Chrome ang mga pahintulot na ito dahil hindi ka bumisita kamakailan</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 tab}one{<ph name="NUMBER_OF_TABS" /> tab}other{<ph name="NUMBER_OF_TABS" /> na tab}}</translation>

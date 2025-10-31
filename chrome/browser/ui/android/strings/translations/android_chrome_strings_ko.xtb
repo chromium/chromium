@@ -1223,6 +1223,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="6473086018775716761">공유 옵션 목록이 절반 높이로 열렸습니다.</translation>
 <translation id="6475951671322991020">동영상 다운로드</translation>
 <translation id="6477928892249167417">다음 사이트는 중요할 수도 있습니다.</translation>
+<translation id="6479881432656947268">Chrome 웹 스토어 방문하기</translation>
 <translation id="6481963882741794338">맞춤설정 등의 목적으로 Chrome과 다른 Google 서비스를 연결합니다</translation>
 <translation id="6482749332252372425">저장공간이 부족하여 <ph name="FILE_NAME" />을(를) 다운로드할 수 없습니다.</translation>
 <translation id="6486420406192123355">비보안 연결을 사용하는 사이트에서 가져온 PDF 파일입니다.</translation>
@@ -1342,6 +1343,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="6908998565271542516">웹사이트 승인 또는 비승인 옵션이 전체 높이로 열림</translation>
 <translation id="6909589135458168665">페이지 미리 로드</translation>
 <translation id="6910211073230771657">삭제됨</translation>
+<translation id="6916590542764765824">확장 프로그램 관리</translation>
 <translation id="6918398787259831832">이 문제가 계속 발생하면 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />에서 <ph name="BEGIN_LINK" />자세히 알아보세요<ph name="END_LINK" />.</translation>
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> 최근에 방문하지 않아 Chrome에서 이러한 권한을 삭제했습니다.</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{탭 1개}other{탭 <ph name="NUMBER_OF_TABS" />개}}</translation>

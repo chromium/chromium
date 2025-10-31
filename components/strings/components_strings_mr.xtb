@@ -1843,6 +1843,7 @@
 <translation id="4014895360827978999">व्यापारी सेवा आणि पेमेंट सिस्टीम</translation>
 <translation id="4018819349042761761">पब्लिक की</translation>
 <translation id="4023431997072828269">हा फॉर्म सुरक्षित नसलेले कनेक्शन वापरून सबमिट केल्यामुळे, तुमची माहिती इतरांना दिसू शकते.</translation>
+<translation id="4024673763872230929">तुमची माहिती सेव्ह करा आणि अधिक झटपट फॉर्म भरा. ही माहिती तुमच्या डिव्हाइसवर सेव्ह होते.</translation>
 <translation id="4025325634010721551">धोरणे रीलोड केली</translation>
 <translation id="4025338605225449265">चलने आणि परकीय विनिमय</translation>
 <translation id="4025777154208238692">उलट क्रम</translation>
@@ -2276,6 +2277,7 @@
 <translation id="4732860731866514038"><ph name="LANGUAGE" /> भाषा पॅक डाउनलोड करत आहे... <ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992"><ph name="URL" /> ला तुमच्या डिव्हाइसचे स्थान वापरायचे आहे</translation>
 <translation id="473414950835101501">तुमचे कॅमेरा वापरा</translation>
+<translation id="4734343956394152985"><ph name="BEGIN_BOLD" />सद्य डीफॉल्ट<ph name="END_BOLD" /> · <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="4736825316280949806">Chromium रीस्टार्ट करा</translation>
 <translation id="4736934858538408121">व्हर्च्युअल कार्ड</translation>
 <translation id="473775607612524610">अपडेट करा</translation>
@@ -2931,6 +2933,7 @@
 <translation id="5813119285467412249">&amp;जोडा पुन्हा करा</translation>
 <translation id="5813753398265398978">भौतिकशास्त्र</translation>
 <translation id="5817918615728894473">जोडा</translation>
+<translation id="5820625124144807242">तुम्ही तुमच्या ऑर्डरचे पुनरावलोकन केल्यानंतर, तुम्ही<ph name="BNPL_ISSUER_NAME" /> खात्यामध्ये साइन इन करणे किंवा ते तयार करणे आवश्यक आहे. हे खाते Google Pay शी आपोआप लिंक केले जाईल.</translation>
 <translation id="5826507051599432481">सामान्य नाव (CN)</translation>
 <translation id="5830698870816298009">कॅमेराचा वापर आणि त्याची हालचाल</translation>
 <translation id="5831217499016131155">Google Wallet</translation>
@@ -3385,6 +3388,7 @@
 <translation id="6521745193039995384">सुरू नाही</translation>
 <translation id="6522682797352430154">शास्त्रीय संगीत</translation>
 <translation id="6524830701589638230">अ‍ॅक्सेसिबिलिटी सेटिंग्ज व्यवस्थापित करा बटण, Chrome सेटिंग्जमध्ये तुमची अ‍ॅक्सेसिबिलिटी टूल पर्सनलाइझ करण्यासाठी ॲक्टिव्हेट करा</translation>
+<translation id="6525222262307262764">सद्य डीफॉल्ट कायम ठेवा</translation>
 <translation id="6527049834925947126">खाद्यपदार्थ उत्पादन</translation>
 <translation id="6529173248185917884">सातवा रोल</translation>
 <translation id="6529602333819889595">&amp;पुन्हा करा हटवा</translation>
@@ -3405,6 +3409,7 @@
 <translation id="6567832540451970450">तुमचा अ‍ॅडमिनिस्ट्रेटर या साइटसाठी <ph name="PERMISSION" /> ची अनुमती देतो</translation>
 <translation id="6568793038316600992">पेमेंट पद्धती व्यवस्थापित करा बटण, Chrome सेटिंग्जमध्ये तुमची पेमेंट आणि क्रेडिट कार्ड माहिती व्यवस्थापित करण्यासाठी ॲक्टिव्हेट करा</translation>
 <translation id="6569060085658103619">तुम्ही एक एक्स्टेंशन पेज पाहत आहात</translation>
+<translation id="6571992525120410251"><ph name="ENGINE_NAME" /> ला काहीही विचारा</translation>
 <translation id="6572867903637058088">हे उपयुक्त आहे का?</translation>
 <translation id="6573200754375280815">ड्युअल पंच राइट</translation>
 <translation id="6575408526598156416">खात्यामध्ये सेव्ह करा</translation>
@@ -3444,7 +3449,6 @@
 <translation id="6649510485211003056">१९५ x २७० मिमी</translation>
 <translation id="6651270836885078973">यांनी व्यवस्थापित केलेले:</translation>
 <translation id="6652101503459149953">Windows Hello वापरा</translation>
-<translation id="6653684225271066234"><ph name="BNPL_ISSUER_NAME" /> तुमची पात्रता तपासेल (यामुळे तुमच्या क्रेडिट स्कोअरवर परिणाम होणार नाही). तुम्ही पात्रता निकषांची पूर्तता केल्यास, तुमची खरेदी पूर्ण करण्यासाठी <ph name="BNPL_ISSUER_NAME" /> संभाव्य पेमेंट प्लॅन पुरवेल.</translation>
 <translation id="6654224358955673568">फॉर्मलाइझ कर</translation>
 <translation id="6654244995031366386">ग्लास (टेक्सचर्ड)</translation>
 <translation id="6657585470893396449">पासवर्ड</translation>
@@ -3454,6 +3458,7 @@
 <translation id="666259744093848177">(x86_64 भाषांतरित)</translation>
 <translation id="6665553082534466207">ट्रिपल पंच राइट</translation>
 <translation id="6668389483194953109">"कस्टम" असे नाव असलेला पेपरचा आकार आढळला आहे, पण "custom_size" ही प्रॉपर्टी रिकामी किंवा चुकीची आहे.</translation>
+<translation id="6670729408462528018">गॅलरी</translation>
 <translation id="6671169470640320959">ऑटो वित्तव्यवस्था</translation>
 <translation id="6671697161687535275">Chromium वरून फॉर्म सूचना काढून टाकायच्या?</translation>
 <translation id="6675846980676550611">AR ला अनुमती नाही</translation>
@@ -3607,7 +3612,6 @@
 <translation id="6925267999184670015">North American B+</translation>
 <translation id="6926216138694948720">बॉडी आर्ट</translation>
 <translation id="692638818576287323">व्यावसायिक वाहने</translation>
-<translation id="6927057753277044239">तुम्ही तुमच्या ऑर्डरचे पुनरावलोकन केल्यानंतर, <ph name="BNPL_ISSUER_NAME" /> खात्यामध्ये साइन इन करणे किंवा ते तयार करणे आवश्यक आहे. हे खाते तुमच्या Google खात्याशी आपोआप लिंक केले जाईल.</translation>
 <translation id="6930607614725241390">साइड पॅनलमध्ये शोधा</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />तुमचे डीफॉल्ट शोध इंजीन तुम्हाला वेबवर शोधू देते आणि Chrome वैशिष्ट्यांना सामर्थ्य देते<ph name="END_BOLD" />, जसे की ॲड्रेस बारवरून आणि वेब पेजवरील इमेजमधून शोधणे. तुमचे शोध इंजीन त्यास सपोर्ट करत नसल्यास, एखादे वैशिष्ट्य कदाचित उपलब्ध होणार नाही.</translation>
 <translation id="6934672428414710184">हे नाव तुमच्या Google खात्यावरून आहे</translation>
@@ -3961,6 +3965,7 @@
 <translation id="7485085230273446323">व्यवसाय आणि औद्योगिक</translation>
 <translation id="7485870689360869515">डेटा आढळला नाही.</translation>
 <translation id="7486880426035242089">OneDrive</translation>
+<translation id="7489255442002627311"><ph name="BNPL_ISSUER_NAME" /> तुमची पात्रता तपासेल (याचा तुमच्या क्रेडिट स्कोअरवर परिणाम होणार नाही). मंजूर झाल्यास, <ph name="BNPL_ISSUER_NAME" /> तुम्हाला निवडण्यासाठी आणि तुमची खरेदी पूर्ण करण्यासाठी पेमेंट प्लॅन पुरवेल.</translation>
 <translation id="7489392576326061356">शँपू आणि कंडिशनर</translation>
 <translation id="7489919936111034362">तुमचे Google Drive स्टोरेज पूर्ण भरले आहे</translation>
 <translation id="7495528107193238112">हा आशय ब्लॉक केला गेला आहे. समस्येचे निराकरण करण्यासाठी साइटच्या मालकाशी संपर्क साधा.</translation>

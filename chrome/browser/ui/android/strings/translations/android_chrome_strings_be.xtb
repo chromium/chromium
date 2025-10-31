@@ -728,6 +728,7 @@
 <translation id="4355272626458588338">Каб мець магчымасць вярнуцца да важнай для вас старонкі пазней, можна дадаць закладку</translation>
 <translation id="4356503491090073318">Нумар карткі*</translation>
 <translation id="4357206670025518404">+ <ph name="COUNT_NUMBER" /></translation>
+<translation id="4358630185957185589">Адкрыць Google Аб’ектыў</translation>
 <translation id="4359809482106103048">Кароткі агляд параметраў бяспекі</translation>
 <translation id="4378154925671717803">Тэлефон</translation>
 <translation id="4380055775103003110">Калі праблема не знікае, паспрабуйце іншыя спосабы ўваходу, каб працягнуць работу на сайце <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
@@ -1222,6 +1223,7 @@
 <translation id="6473086018775716761">Спіс варыянтаў абагульвання разгорнуты на палову экрана.</translation>
 <translation id="6475951671322991020">Спампаваць відэа</translation>
 <translation id="6477928892249167417">Гэтыя сайты могуць быць важнымі для вас:</translation>
+<translation id="6479881432656947268">Наведаць Вэб-краму Chrome</translation>
 <translation id="6481963882741794338">Звяжыце Chrome з іншымі сэрвісамі Google для персаналізацыі і іншых мэт</translation>
 <translation id="6482749332252372425">Не ўдалося спампаваць файл <ph name="FILE_NAME" /> з-за недахопу месца ў сховішчы.</translation>
 <translation id="6486420406192123355">Гэты файл PDF атрыманы з сайта, які выкарыстоўвае неабароненае падключэнне</translation>
@@ -1341,6 +1343,7 @@
 <translation id="6908998565271542516">Старонка, на якой можна ўхваліць вэб-сайт, разгорнута на ўвесь экран</translation>
 <translation id="6909589135458168665">Перадзагрузка старонак</translation>
 <translation id="6910211073230771657">Выдалена</translation>
+<translation id="6916590542764765824">Кіраваць пашырэннямі</translation>
 <translation id="6918398787259831832">Калі праблема не знікае, <ph name="BEGIN_LINK" />атрымаць больш інфармацыі пра памылку<ph name="END_LINK" /> можна ад сэрвісу "<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />".</translation>
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> Браўзер Chrome адклікаў гэтыя дазволы, бо вы не наведвалі гэты сайт у апошні час</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 укладка}one{<ph name="NUMBER_OF_TABS" /> укладка}few{<ph name="NUMBER_OF_TABS" /> укладкі}many{<ph name="NUMBER_OF_TABS" /> укладак}other{<ph name="NUMBER_OF_TABS" /> укладкі}}</translation>
@@ -1510,6 +1513,7 @@
 <translation id="7612619742409846846">Уваход у Google выкананы ад імя</translation>
 <translation id="7612989789287281429">Выконваецца ўваход…</translation>
 <translation id="7619072057915878432">Не ўдалося спампаваць файл "<ph name="FILE_NAME" />" з-за збояў сеткі.</translation>
+<translation id="7620958983792650214">{NUM_REVOKED_PERMISSIONS,plural, =1{Вы адпісаліся ад аднаго сайта}one{Вы адпісаліся ад # сайта}few{Вы адпісаліся ад # сайтаў}many{Вы адпісаліся ад # сайтаў}other{Вы адпісаліся ад # сайта}}</translation>
 <translation id="7626032353295482388">Вас вітае Chrome</translation>
 <translation id="7628417132421583481">Перайсці ў Менеджар пароляў</translation>
 <translation id="7630202231528827509">URL-адрас пастаўшчыка DNS</translation>

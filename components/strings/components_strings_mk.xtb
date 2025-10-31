@@ -2932,6 +2932,7 @@
 <translation id="5813119285467412249">&amp;Повтори додавање</translation>
 <translation id="5813753398265398978">Физика</translation>
 <translation id="5817918615728894473">Спари</translation>
+<translation id="5820625124144807242">Откако ќе ја прегледате нарачката, мора да се најавите на сметката на <ph name="BNPL_ISSUER_NAME" /> или да ја создадете ако немате. Сметкава автоматски ќе се поврзе со Google Pay.</translation>
 <translation id="5826507051599432481">Често име (CN)</translation>
 <translation id="5830698870816298009">користење и движење на камерата</translation>
 <translation id="5831217499016131155">Google Паричник</translation>
@@ -3444,7 +3445,6 @@
 <translation id="6649510485211003056">195 x 270 mm</translation>
 <translation id="6651270836885078973">Управувано од:</translation>
 <translation id="6652101503459149953">Користи Windows Hello</translation>
-<translation id="6653684225271066234"><ph name="BNPL_ISSUER_NAME" /> ќе провери дали сте подобни (ова нема да влијае на вашиот кредитен рејтинг). Ако ги исполнувате критериумите за подобност, <ph name="BNPL_ISSUER_NAME" /> ќе ви испрати можни тарифни планови за да го завршите плаќањето.</translation>
 <translation id="6654224358955673568">Формализирај</translation>
 <translation id="6654244995031366386">Стакло (со текстура)</translation>
 <translation id="6657585470893396449">Лозинка</translation>
@@ -3607,7 +3607,6 @@
 <translation id="6925267999184670015">Северноамерикански B+</translation>
 <translation id="6926216138694948720">Уметност на тело</translation>
 <translation id="692638818576287323">Комерцијални возила</translation>
-<translation id="6927057753277044239">Откако ќе ја прегледате нарачката, мора да се најавите на сметката на <ph name="BNPL_ISSUER_NAME" /> или да ја создадете ако немате. Сметкава автоматски ќе се поврзе со вашата сметка на Google.</translation>
 <translation id="6930607614725241390">Пребарувајте во страничната табла</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Вашиот стандарден пребарувач ви овозможува да пребарувате на интернет и ги обезбедува функциите на Chrome<ph name="END_BOLD" /> како пребарување од лентата за адреси и од слики на веб-страници. Конкретна функција може да биде недостапна ако не ја поддржува вашиот пребарувач.</translation>
 <translation id="6934672428414710184">Ова име е од вашата сметка на Google</translation>
@@ -3960,6 +3959,7 @@
 <translation id="7485085230273446323">Бизнис и индустрија</translation>
 <translation id="7485870689360869515">Не се пронајдени податоци.</translation>
 <translation id="7486880426035242089">OneDrive</translation>
+<translation id="7489255442002627311"><ph name="BNPL_ISSUER_NAME" /> ќе провери дали сте подобни (ова нема да влијае на вашиот кредитен рејтинг). Ако сте, <ph name="BNPL_ISSUER_NAME" /> ќе ви понуди тарифни планови од кои ќе може да изберете и да го завршите купувањето.</translation>
 <translation id="7489392576326061356">Шампони и регенератори</translation>
 <translation id="7489919936111034362">Вашиот простор на Google Drive е полн</translation>
 <translation id="7495528107193238112">Содржинава е блокирана. Контактирајте со сопственикот на сајтот за поправка на проблемот.</translation>

@@ -947,7 +947,7 @@ Einige Funktionen sind eingeschränkt, um die Akkulaufzeit zu verlängern.</tran
 <translation id="4209973997261364186">WLAN ist aktiviert</translation>
 <translation id="4212246570487010370">Mehr ansehen</translation>
 <translation id="4212472694152630271">Zu PIN wechseln</translation>
-<translation id="4212932720786388874"><ph name="PREFERENCE_TITLE" />, <ph name="EFFECT_NAME" />, Ein/Aus-Schaltfläche, <ph name="STATE" /></translation>
+<translation id="4212932720786388874"><ph name="PREFERENCE_TITLE" />, <ph name="EFFECT_NAME" />, Ein/Aus-Button, <ph name="STATE" /></translation>
 <translation id="4215497585250573029">VPN-Einstellungen</translation>
 <translation id="4217571870635786043">Spracheingabe</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, installierte App, pausiert</translation>
@@ -2482,7 +2482,7 @@ Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</
 <translation id="989374776391122812">Kamera- und Audiosteuerung</translation>
 <translation id="990263227494928142">Drücke fünfmal die Umschalttaste, um das Touchpad zu aktivieren</translation>
 <translation id="990277280839877440">Fenster "<ph name="WINDOW_TITILE" />" geschlossen.</translation>
-<translation id="993398562350683614">Einführung: Schritt <ph name="STEP" /> von <ph name="TOTAL_STEPS" />. Auf deinem <ph name="PRODUCT_NAME" /> kannst du mit Apps alle deine Aufgaben erledigen. Du findest deine Apps im Launcher. Drücke „Alt + Umschalttaste + L“, um den Fokus auf die Launcher-Schaltfläche zu verschieben.</translation>
+<translation id="993398562350683614">Einführung: Schritt <ph name="STEP" /> von <ph name="TOTAL_STEPS" />. Auf deinem <ph name="PRODUCT_NAME" /> kannst du mit Apps alle deine Aufgaben erledigen. Du findest deine Apps im Launcher. Drücke „Alt + Umschalttaste + L“, um den Fokus auf den Launcher-Button zu verschieben.</translation>
 <translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="996204416024568215">Hol dir die neuesten Funktionen und Sicherheitsoptimierungen. Updates werden im Hintergrund ausgeführt.</translation>
 </translationbundle>

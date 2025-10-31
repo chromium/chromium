@@ -33,6 +33,7 @@
 <translation id="1111673857033749125">ನಿಮ್ಮ ಇತರ ಸಾಧನಗಳಲ್ಲಿ ಉಳಿಸಲಾದ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು ಇಲ್ಲಿ ಗೋಚರಿಸುತ್ತವೆ.</translation>
 <translation id="1126696498560056882">ಈ ಸಾಧನದಲ್ಲಿ ಖಾತೆಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="1135018701024399762">ಅಜ್ಞಾತ ಮೋಡ್ ನಿಮ್ಮ ಸಾಧನವನ್ನು ಬಳಸುವ ಇತರರಿಂದ ನಿಮ್ಮ ಬ್ರೌಸಿಂಗ್ ಅನ್ನು ಖಾಸಗಿಯಾಗಿರಿಸುತ್ತದೆ</translation>
+<translation id="113752097246673894">ನಿಮ್ಮ ಎಲ್ಲಾ ಸಾಧನಗಳಲ್ಲಿ ನಿಮ್ಮ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು ಮತ್ತು ಇತ್ಯಾದಿಗಳನ್ನು ಪಡೆಯಲು, <ph name="EMAIL" /> ಆಗಿ Chrome ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
 <translation id="1138458427267715730">ವೆಬ್‌ನಾದ್ಯಂತ ಯಾವುದೇ ಸೈಟ್‌ನಲ್ಲಿ ಬೆಲೆ ಕಡಿಮೆಯಾದಾಗ ಎಚ್ಚರಿಕೆಗಳನ್ನು ಪಡೆಯಿರಿ</translation>
 <translation id="1140317858355046628">ನೀವು ಅದನ್ನು ಅಳಿಸಿದರೆ, ಎಲ್ಲರೂ ತಕ್ಷಣವೇ "<ph name="GROUP_NAME" />" ಟ್ಯಾಬ್ ಗುಂಪಿಗೆ ಆ್ಯಕ್ಸೆಸ್ ಅನ್ನು ಕಳೆದುಕೊಳ್ಳುತ್ತಾರೆ ಮತ್ತು ಅದನ್ನು ಎಲ್ಲಾ ಸಾಧನಗಳಿಂದ ಅಳಿಸಲಾಗುತ್ತದೆ.</translation>
 <translation id="1142732900304639782">ಈ ಸೈಟ್‌ಗಳನ್ನು ಅನುವಾದಿಸುವ ಪ್ರಸ್ತಾಪ ಮಾಡಬೇಡಿ</translation>
@@ -395,6 +396,7 @@
 <translation id="2723001399770238859">ಆಡಿಯೋ</translation>
 <translation id="2739887572830526131">ನಂತರ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಸೇರಿಸಲು ಈ ಗುಂಪನ್ನು ಇರಿಸಿಕೊಳ್ಳಿ ಅಥವಾ ನಿಮಗೆ ಅಗತ್ಯವಿಲ್ಲದಿದ್ದರೆ ಅದನ್ನು ಅಳಿಸಿ.</translation>
 <translation id="2742373789128106053"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ಇದೀಗ ಲಭ್ಯವಿಲ್ಲ.</translation>
+<translation id="2751271371269891762">ನಿಮ್ಮ ಎಲ್ಲಾ ಸಾಧನಗಳಲ್ಲಿ ನಿಮ್ಮ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು ಮತ್ತು ಇತ್ಯಾದಿಗಳನ್ನು ಪಡೆಯಲು, <ph name="EMAIL" /> ಆಗಿ ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
 <translation id="2760805590727089264">MM / YY</translation>
 <translation id="2762000892062317888">ಈಗತಾನೇ</translation>
 <translation id="276969039800130567"><ph name="USER_EMAIL_ADDRESS" /> ಹೆಸರಿನಲ್ಲಿ ಸೈನ್ ಇನ್ ಮಾಡಲಾಗಿದೆ.</translation>
@@ -404,6 +406,7 @@
 <translation id="2789486458103222910">ಸರಿ</translation>
 <translation id="2791129728587938169">{NUM_PASSWORDS,plural, =1{ನೀವು ಸುಧಾರಿಸಬಹುದಾದ ಮರುಬಳಕೆ ಮಾಡಲಾದ ಪಾಸ್‌ವರ್ಡ್‌ ಅನ್ನು Chrome ಪತ್ತೆ ಮಾಡಿದೆ}one{ನೀವು ಸುಧಾರಿಸಬಹುದಾದ # ಮರುಬಳಕೆ ಮಾಡಲಾದ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು Chrome ಪತ್ತೆ ಮಾಡಿದೆ}other{ನೀವು ಸುಧಾರಿಸಬಹುದಾದ # ಮರುಬಳಕೆ ಮಾಡಲಾದ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು Chrome ಪತ್ತೆ ಮಾಡಿದೆ}}</translation>
 <translation id="2800066122460699237"><ph name="TAB_TITLE" /> ಟ್ಯಾಬ್ ಅನ್ನು ಮುಚ್ಚಲಾಗುತ್ತದೆ</translation>
+<translation id="2805210243313393104">ನಿಮ್ಮ ಎಲ್ಲಾ ಸಾಧನಗಳಲ್ಲಿ ನಿಮ್ಮ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು ಹಾಗೂ ಇತ್ಯಾದಿಗಳನ್ನು ಪಡೆಯಿರಿ</translation>
 <translation id="2805756323405976993">ಆಪ್ಸ್‌‌</translation>
 <translation id="2819849308549746319">ಎಲ್ಲಾ ಅನ್‍ಸಬ್‍ಸ್ಕ್ರೈಬ್ ಮಾಡಿ</translation>
 <translation id="2820047235535485532">ನಿಮ್ಮ Google ಖಾತೆ <ph name="ACCOUNT_EMAIL" /> ನಲ್ಲಿ ಯಾವ ಡೇಟಾವನ್ನು ಸೇವ್ ಮಾಡಬೇಕೆಂದು ನೀವು ಆಯ್ಕೆ ಮಾಡಬಹುದು.\nನೀವು ಈ ಐಟಂಗಳನ್ನು ನಿಮ್ಮ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು, ಓದುವ ಪಟ್ಟಿ ಅಥವಾ Password Manager ನಲ್ಲಿ ವೀಕ್ಷಿಸಬಹುದು ಮತ್ತು ನಿರ್ವಹಿಸಬಹುದು.</translation>
@@ -673,6 +676,7 @@
 <translation id="4000670338830950598">ಹೈಲೈಟ್ ಮಾಡಿದ ಐಟಂನೊಂದಿಗೆ Google Chrome ಅನ್ನು ಕಸ್ಟಮೈಸ್ ಮಾಡಿ ಮತ್ತು ನಿಯಂತ್ರಿಸಿ</translation>
 <translation id="4015643064997321279">{NUM_PASSWORDS,plural, =1{ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ 1 ಅಪಾಯಕ್ಕೀಡಾದ ಪಾಸ್‌ವರ್ಡ್ ಇದೆ}one{ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ # ಅಪಾಯಕ್ಕೀಡಾದ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಇವೆ}other{ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ # ಅಪಾಯಕ್ಕೀಡಾದ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಇವೆ}}</translation>
 <translation id="4016425174436051808">ಅನುಸರಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ. ಏನೋ ತಪ್ಪಾಗಿದೆ.</translation>
+<translation id="4023638601467301498">ನಿಮ್ಮ ಎಲ್ಲಾ ಸಾಧನಗಳಲ್ಲಿ ನಿಮ್ಮ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು ಮತ್ತು ಇತ್ಯಾದಿಗಳನ್ನು ಪಡೆಯಲು, Chrome ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
 <translation id="4024768890073681126">ನಿಮ್ಮ ಬ್ರೌಸರ್ ಅನ್ನು ನಿಮ್ಮ ಪೋಷಕರು ನಿರ್ವಹಿಸುತ್ತಾರೆ</translation>
 <translation id="4027569221211770437"><ph name="FOLDER_TITLE" /> ಫೋಲ್ಡರ್‌</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# ಗಂಟೆ}one{# ಗಂಟೆಗಳು}other{# ಗಂಟೆಗಳು}}</translation>
@@ -1259,6 +1263,7 @@
 <translation id="6473086018775716761">ಹಂಚಿಕೊಳ್ಳುವ ಆಯ್ಕೆಗಳ ಪಟ್ಟಿಯನ್ನು ಅರ್ಧ ಎತ್ತರದಲ್ಲಿ ತೆರೆಯಲಾಗಿದೆ.</translation>
 <translation id="6475951671322991020">ವೀಡಿಯೊ ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ</translation>
 <translation id="6477928892249167417">ಈ ಸೈಟ್‌ಗಳು ನಿಮಗೆ ಪ್ರಮುಖವಾದವು:</translation>
+<translation id="6479881432656947268">Chrome ವೆಬ್‌ ಸ್ಟೋರ್‌ಗೆ ಭೇಟಿ ನೀಡಿ</translation>
 <translation id="6481963882741794338">ವೈಯಕ್ತೀಕರಣ ಮತ್ತು ಇತರ ಉದ್ದೇಶಗಳಿಗಾಗಿ Chrome ಮತ್ತು ಇತರ Google ಸೇವೆಗಳನ್ನು ಲಿಂಕ್ ಮಾಡಿ</translation>
 <translation id="6482749332252372425">ಸಂಗ್ರಹಣೆ ಸ್ಥಳದ ಕೊರತೆಯ ಕಾರಣದಿಂದ <ph name="FILE_NAME" /> ಡೌನ್‌ಲೋಡ್ ವಿಫಲವಾಗಿದೆ.</translation>
 <translation id="6486420406192123355">ಈ PDF ಫೈಲ್ ಅಸುರಕ್ಷಿತ ಕನೆಕ್ಷನ್‌ ಅನ್ನು ಬಳಸಿಕೊಂಡು ಸೈಟ್‌ನಿಂದ ಬಂದಿದೆ</translation>
@@ -1379,6 +1384,7 @@
 <translation id="6908998565271542516">ವೆಬ್‌ಸೈಟ್ ಅನ್ನು ಅನುಮೋದಿಸುವ ಅಥವಾ ಅನುಮೋದಿಸದಿರುವ ಕುರಿತ ಆಯ್ಕೆಯನ್ನು ಪೂರ್ಣ ಎತ್ತರದಲ್ಲಿ ತೆರೆಯಲಾಗಿದೆ</translation>
 <translation id="6909589135458168665">ಪುಟಗಳನ್ನು ಮುಂಚಿತವಾಗಿ ಲೋಡ್ ಮಾಡಿ</translation>
 <translation id="6910211073230771657">ಅಳಿಸಲಾಗಿದೆ</translation>
+<translation id="6916590542764765824">ವಿಸ್ತರಣೆಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="6918398787259831832">ಈ ಸಮಸ್ಯೆ ಮುಂದುವರಿದರೆ, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ನಿಂದ <ph name="BEGIN_LINK" />ಇನ್ನಷ್ಟು ಮಾಹಿತಿ ಪಡೆಯಿರಿ<ph name="END_LINK" />.</translation>
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> ನೀವು ಇತ್ತೀಚೆಗೆ ಭೇಟಿ ನೀಡದ ಕಾರಣ Chrome ಈ ಅನುಮತಿಗಳನ್ನು ತೆಗೆದುಹಾಕಿದೆ</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 ಟ್ಯಾಬ್}one{<ph name="NUMBER_OF_TABS" /> ಟ್ಯಾಬ್‌ಗಳು}other{<ph name="NUMBER_OF_TABS" /> ಟ್ಯಾಬ್‌ಗಳು}}</translation>

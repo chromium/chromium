@@ -75,7 +75,6 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="1896836275755235458">Chromium štedi bateriju tako što ograničava aktivnosti u pozadini i vizuelne efekte, kao što je glatko skrolovanje i brzine kadrova videa. <ph name="BEGIN_LINK" />Saznajte više o Uštedi energije<ph name="END_LINK" /></translation>
 <translation id="1898804291554630487">Postavite pitanje o ovoj stranici</translation>
 <translation id="1900969832270057921">Usluga ažuriranja Chromium-a</translation>
-<translation id="1911666947158375684">Dok ste prijavljeni, možete da koristite lozinke i drugo sa Google naloga u Chromium-u. Ovo možete da promenite u svakom trenutku u podešavanjima.</translation>
 <translation id="1911763535808217981">Kada to uključite, možete da se prijavljujete na Google sajtove, kao što je Gmail, ali se ne prijavljujete u Chromium</translation>
 <translation id="1929939181775079593">Chromium ne reaguje. Želite li da ga odmah ponovo pokrenete?</translation>
 <translation id="1933341829955786215">Vaša organizacija, <ph name="MANAGER" />, zahteva da se prijavite u Chromium</translation>
@@ -148,6 +147,7 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="2620436844016719705">Sistem</translation>
 <translation id="2629740064077610681">Organizacija može da vidi podatke pregledanja, poput obeleživača, istorije i lozinki, i da upravlja njima. Ne može da vidi podatke pregledanja na drugim Chromium profilima</translation>
 <translation id="2635452620547538388">Potvrdite identitet da biste koristili i sačuvali Chromium podatke na nalogu, <ph name="ACCOUNT_EMAIL" /></translation>
+<translation id="2637732208198500597">{COUNT,plural, =0{Napredna zaštita zahteva da ponovo pokrenete Chromium da biste primenili ažuriranje}=1{Napredna zaštita zahteva da ponovo pokrenete Chromium kako biste primenili ažuriranje. Prozor bez arhiviranja se neće ponovo otvoriti.}one{Napredna zaštita zahteva da ponovo pokrenete Chromium kako biste primenili ažuriranje. # prozor bez arhiviranja se neće ponovo otvoriti.}few{Napredna zaštita zahteva da ponovo pokrenete Chromium kako biste primenili ažuriranje. # prozora bez arhiviranja se neće ponovo otvoriti.}other{Napredna zaštita zahteva da ponovo pokrenete Chromium kako biste primenili ažuriranje. # prozora bez arhiviranja se neće ponovo otvoriti.}}</translation>
 <translation id="2648074677641340862">Tokom instalacije je došlo do greške u operativnom sistemu. Preuzmite Chromium ponovo.</translation>
 <translation id="2661879430930417727">Ako delite uređaj, prijatelji i porodica mogu zasebno da pregledaju i da podese Chromium baš onako kako žele</translation>
 <translation id="2711502716910134313">Kartica Chromium</translation>
@@ -384,6 +384,7 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="5605834417512968703">Izaberite bilo šta za pretragu pomoću pretrage slika ili pritisnite Escape da biste izašli iz pretrage slika</translation>
 <translation id="5618818588972826921">Izaberite bilo koji tekst ili sliku za pretragu pomoću pretrage slika ili pritisnite Escape da biste izašli iz pretrage slika</translation>
 <translation id="5623402015214259806">{0,plural, =0{Ažuriranje za Chromium je dostupno}=1{Ažuriranje za Chromium je dostupno}one{Ažuriranje za Chromium je dostupno već # dan}few{Ažuriranje za Chromium je dostupno već # dana}other{Ažuriranje za Chromium je dostupno već # dana}}</translation>
+<translation id="5633450273457573375">Koristite <ph name="BEGIN_LINK" />sopstvenu pristupnu frazu<ph name="END_LINK" /> da biste šifrovali sve Chromium podatke na Google nalogu. Adrese i svi podaci sačuvani u Google novčaniku neće biti šifrovani pomoću pristupne fraze. Istorija pregledanja iz Chromium-a se neće sinhronizovati.</translation>
 <translation id="5643865575100044307">Uvek izbrišite podatke o sajtovima sa uređaja kada zatvorite Chromium</translation>
 <translation id="5653831366781983928">Restartujte Chromium</translation>
 <translation id="5690427481109656848">Google LLC</translation>

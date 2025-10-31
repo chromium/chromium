@@ -1844,6 +1844,7 @@
 <translation id="4014895360827978999">व्यापारी सेवाएं और पेमेंट सिस्टम</translation>
 <translation id="4018819349042761761">सार्वजनिक पासकोड</translation>
 <translation id="4023431997072828269">यह फ़ॉर्म किसी ऐसे इंटरनेट कनेक्शन की मदद से सबमिट किया जा रहा है जो सुरक्षित नहीं है, इसलिए आपकी जानकारी दूसरे लोग भी देख सकेंगे.</translation>
+<translation id="4024673763872230929">अपनी जानकारी सेव करें और फ़ॉर्म को ज़्यादा तेज़ी से भरें. यह आपके डिवाइस में सेव होती है.</translation>
 <translation id="4025325634010721551">नीतियों को फिर से लोड किया गया</translation>
 <translation id="4025338605225449265">करंसी और फ़ॉरेन एक्सचेंज</translation>
 <translation id="4025777154208238692">उलटे क्रम में</translation>
@@ -2277,6 +2278,7 @@
 <translation id="4732860731866514038"><ph name="LANGUAGE" /> भाषा पैक डाउनलोड किया जा रहा है... <ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992"><ph name="URL" /> वेबसाइट आपके डिवाइस के स्थान की जानकारी का इस्तेमाल करना चाहती है</translation>
 <translation id="473414950835101501">आपके कैमरे का ऐक्सेस</translation>
+<translation id="4734343956394152985"><ph name="BEGIN_BOLD" />मौजूदा डिफ़ॉल्ट सर्च इंजन<ph name="END_BOLD" /> · <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="4736825316280949806">क्रोमियम को फिर से शुरू करें</translation>
 <translation id="4736934858538408121">वर्चुअल कार्ड</translation>
 <translation id="473775607612524610">अपडेट करें</translation>
@@ -2932,6 +2934,7 @@
 <translation id="5813119285467412249">&amp;जोड़ना फिर से करें</translation>
 <translation id="5813753398265398978">भौतिक विज्ञान</translation>
 <translation id="5817918615728894473">युग्‍मित करें</translation>
+<translation id="5820625124144807242">ऑर्डर की समीक्षा करने के बाद, आपको अपने <ph name="BNPL_ISSUER_NAME" /> खाते से साइन इन करना होगा या एक नया खाता बनाना होगा. यह खाता, Google Pay से अपने-आप लिंक हो जाएगा.</translation>
 <translation id="5826507051599432481">सामान्य नाम (CN)</translation>
 <translation id="5830698870816298009">हलचल को कैप्चर करने के लिए, कैमरे का इस्तेमाल करें</translation>
 <translation id="5831217499016131155">Google वॉलेट</translation>
@@ -3385,6 +3388,7 @@
 <translation id="6521745193039995384">चालू नहीं</translation>
 <translation id="6522682797352430154">क्लासिकल म्यूज़िक</translation>
 <translation id="6524830701589638230">'सुलभता सेटिंग को मैनेज करें' बटन, Chrome की सेटिंग में सुलभता टूल को अपने हिसाब से बनाने के लिए इसे चालू करें</translation>
+<translation id="6525222262307262764">मौजूदा सर्च इंजन को डिफ़ॉल्ट पर सेट रहने दें</translation>
 <translation id="6527049834925947126">फ़ूड प्रोडक्शन</translation>
 <translation id="6529173248185917884">सातवां रोल</translation>
 <translation id="6529602333819889595">मिटाना &amp;फिर से करें</translation>
@@ -3405,6 +3409,7 @@
 <translation id="6567832540451970450">आपके एडमिन ने इस साइट के लिए, <ph name="PERMISSION" /> के इस्तेमाल की अनुमति दी है</translation>
 <translation id="6568793038316600992">'पेमेंट के तरीके मैनेज करें' बटन, Chrome की सेटिंग में, पेमेंट और क्रेडिट कार्ड की जानकारी मैनेज करने के लिए इसे चालू करें</translation>
 <translation id="6569060085658103619">एक एक्सटेंशन पेज देखा जा रहा है</translation>
+<translation id="6571992525120410251"><ph name="ENGINE_NAME" /> से किसी भी विषय के बारे में पूछें</translation>
 <translation id="6572867903637058088">क्या यह जानकारी काम की थी?</translation>
 <translation id="6573200754375280815">दाईं ओर ड्युएल पंच</translation>
 <translation id="6575408526598156416">खाते में सेव करें</translation>
@@ -3444,7 +3449,6 @@
 <translation id="6649510485211003056">195 x 270 मि॰मी॰</translation>
 <translation id="6651270836885078973">इसे यह मैनेज करता है:</translation>
 <translation id="6652101503459149953">Windows Hello का इस्तेमाल करें</translation>
-<translation id="6653684225271066234"><ph name="BNPL_ISSUER_NAME" /> जांच करेगा कि आपको यह सुविधा मिल सकती है या नहीं. इसका असर आपके क्रेडिट स्कोर पर नहीं पड़ेगा. ज़रूरी शर्तें पूरी करने पर, <ph name="BNPL_ISSUER_NAME" /> आपको संभावित बिलिंग प्लान के सुझाव देगा, ताकि आप उनमें से कोई प्लान चुनकर खरीदारी कर सकें.</translation>
 <translation id="6654224358955673568">औपचारिक बनाओ</translation>
 <translation id="6654244995031366386">ग्लास (टेक्सचर्ड)</translation>
 <translation id="6657585470893396449">पासवर्ड</translation>
@@ -3454,6 +3458,7 @@
 <translation id="666259744093848177">(x86_64 का अनुवाद किया गया)</translation>
 <translation id="6665553082534466207">दाईं ओर ट्रिपल पंच</translation>
 <translation id="6668389483194953109">पेपर साइज़ का नाम "custom" मिला, लेकिन "custom_size" प्रॉपर्टी खाली या अमान्य है.</translation>
+<translation id="6670729408462528018">गैलरी</translation>
 <translation id="6671169470640320959">वाहनों के लिए क़र्ज़</translation>
 <translation id="6671697161687535275">क्रोमियम से फ़ॉर्म सुझाव निकालें?</translation>
 <translation id="6675846980676550611">एआर इस्तेमाल करने की अनुमति नहीं है</translation>
@@ -3607,7 +3612,6 @@
 <translation id="6925267999184670015">नॉर्थ अमेरिकन B+</translation>
 <translation id="6926216138694948720">बॉडी आर्ट</translation>
 <translation id="692638818576287323">व्यावसायिक वाहन</translation>
-<translation id="6927057753277044239">ऑर्डर की समीक्षा करने के बाद, आपको अपने <ph name="BNPL_ISSUER_NAME" /> खाते से साइन इन करना होगा या एक नया खाता बनाना होगा. यह खाता, आपके Google खाते से अपने-आप लिंक हो जाएगा.</translation>
 <translation id="6930607614725241390">साइड पैनल में खोजें</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />आपका डिफ़ॉल्ट सर्च इंजन आपको वेब पर खोज करने और Chrome की सुविधाएं इस्तेमाल करने की अनुमति देता है.<ph name="END_BOLD" /> जैसे, पता बार से और वेब पेजों पर मौजूद इमेज की मदद से खोज करना. अगर आपका सर्च इंजन, किसी सुविधा के साथ काम नहीं करता, तो हो सकता है कि वह सुविधा उपलब्ध न हो.</translation>
 <translation id="6934672428414710184">यह नाम आपके Google खाते से है</translation>
@@ -3961,6 +3965,7 @@
 <translation id="7485085230273446323">कारोबार और उद्योग</translation>
 <translation id="7485870689360869515">कोई डेटा नहीं मिला</translation>
 <translation id="7486880426035242089">OneDrive</translation>
+<translation id="7489255442002627311"><ph name="BNPL_ISSUER_NAME" /> जांच करेगा कि आपको यह सुविधा मिल सकती है या नहीं. इससे आपके क्रेडिट स्कोर पर कोई असर नहीं पड़ेगा. सुविधा इस्तेमाल करने की मंज़ूरी मिलने पर, <ph name="BNPL_ISSUER_NAME" /> आपको अलग-अलग पेमेंट प्लान के सुझाव देगा, ताकि आप उनमें से कोई प्लान चुनकर खरीदारी की प्रोसेस पूरी कर सकें.</translation>
 <translation id="7489392576326061356">शैम्पू और कंडिशनर</translation>
 <translation id="7489919936111034362">आपका Google Drive स्टोरेज भर चुका है</translation>
 <translation id="7495528107193238112">इस कॉन्टेंट को ब्लॉक कर दिया गया है. समस्या को ठीक करने के लिए, साइट के मालिक से संपर्क करें.</translation>

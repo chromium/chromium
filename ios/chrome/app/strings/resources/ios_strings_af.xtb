@@ -677,6 +677,7 @@
 <translation id="3642060527569456384">Oortjiegroepe stoor en dateer outomaties op al jou toestelle op</translation>
 <translation id="3643338347976071250">{count,plural, =1{{count} wagwoord word net op hierdie toestel gestoor. Stoor dit in jou Google-rekening, {email}, om dit op jou ander toestelle te gebruik.}other{{count} wagwoorde word net op hierdie toestel gestoor. Stoor hulle in jou Google-rekening, {email}, om hulle op jou ander toestelle te gebruik.}}</translation>
 <translation id="3659297405161482746">Geen betaalmetodes is gevind nie</translation>
+<translation id="3662966164093827811">{count,plural, =1{1 is gekies}other{# is gekies}}</translation>
 <translation id="3668816008081204991">Leeslys word versteek</translation>
 <translation id="3670030362669914947">Nommer</translation>
 <translation id="3679163990085797665">Vee uit wat gelees is</translation>
@@ -1125,7 +1126,7 @@
 <translation id="537853552771686272">Bestuur die onderwerpe en werwe waarin jy belangstel</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} is toegemaak}other{{count} is toegemaak}}</translation>
 <translation id="5394975111793637642">Versteek produkresensies vir jou kaart</translation>
-<translation id="5407806496954700135">Wil jy jou Nuwe Oortjie-bladsy se pasmakings van ’n ander toestel af toepas?</translation>
+<translation id="5407806496954700135">Wil jy jou Nuwe Oortjie-bladsy se pasmakings vanaf ’n ander toestel toepas?</translation>
 <translation id="5414763847370083940">Jy sal ’n opletberig kry as die prys op enige werf daal.</translation>
 <translation id="5415289094036440596">Toegangsleutels kan nie gedeel word nie</translation>
 <translation id="5416455648658732408">Skuif na oortjiegroep</translation>
@@ -1760,7 +1761,7 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="7696316012653762532">Opsies om die bladsy te vertaal</translation>
 <translation id="7700527812567437847">Deursoek skerm met Google Lens</translation>
 <translation id="7701040980221191251">Geen</translation>
-<translation id="7708668404222666001">Het jou nuwe oortjiebladsyvoorkeure toegepas</translation>
+<translation id="7708668404222666001">Jou Nuwe Oortjie-bladsy se voorkeure is toegepas</translation>
 <translation id="7708994397325774423">Kry al jou wagwoorde</translation>
 <translation id="7711440461521638739">Jy hergebruik geen wagwoorde nie</translation>
 <translation id="7712361583414030698">Bekyk tans vanlyn weergawe</translation>

@@ -648,7 +648,7 @@
 <translation id="3530024057633834563">אין לך סיסמאות או מפתחות גישה שמורים, אבל אפשר למחוק את רשימת האתרים והאפליקציות שבחרת לא לשמור בהם אף פעם פרטי כניסה. חשבונות שיצרת לאתרים ולאפליקציות לא יימחקו.</translation>
 <translation id="3530206579861815432">איתור מהיר של כרטיסיות פתוחות וכאלה שנסגרו לאחרונה בכל המכשירים המסונכרנים.</translation>
 <translation id="3530767473765895035">ניהול החשבונות במכשיר הזה…</translation>
-<translation id="353340646084395154">העדפות דף הכרטיסייה החדשה הוסרו</translation>
+<translation id="353340646084395154">ההעדפות של דף הכרטיסייה החדשה הוסרו</translation>
 <translation id="3533436815740441613">כרטיסייה חדשה</translation>
 <translation id="3540141921715814660">הוספה לסימניות</translation>
 <translation id="3546122170015471515">‏הפצה מקדימה של "מפות" ב-Google.com</translation>
@@ -677,6 +677,7 @@
 <translation id="3642060527569456384">קבוצות הכרטיסיות נשמרות באופן אוטומטי ומתעדכנות בכל המכשירים.</translation>
 <translation id="3643338347976071250">{count,plural, =1{‏סיסמה אחת ({count}) שמורה רק במכשיר הזה. כדי להשתמש בה במכשירים אחרים, צריך לשמור אותה בחשבון Google עם הכתובת {email}.}one{‏{count} סיסמאות שמורות רק במכשיר הזה. כדי להשתמש בהן במכשירים אחרים, צריך לשמור אותן בחשבון Google עם הכתובת {email}.}two{‏{count} סיסמאות שמורות רק במכשיר הזה. כדי להשתמש בהן במכשירים אחרים, צריך לשמור אותן בחשבון Google עם הכתובת {email}.}other{‏{count} סיסמאות שמורות רק במכשיר הזה. כדי להשתמש בהן במכשירים אחרים, צריך לשמור אותן בחשבון Google עם הכתובת {email}.}}</translation>
 <translation id="3659297405161482746">לא נמצאו אמצעי תשלום</translation>
+<translation id="3662966164093827811">{count,plural, =1{נבחרה מדינה אחת}one{# נבחרו}two{# נבחרו}other{# נבחרו}}</translation>
 <translation id="3668816008081204991">רשימת הקריאה מוסתרת</translation>
 <translation id="3670030362669914947">מספר</translation>
 <translation id="3679163990085797665">מחיקת פריטים שנקראו</translation>
@@ -1002,7 +1003,7 @@
 <translation id="4894963374040315706">כך תהיה לך אפשרות לבצע חיפוש באמצעות הקול</translation>
 <translation id="4895540042460820904">פתיחה אחרונה</translation>
 <translation id="4896467949657706481">הכרטיסיות נסגרו והמערכת הוציאה אותך מהחשבון</translation>
-<translation id="4911042367886397055">שמחים שחזרת, <ph name="USER_NAME" /></translation>
+<translation id="4911042367886397055">שמחים שחזרת, <ph name="USER_NAME" />!</translation>
 <translation id="4913626501929406101">אפשר לשתף באופן מאובטח עותק של הסיסמה עם מישהו בקבוצה המשפחתית שלך. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="4917025507570489430">אפשר להשתמש בנתוני הגלישה הקיימים כשמתחברים כ-<ph name="USER_EMAIL" />. יכול להיות שהארגון שלך יוכל לראות את הנתונים האלה.</translation>
 <translation id="4918086044614829423">אישור</translation>
@@ -1054,7 +1055,7 @@
 <translation id="508645147179720015">ההערה מכילה יותר מ-1,000 תווים</translation>
 <translation id="5087098519049306025">מעקב מחירים</translation>
 <translation id="5090832849094901128">מחיקת הסיסמה הזו לא תגרום למחיקת החשבון שלך באתר <ph name="WEBSITE" />.</translation>
-<translation id="5113960131843706315">הפריטים שלך בדרך…</translation>
+<translation id="5113960131843706315">הדברים שלך בדרך…</translation>
 <translation id="5118462200606189584">הוספת חשבון…</translation>
 <translation id="5118764316110575523">כבויה</translation>
 <translation id="5119329531859909472">כדי לעקוב אחרי המוצר, לוחצים על "מעקב"</translation>
@@ -1760,7 +1761,7 @@
 <translation id="7696316012653762532">אפשרויות לתרגום הדף</translation>
 <translation id="7700527812567437847">‏חיפוש במסך באמצעות Google Lens</translation>
 <translation id="7701040980221191251">אין</translation>
-<translation id="7708668404222666001">העדפות דף הכרטיסייה החדשה הוחלו</translation>
+<translation id="7708668404222666001">ההעדפות של דף הכרטיסייה החדשה הופעלו</translation>
 <translation id="7708994397325774423">קבלת כל הסיסמאות</translation>
 <translation id="7711440461521638739">אין שימוש חוזר בסיסמאות כלשהן</translation>
 <translation id="7712361583414030698">מוצגת גרסת אופליין</translation>

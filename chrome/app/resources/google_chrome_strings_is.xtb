@@ -93,6 +93,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="2018528049276128029">Á hverjum prófíl eru geymdar Chrome upplýsingar á borð við bókamerki, feril, aðgangsorð og fleira</translation>
 <translation id="2018879682492276940">Uppsetning mistókst. Reyndu aftur.</translation>
 <translation id="2024959665595762054">Staðfestu að þetta sért þú til að nota og vista Chrome-gögn á Google-reikningnum þínum</translation>
+<translation id="2026377840141807639">Chrome-prófílar gera þér kleift að halda persónulegri vefskoðun og vinnu aðskildu. Bættu nýjum prófíl við núna.</translation>
 <translation id="2034233344106846793">Chrome uppfærir óöruggar tengingar sjálfkrafa í HTTPS þegar hægt er</translation>
 <translation id="2039417478970545937">Stillingar.</translation>
 <translation id="2091012649849228750">Til að fá frekari uppfærslur á Google Chrome þarftu Windows 10 eða nýrri útgáfu. Þessi tölva notar Windows 8.</translation>
@@ -367,6 +368,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 Sumir eiginleikar kunna að vera óaðgengilegir. Tilgreindu aðra prófílmöppu eða notaðu nýrri útgáfu af Chrome.</translation>
 <translation id="5174969993834422967">Þú lokar yfirleitt á tilkynningar. Smelltu á tilkynningatáknið í hægra horni veffangastikunnar til að leyfa vefsvæðinu að senda þér tilkynningar.</translation>
 <translation id="5174983315706567306">Ekki nægilegt diskpláss.</translation>
+<translation id="5190467473654176081">Sérsníddu Chrome til að gefa honum nýtt útlit</translation>
 <translation id="5201744974236816379">Chrome-uppfærsla</translation>
 <translation id="521447420733633466">Ef nokkrir deila sama tæki geta vinir og fjölskyldumeðlimir vafrað hver á sínum prófíl og sett Chrome upp eins og hverjum og einum líkar best</translation>
 <translation id="5234764350956374838">Hunsa</translation>
@@ -390,6 +392,7 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="5510398294750420479">Sæktu Chrome í símanum þínum til að bæta við aukalagi af vernd þegar þú ert á ferðinni</translation>
 <translation id="5524890928877629608">efsta horn leitarsvæðis vinstra megin: til vinstri <ph name="LEFT" />%, efst <ph name="TOP" />%</translation>
 <translation id="5530733413481476019">Láttu Chrome vinna hraðar</translation>
+<translation id="5550137307985173298">Smelltu á hnappinn „Sérsníða Chrome“ á síðu nýrra flipa til að gefa Chrome nýtt útlit</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-inn)</translation>
 <translation id="5579324208890605088">Villa í ræsingu: keyrðu uppsetningarforritið sem venjulegur notandi, ekki sem kerfisstjóri.</translation>
 <translation id="5596627076506792578">Fleiri valkostir</translation>
@@ -418,6 +421,7 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="5736850870166430177">Ef vefsvæði reynir að stela aðgangsorðinu þínu, eða ef þú sækir skaðlega skrá, gæti Chrome einnig sent vefslóðir í örugga vefskoðun, þar á meðal hluta af innihaldi síðna</translation>
 <translation id="5756509061973259733">Chrome prófíll með þessum reikningi er þegar til í þessu tæki</translation>
 <translation id="5759947850379142561">Veldu hvaða texta eða mynd sem er til að leita með Google-linsu eða ýttu á „Esc“ til að loka Linsunni</translation>
+<translation id="5762867845020858790">Bættu nýjum Chrome-prófíl við til að halda bókamerkjum, aðgangsorðum og stillingum aðskildum.</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Google Chrome Canary</translation>
 <translation id="5804318322022881572">Ekki var hægt að ræsa Chrome. Reyndu aftur.</translation>
 <translation id="5809516625706423866">Ekki er hægt að tengjast internetinu. HTTP 403 óheimilt. Kannaðu uppsetningu staðgengilsþjóna.</translation>
@@ -518,13 +522,13 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="6800285125190089494">Vertu fljótari að skrá þig inn á vefsvæði með því að nota vistuð aðgangsorð fyrir Chrome í iOS</translation>
 <translation id="6831043979455480757">Þýða</translation>
 <translation id="683440813066116847">Regla á innleið til að láta Google Chrome Canary leyfa mDNS-umferð.</translation>
+<translation id="6841242485723266823">Chrome-prófílar hjálpa þér að aðskilja mismunandi hluta lífsins. Bættu nýjum prófíl við núna.</translation>
 <translation id="684888714667046800">Ekki er hægt að tengjast internetinu. Ef þú notar eldvegg skaltu tryggja að <ph name="PRODUCT_EXE_NAME" /> sé á hvíta listanum.</translation>
 <translation id="6877155553248388166">neðsta horn leitarsvæðis hægra megin: til hægri <ph name="RIGHT" />%, neðst <ph name="BOTTOM" />%</translation>
 <translation id="6881299373831449287">Uppfærir Chrome</translation>
 <translation id="6885412569789873916">Chrome Beta forrit</translation>
 <translation id="6893363893008038481">Fjarlægja reikning úr Chrome</translation>
 <translation id="6896758677409633944">Afrita</translation>
-<translation id="6927941417289800361">Á meðan þú ert innskráð(ur) geturðu notað aðgangsorðin þín og fleira af Google-reikningnum þínum í Chrome. Þú getur breytt þessu hvenær sem er í stillingunum.</translation>
 <translation id="6930294499209825">Heldur Google-hugbúnaðinum þínum uppfærðum. Ef slökkt er á þessari þjónustu eða hún stöðvuð verður Google-hugbúnaðinum þínum ekki haldið uppfærðum sem þýðir að ekki verður hægt að lagfæra öryggisveikleika sem kunna að koma upp og tilteknir eiginleikar virka hugsanlega ekki sem skyldi. Þjónustan fjarlægist sjálfkrafa ef enginn Google-hugbúnaður er að nota hana.</translation>
 <translation id="6933858244219479645">ChromeOS-kerfi</translation>
 <translation id="6938166777909186039">Til að fá frekari uppfærslur á Google Chrome þarftu Windows 10 eða nýrri útgáfu. Þessi tölva notar Windows 8.1.</translation>
@@ -681,6 +685,7 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome verður endurræst eftir 1 mínútu}one{Chrome verður endurræst eftir # mínútu}other{Chrome verður endurræst eftir # mínútur}}</translation>
 <translation id="8637932705841171563">Leyfðu skjáupptöku í Chrome í kerfisstillingunum til að deila glugganum þínum</translation>
 <translation id="8641606876632989680">Chrome lætur þig vita þegar þú skráir þig inn með aðgangsorði sem er í hættu</translation>
+<translation id="8647930742055103497">Hafðu allt í Chrome</translation>
 <translation id="8656634243791296665">Opna Gemini í Chrome Dev</translation>
 <translation id="8669527147644353129">Hjálparforrit Google Chrome</translation>
 <translation id="8677922833187616101">Alltaf sýna flýtileið gervigreindarstillingar Google</translation>

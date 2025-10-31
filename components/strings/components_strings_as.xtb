@@ -2928,6 +2928,7 @@
 <translation id="5813119285467412249">যোগ কৰা কার্য &amp;ৰিডু কৰক</translation>
 <translation id="5813753398265398978">পদাৰ্থ বিজ্ঞান</translation>
 <translation id="5817918615728894473">পেয়াৰ কৰক</translation>
+<translation id="5820625124144807242">আপোনাৰ অৰ্ডাৰটো পৰ্যালোচনা কৰাৰ পাছত আপুনি <ph name="BNPL_ISSUER_NAME" />ত ছাইন ইন কৰিবই লাগিব বা সেইটোৰ সৈতে এটা একাউণ্ট সৃষ্টি কৰিব লাগিব। এই একাউণ্টটো স্বয়ংক্ৰিয়ভাৱে Google Payৰ সৈতে লিংক কৰা হ’ব।</translation>
 <translation id="5826507051599432481">কামাণ্ডৰ নাম (CN)</translation>
 <translation id="5830698870816298009">কেমেৰাৰ ব্যৱহাৰ আৰু গতিবিধি</translation>
 <translation id="5831217499016131155">Google Wallet</translation>
@@ -3439,7 +3440,6 @@
 <translation id="6649510485211003056">১৯৫ x ২৭০ মি.মি.</translation>
 <translation id="6651270836885078973">ইয়াৰ দ্বাৰা পৰিচালিত:</translation>
 <translation id="6652101503459149953">Windows Hello ব্যৱহাৰ কৰক</translation>
-<translation id="6653684225271066234"><ph name="BNPL_ISSUER_NAME" />এ আপোনাৰ যোগ্যতা পৰীক্ষা কৰিব (ই আপোনাৰ ক্ৰেডিট স্ক’ৰ প্ৰভাৱিত নকৰে)। আপুনি যদি যোগ্যতাসূচক মান পূৰ কৰে, তেন্তে <ph name="BNPL_ISSUER_NAME" />এ আপোনাৰ ক্ৰয় সম্পূৰ্ণ কৰিবলৈ আপোনাক সম্ভাব্য পৰিশোধৰ আঁচনি(সমূহ) প্ৰদান কৰিব।</translation>
 <translation id="6654224358955673568">গৃহীত ৰূপ দিয়ক</translation>
 <translation id="6654244995031366386">কাচ (বিন্যাসিত)</translation>
 <translation id="6657585470893396449">পাছৱৰ্ড</translation>
@@ -3602,7 +3602,6 @@
 <translation id="6925267999184670015">উত্তৰ আমেৰিকাৰ B+</translation>
 <translation id="6926216138694948720">বডি আৰ্ট</translation>
 <translation id="692638818576287323">বাণিজ্যিক বাহন</translation>
-<translation id="6927057753277044239">আপোনাৰ অৰ্ডাৰটো পৰ্যালোচনা কৰাৰ পাছত আপুনি <ph name="BNPL_ISSUER_NAME" />ত ছাইন ইন কৰিবই লাগিব বা সেইটোৰ সৈতে এটা একাউণ্ট সৃষ্টি কৰিব লাগিব। এই একাউণ্টটো স্বয়ংক্ৰিয়ভাৱে আপোনাৰ Google একাউণ্টৰ সৈতে লিংক কৰা হ’ব।</translation>
 <translation id="6930607614725241390">ছাইডৰ পেনেলত সন্ধান কৰক</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />আপোনাৰ ডিফ’ল্ট সন্ধানৰ ইঞ্জিনে আপোনাক ৱেব সন্ধান কৰিবলৈ দিয়ে আৰু Chromeৰ সুবিধাসমূহক আগবঢ়ায়<ph name="END_BOLD" /> যেনে, ঠিকনাৰ বাৰৰ পৰা আৰু ৱেব পৃষ্ঠাসমূহত প্ৰতিচ্ছবিৰ পৰা সন্ধান কৰা। আপোনাৰ সন্ধানৰ ইঞ্জিনে কোনো সুবিধা সমৰ্থন নকৰিলে সেইটো উপলব্ধ নহ’ব পাৰে।</translation>
 <translation id="6934672428414710184">এই নামটো আপোনাৰ Google একাউণ্টৰ</translation>
@@ -3955,6 +3954,7 @@
 <translation id="7485085230273446323">ব্যৱসায় আৰু ঔদ্যোগিক</translation>
 <translation id="7485870689360869515">কোনো ডেটা বিচাৰি পোৱা নগ’ল।</translation>
 <translation id="7486880426035242089">OneDrive</translation>
+<translation id="7489255442002627311"><ph name="BNPL_ISSUER_NAME" />এ আপোনাৰ যোগ্যতা পৰীক্ষা কৰিব (ই আপোনাৰ ক্ৰেডিট স্ক’ৰ প্ৰভাৱিত নকৰে)। যদি অনুমোদন জনোৱা হয়, তেন্তে <ph name="BNPL_ISSUER_NAME" />এ আপোনাক কিছুমান পৰিশোধৰ আঁচনিৰ মাজৰ পৰা এটা আঁচনি বাছনি কৰি আপোনাৰ ক্ৰয় সম্পূৰ্ণ কৰিব দিব।</translation>
 <translation id="7489392576326061356">শ্বেম্পু আৰু কণ্ডিশ্বনাৰ</translation>
 <translation id="7489919936111034362">আপোনাৰ Google Driveৰ ষ্ট’ৰেজ ভৰি পৰিছে</translation>
 <translation id="7495528107193238112">এই সমলটো অৱৰোধ কৰা হৈছে। সমস্যাটো সমাধান কৰিবলৈ ছাইটৰ গৰাকীৰ সৈতে যোগাযোগ কৰক।</translation>

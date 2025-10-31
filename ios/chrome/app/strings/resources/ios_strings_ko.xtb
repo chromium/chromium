@@ -277,7 +277,7 @@
 <translation id="199425419756152024">비밀번호 보기</translation>
 <translation id="1996318269856535896">이 기기에서 기존 인터넷 사용 기록을 계속 사용할 수 있습니다. 이를 사용하려면 관리 계정에서 로그아웃하세요.</translation>
 <translation id="2010008505735295285">새로고침</translation>
-<translation id="2012723204723845092">다시 방문해 주셔서 감사합니다.</translation>
+<translation id="2012723204723845092">다시 방문해 주셔서 감사합니다</translation>
 <translation id="2015722694326466240">비밀번호를 보려면 먼저 기기에 비밀번호를 설정해야 합니다.</translation>
 <translation id="201759455285471444">탭 그룹을 펼칩니다.</translation>
 <translation id="202070562065520783">설명해 줘</translation>
@@ -648,7 +648,7 @@
 <translation id="3530024057633834563">저장된 비밀번호나 패스키는 없지만, 로그인 정보를 저장하지 않도록 선택한 사이트 및 앱 목록은 삭제할 수 있습니다. 사이트 및 앱용으로 만든 계정은 삭제되지 않습니다.</translation>
 <translation id="3530206579861815432">동기화된 기기에서 열려 있는 탭과 최근에 닫은 탭을 빠르게 찾습니다</translation>
 <translation id="3530767473765895035">이 기기에서 계정 관리…</translation>
-<translation id="353340646084395154">새 탭 페이지 환경설정 삭제됨</translation>
+<translation id="353340646084395154">새 탭 페이지 환경설정이 삭제되었습니다.</translation>
 <translation id="3533436815740441613">새 탭</translation>
 <translation id="3540141921715814660">북마크에 추가</translation>
 <translation id="3546122170015471515">Google.com에서 지도 미리보기</translation>
@@ -1002,7 +1002,7 @@
 <translation id="4894963374040315706">액세스를 허용하면 음성으로 검색할 수 있습니다.</translation>
 <translation id="4895540042460820904">마지막으로 열어본 날짜</translation>
 <translation id="4896467949657706481">탭이 닫히고 로그아웃되었습니다.</translation>
-<translation id="4911042367886397055"><ph name="USER_NAME" />님, 다시 방문해 주셔서 감사합니다.</translation>
+<translation id="4911042367886397055"><ph name="USER_NAME" />님, 다시 방문해 주셔서 감사합니다</translation>
 <translation id="4913626501929406101">가족 그룹의 다른 사용자와 비밀번호 사본을 안전하게 공유할 수 있습니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="4917025507570489430"><ph name="USER_EMAIL" /> 계정으로 로그인하면 기존 인터넷 사용 기록을 사용할 수 있습니다. 조직에서 이 데이터를 볼 수 있습니다</translation>
 <translation id="4918086044614829423">수락</translation>
@@ -1054,7 +1054,7 @@
 <translation id="508645147179720015">메모가 1,000자(영문 기준)를 초과합니다.</translation>
 <translation id="5087098519049306025">가격 추적</translation>
 <translation id="5090832849094901128">비밀번호를 삭제해도 <ph name="WEBSITE" /> 계정은 삭제되지 않습니다.</translation>
-<translation id="5113960131843706315">자료를 가져오는 중…</translation>
+<translation id="5113960131843706315">데이터를 불러오는 중…</translation>
 <translation id="5118462200606189584">계정 추가…</translation>
 <translation id="5118764316110575523">사용 안함</translation>
 <translation id="5119329531859909472">제품을 추적하려면 추적을 탭하세요.</translation>
@@ -1125,7 +1125,7 @@
 <translation id="537853552771686272">관심 있는 주제 및 사이트 관리</translation>
 <translation id="5390458669633674385">{count,plural, =1{닫힌 탭 {count}개}other{닫힌 탭 {count}개}}</translation>
 <translation id="5394975111793637642">추천 제품 리뷰 카드 숨기기</translation>
-<translation id="5407806496954700135">다른 기기에서 새 탭 페이지 맞춤설정을 적용하시겠습니까?</translation>
+<translation id="5407806496954700135">다른 기기의 새 탭 페이지 맞춤설정을 적용하시겠습니까?</translation>
 <translation id="5414763847370083940">가격이 인하된 사이트가 있으면 알림이 전송됩니다</translation>
 <translation id="5415289094036440596">패스키를 공유할 수 없음</translation>
 <translation id="5416455648658732408">탭 그룹으로 이동</translation>

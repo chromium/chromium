@@ -93,6 +93,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="2018528049276128029">Each profile holds its own Chrome info, like bookmarks, history, passwords and more</translation>
 <translation id="2018879682492276940">Installation failed. Please try again.</translation>
 <translation id="2024959665595762054">To use and save Chrome data in your Google Account, verify that it's you</translation>
+<translation id="2026377840141807639">Chrome profiles let you keep personal browsing and work apart. Add a new profile now.</translation>
 <translation id="2034233344106846793">Chrome upgrades insecure connections to HTTPS automatically when possible</translation>
 <translation id="2039417478970545937">Settings.</translation>
 <translation id="2091012649849228750">To get future Google Chrome updates, you'll need Windows 10 or later. This computer is using Windows 8.</translation>
@@ -155,6 +156,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="2738871930057338499">Unable to connect to the Internet. HTTP 403 Forbidden. Please check your proxy configuration.</translation>
 <translation id="2742320827292110288">Warning: Google Chrome cannot prevent extensions from recording your browsing history. To disable this extension in Incognito mode, unselect this option.</translation>
 <translation id="2753623023919742414">Click to search</translation>
+<translation id="2757826245013442432">{COUNT,plural, =0{Advanced Protection requires that you relaunch Chrome to apply an update}=1{Advanced Protection requires that you relaunch Chrome to apply an update. Your Incognito window won't reopen.}other{Advanced Protection requires that you relaunch Chrome to apply an update. Your # Incognito windows won't reopen.}}</translation>
 <translation id="2765403129283291972">Chrome needs permission to access your microphone for this site</translation>
 <translation id="2770231113462710648">Change default browser to:</translation>
 <translation id="2775140325783767197">Chrome can't check your passwords. Try checking your Internet connection.</translation>
@@ -367,6 +369,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 Some features may be unavailable. Please specify a different profile directory or use a newer version of Chrome.</translation>
 <translation id="5174969993834422967">You usually block notifications. To let this site notify you, click the notification icon on the right corner of your location bar.</translation>
 <translation id="5174983315706567306">Not enough disk space.</translation>
+<translation id="5190467473654176081">Customise Chrome to give it a new look</translation>
 <translation id="5201744974236816379">Chrome update</translation>
 <translation id="521447420733633466">If you share a device, friends and family can browse separately and set up Chrome just the way they want</translation>
 <translation id="5234764350956374838">Dismiss</translation>
@@ -390,6 +393,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="5510398294750420479">Download Chrome on your phone to add an extra layer of protection when you're on the go</translation>
 <translation id="5524890928877629608">top-left corner of search area: left <ph name="LEFT" />%, top <ph name="TOP" />%</translation>
 <translation id="5530733413481476019">Make Chrome Faster</translation>
+<translation id="5550137307985173298">Click the Customise Chrome button on the new tab page to give Chrome a new look</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5579324208890605088">Startup error: Please run the installer as a regular user, not as administrator.</translation>
 <translation id="5596627076506792578">More options</translation>
@@ -418,6 +422,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="5736850870166430177">If a site tries to steal your password, or when you download a harmful file, Chrome may also send URLs, including bits of page content, to Safe Browsing</translation>
 <translation id="5756509061973259733">A Chrome profile with this account already exists on this device</translation>
 <translation id="5759947850379142561">Select any text or image to search with Google Lens or press Escape to exit Google Lens</translation>
+<translation id="5762867845020858790">Add a new Chrome profile to keep bookmarks, passwords and settings apart.</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> – Google Chrome Canary</translation>
 <translation id="5804318322022881572">Couldn't launch Chrome. Try again.</translation>
 <translation id="5809516625706423866">Unable to connect to the Internet. HTTP 401 Unauthorised. Please check your proxy configuration.</translation>
@@ -518,13 +523,13 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="6800285125190089494">Sign in faster to sites using saved passwords for Chrome on iOS</translation>
 <translation id="6831043979455480757">Translate</translation>
 <translation id="683440813066116847">Inbound rule for Google Chrome Canary to allow mDNS traffic.</translation>
+<translation id="6841242485723266823">Chrome profiles help you separate different parts of your life. Add a new profile now.</translation>
 <translation id="684888714667046800">Unable to connect to the Internet. If you use a firewall, please ensure that <ph name="PRODUCT_EXE_NAME" /> is in the allowlist.</translation>
 <translation id="6877155553248388166">bottom-right corner of search area: right <ph name="RIGHT" />%, bottom <ph name="BOTTOM" />%</translation>
 <translation id="6881299373831449287">Updating Chrome</translation>
 <translation id="6885412569789873916">Chrome Beta apps</translation>
 <translation id="6893363893008038481">Remove account from Chrome</translation>
 <translation id="6896758677409633944">Copy</translation>
-<translation id="6927941417289800361">While you're signed in, you can use your passwords and more from your Google Account in Chrome. You can change this at any time in settings.</translation>
 <translation id="6930294499209825">Keeps your Google software up to date. If this service is disabled or stopped, your Google software will not be kept up to date, meaning security vulnerabilities that may arise cannot be fixed and features may not work. This service uninstalls itself when there is no Google software using it.</translation>
 <translation id="6933858244219479645">ChromeOS system</translation>
 <translation id="6938166777909186039">To get future Google Chrome updates, you'll need Windows 10 or later. This computer is using Windows 8.1.</translation>
@@ -649,6 +654,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="8255190535488645436">Google Chrome is using your camera and microphone.</translation>
 <translation id="8267953129876836456">Chrome found some safety recommendations for your review</translation>
 <translation id="8286862437124483331">Google Chrome is trying to show passwords. Type your Windows password to allow this.</translation>
+<translation id="8289399803055125418">Use your <ph name="BEGIN_LINK" />own passphrase<ph name="END_LINK" /> to encrypt all the Chrome data in your Google Account. Addresses and any data saved in Google Wallet won't be encrypted by your passphrase. Browsing history from Chrome won't sync.</translation>
 <translation id="829923460755755423">Add a shortcut to Google Password Manager</translation>
 <translation id="8313851650939857356">Startup error: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8321888067342493336">Save as image</translation>
@@ -681,6 +687,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome will relaunch in 1 minute}other{Chrome will relaunch in # minutes}}</translation>
 <translation id="8637932705841171563">To share your window, allow screen recording for Chrome in System Settings</translation>
 <translation id="8641606876632989680">Chrome will notify you when you sign in with a compromised password</translation>
+<translation id="8647930742055103497">Keep everything in Chrome</translation>
 <translation id="8656634243791296665">Open Gemini in Chrome Dev</translation>
 <translation id="8669527147644353129">Google Chrome Helper</translation>
 <translation id="8677922833187616101">Always show Google AI mode shortcut</translation>

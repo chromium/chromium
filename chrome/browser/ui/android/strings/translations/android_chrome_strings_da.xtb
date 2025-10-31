@@ -728,6 +728,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="4355272626458588338">Du kan vende tilbage til en side, der er vigtig for dig, ved at tilføje et bogmærke.</translation>
 <translation id="4356503491090073318">Kortnummer*</translation>
 <translation id="4357206670025518404">+<ph name="COUNT_NUMBER" /></translation>
+<translation id="4358630185957185589">Åbn Google Lens</translation>
 <translation id="4359809482106103048">Sikkerhedsoverblik</translation>
 <translation id="4378154925671717803">Telefon</translation>
 <translation id="4380055775103003110">Hvis problemet fortsætter, kan du prøve at fortsætte på andre måder på <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
@@ -1222,6 +1223,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="6473086018775716761">Listen over delingsindstillinger er åbnet i halv højde.</translation>
 <translation id="6475951671322991020">Download video</translation>
 <translation id="6477928892249167417">Disse websites lader til at være vigtige for dig:</translation>
+<translation id="6479881432656947268">Gå til Chrome Webshop</translation>
 <translation id="6481963882741794338">Tilknyt Chrome og andre Google-tjenester med henblik på personlig tilpasning og andre formål</translation>
 <translation id="6482749332252372425">Download af <ph name="FILE_NAME" /> mislykkedes, fordi der ikke er nok lagerplads.</translation>
 <translation id="6486420406192123355">Denne PDF-fil er fra et website med en usikker forbindelse</translation>
@@ -1341,6 +1343,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="6908998565271542516">Mulighed for at godkende eller ikke godkende et website – åbnet i fuld højde</translation>
 <translation id="6909589135458168665">Forudindlæs sider</translation>
 <translation id="6910211073230771657">Slettet</translation>
+<translation id="6916590542764765824">Administrer udvidelser</translation>
 <translation id="6918398787259831832">Hvis problemet fortsætter, kan du <ph name="BEGIN_LINK" />få flere oplysninger<ph name="END_LINK" /> fra <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> Chrome har fjernet disse tilladelser, fordi du ikke har besøgt websitet for nylig</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 fane}one{<ph name="NUMBER_OF_TABS" /> fane}other{<ph name="NUMBER_OF_TABS" /> faner}}</translation>
@@ -1510,6 +1513,7 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />slette Chrome-dat
 <translation id="7612619742409846846">Du er logget ind på Google som</translation>
 <translation id="7612989789287281429">Logger dig ind…</translation>
 <translation id="7619072057915878432">Download af <ph name="FILE_NAME" /> mislykkedes på grund af netværksfejl.</translation>
+<translation id="7620958983792650214">{NUM_REVOKED_PERMISSIONS,plural, =1{Notifikationer fra ét website er frameldt}one{Notifikationer fra # website er frameldt.}other{Notifikationer fra # websites er frameldt.}}</translation>
 <translation id="7626032353295482388">Velkommen til Chrome</translation>
 <translation id="7628417132421583481">Gå til Adgangs­kode­admin­istrator</translation>
 <translation id="7630202231528827509">Udbyderens webadresse</translation>

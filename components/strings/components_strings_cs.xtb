@@ -2928,6 +2928,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="5813119285467412249">&amp;Opakovat přidání</translation>
 <translation id="5813753398265398978">Fyzika</translation>
 <translation id="5817918615728894473">Spárovat</translation>
+<translation id="5820625124144807242">Po kontrole objednávky se musíte přihlásit nebo si vytvořit účet <ph name="BNPL_ISSUER_NAME" />. Tento účet pak bude automaticky propojen se službou Google Pay.</translation>
 <translation id="5826507051599432481">Běžný název (CN)</translation>
 <translation id="5830698870816298009">používání a natáčení kamery</translation>
 <translation id="5831217499016131155">Peněženka Google</translation>
@@ -3439,7 +3440,6 @@ Kontaktujte administrátora systému.</translation>
 <translation id="6649510485211003056">195 × 270 mm</translation>
 <translation id="6651270836885078973">Správce:</translation>
 <translation id="6652101503459149953">Použít Windows Hello</translation>
-<translation id="6653684225271066234"><ph name="BNPL_ISSUER_NAME" /> ověří vaši způsobilost (výsledek neovlivní vaše kreditní skóre). Pokud splníte kritéria způsobilosti, <ph name="BNPL_ISSUER_NAME" /> vám nabídne možný platební tarif a můžete dokončit nákup.</translation>
 <translation id="6654224358955673568">Formalizovat</translation>
 <translation id="6654244995031366386">Sklo (texturované)</translation>
 <translation id="6657585470893396449">Heslo</translation>
@@ -3602,7 +3602,6 @@ Kontaktujte administrátora systému.</translation>
 <translation id="6925267999184670015">Severoamerická B+</translation>
 <translation id="6926216138694948720">Zdobení těla</translation>
 <translation id="692638818576287323">Užitková vozidla</translation>
-<translation id="6927057753277044239">Po kontrole objednávky se musíte přihlásit nebo si vytvořit účet <ph name="BNPL_ISSUER_NAME" />. Tento účet bude automaticky propojen s vaším účtem Google.</translation>
 <translation id="6930607614725241390">Hledat v bočním panelu</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Výchozí vyhledávač umožňuje vyhledávat na webu a používá se pro funkce Chromu<ph name="END_BOLD" />, jako je vyhledávání z adresního řádku a z obrázků na webových stránkách. Funkce, které vyhledávač nepodporuje, nebudou dostupné.</translation>
 <translation id="6934672428414710184">Toto jméno pochází z vašeho účtu Google</translation>
@@ -3955,6 +3954,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7485085230273446323">Obchod a průmysl</translation>
 <translation id="7485870689360869515">Nebyla nalezena žádná data.</translation>
 <translation id="7486880426035242089">OneDrive</translation>
+<translation id="7489255442002627311"><ph name="BNPL_ISSUER_NAME" /> ověří vaši způsobilost (výsledek neovlivní vaše kreditní skóre). V případě schválení vám <ph name="BNPL_ISSUER_NAME" /> nabídne různé možnosti platebních tarifů k dokončení nákupu.</translation>
 <translation id="7489392576326061356">Šampony a kondicionéry</translation>
 <translation id="7489919936111034362">Vaše úložiště na Disku Google je plné</translation>
 <translation id="7495528107193238112">Tento obsah je blokován. Požádejte vlastníka webu, aby tento problém vyřešil.</translation>
@@ -4453,7 +4453,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="8297545700510100061">Soubory cookie a další data webů slouží k tomu, aby si vás web zapamatoval, například pro účely přihlášení nebo personalizace reklam. Pokud chcete spravovat soubory cookie pro všechny weby, přejděte do <ph name="SETTINGS" />.</translation>
 <translation id="8298115750975731693">Síť Wi-Fi, kterou používáte (<ph name="WIFI_NAME" />), může vyžadovat, abyste navštívili stránku <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="8298399736867690281">Karta je uložená jen v zařízení</translation>
-<translation id="8301894345671534559">Zadat kód</translation>
+<translation id="8301894345671534559">Zadejte kód</translation>
 <translation id="8304912090860925649">Nová srovnávací tabulka</translation>
 <translation id="830498451218851433">Přeložení napůl</translation>
 <translation id="8308653357438598313">Živé přenosy videí</translation>

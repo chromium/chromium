@@ -2932,6 +2932,7 @@
 <translation id="5813119285467412249">&amp;Възстановяване на добавянето</translation>
 <translation id="5813753398265398978">Физика</translation>
 <translation id="5817918615728894473">Сдвояване</translation>
+<translation id="5820625124144807242">След като прегледате поръчката си, трябва да влезете в профила си в(ъв) <ph name="BNPL_ISSUER_NAME" /> или да си създадете такъв. Този профил автоматично ще бъде свързан с Google Pay.</translation>
 <translation id="5826507051599432481">Общо име (CN)</translation>
 <translation id="5830698870816298009">Използване и местене на камерата</translation>
 <translation id="5831217499016131155">Google Wallet</translation>
@@ -3444,7 +3445,6 @@
 <translation id="6649510485211003056">195 x 270 мм</translation>
 <translation id="6651270836885078973">Управлява се от:</translation>
 <translation id="6652101503459149953">Използване на Windows Hello</translation>
-<translation id="6653684225271066234"><ph name="BNPL_ISSUER_NAME" /> ще провери дали отговаряте на условията (това няма да засегне кредитния ви рейтинг). Ако отговаряте на тях, <ph name="BNPL_ISSUER_NAME" /> ще предостави потенциални планове за плащане, за да завършите покупката си.</translation>
 <translation id="6654224358955673568">Официално</translation>
 <translation id="6654244995031366386">Стъкло (текстурирано)</translation>
 <translation id="6657585470893396449">Парола</translation>
@@ -3607,7 +3607,6 @@
 <translation id="6925267999184670015">North American B+</translation>
 <translation id="6926216138694948720">Бодиарт</translation>
 <translation id="692638818576287323">Търговски превозни средства</translation>
-<translation id="6927057753277044239">След като прегледате поръчката си, трябва да влезете в профила си в(ъв) <ph name="BNPL_ISSUER_NAME" /> или да си създадете такъв. Той автоматично ще бъде свързан с профила ви в Google.</translation>
 <translation id="6930607614725241390">Търсене в страничния панел</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Основната търсеща машина ви дава възможност да търсите в мрежата и да се възползвате от функции на Chrome<ph name="END_BOLD" />, като например търсене от адресната лента и от изображенията в уеб страниците. Някои функции може да не са налице, ако не се поддържат от търсещата ви машина.</translation>
 <translation id="6934672428414710184">Това име е от профила ви в Google</translation>
@@ -3961,6 +3960,7 @@
 <translation id="7485085230273446323">Бизнес и промишленост</translation>
 <translation id="7485870689360869515">Няма намерени данни.</translation>
 <translation id="7486880426035242089">OneDrive</translation>
+<translation id="7489255442002627311"><ph name="BNPL_ISSUER_NAME" /> ще провери дали отговаряте на условията (това няма да засегне кредитния ви рейтинг). Ако получите одобрение, <ph name="BNPL_ISSUER_NAME" /> ще ви предостави планове за плащане, от които да изберете, и ще завършите покупката си.</translation>
 <translation id="7489392576326061356">Шампоани и балсами</translation>
 <translation id="7489919936111034362">Хранилището ви в Google Диск е пълно</translation>
 <translation id="7495528107193238112">Това съдържание е блокирано. Свържете се със собственика на сайта, за да отстрани проблема.</translation>

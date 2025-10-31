@@ -73,7 +73,6 @@
 <translation id="1896836275755235458">O Chromium poupa a energia da bateria limitando a atividade em segundo plano e os efeitos visuais, como o deslocamento suave e as velocidades de frames do vídeo. <ph name="BEGIN_LINK" />Saiba mais sobre a Poupança de energia<ph name="END_LINK" /></translation>
 <translation id="1898804291554630487">Faça perguntas acerca desta página</translation>
 <translation id="1900969832270057921">Serviço do atualizador do Chromium</translation>
-<translation id="1911666947158375684">Enquanto tiver sessão iniciada, pode usar as palavras-passe e muito mais da sua Conta Google no Chromium. Pode alterar esta definição em qualquer altura nas definições.</translation>
 <translation id="1911763535808217981">Ao desativar esta opção, pode iniciar sessão nos sites da Google como o Gmail sem iniciar sessão no Chromium.</translation>
 <translation id="1929939181775079593">O Chromium não responde. Reiniciar agora?</translation>
 <translation id="1933341829955786215">A sua organização, <ph name="MANAGER" />, requer que inicie sessão no Chromium</translation>
@@ -89,6 +88,7 @@
 <translation id="2039417478970545937">Definições.</translation>
 <translation id="2049376729098081731">Escolha se quer incluir o histórico do Chromium para obter mais experiências personalizadas nos serviços Google</translation>
 <translation id="2054039611381840095">Para receber atualizações futuras do Chromium, precisa do macOS 12 ou posterior. Este computador está a usar o macOS 11.</translation>
+<translation id="2064856577282482477">Clique no botão Personalizar o Chromium na página Novo separador para dar um novo aspeto ao Chromium</translation>
 <translation id="2086476982681781442">O Chromium bloqueou esta transferência porque o ficheiro é fraudulento e pode fazer alterações inesperadas ao seu dispositivo</translation>
 <translation id="208726765006323911">É apresentada uma indicação para experimentar o <ph name="FEATURE_NAME" /> da próxima vez que abrir o Chromium no iOS.</translation>
 <translation id="2099452623287920103">As suas palavras-passe e outros dados do Chromium que guardou na sua Conta Google vão ser removidos deste dispositivo. Para os usar novamente no Chromium, volte a iniciar sessão.</translation>
@@ -172,6 +172,7 @@
 <translation id="2933336679234709858">Os seus dados estão encriptados com a sua frase de acesso. Introduza-a para usar e guardar os dados do Chromium na sua Conta Google.</translation>
 <translation id="2945997411976714835">Erro de instalação: não foi possível iniciar o processo do instalador.</translation>
 <translation id="2948852018303413228">Inicie sessão mais rapidamente em sites com as palavras-passe guardadas para o Chromium no iOS</translation>
+<translation id="2966959524256557996">Adicione um novo perfil do Chromium para manter os marcadores, as palavras-passe e as definições separados.</translation>
 <translation id="2970426615109535079">A sua organização gere o Chromium</translation>
 <translation id="2977470724722393594">O Chromium está atualizado</translation>
 <translation id="2977506796191543575">Se um site tentar roubar a sua palavra-passe, ou quando transferir um ficheiro prejudicial, o Chromium também pode enviar URLs, incluindo bits de conteúdo das páginas, para a Navegação segura</translation>
@@ -237,6 +238,7 @@
 <translation id="3788675262216168505">Gerir perfis do Chromium</translation>
 <translation id="3790262771324122253">Saiba por que motivo o Chromium bloqueia algumas transferências</translation>
 <translation id="379589255253486813">O Chromium indica-lhe se algo precisar da sua revisão</translation>
+<translation id="3798048725356732506">Os perfis do Chromium ajudam a separar diferentes partes da sua vida. Adicione um novo perfil agora.</translation>
 <translation id="3802055581630249637">O Chromium pré-carrega páginas que provavelmente vai visitar para que sejam carregadas mais rapidamente quando as visita</translation>
 <translation id="3810973564298564668">Administrar</translation>
 <translation id="3846683726093018685">**Resume:** numa única frase com menos de 30 palavras, descreve o assunto e o objetivo principal do conteúdo na captura de ecrã.
@@ -380,11 +382,13 @@
 <translation id="5605834417512968703">Selecione o que quer pesquisar com a pesquisa de imagens ou prima a tecla Escape para sair da pesquisa de imagens</translation>
 <translation id="5618818588972826921">Selecione qualquer texto ou imagem para pesquisar com a pesquisa de imagens ou prima a tecla Escape para sair da pesquisa de imagens</translation>
 <translation id="5623402015214259806">{0,plural, =0{Está disponível uma atualização do Chromium}=1{Está disponível uma atualização do Chromium}other{Está disponível uma atualização do Chromium há # dias}}</translation>
+<translation id="5633450273457573375">Use a sua <ph name="BEGIN_LINK" />própria frase de acesso<ph name="END_LINK" /> para encriptar todos os dados do Chromium na sua Conta Google. As moradas e os dados guardados na Carteira do Google não são encriptados pela sua frase de acesso. O histórico de navegação do Chromium não é sincronizado.</translation>
 <translation id="5643865575100044307">Eliminar sempre os dados de sites do seu dispositivo ao fechar o Chromium</translation>
 <translation id="5653831366781983928">Reinicie o Chromium agora</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Apresentar o Chromium neste idioma</translation>
 <translation id="569897634095159764">Não é possível ligar à Internet. O servidor proxy necessita de autenticação.</translation>
+<translation id="5713518899297503106">Os perfis do Chromium permitem-lhe manter a navegação pessoal e o trabalho separados. Adicione um novo perfil agora.</translation>
 <translation id="5768371961535086509">O Chromium liberta memória dos separadores inativos. Isto permite que os separadores ativos e outras apps tenham mais recursos do computador e mantém o Chromium rápido. Os seus separadores inativos ficam novamente ativos de forma automática quando regressa a eles. <ph name="BEGIN_LINK" />Saiba mais sobre a Poupança de memória<ph name="END_LINK" /></translation>
 <translation id="5775198138441669627">Se se esqueceu da frase de acesso ou quiser alterar esta definição, <ph name="SETTINGS_LINK" /> os dados do Chromium na sua conta</translation>
 <translation id="5800158606660203929">Personalize e controle o Chromium. Defina o Chromium como o navegador predefinido.</translation>
@@ -572,6 +576,7 @@ O Chromium não consegue recuperar as suas definições.</translation>
 <translation id="7810005234485217901">Pode fixar a pesquisa de imagens para um acesso fácil</translation>
 <translation id="7828947555739565424">Já existe um perfil do Chromium com esta conta neste dispositivo.</translation>
 <translation id="7845233973568007926">Agradecemos a instalação. Tem de reiniciar o computador antes de usar o <ph name="BUNDLE_NAME" />.</translation>
+<translation id="7853661403199074278">Personalize o Chromium para lhe dar um novo aspeto</translation>
 <translation id="7859018312476869945">Quando escreve na barra de endereço ou caixa de pesquisa, o Chromium envia o que escreve para o motor de pesquisa predefinido de forma a obter melhores sugestões. Esta opção está desativada na Navegação anónima.</translation>
 <translation id="7867198900892795913">Não foi possível atualizar o Chromium para a versão mais recente, pelo que não está a beneficiar das novas funcionalidades e correções de segurança.</translation>
 <translation id="7872446069773932638">A transferir… Falta(m) <ph name="SECONDS" /> segundo(s)</translation>
@@ -644,6 +649,7 @@ O Chromium não consegue recuperar as suas definições.</translation>
 <translation id="8704119203788522458">Este é o seu Chromium</translation>
 <translation id="8712637175834984815">OK</translation>
 <translation id="8719993436687031146">Iniciar sessão no Chromium?</translation>
+<translation id="8745263398357414606">Mantenha tudo no Chromium</translation>
 <translation id="8747073452963259673">canto inferior esquerdo da área de pesquisa: esquerda <ph name="LEFT" />%, parte inferior <ph name="BOTTOM" />%</translation>
 <translation id="878572486461146056">Erro de instalação: o administrador da rede aplicou uma política de grupo que impede a instalação: <ph name="INSTALL_ERROR" /></translation>
 <translation id="8796602469536043152">O Chromium necessita de autorização de acesso à câmara e ao microfone para este site.</translation>

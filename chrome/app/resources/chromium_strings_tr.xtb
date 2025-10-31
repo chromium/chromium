@@ -72,7 +72,6 @@
 <translation id="1896836275755235458">Chromium, arka plan etkinliğini ve görsel efektleri (ör. kolay kaydırma ve video kare hızı) sınırlandırarak pil gücünden tasarruf eder. <ph name="BEGIN_LINK" />Enerji Tasarrufu hakkında daha fazla bilgi edinin<ph name="END_LINK" />.</translation>
 <translation id="1898804291554630487">Bu sayfa hakkında soru sorun</translation>
 <translation id="1900969832270057921">Chromium Güncelleyici Hizmeti</translation>
-<translation id="1911666947158375684">Oturumunuz açıkken Chromium'da Google Hesabınızdaki şifrelerinizi ve diğer öğeleri kullanabilirsiniz. Bunu Ayarlar'dan istediğiniz zaman değiştirebilirsiniz.</translation>
 <translation id="1911763535808217981">Bu özelliği kapatarak Chromium'da oturum açmadan Gmail gibi Google sitelerinde oturum açabilirsiniz</translation>
 <translation id="1929939181775079593">Chromium yanıt vermiyor. Şimdi yeniden başlatılsın mı?</translation>
 <translation id="1933341829955786215">Kuruluşunuz (<ph name="MANAGER" />), Chromium'da oturum açmanızı zorunlu kılıyor</translation>
@@ -88,7 +87,7 @@
 <translation id="2039417478970545937">Ayarlar.</translation>
 <translation id="2049376729098081731">Google hizmetlerinde daha fazla kişiselleştirilmiş deneyimden faydalanmak için Chromium geçmişinin eklenip eklenmeyeceğini seçin</translation>
 <translation id="2054039611381840095">Gelecekteki Chromium güncellemelerini almak için macOS 12 veya sonraki bir sürümün yüklü olması gerekir. Bu bilgisayar macOS 11 kullanıyor.</translation>
-<translation id="2064856577282482477">Chromium'a yeni bir görünüm kazandırmak için Yeni Sekme sayfasındaki Chromium'u özelleştir düğmesini tıklayın</translation>
+<translation id="2064856577282482477">Chromium'a yeni bir görünüm kazandırmak için Yeni Sekme sayfasındaki Chromium'u Özelleştir düğmesini tıklayın</translation>
 <translation id="2086476982681781442">Dosya yanıltıcı olduğu ve cihazınızda beklenmeyen değişiklikler yapabileceği için Chromium bu indirme işlemini engelledi</translation>
 <translation id="208726765006323911">Chromium iOS'i bir sonraki açışınızda <ph name="FEATURE_NAME" /> özelliğini denemeniz için bir istem görürsünüz.</translation>
 <translation id="2099452623287920103">Google Hesabınıza kaydettiğiniz şifreler ve diğer Chromium verileri bu cihazdan kaldırılır. Bu bilgileri Chromium'da tekrar kullanmak için yeniden oturum açın.</translation>
@@ -572,7 +571,7 @@ Chromium ayarlarınızı kurtaramıyor.</translation>
 <translation id="7810005234485217901">Daha kolay erişmek için Görsel Arama'yı sabitleyebilirsiniz</translation>
 <translation id="7828947555739565424">Cihazda bu hesaba sahip bir Chromium profili zaten var</translation>
 <translation id="7845233973568007926">Yüklediğiniz için teşekkür ederiz. <ph name="BUNDLE_NAME" /> uygulamasını kullanmadan önce bilgisayarınızı yeniden başlatmanız gerekir.</translation>
-<translation id="7853661403199074278">Chromium'a yeni bir görünüm kazandırmak için özelleştirin</translation>
+<translation id="7853661403199074278">Chromium'u özelleştirerek yeni bir görünüm kazandırın</translation>
 <translation id="7859018312476869945">Adres çubuğuna veya arama kutusuna yazdığınızda Chromium, yazdıklarınızı varsayılan arama motorunuza göndererek daha iyi öneriler görmenizi sağlar. Bu ayar Gizli modda kapalıdır.</translation>
 <translation id="7867198900892795913">Chromium en son sürüme güncellenemediği için yeni özellikler ve güvenlik düzeltmeleri cihazınızda bulunmuyor.</translation>
 <translation id="7872446069773932638">İndiriliyor... <ph name="SECONDS" /> saniye kaldı</translation>

@@ -1844,6 +1844,7 @@
 <translation id="4014895360827978999">שירותי מסחר ומערכות תשלום</translation>
 <translation id="4018819349042761761">מפתח ציבורי</translation>
 <translation id="4023431997072828269">שליחת הטופס הזה מתבצעת דרך חיבור שאינו מאובטח, לכן המידע שלך יהיה גלוי לאחרים.</translation>
+<translation id="4024673763872230929">אפשר לשמור פרטים ולמלא טפסים מהר יותר. התמונה תישמר במכשיר שלך.</translation>
 <translation id="4025325634010721551">כללי המדיניות נטענו מחדש</translation>
 <translation id="4025338605225449265">מטבעות והמרת מטבע זר</translation>
 <translation id="4025777154208238692">היפוך הסדר</translation>
@@ -2277,6 +2278,7 @@
 <translation id="4732860731866514038">חבילת השפה <ph name="LANGUAGE" /> בהורדה… <ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992"><ph name="URL" />‏ רוצה להשתמש במיקום המכשיר שלך</translation>
 <translation id="473414950835101501">שימוש במצלמות</translation>
+<translation id="4734343956394152985"><ph name="BEGIN_BOLD" />ברירת המחדל הנוכחית<ph name="END_BOLD" /> · <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="4736825316280949806">‏אתחול ה-Chromium</translation>
 <translation id="4736934858538408121">כרטיס וירטואלי</translation>
 <translation id="473775607612524610">עדכון</translation>
@@ -2434,6 +2436,7 @@ Del</translation>
 <translation id="4961708452830821006">‏כדי להשתמש במיקרופון, צריך לתת ל-Chrome גישה ל<ph name="LINK" />.</translation>
 <translation id="4963413887558778009">עיצוב נוף</translation>
 <translation id="4967366744630699583">עריכת הכתובת</translation>
+<translation id="4968046291688599384">הוזן מספר כרטיס וירטואלי חד-פעמי של <ph name="BNPL_ISSUER_NAME" />.</translation>
 <translation id="4968522289500246572">האפליקציה מיועדת לנייד וייתכן ששינוי הגודל שלה לא יפעל כראוי. עשויות להיות בעיות באפליקציה או שהיא תופעל מחדש.</translation>
 <translation id="4968665849807487749">האתר יכול לבקש הרשאה לנהל את החלונות בכל המסכים</translation>
 <translation id="4969341057194253438">מחיקת ההקלטה</translation>
@@ -2937,6 +2940,7 @@ Del</translation>
 <translation id="5813119285467412249">&amp;ביצוע מחדש של הוספה</translation>
 <translation id="5813753398265398978">פיזיקה</translation>
 <translation id="5817918615728894473">התאמה</translation>
+<translation id="5820625124144807242">‏אחרי שבודקים את ההזמנה, צריך להיכנס לחשבון <ph name="BNPL_ISSUER_NAME" /> או ליצור חשבון חדש אצל הספק הזה. החשבון הזה יקושר באופן אוטומטי ל-Google Pay.</translation>
 <translation id="5826507051599432481">‏שם נפוץ (CN)</translation>
 <translation id="5830698870816298009">שימוש במצלמה והזזה שלה</translation>
 <translation id="5831217499016131155">Google Wallet</translation>
@@ -3390,6 +3394,7 @@ Del</translation>
 <translation id="6521745193039995384">לא פעילה</translation>
 <translation id="6522682797352430154">מוזיקה קלאסית</translation>
 <translation id="6524830701589638230">‏הכפתור לניהול ההגדרות בנושא נגישות, מפעילים אותו כדי להתאים אישית את כלי הנגישות בהגדרות Chrome</translation>
+<translation id="6525222262307262764">שמירה על ברירת המחדל הנוכחית</translation>
 <translation id="6527049834925947126">תעשיית המזון</translation>
 <translation id="6529173248185917884">הגליל השביעי</translation>
 <translation id="6529602333819889595">&amp;ביצוע מחדש של מחיקה</translation>
@@ -3410,6 +3415,7 @@ Del</translation>
 <translation id="6567832540451970450">האדמין שלך מאשר את השימוש ב<ph name="PERMISSION" /> באתר הזה</translation>
 <translation id="6568793038316600992">‏הכפתור לניהול אמצעי התשלום, מפעילים אותו כדי לנהל את פרטי כרטיסי האשראי והתשלומים שלך בהגדרות Chrome</translation>
 <translation id="6569060085658103619">זהו דף של תוסף</translation>
+<translation id="6571992525120410251">אפשר לשאול את <ph name="ENGINE_NAME" /> הכל</translation>
 <translation id="6572867903637058088">המידע הזה מועיל?</translation>
 <translation id="6573200754375280815">שני ניקובים בצד ימין</translation>
 <translation id="6575408526598156416">שמירה בחשבון</translation>
@@ -3449,7 +3455,6 @@ Del</translation>
 <translation id="6649510485211003056">‏195x270 מ"מ</translation>
 <translation id="6651270836885078973">בניהול של:</translation>
 <translation id="6652101503459149953">‏שימוש ב-Windows Hello</translation>
-<translation id="6653684225271066234">החברה <ph name="BNPL_ISSUER_NAME" /> תבדוק את הזכאות שלך (זה לא משפיע על דירוג האשראי שלך). אם החשבון שלך עומד בקריטריונים לזכאות, <ph name="BNPL_ISSUER_NAME" /> תציג תוכניות אפשריות לתשלום כדי להשלים את הרכישה.</translation>
 <translation id="6654224358955673568">יצירת סגנון רשמי</translation>
 <translation id="6654244995031366386">Glass (Textured)</translation>
 <translation id="6657585470893396449">סיסמה</translation>
@@ -3459,6 +3464,7 @@ Del</translation>
 <translation id="666259744093848177">‏(x86_64 מתורגם)</translation>
 <translation id="6665553082534466207">3 ניקובים בצד ימין</translation>
 <translation id="6668389483194953109">‏השם של גודל הנייר הוגדר כ-'custom', אבל המאפיין 'custom_size' ריק או לא חוקי.</translation>
+<translation id="6670729408462528018">גלריה</translation>
 <translation id="6671169470640320959">מימון רכב</translation>
 <translation id="6671697161687535275">‏האם להסיר מ-Chromium הצעות לטפסים?</translation>
 <translation id="6675846980676550611">‏אין הרשאה לשימוש ב-AR</translation>
@@ -3612,7 +3618,6 @@ Del</translation>
 <translation id="6925267999184670015">‏13x19 אינץ' (B+‎ – צפון אמריקה)</translation>
 <translation id="6926216138694948720">אומנות גוף</translation>
 <translation id="692638818576287323">רכבים מסחריים</translation>
-<translation id="6927057753277044239">‏אחרי שבודקים את ההזמנה, צריך להיכנס לחשבון <ph name="BNPL_ISSUER_NAME" /> או ליצור חשבון חדש אצל הספק הזה. החשבון הזה יקושר באופן אוטומטי לחשבון שלך ב-Google.</translation>
 <translation id="6930607614725241390">חיפוש בחלונית הצדדית</translation>
 <translation id="6934236486840930310">‏<ph name="BEGIN_BOLD" />מנוע החיפוש שמוגדר כברירת המחדל מאפשר לך לבצע חיפושים באינטרנט ומפעיל תכונות של Chrome<ph name="END_BOLD" />, כמו חיפוש מסרגל הכתובות ומתמונות בדפי אינטרנט. יכול להיות שתכונה מסוימת לא תהיה זמינה אם מנוע החיפוש לא תומך בה.</translation>
 <translation id="6934672428414710184">‏השם הזה הוא מחשבון Google שלך</translation>
@@ -3966,6 +3971,7 @@ Del</translation>
 <translation id="7485085230273446323">עסקים ותעשייה</translation>
 <translation id="7485870689360869515">לא נמצאו נתונים.</translation>
 <translation id="7486880426035242089">OneDrive</translation>
+<translation id="7489255442002627311">‫<ph name="BNPL_ISSUER_NAME" /> תבדוק את הזכאות שלך (זה לא משפיע על דירוג האשראי שלך). אם הבקשה תאושר, <ph name="BNPL_ISSUER_NAME" /> תציע לך תוכניות תשלומים לבחירה כדי להשלים את הרכישה.</translation>
 <translation id="7489392576326061356">שמפו ומרככי שיער</translation>
 <translation id="7489919936111034362">‏האחסון ב-Google Drive מלא</translation>
 <translation id="7495528107193238112">התוכן הזה חסום. יש לפנות אל הבעלים של האתר כדי לפתור את הבעיה.</translation>

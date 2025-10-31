@@ -277,6 +277,7 @@
 <translation id="199425419756152024">パスワードを表示</translation>
 <translation id="1996318269856535896">このデバイスの既存の閲覧データは引き続き使用できます。使用するには、管理対象アカウントからログアウトしてください。</translation>
 <translation id="2010008505735295285">再読み込み</translation>
+<translation id="2012723204723845092">おかえりなさい。</translation>
 <translation id="2015722694326466240">パスワードを表示するには、まずデバイスにパスコードを設定する必要があります。</translation>
 <translation id="201759455285471444">タブグループを開く。</translation>
 <translation id="202070562065520783">この内容を説明</translation>
@@ -647,6 +648,7 @@
 <translation id="3530024057633834563">保存されているパスワードやパスキーはありませんが、ログイン情報を保存しない設定にしたサイトとアプリの一覧は削除できます。サイトやアプリで作成したアカウントは削除されません。</translation>
 <translation id="3530206579861815432">同期したデバイスで開いているタブや最近閉じたタブが簡単に見つかります。</translation>
 <translation id="3530767473765895035">このデバイスのアカウントを管理…</translation>
+<translation id="353340646084395154">新しいタブページの設定を削除しました</translation>
 <translation id="3533436815740441613">新しいタブ</translation>
 <translation id="3540141921715814660">ブックマークに追加する</translation>
 <translation id="3546122170015471515">Google.com のマップ プレビュー</translation>
@@ -1000,6 +1002,7 @@
 <translation id="4894963374040315706">音声を使って検索できます</translation>
 <translation id="4895540042460820904">最終閲覧日</translation>
 <translation id="4896467949657706481">タブを閉じてログアウトしました</translation>
+<translation id="4911042367886397055">おかえりなさい、<ph name="USER_NAME" /> さん</translation>
 <translation id="4913626501929406101">パスワードのコピーをファミリー グループのユーザーと安全に共有できます。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="4917025507570489430"><ph name="USER_EMAIL" /> としてログインすると、既存の閲覧データを使用できます。組織はこのデータを閲覧できる可能性があります。</translation>
 <translation id="4918086044614829423">同意する</translation>
@@ -1051,6 +1054,7 @@
 <translation id="508645147179720015">メモが 1,000 文字を超えています</translation>
 <translation id="5087098519049306025">価格の追跡</translation>
 <translation id="5090832849094901128">このパスワードを削除しても、<ph name="WEBSITE" /> のアカウントは削除されません。</translation>
+<translation id="5113960131843706315">読み込んでいます…</translation>
 <translation id="5118462200606189584">アカウントを追加…</translation>
 <translation id="5118764316110575523">オフ</translation>
 <translation id="5119329531859909472">商品をトラッキングするには、[トラッキング] をタップします</translation>
@@ -1121,6 +1125,7 @@
 <translation id="537853552771686272">関心のあるトピックとサイトを管理する</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} 個のタブを閉じました}other{{count} 個のタブを閉じました}}</translation>
 <translation id="5394975111793637642">おすすめの商品レビュー カードを非表示にする</translation>
+<translation id="5407806496954700135">別のデバイスでカスタマイズした新しいタブページの設定を適用しますか？</translation>
 <translation id="5414763847370083940">値下げしたサイトがある場合は、アラートが表示されます。</translation>
 <translation id="5415289094036440596">パスキーは共有できません</translation>
 <translation id="5416455648658732408">タブグループに移動</translation>
@@ -1755,6 +1760,7 @@
 <translation id="7696316012653762532">ページ翻訳のオプション</translation>
 <translation id="7700527812567437847">Google レンズで画面を検索</translation>
 <translation id="7701040980221191251">なし</translation>
+<translation id="7708668404222666001">新しいタブページの設定を適用しました</translation>
 <translation id="7708994397325774423">すべてのパスワードにアクセス</translation>
 <translation id="7711440461521638739">使い回されているパスワードはありません</translation>
 <translation id="7712361583414030698">オフライン版を表示しています</translation>

@@ -175,7 +175,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="127777513559587977">Tv-talkshows</translation>
 <translation id="1281476433249504884">Stabler 1</translation>
 <translation id="1282358575813748144">Både og vandfartøjer</translation>
-<translation id="1283977499362032052">CV'er og levnedsbeskrivelser</translation>
+<translation id="1283977499362032052">Cv'er og levnedsbeskrivelser</translation>
 <translation id="1285320974508926690">Oversæt aldrig dette website</translation>
 <translation id="1292571435393770077">Bakke 16</translation>
 <translation id="1292701964462482250">"Der er software på computeren, som forhindrer, at Chrome kan oprette en sikker forbindelse til nettet" (kun Windows-computere)</translation>
@@ -2932,6 +2932,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="5813119285467412249">&amp;Annuller fortryd tilføjelse</translation>
 <translation id="5813753398265398978">Fysik</translation>
 <translation id="5817918615728894473">Start parring</translation>
+<translation id="5820625124144807242">Når du har gennemgået din ordre, skal du logge ind på eller oprette en konto med <ph name="BNPL_ISSUER_NAME" />. Denne konto knyttes automatisk til Google Pay.</translation>
 <translation id="5826507051599432481">Kaldenavn (CN)</translation>
 <translation id="5830698870816298009">kamerabrug og -bevægelse</translation>
 <translation id="5831217499016131155">Google Wallet</translation>
@@ -3444,7 +3445,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6649510485211003056">195 x 270 mm</translation>
 <translation id="6651270836885078973">Administreres af:</translation>
 <translation id="6652101503459149953">Brug Windows Hello</translation>
-<translation id="6653684225271066234"><ph name="BNPL_ISSUER_NAME" /> tjekker, om du er kvalificeret (dette påvirker ikke din kreditvurdering). Hvis du opfylder kriterierne for kvalifikation, leverer <ph name="BNPL_ISSUER_NAME" /> mulige betalingsplaner, så du kan gennemføre dit køb.</translation>
 <translation id="6654224358955673568">Gør formel</translation>
 <translation id="6654244995031366386">Glas (struktureret)</translation>
 <translation id="6657585470893396449">Adgangskode</translation>
@@ -3607,7 +3607,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6925267999184670015">Nordamerika B+</translation>
 <translation id="6926216138694948720">Kropskunst</translation>
 <translation id="692638818576287323">Erhvervskøretøjer</translation>
-<translation id="6927057753277044239">Når du har gennemgået din ordre, skal du logge ind på eller oprette en konto med <ph name="BNPL_ISSUER_NAME" />. Denne konto knyttes automatisk til din Google-konto.</translation>
 <translation id="6930607614725241390">Søg i sidepanel</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Din standardsøgemaskine giver dig mulighed for at søge på nettet og understøtter Chrome-funktioner<ph name="END_BOLD" /> som f.eks. søgning via adresselinjen og billeder på websider. En funktion er muligvis ikke tilgængelig, hvis din søgemaskine ikke understøtter den.</translation>
 <translation id="6934672428414710184">Dette navn er fra din Google-konto</translation>
@@ -3961,6 +3960,7 @@ Yderligere oplysninger:
 <translation id="7485085230273446323">Virksomheder og industri</translation>
 <translation id="7485870689360869515">Der blev ikke fundet nogen data.</translation>
 <translation id="7486880426035242089">OneDrive</translation>
+<translation id="7489255442002627311"><ph name="BNPL_ISSUER_NAME" /> tjekker, om du er kvalificeret (dette påvirker ikke din kreditvurdering). Hvis du bliver godkendt, angiver <ph name="BNPL_ISSUER_NAME" /> betalingsplaner, som du kan vælge mellem, og derefter gennemføres dit køb.</translation>
 <translation id="7489392576326061356">Shampoo og balsam</translation>
 <translation id="7489919936111034362">Du har ikke mere Google Drev-lagerplads</translation>
 <translation id="7495528107193238112">Dette indhold er blokeret. Kontakt ejeren af websitet for at løse problemet.</translation>

@@ -152,6 +152,7 @@
 <translation id="2738871930057338499">Tidak dapat disambungkan kepada Internet. HTTP 403 Dilarang. Sila semak konfigurasi proksi anda.</translation>
 <translation id="2742320827292110288">Amaran: Google Chrome tidak dapat menghalang sambungan daripada merakam sejarah penyemakan imbas anda. Untuk melumpuhkan sambungan ini dalam mod Inkognito, nyahpilih pilihan ini.</translation>
 <translation id="2753623023919742414">Klik untuk mencari</translation>
+<translation id="2757826245013442432">{COUNT,plural, =0{Perlindungan Lanjutan memerlukan anda melancarkan semula Chrome untuk menggunakan kemaskinian}=1{Perlindungan Lanjutan memerlukan anda melancarkan semula Chrome untuk menggunakan kemaskinian. Tetingkap Inkognito anda tidak dapat dibuka semula.}other{Perlindungan Lanjutan memerlukan anda melancarkan semula Chrome untuk menggunakan kemaskinian. # tetingkap Inkognito anda tidak dapat dibuka semula.}}</translation>
 <translation id="2765403129283291972">Chrome memerlukan kebenaran untuk mengakses mikrofon anda bagi tapak ini</translation>
 <translation id="2770231113462710648">Tukar penyemak imbas lalai kepada:</translation>
 <translation id="2775140325783767197">Chrome tidak dapat menyemak kata laluan anda. Cuba periksa sambungan Internet anda.</translation>
@@ -521,7 +522,6 @@
 <translation id="6885412569789873916">Apl Chrome Beta</translation>
 <translation id="6893363893008038481">Alih keluar Akaun daripada Chrome</translation>
 <translation id="6896758677409633944">Salin</translation>
-<translation id="6927941417289800361">Semasa anda log masuk, anda boleh menggunakan kata laluan anda dan pelbagai lagi daripada Google Account anda dalam Chrome. Anda boleh menukar pilihan ini pada bila-bila masa dalam tetapan.</translation>
 <translation id="6930294499209825">Memastikan perisian Google anda terkini. Jika perkhidmatan ini dilumpuhkan atau diberhentikan, perisian Google anda tidak akan dikemaskinikan, bermaksud kerentanan keselamatan yang mungkin berlaku tidak dapat dibetulkan dan ciri mungkin tidak berfungsi. Perkhidmatan ini dinyahpasang dengan sendirinya apabila tidak digunakan oleh perisian Google.</translation>
 <translation id="6933858244219479645">Sistem ChromeOS</translation>
 <translation id="6938166777909186039">Untuk mendapatkan kemaskinian Google Chrome yang akan datang, anda memerlukan Windows 10 atau yang lebih baharu. Komputer ini menggunakan Windows 8.1.</translation>
@@ -646,6 +646,7 @@
 <translation id="8255190535488645436">Google Chrome menggunakan kamera dan mikrofon anda.</translation>
 <translation id="8267953129876836456">Chrome menemukan beberapa syor keselamatan untuk semakan anda</translation>
 <translation id="8286862437124483331">Google Chrome cuba menunjukkan kata laluan. Taip kata laluan Windows anda untuk membenarkannya.</translation>
+<translation id="8289399803055125418">Gunakan <ph name="BEGIN_LINK" />ungkapan laluan<ph name="END_LINK" /> anda sendiri untuk menyulitkan semua data Chrome dalam Google Account anda. Alamat dan sebarang data yang disimpan dalam Google Wallet tidak akan disulitkan oleh ungkapan laluan anda. Sejarah penyemakan imbas daripada Chrome tidak akan disegerakkan.</translation>
 <translation id="829923460755755423">Tambahkan pintasan untuk Google Password Manager</translation>
 <translation id="8313851650939857356">Ralat permulaan: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8321888067342493336">Simpan sebagai imej</translation>

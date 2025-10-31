@@ -1260,6 +1260,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6473086018775716761">Liste d'options de partage ouverte à mi-hauteur.</translation>
 <translation id="6475951671322991020">Télécharger la vidéo</translation>
 <translation id="6477928892249167417">Ces sites semblent importants pour vous :</translation>
+<translation id="6479881432656947268">Visiter la boutique en ligne Chrome Web Store</translation>
 <translation id="6481963882741794338">Associez Chrome et d'autres services Google à des fins de personnalisation et à d'autres fins</translation>
 <translation id="6482749332252372425">Échec du téléchargement de <ph name="FILE_NAME" /> en raison d'un manque d'espace de stockage.</translation>
 <translation id="6486420406192123355">Ce fichier PDF provient d'un site utilisant une connexion non sécurisée</translation>
@@ -1380,6 +1381,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6908998565271542516">Option d'approuver ou de ne pas approuver un site Web ouverte à pleine hauteur</translation>
 <translation id="6909589135458168665">Précharger les pages</translation>
 <translation id="6910211073230771657">Supprimé</translation>
+<translation id="6916590542764765824">Gérer les extensions</translation>
 <translation id="6918398787259831832">Si ce problème persiste, <ph name="BEGIN_LINK" />obtenez plus d'information<ph name="END_LINK" /> auprès de <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> Chrome a retiré ces autorisations, car vous n'avez pas consulté ce site récemment</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 onglet}one{<ph name="NUMBER_OF_TABS" /> onglet}other{<ph name="NUMBER_OF_TABS" /> onglets}}</translation>

@@ -2934,6 +2934,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="5813119285467412249">&amp;Rétablir l'ajout</translation>
 <translation id="5813753398265398978">Physique</translation>
 <translation id="5817918615728894473">Associer</translation>
+<translation id="5820625124144807242">Une fois que vous avez examiné votre commande, vous devez vous connecter à un compte <ph name="BNPL_ISSUER_NAME" /> ou en créer un. Ce compte sera automatiquement associé à Google Pay.</translation>
 <translation id="5826507051599432481">Nom commun (CN)</translation>
 <translation id="5830698870816298009">mouvement et utilisation de la caméra</translation>
 <translation id="5831217499016131155">Google Portefeuille</translation>
@@ -3448,7 +3449,6 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="6649510485211003056">195 mm x 270 mm</translation>
 <translation id="6651270836885078973">Géré par :</translation>
 <translation id="6652101503459149953">Utiliser Windows Hello</translation>
-<translation id="6653684225271066234"><ph name="BNPL_ISSUER_NAME" /> vérifiera votre admissibilité (cela n'affectera pas votre cote de crédit). Si vous répondez aux critères d'admissibilité, <ph name="BNPL_ISSUER_NAME" /> vous proposera un ou plusieurs forfaits de paiement potentiels pour finaliser votre achat.</translation>
 <translation id="6654224358955673568">Rendre plus soutenu</translation>
 <translation id="6654244995031366386">Verre (texturé)</translation>
 <translation id="6657585470893396449">Mot de passe</translation>
@@ -3612,7 +3612,6 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="6925267999184670015">Amérique du Nord B+</translation>
 <translation id="6926216138694948720">Art corporel</translation>
 <translation id="692638818576287323">Véhicules commerciaux</translation>
-<translation id="6927057753277044239">Une fois que vous avez examiné votre commande, vous devez vous connecter à un compte <ph name="BNPL_ISSUER_NAME" /> ou en créer un. Ce compte sera automatiquement associé à votre compte Google.</translation>
 <translation id="6930607614725241390">Recherchez dans le panneau latéral</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Votre moteur de recherche par défaut vous permet d'effectuer des recherches sur le Web et alimente les fonctionnalités de Chrome<ph name="END_BOLD" />, telles que la recherche à partir de la barre d'adresse et des images sur des pages Web. Une fonctionnalité peut ne pas être proposée si votre moteur de recherche ne la prend pas en charge.</translation>
 <translation id="6934672428414710184">Ce nom provient de votre compte Google</translation>
@@ -3965,6 +3964,7 @@ Détails supplémentaires :
 <translation id="7485085230273446323">Entreprise et industrie</translation>
 <translation id="7485870689360869515">Aucune donnée trouvée.</translation>
 <translation id="7486880426035242089">OneDrive</translation>
+<translation id="7489255442002627311"><ph name="BNPL_ISSUER_NAME" /> vérifiera votre admissibilité (cela n'affectera pas votre cote de crédit). En cas d'approbation, <ph name="BNPL_ISSUER_NAME" /> vous proposera des forfaits de paiement parmi lesquels choisir et finalisera votre achat.</translation>
 <translation id="7489392576326061356">Shampooings et après-shampooings</translation>
 <translation id="7489919936111034362">Votre espace de stockage Google Disque est plein</translation>
 <translation id="7495528107193238112">Ce contenu est bloqué. Communiquez avec le propriétaire du site pour corriger le problème.</translation>

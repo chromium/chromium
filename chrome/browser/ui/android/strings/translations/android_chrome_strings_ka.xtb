@@ -33,6 +33,7 @@
 <translation id="1111673857033749125">თქვენს სხვა მოწყობილობებზე შენახული ჩანართები აქ გამოჩნდება.</translation>
 <translation id="1126696498560056882">ამ მოწყობილობაზე ანგარიშების მართვა</translation>
 <translation id="1135018701024399762">ინკოგნიტო რეჟიმი უზრუნველყოფს თქვენ მიერ ვების დათვალიერების მონაცემების კონფიდენციალურობის დაცვას, როცა მოწყობილობას რამდენიმე ადამიანი იყენებს</translation>
+<translation id="113752097246673894">თქვენს ყველა მოწყობილობაზე სანიშნეებისა და სხვა ინფორმაციის მისაღებად შედით Chrome-ში ანგარიშით <ph name="EMAIL" /></translation>
 <translation id="1138458427267715730">მიიღეთ გაფრთხილებები, როცა ფასი დაიკლებს ვებში არსებულ რომელიმე საიტზე.</translation>
 <translation id="1140317858355046628">თუ წაშლით, ყველა დაუყოვნებლივ დაკარგავს წვდომას ჩანართების ჯგუფზე „<ph name="GROUP_NAME" />“ და ის ყველა მოწყობილობიდან წაიშლება.</translation>
 <translation id="1142732900304639782">ამ საიტების თარგმნის შემოთავაზების აკრძალვა</translation>
@@ -395,6 +396,7 @@
 <translation id="2723001399770238859">აუდიო</translation>
 <translation id="2739887572830526131">შეინარჩუნეთ ეს ჯგუფი, რომ მოგვიანებით დაამატოთ ჩანართები, ან წაშალეთ, თუ აღარ გჭირდებათ.</translation>
 <translation id="2742373789128106053"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ამჟამად მიუწვდომელია.</translation>
+<translation id="2751271371269891762">თქვენს ყველა მოწყობილობაზე სანიშნეებისა და სხვა ინფორმაციის მისაღებად შედით ანგარიშით <ph name="EMAIL" /></translation>
 <translation id="2760805590727089264">თთ / წწ</translation>
 <translation id="2762000892062317888">ახლახან</translation>
 <translation id="276969039800130567">შესულია, როგორც <ph name="USER_EMAIL_ADDRESS" />.</translation>
@@ -404,6 +406,7 @@
 <translation id="2789486458103222910">კარგი</translation>
 <translation id="2791129728587938169">{NUM_PASSWORDS,plural, =1{Chrome-მა იპოვა ხელახლა გამოყენებული პაროლი, რაც უნდა გამოასწოროთ}other{Chrome-მა იპოვა ხელახლა გამოყენებული # პაროლი, რაც უნდა გამოასწოროთ}}</translation>
 <translation id="2800066122460699237">ჩანართი „<ph name="TAB_TITLE" />“ დაიხურება</translation>
+<translation id="2805210243313393104">მიიღეთ სანიშნეები და სხვა ინფორმაცია თქვენს ყველა მოწყობილობაზე</translation>
 <translation id="2805756323405976993">პროგრამები</translation>
 <translation id="2819849308549746319">ყველა გამოწერის გაუქმება</translation>
 <translation id="2820047235535485532">შეგიძლიათ აირჩიოთ, რა მონაცემებს შეინახავთ თქვენს Google ანგარიშში, <ph name="ACCOUNT_EMAIL" />.\nშეგიძლიათ, ასევე, ნახოთ და მართოთ ეს ერთეულები თქვენს სანიშნეებში, საკითხავ სიაში ან პაროლების მმართველში.</translation>
@@ -673,6 +676,7 @@
 <translation id="4000670338830950598">მოირგეთ და გააკონტროლეთ Google Chrome გამოყოფილი ერთეულით</translation>
 <translation id="4015643064997321279">{NUM_PASSWORDS,plural, =1{1 გატეხილი პაროლი თქვენს Google ანგარიშში}other{# გატეხილი პაროლი თქვენს Google ანგარიშში}}</translation>
 <translation id="4016425174436051808">თვალის მიდევნება ვერ მოხერხდა. წარმოიქმნა შეფერხება.</translation>
+<translation id="4023638601467301498">თქვენს ყველა მოწყობილობაზე სანიშნეებისა და სხვა ინფორმაციის მისაღებად შედით Chrome-ში</translation>
 <translation id="4024768890073681126">თქვენს ბრაუზერს მართავს თქვენი მშობელი</translation>
 <translation id="4027569221211770437"><ph name="FOLDER_TITLE" /> საქაღალდე</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# სთ}other{# სთ}}</translation>
@@ -1260,6 +1264,7 @@
 <translation id="6473086018775716761">გაზიარების ვარიანტების სია გახსნილია ნახევარ სიმაღლეზე.</translation>
 <translation id="6475951671322991020">ვიდეოს ჩამოტვირთვა</translation>
 <translation id="6477928892249167417">როგორც ჩანს, თქვენთვის მნიშვნელოვანია შემდეგი საიტები:</translation>
+<translation id="6479881432656947268">Chrome Web Store-ზე გადასვლა</translation>
 <translation id="6481963882741794338">მიაბით ერთმანეთს Chrome და სხვა Google სერვისები პერსონალიზებისა და სხვა მიზნით</translation>
 <translation id="6482749332252372425"><ph name="FILE_NAME" /> ვერ ჩამოიტვირთა არასაკმარისი მეხსიერების გამო.</translation>
 <translation id="6486420406192123355">ეს PDF ფაილი დაუცველი კავშირით მოსარგებლე საიტიდან მოდის</translation>
@@ -1380,6 +1385,7 @@
 <translation id="6908998565271542516">ვებსაიტის დადასტურების ან უარყოფის ვარიანტი გახსნილია სრულ სიმაღლეზე</translation>
 <translation id="6909589135458168665">წინასწარ ჩატვირთული გვერდები</translation>
 <translation id="6910211073230771657">წაშლილი</translation>
+<translation id="6916590542764765824">პროგრამული გაფართოებები</translation>
 <translation id="6918398787259831832">თუ პრობლემა არ გვარდება, <ph name="BEGIN_LINK" />მიიღეთ დამატებითი ინფორმაცია<ph name="END_LINK" /> <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-დან.</translation>
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> Chrome-მა ამოშალა ეს ნებართვები, რადგან თქვენ ბოლო დროს ეს საიტი არ მოგინახულებიათ</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 ჩანართი}other{<ph name="NUMBER_OF_TABS" /> ჩანართი}}</translation>

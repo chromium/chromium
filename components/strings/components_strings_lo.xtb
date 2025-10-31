@@ -2932,6 +2932,7 @@
 <translation id="5813119285467412249">​ເຮັດ​ຄືນ​ຄຳ​ສັ່ງ​ເພີ່ມ</translation>
 <translation id="5813753398265398978">ຟີຊິກ</translation>
 <translation id="5817918615728894473">ຈັບ​ຄູ່</translation>
+<translation id="5820625124144807242">ຫຼັງຈາກທີ່ທ່ານກວດສອບຄຳສັ່ງຊື້ຂອງທ່ານແລ້ວ, ທ່ານຕ້ອງເຂົ້າສູ່ລະບົບ ຫຼື ສ້າງບັນຊີດ້ວຍ <ph name="BNPL_ISSUER_NAME" />. ລະບົບຈະລິ້ງບັນຊີນີ້ກັບ Google Pay ໂດຍອັດຕະໂນມັດ.</translation>
 <translation id="5826507051599432481">ຊື່ທົ່ວໄປ (CN)</translation>
 <translation id="5830698870816298009">ກ້ອງ ແລະ ການເຄື່ອນໄຫວ</translation>
 <translation id="5831217499016131155">Google Wallet</translation>
@@ -3444,7 +3445,6 @@
 <translation id="6649510485211003056">195 x 270 ມມ</translation>
 <translation id="6651270836885078973">ຈັດການໂດຍ:</translation>
 <translation id="6652101503459149953">ໃຊ້ Windows Hello</translation>
-<translation id="6653684225271066234"><ph name="BNPL_ISSUER_NAME" /> ຈະກວດສອບສິດຂອງທ່ານ (ການດຳເນີນການນີ້ຈະບໍ່ສົ່ງຜົນຕໍ່ຄະແນນເຄຣດິດຂອງທ່ານ). ຫາກທ່ານມີຄຸນສົມບັດກົງຕາມເກນການຮັບສິດ, <ph name="BNPL_ISSUER_NAME" /> ຈະສະເໜີແພັກເກດເສຍເງິນໃຫ້ທ່ານເພື່ອດຳເນີນການຊື້ຂອງທ່ານໃຫ້ສຳເລັດ.</translation>
 <translation id="6654224358955673568">ເພີ່ມຄວາມເປັນທາງການ</translation>
 <translation id="6654244995031366386">ແກ້ວ (ພື້ນຜິວຫຍາບ)</translation>
 <translation id="6657585470893396449">ລະຫັດຜ່ານ</translation>
@@ -3607,7 +3607,6 @@
 <translation id="6925267999184670015">North American B+</translation>
 <translation id="6926216138694948720">ສິນລະປະເທິງຮ່າງກາຍ</translation>
 <translation id="692638818576287323">ການຂັບລົດທາງການຄ້າ</translation>
-<translation id="6927057753277044239">ຫຼັງຈາກທີ່ທ່ານກວດສອບຄຳສັ່ງຊື້ຂອງຕົນເອງແລ້ວ, ທ່ານຕ້ອງເຂົ້າສູ່ລະບົບ ຫຼື ສ້າງບັນຊີກັບ <ph name="BNPL_ISSUER_NAME" />. ລະບົບຈະລິ້ງບັນຊີນີ້ກັບບັນຊີ Google ຂອງທ່ານໂດຍອັດຕະໂນມັດ.</translation>
 <translation id="6930607614725241390">ຊອກຫາໃນແຜງຄວບຄຸມດ້ານຂ້າງ</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />ໂປຣແກຣມຊອກຫາເລີ່ມຕົ້ນຂອງທ່ານຈະໃຫ້ທ່ານຊອກຫາເວັບ ແລະ ນຳໃຊ້ຄຸນສົມບັດຕ່າງໆຂອງ Chrome<ph name="END_BOLD" /> ເຊັ່ນ: ການຊອກຫາຈາກແຖບທີ່ຢູ່ ແລະ ຈາກຮູບຢູ່ໜ້າເວັບ. ຄຸນສົມບັດອາດບໍ່ພ້ອມນຳໃຊ້ຫາກໂປຣແກຣມຊອກຫາຂອງທ່ານບໍ່ຮອງຮັບມັນ.</translation>
 <translation id="6934672428414710184">ຊື່ນີ້ມາຈາກບັນຊີ Google ຂອງທ່ານ</translation>
@@ -3960,6 +3959,7 @@
 <translation id="7485085230273446323">ທຸລະກິດ ແລະ ອຸດສາຫະກຳ</translation>
 <translation id="7485870689360869515">ບໍ່ພົບຂໍ້​ມູນ​.</translation>
 <translation id="7486880426035242089">OneDrive</translation>
+<translation id="7489255442002627311"><ph name="BNPL_ISSUER_NAME" /> ຈະກວດສອບສິດຂອງທ່ານ (ການດຳເນີນການນີ້ຈະບໍ່ສົ່ງຜົນຕໍ່ຄະແນນເຄຣດິດຂອງທ່ານ). ຫາກໄດ້ຮັບອະນຸມັດ, <ph name="BNPL_ISSUER_NAME" /> ຈະມີແພັກເກດການຈ່າຍເງິນໃຫ້ທ່ານເລືອກ ແລະ ດຳເນີນການຊື້ຂອງທ່ານໃຫ້ສຳເລັດ.</translation>
 <translation id="7489392576326061356">ຢາສະຜົມ ແລະ ຄີມນວດ</translation>
 <translation id="7489919936111034362">ບ່ອນຈັດເກັບຂໍ້ມູນ Google Drive ຂອງທ່ານເຕັມແລ້ວ</translation>
 <translation id="7495528107193238112">ເນື້ອຫານີ້ຖືກບລັອກໄວ້. ຕິດຕໍ່ເຈົ້າຂອງເວັບໄຊເພື່ອແກ້ໄຂບັນຫາ.</translation>

@@ -2932,6 +2932,7 @@
 <translation id="5813119285467412249">&amp;Повторити додавання</translation>
 <translation id="5813753398265398978">Фізика</translation>
 <translation id="5817918615728894473">Підключити</translation>
+<translation id="5820625124144807242">Переглянувши замовлення, увійдіть в обліковий запис <ph name="BNPL_ISSUER_NAME" /> або створіть новий. Цей обліковий запис буде автоматично зв’язано з Google Pay.</translation>
 <translation id="5826507051599432481">Загальне ім'я (CN)</translation>
 <translation id="5830698870816298009">використання й переміщення камери</translation>
 <translation id="5831217499016131155">Google Wallet</translation>
@@ -3444,7 +3445,6 @@
 <translation id="6649510485211003056">195 x 270 мм</translation>
 <translation id="6651270836885078973">Керує:</translation>
 <translation id="6652101503459149953">Використовувати Windows Hello</translation>
-<translation id="6653684225271066234"><ph name="BNPL_ISSUER_NAME" /> перевірить, чи відповідаєте ви вимогам (це не вплине на ваш кредитний рейтинг). Якщо так, <ph name="BNPL_ISSUER_NAME" /> запропонує вам платіжні плани, щоб ви могли завершити купівлю.</translation>
 <translation id="6654224358955673568">Описати у формальнішому стилі</translation>
 <translation id="6654244995031366386">Скло (текстуроване)</translation>
 <translation id="6657585470893396449">Пароль</translation>
@@ -3607,7 +3607,6 @@
 <translation id="6925267999184670015">B+ (Північна Америка)</translation>
 <translation id="6926216138694948720">Боді-арт</translation>
 <translation id="692638818576287323">Комерційні транспортні засоби</translation>
-<translation id="6927057753277044239">Переглянувши замовлення, увійдіть в обліковий запис <ph name="BNPL_ISSUER_NAME" /> або створіть новий. Його буде автоматично зв’язано з вашим обліковим записом Google.</translation>
 <translation id="6930607614725241390">Пошук на бічній панелі</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Пошукова система за умовчанням дає змогу здійснювати пошук в Інтернеті й підтримує такі функції Chrome,<ph name="END_BOLD" /> як пошук з адресного рядка й за зображеннями на веб-сторінках. Функція може бути недоступна, якщо ваша пошукова система її не підтримує.</translation>
 <translation id="6934672428414710184">Це ім’я з вашого облікового запису Google</translation>
@@ -3961,6 +3960,7 @@
 <translation id="7485085230273446323">Бізнес і промисловість</translation>
 <translation id="7485870689360869515">Даних не знайдено.</translation>
 <translation id="7486880426035242089">OneDrive</translation>
+<translation id="7489255442002627311"><ph name="BNPL_ISSUER_NAME" /> перевірить, чи відповідаєте ви вимогам (це не вплине на ваш кредитний рейтинг). У разі схвалення <ph name="BNPL_ISSUER_NAME" /> запропонує платіжні плани, щоб ви могли вибрати один із них і завершити покупку.</translation>
 <translation id="7489392576326061356">Шампуні й кондиціонери</translation>
 <translation id="7489919936111034362">Сховище на Google Диску заповнено</translation>
 <translation id="7495528107193238112">Підключення заблоковано. Щоб вирішити проблему, зв'яжіться з власником сайту.</translation>

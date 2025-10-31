@@ -152,6 +152,7 @@
 <translation id="2738871930057338499">Povezivanje s internetom nije moguće. HTTP 403 Zabranjeno je. Provjerite konfiguraciju proxyja.</translation>
 <translation id="2742320827292110288">Upozorenje: Google Chrome ne može onemogućiti proširenjima da bilježe vašu povijest pregledavanja. Da biste onemogućili to proširenje u anonimnom načinu, poništite odabir te opcije.</translation>
 <translation id="2753623023919742414">Kliknite za pretraživanje</translation>
+<translation id="2757826245013442432">{COUNT,plural, =0{Napredna zaštita zahtijeva da ponovno pokrenete Chrome radi primjene ažuriranja}=1{Napredna zaštita zahtijeva da ponovno pokrenete Chrome radi primjene ažuriranja. Vaš anonimni prozor neće se ponovno otvoriti.}one{Napredna zaštita zahtijeva da ponovno pokrenete Chrome radi primjene ažuriranja. Vaš # anonimni prozor neće se ponovno otvoriti.}few{Napredna zaštita zahtijeva da ponovno pokrenete Chrome radi primjene ažuriranja. Vaša # anonimna prozora neće se ponovno otvoriti.}other{Napredna zaštita zahtijeva da ponovno pokrenete Chrome radi primjene ažuriranja. Vaših # anonimnih prozora neće se ponovno otvoriti.}}</translation>
 <translation id="2765403129283291972">Chrome treba dopuštenje za pristup mikrofonu za ovu web-lokaciju</translation>
 <translation id="2770231113462710648">Promijeni zadani preglednik na:</translation>
 <translation id="2775140325783767197">Chrome ne može provjeriti vaše zaporke. Provjerite internetsku vezu.</translation>
@@ -384,7 +385,7 @@
 <translation id="5510398294750420479">Preuzmite Chrome na telefon da biste dodali dodatni sloj zaštite kad ste u pokretu</translation>
 <translation id="5524890928877629608">gornji lijevi kut područja za pretraživanje: lijevo <ph name="LEFT" />%, vrh <ph name="TOP" />%</translation>
 <translation id="5530733413481476019">Ubrzavanje Chromea</translation>
-<translation id="5550137307985173298">Kliknite gumb Prilagodi Chrome na novoj kartici preglednika da biste Chromeu dali novi izgled</translation>
+<translation id="5550137307985173298">Kliknite gumb Prilagodi Chrome na stranici Nova kartica da biste Chromeu dali novi izgled</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5579324208890605088">Pogreška pri pokretanju: pokrenite instalacijski program kao običan korisnik, a ne kao administrator.</translation>
 <translation id="5596627076506792578">Više opcija</translation>
@@ -521,7 +522,6 @@
 <translation id="6885412569789873916">Aplikacije preglednika Chrome Beta</translation>
 <translation id="6893363893008038481">Uklanjanje računa iz Chromea</translation>
 <translation id="6896758677409633944">Kopiraj</translation>
-<translation id="6927941417289800361">Dok ste prijavljeni, možete koristiti svoje zaporke i još mnogo toga sa svog Google računa u Chromeu. To uvijek možete promijeniti u postavkama.</translation>
 <translation id="6930294499209825">Održava Googleov softver ažurnim. Ako se ta usluga onemogući ili zaustavi, Googleov softver neće se ažurirati, što znači da se mogu pojaviti sigurnosne ranjivosti koje se neće moći popraviti, pa značajke možda neće funkcionirati. Ova se usluga sama deinstalira kada ne postoji Googleov softver koji je koristi.</translation>
 <translation id="6933858244219479645">Sustav ChromeOS</translation>
 <translation id="6938166777909186039">Da biste primali buduća ažuriranja Google Chromea, trebat će vam Windows 10 ili novija verzija. Na ovom se računalu upotrebljava Windows 8.1.</translation>
@@ -678,7 +678,7 @@
 <translation id="8625237574518804553">{0,plural, =1{Chrome će se ponovo pokrenuti za jednu minutu}one{Chrome će se ponovo pokrenuti za # min}few{Chrome će se ponovo pokrenuti za # min}other{Chrome će se ponovo pokrenuti za # min}}</translation>
 <translation id="8637932705841171563">Da biste dijelili prozor, u postavkama sustava dopustite snimanje zaslona za Chrome.</translation>
 <translation id="8641606876632989680">Chrome će vas obavijestiti kada se prijavite ugroženom zaporkom</translation>
-<translation id="8647930742055103497">Sve u Chromeu</translation>
+<translation id="8647930742055103497">Zadržite sve u Chromeu</translation>
 <translation id="8656634243791296665">Otvorite Gemini u verziji preglednika Chrome Dev</translation>
 <translation id="8669527147644353129">Google Chrome Helper</translation>
 <translation id="8677922833187616101">Uvijek prikaži prečac za Googleov AI način</translation>

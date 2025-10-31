@@ -1223,6 +1223,7 @@
 <translation id="6473086018775716761">Η λίστα των επιλογών κοινοποίησης είναι ανοικτή στο μισό ύψος.</translation>
 <translation id="6475951671322991020">Λήψη βίντεο</translation>
 <translation id="6477928892249167417">Αυτοί οι ιστότοποι φαίνονται σημαντικοί για εσάς:</translation>
+<translation id="6479881432656947268">Επισκεφτείτε το Chrome Web Store</translation>
 <translation id="6481963882741794338">Σύνδεση του Chrome και άλλων υπηρεσιών Google για εξατομίκευση και για άλλους σκοπούς</translation>
 <translation id="6482749332252372425">Η λήψη του αρχείου <ph name="FILE_NAME" /> απέτυχε λόγω έλλειψης αποθηκευτικού χώρου.</translation>
 <translation id="6486420406192123355">Αυτό το αρχείο PDF προέρχεται από έναν ιστότοπο που χρησιμοποιεί μη ασφαλή σύνδεση</translation>
@@ -1342,6 +1343,7 @@
 <translation id="6908998565271542516">Άνοιγμα επιλογής για να εγκρίνετε ή να μην εγκρίνετε έναν ιστότοπο σε πλήρες ύψος</translation>
 <translation id="6909589135458168665">Προφόρτωση σελίδων</translation>
 <translation id="6910211073230771657">Διαγράφηκε</translation>
+<translation id="6916590542764765824">Διαχείριση επεκτάσεων</translation>
 <translation id="6918398787259831832">Εάν αυτό το πρόβλημα δεν επιλυθεί, <ph name="BEGIN_LINK" />λάβετε περισσότερες πληροφορίες<ph name="END_LINK" /> από το <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> Το Chrome κατάργησε αυτές τις άδειες, επειδή δεν έχετε επισκεφτεί τον ιστότοπο πρόσφατα</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 καρτέλα}other{<ph name="NUMBER_OF_TABS" /> καρτέλες}}</translation>

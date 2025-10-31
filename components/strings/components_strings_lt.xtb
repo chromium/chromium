@@ -2935,6 +2935,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="5813119285467412249">&amp;Pridėti dar kartą</translation>
 <translation id="5813753398265398978">Fizika</translation>
 <translation id="5817918615728894473">Susieti</translation>
+<translation id="5820625124144807242">Peržiūrėję užsakymą turite prisijungti prie „<ph name="BNPL_ISSUER_NAME" />“ paskyros arba ją sukurti. Ši paskyra bus automatiškai susieta su „Google Pay“.</translation>
 <translation id="5826507051599432481">Bendrasis vardas (angl. „Common Name“) (CN)</translation>
 <translation id="5830698870816298009">vaizdo kameros naudojimas ir judinimas</translation>
 <translation id="5831217499016131155">Google Wallet</translation>
@@ -3449,7 +3450,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="6649510485211003056">195 x 270 mm</translation>
 <translation id="6651270836885078973">Valdo:</translation>
 <translation id="6652101503459149953">Naudoti „Windows Hello“</translation>
-<translation id="6653684225271066234">„<ph name="BNPL_ISSUER_NAME" />“ patikrins, ar atitinkate reikalavimus (tai neturės įtakos jūsų kreditingumo balui). Jei atitinkate tinkamumo kriterijus, „<ph name="BNPL_ISSUER_NAME" />“ pateiks galimą (-us) mokėjimo planą (-us), kad galėtumėte užbaigti pirkimą.</translation>
 <translation id="6654224358955673568">Padaryti oficialesnį</translation>
 <translation id="6654244995031366386">Stiklas (tekstūruotas)</translation>
 <translation id="6657585470893396449">Slaptažodis</translation>
@@ -3613,7 +3613,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="6925267999184670015">Šiaurės Amerikos B+</translation>
 <translation id="6926216138694948720">Kūno menas</translation>
 <translation id="692638818576287323">Komerciniai automobiliai</translation>
-<translation id="6927057753277044239">Peržiūrėję užsakymą turite prisijungti prie „<ph name="BNPL_ISSUER_NAME" />“ paskyros arba ją sukurti. Ši paskyra bus automatiškai susieta su jūsų „Google“ paskyra.</translation>
 <translation id="6930607614725241390">Paieška šoniniame skydelyje</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Naudodami numatytąjį paieškos variklį galite ieškoti žiniatinklyje ir naudoti „Chrome“ funkcijas<ph name="END_BOLD" />, pvz., paiešką iš adreso juostos ir vaizdų tinklalapiuose. Funkcija gali būti nepasiekiama, jei paieškos variklis jos nepalaiko.</translation>
 <translation id="6934672428414710184">Šis vardas yra iš jūsų „Google“ paskyros</translation>
@@ -3967,6 +3966,7 @@ Papildoma išsami informacija:
 <translation id="7485085230273446323">Verslas ir pramonė</translation>
 <translation id="7485870689360869515">Nerasta jokių duomenų.</translation>
 <translation id="7486880426035242089">„OneDrive“</translation>
+<translation id="7489255442002627311">„<ph name="BNPL_ISSUER_NAME" />“ patikrins, ar atitinkate reikalavimus (tai neturės įtakos jūsų kreditingumo balui). Jei paraiška bus patvirtinta, „<ph name="BNPL_ISSUER_NAME" />“ pasiūlys rinktis iš mokėjimo planų ir užbaigti pirkimą.</translation>
 <translation id="7489392576326061356">Šampūnai ir kondicionieriai</translation>
 <translation id="7489919936111034362">Jūsų „Google“ disko saugykla yra pilna</translation>
 <translation id="7495528107193238112">Šis turinys užblokuotas. Susisiekite su svetainės savininku, kad išspręstų problemą.</translation>

@@ -2935,6 +2935,7 @@
 <translation id="5813119285467412249">&amp;যোগ করাকে পুনরায় করুন</translation>
 <translation id="5813753398265398978">পদার্থবিদ্যা</translation>
 <translation id="5817918615728894473">যুক্ত করুন</translation>
+<translation id="5820625124144807242">অর্ডার পর্যালোচনা করার পরে, আপনাকে সাইন-ইন করতে হবে অথবা একটি <ph name="BNPL_ISSUER_NAME" /> অ্যাকাউন্ট তৈরি করতে হবে। এই অ্যাকাউন্টটি Google Pay-এর সাথে অটোমেটিক লিঙ্ক হয়ে যাবে।</translation>
 <translation id="5826507051599432481">কমন নেম (CN)</translation>
 <translation id="5830698870816298009">ক্যামেরার ব্যবহার এবং গতিবিধি</translation>
 <translation id="5831217499016131155">Google Wallet</translation>
@@ -3448,7 +3449,6 @@
 <translation id="6649510485211003056">১৯৫ x ২৭০ মিমি</translation>
 <translation id="6651270836885078973">এটি ম্যানেজ করে:</translation>
 <translation id="6652101503459149953">Windows Hello ব্যবহার করুন</translation>
-<translation id="6653684225271066234"><ph name="BNPL_ISSUER_NAME" /> আপনার যোগ্যতা যাচাই করবে (এর ফলে আপনার ক্রেডিট স্কোরে কোনও প্রভাব পড়বে না)। আপনি যোগ্যতার মাপকাঠি পূরণ করলে, <ph name="BNPL_ISSUER_NAME" /> আপনাকে সম্ভাব্য পেমেন্ট প্ল্যান দেবে যাতে আপনি কেনাকাটার প্রসেস সম্পূর্ণ করতে পারেন।</translation>
 <translation id="6654224358955673568">ফর্মাল স্টাইলে লেখো</translation>
 <translation id="6654244995031366386">গ্লাস (টেক্সচার্জড)</translation>
 <translation id="6657585470893396449">পাসওয়ার্ড</translation>
@@ -3612,7 +3612,6 @@
 <translation id="6925267999184670015">নর্থ আমেরিকান B+</translation>
 <translation id="6926216138694948720">বডি আর্ট</translation>
 <translation id="692638818576287323">ব্যবসায়িক গাড়ি</translation>
-<translation id="6927057753277044239">অর্ডার পর্যালোচনা করার পরে, আপনাকে সাইন-ইন করতে হবে অথবা একটি <ph name="BNPL_ISSUER_NAME" /> অ্যাকাউন্ট তৈরি করতে হবে। এই অ্যাকাউন্টটি আপনার Google অ্যাকাউন্টের সাথে অটোমেটিক লিঙ্ক হয়ে যাবে।</translation>
 <translation id="6930607614725241390">সাইড প্যানেলে সার্চ করুন</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />আপনার ডিফল্ট সার্চ ইঞ্জিন আপনাকে ওয়েবে খুঁজে নিতে এবং Chrome ফিচার ব্যবহারের সুবিধায় দেয়,<ph name="END_BOLD" /> যেমন অ্যাড্রেস বার এবং ওয়েব পেজের ছবি থেকে সার্চ করা। আপনার সার্চ ইঞ্জিনে এটি কাজ না করলে ফিচার উপলভ্য নাও হতে পারে।</translation>
 <translation id="6934672428414710184">এই নাম আপনার Google অ্যাকাউন্ট থেকে নেওয়া</translation>
@@ -3966,6 +3965,7 @@
 <translation id="7485085230273446323">ব্যবসা ও শিল্প সংক্রান্ত</translation>
 <translation id="7485870689360869515">কোনো ডেটা পাওয়া যায়নি৷</translation>
 <translation id="7486880426035242089">OneDrive</translation>
+<translation id="7489255442002627311"><ph name="BNPL_ISSUER_NAME" /> আপনার যোগ্যতা যাচাই করবে (এর ফলে আপনার ক্রেডিট স্কোরে কোনও প্রভাব পড়বে না)। অনুমোদন করা হলে, <ph name="BNPL_ISSUER_NAME" /> আপনাকে কিছু পেমেন্ট প্ল্যান দেবে যার মধ্যে থেকে কোনও একটি বেছে নিয়ে আপনি কেনাকাটা সম্পূর্ণ করতে পারবেন।</translation>
 <translation id="7489392576326061356">শ্যাম্পু ও কন্ডিশনার</translation>
 <translation id="7489919936111034362">আপনার Google Drive-এর স্টোরেজ ভর্তি হয়ে গেছে</translation>
 <translation id="7495528107193238112">এই কন্টেন্ট ব্লক করা হয়েছে। এই সমস্যার সমাধান করতে সাইটের মালিকের সাথে যোগাযোগ করুন।</translation>

@@ -1223,6 +1223,7 @@
 <translation id="6473086018775716761">Списъкът с опции за споделяне е отворен върху половината екран.</translation>
 <translation id="6475951671322991020">Изтегляне на видеоклипа</translation>
 <translation id="6477928892249167417">Тези сайтове изглеждат важни за вас:</translation>
+<translation id="6479881432656947268">Посетете уеб магазина на Chrome</translation>
 <translation id="6481963882741794338">Свързване на Chrome и други услуги на Google с цел персонализиране и др.</translation>
 <translation id="6482749332252372425">Изтеглянето на „<ph name="FILE_NAME" />“ не бе успешно поради липса на място в хранилището.</translation>
 <translation id="6486420406192123355">Този PDF файл е от сайт, който използва незащитена връзка</translation>
@@ -1342,6 +1343,7 @@
 <translation id="6908998565271542516">Опцията за одобряване или отхвърляне на уебсайт бе отворена с пълната си височина</translation>
 <translation id="6909589135458168665">Предварително зареждане на стр.</translation>
 <translation id="6910211073230771657">Изтрито</translation>
+<translation id="6916590542764765824">Управление на разширенията</translation>
 <translation id="6918398787259831832">Ако този проблем не се отстрани, <ph name="BEGIN_LINK" />получете повече информация<ph name="END_LINK" /> от <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> Chrome премахна това разрешение, защото не сте посещавали този сайт наскоро</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 раздел}other{<ph name="NUMBER_OF_TABS" /> раздела}}</translation>

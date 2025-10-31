@@ -74,7 +74,6 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="1896836275755235458">Chromium économise l'énergie de la pile en limitant l'activité en arrière-plan et les effets visuels, comme le défilement fluide et les fréquences d'images vidéo. <ph name="BEGIN_LINK" />En savoir plus sur l'Économiseur d'énergie<ph name="END_LINK" /></translation>
 <translation id="1898804291554630487">Posez une question à propos de cette page</translation>
 <translation id="1900969832270057921">Service de mise à jour Chromium</translation>
-<translation id="1911666947158375684">Pendant que vous êtes connecté, vous pouvez utiliser vos mots de passe et bien plus encore à partir de votre compte Google dans Chromium. Vous pouvez changer cette option en tout temps dans les paramètres.</translation>
 <translation id="1911763535808217981">En désactivant cette option, vous pouvez vous connecter aux sites Google tels que Gmail sans vous connecter à Chromium</translation>
 <translation id="1929939181775079593">Chromium ne répond pas. Voulez-vous le relancer maintenant?</translation>
 <translation id="1933341829955786215">Votre organisation, <ph name="MANAGER" />, vous demande de vous connecter à Chromium</translation>
@@ -384,6 +383,7 @@ Les signets, l'historique et les mots de passe enregistrés ne seront pas touch�
 <translation id="5605834417512968703">Sélectionner un élément à rechercher avec la recherche d'images ou appuyer sur Échap pour quitter la recherche d'images</translation>
 <translation id="5618818588972826921">Sélectionnez n'importe quel texte ou image pour effectuer une recherche avec la recherche d'images ou appuyez sur Échap pour quitter la recherche d'images</translation>
 <translation id="5623402015214259806">{0,plural, =0{Une mise à jour de Chromium est proposée}=1{Une mise à jour de Chromium est proposée}one{Une mise à jour de Chromium est proposée depuis # jour}other{Une mise à jour de Chromium est proposée depuis # jours}}</translation>
+<translation id="5633450273457573375">Utilisez votre <ph name="BEGIN_LINK" />propre phrase de passe<ph name="END_LINK" /> pour chiffrer toutes les données Chromium de votre compte Google. Les adresses et toutes les données enregistrées dans Google Portefeuille ne seront pas chiffrées par votre phrase de passe. L'historique de navigation de Chromium ne se synchronisera pas.</translation>
 <translation id="5643865575100044307">Supprimez toujours les données relatives aux sites sur votre appareil lorsque vous fermez Chromium</translation>
 <translation id="5653831366781983928">Veuillez redémarrer Chromium maintenant</translation>
 <translation id="5690427481109656848">Google LLC</translation>

@@ -277,6 +277,7 @@
 <translation id="199425419756152024">Wachtwoord bekijken</translation>
 <translation id="1996318269856535896">Je kunt je bestaande browsegegevens nog steeds gebruiken op dit apparaat. Als je die wilt gebruiken, log je uit van je beheerde account.</translation>
 <translation id="2010008505735295285">Opnieuw laden</translation>
+<translation id="2012723204723845092">Welkom terug.</translation>
 <translation id="2015722694326466240">Als je wachtwoorden wilt zien, moet je eerst een toegangscode instellen op je apparaat.</translation>
 <translation id="201759455285471444">Tabbladgroep uitvouwen.</translation>
 <translation id="202070562065520783">Leg dit aan me uit</translation>
@@ -647,6 +648,7 @@
 <translation id="3530024057633834563">Je hebt geen opgeslagen wachtwoorden of toegangssleutels, maar je kunt de lijst verwijderen met sites en apps waarvoor je hebt gekozen om nooit inloggegevens op te slaan. Accounts die je voor sites en apps hebt gemaakt, worden niet verwijderd.</translation>
 <translation id="3530206579861815432">Vind snel geopende en recent gesloten tabbladen op je gesynchroniseerde apparaten.</translation>
 <translation id="3530767473765895035">Accounts op dit apparaat beheren…</translation>
+<translation id="353340646084395154">Voorkeuren voor de pagina Nieuw tabblad verwijderd</translation>
 <translation id="3533436815740441613">Nieuw tabblad</translation>
 <translation id="3540141921715814660">Toevoegen aan bookmarks</translation>
 <translation id="3546122170015471515">Previews van Maps op Google.com</translation>
@@ -1000,6 +1002,7 @@
 <translation id="4894963374040315706">Zo kun je zoeken met je stem</translation>
 <translation id="4895540042460820904">Laatst geopend</translation>
 <translation id="4896467949657706481">Tabbladen zijn gesloten en je bent uitgelogd</translation>
+<translation id="4911042367886397055">Welkom terug <ph name="USER_NAME" />.</translation>
 <translation id="4913626501929406101">Je kunt een kopie van je wachtwoord beveiligd delen met iemand in je gezinsgroep. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="4917025507570489430">Je kunt bestaande browsegegevens gebruiken als je bent ingelogd als <ph name="USER_EMAIL" />. Je organisatie kan deze gegevens misschien bekijken.</translation>
 <translation id="4918086044614829423">Accepteren</translation>
@@ -1051,6 +1054,7 @@
 <translation id="508645147179720015">Opmerking bestaat uit meer dan 1000 tekens</translation>
 <translation id="5087098519049306025">Prijzen volgen</translation>
 <translation id="5090832849094901128">Als je dit wachtwoord verwijdert, wordt je account op <ph name="WEBSITE" /> niet verwijderd.</translation>
+<translation id="5113960131843706315">Je items ophalen…</translation>
 <translation id="5118462200606189584">Account toevoegen…</translation>
 <translation id="5118764316110575523">Uit</translation>
 <translation id="5119329531859909472">Tik op Volgen om het product te volgen</translation>
@@ -1121,6 +1125,7 @@
 <translation id="537853552771686272">Beheer de onderwerpen en sites waarin je geïnteresseerd bent</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} gesloten}other{{count} gesloten}}</translation>
 <translation id="5394975111793637642">Kaart Productreviews voor jou verbergen</translation>
+<translation id="5407806496954700135">Wil je de aanpassingen van je pagina Nieuw tabblad van een ander apparaat toepassen?</translation>
 <translation id="5414763847370083940">Je krijgt een melding als de prijs op een site daalt.</translation>
 <translation id="5415289094036440596">Toegangssleutels kunnen niet worden gedeeld</translation>
 <translation id="5416455648658732408">Verplaatsen naar tabbladgroep</translation>
@@ -1755,6 +1760,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="7696316012653762532">Opties om de pagina te vertalen</translation>
 <translation id="7700527812567437847">Zoeken op je scherm met Google Lens</translation>
 <translation id="7701040980221191251">Geen</translation>
+<translation id="7708668404222666001">Je voorkeuren voor de pagina Nieuw tabblad toegepast</translation>
 <translation id="7708994397325774423">Al je wachtwoorden ophalen</translation>
 <translation id="7711440461521638739">Je hergebruikt geen wachtwoorden</translation>
 <translation id="7712361583414030698">Offline versie bekijken</translation>

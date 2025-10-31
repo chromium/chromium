@@ -277,6 +277,7 @@
 <translation id="199425419756152024">Ikusi pasahitza</translation>
 <translation id="1996318269856535896">Hala ere, lehendik dituzun arakatze-datuak erabil ditzakezu gailu honetan. Haiek erabiltzeko, amaitu kontu kudeatuaren saioa.</translation>
 <translation id="2010008505735295285">Kargatu berriro</translation>
+<translation id="2012723204723845092">Ongi etorri berriro!</translation>
 <translation id="2015722694326466240">Pasahitzak ikusteko, lehenik, pasakode bat ezarri behar duzu gailuan.</translation>
 <translation id="201759455285471444">Zabaldu fitxa taldea.</translation>
 <translation id="202070562065520783">Azal iezadazu hau</translation>
@@ -647,6 +648,7 @@
 <translation id="3530024057633834563">Ez daukazu pasahitzik edo sarbide-gakorik gordeta, baina saioa hasteko informazioa inoiz ez gordetzeko aukeratu dituzun webguneen eta aplikazioen zerrenda ezaba dezakezu. Webgune eta aplikazioetarako sortu dituzun kontuak ez dira ezabatuko.</translation>
 <translation id="3530206579861815432">Aurkitu bizkor sinkronizatutako gailuetan irekita dauzkazun edo duela gutxi itxi dituzun fitxak.</translation>
 <translation id="3530767473765895035">Kudeatu gailuko kontuak…</translation>
+<translation id="353340646084395154">Kendu dira fitxa berriaren orriaren hobespenak</translation>
 <translation id="3533436815740441613">Fitxa berria</translation>
 <translation id="3540141921715814660">Gehitu laster-marketan</translation>
 <translation id="3546122170015471515">Maps-en aurrebista Google.com helbidean</translation>
@@ -675,6 +677,7 @@
 <translation id="3642060527569456384">Fitxa taldeak automatikoki gordetzen eta eguneratzen dira zure gailu guztietan.</translation>
 <translation id="3643338347976071250">{count,plural, =1{{count} pasahitz gailu honetan soilik gordeta dago. Beste gailuetan erabiltzeko, gorde ezazu Google-ko kontuan ({email}).}other{{count} pasahitz gailu honetan soilik gordeta daude. Beste gailuetan erabiltzeko, gorde itzazu Google-ko kontuan ({email}).}}</translation>
 <translation id="3659297405161482746">Ez da aurkitu ordainketa-metodorik</translation>
+<translation id="3662966164093827811">{count,plural, =1{1 hautatu da}other{# hautatu dira}}</translation>
 <translation id="3668816008081204991">Irakurketa-zerrenda ezkutatuta dago</translation>
 <translation id="3670030362669914947">Zenbakia</translation>
 <translation id="3679163990085797665">Ezabatu irakurritakoak</translation>
@@ -1000,6 +1003,7 @@
 <translation id="4894963374040315706">Honi esker, ahotsaren bidez bilatu ahal izango dituzu gauzak</translation>
 <translation id="4895540042460820904">Azken irekitze-data</translation>
 <translation id="4896467949657706481">Fitxak itxi dira, eta zure saioa amaitu da</translation>
+<translation id="4911042367886397055">Ongi etorri berriro ere, <ph name="USER_NAME" />!</translation>
 <translation id="4913626501929406101">Pasahitzaren kopia bat era seguruan parteka dezakezu zure familia-taldeko beste norbaitekin. <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="4917025507570489430"><ph name="USER_EMAIL" /> gisa saioa hasita daukazunean erabil ditzakezu lehendik dauden arakatze-datuak. Baliteke erakundeak datu horiek ikusi ahal izatea.</translation>
 <translation id="4918086044614829423">Onartu</translation>
@@ -1051,6 +1055,7 @@
 <translation id="508645147179720015">Oharrak 1.000 karaktere baino gehiago ditu</translation>
 <translation id="5087098519049306025">Prezioen jarraipena</translation>
 <translation id="5090832849094901128">Pasahitza ezabatzen baduzu ere, ez da ezabatuko <ph name="WEBSITE" /> webguneko kontua.</translation>
+<translation id="5113960131843706315">Zure gauzak eskuratzen…</translation>
 <translation id="5118462200606189584">Gehitu kontu bat…</translation>
 <translation id="5118764316110575523">Desaktibatuta</translation>
 <translation id="5119329531859909472">Produktuaren jarraipena egiteko, sakatu Egin jarraipena</translation>
@@ -1121,6 +1126,7 @@
 <translation id="537853552771686272">Kudeatu zer gai eta webgune interesatzen zaizkizun</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} itxi da}other{{count} itxi dira}}</translation>
 <translation id="5394975111793637642">Ezkutatu produktuen iritziak zure txartelean</translation>
+<translation id="5407806496954700135">Beste gailu bateko fitxa berriaren orriko pertsonalizazioak aplikatu nahi dituzu?</translation>
 <translation id="5414763847370083940">Webgune bateko produktu baten prezioa jaisten bada, alerta bat jasoko duzu.</translation>
 <translation id="5415289094036440596">Pasahitzak ezin dira partekatu</translation>
 <translation id="5416455648658732408">Eraman fitxa taldera</translation>
@@ -1755,6 +1761,7 @@
 <translation id="7696316012653762532">Orria itzultzeko aukerak</translation>
 <translation id="7700527812567437847">Bilatu pantaila Google Lens bidez</translation>
 <translation id="7701040980221191251">Bat ere ez</translation>
+<translation id="7708668404222666001">Aplikatu dira fitxa berriaren orriaren hobespenak</translation>
 <translation id="7708994397325774423">Lotu pasahitz guztiak</translation>
 <translation id="7711440461521638739">Ez zara beste inon erabiltzen ari pasahitzak</translation>
 <translation id="7712361583414030698">Konexiorik gabeko bertsioa dago ikusgai</translation>

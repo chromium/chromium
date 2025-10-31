@@ -2932,6 +2932,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="5813119285467412249">&amp;Ailwneud Ychwanegu</translation>
 <translation id="5813753398265398978">Ffiseg</translation>
 <translation id="5817918615728894473">Paru</translation>
+<translation id="5820625124144807242">Ar ôl i chi adolygu'ch archeb, rhaid i chi fewngofnodi neu greu cyfrif gyda <ph name="BNPL_ISSUER_NAME" />. Bydd y cyfrif hwn yn gysylltiedig â Google Pay yn awtomatig.</translation>
 <translation id="5826507051599432481">Enw Cyffredin (CN)</translation>
 <translation id="5830698870816298009">symudiad a defnydd camera</translation>
 <translation id="5831217499016131155">Google Wallet</translation>
@@ -3444,7 +3445,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="6649510485211003056">195 x 270 mm</translation>
 <translation id="6651270836885078973">Rheolir gan:</translation>
 <translation id="6652101503459149953">Defnyddio Windows Hello</translation>
-<translation id="6653684225271066234">Bydd <ph name="BNPL_ISSUER_NAME" /> yn gwirio eich cymhwysedd (ni fydd hyn yn effeithio eich sgôr credyd). Os ydych yn bodloni'r meini prawf cymhwysedd, bydd <ph name="BNPL_ISSUER_NAME" /> yn darparu cynllun(iau) talu posib i gwblhau eich pryniant.</translation>
 <translation id="6654224358955673568">Ffurfioli</translation>
 <translation id="6654244995031366386">Gwydr (Gwead)</translation>
 <translation id="6657585470893396449">Cyfrinair</translation>
@@ -3607,7 +3607,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="6925267999184670015">B+ Gogledd America</translation>
 <translation id="6926216138694948720">Celf Corff</translation>
 <translation id="692638818576287323">Cerbydau Masnachol</translation>
-<translation id="6927057753277044239">Ar ôl i chi adolygu'ch archeb, rhaid i chi fewngofnodi neu greu cyfrif gyda <ph name="BNPL_ISSUER_NAME" />. Bydd y cyfrif hwn yn cael ei gysylltu'n awtomatig â'ch cyfrif Google.</translation>
 <translation id="6930607614725241390">Chwilio yn y panel ochr</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Mae eich peiriant chwilio diofyn yn gadael i chi chwilio'r we ac yn pweru nodweddion Chrome<ph name="END_BOLD" /> fel chwilio o'r bar cyfeiriad ac o ddelweddau ar dudalennau gwe. Mae'n bosib na fydd nodwedd ar gael os nad yw'ch peiriant chwilio yn ei chefnogi.</translation>
 <translation id="6934672428414710184">Mae'r enw hwn yn dod o'ch Cyfrif Google</translation>
@@ -3960,6 +3959,7 @@ Manylion ychwanegol:
 <translation id="7485085230273446323">Busnes a Diwydiannol</translation>
 <translation id="7485870689360869515">Ni chanfuwyd unrhyw ddata.</translation>
 <translation id="7486880426035242089">OneDrive</translation>
+<translation id="7489255442002627311">Bydd <ph name="BNPL_ISSUER_NAME" /> yn gwirio eich cymhwysedd (ni fydd hyn yn effeithio eich sgôr credyd). Os caiff ei gymeradwyo, bydd <ph name="BNPL_ISSUER_NAME" /> yn darparu cynlluniau talu i chi ddewis ohonynt a chwblhau eich pryniant.</translation>
 <translation id="7489392576326061356">Siampŵ a Chyflyrydd</translation>
 <translation id="7489919936111034362">Mae eich storfa Google Drive yn llawn</translation>
 <translation id="7495528107193238112">Mae'r cynnwys hwn wedi'i rwystro. Cysylltwch â pherchennog y wefan i ddatrys y broblem.</translation>

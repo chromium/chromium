@@ -73,7 +73,6 @@
 <translation id="1896836275755235458">Chromium säästää akkua rajoittamalla taustatoimintaa ja visuaalisia tehosteita, esim. sujuvaa vierittämistä ja videon kuvanopeutta. <ph name="BEGIN_LINK" />Lue lisää Virransäästöstä<ph name="END_LINK" /></translation>
 <translation id="1898804291554630487">Kysy tästä sivusta</translation>
 <translation id="1900969832270057921">Chromiumin päivityspalvelu</translation>
-<translation id="1911666947158375684">Kun olet kirjautunut sisään, voit käyttää esimerkiksi Google-tilin salasanoja Chromiumissa. Voit muuttaa valintasi milloin tahansa asetuksista.</translation>
 <translation id="1911763535808217981">Poistamalla tämän käytöstä voit kirjautua Google-sivustoille, esim. Gmailiin, kirjautumatta Chromiumiin.</translation>
 <translation id="1929939181775079593">Chromium ei vastaa. Käynnistetäänkö uudelleen?</translation>
 <translation id="1933341829955786215">Organisaatiosi (<ph name="MANAGER" />) edellyttää, että kirjaudut Chromiumiin</translation>
@@ -382,6 +381,7 @@
 <translation id="5605834417512968703">Valitse, mitä haluat hakea kuvahaulla, tai poistu kuvahausta painamalla Escape</translation>
 <translation id="5618818588972826921">Valitse teksti tai kuva, jota haluat hakea kuvahaulla, tai poistu kuvahausta painamalla Escape</translation>
 <translation id="5623402015214259806">{0,plural, =0{Chromium-päivitys on saatavilla}=1{Chromium-päivitys on saatavilla}other{Chromium-päivitys on ollut saatavilla # vuorokauden ajan}}</translation>
+<translation id="5633450273457573375">Salaa kaikki Google-tilisi Chromium-data <ph name="BEGIN_LINK" />omalla tunnuslauseella<ph name="END_LINK" />. Osoitteita ja Google Walletiin tallennettua dataa ei salata tunnuslauseella. Chromiumin selaushistoriaa ei synkronoida.</translation>
 <translation id="5643865575100044307">Poista laitteen sivustodata aina, kun suljet Chromiumin</translation>
 <translation id="5653831366781983928">Käynnistä Chromium uudelleen nyt</translation>
 <translation id="5690427481109656848">Google LLC</translation>

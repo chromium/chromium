@@ -156,6 +156,7 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="2738871930057338499">Povezivanje sa internetom nije uspelo. Zabranjen je pristup (HTTP 403). Proverite konfiguraciju proksija.</translation>
 <translation id="2742320827292110288">Upozorenje: Google Chrome ne može da spreči dodatke da snimaju vašu istoriju pregledanja. Da biste onemogućili ovaj dodatak u režimu bez arhiviranja, poništite izbor ove opcije.</translation>
 <translation id="2753623023919742414">Kliknite da biste pretražili</translation>
+<translation id="2757826245013442432">{COUNT,plural, =0{Napredna zaštita zahteva da ponovo pokrenete Chrome da biste primenili ažuriranje}=1{Napredna zaštita zahteva da ponovo pokrenete Chrome da biste primenili ažuriranje. Prozor bez arhiviranja se neće ponovo otvoriti.}one{Napredna zaštita zahteva da ponovo pokrenete Chrome da biste primenili ažuriranje. # prozor bez arhiviranja se neće ponovo otvoriti.}few{Napredna zaštita zahteva da ponovo pokrenete Chrome da biste primenili ažuriranje. # prozora bez arhiviranja se neće ponovo otvoriti.}other{Napredna zaštita zahteva da ponovo pokrenete Chrome da biste primenili ažuriranje. # prozora bez arhiviranja se neće ponovo otvoriti.}}</translation>
 <translation id="2765403129283291972">Chrome traži dozvolu da pristupi mikrofonu za ovaj sajt</translation>
 <translation id="2770231113462710648">Promeni podrazumevani pregledač u:</translation>
 <translation id="2775140325783767197">Chrome ne može da vam proverava lozinke. Proverite internet vezu.</translation>
@@ -529,7 +530,6 @@ Google Chrome ne može da vrati podešavanja.</translation>
 <translation id="6885412569789873916">Chrome aplikacije za beta kanal</translation>
 <translation id="6893363893008038481">Ukloni nalog iz Chrome-a</translation>
 <translation id="6896758677409633944">Kopiraj</translation>
-<translation id="6927941417289800361">Dok ste prijavljeni, možete da koristite lozinke i drugo sa Google naloga u Chrome-u. Ovo možete da promenite u svakom trenutku u podešavanjima.</translation>
 <translation id="6930294499209825">Ažurira Google softver. Ako je ova usluga onemogućena ili zaustavljena, Google softver neće biti ažuriran, što znači da neće biti moguće otkloniti bezbednosne propuste koji mogu da nastanu i da funkcije možda neće raditi. Ova usluga se deinstalira kada je ne koristi nijedan Google softver.</translation>
 <translation id="6933858244219479645">Sistem ChromeOS</translation>
 <translation id="6938166777909186039">Da biste dobijali buduća Google Chrome ažuriranja, treba vam Windows 10 ili novija verzija. Ovaj računar koristi Windows 8.1.</translation>
@@ -654,6 +654,7 @@ Google Chrome ne može da vrati podešavanja.</translation>
 <translation id="8255190535488645436">Google Chrome koristi kameru i mikrofon.</translation>
 <translation id="8267953129876836456">Chrome je pronašao bezbednosne preporuke koje možete da pregledate</translation>
 <translation id="8286862437124483331">Google Chrome pokušava da prikaže lozinke. Unesite lozinku za Windows da biste to omogućili.</translation>
+<translation id="8289399803055125418">Koristite <ph name="BEGIN_LINK" />sopstvenu pristupnu frazu<ph name="END_LINK" /> da biste šifrovali sve Chrome podatke na Google nalogu. Adrese i svi podaci sačuvani u Google novčaniku neće biti šifrovani pomoću pristupne fraze. Istorija pregledanja iz Chrome-a se neće sinhronizovati.</translation>
 <translation id="829923460755755423">Dodajte prečicu u Google menadžer lozinki</translation>
 <translation id="8313851650939857356">Greška pri pokretanju: <ph name="STARTUP_ERROR" /></translation>
 <translation id="8321888067342493336">Sačuvaj kao sliku</translation>

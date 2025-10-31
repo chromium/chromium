@@ -2932,6 +2932,7 @@
 <translation id="5813119285467412249">追加のやり直し（&amp;R）</translation>
 <translation id="5813753398265398978">物理学</translation>
 <translation id="5817918615728894473">ペア設定</translation>
+<translation id="5820625124144807242">注文の確認が完了したら、<ph name="BNPL_ISSUER_NAME" /> のアカウントにログインするか、アカウントを作成する必要があります。このアカウントは自動的に Google Pay にリンクされます。</translation>
 <translation id="5826507051599432481">一般名（CN）</translation>
 <translation id="5830698870816298009">カメラの使用と移動</translation>
 <translation id="5831217499016131155">Google ウォレット</translation>
@@ -3444,7 +3445,6 @@
 <translation id="6649510485211003056">195x270 mm</translation>
 <translation id="6651270836885078973">管理者:</translation>
 <translation id="6652101503459149953">Windows Hello を使用</translation>
-<translation id="6653684225271066234"><ph name="BNPL_ISSUER_NAME" /> が利用資格の有無を確認します（これはクレジット スコアには影響しません）。利用資格を満たしている場合は、<ph name="BNPL_ISSUER_NAME" /> から購入手続きに使用できるお支払いプランが提供されます。</translation>
 <translation id="6654224358955673568">よりフォーマルに</translation>
 <translation id="6654244995031366386">ガラス（テクスチャ）</translation>
 <translation id="6657585470893396449">パスワード</translation>
@@ -3607,7 +3607,6 @@
 <translation id="6925267999184670015">北米 B+</translation>
 <translation id="6926216138694948720">ボディアート</translation>
 <translation id="692638818576287323">商用自動車</translation>
-<translation id="6927057753277044239">注文の確認が完了したら、<ph name="BNPL_ISSUER_NAME" /> のアカウントにログインするか、アカウントを作成する必要があります。このアカウントは Google アカウントに自動的にリンクされます。</translation>
 <translation id="6930607614725241390">サイドパネルで検索</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />デフォルトの検索サービスではウェブ検索ができるだけでなく、Chrome の機能を活用<ph name="END_BOLD" />してアドレスバーからの検索、ウェブページの画像からの検索なども行うことができます。ただし検索サービスでサポートされていない機能は利用できない場合があります。</translation>
 <translation id="6934672428414710184">Google アカウントで設定されている名前です</translation>
@@ -3961,6 +3960,7 @@
 <translation id="7485085230273446323">ビジネス、産業</translation>
 <translation id="7485870689360869515">データが見つかりません。</translation>
 <translation id="7486880426035242089">OneDrive</translation>
+<translation id="7489255442002627311"><ph name="BNPL_ISSUER_NAME" /> が利用資格の有無を確認します（これはクレジット スコアには影響しません）。承認された場合は、<ph name="BNPL_ISSUER_NAME" /> からお支払いプランが提供され、選択いただくと購入を完了できます。</translation>
 <translation id="7489392576326061356">シャンプー、コンディショナー</translation>
 <translation id="7489919936111034362">ご利用の Google ドライブ ストレージの空き容量がなくなりました</translation>
 <translation id="7495528107193238112">このコンテンツはブロックされました。サイト所有者に連絡して問題を解決してください。</translation>

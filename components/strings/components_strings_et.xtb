@@ -2932,6 +2932,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="5813119285467412249">&amp;Lisa uuesti</translation>
 <translation id="5813753398265398978">Füüsika</translation>
 <translation id="5817918615728894473">Seo</translation>
+<translation id="5820625124144807242">Kui olete tellimuse üle vaadanud, peate teenuse <ph name="BNPL_ISSUER_NAME" /> kontole sisse logima või konto looma. See konto lingitakse automaatselt Google Payga.</translation>
 <translation id="5826507051599432481">Üldnimi (CN)</translation>
 <translation id="5830698870816298009">kaamera kasutamine ja liigutamine</translation>
 <translation id="5831217499016131155">Google Wallet</translation>
@@ -3444,7 +3445,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="6649510485211003056">195 × 270 mm</translation>
 <translation id="6651270836885078973">Haldab:</translation>
 <translation id="6652101503459149953">Kasuta Windows Hello autentimist</translation>
-<translation id="6653684225271066234"><ph name="BNPL_ISSUER_NAME" /> kontrollib teie sobilikkust (see ei mõjuta teie krediidiskoori). Kui vastate sobilikkuse kriteeriumidele, pakub <ph name="BNPL_ISSUER_NAME" /> teile ostu lõpuleviimiseks potentsiaalse(d) makseplaani(d).</translation>
 <translation id="6654224358955673568">Kirjuta ümber ametlikus stiilis</translation>
 <translation id="6654244995031366386">Klaas (reljeefne)</translation>
 <translation id="6657585470893396449">Parool</translation>
@@ -3607,7 +3607,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="6925267999184670015">Põhja-Ameerika B+</translation>
 <translation id="6926216138694948720">Kehamaalingud</translation>
 <translation id="692638818576287323">Tarbesõidukid</translation>
-<translation id="6927057753277044239">Kui olete tellimuse üle vaadanud, peate teenuse <ph name="BNPL_ISSUER_NAME" /> kontole sisse logima või konto looma. See konto lingitakse automaatselt teie Google'i kontoga.</translation>
 <translation id="6930607614725241390">Otsimine külgpaneelilt</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Teie vaikeotsingumootor võimaldab teil veebist otsida ja toetab Chrome'i funktsioone<ph name="END_BOLD" />, nagu otsimine aadressiribalt ja veebilehtedel olevatelt piltidelt. Funktsioon ei pruugi olla saadaval, kui teie otsingumootor seda ei toeta.</translation>
 <translation id="6934672428414710184">Nimi pärineb teie Google'i kontolt</translation>
@@ -3961,6 +3960,7 @@ Lisateave:
 <translation id="7485085230273446323">Ettevõtlus ja tööstus</translation>
 <translation id="7485870689360869515">Andmeid ei leitud.</translation>
 <translation id="7486880426035242089">OneDrive</translation>
+<translation id="7489255442002627311"><ph name="BNPL_ISSUER_NAME" /> kontrollib teie sobilikkust (see ei mõjuta teie krediidiskoori). Kui see kinnitatakse, pakub <ph name="BNPL_ISSUER_NAME" /> teile makseplaane, mille vahel saate valida ja ostu lõpule viia.</translation>
 <translation id="7489392576326061356">Šampoonid ja palsamid</translation>
 <translation id="7489919936111034362">Teie Google Drive'i salvestusruum on täis</translation>
 <translation id="7495528107193238112">See sisu on blokeeritud. Probleemi lahendamiseks võtke ühendust saidi omanikuga.</translation>

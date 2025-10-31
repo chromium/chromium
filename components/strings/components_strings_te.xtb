@@ -2927,6 +2927,7 @@
 <translation id="5813119285467412249">&amp;జోడించడాన్ని రిపీట్‌ చేయి</translation>
 <translation id="5813753398265398978">భౌతిక శాస్త్రం</translation>
 <translation id="5817918615728894473">పెయిర్ చేయండి</translation>
+<translation id="5820625124144807242">మీరు మీ ఆర్డర్‌ను రివ్యూ చేసిన తర్వాత, సైన్ ఇన్ చేయాలి లేదా <ph name="BNPL_ISSUER_NAME" /> ఖాతాను క్రియేట్ చేయాలి. ఈ ఖాతా ఆటోమెటిక్‌గా Google Payకు లింక్ చేయబడుతుంది.</translation>
 <translation id="5826507051599432481">సాధారణ పేరు (CN)</translation>
 <translation id="5830698870816298009">కెమెరా ఉపయోగం &amp; తరలింపు</translation>
 <translation id="5831217499016131155">Google Wallet</translation>
@@ -3439,7 +3440,6 @@
 <translation id="6649510485211003056">195 x 270 మి.మీ.</translation>
 <translation id="6651270836885078973">దీని ద్వారా మేనేజ్ చేయబడుతోంది:</translation>
 <translation id="6652101503459149953">Windows Helloను ఉపయోగించండి</translation>
-<translation id="6653684225271066234"><ph name="BNPL_ISSUER_NAME" /> మీ అర్హతను చెక్ చేస్తుంది (ఇది మీ క్రెడిట్ స్కోర్‌ను ప్రభావితం చేయదు). మీరు అర్హత ప్రమాణాలకు అనుగుణంగా ఉంటే, మీ కొనుగోలును పూర్తి చేయడానికి <ph name="BNPL_ISSUER_NAME" />, సాధ్యమయ్యే పేమెంట్ ప్లాన్(‌ల)ను అందిస్తుంది.</translation>
 <translation id="6654224358955673568">ఫార్మలైజ్ మోడ్</translation>
 <translation id="6654244995031366386">గ్లాస్ (టెక్స్‌చర్డ్)</translation>
 <translation id="6657585470893396449">పాస్‌వర్డ్</translation>
@@ -3602,7 +3602,6 @@
 <translation id="6925267999184670015">ఉత్తర అమెరికా B+</translation>
 <translation id="6926216138694948720">టాట్టూలు</translation>
 <translation id="692638818576287323">వాణిజ్యపరమైన వాహనాలు</translation>
-<translation id="6927057753277044239">మీరు మీ ఆర్డర్‌ను రివ్యూ చేసిన తర్వాత, సైన్ ఇన్ చేయాలి లేదా <ph name="BNPL_ISSUER_NAME" /> ఖాతాను క్రియేట్ చేయాలి. ఈ ఖాతా ఆటోమేటిక్‌గా మీ Google ఖాతాకు లింక్ అవుతుంది.</translation>
 <translation id="6930607614725241390">సైడ్ ప్యానెల్‌లో సెర్చ్ చేయండి</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />మీ ఆటోమేటిక్ సెర్చ్ ఇంజిన్ వెబ్‌లో సెర్చ్ చేయడానికి మిమ్మల్ని అనుమతిస్తుంది, అదే విధంగా Chrome ఫీచర్‌లను శక్తిమంతం చేస్తుంది<ph name="END_BOLD" /> అంటే అడ్రస్ బార్ నుండి, వెబ్ పేజీలలోని ఇమేజ్‌ల నుండి సెర్చ్ చేయడం వంటివి సులభంగా చేయగలుగుతారు. మీ సెర్చ్ ఇంజిన్ సపోర్ట్ చేయకపోతే, ఏదైనా ఫీచర్ అందుబాటులో లేకపోయే అవకాశం ఉంది.</translation>
 <translation id="6934672428414710184">ఇది మీ Google ఖాతాలో ఉన్న పేరు</translation>
@@ -3956,6 +3955,7 @@
 <translation id="7485085230273446323">బిజినెస్ &amp; పారిశ్రామికం</translation>
 <translation id="7485870689360869515">డేటా కనుగొనబడలేదు.</translation>
 <translation id="7486880426035242089">OneDrive</translation>
+<translation id="7489255442002627311"><ph name="BNPL_ISSUER_NAME" /> మీ అర్హతను చెక్ చేస్తుంది (ఇది మీ క్రెడిట్ స్కోర్‌ను ప్రభావితం చేయదు). ఆమోదించబడితే, <ph name="BNPL_ISSUER_NAME" /> మీరు ఎంచుకోవడానికి, మీ కొనుగోలును పూర్తి చేయడానికి పేమెంట్ ప్లాన్‌లను అందిస్తుంది.</translation>
 <translation id="7489392576326061356">షాంపూలు &amp; కండీషనర్‌లు</translation>
 <translation id="7489919936111034362">మీ Google Drive స్టోరేజ్ నిండింది</translation>
 <translation id="7495528107193238112">ఈ కంటెంట్ బ్లాక్ అయింది. ఈ సమస్య పరిష్కారం కోసం సైట్ ఓనర్‌ను సంప్రదించండి.</translation>

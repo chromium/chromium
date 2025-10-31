@@ -1222,6 +1222,7 @@ Për shembull, disa uebsajte mund t'i përgjigjen kësaj kërkese duke të tregu
 <translation id="6473086018775716761">Listë e opsioneve të ndarjes e hapur në gjysmën e lartësisë.</translation>
 <translation id="6475951671322991020">Shkarko videon</translation>
 <translation id="6477928892249167417">Këto sajte duken të rëndësishme për ty:</translation>
+<translation id="6479881432656947268">Vizito "Dyqanin e uebit të Chrome"</translation>
 <translation id="6481963882741794338">Lidh Chrome dhe shërbimet e tjera të Google për personalizimin dhe qëllime të tjera</translation>
 <translation id="6482749332252372425">Shkarkimi i <ph name="FILE_NAME" /> dështoi për shkak të mungesës së hapësirës ruajtëse.</translation>
 <translation id="6486420406192123355">Ky skedar PDF është nga një sajt që përdor një lidhje të pasigurt</translation>
@@ -1341,6 +1342,7 @@ Për shembull, disa uebsajte mund t'i përgjigjen kësaj kërkese duke të tregu
 <translation id="6908998565271542516">Opsioni për të miratuar ose jo një uebsajt të hapur në gjatësinë e plotë</translation>
 <translation id="6909589135458168665">Ngarkimi paraprak i faqeve</translation>
 <translation id="6910211073230771657">Fshirë</translation>
+<translation id="6916590542764765824">Menaxho shtesat</translation>
 <translation id="6918398787259831832">Nëse ky problem vazhdon të ndodhë, <ph name="BEGIN_LINK" />merr më shumë informacione<ph name="END_LINK" /> nga <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> Chrome i hoqi këto leje sepse nuk e ke vizituar së fundi</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 skedë}other{<ph name="NUMBER_OF_TABS" /> skeda}}</translation>

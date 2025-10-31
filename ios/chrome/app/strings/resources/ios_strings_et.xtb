@@ -277,6 +277,7 @@
 <translation id="199425419756152024">Kuva parool</translation>
 <translation id="1996318269856535896">Saate endiselt kasutada selles seadmes oma olemasolevaid sirvimisandmeid. Nende kasutamiseks logige oma hallatud kontolt välja.</translation>
 <translation id="2010008505735295285">Uuesti laadimine</translation>
+<translation id="2012723204723845092">Tere tulemast tagasi!</translation>
 <translation id="2015722694326466240">Paroolide nägemiseks peate oma seadmes esmalt pääsukoodi seadistama.</translation>
 <translation id="201759455285471444">Vahelehegrupi laiendamine.</translation>
 <translation id="202070562065520783">Selgita seda mulle</translation>
@@ -647,6 +648,7 @@
 <translation id="3530024057633834563">Teil ei ole salvestatud paroole ega pääsuvõtmeid, kuid saate kustutada loendi saitidest ja rakendustest, mille sisselogimisteabe salvestamise olete keelanud. Saitidel ja rakendustel loodud kontosid ei kustutata</translation>
 <translation id="3530206579861815432">Leidke kiiresti oma sünkroonitud seadmetes avatud ja hiljuti suletud vahelehti.</translation>
 <translation id="3530767473765895035">Selles seadmes olevate kontode haldamine…</translation>
+<translation id="353340646084395154">Uue vahelehe eelistused on eemaldatud</translation>
 <translation id="3533436815740441613">Uus vaheleht</translation>
 <translation id="3540141921715814660">Järjehoidjatesse lisamine</translation>
 <translation id="3546122170015471515">Kaartide eelvaated saidil Google.com</translation>
@@ -1000,6 +1002,7 @@
 <translation id="4894963374040315706">See võimaldab hääle abil otsida</translation>
 <translation id="4895540042460820904">Viimati avatud</translation>
 <translation id="4896467949657706481">Vahelehed suleti; teid logiti välja</translation>
+<translation id="4911042367886397055">Tere tulemast tagasi, <ph name="USER_NAME" />!</translation>
 <translation id="4913626501929406101">Saate mõne oma peregrupi liikmega turvaliselt oma parooli koopiat jagada. <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
 <translation id="4917025507570489430">Kui olete kontoga <ph name="USER_EMAIL" /> sisse logitud, saate kasutada olemasolevaid sirvimisandmeid. Teie organisatsioonil võib olla võimalik neid andmeid vaadata.</translation>
 <translation id="4918086044614829423">Nõustu</translation>
@@ -1051,6 +1054,7 @@
 <translation id="508645147179720015">Märkus on pikem kui 1000 tähemärki</translation>
 <translation id="5087098519049306025">Hinnajälgimine</translation>
 <translation id="5090832849094901128">Selle parooli eemaldamisel ei kustutata teie kontot saidil <ph name="WEBSITE" />.</translation>
+<translation id="5113960131843706315">Teie asjade toomine …</translation>
 <translation id="5118462200606189584">Konto lisamine …</translation>
 <translation id="5118764316110575523">Väljas</translation>
 <translation id="5119329531859909472">Toote jälgimiseks puudutage valikut Jälgi</translation>
@@ -1121,6 +1125,7 @@
 <translation id="537853552771686272">Hallake teemasid ja saite, mis teile huvi pakuvad</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} on suletud}other{{count} on suletud}}</translation>
 <translation id="5394975111793637642">Teile mõeldud tootearvustuste kaardi peitmine</translation>
+<translation id="5407806496954700135">Kas soovite rakendada oma uue vahelehe kohandused teisest seadmest?</translation>
 <translation id="5414763847370083940">Saate teavituse, kui hind mis tahes saidil langeb.</translation>
 <translation id="5415289094036440596">Pääsuvõtmeid ei saa jagada</translation>
 <translation id="5416455648658732408">Teisalda vahelehegruppi</translation>
@@ -1755,6 +1760,7 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="7696316012653762532">Lehe tõlkimise võimalused</translation>
 <translation id="7700527812567437847">Otsige ekraanilt Google Lensiga</translation>
 <translation id="7701040980221191251">Pole</translation>
+<translation id="7708668404222666001">Teie uue vahelehe eelistused on rakendatud</translation>
 <translation id="7708994397325774423">Hankige juurdepääs kõigile oma paroolidele</translation>
 <translation id="7711440461521638739">Te ei kasuta ühtegi parooli mitu korda</translation>
 <translation id="7712361583414030698">Kuvatakse võrguühenduseta versiooni</translation>

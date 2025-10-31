@@ -277,6 +277,7 @@
 <translation id="199425419756152024">Gweld y Cyfrinair</translation>
 <translation id="1996318269856535896">Gallwch barhau i ddefnyddio'ch data pori presennol ar y ddyfais hon. I'w ddefnyddio, allgofnodwch o'ch cyfrif a reolir.</translation>
 <translation id="2010008505735295285">Ail-lwytho</translation>
+<translation id="2012723204723845092">Croeso'n ôl!</translation>
 <translation id="2015722694326466240">I weld cyfrineiriau, rhaid i chi osod cod pas ar eich dyfais yn gyntaf.</translation>
 <translation id="201759455285471444">Ehangu'r grŵp tab.</translation>
 <translation id="202070562065520783">Eglurwch hyn i mi</translation>
@@ -647,6 +648,7 @@
 <translation id="3530024057633834563">Nid oes gennych unrhyw gyfrineiriau na chodau pas wedi'u cadw, ond gallwch ddileu'r rhestr o wefannau ac apiau y gwnaethoch ddewis peidio byth â chadw gwybodaeth mewngofnodi. Ni fydd unrhyw gyfrif a grëwyd gennych ar gyfer gwefannau ac apiau yn cael ei ddileu.</translation>
 <translation id="3530206579861815432">Dod o hyd i dabiau sydd ar agor a'r rhai sydd wedi'u cau yn ddiweddar yn gyflym ar draws eich dyfeisiau sydd wedi'u cysoni.</translation>
 <translation id="3530767473765895035">Rheoli cyfrifon ar y ddyfais hon…</translation>
+<translation id="353340646084395154">Tynnwyd dewisiadau tudalen tab newydd</translation>
 <translation id="3533436815740441613">Tab Newydd</translation>
 <translation id="3540141921715814660">Ychwanegu at Nodau Tudalen</translation>
 <translation id="3546122170015471515">Rhagolwg Mapiau ar Google.com</translation>
@@ -1000,6 +1002,7 @@
 <translation id="4894963374040315706">Mae hyn yn eich galluogi i chwilio gan ddefnyddio'ch llais</translation>
 <translation id="4895540042460820904">Agorwyd Ddiwethaf</translation>
 <translation id="4896467949657706481">Cafodd tabiau eu cau; cawsoch eich allgofnodi</translation>
+<translation id="4911042367886397055">Croeso'n ôl <ph name="USER_NAME" />!</translation>
 <translation id="4913626501929406101">Gallwch rannu copi o'ch cyfrinair yn ddiogel gyda rhywun yn eich grŵp teulu. <ph name="BEGIN_LINK" />Dysgu rhagor<ph name="END_LINK" /></translation>
 <translation id="4917025507570489430">Gallwch ddefnyddio data pori presennol pan fyddwch wedi mewngofnodi fel <ph name="USER_EMAIL" />. Mae'n bosib y bydd eich sefydliad yn gallu gweld y data hyn.</translation>
 <translation id="4918086044614829423">Derbyn</translation>
@@ -1051,6 +1054,7 @@
 <translation id="508645147179720015">Mae'r nodyn yn fwy na 1000 o nodau</translation>
 <translation id="5087098519049306025">Olrhain Prisiau</translation>
 <translation id="5090832849094901128">Ni fydd dileu'r cyfrinair hwn yn dileu'ch cyfrif ar <ph name="WEBSITE" />.</translation>
+<translation id="5113960131843706315">Wrthi'n cael eich pethau…</translation>
 <translation id="5118462200606189584">Ychwanegu cyfrif…</translation>
 <translation id="5118764316110575523">Diffodd</translation>
 <translation id="5119329531859909472">I olrhain y cynnyrch, tapiwch Olrhain</translation>
@@ -1121,6 +1125,7 @@
 <translation id="537853552771686272">Rheoli'r pynciau a'r gwefannau y mae gennych ddiddordeb ynddynt</translation>
 <translation id="5390458669633674385">{count,plural, =1{Cafodd {count} ei gau}zero{Cafodd {count} eu cau}two{Cafodd {count} eu cau}few{Cafodd {count} eu cau}many{Cafodd {count} eu cau}other{Cafodd {count} eu cau}}</translation>
 <translation id="5394975111793637642">Cuddio adolygiadau cynnyrch ar gyfer eich cerdyn</translation>
+<translation id="5407806496954700135">Hoffech chi gymhwyso'ch addasiadau tudalen tab newydd o ddyfais arall?</translation>
 <translation id="5414763847370083940">Byddwch yn cael rhybudd os bydd y pris yn gostwng ar unrhyw wefan.</translation>
 <translation id="5415289094036440596">Nid oes modd rhannu codau pas</translation>
 <translation id="5416455648658732408">Symud i Grŵp Tabiau</translation>
@@ -1755,6 +1760,7 @@ Rhaid galluogi Handoff hefyd yn adran Cyffredinol y Gosodiadau, a rhaid i'ch dyf
 <translation id="7696316012653762532">Dewisiadau i gyfieithu'r dudalen</translation>
 <translation id="7700527812567437847">Chwilio'r sgrîn gyda Google Lens</translation>
 <translation id="7701040980221191251">Dim</translation>
+<translation id="7708668404222666001">Wedi cymhwyso'ch dewisiadau tudalen tab newydd</translation>
 <translation id="7708994397325774423">Cael eich holl gyfrineiriau</translation>
 <translation id="7711440461521638739">Nid ydych yn ailddefnyddio unrhyw gyfrineiriau</translation>
 <translation id="7712361583414030698">Dyma'r fersiwn all-lein</translation>

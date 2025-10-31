@@ -171,7 +171,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1270328905573953738">Umzüge</translation>
 <translation id="1270502636509132238">Abholoption</translation>
 <translation id="1273592791152866347">Preis-Tracking deaktiviert</translation>
-<translation id="1277711244058668002">Schaltfläche „Mag ich“ – Eingabetaste drücken, um positives Feedback zu diesem Vorschlag zu senden</translation>
+<translation id="1277711244058668002">Button „Mag ich“ – Eingabetaste drücken, um positives Feedback zu diesem Vorschlag zu senden</translation>
 <translation id="127777513559587977">Fernseh-Talkshows</translation>
 <translation id="1281476433249504884">Stapelfach 1</translation>
 <translation id="1282358575813748144">Wasserfahrzeuge</translation>
@@ -247,7 +247,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1391625539203220400">IBAN auf diesem Gerät speichern?</translation>
 <translation id="1392813880755413602">OpenDocument-Präsentation</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> hat keine Daten gesendet.</translation>
-<translation id="1393071644879491291">Auf dieser Website besteht die Gefahr, dass Angreifer dich zur Installation von Software oder zur Preisgabe von Daten wie Passwörtern, deiner Telefonnummer oder Kreditkartennummern verleiten möchten. Chrome rät dringend dazu, auf die Schaltfläche „Zurück zu sicherer Website“ zu klicken. <ph name="BEGIN_LEARN_MORE_LINK" />Weitere Informationen zu dieser Warnung<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="1393071644879491291">Auf dieser Website besteht die Gefahr, dass Angreifer dich zur Installation von Software oder zur Preisgabe von Daten wie Passwörtern, deiner Telefonnummer oder Kreditkartennummern verleiten möchten. Chrome rät dringend dazu, auf den Button „Zurück zu sicherer Website“ zu klicken. <ph name="BEGIN_LEARN_MORE_LINK" />Weitere Informationen zu dieser Warnung<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1405567553485452995">Hellgrün</translation>
 <translation id="1406370515365284486">Deine Zahlungsmethoden bleiben gespeichert</translation>
 <translation id="1406500794671479665">Überprüfung wird durchgeführt...</translation>
@@ -732,7 +732,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2194856509914051091">Wichtige Punkte</translation>
 <translation id="2198183835992354675">Known Traveler Number</translation>
 <translation id="2198215508485017216">Ein unerwarteter Fehler ist aufgetreten. <ph name="BEGIN_LINK" />Weitere Informationen zu Drive-Uploads<ph name="END_LINK" /></translation>
-<translation id="2200678913752027654">Schaltfläche „Mag ich nicht“ – Eingabetaste drücken, um ein Formular zu öffnen, über das du detailliertes Feedback dazu geben kannst, warum dir dieser Vorschlag nicht gefällt</translation>
+<translation id="2200678913752027654">Button „Mag ich nicht“ – Eingabetaste drücken, um ein Formular zu öffnen, über das du detailliertes Feedback dazu geben kannst, warum dir dieser Vorschlag nicht gefällt</translation>
 <translation id="2202627062836089804">Rückseite deiner Karte</translation>
 <translation id="2204482073374652408">Update abgeschlossen.</translation>
 <translation id="2207770355672215546">Immer erlauben, mit jeder Karte</translation>
@@ -1020,7 +1020,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2651465929321991146">Verlauf und Tabs</translation>
 <translation id="2653659639078652383">Senden</translation>
 <translation id="2655752832536625875">Badezimmer</translation>
-<translation id="2656194288057285221">Schaltfläche „Chrome-Tipp schließen“ – Drück die Eingabetaste zum Schließen</translation>
+<translation id="2656194288057285221">Button „Chrome-Tipp schließen“ – Drück die Eingabetaste zum Schließen</translation>
 <translation id="2657637947725373811">{0,plural, =1{Vertrauliche Datei übertragen?}other{Vertrauliche Dateien übertragen?}}</translation>
 <translation id="2658843814961855121">Arbeitsrecht</translation>
 <translation id="2660779039299703961">Ereignis</translation>
@@ -1615,7 +1615,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3644768007456662469">Symbol für Zahlungselement</translation>
 <translation id="3646643500201740985">Leistung einer Werbeanzeige messen</translation>
 <translation id="3647286794400715637">Jeder URL-Stringeintrag muss eine oder zwei URLs enthalten.</translation>
-<translation id="3647400963805615193">Schaltfläche „Chrome-Tipp schließen“ – Drück die Eingabetaste zum Schließen, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
+<translation id="3647400963805615193">Button „Chrome-Tipp schließen“ – Drück die Eingabetaste zum Schließen, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="3650584904733503804">Überprüfung erfolgreich</translation>
 <translation id="3650594806107685466">Bitte gib aus Sicherheitsgründen den CVC auf der <ph name="SIDE_OF_CARD" /> ein</translation>
 <translation id="3650917416636556301">Wandern und Camping</translation>
@@ -2930,6 +2930,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5813119285467412249">&amp;Hinzufügen wiederholen</translation>
 <translation id="5813753398265398978">Physik</translation>
 <translation id="5817918615728894473">Koppeln</translation>
+<translation id="5820625124144807242">Nachdem du deine Bestellung geprüft hast, musst du dich mit <ph name="BNPL_ISSUER_NAME" /> in deinem Konto anmelden oder ein neues erstellen. Dieses Konto wird automatisch mit Google Pay verknüpft.</translation>
 <translation id="5826507051599432481">Allgemeiner Name (CN)</translation>
 <translation id="5830698870816298009">Kamera verwenden und bewegen</translation>
 <translation id="5831217499016131155">Google Wallet</translation>
@@ -2971,7 +2972,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5890248301649767931">Redress-Nummer speichern?</translation>
 <translation id="5895138241574237353">Neu starten</translation>
 <translation id="5895187275912066135">Ausgestellt am</translation>
-<translation id="5898767305816764989">Schaltfläche „Mag ich“ – Eingabetaste drücken, um positives Feedback zu <ph name="THUMBS_UP_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /> zu senden</translation>
+<translation id="5898767305816764989">Button „Mag ich“ – Eingabetaste drücken, um positives Feedback zu <ph name="THUMBS_UP_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /> zu senden</translation>
 <translation id="5901630391730855834">Gelb</translation>
 <translation id="5903264686717710770">Titel:</translation>
 <translation id="5905671155741555195">Mit deiner Arbeitsadresse kannst du Google-Dienste besser nutzen, z. B. relevantere Suchergebnisse und Wegbeschreibungen in Google Maps erhalten. Du kannst deine Adresse <ph name="BEGIN_LINK" />in deinem Google-Konto <ph name="ACCOUNT" /><ph name="END_LINK" /> bearbeiten oder löschen.</translation>
@@ -3410,7 +3411,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6578434528542148658">Ungültige Erweiterungs-ID.</translation>
 <translation id="6579858392010591435">Feiertage und besondere Anlässe</translation>
 <translation id="6581831440014388355">Entfernung unerwünschter Haare an Gesicht und Körper</translation>
-<translation id="658230438113661756">Auf dieser Website besteht die Gefahr, dass Angreifer Schadsoftware installieren, mit der beispielsweise Passwörter, Fotos, Nachrichten oder Kreditkartennummern gestohlen oder gelöscht werden können. Chrome rät dringend dazu, auf die Schaltfläche „Zurück zu sicherer Website“ zu klicken. <ph name="BEGIN_LEARN_MORE_LINK" />Weitere Informationen zu dieser Warnung<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="658230438113661756">Auf dieser Website besteht die Gefahr, dass Angreifer Schadsoftware installieren, mit der beispielsweise Passwörter, Fotos, Nachrichten oder Kreditkartennummern gestohlen oder gelöscht werden können. Chrome rät dringend dazu, auf den Button „Zurück zu sicherer Website“ zu klicken. <ph name="BEGIN_LEARN_MORE_LINK" />Weitere Informationen zu dieser Warnung<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6587893660316489419">Umschlag B5</translation>
 <translation id="6587923378399804057">Von dir kopierter Link</translation>
 <translation id="6591833882275308647">Dein <ph name="DEVICE_TYPE" /> wird nicht verwaltet</translation>
@@ -3442,7 +3443,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6649510485211003056">195 × 270 mm</translation>
 <translation id="6651270836885078973">Verwaltet von:</translation>
 <translation id="6652101503459149953">Windows Hello verwenden</translation>
-<translation id="6653684225271066234"><ph name="BNPL_ISSUER_NAME" /> prüft, ob du die Voraussetzungen erfüllst. Das hat keinen Einfluss auf deinen Kreditscore. Wenn du die Voraussetzungen erfüllst, erhältst du von <ph name="BNPL_ISSUER_NAME" /> mögliche Abrechnungsmodelle, um den Kauf abzuschließen.</translation>
 <translation id="6654224358955673568">Formeller ausdrücken</translation>
 <translation id="6654244995031366386">Glas (texturiert)</translation>
 <translation id="6657585470893396449">Passwort</translation>
@@ -3605,7 +3605,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6925267999184670015">B+ (Nordamerika)</translation>
 <translation id="6926216138694948720">Körperschmuck und -kunst</translation>
 <translation id="692638818576287323">Gewerbefahrzeuge</translation>
-<translation id="6927057753277044239">Nachdem du deine Bestellung geprüft hast, musst du dich mit <ph name="BNPL_ISSUER_NAME" /> in deinem Konto anmelden oder ein neues erstellen. Dieses Konto wird automatisch mit deinem Google-Konto verknüpft.</translation>
 <translation id="6930607614725241390">In der Seitenleiste suchen</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Mit der Standardsuchmaschine hast du die Möglichkeit, im Web zu suchen und Chrome-Funktionen zu nutzen.<ph name="END_BOLD" /> Du kannst beispielsweise über die Adressleiste oder über Bilder auf Webseiten suchen. Eine Funktion ist möglicherweise nicht verfügbar, wenn sie nicht von deiner Suchmaschine unterstützt wird.</translation>
 <translation id="6934672428414710184">Dieser Name stammt aus deinem Google-Konto</translation>
@@ -3813,7 +3812,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="7251437084390964440">Die Netzwerkkonfiguration entspricht nicht dem ONC-Standard. Die Konfiguration wird unter Umständen nicht vollständig importiert.
 Weitere Details:
 <ph name="DEBUG_INFO" /></translation>
-<translation id="7255540419660272073">Schaltfläche „Mag ich nicht“ – Eingabetaste drücken, um ein Formular zu öffnen, über das du detailliertes Feedback dazu geben kannst, warum dir <ph name="THUMBS_DOWN_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /> nicht gefällt</translation>
+<translation id="7255540419660272073">Button „Mag ich nicht“ – Eingabetaste drücken, um ein Formular zu öffnen, über das du detailliertes Feedback dazu geben kannst, warum dir <ph name="THUMBS_DOWN_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /> nicht gefällt</translation>
 <translation id="7256634549594854023">Hinteres Fach</translation>
 <translation id="7257453341537973799">Karriereplanung</translation>
 <translation id="725866823122871198">Es kann keine private Verbindung zu <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> hergestellt werden, weil Datum und Uhrzeit deines Computers falsch sind (<ph name="DATE_AND_TIME" />).</translation>
@@ -3959,6 +3958,7 @@ Weitere Details:
 <translation id="7485085230273446323">Wirtschaft und Industrie</translation>
 <translation id="7485870689360869515">Keine Daten gefunden</translation>
 <translation id="7486880426035242089">OneDrive</translation>
+<translation id="7489255442002627311"><ph name="BNPL_ISSUER_NAME" /> prüft, ob du die Voraussetzungen erfüllst. Das hat keinen Einfluss auf deinen Kreditscore. Nach der Genehmigung erhältst du von <ph name="BNPL_ISSUER_NAME" /> Abrechnungsmodelle, aus denen du eines auswählen und den Kauf abschließen kannst.</translation>
 <translation id="7489392576326061356">Haarpflegeprodukte</translation>
 <translation id="7489919936111034362">Dein Google Drive-Speicherplatz ist voll</translation>
 <translation id="7495528107193238112">Dieser Inhalt ist blockiert. Setze dich mit dem Websiteinhaber in Verbindung, um das Problem zu beheben.</translation>
@@ -4098,7 +4098,7 @@ Weitere Details:
 <translation id="7682451652090915298">Rugby</translation>
 <translation id="768344142657640519">Du warst gerade hier</translation>
 <translation id="7684683146428206649">Metall</translation>
-<translation id="7684817988830401358">Schaltfläche „Browserdaten löschen“: Aktiviere die Schaltfläche in den Chrome-Einstellungen, um z. B. Browserverlauf, Cookies und andere Daten zu löschen und den Cache zu leeren</translation>
+<translation id="7684817988830401358">Button „Browserdaten löschen“: Aktiviere den Button in den Chrome-Einstellungen, um z. B. Browserverlauf, Cookies und andere Daten zu löschen und den Cache zu leeren</translation>
 <translation id="7684928361160505327">{0,plural, =1{<ph name="FILE_NAME" /> wurde aufgrund einer Richtlinie blockiert}other{<ph name="FILE_COUNT" /> Dateien wurden aufgrund einer Richtlinie blockiert}}</translation>
 <translation id="7687186412095877299">Zahlungsformulare werden mit deinen gespeicherten Zahlungsmethoden ausgefüllt</translation>
 <translation id="7687305263118037187">Zeitüberschreitung bei Wiederholung</translation>
@@ -4516,7 +4516,7 @@ Weitere Details:
 <translation id="8398446215576328011">Angewandte Richtlinien wiederherstellen</translation>
 <translation id="8398790343843005537">Mein Telefon finden</translation>
 <translation id="8400929824946688748">Beruf und Ausbildung</translation>
-<translation id="8402442052798347631">Auf dieser Website besteht die Gefahr, dass Angreifer dich zur Installation von Schadsoftware verleiten möchten, die deine Internetnutzung beeinträchtigt. Solche Software könnte zum Beispiel deine Startseite ändern oder auf Websites zusätzliche Werbung einblenden. Chrome rät dringend dazu, auf die Schaltfläche „Zurück zu sicherer Website“ zu klicken. <ph name="BEGIN_LEARN_MORE_LINK" />Weitere Informationen zu dieser Warnung<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="8402442052798347631">Auf dieser Website besteht die Gefahr, dass Angreifer dich zur Installation von Schadsoftware verleiten möchten, die deine Internetnutzung beeinträchtigt. Solche Software könnte zum Beispiel deine Startseite ändern oder auf Websites zusätzliche Werbung einblenden. Chrome rät dringend dazu, auf den Button „Zurück zu sicherer Website“ zu klicken. <ph name="BEGIN_LEARN_MORE_LINK" />Weitere Informationen zu dieser Warnung<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8403506619177967839">Fan-Fiction</translation>
 <translation id="8405579342203358118">In den Chrome-Einstellungen verwalten, welche Informationen synchronisiert werden</translation>
 <translation id="8406071103346257942">die Displaysperre nicht mehr zum Ausfüllen von Passwörtern zu verwenden</translation>

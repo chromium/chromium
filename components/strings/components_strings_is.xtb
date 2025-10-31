@@ -2932,6 +2932,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="5813119285467412249">Endu&amp;rtaka nýtt bókamerki</translation>
 <translation id="5813753398265398978">Eðlisfræði</translation>
 <translation id="5817918615728894473">Para</translation>
+<translation id="5820625124144807242">Þegar þú hefur farið yfir pöntunina þína þarftu að skrá þig inn á eða stofna reikning hjá <ph name="BNPL_ISSUER_NAME" />. Þessi reikningur verður sjálfkrafa tengdur við Google Pay.</translation>
 <translation id="5826507051599432481">Almennt heiti (CN)</translation>
 <translation id="5830698870816298009">notkun og hreyfing myndavélar</translation>
 <translation id="5831217499016131155">Google Wallet</translation>
@@ -3444,7 +3445,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="6649510485211003056">195 x 270 mm</translation>
 <translation id="6651270836885078973">Stjórnað af:</translation>
 <translation id="6652101503459149953">Nota Windows Hello</translation>
-<translation id="6653684225271066234"><ph name="BNPL_ISSUER_NAME" /> mun athuga gjaldgengi þitt (þetta mun ekki hafa áhrif á lánshæfiseinkunnina þína). Ef gjaldgengi er staðfest mun <ph name="BNPL_ISSUER_NAME" /> gefa þér upp hugsanlega(r) greiðsluleið(ir) til að ganga frá kaupunum.</translation>
 <translation id="6654224358955673568">Gera formlegri</translation>
 <translation id="6654244995031366386">Gler (með áferð)</translation>
 <translation id="6657585470893396449">Aðgangsorð</translation>
@@ -3607,7 +3607,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="6925267999184670015">B+ fyrir Norður Ameríku</translation>
 <translation id="6926216138694948720">Líkamsskreyting</translation>
 <translation id="692638818576287323">Flutningabifreiðir</translation>
-<translation id="6927057753277044239">Þegar þú hefur farið yfir pöntunina þína þarftu að skrá þig inn á eða stofna reikning hjá <ph name="BNPL_ISSUER_NAME" />. Þessi reikningur verður sjálfkrafa tengdur við Google-reikninginn þinn.</translation>
 <translation id="6930607614725241390">Leit í hliðarglugga</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Sjálfgefin leitarvél gerir þér kleift að leita á netinu og knýr Chrome-eiginleika<ph name="END_BOLD" /> á borð við að leita frá veffangastikunni og út frá myndum á vefsíðum. Eiginleiki er hugsanlega ekki í boði ef leitarvélin styður hann ekki.</translation>
 <translation id="6934672428414710184">Þetta nafn kemur af Google reikningnum þínum</translation>
@@ -3960,6 +3959,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="7485085230273446323">Viðskipti og iðnaður</translation>
 <translation id="7485870689360869515">Engin gögn fundust.</translation>
 <translation id="7486880426035242089">OneDrive</translation>
+<translation id="7489255442002627311"><ph name="BNPL_ISSUER_NAME" /> mun athuga gjaldgengi þitt (þetta mun ekki hafa áhrif á lánshæfiseinkunnina þína). Ef þú færð samþykki veitir <ph name="BNPL_ISSUER_NAME" /> þér greiðsluáætlanir sem þú getur valið úr og lokið kaupunum.</translation>
 <translation id="7489392576326061356">Sjampó og hárnæring</translation>
 <translation id="7489919936111034362">Google Drive-geymslurýmið þitt er fullt</translation>
 <translation id="7495528107193238112">Þetta efni er á bannlista. Hafðu samband við eiganda vefsvæðisins til að lagfæra vandamálið.</translation>

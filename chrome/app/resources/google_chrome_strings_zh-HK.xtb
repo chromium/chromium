@@ -367,7 +367,7 @@
 這表示您可能無法使用部分功能。請指定另一個設定檔目錄，或使用較新版本的 Chrome。</translation>
 <translation id="5174969993834422967">系統已按照你的使用習慣封鎖通知。如要允許此網站傳送通知，請按一下網址列右上角的通知圖示。</translation>
 <translation id="5174983315706567306">磁碟空間不足。</translation>
-<translation id="5190467473654176081">自訂 Chrome 以便為瀏覽器套用新風格</translation>
+<translation id="5190467473654176081">自訂 Chrome 來為瀏覽器換上新風格</translation>
 <translation id="5201744974236816379">Chrome 更新</translation>
 <translation id="521447420733633466">如果您與親朋好友共用裝置，每人都能各自瀏覽網頁，並按需求設定 Chrome</translation>
 <translation id="5234764350956374838">關閉</translation>
@@ -391,7 +391,7 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="5510398294750420479">在手機下載 Chrome，隨時隨地多添一重保障</translation>
 <translation id="5524890928877629608">搜尋區域嘅左上角：距左側 <ph name="LEFT" />%，距頂部 <ph name="TOP" />%</translation>
 <translation id="5530733413481476019">加快 Chrome 的運作速度</translation>
-<translation id="5550137307985173298">按一下「新分頁」上的 [自訂 Chrome] 按鈕，為 Chrome 套用新風格</translation>
+<translation id="5550137307985173298">按一下「新分頁」上的「自訂 Chrome」按鈕，即可變更 Chrome 外觀</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5579324208890605088">啟動錯誤：請以一般使用者 (而非管理員) 身分執行安裝程式。</translation>
 <translation id="5596627076506792578">更多選項</translation>
@@ -528,7 +528,6 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="6885412569789873916">Chrome 測試版應用程式</translation>
 <translation id="6893363893008038481">從 Chrome 移除帳戶</translation>
 <translation id="6896758677409633944">複製</translation>
-<translation id="6927941417289800361">登入後，你可以在 Chrome 使用 Google 帳戶儲存的密碼和其他資料。你可隨時在設定中變更此設定。</translation>
 <translation id="6930294499209825">確保 Google 軟件為最新版本。如果此服務停用或停止，Google 軟件就無法保持最新狀態，導致潛在安全漏洞無法修正，功能亦可能無法正常運作。如果此服務沒有用於任何 Google 軟件，就會自行解除安裝。</translation>
 <translation id="6933858244219479645">ChromeOS 系統</translation>
 <translation id="6938166777909186039">如要取得日後的 Google Chrome 更新，您需要使用 Windows 10 或以上版本。此電腦目前版本為 Windows 8.1。</translation>
@@ -685,7 +684,7 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome 將於 1 分鐘後重新啟動}other{Chrome 將於 # 分鐘後重新啟動}}</translation>
 <translation id="8637932705841171563">如要分享視窗，請前往「系統設定」允許 Chrome 螢幕錄影</translation>
 <translation id="8641606876632989680">如果您使用被盜用的密碼登入帳戶，Chrome 會通知您</translation>
-<translation id="8647930742055103497">將所有內容保留在 Chrome 中</translation>
+<translation id="8647930742055103497">將一切保留在 Chrome 中</translation>
 <translation id="8656634243791296665">開啟 Chrome 開發人員版 Gemini</translation>
 <translation id="8669527147644353129">Google Chrome 輔助工具</translation>
 <translation id="8677922833187616101">一律顯示 Google AI 模式捷徑</translation>

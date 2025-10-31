@@ -93,6 +93,7 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="2018528049276128029">Elk profiel heeft eigen Chrome-informatie, zoals bookmarks, geschiedenis en wachtwoorden</translation>
 <translation id="2018879682492276940">Installatie mislukt. Probeer het opnieuw.</translation>
 <translation id="2024959665595762054">Laat verifiëren dat jij het bent om Chrome-gegevens te gebruiken en op te slaan in je Google-account</translation>
+<translation id="2026377840141807639">Met Chrome-profielen kun je persoonlijk browsen en werk gescheiden houden. Voeg nu een nieuw profiel toe.</translation>
 <translation id="2034233344106846793">Chrome upgradet niet-beveiligde verbindingen automatisch naar HTTPS als dat mogelijk is</translation>
 <translation id="2039417478970545937">Instellingen.</translation>
 <translation id="2091012649849228750">Als je toekomstige Google Chrome-updates wilt krijgen, heb je Windows 10 of hoger nodig. Deze computer gebruikt Windows 8.</translation>
@@ -366,6 +367,7 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 Sommige functies zijn wellicht niet beschikbaar. Geef een andere profieldirectory op of gebruik een nieuwere versie van Chrome.</translation>
 <translation id="5174969993834422967">Meestal blokkeer je meldingen. Klik op het meldingsicoon in de rechterhoek van de locatiebalk om toe te staan dat deze site meldingen stuurt.</translation>
 <translation id="5174983315706567306">Er is onvoldoende schijfruimte.</translation>
+<translation id="5190467473654176081">Pas Chrome aan om de browser een nieuwe look te geven</translation>
 <translation id="5201744974236816379">Chrome-update</translation>
 <translation id="521447420733633466">Als je een apparaat deelt, kunnen vrienden en familie afzonderlijk surfen en Chrome instellen zoals zij dat willen.</translation>
 <translation id="5234764350956374838">Sluiten</translation>
@@ -387,6 +389,7 @@ Sommige functies zijn wellicht niet beschikbaar. Geef een andere profieldirector
 <translation id="5510398294750420479">Download Chrome op je telefoon voor een extra beveiligingslaag als je onderweg bent</translation>
 <translation id="5524890928877629608">linkerbovenhoek van zoekgebied: links <ph name="LEFT" />%, boven <ph name="TOP" />%</translation>
 <translation id="5530733413481476019">Maak Chrome sneller</translation>
+<translation id="5550137307985173298">Klik op de knop Chrome aanpassen op de pagina Nieuw tabblad om Chrome een nieuwe look te geven</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5579324208890605088">Opstartfout: voer het installatieprogramma uit als normale gebruiker, niet als beheerder.</translation>
 <translation id="5596627076506792578">Meer opties</translation>
@@ -415,6 +418,7 @@ Dit heeft geen gevolgen voor bookmarks, geschiedenis en opgeslagen wachtwoorden.
 <translation id="5736850870166430177">Als een site je wachtwoord probeert te stelen of als je een schadelijk bestand downloadt, kan Chrome ook URL's, inclusief delen van de paginacontent, naar Safe Browsing sturen</translation>
 <translation id="5756509061973259733">Er bestaat op dit apparaat al een Chrome-profiel met dit account</translation>
 <translation id="5759947850379142561">Selecteer tekst of een afbeelding om te zoeken met Google Lens of druk op Escape om Google Lens te sluiten</translation>
+<translation id="5762867845020858790">Voeg een nieuw Chrome-profiel toe om bookmarks, wachtwoorden en instellingen gescheiden te houden.</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Google Chrome Canary</translation>
 <translation id="5804318322022881572">Kan Chrome niet starten. Probeer het opnieuw.</translation>
 <translation id="5809516625706423866">Kan geen verbinding maken met internet. HTTP 401 Niet geautoriseerd. Check je proxyconfiguratie.</translation>
@@ -515,13 +519,13 @@ Dit heeft geen gevolgen voor bookmarks, geschiedenis en opgeslagen wachtwoorden.
 <translation id="6800285125190089494">Log sneller in op sites met opgeslagen wachtwoorden voor Chrome op iOS</translation>
 <translation id="6831043979455480757">Vertalen</translation>
 <translation id="683440813066116847">Inkomende regel zodat Google Chrome Canary mDNS-verkeer toestaat.</translation>
+<translation id="6841242485723266823">Met Chrome-profielen kun je verschillende delen van je leven gescheiden houden. Voeg nu een nieuw profiel toe.</translation>
 <translation id="684888714667046800">Kan geen verbinding maken met internet. Als je een firewall gebruikt, zorg je dat <ph name="PRODUCT_EXE_NAME" /> op de toelatingslijst staat.</translation>
 <translation id="6877155553248388166">rechterbenedenhoek van zoekgebied: rechts <ph name="RIGHT" />%, onder <ph name="BOTTOM" />%</translation>
 <translation id="6881299373831449287">Chrome updaten</translation>
 <translation id="6885412569789873916">Chrome Bèta-apps</translation>
 <translation id="6893363893008038481">Account verwijderen uit Chrome</translation>
 <translation id="6896758677409633944">Kopiëren</translation>
-<translation id="6927941417289800361">Als je bent ingelogd, kun je onder andere de wachtwoorden uit je Google-account gebruiken in Chrome. Je kunt dit altijd wijzigen in de instellingen.</translation>
 <translation id="6930294499209825">Houdt je Google-software up-to-date. Als deze service is uitgezet of gestopt, wordt je Google-software niet up-to-date gehouden. Dit betekent dat beveiligingskwetsbaarheden die kunnen ontstaan, niet kunnen worden verholpen en dat functies misschien niet werken. De service wordt automatisch verwijderd als er geen Google-software is die deze gebruikt.</translation>
 <translation id="6933858244219479645">ChromeOS-systeem</translation>
 <translation id="6938166777909186039">Als je toekomstige Google Chrome-updates wilt krijgen, heb je Windows 10 of hoger nodig. Deze computer gebruikt Windows 8.1.</translation>
@@ -646,6 +650,7 @@ Dit heeft geen gevolgen voor bookmarks, geschiedenis en opgeslagen wachtwoorden.
 <translation id="8255190535488645436">Google Chrome gebruikt je camera en microfoon.</translation>
 <translation id="8267953129876836456">Chrome heeft een aantal veiligheidsaanbevelingen gevonden</translation>
 <translation id="8286862437124483331">Google Chrome probeert wachtwoorden te bekijken. Geef je Windows-wachtwoord op om dit toe te staan.</translation>
+<translation id="8289399803055125418">Gebruik je <ph name="BEGIN_LINK" />eigen wachtwoordzin<ph name="END_LINK" /> om alle Chrome-gegevens in je Google-account te versleutelen. Adressen en gegevens die zijn opgeslagen in Google Wallet, worden niet versleuteld met je wachtwoordzin. De browsegeschiedenis in Chrome wordt niet gesynchroniseerd.</translation>
 <translation id="829923460755755423">Voeg een snelkoppeling toe naar Google Wachtwoordmanager</translation>
 <translation id="8313851650939857356">Opstartfout: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8321888067342493336">Opslaan als afbeelding</translation>
@@ -678,6 +683,7 @@ Dit heeft geen gevolgen voor bookmarks, geschiedenis en opgeslagen wachtwoorden.
 <translation id="8625237574518804553">{0,plural, =1{Chrome wordt over één minuut opnieuw gestart}other{Chrome wordt over # minuten opnieuw gestart}}</translation>
 <translation id="8637932705841171563">Als je je venster wilt delen, sta je schermopname voor Chrome toe in Systeeminstellingen</translation>
 <translation id="8641606876632989680">Chrome laat het je weten als je inlogt met een gehackt wachtwoord</translation>
+<translation id="8647930742055103497">Alles in Chrome houden</translation>
 <translation id="8656634243791296665">Gemini in Chrome Dev openen</translation>
 <translation id="8669527147644353129">Google Chrome Helper</translation>
 <translation id="8677922833187616101">Snelkoppeling voor AI-modus van Google altijd tonen</translation>

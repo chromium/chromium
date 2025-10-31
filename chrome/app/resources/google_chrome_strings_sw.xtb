@@ -156,6 +156,7 @@ Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahi
 <translation id="2738871930057338499">Imeshindwa kuunganisha kwenye Intaneti. HTTP 403 Hairuhusiwi. Tafadhali angalia mipangilio yako ya seva mbadala.</translation>
 <translation id="2742320827292110288">Onyo: Google Chrome haiwezi kuzuia viendelezi kurekodi historia yako ya kuvinjari. Ili uzime kiendelezi hiki katika Hali fiche, usiteue chaguo hili.</translation>
 <translation id="2753623023919742414">Bofya ili utafute</translation>
+<translation id="2757826245013442432">{COUNT,plural, =0{Mipangilio ya Ulinzi wa Hali ya Juu huhitaji ufungue Chrome tena ili utumie sasisho}=1{Mipangilio ya Ulinzi wa Hali ya Juu huhitaji ufungue Chrome tena ili utumie sasisho. Dirisha lako la faraghani halitafunguka upya.}other{Mipangilio ya Ulinzi wa Hali ya Juu huhitaji ufungue Chrome tena ili utumie sasisho. Madirisha yako # ya faraghani hayatafunguka upya.}}</translation>
 <translation id="2765403129283291972">Chrome inahitaji ruhusa ya kufikia maikrofoni yako katika tovuti hii</translation>
 <translation id="2770231113462710648">Badilisha kivinjari chaguomsingi kiwe:</translation>
 <translation id="2775140325783767197">Chrome imeshindwa kukagua manenosiri yako. Jaribu kuangalia muunganisho wako wa Intaneti.</translation>
@@ -529,7 +530,6 @@ Google Chrome haiwezi kufufua mipangilio yako.</translation>
 <translation id="6885412569789873916">Programu za Chrome Beta</translation>
 <translation id="6893363893008038481">Ondoa Akaunti kwenye Chrome</translation>
 <translation id="6896758677409633944">Nakili</translation>
-<translation id="6927941417289800361">Wakati umeingia katika akaunti, unaweza kutumia manenosiri yako na mengineyo kwenye Akaunti yako ya Google katika Chrome. Unaweza kubadilisha hali hii wakati wowote katika mipangilio.</translation>
 <translation id="6930294499209825">Husasisha programu yako ya Google. Huduma hii ikizimwa au kusimamishwa, programu yako ya Google haitasasishwa, hali inayomaanisha kuwa hatari za usalama zinazoweza kutokea haziwezi kurekebishwa na huenda vipengele visifanye kazi. Huduma hii hujiondoa kwenye kifaa ikiwa hakuna programu ya Google inayoitumia.</translation>
 <translation id="6933858244219479645">Mfumo wa ChromeOS</translation>
 <translation id="6938166777909186039">Ili upate masasisho yajayo ya Google Chrome, utahitaji kutumia toleo la Windows 10 au toleo jipya zaidi. Kompyuta hii inatumia toleo Windows 8.1.</translation>

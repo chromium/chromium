@@ -75,7 +75,6 @@ Neke funkcije možda neće biti dostupne i promjene postavki se neće sačuvati.
 <translation id="1896836275755235458">Chromium štedi energiju baterije ograničavanjem pozadinske aktivnosti i vizuelnih efekata, poput glatkog klizanja i broja slika u sekundi videozapisa. <ph name="BEGIN_LINK" />Saznajte više o Uštedi energije<ph name="END_LINK" /></translation>
 <translation id="1898804291554630487">Pitajte o ovoj stranici</translation>
 <translation id="1900969832270057921">Usluga za ažuriranje Chromiuma</translation>
-<translation id="1911666947158375684">Dok ste prijavljeni, lozinke i drugo s Google računa možete koristiti u Chromiumu. Ovo možete promijeniti bilo kada u postavkama.</translation>
 <translation id="1911763535808217981">Isključivanjem ove postavke, možete se prijaviti na Googleove web lokacije poput Gmaila bez prijave na Chromium</translation>
 <translation id="1929939181775079593">Chromium ne reagira. Ponovo pokrenuti sada?</translation>
 <translation id="1933341829955786215">Organizacija <ph name="MANAGER" /> zahtijeva da se prijavite u Chromium</translation>
@@ -91,7 +90,7 @@ Neke funkcije možda neće biti dostupne i promjene postavki se neće sačuvati.
 <translation id="2039417478970545937">Postavke.</translation>
 <translation id="2049376729098081731">Odaberite želite li uključiti historiju Chromiuma da dodatno personalizirate iskustva na Googleovim uslugama</translation>
 <translation id="2054039611381840095">Da dobijate buduća ažuriranja za Chromium, trebat ćete macOS 12 ili noviju verziju. Računar koristi macOS 11.</translation>
-<translation id="2064856577282482477">Kliknite na dugme Prilagodite Chromium na stranici Nova kartica da biste Chromiumu dodijelili novi izgled</translation>
+<translation id="2064856577282482477">Kliknite na dugme Prilagodite Chromium na stranici Nova kartica da Chromiumu dodijelite novi izgled</translation>
 <translation id="2086476982681781442">Chromium je blokirao ovo preuzimanje jer je fajl obmanjujući i može izvršiti neočekivane izmjene na uređaju</translation>
 <translation id="208726765006323911">Vidjet ćete upit da isprobate funkciju <ph name="FEATURE_NAME" /> sljedeći put kada otvorite Chromium iOS.</translation>
 <translation id="2099452623287920103">Lozinke i drugi podaci Chromiuma koji su sačuvani na Google računu će se ukloniti s uređaja. Da ih ponovo koristite u Chromiumu, prijavite se ponovo.</translation>
@@ -148,6 +147,7 @@ Neke funkcije možda neće biti dostupne i promjene postavki se neće sačuvati.
 <translation id="2620436844016719705">Sistem</translation>
 <translation id="2629740064077610681">Vaša organizacija može vidjeti podatke o pregledanju kao što su oznake, historija i lozinke te upravljati njima. Ne može vidjeti podatke o pregledanju na drugim Chromium profilima</translation>
 <translation id="2635452620547538388">Potvrdite identitet da koristite i sačuvate podatke Chromiuma na računu <ph name="ACCOUNT_EMAIL" /></translation>
+<translation id="2637732208198500597">{COUNT,plural, =0{Napredna zaštita zahtijeva da ponovo pokrenete Chromium radi primjene ažuriranja}=1{Napredna zaštita zahtijeva da ponovo pokrenete Chromium radi primjene ažuriranja. Anonimni prozor se neće ponovo otvoriti.}one{Napredna zaštita zahtijeva da ponovo pokrenete Chromium radi primjene ažuriranja. # anonimni prozor se neće ponovo otvoriti.}few{Napredna zaštita zahtijeva da ponovo pokrenete Chromium radi primjene ažuriranja. # anonimna prozora se neće ponovo otvoriti.}other{Napredna zaštita zahtijeva da ponovo pokrenete Chromium radi primjene ažuriranja. # anonimnih prozora se neće ponovo otvoriti.}}</translation>
 <translation id="2648074677641340862">Tokom instaliranja se pojavila greška operativnog sistema. Ponovo preuzmite Chromium.</translation>
 <translation id="2661879430930417727">Ako dijelite uređaj, prijatelji i porodica mogu odvojeno pregledati i postavljati Chromium na način koji njima odgovara</translation>
 <translation id="2711502716910134313">Kartica Chromiuma</translation>

@@ -2932,6 +2932,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5813119285467412249">&amp;Ribëje shtimin</translation>
 <translation id="5813753398265398978">Fizika</translation>
 <translation id="5817918615728894473">Çifto</translation>
+<translation id="5820625124144807242">Pasi të rishikosh porosinë, duhet të identifikohesh ose të krijosh një llogari me <ph name="BNPL_ISSUER_NAME" />. Kjo llogari do të lidhet automatikisht me Google Pay.</translation>
 <translation id="5826507051599432481">Emri i zakonshëm (CN)</translation>
 <translation id="5830698870816298009">Përdorimi dhe lëvizja e kamerës</translation>
 <translation id="5831217499016131155">Portofoli i Google</translation>
@@ -3443,7 +3444,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6649510485211003056">195 x 270 mm</translation>
 <translation id="6651270836885078973">Menaxhohet nga:</translation>
 <translation id="6652101503459149953">Përdor Windows Hello</translation>
-<translation id="6653684225271066234"><ph name="BNPL_ISSUER_NAME" /> do të kontrollojë kualifikimin tënd (kjo nuk do të ndikojë në vlerësimin tënd të kreditit). Nëse i plotëson kriteret e kualifikimit, <ph name="BNPL_ISSUER_NAME" /> do të të ofrojë planet e mundshme të pagesës për të përfunduar blerjen tënde.</translation>
 <translation id="6654224358955673568">Bëje formal</translation>
 <translation id="6654244995031366386">Qelq (me teksturë)</translation>
 <translation id="6657585470893396449">Fjalëkalimi</translation>
@@ -3606,7 +3606,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6925267999184670015">B+ (Amerika e Veriut)</translation>
 <translation id="6926216138694948720">Art trupor</translation>
 <translation id="692638818576287323">Automjete komerciale</translation>
-<translation id="6927057753277044239">Pasi të rishikosh porosinë, duhet të identifikohesh ose të krijosh një llogari me <ph name="BNPL_ISSUER_NAME" />. Kjo llogari do të lidhet automatikisht me "Llogarinë tënde të Google".</translation>
 <translation id="6930607614725241390">Kërko në panelin anësor</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Motori i parazgjedhur i kërkimit të lejon të kërkosh në ueb dhe mundëson veçoritë e Chrome<ph name="END_BOLD" />, si p.sh. kërkimin nga shiriti i adresave dhe nga imazhet në faqet e uebit. Një veçori mund të mos ofrohet nëse ajo nuk mbështetet nga motori i kërkimit.</translation>
 <translation id="6934672428414710184">Ky emër është nga "Llogaria jote e Google"</translation>
@@ -3959,6 +3958,7 @@ Detaje shtesë:
 <translation id="7485085230273446323">Biznes dhe industriale</translation>
 <translation id="7485870689360869515">Nuk u gjetën të dhëna.</translation>
 <translation id="7486880426035242089">OneDrive</translation>
+<translation id="7489255442002627311"><ph name="BNPL_ISSUER_NAME" /> do të kontrollojë kualifikimin tënd (kjo nuk do të ndikojë në vlerësimin tënd të kreditit). Nëse miratohesh, <ph name="BNPL_ISSUER_NAME" /> do të ofrojë plane pagesash nga të cilat ti mund të zgjedhësh për të përfunduar blerjen tënde.</translation>
 <translation id="7489392576326061356">Shampo dhe zbutës flokësh</translation>
 <translation id="7489919936111034362">Hapësira ruajtëse e "Diskut të Google" është plot</translation>
 <translation id="7495528107193238112">Kjo përmbajtje është bllokuar. Kontakto me zotëruesin e sajtit për të rregulluar problemin.</translation>

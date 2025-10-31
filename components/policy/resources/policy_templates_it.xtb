@@ -3595,6 +3595,15 @@ Se la policy non viene impostata, non è possibile navigare nel browser se è at
 
       Se la policy viene impostata su Disattivata o se non viene configurata, viene disattivato il controller DTC e non sarà possibile raccogliere, elaborare o segnalare dati telemetrici e diagnostici del dispositivo.</translation>
 <translation id="3442589735857147823">Consenti agli utenti di usare le macchine virtuali necessarie per supportare le app Linux</translation>
+<translation id="34476328503285475">Se la policy viene impostata, è possibile preconfigurare fino a 10 scorciatoie personalizzate nella pagina Nuova scheda di <ph name="PRODUCT_NAME" />.
+
+In questo caso, gli utenti vedranno queste scorciatoie per impostazione predefinita, oltre alle proprie scorciatoie personali. Gli utenti possono controllare la visibilità delle scorciatoie dell'organizzazione nel riquadro "Personalizza Chrome".
+
+Gli URL delle scorciatoie devono essere univoci.
+
+Se la policy <ph name="NTP_SHORTCUTS_ALLOW_USER_EDIT_NAME" /> è impostata su True, gli utenti possono modificare il nome della scorciatoia. Se la policy è impostata su False o se non viene configurata, gli utenti non possono modificare il nome.
+
+Se la policy <ph name="NTP_SHORTCUTS_ALLOW_USER_DELETE_NAME" /> è impostata su True, gli utenti possono rimuovere la scorciatoia. Se la policy è impostata su False o se non viene configurata, gli utenti non possono rimuovere la scorciatoia.</translation>
 <translation id="3450649825886735618">Non usare servizi web di Google per correggere gli errori ortografici</translation>
 <translation id="3451422488938880786"> Consente l'attivazione o la disattivazione delle nuove mappature delle scorciatoie da tastiera internazionali</translation>
 <translation id="3451901387456196887">L'utente avrà la possibilità di selezionare dispositivi di trasmissione nel menu di <ph name="PRODUCT_NAME" /> usando un codice di accesso o scansionando un codice QR.</translation>
@@ -4858,6 +4867,7 @@ Nota: questa policy comporta il ritiro della policy <ph name="ARC_GLS_POLICY_NAM
 <translation id="4341199399451274159">Se la policy <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> è attiva, l'assegnazione di un valore alla policy <ph name="DEFAULT_SEARCH_PROVIDER_ENCODINGS_POLICY_NAME" /> consente di specificare le codifiche dei caratteri supportate dal provider di ricerca. Le codifiche sono nomi di pagine codificati come UTF-8, GB2312 e ISO-8859-1. Vengono provate nell'ordine indicato.
 
       Se la policy <ph name="DEFAULT_SEARCH_PROVIDER_ENCODINGS_POLICY_NAME" /> non viene configurata, viene utilizzato il valore UTF-8.</translation>
+<translation id="4346542905412554336">Regole di override del proxy</translation>
 <translation id="4347908978527632940">Se la norma viene impostata su true e l'utente è supervisionato, le altre app Android possono chiedere le restrizioni web dell'utente tramite un provider di contenuti.
 
           Se la norma è impostata su false o non è impostata, il provider di contenuti non restituisce informazioni.</translation>
@@ -10552,6 +10562,21 @@ Se la policy viene disattivata, la funzionalità di trasporto dei dizionari di c
 
       Se questa policy viene impostata, l'utente non può modificarla o ignorarla.</translation>
 <translation id="8080200590486938727">Disattiva la ricerca dei plug-in</translation>
+<translation id="8082268442825947283">Se configuri questa policy, vengono impostate regole che selezionano il proxy utilizzato dal browser in base all'URL di destinazione e ad altre condizioni. Questa policy avrà la precedenza sulle impostazioni del proxy configurate dalla policy<ph name="PROXY_SETTINGS_POLICY_NAME" />, dall'API dell'estensione <ph name="PROXY_SETTINGS_EXTENSION_API" /> o dalle impostazioni manuali dell'utente, se presenti.
+
+Se la policy non viene configurata, non influisce su altre policy del proxy o impostazioni utente.
+
+Quando il browser deve decidere quale proxy utilizzare, le voci della policy <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> vengono valutate in sequenza finché una voce non corrisponde ad almeno uno degli host URL in <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" /> e se tutte le voci in <ph name="PROXY_OVERRIDE_RULES_CONDITIONS" /> sono soddisfatte. Il valore in <ph name="PROXY_OVERRIDE_RULES_PROXY_CHAIN" /> verrà utilizzato come proxy per questa corrispondenza. Se non viene trovata alcuna corrispondenza, le impostazioni del proxy verranno ripristinate in base a quanto impostato nella policy <ph name="PROXY_SETTINGS_POLICY_NAME" />.
+
+Le voci del campo <ph name="PROXY_OVERRIDE_RULES_PROXY_CHAIN" /> corrispondono a valori stringa dei file PAC, ad esempio:
+  * DIRECT
+  * PROXY host:port
+  * HTTPS host:port
+La prima voce raggiungibile verrà utilizzata come proxy.
+
+Il campo <ph name="PROXY_OVERRIDE_RULES_CONDITIONS" /> contiene un elenco di condizioni, le quali devono essere tutte soddisfatte affinché la regola di override venga utilizzata per decidere il proxy da utilizzare. Se non viene impostato, la voce verrà utilizzata finché almeno un host in <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" /> corrisponde.
+
+La condizione <ph name="PROXY_OVERRIDE_RULES_DNS_PROBE" /> verifica se il DNS <ph name="PROXY_OVERRIDE_RULES_HOST" /> fornito riesce a trovare un indirizzo IP corrispondente. Se il valore di <ph name="PROXY_OVERRIDE_RULES_RESULT" /> è "<ph name="PROXY_OVERRIDE_RULES_RESOLVES" />", la condizione viene considerata soddisfatta. Se il valore è invece impostato su <ph name="PROXY_OVERRIDE_RULES_NOT_FOUND" />, la condizione viene considerata soddisfatta se la risoluzione non è riuscita.</translation>
 <translation id="8086746212954621799">Se questa policy viene impostata su True, gli aggiornamenti automatici vengono disattivati.
 
 Se questa policy non viene configurata o viene impostata su False, i <ph name="PRODUCT_OS_NAME" /> controllano automaticamente la disponibilità di aggiornamenti.

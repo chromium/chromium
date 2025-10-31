@@ -528,7 +528,6 @@ Les signets, l'historique et les mots de passe enregistrés ne seront pas touch�
 <translation id="6885412569789873916">Applications Chrome bêta</translation>
 <translation id="6893363893008038481">Retirer le compte de Chrome</translation>
 <translation id="6896758677409633944">Copier</translation>
-<translation id="6927941417289800361">Pendant votre connexion, vous pouvez utiliser vos mots de passe et bien plus encore à partir de votre compte Google dans Chrome. Vous pouvez changer cette option en tout temps dans les paramètres.</translation>
 <translation id="6930294499209825">Maintient votre logiciel Google à jour. Si ce service est désactivé ou arrêté, votre logiciel Google ne sera pas mis à jour, ce qui signifie que les vulnérabilités de sécurité qui pourraient survenir ne pourront pas être corrigées et que les fonctionnalités risquent de ne pas fonctionner. Ce service se désinstalle si aucun logiciel Google ne l'utilise.</translation>
 <translation id="6933858244219479645">Système ChromeOS</translation>
 <translation id="6938166777909186039">Pour recevoir les futures mises à jour de Google Chrome, vous devrez disposer de Windows 10 ou d'une version ultérieure. Cet ordinateur fonctionne sous Windows 8.1.</translation>
@@ -653,6 +652,7 @@ Les signets, l'historique et les mots de passe enregistrés ne seront pas touch�
 <translation id="8255190535488645436">Google Chrome utilise votre caméra et votre microphone.</translation>
 <translation id="8267953129876836456">Chrome a trouvé des recommandations de sécurité que vous pouvez examiner</translation>
 <translation id="8286862437124483331">Google Chrome tente d'afficher les mots de passe. Pour autoriser cette action, entrez votre mot de passe Windows.</translation>
+<translation id="8289399803055125418">Utilisez votre <ph name="BEGIN_LINK" />propre phrase de passe<ph name="END_LINK" /> pour chiffrer toutes les données Chrome de votre compte Google. Les adresses et toutes les données enregistrées dans Google Portefeuille ne seront pas chiffrées par votre phrase de passe. L'historique de navigation de Chrome ne se synchronisera pas.</translation>
 <translation id="829923460755755423">Ajouter un raccourci vers le gestionnaire de mots de passe Google</translation>
 <translation id="8313851650939857356">Erreur de démarrage : <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8321888067342493336">Enregistrer en tant qu'image</translation>

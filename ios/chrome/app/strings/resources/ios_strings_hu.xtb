@@ -1054,7 +1054,7 @@
 <translation id="508645147179720015">A megjegyzés több mint 1000 karakterből áll</translation>
 <translation id="5087098519049306025">Árfigyelés</translation>
 <translation id="5090832849094901128">A jelszó eltávolításával nem törli fiókját a következő domainről: <ph name="WEBSITE" />.</translation>
-<translation id="5113960131843706315">A dolgok lekérése…</translation>
+<translation id="5113960131843706315">Adatainak betöltése folyamatban van…</translation>
 <translation id="5118462200606189584">Fiók hozzáadása…</translation>
 <translation id="5118764316110575523">Ki</translation>
 <translation id="5119329531859909472">A termék nyomon követéséhez koppintson a Nyomon követés elemre</translation>
@@ -1125,7 +1125,7 @@
 <translation id="537853552771686272">Az Önt érdeklő témák és webhelyek kezelése</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} bezárva}other{{count} bezárva}}</translation>
 <translation id="5394975111793637642">A „Termékvélemények Önnek” kártya elrejtése</translation>
-<translation id="5407806496954700135">Szeretné alkalmazni az új lap oldalának testreszabásait egy másik eszközről?</translation>
+<translation id="5407806496954700135">Szeretné alkalmazni az Új lap oldal saját testreszabásait egy másik eszközről?</translation>
 <translation id="5414763847370083940">Ha bármelyik webhelyen csökken az ár, Ön értesítést kap róla.</translation>
 <translation id="5415289094036440596">Az azonosítókulcsok nem oszthatók meg</translation>
 <translation id="5416455648658732408">Áthelyezés lapcsoportba</translation>

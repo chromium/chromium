@@ -2929,6 +2929,7 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="5813119285467412249">&amp;Yenza futhi ukungeza</translation>
 <translation id="5813753398265398978">I-Physics</translation>
 <translation id="5817918615728894473">Banqa</translation>
+<translation id="5820625124144807242">Ngemva kokubuyekeza i-oda lakho, kufanele ungene ngemvume noma usungule i-akhawunti ye-<ph name="BNPL_ISSUER_NAME" />. Le akhawunti izolinkwa ngokuzenzakalelayo kuGoogle Pay.</translation>
 <translation id="5826507051599432481">Igama eljwayelekile (CN)</translation>
 <translation id="5830698870816298009">ukusetshenziswa nokuhanjiswa kwekhamera</translation>
 <translation id="5831217499016131155">I-Google Wallet</translation>
@@ -3441,7 +3442,6 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="6649510485211003056">U-195 x 270 mm</translation>
 <translation id="6651270836885078973">Iphethwe i-:</translation>
 <translation id="6652101503459149953">Sebenzisa i-Windows Hello</translation>
-<translation id="6653684225271066234">I-<ph name="BNPL_ISSUER_NAME" /> izohlola ukufaneleka kwakho (lokhu ngeke kuthinte umphumela wakho wenhlolozikweletu). Uma uhlangabezana nendlela yokufaneleka, i-<ph name="BNPL_ISSUER_NAME" /> izokunikeza uhlelo lokukhokha ongase ukwazi ukulusebenzisa ukuze uqedele ukuthenga.</translation>
 <translation id="6654224358955673568">Yenza ngokusemthethweni</translation>
 <translation id="6654244995031366386">Ingilazi (Ifanisiwe)</translation>
 <translation id="6657585470893396449">Igama lokungena</translation>
@@ -3604,7 +3604,6 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="6925267999184670015">North American B+</translation>
 <translation id="6926216138694948720">Ubuciko bomzimba</translation>
 <translation id="692638818576287323">Izimoto Zezokuthengisa</translation>
-<translation id="6927057753277044239">Ngemva kokubuyekeza i-oda lakho, kufanele ungene ngemvume noma uvule i-akhawunti ye-<ph name="BNPL_ISSUER_NAME" />. Le akhawunti izolinkwa ngokuzenzekela kuGoogle account yakho.</translation>
 <translation id="6930607614725241390">Sesha kuphaneli eseceleni</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Injini yokusesha okuzenzakalelayo yakho ikuvumela ukuthi useshe iwebhu namandla i-Chrome ewahlanganisayo<ph name="END_BOLD" /> njengokusesha kubha yekheli kanye nasezithombeni kumakhasi ewebhu. Isakhi kungenzeka singatholakali uma injini yokusesha yakho ingasisekeli.</translation>
 <translation id="6934672428414710184">Leli gama lisuka ku-akhawunti yakho ye-Google</translation>
@@ -3957,6 +3956,7 @@ Imininingwane engeziwe:
 <translation id="7485085230273446323">Ibhizinisi Nezimboni</translation>
 <translation id="7485870689360869515">Ayikho idatha etholiwe.</translation>
 <translation id="7486880426035242089">I-Onedrive</translation>
+<translation id="7489255442002627311">I-<ph name="BNPL_ISSUER_NAME" /> izohlola ukufaneleka kwakho (lokhu ngeke kuthinte umphumela wenhlolozikweletu yakho). Uma ugunyazwa, i-<ph name="BNPL_ISSUER_NAME" /> izohlinzeka ngezinhlelo zokukhokha ongakhetha kuzo futhi uqedele ukuthenga kwakho.</translation>
 <translation id="7489392576326061356">Ama-shampoo Nama-conditioner</translation>
 <translation id="7489919936111034362">Isitoreji sakho seGoogle Drive sigcwele</translation>
 <translation id="7495528107193238112">Lokhu okuqukethwe kuvinjelwe. Xhumana nomnikazi wesayithi ukulungisa inkinga.</translation>

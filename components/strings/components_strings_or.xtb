@@ -2929,6 +2929,7 @@
 <translation id="5813119285467412249">&amp;ଯୋଗ କରିବା ପୁନଃବତ୍ କରନ୍ତୁ</translation>
 <translation id="5813753398265398978">ପଦାର୍ଥ ବିଜ୍ଞାନ</translation>
 <translation id="5817918615728894473">ପେୟାର୍ କରନ୍ତୁ</translation>
+<translation id="5820625124144807242">ଆପଣଙ୍କ ଅର୍ଡରର ରିଭ୍ୟୁ କରିବା ପରେ, ଆପଣ <ph name="BNPL_ISSUER_NAME" />ରେ ସାଇନ ଇନ କରିବା କିମ୍ବା ଏକ ଆକାଉଣ୍ଟ ତିଆରି କରିବା ଆବଶ୍ୟକ। ଏହି ଆକାଉଣ୍ଟ ସ୍ୱତଃ Google Pay ସହ ଲିଙ୍କ ହୋଇଯିବ।</translation>
 <translation id="5826507051599432481">ସାଧାରଣ ନାମ (CN)</translation>
 <translation id="5830698870816298009">କ୍ୟାମେରାର ବ୍ୟବହାର ଓ ଗତିବିଧି</translation>
 <translation id="5831217499016131155">Google Wallet</translation>
@@ -3440,7 +3441,6 @@
 <translation id="6649510485211003056">195 x 270 ମିମି</translation>
 <translation id="6651270836885078973">ଏହା ଦ୍ୱାରା ପରିଚାଳିତ ହେଉଛି:</translation>
 <translation id="6652101503459149953">Windows Hello ବ୍ୟବହାର କରନ୍ତୁ</translation>
-<translation id="6653684225271066234"><ph name="BNPL_ISSUER_NAME" /> ଆପଣଙ୍କ ଯୋଗ୍ୟତା ଯାଞ୍ଚ କରିବ (ଏହା ଆପଣଙ୍କ କ୍ରେଡିଟ ସ୍କୋରକୁ ପ୍ରଭାବିତ କରିବ ନାହିଁ)। ଯଦି ଆପଣ ଯୋଗ୍ୟତା ମାନଦଣ୍ଡକୁ ପୂରଣ କରନ୍ତି, ତେବେ <ph name="BNPL_ISSUER_NAME" /> ସମ୍ଭାବ୍ୟ ପେମେଣ୍ଟ ପ୍ଲାନ(ଗୁଡ଼ିକ) ପ୍ରଦାନ କରିବ ଏବଂ ଆପଣଙ୍କ କ୍ରୟ ସମ୍ପୂର୍ଣ୍ଣ କରିବ।</translation>
 <translation id="6654224358955673568">ଫର୍ମାଲାଇଜ କରିବା</translation>
 <translation id="6654244995031366386">କାଚ (ଟେକ୍ସଚର୍ଡ)</translation>
 <translation id="6657585470893396449">ପାସ୍‌ୱର୍ଡ</translation>
@@ -3603,7 +3603,6 @@
 <translation id="6925267999184670015">ନର୍ଥ ଆମେରିକାନ B+</translation>
 <translation id="6926216138694948720">ବଡି ଆର୍ଟ</translation>
 <translation id="692638818576287323">କମର୍ସିଆଲ ଗାଡ଼ି</translation>
-<translation id="6927057753277044239">ଆପଣଙ୍କ ଅର୍ଡରର ରିଭ୍ୟୁ କରିବା ପରେ, ଆପଣ <ph name="BNPL_ISSUER_NAME" />ରେ ସାଇନ ଇନ କରିବା କିମ୍ବା ଏକ ଆକାଉଣ୍ଟ ତିଆରି କରିବା ଆବଶ୍ୟକ। ଏହି ଆକାଉଣ୍ଟ ସ୍ୱତଃ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟ ସହ ଲିଙ୍କ ହୋଇଯିବ।</translation>
 <translation id="6930607614725241390">ସାଇଡ ପେନେଲରେ ସର୍ଚ୍ଚ କରନ୍ତୁ</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />ଆପଣଙ୍କ ଡିଫଲ୍ଟ ସର୍ଚ୍ଚ ଇଞ୍ଜିନ ଆପଣଙ୍କୁ ଠିକଣା ବାରରୁ ଏବଂ ୱେବ ପୃଷ୍ଠାରେ ଥିବା ଇମେଜଗୁଡ଼ିକରୁ ସର୍ଚ୍ଚ କରିବା ପରି<ph name="END_BOLD" /> ୱେବରେ ସର୍ଚ୍ଚ କରିବାକୁ ଦିଏ ଏବଂ Chrome ଫିଚରଗୁଡ଼ିକୁ ଶକ୍ତିଶାଳୀ କରେ। ଯଦି ଆପଣଙ୍କ ସର୍ଚ୍ଚ ଇଞ୍ଜିନ ଏହାକୁ ସମର୍ଥନ କରେ ନାହିଁ ତେବେ ଏକ ଫିଚର ଉପଲବ୍ଧ ହୋଇନପାରେ।</translation>
 <translation id="6934672428414710184">ଏହି ନାମ ଆପଣଙ୍କର Google ଆକାଉଣ୍ଟରୁ ଅଟେ</translation>
@@ -3956,6 +3955,7 @@
 <translation id="7485085230273446323">ବିଜିନେସ ଓ ଇଣ୍ଡଷ୍ଟ୍ରିଆଲ</translation>
 <translation id="7485870689360869515">କୌଣସି ଡାଟା ମିଳିଲା ନାହିଁ।</translation>
 <translation id="7486880426035242089">OneDrive</translation>
+<translation id="7489255442002627311"><ph name="BNPL_ISSUER_NAME" /> ଆପଣଙ୍କ ଯୋଗ୍ୟତା ଯାଞ୍ଚ କରିବ (ଏହା ଆପଣଙ୍କ କ୍ରେଡିଟ ସ୍କୋରକୁ ପ୍ରଭାବିତ କରିବ ନାହିଁ)। ଯଦି ଅନୁମୋଦିତ ହୁଏ, ତେବେ <ph name="BNPL_ISSUER_NAME" /> ଆପଣଙ୍କୁ ଆପଣଙ୍କ ପାଇଁ ପେମେଣ୍ଟ ପ୍ଲାନ ବାଛିବାକୁ ଏବଂ କ୍ରୟ ସମ୍ପୂର୍ଣ୍ଣ କରିବାକୁ ଦେବ।</translation>
 <translation id="7489392576326061356">ସାମ୍ପୁ ଓ କଣ୍ଡିସନର</translation>
 <translation id="7489919936111034362">ଆପଣଙ୍କ Google Drive ଷ୍ଟୋରେଜ ପୂର୍ଣ୍ଣ ଅଛି</translation>
 <translation id="7495528107193238112">ଏହି ବିଷୟବସ୍ତୁକୁ ବ୍ଲକ୍ କରାଯାଇଛି। ସମସ୍ୟାର ସମାଧାନ କରିବାକୁ ସାଇଟର ମାଲିକଙ୍କ ସହ ଯୋଗାଯୋଗ କରନ୍ତୁ।</translation>

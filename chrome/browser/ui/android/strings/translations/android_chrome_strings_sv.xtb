@@ -1224,6 +1224,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="6473086018775716761">Lista över delningsalternativ har öppnats över halva skärmen.</translation>
 <translation id="6475951671322991020">Ladda ned video</translation>
 <translation id="6477928892249167417">De här webbplatserna verkar vara viktiga för dig:</translation>
+<translation id="6479881432656947268">Besök Chrome Web Store</translation>
 <translation id="6481963882741794338">Länka Chrome och andra tjänster från Google för anpassning och andra syften</translation>
 <translation id="6482749332252372425">Det gick inte att ladda ned <ph name="FILE_NAME" /> eftersom det inte finns tillräckligt med lagringsutrymme.</translation>
 <translation id="6486420406192123355">Den här PDF-filen kommer från en webbplats som använder en osäker anslutning</translation>
@@ -1343,6 +1344,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="6908998565271542516">Alternativ för att godkänna eller inte godkänna en webbplats som öppnas i full höjd</translation>
 <translation id="6909589135458168665">Läs in sidor i förväg</translation>
 <translation id="6910211073230771657">Borttagen</translation>
+<translation id="6916590542764765824">Hantera tillägg</translation>
 <translation id="6918398787259831832">Om problemet kvarstår kan du <ph name="BEGIN_LINK" />läsa mer<ph name="END_LINK" /> på <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> Chrome har tagit bort dessa behörigheter eftersom du inte har besökt webbplatsen nyligen</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 flik}other{<ph name="NUMBER_OF_TABS" /> flikar}}</translation>

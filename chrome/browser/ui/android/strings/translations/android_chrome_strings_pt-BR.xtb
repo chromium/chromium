@@ -216,7 +216,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="1957557050935255529">Carregando PDF…</translation>
 <translation id="1959679933317802873">Aguardando conteúdo</translation>
 <translation id="1960290143419248813">As atualizações do Chrome não são mais compatíveis com esta versão do Android</translation>
-<translation id="1963056249988316027">A verificação de identidade está ativada e não confirmou sua identidade</translation>
+<translation id="1963056249988316027">A confirmação de identidade está ativada e não confirmou que é você</translation>
 <translation id="1963976881984600709">Proteção padrão</translation>
 <translation id="1966710179511230534">Atualize seus detalhes de login.</translation>
 <translation id="1969037871259811890">A exclusão dos seus dados de navegação não desconecta você da Conta do Google. Para fazer isso, <ph name="BEGIN_LINK1" />saia do Chrome<ph name="END_LINK1" />.</translation>
@@ -573,7 +573,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{e mais 1 site}one{e mais # site}other{e mais # sites}}</translation>
 <translation id="3625870480639975468">Redefinir o zoom</translation>
 <translation id="3631987586758005671">Compartilhando com <ph name="DEVICE_NAME" /></translation>
-<translation id="363484704507524488">Você pode gerenciar a verificação de identidade nas configurações da proteção contra roubo. <ph name="BEGIN_LINK" />Acessar as configurações<ph name="END_LINK" /></translation>
+<translation id="363484704507524488">Você pode gerenciar a confirmação de identidade nas configurações da proteção contra roubo. <ph name="BEGIN_LINK" />Acessar as configurações<ph name="END_LINK" /></translation>
 <translation id="3635073343384702370">O Chrome poderá verificar suas senhas quando elas forem salvas</translation>
 <translation id="3636940436873918441">Idiomas preferidos</translation>
 <translation id="3637744895182738742">Se você esquecer a senha longa ou quiser mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrome na sua conta<ph name="END_LINK" />.</translation>
@@ -1224,6 +1224,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="6473086018775716761">Lista de opções de compartilhamento aberta na metade da altura.</translation>
 <translation id="6475951671322991020">Baixar o vídeo</translation>
 <translation id="6477928892249167417">Estes sites parecem importantes para você:</translation>
+<translation id="6479881432656947268">Acessar a Chrome Web Store</translation>
 <translation id="6481963882741794338">Vincular o Chrome e outros Serviços do Google para personalização e outras finalidades</translation>
 <translation id="6482749332252372425">Falha no download do arquivo <ph name="FILE_NAME" /> devido à falta de espaço de armazenamento.</translation>
 <translation id="6486420406192123355">Esse arquivo PDF está hospedado em um site com uma conexão sem segurança</translation>
@@ -1343,6 +1344,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="6908998565271542516">Opção para aprovar ou não um site aberta no tamanho máximo</translation>
 <translation id="6909589135458168665">Páginas pré-carregadas</translation>
 <translation id="6910211073230771657">Excluído</translation>
+<translation id="6916590542764765824">Gerenciar extensões</translation>
 <translation id="6918398787259831832">Se o problema persistir, <ph name="BEGIN_LINK" />confira mais informações<ph name="END_LINK" /> no <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> O Chrome removeu essas permissões porque você não acessou o site recentemente</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 guia}one{<ph name="NUMBER_OF_TABS" /> guia}other{<ph name="NUMBER_OF_TABS" /> guias}}</translation>

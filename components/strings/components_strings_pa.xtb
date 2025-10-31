@@ -2429,6 +2429,7 @@
 <translation id="4961708452830821006">ਆਪਣੇ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਦੀ ਵਰਤੋਂ ਕਰਨ ਲਈ, <ph name="LINK" /> ਵਿੱਚ ਜਾ ਕੇ Chrome ਨੂੰ ਇਸ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਦੀ ਆਗਿਆ ਦਿਓ।</translation>
 <translation id="4963413887558778009">ਲੈਂਡਸਕੇਪ ਡਿਜ਼ਾਈਨ</translation>
 <translation id="4967366744630699583">ਪਤੇ ਦਾ ਸੰਪਾਦਨ ਕਰੋ</translation>
+<translation id="4968046291688599384"><ph name="BNPL_ISSUER_NAME" /> ਇੱਕ ਵਾਰ ਵਰਤਿਆ ਜਾਣ ਵਾਲਾ ਆਭਾਸੀ ਕਾਰਡ ਨੰਬਰ ਭਰਿਆ ਗਿਆ।</translation>
 <translation id="4968522289500246572">ਇਹ ਐਪ ਮੋਬਾਈਲ ਲਈ ਡਿਜ਼ਾਈਨ ਕੀਤੀ ਗਈ ਹੈ ਅਤੇ ਹੋ ਸਕਦਾ ਹੈ ਕਿ ਇਸਦਾ ਆਕਾਰ ਸਹੀ ਤਰੀਕੇ ਨਾਲ ਨਾ ਬਦਲੇ। ਐਪ ਵਿਚ ਸਮੱਸਿਆਵਾਂ ਆ ਸਕਦੀਆਂ ਹਨ ਜਾਂ ਮੁੜ-ਸ਼ੁਰੂ ਹੋ ਸਕਦੀ ਹੈ।</translation>
 <translation id="4968665849807487749">ਤੁਹਾਡੀਆਂ ਸਾਰੀਆਂ ਡਿਸਪਲੇਆਂ 'ਤੇ ਵਿੰਡੋਆਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰਨ ਲਈ ਪੁੱਛ ਸਕਦੀਆਂ ਹਨ</translation>
 <translation id="4969341057194253438">ਰਿਕਾਰਡਿੰਗ ਨੂੰ ਮਿਟਾਓ</translation>
@@ -2931,6 +2932,7 @@
 <translation id="5813119285467412249">&amp;ਜੋੜੋ ਨੂੰ ਰੀਡੂ ਕਰੋ</translation>
 <translation id="5813753398265398978">ਭੌਤਿਕ ਵਿਗਿਆਨ</translation>
 <translation id="5817918615728894473">ਜੋੜਾ</translation>
+<translation id="5820625124144807242">ਆਪਣੇ ਆਰਡਰ ਦੀ ਸਮੀਖਿਆ ਕਰਨ ਤੋਂ ਬਾਅਦ, ਤੁਹਾਡਾ <ph name="BNPL_ISSUER_NAME" /> ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰਨਾ ਜਾਂ ਇਸ ਨਾਲ ਖਾਤਾ ਬਣਾਉਣਾ ਲਾਜ਼ਮੀ ਹੈ। ਇਹ ਖਾਤਾ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ Google Pay ਨਾਲ ਲਿੰਕ ਹੋ ਜਾਵੇਗਾ।</translation>
 <translation id="5826507051599432481">ਆਮ ਨਾਮ (CN)</translation>
 <translation id="5830698870816298009">ਕੈਮਰੇ ਦੀ ਵਰਤੋਂ ਅਤੇ ਹਿਲਜੁਲ</translation>
 <translation id="5831217499016131155">Google Wallet</translation>
@@ -3444,7 +3446,6 @@
 <translation id="6649510485211003056">195 x 270 ਮਿ.ਮੀ.</translation>
 <translation id="6651270836885078973">ਇਸ ਵੱਲੋਂ ਪ੍ਰਬੰਧਨ ਕੀਤਾ ਜਾਂਦਾ ਹੈ:</translation>
 <translation id="6652101503459149953">Windows Hello ਨੂੰ ਵਰਤੋ</translation>
-<translation id="6653684225271066234"><ph name="BNPL_ISSUER_NAME" /> ਤੁਹਾਡੀ ਯੋਗਤਾ ਦੀ ਜਾਂਚ ਕਰੇਗਾ (ਇਹ ਤੁਹਾਡੇ ਕ੍ਰੈਡਿਟ ਸਕੋਰ ਨੂੰ ਪ੍ਰਭਾਵਿਤ ਨਹੀਂ ਕਰੇਗਾ)। ਜੇ ਤੁਸੀਂ ਯੋਗਤਾ ਮਾਪਦੰਡ ਨੂੰ ਪੂਰਾ ਕਰਦੇ ਹੋ, ਤਾਂ <ph name="BNPL_ISSUER_NAME" /> ਤੁਹਾਡੀ ਖਰੀਦ ਨੂੰ ਪੂਰਾ ਕਰਨ ਲਈ ਸੰਭਾਵੀ ਭੁਗਤਾਨ ਪਲਾਨ ਮੁਹੱਈਆ ਕਰਵਾਏਗਾ।</translation>
 <translation id="6654224358955673568">ਰਸਮੀ ਬਣਾਓ</translation>
 <translation id="6654244995031366386">ਗਲਾਸ (ਟੈਕਸਚਰਡ)</translation>
 <translation id="6657585470893396449">ਪਾਸਵਰਡ</translation>
@@ -3608,7 +3609,6 @@
 <translation id="6925267999184670015">ਨਾਰਥ ਅਮਰੀਕਨ B+</translation>
 <translation id="6926216138694948720">ਸਰੀਰਕ ਕਲਾ</translation>
 <translation id="692638818576287323">ਵਪਾਰਕ ਵਾਹਨ</translation>
-<translation id="6927057753277044239">ਆਪਣੇ ਆਰਡਰ ਦੀ ਸਮੀਖਿਆ ਕਰਨ ਤੋਂ ਬਾਅਦ, ਤੁਹਾਡਾ <ph name="BNPL_ISSUER_NAME" /> ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰਨਾ ਜਾਂ ਇਸ ਨਾਲ ਖਾਤਾ ਬਣਾਉਣਾ ਲਾਜ਼ਮੀ ਹੈ। ਇਹ ਖਾਤਾ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਤੁਹਾਡੇ Google ਖਾਤੇ ਨਾਲ ਲਿੰਕ ਹੋ ਜਾਵੇਗਾ।</translation>
 <translation id="6930607614725241390">ਸਾਈਡ ਪੈਨਲ ਵਿੱਚ ਖੋਜੋ</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />ਤੁਹਾਡਾ ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਖੋਜ ਇੰਜਣ ਤੁਹਾਨੂੰ ਵੈੱਬ 'ਤੇ ਖੋਜ ਕਰਨ ਅਤੇ Chrome ਦੀਆਂ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਦੀ ਵਰਤੋਂ ਕਰਨ ਦਿੰਦਾ ਹੈ<ph name="END_BOLD" /> ਜਿਵੇਂ ਕਿ ਪਤਾ ਬਾਰ ਅਤੇ ਵੈੱਬ ਪੰਨਿਆਂ 'ਤੇ ਮੌਜੂਦ ਚਿੱਤਰਾਂ ਦੀ ਮਦਦ ਨਾਲ ਖੋਜ ਕਰਨਾ। ਜੇ ਤੁਹਾਡਾ ਖੋਜ ਇੰਜਣ ਕਿਸੇ ਸੁਵਿਧਾ ਦਾ ਸਮਰਥਨ ਨਹੀਂ ਕਰਦਾ, ਤਾਂ ਹੋ ਸਕਦਾ ਹੈ ਕਿ ਇਹ ਵਿਸ਼ੇਸ਼ਤਾ ਉਪਲਬਧ ਨਾ ਹੋਵੇ।</translation>
 <translation id="6934672428414710184">ਇਹ ਨਾਮ ਤੁਹਾਡੇ Google ਖਾਤੇ ਤੋਂ ਲਿਆ ਗਿਆ ਹੈ</translation>
@@ -3961,6 +3961,7 @@
 <translation id="7485085230273446323">ਕਾਰੋਬਾਰ ਅਤੇ ਉਦਯੋਗਿਕ</translation>
 <translation id="7485870689360869515">ਕੋਈ ਡਾਟਾ ਨਹੀਂ ਮਿਲਿਆ।</translation>
 <translation id="7486880426035242089">OneDrive</translation>
+<translation id="7489255442002627311"><ph name="BNPL_ISSUER_NAME" /> ਤੁਹਾਡੀ ਯੋਗਤਾ ਦੀ ਜਾਂਚ ਕਰੇਗਾ (ਇਹ ਤੁਹਾਡੇ ਕ੍ਰੈਡਿਟ ਸਕੋਰ ਨੂੰ ਪ੍ਰਭਾਵਿਤ ਨਹੀਂ ਕਰੇਗਾ)। ਜੇ ਮਨਜ਼ੂਰੀ ਦਿੱਤੀ ਜਾਂਦੀ ਹੈ, ਤਾਂ <ph name="BNPL_ISSUER_NAME" /> ਤੁਹਾਨੂੰ ਚੁਣਨ ਲਈ ਅਤੇ ਤੁਹਾਡੀ ਖਰੀਦ ਨੂੰ ਪੂਰਾ ਕਰਨ ਲਈ ਭੁਗਤਾਨ ਪਲਾਨ ਮੁਹੱਈਆ ਕਰਵਾਏਗਾ।</translation>
 <translation id="7489392576326061356">ਸ਼ੈਂਪੂ ਅਤੇ ਕੰਡੀਸ਼ਨਰ</translation>
 <translation id="7489919936111034362">ਤੁਹਾਡੀ Google Drive ਸਟੋਰੇਜ ਭਰ ਗਈ ਹੈ</translation>
 <translation id="7495528107193238112">ਇਹ ਸਮੱਗਰੀ ਬਲਾਕ ਕੀਤੀ ਗਈ ਹੈ। ਸਮੱਸਿਆ ਨੂੰ ਠੀਕ ਕਰਨ ਲਈ ਸਾਈਟ ਦੇ ਮਾਲਕ ਨੂੰ ਸੰਪਰਕ ਕਰੋ।</translation>

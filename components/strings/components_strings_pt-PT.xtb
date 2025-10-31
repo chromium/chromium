@@ -2432,6 +2432,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4961708452830821006">Para usar o microfone, conceda acesso ao Chrome nas <ph name="LINK" />.</translation>
 <translation id="4963413887558778009">Design paisagístico</translation>
 <translation id="4967366744630699583">Editar morada</translation>
+<translation id="4968046291688599384">Número de cartão virtual único <ph name="BNPL_ISSUER_NAME" /> preenchido.</translation>
 <translation id="4968522289500246572">Esta app foi concebida para dispositivos móveis e pode não ser redimensionada corretamente. A app pode ter problemas ou reiniciar.</translation>
 <translation id="4968665849807487749">Pode pedir para gerir janelas em todos os seus ecrãs</translation>
 <translation id="4969341057194253438">Eliminar gravação</translation>
@@ -2934,6 +2935,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5813119285467412249">&amp;Refazer adição</translation>
 <translation id="5813753398265398978">Física</translation>
 <translation id="5817918615728894473">Sincronizar</translation>
+<translation id="5820625124144807242">Depois de rever a encomenda, tem de iniciar sessão ou criar uma conta com <ph name="BNPL_ISSUER_NAME" />. Esta conta vai ser associada automaticamente ao Google Pay.</translation>
 <translation id="5826507051599432481">Nome comum (CN)</translation>
 <translation id="5830698870816298009">utilização e movimento da câmara</translation>
 <translation id="5831217499016131155">Carteira do Google</translation>
@@ -3448,7 +3450,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6649510485211003056">195 x 270 mm</translation>
 <translation id="6651270836885078973">Gerido por:</translation>
 <translation id="6652101503459149953">Usar o Windows Hello</translation>
-<translation id="6653684225271066234">A <ph name="BNPL_ISSUER_NAME" /> vai verificar a sua elegibilidade (este procedimento não tem impacto na sua pontuação de crédito). Se cumprir os critérios de elegibilidade, a <ph name="BNPL_ISSUER_NAME" /> oferece planos de pagamento potenciais para concluir a compra.</translation>
 <translation id="6654224358955673568">Tornar mais formal</translation>
 <translation id="6654244995031366386">Vidro (com textura)</translation>
 <translation id="6657585470893396449">Palavra-passe</translation>
@@ -3612,7 +3613,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6925267999184670015">B+ norte-americano</translation>
 <translation id="6926216138694948720">Arte corporal</translation>
 <translation id="692638818576287323">Veículos comerciais</translation>
-<translation id="6927057753277044239">Depois de rever a encomenda, tem de iniciar sessão ou criar uma conta da <ph name="BNPL_ISSUER_NAME" />. Esta conta vai ser associada automaticamente à sua Conta Google.</translation>
 <translation id="6930607614725241390">Pesquise no painel lateral</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />O seu motor de pesquisa predefinido permite-lhe pesquisar na Web e ativar as funcionalidades do Chrome<ph name="END_BOLD" />, como pesquisar a partir da barra de endereço e de imagens em páginas Web. É possível que uma funcionalidade não esteja disponível se o seu motor de busca não a suportar.</translation>
 <translation id="6934672428414710184">Este nome é proveniente da sua Conta Google.</translation>
@@ -3965,6 +3965,7 @@ Detalhes adicionais:
 <translation id="7485085230273446323">Empresas e indústrias</translation>
 <translation id="7485870689360869515">Não foram encontrados dados.</translation>
 <translation id="7486880426035242089">OneDrive</translation>
+<translation id="7489255442002627311">A <ph name="BNPL_ISSUER_NAME" /> vai verificar a sua elegibilidade (este procedimento não tem impacto na sua pontuação de crédito). Se for aprovada, a <ph name="BNPL_ISSUER_NAME" /> vai apresentar-lhe planos de pagamento à sua escolha e concluir a sua compra.</translation>
 <translation id="7489392576326061356">Champôs e amaciadores</translation>
 <translation id="7489919936111034362">O seu armazenamento do Google Drive está cheio</translation>
 <translation id="7495528107193238112">Este conteúdo está bloqueado. Contacte o proprietário do site para corrigir o problema.</translation>

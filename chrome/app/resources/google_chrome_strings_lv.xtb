@@ -91,7 +91,7 @@
 <translation id="2018528049276128029">Katrā profilā tiek glabāta attiecīgā Chrome profila informācija, piemēram, grāmatzīmes, vēsture, paroles un citi dati.</translation>
 <translation id="2018879682492276940">Instalēšana neizdevās. Lūdzu, mēģiniet vēlreiz.</translation>
 <translation id="2024959665595762054">Lai izmantotu un saglabātu Chrome datus savā Google kontā, apstipriniet savu identitāti.</translation>
-<translation id="2026377840141807639">Izmantojot Chrome profilus, varat nošķirt personīgo un darba pārlūkošanu. Pievienojiet jaunu profilu tūlīt.</translation>
+<translation id="2026377840141807639">Izmantojot Chrome profilus, varat nošķirt pārlūkošanu darba un personīgajām vajadzībām. Pievienojiet jaunu profilu tūlīt.</translation>
 <translation id="2034233344106846793">Pārlūkā Chrome nedrošie savienojumi tiek automātiski jaunināti uz HTTPS, ja iespējams.</translation>
 <translation id="2039417478970545937">Iestatījumi.</translation>
 <translation id="2091012649849228750">Lai saņemtu turpmākus Google Chrome atjauninājumus, nepieciešama operētājsistēma Windows 10 vai jaunāka versija. Šajā datorā tiek izmantota operētājsistēma Windows 8.</translation>
@@ -416,7 +416,7 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai li
 <translation id="5736850870166430177">Ja kādā vietnē tiek mēģināts nozagt jūsu paroli vai ja jūs lejupielādējat kaitīgu failu, Chrome var arī nosūtīt attiecīgos URL, tostarp lapas satura fragmentus, uz funkciju Droša pārlūkošana.</translation>
 <translation id="5756509061973259733">Šajā ierīcē jau pastāv Chrome profils ar šādu kontu.</translation>
 <translation id="5759947850379142561">Atlasiet jebkuru tekstu vai attēlu, lai to meklētu ar Google Lens, vai nospiediet atsoļa taustiņu, lai izietu no Google Lens</translation>
-<translation id="5762867845020858790">Pievienojiet jaunu Chrome profilu, lai grāmatzīmes, paroles un iestatījumi būtu atsevišķi.</translation>
+<translation id="5762867845020858790">Pievienojiet jaunu Chrome profilu, lai atsevišķi saglabātu savas grāmatzīmes, paroles un iestatījumus.</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> — Google Chrome Canary</translation>
 <translation id="5804318322022881572">Neizdevās palaist Chrome. Mēģiniet vēlreiz.</translation>
 <translation id="5809516625706423866">Nevar izveidot savienojumu ar internetu. HTTP 401 — neatļauts. Lūdzu, pārbaudiet starpniekservera konfigurāciju.</translation>
@@ -517,14 +517,13 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai li
 <translation id="6800285125190089494">Ātrāk pierakstieties vietnēs, izmantojot saglabātās paroles pārlūkam Chrome operētājsistēmā iOS.</translation>
 <translation id="6831043979455480757">Tulkot</translation>
 <translation id="683440813066116847">Ienākošo savienojumu kārtula pārlūkam Google Chrome Canary, lai atļautu mDNS datplūsmu.</translation>
-<translation id="6841242485723266823">Chrome profili palīdz nodalīt dažādas jūsu dzīves daļas. Pievienojiet jaunu profilu tūlīt.</translation>
+<translation id="6841242485723266823">Chrome profili palīdz nodalīt dažādas jūsu dzīves jomas. Pievienojiet jaunu profilu tūlīt.</translation>
 <translation id="684888714667046800">Nevar izveidot savienojumu ar internetu. Ja izmantojat ugunsmūri, failam <ph name="PRODUCT_EXE_NAME" /> noteikti ir jābūt iekļautam atļaušanas sarakstā.</translation>
 <translation id="6877155553248388166">meklēšanas apgabala apakšējais labais stūris: <ph name="RIGHT" />% pa labi, <ph name="BOTTOM" />% apakšdaļā</translation>
 <translation id="6881299373831449287">Notiek Chrome atjaunināšana</translation>
 <translation id="6885412569789873916">Chrome Beta lietotnes</translation>
 <translation id="6893363893008038481">Noņemt kontu no pārlūka Chrome</translation>
 <translation id="6896758677409633944">Kopēt</translation>
-<translation id="6927941417289800361">Kamēr esat pierakstījies, pārlūkā Chrome varat izmantot savas paroles un citu saturu no Google konta. Iestatījumos varat jebkurā laikā mainīt šo iespēju.</translation>
 <translation id="6930294499209825">Nodrošina Google programmatūras pastāvīgu atjaunināšanu. Ja šis pakalpojums tiks atspējots vai pārtraukts, jūsu Google programmatūra netiks pastāvīgi atjaunināta, kas nozīmē, ka nebūs iespējams labot drošības ievainojamības, ja tādas radīsies, turklāt var nedarboties funkcijas. Šis pakalpojums pats tiek atinstalēts, ja neviena Google programmatūra to neizmanto.</translation>
 <translation id="6933858244219479645">ChromeOS sistēma</translation>
 <translation id="6938166777909186039">Lai saņemtu turpmākus Google Chrome atjauninājumus, nepieciešama operētājsistēma Windows 10 vai jaunāka versija. Šajā datorā tiek izmantota operētājsistēma Windows 8.1.</translation>

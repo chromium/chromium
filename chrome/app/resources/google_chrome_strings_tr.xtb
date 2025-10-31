@@ -363,7 +363,7 @@
 Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirtin veya daha yeni bir Chrome sürümü kullanın.</translation>
 <translation id="5174969993834422967">Genelde bildirimleri engelliyorsunuz. Bu sitenin size bildirim göndermesine izin vermek için konum çubuğunuzun sağ köşesindeki bildirim simgesini tıklayın.</translation>
 <translation id="5174983315706567306">Yeterli disk alanı yok.</translation>
-<translation id="5190467473654176081">Chrome'a yeni bir görünüm kazandırın</translation>
+<translation id="5190467473654176081">Chrome'u özelleştirerek yeni bir görünüm kazandırın</translation>
 <translation id="5201744974236816379">Chrome güncellemesi</translation>
 <translation id="521447420733633466">Bir cihazı paylaşıyorsanız arkadaşlarınız ve aileniz web'e ayrı olarak göz atabilir ve Chrome'u tam olarak istedikleri şekilde ayarlayabilirler.</translation>
 <translation id="5234764350956374838">Kapat</translation>
@@ -385,7 +385,7 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="5510398294750420479">Hareket halindeyken ek koruma katmanı için telefonunuza Chrome'u indirin</translation>
 <translation id="5524890928877629608">arama alanının sol üst köşesi: sol %<ph name="LEFT" />, üst %<ph name="TOP" /></translation>
 <translation id="5530733413481476019">Chrome'u Daha Hızlı Hale Getirin</translation>
-<translation id="5550137307985173298">Chrome'a yeni bir görünüm kazandırmak için Yeni Sekme sayfasındaki Chrome'u özelleştir düğmesini tıklayın</translation>
+<translation id="5550137307985173298">Chrome'a yeni bir görünüm kazandırmak için Yeni Sekme sayfasındaki Chrome'u Özelleştir düğmesini tıklayın</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5579324208890605088">Başlatma hatası: Lütfen yükleyiciyi yönetici olarak değil, normal bir kullanıcı olarak çalıştırın.</translation>
 <translation id="5596627076506792578">Diğer seçenekler</translation>
@@ -522,7 +522,6 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="6885412569789873916">Chrome Beta Uygulamaları</translation>
 <translation id="6893363893008038481">Hesabı Chrome'dan kaldır</translation>
 <translation id="6896758677409633944">Kopyala</translation>
-<translation id="6927941417289800361">Oturumunuz açıkken Chrome'da Google Hesabınızdaki şifrelerinizi ve diğer öğeleri kullanabilirsiniz. Bunu Ayarlar'dan istediğiniz zaman değiştirebilirsiniz.</translation>
 <translation id="6930294499209825">Google yazılımlarınızı güncel tutar. Bu hizmet devre dışı bırakılırsa veya durdurulursa, Google yazılımlarınız güncel tutulmayacaktır; bu da onarılamayacak güvenlik açıkları meydana gelebileceği ve özelliklerin çalışmayabileceği anlamına gelir. Bu hizmet, kendisini kullanan herhangi bir Google yazılımı olmadığında kendi kendini kaldırır.</translation>
 <translation id="6933858244219479645">ChromeOS Sistemi</translation>
 <translation id="6938166777909186039">Gelecekteki Google Chrome güncellemelerini almak için Windows 10 veya sonraki bir sürümün yüklü olması gerekir. Bu bilgisayar Windows 8.1 kullanıyor.</translation>

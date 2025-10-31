@@ -728,6 +728,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="4355272626458588338">Ajoutez les pages qui vous intéressent à vos favoris pour pouvoir y revenir facilement</translation>
 <translation id="4356503491090073318">Numéro de carte*</translation>
 <translation id="4357206670025518404">+ <ph name="COUNT_NUMBER" /></translation>
+<translation id="4358630185957185589">Ouvrir Google Lens</translation>
 <translation id="4359809482106103048">Votre sécurité en un coup d'œil</translation>
 <translation id="4378154925671717803">Téléphone</translation>
 <translation id="4380055775103003110">Si le problème persiste, vous pouvez essayer d'autres méthodes afin de poursuivre sur <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
@@ -1222,6 +1223,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6473086018775716761">Liste des options de partage ouverte à mi-hauteur.</translation>
 <translation id="6475951671322991020">Télécharger la vidéo</translation>
 <translation id="6477928892249167417">Ces sites semblent être importants pour vous :</translation>
+<translation id="6479881432656947268">Accéder au Chrome Web Store</translation>
 <translation id="6481963882741794338">Associez Chrome et d'autres services Google à des fins de personnalisation et autres</translation>
 <translation id="6482749332252372425">Échec du téléchargement du fichier "<ph name="FILE_NAME" />" en raison de l'espace de stockage insuffisant.</translation>
 <translation id="6486420406192123355">Ce fichier PDF provient d'un site utilisant une connexion non sécurisée</translation>
@@ -1341,6 +1343,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6908998565271542516">Option permettant d'approuver ou non un site Web ouverte à pleine hauteur</translation>
 <translation id="6909589135458168665">Précharger les pages</translation>
 <translation id="6910211073230771657">Supprimé</translation>
+<translation id="6916590542764765824">Gérer les extensions</translation>
 <translation id="6918398787259831832">Si le problème persiste, <ph name="BEGIN_LINK" />renseignez-vous<ph name="END_LINK" /> auprès de <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> Chrome a retiré ces autorisations, car vous n'avez pas consulté ce site récemment</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 onglet}one{<ph name="NUMBER_OF_TABS" /> onglet}other{<ph name="NUMBER_OF_TABS" /> onglets}}</translation>
@@ -1510,6 +1513,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="7612619742409846846">Connecté à Google en tant que</translation>
 <translation id="7612989789287281429">Connexion…</translation>
 <translation id="7619072057915878432">Échec du téléchargement du fichier "<ph name="FILE_NAME" />" en raison de l'échec du réseau.</translation>
+<translation id="7620958983792650214">{NUM_REVOKED_PERMISSIONS,plural, =1{Désabonné d'un site}one{Désabonné de # site}other{Désabonné de # sites}}</translation>
 <translation id="7626032353295482388">Bienvenue dans Chrome</translation>
 <translation id="7628417132421583481">Accéder au Gestionnaire de mots de passe</translation>
 <translation id="7630202231528827509">URL du fournisseur</translation>

@@ -277,6 +277,7 @@
 <translation id="199425419756152024">Ver a palavra-passe</translation>
 <translation id="1996318269856535896">Continua a poder usar os seus dados de navegação existentes neste dispositivo. Para os usar, termine sessão na sua conta gerida.</translation>
 <translation id="2010008505735295285">Atualizar</translation>
+<translation id="2012723204723845092">Olá novamente!</translation>
 <translation id="2015722694326466240">Para ver as palavras-passe, tem de definir primeiro um código secreto no dispositivo.</translation>
 <translation id="201759455285471444">Expandir grupo de separadores.</translation>
 <translation id="202070562065520783">Explica-me isto</translation>
@@ -647,6 +648,7 @@
 <translation id="3530024057633834563">Não tem palavras-passe nem chaves de acesso guardadas, mas pode eliminar a lista de sites e apps para os quais optou por nunca guardar as informações de início de sessão. As contas que criou para sites e apps não são eliminadas.</translation>
 <translation id="3530206579861815432">Encontre rapidamente separadores abertos e fechados recentemente nos seus dispositivos sincronizados.</translation>
 <translation id="3530767473765895035">Gerir contas neste dispositivo…</translation>
+<translation id="353340646084395154">Preferências da página Novo separador removidas</translation>
 <translation id="3533436815740441613">Novo separador</translation>
 <translation id="3540141921715814660">Adicionar aos marcadores</translation>
 <translation id="3546122170015471515">Pré-visualizações do Maps em Google.com</translation>
@@ -1001,6 +1003,7 @@
 <translation id="4894963374040315706">Isto permite-lhe pesquisar com a sua voz</translation>
 <translation id="4895540042460820904">Último acesso</translation>
 <translation id="4896467949657706481">Os separadores foram fechados e a sua sessão foi terminada</translation>
+<translation id="4911042367886397055">Damos-lhe as boas-vindas, <ph name="USER_NAME" />!</translation>
 <translation id="4913626501929406101">Pode partilhar de forma segura uma cópia da sua palavra-passe com alguém no seu grupo familiar. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="4917025507570489430">Pode usar os dados de navegação existentes quando tiver sessão iniciada como <ph name="USER_EMAIL" />. A sua organização pode conseguir ver estes dados.</translation>
 <translation id="4918086044614829423">Aceitar</translation>
@@ -1052,6 +1055,7 @@
 <translation id="508645147179720015">A nota tem mais de 1000 carateres</translation>
 <translation id="5087098519049306025">Acompanhamento de preço</translation>
 <translation id="5090832849094901128">Eliminar esta palavra-passe não elimina a sua conta em <ph name="WEBSITE" />.</translation>
+<translation id="5113960131843706315">A aceder ao seu conteúdo…</translation>
 <translation id="5118462200606189584">Adicionar conta…</translation>
 <translation id="5118764316110575523">Desativado</translation>
 <translation id="5119329531859909472">Para acompanhar o produto, toque em Acompanhar</translation>
@@ -1122,6 +1126,7 @@
 <translation id="537853552771686272">Faça a gestão dos tópicos e sites que lhe interessam</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} fechado}other{{count} fechados}}</translation>
 <translation id="5394975111793637642">Ocultar críticas sobre produtos no seu cartão</translation>
+<translation id="5407806496954700135">Quer aplicar as personalizações da página Novo separador de outro dispositivo?</translation>
 <translation id="5414763847370083940">Vai receber um alerta se o preço descer nalgum site.</translation>
 <translation id="5415289094036440596">Não é possível partilhar as chaves de acesso</translation>
 <translation id="5416455648658732408">Mover para grupo de separadores</translation>
@@ -1756,6 +1761,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="7696316012653762532">Opções de tradução da página</translation>
 <translation id="7700527812567437847">Pesquisar no ecrã com o Google Lens</translation>
 <translation id="7701040980221191251">Nenhuma</translation>
+<translation id="7708668404222666001">Preferências da página Novo separador aplicadas</translation>
 <translation id="7708994397325774423">Tenha acesso a todas as suas palavras-passe</translation>
 <translation id="7711440461521638739">Não está a reutilizar nenhuma palavra-passe</translation>
 <translation id="7712361583414030698">Ver a versão offline</translation>

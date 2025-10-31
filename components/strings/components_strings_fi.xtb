@@ -2933,6 +2933,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="5813119285467412249">&amp;Toista lisäys</translation>
 <translation id="5813753398265398978">Fysiikka</translation>
 <translation id="5817918615728894473">Muodosta laitepari</translation>
+<translation id="5820625124144807242">Kun olet tarkistanut tilauksen, sinun on kirjauduttava palvelun <ph name="BNPL_ISSUER_NAME" /> tilille tai luotava sellainen. Tili linkitetään automaattisesti Google Payhin.</translation>
 <translation id="5826507051599432481">Yleinen nimi (CN)</translation>
 <translation id="5830698870816298009">kameran käyttö ja liike</translation>
 <translation id="5831217499016131155">Google Wallet</translation>
@@ -3445,7 +3446,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="6649510485211003056">195 x 270 mm</translation>
 <translation id="6651270836885078973">Ylläpitäjä:</translation>
 <translation id="6652101503459149953">Käytä Windows Hellota</translation>
-<translation id="6653684225271066234"><ph name="BNPL_ISSUER_NAME" /> tarkastaa, täytätkö ehdot (tämä ei vaikuta luottokelpoisuuteesi). Jos täytät kelpoisuusehdot, <ph name="BNPL_ISSUER_NAME" /> toimittaa mahdolliset sopimukset ostoksesi viimeistelemiseksi.</translation>
 <translation id="6654224358955673568">Korjaa muodollisemmaksi</translation>
 <translation id="6654244995031366386">Lasi (teksturoitu)</translation>
 <translation id="6657585470893396449">Salasana</translation>
@@ -3608,7 +3608,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="6925267999184670015">Pohjoisamerikkalainen B+</translation>
 <translation id="6926216138694948720">Tatuoinnit ja lävistykset</translation>
 <translation id="692638818576287323">Hyötyajoneuvot</translation>
-<translation id="6927057753277044239">Kun olet tarkistanut tilauksen, sinun on kirjauduttava palvelun <ph name="BNPL_ISSUER_NAME" /> tilille tai luotava sellainen. Tili linkitetään automaattisesti Google-tiliisi.</translation>
 <translation id="6930607614725241390">Hae sivupaneelista</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />Oletushakukoneellasi voit tehdä hakuja verkosta ja hyödyntää Chromen ominaisuuksia<ph name="END_BOLD" />, esimerkiksi hakea osoitepalkista ja verkkosivuilla olevien kuvien avulla. Ominaisuus ei välttämättä ole käytettävissä, jos hakukone ei tue sitä.</translation>
 <translation id="6934672428414710184">Tämä nimi on peräisin Google-tililtäsi</translation>
@@ -3962,6 +3961,7 @@ Lisätietoja:
 <translation id="7485085230273446323">Liiketoiminta ja teollisuus</translation>
 <translation id="7485870689360869515">Tietoja ei löydy.</translation>
 <translation id="7486880426035242089">OneDrive</translation>
+<translation id="7489255442002627311"><ph name="BNPL_ISSUER_NAME" /> tarkastaa, täytätkö ehdot (tämä ei vaikuta luottokelpoisuuteesi). Jos tarkastus menee läpi, <ph name="BNPL_ISSUER_NAME" /> tarjoaa erilaisia maksusopimuksia, joista voit valita haluamasi ja viedä ostoksen loppuun.</translation>
 <translation id="7489392576326061356">Shampoot ja hoitoaineet</translation>
 <translation id="7489919936111034362">Google Drive ‑tallennustilasi on täynnä</translation>
 <translation id="7495528107193238112">Tämä sisältö on estetty. Pyydä sivuston omistajalta apua ongelman korjaamiseen.</translation>

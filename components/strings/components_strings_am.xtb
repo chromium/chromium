@@ -2931,6 +2931,7 @@
 <translation id="5813119285467412249">&amp;አክልን ድገም</translation>
 <translation id="5813753398265398978">ፊዚክስ</translation>
 <translation id="5817918615728894473">አጣምር</translation>
+<translation id="5820625124144807242">ትዕዛዝዎን ከገመገሙ በኋላ በመለያ መግባት ወይም በ<ph name="BNPL_ISSUER_NAME" /> መለያ መፍጠር አለብዎት። ይህ መለያ ከGoogle Pay ጋር በራስ-ሰር ይገናኛል።</translation>
 <translation id="5826507051599432481">የጋር ስም (CN)</translation>
 <translation id="5830698870816298009">የካሜራ አጠቃቀም እና እንቅስቃሴ</translation>
 <translation id="5831217499016131155">Google Wallet</translation>
@@ -3443,7 +3444,6 @@
 <translation id="6649510485211003056">195 x 270 ሚሜ</translation>
 <translation id="6651270836885078973">በሚከተለው የሚተዳደር ነው፦</translation>
 <translation id="6652101503459149953">Windows Helloን ይጠቀሙ</translation>
-<translation id="6653684225271066234"><ph name="BNPL_ISSUER_NAME" /> የእርስዎን ብቁነት ይፈትሻል (ይህ በእርስዎ የክሬዲት ውጤት ላይ ተጽዕኖ አያሳድርም)። የብቁነት መስፈርቱን ካሟሉ ግዢዎን ለማጠናቀቅ <ph name="BNPL_ISSUER_NAME" /> ሊሆን የሚችል የክፍያ ዕቅድ(ዶች) ያቀርባል።</translation>
 <translation id="6654224358955673568">መደበኛ አድርግ</translation>
 <translation id="6654244995031366386">መስታወት (ቅርጽ ያለው)</translation>
 <translation id="6657585470893396449">የይለፍ ቃል</translation>
@@ -3606,7 +3606,6 @@
 <translation id="6925267999184670015">የሰሜን አሜሪካ B+</translation>
 <translation id="6926216138694948720">የሰውነት ሥነ ጥበብ</translation>
 <translation id="692638818576287323">የንግድ ተሽከርካሪዎች</translation>
-<translation id="6927057753277044239">ትዕዛዝዎን ከገመገሙ በኋላ በመለያ መግባት ወይም በ<ph name="BNPL_ISSUER_NAME" /> መለያ መፍጠር አለብዎት። ይህ መለያ ከGoogle መለያዎ ጋር በራስ-ሰር ይገናኛል።</translation>
 <translation id="6930607614725241390">በጎን ፓነል ውስጥ ይፈልጉ</translation>
 <translation id="6934236486840930310"><ph name="BEGIN_BOLD" />የእርስዎ ነባሪ የፍለጋ ፕሮግራም ድርን እንዲፈልጉ ያስችልዎታል እና የChrome ባህሪያትን ያጎለብታል<ph name="END_BOLD" /> ለምሳሌ ከአድራሻ አሞሌ እና በድረ-ገጾች ላይ ከምስሎች መፈለግ። ባህሪ በእርስዎ የፍለጋ ፕሮግራም የሚደገፍ ካልሆነ ላይገኝ ይችላል።</translation>
 <translation id="6934672428414710184">ይህ ስም ከእርስዎ Google መለያ የተገኘ ነው</translation>
@@ -3960,6 +3959,7 @@
 <translation id="7485085230273446323">ንግድ እና የኢንዱስትሪ</translation>
 <translation id="7485870689360869515">ምንም ውሂብ አልተገኘም።</translation>
 <translation id="7486880426035242089">OneDrive</translation>
+<translation id="7489255442002627311"><ph name="BNPL_ISSUER_NAME" /> የእርስዎን ብቁነት ይፈትሻል (ይህ በእርስዎ የክሬዲት ውጤት ላይ ተጽዕኖ አያሳድርም)። ከጸደቀ <ph name="BNPL_ISSUER_NAME" /> እንዲመርጡ እና ግዢዎን እንዲያጠናቅቁ የክፍያ ዕቅዶችን ያቀርብልዎታል።</translation>
 <translation id="7489392576326061356">ሻምፖዎች እና ኮንዲሽነሮች</translation>
 <translation id="7489919936111034362">የእርስዎ Google Drive ማከማቻ ሙሉ ነው</translation>
 <translation id="7495528107193238112">ይህ ይዘት ታግዷል። ችግሩን ለማስተካከል የጣቢያውን ባለቤት ያነጋግሩ።</translation>

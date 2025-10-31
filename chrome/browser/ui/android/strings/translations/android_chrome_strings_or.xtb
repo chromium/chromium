@@ -728,6 +728,7 @@
 <translation id="4355272626458588338">ଏକ ବୁକମାର୍କ ଯୋଗ କରି ଆପଣଙ୍କ ପାଇଁ ଗୁରୁତ୍ୱପୂର୍ଣ୍ଣ ଥିବା ଏକ ପୃଷ୍ଠାକୁ ଆପଣ ଫେରି ପାରିବେ</translation>
 <translation id="4356503491090073318">କାର୍ଡ ନମ୍ଵର*</translation>
 <translation id="4357206670025518404">+<ph name="COUNT_NUMBER" /></translation>
+<translation id="4358630185957185589">Google Lens ଖୋଲନ୍ତୁ</translation>
 <translation id="4359809482106103048">ଏକ ନଜରରେ ସୁରକ୍ଷା</translation>
 <translation id="4378154925671717803">ଫୋନ୍</translation>
 <translation id="4380055775103003110">ଯଦି ଏହି ସମସ୍ୟା ଲାଗିରୁହେ, ତେବେ <ph name="SITE_ETLD_PLUS_ONE" />ରେ ଜାରି ରଖିବା ପାଇଁ ଆପଣ ଅନ୍ୟ ଉପାୟଗୁଡ଼ିକୁ ବ୍ୟବହାର କରି ଦେଖିପାରିବେ।</translation>
@@ -1222,6 +1223,7 @@
 <translation id="6473086018775716761">ଅଧା ସ୍କ୍ରିନରେ ଖୋଲାଯାଇଥିବା ସେୟାରିଂ ବିକଳ୍ପଗୁଡ଼ିକର ତାଲିକା।</translation>
 <translation id="6475951671322991020">ଭିଡିଓ ଡାଉନ୍‌ଲୋଡ୍ କରନ୍ତୁ</translation>
 <translation id="6477928892249167417">ଏହି ସାଇଟଗୁଡ଼ିକ ଆପଣଙ୍କ ପାଇଁ ଗୁରୁତ୍ୱପୂର୍ଣ୍ଣ ପରି ଜଣାପଡ଼ୁଛି:</translation>
+<translation id="6479881432656947268">Chrome ୱେବ ଷ୍ଟୋରକୁ ଭିଜିଟ କରନ୍ତୁ</translation>
 <translation id="6481963882741794338">ପର୍ସନାଲାଇଜେସନ ଏବଂ ଅନ୍ୟ ଉଦ୍ଦେଶ୍ୟଗୁଡ଼ିକ ପାଇଁ Chrome ଏବଂ ଅନ୍ୟ Google ସେବାଗୁଡ଼ିକ ଲିଙ୍କ କରନ୍ତୁ</translation>
 <translation id="6482749332252372425">ଷ୍ଟୋରେଜ୍ ସ୍ଥାନ ଅଭାବ ଯୋଗୁଁ <ph name="FILE_NAME" /> ଡାଉନ୍‌ଲୋଡ୍ ହେଲା ନାହିଁ।</translation>
 <translation id="6486420406192123355">ଏହି PDF ଫାଇଲଟି ଏକ ଅସୁରକ୍ଷିତ କନେକ୍ସନ ବ୍ୟବହାର କରୁଥିବା ଗୋଟିଏ ସାଇଟରୁ ଆସିଛି</translation>
@@ -1341,6 +1343,7 @@
 <translation id="6908998565271542516">ଏକ ୱେବସାଇଟକୁ ଅନୁମୋଦନ କରିବା କିମ୍ବା ନକରିବାର ବିକଳ୍ପକୁ ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନରେ ଖୋଲାଯାଇଛି</translation>
 <translation id="6909589135458168665">ପୃଷ୍ଠାଗୁଡ଼ିକୁ ପ୍ରିଲୋଡ କରନ୍ତୁ</translation>
 <translation id="6910211073230771657">ଡିଲିଟ୍ କରାଗଲା</translation>
+<translation id="6916590542764765824">ଏକ୍ସଟେନ୍‌ସନ୍‌ଗୁଡ଼ିକ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="6918398787259831832">ଯଦି ଏହି ସମସ୍ୟା ଲାଗିରୁହେ, ତେବେ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />ରୁ <ph name="BEGIN_LINK" />ଅଧିକ ସୂଚନା ପାଆନ୍ତୁ<ph name="END_LINK" />।</translation>
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> ଆପଣ ବର୍ତ୍ତମାନ ଭିଜିଟ କରିନଥିବା ଯୋଗୁଁ Chrome ଏହି ଅନୁମତିଗୁଡ଼ିକୁ କାଢ଼ି ଦେଇଛି</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 ଟାବ}other{<ph name="NUMBER_OF_TABS" /> ଟାବ}}</translation>
@@ -1510,6 +1513,7 @@
 <translation id="7612619742409846846">ଏପରି Googleରେ ସାଇନ୍ ଇନ୍ ହୋଇଛି</translation>
 <translation id="7612989789287281429">ଆପଣଙ୍କୁ ସାଇନ ଇନ କରାଯାଉଛି…</translation>
 <translation id="7619072057915878432">ନେଟ୍‌ୱାର୍କ ନଥିବା ଯୋଗୁଁ <ph name="FILE_NAME" /> ଡାଉନ୍‌ଲୋଡ୍ ହୋଇପାରିଲା ନାହିଁ।</translation>
+<translation id="7620958983792650214">{NUM_REVOKED_PERMISSIONS,plural, =1{ଗୋଟିଏ ସାଇଟରୁ ସଦସ୍ୟତା ତ୍ୟାଗ କରାଯାଇଛି}other{# ସାଇଟରୁ ସଦସ୍ୟତା ତ୍ୟାଗ କରାଯାଇଛି}}</translation>
 <translation id="7626032353295482388">Chromeକୁ ସ୍ୱାଗତ୍‌</translation>
 <translation id="7628417132421583481">Password Managerକୁ ଯାଆନ୍ତୁ</translation>
 <translation id="7630202231528827509">ପ୍ରଦାନକାରୀ URL</translation>

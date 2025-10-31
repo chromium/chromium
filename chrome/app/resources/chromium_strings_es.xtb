@@ -75,7 +75,6 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="1896836275755235458">Chromium ahorra batería limitando la actividad en segundo plano y los efectos visuales, como el desplazamiento fluido y la velocidad de fotogramas de los vídeos. <ph name="BEGIN_LINK" />Más información sobre Ahorro de energía<ph name="END_LINK" /></translation>
 <translation id="1898804291554630487">Preguntar sobre esta página</translation>
 <translation id="1900969832270057921">Servicio de la herramienta de actualización de Chromium</translation>
-<translation id="1911666947158375684">Mientras tengas la sesión iniciada, puedes usar tus contraseñas y otros elementos de tu cuenta de Google en Chromium. Puedes cambiar esta opción en cualquier momento en la configuración.</translation>
 <translation id="1911763535808217981">Si esta opción está desactivada, puedes iniciar sesión en sitios de Google, como Gmail, sin hacerlo en Chromium</translation>
 <translation id="1929939181775079593">Chromium no responde. ¿Quieres reiniciarlo ahora?</translation>
 <translation id="1933341829955786215">Tu organización, <ph name="MANAGER" />, requiere que inicies sesión en Chromium</translation>
@@ -384,6 +383,7 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="5605834417512968703">Selecciona cualquier cosa para buscarla con la búsqueda por imágenes o pulsa la tecla Esc para salir de la búsqueda por imágenes</translation>
 <translation id="5618818588972826921">Selecciona cualquier texto o imagen para buscar con la búsqueda por imágenes o pulsa la tecla Esc para salir de la búsqueda por imágenes</translation>
 <translation id="5623402015214259806">{0,plural, =0{Hay una actualización de Chromium disponible}=1{Hay una actualización de Chromium disponible}other{Hay una actualización de Chromium disponible desde hace # días}}</translation>
+<translation id="5633450273457573375">Usar tu <ph name="BEGIN_LINK" />propia frase de contraseña<ph name="END_LINK" /> para cifrar todos los datos de Chromium en tu cuenta de Google. Las direcciones y los datos guardados en Google Wallet no se cifrarán con tu frase de contraseña. El historial de navegación de Chromium no se sincronizará.</translation>
 <translation id="5643865575100044307">Eliminar siempre los datos de sitios de tu dispositivo al cerrar Chromium</translation>
 <translation id="5653831366781983928">Reinicia Chromium ahora</translation>
 <translation id="5690427481109656848">Google LLC</translation>

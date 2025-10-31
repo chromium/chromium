@@ -752,6 +752,7 @@
 <translation id="4355272626458588338">বুকমার্ক যোগ করলে আপনি গুরুত্বপূর্ণ পৃষ্ঠায় ফিরে যেতে পারবেন</translation>
 <translation id="4356503491090073318">কার্ডের নম্বর*</translation>
 <translation id="4357206670025518404">আরও <ph name="COUNT_NUMBER" /></translation>
+<translation id="4358630185957185589">Google Lens খুলুন</translation>
 <translation id="4359809482106103048">সুরক্ষা সম্পর্কিত তথ্য এক ঝলকে</translation>
 <translation id="4378154925671717803">ফোন</translation>
 <translation id="4380055775103003110">এই সমস্যা থেকে গেলে, আপনি <ph name="SITE_ETLD_PLUS_ONE" />-এ চালিয়ে যেতে অন্য উপায় চেষ্টা করে দেখতে পারেন।</translation>
@@ -1259,6 +1260,7 @@
 <translation id="6473086018775716761">শেয়ার করার বিকল্পের তালিকা স্ক্রিনের অর্ধেক জুড়ে খুলেছে।</translation>
 <translation id="6475951671322991020">ভিডিও ডাউনলোড করুন</translation>
 <translation id="6477928892249167417">মনে হচ্ছে এই সাইট আপনার জন্য গুরুত্বপূর্ণ:</translation>
+<translation id="6479881432656947268">Chrome ওয়েব স্টোরে যান</translation>
 <translation id="6481963882741794338">পছন্দমতো অভিজ্ঞতা এবং অন্যান্য সুবিধা পেতে Google-এর সব পরিষেবাগুলি সাথে Chrome লিঙ্ক করুন</translation>
 <translation id="6482749332252372425">স্টোরেজে জায়গার ঘাটতির কারণে <ph name="FILE_NAME" /> ডাউনলোড করা যায়নি।</translation>
 <translation id="6486420406192123355">অসুরক্ষিত কানেকশন ব্যবহার করে এমন কোনও সাইট থেকে এই পিডিএফ ফাইল পাওয়া গেছে</translation>
@@ -1379,6 +1381,7 @@
 <translation id="6908998565271542516">ওয়েবসাইট সম্পূর্ণ স্ক্রিন জুড়ে খোলা হবে কিনা তা অনুমোদন করা বা না করার বিকল্প</translation>
 <translation id="6909589135458168665">পৃষ্ঠা প্রিলোড করা</translation>
 <translation id="6910211073230771657">মোছা হয়েছে</translation>
+<translation id="6916590542764765824">এক্সটেনশানগুলি পরিচালনা করুন</translation>
 <translation id="6918398787259831832">এই সমস্যা থেকে গেলে, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> থেকে <ph name="BEGIN_LINK" />আরও পরামর্শ পান<ph name="END_LINK" />।</translation>
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> Chrome এইসব অনুমতি সরিয়ে দিয়েছে কারণ আপনি সম্প্রতি দেখেননি</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{১টি ট্যাব}one{<ph name="NUMBER_OF_TABS" />টি ট্যাব}other{<ph name="NUMBER_OF_TABS" />টি ট্যাব}}</translation>
@@ -1554,6 +1557,7 @@
 <translation id="7612619742409846846">এই হিসেবে Google-এ সাইন-ইন করেছেন</translation>
 <translation id="7612989789287281429">আপনাকে সাইন-ইন করানো হচ্ছে…</translation>
 <translation id="7619072057915878432">নেটওয়ার্ক কানেক্ট হয়নি বলে <ph name="FILE_NAME" /> ডাউনলোড করা যায়নি।</translation>
+<translation id="7620958983792650214">{NUM_REVOKED_PERMISSIONS,plural, =1{একটি সাইট থেকে আনসাবস্ক্রাইব করা হয়েছে}one{#টি সাইট থেকে আনসাবস্ক্রাইব করা হয়েছে}other{#টি সাইট থেকে আনসাবস্ক্রাইব করা হয়েছে}}</translation>
 <translation id="7626032353295482388">Chrome এ স্বাগতম</translation>
 <translation id="7628417132421583481">Password Manager-এ যান</translation>
 <translation id="7630202231528827509">পরিষেবা প্রদানকারীর ইউআরএল</translation>

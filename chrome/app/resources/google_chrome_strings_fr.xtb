@@ -92,6 +92,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="2018528049276128029">Chaque profil possède ses propres informations Chrome, comme des favoris, un historique, des mots de passe, etc.</translation>
 <translation id="2018879682492276940">Échec de l'installation. Veuillez réessayer.</translation>
 <translation id="2024959665595762054">Pour utiliser et enregistrer des données Chrome dans votre compte Google, confirmez votre identité</translation>
+<translation id="2026377840141807639">Les profils Chrome vous permettent de séparer vos données professionnelles et personnelles. Ajoutez un profil maintenant.</translation>
 <translation id="2034233344106846793">Chrome convertit automatiquement les connexions non sécurisées en HTTPS lorsque c'est possible</translation>
 <translation id="2039417478970545937">paramètres.</translation>
 <translation id="2091012649849228750">Pour recevoir les futures mises à jour de Google Chrome, vous devez disposer de Windows 10 ou d'une version ultérieure. Cet ordinateur utilise Windows 8.</translation>
@@ -366,6 +367,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 Certaines fonctionnalités peuvent être indisponibles. Veuillez spécifier un répertoire de profil différent ou utiliser une version plus récente de Google Chrome.</translation>
 <translation id="5174969993834422967">Vous bloquez généralement les notifications. Pour autoriser ce site à vous en envoyer, cliquez sur l'icône de notification dans l'angle droit de la barre d'adresse.</translation>
 <translation id="5174983315706567306">Espace disque insuffisant.</translation>
+<translation id="5190467473654176081">Personnalisez Chrome pour lui donner une nouvelle apparence</translation>
 <translation id="5201744974236816379">Mise à jour de Chrome</translation>
 <translation id="521447420733633466">Si vous partagez un appareil avec vos proches, ceux-ci peuvent configurer Chrome selon leurs préférences et naviguer sur le Web de façon indépendante.</translation>
 <translation id="5234764350956374838">Ignorer</translation>
@@ -389,6 +391,7 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="5510398294750420479">Téléchargez Chrome sur votre téléphone pour bénéficier d'un niveau de protection supplémentaire où que vous soyez</translation>
 <translation id="5524890928877629608">angle supérieur gauche de la zone de recherche : <ph name="LEFT" /> % gauche, <ph name="TOP" /> % haut</translation>
 <translation id="5530733413481476019">Rendre Chrome plus rapide</translation>
+<translation id="5550137307985173298">Cliquez sur le bouton "Personnaliser Chrome" sur la page "Nouvel onglet" pour donner une nouvelle apparence à Chrome</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5579324208890605088">Erreur au démarrage : Veuillez exécuter le programme d'installation en tant qu'utilisateur standard, et non en tant qu'administrateur.</translation>
 <translation id="5596627076506792578">Plus d'options</translation>
@@ -417,6 +420,7 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="5736850870166430177">Si un site tente de voler votre mot de passe ou si vous téléchargez un fichier dangereux, Chrome peut également envoyer les URL concernées, y compris des extraits du contenu des pages, à la fonctionnalité de navigation sécurisée</translation>
 <translation id="5756509061973259733">Il existe déjà un profil Chrome associé à ce compte sur cet appareil</translation>
 <translation id="5759947850379142561">Sélectionnez le texte ou l'image où effectuer votre recherche avec Google Lens ou appuyez sur Échap pour quitter Google Lens</translation>
+<translation id="5762867845020858790">Ajoutez un profil Chrome pour séparer les favoris, mots de passe et paramètres.</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> – Google Chrome Canary</translation>
 <translation id="5804318322022881572">Impossible de lancer Chrome. Réessayez.</translation>
 <translation id="5809516625706423866">Impossible de se connecter à Internet : erreur HTTP 401 (accès non autorisé). Veuillez vérifier la configuration de votre proxy.</translation>
@@ -517,13 +521,13 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="6800285125190089494">Connectez-vous plus rapidement aux sites en utilisant les mots de passe enregistrés pour Chrome sur iOS</translation>
 <translation id="6831043979455480757">Traduire</translation>
 <translation id="683440813066116847">Règle de trafic entrant pour Google Chrome Canary autorisant le trafic mDNS</translation>
+<translation id="6841242485723266823">Les profils Chrome vous aident à séparer différents aspects de votre vie. Ajoutez un profil maintenant.</translation>
 <translation id="684888714667046800">Impossible de se connecter à Internet. Si vous utilisez un pare-feu, assurez-vous que <ph name="PRODUCT_EXE_NAME" /> figure dans la liste d'autorisation.</translation>
 <translation id="6877155553248388166">angle inférieur droit de la zone de recherche : <ph name="RIGHT" /> % droite, <ph name="BOTTOM" /> % bas</translation>
 <translation id="6881299373831449287">Mise à jour de Chrome</translation>
 <translation id="6885412569789873916">Applications pour la version bêta de Chrome</translation>
 <translation id="6893363893008038481">Retirer le compte de Chrome</translation>
 <translation id="6896758677409633944">Copier</translation>
-<translation id="6927941417289800361">Lorsque vous êtes connecté, vous pouvez utiliser vos mots de passe et d'autres éléments de votre compte Google dans Chrome. Vous pouvez modifier cela à tout moment dans les paramètres.</translation>
 <translation id="6930294499209825">Ce service maintient à jour votre logiciel Google, ce qui n'est pas le cas s'il est désactivé ou interrompu. Toute faille de sécurité susceptible d'apparaître ne pourra alors pas être corrigée, et il est possible que certaines options ne fonctionneront pas. Ce service se désinstalle automatiquement quand aucun logiciel Google ne l'utilise.</translation>
 <translation id="6933858244219479645">Système ChromeOS</translation>
 <translation id="6938166777909186039">Pour recevoir les futures mises à jour de Google Chrome, vous devez disposer de Windows 10 ou d'une version ultérieure. Cet ordinateur utilise Windows 8.1.</translation>
@@ -680,6 +684,7 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome va être relancé dans 1 minute}one{Chrome va être relancé dans # minute}other{Chrome va être relancé dans # minutes}}</translation>
 <translation id="8637932705841171563">Pour partager votre fenêtre, autorisez l'enregistrement d'écran pour Chrome dans les réglages système</translation>
 <translation id="8641606876632989680">Chrome vous avertira si vous vous connectez avec un mot de passe compromis</translation>
+<translation id="8647930742055103497">Conservez tout dans Chrome</translation>
 <translation id="8656634243791296665">Ouvrir Gemini dans Chrome Dev</translation>
 <translation id="8669527147644353129">Application d'aide de Google Chrome</translation>
 <translation id="8677922833187616101">Toujours afficher le raccourci vers le Mode IA de Google</translation>

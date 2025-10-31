@@ -1223,6 +1223,7 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="6473086018775716761">Lista cu opțiuni de permitere a accesului deschisă la jumătate din înălțime.</translation>
 <translation id="6475951671322991020">Descarcă videoclipul</translation>
 <translation id="6477928892249167417">Următoarele site-uri par importante pentru tine:</translation>
+<translation id="6479881432656947268">Accesează Magazinul web Chrome</translation>
 <translation id="6481963882741794338">Conectează Chrome și alte servicii Google pentru personalizare și alte scopuri</translation>
 <translation id="6482749332252372425">Descărcarea fișierului <ph name="FILE_NAME" /> nu a reușit din cauza spațiului de stocare insuficient.</translation>
 <translation id="6486420406192123355">Acest fișier PDF provine de la un site care folosește o conexiune nesecurizată</translation>
@@ -1342,6 +1343,7 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="6908998565271542516">Opțiune pentru a aproba sau nu un site deschis la înălțimea completă</translation>
 <translation id="6909589135458168665">Preîncarcă paginile</translation>
 <translation id="6910211073230771657">Șters</translation>
+<translation id="6916590542764765824">Gestionează extensiile</translation>
 <translation id="6918398787259831832">Dacă problema persistă, <ph name="BEGIN_LINK" />află mai multe informații<ph name="END_LINK" /> de la <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> Chrome a eliminat aceste permisiuni deoarece nu ai accesat recent site-ul</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{O filă}few{<ph name="NUMBER_OF_TABS" /> file}other{<ph name="NUMBER_OF_TABS" /> de file}}</translation>

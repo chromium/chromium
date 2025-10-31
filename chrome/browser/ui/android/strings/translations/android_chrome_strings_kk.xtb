@@ -1260,6 +1260,7 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="6473086018775716761">Бөлісу опцияларының тізімі экранның жартысына жайылды.</translation>
 <translation id="6475951671322991020">Бейнені жүктеу</translation>
 <translation id="6477928892249167417">Бұл сайттар маңызды болуы мүмкін:</translation>
+<translation id="6479881432656947268">Chrome Web Store дүкеніне кіру</translation>
 <translation id="6481963882741794338">Жекелендіру және басқа мақсаттарды орындау үшін Chrome мен басқа Google қызметтерін байланыстырыңыз.</translation>
 <translation id="6482749332252372425">Жад орны жеткіліксіз болғандықтан, <ph name="FILE_NAME" /> жүктелмеді.</translation>
 <translation id="6486420406192123355">Бұл PDF файлы қауіпті байланысты қолданатын сайттан алынған.</translation>
@@ -1380,6 +1381,7 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="6908998565271542516">Веб-сайтты мақұлдау не мақұлдамау опциясы бар бет толық ашық.</translation>
 <translation id="6909589135458168665">Беттерді алдын ала жүктеу</translation>
 <translation id="6910211073230771657">Жойылды</translation>
+<translation id="6916590542764765824">Кеңейтімдерді басқару</translation>
 <translation id="6918398787259831832">Бұл мәселе қайталана берсе, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> провайдерінен <ph name="BEGIN_LINK" />қосымша ақпарат алыңыз<ph name="END_LINK" />.</translation>
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> Chrome бұл рұқсаттарды өшірді, себебі сіз соңғы уақытта бұл сайтқа кірмегенсіз.</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 қойынды}other{<ph name="NUMBER_OF_TABS" /> қойынды}}</translation>
