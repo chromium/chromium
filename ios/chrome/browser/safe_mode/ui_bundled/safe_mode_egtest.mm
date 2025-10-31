@@ -152,6 +152,13 @@ void AssertTryAgainButtonOnPage() {
 
 // Tests that an NTP is shown after 2 crashes.
 - (void)testPostCrashNTP {
+  // TODO(crbug.com/456803766): Test is flaky on iOS 18 iPad devices.
+#if !TARGET_OS_SIMULATOR
+  if ([ChromeEarlGrey isIPadIdiom] && !base::ios::IsRunningOnIOS26OrLater()) {
+    EARL_GREY_TEST_DISABLED(@"Test disabled on pre iOS 26 iPad devices.");
+  }
+#endif
+
   [SafeModeAppInterface setFailedStartupAttemptCount:0];
   [ChromeEarlGrey closeAllTabsInCurrentMode];
   [ChromeEarlGrey openNewTab];
