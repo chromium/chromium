@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.compositor.overlays.strip;
 import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.ANIM_TAB_MOVE_MS;
+import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.BUTTON_BACKGROUND_SIZE_DP;
+import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.BUTTON_TOUCH_TARGET_SIZE_DP;
 import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.INVALID_TIME;
 import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.MAX_TAB_WIDTH_DP;
 import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.MIN_TAB_WIDTH_DP;
@@ -181,8 +183,6 @@ public class StripLayoutHelper
 
     // Visibility Constants
     private static final float NEW_TAB_BUTTON_BACKGROUND_Y_OFFSET_DP = 3.f;
-    private static final float NEW_TAB_BUTTON_BACKGROUND_WIDTH_DP = 32.f;
-    private static final float NEW_TAB_BUTTON_BACKGROUND_HEIGHT_DP = 32.f;
 
     // Desired spacing between new tab button and tabs when tab strip is not full.
     private static final float DESIRED_PADDING_BETWEEN_NEW_TAB_BUTTON_AND_TABS = 2.f;
@@ -193,10 +193,8 @@ public class StripLayoutHelper
 
     // Values adapt based on whether the device is desktop or tablet.
     private static final boolean IS_DESKTOP_DENSITY = StripLayoutUtils.shouldApplyMoreDensity();
-    private static final float BUTTON_DESIRED_TOUCH_TARGET_SIZE =
-            IS_DESKTOP_DENSITY ? NEW_TAB_BUTTON_BACKGROUND_WIDTH_DP : 48.f;
     private static final float NEW_TAB_BUTTON_CLICK_SLOP_DP =
-            (BUTTON_DESIRED_TOUCH_TARGET_SIZE - NEW_TAB_BUTTON_BACKGROUND_WIDTH_DP) / 2;
+            (BUTTON_TOUCH_TARGET_SIZE_DP - BUTTON_BACKGROUND_SIZE_DP) / 2;
     private static final float NEW_TAB_BUTTON_WITH_MODEL_SELECTOR_BUTTON_PADDING =
             IS_DESKTOP_DENSITY ? 24.f : 8.f;
 
@@ -711,7 +709,7 @@ public class StripLayoutHelper
             TabGroupListBottomSheetCoordinatorFactory tabGroupListBottomSheetCoordinatorFactory) {
         mGroupTitleDrawXOffset = TAB_OVERLAP_WIDTH_DP - FOLIO_FOOT_LENGTH_DP;
         mGroupTitleOverlapWidth = FOLIO_FOOT_LENGTH_DP - mGroupTitleDrawXOffset;
-        mNewTabButtonWidth = NEW_TAB_BUTTON_BACKGROUND_WIDTH_DP;
+        mNewTabButtonWidth = BUTTON_BACKGROUND_SIZE_DP;
         mModelSelectorButton = modelSelectorButton;
         mToolbarContainerView = toolbarContainerView;
         mTabStripDragHandler = tabStripDragHandler;
@@ -743,8 +741,8 @@ public class StripLayoutHelper
                         context,
                         ButtonType.NEW_TAB,
                         null,
-                        NEW_TAB_BUTTON_BACKGROUND_WIDTH_DP,
-                        NEW_TAB_BUTTON_BACKGROUND_HEIGHT_DP,
+                        BUTTON_BACKGROUND_SIZE_DP,
+                        BUTTON_BACKGROUND_SIZE_DP,
                         mToolbarContainerView::setTooltipText,
                         /* clickHandler= */ this,
                         /* keyboardFocusHandler= */ this,
@@ -1010,7 +1008,7 @@ public class StripLayoutHelper
      */
     protected float getNtbVisualOffsetHorizontal() {
         return Math.max(
-                (BUTTON_DESIRED_TOUCH_TARGET_SIZE - mNewTabButtonWidth) / 2
+                (BUTTON_TOUCH_TARGET_SIZE_DP - mNewTabButtonWidth) / 2
                         - DESIRED_PADDING_BETWEEN_NEW_TAB_BUTTON_AND_TABS,
                 0);
     }

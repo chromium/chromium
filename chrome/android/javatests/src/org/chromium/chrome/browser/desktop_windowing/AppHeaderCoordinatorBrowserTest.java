@@ -171,13 +171,13 @@ public class AppHeaderCoordinatorBrowserTest {
         Assert.assertNotNull(
                 "Tab strip transition coordinator is null.", tabStripTransitionCoordinator);
 
+        var stripLayoutHelperManager = activity.getLayoutManager().getStripLayoutHelperManager();
+        int fadeTransitionThresholdDp = stripLayoutHelperManager.getFadeTransitionThresholdDp();
+
         // A small strip width should hide the strip by adding the strip fade transition scrim.
-        int smallStripWidth =
-                ViewUtils.dpToPx(
-                        activity, TabStripTransitionCoordinator.getFadeTransitionThresholdDp() - 1);
+        int smallStripWidth = ViewUtils.dpToPx(activity, fadeTransitionThresholdDp - 1);
         ThreadUtils.runOnUiThreadBlocking(() -> simulateResizeDesktopWindow(smallStripWidth));
 
-        var stripLayoutHelperManager = activity.getLayoutManager().getStripLayoutHelperManager();
         var stripAreaMotionEventFilter =
                 (AreaMotionEventFilter) stripLayoutHelperManager.getEventFilter();
         CriteriaHelper.pollUiThread(
@@ -193,9 +193,7 @@ public class AppHeaderCoordinatorBrowserTest {
                 });
 
         // A large strip width should show the strip by removing the strip transition scrim.
-        int largeStripWidth =
-                ViewUtils.dpToPx(
-                        activity, TabStripTransitionCoordinator.getFadeTransitionThresholdDp());
+        int largeStripWidth = ViewUtils.dpToPx(activity, fadeTransitionThresholdDp);
         ThreadUtils.runOnUiThreadBlocking(() -> simulateResizeDesktopWindow(largeStripWidth));
         CriteriaHelper.pollUiThread(
                 () -> {

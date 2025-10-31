@@ -6,6 +6,9 @@ package org.chromium.chrome.browser.compositor.overlays.strip;
 
 import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
+import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.BUTTON_TOUCH_TARGET_SIZE_DP;
+import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.MIN_TAB_WIDTH_DP;
+import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.TAB_OVERLAP_WIDTH_DP;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -1053,6 +1056,26 @@ public class StripLayoutHelperManager
         }
         mStatusBarColorController.setTabStripColorOverlay(
                 ScrimProperties.INVALID_COLOR, mStripTransitionScrimOpacity);
+    }
+
+    @Override
+    public int getFadeTransitionThresholdDp() {
+        if (mTabModelSelector == null) return 0;
+        TabModel incognitoTabModel = mTabModelSelector.getModel(/* incognito= */ true);
+        boolean hasIncognitoTabs = incognitoTabModel != null && incognitoTabModel.getCount() > 0;
+        boolean shouldShowMsb =
+                !ChromeFeatureList.sTabStripIncognitoMigration.isEnabled() && hasIncognitoTabs;
+
+        // Tablet: 284 = 2 * minTabWidth(108) - tabOverlap(28) + newTabButton (48) +
+        // [optional] modelSelectorButton(48).
+        // Desktop: 188 = 2 * minTabWidth(76) - tabOverlap(28) + newTabButton (32) +
+        // [optional] modelSelectorButton(32).
+        float thresholdDp =
+                (2 * MIN_TAB_WIDTH_DP)
+                        - TAB_OVERLAP_WIDTH_DP
+                        + BUTTON_TOUCH_TARGET_SIZE_DP
+                        + (shouldShowMsb ? BUTTON_TOUCH_TARGET_SIZE_DP : 0f);
+        return Math.round(thresholdDp);
     }
 
     private boolean duringTabStripHeightTransition() {

@@ -1413,5 +1413,10 @@ public class TabStripTransitionCoordinatorUnitTest {
         public ObservableSupplier<Integer> getStripVisibilityStateSupplier() {
             return mStripVisibilitySupplier;
         }
+
+        @Override
+        public int getFadeTransitionThresholdDp() {
+            return NARROW_DESKTOP_WINDOW_WIDTH + 1;
+        }
     }
 }

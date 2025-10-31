@@ -18,9 +18,6 @@ import org.chromium.ui.base.ViewUtils;
  */
 @NullMarked
 class FadeTransitionHandler {
-    // Minimum width (in dp) of the tab strip for it to be shown.
-    // 284 = 2 * minTabWidth(108) - tabOverlap(28) + newTabButton (48) + modelSelectorButton(48).
-    static final int TRANSITION_THRESHOLD_DP = 284;
     private static final int FADE_TRANSITION_DURATION_MS = 200;
 
     private final OneshotSupplier<TabStripTransitionDelegate> mTabStripTransitionDelegateSupplier;
@@ -37,7 +34,12 @@ class FadeTransitionHandler {
     }
 
     void updateTabStripTransitionThreshold(DisplayMetrics displayMetrics) {
-        mTabStripTransitionThreshold = ViewUtils.dpToPx(displayMetrics, TRANSITION_THRESHOLD_DP);
+        var delegate = mTabStripTransitionDelegateSupplier.get();
+        // Skip while the delegate is null before native init; this method will be invoked by the
+        // observer callback once the delegate supplier is injected.
+        if (delegate == null) return;
+        mTabStripTransitionThreshold =
+                ViewUtils.dpToPx(displayMetrics, delegate.getFadeTransitionThresholdDp());
     }
 
     void onTabStripSizeChanged(

@@ -77,6 +77,12 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks, AppHea
 
         /** Returns the observable supplier for the {@link StripVisibilityState}. */
         ObservableSupplier<Integer> getStripVisibilityStateSupplier();
+
+        /**
+         * Returns the min strip width (in dp) required for it to become visible by a fade
+         * transition.
+         */
+        int getFadeTransitionThresholdDp();
     }
 
     private final CallbackController mCallbackController = new CallbackController();
@@ -157,7 +163,8 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks, AppHea
                 };
         controlContainerView().addOnLayoutChangeListener(mOnLayoutChangedListener);
 
-        updateTabStripTransitionThreshold();
+        mTabStripTransitionDelegateSupplier.runSyncOrOnAvailable(
+                (unused) -> updateTabStripTransitionThreshold());
 
         AppHeaderState appHeaderState = null;
         if (mDesktopWindowStateManager != null) {
@@ -407,8 +414,10 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks, AppHea
      * @return The min strip width (in dp) required for it to become visible by a fade transition.
      */
     @VisibleForTesting
-    public static int getFadeTransitionThresholdDp() {
-        return FadeTransitionHandler.TRANSITION_THRESHOLD_DP;
+    public int getFadeTransitionThresholdDp() {
+        TabStripTransitionDelegate delegate = mTabStripTransitionDelegateSupplier.get();
+        assert delegate != null : "Expected a non-null strip transition delegate.";
+        return delegate.getFadeTransitionThresholdDp();
     }
 
     HeightTransitionHandler getHeightTransitionHandlerForTesting() {

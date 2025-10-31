@@ -854,6 +854,30 @@ public class StripLayoutHelperManagerTest {
     }
 
     @Test
+    @DisableFeatures(ChromeFeatureList.TAB_STRIP_INCOGNITO_MIGRATION)
+    public void testGetFadeTransitionThresholdDp_MsbShown() {
+        when(mStandardTabModel.getCount()).thenReturn(1);
+        int expectedThresholdDp = 284;
+        assertEquals(expectedThresholdDp, mStripLayoutHelperManager.getFadeTransitionThresholdDp());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TAB_STRIP_INCOGNITO_MIGRATION)
+    public void testGetFadeTransitionThresholdDp_MsbHide_IncognitoMigrationEnabled() {
+        when(mStandardTabModel.getCount()).thenReturn(1);
+        int expectedThresholdDp = 236;
+        assertEquals(expectedThresholdDp, mStripLayoutHelperManager.getFadeTransitionThresholdDp());
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.TAB_STRIP_INCOGNITO_MIGRATION)
+    public void testGetFadeTransitionThresholdDp_MsbHide_NoIncognitoTabs() {
+        when(mStandardTabModel.getCount()).thenReturn(0);
+        int expectedThresholdDp = 236;
+        assertEquals(expectedThresholdDp, mStripLayoutHelperManager.getFadeTransitionThresholdDp());
+    }
+
+    @Test
     public void testGetVirtualViews() {
         List<VirtualView> views = new ArrayList<>();
         mStripLayoutHelperManager.getVirtualViews(views);
