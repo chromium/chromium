@@ -67,11 +67,9 @@ article :is(ul, ol, figure) * {
 
 /* Text rules. */
 
-html {
+html, body, h2[itemprop="description"], h3, h4, h5, h6 {
     font-size: 16px;
-}
-
-body {
+    font-weight: normal;
     line-height: 1.5rem; /* 18px */
 }
 
@@ -81,10 +79,9 @@ body {
     font-weight: bold;
 }
 
-h2, h3, h4, h5, h6 {
-    font-size: 1.5rem; /* 24px */
-    line-height: 2.25rem; /* 36px */
-    font-weight: bold;
+h2 {
+  font-size: 1.25rem; /* 20px */
+  line-height: 1.75rem; /* 28px */
 }
 
 /* Styles for images and captions. */
