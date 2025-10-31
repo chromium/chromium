@@ -85,6 +85,7 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
       realboxLayoutMode: {type: String},
       tabSuggestions: {type: Array},
       entrypointName: {type: String},
+      parentFocused: {type: Boolean},
 
       // =========================================================================
       // Protected properties
@@ -128,6 +129,7 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
   accessor realboxLayoutMode: string = '';
   accessor entrypointName: string = '';
   accessor tabSuggestions: TabInfo[] = [];
+  accessor parentFocused: boolean = false;
 
   protected accessor attachmentFileTypes_: string =
       loadTimeData.getString('composeboxAttachmentFileTypes');
@@ -159,8 +161,9 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
   }
 
   protected get shouldShowRecentTabChip_(): boolean {
-    return this.showRecentTabChip_ && this.hasTabSuggestions_() &&
-        !this.recentTabInContext_ && !this.inToolMode_;
+    return this.parentFocused && this.showRecentTabChip_ &&
+        this.hasTabSuggestions_() && !this.recentTabInContext_ &&
+        !this.inToolMode_;
   }
 
   private maxFileCount_: number =

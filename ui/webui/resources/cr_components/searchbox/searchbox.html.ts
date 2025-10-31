@@ -80,7 +80,8 @@ ${this.ntpRealboxNextEnabled ? html`
           @set-create-image-mode="${this.setCreateImageMode_}"
           @get-tab-preview="${this.getTabPreview_}"
           ?show-dropdown="${this.dropdownIsVisible}"
-          realbox-layout-mode="${this.realboxLayoutMode}">
+          realbox-layout-mode="${this.realboxLayoutMode}"
+          .parentFocused="${this.inputFocused_}">
         <cr-searchbox-dropdown id="matches" part="searchbox-dropdown"
             exportparts="dropdown-content"
             role="listbox" .result="${this.result_}"

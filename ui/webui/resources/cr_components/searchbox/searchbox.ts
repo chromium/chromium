@@ -409,7 +409,7 @@ export class SearchboxElement extends SearchboxElementBase {
   accessor showThumbnail: boolean = false;
   accessor placeholderText: string = '';
   protected accessor inputAriaLive_: string = '';
-  private accessor inputFocused_: boolean = false;
+  protected accessor inputFocused_: boolean = false;
   private accessor isLensSearchbox_: boolean =
       loadTimeData.getBoolean('isLensSearchbox');
   protected accessor enableThumbnailSizingTweaks_: boolean =

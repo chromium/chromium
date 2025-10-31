@@ -63,7 +63,8 @@ export function getHtml(this: ComposeboxElement) {
           @get-tab-preview="${this.getTabPreview_}"
           ?show-dropdown="${this.showDropdown_}"
           ?show-context-menu-description="${this.showContextMenuDescription_}"
-          realbox-layout-mode="${this.realboxLayoutMode}">
+          realbox-layout-mode="${this.realboxLayoutMode}"
+          .parentFocused="${true}">
         <ntp-composebox-dropdown
             id="matches"
             part="dropdown"

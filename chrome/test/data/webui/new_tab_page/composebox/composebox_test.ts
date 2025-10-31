@@ -61,6 +61,13 @@ suite('NewTabPageComposeboxTest', () => {
     document.body.appendChild(composeboxElement);
   }
 
+  async function getRecentTabChip(): Promise<HTMLElement|null> {
+    const contextElement = composeboxElement.$.context;
+    await microtasksFinished();
+    await contextElement.updateComplete;
+    return contextElement.shadowRoot.querySelector<HTMLElement>(
+        '#recentTabChip');
+  }
   async function waitForAddFileCallCount(expectedCount: number): Promise<void> {
     const startTime = Date.now();
     return new Promise((resolve, reject) => {
@@ -1783,7 +1790,6 @@ suite('NewTabPageComposeboxTest', () => {
       assertEquals(files[0]!.name, sampleTabTitle);
     });
 
-
     test('shows recent tab chip when suggestions are available', async () => {
       const tabInfo = {
         tabId: 1,
@@ -1794,14 +1800,7 @@ suite('NewTabPageComposeboxTest', () => {
       searchboxHandler.setResultFor(
           'getRecentTabs', Promise.resolve({tabs: [tabInfo]}));
       createComposeboxElement();
-      const contextElement = composeboxElement.$.context;
-
-      await microtasksFinished();
-      await contextElement.updateComplete;
-
-      const recentTabChip =
-          contextElement.shadowRoot.querySelector<HTMLElement>(
-              '#recentTabChip');
+      const recentTabChip = await getRecentTabChip();
       assertTrue(
           recentTabChip !== null, 'recent tab chip should not be visible');
     });
@@ -1820,8 +1819,11 @@ suite('NewTabPageComposeboxTest', () => {
       await microtasksFinished();
       await contextElement.updateComplete;
 
-      let recentTabChip = contextElement.shadowRoot.querySelector<HTMLElement>(
-          '#recentTabChip');
+      // Focus the input to simulate parent focus
+      composeboxElement.$.input.focus();
+      await microtasksFinished();
+
+      let recentTabChip = await getRecentTabChip();
       assertTrue(recentTabChip !== null);
 
       // Add the tab to the context.
@@ -1834,8 +1836,7 @@ suite('NewTabPageComposeboxTest', () => {
       await searchboxHandler.whenCalled(ADD_TAB_CONTEXT_FN);
       await microtasksFinished();
 
-      recentTabChip = contextElement.shadowRoot.querySelector<HTMLElement>(
-          '#recentTabChip');
+      recentTabChip = await getRecentTabChip();
 
       assertTrue(recentTabChip === null);
     });
