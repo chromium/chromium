@@ -817,6 +817,9 @@
   </message>
 
   <!-- Titles -->
+   <message name="IDS_AUTOFILL_AI_NATIONAL_IDS_TITLE" desc="The title of a chip referring to national ids(IDS_AUTOFILL_AI_NATIONAL_ID_CARD_ENTITY_NAME) on Your saved info settings page.">
+    Identity cards
+  </message>
   <message name="IDS_AUTOFILL_AI_VEHICLES_TITLE" desc="The title of a chip referring to vehicles(IDS_AUTOFILL_AI_VEHICLE_ENTITY_NAME) on Your saved info settings page.">
     Vehicles
   </message>

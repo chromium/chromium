@@ -185,7 +185,7 @@ export class SettingsYourSavedInfoPageElement extends
         },
         {
           type: DataType.NATIONAL_ID_CARD,
-          label: this.i18n('yourSavedInfoNationalIdChip'),
+          label: this.i18n('yourSavedInfoNationalIdsChip'),
           icon: 'settings20:id-card',
           isAvailable: true,
         },
