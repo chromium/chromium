@@ -333,7 +333,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="TrustedVault.TrustedVaultHintDegradedRecoverabilityChangedReason"
     enum="TrustedVaultHintDegradedRecoverabilityChangedReason"
-    expires_after="2025-11-17">
+    expires_after="2026-11-17">
   <owner>mmrashad@google.com</owner>
   <owner>mmoskvitin@google.com</owner>
   <summary>
