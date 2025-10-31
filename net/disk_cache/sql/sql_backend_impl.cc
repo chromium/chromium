@@ -422,7 +422,29 @@ void SqlBackendImpl::OnInitialized(CompletionOnceCallback callback,
                                    const std::vector<bool>& results) {
   const bool success = std::all_of(results.begin(), results.end(),
                                    [](bool result) { return result; });
+  if (success) {
+    // Schedule a one-time task to load in-memory index and clean up doomed
+    // entries from previous sessions. This runs after a delay to avoid
+    // impacting startup performance. This is especially important for Android
+    // WebView where Performance Scenario Detection doesn't work. See
+    // https://crbug.com/456009994 for more details.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&SqlBackendImpl::RunDelayedPostInitializationTasks,
+                       weak_factory_.GetWeakPtr()),
+        kSqlBackendPostInitializationTasksDelay);
+  }
   std::move(callback).Run(success ? net::OK : net::ERR_FAILED);
+}
+
+void SqlBackendImpl::RunDelayedPostInitializationTasks() {
+  store_->MaybeLoadInMemoryIndex(base::BindOnce(
+      [](base::WeakPtr<SqlBackendImpl> self, SqlPersistentStore::Error result) {
+        if (self && result == SqlPersistentStore::Error::kOk) {
+          self->store_->MaybeRunCleanupDoomedEntries(base::DoNothing());
+        }
+      },
+      weak_factory_.GetWeakPtr()));
 }
 
 int64_t SqlBackendImpl::MaxFileSize() const {
