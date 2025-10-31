@@ -608,19 +608,22 @@ std::optional<KeyboardCode> KeyboardCapability::GetMappedFKeyIfExists(
   KeyboardTopRowLayout layout = GetTopRowLayout(keyboard);
   switch (layout) {
     case KeyboardTopRowLayout::kKbdTopRowLayout1:
-      if (kLayout1TopRowKeyToFKeyMap.contains(key_code)) {
-        return kLayout1TopRowKeyToFKeyMap.at(key_code);
+      if (auto it = kLayout1TopRowKeyToFKeyMap.find(key_code);
+          it != kLayout1TopRowKeyToFKeyMap.end()) {
+        return it->second;
       }
       break;
     case KeyboardTopRowLayout::kKbdTopRowLayout2:
-      if (kLayout2TopRowKeyToFKeyMap.contains(key_code)) {
-        return kLayout2TopRowKeyToFKeyMap.at(key_code);
+      if (auto it = kLayout2TopRowKeyToFKeyMap.find(key_code);
+          it != kLayout2TopRowKeyToFKeyMap.end()) {
+        return it->second;
       }
       break;
     case KeyboardTopRowLayout::kKbdTopRowLayoutWilco:
     case KeyboardTopRowLayout::kKbdTopRowLayoutDrallion:
-      if (kLayoutWilcoDrallionTopRowKeyToFKeyMap.contains(key_code)) {
-        return kLayoutWilcoDrallionTopRowKeyToFKeyMap.at(key_code);
+      if (auto it = kLayoutWilcoDrallionTopRowKeyToFKeyMap.find(key_code);
+          it != kLayoutWilcoDrallionTopRowKeyToFKeyMap.end()) {
+        return it->second;
       }
       break;
     case KeyboardTopRowLayout::kKbdTopRowLayoutCustom:
