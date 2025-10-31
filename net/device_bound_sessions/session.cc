@@ -263,9 +263,7 @@ proto::Session Session::ToProto() const {
   return session_proto;
 }
 
-bool Session::ShouldDeferRequest(
-    URLRequest* request,
-    const net::FirstPartySetMetadata& first_party_set_metadata) {
+bool Session::IsInScope(URLRequest* request) {
   if (!IncludesUrl(request->url())) {
     // Request is not in scope for this session.
     return false;
@@ -309,6 +307,12 @@ bool Session::ShouldDeferRequest(
     return false;
   }
 
+  return true;
+}
+
+base::TimeDelta Session::MinimumBoundCookieLifetime(
+    URLRequest* request,
+    const FirstPartySetMetadata& first_party_set_metadata) {
   // TODO(crbug.com/438783631): Refactor this.
   // The below is all copied from AddCookieHeaderAndStart. We should refactor
   // it.
@@ -391,7 +395,7 @@ bool Session::ShouldDeferRequest(
 
       // There's an unsatisfied craving. Defer the request.
       request->set_device_bound_session_usage(SessionUsage::kDeferred);
-      return true;
+      return base::TimeDelta();
     }
   }
 
@@ -408,7 +412,7 @@ bool Session::ShouldDeferRequest(
                               });
 
   // All cookiecravings satisfied.
-  return false;
+  return minimum_remaining_lifetime;
 }
 
 bool Session::IsEqualForTesting(const Session& other) const {

@@ -61,7 +61,14 @@ class NET_EXPORT Session {
 
   const KeyIdOrError& unexportable_key_id() const { return key_id_or_error_; }
 
-  bool ShouldDeferRequest(
+  // Return whether `request` is in-scope for this session.
+  bool IsInScope(URLRequest* request);
+
+  // Returns the minimum remaining lifetime over all the bound cookies
+  // on `request`. If any cookie is missing, the lifetime will be
+  // zero. If no cookies would be included on the request, the lifetime
+  // will be `base::TimeDelta::Max()`
+  base::TimeDelta MinimumBoundCookieLifetime(
       URLRequest* request,
       const FirstPartySetMetadata& first_party_set_metadata);
 
