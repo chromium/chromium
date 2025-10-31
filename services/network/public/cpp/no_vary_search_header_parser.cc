@@ -59,14 +59,14 @@ mojom::NoVarySearchWithParseErrorPtr ParseNoVarySearch(
   if (no_vary_search_data.vary_by_default()) {
     no_vary_search->search_variance =
         mojom::SearchParamsVariance::NewNoVaryParams(std::vector<std::string>(
-            no_vary_search_data.no_vary_params().begin(),
-            no_vary_search_data.no_vary_params().end()));
+            no_vary_search_data.affected_params().begin(),
+            no_vary_search_data.affected_params().end()));
     return mojom::NoVarySearchWithParseError::NewNoVarySearch(
         std::move(no_vary_search));
   }
   no_vary_search->search_variance = mojom::SearchParamsVariance::NewVaryParams(
-      std::vector<std::string>(no_vary_search_data.vary_params().begin(),
-                               no_vary_search_data.vary_params().end()));
+      std::vector<std::string>(no_vary_search_data.affected_params().begin(),
+                               no_vary_search_data.affected_params().end()));
   return mojom::NoVarySearchWithParseError::NewNoVarySearch(
       std::move(no_vary_search));
 }

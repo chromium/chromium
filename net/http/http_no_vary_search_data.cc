@@ -46,9 +46,9 @@ void ApplyNoVarySearchRulesToParams(const HttpNoVarySearchData& rules,
                                     ParamsType& params) {
   // Ignore all the query search params that the URL is not varying on.
   if (rules.vary_by_default()) {
-    params.DeleteAllWithNames(rules.no_vary_params());
+    params.DeleteAllWithNames(rules.affected_params());
   } else {
-    params.DeleteAllExceptWithNames(rules.vary_params());
+    params.DeleteAllExceptWithNames(rules.affected_params());
   }
   // Sort the params if the order of the search params in the query
   // is ignored.
@@ -137,10 +137,13 @@ std::string HttpNoVarySearchData::CanonicalizeQuery(const GURL& url) const {
 HttpNoVarySearchData HttpNoVarySearchData::CreateFromNoVaryParams(
     const std::vector<std::string>& no_vary_params,
     bool vary_on_key_order) {
+  // Check that this call creates a non-default configuration.
+  CHECK(!vary_on_key_order || !no_vary_params.empty());
+
   HttpNoVarySearchData no_vary_search;
   no_vary_search.vary_on_key_order_ = vary_on_key_order;
-  no_vary_search.no_vary_params_.insert(no_vary_params.cbegin(),
-                                        no_vary_params.cend());
+  no_vary_search.affected_params_.insert(no_vary_params.cbegin(),
+                                         no_vary_params.cend());
   return no_vary_search;
 }
 
@@ -151,7 +154,8 @@ HttpNoVarySearchData HttpNoVarySearchData::CreateFromVaryParams(
   HttpNoVarySearchData no_vary_search;
   no_vary_search.vary_on_key_order_ = vary_on_key_order;
   no_vary_search.vary_by_default_ = false;
-  no_vary_search.vary_params_.insert(vary_params.cbegin(), vary_params.cend());
+  no_vary_search.affected_params_.insert(vary_params.cbegin(),
+                                         vary_params.cend());
   return no_vary_search;
 }
 
@@ -181,22 +185,6 @@ bool HttpNoVarySearchData::operator==(const HttpNoVarySearchData& rhs) const =
 std::strong_ordering HttpNoVarySearchData::operator<=>(
     const HttpNoVarySearchData& rhs) const = default;
 
-const base::flat_set<std::string>& HttpNoVarySearchData::no_vary_params()
-    const {
-  return no_vary_params_;
-}
-
-const base::flat_set<std::string>& HttpNoVarySearchData::vary_params() const {
-  return vary_params_;
-}
-
-bool HttpNoVarySearchData::vary_on_key_order() const {
-  return vary_on_key_order_;
-}
-bool HttpNoVarySearchData::vary_by_default() const {
-  return vary_by_default_;
-}
-
 bool HttpNoVarySearchData::AreEquivalentOldImplForTesting(const GURL& a,
                                                           const GURL& b) const {
   return AreEquivalentOldImpl(a, b);
@@ -211,13 +199,12 @@ bool HttpNoVarySearchData::AreEquivalentNewImplForTesting(const GURL& a,
 base::expected<HttpNoVarySearchData, HttpNoVarySearchData::ParseErrorEnum>
 HttpNoVarySearchData::ParseNoVarySearchDictionary(
     const structured_headers::Dictionary& dict) {
-  static constexpr const char* kKeyOrder = "key-order";
-  static constexpr const char* kParams = "params";
-  static constexpr const char* kExcept = "except";
+  static constexpr std::string_view kKeyOrder = "key-order";
+  static constexpr std::string_view kParams = "params";
+  static constexpr std::string_view kExcept = "except";
   constexpr std::string_view kValidKeys[] = {kKeyOrder, kParams, kExcept};
 
-  base::flat_set<std::string> no_vary_params;
-  base::flat_set<std::string> vary_params;
+  base::flat_set<std::string> affected_params;
   bool vary_on_key_order = true;
   bool vary_by_default = true;
 
@@ -235,8 +222,8 @@ HttpNoVarySearchData::ParseNoVarySearchDictionary(
   }
 
   // Populate `vary_on_key_order` based on the `key-order` key.
-  if (dict.contains(kKeyOrder)) {
-    const auto& key_order = dict.at(kKeyOrder);
+  if (auto keyorder_it = dict.find(kKeyOrder); keyorder_it != dict.end()) {
+    const auto& key_order = keyorder_it->second;
     if (key_order.member_is_inner_list ||
         !key_order.member[0].item.is_boolean()) {
       return base::unexpected(ParseErrorEnum::kNonBooleanKeyOrder);
@@ -244,15 +231,15 @@ HttpNoVarySearchData::ParseNoVarySearchDictionary(
     vary_on_key_order = !key_order.member[0].item.GetBoolean();
   }
 
-  // Populate `no_vary_params` or `vary_by_default` based on the "params" key.
-  if (dict.contains(kParams)) {
-    const auto& params = dict.at(kParams);
+  // Populate `affected_params` or `vary_by_default` based on the "params" key.
+  if (auto params_it = dict.find(kParams); params_it != dict.end()) {
+    const auto& params = params_it->second;
     if (params.member_is_inner_list) {
       auto keys = ParseStringList(params.member);
       if (!keys.has_value()) {
         return base::unexpected(ParseErrorEnum::kParamsNotStringList);
       }
-      no_vary_params = std::move(*keys);
+      affected_params = std::move(*keys);
     } else if (params.member[0].item.is_boolean()) {
       vary_by_default = !params.member[0].item.GetBoolean();
     } else {
@@ -260,11 +247,11 @@ HttpNoVarySearchData::ParseNoVarySearchDictionary(
     }
   }
 
-  // Populate `vary_params` based on the "except" key.
+  // Populate `affected_params` based on the "except" key.
   // This should be present only if "params" was true
   // (i.e., params don't vary by default).
-  if (dict.contains(kExcept)) {
-    const auto& excepted_params = dict.at(kExcept);
+  if (auto except_it = dict.find(kExcept); except_it != dict.end()) {
+    const auto& excepted_params = except_it->second;
     if (vary_by_default) {
       return base::unexpected(ParseErrorEnum::kExceptWithoutTrueParams);
     }
@@ -275,24 +262,17 @@ HttpNoVarySearchData::ParseNoVarySearchDictionary(
     if (!keys.has_value()) {
       return base::unexpected(ParseErrorEnum::kExceptNotStringList);
     }
-    vary_params = std::move(*keys);
+    affected_params = std::move(*keys);
   }
 
-  // "params" controls both `vary_by_default` and `no_vary_params`. Check to
-  // make sure that when "params" is a boolean, `no_vary_params` is empty.
-  if (!vary_by_default)
-    DCHECK(no_vary_params.empty());
-
-  if (no_vary_params.empty() && vary_params.empty() && vary_by_default &&
-      vary_on_key_order) {
+  if (affected_params.empty() && vary_by_default && vary_on_key_order) {
     // If header is present but it's value is equivalent to only default values
     // then it is the same as if there were no header present.
     return base::unexpected(ParseErrorEnum::kDefaultValue);
   }
 
   HttpNoVarySearchData no_vary_search;
-  no_vary_search.no_vary_params_ = std::move(no_vary_params);
-  no_vary_search.vary_params_ = std::move(vary_params);
+  no_vary_search.affected_params_ = std::move(affected_params);
   no_vary_search.vary_on_key_order_ = vary_on_key_order;
   no_vary_search.vary_by_default_ = vary_by_default;
 
@@ -341,17 +321,16 @@ void PickleTraits<HttpNoVarySearchData>::Serialize(
     base::Pickle& pickle,
     const HttpNoVarySearchData& value) {
   WriteToPickle(pickle, HttpNoVarySearchData::kMagicNumber,
-                value.no_vary_params_, value.vary_params_,
-                value.vary_on_key_order_, value.vary_by_default_);
+                value.affected_params_, value.vary_on_key_order_,
+                value.vary_by_default_);
 }
 
 std::optional<HttpNoVarySearchData>
 PickleTraits<HttpNoVarySearchData>::Deserialize(base::PickleIterator& iter) {
   HttpNoVarySearchData result;
   uint32_t magic_number = 0u;
-  if (!ReadPickleInto(iter, magic_number, result.no_vary_params_,
-                      result.vary_params_, result.vary_on_key_order_,
-                      result.vary_by_default_)) {
+  if (!ReadPickleInto(iter, magic_number, result.affected_params_,
+                      result.vary_on_key_order_, result.vary_by_default_)) {
     return std::nullopt;
   }
 
@@ -359,20 +338,11 @@ PickleTraits<HttpNoVarySearchData>::Deserialize(base::PickleIterator& iter) {
     return std::nullopt;
   }
 
-  if (result.vary_by_default_) {
-    if (result.vary_on_key_order_ && result.vary_params_.empty() &&
-        result.no_vary_params_.empty()) {
-      // This is the default configuration in the absence of a No-Vary-Search
-      // header, and should never be stored in a HttpNoVarySearchData object.
-      return std::nullopt;
-    }
-    if (!result.vary_params_.empty()) {
-      return std::nullopt;
-    }
-  } else {
-    if (!result.no_vary_params_.empty()) {
-      return std::nullopt;
-    }
+  if (result.vary_by_default_ && result.vary_on_key_order_ &&
+      result.affected_params_.empty()) {
+    // This is the default configuration in the absence of a No-Vary-Search
+    // header, and should never be stored in a HttpNoVarySearchData object.
+    return std::nullopt;
   }
 
   return result;
@@ -381,8 +351,8 @@ PickleTraits<HttpNoVarySearchData>::Deserialize(base::PickleIterator& iter) {
 size_t PickleTraits<HttpNoVarySearchData>::PickleSize(
     const HttpNoVarySearchData& value) {
   return EstimatePickleSize(HttpNoVarySearchData::kMagicNumber,
-                            value.no_vary_params_, value.vary_params_,
-                            value.vary_on_key_order_, value.vary_by_default_);
+                            value.affected_params_, value.vary_on_key_order_,
+                            value.vary_by_default_);
 }
 // LINT.ThenChange(//net/http/http_no_vary_search_data.h:MagicNumber)
 

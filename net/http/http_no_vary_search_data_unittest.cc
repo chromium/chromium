@@ -45,9 +45,8 @@ using ::testing::ValuesIn;
 TEST(HttpNoVarySearchCreateTest, CreateFromNoVaryParamsNonEmptyVaryOnKeyOrder) {
   const auto no_vary_search =
       HttpNoVarySearchData::CreateFromNoVaryParams({"a"}, true);
-  EXPECT_THAT(no_vary_search.no_vary_params(),
+  EXPECT_THAT(no_vary_search.affected_params(),
               UnorderedElementsAreArray({"a"}));
-  EXPECT_THAT(no_vary_search.vary_params(), IsEmpty());
   EXPECT_TRUE(no_vary_search.vary_on_key_order());
   EXPECT_TRUE(no_vary_search.vary_by_default());
 }
@@ -56,9 +55,8 @@ TEST(HttpNoVarySearchCreateTest,
      CreateFromNoVaryParamsNonEmptyNoVaryOnKeyOrder) {
   const auto no_vary_search =
       HttpNoVarySearchData::CreateFromNoVaryParams({"a"}, false);
-  EXPECT_THAT(no_vary_search.no_vary_params(),
+  EXPECT_THAT(no_vary_search.affected_params(),
               UnorderedElementsAreArray({"a"}));
-  EXPECT_THAT(no_vary_search.vary_params(), IsEmpty());
   EXPECT_FALSE(no_vary_search.vary_on_key_order());
   EXPECT_TRUE(no_vary_search.vary_by_default());
 }
@@ -66,26 +64,16 @@ TEST(HttpNoVarySearchCreateTest,
 TEST(HttpNoVarySearchCreateTest, CreateFromNoVaryParamsEmptyNoVaryOnKeyOrder) {
   const auto no_vary_search =
       HttpNoVarySearchData::CreateFromNoVaryParams({}, false);
-  EXPECT_THAT(no_vary_search.no_vary_params(), IsEmpty());
-  EXPECT_THAT(no_vary_search.vary_params(), IsEmpty());
+  EXPECT_THAT(no_vary_search.affected_params(), IsEmpty());
   EXPECT_FALSE(no_vary_search.vary_on_key_order());
-  EXPECT_TRUE(no_vary_search.vary_by_default());
-}
-
-TEST(HttpNoVarySearchCreateTest, CreateFromNoVaryParamsEmptyVaryOnKeyOrder) {
-  const auto no_vary_search =
-      HttpNoVarySearchData::CreateFromNoVaryParams({}, true);
-  EXPECT_THAT(no_vary_search.no_vary_params(), IsEmpty());
-  EXPECT_THAT(no_vary_search.vary_params(), IsEmpty());
-  EXPECT_TRUE(no_vary_search.vary_on_key_order());
   EXPECT_TRUE(no_vary_search.vary_by_default());
 }
 
 TEST(HttpNoVarySearchCreateTest, CreateFromVaryParamsNonEmptyVaryOnKeyOrder) {
   const auto no_vary_search =
       HttpNoVarySearchData::CreateFromVaryParams({"a"}, true);
-  EXPECT_THAT(no_vary_search.no_vary_params(), IsEmpty());
-  EXPECT_THAT(no_vary_search.vary_params(), UnorderedElementsAreArray({"a"}));
+  EXPECT_THAT(no_vary_search.affected_params(),
+              UnorderedElementsAreArray({"a"}));
   EXPECT_TRUE(no_vary_search.vary_on_key_order());
   EXPECT_FALSE(no_vary_search.vary_by_default());
 }
@@ -93,8 +81,8 @@ TEST(HttpNoVarySearchCreateTest, CreateFromVaryParamsNonEmptyVaryOnKeyOrder) {
 TEST(HttpNoVarySearchCreateTest, CreateFromVaryParamsNonEmptyNoVaryOnKeyOrder) {
   const auto no_vary_search =
       HttpNoVarySearchData::CreateFromVaryParams({"a"}, false);
-  EXPECT_THAT(no_vary_search.no_vary_params(), IsEmpty());
-  EXPECT_THAT(no_vary_search.vary_params(), UnorderedElementsAreArray({"a"}));
+  EXPECT_THAT(no_vary_search.affected_params(),
+              UnorderedElementsAreArray({"a"}));
   EXPECT_FALSE(no_vary_search.vary_on_key_order());
   EXPECT_FALSE(no_vary_search.vary_by_default());
 }
@@ -102,8 +90,7 @@ TEST(HttpNoVarySearchCreateTest, CreateFromVaryParamsNonEmptyNoVaryOnKeyOrder) {
 TEST(HttpNoVarySearchCreateTest, CreateFromVaryParamsEmptyNoVaryOnKeyOrder) {
   const auto no_vary_search =
       HttpNoVarySearchData::CreateFromVaryParams({}, false);
-  EXPECT_THAT(no_vary_search.no_vary_params(), IsEmpty());
-  EXPECT_THAT(no_vary_search.vary_params(), IsEmpty());
+  EXPECT_THAT(no_vary_search.affected_params(), IsEmpty());
   EXPECT_FALSE(no_vary_search.vary_on_key_order());
   EXPECT_FALSE(no_vary_search.vary_by_default());
 }
@@ -111,16 +98,14 @@ TEST(HttpNoVarySearchCreateTest, CreateFromVaryParamsEmptyNoVaryOnKeyOrder) {
 TEST(HttpNoVarySearchCreateTest, CreateFromVaryParamsEmptyVaryOnKeyOrder) {
   const auto no_vary_search =
       HttpNoVarySearchData::CreateFromVaryParams({}, true);
-  EXPECT_THAT(no_vary_search.no_vary_params(), IsEmpty());
-  EXPECT_THAT(no_vary_search.vary_params(), IsEmpty());
+  EXPECT_THAT(no_vary_search.affected_params(), IsEmpty());
   EXPECT_TRUE(no_vary_search.vary_on_key_order());
   EXPECT_FALSE(no_vary_search.vary_by_default());
 }
 
 struct TestData {
   const char* raw_headers;
-  const base::flat_set<std::string> expected_no_vary_params;
-  const base::flat_set<std::string> expected_vary_params;
+  const base::flat_set<std::string> expected_affected_params;
   const bool expected_vary_on_key_order;
   const bool expected_vary_by_default;
 };
@@ -144,8 +129,8 @@ TEST_P(HttpNoVarySearchResponseHeadersTest, ParsingSuccess) {
   EXPECT_EQ(no_vary_search_data.vary_by_default(),
             test.expected_vary_by_default);
 
-  EXPECT_EQ(no_vary_search_data.no_vary_params(), test.expected_no_vary_params);
-  EXPECT_EQ(no_vary_search_data.vary_params(), test.expected_vary_params);
+  EXPECT_EQ(no_vary_search_data.affected_params(),
+            test.expected_affected_params);
 }
 
 struct FailureData {
@@ -367,8 +352,7 @@ const TestData response_headers_tests[] = {
         "HTTP/1.1 200 OK\r\n"
         R"(No-Vary-Search: params=("a"))"
         "\r\n\r\n",  // raw_headers
-        {"a"},       // expected_no_vary_params
-        {},          // expected_vary_params
+        {"a"},       // expected_affected_params
         true,        // expected_vary_on_key_order
         true,        // expected_vary_by_default
     },
@@ -377,8 +361,7 @@ const TestData response_headers_tests[] = {
         "HTTP/1.1 200 OK\r\n"
         R"(No-Vary-Search: params=("%C2%A2"))"
         "\r\n\r\n",  // raw_headers
-        {"¢"},       // expected_no_vary_params
-        {},          // expected_vary_params
+        {"¢"},       // expected_affected_params
         true,        // expected_vary_on_key_order
         true,        // expected_vary_by_default
     },
@@ -388,8 +371,7 @@ const TestData response_headers_tests[] = {
         "HTTP/1.1 200 OK\r\n"
         R"(No-Vary-Search: params=("c%C2%A2"))"
         "\r\n\r\n",  // raw_headers
-        {"c¢"},      // expected_no_vary_params
-        {},          // expected_vary_params
+        {"c¢"},      // expected_affected_params
         true,        // expected_vary_on_key_order
         true,        // expected_vary_by_default
     },
@@ -399,8 +381,7 @@ const TestData response_headers_tests[] = {
         "HTTP/1.1 200 OK\r\n"
         R"(No-Vary-Search: params=("+%C2%A2"))"
         "\r\n\r\n",  // raw_headers
-        {" ¢"},      // expected_no_vary_params
-        {},          // expected_vary_params
+        {" ¢"},      // expected_affected_params
         true,        // expected_vary_on_key_order
         true,        // expected_vary_by_default
     },
@@ -408,8 +389,7 @@ const TestData response_headers_tests[] = {
     {
         "HTTP/1.1 200 OK\r\n"
         "No-Vary-Search: params\r\n\r\n",  // raw_headers
-        {},                                // expected_no_vary_params
-        {},                                // expected_vary_params
+        {},                                // expected_affected_params
         true,                              // expected_vary_on_key_order
         false,                             // expected_vary_by_default
     },
@@ -417,8 +397,7 @@ const TestData response_headers_tests[] = {
     {
         "HTTP/1.1 200 OK\r\n"
         "No-Vary-Search: params=?1\r\n\r\n",  // raw_headers
-        {},                                   // expected_no_vary_params
-        {},                                   // expected_vary_params
+        {},                                   // expected_affected_params
         true,                                 // expected_vary_on_key_order
         false,                                // expected_vary_by_default
     },
@@ -429,8 +408,7 @@ const TestData response_headers_tests[] = {
         "\r\n"
         R"(No-Vary-Search: params=("c"))"
         "\r\n\r\n",  // raw_headers
-        {"c"},       // expected_no_vary_params
-        {},          // expected_vary_params
+        {"c"},       // expected_affected_params
         true,        // expected_vary_on_key_order
         true,        // expected_vary_by_default
     },
@@ -439,8 +417,7 @@ const TestData response_headers_tests[] = {
         "HTTP/1.1 200 OK\r\n"
         "No-Vary-Search: params\r\n"
         "No-Vary-Search: except=()\r\n\r\n",  // raw_headers
-        {},                                   // expected_no_vary_params
-        {},                                   // expected_vary_params
+        {},                                   // expected_affected_params
         true,                                 // expected_vary_on_key_order
         false,                                // expected_vary_by_default
     },
@@ -450,8 +427,7 @@ const TestData response_headers_tests[] = {
         "No-Vary-Search: params\r\n"
         R"(No-Vary-Search: except=("a"))"
         "\r\n\r\n",  // raw_headers
-        {},          // expected_no_vary_params
-        {"a"},       // expected_vary_params
+        {"a"},       // expected_affected_params
         true,        // expected_vary_on_key_order
         false,       // expected_vary_by_default
     },
@@ -461,8 +437,7 @@ const TestData response_headers_tests[] = {
         "No-Vary-Search: params\r\n"
         R"(No-Vary-Search: except=("%C2%A2"))"
         "\r\n\r\n",  // raw_headers
-        {},          // expected_no_vary_params
-        {"¢"},       // expected_vary_params
+        {"¢"},       // expected_affected_params
         true,        // expected_vary_on_key_order
         false,       // expected_vary_by_default
     },
@@ -473,8 +448,7 @@ const TestData response_headers_tests[] = {
         "No-Vary-Search: params\r\n"
         R"(No-Vary-Search: except=("c+%C2%A2"))"
         "\r\n\r\n",  // raw_headers
-        {},          // expected_no_vary_params
-        {"c ¢"},     // expected_vary_params
+        {"c ¢"},     // expected_affected_params
         true,        // expected_vary_on_key_order
         false,       // expected_vary_by_default
     },
@@ -484,8 +458,7 @@ const TestData response_headers_tests[] = {
         "HTTP/1.1 200 OK\r\n"
         R"(No-Vary-Search: params,except=("a"))"
         "\r\n\r\n",  // raw_headers
-        {},          // expected_no_vary_params
-        {"a"},       // expected_vary_params
+        {"a"},       // expected_affected_params
         true,        // expected_vary_on_key_order
         false,       // expected_vary_by_default
     },
@@ -497,8 +470,7 @@ const TestData response_headers_tests[] = {
         "\r\n"
         R"(No-Vary-Search: except=("c"))"
         "\r\n\r\n",  // raw_headers
-        {},          // expected_no_vary_params
-        {"c"},       // expected_vary_params
+        {"c"},       // expected_affected_params
         true,        // expected_vary_on_key_order
         false,       // expected_vary_by_default
     },
@@ -508,8 +480,7 @@ const TestData response_headers_tests[] = {
         "No-Vary-Search: params\r\n"
         R"(No-Vary-Search: except=("a" "b"))"
         "\r\n\r\n",  // raw_headers
-        {},          // expected_no_vary_params
-        {"a", "b"},  // expected_vary_params
+        {"a", "b"},  // expected_affected_params
         true,        // expected_vary_on_key_order
         false,       // expected_vary_by_default
     },
@@ -520,8 +491,7 @@ const TestData response_headers_tests[] = {
         R"(No-Vary-Search: except=("a" "b"))"
         "\r\n"
         "No-Vary-Search: params\r\n\r\n",  // raw_headers
-        {},                                // expected_no_vary_params
-        {"a", "b"},                        // expected_vary_params
+        {"a", "b"},                        // expected_affected_params
         true,                              // expected_vary_on_key_order
         false,                             // expected_vary_by_default
     },
@@ -531,8 +501,7 @@ const TestData response_headers_tests[] = {
         "HTTP/1.1 200 OK\r\n"
         R"(No-Vary-Search: params,except=("a" "b"))"
         "\r\n\r\n",  // raw_headers
-        {},          // expected_no_vary_params
-        {"a", "b"},  // expected_vary_params
+        {"a", "b"},  // expected_affected_params
         true,        // expected_vary_on_key_order
         false,       // expected_vary_by_default
     },
@@ -541,8 +510,7 @@ const TestData response_headers_tests[] = {
         "HTTP/1.1 200 OK\r\n"
         R"(No-Vary-Search: params=("a" "b"))"
         "\r\n\r\n",  // raw_headers
-        {"a", "b"},  // expected_no_vary_params
-        {},          // expected_vary_params
+        {"a", "b"},  // expected_affected_params
         true,        // expected_vary_on_key_order
         true,        // expected_vary_by_default
     },
@@ -550,8 +518,7 @@ const TestData response_headers_tests[] = {
     {
         "HTTP/1.1 200 OK\r\n"
         "No-Vary-Search: key-order\r\n\r\n",  // raw_headers
-        {},                                   // expected_no_vary_params
-        {},                                   // expected_vary_params
+        {},                                   // expected_affected_params
         false,                                // expected_vary_on_key_order
         true,                                 // expected_vary_by_default
     },
@@ -559,8 +526,7 @@ const TestData response_headers_tests[] = {
     {
         "HTTP/1.1 200 OK\r\n"
         "No-Vary-Search: key-order=?1\r\n\r\n",  // raw_headers
-        {},                                      // expected_no_vary_params
-        {},                                      // expected_vary_params
+        {},                                      // expected_affected_params
         false,                                   // expected_vary_on_key_order
         true,                                    // expected_vary_by_default
     },
@@ -570,8 +536,7 @@ const TestData response_headers_tests[] = {
         R"(No-Vary-Search: params=("a" "b"))"
         "\r\n"
         "No-Vary-Search: key-order\r\n\r\n",  // raw_headers
-        {"a", "b"},                           // expected_no_vary_params
-        {},                                   // expected_vary_params
+        {"a", "b"},                           // expected_affected_params
         false,                                // expected_vary_on_key_order
         true,                                 // expected_vary_by_default
     },
@@ -581,8 +546,7 @@ const TestData response_headers_tests[] = {
         R"(No-Vary-Search: params=("a" "b"))"
         "\r\n"
         "No-Vary-Search: key-order=?1\r\n\r\n",  // raw_headers
-        {"a", "b"},                              // expected_no_vary_params
-        {},                                      // expected_vary_params
+        {"a", "b"},                              // expected_affected_params
         false,                                   // expected_vary_on_key_order
         true,                                    // expected_vary_by_default
     },
@@ -593,8 +557,7 @@ const TestData response_headers_tests[] = {
         R"(No-Vary-Search: params=("a" "b"))"
         "\r\n"
         "No-Vary-Search: key-order=?0\r\n\r\n",  // raw_headers
-        {"a", "b"},                              // expected_no_vary_params
-        {},                                      // expected_vary_params
+        {"a", "b"},                              // expected_affected_params
         true,                                    // expected_vary_on_key_order
         true,                                    // expected_vary_by_default
     },
@@ -606,8 +569,7 @@ const TestData response_headers_tests[] = {
         R"(No-Vary-Search: except=("a"))"
         "\r\n"
         "No-Vary-Search: key-order\r\n\r\n",  // raw_headers
-        {},                                   // expected_no_vary_params
-        {"a"},                                // expected_vary_params
+        {"a"},                                // expected_affected_params
         false,                                // expected_vary_on_key_order
         false,                                // expected_vary_by_default
     },
@@ -619,8 +581,7 @@ const TestData response_headers_tests[] = {
         R"(No-Vary-Search: except=("a"))"
         "\r\n"
         "No-Vary-Search: key-order\r\n\r\n",  // raw_headers
-        {},                                   // expected_no_vary_params
-        {"a"},                                // expected_vary_params
+        {"a"},                                // expected_affected_params
         false,                                // expected_vary_on_key_order
         false,                                // expected_vary_by_default
     },
@@ -632,8 +593,7 @@ const TestData response_headers_tests[] = {
         R"(No-Vary-Search: except=("a"))"
         "\r\n"
         "No-Vary-Search: key-order=?1\r\n\r\n",  // raw_headers
-        {},                                      // expected_no_vary_params
-        {"a"},                                   // expected_vary_params
+        {"a"},                                   // expected_affected_params
         false,                                   // expected_vary_on_key_order
         false,                                   // expected_vary_by_default
     },
@@ -644,8 +604,7 @@ const TestData response_headers_tests[] = {
         R"(No-Vary-Search: except=("a"))"
         "\r\n"
         "No-Vary-Search: key-order=?0\r\n\r\n",  // raw_headers
-        {},                                      // expected_no_vary_params
-        {"a"},                                   // expected_vary_params
+        {"a"},                                   // expected_affected_params
         true,                                    // expected_vary_on_key_order
         false,                                   // expected_vary_by_default
     },
@@ -657,8 +616,7 @@ const TestData response_headers_tests[] = {
         R"(No-Vary-Search: except=("a" "b"))"
         "\r\n"
         "No-Vary-Search: key-order\r\n\r\n",  // raw_headers
-        {},                                   // expected_no_vary_params
-        {"a", "b"},                           // expected_vary_params
+        {"a", "b"},                           // expected_affected_params
         false,                                // expected_vary_on_key_order
         false,                                // expected_vary_by_default
     },
@@ -670,8 +628,7 @@ const TestData response_headers_tests[] = {
         "\r\n"
         R"(No-Vary-Search: params=("b"))"
         "\r\n\r\n",  // raw_headers
-        {"b"},       // expected_no_vary_params
-        {},          // expected_vary_params
+        {"b"},       // expected_affected_params
         true,        // expected_vary_on_key_order
         true,        // expected_vary_by_default
     },
@@ -682,8 +639,7 @@ const TestData response_headers_tests[] = {
         R"(No-Vary-Search: params=("a"))"
         "\r\n"
         "No-Vary-Search: params\r\n\r\n",  // raw_headers
-        {},                                // expected_no_vary_params
-        {},                                // expected_vary_params
+        {},                                // expected_affected_params
         true,                              // expected_vary_on_key_order
         false,                             // expected_vary_by_default
     },
@@ -696,8 +652,7 @@ const TestData response_headers_tests[] = {
         "\r\n"
         R"(No-Vary-Search: except=("b"))"
         "\r\n\r\n",  // raw_headers
-        {},          // expected_no_vary_params
-        {"b"},       // expected_vary_params
+        {"b"},       // expected_affected_params
         true,        // expected_vary_on_key_order
         false,       // expected_vary_by_default
     },
@@ -705,8 +660,7 @@ const TestData response_headers_tests[] = {
     {
         "HTTP/1.1 200 OK\r\n"
         "No-Vary-Search: params;unknown\r\n\r\n",  // raw_headers
-        {},                                        // expected_no_vary_params
-        {},                                        // expected_vary_params
+        {},                                        // expected_affected_params
         true,                                      // expected_vary_on_key_order
         false,                                     // expected_vary_by_default
     },
@@ -715,8 +669,7 @@ const TestData response_headers_tests[] = {
         "HTTP/1.1 200 OK\r\n"
         R"(No-Vary-Search: params=("a");unknown)"
         "\r\n\r\n",  // raw_headers
-        {"a"},       // expected_no_vary_params
-        {},          // expected_vary_params
+        {"a"},       // expected_affected_params
         true,        // expected_vary_on_key_order
         true,        // expected_vary_by_default
     },
@@ -725,8 +678,7 @@ const TestData response_headers_tests[] = {
         "HTTP/1.1 200 OK\r\n"
         R"(No-Vary-Search: params;unknown,except=("a");unknown)"
         "\r\n\r\n",  // raw_headers
-        {},          // expected_no_vary_params
-        {"a"},       // expected_vary_params
+        {"a"},       // expected_affected_params
         true,        // expected_vary_on_key_order
         false,       // expected_vary_by_default
     },
@@ -734,8 +686,7 @@ const TestData response_headers_tests[] = {
     {
         "HTTP/1.1 200 OK\r\n"
         "No-Vary-Search: key-order;unknown\r\n\r\n",  // raw_headers
-        {},                                           // expected_no_vary_params
-        {},                                           // expected_vary_params
+        {},     // expected_affected_params
         false,  // expected_vary_on_key_order
         true,   // expected_vary_by_default
     },
@@ -744,8 +695,7 @@ const TestData response_headers_tests[] = {
         "HTTP/1.1 200 OK\r\n"
         R"(No-Vary-Search: params=("a";unknown))"
         "\r\n\r\n",  // raw_headers
-        {"a"},       // expected_no_vary_params
-        {},          // expected_vary_params
+        {"a"},       // expected_affected_params
         true,        // expected_vary_on_key_order
         true,        // expected_vary_by_default
     },
@@ -755,8 +705,7 @@ const TestData response_headers_tests[] = {
         "No-Vary-Search: params\r\n"
         R"(No-Vary-Search: except=("a";unknown))"
         "\r\n\r\n",  // raw_headers
-        {},          // expected_no_vary_params
-        {"a"},       // expected_vary_params
+        {"a"},       // expected_affected_params
         true,        // expected_vary_on_key_order
         false,       // expected_vary_by_default
     },
@@ -767,8 +716,7 @@ const TestData response_headers_tests[] = {
         "No-Vary-Search: params,except=(a)\r\n"
         R"(No-Vary-Search: except=("a"))"
         "\r\n\r\n",  // raw_headers
-        {},          // expected_no_vary_params
-        {"a"},       // expected_vary_params
+        {"a"},       // expected_affected_params
         true,        // expected_vary_on_key_order
         false,       // expected_vary_by_default
     },
@@ -779,8 +727,7 @@ const TestData response_headers_tests[] = {
         "No-Vary-Search: unknown-key\r\n"
         R"(No-Vary-Search: except=("a"))"
         "\r\n\r\n",  // raw_headers
-        {},          // expected_no_vary_params
-        {"a"},       // expected_vary_params
+        {"a"},       // expected_affected_params
         true,        // expected_vary_on_key_order
         false,       // expected_vary_by_default
     }};
@@ -1237,7 +1184,7 @@ void AreEquivalentImplementationsMatch(const std::string& url_suffix_a,
                                        bool vary_on_params,
                                        bool vary_on_key_order) {
   // Discard invalid configurations early so we don't waste time on them.
-  if (!vary_on_params && params.empty()) {
+  if (vary_on_params && params.empty() && vary_on_key_order) {
     // This configuration is equivalent to the default configuration, so is
     // invalid.
     return;
@@ -1251,9 +1198,9 @@ void AreEquivalentImplementationsMatch(const std::string& url_suffix_a,
     return;
   }
   const HttpNoVarySearchData data =
-      vary_on_params ? HttpNoVarySearchData::CreateFromVaryParams(
+      vary_on_params ? HttpNoVarySearchData::CreateFromNoVaryParams(
                            params, vary_on_key_order)
-                     : HttpNoVarySearchData::CreateFromNoVaryParams(
+                     : HttpNoVarySearchData::CreateFromVaryParams(
                            params, vary_on_key_order);
   EXPECT_EQ(data.AreEquivalentOldImplForTesting(url_a, url_b),
             data.AreEquivalentNewImplForTesting(url_a, url_b));
@@ -1404,21 +1351,19 @@ INSTANTIATE_TEST_SUITE_P(HttpNoVarySearchSerializationParameterizedTest,
                          ValuesIn(no_vary_search_compare_tests));
 
 base::Pickle MakeBadPickle(uint32_t magic_number,
-                           const base::flat_set<std::string>& no_vary_params,
-                           const base::flat_set<std::string>& vary_params,
+                           const base::flat_set<std::string>& affected_params,
                            bool vary_on_key_order,
                            bool vary_by_default) {
   base::Pickle result;
-  WriteToPickle(result, magic_number, no_vary_params, vary_params,
-                vary_on_key_order, vary_by_default);
+  WriteToPickle(result, magic_number, affected_params, vary_on_key_order,
+                vary_by_default);
   return result;
 }
 
 struct BadPickleParams {
   std::string_view why_bad;  // Should be alphanumeric.
   uint32_t magic_number;
-  base::flat_set<std::string> no_vary_params;
-  base::flat_set<std::string> vary_params;
+  base::flat_set<std::string> affected_params;
   bool vary_on_key_order;
   bool vary_by_default;
 };
@@ -1428,9 +1373,9 @@ class HttpNoVarySearchBadPickleTest
       public ::testing::WithParamInterface<BadPickleParams> {};
 
 TEST_P(HttpNoVarySearchBadPickleTest, VerifyFails) {
-  const auto [_, magic_number, no_vary_params, vary_params, vary_on_key_order,
+  const auto [_, magic_number, affected_params, vary_on_key_order,
               vary_by_default] = GetParam();
-  base::Pickle pickle = MakeBadPickle(magic_number, no_vary_params, vary_params,
+  base::Pickle pickle = MakeBadPickle(magic_number, affected_params,
                                       vary_on_key_order, vary_by_default);
   std::optional<HttpNoVarySearchData> result =
       ReadValueFromPickle<HttpNoVarySearchData>(pickle);
@@ -1439,13 +1384,11 @@ TEST_P(HttpNoVarySearchBadPickleTest, VerifyFails) {
 
 // This value and the bad pickle tests need to be updated if the corresponding
 // value in the declaration of HttpNoVarySearchData is updated.
-constexpr uint32_t kMagicNumber = 0x652a610e;
+constexpr uint32_t kMagicNumber = 0xfe1056f3;
 
 const auto bad_pickle_params = std::to_array<BadPickleParams>({
-    {"BadMagicNumber", 0xfeeddad0, {}, {}, false, false},
-    {"DefaultBehavior", kMagicNumber, {}, {}, true, true},
-    {"VaryByDefaultWithVaryParams", kMagicNumber, {}, {"a"}, false, true},
-    {"NoVaryByDefaultWithNoVaryParams", kMagicNumber, {"b"}, {}, false, false},
+    {"BadMagicNumber", 0xfeeddad0, {}, false, false},
+    {"DefaultBehavior", kMagicNumber, {}, true, true},
 });
 
 INSTANTIATE_TEST_SUITE_P(
@@ -1476,7 +1419,7 @@ TEST(HttpNoVarySearchDataTest, AbslHashValue) {
       HttpNoVarySearchData::CreateFromVaryParams({"c"}, true),
       // Object with only vary_on_key_order set to false.
       HttpNoVarySearchData::CreateFromNoVaryParams({}, false),
-      // Object with only vary_params set.
+      // Object that only varies on one param.
       HttpNoVarySearchData::CreateFromVaryParams({"a"}, true),
   }));
 }
