@@ -21,7 +21,7 @@ class PasswordManagerClient;
 // `dom_node_id`. Invokes `callback` on completing.
 class ButtonClickHelper {
  public:
-  using ClickResult = base::OnceCallback<void(bool)>;
+  using ClickResult = base::OnceCallback<void(actor::mojom::ActionResultCode)>;
 
   ButtonClickHelper(content::WebContents* web_contents,
                     password_manager::PasswordManagerClient* client,
@@ -30,7 +30,11 @@ class ButtonClickHelper {
   ~ButtonClickHelper();
 
 #if defined(UNIT_TEST)
-  void SimulateClickResult(bool result) { std::move(callback_).Run(result); }
+  void SimulateClickResult(bool result) {
+    std::move(callback_).Run(
+        result ? actor::mojom::ActionResultCode::kOk
+               : actor::mojom::ActionResultCode::kInvalidDomNodeId);
+  }
 #endif
 
  private:

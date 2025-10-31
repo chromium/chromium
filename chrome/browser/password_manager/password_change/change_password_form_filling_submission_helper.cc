@@ -340,18 +340,14 @@ void ChangePasswordFormFillingSubmissionHelper::OnExecutionResponseCallback(
           weak_ptr_factory_.GetWeakPtr()));
 }
 
-void ChangePasswordFormFillingSubmissionHelper::OnButtonClicked(bool result) {
+void ChangePasswordFormFillingSubmissionHelper::OnButtonClicked(
+    actor::mojom::ActionResultCode result) {
   CHECK(web_contents_);
   click_helper_.reset();
 
-  if (auto logger = GetLoggerIfAvailable(client_)) {
-    logger->LogBoolean(
-        Logger::STRING_AUTOMATED_PASSWORD_CHANGE_ON_BUTTON_CLICKED, result);
-  }
-
-  if (!result && !submission_detected_) {
+  if (result != actor::mojom::ActionResultCode::kOk && !submission_detected_) {
     // Fail immediately as click failed and no form submission was detected.
-    logs_uploader_->SubmitFormTargetElementNotFound();
+    logs_uploader_->RecordButtonClickFailure(kSubmitFormFlowStep, result);
     std::move(callback_).Run(false);
     return;
   }

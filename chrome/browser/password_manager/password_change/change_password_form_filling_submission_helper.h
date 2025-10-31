@@ -13,6 +13,7 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/password_manager/password_change/button_click_helper.h"
+#include "chrome/common/chrome_render_frame.mojom.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -115,7 +116,7 @@ class ChangePasswordFormFillingSubmissionHelper {
           optimization_guide::proto::PasswordChangeSubmissionLoggingData>
           logging_data);
 
-  void OnButtonClicked(bool result);
+  void OnButtonClicked(actor::mojom::ActionResultCode result);
 
   void OnSubmissionDetectedOrTimeout();
 

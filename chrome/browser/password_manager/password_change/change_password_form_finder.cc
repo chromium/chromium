@@ -210,19 +210,15 @@ void ChangePasswordFormFinder::OnExecutionResponseCallback(
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void ChangePasswordFormFinder::OnButtonClicked(bool result) {
+void ChangePasswordFormFinder::OnButtonClicked(
+    actor::mojom::ActionResultCode result) {
   CHECK(web_contents_);
   CHECK(callback_);
 
   click_helper_.reset();
 
-  if (auto logger = GetLoggerIfAvailable(client_)) {
-    logger->LogBoolean(
-        Logger::STRING_AUTOMATED_PASSWORD_CHANGE_ON_BUTTON_CLICKED, result);
-  }
-
-  if (!result) {
-    logs_uploader_->OpenFormTargetElementNotFound();
+  if (result != actor::mojom::ActionResultCode::kOk) {
+    logs_uploader_->RecordButtonClickFailure(kOpenFormFlowStep, result);
     std::move(callback_).Run(nullptr);
     return;
   }

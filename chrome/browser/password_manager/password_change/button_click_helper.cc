@@ -65,5 +65,5 @@ void ButtonClickHelper::OnButtonClicked(actor::mojom::ActionResultPtr result) {
         base::ToString(result->code));
   }
   CHECK(callback_);
-  std::move(callback_).Run(actor::IsOk(*result));
+  std::move(callback_).Run(result->code);
 }
