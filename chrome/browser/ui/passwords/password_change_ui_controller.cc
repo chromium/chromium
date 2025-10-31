@@ -99,9 +99,14 @@ void LogToastEvent(PasswordChangeDelegate::State state,
           "PasswordManager.PasswordChange.ChangingPasswordToast", event);
       return;
     case PasswordChangeDelegate::State::kLoginFormDetected:
-    case PasswordChangeDelegate::State::kLoginFormDetectedUserCanContinue:
       base::UmaHistogramEnumeration(
           "PasswordManager.PasswordChange.WaitingForUserSignInToast", event);
+      return;
+    case PasswordChangeDelegate::State::kLoginFormDetectedUserCanContinue:
+      base::UmaHistogramEnumeration(
+          "PasswordManager.PasswordChange."
+          "WaitingForUserSignInToastWithContinue",
+          event);
       return;
     case PasswordChangeDelegate::State::kCanceled:
       base::UmaHistogramEnumeration(
