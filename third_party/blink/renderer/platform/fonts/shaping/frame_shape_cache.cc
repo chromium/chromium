@@ -55,19 +55,12 @@ E* FrameShapeCache::FindOrCreateEntry(const String& text,
     // old entries.
   }
   wtf_size_t list_index = result.stored_value->value.list_index;
-  // On cache hit,
-  // - Do nothing if it's created in the initial frame
-  // - Do nothing if it's touched in the current frame.
-  // - Otherwise, update `generation`, and move the LRU list entry to the front.
   if (list_index != kNotFound) {
+    // On cache hit, update `generation`, and move the LRU list entry to
+    // the front.
     auto it = lru_list.MakeIterator(list_index);
-    if ((RuntimeEnabledFeatures::CanvasTextCacheLimitEnabled() &&
-         (frame_generation_ == kInitialFrame ||
-          it->generation != kInitialFrame)) ||
-        it->generation != frame_generation_) {
-      it->generation = frame_generation_;
-      lru_list.MoveTo(it, lru_list.cbegin());
-    }
+    it->generation = frame_generation_;
+    lru_list.MoveTo(it, lru_list.cbegin());
   }
   return &result.stored_value->value;
 }
@@ -75,11 +68,6 @@ E* FrameShapeCache::FindOrCreateEntry(const String& text,
 wtf_size_t FrameShapeCache::ListIndexForNewEntry(const String& text,
                                                  TextDirection direction,
                                                  LruList& lru_list) {
-  if (!RuntimeEnabledFeatures::CanvasTextCacheLimitEnabled() &&
-      frame_generation_ == kInitialFrame) {
-    // Do not create an LRU list entry during the initial frame.
-    return kNotFound;
-  }
   lru_list.push_front(ListKey{{text, direction}, frame_generation_});
   return lru_list.begin().GetIndex();
 }
@@ -87,30 +75,18 @@ wtf_size_t FrameShapeCache::ListIndexForNewEntry(const String& text,
 template <typename E>
 void FrameShapeCache::RemoveOldEntries(HeapHashMap<KeyType, E>& map,
                                        LruList& lru_list) {
-  if (RuntimeEnabledFeatures::CanvasTextCacheLimitEnabled()) {
-    if (frame_generation_ == kInitialFrame) {
-      return;
-    }
-    for (auto it = lru_list.begin(); it != lru_list.end();) {
-      auto& value = *it;
-      if (value.generation == kInitialFrame ||
-          value.generation == frame_generation_) {
-        ++it;
-        continue;
-      }
-      map.erase(value.key);
-      it = lru_list.erase(it);
-    }
+  if (frame_generation_ == kInitialFrame) {
     return;
   }
-  while (!lru_list.empty()) {
-    auto& value = lru_list.back();
-    DCHECK_NE(value.generation, kInitialFrame);
-    if (value.generation == frame_generation_) {
-      return;
+  for (auto it = lru_list.begin(); it != lru_list.end();) {
+    auto& value = *it;
+    if (value.generation == kInitialFrame ||
+        value.generation == frame_generation_) {
+      ++it;
+      continue;
     }
     map.erase(value.key);
-    lru_list.pop_back();
+    it = lru_list.erase(it);
   }
 }
 
@@ -118,8 +94,7 @@ template <typename E>
 void FrameShapeCache::LimitCacheSize(HeapHashMap<KeyType, E>& map,
                                      LruList& lru_list,
                                      wtf_size_t limit) {
-  if (!RuntimeEnabledFeatures::CanvasTextCacheLimitEnabled() ||
-      map.size() <= limit) {
+  if (map.size() <= limit) {
     return;
   }
   while (lru_list.size() > limit / 2) {

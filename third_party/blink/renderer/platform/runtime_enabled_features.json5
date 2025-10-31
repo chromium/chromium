@@ -895,11 +895,6 @@
     },
     {
       // crbug.com/389726691.
-      name: "CanvasTextCacheLimit",
-      status: "stable",
-    },
-    {
-      // crbug.com/389726691.
       name: "CanvasTextMemoryPressure",
       status: "stable",
     },
