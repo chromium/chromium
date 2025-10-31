@@ -28,7 +28,6 @@ constexpr AmbientJitterConfig kAnimationJitterConfig{.step_size = 2,
 }  // namespace
 
 // static
-// TODO(b/158039112): return a const* instead.
 AmbientUiModel* AmbientUiModel::Get() {
   return g_ambient_ui_model;
 }
