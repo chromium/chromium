@@ -98,7 +98,7 @@ using enum OmniboxKeyboardAction;
     self.textAlignment = NSTextAlignmentNatural;
     self.keyboardType = UIKeyboardTypeWebSearch;
     self.smartQuotesType = UITextSmartQuotesTypeNo;
-    self.textContainer.lineFragmentPadding = 0;
+    self.textContainer.lineFragmentPadding = 3;
     self.dataDetectorTypes = UIDataDetectorTypeNone;
     self.allowsEditingTextAttributes = NO;
     if (@available(iOS 18, *)) {
