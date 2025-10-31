@@ -5494,7 +5494,7 @@
     },
     {
       name: "ViewTransitionWaitUntil",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "VisibilityCollapseColumn",
