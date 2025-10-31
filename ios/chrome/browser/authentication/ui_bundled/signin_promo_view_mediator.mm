@@ -28,12 +28,14 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signin_presenter.h"
 #import "ios/chrome/browser/discover_feed/model/feed_constants.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/avatar_provider.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/browser/sync/model/sync_observer_bridge.h"
@@ -971,7 +973,7 @@ id<SystemIdentity> GetDisplayedIdentity(
     self.displayedIdentityAvatar = nil;
   } else {
     self.displayedIdentityAvatar =
-        _accountManagerService->GetIdentityAvatarWithIdentityOnDevice(
+        GetApplicationContext()->GetIdentityAvatarProvider()->GetIdentityAvatar(
             _displayedIdentity, IdentityAvatarSize::SmallSize);
   }
 }

@@ -42,6 +42,7 @@
 #import "ios/chrome/browser/settings/ui_bundled/google_services/manage_sync_settings_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/google_services/manage_sync_settings_consumer.h"
 #import "ios/chrome/browser/settings/ui_bundled/google_services/sync_error_settings_command_handler.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/features.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
@@ -54,6 +55,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/avatar_provider.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/constants.h"
 #import "ios/chrome/browser/sync/model/enterprise_utils.h"
@@ -234,7 +236,7 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
     return;
   }
   UIImage* avatarImage =
-      _chromeAccountManagerService->GetIdentityAvatarWithIdentityOnDevice(
+      GetApplicationContext()->GetIdentityAvatarProvider()->GetIdentityAvatar(
           _signedInIdentity, IdentityAvatarSize::Large);
   NSString* managementDescription =
       GetManagementDescription([self managementState]);

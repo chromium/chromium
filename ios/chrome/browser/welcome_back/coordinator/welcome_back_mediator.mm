@@ -8,7 +8,9 @@
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/first_run/public/best_features_item.h"
 #import "ios/chrome/browser/first_run/ui_bundled/features.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/avatar_provider.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/constants.h"
 #import "ios/chrome/browser/welcome_back/model/features.h"
@@ -57,7 +59,7 @@
     id<SystemIdentity> identity = _authenticationService->GetPrimaryIdentity(
         signin::ConsentLevel::kSignin);
     UIImage* avatarImage =
-        _chromeAccountManagerService->GetIdentityAvatarWithIdentityOnDevice(
+        GetApplicationContext()->GetIdentityAvatarProvider()->GetIdentityAvatar(
             identity, IdentityAvatarSize::Large);
 
     [_consumer setTitle:l10n_util::GetNSStringF(

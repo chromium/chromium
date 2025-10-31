@@ -99,6 +99,7 @@ class TestingApplicationContext : public ApplicationContext {
   network::NetworkConnectionTracker* GetNetworkConnectionTracker() override;
   BrowserPolicyConnectorIOS* GetBrowserPolicyConnector() override;
   id<SingleSignOnService> GetSingleSignOnService() override;
+  signin::AvatarProvider* GetIdentityAvatarProvider() override;
   SystemIdentityManager* GetSystemIdentityManager() override;
   AccountProfileMapper* GetAccountProfileMapper() override;
   IncognitoSessionTracker* GetIncognitoSessionTracker() override;
@@ -130,6 +131,7 @@ class TestingApplicationContext : public ApplicationContext {
   std::unique_ptr<network::TestNetworkConnectionTracker>
       test_network_connection_tracker_;
   __strong id<SingleSignOnService> single_sign_on_service_ = nil;
+  std::unique_ptr<signin::AvatarProvider> resized_avatar_caches_;
   std::unique_ptr<SystemIdentityManager> system_identity_manager_;
   std::unique_ptr<AccountProfileMapper> default_account_profile_mapper_;
   std::unique_ptr<PushNotificationService> push_notification_service_;

@@ -62,6 +62,7 @@ class OSCryptAsync;
 
 namespace signin {
 class ActivePrimaryAccountsMetricsRecorder;
+class AvatarProvider;
 }
 
 namespace ukm {
@@ -194,6 +195,9 @@ class ApplicationContext {
 
   // Returns the SingleSignOnService instance used by this application.
   virtual id<SingleSignOnService> GetSingleSignOnService() = 0;
+
+  // Returns the caches for avatars of accounts on the device.
+  virtual signin::AvatarProvider* GetIdentityAvatarProvider() = 0;
 
   // Returns the SystemIdentityManager instance used by this application.
   virtual SystemIdentityManager* GetSystemIdentityManager() = 0;

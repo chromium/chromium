@@ -39,6 +39,7 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/avatar_provider.h"
 #import "ios/chrome/browser/sync/model/sync_observer_bridge.h"
 
 @interface AccountMenuMediator () <AuthenticationFlowDelegate,
@@ -162,8 +163,10 @@
 }
 
 - (UIImage*)imageForGaiaID:(const GaiaId&)gaiaID {
-  return _accountManagerService->GetIdentityAvatarWithIdentityOnDevice(
-      [self identityForGaiaID:gaiaID], IdentityAvatarSize::TableViewIcon);
+  return GetApplicationContext()
+      ->GetIdentityAvatarProvider()
+      ->GetIdentityAvatar([self identityForGaiaID:gaiaID],
+                          IdentityAvatarSize::TableViewIcon);
 }
 
 - (BOOL)isGaiaIDManaged:(const GaiaId&)gaiaID {
@@ -192,8 +195,10 @@
 }
 
 - (UIImage*)primaryAccountAvatar {
-  return _accountManagerService->GetIdentityAvatarWithIdentityOnDevice(
-      _primaryIdentityBeforeSignin, IdentityAvatarSize::Large);
+  return GetApplicationContext()
+      ->GetIdentityAvatarProvider()
+      ->GetIdentityAvatar(_primaryIdentityBeforeSignin,
+                          IdentityAvatarSize::Large);
 }
 
 - (NSString*)managementDescription {

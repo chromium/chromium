@@ -16,8 +16,10 @@
 #import "ios/chrome/browser/settings/ui_bundled/downloads/save_to_photos/save_to_photos_settings_account_confirmation_consumer.h"
 #import "ios/chrome/browser/settings/ui_bundled/downloads/save_to_photos/save_to_photos_settings_account_selection_consumer.h"
 #import "ios/chrome/browser/settings/ui_bundled/downloads/save_to_photos/save_to_photos_settings_mediator_delegate.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/signin/model/avatar_provider.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 
 @interface SaveToPhotosSettingsMediator () <
@@ -188,8 +190,9 @@
   BOOL askEveryTimeSwitchOn =
       _prefService->GetBoolean(prefs::kIosSaveToPhotosSkipAccountPicker);
   [self.accountConfirmationConsumer
-      setIdentityButtonAvatar:_accountManagerService
-                                  ->GetIdentityAvatarWithIdentityOnDevice(
+      setIdentityButtonAvatar:GetApplicationContext()
+                                  ->GetIdentityAvatarProvider()
+                                  ->GetIdentityAvatar(
                                       selectedIdentity,
                                       IdentityAvatarSize::TableViewIcon)
                          name:selectedIdentity.userFullName
@@ -210,7 +213,7 @@
     configurator.name = systemIdentity.userFullName;
     configurator.email = systemIdentity.userEmail;
     configurator.avatar =
-        _accountManagerService->GetIdentityAvatarWithIdentityOnDevice(
+        GetApplicationContext()->GetIdentityAvatarProvider()->GetIdentityAvatar(
             systemIdentity, IdentityAvatarSize::TableViewIcon);
     configurator.selected = systemIdentity.gaiaId == selectedIdentity.gaiaId;
     [identityItemConfigurators addObject:configurator];

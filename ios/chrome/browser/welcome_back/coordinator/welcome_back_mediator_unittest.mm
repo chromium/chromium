@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/avatar_provider.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
@@ -281,10 +282,9 @@ TEST_F(WelcomeBackMediatorTest, ConfirmUserInformationRetrieved) {
       }]]);
 
   // Retrieve the name and avatar.
-  ChromeAccountManagerService* accountManager =
-      ChromeAccountManagerServiceFactory::GetForProfile(profile_.get());
-  UIImage* testAvatar = accountManager->GetIdentityAvatarWithIdentityOnDevice(
-      fake_system_identity_, IdentityAvatarSize::Large);
+  UIImage* testAvatar =
+      GetApplicationContext()->GetIdentityAvatarProvider()->GetIdentityAvatar(
+          fake_system_identity_, IdentityAvatarSize::Large);
   OCMExpect([consumer_ setAvatar:testAvatar]);
   OCMExpect([consumer_ setTitle:l10n_util::GetNSStringF(
                                     IDS_IOS_WELCOME_BACK_TITLE_SIGNED_IN,

@@ -17,7 +17,9 @@
 #import "components/sync_device_info/device_info_sync_service.h"
 #import "components/sync_preferences/cross_device_pref_tracker/cross_device_pref_tracker.h"
 #import "ios/chrome/app/app_startup_parameters.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/avatar_provider.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/browser/synced_set_up/coordinator/synced_set_up_mediator_delegate.h"
@@ -164,7 +166,7 @@
   // fetch completes,
   // `-onExtendedAccountInfoUpdated:` will be called.
   UIImage* avatar =
-      _accountManagerService->GetIdentityAvatarWithIdentityOnDevice(
+      GetApplicationContext()->GetIdentityAvatarProvider()->GetIdentityAvatar(
           _primaryIdentity, IdentityAvatarSize::Large);
 
   [_consumer setWelcomeMessage:

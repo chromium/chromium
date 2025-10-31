@@ -15,6 +15,7 @@ source_set("utils") {
     "//ios/chrome/browser/policy/model",
     "//ios/chrome/browser/policy/ui_bundled:management_util",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile:features",

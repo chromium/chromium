@@ -15,8 +15,10 @@
 #import "components/sync/service/sync_user_settings.h"
 #import "ios/chrome/browser/authentication/ui_bundled/history_sync/history_sync_capabilities_fetcher.h"
 #import "ios/chrome/browser/authentication/ui_bundled/history_sync/history_sync_consumer.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/avatar_provider.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -156,7 +158,7 @@
 // Updates the avatar image for the consumer from `identity`.
 - (void)updateAvatarImageWithIdentity:(id<SystemIdentity>)identity {
   UIImage* image =
-      _accountManagerService->GetIdentityAvatarWithIdentityOnDevice(
+      GetApplicationContext()->GetIdentityAvatarProvider()->GetIdentityAvatar(
           identity, IdentityAvatarSize::Large);
   [self.consumer setPrimaryIdentityAvatarImage:image];
 

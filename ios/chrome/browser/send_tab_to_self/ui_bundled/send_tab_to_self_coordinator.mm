@@ -31,6 +31,7 @@
 #import "ios/chrome/browser/send_tab_to_self/ui_bundled/send_tab_to_self_modal_delegate.h"
 #import "ios/chrome/browser/send_tab_to_self/ui_bundled/send_tab_to_self_modal_presentation_controller.h"
 #import "ios/chrome/browser/send_tab_to_self/ui_bundled/send_tab_to_self_table_view_controller.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
@@ -45,6 +46,7 @@
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/avatar_provider.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
@@ -311,8 +313,9 @@ void OpenManageDevicesTab(CommandDispatcher* dispatcher) {
               initWithDeviceList:syncService->GetSendTabToSelfModel()
                                      ->GetTargetDeviceInfoSortedList()
                         delegate:self
-                   accountAvatar:accountManagerService
-                                     ->GetIdentityAvatarWithIdentityOnDevice(
+                   accountAvatar:GetApplicationContext()
+                                     ->GetIdentityAvatarProvider()
+                                     ->GetIdentityAvatar(
                                          account,
                                          IdentityAvatarSize::TableViewIcon)
                     accountEmail:account.userEmail];

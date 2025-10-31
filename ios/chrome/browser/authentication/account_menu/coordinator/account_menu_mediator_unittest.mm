@@ -27,6 +27,7 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/avatar_provider.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
@@ -335,10 +336,12 @@ TEST_P(AccountMenuMediatorTest, emailForGaiaID) {
 
 // Tests the result of imageForGaiaID.
 TEST_P(AccountMenuMediatorTest, imageForGaiaID) {
-  EXPECT_NSEQ([mediator_ imageForGaiaID:kSecondaryIdentity.gaiaId],
-              account_manager_service_ -> GetIdentityAvatarWithIdentityOnDevice(
-                                           kSecondaryIdentity,
-                                           IdentityAvatarSize::TableViewIcon));
+  EXPECT_NSEQ(
+      [mediator_ imageForGaiaID:kSecondaryIdentity.gaiaId],
+      GetApplicationContext() -> GetIdentityAvatarProvider()
+                                  -> GetIdentityAvatar(
+                                      kSecondaryIdentity,
+                                      IdentityAvatarSize::TableViewIcon));
 }
 
 // Tests the result of primaryAccountEmail.
@@ -355,9 +358,10 @@ TEST_P(AccountMenuMediatorTest, TestPrimaryAccountUserFullName) {
 // Tests the result of primaryAccountAvatar.
 TEST_P(AccountMenuMediatorTest, TestPrimaryAccountAvatar) {
   EXPECT_NSEQ([mediator_ primaryAccountAvatar],
-              account_manager_service_ -> GetIdentityAvatarWithIdentityOnDevice(
-                                           kPrimaryIdentity,
-                                           IdentityAvatarSize::Large));
+              GetApplicationContext() -> GetIdentityAvatarProvider()
+                                          -> GetIdentityAvatar(
+                                              kPrimaryIdentity,
+                                              IdentityAvatarSize::Large));
 }
 
 // Tests the result of TestError when there is no error.

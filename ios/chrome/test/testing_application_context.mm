@@ -22,6 +22,7 @@
 #import "ios/chrome/browser/promos_manager/model/features.h"
 #import "ios/chrome/browser/promos_manager/model/mock_promos_manager.h"
 #import "ios/chrome/browser/signin/model/account_profile_mapper.h"
+#import "ios/chrome/browser/signin/model/avatar_provider.h"
 #import "ios/components/security_interstitials/safe_browsing/fake_safe_browsing_service.h"
 #import "ios/public/provider/chrome/browser/additional_features/additional_features_api.h"
 #import "ios/public/provider/chrome/browser/push_notification/push_notification_api.h"
@@ -282,6 +283,14 @@ id<SingleSignOnService> TestingApplicationContext::GetSingleSignOnService() {
     DCHECK(single_sign_on_service_);
   }
   return single_sign_on_service_;
+}
+
+signin::AvatarProvider* TestingApplicationContext::GetIdentityAvatarProvider() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!resized_avatar_caches_) {
+    resized_avatar_caches_ = std::make_unique<signin::AvatarProvider>();
+  }
+  return resized_avatar_caches_.get();
 }
 
 SystemIdentityManager* TestingApplicationContext::GetSystemIdentityManager() {

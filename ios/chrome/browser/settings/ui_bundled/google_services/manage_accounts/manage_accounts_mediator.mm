@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/settings/ui_bundled/google_services/manage_accounts/identity_view_item.h"
 #import "ios/chrome/browser/settings/ui_bundled/google_services/manage_accounts/manage_accounts_consumer.h"
 #import "ios/chrome/browser/settings/ui_bundled/google_services/manage_accounts/manage_accounts_table_view_controller_constants.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/features.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -25,6 +26,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_model.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/avatar_provider.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/constants.h"
@@ -78,8 +80,9 @@
 
 - (UIImage*)identityAvatarWithSizeForIdentity:(id<SystemIdentity>)identity
                                          size:(IdentityAvatarSize)size {
-  return _accountManagerService->GetIdentityAvatarWithIdentityOnDevice(
-      identity, IdentityAvatarSize::TableViewIcon);
+  return GetApplicationContext()
+      ->GetIdentityAvatarProvider()
+      ->GetIdentityAvatar(identity, IdentityAvatarSize::TableViewIcon);
 }
 
 - (IdentityViewItem*)primaryIdentityViewItem {

@@ -69,6 +69,7 @@
 #import "ios/chrome/browser/omnibox/model/placeholder_service/placeholder_service_observer_bridge.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/search_engines/model/search_engine_observer_bridge.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/utils/first_run_util.h"
@@ -76,6 +77,7 @@
 #import "ios/chrome/browser/shared/ui/util/custom_ui_trait_accessor.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/avatar_provider.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/sync/model/sync_observer_bridge.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
@@ -557,7 +559,7 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
   if (_signedInIdentity) {
     // Only show an avatar if the user is signed in.
     UIImage* image =
-        self.accountManagerService->GetIdentityAvatarWithIdentityOnDevice(
+        GetApplicationContext()->GetIdentityAvatarProvider()->GetIdentityAvatar(
             _signedInIdentity, IdentityAvatarSize::SmallSize);
     [self.imageUpdater updateAccountImage:image
                                      name:_signedInIdentity.userFullName

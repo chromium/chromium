@@ -12,7 +12,9 @@
 #import "ios/chrome/browser/authentication/ui_bundled/enterprise/enterprise_utils.h"
 #import "ios/chrome/browser/authentication/ui_bundled/identity_chooser/identity_chooser_consumer.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/signin/model/avatar_provider.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
 
@@ -131,8 +133,9 @@
   item.name = identity.userFullName;
   item.email = identity.userEmail;
   item.selected = self.selectedIdentity.gaiaId == identity.gaiaId;
-  item.avatar = _accountManagerService->GetIdentityAvatarWithIdentityOnDevice(
-      identity, IdentityAvatarSize::Regular);
+  item.avatar =
+      GetApplicationContext()->GetIdentityAvatarProvider()->GetIdentityAvatar(
+          identity, IdentityAvatarSize::Regular);
 
   if (std::optional<BOOL> isManaged = IsIdentityManaged(identity);
       isManaged.has_value()) {

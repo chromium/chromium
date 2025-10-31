@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/avatar_provider.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
@@ -142,8 +143,9 @@ TEST_F(SharingStatusMediatorTest, NotifiesSignedInConsumerAboutTheirAvatar) {
 
   EXPECT_NSEQ(
       UIImagePNGRepresentation(CircularImageFromImage(
-          GetAccountManagerService()->GetIdentityAvatarWithIdentityOnDevice(
-              fake_identity(), IdentityAvatarSize::Large),
+          GetApplicationContext()
+              ->GetIdentityAvatarProvider()
+              ->GetIdentityAvatar(fake_identity(), IdentityAvatarSize::Large),
           kProfileImageSize)),
       UIImagePNGRepresentation(consumer.senderImage));
 }

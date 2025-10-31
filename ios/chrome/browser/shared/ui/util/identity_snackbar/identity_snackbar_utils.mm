@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/policy/model/management_state.h"
 #import "ios/chrome/browser/policy/ui_bundled/management_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/features.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -18,6 +19,7 @@
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/avatar_provider.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/constants.h"
@@ -122,9 +124,8 @@ SnackbarMessage* CreateIdentitySnackbarMessage(id<SystemIdentity> identity,
 
   // Configure accessory views.
   message.leadingAccessoryImage =
-      ChromeAccountManagerServiceFactory::GetForProfile(profile)
-          ->GetIdentityAvatarWithIdentityOnDevice(identity,
-                                                  IdentityAvatarSize::Regular);
+      GetApplicationContext()->GetIdentityAvatarProvider()->GetIdentityAvatar(
+          identity, IdentityAvatarSize::Regular);
   message.roundLeadingAccessoryView = YES;
 
   message.trailingAccessoryImage = management_state.is_managed()

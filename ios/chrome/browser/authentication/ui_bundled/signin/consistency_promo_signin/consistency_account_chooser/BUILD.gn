@@ -31,6 +31,7 @@ source_set("consistency_account_chooser") {
     "//ios/chrome/browser/keyboard/ui_bundled",
     "//ios/chrome/browser/net/model:crurl",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/shared/public/commands",

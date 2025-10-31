@@ -71,6 +71,7 @@
 #import "ios/chrome/browser/shared/model/profile/incognito_session_tracker.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/account_profile_mapper.h"
+#import "ios/chrome/browser/signin/model/avatar_provider.h"
 #import "ios/chrome/browser/update_client/model/ios_chrome_update_query_params_delegate.h"
 #import "ios/chrome/common/channel_info.h"
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_service_impl.h"
@@ -506,6 +507,14 @@ id<SingleSignOnService> ApplicationContextImpl::GetSingleSignOnService() {
     DCHECK(single_sign_on_service_);
   }
   return single_sign_on_service_;
+}
+
+signin::AvatarProvider* ApplicationContextImpl::GetIdentityAvatarProvider() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!resized_avatar_caches_) {
+    resized_avatar_caches_ = std::make_unique<signin::AvatarProvider>();
+  }
+  return resized_avatar_caches_.get();
 }
 
 SystemIdentityManager* ApplicationContextImpl::GetSystemIdentityManager() {

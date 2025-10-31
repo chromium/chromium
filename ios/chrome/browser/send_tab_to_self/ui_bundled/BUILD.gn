@@ -20,6 +20,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/main/model",
     "//ios/chrome/browser/send_tab_to_self/model",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/shared/public/commands",

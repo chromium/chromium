@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/signin/model/avatar_provider.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
@@ -174,7 +175,7 @@ class SaveToPhotosSettingsMediatorTest : public PlatformTest {
       FakeSaveToPhotosSettingsConsumer* fake_consumer,
       id<SystemIdentity> saved_identity) {
     UIImage* saved_identity_avatar =
-        GetAccountManagerService()->GetIdentityAvatarWithIdentityOnDevice(
+        GetApplicationContext()->GetIdentityAvatarProvider()->GetIdentityAvatar(
             saved_identity, IdentityAvatarSize::TableViewIcon);
 
     // Test that the presented identity is the expected one.
@@ -188,8 +189,10 @@ class SaveToPhotosSettingsMediatorTest : public PlatformTest {
     // identity.
     if (fake_consumer.identityConfigurators.count > 0) {
       UIImage* fake_identity_a_avatar =
-          GetAccountManagerService()->GetIdentityAvatarWithIdentityOnDevice(
-              fake_identity_a_, IdentityAvatarSize::TableViewIcon);
+          GetApplicationContext()
+              ->GetIdentityAvatarProvider()
+              ->GetIdentityAvatar(fake_identity_a_,
+                                  IdentityAvatarSize::TableViewIcon);
       EXPECT_EQ(fake_identity_a_.gaiaId,
                 fake_consumer.identityConfigurators[0].gaiaID);
       EXPECT_NSEQ(fake_identity_a_.userFullName,
@@ -208,8 +211,10 @@ class SaveToPhotosSettingsMediatorTest : public PlatformTest {
     // expected selected identity.
     if (fake_consumer.identityConfigurators.count > 1) {
       UIImage* fake_identity_b_avatar =
-          GetAccountManagerService()->GetIdentityAvatarWithIdentityOnDevice(
-              fake_identity_b_, IdentityAvatarSize::TableViewIcon);
+          GetApplicationContext()
+              ->GetIdentityAvatarProvider()
+              ->GetIdentityAvatar(fake_identity_b_,
+                                  IdentityAvatarSize::TableViewIcon);
       EXPECT_EQ(fake_identity_b_.gaiaId,
                 fake_consumer.identityConfigurators[1].gaiaID);
       EXPECT_NSEQ(fake_identity_b_.userFullName,

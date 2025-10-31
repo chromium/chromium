@@ -22,6 +22,8 @@ source_set("model") {
     "account_profile_mapper.mm",
     "account_reconcilor_factory.cc",
     "account_reconcilor_factory.h",
+    "avatar_provider.h",
+    "avatar_provider.mm",
     "chrome_account_manager_service.h",
     "chrome_account_manager_service.mm",
     "chrome_account_manager_service_factory.h",

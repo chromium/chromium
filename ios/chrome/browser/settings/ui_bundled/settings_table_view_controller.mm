@@ -137,6 +137,7 @@
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/avatar_provider.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
@@ -1732,7 +1733,7 @@ struct EnhancedSafeBrowsingActivePromoData
     return;
   }
   identityAccountItem.image =
-      self.accountManagerService->GetIdentityAvatarWithIdentityOnDevice(
+      GetApplicationContext()->GetIdentityAvatarProvider()->GetIdentityAvatar(
           _identity, IdentityAvatarSize::TableViewIcon);
   identityAccountItem.text = _identity.userFullName;
   identityAccountItem.detailText = _identity.userEmail;

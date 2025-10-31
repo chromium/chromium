@@ -21,6 +21,7 @@ source_set("identity_chooser") {
     "//ios/chrome/browser/authentication/ui_bundled/enterprise:enterprise_utils",
     "//ios/chrome/browser/authentication/ui_bundled/signin:signin_headers",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/public/features",

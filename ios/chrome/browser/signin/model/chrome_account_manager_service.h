@@ -26,7 +26,6 @@ struct AccountInfo;
 class DeviceAccountsProviderImpl;
 class PrefService;
 @protocol RefreshAccessTokenError;
-@class ResizedAvatarCache;
 
 // Service that provides SystemIdentities and avatar caches. Most methods only
 // return the identities belonging to `profile_name_`  according to
@@ -114,14 +113,6 @@ class ChromeAccountManagerService : public KeyedService,
   // Returns the first SystemIdentity object of the profile of this service.
   id<SystemIdentity> GetDefaultIdentity() const;
 
-  // Returns `identity`’s avatar. If the avatar is not available, it is fetched
-  // in background (a notification will be received when it will be available),
-  // and the default avatar is returned (see
-  // `Observer::OnIdentityInProfileUpdated()`). Also handles identities assigned
-  // to other profiles.
-  UIImage* GetIdentityAvatarWithIdentityOnDevice(id<SystemIdentity> identity,
-                                                 IdentityAvatarSize size);
-
   // Returns whether signin is supported.
   bool IsServiceSupported() const;
 
@@ -172,11 +163,6 @@ class ChromeAccountManagerService : public KeyedService,
   // `local_state_` is null, no identity will be filtered.
   void UpdateRestriction();
 
-  // Returns a `ResizedAvatarCache`, for identities of the device, based on
-  // `avatar_size`.
-  ResizedAvatarCache* GetAvatarCacheForIdentityAvatarSize(
-      IdentityAvatarSize avatar_size);
-
   // The local-state pref service, used to retrieve restricted patterns.
   raw_ptr<PrefService> local_state_ = nullptr;
   // Used to filter ChromeIdentities.
@@ -186,17 +172,6 @@ class ChromeAccountManagerService : public KeyedService,
 
   base::ObserverList<Observer, true> observer_list_;
 
-  // The caches below contain avatar for accounts on any profile.
-  // ResizedAvatarCache for IdentityAvatarSize::TableViewIcon.
-  ResizedAvatarCache* default_table_view_avatar_cache_;
-  // ResizedAvatarCache for IdentityAvatarSize::SmallSize.
-  ResizedAvatarCache* small_size_avatar_cache_;
-  // ResizedAvatarCache for IdentityAvatarSize::Regular.
-  ResizedAvatarCache* regular_avatar_cache_;
-  // ResizedAvatarCache for IdentityAvatarSize::Large.
-  ResizedAvatarCache* large_avatar_cache_;
-
-  // The name of the profile to which this service is associated.
   const std::string profile_name_;
 
   base::WeakPtrFactory<ChromeAccountManagerService> weak_ptr_factory_;

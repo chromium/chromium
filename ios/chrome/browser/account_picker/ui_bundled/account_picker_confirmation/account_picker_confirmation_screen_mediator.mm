@@ -13,7 +13,9 @@
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_confirmation/account_picker_confirmation_screen_consumer.h"
 #import "ios/chrome/browser/authentication/ui_bundled/enterprise/enterprise_utils.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/signin/model/avatar_provider.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/browser/signin/model/system_identity_util.h"
@@ -117,7 +119,7 @@
 
   id<SystemIdentity> selectedIdentity = _selectedIdentity;
   UIImage* avatar =
-      _accountManagerService->GetIdentityAvatarWithIdentityOnDevice(
+      GetApplicationContext()->GetIdentityAvatarProvider()->GetIdentityAvatar(
           selectedIdentity, IdentityAvatarSize::TableViewIcon);
   [_consumer showDefaultAccountWithFullName:selectedIdentity.userFullName
                                   givenName:selectedIdentity.userGivenName
