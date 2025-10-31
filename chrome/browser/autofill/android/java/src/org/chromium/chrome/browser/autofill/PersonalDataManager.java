@@ -1140,6 +1140,12 @@ public class PersonalDataManager implements Destroyable {
         return mPrefService.getBoolean(Pref.FACILITATED_PAYMENTS_A2A_TRIGGERED_ONCE);
     }
 
+    /** Returns whether the BNPL preference should be shown on the settings page. */
+    public boolean shouldShowBnplSettings() {
+        ThreadUtils.assertOnUiThread();
+        return PersonalDataManagerJni.get().shouldShowBnplSettings(mPersonalDataManagerAndroid);
+    }
+
     @NativeMethods
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public interface Natives {
@@ -1250,5 +1256,7 @@ public class PersonalDataManager implements Destroyable {
 
         boolean isCardEligibleForBenefits(
                 long nativePersonalDataManagerAndroid, @JniType("std::string") String guid);
+
+        boolean shouldShowBnplSettings(long nativePersonalDataManagerAndroid);
     }
 }

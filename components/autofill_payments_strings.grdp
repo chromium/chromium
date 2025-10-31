@@ -1084,7 +1084,7 @@
   <message name="IDS_AUTOFILL_BNPL_SUGGESTION_LABEL_FOR_UNAVAILABLE_PURCHASE" desc="One line label shows the Buy Now Pay Later option is unavailable for the purchase in the autofill credit card popup." formatter_data="android_java">
     Unavailable for this purchase
   </message>
-  <message name="IDS_AUTOFILL_BNPL_SETTINGS_LABEL" desc="Label for the Buy Now Pay Later preference in the payments settings page. When enabled, users can checkout with external BNPL issuers using a pay-over-time payment option.">
+  <message name="IDS_AUTOFILL_BNPL_SETTINGS_LABEL" desc="Label for the Buy Now Pay Later preference in the payments settings page. When enabled, users can checkout with external BNPL issuers using a pay-over-time payment option." formatter_data="android_java">
     Pay later
   </message>
   <message name="IDS_AUTOFILL_BNPL_SETTINGS_SUBLABEL" desc="Sublabel for the Buy Now Pay Later preference in the payments settings page, including a hyperlink to learn more about pay later options. When enabled, users can checkout with external BNPL issuers using a Buy Now Pay Later option.">

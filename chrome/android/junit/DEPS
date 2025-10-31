@@ -37,6 +37,7 @@ include_rules = [
   "+components/image_fetcher",
   "+components/offline_items_collection/core/android/java/src",
   "+components/omnibox/browser/android/java/src/org/chromium/components/omnibox",
+  "+components/payments/content/android/java/src/org/chromium/components/payments",
   "+components/payments/content/android/ui/java/src/org/chromium/components/payments/ui",
   "+components/regional_capabilities/android",
   "+components/saved_tab_groups/android/java/src/org/chromium/components/tab_group_sync",

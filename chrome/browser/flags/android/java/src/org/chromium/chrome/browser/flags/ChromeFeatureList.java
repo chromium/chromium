@@ -255,6 +255,7 @@ public abstract class ChromeFeatureList {
             "AutofillAndroidDesktopSuppressAccessoryOnEmpty";
     public static final String AUTOFILL_DEEP_LINK_AUTOFILL_OPTIONS =
             "AutofillDeepLinkAutofillOptions";
+    public static final String AUTOFILL_ENABLE_BUY_NOW_PAY_LATER = "AutofillEnableBuyNowPayLater";
     public static final String AUTOFILL_ENABLE_CARD_BENEFITS_FOR_AMERICAN_EXPRESS =
             "AutofillEnableCardBenefitsForAmericanExpress";
     public static final String AUTOFILL_ENABLE_CARD_BENEFITS_FOR_BMO =

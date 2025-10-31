@@ -88,6 +88,7 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
     static final String PREF_ADD_IBAN = "add_iban";
     static final String PREF_CARD = "card";
     static final String PREF_IBAN = "iban";
+    static final String PREF_BUY_NOW_PAY_LATER = "buy_now_pay_later";
     static final String PREF_CARD_BENEFITS = "card_benefits";
     static final String PREF_PAYMENT_APPS = "payment_apps";
     static final String PREF_LOYALTY_CARDS = "loyalty_cards";
@@ -349,6 +350,15 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
                 cardBenefitsPref.setKey(PREF_CARD_BENEFITS);
                 cardBenefitsPref.setFragment(AutofillCardBenefitsFragment.class.getName());
                 getPreferenceScreen().addPreference(cardBenefitsPref);
+            }
+
+            if (personalDataManager.isAutofillPaymentMethodsEnabled()
+                    && personalDataManager.shouldShowBnplSettings()) {
+                Preference buyNowPayLaterPref = new Preference(getStyledContext());
+                buyNowPayLaterPref.setTitle(R.string.autofill_bnpl_settings_label);
+                buyNowPayLaterPref.setKey(PREF_BUY_NOW_PAY_LATER);
+                buyNowPayLaterPref.setFragment(AutofillBuyNowPayLaterFragment.class.getName());
+                getPreferenceScreen().addPreference(buyNowPayLaterPref);
             }
         }
 

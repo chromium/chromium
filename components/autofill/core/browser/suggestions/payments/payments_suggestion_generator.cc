@@ -1467,6 +1467,14 @@ std::vector<Suggestion> GetCreditCardSuggestionsForTouchToFill(
                                  .GetBnplIssuers(),
                              /*extracted_amount_in_micros=*/std::nullopt));
     manager.GetCreditCardFormEventLogger().OnBnplSuggestionShown();
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
+    manager.client()
+        .GetPersonalDataManager()
+        .payments_data_manager()
+        .SetAutofillHasSeenBnpl();
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
   }
   manager.GetCreditCardFormEventLogger().OnMetadataLoggingContextReceived(
       std::move(metadata_logging_context));

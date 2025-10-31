@@ -2295,6 +2295,7 @@ TEST_F(PaymentsSuggestionGeneratorBnplTest,
           Suggestion::Icon::kBnpl,
           {{Suggestion::Text(l10n_util::GetStringFUTF16(
               IDS_AUTOFILL_BNPL_CREDIT_CARD_SUGGESTION_LABEL, u"$35"))}}));
+  EXPECT_TRUE(payments_data().IsAutofillHasSeenBnplPrefEnabled());
 }
 
 // Verifies that a BNPL suggestion is not added to Touch to Fill suggestions

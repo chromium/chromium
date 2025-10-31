@@ -376,10 +376,11 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // Sets the value of the kAutofillHasSeenIban pref to true.
   void SetAutofillHasSeenIban();
 
+  // TODO(crbug.com/430575808): Remove build flags.
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
   // Returns the value of the kAutofillHasSeenBnpl pref.
-  bool IsAutofillHasSeenBnplPrefEnabled() const;
+  virtual bool IsAutofillHasSeenBnplPrefEnabled() const;
 
   // Sets the value of the kAutofillHasSeenBnpl pref to true.
   void SetAutofillHasSeenBnpl();

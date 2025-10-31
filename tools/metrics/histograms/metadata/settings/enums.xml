@@ -111,6 +111,7 @@ chromium-metrics-reviews@google.com.
   <int value="1624624514" label="FinancialAccountsManagementFragment"/>
   <int value="1676521220" label="SelectLanguageFragment"/>
   <int value="1764379105" label="TabsSettings"/>
+  <int value="1837742646" label="AutofillBuyNowPayLaterFragment"/>
   <int value="1849593145" label="AndroidPaymentAppsFragment"/>
   <int value="1891640238" label="AutofillPaymentMethodsFragment"/>
   <int value="1952237285" label="TracingSettings"/>

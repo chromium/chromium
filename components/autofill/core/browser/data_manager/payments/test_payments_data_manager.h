@@ -65,6 +65,11 @@ class TestPaymentsDataManager : public PaymentsDataManager {
   bool IsPaymentCvcStorageEnabled() const override;
   bool IsSyncFeatureEnabledForPaymentsServerMetrics() const override;
   bool IsAutofillBnplPrefEnabled() const override;
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
+  bool IsAutofillHasSeenBnplPrefEnabled() const override;
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
   CoreAccountInfo GetAccountInfoForPaymentsServer() const override;
 
   // Clears |local_credit_cards_| and |server_credit_cards_|.
