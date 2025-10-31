@@ -5,8 +5,6 @@
 package org.chromium.chromecast.shell;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import android.app.Application;
@@ -197,52 +195,11 @@ public class CastWebContentsComponentTest {
     }
 
     @Test
-    public void testSetMediaPlayingBroadcastsMediaStatus() {
-        CastWebContentsComponent component =
-                new CastWebContentsComponent(SESSION_ID, null, null, false, true, false);
-        Intent receivedIntent0 =
-                verifyBroadcastedIntent(
-                        new IntentFilter(CastWebContentsIntentUtils.ACTION_MEDIA_PLAYING),
-                        () -> component.setMediaPlaying(true),
-                        true);
-        Assert.assertTrue(CastWebContentsIntentUtils.isMediaPlaying(receivedIntent0));
-        Intent receivedIntent1 =
-                verifyBroadcastedIntent(
-                        new IntentFilter(CastWebContentsIntentUtils.ACTION_MEDIA_PLAYING),
-                        () -> component.setMediaPlaying(false),
-                        true);
-        Assert.assertFalse(CastWebContentsIntentUtils.isMediaPlaying(receivedIntent1));
-    }
-
-    @Test
-    public void testRequestMediaStatusBroadcastsMediaStatus() {
-        String sessionId = "abcdef0";
-        CastWebContentsComponent component =
-                new CastWebContentsComponent(sessionId, null, null, false, true, false);
-        component.start(mStartParams);
-        Assert.assertTrue(component.isStarted());
-        component.setMediaPlaying(false);
-        Intent receivedIntent0 =
-                verifyBroadcastedIntent(
-                        new IntentFilter(CastWebContentsIntentUtils.ACTION_MEDIA_PLAYING),
-                        () -> requestMediaPlayingStatus(sessionId),
-                        true);
-        Assert.assertFalse(CastWebContentsIntentUtils.isMediaPlaying(receivedIntent0));
-        component.setMediaPlaying(true);
-        Intent receivedIntent1 =
-                verifyBroadcastedIntent(
-                        new IntentFilter(CastWebContentsIntentUtils.ACTION_MEDIA_PLAYING),
-                        () -> requestMediaPlayingStatus(sessionId),
-                        true);
-        Assert.assertTrue(CastWebContentsIntentUtils.isMediaPlaying(receivedIntent1));
-    }
-
-    @Test
     public void requestsAudioFocusIfStartParamsAsks() {
         CastWebContentsComponent component =
                 new CastWebContentsComponent(SESSION_ID, null, null, false, true, true);
         CastWebContentsComponent.StartParams startParams =
-                new StartParams(mWebContents, true /* shouldRequestAudioFocus */);
+                new StartParams(mWebContents, /* shouldRequestAudioFocus= */ true);
         component.start(startParams);
         Intent intent = mShadowApplication.getNextStartedActivity();
         Assert.assertTrue(CastWebContentsIntentUtils.shouldRequestAudioFocus(intent));
@@ -253,34 +210,9 @@ public class CastWebContentsComponentTest {
         CastWebContentsComponent component =
                 new CastWebContentsComponent(SESSION_ID, null, null, false, true, true);
         CastWebContentsComponent.StartParams startParams =
-                new StartParams(mWebContents, false /* shouldRequestAudioFocus */);
+                new StartParams(mWebContents, /* shouldRequestAudioFocus= */ false);
         component.start(startParams);
         Intent intent = mShadowApplication.getNextStartedActivity();
         Assert.assertFalse(CastWebContentsIntentUtils.shouldRequestAudioFocus(intent));
-    }
-
-    private void requestMediaPlayingStatus(String sessionId) {
-        Intent intent = CastWebContentsIntentUtils.requestMediaPlayingStatus(sessionId);
-        LocalBroadcastManager.getInstance(ApplicationProvider.getApplicationContext())
-                .sendBroadcastSync(intent);
-    }
-
-    private Intent verifyBroadcastedIntent(
-            IntentFilter filter, Runnable runnable, boolean shouldExpect) {
-        BroadcastReceiver receiver = mock(BroadcastReceiver.class);
-        LocalBroadcastManager.getInstance(ApplicationProvider.getApplicationContext())
-                .registerReceiver(receiver, filter);
-        try {
-            runnable.run();
-        } finally {
-            LocalBroadcastManager.getInstance(ApplicationProvider.getApplicationContext())
-                    .unregisterReceiver(receiver);
-        }
-        if (shouldExpect) {
-            verify(receiver).onReceive(any(Context.class), mIntentCaptor.capture());
-        } else {
-            verify(receiver, times(0)).onReceive(any(Context.class), mIntentCaptor.getValue());
-        }
-        return mIntentCaptor.getValue();
     }
 }

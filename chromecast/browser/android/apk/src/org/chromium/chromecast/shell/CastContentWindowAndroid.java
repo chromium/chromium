@@ -111,17 +111,6 @@ public class CastContentWindowAndroid
 
     @SuppressWarnings("unused")
     @CalledByNative
-    private void setAllowPictureInPicture(boolean allowPictureInPicture) {
-        mComponent.setAllowPictureInPicture(allowPictureInPicture);
-    }
-
-    @CalledByNative
-    private void setMediaPlaying(boolean mediaPlaying) {
-        mComponent.setMediaPlaying(mediaPlaying);
-    }
-
-    @SuppressWarnings("unused")
-    @CalledByNative
     private void onNativeDestroyed() {
         assert mNativeCastContentWindowAndroid != 0;
         mNativeCastContentWindowAndroid = 0;

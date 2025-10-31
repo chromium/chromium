@@ -93,7 +93,6 @@ public class CastWebContentsComponent {
     private final Controller<WebContents> mHasWebContentsState = new Controller<>();
     private boolean mStarted;
     private boolean mEnableTouchInput;
-    private boolean mMediaPlaying;
     private final boolean mTurnOnScreen;
     private final boolean mKeepScreenOn;
 
@@ -129,8 +128,6 @@ public class CastWebContentsComponent {
                     filter.addDataPath(instanceUri.getPath(), PatternMatcher.PATTERN_LITERAL);
                     filter.addAction(CastWebContentsIntentUtils.ACTION_ACTIVITY_STOPPED);
                     filter.addAction(CastWebContentsIntentUtils.ACTION_ON_VISIBILITY_CHANGE);
-                    filter.addAction(
-                            CastWebContentsIntentUtils.ACTION_REQUEST_MEDIA_PLAYING_STATUS);
                     return new LocalBroadcastReceiverScope(filter, this::onReceiveIntent);
                 });
     }
@@ -151,14 +148,6 @@ public class CastWebContentsComponent {
             if (mSurfaceEventHandler != null) {
                 mSurfaceEventHandler.onVisibilityChange(visibilityType);
             }
-        } else if (CastWebContentsIntentUtils.isIntentOfRequestMediaPlayingStatus(intent)) {
-            Log.d(
-                    TAG,
-                    "Activity media play state requested: sessionId=%s, mediaPlaying=%b",
-                    mSessionId,
-                    mMediaPlaying);
-            // Just broadcast current value.
-            setMediaPlaying(mMediaPlaying);
         }
     }
 
@@ -198,19 +187,6 @@ public class CastWebContentsComponent {
         Log.d(TAG, "Touch input updated: enabled=" + enabled);
         mEnableTouchInput = enabled;
         sendIntentSync(CastWebContentsIntentUtils.enableTouchInput(mSessionId, enabled));
-    }
-
-    public void setAllowPictureInPicture(boolean allowPictureInPicture) {
-        Log.d(TAG, "PiP updated: allowed=" + allowPictureInPicture);
-        sendIntentSync(
-                CastWebContentsIntentUtils.allowPictureInPicture(
-                        mSessionId, allowPictureInPicture));
-    }
-
-    public void setMediaPlaying(boolean mediaPlaying) {
-        Log.d(TAG, "Media playing updated: playing=" + mediaPlaying);
-        mMediaPlaying = mediaPlaying;
-        sendIntentSync(CastWebContentsIntentUtils.mediaPlaying(mSessionId, mMediaPlaying));
     }
 
     public static void onComponentClosed(String sessionId) {

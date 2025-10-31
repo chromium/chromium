@@ -12,10 +12,10 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -40,6 +40,7 @@ import android.view.WindowManager;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.test.core.app.ApplicationProvider;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -66,10 +67,14 @@ import org.robolectric.shadows.ShadowPackageManager;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chromecast.base.Cell;
 import org.chromium.chromecast.base.Observer;
+import org.chromium.chromecast.base.OwnedScope;
 import org.chromium.chromecast.base.Scope;
 import org.chromium.chromecast.base.Unit;
+import org.chromium.chromecast.shell.CastWebContentsActivity.MediaPlaying;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.WebContentsObserver;
 
 /**
  * Tests for CastWebContentsActivity.
@@ -135,13 +140,18 @@ public class CastWebContentsActivityTest {
         }
     }
 
+    private interface ObservableWebContents extends WebContents, WebContentsObserver.Observable {}
+
+    private final Cell<MediaPlaying> mMediaPlaying = new Cell<>(new MediaPlaying(false, false));
+    private final OwnedScope mNotifyMediaStatus = new OwnedScope();
+    private final @Mock ObservableWebContents mWebContents = mock(ObservableWebContents.class);
+    private int mNextMediaId;
     private Application mApplication;
     private ShadowActivityManager mShadowActivityManager;
     private ShadowPackageManager mShadowPackageManager;
     private ActivityController<CastWebContentsActivity> mActivityLifecycle;
     private CastWebContentsActivity mActivity;
     private ShadowActivity mShadowActivity;
-    private @Mock WebContents mWebContents;
     private String mSessionId;
 
     @Captor private ArgumentCaptor<Intent> mIntentCaptor;
@@ -169,6 +179,28 @@ public class CastWebContentsActivityTest {
         mActivity = mActivityLifecycle.get();
         mActivity.testingModeForTesting();
         mShadowActivity = Shadows.shadowOf(mActivity);
+        doAnswer(
+                        invocation -> {
+                            WebContentsObserver observer = invocation.getArgument(0);
+                            mNotifyMediaStatus.set(
+                                    mMediaPlaying.subscribe(
+                                            mediaPlaying -> {
+                                                int id = mNextMediaId++;
+                                                observer.mediaStartedPlaying(
+                                                        id,
+                                                        mediaPlaying.hasAudio,
+                                                        mediaPlaying.hasVideo);
+                                                return () -> observer.mediaStoppedPlaying(id);
+                                            }));
+                            return null;
+                        })
+                .when(mWebContents)
+                .addObserver(any());
+    }
+
+    @After
+    public void tearDown() {
+        mNotifyMediaStatus.close();
     }
 
     @Test
@@ -204,7 +236,7 @@ public class CastWebContentsActivityTest {
     @Test
     public void testDropsIntentWithoutUri() {
         CastWebContentsSurfaceHelper surfaceHelper = mock(CastWebContentsSurfaceHelper.class);
-        WebContents newWebContents = mock(WebContents.class);
+        WebContents newWebContents = mock(ObservableWebContents.class);
         Intent intent =
                 CastWebContentsIntentUtils.requestStartCastActivity(
                         newWebContents, true, false, true, false, null);
@@ -232,7 +264,7 @@ public class CastWebContentsActivityTest {
     @Test
     public void testNotifiesSurfaceHelperWithValidIntent() {
         CastWebContentsSurfaceHelper surfaceHelper = mock(CastWebContentsSurfaceHelper.class);
-        WebContents newWebContents = mock(WebContents.class);
+        WebContents newWebContents = mock(ObservableWebContents.class);
         Intent intent =
                 CastWebContentsIntentUtils.requestStartCastActivity(
                         newWebContents, true, false, true, false, "2");
@@ -527,13 +559,11 @@ public class CastWebContentsActivityTest {
 
     @Test
     @Config(shadows = {ExtendedShadowActivity.class})
-    public void testEntersPipWhenAllowPipIsTrue() {
+    public void testEntersPipWhenPlayingVideo() {
         mShadowPackageManager.setSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE, true);
         mActivityLifecycle.create().start().resume();
 
-        CastWebContentsIntentUtils.getLocalBroadcastManager()
-                .sendBroadcastSync(
-                        CastWebContentsIntentUtils.allowPictureInPicture(mSessionId, true));
+        updateMediaState(true, true);
         mActivity.onUserLeaveHint();
 
         ExtendedShadowActivity shadowActivity = (ExtendedShadowActivity) Shadow.extract(mActivity);
@@ -542,13 +572,11 @@ public class CastWebContentsActivityTest {
 
     @Test
     @Config(shadows = {ExtendedShadowActivity.class})
-    public void testDoesNotenterPipWhenAllowPipIsFalse() {
+    public void testDoesNotenterPipWhenOnlyPlayingAudio() {
         mShadowPackageManager.setSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE, true);
         mActivityLifecycle.create().start().resume();
 
-        CastWebContentsIntentUtils.getLocalBroadcastManager()
-                .sendBroadcastSync(
-                        CastWebContentsIntentUtils.allowPictureInPicture(mSessionId, false));
+        updateMediaState(true, false);
         mActivity.onUserLeaveHint();
 
         ExtendedShadowActivity shadowActivity = (ExtendedShadowActivity) Shadow.extract(mActivity);
@@ -557,13 +585,11 @@ public class CastWebContentsActivityTest {
 
     @Test
     @Config(shadows = {ExtendedShadowActivity.class})
-    public void testEntersPipWhenAllowPipIsTrueOnUserPresent() {
+    public void testEntersPipWhenVideoIsPlayingOnUserPresent() {
         mShadowPackageManager.setSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE, true);
         mActivityLifecycle.create().start().resume();
 
-        CastWebContentsIntentUtils.getLocalBroadcastManager()
-                .sendBroadcastSync(
-                        CastWebContentsIntentUtils.allowPictureInPicture(mSessionId, true));
+        updateMediaState(true, true);
         RuntimeEnvironment.application.sendBroadcast(new Intent(Intent.ACTION_USER_PRESENT));
 
         ExtendedShadowActivity shadowActivity = (ExtendedShadowActivity) Shadow.extract(mActivity);
@@ -574,13 +600,11 @@ public class CastWebContentsActivityTest {
 
     @Test
     @Config(shadows = {ExtendedShadowActivity.class})
-    public void testDoesNotenterPipWhenAllowPipIsFalseOnUserPresent() {
+    public void testDoesNotenterPipWhenVideoNotPlayingOnUserPresent() {
         mShadowPackageManager.setSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE, true);
         mActivityLifecycle.create().start().resume();
 
-        CastWebContentsIntentUtils.getLocalBroadcastManager()
-                .sendBroadcastSync(
-                        CastWebContentsIntentUtils.allowPictureInPicture(mSessionId, false));
+        updateMediaState(false, false);
         RuntimeEnvironment.application.sendBroadcast(new Intent(Intent.ACTION_USER_PRESENT));
 
         ExtendedShadowActivity shadowActivity = (ExtendedShadowActivity) Shadow.extract(mActivity);
@@ -616,11 +640,11 @@ public class CastWebContentsActivityTest {
         mActivityLifecycle.create();
         // RuntimeEnvironment.application
         updateDockState(false);
-        updateMediaState(false);
+        updateMediaState(false, false);
         // State: Undocked & No Media Playing
         assertWakeLockFlags(false, false);
         // Media Starts playing
-        updateMediaState(true);
+        updateMediaState(true, true);
         // State: Undocked & Media Playing
         assertWakeLockFlags(false, false);
         // Device docked
@@ -628,18 +652,18 @@ public class CastWebContentsActivityTest {
         // State: Docked & Media Playing
         assertWakeLockFlags(true, true);
         // Media Stops playing
-        updateMediaState(false);
+        updateMediaState(false, false);
         // // State: Docked & No Media Playing
         assertWakeLockFlags(false, true);
         // Media Starts playing again
-        updateMediaState(true);
+        updateMediaState(true, true);
         // State: Docked & Media Playing
         assertWakeLockFlags(true, true);
         // Undocks
         updateDockState(false);
         // State: Undocked & Media Playing
         assertWakeLockFlags(false, false);
-        updateMediaState(false);
+        updateMediaState(false, false);
         // State: Undocked & No Media Playing
         assertWakeLockFlags(false, false);
     }
@@ -655,59 +679,14 @@ public class CastWebContentsActivityTest {
         mActivity.testingModeForTesting();
         mActivityLifecycle.create();
         updateDockState(false);
-        updateMediaState(false);
+        updateMediaState(false, false);
         assertWakeLockFlags(true, false);
         updateDockState(true);
-        updateMediaState(true);
+        updateMediaState(true, true);
         assertWakeLockFlags(true, true);
         updateDockState(false);
-        updateMediaState(false);
+        updateMediaState(false, false);
         assertWakeLockFlags(false, false);
-    }
-
-    @Test
-    public void testEnsureBroadcastMediaStatusRequestedOnCreation() {
-        updateDockState(true);
-        BroadcastReceiver receiver =
-                spy(
-                        new BroadcastReceiver() {
-                            @Override
-                            public void onReceive(Context context, Intent intent) {
-                                if (CastWebContentsIntentUtils.isIntentOfRequestMediaPlayingStatus(
-                                        intent)) {
-                                    updateMediaState(true);
-                                }
-                            }
-                        });
-
-        IntentFilter filter = new IntentFilter();
-        Uri instanceUri = CastWebContentsIntentUtils.getInstanceUri(mSessionId);
-        filter.addDataScheme(instanceUri.getScheme());
-        filter.addDataAuthority(instanceUri.getAuthority(), null);
-        filter.addDataPath(instanceUri.getPath(), PatternMatcher.PATTERN_LITERAL);
-        filter.addAction(CastWebContentsIntentUtils.ACTION_REQUEST_MEDIA_PLAYING_STATUS);
-        LocalBroadcastManager.getInstance(RuntimeEnvironment.application)
-                .registerReceiver(receiver, filter);
-        mActivityLifecycle =
-                Robolectric.buildActivity(
-                        CastWebContentsActivity.class,
-                        CastWebContentsIntentUtils.requestStartCastActivity(
-                                mWebContents,
-                                true,
-                                false,
-                                true,
-                                /* keepScreenOn= */ false,
-                                mSessionId));
-        mActivity = mActivityLifecycle.get();
-        mActivity.testingModeForTesting();
-        mActivityLifecycle.create();
-        Shadows.shadowOf(getMainLooper()).idle();
-        verify(receiver, times(1)).onReceive(any(Context.class), mIntentCaptor.capture());
-        Intent broadcastIntent = mIntentCaptor.getValue();
-        assertEquals(
-                CastWebContentsIntentUtils.ACTION_REQUEST_MEDIA_PLAYING_STATUS,
-                broadcastIntent.getAction());
-        assertWakeLockFlags(true, true);
     }
 
     @Test
@@ -814,10 +793,8 @@ public class CastWebContentsActivityTest {
         Shadows.shadowOf(getMainLooper()).idle();
     }
 
-    private void updateMediaState(boolean playingMedia) {
-        CastWebContentsIntentUtils.getLocalBroadcastManager()
-                .sendBroadcastSync(
-                        CastWebContentsIntentUtils.mediaPlaying(mSessionId, playingMedia));
+    private void updateMediaState(boolean playingAudio, boolean playingVideo) {
+        mMediaPlaying.set(new MediaPlaying(playingAudio, playingVideo));
     }
 
     private IntentFilter filterFor(String action) {

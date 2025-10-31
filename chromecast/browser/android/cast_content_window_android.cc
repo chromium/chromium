@@ -10,7 +10,6 @@
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "components/media_control/browser/media_blocker.h"
-#include "content/public/browser/web_contents_observer.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chromecast/browser/android/jni_headers/CastContentWindowAndroid_jni.h"
@@ -69,8 +68,6 @@ void CastContentWindowAndroid::CreateWindow(
   }
   JNIEnv* env = base::android::AttachCurrentThread();
 
-  content::WebContentsObserver::Observe(cast_web_contents()->web_contents());
-
   base::android::ScopedJavaLocalRef<jobject> java_web_contents =
       cast_web_contents()->web_contents()->GetJavaWebContents();
 
@@ -96,29 +93,6 @@ void CastContentWindowAndroid::EnableTouchInput(bool enabled) {
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_CastContentWindowAndroid_enableTouchInput(
       env, java_window_, static_cast<jboolean>(enabled));
-}
-
-void CastContentWindowAndroid::MediaStartedPlaying(
-    const content::WebContentsObserver::MediaPlayerInfo& video_type,
-    const content::MediaPlayerId& id) {
-  JNIEnv* env = base::android::AttachCurrentThread();
-  if (video_type.has_video) {
-    Java_CastContentWindowAndroid_setAllowPictureInPicture(
-        env, java_window_, static_cast<jboolean>(true));
-  }
-  Java_CastContentWindowAndroid_setMediaPlaying(env, java_window_,
-                                                static_cast<jboolean>(true));
-}
-
-void CastContentWindowAndroid::MediaStoppedPlaying(
-    const content::WebContentsObserver::MediaPlayerInfo& video_type,
-    const content::MediaPlayerId& id,
-    content::WebContentsObserver::MediaStoppedReason reason) {
-  JNIEnv* env = base::android::AttachCurrentThread();
-  Java_CastContentWindowAndroid_setAllowPictureInPicture(
-      env, java_window_, static_cast<jboolean>(false));
-  Java_CastContentWindowAndroid_setMediaPlaying(env, java_window_,
-                                                static_cast<jboolean>(false));
 }
 
 void CastContentWindowAndroid::OnActivityStopped(JNIEnv* env) {
