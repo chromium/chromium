@@ -231,8 +231,7 @@ function createRoutes(): SettingsRoutes {
       r.ADDRESSES = r.YOUR_SAVED_INFO.createChild('/addresses');
       r.YOUR_SAVED_INFO_IDENTITY_DOCS =
           r.YOUR_SAVED_INFO.createChild('/identityDocs');
-
-      // TODO(crbug.com/438667363): add routing for "Travel"
+      r.YOUR_SAVED_INFO_TRAVEL = r.YOUR_SAVED_INFO.createChild('/travel');
 
       // <if expr="is_win or is_macosx">
       r.PASSKEYS = r.YOUR_SAVED_INFO.createChild('/passkeys');

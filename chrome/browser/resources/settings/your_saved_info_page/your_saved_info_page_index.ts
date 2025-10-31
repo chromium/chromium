@@ -86,6 +86,10 @@ export class SettingsYourSavedInfoPageIndexElement extends
           this.$.viewManager.switchView(
               'payments', 'no-animation', 'no-animation');
           break;
+        case routes.YOUR_SAVED_INFO_TRAVEL:
+          this.$.viewManager.switchView(
+              'travel', 'no-animation', 'no-animation');
+          break;
         default:
           // Nothing to do. Other parent elements are responsible for updating
           // the displayed contents.

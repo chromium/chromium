@@ -478,6 +478,7 @@ chromium-metrics-reviews@google.com.
   <int value="-988053194" label="/lockScreen"/>
   <int value="-972517930" label="/googleAssistant"/>
   <int value="-940942794" label="/content/pdfDocuments"/>
+  <int value="-922372967" label="/travel"/>
   <int value="-916174295" label="/internet"/>
   <int value="-907780721" label="/certificates"/>
   <int value="-898481268" label="/multidevice/features"/>

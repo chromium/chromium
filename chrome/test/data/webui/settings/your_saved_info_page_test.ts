@@ -143,9 +143,7 @@ suite('YourSavedInfoPage', function() {
   [{cardTitle: 'paymentsTitle', expectedRoute: '/payments'},
    {cardTitle: 'contactInfoTitle', expectedRoute: '/addresses'},
    {cardTitle: 'identityDocsCardTitle', expectedRoute: '/identityDocs'},
-   // TODO(crbug.com/438666322): Update routing once the Travel subpage is
-   // created.
-   {cardTitle: 'travelCardTitle', expectedRoute: '/'},
+   {cardTitle: 'travelCardTitle', expectedRoute: '/travel'},
   ].forEach(({cardTitle, expectedRoute}) => {
     test(`${cardTitle} card navigates to the correct route`, function() {
       const card = yourSavedInfoPage.shadowRoot!.querySelector<HTMLElement>(

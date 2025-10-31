@@ -424,9 +424,7 @@ export class SettingsYourSavedInfoPageElement extends
    * Shows the manage travel sub page.
    */
   private onTravelManagerClick_() {
-    // TODO(crbug.com/438666322): Update routing once the Travel subpage is
-    // created.
-    Router.getInstance().navigateTo(routes.BASIC);
+    Router.getInstance().navigateTo(routes.YOUR_SAVED_INFO_TRAVEL);
   }
 
   /**
