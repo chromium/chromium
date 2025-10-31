@@ -77,6 +77,10 @@ enum class WatchTimeKey : int {
   kAudioVideoMutedNativeControlsOff,
   kAudioVideoMediaFoundationAll,
   kAudioVideoMediaFoundationEme,
+  kAudioVideoMediaFoundationHdrAll,
+  kAudioVideoMediaFoundationHdrEme,
+  kAudioVideoMediaFoundationSdrAll,
+  kAudioVideoMediaFoundationSdrEme,
   kAudioVideoSdrAll,
   kAudioVideoSdrEme,
   kVideoAll,
@@ -169,6 +173,10 @@ inline constexpr std::string_view kWatchTimeAudioVideoHdrAll =
     "Media.WatchTime.AudioVideo.HDR.All";
 inline constexpr std::string_view kWatchTimeAudioVideoHdrEme =
     "Media.WatchTime.AudioVideo.HDR.EME";
+inline constexpr std::string_view kWatchTimeAudioVideoMediaFoundationHdrAll =
+    "Media.WatchTime.AudioVideo.MediaFoundation.HDR.All";
+inline constexpr std::string_view kWatchTimeAudioVideoMediaFoundationHdrEme =
+    "Media.WatchTime.AudioVideo.MediaFoundation.HDR.EME";
 
 // Returns the UMA key name associated with a given WatchTimeKey or an empty
 // string if they key should not be logged to UMA.

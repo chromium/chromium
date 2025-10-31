@@ -7937,6 +7937,12 @@ chromium-metrics-reviews@google.com.
     <variant name=".AudioVideo.MediaFoundation.Eme"
         summary="MediaFoundations renderer watch time for EME media with both
                  an audio and video track."/>
+    <variant name=".AudioVideo.MediaFoundation.HDR.All"
+        summary="MediaFoundations renderer HDR watch time for all media with
+                 both an audio and video track."/>
+    <variant name=".AudioVideo.MediaFoundation.HDR.EME"
+        summary="MediaFoundations renderer HDR watch time for EME media with
+                 both an audio and video track."/>
     <variant name=".AudioVideo.MSE"
         summary="Watch time for MSE media with both an audio and video track."/>
     <variant name=".AudioVideo.Muted.All"

@@ -254,6 +254,10 @@ class WatchTimeReporterTest
             case WatchTimeKey::kVideoBackgroundEmbeddedExperience:
             case WatchTimeKey::kAudioVideoMediaFoundationAll:
             case WatchTimeKey::kAudioVideoMediaFoundationEme:
+            case WatchTimeKey::kAudioVideoMediaFoundationHdrAll:
+            case WatchTimeKey::kAudioVideoMediaFoundationHdrEme:
+            case WatchTimeKey::kAudioVideoMediaFoundationSdrAll:
+            case WatchTimeKey::kAudioVideoMediaFoundationSdrEme:
             case WatchTimeKey::kAudioVideoHdrAll:
             case WatchTimeKey::kAudioVideoHdrEme:
             case WatchTimeKey::kAudioVideoSdrAll:
@@ -2313,6 +2317,10 @@ TEST_P(WatchTimeReporterTest, WatchTimeReporterMediaFoundation) {
     EXPECT_WATCH_TIME(NativeControlsOff, kWatchTimeEarly);
     EXPECT_WATCH_TIME_IF_AUDIO_VIDEO_HDR(SdrAll, kWatchTimeEarly);
     EXPECT_WATCH_TIME_IF_AUDIO_VIDEO_HDR(SdrEme, kWatchTimeEarly);
+    EXPECT_WATCH_TIME_IF_AUDIO_VIDEO_HDR(MediaFoundationSdrAll,
+                                         kWatchTimeEarly);
+    EXPECT_WATCH_TIME_IF_AUDIO_VIDEO_HDR(MediaFoundationSdrEme,
+                                         kWatchTimeEarly);
 
     EXPECT_TRUE(IsMonitoring());
 
@@ -2341,6 +2349,8 @@ TEST_P(WatchTimeReporterTest, WatchTimeReporterMediaFoundationNoEme) {
     EXPECT_WATCH_TIME_IF_VIDEO(AuxiliaryVisibleContent, kWatchTimeEarly);
     EXPECT_WATCH_TIME(NativeControlsOff, kWatchTimeEarly);
     EXPECT_WATCH_TIME_IF_AUDIO_VIDEO_HDR(SdrAll, kWatchTimeEarly);
+    EXPECT_WATCH_TIME_IF_AUDIO_VIDEO_HDR(MediaFoundationSdrAll,
+                                         kWatchTimeEarly);
 
     EXPECT_TRUE(IsMonitoring());
 
@@ -2401,6 +2411,79 @@ TEST_P(WatchTimeReporterTest, WatchTimeReporterHdrEme) {
     EXPECT_WATCH_TIME(DisplayInline, kWatchTimeEarly);
     EXPECT_WATCH_TIME_IF_VIDEO(AuxiliaryVisibleContent, kWatchTimeEarly);
     EXPECT_WATCH_TIME(NativeControlsOff, kWatchTimeEarly);
+    EXPECT_WATCH_TIME_IF_AUDIO_VIDEO_HDR(HdrAll, kWatchTimeEarly);
+    EXPECT_WATCH_TIME_IF_AUDIO_VIDEO_HDR(HdrEme, kWatchTimeEarly);
+
+    EXPECT_TRUE(IsMonitoring());
+
+    EXPECT_WATCH_TIME_FINALIZED();
+  }
+}
+
+// Tests MediaFoundation HDR related Keys given no EME.
+TEST_P(WatchTimeReporterTest, WatchTimeReporterMediaFoundationHdrAll) {
+  constexpr base::TimeDelta kWatchTimeEarly = base::Seconds(5);
+
+  // Will include only audio and only video testing when the related keys are
+  // added.
+  if (has_audio_ && has_video_) {
+    EXPECT_CALL(*this, GetCurrentMediaTime())
+        .WillOnce(testing::Return(base::TimeDelta()))
+        .WillRepeatedly(testing::Return(kWatchTimeEarly));
+    Initialize(false, kSizeJustRight, media::DemuxerType::kChunkDemuxer,
+               media::RendererType::kMediaFoundation);
+
+    wtr_->OnHdrChanged(true);
+    wtr_->OnPlaying();
+
+    // Check the following keys are used.
+    EXPECT_WATCH_TIME_IF_AUDIO_VIDEO_HDR(MediaFoundationAll, kWatchTimeEarly);
+    EXPECT_WATCH_TIME(All, kWatchTimeEarly);
+    EXPECT_WATCH_TIME(Mse, kWatchTimeEarly);
+    EXPECT_WATCH_TIME(Ac, kWatchTimeEarly);
+    EXPECT_WATCH_TIME(DisplayInline, kWatchTimeEarly);
+    EXPECT_WATCH_TIME_IF_VIDEO(AuxiliaryVisibleContent, kWatchTimeEarly);
+    EXPECT_WATCH_TIME(NativeControlsOff, kWatchTimeEarly);
+    EXPECT_WATCH_TIME_IF_AUDIO_VIDEO_HDR(MediaFoundationHdrAll,
+                                         kWatchTimeEarly);
+    EXPECT_WATCH_TIME_IF_AUDIO_VIDEO_HDR(HdrAll, kWatchTimeEarly);
+
+    EXPECT_TRUE(IsMonitoring());
+
+    EXPECT_WATCH_TIME_FINALIZED();
+  }
+}
+
+// Tests MediaFoundation HDR related Keys being used and given to recorder.
+TEST_P(WatchTimeReporterTest, WatchTimeReporterMediaFoundationHdrEme) {
+  constexpr base::TimeDelta kWatchTimeEarly = base::Seconds(5);
+
+  // Will include only audio and only video testing when the related keys are
+  // added.
+  if (has_audio_ && has_video_) {
+    EXPECT_CALL(*this, GetCurrentMediaTime())
+        .WillOnce(testing::Return(base::TimeDelta()))
+        .WillRepeatedly(testing::Return(kWatchTimeEarly));
+    Initialize(true, kSizeJustRight, media::DemuxerType::kChunkDemuxer,
+               media::RendererType::kMediaFoundation);
+
+    wtr_->OnHdrChanged(true);
+    wtr_->OnPlaying();
+
+    // Check the following keys are used.
+    EXPECT_WATCH_TIME_IF_AUDIO_VIDEO_HDR(MediaFoundationAll, kWatchTimeEarly);
+    EXPECT_WATCH_TIME_IF_AUDIO_VIDEO_HDR(MediaFoundationEme, kWatchTimeEarly);
+    EXPECT_WATCH_TIME(All, kWatchTimeEarly);
+    EXPECT_WATCH_TIME(Mse, kWatchTimeEarly);
+    EXPECT_WATCH_TIME(Eme, kWatchTimeEarly);
+    EXPECT_WATCH_TIME(Ac, kWatchTimeEarly);
+    EXPECT_WATCH_TIME(DisplayInline, kWatchTimeEarly);
+    EXPECT_WATCH_TIME_IF_VIDEO(AuxiliaryVisibleContent, kWatchTimeEarly);
+    EXPECT_WATCH_TIME(NativeControlsOff, kWatchTimeEarly);
+    EXPECT_WATCH_TIME_IF_AUDIO_VIDEO_HDR(MediaFoundationHdrAll,
+                                         kWatchTimeEarly);
+    EXPECT_WATCH_TIME_IF_AUDIO_VIDEO_HDR(MediaFoundationHdrEme,
+                                         kWatchTimeEarly);
     EXPECT_WATCH_TIME_IF_AUDIO_VIDEO_HDR(HdrAll, kWatchTimeEarly);
     EXPECT_WATCH_TIME_IF_AUDIO_VIDEO_HDR(HdrEme, kWatchTimeEarly);
 

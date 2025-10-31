@@ -312,6 +312,10 @@ TEST_F(WatchTimeRecorderTest, TestBasicReporting) {
       case WatchTimeKey::kAudioVideoHdrEme:
       case WatchTimeKey::kAudioVideoSdrAll:
       case WatchTimeKey::kAudioVideoSdrEme:
+      case WatchTimeKey::kAudioVideoMediaFoundationHdrAll:
+      case WatchTimeKey::kAudioVideoMediaFoundationHdrEme:
+      case WatchTimeKey::kAudioVideoMediaFoundationSdrAll:
+      case WatchTimeKey::kAudioVideoMediaFoundationSdrEme:
       case WatchTimeKey::kAudioVideoDominantVisibleContent:
       case WatchTimeKey::kAudioVideoAuxiliaryVisibleContent:
       case WatchTimeKey::kAudioVideoMutedDominantVisibleContent:
@@ -490,6 +494,10 @@ TEST_F(WatchTimeRecorderTest, TestBasicReportingMediaStream) {
       case WatchTimeKey::kAudioVideoHdrEme:
       case WatchTimeKey::kAudioVideoSdrAll:
       case WatchTimeKey::kAudioVideoSdrEme:
+      case WatchTimeKey::kAudioVideoMediaFoundationHdrAll:
+      case WatchTimeKey::kAudioVideoMediaFoundationHdrEme:
+      case WatchTimeKey::kAudioVideoMediaFoundationSdrAll:
+      case WatchTimeKey::kAudioVideoMediaFoundationSdrEme:
       case WatchTimeKey::kAudioVideoDominantVisibleContent:
       case WatchTimeKey::kAudioVideoAuxiliaryVisibleContent:
       case WatchTimeKey::kAudioVideoMutedDominantVisibleContent:
@@ -2350,6 +2358,95 @@ TEST_F(WatchTimeRecorderTest, HdrWatchTime_SdrNeverRecorded) {
   // No HDR watch time UMAs are expected.
   histogram_tester_->ExpectTotalCount(kWatchTimeAudioVideoHdrAll, 0);
   histogram_tester_->ExpectTotalCount(kWatchTimeAudioVideoHdrEme, 0);
+}
+
+TEST_F(WatchTimeRecorderTest, HdrWatchTime_MediaFoundationAllOnlyRecorded) {
+  mojom::PlaybackPropertiesPtr properties = mojom::PlaybackProperties::New(
+      true, true, false, false, /*is_eme=*/false, false,
+      mojom::MediaStreamType::kNone, RendererType::kMediaFoundation,
+      DemuxerType::kChunkDemuxer);
+  Initialize(properties.Clone());
+
+  constexpr base::TimeDelta kWatchTime = base::Seconds(25);
+  wtr_->RecordWatchTime(WatchTimeKey::kAudioVideoMediaFoundationHdrAll,
+                        kWatchTime);
+  wtr_->FinalizeWatchTime({});
+
+  wtr_.reset();
+  base::RunLoop().RunUntilIdle();
+
+  // We don't record UKMs for HDR watch times.
+  const auto& entries = test_recorder_->GetEntriesByName(UkmEntry::kEntryName);
+  EXPECT_EQ(0u, entries.size());
+
+  // Only MediaFoundation HDR all watch time UMA is expected.
+  ExpectWatchTime({kWatchTimeAudioVideoMediaFoundationHdrAll}, kWatchTime);
+  histogram_tester_->ExpectTotalCount(kWatchTimeAudioVideoMediaFoundationHdrEme,
+                                      0);
+}
+
+TEST_F(WatchTimeRecorderTest, HdrWatchTime_MediaFoundationAllAndEmeRecorded) {
+  mojom::PlaybackPropertiesPtr properties = mojom::PlaybackProperties::New(
+      true, true, false, false, /*is_eme=*/true, false,
+      mojom::MediaStreamType::kNone, RendererType::kMediaFoundation,
+      DemuxerType::kChunkDemuxer);
+  Initialize(properties.Clone());
+
+  constexpr base::TimeDelta kWatchTime = base::Seconds(25);
+  wtr_->RecordWatchTime(WatchTimeKey::kAudioVideoMediaFoundationHdrAll,
+                        kWatchTime);
+  wtr_->RecordWatchTime(WatchTimeKey::kAudioVideoMediaFoundationHdrEme,
+                        kWatchTime);
+  wtr_->FinalizeWatchTime({});
+
+  wtr_.reset();
+  base::RunLoop().RunUntilIdle();
+
+  // We don't record UKMs for HDR watch times.
+  const auto& entries = test_recorder_->GetEntriesByName(UkmEntry::kEntryName);
+  EXPECT_EQ(0u, entries.size());
+
+  // Both MediaFoundation HDR all & eme watch time UMAs are expected.
+  ExpectWatchTime({kWatchTimeAudioVideoMediaFoundationHdrAll,
+                   kWatchTimeAudioVideoMediaFoundationHdrEme},
+                  kWatchTime);
+}
+
+TEST_F(WatchTimeRecorderTest, HdrWatchTime_MediaFoundationSdrNeverRecorded) {
+  mojom::PlaybackPropertiesPtr properties = mojom::PlaybackProperties::New(
+      true, true, false, false, /*is_eme=*/true, false,
+      mojom::MediaStreamType::kNone, RendererType::kMediaFoundation,
+      DemuxerType::kChunkDemuxer);
+  Initialize(properties.Clone());
+
+  constexpr base::TimeDelta kWatchTime = base::Seconds(25);
+  wtr_->RecordWatchTime(WatchTimeKey::kAudioVideoMediaFoundationSdrAll,
+                        kWatchTime);
+  wtr_->RecordWatchTime(WatchTimeKey::kAudioVideoMediaFoundationSdrEme,
+                        kWatchTime);
+  wtr_->FinalizeWatchTime({});
+
+  wtr_.reset();
+  base::RunLoop().RunUntilIdle();
+
+  // We don't record UKMs for MediaFoundation SDR/HDR watch times.
+  const auto& entries = test_recorder_->GetEntriesByName(UkmEntry::kEntryName);
+  EXPECT_EQ(0u, entries.size());
+
+  // We are not interested in MediaFoundationSDR watch times thus no UMA key for
+  // SDR exists.
+  auto sdr_all_key_str = ConvertWatchTimeKeyToStringForUma(
+      WatchTimeKey::kAudioVideoMediaFoundationSdrAll);
+  auto sdr_eme_key_str = ConvertWatchTimeKeyToStringForUma(
+      WatchTimeKey::kAudioVideoMediaFoundationSdrEme);
+  ASSERT_TRUE(sdr_all_key_str.empty());
+  ASSERT_TRUE(sdr_eme_key_str.empty());
+
+  // No MediaFoundation HDR watch time UMAs are expected.
+  histogram_tester_->ExpectTotalCount(kWatchTimeAudioVideoMediaFoundationHdrAll,
+                                      0);
+  histogram_tester_->ExpectTotalCount(kWatchTimeAudioVideoMediaFoundationHdrEme,
+                                      0);
 }
 
 #undef EXPECT_UKM

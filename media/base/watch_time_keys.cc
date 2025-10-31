@@ -228,6 +228,10 @@ std::string_view ConvertWatchTimeKeyToStringForUma(WatchTimeKey key) {
       return kWatchTimeAudioVideoMutedAuxiliaryVisibleContent;
     case WatchTimeKey::kAudioVideoMediaFoundationAll:
       return kWatchTimeAudioVideoMediaFoundationAll;
+    case WatchTimeKey::kAudioVideoMediaFoundationHdrAll:
+      return kWatchTimeAudioVideoMediaFoundationHdrAll;
+    case WatchTimeKey::kAudioVideoMediaFoundationHdrEme:
+      return kWatchTimeAudioVideoMediaFoundationHdrEme;
     case WatchTimeKey::kAudioVideoMediaFoundationEme:
       return kWatchTimeAudioVideoMediaFoundationEme;
     // WARNING: Returning a non-empty value will log the key to UMA.
@@ -240,6 +244,8 @@ std::string_view ConvertWatchTimeKeyToStringForUma(WatchTimeKey key) {
     case WatchTimeKey::kAudioDisplayPictureInPicture:
     case WatchTimeKey::kAudioVideoSdrAll:
     case WatchTimeKey::kAudioVideoSdrEme:
+    case WatchTimeKey::kAudioVideoMediaFoundationSdrAll:
+    case WatchTimeKey::kAudioVideoMediaFoundationSdrEme:
     case WatchTimeKey::kAudioVideoMutedBattery:
     case WatchTimeKey::kAudioVideoMutedAc:
     case WatchTimeKey::kAudioVideoMutedEmbeddedExperience:

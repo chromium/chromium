@@ -818,13 +818,30 @@ Vector<media::WatchTimeKey> WatchTimeReporter::GetDisplayTypeKeys(
          : (is_eme ? media::WatchTimeKey::kAudioVideoSdrEme  \
                    : media::WatchTimeKey::kAudioVideoSdrAll)
 
+#define MEDIA_FOUNDATION_HDR_KEY(is_eme, is_hdr)                            \
+  is_hdr ? (is_eme ? media::WatchTimeKey::kAudioVideoMediaFoundationHdrEme  \
+                   : media::WatchTimeKey::kAudioVideoMediaFoundationHdrAll) \
+         : (is_eme ? media::WatchTimeKey::kAudioVideoMediaFoundationSdrEme  \
+                   : media::WatchTimeKey::kAudioVideoMediaFoundationSdrAll)
+
 std::unique_ptr<WatchTimeComponent<bool>>
 WatchTimeReporter::CreateHdrComponent() {
   Vector<media::WatchTimeKey> keys_to_finalize{HDR_KEY(false, true),
                                                HDR_KEY(false, false)};
+  const auto is_media_foundation =
+      properties_->renderer_type == media::RendererType::kMediaFoundation;
+  if (is_media_foundation) {
+    keys_to_finalize.emplace_back(MEDIA_FOUNDATION_HDR_KEY(false, true));
+    keys_to_finalize.emplace_back(MEDIA_FOUNDATION_HDR_KEY(false, false));
+  }
   if (properties_->is_eme) {
-    keys_to_finalize.emplace_back(HDR_KEY(true, true));
-    keys_to_finalize.emplace_back(HDR_KEY(true, false));
+    if (is_media_foundation) {
+      keys_to_finalize.emplace_back(MEDIA_FOUNDATION_HDR_KEY(true, true));
+      keys_to_finalize.emplace_back(MEDIA_FOUNDATION_HDR_KEY(true, false));
+    } else {
+      keys_to_finalize.emplace_back(HDR_KEY(true, true));
+      keys_to_finalize.emplace_back(HDR_KEY(true, false));
+    }
   }
 
   return std::make_unique<WatchTimeComponent<bool>>(
@@ -835,8 +852,19 @@ WatchTimeReporter::CreateHdrComponent() {
 }
 
 Vector<media::WatchTimeKey> WatchTimeReporter::GetHdrKeys(bool is_hdr) {
+  const auto is_media_foundation =
+      properties_->renderer_type == media::RendererType::kMediaFoundation;
   if (properties_->is_eme) {
+    if (is_media_foundation) {
+      return {HDR_KEY(false, is_hdr), HDR_KEY(true, is_hdr),
+              MEDIA_FOUNDATION_HDR_KEY(false, is_hdr),
+              MEDIA_FOUNDATION_HDR_KEY(true, is_hdr)};
+    }
     return {HDR_KEY(false, is_hdr), HDR_KEY(true, is_hdr)};
+  }
+
+  if (is_media_foundation) {
+    return {HDR_KEY(false, is_hdr), MEDIA_FOUNDATION_HDR_KEY(false, is_hdr)};
   }
   return {HDR_KEY(false, is_hdr)};
 }
