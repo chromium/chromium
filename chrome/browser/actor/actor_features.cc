@@ -50,6 +50,9 @@ BASE_FEATURE(kGlicEnableAutoLoginPersistedPermissions,
 BASE_FEATURE(kGlicTabScreenshotPaintPreviewBackend,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kGlicSkipBeforeUnloadDialogAndNavigate,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 const base::FeatureParam<bool> kFullPageScreenshot{
     &kGlicTabScreenshotPaintPreviewBackend, "full_page_screenshot", false};
 

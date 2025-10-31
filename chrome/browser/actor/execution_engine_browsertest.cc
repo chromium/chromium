@@ -9,8 +9,10 @@
 
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_file_util.h"
 #include "base/test/test_future.h"
@@ -28,6 +30,9 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_navigator.h"
+#include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/file_system_access/file_system_access_test_utils.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -39,18 +44,27 @@
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/javascript_dialogs/app_modal_dialog_controller.h"
+#include "components/javascript_dialogs/app_modal_dialog_queue.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/core/filters/optimization_hints_component_update_listener.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_frame_navigation_observer.h"
+#include "content/public/test/test_navigation_observer.h"
+#include "content/public/test/test_utils.h"
+#include "net/base/features.h"
 #include "net/dns/mock_host_resolver.h"
+#include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
+#include "url/gurl.h"
 
 using ::base::test::TestFuture;
 using ::optimization_guide::proto::ClickAction;
@@ -762,7 +776,7 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
       "foo.com", base::StrCat({"/actor/link_full_page.html?href=",
                                EncodeURI(cross_origin_url.spec())}));
 
-  // Mock IPC response waill always reject navigation.
+  // Mock IPC response will always reject navigation.
   CreateMockNavigationConfirmationResponse(
       actor_task().id(), url::Origin::Create(cross_origin_url),
       /*permission_granted=*/false);
@@ -806,7 +820,7 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
       "foo.com", base::StrCat({"/actor/link_full_page.html?href=",
                                EncodeURI(cross_origin_url.spec())}));
 
-  // Mock IPC response waill always reject navigation.
+  // Mock IPC response will always reject navigation.
   // Task ID is not constant throughout this test so we do not check the IPC
   // request for the ID.
   CreateMockNavigationConfirmationResponse(
@@ -914,6 +928,107 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
 INSTANTIATE_TEST_SUITE_P(All,
                          ExecutionEngineOriginGatingBrowserTest,
                          testing::Bool());
+
+class ExecutionEngineSkipBeforeUnloadBrowserTest
+    : public ExecutionEngineBrowserTest,
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
+ public:
+  ExecutionEngineSkipBeforeUnloadBrowserTest() {
+    if (IsSkipFeatureEnabled()) {
+      scoped_feature_list_.InitAndEnableFeature(
+          kGlicSkipBeforeUnloadDialogAndNavigate);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(
+          kGlicSkipBeforeUnloadDialogAndNavigate);
+    }
+  }
+
+  bool IsActorActive() const { return std::get<0>(GetParam()); }
+  bool IsSkipFeatureEnabled() const { return std::get<1>(GetParam()); }
+
+  void WaitForAppModalDialogToClose() {
+    ASSERT_TRUE(base::test::RunUntil([] {
+      return !javascript_dialogs::AppModalDialogQueue::GetInstance()
+                  ->HasActiveDialog();
+    }));
+  }
+
+  void CancelActiveAppModalDialog() {
+    auto* dialog_queue = javascript_dialogs::AppModalDialogQueue::GetInstance();
+    ASSERT_TRUE(javascript_dialogs::AppModalDialogQueue::GetInstance()
+                    ->HasActiveDialog());
+    javascript_dialogs::AppModalDialogController* dialog =
+        dialog_queue->active_dialog();
+    dialog->OnCancel(true);
+    WaitForAppModalDialogToClose();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// This test is to ensure that the beforeunload dialog is skipped when the
+//  kGlicSkipBeforeUnloadDialogAndNavigate feature is enabled and the actor is
+//  active on the renderer.
+IN_PROC_BROWSER_TEST_P(ExecutionEngineSkipBeforeUnloadBrowserTest,
+                       SkipBeforeUnloadDialogAndNavigate) {
+  if (IsActorActive()) {
+    base::test::TestFuture<mojom::ActionResultPtr> future;
+    actor_task().AddTab(active_tab()->GetHandle(), future.GetCallback());
+    mojom::ActionResultPtr result = future.Take();
+    ASSERT_TRUE(IsOk(*result));
+  } else {
+    actor_keyed_service()->ResetForTesting();
+  }
+
+  const GURL beforeunload_url =
+      embedded_test_server()->GetURL("/actor/beforeunload.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), beforeunload_url));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::PrepContentsForBeforeUnloadTest(web_contents);
+  ASSERT_EQ(beforeunload_url, web_contents->GetLastCommittedURL());
+
+  const GURL target_url = embedded_test_server()->GetURL("/title1.html");
+
+  bool should_skip_dialog = IsActorActive() && IsSkipFeatureEnabled();
+
+  if (should_skip_dialog) {
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), target_url));
+    content::WaitForLoadStop(web_contents);
+
+    EXPECT_EQ(target_url, web_contents->GetLastCommittedURL());
+    EXPECT_FALSE(web_contents->NeedToFireBeforeUnloadOrUnloadEvents());
+
+  } else {
+    // Expect navigation to be blocked by beforeunload dialogs and no navigation
+    // to occur.
+    web_contents->GetController().LoadURL(target_url, content::Referrer(),
+                                          ::ui::PAGE_TRANSITION_TYPED,
+                                          std::string());
+
+    ui_test_utils::WaitForAppModalDialog();
+    EXPECT_EQ(beforeunload_url, web_contents->GetLastCommittedURL());
+    CancelActiveAppModalDialog();
+  }
+}
+
+struct SkipBeforeUnloadTestNameGenerator {
+  template <class ParamType>
+  std::string operator()(const testing::TestParamInfo<ParamType>& info) const {
+    return base::StringPrintf(
+        "%s_%s", std::get<0>(info.param) ? "ActorActive" : "ActorInactive",
+        std::get<1>(info.param) ? "SkipFeatureEnabled" : "SkipFeatureDisabled");
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ExecutionEngineSkipBeforeUnloadBrowserTest,
+    testing::Combine(testing::Bool(),   // IsActorActive
+                     testing::Bool()),  // IsSkipFeatureEnabled
+    SkipBeforeUnloadTestNameGenerator());
 
 }  // namespace
 

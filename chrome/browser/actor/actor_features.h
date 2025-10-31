@@ -29,6 +29,11 @@ BASE_DECLARE_FEATURE(kGlicDeferDownloadFilePickerToUserTakeover);
 
 BASE_DECLARE_FEATURE(kGlicCrossOriginNavigationGating);
 
+// When enabled, `beforeunload` dialog will not be displayed and the callback
+// indicating the dialog outcome will be called with `true`.
+// Warning: Enabling this feature can lead to data loss when navigating.
+BASE_DECLARE_FEATURE(kGlicSkipBeforeUnloadDialogAndNavigate);
+
 // When enabled, the actor will send a dialog request to the web client to
 // allow the user to select a credential to use for a site. When disabled, the
 // actor will automatically use the first credential.

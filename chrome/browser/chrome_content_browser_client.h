@@ -1070,6 +1070,8 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
 
   bool ShouldUseFirstPartyStorageKey(const url::Origin& origin) override;
 
+  bool ShouldSkipBeforeUnloadDialog(content::RenderFrameHost* rfh) override;
+
   std::unique_ptr<content::ResponsivenessCalculatorDelegate>
   CreateResponsivenessCalculatorDelegate() override;
 
