@@ -4,7 +4,25 @@
 
 #include "components/autofill/core/browser/integrators/glic/actor_form_filling_types.h"
 
+#include <ostream>
+
+#include "base/notreached.h"
+
 namespace autofill {
+
+std::ostream& operator<<(std::ostream& os, ActorFormFillingError error) {
+  switch (error) {
+    case ActorFormFillingError::kOther:
+      return os << "kOther";
+    case ActorFormFillingError::kAutofillNotAvailable:
+      return os << "kAutofillNotAvailable";
+    case ActorFormFillingError::kNoForm:
+      return os << "kNoForm";
+    case ActorFormFillingError::kNoSuggestions:
+      return os << "kNoSuggestions";
+  }
+  NOTREACHED();
+}
 
 ActorSuggestion::ActorSuggestion() = default;
 ActorSuggestion::ActorSuggestion(const ActorSuggestion&) = default;

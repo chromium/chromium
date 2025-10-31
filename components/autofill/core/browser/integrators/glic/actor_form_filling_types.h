@@ -6,6 +6,7 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_GLIC_ACTOR_FORM_FILLING_TYPES_H_
 
 #include <optional>
+#include <ostream>
 #include <string>
 #include <vector>
 
@@ -27,6 +28,8 @@ enum class ActorFormFillingError {
   // There are no suggestions.
   kNoSuggestions,
 };
+
+std::ostream& operator<<(std::ostream& os, ActorFormFillingError error);
 
 using ActorSuggestionId = base::IdTypeU32<class ActorSuggestionIdMarker>;
 
