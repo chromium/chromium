@@ -39,10 +39,11 @@ ReloadButtonWebView::ReloadButtonWebView(
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
   auto web_view = std::make_unique<views::WebView>(browser->GetProfile());
-  auto* web_contents = web_view->GetWebContents();
+  const GURL kUrl(chrome::kChromeUIReloadButtonURL);
+  auto* web_contents = web_view->GetWebContents(kUrl);
   // PLM has to be initialized before loading the URL.
   InitializePageLoadMetricsForWebContents(web_contents);
-  web_view->LoadInitialURL(GURL(chrome::kChromeUIReloadButtonURL));
+  web_view->LoadInitialURL(kUrl);
   const int size = GetLayoutConstant(LayoutConstant::TOOLBAR_BUTTON_HEIGHT);
   web_view->SetPreferredSize(gfx::Size(size, size));
   webui::SetBrowserWindowInterface(web_contents, browser);

@@ -25,6 +25,13 @@
 #include "ui/views/view.h"
 #include "ui/views/view_tracker.h"
 
+class GURL;
+
+namespace content {
+class BrowserContext;
+class WebContents;
+}  // namespace content
+
 namespace views {
 
 // Provides a view of a WebContents instance.  WebView can be used standalone,
@@ -73,8 +80,11 @@ class WEBVIEW_EXPORT WebView : public View,
 
   // This creates a WebContents if |browser_context_| has been set and there is
   // not yet a WebContents associated with this WebView, otherwise it will
-  // return a nullptr.
+  // return the existing web contents. `url` is used to create a `SiteInstance`
+  // for the `WebContents`. If `url` is empty, a default `SiteInstance` will be
+  // used.
   content::WebContents* GetWebContents(
+      const GURL& url = GURL(),
       base::Location creator_location = base::Location::Current());
 
   // WebView does not assume ownership of WebContents set via this method, only
@@ -230,7 +240,8 @@ class WEBVIEW_EXPORT WebView : public View,
   // in a unit test or not).
   std::unique_ptr<content::WebContents> CreateWebContents(
       content::BrowserContext* browser_context,
-      base::Location creator_location = base::Location::Current());
+      const GURL& url,
+      base::Location creator_location);
 
   const raw_ptr<NativeViewHost> holder_ =
       AddChildView(std::make_unique<NativeViewHost>());
