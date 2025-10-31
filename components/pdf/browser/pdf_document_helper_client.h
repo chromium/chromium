@@ -21,6 +21,12 @@ class PDFDocumentHelperClient {
  public:
   virtual ~PDFDocumentHelperClient() = default;
 
+  // Notifies that the document load completed successfully. This runs after
+  // callbacks registered via
+  // `PDFDocumentHelper::RegisterForDocumentLoadComplete()` run.
+  virtual void OnDocumentLoadComplete(
+      content::RenderFrameHost* render_frame_host) {}
+
   virtual void UpdateContentRestrictions(
       content::RenderFrameHost* render_frame_host,
       int content_restrictions) {}

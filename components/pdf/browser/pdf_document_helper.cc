@@ -417,6 +417,8 @@ void PDFDocumentHelper::OnDocumentLoadComplete() {
     std::move(callback).Run();
   }
   document_load_complete_callbacks_.clear();
+
+  client_->OnDocumentLoadComplete(&render_frame_host());
 }
 
 void PDFDocumentHelper::SaveUrlAs(const GURL& url,

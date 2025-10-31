@@ -126,8 +126,11 @@ class PDFDocumentHelper
   // Registers `callback` to be run when document load completes successfully.
   // When the PDF is already loaded, `callback` is invoked immediately. Will not
   // be invoked when the load fails. This is useful to wait for document
-  // metadata to be loaded, before calls to `GetPdfBytes`, and `GetPageText`
+  // metadata to be loaded, before calls to `GetPdfBytes()`, and `GetPageText()`
   // should be made.
+  //
+  // This `callback` will run before
+  // `PDFDocumentHelperClient::OnDocumentLoadComplete()`.
   void RegisterForDocumentLoadComplete(base::OnceClosure callback);
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
