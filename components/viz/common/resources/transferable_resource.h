@@ -130,9 +130,12 @@ struct VIZ_COMMON_EXPORT TransferableResource {
   // For usage only in Mojo serialization/deserialization.
   const gpu::Mailbox& memory_buffer_id() const { return memory_buffer_id_; }
 
+  const gfx::Size GetSize() const { return size; }
+
   bool operator==(const TransferableResource& o) const {
-    return id == o.id && is_software == o.is_software && size == o.size &&
-           format == o.format && memory_buffer_id_ == o.memory_buffer_id_ &&
+    return id == o.id && is_software == o.is_software &&
+           GetSize() == o.GetSize() && format == o.format &&
+           memory_buffer_id_ == o.memory_buffer_id_ &&
            sync_token_ == o.sync_token_ &&
            texture_target_ == o.texture_target_ &&
            color_space == o.color_space && hdr_metadata == o.hdr_metadata &&
