@@ -71,7 +71,7 @@ void ScrollJankV4Processor::HandleFramePresented(
     return;
   }
 
-  histogram_emitter_.OnFramePresented(result->missed_vsyncs_per_reason);
+  histogram_emitter_.OnFrameWithScrollUpdates(result->missed_vsyncs_per_reason);
   CHECK(!earliest_event.scroll_jank_v4().has_value());
   earliest_event.set_scroll_jank_v4(std::move(result));
 }

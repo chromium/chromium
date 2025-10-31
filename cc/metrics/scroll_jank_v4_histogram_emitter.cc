@@ -13,6 +13,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
+#include "base/trace_event/trace_event.h"
 #include "cc/base/features.h"
 #include "cc/metrics/event_metrics.h"
 #include "cc/metrics/scroll_jank_dropped_frame_tracker.h"
@@ -44,6 +45,29 @@ constexpr const char* GetDelayedFramesPercentageFixedWindow4HistogramName(
 
 }  // namespace
 
+bool ScrollJankV4HistogramEmitter::SingleFrameData::HasJankReasons() const {
+  return !jank_reasons.empty();
+}
+
+void ScrollJankV4HistogramEmitter::SingleFrameData::UpdateWith(
+    const JankReasonArray<int>& missed_vsyncs_per_reason) {
+  int missed_vsyncs_for_any_reason = 0;
+
+  for (int i = 0; i <= static_cast<int>(JankReason::kMaxValue); i++) {
+    int missed_vsyncs_for_reason = missed_vsyncs_per_reason[i];
+    if (missed_vsyncs_for_reason == 0) {
+      continue;
+    }
+    missed_vsyncs_for_any_reason =
+        std::max(missed_vsyncs_for_any_reason, missed_vsyncs_for_reason);
+    jank_reasons.Put(static_cast<JankReason>(i));
+  }
+
+  missed_vsyncs += missed_vsyncs_for_any_reason;
+  max_consecutive_missed_vsyncs =
+      std::max(max_consecutive_missed_vsyncs, missed_vsyncs_for_any_reason);
+}
+
 ScrollJankV4HistogramEmitter::ScrollJankV4HistogramEmitter() {
   // Not initializing with 0 because the first frame in first window will be
   // always deemed non-janky which makes the metric slightly biased. Setting
@@ -55,9 +79,32 @@ ScrollJankV4HistogramEmitter::~ScrollJankV4HistogramEmitter() {
   EmitPerScrollHistogramsAndResetCounters();
 }
 
-void ScrollJankV4HistogramEmitter::OnFramePresented(
-    const JankReasonArray<int>& missed_vsyncs_per_reason) {
-  UpdateCountersForPresentedFrame(missed_vsyncs_per_reason);
+void ScrollJankV4HistogramEmitter::OnFrameWithScrollUpdates(
+    const JankReasonArray<int>& missed_vsyncs_per_reason,
+    bool counts_towards_histogram_frame_count) {
+  DCHECK_LT(fixed_window_.presented_frames, kHistogramEmitFrequency);
+
+  if (!counts_towards_histogram_frame_count) {
+    if (!accumulated_data_from_non_damaging_frames_.has_value()) {
+      accumulated_data_from_non_damaging_frames_ = SingleFrameData();
+    }
+    accumulated_data_from_non_damaging_frames_->UpdateWith(
+        missed_vsyncs_per_reason);
+    return;
+  }
+
+  SingleFrameData frame_data = {};
+
+  // If we've accumulated any jank data from non-damaging frames, consume it
+  // together with the current frame.
+  if (accumulated_data_from_non_damaging_frames_.has_value()) {
+    frame_data = *accumulated_data_from_non_damaging_frames_;
+    accumulated_data_from_non_damaging_frames_ = std::nullopt;
+  }
+
+  frame_data.UpdateWith(missed_vsyncs_per_reason);
+  UpdateCountersForFrame(frame_data);
+
   // Emit per-window histograms if we've reached the end of the current window.
   if (fixed_window_.presented_frames == kHistogramEmitFrequency) {
     EmitPerWindowHistogramsAndResetCounters();
@@ -69,6 +116,8 @@ void ScrollJankV4HistogramEmitter::OnScrollStarted() {
   // In case ScrollJankDroppedFrameTracker wasn't informed about the end of the
   // previous scroll, emit histograms for the previous scroll now.
   EmitPerScrollHistogramsAndResetCounters();
+  // Don't carry jank data from non-damaging frames across scrolls.
+  ResetAccumulatedDataFromNonDamagingFrames();
   per_scroll_ = JankDataPerScroll();
 }
 
@@ -76,44 +125,45 @@ void ScrollJankV4HistogramEmitter::OnScrollEnded() {
   if (base::FeatureList::IsEnabled(
           features::kEmitPerScrollJankV4MetricAtEndOfScroll)) {
     EmitPerScrollHistogramsAndResetCounters();
+    // Don't carry jank data from non-damaging frames across scrolls.
+    ResetAccumulatedDataFromNonDamagingFrames();
   }
 }
 
-void ScrollJankV4HistogramEmitter::UpdateCountersForPresentedFrame(
-    const JankReasonArray<int>& missed_vsyncs_per_reason) {
-  DCHECK_LT(fixed_window_.presented_frames, kHistogramEmitFrequency);
-
+void ScrollJankV4HistogramEmitter::UpdateCountersForFrame(
+    const SingleFrameData& frame_data) {
   if (!per_scroll_.has_value()) {
     per_scroll_ = JankDataPerScroll();
   }
 
-  int missed_vsyncs = 0;
-
-  // Update per-reason counters.
-  for (int i = 0; i <= static_cast<int>(JankReason::kMaxValue); i++) {
-    int missed_vsyncs_for_reason = missed_vsyncs_per_reason[i];
-    if (missed_vsyncs_for_reason == 0) {
-      continue;
-    }
-    missed_vsyncs = std::max(missed_vsyncs, missed_vsyncs_for_reason);
-    ++fixed_window_.delayed_frames_per_reason[i];
-  }
-
-  bool is_janky = missed_vsyncs > 0;
-  if (is_janky) {
-    // Update total counters. The scroll jank v4 metric decided that **1 frame**
-    // was delayed (hence the `++`) because Chrome missed **`missed_vsyncs`
-    // VSyncs** (hence the `+=`).
-    ++fixed_window_.delayed_frames;
-    ++per_scroll_->delayed_frames;
-    fixed_window_.missed_vsyncs += missed_vsyncs;
-    fixed_window_.max_consecutive_missed_vsyncs =
-        std::max(fixed_window_.max_consecutive_missed_vsyncs, missed_vsyncs);
-  }
-
-  // Update counters of presented frames.
   ++fixed_window_.presented_frames;
   ++per_scroll_->presented_frames;
+
+  if (!frame_data.HasJankReasons()) {
+    // No jank reasons => no need to update any delayed/missed counters.
+    DCHECK_EQ(frame_data.missed_vsyncs, 0);
+    DCHECK_EQ(frame_data.max_consecutive_missed_vsyncs, 0);
+    return;
+  }
+
+  // At least one jank reason => there must be at least one missed VSync.
+  DCHECK_GT(frame_data.missed_vsyncs, 0);
+  DCHECK_GE(frame_data.missed_vsyncs, frame_data.max_consecutive_missed_vsyncs);
+
+  // Update per-reason counters.
+  for (JankReason reason : frame_data.jank_reasons) {
+    fixed_window_.delayed_frames_per_reason[static_cast<int>(reason)]++;
+  }
+
+  // Update total counters. The scroll jank v4 metric decided that **1 frame**
+  // was delayed (hence the `++`) because Chrome missed **`missed_vsyncs`
+  // VSyncs** (hence the `+=`).
+  ++fixed_window_.delayed_frames;
+  ++per_scroll_->delayed_frames;
+  fixed_window_.missed_vsyncs += frame_data.missed_vsyncs;
+  fixed_window_.max_consecutive_missed_vsyncs =
+      std::max(fixed_window_.max_consecutive_missed_vsyncs,
+               frame_data.max_consecutive_missed_vsyncs);
 }
 
 void ScrollJankV4HistogramEmitter::EmitPerWindowHistogramsAndResetCounters() {
@@ -164,6 +214,18 @@ void ScrollJankV4HistogramEmitter::EmitPerScrollHistogramsAndResetCounters() {
   }
 
   per_scroll_ = std::nullopt;
+}
+
+void ScrollJankV4HistogramEmitter::ResetAccumulatedDataFromNonDamagingFrames() {
+  if (!accumulated_data_from_non_damaging_frames_.has_value()) {
+    return;
+  }
+  if (accumulated_data_from_non_damaging_frames_->HasJankReasons()) {
+    TRACE_EVENT("input",
+                "ScrollJankV4HistogramEmitter: Metric missed jank from "
+                "non-damaging frames");
+  }
+  accumulated_data_from_non_damaging_frames_ = std::nullopt;
 }
 
 }  // namespace cc

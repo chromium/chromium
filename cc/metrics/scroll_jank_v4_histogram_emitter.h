@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "base/containers/enum_set.h"
 #include "cc/cc_export.h"
 #include "cc/metrics/event_metrics.h"
 
@@ -35,7 +36,18 @@ class CC_EXPORT ScrollJankV4HistogramEmitter {
  public:
   ScrollJankV4HistogramEmitter();
   ~ScrollJankV4HistogramEmitter();
-  void OnFramePresented(const JankReasonArray<int>& missed_vsyncs_per_reason);
+
+  // Adds data about missed VSyncs in a single frame.
+  //
+  // `counts_towards_histogram_frame_count` controls whether the frame counts
+  // towards `kHistogramEmitFrequency`. This allows us to experiment with the
+  // emitting fixed window histograms after:
+  //
+  //   1. 64 damaging frames or
+  //   2. 64 frames (either damaging or non-damaging).
+  void OnFrameWithScrollUpdates(
+      const JankReasonArray<int>& missed_vsyncs_per_reason,
+      bool counts_towards_histogram_frame_count = true);
   void OnScrollStarted();
   void OnScrollEnded();
 
@@ -63,10 +75,38 @@ class CC_EXPORT ScrollJankV4HistogramEmitter {
       "Event.ScrollJank.MissedVsyncsMax4.FixedWindow";
 
  private:
-  void UpdateCountersForPresentedFrame(
-      const JankReasonArray<int>& missed_vsyncs_per_reason);
+  // Jank data about a single frame that counts towards the scroll jank v4
+  // metric histograms frame count.
+  //
+  // Might actually contain data from multiple non-damaging frames in case they
+  // don't count towards the histogram frame count.
+  struct SingleFrameData {
+    // Reasons why the frame is janky. Might be empty.
+    base::EnumSet<JankReason, JankReason::kMinValue, JankReason::kMaxValue>
+        jank_reasons;
+
+    // Total number of VSyncs that Chrome missed (for any reason). Whenever a
+    // frame is missed, it could be delayed by >=1 vsyncs, this helps us track
+    // how "long" the janks are.
+    //
+    // Must be zero if `jank_reasons` is empty. Must be positive if
+    // `jank_reasons` is non-empty.
+    int missed_vsyncs = 0;
+
+    // Maximum number of consecutive VSyncs that Chrome missed (for any reason).
+    //
+    // Must be zero if `jank_reasons` is empty. Must be less than or equal to
+    // `missed_vsyncs`.
+    int max_consecutive_missed_vsyncs = 0;
+
+    bool HasJankReasons() const;
+    void UpdateWith(const JankReasonArray<int>& missed_vsyncs_per_reason);
+  };
+
+  void UpdateCountersForFrame(const SingleFrameData& frame_data);
   void EmitPerWindowHistogramsAndResetCounters();
   void EmitPerScrollHistogramsAndResetCounters();
+  void ResetAccumulatedDataFromNonDamagingFrames();
 
   struct JankDataFixedWindow {
     // Total number of frames that Chrome presented.
@@ -102,6 +142,8 @@ class CC_EXPORT ScrollJankV4HistogramEmitter {
     int delayed_frames = 0;
   };
 
+  std::optional<SingleFrameData> accumulated_data_from_non_damaging_frames_ =
+      std::nullopt;
   JankDataFixedWindow fixed_window_;
   std::optional<JankDataPerScroll> per_scroll_ = std::nullopt;
 };
