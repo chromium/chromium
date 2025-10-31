@@ -829,7 +829,10 @@ android_library("chrome_test_java_org.chromium.chrome.browser.incognito") {
     "src/org/chromium/chrome/browser/incognito/IncognitoTabLauncherTest.java",
   ]
 
-  deps = [ ":chrome_test_java_helper" ]
+  deps = [
+    ":chrome_test_java_helper",
+    "//chrome/browser/ui/android/hats:factory_java",
+  ]
 }
 
 android_library("chrome_test_java_org.chromium.chrome.browser.media") {
@@ -1087,7 +1090,10 @@ android_library("chrome_test_java_org.chromium.chrome.browser.permissions") {
     "src/org/chromium/chrome/browser/permissions/RuntimePermissionTest.java",
   ]
 
-  deps = [ ":chrome_test_java_helper" ]
+  deps = [
+    ":chrome_test_java_helper",
+    "//chrome/browser/ui/android/hats:factory_java",
+  ]
 }
 
 android_library("chrome_test_java_org.chromium.chrome.browser.privacy") {

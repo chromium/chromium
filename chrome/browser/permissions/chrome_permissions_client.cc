@@ -434,10 +434,19 @@ void ChromePermissionsClient::TriggerPromptHatsSurveyIfEnabled(
   auto survey_data = permissions::PermissionHatsTriggerHelper::
       SurveyProductSpecificData::PopulateFrom(prompt_parameters);
 
+#if !BUILDFLAG(IS_ANDROID)
   hats_service->LaunchSurvey(
       kHatsSurveyTriggerPermissionsPrompt, std::move(hats_shown_callback),
       base::DoNothing(), survey_data.survey_bits_data,
       survey_data.survey_string_data, survey_parameters->supplied_trigger_id,
+#else
+  // Launching surveys on android requires an active web contents.
+  hats_service->LaunchSurveyForWebContents(
+      kHatsSurveyTriggerPermissionsPrompt, web_contents,
+      survey_data.survey_bits_data, survey_data.survey_string_data,
+      std::move(hats_shown_callback), base::DoNothing(),
+      survey_parameters->supplied_trigger_id,
+#endif
       HatsService::SurveyOptions(survey_parameters->custom_survey_invitation,
                                  survey_parameters->message_identifier));
 }
