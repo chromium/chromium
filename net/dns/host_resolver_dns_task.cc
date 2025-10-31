@@ -82,41 +82,16 @@ base::Value::Dict NetLogResults(const HostResolverDnsTask::Results& results) {
   return dict;
 }
 
-void RecordResolveTimeDiffForBucket(const char* histogram_variant,
-                                    const char* histogram_bucket,
-                                    base::TimeDelta diff) {
-  base::UmaHistogramTimes(
-      base::StrCat({"Net.Dns.ResolveTimeDiff.", histogram_variant,
-                    ".FirstRecord", histogram_bucket}),
-      diff);
-}
-
 void RecordResolveTimeDiff(const char* histogram_variant,
                            base::TimeTicks start_time,
                            base::TimeTicks first_record_end_time,
                            base::TimeTicks second_record_end_time) {
   CHECK_LE(start_time, first_record_end_time);
   CHECK_LE(first_record_end_time, second_record_end_time);
-  base::TimeDelta first_elapsed = first_record_end_time - start_time;
   base::TimeDelta diff = second_record_end_time - first_record_end_time;
 
-  if (first_elapsed < base::Milliseconds(10)) {
-    RecordResolveTimeDiffForBucket(histogram_variant, "FasterThan10ms", diff);
-  } else if (first_elapsed < base::Milliseconds(25)) {
-    RecordResolveTimeDiffForBucket(histogram_variant, "10msTo25ms", diff);
-  } else if (first_elapsed < base::Milliseconds(50)) {
-    RecordResolveTimeDiffForBucket(histogram_variant, "25msTo50ms", diff);
-  } else if (first_elapsed < base::Milliseconds(100)) {
-    RecordResolveTimeDiffForBucket(histogram_variant, "50msTo100ms", diff);
-  } else if (first_elapsed < base::Milliseconds(250)) {
-    RecordResolveTimeDiffForBucket(histogram_variant, "100msTo250ms", diff);
-  } else if (first_elapsed < base::Milliseconds(500)) {
-    RecordResolveTimeDiffForBucket(histogram_variant, "250msTo500ms", diff);
-  } else if (first_elapsed < base::Seconds(1)) {
-    RecordResolveTimeDiffForBucket(histogram_variant, "500msTo1s", diff);
-  } else {
-    RecordResolveTimeDiffForBucket(histogram_variant, "SlowerThan1s", diff);
-  }
+  base::UmaHistogramTimes(
+      base::StrCat({"Net.Dns.ResolveTimeDiff2.", histogram_variant}), diff);
 }
 
 // Gets endpoints for sort and prepares `results` to add sorted and merged
