@@ -1028,6 +1028,7 @@ if (enable_new_texture_compressor) {
 
     deps = [
       ":texture_compressor",
+      "//third_party/rust/bytemuck/v1:lib",
       "//third_party/rust/png/v0_18:lib",
     ]
 

@@ -179,3 +179,36 @@ pub fn compress_etc1(
         dst_row[..copy_len].copy_from_slice(&staging_row_bytes[..copy_len]);
     }
 }
+
+/// Decompress ETC1 to RGBA
+///
+/// - `src` should be in ETC1
+/// - `dst` will be filled with RGBA
+/// - `width` and `height` should be the dimensions of `dst`. If width or height
+///   are not multiples of 4, note that the edges become partial blocks and
+///   pixels out of bounds will be discarded. The number is truncated.
+/// - `src_row_width` should be the width of ETC1 image `dst_row_width` should
+///   be the width of RGBA image
+///
+///
+/// This is a stub.
+/// TODO: b/393495436 - Implement ETC1 decoding logic.
+pub fn decompress_etc1(
+    _src: &[u8],
+    dst: &mut [u32],
+    dst_width: u32,
+    dst_height: u32,
+    _src_row_width: u32,
+    dst_row_width: u32,
+) {
+    for y in 0..dst_height {
+        for x in 0..dst_width {
+            let r = (x % 256) as u32;
+            let b = (y % 256) as u32;
+            let pixel_value: u32 = 0xFF000000 // Alpha: 0xFF
+                    | ((r & 0xFF) << 16) // Red
+                    |  (b & 0xFF); // Blue
+            dst[(y * dst_row_width + x) as usize] = pixel_value;
+        }
+    }
+}
