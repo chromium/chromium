@@ -10,7 +10,15 @@ source_set("import_coordinator") {
     "credential_import_mediator.mm",
   ]
   public_deps = [ "//ios/chrome/browser/shared/coordinator/chrome_coordinator" ]
-  deps = [ "//ios/chrome/browser/credential_exchange/model" ]
+  deps = [
+    "//base",
+    "//components/signin/public/identity_manager",
+    "//ios/chrome/browser/credential_exchange/model",
+    "//ios/chrome/browser/credential_exchange/ui",
+    "//ios/chrome/browser/data_import/public",
+    "//ios/chrome/browser/data_import/ui",
+    "//ios/chrome/browser/signin/model",
+  ]
   frameworks = [ "Foundation.framework" ]
 }
 

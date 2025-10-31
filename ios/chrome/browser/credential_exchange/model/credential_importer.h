@@ -7,11 +7,22 @@
 
 #import <Foundation/Foundation.h>
 
+// Delegate for CredentialImporter.
+@protocol CredentialImporterDelegate <NSObject>
+
+// Displays the initial import screen with counts of received credentials.
+- (void)showImportScreenWithPasswordCount:(NSInteger)passwordCount
+                             passkeyCount:(NSInteger)passkeyCount;
+
+@end
+
 // Handles importing credentials using the Credential Exchange Format
 // (https://fidoalliance.org/specifications-credential-exchange-specifications).
 @interface CredentialImporter : NSObject
 
-- (instancetype)init NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithDelegate:(id<CredentialImporterDelegate>)delegate
+    NS_DESIGNATED_INITIALIZER;
+- (instancetype)init NS_UNAVAILABLE;
 
 // Called when the app is launched to perform credential import. `UUID` is a
 // token provided by the OS on app launch, required to receive the credential

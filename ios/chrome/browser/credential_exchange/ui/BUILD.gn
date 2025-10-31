@@ -8,13 +8,20 @@ source_set("ui") {
     "credential_export_view_controller.h",
     "credential_export_view_controller.mm",
     "credential_export_view_controller_presentation_delegate.h",
+    "credential_import_consumer.h",
+    "credential_import_view_controller.h",
+    "credential_import_view_controller.mm",
   ]
   deps = [
     "//components/password_manager/core/browser/ui",
+    "//components/strings",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/data_import/public",
+    "//ios/chrome/browser/data_import/ui",
     "//ios/chrome/browser/settings/ui_bundled/password:ui",
     "//ios/chrome/browser/shared/ui/table_view:utils",
     "//ios/chrome/browser/shared/ui/table_view/cells",
+    "//ios/chrome/common/ui/promo_style",
     "//ui/base",
   ]
   frameworks = [ "UIKit.framework" ]

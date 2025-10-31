@@ -14,13 +14,23 @@
 @implementation CredentialImporter {
   // Imports credentials through the OS ASCredentialImportManager API.
   CredentialImportManager* _credentialImportManager;
+
+  // Delegate for CredentialImporter.
+  id<CredentialImporterDelegate> _delegate;
+
+  // Passwords received from the exporting credential manager.
+  NSArray<CredentialExchangePassword*>* _passwords;
+
+  // Passkeys received from the exporting credential manager.
+  NSArray<CredentialExchangePasskey*>* _passkeys;
 }
 
-- (instancetype)init {
+- (instancetype)initWithDelegate:(id<CredentialImporterDelegate>)delegate {
   self = [super init];
   if (self) {
     _credentialImportManager = [[CredentialImportManager alloc] init];
     _credentialImportManager.delegate = self;
+    _delegate = delegate;
   }
   return self;
 }
@@ -37,7 +47,10 @@
             (NSArray<CredentialExchangePassword*>*)passwords
                                 passkeys:(NSArray<CredentialExchangePasskey*>*)
                                              passkeys {
-  // TODO(crbug.com/445889719): Handle imported data.
+  _passwords = passwords;
+  _passkeys = passkeys;
+  [_delegate showImportScreenWithPasswordCount:passwords.count
+                                  passkeyCount:passkeys.count];
 }
 
 @end
