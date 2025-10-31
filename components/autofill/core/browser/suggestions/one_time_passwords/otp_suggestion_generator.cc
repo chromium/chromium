@@ -10,6 +10,8 @@
 #include "components/autofill/core/browser/integrators/one_time_tokens/otp_manager.h"
 #include "components/autofill/core/browser/suggestions/one_time_passwords/one_time_password_suggestion_data.h"
 #include "components/autofill/core/browser/suggestions/suggestion_generator.h"
+#include "components/strings/grit/components_strings.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace autofill {
 namespace {
@@ -21,8 +23,12 @@ Suggestion BuildOtpSuggestion(const std::string& otp_value,
                                      SuggestionType::kOneTimePasswordEntry);
 #if BUILDFLAG(IS_ANDROID)
   // Android SMS OTPs are the only supported OTPs at the moment. Choose the
-  // right icon when more OTP options are supported in the future.
+  // right icon and A11Y label when more OTP options are supported in the
+  // future.
   suggestion.icon = Suggestion::Icon::kAndroidMessages;
+  suggestion.voice_over = l10n_util::GetStringFUTF16(
+      IDS_AUTOFILL_ONE_TIME_PASSWORD_VOICE_OVER_A11Y_LABEL,
+      base::UTF8ToUTF16(otp_value));
 #endif
   return suggestion;
 }
