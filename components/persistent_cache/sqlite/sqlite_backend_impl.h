@@ -50,16 +50,8 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) SqliteBackendImpl : public Backend {
   void Abandon() override;
 
  private:
-  // Inserts `content` and `metadata` into storage under `key`. Returns a SQLite
-  // extended result code in case of error.
-  base::expected<void, int> InsertImpl(std::string_view key,
-                                       base::span<const uint8_t> content,
-                                       EntryMetadata metadata)
-      EXCLUSIVE_LOCKS_REQUIRED(lock_);
-
-  // Returns the `TransactionError` corresponding to a SQLite extended result
-  // code.
-  static TransactionError TranslateError(int error_code);
+  // Translate error codes from `db_` into a `TransactionError`.
+  TransactionError TranslateError(int error_code);
 
   static SqliteVfsFileSet GetVfsFileSetFromParams(BackendParams backend_params);
 
