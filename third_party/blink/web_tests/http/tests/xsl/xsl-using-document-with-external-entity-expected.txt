@@ -1,4 +1,4 @@
-CONSOLE WARNING: crbug.com/435623334: This page uses XSLT, which being considered for removal from the web. If that happens, it is possible that this page will need to be updated to maintain functionality.
+CONSOLE WARNING: XSLTProcessor and XSLT Processing Instructions have been deprecated by all browsers. These features will be removed from this browser soon. See https://chromestatus.com/feature/4709671889534976.
 CONSOLE ERROR: Unsafe attempt to load URL xsl-using-document-with-external-entity.xml. Domains, protocols and ports must match.
 
 CONSOLE ERROR: Unsafe attempt to load URL http://example.com/ from frame with URL http://127.0.0.1:8000/xsl/xsl-using-document-with-external-entity.xml. Domains, protocols and ports must match.

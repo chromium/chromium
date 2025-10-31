@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+
+<body>
+<script>
+  const xmlString = `
+  <page>
+   <message>
+    Hello World.
+   </message>
+  </page>
+  `;
+
+  const xsltString = `
+  <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+    <xsl:template match="/">
+      <xsl:apply-templates select="/page/message"/>
+    </xsl:template>
+    <xsl:template match="/page/message">
+      Should be green:
+      <div style="color:green">
+        <xsl:value-of select="."/>
+      </div>
+    </xsl:template>
+  </xsl:stylesheet>
+  `;
+
+  const parser = new DOMParser();
+  const xmlDoc = parser.parseFromString(xmlString, "application/xml");
+  const xsltDoc = parser.parseFromString(xsltString, "application/xml");
+  const xsltProcessor = new XSLTProcessor();
+  xsltProcessor.importStylesheet(xsltDoc);
+  const result = xsltProcessor.transformToFragment(xmlDoc, document);
+  document.body.append(result);
+</script>

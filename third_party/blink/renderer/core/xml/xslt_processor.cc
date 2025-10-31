@@ -64,13 +64,17 @@ XSLTProcessor::XSLTProcessor(PassKey, Document& document)
   CHECK(RuntimeEnabledFeatures::XSLTEnabled());
 
   if (auto* window = document.domWindow()) {
+    // This should already be deprecation/use counted by either the DeprecateAs
+    // in xslt_processor.idl, or by DocumentXSLT. Just add an explicit console
+    // message here for visibility, due to crbug.com/40069336.
     window->AddConsoleMessage(
         MakeGarbageCollected<ConsoleMessage>(
             ConsoleMessage::Source::kDeprecation,
             ConsoleMessage::Level::kWarning,
-            "crbug.com/435623334: This page uses XSLT, which being considered "
-            "for removal from the web. If that happens, it is possible that "
-            "this page will need to be updated to maintain functionality."),
+            "XSLTProcessor and XSLT Processing Instructions have been "
+            "deprecated by all browsers. These features will be removed from "
+            "this browser soon. See "
+            "https://chromestatus.com/feature/4709671889534976."),
         /*discard_duplicates=*/true);
   }
 }
