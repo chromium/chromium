@@ -278,6 +278,7 @@
 <translation id="199425419756152024">Parola Baxın</translation>
 <translation id="1996318269856535896">Hələ də bu cihazda mövcud axtarış datasından istifadə edə bilərsiniz. Ondan istifadə etmək üçün idarə olunan hesabınızdan çıxın.</translation>
 <translation id="2010008505735295285">Yenidən yükləyin</translation>
+<translation id="2012723204723845092">Xoş gəlmisiniz!</translation>
 <translation id="2015722694326466240">Parollara baxmaq üçün əvvəlcə cihazınızda parol kod ayarlamalısınız.</translation>
 <translation id="201759455285471444">Tab qrupunu genişləndirin.</translation>
 <translation id="202070562065520783">Bunu mənə izah et</translation>
@@ -648,6 +649,7 @@
 <translation id="3530024057633834563">Yadda saxlanmış hər hansı parol və ya giriş açarınız yoxdur, lakin giriş məlumatlarını yadda saxlamamağı seçdiyiniz sayt və tətbiqlərin siyahısını silə bilərsiniz. Sayt və ya tətbiqlər üçün yaratdığınız heç bir hesab silinməyəcək.</translation>
 <translation id="3530206579861815432">Sinxronlaşdırılmış cihazlarda açıq və son bağlanmış tabları tez tapın.</translation>
 <translation id="3530767473765895035">Bu cihazdakı hesabları idarə edin…</translation>
+<translation id="353340646084395154">Yeni tab səhifəsi tərcihləri silindi</translation>
 <translation id="3533436815740441613">Yeni Tab</translation>
 <translation id="3540141921715814660">Əlfəcinlərə əlavə edin</translation>
 <translation id="3546122170015471515">Google.com-da Xəritə Önizləmələri</translation>
@@ -1000,6 +1002,7 @@
 <translation id="4894963374040315706">Səsinizi istifadə edərək axtarış etməyə icazə verir</translation>
 <translation id="4895540042460820904">Son açılma tarixi:</translation>
 <translation id="4896467949657706481">Tablar bağlandı; çıxış edildi</translation>
+<translation id="4911042367886397055">Təkrar xoş gəldiniz, <ph name="USER_NAME" />!</translation>
 <translation id="4913626501929406101">Parol kopyasını ailə qrupunun üzvü ilə təhlükəsiz paylaşa bilərsiniz. <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
 <translation id="4917025507570489430"><ph name="USER_EMAIL" /> kimi daxil olduğunuz zaman mövcud axtarış datasından istifadə edə bilərsiniz. Təşkilatınız bu dataya baxa bilər.</translation>
 <translation id="4918086044614829423">Qəbul edin</translation>
@@ -1051,6 +1054,7 @@
 <translation id="508645147179720015">Qeyd 1000 simvoldan çoxdur</translation>
 <translation id="5087098519049306025">Qiymət İzləmə</translation>
 <translation id="5090832849094901128">Bu parolu sildikdə <ph name="WEBSITE" /> saytında hesabınız silinməyəcək.</translation>
+<translation id="5113960131843706315">Məlumatlarınız əldə edilir…</translation>
 <translation id="5118462200606189584">Hesab əlavə edin…</translation>
 <translation id="5118764316110575523">Deaktiv</translation>
 <translation id="5119329531859909472">Məhsulu izləmək üçün İzləyin seçiminə toxunun</translation>
@@ -1121,6 +1125,7 @@
 <translation id="537853552771686272">Maraqlandığınız mövzu və saytları idarə edin</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} tab bağlanıb}other{{count} tab bağlanıb}}</translation>
 <translation id="5394975111793637642">Sizin üçün məhsul rəyləri kartını gizlədin</translation>
+<translation id="5407806496954700135">Yeni tab səhifəsi fərdiləşdirmələrini başqa cihazdan tətbiq etmək istəyirsiniz?</translation>
 <translation id="5414763847370083940">Hər hansı saytda qiymət düşərsə, bildiriş alacaqsınız.</translation>
 <translation id="5415289094036440596">Giriş açarlarını paylaşmaq olmaz</translation>
 <translation id="5416455648658732408">Tab qrupuna köçürün</translation>
@@ -1756,6 +1761,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="7696316012653762532">Səhifəni tərcümə etmək üçün seçimlər</translation>
 <translation id="7700527812567437847">Google Linza ilə ekranda axtarın</translation>
 <translation id="7701040980221191251">Heç biri</translation>
+<translation id="7708668404222666001">Yeni tab səhifəsi tərcihləriniz tətbiq edildi</translation>
 <translation id="7708994397325774423">Bütün parollarınızı əldə edin</translation>
 <translation id="7711440461521638739">Heç bir parolu təkrar istifadə etmirsiniz</translation>
 <translation id="7712361583414030698">Oflayn versiyaya baxırsınız</translation>

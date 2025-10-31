@@ -728,6 +728,7 @@
 <translation id="4355272626458588338">သင့်အတွက်အရေးကြီးသော စာမျက်နှာသို့ လိပ်စာမှတ်ပြီး ပြန်သွားနိုင်သည်</translation>
 <translation id="4356503491090073318">ကတ်နံပါတ်*</translation>
 <translation id="4357206670025518404">+<ph name="COUNT_NUMBER" /></translation>
+<translation id="4358630185957185589">Google Lens ဖွင့်ရန်</translation>
 <translation id="4359809482106103048">လုံခြုံမှု အကျဉ်းချုပ်</translation>
 <translation id="4378154925671717803">ဖုန်း</translation>
 <translation id="4380055775103003110">ဤပြဿနာဆက်ဖြစ်နေပါက <ph name="SITE_ETLD_PLUS_ONE" /> တွင် အခြားနည်းလမ်းများကို စမ်းကြည့်နိုင်သည်။</translation>
@@ -1510,6 +1511,7 @@
 <translation id="7612619742409846846">အဖြစ် Google သို့လက်မှတ်ထိုးဝင်ရန်</translation>
 <translation id="7612989789287281429">လက်မှတ်ထိုးဝင်နေသည်…</translation>
 <translation id="7619072057915878432"><ph name="FILE_NAME" /> ဒေါင်းလုဒ်မှာ ကွန်ရက် ပြဿနာများကြောင့် မအောင်မြင်ခဲ့ပါ။</translation>
+<translation id="7620958983792650214">{NUM_REVOKED_PERMISSIONS,plural, =1{ဝဘ်ဆိုက်တစ်ခုမှ မှာယူမှု ရပ်ဆိုင်းလိုက်သည်}other{ဝဘ်ဆိုက် # ခုမှ မှာယူမှု ရပ်ဆိုင်းလိုက်သည်}}</translation>
 <translation id="7626032353295482388">Chrome က ကြိုဆိုပါသည်</translation>
 <translation id="7628417132421583481">Password Manager သို့ သွားရန်</translation>
 <translation id="7630202231528827509">ပံ့ပိုးသူ URL</translation>

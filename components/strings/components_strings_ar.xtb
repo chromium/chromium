@@ -1844,6 +1844,7 @@
 <translation id="4014895360827978999">خدمات تجارية وأنظمة دفع</translation>
 <translation id="4018819349042761761">مفتاح عام</translation>
 <translation id="4023431997072828269">ستظهر معلوماتك للآخرين لأن هذا النموذج يستخدم اتصالاً غير آمن.</translation>
+<translation id="4024673763872230929">يمكنك حفظ معلوماتك على جهازك لملء النماذج بشكل أسرع.</translation>
 <translation id="4025325634010721551">تمت إعادة تحميل السياسات.</translation>
 <translation id="4025338605225449265">عملات وأسعار صرف</translation>
 <translation id="4025777154208238692">ترتيب عكسي</translation>
@@ -2277,6 +2278,7 @@
 <translation id="4732860731866514038">جارٍ تنزيل حزمة اللغة <ph name="LANGUAGE" />… %<ph name="PERCENT" /></translation>
 <translation id="4733082559415072992">يريد <ph name="URL" /> استخدام الموقع الجغرافي لجهازك.</translation>
 <translation id="473414950835101501">استخدام الكاميرات</translation>
+<translation id="4734343956394152985"><ph name="BEGIN_BOLD" />محرك البحث التلقائي<ph name="END_BOLD" /> · <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="4736825316280949806">‏إعادة تشغيل Chromium</translation>
 <translation id="4736934858538408121">البطاقة الافتراضية</translation>
 <translation id="473775607612524610">تحديث</translation>
@@ -2339,6 +2341,7 @@
 <translation id="4822493756793346865">تستند الأسعار العادية إلى معلومات المتاجر المتاحة على الويب خلال آخر 90 يومًا.</translation>
 <translation id="4822922322149719535">مراجعة سجلّ الأخطاء</translation>
 <translation id="4823699521959851389">يحتاج <ph name="SHORT_PRODUCT_NAME" /> إلى إذن باستخدام <ph name="PERMISSION" /> على جهازك</translation>
+<translation id="4825311006392962663">سيتم عرض خيارات الدفع لاحقًا عند الدفع</translation>
 <translation id="4825496307559726072">‏<ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />: اضغط على مفتاح التبويب (Tab) ثم Enter لإنشاء "جدول بيانات Google" جديد بسرعة.</translation>
 <translation id="4826588772550366629">الكاميرا والميكروفون</translation>
 <translation id="4827283332383516812">حذف البطاقة</translation>
@@ -3385,6 +3388,7 @@
 <translation id="6521745193039995384">غير مفعلة</translation>
 <translation id="6522682797352430154">موسيقى كلاسيكية</translation>
 <translation id="6524830701589638230">‏زر إدارة إعدادات تسهيل الاستخدام: انقر على هذا الزر لتخصيص أدوات تسهيل الاستخدام في إعدادات Chrome.</translation>
+<translation id="6525222262307262764">الإبقاء على محرك البحث التلقائي</translation>
 <translation id="6527049834925947126">إنتاج غذائي</translation>
 <translation id="6529173248185917884">اللفافة السابعة</translation>
 <translation id="6529602333819889595">إعادة الح&amp;ذف</translation>
@@ -3405,6 +3409,7 @@
 <translation id="6567832540451970450">يسمح المشرف باستخدام <ph name="PERMISSION" /> لهذا الموقع الإلكتروني</translation>
 <translation id="6568793038316600992">‏زر إدارة طرق الدفع: انقر على هذا الزر لإدارة الدفعات ومعلومات بطاقة الائتمان في إعدادات Chrome.</translation>
 <translation id="6569060085658103619">أنت تعرض صفحة إضافة</translation>
+<translation id="6571992525120410251">‫"<ph name="ENGINE_NAME" />" بانتظار أسئلتك</translation>
 <translation id="6572867903637058088">هل هذه المعلومات مفيدة؟</translation>
 <translation id="6573200754375280815">عمل ثقبَين يمينًا</translation>
 <translation id="6575408526598156416">الحفظ في الحساب</translation>
@@ -3454,6 +3459,7 @@
 <translation id="666259744093848177">‏(معالج x86_64 مُترجَم)</translation>
 <translation id="6665553082534466207">عمل ثلاثة ثقوب يمينًا</translation>
 <translation id="6668389483194953109">‏تم العثور على اسم حجم الورقة "custom"، إلا أنّ السمة "custom_size" فارغة أو غير صالحة.</translation>
+<translation id="6670729408462528018">المعرض</translation>
 <translation id="6671169470640320959">تمويل قروض سيارات</translation>
 <translation id="6671697161687535275">‏هل تريد إزالة اقتراح النموذج من Chromium؟</translation>
 <translation id="6675846980676550611">غير مسموح باستخدام الواقع المعزَّز</translation>

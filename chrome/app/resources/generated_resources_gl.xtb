@@ -1040,6 +1040,7 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="169341880170235617">Agora os teus grupos de pestanas gárdanse automaticamente</translation>
 <translation id="1695487653372841667">Podes controlar os datos que se comparten con Google. Podes cambiar esta opción en calquera momento en Configuración.</translation>
 <translation id="1695510246756136088">Non hai conexión a Internet Téntao de novo.</translation>
+<translation id="1696214930320482113">Os perfís permítenche separar o traballo, a vida persoal e o tempo de lecer sen ter que cambiar de navegador. Engade un novo perfil agora.</translation>
 <translation id="1696555181932908973">Podes probar outras maneiras de continuar en <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="169675691788639886">O dispositivo ten configurado un servidor SSH. Non inicies sesión con contas confidenciais.</translation>
 <translation id="1697122132646041614">Ao premer Non me gusta, abrirase un formulario para enviar comentarios detallados sobre o motivo polo que non che gustan estes resultados.</translation>
@@ -1273,6 +1274,7 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="1851551847729706116">Compartindo <ph name="TAB_NAME" /> con esta pestana</translation>
 <translation id="1854180393107901205">Deter emisión</translation>
 <translation id="1856715684130786728">Engadir localización...</translation>
+<translation id="1857044401921988155">Se fas clic en Gardar, este grupo de pestanas converterase nun cartafol de marcadores e quitarase dos teus grupos en todos os dispositivos</translation>
 <translation id="185766080319917408">A tecla do menú de aplicacións está á esquerda da tecla Alt do lado esquerdo</translation>
 <translation id="1859294693760125695">Xa non me interesa</translation>
 <translation id="1859339856433307593">Xa hai un contrasinal para esta conta gardado no <ph name="BRAND" /> (<ph name="USER_EMAIL" />)</translation>
@@ -3139,6 +3141,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3152356229013609796">Consulta as notificacións do teu teléfono, ignóraas ou respóndeas</translation>
 <translation id="3154754096046236400">Contexto persoal</translation>
 <translation id="3155163173539279776">Reiniciar Chromium</translation>
+<translation id="3155394504825881014">Converter o grupo de pestanas nun cartafol de marcadores</translation>
 <translation id="3156511682997763015">Avanzar 10 segundos</translation>
 <translation id="3157330780336267229">Para compartir grupos de pestanas ou unirte a eles, tes que activar a sincronización</translation>
 <translation id="3157387275655328056">Engadir á lista de lectura</translation>
@@ -3777,6 +3780,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3605156246402033687">{COUNT,plural, =1{Hai {COUNT} conta na que se usa o mesmo contrasinal}other{Hai {COUNT} contas nas que se usa o mesmo contrasinal}}</translation>
 <translation id="3605515937536882518">Valores do formulario actualizados</translation>
 <translation id="3605780360466892872">Home de negocios</translation>
+<translation id="3607338234983711865">Compartes o ordenador?</translation>
 <translation id="3607671391978830431">Para un fillo ou filla</translation>
 <translation id="3607799000129481474"><ph name="SITE" /> quere verificar a túa identidade</translation>
 <translation id="3608460311600621471">Indica un motivo para imprimir estes datos:</translation>
@@ -7198,6 +7202,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="5989497858237037960">Cando navegas polos sitios, o contido das súas páxinas está encriptado e gárdase no teu dispositivo. Isto pode afectar ao rendemento de Chrome</translation>
 <translation id="5990266201903445068">Só por wifi</translation>
 <translation id="5990386583461751448">Páxina traducida</translation>
+<translation id="5990557145969487183">Separa o traballo da túa vida persoal</translation>
 <translation id="5992225669837656567">Desconectáronse todos os ratos</translation>
 <translation id="5992652489368666106">Sen bordos</translation>
 <translation id="5993508466487156420">{NUM_SITES,plural, =1{Completouse a revisión para 1 sitio}other{Completouse a revisión para {NUM_SITES} sitios}}</translation>
@@ -7357,6 +7362,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="6104929924898022309">Usar tecla de busca para modificar o comportamento das teclas de función</translation>
 <translation id="6106167152849320869">Se no paso anterior tamén indicaches que aceptas enviar datos de diagnóstico e de uso, recompilaranse estes datos para as aplicacións instaladas.</translation>
 <translation id="6108952804512516814">Crear con IA</translation>
+<translation id="6110794992500777605">Os meus atallos e sitios</translation>
 <translation id="6111718295497931251">Quitar acceso a Google Drive</translation>
 <translation id="6112727384379533756">Engadir tícket</translation>
 <translation id="6112931163620622315">Consulta o teléfono</translation>
@@ -8805,6 +8811,7 @@ Quédanche # máis. O xestor de contrasinais de Google recomenda que comprobes e
 <translation id="7127286300357471051">Cando decides compartir a pestana actual con Gemini, todo o contido e o URL da pestana envíanse a Google.</translation>
 <translation id="7127980134843952133">Historial de descargas</translation>
 <translation id="7128151990937044829">Mostrar un indicador na barra de enderezos cando se bloqueen notificacións</translation>
+<translation id="7128842673552234514">Tes outra Conta de Google?</translation>
 <translation id="7130438335435247835">Nome do punto de acceso (APN)</translation>
 <translation id="7130680050151101667">Non mostrar esta tarxeta</translation>
 <translation id="7131040479572660648">Lectura dos teus datos de <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> e <ph name="WEBSITE_3" /></translation>
@@ -8863,6 +8870,7 @@ Quédanche # máis. O xestor de contrasinais de Google recomenda que comprobes e
 <translation id="7174199383876220879">Novidade! Controla a túa música, os vídeos e moito máis.</translation>
 <translation id="7175037578838465313">Configurar <ph name="NAME" /></translation>
 <translation id="7175353351958621980">Cargado desde:</translation>
+<translation id="7177659256878428843">Converte o grupo de pestanas nun cartafol de marcadores</translation>
 <translation id="7180611975245234373">Actualizar</translation>
 <translation id="7180865173735832675">Personalizar</translation>
 <translation id="7181117767881540376">Ocultar barra de marcadores</translation>
@@ -11138,6 +11146,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8719472795285728850">Escoitando actividades das extensións…</translation>
 <translation id="8719665168401479425">Usar os xestos faciais para realizar accións</translation>
 <translation id="8720200012906404956">Buscando unha rede de telefonía móbil. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
+<translation id="8720285645560721666">Mantén separados os teus marcadores, contrasinais e opcións de configuración. Engade un novo perfil agora.</translation>
 <translation id="8720816553731218127">Esgotouse o tempo de inicio dos atributos de tempo de instalación.</translation>
 <translation id="8721093493695533465">Esta acción eliminará <ph name="TOTAL_USAGE" /> de datos almacenados polos sitios que se mostran e as aplicacións instaladas</translation>
 <translation id="8724405322205516354">Cando vexas esta icona, utiliza a impresión dixital para efectuar a identificación ou autorizar as compras.</translation>
@@ -11210,6 +11219,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8762886931014513155">O dispositivo <ph name="DEVICE_TYPE" /> necesita unha actualización</translation>
 <translation id="8763170551806710928">Mostrar etiquetas</translation>
 <translation id="8763927697961133303">Dispositivo USB</translation>
+<translation id="8766156860774051068">Seleccionados por ti</translation>
 <translation id="8766796754185931010">Kotoeri</translation>
 <translation id="8767069439158587614">Mostrar todas as buscas de <ph name="QUERY_CLUSTER_NAME" /></translation>
 <translation id="8767621466733104912">Actualizar Chrome para todos os usuarios automaticamente</translation>
@@ -11410,6 +11420,7 @@ Pode tratarse de información sobre o software instalado, os ficheiros, o navega
 <translation id="8902059453911237649">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> require que fagas unha copia de seguranza dos teus datos e que devolvas este <ph name="DEVICE_TYPE" /> hoxe.}other{<ph name="MANAGER" /> require que fagas unha copia de seguranza dos teus datos e devolvas este <ph name="DEVICE_TYPE" /> antes de que acabe o prazo.}}</translation>
 <translation id="8902667442496790482">Abrir configuración de Escoitar selección</translation>
 <translation id="8903733144777177139">O acceso ao micrófono está bloqueado</translation>
+<translation id="8905253417215700291"><ph name="GOOGLE_PASSWORD_MANAGER" /> creou un contrasinal seguro para este sitio web</translation>
 <translation id="890616557918890486">Cambiar fonte</translation>
 <translation id="8907701755790961703">Selecciona un país</translation>
 <translation id="8908420399006197927">Excluír a pestana do grupo suxerido</translation>
@@ -11897,6 +11908,7 @@ Consulta máis información sobre os datos que recompila Google e por que o fai 
 <translation id="934244546219308557">Ponlle un nome a este grupo</translation>
 <translation id="93480724622239549">Erro</translation>
 <translation id="9354763467503131">Permiso concedido para instalar aplicacións web no teu dispositivo</translation>
+<translation id="935514554385170926">Separa os traballos da escola, os proxectos paralelos e outras tarefas</translation>
 <translation id="936646668635477464">Cámara e micrófono</translation>
 <translation id="936801553271523408">Datos de diagnóstico do sistema</translation>
 <translation id="93766956588638423">Reparar extensión</translation>

@@ -1002,7 +1002,7 @@
 <translation id="4894963374040315706">這樣您便可使用語音搜尋功能查詢資訊</translation>
 <translation id="4895540042460820904">上次開啟時間</translation>
 <translation id="4896467949657706481">系統已關閉分頁並將你登出</translation>
-<translation id="4911042367886397055">「<ph name="USER_NAME" />」，歡迎回來！</translation>
+<translation id="4911042367886397055"><ph name="USER_NAME" />，歡迎回來！</translation>
 <translation id="4913626501929406101">你可安全地與家庭群組的成員分享密碼副本。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="4917025507570489430">當你以 <ph name="USER_EMAIL" /> 的身分登入，就能使用現有的瀏覽資料。你的機構或可查閱有關資料。</translation>
 <translation id="4918086044614829423">接受</translation>
@@ -1054,7 +1054,7 @@
 <translation id="508645147179720015">筆記超過 1000 個字元</translation>
 <translation id="5087098519049306025">價格追蹤</translation>
 <translation id="5090832849094901128">刪除此密碼不會刪除您在 <ph name="WEBSITE" /> 的帳戶。</translation>
-<translation id="5113960131843706315">正在取得你的內容…</translation>
+<translation id="5113960131843706315">正在擷取資料…</translation>
 <translation id="5118462200606189584">新增帳戶…</translation>
 <translation id="5118764316110575523">關閉</translation>
 <translation id="5119329531859909472">如要追蹤產品，請輕按 [追蹤]</translation>

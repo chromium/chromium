@@ -1843,6 +1843,7 @@
 <translation id="4014895360827978999">വ്യാപാരി സേവനങ്ങളും പേയ്മെന്റ് സംവിധാനങ്ങളും</translation>
 <translation id="4018819349042761761">എല്ലാവർക്കുമായുള്ള കീ</translation>
 <translation id="4023431997072828269">സുരക്ഷിതമല്ലാത്ത ഒരു കണക്ഷൻ ഉപയോഗിച്ച് ഈ ഫോം സമർപ്പിക്കുന്നതിനാൽ, നിങ്ങളുടെ വിവരങ്ങൾ മറ്റുള്ളവർക്ക് കാണാനാകും.</translation>
+<translation id="4024673763872230929">നിങ്ങളുടെ വിവരങ്ങൾ സംരക്ഷിച്ച് ഫോമുകൾ കൂടുതൽ വേഗത്തിൽ പൂരിപ്പിക്കുക. നിങ്ങളുടെ ഉപകരണത്തിൽ സംരക്ഷിക്കുന്നു.</translation>
 <translation id="4025325634010721551">നയങ്ങൾ റീലോഡ് ചെയ്തു</translation>
 <translation id="4025338605225449265">കറൻസികളും വിദേശ വിനിമയവും</translation>
 <translation id="4025777154208238692">വിപരീത ക്രമം</translation>
@@ -2276,6 +2277,7 @@
 <translation id="4732860731866514038"><ph name="LANGUAGE" /> ഭാഷാ പായ്ക്ക് ഡൗൺലോഡ് ചെയ്യുന്നു..<ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992">നിങ്ങളുടെ ഉപകരണത്തിന്‍റെ ലൊക്കേഷൻ ഉപയോഗിക്കാൻ <ph name="URL" /> ആഗ്രഹിക്കുന്നു</translation>
 <translation id="473414950835101501">നിങ്ങളുടെ ക്യാമറകൾ ഉപയോഗിക്കുക</translation>
+<translation id="4734343956394152985"><ph name="BEGIN_BOLD" />നിലവിലെ ഡിഫോൾട്ട്<ph name="END_BOLD" /> · <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="4736825316280949806">Chromium റീസ്‌റ്റാർട്ടുചെയ്യുക</translation>
 <translation id="4736934858538408121">വെർച്വൽ കാർഡ്</translation>
 <translation id="473775607612524610">അപ്ഡേറ്റ് ചെയ്യുക</translation>
@@ -2338,6 +2340,7 @@
 <translation id="4822493756793346865">വെബിൽ ഉടനീളമുള്ള സ്റ്റോറുകളിലെ കഴിഞ്ഞ 90 ദിവസത്തെ നിരക്കുകൾ അടിസ്ഥാനമാക്കിയുള്ളതാണ് 'സാധാരണ നിരക്കുകൾ'.</translation>
 <translation id="4822922322149719535">പിശക് ലോഗ് അവലോകനം ചെയ്യുക</translation>
 <translation id="4823699521959851389"><ph name="SHORT_PRODUCT_NAME" /> എന്നതിന് നിങ്ങളുടെ ഉപകരണത്തിന്റെ <ph name="PERMISSION" /> എന്നതിലേക്ക് ആക്സസ് ആവശ്യമാണ്</translation>
+<translation id="4825311006392962663">ചെക്ക്ഔട്ടിൽ 'പിന്നീട് പേ ചെയ്യുക' ഓപ്ഷനുകൾ കാണിക്കുക</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, പുതിയൊരു Google Sheet വേഗത്തിൽ സൃഷ്ടിക്കാൻ Tab അമർത്തുക, തുടർന്ന് Enter അമർത്തുക</translation>
 <translation id="4826588772550366629">ക്യാമറയും മൈക്രോഫോണും</translation>
 <translation id="4827283332383516812">കാർഡ് ഇല്ലാതാക്കുക</translation>
@@ -3384,6 +3387,7 @@
 <translation id="6521745193039995384">സജീവമല്ല</translation>
 <translation id="6522682797352430154">ശാസ്‌ത്രീയ സംഗീതം</translation>
 <translation id="6524830701589638230">'ഉപയോഗസഹായി ക്രമീകരണം മാനേജ് ചെയ്യുക' ബട്ടൺ, Chrome ക്രമീകരണത്തിൽ നിങ്ങളുടെ ഉപയോഗസഹായി ടൂളുകൾ വ്യക്തിപരമാക്കാൻ സജീവമാക്കുക</translation>
+<translation id="6525222262307262764">നിലവിലെ ഡിഫോൾട്ട് നിലനിർത്തുക</translation>
 <translation id="6527049834925947126">ഭക്ഷ്യോൽപ്പാദനം</translation>
 <translation id="6529173248185917884">ഏഴാമത്തെ റോൾ</translation>
 <translation id="6529602333819889595">&amp;ഇല്ലാതാക്കുന്നത് വീണ്ടും ചെയ്യുക</translation>
@@ -3404,6 +3408,7 @@
 <translation id="6567832540451970450">നിങ്ങളുടെ അഡ്‌മിൻ ഈ സൈറ്റിന് <ph name="PERMISSION" /> അനുവദിക്കുന്നു</translation>
 <translation id="6568793038316600992">'പേയ്‌മെന്റ് രീതികൾ മാനേജ് ചെയ്യുക ബട്ടൺ', Chrome ക്രമീകരണത്തിൽ നിങ്ങളുടെ പേയ്‌മെന്റുകളും ക്രെഡിറ്റ് കാർഡ് വിവരങ്ങളും മാനേജ് ചെയ്യാൻ സജീവമാക്കുക</translation>
 <translation id="6569060085658103619">നിങ്ങൾ ഒരു വിപുലീകരണ പേജാണ് കാണുന്നത്</translation>
+<translation id="6571992525120410251"><ph name="ENGINE_NAME" /> എന്നതിനോട് എന്തും ചോദിക്കൂ</translation>
 <translation id="6572867903637058088">ഇത് സഹായകരമാണോ?</translation>
 <translation id="6573200754375280815">വലതുവശത്ത് ഇരട്ട പഞ്ച് ചെയ്യുക</translation>
 <translation id="6575408526598156416">അക്കൗണ്ടിൽ സംരക്ഷിക്കുക</translation>
@@ -3453,6 +3458,7 @@
 <translation id="666259744093848177">(x86_64 വിവർത്തനം ചെയ്‌തു)</translation>
 <translation id="6665553082534466207">വലതുവശത്ത് മൂന്ന് തവണ പഞ്ച് ചെയ്യുക</translation>
 <translation id="6668389483194953109">പേപ്പർ വലുപ്പത്തിന്റെ പേര് "custom" എന്ന് കണ്ടെത്തി, എന്നാൽ "custom_size" പ്രോപ്പർട്ടി ശൂന്യമോ അസാധുവോ ആണ്.</translation>
+<translation id="6670729408462528018">Gallery</translation>
 <translation id="6671169470640320959">ഓട്ടോമൊബൈൽ ഫിനാൻസിംഗ്</translation>
 <translation id="6671697161687535275">Chromium-ത്തിൽ നിന്ന് ഫോം നിർദ്ദേശം നീക്കംചെയ്യണോ?</translation>
 <translation id="6675846980676550611">AR അനുവദിച്ചിട്ടില്ല</translation>

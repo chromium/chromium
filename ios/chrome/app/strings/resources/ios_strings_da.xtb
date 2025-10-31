@@ -278,6 +278,7 @@
 <translation id="199425419756152024">Se adgangskode</translation>
 <translation id="1996318269856535896">Du kan stadig bruge dine eksisterende browserdata på denne enhed. For at bruge dem skal du logge ud af din administrerede konto.</translation>
 <translation id="2010008505735295285">Genindlæs</translation>
+<translation id="2012723204723845092">Velkommen tilbage.</translation>
 <translation id="2015722694326466240">Angiv en adgangskode på din enhed, før du kan se adgangskoder.</translation>
 <translation id="201759455285471444">Udvid fanegruppe.</translation>
 <translation id="202070562065520783">Forklar dette til mig</translation>
@@ -648,6 +649,7 @@
 <translation id="3530024057633834563">Der er ingen gemte adgangskoder eller adgangsnøgler, men du kan slette listen over websites og apps, hvor du har valgt aldrig at gemme loginoplysninger. Konti, du har oprettet til websites og apps, slettes ikke.</translation>
 <translation id="3530206579861815432">Find hurtigt åbne og nyligt lukkede faner på dine synkroniserede enheder.</translation>
 <translation id="3530767473765895035">Administrer konti på denne enhed…</translation>
+<translation id="353340646084395154">Præferencerne for siden Ny fane er fjernet</translation>
 <translation id="3533436815740441613">Ny fane</translation>
 <translation id="3540141921715814660">Føj til Bogmærker</translation>
 <translation id="3546122170015471515">Maps (preview) på Google.com</translation>
@@ -1000,6 +1002,7 @@
 <translation id="4894963374040315706">Det giver dig mulighed for at søge ved hjælp af stemmen</translation>
 <translation id="4895540042460820904">Senest åbnet</translation>
 <translation id="4896467949657706481">Fanerne er blevet lukket: Du er blevet logget ud</translation>
+<translation id="4911042367886397055">Velkommen tilbage, <ph name="USER_NAME" />.</translation>
 <translation id="4913626501929406101">Du kan på sikker vis dele en kopi af din adgangskode med en anden i din familiegruppe. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="4917025507570489430">Du kan bruge eksisterende browserdata, når du er logget ind som <ph name="USER_EMAIL" />. Din organisation kan muligvis se disse data.</translation>
 <translation id="4918086044614829423">Accepter</translation>
@@ -1051,6 +1054,7 @@
 <translation id="508645147179720015">Noten indeholder mere end 1.000 tegn</translation>
 <translation id="5087098519049306025">Prissporing</translation>
 <translation id="5090832849094901128">Fjernelse af denne adgangskode sletter ikke din konto på <ph name="WEBSITE" />.</translation>
+<translation id="5113960131843706315">Henter dine ting…</translation>
 <translation id="5118462200606189584">Tilføj konto…</translation>
 <translation id="5118764316110575523">Fra</translation>
 <translation id="5119329531859909472">Tryk på Overvåg for at overvåge produktet</translation>
@@ -1121,6 +1125,7 @@
 <translation id="537853552771686272">Administrer de emner og websites, du er interesseret i</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} er lukket}one{{count} closed}other{{count} er lukket}}</translation>
 <translation id="5394975111793637642">Skjul kortet Produktanmeldelser til dig</translation>
+<translation id="5407806496954700135">Vil du anvende dine tilpasninger af siden Ny fane fra en anden enhed?</translation>
 <translation id="5414763847370083940">Du får en underretning, hvis prisen falder på et website.</translation>
 <translation id="5415289094036440596">Adgangsnøgler kan ikke deles</translation>
 <translation id="5416455648658732408">Flyt til fanegruppe</translation>
@@ -1756,6 +1761,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="7696316012653762532">Valgmuligheder for oversættelse af side</translation>
 <translation id="7700527812567437847">Søg på skærmen med Google Lens</translation>
 <translation id="7701040980221191251">Ingen</translation>
+<translation id="7708668404222666001">Dine præferencer for siden Ny fane er anvendt</translation>
 <translation id="7708994397325774423">Få alle dine adgangskoder</translation>
 <translation id="7711440461521638739">Du genbruger ikke nogen adgangskoder</translation>
 <translation id="7712361583414030698">Viser offlineversion</translation>

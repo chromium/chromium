@@ -1844,6 +1844,7 @@
 <translation id="4014895360827978999">Трговачке услуге и системи плаћања</translation>
 <translation id="4018819349042761761">Јавни кључ</translation>
 <translation id="4023431997072828269">Овај образац се шаље помоћу везе која није безбедна, па ће информације бити видљиве другима.</translation>
+<translation id="4024673763872230929">Сачувајте информације и брже попуњавајте обрасце. Подаци се чувају на уређају.</translation>
 <translation id="4025325634010721551">Смернице су поново учитане</translation>
 <translation id="4025338605225449265">Валуте и мењачки послови</translation>
 <translation id="4025777154208238692">Обрнути редослед</translation>
@@ -2277,6 +2278,7 @@
 <translation id="4732860731866514038">Преузима се језички пакет за језик <ph name="LANGUAGE" />… <ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992"><ph name="URL" /> жели да користи локацију уређаја</translation>
 <translation id="473414950835101501">Користите камере</translation>
+<translation id="4734343956394152985"><ph name="BEGIN_BOLD" />Тренутно подразумевана<ph name="END_BOLD" /> · <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="4736825316280949806">Поново покрените Chromium</translation>
 <translation id="4736934858538408121">Виртуелна картица</translation>
 <translation id="473775607612524610">Ажурирај</translation>
@@ -2339,6 +2341,7 @@
 <translation id="4822493756793346865">Уобичајене цене се заснивају на информацијама из продавница широм веба током последњих 90 дана.</translation>
 <translation id="4822922322149719535">Прикажи евиденцију грешака</translation>
 <translation id="4823699521959851389"><ph name="SHORT_PRODUCT_NAME" /> тражи приступ дозволи <ph name="PERMISSION" /> на уређају</translation>
+<translation id="4825311006392962663">Прикажи опције за касније плаћање приликом плаћања</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, притисните Tab, па Enter да бисте брзо направили нову Google табелу</translation>
 <translation id="4826588772550366629">камера и микрофон</translation>
 <translation id="4827283332383516812">Избришите картицу</translation>
@@ -3384,6 +3387,7 @@
 <translation id="6521745193039995384">Нису активне</translation>
 <translation id="6522682797352430154">Класична музика</translation>
 <translation id="6524830701589638230">Дугме Прилагоди подешавања приступачности, активирајте га да бисте персонализовали алатке за приступачност у подешавањима Chrome-а</translation>
+<translation id="6525222262307262764">Задржи актуелно подразумевано подешавање</translation>
 <translation id="6527049834925947126">Производња хране</translation>
 <translation id="6529173248185917884">Седми котур</translation>
 <translation id="6529602333819889595">&amp;Понови брисање</translation>
@@ -3404,6 +3408,7 @@
 <translation id="6567832540451970450">Администратор дозвољава ставку <ph name="PERMISSION" /> за овај сајт</translation>
 <translation id="6568793038316600992">Дугме Управљај начинима плаћања, активирајте га да бисте управљали плаћањима и информацијама о кредитним картицама у подешавањима Chrome-а</translation>
 <translation id="6569060085658103619">Прегледате страницу додатка.</translation>
+<translation id="6571992525120410251">Питајте <ph name="ENGINE_NAME" /> било шта</translation>
 <translation id="6572867903637058088">Да ли је ово корисно?</translation>
 <translation id="6573200754375280815">Двоструко бушење на десној страни</translation>
 <translation id="6575408526598156416">Сачувајте на налогу</translation>
@@ -3453,6 +3458,7 @@
 <translation id="666259744093848177">(x86_64 преведено)</translation>
 <translation id="6665553082534466207">Троструко бушење на десној страни</translation>
 <translation id="6668389483194953109">Пронађен је назив величине папира „прилагођено“, али је својство „custom_size“ празно или неважеће.</translation>
+<translation id="6670729408462528018">Галерија</translation>
 <translation id="6671169470640320959">Зајмови за куповину аутомобила</translation>
 <translation id="6671697161687535275">Желите ли да уклоните предлог из Chromium-а?</translation>
 <translation id="6675846980676550611">ПР није дозвољен</translation>

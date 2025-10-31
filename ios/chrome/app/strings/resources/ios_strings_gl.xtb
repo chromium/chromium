@@ -278,6 +278,7 @@
 <translation id="199425419756152024">Ver contrasinal</translation>
 <translation id="1996318269856535896">Podes seguir usando os teus datos de navegación actuais neste dispositivo. Para facelo, pecha a sesión na túa conta xestionada.</translation>
 <translation id="2010008505735295285">Volver cargar</translation>
+<translation id="2012723204723845092">Dámosche a benvida de novo!</translation>
 <translation id="2015722694326466240">Para ver os contrasinais, en primeiro lugar debes definir un código de desbloqueo no teu dispositivo.</translation>
 <translation id="201759455285471444">Despregar o grupo de pestanas.</translation>
 <translation id="202070562065520783">Explícame isto</translation>
@@ -648,6 +649,7 @@
 <translation id="3530024057633834563">Non tes ningún contrasinal nin clave de acceso gardados, pero podes eliminar a lista de sitios e aplicacións dos que elixises non gardar nunca a información de inicio de sesión. Non se eliminarán as contas que creases para sitios e aplicacións.</translation>
 <translation id="3530206579861815432">Atopa con rapidez pestanas abertas e pechadas recentemente nos teus dispositivos sincronizados.</translation>
 <translation id="3530767473765895035">Xestionar contas neste dispositivo…</translation>
+<translation id="353340646084395154">Quitáronse as preferencias da páxina Nova pestana</translation>
 <translation id="3533436815740441613">Nova pestana</translation>
 <translation id="3540141921715814660">Engadir aos marcadores</translation>
 <translation id="3546122170015471515">Vista previa de Maps en google.com</translation>
@@ -1000,6 +1002,7 @@
 <translation id="4894963374040315706">Permíteche buscar de forma máis rápida usando a voz</translation>
 <translation id="4895540042460820904">Último acceso</translation>
 <translation id="4896467949657706481">Pecháronse as pestanas e mais a túa sesión</translation>
+<translation id="4911042367886397055">Dámosche a benvida de novo, <ph name="USER_NAME" /></translation>
 <translation id="4913626501929406101">Podes compartir de maneira segura unha copia do teu contrasinal con calquera persoa do teu grupo familiar. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="4917025507570489430">Poderás usar os datos de navegación actuais cando teñas a sesión iniciada como <ph name="USER_EMAIL" />. É posible que a túa organización poida ver estes datos.</translation>
 <translation id="4918086044614829423">Aceptar</translation>
@@ -1051,6 +1054,7 @@
 <translation id="508645147179720015">A nota ten máis de 1000 caracteres</translation>
 <translation id="5087098519049306025">Seguimento de prezos</translation>
 <translation id="5090832849094901128">Ao eliminar este contrasinal non se eliminará a túa conta de <ph name="WEBSITE" />.</translation>
+<translation id="5113960131843706315">Cargando o teu contido…</translation>
 <translation id="5118462200606189584">Engadir conta…</translation>
 <translation id="5118764316110575523">Non</translation>
 <translation id="5119329531859909472">Para facer un seguimento do produto, toca a opción correspondente</translation>
@@ -1121,6 +1125,7 @@
 <translation id="537853552771686272">Xestiona os temas e sitios que che interesan</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} pechada}other{{count} pechadas}}</translation>
 <translation id="5394975111793637642">Ocultar a tarxeta Reseñas de produtos para ti</translation>
+<translation id="5407806496954700135">Queres aplicar as personalizacións da páxina Nova pestana doutro dispositivo?</translation>
 <translation id="5414763847370083940">Recibirás unha alerta se baixa o prezo en calquera sitio.</translation>
 <translation id="5415289094036440596">Os contrasinais non se poden compartir</translation>
 <translation id="5416455648658732408">Mover ao grupo de pestanas</translation>
@@ -1756,6 +1761,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="7696316012653762532">Opcións para traducir a páxina</translation>
 <translation id="7700527812567437847">Buscar pantalla con Google Lens</translation>
 <translation id="7701040980221191251">Ningunha</translation>
+<translation id="7708668404222666001">Aplicáronse as túas preferencias da páxina Nova pestana</translation>
 <translation id="7708994397325774423">Obtén todos os teus contrasinais</translation>
 <translation id="7711440461521638739">Non estás reutilizando ningún contrasinal</translation>
 <translation id="7712361583414030698">Mostrando versión sen conexión</translation>

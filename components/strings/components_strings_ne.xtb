@@ -1841,6 +1841,7 @@
 <translation id="4014895360827978999">व्यापारी सेवा र भुक्तानी प्राणाली</translation>
 <translation id="4018819349042761761">सार्वजनिक की</translation>
 <translation id="4023431997072828269">असुरक्षित इन्टरनेट प्रयोग गरेर यो फारम पेस गरिँदै गरेका हुनाले अरूले तपाईंको जानकारी देख्न सक्ने छन्।</translation>
+<translation id="4024673763872230929">आफ्नो जानकारी सेभ गर्नुहोस् र अझ छिटो फाराम भर्नुहोस्। तपाईंको डिभाइसमा सेभ गरिन्छ।</translation>
 <translation id="4025325634010721551">नीतिहरू रिलोड गरिएका छन्</translation>
 <translation id="4025338605225449265">मुद्रा तथा विदेशी विनिमय</translation>
 <translation id="4025777154208238692">उल्टो क्रममा</translation>
@@ -2275,6 +2276,7 @@
 <translation id="4732860731866514038"><ph name="LANGUAGE" /> ल्याङ्ग्वेज प्याक डाउनलोड गरिँदै छ.. .<ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992"><ph name="URL" /> तपाईंको डिभाइसको स्थान प्रयोग गर्न चाहन्छ</translation>
 <translation id="473414950835101501">क्यामेरा प्रयोग गर्न</translation>
+<translation id="4734343956394152985"><ph name="BEGIN_BOLD" />हालको डिफल्ट सर्च इन्जिन<ph name="END_BOLD" /> · <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="4736825316280949806">Chromium लाई पुनः सुरु गर्नुहोस्</translation>
 <translation id="4736934858538408121">भर्चुअल कार्ड</translation>
 <translation id="473775607612524610">अपडेट गर्नुहोस्</translation>
@@ -2337,6 +2339,7 @@
 <translation id="4822493756793346865">औसत मूल्य वेबमा रहेका विभिन्न स्टोरहरूबाट विगत ९० दिनमा प्राप्त गरिएको जानकारीमा आधारित हुन्छ।</translation>
 <translation id="4822922322149719535">त्रुटिको लगको समीक्षा गर्नुहोस्</translation>
 <translation id="4823699521959851389"><ph name="SHORT_PRODUCT_NAME" /> लाई तपाईंको डिभाइसको <ph name="PERMISSION" /> को एक्सेस दिनु पर्ने हुन्छ</translation>
+<translation id="4825311006392962663">चेकआउट गर्दा पछि भुक्तानी गर्ने विकल्पहरू देखाउनुहोस्</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Sheets प्रयोग गरी तुरुन्तै नयाँ पाना बनाउन Tab थिच्नुहोस् अनि Enter थिच्नुहोस्</translation>
 <translation id="4826588772550366629">क्यामेरा र माइक्रोफोन</translation>
 <translation id="4827283332383516812">कार्ड मेटाउनुहोस्</translation>
@@ -3383,6 +3386,7 @@
 <translation id="6521745193039995384">सक्रिय छैन</translation>
 <translation id="6522682797352430154">शास्त्रीय सङ्गीत</translation>
 <translation id="6524830701589638230">एस्सेसिबिलिटी सेटिङ मिलाउने बटन, Chrome का सेटिङमा गई एस्सेसिबिलिटी टुलहरू पर्सनलाइज गर्न यो बटन थिच्नुहोस्</translation>
+<translation id="6525222262307262764">हालको डिफल्ट सर्च इन्जिन नै कायम राख्नुहोस्</translation>
 <translation id="6527049834925947126">खाद्यवस्तुको उत्पादन</translation>
 <translation id="6529173248185917884">सातौँ रोल</translation>
 <translation id="6529602333819889595">मेटाउने कार्य &amp;पुन: गर्नुहोस्</translation>
@@ -3403,6 +3407,7 @@
 <translation id="6567832540451970450">तपाईंका एड्मिनले यो साइटलाई <ph name="PERMISSION" /> प्रयोग गर्ने अनुमति दिएका छन्</translation>
 <translation id="6568793038316600992">भुक्तानी विधिहरू व्यवस्थापन गर्ने बटन, Chrome का सेटिङमा गई आफ्ना भुक्तानीसम्बन्धी जानकारी तथा क्रेडिट कार्डसम्बन्धी जानकारी व्यवस्थापन गर्न यो बटन थिच्नुहोस्</translation>
 <translation id="6569060085658103619">तपाईं एउटा विस्तार सम्बन्धी पृष्ठ हेर्दै हुनुहुन्छ</translation>
+<translation id="6571992525120410251"><ph name="ENGINE_NAME" /> लाई जुनसुकै कुरा सोध्नुहोस्</translation>
 <translation id="6572867903637058088">यो उपयोगी लाग्यो?</translation>
 <translation id="6573200754375280815">दायाँपट्टि दुई प्वाल</translation>
 <translation id="6575408526598156416">खातामा सेभ गर्नुहोस्</translation>
@@ -3452,6 +3457,7 @@
 <translation id="666259744093848177">(x86_64 अनुवादित)</translation>
 <translation id="6665553082534466207">दायाँपट्टि तीन प्वाल</translation>
 <translation id="6668389483194953109">कागजको आकारको नाम "कस्टम" राखिएको पाइयो तर "custom_size" प्रोपर्टी भने खाली वा अवैध छ।</translation>
+<translation id="6670729408462528018">ग्यालेरी</translation>
 <translation id="6671169470640320959">अटो फाइनान्सिङ</translation>
 <translation id="6671697161687535275">Chromium बाट फारम सुझाव हटाउने हो?</translation>
 <translation id="6675846980676550611">AR प्रयोग गर्ने अनुमति दिइएको छैन</translation>

@@ -1844,6 +1844,7 @@
 <translation id="4014895360827978999">වෙළඳ සේවා සහ ගෙවීම් පද්ධති</translation>
 <translation id="4018819349042761761">පොදු යතුර</translation>
 <translation id="4023431997072828269">ආරක්ෂිත නොවන සම්බන්ධතාවක් භාවිත කරමින් මෙම පෝරමය ඉදිරිපත් කර ඇති නිසා, ඔබේ තොරතුරු අන් අයට පෙනෙනු ඇත.</translation>
+<translation id="4024673763872230929">ඔබේ තොරතුරු සුරකින්න සහ පෝරම ඉක්මනින් පුරවන්න. ඔබේ උපාංගයට සුරකියි.</translation>
 <translation id="4025325634010721551">ප්‍රතිපත්ති නැවත පූරණ කළා</translation>
 <translation id="4025338605225449265">මුදල් වර්ග සහ විදේශ විනිමය</translation>
 <translation id="4025777154208238692">ප්‍රතිලෝම අනුපිළිවෙල</translation>
@@ -2277,6 +2278,7 @@
 <translation id="4732860731866514038"><ph name="LANGUAGE" /> භාෂා ඇසුරුම බා ගත කරමින්... <ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992"><ph name="URL" /> හට ඔබේ උපාංගයෙහි පිහිටීම භාවිතා කිරීමට අවශ්‍යයි</translation>
 <translation id="473414950835101501">ඔබේ කැමරා භාවිතා කරන්න</translation>
+<translation id="4734343956394152985"><ph name="BEGIN_BOLD" />වත්මන් පෙරනිමිය<ph name="END_BOLD" /> · <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="4736825316280949806">Chromium යළි අරඹන්න</translation>
 <translation id="4736934858538408121">අතථ්‍ය කාඩ්පත</translation>
 <translation id="473775607612524610">යාවත්කාලීනය</translation>
@@ -2339,6 +2341,7 @@
 <translation id="4822493756793346865">නියමානුකූල මිල ගණන් පසුගිය දින 90 පුරා වෙබය පුරා ඇති වෙළඳසැල් මත පදනම් වේ.</translation>
 <translation id="4822922322149719535">දෝෂ ලොගය සමාලෝචනය කරන්න</translation>
 <translation id="4823699521959851389"><ph name="SHORT_PRODUCT_NAME" /> හට ඔබේ උපාංගයේ <ph name="PERMISSION" /> වෙත ප්‍රවේශය අවශ්‍යයි</translation>
+<translation id="4825311006392962663">ගෙවා පිටවීමේදී පසුව ගෙවීමේ විකල්ප පෙන්වන්න</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, ඉක්මනින් නව Google Sheet එකක් තැනීමට Tab ඔබා අනතුරුව Enter ඔබන්න</translation>
 <translation id="4826588772550366629">කැමරාව සහ මයික්‍රෆෝනය</translation>
 <translation id="4827283332383516812">කාඩ්පත මකන්න</translation>
@@ -3385,6 +3388,7 @@
 <translation id="6521745193039995384">ක්‍රියාත්මක නැත</translation>
 <translation id="6522682797352430154">සම්භාව්‍ය සංගීතය</translation>
 <translation id="6524830701589638230">ප්‍රවේශ්‍යතා සැකසීම් බොත්තම කළමනාකරණය කරන්න, Chrome සැකසීම් තුළ ඔබේ ප්‍රවේශ්‍යතා මෙවලම් පෞද්ගලීකරණය කිරීමට සක්‍රිය කරන්න</translation>
+<translation id="6525222262307262764">වත්මන් පෙරනිමිය තබා ගන්න</translation>
 <translation id="6527049834925947126">ආහාර නිෂ්පාදනය</translation>
 <translation id="6529173248185917884">Seventh Roll</translation>
 <translation id="6529602333819889595">මැකීම &amp;යළි කරන්න</translation>
@@ -3405,6 +3409,7 @@
 <translation id="6567832540451970450">ඔබේ පරිපාලක මෙම වෙබ් අඩවිය සඳහා <ph name="PERMISSION" />ට ඉඩ දෙයි</translation>
 <translation id="6568793038316600992">ගෙවීම් ක්‍රම කළමනාකරණය කරන්න බොත්තම, Chrome සැකසීම් තුළ ඔබේ ගෙවීම් සහ ණයපත් තොරතුරු කළමනාකරණය කිරීමට සක්‍රිය කරන්න</translation>
 <translation id="6569060085658103619">ඔබ දිගු පිටුවක් බලමින් සිටී</translation>
+<translation id="6571992525120410251"><ph name="ENGINE_NAME" /> වෙතින් ඕනෑම දෙයක් අහන්න</translation>
 <translation id="6572867903637058088">මෙය ප්‍රයෝජනවත් ද?</translation>
 <translation id="6573200754375280815">දකුණට දෙවරක් අනින්න</translation>
 <translation id="6575408526598156416">ගිණුමේ සුරකින්න</translation>
@@ -3454,6 +3459,7 @@
 <translation id="666259744093848177">(x86_64 පරිවර්තිත)</translation>
 <translation id="6665553082534466207">දකුණට තුන් වරක් අනින්න</translation>
 <translation id="6668389483194953109">කඩදාසි ප්‍රමාණයේ නම "අභිරුචි" හමු විය, නමුත් "custom_size" ගුණය හිස් හෝ වලංගු නැත.</translation>
+<translation id="6670729408462528018">ගැලරිය</translation>
 <translation id="6671169470640320959">රථවාහන මූල්‍යකරණය</translation>
 <translation id="6671697161687535275">Chromium වෙතින් පෝරම යෝජනා ඉවත් කරන්නද?</translation>
 <translation id="6675846980676550611">AR ඉඩ දී නැත</translation>

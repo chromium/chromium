@@ -89,7 +89,7 @@
 <translation id="2018528049276128029">Cada perfil conserva la seva informació de Chrome pròpia, com ara les adreces d'interès, l'historial, les contrasenyes i més</translation>
 <translation id="2018879682492276940">La instal·lació ha fallat. Torna-ho a provar.</translation>
 <translation id="2024959665595762054">Per utilitzar i desar les dades de Chrome al teu Compte de Google, verifica la teva identitat</translation>
-<translation id="2026377840141807639">Els perfils de Chrome et permeten mantenir la navegació personal i la de la feina separades. Afegeix un perfil nou ara.</translation>
+<translation id="2026377840141807639">Els perfils de Chrome et permeten mantenir separades la navegació personal i la de la feina. Afegeix un perfil nou ara.</translation>
 <translation id="2034233344106846793">Quan és possible, Chrome actualitza automàticament les connexions no segures a HTTPS</translation>
 <translation id="2039417478970545937">Configuració.</translation>
 <translation id="2091012649849228750">Per obtenir actualitzacions de Google Chrome en el futur, necessitaràs Windows 10 o una versió posterior. Aquest ordinador utilitza Windows 8.</translation>
@@ -384,7 +384,7 @@
 <translation id="5510398294750420479">Baixa Chrome al telèfon per afegir una capa addicional de protecció siguis on siguis</translation>
 <translation id="5524890928877629608">extrem superior esquerre de l'àrea de cerca: <ph name="LEFT" /> % per l'esquerra i <ph name="TOP" /> % per dalt</translation>
 <translation id="5530733413481476019">Fes que Chrome sigui més ràpid</translation>
-<translation id="5550137307985173298">Fes clic al botó Personalitza Chrome a la pàgina Pestanya nova per renovar l'aspecte de Chrome</translation>
+<translation id="5550137307985173298">Per renovar l'aspecte de Chrome, a la pàgina Pestanya nova, fes clic al botó Personalitza Chrome</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5579324208890605088">Error d'arrencada: executa l'instal·lador com a usuari normal, no com a administrador.</translation>
 <translation id="5596627076506792578">Més opcions</translation>

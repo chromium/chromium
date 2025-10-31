@@ -106,7 +106,7 @@
 <translation id="1175393348063009671">Фотобумага (матовая)</translation>
 <translation id="1175875016430184367">Три скобы справа</translation>
 <translation id="1177548198167638471">Больше не спрашивать</translation>
-<translation id="1177863135347784049">Персонализированные</translation>
+<translation id="1177863135347784049">Свой вариант</translation>
 <translation id="1178581264944972037">Пауза</translation>
 <translation id="1178821169867863726">12 x 16 дюймов</translation>
 <translation id="1181037720776840403">Удалить</translation>
@@ -1843,6 +1843,7 @@
 <translation id="4014895360827978999">Торговые услуги и платежные системы</translation>
 <translation id="4018819349042761761">Открытый ключ</translation>
 <translation id="4023431997072828269">Поскольку вы отправляете эту форму с использованием незащищенного подключения, ваша информация может стать известна посторонним.</translation>
+<translation id="4024673763872230929">Сохраните эту информацию, чтобы быстрее заполнять формы. Она останется на устройстве.</translation>
 <translation id="4025325634010721551">Правила перезапущены</translation>
 <translation id="4025338605225449265">Денежные единицы и обмен валют</translation>
 <translation id="4025777154208238692">В обратном порядке</translation>
@@ -2276,6 +2277,7 @@
 <translation id="4732860731866514038">Скачивание языкового пакета (<ph name="LANGUAGE" />)… <ph name="PERCENT" /> %</translation>
 <translation id="4733082559415072992">Сайт <ph name="URL" /> запрашивает данные о местоположении вашего устройства.</translation>
 <translation id="473414950835101501">Использование камер.</translation>
+<translation id="4734343956394152985"><ph name="BEGIN_BOLD" />Используется по умолчанию<ph name="END_BOLD" /> · <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="4736825316280949806">Перезапустить Chromium</translation>
 <translation id="4736934858538408121">Виртуальная карта</translation>
 <translation id="473775607612524610">Обновить</translation>
@@ -2338,6 +2340,7 @@
 <translation id="4822493756793346865">Информация о средних ценах основана на данных из магазинов в интернете за последние 90 дней.</translation>
 <translation id="4822922322149719535">Открыть журнал ошибок</translation>
 <translation id="4823699521959851389"><ph name="SHORT_PRODUCT_NAME" /> требуется доступ к функции "<ph name="PERMISSION" />" вашего устройства.</translation>
+<translation id="4825311006392962663">Показывать варианты рассрочки при оформлении покупки</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />. Чтобы быстро создать таблицу Google, нажмите Tab, а затем Ввод.</translation>
 <translation id="4826588772550366629">"Камера" и "Микрофон"</translation>
 <translation id="4827283332383516812">Удаление карты</translation>
@@ -3384,6 +3387,7 @@
 <translation id="6521745193039995384">Не выбрано</translation>
 <translation id="6522682797352430154">Классическая музыка</translation>
 <translation id="6524830701589638230">Кнопка "Открыть настройки специальных возможностей". Нажмите ее, чтобы персонализировать инструменты специальных возможностей в настройках Chrome.</translation>
+<translation id="6525222262307262764">Оставить поисковую систему по умолчанию</translation>
 <translation id="6527049834925947126">Производство пищевых продуктов</translation>
 <translation id="6529173248185917884">Седьмой рулон</translation>
 <translation id="6529602333819889595">&amp;Повторить удаление</translation>
@@ -3404,6 +3408,7 @@
 <translation id="6567832540451970450">Ваш администратор предоставил этому сайту разрешение "<ph name="PERMISSION" />".</translation>
 <translation id="6568793038316600992">Кнопка "Настроить способы оплаты". Нажмите ее, чтобы изменить данные о способах оплаты и банковских картах в настройках Chrome.</translation>
 <translation id="6569060085658103619">Вы просматриваете страницу расширения</translation>
+<translation id="6571992525120410251">Спросите <ph name="ENGINE_NAME" /></translation>
 <translation id="6572867903637058088">Эта информация полезна?</translation>
 <translation id="6573200754375280815">Два отверстия справа</translation>
 <translation id="6575408526598156416">Сохранить в аккаунте</translation>
@@ -3453,6 +3458,7 @@
 <translation id="666259744093848177">(код конвертирован с языка для архитектуры x86_64)</translation>
 <translation id="6665553082534466207">Три отверстия справа</translation>
 <translation id="6668389483194953109">Найден размер бумаги custom, но свойство custom_size не заполнено или недействительно.</translation>
+<translation id="6670729408462528018">Галерея</translation>
 <translation id="6671169470640320959">Автокредиты</translation>
 <translation id="6671697161687535275">Удалить подсказку из Chromium?</translation>
 <translation id="6675846980676550611">Запрос на использование дополненной реальности отклонен</translation>

@@ -896,7 +896,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili aplik
 <translation id="1603879843804174953">Dlouhé stisknutí</translation>
 <translation id="1603914832182249871">(Anonymní režim)</translation>
 <translation id="1604432177629086300">Tisk se nezdařil. Zkontrolujte tiskárnu a zkuste to znovu.</translation>
-<translation id="1604567162047669454">Rozpoznat sémantiku vizuálního rozvržení</translation>
+<translation id="1604567162047669454">Rozpoznat sémantiku přehledného uspořádání</translation>
 <translation id="1604774728851271529">K upgradování systému Linux potřebujete připojení k síti. Připojte se k internetu a zkuste to znovu.</translation>
 <translation id="1605148987885002237">Klávesnice a vstupy</translation>
 <translation id="1605744057217831567">Zobrazit veškerá data webů a oprávnění</translation>
@@ -1043,7 +1043,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili aplik
 <translation id="169341880170235617">Skupiny karet se teď automaticky ukládají</translation>
 <translation id="1695487653372841667">Můžete určit, jaké údaje jsou s Googlem sdíleny. Tuto možnost můžete kdykoli změnit v Nastavení.</translation>
 <translation id="1695510246756136088">Nelze se připojit k internetu. Zkuste to znovu.</translation>
-<translation id="1696214930320482113">Profily vám umožní oddělit práci, osobní věci a zábavu, aniž byste museli přepínat na jiný prohlížeč. Přidejte nový profil.</translation>
+<translation id="1696214930320482113">Profily vám umožní oddělit si práci, osobní věci a zábavu, aniž byste museli přepínat na jiný prohlížeč. Přidejte nový profil.</translation>
 <translation id="1696555181932908973">Můžete na <ph name="SITE_ETLD_PLUS_ONE" /> zkusit pokračovat jinými způsoby.</translation>
 <translation id="169675691788639886">Zařízení má nakonfigurovaná server SSH. Nepřihlašujte se pomocí účtů s citlivými údaji.</translation>
 <translation id="1697122132646041614">Palec dolů otevře formulář k odeslání podrobné zpětné vazby o tom, proč se vám tyto výsledky nelíbí.</translation>
@@ -3144,7 +3144,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3152356229013609796">Zobrazovat oznámení z telefonu, zavírat je a odpovídat na ně</translation>
 <translation id="3154754096046236400">Osobní kontext</translation>
 <translation id="3155163173539279776">Restartovat Chromium</translation>
-<translation id="3155394504825881014">Převést skupinu karet na složku záložek</translation>
+<translation id="3155394504825881014">Převedení skupiny karet na složku záložek</translation>
 <translation id="3156511682997763015">O 10 sekund vpřed</translation>
 <translation id="3157330780336267229">Pokud chcete sdílet skupiny karet nebo se k nim připojit, musíte zapnout synchronizaci</translation>
 <translation id="3157387275655328056">Přidat do seznamu četby</translation>
@@ -7197,7 +7197,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="5989497858237037960">Při procházení webů se obsah stránek šifruje a ukládá na vašem zařízení. Může to mít dopad na výkon Chromu</translation>
 <translation id="5990266201903445068">Pouze Wi-Fi</translation>
 <translation id="5990386583461751448">Přeloženo</translation>
-<translation id="5990557145969487183">Oddělte práci od života</translation>
+<translation id="5990557145969487183">Oddělte si práci a život</translation>
 <translation id="5992225669837656567">Všechny myši byly odpojeny</translation>
 <translation id="5992652489368666106">Bez okraje</translation>
 <translation id="5993508466487156420">{NUM_SITES,plural, =1{Byla dokončena kontrola 1 webu}few{Byla dokončena kontrola {NUM_SITES} webů}many{Byla dokončena kontrola {NUM_SITES} webu}other{Byla dokončena kontrola {NUM_SITES} webů}}</translation>
@@ -8811,7 +8811,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7127286300357471051">Když se rozhodnete sdílet aktuální kartu s Gemini, celý její obsah a adresa URL se odešlou do Googlu.</translation>
 <translation id="7127980134843952133">Historie stahování</translation>
 <translation id="7128151990937044829">Zobrazovat na adresním řádku indikátor zablokovaných oznámení</translation>
-<translation id="7128842673552234514">Máte jiný účet Google?</translation>
+<translation id="7128842673552234514">Máte další účet Google?</translation>
 <translation id="7130438335435247835">Název přístupového bodu</translation>
 <translation id="7130680050151101667">Tuto kartu nezobrazovat</translation>
 <translation id="7131040479572660648">Čtení vašich dat na webech <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> a <ph name="WEBSITE_3" /></translation>
@@ -8870,7 +8870,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7174199383876220879">Novinka! Ovládejte hudbu, videa a další obsah.</translation>
 <translation id="7175037578838465313">Konfigurace sítě <ph name="NAME" /></translation>
 <translation id="7175353351958621980">Načteno z:</translation>
-<translation id="7177659256878428843">Převést skupinu karet na složku záložek</translation>
+<translation id="7177659256878428843">Převedení skupiny karet na složku záložek</translation>
 <translation id="7180611975245234373">Obnovit</translation>
 <translation id="7180865173735832675">Personalizovat</translation>
 <translation id="7181117767881540376">&amp;Skrýt lištu záložek</translation>
@@ -9219,7 +9219,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7414622565840501288">Zavřít levé zobrazení</translation>
 <translation id="7415454883318062233">Nastavení je hotové</translation>
 <translation id="7415884723030194001">Moučníky</translation>
-<translation id="7415997299997664304">Rozpoznat sémantiku vizuálního rozvržení</translation>
+<translation id="7415997299997664304">Rozpoznat sémantiku přehledného uspořádání</translation>
 <translation id="7416091793702109803">Zkontrolovat soubor <ph name="FILE_NAME" /></translation>
 <translation id="7416263748877373774">Smluvní podmínky se nepodařilo načíst. Zkontrolujte připojení k síti a zkuste to znovu.</translation>
 <translation id="7416362041876611053">Neznámá chyba sítě.</translation>
@@ -11681,7 +11681,7 @@ Informace o tom, jaká data Google shromažďuje a proč je shromažďuje, naj
 <translation id="9069417381769492963">Hledání neodpovídají žádné záložky</translation>
 <translation id="9070231741075992882">Oprávnění, která povolíte pro aplikaci <ph name="APP_NAME" />, budou povolena také pro přidružené nainstalované a streamované aplikace.</translation>
 <translation id="9070342919388027491">Karta se přesunula vlevo</translation>
-<translation id="9072918088200875065">Povolili jste Gemini přihlašovat se za účelem dokončení úkolů za vás k těmto webům</translation>
+<translation id="9072918088200875065">Povolili jste službě Gemini, aby se za vás mohla přihlašovat k těmto webům a dokončovat tam za vás úkoly</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9074836595010225693">Myš s konektorem USB byla připojena</translation>
 <translation id="9075413375877487220">Vylepšené Bezpečné prohlížení tomuto rozšíření nedůvěřuje.</translation>

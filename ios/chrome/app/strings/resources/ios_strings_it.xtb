@@ -278,6 +278,7 @@
 <translation id="199425419756152024">Visualizza password</translation>
 <translation id="1996318269856535896">Puoi comunque usare i dati di navigazione esistenti su questo dispositivo. Per utilizzarli, esci dal tuo account gestito.</translation>
 <translation id="2010008505735295285">Ricarica</translation>
+<translation id="2012723204723845092">Siamo felici di rivederti.</translation>
 <translation id="2015722694326466240">Per visualizzare le password, per prima cosa imposta un passcode sul tuo dispositivo.</translation>
 <translation id="201759455285471444">Espandi il gruppo di schede.</translation>
 <translation id="202070562065520783">Spiegami questo testo</translation>
@@ -648,6 +649,7 @@
 <translation id="3530024057633834563">Non hai password o passkey salvate, ma puoi eliminare l'elenco di siti e app per cui hai scelto di non salvare mai i dati di accesso. Gli account creati per siti o app non verranno eliminati.</translation>
 <translation id="3530206579861815432">Trova rapidamente le schede aperte e chiuse di recente su tutti i tuoi dispositivi sincronizzati.</translation>
 <translation id="3530767473765895035">Gestisci gli account su questo dispositivo…</translation>
+<translation id="353340646084395154">Preferenze della pagina Nuova scheda rimosse</translation>
 <translation id="3533436815740441613">Nuova scheda</translation>
 <translation id="3540141921715814660">Aggiungi ai preferiti</translation>
 <translation id="3546122170015471515">Anteprime di Maps su Google.com</translation>
@@ -1000,6 +1002,7 @@
 <translation id="4894963374040315706">In questo modo puoi eseguire ricerche con i comandi vocali</translation>
 <translation id="4895540042460820904">Ultima apertura</translation>
 <translation id="4896467949657706481">Le schede sono state chiuse; il tuo account è stato disconnesso</translation>
+<translation id="4911042367886397055">Siamo felici di rivederti, <ph name="USER_NAME" />.</translation>
 <translation id="4913626501929406101">Puoi condividere in sicurezza una copia della tua password con un membro del tuo gruppo Famiglia. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="4917025507570489430">Puoi usare i dati di navigazione esistenti quando hai eseguito l'accesso come <ph name="USER_EMAIL" />. La tua organizzazione potrebbe essere in grado di visualizzare questi dati.</translation>
 <translation id="4918086044614829423">Accetto</translation>
@@ -1051,6 +1054,7 @@
 <translation id="508645147179720015">La nota contiene più di 1000 caratteri</translation>
 <translation id="5087098519049306025">Monitoraggio del prezzo</translation>
 <translation id="5090832849094901128">L'eliminazione di questa password non comporta l'eliminazione del tuo account su <ph name="WEBSITE" />.</translation>
+<translation id="5113960131843706315">Recupero dei tuoi dati in corso…</translation>
 <translation id="5118462200606189584">Aggiungi account…</translation>
 <translation id="5118764316110575523">Non attiva</translation>
 <translation id="5119329531859909472">Per monitorare il prodotto, tocca Monitora</translation>
@@ -1121,6 +1125,7 @@
 <translation id="537853552771686272">Gestisci gli argomenti e i siti che ti interessano</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} chiusa}other{{count} chiuse}}</translation>
 <translation id="5394975111793637642">Nascondi la scheda Recensioni prodotto per te</translation>
+<translation id="5407806496954700135">Vuoi applicare le personalizzazioni della pagina Nuova scheda di un altro dispositivo?</translation>
 <translation id="5414763847370083940">Riceverai un avviso se il prezzo calerà su qualsiasi sito.</translation>
 <translation id="5415289094036440596">Le passkey non possono essere condivise</translation>
 <translation id="5416455648658732408">Sposta in gruppo di schede</translation>
@@ -1756,6 +1761,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="7696316012653762532">Opzioni per tradurre la pagina</translation>
 <translation id="7700527812567437847">Cerca sullo schermo con Google Lens</translation>
 <translation id="7701040980221191251">Nessun dato</translation>
+<translation id="7708668404222666001">Preferenze della pagina Nuova scheda applicate</translation>
 <translation id="7708994397325774423">Recupera tutte le tue password</translation>
 <translation id="7711440461521638739">Non stai riutilizzando alcuna password</translation>
 <translation id="7712361583414030698">Visualizzazione versione offline</translation>

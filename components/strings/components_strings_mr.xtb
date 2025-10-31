@@ -1843,6 +1843,7 @@
 <translation id="4014895360827978999">व्यापारी सेवा आणि पेमेंट सिस्टीम</translation>
 <translation id="4018819349042761761">पब्लिक की</translation>
 <translation id="4023431997072828269">हा फॉर्म सुरक्षित नसलेले कनेक्शन वापरून सबमिट केल्यामुळे, तुमची माहिती इतरांना दिसू शकते.</translation>
+<translation id="4024673763872230929">तुमची माहिती सेव्ह करा आणि अधिक झटपट फॉर्म भरा. ही माहिती तुमच्या डिव्हाइसवर सेव्ह होते.</translation>
 <translation id="4025325634010721551">धोरणे रीलोड केली</translation>
 <translation id="4025338605225449265">चलने आणि परकीय विनिमय</translation>
 <translation id="4025777154208238692">उलट क्रम</translation>
@@ -2276,6 +2277,7 @@
 <translation id="4732860731866514038"><ph name="LANGUAGE" /> भाषा पॅक डाउनलोड करत आहे... <ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992"><ph name="URL" /> ला तुमच्या डिव्हाइसचे स्थान वापरायचे आहे</translation>
 <translation id="473414950835101501">तुमचे कॅमेरा वापरा</translation>
+<translation id="4734343956394152985"><ph name="BEGIN_BOLD" />सद्य डीफॉल्ट<ph name="END_BOLD" /> · <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="4736825316280949806">Chromium रीस्टार्ट करा</translation>
 <translation id="4736934858538408121">व्हर्च्युअल कार्ड</translation>
 <translation id="473775607612524610">अपडेट करा</translation>
@@ -2338,6 +2340,7 @@
 <translation id="4822493756793346865">सामान्य किमती या गेल्या ९० दिवसांतील संपूर्ण वेबवरील स्टोअरवर आधारित असतात.</translation>
 <translation id="4822922322149719535">एरर लॉगचे पुनरावलोकन करा</translation>
 <translation id="4823699521959851389"><ph name="SHORT_PRODUCT_NAME" /> ला तुमच्या डिव्हाइसच्या <ph name="PERMISSION" /> चा ॲक्सेस हवा आहे</translation>
+<translation id="4825311006392962663">चेकआउट करताना नंतर पेमेंट करण्याचे पर्याय दाखवा</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, नवीन Google शीट झटपट तयार करण्यासाठी टॅब आणि त्यानंतर एंटर प्रेस करा</translation>
 <translation id="4826588772550366629">कॅमेरा आणि मायक्रोफोन</translation>
 <translation id="4827283332383516812">कार्ड हटवा</translation>
@@ -3385,6 +3388,7 @@
 <translation id="6521745193039995384">सुरू नाही</translation>
 <translation id="6522682797352430154">शास्त्रीय संगीत</translation>
 <translation id="6524830701589638230">अ‍ॅक्सेसिबिलिटी सेटिंग्ज व्यवस्थापित करा बटण, Chrome सेटिंग्जमध्ये तुमची अ‍ॅक्सेसिबिलिटी टूल पर्सनलाइझ करण्यासाठी ॲक्टिव्हेट करा</translation>
+<translation id="6525222262307262764">सद्य डीफॉल्ट कायम ठेवा</translation>
 <translation id="6527049834925947126">खाद्यपदार्थ उत्पादन</translation>
 <translation id="6529173248185917884">सातवा रोल</translation>
 <translation id="6529602333819889595">&amp;पुन्हा करा हटवा</translation>
@@ -3405,6 +3409,7 @@
 <translation id="6567832540451970450">तुमचा अ‍ॅडमिनिस्ट्रेटर या साइटसाठी <ph name="PERMISSION" /> ची अनुमती देतो</translation>
 <translation id="6568793038316600992">पेमेंट पद्धती व्यवस्थापित करा बटण, Chrome सेटिंग्जमध्ये तुमची पेमेंट आणि क्रेडिट कार्ड माहिती व्यवस्थापित करण्यासाठी ॲक्टिव्हेट करा</translation>
 <translation id="6569060085658103619">तुम्ही एक एक्स्टेंशन पेज पाहत आहात</translation>
+<translation id="6571992525120410251"><ph name="ENGINE_NAME" /> ला काहीही विचारा</translation>
 <translation id="6572867903637058088">हे उपयुक्त आहे का?</translation>
 <translation id="6573200754375280815">ड्युअल पंच राइट</translation>
 <translation id="6575408526598156416">खात्यामध्ये सेव्ह करा</translation>
@@ -3454,6 +3459,7 @@
 <translation id="666259744093848177">(x86_64 भाषांतरित)</translation>
 <translation id="6665553082534466207">ट्रिपल पंच राइट</translation>
 <translation id="6668389483194953109">"कस्टम" असे नाव असलेला पेपरचा आकार आढळला आहे, पण "custom_size" ही प्रॉपर्टी रिकामी किंवा चुकीची आहे.</translation>
+<translation id="6670729408462528018">गॅलरी</translation>
 <translation id="6671169470640320959">ऑटो वित्तव्यवस्था</translation>
 <translation id="6671697161687535275">Chromium वरून फॉर्म सूचना काढून टाकायच्या?</translation>
 <translation id="6675846980676550611">AR ला अनुमती नाही</translation>

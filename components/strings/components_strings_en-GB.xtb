@@ -1844,6 +1844,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4014895360827978999">Merchant Services and Payment Systems</translation>
 <translation id="4018819349042761761">Public key</translation>
 <translation id="4023431997072828269">Because this form is being submitted using a connection that’s not secure, your information will be visible to others.</translation>
+<translation id="4024673763872230929">Save your information and fill in forms more quickly. Saves to your device.</translation>
 <translation id="4025325634010721551">Policies reloaded</translation>
 <translation id="4025338605225449265">Currencies and foreign exchange</translation>
 <translation id="4025777154208238692">Reverse order</translation>
@@ -2277,6 +2278,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4732860731866514038">Downloading <ph name="LANGUAGE" /> language pack… <ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992"><ph name="URL" /> wants to use your device's location</translation>
 <translation id="473414950835101501">Use your cameras</translation>
+<translation id="4734343956394152985"><ph name="BEGIN_BOLD" />Current default<ph name="END_BOLD" /> · <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="4736825316280949806">Restart Chromium</translation>
 <translation id="4736934858538408121">Virtual card</translation>
 <translation id="473775607612524610">Update</translation>
@@ -2339,6 +2341,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4822493756793346865">Typical prices are based on shops across the web over the past 90 days.</translation>
 <translation id="4822922322149719535">Review error log</translation>
 <translation id="4823699521959851389"><ph name="SHORT_PRODUCT_NAME" /> needs access to your device's <ph name="PERMISSION" /></translation>
+<translation id="4825311006392962663">Show pay later options at checkout</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />: press Tab then Enter to create a new Google Sheet quickly</translation>
 <translation id="4826588772550366629">camera and microphone</translation>
 <translation id="4827283332383516812">Delete card</translation>
@@ -3385,6 +3388,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6521745193039995384">Not active</translation>
 <translation id="6522682797352430154">Classical music</translation>
 <translation id="6524830701589638230">Manage accessibility settings button, activate to personalise your accessibility tools in Chrome settings</translation>
+<translation id="6525222262307262764">Keep current default</translation>
 <translation id="6527049834925947126">Food production</translation>
 <translation id="6529173248185917884">Seventh roll</translation>
 <translation id="6529602333819889595">&amp;Redo Delete</translation>
@@ -3405,6 +3409,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6567832540451970450">Your administrator allows <ph name="PERMISSION" /> for this site</translation>
 <translation id="6568793038316600992">Manage payment methods button, activate to manage your payments and credit card info in Chrome settings</translation>
 <translation id="6569060085658103619">You're viewing an extension page</translation>
+<translation id="6571992525120410251">Ask <ph name="ENGINE_NAME" /> anything</translation>
 <translation id="6572867903637058088">Is this helpful?</translation>
 <translation id="6573200754375280815">Dual punch right</translation>
 <translation id="6575408526598156416">Save in account</translation>
@@ -3454,6 +3459,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="666259744093848177">(x86_64 translated)</translation>
 <translation id="6665553082534466207">Triple punch right</translation>
 <translation id="6668389483194953109">Found paper size name 'custom', but the 'custom_size' property is empty or invalid.</translation>
+<translation id="6670729408462528018">Gallery</translation>
 <translation id="6671169470640320959">Auto Financing</translation>
 <translation id="6671697161687535275">Remove form suggestion from Chromium?</translation>
 <translation id="6675846980676550611">AR not allowed</translation>

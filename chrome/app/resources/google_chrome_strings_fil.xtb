@@ -392,7 +392,7 @@ Hindi magawang bawiin ng Google Chrome ang iyong mga setting.</translation>
 <translation id="5510398294750420479">I-download ang Chrome sa iyong telepono para magkaroon ng karagdagang layer ng proteksyon kapag on the go ka</translation>
 <translation id="5524890928877629608">kaliwang sulok sa itaas ng lugar para sa paghahanap: kaliwa <ph name="LEFT" />%, itaas <ph name="TOP" />%</translation>
 <translation id="5530733413481476019">Pabilisin ang Chrome</translation>
-<translation id="5550137307985173298">I-click ang button na I-customize ang Chrome sa Page ng Bagong Tab para bigyan ng bagong hitsura ang Chrome</translation>
+<translation id="5550137307985173298">I-click ang button na I-customize ang Chrome sa Page na Bagong Tab para bigyan ang Chrome ng bagong hitsura</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="5579324208890605088">Nagkaroon ng error sa startup: patakbuhin ang installer bilang karaniwang user, hindi bilang administrator.</translation>
 <translation id="5596627076506792578">Higit pang opsyon</translation>
@@ -421,7 +421,7 @@ Hindi magawang bawiin ng Google Chrome ang iyong mga setting.</translation>
 <translation id="5736850870166430177">Kung susubukan ng site na nakawin ang iyong password, o kapag nag-download ka ng mapaminsalang file, posible ring magpadala ang Chrome sa Ligtas na Pag-browse ng mga URL, kabilang ang ilang content ng page</translation>
 <translation id="5756509061973259733">Mayroon nang profile sa Chrome na gumagamit ng account na ito sa device na ito</translation>
 <translation id="5759947850379142561">Pumili ng anumang text o larawang hahanapin gamit ang Google Lens o pindutin ang escape para lumabas sa Google Lens</translation>
-<translation id="5762867845020858790">Magdagdag ng bagong profile sa Chrome para panatilihing magkahiwalay ang mga bookmark, password, at setting.</translation>
+<translation id="5762867845020858790">Magdagdag ng bagong profile sa Chrome para panatilihing magkakahiwalay ang mga bookmark, password, at setting.</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Google Chrome Canary</translation>
 <translation id="5804318322022881572">Hindi mailunsad ang Chrome. Subukang muli.</translation>
 <translation id="5809516625706423866">Hindi makakonekta sa Internet. HTTP 401 Unauthorized. Tingnan ang configuration ng iyong proxy.</translation>

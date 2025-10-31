@@ -278,6 +278,7 @@
 <translation id="199425419756152024">Sýna aðgangsorð</translation>
 <translation id="1996318269856535896">Þú getur áfram notað núverandi vefskoðunargögn í þessu tæki. Skráðu þig út af stýrða reikningnum þínum til að nota þau.</translation>
 <translation id="2010008505735295285">Endurhlaða</translation>
+<translation id="2012723204723845092">Velkomin(n) aftur!</translation>
 <translation id="2015722694326466240">Til að sjá aðgangsorð þarftu fyrst að stilla aðgangsorð á tækinu þínu.</translation>
 <translation id="201759455285471444">Stækka flipahóp.</translation>
 <translation id="202070562065520783">Útskýrðu þetta fyrir mér</translation>
@@ -648,6 +649,7 @@
 <translation id="3530024057633834563">Þú hefur ekki vistað nein aðgangsorð eða aðgangslykla en getur eytt listanum yfir vefsvæði og forrit sem þú valdir að vista aldrei innskráningarupplýsingar fyrir. Engum reikningum sem þú hefur búið til á vefsvæðum eða í forritum verður eytt.</translation>
 <translation id="3530206579861815432">• Fljótlegt að finna opna og nýlega lokaða flipa í öllum samstilltum tækjum.</translation>
 <translation id="3530767473765895035">Stjórna reikningum í þessu tæki…</translation>
+<translation id="353340646084395154">Kjörstillingar fyrir síðu nýrra flipa voru fjarlægðar</translation>
 <translation id="3533436815740441613">Nýr flipi</translation>
 <translation id="3540141921715814660">Bæta við bókamerki</translation>
 <translation id="3546122170015471515">Forskoðun á Kortum í Google.com</translation>
@@ -1000,6 +1002,7 @@
 <translation id="4894963374040315706">Með þessu móti geturðu notað röddina til að leita</translation>
 <translation id="4895540042460820904">Síðast opnað</translation>
 <translation id="4896467949657706481">Flipum var lokað; þú skráðist út</translation>
+<translation id="4911042367886397055">Velkomin(n) til baka, <ph name="USER_NAME" />!</translation>
 <translation id="4913626501929406101">Þú getur núna örugglega deilt afriti að aðgangsorðinu þínu með einhverjum í fjölskylduhópnum. <ph name="BEGIN_LINK" />Nánar<ph name="END_LINK" /></translation>
 <translation id="4917025507570489430">Þú getur notað fyrirliggjandi vefskoðunargögn þegar þú ert skráð(ur) inn sem <ph name="USER_EMAIL" />. Fyrirtækið þitt getur hugsanlega skoðað gögnin.</translation>
 <translation id="4918086044614829423">Samþykkja</translation>
@@ -1051,6 +1054,7 @@
 <translation id="508645147179720015">Glósa er lengri en 1000 stafir</translation>
 <translation id="5087098519049306025">Verðrakning</translation>
 <translation id="5090832849094901128">Reikningnum þínum á <ph name="WEBSITE" /> verður ekki eytt þótt þessu aðgangsorði verði eytt.</translation>
+<translation id="5113960131843706315">Sækir gögnin þín…</translation>
 <translation id="5118462200606189584">Bæta reikningi við…</translation>
 <translation id="5118764316110575523">Slökkt</translation>
 <translation id="5119329531859909472">Ýttu á Rekja til að rekja vöruna</translation>
@@ -1121,6 +1125,7 @@
 <translation id="537853552771686272">Stjórnaðu umfjöllunarefnunum og vefsvæðunum sem þú hefur áhuga á</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} lokað}one{{count} lokað}other{{count} lokað}}</translation>
 <translation id="5394975111793637642">Fela spjaldið „Umsagnir um vörur fyrir þig“</translation>
+<translation id="5407806496954700135">Viltu nota sérsnið síðu nýrra flipa úr öðru tæki?</translation>
 <translation id="5414763847370083940">Þú færð tilkynningu ef verð lækkar á einhverju vefsvæði.</translation>
 <translation id="5415289094036440596">Ekki er hægt að deila aðgangslyklum</translation>
 <translation id="5416455648658732408">Flyta yfir í flipahóp</translation>
@@ -1756,6 +1761,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="7696316012653762532">Val um að þýða síðu</translation>
 <translation id="7700527812567437847">Leita á skjá með Google-linsu</translation>
 <translation id="7701040980221191251">Ekkert</translation>
+<translation id="7708668404222666001">Kjörstillingar fyrir síðu nýrra flipa voru notaðar</translation>
 <translation id="7708994397325774423">Sjáðu öll aðgangsorðin þín</translation>
 <translation id="7711440461521638739">Þú ert ekki að endurnýta nein aðgangsorð</translation>
 <translation id="7712361583414030698">Skoðar útgáfu án nettengingar</translation>

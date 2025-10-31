@@ -143,6 +143,8 @@
 <translation id="1578591621182011812">{NUM_PASSWORDS,plural, =1{יש במכשיר הזה סיסמה אחת שנחשפה}one{יש במכשיר הזה # סיסמאות שנחשפו}two{יש במכשיר הזה # סיסמאות שנחשפו}other{יש במכשיר הזה # סיסמאות שנחשפו}}</translation>
 <translation id="1594635596540195766">ברשימה שבהמשך יש <ph name="SUGGESTIONS_COUNT" /> הצעות לפריטים.</translation>
 <translation id="1598163867407640634">יש לך אפשרות להשתמש באתר <ph name="SITE_ETLD_PLUS_ONE" /> עם החשבון <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
+<translation id="1598770407402123677">‫<ph name="TAB_TITLE" />, הוצמדה כרטיסייה להקלטה</translation>
+<translation id="1600756129506222718">‫<ph name="TAB_TITLE" />, כרטיסייה לשיתוף</translation>
 <translation id="160275202205869636">‏כשההגדרה מופעלת, נעשה שימוש בנתונים והם נשמרים בחשבון Google. כשההגדרה מושבתת, הנתונים נשמרים רק במכשיר הזה.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{הסרת פריט אחד שנבחר}one{הסרת # פריטים שנבחרו}two{הסרת # פריטים שנבחרו}other{הסרת # פריטים שנבחרו}}</translation>
 <translation id="1639239467298939599">בטעינה</translation>
@@ -184,6 +186,7 @@
 <translation id="1807709131360304325">פתיחת חלון חדש</translation>
 <translation id="1810845389119482123">ההגדרה הראשונית של הסנכרון לא הושלמה</translation>
 <translation id="1812027881030482584">ל-<ph name="SITE_ETLD_PLUS_ONE" /> אין אפשרות להמשיך להשתמש ב-<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
+<translation id="1815975907734103433">‫<ph name="TAB_TITLE" />, כרטיסיית הקלטה</translation>
 <translation id="1820408774134375111">גיליון תחתון של כניסה</translation>
 <translation id="1823492026305965829">כניסה בתור <ph name="USER_FULL_NAME" /></translation>
 <translation id="1824902652744048041">לוחצים על מחיקת נתוני הגלישה</translation>
@@ -198,6 +201,7 @@
 <translation id="1877073879466606884">הפרופיל שאליו נכנסת הוא פרופיל מנוהל. לאדמין יש אפשרות לשנות מרחוק את הגדרות הפרופיל, לנתח מידע על הדפדפן באמצעות דוחות ולבצע משימות חשובות אחרות.</translation>
 <translation id="1879904908408734349">הגיליון התחתון של הכניסה סגור</translation>
 <translation id="1883903952484604915">הקבצים שלי</translation>
+<translation id="1889626070177134359">ברשימה שלמעלה יש <ph name="SUGGESTIONS_COUNT" /> הצעות לפריטים.</translation>
 <translation id="189358972401248634">שפות אחרות</translation>
 <translation id="1899175549411605574">הגיליון התחתון של מדדי המחירים</translation>
 <translation id="1900260903084164610">לחיצה על המשך תתפרש כהסכמה ל<ph name="BEGIN_TOS_LINK" />תנאים ולהגבלות<ph name="END_TOS_LINK" /></translation>
@@ -216,6 +220,7 @@
 <translation id="1957557050935255529">‏קובץ ה-PDF בטעינה…</translation>
 <translation id="1959679933317802873">בהמתנה לתוכן</translation>
 <translation id="1960290143419248813">‏עדכוני Chrome לא נתמכים יותר בגרסה הזו של Android</translation>
+<translation id="1962061488333185936">‫<ph name="TAB_TITLE" />, נבחרה סדרת כרטיסיות עם תוכן שאפשר לשמוע</translation>
 <translation id="1963056249988316027">בדיקת הזהות מופעלת ולא ניתן לאמת את הזהות שלך</translation>
 <translation id="1963976881984600709">הגנה רגילה</translation>
 <translation id="1966710179511230534">יש לעדכן את פרטי הכניסה שלך.</translation>
@@ -228,6 +233,7 @@
 <translation id="1984417487208496350">ללא הגנה (לא מומלץ)</translation>
 <translation id="1986685561493779662">השם כבר קיים</translation>
 <translation id="200114059308480249">‏לכלול את הטקסט שמסביב בחיפושים ב-Google?</translation>
+<translation id="2004096469149679223">‫<ph name="TAB_TITLE" />, הכרטיסייה הפרטית המושתקת הוצמדה</translation>
 <translation id="2021896219286479412">פקדי אתר במסך מלא</translation>
 <translation id="2038563949887743358">הפעלה של 'בקשת אתר עבור מחשב שולחני'</translation>
 <translation id="204321170514947529">‏ל-<ph name="APP_NAME" /> יש נתונים גם ב-Chrome</translation>
@@ -249,8 +255,10 @@
 <translation id="2111511281910874386">מעבר לדף</translation>
 <translation id="2119609734654412418">הסימניות זמינות כאן</translation>
 <translation id="2122601567107267586">לא ניתן היה לפתוח את היישום</translation>
+<translation id="2128579426409352593">‫<ph name="TAB_TITLE" />, נבחרה סדרת כרטיסיות מוצמדת שמשמשת לשיתוף</translation>
 <translation id="213279576345780926">הכרטיסייה "<ph name="TAB_TITLE" />" נסגרה</translation>
 <translation id="2138283760993967204">סמל הניהול</translation>
+<translation id="2138632817776076519">‫<ph name="TAB_TITLE" />, נבחרה כרטיסייה להקלטה</translation>
 <translation id="2141396931810938595">על סמך השימוש שלך</translation>
 <translation id="2145315049852051678">‏‫Chrome מוודא בקביעות שלדפדפן שלך יש את ההגדרות הבטוחות ביותר. נודיע לך אם צריך לבדוק משהו.</translation>
 <translation id="2149973817440762519">עריכת סימניות</translation>
@@ -265,6 +273,7 @@
 <translation id="2186779861549045980">‏אפשר לבחור אילו נתונים לשמור בחשבון Google‏.\nאפשר גם לראות ולנהל את הפריטים האלה בסימניות, ברשימת הקריאה או במנהל הסיסמאות.</translation>
 <translation id="219283042927675668">כרטיסיות בקבוצה</translation>
 <translation id="2194856509914051091">מה כדאי לקחת בחשבון</translation>
+<translation id="2205701497928406883">‫<ph name="TAB_TITLE" />, הוצמדה כרטיסייה לשיתוף</translation>
 <translation id="22091350895006575">הוספה של שם המשתמש</translation>
 <translation id="221494669172414749">‏פתיחת Chrome בלי נעילת פרופיל תגרום להסרת הסיסמאות ואמצעי התשלום השמורים מהמכונית. שימוש בנעילת פרופיל עוזר לשמור על אבטחת הנתונים האלה.</translation>
 <translation id="2227179592712503583">הסרת ההצעה</translation>
@@ -304,7 +313,9 @@
 <translation id="2385605401818128172">אפשר לבדוק אתרים ששולחים הרבה התראות ולמנוע מהם לשלוח עוד התראות בעתיד</translation>
 <translation id="2386938421315164605">הסתרה וביטול הסתרה של נושאים</translation>
 <translation id="2390510615457643724">רוצה להוריד שוב את <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />)?</translation>
+<translation id="2397175985681716533">‫<ph name="TAB_TITLE" />, מתבצעת הקלטה של הכרטיסייה הפרטית</translation>
 <translation id="2410754283952462441">בחירת חשבון</translation>
+<translation id="2411239243988279592">‫<ph name="TAB_TITLE" />, נבחרה כרטיסייה עם תוכן שאפשר לשמוע</translation>
 <translation id="2413014528833954543">לא ניתן לבדוק את הסיסמאות במכשיר הזה</translation>
 <translation id="2414886740292270097">כהה</translation>
 <translation id="2421705177906985956">אין כרגע אתרים שאפשר להציג</translation>
@@ -319,6 +330,7 @@
 <translation id="2453860139492968684">סיום</translation>
 <translation id="2461378706168271257">חיפוש בכרטיסיות</translation>
 <translation id="2461822463642141190">כרגע</translation>
+<translation id="2466378451804467735">‫<ph name="TAB_TITLE" />, נבחרה סדרת כרטיסיות שהושתקו.</translation>
 <translation id="2468444275314013497">נראה שהכול בסדר בדפדפן שלך</translation>
 <translation id="2472163211318554013">‏כדי להפיק את המרב מ-Chrome, עליך להיכנס לחשבון</translation>
 <translation id="247737702124049222">התכונה 'תיאורי תמונות' מופעלת</translation>
@@ -342,6 +354,7 @@
 <translation id="2535807170289627159">כל הכרטיסיות</translation>
 <translation id="2536728043171574184">מוצג העתק לא מקוון של עמוד זה</translation>
 <translation id="2539002604555291451">Sans Serif</translation>
+<translation id="2542094237868555728">‫<ph name="TAB_TITLE" />, נבחרה כרטיסייה פרטית מושתקת ומוצמדת</translation>
 <translation id="2542548955756682219">‫<ph name="TAB_TITLE" />, כרטיסייה</translation>
 <translation id="2546283357679194313">‏קובצי Cookie ונתונים מאתרים</translation>
 <translation id="2547843573592965873">‏נעילת הפרופיל מאבטחת את המידע שלך ברכב, כולל סיסמאות, תשלומים ועוד מידע ששמור בחשבון שלך ב-Google.</translation>
@@ -373,6 +386,7 @@
 <translation id="2669454659051515572">כל מי שמשתמש במכשיר הזה יכול לראות את הקבצים שהורדו</translation>
 <translation id="2677748264148917807">יציאה</translation>
 <translation id="2687009626279857299">השירות הפסיק לפעול במכשיר הזה</translation>
+<translation id="2693387519545954740">‫<ph name="TAB_TITLE" />, כרטיסייה עם תוכן שאפשר לשמוע</translation>
 <translation id="2702516483241149200">חדש: ניתן לשתף קישור שגולל לטקסט הזה</translation>
 <translation id="2708226184420201102">פתיחה בדפדפן <ph name="PRODUCT_NAME" /></translation>
 <translation id="271033894570825754">אוסף חדש</translation>
@@ -412,11 +426,13 @@
 <translation id="2871733351037274014">טעינה מראש של דפים</translation>
 <translation id="2876136027428473467">נשלחה מ<ph name="CHILD_NAME" /> בקשה לאישור כדי לבקר באתר הבא:</translation>
 <translation id="2876628302275096482">‏<ph name="BEGIN_LINK" />מידע נוסף לגבי השמירה על פרטיות הנתונים ב-Chrome<ph name="END_LINK" /></translation>
+<translation id="2878607776582720720">‫<ph name="TAB_TITLE" />, נבחרה סדרת כרטיסיות פרטיות לשיתוף</translation>
 <translation id="2885355868600171871">מעבר לסרגל הכתובות</translation>
 <translation id="2888126860611144412">‏מידע כללי על Chrome</translation>
 <translation id="2891154217021530873">הפסקת טעינת הדף</translation>
 <translation id="2894821468041866720">ההגנה המשופרת לא מאטה במידה משמעותית את הדפדפן או המכשיר.</translation>
 <translation id="2895521649038438824">יש אפשרות להאזין לדף הזה</translation>
+<translation id="289596984386220317">‫<ph name="TAB_TITLE" />, כרטיסייה מוצמדת עם תוכן שאפשר לשמוע</translation>
 <translation id="2900528713135656174">יצירת אירוע</translation>
 <translation id="2901411048554510387">מוצגות הצעות הקשורות לדף <ph name="WEBSITE_TITLE" /></translation>
 <translation id="2904300462646366554">‏קובצי PDF ייפתחו באופן אוטומטי אחרי ההורדה באמצעות אחת מהתוכנות להצגת קבצים כאלה במכשיר</translation>
@@ -425,6 +441,7 @@
 <translation id="2909615210195135082">‏פלטפורמת ההתראות של Google</translation>
 <translation id="2912345083818861431">שימוש בנעילת המסך כדי לראות כרטיסיות פתוחות במצב אנונימי</translation>
 <translation id="2918484639460781603">המשך להגדרות</translation>
+<translation id="2920713489113095380">‫<ph name="TAB_TITLE" />, הכרטיסייה הושתקה</translation>
 <translation id="2923908459366352541">השם לא חוקי</translation>
 <translation id="2932150158123903946">‏נפח אחסון של <ph name="APP_NAME" />‏ Google</translation>
 <translation id="2932222164150889403">לא יהיה שינוי במקלדת</translation>
@@ -455,6 +472,7 @@
 <translation id="3029276696788198026">ללא טעינה מראש</translation>
 <translation id="3029704984691124060">ביטויי הסיסמה אינם תואמים</translation>
 <translation id="3029829659829245765">‫<ph name="TAB_TITLE" />, הכרטיסייה שנבחרה הוצמדה</translation>
+<translation id="3035527385626181784">‫<ph name="TAB_TITLE" />, נבחרה כרטיסייה לשיתוף</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />קבלת עזרה<ph name="END_LINK" /></translation>
 <translation id="3037177537145227281">המחיר במעקב</translation>
 <translation id="3037517125981011456">‏יוצגו הודעות לצורך כניסה אל Chrome</translation>
@@ -480,6 +498,7 @@
 <translation id="316694332262407393">‏Chrome כבר פועל כאן.</translation>
 <translation id="3167258285411721858">ניתן לבקש את האתר לנייד של <ph name="HOST_NAME" /></translation>
 <translation id="3169472444629675720">Discover</translation>
+<translation id="3181145110929454111">‫<ph name="TAB_TITLE" />, נבחרה סדרת כרטיסיות פרטית להצמדה ולהשתקה.</translation>
 <translation id="3187472288455401631">מדידת המודעות</translation>
 <translation id="3189635831478931757">קבוצת הכרטיסיות "<ph name="GROUP_TITLE" />"</translation>
 <translation id="3200536777393523575">לסגור את החלון הנוכחי?</translation>
@@ -590,6 +609,7 @@
 <translation id="3701515417135397388">הצגת אזהרה אם סיסמה נחשפה בפרצה באבטחת מידע</translation>
 <translation id="3703166520839776970">אם הבעיה לא נפתרה, ניתן לבחור באפשרות 'פרטים נוספים' למטה כדי לעיין במידע נוסף מ-<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="3708100450779900829">כשהמכשיר מקופל, אפשר לבחור מהאפשרויות למטה או ללחוץ לחיצה ארוכה על סרגל הכתובות כדי לשנות את המיקום שלו</translation>
+<translation id="3709577906275923507">יכול להיות ש<ph name="FILE_NAME" /> מכיל מידע רגיש שעדיף לא לשתף</translation>
 <translation id="3710501561113687889">כדי להמשיך, הפרטים '<ph name="FIELDS_STRING" />' ישותפו על ידי <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> עם האתר הזה.</translation>
 <translation id="3710560693796335511">שיתוף פעולה</translation>
 <translation id="3718765429352682176">‏יכול להיות שתוצג היסטוריה מאפליקציות אחרות שפותחות קישורים ב-Chrome.</translation>
@@ -608,6 +628,7 @@
 <translation id="3777796259512476958">תתבצע יציאה מהחשבון ברוב האתרים</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{כרטיסייה אחת}one{# כרטיסיות}two{# כרטיסיות}other{# כרטיסיות}}</translation>
 <translation id="3795154175078851242">העתקת התמונה עם הקישור</translation>
+<translation id="3807999512799921804">‫<ph name="TAB_TITLE" />, נבחרה כרטיסייה פרטית מוצמדת עם תוכן שאפשר לשמוע</translation>
 <translation id="3810973564298564668">ניהול</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> הורדות נמחקו</translation>
 <translation id="3819183753496523827">אין לך חיבור לאינטרנט. צריך לבדוק את החיבור לאינטרנט ולנסות שוב.</translation>
@@ -630,6 +651,7 @@
 <translation id="3900966090527141178">ייצוא סיסמאות</translation>
 <translation id="3902562446536395999">בתהליך מיון בסדר אלפביתי עולה</translation>
 <translation id="3908308510347173149">יש לעדכן את <ph name="PRODUCT_NAME" /></translation>
+<translation id="3908347685661140825">‫<ph name="TAB_TITLE" />, נבחרה כרטיסייה מושתקת</translation>
 <translation id="3911609878849982353">בתהליך מיון בסדר אלפביתי יורד</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> פעילה</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
@@ -678,6 +700,7 @@
 <translation id="4124152339699379357">תהליך ההרשאה לשליחת התראות נפתח בגובה מלא</translation>
 <translation id="4132137475637520539">כל מי שיש לו את הקישור יכול להצטרף</translation>
 <translation id="4135200667068010335">רשימת המכשירים שאפשר לשתף איתם כרטיסייה נסגרה.</translation>
+<translation id="4136632885151622181">‫<ph name="TAB_TITLE" />, נבחרה סדרת כרטיסיות מוצמדות להקלטה.</translation>
 <translation id="4137746084635924146">שפת המכשיר הנוכחית</translation>
 <translation id="414128724510021958">כברירת מחדל, מתבקשים אתרים שמותאמים למחשב</translation>
 <translation id="4162867837470729563">רשימת אפשרויות השיתוף נפתחה בגובה מלא.</translation>
@@ -714,6 +737,7 @@
 <translation id="4298161202289999785">‫<ph name="TAB_TITLE" />, כרטיסייה פרטית מתוך סדרת כרטיסיות שנבחרה</translation>
 <translation id="4298388696830689168">אתרים מקושרים</translation>
 <translation id="4300632303535881174">חזרה לדף הקודם</translation>
+<translation id="4300949869324911380">‫<ph name="TAB_TITLE" />, נבחרה סדרת כרטיסיות להקלטה</translation>
 <translation id="4303044213806199882">‎chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" />‎</translation>
 <translation id="4306489587293957491">הזנת ביטוי סיסמה</translation>
 <translation id="4307992518367153382">היסודות</translation>
@@ -735,6 +759,7 @@
 <translation id="4384468725000734951">‏שימוש ב-Sogou לחיפוש</translation>
 <translation id="4387647248986092471">יצירה של נעילת פרופיל ברכב</translation>
 <translation id="4387817230000841154">לפתיחת התיקייה "הורדות"</translation>
+<translation id="4398561997852463382">‫<ph name="TAB_TITLE" />, נבחרה כרטיסייה פרטית מוצמדת להקלטה</translation>
 <translation id="4401432223274567153">{INACTIVE_TIME_DAYS,plural, =1{כרטיסיות וקבוצות של כרטיסיות שלא היו בשימוש במשך יום אחד או יותר}one{כרטיסיות וקבוצות של כרטיסיות שלא היו בשימוש במשך # ימים או יותר}two{כרטיסיות וקבוצות של כרטיסיות שלא היו בשימוש במשך יומיים (#) או יותר}other{כרטיסיות וקבוצות של כרטיסיות שלא היו בשימוש במשך # ימים או יותר}}</translation>
 <translation id="4402611456429872546"><ph name="LANG" /> - ההורדה מתבצעת…</translation>
 <translation id="4404568932422911380">ללא סימניות</translation>
@@ -751,6 +776,7 @@
 <translation id="4430277756566635951">החשבון הנוכחי: <ph name="EMAIL" />. עליך לבחור חשבון.</translation>
 <translation id="4452411734226507615">סגירת הכרטיסייה <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">התווסף לסימניות ב-<ph name="FOLDER_NAME" /></translation>
+<translation id="4460822871039013969">‫<ph name="TAB_TITLE" />, נבחרה כרטיסייה מוצמדת להקלטה</translation>
 <translation id="4460861538906892109">{ITEMS_COUNT,plural, =1{סימנייה אחת}one{‫# סימניות}two{‫# סימניות}other{‫# סימניות}}</translation>
 <translation id="4478161224666880173">אפשר להשתמש בחשבון <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> באתר הזה. כדי להמשיך עליך להיכנס אל <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="4479972344484327217">‏מתבצעת התקנה של <ph name="MODULE" /> ל-Chrome…</translation>
@@ -869,6 +895,7 @@
 <translation id="4912413785358399818">העברת הכרטיסייה</translation>
 <translation id="4913169188695071480">הפסקת הרענון</translation>
 <translation id="4921224083091001889">‏כדי לקבל גישה לסיסמאות ולנתונים נוספים בכל המכשירים שלך, צריך להיכנס ל-Chrome עם <ph name="EMAIL" /></translation>
+<translation id="4923173329789776645">הארגון שלך לא ממליץ להוריד את הקובץ</translation>
 <translation id="4925120120285606924">צילום מסך <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="4926901776383726965">אפשר לשמור תמונות וקבצים לצפייה במצב אופליין או לשיתוף באפליקציות אחרות</translation>
 <translation id="492699891214363151">{BOOKMARKS_COUNT,plural, =1{‏סימנייה אחת ופריטים נוספים שמורים רק במכשיר הזה. כדי להשתמש בהם במכשירים אחרים, צריך לשמור אותם בחשבון Google.}one{‏‫# סימניות ופריטים נוספים שמורים רק במכשיר הזה. כדי להשתמש בהם במכשירים אחרים, צריך לשמור אותם בחשבון Google.}two{‏‫# סימניות ופריטים נוספים שמורים רק במכשיר הזה. כדי להשתמש בהם במכשירים אחרים, צריך לשמור אותם בחשבון Google.}other{‏‫# סימניות ופריטים נוספים שמורים רק במכשיר הזה. כדי להשתמש בהם במכשירים אחרים, צריך לשמור אותם בחשבון Google.}}</translation>
@@ -960,10 +987,12 @@
 <translation id="5326246328175179736">אי אפשר להיכנס באמצעות החשבון הזה</translation>
 <translation id="5327248766486351172">שם</translation>
 <translation id="5328542107300944283">שימוש עם <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
+<translation id="5338596104773193991">‫<ph name="TAB_TITLE" />, שותפה כרטיסייה פרטית</translation>
 <translation id="5342314432463739672">בקשות הרשאה</translation>
 <translation id="534580735623577507">אין ביקורים באתרים מאז <ph name="TIME_PERIOD" /></translation>
 <translation id="5354716139000094027">‏סיכום בעזרת AI</translation>
 <translation id="5355191726083956201">מופעלת הגנה משופרת</translation>
+<translation id="5370504953185181057">‫<ph name="TAB_TITLE" />, הוצמדה כרטיסייה פרטית לשיתוף</translation>
 <translation id="5375374982898812658">הגישה שלך לקבוצת הכרטיסיות '<ph name="GROUP_NAME" />' תאבד באופן מיידי, והיא תימחק מכל המכשירים שלך</translation>
 <translation id="5375577065097716013">‏חיפוש תמונה בעזרת Google Lens <ph name="BEGIN_NEW" />חדש<ph name="END_NEW" /></translation>
 <translation id="5390367025924544771">האתר <ph name="WEBSITE_ORIGIN" /> רוצה להשתמש בפרטים האישיים מהארנק הדיגיטלי שלך. מומלץ להמשיך רק אם האתר מהימן. יש אתרים מסוכנים שעשויים להטעות אותך כדי לגרום לך לחשוף פרטים כמו השם החוקי או מספר תעודת הזהות שלך.</translation>
@@ -1035,6 +1064,7 @@
 <translation id="571930967925877633">‏הסימניות, ההיסטוריה ונתונים אחרים ב-Chrome כבר לא יסונכרנו עם חשבון Google</translation>
 <translation id="572328651809341494">כרטיסיות אחרונות</translation>
 <translation id="5728072125198221967">‏שירותי Google מקושרים</translation>
+<translation id="5734658507307260911">‫<ph name="TAB_TITLE" />, הוצמדה כרטיסייה פרטית עם תוכן שאפשר לשמוע</translation>
 <translation id="5744751019568455640">אלה הקולות שאפשר לבחור להקראה של דפי האינטרנט. אם הקול הזה מוצא חן בעיניך וברצונך שאמשיך להשתמש בו, פשוט צריך ללחוץ על שם הקול.</translation>
 <translation id="574845902699630049">שיתוף בתור <ph name="OWNER_FULL_NAME" /></translation>
 <translation id="5749068826913805084">‏לצורך הורדת קבצים, Chrome זקוק לגישה לאחסון.</translation>
@@ -1054,6 +1084,7 @@
 <translation id="5809361687334836369">{HOURS,plural, =1{לפני שעה}one{לפני # שעות}two{לפני שעתיים}other{לפני # שעות}}</translation>
 <translation id="5810288467834065221">‏Copyright <ph name="YEAR" /> Google LLC.‎ כל הזכויות שמורות.</translation>
 <translation id="581030587084991751">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{הצגת ההתראה}one{הצגת ההתראות}two{הצגת ההתראות}other{הצגת ההתראות}}</translation>
+<translation id="5811144606237321538">‫<ph name="TAB_TITLE" />, נבחרה סדרת כרטיסיות מוצמדת ומושתקת</translation>
 <translation id="5814749351757353073">עוקבים אחר אתרים שאוהבים</translation>
 <translation id="5823093032261493462">רוצה להוריד את <ph name="FILE_NAME" /> מ-<ph name="DOWNLOAD_DOMAIN" /> בכל זאת?</translation>
 <translation id="5825135637446025843">‏אחרי ההפעלה מחדש של Chrome, הפרטים שנשמרו מהספק החדש ישמשו למילוי אוטומטי של סיסמאות, מפתחות גישה, כתובות, אמצעי תשלום ופרטים אחרים.</translation>
@@ -1068,6 +1099,7 @@
 <translation id="5849288995120328556">להפסיק את השיתוף?</translation>
 <translation id="5853623416121554550">ההורדה בהשהיה</translation>
 <translation id="5855546874025048181">צמצום: <ph name="REFINE_TEXT" /></translation>
+<translation id="585617462962753911">‫<ph name="TAB_TITLE" />, נבחרה סדרת כרטיסיות פרטית להקלטה</translation>
 <translation id="5857447844686706637">משהו השתבש. לא ניתן היה לעדכן את המחיר שבמעקב.</translation>
 <translation id="5859968346865909126">יש לך אפשרות להפעיל או להשבית אותו בהגדרות</translation>
 <translation id="5860033963881614850">כבוי</translation>
@@ -1080,6 +1112,7 @@
 <translation id="5885378508678660271">‏התראות <ph name="SEPARATOR" /> Chrome הסיר את ההרשאות האלה כי האתר הזה מסוכן</translation>
 <translation id="5899667542927581604">אין גיליון של מפתחות גישה שנסגר</translation>
 <translation id="5907542076239273525">הסימנייה נשמרה בתיקייה <ph name="FOLDER_NAME" /></translation>
+<translation id="5911301511366365629">‫<ph name="TAB_TITLE" />, נבחרה כרטיסייה פרטית עם תוכן שאפשר לשמוע</translation>
 <translation id="5916664084637901428">פועל</translation>
 <translation id="5919204609460789179">יש לעדכן את <ph name="PRODUCT_NAME" /> כדי להתחיל סנכרון</translation>
 <translation id="5932881020239635062">סידורי</translation>
@@ -1142,6 +1175,7 @@
 <translation id="6162892189396105610">‏מערכת Chrome טוענת מראש דפים שסביר שהמשתמש יעבור אליהם.</translation>
 <translation id="6165508094623778733">למידע נוסף</translation>
 <translation id="6170675927290506430">לדף הגדרת ההתראות</translation>
+<translation id="6184972259157699660">‫<ph name="TAB_TITLE" />, כרטיסייה פרטית הושתקה</translation>
 <translation id="6186394685773237175">לא נמצאו סיסמאות שנחשפו</translation>
 <translation id="6192907950379606605">ליצירת תיאורי תמונות</translation>
 <translation id="6193448654517602979">בחירת כרטיסיות</translation>
@@ -1176,6 +1210,7 @@
 <translation id="630308129961693966">בחירת המיקום של סרגל הכתובות</translation>
 <translation id="6303969859164067831">יציאה וכיבוי הסנכרון</translation>
 <translation id="6307241780749477694">כדי לקבל את כל הסיסמאות במכשיר הזה, צריך לאמת את הזהות שלך</translation>
+<translation id="6309082029962045994">‫<ph name="TAB_TITLE" />, נבחרה סדרת כרטיסיות מוצמדת עם תוכן שאפשר לשמוע</translation>
 <translation id="6312687380483398334">אפליקציות אינטרנט (שקט)</translation>
 <translation id="6315386555979018699">מחיקה והמשך</translation>
 <translation id="6316139424528454185">‏אין תמיכה בגרסת Android</translation>
@@ -1185,6 +1220,7 @@
 <translation id="6333140779060797560">שיתוף באמצעות <ph name="APPLICATION" /></translation>
 <translation id="6335454563754888572">‏עריכת כתובת ה-URL שמצביעה על הדף בכתובת: <ph name="PAGE_URL" /></translation>
 <translation id="6337234675334993532">הצפנה</translation>
+<translation id="6338345532044450921">‫<ph name="TAB_TITLE" />, כרטיסייה פרטית עם תוכן שאפשר לשמוע</translation>
 <translation id="6340526405444716530">התאמה אישית</translation>
 <translation id="6341580099087024258">לשאול איפה לשמור קבצים</translation>
 <translation id="6342069812937806050">זה עתה</translation>
@@ -1202,6 +1238,7 @@
 <translation id="6401458660421980302">‏כדי לשלוח את הכרטיסייה הזו למכשיר אחר, צריך להיכנס ל-Chrome במכשיר האחר</translation>
 <translation id="6404511346730675251">עריכת סימנייה</translation>
 <translation id="6406506848690869874">סנכרון</translation>
+<translation id="6408370409308816490">‫<ph name="TAB_TITLE" />, נבחרה כרטיסייה פרטית מוצמדת לשיתוף</translation>
 <translation id="6410883413783534063">ניתן לפתוח כרטיסיות כדי להיכנס אל דפים שונים בו-זמנית</translation>
 <translation id="6411009031428071896">האזנה לפיד</translation>
 <translation id="6411219469806822692">אי אפשר לזוז למעלה יותר. יש לנסות להתחיל מחלק גבוה יותר בדף.</translation>
@@ -1280,6 +1317,7 @@
 <translation id="671928215901716392">מסך נעילה</translation>
 <translation id="6723740634201835758">‏בחשבון Google שלך</translation>
 <translation id="6734310707649923383">בדף ההיסטוריה אפשר לראות או למחוק את הדפים שנכנסת אליהם</translation>
+<translation id="6737429434215739253">‫<ph name="TAB_TITLE" />, הכרטיסייה הפרטית המוצמדת שמתבצעת בה הקלטה</translation>
 <translation id="6738867403308150051">ההורדה מתבצעת...</translation>
 <translation id="6745063744988317486">Mono</translation>
 <translation id="6746338529702829275">בדיקה של נתוני החשבון</translation>
@@ -1346,6 +1384,7 @@
 <translation id="6922812712751566567">‏‫<ph name="PERMISSION" /> <ph name="SEPARATOR" /> Chrome הסיר את ההרשאות האלה כי לא נכנסת לאחרונה</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{כרטיסייה אחת}one{‫<ph name="NUMBER_OF_TABS" /> כרטיסיות}two{‫<ph name="NUMBER_OF_TABS" /> כרטיסיות}other{‫<ph name="NUMBER_OF_TABS" /> כרטיסיות}}</translation>
 <translation id="6929224077895306814">‏כל קודי האבטחה שנשמרו במכשיר ובחשבון Google שלך יימחקו</translation>
+<translation id="6933180670536678127">‫<ph name="TAB_TITLE" />, נבחרה כרטיסייה מוצמדת עם תוכן שאפשר לשמוע</translation>
 <translation id="6937524809504266803">התאמה אישית וקישור</translation>
 <translation id="6937876069006524083">כינוי (אופציונלי)</translation>
 <translation id="6942665639005891494">ניתן תמיד לשנות את מיקום ברירת המחדל להורדות דרך האפשרות 'הגדרות' בתפריט</translation>
@@ -1380,9 +1419,11 @@
 <translation id="707155805709242880">יש לבחור למטה מה לסנכרן</translation>
 <translation id="7077143737582773186">‏כרטיס SD</translation>
 <translation id="7078916049958741685">‏צריך למחוק גם את נתוני Chrome מהמכשיר הזה</translation>
+<translation id="7080145768121641840">‫<ph name="TAB_TITLE" />, נבחרה כרטיסייה מושתקת ומוצמדת</translation>
 <translation id="7084115944294706056">בחירת מיקום סרגל הכתובות</translation>
 <translation id="7085332316435785646">‏בוחרים אם לכלול את ההיסטוריה ב-Chrome להתאמה אישית מדויקת יותר בשירותי Google</translation>
 <translation id="7088681679121566888">‏Chrome מעודכן</translation>
+<translation id="7098100324909062850">‫<ph name="TAB_TITLE" />, נבחרה סדרת כרטיסיות פרטית להשתקה</translation>
 <translation id="7106762743910369165">הדפדפן מנוהל על ידי הארגון שלך</translation>
 <translation id="7111394291981742152">‏ב-Chrome יש לך יותר שליטה במודעות שמוצגות לך, וחלות הגבלות על המידע עליך שהאתרים יכולים לקבל בהצגת מודעות בהתאמה אישית.</translation>
 <translation id="7111822978084196600">יש לתת שם לחלון</translation>
@@ -1435,6 +1476,7 @@
 <translation id="7290209999329137901">לא ניתן היה לשנת את השם מפני שהפריט לא זמין</translation>
 <translation id="7291910923717764901">נוספו תיאורי תמונות בדף זה</translation>
 <translation id="7293429513719260019">בחירת שפה</translation>
+<translation id="7298319215489933099">‫<ph name="TAB_TITLE" />, נבחרה כרטיסייה מוצמדת לשיתוף</translation>
 <translation id="7304072650267745798">‏במכשיר Android עשויה להופיע הגדרה דומה. אם ההגדרה הזו מופעלת ב-Chrome ובמכשיר Android, חברות עשויות לקבל הרשאות למדוד את רמת האפקטיביות של המודעות שלהן באתרים שבהם מבקרים ובאפליקציות שבהן משתמשים.</translation>
 <translation id="7313188324932846546">יש ללחוץ כדי להגדיר סנכרון</translation>
 <translation id="7314734791127433392">לא ניתן לבדוק את הסיסמאות</translation>
@@ -1484,6 +1526,7 @@
 <translation id="749294055653435199">‏Google Lens לא זמין במכשיר הזה</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (עודכן <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7498271377022651285">נא להמתין…</translation>
+<translation id="7499065150275272675">‫<ph name="TAB_TITLE" />, הכרטיסייה המוצמדת הושתקה</translation>
 <translation id="7501135638693251872">כל הסימניות</translation>
 <translation id="750228856503700085">אין עדכונים זמינים</translation>
 <translation id="7507207699631365376">הצגת <ph name="BEGIN_LINK" />מדיניות הפרטיות<ph name="END_LINK" /> של הספק הזה</translation>
@@ -1500,6 +1543,7 @@
 <translation id="7573665567024262965">בחירת האפליקציות שיוגדרו כברירות המחדל</translation>
 <translation id="7577900504646297215">ניהול תחומי עניין</translation>
 <translation id="757855969265046257">{FILES,plural, =1{הורדת קובץ אחד (<ph name="FILES_DOWNLOADED_ONE" />)}one{הורדת <ph name="FILES_DOWNLOADED_MANY" /> קבצים}two{הורדת <ph name="FILES_DOWNLOADED_MANY" /> קבצים}other{הורדת <ph name="FILES_DOWNLOADED_MANY" /> קבצים}}</translation>
+<translation id="7579341427377004341">‫<ph name="TAB_TITLE" />, נבחרה סדרת כרטיסיות פרטית עם תוכן שאפשר לשמוע.</translation>
 <translation id="7581273696622423628">השתתף בסקר</translation>
 <translation id="7583262514280211622">רשימת הקריאה זמינה כאן</translation>
 <translation id="758603037873046260">צריך להיכנס לחשבון כדי לשמור את הדף הזה</translation>
@@ -1538,6 +1582,7 @@
 <translation id="7708994397325774423">קבלת כל הסיסמאות</translation>
 <translation id="7714077993070342304">‏פתיחת תפריט Chrome</translation>
 <translation id="7733878270780732638">אין מספיק נפח אחסון פנוי במכשיר.</translation>
+<translation id="774403695779169686">‫<ph name="TAB_TITLE" />, נבחרה כרטיסייה פרטית לשיתוף</translation>
 <translation id="774876555279732384">‏אפשר לנהל את שירותי המילוי האוטומטי גם ב<ph name="BEGIN_LINK" />הגדרות Android<ph name="END_LINK" />.</translation>
 <translation id="7759809451544302770">אופציונלי</translation>
 <translation id="7762668264895820836">‏כרטיס SD <ph name="SD_CARD_NUMBER" /></translation>
@@ -1603,10 +1648,12 @@
 <translation id="7998918019931843664">פתיחה מחדש של כרטיסייה שנסגרה</translation>
 <translation id="8001245658307297681">מוצג לך קובץ מקומי</translation>
 <translation id="8004582292198964060">דפדפן</translation>
+<translation id="8023190977980579548">‫<ph name="TAB_TITLE" />, כרטיסייה פרטית מוצמדת מתוך סדרת כרטיסיות שנבחרה לשיתוף</translation>
 <translation id="8025972204417227828">הוספת מקש קיצור חדש</translation>
 <translation id="8027863900915310177">בחירת המיקום להורדה</translation>
 <translation id="8030852056903932865">אישור</translation>
 <translation id="8032569120109842252">במעקב</translation>
+<translation id="8035522026858423976">‫<ph name="TAB_TITLE" />, נבחרה כרטיסייה הפרטית הושתקה</translation>
 <translation id="8037750541064988519">נותרו <ph name="DAYS" /> ימים</translation>
 <translation id="8037801708772278989">התבצעה בדיקה עכשיו</translation>
 <translation id="804335162455518893">‏לא נמצא כרטיס SD</translation>
@@ -1676,13 +1723,14 @@
 <translation id="8281886186245836920">דילוג</translation>
 <translation id="8282297628636750033">החלת עיצוב כהה על אתרים, כשאפשר</translation>
 <translation id="8282950411412455249">אל הגדרות האבטחה</translation>
-<translation id="8288688997999490824">{NUM_WINDOWS,plural, =1{סגירת חלון פרטי אחד}one{סגירת # החלונות הפרטיים}two{סגירת # החלונות הפרטיים}other{סגירת # החלונות הפרטיים}}</translation>
+<translation id="8288688997999490824">{NUM_WINDOWS,plural, =1{סגירת החלון הפרטי}one{סגירת # החלונות הפרטיים}two{סגירת # החלונות הפרטיים}other{סגירת # החלונות הפרטיים}}</translation>
 <translation id="831192587911042850">הוספת אתר האינטרנט שפתוח כרגע לרשימת אתרי האינטרנט שבמעקב.</translation>
 <translation id="8317318757008452355">פתיחת האפשרויות להדפסה</translation>
 <translation id="8320212361750431956">פעילות אחרונה</translation>
 <translation id="832514020744584629">‫<ph name="PREF_TITLE" />  <ph name="BEGIN_NEW" />חדש<ph name="END_NEW" /></translation>
 <translation id="8342727528718219152">‏‫Chrome יודיע לך על אתרים שעלולים לשלוח יותר מדי התראות</translation>
 <translation id="834313815369870491">אין לתרגם את האתרים אף פעם</translation>
+<translation id="8348215005712416247">‫<ph name="TAB_TITLE" />, נבחרה סדרת כרטיסיות פרטית מוצמדת להקלטה</translation>
 <translation id="8348430946834215779">‏יש להשתמש ב-HTTPS כשאפשר, ולקבל אזהרה לפני שטוענים אתרים שלא תומכים ב-HTTPS</translation>
 <translation id="8354977102499939946">חיפוש מהיר באמצעות הקול. ניתן לערוך את קיצור הדרך הזה ב'הגדרות'.</translation>
 <translation id="8361737703487394103">מעבר לכרטיסייה ספציפית (1-8)</translation>
@@ -1802,6 +1850,7 @@
 <translation id="8865415417596392024">‏נתוני Chrome בחשבון שלך</translation>
 <translation id="8888527824584402177">כרטיסיות שלא השתמשת בהן במשך <ph name="DAYS_INACTIVE" /> ימים מועברות לכאן<ph name="AUTODELETE_SECTION" />. תמיד אפשר לשנות את זה ב'<ph name="SETTINGS_TITLE" />'.</translation>
 <translation id="8890668505403261809">חיפוש בכרטיסיות הפרטיות</translation>
+<translation id="8894890673032951011">‫<ph name="TAB_TITLE" />, נבחרה כרטיסייה פרטית להקלטה</translation>
 <translation id="8898822736010347272">‏שולח ל-Google כתובות URL של חלק מהדפים שאליהם נכנסת, פרטים מוגבלים לגבי המערכת וחלק מתוכן הדפים. פעולה זו עוזרת לזהות איומים חדשים ולהגן על כל המשתמשים באינטרנט.</translation>
 <translation id="8903921497873541725">התקרבות לתצוגה</translation>
 <translation id="8909135823018751308">שיתוף…</translation>
@@ -1842,8 +1891,10 @@
 <translation id="9065383040763568503">‏נתונים מאוחסנים שלא מוגדרים כחשובים ב-Chrome (למשל: אתרים ללא הגדרות שמורות או כאלה שתדירות הביקור בהם נמוכה)</translation>
 <translation id="9067341854474068781">אין גיליון של מפתחות גישה שנפתח בגובה מלא</translation>
 <translation id="906781307897697745">מיקום הסימנייה: <ph name="PRODUCT_NAME" /></translation>
+<translation id="9068568736932147490">‫<ph name="TAB_TITLE" />, נבחרה סדרת כרטיסיות פרטית מוצמדת עם תוכן שאפשר לשמוע</translation>
 <translation id="9069999660519089861">אין דפים שלא נקראו</translation>
 <translation id="9070377983101773829">ביצוע חיפוש קולי</translation>
+<translation id="9073805459138993880">‫<ph name="TAB_TITLE" />, נבחרה סדרת כרטיסיות לשיתוף</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9081543426177426948">אתרים שנכנסים אליהם לא נשמרים במצב אנונימי</translation>
 <translation id="9086302186042011942">הסנכרון מתבצע</translation>

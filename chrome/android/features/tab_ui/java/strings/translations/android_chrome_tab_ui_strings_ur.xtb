@@ -64,6 +64,7 @@
 <translation id="2918484639460781603">ترتیبات پر جائیں</translation>
 <translation id="2928243913527329289">‏Google | اس اسٹور کے بارے میں</translation>
 <translation id="2978860912612699943">{ITEMS_COUNT,plural, =1{‫<ph name="ITEMS_COUNT_ONE" /> منتخب کیا گیا}other{‫<ph name="ITEMS_COUNT_MANY" /> منتخب کیے گئے}}</translation>
+<translation id="2991702137079525605">{TABS_COUNT,plural, =1{ٹیب کو پن کریں}other{ٹیبز کو پن کریں}}</translation>
 <translation id="3008554597174452548">پروڈکٹ کو ٹریک کرنا بند کریں</translation>
 <translation id="3026391124054406831">اپنے ٹیبز کو منظم کرنے کیلئے گروپس تخلیق کریں۔</translation>
 <translation id="3051031624272448591">یہ آپ کو سرگزشت میں ہمیشہ واپس مل سکتے ہیں</translation>
@@ -85,6 +86,7 @@
 <translation id="3940195383040445971">ٹیبز پر قیمتیں ٹریک کریں</translation>
 <translation id="3940717704786481856">{NUMBER_OF_TABS_ADDED,plural, =1{‫<ph name="ONE_ADDED" /> نیا ٹیب، <ph name="ANY_CLOSED" /> بند کیا گیا}other{‫<ph name="MANY_ADDED" /> نئے ٹیبز، <ph name="ANY_CLOSED" /> بند کئے گئے}}</translation>
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{ٹیب کو گروپ میں شامل کریں}other{ٹیبز کو گروپ میں شامل کریں}}</translation>
+<translation id="3962134438902735041">{TABS_COUNT,plural, =1{‫<ph name="TABS_COUNT_ONE" /> منتخب کردہ ٹیب سے پن ہٹائیں}other{‫<ph name="TABS_COUNT_MANY" /> منتخب کردہ ٹیبز سے پن ہٹائیں}}</translation>
 <translation id="4009732926939031387">{NUM_DAYS,plural, =1{<ph name="NUM_DAYS_ONE" /> دن پہلے تخلیق کیا گیا}other{<ph name="NUM_DAYS_MANY" /> دن پہلے تخلیق کیا گیا}}</translation>
 <translation id="4076226664360336092">ٹیب گروپ کی فہرست، پوری اسکرین پر کھلی ہے</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> ٹیبز متعلقہ معلوم ہوتے ہیں۔ ان کی گروپ بندی کریں؟</translation>
@@ -140,6 +142,7 @@
 <translation id="625996437999624951">{TAB_COUNT,plural, =1{ٹیب کو گروپ سے ہٹائیں}other{ٹیبز کو گروپ سے ہٹائیں}}</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{ٹیب کو نئے گروپ میں شامل کریں}other{ٹیبز کو نئے گروپ میں شامل کریں}}</translation>
 <translation id="6333260925957816943">اس اسٹور سے متعلق معلومات</translation>
+<translation id="6344715021569694246">{TABS_COUNT,plural, =1{‫<ph name="TABS_COUNT_ONE" /> منتخب کردہ ٹیب کو پن کریں}other{‫<ph name="TABS_COUNT_MANY" /> منتخب کردہ ٹیبز کو پن کریں}}</translation>
 <translation id="6381032505162537930">آپ کو اپنے ٹیب گروپس یہاں ملیں گے</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> کو منتخب کردہ ٹیب سے گروپ ختم کریں}other{<ph name="TABS_COUNT_MANY" /> کو منتخب کردہ ٹیبز سے گروپ ختم کریں}}</translation>
 <translation id="6499296376514955580">مشترکہ ٹیب گروپ کی تبدیلیوں کے بارے میں نوٹس بند ہے</translation>
@@ -198,6 +201,7 @@
 <translation id="805809603610022708">{TABS_COUNT,plural, =1{ٹیب کو گروپ میں شامل کریں}other{ٹیبز کو گروپ میں شامل کریں}}</translation>
 <translation id="8138067144082174140">‫14 دن غیر فعال ہونے کے بعد</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ٹیب، <ph name="COLOR_NAME" /> رنگ کے ساتھ <ph name="TITLE_OF_GROUP" /> ٹیب گروپ کو پھیلائیں۔}other{<ph name="TABS_COUNT_MANY" /> ٹیبز، <ph name="COLOR_NAME" /> رنگ کے ساتھ <ph name="TITLE_OF_GROUP" /> ٹیب گروپ کو پھیلائیں۔}}</translation>
+<translation id="8195186926670288294">{TABS_COUNT,plural, =1{ٹیب کی پن ہٹائیں}other{ٹیبز کی پن ہٹائیں}}</translation>
 <translation id="8205266828577616993">ٹیب اوپر منتقل کریں</translation>
 <translation id="8207688828622594111">{NUM_MINS,plural, =1{‫<ph name="NUM_MINS_ONE" /> منٹ قبل اپ ڈیٹ کیا گیا}other{‫<ph name="NUM_MINS_MANY" /> منٹ قبل اپ ڈیٹ کیا گیا}}</translation>
 <translation id="8236097722223016103">بُک مارکس میں شامل کریں</translation>
