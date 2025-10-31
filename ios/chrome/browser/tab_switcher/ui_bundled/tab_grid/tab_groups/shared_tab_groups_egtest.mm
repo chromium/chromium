@@ -1283,6 +1283,13 @@ void WaitForFakeJoinFlowView() {
 // Tests that the activity summary is displayed when a tab is added from sync to
 // a shared tab group.
 - (void)testActivitySummary {
+#if TARGET_IPHONE_SIMULATOR
+  // TODO(crbug.com/456719999): Re-enable the test on simulators.
+  if (base::ios::IsRunningOnIOS26OrLater()) {
+    EARL_GREY_TEST_DISABLED(@"Test disabled on simulators.");
+  }
+#endif
+
   AddSharedGroup(/*owner=*/YES, self.testServer);
   [ChromeEarlGrey waitForMainTabCount:1];
 
