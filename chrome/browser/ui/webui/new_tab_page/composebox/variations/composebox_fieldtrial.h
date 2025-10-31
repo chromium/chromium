@@ -72,6 +72,8 @@ extern const base::FeatureParam<bool> kForceToolsAndModels;
 
 // Whether to show the submit button in the composebox.
 extern const base::FeatureParam<bool> kShowSubmit;
+// Whether to show the smart compose in the composebox.
+extern const base::FeatureParam<bool> kShowSmartCompose;
 
 bool IsNtpComposeboxEnabled(Profile* profile);
 

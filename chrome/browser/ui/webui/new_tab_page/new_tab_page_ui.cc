@@ -593,7 +593,8 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
                      composebox_config.close_by_escape());
   source->AddBoolean("composeboxCloseByClickOutside",
                      composebox_config.close_by_click_outside());
-  source->AddBoolean("composeboxSmartComposeEnabled", true);
+  source->AddBoolean("composeboxSmartComposeEnabled",
+                     ntp_composebox::kShowSmartCompose.Get());
   const auto* aim_eligibility_service =
       AimEligibilityServiceFactory::GetForProfile(profile);
   source->AddBoolean("composeboxShowDeepSearchButton",
