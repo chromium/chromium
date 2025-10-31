@@ -77,8 +77,6 @@ CreditCardAccessManagerTestBase::~CreditCardAccessManagerTestBase() = default;
 
 void CreditCardAccessManagerTestBase::SetUp() {
   InitAutofillClient();
-  autofill_client().SetPrefs(test::PrefServiceForTesting());
-  personal_data().SetPrefService(autofill_client().GetPrefs());
   personal_data().SetSyncServiceForTest(&sync_service_);
 #if BUILDFLAG(IS_IOS)
   // On iOS mandatory reauth is by default enabled. Disable it explicitly

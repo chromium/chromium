@@ -536,11 +536,8 @@ class FormDataImporterTest : public testing::Test {
   }
 
   void SetUp() override {
-    prefs_ = test::PrefServiceForTesting();
-
     client().set_test_strike_database(std::make_unique<TestStrikeDatabase>());
     test_api(address_data_manager()).set_auto_accept_address_imports(true);
-    personal_data_manager().SetPrefService(prefs_.get());
     personal_data_manager().SetSyncServiceForTest(&sync_service_);
 
     auto virtual_card_enrollment_manager =

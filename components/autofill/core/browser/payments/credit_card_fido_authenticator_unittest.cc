@@ -103,7 +103,6 @@ class CreditCardFidoAuthenticatorTest
  public:
   void SetUp() override {
     InitAutofillClient();
-    personal_data_manager().SetPrefService(autofill_client().GetPrefs());
 
     CreateAutofillDriver();
     autofill_driver().SetAuthenticator(new TestInternalAuthenticator());

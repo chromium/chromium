@@ -224,9 +224,6 @@ class TouchToFillDelegateAndroidImplUnitTest
  protected:
   void SetUp() override {
     InitAutofillClient();
-    autofill_client().SetPrefs(test::PrefServiceForTesting());
-    autofill_client().GetPersonalDataManager().SetPrefService(
-        autofill_client().GetPrefs());
     CreateAutofillDriver();
 
     auto touch_to_fill_delegate =

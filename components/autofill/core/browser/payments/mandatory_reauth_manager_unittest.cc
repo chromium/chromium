@@ -45,8 +45,6 @@ class MandatoryReauthManagerTest : public testing::Test {
         std::make_unique<MandatoryReauthManager>(autofill_client_.get());
     SetUpAuthentication(/*biometrics_available=*/true,
                         /*screen_lock_available=*/true);
-    autofill_client_->GetPersonalDataManager().SetPrefService(
-        autofill_client_->GetPrefs());
     test::SetCreditCardInfo(&server_card_, "Test User", "1111" /* Visa */,
                             test::NextMonth().c_str(), test::NextYear().c_str(),
                             "1");

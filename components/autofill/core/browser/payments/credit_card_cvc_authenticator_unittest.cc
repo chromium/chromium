@@ -82,10 +82,6 @@ class CreditCardCvcAuthenticatorTest
 
   void SetUp() override {
     InitAutofillClient();
-    autofill_client().SetPrefs(test::PrefServiceForTesting());
-    autofill_client().GetPersonalDataManager().SetPrefService(
-        autofill_client().GetPrefs());
-
     requester_ = std::make_unique<TestAuthenticationRequester>();
 
     autofill_client()
@@ -97,16 +93,6 @@ class CreditCardCvcAuthenticatorTest
                 &autofill_client().GetPersonalDataManager()));
     cvc_authenticator_ =
         std::make_unique<CreditCardCvcAuthenticator>(&autofill_client());
-  }
-
-  void TearDown() override {
-    // Order of destruction is important as AutofillDriver relies on
-    // PersonalDataManager to be around when it gets destroyed.
-    autofill_client().GetPersonalDataManager().SetPrefService(nullptr);
-    autofill_client()
-        .GetPersonalDataManager()
-        .test_payments_data_manager()
-        .ClearCreditCards();
   }
 
   CreditCard CreateServerCard(std::string guid, std::string number) {

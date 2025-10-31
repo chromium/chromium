@@ -81,8 +81,6 @@ class AutofillAiSuggestionGeneratorTest : public testing::Test {
                               features::kAutofillAiRedressNumber,
                               features::kAutofillAiWalletFlightReservation},
         /*disabled_features=*/{});
-    autofill_client_.GetPersonalDataManager().SetPrefService(
-        autofill_client_.GetPrefs());
     autofill_client_.set_entity_data_manager(
         std::make_unique<EntityDataManager>(
             autofill_client_.GetPrefs(), autofill_client_.GetIdentityManager(),

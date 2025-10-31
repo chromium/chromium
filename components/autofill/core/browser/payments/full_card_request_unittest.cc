@@ -128,10 +128,10 @@ class FullCardRequestTest : public testing::Test {
       : test_shared_loader_factory_(
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
                 &test_url_loader_factory_)) {
-    autofill_client().SetPrefs(test::PrefServiceForTesting());
     personal_data().set_payments_data_manager(
         std::make_unique<MockPaymentsDataManager>());
-    personal_data().SetPrefService(autofill_client().GetPrefs());
+    personal_data().test_payments_data_manager().SetPrefService(
+        autofill_client().GetPrefs());
     personal_data().SetSyncServiceForTest(&sync_service_);
     autofill_client()
         .GetPaymentsAutofillClient()

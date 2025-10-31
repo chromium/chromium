@@ -61,7 +61,6 @@ constexpr char16_t kCapitalizedIbanRegex[] =
 class IbanSaveManagerTest : public testing::Test {
  public:
   IbanSaveManagerTest() {
-    autofill_client_.SetPrefs(test::PrefServiceForTesting());
     autofill_client_.GetPaymentsAutofillClient()
         ->set_payments_network_interface(
             std::make_unique<MockTestPaymentsNetworkInterface>());
@@ -71,7 +70,6 @@ class IbanSaveManagerTest : public testing::Test {
     strike_database_ = test_strike_database.get();
     autofill_client_.set_test_strike_database(std::move(test_strike_database));
     personal_data().payments_data_manager().SetSyncingForTest(true);
-    personal_data().SetPrefService(autofill_client_.GetPrefs());
     iban_save_manager_ = std::make_unique<IbanSaveManager>(&autofill_client_);
   }
 

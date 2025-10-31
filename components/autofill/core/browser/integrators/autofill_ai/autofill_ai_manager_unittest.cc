@@ -155,8 +155,6 @@ class AutofillAiManagerTest : public testing::Test {
         /*enabled_features=*/{features::kAutofillAiWithDataSchema,
                               features::kAutofillAiServerModel},
         /*disabled_features=*/{});
-    autofill_client().GetPersonalDataManager().SetPrefService(
-        autofill_client().GetPrefs());
     autofill_client().set_entity_data_manager(
         std::make_unique<EntityDataManager>(
             autofill_client().GetPrefs(),

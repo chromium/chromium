@@ -105,11 +105,11 @@ class SaveAndFillManagerImplTest : public testing::Test {
  public:
   void SetUp() override {
     autofill_client_ = std::make_unique<autofill::TestAutofillClient>();
-    autofill_client_->SetPrefs(test::PrefServiceForTesting());
     autofill_client_->GetPersonalDataManager().set_payments_data_manager(
         std::make_unique<MockPaymentsDataManager>());
-    autofill_client_->GetPersonalDataManager().SetPrefService(
-        autofill_client_->GetPrefs());
+    autofill_client_->GetPersonalDataManager()
+        .test_payments_data_manager()
+        .SetPrefService(autofill_client_->GetPrefs());
 
     auto payments_autofill_client =
         std::make_unique<TestPaymentsAutofillClientMock>(

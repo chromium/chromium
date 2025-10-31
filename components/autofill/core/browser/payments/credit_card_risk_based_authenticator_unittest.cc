@@ -39,8 +39,6 @@ class CreditCardRiskBasedAuthenticatorTest : public testing::Test {
 
   void SetUp() override {
     requester_ = std::make_unique<TestAuthenticationRequester>();
-    autofill_client_.SetPrefs(test::PrefServiceForTesting());
-    personal_data().SetPrefService(autofill_client_.GetPrefs());
     personal_data().SetSyncServiceForTest(&sync_service_);
     autofill_client_.GetPaymentsAutofillClient()
         ->set_payments_network_interface(

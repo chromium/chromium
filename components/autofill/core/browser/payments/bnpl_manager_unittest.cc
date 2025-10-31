@@ -218,7 +218,6 @@ class BnplManagerTest : public Test,
 
   void SetUp() override {
     InitAutofillClient();
-    autofill_client().SetPrefs(test::PrefServiceForTesting());
     autofill_client().set_app_locale(kAppLocale);
     autofill_client().SetAutofillPaymentMethodsEnabled(true);
     autofill_client().set_last_committed_primary_main_frame_url(kDomain);
@@ -231,8 +230,6 @@ class BnplManagerTest : public Test,
         .test_payments_data_manager()
         .SetPaymentsCustomerData(std::make_unique<PaymentsCustomerData>(
             base::NumberToString(kBillingCustomerNumber)));
-    autofill_client().GetPersonalDataManager().SetPrefService(
-        autofill_client().GetPrefs());
 
     std::unique_ptr<PaymentsNetworkInterfaceMock> payments_network_interface =
         std::make_unique<PaymentsNetworkInterfaceMock>();

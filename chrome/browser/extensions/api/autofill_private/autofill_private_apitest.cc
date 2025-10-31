@@ -55,8 +55,6 @@ class AutofillPrivateApiTest : public ExtensionApiTest {
     AutofillPrivateEventRouterFactory::GetForProfile(browser_context())
         ->RebindPersonalDataManagerForTesting(
             &autofill_client()->GetPersonalDataManager());
-    autofill_client()->GetPersonalDataManager().SetPrefService(
-        autofill_client()->GetPrefs());
   }
 
   void TearDownOnMainThread() override {

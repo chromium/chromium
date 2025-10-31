@@ -110,7 +110,6 @@ AutofillMetricsBaseTest::~AutofillMetricsBaseTest() = default;
 
 void AutofillMetricsBaseTest::InitAutofillClient() {
   WithTestAutofillClientDriverManager::InitAutofillClient();
-  autofill_client().SetPrefs(test::PrefServiceForTesting());
   autofill_client().set_payments_autofill_client(
       std::make_unique<NiceMock<MockPaymentsAutofillClient>>(
           &autofill_client()));
@@ -126,7 +125,6 @@ void AutofillMetricsBaseTest::SetUpHelper() {
 
   test_api(personal_data().address_data_manager())
       .set_auto_accept_address_imports(true);
-  personal_data().SetPrefService(autofill_client().GetPrefs());
   personal_data().SetSyncServiceForTest(&sync_service_);
 
   auto payments_network_interface =

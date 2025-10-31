@@ -149,6 +149,7 @@ class TestAutofillClientTemplate : public T {
   TestPersonalDataManager& GetPersonalDataManager() override {
     if (!test_personal_data_manager_) {
       test_personal_data_manager_ = std::make_unique<TestPersonalDataManager>();
+      test_personal_data_manager_->SetPrefService(GetPrefs());
     }
     return *test_personal_data_manager_.get();
   }

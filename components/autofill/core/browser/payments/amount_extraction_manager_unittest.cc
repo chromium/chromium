@@ -119,8 +119,6 @@ class AmountExtractionManagerTest
         .GetPersonalDataManager()
         .payments_data_manager()
         .SetSyncingForTest(true);
-    autofill_client().GetPersonalDataManager().SetPrefService(
-        autofill_client().GetPrefs());
     CreateAutofillDriver();
     amount_extraction_manager_ =
         std::make_unique<AmountExtractionManager>(&autofill_manager());

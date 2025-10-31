@@ -42,8 +42,6 @@ class CreditCardOtpAuthenticatorTestBase : public testing::Test {
   ~CreditCardOtpAuthenticatorTestBase() override = default;
 
   void SetUp() override {
-    autofill_client_.SetPrefs(test::PrefServiceForTesting());
-    personal_data().SetPrefService(autofill_client().GetPrefs());
     personal_data().SetSyncServiceForTest(&sync_service_);
     personal_data()
         .test_payments_data_manager()
@@ -58,12 +56,6 @@ class CreditCardOtpAuthenticatorTestBase : public testing::Test {
         std::make_unique<CreditCardOtpAuthenticator>(&autofill_client_);
 
     card_ = test::GetMaskedServerCard();
-  }
-
-  void TearDown() override {
-    // Order of destruction is important as AutofillDriver relies on
-    // PersonalDataManager to be around when it gets destroyed.
-    personal_data().SetPrefService(nullptr);
   }
 
   void OnDidGetRealPan(PaymentsRpcResult result,

@@ -790,8 +790,6 @@ class MockAutofillClient : public TestAutofillClient {
     };
 
     set_payments_autofill_client(create_payments_autofill_client());
-    SetPrefs(test::PrefServiceForTesting());
-    GetPersonalDataManager().SetPrefService(GetPrefs());
     GetPersonalDataManager().SetSyncServiceForTest(sync_service);
     set_test_strike_database(std::make_unique<TestStrikeDatabase>());
     set_single_field_fill_router(
