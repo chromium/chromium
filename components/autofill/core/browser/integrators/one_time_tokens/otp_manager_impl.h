@@ -24,6 +24,14 @@ namespace autofill {
 
 class BrowserAutofillManager;
 
+// Used for histograms. Do not reorder.
+enum class OneTimeTokensPhishGuardVerdict {
+  kUnknown = 0,
+  kPhishing = 1,
+  kNotPhishing = 2,
+  kMaxValue = kNotPhishing,
+};
+
 // This class triggers the fetching of OTPs from the `OneTimeTokenService` as
 // soon as `OnFieldTypesDetermined()` is notified about the classification of
 // OTP fields. OTPs are fetched only once per instantiation. This is ok
@@ -63,7 +71,7 @@ class OtpManagerImpl : public OtpManager, public AutofillManager::Observer {
 
   // Callback for `OtpPhishGuardDelegate::StartOtpPhishGuardCheck`.
   void MaybeShowOtpSuggestions(one_time_tokens::OneTimeToken token,
-                               bool is_phishing_site);
+                               OneTimeTokensPhishGuardVerdict verdict);
 
   // Returns true if an OTP must not be delivered to the caller in an autofill
   // context, e.g., because the page called the WebOTP API.
@@ -83,6 +91,9 @@ class OtpManagerImpl : public OtpManager, public AutofillManager::Observer {
   // a callback corresponds to the desire to show an autofill dropdown. A new
   // call to `GetOtpSuggestions()` invalidates the previous call.
   GetOtpSuggestionsCallback last_pending_get_suggestions_callback_;
+
+  // The time when the phish guard check was started.
+  base::TimeTicks phish_guard_check_start_time_;
 
   // The last received OTP. This is used to store the OTP between the phishing
   // check and the actual display of the suggestions.

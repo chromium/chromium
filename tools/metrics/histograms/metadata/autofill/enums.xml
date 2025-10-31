@@ -4154,6 +4154,16 @@ Called by update_autofill_enums.py.-->
 
 <!-- LINT.ThenChange(/components/one_time_tokens/android/backend/common/java/src/org/chromium/components/one_time_tokens/backend/OneTimeTokensBackendErrorCode.java) -->
 
+<enum name="OneTimeTokensPhishGuardVerdict">
+  <summary>
+    The verdict of a PhishGuard check before offering to autofill one-time
+    tokens. Recorded every time a PhishGuard check is completed.
+  </summary>
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Phishing"/>
+  <int value="2" label="Not Phishing"/>
+</enum>
+
 <enum name="PaymentsWindowUserConsentDialogResult">
   <int value="0" label="The tab or browser was closed"/>
   <int value="1" label="The escape key was pressed, closing the dialog"/>

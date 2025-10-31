@@ -7,6 +7,8 @@
 #include <algorithm>
 
 #include "base/containers/to_vector.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/time/time.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
@@ -121,17 +123,43 @@ void OtpManagerImpl::OnOneTimeTokenReceived(
   // potential phishing sites.
   if (OtpPhishGuardDelegate* delegate =
           owner_->client().GetOtpPhishGuardDelegate()) {
+    phish_guard_check_start_time_ = base::TimeTicks::Now();
+    base::UmaHistogramBoolean(
+        "Autofill.OneTimeTokens.PhishGuard.CheckPerformed", true);
     delegate->StartOtpPhishGuardCheck(
         owner_->client().GetLastCommittedPrimaryMainFrameURL(),
-        base::BindOnce(&OtpManagerImpl::MaybeShowOtpSuggestions,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(token)));
+        base::BindOnce(
+            [](base::WeakPtr<OtpManagerImpl> self, OneTimeToken token,
+               bool is_phishing_site) {
+              if (self) {
+                self->MaybeShowOtpSuggestions(
+                    std::move(token),
+                    is_phishing_site
+                        ? OneTimeTokensPhishGuardVerdict::kPhishing
+                        : OneTimeTokensPhishGuardVerdict::kNotPhishing);
+              }
+            },
+            weak_ptr_factory_.GetWeakPtr(), std::move(token)));
   } else {
-    MaybeShowOtpSuggestions(std::move(token), /*is_phishing_site=*/false);
+    base::UmaHistogramBoolean(
+        "Autofill.OneTimeTokens.PhishGuard.CheckPerformed", false);
+    MaybeShowOtpSuggestions(std::move(token),
+                            OneTimeTokensPhishGuardVerdict::kUnknown);
   }
 }
 
-void OtpManagerImpl::MaybeShowOtpSuggestions(OneTimeToken token,
-                                             bool is_phishing_site) {
+void OtpManagerImpl::MaybeShowOtpSuggestions(
+    OneTimeToken token,
+    OneTimeTokensPhishGuardVerdict verdict) {
+  if (!phish_guard_check_start_time_.is_null()) {
+    base::UmaHistogramTimes(
+        "Autofill.OneTimeTokens.PhishGuard.Latency",
+        base::TimeTicks::Now() - phish_guard_check_start_time_);
+  }
+
+  base::UmaHistogramEnumeration("Autofill.OneTimeTokens.PhishGuard.Verdict",
+                                verdict);
+
   if (!last_pending_get_suggestions_callback_) {
     return;
   }
@@ -141,7 +169,8 @@ void OtpManagerImpl::MaybeShowOtpSuggestions(OneTimeToken token,
     suggestions.emplace_back(std::move(token).value());
   }
 
-  if (IsOtpDeliveryBlocked() || is_phishing_site) {
+  if (IsOtpDeliveryBlocked() ||
+      verdict == OneTimeTokensPhishGuardVerdict::kPhishing) {
     suggestions.clear();
   }
 
