@@ -234,10 +234,11 @@ class WebStateImpl::RealizedWebState final : public NavigationManagerDelegate {
   void GoToBackForwardListItem(WKBackForwardListItem* wk_item,
                                NavigationItem* item,
                                NavigationInitiationType type,
-                               bool has_user_gesture) final;
-  void RemoveWebView() final;
-  NavigationItemImpl* GetPendingItem() final;
-  GURL GetCurrentURL() const final;
+                               bool has_user_gesture) override;
+  void RemoveWebView() override;
+  NavigationItemImpl* GetPendingItem() override;
+  void UpdateSSLStatusForCurrentNavigationItem() override;
+  GURL GetCurrentURL() const override;
 
  private:
   // Class storing metadata needed while the navigation history restoration

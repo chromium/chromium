@@ -73,6 +73,10 @@ class NavigationManagerDelegate {
   // Used to access pending item stored in NavigationContext.
   virtual NavigationItemImpl* GetPendingItem() = 0;
 
+  // Instructs the delegate to update the SSL status for the current navigation
+  // item.
+  virtual void UpdateSSLStatusForCurrentNavigationItem() = 0;
+
   // Returns the NavigationManagerDelegate's view of the current URL. This is
   // used as a fallback in situations where the NavigationManager doesn't trust
   // its own view of the last committed item.

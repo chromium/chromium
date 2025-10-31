@@ -102,21 +102,23 @@ class MockNavigationManagerDelegate : public NavigationManagerDelegate {
     mock_web_view_ = nil;
   }
 
-  MOCK_METHOD0(ClearDialogs, void());
-  MOCK_METHOD0(RecordPageStateInNavigationItem, void());
-  MOCK_METHOD1(LoadCurrentItem, void(NavigationInitiationType type));
-  MOCK_METHOD0(LoadIfNecessary, void());
-  MOCK_METHOD0(Reload, void());
-  MOCK_METHOD1(OnNavigationItemsPruned, void(size_t));
-  MOCK_METHOD1(OnNavigationItemCommitted, void(NavigationItem* item));
-  MOCK_METHOD1(SetWebStateUserAgent, void(UserAgentType user_agent_type));
-  MOCK_METHOD4(GoToBackForwardListItem,
-               void(WKBackForwardListItem*,
-                    NavigationItem*,
-                    NavigationInitiationType,
-                    bool));
-  MOCK_METHOD0(GetPendingItem, NavigationItemImpl*());
-  MOCK_CONST_METHOD0(GetCurrentURL, GURL());
+  MOCK_METHOD(void, ClearDialogs, ());
+  MOCK_METHOD(void, RecordPageStateInNavigationItem, ());
+  MOCK_METHOD(void, LoadCurrentItem, (NavigationInitiationType type));
+  MOCK_METHOD(void, LoadIfNecessary, ());
+  MOCK_METHOD(void, Reload, ());
+  MOCK_METHOD(void, OnNavigationItemsPruned, (size_t));
+  MOCK_METHOD(void, OnNavigationItemCommitted, (NavigationItem * item));
+  MOCK_METHOD(void, SetWebStateUserAgent, (UserAgentType user_agent_type));
+  MOCK_METHOD(void,
+              GoToBackForwardListItem,
+              (WKBackForwardListItem*,
+               NavigationItem*,
+               NavigationInitiationType,
+               bool));
+  MOCK_METHOD(NavigationItemImpl*, GetPendingItem, ());
+  MOCK_METHOD(GURL, GetCurrentURL, (), (const));
+  MOCK_METHOD(void, UpdateSSLStatusForCurrentNavigationItem, ());
 
  private:
   WebState* GetWebState() override { return web_state_; }
@@ -2000,6 +2002,81 @@ TEST_F(NavigationManagerTest, GetCurrentItemImpl) {
   EXPECT_EQ(pending_item, navigation_manager()->GetCurrentItemImpl());
 }
 
+// Tests that the SSLStatus is updated when creating a new NavigationItem
+// lazily when getting it by index and the item is the current one.
+TEST_F(
+    NavigationManagerTest,
+    GetNavigationItemImplAtIndex_UpdateSSLStatusForLazilyCreatedItem_Enabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kUpdateSSLStatusOnNavigationItemLazyCreation);
+  // Add a committed item to the back-forward list. This does not
+  [mock_wk_list_ setCurrentURL:@"http://www.url.com/0"];
+  ON_CALL(navigation_manager_delegate(), GetCurrentURL())
+      .WillByDefault(testing::Return(GURL("http://www.url.com/0")));
+
+  // Expect the delegate method to be called the first time
+  // GetNavigationItemImplAtIndex is called, which triggers the lazy creation.
+  EXPECT_CALL(navigation_manager_delegate(),
+              UpdateSSLStatusForCurrentNavigationItem())
+      .Times(1);
+
+  NavigationItem* item = navigation_manager()->GetNavigationItemImplAtIndex(0);
+  ASSERT_TRUE(item);
+  EXPECT_EQ(GURL("http://www.url.com/0"), item->GetURL());
+
+  // Verify the mock call and reset expectations.
+  testing::Mock::VerifyAndClearExpectations(&navigation_manager_delegate());
+
+  EXPECT_CALL(navigation_manager_delegate(),
+              UpdateSSLStatusForCurrentNavigationItem())
+      .Times(0);
+
+  item = navigation_manager()->GetNavigationItemImplAtIndex(0);
+  ASSERT_TRUE(item);
+}
+
+// Tests that the SSLStatus is not updated when creating a new NavigationItem
+// lazily for a non-current item.
+TEST_F(NavigationManagerTest,
+       GetNavigationItemImplAtIndex_NoUpdateSSLStatusForNonCurrentItem) {
+  // Add two committed items to the back-forward list.
+  [mock_wk_list_ setCurrentURL:@"http://www.url.com/1"
+                  backListURLs:@[ @"http://www.url.com/0" ]
+               forwardListURLs:nil];
+
+  EXPECT_CALL(navigation_manager_delegate(),
+              UpdateSSLStatusForCurrentNavigationItem())
+      .Times(0);
+
+  NavigationItem* item = navigation_manager()->GetNavigationItemImplAtIndex(0);
+  ASSERT_TRUE(item);
+  EXPECT_EQ(GURL("http://www.url.com/0"), item->GetURL());
+}
+
+// Tests that when the dedicated kill switch is activated, the SSLStatus is not
+// updated when creating a new NavigationItem lazily when getting it by index.
+TEST_F(
+    NavigationManagerTest,
+    GetNavigationItemImplAtIndex_UpdateSSLStatusForLazilyCreatedItem_Disabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kUpdateSSLStatusOnNavigationItemLazyCreation);
+  // Add a committed item to the back-forward list. This does not
+  // associate a NavigationItemImpl with the WKBackForwardListItem yet.
+  [mock_wk_list_ setCurrentURL:@"http://www.url.com/0"];
+
+  // Expect the delegate method NOT to be called the first time
+  // GetNavigationItemImplAtIndex is called, which triggers the lazy creation.
+  EXPECT_CALL(navigation_manager_delegate(),
+              UpdateSSLStatusForCurrentNavigationItem())
+      .Times(0);
+
+  NavigationItem* item = navigation_manager()->GetNavigationItemImplAtIndex(0);
+  ASSERT_TRUE(item);
+  EXPECT_EQ(GURL("http://www.url.com/0"), item->GetURL());
+}
+
 TEST_F(NavigationManagerTest, UpdateCurrentItemForReplaceState) {
   navigation_manager()->AddPendingItem(
       GURL("http://www.url.com/0"),
@@ -2456,7 +2533,7 @@ TEST_F(NavigationManagerTest, CanGoToOffset) {
 
   // Simulate a history navigation pending item.
   [mock_wk_list_ moveCurrentToIndex:1];
-  OCMExpect([mock_web_view_ URL])
+  OCMStub([mock_web_view_ URL])
       .andReturn([[NSURL alloc] initWithString:@"http://www.url.com/1"]);
   manager_->AddPendingItem(
       GURL("http://www.url.com/1"), Referrer(), ui::PAGE_TRANSITION_LINK,

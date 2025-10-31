@@ -1366,7 +1366,24 @@ NavigationManagerImpl::WKWebViewCache::GetNavigationItemImplAtIndex(
     new_item->SetTitle(GetWKWebViewTitle());
   }
   SetNavigationItemInWKItem(wk_item, std::move(new_item));
-  return GetNavigationItemFromWKItem(wk_item);
+  NavigationItemImpl* created_item = GetNavigationItemFromWKItem(wk_item);
+  if (base::FeatureList::IsEnabled(
+          features::kUpdateSSLStatusOnNavigationItemLazyCreation)) {
+    // Do the SSLStatus update if the nav item is the current item in the nav
+    // stack and its url corresponds to the one in the WebView. Do the update at
+    // the very end to make sure that the item is cached and won't be
+    // re-created indefinitely on re-entry if GetNavigationItemImplAtIndex() is
+    // recursively called when handling
+    // UpdateSSLStatusForCurrentNavigationItem().
+    NavigationManagerDelegate* delegate = navigation_manager_->delegate_;
+    if (delegate &&
+        wk_item ==
+            delegate->GetWebViewNavigationProxy().backForwardList.currentItem &&
+        net::GURLWithNSURL(wk_item.URL) == delegate->GetCurrentURL()) {
+      delegate->UpdateSSLStatusForCurrentNavigationItem();
+    }
+  }
+  return created_item;
 }
 
 WKBackForwardListItem* NavigationManagerImpl::WKWebViewCache::GetWKItemAtIndex(

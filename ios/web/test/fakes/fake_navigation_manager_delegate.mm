@@ -41,6 +41,8 @@ GURL FakeNavigationManagerDelegate::GetCurrentURL() const {
   return GURL();
 }
 
+void FakeNavigationManagerDelegate::UpdateSSLStatusForCurrentNavigationItem() {}
+
 void FakeNavigationManagerDelegate::SetWebViewNavigationProxy(id web_view) {
   test_web_view_ = web_view;
 }

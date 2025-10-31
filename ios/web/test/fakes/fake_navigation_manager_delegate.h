@@ -30,6 +30,7 @@ class FakeNavigationManagerDelegate : public NavigationManagerDelegate {
   void RemoveWebView() override;
   NavigationItemImpl* GetPendingItem() override;
   GURL GetCurrentURL() const override;
+  void UpdateSSLStatusForCurrentNavigationItem() override;
 
   // Setters for tests to inject dependencies.
   void SetWebViewNavigationProxy(id test_web_view);
