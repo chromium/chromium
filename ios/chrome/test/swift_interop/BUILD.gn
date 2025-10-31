@@ -34,11 +34,13 @@ source_set("swift_interop_tests_support_files") {
     "include/pointer_returner.h",
     "include/polymorphism.h",
     "include/shared_ptr.h",
+    "include/string_helper.h",
     "include/struct.h",
     "include/unique_ptr.h",
     "pointer/pointer_returner.cc",
     "pointer/shared_ptr.cc",
     "pointer/unique_ptr.cc",
+    "string/string_helper.cc",
   ]
   deps = [ "//base" ]
 }
@@ -60,6 +62,7 @@ swift_source_set("swift_interop_tests") {
     "pointer/pointer_xctest.swift",
     "pointer/shared_ptr_xctest.swift",
     "pointer/unique_ptr_xctest.swift",
+    "string/string_xctest.swift",
     "struct/struct_xctest.swift",
   ]
   frameworks = [ "UIKit.framework" ]

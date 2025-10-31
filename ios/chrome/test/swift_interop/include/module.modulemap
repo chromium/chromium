@@ -33,6 +33,11 @@ module Pointer {
   export *
 }
 
+module StringHelper {
+  header "string_helper.h"
+  export *
+}
+
 module Struct {
   header "struct.h"
   export *
