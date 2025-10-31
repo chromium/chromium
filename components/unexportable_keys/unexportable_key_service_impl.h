@@ -67,6 +67,9 @@ class COMPONENT_EXPORT(UNEXPORTABLE_KEYS) UnexportableKeyServiceImpl
       UnexportableKeyId key_id,
       BackgroundTaskPriority priority,
       base::OnceCallback<void(ServiceErrorOr<void>)> callback) override;
+  void DeleteAllKeysSlowlyAsync(
+      BackgroundTaskPriority priority,
+      base::OnceCallback<void(ServiceErrorOr<void>)> callback) override;
   ServiceErrorOr<std::vector<uint8_t>> GetSubjectPublicKeyInfo(
       UnexportableKeyId key_id) const override;
   ServiceErrorOr<std::vector<uint8_t>> GetWrappedKey(
@@ -115,7 +118,10 @@ class COMPONENT_EXPORT(UNEXPORTABLE_KEYS) UnexportableKeyServiceImpl
   // session.
   KeyIdMap key_by_key_id_;
 
-  base::WeakPtrFactory<UnexportableKeyServiceImpl> weak_ptr_factory_{this};
+  base::WeakPtrFactory<UnexportableKeyServiceImpl>
+      generate_key_weak_ptr_factory_{this};
+  base::WeakPtrFactory<UnexportableKeyServiceImpl>
+      from_wrapped_key_weak_ptr_factory_{this};
 };
 
 }  // namespace unexportable_keys

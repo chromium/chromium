@@ -107,7 +107,8 @@ void UnexportableKeyServiceImpl::GenerateSigningKeySlowlyAsync(
   task_manager_->GenerateSigningKeySlowlyAsync(
       config_, acceptable_algorithms, priority,
       base::BindOnce(&UnexportableKeyServiceImpl::OnKeyGenerated,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+                     generate_key_weak_ptr_factory_.GetWeakPtr(),
+                     std::move(callback)));
 }
 
 void UnexportableKeyServiceImpl::FromWrappedSigningKeySlowlyAsync(
@@ -131,7 +132,8 @@ void UnexportableKeyServiceImpl::FromWrappedSigningKeySlowlyAsync(
     task_manager_->FromWrappedSigningKeySlowlyAsync(
         config_, wrapped_key, priority,
         base::BindOnce(&UnexportableKeyServiceImpl::OnKeyCreatedFromWrappedKey,
-                       weak_ptr_factory_.GetWeakPtr(), wrapped_key_vec));
+                       from_wrapped_key_weak_ptr_factory_.GetWeakPtr(),
+                       wrapped_key_vec));
   }
 }
 
@@ -168,6 +170,27 @@ void UnexportableKeyServiceImpl::DeleteKeySlowlyAsync(
 
   key_by_key_id_.erase(key_id_it);
   key_id_by_wrapped_key_.erase(wrapped_key_it);
+
+  // TODO: crbug.com/455538141 - Implement deletion in the task manager.
+  std::move(callback).Run(base::ok());
+}
+
+void UnexportableKeyServiceImpl::DeleteAllKeysSlowlyAsync(
+    BackgroundTaskPriority priority,
+    base::OnceCallback<void(ServiceErrorOr<void>)> callback) {
+  key_by_key_id_.clear();
+
+  // Clear the in-memory cache of pending key IDs by moving it to a local
+  // variable and run pending callbacks with a failure.
+  for (auto& [_, maybe_pending_key_id] :
+       std::exchange(key_id_by_wrapped_key_, {})) {
+    if (!maybe_pending_key_id.HasKeyId()) {
+      maybe_pending_key_id.RunCallbacksWithFailure(ServiceError::kKeyNotFound);
+    }
+  }
+
+  // Invalidate weak pointers to cancel pending from wrapped key requests.
+  from_wrapped_key_weak_ptr_factory_.InvalidateWeakPtrs();
 
   // TODO: crbug.com/455538141 - Implement deletion in the task manager.
   std::move(callback).Run(base::ok());
