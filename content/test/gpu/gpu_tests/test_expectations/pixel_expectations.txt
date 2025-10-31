@@ -587,6 +587,11 @@ crbug.com/450326412 [ win11 nvidia-0x2783 ] Pixel_ScissorTestWithPreserveDrawing
 crbug.com/450326412 [ win11 nvidia-0x2783 ] Pixel_WebGLGreenTriangle_NoAA_NoAlpha [ RetryOnFailure ]
 crbug.com/450326412 [ win11 nvidia-0x2783 ] Pixel_WebglResizedCanvas [ RetryOnFailure ]
 
+
+# ViewTransitions capturing incorrect image
+crbug.com/446157733 [ android-pixel-4 angle-opengles graphite-disabled ] Pixel_ViewTransitionsCapture [ Failure ]
+crbug.com/446157733 [ android-pixel-6 angle-vulkan ] Pixel_ViewTransitionsCapture [ Failure ]
+
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
 #######################################################################
