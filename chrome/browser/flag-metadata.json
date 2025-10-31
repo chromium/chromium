@@ -6075,6 +6075,11 @@
     "expiry_milestone": 141
   },
   {
+    "name": "ios-fusebox",
+    "owners": [ "christianxu@chromium.org", "bling-search@google.com" ],
+    "expiry_milestone": 149
+  },
+  {
     "name": "ios-interruptible-coordinator-always-dismissed",
     "owners": [
       "arthurmilchior@google.com",

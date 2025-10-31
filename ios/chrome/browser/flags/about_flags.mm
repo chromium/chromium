@@ -2897,6 +2897,9 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kWebPageReportedImagesSheetName,
      flag_descriptions::kWebPageReportedImagesSheetDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kWebPageReportedImagesSheet)},
+    {"ios-fusebox", flag_descriptions::kIOSFuseboxName,
+     flag_descriptions::kIOSFuseboxDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kIOSFusebox)},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

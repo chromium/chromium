@@ -737,6 +737,10 @@ const char kIOSFillRecoveryPasswordDescription[] =
     "When enabled, users will be able to attempt to log in using a recovery "
     "password if the main one didn't work.";
 
+const char kIOSFuseboxName[] = "IOSFusebox";
+const char kIOSFuseboxDescription[] =
+    "When enabled, shows the fusebox instead of the regular omnibox.";
+
 const char kIOSKeyboardAccessoryTwoBubbleName[] =
     "Enable the two-bubble design for the Keyboard Accessory view";
 const char kIOSKeyboardAccessoryTwoBubbleDescription[] =

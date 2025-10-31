@@ -1167,4 +1167,10 @@ BASE_DECLARE_FEATURE(kLocationBarBadgeMigration);
 // Returns true if the LocationBarBadgeMigration feature is enabled.
 bool IsLocationBarBadgeMigrationEnabled();
 
+// Enables the IOSFusebox feature.
+BASE_DECLARE_FEATURE(kIOSFusebox);
+
+// Returns true if the IOSFusebox feature is enabled.
+bool IsIOSFuseboxEnabled();
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_
