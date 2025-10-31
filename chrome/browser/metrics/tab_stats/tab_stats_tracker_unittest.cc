@@ -235,15 +235,11 @@ class TestTabStatsTracker : public TabStatsTracker {
   void DiscardedStateChange(ChromeRenderViewHostTestHarness* test_harness,
                             ::mojom::LifecycleUnitDiscardReason reason,
                             bool is_discarded) {
-    static constexpr auto kStateChangeReason =
-        ::mojom::LifecycleUnitStateChangeReason::BROWSER_INITIATED;
-
     resource_coordinator::TestLifecycleUnit lifecycle_unit;
     lifecycle_unit.SetDiscardReason(reason);
     lifecycle_unit.SetState(is_discarded
                                 ? ::mojom::LifecycleUnitState::DISCARDED
-                                : ::mojom::LifecycleUnitState::ACTIVE,
-                            kStateChangeReason);
+                                : ::mojom::LifecycleUnitState::ACTIVE);
     const auto previous_state = is_discarded
                                     ? ::mojom::LifecycleUnitState::ACTIVE
                                     : ::mojom::LifecycleUnitState::DISCARDED;

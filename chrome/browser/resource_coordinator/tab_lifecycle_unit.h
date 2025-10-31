@@ -116,7 +116,7 @@ class TabLifecycleUnitSource::TabLifecycleUnit
   friend class TabLifecycleUnitSource;
 
  private:
-  void RecomputeLifecycleUnitState(LifecycleUnitStateChangeReason reason);
+  void RecomputeLifecycleUnitState();
 
   // Same as GetSource, but cast to the most derived type.
   TabLifecycleUnitSource* GetTabSource() const;

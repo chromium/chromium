@@ -64,25 +64,19 @@ TEST_F(DiscardMetricsLifecycleUnitObserverTest, DiscardReloadCount) {
   histograms_.ExpectTotalCount(kDiscardCountHistogram, 0);
   histograms_.ExpectTotalCount(kReloadCountHistogram, 0);
 
-  lifecycle_unit_->SetState(
-      LifecycleUnitState::DISCARDED,
-      LifecycleUnitStateChangeReason::SYSTEM_MEMORY_PRESSURE);
+  lifecycle_unit_->SetState(LifecycleUnitState::DISCARDED);
   histograms_.ExpectTotalCount(kDiscardCountHistogram, 1);
   histograms_.ExpectTotalCount(kReloadCountHistogram, 0);
 
-  lifecycle_unit_->SetState(LifecycleUnitState::ACTIVE,
-                            LifecycleUnitStateChangeReason::BROWSER_INITIATED);
+  lifecycle_unit_->SetState(LifecycleUnitState::ACTIVE);
   histograms_.ExpectTotalCount(kDiscardCountHistogram, 1);
   histograms_.ExpectTotalCount(kReloadCountHistogram, 1);
 
-  lifecycle_unit_->SetState(
-      LifecycleUnitState::DISCARDED,
-      LifecycleUnitStateChangeReason::EXTENSION_INITIATED);
+  lifecycle_unit_->SetState(LifecycleUnitState::DISCARDED);
   histograms_.ExpectTotalCount(kDiscardCountHistogram, 2);
   histograms_.ExpectTotalCount(kReloadCountHistogram, 1);
 
-  lifecycle_unit_->SetState(LifecycleUnitState::ACTIVE,
-                            LifecycleUnitStateChangeReason::BROWSER_INITIATED);
+  lifecycle_unit_->SetState(LifecycleUnitState::ACTIVE);
   histograms_.ExpectTotalCount(kDiscardCountHistogram, 2);
   histograms_.ExpectTotalCount(kReloadCountHistogram, 2);
 }
@@ -90,14 +84,11 @@ TEST_F(DiscardMetricsLifecycleUnitObserverTest, DiscardReloadCount) {
 TEST_F(DiscardMetricsLifecycleUnitObserverTest, DiscardToReloadTime) {
   histograms_.ExpectTotalCount(kDiscardToReloadTimeHistogram, 0);
 
-  lifecycle_unit_->SetState(
-      LifecycleUnitState::DISCARDED,
-      LifecycleUnitStateChangeReason::EXTENSION_INITIATED);
+  lifecycle_unit_->SetState(LifecycleUnitState::DISCARDED);
   test_tick_clock_.Advance(kShortDelay);
   histograms_.ExpectTotalCount(kDiscardToReloadTimeHistogram, 0);
 
-  lifecycle_unit_->SetState(LifecycleUnitState::ACTIVE,
-                            LifecycleUnitStateChangeReason::BROWSER_INITIATED);
+  lifecycle_unit_->SetState(LifecycleUnitState::ACTIVE);
   histograms_.ExpectTimeBucketCount(kDiscardToReloadTimeHistogram, kShortDelay,
                                     1);
 }
@@ -108,14 +99,11 @@ TEST_F(DiscardMetricsLifecycleUnitObserverTest, InactiveToReloadTime) {
   const base::TimeTicks last_focused_time = NowTicks();
   lifecycle_unit_->SetLastFocusedTimeTicks(last_focused_time);
   test_tick_clock_.Advance(kShortDelay);
-  lifecycle_unit_->SetState(
-      LifecycleUnitState::DISCARDED,
-      LifecycleUnitStateChangeReason::EXTENSION_INITIATED);
+  lifecycle_unit_->SetState(LifecycleUnitState::DISCARDED);
   test_tick_clock_.Advance(kShortDelay);
   histograms_.ExpectTotalCount(kInactiveToReloadTimeHistogram, 0);
 
-  lifecycle_unit_->SetState(LifecycleUnitState::ACTIVE,
-                            LifecycleUnitStateChangeReason::BROWSER_INITIATED);
+  lifecycle_unit_->SetState(LifecycleUnitState::ACTIVE);
   histograms_.ExpectTimeBucketCount(kInactiveToReloadTimeHistogram,
                                     2 * kShortDelay, 1);
 }
@@ -131,9 +119,7 @@ TEST_F(DiscardMetricsLifecycleUnitObserverTest,
        ReloadToCloseTimeDiscardedButNotReloaded) {
   histograms_.ExpectTotalCount(kReloadToCloseTimeHistogram, 0);
 
-  lifecycle_unit_->SetState(
-      LifecycleUnitState::DISCARDED,
-      LifecycleUnitStateChangeReason::EXTENSION_INITIATED);
+  lifecycle_unit_->SetState(LifecycleUnitState::DISCARDED);
   histograms_.ExpectTotalCount(kReloadToCloseTimeHistogram, 0);
 
   lifecycle_unit_.reset();
@@ -144,14 +130,11 @@ TEST_F(DiscardMetricsLifecycleUnitObserverTest, ReloadToCloseTime) {
   histograms_.ExpectTotalCount(kReloadToCloseTimeHistogram, 0);
 
   test_tick_clock_.Advance(kShortDelay * 1);
-  lifecycle_unit_->SetState(
-      LifecycleUnitState::DISCARDED,
-      LifecycleUnitStateChangeReason::EXTENSION_INITIATED);
+  lifecycle_unit_->SetState(LifecycleUnitState::DISCARDED);
   histograms_.ExpectTotalCount(kReloadToCloseTimeHistogram, 0);
 
   test_tick_clock_.Advance(kShortDelay * 2);
-  lifecycle_unit_->SetState(LifecycleUnitState::ACTIVE,
-                            LifecycleUnitStateChangeReason::BROWSER_INITIATED);
+  lifecycle_unit_->SetState(LifecycleUnitState::ACTIVE);
   histograms_.ExpectTotalCount(kReloadToCloseTimeHistogram, 0);
 
   test_tick_clock_.Advance(kShortDelay * 4);

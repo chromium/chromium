@@ -49,26 +49,6 @@
 
 namespace resource_coordinator {
 
-namespace {
-
-using StateChangeReason = LifecycleUnitStateChangeReason;
-
-StateChangeReason DiscardReasonToStateChangeReason(
-    LifecycleUnitDiscardReason reason) {
-  switch (reason) {
-    case LifecycleUnitDiscardReason::EXTERNAL:
-      return StateChangeReason::EXTENSION_INITIATED;
-    case LifecycleUnitDiscardReason::URGENT:
-      return StateChangeReason::SYSTEM_MEMORY_PRESSURE;
-    case LifecycleUnitDiscardReason::PROACTIVE:
-    case LifecycleUnitDiscardReason::SUGGESTED:
-    case LifecycleUnitDiscardReason::FROZEN_WITH_GROWING_MEMORY:
-      return StateChangeReason::BROWSER_INITIATED;
-  }
-}
-
-}  // namespace
-
 TabLifecycleUnitSource::TabLifecycleUnit::TabLifecycleUnit(
     TabLifecycleUnitSource* source,
     content::WebContents* web_contents,
@@ -140,7 +120,7 @@ bool TabLifecycleUnitSource::TabLifecycleUnit::MaybeLoad() {
   if (is_discarded_) {
     // Transition to the active state.
     is_discarded_ = false;
-    RecomputeLifecycleUnitState(StateChangeReason::USER_INITIATED);
+    RecomputeLifecycleUnitState();
 
     // Load the tab if it's discarded. It will typically be discarded, but
     // might not be if this is invoked as part of reloading the tab explicitly
@@ -175,7 +155,7 @@ void TabLifecycleUnitSource::TabLifecycleUnit::SetRecentlyAudible(
 void TabLifecycleUnitSource::TabLifecycleUnit::UpdateLifecycleState(
     performance_manager::mojom::LifecycleState state) {
   page_lifecycle_state_ = state;
-  RecomputeLifecycleUnitState(StateChangeReason::RENDERER_INITIATED);
+  RecomputeLifecycleUnitState();
 }
 
 TabLifecycleUnitExternal*
@@ -420,7 +400,7 @@ void TabLifecycleUnitSource::TabLifecycleUnit::FinishDiscard(
   old_contents_deleter.reset();
 
   is_discarded_ = true;
-  RecomputeLifecycleUnitState(DiscardReasonToStateChangeReason(discard_reason));
+  RecomputeLifecycleUnitState();
   DCHECK_EQ(GetLoadingState(), LifecycleUnitLoadingState::UNLOADED);
 
   web_contents()->NotifyWasDiscarded();
@@ -447,7 +427,7 @@ void TabLifecycleUnitSource::TabLifecycleUnit::
       TabChangeType::kAll);
 
   is_discarded_ = true;
-  RecomputeLifecycleUnitState(DiscardReasonToStateChangeReason(discard_reason));
+  RecomputeLifecycleUnitState();
 }
 
 bool TabLifecycleUnitSource::TabLifecycleUnit::Discard(
@@ -520,17 +500,16 @@ TabLifecycleUnitSource::TabLifecycleUnit::GetTabState() const {
   return GetState();
 }
 
-void TabLifecycleUnitSource::TabLifecycleUnit::RecomputeLifecycleUnitState(
-    LifecycleUnitStateChangeReason reason) {
+void TabLifecycleUnitSource::TabLifecycleUnit::RecomputeLifecycleUnitState() {
   performance_manager::PageLiveStateDecorator::SetIsDiscarded(web_contents(),
                                                               is_discarded_);
   if (is_discarded_) {
-    SetState(mojom::LifecycleUnitState::DISCARDED, reason);
+    SetState(mojom::LifecycleUnitState::DISCARDED);
   } else if (page_lifecycle_state_ ==
              performance_manager::mojom::LifecycleState::kFrozen) {
-    SetState(mojom::LifecycleUnitState::FROZEN, reason);
+    SetState(mojom::LifecycleUnitState::FROZEN);
   } else {
-    SetState(mojom::LifecycleUnitState::ACTIVE, reason);
+    SetState(mojom::LifecycleUnitState::ACTIVE);
   }
 }
 
@@ -595,7 +574,7 @@ void TabLifecycleUnitSource::TabLifecycleUnit::DidStartLoading() {
   // It's possible for a discarded tab to receive this notification without
   // being focused first (e.g. right-click > Reload).
   is_discarded_ = false;
-  RecomputeLifecycleUnitState(StateChangeReason::USER_INITIATED);
+  RecomputeLifecycleUnitState();
 }
 
 void TabLifecycleUnitSource::TabLifecycleUnit::OnVisibilityChanged(

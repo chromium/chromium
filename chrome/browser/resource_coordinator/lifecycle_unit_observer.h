@@ -10,7 +10,6 @@
 namespace resource_coordinator {
 
 using ::mojom::LifecycleUnitState;
-using ::mojom::LifecycleUnitStateChangeReason;
 
 class LifecycleUnit;
 
