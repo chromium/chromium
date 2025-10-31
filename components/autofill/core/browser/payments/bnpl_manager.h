@@ -205,6 +205,11 @@ class BnplManager {
   void OnRiskDataLoadedAfterIssuerSelectionDialogAcceptance(
       const std::string& risk_data);
 
+  // Runs after failure happened after the Terms of Service is accepted.
+  // Switches from the current view to the error view.
+  void OnFailureAfterTosAccepted(
+      PaymentsAutofillClient::PaymentsRpcResult result);
+
   // Makes the appropriate call to the payments server to fetch the redirect
   // urls from the selected issuer.
   void FetchRedirectUrl();

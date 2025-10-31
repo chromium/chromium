@@ -60,11 +60,13 @@ void DesktopBnplUiDelegate::ShowBnplTosUi(BnplTosModel bnpl_tos_model,
       std::move(cancel_callback));
 }
 
-void DesktopBnplUiDelegate::CloseBnplTosUi() {
+void DesktopBnplUiDelegate::RemoveBnplTosOrProgressUi() {
   if (!bnpl_tos_controller_) {
     return;
   }
 
+  // If the BNPL issuer selected is not linked, or is linked but requires ToS
+  // acceptance, then the ToS UI must be showing, so close it.
   bnpl_tos_controller_->Dismiss();
   bnpl_tos_controller_.reset();
 }

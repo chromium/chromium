@@ -451,6 +451,31 @@ void BnplManager::OnRiskDataLoadedAfterIssuerSelectionDialogAcceptance(
   FetchRedirectUrl();
 }
 
+void BnplManager::OnFailureAfterTosAccepted(
+    PaymentsAutofillClient::PaymentsRpcResult result) {
+  CHECK(payments_autofill_client().GetBnplUiDelegate());
+  CHECK(payments_autofill_client().GetBnplStrategy());
+  using enum BnplStrategy::BeforeSwitchingViewAction;
+
+  switch (payments_autofill_client()
+              .GetBnplStrategy()
+              ->GetBeforeViewSwitchAction()) {
+    // This case is for platforms (i.e. Android) that will flip to the error
+    // screen within the same view, so no need to remove the current view.
+    case kDoNothing:
+      break;
+    case kCloseCurrentUi:
+      payments_autofill_client()
+          .GetBnplUiDelegate()
+          ->RemoveBnplTosOrProgressUi();
+  }
+
+  payments_autofill_client().GetBnplUiDelegate()->ShowAutofillErrorUi(
+      AutofillErrorDialogContext::WithBnplPermanentOrTemporaryError(
+          /*is_permanent_error=*/ShouldShowPermanentErrorDialog(result)));
+  Reset();
+}
+
 void BnplManager::FetchRedirectUrl() {
   GetBnplPaymentInstrumentForFetchingUrlRequestDetails request_details;
   request_details.billing_customer_number =
@@ -485,9 +510,9 @@ void BnplManager::OnRedirectUrlFetched(
     // then the issuer selection UI must be showing, so close it.
     payments_autofill_client().GetBnplUiDelegate()->DismissSelectBnplIssuerUi();
   } else {
-    // If the BNPL issuer selected is not linked, or is linked but requires ToS
-    // acceptance, then the ToS UI must be showing, so close it.
-    payments_autofill_client().GetBnplUiDelegate()->CloseBnplTosUi();
+    // If the BNPL issuer selected is unlinked, or is linked but requires ToS
+    // acceptance, then the ToS/progress UI must be showing, so remove it.
+    payments_autofill_client().GetBnplUiDelegate()->RemoveBnplTosOrProgressUi();
   }
 
   if (result == payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess) {
@@ -669,12 +694,7 @@ void BnplManager::OnBnplPaymentInstrumentCreated(
     ongoing_flow_state_->instrument_id = std::move(instrument_id);
     FetchRedirectUrl();
   } else {
-    CHECK(payments_autofill_client().GetBnplUiDelegate());
-    payments_autofill_client().GetBnplUiDelegate()->CloseBnplTosUi();
-    payments_autofill_client().GetBnplUiDelegate()->ShowAutofillErrorUi(
-        AutofillErrorDialogContext::WithBnplPermanentOrTemporaryError(
-            /*is_permanent_error=*/ShouldShowPermanentErrorDialog(result)));
-    Reset();
+    OnFailureAfterTosAccepted(result);
   }
 }
 
@@ -704,12 +724,7 @@ void BnplManager::OnBnplPaymentInstrumentUpdated(
   if (result == payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess) {
     FetchRedirectUrl();
   } else {
-    CHECK(payments_autofill_client().GetBnplUiDelegate());
-    payments_autofill_client().GetBnplUiDelegate()->CloseBnplTosUi();
-    payments_autofill_client().GetBnplUiDelegate()->ShowAutofillErrorUi(
-        AutofillErrorDialogContext::WithBnplPermanentOrTemporaryError(
-            /*is_permanent_error=*/ShouldShowPermanentErrorDialog(result)));
-    Reset();
+    OnFailureAfterTosAccepted(result);
   }
 }
 

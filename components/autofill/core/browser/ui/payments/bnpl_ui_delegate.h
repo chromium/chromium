@@ -43,9 +43,10 @@ class BnplUiDelegate {
                              base::OnceClosure accept_callback,
                              base::OnceClosure cancel_callback) = 0;
 
-  // Closes the BNPL Terms of Service UI that was displayed in
-  // `ShowBnplTos()`.
-  virtual void CloseBnplTosUi() = 0;
+  // Closes the BNPL Terms of Service UI that was displayed in `ShowBnplTos()`
+  // on Desktop, and hides the progress UI that was shown after ToS UI
+  // accepted on Android.
+  virtual void RemoveBnplTosOrProgressUi() = 0;
 
   // Shows a progress UI while fetching the VCN. `autofill_progress_dialog_type`
   // determines the specific UI of the progress dialog shown. `cancel_callback`

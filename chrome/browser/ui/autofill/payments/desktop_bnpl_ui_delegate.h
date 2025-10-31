@@ -45,7 +45,7 @@ class DesktopBnplUiDelegate : public BnplUiDelegate {
   void ShowBnplTosUi(BnplTosModel bnpl_tos_model,
                      base::OnceClosure accept_callback,
                      base::OnceClosure cancel_callback) override;
-  void CloseBnplTosUi() override;
+  void RemoveBnplTosOrProgressUi() override;
   void ShowProgressUi(AutofillProgressDialogType autofill_progress_dialog_type,
                       base::OnceClosure cancel_callback) override;
   void CloseProgressUi(bool credit_card_fetched_successfully) override;

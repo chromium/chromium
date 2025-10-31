@@ -45,8 +45,10 @@ void AndroidBnplUiDelegate::ShowBnplTosUi(BnplTosModel bnpl_tos_model,
   // sheet with the ToS screen.
 }
 
-void AndroidBnplUiDelegate::CloseBnplTosUi() {
-  // TODO(crbug.com/438783909): Add JNI call to close the ToS screen.
+void AndroidBnplUiDelegate::RemoveBnplTosOrProgressUi() {
+  // If the user accepted BNPL Terms of Service, then progress touch to fill
+  // screen must be showing, so close it.
+  client_->SetTouchToFillVisible(/*visible=*/false);
 }
 
 void AndroidBnplUiDelegate::ShowProgressUi(

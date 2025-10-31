@@ -161,7 +161,7 @@ class MockBnplUiDelegate : public BnplUiDelegate {
                base::OnceClosure accept_callback,
                base::OnceClosure cancel_callback),
               (override));
-  MOCK_METHOD(void, CloseBnplTosUi, (), (override));
+  MOCK_METHOD(void, RemoveBnplTosOrProgressUi, (), (override));
   MOCK_METHOD(void,
               ShowProgressUi,
               (AutofillProgressDialogType autofill_progress_dialog_type,
@@ -310,6 +310,14 @@ class BnplManagerTest : public Test,
 
   void OnIssuerSelected(const BnplIssuer& selected_issuer) {
     bnpl_manager_->OnIssuerSelected(selected_issuer);
+  }
+
+  bool ShouldCloseViewBeforeSwitching() {
+#if BUILDFLAG(IS_ANDROID)
+    return false;
+#else
+    return true;
+#endif
   }
 
   TestPaymentsAutofillClientMock& GetPaymentsAutofillClient() {
@@ -1028,8 +1036,8 @@ TEST_F(
 
 // Tests that `OnDidGetLegalMessageFromServer` set the BNPL manager state if the
 // request has completed successfully, and shows the ToS UI. This test also
-// ensures the ToS UI is closed after receiving a redirect URL for an unlinked
-// issuer.
+// ensures the ToS/progress UI is closed after receiving a redirect URL for
+// an unlinked issuer.
 TEST_F(BnplManagerTest,
        OnDidGetLegalMessageFromServer_ClosesTosAfterRedirectUrlReceived) {
   bnpl_manager_->OnDidAcceptBnplSuggestion(1'000'000, base::DoNothing());
@@ -1056,7 +1064,7 @@ TEST_F(BnplManagerTest,
 
   EXPECT_EQ(bnpl_tos_model.issuer, unlinked_issuer);
 
-  EXPECT_CALL(GetBnplUiDelegate(), CloseBnplTosUi);
+  EXPECT_CALL(GetBnplUiDelegate(), RemoveBnplTosOrProgressUi());
 
   test_api(*bnpl_manager_)
       .OnRedirectUrlFetched(PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
@@ -1246,8 +1254,8 @@ TEST_F(BnplManagerTest, OnBnplPaymentInstrumentUpdated_Failure) {
   EXPECT_CALL(*payments_network_interface_, UpdateBnplPaymentInstrument)
       .WillOnce(base::test::RunOnceCallback<1>(
           PaymentsAutofillClient::PaymentsRpcResult::kPermanentFailure));
-
-  EXPECT_CALL(GetBnplUiDelegate(), CloseBnplTosUi);
+  EXPECT_CALL(GetBnplUiDelegate(), RemoveBnplTosOrProgressUi())
+      .Times(ShouldCloseViewBeforeSwitching() ? 1 : 0);
   EXPECT_CALL(GetBnplUiDelegate(),
               ShowAutofillErrorUi(
                   AutofillErrorDialogContext::WithBnplPermanentOrTemporaryError(
@@ -1744,7 +1752,8 @@ TEST_F(BnplManagerTest, CreateBnplPaymentInstrument_Failure) {
       .WillOnce(base::test::RunOnceCallback<1>(
           PaymentsAutofillClient::PaymentsRpcResult::kPermanentFailure, ""));
 
-  EXPECT_CALL(GetBnplUiDelegate(), CloseBnplTosUi);
+  EXPECT_CALL(GetBnplUiDelegate(), RemoveBnplTosOrProgressUi())
+      .Times(ShouldCloseViewBeforeSwitching() ? 1 : 0);
   EXPECT_CALL(GetBnplUiDelegate(),
               ShowAutofillErrorUi(
                   AutofillErrorDialogContext::WithBnplPermanentOrTemporaryError(
@@ -1783,7 +1792,8 @@ TEST_F(BnplManagerTest, UpdateBnplPaymentInstrument_Failure) {
       .WillOnce(base::test::RunOnceCallback<1>(
           PaymentsAutofillClient::PaymentsRpcResult::kPermanentFailure));
 
-  EXPECT_CALL(GetBnplUiDelegate(), CloseBnplTosUi);
+  EXPECT_CALL(GetBnplUiDelegate(), RemoveBnplTosOrProgressUi())
+      .Times(ShouldCloseViewBeforeSwitching() ? 1 : 0);
   EXPECT_CALL(GetBnplUiDelegate(),
               ShowAutofillErrorUi(
                   AutofillErrorDialogContext::WithBnplPermanentOrTemporaryError(
