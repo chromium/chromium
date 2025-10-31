@@ -239,23 +239,14 @@ void PluginInfoHostImpl::Context::DecidePluginStatus(
   }
 
   ContentSetting plugin_setting = CONTENT_SETTING_DEFAULT;
-  bool uses_default_content_setting = true;
   bool is_managed = false;
   // Check plugin content settings. The primary URL is the top origin URL and
   // the secondary URL is the plugin URL.
   PluginUtils::GetPluginContentSetting(
       host_content_settings_map_, plugin, main_frame_origin, url,
-      plugin_identifier, &plugin_setting, &uses_default_content_setting,
-      &is_managed);
+      plugin_identifier, &plugin_setting, &is_managed);
 
   DCHECK(plugin_setting != CONTENT_SETTING_DEFAULT);
-
-  // Check if the plugin is crashing too much.
-  if (PluginService::GetInstance()->IsPluginUnstable(plugin.path) &&
-      plugin_setting != CONTENT_SETTING_BLOCK && uses_default_content_setting) {
-    *status = chrome::mojom::PluginStatus::kUnauthorized;
-    return;
-  }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // If an app has explicitly made internal resources available by listing them

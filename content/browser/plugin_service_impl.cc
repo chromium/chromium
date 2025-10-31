@@ -187,37 +187,6 @@ PluginServiceFilter* PluginServiceImpl::GetFilter() {
   return filter_;
 }
 
-static const unsigned int kMaxCrashesPerInterval = 3;
-static const unsigned int kCrashesInterval = 120;
-
-void PluginServiceImpl::RegisterPluginCrash(const base::FilePath& path) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  auto i = crash_times_.find(path);
-  if (i == crash_times_.end()) {
-    crash_times_[path] = std::vector<base::Time>();
-    i = crash_times_.find(path);
-  }
-  if (i->second.size() == kMaxCrashesPerInterval) {
-    i->second.erase(i->second.begin());
-  }
-  base::Time time = base::Time::Now();
-  i->second.push_back(time);
-}
-
-bool PluginServiceImpl::IsPluginUnstable(const base::FilePath& path) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  std::map<base::FilePath, std::vector<base::Time> >::const_iterator i =
-      crash_times_.find(path);
-  if (i == crash_times_.end()) {
-    return false;
-  }
-  if (i->second.size() != kMaxCrashesPerInterval) {
-    return false;
-  }
-  base::TimeDelta delta = base::Time::Now() - i->second[0];
-  return delta.InSeconds() <= kCrashesInterval;
-}
-
 void PluginServiceImpl::RefreshPlugins() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   PluginList::Singleton()->RefreshPlugins();

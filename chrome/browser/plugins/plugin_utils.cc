@@ -34,23 +34,12 @@ void PluginUtils::GetPluginContentSetting(
     const GURL& plugin_url,
     const std::string& resource,
     ContentSetting* setting,
-    bool* is_default,
     bool* is_managed) {
   GURL main_frame_url = main_frame_origin.GetURL();
   content_settings::SettingInfo info;
-  bool uses_plugin_specific_setting = false;
   *setting = host_content_settings_map->GetContentSetting(
       main_frame_url, main_frame_url, ContentSettingsType::JAVASCRIPT, &info);
-
-  bool uses_default_content_setting =
-      !uses_plugin_specific_setting &&
-      info.primary_pattern == ContentSettingsPattern::Wildcard() &&
-      info.secondary_pattern == ContentSettingsPattern::Wildcard();
-
-  if (is_default)
-    *is_default = uses_default_content_setting;
-  if (is_managed)
-    *is_managed = info.source == content_settings::SettingSource::kPolicy;
+  *is_managed = info.source == content_settings::SettingSource::kPolicy;
 }
 
 // static

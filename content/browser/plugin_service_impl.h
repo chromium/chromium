@@ -5,13 +5,11 @@
 #ifndef CONTENT_BROWSER_PLUGIN_SERVICE_IMPL_H_
 #define CONTENT_BROWSER_PLUGIN_SERVICE_IMPL_H_
 
-#include <map>
 #include <optional>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
-#include "base/time/time.h"
 #include "build/build_config.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/plugin_service.h"
@@ -58,15 +56,11 @@ class CONTENT_EXPORT PluginServiceImpl : public PluginService {
   std::vector<WebPluginInfo> GetPluginsSynchronous() override;
   void SetFilter(PluginServiceFilter* filter) override;
   PluginServiceFilter* GetFilter() override;
-  bool IsPluginUnstable(const base::FilePath& plugin_path) override;
   void RefreshPlugins() override;
   void RegisterInternalPlugin(const WebPluginInfo& info,
                               bool add_at_beginning) override;
   void UnregisterInternalPlugin(const base::FilePath& path) override;
   void GetInternalPlugins(std::vector<WebPluginInfo>* plugins) override;
-
-  // Used to monitor plugin stability.
-  void RegisterPluginCrash(const base::FilePath& plugin_path);
 
  private:
   friend struct base::DefaultSingletonTraits<PluginServiceImpl>;
@@ -82,9 +76,6 @@ class CONTENT_EXPORT PluginServiceImpl : public PluginService {
 
   // Weak pointer; set during the startup and must outlive us.
   raw_ptr<PluginServiceFilter, DanglingUntriaged> filter_ = nullptr;
-
-  // Used to detect if a given plugin is crashing over and over.
-  std::map<base::FilePath, std::vector<base::Time>> crash_times_;
 };
 
 }  // namespace content

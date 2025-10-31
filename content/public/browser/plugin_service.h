@@ -94,10 +94,6 @@ class CONTENT_EXPORT PluginService {
   virtual void SetFilter(PluginServiceFilter* filter) = 0;
   virtual PluginServiceFilter* GetFilter() = 0;
 
-  // Used to monitor plugin stability. An unstable plugin is one that has
-  // crashed more than a set number of times in a set time period.
-  virtual bool IsPluginUnstable(const base::FilePath& plugin_path) = 0;
-
   // Cause the plugin list to refresh next time they are accessed, regardless
   // of whether they are already loaded.
   virtual void RefreshPlugins() = 0;

@@ -28,8 +28,7 @@ class PluginUtils {
   PluginUtils(const PluginUtils&) = delete;
   PluginUtils& operator=(const PluginUtils&) = delete;
 
-  // |is_default| and |is_managed| may be nullptr. In that case, they aren't
-  // set.
+  // The out-parameters must be non-null.
   static void GetPluginContentSetting(
       const HostContentSettingsMap* host_content_settings_map,
       const content::WebPluginInfo& plugin,
@@ -37,7 +36,6 @@ class PluginUtils {
       const GURL& plugin_url,
       const std::string& resource,
       ContentSetting* setting,
-      bool* is_default,
       bool* is_managed);
 
   // If there's an extension that is allowed to handle |mime_type|, returns its
