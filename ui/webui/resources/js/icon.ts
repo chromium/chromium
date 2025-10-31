@@ -135,10 +135,6 @@ export interface GetFaviconUrlParams {
   forceLightMode?: boolean;
   // To allow for disabling the best match fallback behavior.
   fallbackToHost?: boolean;
-  // To add the timestamp as a search param to the URL in order to bypass
-  // caching. Useful for surfaces that expect the favicon source to change
-  // during their lifetime (e.g. omnibox).
-  ignoreCache?: boolean;
   // Flag to force the service to return an empty image as the default favicon.
   forceEmptyDefaultFavicon?: boolean;
   // The scale factor for the requested favicon (e.g. '2x').
@@ -152,7 +148,6 @@ function getDefaultFaviconUrlParams(): Required<GetFaviconUrlParams> {
     size: 16,
     forceLightMode: false,
     fallbackToHost: true,
-    ignoreCache: false,
     forceEmptyDefaultFavicon: false,
     scaleFactor: '',
   };
@@ -190,9 +185,6 @@ export function getFaviconUrl(
   if (!params.fallbackToHost) {
     faviconUrl.searchParams.set('fallbackToHost', '0');
   }
-  if (params.ignoreCache) {
-    faviconUrl.searchParams.set('cacheBypass', String(Date.now()));
-  }
   if (params.forceEmptyDefaultFavicon) {
     faviconUrl.searchParams.set('forceEmptyDefaultFavicon', '1');
   }
@@ -217,9 +209,6 @@ export function getFaviconUrl(
  *     mode version of the default favicon.
  * @param fallbackToHost To allow for disabling the best match fallback
  *     behavior.
- * @param ignoreCache To add the timestamp as a search param to the URL in order
- *     to bypass caching. Useful for surfaces that expect the favicon source to
- *     change during their lifetime (e.g. omnibox).
  * @param forceEmptyDefaultFavicon Flag to force the service to return an empty
  *     image as the default favicon.
  * @param scaleFactor The scale factor for the requested favicon (e.g. '2x').
@@ -230,7 +219,7 @@ export function getFaviconForPageURL(
     url: string, isSyncedUrlForHistoryUi: boolean,
     remoteIconUrlForUma: string = '', size: number = 16,
     forceLightMode: boolean = false, fallbackToHost: boolean = true,
-    ignoreCache: boolean = false, forceEmptyDefaultFavicon: boolean = false,
+    forceEmptyDefaultFavicon: boolean = false,
     scaleFactor: string = ''): string {
   return getImageSet(getFaviconUrl(url, {
     isSyncedUrlForHistoryUi,
@@ -238,7 +227,6 @@ export function getFaviconForPageURL(
     size,
     forceLightMode,
     fallbackToHost,
-    ignoreCache,
     forceEmptyDefaultFavicon,
     scaleFactor,
   }));

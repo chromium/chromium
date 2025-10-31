@@ -325,7 +325,6 @@ export class SearchboxIconElement extends CrLitElement {
     return getFaviconUrl(
         /* url= */ this.match.destinationUrl.url, {
           forceLightMode: !this.isTopChromeSearchbox_,
-          ignoreCache: true,
           forceEmptyDefaultFavicon: true,
           scaleFactor: `${scaleFactor}x`,
         });

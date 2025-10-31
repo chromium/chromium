@@ -27,7 +27,6 @@ suite('IconTest', function() {
           }
           assertFalse(faviconUrl.searchParams.has('forceLightMode'));
           assertFalse(faviconUrl.searchParams.has('fallbackToHost'));
-          assertFalse(faviconUrl.searchParams.has('cacheBypass'));
           assertFalse(faviconUrl.searchParams.has('forceEmptyDefaultFavicon'));
           assertEquals(
               faviconUrl.searchParams.get('scaleFactor'), 'SCALEFACTORx');
@@ -65,11 +64,6 @@ suite('IconTest', function() {
     assertEquals(faviconUrl.searchParams.get('fallbackToHost'), '0');
     faviconUrl = getFaviconUrlWithParams({fallbackToHost: true});
     assertFalse(faviconUrl.searchParams.has('fallbackToHost'));
-
-    faviconUrl = getFaviconUrlWithParams({ignoreCache: false});
-    assertFalse(faviconUrl.searchParams.has('cacheBypass'));
-    faviconUrl = getFaviconUrlWithParams({ignoreCache: true});
-    assertTrue((/cacheBypass=\d+/).test(faviconUrl.toString()));
 
     faviconUrl = getFaviconUrlWithParams({forceEmptyDefaultFavicon: false});
     assertFalse(faviconUrl.searchParams.has('forceEmptyDefaultFavicon'));
