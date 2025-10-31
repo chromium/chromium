@@ -277,6 +277,10 @@ chrome_internal_verifier(
 )
 
 chrome_internal_verifier(
+    builder = "ios-simulator",
+)
+
+chrome_internal_verifier(
     builder = "ipad-device",
 )
 
