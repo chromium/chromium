@@ -114,8 +114,9 @@
   configurator.gaiaID = identity.gaiaId;
   configurator.name = identity.userFullName;
   configurator.email = identity.userEmail;
-  configurator.avatar = _accountManagerService->GetIdentityAvatarWithIdentity(
-      identity, IdentityAvatarSize::TableViewIcon);
+  configurator.avatar =
+      _accountManagerService->GetIdentityAvatarWithIdentityOnDevice(
+          identity, IdentityAvatarSize::TableViewIcon);
   configurator.selected = [identity isEqual:self.selectedIdentity];
 
   if (std::optional<BOOL> isManaged = IsIdentityManaged(identity);

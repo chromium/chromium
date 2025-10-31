@@ -162,7 +162,7 @@
 }
 
 - (UIImage*)imageForGaiaID:(const GaiaId&)gaiaID {
-  return _accountManagerService->GetIdentityAvatarWithIdentity(
+  return _accountManagerService->GetIdentityAvatarWithIdentityOnDevice(
       [self identityForGaiaID:gaiaID], IdentityAvatarSize::TableViewIcon);
 }
 
@@ -192,7 +192,7 @@
 }
 
 - (UIImage*)primaryAccountAvatar {
-  return _accountManagerService->GetIdentityAvatarWithIdentity(
+  return _accountManagerService->GetIdentityAvatarWithIdentityOnDevice(
       _primaryIdentityBeforeSignin, IdentityAvatarSize::Large);
 }
 

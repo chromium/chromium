@@ -189,7 +189,7 @@
       _prefService->GetBoolean(prefs::kIosSaveToPhotosSkipAccountPicker);
   [self.accountConfirmationConsumer
       setIdentityButtonAvatar:_accountManagerService
-                                  ->GetIdentityAvatarWithIdentity(
+                                  ->GetIdentityAvatarWithIdentityOnDevice(
                                       selectedIdentity,
                                       IdentityAvatarSize::TableViewIcon)
                          name:selectedIdentity.userFullName
@@ -209,8 +209,9 @@
     configurator.gaiaID = systemIdentity.gaiaId;
     configurator.name = systemIdentity.userFullName;
     configurator.email = systemIdentity.userEmail;
-    configurator.avatar = _accountManagerService->GetIdentityAvatarWithIdentity(
-        systemIdentity, IdentityAvatarSize::TableViewIcon);
+    configurator.avatar =
+        _accountManagerService->GetIdentityAvatarWithIdentityOnDevice(
+            systemIdentity, IdentityAvatarSize::TableViewIcon);
     configurator.selected = systemIdentity.gaiaId == selectedIdentity.gaiaId;
     [identityItemConfigurators addObject:configurator];
   }

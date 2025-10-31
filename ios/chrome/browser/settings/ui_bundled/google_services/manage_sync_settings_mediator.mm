@@ -234,7 +234,7 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
     return;
   }
   UIImage* avatarImage =
-      _chromeAccountManagerService->GetIdentityAvatarWithIdentity(
+      _chromeAccountManagerService->GetIdentityAvatarWithIdentityOnDevice(
           _signedInIdentity, IdentityAvatarSize::Large);
   NSString* managementDescription =
       GetManagementDescription([self managementState]);

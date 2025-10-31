@@ -263,7 +263,7 @@ id<SystemIdentity> ChromeAccountManagerService::GetDefaultIdentity() const {
                                SkipRestricted{restriction_}, profile_name_);
 }
 
-UIImage* ChromeAccountManagerService::GetIdentityAvatarWithIdentity(
+UIImage* ChromeAccountManagerService::GetIdentityAvatarWithIdentityOnDevice(
     id<SystemIdentity> identity,
     IdentityAvatarSize avatar_size) {
   ResizedAvatarCache* avatar_cache =

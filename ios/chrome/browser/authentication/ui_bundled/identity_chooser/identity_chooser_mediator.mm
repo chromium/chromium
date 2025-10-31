@@ -131,7 +131,7 @@
   item.name = identity.userFullName;
   item.email = identity.userEmail;
   item.selected = self.selectedIdentity.gaiaId == identity.gaiaId;
-  item.avatar = _accountManagerService->GetIdentityAvatarWithIdentity(
+  item.avatar = _accountManagerService->GetIdentityAvatarWithIdentityOnDevice(
       identity, IdentityAvatarSize::Regular);
 
   if (std::optional<BOOL> isManaged = IsIdentityManaged(identity);

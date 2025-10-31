@@ -78,7 +78,7 @@
 
 - (UIImage*)identityAvatarWithSizeForIdentity:(id<SystemIdentity>)identity
                                          size:(IdentityAvatarSize)size {
-  return _accountManagerService->GetIdentityAvatarWithIdentity(
+  return _accountManagerService->GetIdentityAvatarWithIdentityOnDevice(
       identity, IdentityAvatarSize::TableViewIcon);
 }
 

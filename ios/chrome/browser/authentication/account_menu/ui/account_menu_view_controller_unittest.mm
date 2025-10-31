@@ -106,7 +106,7 @@ UIImage* kPrimaryAccountAvatar = [[UIImage alloc] init];
 }
 
 - (UIImage*)imageForGaiaID:(const GaiaId&)gaiaID {
-  return _accountManagerService->GetIdentityAvatarWithIdentity(
+  return _accountManagerService->GetIdentityAvatarWithIdentityOnDevice(
       [self identityForGaiaID:gaiaID], IdentityAvatarSize::TableViewIcon);
 }
 

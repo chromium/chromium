@@ -971,7 +971,7 @@ id<SystemIdentity> GetDisplayedIdentity(
     self.displayedIdentityAvatar = nil;
   } else {
     self.displayedIdentityAvatar =
-        _accountManagerService->GetIdentityAvatarWithIdentity(
+        _accountManagerService->GetIdentityAvatarWithIdentityOnDevice(
             _displayedIdentity, IdentityAvatarSize::SmallSize);
   }
 }

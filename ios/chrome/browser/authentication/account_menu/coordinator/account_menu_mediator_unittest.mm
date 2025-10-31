@@ -336,7 +336,7 @@ TEST_P(AccountMenuMediatorTest, emailForGaiaID) {
 // Tests the result of imageForGaiaID.
 TEST_P(AccountMenuMediatorTest, imageForGaiaID) {
   EXPECT_NSEQ([mediator_ imageForGaiaID:kSecondaryIdentity.gaiaId],
-              account_manager_service_ -> GetIdentityAvatarWithIdentity(
+              account_manager_service_ -> GetIdentityAvatarWithIdentityOnDevice(
                                            kSecondaryIdentity,
                                            IdentityAvatarSize::TableViewIcon));
 }
@@ -355,7 +355,7 @@ TEST_P(AccountMenuMediatorTest, TestPrimaryAccountUserFullName) {
 // Tests the result of primaryAccountAvatar.
 TEST_P(AccountMenuMediatorTest, TestPrimaryAccountAvatar) {
   EXPECT_NSEQ([mediator_ primaryAccountAvatar],
-              account_manager_service_ -> GetIdentityAvatarWithIdentity(
+              account_manager_service_ -> GetIdentityAvatarWithIdentityOnDevice(
                                            kPrimaryIdentity,
                                            IdentityAvatarSize::Large));
 }

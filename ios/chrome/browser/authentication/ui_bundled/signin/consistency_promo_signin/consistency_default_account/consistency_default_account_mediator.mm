@@ -308,8 +308,9 @@ NSString* GetPromoLabelString(
   }
 
   id<SystemIdentity> selectedIdentity = self.selectedIdentity;
-  UIImage* avatar = _accountManagerService->GetIdentityAvatarWithIdentity(
-      selectedIdentity, IdentityAvatarSize::TableViewIcon);
+  UIImage* avatar =
+      _accountManagerService->GetIdentityAvatarWithIdentityOnDevice(
+          selectedIdentity, IdentityAvatarSize::TableViewIcon);
   CHECK(self.selectedIdentity, base::NotFatalUntil::M147);
   BOOL isManaged = [self isIdentityKnownToBeManaged:selectedIdentity];
   [self.consumer showDefaultAccountWithFullName:selectedIdentity.userFullName

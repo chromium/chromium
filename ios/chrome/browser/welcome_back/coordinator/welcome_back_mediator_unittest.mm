@@ -283,7 +283,7 @@ TEST_F(WelcomeBackMediatorTest, ConfirmUserInformationRetrieved) {
   // Retrieve the name and avatar.
   ChromeAccountManagerService* accountManager =
       ChromeAccountManagerServiceFactory::GetForProfile(profile_.get());
-  UIImage* testAvatar = accountManager->GetIdentityAvatarWithIdentity(
+  UIImage* testAvatar = accountManager->GetIdentityAvatarWithIdentityOnDevice(
       fake_system_identity_, IdentityAvatarSize::Large);
   OCMExpect([consumer_ setAvatar:testAvatar]);
   OCMExpect([consumer_ setTitle:l10n_util::GetNSStringF(

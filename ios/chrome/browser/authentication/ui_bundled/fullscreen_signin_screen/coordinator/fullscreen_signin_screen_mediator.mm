@@ -358,8 +358,9 @@ enum class SigninScreenState {
   if (!selectedIdentity) {
     [self.consumer noIdentityAvailable];
   } else {
-    UIImage* avatar = _accountManagerService->GetIdentityAvatarWithIdentity(
-        selectedIdentity, IdentityAvatarSize::Regular);
+    UIImage* avatar =
+        _accountManagerService->GetIdentityAvatarWithIdentityOnDevice(
+            selectedIdentity, IdentityAvatarSize::Regular);
 
     [self.consumer setSelectedIdentityUserName:selectedIdentity.userFullName
                                          email:selectedIdentity.userEmail

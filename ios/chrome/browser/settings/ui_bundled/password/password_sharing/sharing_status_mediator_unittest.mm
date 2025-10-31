@@ -140,11 +140,12 @@ TEST_F(SharingStatusMediatorTest, NotifiesSignedInConsumerAboutTheirAvatar) {
           changePasswordURL:std::nullopt];
   mediator.consumer = consumer;
 
-  EXPECT_NSEQ(UIImagePNGRepresentation(CircularImageFromImage(
-                  GetAccountManagerService()->GetIdentityAvatarWithIdentity(
-                      fake_identity(), IdentityAvatarSize::Large),
-                  kProfileImageSize)),
-              UIImagePNGRepresentation(consumer.senderImage));
+  EXPECT_NSEQ(
+      UIImagePNGRepresentation(CircularImageFromImage(
+          GetAccountManagerService()->GetIdentityAvatarWithIdentityOnDevice(
+              fake_identity(), IdentityAvatarSize::Large),
+          kProfileImageSize)),
+      UIImagePNGRepresentation(consumer.senderImage));
 }
 
 TEST_F(SharingStatusMediatorTest, NotifiesSignedOutConsumerWithDefaultAvatar) {

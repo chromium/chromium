@@ -60,7 +60,7 @@ SigninNotificationInfoBarDelegate::SigninNotificationInfoBarDelegate(
 
   ChromeAccountManagerService* accountManagerService =
       ChromeAccountManagerServiceFactory::GetForProfile(profile);
-  UIImage* image = accountManagerService->GetIdentityAvatarWithIdentity(
+  UIImage* image = accountManagerService->GetIdentityAvatarWithIdentityOnDevice(
       identity, IdentityAvatarSize::Regular);
   icon_ = gfx::Image(CircularImageFromImage(image, image.size.width));
 

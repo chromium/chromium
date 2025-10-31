@@ -123,10 +123,8 @@ void RecordFullscreenSigninPromoStarted(
 // Converts a SystemIdentityCapabilityResult to a Tribool.
 Tribool TriboolFromCapabilityResult(SystemIdentityCapabilityResult result);
 
-// Returns the list of all accounts on the device, including the ones that are
-// assigned to other profiles, in the order provided by the system, from
-// (depending on feature flags) IdentityManager and/or
-// ChromeAccountManagerService.
+// Returns the list of all accounts on the device, in the order provided by the
+// system, including the ones that are assigned to other profiles.
 NSArray<id<SystemIdentity>>* GetIdentitiesOnDevice(
     signin::IdentityManager* identityManager,
     ChromeAccountManagerService* accountManagerService);

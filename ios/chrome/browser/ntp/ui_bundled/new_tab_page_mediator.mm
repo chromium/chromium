@@ -556,8 +556,9 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
   // Fetches user's identity from Authentication Service.
   if (_signedInIdentity) {
     // Only show an avatar if the user is signed in.
-    UIImage* image = self.accountManagerService->GetIdentityAvatarWithIdentity(
-        _signedInIdentity, IdentityAvatarSize::SmallSize);
+    UIImage* image =
+        self.accountManagerService->GetIdentityAvatarWithIdentityOnDevice(
+            _signedInIdentity, IdentityAvatarSize::SmallSize);
     [self.imageUpdater updateAccountImage:image
                                      name:_signedInIdentity.userFullName
                                     email:_signedInIdentity.userEmail];

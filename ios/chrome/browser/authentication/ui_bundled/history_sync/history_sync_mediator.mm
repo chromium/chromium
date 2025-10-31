@@ -155,8 +155,9 @@
 
 // Updates the avatar image for the consumer from `identity`.
 - (void)updateAvatarImageWithIdentity:(id<SystemIdentity>)identity {
-  UIImage* image = _accountManagerService->GetIdentityAvatarWithIdentity(
-      identity, IdentityAvatarSize::Large);
+  UIImage* image =
+      _accountManagerService->GetIdentityAvatarWithIdentityOnDevice(
+          identity, IdentityAvatarSize::Large);
   [self.consumer setPrimaryIdentityAvatarImage:image];
 
   NSString* accessibilityLabel = nil;

@@ -312,7 +312,7 @@ void OpenManageDevicesTab(CommandDispatcher* dispatcher) {
                                      ->GetTargetDeviceInfoSortedList()
                         delegate:self
                    accountAvatar:accountManagerService
-                                     ->GetIdentityAvatarWithIdentity(
+                                     ->GetIdentityAvatarWithIdentityOnDevice(
                                          account,
                                          IdentityAvatarSize::TableViewIcon)
                     accountEmail:account.userEmail];

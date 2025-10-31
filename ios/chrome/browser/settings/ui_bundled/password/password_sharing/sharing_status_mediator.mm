@@ -105,7 +105,7 @@ const CGFloat kProfileImageSize = 60.0;
       _authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
   if (identity) {
     return CircularImageFromImage(
-        _accountManagerService->GetIdentityAvatarWithIdentity(
+        _accountManagerService->GetIdentityAvatarWithIdentityOnDevice(
             identity, IdentityAvatarSize::SmallSize),
         kProfileImageSize);
   }

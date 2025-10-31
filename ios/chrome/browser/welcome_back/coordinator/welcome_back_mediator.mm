@@ -57,7 +57,7 @@
     id<SystemIdentity> identity = _authenticationService->GetPrimaryIdentity(
         signin::ConsentLevel::kSignin);
     UIImage* avatarImage =
-        _chromeAccountManagerService->GetIdentityAvatarWithIdentity(
+        _chromeAccountManagerService->GetIdentityAvatarWithIdentityOnDevice(
             identity, IdentityAvatarSize::Large);
 
     [_consumer setTitle:l10n_util::GetNSStringF(

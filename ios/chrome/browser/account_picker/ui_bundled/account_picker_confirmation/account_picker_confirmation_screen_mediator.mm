@@ -116,8 +116,9 @@
   }
 
   id<SystemIdentity> selectedIdentity = _selectedIdentity;
-  UIImage* avatar = _accountManagerService->GetIdentityAvatarWithIdentity(
-      selectedIdentity, IdentityAvatarSize::TableViewIcon);
+  UIImage* avatar =
+      _accountManagerService->GetIdentityAvatarWithIdentityOnDevice(
+          selectedIdentity, IdentityAvatarSize::TableViewIcon);
   [_consumer showDefaultAccountWithFullName:selectedIdentity.userFullName
                                   givenName:selectedIdentity.userGivenName
                                       email:selectedIdentity.userEmail

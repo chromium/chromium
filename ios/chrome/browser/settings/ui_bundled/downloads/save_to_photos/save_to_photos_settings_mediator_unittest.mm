@@ -174,7 +174,7 @@ class SaveToPhotosSettingsMediatorTest : public PlatformTest {
       FakeSaveToPhotosSettingsConsumer* fake_consumer,
       id<SystemIdentity> saved_identity) {
     UIImage* saved_identity_avatar =
-        GetAccountManagerService()->GetIdentityAvatarWithIdentity(
+        GetAccountManagerService()->GetIdentityAvatarWithIdentityOnDevice(
             saved_identity, IdentityAvatarSize::TableViewIcon);
 
     // Test that the presented identity is the expected one.
@@ -188,7 +188,7 @@ class SaveToPhotosSettingsMediatorTest : public PlatformTest {
     // identity.
     if (fake_consumer.identityConfigurators.count > 0) {
       UIImage* fake_identity_a_avatar =
-          GetAccountManagerService()->GetIdentityAvatarWithIdentity(
+          GetAccountManagerService()->GetIdentityAvatarWithIdentityOnDevice(
               fake_identity_a_, IdentityAvatarSize::TableViewIcon);
       EXPECT_EQ(fake_identity_a_.gaiaId,
                 fake_consumer.identityConfigurators[0].gaiaID);
@@ -208,7 +208,7 @@ class SaveToPhotosSettingsMediatorTest : public PlatformTest {
     // expected selected identity.
     if (fake_consumer.identityConfigurators.count > 1) {
       UIImage* fake_identity_b_avatar =
-          GetAccountManagerService()->GetIdentityAvatarWithIdentity(
+          GetAccountManagerService()->GetIdentityAvatarWithIdentityOnDevice(
               fake_identity_b_, IdentityAvatarSize::TableViewIcon);
       EXPECT_EQ(fake_identity_b_.gaiaId,
                 fake_consumer.identityConfigurators[1].gaiaID);

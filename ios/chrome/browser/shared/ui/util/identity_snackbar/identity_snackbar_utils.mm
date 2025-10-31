@@ -123,8 +123,8 @@ SnackbarMessage* CreateIdentitySnackbarMessage(id<SystemIdentity> identity,
   // Configure accessory views.
   message.leadingAccessoryImage =
       ChromeAccountManagerServiceFactory::GetForProfile(profile)
-          ->GetIdentityAvatarWithIdentity(identity,
-                                          IdentityAvatarSize::Regular);
+          ->GetIdentityAvatarWithIdentityOnDevice(identity,
+                                                  IdentityAvatarSize::Regular);
   message.roundLeadingAccessoryView = YES;
 
   message.trailingAccessoryImage = management_state.is_managed()

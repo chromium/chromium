@@ -158,12 +158,14 @@
     return;
   }
 
-  // Get the avatar. `GetIdentityAvatarWithIdentity()` handles asynchronous
-  // loading. It returns a cached image or a placeholder immediately and
-  // initiates a fetch in the background if necessary. When the fetch completes,
+  // Get the avatar. `GetIdentityAvatarWithIdentityOnDevice()` handles
+  // asynchronous loading. It returns a cached image or a placeholder
+  // immediately and initiates a fetch in the background if necessary. When the
+  // fetch completes,
   // `-onExtendedAccountInfoUpdated:` will be called.
-  UIImage* avatar = _accountManagerService->GetIdentityAvatarWithIdentity(
-      _primaryIdentity, IdentityAvatarSize::Large);
+  UIImage* avatar =
+      _accountManagerService->GetIdentityAvatarWithIdentityOnDevice(
+          _primaryIdentity, IdentityAvatarSize::Large);
 
   [_consumer setWelcomeMessage:
                  l10n_util::GetNSStringF(
