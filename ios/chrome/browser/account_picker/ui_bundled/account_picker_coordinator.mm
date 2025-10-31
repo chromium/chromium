@@ -109,6 +109,7 @@
   [_accountPickerConfirmationScreenCoordinator stop];
   _accountPickerConfirmationScreenCoordinator = nil;
   [self stopAddAccountSigninCoordinator];
+  [self stopReauthCoordinator];
   [super stop];
 }
 
