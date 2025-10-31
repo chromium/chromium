@@ -94,8 +94,6 @@
 #include "components/browsing_topics/browsing_topics_service.h"
 #include "components/favicon/content/content_favicon_driver.h"
 #include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_features.h"
-#include "components/fingerprinting_protection_filter/interventions/browser/canvas_interventions_web_contents_helper.h"
-#include "components/fingerprinting_protection_filter/interventions/common/interventions_features.h"
 #include "components/image_fetcher/core/image_fetcher_service.h"
 #include "components/ip_protection/common/ip_protection_status.h"
 #include "components/lens/tab_contextualization_controller.h"
@@ -381,18 +379,6 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
         HostContentSettingsMapFactory::GetForProfile(profile),
         TrackingProtectionSettingsFactory::GetForProfile(profile),
         profile->IsIncognitoProfile());
-  }
-
-  if (fingerprinting_protection_interventions::features::
-          ShouldBlockCanvasReadbackForIncognitoState(
-              profile->IsIncognitoProfile()) ||
-      fingerprinting_protection_interventions::features::
-          IsCanvasInterventionsEnabledForIncognitoState(
-              profile->IsIncognitoProfile())) {
-    fingerprinting_protection_interventions::
-        CanvasInterventionsWebContentsHelper::CreateForWebContents(
-            tab.GetContents(),
-            profile->IsIncognitoProfile());
   }
 
   // Only create the IpProtectionStatus if the User Bypass feature is enabled.

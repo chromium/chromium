@@ -1740,12 +1740,6 @@ inline constexpr char kEnableCanvasNoiseDescription[] =
     "Enable noising pixels when the contents of a canvas are read back by a "
     "script.";
 
-inline constexpr char kEnableBlockCanvasReadbackName[] =
-    "Enable blocking canvas readbacks in Incognito";
-inline constexpr char kEnableBlockCanvasReadbackDescription[] =
-    "Enable throwing an exception when the contents of a canvas are read back "
-    "by a script.";
-
 inline constexpr char kEnablePeripheralCustomizationName[] =
     "Enable peripheral customization";
 inline constexpr char kEnablePeripheralCustomizationDescription[] =

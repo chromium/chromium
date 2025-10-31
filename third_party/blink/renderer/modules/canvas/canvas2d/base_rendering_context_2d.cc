@@ -393,10 +393,6 @@ ImageData* BaseRenderingContext2D::getImageDataInternal(
     exception_state.ThrowDOMException(
         DOMExceptionCode::kIndexSizeError,
         String::Format("The source %s is 0.", sw ? "height" : "width"));
-  } else if (RuntimeEnabledFeatures::BlockCanvasReadbackEnabled(
-                 GetTopExecutionContext())) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kNotAllowedError,
-                                      String(kBlockCanvasReadbackErrorMessage));
   }
 
   if (exception_state.HadException())

@@ -3076,14 +3076,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "enable-block-canvas-readback",
-    "owners": [
-      "tov@chromium.org",
-      "//third_party/blink/renderer/core/canvas_interventions/OWNERS"
-    ],
-    "expiry_milestone": 150
-  },
-  {
     "name": "enable-bound-session-credentials",
     "owners": [ "alexilin@chromium.org", "msalama@chromium.org", "chrome-signin-team@google.com" ],
     "expiry_milestone": 146

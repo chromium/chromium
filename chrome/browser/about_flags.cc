@@ -4379,12 +4379,6 @@ const FeatureEntry::FeatureVariation
              kStandardBoundSessionCredentialsFederatedSessionsForDevelopers),
          nullptr}};
 
-const FeatureEntry::FeatureParam kEnableBlockCanvasReadbackInAllModes[] = {
-    {"enable_in_regular_mode", "true"}};
-const FeatureEntry::FeatureVariation kEnableBlockCanvasReadbackVariations[] = {
-    {" - In all browsing modes", kEnableBlockCanvasReadbackInAllModes,
-     std::size(kEnableBlockCanvasReadbackInAllModes), nullptr}};
-
 const FeatureEntry::FeatureParam kEnableCanvasNoiseInAllModes[] = {
     {"enable_in_regular_mode", "true"}};
 const FeatureEntry::FeatureVariation kEnableCanvasNoiseVariations[] = {
@@ -13109,14 +13103,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAll,
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillPreferBuyNowPayLaterBlocklists)},
-
-    {"enable-block-canvas-readback",
-     flag_descriptions::kEnableBlockCanvasReadbackName,
-     flag_descriptions::kEnableBlockCanvasReadbackDescription, kOsAll,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(fingerprinting_protection_interventions::
-                                        features::kBlockCanvasReadback,
-                                    kEnableBlockCanvasReadbackVariations,
-                                    "EnableBlockCanvasReadback")},
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
