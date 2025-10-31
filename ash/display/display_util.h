@@ -44,9 +44,9 @@ ASH_EXPORT gfx::Rect GetNativeEdgeBounds(AshWindowTreeHost* ash_host,
 // the point_in_screen, which may be outside of the root window.
 // |update_last_loation_now| is used for the test to update the mouse
 // location synchronously.
-void MoveCursorTo(AshWindowTreeHost* ash_host,
-                  const gfx::Point& point_in_screen,
-                  bool update_last_location_now);
+ASH_EXPORT void MoveCursorTo(AshWindowTreeHost* ash_host,
+                             const gfx::Point& point_in_screen,
+                             bool update_last_location_now);
 
 // Shows the notification message for display related issues, and optionally
 // adds a button to send a feedback report.
