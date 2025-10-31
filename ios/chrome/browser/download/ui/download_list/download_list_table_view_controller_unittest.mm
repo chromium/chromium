@@ -85,14 +85,15 @@ using ::testing::Return;
 
 // Mock for DownloadRecordCommands protocol.
 @interface MockDownloadRecordCommands : NSObject <DownloadRecordCommands>
-@property(nonatomic, assign) BOOL openFileWithDownloadRecordCalled;
+@property(nonatomic, assign) BOOL openFileCalled;
 @property(nonatomic, assign) BOOL shareDownloadedFileCalled;
 @end
 
 @implementation MockDownloadRecordCommands
 
-- (void)openFileWithDownloadRecord:(const DownloadRecord&)record {
-  self.openFileWithDownloadRecordCalled = YES;
+- (void)openFileWithPath:(const base::FilePath&)filePath
+                mimeType:(const std::string&)mimeType {
+  self.openFileCalled = YES;
 }
 
 - (void)shareDownloadedFile:(const DownloadRecord&)record

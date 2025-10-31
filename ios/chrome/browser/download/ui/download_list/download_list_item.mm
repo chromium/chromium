@@ -125,6 +125,10 @@ NSString* const kStatusTextEmptyString = @"";
   return ConvertToAbsoluteDownloadPath(_downloadRecord.file_path);
 }
 
+- (NSString*)mimeType {
+  return base::SysUTF8ToNSString(_downloadRecord.mime_type);
+}
+
 - (UIImage*)fileTypeIcon {
   if (_fileTypeIcon) {
     return _fileTypeIcon;

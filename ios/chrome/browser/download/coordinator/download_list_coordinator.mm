@@ -157,17 +157,17 @@
 
 #pragma mark - DownloadRecordCommands
 
-- (void)openFileWithDownloadRecord:(const DownloadRecord&)record {
-  base::FilePath filePath = ConvertToAbsoluteDownloadPath(record.file_path);
-
+- (void)openFileWithPath:(const base::FilePath&)filePath
+                mimeType:(const std::string&)mimeType {
+  base::FilePath filePathCopy = filePath;
   __weak __typeof(self) weakSelf = self;
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
       {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-      base::BindOnce(&base::PathExists, filePath),
+      base::BindOnce(&base::PathExists, filePathCopy),
       base::BindOnce(^(bool fileExists) {
-        [weakSelf handleOpenFilePath:filePath
-                            mimeType:record.mime_type
+        [weakSelf handleOpenFilePath:filePathCopy
+                            mimeType:mimeType
                           fileExists:fileExists];
       }));
 }
@@ -247,7 +247,7 @@
     [_filePreviewCoordinator start];
   }
   NSURL* fileURL =
-      [NSURL fileURLWithPath:base::SysUTF8ToNSString(filePath.value())];
+      [NSURL fileURLWithPath:base::SysUTF8ToNSString(filePath.value().c_str())];
   [_filePreviewCoordinator presentFilePreviewWithURL:fileURL];
 }
 

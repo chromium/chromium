@@ -8,6 +8,7 @@
 #import <UIKit/UIKit.h>
 
 #import "base/apple/foundation_util.h"
+#import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/download/model/download_filter_util.h"
 #import "ios/chrome/browser/download/model/external_app_util.h"
 #import "ios/chrome/browser/download/ui/download_list/download_list_action_delegate.h"
@@ -235,7 +236,15 @@ typedef NSDiffableDataSourceSnapshot<DownloadListGroupItem*, DownloadListItem*>
 
 - (void)tableView:(UITableView*)tableView
     performPrimaryActionForRowAtIndexPath:(NSIndexPath*)indexPath {
-  // TODO(crbug.com/440222083): Implement download primary action handling.
+  DownloadListItem* item =
+      [_diffableDataSource itemIdentifierForIndexPath:indexPath];
+
+  CHECK(item);
+
+  base::FilePath filePath = item.filePath;
+  std::string mimeType = base::SysNSStringToUTF8(item.mimeType);
+
+  [self.downloadRecordHandler openFileWithPath:filePath mimeType:mimeType];
 }
 
 - (UIContextMenuConfiguration*)tableView:(UITableView*)tableView

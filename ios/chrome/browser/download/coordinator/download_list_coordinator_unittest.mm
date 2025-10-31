@@ -208,7 +208,9 @@ TEST_F(DownloadListCoordinatorTest, OpenFileWithDownloadRecordPDF) {
   // Call the method under test through command dispatcher.
   id<DownloadRecordCommands> downloadRecordHandler =
       HandlerForProtocol(dispatcher, DownloadRecordCommands);
-  [downloadRecordHandler openFileWithDownloadRecord:pdf_record];
+  [downloadRecordHandler
+      openFileWithPath:ConvertToAbsoluteDownloadPath(pdf_record.file_path)
+              mimeType:pdf_record.mime_type];
 
   // Wait for the openURLInNewTab call to complete.
   task_environment_.RunUntilIdle();
@@ -251,7 +253,9 @@ TEST_F(DownloadListCoordinatorTest, OpenFileWithDownloadRecordNonPDF) {
   dispatcher = browser_->GetCommandDispatcher();
   id<DownloadRecordCommands> downloadRecordHandler2 =
       HandlerForProtocol(dispatcher, DownloadRecordCommands);
-  [downloadRecordHandler2 openFileWithDownloadRecord:image_record];
+  [downloadRecordHandler2
+      openFileWithPath:ConvertToAbsoluteDownloadPath(image_record.file_path)
+              mimeType:image_record.mime_type];
 
   // Wait for async file existence check to complete.
   task_environment_.RunUntilIdle();
@@ -288,7 +292,9 @@ TEST_F(DownloadListCoordinatorTest, OpenFileWithDownloadRecordFileNotExists) {
   dispatcher = browser_->GetCommandDispatcher();
   id<DownloadRecordCommands> downloadRecordHandler3 =
       HandlerForProtocol(dispatcher, DownloadRecordCommands);
-  [downloadRecordHandler3 openFileWithDownloadRecord:missing_record];
+  [downloadRecordHandler3
+      openFileWithPath:ConvertToAbsoluteDownloadPath(missing_record.file_path)
+              mimeType:missing_record.mime_type];
 
   // Wait for async file existence check to complete.
   task_environment_.RunUntilIdle();

@@ -37,6 +37,9 @@ typedef NS_OPTIONS(NSUInteger, DownloadListItemAction) {
 /// Returns the absolute file path for this download item.
 @property(nonatomic, assign, readonly) base::FilePath filePath;
 
+/// Returns the MIME type for this download item.
+@property(nonatomic, copy, readonly) NSString* mimeType;
+
 /// Returns the icon for this download item.
 @property(nonatomic, strong, readonly) UIImage* fileTypeIcon;
 
