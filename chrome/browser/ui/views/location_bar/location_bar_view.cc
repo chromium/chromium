@@ -73,6 +73,7 @@
 #include "chrome/browser/ui/views/location_bar/omnibox_chip_button.h"
 #include "chrome/browser/ui/views/location_bar/selected_keyword_view.h"
 #include "chrome/browser/ui/views/location_bar/star_view.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_context_menu.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_view_views.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_view_webui.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
@@ -221,6 +222,10 @@ LocationBarView::LocationBarView(Browser* browser,
       profile_(profile),
       delegate_(delegate),
       is_popup_mode_(is_popup_mode) {
+  run_omnibox_context_menu_callback_ =
+      base::BindRepeating([](OmniboxContextMenu* menu, gfx::Point point) {
+        menu->RunMenuAt(point, ui::mojom::MenuSourceType::kMouse);
+      });
   set_suppress_default_focus_handling();
   if (!is_popup_mode_) {
     views::FocusRing::Install(this);
@@ -1814,6 +1819,8 @@ void LocationBarView::OnOmniboxBlurred() {
   // The AI mode page action icon view should only be visible when the omnibox
   // is focused, so if there is a change in focus, refresh the icon.
   RefreshAiModePageActionIconView();
+
+  location_icon_view_->Update(false, false);
 }
 
 void LocationBarView::OnOmniboxHovered(bool is_hovering) {
@@ -1858,6 +1865,15 @@ bool LocationBarView::IsEditingOrEmpty() const {
 }
 
 void LocationBarView::OnLocationIconPressed(const ui::MouseEvent& event) {
+  if (browser_ && GetOmniboxView()->model()->ShouldShowAddContextButton()) {
+    omnibox_context_menu_ =
+        std::make_unique<OmniboxContextMenu>(GetWidget(), browser_);
+    gfx::Point point = event.location();
+    views::View::ConvertPointToScreen(location_icon_view_, &point);
+    run_omnibox_context_menu_callback_.Run(omnibox_context_menu_.get(), point);
+    return;
+  }
+
   if (event.IsOnlyMiddleMouseButton() &&
       ui::Clipboard::IsSupportedClipboardBuffer(
           ui::ClipboardBuffer::kSelection)) {

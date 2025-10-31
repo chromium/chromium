@@ -27,6 +27,7 @@
 #include "base/trace_event/typed_macros.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
+#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/omnibox/omnibox_popup_view.h"
@@ -494,6 +495,18 @@ ui::ImageModel OmniboxEditModel::GetSuperGIcon(int image_size,
 #else
   return ui::ImageModel();
 #endif
+}
+
+bool OmniboxEditModel::ShouldShowAddContextButton() const {
+  return base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxAimPopup) &&
+         omnibox::kWebUIOmniboxAimPopupAddContextButtonVariantParam.Get() ==
+             omnibox::AddContextButtonVariant::kInline &&
+         PopupIsOpen();
+}
+
+ui::ImageModel OmniboxEditModel::GetAddContextIcon(int image_size) const {
+  return ui::ImageModel::FromVectorIcon(kAddChromeRefreshIcon,
+                                        ui::kColorSysPrimary, image_size);
 }
 
 gfx::Image OmniboxEditModel::GetAgentspaceIcon(bool dark_mode) const {

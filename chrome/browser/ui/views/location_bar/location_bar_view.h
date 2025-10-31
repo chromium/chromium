@@ -62,6 +62,7 @@ class PageActionIconContainerView;
 class PermissionDashboardView;
 class Profile;
 class SelectedKeywordView;
+class OmniboxContextMenu;
 
 namespace page_actions {
 class PageActionContainerView;
@@ -301,8 +302,15 @@ class LocationBarView
                            OmniboxViewViewsSize);
   FRIEND_TEST_ALL_PREFIXES(TouchLocationBarViewBrowserTest,
                            IMEInlineAutocompletePosition);
+  FRIEND_TEST_ALL_PREFIXES(LocationBarViewAddContextButtonBrowserTest,
+                           AddContextButtonVisibilityAndClick);
   using ContentSettingViews =
       std::vector<raw_ptr<ContentSettingImageView, VectorExperimental>>;
+
+  void SetRunOmniboxContextMenuForTesting(
+      base::RepeatingCallback<void(OmniboxContextMenu*, gfx::Point)> callback) {
+    run_omnibox_context_menu_callback_ = std::move(callback);
+  }
 
   // Returns the amount of space required to the left of the omnibox text.
   int GetMinimumLeadingWidth() const;
@@ -541,6 +549,11 @@ class LocationBarView
   // The focus manager associated with this view. The focus manager is expected
   // to outlive this view.
   raw_ptr<views::FocusManager> focus_manager_ = nullptr;
+
+  std::unique_ptr<OmniboxContextMenu> omnibox_context_menu_;
+
+  base::RepeatingCallback<void(OmniboxContextMenu*, gfx::Point)>
+      run_omnibox_context_menu_callback_;
 
   base::CallbackListSubscription subscription_ =
       ui::TouchUiController::Get()->RegisterCallback(

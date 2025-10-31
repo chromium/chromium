@@ -73,6 +73,10 @@ ui::ImageModel OmniboxView::GetIcon(int dip_size,
                                     SkColor color_vectors_with_background,
                                     IconFetchedCallback on_icon_fetched,
                                     bool dark_mode) const {
+  if (model()->ShouldShowAddContextButton()) {
+    return model()->GetAddContextIcon(dip_size);
+  }
+
   if (model()->ShouldShowCurrentPageIcon()) {
     return ui::ImageModel::FromVectorIcon(
         controller_->client()->GetVectorIcon(), color_current_page_icon,

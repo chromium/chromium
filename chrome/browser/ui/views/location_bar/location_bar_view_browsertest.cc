@@ -14,6 +14,7 @@
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -23,13 +24,17 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
+#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
+#include "chrome/browser/ui/views/location_bar/location_icon_view.h"
 #include "chrome/browser/ui/views/location_bar/zoom_bubble_coordinator.h"
 #include "chrome/browser/ui/views/location_bar/zoom_bubble_view.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_context_menu.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
 #include "chrome/browser/ui/views/page_action/page_action_container_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_controller.h"
@@ -65,6 +70,8 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
 #include "ui/base/pointer/touch_ui_controller.h"
+#include "ui/events/event.h"
+#include "ui/events/event_constants.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/test/views_test_utils.h"
 
@@ -600,4 +607,68 @@ IN_PROC_BROWSER_TEST_F(LocationBarViewPageActionHideWhileEditingTests,
 
   EnsureLayout();
   EXPECT_TRUE(zoom_view->GetVisible());
+}
+
+class LocationBarViewAddContextButtonBrowserTest
+    : public LocationBarViewBrowserTest {
+ public:
+  LocationBarViewAddContextButtonBrowserTest() {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{omnibox::kWebUIOmniboxAimPopup,
+          {{omnibox::kWebUIOmniboxAimPopupAddContextButtonVariantParam.name,
+            "inline"}}}},
+        {});
+  }
+  ~LocationBarViewAddContextButtonBrowserTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// TODO(crbug.com/454313733): This test is flaky on Linux.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_AddContextButtonVisibilityAndClick \
+  DISABLED_AddContextButtonVisibilityAndClick
+#else
+#define MAYBE_AddContextButtonVisibilityAndClick \
+  AddContextButtonVisibilityAndClick
+#endif
+IN_PROC_BROWSER_TEST_F(LocationBarViewAddContextButtonBrowserTest,
+                       MAYBE_AddContextButtonVisibilityAndClick) {
+  LocationBarView* location_bar_view = GetLocationBarView();
+  OmniboxViewViews* omnibox_view = location_bar_view->omnibox_view();
+  LocationIconView* location_icon_view =
+      location_bar_view->location_icon_view();
+
+  // The "Add Context" button doesn't show up when the Omnibox popup is
+  // closed.
+  EXPECT_FALSE(omnibox_view->model()->PopupIsOpen());
+  EXPECT_FALSE(omnibox_view->model()->ShouldShowAddContextButton());
+  const auto icon_when_closed =
+      location_icon_view->GetImageModel(views::Button::STATE_NORMAL);
+
+  // The "Add Context" button does show up when the Omnibox popup is open.
+  location_bar_view->FocusLocation(true);
+  omnibox_view->SetUserText(u"test");
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return omnibox_view->model()->PopupIsOpen(); }));
+  EXPECT_TRUE(omnibox_view->model()->ShouldShowAddContextButton());
+  const auto icon_when_open =
+      location_icon_view->GetImageModel(views::Button::STATE_NORMAL);
+  EXPECT_NE(icon_when_closed->GetVectorIcon().vector_icon(),
+            icon_when_open->GetVectorIcon().vector_icon());
+
+  // Clicking on the "Add Context" button causes
+  // `OmniboxContextMenu::RunMenuAt()` to get called.
+  bool run_menu_called = false;
+  location_bar_view->SetRunOmniboxContextMenuForTesting(
+      base::BindLambdaForTesting(
+          [&](OmniboxContextMenu*, gfx::Point) { run_menu_called = true; }));
+
+  ui::MouseEvent click_event(
+      ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
+      base::TimeTicks(), ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
+  location_icon_view->OnMousePressed(click_event);
+
+  EXPECT_TRUE(run_menu_called);
 }
