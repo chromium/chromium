@@ -93,6 +93,7 @@
 #include "components/segmentation_platform/public/prediction_options.h"
 #include "components/segmentation_platform/public/segmentation_platform_service.h"
 #include "components/sync/service/sync_service.h"
+#include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -608,6 +609,7 @@ void NewTabPageHandler::RegisterProfilePrefs(PrefRegistrySimple* registry) {
       prefs::kNtpCustomizeChromeSidePanelAutoOpeningsCount, 0);
   registry->RegisterBooleanPref(prefs::kNtpCustomizeChromeExplicitlyClosed,
                                 false);
+  registry->RegisterBooleanPref(prefs::kNtpCustomizeChromeIPHAutoOpened, false);
 }
 
 void NewTabPageHandler::SetMostVisitedSettings(ntp_tiles::TileType type,
@@ -1212,10 +1214,35 @@ void NewTabPageHandler::MaybeTriggerAutomaticCustomizeChromePromo() {
     return;
   }
 
-  feature_promo_helper_->MaybeShowFeaturePromo(
-      feature_engagement::kIPHDesktopCustomizeChromeAutoOpenFeature,
-      web_contents_.get());
+  if (!profile_->GetPrefs()->GetBoolean(
+          prefs::kNtpCustomizeChromeIPHAutoOpened)) {
+    user_education::FeaturePromoParams params(
+        feature_engagement::kIPHDesktopCustomizeChromeAutoOpenFeature);
+    params.show_promo_result_callback = base::BindOnce(
+        &NewTabPageHandler::OnShowPromoResult, weak_ptr_factory_.GetWeakPtr());
 
+    feature_promo_helper_->MaybeShowFeaturePromo(std::move(params),
+                                                 web_contents_.get());
+    return;
+  }
+
+  ShowCustomizeChromeSidePanel();
+}
+
+void NewTabPageHandler::OnShowPromoResult(
+    user_education::FeaturePromoResult result) {
+  // If pref was not set before, this is first opening, so panel should be shown
+  // only after the IPH.
+  if (result == user_education::FeaturePromoResult::Success() &&
+      !profile_->GetPrefs()->GetBoolean(
+          prefs::kNtpCustomizeChromeIPHAutoOpened)) {
+    profile_->GetPrefs()->SetBoolean(prefs::kNtpCustomizeChromeIPHAutoOpened,
+                                     true);
+    ShowCustomizeChromeSidePanel();
+  }
+}
+
+void NewTabPageHandler::ShowCustomizeChromeSidePanel() {
   CustomizeChromeAutoOpenedUserData::GetOrCreateForProfile(profile_)
       ->IncrementTimesOpened();
   profile_->GetPrefs()->SetInteger(
