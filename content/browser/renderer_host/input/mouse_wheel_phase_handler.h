@@ -51,7 +51,7 @@ enum class FirstScrollUpdateAckState {
 // The MouseWheelPhaseHandler is responsible for adding the proper phase to
 // wheel events. Phase information is necessary for wheel scrolling since it
 // shows the start and end of a scrolling sequence.
-class MouseWheelPhaseHandler {
+class CONTENT_EXPORT MouseWheelPhaseHandler {
  public:
   MouseWheelPhaseHandler(RenderWidgetHostViewBase* const host_view);
 
@@ -99,6 +99,8 @@ class MouseWheelPhaseHandler {
   max_time_between_phase_ended_and_momentum_phase_began() {
     return max_time_between_phase_ended_and_momentum_phase_began_;
   }
+
+  void DidEnterBackForwardCache();
 
  private:
   void SendSyntheticWheelEventWithPhaseEnded(bool should_route_event);

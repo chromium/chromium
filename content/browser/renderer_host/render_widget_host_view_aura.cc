@@ -3209,6 +3209,7 @@ void RenderWidgetHostViewAura::DidEnterBackForwardCache() {
   //
   // Called after to prevent prematurely evict the BFCached surface.
   host()->ForceFirstFrameAfterNavigationTimeout();
+  GetMouseWheelPhaseHandler()->DidEnterBackForwardCache();
 }
 
 void RenderWidgetHostViewAura::ActivatedOrEvictedFromBackForwardCache() {

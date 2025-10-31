@@ -10,6 +10,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/test_mock_time_task_runner.h"
+#include "base/test/test_timeouts.h"
 #include "base/types/expected.h"
 #include "build/build_config.h"
 #include "content/browser/back_forward_cache_browsertest.h"
@@ -52,6 +53,11 @@
 #include "ui/accessibility/ax_node_id_forward.h"
 #include "ui/accessibility/platform/browser_accessibility.h"
 #include "ui/accessibility/platform/browser_accessibility_manager.h"
+#include "ui/events/base_event_utils.h"
+
+#if defined(USE_AURA)
+#include "content/browser/renderer_host/render_widget_host_view_aura.h"
+#endif
 
 // This file contains back/forward-cache tests that test or use internal
 // features, e.g. cache-flushing, crashes, verifying proxies and other
@@ -4263,6 +4269,82 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
       {NotRestoredReason::kHTTPStatusNotOK, NotRestoredReason::kErrorDocument},
       {}, {}, {}, {}, FROM_HERE);
 }
+
+#if defined(USE_AURA)
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
+                       WheelScrollDuringNavigation) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  // Makes the page scrollable and waits for commit and activation.
+  std::string setup = R"(
+    (async () => {
+      document.body.style.height = '4000px';
+      await document.body.animate({opacity: [0, 1]}, {duration: 1}).finished;
+      next_scroll = Promise.withResolvers();
+      onscroll = () => { next_scroll.resolve(); }
+      return true;
+    })()
+  )";
+
+  // Returns the new scroll offset.
+  std::string wait_for_scroll = R"(
+    (async () => {
+      await next_scroll.promise;
+      next_scroll = Promise.withResolvers();
+      return scrollY;
+    })()
+  )";
+
+  // This is turned into a mousewheel event by the RWHVEventHandler.
+  ui::ScrollEvent scroll_by_20_px(ui::EventType::kScroll, gfx::Point(100, 100),
+                                  ui::EventTimeForNow(), 0, 0, -20, 0, 20, 2);
+
+  // 1) Go to A.
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  auto* rfh_a = current_frame_host();
+  auto* rwhv_a = static_cast<RenderWidgetHostViewAura*>(rfh_a->GetView());
+
+  // Set a high timeout for the synthetic PhaseEnded mousewheel (we will
+  // manually trigger it below).
+  rwhv_a->event_handler()->set_mouse_wheel_wheel_phase_handler_timeout(
+      TestTimeouts::action_max_timeout());
+
+  // Scroll by 20px.
+  EXPECT_EQ(true, EvalJs(rfh_a, setup));
+  rwhv_a->OnScrollEvent(&scroll_by_20_px);
+  EXPECT_EQ(20, EvalJs(rfh_a, wait_for_scroll));
+
+  // 2) Go to B. This puts A into bfcache.
+  EXPECT_TRUE(NavigateToURL(shell(), url_b));
+  auto* rfh_b = current_frame_host();
+  auto* rwhv_b = static_cast<RenderWidgetHostViewAura*>(rfh_b->GetView());
+  EXPECT_TRUE(rfh_a->IsInBackForwardCache());
+
+  // Scroll by 20px. This is PhaseBegan for the new page (rwhv_b).
+  EXPECT_EQ(true, EvalJs(rfh_b, setup));
+  rwhv_b->OnScrollEvent(&scroll_by_20_px);
+  EXPECT_EQ(20, EvalJs(rfh_b, wait_for_scroll));
+
+  // Simulate timer firing in the *old* RWHV's MouseWheelPhaseHandler.
+  rwhv_a->GetMouseWheelPhaseHandler()->DispatchPendingWheelEndEvent();
+
+  // Scroll again by 20px (PhaseChanged). The RenderWidgetHostInputEventRouter
+  // should remember that we are scrolling rwhv_b.
+  rwhv_b->OnScrollEvent(&scroll_by_20_px);
+  EXPECT_EQ(40, EvalJs(rfh_b, wait_for_scroll));
+
+  // 3) Go back to A.
+  ASSERT_TRUE(HistoryGoBack(shell()->web_contents()));
+  EXPECT_EQ(current_frame_host(), rfh_a);
+  EXPECT_EQ(20, EvalJs(rfh_a, "scrollY"));
+
+  // A new scroll of A should work as expected.
+  rwhv_a->OnScrollEvent(&scroll_by_20_px);
+  EXPECT_EQ(40, EvalJs(rfh_a, wait_for_scroll));
+}
+#endif  // defined(USE_AURA)
 
 class BackForwardCacheBrowserTestWithFencedFrames
     : public BackForwardCacheBrowserTest {

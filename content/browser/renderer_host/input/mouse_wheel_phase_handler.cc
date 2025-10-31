@@ -259,4 +259,16 @@ void MouseWheelPhaseHandler::GestureEventAck(
     first_scroll_update_ack_state_ = FirstScrollUpdateAckState::kNotConsumed;
 }
 
+void MouseWheelPhaseHandler::DidEnterBackForwardCache() {
+  // Don't send any events after going into bfcache. Sending a PhaseEnded wheel
+  // event resets RenderWidgetHostInputEventRouter::wheel_target_, which will
+  // interfere with a wheel scroll happening in the new RWHV.
+  //
+  // TODO(crbug.com/447423251): Consider refactoring RWHInputEventRouter to be
+  // owned by the root RWHV instead of the WebContents? Then the old page can
+  // route its wheel end independently of the new page.
+  IgnorePendingWheelEndEvent();
+  ResetTouchpadScrollSequence();
+}
+
 }  // namespace content
