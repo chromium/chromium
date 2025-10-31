@@ -165,7 +165,6 @@ RecentAppsView::RecentAppsView(AppListKeyboardController* keyboard_controller,
   layout_->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kStart);
   GetViewAccessibility().SetRole(ax::mojom::Role::kGroup);
-  // TODO(https://crbug.com/1298211): This needs a designated string resource.
   GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(IDS_ASH_LAUNCHER_RECENT_APPS_A11Y_NAME),
       ax::mojom::NameFrom::kAttribute);
