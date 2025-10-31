@@ -194,6 +194,9 @@ class WebStateImpl;
 // Picture).
 - (void)closeMediaPresentations;
 
+// Updates the SSL status of the current navigation item.
+- (void)updateSSLStatusForCurrentNavigationItem;
+
 // Creates a web view if it's not yet created. Returns the web view.
 - (WKWebView*)ensureWebViewCreated;
 

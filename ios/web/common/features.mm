@@ -93,4 +93,7 @@ bool CreateTabHelperOnlyForRealizedWebStates() {
   return base::FeatureList::IsEnabled(kCreateTabHelperOnlyForRealizedWebStates);
 }
 
+BASE_FEATURE(kUpdateSSLStatusOnNavigationItemLazyCreation,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace web::features
