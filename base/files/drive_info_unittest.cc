@@ -32,6 +32,9 @@ void TestForReasonableDriveInfo(const std::optional<DriveInfo>& info) {
 #if BUILDFLAG(IS_WIN)
   // `is_usb` may or may not be true but should be ascertainable.
   EXPECT_TRUE(info->is_usb.has_value());
+
+  // `sector_size` should have a value.
+  EXPECT_NE(info->bytes_per_sector, std::nullopt);
 #endif
 
 #if BUILDFLAG(IS_MAC)
