@@ -720,12 +720,6 @@ const char kIOSEnableCloudProfileReportingDescription[] =
     "When enabled, profile reports will be reported to the user's "
     "organization.";
 
-const char kIOSEnablePasswordManagerTrustedVaultWidgetName[] =
-    "Enable password settings encryption error widget";
-const char kIOSEnablePasswordManagerTrustedVaultWidgetDescription[] =
-    "Display a widget in the password management settings page in case of a "
-    "password encryption error.";
-
 const char kIOSEnableRealtimeEventReportingName[] =
     "Enable realtime event reporting on iOS";
 const char kIOSEnableRealtimeEventReportingDescription[] =

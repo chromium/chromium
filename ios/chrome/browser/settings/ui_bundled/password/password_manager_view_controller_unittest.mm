@@ -14,10 +14,8 @@
 #import "base/test/bind.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
-#import "base/test/scoped_feature_list.h"
 #import "components/affiliations/core/browser/fake_affiliation_service.h"
 #import "components/application_locale_storage/application_locale_storage.h"
-#import "components/feature_engagement/public/feature_constants.h"
 #import "components/google/core/common/google_util.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/password_manager/core/browser/leak_detection/mock_bulk_leak_check_service.h"
@@ -38,7 +36,6 @@
 #import "ios/chrome/browser/settings/ui_bundled/cells/inline_promo_cell.h"
 #import "ios/chrome/browser/settings/ui_bundled/cells/inline_promo_item.h"
 #import "ios/chrome/browser/settings/ui_bundled/cells/settings_check_item.h"
-#import "ios/chrome/browser/settings/ui_bundled/password/password_manager_ui_features.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_manager_view_controller+Testing.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_manager_view_controller_presentation_delegate.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/passwords_consumer.h"
@@ -1316,17 +1313,8 @@ TEST_F(PasswordManagerViewControllerTest, WidgetPromoMoreInfoButtonMetric) {
   [GetPasswordManagerViewController() settingsWillBeDismissed];
 }
 
-// Test verifies the content of the Trusted Vault widget promo cell when the
-// flag
-// `password_manager::features::kIOSEnablePasswordManagerTrustedVaultWidget` is
-// enabled.
-TEST_F(PasswordManagerViewControllerTest,
-       TrustedVaultWidgetPromoWhenFlagIsEnabled) {
-  // Enable a flag `kIOSEnablePasswordManagerTrustedVaultWidget` for this test.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      password_manager::features::kIOSEnablePasswordManagerTrustedVaultWidget);
-
+// Test verifies the content of the Trusted Vault widget promo cell.
+TEST_F(PasswordManagerViewControllerTest, TrustedVaultWidgetPromo) {
   base::HistogramTester histogram_tester;
   AddSavedForm1();
 
@@ -1376,11 +1364,6 @@ TEST_F(PasswordManagerViewControllerTest,
 // recorded only once.
 TEST_F(PasswordManagerViewControllerTest,
        TrustedVaultWidgetPromoIpressionRecordedOnlyOnce) {
-  // Enable a flag `kIOSEnablePasswordManagerTrustedVaultWidget` for this test.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      password_manager::features::kIOSEnablePasswordManagerTrustedVaultWidget);
-
   base::HistogramTester histogram_tester;
   AddSavedForm1();
 
@@ -1401,11 +1384,6 @@ TEST_F(PasswordManagerViewControllerTest,
 // called when tapping the trusted vault widget promo's button.
 TEST_F(PasswordManagerViewControllerTest,
        TrustedVaultWidgetPromoTappingButton) {
-  // Enable a flag `kIOSEnablePasswordManagerTrustedVaultWidget` for this test.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      password_manager::features::kIOSEnablePasswordManagerTrustedVaultWidget);
-
   base::HistogramTester histogram_tester;
   AddSavedForm1();
 
@@ -1440,10 +1418,6 @@ TEST_F(PasswordManagerViewControllerTest,
 
 TEST_F(PasswordManagerViewControllerTest,
        TestTrustedVaultPromoIsNotPresentedWhileSearching) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      password_manager::features::kIOSEnablePasswordManagerTrustedVaultWidget);
-
   root_view_controller_ = [[UIViewController alloc] init];
   scoped_window_.Get().rootViewController = root_view_controller_;
 

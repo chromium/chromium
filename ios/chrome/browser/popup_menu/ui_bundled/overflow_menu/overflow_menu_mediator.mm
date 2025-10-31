@@ -70,7 +70,6 @@
 #import "ios/chrome/browser/search_engines/model/search_engine_observer_bridge.h"
 #import "ios/chrome/browser/search_engines/model/search_engines_util.h"
 #import "ios/chrome/browser/settings/model/sync/utils/identity_error_util.h"
-#import "ios/chrome/browser/settings/ui_bundled/password/password_manager_ui_features.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group_utils.h"
@@ -2034,9 +2033,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
       return self.readingListModel->loaded() ? self.readingListDestination
                                              : nil;
     case overflow_menu::Destination::Passwords:
-      if ([self shouldIndicateMissingTrustedVaultKeyForPasswordsError] &&
-          password_manager::features::
-              IsPasswordManagerTrustedVaultWidgetEnabled()) {
+      if ([self shouldIndicateMissingTrustedVaultKeyForPasswordsError]) {
         self.passwordsDestination.badge = BadgeTypeError;
       }
       return self.passwordsDestination;

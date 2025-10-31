@@ -20,19 +20,12 @@ BASE_DECLARE_FEATURE(kIOSEnablePasscodeSettings);
 // password page.
 BASE_DECLARE_FEATURE(kSuggestStrongPasswordInAddPassword);
 
-// Feature switch for enabling the Password Manager Trusted Vault widget.
-BASE_DECLARE_FEATURE(kIOSEnablePasswordManagerTrustedVaultWidget);
-
 // Helper function returning the status of `kIOSEnablePasscodeSettings`.
 bool IsPasscodeSettingsEnabled();
 
 // Helper function returning the status of
 // `kSuggestStrongPasswordInAddPassword`.
 bool IsSuggestStrongPasswordInAddPasswordEnabled();
-
-// Helper function returning the status of
-// `kIOSEnablePasswordManagerTrustedVaultWidget`.
-bool IsPasswordManagerTrustedVaultWidgetEnabled();
 
 }  // namespace password_manager::features
 

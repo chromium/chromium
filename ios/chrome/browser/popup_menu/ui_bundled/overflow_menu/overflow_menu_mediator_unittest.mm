@@ -66,7 +66,6 @@
 #import "ios/chrome/browser/reading_list/model/reading_list_model_factory.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_test_utils.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
-#import "ios/chrome/browser/settings/ui_bundled/password/password_manager_ui_features.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
@@ -901,11 +900,6 @@ TEST_F(OverflowMenuMediatorTest, TestSyncError) {
 // Trusted Vault key for preferred data types is missing. The account is signed.
 TEST_F(OverflowMenuMediatorTest,
        TestTrustedVaultKeyMissingForPreferredDataTypes) {
-  // Enable a flag `kIOSEnablePasswordManagerTrustedVaultWidget` for this test.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      password_manager::features::kIOSEnablePasswordManagerTrustedVaultWidget);
-
   CreateMediator(/*incognito=*/NO);
 
   syncer::MockSyncService syncService;
@@ -929,11 +923,6 @@ TEST_F(OverflowMenuMediatorTest,
 // signed.
 TEST_F(OverflowMenuMediatorTest,
        TestNoErrorBadgeWhenTrustedVaultKeyIsNotMissingForPreferredDataTypes) {
-  // Enable a flag `kIOSEnablePasswordManagerTrustedVaultWidget` for this test.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      password_manager::features::kIOSEnablePasswordManagerTrustedVaultWidget);
-
   CreateMediator(/*incognito=*/NO);
 
   syncer::MockSyncService syncService;

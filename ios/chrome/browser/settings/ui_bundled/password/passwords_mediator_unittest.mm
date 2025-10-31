@@ -10,7 +10,6 @@
 #import "base/strings/string_util.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/bind.h"
-#import "base/test/scoped_feature_list.h"
 #import "components/affiliations/core/browser/fake_affiliation_service.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/test/mock_tracker.h"
@@ -28,7 +27,6 @@
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
 #import "ios/chrome/browser/passwords/model/password_check_observer_bridge.h"
-#import "ios/chrome/browser/settings/ui_bundled/password/password_manager_ui_features.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/passwords_consumer.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/passwords_mediator+Testing.h"
 #import "ios/chrome/browser/settings/ui_bundled/utils/password_auto_fill_status_observer.h"
@@ -242,9 +240,6 @@ TEST_F(PasswordsMediatorTest, NotifiesConsumerToShowPromoOrNot) {
 // Trusted Vault widget promo should be shown
 TEST_F(PasswordsMediatorTest,
        PasswordManagerWidgetPromoIsNotShownDueToTrustedVaultWidgetPromo) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      password_manager::features::kIOSEnablePasswordManagerTrustedVaultWidget);
   ON_CALL(*(syncService()->GetMockUserSettings()),
           IsTrustedVaultKeyRequiredForPreferredDataTypes())
       .WillByDefault(Return(true));

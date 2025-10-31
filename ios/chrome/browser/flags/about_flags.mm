@@ -2535,12 +2535,6 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kImportPasswordsFromSafariName,
      flag_descriptions::kImportPasswordsFromSafariDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kImportPasswordsFromSafari)},
-    {"enable-password-manager-trusted-vault-widget",
-     flag_descriptions::kIOSEnablePasswordManagerTrustedVaultWidgetName,
-     flag_descriptions::kIOSEnablePasswordManagerTrustedVaultWidgetDescription,
-     flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(password_manager::features::
-                            kIOSEnablePasswordManagerTrustedVaultWidget)},
     {"enable-profile-reporting",
      flag_descriptions::kIOSEnableCloudProfileReportingName,
      flag_descriptions::kIOSEnableCloudProfileReportingDescription,

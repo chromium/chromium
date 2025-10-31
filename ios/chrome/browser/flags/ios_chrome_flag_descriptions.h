@@ -428,9 +428,6 @@ extern const char kIOSDockingPromoDescription[];
 extern const char kIOSEnableCloudProfileReportingName[];
 extern const char kIOSEnableCloudProfileReportingDescription[];
 
-extern const char kIOSEnablePasswordManagerTrustedVaultWidgetName[];
-extern const char kIOSEnablePasswordManagerTrustedVaultWidgetDescription[];
-
 extern const char kIOSEnableRealtimeEventReportingName[];
 extern const char kIOSEnableRealtimeEventReportingDescription[];
 

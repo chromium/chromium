@@ -524,9 +524,7 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
         forSectionWithIdentifier:SectionIdentifierManageAccountHeader];
 
     // Trusted Vault widget promo.
-    if (password_manager::features::
-            IsPasswordManagerTrustedVaultWidgetEnabled() &&
-        _shouldShowTrustedVaultWidgetPromo) {
+    if (_shouldShowTrustedVaultWidgetPromo) {
       [model addSectionWithIdentifier:SectionIdentifierTrustedVaultWidgetPromo];
       [model addItem:self.trustedVaultWidgetPromoItem
           toSectionWithIdentifier:SectionIdentifierTrustedVaultWidgetPromo];
@@ -1130,9 +1128,7 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
 
         sectionIndex++;
         // Add the trusted vault promo section.
-        if (password_manager::features::
-                IsPasswordManagerTrustedVaultWidgetEnabled() &&
-            _shouldShowTrustedVaultWidgetPromo) {
+        if (_shouldShowTrustedVaultWidgetPromo) {
           [model insertSectionWithIdentifier:
                      SectionIdentifierTrustedVaultWidgetPromo
                                      atIndex:sectionIndex];
@@ -1905,9 +1901,7 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
 // tableView, otherwise hides the empty state view if one is being displayed.
 - (void)showOrHideEmptyView {
   if ([self shouldShowEmptyStateView]) {
-    if (password_manager::features::
-            IsPasswordManagerTrustedVaultWidgetEnabled() &&
-        _shouldShowTrustedVaultWidgetPromo) {
+    if (_shouldShowTrustedVaultWidgetPromo) {
       // Instead of displaying empty state with image we are currently
       // displaying the Trusted Vault promo widget.
       // TODO(crbug.com/407605858): Discuss with UX the UI behvior in case of
