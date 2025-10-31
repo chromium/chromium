@@ -100,8 +100,8 @@
 }
 
 - (void)setSelectedFolder:(const bookmarks::BookmarkNode*)folder {
-  DCHECK(folder);
-  DCHECK(folder->is_folder());
+  CHECK(folder, base::NotFatalUntil::M150);
+  CHECK(folder->is_folder(), base::NotFatalUntil::M150);
   _selectedFolder = folder;
   _mediator.selectedFolderNode = _selectedFolder;
 }
@@ -159,8 +159,8 @@
   // Stop child coordinator before stopping `self`.
   [self stopBookmarksFolderEditorCoordinator];
 
-  DCHECK(_mediator);
-  DCHECK(_viewController);
+  CHECK(_mediator, base::NotFatalUntil::M150);
+  CHECK(_viewController, base::NotFatalUntil::M150);
   [_mediator disconnect];
   _mediator.consumer = nil;
   _mediator.delegate = nil;
@@ -175,7 +175,8 @@
     // the parent coordinator (who owns the `_baseNavigationController`) has
     // already been dismissed. In this case `_baseNavigationController` itself
     // is no longer being presented and this coordinator was dismissed as well.
-    DCHECK_EQ(_baseNavigationController.topViewController, _viewController);
+    CHECK_EQ(_baseNavigationController.topViewController, _viewController,
+             base::NotFatalUntil::M150);
     [_baseNavigationController popViewControllerAnimated:YES];
   } else if (!_baseNavigationController) {
     // If there is no `_baseNavigationController` and `_navigationController`,
@@ -184,7 +185,8 @@
     // `bookmarksFolderChooserViewControllerDidDismiss:`.
     // Therefore `self.baseViewController.presentedViewController` must be
     // `nil`.
-    DCHECK(!self.baseViewController.presentedViewController);
+    CHECK(!self.baseViewController.presentedViewController,
+          base::NotFatalUntil::M150);
   }
   _viewController.delegate = nil;
   _viewController.dataSource = nil;
@@ -204,8 +206,8 @@
 
 - (void)showBookmarksFolderEditorWithParentFolderNode:
     (const bookmarks::BookmarkNode*)parentNode {
-  DCHECK(!_folderEditorCoordinator);
-  DCHECK(parentNode);
+  CHECK(!_folderEditorCoordinator, base::NotFatalUntil::M150);
+  CHECK(parentNode, base::NotFatalUntil::M150);
   _folderEditorCoordinator = [[BookmarksFolderEditorCoordinator alloc]
       initWithBaseNavigationController:(_baseNavigationController
                                             ? _baseNavigationController
@@ -231,7 +233,7 @@
 
 - (void)bookmarksFolderChooserViewControllerDidDismiss:
     (BookmarksFolderChooserViewController*)viewController {
-  DCHECK(_baseNavigationController);
+  CHECK(_baseNavigationController, base::NotFatalUntil::M150);
   _baseNavigationController = nil;
   [_delegate bookmarksFolderChooserCoordinatorDidCancel:self];
 }
@@ -242,8 +244,8 @@
             (BookmarksFolderEditorCoordinator*)folderEditor
               didFinishEditingFolderNode:
                   (const bookmarks::BookmarkNode*)folder {
-  DCHECK(folder);
-  DCHECK(_folderEditorCoordinator);
+  CHECK(folder, base::NotFatalUntil::M150);
+  CHECK(_folderEditorCoordinator, base::NotFatalUntil::M150);
   [self stopBookmarksFolderEditorCoordinator];
   [_delegate bookmarksFolderChooserCoordinatorDidConfirm:self
                                       withSelectedFolder:folder];
@@ -251,7 +253,7 @@
 
 - (void)bookmarksFolderEditorCoordinatorShouldStop:
     (BookmarksFolderEditorCoordinator*)coordinator {
-  DCHECK(_folderEditorCoordinator);
+  CHECK(_folderEditorCoordinator, base::NotFatalUntil::M150);
   [self stopBookmarksFolderEditorCoordinator];
 }
 
@@ -266,7 +268,7 @@
     (UIPresentationController*)presentationController {
   base::RecordAction(
       base::UserMetricsAction("IOSBookmarksFolderChooserClosedWithSwipeDown"));
-  DCHECK(_navigationController);
+  CHECK(_navigationController, base::NotFatalUntil::M150);
   _navigationController.presentationController.delegate = nil;
   _navigationController = nil;
   [_delegate bookmarksFolderChooserCoordinatorDidCancel:self];
