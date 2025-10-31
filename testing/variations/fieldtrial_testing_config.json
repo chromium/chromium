@@ -3646,6 +3646,21 @@
             ]
         }
     ],
+    "BackForwardTransitionsSameDocSharedImage": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "BackForwardTransitionsSameDocSharedImage"
+                    ]
+                }
+            ]
+        }
+    ],
     "BackNavigationMenuIPH": [
         {
             "platforms": [
