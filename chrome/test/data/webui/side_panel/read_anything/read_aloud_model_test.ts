@@ -380,4 +380,29 @@ suite('ReadAloudModel', () => {
     getReadAloudModel().moveSpeechForward();
     assertTextEmpty();
   });
+
+  test(
+      'getCurrentTextContent called multiple times returns the same content if moveSpeechForward or moveSpeechBackwards is not called',
+      async () => {
+        const div = document.createElement('div');
+        const sentence1 = document.createElement('strong');
+        sentence1.textContent = 'Can\'t we be seventeen? ';
+
+        const sentence2 = document.createElement('i');
+        sentence2.textContent = 'That\'s all I want to do.';
+
+        div.appendChild(sentence1);
+        div.appendChild(sentence2);
+        document.body.appendChild(div);
+        await microtasksFinished();
+        getReadAloudModel().init(ReadAloudNode.create(document.body)!);
+        for (let i = 0; i < 10; i++) {
+          assertSentenceMatchesEntireSegment(sentence1.textContent);
+        }
+
+        getReadAloudModel().moveSpeechForward();
+        for (let i = 0; i < 10; i++) {
+          assertSentenceMatchesEntireSegment(sentence2.textContent);
+        }
+      });
 });
