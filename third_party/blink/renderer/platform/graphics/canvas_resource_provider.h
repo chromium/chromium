@@ -174,15 +174,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
   static bool CanUseSharedImageSwapChainCapability(
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>);
 
-  static std::unique_ptr<CanvasResourceProvider> CreateSwapChainProvider(
-      gfx::Size size,
-      viz::SharedImageFormat format,
-      SkAlphaType alpha_type,
-      const gfx::ColorSpace& color_space,
-      ShouldInitialize initialize_provider,
-      base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
-      Delegate* delegate = nullptr);
-
   static std::unique_ptr<CanvasResourceProvider> CreateBitmapProvider(
       gfx::Size size,
       const Canvas2DColorParams& color_params,
