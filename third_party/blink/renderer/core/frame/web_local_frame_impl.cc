@@ -288,6 +288,7 @@
 #if BUILDFLAG(IS_WIN)
 #include "third_party/blink/public/web/win/web_font_family_names.h"
 #include "third_party/blink/renderer/core/layout/layout_font_accessor_win.h"
+#include "third_party/blink/renderer/platform/wtf/text/line_ending.h"
 #endif
 
 #if BUILDFLAG(IS_IOS)
@@ -1486,7 +1487,7 @@ WebString WebLocalFrameImpl::SelectionAsText() const {
         TextIteratorBehavior::EmitsObjectReplacementCharacterBehavior());
   }
 #if BUILDFLAG(IS_WIN)
-  ReplaceNewlinesWithWindowsStyleNewlines(text);
+  text = NormalizeLineEndingsToCRLF(text);
 #endif
   ReplaceNBSPWithSpace(text);
   return text;

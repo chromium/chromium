@@ -17,24 +17,21 @@
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_drag_data.h"
-#include "third_party/blink/public/platform/web_string.h"
-#include "third_party/blink/public/web/web_local_frame.h"
-#include "third_party/blink/public/web/web_local_frame_client.h"
 #include "third_party/blink/renderer/core/clipboard/clipboard_utilities.h"
 #include "third_party/blink/renderer/core/clipboard/data_object.h"
-#include "third_party/blink/renderer/core/dom/document_fragment.h"
-#include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
-#include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
-#include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/base/ui_base_features.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "third_party/blink/renderer/platform/wtf/text/line_ending.h"
+#endif
 
 namespace blink {
 
@@ -149,7 +146,7 @@ void SystemClipboard::WritePlainText(const String& plain_text,
   // currently under-specified.
   String text = plain_text;
 #if BUILDFLAG(IS_WIN)
-  ReplaceNewlinesWithWindowsStyleNewlines(text);
+  text = NormalizeLineEndingsToCRLF(text);
 #endif
   clipboard_->WriteText(NonNullString(text));
 }

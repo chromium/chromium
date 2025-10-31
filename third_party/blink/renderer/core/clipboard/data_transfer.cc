@@ -66,6 +66,10 @@
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-blink.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "third_party/blink/renderer/platform/wtf/text/line_ending.h"
+#endif
+
 namespace blink {
 
 namespace {
@@ -568,7 +572,7 @@ void DataTransfer::WriteSelection(const FrameSelection& selection) {
 
   String str = selection.SelectedTextForClipboard();
 #if BUILDFLAG(IS_WIN)
-  ReplaceNewlinesWithWindowsStyleNewlines(str);
+  str = NormalizeLineEndingsToCRLF(str);
 #endif
   ReplaceNBSPWithSpace(str);
   data_object_->SetData(ui::kMimeTypePlainText, str);

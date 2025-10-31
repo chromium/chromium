@@ -23,10 +23,6 @@ blink_core_sources_clipboard = [
   "system_clipboard.h",
 ]
 
-if (is_win) {
-  blink_core_sources_clipboard += [ "clipboard_utilities_win.cc" ]
-}
-
 blink_core_tests_clipboard = [
   "clipboard_utilities_test.cc",
   "data_object_test.cc",
