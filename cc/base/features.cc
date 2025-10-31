@@ -203,7 +203,7 @@ PROGRAMMATIC_SCROLL_ANIMATION_CURVE(0.4, 0.0, 0.0, 1.0, 1500);
 BASE_FEATURE(kSlimDirectReceiverIpc, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kOverscrollBehaviorRespectedOnAllScrollContainers,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kOverscrollEffectOnNonRootScrollers,
              base::FEATURE_DISABLED_BY_DEFAULT);
