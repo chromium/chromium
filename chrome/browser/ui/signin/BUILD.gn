@@ -142,6 +142,7 @@ if (!is_android) {
         "//chrome/browser/ui:browser_element_identifiers",
         "//chrome/browser/ui:ui_features",
         "//chrome/browser/ui/browser_window",
+        "//chrome/browser/ui/extensions",
         "//chrome/browser/ui/hats",
         "//chrome/browser/ui/hats:test_support",
         "//chrome/browser/ui/passwords:test_support",
