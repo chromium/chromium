@@ -480,8 +480,8 @@ class WebContentsObserverProxy extends WebContentsObserver {
     @CalledByNative
     public void safeAreaConstraintChanged(boolean hasConstraint) {
         handleObserverCall();
-        for (WebContentsObserver mObserver : mObservers) {
-            mObserver.safeAreaConstraintChanged(hasConstraint);
+        for (WebContentsObserver observer : mObservers) {
+            observer.safeAreaConstraintChanged(hasConstraint);
         }
         finishObserverCall();
     }
