@@ -285,7 +285,7 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
                 mMultiColumnTitleUpdater =
                         new MultiColumnTitleUpdater(
                                 mMultiColumnSettings,
-                                /* context= */ this,
+                                actionBar.getContext(),
                                 findViewById(R.id.settings_detailed_pane_title),
                                 this::setTitle);
                 mMultiColumnSettings.addObserver(mMultiColumnTitleUpdater);

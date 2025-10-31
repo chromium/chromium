@@ -9,8 +9,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
+import androidx.appcompat.widget.AppCompatTextView;
 import androidx.fragment.app.FragmentManager;
 
 import org.chromium.base.Callback;
@@ -28,7 +28,7 @@ import org.chromium.ui.base.LocalizationUtils;
 class MultiColumnTitleUpdater implements MultiColumnSettings.Observer {
 
     /** Displays one component of the detailed pane fragment stack. */
-    private static class DetailedTitle extends TextView {
+    private static class DetailedTitle extends AppCompatTextView {
         private final Callback<String> mSetter =
                 (title) -> {
                     if (title == null) {
