@@ -5,10 +5,12 @@
 #include "chrome/browser/ui/lens/lens_overlay_side_panel_navigation_throttle.h"
 
 #include "base/memory/ptr_util.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_side_panel_coordinator.h"
 #include "chrome/browser/ui/lens/lens_overlay_theme_utils.h"
 #include "chrome/browser/ui/lens/lens_overlay_url_builder.h"
+#include "chrome/browser/ui/lens/lens_search_feature_flag_utils.h"
 #include "components/lens/lens_features.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle_registry.h"
@@ -91,7 +93,10 @@ LensOverlaySidePanelNavigationThrottle::HandleSidePanelRequest() {
   // not supported in the side panel it should also be handled by the side panel
   // coordinator so it can open in a new tab without changing the
   // loading/offline state.
-  if (!lens::IsValidSearchResultsUrl(url) || ShouldOpenSearchURLInNewTab(url)) {
+  auto* const profile =
+      controller->GetTabInterface()->GetBrowserWindowInterface()->GetProfile();
+  if (!lens::IsValidSearchResultsUrl(url) ||
+      ShouldOpenSearchURLInNewTab(url, lens::IsAimM3Enabled(profile))) {
     return content::NavigationThrottle::CANCEL;
   }
 

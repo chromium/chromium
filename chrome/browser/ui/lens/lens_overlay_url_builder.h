@@ -88,8 +88,11 @@ bool IsAimQuery(const GURL& url);
 
 // Returns whether the `url` is a valid lens overlay search URL but contains
 // parameters known not to be supported in the side panel and thus should be
-// opened in a new tab.
-bool ShouldOpenSearchURLInNewTab(const GURL& url);
+// opened in a new tab. `is_aim_feature_enabled` indicates whether the AIM M3
+// feature is enabled, and should be passed in via the lens::IsAimM3Enabled from
+// lens_search_feature_flag_utils. This function keeps a bool to keep
+// dependencies light and testing easy
+bool ShouldOpenSearchURLInNewTab(const GURL& url, bool is_aim_feature_enabled);
 
 // Returns whether the given |url| is a valid lens overlay search redirect URL.
 // This could differ from values in common APIs since the search URL is set via
