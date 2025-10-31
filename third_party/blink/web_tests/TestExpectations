@@ -9808,8 +9808,8 @@ crbug.com/448507881 [ Linux ] virtual/css-anchor-update-disabled/external/wpt/cs
 crbug.com/449751911 crbug.com/331556923 crbug.com/347055177 external/wpt/geolocation/enabled-on-self-origin-by-permissions-policy.https.sub.html [ Failure Pass Timeout ]
 crbug.com/449751911 crbug.com/331556923 crbug.com/347055177 external/wpt/geolocation/enabled-by-permissions-policy.https.sub.html [ Failure Pass Timeout ]
 crbug.com/449751911 [ Debug Linux ] virtual/scalefactor200/external/wpt/largest-contentful-paint/animated/observe-animated-image.tentative.html [ Failure Pass ]
-# crbug.com/449751911 failure pass for linux debug, crbug.com/805756 for timeouts on all platforms.
-crbug.com/449751911 crbug.com/805756 external/wpt/html/semantics/tabular-data/processing-model-1/span-limits.html [ Failure Pass Timeout ]
+# crbug.com/449751911 failure pass for linux debug, crbug.com/41366962 for timeouts (sometimes unresponsive browser reported as a crash) on all platforms.
+crbug.com/449751911 crbug.com/41366962 external/wpt/html/semantics/tabular-data/processing-model-1/span-limits.html [ Failure Pass Timeout Crash ]
 
 # WebAudio AudioWorklet test failure in MSAN
 crbug.com/446563923 [ Linux ] external/wpt/webaudio/the-audio-api/the-audioworklet-interface/simple-input-output.https.html [ Crash Pass Timeout ]
