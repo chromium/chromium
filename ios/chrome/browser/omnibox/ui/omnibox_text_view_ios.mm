@@ -64,6 +64,9 @@ using enum OmniboxKeyboardAction;
   OmniboxPresentationContext _presentationContext;
   /// The default foreground color for text.
   UIColor* _defaultTextColor;
+
+  /// The omnibox typing attributes.
+  NSDictionary<NSAttributedStringKey, id>* _omniboxTypingAttributes;
 }
 
 @synthesize omniboxTextInputDelegate = _omniboxTextInputDelegate;
@@ -101,6 +104,7 @@ using enum OmniboxKeyboardAction;
     if (@available(iOS 18, *)) {
       self.writingToolsBehavior = UIWritingToolsBehaviorNone;
     }
+    [self updateOmniboxTypingAttributes];
 
     // Disable drag on iPhone because there's nowhere to drag to
     if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
@@ -408,7 +412,6 @@ using enum OmniboxKeyboardAction;
   [attributes setValue:self.currentFont forKey:NSFontAttributeName];
   [attributes setValue:self.selectedTextBackgroundColor
                 forKey:NSBackgroundColorAttributeName];
-  self.typingAttributes = attributes;
 
   // Also apply the attributes to the whole text.
   NSMutableAttributedString* attributedText = [self.attributedText mutableCopy];
@@ -925,6 +928,17 @@ using enum OmniboxKeyboardAction;
   return IsCompactWidth(self) ? self.normalFont : self.largerFont;
 }
 
+/// Updates the omnibox typing attributes with the current font.
+- (void)updateOmniboxTypingAttributes {
+  NSMutableDictionary<NSAttributedStringKey, id>* attributes =
+      self.typingAttributes.mutableCopy;
+  [attributes setValue:self.currentFont forKey:NSFontAttributeName];
+  [attributes setValue:UIColor.clearColor
+                forKey:NSBackgroundColorAttributeName];
+  [attributes setValue:_defaultTextColor forKey:NSForegroundColorAttributeName];
+  _omniboxTypingAttributes = attributes;
+}
+
 #pragma mark Helpers
 
 /// Length of added text in the omnibox (autocomplete and additional text).
@@ -1139,6 +1153,13 @@ using enum OmniboxKeyboardAction;
   [self.omniboxTextInputDelegate textInputDidChange:self];
   [self updatePlaceholderVisibility];
   [self.heightDelegate textViewContentChanged:self];
+  self.typingAttributes = _omniboxTypingAttributes;
+}
+
+- (void)textViewDidChangeSelection:(UITextView*)textView {
+  // UITextView resets typing attributes on text selection change, reapply them
+  // here.
+  self.typingAttributes = _omniboxTypingAttributes;
 }
 
 - (BOOL)textView:(UITextView*)textView
@@ -1156,6 +1177,7 @@ using enum OmniboxKeyboardAction;
 - (void)textViewDidBeginEditing:(UITextView*)textView {
   _editing = YES;
   [self.omniboxTextInputDelegate textInputDidBeginEditing:self];
+  [self updateOmniboxTypingAttributes];
 }
 
 - (void)textViewDidEndEditing:(UITextView*)textView {
