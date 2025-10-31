@@ -42,6 +42,9 @@
                     tintColor:(UIColor*)tintColor
           presentationContext:(OmniboxPresentationContext)presentationContext;
 
+/// Returns the user text.
+- (NSAttributedString*)attributedUserText;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_OMNIBOX_UI_OMNIBOX_TEXT_VIEW_IOS_H_

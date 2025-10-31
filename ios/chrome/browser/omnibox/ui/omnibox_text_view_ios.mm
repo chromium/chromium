@@ -249,6 +249,16 @@ using enum OmniboxKeyboardAction;
   return [self.text substringToIndex:userTextEndIndex];
 }
 
+- (NSAttributedString*)attributedUserText {
+  const NSUInteger addedTextLength = [self addedTextLength];
+  DCHECK_LE(addedTextLength, self.text.length);
+  NSUInteger userTextEndIndex = self.text.length >= addedTextLength
+                                    ? self.text.length - addedTextLength
+                                    : self.text.length;
+  return [self.attributedText
+      attributedSubstringFromRange:NSMakeRange(0, userTextEndIndex)];
+}
+
 - (NSString*)markedText {
   DCHECK([self conformsToProtocol:@protocol(UITextInput)]);
   return [self textInRange:[self markedTextRange]];
@@ -434,8 +444,8 @@ using enum OmniboxKeyboardAction;
     [attributedText addAttributes:attributes
                             range:NSMakeRange(0, self.attributedText.length)];
     self.attributedText = attributedText;
+    [self.heightDelegate textViewContentChanged:self];
   }
-  [self.heightDelegate textViewContentChanged:self];
 }
 
 #pragma mark - UITextView
@@ -461,6 +471,15 @@ using enum OmniboxKeyboardAction;
     [mutableText addAttribute:NSForegroundColorAttributeName
                         value:_defaultTextColor
                         range:foregroundColorRange];
+    NSMutableParagraphStyle* style = [[NSMutableParagraphStyle alloc] init];
+    // Text is char wrap to ensure URL is wrapped correctly and autocomplete is
+    // displayed on the same line without wrapping. TODO(crbug.com/456397231): A
+    // better behavior would be to word wrap search and char wrap URL and
+    // autocomplete, but mixing line break is not supported in a same paragraph.
+    [style setLineBreakMode:NSLineBreakByCharWrapping];
+    [mutableText addAttribute:NSParagraphStyleAttributeName
+                        value:style
+                        range:entireString];
   } else {
     NSMutableParagraphStyle* style = [[NSMutableParagraphStyle alloc] init];
     // URLs have their text direction set to to LTR (avoids RTL characters
