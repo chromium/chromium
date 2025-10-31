@@ -12,6 +12,7 @@
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/test_support/non_interactive_glic_test.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
@@ -255,6 +256,27 @@ IN_PROC_BROWSER_TEST_F(GlicPinnedTabManagerBrowserTest, PinTabs) {
     EXPECT_EQ(tab_interface, result_interface);
     EXPECT_TRUE(result_pinned);
   }
+}
+
+// Ensure that a pinned tab can be dragged out to another window without
+// crashing.
+IN_PROC_BROWSER_TEST_F(GlicPinnedTabManagerBrowserTest,
+                       DragPinnedTabsToNewWindow) {
+  // We intentionally create a second window.
+  browser_activator().SetMode(BrowserActivator::Mode::kFirst);
+
+  CreateAndAddTab("/why-cats-are-liquid");
+
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  tabs::TabInterface* tab_interface =
+      tabs::TabInterface::GetFromContents(tab_strip_model->GetWebContentsAt(1));
+  ASSERT_TRUE(tab_interface);
+  const tabs::TabHandle tab_handle = tab_interface->GetHandle();
+
+  EXPECT_TRUE(pinned_tab_manager_->PinTabs({tab_handle}));
+  EXPECT_TRUE(pinned_tab_manager_->IsTabPinned(tab_handle));
+
+  chrome::MoveTabsToNewWindow(browser(), {1});
 }
 
 IN_PROC_BROWSER_TEST_F(GlicPinnedTabManagerBrowserTest, unpinTabs) {
