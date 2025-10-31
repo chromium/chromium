@@ -38,6 +38,12 @@ public class Barrier {
         BOTH,
     }
 
+    private enum CallbacksToRun {
+        RUN_FIDO_2_CALLBACK,
+        RUN_CRED_MAN_CALLBACK,
+        RUN_BOTH,
+    }
+
     private final Callback<Integer> mErrorCallback;
     @Nullable private Runnable mFido2ApiRunnable;
     @Nullable private Runnable mCredManRunnable;
@@ -46,6 +52,7 @@ public class Barrier {
     private int mFido2ApiError;
     private boolean mFido2ApiCancelled;
     private boolean mCredManCancelled;
+    private boolean mIsImmediateIncognito;
 
     public Barrier(Callback<Integer> errorCallback) {
         mErrorCallback = errorCallback;
@@ -72,59 +79,67 @@ public class Barrier {
     }
 
     public void onCredManSuccessful(Runnable onBarrierComplete) {
-        if (mFido2ApiStatus == Status.FAILURE) {
-            onBarrierComplete.run();
-        } else if (mFido2ApiStatus == Status.SUCCESS) {
-            onBarrierComplete.run();
-            assumeNonNull(mFido2ApiRunnable);
-            mFido2ApiRunnable.run();
-        } else if (mFido2ApiStatus == Status.WAITING) {
-            mCredManRunnable = onBarrierComplete;
-            mCredManStatus = Status.SUCCESS;
-        } else {
-            onBarrierComplete.run();
+        mCredManRunnable = onBarrierComplete;
+        switch (mFido2ApiStatus) {
+            case SUCCESS:
+                maybeRunSuccessCallbacks(CallbacksToRun.RUN_BOTH);
+                break;
+            case WAITING:
+                mCredManStatus = Status.SUCCESS;
+                break;
+            case NONE:
+            case FAILURE:
+                maybeRunSuccessCallbacks(CallbacksToRun.RUN_CRED_MAN_CALLBACK);
+                break;
         }
     }
 
     public void onCredManFailed(int error) {
-        if (mFido2ApiStatus == Status.FAILURE) {
-            mErrorCallback.onResult(mFido2ApiError);
-        } else if (mFido2ApiStatus == Status.SUCCESS) {
-            assumeNonNull(mFido2ApiRunnable);
-            mFido2ApiRunnable.run();
-        } else if (mFido2ApiStatus == Status.WAITING) {
-            mCredManStatus = Status.FAILURE;
-        } else {
-            mErrorCallback.onResult(error);
+        switch (mFido2ApiStatus) {
+            case SUCCESS:
+                maybeRunSuccessCallbacks(CallbacksToRun.RUN_FIDO_2_CALLBACK);
+                break;
+            case WAITING:
+                mCredManStatus = Status.FAILURE;
+                break;
+            case NONE:
+                mErrorCallback.onResult(error);
+                break;
+            case FAILURE:
+                mErrorCallback.onResult(mFido2ApiError);
+                break;
         }
     }
 
     public void onFido2ApiSuccessful(Runnable onBarrierComplete) {
-        if (mCredManStatus == Status.FAILURE) {
-            onBarrierComplete.run();
-        } else if (mCredManStatus == Status.SUCCESS) {
-            assumeNonNull(mCredManRunnable);
-            mCredManRunnable.run();
-            onBarrierComplete.run();
-        } else if (mCredManStatus == Status.WAITING) {
-            mFido2ApiRunnable = onBarrierComplete;
-            mFido2ApiStatus = Status.SUCCESS;
-        } else {
-            onBarrierComplete.run();
+        mFido2ApiRunnable = onBarrierComplete;
+        switch (mCredManStatus) {
+            case SUCCESS:
+                maybeRunSuccessCallbacks(CallbacksToRun.RUN_BOTH);
+                break;
+            case WAITING:
+                mFido2ApiStatus = Status.SUCCESS;
+                break;
+            case NONE:
+            case FAILURE:
+                maybeRunSuccessCallbacks(CallbacksToRun.RUN_FIDO_2_CALLBACK);
+                break;
         }
     }
 
     public void onFido2ApiFailed(int error) {
-        if (mCredManStatus == Status.FAILURE) {
-            mErrorCallback.onResult(error);
-        } else if (mCredManStatus == Status.SUCCESS) {
-            assumeNonNull(mCredManRunnable);
-            mCredManRunnable.run();
-        } else if (mCredManStatus == Status.WAITING) {
-            mFido2ApiError = error;
-            mFido2ApiStatus = Status.FAILURE;
-        } else {
-            mErrorCallback.onResult(error);
+        switch (mCredManStatus) {
+            case SUCCESS:
+                maybeRunSuccessCallbacks(CallbacksToRun.RUN_CRED_MAN_CALLBACK);
+                break;
+            case WAITING:
+                mFido2ApiError = error;
+                mFido2ApiStatus = Status.FAILURE;
+                break;
+            case NONE:
+            case FAILURE:
+                mErrorCallback.onResult(error);
+                break;
         }
     }
 
@@ -152,6 +167,33 @@ public class Barrier {
             return;
         }
         mFido2ApiCancelled = true;
+    }
+
+    /**
+     * Called to indicate that the current request is an Immediate get that is in incognito mode. In
+     * this case, the Barrier will always trigger a cancellation with `NOT_ALLOWED_ERROR`, but only
+     * after it has finished querying available credentials.
+     *
+     * <p>This makes the incognito behaviour indistinguishable to the behaviour when no credentials
+     * are available, even if the Relying Party is monitoring the call duration.
+     */
+    public void setImmediateIncognito() {
+        mIsImmediateIncognito = true;
+    }
+
+    private void maybeRunSuccessCallbacks(CallbacksToRun callbacks) {
+        if (mIsImmediateIncognito) {
+            mErrorCallback.onResult(AuthenticatorStatus.NOT_ALLOWED_ERROR);
+            return;
+        }
+
+        if (callbacks != CallbacksToRun.RUN_CRED_MAN_CALLBACK) {
+            assumeNonNull(mFido2ApiRunnable).run();
+        }
+
+        if (callbacks != CallbacksToRun.RUN_FIDO_2_CALLBACK) {
+            assumeNonNull(mCredManRunnable).run();
+        }
     }
 
     private void reset() {

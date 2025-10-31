@@ -468,8 +468,7 @@ public class Fido2CredentialRequest
             }
             if (webContents != null && webContents.isIncognito()) {
                 log(TAG, "Immediate Get called in Incognito mode");
-                returnErrorAndResetCallback(AuthenticatorStatus.NOT_ALLOWED_ERROR);
-                return;
+                mBarrier.setImmediateIncognito();
             }
         }
 
