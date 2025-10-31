@@ -61,12 +61,12 @@ class HTMLOListElement final : public HTMLElement {
       const AtomicString&,
       HeapVector<CSSPropertyValue, 8>&) override;
 
-  int start_;
-  unsigned item_count_;
+  int start_ = 0xBADBEEF;
+  unsigned item_count_ = 0;
 
-  bool has_explicit_start_ : 1;
-  bool is_reversed_ : 1;
-  bool should_recalculate_item_count_ : 1;
+  bool has_explicit_start_ : 1 = false;
+  bool is_reversed_ : 1 = false;
+  bool should_recalculate_item_count_ : 1 = false;
 };
 
 }  // namespace blink

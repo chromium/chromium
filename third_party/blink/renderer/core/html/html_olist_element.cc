@@ -33,12 +33,7 @@
 namespace blink {
 
 HTMLOListElement::HTMLOListElement(Document& document)
-    : HTMLElement(html_names::kOlTag, document),
-      start_(0xBADBEEF),
-      item_count_(0),
-      has_explicit_start_(false),
-      is_reversed_(false),
-      should_recalculate_item_count_(false) {}
+    : HTMLElement(html_names::kOlTag, document) {}
 
 bool HTMLOListElement::IsPresentationAttribute(
     const QualifiedName& name) const {
