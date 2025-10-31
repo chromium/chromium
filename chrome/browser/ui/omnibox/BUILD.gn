@@ -99,6 +99,7 @@ source_set("impl") {
     ]
     deps += [
       "//chrome/app:command_ids",
+      "//chrome/app/vector_icons",
       "//chrome/browser:browser_process",
       "//chrome/browser:primitives",
       "//chrome/browser/autocomplete",
@@ -110,6 +111,7 @@ source_set("impl") {
       "//chrome/browser/omnibox",
       "//chrome/browser/preloading/search_preload",
       "//chrome/browser/profiles:profile",
+      "//chrome/browser/resources/omnibox_popup:resources_grit",
       "//chrome/browser/safe_browsing",
       "//chrome/browser/search_engines",
       "//chrome/browser/ui:browser_list",

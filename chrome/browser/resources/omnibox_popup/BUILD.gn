@@ -9,6 +9,7 @@ assert(!is_android && !is_ios)
 build_webui("build") {
   grd_prefix = "omnibox_popup"
   static_files = [
+    "images/create_images.png",
     "omnibox_popup_aim.html",
     "omnibox_popup_full.html",
     "omnibox_popup.html",
