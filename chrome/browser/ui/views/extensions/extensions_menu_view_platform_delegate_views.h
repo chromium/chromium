@@ -66,6 +66,7 @@ class ExtensionsMenuViewPlatformDelegateViews
       bool can_show_requests) override;
   void OnActionAdded(const ToolbarActionsModel::ActionId& action_id) override;
   void OnActionRemoved(const ToolbarActionsModel::ActionId& action_id) override;
+  void OnActionUpdated() override;
   void OnPermissionsSettingsChanged() override;
 
   // ExtensionsMenuHandler:

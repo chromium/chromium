@@ -317,6 +317,10 @@ void ExtensionsMenuViewPlatformDelegateViews::OnActionRemoved(
   main_page->RemoveMenuItem(action_id);
 }
 
+void ExtensionsMenuViewPlatformDelegateViews::OnActionUpdated() {
+  UpdatePage(GetActiveWebContents());
+}
+
 void ExtensionsMenuViewPlatformDelegateViews::OnPermissionsSettingsChanged() {
   CHECK(current_page_);
 
@@ -659,9 +663,7 @@ void ExtensionsMenuViewPlatformDelegateViews::OnToolbarActionRemoved(
     const ToolbarActionsModel::ActionId& action_id) {}
 
 void ExtensionsMenuViewPlatformDelegateViews::OnToolbarActionUpdated(
-    const ToolbarActionsModel::ActionId& action_id) {
-  UpdatePage(GetActiveWebContents());
-}
+    const ToolbarActionsModel::ActionId& action_id) {}
 
 void ExtensionsMenuViewPlatformDelegateViews::OnToolbarModelInitialized() {
   DCHECK(current_page_);
