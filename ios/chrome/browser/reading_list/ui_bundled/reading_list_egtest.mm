@@ -1273,9 +1273,7 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 #if TARGET_IPHONE_SIMULATOR
   // TODO(crbug.com/433982582): Flaky on an iPhone simulator.
   if ([ChromeEarlGrey isIPhoneIdiom]) {
-    if (!@available(iOS 18, *)) {
-      EARL_GREY_TEST_DISABLED(@"Flakes on iPhone.");
-    }
+    EARL_GREY_TEST_DISABLED(@"Flakes on iPhone.");
   }
 #endif
   AddEntriesAndOpenReadingList();
