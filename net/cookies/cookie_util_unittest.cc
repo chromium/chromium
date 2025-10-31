@@ -1091,7 +1091,8 @@ TEST_P(CookieUtilComputeSameSiteContextTest, UrlAndSiteForCookiesCrossSite) {
             EXPECT_THAT(cookie_util::ComputeSameSiteContextForRequest(
                             method, {url}, site_for_cookies, initiator,
                             is_main_frame_navigation,
-                            false /* force_ignore_site_for_cookies */),
+                            false /* force_ignore_site_for_cookies */,
+                            /*ignore_unsafe_method_for_same_site_lax=*/false),
                         ContextTypeIs(ContextType::CROSS_SITE));
             EXPECT_THAT(cookie_util::ComputeSameSiteContextForResponse(
                             {url}, site_for_cookies, initiator,
@@ -1105,7 +1106,8 @@ TEST_P(CookieUtilComputeSameSiteContextTest, UrlAndSiteForCookiesCrossSite) {
                 cookie_util::ComputeSameSiteContextForRequest(
                     method, {site_for_cookies.RepresentativeUrl(), url},
                     site_for_cookies, initiator, is_main_frame_navigation,
-                    false /* force_ignore_site_for_cookies */),
+                    false /* force_ignore_site_for_cookies */,
+                    /*ignore_unsafe_method_for_same_site_lax=*/false),
                 ContextTypeIs(ContextType::CROSS_SITE));
             EXPECT_THAT(
                 cookie_util::ComputeSameSiteContextForResponse(
@@ -1153,7 +1155,8 @@ TEST_P(CookieUtilComputeSameSiteContextTest, SiteForCookiesNotSchemefullySame) {
           EXPECT_THAT(cookie_util::ComputeSameSiteContextForRequest(
                           method, {url}, site_for_cookies, initiator,
                           false /* is_main_frame_navigation */,
-                          false /* force_ignore_site_for_cookies */),
+                          false /* force_ignore_site_for_cookies */,
+                          /*ignore_unsafe_method_for_same_site_lax=*/false),
                       ContextTypeIs(ContextType::CROSS_SITE));
           EXPECT_THAT(cookie_util::ComputeSameSiteContextForResponse(
                           {url}, site_for_cookies, initiator,
@@ -1260,7 +1263,8 @@ TEST_P(CookieUtilComputeSameSiteContextTest, ForRequest) {
             EXPECT_THAT(cookie_util::ComputeSameSiteContextForRequest(
                             method, {url}, site_for_cookies, initiator,
                             is_main_frame_navigation,
-                            false /* force_ignore_site_for_cookies */),
+                            false /* force_ignore_site_for_cookies */,
+                            /*ignore_unsafe_method_for_same_site_lax=*/false),
                         ContextTypeIs(ContextType::SAME_SITE_STRICT));
           }
         }
@@ -1276,7 +1280,8 @@ TEST_P(CookieUtilComputeSameSiteContextTest, ForRequest) {
           EXPECT_THAT(cookie_util::ComputeSameSiteContextForRequest(
                           method, {url}, site_for_cookies, initiator,
                           true /* is_main_frame_navigation */,
-                          false /* force_ignore_site_for_cookies */),
+                          false /* force_ignore_site_for_cookies */,
+                          /*ignore_unsafe_method_for_same_site_lax=*/false),
                       ContextTypeIs(ContextType::SAME_SITE_LAX));
         }
         for (const std::string& method : {"POST", "PUT"}) {
@@ -1285,8 +1290,16 @@ TEST_P(CookieUtilComputeSameSiteContextTest, ForRequest) {
           EXPECT_THAT(cookie_util::ComputeSameSiteContextForRequest(
                           method, {url}, site_for_cookies, initiator,
                           true /* is_main_frame_navigation */,
-                          false /* force_ignore_site_for_cookies */),
+                          false /* force_ignore_site_for_cookies */,
+                          /*ignore_unsafe_method_for_same_site_lax=*/false),
                       ContextTypeIs(ContextType::SAME_SITE_LAX_METHOD_UNSAFE));
+
+          EXPECT_THAT(cookie_util::ComputeSameSiteContextForRequest(
+                          method, {url}, site_for_cookies, initiator,
+                          true /* is_main_frame_navigation */,
+                          false /* force_ignore_site_for_cookies */,
+                          /*ignore_unsafe_method_for_same_site_lax=*/true),
+                      ContextTypeIs(ContextType::SAME_SITE_LAX));
         }
 
         // For non-main-frame-navigation requests, the context should be
@@ -1295,7 +1308,8 @@ TEST_P(CookieUtilComputeSameSiteContextTest, ForRequest) {
           EXPECT_THAT(cookie_util::ComputeSameSiteContextForRequest(
                           method, {url}, site_for_cookies, initiator,
                           false /* is_main_frame_navigation */,
-                          false /* force_ignore_site_for_cookies */),
+                          false /* force_ignore_site_for_cookies */,
+                          /*ignore_unsafe_method_for_same_site_lax=*/false),
                       ContextTypeIs(ContextType::CROSS_SITE));
         }
       }
@@ -1317,13 +1331,15 @@ TEST_P(CookieUtilComputeSameSiteContextTest, ForRequest_SchemefulDowngrade) {
               cookie_util::ComputeSameSiteContextForRequest(
                   method, {kSecureSiteUrl}, kSiteForCookies, kSiteInitiator,
                   false /* is_main_frame_navigation */,
-                  false /* force_ignore_site_for_cookies */));
+                  false /* force_ignore_site_for_cookies */,
+                  /*ignore_unsafe_method_for_same_site_lax=*/false));
     EXPECT_EQ(SameSiteCookieContext(ContextType::SAME_SITE_STRICT,
                                     ContextType::CROSS_SITE),
               cookie_util::ComputeSameSiteContextForRequest(
                   method, {kSiteUrl}, kSecureSiteForCookies, kSiteInitiator,
                   false /* is_main_frame_navigation */,
-                  false /* force_ignore_site_for_cookies */));
+                  false /* force_ignore_site_for_cookies */,
+                  /*ignore_unsafe_method_for_same_site_lax=*/false));
   }
 
   // Schemefully same-site URL and site-for-cookies with cross-scheme
@@ -1340,26 +1356,28 @@ TEST_P(CookieUtilComputeSameSiteContextTest, ForRequest_SchemefulDowngrade) {
         SameSiteCookieContext(ContextType::SAME_SITE_STRICT, lax_if_main_frame),
         cookie_util::ComputeSameSiteContextForRequest(
             "GET", {kSecureSiteUrl}, kSecureSiteForCookies, kSiteInitiator,
-            is_main_frame_navigation,
-            false /* force_ignore_site_for_cookies */));
+            is_main_frame_navigation, false /* force_ignore_site_for_cookies */,
+            /*ignore_unsafe_method_for_same_site_lax=*/false));
     EXPECT_EQ(
         SameSiteCookieContext(ContextType::SAME_SITE_STRICT, lax_if_main_frame),
         cookie_util::ComputeSameSiteContextForRequest(
             "GET", {kSiteUrl}, kSiteForCookies, kSecureSiteInitiator,
-            is_main_frame_navigation,
-            false /* force_ignore_site_for_cookies */));
-    EXPECT_EQ(SameSiteCookieContext(ContextType::SAME_SITE_STRICT,
-                                    lax_unsafe_if_main_frame),
-              cookie_util::ComputeSameSiteContextForRequest(
-                  "POST", {kSecureSiteUrl}, kSecureSiteForCookies,
-                  kSiteInitiator, is_main_frame_navigation,
-                  false /* force_ignore_site_for_cookies */));
-    EXPECT_EQ(SameSiteCookieContext(ContextType::SAME_SITE_STRICT,
-                                    lax_unsafe_if_main_frame),
-              cookie_util::ComputeSameSiteContextForRequest(
-                  "POST", {kSiteUrl}, kSiteForCookies, kSecureSiteInitiator,
-                  is_main_frame_navigation,
-                  false /* force_ignore_site_for_cookies */));
+            is_main_frame_navigation, false /* force_ignore_site_for_cookies */,
+            /*ignore_unsafe_method_for_same_site_lax=*/false));
+    EXPECT_EQ(
+        SameSiteCookieContext(ContextType::SAME_SITE_STRICT,
+                              lax_unsafe_if_main_frame),
+        cookie_util::ComputeSameSiteContextForRequest(
+            "POST", {kSecureSiteUrl}, kSecureSiteForCookies, kSiteInitiator,
+            is_main_frame_navigation, false /* force_ignore_site_for_cookies */,
+            /*ignore_unsafe_method_for_same_site_lax=*/false));
+    EXPECT_EQ(
+        SameSiteCookieContext(ContextType::SAME_SITE_STRICT,
+                              lax_unsafe_if_main_frame),
+        cookie_util::ComputeSameSiteContextForRequest(
+            "POST", {kSiteUrl}, kSiteForCookies, kSecureSiteInitiator,
+            is_main_frame_navigation, false /* force_ignore_site_for_cookies */,
+            /*ignore_unsafe_method_for_same_site_lax=*/false));
   }
 
   // Cross-scheme URL and site-for-cookies with cross-site initiator.
@@ -1369,22 +1387,26 @@ TEST_P(CookieUtilComputeSameSiteContextTest, ForRequest_SchemefulDowngrade) {
             cookie_util::ComputeSameSiteContextForRequest(
                 "GET", {kSiteUrl}, kSecureSiteForCookies, kCrossSiteInitiator,
                 false /* is_main_frame_navigation */,
-                false /* force_ignore_site_for_cookies */));
+                false /* force_ignore_site_for_cookies */,
+                /*ignore_unsafe_method_for_same_site_lax=*/false));
   EXPECT_EQ(SameSiteCookieContext(ContextType::CROSS_SITE),
             cookie_util::ComputeSameSiteContextForRequest(
                 "GET", {kSecureSiteUrl}, kSiteForCookies, kCrossSiteInitiator,
                 false /* is_main_frame_navigation */,
-                false /* force_ignore_site_for_cookies */));
+                false /* force_ignore_site_for_cookies */,
+                /*ignore_unsafe_method_for_same_site_lax=*/false));
   EXPECT_EQ(SameSiteCookieContext(ContextType::CROSS_SITE),
             cookie_util::ComputeSameSiteContextForRequest(
                 "POST", {kSiteUrl}, kSecureSiteForCookies, kCrossSiteInitiator,
                 false /* is_main_frame_navigation */,
-                false /* force_ignore_site_for_cookies */));
+                false /* force_ignore_site_for_cookies */,
+                /*ignore_unsafe_method_for_same_site_lax=*/false));
   EXPECT_EQ(SameSiteCookieContext(ContextType::CROSS_SITE),
             cookie_util::ComputeSameSiteContextForRequest(
                 "POST", {kSecureSiteUrl}, kSiteForCookies, kCrossSiteInitiator,
                 false /* is_main_frame_navigation */,
-                false /* force_ignore_site_for_cookies */));
+                false /* force_ignore_site_for_cookies */,
+                /*ignore_unsafe_method_for_same_site_lax=*/false));
 }
 
 TEST_P(CookieUtilComputeSameSiteContextTest, ForRequest_WebSocketSchemes) {
@@ -1393,24 +1415,28 @@ TEST_P(CookieUtilComputeSameSiteContextTest, ForRequest_WebSocketSchemes) {
   EXPECT_THAT(cookie_util::ComputeSameSiteContextForRequest(
                   "GET", {kWssUrl}, kSecureSiteForCookies, kSecureSiteInitiator,
                   false /* is_main_frame_navigation */,
-                  false /* force_ignore_site_for_cookies */),
+                  false /* force_ignore_site_for_cookies */,
+                  /*ignore_unsafe_method_for_same_site_lax=*/false),
               ContextTypeIs(ContextType::SAME_SITE_STRICT));
   EXPECT_THAT(
       cookie_util::ComputeSameSiteContextForRequest(
           "GET", {kWssUrl}, kSecureSiteForCookies, kSecureCrossSiteInitiator,
           false /* is_main_frame_navigation */,
-          false /* force_ignore_site_for_cookies */),
+          false /* force_ignore_site_for_cookies */,
+          /*ignore_unsafe_method_for_same_site_lax=*/false),
       ContextTypeIs(ContextType::CROSS_SITE));
 
   EXPECT_THAT(cookie_util::ComputeSameSiteContextForRequest(
                   "GET", {kWsUrl}, kSiteForCookies, kSiteInitiator,
                   false /* is_main_frame_navigation */,
-                  false /* force_ignore_site_for_cookies */),
+                  false /* force_ignore_site_for_cookies */,
+                  /*ignore_unsafe_method_for_same_site_lax=*/false),
               ContextTypeIs(ContextType::SAME_SITE_STRICT));
   EXPECT_THAT(cookie_util::ComputeSameSiteContextForRequest(
                   "GET", {kWsUrl}, kSiteForCookies, kCrossSiteInitiator,
                   false /* is_main_frame_navigation */,
-                  false /* force_ignore_site_for_cookies */),
+                  false /* force_ignore_site_for_cookies */,
+                  /*ignore_unsafe_method_for_same_site_lax=*/false),
               ContextTypeIs(ContextType::CROSS_SITE));
 }
 
@@ -1534,7 +1560,8 @@ TEST_P(CookieUtilComputeSameSiteContextTest, ForRequest_Redirect) {
               cookie_util::ComputeSameSiteContextForRequest(
                   test_case.method, url_chain, site_for_cookies, initiator,
                   false /* is_main_frame_navigation */,
-                  false /* force_ignore_site_for_cookies */),
+                  false /* force_ignore_site_for_cookies */,
+                  /*ignore_unsafe_method_for_same_site_lax=*/false),
               AllOf(ContextTypeIs(expected_context_type),
                     CrossSiteRedirectMetadataCorrect(
                         cookie_util::HttpMethodStringToEnum(test_case.method),
@@ -1550,7 +1577,8 @@ TEST_P(CookieUtilComputeSameSiteContextTest, ForRequest_Redirect) {
               cookie_util::ComputeSameSiteContextForRequest(
                   test_case.method, url_chain, site_for_cookies, initiator,
                   true /* is_main_frame_navigation */,
-                  false /* force_ignore_site_for_cookies */),
+                  false /* force_ignore_site_for_cookies */,
+                  /*ignore_unsafe_method_for_same_site_lax=*/false),
               AllOf(
                   ContextTypeIs(
                       expected_context_type_for_main_frame_navigation),
@@ -1898,7 +1926,8 @@ TEST_P(CookieUtilComputeSameSiteContextTest, ForceIgnoreSiteForCookies) {
             EXPECT_THAT(cookie_util::ComputeSameSiteContextForRequest(
                             method, {url}, site_for_cookies, initiator,
                             is_main_frame_navigation,
-                            true /* force_ignore_site_for_cookies */),
+                            true /* force_ignore_site_for_cookies */,
+                            /*ignore_unsafe_method_for_same_site_lax=*/false),
                         ContextTypeIs(ContextType::SAME_SITE_STRICT));
             EXPECT_THAT(cookie_util::ComputeSameSiteContextForResponse(
                             {url}, site_for_cookies, initiator,
@@ -1909,7 +1938,8 @@ TEST_P(CookieUtilComputeSameSiteContextTest, ForceIgnoreSiteForCookies) {
                 cookie_util::ComputeSameSiteContextForRequest(
                     method, {site_for_cookies.RepresentativeUrl(), url},
                     site_for_cookies, initiator, is_main_frame_navigation,
-                    true /* force_ignore_site_for_cookies */),
+                    true /* force_ignore_site_for_cookies */,
+                    /*ignore_unsafe_method_for_same_site_lax=*/false),
                 ContextTypeIs(ContextType::SAME_SITE_STRICT));
             EXPECT_THAT(
                 cookie_util::ComputeSameSiteContextForResponse(

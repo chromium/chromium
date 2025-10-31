@@ -840,7 +840,8 @@ void URLRequestHttpJob::AddCookieHeaderAndStart() {
       cookie_util::ComputeSameSiteContextForRequest(
           request_->method(), request_->url_chain(),
           request_->site_for_cookies(), request_->initiator(),
-          is_main_frame_navigation, force_ignore_site_for_cookies);
+          is_main_frame_navigation, force_ignore_site_for_cookies,
+          request_->ignore_unsafe_method_for_same_site_lax());
 
   CookieOptions options = CreateCookieOptions(same_site_context);
 

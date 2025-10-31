@@ -337,6 +337,15 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
     force_ignore_site_for_cookies_ = attach;
   }
 
+  // Force allow SameSite=Lax cookies, even when they normally wouldn't be
+  // sent because the request method is unsafe.
+  bool ignore_unsafe_method_for_same_site_lax() const {
+    return ignore_unsafe_method_for_same_site_lax_;
+  }
+  void set_ignore_unsafe_method_for_same_site_lax(bool allow) {
+    ignore_unsafe_method_for_same_site_lax_ = allow;
+  }
+
   // Indicates if the request should be treated as a main frame navigation for
   // SameSite cookie computations. This flag overrides the IsolationInfo
   // request type associated with fetches from a service worker context.
@@ -1095,6 +1104,7 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   std::optional<CookiePartitionKey> cookie_partition_key_ = std::nullopt;
 
   bool force_ignore_site_for_cookies_ = false;
+  bool ignore_unsafe_method_for_same_site_lax_ = false;
   bool force_main_frame_for_same_site_cookies_ = false;
   bool is_shared_resource_ = false;
   CookieSettingOverrides cookie_setting_overrides_;

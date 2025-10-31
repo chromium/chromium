@@ -8869,4 +8869,64 @@ TEST_F(URLLoaderTest, ParseUnencodedDigest) {
   EXPECT_EQ(expected, client()->response_head()->unencoded_digests->digests[0]);
 }
 
+class ExpectIgnoreUnsafeMethodForSameSiteLax
+    : public net::URLRequestInterceptor {
+ public:
+  explicit ExpectIgnoreUnsafeMethodForSameSiteLax(bool expected_value)
+      : expected_value_(expected_value) {}
+
+  std::unique_ptr<net::URLRequestJob> MaybeInterceptRequest(
+      net::URLRequest* request) const override {
+    EXPECT_EQ(expected_value_,
+              request->ignore_unsafe_method_for_same_site_lax());
+    return nullptr;
+  }
+
+ private:
+  const bool expected_value_;
+};
+
+TEST_F(URLLoaderTest, IgnoreUnsafeMethodForSameSiteLaxIsTrue) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kSendSameSiteLaxForFedCM);
+
+  GURL request_url = test_server()->GetURL("/simple_page.html");
+  ResourceRequest request = CreateResourceRequest("POST", request_url);
+  request.destination = mojom::RequestDestination::kWebIdentity;
+  request.redirect_mode = mojom::RedirectMode::kError;
+
+  net::URLRequestFilter::GetInstance()->AddUrlInterceptor(
+      request_url,
+      std::make_unique<ExpectIgnoreUnsafeMethodForSameSiteLax>(true));
+  EXPECT_THAT(LoadRequest(request), IsOk());
+}
+
+TEST_F(URLLoaderTest, IgnoreUnsafeMethodForSameSiteLaxIsFalseWithoutFlag) {
+  // Feature flag not enabled.
+  GURL request_url = test_server()->GetURL("/simple_page.html");
+  ResourceRequest request = CreateResourceRequest("POST", request_url);
+  request.destination = mojom::RequestDestination::kWebIdentity;
+  request.redirect_mode = mojom::RedirectMode::kError;
+
+  net::URLRequestFilter::GetInstance()->AddUrlInterceptor(
+      request_url,
+      std::make_unique<ExpectIgnoreUnsafeMethodForSameSiteLax>(false));
+  EXPECT_THAT(LoadRequest(request), IsOk());
+}
+
+TEST_F(URLLoaderTest,
+       IgnoreUnsafeMethodForSameSiteLaxIsFalseForNonWebidentity) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kSendSameSiteLaxForFedCM);
+
+  GURL request_url = test_server()->GetURL("/simple_page.html");
+  ResourceRequest request = CreateResourceRequest("POST", request_url);
+  request.redirect_mode = mojom::RedirectMode::kError;
+
+  net::URLRequestFilter::GetInstance()->AddUrlInterceptor(
+      request_url,
+      std::make_unique<ExpectIgnoreUnsafeMethodForSameSiteLax>(false));
+  EXPECT_THAT(LoadRequest(request), IsOk());
+}
+
 }  // namespace network

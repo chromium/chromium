@@ -574,6 +574,8 @@ BASE_FEATURE(kCSPScriptSrcHashesInV1,
 BASE_FEATURE(kCacheSharingForPervasiveScripts,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kSendSameSiteLaxForFedCM, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // This is a newline-delimited list of pervasive script URL Patterns.
 BASE_FEATURE_PARAM(std::string,
                    kPervasiveScriptURLPatterns,

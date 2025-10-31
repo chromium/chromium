@@ -342,6 +342,11 @@ BASE_DECLARE_FEATURE(kCSPScriptSrcHashesInV1);
 COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
 BASE_DECLARE_FEATURE(kCacheSharingForPervasiveScripts);
 
+// When enabled, sends SameSite=Lax cookies for FedCM requests in addition to
+// SameSite=None.
+COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
+BASE_DECLARE_FEATURE(kSendSameSiteLaxForFedCM);
+
 // newline-delimited list of URL patterns for "pervasive" scripts.
 COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
 BASE_DECLARE_FEATURE_PARAM(std::string, kPervasiveScriptURLPatterns);

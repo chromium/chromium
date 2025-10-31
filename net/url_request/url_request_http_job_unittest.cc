@@ -2833,4 +2833,56 @@ TEST_F(URLRequestHttpJobTest, PartitionedCookiePrivacyMode) {
   }
 }
 
+TEST_F(URLRequestHttpJobTest, IgnoreUnsafeMethodForSameSiteLax) {
+  EmbeddedTestServer https_test(EmbeddedTestServer::TYPE_HTTPS);
+  https_test.AddDefaultHandlers(base::FilePath());
+  ASSERT_TRUE(https_test.Start());
+
+  auto context_builder = CreateTestURLRequestContextBuilder();
+  context_builder->SetCookieStore(
+      std::make_unique<CookieMonster>(/*store=*/nullptr, /*net_log=*/nullptr));
+  auto context = context_builder->Build();
+
+  const url::Origin kTestOrigin = url::Origin::Create(https_test.GetURL("/"));
+  // kMainFrame so we get lax cookies.
+  const IsolationInfo kTestIsolationInfo = IsolationInfo::Create(
+      IsolationInfo::RequestType::kMainFrame, kTestOrigin, kTestOrigin,
+      SiteForCookies::FromOrigin(kTestOrigin));
+
+  // We will use this as the initiator so that the request is cross-site.
+  const url::Origin kCrossSiteOrigin =
+      url::Origin::Create(GURL("https://www.toplevelsite.com"));
+
+  {
+    // Set a SameSite=Lax cookie.
+    TestDelegate delegate;
+    std::unique_ptr<URLRequest> req(context->CreateRequest(
+        https_test.GetURL("/set-cookie?name=value;SameSite=Lax;Secure;Path=/"),
+        DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
+    req->set_isolation_info(kTestIsolationInfo);
+    req->set_site_for_cookies(kTestIsolationInfo.site_for_cookies());
+    req->set_initiator(kCrossSiteOrigin);
+    req->Start();
+    ASSERT_TRUE(req->is_pending());
+    delegate.RunUntilComplete();
+  }
+
+  {
+    // Make sure that the cookie gets sent even for a post request when
+    // ignore_unsafe_method_for_same_site_lax is true.
+    TestDelegate delegate;
+    std::unique_ptr<URLRequest> req(context->CreateRequest(
+        https_test.GetURL("/echoheader?Cookie"), DEFAULT_PRIORITY, &delegate,
+        TRAFFIC_ANNOTATION_FOR_TESTS));
+    req->set_isolation_info(kTestIsolationInfo);
+    req->set_site_for_cookies(kTestIsolationInfo.site_for_cookies());
+    req->set_initiator(kCrossSiteOrigin);
+    req->set_ignore_unsafe_method_for_same_site_lax(true);
+    req->set_method("POST");
+    req->Start();
+    delegate.RunUntilComplete();
+    EXPECT_EQ("name=value", delegate.data_received());
+  }
+}
+
 }  // namespace net

@@ -1492,7 +1492,9 @@ void InterceptionJob::FetchCookies(base::OnceClosure callback) {
       net::cookie_util::ComputeSameSiteContextForRequest(
           request.method, url_chain_, request.site_for_cookies,
           request.request_initiator, is_main_frame_navigation,
-          should_treat_as_first_party));
+          should_treat_as_first_party,
+          request.destination ==
+              network::mojom::RequestDestination::kWebIdentity));
 
   cookie_manager_->GetCookieList(
       request.url, options, net::CookiePartitionKeyCollection::Todo(),

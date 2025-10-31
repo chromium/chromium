@@ -765,13 +765,24 @@ bool CorsURLLoaderFactory::IsValidRequest(const ResourceRequest& request,
     }
 
     // Only the browser process is allowed to initiate FedCM requests.
-    if (request.destination ==
-        network::mojom::RequestDestination::kWebIdentity) {
+    if (request.destination == mojom::RequestDestination::kWebIdentity) {
       mojo::ReportBadMessage(
           "CorsURLLoaderFactory: attempt to use forbidden destination from "
           "renderer");
       return false;
     }
+  }
+
+  // FedCM requests must either disable cookies or disable redirects
+  // (this simplifies reasoning around SameSite=Lax cookies).
+  // See also the DCHECK in url_loader_util::ConfigureUrlRequest.
+  if (request.destination == mojom::RequestDestination::kWebIdentity &&
+      request.redirect_mode != mojom::RedirectMode::kError &&
+      request.credentials_mode != mojom::CredentialsMode::kOmit) {
+    mojo::ReportBadMessage(
+        "CorsURLLoaderFactory: FedCM requests must either disable redirects "
+        "or disable cookies");
+    return false;
   }
 
   // Depending on the type of request, compare either `request_initiator` or

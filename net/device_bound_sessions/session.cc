@@ -332,7 +332,8 @@ base::TimeDelta Session::MinimumBoundCookieLifetime(
       net::cookie_util::ComputeSameSiteContextForRequest(
           request->method(), request->url_chain(), request->site_for_cookies(),
           request->initiator(), is_main_frame_navigation,
-          force_ignore_site_for_cookies);
+          force_ignore_site_for_cookies,
+          request->ignore_unsafe_method_for_same_site_lax());
 
   CookieOptions options;
   options.set_same_site_cookie_context(same_site_context);

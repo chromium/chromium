@@ -664,6 +664,14 @@ void ConfigureUrlRequest(const ResourceRequest& request,
 
   url_request.set_allows_device_bound_session_registration(
       request.allows_device_bound_session_registration);
+
+  if (base::FeatureList::IsEnabled(features::kSendSameSiteLaxForFedCM) &&
+      request.destination == mojom::RequestDestination::kWebIdentity) {
+    // This check is enforced by CorsURLLoaderFactory::IsValidRequest.
+    CHECK(request.redirect_mode == mojom::RedirectMode::kError ||
+          request.credentials_mode == mojom::CredentialsMode::kOmit);
+    url_request.set_ignore_unsafe_method_for_same_site_lax(true);
+  }
 }
 
 void SetRequestCredentials(

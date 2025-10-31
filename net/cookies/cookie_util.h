@@ -355,7 +355,8 @@ ComputeSameSiteContextForRequest(std::string_view http_method,
                                  const SiteForCookies& site_for_cookies,
                                  const std::optional<url::Origin>& initiator,
                                  bool is_main_frame_navigation,
-                                 bool force_ignore_site_for_cookies);
+                                 bool force_ignore_site_for_cookies,
+                                 bool ignore_unsafe_method_for_same_site_lax);
 
 // As above, but applying for scripts. `initiator` here should be the initiator
 // used when fetching the document.

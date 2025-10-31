@@ -196,10 +196,6 @@ BASE_FEATURE(kExperimentalContentSecurityPolicyFeatures,
 BASE_FEATURE(kFedCmUseOtherAccountAndLabelsNewSyntax,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables sending SameSite=Lax cookies in credentialed FedCM requests
-// (accounts endpoint, ID assertion endpoint and disconnect endpoint).
-BASE_FEATURE(kFedCmSameSiteLax, base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables NonString Tokens
 BASE_FEATURE(kFedCmNonStringToken, base::FEATURE_ENABLED_BY_DEFAULT);
 
