@@ -231,7 +231,7 @@ suite('AutofillAiEntriesListUiTest', function() {
         chrome.autofillPrivate.EntityInstanceWithLabels[] = [
       {
         guid: 'e4bbe384-ee63-45a4-8df3-713a58fdc181',
-        type: testEntityTypes[1]!,
+        type: testEntityTypes[2]!,
         entityInstanceLabel: 'Toyota',
         entityInstanceSubLabel: 'Car',
         storedInWallet: true,
@@ -275,10 +275,11 @@ suite('AutofillAiEntriesListUiTest', function() {
     CrSettingsPrefs.resetForTesting();
   });
 
-  async function createPage() {
+  async function createPage(allowedEntityTypes: Set<number>|null = null) {
     entriesList =
         document.createElement('settings-autofill-ai-entries-list-element');
     entriesList.prefs = settingsPrefs.prefs;
+    entriesList.allowedEntityTypes = allowedEntityTypes;
     document.body.appendChild(entriesList);
     await flushTasks();
 
@@ -342,6 +343,21 @@ suite('AutofillAiEntriesListUiTest', function() {
     assertTrue(listItems[2]!.textContent.includes('Toyota'));
     assertTrue(listItems[2]!.textContent.includes('Car'));
     assertFalse(isVisible(listItems[3]!));
+  });
+
+  test('EntityInstancesFilteredWhenFilterProvided', async function() {
+    await createPage(new Set([
+      0,  // Passport
+    ]));
+
+    const listItems =
+        entityInstancesListElement.querySelectorAll<HTMLElement>('.list-item');
+
+    // Only pasport and hidden placeholder entry should remain
+    assertEquals(2, listItems.length);
+    assertTrue(listItems[0]!.textContent.includes('John Doe'));
+    assertTrue(listItems[0]!.textContent.includes('Passport'));
+    assertFalse(isVisible(listItems[1]!));
   });
 
   interface RemoveEntityInstanceParams {

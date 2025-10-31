@@ -3,7 +3,9 @@
 
   <!-- Entities list card -->
   <div class="card">
-    <settings-autofill-ai-entries-list-element prefs="{{prefs}}">
+    <settings-autofill-ai-entries-list-element
+        allowed-entity-types="[[getAllowedEntityTypes_()]]"
+        prefs="{{prefs}}">
     </settings-autofill-ai-entries-list-element>
   </div>
 

@@ -17,6 +17,7 @@ import '../settings_page/settings_subpage.js';
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {EntityTypeName} from '../autofill_ai_enums.mojom-webui.js';
 import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
 
 import {getTemplate} from './travel_page.html.js';
@@ -31,6 +32,15 @@ export class SettingsTravelPageElement extends SettingsTravelPageElementBase {
 
   static get template() {
     return getTemplate();
+  }
+
+  private getAllowedEntityTypes_(): Set<EntityTypeName> {
+    return new Set([
+      EntityTypeName.kFlightReservation,
+      EntityTypeName.kKnownTravelerNumber,
+      EntityTypeName.kRedressNumber,
+      EntityTypeName.kVehicle,
+    ]);
   }
 }
 

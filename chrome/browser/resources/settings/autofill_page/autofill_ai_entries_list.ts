@@ -37,6 +37,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {SyncStatus} from '/shared/settings/people_page/sync_browser_proxy.js';
 
+import type {EntityTypeName} from '../autofill_ai_enums.mojom-webui.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
 import type {SettingsSimpleConfirmationDialogElement} from '../simple_confirmation_dialog.js';
@@ -84,6 +85,11 @@ export class SettingsAutofillAiEntriesListElement extends
         value() {
           return !loadTimeData.getBoolean('userEligibleForAutofillAi');
         },
+      },
+
+      allowedEntityTypes: {
+        type: Set,
+        value: null,
       },
 
       allowEditing_: {
@@ -145,6 +151,7 @@ export class SettingsAutofillAiEntriesListElement extends
   }
 
   declare ineligibleUser: boolean;
+  declare allowedEntityTypes: Set<EntityTypeName>|null;
   declare private allowEditing_: boolean;
   declare private activeEntityInstance_: EntityInstance|null;
   declare private completeEntityTypesList_: EntityType[];
@@ -179,8 +186,15 @@ export class SettingsAutofillAiEntriesListElement extends
 
     this.entityDataManager_.loadEntityInstances().then(
         (entityInstances: EntityInstanceWithLabels[]) => {
-          this.entityInstances_ =
-              entityInstances.sort(this.entityInstancesWithLabelsComparator_);
+          // Filter only if the filter was set
+          const filteredEntityInstaces = this.allowedEntityTypes ?
+              entityInstances.filter(
+                  instance =>
+                      this.allowedEntityTypes!.has(instance.type.typeName)) :
+              entityInstances;
+
+          this.entityInstances_ = filteredEntityInstaces.sort(
+              this.entityInstancesWithLabelsComparator_);
         });
 
     this.addWebUiListener(
