@@ -490,7 +490,7 @@ BASE_FEATURE(kAutofillPreferSavedFormAsSubmittedForm,
 // Allows the import of an Autofill profile if duplicate fields were present
 // with identical field values.
 // TODO(crbug.com/395855125): Remove when launched.
-BASE_FEATURE(kAutofillRelaxAddressImport, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAutofillRelaxAddressImport, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Replaces blink::WebFormElementObserver usage in FormTracker by updated logic
 // for tracking the disappearance of forms as well as other submission
