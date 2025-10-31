@@ -1153,6 +1153,80 @@ suite('NewTabPageComposeboxTest', () => {
     assertTrue(composeboxDropdown.hidden);
   });
 
+  test('dropdown does not show for typed suggest with context', async () => {
+    loadTimeData.overrideValues(
+        {composeboxShowZps: true, composeboxShowTypedSuggest: true});
+    createComposeboxElement();
+    await microtasksFinished();
+
+    // Add typed input.
+    composeboxElement.$.input.value = 'Test';
+    composeboxElement.$.input.dispatchEvent(new Event('input'));
+    await microtasksFinished();
+
+    const composeboxDropdown =
+        composeboxElement.shadowRoot.querySelector<HTMLElement>('#matches');
+    assertTrue(!!composeboxDropdown);
+
+    const matches = [
+      createSearchMatch({
+        fillIntoEdit: stringToMojoString16('hello world 1'),
+        allowedToBeDefaultMatch: true,
+      }),
+      createSearchMatch({fillIntoEdit: stringToMojoString16('hello world 2')}),
+      createSearchMatch({fillIntoEdit: stringToMojoString16('hello world 3')}),
+      createSearchMatch({fillIntoEdit: stringToMojoString16('hello world 4')}),
+    ];
+    searchboxCallbackRouterRemote.autocompleteResultChanged(
+        createAutocompleteResult({
+          matches: matches,
+          input: stringToMojoString16('Test'),
+        }));
+    await microtasksFinished();
+
+    // Dropdown should show for when matches are available.
+    assertFalse(composeboxDropdown.hidden);
+
+    // If context files are added, the dropdown should no longer be visible.
+    composeboxElement.$.context.dispatchEvent(
+        new CustomEvent('on-context-files-changed', {
+          detail: {files: 1},
+        }));
+    await microtasksFinished();
+    assertTrue(composeboxDropdown.hidden);
+  });
+
+  test(
+      'dropdown does not show for typed suggest with verbatim match only',
+      async () => {
+        loadTimeData.overrideValues(
+            {composeboxShowZps: true, composeboxShowTypedSuggest: true});
+        createComposeboxElement();
+        await microtasksFinished();
+
+        // Add typed input.
+        composeboxElement.$.input.value = 'Test';
+        composeboxElement.$.input.dispatchEvent(new Event('input'));
+        await microtasksFinished();
+
+        const composeboxDropdown =
+            composeboxElement.shadowRoot.querySelector<HTMLElement>('#matches');
+        assertTrue(!!composeboxDropdown);
+
+        const matches = [
+          createSearchMatch(),
+        ];
+        searchboxCallbackRouterRemote.autocompleteResultChanged(
+            createAutocompleteResult({
+              matches: matches,
+              input: stringToMojoString16('Test'),
+            }));
+        await microtasksFinished();
+
+        // Dropdown should not show when only the verbatim match is present.
+        assertTrue(composeboxDropdown.hidden);
+      });
+
   test('notify browser when image is added in create image mode', async () => {
     loadTimeData.overrideValues({
       composeboxShowZps: true,
@@ -1197,42 +1271,6 @@ suite('NewTabPageComposeboxTest', () => {
     await microtasksFinished();
     assertEquals(handler.getCallCount('setCreateImageMode'), 3);
   });
-
-  test(
-      'dropdown visibility change fires an event when Realbox Next is enabled',
-      async () => {
-        loadTimeData.overrideValues({
-          composeboxShowZps: true,
-          composeboxShowTypedSuggest: true,
-        });
-        createComposeboxElement();
-        composeboxElement.ntpRealboxNextEnabled = true;
-
-        let whenDropdownVisibleChanged = eventToPromise(
-            'composebox-dropdown-visible-changed', composeboxElement);
-
-        // Add typed input.
-        composeboxElement.$.input.value = 'Test';
-        composeboxElement.$.input.style.height = '48px';
-        composeboxElement.$.input.dispatchEvent(new Event('input'));
-        await microtasksFinished();
-        const matches = [
-          createSearchMatch(),
-        ];
-        searchboxCallbackRouterRemote.autocompleteResultChanged(
-            createAutocompleteResult({
-              input: stringToMojoString16('Test'),
-              matches: matches,
-            }));
-        const e1 = await whenDropdownVisibleChanged;
-        assertTrue(e1.detail.value);
-
-        whenDropdownVisibleChanged = eventToPromise(
-            'composebox-dropdown-visible-changed', composeboxElement);
-        composeboxElement.closeDropdown();
-        const e2 = await whenDropdownVisibleChanged;
-        assertFalse(e2.detail.value);
-      });
 
   test('arrow up/down moves selection / focus', async () => {
     loadTimeData.overrideValues({composeboxShowZps: true});

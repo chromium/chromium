@@ -382,8 +382,11 @@ export class ComposeboxElement extends I18nMixinLit
     }
 
     if (this.showTypedSuggest_ && this.input_.trim()) {
-      // Do not show dropdown for multiline input.
-      if (this.$.input.scrollHeight <= 48) {
+      // Do not show the dropdown for multiline input, if context is present, or
+      // if only the verbatim match is present (we always expect a verbatim
+      // match for typed suggest, so we ensure the length of the matches is >1).
+      if (this.$.input.scrollHeight <= 48 && this.contextFilesSize_ === 0 &&
+          this.result_?.matches.length > 1) {
         return true;
       }
     }
