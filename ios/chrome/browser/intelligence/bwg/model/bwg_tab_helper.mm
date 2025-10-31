@@ -180,6 +180,10 @@ void BwgTabHelper::SetPreventContextualPanelEntryPoint(bool shouldPrevent) {
   prevent_contextual_panel_entry_point_ = shouldPrevent;
 }
 
+void BwgTabHelper::SetPageLoadedCallback(base::OnceClosure callback) {
+  page_loaded_callback_ = std::move(callback);
+}
+
 bool BwgTabHelper::GetIsBwgSessionActiveInBackground() {
   return is_bwg_session_active_in_background_;
 }
@@ -299,6 +303,14 @@ void BwgTabHelper::WasHidden(web::WebState* web_state) {
   UpdateWebStateSnapshotInStorage();
 }
 
+void BwgTabHelper::DidStartNavigation(
+    web::WebState* web_state,
+    web::NavigationContext* navigation_context) {
+  // Cancel the callback that runs on page load, since we're now going to a new
+  // page.
+  page_loaded_callback_.Reset();
+}
+
 void BwgTabHelper::DidFinishNavigation(
     web::WebState* web_state,
     web::NavigationContext* navigation_context) {
@@ -332,6 +344,10 @@ void BwgTabHelper::DidStartLoading(web::WebState* web_state) {
 void BwgTabHelper::PageLoaded(
     web::WebState* web_state,
     web::PageLoadCompletionStatus load_completion_status) {
+  if (page_loaded_callback_) {
+    std::move(page_loaded_callback_).Run();
+  }
+
   ProfileIOS* profile =
       ProfileIOS::FromBrowserState(web_state->GetBrowserState());
   bool floaty_shown = profile->GetPrefs()->GetBoolean(prefs::kIOSBwgConsent);

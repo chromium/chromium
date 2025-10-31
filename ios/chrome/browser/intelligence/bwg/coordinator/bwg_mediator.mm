@@ -145,18 +145,55 @@
 
   // Configure the callback to be executed once the page context is ready.
   __weak __typeof(self) weakSelf = self;
+  web::WebState* activeWebState = _webStateList->GetActiveWebState();
   base::OnceCallback<void(PageContextWrapperCallbackResponse)>
-      page_context_completion_callback =
-          base::BindOnce(^void(PageContextWrapperCallbackResponse response) {
-            [weakSelf openBWGOverlayForPage:std::move(response)];
-          });
+      page_context_completion_callback;
+  if (IsGeminiImmediateOverlayEnabled()) {
+    // Present the overlay immediately without page context.
+    [self openPendingBWGOverlay];
+
+    page_context_completion_callback =
+        base::BindOnce(^void(PageContextWrapperCallbackResponse response) {
+          [weakSelf updateBWGOverlayForWebState:activeWebState
+                     pageContextWrapperResponse:std::move(response)];
+        });
+  } else {
+    page_context_completion_callback =
+        base::BindOnce(^void(PageContextWrapperCallbackResponse response) {
+          [weakSelf openBWGOverlayForPage:std::move(response)];
+        });
+  }
 
   // Collect the PageContext and execute the callback once it's ready.
   _pageContextWrapper = [[PageContextWrapper alloc]
-        initWithWebState:_webStateList->GetActiveWebState()
+        initWithWebState:activeWebState
       completionCallback:std::move(page_context_completion_callback)];
   [_pageContextWrapper setShouldGetAnnotatedPageContent:YES];
   [_pageContextWrapper setShouldGetSnapshot:YES];
+  // Attempt to populate page context fields. If the page is still loading,
+  // processing will start once the page has loaded.
+  if (IsGeminiImmediateOverlayEnabled() && activeWebState &&
+      activeWebState->IsLoading()) {
+    BwgTabHelper* BWGTabHelper = [self activeWebStateBWGTabHelper];
+    base::OnceCallback<void()> pageContextPopulateCallback =
+        base::BindOnce(^void() {
+          [weakSelf populatePageContextFieldsAsync];
+        });
+    if (BWGTabHelper) {
+      BWGTabHelper->SetPageLoadedCallback(
+          std::move(pageContextPopulateCallback));
+    }
+  } else {
+    [_pageContextWrapper populatePageContextFieldsAsync];
+  }
+}
+
+// Begins asynchronous work to populate page context fields for the current
+// page.
+- (void)populatePageContextFieldsAsync {
+  if (!_pageContextWrapper) {
+    return;
+  }
   [_pageContextWrapper populatePageContextFieldsAsync];
 }
 
@@ -181,6 +218,45 @@
       _didPresentBWGFRE ? kStartupTimeWithFREHistogram
                         : kStartupTimeNoFREHistogram,
       base::TimeTicks::Now() - _BWGOverlayPreparationStartTime);
+}
+
+// Opens the BWG overlay in a pending state, since page context is not yet
+// ready.
+- (void)openPendingBWGOverlay {
+  _pageContextWrapper = nil;
+
+  web::WebState* activeWebState = _webStateList->GetActiveWebState();
+  CHECK(activeWebState);
+  CHECK(_BWGService->IsBwgAvailableForWebState(activeWebState));
+
+  _BWGBrowserAgent->PresentPendingBwgOverlay(self.baseViewController);
+
+  base::UmaHistogramLongTimes100(
+      _didPresentBWGFRE ? kStartupTimeWithFREHistogram
+                        : kStartupTimeNoFREHistogram,
+      base::TimeTicks::Now() - _BWGOverlayPreparationStartTime);
+}
+
+// Updates the BWG overlay with a given PageContextWrapperCallbackResponse.
+- (void)updateBWGOverlayForWebState:(web::WebState*)webState
+         pageContextWrapperResponse:
+             (PageContextWrapperCallbackResponse)response {
+  _pageContextWrapper = nil;
+
+  // The original web state may no longer be eligible for Gemini by the time
+  // this is called. If this is the case, the overlay should not update.
+  if (!webState || !_BWGService->IsBwgAvailableForWebState(webState)) {
+    return;
+  }
+
+  // The current web state may have changed. If so, do not update the overlay.
+  web::WebState* activeWebState = _webStateList->GetActiveWebState();
+  if (!activeWebState || activeWebState->GetUniqueIdentifier() !=
+                             webState->GetUniqueIdentifier()) {
+    return;
+  }
+
+  _BWGBrowserAgent->UpdateBwgOverlayPageContext(std::move(response));
 }
 
 // Notifies the currently active WebState's BWG tab helper that the FRE will be
