@@ -24,7 +24,7 @@ constexpr char kLnaPath[] =
     "?Access-Control-Allow-Origin: *";
 
 constexpr char kWorkerHtmlPath[] =
-    "/local_network_access/fetch-from-worker-as-public-address.html";
+    "/local_network_access/request-from-worker-as-public-address.html";
 
 constexpr char kSharedWorkerHtmlPath[] =
     "/local_network_access/fetch-from-shared-worker-as-public-address.html";

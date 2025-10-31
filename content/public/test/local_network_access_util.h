@@ -63,7 +63,7 @@ class DeprecationTrialURLLoaderInterceptor {
   const GURL enabled_http_shared_worker_url_{
       "http://enabled.test/sharedworker"};
   const GURL enabled_http_worker_js_url_{
-      "http://enabled.test/fetch-from-worker-as-public-address.js"};
+      "http://enabled.test/request-from-worker-as-public-address.js"};
   const GURL enabled_http_shared_worker_js_url_{
       "http://enabled.test/fetch-from-shared-worker-as-public-address.js"};
   URLLoaderInterceptor interceptor_;

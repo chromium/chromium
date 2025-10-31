@@ -25,7 +25,7 @@ bool DeprecationTrialURLLoaderInterceptor::HandleRequest(
     if (url == EnabledHttpWorkerUrl()) {
       body_file =
           "chrome/test/data/local_network_access/"
-          "fetch-from-worker-as-public-address.html";
+          "request-from-worker-as-public-address.html";
     } else if (url == EnabledHttpSharedWorkerUrl()) {
       body_file =
           "chrome/test/data/local_network_access/"
@@ -47,7 +47,7 @@ bool DeprecationTrialURLLoaderInterceptor::HandleRequest(
     // like in https://crbug.com/40860522#comment8.
     URLLoaderInterceptor::WriteResponse(
         "chrome/test/data/local_network_access/"
-        "fetch-from-worker-as-public-address.js",
+        "request-from-worker-as-public-address.js",
         request_params->client.get());
     return true;
   }
