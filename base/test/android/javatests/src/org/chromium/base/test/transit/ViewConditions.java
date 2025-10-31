@@ -4,43 +4,32 @@
 
 package org.chromium.base.test.transit;
 
-import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
-import static androidx.test.espresso.matcher.RootMatchers.isDialog;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
 
 import static org.hamcrest.CoreMatchers.allOf;
-import static org.hamcrest.CoreMatchers.any;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
+import android.app.Activity;
 import android.view.View;
 
-import androidx.test.espresso.AmbiguousViewMatcherException;
-import androidx.test.espresso.NoMatchingRootException;
-import androidx.test.espresso.NoMatchingViewException;
-import androidx.test.espresso.UiController;
-import androidx.test.espresso.ViewAction;
-import androidx.test.espresso.ViewInteraction;
-import androidx.test.espresso.matcher.ViewMatchers;
+import androidx.test.espresso.Root;
 
 import org.hamcrest.Matcher;
 import org.hamcrest.StringDescription;
 
 import org.chromium.base.ApplicationStatus;
-import org.chromium.base.test.util.RawFailureHandler;
 import org.chromium.base.test.util.ViewPrinter;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.function.Supplier;
+import java.util.List;
 
 /** {@link Condition}s related to Android {@link View}s. */
 @NullMarked
 public class ViewConditions {
 
+    private static final String TAG = "Transit";
     private static final ViewPrinter.Options PRINT_SHALLOW_WITH_BOUNDS =
             new ViewPrinter.Options()
                     .setPrintChildren(false)
@@ -58,7 +47,6 @@ public class ViewConditions {
         private final Matcher<View> mMatcher;
         private final Class<ViewT> mViewClass;
         private final Options mOptions;
-        private @Nullable View mViewMatched;
         private int mPreviousViewX = Integer.MIN_VALUE;
         private int mPreviousViewY = Integer.MIN_VALUE;
         private int mPreviousViewWidth = Integer.MIN_VALUE;
@@ -66,18 +54,10 @@ public class ViewConditions {
         private long mLastChangeMs = -1;
 
         public DisplayedCondition(Matcher<View> matcher, Class<ViewT> viewClass, Options options) {
-            super(/* isRunOnUiThread= */ false);
+            super(/* isRunOnUiThread= */ true);
             mMatcher = matcher;
             mViewClass = viewClass;
             mOptions = options;
-        }
-
-        @Override
-        public boolean shouldRunInPreCheck() {
-            // TODO(crbug.com/363308068): onView().inRoot(isDialog()) hangs for 60s waiting for a
-            // dialog root if there is no matching root, so only check when we actually expect a
-            // dialog to exist.
-            return !mOptions.mInDialogRoot;
         }
 
         @Override
@@ -115,74 +95,47 @@ public class ViewConditions {
             // more details later in this method.
             ArrayList<String> messages = new ArrayList<>();
 
-            Supplier<ViewAction> findViewActionFactory =
-                    () ->
-                            new ViewAction() {
-                                @Override
-                                public Matcher<View> getConstraints() {
-                                    return any(View.class);
-                                }
+            assert mOwnerState != null : "No owner state, cannot be a Transition Condition";
 
-                                @Override
-                                public String getDescription() {
-                                    return "check existence, visibility and displayed percentage";
-                                }
-
-                                @Override
-                                public void perform(UiController uiController, View view) {
-                                    mViewMatched = view;
-                                }
-                            };
-
-            ViewInteraction viewInteraction =
-                    onView(mMatcher).withFailureHandler(RawFailureHandler.getInstance());
-            if (mOptions.mInDialogRoot) {
-                viewInteraction = viewInteraction.inRoot(isDialog());
-            }
-
-            try {
-                viewInteraction.perform(findViewActionFactory.get());
-            } catch (NoMatchingViewException | NoMatchingRootException e) {
-                return notFulfilled(e.getClass().getSimpleName()).withoutResult();
-            } catch (AmbiguousViewMatcherException e) {
-                // Found 2+ Views. Try again, but filtering only by effectively visible Views.
-                // This avoids AmbiguousViewMatcherException when there is one VISIBLE but also
-                // GONE views that match |mMatcher|.
-                try {
-                    onView(
-                                    allOf(
-                                            mMatcher,
-                                            withEffectiveVisibility(
-                                                    ViewMatchers.Visibility.VISIBLE)))
-                            .withFailureHandler(RawFailureHandler.getInstance())
-                            .perform(findViewActionFactory.get());
-                } catch (NoMatchingViewException f) {
-                    // Report the AmbiguousViewMatcherException with the GONE views.
-                    return notFulfilled(
-                                    e.getClass().getSimpleName()
-                                            + " with GONE Views | "
-                                            + e.getMessage())
+            Activity activity;
+            ActivityElement<?> activityElement = mOwnerState.determineActivityElement();
+            if (activityElement == null) {
+                // TODO(crbug.com/456768907): Allow this only for dialogs.
+                activity = null;
+            } else {
+                activity = activityElement.get();
+                if (activity == null) {
+                    return awaiting("Waiting for Activity from %s", activityElement)
                             .withoutResult();
-                } catch (NoMatchingRootException f) {
-                    return notFulfilled(f.getClass().getSimpleName()).withoutResult();
-                } catch (AmbiguousViewMatcherException f) {
-                    return notFulfilled(f.getClass().getSimpleName() + " | " + f.getMessage())
+                }
+                if (activity.isDestroyed()) {
+                    return notFulfilled("Activity from %s is destroyed", activityElement)
+                            .withoutResult();
+                }
+                if (activity.isFinishing()) {
+                    return notFulfilled("Activity from %s is finishing", activityElement)
                             .withoutResult();
                 }
             }
 
-            // Assume found a View, or an exception would have been thrown above and
-            // |notFulfilled()| would have been returned.
-            assumeNonNull(mViewMatched);
-            boolean fulfilled = true;
-            messages.add(ViewPrinter.describeView(mViewMatched, PRINT_SHALLOW_WITH_BOUNDS));
+            List<Root> roots = ViewFinder.findRoots(activity);
 
-            View view = mViewMatched;
-            int visibility = view.getVisibility();
+            List<View> viewMatches = ViewFinder.findViews(roots, mMatcher);
+
+            if (viewMatches.size() != 1) {
+                return notFulfilled(writeMatchingViewsStatusMessage(viewMatches)).withoutResult();
+            }
+            View matchedView = viewMatches.get(0);
+
+            boolean fulfilled = true;
+            messages.add(ViewPrinter.describeView(matchedView, PRINT_SHALLOW_WITH_BOUNDS));
+
+            int visibility = matchedView.getVisibility();
             if (visibility != View.VISIBLE) {
                 fulfilled = false;
                 messages.add(String.format("visibility = %s", visibilityIntToString(visibility)));
             } else {
+                View view = matchedView;
                 while (view.getParent() instanceof View) {
                     view = (View) view.getParent();
                     visibility = view.getVisibility();
@@ -198,9 +151,8 @@ public class ViewConditions {
                 }
             }
 
-            // Since perform() above did not throw an Exception, mViewMatched is non-null.
             if (mOptions.mDisplayedPercentageRequired > 0) {
-                DisplayedPortion portion = DisplayedPortion.ofView(mViewMatched);
+                DisplayedPortion portion = DisplayedPortion.ofView(matchedView);
                 if (portion.mPercentage < mOptions.mDisplayedPercentageRequired) {
                     fulfilled = false;
                     messages.add(
@@ -214,12 +166,12 @@ public class ViewConditions {
             }
 
             if (mOptions.mExpectEnabled) {
-                if (!mViewMatched.isEnabled()) {
+                if (!matchedView.isEnabled()) {
                     fulfilled = false;
                     messages.add("disabled");
                 }
             } else if (mOptions.mExpectDisabled) {
-                if (mViewMatched.isEnabled()) {
+                if (matchedView.isEnabled()) {
                     fulfilled = false;
                     messages.add("enabled");
                 }
@@ -228,11 +180,11 @@ public class ViewConditions {
             if (mOptions.mSettleTimeMs > 0) {
                 long nowMs = System.currentTimeMillis();
                 int[] locationOnScreen = new int[2];
-                mViewMatched.getLocationOnScreen(locationOnScreen);
+                matchedView.getLocationOnScreen(locationOnScreen);
                 int newX = locationOnScreen[0];
                 int newY = locationOnScreen[1];
-                int newWidth = view.getWidth();
-                int newHeight = view.getHeight();
+                int newWidth = matchedView.getWidth();
+                int newHeight = matchedView.getHeight();
                 if (mPreviousViewX != newX
                         || mPreviousViewY != newY
                         || mPreviousViewWidth != newWidth
@@ -255,13 +207,13 @@ public class ViewConditions {
 
             ViewT typedView = null;
             try {
-                typedView = mViewClass.cast(mViewMatched);
+                typedView = mViewClass.cast(matchedView);
             } catch (ClassCastException e) {
                 fulfilled = false;
                 messages.add(
                         String.format(
                                 "Matched View was a %s which is not a %s",
-                                mViewMatched.getClass().getName(), mViewClass.getName()));
+                                matchedView.getClass().getName(), mViewClass.getName()));
             }
 
             String message = String.join("; ", messages);
@@ -338,7 +290,7 @@ public class ViewConditions {
     }
 
     /** Fulfilled when no matching Views exist and are displayed. */
-    public static class NotDisplayedAnymoreCondition extends InstrumentationThreadCondition {
+    public static class NotDisplayedAnymoreCondition extends UiThreadCondition {
         private final Matcher<View> mMatcher;
 
         private static final String VERBOSE_DESCRIPTION =
@@ -364,14 +316,34 @@ public class ViewConditions {
                 return fulfilled("No visible activities");
             }
 
-            try {
-                onView(mMatcher)
-                        .withFailureHandler(RawFailureHandler.getInstance())
-                        .check(doesNotExist());
+            // TODO(crbug.com/414438521): Search only in the respective Activity instead of all.
+            List<Root> roots = ViewFinder.findRoots(/* activity= */ null);
+
+            List<View> viewMatches = ViewFinder.findViews(roots, mMatcher);
+
+            if (viewMatches.isEmpty()) {
                 return fulfilled();
-            } catch (AssertionError e) {
-                return notFulfilled();
+            } else {
+                return notFulfilled(writeMatchingViewsStatusMessage(viewMatches));
             }
+        }
+    }
+
+    private static String writeMatchingViewsStatusMessage(List<View> viewMatches) {
+        // TODO(crbug.com/456770151): Print which root matches are in.
+        if (viewMatches.isEmpty()) {
+            return "No matching Views";
+        } else if (viewMatches.size() == 1) {
+            String viewDescription = ViewPrinter.describeView(viewMatches.get(0), PRINT_SHALLOW);
+            return String.format("1 matching View: %s", viewDescription);
+        } else {
+            String viewDescription1 = ViewPrinter.describeView(viewMatches.get(0), PRINT_SHALLOW);
+            String viewDescription2 = ViewPrinter.describeView(viewMatches.get(1), PRINT_SHALLOW);
+            String moreString = viewMatches.size() > 2 ? " and more" : "";
+
+            return String.format(
+                    "%d matching Views: %s, %s%s",
+                    viewMatches.size(), viewDescription1, viewDescription2, moreString);
         }
     }
 }

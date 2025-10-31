@@ -9,6 +9,7 @@ import android.view.View;
 import androidx.test.espresso.Espresso;
 import androidx.test.espresso.ViewAction;
 import androidx.test.espresso.ViewAssertion;
+import androidx.test.espresso.ViewInteraction;
 import androidx.test.espresso.action.ViewActions;
 import androidx.test.platform.app.InstrumentationRegistry;
 
@@ -153,12 +154,19 @@ public class ViewElement<ViewT extends View> extends Element<ViewT> {
     public TripBuilder performViewActionTo(ViewAction action) {
         return new TripBuilder()
                 .withContext(this)
-                .withTrigger(() -> Espresso.onView(mViewSpec.getViewMatcher()).perform(action));
+                .withTrigger(() -> newViewInteraction().perform(action));
     }
 
     /** Trigger an Espresso ViewAssertion on this View. */
     public void check(ViewAssertion assertion) {
-        Espresso.onView(mViewSpec.getViewMatcher()).check(assertion);
+        newViewInteraction().check(assertion);
+    }
+
+    private ViewInteraction newViewInteraction() {
+        // TODO(crbug.com/456785513): Ensure the View is still there rechecking DisplayedCondition,
+        // find the root and use inRoot() to avoid interacting with a matching View in a different
+        // window.
+        return Espresso.onView(mViewSpec.getViewMatcher());
     }
 
     /** Creates a Condition fulfilled if the View matches the |matcher|. */
