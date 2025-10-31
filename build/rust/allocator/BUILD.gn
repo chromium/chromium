@@ -53,6 +53,10 @@ if (toolchain_has_rust) {
     crate_root = "lib.rs"
 
     rustflags = []
+    if (!rustc_nightly_capability) {
+      rustflags += [ "--cfg=rust_allocator_no_nightly_capability" ]
+    }
+
     deps = [ ":alloc_error_handler_impl_ffi" ]
     if (rust_allocator_uses_allocator_impls_h) {
       deps += [ ":allocator_impls_ffi" ]

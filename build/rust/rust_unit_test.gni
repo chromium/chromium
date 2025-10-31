@@ -61,6 +61,9 @@ template("rust_unit_test") {
   _configs = invoker.configs
 
   _edition = "2024"
+  if (!rustc_nightly_capability) {
+    _edition = "2021"
+  }
   if (defined(invoker.edition)) {
     _edition = invoker.edition
   }

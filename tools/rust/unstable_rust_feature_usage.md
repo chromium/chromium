@@ -21,6 +21,16 @@ When an exception is required, consider:
 -   Ways to fallback in case a backward-incompatible toolchain change is
     introduced
 
+The following directories have a stricter policy toward unstable features:
+
+* `//build` accepts patches for community-maintained support
+  for working with a stable version of the Rust compiler.
+  See also `rustc_nightly_capability` and https://crbug.com/410596442
+* `//v8` tentatively disallows unstable features to provide
+  community-maintained support for building V8 with a stable
+  version of the Rust compiler.
+  See also https://crbug.com/450577984
+
 ## Exceptions
 
 This section maintains a list of exceptions from the policy above:

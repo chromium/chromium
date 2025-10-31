@@ -149,6 +149,9 @@ template("rust_target") {
   # to override this.  See also doc comments for `edition` at the top of
   # `//build/rust/rust_static_library.gni`.
   _edition = "2024"
+  if (!rustc_nightly_capability) {
+    _edition = "2021"
+  }
   if (defined(invoker.edition)) {
     _edition = invoker.edition
   }
