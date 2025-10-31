@@ -161,7 +161,9 @@ void WebSocketClient::Connect() {
 void WebSocketClient::InternalWrite(base::span<const uint8_t> data) {
   CHECK(state_ == State::kOpen);
 
-  websocket_->SendMessage(network::mojom::WebSocketMessageType::TEXT,
+  // Use the BINARY message type because the message is a binary-encoded
+  // protobuf. The TEXT message type would be used for JSON.
+  websocket_->SendMessage(network::mojom::WebSocketMessageType::BINARY,
                           data.size());
   MojoResult result = writable_->WriteAllData(data);
   if (result != MOJO_RESULT_OK) {
