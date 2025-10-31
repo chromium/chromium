@@ -21,6 +21,8 @@ Suggestion BuildOtpSuggestion(const std::string& otp_value,
                               const FieldGlobalId& field_id) {
   Suggestion suggestion = Suggestion(base::UTF8ToUTF16(otp_value),
                                      SuggestionType::kOneTimePasswordEntry);
+  suggestion.acceptance_a11y_announcement =
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_A11Y_ANNOUNCE_FILLED_FORM);
 #if BUILDFLAG(IS_ANDROID)
   // Android SMS OTPs are the only supported OTPs at the moment. Choose the
   // right icon and A11Y label when more OTP options are supported in the
