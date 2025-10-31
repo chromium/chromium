@@ -90,14 +90,8 @@ class ManifestManagerHost : public PageUserData<ManifestManagerHost>,
   mojo::Remote<blink::mojom::ManifestManager> manifest_manager_;
   CallbackMap callbacks_;
 
-  // Invariants:
-  // - The 'not yet fetched' manifest is represented via
-  //   blink::mojom::ManifestRequestResult::kManifestFailedToFetch
-  // - This is only 'saved' from a fetch if the result of the fetch was a
-  //   successful manifest.
-  base::expected<blink::mojom::ManifestPtr,
-                 blink::mojom::RequestManifestErrorPtr>
-      last_manifest_success_result_;
+  std::optional<blink::mojom::ManifestPtr> last_manifest_success_result_ =
+      std::nullopt;
 
   ManifestCallbackList developer_manifest_callback_list_;
 
