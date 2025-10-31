@@ -1170,13 +1170,13 @@ TEST(DnsResponseTest, ParserLimitedToNumClaimedRecords) {
 
   // Response header only claims 4 records, so expect parser to only allow
   // parsing that many, ignoring extra records in the data.
-  DnsResourceRecord record;
-  EXPECT_TRUE(parser1.ReadRecord(&record));
-  EXPECT_TRUE(parser1.ReadRecord(&record));
-  EXPECT_TRUE(parser1.ReadRecord(&record));
-  EXPECT_TRUE(parser1.ReadRecord(&record));
-  EXPECT_FALSE(parser1.ReadRecord(&record));
-  EXPECT_FALSE(parser1.ReadRecord(&record));
+  DnsResourceRecord record1;
+  EXPECT_TRUE(parser1.ReadRecord(&record1));
+  EXPECT_TRUE(parser1.ReadRecord(&record1));
+  EXPECT_TRUE(parser1.ReadRecord(&record1));
+  EXPECT_TRUE(parser1.ReadRecord(&record1));
+  EXPECT_FALSE(parser1.ReadRecord(&record1));
+  EXPECT_FALSE(parser1.ReadRecord(&record1));
 
   // Repeat using InitParse()
   DnsResponse resp2;
@@ -1193,12 +1193,13 @@ TEST(DnsResponseTest, ParserLimitedToNumClaimedRecords) {
 
   // Response header only claims 4 records, so expect parser to only allow
   // parsing that many, ignoring extra records in the data.
-  EXPECT_TRUE(parser2.ReadRecord(&record));
-  EXPECT_TRUE(parser2.ReadRecord(&record));
-  EXPECT_TRUE(parser2.ReadRecord(&record));
-  EXPECT_TRUE(parser2.ReadRecord(&record));
-  EXPECT_FALSE(parser2.ReadRecord(&record));
-  EXPECT_FALSE(parser2.ReadRecord(&record));
+  DnsResourceRecord record2;
+  EXPECT_TRUE(parser2.ReadRecord(&record2));
+  EXPECT_TRUE(parser2.ReadRecord(&record2));
+  EXPECT_TRUE(parser2.ReadRecord(&record2));
+  EXPECT_TRUE(parser2.ReadRecord(&record2));
+  EXPECT_FALSE(parser2.ReadRecord(&record2));
+  EXPECT_FALSE(parser2.ReadRecord(&record2));
 }
 
 // Test that a parsed DnsResponse does not allow parsing past the end of the
@@ -1240,11 +1241,11 @@ TEST(DnsResponseTest, ParserLimitedToBufferSize) {
   ASSERT_TRUE(parser1.IsValid());
 
   // Response header claims 4 records, but only 2 present in input.
-  DnsResourceRecord record;
-  EXPECT_TRUE(parser1.ReadRecord(&record));
-  EXPECT_TRUE(parser1.ReadRecord(&record));
-  EXPECT_FALSE(parser1.ReadRecord(&record));
-  EXPECT_FALSE(parser1.ReadRecord(&record));
+  DnsResourceRecord record1;
+  EXPECT_TRUE(parser1.ReadRecord(&record1));
+  EXPECT_TRUE(parser1.ReadRecord(&record1));
+  EXPECT_FALSE(parser1.ReadRecord(&record1));
+  EXPECT_FALSE(parser1.ReadRecord(&record1));
 
   // Repeat using InitParse()
   DnsResponse resp2;
@@ -1256,10 +1257,11 @@ TEST(DnsResponseTest, ParserLimitedToBufferSize) {
   ASSERT_TRUE(parser2.IsValid());
 
   // Response header claims 4 records, but only 2 present in input.
-  EXPECT_TRUE(parser2.ReadRecord(&record));
-  EXPECT_TRUE(parser2.ReadRecord(&record));
-  EXPECT_FALSE(parser2.ReadRecord(&record));
-  EXPECT_FALSE(parser2.ReadRecord(&record));
+  DnsResourceRecord record2;
+  EXPECT_TRUE(parser2.ReadRecord(&record2));
+  EXPECT_TRUE(parser2.ReadRecord(&record2));
+  EXPECT_FALSE(parser2.ReadRecord(&record2));
+  EXPECT_FALSE(parser2.ReadRecord(&record2));
 }
 
 TEST(DnsResponseWriteTest, SingleARecordAnswer) {
