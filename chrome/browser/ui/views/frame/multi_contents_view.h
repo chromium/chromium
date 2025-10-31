@@ -78,13 +78,6 @@ class MultiContentsView : public views::View,
   const gfx::RoundedCornersF& background_radii() const;
   void SetBackgroundRadii(const gfx::RoundedCornersF& radii);
 
-  // Returns the size of the contents area. If in split view, this captures the
-  // entire area starting from the origin of the first contents to the bottom
-  // right of the last contents.
-  // TODO(crbug.com/441514755): Determine how we should handle size for split
-  // views.
-  gfx::Size GetContentsSize() const;
-
   // Returns true if more than one WebContents is displayed.
   bool IsInSplitView() const;
 
@@ -105,9 +98,11 @@ class MultiContentsView : public views::View,
 
   // Sets the index of the active contents view within contents_views_.
   void SetActiveIndex(int index);
+  int GetActiveIndex() const { return active_index_; }
 
   // Updates the size of the contents views based on |ratio|.
   void UpdateSplitRatio(double ratio);
+  double GetSplitRatio() const { return start_ratio_; }
 
   // Sets whether the active contents view is highlighted.
   void SetHighlightActiveContentsView(bool needs_attention);

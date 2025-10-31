@@ -292,12 +292,16 @@ class BrowserWindow : public ui::BaseWindow {
   virtual bool IsForceFullscreen() const = 0;
   virtual void SetForceFullscreen(bool force_fullscreen) = 0;
 
-  // Returns the size of WebContents in the browser. This may be called before
-  // the TabStripModel has an active tab.
+  // Returns the size of `WebContents` in the browser. This may be called before
+  // the `TabStripModel` has an active tab.
+  // Returns the size of the active `WebContents` if in a split view.
   virtual gfx::Size GetContentsSize() const = 0;
 
-  // Resizes the window to fit a WebContents of a certain size. This should only
-  // be called after the TabStripModel has an active tab.
+  // Resizes the window to fit `WebContents` of a certain size. This should only
+  // be called after the `TabStripModel` has an active tab.
+  // If in a split view, this will resize the active `WebContents` to the
+  // specified size, while preserving the size ratio of the other
+  // `WebContents`.
   virtual void SetContentsSize(const gfx::Size& size) = 0;
 
   // Updates the visual state of the specified page action icon if present on

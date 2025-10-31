@@ -4,6 +4,7 @@
 
 #include "base/functional/bind.h"
 #include "base/numerics/clamped_math.h"
+#include "base/numerics/ranges.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
@@ -177,10 +178,22 @@ class MultiContentsViewUiTest
 
   auto ResizeWindow(int width) {
     auto result = Steps(Do([width, this]() {
+      auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+      auto bounds = browser_view->bounds();
+      bounds.set_width(width);
+      bounds.set_height(1000);
+      browser_view->SetBounds(bounds);
+    }));
+    AddDescriptionPrefix(result, "ResizeWindow()");
+    return result;
+  }
+
+  auto ResizeContents(int width) {
+    auto result = Steps(Do([width, this]() {
       BrowserView::GetBrowserViewForBrowser(browser())->SetContentsSize(
           gfx::Size(width, 1000));
     }));
-    AddDescriptionPrefix(result, "ResizeWindow()");
+    AddDescriptionPrefix(result, "ResizeContents()");
     return result;
   }
 
@@ -204,6 +217,36 @@ class MultiContentsViewUiTest
 // Check that MultiContentsView exists when the side by side flag is enabled
 IN_PROC_BROWSER_TEST_F(MultiContentsViewUiTest, ExistsWithFlag) {
   RunTestSequence(EnsurePresent(kMultiContentsViewElementId));
+}
+
+// Check that resizing the browser window in split view correctly resizes
+// both content panes.
+IN_PROC_BROWSER_TEST_F(MultiContentsViewUiTest, ResizesInSplitView) {
+  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(MultiContentsViewLayoutObserver,
+                                      kLayoutObserver);
+
+  RunTestSequence(
+      AddInstrumentedTab(kNewTab, GURL(chrome::kChromeUISettingsURL), 0),
+      CheckResult([=, this]() { return tab_strip_model()->count(); }, 2u),
+      EnterSplitView(/*active_tab=*/0, /*other_tab=*/1, /*ratio=*/0.75),
+      ResizeContents(500),
+
+      // Set the contents size to 600.
+      ResizeContents(600),
+      // Check that the active contents width is 600.
+      CheckResizeValues(
+          base::BindRepeating([](double start_width, double end_width) {
+            return base::IsApproximatelyEqual(start_width, 600.0, 2.0);
+          }),
+          kLayoutObserver),
+      // The inactive tab loses some sizing, so activate it before validating
+      // width. It should be size to 200, in line with the 0.75 split ratio.
+      Do([this]() { browser()->tab_strip_model()->ActivateTabAt(1); }),
+      CheckResizeValues(
+          base::BindRepeating([](double start_width, double end_width) {
+            return base::IsApproximatelyEqual(end_width, 200.0, 2.0);
+          }),
+          kLayoutObserver));
 }
 
 // Create a new split and exit the split view and ensure only 1 contents view is
@@ -1010,15 +1053,14 @@ class MultiContentsViewDragEntrypointsUiTest : public MultiContentsViewUiTest {
                     AddStep(mouse_moves, Do([kMovementDelay] {
                               base::PlatformThread::Sleep(kMovementDelay);
                             }));
-                    AddStep(
-                        mouse_moves,
-                        WithView(kMultiContentsViewElementId,
-                                 [jitter](views::View* view) {
-                                   gfx::Point target =
-                                       PointForDropTargetFromView(view);
-                                   EXPECT_TRUE(ui_controls::SendMouseMove(
-                                       target.x() + jitter, target.y()));
-                                 }));
+                    AddStep(mouse_moves,
+                            WithView(kMultiContentsViewElementId,
+                                     [jitter](views::View* view) {
+                                       gfx::Point target =
+                                           PointForDropTargetFromView(view);
+                                       EXPECT_TRUE(ui_controls::SendMouseMove(
+                                           target.x() + jitter, target.y()));
+                                     }));
                   }
                   return mouse_moves;
                 }()),
