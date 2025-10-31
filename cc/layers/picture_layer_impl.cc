@@ -223,14 +223,10 @@ void PictureLayerImpl::AppendQuadsSpecialization(
     const AppendQuadsContext& context,
     viz::CompositorRenderPass* render_pass,
     AppendQuadsData* append_quads_data,
-    viz::SharedQuadState* shared_quad_state) {
+    viz::SharedQuadState* shared_quad_state,
+    const Occlusion& scaled_occlusion) {
   float device_scale_factor = layer_tree_impl()->device_scale_factor();
   float max_contents_scale = GetMaximumContentsScaleForUseInAppendQuads();
-
-  Occlusion scaled_occlusion =
-      draw_properties()
-          .occlusion_in_content_space.GetOcclusionWithGivenDrawTransform(
-              shared_quad_state->quad_to_target_transform);
 
   if (context.draw_mode == DRAW_MODE_RESOURCELESS_SOFTWARE) {
     DCHECK(shared_quad_state->quad_layer_rect.origin() == gfx::Point(0, 0));

@@ -389,11 +389,11 @@ class CC_EXPORT PictureLayerImpl
 
  private:
   // TileBasedLayerImpl:
-  void AppendQuadsSpecialization(
-      const AppendQuadsContext& context,
-      viz::CompositorRenderPass* render_pass,
-      AppendQuadsData* append_quads_data,
-      viz::SharedQuadState* shared_quad_state) override;
+  void AppendQuadsSpecialization(const AppendQuadsContext& context,
+                                 viz::CompositorRenderPass* render_pass,
+                                 AppendQuadsData* append_quads_data,
+                                 viz::SharedQuadState* shared_quad_state,
+                                 const Occlusion& scaled_occlusion) override;
   float GetMaximumContentsScaleForUseInAppendQuads() override;
 };
 

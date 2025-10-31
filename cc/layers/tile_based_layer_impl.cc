@@ -62,8 +62,13 @@ void TileBasedLayerImpl::AppendQuads(const AppendQuadsContext& context,
     shared_quad_state->clip_rect = bounds_in_target_space;
   }
 
+  const Occlusion scaled_occlusion =
+      draw_properties()
+          .occlusion_in_content_space.GetOcclusionWithGivenDrawTransform(
+              shared_quad_state->quad_to_target_transform);
+
   AppendQuadsSpecialization(context, render_pass, append_quads_data,
-                            shared_quad_state);
+                            shared_quad_state, scaled_occlusion);
 }
 
 void TileBasedLayerImpl::AppendSolidQuad(viz::CompositorRenderPass* render_pass,

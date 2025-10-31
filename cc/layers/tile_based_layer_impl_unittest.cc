@@ -25,11 +25,11 @@ class TestTileBasedLayerImpl : public TileBasedLayerImpl {
 
  private:
   // TileBasedLayerImpl:
-  void AppendQuadsSpecialization(
-      const AppendQuadsContext& context,
-      viz::CompositorRenderPass* render_pass,
-      AppendQuadsData* append_quads_data,
-      viz::SharedQuadState* shared_quad_state) override {}
+  void AppendQuadsSpecialization(const AppendQuadsContext& context,
+                                 viz::CompositorRenderPass* render_pass,
+                                 AppendQuadsData* append_quads_data,
+                                 viz::SharedQuadState* shared_quad_state,
+                                 const Occlusion& scaled_occlusion) override {}
   float GetMaximumContentsScaleForUseInAppendQuads() override { return 1.f; }
   bool IsDirectlyCompositedImage() const override { return false; }
 };
@@ -282,6 +282,80 @@ TEST_F(TileBasedLayerImplTest,
 
   ASSERT_EQ(render_pass->shared_quad_state_list.size(), 1u);
   EXPECT_EQ(render_pass->shared_quad_state_list.front()->clip_rect, kLayerRect);
+}
+
+class OcclusionTestTileBasedLayerImpl : public TestTileBasedLayerImpl {
+ public:
+  OcclusionTestTileBasedLayerImpl(LayerTreeImpl* tree_impl, int id)
+      : TestTileBasedLayerImpl(tree_impl, id) {}
+
+  const Occlusion& scaled_occlusion() const { return scaled_occlusion_; }
+  void set_max_contents_scale(float scale) { max_contents_scale_ = scale; }
+
+ private:
+  void AppendQuadsSpecialization(const AppendQuadsContext& context,
+                                 viz::CompositorRenderPass* render_pass,
+                                 AppendQuadsData* append_quads_data,
+                                 viz::SharedQuadState* shared_quad_state,
+                                 const Occlusion& scaled_occlusion) override {
+    scaled_occlusion_ = scaled_occlusion;
+    // Create a dummy quad to avoid tripping debug checks.
+    auto* quad =
+        render_pass->CreateAndAppendDrawQuad<viz::SolidColorDrawQuad>();
+    quad->SetNew(shared_quad_state, gfx::Rect(1, 1), gfx::Rect(1, 1),
+                 SkColors::kTransparent, false);
+  }
+  float GetMaximumContentsScaleForUseInAppendQuads() override {
+    return max_contents_scale_;
+  }
+
+  Occlusion scaled_occlusion_;
+  float max_contents_scale_ = 1.f;
+};
+
+TEST_F(TileBasedLayerImplTest, AppendQuadsScalesOcclusion) {
+  const float scale = 2.0f;
+  const gfx::Rect layer_rect(0, 0, 10, 10);
+  const gfx::Rect occluded_rect_in_content_space(0, 0, 5, 10);
+
+  auto layer = std::make_unique<OcclusionTestTileBasedLayerImpl>(
+      host_impl()->active_tree(), /*id=*/1);
+  auto* raw_layer = layer.get();
+  host_impl()->active_tree()->AddLayer(std::move(layer));
+
+  raw_layer->set_max_contents_scale(scale);
+  raw_layer->SetBounds(layer_rect.size());
+  raw_layer->draw_properties().visible_layer_rect = layer_rect;
+
+  // Set a screen space transform to simulate the layer being scaled. This is
+  // crucial because scaled_occlusion is computed using this transform.
+  gfx::Transform screen_space_transform;
+  screen_space_transform.Scale(scale, scale);
+  raw_layer->draw_properties().screen_space_transform = screen_space_transform;
+
+  // Define an occlusion in the layer's content space. This will be scaled
+  // by AppendQuads to produce the scaled_occlusion.
+  raw_layer->draw_properties().occlusion_in_content_space = Occlusion(
+      gfx::Transform(), SimpleEnclosedRegion(occluded_rect_in_content_space),
+      SimpleEnclosedRegion());
+
+  SetupRootProperties(host_impl()->active_tree()->root_layer());
+
+  auto render_pass = viz::CompositorRenderPass::Create();
+  AppendQuadsData data;
+  raw_layer->AppendQuads(AppendQuadsContext{DRAW_MODE_SOFTWARE, {}, true},
+                         render_pass.get(), &data);
+
+  // The expected occluded rectangle is the original content-space occluded
+  // rectangle scaled to the layer's target space (which is screen space in this
+  // test due to the screen space transform).
+  const gfx::Rect expected_occluded_rect =
+      gfx::ScaleToEnclosingRect(occluded_rect_in_content_space, scale);
+
+  auto enclosing_rect = gfx::ScaleToEnclosingRect(layer_rect, scale);
+  EXPECT_EQ(
+      raw_layer->scaled_occlusion().GetUnoccludedContentRect(enclosing_rect),
+      gfx::SubtractRects(enclosing_rect, expected_occluded_rect));
 }
 
 }  // namespace

@@ -190,13 +190,9 @@ void TileDisplayLayerImpl::AppendQuadsSpecialization(
     const AppendQuadsContext& context,
     viz::CompositorRenderPass* render_pass,
     AppendQuadsData* append_quads_data,
-    viz::SharedQuadState* shared_quad_state) {
+    viz::SharedQuadState* shared_quad_state,
+    const Occlusion& scaled_occlusion) {
   const float max_contents_scale = GetMaximumContentsScaleForUseInAppendQuads();
-
-  const Occlusion scaled_occlusion =
-      draw_properties()
-          .occlusion_in_content_space.GetOcclusionWithGivenDrawTransform(
-              shared_quad_state->quad_to_target_transform);
 
   // If we're doing a regular AppendQuads (ie, not solid color or resourceless
   // software draw, and if the visible rect is scrolled far enough away, then we
