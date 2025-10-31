@@ -1303,6 +1303,12 @@
     'gfx_image': {
       'filepath': 'ui/gfx/image/',
     },
+    'glic': {
+      'filepath': 'chrome/browser/glic|'\
+                  'chrome/test/data/webui/glic|'\
+                  'chrome/browser/resources/glic',
+
+    },
     'global_media_controls': {
       'filepath': 'chrome/browser/ui/global_media_controls|'\
                   'chrome/browser/ui/views/global_media_controls|'\
@@ -2905,8 +2911,7 @@
                 'mdjones+watch@chromium.org',
                 'yuezhanggg+watch@chromium.org'],
     'components_deps': ['droger+watchlist@chromium.org'],
-    'compose': ['dewittj+watch@chromium.org',
-                'petewil@chromium.org'],
+    'compose': ['petewil@chromium.org'],
     'compositor_animator': ['mdjones+watch@chromium.org'],
     'compute_pressure': ['arnaud.mandy@intel.com',
                          'wei4.wang@intel.com',
@@ -3027,6 +3032,7 @@
     'geolocation': ['mattreynolds+watch@chromium.org'],
     'gfx_geometry': ['cc-bugs@chromium.org'],
     'gfx_image': ['rsesek+watch@chromium.org'],
+    'glic': ['dewittj+watch@chromium.org'],
     'global_media_controls': ['steimel+watch-gmc@chromium.org'],
     'gn': ['agrieve+watch@chromium.org',
            'dpranke@chromium.org'],
