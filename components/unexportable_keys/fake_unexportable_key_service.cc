@@ -27,6 +27,13 @@ void FakeUnexportableKeyService::FromWrappedSigningKeySlowlyAsync(
     base::OnceCallback<void(ServiceErrorOr<UnexportableKeyId>)> callback) {
   std::move(callback).Run(base::unexpected(ServiceError::kKeyNotFound));
 }
+void FakeUnexportableKeyService::
+    GetAllSigningKeysForGarbageCollectionSlowlyAsync(
+        BackgroundTaskPriority priority,
+        base::OnceCallback<void(ServiceErrorOr<std::vector<UnexportableKeyId>>)>
+            callback) {
+  std::move(callback).Run(base::unexpected(ServiceError::kKeyNotFound));
+}
 void FakeUnexportableKeyService::SignSlowlyAsync(
     UnexportableKeyId key_id,
     base::span<const uint8_t> data,

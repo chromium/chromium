@@ -30,9 +30,11 @@
 namespace unexportable_keys {
 
 using ::base::test::ErrorIs;
+using ::base::test::ValueIs;
 using ::testing::AtLeast;
 using ::testing::ElementsAreArray;
 using ::testing::Invoke;
+using ::testing::IsEmpty;
 using ::testing::NiceMock;
 using ::testing::Return;
 
@@ -288,6 +290,18 @@ TEST_F(UnexportableKeyServiceImplTest,
   EXPECT_TRUE(from_wrapped_future.IsReady());
   // Key IDs should be the same.
   EXPECT_EQ(key_id, from_wrapped_future.Get());
+}
+
+TEST_F(UnexportableKeyServiceImplTest,
+       GetAllSigningKeysForGarbageCollectionSlowlyAsync) {
+  base::test::TestFuture<ServiceErrorOr<std::vector<UnexportableKeyId>>>
+      get_all_keys_future;
+  service().GetAllSigningKeysForGarbageCollectionSlowlyAsync(
+      kTaskPriority, get_all_keys_future.GetCallback());
+  RunBackgroundTasks();
+  // TODO: crbug.com/455538141 - Update the test when the retrieval is
+  // implemented.
+  EXPECT_THAT(get_all_keys_future.Get(), ValueIs(IsEmpty()));
 }
 
 TEST_F(UnexportableKeyServiceImplTest, Sign) {

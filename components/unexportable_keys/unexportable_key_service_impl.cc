@@ -137,6 +137,15 @@ void UnexportableKeyServiceImpl::FromWrappedSigningKeySlowlyAsync(
   }
 }
 
+void UnexportableKeyServiceImpl::
+    GetAllSigningKeysForGarbageCollectionSlowlyAsync(
+        BackgroundTaskPriority priority,
+        base::OnceCallback<void(ServiceErrorOr<std::vector<UnexportableKeyId>>)>
+            callback) {
+  // TODO: crbug.com/455538141 - Implement key retrieval in the task manager.
+  std::move(callback).Run(std::vector<UnexportableKeyId>());
+}
+
 void UnexportableKeyServiceImpl::SignSlowlyAsync(
     UnexportableKeyId key_id,
     base::span<const uint8_t> data,

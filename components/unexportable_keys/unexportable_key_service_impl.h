@@ -57,6 +57,10 @@ class COMPONENT_EXPORT(UNEXPORTABLE_KEYS) UnexportableKeyServiceImpl
       BackgroundTaskPriority priority,
       base::OnceCallback<void(ServiceErrorOr<UnexportableKeyId>)> callback)
       override;
+  void GetAllSigningKeysForGarbageCollectionSlowlyAsync(
+      BackgroundTaskPriority priority,
+      base::OnceCallback<void(ServiceErrorOr<std::vector<UnexportableKeyId>>)>
+          callback) override;
   void SignSlowlyAsync(
       UnexportableKeyId key_id,
       base::span<const uint8_t> data,

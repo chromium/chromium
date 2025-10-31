@@ -39,6 +39,13 @@ class MockUnexportableKeyService : public UnexportableKeyService {
       (override));
   MOCK_METHOD(
       void,
+      GetAllSigningKeysForGarbageCollectionSlowlyAsync,
+      (BackgroundTaskPriority priority,
+       base::OnceCallback<void(ServiceErrorOr<std::vector<UnexportableKeyId>>)>
+           callback),
+      (override));
+  MOCK_METHOD(
+      void,
       SignSlowlyAsync,
       (UnexportableKeyId key_id,
        base::span<const uint8_t> data,
