@@ -670,11 +670,15 @@ bool Frame::IsFormSubmissionPending() {
 }
 
 void Frame::FocusPage(LocalFrame* originating_frame) {
-  // We only allow focus to move to the |frame|'s page when the request comes
-  // from a user gesture. (See https://bugs.webkit.org/show_bug.cgi?id=33389.)
+  // To prevent unexpected focus stealing, only allow the focus to move to the
+  // |originating_frame|'s page if the request is initiated by a user
+  // gesture (has transient user activation) or if the |originating_frame|
+  // is specially permitted to change focus without user interaction.
   if (originating_frame &&
-      LocalFrame::HasTransientUserActivation(originating_frame)) {
-    // Ask the broswer process to focus the page.
+      (LocalFrame::HasTransientUserActivation(originating_frame) ||
+       originating_frame->GetSettings()
+           ->GetAllowWindowFocusWithoutUserGesture())) {
+    // Ask the browser process to focus the page.
     GetPage()->GetChromeClient().FocusPage();
 
     // Tattle on the frame that called |window.focus()|.

@@ -5229,8 +5229,13 @@ if (!is_android) {
           "../browser/ui/views/status_bubble_views_browsertest_mac.mm",
         ]
       } else {
-        # TaskManagerView is not used or built on Mac.
-        sources += [ "../browser/ui/views/task_manager_view_browsertest.cc" ]
+        sources += [
+          # TaskManagerView is not used or built on Mac.
+          "../browser/ui/views/task_manager_view_browsertest.cc",
+
+          # Excluded on Mac: Cannot reliably check window focus on this platform.
+          "../browser/web_applications/isolated_web_apps/window_management/isolated_web_apps_focus_window_browsertest.cc",
+        ]
       }
       if (is_win || is_mac || is_linux) {
         sources += [
