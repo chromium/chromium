@@ -73,23 +73,6 @@ public class ViewElement<ViewT extends View> extends Element<ViewT> {
         return new DisplayedCondition<>(viewMatcher, mViewSpec.getViewClass(), conditionOptions);
     }
 
-    /**
-     * Create a {@link DisplayedCondition} like the enter Condition, but also waiting for the View
-     * to settle (no changes to its rect coordinates) for 1 second.
-     */
-    public ConditionWithResult<ViewT> createSettleCondition() {
-        Matcher<View> viewMatcher = mViewSpec.getViewMatcher();
-        DisplayedCondition.Options conditionOptions =
-                DisplayedCondition.newOptions()
-                        .withInDialogRoot(mOptions.mInDialog)
-                        .withExpectEnabled(mOptions.mExpectEnabled)
-                        .withExpectDisabled(mOptions.mExpectDisabled)
-                        .withDisplayingAtLeast(mOptions.mDisplayedPercentageRequired)
-                        .withSettleTimeMs(1000)
-                        .build();
-        return new DisplayedCondition<>(viewMatcher, mViewSpec.getViewClass(), conditionOptions);
-    }
-
     @Override
     public @Nullable Condition createExitCondition() {
         if (mOptions.mScoped) {
@@ -183,6 +166,16 @@ public class ViewElement<ViewT extends View> extends Element<ViewT> {
         return new ViewElementMatchesCondition(this, matcher);
     }
 
+    /** Returns the {@link Options} for this ViewElement. */
+    public Options getOptions() {
+        return mOptions;
+    }
+
+    /** Returns an {@link Options.Builder} copying the {@link Options} for this ViewElement. */
+    public Options.Builder copyOptions() {
+        return ViewElement.newOptions().initFrom(mOptions);
+    }
+
     /** Extra options for declaring ViewElements. */
     public static class Options {
         static final Options DEFAULT = new Options();
@@ -247,6 +240,17 @@ public class ViewElement<ViewT extends View> extends Element<ViewT> {
             /** Waits for the View's rect to stop moving. */
             public Builder initialSettleTime(int settleTimeMs) {
                 mInitialSettleTimeMs = settleTimeMs;
+                return this;
+            }
+
+            /** Copy |optionsToClose|'s options into this instance. */
+            public Builder initFrom(Options optionsToClone) {
+                mScoped = optionsToClone.mScoped;
+                mInDialog = optionsToClone.mInDialog;
+                mExpectDisabled = optionsToClone.mExpectDisabled;
+                mExpectEnabled = optionsToClone.mExpectEnabled;
+                mDisplayedPercentageRequired = optionsToClone.mDisplayedPercentageRequired;
+                mInitialSettleTimeMs = optionsToClone.mInitialSettleTimeMs;
                 return this;
             }
         }

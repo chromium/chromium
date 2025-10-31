@@ -65,6 +65,11 @@ public class ActivityElement<ActivityT extends Activity> extends Element<Activit
         replaceExitCondition(new ActivityDestroyedCondition());
     }
 
+    /** Returns the Activity class expected. */
+    public Class<ActivityT> getActivityClass() {
+        return mActivityClass;
+    }
+
     private abstract class ActivityExistsCondition extends ConditionWithResult<ActivityT> {
         private ActivityExistsCondition() {
             super(/* isRunOnUiThread= */ false);

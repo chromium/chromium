@@ -17,6 +17,7 @@ import org.hamcrest.Matcher;
 
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -231,7 +232,7 @@ public abstract class ConditionalState {
     }
 
     /** Declare as an element an Android Activity of type |activityClass|. */
-    protected <T extends Activity> ActivityElement<T> declareActivity(Class<T> activityClass) {
+    public <T extends Activity> ActivityElement<T> declareActivity(Class<T> activityClass) {
         return mElements.declareActivity(activityClass);
     }
 
@@ -380,4 +381,10 @@ public abstract class ConditionalState {
     public TripBuilder pressBackTo() {
         return Triggers.pressBackTo().withContext(this);
     }
+
+    /** Returns which ActivityElement any ViewElements declare should be expected to be in. */
+    abstract @Nullable ActivityElement<?> determineActivityElement();
+
+    /** Called when a {@link ActivityElement} is declared. */
+    abstract <T extends Activity> void onDeclaredActivityElement(ActivityElement<T> element);
 }

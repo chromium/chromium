@@ -5,6 +5,7 @@
 package org.chromium.base.test.transit;
 
 import static org.chromium.base.test.transit.ViewSpec.viewSpec;
+import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.app.Activity;
 import android.view.View;
@@ -61,8 +62,10 @@ public class Elements extends BaseElements {
 
         /** See {@link ConditionalState#declareActivity(Class)}. */
         public <T extends Activity> ActivityElement<T> declareActivity(Class<T> activityClass) {
-            ActivityElement<T> element = new ActivityElement<>(activityClass);
-            return declareElement(element);
+            ActivityElement<T> element = declareElement(new ActivityElement<>(activityClass));
+            assumeNonNull(mOwner);
+            mOwner.mOwnerState.onDeclaredActivityElement(element);
+            return element;
         }
 
         /** See {@link ConditionalState#declareView(ViewSpec)}. */
