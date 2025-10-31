@@ -240,9 +240,10 @@ void HTMLButtonElement::DefaultEventHandler(Event& event) {
     }
   }
 
-  HandleCommandForActivation(event);
-  if (event.DefaultHandled()) {
-    return;
+  if (event.type() == event_type_names::kDOMActivate) {
+    if (HandleCommandForActivation()) {
+      return;
+    }
   }
 
   if (HandleKeyboardActivation(event)) {
