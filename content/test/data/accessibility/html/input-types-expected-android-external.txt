@@ -65,7 +65,7 @@ WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="ro
 ++++++EditText hint:"Text:" clickable editable focusable inputType:1 textSelectionStart:0 textSelectionEnd:0 actions:[FOCUS, CLICK, AX_FOCUS, PASTE, SET_TEXT, IME_ENTER] bundle:[chromeRole="textField", clickableScore="300", hint="Text:"]
 ++++View actions:[AX_FOCUS] bundle:[chromeRole="labelText"]
 ++++++TextView text:"Time: " actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="staticText"]
-++++++Spinner hint:"Time:" clickable focusable inputType:36 actions:[FOCUS, CLICK, AX_FOCUS] bundle:[chromeRole="inputTime", clickableScore="300", hint="Time:", roleDescription="time picker"]
+++++++TimePicker hint:"Time:" clickable focusable inputType:36 actions:[FOCUS, CLICK, AX_FOCUS] bundle:[chromeRole="inputTime", clickableScore="300", hint="Time:", roleDescription="time picker"]
 ++++View actions:[AX_FOCUS] bundle:[chromeRole="labelText"]
 ++++++TextView text:"Url: " actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="staticText"]
 ++++++EditText hint:"Url:" clickable editable focusable inputType:17 textSelectionStart:0 textSelectionEnd:0 actions:[FOCUS, CLICK, AX_FOCUS, PASTE, SET_TEXT, IME_ENTER] bundle:[chromeRole="textField", clickableScore="300", hint="Url:"]

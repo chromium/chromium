@@ -43,6 +43,7 @@ COMPONENT_EXPORT(AX_PLATFORM) extern const char kAXSwitchClassname[];
 COMPONENT_EXPORT(AX_PLATFORM) extern const char kAXSpinnerClassname[];
 COMPONENT_EXPORT(AX_PLATFORM) extern const char kAXTabWidgetClassname[];
 COMPONENT_EXPORT(AX_PLATFORM) extern const char kAXTextViewClassname[];
+COMPONENT_EXPORT(AX_PLATFORM) extern const char kAXTimePickerClassname[];
 COMPONENT_EXPORT(AX_PLATFORM) extern const char kAXToggleButtonClassname[];
 COMPONENT_EXPORT(AX_PLATFORM) extern const char kAXViewClassname[];
 COMPONENT_EXPORT(AX_PLATFORM) extern const char kAXViewGroupClassname[];

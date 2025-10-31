@@ -65,7 +65,7 @@ android.webkit.WebView focusable focused
 ++++++android.widget.EditText clickable editable_text focusable interesting hint='Text:' input_type=1
 ++++android.view.View
 ++++++android.widget.TextView interesting name='Time: '
-++++++android.widget.Spinner role_description='time picker' clickable focusable interesting hint='Time:' input_type=36
+++++++android.widget.TimePicker role_description='time picker' clickable focusable interesting hint='Time:' input_type=36
 ++++android.view.View
 ++++++android.widget.TextView interesting name='Url: '
 ++++++android.widget.EditText clickable editable_text focusable interesting hint='Url:' input_type=17

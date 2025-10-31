@@ -39,6 +39,7 @@ const char kAXSpinnerClassname[] = "android.widget.Spinner";
 const char kAXSwitchClassname[] = "android.widget.Switch";
 const char kAXTabWidgetClassname[] = "android.widget.TabWidget";
 const char kAXTextViewClassname[] = "android.widget.TextView";
+const char kAXTimePickerClassname[] = "android.widget.TimePicker";
 const char kAXToggleButtonClassname[] = "android.widget.ToggleButton";
 const char kAXViewClassname[] = "android.view.View";
 const char kAXViewGroupClassname[] = "android.view.ViewGroup";
