@@ -32,7 +32,7 @@ class MockPage : public reload_button::mojom::Page {
 
   // Returns a PendingRemote to this mock implementation.
   mojo::PendingRemote<reload_button::mojom::Page> BindAndGetRemote() {
-    DCHECK(!receiver_.is_bound());
+    CHECK(!receiver_.is_bound());
     return receiver_.BindNewPipeAndPassRemote();
   }
 

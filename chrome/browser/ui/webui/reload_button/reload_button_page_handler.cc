@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -52,7 +53,10 @@ ReloadButtonPageHandler::ReloadButtonPageHandler(
       page_(std::move(page)),
       web_contents_(web_contents),
       command_updater_(command_updater),
-      metrics_reporter_(metrics_reporter) {}
+      metrics_reporter_(metrics_reporter) {
+  CHECK(command_updater_);
+  CHECK(metrics_reporter_);
+}
 
 ReloadButtonPageHandler::~ReloadButtonPageHandler() = default;
 

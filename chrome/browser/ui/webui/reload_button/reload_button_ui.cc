@@ -12,7 +12,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/metrics_handler.h"
-#include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter.h"
+#include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter_service.h"
 #include "chrome/browser/ui/webui/reload_button/reload_button.mojom.h"
 #include "chrome/browser/ui/webui/reload_button/reload_button_page_handler.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
@@ -24,15 +24,13 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/webui/color_change_listener/color_change_handler.h"
-#include "ui/webui/resources/js/metrics_reporter/metrics_reporter.mojom.h"
 #include "ui/webui/webui_util.h"
 
 ReloadButtonUI::ReloadButtonUI(content::WebUI* web_ui)
     // Sets `enable_chrome_send` to true to allow chrome.send() to be called in
     // TypeScript to record non-timestamp histograms, which can't be done by
     // MetricsReporter.
-    : TopChromeWebUIController(web_ui, /*enable_chrome_send=*/true),
-      metrics_reporter_(std::make_unique<MetricsReporter>()) {
+    : TopChromeWebUIController(web_ui, /*enable_chrome_send=*/true) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       web_ui->GetWebContents()->GetBrowserContext(),
       chrome::kChromeUIReloadButtonHost);
@@ -52,11 +50,7 @@ ReloadButtonUI::ReloadButtonUI(content::WebUI* web_ui)
 
 WEB_UI_CONTROLLER_TYPE_IMPL(ReloadButtonUI)
 
-ReloadButtonUI::~ReloadButtonUI() {
-  page_handler_.reset();
-  // Must live longer than `page_handler_`.
-  metrics_reporter_.reset();
-}
+ReloadButtonUI::~ReloadButtonUI() = default;
 
 ReloadButtonUIConfig::ReloadButtonUIConfig()
     : DefaultTopChromeWebUIConfig(content::kChromeUIScheme,
@@ -71,11 +65,6 @@ void ReloadButtonUI::BindInterface(
     mojo::PendingReceiver<reload_button::mojom::PageHandlerFactory> receiver) {
   page_factory_receiver_.reset();
   page_factory_receiver_.Bind(std::move(receiver));
-}
-
-void ReloadButtonUI::BindInterface(
-    mojo::PendingReceiver<metrics_reporter::mojom::PageMetricsHost> receiver) {
-  metrics_reporter_->BindInterface(std::move(receiver));
 }
 
 void ReloadButtonUI::BindInterface(
@@ -99,8 +88,10 @@ void ReloadButtonUI::CreatePageHandler(
   auto* command_updater = webui::GetBrowserWindowInterface(web_contents)
                               ->GetFeatures()
                               .browser_command_controller();
-
+  auto* metrics_reporter =
+      MetricsReporterService::GetFromWebContents(web_contents)
+          ->metrics_reporter();
   page_handler_ = std::make_unique<ReloadButtonPageHandler>(
       std::move(receiver), std::move(page), web_contents, command_updater,
-      metrics_reporter_.get());
+      metrics_reporter);
 }
