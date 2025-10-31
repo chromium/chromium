@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [10.6.1](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v10.6.0...chromium-bidi-v10.6.1) (2025-10-22)
+
+
+### Bug Fixes
+
+* do not merge headers with the same names ([#3864](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3864)) ([ae6cec6](https://github.com/GoogleChromeLabs/chromium-bidi/commit/ae6cec6cb4b503a25cb78dfcb591d262200f1a56))
+
 ## [10.6.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v10.5.1...chromium-bidi-v10.6.0) (2025-10-20)
 
 
