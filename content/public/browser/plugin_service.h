@@ -111,7 +111,7 @@ class CONTENT_EXPORT PluginService {
   virtual void UnregisterInternalPlugin(const base::FilePath& path) = 0;
 
   // Gets a list of all the registered internal plugins.
-  virtual void GetInternalPlugins(std::vector<WebPluginInfo>* plugins) = 0;
+  virtual std::vector<WebPluginInfo> GetInternalPluginsForTesting() = 0;
 };
 
 }  // namespace content

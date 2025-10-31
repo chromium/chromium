@@ -51,7 +51,7 @@ class CONTENT_EXPORT PluginList {
   void UnregisterInternalPlugin(const base::FilePath& path);
 
   // Gets a list of all the registered internal plugins.
-  void GetInternalPlugins(std::vector<WebPluginInfo>* plugins);
+  std::vector<WebPluginInfo> GetInternalPluginsForTesting() const;
 
   // Get all the plugins synchronously, loading them if necessary.
   void GetPlugins(std::vector<WebPluginInfo>* plugins);

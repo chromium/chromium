@@ -60,7 +60,7 @@ class CONTENT_EXPORT PluginServiceImpl : public PluginService {
   void RegisterInternalPlugin(const WebPluginInfo& info,
                               bool add_at_beginning) override;
   void UnregisterInternalPlugin(const base::FilePath& path) override;
-  void GetInternalPlugins(std::vector<WebPluginInfo>* plugins) override;
+  std::vector<WebPluginInfo> GetInternalPluginsForTesting() override;
 
  private:
   friend struct base::DefaultSingletonTraits<PluginServiceImpl>;

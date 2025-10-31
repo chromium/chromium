@@ -136,8 +136,8 @@ class PluginInfoHostImplBidiTest : public PluginInfoHostImplBidiTestBase,
 IN_PROC_BROWSER_TEST_F(PluginInfoHostImplTest, CoverAllPlugins) {
   // Note that "internal" plugins are the only type that can be registered with
   // `content::PluginService` now.
-  std::vector<WebPluginInfo> plugins;
-  content::PluginService::GetInstance()->GetInternalPlugins(&plugins);
+  const std::vector<WebPluginInfo> plugins =
+      content::PluginService::GetInstance()->GetInternalPluginsForTesting();
 
   size_t expected_plugin_count = 0;
 

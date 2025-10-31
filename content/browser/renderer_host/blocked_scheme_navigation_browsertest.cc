@@ -143,16 +143,14 @@ void RegisterFakePlugin() {
 
 void UnregisterFakePlugin() {
   auto* plugin_service = PluginService::GetInstance();
-  std::vector<WebPluginInfo> plugins;
-  plugin_service->GetInternalPlugins(&plugins);
-  EXPECT_EQ(1u, plugins.size());
+  const std::vector<WebPluginInfo> plugins =
+      plugin_service->GetInternalPluginsForTesting();
+  ASSERT_EQ(1u, plugins.size());
 
   plugin_service->UnregisterInternalPlugin(plugins[0].path);
   plugin_service->RefreshPlugins();
 
-  plugins.clear();
-  plugin_service->GetInternalPlugins(&plugins);
-  EXPECT_TRUE(plugins.empty());
+  EXPECT_TRUE(plugin_service->GetInternalPluginsForTesting().empty());
 }
 #endif  // BUILDFLAG(ENABLE_PLUGINS)
 

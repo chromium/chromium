@@ -108,12 +108,9 @@ void PluginList::UnregisterInternalPlugin(const base::FilePath& path) {
   RemoveExtraPluginPath(path);
 }
 
-void PluginList::GetInternalPlugins(
-    std::vector<WebPluginInfo>* internal_plugins) {
+std::vector<WebPluginInfo> PluginList::GetInternalPluginsForTesting() const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  for (const auto& plugin : internal_plugins_)
-    internal_plugins->push_back(plugin);
+  return internal_plugins_;
 }
 
 bool PluginList::ReadPluginInfo(const base::FilePath& filename,

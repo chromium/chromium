@@ -204,10 +204,9 @@ void PluginServiceImpl::UnregisterInternalPlugin(const base::FilePath& path) {
   PluginList::Singleton()->UnregisterInternalPlugin(path);
 }
 
-void PluginServiceImpl::GetInternalPlugins(
-    std::vector<WebPluginInfo>* plugins) {
+std::vector<WebPluginInfo> PluginServiceImpl::GetInternalPluginsForTesting() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  PluginList::Singleton()->GetInternalPlugins(plugins);
+  return PluginList::Singleton()->GetInternalPluginsForTesting();
 }
 
 }  // namespace content
