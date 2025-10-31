@@ -40,13 +40,8 @@ class MockTrackingProtectionSettingsObserver
     : public TrackingProtectionSettingsObserver {
  public:
   MOCK_METHOD(void, OnIpProtectionEnabledChanged, (), (override));
-  MOCK_METHOD(void, OnFpProtectionEnabledChanged, (), (override));
   MOCK_METHOD(void, OnBlockAllThirdPartyCookiesChanged, (), (override));
   MOCK_METHOD(void, OnTrackingProtection3pcdChanged, (), (override));
-  MOCK_METHOD(void,
-              OnTrackingProtectionExceptionsChanged,
-              (const GURL&),
-              (override));
 };
 
 class TrackingProtectionSettingsTest : public testing::Test {
@@ -224,32 +219,6 @@ TEST_F(TrackingProtectionSettingsTest,
             CONTENT_SETTING_BLOCK);
 }
 
-// Tests that `GetTrackingProtectionExceptions` correctly filters its results.
-// The method should only return content settings with a value of ALLOW, as
-// these represent exceptions. It should not return settings of type
-// TRACKING_PROTECTION with other values, such as BLOCK.
-TEST_F(TrackingProtectionSettingsTest,
-       GetTrackingProtectionExceptionsReturnsOnlyAllowed) {
-  // Add a user-created exception, which is stored as a content setting with a
-  // value of ALLOW.
-  tracking_protection_settings()->AddTrackingProtectionException(GetTestUrl());
-  // In addition, manually add a content setting for the same feature but with a
-  // value of BLOCK. This simulates other potential rules that are not user
-  // exceptions.
-  host_content_settings_map()->SetContentSettingCustomScope(
-      ContentSettingsPattern::Wildcard(),
-      ContentSettingsPattern::FromURLToSchemefulSitePattern(
-          GURL("http://another.url.com")),
-      ContentSettingsType::TRACKING_PROTECTION, CONTENT_SETTING_BLOCK);
-
-  // Verify that the method correctly filters the results and returns only the
-  // ALLOW setting.
-  ContentSettingsForOneType exceptions =
-      tracking_protection_settings()->GetTrackingProtectionExceptions();
-  ASSERT_EQ(exceptions.size(), 1u);
-  EXPECT_EQ(exceptions[0].GetContentSetting(), CONTENT_SETTING_ALLOW);
-}
-
 // Sets prefs
 
 TEST_F(TrackingProtectionSettingsTest,
@@ -280,19 +249,6 @@ TEST_F(TrackingProtectionSettingsTest, CorrectlyCallsObserversForIpProtection) {
   testing::Mock::VerifyAndClearExpectations(&observer);
 }
 
-TEST_F(TrackingProtectionSettingsTest, CorrectlyCallsObserversForFpp) {
-  MockTrackingProtectionSettingsObserver observer;
-  tracking_protection_settings()->AddObserver(&observer);
-
-  EXPECT_CALL(observer, OnFpProtectionEnabledChanged());
-  prefs()->SetBoolean(prefs::kFingerprintingProtectionEnabled, true);
-  testing::Mock::VerifyAndClearExpectations(&observer);
-
-  EXPECT_CALL(observer, OnFpProtectionEnabledChanged());
-  prefs()->SetBoolean(prefs::kFingerprintingProtectionEnabled, false);
-  testing::Mock::VerifyAndClearExpectations(&observer);
-}
-
 TEST_F(TrackingProtectionSettingsTest, CorrectlyCallsObserversForBlockAll3pc) {
   MockTrackingProtectionSettingsObserver observer;
   tracking_protection_settings()->AddObserver(&observer);
@@ -303,37 +259,6 @@ TEST_F(TrackingProtectionSettingsTest, CorrectlyCallsObserversForBlockAll3pc) {
 
   EXPECT_CALL(observer, OnBlockAllThirdPartyCookiesChanged());
   prefs()->SetBoolean(prefs::kBlockAll3pcToggleEnabled, false);
-  testing::Mock::VerifyAndClearExpectations(&observer);
-}
-
-TEST_F(TrackingProtectionSettingsTest,
-       CorrectlyCallsObserversForTrackingProtectionExceptions) {
-  MockTrackingProtectionSettingsObserver observer;
-  tracking_protection_settings()->AddObserver(&observer);
-
-  EXPECT_CALL(observer,
-              OnTrackingProtectionExceptionsChanged(IsSameSite(GetTestUrl())));
-  tracking_protection_settings()->AddTrackingProtectionException(GetTestUrl());
-  testing::Mock::VerifyAndClearExpectations(&observer);
-
-  EXPECT_CALL(observer,
-              OnTrackingProtectionExceptionsChanged(IsSameSite(GetTestUrl())));
-  tracking_protection_settings()->RemoveTrackingProtectionException(
-      GetTestUrl());
-  testing::Mock::VerifyAndClearExpectations(&observer);
-}
-
-TEST_F(TrackingProtectionSettingsTest,
-       CorrectlyCallsObserversForDirectContentSettingChanges) {
-  MockTrackingProtectionSettingsObserver observer;
-  tracking_protection_settings()->AddObserver(&observer);
-
-  EXPECT_CALL(observer,
-              OnTrackingProtectionExceptionsChanged(IsSameSite(GetTestUrl())));
-  host_content_settings_map()->SetContentSettingCustomScope(
-      ContentSettingsPattern::Wildcard(),
-      ContentSettingsPattern::FromURLToSchemefulSitePattern(GetTestUrl()),
-      ContentSettingsType::TRACKING_PROTECTION, CONTENT_SETTING_ALLOW);
   testing::Mock::VerifyAndClearExpectations(&observer);
 }
 

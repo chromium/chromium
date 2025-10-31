@@ -182,9 +182,6 @@ class CookieControlsController final
       bool block_third_party_cookies) override;
   void OnCookieSettingChanged() override;
 
-  void OnIpProtectionEnabledChanged() override;
-  void OnFpProtectionEnabledChanged() override;
-
   Status GetStatus(content::WebContents* web_contents);
 
   CookieControlsEnforcement GetEnforcementForThirdPartyCookieBlocking(

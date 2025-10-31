@@ -539,18 +539,6 @@ void CookieControlsController::OnCookieSettingChanged() {
   }
 }
 
-void CookieControlsController::OnIpProtectionEnabledChanged() {
-  if (GetWebContents()) {
-    UpdateUserBypass();
-  }
-}
-
-void CookieControlsController::OnFpProtectionEnabledChanged() {
-  if (GetWebContents()) {
-    UpdateUserBypass();
-  }
-}
-
 content::WebContents* CookieControlsController::GetWebContents() const {
   if (!tab_observer_) {
     return nullptr;
