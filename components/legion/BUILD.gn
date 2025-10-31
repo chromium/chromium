@@ -3,6 +3,11 @@
 # found in the LICENSE file.
 
 import("//testing/test.gni")
+import("//third_party/protobuf/proto_library.gni")
+
+proto_library("proto") {
+  sources = [ "proto/legion.proto" ]
+}
 
 source_set("legion") {
   sources = [
@@ -31,6 +36,7 @@ source_set("legion") {
     "websocket_client.h",
   ]
   deps = [
+    ":proto",
     "//base",
     "//crypto",
     "//mojo/public/cpp/system",
