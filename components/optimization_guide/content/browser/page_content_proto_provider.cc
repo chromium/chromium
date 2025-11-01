@@ -19,6 +19,7 @@
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/media_session.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -456,6 +457,12 @@ void GetAIPageContent(content::WebContents* web_contents,
   const url::Origin& top_level_origin =
       web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin();
 
+  gfx::Rect main_frame_view_rect_dips;
+  if (content::RenderWidgetHostView* rwhv =
+          web_contents->GetRenderWidgetHostView()) {
+    main_frame_view_rect_dips = rwhv->GetViewBounds();
+  }
+
   web_contents->GetPrimaryMainFrame()->ForEachRenderFrameHost(
       [&](content::RenderFrameHost* rfh) {
         if (!rfh->IsRenderFrameLive()) {
@@ -493,6 +500,9 @@ void GetAIPageContent(content::WebContents* web_contents,
             is_subframe ? ApplyOptionsOverridesForSubframe(
                               main_frame_rph, rfh->GetProcess(), *options)
                         : options.Clone();
+
+        options_to_use->main_frame_view_rect_in_dips =
+            main_frame_view_rect_dips;
 
         mojo::Remote<blink::mojom::AIPageContentAgent> agent;
         rfh->GetRemoteInterfaces()->GetInterface(
