@@ -2468,17 +2468,24 @@ void PermissionUmaUtil::RecordPostPromptSessionDuration(
                     ".PostPromptSessionDuration"}),
       duration);
 
+      // UmaHistogramCustomTimes(name, sample, Milliseconds(1), Hours(1), 100);
+
   // Record finer-grained histograms for the first minute.
   if (duration <= base::Seconds(10)) {
-    base::UmaHistogramTimes(
+    base::UmaHistogramCustomTimes(
         base::StrCat({"Permissions.PredictionService.", permission_string,
                       ".PostPromptSessionDuration10s"}),
-        duration);
+        duration, base::Milliseconds(1), base::Milliseconds(10), 10);
   } else if (duration <= base::Minutes(1)) {
-    base::UmaHistogramLongTimes100(
+    base::UmaHistogramCustomTimes(
         base::StrCat({"Permissions.PredictionService.", permission_string,
                       ".PostPromptSessionDuration1m"}),
-        duration);
+        duration, base::Milliseconds(11), base::Minutes(1), 25);
+  } else if (duration <= base::Minutes(5)) {
+    base::UmaHistogramCustomTimes(
+        base::StrCat({"Permissions.PredictionService.", permission_string,
+                      ".PostPromptSessionDuration5m"}),
+        duration, base::Minutes(1), base::Minutes(5), 15);
   }
 }
 
