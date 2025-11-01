@@ -143,6 +143,8 @@
 <translation id="1578591621182011812">{NUM_PASSWORDS,plural, =1{На прыладзе знойдзены 1 раскрыты пароль}one{На прыладзе знойдзены # раскрыты пароль}few{На прыладзе знойдзены # раскрытыя паролі}many{На прыладзе знойдзены # раскрытых пароляў}other{На прыладзе знойдзены # раскрытага пароля}}</translation>
 <translation id="1594635596540195766">У размешчаным ніжэй спісе наступная колькасць прапанаваных элементаў: <ph name="SUGGESTIONS_COUNT" />.</translation>
 <translation id="1598163867407640634">Выкарыстоўвайце вэб-сайт <ph name="SITE_ETLD_PLUS_ONE" /> праз сэрвіс "<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />"</translation>
+<translation id="1598770407402123677"><ph name="TAB_TITLE" />, замацаваная ўкладка, на якой ідзе запіс</translation>
+<translation id="1600756129506222718"><ph name="TAB_TITLE" />, укладка, змесціва якой абагульваецца</translation>
 <translation id="160275202205869636">Калі параметр уключаны, даныя можна выкарыстоўваць і захоўваць ва Уліковым запісе Google. Калі выключаны – даныя захоўваюцца толькі на гэтай прыладзе.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Выдаліць 1 выбраны элемент}one{Выдаліць # выбраны элемент}few{Выдаліць # выбраныя элементы}many{Выдаліць # выбраных элементаў}other{Выдаліць # выбранага элемента}}</translation>
 <translation id="1639239467298939599">Ідзе загрузка</translation>
@@ -184,6 +186,7 @@
 <translation id="1807709131360304325">Адкрыць новае акно</translation>
 <translation id="1810845389119482123">Першапачатковая наладка сінхранізацыі не завершана</translation>
 <translation id="1812027881030482584">Нельга выканаць уваход на сайце <ph name="SITE_ETLD_PLUS_ONE" /> з дапамогай сэрвісу "<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />"</translation>
+<translation id="1815975907734103433"><ph name="TAB_TITLE" />, укладка, на якой ідзе запіс</translation>
 <translation id="1820408774134375111">Ніжні аркуш са спісам даступных для выбару ўліковых запісаў</translation>
 <translation id="1823492026305965829">Увайсці як <ph name="USER_FULL_NAME" /></translation>
 <translation id="1824902652744048041">Націсніце "Выдаліць даныя пра работу ў браўзеры".</translation>
@@ -198,6 +201,7 @@
 <translation id="1877073879466606884">Профіль, у які вы ўвайшлі, знаходзіцца пад кіраваннем. Адміністратар можа аддалена змяняць налады профілю, аналізаваць інфармацыю пра браўзер з дапамогай водгукаў і выконваць іншыя неабходныя задачы.</translation>
 <translation id="1879904908408734349">Ніжні аркуш са спісам даступных для выбару ўліковых запісаў закрыты</translation>
 <translation id="1883903952484604915">Мае файлы</translation>
+<translation id="1889626070177134359">Прапанаваных элементаў у спісе вышэй: <ph name="SUGGESTIONS_COUNT" />.</translation>
 <translation id="189358972401248634">Іншыя мовы</translation>
 <translation id="1899175549411605574">Ніжні аркуш са статыстыкай цэн</translation>
 <translation id="1900260903084164610">Працягваючы, вы прымаеце <ph name="BEGIN_TOS_LINK" />Умовы выкарыстання<ph name="END_TOS_LINK" />.</translation>
@@ -216,6 +220,7 @@
 <translation id="1957557050935255529">Ідзе загрузка файла PDF…</translation>
 <translation id="1959679933317802873">Чакаецца атрыманне змесціва</translation>
 <translation id="1960290143419248813">Абнаўленні Chrome больш не падтрымліваюцца для гэтай версіі Android.</translation>
+<translation id="1962061488333185936"><ph name="TAB_TITLE" />, укладка з уключаным гукам, выбраная разам з іншымі ўкладкамі</translation>
 <translation id="1963056249988316027">Функцыя праверкі асобы ўключана і не можа пацвердзіць вашу асобу</translation>
 <translation id="1963976881984600709">Стандартная абарона</translation>
 <translation id="1966710179511230534">Абнавіце ўліковыя даныя для ўваходу.</translation>
@@ -228,6 +233,7 @@
 <translation id="1984417487208496350">Без абароны (не рэкамендуецца)</translation>
 <translation id="1986685561493779662">Такая назва ўжо існуе</translation>
 <translation id="200114059308480249">Дадаваць кантэкст у пошукавыя запыты Google?</translation>
+<translation id="2004096469149679223"><ph name="TAB_TITLE" />, замацаваная ўкладка ў рэжыме інкогніта з выключаным гукам</translation>
 <translation id="2021896219286479412">Кіраванне сайтам на ўвесь экран</translation>
 <translation id="2038563949887743358">Уключыць запытванне версіі для настольнага камп’ютара</translation>
 <translation id="204321170514947529">Праграма "<ph name="APP_NAME" />" таксама мае змесціва ў Chrome</translation>
@@ -249,8 +255,10 @@
 <translation id="2111511281910874386">Перайдзіце на старонку</translation>
 <translation id="2119609734654412418">Вашы закладкі знаходзяцца тут</translation>
 <translation id="2122601567107267586">Не ўдалося адкрыць праграму</translation>
+<translation id="2128579426409352593"><ph name="TAB_TITLE" />, замацаваная ўкладка, змесціва якой абагульваецца, выбраная разам з іншымі ўкладкамі</translation>
 <translation id="213279576345780926">Закрыта ўкладка <ph name="TAB_TITLE" /></translation>
 <translation id="2138283760993967204">Значок "Кіраваць"</translation>
+<translation id="2138632817776076519"><ph name="TAB_TITLE" />, выбраная ўкладка, на якой ідзе запіс</translation>
 <translation id="2141396931810938595">На падставе выкарыстання</translation>
 <translation id="2145315049852051678">Chrome пастаянна сочыць за тым, каб у вашым браўзеры былі самыя бяспечныя налады. Мы паведамім вам, калі нешта будзе патрабаваць вашай увагі.</translation>
 <translation id="2149973817440762519">Рэдагаваць закладку</translation>
@@ -265,6 +273,7 @@
 <translation id="2186779861549045980">Вы можаце выбраць, якія даныя захоўваць ва Уліковым запісе Google.\nВы таксама можаце праглядаць гэтыя даныя і кіраваць імі ў закладках, спісе на прагляд і менеджары пароляў.</translation>
 <translation id="219283042927675668">Укладкі ў групе</translation>
 <translation id="2194856509914051091">Інфармацыя для разгляду</translation>
+<translation id="2205701497928406883"><ph name="TAB_TITLE" />, замацаваная ўкладка, змесціва якой абагульваецца</translation>
 <translation id="22091350895006575">Дадаць імя карыстальніка</translation>
 <translation id="221494669172414749">Калі адкрыць Chrome без блакіроўкі профілю, паролі і спосабы аплаты, захаваныя для гэтага аўтамабіля, будуць выдалены. Блакіроўка профілю дазваляе абараніць гэты даныя.</translation>
 <translation id="2227179592712503583">Выдаліць прапанову</translation>
@@ -304,7 +313,9 @@
 <translation id="2385605401818128172">Вы можаце праглядзець сайты, які адпраўляюць зашмат апавяшчэнняў, і адклікаць дазвол на адпраўку новых апавяшчэнняў</translation>
 <translation id="2386938421315164605">Хавайце і рабіце бачнымі тэмы</translation>
 <translation id="2390510615457643724">Спампаваць файл "<ph name="FILE_NAME" />" (<ph name="FILE_SIZE" />) зноў?</translation>
+<translation id="2397175985681716533"><ph name="TAB_TITLE" />, укладка ў рэжыме інкогніта, на якой ідзе запіс</translation>
 <translation id="2410754283952462441">Выберыце ўліковы запіс</translation>
+<translation id="2411239243988279592"><ph name="TAB_TITLE" />, выбраная ўкладка з уключаным гукам</translation>
 <translation id="2413014528833954543">Не ўдаецца праверыць паролі на гэтай прыладзе</translation>
 <translation id="2414886740292270097">Цёмная</translation>
 <translation id="2421705177906985956">Пакуль што сайтаў няма</translation>
@@ -319,6 +330,7 @@
 <translation id="2453860139492968684">Завяршыць</translation>
 <translation id="2461378706168271257">Шукаць па ўкладках</translation>
 <translation id="2461822463642141190">Цяпер</translation>
+<translation id="2466378451804467735"><ph name="TAB_TITLE" />, укладка з выключаным гукам, выбраная разам з іншымі ўкладкамі</translation>
 <translation id="2468444275314013497">З браўзерам усё ў парадку</translation>
 <translation id="2472163211318554013">Увайдзіце ва ўліковы запіс, каб карыстацца ўсімі магчымасцямі Chrome</translation>
 <translation id="247737702124049222">Апісанні відарысаў уключаны</translation>
@@ -342,6 +354,7 @@
 <translation id="2535807170289627159">Усе ўкладкі</translation>
 <translation id="2536728043171574184">Вы праглядаеце пазасеткавую копію гэтай старонкі</translation>
 <translation id="2539002604555291451">Sans serif</translation>
+<translation id="2542094237868555728"><ph name="TAB_TITLE" />, выбраная замацаваная ўкладка ў рэжыме інкогніта з выключаным гукам</translation>
 <translation id="2542548955756682219"><ph name="TAB_TITLE" />, укладка</translation>
 <translation id="2546283357679194313">Файлы сookie і даныя сайтаў</translation>
 <translation id="2547843573592965873">Блакіроўка профілю гарантуе бяспеку вашай інфармацыі ў аўтамабілі. Такая інфармацыя ўключае ў сябе паролі, плацежныя даныя і іншыя звесткі, захаваныя ва Уліковым запісе Google.</translation>
@@ -373,6 +386,7 @@
 <translation id="2669454659051515572">Усе, хто карыстаецца гэтай прыладай, могуць бачыць спампаваныя файлы</translation>
 <translation id="2677748264148917807">Выйсці</translation>
 <translation id="2687009626279857299">Перастаў працаваць на гэтай прыладзе</translation>
+<translation id="2693387519545954740"><ph name="TAB_TITLE" />, укладка з уключаным гукам</translation>
 <translation id="2702516483241149200">Навінка: абагульце спасылку, пры выкарыстанні якой старонка прагартаецца гэтага фрагмента тэксту</translation>
 <translation id="2708226184420201102">Адкрыць у браўзеры <ph name="PRODUCT_NAME" /></translation>
 <translation id="271033894570825754">Новае</translation>
@@ -412,11 +426,13 @@
 <translation id="2871733351037274014">Перадзагрузка старонак</translation>
 <translation id="2876136027428473467"><ph name="CHILD_NAME" /> просіць ухваліць гэты вэб-сайт:</translation>
 <translation id="2876628302275096482">Даведайцеся больш пра тое, <ph name="BEGIN_LINK" />як Chrome забяспечвае прыватнасць вашых даных<ph name="END_LINK" /></translation>
+<translation id="2878607776582720720"><ph name="TAB_TITLE" />, укладка ў рэжыме інкогніта, змесціва якой абагульваецца, выбраная разам з іншымі ўкладкамі</translation>
 <translation id="2885355868600171871">Перайсці на адрасны радок</translation>
 <translation id="2888126860611144412">Пра браўзер Chrome</translation>
 <translation id="2891154217021530873">Спыніць загрузку старонкі</translation>
 <translation id="2894821468041866720">Не выклікае прыметнага запаволення працы браўзера або прылады.</translation>
 <translation id="2895521649038438824">Вы можаце агучыць змесціва гэтай старонкі</translation>
+<translation id="289596984386220317"><ph name="TAB_TITLE" />, замацаваная ўкладка з уключаным гукам</translation>
 <translation id="2900528713135656174">Стварыце падзею</translation>
 <translation id="2901411048554510387">Паказваюцца прапановы для сайта "<ph name="WEBSITE_TITLE" />"</translation>
 <translation id="2904300462646366554">Спампаваныя PDF аўтаматычна адкрываюцца ў адной з праграм для іх прагляду, усталяванай на прыладзе</translation>
@@ -425,6 +441,7 @@
 <translation id="2909615210195135082">Платформа апавяшчэнняў Google</translation>
 <translation id="2912345083818861431">Выкарыстоўваць блакіроўку экрана для прагляду адкрытых укладак у рэжыме інкогніта</translation>
 <translation id="2918484639460781603">Перайсці ў налады</translation>
+<translation id="2920713489113095380"><ph name="TAB_TITLE" />, укладка з выключаным гукам</translation>
 <translation id="2923908459366352541">Няправільная назва.</translation>
 <translation id="2932150158123903946">Сховішча Google <ph name="APP_NAME" /></translation>
 <translation id="2932222164150889403">Мова ўводу з клавіятуры не зменіцца</translation>
@@ -455,6 +472,7 @@
 <translation id="3029276696788198026">Без перадзагрузкі</translation>
 <translation id="3029704984691124060">Фразы-паролі не супадаюць</translation>
 <translation id="3029829659829245765"><ph name="TAB_TITLE" />, замацаваная выбраная ўкладка</translation>
+<translation id="3035527385626181784"><ph name="TAB_TITLE" />, выбраная ўкладка, змесціва якой абагульваецца</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Даведка<ph name="END_LINK" /></translation>
 <translation id="3037177537145227281">Цана адсочваецца</translation>
 <translation id="3037517125981011456">Будуць паказвацца запыты ўваходу ў Chrome</translation>
@@ -480,6 +498,7 @@
 <translation id="316694332262407393">Браўзер Chrome ужо запушчаны.</translation>
 <translation id="3167258285411721858">Вы можаце запытаць мабільную версію сайта <ph name="HOST_NAME" /></translation>
 <translation id="3169472444629675720">Discover</translation>
+<translation id="3181145110929454111"><ph name="TAB_TITLE" />, замацаваная ўкладка ў рэжыме інкогніта з выключаным гукам, выбраная разам з іншымі ўкладкамі</translation>
 <translation id="3187472288455401631">Вымярэнне паказчыкаў, звязаных з рэкламай</translation>
 <translation id="3189635831478931757">Група ўкладак "<ph name="GROUP_TITLE" />"</translation>
 <translation id="3200536777393523575">Закрыць гэта акно?</translation>
@@ -590,6 +609,7 @@
 <translation id="3701515417135397388">Папярэджваць, калі пароль быў раскрыты ў выніку ўцечкі даных</translation>
 <translation id="3703166520839776970">Калі праблема не знікае, то, каб атрымаць больш звестак пра памылку ад сэрвісу "<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />", націсніце на кнопку "Дадатковая інфармацыя" ўнізе.</translation>
 <translation id="3708100450779900829">Каб змяніць пазіцыю адраснага радка, калі прылада знаходзіцца ў складзеным стане, выберыце адзін з прапанаваных варыянтаў яго пазіцыі або націсніце і ўтрымлівайце яго, каб перамясціць.</translation>
+<translation id="3709577906275923507">Файл "<ph name="FILE_NAME" />" можа змяшчаць канфідэнцыяльную інфармацыю, таму яго нельга абагульваць</translation>
 <translation id="3710501561113687889">Каб працягнуць, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> абагуліць з гэтым сайтам наступныя даныя: <ph name="FIELDS_STRING" />.</translation>
 <translation id="3710560693796335511">Супрацоўніцтва</translation>
 <translation id="3718765429352682176">Вы можаце бачыць гісторыю з іншых праграм, спасылкі з якіх адкрываюцца ў Chrome.</translation>
@@ -608,6 +628,7 @@
 <translation id="3777796259512476958">Будзе выкананы выхад з уліковых запісаў на большасці сайтаў</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 укладка}one{# укладка}few{# укладкі}many{# укладак}other{# укладкі}}</translation>
 <translation id="3795154175078851242">Капіраваць відарыс са спасылкай</translation>
+<translation id="3807999512799921804"><ph name="TAB_TITLE" />, выбраная замацаваная ўкладка ў рэжыме інкогніта з уключаным гукам</translation>
 <translation id="3810973564298564668">Кіраваць</translation>
 <translation id="3819178904835489326">Выдалена спамповак: <ph name="NUMBER_OF_DOWNLOADS" /></translation>
 <translation id="3819183753496523827">Вы па-за сеткай. Праверце падключэнне да інтэрнэту і паўтарыце спробу.</translation>
@@ -630,6 +651,7 @@
 <translation id="3900966090527141178">Экспарт пароляў</translation>
 <translation id="3902562446536395999">Адсартавана па алфавіце (ад А да Я)</translation>
 <translation id="3908308510347173149">Абнавіць <ph name="PRODUCT_NAME" /></translation>
+<translation id="3908347685661140825"><ph name="TAB_TITLE" />, выбраная ўкладка з выключаным гукам</translation>
 <translation id="3911609878849982353">Адсартавана па алфавіце (ад Я да А)</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" />: уключана</translation>
 <translation id="3927692899758076493">Без засечак</translation>
@@ -678,6 +700,7 @@
 <translation id="4124152339699379357">Ніжні аркуш з інфармацыяй пра дазвол апавяшчэнняў адкрыты на ўвесь экран</translation>
 <translation id="4132137475637520539">Дазволіць далучацца ўсім, у каго ёсць спасылка</translation>
 <translation id="4135200667068010335">Спіс прылад, з якімі можна абагуліць укладку, закрыты.</translation>
+<translation id="4136632885151622181"><ph name="TAB_TITLE" />, замацаваная ўкладка, на якой ідзе запіс, выбраная разам з іншымі ўкладкамі</translation>
 <translation id="4137746084635924146">Бягучая мова прылады</translation>
 <translation id="414128724510021958">Стандартна запытваюцца сайты для камп’ютараў</translation>
 <translation id="4162867837470729563">Спіс варыянтаў абагульвання разгорнуты на ўвесь экран.</translation>
@@ -714,6 +737,7 @@
 <translation id="4298161202289999785"><ph name="TAB_TITLE" />, выбраная ўкладка ў рэжыме інкогніта</translation>
 <translation id="4298388696830689168">Звязаныя сайты</translation>
 <translation id="4300632303535881174">Папярэдняя старонка</translation>
+<translation id="4300949869324911380"><ph name="TAB_TITLE" />, укладка, на якой ідзе запіс, выбраная разам з іншымі ўкладкамі</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4306489587293957491">Увод</translation>
 <translation id="4307992518367153382">Асноўнае</translation>
@@ -735,6 +759,7 @@
 <translation id="4384468725000734951">Выкарыстоўваецца пошукавая сістэма Sogou</translation>
 <translation id="4387647248986092471">Стварыць блакіроўку профілю для аўтамабіля</translation>
 <translation id="4387817230000841154">Адкрыць спампоўкі</translation>
+<translation id="4398561997852463382"><ph name="TAB_TITLE" />, выбраная і замацаваная ўкладка ў рэжыме інкогніта, на якой ідзе запіс</translation>
 <translation id="4401432223274567153">{INACTIVE_TIME_DAYS,plural, =1{Укладкі і групы ўкладак не выкарыстоўваліся на працягу 1 дня ці больш}one{Укладкі і групы ўкладак не выкарыстоўваліся на працягу # дня ці больш}few{Укладкі і групы ўкладак не выкарыстоўваліся на працягу # дзён ці больш}many{Укладкі і групы ўкладак не выкарыстоўваліся на працягу # дзён ці больш}other{Укладкі і групы ўкладак не выкарыстоўваліся на працягу # дня ці больш}}</translation>
 <translation id="4402611456429872546"><ph name="LANG" /> – ідзе спампоўванне…</translation>
 <translation id="4404568932422911380">Няма закладак</translation>
@@ -751,6 +776,7 @@
 <translation id="4430277756566635951">Зараз выбрана: <ph name="EMAIL" />. Выберыце ўліковы запіс.</translation>
 <translation id="4452411734226507615">Закрыць укладку "<ph name="TAB_TITLE" />"</translation>
 <translation id="4452548195519783679">Закладка дададзена ў папку "<ph name="FOLDER_NAME" />"</translation>
+<translation id="4460822871039013969"><ph name="TAB_TITLE" />, выбраная замацаваная ўкладка, на якой ідзе запіс</translation>
 <translation id="4460861538906892109">{ITEMS_COUNT,plural, =1{1 закладка}one{# закладка}few{# закладкі}many{# закладак}other{# закладкі}}</translation>
 <translation id="4478161224666880173">Вы можаце выкарыстоўваць уліковы запіс <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> на гэтым вэб-сайце. Каб працягнуць, увайдзіце ва ўліковы запіс <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="4479972344484327217">Усталёўваецца <ph name="MODULE" /> для Chrome…</translation>
@@ -869,6 +895,7 @@
 <translation id="4912413785358399818">Перамясціць укладку</translation>
 <translation id="4913169188695071480">Спыніць абнаўленне</translation>
 <translation id="4921224083091001889">Каб выкарыстоўваць свае паролі і іншыя даныя на ўсіх сваіх прыладах, увайдзіце ў Chrome як <ph name="EMAIL" /></translation>
+<translation id="4923173329789776645">Ваша арганізацыя не рэкамендуе спампоўваць гэты файл</translation>
 <translation id="4925120120285606924">Здымак экрана <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="4926901776383726965">Вы можаце захоўваць відарысы і файлы для прагляду па-за сеткай ці абагульваць іх з іншымі праграмамі</translation>
 <translation id="492699891214363151">{BOOKMARKS_COUNT,plural, =1{1 закладка і іншыя элементы захаваны толькі на гэтай прыладзе. Каб выкарыстоўваць іх на іншых прыладах, захавайце гэту закладку і элементы ва Уліковым запісе Google.}one{# закладка і іншыя элементы захаваны толькі на гэтай прыладзе. Каб выкарыстоўваць іх на іншых прыладах, захавайце гэтыя закладкі і элементы ва Уліковым запісе Google.}few{# закладкі і іншыя элементы захаваны толькі на гэтай прыладзе. Каб выкарыстоўваць іх на іншых прыладах, захавайце гэтыя закладкі і элементы ва Уліковым запісе Google.}many{# закладак і іншыя элементы захаваны толькі на гэтай прыладзе. Каб выкарыстоўваць іх на іншых прыладах, захавайце гэтыя закладкі і элементы ва Уліковым запісе Google.}other{# закладкі і іншыя элементы захаваны толькі на гэтай прыладзе. Каб выкарыстоўваць іх на іншых прыладах, захавайце гэтыя закладкі і элементы ва Уліковым запісе Google.}}</translation>
@@ -960,10 +987,12 @@
 <translation id="5326246328175179736">Вы не можаце ўвайсці праз гэты ўліковы запіс</translation>
 <translation id="5327248766486351172">Імя</translation>
 <translation id="5328542107300944283">Выкарыстоўвайце праз <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
+<translation id="5338596104773193991"><ph name="TAB_TITLE" />, укладка ў рэжыме інкогніта, змесціва якой абагульваецца</translation>
 <translation id="5342314432463739672">Запыты дазволаў</translation>
 <translation id="534580735623577507">Няма сайтаў за <ph name="TIME_PERIOD" /></translation>
 <translation id="5354716139000094027">Падсумоўвайце з дапамогай AI</translation>
 <translation id="5355191726083956201">Палепшаная абарона ўключана</translation>
+<translation id="5370504953185181057"><ph name="TAB_TITLE" />, замацаваная ўкладка ў рэжыме інкогніта, змесціва якой абагульваецца</translation>
 <translation id="5375374982898812658">Вы адразу страціце доступ да групы ўкладак "<ph name="GROUP_NAME" />", і яна будзе выдалена з усіх вашых прылад</translation>
 <translation id="5375577065097716013">Шукаць праз Аб’ектыў <ph name="BEGIN_NEW" />Навінка<ph name="END_NEW" /></translation>
 <translation id="5390367025924544771"><ph name="WEBSITE_ORIGIN" /> запытвае магчымасць выкарыстоўваць вашу асабістую інфармацыю з лічбавага кашалька. Працягвайце, толькі калі давяраеце гэтаму сайту. З дапамогай шкодных сайтаў зламыснікі могуць падманам прымусіць вас раскрыць свае даныя, такія як поўнае імя і нумар пасведчання асобы.</translation>
@@ -1035,6 +1064,7 @@
 <translation id="571930967925877633">Закладкі, гісторыя і іншыя даныя Chrome больш не будуць сінхранізавацца з Уліковым запісам Google</translation>
 <translation id="572328651809341494">Нядаўнія ўкладкі</translation>
 <translation id="5728072125198221967">Звязаныя сэрвісы Google</translation>
+<translation id="5734658507307260911"><ph name="TAB_TITLE" />, замацаваная ўкладка ў рэжыме інкогніта з уключаным гукам</translation>
 <translation id="5744751019568455640">Тут вы можаце выбраць галасы для агучвання змесціва вэб-старонак. Націсніце на назву голасу, які вам спадабаўся, і я буду выкарыстоўваць іменна яго.</translation>
 <translation id="574845902699630049">Будзе абагулена як <ph name="OWNER_FULL_NAME" /></translation>
 <translation id="5749068826913805084">Для спампоўвання файлаў Chrome патрабуецца доступ да сховішча.</translation>
@@ -1054,6 +1084,7 @@
 <translation id="5809361687334836369">{HOURS,plural, =1{# гадзіну таму}one{# гадзіну таму}few{# гадзіны таму}many{# гадзін таму}other{# гадзіны таму}}</translation>
 <translation id="5810288467834065221">© <ph name="YEAR" /> Google LLC. Усе правы абароненыя.</translation>
 <translation id="581030587084991751">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{Паказаць апавяшчэнне}one{Паказаць апавяшчэнні}few{Паказаць апавяшчэнні}many{Паказаць апавяшчэнні}other{Паказаць апавяшчэнні}}</translation>
+<translation id="5811144606237321538"><ph name="TAB_TITLE" />, замацаваная ўкладка з выключаным гукам, выбраная разам з іншымі ўкладкамі</translation>
 <translation id="5814749351757353073">Падпісвайцеся на любімыя сайты</translation>
 <translation id="5823093032261493462">Усё роўна спампаваць файл "<ph name="FILE_NAME" />" з дамена "<ph name="DOWNLOAD_DOMAIN" />"?</translation>
 <translation id="5825135637446025843">Пасля перазапуску Chrome інфармацыя, захаваная новай службай, будзе выкарыстоўвацца для аўтазапаўнення пры ўводзе пароляў, ключоў доступу, адрасоў, спосабаў аплаты і іншых звестак.</translation>
@@ -1068,6 +1099,7 @@
 <translation id="5849288995120328556">Спыніць абагульванне?</translation>
 <translation id="5853623416121554550">прыпынена</translation>
 <translation id="5855546874025048181">Удакладніць: <ph name="REFINE_TEXT" /></translation>
+<translation id="585617462962753911"><ph name="TAB_TITLE" />, укладка ў рэжыме інкогніта, на якой ідзе запіс, выбраная разам з іншымі ўкладкамі</translation>
 <translation id="5857447844686706637">Нешта пайшло не так. Абнавіць функцыю "Адсочванне цаны" не ўдалося.</translation>
 <translation id="5859968346865909126">Уключыць або выключыць яе можна ў наладах</translation>
 <translation id="5860033963881614850">Выключана</translation>
@@ -1080,6 +1112,7 @@
 <translation id="5885378508678660271">Апавяшчэнні <ph name="SEPARATOR" /> Браўзер Chrome адклікаў гэтыя дазволы, бо гэты сайт небяспечны</translation>
 <translation id="5899667542927581604">Аркуш з інфармацыяй пра адсутнасць ключоў доступу закрыты</translation>
 <translation id="5907542076239273525">Закладка захавана ў папку "<ph name="FOLDER_NAME" />"</translation>
+<translation id="5911301511366365629"><ph name="TAB_TITLE" />, выбраная ўкладка ў рэжыме інкогніта з уключаным гукам</translation>
 <translation id="5916664084637901428">Уключана</translation>
 <translation id="5919204609460789179">Каб запусціць сінхранізацыю, абнавіце <ph name="PRODUCT_NAME" /></translation>
 <translation id="5932881020239635062">Серыйны нумар</translation>
@@ -1142,6 +1175,7 @@
 <translation id="6162892189396105610">Chrome перадзагружае старонкі, якія вы, імаверна, наведаеце.</translation>
 <translation id="6165508094623778733">Даведацца больш</translation>
 <translation id="6170675927290506430">Перайсці да налад апавяшчэнняў</translation>
+<translation id="6184972259157699660"><ph name="TAB_TITLE" />, укладка ў рэжыме інкогніта з выключаным гукам</translation>
 <translation id="6186394685773237175">Не знойдзена раскрытых пароляў</translation>
 <translation id="6192907950379606605">Атрымл. апісанні відарысаў</translation>
 <translation id="6193448654517602979">Выберыце ўкладкі</translation>
@@ -1176,6 +1210,7 @@
 <translation id="630308129961693966">Выберыце пазіцыю адраснага радка</translation>
 <translation id="6303969859164067831">Выйсці і выключыць сінхранізацыю</translation>
 <translation id="6307241780749477694">Каб атрымаць доступ да ўсіх пароляў на гэтай прыладзе, спраўдзіце сваю асобу</translation>
+<translation id="6309082029962045994"><ph name="TAB_TITLE" />, замацаваная ўкладка з уключаным гукам, выбраная разам з іншымі ўкладкамі</translation>
 <translation id="6312687380483398334">Вэб-праграмы (бязгучныя)</translation>
 <translation id="6315386555979018699">Выдаліць і працягнуць</translation>
 <translation id="6316139424528454185">Версія Android не падтрымлів.</translation>
@@ -1185,6 +1220,7 @@
 <translation id="6333140779060797560">Абагуліць праз <ph name="APPLICATION" /></translation>
 <translation id="6335454563754888572">Рэдагаваць URL-адрас, які вядзе на старонку на вэб-сайце <ph name="PAGE_URL" /></translation>
 <translation id="6337234675334993532">Шыфраванне</translation>
+<translation id="6338345532044450921"><ph name="TAB_TITLE" />, укладка ў рэжыме інкогніта з уключаным гукам</translation>
 <translation id="6340526405444716530">Персаналізацыя</translation>
 <translation id="6341580099087024258">Запытваць месца для захоўвання файлаў</translation>
 <translation id="6342069812937806050">Толькі што</translation>
@@ -1202,6 +1238,7 @@
 <translation id="6401458660421980302">Каб адправіць гэту ўкладку на іншую прыладу, увайдзіце з гэтай прылады ў Chrome</translation>
 <translation id="6404511346730675251">Змяніце закладку</translation>
 <translation id="6406506848690869874">Сінхранізаваць</translation>
+<translation id="6408370409308816490"><ph name="TAB_TITLE" />, выбраная замацаваная ўкладка ў рэжыме інкогніта, змесціва якой абагульваецца</translation>
 <translation id="6410883413783534063">Каб праглядаць некалькі старонак адначасова, карыстайцеся ўкладкамі</translation>
 <translation id="6411009031428071896">Слухаць стужку</translation>
 <translation id="6411219469806822692">Не ўдаецца перамясціцца вышэй. Паспрабуйце пачаць з месца, якое б знаходзілася вышэй на старонцы.</translation>
@@ -1280,6 +1317,7 @@
 <translation id="671928215901716392">Экран блакіроўкі</translation>
 <translation id="6723740634201835758">У вашым Уліковым запісе Google</translation>
 <translation id="6734310707649923383">Вы можаце прагледзець наведаныя старонкі або выдаліць іх з гісторыі</translation>
+<translation id="6737429434215739253"><ph name="TAB_TITLE" />, замацаваная ўкладка ў рэжыме інкогніта, на якой ідзе запіс</translation>
 <translation id="6738867403308150051">Ідзе спампоўка…</translation>
 <translation id="6745063744988317486">Mono</translation>
 <translation id="6746338529702829275">Праверце даныя ўліковага запісу</translation>
@@ -1346,6 +1384,7 @@
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> Браўзер Chrome адклікаў гэтыя дазволы, бо вы не наведвалі гэты сайт у апошні час</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 укладка}one{<ph name="NUMBER_OF_TABS" /> укладка}few{<ph name="NUMBER_OF_TABS" /> укладкі}many{<ph name="NUMBER_OF_TABS" /> укладак}other{<ph name="NUMBER_OF_TABS" /> укладкі}}</translation>
 <translation id="6929224077895306814">Усе коды бяспекі, захаваныя на вашай прыладзе і ва Уліковым запісе Google, будуць выдалены</translation>
+<translation id="6933180670536678127"><ph name="TAB_TITLE" />, выбраная замацаваная ўкладка з уключаным гукам</translation>
 <translation id="6937524809504266803">Персаналізацыя і звязванне</translation>
 <translation id="6937876069006524083">Псеўданім (неабавязкова)</translation>
 <translation id="6942665639005891494">Стандартнае размяшчэнне спамповак можна змяніць у наладах</translation>
@@ -1380,9 +1419,11 @@
 <translation id="707155805709242880">Выберыце, што сінхранізаваць</translation>
 <translation id="7077143737582773186">SD-карта</translation>
 <translation id="7078916049958741685">Таксама выдаліць даныя Chrome з гэтай прылады</translation>
+<translation id="7080145768121641840"><ph name="TAB_TITLE" />, выбраная замацаваная ўкладка з выключаным гукам</translation>
 <translation id="7084115944294706056">Выбар размяшчэння адраснага радка</translation>
 <translation id="7085332316435785646">Выберыце, ці выкарыстоўваць гісторыю Chrome для персаналізацыі сэрвісаў Google</translation>
 <translation id="7088681679121566888">Chrome не патрабуе абнаўлення</translation>
+<translation id="7098100324909062850"><ph name="TAB_TITLE" />, укладка ў рэжыме інкогніта з выключаным гукам, выбраная разам з іншымі ўкладкамі</translation>
 <translation id="7106762743910369165">Вашым браўзерам кіруе арганізацыя</translation>
 <translation id="7111394291981742152">Chrome забяспечвае дадатковы кантроль над тым, якую рэкламу вы бачыце, і абмяжоўвае колькасць даных, якія сайты могуць атрымліваць пра вас пры паказе персаналізаванай рэкламы.</translation>
 <translation id="7111822978084196600">Дайце назву гэтаму акну</translation>
@@ -1435,6 +1476,7 @@
 <translation id="7290209999329137901">Перайменаванне недаступнае</translation>
 <translation id="7291910923717764901">Дададзены апісанні відарысаў на гэтай старонцы</translation>
 <translation id="7293429513719260019">Выбраць мову</translation>
+<translation id="7298319215489933099"><ph name="TAB_TITLE" />, выбраная замацаваная ўкладка, змесціва якой абагульваецца</translation>
 <translation id="7304072650267745798">На вашай прыладзе Android можа быць падобная налада. Калі гэта налада ўключана ў Chrome і на вашай прыладзе Android, кампаніі змогуць ацэньваць эфектыўнасць рэкламы на сайтах, якія вы наведваеце, і ў праграмах, якімі вы карыстаецеся.</translation>
 <translation id="7313188324932846546">Дакраніцеся, каб наладзіць сінхранізацыю</translation>
 <translation id="7314734791127433392">Не ўдалося праверыць паролі</translation>
@@ -1484,6 +1526,7 @@
 <translation id="749294055653435199">Google Аб’ектыў недаступны на гэтай прыладзе</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (абноўлена <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7498271377022651285">Пачакайце…</translation>
+<translation id="7499065150275272675"><ph name="TAB_TITLE" />, замацаваная ўкладка з выключаным гукам</translation>
 <translation id="7501135638693251872">Усе закладкі</translation>
 <translation id="750228856503700085">Абнаўленні недаступныя</translation>
 <translation id="7507207699631365376">Азнаёміцца з <ph name="BEGIN_LINK" />палітыкай прыватнасці<ph name="END_LINK" /> гэтага пастаўшчыка</translation>
@@ -1500,6 +1543,7 @@
 <translation id="7573665567024262965">Выберыце стандартныя праграмы</translation>
 <translation id="7577900504646297215">Кіраваць інтарэсамі</translation>
 <translation id="757855969265046257">{FILES,plural, =1{Спампаваны <ph name="FILES_DOWNLOADED_ONE" /> файл}one{Спампаваны <ph name="FILES_DOWNLOADED_MANY" /> файл}few{Спампавана <ph name="FILES_DOWNLOADED_MANY" /> файлы}many{Спампавана <ph name="FILES_DOWNLOADED_MANY" /> файлаў}other{Спампавана <ph name="FILES_DOWNLOADED_MANY" /> файла}}</translation>
+<translation id="7579341427377004341"><ph name="TAB_TITLE" />, укладка ў рэжыме інкогніта з уключаным гукам, змесціва якой абагульваецца</translation>
 <translation id="7581273696622423628">Прыняць удзел у апытанні</translation>
 <translation id="7583262514280211622">Ваш спіс чытання знаходзіцца тут</translation>
 <translation id="758603037873046260">Каб захаваць гэту старонку, увайдзіце ва ўліковы запіс</translation>
@@ -1538,6 +1582,7 @@
 <translation id="7708994397325774423">Атрымаць усе паролі</translation>
 <translation id="7714077993070342304">Адкрыць меню Chrome</translation>
 <translation id="7733878270780732638">Недастаткова месца на прыладзе.</translation>
+<translation id="774403695779169686"><ph name="TAB_TITLE" />, выбраная ўкладка ў рэжыме інкогніта, змесціва якой абагульваецца</translation>
 <translation id="774876555279732384">Кіраваць службамі аўтазапаўнення таксама можна ў <ph name="BEGIN_LINK" />Наладах Android<ph name="END_LINK" />.</translation>
 <translation id="7759809451544302770">Неабавязкова</translation>
 <translation id="7762668264895820836">SD-карта <ph name="SD_CARD_NUMBER" /></translation>
@@ -1603,10 +1648,12 @@
 <translation id="7998918019931843664">Паўторна адкрыць закрытую ўкладку</translation>
 <translation id="8001245658307297681">Вы праглядаеце лакальны файл</translation>
 <translation id="8004582292198964060">Браўзер</translation>
+<translation id="8023190977980579548"><ph name="TAB_TITLE" />, замацаваная ўкладка ў рэжыме інкогніта, змесціва якой абагульваецца, выбраная разам з іншымі ўкладкамі</translation>
 <translation id="8025972204417227828">Дадаць новае</translation>
 <translation id="8027863900915310177">Выберыце, куды спампаваць файл</translation>
 <translation id="8030852056903932865">Ухваліць</translation>
 <translation id="8032569120109842252">Вы падпісаны</translation>
+<translation id="8035522026858423976"><ph name="TAB_TITLE" />, выбраная ўкладка ў рэжыме інкогніта з выключаным гукам</translation>
 <translation id="8037750541064988519">Засталося дзён: <ph name="DAYS" /></translation>
 <translation id="8037801708772278989">Праверка праводзілася толькі што</translation>
 <translation id="804335162455518893">SD-карта не знойдзена</translation>
@@ -1683,6 +1730,7 @@
 <translation id="832514020744584629"><ph name="PREF_TITLE" />  <ph name="BEGIN_NEW" />Навінка<ph name="END_NEW" /></translation>
 <translation id="8342727528718219152">Chrome паведаміць вам пра сайты, якія могуць адпраўляць зашмат апавяшчэнняў</translation>
 <translation id="834313815369870491">Ніколі не перакладаць наступныя сайты:</translation>
+<translation id="8348215005712416247"><ph name="TAB_TITLE" />, замацаваная ўкладка ў рэжыме інкогніта, на якой ідзе запіс, выбраная разам з іншымі ўкладкамі</translation>
 <translation id="8348430946834215779">Выкарыстоўваць HTTPS калі магчыма і паказваць папярэджанне перад загрузкай сайтаў, якія не падтрымліваюць гэты пратакол</translation>
 <translation id="8354977102499939946">Хуткі пошук з дапамогай галасавых каманд. Каб змяніць функцыю гэтай кнопкі, перайдзіце ў Налады.</translation>
 <translation id="8361737703487394103">Перайсці да ўказанай укладкі (1–8)</translation>
@@ -1802,6 +1850,7 @@
 <translation id="8865415417596392024">Даныя Chrome у вашым уліковым запісе</translation>
 <translation id="8888527824584402177">Укладкі, якімі вы не карысталіся на працягу <ph name="DAYS_INACTIVE" /> сут, будуць перамешчаны сюды<ph name="AUTODELETE_SECTION" />. Гэты параметр можна ў любы час змяніць у раздзеле "<ph name="SETTINGS_TITLE" />".</translation>
 <translation id="8890668505403261809">Шукайце па ўкладках у рэжыме інкогніта</translation>
+<translation id="8894890673032951011"><ph name="TAB_TITLE" />, выбраная ўкладка ў рэжыме інкогніта, на якой ідзе запіс</translation>
 <translation id="8898822736010347272">Адпраўляе URL-адрасы некаторых наведаных вамі старонак, пэўную сістэмную інфармацыю і фрагменты змесціва старонак у сэрвісы Google, каб дапамагаць выяўляць новыя кіберпагрозы і абараняць усіх у інтэрнэце.</translation>
 <translation id="8903921497873541725">Павялічыць маштаб</translation>
 <translation id="8909135823018751308">Абагуліць…</translation>
@@ -1842,8 +1891,10 @@
 <translation id="9065383040763568503">Захаваныя даныя, якія Chrome не лічыць важнымі (напрыклад, сайты, налады якіх не захаваны або якія вы наведваеце рэдка)</translation>
 <translation id="9067341854474068781">Аркуш з інфармацыяй пра адсутнасць ключоў доступу адкрыты на ўсю вышыню</translation>
 <translation id="906781307897697745">месцазнаходжанне: <ph name="PRODUCT_NAME" /></translation>
+<translation id="9068568736932147490"><ph name="TAB_TITLE" />, замацаваная ўкладка ў рэжыме інкогніта з уключаным гукам, выбраная разам з іншымі ўкладкамі</translation>
 <translation id="9069999660519089861">Няма непрачытаных старонак</translation>
 <translation id="9070377983101773829">Пачаць галасавы пошук</translation>
+<translation id="9073805459138993880"><ph name="TAB_TITLE" />, укладка, змесціва якой абагульваецца, выбраная разам з іншымі ўкладкамі</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9081543426177426948">Звесткі аб сайтах, якія вы наведваеце ў рэжыме інкогніта, не захоўваюцца</translation>
 <translation id="9086302186042011942">Сінхранізацыя</translation>

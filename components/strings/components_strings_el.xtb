@@ -1844,6 +1844,7 @@
 <translation id="4014895360827978999">Εμπορικές υπηρεσίες και συστήματα πληρωμών</translation>
 <translation id="4018819349042761761">Δημόσιο κλειδί</translation>
 <translation id="4023431997072828269">Επειδή αυτή η φόρμα υποβάλλεται χρησιμοποιώντας μια σύνδεση που δεν είναι ασφαλής, οι πληροφορίες σας θα είναι ορατές σε άλλους χρήστες.</translation>
+<translation id="4024673763872230929">Αποθηκεύστε τις πληροφορίες σας και συμπληρώστε φόρμες πιο γρήγορα. Αποθηκεύονται στη συσκευή σας.</translation>
 <translation id="4025325634010721551">Οι πολιτικές φορτώθηκαν ξανά</translation>
 <translation id="4025338605225449265">Νομίσματα και συνάλλαγμα</translation>
 <translation id="4025777154208238692">Αντίστροφη σειρά</translation>
@@ -2278,6 +2279,7 @@
 <translation id="4732860731866514038">Λήψη πακέτου γλώσσας για <ph name="LANGUAGE" />... <ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992">Ο ιστότοπος <ph name="URL" /> ζητά να χρησιμοποιήσει την τοποθεσία της συσκευής σας</translation>
 <translation id="473414950835101501">Χρήση των καμερών σας</translation>
+<translation id="4734343956394152985"><ph name="BEGIN_BOLD" />Τρέχουσα προεπιλογή<ph name="END_BOLD" /> · <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="4736825316280949806">Επανεκκινήστε το Chromium</translation>
 <translation id="4736934858538408121">Εικονική κάρτα</translation>
 <translation id="473775607612524610">Ενημέρωση</translation>
@@ -2340,6 +2342,7 @@
 <translation id="4822493756793346865">Οι συνήθεις τιμές βασίζονται σε πληροφορίες των τελευταίων 90 ημερών από καταστήματα στον ιστό.</translation>
 <translation id="4822922322149719535">Έλεγχος αρχείου καταγραφής σφαλμάτων</translation>
 <translation id="4823699521959851389">Το <ph name="SHORT_PRODUCT_NAME" /> χρειάζεται πρόσβαση στην άδεια <ph name="PERMISSION" /> της συσκευής σας</translation>
+<translation id="4825311006392962663">Εμφάνιση επιλογών για πληρωμή αργότερα κατά την ολοκλήρωση αγοράς</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, πατήστε το πλήκτρο Tab και έπειτα το πλήκτρο Enter για να δημιουργήσετε γρήγορα ένα νέο Φύλλο Google</translation>
 <translation id="4826588772550366629">κάμερα και μικρόφωνο</translation>
 <translation id="4827283332383516812">Διαγραφή κάρτας</translation>
@@ -3388,6 +3391,7 @@
 <translation id="6521745193039995384">Ανενεργή</translation>
 <translation id="6522682797352430154">Κλασική μουσική</translation>
 <translation id="6524830701589638230">Κουμπί Διαχείριση ρυθμίσεων προσβασιμότητας, ενεργοποιήστε το για να εξατομικεύσετε τα εργαλεία προσβασιμότητας από τις ρυθμίσεις του Chrome</translation>
+<translation id="6525222262307262764">Διατήρηση τρέχουσας προεπιλογής</translation>
 <translation id="6527049834925947126">Παραγωγή τροφίμων</translation>
 <translation id="6529173248185917884">Έβδομο ρολό</translation>
 <translation id="6529602333819889595">&amp;Επανάληψη διαγραφής</translation>
@@ -3408,6 +3412,7 @@
 <translation id="6567832540451970450">Ο διαχειριστής σας επιτρέπει την άδεια <ph name="PERMISSION" /> για αυτόν τον ιστότοπο</translation>
 <translation id="6568793038316600992">Κουμπί Διαχείριση τρόπων πληρωμής, ενεργοποιήστε το για να διαχειριστείτε τα στοιχεία πληρωμών και πιστωτικών καρτών από τις ρυθμίσεις του Chrome</translation>
 <translation id="6569060085658103619">Βλέπετε μια σελίδα επέκτασης</translation>
+<translation id="6571992525120410251">Ρωτήστε το <ph name="ENGINE_NAME" /> οτιδήποτε</translation>
 <translation id="6572867903637058088">Είναι χρήσιμο αυτό;</translation>
 <translation id="6573200754375280815">Διπλό τρύπημα στα δεξιά</translation>
 <translation id="6575408526598156416">Αποθήκευση στον λογαριασμό</translation>
@@ -3457,6 +3462,7 @@
 <translation id="666259744093848177">(x86_64 μεταφρασμένο)</translation>
 <translation id="6665553082534466207">Τριπλό τρύπημα στα δεξιά</translation>
 <translation id="6668389483194953109">Βρέθηκε το όνομα μεγέθους χαρτιού custom, αλλά η ιδιότητα custom_size είναι κενή ή μη έγκυρη.</translation>
+<translation id="6670729408462528018">Gallery</translation>
 <translation id="6671169470640320959">Χρηματοδότηση για την αγορά αυτοκινήτου</translation>
 <translation id="6671697161687535275">Να καταργηθεί η πρόταση φόρμας από το Chromium;</translation>
 <translation id="6675846980676550611">Δεν επιτρέπεται η χρήση του AR</translation>

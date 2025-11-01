@@ -64,6 +64,7 @@
 <translation id="2918484639460781603">Ayarlara keçin</translation>
 <translation id="2928243913527329289">Google | Bu mağaza haqqında</translation>
 <translation id="2978860912612699943">{ITEMS_COUNT,plural, =1{<ph name="ITEMS_COUNT_ONE" /> element seçilib}other{<ph name="ITEMS_COUNT_MANY" /> element seçilib}}</translation>
+<translation id="2991702137079525605">{TABS_COUNT,plural, =1{Tabı bərkidin}other{Tabları bərkidin}}</translation>
 <translation id="3008554597174452548">Məhsulu izləməyi dayandırın</translation>
 <translation id="3026391124054406831">Tabları nizamlamaq üçün qruplar yaradın.</translation>
 <translation id="3051031624272448591">Tarixçədə onları yenidən əldə edə bilərsiniz</translation>
@@ -85,6 +86,7 @@
 <translation id="3940195383040445971">Tablarda qiymətləri izləyin</translation>
 <translation id="3940717704786481856">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> yeni tab, <ph name="ANY_CLOSED" /> tab bağlıdır}other{<ph name="MANY_ADDED" /> yeni tab, <ph name="ANY_CLOSED" /> tab bağlıdır}}</translation>
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{Tabı qruplaşdırın}other{Tabları qruplaşdırın}}</translation>
+<translation id="3962134438902735041">{TABS_COUNT,plural, =1{Seçilmiş <ph name="TABS_COUNT_ONE" /> tabın bərkidilməsini ləğv edin}other{Seçilmiş <ph name="TABS_COUNT_MANY" /> tabın bərkidilməsini ləğv edin}}</translation>
 <translation id="4009732926939031387">{NUM_DAYS,plural, =1{<ph name="NUM_DAYS_ONE" /> gün əvvəl yaradıldı}other{<ph name="NUM_DAYS_MANY" /> gün əvvəl yaradıldı}}</translation>
 <translation id="4076226664360336092">Tab qrupu siyahısı, tam hündürlükdə açıldı</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> tab əlaqəli görünür. Onlar qruplaşdırılsın?</translation>
@@ -140,6 +142,7 @@
 <translation id="625996437999624951">{TAB_COUNT,plural, =1{Tabı qrupdan silin}other{Tabları qrupdan silin}}</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Yeni qrupa tab əlavə edin}other{Yeni qrupa tablar əlavə edin}}</translation>
 <translation id="6333260925957816943">Bu mağaza haqqında məlumatlar</translation>
+<translation id="6344715021569694246">{TABS_COUNT,plural, =1{Seçilmiş <ph name="TABS_COUNT_ONE" /> tabı bərkidin}other{Seçilmiş <ph name="TABS_COUNT_MANY" /> tabı bərkidin}}</translation>
 <translation id="6381032505162537930">Tab qruplarınız burada tapa bilərsiniz</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> seçilmiş tabı ayırın}other{<ph name="TABS_COUNT_MANY" /> seçilmiş tabı ayırın}}</translation>
 <translation id="6499296376514955580">Paylaşılan Tab Qrupu dəyişiklikləri haqqında bildiriş bağlandı</translation>
@@ -198,6 +201,7 @@
 <translation id="805809603610022708">{TABS_COUNT,plural, =1{Qrupa tab əlavə edin}other{Qrupa tablar əlavə edin}}</translation>
 <translation id="8138067144082174140">14 gün qeyri-aktiv olduqdan sonra</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> tabdan ibarət <ph name="TITLE_OF_GROUP" /> tab qrupunu genişləndirin, rəng <ph name="COLOR_NAME" />.}other{<ph name="TABS_COUNT_MANY" /> tabdan ibarət <ph name="TITLE_OF_GROUP" /> tab qrupunu genişləndirin, rəng <ph name="COLOR_NAME" />.}}</translation>
+<translation id="8195186926670288294">{TABS_COUNT,plural, =1{Tabın bərkidilməsini ləğv edin}other{Tabların bərkidilməsini ləğv edin}}</translation>
 <translation id="8205266828577616993">Tabı yuxarıya daşıyın</translation>
 <translation id="8207688828622594111">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> dəqiqə əvvəl yenilənib}other{<ph name="NUM_MINS_MANY" /> dəqiqə əvvəl yenilənib}}</translation>
 <translation id="8236097722223016103">Əlfəcinlərə əlavə edin</translation>

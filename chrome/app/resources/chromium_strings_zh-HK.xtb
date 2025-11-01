@@ -147,6 +147,7 @@
 <translation id="2620436844016719705">系統</translation>
 <translation id="2629740064077610681">機構可查看和管理瀏覽資料 (例如書籤、記錄和密碼)，但無法查看其他 Chromium 設定檔中的瀏覽資料</translation>
 <translation id="2635452620547538388">請驗證你的身分，以在帳戶 <ph name="ACCOUNT_EMAIL" /> 中使用及儲存 Chromium 資料</translation>
+<translation id="2637732208198500597">{COUNT,plural, =0{「進階保護功能」要求你重新啟動 Chromium 以套用更新}=1{「進階保護功能」要求你重新啟動 Chromium 以套用更新。無痕式視窗不會重新開啟。}other{「進階保護功能」要求你重新啟動 Chromium 以套用更新。# 個無痕式視窗不會重新開啟。}}</translation>
 <translation id="2648074677641340862">安裝期間發生作業系統錯誤，請再次下載 Chromium。</translation>
 <translation id="2661879430930417727">如果您與親朋好友共用裝置，每人都能各自瀏覽網頁，並按需求設定 Chromium</translation>
 <translation id="2711502716910134313">Chromium 分頁</translation>

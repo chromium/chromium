@@ -1843,6 +1843,7 @@
 <translation id="4014895360827978999">บริการร้านค้าและระบบการชำระเงิน</translation>
 <translation id="4018819349042761761">คีย์สาธารณะ</translation>
 <translation id="4023431997072828269">เนื่องจากแบบฟอร์มนี้ส่งผ่านการเชื่อมต่อที่ไม่ปลอดภัย ผู้อื่นอาจมองเห็นข้อมูลของคุณ</translation>
+<translation id="4024673763872230929">บันทึกข้อมูลและกรอกแบบฟอร์มได้รวดเร็วยิ่งขึ้น บันทึกลงในอุปกรณ์</translation>
 <translation id="4025325634010721551">โหลดนโยบายซ้ำแล้ว</translation>
 <translation id="4025338605225449265">สกุลเงินและการแลกเปลี่ยนเงินตราต่างประเทศ</translation>
 <translation id="4025777154208238692">กลับลำดับ</translation>
@@ -2276,6 +2277,7 @@
 <translation id="4732860731866514038">กำลังดาวน์โหลดแพ็กภาษา<ph name="LANGUAGE" />... <ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992"><ph name="URL" /> ต้องการใช้ตำแหน่งอุปกรณ์ของคุณ</translation>
 <translation id="473414950835101501">ใช้กล้อง</translation>
+<translation id="4734343956394152985"><ph name="BEGIN_BOLD" />ค่าเริ่มต้นปัจจุบัน<ph name="END_BOLD" /> · <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="4736825316280949806">รีสตาร์ท Chromium</translation>
 <translation id="4736934858538408121">บัตรเสมือน</translation>
 <translation id="473775607612524610">อัปเดต</translation>
@@ -2338,6 +2340,7 @@
 <translation id="4822493756793346865">ราคาปกติอิงจากร้านค้าต่างๆ ทั่วทั้งอินเทอร์เน็ตในช่วง 90 วันที่ผ่านมา</translation>
 <translation id="4822922322149719535">ตรวจสอบบันทึกข้อผิดพลาด</translation>
 <translation id="4823699521959851389"><ph name="SHORT_PRODUCT_NAME" /> ต้องมีสิทธิ์เข้าถึง<ph name="PERMISSION" />ของอุปกรณ์</translation>
+<translation id="4825311006392962663">แสดงตัวเลือกการชำระเงินภายหลังที่จุดชำระเงิน</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" /> กด Tab ตามด้วย Enter เพื่อสร้างชีตใหม่ใน Google ชีตอย่างรวดเร็ว</translation>
 <translation id="4826588772550366629">กล้องและไมโครโฟน</translation>
 <translation id="4827283332383516812">ลบบัตร</translation>
@@ -3384,6 +3387,7 @@
 <translation id="6521745193039995384">ไม่ได้ใช้งานอยู่</translation>
 <translation id="6522682797352430154">เพลงคลาสสิก</translation>
 <translation id="6524830701589638230">ปุ่มจัดการการตั้งค่าการช่วยเหลือพิเศษ เปิดใช้งานเพื่อปรับเปลี่ยนเครื่องมือช่วยเหลือพิเศษในแบบของคุณที่การตั้งค่า Chrome</translation>
+<translation id="6525222262307262764">คงค่าเริ่มต้นปัจจุบันไว้</translation>
 <translation id="6527049834925947126">การผลิตอาหาร</translation>
 <translation id="6529173248185917884">ม้วนกระดาษ 7</translation>
 <translation id="6529602333819889595">&amp;ทำซ้ำการนำออก</translation>
@@ -3404,6 +3408,7 @@
 <translation id="6567832540451970450">ผู้ดูแลระบบอนุญาตให้ใช้<ph name="PERMISSION" />สำหรับเว็บไซต์นี้</translation>
 <translation id="6568793038316600992">ปุ่มจัดการวิธีการชําระเงิน เปิดใช้งานเพื่อจัดการการชำระเงินและข้อมูลบัตรเครดิตในการตั้งค่า Chrome</translation>
 <translation id="6569060085658103619">คุณกำลังดูหน้าส่วนขยาย</translation>
+<translation id="6571992525120410251">ถาม <ph name="ENGINE_NAME" /> อะไรก็ได้</translation>
 <translation id="6572867903637058088">ข้อมูลนี้มีประโยชน์ไหม</translation>
 <translation id="6573200754375280815">เจาะรูด้านขวา 2 รู</translation>
 <translation id="6575408526598156416">บันทึกในบัญชี</translation>
@@ -3453,6 +3458,7 @@
 <translation id="666259744093848177">(x86_64 แปลแล้ว)</translation>
 <translation id="6665553082534466207">เจาะรูด้านขวา 3 รู</translation>
 <translation id="6668389483194953109">พบชื่อขนาดกระดาษ "custom" แต่พร็อพเพอร์ตี้ "custom_size" ว่างเปล่าหรือไม่ถูกต้อง</translation>
+<translation id="6670729408462528018">แกลเลอรี</translation>
 <translation id="6671169470640320959">สินเชื่อรถยนต์</translation>
 <translation id="6671697161687535275">ต้องการนำคำแนะนำสำหรับแบบฟอร์มออกจาก Chromium ใช่ไหม</translation>
 <translation id="6675846980676550611">ไม่อนุญาต AR</translation>

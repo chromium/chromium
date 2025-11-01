@@ -1844,6 +1844,7 @@
 <translation id="4014895360827978999">Обслуговування торгівлі й системи платежів</translation>
 <translation id="4018819349042761761">Відкритий ключ</translation>
 <translation id="4023431997072828269">Вашу інформацію бачитимуть інші користувачі, оскільки форма надсилається через незахищене з'єднання.</translation>
+<translation id="4024673763872230929">Зберігайте інформацію, щоб швидше заповнювати форми. Дані зберігаються на вашому пристрої.</translation>
 <translation id="4025325634010721551">Правила оновлено</translation>
 <translation id="4025338605225449265">Валюти й курси обміну</translation>
 <translation id="4025777154208238692">У зворотному порядку</translation>
@@ -2277,6 +2278,7 @@
 <translation id="4732860731866514038">Завантаження мовного пакета (<ph name="LANGUAGE" />)… <ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992">Сайт <ph name="URL" /> хоче отримати доступ до геоданих вашого пристрою</translation>
 <translation id="473414950835101501">Використовувати камери</translation>
+<translation id="4734343956394152985"><ph name="BEGIN_BOLD" />Ваша пошукова система за умовчанням<ph name="END_BOLD" /> · <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="4736825316280949806">Перезапустіть Chromium</translation>
 <translation id="4736934858538408121">Віртуальна картка</translation>
 <translation id="473775607612524610">Оновити</translation>
@@ -2339,6 +2341,7 @@
 <translation id="4822493756793346865">Звичайні ціни на основі даних з онлайн-магазинів за останні 90 днів.</translation>
 <translation id="4822922322149719535">Переглянути журнал помилок</translation>
 <translation id="4823699521959851389"><ph name="SHORT_PRODUCT_NAME" /> потрібен дозвіл "<ph name="PERMISSION" />" на вашому пристрої</translation>
+<translation id="4825311006392962663">Показувати варіанти пізнішої оплати під час оформлення замовлення</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />; натисніть Tab, а потім – Enter, щоб швидко створити нову таблицю Google</translation>
 <translation id="4826588772550366629">камеру та мікрофон</translation>
 <translation id="4827283332383516812">Видалити картку</translation>
@@ -3385,6 +3388,7 @@
 <translation id="6521745193039995384">Неактивне</translation>
 <translation id="6522682797352430154">Класична музика</translation>
 <translation id="6524830701589638230">Кнопка "Керувати налаштуваннями доступності"; активуйте, щоб персоналізувати інструменти доступності в налаштуваннях Chrome</translation>
+<translation id="6525222262307262764">Залишити вашу пошукову систему за умовчанням</translation>
 <translation id="6527049834925947126">Виробництво харчових продуктів</translation>
 <translation id="6529173248185917884">Сьомий рулон</translation>
 <translation id="6529602333819889595">&amp;Повторити видалення</translation>
@@ -3405,6 +3409,7 @@
 <translation id="6567832540451970450">Ваш адміністратор дозволяє надавати цьому сайту такий дозвіл: <ph name="PERMISSION" /></translation>
 <translation id="6568793038316600992">Кнопка "Керувати способами оплати"; активуйте, щоб керувати платежами й даними кредитної картки в налаштуваннях Chrome</translation>
 <translation id="6569060085658103619">Ви переглядаєте сторінку розширень</translation>
+<translation id="6571992525120410251">Запитайте <ph name="ENGINE_NAME" /> про щось</translation>
 <translation id="6572867903637058088">Ця інформація корисна?</translation>
 <translation id="6573200754375280815">Пробити два отвори праворуч</translation>
 <translation id="6575408526598156416">Зберегти в обліковому записі</translation>
@@ -3454,6 +3459,7 @@
 <translation id="666259744093848177">(x86_64 перекладено)</translation>
 <translation id="6665553082534466207">Пробити три отвори праворуч</translation>
 <translation id="6668389483194953109">Знайдено назву розміру паперу "custom", але властивість "custom_size" порожня або недійсна.</translation>
+<translation id="6670729408462528018">Галерея</translation>
 <translation id="6671169470640320959">Автокредитування</translation>
 <translation id="6671697161687535275">Видалити пропозицію автозаповнення форм із Chromium?</translation>
 <translation id="6675846980676550611">Заборонено використовувати доповнену реальність</translation>

@@ -1844,6 +1844,7 @@
 <translation id="4014895360827978999">ရောင်းသူဝန်ဆောင်မှုနှင့် ငွေပေးချေမှုစနစ်</translation>
 <translation id="4018819349042761761">အများသုံးကီး</translation>
 <translation id="4023431997072828269">မလုံခြုံသောချိတ်ဆက်မှုကို အသုံးပြုပြီး ဤဖောင်ကိုပေးပို့ထားသဖြင့် အခြားသူများက သင့်အချက်အလက်များကို မြင်နိုင်သည်။</translation>
+<translation id="4024673763872230929">သင့်အချက်အလက်ကို သိမ်းပြီး ဖောင်များကို ပိုမိုမြန်ဆန်စွာ ဖြည့်သည်။ သင့်စက်တွင် သိမ်းသည်။</translation>
 <translation id="4025325634010721551">မူဝါဒများ ပြန်ဖွင့်လိုက်သည်</translation>
 <translation id="4025338605225449265">ငွေကြေး၊ နိုင်ငံခြားငွေလဲလှယ်ခြင်း</translation>
 <translation id="4025777154208238692">နံပါတ်စဉ် ပြောင်းပြန်</translation>
@@ -2278,6 +2279,7 @@
 <translation id="4732860731866514038"><ph name="LANGUAGE" /> ဘာသာစကားအတွဲကို ဒေါင်းလုဒ်လုပ်နေသည်… <ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992"><ph name="URL" /> သည် သင့်စက်၏ တည်နေရာကို အသုံးပြုလိုသည်</translation>
 <translation id="473414950835101501">သင့်ကင်မရာများ သုံးရန်</translation>
+<translation id="4734343956394152985"><ph name="BEGIN_BOLD" />လက်ရှိမူရင်း<ph name="END_BOLD" /> · <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="4736825316280949806">Chromium ကို ပိတ်ပြီးပြန်ဖွင့်ပါ</translation>
 <translation id="4736934858538408121">ပကတိအသွင်ကတ်</translation>
 <translation id="473775607612524610">အပ်ဒိတ်လုပ်ရန်</translation>
@@ -2340,6 +2342,7 @@
 <translation id="4822493756793346865">ပုံမှန်ဈေးနှုန်းများသည် ပြီးခဲ့သော ရက် ၉၀ အတွင်း ဝဘ်တစ်ခုလုံးရှိ ဆိုင်များအပေါ် အခြေခံထားသည်။</translation>
 <translation id="4822922322149719535">အမှားမှတ်တမ်းကို ကြည့်ရန်</translation>
 <translation id="4823699521959851389"><ph name="SHORT_PRODUCT_NAME" /> သည် သင့်စက်၏ <ph name="PERMISSION" /> သုံးခွင့် လိုအပ်သည်</translation>
+<translation id="4825311006392962663">ငွေရှင်းသည့်အခါ ‘နောက်မှပေးရန်’ ရွေးစရာများကို ပြပါ</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />၊ Google Sheet အသစ် အမြန်ပြုလုပ်ရန် ‘တဘ်’ နှိပ်ပြီးနောက် Enter ခလုတ် နှိပ်ပါ</translation>
 <translation id="4826588772550366629">ကင်မရာနှင့် မိုက်ခရိုဖုန်း</translation>
 <translation id="4827283332383516812">ကတ်ကို ဖျက်ရန်</translation>
@@ -3385,6 +3388,7 @@
 <translation id="6521745193039995384">ဆောင်ရွက်မှုမရှိပါ</translation>
 <translation id="6522682797352430154">ဂန္ထဝင် ဂီတ</translation>
 <translation id="6524830701589638230">Chrome ဆက်တင်များတွင် သင့်အများသုံးနိုင်မှု တူးလ်များကို ပုဂ္ဂိုလ်ရေးသီးသန့်ပြုလုပ်ရန်အတွက် ‘အများသုံးနိုင်မှု ဆက်တင်များ စီမံရန်’ ခလုတ်ကို နှိပ်နိုင်သည်</translation>
+<translation id="6525222262307262764">လက်ရှိမူရင်းကို ဆက်ထားရန်</translation>
 <translation id="6527049834925947126">အစားအသောက်ထုတ်လုပ်မှု</translation>
 <translation id="6529173248185917884">ခုနှစ်ခုမြောက်အလိပ်</translation>
 <translation id="6529602333819889595">&amp;ဖျက်ရန်ကို ပြန်လုပ်ရန်</translation>
@@ -3405,6 +3409,7 @@
 <translation id="6567832540451970450">ဤဝဘ်ဆိုက်အတွက် <ph name="PERMISSION" /> ကို သင်၏စီမံခန့်ခွဲသူက ခွင့်ပြုသည်</translation>
 <translation id="6568793038316600992">သင့်ငွေပေးချေမှုများနှင့် ခရက်ဒစ်ကတ်အချက်အလက်ကို Chrome ဆက်တင်များတွင် စီမံရန်အတွက် ‘ငွေပေးချေနည်းလမ်းများ စီမံရန်’ ခလုတ်ကို နှိပ်နိုင်သည်</translation>
 <translation id="6569060085658103619">သင်သည် နောက်ဆက်တွဲစာမျက်နှာကို ကြည့်ရှုနေခြင်းဖြစ်သည်</translation>
+<translation id="6571992525120410251"><ph name="ENGINE_NAME" /> ကို ကြိုက်ရာမေးရန်</translation>
 <translation id="6572867903637058088">ဤအရာက အကူအညီရပါသလား။</translation>
 <translation id="6573200754375280815">ညာဘက်တွင် နှစ်ချက်ဖောက်ရန်</translation>
 <translation id="6575408526598156416">အကောင့်တွင် သိမ်းခြင်း</translation>
@@ -3454,6 +3459,7 @@
 <translation id="666259744093848177">(x86_64 ဘာသာပြန်ထားသည်)</translation>
 <translation id="6665553082534466207">ညာဘက်တွင် သုံးချက်ဖောက်ရန်</translation>
 <translation id="6668389483194953109">စာရွက်အရွယ်အစား အမည်ကို “စိတ်ကြိုက်” ဟု တွေ့သော်လည်း “custom_size” သတ်မှတ်ချက် အလွတ်ဖြစ်နေသည် (သို့) ပုံစံမမှန်ပါ။</translation>
+<translation id="6670729408462528018">ပြခန်း</translation>
 <translation id="6671169470640320959">ကားဝယ် ကားငှားရန် ငွေချေးခြင်း</translation>
 <translation id="6671697161687535275">Chromium ထဲမှ ပုံစံအကြံပြုချက်ကို ဖယ်ရှားရမလား။</translation>
 <translation id="6675846980676550611">AR ကို ခွင့်ပြုမထားပါ</translation>

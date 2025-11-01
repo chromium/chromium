@@ -156,6 +156,7 @@
 <translation id="2738871930057338499">無法連線至互聯網。發生 HTTP 403 禁止錯誤，請檢查 Proxy 設定。</translation>
 <translation id="2742320827292110288">警告：Google Chrome 無法阻止擴充程式記錄您的瀏覽活動。如要在無痕模式中停用這個擴充程式，請取消選取這個選項。</translation>
 <translation id="2753623023919742414">按一下即可搜尋</translation>
+<translation id="2757826245013442432">{COUNT,plural, =0{「進階保護功能」要求你重新啟動 Chrome 以套用更新}=1{「進階保護功能」要求你重新啟動 Chrome 以套用更新。無痕式視窗不會重新開啟。}other{「進階保護功能」要求你重新啟動 Chrome 以套用更新。# 個無痕式視窗不會重新開啟。}}</translation>
 <translation id="2765403129283291972">Chrome 需要取得權限，才能讓這個網站存取您的麥克風</translation>
 <translation id="2770231113462710648">將預設瀏覽器變更為：</translation>
 <translation id="2775140325783767197">Chrome 無法檢查密碼，請檢查互聯網連線。</translation>

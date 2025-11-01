@@ -2341,7 +2341,7 @@
 <translation id="4822493756793346865">تستند الأسعار العادية إلى معلومات المتاجر المتاحة على الويب خلال آخر 90 يومًا.</translation>
 <translation id="4822922322149719535">مراجعة سجلّ الأخطاء</translation>
 <translation id="4823699521959851389">يحتاج <ph name="SHORT_PRODUCT_NAME" /> إلى إذن باستخدام <ph name="PERMISSION" /> على جهازك</translation>
-<translation id="4825311006392962663">سيتم عرض خيارات الدفع لاحقًا عند الدفع</translation>
+<translation id="4825311006392962663">عند الدفع، ستُعرض لك خيارات الدفع لاحقًا</translation>
 <translation id="4825496307559726072">‏<ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />: اضغط على مفتاح التبويب (Tab) ثم Enter لإنشاء "جدول بيانات Google" جديد بسرعة.</translation>
 <translation id="4826588772550366629">الكاميرا والميكروفون</translation>
 <translation id="4827283332383516812">حذف البطاقة</translation>
@@ -3409,7 +3409,7 @@
 <translation id="6567832540451970450">يسمح المشرف باستخدام <ph name="PERMISSION" /> لهذا الموقع الإلكتروني</translation>
 <translation id="6568793038316600992">‏زر إدارة طرق الدفع: انقر على هذا الزر لإدارة الدفعات ومعلومات بطاقة الائتمان في إعدادات Chrome.</translation>
 <translation id="6569060085658103619">أنت تعرض صفحة إضافة</translation>
-<translation id="6571992525120410251">‫"<ph name="ENGINE_NAME" />" بانتظار أسئلتك</translation>
+<translation id="6571992525120410251">‫<ph name="ENGINE_NAME" /> بانتظار أسئلتك</translation>
 <translation id="6572867903637058088">هل هذه المعلومات مفيدة؟</translation>
 <translation id="6573200754375280815">عمل ثقبَين يمينًا</translation>
 <translation id="6575408526598156416">الحفظ في الحساب</translation>

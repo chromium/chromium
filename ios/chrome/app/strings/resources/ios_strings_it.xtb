@@ -678,6 +678,7 @@
 <translation id="3642060527569456384">I gruppi di schede vengono automaticamente salvati e aggiornati su tutti i tuoi dispositivi.</translation>
 <translation id="3643338347976071250">{count,plural, =1{{count} password è salvata solo su questo dispositivo. Per usarla su altri dispositivi, salvala nel tuo Account Google {email}.}other{{count} password sono salvate solo su questo dispositivo. Per usarle su altri dispositivi, salvale nel tuo Account Google {email}.}}</translation>
 <translation id="3659297405161482746">Nessun metodo di pagamento trovato</translation>
+<translation id="3662966164093827811">{count,plural, =1{1 elemento selezionato}other{# elementi selezionati}}</translation>
 <translation id="3668816008081204991">L'elenco di lettura è nascosto</translation>
 <translation id="3670030362669914947">Numero</translation>
 <translation id="3679163990085797665">Elimina voci lette</translation>
