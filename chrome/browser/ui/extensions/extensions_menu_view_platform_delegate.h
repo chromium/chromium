@@ -69,6 +69,13 @@ class ExtensionsMenuViewPlatformDelegate {
   // delegate to the model, since same name causes parameter type mismatch.
   virtual void OnActionUpdated() = 0;
 
+  // Notifies the delegate that the pinned toolbar actions have changed
+  // TODO(crbug.com/449814184): Rename to `OnToolbarPinnedActionsChanged` after
+  // we finish migrating all ToolbarActionsModel::Observer method from the
+  // platform delegate to the model, since same name causes parameter type
+  // mismatch.
+  virtual void OnPinnedActionsChanged() = 0;
+
   // Notifies the delegate that the user permissions settings changed on the
   // current site.
   // TODO(crbug.com/449814184): Rename to `OnUserPermissionsSettingsChanged`

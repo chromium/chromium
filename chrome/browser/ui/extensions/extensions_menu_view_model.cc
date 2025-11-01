@@ -499,8 +499,7 @@ void ExtensionsMenuViewModel::OnToolbarModelInitialized() {
 }
 
 void ExtensionsMenuViewModel::OnToolbarPinnedActionsChanged() {
-  // TODO(crbug.com/449814184): implement and remove observer from
-  // ExtensionsMenuViewPlatformDelegateViews.
+  platform_delegate_->OnPinnedActionsChanged();
 }
 
 content::WebContents* ExtensionsMenuViewModel::GetActiveWebContents() {

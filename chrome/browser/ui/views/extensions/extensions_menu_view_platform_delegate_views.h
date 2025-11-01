@@ -67,6 +67,7 @@ class ExtensionsMenuViewPlatformDelegateViews
   void OnActionAdded(const ToolbarActionsModel::ActionId& action_id) override;
   void OnActionRemoved(const ToolbarActionsModel::ActionId& action_id) override;
   void OnActionUpdated() override;
+  void OnPinnedActionsChanged() override;
   void OnPermissionsSettingsChanged() override;
 
   // ExtensionsMenuHandler:

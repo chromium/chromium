@@ -321,6 +321,24 @@ void ExtensionsMenuViewPlatformDelegateViews::OnActionUpdated() {
   UpdatePage(GetActiveWebContents());
 }
 
+void ExtensionsMenuViewPlatformDelegateViews::OnPinnedActionsChanged() {
+  CHECK(current_page_);
+
+  // Do nothing when is not the main page, as site permissions page doesn't have
+  // pinning functionality.
+  ExtensionsMenuMainPageView* main_page = GetMainPage(current_page_.view());
+  if (!main_page) {
+    return;
+  }
+
+  std::vector<ExtensionMenuItemView*> menu_items = main_page->GetMenuItems();
+  for (auto* menu_item : menu_items) {
+    bool is_action_pinned =
+        toolbar_model_->IsActionPinned(menu_item->view_controller()->GetId());
+    menu_item->UpdateContextMenuButton(is_action_pinned);
+  }
+}
+
 void ExtensionsMenuViewPlatformDelegateViews::OnPermissionsSettingsChanged() {
   CHECK(current_page_);
 
@@ -678,26 +696,7 @@ void ExtensionsMenuViewPlatformDelegateViews::OnToolbarModelInitialized() {
   PopulateMainPage(main_page);
 }
 
-void ExtensionsMenuViewPlatformDelegateViews::OnToolbarPinnedActionsChanged() {
-  DCHECK(current_page_);
-
-  // Do nothing when site permissions page is opened as it doesn't have pin
-  // buttons.
-  if (GetSitePermissionsPage(current_page_.view())) {
-    return;
-  }
-
-  auto* main_page = GetMainPage(current_page_.view());
-  DCHECK(main_page);
-
-  std::vector<ExtensionMenuItemView*> menu_items = main_page->GetMenuItems();
-  for (auto* menu_item : menu_items) {
-    bool is_action_pinned =
-        toolbar_model_->IsActionPinned(menu_item->view_controller()->GetId());
-    menu_item->UpdateContextMenuButton(is_action_pinned);
-  }
-}
-
+void ExtensionsMenuViewPlatformDelegateViews::OnToolbarPinnedActionsChanged() {}
 
 ExtensionsMenuMainPageView*
 ExtensionsMenuViewPlatformDelegateViews::GetMainPageViewForTesting() {

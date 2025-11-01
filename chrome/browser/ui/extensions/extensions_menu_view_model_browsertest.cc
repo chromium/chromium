@@ -51,6 +51,7 @@ class TestPlatformDelegate : public ExtensionsMenuViewPlatformDelegate {
   void OnActionRemoved(
       const ToolbarActionsModel::ActionId& action_id) override {}
   void OnActionUpdated() override {}
+  void OnPinnedActionsChanged() override {}
 };
 
 }  // namespace
