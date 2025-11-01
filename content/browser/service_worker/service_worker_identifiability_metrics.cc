@@ -5,6 +5,7 @@
 #include "content/browser/service_worker/service_worker_identifiability_metrics.h"
 
 #include "base/containers/contains.h"
+#include "content/browser/service_worker/service_worker_info.h"
 #include "content/public/browser/worker_type.h"
 #include "services/metrics/public/cpp/delegating_ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_builders.h"

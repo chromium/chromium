@@ -11,11 +11,12 @@
 #include <set>
 
 #include "content/browser/service_worker/service_worker_context_core_observer.h"
-#include "content/browser/service_worker/service_worker_info.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_client.mojom.h"
 
 namespace content {
+
+struct ServiceWorkerVersionInfo;
 
 struct VersionIdentifiabilityInfo {
   VersionIdentifiabilityInfo() = default;

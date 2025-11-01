@@ -14,7 +14,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "content/browser/background_fetch/background_fetch_registration_id.h"
 #include "content/browser/background_fetch/storage/database_task.h"
-#include "content/browser/service_worker/service_worker_info.h"
 #include "content/common/background_fetch/background_fetch_types.h"
 #include "content/common/content_export.h"
 #include "net/base/isolation_info.h"
