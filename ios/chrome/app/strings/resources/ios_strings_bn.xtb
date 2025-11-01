@@ -742,7 +742,6 @@
 <translation id="3926703470020109118">ডাউনলোড বাতিল করা হয়েছে</translation>
 <translation id="3929457972718048006">ঠিকানা</translation>
 <translation id="3931215329146376310">{count,plural, =1{এই সাইটের জন্য নতুন পাসওয়ার্ড}one{এই সাইটের জন্য নতুন পাসওয়ার্ড}other{এই সাইটের জন্য নতুন পাসওয়ার্ড}}</translation>
-<translation id="3933372629914873850">আপনি <ph name="URL" />-এ সাইন-ইন করবেন</translation>
 <translation id="3934905113567851655">সাইজ পরিবর্তন করতে পিঞ্চ করুন</translation>
 <translation id="3940195383040445971">ট্যাবে দাম ট্র্যাক করুন</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{{COUNT}টি ট্যাব বন্ধ করুন}one{{COUNT}টি ট্যাব বন্ধ করুন}other{{COUNT}টি ট্যাব বন্ধ করুন}}</translation>
@@ -1333,7 +1332,6 @@
 <translation id="6103540626693881831">অন-ডিভাইস এনক্রিপশন</translation>
 <translation id="611361228753138223">এই ডিভাইসে সম্প্রতি দেখেছেন এমন সাইট</translation>
 <translation id="611705554202268369">কোনও ট্যাব গ্রুপ যোগ করতে বেশিক্ষণ প্রেস করে রাখুন</translation>
-<translation id="6117260878488959646">কোনও সমস্যা হয়েছে। পরে আবার চেষ্টা করুন।</translation>
 <translation id="6122191549521593678">অনলাইন</translation>
 <translation id="6122831415929794347">Safe Browsing বন্ধ করতে চান?</translation>
 <translation id="6123514585040403489">আপনার ট্যাব বন্ধ হয়ে যাবে</translation>

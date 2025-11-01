@@ -64,7 +64,6 @@
 <translation id="2918484639460781603">સેટિંગ્સ પર જાઓ </translation>
 <translation id="2928243913527329289">Google | આ સ્ટોર વિશે</translation>
 <translation id="2978860912612699943">{ITEMS_COUNT,plural, =1{<ph name="ITEMS_COUNT_ONE" /> પસંદ કરી}one{<ph name="ITEMS_COUNT_MANY" /> પસંદ કરી}other{<ph name="ITEMS_COUNT_MANY" /> પસંદ કરી}}</translation>
-<translation id="2991702137079525605">{TABS_COUNT,plural, =1{ટૅબને પિન કરો}one{ટૅબને પિન કરો}other{ટૅબને પિન કરો}}</translation>
 <translation id="3008554597174452548">પ્રોડક્ટને ટ્રૅક કરવાનું બંધ કરો</translation>
 <translation id="3026391124054406831">તમારા ટૅબ ગોઠવવાનું શરૂ કરવા માટે ગ્રૂપ બનાવો.</translation>
 <translation id="3051031624272448591">તમે ઇતિહાસમાં જઈને હંમેશાં તેમને ફરી મેળવી શકો છો</translation>
@@ -86,7 +85,6 @@
 <translation id="3940195383040445971">ટૅબ પર કિંમત ટ્રૅક કરો</translation>
 <translation id="3940717704786481856">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> નવું ટૅબ, <ph name="ANY_CLOSED" /> બંધ કર્યું}one{<ph name="MANY_ADDED" /> નવું ટૅબ, <ph name="ANY_CLOSED" /> બંધ કર્યું}other{<ph name="MANY_ADDED" /> નવા ટૅબ, <ph name="ANY_CLOSED" /> બંધ કર્યા}}</translation>
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{ટૅબનું ગ્રૂપ બનાવો}one{ટૅબનું ગ્રૂપ બનાવો}other{ટૅબનું ગ્રૂપ બનાવો}}</translation>
-<translation id="3962134438902735041">{TABS_COUNT,plural, =1{પસંદ કરેલા <ph name="TABS_COUNT_ONE" /> ટૅબને અનપિન કરો}one{પસંદ કરેલા <ph name="TABS_COUNT_MANY" /> ટૅબને અનપિન કરો}other{પસંદ કરેલા <ph name="TABS_COUNT_MANY" /> ટૅબને અનપિન કરો}}</translation>
 <translation id="4009732926939031387">{NUM_DAYS,plural, =1{<ph name="NUM_DAYS_ONE" /> દિવસ પહેલાં બનાવ્યું}one{<ph name="NUM_DAYS_MANY" /> દિવસ પહેલાં બનાવ્યું}other{<ph name="NUM_DAYS_MANY" /> દિવસ પહેલાં બનાવ્યું}}</translation>
 <translation id="4076226664360336092">ટૅબના ગ્રૂપની સૂચિ સંપૂર્ણ ઊંચાઈએ ખોલવામાં આવી</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> ટૅબ સંબંધિત હોય તેમ જણાય છે. તેમનું ગ્રૂપ બનાવીએ?</translation>
@@ -142,7 +140,6 @@
 <translation id="625996437999624951">{TAB_COUNT,plural, =1{ગ્રૂપમાંથી ટૅબ કાઢી નાખો}one{ગ્રૂપમાંથી ટૅબ કાઢી નાખો}other{ગ્રૂપમાંથી ટૅબ કાઢી નાખો}}</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{નવા ગ્રૂપમાં ટૅબ ઉમેરો}one{નવા ગ્રૂપમાં ટૅબ ઉમેરો}other{નવા ગ્રૂપમાં ટૅબ ઉમેરો}}</translation>
 <translation id="6333260925957816943">આ સ્ટોર વિશેની માહિતી</translation>
-<translation id="6344715021569694246">{TABS_COUNT,plural, =1{પસંદ કરેલા <ph name="TABS_COUNT_ONE" /> ટૅબને પિન કરો}one{પસંદ કરેલા <ph name="TABS_COUNT_MANY" /> ટૅબ પિન કરો}other{પસંદ કરેલા <ph name="TABS_COUNT_MANY" /> ટૅબ પિન કરો}}</translation>
 <translation id="6381032505162537930">અહીં તમને તમારા ટૅબના ગ્રૂપ જોવા મળશે</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{પસંદ કરેલું <ph name="TABS_COUNT_ONE" /> ટૅબ અનગ્રૂપ કરો}one{પસંદ કરેલું <ph name="TABS_COUNT_MANY" /> ટૅબ અનગ્રૂપ કરો}other{પસંદ કરેલા <ph name="TABS_COUNT_MANY" /> ટૅબ અનગ્રૂપ કરો}}</translation>
 <translation id="6499296376514955580">શેર કરેલા ટૅબના ગ્રૂપમાં કરવામાં આવેલા ફેરફારો સંબંધિત નોટિસવાળું ટૅબ બંધ કરવામાં આવ્યું</translation>
@@ -201,7 +198,6 @@
 <translation id="805809603610022708">{TABS_COUNT,plural, =1{ગ્રૂપમાં ટૅબ ઉમેરો}one{ગ્રૂપમાં ટૅબ ઉમેરો}other{ગ્રૂપમાં ટૅબ ઉમેરો}}</translation>
 <translation id="8138067144082174140">14 દિવસ પછી નિષ્ક્રિય</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{<ph name="COLOR_NAME" /> રંગનું <ph name="TABS_COUNT_ONE" /> ટૅબ ધરાવતા <ph name="TITLE_OF_GROUP" /> ટૅબના ગ્રૂપને મોટું કરો.}one{<ph name="COLOR_NAME" /> રંગનું <ph name="TABS_COUNT_MANY" /> ટૅબ ધરાવતા <ph name="TITLE_OF_GROUP" /> ટૅબના ગ્રૂપને મોટું કરો.}other{<ph name="COLOR_NAME" /> રંગના <ph name="TABS_COUNT_MANY" /> ટૅબ ધરાવતા <ph name="TITLE_OF_GROUP" /> ટૅબના ગ્રૂપને મોટું કરો.}}</translation>
-<translation id="8195186926670288294">{TABS_COUNT,plural, =1{ટૅબને અનપિન કરો}one{ટૅબને અનપિન કરો}other{ટૅબને અનપિન કરો}}</translation>
 <translation id="8205266828577616993">ટૅબ ઉપર ખસેડો</translation>
 <translation id="8207688828622594111">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> મિનિટ પહેલાં અપડેટ કરવામાં આવ્યું}one{<ph name="NUM_MINS_MANY" /> મિનિટ પહેલાં અપડેટ કરવામાં આવ્યું}other{<ph name="NUM_MINS_MANY" /> મિનિટ પહેલાં અપડેટ કરવામાં આવ્યું}}</translation>
 <translation id="8236097722223016103">બુકમાર્કમાં ઉમેરો</translation>

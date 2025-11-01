@@ -1844,7 +1844,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="4014895360827978999">Serveis per a comerciants i sistemes de pagament</translation>
 <translation id="4018819349042761761">Clau pública</translation>
 <translation id="4023431997072828269">Com que el formulari s'està enviant mitjançant una connexió que no és segura, altres persones podran veure la teva informació.</translation>
-<translation id="4024673763872230929">Desa la teva informació i emplena els formularis més ràpidament. Es desa al dispositiu.</translation>
 <translation id="4025325634010721551">Les polítiques s'han tornat a carregar</translation>
 <translation id="4025338605225449265">Monedes i canvi de divisa</translation>
 <translation id="4025777154208238692">Ordre invers</translation>
@@ -2278,7 +2277,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="4732860731866514038">S'està baixant el paquet d'idioma en <ph name="LANGUAGE" />... <ph name="PERCENT" /> %</translation>
 <translation id="4733082559415072992"><ph name="URL" /> vol utilitzar la ubicació del dispositiu</translation>
 <translation id="473414950835101501">Utilitzar les càmeres</translation>
-<translation id="4734343956394152985"><ph name="BEGIN_BOLD" />Opció predeterminada actualment<ph name="END_BOLD" /> · <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="4736825316280949806">Reinicia Chromium</translation>
 <translation id="4736934858538408121">Targeta virtual</translation>
 <translation id="473775607612524610">Actualitza</translation>
@@ -3388,7 +3386,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="6521745193039995384">No activa</translation>
 <translation id="6522682797352430154">Música clàssica</translation>
 <translation id="6524830701589638230">Botó Gestiona la configuració d'accessibilitat: activa'l per personalitzar les eines d'accessibilitat a la configuració de Chrome</translation>
-<translation id="6525222262307262764">Mantén l'opció predeterminada actual</translation>
 <translation id="6527049834925947126">Producció alimentària</translation>
 <translation id="6529173248185917884">Setè corró</translation>
 <translation id="6529602333819889595">&amp;Refés la supressió</translation>
@@ -3409,7 +3406,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="6567832540451970450">El teu administrador ha concedit permís de <ph name="PERMISSION" /> a aquest lloc web</translation>
 <translation id="6568793038316600992">Botó Gestiona les formes de pagament: activa'l per gestionar la informació dels pagaments i de les targetes de crèdit a la configuració de Chrome</translation>
 <translation id="6569060085658103619">Estàs consultant la pàgina d'una extensió</translation>
-<translation id="6571992525120410251">Pregunta a <ph name="ENGINE_NAME" /> el que vulguis</translation>
 <translation id="6572867903637058088">Et sembla útil?</translation>
 <translation id="6573200754375280815">Encunyació doble a la dreta</translation>
 <translation id="6575408526598156416">Desa al compte</translation>
@@ -3458,7 +3454,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="666259744093848177">(x86_64 traduït)</translation>
 <translation id="6665553082534466207">Encunyació triple a la dreta</translation>
 <translation id="6668389483194953109">S'ha trobat el nom de la mida del paper "custom", però la propietat "custom_size" està buida o no és vàlida.</translation>
-<translation id="6670729408462528018">Galeria</translation>
 <translation id="6671169470640320959">Finançament per a automòbils</translation>
 <translation id="6671697161687535275">Voleu suprimir el suggeriment de formulari de Chromium?</translation>
 <translation id="6675846980676550611">No es permet la RA</translation>

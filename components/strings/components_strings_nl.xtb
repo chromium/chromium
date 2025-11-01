@@ -1839,7 +1839,6 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="4014895360827978999">Financiële services en betalingssystemen</translation>
 <translation id="4018819349042761761">Openbare sleutel</translation>
 <translation id="4023431997072828269">Dit formulier wordt ingediend via een verbinding die niet beveiligd is. Hierdoor zijn je gegevens zichtbaar voor anderen.</translation>
-<translation id="4024673763872230929">Sla je informatie op en vul sneller formulieren in. Wordt opgeslagen op je apparaat.</translation>
 <translation id="4025325634010721551">Beleid is opnieuw geladen</translation>
 <translation id="4025338605225449265">Valuta's en wisselkoersen</translation>
 <translation id="4025777154208238692">Omgekeerde volgorde</translation>
@@ -2272,7 +2271,6 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="4732860731866514038">Taalpakket voor <ph name="LANGUAGE" /> downloaden… <ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992"><ph name="URL" /> wil de locatie van je apparaat gebruiken</translation>
 <translation id="473414950835101501">Je camera's gebruiken</translation>
-<translation id="4734343956394152985"><ph name="BEGIN_BOLD" />Huidige standaard<ph name="END_BOLD" /> · <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="4736825316280949806">Chromium opnieuw starten</translation>
 <translation id="4736934858538408121">Virtuele kaart</translation>
 <translation id="473775607612524610">Updaten</translation>
@@ -2426,7 +2424,6 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="4961708452830821006">Als je je microfoon wilt gebruiken, geef je Chrome toegang via <ph name="LINK" />.</translation>
 <translation id="4963413887558778009">Landschapsontwerp</translation>
 <translation id="4967366744630699583">Adres bewerken</translation>
-<translation id="4968046291688599384">Eenmalig virtueel kaartnummer van <ph name="BNPL_ISSUER_NAME" /> ingevuld.</translation>
 <translation id="4968522289500246572">Deze app is ontworpen voor mobiel en het formaat wordt misschien niet goed aangepast. De app kan problemen ondervinden of opnieuw opstarten.</translation>
 <translation id="4968665849807487749">Kan toestemming vragen om vensters te beheren op al je schermen</translation>
 <translation id="4969341057194253438">Opname verwijderen</translation>
@@ -3382,7 +3379,6 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="6521745193039995384">Niet actief</translation>
 <translation id="6522682797352430154">Klassieke muziek</translation>
 <translation id="6524830701589638230">Knop Toegankelijkheidsinstellingen beheren. Activeer deze om je toegankelijkheidstools te personaliseren in de Chrome-instellingen.</translation>
-<translation id="6525222262307262764">Huidige standaard behouden</translation>
 <translation id="6527049834925947126">Levensmiddelenindustrie</translation>
 <translation id="6529173248185917884">7e rol</translation>
 <translation id="6529602333819889595">&amp;Opnieuw verwijderen</translation>
@@ -3403,7 +3399,6 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="6567832540451970450">Je beheerder staat <ph name="PERMISSION" /> toe voor deze site</translation>
 <translation id="6568793038316600992">Knop Betaalmethoden beheren. Activeer deze om betalingen en creditcardgegevens te beheren in de Chrome-instellingen.</translation>
 <translation id="6569060085658103619">Je bekijkt een extensiepagina</translation>
-<translation id="6571992525120410251">Stel je vraag aan <ph name="ENGINE_NAME" /></translation>
 <translation id="6572867903637058088">Is dit nuttig?</translation>
 <translation id="6573200754375280815">Twee perforaties rechts</translation>
 <translation id="6575408526598156416">Opslaan in account</translation>
@@ -3452,7 +3447,6 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="666259744093848177">(x86_64 vertaald)</translation>
 <translation id="6665553082534466207">Drie perforaties rechts</translation>
 <translation id="6668389483194953109">De papierformaatnaam 'custom' is gevonden, maar de property 'custom_size' is leeg of ongeldig.</translation>
-<translation id="6670729408462528018">Galerij</translation>
 <translation id="6671169470640320959">Autofinanciering</translation>
 <translation id="6671697161687535275">Formuliersuggestie verwijderen uit Chromium?</translation>
 <translation id="6675846980676550611">AR niet toegestaan</translation>

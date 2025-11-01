@@ -152,8 +152,8 @@
 <translation id="2738871930057338499">Der kan ikke oprettes forbindelse til internettet. HTTP 403 (forbudt). Tjek din proxykonfiguration.</translation>
 <translation id="2742320827292110288">Advarsel! Google Chrome kan ikke forhindre udvidelser i at registrere din browserhistorik. Fjern markeringen af denne valgmulighed for at deaktivere denne udvidelse i inkognitotilstand.</translation>
 <translation id="2753623023919742414">Klik for at søge</translation>
-<translation id="2757826245013442432">{COUNT,plural, =0{Avanceret beskyttelse kræver, at du genstarter Chrome for at anvende en opdatering}=1{Avanceret beskyttelse kræver, at du genstarter Chrome for at anvende en opdatering. Dit inkognitovindue åbnes ikke igen.}one{Avanceret beskyttelse kræver, at du genstarter Chrome for at anvende en opdatering. # inkognitovindue åbnes ikke igen.}other{Avanceret beskyttelse kræver, at du genstarter Chrome for at anvende en opdatering. # inkognitovinduer åbnes ikke igen.}}</translation>
 <translation id="2765403129283291972">Chrome skal have tilladelse til at bruge din mikrofon på dette website</translation>
+<translation id="2770231113462710648">Skift standardbrowser til:</translation>
 <translation id="2775140325783767197">Chrome kan ikke tjekke dine adgangskoder. Prøv at tjekke din internetforbindelse.</translation>
 <translation id="2797864378188255696">Når du logger ind i Google-tjenester som f.eks. Gmail eller YouTube med <ph name="USER_EMAIL" />, kan du automatisk logge ind i Chrome med den samme konto</translation>
 <translation id="2799162042226656283">Dit Chrome</translation>
@@ -645,7 +645,6 @@
 <translation id="8255190535488645436">Google Chrome bruger dit kamera og din mikrofon.</translation>
 <translation id="8267953129876836456">Chrome har fundet nogle sikkerhedsanbefalinger, du kan gennemgå</translation>
 <translation id="8286862437124483331">Google Chrome forsøger at vise adgangskoder. Angiv din Windows-adgangskode for at tillade dette.</translation>
-<translation id="8289399803055125418">Brug din <ph name="BEGIN_LINK" />egen adgangssætning<ph name="END_LINK" /> til at kryptere alle Chrome-data på din Google-konto. Adresser og eventuelle data, der er gemt i Google Wallet, krypteres ikke med din adgangssætning. Browserhistorik fra Chrome synkroniseres ikke.</translation>
 <translation id="829923460755755423">Tilføj en genvej til Google Adgangs­kode­admin­istrator</translation>
 <translation id="8313851650939857356">Opstartsfejl: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8321888067342493336">Gem som billede</translation>

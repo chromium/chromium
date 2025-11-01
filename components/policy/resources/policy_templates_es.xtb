@@ -3514,7 +3514,7 @@ Si no se define esta política, no se podrá navegar en el navegador mientras la
 <translation id="3442589735857147823">Permitir que los usuarios usen las máquinas virtuales necesarias para el funcionamiento de las aplicaciones de Linux</translation>
 <translation id="34476328503285475">Si se establece esta política, se preconfigurarán hasta 10 accesos directos personalizados en la página Nueva pestaña de <ph name="PRODUCT_NAME" />.
 
-Si se establece, los usuarios verán estos accesos directos de forma predeterminada, además de sus accesos directos personales. Los usuarios pueden controlar la visibilidad de los accesos directos de su organización en el panel Personalizar Chrome.
+Si se define esta política, los usuarios verán estos accesos directos de forma predeterminada, además de sus accesos directos personales. Los usuarios pueden controlar la visibilidad de los accesos directos de su organización en el panel Personalizar Chrome.
 
 Las URLs de acceso directo deben ser únicas.
 

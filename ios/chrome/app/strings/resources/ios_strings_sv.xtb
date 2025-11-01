@@ -677,7 +677,6 @@
 <translation id="3642060527569456384">Flikgrupper sparas och uppdateras automatiskt på alla dina enheter.</translation>
 <translation id="3643338347976071250">{count,plural, =1{{count} lösenord sparas endast på den här enheten. Om du vill använda det på dina andra enheter sparar du det i Google-kontot {email}.}other{{count} lösenord sparas endast på den här enheten. Om du vill använda dem på dina andra enheter kan du spara dem i Google-kontot {email}.}}</translation>
 <translation id="3659297405161482746">Inga betalningsmetoder hittades</translation>
-<translation id="3662966164093827811">{count,plural, =1{1 har valts}other{# har valts}}</translation>
 <translation id="3668816008081204991">Läslistan har dolts</translation>
 <translation id="3670030362669914947">Nummer</translation>
 <translation id="3679163990085797665">Radera lästa</translation>
@@ -742,7 +741,6 @@
 <translation id="3926703470020109118">Nedladdningen har avbrutits</translation>
 <translation id="3929457972718048006">Adresser</translation>
 <translation id="3931215329146376310">{count,plural, =1{Nytt lösenord för den här webbplatsen}other{Nya lösenord för den här webbplatsen}}</translation>
-<translation id="3933372629914873850">Du loggar in på <ph name="URL" /></translation>
 <translation id="3934905113567851655">Nyp för att ändra storlek</translation>
 <translation id="3940195383040445971">Bevaka priser på flikar</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{Stäng {COUNT} flik}other{Stäng {COUNT} flikar}}</translation>
@@ -1332,7 +1330,6 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="6103540626693881831">Kryptering på enheten</translation>
 <translation id="611361228753138223">Webbplatser som du har besökt nyligen på den här enheten</translation>
 <translation id="611705554202268369">Tryck länge för att lägga till i en flikgrupp</translation>
-<translation id="6117260878488959646">Ett fel har uppstått. Försök igen senare.</translation>
 <translation id="6122191549521593678">Online</translation>
 <translation id="6122831415929794347">Vill du inaktivera Säker webbsökning?</translation>
 <translation id="6123514585040403489">Dina flikar stängs</translation>

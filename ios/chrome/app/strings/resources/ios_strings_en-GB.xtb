@@ -742,7 +742,6 @@
 <translation id="3926703470020109118">Download cancelled</translation>
 <translation id="3929457972718048006">Addresses</translation>
 <translation id="3931215329146376310">{count,plural, =1{New password for this site}other{New passwords for this site}}</translation>
-<translation id="3933372629914873850">You'll sign in to <ph name="URL" /></translation>
 <translation id="3934905113567851655">Pinch to resize</translation>
 <translation id="3940195383040445971">Track prices on tabs</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{Close {COUNT} tab}other{Close {COUNT} tabs}}</translation>
@@ -1332,7 +1331,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6103540626693881831">On-device encryption</translation>
 <translation id="611361228753138223">Sites that you've visited lately on this device</translation>
 <translation id="611705554202268369">Long press to add to a tab group</translation>
-<translation id="6117260878488959646">An error occurred. Please try again later.</translation>
 <translation id="6122191549521593678">Online</translation>
 <translation id="6122831415929794347">Turn off Safe Browsing?</translation>
 <translation id="6123514585040403489">Your tabs will be closed</translation>

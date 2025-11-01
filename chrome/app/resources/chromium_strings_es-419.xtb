@@ -145,7 +145,6 @@
 <translation id="2620436844016719705">Sistema</translation>
 <translation id="2629740064077610681">Tu organización puede ver y administrar los datos de navegación, como tus favoritos, historial y contraseñas. No puede ver los datos de navegación en otros perfiles de Chromium.</translation>
 <translation id="2635452620547538388">Verifica tu identidad para usar y guardar datos de Chromium en tu cuenta, <ph name="ACCOUNT_EMAIL" /></translation>
-<translation id="2637732208198500597">{COUNT,plural, =0{La Protección avanzada requiere que reinicies Chromium para aplicar una actualización}=1{La Protección avanzada requiere que reinicies Chromium para aplicar una actualización. No se volverá a abrir la ventana de incógnito.}other{La Protección avanzada requiere que reinicies Chromium para aplicar una actualización. No se volverán a abrir las # ventanas de incógnito.}}</translation>
 <translation id="2648074677641340862">Se produjo un error del sistema operativo durante la instalación. Descarga Chromium nuevamente.</translation>
 <translation id="2661879430930417727">Si compartes un dispositivo, tus amigos y familiares podrán navegar de forma independiente y configurar Chromium según sus preferencias.</translation>
 <translation id="2711502716910134313">Pestaña de Chromium</translation>
@@ -156,6 +155,7 @@
 <translation id="2738871930057338499">No se puede conectar a Internet. HTTP 403 no permitido. Comprueba la configuración del proxy.</translation>
 <translation id="2753623023919742414">Hacer clic para buscar</translation>
 <translation id="2768103863314748511">Establece Chromium como tu lector de PDF predeterminado</translation>
+<translation id="2770231113462710648">Cambiar el navegador predeterminado a:</translation>
 <translation id="2785438272836277133">Esta extensión contiene software malicioso y no es segura. Quítala de Chromium para que ya no pueda ver ni cambiar tus datos en los sitios que visitas, incluida tu información personal.</translation>
 <translation id="2799223571221894425">Reiniciar</translation>
 <translation id="2803971713792056305">Tu Chromium</translation>
@@ -379,7 +379,6 @@
 <translation id="5605834417512968703">Selecciona cualquier elemento para realizar una Búsqueda con imágenes o presiona Escape para salir de la Búsqueda con imágenes</translation>
 <translation id="5618818588972826921">Selecciona cualquier texto o imagen para realizar una Búsqueda con imágenes o presiona Escape para salir de la Búsqueda con imágenes</translation>
 <translation id="5623402015214259806">{0,plural, =0{Hay una actualización de Chromium disponible}=1{Hay una actualización de Chromium disponible}other{Hay una actualización de Chromium disponible hace # días}}</translation>
-<translation id="5633450273457573375">Usar tu <ph name="BEGIN_LINK" />propia frase de contraseña<ph name="END_LINK" /> para encriptar todos los datos de Chromium en tu Cuenta de Google. Las direcciones y los datos guardados en la Billetera de Google no se encriptarán con tu frase de contraseña. No se sincronizará el historial de navegación de Chromium.</translation>
 <translation id="5643865575100044307">Siempre borrar los datos de sitios de tu dispositivo cuando cierras Chromium</translation>
 <translation id="5653831366781983928">Reinicia Chromium ahora</translation>
 <translation id="5690427481109656848">Google LLC</translation>

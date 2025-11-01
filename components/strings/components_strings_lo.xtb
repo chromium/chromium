@@ -1844,7 +1844,6 @@
 <translation id="4014895360827978999">ບໍລິການຜູ້ຂາຍ ແລະ ລະບົບການຈ່າຍເງິນ</translation>
 <translation id="4018819349042761761">ກະແຈສາທາລະນະ</translation>
 <translation id="4023431997072828269">ເພາະວ່າແບບຟອມນີ້ກຳລັງຖືກສົ່ງໂດຍໃຊ້ການເຊື່ອມຕໍ່ທີ່ບໍ່ປອດໄພ, ຄົນອື່ນຈຶ່ງສາມາດເຫັນຂໍ້ມູນຂອງທ່ານໄດ້.</translation>
-<translation id="4024673763872230929">ບັນທຶກຂໍ້ມູນຂອງທ່ານ ແລະ ຕື່ມຂໍ້ມູນໃສ່ແບບຟອມໄດ້ວ່ອງໄວຍິ່ງຂຶ້ນ. ບັນທຶກໃສ່ໃນອຸປະກອນຂອງທ່ານ.</translation>
 <translation id="4025325634010721551">ໂຫຼດນະໂຍບາຍຄືນໃໝ່ແລ້ວ</translation>
 <translation id="4025338605225449265">ສະກຸນເງິນ ແລະ ການແລກປ່ຽນເງິນຕາຕ່າງປະເທດ</translation>
 <translation id="4025777154208238692">ລໍາດັບປີ້ນຄືນ</translation>
@@ -2278,7 +2277,6 @@
 <translation id="4732860731866514038">ກຳລັງດາວໂຫຼດຊຸດພາສາ <ph name="LANGUAGE" />... <ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992"><ph name="URL" /> ຕ້ອງການໃຊ້ສະຖານທີ່ຂອງອຸປະກອນຂອງທ່ານ</translation>
 <translation id="473414950835101501">ໃຊ້ກ້ອງຖ່າຍຮູບຂອງທ່ານ</translation>
-<translation id="4734343956394152985"><ph name="BEGIN_BOLD" />ຄ່າເລີ່ມຕົ້ນປັດຈຸບັນ<ph name="END_BOLD" /> · <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="4736825316280949806">ປິດເປີດ Chromium ຄືນໃໝ່</translation>
 <translation id="4736934858538408121">ບັດສະເໝືອນ</translation>
 <translation id="473775607612524610">ອັບເດດ</translation>
@@ -3388,7 +3386,6 @@
 <translation id="6521745193039995384">ບໍ່ເຄື່ອນໄຫວ</translation>
 <translation id="6522682797352430154">ດົນຕີຄລາດສິກ</translation>
 <translation id="6524830701589638230">ປຸ່ມຈັດການການຕັ້ງຄ່າການຊ່ວຍເຂົ້າເຖິງ, ເປີດນຳໃຊ້ເພື່ອປັບແຕ່ງເຄື່ອງມືການຊ່ວຍເຂົ້າເຖິງຂອງທ່ານໃຫ້ເປັນແບບສ່ວນຕົວໃນການຕັ້ງຄ່າ Chrome</translation>
-<translation id="6525222262307262764">ຮັກສາຄ່າເລີ່ມຕົ້ນປັດຈຸບັນໄວ້</translation>
 <translation id="6527049834925947126">ການຜະລິດອາຫານ</translation>
 <translation id="6529173248185917884">ມ້ວນທີເຈັດ</translation>
 <translation id="6529602333819889595">ເຮັດຄືນຄໍາສັ່ງລຶບ</translation>
@@ -3409,7 +3406,6 @@
 <translation id="6567832540451970450">ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານອະນຸຍາດໃຫ້ໃຊ້ <ph name="PERMISSION" /> ສຳລັບເວັບໄຊນີ້</translation>
 <translation id="6568793038316600992">ປຸ່ມຈັດການວິທີການຈ່າຍເງິນ, ເປີດນຳໃຊ້ເພື່ອຈັດການການຈ່າຍເງິນ ແລະ ຂໍ້ມູນບັດເຄຣດິດຂອງທ່ານໃນການຕັ້ງຄ່າ Chrome</translation>
 <translation id="6569060085658103619">ທ່ານກຳລັງເບິ່ງໜ້າສ່ວນຂະຫຍາຍ</translation>
-<translation id="6571992525120410251">ຖາມ <ph name="ENGINE_NAME" /> ຫຍັງກໍໄດ້</translation>
 <translation id="6572867903637058088">ຂໍ້ມູນນີ້ມີປະໂຫຍດບໍ?</translation>
 <translation id="6573200754375280815">ເຈາະຮູຢູ່ເບື້ອງຂວາສອງຮູ</translation>
 <translation id="6575408526598156416">ບັນທຶກໃນບັນຊີ</translation>
@@ -3458,7 +3454,6 @@
 <translation id="666259744093848177">(x86_64 ແປແລ້ວ)</translation>
 <translation id="6665553082534466207">ເຈາະຮູຢູ່ເບື້ອງຂວາສາມຮູ</translation>
 <translation id="6668389483194953109">ພົບຊື່ຂະໜາດເຈ້ຍ "ກໍານົດເອງ", ແຕ່ຄຸນສົມບັດ "custom_size" ຫວ່າງເປົ່າ ຫຼື ບໍ່ຖືກຕ້ອງ.</translation>
-<translation id="6670729408462528018">ຄັງ</translation>
 <translation id="6671169470640320959">ສິນເຊື່ອລົດ</translation>
 <translation id="6671697161687535275">ເອົາ​ການ​ແນະ​ນຳ​ແບບ​ຟອມ​ອອກ​​ຈາກ Chromium ບໍ?</translation>
 <translation id="6675846980676550611">ບໍ່ອະນຸຍາດ AR</translation>

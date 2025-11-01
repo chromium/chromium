@@ -1843,7 +1843,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="4014895360827978999">Tirgotāju pakalpojumi un maksājumu sistēmas</translation>
 <translation id="4018819349042761761">Publiska atslēga</translation>
 <translation id="4023431997072828269">Tā kā šī veidlapa tiek iesniegta, izmantojot nedrošu savienojumu, jūsu informācija būs redzama citām personām.</translation>
-<translation id="4024673763872230929">Saglabājiet savu informāciju, lai veidlapas aizpildītu ātrāk. Informācija tiek saglabāta ierīcē.</translation>
 <translation id="4025325634010721551">Politikas ir ielādētas atkārtoti</translation>
 <translation id="4025338605225449265">Valūtas un valūtas maiņa</translation>
 <translation id="4025777154208238692">Apgrieztā secībā</translation>
@@ -2276,7 +2275,6 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="4732860731866514038">Notiek šādas valodas pakotnes lejupielāde: <ph name="LANGUAGE" />… <ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992">Vietnē <ph name="URL" /> tiek pieprasīta atļauja izmantot jūsu ierīces atrašanās vietu.</translation>
 <translation id="473414950835101501">Izmantot jūsu kameras</translation>
-<translation id="4734343956394152985"><ph name="BEGIN_BOLD" />Pašreizējā noklusējuma izvēle<ph name="END_BOLD" /> · <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="4736825316280949806">Restartējiet pārlūku Chromium</translation>
 <translation id="4736934858538408121">Virtuāla karte</translation>
 <translation id="473775607612524610">Atjaunināt</translation>
@@ -3386,7 +3384,6 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="6521745193039995384">Nav aktīva</translation>
 <translation id="6522682797352430154">Klasiskā mūzika</translation>
 <translation id="6524830701589638230">Poga “Pārvaldīt pieejamības iestatījumus”. Aktivizējiet, lai Chrome iestatījumos personalizētu pieejamības rīkus.</translation>
-<translation id="6525222262307262764">Paturēt pašreizējo noklusējuma izvēli</translation>
 <translation id="6527049834925947126">Pārtikas rūpniecība</translation>
 <translation id="6529173248185917884">Septītais rullis</translation>
 <translation id="6529602333819889595">&amp;Dzēšanas atsaukuma atcelšana</translation>
@@ -3407,7 +3404,6 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="6567832540451970450">Jūsu administrators ļauj šajā vietnē izmantot atļauju “<ph name="PERMISSION" />”.</translation>
 <translation id="6568793038316600992">Poga “Pārvaldīt maksājumu veidus”. Aktivizējiet, lai Chrome iestatījumos pārvaldītu savus maksājumu un kredītkaršu informāciju.</translation>
 <translation id="6569060085658103619">Jūs skatāt paplašinājumu lapu.</translation>
-<translation id="6571992525120410251">Jautājiet <ph name="ENGINE_NAME" /> jebko</translation>
 <translation id="6572867903637058088">Vai tas ir noderīgi?</translation>
 <translation id="6573200754375280815">Divi caurumi labajā pusē</translation>
 <translation id="6575408526598156416">Saglabāt kontā</translation>
@@ -3456,7 +3452,6 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="666259744093848177">(x86_64, tulkots)</translation>
 <translation id="6665553082534466207">Trīs caurumi labajā pusē</translation>
 <translation id="6668389483194953109">Atrasts papīra izmēru nosaukums “custom”, taču parametrs “custom_size” ir tukšs vai nederīgs.</translation>
-<translation id="6670729408462528018">Galerija</translation>
 <translation id="6671169470640320959">Finansējums automašīnas iegādei</translation>
 <translation id="6671697161687535275">Vai noņemt veidlapas ieteikumu no pārlūka Chromium?</translation>
 <translation id="6675846980676550611">Nav atļauts izmantot PR</translation>

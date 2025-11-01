@@ -677,7 +677,6 @@
 <translation id="3642060527569456384">Tabbladgroepen worden automatisch opgeslagen en geüpdatet op al je apparaten.</translation>
 <translation id="3643338347976071250">{count,plural, =1{{count} wachtwoord wordt alleen op dit apparaat opgeslagen. Als je het op je andere apparaten wilt gebruiken, sla je het op in je Google-account, {email}.}other{{count} wachtwoorden worden alleen op dit apparaat opgeslagen. Als je ze op je andere apparaten wilt gebruiken, sla je ze op in je Google-account, {email}.}}</translation>
 <translation id="3659297405161482746">Geen betaalmethoden gevonden</translation>
-<translation id="3662966164093827811">{count,plural, =1{1 geselecteerd}other{# geselecteerd}}</translation>
 <translation id="3668816008081204991">Leeslijst is verborgen</translation>
 <translation id="3670030362669914947">Nummer</translation>
 <translation id="3679163990085797665">Gelezen items verwijderen</translation>

@@ -1843,7 +1843,6 @@
 <translation id="4014895360827978999">Сатуучу кызматтары жана төлөм тутумдары</translation>
 <translation id="4018819349042761761">Жалпыга ачык ачкыч</translation>
 <translation id="4023431997072828269">Форманы тапшырууда кооптуу байланыш колдонулуп жаткандыктан, маалыматыңыз башкаларга көрүнүп турат.</translation>
-<translation id="4024673763872230929">Маалыматыңызды сактап, формаларды тезирээк толтуруңуз. Түзмөгүңүзгө сакталат.</translation>
 <translation id="4025325634010721551">Эрежелер кайра жүктөлдү</translation>
 <translation id="4025338605225449265">Валюталар</translation>
 <translation id="4025777154208238692">Тескери тартипте</translation>
@@ -2277,7 +2276,6 @@
 <translation id="4732860731866514038"><ph name="LANGUAGE" /> тил топтому жүктөлүп алынууда... <ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992"><ph name="URL" /> түзмөгүңүздүн жайгашкан жерин пайдаланганы жатат</translation>
 <translation id="473414950835101501">Камераларыңызды колдонуу</translation>
-<translation id="4734343956394152985"><ph name="BEGIN_BOLD" />Учурдагы демейки колдонмо<ph name="END_BOLD" /> · <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="4736825316280949806">Chromium’ду өчүрүп-күйгүзүңүз</translation>
 <translation id="4736934858538408121">Виртуалдык карта</translation>
 <translation id="473775607612524610">Жаңыртуу</translation>
@@ -3387,7 +3385,6 @@
 <translation id="6521745193039995384">Жигердүү эмес</translation>
 <translation id="6522682797352430154">Классикалык музыка</translation>
 <translation id="6524830701589638230">"Атайын мүмкүнчүлүктөрдү тууралоону башкаруу" баскычы. Chrome жөндөөлөрүндө атайын мүмкүнчүлүктөр куралдарын жекелештирүү үчүн иштетиңиз</translation>
-<translation id="6525222262307262764">Учурдагы демейки кызмат калсын</translation>
 <translation id="6527049834925947126">Тамак-аш өндүрүү</translation>
 <translation id="6529173248185917884">Жетинчи барабан</translation>
 <translation id="6529602333819889595">Жок кылууну &amp;кайталоо</translation>
@@ -3408,7 +3405,6 @@
 <translation id="6567832540451970450">Администраторуңуз бул сайт үчүн <ph name="PERMISSION" /> колдонууга уруксат берет</translation>
 <translation id="6568793038316600992">"Төлөм ыкмаларын башкаруу" баскычы. Chrome'дун жөндөөлөрүнө өтүп, төлөмдөрүңүздү жана насыя карточкасынын маалыматын башкаруу үчүн иштетиңиз</translation>
 <translation id="6569060085658103619">Кеңейтүү баракчасын карап жатасыз</translation>
-<translation id="6571992525120410251"><ph name="ENGINE_NAME" /> кызматынан каалаган нерсени сураңыз</translation>
 <translation id="6572867903637058088">Пайдасы тийдиби?</translation>
 <translation id="6573200754375280815">Оң жагын эки жолу тешүү</translation>
 <translation id="6575408526598156416">Аккаунтта сактоо</translation>
@@ -3457,7 +3453,6 @@
 <translation id="666259744093848177">(x86_64 которулду)</translation>
 <translation id="6665553082534466207">Оң жагын үч жолу тешүү</translation>
 <translation id="6668389483194953109">Кагаздын өлчөмүнүн аталышы "custom", бирок "custom_size" касиети бош же жараксыз.</translation>
-<translation id="6670729408462528018">Галерея</translation>
 <translation id="6671169470640320959">Авто каржылоо</translation>
 <translation id="6671697161687535275">Сунушту Chromium'дан өчүрөсүзбү?</translation>
 <translation id="6675846980676550611">AR'га (кошумчаланган чындык) тыюу салынат</translation>

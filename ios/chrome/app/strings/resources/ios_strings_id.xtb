@@ -677,7 +677,6 @@
 <translation id="3642060527569456384">Grup tab disimpan dan diperbarui otomatis di semua perangkat Anda.</translation>
 <translation id="3643338347976071250">{count,plural, =1{{count} sandi hanya disimpan ke perangkat ini. Untuk menggunakannya di perangkat lain, simpan sandi di Akun Google Anda, {email}.}other{{count} sandi hanya disimpan ke perangkat ini. Untuk menggunakannya di perangkat lain, simpan sandi di Akun Google Anda, {email}.}}</translation>
 <translation id="3659297405161482746">Metode pembayaran tidak ditemukan</translation>
-<translation id="3662966164093827811">{count,plural, =1{1 dipilih}other{# dipilih}}</translation>
 <translation id="3668816008081204991">Daftar bacaan disembunyikan</translation>
 <translation id="3670030362669914947">Nomor</translation>
 <translation id="3679163990085797665">Hapus yang telah dibaca</translation>

@@ -677,7 +677,6 @@
 <translation id="3642060527569456384">Os grupos de pestanas gárdanse e actualízanse automaticamente en todos os dispositivos.</translation>
 <translation id="3643338347976071250">{count,plural, =1{Hai {count} contrasinal gardado só neste dispositivo. Para usalo noutros aparellos, gárdao na túa Conta de Google ({email}).}other{Hai {count} contrasinais gardados só neste dispositivo. Para usalos noutros aparellos, gárdaos na túa Conta de Google ({email}).}}</translation>
 <translation id="3659297405161482746">Non se atopou ningún método de pago</translation>
-<translation id="3662966164093827811">{count,plural, =1{1 elemento seleccionado}other{# elementos seleccionados}}</translation>
 <translation id="3668816008081204991">A lista de lectura está oculta</translation>
 <translation id="3670030362669914947">Número</translation>
 <translation id="3679163990085797665">Eliminar elementos lidos</translation>
