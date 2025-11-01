@@ -19,19 +19,15 @@
 
 namespace {
 
-const base::FilePath::CharType kManifestFileName[] =
-    FILE_PATH_LITERAL("wasm_tts_manifest.json");
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 const base::FilePath::CharType kBindingsMainWasmFileName[] =
     FILE_PATH_LITERAL("bindings_main.wasm");
 const base::FilePath::CharType kBindingsMainJsFileName[] =
     FILE_PATH_LITERAL("bindings_main.js");
-const base::FilePath::CharType kTTSEngineJsBinFileName[] =
-    FILE_PATH_LITERAL("googletts_engine_js_bin.js");
 const base::FilePath::CharType kWorkletProcessorJsFileName[] =
     FILE_PATH_LITERAL("streaming_worklet_processor.js");
 const base::FilePath::CharType kVoicesJsonFileName[] =
     FILE_PATH_LITERAL("voices.json");
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 const base::FilePath::CharType kManifestV3FileName[] =
     FILE_PATH_LITERAL("wasm_tts_manifest_v3.json");
 const base::FilePath::CharType kOffscreenHtmlFileName[] =
@@ -192,9 +188,7 @@ void WasmTtsEngineComponentInstallerPolicy::MaybeReinstallTtsEngine(
     return;
   }
 
-  const base::FilePath::CharType* manifest_file =
-      features::IsWasmTtsComponentUpdaterV3Enabled() ? kManifestV3FileName
-                                                     : kManifestFileName;
+  const base::FilePath::CharType* manifest_file = kManifestV3FileName;
 
   // If it's been more than 14 days since reading mode was last opened,
   // re-install the engine so that unused voices can be removed.
@@ -228,23 +222,19 @@ bool WasmTtsEngineComponentInstallerPolicy::VerifyInstallation(
     const base::Value::Dict& /* manifest */,
     const base::FilePath& install_dir) const {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-  if (features::IsWasmTtsComponentUpdaterV3Enabled()) {
-    return base::PathExists(install_dir.Append(kManifestV3FileName)) &&
-           base::PathExists(install_dir.Append(kBindingsMainWasmFileName)) &&
-           base::PathExists(install_dir.Append(kBindingsMainJsFileName)) &&
-           base::PathExists(install_dir.Append(kOffscreenHtmlFileName)) &&
-           base::PathExists(install_dir.Append(kOffscreenCompiledFileName)) &&
-           base::PathExists(install_dir.Append(kBackgroundCompiledFileName)) &&
-           base::PathExists(install_dir.Append(kWorkletProcessorJsFileName)) &&
-           base::PathExists(install_dir.Append(kVoicesJsonFileName));
-  }
-#endif
-  return base::PathExists(install_dir.Append(kManifestFileName)) &&
+  return base::PathExists(install_dir.Append(kManifestV3FileName)) &&
          base::PathExists(install_dir.Append(kBindingsMainWasmFileName)) &&
          base::PathExists(install_dir.Append(kBindingsMainJsFileName)) &&
-         base::PathExists(install_dir.Append(kTTSEngineJsBinFileName)) &&
+         base::PathExists(install_dir.Append(kOffscreenHtmlFileName)) &&
+         base::PathExists(install_dir.Append(kOffscreenCompiledFileName)) &&
+         base::PathExists(install_dir.Append(kBackgroundCompiledFileName)) &&
          base::PathExists(install_dir.Append(kWorkletProcessorJsFileName)) &&
          base::PathExists(install_dir.Append(kVoicesJsonFileName));
+#else
+  // Attempting to install the TTS extension should never be done outside of
+  // Windows, Mac, and Linux. Return false as a fallback just in case.
+  return false;
+#endif
 }
 
 base::FilePath WasmTtsEngineComponentInstallerPolicy::GetRelativeInstallDir()

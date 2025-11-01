@@ -38,8 +38,6 @@ constexpr int kRemoveExtensionDelaySeconds = 30;
 }  // namespace
 
 #if !BUILDFLAG(IS_CHROMEOS)
-const base::FilePath::CharType kManifestFileName[] =
-    FILE_PATH_LITERAL("wasm_tts_manifest.json");
 const base::FilePath::CharType kManifestV3FileName[] =
     FILE_PATH_LITERAL("wasm_tts_manifest_v3.json");
 #endif  // !BUILDFLAG(IS_CHROMEOS)
@@ -202,19 +200,11 @@ void ReadAnythingService::RemoveTtsDownloadExtension() {
 
 #if !BUILDFLAG(IS_CHROMEOS)
 void ReadAnythingService::InstallComponent(const base::FilePath& new_dir) {
-  const base::FilePath::CharType* manifest;
-  if (features::IsWasmTtsComponentUpdaterV3Enabled()) {
-    VLOG(1) << "Installing TTS component using V3 engine";
-    manifest = kManifestV3FileName;
-  } else {
-    VLOG(1) << "Installing TTS component using V2 engine";
-    manifest = kManifestFileName;
-  }
-
   RecordEngineVersion(new_dir.BaseName());
   EmbeddedA11yExtensionLoader::GetInstance()->Init();
   EmbeddedA11yExtensionLoader::GetInstance()->InstallExtensionWithIdAndPath(
-      extension_misc::kComponentUpdaterTTSEngineExtensionId, new_dir, manifest,
+      extension_misc::kComponentUpdaterTTSEngineExtensionId, new_dir,
+      kManifestV3FileName,
       /*should_localize=*/false);
 
   // Store the last time reading mode was opened and the TTS engine was

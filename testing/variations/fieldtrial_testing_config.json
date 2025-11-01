@@ -27018,29 +27018,6 @@
             ]
         }
     ],
-    "WasmTtsComponentUpdaterV3Enabled": [
-        {
-            "platforms": [
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "WasmTtsComponentUpdaterV3Enabled"
-                    ]
-                },
-                {
-                    "name": "Disabled",
-                    "disable_features": [
-                        "WasmTtsComponentUpdaterV3Enabled"
-                    ]
-                }
-            ]
-        }
-    ],
     "WebApkBackupAndRestore": [
         {
             "platforms": [

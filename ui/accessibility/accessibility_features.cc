@@ -526,13 +526,6 @@ bool IsBlockRootWindowAccessibleNameChangeEventEnabled() {
 #endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-BASE_FEATURE(kWasmTtsComponentUpdaterV3Enabled,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-bool IsWasmTtsComponentUpdaterV3Enabled() {
-  return base::FeatureList::IsEnabled(
-      ::features::kWasmTtsComponentUpdaterV3Enabled);
-}
-
 BASE_FEATURE(kWasmTtsEngineAutoInstallDisabled,
              base::FEATURE_DISABLED_BY_DEFAULT);
 bool IsWasmTtsEngineAutoInstallDisabled() {
