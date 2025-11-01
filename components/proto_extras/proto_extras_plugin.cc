@@ -25,6 +25,7 @@
 namespace {
 
 using google::protobuf::Descriptor;
+using google::protobuf::Edition;
 using google::protobuf::FieldDescriptor;
 using google::protobuf::FileDescriptor;
 using google::protobuf::OneofDescriptor;
@@ -375,8 +376,12 @@ class ProtoExtrasGenerator : public google::protobuf::compiler::CodeGenerator {
   ~ProtoExtrasGenerator() override = default;
 
   uint64_t GetSupportedFeatures() const override {
-    return FEATURE_PROTO3_OPTIONAL;
+    return FEATURE_PROTO3_OPTIONAL | FEATURE_SUPPORTS_EDITIONS;
   }
+
+  Edition GetMinimumEdition() const override { return Edition::EDITION_PROTO2; }
+
+  Edition GetMaximumEdition() const override { return Edition::EDITION_2024; }
 
   bool Generate(const FileDescriptor* file,
                 const std::string& command_line_options,

@@ -15,6 +15,8 @@
 #include "components/proto_extras/test_proto2/test_proto2.pb.h"
 #include "components/proto_extras/test_proto2/test_proto2.test.h"
 #include "components/proto_extras/test_proto2/test_proto2.to_value.h"
+#include "components/proto_extras/test_proto_edition/test_proto_edition.pb.h"
+#include "components/proto_extras/test_proto_edition/test_proto_edition.to_value.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace proto_extras {
@@ -745,6 +747,16 @@ TEST(ProtoExtrasProto2ToValueTest, EmptyEmbeddedMessageToValue) {
   ASSERT_TRUE(result.is_dict());
   EXPECT_EQ(Serialize(message), base::test::ParseJson(R"!({
     "empty_embedded_message": {}
+  })!"));
+}
+
+TEST(ProtoExtrasProto2ToValueTest, TestEditionMessage) {
+  TestMessageEdition message;
+  message.set_text("test");
+  base::Value result = Serialize(message);
+  ASSERT_TRUE(result.is_dict());
+  EXPECT_EQ(Serialize(message), base::test::ParseJson(R"!({
+    "text": "test"
   })!"));
 }
 

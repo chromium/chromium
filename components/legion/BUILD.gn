@@ -2,11 +2,18 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//components/proto_extras/proto_extras.gni")
 import("//testing/test.gni")
 import("//third_party/protobuf/proto_library.gni")
 
 proto_library("proto") {
   sources = [ "proto/legion.proto" ]
+}
+
+# Generate serialization helper.
+proto_extras("proto_extras") {
+  sources = [ "proto/legion.proto" ]
+  deps = [ ":proto" ]
 }
 
 source_set("legion") {
@@ -35,6 +42,7 @@ source_set("legion") {
   ]
   deps = [
     ":proto",
+    ":proto_extras",
     "//base",
     "//crypto",
     "//mojo/public/cpp/system",

@@ -9,6 +9,8 @@
 #include "components/proto_extras/test_proto/test_proto_dependency.test.h"
 #include "components/proto_extras/test_proto2/test_proto2.pb.h"
 #include "components/proto_extras/test_proto2/test_proto2.test.h"
+#include "components/proto_extras/test_proto_edition/test_proto_edition.pb.h"
+#include "components/proto_extras/test_proto_edition/test_proto_edition.test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -253,6 +255,18 @@ TEST(ProtoTestExtrasProto2, MapFields) {
   EXPECT_THAT(message, Not(EqualsTestMessageProto2(expected)));
   (*expected.mutable_message_map_field())["hello2"].set_str_field("world2");
   EXPECT_THAT(message, EqualsTestMessageProto2(expected));
+}
+
+TEST(ProtoTestExtrasProtoEdition, TestMessage) {
+  TestMessageEdition message;
+  message.set_text("foo");
+  TestMessageEdition message2;
+  message2.set_text("bar");
+  TestMessageEdition expected;
+  expected.set_text("foo");
+
+  EXPECT_THAT(message, EqualsTestMessageEdition(expected));
+  EXPECT_THAT(message, Not(EqualsTestMessageEdition(message2)));
 }
 
 }  // namespace

@@ -23,6 +23,8 @@ if (!is_android) {
       "//chrome/browser",
       "//chrome/test:test_support",
       "//components/legion",
+      "//components/legion:proto",
+      "//components/legion:proto_extras",
       "//content/test:test_support",
       "//third_party/oak:oak_proto",
       "//third_party/oak:oak_proto_extras",
