@@ -15,6 +15,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/web_transport_simple_test_server.h"
+#include "services/network/public/cpp/features.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 
 // Local network access browser tests related to workers
@@ -51,21 +52,15 @@ class LocalNetworkAccessWorkersWebTransportBrowserTest
   int webtransport_port() const { return server_.server_address().port(); }
 
  private:
+  base::test::ScopedFeatureList feature_list_{
+      network::features::kLocalNetworkAccessChecksWebTransport};
   content::WebTransportSimpleTestServer server_;
 };
 
 // Tests that a script tag that is included in the main page HTML (and thus
 // load blocking) correctly triggers the LNA permission prompt.
-
-// TODO(crbug.com/456821852): Re-enable this test.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_DedicatedWorkerDenyPermission \
-  DISABLED_DedicatedWorkerDenyPermission
-#else
-#define MAYBE_DedicatedWorkerDenyPermission DedicatedWorkerDenyPermission
-#endif
 IN_PROC_BROWSER_TEST_F(LocalNetworkAccessWorkersBrowserTest,
-                       MAYBE_DedicatedWorkerDenyPermission) {
+                       DedicatedWorkerDenyPermission) {
   ASSERT_TRUE(content::NavigateToURL(
       web_contents(), https_server().GetURL("a.com", kWorkerHtmlPath)));
 
