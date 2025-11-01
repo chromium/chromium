@@ -52,6 +52,7 @@ found in the LICENSE file.
         android:id="@+id/location_bar_attachments_settings"
         android:layout_width="@dimen/navigation_attachments_button_size"
         android:layout_height="@dimen/navigation_attachments_button_size"
+        android:visibility="gone"
         android:padding="@dimen/navigation_attachments_button_padding"
         android:src="@drawable/ic_settings_tune_24dp"
         android:scaleType="centerInside"
@@ -59,7 +60,6 @@ found in the LICENSE file.
         android:focusable="true"
         android:background="?attr/selectableItemBackground"
         android:clipToOutline="true"
-        android:visibility="gone"
         app:layout_constraintStart_toEndOf="@id/location_bar_attachments_add"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/location_bar_attachments"
@@ -70,11 +70,11 @@ found in the LICENSE file.
         android:id="@+id/navigation_attachments_request_type"
         android:layout_width="wrap_content"
         android:layout_height="@dimen/min_touch_target_size"
+        android:visibility="gone"
         android:contentDescription="@string/accessibility_omnibox_reset_mode"
         android:drawableStart="@drawable/search_spark_black_24dp"
         android:drawableEnd="@drawable/btn_close"
         android:drawablePadding="8dp"
-        android:visibility="gone"
         android:singleLine="true"
         android:text="@string/ai_mode_entrypoint_label"
         android:textAlignment="viewStart"
@@ -86,5 +86,19 @@ found in the LICENSE file.
         app:buttonBorderStyle="dashed"
         app:drawableTint="?attr/colorPrimary"
         app:buttonTextColor="@null"/>
+
+    <org.chromium.ui.widget.ChromeImageView
+        android:id="@+id/navigate_button"
+        android:layout_width="@dimen/navigation_attachments_button_size"
+        android:layout_height="@dimen/navigation_attachments_button_size"
+        android:visibility="gone"
+        android:src="@drawable/ic_arrow_forward_blue_24dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:scaleType="centerInside"
+        android:background="@drawable/oval_baseline_primary_50"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/margin_spacer"
+        app:tint="@macro/default_icon_color_inverse"/>
 
 </merge>

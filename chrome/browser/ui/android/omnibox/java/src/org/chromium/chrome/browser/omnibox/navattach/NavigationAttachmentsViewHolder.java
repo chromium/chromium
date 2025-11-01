@@ -24,6 +24,7 @@ class NavigationAttachmentsViewHolder {
     public final ChromeImageView settingsButton;
     public final NavigationAttachmentsPopup popup;
     public final ButtonCompat requestType;
+    public final ChromeImageView navigateButton;
 
     NavigationAttachmentsViewHolder(ViewGroup parent, NavigationAttachmentsPopup popup) {
         attachmentsView = parent.findViewById(R.id.location_bar_attachments);
@@ -31,6 +32,7 @@ class NavigationAttachmentsViewHolder {
         addButton = parent.findViewById(R.id.location_bar_attachments_add);
         settingsButton = parent.findViewById(R.id.location_bar_attachments_settings);
         requestType = parent.findViewById(R.id.navigation_attachments_request_type);
+        navigateButton = parent.findViewById(R.id.navigate_button);
         this.popup = popup;
 
         var outline =

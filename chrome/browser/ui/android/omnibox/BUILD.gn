@@ -343,6 +343,7 @@ android_resources("java_resources") {
     "java/res/drawable/navattach_item_thumbnail_background.xml",
     "java/res/drawable/north_east_24dp.xml",
     "java/res/drawable/north_west_24dp.xml",
+    "java/res/drawable/oval_baseline_primary_50.xml",
     "java/res/drawable/search_spark_black_24dp.xml",
     "java/res/drawable/search_spark_rainbow.xml",
     "java/res/drawable/search_spark_rainbow_background.xml",
