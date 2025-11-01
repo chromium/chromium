@@ -1204,7 +1204,7 @@ deps = {
       'packages': [
           {
               'package': 'chromium/chrome/android/orderfiles/arm64',
-              'version': 'YJbOFW7JOEIOfCGWC45Txm8N2lpyzSuHpJcRxcwYO90C',
+              'version': 'jttbOzzCCZhJbCT8XaZUZlQOwooABwTSwdiaXkcK_ukC',
           },
       ],
       'condition': 'checkout_android and non_git_source',
@@ -1226,7 +1226,7 @@ deps = {
       'packages': [
           {
               'package': 'chromium/android_webview/tools/orderfiles/arm64',
-              'version': 'ecp82XjITflXzR9FHl-WoEKtiKfbgTY__jrlR-yTJOUC',
+              'version': 'hC2eUPq7M3ddzEppJUEtOaIuTG8twYTUjzcTzVPZ8toC',
           },
       ],
       'condition': 'checkout_android and non_git_source',
@@ -1622,7 +1622,7 @@ deps = {
 
   'src/clank': {
     'url': Var('chrome_git') + '/clank/internal/apps.git' + '@' +
-    '2e976e74469138b5041fb7000dd8d6cb21e01dc7',
+    '4494387938995d1d7f55c30e24a49df0e869d323',
     'condition': 'checkout_android and checkout_src_internal',
   },
 
@@ -3123,7 +3123,7 @@ deps = {
     'packages': [
       {
         'package': 'chromeos_internal/apps/help_app/app',
-        'version': 'QvtER0lzp0QzSAVTe5mpS05BVQykBzueOwzW8ikQx_MC',
+        'version': 'cV-xXUukgohZpKnI47CqykKr2JzWvfVcPSgU3uV5GlEC',
       },
     ],
     'condition': 'checkout_chromeos and checkout_src_internal',
@@ -3134,7 +3134,7 @@ deps = {
     'packages': [
       {
         'package': 'chromeos_internal/apps/media_app/app',
-        'version': 'If-KEWohmHgm2Mbincn5wBr-X3eL2_u3R11qp5s5hm0C',
+        'version': '8nOVc16PWX1vOL2FAJPm8X8Lk57BHqt0zzQIkXHR3YAC',
       },
     ],
     'condition': 'checkout_chromeos and checkout_src_internal',

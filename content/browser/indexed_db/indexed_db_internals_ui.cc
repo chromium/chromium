@@ -26,6 +26,7 @@
 #include "content/browser/indexed_db/indexed_db_internals.mojom-forward.h"
 #include "content/browser/indexed_db/indexed_db_internals.mojom.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/browser/service_worker/service_worker_info.h"
 #include "content/browser/worker_host/shared_worker_service_impl.h"
 #include "content/grit/indexed_db_resources.h"
 #include "content/grit/indexed_db_resources_map.h"

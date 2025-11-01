@@ -2459,11 +2459,34 @@ void PermissionUmaUtil::RecordPostPromptSessionDuration(
 
   base::TimeDelta duration =
       base::TimeTicks::Now() - request_first_display_time;
+  std::string permission_string =
+      PermissionUtil::GetPermissionString(permission);
+
+  // Record the original histogram for up to 1 hour.
   base::UmaHistogramLongTimes100(
-      base::StrCat({"Permissions.PredictionService.",
-                    PermissionUtil::GetPermissionString(permission),
+      base::StrCat({"Permissions.PredictionService.", permission_string,
                     ".PostPromptSessionDuration"}),
       duration);
+
+      // UmaHistogramCustomTimes(name, sample, Milliseconds(1), Hours(1), 100);
+
+  // Record finer-grained histograms for the first minute.
+  if (duration <= base::Seconds(10)) {
+    base::UmaHistogramCustomTimes(
+        base::StrCat({"Permissions.PredictionService.", permission_string,
+                      ".PostPromptSessionDuration10s"}),
+        duration, base::Milliseconds(1), base::Milliseconds(10), 10);
+  } else if (duration <= base::Minutes(1)) {
+    base::UmaHistogramCustomTimes(
+        base::StrCat({"Permissions.PredictionService.", permission_string,
+                      ".PostPromptSessionDuration1m"}),
+        duration, base::Milliseconds(11), base::Minutes(1), 25);
+  } else if (duration <= base::Minutes(5)) {
+    base::UmaHistogramCustomTimes(
+        base::StrCat({"Permissions.PredictionService.", permission_string,
+                      ".PostPromptSessionDuration5m"}),
+        duration, base::Minutes(1), base::Minutes(5), 15);
+  }
 }
 
 }  // namespace permissions

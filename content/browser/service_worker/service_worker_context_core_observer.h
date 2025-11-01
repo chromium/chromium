@@ -11,7 +11,6 @@
 
 #include "base/functional/callback.h"
 #include "base/time/time.h"
-#include "content/browser/service_worker/service_worker_info.h"
 #include "content/browser/service_worker/service_worker_version.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/service_worker_context_observer.h"
@@ -29,6 +28,7 @@ namespace content {
 
 struct ConsoleMessage;
 struct ServiceWorkerRegistrationInformation;
+struct ServiceWorkerVersionInfo;
 
 class ServiceWorkerContextCoreObserver {
  public:

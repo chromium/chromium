@@ -247,6 +247,16 @@ class PermissionRequestManager
     current_request_first_display_time_ = time;
   }
 
+  void set_notification_request_first_display_time_for_testing(
+      base::TimeTicks time) {
+    notification_request_first_display_time_ = time;
+  }
+
+  void set_geolocation_request_first_display_time_for_testing(
+      base::TimeTicks time) {
+    geolocation_request_first_display_time_ = time;
+  }
+
   std::optional<PermissionUiSelector::PredictionGrantLikelihood>
   prediction_grant_likelihood_for_testing() const {
     return prediction_grant_likelihood_;
