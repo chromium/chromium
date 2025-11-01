@@ -32,6 +32,10 @@ SystemWebAppDelegate::SystemWebAppDelegate(
 
 SystemWebAppDelegate::~SystemWebAppDelegate() = default;
 
+bool SystemWebAppDelegate::ShouldForceReinstall() const {
+  return false;
+}
+
 std::vector<std::string> SystemWebAppDelegate::GetAppIdsToUninstallAndReplace()
     const {
   return {};

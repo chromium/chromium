@@ -77,6 +77,11 @@ class SystemWebAppDelegate {
   // Returns a WebAppInstallInfo struct to complete installation.
   virtual std::unique_ptr<web_app::WebAppInstallInfo> GetWebAppInfo() const = 0;
 
+  // Decides whether the `SystemWebAppManager` should override its default app
+  // update policy and trigger a force reinstall on system start. If false is
+  // returned, the default app update policy is applied.
+  virtual bool ShouldForceReinstall() const;
+
   // Returns a vector of AppIDs. Each app_id (a string id) may correspond to any
   // ChromeOS app: ChromeApp, WebApp, Arc++ etc. The apps specified will have
   // their data migrated to this System App.
