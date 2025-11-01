@@ -38,8 +38,7 @@ namespace printing {
 
 // Not in namespace {} so it can be friended by crypto/obsolete/md5.
 std::string ServerPrinterId(const std::string& url) {
-  return "server-" +
-         base::ToLowerASCII(base::HexEncode(crypto::obsolete::Md5::Hash(url)));
+  return "server-" + base::HexEncodeLower(crypto::obsolete::Md5::Hash(url));
 }
 
 }  // namespace printing

@@ -124,7 +124,7 @@ std::string HashWallpaperFilesIdStr(std::string_view files_id_unhashed) {
   // presumably meant to lowercase the input string before hashing, but it did
   // not.
   base::Extend(data, base::as_byte_span(files_id_unhashed));
-  return base::ToLowerASCII(base::HexEncode(base::SHA1Hash(data)));
+  return base::HexEncodeLower(base::SHA1Hash(data));
 }
 
 // Returns true if wallpaper files id can be returned successfully.

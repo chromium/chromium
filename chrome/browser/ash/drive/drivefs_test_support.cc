@@ -47,7 +47,7 @@ FakeDriveFsHelper::FakeDriveFsHelper(Profile* profile,
         md5.Update(FakeDriveFsHelper::kPredefinedProfileSalt);
         md5.Update("-");
         md5.Update(user->GetAccountId().GetAccountIdKey());
-        return base::ToLowerASCII(base::HexEncode(md5.Finish()));
+        return base::HexEncodeLower(md5.Finish());
       }));
 }
 FakeDriveFsHelper::~FakeDriveFsHelper() = default;

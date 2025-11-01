@@ -44,7 +44,7 @@ using std::set;
 
 namespace devtools {
 std::string Md5OfUrlAsHexForDevTools(std::string_view url) {
-  return base::ToLowerASCII(base::HexEncode(crypto::obsolete::Md5::Hash(url)));
+  return base::HexEncodeLower(crypto::obsolete::Md5::Hash(url));
 }
 }  // namespace devtools
 

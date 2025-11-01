@@ -85,7 +85,7 @@ bool SlotContainsCertWithHash(PK11SlotInfo* slot, std::string_view hash_hex) {
 }
 
 std::string HexHash(base::span<const uint8_t> data) {
-  return base::ToLowerASCII(base::HexEncode(crypto::SHA256Hash(data)));
+  return base::HexEncodeLower(crypto::SHA256Hash(data));
 }
 
 class FakeCertificateManagerPage

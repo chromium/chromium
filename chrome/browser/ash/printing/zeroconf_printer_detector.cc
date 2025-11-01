@@ -155,8 +155,7 @@ std::string ZeroconfPrinterId(const ServiceDescription& service,
   md5.Update(metadata.usb_MDL);
   md5.Update(metadata.ty);
   md5.Update(metadata.rp);
-  return base::StringPrintf("zeroconf-%s",
-                            base::ToLowerASCII(base::HexEncode(md5.Finish())));
+  return base::StringPrintf("zeroconf-%s", base::HexEncodeLower(md5.Finish()));
 }
 
 // Attempt to fill |detected_printer| using the information in

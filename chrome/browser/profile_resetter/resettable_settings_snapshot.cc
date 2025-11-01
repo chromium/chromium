@@ -84,7 +84,7 @@ ResettableSettingsSnapshot::ResettableSettingsSnapshot(Profile* profile)
   std::sort(enabled_extensions_.begin(), enabled_extensions_.end());
 
   // Choose a random ID for this snapshot and store it.
-  guid_ = base::ToLowerASCII(base::HexEncode(crypto::RandBytesAsArray<16>()));
+  guid_ = base::HexEncodeLower(crypto::RandBytesAsArray<16>());
 }
 
 ResettableSettingsSnapshot::~ResettableSettingsSnapshot() {

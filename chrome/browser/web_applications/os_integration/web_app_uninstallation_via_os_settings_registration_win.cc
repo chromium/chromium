@@ -30,8 +30,8 @@ namespace internals {
 // Deliberately not in namespace{} so it can be friended by
 // crypto::obsolete::Md5.
 std::wstring Md5AsHexForUninstall(const std::wstring& key) {
-  return base::ASCIIToWide(base::ToLowerASCII(
-      base::HexEncode(crypto::obsolete::Md5::Hash(base::as_byte_span(key)))));
+  return base::ASCIIToWide(base::HexEncodeLower(
+      crypto::obsolete::Md5::Hash(base::as_byte_span(key))));
 }
 
 }  // namespace internals

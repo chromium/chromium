@@ -39,7 +39,7 @@ using content::BrowserThread;
 
 namespace spellcheck {
 std::string Md5AsHexForDictionaryChecksum(std::string_view data) {
-  return base::ToLowerASCII(base::HexEncode(crypto::obsolete::Md5::Hash(data)));
+  return base::HexEncodeLower(crypto::obsolete::Md5::Hash(data));
 }
 }  // namespace spellcheck
 

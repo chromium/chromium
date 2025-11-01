@@ -72,8 +72,8 @@ namespace safe_browsing {
 namespace {
 
 std::string ComputeMd5(std::string_view data) {
-  return base::ToLowerASCII(base::HexEncode(
-      crypto::obsolete::Md5::HashForTesting(base::as_byte_span(data))));
+  return base::HexEncodeLower(
+      crypto::obsolete::Md5::HashForTesting(base::as_byte_span(data)));
 }
 
 // Mixture of HTTP and HTTPS.  No special treatment for HTTPS.

@@ -39,8 +39,7 @@ namespace shortcuts {
 namespace {
 
 base::SafeBaseName GenerateIconFilename(const GURL& url) {
-  std::string url_hash =
-      base::ToLowerASCII(base::HexEncode(crypto::hash::Sha256(url.spec())));
+  std::string url_hash = base::HexEncodeLower(crypto::hash::Sha256(url.spec()));
   std::optional<base::SafeBaseName> base_name =
       base::SafeBaseName::Create(base::StrCat({"shortcut-", url_hash, ".png"}));
   CHECK(base_name);

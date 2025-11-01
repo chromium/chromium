@@ -524,7 +524,7 @@ class DriveIntegrationService::DriveFsHolder
     hasher.Update(GetProfileSalt());
     hasher.Update("-");
     hasher.Update(GetAccountId().GetAccountIdKey());
-    return base::ToLowerASCII(base::HexEncode(hasher.Finish()));
+    return base::HexEncodeLower(hasher.Finish());
   }
 
   bool IsMetricsCollectionEnabled() override {

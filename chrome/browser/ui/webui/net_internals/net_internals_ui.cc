@@ -507,7 +507,7 @@ void NetInternalsMessageHandler::OnGetSharedDictionaryInfoDone(
     dict.Set("expiration", base::NumberToString(item->expiration.InSeconds()));
     dict.Set("last_used_time", base::TimeFormatHTTP(item->last_used_time));
     dict.Set("size", base::NumberToString(item->size));
-    dict.Set("hash", base::ToLowerASCII(base::HexEncode(item->hash)));
+    dict.Set("hash", base::HexEncodeLower(item->hash));
     dict_list.Append(std::move(dict));
   }
   AllowJavascript();

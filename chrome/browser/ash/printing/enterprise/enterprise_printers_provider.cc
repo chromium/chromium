@@ -37,7 +37,7 @@ namespace ash {
 
 namespace printing {
 std::string PolicyPrinterId(const std::string& json) {
-  return base::ToLowerASCII(base::HexEncode(crypto::obsolete::Md5::Hash(json)));
+  return base::HexEncodeLower(crypto::obsolete::Md5::Hash(json));
 }
 }  // namespace printing
 

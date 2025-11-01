@@ -84,8 +84,8 @@ class LocalExtensionCacheTest : public testing::Test {
                                         const base::Time& timestamp,
                                         base::FilePath* filename) {
     std::string data(size, 0);
-    const std::string hex_hash = base::ToLowerASCII(
-        base::HexEncode(crypto::hash::Sha256(base::as_byte_span(data))));
+    const std::string hex_hash =
+        base::HexEncodeLower(crypto::hash::Sha256(base::as_byte_span(data)));
 
     const base::FilePath file =
         GetExtensionFileName(dir, id, version, hex_hash);

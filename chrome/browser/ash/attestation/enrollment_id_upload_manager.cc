@@ -187,7 +187,7 @@ void EnrollmentIdUploadManager::OnUploadComplete(
     const std::string& enrollment_id,
     policy::CloudPolicyClient::Result result) {
   const std::string printable_enrollment_id =
-      base::ToLowerASCII(base::HexEncode(enrollment_id));
+      base::HexEncodeLower(enrollment_id);
 
   if (!result.IsSuccess()) {
     LOG(ERROR) << "Failed to upload Enrollment Identifier \""

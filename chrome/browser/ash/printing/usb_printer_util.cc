@@ -227,8 +227,7 @@ std::string CreateUsbPrinterId(const UsbDeviceInfo& device_info) {
   md5.Update(GetManufacturerName(device_info));
   md5.Update(GetProductName(device_info));
   Md5UpdateString16(md5, GetSerialNumber(device_info));
-  return base::StringPrintf("usb-%s",
-                            base::ToLowerASCII(base::HexEncode(md5.Finish())));
+  return base::StringPrintf("usb-%s", base::HexEncodeLower(md5.Finish()));
 }
 
 // Creates a mojom filter which can be used to identify a basic USB printer.

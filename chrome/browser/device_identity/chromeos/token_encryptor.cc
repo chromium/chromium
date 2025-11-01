@@ -59,8 +59,7 @@ std::string CryptohomeTokenEncryptor::EncryptWithSystemSalt(
 
   // Return a concatenation of the nonce (counter) and the encrypted data, both
   // hex-encoded.
-  return base::ToLowerASCII(base::HexEncode(nonce) +
-                            base::HexEncode(ciphertext));
+  return base::HexEncodeLower(nonce) + base::HexEncodeLower(ciphertext);
 }
 
 std::string CryptohomeTokenEncryptor::DecryptWithSystemSalt(
@@ -99,8 +98,8 @@ std::string CryptohomeTokenEncryptor::WeakEncryptWithSystemSalt(
     return token;
   }
 
-  return base::ToLowerASCII(base::HexEncode(
-      crypto::aes_ctr::Encrypt(key_, nonce_, base::as_byte_span(token))));
+  return base::HexEncodeLower(
+      crypto::aes_ctr::Encrypt(key_, nonce_, base::as_byte_span(token)));
 }
 
 std::string CryptohomeTokenEncryptor::WeakDecryptWithSystemSalt(

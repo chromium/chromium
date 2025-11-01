@@ -40,8 +40,7 @@ std::string ComputeNetworkId(
     combined_ids = combined_ids + "!" + network_info.network_id;
   }
 
-  return base::ToLowerASCII(
-      base::HexEncode(crypto::hash::Sha256(combined_ids)));
+  return base::HexEncodeLower(crypto::hash::Sha256(combined_ids));
 }
 
 }  // namespace

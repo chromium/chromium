@@ -165,9 +165,8 @@ connectors_internals::mojom::CertificateMetadataPtr ConvertCertificate(
   }
 
   return connectors_internals::mojom::CertificateMetadata::New(
-      base::ToLowerASCII(base::HexEncode(certificate->serial_number())),
-      base::ToLowerASCII(
-          base::HexEncode(certificate->CalculateChainFingerprint256())),
+      base::HexEncodeLower(certificate->serial_number()),
+      base::HexEncodeLower(certificate->CalculateChainFingerprint256()),
       base::UnlocalizedTimeFormatWithPattern(certificate->valid_start(),
                                              "MMM d, yyyy"),
       base::UnlocalizedTimeFormatWithPattern(certificate->valid_expiry(),
