@@ -308,12 +308,13 @@ void CanvasCaptureHandler::SendRefreshFrame() {
   DCHECK_CALLED_ON_VALID_THREAD(main_render_thread_checker_);
   DCHECK_EQ(pending_send_new_frame_calls_, 0u);
   if (last_frame_ && delegate_) {
-    io_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&CanvasCaptureHandler::CanvasCaptureHandlerDelegate::
-                           SendNewFrameOnIOThread,
-                       delegate_->GetWeakPtrForIOThread(), last_frame_,
-                       base::TimeTicks::Now()));
+    PostCrossThreadTask(
+        *io_task_runner_, FROM_HERE,
+        CrossThreadBindOnce(
+            &CanvasCaptureHandler::CanvasCaptureHandlerDelegate::
+                SendNewFrameOnIOThread,
+            delegate_->GetWeakPtrForIOThread(), last_frame_,
+            base::TimeTicks::Now()));
   }
   deferred_request_refresh_frame_ = false;
 }

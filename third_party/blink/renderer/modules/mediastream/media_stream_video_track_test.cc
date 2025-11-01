@@ -1340,7 +1340,7 @@ class MediaStreamVideoTrackCaptureVersionTest
 
  protected:
   static base::OnceClosure AsClosure(CaptureVersionCb& cb) {
-    return base::BindOnce(&CaptureVersionCb::Call, base::Unretained(&cb));
+    return blink::BindOnce(&CaptureVersionCb::Call, base::Unretained(&cb));
   }
 
   static scoped_refptr<media::VideoFrame> MakeFrame(

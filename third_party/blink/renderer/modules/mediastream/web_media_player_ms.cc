@@ -63,6 +63,7 @@
 #include "third_party/blink/renderer/platform/timer.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_media.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 // Put this macro in a scope to prevent `client_` from being GC'd.
 // This is important for any method that might be called from anywhere
@@ -245,15 +246,13 @@ class WebMediaPlayerMS::FrameDeliverer {
     // |gpu_memory_buffer_pool_| deletion is going to be posted to
     // |media_task_runner_|. base::Unretained() usage is fine since
     // |gpu_memory_buffer_pool_| outlives the task.
-    //
-    // TODO(crbug.com/964947): Converting this to PostCrossThreadTask requires
-    // re-binding a CrossThreadOnceFunction instance.
-    media_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(
+    PostCrossThreadTask(
+        *media_task_runner_, FROM_HERE,
+        CrossThreadBindOnce(
             &media::GpuMemoryBufferVideoFramePool::MaybeCreateHardwareFrame,
-            base::Unretained(gpu_memory_buffer_pool_.get()), std::move(frame),
-            base::BindPostTaskToCurrentDefault(base::BindOnce(
+            CrossThreadUnretained(gpu_memory_buffer_pool_.get()),
+            std::move(frame),
+            base::BindPostTaskToCurrentDefault(blink::BindOnce(
                 &FrameDeliverer::EnqueueFrame,
                 weak_factory_for_pool_.GetWeakPtr(), original_frame_id))));
   }
@@ -1494,7 +1493,7 @@ void WebMediaPlayerMS::RequestVideoFrameCallback() {
   }
 
   compositor_->SetOnFramePresentedCallback(
-      base::BindPostTaskToCurrentDefault(base::BindOnce(
+      base::BindPostTaskToCurrentDefault(blink::BindOnce(
           &WebMediaPlayerMS::OnNewFramePresentedCallback, weak_this_)));
 
   compositor_->SetForceBeginFrames(true);

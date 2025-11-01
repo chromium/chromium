@@ -46,6 +46,7 @@
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
@@ -70,7 +71,7 @@ class MockPerfHistoryService
     receiver_.Bind(
         mojo::PendingReceiver<media::mojom::blink::VideoDecodePerfHistory>(
             std::move(handle)));
-    receiver_.set_disconnect_handler(base::BindOnce(
+    receiver_.set_disconnect_handler(blink::BindOnce(
         &MockPerfHistoryService::OnConnectionError, base::Unretained(this)));
   }
 
@@ -93,8 +94,8 @@ class MockWebrtcPerfHistoryService
         mojo::PendingReceiver<media::mojom::blink::WebrtcVideoPerfHistory>(
             std::move(handle)));
     receiver_.set_disconnect_handler(
-        base::BindOnce(&MockWebrtcPerfHistoryService::OnConnectionError,
-                       base::Unretained(this)));
+        blink::BindOnce(&MockWebrtcPerfHistoryService::OnConnectionError,
+                        base::Unretained(this)));
   }
 
   void OnConnectionError() { receiver_.reset(); }
@@ -120,7 +121,7 @@ class FakeMediaMetricsProvider
     receiver_.Bind(
         mojo::PendingReceiver<media::mojom::blink::MediaMetricsProvider>(
             std::move(handle)));
-    receiver_.set_disconnect_handler(base::BindOnce(
+    receiver_.set_disconnect_handler(blink::BindOnce(
         &FakeMediaMetricsProvider::OnConnectionError, base::Unretained(this)));
   }
 

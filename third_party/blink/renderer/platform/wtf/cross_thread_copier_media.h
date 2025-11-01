@@ -31,6 +31,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_CROSS_THREAD_COPIER_MEDIA_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_CROSS_THREAD_COPIER_MEDIA_H_
 
+#include "base/functional/callback.h"
+#include "base/memory/scoped_refptr.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_std.h"
@@ -108,6 +110,14 @@ struct CrossThreadCopier<media::VideoTransformation>
 template <>
 struct CrossThreadCopier<media::CaptureVersion>
     : public CrossThreadCopierPassThrough<media::CaptureVersion> {
+  STATIC_ONLY(CrossThreadCopier);
+};
+
+template <>
+struct CrossThreadCopier<
+    base::OnceCallback<void(scoped_refptr<media::VideoFrame>)>>
+    : public CrossThreadCopierByValuePassThrough<
+          base::OnceCallback<void(scoped_refptr<media::VideoFrame>)>> {
   STATIC_ONLY(CrossThreadCopier);
 };
 
