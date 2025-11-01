@@ -39,8 +39,6 @@ class ASH_EXPORT CaptureModeSessionFocusCycler : public views::WidgetObserver {
  public:
   // The different groups which can receive focus during a capture mode session.
   // A group may have multiple items which can receive focus.
-  // TODO(crbug.com/40170806): Investigate removing the groups concept and
-  // having one flat list.
   enum class FocusGroup {
     kNone = 0,
     // The buttons to select the capture type and source on the capture bar.
@@ -118,10 +116,6 @@ class ASH_EXPORT CaptureModeSessionFocusCycler : public views::WidgetObserver {
     HighlightableView();
     virtual ~HighlightableView();
 
-    // TODO(crbug.com/40170806): This can result in multiple of these objects
-    // thinking they have focus if CaptureModeSessionFocusCycler does not call
-    // PseudoFocus or PseudoBlur properly. Investigate if there is a better
-    // approach.
     bool has_focus_ = false;
 
    private:
