@@ -342,7 +342,7 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
 #define MAYBE_OpenMenuItemShows OpenMenuItemShows
 #endif
 IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest, MAYBE_OpenMenuItemShows) {
-  if (!base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+  if (!GlicEnabling::IsMultiInstanceEnabledByFlags()) {
     RunTestSequence(SimulateOpenMenuItem(),
                     WaitForAndInstrumentGlic(kHostAndContents),
                     CheckControllerWidgetMode(GlicWindowMode::kDetached),
@@ -921,7 +921,7 @@ class GlicWindowControllerWithMemoryPressureUiTest
 
   auto CheckWarmed() {
     return Do([this]() {
-      if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+      if (GlicEnabling::IsMultiInstanceEnabledByFlags()) {
         EXPECT_TRUE(GetInstanceCoordinator().HasWarmedInstanceForTesting());
       } else {
         EXPECT_TRUE(GetWindowControllerImpl().IsWarmed());

@@ -113,6 +113,10 @@
 #include "ui/base/page_transition_types.h"
 #include "ui/gfx/range/range.h"
 
+#if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/glic/public/glic_enabling.h"
+#endif
+
 using base::UserMetricsAction;
 using content::WebContents;
 
@@ -2849,7 +2853,7 @@ void TabStripModel::ExecuteContextMenuCommand(int context_index,
       }
       if (command_id == CommandGlicStartShare) {
         CHECK(delegate_->GlicPinTabs(tab_handles));
-        if (!base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+        if (!glic::GlicEnabling::IsMultiInstanceEnabledByFlags()) {
           delegate_->OpenGlicWindowFromSharedTab();
         }
       } else {

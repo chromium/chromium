@@ -208,7 +208,7 @@ class InteractiveGlicTestMixin : public T {
   }
 
   auto WaitForAndInstrumentGlic(GlicInstrumentMode instrument_mode) {
-    if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+    if (GlicEnabling::IsMultiInstanceEnabledByFlags()) {
       return WaitForAndInstrumentGlicMultiInstance(instrument_mode);
     }
     return WaitForAndInstrumentGlic(instrument_mode, window_controller());
@@ -378,7 +378,7 @@ class InteractiveGlicTestMixin : public T {
 
   auto WaitForGlicClose() {
     Api::MultiStep steps;
-    if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+    if (GlicEnabling::IsMultiInstanceEnabledByFlags()) {
       Api::AddStep(steps, WaitUntil(
                               [&]() {
                                 auto* instance = GetGlicInstance();
@@ -398,7 +398,7 @@ class InteractiveGlicTestMixin : public T {
 
   auto OpenGlicFloatingWindow(GlicInstrumentMode instrument_mode =
                                   GlicInstrumentMode::kHostAndContents) {
-    if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+    if (GlicEnabling::IsMultiInstanceEnabledByFlags()) {
       auto steps = Api::Steps(
           Api::Do([&]() {
             GetInstanceCoordinator().Toggle(
@@ -417,7 +417,7 @@ class InteractiveGlicTestMixin : public T {
   // Does not wait for Glic to open or close, tests using this should check for
   // the correct window state after toggling.
   auto ToggleGlicWindow(GlicWindowMode window_mode) {
-    if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+    if (GlicEnabling::IsMultiInstanceEnabledByFlags()) {
       return Api::PressButton(kGlicButtonElementId)
           .SetContext(BrowserElements::From(browser())->GetContext());
     }
@@ -451,7 +451,7 @@ class InteractiveGlicTestMixin : public T {
   // not connected, and will do nothing if the window is already closed.
   auto CloseGlic() {
     return Api::Do([&]() {
-      if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+      if (GlicEnabling::IsMultiInstanceEnabledByFlags()) {
         auto* instance = GetGlicInstanceImpl();
         if (!instance) {
           return;
@@ -538,7 +538,7 @@ class InteractiveGlicTestMixin : public T {
   auto CheckControllerShowing(bool expect_showing) {
     return Api::CheckResult(
         [this]() {
-          if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+          if (GlicEnabling::IsMultiInstanceEnabledByFlags()) {
             return GetGlicInstance() && GetGlicInstance()->IsShowing();
           } else {
             return GetWindowControllerImpl().IsShowing();
@@ -550,7 +550,7 @@ class InteractiveGlicTestMixin : public T {
   auto CheckControllerWidgetMode(GlicWindowMode mode) {
     return Api::CheckResult(
         [this]() {
-          if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+          if (GlicEnabling::IsMultiInstanceEnabledByFlags()) {
             if (!GetGlicInstance()) {
               return GlicWindowMode::kAttached;
             }
@@ -672,7 +672,7 @@ class InteractiveGlicTestMixin : public T {
   }
 
   void DisableWarming() {
-    if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+    if (GlicEnabling::IsMultiInstanceEnabledByFlags()) {
       GetInstanceCoordinator().SetWarmingEnabledForTesting(false);
     } else {
       // Not supported for single-instance, as warming is disabled by feature
@@ -714,7 +714,7 @@ class InteractiveGlicTestMixin : public T {
                   tabs::TabModel::MaybeGetFromContents(contents);
               CHECK(tab) << "Could not find a tab for the new WebContents.";
 
-              if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+              if (GlicEnabling::IsMultiInstanceEnabledByFlags()) {
                 // Show the Glic side panel in the newly created tab.
                 GetGlicInstanceImpl()->Show(ShowOptions::ForSidePanel(*tab));
               }
@@ -753,24 +753,24 @@ class InteractiveGlicTestMixin : public T {
   }
 
   GlicWindowControllerImpl& GetWindowControllerImpl() {
-    CHECK(!base::FeatureList::IsEnabled(features::kGlicMultiInstance));
+    CHECK(!GlicEnabling::IsMultiInstanceEnabledByFlags());
     return static_cast<GlicWindowControllerImpl&>(
         glic_service()->window_controller());
   }
 
   GlicInstanceCoordinatorImpl& GetInstanceCoordinator() {
-    CHECK(base::FeatureList::IsEnabled(features::kGlicMultiInstance));
+    CHECK(GlicEnabling::IsMultiInstanceEnabledByFlags());
     return static_cast<GlicInstanceCoordinatorImpl&>(
         glic_service()->window_controller());
   }
 
   GlicInstanceImpl* GetGlicInstanceImpl() {
-    CHECK(base::FeatureList::IsEnabled(features::kGlicMultiInstance));
+    CHECK(GlicEnabling::IsMultiInstanceEnabledByFlags());
     return static_cast<GlicInstanceImpl*>(GetGlicInstance());
   }
 
   views::View* GetGlicView() {
-    if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+    if (GlicEnabling::IsMultiInstanceEnabledByFlags()) {
       GlicInstanceImpl* instance = GetGlicInstanceImpl();
       if (!instance) {
         return nullptr;
@@ -782,7 +782,7 @@ class InteractiveGlicTestMixin : public T {
   }
 
   views::Widget* GetGlicWidget() {
-    if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+    if (GlicEnabling::IsMultiInstanceEnabledByFlags()) {
       GlicInstanceImpl* instance = GetGlicInstanceImpl();
       if (!instance) {
         return nullptr;
@@ -805,7 +805,7 @@ class InteractiveGlicTestMixin : public T {
   }
 
   auto CheckGlicInstanceIsShowing() {
-    if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+    if (GlicEnabling::IsMultiInstanceEnabledByFlags()) {
       return Api::CheckResult(
           [this]() {
             auto* instance = GetGlicInstance();
@@ -817,7 +817,7 @@ class InteractiveGlicTestMixin : public T {
                                  GlicWindowController::State::kOpen);
   }
   auto CheckGlicIsClosed() {
-    if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+    if (GlicEnabling::IsMultiInstanceEnabledByFlags()) {
       return Api::CheckResult(
           [this]() {
             views::View* view = GetGlicView();

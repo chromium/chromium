@@ -225,7 +225,7 @@ class ActiveStateCalculator : public PanelStateObserver {
       return false;
     }
     // TODO(b:444463509): Implement better calculation.
-    if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+    if (GlicEnabling::IsMultiInstanceEnabledByFlags()) {
       return true;
     }
     if (!attached_browser_) {
@@ -671,7 +671,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
             base::BindRepeating(&GlicWebClientHandler::OnFocusedTabDataChanged,
                                 base::Unretained(this)));
 
-    if (!base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+    if (!GlicEnabling::IsMultiInstanceEnabledByFlags()) {
       focused_browser_changed_subscription_ =
           sharing_manager().AddFocusedBrowserChangedCallback(
               base::BindRepeating(
@@ -799,7 +799,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
       state->host_capabilities.push_back(
           mojom::HostCapability::kResetSizeAndLocationOnOpen);
     }
-    if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+    if (GlicEnabling::IsMultiInstanceEnabledByFlags()) {
       state->host_capabilities.push_back(mojom::HostCapability::kMultiInstance);
     }
     state->enable_get_page_metadata =
@@ -899,7 +899,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   void ClosePanel() override { host().ClosePanel(page_handler_); }
 
   void ClosePanelAndShutdown() override {
-    if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+    if (GlicEnabling::IsMultiInstanceEnabledByFlags()) {
       ClosePanel();
     } else {
       // This call will tear down the web client after closing the window.

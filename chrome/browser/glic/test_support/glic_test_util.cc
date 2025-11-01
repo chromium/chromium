@@ -26,7 +26,7 @@ namespace glic {
 namespace {
 
 GlicInstanceCoordinatorImpl& GetInstanceCoordinator(GlicKeyedService& service) {
-  CHECK(base::FeatureList::IsEnabled(features::kGlicMultiInstance));
+  CHECK(GlicEnabling::IsMultiInstanceEnabledByFlags());
   return static_cast<GlicInstanceCoordinatorImpl&>(service.window_controller());
 }
 
@@ -126,7 +126,7 @@ GlicInstance* GlicInstanceTracker::GetGlicInstance() {
     return nullptr;
   }
 
-  if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+  if (GlicEnabling::IsMultiInstanceEnabledByFlags()) {
     if (track_floating_glic_instance_) {
       return GetInstanceCoordinator(*service).GetInstanceWithFloaty();
     }

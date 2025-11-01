@@ -200,6 +200,7 @@ class GlicApiTest : public NonInteractiveGlicApiTest, public WithTestParams {
             {features::kGlicClosedCaptioning, {}},
             {features::kGlicApiActivationGating, {}},
             {mojom::features::kGlicMultiTab, {}},
+            {features::kGlicMultitabUnderlines, {}},
             {features::kGlicWebActuationSetting, {}},
             {features::kGlicCaptureRegion, {}},
             {features::kGlicUserStatusCheck,

@@ -35,7 +35,7 @@ GlicSidePanelCoordinator::GlicSidePanelCoordinator(
     tabs::TabInterface* tab,
     SidePanelRegistry* side_panel_registry)
     : tab_(tab), side_panel_registry_(side_panel_registry) {
-  CHECK(base::FeatureList::IsEnabled(features::kGlicMultiInstance));
+  CHECK(GlicEnabling::IsMultiInstanceEnabledByFlags());
   auto* glic_service = GlicKeyedServiceFactory::GetGlicKeyedService(
       tab->GetBrowserWindowInterface()->GetProfile());
   on_glic_enabled_changed_subscription_ =

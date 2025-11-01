@@ -3372,7 +3372,7 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
         auto* glic_service = glic::GlicKeyedService::Get(browser_context_);
         if (glic_service) {
           // TODO(crbug.com/454112198): Clean up after multi-instance launches.
-          if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+          if (glic::GlicEnabling::IsMultiInstanceEnabledByFlags()) {
             if (auto* rfh = GetRenderFrameHost()) {
               glic_service->Close(rfh->GetOutermostMainFrame());
             }

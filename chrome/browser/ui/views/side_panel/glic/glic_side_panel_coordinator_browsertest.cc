@@ -4,6 +4,7 @@
 #include "chrome/browser/ui/views/side_panel/glic/glic_side_panel_coordinator.h"
 
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/glic/host/glic_features.mojom.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
@@ -36,6 +37,7 @@ class GlicSidePanelCoordinatorTest : public InProcessBrowserTest {
   GlicSidePanelCoordinatorTest() {
     scoped_feature_list_.InitWithFeatures(
         {features::kGlic, features::kGlicRollout,
+         mojom::features::kGlicMultiTab, features::kGlicMultitabUnderlines,
          features::kTabstripComboButton, features::kGlicMultiInstance},
         {});
   }
