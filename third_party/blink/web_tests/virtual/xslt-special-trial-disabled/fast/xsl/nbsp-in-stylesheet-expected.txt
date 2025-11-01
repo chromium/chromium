@@ -1,0 +1,6 @@
+CONSOLE WARNING: Usage of XSLTProcessor or XSLT Processing Instructions was detected. These features have been deprecated by all browsers, and a special early trial of complete removal is underway in this browser.
+--> If you are a *user* experiencing a problem, please report the issue directly to the operator of the website.
+--> If you are a site owner, and you think this trial is causing an unexpected issue, please report a bug at https://issues.chromium.org/issues/new?component=1456730&template=2210866
+Test for bug 19215: XSLT transformToDocument fails when stylesheet contains &#160;
+
+Exception: NotSupportedError: Failed to construct 'XSLTProcessor': XSLT is disabled

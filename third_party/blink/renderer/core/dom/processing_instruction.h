@@ -47,7 +47,8 @@ class CORE_EXPORT ProcessingInstruction final : public CharacterData,
 
   bool IsCSS() const { return is_css_; }
   bool IsXSL() const {
-    CHECK(!is_xsl_ || RuntimeEnabledFeatures::XSLTEnabled());
+    CHECK(!is_xsl_ || (RuntimeEnabledFeatures::XSLTEnabled() &&
+                       RuntimeEnabledFeatures::XSLTSpecialTrialEnabled()));
     return is_xsl_;
   }
 

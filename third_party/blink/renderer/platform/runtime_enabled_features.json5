@@ -6012,6 +6012,14 @@
       status: "stable",
     },
     {
+      // A feature flag that will be used for a "special trial" of disabling
+      // XSLT on pre-stable channels only. If *either* this flag is disabled,
+      // *or* the main "XSLT" flag is disabled, then XSLT will be disabled.
+      // crbug.com/435623334.
+      name: "XSLTSpecialTrial",
+      status: "stable",
+    },
+    {
       // If enabled, the `getDisplayMedia()` family of APIs will ask for NV12
       // frames, which should trigger a zero-copy path in the tab capture code.
       name: "ZeroCopyTabCapture",

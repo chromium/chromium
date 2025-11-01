@@ -22,6 +22,7 @@
 
 #include "third_party/blink/renderer/core/xml/xslt_processor.h"
 
+#include "base/notreached.h"
 #include "third_party/blink/renderer/core/dom/document_encoding_data.h"
 #include "third_party/blink/renderer/core/dom/document_fragment.h"
 #include "third_party/blink/renderer/core/dom/document_init.h"
@@ -36,6 +37,7 @@
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/xml/document_xslt.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 
 namespace blink {
@@ -59,24 +61,67 @@ static inline void TransformTextStringToXHTMLDocumentString(String& text) {
       "</html>\n";
 }
 
-XSLTProcessor::XSLTProcessor(PassKey, Document& document)
-    : document_(&document) {
-  CHECK(RuntimeEnabledFeatures::XSLTEnabled());
-
+namespace {
+void AddXSLTConsoleWarning(Document& document, const String& message) {
   if (auto* window = document.domWindow()) {
-    // This should already be deprecation/use counted by either the DeprecateAs
-    // in xslt_processor.idl, or by DocumentXSLT. Just add an explicit console
-    // message here for visibility, due to crbug.com/40069336.
-    window->AddConsoleMessage(
-        MakeGarbageCollected<ConsoleMessage>(
-            ConsoleMessage::Source::kDeprecation,
-            ConsoleMessage::Level::kWarning,
-            "XSLTProcessor and XSLT Processing Instructions have been "
-            "deprecated by all browsers. These features will be removed from "
-            "this browser soon. See "
-            "https://chromestatus.com/feature/4709671889534976."),
-        /*discard_duplicates=*/true);
+    window->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+                                  ConsoleMessage::Source::kDeprecation,
+                                  ConsoleMessage::Level::kWarning, message),
+                              /*discard_duplicates=*/true);
   }
+}
+}  // namespace
+
+void XSLTProcessor::ReportXSLTDisabled(Document& document,
+                                       ExceptionState* exception_state) {
+  if (!RuntimeEnabledFeatures::XSLTEnabled()) {
+    // Normal case - XSLT is disabled.
+    AddXSLTConsoleWarning(
+        document,
+        "XSLTProcessor and XSLT Processing Instructions have been "
+        "removed in this browser. See "
+        "https://chromestatus.com/feature/4709671889534976.");
+  } else if (!RuntimeEnabledFeatures::XSLTSpecialTrialEnabled()) {
+    // Special trial run of XSLT removal (pre-stable channels, via Finch).
+    AddXSLTConsoleWarning(
+        document,
+        "Usage of XSLTProcessor or XSLT Processing Instructions was detected. "
+        "These features have been deprecated by all browsers, and a special "
+        "early trial of complete removal is underway in this browser.\n"
+        "--> If you are a *user* experiencing a problem, please report the "
+        "issue directly to the operator of the website.\n"
+        "--> If you are a site owner, and you think this trial is causing an "
+        "unexpected issue, please report a bug at "
+        "https://issues.chromium.org/issues/"
+        "new?component=1456730&template=2210866");
+  } else {
+    NOTREACHED();
+  }
+  if (exception_state) {
+    exception_state->ThrowDOMException(DOMExceptionCode::kNotSupportedError,
+                                       "XSLT is disabled");
+  }
+}
+
+XSLTProcessor::XSLTProcessor(PassKey,
+                             Document& document,
+                             WebFeature feature,
+                             ExceptionState& exception_state)
+    : document_(&document) {
+  if (!RuntimeEnabledFeatures::XSLTEnabled() ||
+      !RuntimeEnabledFeatures::XSLTSpecialTrialEnabled()) {
+    ReportXSLTDisabled(document, &exception_state);
+    return;
+  }
+  // XSLT is still enabled. Use count, report the deprecation, and add an
+  // explicit console message here for visibility, due to crbug.com/40069336.
+  document.CountDeprecation(feature);
+  AddXSLTConsoleWarning(
+      document,
+      "XSLTProcessor and XSLT Processing Instructions have been "
+      "deprecated by all browsers. These features will be removed from "
+      "this browser soon. See "
+      "https://chromestatus.com/feature/4709671889534976.");
 }
 
 XSLTProcessor::~XSLTProcessor() = default;

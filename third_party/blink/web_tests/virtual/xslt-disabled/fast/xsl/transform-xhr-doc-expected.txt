@@ -1,0 +1,5 @@
+CONSOLE WARNING: XSLTProcessor and XSLT Processing Instructions have been removed in this browser. See https://chromestatus.com/feature/4709671889534976.
+CONSOLE ERROR: Uncaught NotSupportedError: Failed to construct 'XSLTProcessor': XSLT is disabled
+Test for bug 10313: xsl:import doesn't work in stylesheets loaded via XMLHttpRequest.
+
+It's nice that this hasn't crashed, but the XSL transformation has failed.

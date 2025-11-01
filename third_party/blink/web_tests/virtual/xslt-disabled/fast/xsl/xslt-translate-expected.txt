@@ -1,0 +1,10 @@
+CONSOLE WARNING: XSLTProcessor and XSLT Processing Instructions have been removed in this browser. See https://chromestatus.com/feature/4709671889534976.
+CONSOLE ERROR: Uncaught NotSupportedError: Failed to construct 'XSLTProcessor': XSLT is disabled
+Must not crash, and transforms to 'Simple_sting_line'. Test for http://crbug.com/599427.
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+FAIL successfullyParsed should be true. Was false.
+
+TEST COMPLETE
+

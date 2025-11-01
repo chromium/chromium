@@ -1269,7 +1269,9 @@ void XMLDocumentParser::GetProcessingInstruction(const String& target,
   CheckIfBlockingStyleSheetAdded();
 
   saw_xsl_transform_ = !saw_first_element_ && pi->IsXSL();
-  CHECK(!saw_xsl_transform_ || RuntimeEnabledFeatures::XSLTEnabled());
+  CHECK(!saw_xsl_transform_ ||
+        (RuntimeEnabledFeatures::XSLTEnabled() &&
+         RuntimeEnabledFeatures::XSLTSpecialTrialEnabled()));
   if (saw_xsl_transform_ &&
       !DocumentXSLT::HasTransformSourceDocument(*GetDocument())) {
     // This behavior is very tricky. We call stopParsing() here because we

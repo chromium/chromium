@@ -1,0 +1,3 @@
+CONSOLE WARNING: XSLTProcessor and XSLT Processing Instructions have been removed in this browser. See https://chromestatus.com/feature/4709671889534976.
+CONSOLE ERROR: Uncaught NotSupportedError: Failed to construct 'XSLTProcessor': XSLT is disabled
+This tests that XSLT transforms can traverse into XHTML template element content when applying XSL template. If the test succeeds, the transform will have swapped the position of the body spans (A and B) with the template content spans (C and D) and replaced the spans with divs.

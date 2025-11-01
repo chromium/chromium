@@ -5987,5 +5987,26 @@
       "masonf@chromium.org"
     ],
     "expires": "Aug 1, 2026"
+  },
+  {
+    "prefix": "xslt-special-trial-disabled",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": [
+      "fast/css/dumpAsText/xml-stylesheet-pi-not-in-prolog.xml",
+      "fast/parser",
+      "fast/xsl",
+      "external/wpt/dom/xslt",
+      "http/tests/xsl",
+      "http/tests/document-policy/resources/document-policy-in-xsl.xslt",
+      "http/tests/misc/xslt-bad-import.html",
+      "loader/resources/document-updated-by-xslt.svg",
+      "svg/custom/invalid-xslt-crash.svg",
+      "external/wpt/fetch/metadata/xslt.https.sub.html"
+    ],
+    "args": [ "--disable-blink-features=XSLTSpecialTrial" ],
+    "owners": [
+      "masonf@chromium.org"
+    ],
+    "expires": "Aug 1, 2026"
   }
 ]

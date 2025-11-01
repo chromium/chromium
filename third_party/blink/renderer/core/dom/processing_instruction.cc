@@ -35,12 +35,12 @@
 #include "third_party/blink/renderer/core/xml/document_xslt.h"
 #include "third_party/blink/renderer/core/xml/parser/xml_document_parser.h"  // for parseAttributes()
 #include "third_party/blink/renderer/core/xml/xsl_style_sheet.h"
+#include "third_party/blink/renderer/core/xml/xslt_processor.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_type_names.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loader_options.h"
-
 namespace blink {
 
 namespace {
@@ -127,7 +127,10 @@ bool ProcessingInstruction::CheckStyleSheet(String& href, String& charset) {
   if (!is_css_ && !is_xsl_)
     return false;
 
-  if (is_xsl_ && !RuntimeEnabledFeatures::XSLTEnabled()) {
+  if (is_xsl_ && (!RuntimeEnabledFeatures::XSLTEnabled() ||
+                  !RuntimeEnabledFeatures::XSLTSpecialTrialEnabled())) {
+    XSLTProcessor::ReportXSLTDisabled(GetDocument(),
+                                      /*exception_state*/ nullptr);
     is_xsl_ = false;
     return false;
   }
