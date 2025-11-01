@@ -148,6 +148,7 @@ import org.chromium.chrome.browser.incognito.IncognitoStartup;
 import org.chromium.chrome.browser.incognito.IncognitoTabLauncher;
 import org.chromium.chrome.browser.incognito.IncognitoTabbedSnapshotController;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
+import org.chromium.chrome.browser.incognito.IncognitoWindowNightModeStateProvider;
 import org.chromium.chrome.browser.init.ActivityProfileProvider;
 import org.chromium.chrome.browser.latency_injection.StartupLatencyInjector;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
@@ -568,6 +569,7 @@ public class ChromeTabbedActivity extends ChromeActivity {
     private LocaleManager mLocaleManager;
     private Runnable mShowHistoryRunnable;
     private CompositorViewHolder mCompositorViewHolder;
+    private IncognitoWindowNightModeStateProvider mIncognitoWindowNightModeStateProvider;
 
     /** Keeps track of whether or not a specific tab was created based on the startup intent. */
     private boolean mCreatedTabOnStartup;
@@ -680,18 +682,19 @@ public class ChromeTabbedActivity extends ChromeActivity {
                 () -> {
                     minimizeAppAndCloseTabOnBackPress(getActivityTab());
                 });
+
+        if (IncognitoUtils.shouldOpenIncognitoAsWindow() && !mHasIncognitoExtra) {
+            // Ensure that Incognito extras have been checked.
+            setHasIncognitoExtra();
+        }
     }
 
     @Override
     protected void attachBaseContext(Context newBase) {
-        if (IncognitoUtils.shouldOpenIncognitoAsWindow()) {
-            Intent intent = getIntent();
-            mHasIncognitoExtra =
-                    intent != null
-                            && (intent.getBooleanExtra(
-                                            IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, false)
-                                    || intent.getBooleanExtra(
-                                            IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_WINDOW, false));
+        if (IncognitoUtils.shouldOpenIncognitoAsWindow() && getIntent() != null) {
+            // Check for incognito extras here if intent is available to allow for override
+            // day/night theme.
+            setHasIncognitoExtra();
         }
         super.attachBaseContext(newBase);
     }
@@ -4930,24 +4933,31 @@ public class ChromeTabbedActivity extends ChromeActivity {
                 mWindowId, this, mTabModelSelector, getLifecycleDispatcher());
     }
 
+    private void setHasIncognitoExtra() {
+        Intent intent = getIntent();
+        mHasIncognitoExtra =
+                intent != null
+                        && (intent.getBooleanExtra(
+                                        IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, false)
+                                || intent.getBooleanExtra(
+                                        IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_WINDOW, false));
+    }
+
+    @Override
+    protected void initializeNightModeStateProvider() {
+        if (mIncognitoWindowNightModeStateProvider != null) {
+            mIncognitoWindowNightModeStateProvider.initialize(getDelegate());
+        } else {
+            super.initializeNightModeStateProvider();
+        }
+    }
+
     @Override
     protected NightModeStateProvider createNightModeStateProvider() {
-        NightModeStateProvider incognitoWindowNightModeStateProvider =
-                new NightModeStateProvider() {
-                    @Override
-                    public boolean isInNightMode() {
-                        // An incognito window should default night mode.
-                        return true;
-                    }
-
-                    @Override
-                    public void addObserver(Observer observer) {}
-
-                    @Override
-                    public void removeObserver(Observer observer) {}
-                };
-        return mHasIncognitoExtra
-                ? incognitoWindowNightModeStateProvider
-                : super.createNightModeStateProvider();
+        if (mHasIncognitoExtra && IncognitoUtils.shouldOpenIncognitoAsWindow()) {
+            mIncognitoWindowNightModeStateProvider = new IncognitoWindowNightModeStateProvider();
+            return mIncognitoWindowNightModeStateProvider;
+        }
+        return super.createNightModeStateProvider();
     }
 }
