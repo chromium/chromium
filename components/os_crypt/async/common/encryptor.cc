@@ -12,6 +12,7 @@
 #include "base/check.h"
 #include "base/containers/span.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/buildflag.h"
@@ -236,6 +237,12 @@ std::optional<std::vector<uint8_t>> Encryptor::EncryptString(
     return std::vector<uint8_t>();
   }
 
+  bool fallback_to_sync = false;
+
+  absl::Cleanup record_metric = [&fallback_to_sync] {
+    base::UmaHistogramBoolean("OSCrypt.Async.EncryptionFallbackToSync",
+                              fallback_to_sync);
+  };
   const auto& it = keys_.find(provider_for_encryption_);
 
   if (it == keys_.end() || !it->second.has_value()) {
@@ -244,6 +251,7 @@ std::optional<std::vector<uint8_t>> Encryptor::EncryptString(
     // fall back to legacy OSCrypt encryption.
     std::string ciphertext;
     if (OSCrypt::EncryptString(data, &ciphertext)) {
+      fallback_to_sync = true;
       return std::vector<uint8_t>(ciphertext.cbegin(), ciphertext.cend());
     }
     return std::nullopt;
@@ -269,6 +277,13 @@ std::optional<std::string> Encryptor::DecryptData(
   if (data.empty()) {
     return std::string();
   }
+
+  bool fallback_to_sync = false;
+
+  absl::Cleanup record_metric = [&fallback_to_sync] {
+    base::UmaHistogramBoolean("OSCrypt.Async.DecryptionFallbackToSync",
+                              fallback_to_sync);
+  };
 
   for (const auto& [provider, key] : keys_) {
     if (data.size() < provider.size()) {
@@ -308,6 +323,7 @@ std::optional<std::string> Encryptor::DecryptData(
   std::string string_data(data.begin(), data.end());
   std::string plaintext;
   if (OSCrypt::DecryptString(string_data, &plaintext)) {
+    fallback_to_sync = true;
     if (flags) {
       // Possibly, an OSCrypt sync compatible Key Provider had temporarily
       // failed to provide a key for this data, so reset the

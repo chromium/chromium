@@ -10,6 +10,7 @@
 #include "base/containers/span.h"
 #include "base/functional/callback_helpers.h"
 #include "base/test/gtest_util.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "components/os_crypt/async/common/encryptor.h"
 #include "components/os_crypt/async/common/encryptor.mojom.h"
@@ -204,6 +205,7 @@ class EncryptorTest : public EncryptorTestWithOSCrypt,
 };
 
 TEST_P(EncryptorTest, StringInterface) {
+  base::HistogramTester histograms;
   const Encryptor encryptor = GetTestEncryptor();
   std::string plaintext = "secrets";
   std::string ciphertext;
@@ -211,6 +213,11 @@ TEST_P(EncryptorTest, StringInterface) {
   std::string decrypted;
   EXPECT_TRUE(encryptor.DecryptString(ciphertext, &decrypted));
   EXPECT_EQ(plaintext, decrypted);
+  const bool fallback_should_occur = (GetParam() == TestType::kEmptyPassThru);
+  histograms.ExpectUniqueSample("OSCrypt.Async.DecryptionFallbackToSync",
+                                fallback_should_occur, 1);
+  histograms.ExpectUniqueSample("OSCrypt.Async.EncryptionFallbackToSync",
+                                fallback_should_occur, 1);
 }
 
 TEST_P(EncryptorTest, SpanInterface) {
@@ -325,6 +332,7 @@ TEST_P(EncryptorTest, DecryptInvalid) {
 
 // Encryptor can decrypt data encrypted with OSCrypt.
 TEST_P(EncryptorTest, DecryptFallback) {
+  base::HistogramTester histograms;
   std::string ciphertext;
   EXPECT_TRUE(OSCrypt::EncryptString("secret", &ciphertext));
 
@@ -335,6 +343,9 @@ TEST_P(EncryptorTest, DecryptFallback) {
   EXPECT_TRUE(encryptor.DecryptString(ciphertext, &decrypted));
 
   EXPECT_EQ("secret", decrypted);
+  histograms.ExpectUniqueSample("OSCrypt.Async.DecryptionFallbackToSync", true,
+                                1);
+  histograms.ExpectTotalCount("OSCrypt.Async.EncryptionFallbackToSync", 0);
 }
 
 // Encryptor can decrypt data encrypted with OSCrypt.
@@ -355,6 +366,7 @@ TEST_P(EncryptorTest, Decrypt16Fallback) {
 // Encryptor should still decrypt data encrypted using DPAPI (pre-m79) by fall
 // back to OSCrypt.
 TEST_P(EncryptorTest, AncientFallback) {
+  base::HistogramTester histograms;
   std::string ciphertext;
   EXPECT_TRUE(EncryptStringWithDPAPI("secret", ciphertext));
 
@@ -364,6 +376,9 @@ TEST_P(EncryptorTest, AncientFallback) {
   EXPECT_TRUE(encryptor.DecryptString(ciphertext, &decrypted));
 
   EXPECT_EQ("secret", decrypted);
+  histograms.ExpectUniqueSample("OSCrypt.Async.DecryptionFallbackToSync", true,
+                                1);
+  histograms.ExpectTotalCount("OSCrypt.Async.EncryptionFallbackToSync", 0);
 }
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -495,9 +510,14 @@ TEST_F(EncryptorTestWithOSCrypt, ShortCiphertext) {
   // This is the nonce length for this algorithm.
   static const size_t kNonceLength = 12u;
   for (size_t i = 0; i < kNonceLength * 2; i++) {
+    base::HistogramTester histograms;
     bad_data += "a";
     auto decrypted = encryptor.DecryptData(base::as_byte_span(bad_data));
     EXPECT_FALSE(decrypted);
+    // Fallback does not happen here because the prefix on the data matches the
+    // key, but the data is invalid.
+    histograms.ExpectUniqueSample("OSCrypt.Async.DecryptionFallbackToSync",
+                                  false, 1);
   }
 }
 

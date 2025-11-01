@@ -6778,6 +6778,32 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="OSCrypt.Async.DecryptionFallbackToSync" enum="Boolean"
+    expires_after="2026-06-15">
+  <owner>wfh@chromium.org</owner>
+  <owner>thomasanderson@chromium.org</owner>
+  <summary>
+    Whether or not a fallback to OSCrypt Sync occured in a decryption call to an
+    OSCrypt Async Encryptor. This histogram is recorded every time a data
+    decryption happens and only reports true if the Encryptor was unable to
+    decrypt the data, a fallback to OSCrypt Sync therefore happened, and OSCrypt
+    Sync was able to successfully decrypt the data. It reports false otherwise.
+  </summary>
+</histogram>
+
+<histogram name="OSCrypt.Async.EncryptionFallbackToSync" enum="Boolean"
+    expires_after="2026-06-15">
+  <owner>wfh@chromium.org</owner>
+  <owner>thomasanderson@chromium.org</owner>
+  <summary>
+    Whether or not a fallback to OSCrypt Sync occured in a encryption call to an
+    OSCrypt Async Encryptor. This histogram is recorded every time a data
+    encryption happens and only reports true if the Encryptor contained no valid
+    key for encryption, a fallback to OSCrypt Sync therefore happened, and
+    OSCrypt Sync successfully encrypted the data. It reports false otherwise.
+  </summary>
+</histogram>
+
 <histogram name="OSCrypt.AsyncInitialization.Time" units="ms"
     expires_after="2026-03-15">
   <owner>wfh@chromium.org</owner>
