@@ -1657,7 +1657,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3723316892512143176">IBAN</translation>
 <translation id="3723663469265383848">Não será possível usar o dispositivo por até 10 minutos durante a atualização.</translation>
 <translation id="372429172604983730">Entre os apps que podem causar esse erro estão antivírus, firewall e softwares de filtros ou proxy da Web.</translation>
-<translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione Tab e depois Enter para criar rapidamente um novo arquivo no Apresentações Google</translation>
+<translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione Tab e depois Enter para criar um novo arquivo no Google Slides em instantes</translation>
 <translation id="3727309136762649052">Namespace</translation>
 <translation id="3727850735097852673">Para usar o Gerenciador de senhas do Google com o Acesso às Chaves do macOS, reinicie o Chrome e permita o acesso. Suas guias serão reabertas após a reinicialização.</translation>
 <translation id="3728173127485570463">O navegador Chrome não vai mais exigir sua impressão digital para preencher senhas automaticamente</translation>
@@ -2212,7 +2212,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4675391562155186035">Chave de acesso • seu perfil do Chrome</translation>
 <translation id="467662567472608290">Este servidor não conseguiu provar que é <ph name="DOMAIN" />. O certificado de segurança contém erros. Isso pode ser causado por uma configuração incorreta ou pela interceptação da sua conexão por um invasor.</translation>
 <translation id="4677585247300749148"><ph name="URL" /> quer responder a eventos de acessibilidade</translation>
-<translation id="467809019005607715">Apresentações Google</translation>
+<translation id="467809019005607715">Google Slides</translation>
 <translation id="4678379207584374453"><ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="4682496302933121474">Traduzir página?</translation>
 <translation id="468314109939257734">Ver o número do seu cartão virtual</translation>
@@ -3598,7 +3598,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="696703987787944103">Perceptivo</translation>
 <translation id="6967851206780867018">1 arquivo foi bloqueado devido ao conteúdo</translation>
 <translation id="6970885655016700774">Tecido (permanente)</translation>
-<translation id="6971439137020188025">Criar rapidamente um novo arquivo no Apresentações Google</translation>
+<translation id="6971439137020188025">Criar um novo arquivo no Google Slides em instantes</translation>
 <translation id="6972629891077993081">Dispositivos HID</translation>
 <translation id="6972867931824045907">Para usar sua área de transferência, permita o acesso ao Chrome em <ph name="LINK" />.</translation>
 <translation id="6973656660372572881">Ambos os servidores proxy fixo e um URL de script .pac foram especificados.</translation>
@@ -4664,7 +4664,7 @@ Mais detalhes:
 <translation id="8766943070169463815">A página de autenticação de credenciais para pagamento seguro está aberta</translation>
 <translation id="8767765348545497220">Fechar balão de ajuda</translation>
 <translation id="8767881944435256294">{COUNT,plural, =1{1 forma de pagamento}one{# forma de pagamento}other{# formas de pagamento}}</translation>
-<translation id="8768225988514678921">Botão "Criar apresentação". Ative para criar rapidamente um novo arquivo no Apresentações Google</translation>
+<translation id="8768225988514678921">Botão "Criar apresentação". Ative para criar rapidamente um novo arquivo no Google Slides</translation>
 <translation id="8769662576926275897">Detalhes do cartão</translation>
 <translation id="8769858749286369844">Marrom-claro 2</translation>
 <translation id="8770286973007342895">Cortadores de grama</translation>

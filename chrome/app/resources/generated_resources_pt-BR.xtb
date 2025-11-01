@@ -2811,7 +2811,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="289695669188700754">ID da chave: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">Esta configuração personalizada será removida quando você fechar todas as janelas anônimas</translation>
 <translation id="2897878306272793870">Você quer mesmo abrir <ph name="TAB_COUNT" /> guias?</translation>
-<translation id="2900247416110050639">Os apps Documentos, Planilhas e Apresentações Google exigem que os arquivos sejam armazenados no Google Drive. Os arquivos locais serão transferidos, e os outros serão copiados. Seus arquivos podem ser encontrados na pasta do Google Drive no app Arquivos.</translation>
+<translation id="2900247416110050639">Os apps Google Docs, Planilhas e Slides exigem que os arquivos sejam armazenados no Google Drive. Os arquivos locais serão transferidos, e os outros serão copiados. Seus arquivos podem ser encontrados na pasta do Google Drive no app Arquivos.</translation>
 <translation id="290105521672621980">O arquivo utiliza recursos não compatíveis</translation>
 <translation id="2901348420151309559">Fotos e apps recentes</translation>
 <translation id="2902127500170292085"><ph name="EXTENSION_NAME" /> não conseguiu se comunicar com esta impressora. Verifique se a impressora está conectada e tente novamente.</translation>
@@ -5358,7 +5358,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4676595058027112862">Seu smartphone. Saiba mais</translation>
 <translation id="4676616966096505747">Alguns dados ainda não foram salvos na sua conta</translation>
 <translation id="4677772697204437347">Memória da GPU</translation>
-<translation id="467809019005607715">Apresentações Google</translation>
+<translation id="467809019005607715">Google Slides</translation>
 <translation id="4678848110205818817">Cartão de crédito/débito</translation>
 <translation id="4679018849559620189">Ele ajuda você a acessar as chaves de acesso salvas em qualquer dispositivo</translation>
 <translation id="4680105648806843642">O som foi desativado nesta página</translation>
