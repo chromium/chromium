@@ -351,6 +351,8 @@ public class UrlBarMediatorUnitTest {
 
         mMediator.onTextChanged("f");
         Assert.assertFalse(mModel.get(UrlBarProperties.SHOW_HINT_TEXT));
+        mMediator.setUrlBarData(UrlBarData.EMPTY, ScrollType.NO_SCROLL, SelectionState.SELECT_END);
+        Assert.assertTrue(mModel.get(UrlBarProperties.SHOW_HINT_TEXT));
 
         mMediator.onUrlFocusChange(false);
         Assert.assertTrue(mModel.get(UrlBarProperties.SHOW_HINT_TEXT));
