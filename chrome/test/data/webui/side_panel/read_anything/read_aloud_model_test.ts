@@ -98,6 +98,47 @@ suite('ReadAloudModel', () => {
     assertTextEmpty();
   });
 
+
+  test('init called multiple times does nothing', async () => {
+    const paragraph1 = document.createElement('div');
+    paragraph1.textContent = 'Keep a grip and take a deep breath. ';
+
+    const paragraph2 = document.createElement('div');
+    const bold = document.createElement('strong');
+    bold.textContent = 'And soon we\'ll know what\'s what.  ';
+
+    const textAfterBold = document.createTextNode(
+        'Put on a show, rewards will flow, and we\'ll go from there.');
+    paragraph2.appendChild(bold);
+    paragraph2.appendChild(textAfterBold);
+
+    document.body.appendChild(paragraph1);
+    document.body.appendChild(paragraph2);
+
+    await microtasksFinished();
+
+    getReadAloudModel().init(ReadAloudNode.create(document.body)!);
+    getReadAloudModel().init(ReadAloudNode.create(document.body)!);
+    getReadAloudModel().init(ReadAloudNode.create(document.body)!);
+
+    assertEquals(
+        paragraph1.textContent + '\n',
+        getReadAloudModel().getCurrentTextContent());
+
+    getReadAloudModel().init(ReadAloudNode.create(document.body)!);
+    getReadAloudModel().init(ReadAloudNode.create(document.body)!);
+
+    getReadAloudModel().moveSpeechForward();
+    assertEquals(bold.textContent, getReadAloudModel().getCurrentTextContent());
+
+    getReadAloudModel().init(ReadAloudNode.create(document.body)!);
+    getReadAloudModel().init(ReadAloudNode.create(document.body)!);
+
+    getReadAloudModel().moveSpeechForward();
+    assertEquals(
+        textAfterBold.textContent, getReadAloudModel().getCurrentTextContent());
+  });
+
   test('moveSpeechBackwards returns expected text', async () => {
     const paragraph1 = document.createElement('div');
     paragraph1.textContent = 'See the line where the sky meets the sea? ';
