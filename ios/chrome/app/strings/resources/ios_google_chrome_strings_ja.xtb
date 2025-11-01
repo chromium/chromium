@@ -169,6 +169,7 @@
 <translation id="5162467219239570114">Chrome は古いバージョンです。<ph name="BEGIN_LINK" />アプリストア<ph name="END_LINK" />に利用可能なアップデートがない場合は、デバイスで新しいバージョンの Chrome がサポートされなくなった可能性があります。</translation>
 <translation id="5184329579814168207">Chromeで開く</translation>
 <translation id="5190139289262548459">組織（<ph name="DOMAIN" />）が、ログインしているアカウントと Chrome の使用方法を管理しています。</translation>
+<translation id="5209238444239954363">Chrome でアップデートを確認できませんでした。しばらくしてからもう一度お試しください。</translation>
 <translation id="5305440589062022504">Chrome でパスワード マネージャーを開きます</translation>
 <translation id="5310957470610282541">Chrome データの一部が Google アカウントにまだ保存されていません。
 数分待ってからログアウトしてください。今すぐログアウトすると、このデータは削除されます。</translation>

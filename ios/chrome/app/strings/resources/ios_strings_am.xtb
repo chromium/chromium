@@ -677,6 +677,7 @@
 <translation id="3642060527569456384">የትር ቡድኖች በሁሉም መሣሪያዎችዎ ላይ በራስ-ሰር ይቀመጣሉ እና ይዘመናሉ።</translation>
 <translation id="3643338347976071250">{count,plural, =1{{count} የይለፍ ቃል ብቻ በዚሀ መሣሪያ ላይ ተቀምጧል። በሌሎች መሣሪያዎቸዎ ላይ እሱን ለመጠቀም በGoogle መለያዎ {email} ውስጥ ያስቀምጡት።}one{{count} የይለፍ ቃል ብቻ በዚሀ መሣሪያ ላይ ተቀምጧል። በሌሎች መሣሪያዎችዎ ላይ እሱን ለመጠቀም በGoogle መለያዎ {email} ውስጥ ያስቀምጡት።}other{{count} የይለፍ ቃላት ብቻ በዚሀ መሣሪያ ላይ ተቀምጠዋል። በሌሎች መሣሪያዎችዎ ላይ እነሱን ለመጠቀም በGoogle መለያዎ {email} ውስጥ ያስቀምጧቸው።}}</translation>
 <translation id="3659297405161482746">ምንም የመክፈያ ዘዴዎች አልተገኙም</translation>
+<translation id="3662966164093827811">{count,plural, =1{1 ተመርጧል}one{# ተመርጧል}other{# ተመርጠዋል}}</translation>
 <translation id="3668816008081204991">የንባብ ዝርዝር ተደብቋል</translation>
 <translation id="3670030362669914947">ቁጥር</translation>
 <translation id="3679163990085797665">የተነበቡትን ሰርዝ</translation>

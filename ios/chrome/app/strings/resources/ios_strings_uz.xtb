@@ -677,6 +677,7 @@
 <translation id="3642060527569456384">Varaqlar guruhi barcha qurilmalarda avtomatik saqlanadi va yangilanib turadi.</translation>
 <translation id="3643338347976071250">{count,plural, =1{{count} ta parol faqat mazkur qurilmada saqlangan. Boshqa qurilmalarda foydalanish uchun uni Google hisobingizda ({email}) saqlang.}other{{count} ta parol faqat bu qurilmaga saqlanadi. Boshqa qurilmalarda foydalanish uchun ularni Google hisobingizda ({email}) saqlang.}}</translation>
 <translation id="3659297405161482746">Hech qanday toʻlov usuli topilmadi</translation>
+<translation id="3662966164093827811">{count,plural, =1{1 band tanlandi}other{# band belgilandi}}</translation>
 <translation id="3668816008081204991">Saqlangan sahifalar berkitilgan</translation>
 <translation id="3670030362669914947">Raqam</translation>
 <translation id="3679163990085797665">Ochilganlarni oʻchirish</translation>

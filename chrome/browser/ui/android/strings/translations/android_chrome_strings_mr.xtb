@@ -596,6 +596,7 @@
 <translation id="3635073343384702370">तुम्ही तुमचे पासवर्ड सेव्ह केल्यावर Chrome ते तपासू शकते</translation>
 <translation id="3636940436873918441">प्राधान्य दिलेल्या भाषा</translation>
 <translation id="3637744895182738742">तुम्ही तुमचा पासफ्रेझ विसरल्यास किंवा तुम्हाला हे सेटिंग बदलायचे असल्यास, <ph name="BEGIN_LINK" />तुमच्या खात्यामधील Chrome हटवणे<ph name="END_LINK" /> हे करा.</translation>
+<translation id="3647019414263135904">काँटेक्स्ट पॉपअप उघडा किंवा बंद करा</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3674208116086565128">Google अ‍ॅप होम वर जा</translation>
 <translation id="368329460027487650">साइन आउट केले आहे. साइन इन करण्यासाठी पर्याय उघडते.</translation>
@@ -669,6 +670,7 @@
 <translation id="3985022125189960801">तुम्हाला काय आवडते याचा अंदाज लावू शकतील अशा साइटच्या गटामध्ये तुम्हाला साइट हवी असल्यास ती परत जोडा</translation>
 <translation id="3985215325736559418">तुम्ही <ph name="FILE_NAME" /> पुन्हा डाउनलोड करू इच्छिता?</translation>
 <translation id="3987993985790029246">लिंक कॉपी करा</translation>
+<translation id="3994236846568425219">तुमच्या डिव्हाइसची गडद थीम सुरू असेल, तेव्हा गडद थीम सुरू करा</translation>
 <translation id="4000212216660919741">ऑफलाइन होम</translation>
 <translation id="4000670338830950598">हायलाइट केलेल्या आयटमच्या मदतीने Google Chrome कस्टमाइझ आणि नियंत्रित करा</translation>
 <translation id="4015643064997321279">{NUM_PASSWORDS,plural, =1{तुमच्या Google खाते मध्ये धोक्यात असलेला १ पासवर्ड आहे}other{तुमच्या Google खाते मध्ये धोक्यात असलेले # पासवर्ड आहेत}}</translation>
@@ -805,6 +807,7 @@
 <translation id="4587589328781138893">Sites</translation>
 <translation id="4594952190837476234">हे <ph name="CREATION_TIME" /> पासूनचे ऑफलाइन पेज आहे आणि ऑनलाइन आवृत्तीपेक्षा वेगळे असू शकते.</translation>
 <translation id="4595237294768457124">नवीन टॅब पेज उघडा</translation>
+<translation id="4595276580892809760">गॅलरीमधून इमेज अटॅच करा</translation>
 <translation id="4595805675102978678">Google खाते शी संबंधित एरर</translation>
 <translation id="4601095002996233687">संशयास्पद डाउनलोडसाठी तपशीलवार स्कॅनची सुविधा.</translation>
 <translation id="4606559747793337066">साइट किंवा अ‍ॅपद्वारे त्याच्या पेजवरील लिंक खाजगीरीत्या प्रीलोड करण्याची विनंती केली गेल्यास, Chrome हे कुकीशिवाय Google सर्व्हरद्वारे पेज एन्क्रिप्ट आणि प्रीलोड करते. यामुळे, प्रीलोड केलेल्या साइटपासून तुमची ओळख लपवली जाते.</translation>
@@ -881,6 +884,7 @@
 <translation id="4864369630010738180">साइन इन करत आहे...</translation>
 <translation id="4866368707455379617">Chrome साठी <ph name="MODULE" /> इंस्टॉल करू शकत नाही</translation>
 <translation id="4871568871368204250">सिंक बंद करा</translation>
+<translation id="487567923005969537">AI मोड सुरू करा</translation>
 <translation id="4875775213178255010">आशय सूचना</translation>
 <translation id="4877678010818027629">गुप्त मोडमध्ये प्रवेश करा</translation>
 <translation id="4878404682131129617">प्रॉक्सी सर्व्हर मार्फत टनेल स्थापन करणे अयशस्वी झाले</translation>
@@ -1300,6 +1304,7 @@
 <translation id="6636623428211296678">खालील दिलेल्या आणखी सेटिंग्ज एक्सप्लोर करा आणि आता पूर्ण करा</translation>
 <translation id="6637100877383020115">अ‍ॅपमध्ये सुधारणा करण्यात मदत करण्यासाठी, Chrome हे Google ला वापर आणि क्रॅश डेटा पाठवते. <ph name="BEGIN_UMA_LINK" />व्यवस्थापित करा<ph name="END_UMA_LINK" /></translation>
 <translation id="6641780377503683465"><ph name="INTEREST" /> काढून टाका</translation>
+<translation id="6642299196749785472">टॅब अटॅच करा</translation>
 <translation id="6647441008198474441">तुम्ही भेट देता त्या URLs तुम्ही पुढे कोणत्या साइटला भेट देऊ शकता याचा अंदाज घेण्यासाठी Google ला पाठवल्या जातात</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 आणि <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> अधिक}other{<ph name="CONTACT_PREVIEW" />\u2026 आणि <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> अधिक}}</translation>
 <translation id="6649642165559792194">इमेज <ph name="BEGIN_NEW" />नवीन<ph name="END_NEW" /> चे पूर्वावलोकन करा</translation>
@@ -1709,6 +1714,7 @@
 <translation id="8236097722223016103">बुकमार्कमध्ये जोडा</translation>
 <translation id="8243077599929149377">तुमचे वापरकर्ता नाव जोडा</translation>
 <translation id="8244387390464017490">नवीन टॅब पेज कस्टमाइझ करा</translation>
+<translation id="8244444485683708655">कॅमेरा फोटो अटॅच करा</translation>
 <translation id="8250920743982581267">दस्तऐवज</translation>
 <translation id="8258999165172757081">जोडले</translation>
 <translation id="8259179246279078674">प्रीलोड केलेली पेज एंक्रिप्ट केलेली असल्यामुळे, प्रीलोड केलेल्या पेज आशयाबद्दल Google ला काहीही समजणार नाही. कोणत्या साइट खाजगीरीत्या प्रीलोड केलेल्या आहेत हे Google सर्व्हरना समजेल. ही माहिती फक्त पेज प्रीलोड करण्यासाठी वापरली जाते आणि तुमच्या Google खाते मधील इतर माहितीशी लिंक केलेली नाही.</translation>
@@ -1940,6 +1946,7 @@
 <translation id="927968626442779827">Google Chrome वर लाइट मोड वापरा</translation>
 <translation id="928550791203542716"><ph name="SITE_NAME" /> ला फॉलो करत आहे</translation>
 <translation id="930124987204876019">इतिहास, कुकी, साइट डेटा, कॅशे हटवा…</translation>
+<translation id="930834144334005936">सद्य मोड <ph name="MODE_NAME" /> हा शोध वर रीसेट करा</translation>
 <translation id="938850635132480979">एरर: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">सांकेतिक पासफ्रेझ एंटर करा</translation>
 <translation id="945522503751344254">अभिप्राय पाठवा</translation>

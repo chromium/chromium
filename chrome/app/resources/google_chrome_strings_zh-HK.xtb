@@ -156,8 +156,8 @@
 <translation id="2738871930057338499">無法連線至互聯網。發生 HTTP 403 禁止錯誤，請檢查 Proxy 設定。</translation>
 <translation id="2742320827292110288">警告：Google Chrome 無法阻止擴充程式記錄您的瀏覽活動。如要在無痕模式中停用這個擴充程式，請取消選取這個選項。</translation>
 <translation id="2753623023919742414">按一下即可搜尋</translation>
+<translation id="2757826245013442432">{COUNT,plural, =0{「進階保護功能」要求你重新啟動 Chrome 以套用更新}=1{「進階保護功能」要求你重新啟動 Chrome 以套用更新。無痕式視窗不會重新開啟。}other{「進階保護功能」要求你重新啟動 Chrome 以套用更新。# 個無痕式視窗不會重新開啟。}}</translation>
 <translation id="2765403129283291972">Chrome 需要取得權限，才能讓這個網站存取您的麥克風</translation>
-<translation id="2770231113462710648">將預設瀏覽器變更為：</translation>
 <translation id="2775140325783767197">Chrome 無法檢查密碼，請檢查互聯網連線。</translation>
 <translation id="2797864378188255696">使用 <ph name="USER_EMAIL" /> 登入 Gmail 或 YouTube 等 Google 服務時，你可使用同一個帳戶自動登入 Chrome</translation>
 <translation id="2799162042226656283">你的 Chrome</translation>
@@ -652,6 +652,7 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="8255190535488645436">Google Chrome 正在使用您的相機和麥克風。</translation>
 <translation id="8267953129876836456">Chrome 發現一些安全性建議需要你審核</translation>
 <translation id="8286862437124483331">Google Chrome 正在嘗試顯示密碼。如果您同意，請輸入您的 Windows 密碼。</translation>
+<translation id="8289399803055125418">使用<ph name="BEGIN_LINK" />密碼短語<ph name="END_LINK" />加密 Google 帳戶中的所有 Chrome 資料。地址和儲存在「Google 錢包」中的任何資料不會以密碼短語加密。Chrome 上的瀏覽記錄將不會同步。</translation>
 <translation id="829923460755755423">新增「Google 密碼管理工具」的捷徑</translation>
 <translation id="8313851650939857356">啟動錯誤：<ph name="STARTUP_ERROR" />。</translation>
 <translation id="8321888067342493336">儲存為圖片</translation>

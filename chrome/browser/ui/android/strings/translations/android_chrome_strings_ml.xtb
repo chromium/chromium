@@ -599,6 +599,7 @@
 <translation id="3635073343384702370">നിങ്ങളുടെ പാസ്‌വേഡുകൾ സംരക്ഷിക്കുകയാണങ്കിൽ, Chrome-ന് അവ പരിശോധിക്കാനാകും</translation>
 <translation id="3636940436873918441">മുൻഗണന നൽകുന്ന ഭാഷകൾ</translation>
 <translation id="3637744895182738742">നിങ്ങൾ പാസ്ഫ്രെയ്‌സ് മറന്നാലോ ഈ ക്രമീകരണം മാറ്റണമെന്നുണ്ടെങ്കിലോ, <ph name="BEGIN_LINK" />നിങ്ങളുടെ അക്കൗണ്ടിലെ Chrome ഡാറ്റ ഇല്ലാതാക്കുക<ph name="END_LINK" />.</translation>
+<translation id="3647019414263135904">സന്ദർഭോചിത പോപ്പ് അപ്പ് തുറക്കുക അല്ലെങ്കിൽ അടയ്ക്കുക</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3674208116086565128">Google ആപ്പ് ഹോമിലേക്ക് പോകുക</translation>
 <translation id="368329460027487650">സൈൻ ഔട്ട് ചെയ്‌തു. സൈൻ ഇൻ ചെയ്യാനുള്ള ഓപ്‌ഷനുകൾ തുറക്കുന്നു.</translation>
@@ -672,6 +673,7 @@
 <translation id="3985022125189960801">നിങ്ങൾക്ക് ഇഷ്ടമുള്ളതെന്തെന്ന് ഊഹിക്കാനാകുന്ന സൈറ്റുകളുടെ പൂളിൽ ഒരു സൈറ്റ് വേണമെന്ന് തോന്നുകയാണെങ്കിൽ ആ സൈറ്റ് വീണ്ടും ചേർക്കുക</translation>
 <translation id="3985215325736559418">നിങ്ങൾക്ക് വീണ്ടും <ph name="FILE_NAME" /> ഡൗൺലോഡ് ചെയ്യണോ?</translation>
 <translation id="3987993985790029246">ലിങ്ക് പകർത്തുക</translation>
+<translation id="3994236846568425219">നിങ്ങളുടെ ഉപകരണത്തിന്റെ ഡാർക്ക് തീം ഓണായിരിക്കുമ്പോൾ ഡാർക്ക് തീം ഓണാക്കുക</translation>
 <translation id="4000212216660919741">ഓഫ്‌ലൈൻ ഹോം</translation>
 <translation id="4000670338830950598">ഹൈലൈറ്റ് ചെയ്ത ഇനം ഉപയോഗിച്ച് Google Chrome ഇഷ്ടാനുസൃതമാക്കുകയും നിയന്ത്രിക്കുകയും ചെയ്യൂ</translation>
 <translation id="4015643064997321279">{NUM_PASSWORDS,plural, =1{നിങ്ങളുടെ Google Account-ൽ അപഹരിക്കപ്പെട്ട ഒരു പാസ്‌വേഡ്}other{നിങ്ങളുടെ Google Account-ൽ അപഹരിക്കപ്പെട്ട # പാസ്‌വേഡുകൾ}}</translation>
@@ -809,6 +811,7 @@
 <translation id="4587589328781138893">സൈറ്റുകള്‍</translation>
 <translation id="4594952190837476234">ഈ ഓഫ്‌ലൈൻ പേജ് <ph name="CREATION_TIME" /> -ന് സൃഷ്‌ടിച്ചതാണ്, അതിനാൽ ഓൺലൈൻ പതിപ്പിൽ നിന്ന് വ്യത്യസ്തമായിരിക്കാം.</translation>
 <translation id="4595237294768457124">പുതിയ ടാബ് പേജ് തുറക്കുക</translation>
+<translation id="4595276580892809760">ഗാലറിയിൽ നിന്ന് ചിത്രങ്ങൾ അറ്റാച്ച് ചെയ്യുക</translation>
 <translation id="4595805675102978678">Google Account-ൽ പിശക്</translation>
 <translation id="4601095002996233687">സംശയാസ്പദമായ ഡൗൺലോഡുകൾക്കായി വിശദമായ സ്കാനുകൾ.</translation>
 <translation id="4606559747793337066">ഒരു സൈറ്റ് അല്ലെങ്കിൽ ആപ്പ് അവരുടെ പേജിലെ ലിങ്കുകൾ സ്വകാര്യമായി മുൻകൂട്ടി ലോഡ് ചെയ്യാൻ ആവശ്യപ്പെടുമ്പോൾ, കുക്കികളില്ലാതെ Google സെർവറുകൾ മുഖേന പേജുകൾ Chrome എൻക്രിപ്റ്റും മുൻകൂട്ടി ലോഡും ചെയ്യുന്നു. മുൻകൂട്ടി ലോഡ് ചെയ്ത സൈറ്റിൽ നിന്ന് ഇത് നിങ്ങളുടെ ഐഡന്റിറ്റി മറയ്ക്കുന്നു.</translation>
@@ -885,6 +888,7 @@
 <translation id="4864369630010738180">സൈൻ ഇൻ ചെയ്യുന്നു...</translation>
 <translation id="4866368707455379617">Chrome-നായി <ph name="MODULE" /> ഇൻസ്‌റ്റാൾ ചെയ്യാനായില്ല</translation>
 <translation id="4871568871368204250">സമന്വയിപ്പിക്കൽ ഓഫാക്കുക</translation>
+<translation id="487567923005969537">AI മോഡ് പ്രവർത്തനക്ഷമമാക്കുക</translation>
 <translation id="4875775213178255010">ഉള്ളടക്ക നിർദ്ദേശങ്ങൾ</translation>
 <translation id="4877678010818027629">അദൃശ്യ മോഡിലേക്ക് പോകുക</translation>
 <translation id="4878404682131129617">പ്രോക്‌സി സെർവർ മുഖേന ഒരു ടണൽ രൂപപ്പെടുത്താനായില്ല</translation>
@@ -1304,6 +1308,7 @@
 <translation id="6636623428211296678">ചുവടെ കൂടുതൽ ക്രമീകരണം അടുത്തറിയുകയോ ഇപ്പോൾ പൂർത്തിയാക്കുകയോ ചെയ്യുക</translation>
 <translation id="6637100877383020115">ആപ്പ് മെച്ചപ്പെടുത്താൻ സഹായിക്കുന്നതിന് Chrome, ഉപയോഗ ഡാറ്റയും ക്രാഷ് ഡാറ്റയും Google-ന് അയയ്ക്കുന്നു. <ph name="BEGIN_UMA_LINK" />മാനേജ് ചെയ്യുക<ph name="END_UMA_LINK" /></translation>
 <translation id="6641780377503683465"><ph name="INTEREST" /> നീക്കം ചെയ്യുക</translation>
+<translation id="6642299196749785472">ടാബുകൾ അറ്റാച്ച് ചെയ്യുക</translation>
 <translation id="6647441008198474441">നിങ്ങൾ അടുത്തതായി ഏതൊക്കെ സൈറ്റുകളായിരിക്കും സന്ദർശിക്കുകയെന്ന് പ്രവചിക്കാൻ, നിങ്ങൾ സന്ദർശിക്കുന്ന URL-കൾ Google-ലേക്ക് അയയ്ക്കുന്നു</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 എന്നതും ‌മറ്റ് <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> പേയ്‌മെന്റ് രീതികളും}other{<ph name="CONTACT_PREVIEW" />\u2026 എന്നതും ‌മറ്റ് <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> പേയ്‌മെന്റ് രീതികളും}}</translation>
 <translation id="6649642165559792194"><ph name="BEGIN_NEW" />പുതിയ<ph name="END_NEW" /> ചിത്രം പ്രിവ്യൂ ചെയ്യുക</translation>
@@ -1713,6 +1718,7 @@
 <translation id="8236097722223016103">ബുക്ക്‌മാർക്കുകളിൽ ചേർക്കുക</translation>
 <translation id="8243077599929149377">നിങ്ങളുടെ ഉപയോക്തൃനാമം ചേർക്കുക</translation>
 <translation id="8244387390464017490">പുതിയ ടാബ് പേജ് ഇഷ്ടാനുസൃതമാക്കൂ</translation>
+<translation id="8244444485683708655">ക്യാമറാ ചിത്രം അറ്റാച്ച് ചെയ്യുക</translation>
 <translation id="8250920743982581267">ഡോക്യുമെന്റുകൾ</translation>
 <translation id="8258999165172757081">ചേർത്തു</translation>
 <translation id="8259179246279078674">മുൻകൂട്ടി ലോഡ് ചെയ്ത പേജുകൾ എൻക്രിപ്റ്റ് ചെയ്തതിനാൽ, അവയുടെ ഉള്ളടക്കം സംബന്ധിച്ച കാര്യങ്ങളൊന്നും Google-ന് മനസ്സിലാക്കാനാകില്ല. ഏതൊക്കെ സൈറ്റുകളാണ് സ്വകാര്യമായി മുൻകൂട്ടി ലോഡ് ചെയ്തതെന്ന് Google സെർവറുകൾ മനസ്സിലാക്കും. പേജുകൾ മുൻകൂട്ടി ലോഡ് ചെയ്യാൻ മാത്രമേ ഈ വിവരങ്ങൾ ഉപയോഗിക്കൂ, നിങ്ങളുടെ Google അക്കൗണ്ടിലെ മറ്റ് വിവരങ്ങളുമായി ഇതിന് ബന്ധമില്ല.</translation>
@@ -1944,6 +1950,7 @@
 <translation id="927968626442779827">Google Chrome-ൽ ലൈറ്റ് മോഡ് ഉപയോഗിക്കൂ</translation>
 <translation id="928550791203542716"><ph name="SITE_NAME" /> പിന്തുടരുന്നു</translation>
 <translation id="930124987204876019">ചരിത്രവും കുക്കികളും സൈറ്റ് ഡാറ്റയും കാഷെയും ഇല്ലാതാക്കുക…</translation>
+<translation id="930834144334005936">നിലവിലെ <ph name="MODE_NAME" /> മോഡ്, തിരയലിലേക്ക് റീസെറ്റ് ചെയ്യുക</translation>
 <translation id="938850635132480979">പിശക്: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">പാസ്ഫ്രെയ്‍സ് നല്‍കുക</translation>
 <translation id="945522503751344254">ഫീഡ്‌ബാക്ക് അയയ്‌ക്കുക</translation>

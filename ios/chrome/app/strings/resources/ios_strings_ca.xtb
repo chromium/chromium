@@ -677,6 +677,7 @@
 <translation id="3642060527569456384">Els grups de pestanyes es desen i s'actualitzen automàticament en tots els teus dispositius.</translation>
 <translation id="3643338347976071250">{count,plural, =1{{count} contrasenya s'ha desat només en aquest dispositiu. Per utilitzar-la en altres dispositius, desa-la al teu Compte de Google {email}.}other{{count} contrasenyes s'han desat només en aquest dispositiu. Per utilitzar-les en altres dispositius, desa-les al teu Compte de Google {email}.}}</translation>
 <translation id="3659297405161482746">No s'ha trobat cap forma de pagament</translation>
+<translation id="3662966164093827811">{count,plural, =1{1 element seleccionat}other{# elements seleccionats}}</translation>
 <translation id="3668816008081204991">La llista de lectura està amagada</translation>
 <translation id="3670030362669914947">Número</translation>
 <translation id="3679163990085797665">Suprimeix els elements llegits</translation>

@@ -1841,6 +1841,7 @@
 <translation id="4014895360827978999">বণিক সেৱা আৰু পৰিশোধ প্ৰণালী</translation>
 <translation id="4018819349042761761">ৰাজহুৱা চাবি</translation>
 <translation id="4023431997072828269">যিহেতু এই ফৰ্মখন এটা অসুৰক্ষিত সংযোগ ব্যৱহাৰ কৰি দাখিল কৰি থকা হৈছে, আপোনাৰ তথ্য অন্য লোকে দেখা পাব।</translation>
+<translation id="4024673763872230929">আপোনাৰ তথ্য ছেভ কৰক আৰু ফৰ্মসমূহ অধিক ক্ষিপ্ৰতাৰে পূৰ কৰক। আপোনাৰ ডিভাইচত ছেভ কৰে।</translation>
 <translation id="4025325634010721551">নীতিসমূহ পুনৰ ল’ড কৰা হৈছে</translation>
 <translation id="4025338605225449265">মুদ্ৰা আৰু বিদেশী মুদ্ৰা বিনিময়</translation>
 <translation id="4025777154208238692">ওলোটা ক্ৰম</translation>
@@ -2273,6 +2274,7 @@
 <translation id="4732860731866514038"><ph name="LANGUAGE" /> ভাষাৰ পেক ডাউনল’ড কৰি থকা হৈছে...<ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992"><ph name="URL" />এ আপোনাৰ ডিভাইচৰ অৱস্থান জানিব বিচাৰে</translation>
 <translation id="473414950835101501">আপোনাৰ কেমেৰা ব্যৱহাৰ কৰক</translation>
+<translation id="4734343956394152985"><ph name="BEGIN_BOLD" />বৰ্তমানৰ ডিফ’ল্ট<ph name="END_BOLD" /> · <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="4736825316280949806">Chromium ৰিষ্টাৰ্ট কৰক</translation>
 <translation id="4736934858538408121">ভাৰ্চুৱেল কাৰ্ড</translation>
 <translation id="473775607612524610">আপডে'ট কৰক</translation>
@@ -3381,6 +3383,7 @@
 <translation id="6521745193039995384">সক্ৰিয় নহয়</translation>
 <translation id="6522682797352430154">শাস্ত্ৰীয় সংগীত</translation>
 <translation id="6524830701589638230">সাধ্য সুবিধাৰ ছেটিং পৰিচালনা কৰাৰ বুটাম, Chromeৰ ছেটিঙত আপোনাৰ সাধ্য সুবিধাৰ সঁজুলি ব্যক্তিগতকৰণ কৰিবলৈ সক্ৰিয় কৰক</translation>
+<translation id="6525222262307262764">বৰ্তমানৰ ডিফ’ল্ট ৰাখক</translation>
 <translation id="6527049834925947126">খাদ্য বস্তু প্ৰস্তুতকৰণ</translation>
 <translation id="6529173248185917884">সপ্তম ৰোল</translation>
 <translation id="6529602333819889595">মচা কার্য &amp;ৰিডু কৰক</translation>
@@ -3401,6 +3404,7 @@
 <translation id="6567832540451970450">আপোনাৰ প্ৰশাসকে এই ছাইটটোৰ বাবে <ph name="PERMISSION" /> দিয়ে</translation>
 <translation id="6568793038316600992">পৰিশোধ পদ্ধতিসমূহ পৰিচালনা কৰাৰ বুটাম, Chromeৰ ছেটিঙত আপোনাৰ পৰিশোধসমূহ আৰু ক্ৰেডিট কাৰ্ডৰ তথ্য পৰিচালনা কৰিবলৈ সক্ৰিয় কৰক</translation>
 <translation id="6569060085658103619">আপুনি কোনো এক্সটেনশ্বনৰ পৃষ্ঠা চাই আছে</translation>
+<translation id="6571992525120410251"><ph name="ENGINE_NAME" />ক যিকোনো প্ৰশ্ন সোধক</translation>
 <translation id="6572867903637058088">এইটো সহায়কনে?</translation>
 <translation id="6573200754375280815">সোঁফালে দুবাৰ পাঞ্চ কৰক</translation>
 <translation id="6575408526598156416">একাউণ্টত ছেভ কৰক</translation>
@@ -3449,6 +3453,7 @@
 <translation id="666259744093848177">(x86_64 অনুবাদ কৰা হৈছে)</translation>
 <translation id="6665553082534466207">সোঁফালে তিনিবাৰ পাঞ্চ কৰক</translation>
 <translation id="6668389483194953109">কাগজৰ আকাৰৰ নাম "কাষ্টম" পোৱা গৈছে, কিন্তু "custom_size" সম্পদটো খালী অথবা মান্য নহয়।</translation>
+<translation id="6670729408462528018">গেলাৰী</translation>
 <translation id="6671169470640320959">বাহন কিনিবৰ বাবে বিত্তীয় সাহাৰ্য</translation>
 <translation id="6671697161687535275">Chromiumৰ পৰা ফ’ৰ্মৰ পৰামৰ্শ আঁতৰাবনে?</translation>
 <translation id="6675846980676550611">ARৰ অনুমতি নাই</translation>

@@ -1844,6 +1844,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="4014895360827978999">Greiðsluþjónustur og greiðslukerfi</translation>
 <translation id="4018819349042761761">Opinber lykill</translation>
 <translation id="4023431997072828269">Þar sem þetta eyðublað er sent með tengingu sem er ekki örugg verða upplýsingarnar þínar sýnilegar öðrum.</translation>
+<translation id="4024673763872230929">Vistaðu upplýsingarnar þínar og fylltu út eyðublöð á fljótlegri hátt. Vistar í tækinu þínu.</translation>
 <translation id="4025325634010721551">Reglum var endurhlaðið</translation>
 <translation id="4025338605225449265">Gjaldmiðlar og gjaldeyrisskipti</translation>
 <translation id="4025777154208238692">Öfug röð</translation>
@@ -2277,6 +2278,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="4732860731866514038">Sækir tungumálapakka fyrir „<ph name="LANGUAGE" />“... <ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992"><ph name="URL" /> vill nota staðsetningu tækisins</translation>
 <translation id="473414950835101501">Notaðu myndavélarnar</translation>
+<translation id="4734343956394152985"><ph name="BEGIN_BOLD" />Núverandi sjálfgefið val<ph name="END_BOLD" /> · <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="4736825316280949806">Endurræsa Chromium</translation>
 <translation id="4736934858538408121">Sýndarkort</translation>
 <translation id="473775607612524610">Uppfæra</translation>
@@ -3386,6 +3388,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="6521745193039995384">Ekki virk</translation>
 <translation id="6522682797352430154">Klassísk tónlist</translation>
 <translation id="6524830701589638230">Hnappur til að stjórna aðgengisstillingum, virkjaðu til að sérsníða aðgengisverkfærin þín í stillingum Chrome.</translation>
+<translation id="6525222262307262764">Halda núverandi sjálfgefnu</translation>
 <translation id="6527049834925947126">Matvælaframleiðsla</translation>
 <translation id="6529173248185917884">Sjöunda rúlla</translation>
 <translation id="6529602333819889595">Endu&amp;rtaka eyðingu</translation>
@@ -3406,6 +3409,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="6567832540451970450">Kerfisstjórinn þinn veitti þessu vefsvæði aðgang að <ph name="PERMISSION" /></translation>
 <translation id="6568793038316600992">Hnappurinn „Stjórna greiðslumátum“, virkjaðu til að stjórna greiðslu- og kreditkortaupplýsingum í stillingum Chrome</translation>
 <translation id="6569060085658103619">Þú ert að skoða viðbótarsíðu</translation>
+<translation id="6571992525120410251">Spyrðu <ph name="ENGINE_NAME" /> að hverju sem er</translation>
 <translation id="6572867903637058088">Er þetta gagnlegt?</translation>
 <translation id="6573200754375280815">Tvö göt hægra megin</translation>
 <translation id="6575408526598156416">Vista á reikningi</translation>
@@ -3454,6 +3458,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="666259744093848177">(x86_64 þýtt)</translation>
 <translation id="6665553082534466207">Þrjú göt hægra megin</translation>
 <translation id="6668389483194953109">Fann pappírsstærð með heitinu „custom“ en eiginleikinn „custom size" er auður eða ógildur.</translation>
+<translation id="6670729408462528018">Gallerí</translation>
 <translation id="6671169470640320959">Bílafjármögnun</translation>
 <translation id="6671697161687535275">Fjarlægja eyðublaðstillögu úr Chromium?</translation>
 <translation id="6675846980676550611">Aukinn veruleiki ekki leyfður</translation>

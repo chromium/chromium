@@ -33,6 +33,7 @@
 <translation id="1111673857033749125">Dấu trang được lưu trên thiết bị khác của bạn sẽ xuất hiện tại đây.</translation>
 <translation id="1126696498560056882">Quản lý các tài khoản trên thiết bị này</translation>
 <translation id="1135018701024399762">Chế độ ẩn danh giúp ẩn hoạt động duyệt web của bạn với người dùng thiết bị của bạn</translation>
+<translation id="113752097246673894">Để sử dụng dấu trang và các dữ liệu khác trên mọi thiết bị của bạn, hãy đăng nhập vào Chrome bằng <ph name="EMAIL" /></translation>
 <translation id="1138458427267715730">Nhận thông báo khi có chương trình giảm giá tại bất cứ trang nào trên web</translation>
 <translation id="1140317858355046628">Nếu bạn xoá, mọi người sẽ lập tức mất quyền truy cập vào nhóm thẻ "<ph name="GROUP_NAME" />" và nhóm thẻ này sẽ bị xoá khỏi tất cả thiết bị.</translation>
 <translation id="1142732900304639782">Không đề xuất dịch những trang web này</translation>
@@ -395,6 +396,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="2723001399770238859">âm thanh</translation>
 <translation id="2739887572830526131">Giữ lại nhóm này để thêm thẻ sau hoặc xoá nhóm này nếu bạn không cần nữa.</translation>
 <translation id="2742373789128106053"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> hiện không sẵn dùng.</translation>
+<translation id="2751271371269891762">Để sử dụng dấu trang và các dữ liệu khác trên mọi thiết bị của bạn, hãy đăng nhập bằng tài khoản <ph name="EMAIL" /></translation>
 <translation id="2760805590727089264">MM/YY</translation>
 <translation id="2762000892062317888">vừa xong</translation>
 <translation id="276969039800130567">Đăng nhập bằng địa chỉ <ph name="USER_EMAIL_ADDRESS" />.</translation>
@@ -404,6 +406,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="2789486458103222910">OK</translation>
 <translation id="2791129728587938169">{NUM_PASSWORDS,plural, =1{Chrome đã phát hiện một mật khẩu trùng lặp mà bạn có thể cải thiện}other{Chrome đã phát hiện # mật khẩu trùng lặp mà bạn có thể cải thiện}}</translation>
 <translation id="2800066122460699237">Thẻ <ph name="TAB_TITLE" /> sẽ đóng</translation>
+<translation id="2805210243313393104">Sử dụng dấu trang và các dữ liệu khác trên mọi thiết bị của bạn</translation>
 <translation id="2805756323405976993">Ứng dụng</translation>
 <translation id="2819849308549746319">Huỷ đăng ký tất cả</translation>
 <translation id="2820047235535485532">Bạn có thể chọn dữ liệu cần lưu vào Tài khoản Google <ph name="ACCOUNT_EMAIL" />.\nBạn cũng có thể xem và quản lý các mục này trong phần dấu trang, danh sách đọc hoặc trình quản lý mật khẩu.</translation>
@@ -673,6 +676,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="4000670338830950598">Tuỳ chỉnh và kiểm soát Google Chrome với mục được làm nổi bật</translation>
 <translation id="4015643064997321279">{NUM_PASSWORDS,plural, =1{1 mật khẩu bị lộ trong Tài khoản Google của bạn}other{# mật khẩu bị lộ trong Tài khoản Google của bạn}}</translation>
 <translation id="4016425174436051808">Không thể theo dõi. Đã xảy ra lỗi.</translation>
+<translation id="4023638601467301498">Để sử dụng dấu trang và các dữ liệu khác trên mọi thiết bị của bạn, hãy đăng nhập vào Chrome</translation>
 <translation id="4024768890073681126">Trình duyệt này do cha mẹ của bạn quản lý</translation>
 <translation id="4027569221211770437">Thư mục <ph name="FOLDER_TITLE" /></translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# giờ}other{# giờ}}</translation>

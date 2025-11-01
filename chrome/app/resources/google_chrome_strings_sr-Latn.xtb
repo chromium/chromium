@@ -158,7 +158,6 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="2753623023919742414">Kliknite da biste pretražili</translation>
 <translation id="2757826245013442432">{COUNT,plural, =0{Napredna zaštita zahteva da ponovo pokrenete Chrome da biste primenili ažuriranje}=1{Napredna zaštita zahteva da ponovo pokrenete Chrome da biste primenili ažuriranje. Prozor bez arhiviranja se neće ponovo otvoriti.}one{Napredna zaštita zahteva da ponovo pokrenete Chrome da biste primenili ažuriranje. # prozor bez arhiviranja se neće ponovo otvoriti.}few{Napredna zaštita zahteva da ponovo pokrenete Chrome da biste primenili ažuriranje. # prozora bez arhiviranja se neće ponovo otvoriti.}other{Napredna zaštita zahteva da ponovo pokrenete Chrome da biste primenili ažuriranje. # prozora bez arhiviranja se neće ponovo otvoriti.}}</translation>
 <translation id="2765403129283291972">Chrome traži dozvolu da pristupi mikrofonu za ovaj sajt</translation>
-<translation id="2770231113462710648">Promeni podrazumevani pregledač u:</translation>
 <translation id="2775140325783767197">Chrome ne može da vam proverava lozinke. Proverite internet vezu.</translation>
 <translation id="2797864378188255696">Kada se prijavljujete u Google usluge kao što su Gmail ili YouTube pomoću naloga <ph name="USER_EMAIL" />, možete automatski da se prijavite u Chrome pomoću istog naloga</translation>
 <translation id="2799162042226656283">Vaš Chrome</translation>

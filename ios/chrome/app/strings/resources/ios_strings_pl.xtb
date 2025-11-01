@@ -677,6 +677,7 @@
 <translation id="3642060527569456384">Grupy kart są automatycznie zapisywane i aktualizowane na wszystkich Twoich urządzeniach.</translation>
 <translation id="3643338347976071250">{count,plural, =1{{count} hasło zostało zapisane tylko na tym urządzeniu. Aby używać go na innych urządzeniach, zapisz je na swoim koncie Google {email}.}few{{count} hasła zostały zapisane tylko na tym urządzeniu. Aby używać ich na innych urządzeniach, zapisz je na swoim koncie Google {email}.}many{{count} haseł zostało zapisanych tylko na tym urządzeniu. Aby używać ich na innych urządzeniach, zapisz je na swoim koncie Google {email}.}other{{count} hasła zostało zapisane tylko na tym urządzeniu. Aby używać ich na innych urządzeniach, zapisz je na swoim koncie Google {email}.}}</translation>
 <translation id="3659297405161482746">Nie znaleziono form płatności</translation>
+<translation id="3662966164093827811">{count,plural, =1{Wybrano 1}few{Wybrano #}many{Wybrano #}other{Wybrano #}}</translation>
 <translation id="3668816008081204991">Lista Do przeczytania jest ukryta</translation>
 <translation id="3670030362669914947">Numer</translation>
 <translation id="3679163990085797665">Usuń przeczytane</translation>

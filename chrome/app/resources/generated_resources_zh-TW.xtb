@@ -973,6 +973,7 @@
 <translation id="1646045728251578877">有可用的軟體更新</translation>
 <translation id="1647408325348388858">要在這個網頁應用程式中開啟並編輯「<ph name="FILE_NAME" />」嗎？</translation>
 <translation id="1647986356840967552">上一頁</translation>
+<translation id="1648401604841225489">解鎖密碼金鑰</translation>
 <translation id="1648439345221797326">Ctrl + Shift + <ph name="TOP_ROW_KEY" /> 鍵</translation>
 <translation id="1648528859488547844">使用 Wi-Fi 或行動網路判斷所在位置</translation>
 <translation id="164936512206786300">取消配對藍牙裝置</translation>
@@ -2259,6 +2260,7 @@
 <translation id="2523184218357549926">將你造訪的網頁網址傳送給 Google</translation>
 <translation id="2524093372979370955">這麼做會停用系統中所有新 USB 周邊裝置的通知。確定要繼續嗎？</translation>
 <translation id="252418934079508528">安裝 <ph name="DEVICE_OS" /></translation>
+<translation id="252513908494776481">詢問這個分頁的內容</translation>
 <translation id="2526590354069164005">桌面</translation>
 <translation id="2526619973349913024">檢查更新</translation>
 <translation id="2527167509808613699">任何類型的連線</translation>
@@ -2487,6 +2489,7 @@
 <translation id="2692901429679246677">水藍</translation>
 <translation id="2693134906590795721">充電音效</translation>
 <translation id="2695943520968279338">瀏覽擴充功能</translation>
+<translation id="2696675923413008404">這個網站的內容 (包括網址) 會傳送給 Google，並可能交由專人審查，以改進這項功能</translation>
 <translation id="2698147581454716013">這是隨附裝置，因此無法註冊 Kiosk &amp; Signage 升級版。</translation>
 <translation id="2699911226086014512">PIN 碼作業失敗，錯誤代碼為 <ph name="RETRIES" />。</translation>
 <translation id="2701330563083355633">透過 <ph name="DEVICE_NAME" /> 分享</translation>
@@ -2909,6 +2912,7 @@
 <translation id="2983818520079887040">設定...</translation>
 <translation id="2984384421572259426">清理未使用的分頁</translation>
 <translation id="2984727013951557074">系統仍在將檔案同步到 Google 雲端硬碟。</translation>
+<translation id="2984923316661218534">在這部裝置上用 Google 密碼管理工具取得密碼金鑰</translation>
 <translation id="2985348301114641460">要傳送「<ph name="EXTENSION_NAME" />」的安裝要求給系統管理員嗎？</translation>
 <translation id="2985476671756533899">{NUM_SUB_APPS,plural, =1{「<ph name="APP_NAME" />」已解除安裝 1 個應用程式}other{「<ph name="APP_NAME" />」已解除安裝 # 個應用程式}}</translation>
 <translation id="2987620471460279764">從其他裝置分享的文字</translation>
@@ -3132,6 +3136,7 @@
 <translation id="3143515551205905069">取消同步處理</translation>
 <translation id="3143754809889689516">從頭播放</translation>
 <translation id="3144647712221361880">以其他身分開啟連結</translation>
+<translation id="3147878021189006333">網址列</translation>
 <translation id="3149510190863420837">Chrome 應用程式</translation>
 <translation id="3150927491400159470">強制重新載入</translation>
 <translation id="315116470104423982">行動數據</translation>
@@ -3969,6 +3974,7 @@
 <translation id="372722114124766626">限用一次</translation>
 <translation id="3727332897090187514">未新增任何附註</translation>
 <translation id="3727473233247516571">往返快取子頁框：<ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
+<translation id="3727558469988088200">取得密碼金鑰</translation>
 <translation id="3727843212509629024">PIN 碼不正確，請再試一次</translation>
 <translation id="3727850735097852673">如要搭配 macOS 鑰匙圈使用 Google 密碼管理工具，請重新啟動 Chrome 並允許存取鑰匙圈。重新啟動之後，會重新開啟所有分頁。</translation>
 <translation id="3728188878314831180">鏡向投射手機的通知</translation>
@@ -4689,6 +4695,7 @@
 <translation id="4213918571089943508">孩子的 Google 帳戶</translation>
 <translation id="4214192212360095377">立即關閉</translation>
 <translation id="4214313983951846766">{NUM_TABS,plural, =0{沒有閒置分頁}=1{查看 1 個閒置分頁}other{查看 # 個閒置分頁}}</translation>
+<translation id="4216407171061541111">貴機構已關閉在 Google 帳戶中儲存分頁的功能</translation>
 <translation id="4217571870635786043">語音輸入</translation>
 <translation id="4218081191298393750">按一下「喇叭」圖示即可將這個分頁設為靜音</translation>
 <translation id="4220157655212610908">使用外部安全金鑰</translation>
@@ -4928,6 +4935,7 @@
 <translation id="4378589147979399051">使用主要鍵盤控制滑鼠游標</translation>
 <translation id="4379097572583973456">網站也可以嵌入其他網站的內容，例如圖片、廣告和文字。這些其他網站也可以儲存資料。</translation>
 <translation id="4379281552162875326">要解除安裝「<ph name="APP_NAME" />」嗎？</translation>
+<translation id="4379623957571212011">選擇圖片即可立即套用主題</translation>
 <translation id="4380055775103003110">如果這個問題持續發生，可以試著在「<ph name="SITE_ETLD_PLUS_ONE" />」上透過其他方法繼續操作。</translation>
 <translation id="4380648069038809855">已開啟全螢幕模式</translation>
 <translation id="4381902252848068865">禁止網站儲存資料</translation>
@@ -5193,6 +5201,7 @@
 <translation id="4570201855944865395">要求取得這個擴充功能的理由：</translation>
 <translation id="4572779512957829735">輸入安全金鑰的 PIN 碼</translation>
 <translation id="4573098337225168831">請務必在「<ph name="DEVICE_NAME" />」上接受投放要求</translation>
+<translation id="4573494901102723760">取得密碼金鑰</translation>
 <translation id="457386861538956877">更多…</translation>
 <translation id="4574741712540401491">•  <ph name="LIST_ITEM_TEXT" /></translation>
 <translation id="4575614183318795561">設定<ph name="FEATURE_NAME" /></translation>
@@ -5364,6 +5373,7 @@
 <translation id="4689235506267737042">選擇示範模式偏好設定</translation>
 <translation id="4689421377817139245">將這個書籤同步到 iPhone 上</translation>
 <translation id="4690091457710545971">&lt;Intel Wi-Fi 韌體產生了 4 個檔案：csr.lst、fh_regs.lst、radio_reg.lst 和 monitor.lst.sysmon。前三個檔案為包含暫存器傾印的二進位檔案，且 Intel 表示當中並未包含任何個人資訊或裝置識別資訊。最後一個檔案是 Intel 韌體的執行追蹤記錄，其中的個人資訊或裝置識別資訊已全部遭到清除，但由於檔案過大而無法顯示在這裡。這些檔案的產生原因是裝置的 Wi-Fi 最近出現問題所導致，系統會將檔案提供給 Intel 以協助排解這些問題。&gt;</translation>
+<translation id="4691995778017338841">改造相片</translation>
 <translation id="4692342362587775867">這個網站的通知可能會造成干擾</translation>
 <translation id="4692530924160500770">{MEMBER_COUNT,plural, =1{群組中有 # 位成員}other{群組中有 # 位成員}}</translation>
 <translation id="4692623383562244444">搜尋引擎</translation>
@@ -5390,6 +5400,7 @@
 <translation id="4711638718396952945">還原設定</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4713409221649555176">在所有視窗關閉後刪除</translation>
+<translation id="4714414859110184926">取得密碼金鑰</translation>
 <translation id="4715631922189108923">編輯使用者名稱</translation>
 <translation id="47158868804223727">按一下以展開或收合群組名稱</translation>
 <translation id="4716483597559580346">執行 Powerwash 以提升安全性</translation>
@@ -6174,6 +6185,7 @@
 <translation id="5265797726250773323">安裝時發生錯誤</translation>
 <translation id="526622169288322445">可對「<ph name="ADDRESS_SUMMARY" />」執行的其他動作</translation>
 <translation id="5267572070504076962">開啟安全瀏覽功能即可防範危險網站</translation>
+<translation id="5269659747698455324">解鎖密碼金鑰</translation>
 <translation id="5269977353971873915">列印失敗</translation>
 <translation id="5271578170655641944">要移除 Google 雲端硬碟存取權嗎？</translation>
 <translation id="5272198173084686007">沒有其他裝置的分頁</translation>
@@ -6772,6 +6784,7 @@
 <translation id="5695184138696833495">Linux Android 應用程式 ADB</translation>
 <translation id="5696143504434933566">檢舉「<ph name="EXTENSION_NAME" />」的濫用情形</translation>
 <translation id="5696679855467848181">目前使用中的 PPD：<ph name="PPD_NAME" /></translation>
+<translation id="5697664819730124632">新增圖像並改造</translation>
 <translation id="5697832193891326782">表情符號挑選器</translation>
 <translation id="5698136107297470317">你即將刪除 <ph name="BRAND" />的資料</translation>
 <translation id="5698878456427040674">請確認系統是否支援所選帳戶。</translation>
@@ -6782,6 +6795,7 @@
 <translation id="5701080607174488915">從伺服器擷取政策時發生錯誤。</translation>
 <translation id="5701212929149679556">行動數據漫遊</translation>
 <translation id="5701786609538182967">其他應用程式所設定會開啟的連結與「<ph name="APP_NAME" />」的設定相同，這會導致「<ph name="APP_NAME_2" />」、「<ph name="APP_NAME_3" />」、「<ph name="APP_NAME_4" />」和另外 1 個應用程式無法開啟支援的連結。</translation>
+<translation id="5702161882524398150">詢問上一個分頁的內容</translation>
 <translation id="5702749864074810610">已關閉建議內容</translation>
 <translation id="5703716265115423771">調低音量</translation>
 <translation id="5704875434923668958">同步到</translation>
@@ -7087,6 +7101,7 @@
 <translation id="5919486630433391408">系統管理員已停用韌體更新。</translation>
 <translation id="5920543303088087579">你的管理員禁止使用者連線到這個網路</translation>
 <translation id="5922493635960054020">禁止初次造訪的網站使用 JavaScript 最佳化工具 (必須開啟安全瀏覽功能)</translation>
+<translation id="5922854266885514646">點選「自訂 Chrome」</translation>
 <translation id="5922963926582976524">中斷與即時無線基地台網路的連線</translation>
 <translation id="5924047253200400718">查看說明。<ph name="SCANNING_STATUS" /></translation>
 <translation id="5924438086390153180">先詢問我，再將 Microsoft 檔案複製或移動到 Google 雲端硬碟</translation>
@@ -7318,6 +7333,7 @@
 <translation id="6086846494333236931">由您的管理員安裝</translation>
 <translation id="6087286598828478206">要封鎖成員並退出群組嗎？</translation>
 <translation id="6087960857463881712">好看的臉蛋</translation>
+<translation id="608819668983150122">驗證身分即可在這部裝置儲存及使用密碼金鑰</translation>
 <translation id="6088475950266477163">設定(&amp;G)</translation>
 <translation id="608912389580139775">如要將這個網頁加入閱讀清單，請按一下「書籤」圖示</translation>
 <translation id="6089289670051481345">藍色弱</translation>
@@ -8359,6 +8375,7 @@
 <translation id="6814754908910736855">Wi-Fi Direct 用戶端資訊：</translation>
 <translation id="6815376457351236663">仍要開啟</translation>
 <translation id="6815787852028615386">這是欺騙性檔案，可能會造成裝置非預期的變更</translation>
+<translation id="6815861164669871832">詢問分頁內容</translation>
 <translation id="6816097980753839617">藍 - 黃 (藍色弱視)</translation>
 <translation id="6816443526270499804">正在尋找可用的 eSIM 設定檔</translation>
 <translation id="6818198425579322765">要翻譯的網頁語言</translation>
@@ -8678,6 +8695,7 @@
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> - 已連線至序列埠</translation>
 <translation id="7033616203784997570">輸入內容長度上限為 62 個半形字元</translation>
 <translation id="7034692021407794547">有「帳單管理」權限的管理員必須先前往管理控制台的「Google Meet 設備」專區接受《Google Meet 設備服務條款》。</translation>
+<translation id="70356134210715500">取得密碼金鑰</translation>
 <translation id="7036550011779986598"><ph name="RP_ID" /> 剛剛為你的帳戶建立了密碼金鑰。密碼金鑰會儲存到 <ph name="USER" /> 的 Google 密碼管理工具，讓你登入時更快速、安全。<ph name="LEARN_MORE" /></translation>
 <translation id="7036706669646341689">建議你為 Linux 保留 <ph name="DISK_SIZE" /> 的空間。如要增加可用空間，請刪除裝置中的檔案。</translation>
 <translation id="7036833812387983071">前往開發人員工具查看</translation>
@@ -8723,6 +8741,7 @@
 <translation id="7067725467529581407">不再顯示這個訊息。</translation>
 <translation id="7067779359472606732">提醒已傳送至你的 <ph name="DEVICE_TYPE" /></translation>
 <translation id="7068279399556423026">登入即可查看在其他裝置上開啟的分頁</translation>
+<translation id="7068539819344620805">現在隨時可以透過「自訂 Chrome」選單變更瀏覽器的外觀</translation>
 <translation id="7068591156533195518">「<ph name="APP_NAME" />」和另外幾個應用程式已禁止在 <ph name="DEVICE_TYPE" /> 上使用</translation>
 <translation id="706949303827219454">在新分頁中開啟安全性設定頁面</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{這個網站的新密碼}other{這個網站的新密碼}}</translation>
@@ -10509,6 +10528,7 @@
 <translation id="8291415872436043161">下載 Chrome</translation>
 <translation id="8291942417224950075">個人用途</translation>
 <translation id="8293206222192510085">新增書籤</translation>
+<translation id="8293957715257389063">深度搜尋分頁內容</translation>
 <translation id="8294431847097064396">來源</translation>
 <translation id="8294476140219241086">分頁整理工具</translation>
 <translation id="8295449579927246485">即時翻譯</translation>
@@ -10548,6 +10568,7 @@
 <translation id="8320212361750431956">近期活動</translation>
 <translation id="8321476692217554900">通知</translation>
 <translation id="8321837372750396788">這部 <ph name="DEVICE_TYPE" /> 將由 <ph name="MANAGER" /> 管理。</translation>
+<translation id="8322000044173139239">如要在這部裝置取得密碼金鑰，請驗證身分</translation>
 <translation id="8322814362483282060">系統已封鎖這個網頁存取你的麥克風。</translation>
 <translation id="8323167517179506834">輸入網址</translation>
 <translation id="8323317289166663449">讀取及變更你在個人電腦和所有網站上的所有資料</translation>
@@ -11773,6 +11794,7 @@
 <translation id="9137916601698928395">以 <ph name="USER" /> 身分開啟連結</translation>
 <translation id="9138978632494473300">在以下位置新增捷徑：</translation>
 <translation id="9139988741193276691">設定 Linux</translation>
+<translation id="9140050311673642960">深入瞭解新事物</translation>
 <translation id="9140067245205650184">你正在使用不受支援的功能標幟：<ph name="BAD_FLAG" />。這可能會危及穩定性與安全性。</translation>
 <translation id="914031120300235526">無法解鎖設定檔</translation>
 <translation id="9142637293078737510">映像檔別名</translation>

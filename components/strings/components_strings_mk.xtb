@@ -1844,6 +1844,7 @@
 <translation id="4014895360827978999">Трговски услуги и системи за плаќање</translation>
 <translation id="4018819349042761761">Јавен клуч</translation>
 <translation id="4023431997072828269">Бидејќи формуларов се испраќа преку врска што не е безбедна, вашите податоци ќе бидат видливи за другите.</translation>
+<translation id="4024673763872230929">Зачувајте ги вашите податоци и пополнувајте ги формуларите побрзо. Се зачувува на вашиот уред.</translation>
 <translation id="4025325634010721551">Правилата се вчитани повторно</translation>
 <translation id="4025338605225449265">Валути и размена на пари</translation>
 <translation id="4025777154208238692">Обратен редослед</translation>
@@ -2277,6 +2278,7 @@
 <translation id="4732860731866514038">Се презема јазичен пакет за <ph name="LANGUAGE" />… <ph name="PERCENT" /> %</translation>
 <translation id="4733082559415072992"><ph name="URL" /> сака да ја користи локацијата на вашиот уред</translation>
 <translation id="473414950835101501">да ги користи вашите камери</translation>
+<translation id="4734343956394152985"><ph name="BEGIN_BOLD" />Тековен стандарден пребарувач<ph name="END_BOLD" /> · <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="4736825316280949806">Рестартирајте го Chromium</translation>
 <translation id="4736934858538408121">Виртуелна картичка</translation>
 <translation id="473775607612524610">Ажурирај</translation>
@@ -2430,6 +2432,7 @@
 <translation id="4961708452830821006">За да го користи микрофонот, дајте му пристап на Chrome во <ph name="LINK" />.</translation>
 <translation id="4963413887558778009">Пејзажен дизајн</translation>
 <translation id="4967366744630699583">Изменување адреса</translation>
+<translation id="4968046291688599384">Еднократниот број на виртуелна картичка за <ph name="BNPL_ISSUER_NAME" /> е пополнет.</translation>
 <translation id="4968522289500246572">Апликацијава е дизајнирана за мобилен уред и можеби нема добро да ја промени големината. Апликацијата може да има проблеми или да се рестартира.</translation>
 <translation id="4968665849807487749">Може да бара да управува со прозорците на сите екрани</translation>
 <translation id="4969341057194253438">Избриши ја снимката</translation>
@@ -3386,6 +3389,7 @@
 <translation id="6521745193039995384">Неактивна</translation>
 <translation id="6522682797352430154">Класична музика</translation>
 <translation id="6524830701589638230">Копче за управување со поставките за пристапност, активирајте го за да ги персонализирате алатките за пристапност во поставките за Chrome</translation>
+<translation id="6525222262307262764">Задржи го тековниот стандарден пребарувач</translation>
 <translation id="6527049834925947126">Производство на храна</translation>
 <translation id="6529173248185917884">Седма ролна</translation>
 <translation id="6529602333819889595">&amp;Повтори бришење</translation>
@@ -3406,6 +3410,7 @@
 <translation id="6567832540451970450">Администраторот дозволува <ph name="PERMISSION" /> за сајтов</translation>
 <translation id="6568793038316600992">Копче за управување со начините на плаќање, активирајте го за да управувате со податоците за плаќањата и кредитната картичка во поставките за Chrome</translation>
 <translation id="6569060085658103619">Гледате страница со екстензии</translation>
+<translation id="6571992525120410251">Прашајте го пребарувачот <ph name="ENGINE_NAME" /> што било</translation>
 <translation id="6572867903637058088">Дали е ова корисно?</translation>
 <translation id="6573200754375280815">Две дупки десно</translation>
 <translation id="6575408526598156416">Зачувајте во сметката</translation>
@@ -3454,6 +3459,7 @@
 <translation id="666259744093848177">(x86_64 преведен)</translation>
 <translation id="6665553082534466207">Три дупки десно</translation>
 <translation id="6668389483194953109">Откриено е име за големина на хартија „custom“, но својството „custom_size“ е празно или неважечко.</translation>
+<translation id="6670729408462528018">Галерија</translation>
 <translation id="6671169470640320959">Финансирање за автомобил</translation>
 <translation id="6671697161687535275">Да се отстранат предлозите за формулари од Chromium?</translation>
 <translation id="6675846980676550611">AR не е дозволена</translation>

@@ -1839,6 +1839,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="4014895360827978999">Sotuvchi xizmatlari va toʻlov tizimlari</translation>
 <translation id="4018819349042761761">Ochiq kalit</translation>
 <translation id="4023431997072828269">Chunki sayt xavfsiz boʻlmagan ulanishdan foydalanmoqda. Maʼlumotlaringiz boshqalarga koʻrinadi.</translation>
+<translation id="4024673763872230929">Maʼlumotlaringizni saqlang va shakllarni tezroq toʻldiring. Qurilmangizda saqlanadi.</translation>
 <translation id="4025325634010721551">Qoidalar qayta yuklandi</translation>
 <translation id="4025338605225449265">Valyutalar va chet el valyutasi</translation>
 <translation id="4025777154208238692">Teskari tartibda</translation>
@@ -2272,6 +2273,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="4732860731866514038"><ph name="LANGUAGE" /> tili paketi yuklab olinmoqda...<ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992"><ph name="URL" /> sayti qurilmangiz joylashuvidan foydalanmoqchi</translation>
 <translation id="473414950835101501">Kameralardan foydalanish</translation>
+<translation id="4734343956394152985"><ph name="BEGIN_BOLD" />Joriy birlamchisi<ph name="END_BOLD" /> · <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="4736825316280949806">Chromium’ni qayta ishga tushiring</translation>
 <translation id="4736934858538408121">Virtual karta</translation>
 <translation id="473775607612524610">Yangilash</translation>
@@ -3380,6 +3382,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="6521745193039995384">Faol emas</translation>
 <translation id="6522682797352430154">Mumtoz musiqa</translation>
 <translation id="6524830701589638230">Qulaylik sozlamalari boshqarish tugmasi, Chrome sozlamalari orqali qulaylik vositalarini moslashtirish uchun faollashtiring</translation>
+<translation id="6525222262307262764">Joriy birlamchisi qolsin</translation>
 <translation id="6527049834925947126">Oziq-ovqat ishlab chiqarish</translation>
 <translation id="6529173248185917884">Yettinchi oʻram</translation>
 <translation id="6529602333819889595">&amp;O‘chirishni qaytarish</translation>
@@ -3400,6 +3403,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="6567832540451970450">Administrator bu sayt uchun <ph name="PERMISSION" /> ruxsatini taqdim qilgan</translation>
 <translation id="6568793038316600992">Toʻlov usullarini boshqarish tugmasi, Chrome sozlamalari orqali toʻlov va kredit karta axborotini boshqarish uchun faollashtiring</translation>
 <translation id="6569060085658103619">Siz kengaytma sahifasidasiz.</translation>
+<translation id="6571992525120410251">Savol bering: <ph name="ENGINE_NAME" /></translation>
 <translation id="6572867903637058088">Buning foydasi tegdimi?</translation>
 <translation id="6573200754375280815">Oʻngdan 2 ta teshik ochish</translation>
 <translation id="6575408526598156416">Hisobda saqlash</translation>
@@ -3448,6 +3452,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="666259744093848177">(x86_64 tarjimasi)</translation>
 <translation id="6665553082534466207">Oʻngdan 3 ta teshik ochish</translation>
 <translation id="6668389483194953109">“custom” qogʻoz oʻlchami topildi, lekin custom_size xususiyati boʻsh yoki yaroqsiz.</translation>
+<translation id="6670729408462528018">Galereya</translation>
 <translation id="6671169470640320959">Avtokreditlar</translation>
 <translation id="6671697161687535275">Bu taklif Chromium’dan o‘chirib tashlansinmi?</translation>
 <translation id="6675846980676550611">AR ishlatish rad etildi</translation>
