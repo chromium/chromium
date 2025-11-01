@@ -90,16 +90,6 @@ ukm::SourceId UkmRecorder::GetSourceIdForChromeOSWebsiteURL(
 
 // static
 ukm::SourceId UkmRecorder::GetSourceIdForExtensionUrl(
-    base::PassKey<extensions::ExtensionMessagePort>,
-    const GURL& extension_url) {
-  // UkmRecorderImpl will verify the extension URL (and the corresponding
-  // extension) prior to emitting the record.
-  return UkmRecorder::GetSourceIdFromScopeImpl(extension_url,
-                                               SourceIdType::EXTENSION_ID);
-}
-
-// static
-ukm::SourceId UkmRecorder::GetSourceIdForExtensionUrl(
     base::PassKey<extensions::ManifestV2ExperimentManager>,
     const GURL& extension_url) {
   // UkmRecorderImpl will verify the extension URL (and the corresponding
