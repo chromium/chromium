@@ -261,12 +261,11 @@ public class PinnedTabStripItemContextMenuCoordinatorTest {
         when(mTab.getUrl()).thenReturn(mUrl);
         mCoordinator.buildMenuActionItems(mMenuItemList, TAB_ID);
 
-        assertEquals(5, mMenuItemList.size());
-        assertEquals(R.string.share, getMenuItemTitleId(0));
-        assertEquals(R.string.menu_move_tab_to_group, getMenuItemTitleId(1));
-        assertEquals(R.string.add_to_bookmarks, getMenuItemTitleId(2));
-        assertEquals(R.string.unpin_tab, getMenuItemTitleId(3));
-        assertEquals(R.string.close_tab, getMenuItemTitleId(4));
+        assertEquals(4, mMenuItemList.size());
+        assertEquals(R.string.menu_move_tab_to_group, getMenuItemTitleId(0));
+        assertEquals(R.string.add_to_bookmarks, getMenuItemTitleId(1));
+        assertEquals(R.string.unpin_tab, getMenuItemTitleId(2));
+        assertEquals(R.string.close_tab, getMenuItemTitleId(3));
     }
 
     @Test
@@ -276,12 +275,11 @@ public class PinnedTabStripItemContextMenuCoordinatorTest {
         when(mTab.getTabGroupId()).thenReturn(null);
         mCoordinator.buildMenuActionItems(mMenuItemList, TAB_ID);
 
-        assertEquals(5, mMenuItemList.size());
-        assertEquals(R.string.share, getMenuItemTitleId(0));
-        assertEquals(R.string.menu_add_tab_to_group, getMenuItemTitleId(1));
-        assertEquals(R.string.add_to_bookmarks, getMenuItemTitleId(2));
-        assertEquals(R.string.unpin_tab, getMenuItemTitleId(3));
-        assertEquals(R.string.close_tab, getMenuItemTitleId(4));
+        assertEquals(4, mMenuItemList.size());
+        assertEquals(R.string.menu_add_tab_to_group, getMenuItemTitleId(0));
+        assertEquals(R.string.add_to_bookmarks, getMenuItemTitleId(1));
+        assertEquals(R.string.unpin_tab, getMenuItemTitleId(2));
+        assertEquals(R.string.close_tab, getMenuItemTitleId(3));
     }
 
     @Test
@@ -291,12 +289,11 @@ public class PinnedTabStripItemContextMenuCoordinatorTest {
         when(mTabGroupModelFilter.getTabGroupCount()).thenReturn(0);
         mCoordinator.buildMenuActionItems(mMenuItemList, TAB_ID);
 
-        assertEquals(5, mMenuItemList.size());
-        assertEquals(R.string.share, getMenuItemTitleId(0));
-        assertEquals(R.string.menu_add_tab_to_new_group, getMenuItemTitleId(1));
-        assertEquals(R.string.add_to_bookmarks, getMenuItemTitleId(2));
-        assertEquals(R.string.unpin_tab, getMenuItemTitleId(3));
-        assertEquals(R.string.close_tab, getMenuItemTitleId(4));
+        assertEquals(4, mMenuItemList.size());
+        assertEquals(R.string.menu_add_tab_to_new_group, getMenuItemTitleId(0));
+        assertEquals(R.string.add_to_bookmarks, getMenuItemTitleId(1));
+        assertEquals(R.string.unpin_tab, getMenuItemTitleId(2));
+        assertEquals(R.string.close_tab, getMenuItemTitleId(3));
     }
 
     @Test
@@ -308,12 +305,11 @@ public class PinnedTabStripItemContextMenuCoordinatorTest {
         when(mTabGroupModelFilter.getTabGroupCount()).thenReturn(0);
         mCoordinator.buildMenuActionItems(mMenuItemList, TAB_ID);
 
-        assertEquals(5, mMenuItemList.size());
-        assertEquals(R.string.share, getMenuItemTitleId(0));
-        assertEquals(R.string.menu_add_tab_to_new_group, getMenuItemTitleId(1));
-        assertEquals(R.string.edit_bookmark, getMenuItemTitleId(2));
-        assertEquals(R.string.unpin_tab, getMenuItemTitleId(3));
-        assertEquals(R.string.close_tab, getMenuItemTitleId(4));
+        assertEquals(4, mMenuItemList.size());
+        assertEquals(R.string.menu_add_tab_to_new_group, getMenuItemTitleId(0));
+        assertEquals(R.string.edit_bookmark, getMenuItemTitleId(1));
+        assertEquals(R.string.unpin_tab, getMenuItemTitleId(2));
+        assertEquals(R.string.close_tab, getMenuItemTitleId(3));
     }
 
     @Test

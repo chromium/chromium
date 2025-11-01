@@ -21,7 +21,6 @@ import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.TabBookmarker;
 import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.share.ShareUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
@@ -123,10 +122,6 @@ public class PinnedTabStripItemContextMenuCoordinator
         if (tab == null) return;
         boolean isIncognito = tab.isIncognitoBranded();
 
-        if (ShareUtils.shouldEnableShare(tab)) {
-            itemList.add(buildShareItem(isIncognito));
-        }
-
         itemList.add(buildGroupItem(tab, isIncognito));
         itemList.add(buildBookmarkItem(tab, isIncognito));
         itemList.add(buildTogglePinStateItem(tab));
@@ -137,15 +132,6 @@ public class PinnedTabStripItemContextMenuCoordinator
     @Override
     protected String getCollaborationIdOrNull(Integer id) {
         return null;
-    }
-
-    private ListItem buildShareItem(boolean isIncognito) {
-        return new ListItemBuilder()
-                .withTitleRes(R.string.share)
-                .withMenuId(R.id.share_tab)
-                .withStartIconRes(R.drawable.tab_list_editor_share_icon)
-                .withIsIncognito(isIncognito)
-                .build();
     }
 
     private ListItem buildGroupItem(Tab tab, boolean isIncognito) {
