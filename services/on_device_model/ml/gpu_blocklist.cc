@@ -24,6 +24,9 @@ const base::FeatureParam<std::string> kGpuBlockList{
     &optimization_guide::features::kOnDeviceModelPerformanceParams,
     "on_device_model_gpu_block_list",
     // These devices are nearly always crashing or have very low performance.
+#if BUILDFLAG(IS_LINUX)
+    "8086:64a0|"  // TODO(b/456603738): Remove when fixed.
+#endif  // BUILDFLAG(IS_LINUX)
     "8086:412|8086:a16|8086:41e|8086:416|8086:402|8086:166|8086:1616|8086:22b1|"
     "8086:22b0|8086:1916|8086:5a84|8086:5a85|8086:416|1414:8c|"
     "8086:*:*31.0.101.4824*|8086:*:*31.0.101.4676*|8086:*:*20.19.15.4835*|"
