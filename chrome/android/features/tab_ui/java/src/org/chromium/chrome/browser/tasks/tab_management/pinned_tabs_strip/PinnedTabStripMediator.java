@@ -83,6 +83,7 @@ public class PinnedTabStripMediator {
     private @Nullable TabGroupListBottomSheetCoordinator mTabGroupListBottomSheetCoordinator;
     private final ModalDialogManager mModalDialogManager;
     private final @Nullable Runnable mOnTabGroupCreation;
+    private final @Px int mPinnedTabListItemHeight;
 
     private final Callback<@Nullable TabGroupModelFilter> mOnTabGroupModelFilterChanged =
             new ValueChangedCallback<>(this::onTabGroupModelFilterChanged);
@@ -142,6 +143,10 @@ public class PinnedTabStripMediator {
         mTabLisCoordinator.addTabListItemSizeChangedObserver(mTabListItemSizeChangedObserver);
         mTabGroupModelFilterSupplier = tabGroupModelFilterSupplier;
         mTabBookmarkerSupplier = tabBookmarkerSupplier;
+        mPinnedTabListItemHeight =
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.pinned_tab_strip_item_height);
         mTabModelObserver =
                 new TabModelObserver() {
                     @Override
@@ -251,7 +256,7 @@ public class PinnedTabStripMediator {
     private ListItem createPinnedTabListItem(PropertyModel model) {
         // The view will animate to its final size, so we can set a default width here.
         // The correct width will be set in resizePinnedTabCards.
-        Size pinnedTabSize = new Size(mTabListItemCurrentWidth, 0);
+        Size pinnedTabSize = new Size(mTabListItemCurrentWidth, mPinnedTabListItemHeight);
 
         PropertyModel newModel =
                 new PropertyModel.Builder(ALL_KEYS_TAB_GRID)
@@ -332,7 +337,7 @@ public class PinnedTabStripMediator {
                         res, mTabGridListLayoutManager, mPinnedTabsModelList.size());
 
         int newWidth = Math.round(mTabListItemCurrentWidth * widthPercentage);
-        Size newSize = new Size(max(minAllowedWidth, newWidth), 0);
+        Size newSize = new Size(max(minAllowedWidth, newWidth), mPinnedTabListItemHeight);
         for (ListItem item : mPinnedTabsModelList) {
             item.model.set(GRID_CARD_SIZE, newSize);
         }
