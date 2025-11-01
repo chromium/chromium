@@ -77,7 +77,7 @@ public class WebContentsDelegateAndroid {
     }
 
     @CalledByNative
-    public void onUpdateUrl(GURL url) {}
+    public void onUpdateTargetUrl(GURL url) {}
 
     @CalledByNative
     public boolean takeFocus(boolean reverse) {

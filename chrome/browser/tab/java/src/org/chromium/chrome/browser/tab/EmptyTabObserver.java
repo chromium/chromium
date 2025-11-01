@@ -99,7 +99,7 @@ public class EmptyTabObserver implements TabObserver {
     public void onLoadProgressChanged(Tab tab, float progress) {}
 
     @Override
-    public void onUpdateUrl(Tab tab, GURL url) {}
+    public void onUpdateTargetUrl(Tab tab, GURL url) {}
 
     @Override
     public void onDidStartNavigationInPrimaryMainFrame(

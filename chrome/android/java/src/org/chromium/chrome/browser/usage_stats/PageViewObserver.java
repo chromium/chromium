@@ -24,6 +24,7 @@ import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.components.embedder_support.util.UrlUtilities;
+import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.url.GURL;
 
 import java.lang.reflect.InvocationTargetException;
@@ -78,8 +79,13 @@ public class PageViewObserver extends EmptyTabObserver {
     }
 
     @Override
-    public void onUpdateUrl(Tab tab, GURL url) {
+    public void onDidStartNavigationInPrimaryMainFrame(Tab tab, NavigationHandle navigationHandle) {
         assert tab == mCurrentTab;
+        // We only want to check for suspended tabs on new navigations, not on same-document
+        // navigations like fragment changes or history.pushState.
+        if (navigationHandle.isSameDocument()) return;
+
+        GURL url = navigationHandle.getUrl();
         String newFqdn = getValidFqdnOrEmptyString(url);
         // We don't call updateUrl() here to avoid reporting start events for domains
         // that never paint, e.g. link shorteners. We still need to check the SuspendedTab

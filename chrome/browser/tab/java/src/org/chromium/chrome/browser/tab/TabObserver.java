@@ -201,18 +201,20 @@ public interface TabObserver {
 
     /**
      * Called when the URL of a {@link Tab} changes.
+     *
      * @param tab The notifying {@link Tab}.
      * @param url The new URL.
      */
-    void onUpdateUrl(Tab tab, GURL url);
+    void onUpdateTargetUrl(Tab tab, GURL url);
 
     // WebContentsObserver methods ---------------------------------------------------------
 
     /**
      * Called when a navigation in the primary main frame is started in the WebContents.
+     *
      * @param tab The notifying {@link Tab}.
-     * @param navigationHandle Pointer to a NavigationHandle representing the navigation.
-     *                         Its lifetime end at the end of onDidFinishNavigation().
+     * @param navigationHandle Pointer to a NavigationHandle representing the navigation. Its
+     *     lifetime end at the end of onDidFinishNavigation().
      */
     void onDidStartNavigationInPrimaryMainFrame(Tab tab, NavigationHandle navigationHandle);
 

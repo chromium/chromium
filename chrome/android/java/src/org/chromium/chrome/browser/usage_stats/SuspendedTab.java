@@ -19,6 +19,8 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.UserData;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.EnsuresNonNullIf;
 import org.chromium.build.annotations.NullMarked;
@@ -103,7 +105,9 @@ public class SuspendedTab extends EmptyTabObserver implements UserData, TabViewP
     public void show(String fqdn) {
         mFqdn = fqdn;
         mTab.addObserver(this);
-        mTab.stopLoading();
+        // This is called from onDidStartNavigationInPrimaryMainFrame, so the navigation cannot be
+        // synchronously deleted (as stopLoading does).
+        PostTask.postTask(TaskTraits.UI_DEFAULT, mTab::stopLoading);
 
         WebContents webContents = mTab.getWebContents();
         if (webContents != null) {

@@ -270,10 +270,10 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
     }
 
     @Override
-    public void onUpdateUrl(GURL url) {
+    public void onUpdateTargetUrl(GURL url) {
         RewindableIterator<TabObserver> observers = mTab.getTabObservers();
-        while (observers.hasNext()) observers.next().onUpdateUrl(mTab, url);
-        mDelegate.onUpdateUrl(url);
+        while (observers.hasNext()) observers.next().onUpdateTargetUrl(mTab, url);
+        mDelegate.onUpdateTargetUrl(url);
     }
 
     @Override

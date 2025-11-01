@@ -164,7 +164,7 @@ class AwWebContentsDelegateAdapter extends AwWebContentsDelegate {
     }
 
     @Override
-    public void onUpdateUrl(GURL url) {
+    public void onUpdateTargetUrl(GURL url) {
         // TODO: implement
     }
 
