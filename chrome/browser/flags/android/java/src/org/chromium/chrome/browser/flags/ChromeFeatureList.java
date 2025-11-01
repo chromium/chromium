@@ -741,7 +741,7 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sAndroidDataImporterService =
             newCachedFlag(ANDROID_DATA_IMPORTER_SERVICE, true);
     public static final CachedFlag sAndroidDesktopDensity =
-            newCachedFlag(ANDROID_DESKTOP_DENSITY, false);
+            newCachedFlag(ANDROID_DESKTOP_DENSITY, true);
     public static final CachedFlag sAndroidElegantTextHeight =
             newCachedFlag(ANDROID_ELEGANT_TEXT_HEIGHT, true);
     public static final CachedFlag sAndroidLogoViewRefactor =
