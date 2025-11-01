@@ -1107,7 +1107,7 @@ public class ToolbarPositionControllerTest {
         doReturn(430).when(mDisplayAndroid).getDisplayHeight();
         mKeyboardHeightSupplier.set(401);
         verify(mControlContainerView).setTranslationY(-(430f - TOOLBAR_HEIGHT - statusBarHeight));
-        verify(mControlContainer, atLeast(1)).setMaxHeight(30);
+        verify(mControlContainer, atLeast(1)).setMaxHeight(20);
     }
 
     @Test
