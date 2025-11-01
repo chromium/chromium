@@ -116,6 +116,7 @@ public class LocationBarCoordinator
     private View mUrlBar;
     private View mZoomButton;
     private @Nullable View mDeleteButton;
+    private @Nullable View mNavigateButton;
     private @Nullable View mMicButton;
     private @Nullable View mLensButton;
     private @Nullable View mComposeplateButton;
@@ -340,6 +341,11 @@ public class LocationBarCoordinator
         mDeleteButton = mLocationBarLayout.findViewById(R.id.delete_button);
         mDeleteButton.setOnClickListener(mLocationBarMediator::deleteButtonClicked);
 
+        mNavigateButton = mLocationBarLayout.findViewById(R.id.navigate_button);
+        if (mNavigateButton != null) {
+            mNavigateButton.setOnClickListener(mLocationBarMediator::navigateButtonClicked);
+        }
+
         mMicButton = mLocationBarLayout.findViewById(R.id.mic_button);
         mMicButton.setOnClickListener(mLocationBarMediator::micButtonClicked);
 
@@ -430,6 +436,11 @@ public class LocationBarCoordinator
         if (mComposeplateButton != null) {
             mComposeplateButton.setOnClickListener(null);
             mComposeplateButton = null;
+        }
+
+        if (mNavigateButton != null) {
+            mNavigateButton.setOnClickListener(null);
+            mNavigateButton = null;
         }
 
         mZoomButton.setOnClickListener(null);

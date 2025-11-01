@@ -8,6 +8,7 @@ import android.content.Context;
 import android.view.ActionMode;
 import android.view.View;
 import android.view.View.OnLongClickListener;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 
 import androidx.annotation.IntDef;
@@ -50,6 +51,7 @@ public class UrlBarCoordinator
     private final KeyboardVisibilityDelegate mKeyboardVisibilityDelegate;
     private final Callback<Boolean> mFocusChangeCallback;
     private @Nullable Runnable mKeyboardHideTask;
+    private boolean mHasFocus;
 
     /**
      * Constructs a coordinator for the given UrlBar view.
@@ -267,7 +269,7 @@ public class UrlBarCoordinator
     }
 
     /* package */ boolean hasFocus() {
-        return mUrlBar.hasFocus();
+        return mHasFocus;
     }
 
     /* package */ void requestFocus() {
@@ -280,6 +282,11 @@ public class UrlBarCoordinator
 
     /* package */ void requestAccessibilityFocus() {
         mUrlBar.requestAccessibilityFocus();
+    }
+
+    /* package */ void dispatchGoEvent() {
+        if (!mHasFocus) return;
+        mUrlBar.onEditorAction(EditorInfo.IME_ACTION_GO);
     }
 
     /**
@@ -339,6 +346,7 @@ public class UrlBarCoordinator
         InputMethodManager imm =
                 (InputMethodManager)
                         mUrlBar.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+        mHasFocus = hasFocus;
         if (hasFocus) {
             // Explicitly tell InputMethodManager that the url bar is focused before any callbacks
             // so that it updates the active view accordingly. Otherwise, it may fail to update

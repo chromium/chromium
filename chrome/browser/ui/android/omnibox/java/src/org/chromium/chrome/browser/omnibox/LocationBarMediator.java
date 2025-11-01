@@ -806,6 +806,11 @@ class LocationBarMediator
         mUrlCoordinator.requestAccessibilityFocus();
     }
 
+    /* package */ void navigateButtonClicked(View view) {
+        if (!mNativeInitialized) return;
+        mUrlCoordinator.dispatchGoEvent();
+    }
+
     /* package */ void micButtonClicked(View view) {
         if (!mNativeInitialized) return;
         // Hide keyboard before launch voice search to avoid keyboard action announcement in
@@ -1349,7 +1354,11 @@ class LocationBarMediator
     }
 
     private void updateDeleteButtonVisibility() {
-        mLocationBarLayout.setDeleteButtonVisibility(shouldShowDeleteButton());
+        mLocationBarLayout.setDeleteButtonVisibility(isUrlBarFocusedWithUserInput());
+        mLocationBarLayout.setNavigateButtonVisibility(
+                isUrlBarFocusedWithUserInput()
+                        && mAutocompleteRequestTypeSupplier.get()
+                                == AutocompleteRequestType.AI_MODE);
     }
 
     /* package */ void onZoomLevelChanged() {
@@ -1444,7 +1453,7 @@ class LocationBarMediator
      * @return Whether the delete button should be shown.
      */
     @VisibleForTesting
-    boolean shouldShowDeleteButton() {
+    boolean isUrlBarFocusedWithUserInput() {
         // Show the delete button at the end when the bar has focus and has some text.
         boolean hasText =
                 mUrlCoordinator != null
@@ -1458,7 +1467,7 @@ class LocationBarMediator
             return false;
         }
 
-        if (shouldShowDeleteButton()) return false;
+        if (isUrlBarFocusedWithUserInput()) return false;
         if (!mNativeInitialized
                 || mVoiceRecognitionHandler == null
                 || !mVoiceRecognitionHandler.isVoiceSearchEnabled()
@@ -1484,7 +1493,7 @@ class LocationBarMediator
             return false;
         }
 
-        if (shouldShowDeleteButton()) return false;
+        if (isUrlBarFocusedWithUserInput()) return false;
 
         // When this method is called on UI inflation, return false as the native is not ready.
         if (!mNativeInitialized) {
@@ -1517,7 +1526,7 @@ class LocationBarMediator
         if (!mIsComposeplateEnabled
                 || !shouldShowMicButton
                 || !shouldShowLensButton
-                || shouldShowDeleteButton()) {
+                || isUrlBarFocusedWithUserInput()) {
             return false;
         }
 

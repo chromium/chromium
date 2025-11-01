@@ -43,6 +43,7 @@ public class LocationBarLayout extends ConstraintLayout {
     protected ImageButton mZoomButton;
     protected ImageButton mInstallButton;
     protected ImageButton mComposeplateButton;
+    private final @Nullable View mNavigateButton;
     protected UrlBar mUrlBar;
 
     protected UrlBarCoordinator mUrlCoordinator;
@@ -69,6 +70,7 @@ public class LocationBarLayout extends ConstraintLayout {
     private boolean mShowMicButton;
     private boolean mShowLensButton;
     private boolean mShowDeleteButton;
+    private boolean mShowNavigateButton;
 
     public LocationBarLayout(Context context, AttributeSet attrs) {
         this(context, attrs, R.layout.location_bar);
@@ -89,6 +91,7 @@ public class LocationBarLayout extends ConstraintLayout {
         mZoomButton = findViewById(R.id.zoom_button);
         mInstallButton = findViewById(R.id.install_button);
         mComposeplateButton = findViewById(R.id.composeplate_button);
+        mNavigateButton = findViewById(R.id.navigate_button);
         mMarginSpacer = findViewById(R.id.margin_spacer);
         mStatusIconAndUrlBarOffset =
                 OmniboxResourceProvider.getToolbarSidePaddingForNtp(context)
@@ -232,7 +235,8 @@ public class LocationBarLayout extends ConstraintLayout {
         setUrlActionContainerVisibility(mShowUrlButtons);
     }
 
-    private void setButtonVisibility(View button, boolean wantShow) {
+    private void setButtonVisibility(@Nullable View button, boolean wantShow) {
+        if (button == null) return;
         button.setVisibility(
                 (wantShow && mShowUrlButtons && !mHidingActionContainerForNarrowWindow)
                         ? VISIBLE
@@ -243,6 +247,12 @@ public class LocationBarLayout extends ConstraintLayout {
     /* package */ void setDeleteButtonVisibility(boolean shouldShow) {
         mShowDeleteButton = shouldShow;
         setButtonVisibility(mDeleteButton, shouldShow);
+    }
+
+    /** Sets the visibility of the Navigate. */
+    /* package */ void setNavigateButtonVisibility(boolean shouldShow) {
+        mShowNavigateButton = shouldShow;
+        setButtonVisibility(mNavigateButton, shouldShow);
     }
 
     /** Sets the visibility of the mic button. */
@@ -300,6 +310,7 @@ public class LocationBarLayout extends ConstraintLayout {
         setMicButtonVisibility(mShowMicButton);
         setLensButtonVisibility(mShowLensButton);
         setDeleteButtonVisibility(mShowDeleteButton);
+        setNavigateButtonVisibility(mShowNavigateButton);
     }
 
     /** Returns the increase in StatusView end padding, when the Url bar is focused. */
