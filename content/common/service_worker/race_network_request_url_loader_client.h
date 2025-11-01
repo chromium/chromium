@@ -108,7 +108,8 @@ class CONTENT_EXPORT ServiceWorkerRaceNetworkRequestURLLoaderClient
   ServiceWorkerRaceNetworkRequestURLLoaderClient(
       const GURL& resource_request_url,
       base::WeakPtr<ServiceWorkerResourceLoader> owner,
-      mojo::PendingRemote<network::mojom::URLLoaderClient> forwarding_client);
+      mojo::PendingRemote<network::mojom::URLLoaderClient> forwarding_client,
+      base::OnceCallback<void()> clone_completed_for_fetch_handler_callback);
   ServiceWorkerRaceNetworkRequestURLLoaderClient(
       const ServiceWorkerRaceNetworkRequestURLLoaderClient&) = delete;
   ServiceWorkerRaceNetworkRequestURLLoaderClient& operator=(
@@ -158,6 +159,11 @@ class CONTENT_EXPORT ServiceWorkerRaceNetworkRequestURLLoaderClient
       base::TimeTicks fetch_handler_end_time,
       bool is_fallback);
 
+  bool clone_response_for_fetch_handler_completed_or_connection_closed() const {
+    return clone_response_for_fetch_handler_completed_ ||
+           connection_to_fetch_handler_closed_;
+  }
+
  private:
   uint32_t GetDataPipeCapacityBytes();
   MojoResultForUMA ConvertMojoResultForUMA(MojoResult mojo_result);
@@ -178,6 +184,9 @@ class CONTENT_EXPORT ServiceWorkerRaceNetworkRequestURLLoaderClient
 
   void OnDataTransferComplete();
   void TransitionState(State new_state);
+  void OnConnectionToFetchHandlerClosed(uint32_t custom_reason,
+                                        const std::string& description);
+  void MaybeRunCloneCompletedForFetchHandlerCallback();
 
   // Reads data from RaceNetworkRequestReadBufferManager. If there is a buffer
   // to read, notifies the write buffer manager to start write operations.
@@ -228,6 +237,8 @@ class CONTENT_EXPORT ServiceWorkerRaceNetworkRequestURLLoaderClient
   mojo::Receiver<network::mojom::URLLoaderClient> receiver_{this};
   const GURL resource_request_url_;
   base::WeakPtr<ServiceWorkerResourceLoader> owner_;
+  // `URLLoaderClient` endpoint connected to the corresponding `fetch()` in the
+  // fetch handler.
   mojo::Remote<network::mojom::URLLoaderClient> forwarding_client_;
 
   network::mojom::URLResponseHeadPtr head_;
@@ -248,6 +259,7 @@ class CONTENT_EXPORT ServiceWorkerRaceNetworkRequestURLLoaderClient
   bool is_main_resource_;
   bool clone_response_for_network_completed_ = false;
   bool clone_response_for_fetch_handler_completed_ = false;
+  bool connection_to_fetch_handler_closed_ = false;
 
   // TODO(crbug.com/340949948): Remove this after fixing the bug. This is set
   // only when the data cloning to the fetch handler is excplitly cancelled.
@@ -255,6 +267,8 @@ class CONTENT_EXPORT ServiceWorkerRaceNetworkRequestURLLoaderClient
 
   base::TimeTicks request_start_;
   base::Time request_start_time_;
+
+  base::OnceCallback<void()> clone_completed_for_fetch_handler_callback_;
 
   base::WeakPtrFactory<ServiceWorkerRaceNetworkRequestURLLoaderClient>
       weak_factory_{this};

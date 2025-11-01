@@ -67,13 +67,16 @@ ServiceWorkerRaceNetworkRequestURLLoaderClient::
     ServiceWorkerRaceNetworkRequestURLLoaderClient(
         const GURL& resource_request_url,
         base::WeakPtr<ServiceWorkerResourceLoader> owner,
-        mojo::PendingRemote<network::mojom::URLLoaderClient> forwarding_client)
+        mojo::PendingRemote<network::mojom::URLLoaderClient> forwarding_client,
+        base::OnceCallback<void()> clone_completed_for_fetch_handler_callback)
     : resource_request_url_(resource_request_url),
       owner_(std::move(owner)),
       forwarding_client_(std::move(forwarding_client)),
       is_main_resource_(owner_->IsMainResourceLoader()),
       request_start_(base::TimeTicks::Now()),
-      request_start_time_(base::Time::Now()) {
+      request_start_time_(base::Time::Now()),
+      clone_completed_for_fetch_handler_callback_(
+          std::move(clone_completed_for_fetch_handler_callback)) {
   TRACE_EVENT_WITH_FLOW0("ServiceWorker",
                          "ServiceWorkerRaceNetworkRequestURLLoaderClient::"
                          "ServiceWorkerRaceNetworkRequestURLLoaderClient",
@@ -89,6 +92,10 @@ ServiceWorkerRaceNetworkRequestURLLoaderClient::
     TransitionState(State::kAborted);
     return;
   }
+  forwarding_client_.set_disconnect_with_reason_handler(
+      base::BindOnce(&ServiceWorkerRaceNetworkRequestURLLoaderClient::
+                         OnConnectionToFetchHandlerClosed,
+                     weak_factory_.GetWeakPtr()));
 }
 
 ServiceWorkerRaceNetworkRequestURLLoaderClient::
@@ -273,6 +280,20 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::OnComplete(
     case DataConsumePolicy::kForwardingOnly:
       forwarding_client_->OnComplete(status);
       break;
+  }
+}
+
+void ServiceWorkerRaceNetworkRequestURLLoaderClient::
+    OnConnectionToFetchHandlerClosed(uint32_t custom_reason,
+                                     const std::string& description) {
+  connection_to_fetch_handler_closed_ = true;
+  MaybeRunCloneCompletedForFetchHandlerCallback();
+}
+
+void ServiceWorkerRaceNetworkRequestURLLoaderClient::
+    MaybeRunCloneCompletedForFetchHandlerCallback() {
+  if (clone_completed_for_fetch_handler_callback_) {
+    std::move(clone_completed_for_fetch_handler_callback_).Run();
   }
 }
 
@@ -760,6 +781,7 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::
     RecordRaceNetworkRequestCloningResponseForFetchHandlerHistogram(
         is_main_resource_,
         /*is_cloning_data_finished_before_response_complete=*/false);
+    MaybeRunCloneCompletedForFetchHandlerCallback();
   }
 }
 
