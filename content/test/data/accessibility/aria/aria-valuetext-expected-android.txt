@@ -1,2 +1,2 @@
 android.webkit.WebView focusable focused
-++android.widget.ProgressBar range interesting name='three' range_min=1 range_max=96 range_current_value=3
+++android.widget.ProgressBar range interesting state_description='three' range_min=1 range_max=96 range_current_value=3

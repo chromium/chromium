@@ -14,12 +14,12 @@ android.webkit.WebView focusable focused
 ++android.widget.RadioGroup role_description='radio group'
 ++android.widget.RadioGroup role_description='radio group'
 ++android.widget.RadioGroup role_description='radio group'
-++android.view.View role_description='scroll bar' clickable range interesting name='50' item_index=50 item_count=100 range_max=100 range_current_value=50
-++android.view.View role_description='scroll bar' clickable range interesting name='50' item_index=50 item_count=100 range_max=100 range_current_value=50
-++android.view.View role_description='scroll bar' clickable range interesting name='50' item_index=50 item_count=100 range_max=100 range_current_value=50
-++android.widget.SeekBar clickable range interesting name='50' item_index=50 item_count=100 range_max=100 range_current_value=50
-++android.widget.SeekBar clickable range interesting name='50' item_index=50 item_count=100 range_max=100 range_current_value=50
-++android.widget.SeekBar clickable range interesting name='50' item_index=50 item_count=100 range_max=100 range_current_value=50
+++android.view.View role_description='scroll bar' clickable range interesting item_index=50 item_count=100 range_max=100 range_current_value=50
+++android.view.View role_description='scroll bar' clickable range interesting item_index=50 item_count=100 range_max=100 range_current_value=50
+++android.view.View role_description='scroll bar' clickable range interesting item_index=50 item_count=100 range_max=100 range_current_value=50
+++android.widget.SeekBar clickable range interesting item_index=50 item_count=100 range_max=100 range_current_value=50
+++android.widget.SeekBar clickable range interesting item_index=50 item_count=100 range_max=100 range_current_value=50
+++android.widget.SeekBar clickable range interesting item_index=50 item_count=100 range_max=100 range_current_value=50
 ++android.view.View role_description='splitter'
 ++android.view.View role_description='splitter'
 ++android.view.View role_description='splitter'

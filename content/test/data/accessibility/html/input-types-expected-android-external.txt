@@ -47,7 +47,7 @@ WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="ro
 ++++RadioButton text:"Radio:" checkable clickable focusable actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="radioButton", clickableScore="300"]
 ++++View actions:[AX_FOCUS] bundle:[chromeRole="labelText"]
 ++++++TextView text:"Range: " actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="staticText"]
-++++++SeekBar text:"50, Range:" clickable focusable RangeInfo:[current=50.0, min=0.0, max=100.0] actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS, SET_PROGRESS] bundle:[chromeRole="slider"]
+++++++SeekBar text:"Range:" clickable focusable RangeInfo:[current=50.0, min=0.0, max=100.0] actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS, SET_PROGRESS] bundle:[chromeRole="slider"]
 ++++View actions:[AX_FOCUS] bundle:[chromeRole="labelText"]
 ++++++TextView text:"Reset: " actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="staticText"]
 ++++++Button text:"Reset:" clickable focusable actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="button", clickableScore="300"]

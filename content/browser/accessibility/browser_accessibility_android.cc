@@ -953,26 +953,6 @@ void BrowserAccessibilityAndroid::AccumulateSubstringTextContentUTF16(
       !is_non_atomic_text_field) {
     text = GetNameAsString16();
   }
-  if (ui::IsRangeValueSupported(GetRole())) {
-    // For controls that support range values such as sliders, when a non-empty
-    // name is present (e.g. a label), append this to the value so both the
-    // valuetext and label are included, rather than replacing the value.
-    // If the value itself is empty on a progress indicator, then this would
-    // suggest it is indeterminate, so add that keyword.
-    if (value.empty() && GetRole() == ax::mojom::Role::kProgressIndicator) {
-      value = GetLocalizedString(IDS_AX_INDETERMINATE_VALUE);
-    }
-
-    // To prevent extra commas, only add if the text is non-empty
-    if (!text.empty() && !value.empty()) {
-      text = base::JoinString({std::move(value), std::move(text)}, u", ");
-    } else if (!value.empty()) {
-      text = std::move(value);
-    }
-  } else if (text.empty() && !is_non_atomic_text_field) {
-    // When a node does not have a name (e.g. a label), use its value instead.
-    text = std::move(value);
-  }
 
   // For almost all focusable nodes we try to get text from contents, but for
   // the root node that's redundant and often way too verbose.
@@ -1160,6 +1140,15 @@ std::u16string BrowserAccessibilityAndroid::GetStateDescription() const {
   // For nodes with non-trivial aria-current values, communicate state.
   if (HasAriaCurrent()) {
     state_descs.push_back(GetAriaCurrentStateDescription());
+  }
+
+  // For range controls, communicate the string value from aria-valuetext.
+  if (GetData().IsRangeValueSupported()) {
+    std::u16string value =
+        GetString16Attribute(ax::mojom::StringAttribute::kValue);
+    if (!value.empty()) {
+      state_descs.push_back(value);
+    }
   }
 
   // Concatenate all state descriptions and return.
