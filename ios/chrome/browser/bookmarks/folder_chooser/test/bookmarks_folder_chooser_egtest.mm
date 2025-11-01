@@ -273,8 +273,7 @@ BookmarkStorageType kindOfTestToStorageType(KindOfTest kind) {
   [self util_testCantDeleteFolderBeingEdited:KindOfTest::kLocal];
 }
 
-// TODO(crbug.com/326425036): New folder can’t be renamed in account model.
-- (void)FLAKY_testCantDeleteFolderBeingEditedAccount {
+- (void)testCantDeleteFolderBeingEditedAccount {
   [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self util_testCantDeleteFolderBeingEdited:KindOfTest::kAccount];
 }
@@ -310,8 +309,7 @@ BookmarkStorageType kindOfTestToStorageType(KindOfTest kind) {
   [self util_testNavigateAwayFromFolderBeingEdited:KindOfTest::kLocal];
 }
 
-// TODO(crbug.com/337774320) Test is flaky on ios-fieldtrial-rel.
-- (void)FLAKY_testNavigateAwayFromFolderBeingEditedAccount {
+- (void)testNavigateAwayFromFolderBeingEditedAccount {
   [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self util_testNavigateAwayFromFolderBeingEdited:KindOfTest::kAccount];
 }
@@ -560,8 +558,7 @@ BookmarkStorageType kindOfTestToStorageType(KindOfTest kind) {
   [self util_testEditFunctionalityOnSingleFolder:KindOfTest::kLocal];
 }
 
-// TODO(crbug.com/326425036): Figure out why Chrome crash with this test.
-- (void)FLAKY_testEditFunctionalityOnSingleFolderAccount {
+- (void)testEditFunctionalityOnSingleFolderAccount {
   [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self util_testEditFunctionalityOnSingleFolder:KindOfTest::kAccount];
 }
@@ -1268,9 +1265,7 @@ BookmarkStorageType kindOfTestToStorageType(KindOfTest kind) {
   [self util_testNewFolderNameCommittedOnNavigatingAway:KindOfTest::kLocal];
 }
 
-// TODO(crbug.com/342589920): Test failing on ios-fieldtrial-rel or when there
-// is no field trial config.
-- (void)FLAKY_testNewFolderNameCommittedOnNavigatingAwayAccount {
+- (void)testNewFolderNameCommittedOnNavigatingAwayAccount {
   [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self util_testNewFolderNameCommittedOnNavigatingAway:KindOfTest::kAccount];
 }
@@ -1355,8 +1350,7 @@ BookmarkStorageType kindOfTestToStorageType(KindOfTest kind) {
   [self util_testCreateNewFolderWithContextBar:KindOfTest::kLocal];
 }
 
-// TODO(crbug.com/326425036): New folder can’t be renamed in account model.
-- (void)FLAKY_testCreateNewFolderWithContextBarAccount {
+- (void)testCreateNewFolderWithContextBarAccount {
   [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self util_testCreateNewFolderWithContextBar:KindOfTest::kAccount];
 }
