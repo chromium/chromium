@@ -209,8 +209,9 @@ class TestFactory : public GlicBorderView::Factory {
 class GlicBorderViewUiTest : public test::InteractiveGlicTest {
  public:
   GlicBorderViewUiTest() {
-    // Toggling this feature is only possible via command line.
-    features_.InitFromCommandLine("UiGpuRasterization", "");
+    // Toggling UiGpuRasterization is only possible via command line.
+    features_.InitFromCommandLine("UiGpuRasterization",
+                                  "GlicForceSimplifiedBorder");
   }
   ~GlicBorderViewUiTest() override = default;
 
