@@ -46,6 +46,7 @@
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_database_factory.h"
+#include "chrome/browser/web_applications/web_app_filter.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
@@ -555,10 +556,15 @@ void WebAppProvider::DoDelayedPostStartupWork() {
     GURL::Replacements add_query;
     add_query.SetQueryStr("usp=chrome_preinstall_update");
     GURL install_url = app_to_update->install_url.ReplaceComponents(add_query);
-    scheduler().FetchManifestAndUpdate(
-        install_url, app_to_update->manifest_id,
-        base::BindOnce(&WebAppProvider::OnDefaultAppUpdateComplete,
-                       weak_ptr_factory_.GetWeakPtr(), preinstalled_app_id));
+    // The unsafe registrar is checked to prevent wasting resources loading the
+    // install_url. If the app isn't installed, do not bother.
+    if (registrar_unsafe().AppMatches(preinstalled_app_id,
+                                      WebAppFilter::InstalledInChrome())) {
+      scheduler().FetchManifestAndUpdate(
+          install_url, app_to_update->manifest_id,
+          base::BindOnce(&WebAppProvider::OnDefaultAppUpdateComplete,
+                         weak_ptr_factory_.GetWeakPtr(), preinstalled_app_id));
+    }
   }
 #if BUILDFLAG(IS_MAC)
   if (base::FeatureList::IsEnabled(kDiyAppIconsMaskedOnMacUpdate)) {

@@ -5,10 +5,13 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_COMMANDS_FETCH_MANIFEST_AND_UPDATE_COMMAND_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_COMMANDS_FETCH_MANIFEST_AND_UPDATE_COMMAND_H_
 
+#include <memory>
+
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/web_applications/commands/fetch_manifest_and_update_result.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/jobs/manifest_to_web_app_install_info_job.h"
+#include "chrome/browser/web_applications/locks/shared_web_contents_lock.h"
 #include "chrome/browser/web_applications/locks/shared_web_contents_with_app_lock.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "components/webapps/browser/install_result_code.h"
@@ -38,7 +41,7 @@ struct WebAppInstallInfo;
 //   and call the appropriate observer.
 // - This command will call the OnWebAppManifestUpdated observer method.
 class FetchManifestAndUpdateCommand
-    : public WebAppCommand<SharedWebContentsWithAppLock,
+    : public WebAppCommand<SharedWebContentsLock,
                            FetchManifestAndUpdateResult> {
  public:
   FetchManifestAndUpdateCommand(const GURL& install_url,
@@ -46,14 +49,14 @@ class FetchManifestAndUpdateCommand
                                 FetchManifestAndUpdateCallback callback);
   ~FetchManifestAndUpdateCommand() override;
 
-  void StartWithLock(
-      std::unique_ptr<SharedWebContentsWithAppLock> lock) override;
+  void StartWithLock(std::unique_ptr<SharedWebContentsLock> lock) override;
 
  private:
   void OnUrlLoaded(webapps::WebAppUrlLoaderResult result);
   void OnManifestRetrieved(
       const base::expected<blink::mojom::ManifestPtr,
                            blink::mojom::RequestManifestErrorPtr>& result);
+  void OnAppLockAcquired();
   void OnWebAppInfoCreatedFromManifest(
       std::unique_ptr<WebAppInstallInfo> install_info);
   void OnIconsFetched();
@@ -63,7 +66,8 @@ class FetchManifestAndUpdateCommand
   const GURL install_url_;
   const webapps::ManifestId expected_manifest_id_;
 
-  std::unique_ptr<SharedWebContentsWithAppLock> lock_;
+  std::unique_ptr<SharedWebContentsLock> web_contents_lock_;
+  std::unique_ptr<SharedWebContentsWithAppLock> app_lock_;
   std::unique_ptr<webapps::WebAppUrlLoader> url_loader_;
   std::unique_ptr<WebAppDataRetriever> data_retriever_;
   std::unique_ptr<WebAppInstallInfo> install_info_;

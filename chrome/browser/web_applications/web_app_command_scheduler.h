@@ -675,10 +675,14 @@ class WebAppCommandScheduler {
                          WebInstallFromUrlCommandCallback installed_callback,
                          const base::Location& location = FROM_HERE);
 
-  // If an app with the given `manifest_id` is installed, feches the
-  // install_url, validates that an installable manifest with a manifest id
-  // exists, and updates the app. This assumes it is a trusted update, so
-  // trusted icons are copied from all manifest icons.
+  // Feches the install_url, validates that an installable manifest with a
+  // manifest id exists and matches the given one. Then, locks the app lock for
+  // the app and and updates the app if it is installed. This assumes it is a
+  // trusted update, so trusted icons are copied from all manifest icons.
+  //
+  // Note: Callers may want to check if the app is installed first before
+  // calling this to not waste resources loading the install url in the
+  // background.
   void FetchManifestAndUpdate(
       const GURL& install_url,
       const webapps::ManifestId& manifest_id,

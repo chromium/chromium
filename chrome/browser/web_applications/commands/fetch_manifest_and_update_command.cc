@@ -4,14 +4,18 @@
 
 #include "chrome/browser/web_applications/commands/fetch_manifest_and_update_command.h"
 
+#include <memory>
+
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/web_applications/commands/command_result.h"
 #include "chrome/browser/web_applications/commands/fetch_manifest_and_update_result.h"
 #include "chrome/browser/web_applications/jobs/manifest_to_web_app_install_info_job.h"
+#include "chrome/browser/web_applications/locks/shared_web_contents_lock.h"
 #include "chrome/browser/web_applications/locks/shared_web_contents_with_app_lock.h"
 #include "chrome/browser/web_applications/model/web_app_comparison.h"
 #include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_filter.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -34,12 +38,9 @@ FetchManifestAndUpdateCommand::FetchManifestAndUpdateCommand(
     const GURL& install_url,
     const webapps::ManifestId& expected_manifest_id,
     FetchManifestAndUpdateCallback callback)
-    : WebAppCommand<SharedWebContentsWithAppLock, FetchManifestAndUpdateResult>(
+    : WebAppCommand<SharedWebContentsLock, FetchManifestAndUpdateResult>(
           "FetchManifestAndUpdateCommand",
-          SharedWebContentsWithAppLockDescription(
-              {GenerateAppIdFromManifestId(expected_manifest_id)}),
-          // TODO(http://crbug.com/452416687): Add metrics callback here on
-          // result.
+          SharedWebContentsLockDescription(),
           std::move(callback),
           FetchManifestAndUpdateResult::kShutdown),
       install_url_(install_url),
@@ -51,19 +52,12 @@ FetchManifestAndUpdateCommand::FetchManifestAndUpdateCommand(
 }
 
 void FetchManifestAndUpdateCommand::StartWithLock(
-    std::unique_ptr<SharedWebContentsWithAppLock> lock) {
-  lock_ = std::move(lock);
-  if (!lock_->registrar().AppMatches(
-          GenerateAppIdFromManifestId(expected_manifest_id_),
-          WebAppFilter::InstalledInChrome())) {
-    CompleteAndSelfDestruct(CommandResult::kSuccess,
-                            FetchManifestAndUpdateResult::kAppNotInstalled);
-    return;
-  }
+    std::unique_ptr<SharedWebContentsLock> lock) {
+  web_contents_lock_ = std::move(lock);
 
-  url_loader_ = lock_->web_contents_manager().CreateUrlLoader();
+  url_loader_ = web_contents_lock_->web_contents_manager().CreateUrlLoader();
   url_loader_->LoadUrl(
-      install_url_, &lock_->shared_web_contents(),
+      install_url_, &web_contents_lock_->shared_web_contents(),
       webapps::WebAppUrlLoader::UrlComparison::kSameOrigin,
       base::BindOnce(&FetchManifestAndUpdateCommand::OnUrlLoaded,
                      weak_factory_.GetWeakPtr()));
@@ -83,9 +77,10 @@ void FetchManifestAndUpdateCommand::OnUrlLoaded(
                               FetchManifestAndUpdateResult::kUrlLoadingError);
       return;
   }
-  data_retriever_ = lock_->web_contents_manager().CreateDataRetriever();
+  data_retriever_ =
+      web_contents_lock_->web_contents_manager().CreateDataRetriever();
   data_retriever_->GetPrimaryPageFirstSpecifiedManifest(
-      lock_->shared_web_contents(),
+      web_contents_lock_->shared_web_contents(),
       base::BindOnce(&FetchManifestAndUpdateCommand::OnManifestRetrieved,
                      weak_factory_.GetWeakPtr()));
 }
@@ -152,16 +147,15 @@ void FetchManifestAndUpdateCommand::OnManifestRetrieved(
           manifest, *data_retriever_,
           /*background_installation=*/false,
           webapps::WebappInstallSource::MENU_BROWSER_TAB,
-          lock_->shared_web_contents().GetWeakPtr(), [](IconUrlSizeSet&) {},
-          *GetMutableDebugValue().EnsureDict("job"),
+          web_contents_lock_->shared_web_contents().GetWeakPtr(),
+          [](IconUrlSizeSet&) {}, *GetMutableDebugValue().EnsureDict("job"),
           base::BindOnce(
               &FetchManifestAndUpdateCommand::OnWebAppInfoCreatedFromManifest,
               weak_factory_.GetWeakPtr()),
-          {
-              .bypass_icon_generation_if_no_url = true,
-              .fail_all_if_any_fail = true,
-              .defer_icon_fetching = true,
-          });
+          {.bypass_icon_generation_if_no_url = true,
+           .fail_all_if_any_fail = true,
+           .defer_icon_fetching = true,
+           .use_manifest_icons_as_trusted = true});
 }
 
 void FetchManifestAndUpdateCommand::OnWebAppInfoCreatedFromManifest(
@@ -174,7 +168,24 @@ void FetchManifestAndUpdateCommand::OnWebAppInfoCreatedFromManifest(
   }
   install_info_ = std::move(install_info);
 
-  const WebApp* app = lock_->registrar().GetAppById(
+  app_lock_ = std::make_unique<SharedWebContentsWithAppLock>();
+  command_manager()->lock_manager().UpgradeAndAcquireLock(
+      std::move(web_contents_lock_), *app_lock_,
+      {GenerateAppIdFromManifestId(expected_manifest_id_)},
+      base::BindOnce(&FetchManifestAndUpdateCommand::OnAppLockAcquired,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void FetchManifestAndUpdateCommand::OnAppLockAcquired() {
+  if (!app_lock_->registrar().AppMatches(
+          GenerateAppIdFromManifestId(expected_manifest_id_),
+          WebAppFilter::InstalledInChrome())) {
+    CompleteAndSelfDestruct(CommandResult::kSuccess,
+                            FetchManifestAndUpdateResult::kAppNotInstalled);
+    return;
+  }
+
+  const WebApp* app = app_lock_->registrar().GetAppById(
       GenerateAppIdFromManifestId(expected_manifest_id_));
   CHECK(app);
 
@@ -187,7 +198,7 @@ void FetchManifestAndUpdateCommand::OnWebAppInfoCreatedFromManifest(
   }
 
   manifest_to_install_info_job_->FetchIcons(
-      *install_info_, lock_->shared_web_contents(),
+      *install_info_, app_lock_->shared_web_contents(),
       base::BindOnce(&FetchManifestAndUpdateCommand::OnIconsFetched,
                      weak_factory_.GetWeakPtr()));
 }
@@ -207,10 +218,7 @@ void FetchManifestAndUpdateCommand::OnIconsFetched() {
       return;
   }
 
-  install_info_->trusted_icons = install_info_->manifest_icons;
-  install_info_->trusted_icon_bitmaps = install_info_->icon_bitmaps;
-
-  lock_->install_finalizer().FinalizeUpdate(
+  app_lock_->install_finalizer().FinalizeUpdate(
       *install_info_,
       base::BindOnce(&FetchManifestAndUpdateCommand::OnUpdateFinalized,
                      weak_factory_.GetWeakPtr()));
@@ -225,14 +233,14 @@ void FetchManifestAndUpdateCommand::OnUpdateFinalized(
     return;
   }
 
-  const WebApp* app = lock_->registrar().GetAppById(app_id);
+  const WebApp* app = app_lock_->registrar().GetAppById(app_id);
   CHECK(app);
   if (app->pending_update_info().has_value()) {
     {
-      ScopedRegistryUpdate update = lock_->sync_bridge().BeginUpdate();
+      ScopedRegistryUpdate update = app_lock_->sync_bridge().BeginUpdate();
       update->UpdateApp(app_id)->SetPendingUpdateInfo(std::nullopt);
     }
-    lock_->registrar().NotifyPendingUpdateInfoChanged(
+    app_lock_->registrar().NotifyPendingUpdateInfoChanged(
         app_id, /*pending_update_available=*/false,
         WebAppRegistrar::PendingUpdateInfoChangePassKey());
   }
