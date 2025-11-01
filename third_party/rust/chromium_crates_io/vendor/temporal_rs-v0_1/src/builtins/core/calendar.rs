@@ -250,6 +250,43 @@ impl<'a> TryFrom<&'a CalendarFields> for DateFields<'a> {
         Ok(this)
     }
 }
+
+/// See <https://github.com/unicode-org/icu4x/issues/7207>
+///
+/// We don't want to trigger any pathological or panicky testcases in ICU4X.
+///
+/// To aid in that, we early constrain date durations to things that have no hope of producing a datetime
+/// that is within Temporal range.
+fn early_constrain_date_duration(duration: &IcuDateDuration) -> Result<(), TemporalError> {
+    // Temporal range is -271821-04-20 to +275760-09-13
+    // This is (roughly) the maximum year duration that can exist for ISO
+    const TEMPORAL_MAX_ISO_YEAR_DURATION: u32 = 275760 + 271821;
+    // Double it. No calendar has years that are half the size of ISO years.
+    const YEAR_DURATION: u32 = 2 * TEMPORAL_MAX_ISO_YEAR_DURATION;
+    // Assume every year is a leap year, calculate a month range
+    const MONTH_DURATION: u32 = YEAR_DURATION * 13;
+    // Our longest year is 390 days
+    const DAY_DURATION: u32 = YEAR_DURATION * 390;
+    const WEEK_DURATION: u32 = DAY_DURATION / 7;
+
+    let err = Err(TemporalError::range().with_enum(ErrorMessage::IntermediateDateTimeOutOfRange));
+
+    if duration.years > YEAR_DURATION {
+        return err;
+    }
+    if duration.months > MONTH_DURATION {
+        return err;
+    }
+    if duration.weeks > WEEK_DURATION {
+        return err;
+    }
+    if duration.days > DAY_DURATION.into() {
+        return err;
+    }
+
+    Ok(())
+}
+
 // ==== Public `CalendarSlot` methods ====
 
 impl Calendar {
@@ -437,6 +474,8 @@ impl Calendar {
             weeks: u32::try_from(duration.weeks.abs()).map_err(|_| invalid)?,
             days: u64::try_from(duration.days.abs()).map_err(|_| invalid)?,
         };
+
+        early_constrain_date_duration(&duration)?;
         let mut options = DateAddOptions::default();
         options.overflow = Some(overflow.into());
         let calendar_date = self.0.from_iso(*date.to_icu4x().inner());
