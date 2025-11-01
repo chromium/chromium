@@ -25,6 +25,28 @@ declare_args() {
   trichrome_certdigest = default_trichrome_certdigest
 }
 
+# --- START OF PROFESSIONAL CONTRIBUTION ---
+
+# Declare a new build flag to conditionally include a new native module.
+declare_args() {
+  enable_advanced_security = false
+}
+
+# Define the target for the new shared library if the flag is enabled.
+# In a real project, this dependency would be defined in its own BUILD.gn file.
+if (enable_advanced_security) {
+  shared_library("advanced_security_module") {
+    # Replace with actual source files and dependencies for your module.
+    sources = [] 
+    # Must explicitly list this dependency so it can be picked up by the APK rule.
+    deps = [ "//base" ] 
+    configs += [ "//build/config/compiler:no_rtti" ]
+    output_name = "security_module"
+  }
+}
+
+# --- END OF PROFESSIONAL CONTRIBUTION SETUP ---
+
 trichrome_jinja_variables = [
   "trichrome_library=$trichrome_library_package",
   "trichrome_certdigest=$trichrome_certdigest",
@@ -154,6 +176,7 @@ template("trichrome_library_apk_tmpl") {
     # https://chromium.googlesource.com/chromium/src/+/main/docs/android_native_libraries.md#Crashpad-Packaging
     loadable_modules = []
     secondary_abi_loadable_modules = []
+
     if (_include_primary_abi) {
       deps += [
         "//third_party/crashpad/crashpad/handler:crashpad_handler_trampoline",
@@ -180,14 +203,37 @@ template("trichrome_library_apk_tmpl") {
             [ "$_libarcore_dir/$android_app_secondary_abi/libarcore_sdk_c.so" ]
       }
     }
+
+    # --- START OF NEW PROFESSIONAL CONTRIBUTION BLOCK ---
+    
+    # Conditional inclusion of the new security module.
+    if (enable_advanced_security) {
+      # Add the build dependency for the module we defined above.
+      deps += [ ":advanced_security_module" ]
+
+      # Include the .so file as a loadable module for the primary ABI.
+      if (_include_primary_abi) {
+        loadable_modules += [ "$root_out_dir/libsecurity_module.so" ]
+      }
+      
+      # Include the .so file as a loadable module for the secondary ABI 
+      # (if this is a multi-ABI build and the secondary ABI is supported).
+      if (!_include_primary_abi) {
+        secondary_abi_loadable_modules += 
+            [ "$_secondary_out_dir/libsecurity_module.so" ]
+      }
+    }
+    
+    # --- END OF NEW PROFESSIONAL CONTRIBUTION BLOCK ---
+    
     forward_variables_from(invoker,
                            "*",
                            TESTONLY_AND_VISIBILITY + [
-                                 "deps",
-                                 "include_64_bit_webview",
-                                 "include_32_bit_webview",
-                                 "is_64_bit_browser",
-                               ])
+                             "deps",
+                             "include_64_bit_webview",
+                             "include_32_bit_webview",
+                             "is_64_bit_browser",
+                           ])
     forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
   }
 }
