@@ -10,46 +10,34 @@
 #include "components/version_info/channel.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#include "chrome/test/base/scoped_channel_override.h"
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
 namespace shell_integration {
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-// A test fixture that allows for overriding the channel on macOS.
-class ShellIntegrationMacTest : public testing::Test {
- public:
-  ShellIntegrationMacTest() = default;
 
- protected:
-  class ScopedChannelOverrider {
-   public:
-    explicit ScopedChannelOverrider(version_info::Channel channel)
-        : original_channel_(chrome::GetChannel()) {
-      chrome::SetChannelForTesting(channel);
-    }
-    ~ScopedChannelOverrider() {
-      chrome::SetChannelForTesting(original_channel_);
-    }
-
-   private:
-    version_info::Channel original_channel_;
-  };
-};
-
-TEST_F(ShellIntegrationMacTest, GetDirectLaunchUrlScheme) {
+TEST(ShellIntegrationMacTest, GetDirectLaunchUrlScheme) {
   // Test each channel on Mac.
   {
-    ScopedChannelOverrider stable(version_info::Channel::STABLE);
+    chrome::ScopedChannelOverride stable(
+        chrome::ScopedChannelOverride::Channel::kStable);
     EXPECT_EQ("google-chrome", GetDirectLaunchUrlScheme());
   }
   {
-    ScopedChannelOverrider beta(version_info::Channel::BETA);
+    chrome::ScopedChannelOverride beta(
+        chrome::ScopedChannelOverride::Channel::kBeta);
     EXPECT_EQ("google-chrome-beta", GetDirectLaunchUrlScheme());
   }
   {
-    ScopedChannelOverrider dev(version_info::Channel::DEV);
+    chrome::ScopedChannelOverride dev(
+        chrome::ScopedChannelOverride::Channel::kDev);
     EXPECT_EQ("google-chrome-dev", GetDirectLaunchUrlScheme());
   }
   {
-    ScopedChannelOverrider canary(version_info::Channel::CANARY);
+    chrome::ScopedChannelOverride canary(
+        chrome::ScopedChannelOverride::Channel::kCanary);
     EXPECT_EQ("google-chrome-canary", GetDirectLaunchUrlScheme());
   }
 }
