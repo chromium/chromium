@@ -126,9 +126,9 @@ public class MediaViewerUtils {
                                     | getAllowUnsafeImplicitIntentFlag());
             builder.setActionButton(
                     shareIcon, context.getString(R.string.share), pendingShareIntent, true);
-        } else {
-            builder.setShareState(CustomTabsIntent.SHARE_STATE_OFF);
         }
+        // Disables Chrome share action as share is added as a custom action button.
+        builder.setShareState(CustomTabsIntent.SHARE_STATE_OFF);
 
         // The color of the media viewer is dependent on the file type.
         int backgroundRes;
