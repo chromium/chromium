@@ -223,6 +223,9 @@ public final class ProductionSupportedFlagList {
                 "Enables the ability to use Document Policy header to control feature"
                         + " ExpectNoLinkedResources."),
         Flag.baseFeature(
+                BlinkFeatures.HIT_TEST_BORDER_RADIUS_FOR_STACKING_CONTEXT,
+                "Hit testing should respect border-radius clips when creating a stacking context."),
+        Flag.baseFeature(
                 BlinkFeatures.WEBVIEW_ACCELERATE_SMALL_CANVASES,
                 "Accelerate all canvases in webview."),
         Flag.baseFeature(
