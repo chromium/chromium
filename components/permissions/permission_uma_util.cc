@@ -2459,11 +2459,22 @@ void PermissionUmaUtil::RecordPostPromptSessionDuration(
 
   base::TimeDelta duration =
       base::TimeTicks::Now() - request_first_display_time;
+  std::string permission_string =
+      PermissionUtil::GetPermissionString(permission);
+
+  // Record the original histogram for up to 1 hour.
   base::UmaHistogramLongTimes100(
-      base::StrCat({"Permissions.PredictionService.",
-                    PermissionUtil::GetPermissionString(permission),
+      base::StrCat({"Permissions.PredictionService.", permission_string,
                     ".PostPromptSessionDuration"}),
       duration);
+
+  // Record finer-grained histograms for the first minute.
+  if (duration <= base::Seconds(10)) {
+    base::UmaHistogramTimes(
+        base::StrCat({"Permissions.PredictionService.", permission_string,
+                      ".PostPromptSessionDuration10s"}),
+        duration);
+  }
 }
 
 }  // namespace permissions
