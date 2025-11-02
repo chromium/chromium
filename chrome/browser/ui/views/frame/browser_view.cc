@@ -4018,18 +4018,38 @@ BrowserView::GetNativeViewHostsForTopControlsSlide() {
   return results;
 }
 
+void BrowserView::ReparentTopContainerForStartOfImmersive() {
+  top_container()->SetPaintToLayer();
+  top_container()->layer()->SetFillsBoundsOpaquely(false);
+
+#if BUILDFLAG(IS_MAC)
+  if (!UsesImmersiveFullscreenTabbedMode()) {
+    top_container()->AddChildViewAt(tab_strip_region_view_.get(), 0);
+  }
+#endif  // BUILDFLAG(IS_MAC)
+
+#if BUILDFLAG(IS_CHROMEOS)
+  top_container()->SetBackground(
+      views::CreateSolidBackground(ui::kColorFrameActive));
+  top_container()->AddChildViewAt(tab_strip_region_view_.get(), 0);
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+  if (web_app_frame_toolbar_) {
+    top_container()->AddChildView(web_app_frame_toolbar_);
+  }
+  if (web_app_window_title_) {
+    top_container()->AddChildView(web_app_window_title_);
+  }
+
+  CHECK(overlay_view_tracker_);
+  overlay_view_tracker_.view()->AddChildView(top_container());
+
+  overlay_view_tracker_.view()->SetVisible(true);
+}
+
 void BrowserView::ReparentTopContainerForEndOfImmersive() {
   if (top_container()->parent() == main_container_ &&
       tab_strip_view()->parent() == this) {
-    return;
-  }
-  // TODO(crbug.com/442255944): In the case top_container() is not a child of
-  // main_container_, we expect the overlay widget and overlay view to still be
-  // present. Investigate why this may not always be the case on Mac and remove
-  // this check.
-  if (!overlay_view_tracker_) {
-    LOG(ERROR) << "ReparentTopContainerForEndOfImmersive() called after "
-                  "overlay_view_ destroyed.";
     return;
   }
 
@@ -6015,16 +6035,6 @@ Profile* BrowserView::GetProfile() {
 
 ///////////////////////////////////////////////////////////////////////////////
 // BrowserView, ImmersiveModeController::Observer implementation:
-void BrowserView::OnImmersiveRevealStarted() {
-  CHECK(overlay_view_tracker_);
-  overlay_view_tracker_.view()->SetVisible(true);
-}
-
-void BrowserView::OnImmersiveRevealEnded() {
-  CHECK(overlay_view_tracker_);
-  overlay_view_tracker_.view()->SetVisible(false);
-}
-
 void BrowserView::OnImmersiveFullscreenEntered() {
   AppMenuButton* app_menu_button =
       toolbar_button_provider()->GetAppMenuButton();
@@ -6032,30 +6042,10 @@ void BrowserView::OnImmersiveFullscreenEntered() {
     app_menu_button->CloseMenu();
   }
 
-  top_container()->SetPaintToLayer();
-  top_container()->layer()->SetFillsBoundsOpaquely(false);
+  ReparentTopContainerForStartOfImmersive();
 
-#if BUILDFLAG(IS_MAC)
-  if (!UsesImmersiveFullscreenTabbedMode()) {
-    top_container()->AddChildViewAt(tab_strip_region_view_.get(), 0);
-  }
-#endif  // BUILDFLAG(IS_MAC)
-
-#if BUILDFLAG(IS_CHROMEOS)
-  top_container()->SetBackground(
-      views::CreateSolidBackground(ui::kColorFrameActive));
-  top_container()->AddChildViewAt(tab_strip_region_view_.get(), 0);
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
-  if (web_app_frame_toolbar_) {
-    top_container()->AddChildView(web_app_frame_toolbar_);
-  }
-  if (web_app_window_title_) {
-    top_container()->AddChildView(web_app_window_title_);
-  }
-
-  CHECK(overlay_view_tracker_);
-  overlay_view_tracker_.view()->AddChildView(top_container());
+  InvalidateLayout();
+  GetWidget()->GetRootView()->DeprecatedLayoutImmediately();
 }
 
 void BrowserView::OnImmersiveFullscreenExited() {
@@ -6071,7 +6061,9 @@ void BrowserView::OnImmersiveFullscreenExited() {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   ReparentTopContainerForEndOfImmersive();
-  OnImmersiveRevealEnded();
+
+  InvalidateLayout();
+  GetWidget()->GetRootView()->DeprecatedLayoutImmediately();
 }
 
 void BrowserView::OnImmersiveModeControllerDestroyed() {
