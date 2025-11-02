@@ -195,6 +195,7 @@ _DEFAULT_COVERAGE_EXCLUSION_LIST = [
     '../../base/allocator/partition_allocator/src/partition_alloc/reservation_offset_table.cc',  #pylint: disable=line-too-long
     '../../base/allocator/partition_allocator/src/partition_alloc/reverse_bytes_unittest.cc',  #pylint: disable=line-too-long
     '../../base/allocator/partition_allocator/src/partition_alloc/scheduler_loop_quarantine.cc',  #pylint: disable=line-too-long
+    '../../base/allocator/partition_allocator/src/partition_alloc/scheduler_loop_quarantine_runtime_stats.cc',  #pylint: disable=line-too-long
     '../../base/allocator/partition_allocator/src/partition_alloc/scheduler_loop_quarantine_support.cc',  #pylint: disable=line-too-long
     '../../base/allocator/partition_allocator/src/partition_alloc/scheduler_loop_quarantine_unittest.cc',  #pylint: disable=line-too-long
     '../../base/allocator/partition_allocator/src/partition_alloc/shim/allocator_shim_android.cc',  #pylint: disable=line-too-long

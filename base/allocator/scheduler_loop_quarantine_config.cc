@@ -52,6 +52,11 @@ constexpr char kKeyEnableQuarantine[] = "enable-quarantine";
 constexpr char kKeyEnableZapping[] = "enable-zapping";
 constexpr char kKeyLeakOnDestruction[] = "leak-on-destruction";
 constexpr char kKeyBranchCapacityInBytes[] = "branch-capacity-in-bytes";
+constexpr char kKeyEnableQuarantineRuntimeStats[] =
+    "enable-quarantine-runtime-stats";
+constexpr char kKeyMaxZapAboveAvgBeforePauseUs[] =
+    "max-zap-above-avg-before-pause-us";
+constexpr char kKeyPauseDurationUs[] = "pause-duration-us";
 #endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 }  // namespace
 
@@ -144,6 +149,17 @@ GetSchedulerLoopQuarantineConfiguration(
   config.branch_capacity_in_bytes =
       static_cast<size_t>(config_entry->FindInt(kKeyBranchCapacityInBytes)
                               .value_or(config.branch_capacity_in_bytes));
+  config.enable_quarantine_runtime_stats =
+      config_entry->FindBool(kKeyEnableQuarantineRuntimeStats).value_or(false);
+  config.pause_duration_us =
+      config_entry->FindInt(kKeyPauseDurationUs).value_or(0);
+  config.max_zap_above_avg_before_pause_us =
+      config_entry->FindInt(kKeyMaxZapAboveAvgBeforePauseUs).value_or(0);
+  if (config.pause_duration_us <= 0 ||
+      config.max_zap_above_avg_before_pause_us <= 0) {
+    config.pause_duration_us = 0;
+    config.max_zap_above_avg_before_pause_us = 0;
+  }
 #endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
   return config;

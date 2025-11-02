@@ -149,6 +149,7 @@ _DEFAULT_COVERAGE_EXCLUSION_LIST = [
     "../../base/allocator/partition_allocator/src/partition_alloc/reservation_offset_table.cc",
     "../../base/allocator/partition_allocator/src/partition_alloc/reverse_bytes_unittest.cc",
     "../../base/allocator/partition_allocator/src/partition_alloc/scheduler_loop_quarantine.cc",
+    "../../base/allocator/partition_allocator/src/partition_alloc/scheduler_loop_quarantine_runtime_stats.cc",
     "../../base/allocator/partition_allocator/src/partition_alloc/scheduler_loop_quarantine_support.cc",
     "../../base/allocator/partition_allocator/src/partition_alloc/scheduler_loop_quarantine_unittest.cc",
     "../../base/allocator/partition_allocator/src/partition_alloc/shim/allocator_shim_android.cc",

@@ -70,6 +70,7 @@
 #include "partition_alloc/pointers/instance_tracer.h"
 #include "partition_alloc/pointers/raw_ptr.h"
 #include "partition_alloc/scheduler_loop_quarantine.h"
+#include "partition_alloc/scheduler_loop_quarantine_runtime_stats.h"
 #include "partition_alloc/shim/allocator_shim.h"
 #include "partition_alloc/shim/allocator_shim_default_dispatch_to_partition_alloc.h"
 #include "partition_alloc/shim/allocator_shim_dispatch_to_noop_on_free.h"
@@ -177,6 +178,156 @@ void RunThreadCachePeriodicPurge() {
       FROM_HERE, BindOnce(RunThreadCachePeriodicPurge), delay);
 }
 
+enum SchedulerLoopQuarantineObjectSizes {
+  kSmall,
+  kMedium,
+  kMediumLarge,
+  kLarge,
+  kExtraLarge,
+  kMax,
+};
+
+std::string_view GetSizeSuffix(SchedulerLoopQuarantineObjectSizes s) {
+  switch (s) {
+    case kSmall:
+      return ".0B.512B";
+    case kMedium:
+      return ".512B.32KiB";
+    case kMediumLarge:
+      return ".32KiB.256KiB";
+    case kLarge:
+      return ".256KiB.512KiB";
+    case kExtraLarge:
+      return ".512KiB.1MiB";
+    case kMax:
+      return ".Invalid";
+  }
+}
+
+SchedulerLoopQuarantineObjectSizes GetSchedulerLoopQuarantineSize(
+    size_t byte_size) {
+  constexpr size_t kKiB = 1024;
+  if (byte_size <= 512) {
+    return SchedulerLoopQuarantineObjectSizes::kSmall;
+  } else if (byte_size <= 32 * kKiB) {
+    return SchedulerLoopQuarantineObjectSizes::kMedium;
+  } else if (byte_size <= 256 * kKiB) {
+    return SchedulerLoopQuarantineObjectSizes::kMediumLarge;
+  } else if (byte_size <= 512 * kKiB) {
+    return SchedulerLoopQuarantineObjectSizes::kLarge;
+  } else if (byte_size <= 1024 * kKiB) {
+    return SchedulerLoopQuarantineObjectSizes::kExtraLarge;
+  } else {
+    return SchedulerLoopQuarantineObjectSizes::kMax;
+  }
+}
+
+enum class SchedulerLoopQuarantineMetric {
+  kTotalTime,
+  kPurgeTime,
+  kZapTime,
+  kPausedCount,
+  kCycleCount,
+};
+
+std::string_view GetMetricName(SchedulerLoopQuarantineMetric metric) {
+  switch (metric) {
+    // Total is from the start of the SchedulerLoopQuarantineBranch::Quarantine
+    // call to when the function exits.
+    case SchedulerLoopQuarantineMetric::kTotalTime:
+      return ".TotalTime";
+    // Purge is from the start of the logic related to purging objects from the
+    // quarantine to either the start of zapping (if enabled) or the function
+    // exits.
+    case SchedulerLoopQuarantineMetric::kPurgeTime:
+      return ".PurgeTime";
+      // Zap is from the start of the logic related to zapping objects to the
+      // function exiting.
+    case SchedulerLoopQuarantineMetric::kZapTime:
+      return ".ZapTime";
+    // The number of times the quarantine was paused due to zapping taking too
+    // long (since the last time stats were reported).
+    case SchedulerLoopQuarantineMetric::kPausedCount:
+      return ".PausedCount";
+    // The number of times the quarantine was cycled (since the last time stats
+    // were reported), this describes approximately how many times this bucket
+    // was cycled between stats reporting.
+    case SchedulerLoopQuarantineMetric::kCycleCount:
+      return ".CycleCount";
+  }
+}
+
+void ReportBucketStatsToUMA(
+    const ::partition_alloc::internal::SchedulerLoopQuarantineRuntimeStats::
+        BucketStats& stats,
+    SchedulerLoopQuarantineObjectSizes size,
+    SchedulerLoopQuarantineMetric metric) {
+  if (!stats.valid()) {
+    return;
+  }
+  if (stats.cycled() < 1) {
+    return;
+  }
+  const std::string_view prefix =
+      "Memory.Browser.PartitionAlloc.SchedulerLoopQuarantine.Stats";
+  const std::string_view metric_name = GetMetricName(metric);
+  const std::string_view suffix = GetSizeSuffix(size);
+  std::string full_name;
+  full_name.reserve(prefix.size() + metric_name.size() + suffix.size());
+  full_name.append(prefix).append(metric_name).append(suffix);
+  // STATIC_HISTOGRAM_POINTER_GROUP() caches an array of Histogram objects (one
+  // for each `size` value) for each macro invocation below. Since each macro
+  // invocation expects the name to only differ based on the `size` value, the
+  // switch below is needed to allocate separate arrays for each `metrics` which
+  // is part of the metric name via GetMetricName().
+#define TIME_METRIC()                                              \
+  STATIC_HISTOGRAM_POINTER_GROUP(                                  \
+      full_name, size, SchedulerLoopQuarantineObjectSizes::kMax,   \
+      AddTimeMicrosecondsGranularity(base::Nanoseconds(value)),    \
+      base::Histogram::FactoryMicrosecondsTimeGet(                 \
+          full_name, base::Microseconds(1), base::Seconds(10), 50, \
+          base::HistogramBase::kUmaTargetedHistogramFlag))
+
+#define COUNT_METRIC(value)                                                  \
+  STATIC_HISTOGRAM_POINTER_GROUP(                                            \
+      full_name, size, SchedulerLoopQuarantineObjectSizes::kMax, Add(value), \
+      base::Histogram::FactoryGet(                                           \
+          full_name, 1, 51, 50,                                              \
+          base::HistogramBase::kUmaTargetedHistogramFlag));
+
+  switch (metric) {
+    case SchedulerLoopQuarantineMetric::kTotalTime: {
+      for (const int64_t value : stats.bucket_times()) {
+        TIME_METRIC();
+      }
+      return;
+    }
+
+    case SchedulerLoopQuarantineMetric::kPurgeTime: {
+      for (const int64_t value : stats.bucket_times()) {
+        TIME_METRIC();
+      }
+      return;
+    }
+    case SchedulerLoopQuarantineMetric::kZapTime: {
+      for (const int64_t value : stats.bucket_times()) {
+        TIME_METRIC();
+      }
+      return;
+    }
+    case SchedulerLoopQuarantineMetric::kPausedCount: {
+      COUNT_METRIC(stats.paused());
+      return;
+    }
+    case SchedulerLoopQuarantineMetric::kCycleCount: {
+      COUNT_METRIC(stats.cycled());
+      return;
+    }
+  }
+#undef TIME_METRIC
+#undef COUNT_METRIC
+}
+
 }  // namespace
 
 // static
@@ -275,6 +426,36 @@ void StartThreadCachePeriodicPurge() {
 
 void StartMemoryReclaimer(scoped_refptr<SequencedTaskRunner> task_runner) {
   MemoryReclaimerSupport::Instance().Start(task_runner);
+}
+
+void StartSchedulerLoopPeriodicStatsReporting(
+    base::TimeDelta interval,
+    partition_alloc::PartitionRoot* root) {
+  auto& stats = root->GetStatsForSchedulerLoopQuarantineForCurrentThread();
+  for (uint16_t i = 0; i < stats.total_time_buckets().size(); ++i) {
+    if (!stats.total_time_buckets()[i].valid()) {
+      continue;
+    }
+    size_t byte_size = ::partition_alloc::BucketIndexLookup::GetBucketSize(i);
+
+    SchedulerLoopQuarantineObjectSizes size =
+        GetSchedulerLoopQuarantineSize(byte_size);
+    ReportBucketStatsToUMA(stats.total_time_buckets()[i], size,
+                           SchedulerLoopQuarantineMetric::kTotalTime);
+    ReportBucketStatsToUMA(stats.purge_buckets()[i], size,
+                           SchedulerLoopQuarantineMetric::kPurgeTime);
+    ReportBucketStatsToUMA(stats.zap_buckets()[i], size,
+                           SchedulerLoopQuarantineMetric::kZapTime);
+    ReportBucketStatsToUMA(stats.zap_buckets()[i], size,
+                           SchedulerLoopQuarantineMetric::kPausedCount);
+    ReportBucketStatsToUMA(stats.total_time_buckets()[i], size,
+                           SchedulerLoopQuarantineMetric::kCycleCount);
+  }
+  stats.ReportedStats();
+  SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      BindOnce(StartSchedulerLoopPeriodicStatsReporting, interval, root),
+      interval);
 }
 
 std::map<std::string, std::string> ProposeSyntheticFinchTrials() {
@@ -1335,6 +1516,24 @@ void PartitionAllocSupport::ReconfigureAfterTaskRunnerInit(
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   base::allocator::StartMemoryReclaimer(
       base::SingleThreadTaskRunner::GetCurrentDefault());
+
+  const bool is_browser_process = process_type.empty();
+  if (is_browser_process &&
+      base::FeatureList::IsEnabled(
+          base::features::kPartitionAllocSchedulerLoopQuarantine)) {
+    // If kPartitionAllocSchedulerLoopQuarantine is enabled (and since this
+    // function runs on the Browser Main Thread), we check to see if
+    // RuntimeStats are initialized previously during FeatureInit period of
+    // time. If so start periodically reporting them.
+    CHECK(allocator_shim::internal::PartitionAllocMalloc::
+              AllocatorConfigurationFinalized());
+    auto* allocator =
+        allocator_shim::internal::PartitionAllocMalloc::Allocator();
+    if (allocator->GetStatsForSchedulerLoopQuarantineForCurrentThread()
+            .IsInitialized()) {
+      StartSchedulerLoopPeriodicStatsReporting(base::Seconds(30), allocator);
+    }
+  }
 #endif
 
   partition_alloc::PartitionRoot::SetStraightenLargerSlotSpanFreeListsMode(

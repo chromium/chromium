@@ -797,6 +797,35 @@ chromium-metrics-reviews@google.com.
                tasks are run, clamped at 0."/>
 </variants>
 
+<variants name="SchedulerLoopQuarantineRuntimeMetricType">
+  <variant name="PurgeTime"
+      summary="Purge time from the start of purging inside the quarantine
+               function to either then end of the function or the start of
+               zapping."/>
+  <variant name="TotalTime"
+      summary="Total time from start of quarantine to end of quarantine
+               function."/>
+  <variant name="ZapTime"
+      summary="Zap time from the start of zapping inside the quarantine
+               function to the end of the function."/>
+</variants>
+
+<variants name="SchedulerLoopQuarantineSize">
+  <variant name="0B.512B"
+      summary="0 less than or equal to allocation size less than or equal to
+               512 bytes."/>
+  <variant name="32KiB.256KiB"
+      summary="32KiB less than allocation size less than or equal to 256KiB."/>
+  <variant name="256KiB.512KiB"
+      summary="256KiB less than allocation size less than or equal to 512KiB."/>
+  <variant name="512B.32KiB"
+      summary="512B less than allocation size less than or equal to 32KiB."/>
+  <variant name="512KiB.1MiB"
+      summary="512KiB less than allocation size less than or equal to 1MiB."/>
+  <variant name="Invalid"
+      summary="Shouldn't occur, but any allocation size greater than 1MiB."/>
+</variants>
+
 <variants name="SmapsMetric">
   <variant name="Pss" summary="Proportional set size"/>
   <variant name="PssAnon" summary="Anonymous PSS"/>
@@ -1140,6 +1169,50 @@ chromium-metrics-reviews@google.com.
     but recorded during startup after the deferred initialization blocks queue
     becomes empty.
   </summary>
+</histogram>
+
+<histogram
+    name="Memory.Browser.PartitionAlloc.SchedulerLoopQuarantine.Stats.CycleCount.{QuarantineSize}"
+    units="cycles" expires_after="2026-05-01">
+  <owner>nuskos@chromium.org</owner>
+  <owner>mikt@google.com</owner>
+  <owner>chrome-memory@google.com</owner>
+  <summary>
+    Number of times the BrowserUI scheduler loop quarantine runtime stats were
+    cycled, for quarantines of size {QuarantineSize} bytes. Recorded once every
+    30 seconds. If we were reporting stats more frequently this would be 1, if
+    there are any values above 1 it means that some data loss occurred.
+  </summary>
+  <token key="QuarantineSize" variants="SchedulerLoopQuarantineSize"/>
+</histogram>
+
+<histogram
+    name="Memory.Browser.PartitionAlloc.SchedulerLoopQuarantine.Stats.PausedCount.{QuarantineSize}"
+    units="pauses" expires_after="2026-05-01">
+  <owner>nuskos@chromium.org</owner>
+  <owner>mikt@google.com</owner>
+  <owner>chrome-memory@google.com</owner>
+  <summary>
+    Number of times the BrowserUI scheduler loop quarantine was paused, for
+    quarantines of size {QuarantineSize} bytes. Recorded once every 30 seconds.
+  </summary>
+  <token key="QuarantineSize" variants="SchedulerLoopQuarantineSize"/>
+</histogram>
+
+<histogram
+    name="Memory.Browser.PartitionAlloc.SchedulerLoopQuarantine.Stats.{MetricType}.{QuarantineSize}"
+    units="microseconds" expires_after="2026-05-01">
+  <owner>nuskos@chromium.org</owner>
+  <owner>mikt@google.com</owner>
+  <owner>chrome-memory@google.com</owner>
+  <summary>
+    {MetricType} time for the BrowserUI scheduler loop quarantine, for
+    quarantines of size {QuarantineSize} bytes. Recorded once every 30 seconds.
+    This uses AddTimeMicrosecondsGranularity() under the hood so only reported
+    from clients that have high-resolution clocks.
+  </summary>
+  <token key="MetricType" variants="SchedulerLoopQuarantineRuntimeMetricType"/>
+  <token key="QuarantineSize" variants="SchedulerLoopQuarantineSize"/>
 </histogram>
 
 <histogram name="Memory.Browser.PrivateMemoryFootprint" units="MB"
