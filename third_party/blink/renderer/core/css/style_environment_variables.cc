@@ -49,9 +49,7 @@ void SetDefaultEnvironmentVariables(StyleEnvironmentVariables* instance) {
   instance->SetVariable(UADefinedVariable::kKeyboardInsetHeight,
                         kKeyboardInsetDefault);
 
-  if (RuntimeEnabledFeatures::CSSPreferredTextScaleEnabled()) {
-    instance->SetVariable(UADefinedVariable::kPreferredTextScale, "1");
-  }
+  instance->SetVariable(UADefinedVariable::kPreferredTextScale, "1");
 }
 
 }  // namespace.

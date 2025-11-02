@@ -55,10 +55,8 @@ DocumentStyleEnvironmentVariables::DocumentStyleEnvironmentVariables(
     StyleEnvironmentVariables& parent,
     Document& document)
     : StyleEnvironmentVariables(parent), document_(&document) {
-  if (RuntimeEnabledFeatures::CSSPreferredTextScaleEnabled()) {
-    SetPreferredTextScale(
-        document_->GetSettings()->GetAccessibilityFontScaleFactor());
-  }
+  SetPreferredTextScale(
+      document_->GetSettings()->GetAccessibilityFontScaleFactor());
 }
 
 void DocumentStyleEnvironmentVariables::RecordVariableUsage(

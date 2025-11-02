@@ -1079,9 +1079,7 @@ void Page::SettingsChanged(ChangeType change_type) {
       }
       break;
     case ChangeType::kFontScaleFactor:
-      if (!RuntimeEnabledFeatures::CSSPreferredTextScaleEnabled()) {
-        break;
-      }
+
       for (Frame* frame = MainFrame(); frame;
            frame = frame->Tree().TraverseNext()) {
         LocalFrame* local_frame = DynamicTo<LocalFrame>(frame);
