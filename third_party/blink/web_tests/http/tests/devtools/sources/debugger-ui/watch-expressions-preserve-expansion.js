@@ -35,10 +35,11 @@ import * as Sources from 'devtools/panels/sources/sources.js';
   `);
 
   var watchExpressionsPane = Sources.WatchExpressionsSidebarPane.WatchExpressionsSidebarPane.instance();
-  Sources.SourcesPanel.SourcesPanel.instance().sidebarPaneStack
+  Sources.SourcesPanel.SourcesPanel.instance()
+      .sidebarPaneStack
       .showView(Sources.SourcesPanel.SourcesPanel.instance().watchSidebarPane)
       .then(() => {
-        watchExpressionsPane.doUpdate();
+        watchExpressionsPane.performUpdate();
         watchExpressionsPane.createWatchExpression('globalObject');
         watchExpressionsPane.createWatchExpression('windowAlias');
         watchExpressionsPane.createWatchExpression('array');
