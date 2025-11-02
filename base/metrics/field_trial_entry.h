@@ -8,12 +8,12 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <atomic>
 #include <map>
 #include <string>
 #include <string_view>
 #include <vector>
 
-#include "base/atomicops.h"
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
 #include "base/metrics/persistent_memory_allocator.h"
@@ -47,11 +47,8 @@ struct BASE_EXPORT FieldTrialEntry {
   }
 
   // Whether or not this field trial is activated. This is really just a
-  // boolean but using a 32 bit value for portability reasons. It should be
-  // accessed via NoBarrier_Load()/NoBarrier_Store() to prevent the compiler
-  // from doing unexpected optimizations because it thinks that only one
-  // thread is accessing the memory location.
-  subtle::Atomic32 activated;
+  // boolean but using a 32 bit value for portability reasons.
+  std::atomic<uint32_t> activated;
 
   // On e.g. x86, alignof(uint64_t) is 4.  Ensure consistent size and
   // alignment of `pickle_size` across platforms. This can be considered

@@ -631,7 +631,7 @@ std::set<std::string> FieldTrialList::GetActiveTrialsOfParentProcess() {
     std::string_view trial_name;
     std::string_view group_name;
     bool is_overridden;
-    if (subtle::NoBarrier_Load(&entry->activated) &&
+    if (entry->activated.load(std::memory_order_relaxed) &&
         entry->GetState(trial_name, group_name, is_overridden)) {
       result.emplace(trial_name);
     }
@@ -954,8 +954,9 @@ void FieldTrialList::ClearParamsFromSharedMemoryForTesting() {
     DCHECK(new_entry)
         << "Failed to allocate a new entry, likely because the allocator is "
            "full. Consider increasing kFieldTrialAllocationSize.";
-    subtle::NoBarrier_Store(&new_entry->activated,
-                            subtle::NoBarrier_Load(&prev_entry->activated));
+    new_entry->activated.store(
+        prev_entry->activated.load(std::memory_order_relaxed),
+        std::memory_order_relaxed);
     new_entry->pickle_size = pickle.size();
 
     // TODO(lawrencewu): Modify base::Pickle to be able to write over a section
@@ -1070,7 +1071,7 @@ bool FieldTrialList::CreateTrialsFromSharedMemoryMapping(
     FieldTrial* trial = CreateFieldTrial(
         trial_name, group_name, /*is_low_anonymity=*/false, is_overridden);
     trial->ref_ = mem_iter.GetAsReference(entry);
-    if (subtle::NoBarrier_Load(&entry->activated)) {
+    if (entry->activated.load(std::memory_order_relaxed)) {
       // Mark the trial as "used" and notify observers, if any.
       // This is useful to ensure that field trials created in child
       // processes are properly reported in crash reports.
@@ -1153,7 +1154,7 @@ void FieldTrialList::AddToAllocatorWhileLocked(
 
   internal::FieldTrialEntry* entry =
       allocator->GetAsObject<internal::FieldTrialEntry>(ref);
-  subtle::NoBarrier_Store(&entry->activated, trial_state.activated);
+  entry->activated.store(trial_state.activated, std::memory_order_relaxed);
   entry->pickle_size = pickle.size();
 
   // TODO(lawrencewu): Modify base::Pickle to be able to write over a section in
@@ -1185,7 +1186,7 @@ void FieldTrialList::ActivateFieldTrialEntryWhileLocked(
     // hit from the child re-synchronizing activation state.
     internal::FieldTrialEntry* entry =
         allocator->GetAsObject<internal::FieldTrialEntry>(ref);
-    subtle::NoBarrier_Store(&entry->activated, 1);
+    entry->activated.store(true, std::memory_order_relaxed);
   }
 }
 
