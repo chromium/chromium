@@ -492,9 +492,9 @@ TEST_F(URLCanonHostTest, Host) {
        L"a\x200c"
        L"b\x200d"
        L"c",
-       "a%E2%80%8Cb%E2%80%8Dc",
-       Component(0, 21),
-       CanonHostInfo::BROKEN, -1, ""},
+       "xn--abc-9m0ag",
+       Component(0, 13),
+       CanonHostInfo::NEUTRAL, -1, ""},
 
       // ZWJ between Devanagari characters was still mapped away in UTS 46
       // transitional handling. IDNA 2008 gives xn--11bo0mv54g.

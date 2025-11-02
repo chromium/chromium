@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 108 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 117 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] xn--a (using URL)
   assert_throws_js: function "() => makeURL("url", hostTest.input)" did not throw
 [FAIL] xn--a (using URL.host)
@@ -54,6 +54,24 @@ Found 108 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: expected "x" but got "xn--ls8h="
 [FAIL] xn--ls8h= (using <area>.hostname)
   assert_equals: expected "x" but got "xn--ls8h="
+[FAIL] ‍.example (using URL)
+  assert_throws_js: function "() => makeURL("url", hostTest.input)" did not throw
+[FAIL] ‍.example (using URL.host)
+  assert_equals: expected "x" but got "xn--1ug.example"
+[FAIL] ‍.example (using URL.hostname)
+  assert_equals: expected "x" but got "xn--1ug.example"
+[FAIL] ‍.example (using <a>)
+  assert_equals: expected "" but got "xn--1ug.example"
+[FAIL] ‍.example (using <a>.host)
+  assert_equals: expected "x" but got "xn--1ug.example"
+[FAIL] ‍.example (using <a>.hostname)
+  assert_equals: expected "x" but got "xn--1ug.example"
+[FAIL] ‍.example (using <area>)
+  assert_equals: expected "" but got "xn--1ug.example"
+[FAIL] ‍.example (using <area>.host)
+  assert_equals: expected "x" but got "xn--1ug.example"
+[FAIL] ‍.example (using <area>.hostname)
+  assert_equals: expected "x" but got "xn--1ug.example"
 [FAIL] xn--1ug.example (using URL)
   assert_throws_js: function "() => makeURL("url", hostTest.input)" did not throw
 [FAIL] xn--1ug.example (using URL.host)
