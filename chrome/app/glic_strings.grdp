@@ -341,4 +341,17 @@
   <if expr="not use_titlecase">
     <message name="IDS_CONTENT_CONTEXT_GLICSHAREIMAGE" desc="Share image with Gemini and recreate based on user-selected prompt" translateable="false">Create image with Gemini</message>
   </if>
+  <!-- IPH -->
+  <if expr="use_titlecase">
+    <message name="IDS_GLIC_PROMO_CONFIRM" desc="The button that a user clicks to open Gemini." translateable="false">Try Now</message>
+  </if>
+  <if expr="not use_titlecase">
+    <message name="IDS_GLIC_PROMO_CONFIRM" desc="The button that a user clicks to open Gemini." translateable="false">Try now</message>
+  </if>
+  <message name="IDS_GLIC_TRYIT_TITLE" desc="Title for a promo pointing to the Gemini icon in Chrome, that opens Gemini in Chrome if selected." translateable="false">
+    Get help with your tasks
+  </message>
+  <message name="IDS_GLIC_TRYIT_BODY" desc="Text for a promo pointing to the Gemini icon in Chrome, that opens Gemini in Chrome if selected." translateable="false">
+    Chat with Gemini in Chrome to get answers, key takeaways, and more as you browse
+  </message>
 </grit-part>

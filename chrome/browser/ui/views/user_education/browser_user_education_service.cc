@@ -137,6 +137,11 @@
 #include "chrome/browser/ui/webui/extensions_zero_state_promo/zero_state_promo_ui.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
+#if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/glic/host/glic.mojom.h"
+#include "chrome/browser/glic/public/glic_keyed_service.h"
+#endif
+
 namespace {
 
 using Platforms = user_education::Metadata::Platforms;
@@ -707,6 +712,35 @@ void MaybeRegisterChromeFeaturePromos(
           .OverrideFocusOnShow(false)
           .SetMetadata(
               133, "dfried@chromium.org",
+              "Attempts to trigger when the user is on a supported page.")));
+
+  // kIPHGlicTryItFeature:
+  registry.RegisterFeature(std::move(
+      FeaturePromoSpecification::CreateForCustomAction(
+          feature_engagement::kIPHGlicTryItFeature, kGlicButtonElementId,
+          IDS_GLIC_TRYIT_BODY, IDS_GLIC_PROMO_CONFIRM,
+          base::BindRepeating(
+              [](ContextPtr ctx,
+                 user_education::FeaturePromoHandle promo_handle) {
+                auto* browser = GetBrowser(ctx);
+                if (!browser) {
+                  return;
+                }
+                if (auto* glic_service =
+                        glic::GlicKeyedService::Get(browser->GetProfile())) {
+                  glic_service->ToggleUI(
+                      browser, /*prevent_close=*/true,
+                      glic::mojom::InvocationSource::kTopChromeButton);
+                }
+              }))
+          .SetBubbleTitleText(IDS_GLIC_TRYIT_TITLE)
+          .SetBubbleArrow(HelpBubbleArrow::kTopRight)
+          .SetCustomActionIsDefault(true)
+          // Since this can appear randomly, we do not want to steal focus from
+          // the user; see https://crbug.com/418579754
+          .OverrideFocusOnShow(false)
+          .SetMetadata(
+              142, "dewittj@chromium.org",
               "Attempts to trigger when the user is on a supported page.")));
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
