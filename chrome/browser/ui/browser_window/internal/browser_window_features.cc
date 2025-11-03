@@ -696,7 +696,7 @@ void BrowserWindowFeatures::InitPostBrowserViewConstruction(
 
       if (features::kGlicActorUiTaskIcon.Get() &&
           browser_->GetProfile()->IsRegularProfile()) {
-        if (features::kGlicActorUiNudgeRedesign.Get()) {
+        if (base::FeatureList::IsEnabled(features::kGlicActorUiNudgeRedesign)) {
           // Includes browser twice to enable injecting for testing.
           glic_actor_nudge_controller_ =
               GetUserDataFactory()

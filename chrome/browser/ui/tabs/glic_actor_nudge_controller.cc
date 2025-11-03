@@ -30,8 +30,8 @@ GlicActorNudgeController::GlicActorNudgeController(
       browser_(browser),
       tab_strip_action_container_(tab_strip_action_container),
       scoped_data_holder_(browser->GetUnownedUserDataHost(), *this) {
-  if (base::FeatureList::IsEnabled(features::kGlicActorUi)) {
-    CHECK(features::kGlicActorUiNudgeRedesign.Get());
+  if (base::FeatureList::IsEnabled(features::kGlicActorUi) &&
+      base::FeatureList::IsEnabled(features::kGlicActorUiNudgeRedesign)) {
     RegisterActorNudgeStateCallback();
     UpdateCurrentActorNudgeState();
   }

@@ -87,17 +87,20 @@ class TabStripActionContainerTest : public ChromeViewsTestBase,
       : animation_mode_reset_(gfx::AnimationTestApi::SetRichAnimationRenderMode(
             gfx::Animation::RichAnimationRenderMode::FORCE_ENABLED)) {
 #if BUILDFLAG(ENABLE_GLIC)
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {
-            {features::kGlic, {}},
-            {features::kTabstripComboButton, {}},
-            {features::kGlicActor, {}},
-            {features::kGlicActorUi,
-             {{features::kGlicActorUiTaskIconName, "true"},
-              {features::kGlicActorUiNudgeRedesign.name,
-               base::ToString(GetParam())}}},
-        },
-        {});
+    std::vector<base::test::FeatureRefAndParams> enabled_features = {
+        {features::kGlic, {}},
+        {features::kTabstripComboButton, {}},
+        {features::kGlicActor, {}},
+        {features::kGlicActorUi,
+         {{features::kGlicActorUiTaskIconName, "true"}}}};
+    std::vector<base::test::FeatureRef> disabled_features;
+    if (GetParam()) {
+      enabled_features.push_back({features::kGlicActorUiNudgeRedesign, {}});
+    } else {
+      disabled_features.push_back(features::kGlicActorUiNudgeRedesign);
+    }
+    scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,
+                                                       disabled_features);
 #endif  // BUILDFLAG(ENABLE_GLIC)
   }
   TabStripActionContainerTest(const TabStripActionContainerTest&) = delete;
@@ -331,21 +334,12 @@ class TabStripActionContainerTestWithProduct
     : public TabStripActionContainerTest {
  public:
   TabStripActionContainerTestWithProduct() {
-    scoped_feature_list_.Reset();
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {
-            {features::kGlic, {}},
-            {features::kTabstripComboButton, {}},
-            {commerce::kProductSpecifications, {}},
-            {features::kGlicActor, {}},
-            {features::kGlicActorUi,
-             {{features::kGlicActorUiTaskIconName, "true"},
-              {features::kGlicActorUiNudgeRedesign.name,
-               base::ToString(GetParam())}}},
-        },
-        {});
+    scoped_feature_list_.InitAndEnableFeature(commerce::kProductSpecifications);
   }
   ~TabStripActionContainerTestWithProduct() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(/* no prefix */,

@@ -11316,6 +11316,23 @@
             ]
         }
     ],
+    "GlicActorUiNudgeRedesign": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "GlicActorUiNudgeRedesign"
+                    ]
+                }
+            ]
+        }
+    ],
     "GlicAppendModelQualityClientId": [
         {
             "platforms": [

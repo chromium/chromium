@@ -23,16 +23,17 @@ namespace glic {
 
 GlicActorTaskIcon::GlicActorTaskIcon(TabStripController* tab_strip_controller,
                                      PressedCallback pressed_callback)
-    : TabStripNudgeButton(tab_strip_controller,
-                          std::move(pressed_callback),
-                          views::Button::PressedCallback(),
-                          std::u16string(),
-                          kGlicActorTaskIconElementId,
-                          Edge::kNone,
-                          features::kGlicActorUiNudgeRedesign.Get()
-                              ? gfx::VectorIcon::EmptyIcon()
-                              : kScreensaverAutoIcon,
-                          /*show_close_button=*/false),
+    : TabStripNudgeButton(
+          tab_strip_controller,
+          std::move(pressed_callback),
+          views::Button::PressedCallback(),
+          std::u16string(),
+          kGlicActorTaskIconElementId,
+          Edge::kNone,
+          base::FeatureList::IsEnabled(features::kGlicActorUiNudgeRedesign)
+              ? gfx::VectorIcon::EmptyIcon()
+              : kScreensaverAutoIcon,
+          /*show_close_button=*/false),
       tab_strip_controller_(tab_strip_controller) {
   SetProperty(views::kElementIdentifierKey, kGlicActorTaskIconElementId);
 
@@ -56,7 +57,7 @@ gfx::Size GlicActorTaskIcon::CalculatePreferredSize(
                          views::SizeBounds(full_width, available_size.height()))
                          .height();
   int width = std::lerp(height, full_width, GetWidthFactor());
-  if (features::kGlicActorUiNudgeRedesign.Get()) {
+  if (base::FeatureList::IsEnabled(features::kGlicActorUiNudgeRedesign)) {
     // Task Icon shouldn't show for the redesign, making the default width 0.
     width = std::lerp(0, full_width, GetWidthFactor());
   }
