@@ -44,6 +44,8 @@ import java.util.concurrent.TimeUnit;
 class PlayerMediator implements InteractionHandler {
     private static final long SEEK_BACK_NANOS = -10 * 1_000_000_000L;
     private static final long SEEK_FORWARD_NANOS = 10 * 1_000_000_000L;
+    private static final int NANOS_IN_MILLS = 1_000_000;
+
     private final PlayerCoordinator mCoordinator;
     private final Delegate mDelegate;
     private final PropertyModel mModel;
@@ -67,6 +69,8 @@ class PlayerMediator implements InteractionHandler {
     private boolean mScreenLocked;
     private long mLastStartTimeMillisLockedScreen;
     private long mTotalTimeMillisLockedScreen;
+
+    private long mPlaybackCreationStartTimeMillis;
 
     private final PlaybackListener mPlaybackListener =
             new PlaybackListener() {
@@ -254,6 +258,9 @@ class PlayerMediator implements InteractionHandler {
     }
 
     void setPlaybackState(@PlaybackListener.State int currentPlaybackState) {
+        if (currentPlaybackState == PLAYBACK_CREATION) {
+            mPlaybackCreationStartTimeMillis = mClock.currentTimeMillis();
+        }
         mModel.set(PlayerProperties.PLAYBACK_STATE, currentPlaybackState);
     }
 
@@ -308,6 +315,8 @@ class PlayerMediator implements InteractionHandler {
 
     @Override
     public void onCloseClick() {
+        reportCloseClickInfo();
+
         mCoordinator.closeClicked();
     }
 
@@ -571,5 +580,24 @@ class PlayerMediator implements InteractionHandler {
 
     void setClockForTesting(Clock clock) {
         mClock = clock;
+    }
+
+    private void reportCloseClickInfo() {
+        if (mModel.get(PlayerProperties.PLAYBACK_STATE) == ERROR) {
+            return;
+        }
+
+        PlaybackMode playbackMode =
+                PlaybackMode.fromValue(mModel.get(PlayerProperties.REQUESTED_PLAYBACK_MODE));
+
+        if (mModel.get(PlayerProperties.PLAYBACK_STATE) == PLAYBACK_CREATION) {
+            ReadAloudMetrics.recordPlaybackPositionInManualClose(0, playbackMode);
+            ReadAloudMetrics.recordTimeToMidLoadingManualClose(
+                    mClock.currentTimeMillis() - mPlaybackCreationStartTimeMillis, playbackMode);
+            return;
+        }
+
+        ReadAloudMetrics.recordPlaybackPositionInManualClose(
+                mModel.get(PlayerProperties.ELAPSED_NANOS) / NANOS_IN_MILLS, playbackMode);
     }
 }

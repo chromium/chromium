@@ -86,6 +86,7 @@ android_library("metrics_java") {
 
   deps = [
     "//base:base_java",
+    "//chrome/android/modules/readaloud/public:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]
 }

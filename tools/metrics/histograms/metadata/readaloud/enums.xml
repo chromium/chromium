@@ -26,6 +26,14 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<enum name="PlaybackLocation">
+  <int value="0" label="Not started"/>
+  <int value="1" label="0s-5s"/>
+  <int value="2" label="5s-10s"/>
+  <int value="3" label="10s-20s"/>
+  <int value="4" label="More than 20s"/>
+</enum>
+
 <enum name="PlaybackMode">
   <int value="0" label="Unspecified"/>
   <int value="1" label="Standard"/>
