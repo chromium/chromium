@@ -762,9 +762,6 @@ void QuickInsertView::SelectCategoryWithQuery(QuickInsertCategory category,
     session_metrics.SetOutcome(
         QuickInsertSessionMetrics::SessionOutcome::kRedirected);
     if (auto* widget = GetWidget()) {
-      // TODO: b/330267329 - Correctly handle opening of Editor. Probably
-      // best to wait for the IME on focus event, or save some coordinates and
-      // open Editor in the correct location in some other way.
       widget->CloseWithReason(views::Widget::ClosedReason::kLostFocus);
     }
     CHECK(query.empty());
