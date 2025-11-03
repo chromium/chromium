@@ -11,4 +11,5 @@ include_rules = [
   "+ios/chrome/browser/url_loading/model/url_loading_params.h",
   "+ios/web/util/content_type_util.h",
   "+ios/chrome/browser/optimization_guide/mojom/zero_state_suggestions_service.mojom.h",
+  "+ios/chrome/browser/web/model/image_fetch/image_fetch_tab_helper.h",
 ]

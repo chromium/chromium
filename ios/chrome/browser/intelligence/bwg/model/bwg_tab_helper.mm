@@ -4,6 +4,9 @@
 
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_tab_helper.h"
 
+#import "base/functional/bind.h"
+#import "base/ios/block_types.h"
+#import "base/memory/weak_ptr.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
@@ -35,7 +38,10 @@
 #import "ios/chrome/browser/shared/public/snackbar/snackbar_message_action.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
+#import "ios/chrome/browser/web/model/image_fetch/image_fetch_tab_helper.h"
 #import "ios/public/provider/chrome/browser/bwg/bwg_api.h"
+#import "ios/web/public/js_messaging/web_frame.h"
+#import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/web_state.h"
 #import "mojo/public/cpp/bindings/remote.h"
@@ -280,7 +286,7 @@ void BwgTabHelper::SetBwgCommandsHandler(id<BWGCommands> handler) {
 }
 
 void BwgTabHelper::SetSnackbarCommandsHandler(id<SnackbarCommands> handler) {
-  CHECK(IsAskGeminiSnackbarEnabled());
+  CHECK(IsAskGeminiSnackbarEnabled() || IsWebPageReportedImagesSheetEnabled());
   snackbar_commands_handler_ = handler;
 }
 
@@ -372,6 +378,10 @@ void BwgTabHelper::PageLoaded(
   if (IsGeminiNavigationPromoEnabled() && !should_wait_for_new_user &&
       !floaty_shown && !bwg_promo_shown) {
     [bwg_commands_handler_ showBWGPromoIfPageIsEligible];
+  }
+
+  if (IsWebPageReportedImagesSheetEnabled()) {
+    PrepareWebPageReportedImagesSnackbar();
   }
 }
 
@@ -551,4 +561,139 @@ void BwgTabHelper::ParseSuggestionsResponse(
 
   std::move(callback).Run(
       ZeroStateSuggestionsAsNSArray(zero_state_suggestions_.value()));
+}
+
+// TODO(crbug.com/456782848): Cleanup when no longer needed/wanted.
+#pragma mark - Experimental. Do not use in production code.
+
+// TODO(crbug.com/456782848): Cleanup when no longer needed/wanted.
+void BwgTabHelper::PrepareWebPageReportedImagesSnackbar() {
+  if (!IsWebPageReportedImagesSheetEnabled() || !web_state_) {
+    return;
+  }
+
+  web::WebFrame* main_frame =
+      web_state_->GetPageWorldWebFramesManager()->GetMainWebFrame();
+
+  // Extract the OG image.
+  main_frame->ExecuteJavaScript(
+      u"(() => {"
+      u"return document.querySelector('meta[property=\"og:image\"]')?.content;"
+      u"})()",
+      base::BindOnce(&BwgTabHelper::OnImageExtractedFromWebState,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+// TODO(crbug.com/456782848): Cleanup when no longer needed/wanted.
+void BwgTabHelper::OnImageExtractedFromWebState(const base::Value* value,
+                                                NSError* error) {
+  if (!IsWebPageReportedImagesSheetEnabled() || !web_state_) {
+    return;
+  }
+
+  if (error) {
+    DLOG(WARNING) << "Failed to fetch og:image."
+                  << base::SysNSStringToUTF8([error localizedDescription]);
+    return;
+  }
+
+  // Skip to the last step if no og:image was found.
+  if (!value || !value->is_string()) {
+    OnImageTranscoded(nil, nil);
+    return;
+  }
+
+  // Fetch the image bytes.
+  ImageFetchTabHelper* image_fetcher =
+      ImageFetchTabHelper::FromWebState(web_state_.get());
+  const GURL& lastCommittedURL = web_state_->GetLastCommittedURL();
+  web::Referrer referrer(lastCommittedURL, web::ReferrerPolicyDefault);
+
+  image_fetcher->GetImageData(
+      GURL(value->GetString()), referrer,
+      base::CallbackToBlock(base::BindOnce(&BwgTabHelper::OnImageFetched,
+                                           weak_ptr_factory_.GetWeakPtr())));
+}
+
+// TODO(crbug.com/456782848): Cleanup when no longer needed/wanted.
+void BwgTabHelper::OnImageFetched(NSData* data) {
+  if (!IsWebPageReportedImagesSheetEnabled() || !web_state_ || !data) {
+    return;
+  }
+
+  image_transcoder_ = std::make_unique<web::JavaScriptImageTranscoder>();
+  image_transcoder_->TranscodeImage(
+      data, @"image/png", nil, nil, nil,
+      base::BindOnce(&BwgTabHelper::OnImageTranscoded,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+// TODO(crbug.com/456782848): Cleanup when no longer needed/wanted.
+void BwgTabHelper::OnImageTranscoded(NSData* png_data, NSError* error) {
+  image_transcoder_ = nullptr;
+  if (!IsWebPageReportedImagesSheetEnabled() || !web_state_) {
+    return;
+  }
+
+  if (error) {
+    DLOG(WARNING) << "Failed to transcode og:image."
+                  << base::SysNSStringToUTF8([error localizedDescription]);
+    return;
+  }
+
+  UIWindow* web_state_window = web_state_->GetView().window;
+  UIViewController* parentVC = web_state_window.rootViewController;
+  ProceduralBlock present_sheet = ^{
+    if (!parentVC) {
+      return;
+    }
+
+    // Create the presentation sheet.
+    UIViewController* sheet = [[UIViewController alloc] init];
+    sheet.view.backgroundColor = [UIColor blackColor];
+
+    // Prepare the image if it exists.
+    UIImage* image = nil;
+    if (png_data) {
+      image = [UIImage imageWithData:png_data];
+      UIImageView* imageView = [[UIImageView alloc] initWithImage:image];
+      imageView.contentMode = UIViewContentModeScaleAspectFit;
+      imageView.frame = sheet.view.bounds;
+      imageView.autoresizingMask =
+          UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+      [sheet.view addSubview:imageView];
+    }
+
+    // Prepare the label and its constraints.
+    NSString* labelText =
+        image ? [NSString stringWithFormat:@"og:image %.0fw x %.0fh",
+                                           image.size.width, image.size.height]
+              : @"no og:image reported";
+    UILabel* label = [[UILabel alloc] init];
+    label.text = labelText;
+    label.font = [UIFont boldSystemFontOfSize:16];
+    label.textColor = [UIColor whiteColor];
+    label.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0.6];
+    label.translatesAutoresizingMaskIntoConstraints = NO;
+    [sheet.view addSubview:label];
+    [NSLayoutConstraint activateConstraints:@[
+      [label.centerXAnchor constraintEqualToAnchor:sheet.view.centerXAnchor],
+      [label.topAnchor
+          constraintEqualToAnchor:sheet.view.safeAreaLayoutGuide.topAnchor],
+    ]];
+
+    [parentVC presentViewController:sheet animated:YES completion:nil];
+  };
+
+  // Show a snackbar which shows a sheet as action.
+  SnackbarMessage* message = [[SnackbarMessage alloc]
+      initWithTitle:png_data ? @"og:image detected" : @"No og:image detected"];
+  if (png_data) {
+    SnackbarMessageAction* action = [[SnackbarMessageAction alloc] init];
+    action.handler = present_sheet;
+    action.title = @"View image";
+    message.action = action;
+  }
+
+  [snackbar_commands_handler_ showSnackbarMessage:message];
 }

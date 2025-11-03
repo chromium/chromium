@@ -284,7 +284,7 @@
 
     // TODO(crbug.com/448157489): Remove this or refactor to
     // `HandlerForProtocol`.
-    if (IsAskGeminiSnackbarEnabled()) {
+    if (IsAskGeminiSnackbarEnabled() || IsWebPageReportedImagesSheetEnabled()) {
       BWGTabHelper->SetSnackbarCommandsHandler(
           static_cast<id<SnackbarCommands>>(_commandDispatcher));
     }

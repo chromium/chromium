@@ -13,12 +13,17 @@
 #import "components/optimization_guide/core/hints/optimization_metadata.h"
 #import "components/optimization_guide/proto/contextual_cueing_metadata.pb.h"
 #import "ios/chrome/browser/optimization_guide/mojom/zero_state_suggestions_service.mojom.h"
+#import "ios/web/public/js_image_transcoder/java_script_image_transcoder.h"
 #import "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
 
 @protocol BWGCommands;
 @protocol LocationBarBadgeCommands;
 @protocol SnackbarCommands;
+
+namespace base {
+class Value;
+}  // namespace base
 
 // Tab helper controlling the BWG feature and its current state for a given tab.
 class BwgTabHelper : public web::WebStateObserver,
@@ -197,6 +202,22 @@ class BwgTabHelper : public web::WebStateObserver,
 
   // Whether to prevent contextual panel entry point.
   bool prevent_contextual_panel_entry_point_ = false;
+
+  // TODO(crbug.com/456782848): Cleanup when no longer needed/wanted.
+  // Experimental. Injects JS to extract the URL of an `og:image`, fetches its
+  // bytes, transcodes it to PNG safely and finally presents a snackbar with a
+  // button that presents a sheet on the current WebState, along with its
+  // resolution. Most of this work is async, so this is implemented as a chain
+  // of callbacks.
+  void PrepareWebPageReportedImagesSnackbar();
+  void OnImageExtractedFromWebState(const base::Value* value, NSError* error);
+  void OnImageFetched(NSData* data);
+  void OnImageTranscoded(NSData* png_data, NSError* error);
+
+  // TODO(crbug.com/456782848): Cleanup when no longer needed/wanted.
+  // Experimental. The image transcoder web JS feature to convert images to PNG
+  // safely.
+  std::unique_ptr<web::JavaScriptImageTranscoder> image_transcoder_;
 
   // The zero-state suggestions service.
   std::unique_ptr<ZeroStateSuggestionsService> zero_state_suggestions_service_;
