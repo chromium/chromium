@@ -365,7 +365,7 @@ void WebContentsDelegateAndroid::EnterFullscreenModeForTab(
     return;
   }
   Java_WebContentsDelegateAndroid_enterFullscreenModeForTab(
-      env, obj, reinterpret_cast<jlong>(requesting_frame),
+      env, obj, requesting_frame->GetJavaRenderFrameHost(),
       options.prefers_navigation_bar, options.prefers_status_bar,
       options.display_id);
 }
@@ -379,7 +379,7 @@ void WebContentsDelegateAndroid::FullscreenStateChangedForTab(
     return;
   }
   Java_WebContentsDelegateAndroid_fullscreenStateChangedForTab(
-      env, obj, reinterpret_cast<jlong>(requesting_frame),
+      env, obj, requesting_frame->GetJavaRenderFrameHost(),
       options.prefers_navigation_bar, options.prefers_status_bar,
       options.display_id);
 }

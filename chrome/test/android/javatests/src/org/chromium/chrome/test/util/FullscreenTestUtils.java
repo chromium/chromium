@@ -151,7 +151,10 @@ public class FullscreenTestUtils {
                 () -> {
                     if (state) {
                         delegate.enterFullscreenModeForTab(
-                                0, prefersNavigationBar, prefersStatusBar, displayId);
+                                null,
+                                prefersNavigationBar,
+                                prefersStatusBar,
+                                displayId);
                     } else {
                         delegate.exitFullscreenModeForTab();
                     }

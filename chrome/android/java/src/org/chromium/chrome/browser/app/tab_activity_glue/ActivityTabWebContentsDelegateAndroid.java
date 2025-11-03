@@ -63,6 +63,7 @@ import org.chromium.chrome.browser.util.AndroidTaskUtils;
 import org.chromium.chrome.browser.util.WindowFeatures;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuUtils;
 import org.chromium.components.embedder_support.delegate.WebContentsDelegateAndroid;
+import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ResourceRequestBody;
 import org.chromium.ui.base.WindowAndroid;
@@ -596,7 +597,7 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
 
     @Override
     public void enterFullscreenModeForTab(
-            long requestingFrame,
+            RenderFrameHost renderFrameHost,
             boolean prefersNavigationBar,
             boolean prefersStatusBar,
             long displayId) {
@@ -607,7 +608,7 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.ENABLE_EXCLUSIVE_ACCESS_MANAGER)) {
             if (mExclusiveAccessManager != null) {
                 mExclusiveAccessManager.enterFullscreenModeForTab(
-                        requestingFrame,
+                        renderFrameHost,
                         new FullscreenOptions(prefersNavigationBar, prefersStatusBar, displayId));
             }
         } else {
@@ -621,14 +622,14 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
 
     @Override
     public void fullscreenStateChangedForTab(
-            long requestingFrame,
+            RenderFrameHost renderFrameHost,
             boolean prefersNavigationBar,
             boolean prefersStatusBar,
             long displayId) {
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.ENABLE_EXCLUSIVE_ACCESS_MANAGER)) {
             if (mExclusiveAccessManager != null) {
                 mExclusiveAccessManager.enterFullscreenModeForTab(
-                        requestingFrame,
+                        renderFrameHost,
                         new FullscreenOptions(prefersNavigationBar, prefersStatusBar, displayId));
             }
         } else {

@@ -23,6 +23,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
+import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
 
 /**
@@ -120,14 +121,15 @@ public class ExclusiveAccessManager
     /**
      * EAM frontend for WebContentsDelegate to enter fullscreen
      *
-     * @param requestingFrame the native pointer to the frame object
+     * @param renderFrameHost the render frame host requesting fullscreen
      * @param options should the bars be hidden
      */
-    public void enterFullscreenModeForTab(long requestingFrame, FullscreenOptions options) {
+    public void enterFullscreenModeForTab(
+            RenderFrameHost renderFrameHost, FullscreenOptions options) {
         ExclusiveAccessManagerJni.get()
                 .enterFullscreenModeForTab(
                         mExclusiveAccessManagerAndroidNativePointer,
-                        requestingFrame,
+                        renderFrameHost,
                         options.showNavigationBar,
                         options.showStatusBar,
                         options.displayId);
@@ -271,7 +273,7 @@ public class ExclusiveAccessManager
 
         void enterFullscreenModeForTab(
                 long nativeExclusiveAccessManagerAndroid,
-                long requestingFrame,
+                RenderFrameHost renderFrameHost,
                 boolean showNavigationBar,
                 boolean showStatusBar,
                 long displayId);

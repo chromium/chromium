@@ -17,6 +17,7 @@ import org.chromium.base.JniOnceCallback;
 import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.navigation_controller.UserAgentOverrideOption;
 import org.chromium.content_public.common.ResourceRequestBody;
@@ -118,14 +119,14 @@ public class WebContentsDelegateAndroid {
 
     @CalledByNative
     public void enterFullscreenModeForTab(
-            long requestingFrame,
+            RenderFrameHost renderFrameHost,
             boolean prefersNavigationBar,
             boolean prefersStatusBar,
             long displayId) {}
 
     @CalledByNative
     public void fullscreenStateChangedForTab(
-            long requestingFrame,
+            RenderFrameHost renderFrameHost,
             boolean prefersNavigationBar,
             boolean prefersStatusBar,
             long displayId) {}

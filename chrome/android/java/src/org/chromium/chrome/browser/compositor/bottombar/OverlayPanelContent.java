@@ -37,6 +37,7 @@ import org.chromium.content_public.browser.LoadCommittedDetails;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.RenderCoordinates;
+import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.Visibility;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
@@ -282,7 +283,7 @@ public class OverlayPanelContent {
 
                     @Override
                     public void enterFullscreenModeForTab(
-                            long requestingFrame,
+                            RenderFrameHost renderFrameHost,
                             boolean prefersNavigationBar,
                             boolean prefersStatusBar,
                             long displayId) {

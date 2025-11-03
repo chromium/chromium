@@ -32,15 +32,17 @@ ExclusiveAccessManagerAndroid::~ExclusiveAccessManagerAndroid() = default;
 
 void ExclusiveAccessManagerAndroid::EnterFullscreenModeForTab(
     JNIEnv* env,
-    jlong requesting_frame,
+    const jni_zero::JavaRef<jobject>& jrender_frame_host_android,
     bool prefersNavigationBar,
     bool prefersStatusBar,
     jlong displayId) {
   FullscreenTabParams fullscreen_tab_params{displayId, prefersNavigationBar,
                                             prefersStatusBar};
+  content::RenderFrameHost* rfh =
+      content::RenderFrameHost::FromJavaRenderFrameHost(
+          jrender_frame_host_android);
   eam_.fullscreen_controller()->EnterFullscreenModeForTab(
-      reinterpret_cast<content::RenderFrameHost*>(requesting_frame),
-      fullscreen_tab_params);
+      rfh, fullscreen_tab_params);
 }
 
 void ExclusiveAccessManagerAndroid::ExitFullscreenModeForTab(
