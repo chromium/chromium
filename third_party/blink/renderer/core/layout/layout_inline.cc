@@ -424,9 +424,9 @@ LayoutBox* LayoutInline::CreateAnonymousBoxToSplit(
   return CreateAnonymousContainerForBlockChildren();
 }
 
-void LayoutInline::MarkMayHaveAnchorQuery() {
+void LayoutInline::MarkMayContainAnchor() {
   NOT_DESTROYED();
-  LayoutBoxModelObject::MarkMayHaveAnchorQuery();
+  LayoutBoxModelObject::MarkMayContainAnchor();
   // If this is an anchor, it cannot be a culled inline.
   UpdateShouldCreateBoxFragment();
 }

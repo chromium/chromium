@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/layout/anchor_position_scroll_data.h"
 #include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
+#include "third_party/blink/renderer/core/layout/physical_fragment.h"
 #include "third_party/blink/renderer/core/layout/transform_utils.h"
 #include "third_party/blink/renderer/core/style/anchor_specifier_value.h"
 #include "third_party/blink/renderer/core/style/position_area.h"
@@ -238,7 +239,7 @@ void PhysicalAnchorReference::InsertInReverseTreeOrderInto(
   }
 }
 
-const PhysicalAnchorReference* PhysicalAnchorQuery::AnchorReference(
+const PhysicalAnchorReference* AnchorMap::AnchorReference(
     const LayoutBox& query_box,
     const LayoutObject* query_box_actual_containing_block,
     const AnchorKey& key) const {
@@ -272,9 +273,8 @@ const PhysicalAnchorReference* PhysicalAnchorQuery::AnchorReference(
   return nullptr;
 }
 
-const LayoutObject* PhysicalAnchorQuery::AnchorLayoutObject(
-    const LayoutBox& query_box,
-    const AnchorKey& key) const {
+const LayoutObject* AnchorMap::AnchorLayoutObject(const LayoutBox& query_box,
+                                                  const AnchorKey& key) const {
   if (const PhysicalAnchorReference* reference = AnchorReference(
           query_box, /*query_box_actual_containing_block=*/nullptr, key)) {
     return reference->GetLayoutObject();
@@ -282,12 +282,12 @@ const LayoutObject* PhysicalAnchorQuery::AnchorLayoutObject(
   return nullptr;
 }
 
-void PhysicalAnchorQuery::Set(const AnchorKey& key,
-                              const LayoutObject& layout_object,
-                              const TransformState& transform_state,
-                              const PhysicalRect& rect_without_transforms,
-                              SetOptions options,
-                              Element* element_for_display_lock) {
+void AnchorMap::Set(const AnchorKey& key,
+                    const LayoutObject& layout_object,
+                    const TransformState& transform_state,
+                    const PhysicalRect& rect_without_transforms,
+                    SetOptions options,
+                    Element* element_for_display_lock) {
   GCedHeapHashSet<Member<Element>>* display_locks = nullptr;
   if (element_for_display_lock) {
     display_locks = MakeGarbageCollected<GCedHeapHashSet<Member<Element>>>();
@@ -299,8 +299,7 @@ void PhysicalAnchorQuery::Set(const AnchorKey& key,
                display_locks));
 }
 
-void PhysicalAnchorQuery::Set(const AnchorKey& key,
-                              PhysicalAnchorReference* reference) {
+void AnchorMap::Set(const AnchorKey& key, PhysicalAnchorReference* reference) {
   DCHECK(reference);
   DCHECK(!reference->next);
   const auto result = insert(key, reference);
@@ -333,15 +332,16 @@ void PhysicalAnchorQuery::Set(const AnchorKey& key,
   reference->InsertInReverseTreeOrderInto(existing_head_ptr);
 }
 
-void PhysicalAnchorQuery::SetFromChild(
-    const PhysicalAnchorQuery& physical_query,
-    const PhysicalFragment& child_fragment,
-    PhysicalOffset additional_offset,
-    const LayoutObject& container_object,
-    PhysicalSize container_size,
-    SetOptions options,
-    Element* element_for_display_lock) {
-  for (auto entry : physical_query) {
+void AnchorMap::SetFromChild(const PhysicalFragment& child_fragment,
+                             PhysicalOffset additional_offset,
+                             const LayoutObject& container_object,
+                             PhysicalSize container_size,
+                             SetOptions options,
+                             Element* element_for_display_lock) {
+  const AnchorMap* child_anchor_map = child_fragment.GetAnchorMap();
+  DCHECK(child_anchor_map);
+
+  for (auto entry : *child_anchor_map) {
     // For each key, only the last reference in tree order is reachable
     // under normal circumstances. However, the presence of anchor-scope
     // can make it necessary to skip past any number of references to reach
@@ -378,7 +378,7 @@ void PhysicalAnchorQuery::SetFromChild(
 }
 
 std::optional<LayoutUnit> AnchorEvaluatorImpl::Evaluate(
-    const class AnchorQuery& anchor_query,
+    const AnchorQuery& anchor_query,
     const ScopedCSSName* position_anchor,
     const std::optional<PositionAreaOffsets>& position_area_offsets) {
   switch (anchor_query.Type()) {
@@ -399,22 +399,22 @@ const PhysicalAnchorReference* AnchorEvaluatorImpl::ResolveAnchorReference(
   if (!anchor_specifier.IsNamed() && !position_anchor && !implicit_anchor_) {
     return nullptr;
   }
-  if (!anchor_query_) {
+  if (!anchor_map_) {
     return nullptr;
   }
   if (anchor_specifier.IsNamed()) {
-    return anchor_query_->AnchorReference(
+    return anchor_map_->AnchorReference(
         *query_box_, query_box_actual_containing_block_,
         ToAnchorScopedName(anchor_specifier.GetName(), *query_box_));
   }
   if (anchor_specifier.IsDefault() && position_anchor) {
-    return anchor_query_->AnchorReference(
+    return anchor_map_->AnchorReference(
         *query_box_, query_box_actual_containing_block_,
         ToAnchorScopedName(*position_anchor, *query_box_));
   }
-  return anchor_query_->AnchorReference(
-      *query_box_, query_box_actual_containing_block_,
-      To<Element>(implicit_anchor_->GetNode()));
+  return anchor_map_->AnchorReference(*query_box_,
+                                      query_box_actual_containing_block_,
+                                      To<Element>(implicit_anchor_->GetNode()));
 }
 
 const LayoutObject* AnchorEvaluatorImpl::DefaultAnchor(
@@ -708,9 +708,9 @@ AnchorEvaluatorImpl::ComputePositionAreaOffsetsForLayout(
       return LayoutUnit();
     }
     behaves_as_auto.top = (area == PositionAreaRegion::kTop);
-    const blink::AnchorQuery query = (area == PositionAreaRegion::kBottom)
-                                         ? PositionArea::AnchorBottom()
-                                         : PositionArea::AnchorTop();
+    const AnchorQuery query = (area == PositionAreaRegion::kBottom)
+                                  ? PositionArea::AnchorBottom()
+                                  : PositionArea::AnchorTop();
     AnchorScope anchor_scope(AnchorScope::Mode::kTop, this);
     if (const std::optional<LayoutUnit> value =
             Evaluate(query, position_anchor, std::nullopt)) {
@@ -727,9 +727,9 @@ AnchorEvaluatorImpl::ComputePositionAreaOffsetsForLayout(
       return LayoutUnit();
     }
     behaves_as_auto.bottom = (area == PositionAreaRegion::kBottom);
-    const blink::AnchorQuery query = (area == PositionAreaRegion::kTop)
-                                         ? PositionArea::AnchorTop()
-                                         : PositionArea::AnchorBottom();
+    const AnchorQuery query = (area == PositionAreaRegion::kTop)
+                                  ? PositionArea::AnchorTop()
+                                  : PositionArea::AnchorBottom();
     AnchorScope anchor_scope(AnchorScope::Mode::kBottom, this);
     if (const std::optional<LayoutUnit> value =
             Evaluate(query, position_anchor, std::nullopt)) {
@@ -746,9 +746,9 @@ AnchorEvaluatorImpl::ComputePositionAreaOffsetsForLayout(
       return LayoutUnit();
     }
     behaves_as_auto.left = (area == PositionAreaRegion::kLeft);
-    const blink::AnchorQuery query = (area == PositionAreaRegion::kRight)
-                                         ? PositionArea::AnchorRight()
-                                         : PositionArea::AnchorLeft();
+    const AnchorQuery query = (area == PositionAreaRegion::kRight)
+                                  ? PositionArea::AnchorRight()
+                                  : PositionArea::AnchorLeft();
     AnchorScope anchor_scope(AnchorScope::Mode::kLeft, this);
     if (const std::optional<LayoutUnit> value =
             Evaluate(query, position_anchor, std::nullopt)) {
@@ -765,9 +765,9 @@ AnchorEvaluatorImpl::ComputePositionAreaOffsetsForLayout(
       return LayoutUnit();
     }
     behaves_as_auto.right = (area == PositionAreaRegion::kRight);
-    const blink::AnchorQuery query = (area == PositionAreaRegion::kLeft)
-                                         ? PositionArea::AnchorLeft()
-                                         : PositionArea::AnchorRight();
+    const AnchorQuery query = (area == PositionAreaRegion::kLeft)
+                                  ? PositionArea::AnchorLeft()
+                                  : PositionArea::AnchorRight();
     AnchorScope anchor_scope(AnchorScope::Mode::kRight, this);
     if (const std::optional<LayoutUnit> value =
             Evaluate(query, position_anchor, std::nullopt)) {

@@ -23,6 +23,7 @@
 
 namespace blink {
 
+class AnchorQuery;
 class AnchorSpecifierValue;
 class Element;
 class LayoutBox;
@@ -75,12 +76,13 @@ struct CORE_EXPORT PhysicalAnchorReference
 
 using AnchorKey = std::variant<const AnchorScopedName*, const Element*>;
 
+// Map of descendant anchor references at a specific container.
+//
 // This class is conceptually a concatenation of two hash maps with different
 // key types but the same value type. To save memory, we don't implement it as
 // one hash map with a unified key type; Otherwise, the size of each key will be
 // increased by at least one pointer, which is undesired.
-class CORE_EXPORT PhysicalAnchorQuery
-    : public GarbageCollected<PhysicalAnchorQuery> {
+class CORE_EXPORT AnchorMap : public GarbageCollected<AnchorMap> {
   using NamedAnchorMap = HeapHashMap<Member<const AnchorScopedName>,
                                      Member<PhysicalAnchorReference>>;
   using ImplicitAnchorMap =
@@ -117,10 +119,10 @@ class CORE_EXPORT PhysicalAnchorQuery
     STACK_ALLOCATED();
 
    public:
-    Iterator(const PhysicalAnchorQuery* anchor_query,
+    Iterator(const AnchorMap* anchor_map,
              typename NamedAnchorMap::const_iterator named_map_iterator,
              typename ImplicitAnchorMap::const_iterator implicit_map_iterator)
-        : anchor_query_(anchor_query),
+        : anchor_map_(anchor_map),
           named_map_iterator_(named_map_iterator),
           implicit_map_iterator_(implicit_map_iterator) {}
 
@@ -130,8 +132,9 @@ class CORE_EXPORT PhysicalAnchorQuery
       STACK_ALLOCATED();
     };
     Entry operator*() const {
-      if (named_map_iterator_ != anchor_query_->named_anchors_.end())
+      if (named_map_iterator_ != anchor_map_->named_anchors_.end()) {
         return Entry{named_map_iterator_->key, named_map_iterator_->value};
+      }
       return Entry{implicit_map_iterator_->key, implicit_map_iterator_->value};
     }
 
@@ -141,15 +144,16 @@ class CORE_EXPORT PhysicalAnchorQuery
     }
 
     Iterator& operator++() {
-      if (named_map_iterator_ != anchor_query_->named_anchors_.end())
+      if (named_map_iterator_ != anchor_map_->named_anchors_.end()) {
         ++named_map_iterator_;
-      else
+      } else {
         ++implicit_map_iterator_;
+      }
       return *this;
     }
 
    private:
-    const PhysicalAnchorQuery* anchor_query_;
+    const AnchorMap* anchor_map_;
     typename NamedAnchorMap::const_iterator named_map_iterator_;
     typename ImplicitAnchorMap::const_iterator implicit_map_iterator_;
   };
@@ -193,8 +197,7 @@ class CORE_EXPORT PhysicalAnchorQuery
   void Set(const AnchorKey&, PhysicalAnchorReference* reference);
   // If the element owning this object has a display lock, the element should be
   // passed as |element_for_display_lock|.
-  void SetFromChild(const PhysicalAnchorQuery& physical_query,
-                    const PhysicalFragment& child_fragment,
+  void SetFromChild(const PhysicalFragment& child_fragment,
                     PhysicalOffset additional_offset,
                     const LayoutObject& container_object,
                     PhysicalSize container_size,
@@ -231,14 +234,14 @@ class CORE_EXPORT AnchorEvaluatorImpl : public AnchorEvaluator {
   AnchorEvaluatorImpl() = default;
 
   AnchorEvaluatorImpl(const LayoutBox& query_box,
-                      const PhysicalAnchorQuery& anchor_query,
+                      const AnchorMap& anchor_map,
                       const LayoutObject* implicit_anchor,
                       const LayoutObject* css_containing_block,
                       WritingDirectionMode container_writing_direction,
                       const PhysicalRect& container_rect,
                       const std::optional<PhysicalRect>& scroll_rect)
       : query_box_(&query_box),
-        anchor_query_(&anchor_query),
+        anchor_map_(&anchor_map),
         implicit_anchor_(implicit_anchor),
         query_box_actual_containing_block_(css_containing_block),
         container_writing_direction_(container_writing_direction),
@@ -246,7 +249,7 @@ class CORE_EXPORT AnchorEvaluatorImpl : public AnchorEvaluator {
         scroll_rect_(scroll_rect),
         display_locks_affected_by_anchors_(
             MakeGarbageCollected<GCedHeapHashSet<Member<Element>>>()) {
-    DCHECK(anchor_query_);
+    DCHECK(anchor_map_);
   }
 
   // Returns true if any anchor reference in the axis is in the same scroll
@@ -262,7 +265,7 @@ class CORE_EXPORT AnchorEvaluatorImpl : public AnchorEvaluator {
   // Evaluates the given anchor query. Returns nullopt if the query invalid
   // (e.g., no target or wrong axis).
   std::optional<LayoutUnit> Evaluate(
-      const class AnchorQuery&,
+      const AnchorQuery&,
       const ScopedCSSName* position_anchor,
       const std::optional<PositionAreaOffsets>&) override;
 
@@ -273,7 +276,7 @@ class CORE_EXPORT AnchorEvaluatorImpl : public AnchorEvaluator {
   std::optional<PhysicalOffset> ComputeAnchorCenterOffsets(
       const ComputedStyleBuilder&) override;
 
-  const PhysicalAnchorQuery* AnchorQuery() const { return anchor_query_; }
+  const AnchorMap* GetAnchorMap() const { return anchor_map_; }
 
   // Given the computed value of `position-anchor`, returns the default anchor.
   const LayoutObject* DefaultAnchor(const ScopedCSSName* position_anchor) const;
@@ -344,7 +347,7 @@ class CORE_EXPORT AnchorEvaluatorImpl : public AnchorEvaluator {
       bool has_default_anchor) const;
 
   const LayoutBox* query_box_ = nullptr;
-  mutable const PhysicalAnchorQuery* anchor_query_ = nullptr;
+  const AnchorMap* anchor_map_ = nullptr;
   const LayoutObject* implicit_anchor_ = nullptr;
 
   // The (CSS) containing block of the querying element. This should only be set

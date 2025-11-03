@@ -917,16 +917,15 @@ void PhysicalBoxFragment::MutableForOofFragmentation::Merge(
     }
   }
 
-  // Copy over any additional anchor queries.
-  if (const PhysicalAnchorQuery* query =
-          placeholder_fragmentainer.AnchorQuery()) {
+  // Copy over any additional anchors.
+  if (const AnchorMap* new_anchor_map =
+          placeholder_fragmentainer.GetAnchorMap()) {
     if (!fragment_.oof_data_) {
       fragment_.oof_data_ = MakeGarbageCollected<OofData>();
     }
-    PhysicalAnchorQuery& anchor_query =
-        fragment_.oof_data_->EnsureAnchorQuery();
-    for (auto entry : *query) {
-      anchor_query.Set(entry.key, entry.value);
+    AnchorMap& anchor_map = fragment_.oof_data_->EnsureAnchorMap();
+    for (auto entry : *new_anchor_map) {
+      anchor_map.Set(entry.key, entry.value);
     }
   }
 

@@ -137,7 +137,7 @@ class CORE_EXPORT BlockNode : public LayoutInputNode {
   // Returns the aspect ratio of a replaced element.
   LogicalSize GetReplacedAspectRatio() const;
 
-  bool MayHaveAnchorQuery() const { return box_->MayHaveAnchorQuery(); }
+  bool MayContainAnchor() const { return box_->MayContainAnchor(); }
 
   bool HasLeftOverflow() const { return box_->HasLeftOverflow(); }
   bool HasTopOverflow() const { return box_->HasTopOverflow(); }

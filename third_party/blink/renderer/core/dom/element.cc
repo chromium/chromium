@@ -12638,10 +12638,10 @@ void Element::SetMayBeImplicitAnchor() {
   bool was_implicit_anchor = MayBeImplicitAnchor();
   EnsureElementRareData().SetMayBeImplicitAnchor();
   if (!was_implicit_anchor && GetLayoutObject()) {
-    // Invalidate layout to populate itself into Physical/LogicalAnchorQuery.
+    // Invalidate layout to populate itself into AnchorMap.
     GetLayoutObject()->SetNeedsLayoutAndFullPaintInvalidation(
         layout_invalidation_reason::kAnchorPositioning);
-    GetLayoutObject()->MarkMayHaveAnchorQuery();
+    GetLayoutObject()->MarkMayContainAnchor();
   }
 }
 

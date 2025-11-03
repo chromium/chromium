@@ -70,8 +70,7 @@ class CORE_EXPORT FragmentBuilder {
   }
   TextDirection Direction() const { return writing_direction_.Direction(); }
 
-  PhysicalAnchorQuery::SetOptions AnchorQuerySetOptionsForChild(
-      const PhysicalFragment&) const;
+  AnchorMap::SetOptions AnchorOptionsForChild(const PhysicalFragment&) const;
 
   // Return true if this is a builder for the root fragment.
   bool IsRoot() const;
@@ -208,10 +207,10 @@ class CORE_EXPORT FragmentBuilder {
                                     const LayoutObject& container_object,
                                     WritingDirectionMode,
                                     LogicalSize container_logical_size,
-                                    PhysicalAnchorQuery::SetOptions options,
-                                    PhysicalAnchorQuery** out_anchor_query);
+                                    AnchorMap::SetOptions options,
+                                    AnchorMap** out_anchor_map);
 
-  const PhysicalAnchorQuery* AnchorQuery() const { return anchor_query_; }
+  const AnchorMap* GetAnchorMap() const { return anchor_map_; }
 
   // Builder has non-trivial OOF-positioned methods.
   // They are intended to be used by a layout algorithm like this:
@@ -608,7 +607,7 @@ class CORE_EXPORT FragmentBuilder {
   GCedNamedAnimationTriggerMap* named_triggers_ = nullptr;
   // [1] https://drafts.csswg.org/css-scroll-snap-2/#scroll-initial-target
   const LayoutObject* scroll_start_target_ = nullptr;
-  PhysicalAnchorQuery* anchor_query_ = nullptr;
+  AnchorMap* anchor_map_ = nullptr;
   LayoutUnit bfc_line_offset_;
   std::optional<LayoutUnit> bfc_block_offset_;
   MarginStrut end_margin_strut_;
@@ -683,8 +682,8 @@ class CORE_EXPORT FragmentBuilder {
   bool would_be_last_line_if_not_for_ellipsis_ = false;
   bool has_final_size_ = false;
 
-  bool oof_candidates_may_have_anchor_queries_ = false;
-  bool oof_fragmentainer_descendants_may_have_anchor_queries_ = false;
+  bool oof_candidates_may_have_anchors_ = false;
+  bool oof_fragmentainer_descendants_may_have_anchors_ = false;
 #if DCHECK_IS_ON()
   bool is_may_have_descendant_above_block_start_explicitly_set_ = false;
   bool is_finalized_ = false;

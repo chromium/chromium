@@ -1288,7 +1288,7 @@ bool DisplayLockContext::DescendantIsAnchorTargetFromOutsideDisplayLock() {
       for (const PhysicalBoxFragment& fragment :
            ancestor_box->PhysicalFragments()) {
         // Early out if there are no anchor targets in the subtree.
-        if (!fragment.HasAnchorQuery()) {
+        if (!fragment.HasChildAnchors()) {
           return false;
         }
         // Early out if there are not OOF children.

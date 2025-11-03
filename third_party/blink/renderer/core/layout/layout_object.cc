@@ -560,10 +560,10 @@ bool LayoutObject::IsStyleGenerated() const {
   return !node || node->IsPseudoElement();
 }
 
-void LayoutObject::MarkMayHaveAnchorQuery() {
-  for (LayoutObject* runner = this; runner && !runner->MayHaveAnchorQuery();
+void LayoutObject::MarkMayContainAnchor() {
+  for (LayoutObject* runner = this; runner && !runner->MayContainAnchor();
        runner = runner->Parent()) {
-    runner->SetSelfMayHaveAnchorQuery();
+    runner->SetSelfMayContainAnchor();
   }
 }
 
@@ -1394,9 +1394,9 @@ static inline bool ObjectIsRelayoutBoundary(const LayoutObject* object) {
     return false;
   }
 
-  // Anchor queries should be propagated across the layout boundaries, even
-  // when `contain: strict` is explicitly set.
-  if (fragment.HasAnchorQuery()) {
+  // Anchors should be propagated across the layout boundaries, even when
+  // `contain: strict` is explicitly set.
+  if (fragment.HasChildAnchors()) {
     return false;
   }
 
@@ -3307,7 +3307,7 @@ void LayoutObject::StyleDidChange(
   }
 
   if (StyleRef().AnchorName())
-    MarkMayHaveAnchorQuery();
+    MarkMayContainAnchor();
 
   const bool style_focusability = style_ && style_->IsFocusable();
   const bool old_style_focusability = old_style && old_style->IsFocusable();
@@ -3862,9 +3862,9 @@ void LayoutObject::InsertedIntoTree() {
 
   if (const Element* element = DynamicTo<Element>(GetNode());
       element && element->MayBeImplicitAnchor()) {
-    MarkMayHaveAnchorQuery();
-  } else if (MayHaveAnchorQuery()) {
-    Parent()->MarkMayHaveAnchorQuery();
+    MarkMayContainAnchor();
+  } else if (MayContainAnchor()) {
+    Parent()->MarkMayContainAnchor();
   }
 }
 

@@ -637,8 +637,8 @@ void BoxFragmentBuilder::PropagateChildBreakValues(
 void BoxFragmentBuilder::HandleOofsAndSpecialDescendants() {
   has_final_size_ = true;
 
-  // There may be OOFs with anchor queries. So be sure to propagate any anchors
-  // that we've found so far.
+  // There may be OOFs with anchors. So be sure to propagate any anchors that
+  // we've found so far.
   PropagateSizeDependentData();
 
   OutOfFlowLayoutPart(this).Run();

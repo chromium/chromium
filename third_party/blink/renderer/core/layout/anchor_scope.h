@@ -43,10 +43,10 @@ class CORE_EXPORT AnchorScopedName : public GarbageCollected<AnchorScopedName> {
 // looking for a matching anchor-scope value, and creates a corresponding
 // AnchorScopedName.
 //
-// The result is used as a key in the anchor maps (AnchorQueryBase:
-// named_anchors_). By taking into account anchor-scope in the key,
-// we can avoid traversing AnchorReferences outside the relevant anchor-scope
-// during lookup (PhysicalAnchorQuery::AnchorReference).
+// The result is used as a key in the anchor maps (AnchorMap::named_anchors_).
+// By taking into account anchor-scope in the key, we can avoid traversing
+// AnchorReferences outside the relevant anchor-scope during lookup
+// (AnchorMap::AnchorReference).
 AnchorScopedName* ToAnchorScopedName(const ScopedCSSName&, const LayoutObject&);
 
 // Allows creating a hash table of Member<AnchorScopedName> that hashes the
