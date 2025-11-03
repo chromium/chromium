@@ -431,6 +431,12 @@ export class SearchboxElement extends SearchboxElementBase {
   protected accessor isThumbnailDeletable_: boolean = false;
   private accessor useWebkitSearchIcons_: boolean = false;
   protected accessor tabSuggestions_: TabInfo[] = [];
+  protected showVoiceSearchInExpandedRealbox: boolean =
+      loadTimeData.getBoolean('expandedSearchboxShowVoiceSearch');
+
+  protected get shouldShowVoiceSearch_(): boolean {
+    return this.dropdownIsVisible && this.showVoiceSearchInExpandedRealbox;
+  }
 
   private pageHandler_: PageHandlerInterface;
   private callbackRouter_: PageCallbackRouter;

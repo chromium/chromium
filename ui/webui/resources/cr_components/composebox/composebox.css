@@ -119,6 +119,7 @@
 :host([ntp-realbox-next-enabled]) {
   --cr-composebox-font-size: 16px;
   --input-bottom-spacing: 12px;
+  --text-input-inline-start-spacing: 18px;
 }
 
 :host([ntp-realbox-next-enabled]) #input::placeholder {
@@ -238,8 +239,8 @@
   -webkit-mask-repeat: no-repeat;
   -webkit-mask-size: cover;
   background-color: var(--color-composebox-input-icon);
-  height: 24px;
-  width: 24px;
+  height: 20px;
+  width: 20px;
 }
 
 @media (forced-colors: active) {
@@ -379,9 +380,14 @@
   /* SVG is size 20 with 5px of padding so actual size is 10px */
   --cr-icon-button-icon-size: 20px;
   position: absolute;
-  top: 8px;
+  top: 12px;
+  inset-inline-end: 12px;
   /* Uses the same transitions as the submit button so they are in sync. */
   transition: var(--submit-enabled-transition);
+}
+
+:host([realbox-layout-mode="Compact"]) #cancelIcon {
+  top: 10px;
 }
 
 :host([expanded_][is-collapsible]) #cancelIcon {
@@ -730,12 +736,11 @@
 
 :host([ntp-realbox-next-enabled]) #input,
 :host([ntp-realbox-next-enabled]) #smartCompose {
-  --text-input-top-spacing: 14px;
+  --text-input-top-spacing: 10px;
 }
 
-:host([ntp-realbox-next-enabled][realbox-layout-mode="Compact"]) #input,
-:host([ntp-realbox-next-enabled][realbox-layout-mode="Compact"]) #smartCompose {
-  --text-input-top-spacing: 8px;
+:host([ntp-realbox-next-enabled]) #iconContainer {
+  height: 44px;
 }
 
 :host([ntp-realbox-next-enabled][realbox-layout-mode="Compact"]) #context {
@@ -751,25 +756,30 @@
   margin-top: 10px;
 }
 
-:host([realbox-layout-mode^='Tall']) contextual-entrypoint-and-carousel::part(voice-icon) {
+:host([ntp-realbox-next-enabled]) contextual-entrypoint-and-carousel::part(voice-icon) {
   --cr-icon-button-fill-color: var(--color-composebox-font-light);
   --cr-icon-button-hover-background-color: var(--color-composebox-context-entrypoint-hover-background);
   --cr-icon-button-margin-end: 0px;
   --cr-icon-button-margin-start: 0px;
   --cr-icon-button-size: 36px;
-  display: flex;
-  position: absolute;
 }
 
 :host([realbox-layout-mode='TallBottomContext']) contextual-entrypoint-and-carousel::part(voice-icon) {
   bottom: 10px;
   inset-inline-end: 14px;
+  position: absolute;
 }
 
 :host([realbox-layout-mode='TallTopContext']) contextual-entrypoint-and-carousel::part(voice-icon) {
   margin-inline-end: 14px;
   margin-inline-start: auto;
   position: static;
+}
+
+:host([realbox-layout-mode='Compact']) contextual-entrypoint-and-carousel::part(voice-icon) {
+  margin-inline-end: calc(var(--cr-icon-button-size) + 12px);
+  margin-inline-start: auto;
+  z-index: 100;
 }
 
 :host([ntp-realbox-next-enabled]) contextual-entrypoint-and-carousel::part(context-menu-entrypoint-icon) {

@@ -70,10 +70,15 @@ export function getHtml(this: ContextualEntrypointAndCarouselElement) {
             ?inputs-disabled="${this.inputsDisabled_}"
             ?show-context-menu-description="${showDescription}">
         </cr-composebox-context-menu-entrypoint>
+        ${
+      this.realboxLayoutMode === 'Compact' && this.showVoiceSearch ?
+          voiceSearchButton :
+          ''}
         ${this.realboxLayoutMode !== 'Compact' ? toolChips : ''}
         ${
-        this.realboxLayoutMode === 'TallTopContext' && (this.showDropdown || this.files_.size > 0) ?
-          voiceSearchButton : ''}
+      this.realboxLayoutMode === 'TallTopContext' && this.showVoiceSearch ?
+          voiceSearchButton :
+          ''}
       </div>
   `;
 
@@ -133,7 +138,9 @@ export function getHtml(this: ContextualEntrypointAndCarouselElement) {
       @change="${this.onFileChange_}"
       hidden>
   </input>
-  ${this.realboxLayoutMode === 'TallBottomContext' && (this.showDropdown || this.files_.size > 0) ? voiceSearchButton : ''}
+  ${this.realboxLayoutMode === 'TallBottomContext' && this.showVoiceSearch ?
+          voiceSearchButton :
+          ''}
 <!--_html_template_end_-->`;
   // clang-format on
 }

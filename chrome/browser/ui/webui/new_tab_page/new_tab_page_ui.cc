@@ -259,6 +259,9 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
   source->AddBoolean("searchboxCyclingPlaceholders",
                      ntp_realbox::IsNtpRealboxNextEnabled(profile) &&
                          ntp_realbox::kCyclingPlaceholders.Get());
+  source->AddBoolean("expandedSearchboxShowVoiceSearch",
+                     ntp_realbox::IsNtpRealboxNextEnabled(profile) &&
+                         ntp_realbox::kShowVoiceSearchInExpandedRealbox.Get());
 
   static constexpr webui::LocalizedString kStrings[] = {
       {"doneButton", IDS_DONE},
@@ -616,6 +619,12 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
   source->AddBoolean("composeboxShowPdfUpload", show_pdf_upload);
 
   source->AddBoolean("composeboxShowSubmit", ntp_composebox::kShowSubmit.Get());
+
+  source->AddBoolean("steadyComposeboxShowVoiceSearch",
+                     ntp_composebox::kShowVoiceSearchInSteadyComposebox.Get());
+
+  source->AddBoolean("expandedComposeboxShowVoiceSearch",
+                     ntp_composebox::kShowVoiceSearchInExpandedComposebox.Get());
 
   // Action Chips LoadTimeData
   bool show_action_chips =

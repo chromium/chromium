@@ -133,6 +133,12 @@ input {
       + var(--cr-searchbox-icon-spacing));
 }
 
+:host([realbox-layout-mode='Compact'][dropdown-is-visible]) input {
+  --cr-searchbox-input-trailing-padding: calc(var(--cr-searchbox-voice-search-button-width)
+      + var(--cr-compose-button-width)
+      + var(--cr-searchbox-icon-spacing));
+}
+
 :host-context([is-back-arrow-visible]) input {
   padding-inline-start: calc(22px + var(--cr-searchbox-thumbnail-icon-offset, 0px));
 }
@@ -451,7 +457,7 @@ cr-searchbox-icon {
   --cr-searchbox-compose-button-position-top: 12px;
   --cr-searchbox-dropdown-padding-top: 60px;
   --cr-searchbox-height: 108px;
-  --cr-searchbox-input-padding-top_: 22px;
+  --cr-searchbox-input-padding-top_: 18px;
 }
 
 @media (forced-colors: active) {
@@ -466,7 +472,7 @@ cr-searchbox-icon {
 }
 
 :host([realbox-layout-mode^='Tall']) input {
-  height: 48px;
+  height: 44px;
   padding-top: var(--cr-searchbox-input-padding-top_);
 }
 
@@ -553,23 +559,28 @@ cr-searchbox-icon {
   padding-top: 12px;
 }
 
-:host([realbox-layout-mode^='Tall']) contextual-entrypoint-and-carousel::part(voice-icon) {
-  --cr-icon-button-fill-color: var(--color-new-tab-page-composebox-font-light);
-  --cr-icon-button-hover-background-color: var(--color-new-tab-page-composebox-context-entrypoint-hover-background);
+:host([ntp-realbox-next-enabled]) contextual-entrypoint-and-carousel::part(voice-icon) {
+  --cr-icon-button-fill-color: var(--color-composebox-font-light);
+  --cr-icon-button-hover-background-color: var(--color-composebox-context-entrypoint-hover-background);
   --cr-icon-button-margin-end: 0px;
   --cr-icon-button-margin-start: 0px;
   --cr-icon-button-size: 36px;
-  display: flex;
-  position: absolute;
 }
 
 :host([realbox-layout-mode='TallBottomContext']) contextual-entrypoint-and-carousel::part(voice-icon) {
   bottom: 10px;
   inset-inline-end: 14px;
+  position: absolute;
 }
 
 :host([realbox-layout-mode='TallTopContext']) contextual-entrypoint-and-carousel::part(voice-icon) {
   margin-inline-end: 14px;
   margin-inline-start: auto;
   position: static;
+}
+
+:host([realbox-layout-mode='Compact']) contextual-entrypoint-and-carousel::part(voice-icon) {
+  margin-inline-end: calc(var(--cr-compose-button-width));
+  margin-inline-start: auto;
+  z-index: 100;
 }

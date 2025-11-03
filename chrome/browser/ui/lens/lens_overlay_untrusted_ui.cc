@@ -327,6 +327,9 @@ LensOverlayUntrustedUI::LensOverlayUntrustedUI(content::WebUI* web_ui)
   html_source->AddBoolean(
     "enableThumbnailSizingTweaks",
     lens::features::GetVisualSelectionUpdatesEnableThumbnailSizingTweaks());
+  html_source->AddBoolean("steadyComposeboxShowVoiceSearch", false);
+  html_source->AddBoolean("expandedComposeboxShowVoiceSearch", false);
+  html_source->AddBoolean("expandedSearchboxShowVoiceSearch", false);
 
   // Determine if the cursor tooltip should appear.
   Profile* profile = Profile::FromWebUI(web_ui);

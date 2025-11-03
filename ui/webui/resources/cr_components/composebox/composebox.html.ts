@@ -71,6 +71,7 @@ export function getHtml(this: ComposeboxElement) {
           ?show-context-menu-description="${this.showContextMenuDescription_}"
           realbox-layout-mode="${this.realboxLayoutMode}"
           ?carousel-on-top_="${this.carouselOnTop_}"
+          ?show-voice-search="${this.shouldShowVoiceSearch_()}"
           .parentFocused="${true}">
         <cr-composebox-dropdown
             id="matches"
