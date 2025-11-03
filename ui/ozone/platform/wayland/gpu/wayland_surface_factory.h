@@ -40,13 +40,6 @@ class WaylandSurfaceFactory : public SurfaceFactoryOzone {
 #endif
   std::unique_ptr<SurfaceOzoneCanvas> CreateCanvasForWidget(
       gfx::AcceleratedWidget widget) override;
-  scoped_refptr<gfx::NativePixmap> CreateNativePixmap(
-      gfx::AcceleratedWidget widget,
-      gpu::VulkanDeviceQueue* device_queue,
-      gfx::Size size,
-      gfx::BufferFormat format,
-      gfx::BufferUsage usage,
-      std::optional<gfx::Size> framebuffer_size = std::nullopt) override;
   scoped_refptr<gfx::NativePixmap> CreateNativePixmapFromHandle(
       gfx::AcceleratedWidget widget,
       gfx::Size size,
@@ -66,6 +59,14 @@ class WaylandSurfaceFactory : public SurfaceFactoryOzone {
   void SetBufferManagerForTesting(WaylandBufferManagerGpu* buffer_manager);
 
  private:
+  scoped_refptr<gfx::NativePixmap> CreateNativePixmap(
+      gfx::AcceleratedWidget widget,
+      gpu::VulkanDeviceQueue* device_queue,
+      gfx::Size size,
+      gfx::BufferFormat format,
+      gfx::BufferUsage usage,
+      std::optional<gfx::Size> framebuffer_size = std::nullopt) override;
+
   const raw_ptr<WaylandConnection> connection_;
   raw_ptr<WaylandBufferManagerGpu> buffer_manager_;
   std::unique_ptr<GLOzone> egl_implementation_;

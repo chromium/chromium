@@ -144,14 +144,6 @@ class COMPONENT_EXPORT(OZONE_BASE) SurfaceFactoryOzone {
   // case, |size| would be 100x100 while |framebuffer_size| would be 90x90. If
   // |framebuffer_size| is not contained by |size|, this method returns nullptr.
   // This method can be called on any thread.
-  virtual scoped_refptr<gfx::NativePixmap> CreateNativePixmap(
-      gfx::AcceleratedWidget widget,
-      gpu::VulkanDeviceQueue* device_queue,
-      gfx::Size size,
-      gfx::BufferFormat format,
-      gfx::BufferUsage usage,
-      std::optional<gfx::Size> framebuffer_size = std::nullopt);
-
   scoped_refptr<gfx::NativePixmap> CreateNativePixmap(
       gfx::AcceleratedWidget widget,
       gpu::VulkanDeviceQueue* device_queue,
@@ -234,6 +226,15 @@ class COMPONENT_EXPORT(OZONE_BASE) SurfaceFactoryOzone {
  protected:
   SurfaceFactoryOzone();
   virtual ~SurfaceFactoryOzone();
+
+ private:
+  virtual scoped_refptr<gfx::NativePixmap> CreateNativePixmap(
+      gfx::AcceleratedWidget widget,
+      gpu::VulkanDeviceQueue* device_queue,
+      gfx::Size size,
+      gfx::BufferFormat format,
+      gfx::BufferUsage usage,
+      std::optional<gfx::Size> framebuffer_size = std::nullopt);
 };
 
 }  // namespace ui

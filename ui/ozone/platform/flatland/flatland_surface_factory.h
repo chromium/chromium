@@ -46,13 +46,6 @@ class FlatlandSurfaceFactory : public SurfaceFactoryOzone {
       gfx::AcceleratedWidget widget) override;
   std::unique_ptr<SurfaceOzoneCanvas> CreateCanvasForWidget(
       gfx::AcceleratedWidget widget) override;
-  scoped_refptr<gfx::NativePixmap> CreateNativePixmap(
-      gfx::AcceleratedWidget widget,
-      gpu::VulkanDeviceQueue* device_queue,
-      gfx::Size size,
-      gfx::BufferFormat format,
-      gfx::BufferUsage usage,
-      std::optional<gfx::Size> framebuffer_size = std::nullopt) override;
   scoped_refptr<gfx::NativePixmap> CreateNativePixmapFromHandle(
       gfx::AcceleratedWidget widget,
       gfx::Size size,
@@ -84,6 +77,14 @@ class FlatlandSurfaceFactory : public SurfaceFactoryOzone {
       LOCKS_EXCLUDED(surface_lock_);
 
  private:
+  scoped_refptr<gfx::NativePixmap> CreateNativePixmap(
+      gfx::AcceleratedWidget widget,
+      gpu::VulkanDeviceQueue* device_queue,
+      gfx::Size size,
+      gfx::BufferFormat format,
+      gfx::BufferUsage usage,
+      std::optional<gfx::Size> framebuffer_size = std::nullopt) override;
+
   // Links a surface to its parent window in the host process.
   void AttachSurfaceToWindow(
       gfx::AcceleratedWidget window,

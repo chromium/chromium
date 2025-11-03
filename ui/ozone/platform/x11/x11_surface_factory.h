@@ -37,13 +37,6 @@ class X11SurfaceFactory : public SurfaceFactoryOzone {
 #endif
   std::unique_ptr<SurfaceOzoneCanvas> CreateCanvasForWidget(
       gfx::AcceleratedWidget widget) override;
-  scoped_refptr<gfx::NativePixmap> CreateNativePixmap(
-      gfx::AcceleratedWidget widget,
-      gpu::VulkanDeviceQueue* device_queue,
-      gfx::Size size,
-      gfx::BufferFormat format,
-      gfx::BufferUsage usage,
-      std::optional<gfx::Size> framebuffer_size = std::nullopt) override;
   bool CanCreateNativePixmapForFormat(viz::SharedImageFormat format) override;
   scoped_refptr<gfx::NativePixmap> CreateNativePixmapFromHandle(
       gfx::AcceleratedWidget widget,
@@ -55,6 +48,14 @@ class X11SurfaceFactory : public SurfaceFactoryOzone {
       const override;
 
  private:
+  scoped_refptr<gfx::NativePixmap> CreateNativePixmap(
+      gfx::AcceleratedWidget widget,
+      gpu::VulkanDeviceQueue* device_queue,
+      gfx::Size size,
+      gfx::BufferFormat format,
+      gfx::BufferUsage usage,
+      std::optional<gfx::Size> framebuffer_size = std::nullopt) override;
+
   std::unique_ptr<GLOzone> egl_implementation_;
 
   std::unique_ptr<x11::Connection> connection_;
