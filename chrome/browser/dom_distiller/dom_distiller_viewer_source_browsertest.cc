@@ -592,7 +592,13 @@ IN_PROC_BROWSER_TEST_F(DomDistillerViewerSourceBrowserTest, PrefPersist) {
   ASSERT_FLOAT_EQ(kScale, fontSize / oldFontSize);
 }
 
-IN_PROC_BROWSER_TEST_F(DomDistillerViewerSourceBrowserTest, UISetsPrefs) {
+// Flaky on MacOS (crbug.com/447462280).
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_UISetsPrefs DISABLED_UISetsPrefs
+#else
+#define MAYBE_UISetsPrefs UISetsPrefs
+#endif
+IN_PROC_BROWSER_TEST_F(DomDistillerViewerSourceBrowserTest, MAYBE_UISetsPrefs) {
   content::WebContents* contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
