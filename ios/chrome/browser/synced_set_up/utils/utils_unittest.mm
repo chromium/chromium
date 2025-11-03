@@ -259,15 +259,14 @@ TEST_F(SyncedSetUpUtilsTest, TestMatchPrefsByFormFactor) {
 
   // Expect that the prefs from the Android phone are returned.
   std::map<std::string_view, base::Value> expected_result;
-  expected_result.insert(
-      {GetTrackedPrefName(prefs::kCrossDeviceMagicStackHomeModuleEnabled),
-       android_phone_magic_stack_enabled.value.Clone()});
-  expected_result.insert(
-      {GetTrackedPrefName(prefs::kCrossDeviceMostVisitedHomeModuleEnabled),
-       android_phone_most_visited_enabled.value.Clone()});
+  expected_result.insert({prefs::kCrossDeviceMagicStackHomeModuleEnabled,
+                          android_phone_magic_stack_enabled.value.Clone()});
+  expected_result.insert({prefs::kCrossDeviceMostVisitedHomeModuleEnabled,
+                          android_phone_most_visited_enabled.value.Clone()});
 
-  std::map<std::string_view, base::Value> result = GetRemoteDevicePrefs(
-      &pref_tracker_, &device_info_tracker_, local_device.get());
+  std::map<std::string_view, base::Value> result =
+      GetCrossDevicePrefsFromRemoteDevice(&pref_tracker_, &device_info_tracker_,
+                                          local_device.get());
   ASSERT_TRUE(!result.empty());
   ASSERT_EQ(result.size(), expected_result.size());
 
@@ -342,15 +341,14 @@ TEST_F(SyncedSetUpUtilsTest, TestMatchPrefsByOsType) {
 
   // Expect that the prefs from the iOS tablet are returned.
   std::map<std::string_view, base::Value> expected_result;
-  expected_result.insert(
-      {GetTrackedPrefName(prefs::kCrossDeviceMagicStackHomeModuleEnabled),
-       ios_tablet_magic_stack_enabled.value.Clone()});
-  expected_result.insert(
-      {GetTrackedPrefName(prefs::kCrossDeviceMostVisitedHomeModuleEnabled),
-       ios_tablet_most_visited_enabled.value.Clone()});
+  expected_result.insert({prefs::kCrossDeviceMagicStackHomeModuleEnabled,
+                          ios_tablet_magic_stack_enabled.value.Clone()});
+  expected_result.insert({prefs::kCrossDeviceMostVisitedHomeModuleEnabled,
+                          ios_tablet_most_visited_enabled.value.Clone()});
 
-  std::map<std::string_view, base::Value> result = GetRemoteDevicePrefs(
-      &pref_tracker_, &device_info_tracker_, local_device.get());
+  std::map<std::string_view, base::Value> result =
+      GetCrossDevicePrefsFromRemoteDevice(&pref_tracker_, &device_info_tracker_,
+                                          local_device.get());
   ASSERT_TRUE(!result.empty());
   ASSERT_EQ(result.size(), expected_result.size());
 
@@ -451,18 +449,16 @@ TEST_F(SyncedSetUpUtilsTest, TestMatchPrefsByObservedChangeCount) {
   // Expect that the prefs from the second iOS phone with more changes are
   // returned.
   std::map<std::string_view, base::Value> expected_result;
-  expected_result.insert(
-      {GetTrackedPrefName(prefs::kCrossDeviceMagicStackHomeModuleEnabled),
-       ios_phone_2_magic_stack_enabled.value.Clone()});
-  expected_result.insert(
-      {GetTrackedPrefName(prefs::kCrossDeviceMostVisitedHomeModuleEnabled),
-       ios_phone_2_most_visited_enabled.value.Clone()});
-  expected_result.insert(
-      {GetTrackedPrefName(prefs::kCrossDevicePriceTrackingHomeModuleEnabled),
-       ios_phone_2_price_tracking_enabled.value.Clone()});
+  expected_result.insert({prefs::kCrossDeviceMagicStackHomeModuleEnabled,
+                          ios_phone_2_magic_stack_enabled.value.Clone()});
+  expected_result.insert({prefs::kCrossDeviceMostVisitedHomeModuleEnabled,
+                          ios_phone_2_most_visited_enabled.value.Clone()});
+  expected_result.insert({prefs::kCrossDevicePriceTrackingHomeModuleEnabled,
+                          ios_phone_2_price_tracking_enabled.value.Clone()});
 
-  std::map<std::string_view, base::Value> result = GetRemoteDevicePrefs(
-      &pref_tracker_, &device_info_tracker_, local_device.get());
+  std::map<std::string_view, base::Value> result =
+      GetCrossDevicePrefsFromRemoteDevice(&pref_tracker_, &device_info_tracker_,
+                                          local_device.get());
   ASSERT_TRUE(!result.empty());
   ASSERT_EQ(result.size(), expected_result.size());
 
@@ -579,8 +575,9 @@ TEST_F(SyncedSetUpUtilsTest, TestKeepLocalPrefsByChangeActivity) {
       ios_phone_2_price_tracking_enabled);
 
   // Expect that no new prefs are returned.
-  std::map<std::string_view, base::Value> result = GetRemoteDevicePrefs(
-      &pref_tracker_, &device_info_tracker_, local_device.get());
+  std::map<std::string_view, base::Value> result =
+      GetCrossDevicePrefsFromRemoteDevice(&pref_tracker_, &device_info_tracker_,
+                                          local_device.get());
   EXPECT_TRUE(result.empty());
 }
 
@@ -627,12 +624,12 @@ TEST_F(SyncedSetUpUtilsTest, TestReturnsMostRecentObservedPrefChanges) {
 
   // Expect that the pref is returned with its most recently set value.
   std::map<std::string_view, base::Value> expected_result;
-  expected_result.insert(
-      {GetTrackedPrefName(prefs::kCrossDeviceMagicStackHomeModuleEnabled),
-       magic_stack_enabled_now.value.Clone()});
+  expected_result.insert({prefs::kCrossDeviceMagicStackHomeModuleEnabled,
+                          magic_stack_enabled_now.value.Clone()});
 
-  std::map<std::string_view, base::Value> result = GetRemoteDevicePrefs(
-      &pref_tracker_, &device_info_tracker_, local_device.get());
+  std::map<std::string_view, base::Value> result =
+      GetCrossDevicePrefsFromRemoteDevice(&pref_tracker_, &device_info_tracker_,
+                                          local_device.get());
   ASSERT_TRUE(!result.empty());
   ASSERT_EQ(result.size(), expected_result.size());
 
