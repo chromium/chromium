@@ -124,6 +124,9 @@
 - (void)exitPreEditState;
 - (BOOL)isPreEditing;
 
+/// Current omnibox font.
+- (UIFont*)currentFont;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_OMNIBOX_UI_OMNIBOX_TEXT_INPUT_H_

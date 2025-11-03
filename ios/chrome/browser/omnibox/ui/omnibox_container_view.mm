@@ -325,13 +325,39 @@ UIButton* CreateClearButton() {
   if (!_textView) {
     return;
   }
+
   // Recalculate textView height and update it to clip and scroll if necessary.
   CGFloat verticalPadding =
       _textView.textContainerInset.top + _textView.textContainerInset.bottom;
-  CGFloat maxHeight = (_textView.font.lineHeight * kMaxLines) + verticalPadding;
-  CGSize size = [_textView
-      sizeThatFits:CGSizeMake(_textView.frame.size.width, CGFLOAT_MAX)];
-  CGFloat newHeight = MIN(size.height, maxHeight);
+  CGFloat singleLineHeight = [self singleLineHeight];
+  CGFloat maxHeight = (singleLineHeight * kMaxLines) + verticalPadding;
+
+  // Calculate the height of the user text.
+  NSAttributedString* userText = _textView.attributedUserText;
+  if (_textView.isPreEditing) {
+    userText = [[NSAttributedString alloc] initWithString:@""];
+  }
+
+  // Calculate the precise drawing width.
+  UIEdgeInsets textContainerInsets = _textView.textContainerInset;
+  CGFloat lineFragmentPadding = _textView.textContainer.lineFragmentPadding;
+  CGFloat drawingWidth = _textView.bounds.size.width -
+                         textContainerInsets.left - textContainerInsets.right -
+                         lineFragmentPadding * 2.0;
+  if (drawingWidth < 0) {
+    drawingWidth = 0;
+  }
+  CGFloat userTextHeight = 0;
+  if (userText.length > 0) {
+    userTextHeight = [self heightForAttributedText:userText
+                                  withDrawingWidth:drawingWidth];
+  }
+  if (!userTextHeight) {
+    userTextHeight = singleLineHeight;
+  }
+  CGFloat newHeight = userTextHeight + verticalPadding;
+
+  newHeight = MIN(newHeight, maxHeight);
   if (!_textInputHeightConstraint) {
     _textInputHeightConstraint =
         [_textView.heightAnchor constraintEqualToConstant:newHeight];
@@ -339,7 +365,7 @@ UIButton* CreateClearButton() {
   } else {
     _textInputHeightConstraint.constant = newHeight;
   }
-  _textView.scrollEnabled = size.height > maxHeight;
+  _textView.scrollEnabled = userTextHeight > maxHeight;
   [self.heightDelegate textFieldViewContaining:self didChangeHeight:newHeight];
 }
 
@@ -390,6 +416,46 @@ UIButton* CreateClearButton() {
 
 - (void)textViewContentChanged:(OmniboxTextViewIOS*)textView {
   [self updateTextViewHeight];
+}
+
+#pragma mark - Private
+
+/// Returns the height of a single line of text with the current font.
+- (CGFloat)singleLineHeight {
+  UIFont* font = _textView.font ?: _textView.currentFont;
+  // Create a sample attributed string for one line.
+  NSAttributedString* singleLineSampler =
+      [[NSAttributedString alloc] initWithString:@"A"
+                                      attributes:@{NSFontAttributeName : font}];
+  CGSize singleLineConstraint = CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX);
+  NSStringDrawingOptions options =
+      NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading;
+  CGRect singleLineBoundingRect =
+      [singleLineSampler boundingRectWithSize:singleLineConstraint
+                                      options:options
+                                      context:nil];
+  CGFloat measuredSingleLineHeight = ceilf(singleLineBoundingRect.size.height);
+
+  // If for some reason measurement fails, fall back to font.lineHeight.
+  if (measuredSingleLineHeight <= 0) {
+    measuredSingleLineHeight = font.lineHeight;
+  }
+  return measuredSingleLineHeight;
+}
+
+/// Computes the height needed to layout `attributedText` with `drawingWidth`.
+- (CGFloat)heightForAttributedText:(NSAttributedString*)attributedText
+                  withDrawingWidth:(CGFloat)drawingWidth {
+  if (attributedText.length == 0) {
+    return 0;
+  }
+  CGSize constraintSize = CGSizeMake(drawingWidth, CGFLOAT_MAX);
+  NSStringDrawingOptions options =
+      NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading;
+  CGRect boundingRect = [attributedText boundingRectWithSize:constraintSize
+                                                     options:options
+                                                     context:nil];
+  return ceilf(boundingRect.size.height);
 }
 
 @end
