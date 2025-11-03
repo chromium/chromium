@@ -71,7 +71,7 @@ constexpr uint32_t KSAUDIO_SPEAKER_UNSUPPORTED = 0;
 
 // Feature flag for enabling usage of the device/engine sample format.
 BASE_FEATURE(kWasapiInputUseDeviceSampleFormat,
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Max allowed absolute difference between a QPC-based timestamp and a default
 // base::TimeTicks::Now() timestamp before switching to fake audio timestamps.
