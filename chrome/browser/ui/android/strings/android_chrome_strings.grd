@@ -7404,6 +7404,30 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_TIPS_PROMO_BOTTOM_SHEET_BACK_BUTTON_DESCRIPTION" desc="Acessibility string describing the back icon on the info details page of the promo.">
         Back
       </message>
+      <message name="IDS_TIPS_OPT_IN_BOTTOM_SHEET_CONTENT_DESCRIPTION" desc="Content description of the Tips Opt In bottom sheet informing the user on what tips notifications are and where to turn it on.">
+        Tips notifications opt-in help and guidance bottom sheet
+      </message>
+      <message name="IDS_TIPS_OPT_IN_BOTTOM_SHEET_CLOSED_CONTENT_DESCRIPTION" desc="Content description of the Tips Opt In bottom sheet when closed.">
+        Tips notifications opt in closed
+      </message>
+      <message name="IDS_TIPS_OPT_IN_BOTTOM_SHEET_HALF_HEIGHT_CONTENT_DESCRIPTION" desc="Content description of the Tips Opt In bottom sheet when opened at half height.">
+        Tips notifications opt in opened at half height
+      </message>
+      <message name="IDS_TIPS_OPT_IN_BOTTOM_SHEET_FULL_HEIGHT_CONTENT_DESCRIPTION" desc="Content description of the Tips Opt In bottom sheet when opened at full height.">
+        Tips notifications opt in opened at full height
+      </message>
+      <message name="IDS_TIPS_OPT_IN_BOTTOM_SHEET_POSITIVE_BUTTON_TEXT" desc="Button text for the Tips Opt In bottom sheet to go to the notifications settings page.">
+        Turn on Tips notifications
+      </message>
+      <message name="IDS_TIPS_OPT_IN_BOTTOM_SHEET_NEGATIVE_BUTTON_TEXT" desc="Button text for the Tips Opt In bottom sheet to exit the promo.">
+        Close
+      </message>
+      <message name="IDS_TIPS_OPT_IN_BOTTOM_SHEET_TITLE" desc="Title of the Tips Opt In bottom sheet promo. [CHAR_LIMIT=32]">
+        Get the most out of Chrome
+      </message>
+      <message name="IDS_TIPS_OPT_IN_BOTTOM_SHEET_DESCRIPTION" desc="Description of the Tips Opt In bottom sheet promo.">
+        Turn on notifications for useful tips to help you get the best of Chrome
+      </message>
 
       <!-- Caret Browsing -->
       <message name="IDS_CARET_BROWSING_DIALOG_TITLE" desc="Title of the caret browsing confirmation dialog" formatter_data="android_java">

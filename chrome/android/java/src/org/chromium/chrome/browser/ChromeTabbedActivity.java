@@ -582,7 +582,8 @@ public class ChromeTabbedActivity extends ChromeActivity {
     private boolean mPendingInitialTabCreation;
 
     /** Keeps track of the pref for the last time since this activity was stopped. */
-    private ChromeInactivityTracker mInactivityTracker;
+    private final OneshotSupplierImpl<ChromeInactivityTracker> mInactivityTrackerSupplier =
+            new OneshotSupplierImpl<>();
 
     /** The controller for the auxiliary search. */
     private @Nullable AuxiliarySearchController mAuxiliarySearchController;
@@ -1475,7 +1476,9 @@ public class ChromeTabbedActivity extends ChromeActivity {
                 incognitoSwitcher.initWithNative();
             }
 
-            mInactivityTracker.setLastVisibleTimeMsAndRecord(System.currentTimeMillis());
+            mInactivityTrackerSupplier
+                    .get()
+                    .setLastVisibleTimeMsAndRecord(System.currentTimeMillis());
             initializeSuggestionMetricsTracker();
             if (ChromeFeatureList.isEnabled(ChromeFeatureList.GROUP_SUGGESTION_SERVICE)) {
                 mSuggestionEventObserver =
@@ -1560,7 +1563,9 @@ public class ChromeTabbedActivity extends ChromeActivity {
                                 FeedUma.recordArticlesListVisible(isArticlesListVisible);
                             });
         } else {
-            mInactivityTracker.setLastVisibleTimeMsAndRecord(System.currentTimeMillis());
+            mInactivityTrackerSupplier
+                    .get()
+                    .setLastVisibleTimeMsAndRecord(System.currentTimeMillis());
         }
     }
 
@@ -1577,7 +1582,7 @@ public class ChromeTabbedActivity extends ChromeActivity {
         mLocaleManager.stopObservingPhoneChanges();
 
         // Always track the last backgrounded time in case others are using the pref.
-        mInactivityTracker.setLastBackgroundedTimeInPrefs(System.currentTimeMillis());
+        mInactivityTrackerSupplier.get().setLastBackgroundedTimeInPrefs(System.currentTimeMillis());
 
         MultiWindowUtils.recordTabCountForRelaunchWhenActivityPaused(mTabModelSelector, mWindowId);
 
@@ -1646,7 +1651,7 @@ public class ChromeTabbedActivity extends ChromeActivity {
 
         resetSavedInstanceState();
         BookmarkUtils.maybeExpireLastBookmarkLocationForReadLater(
-                mInactivityTracker.getTimeSinceLastBackgroundedMs());
+                mInactivityTrackerSupplier.get().getTimeSinceLastBackgroundedMs());
 
         MultiWindowUtils.maybeRecordDesktopWindowCountHistograms(
                 mRootUiCoordinator.getDesktopWindowStateManager(),
@@ -2131,7 +2136,7 @@ public class ChromeTabbedActivity extends ChromeActivity {
         }
 
         mMainIntentMetrics.onMainIntentWithNative(
-                mInactivityTracker.getTimeSinceLastBackgroundedMs());
+                mInactivityTrackerSupplier.get().getTimeSinceLastBackgroundedMs());
     }
 
     /** Access the main intent metrics for test validation. */
@@ -2140,7 +2145,7 @@ public class ChromeTabbedActivity extends ChromeActivity {
     }
 
     public ChromeInactivityTracker getInactivityTrackerForTesting() {
-        return mInactivityTracker;
+        return mInactivityTrackerSupplier.get();
     }
 
     @Override
@@ -2223,7 +2228,7 @@ public class ChromeTabbedActivity extends ChromeActivity {
                                 }
                             });
 
-            mInactivityTracker.register(this.getLifecycleDispatcher());
+            mInactivityTrackerSupplier.get().register(this.getLifecycleDispatcher());
             boolean isIntentWithEffect = false;
             boolean isMainIntentFromLauncher = false;
             boolean isLaunchingDraggedTabOrGroup = false;
@@ -2944,7 +2949,8 @@ public class ChromeTabbedActivity extends ChromeActivity {
                 mManualFillingComponentSupplier,
                 getEdgeToEdgeManager(),
                 mBookmarkManagerOpenerSupplier,
-                getXrSpaceModeObservableSupplier());
+                getXrSpaceModeObservableSupplier(),
+                mInactivityTrackerSupplier);
     }
 
     /**
@@ -3052,9 +3058,9 @@ public class ChromeTabbedActivity extends ChromeActivity {
                                             .getCurrentTabGroupModelFilter());
                         }));
 
-        mInactivityTracker =
+        mInactivityTrackerSupplier.set(
                 new ChromeInactivityTracker(
-                        ChromePreferenceKeys.TABBED_ACTIVITY_LAST_BACKGROUNDED_TIME_MS_PREF);
+                        ChromePreferenceKeys.TABBED_ACTIVITY_LAST_BACKGROUNDED_TIME_MS_PREF));
         TabUsageTracker.initialize(this.getLifecycleDispatcher(), tabModelSelector);
         TabGroupUsageTracker.initialize(
                 this.getLifecycleDispatcher(), tabModelSelector, this::isWarmOnResume);
@@ -4763,9 +4769,9 @@ public class ChromeTabbedActivity extends ChromeActivity {
     private boolean shouldShowNtpHomeSurfaceOnStartup() {
         if (mTabModelSelector.isIncognitoSelected()) return false;
 
-        assert mInactivityTracker != null;
+        assert mInactivityTrackerSupplier.get() != null;
         return ReturnToChromeUtil.shouldShowNtpAsHomeSurfaceAtStartup(
-                getIntent(), getSavedInstanceState(), mInactivityTracker);
+                getIntent(), getSavedInstanceState(), mInactivityTrackerSupplier.get());
     }
 
     /**

@@ -839,6 +839,7 @@ if (is_android) {
       "src/org/chromium/chrome/browser/notifications/NotificationSuspenderUnitTest.java",
       "src/org/chromium/chrome/browser/notifications/NotificationTriggerBackgroundTaskTest.java",
       "src/org/chromium/chrome/browser/notifications/NotificationTriggerSchedulerTest.java",
+      "src/org/chromium/chrome/browser/notifications/tips/TipsOptInCoordinatorUnitTest.java",
       "src/org/chromium/chrome/browser/notifications/tips/TipsPromoCoordinatorUnitTest.java",
       "src/org/chromium/chrome/browser/notifications/tips/TipsPromoViewBinderUnitTest.java",
       "src/org/chromium/chrome/browser/notifications/tips/TipsUtilsUnitTest.java",

@@ -600,6 +600,7 @@ chrome_java_resources = [
   "java/res/layout/tab_switcher_action_menu_layout.xml",
   "java/res/layout/tab_switcher_module_container.xml",
   "java/res/layout/tab_switcher_view_holder.xml",
+  "java/res/layout/tips_opt_in_bottom_sheet.xml",
   "java/res/layout/tips_promo_bottom_sheet.xml",
   "java/res/layout/tips_promo_detail_sheet.xml",
   "java/res/layout/tips_promo_main_sheet.xml",

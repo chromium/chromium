@@ -977,6 +977,10 @@ public final class ChromePreferenceKeys {
     public static final String TAB_OR_GROUP_TEARING_MAX_INSTANCES_FAILURE_COUNT =
             "Chrome.TabOrGroupTearing.MaxInstancesFailureCount";
 
+    // Whether the Tips Notifications Opt In promo has been shown.
+    public static final String TIPS_NOTIFICATIONS_OPT_IN_PROMO_SHOWN =
+            "Chrome.TipsNotifications.OptInShown";
+
     // If the toolbar should be shown on top.
     public static final String TOOLBAR_TOP_ANCHORED = "Chrome.Toolbar.TopAnchored";
 
@@ -1261,6 +1265,7 @@ public final class ChromePreferenceKeys {
                 TAB_DECLUTTER_DIALOG_IPH_DISMISS_COUNT,
                 TAB_OR_GROUP_TEARING_MAX_INSTANCES_FAILURE_START_TIME_MS,
                 TAB_OR_GROUP_TEARING_MAX_INSTANCES_FAILURE_COUNT,
+                TIPS_NOTIFICATIONS_OPT_IN_PROMO_SHOWN,
                 TOOLBAR_TOP_ANCHORED,
                 TWA_DISCLOSURE_SEEN_PACKAGES,
                 UMA_ON_POSTCREATE_COUNTER,

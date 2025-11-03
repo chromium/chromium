@@ -41,6 +41,8 @@ import org.chromium.base.version_info.VersionInfo;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ActivityTabProvider.ActivityTabTabObserver;
+import org.chromium.chrome.browser.ChromeInactivityTracker;
+import org.chromium.chrome.browser.ChromeInactivityTracker.InactivityObserver;
 import org.chromium.chrome.browser.SwipeRefreshHandler;
 import org.chromium.chrome.browser.accessibility.PageZoomIphController;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
@@ -114,6 +116,7 @@ import org.chromium.chrome.browser.notifications.permissions.NotificationPermiss
 import org.chromium.chrome.browser.notifications.permissions.NotificationPermissionController.RationaleDelegate;
 import org.chromium.chrome.browser.notifications.permissions.NotificationPermissionRationaleBottomSheet;
 import org.chromium.chrome.browser.notifications.permissions.NotificationPermissionRationaleDialogController;
+import org.chromium.chrome.browser.notifications.tips.TipsOptInCoordinator;
 import org.chromium.chrome.browser.ntp.NewTabPageLaunchOrigin;
 import org.chromium.chrome.browser.ntp.NewTabPageUtils;
 import org.chromium.chrome.browser.ntp_customization.edge_to_edge.TopInsetCoordinator;
@@ -219,6 +222,7 @@ import org.chromium.ui.insets.InsetObserver;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.url.GURL;
 
+import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -287,6 +291,9 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private @NonNull AdvancedProtectionCoordinator mAdvancedProtectionCoordinator;
     private final @NonNull KeyboardFocusRowManager mKeyboardFocusRowManager;
     private CharSequence mApplicationLabel;
+    private TipsOptInCoordinator mTipsOptInCoordinator;
+    private final OneshotSupplier<ChromeInactivityTracker> mInactivityTrackerSupplier;
+    private final InactivityObserver mInactivityObserver;
 
     // Activity tab observer that updates the current tab used by various UI components.
     private class RootUiTabObserver extends ActivityTabTabObserver {
@@ -442,7 +449,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             @NonNull ManualFillingComponentSupplier manualFillingComponentSupplier,
             @NonNull EdgeToEdgeManager edgeToEdgeManager,
             @NonNull ObservableSupplier<BookmarkManagerOpener> bookmarkManagerOpenerSupplier,
-            @Nullable ObservableSupplier<Boolean> xrSpaceModeObservableSupplier) {
+            @Nullable ObservableSupplier<Boolean> xrSpaceModeObservableSupplier,
+            @NonNull OneshotSupplier<ChromeInactivityTracker> inactivityTrackerSupplier) {
         super(
                 activity,
                 onOmniboxFocusChangedListener,
@@ -525,6 +533,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         mEdgeToEdgeControllerSupplier = edgeToEdgeSupplier;
         mSystemBarColorHelperSupplier = systemBarColorHelperSupplier;
         mManualFillingComponentSupplier = manualFillingComponentSupplier;
+        mInactivityTrackerSupplier = inactivityTrackerSupplier;
 
         DataSharingTabGroupsDelegate dataSharingTabGroupsDelegate =
                 createDataSharingTabGroupsDelegate();
@@ -579,6 +588,19 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         getTabObscuringHandler(),
                         () -> mToolbarManager // Gets current value of mToolbarManager
                         );
+
+        mInactivityObserver =
+                new InactivityObserver() {
+                    @Override
+                    public void onForegrounded(long timeSinceLastBackgroundedMs) {
+                        maybeShowTipsOptInPromo(timeSinceLastBackgroundedMs);
+                    }
+                };
+
+        mInactivityTrackerSupplier.onAvailable(
+                (inactivityTracker) -> {
+                    inactivityTracker.addObserver(mInactivityObserver);
+                });
 
         try {
             PackageManager packageManager = mActivity.getPackageManager();
@@ -723,6 +745,14 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         if (mPrivacySandbox3pcdRollbackMessageController != null) {
             mPrivacySandbox3pcdRollbackMessageController.destroy();
             mPrivacySandbox3pcdRollbackMessageController = null;
+        }
+
+        if (mTipsOptInCoordinator != null) {
+            mTipsOptInCoordinator.destroy();
+        }
+
+        if (mInactivityTrackerSupplier.get() != null) {
+            mInactivityTrackerSupplier.get().removeObserver(mInactivityObserver);
         }
 
         super.onDestroy();
@@ -1284,6 +1314,18 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                             mAppMenuCoordinator.getAppMenuHandler(),
                             mToolbarManager.getMenuButtonView(),
                             mBookmarkModelSupplier.get());
+        }
+    }
+
+    private void maybeShowTipsOptInPromo(long timeSinceLastBackgroundedMs) {
+        // Only trigger the promo if the user has been 3 hours inactive and has not seen it before.
+        if (ChromeFeatureList.sAndroidTipsNotifications.isEnabled()
+                && !ChromeSharedPreferences.getInstance()
+                        .readBoolean(
+                                ChromePreferenceKeys.TIPS_NOTIFICATIONS_OPT_IN_PROMO_SHOWN, false)
+                && timeSinceLastBackgroundedMs > TimeUnit.HOURS.toMillis(3)) {
+            mTipsOptInCoordinator = new TipsOptInCoordinator(mActivity, getBottomSheetController());
+            mTipsOptInCoordinator.showBottomSheet();
         }
     }
 
