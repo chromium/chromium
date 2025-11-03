@@ -45,6 +45,12 @@ BwgService::BwgService(ProfileIOS* profile,
         {optimization_guide::proto::GLIC_CONTEXTUAL_CUEING});
   }
 
+  if (IsZeroStateSuggestionsEnabled()) {
+    optimization_guide_ = optimization_guide;
+    optimization_guide_->RegisterOptimizationTypes(
+        {optimization_guide::proto::GLIC_ZERO_STATE_SUGGESTIONS});
+  }
+
   CheckGeminiEnterpriseEligibility();
 }
 
