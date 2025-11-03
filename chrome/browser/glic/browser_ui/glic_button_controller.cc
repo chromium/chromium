@@ -29,63 +29,48 @@ GlicButtonController::GlicButtonController(
   CHECK(glic_controller_delegate_);
   CHECK(glic_keyed_service_);
 
-  // Initialize default values
-  PanelStateChanged(
-      glic_keyed_service_->window_controller().GetGlobalPanelState(), {});
+  // Set initial button state.
+  UpdateButton();
 
-  // Observe for changes in preferences and panel state events
+  // Observe for changes in preferences and panel state events.
   pref_registrar_.Init(profile_->GetPrefs());
-  pref_registrar_.Add(glic::prefs::kGlicPinnedToTabstrip,
-                      base::BindRepeating(&GlicButtonController::OnPrefsChanged,
-                                          base::Unretained(this)));
+
+  auto update_callback = base::BindRepeating(
+      &GlicButtonController::UpdateButton, base::Unretained(this));
+
+  pref_registrar_.Add(glic::prefs::kGlicPinnedToTabstrip, update_callback);
   subscriptions_.push_back(
-      glic_keyed_service_->enabling().RegisterAllowedChanged(
-          base::BindRepeating(&GlicButtonController::OnPrefsChanged,
-                              base::Unretained(this))));
-
-  glic_keyed_service_->window_controller().AddGlobalStateObserver(this);
+      glic_keyed_service_->enabling().RegisterAllowedChanged(update_callback));
+  subscriptions_.push_back(
+      glic_keyed_service_->window_controller().AddGlobalShowHideCallback(
+          update_callback));
 }
 
-GlicButtonController::~GlicButtonController() {
-  glic_keyed_service_->window_controller().RemoveGlobalStateObserver(this);
-}
+GlicButtonController::~GlicButtonController() = default;
 
-void GlicButtonController::PanelStateChanged(
-    const mojom::PanelState& panel_state,
-    const GlicWindowController::PanelStateContext& context) {
-  if (GlicWindowController::AlwaysDetached()) {
-    UpdateShowState(true);
-  } else {
-    const bool detached = panel_state.kind == mojom::PanelStateKind::kDetached;
-    glic_controller_delegate_->SetGlicDetached(detached);
-    UpdateShowState(detached);
+void GlicButtonController::UpdateButton() {
+  const bool is_enabled_for_profile =
+      GlicEnabling::IsEnabledForProfile(profile_);
+  const bool is_pinned_to_tabstrip =
+      profile_->GetPrefs()->GetBoolean(prefs::kGlicPinnedToTabstrip);
+  if (!is_enabled_for_profile || !is_pinned_to_tabstrip) {
+    // If the button shouldn't be shown, just hide it.
+    return glic_controller_delegate_->SetGlicShowState(false);
   }
-}
 
-void GlicButtonController::OnPrefsChanged() {
-  UpdateShowState(
-      glic_keyed_service_->window_controller().GetGlobalPanelState().kind ==
-      mojom::PanelStateKind::kDetached);
-}
+  const bool can_show_attach_icon = !GlicWindowController::AlwaysDetached();
+  GlicInstance* instance =
+      glic_keyed_service_->GetInstanceForActiveTab(&*browser_);
+  const bool glic_instance_detached =
+      instance &&
+      instance->GetPanelState().kind == mojom::PanelStateKind::kDetached;
 
-void GlicButtonController::UpdateShowState(bool detached) {
-  // If the glic window is detached, we want to show the re-attach icon
-  // regardless of glic enabling/pinned state.
-  if (detached && !GlicWindowController::AlwaysDetached()) {
-    glic_controller_delegate_->SetGlicShowState(true);
-  } else {
-    const bool is_enabled_for_profile =
-        GlicEnabling::IsEnabledForProfile(profile_);
-    const bool is_pinned_to_tabstrip =
-        profile_->GetPrefs()->GetBoolean(prefs::kGlicPinnedToTabstrip);
+  glic_controller_delegate_->SetGlicShowState(true);
+  glic_controller_delegate_->SetGlicDetached(can_show_attach_icon &&
+                                             glic_instance_detached);
 
-    if (is_enabled_for_profile && is_pinned_to_tabstrip) {
-      glic_keyed_service_->TryPreload();
-      glic_controller_delegate_->SetGlicShowState(true);
-    } else {
-      glic_controller_delegate_->SetGlicShowState(false);
-    }
-  }
+  // Try preloading since we know the button is visible.
+  glic_keyed_service_->TryPreload();
 
   if (base::FeatureList::IsEnabled(features::kGlicButtonPressedState)) {
     glic_controller_delegate_->SetGlicPanelIsOpen(

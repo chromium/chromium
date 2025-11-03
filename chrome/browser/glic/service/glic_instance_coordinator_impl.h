@@ -102,13 +102,14 @@ class GlicInstanceCoordinatorImpl
 
   void AddGlobalStateObserver(StateObserver* observer) override;
   void RemoveGlobalStateObserver(StateObserver* observer) override;
-  mojom::PanelState GetGlobalPanelState() override;
 
   bool IsDetached() const override;
   bool IsPanelShowingForBrowser(
       const BrowserWindowInterface& bwi) const override;
   base::CallbackListSubscription AddWindowActivationChangedCallback(
       WindowActivationChangedCallback callback) override;
+  base::CallbackListSubscription AddGlobalShowHideCallback(
+      base::RepeatingClosure callback) override;
   void Preload() override;
   void Reload(content::RenderFrameHost* render_frame_host) override;
   base::WeakPtr<GlicInstanceCoordinatorImpl> GetWeakPtr();
@@ -160,7 +161,6 @@ class GlicInstanceCoordinatorImpl
   // List of callbacks to be notified when window activation has changed.
   base::RepeatingCallbackList<void(bool)> window_activation_callback_list_;
 
-  mojom::PanelState panel_state_;
   const raw_ptr<Profile> profile_;
   raw_ptr<contextual_cueing::ContextualCueingService>
       contextual_cueing_service_;
@@ -175,6 +175,7 @@ class GlicInstanceCoordinatorImpl
   raw_ptr<GlicInstanceImpl> last_active_instance_ = nullptr;
   base::RepeatingCallbackList<void(GlicInstance*)>
       active_instance_changed_callback_list_;
+  base::RepeatingClosureList global_show_hide_callback_list_;
 
   base::MemoryPressureListenerRegistration
       memory_pressure_listener_registration_;

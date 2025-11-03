@@ -1078,10 +1078,6 @@ mojom::PanelState GlicWindowControllerImpl::GetPanelState() {
   return panel_state_;
 }
 
-mojom::PanelState GlicWindowControllerImpl::GetGlobalPanelState() {
-  return panel_state_;
-}
-
 bool GlicWindowControllerImpl::IsPanelShowingForBrowser(
     const BrowserWindowInterface& bwi) const {
   return IsShowing();
@@ -1274,6 +1270,15 @@ base::CallbackListSubscription
 GlicWindowControllerImpl::AddWindowActivationChangedCallback(
     WindowActivationChangedCallback callback) {
   return window_activation_callback_list_.Add(std::move(callback));
+}
+
+base::CallbackListSubscription
+GlicWindowControllerImpl::AddGlobalShowHideCallback(
+    base::RepeatingClosure callback) {
+  return RegisterStateChange(
+      base::BindRepeating([](base::RepeatingClosure callback, bool,
+                             mojom::CurrentView) { callback.Run(); },
+                          std::move(callback)));
 }
 
 void GlicWindowControllerImpl::Preload() {
