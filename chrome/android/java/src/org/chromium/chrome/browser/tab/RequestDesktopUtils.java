@@ -485,6 +485,9 @@ public class RequestDesktopUtils {
         }
 
         // Do not enable on OEMs not allowlisted.
+        if (!ChromeFeatureList.sDesktopUAOnConnectedDisplay.isEnabled()) {
+            return false;
+        }
         if (sDesktopUAAllowedOnExternalDisplayForOem == null) {
             Set<String> allowlist = new HashSet<>();
             String allowlistStr =

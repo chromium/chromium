@@ -33,8 +33,7 @@ enum class UserAgentRequestType {
 };
 }  // namespace rds_web_contents_observer
 
-static std::optional<bool>
-    s_is_oem_allowlisted_for_external_display_desktop_ua = false;
+static std::optional<bool> s_is_oem_allowlisted_for_external_display_desktop_ua;
 
 RequestDesktopSiteWebContentsObserverAndroid::
     RequestDesktopSiteWebContentsObserverAndroid(content::WebContents* contents)
@@ -123,10 +122,21 @@ WEB_CONTENTS_USER_DATA_KEY_IMPL(RequestDesktopSiteWebContentsObserverAndroid);
 
 bool RequestDesktopSiteWebContentsObserverAndroid::ShouldAllowOnExternalDisplay(
     bool is_global_setting) {
+  // Disallow if feature is disabled.
+  if (!base::FeatureList::IsEnabled(
+          chrome::android::kDesktopUAOnConnectedDisplay)) {
+    return false;
+  }
+  // Disallow if user has explicitly set preference ie. not a global setting or
+  // default global setting has been changed.
   base::android::SharedPreferencesManager shared_prefs =
       android::shared_preferences::GetChromeSharedPreferences();
-  // Enable on large connected displays only when user has not explicitly set
-  // preference. ie: user is using global setting and has not changed it.
+  if (!is_global_setting ||
+      shared_prefs.ContainsKey(
+          prefs::kRequestDesktopSiteGlobalSettingUserEnabled)) {
+    return false;
+  }
+  // Disallow if not on an large external display.
   display::Display display = display::Screen::Get()->GetDisplayNearestWindow(
       web_contents()->GetTopLevelNativeWindow());
   // Compute the display's diagonal length in inches.
@@ -139,6 +149,10 @@ bool RequestDesktopSiteWebContentsObserverAndroid::ShouldAllowOnExternalDisplay(
   bool is_on_eligible_external_display =
       display.id() != display::kDefaultDisplayId &&
       diagonal_inches >= kDesktopSiteDisplaySizeThresholdInches;
+  if (!is_on_eligible_external_display) {
+    return false;
+  }
+  // Disallow if OEM is not allowlisted.
   if (!s_is_oem_allowlisted_for_external_display_desktop_ua.has_value()) {
     std::string oemAllowlistStr = base::GetFieldTrialParamByFeatureAsString(
         chrome::android::kDesktopUAOnConnectedDisplay,
@@ -155,8 +169,5 @@ bool RequestDesktopSiteWebContentsObserverAndroid::ShouldAllowOnExternalDisplay(
           base::Contains(allowlist, manufacturer);
     }
   }
-  return s_is_oem_allowlisted_for_external_display_desktop_ua.value() &&
-         is_on_eligible_external_display && is_global_setting &&
-         !shared_prefs.ContainsKey(
-             prefs::kRequestDesktopSiteGlobalSettingUserEnabled);
+  return s_is_oem_allowlisted_for_external_display_desktop_ua.value();
 }
