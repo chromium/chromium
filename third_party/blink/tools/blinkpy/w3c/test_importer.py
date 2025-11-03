@@ -163,10 +163,11 @@ class TestImporter:
         _log.info('Importing wpt@%s to Chromium %s', new_wpt_revision,
                   chromium_revision)
 
-        if options.ignore_exportable_commits:
+        if options.ignored_commit_ids == {'*'}:
             commits = []
         else:
-            commits = self.apply_exportable_commits_locally(local_wpt)
+            commits = self.apply_exportable_commits_locally(
+                local_wpt, options.ignored_commit_ids)
             if commits is None:
                 _log.error('Could not apply some exportable commits cleanly.')
                 _log.error('Aborting import to prevent clobbering commits.')
@@ -375,8 +376,13 @@ class TestImporter:
             help='log extra details that may be helpful when debugging')
         parser.add_argument(
             '--ignore-exportable-commits',
-            action='store_true',
-            help='do not check for exportable commits that would be clobbered')
+            dest='ignored_commit_ids',
+            nargs='?',
+            const='*',
+            type=lambda value: set(value.split(',')) if value else None,
+            help=('Comma-separated list of in-flight exportable commit hashes '
+                  'to exempt from the clobber check. If no value is provided, '
+                  'exempt all commits.'))
         parser.add_argument('-r', '--revision', help='target wpt revision')
         parser.add_argument(
             '--auto-upload',
@@ -408,7 +414,11 @@ class TestImporter:
             _log.warning('Checkout has local commits before import.')
         return True
 
-    def apply_exportable_commits_locally(self, local_wpt):
+    def apply_exportable_commits_locally(
+        self,
+        local_wpt: LocalWPT,
+        ignored_commit_ids: set[str] | None = None,
+    ) -> list[ChromiumCommit] | None:
         """Applies exportable Chromium changes to the local WPT repo.
 
         The purpose of this is to avoid clobbering changes that were made in
@@ -418,14 +428,22 @@ class TestImporter:
         previous Chromium change.
 
         Args:
-            A LocalWPT instance for our local copy of WPT.
+            local_wpt: Our local copy of WPT.
+            ignored_commit_ids: A list of Chromium commit IDs to skip applying
+                on `local_wpt`. IDs can be either the full SHA hash, or
+                shortened to 10 characters.
 
         Returns:
             A list of commits applied (could be empty), or None if any
             of the patches could not be applied cleanly.
         """
+        ignored_commit_ids = ignored_commit_ids or set()
         commits = self.exportable_but_not_exported_commits(local_wpt)
+        commits_applied = []
         for commit in commits:
+            if {commit.short_sha, commit.sha} & ignored_commit_ids:
+                _log.warning('Skipping %s for application', commit.short_sha)
+                continue
             _log.info('Applying exportable commit locally:')
             _log.info(commit.url())
             _log.info('Subject: %s', commit.subject().strip())
@@ -443,7 +461,8 @@ class TestImporter:
                 return None
             self.wpt_git.commit_locally_with_message(
                 'Applying patch %s' % commit.sha)
-        return commits
+            commits_applied.append(commit)
+        return commits_applied
 
     def exportable_but_not_exported_commits(self, local_wpt):
         """Returns a list of commits that would be clobbered by importer.

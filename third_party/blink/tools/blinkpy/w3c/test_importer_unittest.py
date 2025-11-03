@@ -413,6 +413,41 @@ class TestImporterTest(LoggingTestCase):
             importer.wpt_git.local_commits(),
             [['Applying patch 14fd77e88e42147c57935c49d9e3b2412b8491b7']])
 
+    def test_apply_exportable_commits_locally_ignore(self):
+        host = self.mock_host()
+        importer = self._get_test_importer(
+            host, github=MockWPTGitHub(pull_requests=[]))
+        importer.wpt_git = MockGit(cwd='/tmp/wpt', executive=host.executive)
+        # The commit hashes are SHA1s of the `position` argument.
+        commit_to_keep = MockChromiumCommit(
+            host,
+            subject='Keep',
+            patch='Fake patch contents...\n',
+            position='refs/heads/master@{#123}')
+        commit_to_ignore1 = MockChromiumCommit(
+            host,
+            subject='Ignore (1/2)',
+            patch='Fake patch contents...\n',
+            position='refs/heads/master@{#124}')
+        commit_to_ignore2 = MockChromiumCommit(
+            host,
+            subject='Ignore (2/2)',
+            patch='Fake patch contents...\n',
+            position='refs/heads/master@{#125}')
+        commits = [commit_to_ignore1, commit_to_keep, commit_to_ignore2]
+
+        with mock.patch.object(importer, 'exportable_but_not_exported_commits',
+                               return_value=commits):
+            applied = importer.apply_exportable_commits_locally(LocalWPT(host), {
+                '39e866ed54f106fdc751cfae9cf623df4ccf9082',
+                '688b9695f0',
+            })
+
+        self.assertEqual(applied, [commit_to_keep])
+        self.assertEqual(
+            importer.wpt_git.local_commits(),
+            [['Applying patch 14fd77e88e42147c57935c49d9e3b2412b8491b7']])
+
     def test_apply_exportable_commits_locally_returns_none_on_failure(self):
         host = self.mock_host()
         github = MockWPTGitHub(pull_requests=[])
