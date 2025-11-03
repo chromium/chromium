@@ -9,6 +9,7 @@
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/aggregated_journal.h"
 #include "chrome/browser/actor/site_policy.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/browser_management/browser_management_service.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/glic/glic_pref_names.h"
@@ -17,6 +18,7 @@
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_features.h"
 #include "components/prefs/pref_service.h"
+#include "components/variations/service/variations_service.h"
 #include "content/public/browser/web_contents.h"
 
 namespace actor {
@@ -47,6 +49,12 @@ std::string GlicActuationOnWebPrefToString(int value) {
   }
   NOTREACHED();
 }
+
+bool IsLikelyDogfoodClient() {
+  variations::VariationsService* variations_service =
+      g_browser_process->variations_service();
+  return variations_service && variations_service->IsLikelyDogfoodClient();
+}
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
 bool HasActuationCapability(Profile* profile) {
@@ -68,6 +76,7 @@ bool HasActuationCapability(Profile* profile) {
       features::kGlicActorEnterprisePrefDefault.Get();
   const int capability_pref =
       profile->GetPrefs()->GetInteger(glic::prefs::kGlicActuationOnWeb);
+  bool is_likely_dogfood_client = IsLikelyDogfoodClient();
 
   VLOG(1) << "Is browser managed: " << is_managed;
   VLOG(1) << "kGlicActorEnterprisePrefDefault value: "
@@ -76,8 +85,9 @@ bool HasActuationCapability(Profile* profile) {
           << profile->GetPrefs()->IsManagedPreference(
                  glic::prefs::kGlicActuationOnWeb)
           << " value: " << GlicActuationOnWebPrefToString(capability_pref);
+  VLOG(1) << "is_likely_dogfood_client: " << is_likely_dogfood_client;
 
-  if (!is_managed) {
+  if (!is_managed || is_likely_dogfood_client) {
     return true;
   }
 
