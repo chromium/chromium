@@ -1844,6 +1844,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="4014895360827978999">Ticaret Hizmetleri ve Ödeme Sistemleri</translation>
 <translation id="4018819349042761761">Ortak Anahtar</translation>
 <translation id="4023431997072828269">Bu form, güvenli olmayan bir bağlantı kullanılarak gönderildiğinden bilgileriniz başkaları tarafından görülebilir.</translation>
+<translation id="4024673763872230929">Bilgilerinizi kaydederek formları daha hızlı doldurun. Cihazınıza kaydedilir.</translation>
 <translation id="4025325634010721551">Politikalar yeniden yüklendi</translation>
 <translation id="4025338605225449265">Para Birimleri ve Döviz</translation>
 <translation id="4025777154208238692">Ters sırada</translation>
@@ -2277,6 +2278,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="4732860731866514038"><ph name="LANGUAGE" /> dil paketi indiriliyor... %<ph name="PERCENT" /></translation>
 <translation id="4733082559415072992"><ph name="URL" />, cihazınızın konumunu kullanmak istiyor</translation>
 <translation id="473414950835101501">Kameralarınızı kullanma</translation>
+<translation id="4734343956394152985"><ph name="BEGIN_BOLD" />Mevcut varsayılan<ph name="END_BOLD" /> · <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="4736825316280949806">Chromium'u yeniden başlatın</translation>
 <translation id="4736934858538408121">Sanal kart</translation>
 <translation id="473775607612524610">Güncelle</translation>
@@ -3386,6 +3388,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6521745193039995384">Etkin değil</translation>
 <translation id="6522682797352430154">Klasik Müzik</translation>
 <translation id="6524830701589638230">Erişilebilirlik ayarlarını yönetin düğmesi, Chrome ayarlarında erişilebilirlik araçlarınızı kişiselleştirmek için etkinleştirin.</translation>
+<translation id="6525222262307262764">Mevcut varsayılanı koru</translation>
 <translation id="6527049834925947126">Gıda Üretimi</translation>
 <translation id="6529173248185917884">Yedinci Rulo</translation>
 <translation id="6529602333819889595">Silmeyi &amp;Yeniden Yap</translation>
@@ -3406,6 +3409,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6567832540451970450">Yöneticiniz bu sitede <ph name="PERMISSION" /> erişimine izin verdi</translation>
 <translation id="6568793038316600992">Ödeme yöntemlerini yönet düğmesi, Chrome ayarlarında ödemelerinizi ve kredi kartı bilgilerinizi yönetmek için etkinleştirin</translation>
 <translation id="6569060085658103619">Bir uzantı sayfası görüntülüyorsunuz</translation>
+<translation id="6571992525120410251"><ph name="ENGINE_NAME" /> arama motoruna soru sorun</translation>
 <translation id="6572867903637058088">İşinize yaradı mı?</translation>
 <translation id="6573200754375280815">Sağda ikili delik</translation>
 <translation id="6575408526598156416">Hesaba kaydet</translation>
@@ -3454,6 +3458,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="666259744093848177">(x86_64 çevrilmiş)</translation>
 <translation id="6665553082534466207">Sağda üçlü delik</translation>
 <translation id="6668389483194953109">"custom" adlı kağıt boyutu bulundu, ancak "custom_size" özelliği boş veya geçersiz.</translation>
+<translation id="6670729408462528018">Galeri</translation>
 <translation id="6671169470640320959">Otomobil Finansmanı</translation>
 <translation id="6671697161687535275">Form önerisi Chromium'dan kaldırılsın mı?</translation>
 <translation id="6675846980676550611">Artırılmış gerçekliğe (AR) izin verilmedi</translation>

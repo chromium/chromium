@@ -1852,6 +1852,7 @@
 <translation id="4014895360827978999">Առևտրային ծառայություններ և վճարային համակարգեր</translation>
 <translation id="4018819349042761761">Բաց բանալի</translation>
 <translation id="4023431997072828269">Քանի որ այս ձևը ոչ ապահով կապ է օգտագործում, ձեր տեղեկությունները տեսանելի կլինեն բոլորին։</translation>
+<translation id="4024673763872230929">Պահեք ձեր տեղեկությունները և ավելի արագ լրացրեք ձևերը։ Պահվում է սարքում։</translation>
 <translation id="4025325634010721551">Կանոնները նորից բեռնվեցին</translation>
 <translation id="4025338605225449265">Արժույթներ և արտարժույթի փոխանակում</translation>
 <translation id="4025777154208238692">Չեղարկել դասավորությունը</translation>
@@ -2283,6 +2284,7 @@
 <translation id="4732860731866514038"><ph name="LANGUAGE" /> լեզվի փաթեթը ներբեռնվում է... <ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992"><ph name="URL" /> կայքն ուզում է օգտագործել ձեր սարքի տեղադրությունը</translation>
 <translation id="473414950835101501">Օգտագործել ձեր տեսախցիկները</translation>
+<translation id="4734343956394152985"><ph name="BEGIN_BOLD" />Կանխադրված որոնողական համակարգը<ph name="END_BOLD" /> · <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="4736825316280949806">Վերագործարկեք Chromium-ը</translation>
 <translation id="4736934858538408121">Վիրտուալ քարտ</translation>
 <translation id="473775607612524610">Թարմացնել</translation>
@@ -3395,6 +3397,7 @@
 <translation id="6521745193039995384">Ակտիվ չէ</translation>
 <translation id="6522682797352430154">Դասական երաժշտություն</translation>
 <translation id="6524830701589638230">«Կառավարել հատուկ գործառույթների կարգավորումները» կոճակ․ ակտիվացրեք՝ Chrome-ի կարգավորումներում հատուկ գործառույթների գործիքներն անհատականացնելու համար</translation>
+<translation id="6525222262307262764">Պահպանել ընթացիկ կանխադրված համակարգը</translation>
 <translation id="6527049834925947126">Սննդի արտադրություն</translation>
 <translation id="6529173248185917884">Յոթերորդ գլանափաթեթ</translation>
 <translation id="6529602333819889595">&amp;Վերարկել ջնջումը</translation>
@@ -3415,6 +3418,7 @@
 <translation id="6567832540451970450">Ձեր ադմինիստրատորը այս կայքին <ph name="PERMISSION" />ն օգտագործելու թույլտվություն է տվել</translation>
 <translation id="6568793038316600992">«Կառավարել վճարման եղանակները» կոճակ․ ակտիվացրեք ձեր վճարումները և վարկային քարտերի տվյալները Chrome-ի կարգավորումներում կառավարելու համար</translation>
 <translation id="6569060085658103619">Դուք դիտում եք ընդլայնման էջը</translation>
+<translation id="6571992525120410251">Որևէ բան հարցրեք <ph name="ENGINE_NAME" />-ին</translation>
 <translation id="6572867903637058088">Տեղեկությունն օգտակա՞ր է</translation>
 <translation id="6573200754375280815">Երկու անցք աջ կողմում</translation>
 <translation id="6575408526598156416">Պահել հաշվում</translation>
@@ -3463,6 +3467,7 @@
 <translation id="666259744093848177">(x86_64 թարգմանված)</translation>
 <translation id="6665553082534466207">Երեք անցք աջ կողմում</translation>
 <translation id="6668389483194953109">Գտնվել է թղթի չափսի «custom» անվանումը, սակայն «custom_size» հատկությունը դատարկ է կամ անվավեր։</translation>
+<translation id="6670729408462528018">Ցուցասրահ</translation>
 <translation id="6671169470640320959">Ավտովարկեր</translation>
 <translation id="6671697161687535275">Հեռացնե՞լ ձևերի առաջարկները Chromium-ից:</translation>
 <translation id="6675846980676550611">Լրացված իրականության օգտագործման թույլտվությունը մերժվել է</translation>

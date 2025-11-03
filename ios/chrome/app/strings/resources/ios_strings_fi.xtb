@@ -677,6 +677,7 @@
 <translation id="3642060527569456384">Välilehtiryhmät tallentuvat ja päivittyvät automaattisesti kaikilla laitteillasi.</translation>
 <translation id="3643338347976071250">{count,plural, =1{{count} salasana tallennetaan vain tälle laitteelle. Jos haluat käyttää sitä muilla laitteillasi, tallenna se Google-tilillesi ({email}).}other{{count} salasanaa tallennetaan vain tälle laitteelle. Jos haluat käyttää niitä muilla laitteilla, tallenna ne Google-tilillesi ({email}).}}</translation>
 <translation id="3659297405161482746">Maksutapoja ei löytynyt</translation>
+<translation id="3662966164093827811">{count,plural, =1{1 valittu}other{# valittu}}</translation>
 <translation id="3668816008081204991">Lukulista on piilotettu</translation>
 <translation id="3670030362669914947">Numero</translation>
 <translation id="3679163990085797665">Poista luetut</translation>

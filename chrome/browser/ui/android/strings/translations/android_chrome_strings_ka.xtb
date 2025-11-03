@@ -599,6 +599,7 @@
 <translation id="3635073343384702370">პაროლების შემოწმებას Chrome შეძლებს მათი შენახვის შემდეგ</translation>
 <translation id="3636940436873918441">უპირატესი ენები</translation>
 <translation id="3637744895182738742">საიდუმლო ფრაზის დავიწყების ან ამ პარამეტრის შეცვლის სურვილის შემთხვევაში, <ph name="BEGIN_LINK" />წაშალეთ Chrome-ის მონაცემები თქვენი ანგარიშიდან<ph name="END_LINK" />.</translation>
+<translation id="3647019414263135904">კონტექსტური ამომხტარი ფანჯრის გახსნა ან დახურვა</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3674208116086565128">Google აპის მთავარ გვერდზე გადასვა</translation>
 <translation id="368329460027487650">გამოსული ხართ. გახსნის შესვლის ვარიანტებს.</translation>
@@ -672,6 +673,7 @@
 <translation id="3985022125189960801">კვლავ დაამატეთ საიტი, თუ გსურთ, რომ ის იმ საიტების რიგებში მოხვდეს, რომლებსაც შეუძლია თქვენთვის საინტერესო კონტენტის პროგნოზირება</translation>
 <translation id="3985215325736559418">გსურთ, ხელახლა ჩამოტვირთოთ <ph name="FILE_NAME" />?</translation>
 <translation id="3987993985790029246">ბმულის კოპირება</translation>
+<translation id="3994236846568425219">მუქი თემის ჩართვა, როცა მოწყობილობაზე მუქი თემა გააქტიურდება</translation>
 <translation id="4000212216660919741">ხაზგარეშე მთავარი გვერდი</translation>
 <translation id="4000670338830950598">მოირგეთ და გააკონტროლეთ Google Chrome გამოყოფილი ერთეულით</translation>
 <translation id="4015643064997321279">{NUM_PASSWORDS,plural, =1{1 გატეხილი პაროლი თქვენს Google ანგარიშში}other{# გატეხილი პაროლი თქვენს Google ანგარიშში}}</translation>
@@ -809,6 +811,7 @@
 <translation id="4587589328781138893">საიტები</translation>
 <translation id="4594952190837476234">ეს ხაზგარეშე გვერდი თარიღდება <ph name="CREATION_TIME" />-ით და შეიძლება განსხვავდებოდეს ონლაინ-ვერსიისგან.</translation>
 <translation id="4595237294768457124">გახსენით ახალი ჩანართის გვერდი</translation>
+<translation id="4595276580892809760">სურათების მიმაგრება გალერეიდან</translation>
 <translation id="4595805675102978678">Google ანგარიშის შეცდომა</translation>
 <translation id="4601095002996233687">საეჭვო ჩამოტვირთვების სიღრმისეული სკანირების ფუნქცია.</translation>
 <translation id="4606559747793337066">როცა საიტი ან აპი გთხოვთ, უფლება მისცეთ, კონფიდენციალურად ჩატვირთოს თავის გვერდზე არსებული ბმულები, Chrome დაშიფრავს და წინასწარ ჩატვირთავს გვერდებს Google-ის სერვერების მეშვეობით, ქუქი-ჩანაწერების გარეშე. აღნიშნული დამალავს თქვენს ვინაობას წინასწარ ჩატვირთული საიტისგან.</translation>
@@ -885,6 +888,7 @@
 <translation id="4864369630010738180">მიმდინარეობს შესვლა…</translation>
 <translation id="4866368707455379617"><ph name="MODULE" /> ვერ დაინსტალირდა Chrome-ისთვის</translation>
 <translation id="4871568871368204250">სინქრონიზაციის გამორთვა</translation>
+<translation id="487567923005969537">AI რეჟიმის ჩართვა</translation>
 <translation id="4875775213178255010">კონტენტის შემოთავაზება</translation>
 <translation id="4877678010818027629">ინკოგნიტო რეჟიმზე გადასვლა</translation>
 <translation id="4878404682131129617">პროქსი-სერვერის მეშვეობით გვირაბული კავშირის დამყარება ვერ მოხერხდა</translation>
@@ -1304,6 +1308,7 @@
 <translation id="6636623428211296678">გაეცანით სხვა ვარიანტებს ქვემოთ, ან დაასრულეთ ახლავე</translation>
 <translation id="6637100877383020115">ამ აპის გაუმჯობესების მიზნით, Chrome უგზავნის მოხმარებისა და ავარიულად გათიშვის მონაცემებს Google-ს. <ph name="BEGIN_UMA_LINK" />მართვა<ph name="END_UMA_LINK" /></translation>
 <translation id="6641780377503683465">წაიშალოს <ph name="INTEREST" /></translation>
+<translation id="6642299196749785472">ჩანართების დართვა</translation>
 <translation id="6647441008198474441">თქვენ მიერ მონახულებული URL-ები ეგზავნება Google-ს იმის პროგნოზირებისთვის, თუ რომელი საიტების მონახულებას მოისურვებთ შემდგომში</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 და <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> სხვა}other{<ph name="CONTACT_PREVIEW" />\u2026 და <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> სხვა}}</translation>
 <translation id="6649642165559792194">სურათის გადახედვა <ph name="BEGIN_NEW" />სიახლე<ph name="END_NEW" /></translation>
@@ -1713,6 +1718,7 @@
 <translation id="8236097722223016103">სანიშნეებში დამატება</translation>
 <translation id="8243077599929149377">დაამატეთ თქვენი მომხმარებლის სახელი</translation>
 <translation id="8244387390464017490">ახალი ჩან. გვერდის მორგება</translation>
+<translation id="8244444485683708655">კამერის სურათის დართვა</translation>
 <translation id="8250920743982581267">დოკუმენტები</translation>
 <translation id="8258999165172757081">დამატებულია</translation>
 <translation id="8259179246279078674">ვინაიდან წინასწარ ჩატვირთული გვერდები დაშიფრულია, Google ვერაფერს შეიტყობს წინასწარ ჩატვირთული გვერდების კონტენტის შესახებ. Google-ის სერვერებს ეცოდინება, რომელი საიტები იტვირთება წინასწარ კონფიდენციალურად. ეს ინფორმაცია გამოყენებული იქნება მხოლოდ გვერდების წინასწარ ჩასატვირთად და არ მიებმება თქვენს Google ანგარიშში არსებულ სხვა ინფორმაციას.</translation>
@@ -1944,6 +1950,7 @@
 <translation id="927968626442779827">გამოიყენეთ Lite რეჟიმი Google Chrome-ში</translation>
 <translation id="928550791203542716"><ph name="SITE_NAME" /> თვალმიდევნებულია</translation>
 <translation id="930124987204876019">ისტორიის, ქუქი-ჩანაწერების, საიტის მონაცემების, ქეშის წაშლა…</translation>
+<translation id="930834144334005936">მიმდინარე რეჟიმის „<ph name="MODE_NAME" />“ ძიებაზე გადართვა</translation>
 <translation id="938850635132480979">შეცდომა: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">შეიყვანეთ საიდუმლო ფრაზა</translation>
 <translation id="945522503751344254">შეფასების გაგზავნა</translation>

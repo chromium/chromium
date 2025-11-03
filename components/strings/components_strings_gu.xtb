@@ -1844,6 +1844,7 @@
 <translation id="4014895360827978999">વેપારી સેવાઓ અને ચુકવણી સિસ્ટમ</translation>
 <translation id="4018819349042761761">જાહેર કી</translation>
 <translation id="4023431997072828269">અસુરક્ષિત કનેક્શનનો ઉપયોગ કરીને આ ફોર્મ સબમિટ કરવામાં આવી રહ્યું હોવાથી, તમારી માહિતી અન્ય લોકોને દેખાઈ શકે છે.</translation>
+<translation id="4024673763872230929">તમારી માહિતી સાચવો અને ફોર્મ વધુ ઝડપથી ભરો. તમારા ડિવાઇસમાં સાચવે છે.</translation>
 <translation id="4025325634010721551">પૉલિસીઓ ફરીથી લોડ કરવામાં આવી</translation>
 <translation id="4025338605225449265">ચલણ અને વિદેશ વિનિમય</translation>
 <translation id="4025777154208238692">વિપરિત ક્રમ</translation>
@@ -2277,6 +2278,7 @@
 <translation id="4732860731866514038"><ph name="LANGUAGE" /> ભાષા પૅક ડાઉનલોડ કરી રહ્યાં છીએ... <ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992"><ph name="URL" /> તમારા ઉપકરણના સ્થાનનો ઉપયોગ કરવા માગે છે</translation>
 <translation id="473414950835101501">તમારા કૅમેરાનો ઉપયોગ કરો</translation>
+<translation id="4734343956394152985"><ph name="BEGIN_BOLD" />હાલનું ડિફૉલ્ટ<ph name="END_BOLD" /> · <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="4736825316280949806">Chromium ને પુનઃપ્રારંભ કરો</translation>
 <translation id="4736934858538408121">વર્ચ્યુઅલ કાર્ડ</translation>
 <translation id="473775607612524610">અપડેટ કરો</translation>
@@ -3387,6 +3389,7 @@
 <translation id="6521745193039995384">સક્રિય નથી</translation>
 <translation id="6522682797352430154">શાસ્ત્રીય સંગીત</translation>
 <translation id="6524830701589638230">'ઍક્સેસિબિલિટી સેટિંગ મેનેજ કરો' બટન, Chrome સેટિંગમાં તમારા ઍક્સેસિબિલિટી ટૂલ મનગમતા બનાવવા માટે સક્રિય કરો</translation>
+<translation id="6525222262307262764">હાલનું ડિફૉલ્ટ જાળવી રાખો</translation>
 <translation id="6527049834925947126">ખાદ્ય પ્રોડક્શન</translation>
 <translation id="6529173248185917884">સાતમો રોલ</translation>
 <translation id="6529602333819889595">&amp;ફરી કરો ડિલીટ કરો</translation>
@@ -3407,6 +3410,7 @@
 <translation id="6567832540451970450">તમારા ઍડમિનિસ્ટ્રેટર આ સાઇટ માટે <ph name="PERMISSION" />ને મંજૂરી આપે છે</translation>
 <translation id="6568793038316600992">'ચુકવણી પદ્ધતિઓ મેનેજ કરો' બટન, Chrome સેટિંગમાં તમારી ચુકવણીઓ અને ક્રેડિટ કાર્ડની માહિતી મેનેજ કરવા માટે સક્રિય કરો</translation>
 <translation id="6569060085658103619">તમે એક્સ્ટેન્શન પેજ જોઈ રહ્યાં છો</translation>
+<translation id="6571992525120410251"><ph name="ENGINE_NAME" />ને કંઈપણ પૂછો</translation>
 <translation id="6572867903637058088">શું આ સહાયરૂપ છે?</translation>
 <translation id="6573200754375280815">જમણી બાજુએ બે કાણાં પાડો</translation>
 <translation id="6575408526598156416">એકાઉન્ટમાં સાચવો</translation>
@@ -3455,6 +3459,7 @@
 <translation id="666259744093848177">(x86_64 અનુવાદિત)</translation>
 <translation id="6665553082534466207">જમણી બાજુએ ત્રણ કાણાં પાડો</translation>
 <translation id="6668389483194953109">કાગળના કદનું નામ "custom" તરીકે જોવા મળ્યું છે, પરંતુ પ્રોપર્ટીની "custom_size" ખાલી અથવા અમાન્ય છે.</translation>
+<translation id="6670729408462528018">Gallery</translation>
 <translation id="6671169470640320959">ઑટો ફાઇનાન્સિંગ</translation>
 <translation id="6671697161687535275">Chromium માંથી ફોર્મ સૂચન દૂર કરીએ?</translation>
 <translation id="6675846980676550611">ARને મંજૂરી નથી</translation>

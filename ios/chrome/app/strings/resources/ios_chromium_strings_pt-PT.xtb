@@ -25,6 +25,7 @@
 <translation id="1502360822835740515">Tornar o Chromium o navegador predefinido</translation>
 <translation id="1503199973012840174">O Chromium está desatualizado. Atualize-o para manter a sua segurança.</translation>
 <translation id="1515748263297244785">Use o Chromium para iPad por predefinição</translation>
+<translation id="1530961174488670696">O Chromium não conseguiu verificar se existem atualizações. Tente mais tarde.</translation>
 <translation id="1531155317299575425">Mostra pedidos para iniciar sessão no Chromium.</translation>
 <translation id="1553657876656159572">Um feed personalizado criado para si. Incluindo notícias, desporto e meteorologia.</translation>
 <translation id="1561849081734670621">Para desativar o modo de bloqueio no Chromium, desative-o no seu iPhone.</translation>
@@ -145,6 +146,7 @@ Os seus dados estão encriptados com a sua frase de acesso. Introduza-a para usa
 <translation id="420541179527342563">Para desativar o modo de bloqueio no Chromium, desative-o no seu iPad.</translation>
 <translation id="4272892696084633551">Ajudar a melhorar as funcionalidades e o desempenho do Chromium</translation>
 <translation id="4302397443352897529">Definições do Chromium</translation>
+<translation id="4304713468139749426">Gestor de palavras-passe</translation>
 <translation id="4408912345039114853">Execute a verificação de segurança do Chromium</translation>
 <translation id="4432744876818348753">Inicie sessão para tirar o máximo partido do Chromium.</translation>
 <translation id="4445228361214254027">A sua organização desativou a capacidade de usar e guardar dados do Chromium na sua Conta Google. Os novos marcadores, palavras-passe e muito mais são guardados apenas neste dispositivo.</translation>
@@ -236,7 +238,6 @@ Aspetos a considerar:
 <translation id="6154098560469640583">Use o Chromium sempre que tocar em links de mensagens, documentos e outras apps</translation>
 <translation id="6157162508956739031">Preencha automaticamente as suas palavras-passe e chaves de acesso a partir do Chromium para iniciar sessão em apps e sites de forma rápida</translation>
 <translation id="6170619162539716595">Permita que o Chromium use o Google Maps para lhe dar direções e informações locais sobre moradas detetadas.</translation>
-<translation id="6247557882553405851">Gestor de Palavras-passe da Google</translation>
 <translation id="6268381023930128611">Quer terminar sessão no Chromium?</translation>
 <translation id="6301717043141881464">Para ter facilmente as palavras-passe guardadas nas suas outras apps, escolha o Chromium para o preenchimento automático</translation>
 <translation id="6324041800010509197">Aceda à grelha de separadores no Chromium</translation>

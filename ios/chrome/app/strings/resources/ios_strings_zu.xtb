@@ -677,6 +677,7 @@
 <translation id="3642060527569456384">Amaqembu wamathebhu alondoloza ngokuzenzekela futhi abuyekeze kuwo wonke amadivayisi wakho.</translation>
 <translation id="3643338347976071250">{count,plural, =1{Iphasiwedi engu-{count} ilondoloziwe kule divayisi kuphela. Ukuze uyisebenzise kwamanye amadivayisi, ilondoloze ku-Google Account yakho, {email}.}one{Amaphasiwedi angu-{count} alondolozwe kule divayisi kuphela. Ukuze uzisebenzise kwamanye amadivayisi akho, zilondoloze ku-Google Account yakho, {email}.}other{Amaphasiwedi angu-{count} alondolozwe kule divayisi kuphela. Ukuze uzisebenzise kwamanye amadivayisi akho, zilondoloze ku-Google Account yakho, {email}.}}</translation>
 <translation id="3659297405161482746">Azikho izindlela zokukhokha ezitholiwe</translation>
+<translation id="3662966164093827811">{count,plural, =1{Kukhethwe oku-1}one{Kukhethwe okungu-#}other{Kukhethwe okungu-#}}</translation>
 <translation id="3668816008081204991">Uhlu lokufunda lufihliwe</translation>
 <translation id="3670030362669914947">Inombolo</translation>
 <translation id="3679163990085797665">Sula okufundiwe</translation>

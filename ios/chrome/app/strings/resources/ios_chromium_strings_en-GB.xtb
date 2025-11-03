@@ -25,6 +25,7 @@
 <translation id="1502360822835740515">Make Chromium your default browser</translation>
 <translation id="1503199973012840174">Your Chromium is out of date. Update it to stay safe.</translation>
 <translation id="1515748263297244785">Use Chromium for iPad by default</translation>
+<translation id="1530961174488670696">Chromium couldn't check for updates. Please try again later.</translation>
 <translation id="1531155317299575425">Shows prompts to sign in to Chromium.</translation>
 <translation id="1553657876656159572">A custom feed made for you. Including news, sports and weather.</translation>
 <translation id="1561849081734670621">To disable Lockdown mode in Chromium, turn it off on your iPhone.</translation>
@@ -145,6 +146,7 @@ Your data is encrypted with your passphrase. Enter it to use and save Chromium d
 <translation id="420541179527342563">To disable Lockdown mode in Chromium, turn it off on your iPad.</translation>
 <translation id="4272892696084633551">Help improve Chromium's features and performance</translation>
 <translation id="4302397443352897529">Chromium settings</translation>
+<translation id="4304713468139749426">Password Manager</translation>
 <translation id="4408912345039114853">Run Chromium Safety Check</translation>
 <translation id="4432744876818348753">Sign in to get the most out of Chromium.</translation>
 <translation id="4445228361214254027">Your organisation turned off the ability to use and save Chromium data in your Google Account. New bookmarks, passwords and more will be saved only to this device.</translation>
@@ -236,7 +238,6 @@ Things to consider:
 <translation id="6154098560469640583">Use Chromium any time that you click links in messages, documents and other apps</translation>
 <translation id="6157162508956739031">Sign in quickly to apps and sites by autofilling your passwords and passkeys from Chromium</translation>
 <translation id="6170619162539716595">Allow Chromium to use Google Maps to give you directions and local info on detected addresses.</translation>
-<translation id="6247557882553405851">Google Password Manager</translation>
 <translation id="6268381023930128611">Sign out of Chromium?</translation>
 <translation id="6301717043141881464">To easily get your saved passwords in your other apps, choose Chromium for Autofill</translation>
 <translation id="6324041800010509197">Visit the Tab Grid in Chromium</translation>

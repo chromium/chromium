@@ -145,6 +145,7 @@
 <translation id="420541179527342563">如要停用 Chromium 的鎖定模式，請在 iPad 上將該模式關閉。</translation>
 <translation id="4272892696084633551">協助改善 Chromium 的功能與效能</translation>
 <translation id="4302397443352897529">Chromium 設定</translation>
+<translation id="4304713468139749426">密碼管理工具</translation>
 <translation id="4408912345039114853">執行 Chromium 安全檢查</translation>
 <translation id="4432744876818348753">登入以充分運用 Chromium 的各項功能。</translation>
 <translation id="4445228361214254027">貴機構已關閉在 Google 帳戶中使用及儲存 Chromium 資料的功能。新的書籤、密碼等資訊只會儲存在這部裝置上。</translation>
@@ -236,7 +237,6 @@
 <translation id="6154098560469640583">隨時可以使用 Chromium 開啟訊息、文件和其他應用程式中的連結。</translation>
 <translation id="6157162508956739031">自動填入 Chromium 中的密碼和密碼金鑰，快速登入應用程式和網站</translation>
 <translation id="6170619162539716595">允許 Chromium 偵測到地址時，使用 Google 地圖提供路線和當地資訊。</translation>
-<translation id="6247557882553405851">Google 密碼管理工具</translation>
 <translation id="6268381023930128611">要登出 Chromium 嗎？</translation>
 <translation id="6301717043141881464">如要在其他應用程式中輕鬆取得已儲存的密碼，請選擇 Chromium 做為自動填寫來源</translation>
 <translation id="6324041800010509197">開啟 Chromium 的分頁方格</translation>

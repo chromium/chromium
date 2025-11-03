@@ -158,7 +158,6 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="2753623023919742414">Sakatu bilatzeko</translation>
 <translation id="2757826245013442432">{COUNT,plural, =0{Eguneratzea aplikatzeko, Chrome berriro exekuta dezazun behar du Babes aurreratua ezarpenak}=1{Eguneratzea aplikatzeko, Chrome berriro exekuta dezazun behar du Babes aurreratua ezarpenak. Ezkutuko moduko leihoa ez da irekiko berriro.}other{Eguneratzea aplikatzeko, Chrome berriro exekuta dezazun behar du Babes aurreratua ezarpenak. Ezkutuko moduko # leihoak ez dira irekiko berriro.}}</translation>
 <translation id="2765403129283291972">Chrome-k webgune honen izenean mikrofonoa erabiltzeko baimena behar du</translation>
-<translation id="2770231113462710648">Ezarri hau arakatzaile lehenetsia gisa:</translation>
 <translation id="2775140325783767197">Chrome-k ezin ditu egiaztatu pasahitzak. Egiaztatu Internetera konektatuta zaudela.</translation>
 <translation id="2797864378188255696"><ph name="USER_EMAIL" /> kontuarekin Google-ren zerbitzuetan saioa hastean (adibidez, Gmail-en edo YouTube-n), Chrome-n ere automatikoki has dezakezu saioa kontu berarekin</translation>
 <translation id="2799162042226656283">Zure Chrome</translation>
@@ -653,6 +652,7 @@ Google Chrome-k ezin ditu berreskuratu zure ezarpenak.</translation>
 <translation id="8255190535488645436">Google Chrome zure mikrofonoa eta kamera erabiltzen ari da.</translation>
 <translation id="8267953129876836456">Chrome-k segurtasun-gomendio batzuk aurkitu ditu berrikus ditzazun</translation>
 <translation id="8286862437124483331">Google Chrome pasahitzak erakusten saiatzen ari da. Hori baimentzeko, idatzi Windows pasahitza.</translation>
+<translation id="8289399803055125418">Erabili <ph name="BEGIN_LINK" />zeure pasaesaldia<ph name="END_LINK" /> Google-ko kontuko Chrome-ko datu guztiak enkriptatzeko Helbideak eta Google Diru-zorroa zerbitzuan gordetako datuak ez dira enkriptatuko pasaesaldiarekin. Chrome-ko arakatze-historia ez da sinkronizatuko.</translation>
 <translation id="829923460755755423">Gehitu Google-ren Pasahitz-kudeatzailea zerbitzurako lasterbide bat</translation>
 <translation id="8313851650939857356">Abiarazte-errorea: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8321888067342493336">Gorde irudi gisa</translation>

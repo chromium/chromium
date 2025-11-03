@@ -153,8 +153,8 @@
 <translation id="2738871930057338499">Internetga ulanmadi. HTTP 403, taqiqlangan. Proksi konfiguratsiyasini tekshiring.</translation>
 <translation id="2742320827292110288">Diqqat: Google Chrome kengaytmalar kezish tarixini yozib olishiga to‘sqinlik qilolmaydi. Bu kengaytmani inkognito rejimida o‘chirish uchun ushbu parametrdan belgini olib tashlang.</translation>
 <translation id="2753623023919742414">Qidirish uchun bosing</translation>
+<translation id="2757826245013442432">{COUNT,plural, =0{Kuchaytirilgan himoya yangilishlarni oʻrnatish uchun Chrome brauzerini qayta ishga tushirishni talab qilmoqda}=1{Kuchaytirilgan himoya yangilishlarni oʻrnatish uchun Chrome brauzerini qayta ishga tushirishni talab qilmoqda. Inkognito oyna qayta ochilmaydi.}other{Kuchaytirilgan himoya yangilishlarni oʻrnatish uchun Chrome brauzerini qayta ishga tushirishni talab qilmoqda. # inkognito oyna qayta ochilmaydi.}}</translation>
 <translation id="2765403129283291972">Bu sayt mikrofoningizdan foydalanishi uchun Chrome brauzeriga ruxsat berishingiz lozim</translation>
-<translation id="2770231113462710648">Standart brauzer etib tayinlash:</translation>
 <translation id="2775140325783767197">Chrome parollaringizni tekshira olmadi. Internet aloqasini tekshiring.</translation>
 <translation id="2797864378188255696">Gmail yoki YouTube kabi Google xizmatlariga <ph name="USER_EMAIL" /> hisobidan avtomatik kirganda Chromega ham shu hisobdan kirishingiz mumkin</translation>
 <translation id="2799162042226656283">Chrome</translation>

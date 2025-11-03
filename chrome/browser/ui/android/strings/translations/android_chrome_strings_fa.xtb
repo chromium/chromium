@@ -33,6 +33,7 @@
 <translation id="1111673857033749125">نشانک‌های ذخیره‌شده در سایر دستگاه‌های شما در اینجا نشان داده می‌شوند.</translation>
 <translation id="1126696498560056882">مدیریت حساب‌ها در این دستگاه</translation>
 <translation id="1135018701024399762">اگر افراد دیگری هم از دستگاهتان استفاده می‌کنند، «حالت ناشناس» مرورتان را از دید این افراد محفوظ نگه می‌دارد</translation>
+<translation id="113752097246673894">‏برای دریافت نشانک‌ها و موارد دیگر در همه دستگاه‌هایتان، با <ph name="EMAIL" /> به سیستم Chrome وارد شوید</translation>
 <translation id="1138458427267715730">وقتی قیمت در هر سایتی در وب کاهش پیدا کند، هشدار دریافت می‌کنید</translation>
 <translation id="1140317858355046628">اگر گروه زبانه را حذف کنید، همه دسترسی به گروه زبانه «<ph name="GROUP_NAME" />» را فوراً ازدست می‌دهند و این گروه زبانه از همه دستگاه‌ها حذف می‌شود.</translation>
 <translation id="1142732900304639782">ترجمه این سایت‌ها پیشنهاد نشود</translation>
@@ -395,6 +396,7 @@
 <translation id="2723001399770238859">صدا</translation>
 <translation id="2739887572830526131">این گروه را نگه دارید تا بعداً به آن برگه اضافه کنید یا اگر دیگر به آن نیاز ندارید، آن را حذف کنید.</translation>
 <translation id="2742373789128106053"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> فعلاً دردسترس نیست.</translation>
+<translation id="2751271371269891762">برای دریافت نشانک‌ها و موارد دیگر در همه دستگاه‌هایتان، با <ph name="EMAIL" /> به سیستم وارد شوید</translation>
 <translation id="2760805590727089264">ماه/سال</translation>
 <translation id="2762000892062317888">هم‌اکنون</translation>
 <translation id="276969039800130567">با <ph name="USER_EMAIL_ADDRESS" /> وارد سیستم شد.</translation>
@@ -404,6 +406,7 @@
 <translation id="2789486458103222910">تأیید</translation>
 <translation id="2791129728587938169">{NUM_PASSWORDS,plural, =1{‏‫Chrome یک مورد استفاده مجدد از گذرواژه پیدا کرده است که می‌توانید آن را بهبود دهید}one{‏‫Chrome ‏# مورد استفاده مجدد از گذرواژه پیدا کرده است که می‌توانید آن‌ها را بهبود دهید}other{‏‫Chrome ‏# مورد استفاده مجدد از گذرواژه پیدا کرده است که می‌توانید آن‌ها را بهبود دهید}}</translation>
 <translation id="2800066122460699237">زبانه <ph name="TAB_TITLE" /> بسته خواهد شد</translation>
+<translation id="2805210243313393104">در همه دستگاه‌هایتان به نشانک‌ها و موارد دیگر دسترسی داشته باشید</translation>
 <translation id="2805756323405976993">برنامه‌ها</translation>
 <translation id="2819849308549746319">لغو اشتراک از همه</translation>
 <translation id="2820047235535485532">‏می‌توانید انتخاب کنید چه داده‌هایی در «حساب Google» شما (<ph name="ACCOUNT_EMAIL" />) ذخیره شود.\nهمچنین می‌توانید این موارد را در نشانک‌ها، فهرست خواندن، یا مدیر گذرواژه مشاهده و مدیریت کنید.</translation>
@@ -673,6 +676,7 @@
 <translation id="4000670338830950598">‏با موردی برجسته‌شده Google Chrome را سفارشی‌سازی و کنترل کنید</translation>
 <translation id="4015643064997321279">{NUM_PASSWORDS,plural, =1{‏‫۱ گذرواژه لورفته در «حساب Google» شما}one{‏‫# گذرواژه لورفته در «حساب Google» شما}other{‏‫# گذرواژه لورفته در «حساب Google» شما}}</translation>
 <translation id="4016425174436051808">دنبال کردن ممکن نیست. مشکلی پیش آمد.</translation>
+<translation id="4023638601467301498">‏برای دریافت نشانک‌ها و موارد دیگر در همه دستگاه‌هایتان، به سیستم Chrome وارد شوید</translation>
 <translation id="4024768890073681126">ولی‌تان مرورگر را مدیریت می‌کند</translation>
 <translation id="4027569221211770437">پوشه <ph name="FOLDER_TITLE" /></translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# ساعت}one{# ساعت}other{# ساعت}}</translation>

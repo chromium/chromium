@@ -596,6 +596,7 @@
 <translation id="3635073343384702370">আপনি পাসওয়ার্ড সেভ করলে Chrome তা চেক করতে পারবে</translation>
 <translation id="3636940436873918441">পছন্দের ভাষা</translation>
 <translation id="3637744895182738742">আপনি নিজের পাসফ্রেজ ভুলে গেলে অথবা এই সেটিং পরিবর্তন করতে চাইলে, <ph name="BEGIN_LINK" />আপনার অ্যাকাউন্টে থাকা Chrome ডেটা মুছে দিন<ph name="END_LINK" />।</translation>
+<translation id="3647019414263135904">কন্টেক্সট পপ-আপ খুলুন বা বন্ধ করুন</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3674208116086565128">Google অ্যাপের হোম ট্যাবে যান</translation>
 <translation id="368329460027487650">সাইন-আউট হয়ে গেছেন। সাইন-ইন করার জন্য বিকল্প খোলে।</translation>
@@ -669,6 +670,7 @@
 <translation id="3985022125189960801">আপনি কী পছন্দ করেন তা অনুমান করতে পারে এমন সাইটগুলির পুলে আপনি চাইলে একটি সাইট আবার যোগ করুন</translation>
 <translation id="3985215325736559418">আপনি কি আবার <ph name="FILE_NAME" /> ডাউনলোড করতে চান?</translation>
 <translation id="3987993985790029246">লিঙ্ক কপি করুন</translation>
+<translation id="3994236846568425219">আপনার ডিভাইসের ডার্ক থিম চালু থাকলে ডার্ক থিম চালু করুন</translation>
 <translation id="4000212216660919741">অফলাইন হোম</translation>
 <translation id="4000670338830950598">হাইলাইট করা আইটেমের সাহায্যে Google Chrome কাস্টমাইজ এবং নিয়ন্ত্রণ করুন</translation>
 <translation id="4015643064997321279">{NUM_PASSWORDS,plural, =1{আপনার Google অ্যাকাউন্টের চুরি হয়ে যাওয়া ১টি পাসওয়ার্ড}one{আপনার Google অ্যাকাউন্টের চুরি হয়ে যাওয়া #টি পাসওয়ার্ড}other{আপনার Google অ্যাকাউন্টের চুরি হয়ে যাওয়া #টি পাসওয়ার্ড}}</translation>
@@ -805,6 +807,7 @@
 <translation id="4587589328781138893">সাইট</translation>
 <translation id="4594952190837476234">এই অফলাইন পৃষ্ঠাটি <ph name="CREATION_TIME" />-এ তৈরি করা হয়েছিল এবং এটি অনলাইন ভার্সনের থেকে আলাদা হতে পারে।</translation>
 <translation id="4595237294768457124">নতুন ট্যাব পৃষ্ঠা খুলুন</translation>
+<translation id="4595276580892809760">গ্যালারি থেকে ছবি অ্যাটাচ করুন</translation>
 <translation id="4595805675102978678">Google অ্যাকাউন্ট সম্পর্কিত সমস্যা</translation>
 <translation id="4601095002996233687">এই সুবিধা সন্দেহজনক ডাউনলোড যাচাই করতে ভালভাবে স্ক্যান করে।</translation>
 <translation id="4606559747793337066">কোনও সাইট বা অ্যাপ তার পৃষ্ঠার লিঙ্ক ব্যক্তিগতভাবে প্রিলোড করা হোক বলে নির্দেশ দিলে, কুকি ছাড়াই Google সার্ভারের মাধ্যমে Chrome, সেইসব পৃষ্ঠা এনক্রিপ্ট ও প্রিলোড করে। এর ফলে প্রিলোড করা সাইট আপনার পরিচয় দেখতে পায় না।</translation>
@@ -881,6 +884,7 @@
 <translation id="4864369630010738180">প্রবেশ করা হচ্ছে...</translation>
 <translation id="4866368707455379617">Chrome-এর জন্য <ph name="MODULE" /> ইনস্টল করা যাচ্ছে না</translation>
 <translation id="4871568871368204250">সিঙ্ক করা বন্ধ করুন</translation>
+<translation id="487567923005969537">AI মোড চালু করুন</translation>
 <translation id="4875775213178255010">কন্টেন্টের প্রস্তাবনা</translation>
 <translation id="4877678010818027629">ছদ্মবেশী মোড চালু করুন</translation>
 <translation id="4878404682131129617">প্রক্সি সার্ভারের মাধ্যমে টানেল তৈরি করা যায়নি</translation>
@@ -1300,6 +1304,7 @@
 <translation id="6636623428211296678">নিচে দেওয়া আরও সেটিংস দেখুন অথবা এখনই শেষ করুন</translation>
 <translation id="6637100877383020115">অ্যাপ উন্নত করার জন্য সাহায্য করতে, Chrome ব্যবহার সম্পর্কিত ও ক্র্যাশ ডেটা Google-এ পাঠায়। <ph name="BEGIN_UMA_LINK" />ম্যানেজ করুন<ph name="END_UMA_LINK" /></translation>
 <translation id="6641780377503683465"><ph name="INTEREST" /> সরিয়ে দিন</translation>
+<translation id="6642299196749785472">ট্যাব অ্যাটাচ করুন</translation>
 <translation id="6647441008198474441">আপনি পরে কোন কোন সাইট ভিজিট করতে পারেন তা অনুমান করার জন্য আপনি যেসব URL দেখেন তা Google-এ পাঠানো হয়</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 এবং <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> আরও অনেক}one{<ph name="CONTACT_PREVIEW" />\u2026 এবং <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> আরও অনেক}other{<ph name="CONTACT_PREVIEW" />\u2026 এবং <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> আরও অনেক}}</translation>
 <translation id="6649642165559792194"><ph name="BEGIN_NEW" />নতুন<ph name="END_NEW" /> ছবির প্রিভিউ দেখুন</translation>
@@ -1709,6 +1714,7 @@
 <translation id="8236097722223016103">বুকমার্কে যোগ করুন</translation>
 <translation id="8243077599929149377">আপনার ইউজারনেম যোগ করুন</translation>
 <translation id="8244387390464017490">'নতুন ট্যাব' পৃষ্ঠা কাস্টমাইজ করুন</translation>
+<translation id="8244444485683708655">ক্যামেরার ছবি অ্যাটাচ করুন</translation>
 <translation id="8250920743982581267">দস্তাবেজগুলি</translation>
 <translation id="8258999165172757081">যোগ করা্ হয়েছে</translation>
 <translation id="8259179246279078674">প্রিলোড করা পৃষ্ঠা এনক্রিপ্ট করা থাকে বলে সেটির কন্টেন্ট Google জানতে পারে না। কোন সাইট ব্যক্তিগতভাবে প্রিলোড করা হয়েছে সেটি Google সার্ভার জানতে পারে। এই তথ্য শুধু পৃষ্ঠা প্রিলোড করার জন্য ব্যবহার করা হয় এবং আপনার Google অ্যাকাউন্টের অন্য তথ্যের সাথে যুক্ত থাকে না।</translation>
@@ -1940,6 +1946,7 @@
 <translation id="927968626442779827">Google Chrome-এ 'লাইট' মোড ব্যবহার করুন</translation>
 <translation id="928550791203542716"><ph name="SITE_NAME" /> অনুসরণ করা হচ্ছে</translation>
 <translation id="930124987204876019">ইতিহাস, কুকি, সাইট ডেটা, ক্যাশে মুছুন…</translation>
+<translation id="930834144334005936">বর্তমান মোড <ph name="MODE_NAME" /> থেকে Search-এ রিসেট করুন</translation>
 <translation id="938850635132480979">ত্রুটি: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">পাসফ্রেজ প্রবেশ করান</translation>
 <translation id="945522503751344254">মতামত জানান</translation>

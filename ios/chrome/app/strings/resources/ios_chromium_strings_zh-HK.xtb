@@ -25,6 +25,7 @@
 <translation id="1502360822835740515">將 Chromium 設為預設瀏覽器</translation>
 <translation id="1503199973012840174">Chromium 版本過舊，請更新以確保安全。</translation>
 <translation id="1515748263297244785">預設使用 iPad 版 Chromium</translation>
+<translation id="1530961174488670696">Chromium 無法檢查更新，請稍後再試。</translation>
 <translation id="1531155317299575425">顯示登入 Chromium 的指示。</translation>
 <translation id="1553657876656159572">為你而設的自訂動態消息，涵蓋新聞、運動和天氣資訊。</translation>
 <translation id="1561849081734670621">在 iPhone 上關閉「封鎖模式」，就能在 Chromium 中停用此模式。</translation>
@@ -145,6 +146,7 @@
 <translation id="420541179527342563">在 iPad 上關閉「封鎖模式」，就能在 Chromium 中停用此模式。</translation>
 <translation id="4272892696084633551">協助改善 Chromium 的功能和效能</translation>
 <translation id="4302397443352897529">Chromium 設定</translation>
+<translation id="4304713468139749426">密碼管理工具</translation>
 <translation id="4408912345039114853">執行 Chromium「安全檢查」</translation>
 <translation id="4432744876818348753">登入以充分運用 Chromium 的所有功能。</translation>
 <translation id="4445228361214254027">你的機構已關閉在 Google 帳戶中使用及儲存 Chromium 資料的功能。新書籤、密碼等資料只會儲存在此裝置上。</translation>
@@ -236,7 +238,6 @@
 <translation id="6154098560469640583">隨時使用 Chromium 開啟訊息、文件和其他應用程式中的連結。</translation>
 <translation id="6157162508956739031">自動填入 Chromium 中的密碼與密鑰，快速登入應用程式和網站</translation>
 <translation id="6170619162539716595">允許 Chromium 使用「Google 地圖」，為偵測到的地址提供路線和本地資訊。</translation>
-<translation id="6247557882553405851">Google 密碼管理工具</translation>
 <translation id="6268381023930128611">要登出 Chromium 嗎？</translation>
 <translation id="6301717043141881464">如要在其他應用程式中輕鬆取得已儲存的密碼，請使用 Chromium 的自動填入功能</translation>
 <translation id="6324041800010509197">在 Chromium 中瀏覽分頁網格</translation>

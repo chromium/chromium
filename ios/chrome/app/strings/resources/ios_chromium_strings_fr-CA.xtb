@@ -145,6 +145,7 @@ Vos données sont chiffrées avec votre phrase de passe. Entrez-la pour utiliser
 <translation id="420541179527342563">Pour désactiver le mode de confinement dans Chromium, désactivez-le sur votre iPad.</translation>
 <translation id="4272892696084633551">Nous aider à améliorer les fonctionnalités et les performances de Chromium</translation>
 <translation id="4302397443352897529">Paramètres Chromium</translation>
+<translation id="4304713468139749426">Gestionnaire de mots de passe</translation>
 <translation id="4408912345039114853">Exécuter une Vérification de sécurité de Chromium</translation>
 <translation id="4432744876818348753">Connectez-vous pour profiter pleinement de Chromium.</translation>
 <translation id="4445228361214254027">Votre organisation a désactivé la possibilité d'utiliser et d'enregistrer des données Chromium dans votre compte Google. Les nouveaux favoris, mots de passe et plus ne seront enregistrés que sur cet appareil.</translation>
@@ -236,7 +237,6 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="6154098560469640583">Utilisez Chromium chaque fois que vous touchez des liens dans des messages, des documents et d'autres applications.</translation>
 <translation id="6157162508956739031">Connectez-vous rapidement aux applis et aux sites en remplissant automatiquement vos mots de passe et vos clés d'accès à partir de Chromium</translation>
 <translation id="6170619162539716595">Autorisez Chromium à utiliser Google Maps pour vous fournir des itinéraires et des renseignements locaux sur les adresses détectées.</translation>
-<translation id="6247557882553405851">Gestionnaire de mots de passe Google</translation>
 <translation id="6268381023930128611">Se déconnecter de Chromium?</translation>
 <translation id="6301717043141881464">Pour obtenir facilement vos mots de passe enregistrés dans vos autres applis, choisissez Chromium pour le remplissage automatique</translation>
 <translation id="6324041800010509197">Consulter la grille d'onglets dans Chromium</translation>

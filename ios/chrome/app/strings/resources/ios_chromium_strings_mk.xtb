@@ -145,6 +145,7 @@
 <translation id="420541179527342563">За да го оневозможите режимот на заклучување во Chromium, исклучете го на вашиот iPad.</translation>
 <translation id="4272892696084633551">Помогнете да се подобрат функциите и изведбата на Chromium</translation>
 <translation id="4302397443352897529">Поставки за Chromium</translation>
+<translation id="4304713468139749426">Управник со лозинки</translation>
 <translation id="4408912345039114853">Извршете безбедносна проверка во Chromium</translation>
 <translation id="4432744876818348753">Најавете се за да извадите максимум од Chromium.</translation>
 <translation id="4445228361214254027">Вашата организација ја исклучи способноста да се користат и зачувуваат податоци од Chromium во вашата сметка на Google. Новите обележувачи, лозинки и друго ќе се зачувуваат само на овој уред.</translation>
@@ -236,7 +237,6 @@
 <translation id="6154098560469640583">Користете го Chromium секогаш кога ќе кликнете линкови во пораки, документи и други апликации</translation>
 <translation id="6157162508956739031">Најавувајте се брзо на апликациите и сајтовите со автоматско пополнување на лозинките и криптографските клуч од Chromium</translation>
 <translation id="6170619162539716595">Дозволете Chromium да користи „Карти на Google“ за да ви обезбедува насоки и локални информации за откриените адреси.</translation>
-<translation id="6247557882553405851">Google Password Manager</translation>
 <translation id="6268381023930128611">Ќе се одјавите од Chromium?</translation>
 <translation id="6301717043141881464">За да ги добиете зачуваните лозинки лесно во другите апликации, користете Chromium for AutoFill</translation>
 <translation id="6324041800010509197">Отворање на мрежата со картички во Chromium</translation>

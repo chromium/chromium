@@ -1843,6 +1843,7 @@
 <translation id="4014895360827978999">商業服務和付款系統</translation>
 <translation id="4018819349042761761">公開金鑰</translation>
 <translation id="4023431997072828269">由於此表格透過不安全的連線提交，其他人將可看到您的資料。</translation>
+<translation id="4024673763872230929">儲存資料可更快填寫表格。資料會儲存在你的裝置上。</translation>
 <translation id="4025325634010721551">重新載入咗政策</translation>
 <translation id="4025338605225449265">貨幣和外幣兌換</translation>
 <translation id="4025777154208238692">反向順序</translation>
@@ -2276,6 +2277,7 @@
 <translation id="4732860731866514038">正在下載<ph name="LANGUAGE" />語言套件…<ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992"><ph name="URL" /> 要求使用裝置的位置資料</translation>
 <translation id="473414950835101501">使用攝錄機</translation>
+<translation id="4734343956394152985"><ph name="BEGIN_BOLD" />目前預設<ph name="END_BOLD" /> · <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="4736825316280949806">重新啟動 Chromium</translation>
 <translation id="4736934858538408121">虛擬卡</translation>
 <translation id="473775607612524610">更新</translation>
@@ -2429,6 +2431,7 @@
 <translation id="4961708452830821006">如要使用麥克風，請在<ph name="LINK" />向 Chrome 授予存取權。</translation>
 <translation id="4963413887558778009">園景設計</translation>
 <translation id="4967366744630699583">編輯地址</translation>
+<translation id="4968046291688599384">已填入 <ph name="BNPL_ISSUER_NAME" /> 一次性虛擬卡號。</translation>
 <translation id="4968522289500246572">此應用程式專為流動裝置而設，可能無法正常調整大小。應用程式可能會發生問題或重新啟動。</translation>
 <translation id="4968665849807487749">可以要求在您所有的顯示屏上管理視窗</translation>
 <translation id="4969341057194253438">刪除錄影</translation>
@@ -3385,6 +3388,7 @@
 <translation id="6521745193039995384">未啟用</translation>
 <translation id="6522682797352430154">古典音樂</translation>
 <translation id="6524830701589638230">管理無障礙設定按鈕，啟動之後就可以喺 Chrome 設定度個人化無障礙工具</translation>
+<translation id="6525222262307262764">保留目前預設值</translation>
 <translation id="6527049834925947126">食品製造</translation>
 <translation id="6529173248185917884">第七卷</translation>
 <translation id="6529602333819889595">重做刪除(&amp;R)</translation>
@@ -3405,6 +3409,7 @@
 <translation id="6567832540451970450">管理員允許此網站使用<ph name="PERMISSION" /></translation>
 <translation id="6568793038316600992">管理付款方法按鈕，啟動之後就可以喺 Chrome 設定度管理付款同信用卡資料</translation>
 <translation id="6569060085658103619">您正在查看擴充程式頁面</translation>
+<translation id="6571992525120410251">向 <ph name="ENGINE_NAME" /> 發問</translation>
 <translation id="6572867903637058088">這對你有幫助嗎？</translation>
 <translation id="6573200754375280815">雙孔 (右側)</translation>
 <translation id="6575408526598156416">儲存在帳戶中</translation>
@@ -3446,6 +3451,7 @@
 <translation id="6652101503459149953">使用 Windows Hello</translation>
 <translation id="6654224358955673568">使用正式語氣</translation>
 <translation id="6654244995031366386">玻璃 (紋理)</translation>
+<translation id="6655085656059574817">保持連結帳戶有助加快 <ph name="BNPL_ISSUER_NAME" /> 付款流程，你也可前往 <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" /> 解除連結</translation>
 <translation id="6657585470893396449">密碼</translation>
 <translation id="6659246032834639189">此價格屬低價位</translation>
 <translation id="6660413144148052430">位置</translation>
@@ -3453,6 +3459,7 @@
 <translation id="666259744093848177">(x86_64 已翻譯)</translation>
 <translation id="6665553082534466207">三孔 (右側)</translation>
 <translation id="6668389483194953109">系統偵測到紙張大小名稱為「自訂」，但「custom_size」屬性空白或無效。</translation>
+<translation id="6670729408462528018">媒體庫</translation>
 <translation id="6671169470640320959">汽車貸款</translation>
 <translation id="6671697161687535275">要從 Chromium 移除表格建議嗎？</translation>
 <translation id="6675846980676550611">不允許使用 AR</translation>

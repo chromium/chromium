@@ -677,6 +677,7 @@
 <translation id="3642060527569456384">Flipahópar vistast og uppfærast sjálfkrafa í öllum tækjunum þínum.</translation>
 <translation id="3643338347976071250">{count,plural, =1{{count} aðgangsorð er aðeins vistað í þessu tæki. Til að nota það í öðrum tækjum skaltu vista það á Google-reikningnum þínum, {email}.}one{{count} aðgangsorð er aðeins vistað í þessu tæki. Til að nota þau í öðrum tækjum skaltu vista þau á Google-reikningnum þínum, {email}.}other{{count} aðgangsorð eru aðeins vistuð í þessu tæki. Til að nota þau í öðrum tækjum skaltu vista þau á Google-reikningnum þínum, {email}.}}</translation>
 <translation id="3659297405161482746">Engir greiðslumátar fundust</translation>
+<translation id="3662966164093827811">{count,plural, =1{Eitt valið}one{# valið}other{# valin}}</translation>
 <translation id="3668816008081204991">Leslisti er falinn</translation>
 <translation id="3670030362669914947">Númer</translation>
 <translation id="3679163990085797665">Eyða því sem er lesið</translation>

@@ -677,6 +677,7 @@
 <translation id="3642060527569456384">Fanegrupper lagres og oppdateres automatisk på alle enhetene dine.</translation>
 <translation id="3643338347976071250">{count,plural, =1{{count} passord er bare lagret på denne enheten. For å bruke det på andre enheter, lagre det i Google-kontoen din ({email}).}other{{count} passord lagres bare på denne enheten. For å bruke dem på andre enheter, lagre dem i Google-kontoen din ({email}).}}</translation>
 <translation id="3659297405161482746">Fant ingen betalingsmåter</translation>
+<translation id="3662966164093827811">{count,plural, =1{1 er valgt}other{# er valgt}}</translation>
 <translation id="3668816008081204991">Leselisten er skjult</translation>
 <translation id="3670030362669914947">Nummer</translation>
 <translation id="3679163990085797665">Slett leste</translation>

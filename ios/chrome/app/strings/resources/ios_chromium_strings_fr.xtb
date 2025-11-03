@@ -145,6 +145,7 @@ Vos données sont chiffrées avec votre phrase secrète. Saisissez-la pour utili
 <translation id="420541179527342563">Pour désactiver le mode Blocage dans Chromium, désactivez-le sur votre iPad.</translation>
 <translation id="4272892696084633551">Contribuer à l'amélioration des fonctionnalités et des performances de Chromium</translation>
 <translation id="4302397443352897529">Réglages Chromium</translation>
+<translation id="4304713468139749426">Gestionnaire de mots de passe</translation>
 <translation id="4408912345039114853">Effectuer le contrôle de sécurité de Chromium</translation>
 <translation id="4432744876818348753">Connectez-vous pour profiter pleinement de Chromium.</translation>
 <translation id="4445228361214254027">Votre organisation a désactivé la possibilité d'utiliser et d'enregistrer les données Chromium dans votre compte Google. Les nouveaux favoris, mots de passe, etc. ne seront enregistrés que sur cet appareil.</translation>
@@ -236,7 +237,6 @@ Points à prendre en compte :
 <translation id="6154098560469640583">Utiliser Chromium chaque fois que vous appuyez sur un lien dans un message, un document ou une autre appli.</translation>
 <translation id="6157162508956739031">Connectez-vous rapidement aux applis et aux sites en saisissant automatiquement vos mots de passe et vos clés d'accès depuis Chromium</translation>
 <translation id="6170619162539716595">Autorisez Chromium à utiliser Google Maps pour vous fournir des itinéraires et des informations locales sur les adresses détectées.</translation>
-<translation id="6247557882553405851">Gestionnaire de mots de passe Google</translation>
 <translation id="6268381023930128611">Se déconnecter de Chromium ?</translation>
 <translation id="6301717043141881464">Pour retrouver facilement vos mots de passe enregistrés dans vos autres applis, choisissez Chromium pour la saisie automatique</translation>
 <translation id="6324041800010509197">Accéder à la grille d'onglets dans Chromium</translation>

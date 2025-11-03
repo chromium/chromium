@@ -1904,6 +1904,7 @@
 <translation id="2287704681286152065">{NUM_SITES,plural, =1{برای محافظت از داده‌هایتان، اجازه‌ها از سایتی که اخیراً بازدید نکرده‌اید برداشته شد}one{برای محافظت از داده‌هایتان، اجازه‌ها از سایتی که اخیراً بازدید نکرده‌اید برداشته شد}other{برای محافظت از داده‌هایتان، اجازه‌ها از سایت‌هایی که اخیراً بازدید نکرده‌اید برداشته شد}}</translation>
 <translation id="2287944065963043964">صفحه ورود به سیستم</translation>
 <translation id="2290615375132886363">دکمه‌های پیمایش رایانه لوحی</translation>
+<translation id="2290703778620332549">جایگزین شود یا گروه جدیدی ایجاد شود؟</translation>
 <translation id="2291452790265535215">سعی کنید برای نشانک‌ها، سفرهای جستجو، و موارد دیگر از پانل کناری استفاده کنید</translation>
 <translation id="229182044471402145">هیچ مورد منطبقی پیدا نشد</translation>
 <translation id="2292590498047171967">برای هم‌رسانی کردن زبانه‌ها و همکاری کردن با دیگران، سابقه و زبانه‌ها را با <ph name="EMAIL" /> همگام‌سازی کنید</translation>
@@ -2345,7 +2346,7 @@
 <translation id="2580889980133367162">همیشه به <ph name="HOST" /> اجازه داده شود چند فایل را بارگیری کند</translation>
 <translation id="258095186877893873">طولانی</translation>
 <translation id="2581786034175502848">‏کلید Shift را ۵ بار فشار دهید تا دوباره فعال شود</translation>
-<translation id="2581992808349413349">‏استفاده از اتصال امن برای جستجوی نشانی IP سایت در ساناد (سیستم نامگذاری دامنه) این ویژگی از رساننده خدمات تحت مدیریت <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /> استفاده می‌کند</translation>
+<translation id="2581992808349413349">‏استفاده از اتصال امن برای جستجوی نشانی IP سایت در ساناد (سیستم نامگذاری دامنه) این ویژگی از فراهم‌ساز خدمات تحت مدیریت <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /> استفاده می‌کند</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (پلتفورم <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
 <translation id="2583905535229480958">همه انواع کارت‌خوان هوشمند</translation>
 <translation id="2584109212074498965">‏بلیت Kerberos اضافه نشد. دوباره امتحان کنید یا با سرپرست دستگاه سازمانتان تماس بگیرید. (کد خطا: <ph name="ERROR_CODE" />).</translation>
@@ -2745,6 +2746,7 @@
 <translation id="2852045827873867442">به اتصال اینترنت نیاز است.</translation>
 <translation id="285237063405807022">(بارگیری)</translation>
 <translation id="2853121255651601031">گذرواژه ذخیره شد</translation>
+<translation id="2854453262159518435">جایگزین کردن گروه زبانه موجود</translation>
 <translation id="2855243985454069333">سابقه از همه دستگاه‌های همگام‌سازی‌شده حذف می‌شود</translation>
 <translation id="2855812646048059450">ورود به سیستم با <ph name="CREDENTIAL_PROVIDER" /></translation>
 <translation id="2856776373509145513">ایجاد محتوی جدید</translation>
@@ -3858,6 +3860,7 @@
 <translation id="3643962751030964445">این دستگاه را <ph name="DEVICE_MANAGER" /> مدیریت می‌کند. <ph name="DEVICE_MANAGER" /> برای حساب <ph name="USER_EMAIL_ADDRESS" /> به نمایه جدیدی نیاز دارد</translation>
 <translation id="364418405912311456">برای جستجو، روی تصاویر کلیک کنید و بکشید یا نوشتار را برجسته کنید</translation>
 <translation id="3645372836428131288">انگشتتان را کمی حرکت دهید تا بخش دیگری از اثرانگشت ثبت شود.</translation>
+<translation id="3645951915068244649">گروه زبانه‌ای قبلاً با این پوشه نشانک ایجاد شده است. می‌خواهید گروه زبانه جدیدی ایجاد کنید یا گروه موجود را جایگزین کنید؟</translation>
 <translation id="3646789916214779970">بازنشانی به زمینه پیش‌فرض</translation>
 <translation id="3647654707956482440">نمی‌توانید از این پیوند استفاده کنید. پیوند را از لحاظ غلط‌های املایی بررسی کنید یا از پیوند دیگری استفاده کنید و دوباره امتحان کنید.</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> از <ph name="DEVICE_NAME" /> دریافت شد}one{<ph name="ATTACHMENTS" /> از <ph name="DEVICE_NAME" /> دریافت شد}other{<ph name="ATTACHMENTS" /> از <ph name="DEVICE_NAME" /> دریافت شد}}</translation>
@@ -5040,7 +5043,7 @@
 <translation id="4434611816075088065">درحال‌حاضر مورد دیگری نیاز به رسیدگی ندارد</translation>
 <translation id="443503224864902151">‏از سیستم اکثر سایت‌ها خارج می‌شوید. از سیستم «حساب Google» خارج نخواهید شد تا بتوانید داده‌های همگام‌سازی‌شده را حذف کنید.</translation>
 <translation id="4437879751057074691">پیشنهاد برای ذخیره کردن گذرواژه‌ها و گذرکلیدها</translation>
-<translation id="4437947179446780764">افزودن رساننده خدمات ساناد سفارشی</translation>
+<translation id="4437947179446780764">افزودن فراهم‌ساز خدمات ساناد سفارشی</translation>
 <translation id="4438043733494739848">شفاف</translation>
 <translation id="4439157218765614426">خط‌مشی ممنوع کرده است.</translation>
 <translation id="4441124369922430666">آیا می‌خواهید با روشن شدن دستگاه، این برنامه به‌طور خودکار شروع شود؟</translation>
@@ -5838,6 +5841,7 @@
 <translation id="5010886807652684893">نمای تصویری</translation>
 <translation id="5012523644916800014">مدیریت گذرواژه‌ها و گذرکلیدها</translation>
 <translation id="501394389332262641">صدای ضعیف بودن باتری</translation>
+<translation id="5014286001996333986">جایگزین شود یا گروه جدیدی ایجاد شود؟</translation>
 <translation id="5015344424288992913">در حال تحلیل پراکسی...</translation>
 <translation id="5016305686459575361">با متصل کردن تلفنتان، می‌توانید:</translation>
 <translation id="5016491575926936899">می‌توانید از رایانه پیامک ارسال کنید، اتصال اینترنت را به‌اشتراک بگذارید، به اعلان‌های مکالمه پاسخ دهید، و قفل <ph name="DEVICE_TYPE" /> را با تلفنتان باز کنید.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
@@ -6540,6 +6544,7 @@
 <translation id="5499453227627332024">‏نسخه‌ای برای ارتقای محتوی Linux شما دردسترس است. همچنین می‌توانید بعداً در «تنظیمات» ارتقا دهید.</translation>
 <translation id="5499476581866658341">اکنون می‌توانید عکس‌ها و رسانه‌های جدید تلفنتان را مشاهده کنید</translation>
 <translation id="549957179819296104">نماد جدید</translation>
+<translation id="5499634624419508916">جایگزین کردن گروه زبانه موجود</translation>
 <translation id="5500163593833085874">وقتی دکمه سمت چپ موشواره انتخاب شده است، از «+» برای دوکلیک کردن استفاده کنید</translation>
 <translation id="5500168250243071806">‏وقتی به سیستم وارد شده باشید، ممکن است <ph name="BEGIN_LINK_SEARCH" />سابقه «جستجو»<ph name="END_LINK_SEARCH" /> و <ph name="BEGIN_LINK_GOOGLE" />انواع دیگر فعالیت<ph name="END_LINK_GOOGLE" /> در «حساب Google» شما ذخیره شوند. هر زمان خواستید می‌توانید آن‌ها را حذف کنید.</translation>
 <translation id="5501322521654567960">پانل کناری ترازشده به‌چپ</translation>
@@ -8351,6 +8356,7 @@
 <translation id="6787839852456839824">میان‌برهای صفحه‌کلید</translation>
 <translation id="6788210894632713004">افزونه غیر فشرده</translation>
 <translation id="6789592661892473991">تقسیم افقی</translation>
+<translation id="6789665473250283877">برداشتن <ph name="TOOL_NAME" /></translation>
 <translation id="6789834167207639931">‏برای تکمیل بازیابی، گذرواژه «حساب Google» خود را دوباره در صفحه بعدی وارد کنید.</translation>
 <translation id="6790428901817661496">پخش</translation>
 <translation id="6790497603648687708"><ph name="EXTENSION_NAME" /> ازراه‌دور اضافه شد</translation>
@@ -9468,7 +9474,7 @@
 <translation id="7566969018588966785">ایجاد ترکیب کلید</translation>
 <translation id="7567100268516475532">انتقال زبانه به «نمای تقسیم‌شده»</translation>
 <translation id="7568014768212280234">گروه زبانه شما پر است، اعضای جدید نمی‌توانند با پیوند بپیوندند</translation>
-<translation id="7568759527730933493">‏برای جستجوی نشانی IP سایت در ساناد (سیستم نامگذاری دامنه) از اتصال ایمن استفاده می‌شود. این ویژگی از رساننده خدمات تحت مدیریت <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /> استفاده می‌کند. برای برخی‌از دامنه‌هایی که سرپرستتان پیکربندی کرده است، از اتصال ایمن استفاده نمی‌شود.</translation>
+<translation id="7568759527730933493">‏برای جستجوی نشانی IP سایت در ساناد (سیستم نامگذاری دامنه) از اتصال ایمن استفاده می‌شود. این ویژگی از فراهم‌ساز خدمات تحت مدیریت <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /> استفاده می‌کند. برای برخی‌از دامنه‌هایی که سرپرستتان پیکربندی کرده است، از اتصال ایمن استفاده نمی‌شود.</translation>
 <translation id="756876171895853918">سفارشی کردن چهرک</translation>
 <translation id="7568790562536448087">در حال به‌روزرسانی</translation>
 <translation id="7569983096843329377">سیاه</translation>
@@ -11605,6 +11611,7 @@
 <translation id="90033698482696970">نمایه‌های سیم‌کارت داخلی موجود به‌طور خودکار اسکن شود؟</translation>
 <translation id="9003647077635673607">در همه وب‌سایت‌ها مجاز باشد</translation>
 <translation id="9005774573776346118">برای دریافت گذرواژه‌ها، نشانک‌ها، و موارد دیگر در همه دستگاه‌هایتان، با <ph name="EMAIL" /> به سیستم وارد شوید</translation>
+<translation id="9008133509889712539">‫<ph name="ORIGIN" /> می‌خواهد این پیوند را در برنامه‌ای باز کند.</translation>
 <translation id="9008201768610948239">نادیده گرفتن</translation>
 <translation id="9008201858626224558">دکمه برگشت صفحه جزئیات <ph name="SUBPAGE_TITLE" /></translation>
 <translation id="9008828754342192581">قبلاً انتخاب کرده‌اید همه افزونه‌ها در <ph name="ORIGIN" /> مجاز باشند</translation>
