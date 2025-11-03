@@ -121,6 +121,7 @@ void BwgBrowserAgent::UpdateBwgOverlayPageContext(
             expected_page_context.error());
   }
   gemini_page_context.uniquePageContext = std::move(page_context_proto);
+  gemini_page_context.favicon = FetchPageFavicon();
 
   ApplyUserPrefsToPageContext(gemini_page_context);
   ios::provider::UpdatePageContext(gemini_page_context);
@@ -171,28 +172,28 @@ void BwgBrowserAgent::PresentBwgOverlayWithState(
   config.pageContext.BWGPageContextComputationState = computation_state;
   config.pageContext.BWGPageContextAttachmentState = attachment_state;
   config.pageContext.uniquePageContext = std::move(page_context_proto);
-
-  // Use the cached favicon of the web state. If it's not available, use a
-  // default favicon instead.
-  gfx::Image cached_favicon =
-      favicon::WebFaviconDriver::FromWebState(web_state)->GetFavicon();
-  UIImage* page_favicon;
-  if (!cached_favicon.IsEmpty()) {
-    page_favicon = cached_favicon.ToUIImage();
-  } else {
-    UIImageConfiguration* configuration = [UIImageSymbolConfiguration
-        configurationWithPointSize:gfx::kFaviconSize
-                            weight:UIImageSymbolWeightBold
-                             scale:UIImageSymbolScaleMedium];
-    page_favicon =
-        DefaultSymbolWithConfiguration(kGlobeAmericasSymbol, configuration);
-  }
-  config.pageContext.favicon = page_favicon;
+  config.pageContext.favicon = FetchPageFavicon();
   ApplyUserPrefsToPageContext(config.pageContext);
 
   // Start the overlay and update the tab helper to reflect this.
   ios::provider::StartBwgOverlay(config);
   bwg_tab_helper->SetBwgUiShowing(true);
+}
+
+UIImage* BwgBrowserAgent::FetchPageFavicon() {
+  // Use the cached favicon of the web state. If it's not available, use a
+  // default favicon instead.
+  web::WebState* web_state = browser_->GetWebStateList()->GetActiveWebState();
+  gfx::Image cached_favicon =
+      favicon::WebFaviconDriver::FromWebState(web_state)->GetFavicon();
+  if (!cached_favicon.IsEmpty()) {
+    return cached_favicon.ToUIImage();
+  }
+  UIImageConfiguration* configuration = [UIImageSymbolConfiguration
+      configurationWithPointSize:gfx::kFaviconSize
+                          weight:UIImageSymbolWeightBold
+                           scale:UIImageSymbolScaleMedium];
+  return DefaultSymbolWithConfiguration(kGlobeAmericasSymbol, configuration);
 }
 
 void BwgBrowserAgent::ApplyUserPrefsToPageContext(
