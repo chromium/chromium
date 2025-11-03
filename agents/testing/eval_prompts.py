@@ -17,6 +17,7 @@ import eval_config
 import gemini_cli_installation
 import metrics
 import promptfoo_installation
+import resultdb
 import results
 import workers
 
@@ -321,9 +322,11 @@ def _run_prompt_eval_tests(args: argparse.Namespace) -> int:
                                            sandbox=args.sandbox,
                                            gemini_cli_bin=gemini_cli_bin,
                                            node_bin=node_bin)
+
+    rdb_reporter = resultdb.ResultDBReporter()
     result_options = results.ResultOptions(
         print_output_on_success=args.print_output_on_success,
-        result_handlers=[])
+        result_handlers=[rdb_reporter.report_result])
 
     worker_pool = workers.WorkerPool(
         args.parallel_workers

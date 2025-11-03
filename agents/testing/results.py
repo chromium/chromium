@@ -11,13 +11,8 @@ import sys
 import threading
 from typing import Callable
 
-import constants
 import eval_config
 import metrics
-
-sys.path.insert(0, str(constants.CHROMIUM_SRC / 'build' / 'util'))
-from lib.results import result_sink
-from lib.results import result_types
 
 _RESULT_THREAD_POLLING_SLEEP_DURATION = 0.5
 
@@ -101,33 +96,6 @@ class AtomicCounter:
             self._counter += 1
 
 
-def report_result(result_sink_client: result_sink.ResultSinkClient,
-                  test_result: TestResult) -> None:
-    """Reports a test result to ResultDB if possible.
-
-    Args:
-        result_sink_client: A ResultSinkClient to use for reporting.
-        test_result: A TestResult instance containing the result to report.
-    """
-    relative_path = test_result.config.test_file.relative_to(
-        constants.CHROMIUM_SRC)
-    posix_path = relative_path.as_posix()
-    for iteration_result in test_result.iteration_results:
-        result_sink_client.Post(
-            test_id=str(posix_path),
-            status=(result_types.PASS
-                    if iteration_result.success else result_types.FAIL),
-            duration=iteration_result.duration * 1000,
-            test_log=iteration_result.test_log,
-            test_id_structured={
-                'coarseName': '',  # Leave blank for scheme 'flat'.
-                'fineName': '',  # Leave blank for scheme 'flat'.
-                'caseNameComponents': [str(posix_path)],
-            },
-            test_file=f'//{str(posix_path)}')
-
-
-
 class ResultThread(threading.Thread):
     """Class for processing test results from a queue.
 
@@ -147,7 +115,6 @@ class ResultThread(threading.Thread):
         self.total_results_reported = AtomicCounter()
         self._result_options = result_options
         self._shutdown_event = threading.Event()
-        self._result_sink_client = result_sink.TryInitClient()
         self._fatal_exception = None
 
     def run(self) -> None:
@@ -157,7 +124,6 @@ class ResultThread(threading.Thread):
             self._fatal_exception = e
 
     def _process_incoming_results_until_shutdown(self) -> None:
-        # TODO(crbug.com/456827244): Move ResultDB processing to a handler
         # TODO(crbug.com/456827244): Move perf processing to a handler
         while not self._shutdown_event.is_set():
             try:
@@ -170,8 +136,6 @@ class ResultThread(threading.Thread):
             if (not test_result.success
                     or self._result_options.print_output_on_success):
                 sys.stdout.write(test_result.combined_logs)
-            if self._result_sink_client:
-                report_result(self._result_sink_client, test_result)
             if test_result.success:
                 logging.info('Test passed in %.2f seconds: %s',
                              test_result.total_duration,
