@@ -25,12 +25,11 @@ const int kLastOp = SkPathOp::kReverseDifference_SkPathOp;
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   SkOpBuilder builder;
   while (size > 0) {
-    SkPath path;
     uint8_t op;
     if (!read<uint8_t>(&data, &size, &op))
       break;
 
-    BuildPath(&data, &size, &path, SkPath::Verb::kDone_Verb);
+    const SkPath path = BuildPath(&data, &size, SkPath::Verb::kDone_Verb);
     builder.add(path, static_cast<SkPathOp>(op % (kLastOp + 1)));
   }
 

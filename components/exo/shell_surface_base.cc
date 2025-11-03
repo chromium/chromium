@@ -1410,7 +1410,7 @@ void ShellSurfaceBase::GetWidgetHitTestMask(SkPath* mask) const {
   matrix.setScaleTranslate(
       SkFloatToScalar(1.0f / scale), SkFloatToScalar(1.0f / scale),
       SkIntToScalar(offset.x()), SkIntToScalar(offset.y()));
-  mask->transform(matrix);
+  *mask = mask->makeTransform(matrix);
 }
 
 void ShellSurfaceBase::OnCaptureChanged(aura::Window* lost_capture,

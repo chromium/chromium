@@ -561,22 +561,22 @@ void PaintHorizontalTrackbarThumbClassic(
   // Fill all three pieces with the pattern.
   canvas->drawIRect(skia::RECTToSkIRect(top_section), paint);
 
-  const SkScalar left_triangle_top = SkIntToScalar(left_half.top);
-  const SkScalar left_triangle_right = SkIntToScalar(left_half.right);
-  SkPath left_triangle;
-  left_triangle.moveTo(SkIntToScalar(left_half.left), left_triangle_top);
-  left_triangle.lineTo(left_triangle_right, left_triangle_top);
-  left_triangle.lineTo(left_triangle_right, SkIntToScalar(left_half.bottom));
-  left_triangle.close();
+  const SkPath left_triangle = SkPath::Polygon(
+      {
+          SkPoint(left_half.left, left_half.top),
+          SkPoint(left_half.right, left_half.top),
+          SkPoint(left_half.right, left_half.bottom),
+      },
+      /*isClosed=*/true);
   canvas->drawPath(left_triangle, paint);
 
-  const SkScalar right_triangle_left = SkIntToScalar(right_half.left);
-  const SkScalar right_triangle_top = SkIntToScalar(right_half.top);
-  SkPath right_triangle;
-  right_triangle.moveTo(right_triangle_left, right_triangle_top);
-  right_triangle.lineTo(SkIntToScalar(right_half.right), right_triangle_top);
-  right_triangle.lineTo(right_triangle_left, SkIntToScalar(right_half.bottom));
-  right_triangle.close();
+  const SkPath right_triangle = SkPath::Polygon(
+      {
+          SkPoint(right_half.left, right_half.top),
+          SkPoint(right_half.right, right_half.top),
+          SkPoint(right_half.left, right_half.bottom),
+      },
+      /*isClosed=*/true);
   canvas->drawPath(right_triangle, paint);
 }
 

@@ -141,6 +141,10 @@ SK_API void SkDebugf_FileLine(const char* file,
 
 #define SK_ENABLE_SKOTTIE_FILLRULE
 
+// Ensures Chromium is not using any mutable path APIs.  Only remove after the
+// editing methods on SkPath are truly gone.
+#define SK_HIDE_PATH_EDIT_METHODS
+
 ///////////////////////// Imported from BUILD.gn and skia_common.gypi
 
 /* In some places Skia can use static initializers for global initialization,

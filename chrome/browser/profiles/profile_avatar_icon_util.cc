@@ -258,10 +258,9 @@ void AvatarImageSource::Draw(gfx::Canvas* canvas) {
 
     // Calculate the circular mask that will be used to display the avatar
     // image.
-    SkPath circular_mask;
-    circular_mask.addCircle(SkIntToScalar(canvas_size_.width() / 2),
-                            SkIntToScalar(canvas_size_.height() / 2),
-                            SkIntToScalar(canvas_size_.width() / 2));
+    const SkPath circular_mask =
+        SkPath::Circle(canvas_size_.width() / 2, canvas_size_.height() / 2,
+                       canvas_size_.width() / 2);
     canvas->ClipPath(circular_mask, true);
   }
 #endif
@@ -404,7 +403,7 @@ class AvatarEmbeddedImageSource : public gfx::CanvasImageSource {
     canvas->DrawImageInt(image_.AsImageSkia(), 0, 0);
 
     // Setting a clippath makes subsequent avatar drawing cropped in a circle.
-    SkPath avatar_bound = SkPath().addOval(
+    const SkPath avatar_bound = SkPath::Oval(
         SkRect::MakeXYWH(avatar_position_.x(), avatar_position_.y(),
                          /*w=*/avatar_size_, /*h=*/avatar_size_));
     canvas->ClipPath(avatar_bound, /*do_anti_alias=*/true);

@@ -41,6 +41,7 @@
 #include "extensions/common/manifest_handlers/icons_handler.h"
 #include "extensions/grit/extensions_browser_resources.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
+#include "third_party/skia/include/core/SkPath.h"
 #include "ui/actions/actions.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -85,7 +86,7 @@ class ZoomButtonHighlightPathGenerator : public views::HighlightPathGenerator {
   SkPath GetHighlightPath(const views::View* view) override {
     constexpr int kCircleRadiusDp = 24 / 2;
     const gfx::Point center = view->GetLocalBounds().CenterPoint();
-    return SkPath().addCircle(center.x(), center.y(), kCircleRadiusDp);
+    return SkPath::Circle(center.x(), center.y(), kCircleRadiusDp);
   }
 };
 

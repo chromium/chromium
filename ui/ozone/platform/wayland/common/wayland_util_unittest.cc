@@ -8,6 +8,8 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkPathBuilder.h"
+#include "third_party/skia/include/core/SkRRect.h"
 #include "third_party/skia/include/core/SkRect.h"
 
 namespace ui {
@@ -21,25 +23,22 @@ TEST_F(WaylandUtilTest, TestCreateRectsFromSkPath) {
   // Test1 consists of 2 rectangles from SkPath.
   std::vector<gfx::Rect> expectedFor2Rects = {gfx::Rect(1, 0, 99, 1),
                                               gfx::Rect(0, 1, 100, 99)};
-  SkPath pathFor2Rects;
   const SkRect rect = SkRect::MakeIWH(width, height);
   constexpr SkScalar corner_radius_scalar = 2.0;
-  constexpr SkScalar radii[8] = {corner_radius_scalar,
-                                 corner_radius_scalar,  // top-left
-                                 corner_radius_scalar,
-                                 corner_radius_scalar,  // top-right
-                                 0,
-                                 0,  // bottom-right
-                                 0,
-                                 0};  // bottom-left
-  pathFor2Rects.addRoundRect(rect, radii, SkPathDirection::kCW);
+  constexpr SkVector radii[4] = {
+      {corner_radius_scalar, corner_radius_scalar},  // top-left
+      {corner_radius_scalar, corner_radius_scalar},  // top-right
+      {0, 0},                                        // bottom-right
+      {0, 0}};                                       // bottom-left
+  const SkPath pathFor2Rects =
+      SkPath::RRect(SkRRect::MakeRectRadii(rect, radii));
   EXPECT_EQ(expectedFor2Rects, wl::CreateRectsFromSkPath(pathFor2Rects));
 
   // Test2 consists of 5 rectangles from SkPath.
   std::vector<gfx::Rect> expectedFor5Rects = {
       gfx::Rect(3, 0, 94, 1), gfx::Rect(1, 1, 98, 2), gfx::Rect(0, 3, 100, 94),
       gfx::Rect(1, 97, 98, 2), gfx::Rect(3, 99, 94, 1)};
-  SkPath pathFor5Rects;
+  SkPathBuilder pathFor5Rects;
   pathFor5Rects.moveTo(0, 3);
   pathFor5Rects.lineTo(1, 3);
   pathFor5Rects.lineTo(1, 1);
@@ -65,7 +64,8 @@ TEST_F(WaylandUtilTest, TestCreateRectsFromSkPath) {
   pathFor5Rects.lineTo(0, height - 3);
   pathFor5Rects.close();
 
-  EXPECT_EQ(expectedFor5Rects, wl::CreateRectsFromSkPath(pathFor5Rects));
+  EXPECT_EQ(expectedFor5Rects,
+            wl::CreateRectsFromSkPath(pathFor5Rects.detach()));
 }
 
 }  // namespace ui

@@ -18,6 +18,7 @@
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkPath.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/display/screen.h"
@@ -291,10 +292,8 @@ void EyeDropperView::OnPaint(gfx::Canvas* view_canvas) {
   if (views::Widget::IsWindowCompositingSupported()) {
     // Clip circle for magnified projection only when the widget
     // supports translucency.
-    SkPath clip_path;
-    clip_path.addOval(SkRect::MakeXYWH(padding.width(), padding.height(),
-                                       diameter, diameter));
-    clip_path.close();
+    const SkPath clip_path = SkPath::Oval(SkRect::MakeXYWH(
+        padding.width(), padding.height(), diameter, diameter));
     view_canvas->ClipPath(clip_path, true);
   }
 

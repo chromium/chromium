@@ -11,6 +11,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/global_media_controls/media_view_utils.h"
 #include "components/global_media_controls/public/format_duration.h"
+#include "third_party/skia/include/core/SkPath.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
@@ -126,7 +127,7 @@ void ChapterItemView::UpdateArtwork(const gfx::ImageSkia& image) {
   artwork_view_->SetImage(ui::ImageModel::FromImageSkia(image));
 
   // Draws the image with rounded corners.
-  auto path = SkPath().addRoundRect(
+  const auto path = SkPath::RRect(
       RectToSkRect(gfx::Rect(kImageSize.width(), kImageSize.height())),
       kDefaultArtworkCornerRadius, kDefaultArtworkCornerRadius);
   artwork_view_->SetClipPath(path);

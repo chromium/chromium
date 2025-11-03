@@ -9,6 +9,7 @@
 #include "cc/paint/paint_flags.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkPathBuilder.h"
 #include "third_party/skia/include/core/SkRect.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -176,7 +177,7 @@ void NativeThemeMobile::PaintArrowButton(
                     dark_mode, contrast);
 
   // Paint the button's outline and fill the middle.
-  SkPath outline;
+  SkPathBuilder outline;
   if (part == kScrollbarUpArrow) {
     outline.moveTo(rect.x() + 0.5f, rect.y() + rect.height() + 0.5f);
     outline.rLineTo(0, -(rect.height() - 2));
@@ -208,19 +209,20 @@ void NativeThemeMobile::PaintArrowButton(
     outline.rLineTo(rect.width() - 2, 0);
   }
   outline.close();
+  const SkPath outline_path = outline.detach();
 
   const SkColor bg_color = GetScrollbarArrowBackgroundColor(
       extra_params, state, dark_mode, contrast, color_provider);
   cc::PaintFlags flags;
   flags.setStyle(cc::PaintFlags::kFill_Style);
   flags.setColor(bg_color);
-  canvas->drawPath(outline, flags);
+  canvas->drawPath(outline_path, flags);
 
   flags.setAntiAlias(true);
   flags.setStyle(cc::PaintFlags::kStroke_Style);
   flags.setColor(GetControlColorForState(kButtonBorderColors, state, dark_mode,
                                          contrast, color_provider));
-  canvas->drawPath(outline, flags);
+  canvas->drawPath(outline_path, flags);
 
   PaintArrow(
       canvas, rect, part, state,

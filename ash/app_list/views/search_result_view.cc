@@ -33,6 +33,7 @@
 #include "base/trace_event/trace_event.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/services/app_service/public/cpp/app_shortcut_image.h"
+#include "third_party/skia/include/core/SkPath.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -383,7 +384,6 @@ class MaskedImageView : public views::ImageView {
  protected:
   // views::ImageView:
   void OnPaint(gfx::Canvas* canvas) override {
-    SkPath mask;
     const gfx::Rect& bounds = GetImageBounds();
 
     switch (shape_) {
@@ -392,17 +392,19 @@ class MaskedImageView : public views::ImageView {
         // Noop.
         break;
       case SearchResult::IconShape::kRoundedRectangle:
-        mask.addRoundRect(gfx::RectToSkRect(bounds), kImageIconCornerRadius,
-                          kImageIconCornerRadius);
-        canvas->ClipPath(mask, true);
+        canvas->ClipPath(
+            SkPath::RRect(gfx::RectToSkRect(bounds), kImageIconCornerRadius,
+                          kImageIconCornerRadius),
+            /*do_anti_alias=*/true);
         break;
       case SearchResult::IconShape::kCircle:
         // Calculate the radius of the circle based on the minimum of width and
         // height in case the icon isn't square.
-        mask.addCircle(bounds.x() + bounds.width() / 2,
-                       bounds.y() + bounds.height() / 2,
-                       std::min(bounds.width(), bounds.height()) / 2);
-        canvas->ClipPath(mask, true);
+        canvas->ClipPath(
+            SkPath::Circle(bounds.x() + bounds.width() / 2,
+                           bounds.y() + bounds.height() / 2,
+                           std::min(bounds.width(), bounds.height()) / 2),
+            /*do_anti_alias=*/true);
         break;
     }
 

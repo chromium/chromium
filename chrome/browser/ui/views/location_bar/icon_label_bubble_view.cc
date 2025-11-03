@@ -15,6 +15,8 @@
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/omnibox/omnibox_theme.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_util.h"
+#include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkRRect.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer_animator.h"
@@ -819,13 +821,12 @@ SkPath IconLabelBubbleView::GetHighlightPath() const {
 
   const SkRect rect = RectToSkRect(highlight_bounds);
   gfx::RoundedCornersF radii = GetCornerRadii();
-  const SkScalar sk_radii[8] = {
-      SkIntToScalar(radii.upper_left()),  SkIntToScalar(radii.upper_left()),
-      SkIntToScalar(radii.upper_right()), SkIntToScalar(radii.upper_right()),
-      SkIntToScalar(radii.lower_right()), SkIntToScalar(radii.lower_right()),
-      SkIntToScalar(radii.lower_left()),  SkIntToScalar(radii.lower_left())};
+  const SkVector sk_radii[4] = {{radii.upper_left(), radii.upper_left()},
+                                {radii.upper_right(), radii.upper_right()},
+                                {radii.lower_right(), radii.lower_right()},
+                                {radii.lower_left(), radii.lower_left()}};
 
-  return SkPath().addRoundRect(rect, sk_radii);
+  return SkPath::RRect(SkRRect::MakeRectRadii(rect, sk_radii));
 }
 
 bool IconLabelBubbleView::PaintedOnSolidBackground() const {

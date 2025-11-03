@@ -928,10 +928,7 @@ void DesktopWindowTreeHostWin::GetWindowMask(const gfx::Size& size_px,
   if (!path->isEmpty()) {
     const float scale =
         display::win::GetScreenWin()->GetScaleFactorForHWND(GetHWND());
-    SkScalar sk_scale = SkFloatToScalar(scale);
-    SkMatrix matrix;
-    matrix.setScale(sk_scale, sk_scale);
-    path->transform(matrix);
+    *path = path->makeTransform(SkMatrix::Scale(scale, scale));
   }
 }
 

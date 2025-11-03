@@ -18,7 +18,8 @@
 #include "testing/perf/perf_result_reporter.h"
 #include "third_party/skia/include/core/SkBlurTypes.h"
 #include "third_party/skia/include/core/SkColor.h"
-#include "third_party/skia/include/effects/SkColorMatrixFilter.h"
+#include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkPathBuilder.h"
 
 namespace cc {
 namespace {
@@ -136,10 +137,11 @@ TEST_F(PaintOpPerfTest, ManyFlagsOps) {
   sk_sp<PaintShader> shader = PaintShader::MakeColor(SkColors::kTransparent);
   flags.setShader(std::move(shader));
 
-  SkPath path;
-  path.addCircle(2, 2, 5);
-  path.addCircle(3, 4, 2);
-  path.addArc(SkRect::MakeXYWH(1, 2, 3, 4), 5, 6);
+  const SkPath path = SkPathBuilder()
+                          .addCircle(2, 2, 5)
+                          .addCircle(3, 4, 2)
+                          .addArc(SkRect::MakeXYWH(1, 2, 3, 4), 5, 6)
+                          .detach();
 
   for (size_t i = 0; i < 100; ++i)
     buffer.push<DrawPathOp>(path, flags);
