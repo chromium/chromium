@@ -989,6 +989,7 @@ class WorkerPoolUnittest(unittest.TestCase):
         )
         self.result_options = results.ResultOptions(
             print_output_on_success=False,
+            result_handlers=[],
         )
 
     def _setUpPatches(self):

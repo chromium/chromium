@@ -322,7 +322,8 @@ def _run_prompt_eval_tests(args: argparse.Namespace) -> int:
                                            gemini_cli_bin=gemini_cli_bin,
                                            node_bin=node_bin)
     result_options = results.ResultOptions(
-        print_output_on_success=args.print_output_on_success)
+        print_output_on_success=args.print_output_on_success,
+        result_handlers=[])
 
     worker_pool = workers.WorkerPool(
         args.parallel_workers

@@ -9,6 +9,7 @@ import pprint
 import queue
 import sys
 import threading
+from typing import Callable
 
 import constants
 import eval_config
@@ -77,6 +78,11 @@ class ResultOptions:
     """Options for configuring result reporting."""
     # Always print test logs to stdout instead of only for failed tests.
     print_output_on_success: bool
+    # The handlers that will process test results. Handlers are called on the
+    # thread owned by the ResultThread that the ResultOptions are ultimately
+    # passed to, so any communication, state modification, etc. in these
+    # handlers must be done in a thread-safe manner.
+    result_handlers: list[Callable[TestResult, None]]
 
 
 class AtomicCounter:
@@ -123,7 +129,10 @@ def report_result(result_sink_client: result_sink.ResultSinkClient,
 
 
 class ResultThread(threading.Thread):
-    """Class for reporting test results from a queue."""
+    """Class for processing test results from a queue.
+
+    Actual processing is delegated to user-provided result handlers.
+    """
 
     def __init__(self, result_options: ResultOptions, **kwargs):
         """
@@ -148,6 +157,8 @@ class ResultThread(threading.Thread):
             self._fatal_exception = e
 
     def _process_incoming_results_until_shutdown(self) -> None:
+        # TODO(crbug.com/456827244): Move ResultDB processing to a handler
+        # TODO(crbug.com/456827244): Move perf processing to a handler
         while not self._shutdown_event.is_set():
             try:
                 test_result = self.result_input_queue.get(
@@ -170,6 +181,9 @@ class ResultThread(threading.Thread):
                                 test_result.total_duration,
                                 str(test_result.config.test_file))
                 self.failed_result_output_queue.put(test_result)
+
+            for result_handler in self._result_options.result_handlers:
+                result_handler(test_result)
 
             self.total_results_reported.increment()
 
