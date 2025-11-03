@@ -9,6 +9,7 @@
 #import "base/types/expected.h"
 #import "ios/chrome/browser/optimization_guide/mojom/zero_state_suggestions_service.mojom.h"
 #import "mojo/public/cpp/bindings/receiver.h"
+#import "url/gurl.h"
 
 namespace web {
 class WebState;
@@ -76,6 +77,9 @@ class ZeroStateSuggestionsServiceImpl
 
   // Callback for the current request, cleared once invoked.
   FetchZeroStateSuggestionsCallback pending_request_callback_;
+
+  // The URL of the ongoing request.
+  GURL zero_state_suggestions_url_;
 
   // Weak pointer factory.
   base::WeakPtrFactory<ZeroStateSuggestionsServiceImpl> weak_ptr_factory_{this};

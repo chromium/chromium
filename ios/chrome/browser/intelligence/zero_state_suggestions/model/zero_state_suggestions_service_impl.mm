@@ -17,6 +17,39 @@
 namespace {
 // Timeout for the model execution.
 const base::TimeDelta kModelExecutionTimeout = base::Seconds(5);
+
+// Helper to chain two zero-state callbacks for same-page requests.
+void RunChainedCallbacks(
+    ai::mojom::ZeroStateSuggestionsService::FetchZeroStateSuggestionsCallback
+        old_callback,
+    ai::mojom::ZeroStateSuggestionsService::FetchZeroStateSuggestionsCallback
+        new_callback,
+    ai::mojom::ZeroStateSuggestionsResponseResultPtr result) {
+  ai::mojom::ZeroStateSuggestionsResponseResultPtr result_for_new_callback;
+  if (result->is_error()) {
+    result_for_new_callback =
+        ai::mojom::ZeroStateSuggestionsResponseResult::NewError(
+            result->get_error());
+  } else {
+    std::optional<optimization_guide::proto::ZeroStateSuggestionsResponse>
+        original_proto =
+            result->get_response()
+                .As<optimization_guide::proto::ZeroStateSuggestionsResponse>();
+    if (original_proto) {
+      auto cloned_proto = *original_proto;
+      result_for_new_callback =
+          ai::mojom::ZeroStateSuggestionsResponseResult::NewResponse(
+              mojo_base::ProtoWrapper(std::move(cloned_proto)));
+    } else {
+      result_for_new_callback =
+          ai::mojom::ZeroStateSuggestionsResponseResult::NewError(
+              "Proto deserialization error.");
+    }
+  }
+  std::move(old_callback).Run(std::move(result));
+  std::move(new_callback).Run(std::move(result_for_new_callback));
+}
+
 }  // namespace
 
 namespace ai {
@@ -36,19 +69,30 @@ ZeroStateSuggestionsServiceImpl::~ZeroStateSuggestionsServiceImpl() {
 
 void ZeroStateSuggestionsServiceImpl::FetchZeroStateSuggestions(
     FetchZeroStateSuggestionsCallback callback) {
-  // Cancel any in-flight requests.
-  // TODO(crbug.com/455623277): If there's an ongoing request for the same page,
-  // we should return its result instead of cancelling it.
-  CancelOngoingRequests();
-  pending_request_callback_ = std::move(callback);
-
   if (!web_state_) {
     mojom::ZeroStateSuggestionsResponseResultPtr result_union =
         mojom::ZeroStateSuggestionsResponseResult::NewError(
             "WebState destroyed.");
-    std::move(pending_request_callback_).Run(std::move(result_union));
+    std::move(callback).Run(std::move(result_union));
     return;
   }
+
+  const GURL current_page_url = web_state_->GetVisibleURL();
+
+  // If there's an ongoing request for the same page, chain the new callback to
+  // the existing one.
+  if (pending_request_callback_ &&
+      zero_state_suggestions_url_ == current_page_url) {
+    pending_request_callback_ = base::BindOnce(
+        &RunChainedCallbacks, std::move(pending_request_callback_),
+        std::move(callback));
+    return;
+  }
+
+  // Cancel any in-flight requests for a different page.
+  CancelOngoingRequests();
+  pending_request_callback_ = std::move(callback);
+  zero_state_suggestions_url_ = current_page_url;
 
   optimization_guide::proto::ZeroStateSuggestionsRequest request;
 
@@ -124,6 +168,7 @@ void ZeroStateSuggestionsServiceImpl::OnZeroStateSuggestionsResponse(
 void ZeroStateSuggestionsServiceImpl::CancelOngoingRequests() {
   weak_ptr_factory_.InvalidateWeakPtrs();
   page_context_wrapper_ = nil;
+  zero_state_suggestions_url_ = GURL();
   if (pending_request_callback_) {
     mojom::ZeroStateSuggestionsResponseResultPtr result_union =
         mojom::ZeroStateSuggestionsResponseResult::NewError(
