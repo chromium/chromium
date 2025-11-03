@@ -134,8 +134,11 @@ public class TabStateStore implements TabPersistentStore {
 
     /**
      * @param tabStateStorageService The {@link TabStateStorageService} to save to.
-     * @param tabModelSelector The {@link TabModelSelector} to observe changes in.
-     * @param tabCreatorManager Used to create new tabs on initial load.
+     * @param tabModelSelector The {@link TabModelSelector} to observe changes in. Regardless of the
+     *     mode this store is in, this will be the real selector with real models. This should be
+     *     treated as a read only object, no modifications should go through it.
+     * @param tabCreatorManager Used to create new tabs on initial load. This may return real
+     *     creators, or faked out creators if in non-authoritative mode.
      */
     public TabStateStore(
             TabStateStorageService tabStateStorageService,
@@ -344,21 +347,14 @@ public class TabStateStore implements TabPersistentStore {
         }
 
         for (int i = 0; i < loadedTabStates.length; i++) {
-            TabState tabState = loadedTabStates[i].tabState;
-            if (tabState.contentsState == null || tabState.contentsState.buffer().limit() <= 0) {
-                Log.i(TAG, " Tab %d: no state", i);
-                loadedTabStates[i].onTabCreationCallback.onResult(null);
+            LoadedTabState loadedTabState = loadedTabStates[i];
+            @TabId int tabId = loadedTabState.tabId;
+            Tab tab = resolveTab(loadedTabState.tabState, tabId, i);
+            loadedTabState.onTabCreationCallback.onResult(tab);
+
+            if (tab == null) {
                 continue;
             }
-
-            @TabId int tabId = loadedTabStates[i].tabId;
-            Tab tab =
-                    mTabCreatorManager
-                            .getTabCreator(/* incognito= */ false)
-                            .createFrozenTab(tabState, tabId, i);
-            if (tab == null) continue;
-
-            loadedTabStates[i].onTabCreationCallback.onResult(tab);
 
             // TODO(https://crbug.com/448151052): Correctly mark the selected tab as active.
             // TODO(https://crbug.com/451624258): This is the opposite order of creation and details
@@ -386,6 +382,16 @@ public class TabStateStore implements TabPersistentStore {
             clearState();
             catchUpAndBeginTracking();
         }
+    }
+
+    private @Nullable Tab resolveTab(TabState tabState, @TabId int tabId, int index) {
+        if (tabState.contentsState == null || tabState.contentsState.buffer().limit() <= 0) {
+            return null;
+        }
+
+        return mTabCreatorManager
+                .getTabCreator(/* incognito= */ false)
+                .createFrozenTab(tabState, tabId, index);
     }
 
     private void saveTabGroup(Token tabGroupId) {

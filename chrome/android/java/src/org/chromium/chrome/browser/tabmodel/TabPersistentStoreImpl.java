@@ -205,8 +205,11 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
      *
      * @param clientTag The client tag used to record metrics.
      * @param policy Abstraction around activity specific behaviors.
-     * @param modelSelector The {@link TabModelSelector} to restore to and save from.
-     * @param tabCreatorManager The {@link TabCreatorManager} to use.
+     * @param modelSelector The {@link TabModelSelector} to observe changes in. Regardless of the
+     *     mode this store is in, this will be the real selector with real models. This should be
+     *     treated as a read only object, no modifications should go through it.
+     * @param tabCreatorManager Used to create new tabs on initial load. This may return real
+     *     creators, or faked out creators if in non-authoritative mode.
      * @param tabWindowManager Used to avoid deleting archived tab state files.
      * @param cipherFactory The {@link CipherFactory} used for encrypting and decrypting files.
      */
@@ -859,6 +862,8 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
             boolean wasIncognitoTabModelSelected = mTabModelSelector.isIncognitoSelected();
             int selectedModelTabCount = mTabModelSelector.getCurrentModel().getCount();
 
+            // TODO(https://crbug.com/445197903): This is a modification to the tab model that
+            // may not be correct if this store isn't authoritative. Move this into an observer.
             TabModelUtils.setIndex(model, TabModelUtils.getTabIndexById(model, tabId));
             boolean isIncognitoTabModelSelected = mTabModelSelector.isIncognitoSelected();
 
@@ -869,6 +874,8 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
             if (tabToRestore.fromMerge
                     && wasIncognitoTabModelSelected != isIncognitoTabModelSelected
                     && selectedModelTabCount != 0) {
+                // TODO(https://crbug.com/445197903): This is a modification to the tab model that
+                // may not be correct if this store isn't authoritative. Move this into an observer.
                 mTabModelSelector.selectModel(wasIncognitoTabModelSelected);
             }
         }
@@ -1944,6 +1951,8 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
                         + ", "
                         + incognitoInfo.ids.size());
 
+        // TODO(https://crbug.com/445197903): This is a modification to shared prefs that may not be
+        // correct if this store isn't authoritative. Move this into an observer.
         saveTabModelPrefs(activeTabId, activeTabState);
         return new TabModelSelectorMetadata(normalInfo, incognitoInfo);
     }

@@ -30,6 +30,7 @@ import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.TabStateStorageFlagHelper;
 import org.chromium.chrome.browser.tab.TabStateStorageServiceFactory;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
+import org.chromium.chrome.browser.tabmodel.AccumulatingTabCreator;
 import org.chromium.chrome.browser.tabmodel.MismatchedIndicesHandler;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
@@ -60,7 +61,6 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
     private final CipherFactory mCipherFactory;
 
     private OneshotSupplier<ProfileProvider> mProfileProviderSupplier;
-    private TabCreatorManager mTabCreatorManager;
 
     // This class is driven by TabbedModeTabModelOrchestrator to prevent duplicate glue code in
     // ChromeTabbedActivity.
@@ -68,8 +68,10 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
     private @Nullable Supplier<TabModel> mArchivedHistoricalObserverSupplier;
 
     // Currently used to perform shadow operations for an alternative storage. Not always enabled.
-    private @Nullable TabStateStore mTabStateStore;
+    private @Nullable TabPersistentStore mShadowTabPersistentStore;
     private @Nullable Boolean mTabStateStoreIsAuthoritative;
+    private final AccumulatingTabCreator mRegularShadowTabCreator = new AccumulatingTabCreator();
+    private final AccumulatingTabCreator mIncognitoShadowTabCreator = new AccumulatingTabCreator();
 
     /**
      * Constructor.
@@ -95,9 +97,9 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
                     assumeNonNull(mArchivedHistoricalObserverSupplier));
             mArchivedTabModelOrchestrator.unregisterTabModelOrchestrator(this);
         }
-        if (mTabStateStore != null) {
-            mTabStateStore.destroy();
-            mTabStateStore = null;
+        if (mShadowTabPersistentStore != null) {
+            mShadowTabPersistentStore.destroy();
+            mShadowTabPersistentStore = null;
         }
         super.destroy();
     }
@@ -126,7 +128,6 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
             MismatchedIndicesHandler mismatchedIndicesHandler,
             int selectorIndex) {
         mProfileProviderSupplier = profileProviderSupplier;
-        mTabCreatorManager = tabCreatorManager;
         boolean mergeTabsOnStartup = shouldMergeTabs(activity);
         if (mergeTabsOnStartup) {
             MultiInstanceManager.mergedOnStartup();
@@ -247,11 +248,14 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
             ProfileProvider profileProvider = mProfileProviderSupplier.get();
             Profile profile = profileProvider.getOriginalProfile();
             assert profile != null;
-            mTabStateStore =
+
+            TabCreatorManager shadowTabCreatorManager =
+                    incognito -> incognito ? mIncognitoShadowTabCreator : mRegularShadowTabCreator;
+            mShadowTabPersistentStore =
                     new TabStateStore(
                             TabStateStorageServiceFactory.getForProfile(profile),
                             mTabModelSelector,
-                            mTabCreatorManager);
+                            shadowTabCreatorManager);
         }
     }
 
