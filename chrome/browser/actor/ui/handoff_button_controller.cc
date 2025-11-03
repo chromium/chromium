@@ -33,9 +33,11 @@
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/skia_conversions.h"
+#include "ui/views/border.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/button/label_button.h"
+#include "ui/views/controls/button/label_button_border.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/view_class_properties.h"
@@ -52,8 +54,11 @@ namespace {
 constexpr int kHandoffButtonTopOffset = 8;
 constexpr int kHandoffButtonPreferredHeight = 44;
 constexpr float kHandoffButtonShadowMargin = 15.0f;
+constexpr float kBackgroundInset = 2.0f;
 constexpr float kHandoffButtonCornerRadius = 48.0f;
 constexpr int kHandoffButtonIconSize = 20;
+constexpr gfx::Insets kHandoffButtonContentPadding =
+    gfx::Insets::TLBR(10, 10, 10, 14);
 
 // A customized LabelButton that shows a hand cursor on hover.
 class HandoffLabelButton : public views::LabelButton {
@@ -95,7 +100,6 @@ class GradientBubbleFrameView : public views::BubbleFrameView {
     constexpr float kShadowBlurSigma = 5.0f;
     constexpr float kShadowOffsetX = 0.0f;
     constexpr float kShadowOffsetY = 3.0f;
-    constexpr float kBackgroundInset = 2.0f;
 
     gfx::RectF button_bounds_f(GetLocalBounds());
     button_bounds_f.Inset(kHandoffButtonShadowMargin);
@@ -160,9 +164,8 @@ END_METADATA
 
 std::unique_ptr<views::FrameView> CreateHandoffButtonFrameView(
     views::Widget* widget) {
-  const gfx::Insets content_padding = gfx::Insets::TLBR(10, 10, 10, 14);
   const gfx::Insets total_insets =
-      content_padding + gfx::Insets(kHandoffButtonShadowMargin);
+      gfx::Insets(kHandoffButtonShadowMargin) + gfx::Insets(kBackgroundInset);
   const gfx::RoundedCornersF corners(kHandoffButtonCornerRadius);
   auto frame_view = std::make_unique<GradientBubbleFrameView>(
       total_insets, views::BubbleBorder::Arrow::NONE, corners);
@@ -267,6 +270,9 @@ void HandoffButtonController::CreateAndShowButton(const std::u16string& text,
   button_view_->SetProperty(views::kElementIdentifierKey,
                             kHandoffButtonElementId);
   button_view_->SetLabelStyle(views::style::STYLE_BODY_3_MEDIUM);
+  button_view_->SetBorder(views::CreatePaddedBorder(
+      button_view_->CreateDefaultBorder(),
+      kHandoffButtonContentPadding - gfx::Insets(kBackgroundInset)));
 
   auto widget_delegate = std::make_unique<views::WidgetDelegate>();
   widget_delegate->SetContentsView(std::move(button_view));
