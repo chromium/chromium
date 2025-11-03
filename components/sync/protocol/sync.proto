@@ -190,7 +190,6 @@ message GetUpdatesMessage {
 
   // This value is an updated version of the GetUpdatesCallerInfo's
   // GetUpdatesSource.  It describes the reason for the GetUpdate request.
-  // Introduced in M29.
   optional SyncEnums.GetUpdatesOrigin get_updates_origin = 9;
 
   // Whether this GU also serves as a retry GU. Any GU that happens after
