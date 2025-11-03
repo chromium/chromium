@@ -228,6 +228,7 @@ blink_core_sources_dom = [
   "observable_internal_observer.h",
   "observable.cc",
   "observable.h",
+  "overscroll_pseudo_element_data.h",
   "parser_content_policy.h",
   "part.cc",
   "part.h",

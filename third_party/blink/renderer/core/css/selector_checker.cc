@@ -659,6 +659,8 @@ SelectorChecker::FeaturelessMatch SelectorChecker::MatchShadowHost(
     case CSSSelector::kPseudoScrollMarker:
     case CSSSelector::kPseudoScrollMarkerGroup:
     case CSSSelector::kPseudoScrollButton:
+    case CSSSelector::kPseudoOverscrollAreaParent:
+    case CSSSelector::kPseudoOverscrollClientArea:
       // These pseudos are not allowed to match featureless elements. When
       // adding new pseudos here, they would typically be allowed if they are
       // logical pseudos which take selector arguments.

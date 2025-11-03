@@ -402,6 +402,10 @@ PseudoId CSSSelector::GetPseudoId(PseudoType type) {
       return kPseudoIdViewTransitionOld;
     case kPseudoViewTransitionNew:
       return kPseudoIdViewTransitionNew;
+    case kPseudoOverscrollAreaParent:
+      return kPseudoIdOverscrollAreaParent;
+    case kPseudoOverscrollClientArea:
+      return kPseudoIdOverscrollClientArea;
     case kPseudoActive:
     case kPseudoActiveViewTransition:
     case kPseudoActiveViewTransitionType:
@@ -952,6 +956,8 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
         bits_.set<PseudoTypeField>(kPseudoUnknown);
       }
       break;
+    case kPseudoOverscrollAreaParent:
+    case kPseudoOverscrollClientArea:
     case kPseudoBlinkInternalElement:
       if (Match() != kPseudoElement || mode != kUASheetMode) {
         bits_.set<PseudoTypeField>(kPseudoUnknown);
@@ -1332,6 +1338,11 @@ void CSSSelector::SerializeSimpleSelector(StringBuilder& builder,
         builder.Append(')');
         break;
       }
+      case kPseudoOverscrollAreaParent:
+        builder.Append('(');
+        builder.Append(Argument());
+        builder.Append(')');
+        break;
       default:
         break;
     }
@@ -1667,6 +1678,8 @@ bool CSSSelector::IsTreeAbidingPseudoElement() const {
           GetPseudoType() == kPseudoViewTransitionImagePair ||
           GetPseudoType() == kPseudoViewTransitionOld ||
           GetPseudoType() == kPseudoViewTransitionNew ||
+          GetPseudoType() == kPseudoOverscrollAreaParent ||
+          GetPseudoType() == kPseudoOverscrollClientArea ||
           IsElementBackedPseudoElement(GetPseudoType()));
 }
 
@@ -1731,6 +1744,8 @@ bool CSSSelector::IsAllowedAfterPart() const {
     case kPseudoViewTransitionImagePair:
     case kPseudoViewTransitionNew:
     case kPseudoViewTransitionOld:
+    case kPseudoOverscrollAreaParent:
+    case kPseudoOverscrollClientArea:
       return true;
 
     // It's possible that we should support ::slotted() after ::part().

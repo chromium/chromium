@@ -389,6 +389,8 @@ NodeList* Node::childNodes() {
   return EnsureRareData().EnsureNodeLists().EnsureEmptyChildNodeList(*this);
 }
 
+// TODO(crbug.com/447642032): Implement previous / next sibling for overscroll
+// pseudo-elements.
 Node* Node::PseudoAwarePreviousSibling() const {
   Element* parent = parentElement();
   if (!parent || HasPreviousSibling()) {

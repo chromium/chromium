@@ -291,6 +291,10 @@ protocol::DOM::PseudoType InspectorDOMAgent::ProtocolPseudoElementType(
       return protocol::DOM::PseudoTypeEnum::ViewTransitionNew;
     case kPseudoIdViewTransitionOld:
       return protocol::DOM::PseudoTypeEnum::ViewTransitionOld;
+    case kPseudoIdOverscrollAreaParent:
+      return protocol::DOM::PseudoTypeEnum::OverscrollAreaParent;
+    case kPseudoIdOverscrollClientArea:
+      return protocol::DOM::PseudoTypeEnum::OverscrollClientArea;
     case kAfterLastInternalPseudoId:
     case kPseudoIdNone:
     case kPseudoIdInvalid:

@@ -113,6 +113,7 @@
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/dom/node_cloning_data.h"
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
+#include "third_party/blink/renderer/core/dom/overscroll_pseudo_element_data.h"
 #include "third_party/blink/renderer/core/dom/popover_data.h"
 #include "third_party/blink/renderer/core/dom/presentation_attribute_style.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
@@ -4310,6 +4311,8 @@ void Element::AttachLayoutTree(AttachContext& context) {
     context.counters_context.EnterObject(*layout_object);
   }
 
+  AttachOverscrollPseudoElements(children_context);
+
   AttachColumnPseudoElements(children_context);
   AttachPrecedingPseudoElements(children_context);
 
@@ -4937,6 +4940,7 @@ void Element::RecalcStyle(const StyleRecalcChange change,
                                      child_recalc_context);
     }
 
+    UpdateOverscrollPseudoElements(child_change, child_recalc_context);
     UpdateTransitionPseudoElements(child_change, child_recalc_context);
   }
 
@@ -5604,6 +5608,37 @@ void Element::RebuildTransitionLayoutTree(
       };
   ViewTransitionUtils::ForEachTransitionPseudo(
       *this, rebuild_pseudo_tree, ViewTransitionUtils::Filter::kDirectChildren);
+}
+
+void Element::AttachOverscrollPseudoElements(AttachContext& context) {
+  const ComputedStyle* computed_style = GetComputedStyle();
+  if (!computed_style) {
+    return;
+  }
+  const ScopedCSSNameList* overscroll_areas = computed_style->OverscrollArea();
+  if (!overscroll_areas || overscroll_areas->GetNames().empty()) {
+    return;
+  }
+  for (const auto& name : overscroll_areas->GetNames()) {
+    PseudoElement* pseudo_element =
+        GetPseudoElement(kPseudoIdOverscrollAreaParent, name->GetName());
+    CHECK(pseudo_element);
+    pseudo_element->AttachLayoutTree(context);
+    CHECK(pseudo_element->GetLayoutObject());
+    context.previous_in_flow = nullptr;
+    context.parent = pseudo_element->GetLayoutObject();
+    context.next_sibling = nullptr;
+    context.next_sibling_valid = true;
+  }
+  PseudoElement* pseudo_element =
+      GetPseudoElement(kPseudoIdOverscrollClientArea);
+  CHECK(pseudo_element);
+  pseudo_element->AttachLayoutTree(context);
+  CHECK(pseudo_element->GetLayoutObject());
+  context.previous_in_flow = nullptr;
+  context.parent = pseudo_element->GetLayoutObject();
+  context.next_sibling = nullptr;
+  context.next_sibling_valid = true;
 }
 
 void Element::AttachTransitionPseudoElements(AttachContext& context) {
@@ -11885,6 +11920,60 @@ void Element::InvalidateStyleAttribute(
       html_names::kStyleAttr, *this);
 }
 
+void Element::UpdateOverscrollPseudoElements(
+    const StyleRecalcChange style_recalc_change,
+    const StyleRecalcContext& style_recalc_context) {
+  size_t overscroll_area_count = 0;
+  if (const ComputedStyle* computed_style = GetComputedStyle()) {
+    if (const ScopedCSSNameList* overscroll_area =
+            computed_style->OverscrollArea()) {
+      overscroll_area_count = overscroll_area->GetNames().size();
+    }
+  }
+
+  ElementRareDataVector* data = GetElementRareData();
+  const OverscrollPseudoElementData* pseudo_data =
+      data ? data->GetOverscrollPseudoElementData() : nullptr;
+
+  // Detect if the declared overscroll areas have changed.
+  size_t current_overscroll_area_count = pseudo_data ? pseudo_data->size() : 0;
+  bool overscroll_areas_changed =
+      overscroll_area_count != current_overscroll_area_count;
+  if (!overscroll_areas_changed && overscroll_area_count > 0) {
+    const HeapVector<Member<const ScopedCSSName>>& overscroll_area_css =
+        GetComputedStyle()->OverscrollArea()->GetNames();
+    const HeapVector<Member<PseudoElement>>& current_overscroll_parent =
+        pseudo_data->GetOverscrollParents();
+    for (size_t i = 0; i < overscroll_area_count; ++i) {
+      if (overscroll_area_css.at(i)->GetName() !=
+          current_overscroll_parent.at(i)->GetPseudoArgument()) {
+        overscroll_areas_changed = true;
+        break;
+      }
+    }
+  }
+  if (!overscroll_areas_changed) {
+    return;
+  }
+
+  if (data) {
+    data->ClearOverscrollPseudoElements();
+  }
+  if (overscroll_area_count == 0) {
+    return;
+  }
+
+  const ScopedCSSNameList* overscroll_area =
+      GetComputedStyle()->OverscrollArea();
+  data = &EnsureElementRareData();
+  UpdatePseudoElement(kPseudoIdOverscrollClientArea, style_recalc_change,
+                      style_recalc_context);
+  for (const ScopedCSSName* name : overscroll_area->GetNames()) {
+    UpdatePseudoElement(kPseudoIdOverscrollAreaParent, style_recalc_change,
+                        style_recalc_context, name->GetName());
+  }
+}
+
 void Element::UpdateTransitionPseudoElements(
     const StyleRecalcChange style_recalc_change,
     const StyleRecalcContext& style_recalc_context) {
@@ -12689,6 +12778,8 @@ Element* Element::ImplicitAnchorElement() const {
       case kPseudoIdScrollButtonInlineStart:
       case kPseudoIdScrollButtonInlineEnd:
       case kPseudoIdScrollButtonBlockEnd:
+      case kPseudoIdOverscrollAreaParent:
+      case kPseudoIdOverscrollClientArea:
         if (RuntimeEnabledFeatures::
                 OriginatingElementIsImplicitAnchorEnabled()) {
           return parentElement();

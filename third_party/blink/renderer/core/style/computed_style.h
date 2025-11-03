@@ -2470,6 +2470,10 @@ class ComputedStyle final : public ComputedStyleBase {
         pseudo == kPseudoIdScrollButtonBlockEnd) {
       return HasPseudoElementStyle(kPseudoIdScrollButton);
     }
+    if (pseudo == kPseudoIdOverscrollClientArea ||
+        pseudo == kPseudoIdOverscrollAreaParent) {
+      return HasOverscrollArea();
+    }
     if (!HasPseudoElementStyle(pseudo)) {
       return false;
     }
@@ -2490,6 +2494,10 @@ class ComputedStyle final : public ComputedStyleBase {
 
   bool HasScrollMarkerGroupAfter() const {
     return GetScrollMarkerGroup() && GetScrollMarkerGroup()->PositionAfter();
+  }
+
+  bool HasOverscrollArea() const {
+    return OverscrollArea() && !OverscrollArea()->GetNames().empty();
   }
 
   // Empty value means scroll-marker-group: none.

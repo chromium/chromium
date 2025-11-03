@@ -2553,7 +2553,8 @@ static void AssertLayoutTreeUpdatedForPseudoElements(const Element& element) {
                                  kPseudoIdScrollButtonInlineStart,
                                  kPseudoIdScrollButtonInlineEnd,
                                  kPseudoIdScrollButtonBlockEnd,
-                                 kPseudoIdScrollMarker};
+                                 kPseudoIdScrollMarker,
+                                 kPseudoIdOverscrollClientArea};
   for (auto pseudo_id : pseudo_ids) {
     if (const PseudoElement* pseudo_element =
             element.GetPseudoElement(pseudo_id)) {

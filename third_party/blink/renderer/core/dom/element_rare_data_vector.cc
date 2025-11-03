@@ -158,6 +158,36 @@ void ElementRareDataVector::ClearColumnPseudoElements(wtf_size_t to_keep) {
   data->ClearColumnPseudoElements(to_keep);
 }
 
+void ElementRareDataVector::AddOverscrollPseudoElement(PseudoElement& element) {
+  PseudoElementData* data =
+      static_cast<PseudoElementData*>(GetField(FieldId::kPseudoElementData));
+  if (!data) {
+    data = MakeGarbageCollected<PseudoElementData>();
+    SetField(FieldId::kPseudoElementData, data);
+  }
+  data->SetPseudoElement(element.GetPseudoId(), &element,
+                         element.GetPseudoArgument());
+}
+
+const OverscrollPseudoElementData*
+ElementRareDataVector::GetOverscrollPseudoElementData() const {
+  PseudoElementData* data =
+      static_cast<PseudoElementData*>(GetField(FieldId::kPseudoElementData));
+  if (!data) {
+    return nullptr;
+  }
+  return data->GetOverscrollAreaData();
+}
+
+void ElementRareDataVector::ClearOverscrollPseudoElements() {
+  PseudoElementData* data =
+      static_cast<PseudoElementData*>(GetField(FieldId::kPseudoElementData));
+  if (!data) {
+    return;
+  }
+  data->ClearOverscrollAreas();
+}
+
 CSSStyleDeclaration& ElementRareDataVector::EnsureInlineCSSStyleDeclaration(
     Element* owner_element) {
   return EnsureField<InlineCSSStyleDeclaration>(FieldId::kCssomWrapper,

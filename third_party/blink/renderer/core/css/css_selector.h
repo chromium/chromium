@@ -407,6 +407,9 @@ class CORE_EXPORT CSSSelector {
     kPseudoScrollMarkerGroup,
     // Scroll button pseudo for Carousel
     kPseudoScrollButton,
+
+    kPseudoOverscrollAreaParent,
+    kPseudoOverscrollClientArea,
   };
 
   enum class AttributeMatchType : int {

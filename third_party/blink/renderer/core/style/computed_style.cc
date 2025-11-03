@@ -317,6 +317,9 @@ bool ComputedStyle::NeedsReattachLayoutTree(const Element& element,
   if (!old_style->ScrollMarkerGroupEqual(*new_style)) {
     return true;
   }
+  if (old_style->OverscrollArea() != new_style->OverscrollArea()) {
+    return true;
+  }
   // We need to perform a reattach if a "display: layout(foo)" has changed to a
   // "display: layout(bar)". This is because one custom layout could be
   // registered and the other may not, affecting the box-tree construction.
@@ -446,6 +449,13 @@ ComputedStyle::ComputeDifferenceIgnoringInheritedFirstLineStyle(
     }
     return Difference::kPseudoElementStyle;
   }
+  if (old_style.OverscrollArea() != new_style.OverscrollArea()) {
+    // TODO(crbug.com/447642032): Should we return kDescendantAffecting since
+    // descendants may move into or out of a newly declared or no longer
+    // declared overscroll area?
+    return Difference::kPseudoElementStyle;
+  }
+
   if (new_style.HasAnyPseudoElementStyles() ||
       old_style.HasAnyPseudoElementStyles()) {
     return Difference::kPseudoElementStyle;

@@ -354,6 +354,10 @@ String ToString(PseudoId pseudo_id) {
       return "kPseudoIdPermissionIcon";
     case kAfterLastInternalPseudoId:
       return "kAfterLastInternalPseudoId";
+    case kPseudoIdOverscrollAreaParent:
+      return "kPseudoIdOverscrollAreaParent";
+    case kPseudoIdOverscrollClientArea:
+      return "kPseudoIdOverscrollClientArea";
     case kPseudoIdInvalid:
       return "kPseudoIdInvalid";
   }
