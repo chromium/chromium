@@ -66,30 +66,4 @@ enum class SessionStorageMigrationStatus {
 extern const char kSessionHistogramSavingTime[];
 extern const char kSessionHistogramLoadingTime[];
 
-// Name of the histograms used to record the status of the session storage
-// migration, the format of the session storage and the duration of the
-// migration.
-extern const char kSessionHistogramStorageFormat[];
-extern const char kSessionHistogramStorageMigrationStatus[];
-extern const char kSessionHistogramStorageMigrationTiming[];
-
-// Possible value of the kSessionHistogramStorageFormat histogram.
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class SessionHistogramStorageFormat {
-  kLegacy = 0,
-  kOptimized = 1,
-  kMaxValue = kOptimized,
-};
-
-// Possible value of the kSessionHistogramStorageMigrationStatus histogram.
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class SessionHistogramStorageMigrationStatus {
-  kSuccess = 0,
-  kFailure = 1,
-  kInterrupted = 2,
-  kMaxValue = kInterrupted,
-};
-
 #endif  // IOS_CHROME_BROWSER_SESSIONS_MODEL_SESSION_CONSTANTS_H_

@@ -256,21 +256,17 @@ source_set("session_restoration_service_factory") {
     "session_restoration_service_factory.mm",
   ]
   deps = [
-    ":features",
     ":legacy_session_restoration_service",
     ":session_constants",
-    ":session_migration",
     ":session_restoration_service_impl",
     ":session_service",
     ":session_state",
     "//base",
     "//components/pref_registry",
     "//components/prefs",
-    "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/chrome/browser/shared/public/features",
-    "//ios/web/public",
   ]
 }
 

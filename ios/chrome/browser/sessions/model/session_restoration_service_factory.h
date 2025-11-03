@@ -7,7 +7,6 @@
 
 #import <memory>
 
-#import "base/functional/callback_forward.h"
 #import "base/no_destructor.h"
 #import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
@@ -19,23 +18,8 @@ class SessionRestorationService;
 class SessionRestorationServiceFactory final
     : public ProfileKeyedServiceFactoryIOS {
  public:
-  // Represents the storage format that is requested.
-  enum StorageFormat {
-    kLegacy,
-    kOptimized,
-  };
-
   static SessionRestorationService* GetForProfile(ProfileIOS* profile);
   static SessionRestorationServiceFactory* GetInstance();
-
-  // Requests that session storage for `profile` is migrated if needed.
-  // Invokes `closure` when the migration is complete. If data is already in
-  // the correct format, `closure` is called synchronously.
-  //
-  // Must be called before GetForProfile() is called for `profile`.
-  void MigrateSessionStorageFormat(ProfileIOS* profile,
-                                   StorageFormat requested_format,
-                                   base::OnceClosure closure);
 
  private:
   friend class base::NoDestructor<SessionRestorationServiceFactory>;
