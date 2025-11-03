@@ -144,7 +144,7 @@ found in the LICENSE file.
         <ViewStub
             android:id="@+id/optional_button_stub"
             android:inflatedId="@+id/optional_toolbar_button_container"
-            android:layout_gravity="top"
+            android:layout_gravity="center_vertical"
             android:visibility="gone"
             style="@style/ToolbarHoverableButton" />
     </LinearLayout>
