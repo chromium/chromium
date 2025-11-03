@@ -136,6 +136,43 @@ TEST_F(AccessibilityTest, TextOffsetInFormattingContextWithLayoutFirstLetter) {
   EXPECT_EQ(8, ax_first_letter->TextOffsetInFormattingContext(1));
 }
 
+TEST_F(AccessibilityTest, FocusgroupOwnerImpliedRoleGenericContainer) {
+  SetBodyInnerHTML(R"HTML(
+      <div id="fg" focusgroup="toolbar">
+        <button>Item</button>
+      </div>)HTML");
+
+  const AXObject* fg = GetAXObjectByElementId("fg");
+  ASSERT_NE(nullptr, fg);
+  // A generic container with focusgroup behavior should be promoted to the
+  // minimum ARIA role for its behavior (toolbar).
+  EXPECT_EQ(ax::mojom::Role::kToolbar, fg->RoleValue());
+}
+
+TEST_F(AccessibilityTest, FocusgroupOwnerDoesNotOverrideExplicitRole) {
+  SetBodyInnerHTML(R"HTML(
+      <div id="fg" role="list" focusgroup="toolbar">
+        <div>Item</div>
+      </div>)HTML");
+  const AXObject* fg = GetAXObjectByElementId("fg");
+  ASSERT_NE(nullptr, fg);
+  // The explicit author role should be preserved (list) and not overridden by
+  // focusgroup implied role inference.
+  EXPECT_EQ(ax::mojom::Role::kList, fg->RoleValue());
+}
+
+TEST_F(AccessibilityTest, FocusgroupOwnerDoesNotOverrideNativeSemantics) {
+  SetBodyInnerHTML(R"HTML(
+      <ul id="fg" focusgroup="toolbar">
+        <li>Item</li>
+      </ul>)HTML");
+  const AXObject* fg = GetAXObjectByElementId("fg");
+  ASSERT_NE(nullptr, fg);
+  // Native semantic list role should remain (list) and not be replaced by
+  // toolbar.
+  EXPECT_EQ(ax::mojom::Role::kList, fg->RoleValue());
+}
+
 TEST_F(AccessibilityTest,
        TextOffsetInFormattingContextWithCSSGeneratedContent) {
   SetBodyInnerHTML(R"HTML(

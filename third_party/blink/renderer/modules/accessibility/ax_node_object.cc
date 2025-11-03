@@ -53,6 +53,7 @@
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/focus_params.h"
+#include "third_party/blink/renderer/core/dom/focusgroup_flags.h"
 #include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
 #include "third_party/blink/renderer/core/dom/qualified_name.h"
@@ -2746,6 +2747,26 @@ ax::mojom::blink::Role AXNodeObject::DetermineRoleValue() {
   native_role_ = NativeRoleIgnoringAria();
 
   aria_role_ = DetermineAriaRole();
+
+  // Focusgroup implied role inference:
+  // If there is no explicit ARIA role (aria_role_ is kUnknown) and the native
+  // role is a generic container (e.g. a <div> / <span> without richer native
+  // semantics), infer the minimum ARIA role from the element's focusgroup
+  // behavior. This only applies to actual focusgroup owners (excludes the
+  // empty sentinel and explicit opt-outs) and never overrides author supplied
+  // roles or native semantics richer than GenericContainer.
+
+  const Element* element = GetElement();
+  if (element &&
+      RuntimeEnabledFeatures::FocusgroupEnabled(
+          element->GetExecutionContext()) &&
+      aria_role_ == ax::mojom::blink::Role::kUnknown &&
+      native_role_ == ax::mojom::blink::Role::kGenericContainer && element) {
+    const FocusgroupData data = element->GetFocusgroupData();
+    if (focusgroup::IsActualFocusgroup(data)) {
+      aria_role_ = focusgroup::FocusgroupMinimumAriaRole(data);
+    }
+  }
 
   return aria_role_ == ax::mojom::blink::Role::kUnknown ? native_role_
                                                         : aria_role_;
