@@ -1899,7 +1899,6 @@ targets.binaries.generated_script(
             "--smoke-test-mode",
         ],
     ),
-    module_scheme = "flat",
 )
 
 targets.binaries.generated_script(
