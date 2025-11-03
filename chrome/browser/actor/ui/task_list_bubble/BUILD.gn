@@ -1,0 +1,55 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/common/features.gni")
+
+assert(!is_android)
+
+source_set("ui") {
+  sources = [
+    "actor_task_list_bubble.cc",
+    "actor_task_list_bubble.h",
+    "actor_task_list_bubble_row_button.cc",
+    "actor_task_list_bubble_row_button.h",
+  ]
+  deps = [
+    ":controller",
+    "//base",
+    "//chrome/app/vector_icons",
+    "//chrome/browser/ui",
+    "//chrome/common",
+    "//content/public/browser",
+    "//ui/views",
+  ]
+}
+
+source_set("controller") {
+  sources = [ "actor_task_list_bubble_controller.h" ]
+  deps = [
+    "//base",
+    "//chrome/browser/ui/browser_window",
+    "//ui/base/unowned_user_data",
+    "//ui/views",
+  ]
+}
+
+source_set("controller_impl") {
+  sources = [ "actor_task_list_bubble_controller.cc" ]
+  deps = [
+    ":controller",
+    "//base",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "actor_task_list_bubble_unittest.cc" ]
+  deps = [
+    ":controller",
+    ":ui",
+    "//base",
+    "//chrome/test:test_support",
+    "//testing/gtest",
+  ]
+}
