@@ -652,8 +652,16 @@ class PathParser {
 
     cache = PathParser.resultDBArtifacts[this.path] =
         { artifacts: {}, expiration: 0 };
+    let pathPattern = this.path
+      // Remove leading `/`.
+      .substring(1)
+      // Escape literal `.`, `?`, and `+` characters.
+      .replace(/[.?+]/g, '\\$&')
+      // Replace the last path separator `/` with `#`. A few tests have `/` in
+      // query string, which we should avoid touching.
+      .replace(/\/([^\/\?]*($|\?))/, '#$1');
     let promise = PathParser.queryArtifacts({
-      testIdRegexp: `ninja://[^:]*:[^/]*${this.path.replace(/[.?+]/g, '\\$&')}`,
+      testIdRegexp: `://[^:]*:[^/]*!webtest::${pathPattern}`,
       expectancy: 'ALL',
     }).then(() => { return Promise.resolve(cache.artifacts); });
     // If the promise is not fulfilled immediately, save the promise in the
@@ -680,12 +688,11 @@ class PathParser {
       .then((responseJson) => {
         if (responseJson.artifacts) {
           for (let artifact of responseJson.artifacts) {
-            let match = artifact.name.match(
-                /\/tests\/ninja:%2F%2F[^:]*:[^%]*(%2F.*)\/results\//);
+            let match = artifact.name.match(/%21webtest::([^/]*)\/results\//);
             if (!match) {
               continue;
             }
-            let testPath = decodeURIComponent(match[1]);
+            let testPath = '/' + decodeURIComponent(match[1]).replace('#', '/');
             let cache = PathParser.resultDBArtifacts[testPath];
             if (!cache) {
               cache = PathParser.resultDBArtifacts[testPath] =
