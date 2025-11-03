@@ -8,21 +8,33 @@ import type {OmniboxPopupAppElement} from './app.js';
 
 export function getHtml(this: OmniboxPopupAppElement) {
   // clang-format off
-  return html`<!--_html_template_start_-->
-<cr-searchbox-dropdown id="matches" .result="${this.result_}"
+  const searchboxDropdown = html`
+<cr-searchbox-dropdown id="matches" part="searchbox-dropdown"
+    exportparts="dropdown-content"
+    role="listbox" .result="${this.result_}"
     ?can-show-secondary-side="${this.canShowSecondarySide}"
     ?has-secondary-side="${this.hasSecondarySide}"
     @has-secondary-side-changed="${this.onHasSecondarySideChanged_}"
     @dom-change="${this.onResultRepaint_}">
 </cr-searchbox-dropdown>
-${this.showContextEntrypoint_ ? html`
-<cr-button id="addContextButton"
-    @click="${this.onAddContextButtonClick_}"
-    title="${this.i18n('addContextTitle')}">
-  <cr-icon id="entrypointIcon" icon="cr:add" slot="prefix-icon"></cr-icon>
-  <span id="description">${this.i18n('addContext')}</span>
-</cr-button>
-`: ``}
+  `;
+
+  return html`<!--_html_template_start_-->
+${this.searchboxLayoutMode_ ? html`
+<!-- WebUI Omnibox popup w/ "Add Context" button -->
+<div class="dropdownContainer">
+  <contextual-entrypoint-and-carousel id="context"
+      part="contextual-entrypoint-and-carousel"
+      exportparts="composebox-entrypoint, context-menu-entrypoint-icon"
+      entrypoint-name="Omnibox"
+      ?show-dropdown="${this.result_?.matches.length ?? 0}"
+      realbox-layout-mode="${this.searchboxLayoutMode_}"
+      @click="${this.onContextualEntryPointClicked_}">
+    ${searchboxDropdown}
+  </contextual-entrypoint-and-carousel>
+</div>` : html`
+<!-- WebUI Omnibox popup w/o "Add Context" button -->
+  ${searchboxDropdown}`}
 <!--_html_template_end_-->`;
   // clang-format on
 }

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import '//resources/cr_components/composebox/contextual_entrypoint_and_carousel.js';
 import '//resources/cr_components/searchbox/searchbox_dropdown.js';
 import '//resources/cr_elements/icons.html.js';
 import '/strings.m.js';
@@ -73,6 +74,7 @@ export class OmniboxPopupAppElement extends I18nMixinLit
       },
 
       result_: {type: Object},
+      searchboxLayoutMode_: {type: String},
       showContextEntrypoint_: {type: Boolean},
     };
   }
@@ -82,6 +84,8 @@ export class OmniboxPopupAppElement extends I18nMixinLit
   accessor hasSecondarySide: boolean = false;
   accessor isDebug: boolean = false;
   protected accessor result_: AutocompleteResult|null = null;
+  protected accessor searchboxLayoutMode_: string =
+      loadTimeData.getString('searchboxLayoutMode');
   protected accessor showContextEntrypoint_: boolean =
       loadTimeData.getBoolean('showContextEntrypoint');
 
@@ -170,14 +174,17 @@ export class OmniboxPopupAppElement extends I18nMixinLit
     this.hasSecondarySide = e.detail.value;
   }
 
-  protected onAddContextButtonClick_(e: Event) {
+  protected onContextualEntryPointClicked_(e: Event) {
     e.preventDefault();
-    const addContextButton =
-        this.shadowRoot.querySelector<HTMLElement>('#addContextButton');
-    assert(addContextButton);
+    const carousel =
+        this.shadowRoot.querySelector('contextual-entrypoint-and-carousel');
+    assert(!!carousel);
+    const contextEntrypoint =
+        carousel.shadowRoot.querySelector('#contextEntrypoint');
+    assert(!!contextEntrypoint);
     const point = {
-      x: addContextButton.getBoundingClientRect().left,
-      y: addContextButton.getBoundingClientRect().bottom,
+      x: contextEntrypoint.getBoundingClientRect().left,
+      y: contextEntrypoint.getBoundingClientRect().bottom,
     };
     this.pageHandler_.showContextMenu(point);
   }

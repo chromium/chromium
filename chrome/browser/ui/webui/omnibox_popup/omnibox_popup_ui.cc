@@ -31,6 +31,28 @@
 #include "ui/webui/color_change_listener/color_change_handler.h"
 #include "ui/webui/webui_util.h"
 
+namespace {
+
+using AddContextButtonVariant = omnibox::AddContextButtonVariant;
+
+std::string AddContextButtonVariantToSearchboxLayoutMode(
+    AddContextButtonVariant variant) {
+  switch (variant) {
+    case AddContextButtonVariant::kNone:
+      return "";
+    case AddContextButtonVariant::kBelowResults:
+      return "TallBottomContext";
+    case AddContextButtonVariant::kAboveResults:
+      return "TallTopContext";
+    case AddContextButtonVariant::kInline:
+      return "";
+  }
+
+  return "";
+}
+
+}  // namespace
+
 bool OmniboxPopupUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
   return base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxAimPopup) ||
@@ -64,8 +86,12 @@ OmniboxPopupUI::OmniboxPopupUI(content::WebUI* web_ui)
       base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxAimPopup));
 
   // Add composebox data.
+  const std::string searchbox_layout_mode =
+      AddContextButtonVariantToSearchboxLayoutMode(
+          omnibox::kWebUIOmniboxAimPopupAddContextButtonVariantParam.Get());
+  source->AddString("searchboxLayoutMode", searchbox_layout_mode);
   source->AddBoolean("composeboxShowContextMenu",
-                     ntp_composebox::kShowContextMenu.Get());
+                     !searchbox_layout_mode.empty());
   source->AddBoolean("composeboxShowContextMenuTabPreviews",
                      ntp_composebox::kShowContextMenuTabPreviews.Get());
   source->AddBoolean("composeboxShowZps",
@@ -75,7 +101,7 @@ OmniboxPopupUI::OmniboxPopupUI(content::WebUI* web_ui)
   source->AddBoolean("composeboxShowImageSuggest",
                      ntp_composebox::kShowComposeboxImageSuggestions.Get());
   source->AddBoolean("composeboxShowContextMenuDescription",
-                     ntp_composebox::kShowContextMenuDescription.Get());
+                     !searchbox_layout_mode.empty());
   source->AddBoolean("composeboxShowSubmit", ntp_composebox::kShowSubmit.Get());
   source->AddBoolean("composeboxShowCreateImageButton", false);
   source->AddBoolean("composeboxShowDeepSearchButton", false);
