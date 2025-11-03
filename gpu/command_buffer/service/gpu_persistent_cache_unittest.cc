@@ -83,6 +83,72 @@ TEST_F(GpuPersistentCacheTest, StoreAndLoadData) {
   EXPECT_EQ(std::string(buffer.begin(), buffer.end()), value);
 }
 
+// Tests basic load and store using the Skia, ANGLE and Dawn caching interfaces.
+TEST_F(GpuPersistentCacheTest, StoreAndLoadDataMixedInterfaces) {
+  InitializeCache();
+
+  // Insert 3 key/value pairs with the 3 caching interfaces.
+  const std::string key_dawn = "my_key_dawn";
+  const std::string value_dawn = "my_value_dawn";
+  cache_.StoreData(key_dawn.c_str(), key_dawn.size(), value_dawn.c_str(),
+                   value_dawn.size());
+
+  const std::string key_gr = "my_key_gr";
+  sk_sp<SkData> key_gr_data =
+      SkData::MakeWithoutCopy(key_gr.c_str(), key_gr.size());
+  const std::string value_gr = "my_value_gr";
+  sk_sp<SkData> value_gr_data =
+      SkData::MakeWithoutCopy(value_gr.c_str(), value_gr.size());
+  cache_.store(*key_gr_data, *value_gr_data);
+
+  const std::string key_gl = "my_key_gl";
+  const std::string value_gl = "my_value_gl";
+  cache_.GLBlobCacheSet(key_gl.c_str(), static_cast<int64_t>(key_gl.size()),
+                        value_gl.c_str(),
+                        static_cast<int64_t>(value_gl.size()));
+
+  // Load with dawn::Platform::CachingInterface
+  auto test_load_dawn = [this](const std::string& key,
+                               const std::string& value) {
+    std::vector<char> buffer(value.size());
+    size_t loaded_size =
+        cache_.LoadData(key.c_str(), key.size(), buffer.data(), buffer.size());
+
+    EXPECT_EQ(loaded_size, value.size());
+    EXPECT_EQ(std::string(buffer.begin(), buffer.end()), value);
+  };
+  test_load_dawn(key_dawn, value_dawn);
+  test_load_dawn(key_gr, value_gr);
+  test_load_dawn(key_gl, value_gl);
+
+  // Load with GrContextOptions::PersistentCache
+  auto test_load_gr = [this](const std::string& key, const std::string& value) {
+    sk_sp<SkData> key_data = SkData::MakeWithoutCopy(key.c_str(), key.size());
+    sk_sp buffer = cache_.load(*key_data);
+
+    EXPECT_EQ(buffer->size(), value.size());
+    EXPECT_EQ(
+        std::string(static_cast<const char*>(buffer->data()), buffer->size()),
+        value);
+  };
+  test_load_gr(key_dawn, value_dawn);
+  test_load_gr(key_gr, value_gr);
+  test_load_gr(key_gl, value_gl);
+
+  // Load with GL_ANGLE_blob_cache
+  auto test_load_gl = [this](const std::string& key, const std::string& value) {
+    std::vector<char> buffer(value.size());
+    int64_t loaded_size = cache_.GLBlobCacheGet(key.c_str(), key.size(),
+                                                buffer.data(), buffer.size());
+
+    EXPECT_EQ(loaded_size, static_cast<int64_t>(value.size()));
+    EXPECT_EQ(std::string(buffer.begin(), buffer.end()), value);
+  };
+  test_load_gl(key_dawn, value_dawn);
+  test_load_gl(key_gr, value_gr);
+  test_load_gl(key_gl, value_gl);
+}
+
 // Tests that loading a non-existent key returns 0.
 TEST_F(GpuPersistentCacheTest, LoadNonExistentKey) {
   InitializeCache();
