@@ -128,13 +128,11 @@ public class PreferenceParser {
 
                 indexData.addEntry(
                         key,
-                        new SettingsIndexData.Entry(
-                                key,
-                                title,
-                                bundle.getString(METADATA_HEADER),
-                                bundle.getString(METADATA_SUMMARY),
-                                bundle.getString(METADATA_FRAGMENT),
-                                prefFragment));
+                        new SettingsIndexData.Entry.Builder(key, title, prefFragment)
+                                .setHeader(bundle.getString(METADATA_HEADER))
+                                .setSummary(bundle.getString(METADATA_SUMMARY))
+                                .setFragment(bundle.getString(METADATA_FRAGMENT))
+                                .build());
             }
         } catch (IOException | XmlPullParserException e) {
             Log.e(TAG, "Failed to parse preference xml for getting controllers", e);

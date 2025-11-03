@@ -37,8 +37,10 @@ public class SettingsIndexDataTest {
     @Test
     public void testAddAndGetEntry() {
         SettingsIndexData.Entry entry =
-                new SettingsIndexData.Entry(
-                        "key1", "Title 1", "Header 1", "Summary 1", null, "Parent1");
+                new SettingsIndexData.Entry.Builder("key1", "Title 1", "Parent1")
+                        .setHeader("Header 1")
+                        .setSummary("Summary 1")
+                        .build();
 
         mIndexData.addEntry("key1", entry);
 
@@ -51,19 +53,25 @@ public class SettingsIndexDataTest {
     public void testAddEntry_throwsOnDuplicateKey() {
         mIndexData.addEntry(
                 "key1",
-                new SettingsIndexData.Entry("key1", "Title 1", "Header 1", null, null, "P1"));
+                new SettingsIndexData.Entry.Builder("key1", "Title 1", "P1")
+                        .setHeader("Header 1")
+                        .build());
         // This second call with the same key should throw.
         mIndexData.addEntry(
                 "key1",
-                new SettingsIndexData.Entry("key1", "Title 2", "Header 2", null, null, "P2"));
+                new SettingsIndexData.Entry.Builder("key1", "Title 2", "P2")
+                        .setHeader("Header 2")
+                        .build());
     }
 
     /** Tests the hierarchical disabling logic of removeEntry. */
     @Test
     public void testRemoveEntry_disablesTargetFragment() {
         SettingsIndexData.Entry entry =
-                new SettingsIndexData.Entry(
-                        "key1", "Title 1", "Header 1", null, "FragmentToDisable", "Parent1");
+                new SettingsIndexData.Entry.Builder("key1", "Title 1", "Parent1")
+                        .setHeader("Header 1")
+                        .setFragment("FragmentToDisable")
+                        .build();
         mIndexData.addEntry("key1", entry);
         assertFalse(mIndexData.isDisabledFragment("FragmentToDisable"));
 
@@ -79,8 +87,10 @@ public class SettingsIndexDataTest {
     @Test
     public void testRemoveSimpleEntry_doesNotDisableTargetFragment() {
         SettingsIndexData.Entry entry =
-                new SettingsIndexData.Entry(
-                        "key1", "Title 1", "Header 1", null, "FragmentToKeep", "Parent1");
+                new SettingsIndexData.Entry.Builder("key1", "Title 1", "Parent1")
+                        .setHeader("Header 1")
+                        .setFragment("FragmentToKeep")
+                        .build();
         mIndexData.addEntry("key1", entry);
 
         mIndexData.removeSimpleEntry("key1");
@@ -97,21 +107,20 @@ public class SettingsIndexDataTest {
         // Setup: Add entries designed to test different scoring levels.
         mIndexData.addEntry(
                 "key_summary",
-                new SettingsIndexData.Entry(
-                        "key_summary",
-                        "Other",
-                        "Header 1",
-                        "Contains the word privacy",
-                        null,
-                        "P1"));
+                new SettingsIndexData.Entry.Builder("key_summary", "Other", "P1")
+                        .setHeader("Header 1")
+                        .setSummary("Contains the word privacy")
+                        .build());
         mIndexData.addEntry(
                 "key_title_partial",
-                new SettingsIndexData.Entry(
-                        "key_title_partial", "Privacy Guide", "Header 2", null, null, "P2"));
+                new SettingsIndexData.Entry.Builder("key_title_partial", "Privacy Guide", "P2")
+                        .setHeader("Header 2")
+                        .build());
         mIndexData.addEntry(
                 "key_title_exact",
-                new SettingsIndexData.Entry(
-                        "key_title_exact", "Privacy", "Header 2", null, null, "P3"));
+                new SettingsIndexData.Entry.Builder("key_title_exact", "Privacy", "P3")
+                        .setHeader("Header 2")
+                        .build());
 
         // Action: Perform the search.
         SettingsIndexData.SearchResults results = mIndexData.search("privacy");
@@ -133,8 +142,9 @@ public class SettingsIndexDataTest {
         // Setup: Add an entry with an accented character.
         mIndexData.addEntry(
                 "key_resume",
-                new SettingsIndexData.Entry(
-                        "key_resume", "Resumé Settings", "Header 1", null, null, "P1"));
+                new SettingsIndexData.Entry.Builder("key_resume", "Resumé Settings", "P1")
+                        .setHeader("Header 1")
+                        .build());
 
         // Action: Search using the un-accented version of the word.
         SettingsIndexData.SearchResults results = mIndexData.search("resume");
@@ -149,7 +159,10 @@ public class SettingsIndexDataTest {
     public void testSearch_noMatches() {
         mIndexData.addEntry(
                 "key1",
-                new SettingsIndexData.Entry("key1", "Title", "Header", "Summary", null, "P1"));
+                new SettingsIndexData.Entry.Builder("key1", "Title", "P1")
+                        .setHeader("Header")
+                        .setSummary("Summary")
+                        .build());
 
         assertTrue(
                 "Searching for a non-existent term should return empty results.",

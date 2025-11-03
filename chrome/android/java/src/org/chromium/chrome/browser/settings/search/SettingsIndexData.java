@@ -83,22 +83,99 @@ public class SettingsIndexData {
         private final @Nullable String mTitleNormalized;
         private final @Nullable String mSummaryNormalized;
 
-        public Entry(
+        private Entry(
                 String key,
                 String title,
                 @Nullable String header,
                 @Nullable String summary,
                 @Nullable String fragment,
-                String parentFragment) {
+                String parentFragment,
+                @Nullable String titleNormalized,
+                @Nullable String summaryNormalized) {
             this.key = key;
             this.title = title;
             this.header = header;
             this.summary = summary;
             this.fragment = fragment;
             this.parentFragment = parentFragment;
+            mTitleNormalized = titleNormalized;
+            mSummaryNormalized = summaryNormalized;
+        }
 
-            mTitleNormalized = normalizeString(title);
-            mSummaryNormalized = normalizeString(summary);
+        /**
+         * A builder for creating immutable {@link Entry} objects. For future modifications, please
+         * be aware of the normalized fields.
+         */
+        public static class Builder {
+            private final String mKey;
+            private final String mTitle;
+            private @Nullable String mHeader;
+            private @Nullable String mSummary;
+            private @Nullable String mFragment;
+            private final String mParentFragment;
+
+            /**
+             * Constructs a builder with the minimum required fields for creating a new {@link
+             * Entry}.
+             *
+             * @param key The unique key of the preference.
+             * @param title The title of the preference.
+             * @param parentFragment The class name of the fragment containing this preference.
+             */
+            public Builder(String key, String title, String parentFragment) {
+                mKey = key;
+                mTitle = title;
+                mParentFragment = parentFragment;
+            }
+
+            /**
+             * Constructs a builder by copying the state from an existing {@link Entry}.
+             *
+             * @param original The original {@link Entry} to copy.
+             */
+            public Builder(Entry original) {
+                mKey = original.key;
+                mTitle = original.title;
+                mHeader = original.header;
+                mSummary = original.summary;
+                mFragment = original.fragment;
+                mParentFragment = original.parentFragment;
+            }
+
+            public Builder setHeader(@Nullable String header) {
+                mHeader = header;
+                return this;
+            }
+
+            public Builder setSummary(@Nullable String summary) {
+                mSummary = summary;
+                return this;
+            }
+
+            public Builder setFragment(@Nullable String fragment) {
+                mFragment = fragment;
+                return this;
+            }
+
+            /**
+             * Creates an {@link Entry} object.
+             *
+             * @return A new, immutable {@link Entry} instance.
+             */
+            public Entry build() {
+                String titleNormalized = normalizeString(mTitle);
+                String summaryNormalized = normalizeString(mSummary);
+
+                return new Entry(
+                        mKey,
+                        mTitle,
+                        mHeader,
+                        mSummary,
+                        mFragment,
+                        mParentFragment,
+                        titleNormalized,
+                        summaryNormalized);
+            }
         }
     }
 
@@ -120,6 +197,16 @@ public class SettingsIndexData {
     @Nullable
     public Entry getEntry(String key) {
         return mEntries.get(key);
+    }
+
+    /**
+     * Replaces an existing entry with a new one.
+     *
+     * @param key The key of the {@link Entry} to replace.
+     * @param updatedEntry The new {@link Entry} to place in place of the existing one.
+     */
+    public void updateEntry(String key, Entry updatedEntry) {
+        mEntries.put(key, updatedEntry);
     }
 
     /**
