@@ -48,7 +48,8 @@ class CORE_EXPORT MouseEventManager final
   MouseEventManager& operator=(const MouseEventManager&) = delete;
   void Trace(Visitor*) const;
 
-  WebInputEventResult DispatchMouseEvent(
+  // Returns the DOM event that was dispatched plus the result of dispatch.
+  std::pair<MouseEvent*, WebInputEventResult> DispatchMouseEvent(
       EventTarget*,
       const AtomicString&,
       const WebMouseEvent&,

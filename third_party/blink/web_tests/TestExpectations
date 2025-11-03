@@ -2943,10 +2943,6 @@ crbug.com/626703 external/wpt/editing/other/insertparagraph-in-editing-host-cann
 crbug.com/626703 external/wpt/mediacapture-insertable-streams/tentative/MediaStreamTrackProcessor-backpressure.https.html [ Failure Pass ]
 crbug.com/626703 external/wpt/mediacapture-insertable-streams/legacy/MediaStreamTrackProcessor-backpressure.https.html [ Failure Pass ]
 
-# Flaky output on multiple platforms:
-# https://logs.chromium.org/logs/infra/buildbucket/cr-buildbucket/8757448685637289873/+/u/Import_changes_from_WPT_to_Chromium/stdout
-crbug.com/626703 external/wpt/uievents/mouse/mouse_boundary_events_after_removing_last_over_element.html [ Failure ]
-
 # Flaky output (sometimes passing)
 crbug.com/347045480 external/wpt/webrtc/RTCRtpReceiver-video-jitterBufferTarget-stats.html [ Failure ]
 crbug.com/347045480 external/wpt/webrtc/RTCRtpReceiver-audio-jitterBufferTarget-stats.https.html [ Failure ]

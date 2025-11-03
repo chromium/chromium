@@ -2167,11 +2167,15 @@ WebInputEventResult EventHandler::SendContextMenuEvent(
 
   Element* target_element =
       override_target_element ? override_target_element : mev.InnerElement();
-  WebInputEventResult result = mouse_event_manager_->DispatchMouseEvent(
-      EffectiveMouseEventTargetElement(target_element),
-      event_type_names::kContextmenu, event, nullptr, nullptr, false, event.id,
-      PointerEventFactory::PointerTypeNameForWebPointPointerType(
-          event.pointer_type));
+  WebInputEventResult result =
+      mouse_event_manager_
+          ->DispatchMouseEvent(
+              EffectiveMouseEventTargetElement(target_element),
+              event_type_names::kContextmenu, event, nullptr, nullptr, false,
+              event.id,
+              PointerEventFactory::PointerTypeNameForWebPointPointerType(
+                  event.pointer_type))
+          .second;
   if (result == WebInputEventResult::kHandledApplication) {
     UseCounter::Count(document, WebFeature::kContextMenuEventDefaultPrevented);
   }

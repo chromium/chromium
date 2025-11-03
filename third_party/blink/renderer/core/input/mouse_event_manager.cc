@@ -191,15 +191,15 @@ void MouseEventManager::SendBoundaryEvents(EventTarget* exited_target,
       exited_target, original_exited_target_removed, entered_target);
 }
 
-WebInputEventResult MouseEventManager::DispatchMouseEvent(
-    EventTarget* target,
-    const AtomicString& mouse_event_type,
-    const WebMouseEvent& mouse_event,
-    const gfx::PointF* last_position,
-    EventTarget* related_target,
-    bool check_for_listener,
-    const PointerId& pointer_id,
-    const String& pointer_type) {
+std::pair<MouseEvent*, WebInputEventResult>
+MouseEventManager::DispatchMouseEvent(EventTarget* target,
+                                      const AtomicString& mouse_event_type,
+                                      const WebMouseEvent& mouse_event,
+                                      const gfx::PointF* last_position,
+                                      EventTarget* related_target,
+                                      bool check_for_listener,
+                                      const PointerId& pointer_id,
+                                      const String& pointer_type) {
   DCHECK(mouse_event_type == event_type_names::kMouseup ||
          mouse_event_type == event_type_names::kMousedown ||
          mouse_event_type == event_type_names::kMousemove ||
@@ -246,6 +246,7 @@ WebInputEventResult MouseEventManager::DispatchMouseEvent(
       if (should_dispatch) {
         input_event_result = event_handling_util::ToWebInputEventResult(
             target->DispatchEvent(*event));
+        return {event, input_event_result};
       }
     } else {
       MouseEventInit* initializer = MouseEventInit::Create();
@@ -264,11 +265,12 @@ WebInputEventResult MouseEventManager::DispatchMouseEvent(
       if (should_dispatch) {
         input_event_result = event_handling_util::ToWebInputEventResult(
             target->DispatchEvent(*event));
+        return {event, input_event_result};
       }
     }
   }
 
-  return input_event_result;
+  return {nullptr, input_event_result};
 }
 
 // TODO(https://crbug.com/1147674): This bypasses PointerEventManager states!
@@ -291,10 +293,11 @@ MouseEventManager::SetElementUnderMouseAndDispatchMouseEvent(
 
   SetElementUnderMouse(target_element, web_mouse_event);
   return DispatchMouseEvent(
-      element_under_mouse_, event_type, web_mouse_event, nullptr, nullptr,
-      false, web_mouse_event.id,
-      PointerEventFactory::PointerTypeNameForWebPointPointerType(
-          web_mouse_event.pointer_type));
+             element_under_mouse_, event_type, web_mouse_event, nullptr,
+             nullptr, false, web_mouse_event.id,
+             PointerEventFactory::PointerTypeNameForWebPointPointerType(
+                 web_mouse_event.pointer_type))
+      .second;
 }
 
 WebInputEventResult MouseEventManager::DispatchMouseClickIfNeeded(
@@ -339,7 +342,8 @@ WebInputEventResult MouseEventManager::DispatchMouseClickIfNeeded(
           : event_type_names::kAuxclick;
 
   return DispatchMouseEvent(click_target_node, click_event_type, mouse_event,
-                            nullptr, nullptr, false, pointer_id, pointer_type);
+                            nullptr, nullptr, false, pointer_id, pointer_type)
+      .second;
 }
 
 void MouseEventManager::RecomputeMouseHoverStateIfNeeded() {

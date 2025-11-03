@@ -962,9 +962,10 @@ WebInputEventResult PointerEventManager::DirectDispatchMousePointerEvent(
         target, mouse_event_type, event, coalesced_events, predicted_events);
 
     result = event_handling_util::MergeEventResult(
-        result,
-        mouse_event_manager_->DispatchMouseEvent(
-            target, mouse_event_type, event, &last_mouse_position, nullptr));
+        result, mouse_event_manager_
+                    ->DispatchMouseEvent(target, mouse_event_type, event,
+                                         &last_mouse_position, nullptr)
+                    .second);
     return result;
   }
   pointer_event_factory_->SetLastPosition(
@@ -1021,14 +1022,26 @@ void PointerEventManager::SendEffectivePanActionAtPointer(
 
 namespace {
 
+// Caution: We should avoid using this method!  This is called from
+// `SendMousePointerEvents` for the events after a `pointerup` only as an ad-hoc
+// solution to finding a new target after an event target is deleted.  We can't
+// use the `*WillBeRemoved` methods in this case because the tracker pointer is
+// maintained locally in `SendMousePointerEvents`.  For possible fixes, see
+// https://crbug.com/448046115 .
 Element* NonDeletedElementTarget(Element* target,
-                                 PointerEvent* dispatched_pointer_event) {
-  // Event path could be null if the pointer event failed to get dispatched.
-  bool has_event_path = dispatched_pointer_event->HasEventPath();
+                                 PointerEvent* pointer_event,
+                                 MouseEvent* mouse_event) {
+  // Event path could be null if any of the events failed to get dispatched.
+  MouseEvent* dispatched_event = nullptr;
+  if (pointer_event->HasEventPath()) {
+    dispatched_event = pointer_event;
+  } else if (mouse_event && mouse_event->HasEventPath()) {
+    dispatched_event = mouse_event;
+  }
 
-  if (!event_handling_util::IsInDocument(target) && has_event_path) {
+  if (!event_handling_util::IsInDocument(target) && dispatched_event) {
     for (const auto& context :
-         dispatched_pointer_event->GetEventPath().NodeEventContexts()) {
+         dispatched_event->GetEventPath().NodeEventContexts()) {
       auto* element = DynamicTo<Element>(&context.GetNode());
       if (element && event_handling_util::IsInDocument(element)) {
         return element;
@@ -1152,16 +1165,18 @@ WebInputEventResult PointerEventManager::SendMousePointerEvent(
     mouse_target =
         RuntimeEnabledFeatures::BoundaryEventDispatchTracksNodeRemovalEnabled()
             ? mouse_event_manager_->GetElementUnderMouse()
-            : NonDeletedElementTarget(effective_target, pointer_event);
+            : NonDeletedElementTarget(effective_target, pointer_event, nullptr);
   }
 
   // Dispatch compat mouse events.
+  MouseEvent* dispatched_mouse_event = nullptr;
   if (send_compat_mouse) {
-    result = event_handling_util::MergeEventResult(
-        result,
-        mouse_event_manager_->DispatchMouseEvent(
-            mouse_target, MouseEventNameForPointerEventInputType(event_type),
-            mouse_event, &last_mouse_position, nullptr));
+    auto dispatch_result = mouse_event_manager_->DispatchMouseEvent(
+        mouse_target, MouseEventNameForPointerEventInputType(event_type),
+        mouse_event, &last_mouse_position, nullptr);
+    dispatched_mouse_event = dispatch_result.first;
+    result =
+        event_handling_util::MergeEventResult(result, dispatch_result.second);
   }
 
   if (!mouse_target) {
@@ -1202,7 +1217,8 @@ WebInputEventResult PointerEventManager::SendMousePointerEvent(
       target = mev.InnerElement();
     } else if (RuntimeEnabledFeatures::
                    BoundaryEventDispatchTracksNodeRemovalEnabled()) {
-      target = NonDeletedElementTarget(target, pointer_event);
+      target = NonDeletedElementTarget(target, pointer_event,
+                                       dispatched_mouse_event);
     }
   }
 
@@ -1224,11 +1240,16 @@ WebInputEventResult PointerEventManager::SendMousePointerEvent(
     if (consider_click_dispatch &&
         RuntimeEnabledFeatures::
             BoundaryEventDispatchTracksNodeRemovalEnabled()) {
-      target = NonDeletedElementTarget(target, pointer_event);
+      target = NonDeletedElementTarget(target, pointer_event,
+                                       dispatched_mouse_event);
     }
 
     // If a click was dispatched above, the following call only sets element
     // under pointer/mouse and skips sending got/lostpointercapture events.
+    //
+    // TODO(https://crbug.com/448046115): Here `target` will be a nullptr when
+    // neither `pointerup` nor `mouseup` are dispatched, effectively implying
+    // that the mouse pointer has gone off the page!
     ProcessCaptureAndPositionOfPointerEvent(pointer_event, target,
                                             &mouse_event);
   } else if (pointer_event->type() == event_type_names::kPointercancel) {
