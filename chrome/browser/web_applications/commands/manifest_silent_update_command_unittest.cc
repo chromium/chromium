@@ -1640,6 +1640,55 @@ TEST_P(ManifestSilentUpdateCommandExternalAppsTest,
                   /*count=*/1)));
 }
 
+TEST_P(ManifestSilentUpdateCommandExternalAppsTest,
+       DoubleVisitsUpdateOnlyOnce) {
+  SetupBasicInstallablePageState();
+  webapps::AppId app_id = InstallExternallyManagedAppFromSource();
+
+  EXPECT_EQ(provider().registrar_unsafe().GetAppIconInfos(app_id).begin()->url,
+            GURL("https://example.com/path/def_icon.png"));
+  EXPECT_EQ(provider().registrar_unsafe().GetAppIconInfos(app_id).size(), 1u);
+
+  auto& new_manifest = GetPageManifest();
+
+  // Set up manifest icon for the first visit.
+  blink::Manifest::ImageResource new_icon;
+  new_icon.src = GURL("https://example2.com/path/def_icon.png");
+  new_icon.sizes = {{96, 96}};
+  new_icon.purpose = {blink::mojom::ManifestImageResource_Purpose::ANY};
+  new_manifest->icons = {new_icon};
+
+  // Set icon in content. Setting the icon color to YELLOW to trigger a more
+  // than 10% image diff.
+  SkBitmap updated_bitmap = gfx::test::CreateBitmap(96, SK_ColorYELLOW);
+  web_contents_manager()
+      .GetOrCreateIconState(GURL("https://example2.com/path/def_icon.png"))
+      .bitmaps = {updated_bitmap};
+
+  EXPECT_EQ(RunManifestUpdateAndGetResult(),
+            ManifestSilentUpdateCheckResult::kAppSilentlyUpdated);
+  ASSERT_FALSE(AppHasPendingUpdateInfo(app_id));
+  EXPECT_EQ(provider().registrar_unsafe().GetAppIconInfos(app_id).begin()->url,
+            GURL("https://example2.com/path/def_icon.png"));
+
+  // Retrigger a manifest update for the same set of constraints, and verify
+  // that an update does not happen.
+  EXPECT_EQ(RunManifestUpdateAndGetResult(),
+            ManifestSilentUpdateCheckResult::kAppUpToDate);
+  ASSERT_FALSE(AppHasPendingUpdateInfo(app_id));
+  EXPECT_EQ(provider().registrar_unsafe().GetAppIconInfos(app_id).begin()->url,
+            GURL("https://example2.com/path/def_icon.png"));
+
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples(
+          "Webapp.Update.ManifestSilentUpdateCheckResult"),
+      BucketsAre(
+          base::Bucket(ManifestSilentUpdateCheckResult::kAppSilentlyUpdated,
+                       /*count=*/1),
+          base::Bucket(ManifestSilentUpdateCheckResult::kAppUpToDate,
+                       /*count=*/1)));
+}
+
 INSTANTIATE_TEST_SUITE_P(
     AllExternalInstallSources,
     ManifestSilentUpdateCommandExternalAppsTest,
