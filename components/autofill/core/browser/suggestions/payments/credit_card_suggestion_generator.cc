@@ -112,7 +112,7 @@ void CreditCardSuggestionGenerator::FetchSuggestionData(
     return;
   }
 
-  if (trigger_autofill_field->Type().GetTypes().contains_any(
+  if (!trigger_autofill_field->Type().GetTypes().contains_any(
           FieldTypesOfGroup(FieldTypeGroup::kCreditCard))) {
     callback({SuggestionDataSource::kCreditCard, {}});
     return;
