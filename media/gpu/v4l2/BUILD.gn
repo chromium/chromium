@@ -201,6 +201,7 @@ executable("v4l2_stateless_decoder") {
 
   deps = [
     "//base",
+    "//crypto",
     "//media",
     "//media:test_support",
     "//media/gpu:common",

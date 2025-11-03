@@ -15,11 +15,11 @@
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/files/memory_mapped_file.h"
-#include "base/hash/md5.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "crypto/obsolete/md5.h"
 #include "media/gpu/v4l2/test/video_decoder.h"
 #include "media/gpu/v4l2/test/vp8_decoder.h"
 #include "media/gpu/v4l2/test/vp9_decoder.h"
@@ -94,9 +94,8 @@ constexpr char kHelpMsg[] =
 // This functionality is needed for tast tests.
 void ComputeAndPrintMD5hash(const std::vector<uint8_t>& yuv_plane,
                             const base::FilePath md5_log_location) {
-  base::MD5Digest md5_digest;
-  base::MD5Sum(yuv_plane, &md5_digest);
-  std::string md5_digest_b16 = MD5DigestToBase16(md5_digest);
+  std::string md5_digest_b16 =
+      base::HexEncodeLower(crypto::obsolete::Md5::HashForTesting(yuv_plane));
 
   if (!md5_log_location.empty()) {
     if (!PathExists(md5_log_location))
