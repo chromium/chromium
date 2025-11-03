@@ -1228,9 +1228,13 @@ EntityInstance GetFlightReservationEntityInstance(
   std::string frecency_override;
   if (options.departure_time) {
     frecency_override = base::TimeFormatAsIso8601(*options.departure_time);
+
     attributes.emplace_back(AttributeType(kFlightReservationDepartureDate));
-    std::string date =
-        frecency_override.substr(0, frecency_override.find_first_of('T'));
+    // The departure date must be stored in the departure airport's time zone.
+    std::string offsetted_departure_time = base::TimeFormatAsIso8601(
+        *options.departure_time + options.departure_time_zone_offset);
+    std::string date = offsetted_departure_time.substr(
+        0, offsetted_departure_time.find_first_of('T'));
     attributes.back().SetInfo(
         FLIGHT_RESERVATION_DEPARTURE_DATE, base::UTF8ToUTF16(date),
         std::string(options.app_locale),

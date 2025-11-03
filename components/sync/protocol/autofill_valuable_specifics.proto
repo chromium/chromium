@@ -105,6 +105,12 @@ message FlightReservation {
 
   // The carrier code e.g. BA for British Airways.
   optional string carrier_code = 10;
+
+  // The UTC offset of the departure airport's time zone in seconds.
+  optional int64 departure_airport_utc_offset_seconds = 11;
+
+  // The UTC offset of the arrival airport's time zone in seconds.
+  optional int64 arrival_airport_utc_offset_seconds = 12;
 }
 
 // Valuables coming from Google Wallet.

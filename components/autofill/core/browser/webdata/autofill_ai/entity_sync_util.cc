@@ -138,16 +138,21 @@ GetFlightReservationAttributesFromSpecifics(
   add_attribute(kFlightReservationArrivalAirport,
                 flight_reservation.arrival_airport());
   if (flight_reservation.has_departure_date_unix_epoch_micros()) {
-    // Timestamp is adjusted by Sync so that UTC date resembles the date in the
-    // departure airport's timezone.
-    base::Time departure_time = base::Time::FromMillisecondsSinceUnixEpoch(
-        specifics.flight_reservation().departure_date_unix_epoch_micros() /
-        1000);
+    // We need to offset the departure time by the departure airport's time zone
+    // offset to get the local time of the departure.
+    base::Time offsetted_departure_time =
+        base::Time::FromMillisecondsSinceUnixEpoch(
+            specifics.flight_reservation().departure_date_unix_epoch_micros() /
+            1000) +
+        base::Seconds(
+            flight_reservation.departure_airport_utc_offset_seconds());
+
     // Departure date is stored in this format to be consistent with how
     // other dates are stored.
-    add_attribute(kFlightReservationDepartureDate,
-                  base::UnlocalizedTimeFormatWithPattern(
-                      departure_time, "yyyy-MM-dd", icu::TimeZone::getGMT()));
+    add_attribute(
+        kFlightReservationDepartureDate,
+        base::UnlocalizedTimeFormatWithPattern(
+            offsetted_departure_time, "yyyy-MM-dd", icu::TimeZone::getGMT()));
   }
 
   ReadChromeValuablesMetadata(attributes,
