@@ -45,6 +45,8 @@ class ReaderModeWebStateDelegate : public web::WebStateDelegate {
   void ContextMenuWillCommitWithAnimator(
       web::WebState* source,
       id<UIContextMenuInteractionCommitAnimating> animator) override;
+  void ShouldAllowCopy(web::WebState* source,
+                       base::OnceCallback<void(bool)> callback) override;
 
  private:
   raw_ptr<web::WebState> original_web_state_ = nullptr;

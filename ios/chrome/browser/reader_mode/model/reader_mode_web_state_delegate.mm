@@ -77,3 +77,9 @@ void ReaderModeWebStateDelegate::ContextMenuWillCommitWithAnimator(
   return web_state_delegate_->ContextMenuWillCommitWithAnimator(source,
                                                                 animator);
 }
+
+void ReaderModeWebStateDelegate::ShouldAllowCopy(
+    web::WebState* source,
+    base::OnceCallback<void(bool)> callback) {
+  web_state_delegate_->ShouldAllowCopy(source, std::move(callback));
+}

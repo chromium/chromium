@@ -55,6 +55,10 @@ class MockWebStateDelegate : public web::WebStateDelegate {
               ContextMenuWillCommitWithAnimator,
               (web::WebState*, id<UIContextMenuInteractionCommitAnimating>),
               (override));
+  MOCK_METHOD(void,
+              ShouldAllowCopy,
+              (web::WebState*, base::OnceCallback<void(bool)>),
+              (override));
 };
 
 }  // namespace
@@ -146,4 +150,10 @@ TEST_F(ReaderModeWebStateDelegateTest,
               ContextMenuWillCommitWithAnimator(nullptr, nil));
   reader_mode_web_state_delegate_.ContextMenuWillCommitWithAnimator(nullptr,
                                                                     nil);
+}
+
+// Tests that ShouldAllowCopy is forwarded.
+TEST_F(ReaderModeWebStateDelegateTest, ShouldAllowCopyForwarded) {
+  EXPECT_CALL(mock_web_state_delegate_, ShouldAllowCopy(nullptr, testing::_));
+  reader_mode_web_state_delegate_.ShouldAllowCopy(nullptr, base::DoNothing());
 }
