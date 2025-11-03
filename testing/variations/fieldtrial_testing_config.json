@@ -14332,28 +14332,6 @@
                     "enable_features": [
                         "InputOnViz"
                     ]
-                },
-                {
-                    "name": "InputOnVizPredictionAtDeadlineEnabled",
-                    "params": {
-                        "mode": "UseScrollPredictorForDeadline"
-                    },
-                    "enable_features": [
-                        "InputOnViz",
-                        "WaitForLateScrollEvents"
-                    ]
-                },
-                {
-                    "name": "InputOnVizDisabledPredictionAtDeadlineEnabled",
-                    "params": {
-                        "mode": "UseScrollPredictorForDeadline"
-                    },
-                    "enable_features": [
-                        "WaitForLateScrollEvents"
-                    ],
-                    "disable_features": [
-                        "InputOnViz"
-                    ]
                 }
             ]
         }
@@ -25926,6 +25904,25 @@
                         "IPH_SignInBenefits",
                         "ReplaceSyncPromosWithSignInPromos",
                         "SyncEnableContactInfoDataTypeForCustomPassphraseUsers"
+                    ]
+                }
+            ]
+        }
+    ],
+    "UpdateScrollPredictorInputMapping": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "InputPredictorInputMappingEnabled_20251031",
+                    "params": {
+                        "mode": "UseScrollPredictorForEmptyQueue"
+                    },
+                    "enable_features": [
+                        "UpdateScrollPredictorInputMapping",
+                        "WaitForLateScrollEvents"
                     ]
                 }
             ]
