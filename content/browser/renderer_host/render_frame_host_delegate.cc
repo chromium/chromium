@@ -101,9 +101,11 @@ void RenderFrameHostDelegate::FullscreenStateChanged(
     bool is_fullscreen,
     blink::mojom::FullscreenOptionsPtr options) {}
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 bool RenderFrameHostDelegate::CanUseWindowingControls(RenderFrameHostImpl*) {
   return false;
 }
+#endif
 
 bool RenderFrameHostDelegate::IsInnerWebContentsForGuest() {
   return false;

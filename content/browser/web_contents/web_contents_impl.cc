@@ -4822,6 +4822,7 @@ void WebContentsImpl::FullscreenStateChanged(
   }
 }
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 bool WebContentsImpl::CanUseWindowingControls(
     RenderFrameHostImpl* requesting_frame) {
   return GetDelegate() &&
@@ -4848,6 +4849,7 @@ void WebContentsImpl::Restore() {
   }
   GetDelegate()->RestoreFromWebAPI();
 }
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 // TODO(laurila, crbug.com/1466855): Map into new `ui::DisplayState` enum
 // instead of `ui::mojom::WindowShowState`.

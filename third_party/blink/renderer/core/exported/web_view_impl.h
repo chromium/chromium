@@ -600,6 +600,7 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   // empty document of a main frame.
   void DidAccessInitialMainDocument();
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   // Sends window.minimize() requests to the browser window.
   void Minimize();
   // Sends window.maximize() requests to the browser window.
@@ -608,6 +609,7 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   void Restore();
   // Sends window.setResizable() requests to the browser window.
   void SetResizable(bool resizable);
+#endif
 
   // TODO(crbug.com/1149992): This is called from the associated widget and this
   // code should eventually move out of WebView into somewhere else.

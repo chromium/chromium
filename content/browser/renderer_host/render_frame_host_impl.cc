@@ -8260,15 +8260,9 @@ void RenderFrameHostImpl::FullscreenStateChanged(
   delegate_->FullscreenStateChanged(this, is_fullscreen, std::move(options));
 }
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 bool RenderFrameHostImpl::CanUseWindowingControls(
     std::string_view js_api_name) {
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-  mojo::ReportBadMessage(
-      base::StrCat({js_api_name,
-                    " API is only supported on Desktop platforms. This "
-                    "excludes mobile platforms."}));
-  return false;
-#else
   if (!base::FeatureList::IsEnabled(
           blink::features::kDesktopPWAsAdditionalWindowingControls)) {
     mojo::ReportBadMessage(base::StrCat(
@@ -8297,7 +8291,6 @@ bool RenderFrameHostImpl::CanUseWindowingControls(
     return false;
   }
   return delegate_->CanUseWindowingControls(this);
-#endif
 }
 
 void RenderFrameHostImpl::Maximize() {
@@ -8328,6 +8321,7 @@ void RenderFrameHostImpl::SetResizable(bool resizable) {
 
   GetPage().SetResizable(resizable);
 }
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 void RenderFrameHostImpl::DraggableRegionsChanged(
     std::vector<blink::mojom::DraggableRegionPtr> regions) {

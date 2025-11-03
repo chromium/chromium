@@ -178,14 +178,16 @@ void WebContentsDelegate::CreateSmsPrompt(
     base::OnceCallback<void()> on_confirm,
     base::OnceCallback<void()> on_cancel) {}
 
+bool WebContentsDelegate::GetCanResize() {
+  return false;
+}
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 bool WebContentsDelegate::CanUseWindowingControls(
     RenderFrameHost* requesting_frame) {
   return false;
 }
-
-bool WebContentsDelegate::GetCanResize() {
-  return false;
-}
+#endif
 
 ui::mojom::WindowShowState WebContentsDelegate::GetWindowShowState() const {
   return ui::mojom::WindowShowState::kDefault;

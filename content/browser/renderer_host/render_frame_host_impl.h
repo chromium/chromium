@@ -2685,10 +2685,12 @@ class CONTENT_EXPORT RenderFrameHostImpl
                      SetWindowRectCallback callback) override;
   void DidFirstVisuallyNonEmptyPaint() override;
   void DidAccessInitialMainDocument() override;
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   void Minimize() override;
   void Maximize() override;
   void Restore() override;
   void SetResizable(bool resizable) override;
+#endif
   void DraggableRegionsChanged(
       std::vector<blink::mojom::DraggableRegionPtr> regions) override;
   void NotifyDocumentInteractive() override;
@@ -4396,10 +4398,12 @@ class CONTENT_EXPORT RenderFrameHostImpl
   std::vector<RenderFrameHostImpl*> GetAncestorChainForStorageKeyCalculation(
       const url::Origin& new_rfh_origin);
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   // Returns whether the `RenderFrameHost` can use Additional Windowing Controls
   // APIs.
   // https://github.com/explainers-by-googlers/additional-windowing-controls/blob/main/README.md
   bool CanUseWindowingControls(std::string_view js_api_name);
+#endif
 
   // Notifies when the renderer side Widget instance has been created and mojo
   // interfaces to it can be bound.

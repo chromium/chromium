@@ -2562,6 +2562,15 @@ void Browser::EnumerateDirectory(
   FileSelectHelper::EnumerateDirectory(web_contents, std::move(listener), path);
 }
 
+void Browser::OnWebApiWindowResizableChanged() {
+  window_->OnWebApiWindowResizableChanged();
+}
+
+bool Browser::GetCanResize() {
+  return window_->GetCanResize();
+}
+
+#if !BUILDFLAG(IS_ANDROID)
 bool Browser::CanUseWindowingControls(
     content::RenderFrameHost* requesting_frame) {
   if (!app_controller()) {
@@ -2571,14 +2580,6 @@ bool Browser::CanUseWindowingControls(
     return false;
   }
   return true;
-}
-
-void Browser::OnWebApiWindowResizableChanged() {
-  window_->OnWebApiWindowResizableChanged();
-}
-
-bool Browser::GetCanResize() {
-  return window_->GetCanResize();
 }
 
 void Browser::MinimizeFromWebAPI() {
@@ -2592,6 +2593,7 @@ void Browser::MaximizeFromWebAPI() {
 void Browser::RestoreFromWebAPI() {
   window_->Restore();
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 ui::mojom::WindowShowState Browser::GetWindowShowState() const {
   return window_->GetWindowShowState();

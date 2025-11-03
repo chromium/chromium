@@ -68,10 +68,12 @@ class CORE_EXPORT ChromeClientImpl final : public ChromeClient {
   WebViewImpl* GetWebView() const override;
   void ChromeDestroyed() override;
   void SetWindowRect(const gfx::Rect&, LocalFrame&) override;
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   void Minimize(LocalFrame&) override;
   void Maximize(LocalFrame&) override;
   void Restore(LocalFrame&) override;
   void SetResizable(bool resizable, LocalFrame& frame) override;
+#endif
   gfx::Rect RootWindowRect(LocalFrame&) override;
   void DidAccessInitialMainDocument() override;
   void FocusPage() override;

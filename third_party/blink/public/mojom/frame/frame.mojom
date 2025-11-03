@@ -1432,18 +1432,22 @@ interface LocalMainFrameHost {
 
   // Request browser to maximize window. Link to I2P:
   // https://groups.google.com/a/chromium.org/g/blink-dev/c/oCxWg8q_OQY/m/LUTw0T5cCQAJ
+  [EnableIfNot=is_android|is_ios]
   Maximize();
 
   // Request browser to minimize window. Link to I2P:
   // https://groups.google.com/a/chromium.org/g/blink-dev/c/oCxWg8q_OQY/m/LUTw0T5cCQAJ
+  [EnableIfNot=is_android|is_ios]
   Minimize();
 
   // Request browser to restore window. Link to I2P:
   // https://groups.google.com/a/chromium.org/g/blink-dev/c/oCxWg8q_OQY/m/LUTw0T5cCQAJ
+  [EnableIfNot=is_android|is_ios]
   Restore();
 
   // Set the browser window to resizable or not. Link to I2P:
   // https://groups.google.com/a/chromium.org/g/blink-dev/c/oCxWg8q_OQY/m/LUTw0T5cCQAJ
+  [EnableIfNot=is_android|is_ios]
   SetResizable(bool resizable);
 
   // Notify the browser that the draggable regions defined by the app-region
