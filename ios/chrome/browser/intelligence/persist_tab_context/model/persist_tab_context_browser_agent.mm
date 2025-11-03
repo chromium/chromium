@@ -10,7 +10,6 @@
 #import "base/functional/bind.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
-#import "base/notimplemented.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/task/thread_pool.h"
 #import "base/time/time.h"
@@ -388,10 +387,6 @@ void PersistTabContextBrowserAgent::GetSingleContextAsync(
     base::OnceCallback<void(
         std::optional<std::unique_ptr<optimization_guide::proto::PageContext>>)>
         callback) {
-  // TODO(crbug.com/454689025): Remove when this browser agent is ready to be
-  // used by clients.
-  NOTIMPLEMENTED();
-
   task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&ReadAndParseContextFromStorage, storage_directory_path_,
@@ -402,10 +397,6 @@ void PersistTabContextBrowserAgent::GetSingleContextAsync(
 void PersistTabContextBrowserAgent::GetMultipleContextsAsync(
     const std::vector<std::string>& webstate_unique_ids,
     base::OnceCallback<void(PageContextMap)> callback) {
-  // TODO(crbug.com/454689025): Remove when this browser agent is ready to be
-  // used by clients.
-  NOTIMPLEMENTED();
-
   if (webstate_unique_ids.empty()) {
     std::move(callback).Run({});
     return;
