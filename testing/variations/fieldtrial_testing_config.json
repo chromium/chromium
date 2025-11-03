@@ -23397,7 +23397,7 @@
             ]
         }
     ],
-    "SessionRestoreInfoBar": [
+    "SessionRestoreInfobar": [
         {
             "platforms": [
                 "linux",
@@ -23411,7 +23411,7 @@
                         "continue_session": "true"
                     },
                     "enable_features": [
-                        "SessionRestoreInfoBar"
+                        "SessionRestoreInfobar"
                     ]
                 }
             ]
