@@ -98,21 +98,12 @@ ZoomBubbleCoordinator* ZoomBubbleCoordinator::From(
 void ZoomBubbleCoordinator::OnWidgetVisibilityChanged(views::Widget* widget,
                                                       bool visible) {
   CHECK(widget_observation_.IsObservingSource(widget));
-
-  // Only update bubble state and icon visibility when visible. The non visible
-  // case will be handled when the widget is destroyed.
-  if (!visible) {
-    return;
-  }
-
   UpdateZoomBubbleStateAndIconVisibility(
-      /*is_bubble_visible=*/true);
+      /*is_bubble_visible=*/visible);
 }
 
 void ZoomBubbleCoordinator::OnWidgetDestroying(views::Widget* widget) {
   CHECK(widget_observation_.IsObservingSource(widget));
-  UpdateZoomBubbleStateAndIconVisibility(
-      /*is_bubble_visible=*/false);
   widget_observation_.Reset();
 }
 
@@ -200,7 +191,7 @@ bool ZoomBubbleCoordinator::RefreshIfShowing(content::WebContents* contents) {
 }
 
 ZoomBubbleView* ZoomBubbleCoordinator::bubble() {
-  if (!widget_observation_.IsObserving()) {
+  if (!IsShowing()) {
     return nullptr;
   }
 
