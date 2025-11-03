@@ -7,6 +7,7 @@ import json
 import logging
 import multiprocessing
 import os
+import pathlib
 import queue
 import re
 import subprocess
@@ -16,6 +17,7 @@ import threading
 import time
 import zipfile
 from concurrent.futures import ThreadPoolExecutor
+import ast
 
 from devil.utils import cmd_helper
 from py_utils import tempfile_ext
@@ -24,6 +26,9 @@ from pylib.base import base_test_result
 from pylib.base import test_run
 from pylib.constants import host_paths
 from pylib.results import json_results
+
+sys.path.append(str(pathlib.Path(__file__).parents[3] / 'gyp'))
+from util import md5_check
 
 # Chosen after timing test runs of chrome_junit_tests with 7,16,32,
 # and 64 workers in threadpool and different classes_per_job.
@@ -210,16 +215,68 @@ class LocalMachineJunitTestRun(test_run.TestRun):
                 json_config=job_json_config,
                 json_results_path=json_results_path)
 
+  def _GetJsonConfig(self):
+    # The test list is expensive to generate, so cache it. The cache is
+    # invalidated when the classpath or this file changes.
+    cache_dir = pathlib.Path(
+        constants.GetOutDirectory()) / 'junit_test_list_cache'
+    os.makedirs(cache_dir, exist_ok=True)
+    record_path = cache_dir / f'{self._test_instance.suite}.stamp'
+    cached_test_list_path = cache_dir / f'{self._test_instance.suite}.json'
+
+    # Extract the classpath from the wrapper script.
+    wrapper_script_source = ''
+    print(f'Wrapper path: {self._wrapper_path}')
+    with open(self._wrapper_path) as f:
+      wrapper_script_source = f.read()
+    classpath_re = re.compile(r'classpath = (\[[^\]]+\])', re.MULTILINE)
+    matches = classpath_re.search(wrapper_script_source)
+    classpath_str = matches.group(1)
+    classpath_list = ast.literal_eval(classpath_str)
+    # The paths in the wrapper script are relative to the script's location. We
+    # need to make them relative to the current working directory.
+    wrapper_dir = pathlib.Path(self._wrapper_path).parent
+    classpath = [str(wrapper_dir / p) for p in classpath_list]
+
+    # Filters affect the test list so changes in filter should invalidate the
+    # cache.
+    input_strings = self._GetFilterArgs()
+
+    # When listing tests, filters do not apply. Caching this separately avoids
+    # re-generating the list whenever filters change. This way --list-tests is
+    # always fast when the cache is warm.
+    if not input_strings:
+      record_path = (cache_dir /
+                     f'{self._test_instance.suite}_unfiltered.stamp')
+      cached_test_list_path = (cache_dir /
+                               f'{self._test_instance.suite}_unfiltered.json')
+
+    def do_query_test_json_config():
+      with tempfile_ext.NamedTemporaryDirectory() as temp_dir:
+        result = self._QueryTestJsonConfig(temp_dir,
+                                           allow_debugging=False,
+                                           enable_shadow_allowlist=True)
+        with open(cached_test_list_path, 'w') as f:
+          json.dump(result, f)
+
+    md5_check.CallAndRecordIfStale(do_query_test_json_config,
+                                   record_path=str(record_path),
+                                   input_paths=classpath + [__file__],
+                                   input_strings=input_strings,
+                                   output_paths=[str(cached_test_list_path)])
+
+    with open(cached_test_list_path) as f:
+      return json.load(f)
+
   #override
   def GetTestsForListing(self):
-    with tempfile_ext.NamedTemporaryDirectory() as temp_dir:
-      json_config = self._QueryTestJsonConfig(temp_dir)
-      ret = []
-      for config in json_config['configs'].values():
-        for class_name, methods in config.items():
-          ret.extend(f'{class_name}.{method}' for method in methods)
-      ret.sort()
-      return ret
+    json_config = self._GetJsonConfig()
+    ret = []
+    for config in json_config['configs'].values():
+      for class_name, methods in config.items():
+        ret.extend(f'{class_name}.{method}' for method in methods)
+    ret.sort()
+    return ret
 
   # override
   def RunTests(self, results, raw_logs_fh=None):
@@ -231,13 +288,9 @@ class LocalMachineJunitTestRun(test_run.TestRun):
       with open(self._test_instance.json_config) as f:
         json_config = json.load(f)
     else:
-      # TODO(crbug.com/40878339): This step can take 3-4 seconds for
-      # chrome_junit_tests.
       try:
-        json_config = self._QueryTestJsonConfig(temp_dir,
-                                                allow_debugging=False,
-                                                enable_shadow_allowlist=True)
-      except subprocess.CalledProcessError:
+        json_config = self._GetJsonConfig()
+      except (subprocess.CalledProcessError, IOError):
         results.append(_MakeUnknownFailureResult('Filter matched no tests'))
         return
     test_groups = GroupTests(json_config, _MAX_TESTS_PER_JOB)
