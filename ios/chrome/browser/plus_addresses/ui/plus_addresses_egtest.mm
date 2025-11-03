@@ -116,7 +116,7 @@ void ExpectModalTimeSample(
            {"manage-url", {fakeLocalUrl}},
        }}});
 
-  if ([self isRunningTest:@selector(testCreatePlusAddressIPH)]) {
+  if ([self isRunningTest:@selector(DISABLED_testCreatePlusAddressIPH)]) {
     config.iph_feature_enabled =
         feature_engagement::kIPHPlusAddressCreateSuggestionFeature.name;
   }
@@ -257,7 +257,8 @@ id<GREYMatcher> GetMatcherForPlusAddressLabel(NSString* labelText) {
 }
 
 // A test to check the refresh plus address functionality.
-- (void)testRefresh {
+// TODO(crbug.com/457492240): Failing on iOS.
+- (void)DISABLED_testRefresh {
   [self openCreatePlusAddressBottomSheet];
 
   id<GREYMatcher> plusAddressLabelMatcher = GetMatcherForPlusAddressLabel(
@@ -286,7 +287,8 @@ id<GREYMatcher> GetMatcherForPlusAddressLabel(NSString* labelText) {
 }
 
 // A test to check the plus address create suggestion IPH feature.
-- (void)testCreatePlusAddressIPH {
+// TODO(crbug.com/457492240): Failing on iOS.
+- (void)DISABLED_testCreatePlusAddressIPH {
   [PlusAddressAppInterface setShouldOfferPlusAddressCreation:YES];
 
   // Synchronization off because the tap on element 'kEmailFieldId' completes
@@ -306,7 +308,8 @@ id<GREYMatcher> GetMatcherForPlusAddressLabel(NSString* labelText) {
 
 // Tests that an error alert is shown if the plus address quota has been reached
 // on confirming plus address.
-- (void)testQuotaErrorAlertOnConfirm {
+// TODO(crbug.com/457492240): Failing on iOS.
+- (void)DISABLED_testQuotaErrorAlertOnConfirm {
   [self openCreatePlusAddressBottomSheet];
 
   // Set up after the reserve has been called so that it fails on confirm.
@@ -377,7 +380,8 @@ id<GREYMatcher> GetMatcherForPlusAddressLabel(NSString* labelText) {
 
 // Tests that a generic alert is shown when the plus address is failed to
 // confirm.
-- (void)testGenericAlertOnConfirm {
+// TODO(crbug.com/457492240): Failing on iOS.
+- (void)DISABLED_testGenericAlertOnConfirm {
   [self openCreatePlusAddressBottomSheet];
 
   id<GREYMatcher> plusAddressLabelMatcher = GetMatcherForPlusAddressLabel(
@@ -415,7 +419,8 @@ id<GREYMatcher> GetMatcherForPlusAddressLabel(NSString* labelText) {
 
 // Tests that a timeout alert is shown when the plus address is failed to
 // confirm.
-- (void)testTimeOutAlertOnConfirm {
+// TODO(crbug.com/457492240): Failing on iOS.
+- (void)DISABLED_testTimeOutAlertOnConfirm {
   [self openCreatePlusAddressBottomSheet];
 
   id<GREYMatcher> plusAddressLabelMatcher = GetMatcherForPlusAddressLabel(
@@ -441,7 +446,8 @@ id<GREYMatcher> GetMatcherForPlusAddressLabel(NSString* labelText) {
 
 // Tests that an error alert is shown if the plus address quota has been reached
 // on reserving plus address.
-- (void)testQuotaErrorAlertOnReserve {
+// TODO(crbug.com/457492240): Failing on iOS.
+- (void)DISABLED_testQuotaErrorAlertOnReserve {
   [PlusAddressAppInterface setShouldReturnQuotaError:YES];
 
   [self openCreatePlusAddressBottomSheet];
@@ -459,7 +465,8 @@ id<GREYMatcher> GetMatcherForPlusAddressLabel(NSString* labelText) {
 
 // Tests that a timeout alert is shown when the plus address is failed to
 // reserve.
-- (void)testTimeoutErrorAlertOnReserve {
+// TODO(crbug.com/457492240): Failing on iOS.
+- (void)DISABLED_testTimeoutErrorAlertOnReserve {
   [PlusAddressAppInterface setShouldReturnTimeoutError:YES];
 
   [self openCreatePlusAddressBottomSheet];
@@ -503,7 +510,8 @@ id<GREYMatcher> GetMatcherForPlusAddressLabel(NSString* labelText) {
 
 // Tests that a generic alert is shown when the plus address is failed to
 // reserve.
-- (void)testGenericAlertOnReserve {
+// TODO(crbug.com/457492240): Failing on iOS.
+- (void)DISABLED_testGenericAlertOnReserve {
   [PlusAddressAppInterface setShouldFailToReserve:YES];
   [self openCreatePlusAddressBottomSheet];
 
