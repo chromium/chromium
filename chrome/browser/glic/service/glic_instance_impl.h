@@ -340,7 +340,7 @@ class GlicInstanceImpl : public GlicInstance,
   // Tracks the last non-hidden panel state kind for the instance. This is
   // useful for responding to changes in attached/detached state.
   mojom::PanelStateKind last_non_hidden_panel_state_kind_;
-  mojom::WebClientMode interaction_mode_;
+  mojom::WebClientMode interaction_mode_ = mojom::WebClientMode::kText;
 
   base::ScopedObservation<BrowserList, BrowserListObserver>
       browser_list_observation_{this};
