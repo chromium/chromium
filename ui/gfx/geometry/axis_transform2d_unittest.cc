@@ -4,7 +4,8 @@
 
 #include "ui/gfx/geometry/axis_transform2d.h"
 
-#include "base/compiler_specific.h"
+#include <array>
+
 #include "base/strings/stringprintf.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/decomposed_transform.h"
@@ -92,14 +93,25 @@ TEST(AxisTransform2dTest, Inverse) {
 }
 
 TEST(AxisTransform2dTest, ClampOutput) {
-  double entries[][2] = {
+  const auto entries = std::to_array<std::pair<float, float>>({
       // The first entry is used to initialize the transform.
       // The second entry is used to initialize the object to be mapped.
-      {std::numeric_limits<float>::max(),
-       std::numeric_limits<float>::infinity()},
-      {1, std::numeric_limits<float>::infinity()},
-      {-1, std::numeric_limits<float>::infinity()},
-      {1, -std::numeric_limits<float>::infinity()},
+      {
+          std::numeric_limits<float>::max(),
+          std::numeric_limits<float>::infinity(),
+      },
+      {
+          1,
+          std::numeric_limits<float>::infinity(),
+      },
+      {
+          -1,
+          std::numeric_limits<float>::infinity(),
+      },
+      {
+          1,
+          -std::numeric_limits<float>::infinity(),
+      },
       {
           std::numeric_limits<float>::max(),
           std::numeric_limits<float>::max(),
@@ -108,12 +120,9 @@ TEST(AxisTransform2dTest, ClampOutput) {
           std::numeric_limits<float>::lowest(),
           -std::numeric_limits<float>::infinity(),
       },
-  };
+  });
 
-  for (double* entry : entries) {
-    const float mv = entry[0];
-    const float factor = UNSAFE_TODO(entry[1]);
-
+  for (const auto& [mv, factor] : entries) {
     auto is_valid_point = [&](const PointF& p) -> bool {
       return std::isfinite(p.x()) && std::isfinite(p.y());
     };
