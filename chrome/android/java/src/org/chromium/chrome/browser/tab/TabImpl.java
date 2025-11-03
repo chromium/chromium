@@ -1692,7 +1692,13 @@ class TabImpl implements Tab {
                     // Wait until the content/ draws the transition.
                     CompositorViewHolder viewHolder =
                             assumeNonNull(getActivity()).getCompositorViewHolderSupplier().get();
-                    viewHolder.requestRender(() -> assumeNonNull(getView()).setAlpha(0f));
+                    viewHolder.requestRender(
+                            () -> {
+                                var currView = getView();
+                                if (currView != null) {
+                                    currView.setAlpha(0f);
+                                }
+                            });
                 }
                 return;
             case AnimationStage.WAITING_FOR_EMBEDDER_CONTENT_FOR_COMMITTED_ENTRY:
