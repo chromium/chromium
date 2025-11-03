@@ -77,13 +77,6 @@ bool DecodeBinaryValueFromXml(const jingle_xmpp::XmlElement* message,
   return !data->empty();
 }
 
-std::string PrefixWithLength(const std::string& str) {
-  std::string out;
-  out += base::as_string_view(base::U32ToBigEndian(str.size()));
-  out += str;
-  return out;
-}
-
 }  // namespace
 
 // static
@@ -335,17 +328,17 @@ std::string Spake2Authenticator::CalculateVerificationHash(
     bool from_host,
     const std::string& local_id,
     const std::string& remote_id) {
-  std::string message = (from_host ? "host" : "client") +
-                        PrefixWithLength(local_id) +
-                        PrefixWithLength(remote_id);
-  crypto::HMAC hmac(crypto::HMAC::SHA256);
-  std::string result(hmac.DigestLength(), '\0');
-  if (!hmac.Init(auth_key_) ||
-      !hmac.Sign(message, reinterpret_cast<uint8_t*>(&result[0]),
-                 result.length())) {
-    LOG(FATAL) << "Failed to calculate HMAC.";
-  }
-  return result;
+  crypto::hmac::HmacSigner signer(crypto::hash::kSha256,
+                                  base::as_byte_span(auth_key_));
+  std::string_view direction = from_host ? "host" : "client";
+  signer.Update(base::as_byte_span(direction));
+  signer.Update(base::U32ToBigEndian(local_id.size()));
+  signer.Update(base::as_byte_span(local_id));
+  signer.Update(base::U32ToBigEndian(remote_id.size()));
+  signer.Update(base::as_byte_span(remote_id));
+  std::array<uint8_t, crypto::hash::kSha256Size> result;
+  signer.Finish(result);
+  return std::string(base::as_string_view(result));
 }
 
 }  // namespace remoting::protocol
