@@ -207,6 +207,7 @@ class PeopleHandler : public SettingsPageUIHandler,
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   void HandleGetChromeSigninUserChoiceInfo(const base::Value::List& args);
   void HandleSetChromeSigninUserChoice(const base::Value::List& args);
+  void HandleRecordSigninPendingOffered(const base::Value::List& args);
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)

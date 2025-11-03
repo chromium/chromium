@@ -552,5 +552,42 @@ suite('<history-sync-optin>', function() {
 
     await testService.handler.whenCalled('turnOnHistorySync');
   });
+
+  test('check recorded metrics in pending signin', async () => {
+    // The signin pending offered histogram is recorded once.
+    element.configureSignInForTest({
+      signInState: HistorySignInState.SIGN_IN_PENDING_NOT_SYNCING_TABS,
+      signInAllowed: true,
+      guestSession: false,
+    });
+    await microtasksFinished();
+    assertEquals(1, testService.getCallCount('recordSigninPendingOffered'));
+
+    // Firing a sign in pending state again does not record again.
+    element.configureSignInForTest({
+      signInState: HistorySignInState.SIGN_IN_PENDING_SYNCING_TABS,
+      signInAllowed: true,
+      guestSession: false,
+    });
+    await microtasksFinished();
+    assertEquals(1, testService.getCallCount('recordSigninPendingOffered'));
+
+    // Signing in and then getting into sign in pending state again records the
+    // histogram again.
+    element.configureSignInForTest({
+      signInState: HistorySignInState.SIGNED_IN_SYNCING_TABS,
+      signInAllowed: true,
+      guestSession: false,
+    });
+    await microtasksFinished();
+    element.configureSignInForTest({
+      signInState: HistorySignInState.SIGN_IN_PENDING_SYNCING_TABS,
+      signInAllowed: true,
+      guestSession: false,
+    });
+    await microtasksFinished();
+
+    assertEquals(2, testService.getCallCount('recordSigninPendingOffered'));
+  });
 });
 // </if>

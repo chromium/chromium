@@ -39,6 +39,12 @@ void HistoryLoginHandler::RegisterMessages() {
       "startTurnOnSyncFlow",
       base::BindRepeating(&HistoryLoginHandler::HandleTurnOnSyncFlow,
                           base::Unretained(this)));
+
+  web_ui()->RegisterMessageCallback(
+      "recordSigninPendingOffered",
+      base::BindRepeating(
+          &HistoryLoginHandler::HandleRecordSigninPendingOffered,
+          base::Unretained(this)));
 }
 
 void HistoryLoginHandler::OnJavascriptAllowed() {
@@ -87,4 +93,10 @@ void HistoryLoginHandler::HandleTurnOnSyncFlow(
 #endif  // !BUILDFLAG(IS_CHROMEOS)
   signin_ui_util::EnableSyncFromSingleAccountPromo(
       profile, account_info, signin_metrics::AccessPoint::kRecentTabs);
+}
+
+void HistoryLoginHandler::HandleRecordSigninPendingOffered(
+    const base::Value::List& /*args*/) {
+  signin_metrics::LogSigninPendingOffered(
+      signin_metrics::AccessPoint::kRecentTabs);
 }

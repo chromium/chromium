@@ -409,6 +409,10 @@ void PeopleHandler::RegisterMessages() {
       "SetChromeSigninUserChoice",
       base::BindRepeating(&PeopleHandler::HandleSetChromeSigninUserChoice,
                           base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "RecordSigninPendingOffered",
+      base::BindRepeating(&PeopleHandler::HandleRecordSigninPendingOffered,
+                          base::Unretained(this)));
 #endif
 }
 
@@ -1487,6 +1491,12 @@ void PeopleHandler::HandleSetChromeSigninUserChoiceForTesting(
   args.Append(static_cast<int>(choice));
   args.Append(email);
   HandleSetChromeSigninUserChoice(args);
+}
+
+void PeopleHandler::HandleRecordSigninPendingOffered(
+    const base::Value::List& /*args*/) {
+  signin_metrics::LogSigninPendingOffered(
+      signin_metrics::AccessPoint::kSettings);
 }
 #endif
 

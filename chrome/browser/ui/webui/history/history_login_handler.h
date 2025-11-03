@@ -35,6 +35,9 @@ class HistoryLoginHandler : public content::WebUIMessageHandler {
   // Handler for the "startTurnOnSyncFlow" message. No args.
   void HandleTurnOnSyncFlow(const base::Value::List& args);
 
+  // Handler for the "recordSigninPendingOffered" message. No args.
+  void HandleRecordSigninPendingOffered(const base::Value::List& args);
+
   // Called by |history_sign_in_state_watcher_| when the signin state changes
   void SigninStateChanged();
 

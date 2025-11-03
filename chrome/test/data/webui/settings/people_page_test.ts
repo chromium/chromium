@@ -443,6 +443,7 @@ suite('PeoplePageAccountSettings', function() {
   setup(function() {
     loadTimeData.overrideValues({replaceSyncPromosWithSignInPromos: true});
     resetRouterForTesting();
+    Router.getInstance().navigateTo(routes.PEOPLE);
 
     syncBrowserProxy = new TestSyncBrowserProxy();
     SyncBrowserProxyImpl.setInstance(syncBrowserProxy);
@@ -629,6 +630,34 @@ suite('PeoplePageAccountSettings', function() {
         loadTimeData.substituteString(
             peoplePage.syncStatus!.statusText!, testEmail),
         accountSubtitle.textContent.trim());
+  });
+
+  test('RecordSigninPendingOfferedMetrics', async function() {
+    syncBrowserProxy.resetResolver('recordSigninPendingOffered');
+
+    // Signin pending offered recorded.
+    await simulateSignedInState(
+        SignedInState.SIGNED_IN_PAUSED, [{email: 'foo@foo.com'}]);
+    assertEquals(
+        1, syncBrowserProxy.getCallCount('recordSigninPendingOffered'));
+
+    // Firing the same signin state again doesn't record twice.
+    await simulateSignedInState(
+        SignedInState.SIGNED_IN_PAUSED, [{email: 'foo@foo.com'}]);
+    assertEquals(
+        1, syncBrowserProxy.getCallCount('recordSigninPendingOffered'));
+
+    // Nothing recorded when signing in.
+    await simulateSignedInState(
+        SignedInState.SIGNED_IN, [{email: 'foo@foo.com'}]);
+    assertEquals(
+        1, syncBrowserProxy.getCallCount('recordSigninPendingOffered'));
+
+    // After getting in pending state again, the metric is recorded.
+    await simulateSignedInState(
+        SignedInState.SIGNED_IN_PAUSED, [{email: 'foo@foo.com'}]);
+    assertEquals(
+        2, syncBrowserProxy.getCallCount('recordSigninPendingOffered'));
   });
 });
 // </if>
