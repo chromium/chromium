@@ -1513,6 +1513,15 @@ bool DisplayManager::IsActiveDisplayId(int64_t display_id) const {
   return ContainsDisplayWithId(active_display_list_, display_id);
 }
 
+bool DisplayManager::IsConnectedDisplayId(int64_t display_id) const {
+  for (int64_t id : connected_display_id_list_) {
+    if (id == display_id) {
+      return true;
+    }
+  }
+  return false;
+}
+
 bool DisplayManager::IsInMirrorMode() const {
   return IsInSoftwareMirrorMode();
 }

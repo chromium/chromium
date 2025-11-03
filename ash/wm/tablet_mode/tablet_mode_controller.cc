@@ -153,13 +153,13 @@ TabletModeController::UiMode GetUiMode() {
 }
 
 // Returns true if the device has an active internal display.
-bool HasActiveInternalDisplay() {
+bool HasConnectedInternalDisplay() {
   if (!display::HasInternalDisplay()) {
     return false;
   }
 
   display::DisplayManager* display_manager = Shell::Get()->display_manager();
-  return display_manager->IsActiveDisplayId(
+  return display_manager->IsConnectedDisplayId(
              display::Display::InternalDisplayId()) ||
          display_manager->IsInUnifiedMode();
 }
@@ -687,7 +687,8 @@ void TabletModeController::OnAccelerometerUpdated(
     if (record_lid_angle_timer_.IsRunning()) {
       record_lid_angle_timer_.Stop();
     }
-  } else if (HasActiveInternalDisplay() && tablet_mode_behavior_.use_sensor) {
+  } else if (HasConnectedInternalDisplay() &&
+             tablet_mode_behavior_.use_sensor) {
     // Whether or not we enter tablet mode affects whether we handle screen
     // rotation, so determine whether to enter tablet mode first.
     if (update.IsReadingStable(ACCELEROMETER_SOURCE_SCREEN) &&
@@ -1346,7 +1347,7 @@ bool TabletModeController::CalculateIsInTabletPhysicalState() const {
       return false;
   }
 
-  if (!HasActiveInternalDisplay()) {
+  if (!HasConnectedInternalDisplay()) {
     return false;
   }
 
@@ -1414,7 +1415,7 @@ bool TabletModeController::ShouldUiBeInTabletMode() const {
   }
 
   return !has_internal_pointing_device_ && CanEnterTabletMode() &&
-         HasActiveInternalDisplay() && base::SysInfo::IsRunningOnChromeOS();
+         HasConnectedInternalDisplay() && base::SysInfo::IsRunningOnChromeOS();
 }
 
 bool TabletModeController::SetIsInTabletPhysicalState(bool new_state) {

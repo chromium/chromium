@@ -37,6 +37,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/math_constants.h"
 #include "base/run_loop.h"
+#include "base/task/current_thread.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_chromeos_version_info.h"
@@ -604,6 +605,52 @@ TEST_F(TabletModeControllerTest, VerticalHingeTest) {
     // one failure rather than potentially hundreds.
     ASSERT_TRUE(display::Screen::Get()->InTabletMode());
   }
+}
+
+// Test entering tablet mode with internal and external primary display. See
+// http://crbug.com/443010999
+TEST_F(TabletModeControllerTest, TabletModeWithDifferentPrimaryDisplay) {
+  const int64_t internal_display_id =
+      display::test::DisplayManagerTestApi(display_manager())
+          .SetFirstDisplayAsInternalDisplay();
+  const auto internal_info =
+      display_manager()->GetDisplayInfo(internal_display_id);
+  constexpr int64_t external_id = 210000010;
+
+  const auto external_info =
+      display::ManagedDisplayInfo::CreateFromSpecWithID("400x300", external_id);
+
+  std::vector<display::ManagedDisplayInfo> display_info_list;
+  display_info_list.push_back(internal_info);
+  display_info_list.push_back(external_info);
+  display_manager()->OnNativeDisplaysChanged(display_info_list);
+  EXPECT_EQ(2U, display_manager()->GetNumDisplays());
+
+  // Enter tablet mode.
+  OpenLidToAngle(270.0f);
+
+  // Confirm is in tablet mode and mirrored.
+  base::test::RunUntil([&] { return display_manager()->IsInMirrorMode(); });
+  EXPECT_TRUE(display::Screen::Get()->InTabletMode());
+
+  // Exit tablet mode.
+  OpenLidToAngle(90.0f);
+
+  base::test::RunUntil([&] { return !display_manager()->IsInMirrorMode(); });
+  EXPECT_FALSE(display::Screen::Get()->InTabletMode());
+
+  // Change primary display.
+  Shell::Get()->window_tree_host_manager()->SetPrimaryDisplayId(external_id);
+
+  // Enter tablet mode.
+  OpenLidToAngle(270.0f);
+
+  // Confirm in tablet mode and mirrored.
+  base::test::RunUntil([&] { return display_manager()->IsInMirrorMode(); });
+  EXPECT_TRUE(display::Screen::Get()->InTabletMode());
+
+  // Exit tablet mode.
+  OpenLidToAngle(90.0f);
 }
 
 // Test if this case does not crash. See http://crbug.com/462806.
