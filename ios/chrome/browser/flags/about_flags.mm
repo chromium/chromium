@@ -1328,9 +1328,14 @@ const FeatureEntry::FeatureVariation kPageActionMenuVariations[] = {
 const FeatureEntry::FeatureParam kAskGeminiChipUseSnackbarVariation[] = {
     {kAskGeminiChipUseSnackbar, "true"},
 };
+const FeatureEntry::FeatureParam kAskGeminiChipIgnoreCriteriaVariation[] = {
+    {kAskGeminiChipIgnoreCriteria, "true"},
+};
 const FeatureEntry::FeatureVariation kAskGeminiChipVariations[] = {
     {"Use Snackbar", kAskGeminiChipUseSnackbarVariation,
      std::size(kAskGeminiChipUseSnackbarVariation), nullptr},
+    {"Ignore FET and Time Criteria", kAskGeminiChipIgnoreCriteriaVariation,
+     std::size(kAskGeminiChipIgnoreCriteriaVariation), nullptr},
 };
 
 // LINT.IfChange(DataSharingVersioningChoices)

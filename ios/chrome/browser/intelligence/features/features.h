@@ -38,6 +38,11 @@ BASE_DECLARE_FEATURE(kAskGeminiChip);
 // Returns true if the Ask Gemini chip is enabled.
 bool IsAskGeminiChipEnabled();
 
+// Returns true if the Ask Gemini chip should be shown without checking the FET
+// and time criteria.
+bool IsAskGeminiChipIgnoreCriteria();
+extern const char kAskGeminiChipIgnoreCriteria[];
+
 // Returns true if a snackbar should be shown when a site is eligible for Ask
 // Gemini.
 bool IsAskGeminiSnackbarEnabled();

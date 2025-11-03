@@ -456,7 +456,7 @@
   } else {
     _badgeIcon.tintColor = shouldShowMutedColors
                                ? [UIColor colorNamed:kGrey600Color]
-                               : [UIColor colorNamed:kBlue600Color];
+                               : [self defaultBadgeTintColor];
   }
 
   // Button container shadow.
@@ -488,7 +488,7 @@
 // in-product help is present), otherwise back to the normal colorset.
 - (void)updateBadgeHighlight:(BOOL)highlighted {
   _badgeIcon.tintColor = highlighted ? [UIColor colorNamed:kBackgroundColor]
-                                     : [UIColor colorNamed:kBlue600Color];
+                                     : [self defaultBadgeTintColor];
 
   // Update entrypoint container background.
   UIColor* buttonContainerBackgroundColor =
@@ -496,6 +496,14 @@
                   : [UIColor colorNamed:kBackgroundColor];
   _buttonContainer.configuration = [self
       buttonConfigurationWithBackgroundColor:buttonContainerBackgroundColor];
+}
+
+// Returns the default badge tint color. Ignores applying a tint color in favor
+// of using an image gradient layer.
+- (UIColor*)defaultBadgeTintColor {
+  BOOL useImageGradient =
+      _badgeConfig.badgeType == LocationBarBadgeType::kGeminiContextualCueChip;
+  return useImageGradient ? nil : [UIColor colorNamed:kBlue600Color];
 }
 
 // User swiped the expanded badge towards the leading edge to dismiss it.

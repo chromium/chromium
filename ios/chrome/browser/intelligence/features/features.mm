@@ -38,8 +38,15 @@ BASE_FEATURE(kAskGeminiChip, base::FEATURE_DISABLED_BY_DEFAULT);
 
 const char kAskGeminiChipUseSnackbar[] = "AskGeminiChipUseSnackbar";
 
+const char kAskGeminiChipIgnoreCriteria[] = "AskGeminiChipIgnoreCriteria";
+
 bool IsAskGeminiChipEnabled() {
   return base::FeatureList::IsEnabled(kAskGeminiChip);
+}
+
+bool IsAskGeminiChipIgnoreCriteria() {
+  return base::GetFieldTrialParamByFeatureAsBool(
+      kAskGeminiChip, kAskGeminiChipIgnoreCriteria, false);
 }
 
 bool IsAskGeminiSnackbarEnabled() {

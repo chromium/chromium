@@ -19,6 +19,9 @@
 // Returns the branded version of the Gemini symbol with a `pointSize`.
 + (UIImage*)brandedGeminiSymbolWithPointSize:(CGFloat)pointSize;
 
+// Create the Gemini logo with a diagonal linear gradient color palette.
++ (UIImage*)createGradientGeminiLogo:(CGFloat)pointSize;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_UI_BWG_UI_UTILS_H_

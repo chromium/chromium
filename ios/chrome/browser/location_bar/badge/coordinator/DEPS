@@ -4,6 +4,7 @@ include_rules = [
   "+ios/chrome/browser/contextual_panel/entrypoint/ui",
   "+ios/chrome/browser/intelligence/bwg/model",
   "+ios/chrome/browser/intelligence/bwg/utils",
+  "+ios/chrome/browser/intelligence/features",
   "+ios/chrome/browser/feature_engagement/model",
   "+ios/chrome/browser/fullscreen/ui_bundled",
   "+ios/chrome/browser/infobars/model",

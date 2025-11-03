@@ -23,6 +23,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/intelligence/bwg/model:bwg_service",
     "//ios/chrome/browser/intelligence/bwg/model:bwg_service_factory",
     "//ios/chrome/browser/intelligence/bwg/utils:constants",
+    "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/browser/location_bar/badge/model",
     "//ios/chrome/browser/location_bar/badge/ui",
     "//ios/chrome/browser/reader_mode/ui:chip",

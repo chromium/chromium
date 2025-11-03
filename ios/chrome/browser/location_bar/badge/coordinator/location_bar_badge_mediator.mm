@@ -13,6 +13,7 @@
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_service.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/bwg_constants.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/location_bar/badge/coordinator/location_bar_badge_mediator_delegate.h"
 #import "ios/chrome/browser/location_bar/badge/model/badge_type.h"
 #import "ios/chrome/browser/location_bar/badge/model/location_bar_badge_configuration.h"
@@ -248,9 +249,7 @@ const int kTransitionTimeInSeconds = 2;
 - (BOOL)shouldShowBadge:(LocationBarBadgeType)badgeType {
   switch (badgeType) {
     case LocationBarBadgeType::kGeminiContextualCueChip:
-      if ([self shouldShowGeminiContextualChip] &&
-          _tracker->ShouldTriggerHelpUI(
-              feature_engagement::kIPHiOSGeminiContextualCueChip)) {
+      if ([self shouldShowGeminiContextualChip]) {
         return YES;
       }
       return NO;
@@ -290,7 +289,13 @@ const int kTransitionTimeInSeconds = 2;
   BOOL eligibleTimeWindow =
       timeSinceLastShown >= base::Hours(kGeminiContextualCueChipSlidingWindow);
 
-  return isPageEligible && isUserConsented && eligibleTimeWindow;
+  if (IsAskGeminiChipIgnoreCriteria()) {
+    return YES;
+  }
+
+  return isPageEligible && isUserConsented && eligibleTimeWindow &&
+         _tracker->ShouldTriggerHelpUI(
+             feature_engagement::kIPHiOSGeminiContextualCueChip);
 }
 
 @end

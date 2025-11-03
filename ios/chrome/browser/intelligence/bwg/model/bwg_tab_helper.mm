@@ -511,7 +511,7 @@ void BwgTabHelper::OnOptimizationGuideDecision(
       [snackbar_commands_handler_ showSnackbarMessage:message];
     } else {
       UIImage* badge_image =
-          [BWGUIUtils brandedGeminiSymbolWithPointSize:kBadgeSymbolPointSize];
+          [BWGUIUtils createGradientGeminiLogo:kBadgeSymbolPointSize];
       NSString* cue_label = base::SysUTF8ToNSString(
           latest_load_contextual_cueing_metadata_->cueing_configurations(0)
               .cue_label());
