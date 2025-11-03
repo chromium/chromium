@@ -99,6 +99,7 @@ class CredentialProviderServiceTest : public PlatformTest {
         password_manager::prefs::kCredentialsEnablePasskeys, true);
     testing_pref_service_.registry()->RegisterBooleanPref(
         password_manager::prefs::kAutomaticPasskeyUpgrades, true);
+    scoped_feature_list_.InitAndEnableFeature(kCredentialProviderSignalAPI);
   }
 
   void TearDown() override {
@@ -198,6 +199,7 @@ class CredentialProviderServiceTest : public PlatformTest {
   affiliations::FakeAffiliationService affiliation_service_;
   MockFaviconLoader favicon_loader_;
   std::unique_ptr<CredentialProviderService> credential_provider_service_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Test that CredentialProviderService writes all the credentials the first time
@@ -449,7 +451,7 @@ TEST_F(CredentialProviderServiceTest, AddCredentialsWithValidURL) {
   ASSERT_EQ(credential_store_.credentials.count, 0u);
 
   // Add password with valid URL to store.
-  EXPECT_CALL(favicon_loader_, FaviconForPageUrl(_, _, _, _, _)).Times(1);
+  EXPECT_CALL(favicon_loader_, FaviconForPageUrl).Times(1);
   password_manager::PasswordForm valid_password_form;
   valid_password_form.url = GURL("http://g.com");
   valid_password_form.username_value = u"user1";
@@ -461,7 +463,7 @@ TEST_F(CredentialProviderServiceTest, AddCredentialsWithValidURL) {
 
   // Don't add password with invalid URL to store.
   // No favicon should be fetched for invalid URLs.
-  EXPECT_CALL(favicon_loader_, FaviconForPageUrl(_, _, _, _, _)).Times(0);
+  EXPECT_CALL(favicon_loader_, FaviconForPageUrl).Times(0);
   password_manager::PasswordForm invalid_password_form;
   invalid_password_form.url = GURL("");
   invalid_password_form.username_value = u"user2";
@@ -473,7 +475,7 @@ TEST_F(CredentialProviderServiceTest, AddCredentialsWithValidURL) {
 
   // Add password with valid Android facet URI to store.
   // No favicon should be fetched for Android URI.
-  EXPECT_CALL(favicon_loader_, FaviconForPageUrl(_, _, _, _, _)).Times(0);
+  EXPECT_CALL(favicon_loader_, FaviconForPageUrl).Times(0);
   password_manager::PasswordForm android_password_form;
   android_password_form.url = GURL(android_password_form.signon_realm);
   android_password_form.signon_realm = "android://hash@com.example.my.app";
@@ -494,7 +496,7 @@ TEST_F(CredentialProviderServiceTest, AddCredentialsRefactored) {
   ASSERT_EQ(credential_store_.credentials.count, 0u);
 
   // Add password with valid URL to store.
-  EXPECT_CALL(favicon_loader_, FaviconForPageUrl(_, _, _, _, _)).Times(1);
+  EXPECT_CALL(favicon_loader_, FaviconForPageUrl).Times(1);
   password_manager::PasswordForm valid_password_form;
   valid_password_form.url = GURL("http://g.com");
   valid_password_form.username_value = u"user1";
@@ -506,7 +508,7 @@ TEST_F(CredentialProviderServiceTest, AddCredentialsRefactored) {
 
   // Don't add password with invalid URL to store.
   // No favicon should be fetched for invalid URLs.
-  EXPECT_CALL(favicon_loader_, FaviconForPageUrl(_, _, _, _, _)).Times(0);
+  EXPECT_CALL(favicon_loader_, FaviconForPageUrl).Times(0);
   password_manager::PasswordForm invalid_password_form;
   invalid_password_form.url = GURL("");
   invalid_password_form.username_value = u"user2";
@@ -518,7 +520,7 @@ TEST_F(CredentialProviderServiceTest, AddCredentialsRefactored) {
 
   // Add password with valid Android facet URI to store.
   // No favicon should be fetched for Android URI.
-  EXPECT_CALL(favicon_loader_, FaviconForPageUrl(_, _, _, _, _)).Times(0);
+  EXPECT_CALL(favicon_loader_, FaviconForPageUrl).Times(0);
   password_manager::PasswordForm android_password_form;
   android_password_form.url = GURL(android_password_form.signon_realm);
   android_password_form.signon_realm = "android://hash@com.example.my.app";
@@ -714,7 +716,7 @@ TEST_F(CredentialProviderServiceTest, AddPasskeys) {
   ASSERT_EQ(credential_store_.credentials.count, 0u);
 
   // Add passkey with valid URL to store.
-  EXPECT_CALL(favicon_loader_, FaviconForPageUrl(_, _, _, _, _)).Times(1);
+  EXPECT_CALL(favicon_loader_, FaviconForPageUrl).Times(1);
   sync_pb::WebauthnCredentialSpecifics valid_passkey = CreatePasskey(
       kRpId, {1, 2, 3, 4}, "passkey_username", "passkey_display_name");
   test_passkey_model_->AddNewPasskeyForTesting(valid_passkey);
@@ -724,7 +726,7 @@ TEST_F(CredentialProviderServiceTest, AddPasskeys) {
 
   // Add passkey with invalid URL to store.
   // No favicon should be fetched for invalid URLs.
-  EXPECT_CALL(favicon_loader_, FaviconForPageUrl(_, _, _, _, _)).Times(0);
+  EXPECT_CALL(favicon_loader_, FaviconForPageUrl).Times(0);
   sync_pb::WebauthnCredentialSpecifics invalid_passkey = CreatePasskey(
       "", {1, 2, 3, 4}, "passkey_username", "passkey_display_name");
   test_passkey_model_->AddNewPasskeyForTesting(invalid_passkey);
@@ -732,36 +734,33 @@ TEST_F(CredentialProviderServiceTest, AddPasskeys) {
 
   ASSERT_TRUE(WaitForCredentialCount(2u));
 
-  // Don't add hidden passkeys to the store.
-  // No favicon should be fetched for hidden passkeys.
-  EXPECT_CALL(favicon_loader_, FaviconForPageUrl(_, _, _, _, _)).Times(0);
+  // Hidden passkeys should be added to the store as their properties might need
+  // to be updated by the Signal API.
+  EXPECT_CALL(favicon_loader_, FaviconForPageUrl).Times(1);
   sync_pb::WebauthnCredentialSpecifics hidden_passkey = CreatePasskey(
       kRpId, {1, 2, 3, 4}, "passkey_username", "passkey_display_name");
   hidden_passkey.set_hidden(true);
   test_passkey_model_->AddNewPasskeyForTesting(hidden_passkey);
   task_environment_.RunUntilIdle();
 
-  ASSERT_EQ(credential_store_.credentials.count, 2u);
+  ASSERT_EQ(credential_store_.credentials.count, 3u);
 
   // Add 2nd passkey with valid URL to store.
-  EXPECT_CALL(favicon_loader_, FaviconForPageUrl(_, _, _, _, _)).Times(1);
+  EXPECT_CALL(favicon_loader_, FaviconForPageUrl).Times(1);
   sync_pb::WebauthnCredentialSpecifics valid_passkey2 = CreatePasskey(
       kRpId, {1, 2, 3, 4}, "passkey_username2", "passkey_display_name2");
   test_passkey_model_->AddNewPasskeyForTesting(valid_passkey2);
   task_environment_.RunUntilIdle();
 
-  EXPECT_TRUE(WaitForCredentialCount(3u));
+  EXPECT_TRUE(WaitForCredentialCount(4u));
 }
 
 TEST_F(CredentialProviderServiceTest,
        HiddenPasskeyAddedToCredentialStoreWithSignalAPI) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kCredentialProviderSignalAPI);
-
   CreateCredentialProviderService(/*with_account_store=*/true);
   ASSERT_EQ(credential_store_.credentials.count, 0u);
 
-  EXPECT_CALL(favicon_loader_, FaviconForPageUrl(_, _, _, _, _)).Times(1);
+  EXPECT_CALL(favicon_loader_, FaviconForPageUrl).Times(1);
   sync_pb::WebauthnCredentialSpecifics hidden_passkey = CreatePasskey(
       kRpId, {1, 2, 3, 4}, "passkey_username", "passkey_display_name");
   hidden_passkey.set_hidden(true);
@@ -776,7 +775,7 @@ TEST_F(CredentialProviderServiceTest, DeletePasskey) {
   ASSERT_EQ(credential_store_.credentials.count, 0u);
 
   // Add passkey with valid URL to store.
-  EXPECT_CALL(favicon_loader_, FaviconForPageUrl(_, _, _, _, _)).Times(1);
+  EXPECT_CALL(favicon_loader_, FaviconForPageUrl).Times(1);
   sync_pb::WebauthnCredentialSpecifics passkey = CreatePasskey(
       kRpId, {1, 2, 3, 4}, "passkey_username", "passkey_display_name");
   test_passkey_model_->AddNewPasskeyForTesting(passkey);
