@@ -846,6 +846,25 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/components/sync/protocol/sync.proto:SyncClientToServerMessageContents) -->
 
+<!-- LINT.IfChange(SyncConfigureDataTypeManagerReason) -->
+
+<enum name="SyncConfigureDataTypeManagerReason">
+  <summary>
+    The reason that triggered a configuration cycle, i.e. initializing
+    DataTypeManager or changing the set of datatypes that should be actively
+    syncing.
+  </summary>
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Reconfiguration"/>
+  <int value="2" label="Migration"/>
+  <int value="3" label="New client"/>
+  <int value="4" label="Existing client restart"/>
+  <int value="5" label="Crypto"/>
+  <int value="6" label="Programmatic"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/sync/engine/configure_reason.h:ConfigureReason) -->
+
 <!-- LINT.IfChange(SyncConflictResolution) -->
 
 <enum name="SyncConflictResolution">

@@ -638,6 +638,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Sync.ConfigureDataTypeManagerReason"
+    enum="SyncConfigureDataTypeManagerReason" expires_after="2026-03-31">
+  <owner>treib@chromium.org</owner>
+  <owner>src/components/sync/OWNERS</owner>
+  <summary>
+    The reason that triggered a configuration cycle. Recorded when configuring
+    the data types for any reason: Most commonly during browser startup, but
+    also after initial setup, or after a reconfiguration by the user.
+  </summary>
+</histogram>
+
 <histogram name="Sync.ConfigureDataTypes" enum="SyncDataTypes"
     expires_after="2026-04-26">
   <owner>mastiz@chromium.org</owner>

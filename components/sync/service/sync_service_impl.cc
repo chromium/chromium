@@ -1739,6 +1739,9 @@ void SyncServiceImpl::ConfigureDataTypeManager(
                                     ? ConfigureDataTypeManagerOption::kTransport
                                     : ConfigureDataTypeManagerOption::kFeature);
 
+  base::UmaHistogramEnumeration("Sync.ConfigureDataTypeManagerReason",
+                                configure_context.reason);
+
   base::UmaHistogramBoolean("Sync.ConfigureDataTypeManager.Start",
                             is_first_time_sync_configure_);
 

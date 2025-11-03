@@ -12,36 +12,40 @@ namespace syncer {
 // actively syncing. Note that configuration cycles can involve downloading
 // updates from the server (e.g. fully disabled datatype is now enabled) but
 // it's not always the case (in particular during browser startup).
+// LINT.IfChange(ConfigureReason)
 enum class ConfigureReason {
   // We should never be here during actual configure. This is for setting
   // default values.
-  kUnknown,
+  kUnknown = 0,
 
   // The client is configuring because the user opted to sync a different set
   // of datatypes.
-  kReconfiguration,
+  kReconfiguration = 1,
 
   // The client is configuring because the client is being asked to migrate.
-  kMigration,
+  kMigration = 2,
 
   // Setting up sync performs an initial config to download NIGORI data, and
   // also a config to download initial data once the user selects types.
-  kNewClient,
+  kNewClient = 3,
 
   // An existing client restarted sync, including cases like profile startup
   // or a persistent auth error having been fixed. In many cases, specially
   // for the profile startup case, these configuration requests don't
   // actually lead to downloading updates from the server.
-  kExistingClientRestart,
+  kExistingClientRestart = 4,
 
   // A configuration due to enabling or disabling encrypted types due to
   // cryptographer errors/resolutions.
-  kCrypto,
+  kCrypto = 5,
 
   // The client is configuring because of a programmatic type enable/disable,
   // such as when an error is encountered/resolved.
-  kProgrammatic,
+  kProgrammatic = 6,
+
+  kMaxValue = kProgrammatic,
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:SyncConfigureDataTypeManagerReason)
 
 }  // namespace syncer
 
