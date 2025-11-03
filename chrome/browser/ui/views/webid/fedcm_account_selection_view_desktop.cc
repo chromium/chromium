@@ -114,6 +114,14 @@ void FedCmAccountSelectionView::ShowDialogWidget() {
     params->disable_input = false;
     params->get_dialog_bounds = base::BindRepeating(
         &FedCmAccountSelectionView::GetDialogBounds, base::Unretained(this));
+    // Features may not be available under some unit tests. Check first.
+    if (auto* features = tab_->GetTabFeatures()) {
+      if (auto* inactive_event_controller =
+              features->inactive_window_mouse_event_controller()) {
+        tab_accept_mouse_events_ =
+            inactive_event_controller->AcceptMouseEventsWhileWindowInactive();
+      }
+    }
   }
   ShowDialog(GetDialogWidget(), std::move(params));
 
