@@ -563,6 +563,21 @@ constexpr CGFloat kLocationBarCompactBottomPadding = 10.0;
   // Do nothing.
 }
 
+- (ToolbarCancelButtonStyle)styleForCancelButtonInToolbar {
+  BOOL userPreferenceBottom =
+      _toolbarMediator.preferredOmniboxPosition == ToolbarType::kSecondary;
+  BOOL followSteadyState =
+      omnibox::ShouldFocusedOmniboxFollowSteadyStatePosition();
+  BOOL forcedBottomInEditState = omnibox::ForceBottomOmniboxInEditState();
+  BOOL inTheBottomInEditState =
+      (followSteadyState && userPreferenceBottom) || forcedBottomInEditState;
+  if (inTheBottomInEditState) {
+    return ToolbarCancelButtonStyle::kXCircle;
+  }
+
+  return ToolbarCancelButtonStyle::kCancelLabel;
+}
+
 #pragma mark - SideSwipeToolbarInteracting
 
 - (BOOL)isInsideToolbar:(CGPoint)point {

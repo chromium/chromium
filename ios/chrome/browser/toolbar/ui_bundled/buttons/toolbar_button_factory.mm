@@ -42,6 +42,10 @@ const CGFloat kDiamondButtonSize = 38;
 const CGFloat kDiamondTintAlpha = 0.9;
 // Corner radius of the button with diamond.
 const CGFloat kDiamondCornerRadius = 13;
+/// The size for the close button.
+const CGFloat kCloseButtonSize = 30.0f;
+/// The alpha for the close button.
+const CGFloat kCloseButtonAlpha = 0.6f;
 
 }  // namespace
 
@@ -365,6 +369,10 @@ const CGFloat kDiamondCornerRadius = 13;
 }
 
 - (UIButton*)cancelButton {
+  return [self cancelButtonWithStyle:ToolbarCancelButtonStyle::kCancelLabel];
+}
+
+- (UIButton*)cancelButtonWithStyle:(ToolbarCancelButtonStyle)style {
   UIButton* cancelButton = [UIButton buttonWithType:UIButtonTypeSystem];
   cancelButton.tintColor = [UIColor colorNamed:kBlueColor];
   [cancelButton setContentHuggingPriority:UILayoutPriorityRequired
@@ -373,18 +381,35 @@ const CGFloat kDiamondCornerRadius = 13;
       setContentCompressionResistancePriority:UILayoutPriorityRequired
                                       forAxis:UILayoutConstraintAxisHorizontal];
 
-  UIButtonConfiguration* buttonConfiguration =
-      [UIButtonConfiguration plainButtonConfiguration];
-  buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
-      0, kCancelButtonHorizontalInset, 0, kCancelButtonHorizontalInset);
-  UIFont* font = [UIFont systemFontOfSize:kLocationBarFontSize];
-  NSDictionary* attributes = @{NSFontAttributeName : font};
-  NSMutableAttributedString* attributedString =
-      [[NSMutableAttributedString alloc]
-          initWithString:l10n_util::GetNSString(IDS_CANCEL)
-              attributes:attributes];
-  buttonConfiguration.attributedTitle = attributedString;
-  cancelButton.configuration = buttonConfiguration;
+  if (style == ToolbarCancelButtonStyle::kXCircle) {
+    UIImageSymbolConfiguration* symbolConfiguration =
+        [UIImageSymbolConfiguration
+            configurationWithPointSize:kCloseButtonSize
+                                weight:UIImageSymbolWeightRegular
+                                 scale:UIImageSymbolScaleMedium];
+    UIImage* buttonImage =
+        SymbolWithPalette(DefaultSymbolWithConfiguration(kXMarkCircleFillSymbol,
+                                                         symbolConfiguration),
+                          @[
+                            [[UIColor tertiaryLabelColor]
+                                colorWithAlphaComponent:kCloseButtonAlpha],
+                            [UIColor tertiarySystemFillColor]
+                          ]);
+    [cancelButton setImage:buttonImage forState:UIControlStateNormal];
+  } else {
+    UIButtonConfiguration* buttonConfiguration =
+        [UIButtonConfiguration plainButtonConfiguration];
+    buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
+        0, kCancelButtonHorizontalInset, 0, kCancelButtonHorizontalInset);
+    UIFont* font = [UIFont systemFontOfSize:kLocationBarFontSize];
+    NSDictionary* attributes = @{NSFontAttributeName : font};
+    NSMutableAttributedString* attributedString =
+        [[NSMutableAttributedString alloc]
+            initWithString:l10n_util::GetNSString(IDS_CANCEL)
+                attributes:attributes];
+    buttonConfiguration.attributedTitle = attributedString;
+    cancelButton.configuration = buttonConfiguration;
+  }
 
   cancelButton.hidden = YES;
   [cancelButton addTarget:self.actionHandler
