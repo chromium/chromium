@@ -1164,11 +1164,6 @@ BASE_FEATURE(kImeSystemEmojiPickerVariantGrouping,
 // idle.
 BASE_FEATURE(kImeSwitchCheckConnectionStatus, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Controls whether to show new improved UI for cryptohome errors that happened
-// during login. UI contains links to help center and might provide actions
-// that can be taken to resolve the problem.
-BASE_FEATURE(kImprovedLoginErrorHandling, base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Controls whether to show new management disclosure UI page instead of the
 // management warning bubble.
 BASE_FEATURE(kImprovedManagementDisclosure, base::FEATURE_ENABLED_BY_DEFAULT);
