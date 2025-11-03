@@ -82,6 +82,10 @@ class AutofillWebDataBackendImpl
   void NotifyOfIbanChanged(const IbanChange& change) override;
   void NotifyOnAutofillChangedBySync(syncer::DataType data_type) override;
   void NotifyOnServerCvcChanged(const ServerCvcChange& change) override;
+  void NotifyOnEntityInstanceChanged(
+      const EntityInstanceChange& change) override;
+  void NotifyOnServerEntityMetadataChanged(
+      const EntityInstanceMetadataChange& change) override;
   void CommitChanges() override;
 
   // Returns a SupportsUserData object that may be used to store data accessible

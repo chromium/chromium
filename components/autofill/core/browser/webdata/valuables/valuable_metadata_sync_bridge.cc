@@ -27,20 +27,6 @@ namespace {
 // The address of this variable is used as the user data key.
 static const int kAutofillValuableMetadataSyncBridgeUserDataKey = 0;
 
-// Returns if the entity `change` should be uploaded to
-// AUTOFILL_VALUABLE_METADATA. Only metadata entries related to server entities
-// should be uploaded.
-bool ShouldUploadEntityChange(const EntityInstanceChange& change) {
-  switch (change.data_model()->record_type()) {
-    case EntityInstance::RecordType::kLocal:
-      // Local entities are not uploaded as AUTOFILL_VALUABLE.
-      return false;
-    case EntityInstance::RecordType::kServerWallet:
-      return true;
-  }
-  NOTREACHED();
-}
-
 }  // namespace
 
 ValuableMetadataSyncBridge::ValuableMetadataSyncBridge(
@@ -301,36 +287,31 @@ ValuableMetadataSyncBridge::MergeRemoteChanges(
   return std::nullopt;
 }
 
-void ValuableMetadataSyncBridge::EntityInstanceChanged(
-    const EntityInstanceChange& change) {
+void ValuableMetadataSyncBridge::ServerEntityInstanceMetadataChanged(
+    const EntityInstanceMetadataChange& change) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(base::FeatureList::IsEnabled(syncer::kSyncAutofillValuableMetadata));
-
-  if (!ShouldUploadEntityChange(change)) {
+  if (!change_processor()->IsTrackingMetadata()) {
     return;
   }
-
-  CHECK(change_processor()->IsTrackingMetadata());
 
   std::unique_ptr<syncer::MetadataChangeList> metadata_change_list =
       CreateMetadataChangeList();
 
   switch (change.type()) {
-    case EntityInstanceChange::ADD:
-    case EntityInstanceChange::UPDATE:
-      CHECK(change.data_model());
+    case EntityInstanceMetadataChange::ADD:
+    case EntityInstanceMetadataChange::UPDATE:
       change_processor()->Put(
           *change.key(),
-          CreateEntityDataFromEntityMetadata(change.data_model()->metadata()),
+          CreateEntityDataFromEntityMetadata(change.data_model()),
           metadata_change_list.get());
       break;
-    case EntityInstanceChange::REMOVE:
+    case EntityInstanceMetadataChange::REMOVE:
       change_processor()->Delete(
           *change.key(), syncer::DeletionOrigin::FromLocation(FROM_HERE),
           metadata_change_list.get());
       break;
-    case EntityInstanceChange::HIDE_IN_AUTOFILL:
-      // Removing valuables is not supported from the client.
+    case EntityInstanceMetadataChange::HIDE_IN_AUTOFILL:
       NOTREACHED();
   }
 }

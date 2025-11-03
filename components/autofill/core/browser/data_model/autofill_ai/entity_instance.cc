@@ -9,6 +9,7 @@
 #include <variant>
 
 #include "base/i18n/time_formatting.h"
+#include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -498,6 +499,16 @@ EntityInstance::EntityMergeability EntityInstance::GetEntityMergeability(
   }
 
   return {std::move(mergeable_attributes), is_subset};
+}
+
+bool EntityInstance::IsServerInstance() const {
+  switch (record_type_) {
+    case RecordType::kLocal:
+      return false;
+    case RecordType::kServerWallet:
+      return true;
+  }
+  NOTREACHED();
 }
 
 bool EntityInstance::IsSubsetOf(const EntityInstance& other) const {

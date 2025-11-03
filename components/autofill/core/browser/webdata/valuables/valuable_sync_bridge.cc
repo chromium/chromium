@@ -65,9 +65,13 @@ bool IsSyncWalletVehicleRegistrationsEnabled() {
   return base::FeatureList::IsEnabled(syncer::kSyncWalletVehicleRegistrations);
 }
 
+bool IsSyncAutofillValuableMetadataEnabled() {
+  return base::FeatureList::IsEnabled(syncer::kSyncAutofillValuableMetadata);
+}
+
 // Returns if the entity `change` should be uploaded to AUTOFILL_VALUABLE.
 bool ShouldUploadEntityChange(const EntityInstanceChange& change) {
-  switch (change.data_model()->record_type()) {
+  switch (change.data_model().record_type()) {
     case EntityInstance::RecordType::kLocal:
       // Local entities are not uploaded as AUTOFILL_VALUABLE.
       return false;
@@ -75,39 +79,6 @@ bool ShouldUploadEntityChange(const EntityInstanceChange& change) {
       return true;
   }
   NOTREACHED();
-}
-
-// Handles delete request for a valuable with the corresponding `storage_key` as
-// id. As during delete request the valuable type is not available, the function
-// tries to delete the valuable from the corresponding table using only the
-// `storage_key`.
-ValuableDatabaseOperationResult HandleDeleteRequest(
-    const std::string& storage_key,
-    ValuablesTable* valuables_table,
-    EntityTable* entity_table) {
-  if (std::optional<LoyaltyCard> loyalty_card =
-          valuables_table->GetLoyaltyCardById(ValuableId(storage_key))) {
-    if (!valuables_table->RemoveLoyaltyCard(loyalty_card->id())) {
-      return ValuableDatabaseOperationResult::kDatabaseError;
-    }
-    return ValuableDatabaseOperationResult::kDataChanged;
-  }
-
-  if (!IsSyncWalletFlightReservationsEnabled() &&
-      !IsSyncWalletVehicleRegistrationsEnabled()) {
-    return ValuableDatabaseOperationResult::kNoChange;
-  }
-
-  if (entity_table->EntityInstanceExists(
-          EntityInstance::EntityId(storage_key))) {
-    if (!entity_table->RemoveEntityInstance(
-            EntityInstance::EntityId(storage_key))) {
-      return ValuableDatabaseOperationResult::kDatabaseError;
-    }
-    return ValuableDatabaseOperationResult::kDataChanged;
-  }
-
-  return ValuableDatabaseOperationResult::kNoChange;
 }
 
 // Creates an `EntityInstance` from `specifics` and loads its metadata from
@@ -199,6 +170,46 @@ ValuableSyncBridge::CreateMetadataChangeList() {
                           change_processor()->GetWeakPtr()));
 }
 
+ValuableDatabaseOperationResult ValuableSyncBridge::HandleDeleteRequest(
+    const std::string& storage_key) {
+  if (std::optional<LoyaltyCard> loyalty_card =
+          GetValuablesTable()->GetLoyaltyCardById(ValuableId(storage_key))) {
+    if (!GetValuablesTable()->RemoveLoyaltyCard(loyalty_card->id())) {
+      return ValuableDatabaseOperationResult::kDatabaseError;
+    }
+    return ValuableDatabaseOperationResult::kDataChanged;
+  }
+
+  if (!IsSyncWalletFlightReservationsEnabled() &&
+      !IsSyncWalletVehicleRegistrationsEnabled()) {
+    return ValuableDatabaseOperationResult::kNoChange;
+  }
+  EntityInstance::EntityId entity_id(storage_key);
+  if (GetEntityTable()->EntityInstanceExists(entity_id)) {
+    // Requesting the associated metadata before the entity removed.
+    std::optional<EntityInstance::EntityMetadata> metadata =
+        GetEntityTable()->GetEntityMetadata(entity_id);
+    if (!GetEntityTable()->RemoveEntityInstance(entity_id)) {
+      return ValuableDatabaseOperationResult::kDatabaseError;
+    }
+
+    // Server entities can not be removed directly by the user in the client.
+    // They are only removed via a ACTION_DELETE directive received through the
+    // valuables bridge. When the bridge removes an entity instance and its
+    // associated metadata directly from the local table, server metadata
+    // observers (e.g. ValuableMetadataSyncBridge) must be manually notified of
+    // the deletion so it can be committed to the server.
+    if (IsSyncAutofillValuableMetadataEnabled() && metadata) {
+      web_data_backend_->NotifyOnServerEntityMetadataChanged(
+          EntityInstanceMetadataChange(EntityInstanceMetadataChange::REMOVE,
+                                       entity_id, std::move(*metadata)));
+    }
+    return ValuableDatabaseOperationResult::kDataChanged;
+  }
+
+  return ValuableDatabaseOperationResult::kNoChange;
+}
+
 std::optional<syncer::ModelError> ValuableSyncBridge::MergeFullSyncData(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_data) {
@@ -259,8 +270,7 @@ ValuableSyncBridge::ApplyIncrementalSyncChanges(
         break;
       }
       case syncer::EntityChange::ACTION_DELETE:
-        if (HandleDeleteRequest(change->storage_key(), GetValuablesTable(),
-                                GetEntityTable()) ==
+        if (HandleDeleteRequest(change->storage_key()) ==
             ValuableDatabaseOperationResult::kDatabaseError) {
           db_operation_result = ValuableDatabaseOperationResult::kDatabaseError;
         }
@@ -613,10 +623,9 @@ void ValuableSyncBridge::EntityInstanceChanged(
   switch (change.type()) {
     case EntityInstanceChange::ADD:
     case EntityInstanceChange::UPDATE:
-      CHECK(change.data_model());
       change_processor()->Put(
           *change.key(),
-          CreateEntityDataFromEntityInstance(*change.data_model()),
+          CreateEntityDataFromEntityInstance(change.data_model()),
           metadata_change_list.get());
       break;
     case EntityInstanceChange::REMOVE:

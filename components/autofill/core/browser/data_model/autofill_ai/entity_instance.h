@@ -336,6 +336,9 @@ class EntityInstance final {
     return frecency_override_;
   }
 
+  // Whether the instance's `record_type` indicates server side storage.
+  bool IsServerInstance() const;
+
   struct EntityMergeability {
     EntityMergeability();
     EntityMergeability(std::vector<AttributeInstance> mergeable_attributes,
