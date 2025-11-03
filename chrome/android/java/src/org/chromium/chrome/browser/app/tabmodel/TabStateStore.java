@@ -297,7 +297,10 @@ public class TabStateStore implements TabPersistentStore {
     private void onTabRegistered(Tab tab) {
         TabStateAttributes attributes = TabStateAttributes.from(tab);
         assumeNonNull(attributes);
-        if (attributes.addObserver(mAttributesObserver) == DirtinessState.DIRTY) {
+        // Save every clean tab on registration if we are not authoritative, we are catching up.
+        if (attributes.addObserver(mAttributesObserver) == DirtinessState.DIRTY
+                || !ChromeFeatureList.sTabStorageSqlitePrototypeAuthoritativeReadSource
+                        .getValue()) {
             saveTab(tab);
         }
     }
