@@ -425,6 +425,7 @@ void LensOverlayController::CloseUI(
   immersive_mode_observer_.Reset();
   lens_overlay_blur_layer_delegate_.reset();
   pref_change_registrar_.Reset();
+  use_aim_for_visual_search_ = false;
 
   // Notify the searchbox controller to reset its handlers before the overlay
   // is cleaned up. This is needed to prevent a dangling ptr.
@@ -926,6 +927,10 @@ void LensOverlayController::ShowUI(
   if (!tab_->CanShowModalUI()) {
     return;
   }
+
+  // If the search controller is already active, then visual selections
+  // are considered follow ups that should be fulfilled by AIM.
+  use_aim_for_visual_search_ = lens_search_controller_->IsActive();
 
   // Increment the counter for the number of times the Lens Overlay has been
   // started.
@@ -2542,8 +2547,7 @@ void LensOverlayController::HandleInteractionURLResponse(
   MaybeOpenSidePanel();
   auto* results_side_panel_coordinator = GetLensOverlaySidePanelCoordinator();
 
-  if (lens::IsAimQuery(
-          results_side_panel_coordinator->GetSidePanelNewTabUrl()) &&
+  if (use_aim_for_visual_search_ &&
       IsVisualSelectionType(lens_selection_type_) &&
       lens::features::GetEnableLensButtonInSearchbox()) {
     // Focus the side panel contents so the composebox can be properly focused.
@@ -2642,6 +2646,7 @@ void LensOverlayController::HideOverlayAndMaybeSetHiddenState() {
 void LensOverlayController::ReshowOverlay() {
   // The overlay must be in the kHidden state to be restored properly.
   CHECK(state_ == State::kHidden);
+  use_aim_for_visual_search_ = true;
 
   // Clear any previous selections to ensure a clean state.
   ClearAllSelections();
