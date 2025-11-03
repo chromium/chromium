@@ -224,11 +224,6 @@ void P2PSocketManager::ResumeNetworkChangeNotifications() {
   }
 }
 
-void P2PSocketManager::AddAcceptedConnection(
-    std::unique_ptr<P2PSocket> accepted_connection) {
-  sockets_[accepted_connection.get()] = std::move(accepted_connection);
-}
-
 void P2PSocketManager::DestroySocket(P2PSocket* socket) {
   auto iter = sockets_.find(socket);
   CHECK(iter != sockets_.end());
