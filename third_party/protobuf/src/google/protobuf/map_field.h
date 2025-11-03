@@ -301,8 +301,8 @@ class PROTOBUF_EXPORT MapFieldBase : public MapFieldBaseForParse {
  public:
   explicit constexpr MapFieldBase(const void* prototype_as_void)
       : MapFieldBaseForParse(prototype_as_void) {}
-  explicit MapFieldBase(const Message* prototype, Arena* arena)
-      : MapFieldBaseForParse(prototype, ToTaggedPtr(arena)) {}
+  explicit MapFieldBase(const Message* prototype)
+      : MapFieldBaseForParse(prototype) {}
   MapFieldBase(const MapFieldBase&) = delete;
   MapFieldBase& operator=(const MapFieldBase&) = delete;
 
@@ -360,14 +360,8 @@ class PROTOBUF_EXPORT MapFieldBase : public MapFieldBaseForParse {
     return internal::ToIntSize(SpaceUsedExcludingSelfLong());
   }
 
-  static constexpr size_t InternalGetArenaOffset(internal::InternalVisibility) {
-    return PROTOBUF_FIELD_OFFSET(MapFieldBase, payload_);
-  }
-
  protected:
-  const Message* GetPrototype() const {
-    return reinterpret_cast<const Message*>(prototype_as_void_);
-  }
+  const Message* GetPrototype() const;
   void ClearMapNoSync();
 
   // Synchronizes the content in Map to RepeatedPtrField if there is any change
@@ -389,7 +383,7 @@ class PROTOBUF_EXPORT MapFieldBase : public MapFieldBaseForParse {
     // callers responsibility to have these calls properly ordered.
     if (auto* p = maybe_payload()) {
       // If we don't have a payload, it is already assumed `STATE_MODIFIED_MAP`.
-      p->state.store(STATE_MODIFIED_MAP, std::memory_order_relaxed);
+      p->set_state_relaxed(STATE_MODIFIED_MAP);
     }
   }
 
@@ -406,21 +400,8 @@ class PROTOBUF_EXPORT MapFieldBase : public MapFieldBaseForParse {
   // thread calls either ConstAccess() or MutableAccess(), on the same
   // MapFieldBase-derived object, and there is no synchronization going
   // on between them, tsan will alert.
-#if defined(ABSL_HAVE_THREAD_SANITIZER)
-  // Using prototype_as_void_ as an arbitrary member that we can read/write.
-  void ConstAccess() const {
-    auto* p = prototype_as_void_;
-    asm volatile("" : "+r"(p));
-  }
-  void MutableAccess() {
-    auto* p = prototype_as_void_;
-    asm volatile("" : "+r"(p));
-    prototype_as_void_ = p;
-  }
-#else
-  void ConstAccess() const {}
-  void MutableAccess() {}
-#endif
+  void ConstAccess() const { GetMapRaw().ConstAccess(); }
+  void MutableAccess() { GetMapRaw().MutableAccess(); }
   enum State {
     STATE_MODIFIED_MAP = 0,       // map has newly added data that has not been
                                   // synchronized to repeated field
@@ -429,24 +410,45 @@ class PROTOBUF_EXPORT MapFieldBase : public MapFieldBaseForParse {
     CLEAN = 2,                    // data in map and repeated field are same
   };
 
-  struct ReflectionPayload {
-    explicit ReflectionPayload(Arena* arena) : repeated_field(arena) {}
-    RepeatedPtrField<Message> repeated_field;
+  class ReflectionPayload {
+   public:
+    ReflectionPayload(Arena* arena, const Message* prototype)
+        : repeated_field_(arena), prototype_(prototype) {}
 
-    absl::Mutex mutex;  // The thread to synchronize map and repeated
-                        // field needs to get lock first;
-    std::atomic<State> state{STATE_MODIFIED_MAP};
+    RepeatedPtrField<Message>& repeated_field() { return repeated_field_; }
+
+    const Message* prototype() const { return prototype_; }
+
+    absl::Mutex& mutex() { return mutex_; }
+
+    State load_state_relaxed() const {
+      return state_.load(std::memory_order_relaxed);
+    }
+    State load_state_acquire() const {
+      return state_.load(std::memory_order_acquire);
+    }
+    void set_state_relaxed(State state) {
+      state_.store(state, std::memory_order_relaxed);
+    }
+    void set_state_release(State state) {
+      state_.store(state, std::memory_order_release);
+    }
+
+    void Swap(ReflectionPayload& other);
+
+   private:
+    RepeatedPtrField<Message> repeated_field_;
+    const Message* prototype_;
+    absl::Mutex mutex_;  // The thread to synchronize map and repeated
+                         // field needs to get lock first;
+    std::atomic<State> state_{STATE_MODIFIED_MAP};
   };
 
-  Arena* arena() const {
-    auto p = payload_.load(std::memory_order_acquire);
-    if (IsPayload(p)) return ToPayload(p)->repeated_field.GetArena();
-    return ToArena(p);
-  }
+  Arena* arena() const { return GetMapRaw().arena(); }
 
   // Returns the reflection payload. Returns null if it does not exist yet.
   ReflectionPayload* maybe_payload() const {
-    auto p = payload_.load(std::memory_order_acquire);
+    auto p = prototype_or_payload_.load(std::memory_order_acquire);
     return IsPayload(p) ? ToPayload(p) : nullptr;
   }
   // Returns the reflection payload, and constructs one if does not exist yet.
@@ -458,7 +460,7 @@ class PROTOBUF_EXPORT MapFieldBase : public MapFieldBaseForParse {
 
   State state() const {
     auto* p = maybe_payload();
-    return p != nullptr ? p->state.load(std::memory_order_acquire)
+    return p != nullptr ? p->load_state_acquire()
                         // The default
                         : STATE_MODIFIED_MAP;
   }
@@ -505,23 +507,16 @@ class PROTOBUF_EXPORT MapFieldBase : public MapFieldBaseForParse {
   void IncreaseIterator(MapIteratorBase<kIsMutable>* map_iter) const;
 
   bool LookupMapValueNoSync(const MapKey& map_key, MapValueConstRef* val) const;
-  static ReflectionPayload* ToPayload(TaggedPtr p) {
+  static ReflectionPayload* ToPayload(const void* p) {
     ABSL_DCHECK(IsPayload(p));
-    auto* res = reinterpret_cast<ReflectionPayload*>(static_cast<uintptr_t>(p) -
-                                                     kHasPayloadBit);
+    auto* res = reinterpret_cast<ReflectionPayload*>(
+        reinterpret_cast<uintptr_t>(p) - kHasPayloadBit);
     PROTOBUF_ASSUME(res != nullptr);
     return res;
   }
-  static Arena* ToArena(TaggedPtr p) {
-    ABSL_DCHECK(!IsPayload(p));
-    return reinterpret_cast<Arena*>(p);
-  }
-  static TaggedPtr ToTaggedPtr(ReflectionPayload* p) {
-    return static_cast<TaggedPtr>(reinterpret_cast<uintptr_t>(p) +
-                                  kHasPayloadBit);
-  }
-  static TaggedPtr ToTaggedPtr(Arena* p) {
-    return static_cast<TaggedPtr>(reinterpret_cast<uintptr_t>(p));
+  static const void* ToTaggedPtr(ReflectionPayload* p) {
+    return reinterpret_cast<const void*>(reinterpret_cast<uintptr_t>(p) +
+                                         kHasPayloadBit);
   }
 };
 
@@ -541,11 +536,11 @@ class TypeDefinedMapFieldBase : public MapFieldBase {
   TypeDefinedMapFieldBase& operator=(const TypeDefinedMapFieldBase&) = delete;
 
   TypeDefinedMapFieldBase(const Message* prototype, Arena* arena)
-      : MapFieldBase(prototype, arena), map_(arena) {}
+      : MapFieldBase(prototype), map_(arena) {}
 
   TypeDefinedMapFieldBase(const Message* prototype, Arena* arena,
                           const TypeDefinedMapFieldBase& from)
-      : MapFieldBase(prototype, arena), map_(arena, from.GetMap()) {}
+      : MapFieldBase(prototype), map_(arena, from.GetMap()) {}
 
  protected:
   ~TypeDefinedMapFieldBase() { map_.~Map(); }
@@ -569,7 +564,7 @@ class TypeDefinedMapFieldBase : public MapFieldBase {
     internal::MapMergeFrom(*MutableMap(), other.GetMap());
   }
 
-  static constexpr size_t InternalGetArenaOffsetAlt(
+  static constexpr size_t InternalGetArenaOffset(
       internal::InternalVisibility access) {
     return PROTOBUF_FIELD_OFFSET(TypeDefinedMapFieldBase, map_) +
            decltype(map_)::InternalGetArenaOffset(access);

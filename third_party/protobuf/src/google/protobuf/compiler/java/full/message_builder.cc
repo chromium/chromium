@@ -22,6 +22,7 @@
 #include "absl/strings/ascii.h"
 #include "absl/strings/str_cat.h"
 #include "absl/strings/string_view.h"
+#include "google/protobuf/compiler/code_generator_lite.h"
 #include "google/protobuf/compiler/java/context.h"
 #include "google/protobuf/compiler/java/doc_comment.h"
 #include "google/protobuf/compiler/java/field_common.h"
@@ -392,6 +393,36 @@ void MessageBuilderGenerator::GenerateCommonBuilderMethods(
       "classname", name_resolver_->GetImmutableClassName(descriptor_));
 
   GenerateBuildPartial(printer);
+
+  // We include these methods only in open source to maintain long term ABI
+  // compatibility, and there should be no need to include them in Google3.
+  if (google::protobuf::internal::IsOss() && descriptor_->extension_range_count() > 0) {
+    printer->Print(
+        "public <Type> Builder setExtension(\n"
+        "    com.google.protobuf.GeneratedMessage.GeneratedExtension<\n"
+        "        $classname$, Type> extension,\n"
+        "    Type value) {\n"
+        "  return super.setExtension(extension, value);\n"
+        "}\n"
+        "public <Type> Builder setExtension(\n"
+        "    com.google.protobuf.GeneratedMessage.GeneratedExtension<\n"
+        "        $classname$, java.util.List<Type>> extension,\n"
+        "    int index, Type value) {\n"
+        "  return super.setExtension(extension, index, value);\n"
+        "}\n"
+        "public <Type> Builder addExtension(\n"
+        "    com.google.protobuf.GeneratedMessage.GeneratedExtension<\n"
+        "        $classname$, java.util.List<Type>> extension,\n"
+        "    Type value) {\n"
+        "  return super.addExtension(extension, value);\n"
+        "}\n"
+        "public <Type> Builder clearExtension(\n"
+        "    com.google.protobuf.GeneratedMessage.GeneratedExtension<\n"
+        "        $classname$, Type> extension) {\n"
+        "  return super.clearExtension(extension);\n"
+        "}\n",
+        "classname", name_resolver_->GetImmutableClassName(descriptor_));
+  }
 
   // -----------------------------------------------------------------
 

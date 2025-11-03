@@ -13,8 +13,12 @@
 #include <thread>
 
 #include <gtest/gtest.h>
+#include "absl/base/attributes.h"
+#include "absl/base/const_init.h"
+#include "absl/base/thread_annotations.h"
 #include "absl/hash/hash.h"
 #include "absl/log/absl_check.h"
+#include "absl/synchronization/mutex.h"
 #include "hpb_generator/tests/test_model.hpb.h"
 #include "hpb/arena.h"
 #include "hpb/extension.h"
@@ -48,10 +52,19 @@ std::string GenerateTestData() {
   return std::string(bytes->data(), bytes->size());
 }
 
-std::mutex m[8];
-void unlock_func(const void* msg) { m[absl::HashOf(msg) & 0x7].unlock(); }
-::hpb::internal::UpbExtensionUnlocker lock_func(const void* msg) {
-  m[absl::HashOf(msg) & 0x7].lock();
+ABSL_CONST_INIT absl::Mutex m[8] = {
+    absl::Mutex(absl::kConstInit), absl::Mutex(absl::kConstInit),
+    absl::Mutex(absl::kConstInit), absl::Mutex(absl::kConstInit),
+    absl::Mutex(absl::kConstInit), absl::Mutex(absl::kConstInit),
+    absl::Mutex(absl::kConstInit), absl::Mutex(absl::kConstInit)};
+void unlock_func(const void* msg)
+    ABSL_UNLOCK_FUNCTION(m[absl::HashOf(msg) & 0x7]) {
+  m[absl::HashOf(msg) & 0x7].Unlock();
+}
+
+::hpb::internal::UpbExtensionUnlocker lock_func(const void* msg)
+    ABSL_EXCLUSIVE_LOCK_FUNCTION(m[absl::HashOf(msg) & 0x7]) {
+  m[absl::HashOf(msg) & 0x7].Lock();
   return &unlock_func;
 }
 

@@ -30,6 +30,8 @@ config("protobuf_config_internal") {
     cflags = [
       # For src/google/protobuf/map.cc:
       "-Wno-deprecated-this-capture",
+      # For src/google/protobuf/generated_message_reflection.cc
+      "-Wno-unused-lambda-capture",
     ]
   }
 }

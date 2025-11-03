@@ -357,6 +357,16 @@ cc_proto_library(
 ################################################################################
 
 cc_library(
+    name = "os_macros",
+    hdrs = [
+        "os_macros_restore.inc",
+        "os_macros_undef.inc",
+    ],
+    strip_include_prefix = "/src",
+    visibility = ["//hpb:__subpackages__"],
+)
+
+cc_library(
     name = "port",
     srcs = ["port.cc"],
     hdrs = [
@@ -370,6 +380,7 @@ cc_library(
         "//src/google/protobuf:__subpackages__",
     ],
     deps = [
+        ":os_macros",
         "@abseil-cpp//absl/base:config",
         "@abseil-cpp//absl/base:core_headers",
         "@abseil-cpp//absl/base:prefetch",
@@ -537,6 +548,7 @@ cc_library(
         ":arena_align",
         ":arena_allocation_policy",
         ":arena_cleanup",
+        ":internal_visibility",
         ":port",
         ":string_block",
         "//src/google/protobuf/stubs:lite",
@@ -546,6 +558,7 @@ cc_library(
         "@abseil-cpp//absl/container:layout",
         "@abseil-cpp//absl/log:absl_check",
         "@abseil-cpp//absl/log:absl_log",
+        "@abseil-cpp//absl/meta:type_traits",
         "@abseil-cpp//absl/numeric:bits",
         "@abseil-cpp//absl/synchronization",
         "@abseil-cpp//absl/types:span",
@@ -702,6 +715,7 @@ cc_library(
         "@abseil-cpp//absl/memory",
         "@abseil-cpp//absl/meta:type_traits",
         "@abseil-cpp//absl/numeric:bits",
+        "@abseil-cpp//absl/status",
         "@abseil-cpp//absl/strings",
         "@abseil-cpp//absl/strings:cord",
         "@abseil-cpp//absl/strings:internal",
@@ -861,7 +875,14 @@ cc_test(
     srcs = ["has_bits_test.cc"],
     copts = COPTS,
     deps = [
+        ":cc_test_protos",
+        ":port",
+        ":protobuf",
         ":protobuf_lite",
+        "@abseil-cpp//absl/log:absl_check",
+        "@abseil-cpp//absl/status",
+        "@abseil-cpp//absl/strings:str_format",
+        "@abseil-cpp//absl/strings:string_view",
         "@googletest//:gtest",
         "@googletest//:gtest_main",
     ],
@@ -1720,7 +1741,7 @@ cc_test(
         "//src/google/protobuf/testing",
         "//src/google/protobuf/testing:file",
         "//src/google/protobuf/util:differencer",
-        "@abseil-cpp//absl/base",
+        "@abseil-cpp//absl/algorithm:container",
         "@abseil-cpp//absl/strings",
         "@abseil-cpp//absl/strings:cord",
         "@googletest//:gtest",
@@ -2212,6 +2233,7 @@ cc_test(
         "//src/google/protobuf/testing",
         "//src/google/protobuf/testing:file",
         "@abseil-cpp//absl/base:config",
+        "@abseil-cpp//absl/flags:flag",
         "@abseil-cpp//absl/log:absl_check",
         "@abseil-cpp//absl/numeric:bits",
         "@abseil-cpp//absl/random",

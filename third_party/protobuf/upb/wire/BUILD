@@ -127,7 +127,10 @@ cc_library(
     hdrs = ["internal/reader.h"],
     copts = UPB_DEFAULT_COPTS,
     visibility = ["//upb:__pkg__"],
-    deps = ["//upb/port"],
+    deps = [
+        ":eps_copy_input_stream",
+        "//upb/port",
+    ],
 )
 
 cc_library(
@@ -195,6 +198,7 @@ cc_library(
     name = "eps_copy_input_stream",
     srcs = ["eps_copy_input_stream.c"],
     hdrs = ["eps_copy_input_stream.h"],
+    copts = UPB_DEFAULT_COPTS,
     visibility = ["//visibility:public"],
     deps = [
         "//upb/mem",

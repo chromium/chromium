@@ -249,6 +249,8 @@ load("@fuzzing_py_deps//:requirements.bzl", fuzzing_py_deps_install_deps = "inst
 
 fuzzing_py_deps_install_deps()
 
+# This version of rules_rust is older than the one in MODULE.bazel, but we
+# cannot upgrade any further without breaking the WORKSPACE-based build.
 http_archive(
     name = "rules_rust",
     integrity = "sha256-8TBqrAsli3kN8BrZq8arsN8LZUFsdLTvJ/Sqsph4CmQ=",
@@ -309,9 +311,9 @@ protobuf_v25_deps()
 
 http_archive(
     name = "rules_testing",
-    sha256 = "89feaf18d6e2fc07ed7e34510058fc8d48e45e6d2ff8a817a718e8c8e4bcda0e",
-    strip_prefix = "rules_testing-0.8.0",
-    url = "https://github.com/bazelbuild/rules_testing/releases/download/v0.8.0/rules_testing-v0.8.0.tar.gz",
+    sha256 = "281b69eed71e2b95cefc284ee5a1a9f7c5088141b58f2508be910eb22f13b986",
+    strip_prefix = "rules_testing-0.9.0",
+    url = "https://github.com/bazelbuild/rules_testing/releases/download/v0.9.0/rules_testing-v0.9.0.tar.gz",
 )
 
 # For checking breaking changes to well-known types from the previous release version.

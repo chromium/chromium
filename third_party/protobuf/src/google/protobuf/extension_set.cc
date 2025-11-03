@@ -153,16 +153,16 @@ void ExtensionSet::RegisterEnumExtension(const MessageLite* extendee,
   Register(info);
 }
 
-void ExtensionSet::RegisterMessageExtension(const MessageLite* extendee,
-                                            int number, FieldType type,
-                                            bool is_repeated, bool is_packed,
-                                            const MessageLite* prototype,
-                                            LazyEagerVerifyFnType verify_func,
-                                            LazyAnnotation is_lazy) {
+void ExtensionSet::RegisterMessageExtension(
+    const MessageLite* extendee, int number, FieldType type, bool is_repeated,
+    bool is_packed, const MessageLite* prototype,
+    LazyEagerVerifyFnType verify_func,
+    LazyAnnotation is_lazy) {
   ABSL_CHECK(type == WireFormatLite::TYPE_MESSAGE ||
              type == WireFormatLite::TYPE_GROUP);
   ExtensionInfo info(extendee, number, type, is_repeated, is_packed,
-                     verify_func, is_lazy);
+                     verify_func,
+                     is_lazy);
   info.message_info = {prototype,
 #if defined(PROTOBUF_CONSTINIT_DEFAULT_INSTANCES) && \
     !defined(PROTOBUF_DEFAULT_INSTANCES_MAY_NOT_BE_CONSTINIT)
@@ -179,14 +179,13 @@ void ExtensionSet::RegisterMessageExtension(const MessageLite* extendee,
 
 ExtensionSet::~ExtensionSet() {
   // Deletes all allocated extensions.
-  if (arena_ == nullptr) {
-    ForEach([](int /* number */, Extension& ext) { ext.Free(); },
-            PrefetchNta{});
-    if (ABSL_PREDICT_FALSE(is_large())) {
-      delete map_.large;
-    } else {
-      DeleteFlatMap(map_.flat, flat_capacity_);
-    }
+  ABSL_DCHECK(arena_ == nullptr);
+
+  ForEach([](int /* number */, Extension& ext) { ext.Free(); }, PrefetchNta{});
+  if (ABSL_PREDICT_FALSE(is_large())) {
+    delete map_.large;
+  } else {
+    DeleteFlatMap(map_.flat, flat_capacity_);
   }
 }
 
@@ -220,6 +219,12 @@ void ExtensionSet::DeleteFlatMap(const ExtensionSet::KeyValue* flat,
 //                                 const DescriptorPool* pool,
 //                                 vector<const FieldDescriptor*>* output) const
 
+bool ExtensionSet::IsEmpty() const {
+  if (IsCompletelyEmpty()) return true;
+  return !AnyOfNoPrefetch(
+      [](const int number, const Extension& ext) { return ext.IsSet(); });
+}
+
 bool ExtensionSet::Has(int number) const {
   const Extension* ext = FindOrNull(number);
   if (ext == nullptr) return false;
@@ -229,6 +234,11 @@ bool ExtensionSet::Has(int number) const {
 
 bool ExtensionSet::HasLazy(int number) const {
   return Has(number) && FindOrNull(number)->is_lazy;
+}
+
+bool ExtensionSet::LazyHasUnparsed(int number) const {
+  ABSL_DCHECK(HasLazy(number));
+  return FindOrNull(number)->ptr.lazymessage_value->HasUnparsed();
 }
 
 int ExtensionSet::NumExtensions() const {
@@ -655,7 +665,7 @@ MessageLite* ExtensionSet::AddMessage(int number, FieldType type,
   }
   return reinterpret_cast<internal::RepeatedPtrFieldBase*>(
              extension->ptr.repeated_message_value)
-      ->AddFromClassData<GenericTypeHandler<MessageLite>>(class_data);
+      ->AddFromClassData<GenericTypeHandler<MessageLite>>(arena_, class_data);
 }
 
 // Defined in extension_set_heavy.cc.
@@ -1015,7 +1025,7 @@ void ExtensionSet::Swap(const MessageLite* extendee, ExtensionSet* other) {
 
 void ExtensionSet::InternalSwap(ExtensionSet* other) {
   using std::swap;
-  swap(arena_, other->arena_);
+  ABSL_DCHECK_EQ(arena_, other->arena_);
   swap(flat_capacity_, other->flat_capacity_);
   swap(flat_size_, other->flat_size_);
   swap(map_, other->map_);
@@ -1642,13 +1652,6 @@ void ExtensionSet::InternalReserveSmallCapacityFromEmpty(
   map_.flat = AllocateFlatMap(arena_, new_flat_capacity);
 }
 
-#if (__cplusplus < 201703) && \
-    (!defined(_MSC_VER) || (_MSC_VER >= 1900 && _MSC_VER < 1912))
-// static
-constexpr uint16_t ExtensionSet::kMaximumFlatCapacity;
-#endif  //  (__cplusplus < 201703) && (!defined(_MSC_VER) || (_MSC_VER >= 1900
-        //  && _MSC_VER < 1912))
-
 void ExtensionSet::Erase(int key) {
   if (ABSL_PREDICT_FALSE(is_large())) {
     map_.large->erase(key);
@@ -1920,6 +1923,7 @@ LazyEagerVerifyFnType FindExtensionLazyEagerVerifyFn(
   }
   return nullptr;
 }
+
 
 std::atomic<ExtensionSet::LazyMessageExtension* (*)(Arena * arena)>
     ExtensionSet::maybe_create_lazy_extension_;

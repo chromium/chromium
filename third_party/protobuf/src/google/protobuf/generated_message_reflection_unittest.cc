@@ -21,6 +21,7 @@
 
 #include "google/protobuf/generated_message_reflection.h"
 
+#include <cstddef>
 #include <memory>
 #include <string>
 #include <vector>
@@ -84,6 +85,7 @@ class GeneratedMessageReflectionTestHelper {
 namespace {
 
 using ::testing::ElementsAre;
+using ::testing::IsEmpty;
 using ::testing::Pointee;
 using ::testing::Property;
 
@@ -1087,12 +1089,17 @@ TEST(GeneratedMessageReflectionTest, AddAllocatedMessage) {
 
 TEST(GeneratedMessageReflectionTest, ListFieldsOneOf) {
   unittest::TestOneof2 message;
+  const Reflection* reflection = message.GetReflection();
+  EXPECT_TRUE(reflection->IsEmpty(message));
+  EXPECT_TRUE(reflection->IsEmptyIgnoringUnknownFields(message));
+
   TestUtil::SetOneof1(&message);
 
-  const Reflection* reflection = message.GetReflection();
   std::vector<const FieldDescriptor*> fields;
   reflection->ListFields(message, &fields);
   EXPECT_EQ(4, fields.size());
+  EXPECT_FALSE(reflection->IsEmpty(message));
+  EXPECT_FALSE(reflection->IsEmptyIgnoringUnknownFields(message));
 }
 
 TEST(GeneratedMessageReflectionTest, Oneof) {
@@ -1759,9 +1766,53 @@ TEST(GeneratedMessageReflection, IsDescendantOneof) {
       IsDescendant(msg1, msg2.foo_message().repeated_foreign_message(0)));
 }
 
+TEST(GeneratedMessageReflection, IsDescendantDirtyMap) {
+  proto2_unittest::TestMap msg;
+  ASSERT_TRUE(google::protobuf::TextFormat::ParseFromString(
+      R"pb(
+        map_int32_all_types {
+          key: 123
+          value: { optional_int32: 123 }
+        }
+      )pb",
+      &msg));
+
+  msg.mutable_map_int32_all_types()->insert({789, unittest::TestAllTypes()});
+
+  size_t msg_size = msg.SpaceUsedLong();
+
+  proto2_unittest::TestAllTypes msg2;
+  EXPECT_FALSE(IsDescendant(msg, msg2));
+
+  EXPECT_EQ(msg_size, msg.SpaceUsedLong());
+}
+
+// Tests that a map field with in state `STATE_MODIFIED_REPEATED` does not force
+// a sync to the map.
+TEST(GeneratedMessageReflection, IsDescendantInvalidMap) {
+  proto2_unittest::TestMap msg;
+  ASSERT_TRUE(google::protobuf::TextFormat::ParseFromString(
+      R"pb(
+        map_int32_all_types {
+          key: 123
+          value: { optional_int32: 123 }
+        }
+      )pb",
+      &msg));
+
+  size_t msg_size = msg.SpaceUsedLong();
+
+  proto2_unittest::TestAllTypes msg2;
+  EXPECT_FALSE(IsDescendant(msg, msg2));
+
+  EXPECT_EQ(msg_size, msg.SpaceUsedLong());
+}
+
 TEST(GeneratedMessageReflection, ListFieldsSorted) {
   unittest::TestFieldOrderings msg;
   const Reflection* reflection = msg.GetReflection();
+  EXPECT_TRUE(reflection->IsEmpty(msg));
+  EXPECT_TRUE(reflection->IsEmptyIgnoringUnknownFields(msg));
   std::vector<const FieldDescriptor*> fields;
   msg.set_my_string("hello");             // tag 11
   msg.mutable_optional_nested_message();  // tag 200
@@ -1770,6 +1821,8 @@ TEST(GeneratedMessageReflection, ListFieldsSorted) {
   EXPECT_THAT(fields,
               ElementsAre(Pointee(Property(&FieldDescriptor::number, 11)),
                           Pointee(Property(&FieldDescriptor::number, 200))));
+  EXPECT_FALSE(reflection->IsEmpty(msg));
+  EXPECT_FALSE(reflection->IsEmptyIgnoringUnknownFields(msg));
   msg.set_my_int(4242);  // tag 1
   reflection->ListFields(msg, &fields);
   // Sorting as fields are declared in order 11, 1, 200.
@@ -1777,6 +1830,8 @@ TEST(GeneratedMessageReflection, ListFieldsSorted) {
               ElementsAre(Pointee(Property(&FieldDescriptor::number, 1)),
                           Pointee(Property(&FieldDescriptor::number, 11)),
                           Pointee(Property(&FieldDescriptor::number, 200))));
+  EXPECT_FALSE(reflection->IsEmpty(msg));
+  EXPECT_FALSE(reflection->IsEmptyIgnoringUnknownFields(msg));
   msg.clear_optional_nested_message();  // tag 200
   msg.SetExtension(unittest::my_extension_int,
                    424242);  // tag 5 from extension
@@ -1786,12 +1841,16 @@ TEST(GeneratedMessageReflection, ListFieldsSorted) {
               ElementsAre(Pointee(Property(&FieldDescriptor::number, 1)),
                           Pointee(Property(&FieldDescriptor::number, 5)),
                           Pointee(Property(&FieldDescriptor::number, 11))));
+  EXPECT_FALSE(reflection->IsEmpty(msg));
+  EXPECT_FALSE(reflection->IsEmptyIgnoringUnknownFields(msg));
   msg.clear_my_string();  // tag 11.
   reflection->ListFields(msg, &fields);
   // No sorting as extension is bigger than tag 1.
   EXPECT_THAT(fields,
               ElementsAre(Pointee(Property(&FieldDescriptor::number, 1)),
                           Pointee(Property(&FieldDescriptor::number, 5))));
+  EXPECT_FALSE(reflection->IsEmpty(msg));
+  EXPECT_FALSE(reflection->IsEmptyIgnoringUnknownFields(msg));
   msg.set_my_float(1.0);  // tag 101
   msg.SetExtension(unittest::my_extension_string,
                    "hello");  // tag 50 from extension
@@ -1802,6 +1861,112 @@ TEST(GeneratedMessageReflection, ListFieldsSorted) {
                           Pointee(Property(&FieldDescriptor::number, 5)),
                           Pointee(Property(&FieldDescriptor::number, 50)),
                           Pointee(Property(&FieldDescriptor::number, 101))));
+  EXPECT_FALSE(reflection->IsEmpty(msg));
+  EXPECT_FALSE(reflection->IsEmptyIgnoringUnknownFields(msg));
+}
+
+TEST(GeneratedMessageReflection, ListFieldsEmptyRepeated) {
+  unittest::TestAllTypes msg;
+  const Reflection* reflection = msg.GetReflection();
+  std::vector<const FieldDescriptor*> fields;
+
+  msg.mutable_repeated_bool();
+  reflection->ListFields(msg, &fields);
+  EXPECT_THAT(fields, IsEmpty());
+  EXPECT_TRUE(reflection->IsEmpty(msg));
+  EXPECT_TRUE(reflection->IsEmptyIgnoringUnknownFields(msg));
+
+  msg.Clear();
+  reflection->GetMutableRepeatedFieldRef<bool>(
+      &msg, msg.GetDescriptor()->FindFieldByName("repeated_bool"));
+  reflection->ListFields(msg, &fields);
+  EXPECT_THAT(fields, IsEmpty());
+  EXPECT_TRUE(reflection->IsEmpty(msg));
+  EXPECT_TRUE(reflection->IsEmptyIgnoringUnknownFields(msg));
+}
+
+TEST(GeneratedMessageReflection, ListFieldsEmptyMap) {
+  unittest::TestMap msg;
+  const Reflection* reflection = msg.GetReflection();
+  std::vector<const FieldDescriptor*> fields;
+
+  msg.mutable_map_int32_int32();
+  reflection->ListFields(msg, &fields);
+  EXPECT_THAT(fields, IsEmpty());
+  EXPECT_TRUE(reflection->IsEmpty(msg));
+  EXPECT_TRUE(reflection->IsEmptyIgnoringUnknownFields(msg));
+}
+
+TEST(GeneratedMessageReflection, ListFieldsExtensions) {
+  proto2_unittest::TestAllExtensions msg;
+  const Reflection* reflection = msg.GetReflection();
+  std::vector<const FieldDescriptor*> fields;
+  reflection->ListFields(msg, &fields);
+  EXPECT_THAT(fields, IsEmpty());
+  EXPECT_TRUE(reflection->IsEmpty(msg));
+  EXPECT_TRUE(reflection->IsEmptyIgnoringUnknownFields(msg));
+
+  // Add an extension, make sure it's accounted for.
+  msg.AddExtension(proto2_unittest::repeated_string_extension, "bar");
+  reflection->ListFields(msg, &fields);
+  EXPECT_THAT(fields,
+              ElementsAre(Pointee(Property(&FieldDescriptor::number, 44))));
+  EXPECT_FALSE(reflection->IsEmpty(msg));
+  EXPECT_FALSE(reflection->IsEmptyIgnoringUnknownFields(msg));
+
+  // Clearing the extension sets everything back to empty.
+  msg.ClearExtension(proto2_unittest::repeated_string_extension);
+  reflection->ListFields(msg, &fields);
+  EXPECT_THAT(fields, IsEmpty());
+  EXPECT_TRUE(reflection->IsEmpty(msg));
+  EXPECT_TRUE(reflection->IsEmptyIgnoringUnknownFields(msg));
+
+  // Try with a different extension type.
+  msg.SetExtension(proto2_unittest::optional_double_extension, 3.14);
+  reflection->ListFields(msg, &fields);
+  EXPECT_THAT(fields,
+              ElementsAre(Pointee(Property(&FieldDescriptor::number, 12))));
+  EXPECT_FALSE(reflection->IsEmpty(msg));
+  EXPECT_FALSE(reflection->IsEmptyIgnoringUnknownFields(msg));
+
+  // Clearing the extension sets everything back to empty.
+  msg.ClearExtension(proto2_unittest::optional_double_extension);
+  reflection->ListFields(msg, &fields);
+  EXPECT_THAT(fields, IsEmpty());
+  EXPECT_TRUE(reflection->IsEmpty(msg));
+  EXPECT_TRUE(reflection->IsEmptyIgnoringUnknownFields(msg));
+}
+
+TEST(GeneratedMessageReflection, ListFieldsDefaultInstance) {
+  const unittest::TestAllTypes& msg =
+      unittest::TestAllTypes::default_instance();
+  const Reflection* reflection = msg.GetReflection();
+  std::vector<const FieldDescriptor*> fields;
+  reflection->ListFields(msg, &fields);
+  EXPECT_THAT(fields, IsEmpty());
+  EXPECT_TRUE(reflection->IsEmpty(msg));
+  EXPECT_TRUE(reflection->IsEmptyIgnoringUnknownFields(msg));
+}
+
+TEST(GeneratedMessageReflection, IsEmptyWithUnknownFields) {
+  proto2_unittest::TestChildExtension msg;
+  const Reflection* reflection = msg.GetReflection();
+  std::vector<const FieldDescriptor*> fields;
+  reflection->ListFields(msg, &fields);
+  EXPECT_THAT(fields, IsEmpty());
+  EXPECT_TRUE(reflection->IsEmpty(msg));
+  EXPECT_TRUE(reflection->IsEmptyIgnoringUnknownFields(msg));
+
+  // Parse incompatible bytes.
+  proto2_unittest::TestAllExtensions other_msg;
+  other_msg.SetExtension(proto2_unittest::optional_double_extension, 3.14);
+  msg.ParseFromString(other_msg.SerializeAsString());
+
+  reflection->ListFields(msg, &fields);
+  EXPECT_THAT(fields, IsEmpty());
+  EXPECT_TRUE(reflection->IsEmptyIgnoringUnknownFields(msg));
+  // IsEmpty() sees there are unknown fields, and returns false.
+  EXPECT_FALSE(reflection->IsEmpty(msg));
 }
 
 TEST(GeneratedMessageReflection, SwapImplicitPresenceShouldWork) {

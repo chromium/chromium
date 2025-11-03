@@ -18,7 +18,11 @@ if (is_android) {
 # Only compile the plugin for the host architecture.
 if (current_toolchain == host_toolchain) {
   config("grpc_java_plugin_internal_config") {
-    cflags = [ "-Wno-implicit-fallthrough" ]
+    cflags = [
+      "-Wno-implicit-fallthrough",
+      # Remove when https://github.com/grpc/grpc-java/issues/12464 fixed.
+      "-Wno-deprecated-declarations",
+    ]
   }
   executable("grpc_java_plugin") {
     sources = [

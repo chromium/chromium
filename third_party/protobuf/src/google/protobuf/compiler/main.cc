@@ -11,6 +11,9 @@
 #include "google/protobuf/compiler/java/generator.h"
 #include "google/protobuf/compiler/python/generator.h"
 #include "google/protobuf/compiler/python/pyi_generator.h"
+#ifdef GOOGLE_PROTOBUF_RUNTIME_INCLUDE_BASE
+#include "google/protobuf/compiler/code_generator_lite.h"
+#endif
 
 #ifdef DISABLE_PROTOC_CONFIG
 #include "google/protobuf/compiler/allowlists/allowlist.h"
@@ -29,6 +32,10 @@ namespace protobuf {
 namespace compiler {
 
 int ProtobufMain(int argc, char* argv[]) {
+#ifdef GOOGLE_PROTOBUF_RUNTIME_INCLUDE_BASE
+  google::protobuf::internal::SetIsOss(true);
+#endif
+
   absl::InitializeLog();
 
   CommandLineInterface cli;
@@ -51,11 +58,6 @@ int ProtobufMain(int argc, char* argv[]) {
   java::JavaGenerator java_generator;
   cli.RegisterGenerator("--java_out", "--java_opt", &java_generator,
                         "Generate Java source file.");
-
-#ifdef GOOGLE_PROTOBUF_RUNTIME_INCLUDE_BASE
-  java_generator.set_opensource_runtime(true);
-#endif
-
 
   // Proto2 Python
   python::Generator py_generator;

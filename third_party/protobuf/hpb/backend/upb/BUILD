@@ -7,10 +7,6 @@
 
 load("@rules_cc//cc:cc_library.bzl", "cc_library")
 load("@rules_cc//cc:cc_test.bzl", "cc_test")
-load(
-    "//upb/bazel:build_defs.bzl",
-    "UPB_DEFAULT_CPPOPTS",
-)
 
 package(default_applicable_licenses = ["//:license"])
 
@@ -22,11 +18,16 @@ cc_library(
         ":interop",
         "//hpb:arena",
         "//hpb:extension",
+        "//hpb:options",
         "//hpb:ptr",
         "//hpb:status",
+        "//hpb/backend:types",
         "//hpb/internal",
         "//hpb/internal:message_lock",
         "//hpb/internal:template_help",
+        "//upb/mem",
+        "//upb/message",
+        "//upb/port",
         "//upb/wire",
         "@abseil-cpp//absl/status:statusor",
         "@abseil-cpp//absl/strings:string_view",
@@ -38,7 +39,7 @@ cc_library(
     hdrs = ["interop.h"],
     visibility = [
         "//hpb:__subpackages__",
-        "//src/google/protobuf/compiler:__subpackages__",
+        "//hpb_generator:__subpackages__",
     ],
     deps = [
         "//hpb:ptr",
@@ -54,11 +55,10 @@ cc_library(
 cc_test(
     name = "interop_test",
     srcs = ["interop_test.cc"],
-    copts = UPB_DEFAULT_CPPOPTS,
     deps = [
         ":interop",
-        "//src/google/protobuf/compiler/hpb/tests:test_model_hpb_proto",
-        "//src/google/protobuf/compiler/hpb/tests:test_model_upb_proto",
+        "//hpb_generator/tests:test_model_hpb_proto",
+        "//hpb_generator/tests:test_model_upb_proto",
         "//upb/mem",
         "//upb/message",
         "@googletest//:gtest",
@@ -114,5 +114,32 @@ cc_test(
         "@abseil-cpp//absl/strings:string_view",
         "@googletest//:gtest",
         "@googletest//:gtest_main",
+    ],
+)
+
+cc_library(
+    name = "repeated_field",
+    hdrs = ["repeated_field.h"],
+    visibility = ["//hpb:__subpackages__"],
+    deps = [
+        ":interop",
+        ":repeated_field_iterator",
+        "//hpb",
+        "//hpb:multibackend",
+        "//hpb/internal:template_help",
+        "//upb/base",
+        "//upb/mem",
+        "//upb/message",
+        "//upb/message:copy",
+    ],
+)
+
+cc_library(
+    name = "error",
+    hdrs = ["error.h"],
+    visibility = ["//hpb:__subpackages__"],
+    deps = [
+        "//upb/wire",
+        "@abseil-cpp//absl/log:absl_log",
     ],
 )

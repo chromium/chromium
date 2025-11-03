@@ -52,8 +52,7 @@ jobs:
           image: us-docker.pkg.dev/protobuf-build/containers/test/linux/sanitize:${{ matrix.config.bazel_version || '7.6.1' }}-12e21b8dda91028bc14212a3ab582c7c4d149fac
           credentials: ${{ secrets.GAR_SERVICE_ACCOUNT }}
           bazel-cache: upb-bazel
-          # TODO: Enable bzlmod once python headers are supported for python dist.
-          bazel: test --noenable_bzlmod --cxxopt=-std=c++17 --host_cxxopt=-std=c++17 //bazel/... //benchmarks/... //lua/... //python/... //upb/... //upb_generator/... ${{ matrix.config.flags }}
+          bazel: test //bazel/... //benchmarks/... //lua/... //python/... //upb/... //upb_generator/... ${{ matrix.config.flags }}
           exclude-targets: ${{ matrix.config.exclude-targets }}
 
   linux-gcc:
@@ -73,7 +72,7 @@ jobs:
           credentials: ${{ secrets.GAR_SERVICE_ACCOUNT }}
           bazel-cache: "upb-bazel-gcc"
           bazel: >-
-            test --noenable_bzlmod --cxxopt=-std=c++17 --host_cxxopt=-std=c++17 -c opt
+            test -c opt
             --copt="-Wno-error=maybe-uninitialized" --java_runtime_version=remotejdk_11
             //bazel/... //benchmarks/... //lua/... //python/... //upb/... //upb_generator/...
 
@@ -92,7 +91,8 @@ jobs:
         with:
           credentials: ${{ secrets.GAR_SERVICE_ACCOUNT }}
           bazel-cache: "upb-bazel-windows"
-          bazel: test --noenable_bzlmod --cxxopt=/std:c++17 --host_cxxopt=/std:c++17 //upb/... //upb_generator/... //python/...
+          # TODO: Enable python tests here once rules_python supports Windows better.
+          bazel: test //upb/... //upb_generator/...
           version: 7.6.1
           exclude-targets: -//python:conformance_test -//upb/reflection:def_builder_test
 
@@ -121,30 +121,8 @@ jobs:
         with:
           credentials: ${{ secrets.GAR_SERVICE_ACCOUNT }}
           bazel-cache: "upb-bazel-macos"
-          bazel: ${{ matrix.config.bazel-command }} --noenable_bzlmod --cxxopt=-std=c++17 --host_cxxopt=-std=c++17 ${{ matrix.config.flags }} //bazel/... //benchmarks/... //lua/... //python/... //upb/... //upb_generator/...
+          bazel: ${{ matrix.config.bazel-command }} ${{ matrix.config.flags }} //bazel/... //benchmarks/... //lua/... //python/... //upb/... //upb_generator/...
           version: 7.6.1
-
-  no-python:
-    strategy:
-      fail-fast: false   # Don't cancel all jobs if one fails.
-    name: No System Python
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout pending changes
-        uses: protocolbuffers/protobuf-ci/checkout@v4
-        with:
-          ref: ${{ inputs.safe-checkout }}
-      - name: Run tests
-        uses: protocolbuffers/protobuf-ci/bazel-docker@v4
-        with:
-          image: us-docker.pkg.dev/protobuf-build/containers/common/linux/bazel:7.6.1-e0df73e51131ccaf53451355d22577f377357604
-          credentials: ${{ secrets.GAR_SERVICE_ACCOUNT }}
-          bazel-cache: "upb-bazel-no-python"
-          bash: >-
-            which python3 &&
-            mv `which python3` /tmp &&
-            ! which python3 &&
-            bazel test $BAZEL_FLAGS --noenable_bzlmod --cxxopt=-std=c++17 --host_cxxopt=-std=c++17 //python/... -- -//python/dist:source_wheel -//python:aarch64_test -//python:x86_64_test -//python:google/protobuf/pyext/_message.so -//python:proto_api
 
   build_wheels:
     name: Build Wheels
@@ -161,7 +139,7 @@ jobs:
           image: us-docker.pkg.dev/protobuf-build/release-containers/linux/apple:7.6.1-12e21b8dda91028bc14212a3ab582c7c4d149fac
           credentials: ${{ secrets.GAR_SERVICE_ACCOUNT }}
           bazel-cache: upb-bazel-python
-          bazel: build --noenable_bzlmod --crosstool_top=//toolchain:clang_suite --//toolchain:release=true --symlink_prefix=/ -c dbg --incompatible_enable_cc_toolchain_resolution=false //python/dist //python/dist:test_wheel //python/dist:source_wheel
+          bazel: build --crosstool_top=//toolchain:clang_suite --//toolchain:release=true --symlink_prefix=/ -c dbg --incompatible_enable_cc_toolchain_resolution=false //python/dist //python/dist:test_wheel //python/dist:source_wheel
       - name: Move Wheels
         run: mkdir wheels && find _build/out \( -name 'protobuf*.whl' -o -name 'protobuf-*.tar.gz' \) -exec mv '{}' wheels ';'
       - uses: actions/upload-artifact@50769540e7f4bd5e21e526ee35c689e35e0d6874 # v4.4.0
@@ -262,15 +240,10 @@ jobs:
         run: pip install -vvv --no-index --find-links wheels protobuftests
       - name: Run unit tests
         if: ${{ !matrix.continuous-only || inputs.continuous-run }}
-        # Newer upb tests are in the standard google.protobuf.internal path.
-        # We will eventually make this into a wildcard rule once all tests
-        # have been migrated to be compatible with upb.
-        # TODO: b/378725969 - Use wildcard expansion to ensure that we don't
-        # accidentally miss test coverage.
         run: |
-          TESTS=(message_test message_factory_test descriptor_test proto_builder_test descriptor_pool_test generator_test reflection_test reflection_cpp_test)
+          TESTS=$(pip show -f protobuftests | grep _test.py | grep --invert-match _pybind11_test.py | sed 's,[/\\],.,g' | sed -E 's,.py$,,g')
           for test in ${TESTS[@]}; do
-            python -m unittest -v google.protobuf.internal.${test}
+            python -m unittest -v ${test}
           done
 
   test_pure_python_wheels:

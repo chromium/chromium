@@ -13,6 +13,7 @@
 
 #include <algorithm>
 #include <atomic>
+#include <cstddef>
 #include <cstdint>
 #include <cstring>
 #include <new>  // IWYU pragma: keep for operator delete
@@ -28,13 +29,13 @@
 #include "absl/base/call_once.h"
 #include "absl/base/casts.h"
 #include "absl/base/const_init.h"
-#include "absl/base/optimization.h"
 #include "absl/container/flat_hash_set.h"
 #include "absl/log/absl_check.h"
 #include "absl/log/absl_log.h"
 #include "absl/strings/str_format.h"
 #include "absl/strings/string_view.h"
 #include "absl/synchronization/mutex.h"
+#include "absl/types/span.h"
 #include "google/protobuf/arena.h"
 #include "google/protobuf/descriptor.h"
 #include "google/protobuf/descriptor.pb.h"
@@ -45,6 +46,7 @@
 #include "google/protobuf/generated_message_tctable_gen.h"
 #include "google/protobuf/generated_message_tctable_impl.h"
 #include "google/protobuf/generated_message_util.h"
+#include "google/protobuf/has_bits.h"
 #include "google/protobuf/inlined_string_field.h"
 #include "google/protobuf/map_field.h"
 #include "google/protobuf/message.h"
@@ -68,9 +70,9 @@ using google::protobuf::internal::ArenaStringPtr;
 using google::protobuf::internal::DescriptorTable;
 using google::protobuf::internal::ExtensionSet;
 using google::protobuf::internal::GenericTypeHandler;
-using google::protobuf::internal::GetEmptyString;
 using google::protobuf::internal::InlinedStringField;
 using google::protobuf::internal::InternalMetadata;
+using google::protobuf::internal::kNoHasbit;
 using google::protobuf::internal::LazyField;
 using google::protobuf::internal::MapFieldBase;
 using google::protobuf::internal::MicroString;
@@ -343,12 +345,12 @@ static void ReportReflectionUsageEnumTypeError(
 Reflection::Reflection(const Descriptor* descriptor,
                        const internal::ReflectionSchema& schema,
                        const DescriptorPool* pool, MessageFactory* factory)
-    : descriptor_(descriptor),
-      schema_(schema),
+    : last_non_weak_field_index_(-1),
+      descriptor_(descriptor),
+      message_factory_(factory),
       descriptor_pool_(
           (pool == nullptr) ? DescriptorPool::internal_generated_pool() : pool),
-      message_factory_(factory),
-      last_non_weak_field_index_(-1) {
+      schema_(schema) {
   last_non_weak_field_index_ = descriptor_->field_count() - 1;
 }
 
@@ -657,6 +659,8 @@ template <bool unsafe_shallow_swap>
 void SwapFieldHelper::SwapRepeatedStringField(const Reflection* r, Message* lhs,
                                               Message* rhs,
                                               const FieldDescriptor* field) {
+  Arena* lhs_arena = lhs->GetArena();
+  Arena* rhs_arena = rhs->GetArena();
   switch (field->cpp_string_type()) {
     case FieldDescriptor::CppStringType::kCord: {
       auto* lhs_cord = r->MutableRaw<RepeatedField<absl::Cord>>(lhs, field);
@@ -675,7 +679,8 @@ void SwapFieldHelper::SwapRepeatedStringField(const Reflection* r, Message* lhs,
       if (unsafe_shallow_swap) {
         lhs_string->InternalSwap(rhs_string);
       } else {
-        lhs_string->Swap<GenericTypeHandler<std::string>>(rhs_string);
+        lhs_string->Swap<GenericTypeHandler<std::string>>(lhs_arena, rhs_string,
+                                                          rhs_arena);
       }
       break;
     }
@@ -809,7 +814,8 @@ void SwapFieldHelper::SwapRepeatedMessageField(const Reflection* r,
     if (unsafe_shallow_swap) {
       lhs_rm->InternalSwap(rhs_rm);
     } else {
-      lhs_rm->Swap<GenericTypeHandler<Message>>(rhs_rm);
+      lhs_rm->Swap<GenericTypeHandler<Message>>(lhs->GetArena(), rhs_rm,
+                                                rhs->GetArena());
     }
   }
 }
@@ -842,13 +848,13 @@ void SwapFieldHelper::SwapMessage(const Reflection* r, Message* lhs,
 
   if (*lhs_sub != nullptr && *rhs_sub != nullptr) {
     (*lhs_sub)->GetReflection()->Swap(*lhs_sub, *rhs_sub);
-  } else if (*lhs_sub == nullptr && r->HasFieldSingular(*rhs, field)) {
+  } else if (*lhs_sub == nullptr && r->HasFieldWithHasbits(*rhs, field)) {
     *lhs_sub = (*rhs_sub)->New(lhs_arena);
     (*lhs_sub)->CopyFrom(**rhs_sub);
     r->ClearField(rhs, field);
     // Ensures has bit is unchanged after ClearField.
     r->SetHasBit(rhs, field);
-  } else if (*rhs_sub == nullptr && r->HasFieldSingular(*lhs, field)) {
+  } else if (*rhs_sub == nullptr && r->HasFieldWithHasbits(*lhs, field)) {
     *rhs_sub = (*lhs_sub)->New(rhs_arena);
     (*rhs_sub)->CopyFrom(**lhs_sub);
     r->ClearField(lhs, field);
@@ -1179,48 +1185,50 @@ void Reflection::SwapFieldsImpl(
 
   absl::flat_hash_set<int> swapped_oneof;
 
-  const Message* prototype =
-      message_factory_->GetPrototype(message1->GetDescriptor());
   for (const auto* field : fields) {
     if (field->is_extension()) {
-      if (unsafe_shallow_swap) {
+      if constexpr (unsafe_shallow_swap) {
         MutableExtensionSet(message1)->UnsafeShallowSwapExtension(
             MutableExtensionSet(message2), field->number());
       } else {
+        const Message* prototype =
+            message_factory_->GetPrototype(message1->GetDescriptor());
         MutableExtensionSet(message1)->SwapExtension(
             prototype, MutableExtensionSet(message2), field->number());
       }
-    } else {
-      if (schema_.InRealOneof(field)) {
-        int oneof_index = field->containing_oneof()->index();
-        // Only swap the oneof field once.
-        if (!swapped_oneof.insert(oneof_index).second) {
-          continue;
-        }
+      continue;
+    } else if (schema_.InRealOneof(field)) {
+      int oneof_index = field->containing_oneof()->index();
+      // Only swap the oneof field once.
+      if (swapped_oneof.insert(oneof_index).second) {
         SwapOneofField<unsafe_shallow_swap>(message1, message2,
                                             field->containing_oneof());
-      } else {
-        // Swap field.
-        if (unsafe_shallow_swap) {
-          UnsafeShallowSwapField(message1, message2, field);
-        } else {
-          SwapField(message1, message2, field);
-        }
-        // Swap has bit for non-repeated fields.  We have already checked for
-        // oneof already. This has to be done after SwapField, because SwapField
-        // may depend on the information in has bits.
-        if (!field->is_repeated()) {
-          NaiveSwapHasBit(message1, message2, field);
-          if (field->cpp_type() == FieldDescriptor::CPPTYPE_STRING &&
-              field->cpp_string_type() ==
-                  FieldDescriptor::CppStringType::kString &&
-              IsInlined(field)) {
-            ABSL_DCHECK(!unsafe_shallow_swap ||
-                        message1->GetArena() == message2->GetArena());
-            SwapInlinedStringDonated(message1, message2, field);
-          }
-        }
       }
+      continue;
+    }
+
+    // Swap field.
+    if constexpr (unsafe_shallow_swap) {
+      UnsafeShallowSwapField(message1, message2, field);
+    } else {
+      SwapField(message1, message2, field);
+    }
+    // If the hasbits for repeated fields experiment is disabled, we can
+    // skip repeated fields since we know they don't have hasbits.
+    if (!internal::EnableExperimentalHintHasBitsForRepeatedFields() &&
+        field->is_repeated()) {
+      continue;
+    }
+    // Swap has bit. We have already checked for oneof already. This has to
+    // be done after SwapField, because SwapField may depend on the
+    // information in has bits.
+    NaiveSwapHasBit(message1, message2, field);
+    if (field->cpp_type() == FieldDescriptor::CPPTYPE_STRING &&
+        field->cpp_string_type() == FieldDescriptor::CppStringType::kString &&
+        IsInlined(field)) {
+      ABSL_DCHECK(!unsafe_shallow_swap ||
+                  message1->GetArena() == message2->GetArena());
+      SwapInlinedStringDonated(message1, message2, field);
     }
   }
 }
@@ -1260,15 +1268,16 @@ bool Reflection::HasField(const Message& message,
                           const FieldDescriptor* field) const {
   USAGE_CHECK_MESSAGE(HasField, &message);
   USAGE_CHECK_MESSAGE_TYPE(HasField);
-  USAGE_CHECK_SINGULAR(HasField);
 
   if (field->is_extension()) {
-    return GetExtensionSet(message).Has(field->number());
+    const auto& ext = GetExtensionSet(message);
+    return field->is_repeated() ? ext.ExtensionSize(field->number()) != 0
+                                : ext.Has(field->number());
   } else {
     if (schema_.InRealOneof(field)) {
       return HasOneofField(message, field);
     } else {
-      return HasFieldSingular(message, field);
+      return HasFieldWithHasbits(message, field);
     }
   }
 }
@@ -1310,7 +1319,7 @@ void Reflection::InternalSwap(Message* lhs, Message* rhs) const {
     for (int i = 0; i < descriptor_->field_count(); i++) {
       const FieldDescriptor* field = descriptor_->field(i);
       const uint32_t has_bit_index = schema_.HasBitIndex(field);
-      if (has_bit_index != static_cast<uint32_t>(-1)) {
+      if (has_bit_index != static_cast<uint32_t>(kNoHasbit)) {
         max_has_bit_index = std::max(max_has_bit_index, has_bit_index);
       }
     }
@@ -1459,80 +1468,23 @@ void Reflection::ClearField(Message* message,
 
   if (field->is_extension()) {
     MutableExtensionSet(message)->ClearExtension(field->number());
-  } else if (!field->is_repeated()) {
-    if (schema_.InRealOneof(field)) {
-      ClearOneofField(message, field);
-      return;
-    }
-    if (HasFieldSingular(*message, field)) {
-      ClearHasBit(message, field);
+    return;
+  } else if (schema_.InRealOneof(field)) {
+    ClearOneofField(message, field);
+    return;
+  } else if (!HasFieldWithHasbits(*message, field)) {
+    // Clear the has bit even if the field is not present. If this is an empty
+    // repeated field with a set has bit, we want to clear the has bit.
+    ClearHasBit(message, field);
+    return;
+  }
+  ClearHasBit(message, field);
 
-      // We need to set the field back to its default value.
-      switch (field->cpp_type()) {
-#define CLEAR_TYPE(CPPTYPE, TYPE)                                      \
-  case FieldDescriptor::CPPTYPE_##CPPTYPE:                             \
-    *MutableRaw<TYPE>(message, field) = field->default_value_##TYPE(); \
-    break;
-
-        CLEAR_TYPE(INT32, int32_t);
-        CLEAR_TYPE(INT64, int64_t);
-        CLEAR_TYPE(UINT32, uint32_t);
-        CLEAR_TYPE(UINT64, uint64_t);
-        CLEAR_TYPE(FLOAT, float);
-        CLEAR_TYPE(DOUBLE, double);
-        CLEAR_TYPE(BOOL, bool);
-#undef CLEAR_TYPE
-
-        case FieldDescriptor::CPPTYPE_ENUM:
-          *MutableRaw<int>(message, field) =
-              field->default_value_enum()->number();
-          break;
-
-        case FieldDescriptor::CPPTYPE_STRING: {
-          switch (field->cpp_string_type()) {
-            case FieldDescriptor::CppStringType::kCord:
-              if (field->has_default_value()) {
-                *MutableRaw<absl::Cord>(message, field) =
-                    field->default_value_string();
-              } else {
-                MutableRaw<absl::Cord>(message, field)->Clear();
-              }
-              break;
-            case FieldDescriptor::CppStringType::kView:
-            case FieldDescriptor::CppStringType::kString:
-              if (IsInlined(field)) {
-                // Currently, string with default value can't be inlined. So we
-                // don't have to handle default value here.
-                MutableRaw<InlinedStringField>(message, field)->ClearToEmpty();
-              } else if (IsMicroString(field)) {
-                if (field->has_default_value()) {
-                  MutableRaw<MicroString>(message, field)
-                      ->ClearToDefault(GetRaw<MicroString>(
-                                           *schema_.default_instance_, field),
-                                       message->GetArena());
-                } else {
-                  MutableRaw<MicroString>(message, field)->Clear();
-                }
-              } else {
-                auto* str = MutableRaw<ArenaStringPtr>(message, field);
-                str->Destroy();
-                str->InitDefault();
-              }
-              break;
-          }
-          break;
-        }
-
-        case FieldDescriptor::CPPTYPE_MESSAGE:
-          (*MutableRaw<Message*>(message, field))->Clear();
-          break;
-      }
-    }
-  } else {
+  if (field->is_repeated()) {
     switch (field->cpp_type()) {
-#define HANDLE_TYPE(UPPERCASE, LOWERCASE)                           \
-  case FieldDescriptor::CPPTYPE_##UPPERCASE:                        \
-    MutableRaw<RepeatedField<LOWERCASE> >(message, field)->Clear(); \
+#define HANDLE_TYPE(UPPERCASE, LOWERCASE)                          \
+  case FieldDescriptor::CPPTYPE_##UPPERCASE:                       \
+    MutableRaw<RepeatedField<LOWERCASE>>(message, field)->Clear(); \
     break
 
       HANDLE_TYPE(INT32, int32_t);
@@ -1552,7 +1504,7 @@ void Reflection::ClearField(Message* message,
             break;
           case FieldDescriptor::CppStringType::kView:
           case FieldDescriptor::CppStringType::kString:
-            MutableRaw<RepeatedPtrField<std::string> >(message, field)->Clear();
+            MutableRaw<RepeatedPtrField<std::string>>(message, field)->Clear();
             break;
         }
         break;
@@ -1562,13 +1514,74 @@ void Reflection::ClearField(Message* message,
         if (IsMapFieldInApi(field)) {
           MutableRaw<MapFieldBase>(message, field)->Clear();
         } else {
-          // We don't know which subclass of RepeatedPtrFieldBase the type is,
-          // so we use RepeatedPtrFieldBase directly.
+          // We don't know which subclass of RepeatedPtrFieldBase the type
+          // is, so we use RepeatedPtrFieldBase directly.
           MutableRaw<RepeatedPtrFieldBase>(message, field)
-              ->Clear<GenericTypeHandler<Message> >();
+              ->Clear<GenericTypeHandler<Message>>();
         }
         break;
       }
+    }
+  } else {
+    // We need to set the field back to its default value.
+    switch (field->cpp_type()) {
+#define CLEAR_TYPE(CPPTYPE, TYPE)                                      \
+  case FieldDescriptor::CPPTYPE_##CPPTYPE:                             \
+    *MutableRaw<TYPE>(message, field) = field->default_value_##TYPE(); \
+    break;
+
+      CLEAR_TYPE(INT32, int32_t);
+      CLEAR_TYPE(INT64, int64_t);
+      CLEAR_TYPE(UINT32, uint32_t);
+      CLEAR_TYPE(UINT64, uint64_t);
+      CLEAR_TYPE(FLOAT, float);
+      CLEAR_TYPE(DOUBLE, double);
+      CLEAR_TYPE(BOOL, bool);
+#undef CLEAR_TYPE
+
+      case FieldDescriptor::CPPTYPE_ENUM:
+        *MutableRaw<int>(message, field) =
+            field->default_value_enum()->number();
+        break;
+
+      case FieldDescriptor::CPPTYPE_STRING: {
+        switch (field->cpp_string_type()) {
+          case FieldDescriptor::CppStringType::kCord:
+            if (field->has_default_value()) {
+              *MutableRaw<absl::Cord>(message, field) =
+                  field->default_value_string();
+            } else {
+              MutableRaw<absl::Cord>(message, field)->Clear();
+            }
+            break;
+          case FieldDescriptor::CppStringType::kView:
+          case FieldDescriptor::CppStringType::kString:
+            if (IsInlined(field)) {
+              // Currently, string with default value can't be inlined. So we
+              // don't have to handle default value here.
+              MutableRaw<InlinedStringField>(message, field)->ClearToEmpty();
+            } else if (IsMicroString(field)) {
+              if (field->has_default_value()) {
+                MutableRaw<MicroString>(message, field)
+                    ->ClearToDefault(
+                        GetRaw<MicroString>(*schema_.default_instance_, field),
+                        message->GetArena());
+              } else {
+                MutableRaw<MicroString>(message, field)->Clear();
+              }
+            } else {
+              auto* str = MutableRaw<ArenaStringPtr>(message, field);
+              str->Destroy();
+              str->InitDefault();
+            }
+            break;
+        }
+        break;
+      }
+
+      case FieldDescriptor::CPPTYPE_MESSAGE:
+        (*MutableRaw<Message*>(message, field))->Clear();
+        break;
     }
   }
 }
@@ -1635,12 +1648,14 @@ Message* Reflection::ReleaseLast(Message* message,
         MutableExtensionSet(message)->ReleaseLast(field->number()));
   } else {
     if (IsMapFieldInApi(field)) {
-      released = MutableRaw<MapFieldBase>(message, field)
-                     ->MutableRepeatedField()
-                     ->ReleaseLast<GenericTypeHandler<Message>>();
+      released =
+          MutableRaw<MapFieldBase>(message, field)
+              ->MutableRepeatedField()
+              ->ReleaseLast<GenericTypeHandler<Message>>(message->GetArena());
     } else {
-      released = MutableRaw<RepeatedPtrFieldBase>(message, field)
-                     ->ReleaseLast<GenericTypeHandler<Message>>();
+      released =
+          MutableRaw<RepeatedPtrFieldBase>(message, field)
+              ->ReleaseLast<GenericTypeHandler<Message>>(message->GetArena());
     }
   }
   if (internal::DebugHardenForceCopyInRelease()) {
@@ -1747,13 +1762,23 @@ bool CreateUnknownEnumValues(const FieldDescriptor* field) {
 }  // namespace internal
 using internal::CreateUnknownEnumValues;
 
-void Reflection::ListFields(const Message& message,
-                            std::vector<const FieldDescriptor*>* output) const {
-  output->clear();
 
-  // Optimization:  The default instance never has any fields set.
-  if (schema_.IsDefaultInstance(message)) return;
-
+// Common functionality shared by IsEmpty and ListFields for iterating over
+// all set fields.
+//
+// If kForIsEmpty=true, returns 0 if the message is empty, and 1 otherwise.
+//
+// If kForIsEmpty=false, populates output with all filled fields. Return value
+// is the last field set, or 0 if the message is empty.
+template <bool kForIsEmpty, typename MaybeFieldDescriptorVec>
+inline int32_t Reflection::IsEmptyOrCollectSetFields(
+    const Message& message,
+    // Cached locally rather than a member variable for performance.
+    const Descriptor& descriptor,
+    [[maybe_unused]] MaybeFieldDescriptorVec output) const {
+  // Output should be null only if we are not computing the full output list.
+  static_assert(kForIsEmpty ==
+                std::is_same_v<MaybeFieldDescriptorVec, std::nullptr_t>);
   // Optimization: Avoid calling GetHasBits() and HasOneofField() many times
   // within the field loop.  We allow this violation of ReflectionSchema
   // encapsulation because this function takes a noticeable about of CPU
@@ -1762,43 +1787,78 @@ void Reflection::ListFields(const Message& message,
   const uint32_t* const has_bits =
       schema_.HasHasbits() ? GetHasBits(message) : nullptr;
   const uint32_t* const has_bits_indices = schema_.has_bit_indices_;
-  output->reserve(descriptor_->field_count());
-  const int last_non_weak_field_index = last_non_weak_field_index_;
+  if constexpr (!kForIsEmpty) {
+    output->reserve(descriptor.field_count());
+  }
   // Fields in messages are usually added with the increasing tags.
   uint32_t last = 0;  // UINT32_MAX if out-of-order
-  auto append_to_output = [&last, &output](const FieldDescriptor* field) {
-    CheckInOrder(field, &last);
-    output->push_back(field);
-  };
-  for (int i = 0; i <= last_non_weak_field_index; i++) {
-    const FieldDescriptor* field = descriptor_->field(i);
-    if (field->is_repeated()) {
-      if (FieldSize(message, field) > 0) {
-        append_to_output(field);
-      }
-    } else {
-      const OneofDescriptor* containing_oneof = field->containing_oneof();
-      if (schema_.InRealOneof(field)) {
-        const uint32_t* const oneof_case_array =
-            GetConstPointerAtOffset<uint32_t>(&message,
-                                              schema_.oneof_case_offset_);
-        // Equivalent to: HasOneofField(message, field)
-        if (static_cast<int64_t>(oneof_case_array[containing_oneof->index()]) ==
-            field->number()) {
-          append_to_output(field);
+  // Stifle unused variable compilation error when kForIsEmpty is true.
+  [[maybe_unused]] const auto append_to_output =
+      [&last, output](const FieldDescriptor& field) {
+        if constexpr (!kForIsEmpty) {
+          CheckInOrder(&field, &last);
+          output->push_back(&field);
         }
-      } else if (has_bits && has_bits_indices[i] != static_cast<uint32_t>(-1)) {
-        // Equivalent to: HasFieldSingular(message, field)
-        if (IsFieldPresentGivenHasbits(message, field, has_bits,
-                                       has_bits_indices[i])) {
-          append_to_output(field);
-        }
-      } else if (HasFieldSingular(message, field)) {
-        // Fall back on proto3-style HasBit.
-        append_to_output(field);
+      };
+  // Core functionality difference depending on the value of kForIsEmpty. If we
+  // encounter a set field, either return 1, or push it back into the vector.
+#define PROTO_REFLECTION_APPEND_OR_RETURN() \
+  do {                                      \
+    if constexpr (kForIsEmpty) {            \
+      return 1;                             \
+    } else {                                \
+      append_to_output(field);              \
+    }                                       \
+  } while (false)
+
+  int i = -1;
+  for (const FieldDescriptor& field :
+       absl::MakeSpan(descriptor.fields_, last_non_weak_field_index_ + 1)) {
+    ++i;
+    const OneofDescriptor* containing_oneof = field.containing_oneof();
+    // If the hasbits for repeated fields experiment is disabled, we can
+    // shortcut to checking the field size, since we know the field doesn't
+    // have hasbits.
+    if (!internal::EnableExperimentalHintHasBitsForRepeatedFields() &&
+        field.is_repeated()) {
+      if (FieldSize(message, &field) > 0) {
+        PROTO_REFLECTION_APPEND_OR_RETURN();
       }
+    } else if (schema_.InRealOneof(&field)) {
+      const uint32_t* const oneof_case_array =
+          GetConstPointerAtOffset<uint32_t>(&message,
+                                            schema_.oneof_case_offset_);
+      // Equivalent to: HasOneofField(message, field)
+      if (static_cast<int64_t>(oneof_case_array[containing_oneof->index()]) ==
+          field.number()) {
+        PROTO_REFLECTION_APPEND_OR_RETURN();
+      }
+    } else if (has_bits &&
+               has_bits_indices[i] != static_cast<uint32_t>(kNoHasbit)) {
+      // Equivalent to: HasFieldSingular(message, field)
+      if (IsFieldPresentGivenHasbits(message, &field, has_bits,
+                                     has_bits_indices[i])) {
+        PROTO_REFLECTION_APPEND_OR_RETURN();
+      }
+    } else if (HasFieldWithHasbits(message, &field)) {
+      PROTO_REFLECTION_APPEND_OR_RETURN();
     }
   }
+#undef PROTO_REFLECTION_APPEND_OR_RETURN
+  // Last will be 0 if no fields were encountered. Otherwise it contains the
+  // last encountered field.
+  return last;
+}
+
+void Reflection::ListFields(const Message& message,
+                            std::vector<const FieldDescriptor*>* output) const {
+  output->clear();
+  // Optimization:  The default instance never has any fields set.
+  if (schema_.IsDefaultInstance(message)) return;
+  const Descriptor* const descriptor = descriptor_;
+  uint32_t last = IsEmptyOrCollectSetFields</*kForIsEmpty=*/false>(
+      message, *descriptor, output);
+
   // Descriptors of ExtensionSet are appended in their increasing tag
   // order and they are usually bigger than the field tags so if all fields are
   // not sorted, let them be sorted.
@@ -1809,8 +1869,7 @@ void Reflection::ListFields(const Message& message,
   size_t last_size = output->size();
   if (schema_.HasExtensionSet()) {
     // Descriptors of ExtensionSet are appended in their increasing order.
-    GetExtensionSet(message).AppendToList(descriptor_, descriptor_pool_,
-                                          output);
+    GetExtensionSet(message).AppendToList(descriptor, descriptor_pool_, output);
     ABSL_DCHECK(std::is_sorted(output->begin() + last_size, output->end(),
                                FieldNumberSorter()));
     if (output->size() != last_size) {
@@ -1824,6 +1883,29 @@ void Reflection::ListFields(const Message& message,
     // ListFields() must sort output by field number.
     std::sort(output->begin(), output->end(), FieldNumberSorter());
   }
+}
+
+bool Reflection::IsEmptyIgnoringUnknownFieldsImpl(
+    const Message& message) const {
+  if (IsEmptyOrCollectSetFields</*kForIsEmpty=*/true>(message, *descriptor_,
+                                                      nullptr) != 0) {
+    return false;
+  }
+  return
+      !(schema_.HasExtensionSet() && !GetExtensionSet(message).IsEmpty());
+}
+
+bool Reflection::IsEmptyIgnoringUnknownFields(const Message& message) const {
+  // Optimization:  The default instance never has any fields set.
+  if (schema_.IsDefaultInstance(message)) return true;
+  return IsEmptyIgnoringUnknownFieldsImpl(message);
+}
+
+bool Reflection::IsEmpty(const Message& message) const {
+  // Optimization:  The default instance never has any fields set.
+  if (schema_.IsDefaultInstance(message)) return true;
+  return IsEmptyIgnoringUnknownFieldsImpl(message) &&
+         GetUnknownFields(message).empty();
 }
 
 // -------------------------------------------------------------------
@@ -2591,7 +2673,7 @@ Message* Reflection::UnsafeArenaReleaseMessage(Message* message,
         MutableExtensionSet(message)->UnsafeArenaReleaseMessage(field,
                                                                 factory));
   } else {
-    if (!(field->is_repeated() || schema_.InRealOneof(field))) {
+    if (!schema_.InRealOneof(field)) {
       ClearHasBit(message, field);
     }
     if (schema_.InRealOneof(field)) {
@@ -2653,6 +2735,8 @@ Message* Reflection::MutableRepeatedMessage(Message* message,
         MutableExtensionSet(message)->MutableRepeatedMessage(field->number(),
                                                              index));
   } else {
+    SetHasBitForRepeated(message, field);
+
     if (IsMapFieldInApi(field)) {
       return MutableRaw<MapFieldBase>(message, field)
           ->MutableRepeatedField()
@@ -2676,6 +2760,8 @@ Message* Reflection::AddMessage(Message* message, const FieldDescriptor* field,
   } else {
     Message* result = nullptr;
 
+    SetHasBitForRepeated(message, field);
+
     // We can't use AddField<Message>() because RepeatedPtrFieldBase doesn't
     // know how to allocate one.
     RepeatedPtrFieldBase* repeated = nullptr;
@@ -2698,7 +2784,8 @@ Message* Reflection::AddMessage(Message* message, const FieldDescriptor* field,
       // We can guarantee here that repeated and result are either both heap
       // allocated or arena owned. So it is safe to call the unsafe version
       // of AddAllocated.
-      repeated->UnsafeArenaAddAllocated<GenericTypeHandler<Message> >(result);
+      repeated->UnsafeArenaAddAllocated<GenericTypeHandler<Message>>(
+          message->GetArena(), result);
     }
 
     return result;
@@ -2720,7 +2807,9 @@ void Reflection::AddAllocatedMessage(Message* message,
     } else {
       repeated = MutableRaw<RepeatedPtrFieldBase>(message, field);
     }
-    repeated->AddAllocated<GenericTypeHandler<Message> >(new_entry);
+    repeated->AddAllocated<GenericTypeHandler<Message>>(message->GetArena(),
+                                                        new_entry);
+    SetHasBitForRepeated(message, field);
   }
 }
 
@@ -2740,7 +2829,59 @@ void Reflection::UnsafeArenaAddAllocatedMessage(Message* message,
     } else {
       repeated = MutableRaw<RepeatedPtrFieldBase>(message, field);
     }
-    repeated->UnsafeArenaAddAllocated<GenericTypeHandler<Message>>(new_entry);
+    repeated->UnsafeArenaAddAllocated<GenericTypeHandler<Message>>(
+        message->GetArena(), new_entry);
+    SetHasBitForRepeated(message, field);
+  }
+}
+
+bool Reflection::IsRepeatedOrMapFieldEmpty(const Message& message,
+                                           const FieldDescriptor* field) const {
+  USAGE_CHECK_MESSAGE(IsRepeatedOrMapFieldEmpty, &message);
+  USAGE_CHECK_MESSAGE_TYPE(IsRepeatedOrMapFieldEmpty);
+  USAGE_CHECK_REPEATED(IsRepeatedOrMapFieldEmpty);
+
+  if (field->is_extension()) {
+    return GetExtensionSet(message).ExtensionSize(field->number()) == 0;
+  } else {
+    switch (field->cpp_type()) {
+#define HANDLE_TYPE(UPPERCASE, LOWERCASE)    \
+  case FieldDescriptor::CPPTYPE_##UPPERCASE: \
+    return GetRaw<RepeatedField<LOWERCASE>>(message, field).empty()
+
+      HANDLE_TYPE(INT32, int32_t);
+      HANDLE_TYPE(INT64, int64_t);
+      HANDLE_TYPE(UINT32, uint32_t);
+      HANDLE_TYPE(UINT64, uint64_t);
+      HANDLE_TYPE(DOUBLE, double);
+      HANDLE_TYPE(FLOAT, float);
+      HANDLE_TYPE(BOOL, bool);
+      HANDLE_TYPE(ENUM, int);
+#undef HANDLE_TYPE
+
+      case FieldDescriptor::CPPTYPE_STRING:
+        if (field->cpp_string_type() == FieldDescriptor::CppStringType::kCord) {
+          return GetRaw<RepeatedField<absl::Cord>>(message, field).empty();
+        } else {
+          return GetRaw<RepeatedPtrFieldBase>(message, field).empty();
+        }
+      case FieldDescriptor::CPPTYPE_MESSAGE:
+        if (IsMapFieldInApi(field)) {
+          const internal::MapFieldBase& map =
+              GetRaw<MapFieldBase>(message, field);
+          if (map.IsRepeatedFieldValid()) {
+            return map.GetRepeatedField().empty();
+          } else {
+            // No need to materialize the repeated field if it is out of sync:
+            // its size will be the same as the map's size.
+            return map.size() == 0;
+          }
+        } else {
+          return GetRaw<RepeatedPtrFieldBase>(message, field).empty();
+        }
+      default:
+        internal::Unreachable();
+    }
   }
 }
 
@@ -2828,6 +2969,7 @@ bool Reflection::InsertOrLookupMapValue(Message* message,
   USAGE_CHECK(IsMapFieldInApi(field), InsertOrLookupMapValue,
               "Field is not a map field.");
   val->SetType(field->message_type()->map_value()->cpp_type());
+  SetHasBitForRepeated(message, field);
   return MutableRaw<MapFieldBase>(message, field)
       ->InsertOrLookupMapValue(key, val);
 }
@@ -3047,12 +3189,16 @@ void Reflection::SwapInlinedStringDonated(Message* lhs, Message* rhs,
   }
 }
 
-bool Reflection::IsSingularFieldNonEmpty(const Message& message,
-                                         const FieldDescriptor* field) const {
+bool Reflection::IsImplicitPresenceFieldNonEmpty(
+    const Message& message, const FieldDescriptor* field) const {
   ABSL_DCHECK(IsMapEntry(field) || !field->has_presence());
-  ABSL_DCHECK(!field->is_repeated());
-  ABSL_DCHECK(!field->is_map());
-  ABSL_DCHECK(field->cpp_type() != FieldDescriptor::CPPTYPE_MESSAGE);
+  ABSL_DCHECK(field->cpp_type() != FieldDescriptor::CPPTYPE_MESSAGE ||
+              field->is_repeated());
+
+  if (field->is_repeated()) {
+    return !IsRepeatedOrMapFieldEmpty(message, field);
+  }
+
   // Scalar primitive (numeric or string/bytes) fields are present if
   // their value is non-zero (numeric) or non-empty (string/bytes). N.B.:
   // we must use this definition here, rather than the "scalar fields
@@ -3122,10 +3268,6 @@ bool Reflection::IsFieldPresentGivenHasbits(const Message& message,
   // proto3: hasbits are present, but an additional zero check must be
   // performed because hasbit can be set to true while field is zero.
 
-  // Repeated fields do not have hasbits enabled in proto3.
-  ABSL_DCHECK(!field->is_repeated())
-      << "repeated fields do not have hasbits in proto3.";
-
   // Handling map entries in proto3:
   // Implicit presence map fields are represented as a native C++ map, but their
   // corresponding MapEntry messages (e.g. if we want to access them as repeated
@@ -3140,15 +3282,20 @@ bool Reflection::IsFieldPresentGivenHasbits(const Message& message,
 
   // This is the vanilla case: for a non-repeated primitive or string field,
   // returns if the field is nonzero (i.e. present in proto3 semantics).
-  return IsSingularFieldNonEmpty(message, field);
+  return IsImplicitPresenceFieldNonEmpty(message, field);
 }
 
-bool Reflection::HasFieldSingular(const Message& message,
-                                  const FieldDescriptor* field) const {
+bool Reflection::HasFieldWithHasbits(const Message& message,
+                                     const FieldDescriptor* field) const {
   ABSL_DCHECK(!field->options().weak());
-  if (schema_.HasBitIndex(field) != static_cast<uint32_t>(-1)) {
+  ABSL_DCHECK(!field->is_extension());
+  if (schema_.HasBitIndex(field) != static_cast<uint32_t>(kNoHasbit)) {
     return IsFieldPresentGivenHasbits(message, field, GetHasBits(message),
                                       schema_.HasBitIndex(field));
+  }
+
+  if (field->is_repeated()) {
+    return !IsRepeatedOrMapFieldEmpty(message, field);
   }
 
   // The python implementation traditionally assumes that proto3 messages don't
@@ -3166,17 +3313,16 @@ bool Reflection::HasFieldSingular(const Message& message,
   }
 
   // Non-message field (and non-oneof, since that was handled in HasField()
-  // before calling us), and singular (again, checked in HasField). So, this
-  // field must be a scalar.
+  // before calling us).
 
-  return IsSingularFieldNonEmpty(message, field);
+  return IsImplicitPresenceFieldNonEmpty(message, field);
 }
 
 void Reflection::SetHasBit(Message* message,
                            const FieldDescriptor* field) const {
   ABSL_DCHECK(!field->options().weak());
   const uint32_t index = schema_.HasBitIndex(field);
-  if (index == static_cast<uint32_t>(-1)) return;
+  if (index == static_cast<uint32_t>(kNoHasbit)) return;
   MutableHasBits(message)[index / 32] |=
       (static_cast<uint32_t>(1) << (index % 32));
 }
@@ -3185,7 +3331,7 @@ void Reflection::ClearHasBit(Message* message,
                              const FieldDescriptor* field) const {
   ABSL_DCHECK(!field->options().weak());
   const uint32_t index = schema_.HasBitIndex(field);
-  if (index == static_cast<uint32_t>(-1)) return;
+  if (index == static_cast<uint32_t>(kNoHasbit)) return;
   MutableHasBits(message)[index / 32] &=
       ~(static_cast<uint32_t>(1) << (index % 32));
 }
@@ -3193,7 +3339,8 @@ void Reflection::ClearHasBit(Message* message,
 void Reflection::NaiveSwapHasBit(Message* message1, Message* message2,
                                  const FieldDescriptor* field) const {
   ABSL_DCHECK(!field->options().weak());
-  if (!schema_.HasHasbits()) {
+  if (!schema_.HasHasbits() ||
+      schema_.HasBitIndex(field) == static_cast<uint32_t>(kNoHasbit)) {
     return;
   }
   const Reflection* r1 = message1->GetReflection();
@@ -3295,6 +3442,9 @@ void Reflection::ClearOneof(Message* message,
   template <>                                                              \
   RepeatedField<TYPE>* Reflection::MutableRepeatedFieldInternal<TYPE>(     \
       Message * message, const FieldDescriptor* field) const {             \
+    if (!field->is_extension()) {                                          \
+      SetHasBitForRepeated(message, field);                                \
+    }                                                                      \
     return static_cast<RepeatedField<TYPE>*>(                              \
         MutableRawRepeatedField(message, field, CPPTYPE, CTYPE, nullptr)); \
   }
@@ -3359,21 +3509,21 @@ template <typename Type>
 const Type& Reflection::GetRepeatedField(const Message& message,
                                          const FieldDescriptor* field,
                                          int index) const {
-  return GetRaw<RepeatedField<Type> >(message, field).Get(index);
+  return GetRaw<RepeatedField<Type>>(message, field).Get(index);
 }
 
 template <typename Type>
 const Type& Reflection::GetRepeatedPtrField(const Message& message,
                                             const FieldDescriptor* field,
                                             int index) const {
-  return GetRaw<RepeatedPtrField<Type> >(message, field).Get(index);
+  return GetRaw<RepeatedPtrField<Type>>(message, field).Get(index);
 }
 
 template <typename Type>
 void Reflection::SetRepeatedField(Message* message,
                                   const FieldDescriptor* field, int index,
                                   Type value) const {
-  MutableRaw<RepeatedField<Type> >(message, field)->Set(index, value);
+  MutableRaw<RepeatedField<Type>>(message, field)->Set(index, value);
 }
 
 template <typename Type>
@@ -3381,21 +3531,23 @@ Type* Reflection::MutableRepeatedField(Message* message,
                                        const FieldDescriptor* field,
                                        int index) const {
   RepeatedPtrField<Type>* repeated =
-      MutableRaw<RepeatedPtrField<Type> >(message, field);
+      MutableRaw<RepeatedPtrField<Type>>(message, field);
   return repeated->Mutable(index);
 }
 
 template <typename Type>
 void Reflection::AddField(Message* message, const FieldDescriptor* field,
                           const Type& value) const {
-  MutableRaw<RepeatedField<Type> >(message, field)->Add(value);
+  MutableRaw<RepeatedField<Type>>(message, field)->Add(value);
+  SetHasBitForRepeated(message, field);
 }
 
 template <typename Type>
 Type* Reflection::AddField(Message* message,
                            const FieldDescriptor* field) const {
   RepeatedPtrField<Type>* repeated =
-      MutableRaw<RepeatedPtrField<Type> >(message, field);
+      MutableRaw<RepeatedPtrField<Type>>(message, field);
+  SetHasBitForRepeated(message, field);
   return repeated->Add();
 }
 
@@ -3449,6 +3601,7 @@ void* Reflection::RepeatedFieldData(Message* message,
 MapFieldBase* Reflection::MutableMapData(Message* message,
                                          const FieldDescriptor* field) const {
   USAGE_CHECK(IsMapFieldInApi(field), GetMapData, "Field is not a map field.");
+  SetHasBitForRepeated(message, field);
   auto* map = MutableRaw<MapFieldBase>(message, field);
   map->MutableAccess();
   return map;
@@ -3543,7 +3696,9 @@ void Reflection::PopulateTcParseEntries(
       entries->has_idx = schema_.oneof_case_offset_ + 4 * oneof->index();
     } else if (schema_.HasHasbits()) {
       entries->has_idx =
-          static_cast<int>(8 * schema_.HasBitsOffset() + entry.hasbit_idx);
+          entry.hasbit_idx >= 0
+              ? static_cast<int>(8 * schema_.HasBitsOffset() + entry.hasbit_idx)
+              : kNoHasbit;
     } else {
       entries->has_idx = 0;
     }
@@ -3611,7 +3766,6 @@ void Reflection::PopulateTcParseFieldAux(
 const internal::TcParseTableBase* Reflection::CreateTcParseTable() const {
   using TcParseTableBase = internal::TcParseTableBase;
 
-  constexpr int kNoHasbit = -1;
   std::vector<internal::TailCallTableInfo::FieldOptions> fields;
   fields.reserve(descriptor_->field_count());
   for (int i = 0; i < descriptor_->field_count(); ++i) {
@@ -3711,7 +3865,8 @@ const internal::TcParseTableBase* Reflection::CreateTcParseTable() const {
   // Validation to make sure we used all the bytes correctly.
   ABSL_CHECK_EQ(res->name_data() + table_info.field_name_data.size() -
                     reinterpret_cast<char*>(res),
-                byte_size);
+                byte_size)
+      << "message = " << descriptor_->full_name();
 
   return res;
 }
@@ -3955,7 +4110,7 @@ void UnknownFieldSetSerializer(const uint8_t* base, uint32_t offset,
   }
 }
 
-bool IsDescendant(Message& root, const Message& message) {
+bool IsDescendant(const Message& root, const Message& message) {
   const Reflection* reflection = root.GetReflection();
   std::vector<const FieldDescriptor*> fields;
   reflection->ListFields(root, &fields);
@@ -3966,37 +4121,45 @@ bool IsDescendant(Message& root, const Message& message) {
 
     // Optional messages.
     if (!field->is_repeated()) {
-      Message* sub_message = reflection->MutableMessage(&root, field);
-      if (sub_message == &message || IsDescendant(*sub_message, message)) {
+      const Message& sub_message = reflection->GetMessage(root, field);
+      if (&sub_message == &message || IsDescendant(sub_message, message)) {
         return true;
       }
       continue;
     }
 
-    // Repeated messages.
-    if (!IsMapFieldInApi(field)) {
-      int count = reflection->FieldSize(root, field);
-      for (int i = 0; i < count; i++) {
-        Message* sub_message =
-            reflection->MutableRepeatedMessage(&root, field, i);
-        if (sub_message == &message || IsDescendant(*sub_message, message)) {
-          return true;
+    if (IsMapFieldInApi(field)) {
+      // Map field: if accessed as repeated fields, messages are *copied* and
+      // matching pointer won't work. Must directly access map.
+      constexpr int kValIdx = 1;
+      const FieldDescriptor* val_field = field->message_type()->field(kValIdx);
+      // Skip map fields whose value type is not message.
+      if (val_field->cpp_type() != FieldDescriptor::CPPTYPE_MESSAGE) continue;
+
+      const auto& map = reflection->GetRaw<MapFieldBase>(root, field);
+      if (map.IsMapValid()) {
+        const auto end = reflection->ConstMapEnd(&root, field);
+        for (auto iter = reflection->ConstMapBegin(&root, field); iter != end;
+             ++iter) {
+          const Message& sub_message = iter.GetValueRef().GetMessageValue();
+          if (&sub_message == &message || IsDescendant(sub_message, message)) {
+            return true;
+          }
         }
+
+        continue;
       }
-      continue;
+
+      // If the map is in state STATE_MODIFIED_REPEATED, then accessing it as a
+      // repeated message field will not require syncing.
     }
 
-    // Map field: if accessed as repeated fields, messages are *copied* and
-    // matching pointer won't work. Must directly access map.
-    constexpr int kValIdx = 1;
-    const FieldDescriptor* val_field = field->message_type()->field(kValIdx);
-    // Skip map fields whose value type is not message.
-    if (val_field->cpp_type() != FieldDescriptor::CPPTYPE_MESSAGE) continue;
-
-    MapIterator end = reflection->MapEnd(&root, field);
-    for (auto iter = reflection->MapBegin(&root, field); iter != end; ++iter) {
-      Message* sub_message = iter.MutableValueRef()->MutableMessageValue();
-      if (sub_message == &message || IsDescendant(*sub_message, message)) {
+    // Repeated messages.
+    int count = reflection->FieldSize(root, field);
+    for (int i = 0; i < count; i++) {
+      const Message& sub_message =
+          reflection->GetRepeatedMessage(root, field, i);
+      if (&sub_message == &message || IsDescendant(sub_message, message)) {
         return true;
       }
     }

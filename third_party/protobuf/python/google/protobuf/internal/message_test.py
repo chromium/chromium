@@ -40,8 +40,10 @@ from google.protobuf.internal import self_recursive_pb2
 from google.protobuf.internal import test_proto3_optional_pb2
 from google.protobuf.internal import test_util
 from google.protobuf.internal import testing_refleaks
+from google.protobuf.internal import wire_format
 from google.protobuf import descriptor
 from google.protobuf import message
+from google.protobuf import unknown_fields
 from absl.testing import parameterized
 from google.protobuf import map_proto2_unittest_pb2
 from google.protobuf import map_unittest_pb2
@@ -1483,6 +1485,21 @@ class MessageTest(unittest.TestCase):
       self.assertIn('bool', str(w[0].message))
     self.assertEqual(
         m.Extensions[unittest_pb2.optional_nested_enum_extension], 1
+    )
+
+  def testClosedEnumExtension(self, message_module):
+    m = unittest_pb2.TestAllExtensions()
+    m.ParseFromString(b'\xa8\x01\x7f')
+    unknown = unknown_fields.UnknownFieldSet(m)
+
+    # The data is present in unknown fields.
+    self.assertEqual(unknown[0].field_number, 21)
+    self.assertEqual(unknown[0].wire_type, wire_format.WIRETYPE_VARINT)
+    self.assertEqual(unknown[0].data, 0x7f)
+
+    # There is no extension present.
+    self.assertFalse(
+        m.HasExtension(unittest_pb2.optional_nested_enum_extension)
     )
 
   def testAssignBoolToInt(self, message_module):

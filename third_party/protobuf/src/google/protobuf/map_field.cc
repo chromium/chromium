@@ -30,10 +30,7 @@ namespace google {
 namespace protobuf {
 namespace internal {
 
-MapFieldBase::~MapFieldBase() {
-  ABSL_DCHECK_EQ(arena(), nullptr);
-  delete maybe_payload();
-}
+MapFieldBase::~MapFieldBase() { delete maybe_payload(); }
 
 void MapFieldBase::MergeFrom(const MapFieldBase& other) {
   MutableMap()->UntypedMergeFrom(other.GetMap());
@@ -46,6 +43,14 @@ void MapFieldBase::Swap(MapFieldBase* other) {
   }
   MapFieldBase::SwapPayload(*this, *other);
   GetMapRaw().UntypedSwap(other->GetMapRaw());
+}
+
+const Message* MapFieldBase::GetPrototype() const {
+  const void* p = prototype_or_payload_.load(std::memory_order_acquire);
+  if (IsPayload(p)) {
+    return ToPayload(p)->prototype();
+  }
+  return reinterpret_cast<const Message*>(p);
 }
 
 template <typename Map, typename F>
@@ -200,7 +205,7 @@ static void SwapRelaxed(std::atomic<T>& a, std::atomic<T>& b) {
 }
 
 MapFieldBase::ReflectionPayload& MapFieldBase::PayloadSlow() const {
-  auto p = payload_.load(std::memory_order_acquire);
+  const void* p = prototype_or_payload_.load(std::memory_order_acquire);
   if (!IsPayload(p)) {
     // Inject the sync callback.
     sync_map_with_repeated.store(
@@ -211,17 +216,19 @@ MapFieldBase::ReflectionPayload& MapFieldBase::PayloadSlow() const {
         },
         std::memory_order_relaxed);
 
-    auto* arena = ToArena(p);
-    auto* payload = Arena::Create<ReflectionPayload>(arena, arena);
+    const Message* prototype = static_cast<const Message*>(p);
+    auto* payload =
+        Arena::Create<ReflectionPayload>(arena(), arena(), prototype);
 
     auto new_p = ToTaggedPtr(payload);
-    if (payload_.compare_exchange_strong(p, new_p, std::memory_order_acq_rel)) {
+    if (prototype_or_payload_.compare_exchange_strong(
+            p, new_p, std::memory_order_acq_rel)) {
       // We were able to store it.
       p = new_p;
     } else {
       // Someone beat us to it. Throw away the one we made. `p` already contains
       // the one we want.
-      if (arena == nullptr) delete payload;
+      if (arena() == nullptr) delete payload;
     }
   }
   return *ToPayload(p);
@@ -229,7 +236,7 @@ MapFieldBase::ReflectionPayload& MapFieldBase::PayloadSlow() const {
 
 void MapFieldBase::SwapPayload(MapFieldBase& lhs, MapFieldBase& rhs) {
   if (lhs.arena() == rhs.arena()) {
-    SwapRelaxed(lhs.payload_, rhs.payload_);
+    SwapRelaxed(lhs.prototype_or_payload_, rhs.prototype_or_payload_);
     return;
   }
   auto* p1 = lhs.maybe_payload();
@@ -238,8 +245,7 @@ void MapFieldBase::SwapPayload(MapFieldBase& lhs, MapFieldBase& rhs) {
 
   if (p1 == nullptr) p1 = &lhs.payload();
   if (p2 == nullptr) p2 = &rhs.payload();
-  p1->repeated_field.Swap(&p2->repeated_field);
-  SwapRelaxed(p1->state, p2->state);
+  p1->Swap(*p2);
 }
 
 void MapFieldBase::InternalSwap(MapFieldBase* other) {
@@ -251,11 +257,11 @@ size_t MapFieldBase::SpaceUsedExcludingSelfLong() const {
   ConstAccess();
   size_t size = 0;
   if (auto* p = maybe_payload()) {
-    absl::MutexLock lock(&p->mutex);
+    absl::MutexLock lock(&p->mutex());
     // Measure the map under the lock, because there could be some repeated
     // field data that might be sync'd back into the map.
     size = GetMapRaw().SpaceUsedExcludingSelfLong();
-    size += p->repeated_field.SpaceUsedExcludingSelfLong();
+    size += p->repeated_field().SpaceUsedExcludingSelfLong();
     ConstAccess();
   } else {
     // Only measure the map without the repeated field, because it is not there.
@@ -281,7 +287,7 @@ void MapFieldBase::SetRepeatedDirty() {
   MutableAccess();
   // These are called by (non-const) mutator functions. So by our API it's the
   // callers responsibility to have these calls properly ordered.
-  payload().state.store(STATE_MODIFIED_REPEATED, std::memory_order_relaxed);
+  payload().set_state_relaxed(STATE_MODIFIED_REPEATED);
 }
 
 const RepeatedPtrFieldBase& MapFieldBase::SyncRepeatedFieldWithMap(
@@ -301,19 +307,18 @@ const RepeatedPtrFieldBase& MapFieldBase::SyncRepeatedFieldWithMap(
     }
 
     {
-      absl::MutexLock lock(&p->mutex);
+      absl::MutexLock lock(&p->mutex());
       // Double check state, because another thread may have seen the same
       // state and done the synchronization before the current thread.
-      if (p->state.load(std::memory_order_relaxed) == STATE_MODIFIED_MAP) {
+      if (p->load_state_relaxed() == STATE_MODIFIED_MAP) {
         const_cast<MapFieldBase*>(this)->SyncRepeatedFieldWithMapNoLock();
-        p->state.store(CLEAN, std::memory_order_release);
+        p->set_state_release(CLEAN);
       }
     }
     ConstAccess();
-    return reinterpret_cast<const RepeatedPtrFieldBase&>(p->repeated_field);
+    return static_cast<const RepeatedPtrFieldBase&>(p->repeated_field());
   }
-  return reinterpret_cast<const RepeatedPtrFieldBase&>(
-      payload().repeated_field);
+  return static_cast<const RepeatedPtrFieldBase&>(payload().repeated_field());
 }
 
 void MapFieldBase::SyncRepeatedFieldWithMapNoLock() {
@@ -323,7 +328,7 @@ void MapFieldBase::SyncRepeatedFieldWithMapNoLock() {
   const FieldDescriptor* key_des = descriptor->map_key();
   const FieldDescriptor* val_des = descriptor->map_value();
 
-  RepeatedPtrField<Message>& rep = payload().repeated_field;
+  RepeatedPtrField<Message>& rep = payload().repeated_field();
   rep.Clear();
 
   ConstMapIterator it(this, descriptor);
@@ -407,12 +412,12 @@ void MapFieldBase::SyncMapWithRepeatedField() const {
   if (state() == STATE_MODIFIED_REPEATED) {
     auto& p = payload();
     {
-      absl::MutexLock lock(&p.mutex);
+      absl::MutexLock lock(&p.mutex());
       // Double check state, because another thread may have seen the same state
       // and done the synchronization before the current thread.
-      if (p.state.load(std::memory_order_relaxed) == STATE_MODIFIED_REPEATED) {
+      if (p.load_state_relaxed() == STATE_MODIFIED_REPEATED) {
         const_cast<MapFieldBase*>(this)->SyncMapWithRepeatedFieldNoLock();
-        p.state.store(CLEAN, std::memory_order_release);
+        p.set_state_release(CLEAN);
       }
     }
     ConstAccess();
@@ -422,7 +427,7 @@ void MapFieldBase::SyncMapWithRepeatedField() const {
 void MapFieldBase::SyncMapWithRepeatedFieldNoLock() {
   ClearMapNoSync();
 
-  RepeatedPtrField<Message>& rep = payload().repeated_field;
+  RepeatedPtrField<Message>& rep = payload().repeated_field();
 
   if (rep.empty()) return;
 
@@ -492,7 +497,7 @@ void MapFieldBase::SyncMapWithRepeatedFieldNoLock() {
 
 void MapFieldBase::Clear() {
   if (ReflectionPayload* p = maybe_payload()) {
-    p->repeated_field.Clear();
+    p->repeated_field().Clear();
   }
 
   ClearMapNoSync();
@@ -509,6 +514,11 @@ bool MapFieldBase::InsertOrLookupMapValue(const MapKey& map_key,
   SyncMapWithRepeatedField();
   SetMapDirty();
   return InsertOrLookupMapValueNoSync(map_key, val);
+}
+
+void MapFieldBase::ReflectionPayload::Swap(ReflectionPayload& other) {
+  repeated_field().Swap(&other.repeated_field());
+  SwapRelaxed(state_, other.state_);
 }
 
 }  // namespace internal

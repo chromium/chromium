@@ -71,8 +71,8 @@ void MessageLite::DeleteInstance() {
   internal::SizedDelete(ptr, size);
 }
 
-void MessageLite::VerifyHasBitConsistency() const {
-  internal::TcParser::VerifyHasBitConsistency(this, GetTcParseTable());
+void MessageLite::CheckHasBitConsistency() const {
+  internal::TcParser::CheckHasBitConsistency(this, GetTcParseTable());
 }
 
 void MessageLite::CheckTypeAndMergeFrom(const MessageLite& other) {
@@ -82,16 +82,6 @@ void MessageLite::CheckTypeAndMergeFrom(const MessageLite& other) {
   ABSL_CHECK_EQ(data, other_data)
       << "Invalid call to CheckTypeAndMergeFrom between types " << GetTypeName()
       << " and " << other.GetTypeName();
-  data->merge_to_from(*this, other);
-}
-
-void MessageLite::MergeFromWithClassData(const MessageLite& other,
-                                         const internal::ClassData* data) {
-  ABSL_DCHECK(data != nullptr);
-  ABSL_DCHECK(GetClassData() == data && other.GetClassData() == data)
-      << "Invalid call to " << __func__ << ": this=" << GetTypeName()
-      << " other=" << other.GetTypeName()
-      << " data=" << data->prototype->GetTypeName();
   data->merge_to_from(*this, other);
 }
 

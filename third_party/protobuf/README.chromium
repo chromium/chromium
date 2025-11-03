@@ -3,9 +3,9 @@ Short Name: protobuf
 URL: https://github.com/google/protobuf
 License: BSD-3-Clause
 License File: LICENSE
-Version: 32.0
-CPEPrefix: cpe:/a:google:protobuf:32.0
-Revision: 4fbd1111a292d04746c732573025e3251de0bb9c
+Version: 33.0
+CPEPrefix: cpe:/a:google:protobuf:33.0
+Revision: a79f2d2e9fadd75e94f3fe40a0399bf0a5d90551
 Update Mechanism: Manual
 Security Critical: yes
 Shipped: yes
@@ -257,3 +257,19 @@ Description of the patches:
   Updates the implementation of the deprecated
   FieldDescriptor::has_optional_keyword() to use the recommended has_presence()
   method, fixing a deprecation error.
+
+- 0057-rm-extraneous-utf8-import.patch
+
+  Removes an extraneous utf8 import in parse_context.h. This has already been
+  upstreamed.
+
+- 0058-fix-messagelite-clear-declaration.patch
+
+   Fix a compile error in how a function parameter is declared.
+
+- 0059-rm-repeatedptrfield-deprecated-declaration.patch
+
+   Remove deprecated declaration on repeatedptrfield constructor. This
+   constructor is removed in the next roll post-v33, but this patch is added
+   to allow for rolling proto first without touching the 100s of places to
+   patch in Chromium.

@@ -28,6 +28,8 @@
 #include <variant>
 #include <vector>
 
+#include "absl/log/absl_log.h"
+
 #include "google/protobuf/stubs/common.h"
 #include "absl/base/casts.h"
 #include "absl/base/prefetch.h"
@@ -92,6 +94,10 @@ namespace protobuf {
 namespace internal {
 
 class InternalMetadata;
+class FindExtensionTest;
+
+// Forward-declared from message.h.
+PROTOBUF_EXPORT bool IsDescendant(const Message& root, const Message& message);
 
 namespace v2 {
 class TableDrivenMessage;
@@ -135,7 +141,9 @@ struct ExtensionInfo {
         is_packed(ispacked),
         is_lazy(islazy),
         enum_validity_check(),
-        lazy_eager_verify_func(verify_func) {}
+        lazy_eager_verify_func(verify_func)
+  {
+  }
 
   const MessageLite* message = nullptr;
   int number = 0;
@@ -209,8 +217,23 @@ class PROTOBUF_EXPORT GeneratedExtensionFinder {
   const MessageLite* extendee_;
 };
 
-// Note:  extension_set_heavy.cc defines DescriptorPoolExtensionFinder for
-// finding extensions from a DescriptorPool.
+// Implementation of ExtensionFinder which finds extensions in a given
+// DescriptorPool, using the given MessageFactory to construct sub-objects.
+// This class is only implemented in extension_set_heavy.cc.
+class PROTOBUF_EXPORT DescriptorPoolExtensionFinder {
+ public:
+  DescriptorPoolExtensionFinder(const DescriptorPool* pool,
+                                MessageFactory* factory,
+                                const Descriptor* extendee)
+      : pool_(pool), factory_(factory), containing_type_(extendee) {}
+
+  bool Find(int number, ExtensionInfo* output);
+
+ private:
+  const DescriptorPool* pool_;
+  MessageFactory* factory_;
+  const Descriptor* containing_type_;
+};
 
 // This is an internal helper class intended for use within the protocol buffer
 // library and generated classes.  Clients should not use it directly.  Instead,
@@ -279,6 +302,11 @@ class PROTOBUF_EXPORT ExtensionSet {
   // in increasing tag order.
   void AppendToList(const Descriptor* extendee, const DescriptorPool* pool,
                     std::vector<const FieldDescriptor*>* output) const;
+
+  // Whether there are any fields which are currently present. Note that this
+  // is different from IsCompletelyEmpty(), which returns false if the list has
+  // any capacity; and Size(), which also accounts for cleared fields.
+  bool IsEmpty() const;
 
   // =================================================================
   // Accessors
@@ -601,6 +629,9 @@ class PROTOBUF_EXPORT ExtensionSet {
   friend class google::protobuf::internal::v2::TableDrivenMessage;
 
   friend void internal::InitializeLazyExtensionSet();
+  friend PROTOBUF_EXPORT bool internal::IsDescendant(const Message& root,
+                                                     const Message& message);
+  friend class google::protobuf::internal::FindExtensionTest;
 
   // The repeated field type for T.
   template <typename T>
@@ -656,15 +687,11 @@ class PROTOBUF_EXPORT ExtensionSet {
     virtual MessageLite* UnsafeArenaReleaseMessage(const MessageLite& prototype,
                                                    Arena* arena) = 0;
 
+    virtual bool HasUnparsed() const = 0;
     virtual bool IsInitialized(const MessageLite* prototype,
                                Arena* arena) const = 0;
     virtual bool IsEagerSerializeSafe(const MessageLite* prototype,
                                       Arena* arena) const = 0;
-
-    [[deprecated("Please use ByteSizeLong() instead")]] virtual int ByteSize()
-        const {
-      return internal::ToIntSize(ByteSizeLong());
-    }
     virtual size_t ByteSizeLong() const = 0;
     virtual size_t SpaceUsedLong() const = 0;
 
@@ -694,7 +721,7 @@ class PROTOBUF_EXPORT ExtensionSet {
     auto* f = maybe_create_lazy_extension_.load(std::memory_order_relaxed);
     return f != nullptr ? f(arena) : nullptr;
   }
-  static std::atomic<LazyMessageExtension* (*)(Arena* arena)>
+  static std::atomic<LazyMessageExtension* (*)(Arena * arena)>
       maybe_create_lazy_extension_;
 
   // We can't directly use std::atomic for Extension::cached_size because
@@ -727,6 +754,7 @@ class PROTOBUF_EXPORT ExtensionSet {
     void Clear();
     int GetSize() const;
     void Free();
+    bool IsSet() const { return is_repeated ? GetSize() > 0 : !is_cleared; }
     size_t SpaceUsedExcludingSelfLong() const;
     bool IsInitialized(const ExtensionSet* ext_set, const MessageLite* extendee,
                        int number, Arena* arena) const;
@@ -984,6 +1012,19 @@ class PROTOBUF_EXPORT ExtensionSet {
     for (Iterator it = begin; it != end; ++it) func(it->first, it->second);
   }
 
+  // Loops through [begin, end), and returns true as soon as some element
+  // satisfies predicate. Returns false if no element satisfies predicate.
+  template <typename Iterator, typename KeyValueFunctor>
+  static bool AnyOfNoPrefetch(Iterator begin, Iterator end,
+                              KeyValueFunctor predicate) {
+    for (Iterator it = begin; it != end; ++it) {
+      if (predicate(it->first, it->second)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   // Applies a functor to the <int, Extension&> pairs in sorted order.
   template <typename KeyValueFunctor>
   void ForEachNoPrefetch(KeyValueFunctor func) {
@@ -1004,6 +1045,18 @@ class PROTOBUF_EXPORT ExtensionSet {
       return;
     }
     ForEachNoPrefetch(flat_begin(), flat_end(), std::move(func));
+  }
+
+  // Loops through all <int, Extension&> pairs in sorted order, and returns true
+  // as soon as some element satisfies `predicate`. Returns false if no element
+  // satisfies predicate.
+  template <typename KeyValueFunctor>
+  bool AnyOfNoPrefetch(KeyValueFunctor predicate) const {
+    if (ABSL_PREDICT_FALSE(is_large())) {
+      return AnyOfNoPrefetch(map_.large->begin(), map_.large->end(),
+                             std::move(predicate));
+    }
+    return AnyOfNoPrefetch(flat_begin(), flat_end(), std::move(predicate));
   }
 
   // Returns true if nothing is allocated in the ExtensionSet.
@@ -1080,10 +1133,10 @@ class PROTOBUF_EXPORT ExtensionSet {
 
     ABSL_DCHECK(extension->type > 0 &&
                 extension->type <= WireFormatLite::MAX_FIELD_TYPE);
-    auto real_type = static_cast<WireFormatLite::FieldType>(extension->type);
+    auto schema_type = static_cast<WireFormatLite::FieldType>(extension->type);
 
     WireFormatLite::WireType expected_wire_type =
-        WireFormatLite::WireTypeForFieldType(real_type);
+        WireFormatLite::WireTypeForFieldType(schema_type);
 
     // Check if this is a packed field.
     *was_packed_on_wire = false;
@@ -1104,6 +1157,10 @@ class PROTOBUF_EXPORT ExtensionSet {
 
   // Returns true if extension is present and lazy.
   bool HasLazy(int number) const;
+
+  // Returns true if the lazy extension has unparsed data. Requires
+  // HasLazy(number) to be true.
+  bool LazyHasUnparsed(int number) const;
 
   // Gets the extension with the given number, creating it if it does not
   // already exist.  Returns true if the extension did not already exist.
@@ -1134,10 +1191,9 @@ class PROTOBUF_EXPORT ExtensionSet {
     return FindExtensionInfoFromFieldNumber(wire_type, field, &finder,
                                             extension, was_packed_on_wire);
   }
-  inline bool FindExtension(int wire_type, uint32_t field,
-                            const Message* extendee,
-                            const internal::ParseContext* ctx,
-                            ExtensionInfo* extension, bool* was_packed_on_wire);
+  bool FindExtension(int wire_type, uint32_t field, const Message* extendee,
+                     const internal::ParseContext* ctx,
+                     ExtensionInfo* extension, bool* was_packed_on_wire);
   // Used for MessageSet only
   const char* ParseFieldMaybeLazily(uint64_t tag, const char* ptr,
                                     const MessageLite* extendee,
@@ -1164,6 +1220,7 @@ class PROTOBUF_EXPORT ExtensionSet {
                                           internal::InternalMetadata* metadata,
                                           const char* ptr,
                                           internal::ParseContext* ctx);
+
   template <typename Msg, typename T>
   const char* ParseMessageSetItemTmpl(const char* ptr, const Msg* extendee,
                                       internal::InternalMetadata* metadata,
@@ -1639,6 +1696,7 @@ class MessageTypeTraits {
 // Used by WireFormatVerify to extract the verify function from the registry.
 LazyEagerVerifyFnType FindExtensionLazyEagerVerifyFn(
     const MessageLite* extendee, int number);
+
 
 // forward declaration.
 class RepeatedMessageGenericTypeTraits;

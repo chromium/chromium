@@ -51,11 +51,14 @@
 #error "You cannot SWIG proto headers"
 #endif
 
+
 namespace google {
 namespace protobuf {
 
 class Message;
 class UnknownField;  // For the allowlist
+class UnknownFieldSet;
+class DynamicMessage;
 
 namespace internal {
 
@@ -140,9 +143,15 @@ enum { kSooSizeMask = kNotSooBit - 1 };
 // The number of elements that can be stored in the SOO rep. On 64-bit
 // platforms, this is 1 for int64_t, 2 for int32_t, 3 for bool, and 0 for
 // absl::Cord. We return 0 to disable SOO on 32-bit platforms.
-constexpr int SooCapacityElements(size_t element_size) {
-  if (sizeof(void*) < 8) return 0;
-  return std::min<int>(kSooCapacityBytes / element_size, kSooSizeMask);
+template <typename T>
+constexpr int SooCapacityElements() {
+  // RepeatedPtrField always has SOO capacity of 1.
+  if constexpr (std::is_pointer_v<T>) {
+    return 1;
+  }
+  // Disable SOO for RepeatedFields on 32-bit platforms.
+  if constexpr (sizeof(void*) < 8) return 0;
+  return std::min<int>(kSooCapacityBytes / sizeof(T), kSooSizeMask);
 }
 
 struct LongSooRep {
@@ -282,8 +291,10 @@ class ABSL_ATTRIBUTE_WARN_UNUSED RepeatedField final
   constexpr RepeatedField();
   RepeatedField(const RepeatedField& rhs) : RepeatedField(nullptr, rhs) {}
 
+#ifndef PROTOBUF_FUTURE_REMOVE_REPEATED_FIELD_ARENA_CONSTRUCTOR
   // TODO: make this constructor private
   explicit RepeatedField(Arena* arena);
+#endif
 
   template <typename Iter,
             typename = typename std::enable_if<std::is_constructible<
@@ -478,11 +489,21 @@ class ABSL_ATTRIBUTE_WARN_UNUSED RepeatedField final
 
   friend class Arena;
 
+#ifdef PROTOBUF_FUTURE_REMOVE_REPEATED_FIELD_ARENA_CONSTRUCTOR
+  // For access to private arena constructor.
+  friend class UnknownFieldSet;
+  friend class DynamicMessage;
+#endif
+
   static constexpr int kSooCapacityElements =
-      internal::SooCapacityElements(sizeof(Element));
+      internal::SooCapacityElements<Element>();
 
   static constexpr int kInitialSize = 0;
   static PROTOBUF_CONSTEXPR const size_t kHeapRepHeaderSize = sizeof(HeapRep);
+
+#ifdef PROTOBUF_FUTURE_REMOVE_REPEATED_FIELD_ARENA_CONSTRUCTOR
+  explicit RepeatedField(Arena* arena);
+#endif
 
   RepeatedField(Arena* arena, const RepeatedField& rhs);
   RepeatedField(Arena* arena, RepeatedField&& rhs);
@@ -533,8 +554,9 @@ class ABSL_ATTRIBUTE_WARN_UNUSED RepeatedField final
 
   // Destroys all elements in [begin, end).
   // This function does nothing if `Element` is trivial.
-  static void Destroy(const Element* begin, const Element* end) {
-    if (!std::is_trivial<Element>::value) {
+  static void Destroy([[maybe_unused]] const Element* begin,
+                      [[maybe_unused]] const Element* end) {
+    if constexpr (!std::is_trivially_destructible<Element>::value) {
       std::for_each(begin, end, [&](const Element& e) { e.~Element(); });
     }
   }
@@ -821,13 +843,7 @@ inline void RepeatedField<Element>::Resize(int new_size, const Element& value) {
 template <typename Element>
 inline const Element& RepeatedField<Element>::Get(int index) const
     ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  if constexpr (internal::GetBoundsCheckMode() ==
-                internal::BoundsCheckMode::kAbort) {
-    internal::RuntimeAssertInBounds(index, size());
-  } else {
-    ABSL_DCHECK_GE(index, 0);
-    ABSL_DCHECK_LT(index, size());
-  }
+  internal::RuntimeAssertInBounds(index, size());
   return elements(is_soo())[index];
 }
 
@@ -850,13 +866,7 @@ inline Element& RepeatedField<Element>::at(int index)
 template <typename Element>
 inline Element* RepeatedField<Element>::Mutable(int index)
     ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  if constexpr (internal::GetBoundsCheckMode() ==
-                internal::BoundsCheckMode::kAbort) {
-    internal::RuntimeAssertInBounds(index, size());
-  } else {
-    ABSL_DCHECK_GE(index, 0);
-    ABSL_DCHECK_LT(index, size());
-  }
+  internal::RuntimeAssertInBounds(index, size());
   return &elements(is_soo())[index];
 }
 
@@ -912,7 +922,15 @@ inline void RepeatedField<Element>::AddForwardIterator(Iter begin, Iter end) {
   const int old_size = size(is_soo);
   int capacity = Capacity(is_soo);
   Element* elem = unsafe_elements(is_soo);
-  int new_size = old_size + static_cast<int>(std::distance(begin, end));
+  // Check for signed overflow.
+  const size_t distance = std::distance(begin, end);
+  ABSL_CHECK_LE(distance, static_cast<size_t>(std::numeric_limits<int>::max()))
+      << "Input too large";
+  // Check again for signed overflow.
+  const int delta = static_cast<int>(distance);
+  ABSL_CHECK_LE(old_size, std::numeric_limits<int>::max() - delta)
+      << "Input too large";
+  const int new_size = old_size + delta;
   if (ABSL_PREDICT_FALSE(new_size > capacity)) {
     Grow(is_soo, old_size, new_size);
     is_soo = false;
@@ -1179,7 +1197,7 @@ inline int CalculateReserveSize(int capacity, int new_size) {
   if (ABSL_PREDICT_FALSE(capacity > kMaxSizeBeforeClamp)) {
     return std::numeric_limits<int>::max();
   }
-  constexpr int kSooCapacityElements = SooCapacityElements(sizeof(T));
+  constexpr int kSooCapacityElements = SooCapacityElements<T>();
   if (kSooCapacityElements > 0 && kSooCapacityElements < lower_limit) {
     // In this case, we need to set capacity to 0 here to ensure power-of-two
     // sized allocations.
@@ -1243,8 +1261,8 @@ PROTOBUF_NOINLINE void RepeatedField<Element>::GrowNoAnnotate(bool was_soo,
   if (old_size > 0) {
     Element* pnew = static_cast<Element*>(new_rep->elements());
     Element* pold = elements(was_soo);
-    // TODO: add absl::is_trivially_relocatable<Element>
-    if (std::is_trivial<Element>::value) {
+    if constexpr (std::is_trivially_copyable<Element>::value ||
+                  absl::is_trivially_relocatable<Element>::value) {
       memcpy(static_cast<void*>(pnew), pold, old_size * sizeof(Element));
     } else {
       for (Element* end = pnew + old_size; pnew != end; ++pnew, ++pold) {
@@ -1286,7 +1304,6 @@ inline void RepeatedField<Element>::Truncate(int new_size) {
 template <>
 PROTOBUF_EXPORT size_t
 RepeatedField<absl::Cord>::SpaceUsedExcludingSelfLong() const;
-
 
 // -------------------------------------------------------------------
 

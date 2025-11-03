@@ -29,6 +29,8 @@ compile_edition_defaults(
     ],
     maximum_edition = "2024",
     minimum_edition = "2023",
+    # Test with HEAD protoc for any behavior change, other usages don't need this.
+    protoc = "//src/google/protobuf/compiler:protoc_minimal",
 )
 
 compile_edition_defaults(
@@ -37,6 +39,8 @@ compile_edition_defaults(
     srcs = ["//src/google/protobuf:unittest_features_proto"],
     maximum_edition = "2023",
     minimum_edition = "2023",
+    # Test with HEAD protoc for any behavior change, other usages don't need this.
+    protoc = "//src/google/protobuf/compiler:protoc_minimal",
 )
 
 compile_edition_defaults(
@@ -45,6 +49,8 @@ compile_edition_defaults(
     srcs = ["//src/google/protobuf:unittest_features_proto"],
     maximum_edition = "99997_TEST_ONLY",
     minimum_edition = "2023",
+    # Test with HEAD protoc for any behavior change, other usages don't need this.
+    protoc = "//src/google/protobuf/compiler:protoc_minimal",
 )
 
 compile_edition_defaults(
@@ -53,6 +59,8 @@ compile_edition_defaults(
     srcs = ["//src/google/protobuf:unittest_features_proto"],
     maximum_edition = "99999_TEST_ONLY",
     minimum_edition = "99997_TEST_ONLY",
+    # Test with HEAD protoc for any behavior change, other usages don't need this.
+    protoc = "//src/google/protobuf/compiler:protoc_minimal",
 )
 
 embed_edition_defaults(
@@ -74,12 +82,30 @@ embed_edition_defaults(
     template = "defaults_test_embedded_base64.h.template",
 )
 
+embed_edition_defaults(
+    name = "embed_test_defaults_decimal_array",
+    testonly = True,
+    defaults = ":test_defaults_2023",
+    encoding = "decimal_array",
+    output = "defaults_test_embedded_decimal_array.h",
+    placeholder = "DEFAULTS_VALUE",
+    template = "defaults_test_embedded_decimal_array.h.template",
+)
+
+embed_edition_defaults(
+    name = "embed_test_defaults_hex_array",
+    testonly = True,
+    defaults = ":test_defaults_2023",
+    encoding = "hex_array",
+    output = "defaults_test_embedded_hex_array.h",
+    placeholder = "DEFAULTS_VALUE",
+    template = "defaults_test_embedded_hex_array.h.template",
+)
+
 cc_binary(
     name = "internal_defaults_escape",
     srcs = ["internal_defaults_escape.cc"],
     malloc = "@bazel_tools//tools/cpp:malloc",
-    # This needs to be public for users of embed_edition_defaults.
-    visibility = ["//visibility:public"],
     deps = [
         "//src/google/protobuf",
         "@abseil-cpp//absl/flags:flag",
@@ -94,6 +120,8 @@ cc_library(
     hdrs = [
         "defaults_test_embedded.h",
         "defaults_test_embedded_base64.h",
+        "defaults_test_embedded_decimal_array.h",
+        "defaults_test_embedded_hex_array.h",
     ],
 )
 

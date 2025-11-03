@@ -1106,8 +1106,11 @@ std::optional<float> GetFieldGroupPresenceProbability(
 
 HasbitMode GetFieldHasbitMode(const FieldDescriptor* field,
                               const Options& options) {
-  // TODO: Use profile data to determine the hasbit mode for fields
-  // with optional hasbits.
+  if (IsProfileDriven(options) && field->is_repeated() &&
+      IsLikelyPresent(field, options)) {
+    return HasbitMode::kNoHasbit;
+  }
+
   return internal::cpp::GetFieldHasbitModeWithoutProfile(field);
 }
 
@@ -1359,38 +1362,13 @@ bool IsV2EnabledForMessage(const Descriptor* descriptor,
   return false;
 }
 
-#ifdef PROTOBUF_INTERNAL_V2_EXPERIMENT
-bool IsV2CodegenEnabled(const Options& options) {
-  return !options.opensource_runtime && !options.bootstrap;
-}
-
-bool IsEditionsGoldenProto(const Descriptor* descriptor) {
-  return descriptor->file()->package() == "protobuf_editions_test.golden";
-}
-
-bool ShouldGenerateV2Code(const Descriptor* descriptor,
-                          const Options& options) {
-  return IsV2CodegenEnabled(options) && !IsEditionsGoldenProto(descriptor) &&
-         !HasSimpleBaseClass(descriptor, options);
-}
-
-bool IsEligibleForV2Batching(const FieldDescriptor* field) {
-  // Non-message fields whose numbers fit into 2B should be considered for
-  // batching although the actual batching depends on the current batching, the
-  // payload size, etc. Oneof fields are not eligible for batching because they
-  // are handled separately.
-  return field->cpp_type() != FieldDescriptor::CPPTYPE_MESSAGE &&
-         field->real_containing_oneof() == nullptr && !field->is_map() &&
-         field->number() < std::numeric_limits<uint16_t>::max();
-}
-
-bool HasFieldEligibleForV2Batching(const Descriptor* descriptor) {
-  for (const auto& field : FieldRange(descriptor)) {
-    if (IsEligibleForV2Batching(field)) return true;
-  }
+// Returns true if a message (descriptor) directly has required fields. Later
+// CLs will expand to cover transitively required fields.
+bool ShouldVerifyV2(const Descriptor* descriptor, const Options& options,
+                    MessageSCCAnalyzer* scc_analyzer) {
   return false;
 }
-#endif  // PROTOBUF_INTERNAL_V2_EXPERIMENT
+
 
 bool HasV2MessageTable(const FileDescriptor* file, const Options& options) {
   for (int i = 0; i < file->message_type_count(); ++i) {
@@ -1443,6 +1421,20 @@ bool IsStringOrMessage(const FieldDescriptor* field) {
 
   ABSL_LOG(FATAL) << "Can't get here.";
   return false;
+}
+
+bool IsRepeatedPtrField(const FieldDescriptor* field) {
+  if (!field->is_repeated() || field->is_map()) {
+    return false;
+  }
+  switch (field->cpp_type()) {
+    case FieldDescriptor::CPPTYPE_MESSAGE:
+      return true;
+    case FieldDescriptor::CPPTYPE_STRING:
+      return field->cpp_string_type() != FieldDescriptor::CppStringType::kCord;
+    default:
+      return false;
+  }
 }
 
 bool IsAnyMessage(const FileDescriptor* descriptor) {
@@ -1538,20 +1530,6 @@ static void GenerateUtf8CheckCode(io::Printer* p, const FieldDescriptor* field,
         p->Emit(R"cc(
           $pbi$::WireFormatLite::$Strict$(
               $params$ $pbi$::WireFormatLite::SERIALIZE, "$pkg.Msg.field$");
-        )cc");
-      }
-      break;
-
-    case internal::cpp::Utf8CheckMode::kVerify:
-      if (for_parse) {
-        p->Emit(R"cc(
-          $pbi$::WireFormat::$Verify$($params$ $pbi$::WireFormat::PARSE,
-                                      "$pkg.Msg.field$");
-        )cc");
-      } else {
-        p->Emit(R"cc(
-          $pbi$::WireFormat::$Verify$($params$ $pbi$::WireFormat::SERIALIZE,
-                                      "$pkg.Msg.field$");
         )cc");
       }
       break;

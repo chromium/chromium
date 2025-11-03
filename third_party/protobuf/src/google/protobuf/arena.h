@@ -19,6 +19,10 @@
 #include <type_traits>
 #include <utility>
 #include <vector>
+
+#include "absl/base/macros.h"
+#include "absl/meta/type_traits.h"
+#include "google/protobuf/internal_visibility.h"
 #if defined(_MSC_VER) && !defined(_LIBCPP_STD_VER) && !_HAS_EXCEPTIONS
 // Work around bugs in MSVC <typeinfo> header when _HAS_EXCEPTIONS=0.
 #include <exception>
@@ -37,6 +41,7 @@ using type_info = ::type_info;
 #include "google/protobuf/serial_arena.h"
 #include "google/protobuf/thread_safe_arena.h"
 
+
 // Must be included last.
 #include "google/protobuf/port_def.inc"
 
@@ -48,7 +53,7 @@ namespace google {
 namespace protobuf {
 
 struct ArenaOptions;  // defined below
-class Arena;    // defined below
+class Arena;          // defined below
 class Message;  // defined in message.h
 class MessageLite;
 template <typename Key, typename T>
@@ -75,6 +80,59 @@ class TcParser;              // defined in generated_message_tctable_impl.h
 
 template <typename Type>
 class GenericTypeHandler;  // defined in repeated_field.h
+
+// This struct maps field types to the types that we will use to represent them
+// when allocated on an arena. This is necessary because fields no longer own an
+// arena pointer, but can be allocated directly on an arena. In this case, we
+// will use a wrapper class that holds both the arena pointer and the field, and
+// points the field to the arena pointer.
+//
+// Additionally, split pointer fields will use this representation when
+// allocated, regardless of whether they are on an arena or not.
+//
+// For example:
+// ```
+// template <>
+// struct FieldArenaRep<Message> {
+//   using Type = ArenaMessage;
+//   static Message* Get(ArenaMessage* arena_rep) {
+//     return &arena_rep->message();
+//   }
+// };
+// ```
+template <typename T>
+struct FieldArenaRep {
+  // The type of the field when allocated on an arena. By default, this is just
+  // `T`, but can be specialized to use a wrapper class that holds both the
+  // arena pointer and the field.
+  using Type = T;
+
+  // Returns a pointer to the field from the arena representation. By default,
+  // this is just a no-op, but can be specialized to extract the field from the
+  // wrapper class.
+  static T* PROTOBUF_NONNULL Get(Type* PROTOBUF_NONNULL arena_rep) {
+    return arena_rep;
+  }
+};
+
+// Returns true if `T` uses arena offsets instead of holding a copy of the arena
+// pointer. This can be deduced if the field's arena representation is not the
+// same as the field itself.
+template <typename T>
+constexpr bool FieldHasArenaOffset() {
+  using ArenaRepT = typename FieldArenaRep<T>::Type;
+  return !std::is_same_v<T, ArenaRepT>;
+}
+
+// TODO - Some types have a deprecated arena-enabled constructor,
+// as we plan to remove it in favor of using arena offsets, but for now Arena
+// needs to call it. While the arena constructor exists, we will call the
+// `InternalVisibility` override to silence the warning.
+template <typename T>
+constexpr bool HasDeprecatedArenaConstructor() {
+  return std::is_base_of_v<internal::RepeatedPtrFieldBase, T> &&
+         !std::is_same_v<T, internal::RepeatedPtrFieldBase>;
+}
 
 template <typename T>
 void arena_delete_object(void* PROTOBUF_NONNULL object) {
@@ -162,7 +220,12 @@ struct ABSL_ATTRIBUTE_WARN_UNUSED ArenaOptions final {
 // This is a thread-safe implementation: multiple threads may allocate from the
 // arena concurrently. Destruction is not thread-safe and the destructing
 // thread must synchronize with users of the arena first.
-class PROTOBUF_EXPORT PROTOBUF_ALIGNAS(8) Arena final {
+class PROTOBUF_EXPORT PROTOBUF_ALIGNAS(8)
+#ifdef __clang__
+    // TODO: Enable this for GCC.
+    ABSL_ATTRIBUTE_WARN_UNUSED
+#endif  // __clang__
+    Arena final {
  public:
   // Default constructor with sensible default options, tuned for average
   // use-cases.
@@ -258,7 +321,7 @@ class PROTOBUF_EXPORT PROTOBUF_ALIGNAS(8) Arena final {
   template <typename T>
   PROTOBUF_NDEBUG_INLINE static T* PROTOBUF_NONNULL
   CreateArray(Arena* PROTOBUF_NULLABLE arena, size_t num_elements) {
-    static_assert(std::is_trivial<T>::value,
+    static_assert(std::is_trivially_default_constructible<T>::value,
                   "CreateArray requires a trivially constructible type");
     static_assert(std::is_trivially_destructible<T>::value,
                   "CreateArray requires a trivially destructible type");
@@ -334,7 +397,6 @@ class PROTOBUF_EXPORT PROTOBUF_ALIGNAS(8) Arena final {
       void (*PROTOBUF_NONNULL destruct)(void* PROTOBUF_NONNULL)) {
     impl_.AddCleanup(object, destruct);
   }
-
 
   template <typename T>
   class InternalHelper {
@@ -423,18 +485,49 @@ class PROTOBUF_EXPORT PROTOBUF_ALIGNAS(8) Arena final {
         is_arena_constructable;
 
     template <typename... Args>
+    static T* PROTOBUF_NONNULL ConstructOnArena(void* PROTOBUF_NONNULL ptr,
+                                                Arena& arena, Args&&... args) {
+      // TODO - ClangTidy gives warnings for calling the deprecated
+      // constructors here, which leads to log spam. It is correct to invoke
+      // these constructors through the Arena class as it will allow us to
+      // silently switch to a different constructor once arena pointers are
+      // removed. While these constructors exists, we will call the
+      // `InternalVisibility` overrides to silence the warning.
+      if constexpr (internal::HasDeprecatedArenaConstructor<T>()) {
+        return new (ptr) T(internal::InternalVisibility(), &arena,
+                           static_cast<Args&&>(args)...);
+      } else {
+        return new (ptr) T(&arena, static_cast<Args&&>(args)...);
+      }
+    }
+
+    template <typename... Args>
     static T* PROTOBUF_NONNULL Construct(void* PROTOBUF_NONNULL ptr,
+                                         Arena* PROTOBUF_NULLABLE arena,
                                          Args&&... args) {
-      return new (ptr) T(static_cast<Args&&>(args)...);
+      if (ABSL_PREDICT_FALSE(arena == nullptr)) {
+        return new (ptr) T(static_cast<Args&&>(args)...);
+      } else {
+        return ConstructOnArena(ptr, *arena, static_cast<Args&&>(args)...);
+      }
     }
 
     static PROTOBUF_ALWAYS_INLINE T* PROTOBUF_NONNULL New() {
-      return new T(nullptr);
+      // Fields which use arena offsets don't have constructors that take an
+      // arena pointer. Since the arena is nullptr, it is safe to default
+      // construct the object.
+      if constexpr (internal::FieldHasArenaOffset<T>() ||
+                    internal::HasDeprecatedArenaConstructor<T>()) {
+        return new T();
+      } else {
+        return new T(nullptr);
+      }
     }
 
     friend class Arena;
     friend class TestUtil::ReflectionTester;
   };
+
 
   // Provides access to protected GetArena to generated messages.
   // For internal use only.
@@ -504,7 +597,12 @@ class PROTOBUF_EXPORT PROTOBUF_ALIGNAS(8) Arena final {
     static_assert(is_arena_constructable<T>::value,
                   "Can only construct types that are ArenaConstructable");
     if (ABSL_PREDICT_FALSE(arena == nullptr)) {
-      return new T(nullptr, static_cast<Args&&>(args)...);
+      if constexpr (internal::FieldHasArenaOffset<T>() ||
+                    internal::HasDeprecatedArenaConstructor<T>()) {
+        return new T(static_cast<Args&&>(args)...);
+      } else {
+        return new T(nullptr, static_cast<Args&&>(args)...);
+      }
     } else {
       return arena->DoCreateMessage<T>(static_cast<Args&&>(args)...);
     }
@@ -559,9 +657,14 @@ class PROTOBUF_EXPORT PROTOBUF_ALIGNAS(8) Arena final {
 
   template <typename T, typename... Args>
   PROTOBUF_NDEBUG_INLINE T* PROTOBUF_NONNULL DoCreateMessage(Args&&... args) {
-    return InternalHelper<T>::Construct(
-        AllocateInternal<T, is_destructor_skippable<T>::value>(), this,
-        std::forward<Args>(args)...);
+    using ArenaRepT = typename internal::FieldArenaRep<T>::Type;
+    auto* arena_repr = InternalHelper<ArenaRepT>::ConstructOnArena(
+        AllocateInternal<ArenaRepT,
+                         is_destructor_skippable<ArenaRepT>::value>(),
+        *this, std::forward<Args>(args)...);
+    // Note that we can't static_cast arena_repr to T* here, since T might be a
+    // member of ArenaRepT.
+    return internal::FieldArenaRep<T>::Get(arena_repr);
   }
 
   // CreateInArenaStorage is used to implement map field. Without it,
@@ -649,7 +752,12 @@ Arena::DefaultConstruct(Arena* PROTOBUF_NULLABLE arena) {
   static_assert(is_destructor_skippable<T>::value, "");
   void* mem = arena != nullptr ? arena->AllocateAligned(sizeof(T))
                                : ::operator new(sizeof(T));
-  return new (mem) T(arena);
+
+  if constexpr (internal::HasDeprecatedArenaConstructor<T>()) {
+    return new (mem) T(internal::InternalVisibility(), arena);
+  } else {
+    return new (mem) T(arena);
+  }
 }
 
 template <typename T>

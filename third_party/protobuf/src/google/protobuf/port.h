@@ -23,6 +23,10 @@
 #include <type_traits>
 #include <typeinfo>
 
+#if defined(__ARM_FEATURE_CRC32)
+#include <arm_acle.h>
+#endif
+
 #include "absl/base/optimization.h"
 
 
@@ -274,6 +278,22 @@ inline constexpr bool ForceEagerlyVerifiedLazyInProtoc() {
   return EnableStableExperiments();
 }
 
+inline constexpr bool ForceSplitFieldsInProtoc() {
+#if defined(PROTOBUF_FORCE_SPLIT)
+  return true;
+#else
+  return false;
+#endif
+}
+
+// Returns true if hasbits for repeated fields are enabled (b/391445226). This
+// flag-gates the rollout of the feature, and if disabled will disable the
+// feature. This will be removed once the feature is fully rolled out and
+// verified.
+inline constexpr bool EnableExperimentalHintHasBitsForRepeatedFields() {
+  return true;
+}
+
 // Returns true if debug hardening for clearing oneof message on arenas is
 // enabled.
 inline constexpr bool DebugHardenClearOneofMessageOnArena() {
@@ -328,7 +348,7 @@ constexpr bool DebugHardenFuzzMessageSpaceUsedLong() {
   return false;
 }
 
-inline constexpr bool DebugHardenVerifyHasBitConsistency() {
+inline constexpr bool DebugHardenCheckHasBitConsistency() {
 #if !defined(NDEBUG) || defined(ABSL_HAVE_ADDRESS_SANITIZER) || \
     defined(ABSL_HAVE_MEMORY_SANITIZER) || defined(ABSL_HAVE_THREAD_SANITIZER)
   return true;
@@ -686,8 +706,6 @@ constexpr bool EnableCustomNewFor() {
 }
 #endif
 
-constexpr bool IsOss() { return true; }
-
 // Counter library for debugging internal protobuf logic.
 // It allows instrumenting code that has different options (eg fast vs slow
 // path) to get visibility into how much we are hitting each path.
@@ -794,9 +812,7 @@ inline uint32_t Crc32(uint32_t crc, uint64_t v) {
 #elif defined(__ARM_FEATURE_CRC32)
 
 constexpr bool HasCrc32() { return true; }
-inline uint32_t Crc32(uint32_t crc, uint64_t v) {
-  return __builtin_arm_crc32cd(crc, v);
-}
+inline uint32_t Crc32(uint32_t crc, uint64_t v) { return __crc32cd(crc, v); }
 
 #else
 

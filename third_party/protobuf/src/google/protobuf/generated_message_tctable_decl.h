@@ -180,9 +180,9 @@ class MapTypeCard {
 
  private:
   uint8_t tag_;
-  bool is_signed_ : 1;
-  bool is_zigzag_ : 1;
-  bool is_utf8_ : 1;
+  uint8_t is_signed_ : 1;
+  uint8_t is_zigzag_ : 1;
+  uint8_t is_utf8_ : 1;
 };
 
 // Make the map entry type card for a specified field type.
@@ -253,8 +253,6 @@ struct MapAuxInfo {
   uint8_t use_lite : 1;
   // If true UTF8 errors cause the parsing to fail.
   uint8_t fail_on_utf8_failure : 1;
-  // If true UTF8 errors are logged, but they are accepted.
-  uint8_t log_debug_utf8_failure : 1;
   // If true the next aux contains the enum validator.
   uint8_t value_is_validated_enum : 1;
 };

@@ -30,13 +30,13 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.logging.Logger;
 
 /**
@@ -416,8 +416,7 @@ public abstract class GeneratedMessage extends AbstractMessage implements Serial
           + " security vulnerability:"
           + " https://github.com/protocolbuffers/protobuf/security/advisories/GHSA-h4h5-3hr4-j3g2";
 
-  protected static final Set<String> loggedPre22TypeNames =
-      Collections.synchronizedSet(new HashSet<String>());
+  protected static final Set<String> loggedPre22TypeNames = new CopyOnWriteArraySet<String>();
 
   static void warnPre22Gencode(Class<?> messageClass) {
     if (System.getProperty(PRE22_GENCODE_SILENCE_PROPERTY) != null) {
@@ -949,14 +948,58 @@ public abstract class GeneratedMessage extends AbstractMessage implements Serial
     /** Check if a singular extension is present. */
     <T> boolean hasExtension(ExtensionLite<? extends MessageT, T> extension);
 
+    /**
+     * hasExtension() overload for {@link Extension} instances. Since {@link Extension} is a subtype
+     * of {@link ExtensionLite}, this is redundant for source-compatibility, but exists here to
+     * maintain ABI compatibility with .class files which dispatch to a method of the concrete type.
+     */
+    default <T> boolean hasExtension(Extension<? extends MessageT, T> extension) {
+      return hasExtension((ExtensionLite<? extends MessageT, T>) extension);
+    }
+
+    /** Overload to maintain ABI compatibility. See {@link #hasExtension(ExtensionLite)}. */
+    default <T> boolean hasExtension(GeneratedExtension<? extends MessageT, T> extension) {
+      return hasExtension((ExtensionLite<? extends MessageT, T>) extension);
+    }
+
     /** Get the number of elements in a repeated extension. */
     <T> int getExtensionCount(ExtensionLite<? extends MessageT, List<T>> extension);
+
+    /** Overload to maintain ABI compatibility. See {@link #getExtensionCount(ExtensionLite)}. */
+    default <T> int getExtensionCount(Extension<? extends MessageT, List<T>> extension) {
+      return getExtensionCount((ExtensionLite<? extends MessageT, List<T>>) extension);
+    }
+
+    /** Overload to maintain ABI compatibility. See {@link #getExtensionCount(ExtensionLite)}. */
+    default <T> int getExtensionCount(GeneratedExtension<MessageT, List<T>> extension) {
+      return getExtensionCount((ExtensionLite<? extends MessageT, List<T>>) extension);
+    }
 
     /** Get the value of an extension. */
     <T> T getExtension(ExtensionLite<? extends MessageT, T> extension);
 
+    /** Overload to maintain ABI compatibility. See {@link #getExtension(ExtensionLite)}. */
+    default <T> T getExtension(Extension<? extends MessageT, T> extension) {
+      return getExtension((ExtensionLite<? extends MessageT, T>) extension);
+    }
+
+    /** Overload to maintain ABI compatibility. See {@link #getExtension(ExtensionLite)}. */
+    default <T> T getExtension(GeneratedExtension<MessageT, T> extension) {
+      return getExtension((ExtensionLite<? extends MessageT, T>) extension);
+    }
+
     /** Get one element of a repeated extension. */
     <T> T getExtension(ExtensionLite<? extends MessageT, List<T>> extension, int index);
+
+    /** Overload to maintain ABI compatibility. See {@link #getExtension(ExtensionLite)}. */
+    default <T> T getExtension(Extension<? extends MessageT, List<T>> extension, int index) {
+      return getExtension((ExtensionLite<? extends MessageT, List<T>>) extension, index);
+    }
+
+    /** Overload to maintain ABI compatibility. See {@link #getExtension(ExtensionLite)}. */
+    default <T> T getExtension(GeneratedExtension<MessageT, List<T>> extension, int index) {
+      return getExtension((ExtensionLite<? extends MessageT, List<T>>) extension, index);
+    }
   }
 
   /**
@@ -1007,12 +1050,20 @@ public abstract class GeneratedMessage extends AbstractMessage implements Serial
       this.extensions = builder.buildExtensions();
     }
 
-    private void verifyExtensionContainingType(final Extension<? extends MessageT, ?> extension) {
-      if (extension.getDescriptor().getContainingType() != getDescriptorForType()) {
+    /**
+     * Returns an iterator over the set extensions lazily wrapped in {@link FieldEntry} objects.
+     * Order is unspecified.
+     */
+    public final Iterator<FieldEntry> extensionsIterator() {
+      return new FieldEntryIterator(extensions);
+    }
+
+    private void verifyExtensionContainingType(final FieldDescriptor descriptor) {
+      if (descriptor.getContainingType() != getDescriptorForType()) {
         // This can only happen if someone uses unchecked operations.
         throw new IllegalArgumentException(
             "Extension is for type \""
-                + extension.getDescriptor().getContainingType().getFullName()
+                + descriptor.getContainingType().getFullName()
                 + "\" which does not match message type \""
                 + getDescriptorForType().getFullName()
                 + "\".");
@@ -1025,8 +1076,9 @@ public abstract class GeneratedMessage extends AbstractMessage implements Serial
         final ExtensionLite<? extends MessageT, T> extensionLite) {
       Extension<MessageT, T> extension = checkNotLite(extensionLite);
 
-      verifyExtensionContainingType(extension);
-      return extensions.hasField(extension.getDescriptor());
+      final FieldDescriptor descriptor = extension.getDescriptor();
+      verifyExtensionContainingType(descriptor);
+      return extensions.hasField(descriptor);
     }
 
     /** Get the number of elements in a repeated extension. */
@@ -1035,8 +1087,8 @@ public abstract class GeneratedMessage extends AbstractMessage implements Serial
         final ExtensionLite<? extends MessageT, List<T>> extensionLite) {
       Extension<MessageT, List<T>> extension = checkNotLite(extensionLite);
 
-      verifyExtensionContainingType(extension);
       final FieldDescriptor descriptor = extension.getDescriptor();
+      verifyExtensionContainingType(descriptor);
       return extensions.getRepeatedFieldCount(descriptor);
     }
 
@@ -1046,8 +1098,8 @@ public abstract class GeneratedMessage extends AbstractMessage implements Serial
     public final <T> T getExtension(final ExtensionLite<? extends MessageT, T> extensionLite) {
       Extension<MessageT, T> extension = checkNotLite(extensionLite);
 
-      verifyExtensionContainingType(extension);
-      FieldDescriptor descriptor = extension.getDescriptor();
+      final FieldDescriptor descriptor = extension.getDescriptor();
+      verifyExtensionContainingType(descriptor);
       final Object value = extensions.getField(descriptor);
       T result = null;
       if (value == null) {
@@ -1078,8 +1130,8 @@ public abstract class GeneratedMessage extends AbstractMessage implements Serial
         final ExtensionLite<? extends MessageT, List<T>> extensionLite, final int index) {
       Extension<MessageT, List<T>> extension = checkNotLite(extensionLite);
 
-      verifyExtensionContainingType(extension);
-      FieldDescriptor descriptor = extension.getDescriptor();
+      final FieldDescriptor descriptor = extension.getDescriptor();
+      verifyExtensionContainingType(descriptor);
       return (T)
           extension.singularFromReflectionType(extensions.getRepeatedField(descriptor, index));
     }
@@ -1300,6 +1352,45 @@ public abstract class GeneratedMessage extends AbstractMessage implements Serial
         throw new IllegalArgumentException("FieldDescriptor does not match message type.");
       }
     }
+
+    /** A wrapper for a field descriptor and its value. */
+    public static final class FieldEntry {
+      private final FieldDescriptor descriptor;
+      private final Object value;
+
+      public FieldDescriptor getDescriptor() {
+        return descriptor;
+      }
+
+      public Object getValue() {
+        return value;
+      }
+
+      FieldEntry(FieldDescriptor descriptor, Object value) {
+        this.descriptor = descriptor;
+        this.value = value;
+      }
+    }
+
+    private static final class FieldEntryIterator implements Iterator<FieldEntry> {
+      private final Iterator<Map.Entry<FieldDescriptor, Object>> iter;
+
+      FieldEntryIterator(FieldSet<FieldDescriptor> fieldSet) {
+        this.iter = fieldSet.iterator();
+      }
+
+      @Override
+      public final boolean hasNext() {
+        return iter.hasNext();
+      }
+
+      @Override
+      public final FieldEntry next() {
+        // Just let the inner iterator throw the NoSuchElementException.
+        Map.Entry<FieldDescriptor, Object> entry = iter.next();
+        return new FieldEntry(entry.getKey(), entry.getValue());
+      }
+    }
   }
 
   /**
@@ -1436,6 +1527,12 @@ public abstract class GeneratedMessage extends AbstractMessage implements Serial
           extension.singularFromReflectionType(extensions.getRepeatedField(descriptor, index));
     }
 
+    /** Overload to maintain ABI compatibility. See {@link #setExtension(ExtensionLite, Object)}. */
+    public final <T> BuilderT setExtension(
+        final Extension<? extends MessageT, T> extension, final T value) {
+      return setExtension((ExtensionLite<? extends MessageT, T>) extension, value);
+    }
+
     /** Set the value of an extension. */
     public final <T> BuilderT setExtension(
         final ExtensionLite<? extends MessageT, T> extensionLite, final T value) {
@@ -1447,6 +1544,15 @@ public abstract class GeneratedMessage extends AbstractMessage implements Serial
       extensions.setField(descriptor, extension.toReflectionType(value));
       onChanged();
       return (BuilderT) this;
+    }
+
+    /**
+     * Overload to maintain ABI compatibility. See {@link #setExtension(ExtensionLite, int,
+     * Object)}.
+     */
+    public final <T> BuilderT setExtension(
+        final Extension<? extends MessageT, List<T>> extension, final int index, final T value) {
+      return setExtension((ExtensionLite<? extends MessageT, List<T>>) extension, index, value);
     }
 
     /** Set the value of one element of a repeated extension. */
@@ -1464,6 +1570,12 @@ public abstract class GeneratedMessage extends AbstractMessage implements Serial
       return (BuilderT) this;
     }
 
+    /** Overload to maintain ABI compatibility. See {@link #addExtension(ExtensionLite, Object)}. */
+    public final <T> BuilderT addExtension(
+        final Extension<? extends MessageT, List<T>> extension, final T value) {
+      return addExtension((ExtensionLite<? extends MessageT, List<T>>) extension, value);
+    }
+
     /** Append a value to a repeated extension. */
     public final <T> BuilderT addExtension(
         final ExtensionLite<? extends MessageT, List<T>> extensionLite, final T value) {
@@ -1475,6 +1587,11 @@ public abstract class GeneratedMessage extends AbstractMessage implements Serial
       extensions.addRepeatedField(descriptor, extension.singularToReflectionType(value));
       onChanged();
       return (BuilderT) this;
+    }
+
+    /** Overload to maintain ABI compatibility. See {@link #clearExtension(ExtensionLite)}. */
+    public final <T> BuilderT clearExtension(final Extension<? extends MessageT, T> extension) {
+      return clearExtension((ExtensionLite<? extends MessageT, T>) extension);
     }
 
     /** Clear an extension. */
@@ -1749,7 +1866,7 @@ public abstract class GeneratedMessage extends AbstractMessage implements Serial
         new CachedDescriptorRetriever() {
           @Override
           public FieldDescriptor loadDescriptor() {
-            return scope.getDescriptorForType().getExtensions().get(descriptorIndex);
+            return scope.getDescriptorForType().getExtension(descriptorIndex);
           }
         },
         singularType,
@@ -2103,8 +2220,8 @@ public abstract class GeneratedMessage extends AbstractMessage implements Serial
     public FieldAccessorTable(final Descriptor descriptor, final String[] camelCaseNames) {
       this.descriptor = descriptor;
       this.camelCaseNames = camelCaseNames;
-      fields = new FieldAccessor[descriptor.getFields().size()];
-      oneofs = new OneofAccessor[descriptor.getOneofs().size()];
+      fields = new FieldAccessor[descriptor.getFieldCount()];
+      oneofs = new OneofAccessor[descriptor.getOneofCount()];
       initialized = false;
     }
 
@@ -2127,7 +2244,7 @@ public abstract class GeneratedMessage extends AbstractMessage implements Serial
         }
         int fieldsSize = fields.length;
         for (int i = 0; i < fieldsSize; i++) {
-          FieldDescriptor field = descriptor.getFields().get(i);
+          FieldDescriptor field = descriptor.getField(i);
           String containingOneofCamelCaseName = null;
           if (field.getContainingOneof() != null) {
             int index = fieldsSize + field.getContainingOneof().getIndex();
@@ -2187,8 +2304,8 @@ public abstract class GeneratedMessage extends AbstractMessage implements Serial
           }
         }
 
-        for (int i = 0; i < descriptor.getOneofs().size(); i++) {
-          if (i < descriptor.getRealOneofs().size()) {
+        for (int i = 0; i < descriptor.getOneofCount(); i++) {
+          if (i < descriptor.getRealOneofCount()) {
             oneofs[i] =
                 new RealOneofAccessor(
                     descriptor, camelCaseNames[i + fieldsSize], messageClass, builderClass);
@@ -2335,8 +2452,8 @@ public abstract class GeneratedMessage extends AbstractMessage implements Serial
     /** SyntheticOneofAccessor provides access to a single synthetic oneof. */
     private static class SyntheticOneofAccessor implements OneofAccessor {
       SyntheticOneofAccessor(final Descriptor descriptor, final int oneofIndex) {
-        OneofDescriptor oneofDescriptor = descriptor.getOneofs().get(oneofIndex);
-        fieldDescriptor = oneofDescriptor.getFields().get(0);
+        OneofDescriptor oneofDescriptor = descriptor.getOneof(oneofIndex);
+        fieldDescriptor = oneofDescriptor.getField(0);
       }
 
       private final FieldDescriptor fieldDescriptor;

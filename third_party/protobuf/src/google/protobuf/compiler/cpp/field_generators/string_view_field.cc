@@ -501,7 +501,7 @@ void SingularStringView::GenerateCopyConstructorCode(io::Printer* p) const {
       {{"hazzer",
         [&] {
           if (HasHasbit(field_, options_)) {
-            p->Emit(R"cc((from.$has_hasbit$) != 0)cc");
+            p->Emit(R"cc(CheckHasBit(from.$has_bits_array$, $has_mask$))cc");
           } else {
             p->Emit(R"cc(!from._internal_$name$().empty())cc");
           }
@@ -630,12 +630,22 @@ class RepeatedStringView : public FieldGeneratorBase {
     }
   }
 
+  bool RequiresArena(GeneratorFunction function) const override {
+    switch (function) {
+      case GeneratorFunction::kMergeFrom:
+        return true;
+    }
+    return false;
+  }
+
   void GenerateMergingCode(io::Printer* p) const override {
     // TODO: experiment with simplifying this to be
     // `if (!from.empty()) { body(); }` for both split and non-split cases.
     auto body = [&] {
       p->Emit(R"cc(
-        _this->_internal_mutable_$name$()->MergeFrom(from._internal_$name$());
+        _this->_internal_mutable_$name$()->InternalMergeFromWithArena(
+            $pb$::MessageLite::internal_visibility(), arena,
+            from._internal_$name$());
       )cc");
     };
     if (!should_split()) {
@@ -670,7 +680,9 @@ class RepeatedStringView : public FieldGeneratorBase {
     if (should_split()) {
       p->Emit(R"cc(
         if (!from._internal_$name$().empty()) {
-          _internal_mutable_$name$()->MergeFrom(from._internal_$name$());
+          _internal_mutable_$name$()->InternalMergeFromWithArena(
+              $pb$::MessageLite::internal_visibility(), arena,
+              from._internal_$name$());
         }
       )cc");
     }
@@ -743,6 +755,9 @@ void RepeatedStringView::GenerateInlineAccessorDefinitions(
           // @@protoc_insertion_point(field_get:$pkg.Msg.field$)
           return $getter$;
         }
+        //~ Note: no need to set hasbit in set_$name$(int index). Hasbits only
+        //~ need to be updated if a new element is (potentially) added, not if
+        //~ an existing element is mutated.
         template <typename Arg_>
         inline void $Msg$::set_$name$(int index, Arg_&& value) {
           $WeakDescriptorSelfPin$;
@@ -754,8 +769,11 @@ void RepeatedStringView::GenerateInlineAccessorDefinitions(
         inline void $Msg$::add_$name$(Arg_&& value) {
           $WeakDescriptorSelfPin$;
           $TsanDetectConcurrentMutation$;
-          $pbi$::AddToRepeatedPtrField(*_internal_mutable_$name_internal$(),
+          $pbi$::AddToRepeatedPtrField($pb$::MessageLite::internal_visibility(),
+                                       GetArena(),
+                                       *_internal_mutable_$name_internal$(),
                                        ::std::forward<Arg_>(value) $bytes_tag$);
+          $set_hasbit$;
           $annotate_add$;
           // @@protoc_insertion_point(field_add:$pkg.Msg.field$)
         }
@@ -769,6 +787,7 @@ void RepeatedStringView::GenerateInlineAccessorDefinitions(
         inline $pb$::RepeatedPtrField<::std::string>* $nonnull$
         $Msg$::mutable_$name$() ABSL_ATTRIBUTE_LIFETIME_BOUND {
           $WeakDescriptorSelfPin$;
+          $set_hasbit$;
           $annotate_mutable_list$;
           // @@protoc_insertion_point(field_mutable_list:$pkg.Msg.field$)
           $TsanDetectConcurrentMutation$;

@@ -17,7 +17,9 @@ on:
         type: string
   workflow_dispatch:
 
-permissions: {}
+permissions:
+  contents: read
+
 jobs:
   test:
     name: Test staleness
@@ -27,7 +29,7 @@ jobs:
       - name: Checkout
         uses: protocolbuffers/protobuf-ci/checkout@v4
         with:
-          ref: ${{ inputs.safe-checkout || github.head_ref || github.ref }}
+          ref: ${{ inputs.safe-checkout }}
 
       - name: Mark runs associated with commits
         if: ${{ github.event_name != 'schedule' && github.event_name != 'workflow_dispatch' }}

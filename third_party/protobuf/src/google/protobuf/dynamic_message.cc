@@ -61,6 +61,7 @@
 #include "google/protobuf/extension_set.h"
 #include "google/protobuf/generated_message_reflection.h"
 #include "google/protobuf/generated_message_util.h"
+#include "google/protobuf/has_bits.h"
 #include "google/protobuf/map.h"
 #include "google/protobuf/map_field.h"
 #include "google/protobuf/message_lite.h"
@@ -147,7 +148,7 @@ static auto DefaultEntryToTypeInfo(
 DynamicMapField::DynamicMapField(const Message* default_entry,
                                  const Message* mapped_default_entry_if_message,
                                  Arena* arena)
-    : MapFieldBase(default_entry, arena),
+    : MapFieldBase(default_entry),
       map_(arena, DefaultEntryToTypeInfo(default_entry,
                                          mapped_default_entry_if_message)) {
   // This invariant is required by `GetMapRaw` to easily access the map
@@ -157,7 +158,7 @@ DynamicMapField::DynamicMapField(const Message* default_entry,
 }
 
 DynamicMapField::~DynamicMapField() {
-  ABSL_DCHECK_EQ(arena(), nullptr);
+  ABSL_DCHECK_EQ(map_.arena(), nullptr);
   map_.ClearTable(false);
 }
 
@@ -346,6 +347,8 @@ class DynamicMessage final : public Message {
   // If `T` is not `void`, it will mask bits off the offset via alignment.
   // Used to remove feature masks that are part of the reflection
   // implementation.
+  template <typename T>
+  uint32_t FieldOffset(int i) const;
   template <typename T = void>
   T* MutableRaw(int i);
   template <typename T = void>
@@ -444,21 +447,20 @@ DynamicMessage::DynamicMessage(DynamicMessageFactory::TypeInfo* type_info,
 }
 
 template <typename T>
-inline T* DynamicMessage::MutableRaw(int i) {
-  uint32_t mask = ~uint32_t{};
+inline uint32_t DynamicMessage::FieldOffset(int i) const {
+  uint32_t mask = ~uint32_t{0};
   if constexpr (!std::is_void_v<T>) {
     mask = ~(uint32_t{alignof(T)} - 1);
   }
-  return reinterpret_cast<T*>(OffsetToPointer(type_info_->offsets[i] & mask));
+  return type_info_->offsets[i] & mask;
+}
+template <typename T>
+inline T* DynamicMessage::MutableRaw(int i) {
+  return reinterpret_cast<T*>(OffsetToPointer(FieldOffset<T>(i)));
 }
 template <typename T>
 inline const T& DynamicMessage::GetRaw(int i) const {
-  uint32_t mask = ~uint32_t{};
-  if constexpr (!std::is_void_v<T>) {
-    mask = ~(uint32_t{alignof(T)} - 1);
-  }
-  return *reinterpret_cast<const T*>(
-      OffsetToPointer(type_info_->offsets[i] & mask));
+  return *reinterpret_cast<const T*>(OffsetToPointer(FieldOffset<T>(i)));
 }
 inline void* DynamicMessage::MutableExtensionsRaw() {
   return OffsetToPointer(type_info_->extensions_offset);
@@ -901,8 +903,8 @@ const Message* DynamicMessageFactory::GetPrototypeNoLock(
         type_info->has_bits_offset = size;
         uint32_t* has_bits_indices = new uint32_t[type->field_count()];
         for (int j = 0; j < type->field_count(); j++) {
-          // Initialize to -1, fields that need a hasbit will overwrite.
-          has_bits_indices[j] = static_cast<uint32_t>(-1);
+          // Initialize to kNoHasbit, fields that need a hasbit will overwrite.
+          has_bits_indices[j] = static_cast<uint32_t>(internal::kNoHasbit);
         }
         type_info->has_bits_indices.reset(has_bits_indices);
       }

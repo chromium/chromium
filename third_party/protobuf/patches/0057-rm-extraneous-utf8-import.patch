@@ -1,0 +1,13 @@
+diff --git a/src/google/protobuf/parse_context.h b/src/google/protobuf/parse_context.h
+index 5b058f5eecd83..b4392b46ebc29 100644
+--- a/src/google/protobuf/parse_context.h
++++ b/src/google/protobuf/parse_context.h
+@@ -38,7 +38,6 @@
+ #include "google/protobuf/repeated_field.h"
+ #include "google/protobuf/repeated_ptr_field.h"
+ #include "google/protobuf/wire_format_lite.h"
+-#include "utf8_validity.h"
+ 
+ 
+ // Must be included last.
+ 

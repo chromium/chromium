@@ -69,26 +69,8 @@ void TypeConversions(Context& ctx, const EnumDescriptor& desc) {
       return;
     case Kernel::kUpb:
       ctx.Emit(R"rs(
-            impl $pbr$::UpbTypeConversions for $name$ {
-                fn upb_type() -> $pbr$::CType {
-                    $pbr$::CType::Enum
-                }
-
-                fn to_message_value(
-                    val: $pb$::View<'_, Self>) -> $pbr$::upb_MessageValue {
-                    $pbr$::upb_MessageValue { int32_val: val.0 }
-                }
-
-                unsafe fn into_message_value_fuse_if_required(
-                  _raw_parent_arena: $pbr$::RawArena,
-                  val: Self) -> $pbr$::upb_MessageValue {
-                    $pbr$::upb_MessageValue { int32_val: val.0 }
-                }
-
-                unsafe fn from_message_value<'msg>(val: $pbr$::upb_MessageValue)
-                    -> $pb$::View<'msg, Self> {
-                  $name$(unsafe { val.int32_val })
-                }
+            impl $pbr$::EntityType for $name$ {
+                type Tag = $pbr$::EnumTag;
             }
             )rs");
       return;
@@ -105,14 +87,12 @@ void MiniTable(Context& ctx, const EnumDescriptor& desc,
             {"mini_descriptor_length", mini_descriptor.size()}},
            R"rs(
     unsafe impl $pbr$::AssociatedMiniTableEnum for $name$ {
-      fn mini_table() -> *const $pbr$::upb_MiniTableEnum {
-        static MINI_TABLE: $std$::sync::OnceLock<$pbr$::MiniTableEnumPtr> =
+      fn mini_table() -> $pbr$::MiniTableEnumPtr {
+        static MINI_TABLE: $std$::sync::OnceLock<$pbr$::MiniTableEnumInitPtr> =
             $std$::sync::OnceLock::new();
         MINI_TABLE.get_or_init(|| unsafe {
-          $pbr$::MiniTableEnumPtr($pbr$::upb_MiniTableEnum_Build(
-              "$mini_descriptor$".as_ptr(), $mini_descriptor_length$,
-              $pbr$::THREAD_LOCAL_ARENA.with(|a| a.raw()),
-              $std$::ptr::null_mut()))
+          $pbr$::MiniTableEnumInitPtr(
+              $pbr$::build_enum_mini_table("$mini_descriptor$"))
         }).0
       }
     }
@@ -314,6 +294,26 @@ void GenerateEnumDefinition(Context& ctx, const EnumDescriptor& desc,
         }
       }
 
+      // SAFETY: this is an enum type
+      unsafe impl $pbi$::Enum for $name$ {
+        const NAME: &'static str = "$name$";
+
+        fn is_known(value: i32) -> bool {
+          matches!(value, $known_values_pattern$)
+        }
+      }
+
+      $type_conversions_impl$
+
+      $mini_table$
+      )rs");
+
+  if (ctx.is_cpp()) {
+    ctx.Emit(
+        {
+            {"name", name},
+        },
+        R"rs(
       unsafe impl $pb$::ProxiedInRepeated for $name$ {
         fn repeated_new(_private: $pbi$::Private) -> $pb$::Repeated<Self> {
           $pbr$::new_enum_repeated()
@@ -377,20 +377,8 @@ void GenerateEnumDefinition(Context& ctx, const EnumDescriptor& desc,
             $pbr$::reserve_enum_repeated_mut(r, additional);
         }
       }
-
-      // SAFETY: this is an enum type
-      unsafe impl $pbi$::Enum for $name$ {
-        const NAME: &'static str = "$name$";
-
-        fn is_known(value: i32) -> bool {
-          matches!(value, $known_values_pattern$)
-        }
-      }
-
-      $type_conversions_impl$
-
-      $mini_table$
-      )rs");
+        )rs");
+  }
 }
 
 }  // namespace rust

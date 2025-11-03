@@ -29,9 +29,11 @@
 #include "absl/strings/string_view.h"
 #include "absl/strings/substitute.h"
 #include "google/protobuf/compiler/java/java_features.pb.h"
+#include "google/protobuf/compiler/code_generator_lite.h"
 #include "google/protobuf/compiler/java/generator.h"
 #include "google/protobuf/compiler/java/name_resolver.h"
 #include "google/protobuf/compiler/versions.h"
+#include "google/protobuf/descriptor.h"
 #include "google/protobuf/descriptor.pb.h"
 #include "google/protobuf/io/printer.h"
 #include "google/protobuf/io/strtod.h"
@@ -100,13 +102,13 @@ void PrintGencodeVersionValidator(io::Printer* printer, bool oss_runtime,
       "  $minor$,\n"
       "  $patch$,\n"
       "  $suffix$,\n"
-      "  $location$);\n",
-      "domain", oss_runtime ? "PUBLIC" : "GOOGLE_INTERNAL", "major",
-      absl::StrCat("/* major= */ ", version.major()), "minor",
-      absl::StrCat("/* minor= */ ", version.minor()), "patch",
-      absl::StrCat("/* patch= */ ", version.patch()), "suffix",
-      absl::StrCat("/* suffix= */ \"", version.suffix(), "\""), "location",
-      absl::StrCat(java_class_name, ".class.getName()"));
+      "  \"$location$\");\n",
+      "domain", oss_runtime ? "PUBLIC" : "GOOGLE_INTERNAL",                //
+      "major", absl::StrCat("/* major= */ ", version.major()),             //
+      "minor", absl::StrCat("/* minor= */ ", version.minor()),             //
+      "patch", absl::StrCat("/* patch= */ ", version.patch()),             //
+      "suffix", absl::StrCat("/* suffix= */ \"", version.suffix(), "\""),  //
+      "location", java_class_name);                                        //
 }
 
 std::string UnderscoresToCamelCase(absl::string_view input,
@@ -941,7 +943,6 @@ inline bool NestInFileClass(const Descriptor& descriptor) {
   }
   return nest_in_file_class == pb::JavaFeatures::NestInFileClassFeature::YES;
 }
-
 
 // Returns whether the type should be nested in the file class for the given
 // descriptor, depending on different Protobuf Java API versions.
