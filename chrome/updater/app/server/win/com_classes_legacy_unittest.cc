@@ -21,6 +21,7 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "base/threading/platform_thread.h"
 #include "base/win/scoped_bstr.h"
 #include "base/win/scoped_variant.h"
 #include "base/win/win_util.h"
@@ -274,6 +275,7 @@ TEST_F(LegacyAppCommandWebImplTest, FailedToLaunchStatus) {
 
   DWORD exit_code = 0;
   EXPECT_EQ(app_command_web->get_exitCode(&exit_code), S_FALSE);
+  base::PlatformThread::Sleep(base::Milliseconds(100));
   EXPECT_TRUE(ping_sent);
 }
 

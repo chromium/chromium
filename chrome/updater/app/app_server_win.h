@@ -32,18 +32,19 @@ class AppServerWin : public AppServer {
   using AppServer::config;
   using AppServer::prefs;
 
-  // Posts the `task` to the sequence bound to this instance. Increments the COM
-  // module count before posting the task, and decrements the module count after
-  // the task is complete, to ensure that `task` completes before the
-  // `AppServer` instance is stopped.
+  // Posts the `task` to the sequence bound to this instance. Calls
+  // `TaskStarted` before posting the task, and calls `TaskCompleted` after the
+  // task is complete, to ensure that `task` completes before the `AppServer`
+  // instance is stopped (this task counting only works for synchronous tasks).
   static void PostRpcTask(base::OnceClosure task);
 
-  // Posts `task` to the provided `task_runner`. Increments the COM module count
-  // before posting the task, and decrements the module count after the task is
-  // complete, to ensure that `task` completes before the `AppServer` instance
-  // is stopped.
-  static void PostOnTaskRunner(scoped_refptr<base::TaskRunner> task_runner,
-                               base::OnceClosure task);
+  // Posts `task` to the provided `task_runner`. Calls `TaskStarted` before
+  // posting the task, and calls `TaskCompleted` after `task` completes and
+  // calls the provided `OnceClosure`, to ensure that `task` completes before
+  // the `AppServer` instance is stopped.
+  static void PostOnTaskRunner(
+      scoped_refptr<base::TaskRunner> task_runner,
+      base::OnceCallback<void(base::OnceClosure)> task);
 
   scoped_refptr<UpdateService> update_service() { return update_service_; }
 
@@ -86,6 +87,9 @@ class AppServerWin : public AppServer {
   void Start(base::OnceCallback<HRESULT()> register_callback);
 
   void PostRpcTaskOnMainSequence(base::OnceClosure task);
+  void PostRpcTaskOnTaskRunner(
+      scoped_refptr<base::TaskRunner> task_runner,
+      base::OnceCallback<void(base::OnceClosure)> task);
 
   // Task runner bound to the main sequence.
   scoped_refptr<base::SequencedTaskRunner> main_task_runner_ =
