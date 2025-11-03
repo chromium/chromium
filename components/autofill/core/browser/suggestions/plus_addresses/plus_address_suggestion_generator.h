@@ -18,7 +18,6 @@ class PlusAddressSuggestionGenerator : public SuggestionGenerator {
  public:
   explicit PlusAddressSuggestionGenerator(
       AutofillPlusAddressDelegate* plus_address_delegate,
-      PasswordFormClassification password_form_classification,
       bool is_manually_triggered);
 
   ~PlusAddressSuggestionGenerator() override;
@@ -45,8 +44,6 @@ class PlusAddressSuggestionGenerator : public SuggestionGenerator {
 
  private:
   raw_ptr<AutofillPlusAddressDelegate> plus_address_delegate_;
-
-  PasswordFormClassification password_form_classification_;
 
   // TODO(crbug.com/409962888): remove [[maybe_unused]] when logic is added
   [[maybe_unused]] bool is_manually_triggered_;

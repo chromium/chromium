@@ -1319,19 +1319,14 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase1(
       weak_ptr_factory_.GetWeakPtr(), form, field, trigger_source, context);
 
   if (field_is_relevant_for_plus_addresses) {
-    auto callback =
-        base::BindOnce([](std::vector<std::string> plus_addresses) {
-          // Noop to make function signatures fit.
-          return std::optional<std::vector<std::string>>(
-              std::move(plus_addresses));
-        }).Then(std::move(generate_suggestions_and_maybe_show_ui_phase2));
     client().GetPlusAddressDelegate()->GetAffiliatedPlusAddresses(
-        client().GetLastCommittedPrimaryMainFrameOrigin(), std::move(callback));
+        client().GetLastCommittedPrimaryMainFrameOrigin(),
+        std::move(generate_suggestions_and_maybe_show_ui_phase2));
     return;
   }
 
   std::move(generate_suggestions_and_maybe_show_ui_phase2)
-      .Run(/*plus_addresses=*/std::nullopt);
+      .Run(/*plus_addresses=*/{});
 }
 
 void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase2(
@@ -1339,7 +1334,7 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase2(
     const FormFieldData& field,
     AutofillSuggestionTriggerSource trigger_source,
     SuggestionsContext context,
-    std::optional<std::vector<std::string>> plus_addresses) {
+    std::vector<std::string> plus_addresses) {
   FormStructure* form_structure = nullptr;
   AutofillField* autofill_field = nullptr;
   // In case we cannot fetch the parsed `FormStructure` and `AutofillField`, we
@@ -1373,7 +1368,7 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase3(
     const FormFieldData& field,
     AutofillSuggestionTriggerSource trigger_source,
     SuggestionsContext context,
-    std::optional<std::vector<std::string>> plus_addresses,
+    std::vector<std::string> plus_addresses,
     std::vector<std::string> one_time_passwords) {
   OnGenerateSuggestionsCallback callback =
       base::BindOnce(&BrowserAutofillManager::OnGenerateSuggestionsComplete,
@@ -1412,9 +1407,7 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase3(
                                       &form_structure, &autofill_field);
   std::vector<Suggestion> suggestions = GetAvailableSuggestions(
       form, form_structure, field, autofill_field, trigger_source,
-      GetPlusAddressOverride(
-          client().GetPlusAddressDelegate(),
-          plus_addresses.value_or(std::vector<std::string>())),
+      GetPlusAddressOverride(client().GetPlusAddressDelegate(), plus_addresses),
       one_time_passwords, context);
 
   if (ShouldSuppressSuggestions(context.suppress_reason, log_manager())) {
@@ -1481,7 +1474,7 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase3(
   // suggestions are not shown if the plus address email override was applied on
   // at least one address suggestion.
   const bool should_offer_plus_addresses_with_profiles =
-      plus_addresses && !plus_addresses->empty() && autofill_field &&
+      !plus_addresses.empty() && autofill_field &&
       autofill_field->Type().GetGroups().contains(FieldTypeGroup::kEmail) &&
       !suggestions.empty() &&
       !WasEmailOverrideAppliedOnSuggestions(suggestions);
@@ -1491,9 +1484,6 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase3(
   // suggestions are mixed with profile suggestions if these exist.
   if (IsPlusAddressesManuallyTriggered(trigger_source) ||
       should_offer_plus_addresses_with_profiles) {
-    const PasswordFormClassification password_form_classification =
-        client().ClassifyAsPasswordForm(*this, form.global_id(),
-                                        field.global_id());
     const AutofillPlusAddressDelegate::SuggestionContext suggestions_context =
         IsPlusAddressesManuallyTriggered(trigger_source)
             ? AutofillPlusAddressDelegate::SuggestionContext::kManualFallback
@@ -1501,14 +1491,13 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase3(
                   kAutofillProfileOnEmailField;
     std::vector<Suggestion> plus_address_suggestions =
         client().GetPlusAddressDelegate()->GetSuggestionsFromPlusAddresses(
-            *plus_addresses, client().GetLastCommittedPrimaryMainFrameOrigin(),
+            plus_addresses, client().GetLastCommittedPrimaryMainFrameOrigin(),
             field, IsPlusAddressesManuallyTriggered(trigger_source));
 
-    MixPlusAddressAndAddressSuggestions(
-        std::move(plus_address_suggestions), std::move(suggestions),
-        suggestions_context, password_form_classification.type,
-        form.global_id(), field.global_id(), std::move(callback));
-
+    MixPlusAddressAndAddressSuggestions(std::move(plus_address_suggestions),
+                                        std::move(suggestions),
+                                        suggestions_context, form.global_id(),
+                                        field.global_id(), std::move(callback));
     return;
   }
 
@@ -1559,20 +1548,16 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase3(
   }
 
   const bool should_offer_plus_addresses =
-      plus_addresses && !plus_addresses->empty() && autofill_field &&
+      !plus_addresses.empty() && autofill_field &&
       (autofill_field->Type().GetGroups().contains(FieldTypeGroup::kEmail) ||
        autofill_field->Type().GetTypes().contains(FieldType::USERNAME) ||
        autofill_field->Type().GetTypes().contains(FieldType::SINGLE_USERNAME));
-
-  const PasswordFormClassification password_form_classification =
-      client().ClassifyAsPasswordForm(*this, form.global_id(),
-                                      field.global_id());
 
   std::vector<Suggestion> plus_address_suggestions;
   if (should_offer_plus_addresses) {
     plus_address_suggestions =
         client().GetPlusAddressDelegate()->GetSuggestionsFromPlusAddresses(
-            *plus_addresses, client().GetLastCommittedPrimaryMainFrameOrigin(),
+            plus_addresses, client().GetLastCommittedPrimaryMainFrameOrigin(),
             field, IsPlusAddressesManuallyTriggered(trigger_source));
   }
 
@@ -1580,9 +1565,8 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase3(
       &BrowserAutofillManager::
           OnGeneratedPlusAddressAndSingleFieldFillSuggestions,
       weak_ptr_factory_.GetWeakPtr(),
-      AutofillPlusAddressDelegate::SuggestionContext::kAutocomplete,
-      password_form_classification.type, form, field, std::move(callback),
-      std::move(plus_address_suggestions));
+      AutofillPlusAddressDelegate::SuggestionContext::kAutocomplete, form,
+      field, std::move(callback), std::move(plus_address_suggestions));
 
   // Generating single field suggestions.
   auto on_suggestions_returned = base::BindOnce(
@@ -1622,7 +1606,6 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase3(
 void BrowserAutofillManager::
     OnGeneratedPlusAddressAndSingleFieldFillSuggestions(
         AutofillPlusAddressDelegate::SuggestionContext suggestions_context,
-        PasswordFormClassification::Type password_form_type,
         const FormData& form,
         const FormFieldData& field,
         OnGenerateSuggestionsCallback callback,
@@ -1659,9 +1642,12 @@ void BrowserAutofillManager::
   }
 
   if (!plus_address_suggestions.empty()) {
+    const PasswordFormClassification password_form_classification =
+        client().ClassifyAsPasswordForm(*this, form.global_id(),
+                                        field.global_id());
     client().GetPlusAddressDelegate()->OnPlusAddressSuggestionShown(
         *this, form.global_id(), field.global_id(), suggestions_context,
-        password_form_type, suggestions[0].type);
+        password_form_classification.type, suggestions[0].type);
 
     // Include ManagePlusAddressSuggestion item.
     suggestions.emplace_back(SuggestionType::kSeparator);
@@ -1746,7 +1732,6 @@ void BrowserAutofillManager::MixPlusAddressAndAddressSuggestions(
     std::vector<Suggestion> plus_address_suggestions,
     std::vector<Suggestion> address_suggestions,
     AutofillPlusAddressDelegate::SuggestionContext suggestions_context,
-    PasswordFormClassification::Type password_form_type,
     const FormGlobalId& form_id,
     const FieldGlobalId& field_id,
     OnGenerateSuggestionsCallback callback) {
@@ -1756,9 +1741,11 @@ void BrowserAutofillManager::MixPlusAddressAndAddressSuggestions(
     return;
   }
 
+  const PasswordFormClassification password_form_classification =
+      client().ClassifyAsPasswordForm(*this, form_id, field_id);
   client().GetPlusAddressDelegate()->OnPlusAddressSuggestionShown(
-      *this, form_id, field_id, suggestions_context, password_form_type,
-      plus_address_suggestions[0].type);
+      *this, form_id, field_id, suggestions_context,
+      password_form_classification.type, plus_address_suggestions[0].type);
   if (address_suggestions.empty()) {
     plus_address_suggestions.emplace_back(SuggestionType::kSeparator);
     plus_address_suggestions.push_back(

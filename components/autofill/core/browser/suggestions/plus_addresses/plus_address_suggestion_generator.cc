@@ -18,10 +18,8 @@ namespace autofill {
 
 PlusAddressSuggestionGenerator::PlusAddressSuggestionGenerator(
     AutofillPlusAddressDelegate* plus_address_delegate,
-    PasswordFormClassification password_form_classification,
     bool is_manually_triggered)
     : plus_address_delegate_(plus_address_delegate),
-      password_form_classification_(password_form_classification),
       is_manually_triggered_(is_manually_triggered) {}
 
 PlusAddressSuggestionGenerator::~PlusAddressSuggestionGenerator() = default;
