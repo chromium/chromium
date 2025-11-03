@@ -266,6 +266,7 @@ chromium-metrics-reviews@google.com.
   <int value="31" label="IceOptionsTrickle"/>
   <int value="32" label="IceCandidateCount"/>
   <int value="33" label="Bundle"/>
+  <int value="34" label="Bandwidth"/>
   <int value="40" label="RtpHeaderExtensionsRemoved"/>
   <int value="41" label="RtpHeaderExtensionsAdded"/>
   <int value="42" label="RtpHeaderExtensionsModified"/>
@@ -293,6 +294,9 @@ chromium-metrics-reviews@google.com.
   <int value="87" label="VideoCodecsAddedWithRawPacketization"/>
   <int value="88" label="VideoCodecsModifiedWithRawPacketization"/>
   <int value="89" label="VideoCodecsRtcpReducedSize"/>
+  <int value="100" label="DataChannelSctpInit"/>
+  <int value="101" label="DataChannelMaxMessageSize"/>
+  <int value="102" label="DataChannelSctpPort"/>
 </enum>
 
 <enum name="SetTosArguments">
