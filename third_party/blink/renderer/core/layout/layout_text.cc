@@ -672,7 +672,8 @@ void LayoutText::AbsoluteQuadsForRange(Vector<gfx::QuadF>& quads,
   }
 }
 
-gfx::RectF LayoutText::LocalBoundingBoxRectForAccessibility() const {
+gfx::RectF LayoutText::LocalBoundingBoxRectForAccessibility(
+    IncludeDescendants include_descendants) const {
   NOT_DESTROYED();
   gfx::RectF result;
   CollectLineBoxRects(
