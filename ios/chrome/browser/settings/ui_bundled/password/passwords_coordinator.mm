@@ -391,7 +391,13 @@
       trusted_vault::SecurityDomainId::kChromeSync;
   syncer::TrustedVaultUserActionTriggerForUMA trigger =
       syncer::TrustedVaultUserActionTriggerForUMA::kPasswordManagerSettings;
-  CHECK(!_trustedVaultReauthenticationCoordinator, base::NotFatalUntil::M145);
+  if (_trustedVaultReauthenticationCoordinator) {
+    // This method can be called while the previous trusted vault reauth is
+    // being dismissed. This is probably a mistap. If not, the user can tap
+    // again once the view is entirely dismissed, as this will cause the
+    // execution of `dismissTrustedVaultReauthenticationCoordinator`.
+    return;
+  }
   _trustedVaultReauthenticationCoordinator =
       [[TrustedVaultReauthenticationCoordinator alloc]
           initWithBaseViewController:self.passwordsViewController
