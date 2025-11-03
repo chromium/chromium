@@ -276,6 +276,10 @@ void RTCRtpReceiver::Trace(Visitor* visitor) const {
 
 RTCRtpCapabilities* RTCRtpReceiver::getCapabilities(ScriptState* state,
                                                     const String& kind) {
+  if (!state->ContextIsValid()) {
+    return nullptr;
+  }
+
   if (kind != "audio" && kind != "video")
     return nullptr;
 
