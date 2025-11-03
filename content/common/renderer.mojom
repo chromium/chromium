@@ -13,6 +13,7 @@ import "mojo/public/mojom/base/shared_memory.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "services/network/public/mojom/network_types.mojom";
 import "third_party/blink/public/mojom/browser_interface_broker.mojom";
+import "third_party/blink/public/mojom/cpu_performance.mojom";
 import "third_party/blink/public/mojom/origin_trials/origin_trials_settings.mojom";
 import "third_party/blink/public/mojom/user_agent/user_agent_metadata.mojom";
 import "url/mojom/url.mojom";
@@ -176,5 +177,6 @@ interface Renderer {
                      blink.mojom.UserAgentMetadata metadata,
                      array<string> cors_exempt_header_list,
                      blink.mojom.OriginTrialsSettings? origin_trials_settings,
+                     blink.mojom.PerformanceTier cpu_performance_tier,
                      uint64 trace_id);
 };

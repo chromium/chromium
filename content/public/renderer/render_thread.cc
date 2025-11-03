@@ -6,6 +6,7 @@
 
 #include "base/no_destructor.h"
 #include "base/threading/thread_checker_impl.h"
+#include "third_party/blink/public/mojom/cpu_performance.mojom.h"
 
 namespace content {
 
@@ -34,5 +35,9 @@ bool RenderThread::IsMainThread() {
 RenderThread::RenderThread() : resetter_(&render_thread, this) {}
 
 RenderThread::~RenderThread() = default;
+
+blink::mojom::PerformanceTier RenderThread::GetCpuPerformanceTier() {
+  return blink::mojom::PerformanceTier::kUnknown;
+}
 
 }  // namespace content

@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 #include <stdint.h>
+
 #include <memory>
 
 #include "base/auto_reset.h"
@@ -17,6 +18,7 @@
 #include "content/common/content_export.h"
 #include "content/public/child/child_thread.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
+#include "third_party/blink/public/mojom/cpu_performance.mojom-forward.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_proto.h"
 
@@ -81,6 +83,10 @@ class CONTENT_EXPORT RenderThread : virtual public ChildThread {
   // Returns the user-agent string.
   virtual blink::WebString GetUserAgent() = 0;
   virtual const blink::UserAgentMetadata& GetUserAgentMetadata() = 0;
+
+  // Returns the CPU performance tier, which exposes some information about how
+  // powerful the user device is.
+  virtual blink::mojom::PerformanceTier GetCpuPerformanceTier();
 
   // Write a representation of the current Renderer process into a trace.
   virtual void WriteIntoTrace(

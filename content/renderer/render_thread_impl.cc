@@ -143,6 +143,7 @@
 #include "third_party/blink/public/common/page/launching_process_state.h"
 #include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
+#include "third_party/blink/public/mojom/cpu_performance.mojom.h"
 #include "third_party/blink/public/mojom/origin_trials/origin_trials_settings.mojom.h"
 #include "third_party/blink/public/platform/modules/video_capture/web_video_capture_impl_manager.h"
 #include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
@@ -846,6 +847,7 @@ void RenderThreadImpl::InitializeRenderer(
     const blink::UserAgentMetadata& user_agent_metadata,
     const std::vector<std::string>& cors_exempt_header_list,
     blink::mojom::OriginTrialsSettingsPtr origin_trials_settings,
+    blink::mojom::PerformanceTier cpu_performance_tier,
     uint64_t trace_id) {
   TRACE_EVENT("navigation", "RenderThreadImpl::InitializeRenderer",
               perfetto::TerminatingFlow::Global(trace_id));
@@ -855,6 +857,7 @@ void RenderThreadImpl::InitializeRenderer(
   GetContentClient()->renderer()->DidSetUserAgent(user_agent);
   user_agent_metadata_ = user_agent_metadata;
   cors_exempt_header_list_ = cors_exempt_header_list;
+  cpu_performance_tier_ = cpu_performance_tier;
 
   std::vector<blink::WebString> web_cors_exempt_header_list(
       cors_exempt_header_list.size());
@@ -1188,6 +1191,10 @@ blink::WebString RenderThreadImpl::GetUserAgent() {
 
 const blink::UserAgentMetadata& RenderThreadImpl::GetUserAgentMetadata() {
   return user_agent_metadata_;
+}
+
+blink::mojom::PerformanceTier RenderThreadImpl::GetCpuPerformanceTier() {
+  return cpu_performance_tier_;
 }
 
 void RenderThreadImpl::WriteIntoTrace(

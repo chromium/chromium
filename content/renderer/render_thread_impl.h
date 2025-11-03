@@ -171,6 +171,7 @@ class CONTENT_EXPORT RenderThreadImpl
   void WriteIntoTrace(
       perfetto::TracedProto<perfetto::protos::pbzero::RenderProcessHost> proto)
       override;
+  blink::mojom::PerformanceTier GetCpuPerformanceTier() override;
 
   // IPC::Listener implementation via ChildThreadImpl:
   void OnAssociatedInterfaceRequest(
@@ -404,6 +405,7 @@ class CONTENT_EXPORT RenderThreadImpl
       const blink::UserAgentMetadata& user_agent_metadata,
       const std::vector<std::string>& cors_exempt_header_list,
       blink::mojom::OriginTrialsSettingsPtr origin_trial_settings,
+      blink::mojom::PerformanceTier cpu_performance_tier,
       uint64_t trace_id) override;
   void UpdateScrollbarTheme(
       mojom::UpdateScrollbarThemeParamsPtr params) override;
@@ -580,6 +582,9 @@ class CONTENT_EXPORT RenderThreadImpl
   // off only one asynchronous request.
   bool cached_items_requested_ = false;
   bool use_cached_routing_table_ = false;
+
+  blink::mojom::PerformanceTier cpu_performance_tier_ =
+      blink::mojom::PerformanceTier::kUnknown;
 
   std::optional<base::ThreadPoolInstance::ScopedRestrictedTasks>
       restrict_thread_pool_;

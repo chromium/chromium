@@ -51,6 +51,7 @@
 #include "media/base/audio_renderer_sink.h"
 #include "third_party/blink/public/common/security/protocol_handler_security_level.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
+#include "third_party/blink/public/mojom/cpu_performance.mojom-shared.h"
 #include "third_party/blink/public/mojom/peerconnection/webrtc_ip_handling_policy.mojom-forward.h"
 #include "third_party/blink/public/platform/audio/web_audio_device_source_type.h"
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
@@ -807,6 +808,13 @@ class BLINK_PLATFORM_EXPORT Platform {
 
   // Returns a sad page bitmap used when the child frame has crashed.
   virtual SkBitmap* GetSadPageBitmap() { return nullptr; }
+
+  // CPU Performance -----------------------------------------------------
+
+  // Returns the CPU performance tier.
+  virtual mojom::PerformanceTier GetCpuPerformanceTier() {
+    return mojom::PerformanceTier::kUnknown;
+  }
 
   // V8 Converter -------------------------------------------------
 

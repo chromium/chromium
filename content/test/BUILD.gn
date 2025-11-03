@@ -2637,6 +2637,7 @@ test("content_unittests") {
     "../browser/cookie_insight_list/cookie_insight_list_unittest.cc",
     "../browser/cookie_insight_list/cookie_readiness_list/cookie_readiness_list_parser_unittest.cc",
     "../browser/cookie_store/cookie_store_manager_unittest.cc",
+    "../browser/cpu_performance/cpu_performance_unittest.cc",
     "../browser/devtools/devtools_background_services_context_impl_unittest.cc",
     "../browser/devtools/devtools_frontend_host_impl_unittest.cc",
     "../browser/devtools/devtools_http_handler_unittest.cc",

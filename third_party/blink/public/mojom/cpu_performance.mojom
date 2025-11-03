@@ -1,0 +1,18 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+// This is an enumeration of performance tiers, as returned by
+// content::cpu_performance::GetTier() and possibly overridden by the embedder.
+// It is used as part of the CPU Performance API:
+// https://github.com/explainers-by-googlers/cpu-performance
+// Ordered by increasing CPU power of the user device.
+enum PerformanceTier {
+  kUnknown = 0,
+  kLow = 1,
+  kMid = 2,
+  kHigh = 3,
+  kUltra = 4,
+};
