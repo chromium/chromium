@@ -57,6 +57,7 @@ import org.chromium.chrome.browser.ntp.NewTabPageLaunchOrigin;
 import org.chromium.chrome.browser.ntp.NewTabPageLayout;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinatorFactory;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationMetricsUtils;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType;
 import org.chromium.chrome.browser.ntp_customization.theme.BackgroundImageInfo;
@@ -711,7 +712,8 @@ public class FeedSurfaceCoordinator
     }
 
     void showNtpCustomizationBottomSheet() {
-        new NtpCustomizationCoordinator(
+        NtpCustomizationCoordinatorFactory.getInstance()
+                .create(
                         mActivity,
                         mBottomSheetController,
                         () -> mProfile,

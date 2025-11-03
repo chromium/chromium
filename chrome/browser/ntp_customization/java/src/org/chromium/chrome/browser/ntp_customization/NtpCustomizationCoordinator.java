@@ -114,7 +114,7 @@ public class NtpCustomizationCoordinator {
      *     main bottom sheet will be shown instead, enabling its full navigation flow, otherwise the
      *     bottom sheet of the bottomSheetType will show by itself.
      */
-    public NtpCustomizationCoordinator(
+    NtpCustomizationCoordinator(
             Context context,
             BottomSheetController bottomSheetController,
             Supplier<@Nullable Profile> profileSupplier,
@@ -248,6 +248,10 @@ public class NtpCustomizationCoordinator {
         mMediator.showBottomSheet(THEME);
     }
 
+    void dismissBottomSheet() {
+        mMediator.dismissBottomSheet(/* animate= */ true);
+    }
+
     /**
      * Returns a click listener to handle user clicks on the options in the NTP customization main
      * bottom sheet.
@@ -331,6 +335,9 @@ public class NtpCustomizationCoordinator {
     public void destroy() {
         mViewFlipperView.removeAllViews();
         mMediator.destroy();
+        NtpCustomizationCoordinatorFactory.getInstance()
+                .onNtpCustomizationCoordinatorDestroyed(this);
+
         if (mMvtSettingCoordinator != null) {
             mMvtSettingCoordinator.destroy();
         }

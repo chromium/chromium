@@ -73,6 +73,7 @@ import org.chromium.chrome.browser.metrics.StartupMetricsTracker;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinatorFactory;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType;
 import org.chromium.chrome.browser.ntp_customization.edge_to_edge.TopInsetCoordinator;
@@ -1539,7 +1540,8 @@ public class NewTabPage
     @Override
     public void customizeSettings() {
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION)) {
-            new NtpCustomizationCoordinator(
+            NtpCustomizationCoordinatorFactory.getInstance()
+                    .create(
                             mContext,
                             mBottomSheetController,
                             mTab::getProfile,

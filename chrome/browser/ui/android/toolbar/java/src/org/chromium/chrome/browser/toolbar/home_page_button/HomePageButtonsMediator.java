@@ -19,6 +19,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.EntryPointType;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinatorFactory;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationMetricsUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.toolbar.MenuBuilderHelper;
@@ -94,7 +95,8 @@ public class HomePageButtonsMediator {
         mNtpCustomizationButtonData =
                 new HomePageButtonData(
                         /* onClickListener= */ view -> {
-                            new NtpCustomizationCoordinator(
+                            NtpCustomizationCoordinatorFactory.getInstance()
+                                    .create(
                                             mContext,
                                             mBottomSheetController,
                                             mProfileSupplier,

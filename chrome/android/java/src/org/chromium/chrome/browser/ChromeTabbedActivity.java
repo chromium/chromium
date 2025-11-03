@@ -179,6 +179,7 @@ import org.chromium.chrome.browser.ntp.NewTabPageLaunchOrigin;
 import org.chromium.chrome.browser.ntp.NewTabPageUma;
 import org.chromium.chrome.browser.ntp.NewTabPageUtils;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinatorFactory;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationMetricsUtils;
 import org.chromium.chrome.browser.ntp_customization.edge_to_edge.TopInsetCoordinator;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
@@ -3951,7 +3952,8 @@ public class ChromeTabbedActivity extends ChromeActivity {
                                 ? profileProvider.getOriginalProfile()
                                 : null;
                     };
-            new NtpCustomizationCoordinator(
+            NtpCustomizationCoordinatorFactory.getInstance()
+                    .create(
                             this,
                             mRootUiCoordinator.getBottomSheetController(),
                             profileSupplier,
