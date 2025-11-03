@@ -62,7 +62,7 @@ TEST_F(URLProvisionFetcherTest,
   feature_list.InitAndDisableFeature(media::kUsePostBodyForUrlProvisionFetcher);
 
   const GURL expected_url(
-      base::StrCat({GURL(kTestUrl).spec(), "&", kRequestParam}));
+      base::StrCat({GURL(kTestUrl).spec(), "?", kRequestParam}));
 
   base::RunLoop run_loop;
   fetcher_->Retrieve(GURL(kTestUrl), kTestRequestBody,
