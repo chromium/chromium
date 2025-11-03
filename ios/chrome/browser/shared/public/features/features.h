@@ -1128,16 +1128,6 @@ BASE_DECLARE_FEATURE(kMultilineBrowserOmnibox);
 // Returns true if the MultilineBrowserOmnibox feature is enabled.
 bool IsMultilineBrowserOmniboxEnabled();
 
-// Variations for MultilineBrowserOmnibox feature.
-extern const char kMultilineOmniboxParam[];
-extern const char kMultilineOmniboxAllText[];
-extern const char kMultilineOmniboxNoPeeking[];
-extern const char kMultilineOmniboxHalfLinePeeking[];
-extern const char kMultilineOmniboxFullLineAndPeeking[];
-
-// Returns the number of line available for autocomplete.
-CGFloat GetMultilineOmniboxAutocompleteHeight();
-
 // Feature flag for settings controls auto open remote tab groups.
 BASE_DECLARE_FEATURE(kIOSAutoOpenRemoteTabGroupsSettings);
 

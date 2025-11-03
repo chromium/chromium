@@ -1175,44 +1175,11 @@ bool IsSyncedSetUpEnabled() {
 
 BASE_FEATURE(kMultilineBrowserOmnibox, base::FEATURE_DISABLED_BY_DEFAULT);
 
-const char kMultilineOmniboxParam[] = "kMultilineOmniboxParam";
-const char kMultilineOmniboxAllText[] = "kMultilineOmniboxAllText";
-const char kMultilineOmniboxNoPeeking[] = "kMultilineOmniboxNoPeeking";
-const char kMultilineOmniboxHalfLinePeeking[] =
-    "kMultilineOmniboxHalfLinePeeking";
-const char kMultilineOmniboxFullLineAndPeeking[] =
-    "kMultilineOmniboxFullLineAndPeeking";
-
 bool IsMultilineBrowserOmniboxEnabled() {
   if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_PHONE) {
     return false;
   }
   return base::FeatureList::IsEnabled(kMultilineBrowserOmnibox);
-}
-
-// Peeking values for MultilineOmnibox.
-const float kMultilineOmniboxNoPeekingValue = 0.0f;
-const float kMultilineOmniboxHalfLinePeekingValue = 0.5f;
-const float kMultilineOmniboxFullLineAndPeekingValue = 1.5f;
-
-CGFloat GetMultilineOmniboxAutocompleteHeight() {
-  if (!base::FeatureList::IsEnabled(kMultilineBrowserOmnibox)) {
-    return CGFLOAT_MAX;
-  }
-
-  std::string param_value = base::GetFieldTrialParamByFeatureAsString(
-      kMultilineBrowserOmnibox, kMultilineOmniboxParam,
-      kMultilineOmniboxAllText);
-
-  if (param_value == kMultilineOmniboxNoPeeking) {
-    return kMultilineOmniboxNoPeekingValue;
-  } else if (param_value == kMultilineOmniboxHalfLinePeeking) {
-    return kMultilineOmniboxHalfLinePeekingValue;
-  } else if (param_value == kMultilineOmniboxFullLineAndPeeking) {
-    return kMultilineOmniboxFullLineAndPeekingValue;
-  }
-  // Default case if the param is not recognized or is kMultilineOmniboxAllText.
-  return CGFLOAT_MAX;
 }
 
 BASE_FEATURE(kIOSAutoOpenRemoteTabGroupsSettings,
