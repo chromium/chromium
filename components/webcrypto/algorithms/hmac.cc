@@ -11,6 +11,7 @@
 
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
+#include "base/containers/to_vector.h"
 #include "base/numerics/safe_math.h"
 #include "components/webcrypto/algorithm_implementation.h"
 #include "components/webcrypto/algorithms/secret_key_util.h"
@@ -201,8 +202,7 @@ class HmacImplementation : public AlgorithmImplementation {
     }
 
     // Otherwise zero out the unused bits in the key data before importing.
-    std::vector<uint8_t> modified_key_data(
-        key_data.data(), UNSAFE_TODO(key_data.data() + key_data.size()));
+    std::vector<uint8_t> modified_key_data = base::ToVector(key_data);
     TruncateToBitLength(keylen_bits, &modified_key_data);
     return CreateWebCryptoSecretKey(modified_key_data, key_algorithm,
                                     extractable, usages, key);
