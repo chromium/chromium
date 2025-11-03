@@ -878,11 +878,6 @@ class EnrollmentStateFetcherImpl::Sequence {
     ReportStepDurationAndResetTimer(kUMASuffixOwnershipCheck);
     base::UmaHistogramEnumeration(kUMAStateDeterminationOwnershipStatus,
                                   status);
-    if (local_state_->GetBoolean(prefs::kEnrollmentRecoveryRequired)) {
-      base::UmaHistogramEnumeration(
-          kUMAStateDeterminationOwnershipStatusDuringEnrollmentRecovery,
-          status);
-    }
     if (status ==
         ash::DeviceSettingsService::OwnershipStatus::kOwnershipUnknown) {
       LOG(ERROR) << "Device ownership is unknown. Skipping enrollment";

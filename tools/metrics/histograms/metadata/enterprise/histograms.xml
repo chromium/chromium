@@ -3601,17 +3601,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="Enterprise.StateDetermination.OwnershipStatusDuringEnrollmentRecovery"
-    enum="OwnershipStatus" expires_after="2026-06-01">
-  <owner>sergiyb@google.com</owner>
-  <owner>chromeos-commercial-remote-management@google.com</owner>
-  <summary>
-    Captures ownership state of device during state determination. Only logged
-    when enrollment recovery is required.
-  </summary>
-</histogram>
-
 <histogram name="Enterprise.StateDetermination.PsmReportedAvailableState"
     enum="Boolean" expires_after="2026-06-01">
   <owner>sergiyb@google.com</owner>

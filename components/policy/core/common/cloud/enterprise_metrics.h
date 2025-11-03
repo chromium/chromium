@@ -435,9 +435,6 @@ inline constexpr char kUMAStateDeterminationOnFlex[] =
     "Enterprise.StateDetermination.OnFlex";
 inline constexpr char kUMAStateDeterminationOwnershipStatus[] =
     "Enterprise.StateDetermination.OwnershipStatus";
-inline constexpr char
-    kUMAStateDeterminationOwnershipStatusDuringEnrollmentRecovery[] =
-        "Enterprise.StateDetermination.OwnershipStatusDuringEnrollmentRecovery";
 inline constexpr char kUMAStateDeterminationPsmReportedAvailableState[] =
     "Enterprise.StateDetermination.PsmReportedAvailableState";
 inline constexpr char kUMAStateDeterminationPsmRlweOprfRequestDmStatusCode[] =
