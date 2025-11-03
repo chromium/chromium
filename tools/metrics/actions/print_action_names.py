@@ -26,7 +26,7 @@ def get_names(xml_content):
   """
   if not xml_content:
     return set()
-  actions_dict, _, _, _ = extract_actions.ParseActionFile(xml_content)
+  actions_dict, _, _ = extract_actions.ParseActionFile(xml_content)
   return set(actions_dict.keys())
 
 

@@ -115,107 +115,6 @@ NOT_USER_TRIGGERED_EXPECTED_XML = (
     '</action>\n\n'
     '</actions>\n')
 
-BASIC_SUFFIX_EXPECTED_XML = (
-    '<actions>\n\n'
-    '<action name="action1">\n'
-    '  <owner>name1@chromium.org</owner>\n'
-    '  <description>Description.</description>\n'
-    '</action>\n\n'
-    '<action name="action1_suffix1">\n'
-    '  <owner>name1@chromium.org</owner>\n'
-    '  <description>Description. Suffix Description 1.</description>\n'
-    '</action>\n\n'
-    '</actions>\n')
-
-MULTI_ACTION_MULTI_SUFFIX_CHAIN = (
-    '<actions>\n\n'
-    '<action name="action1">\n'
-    '  <owner>name1@chromium.org</owner>\n'
-    '  <description>Description.</description>\n'
-    '</action>\n\n'
-    '<action name="action1_suffix1">\n'
-    '  <owner>name1@chromium.org</owner>\n'
-    '  <description>Description. Suffix Description 1.</description>\n'
-    '</action>\n\n'
-    '<action name="action1_suffix2">\n'
-    '  <owner>name1@chromium.org</owner>\n'
-    '  <description>Description. Suffix Description 2.</description>\n'
-    '</action>\n\n'
-    '<action name="action1_suffix2_suffix3">\n'
-    '  <owner>name1@chromium.org</owner>\n'
-    '  <description>\n'
-    '    Description. Suffix Description 2. Suffix Description 3.\n'
-    '  </description>\n'
-    '</action>\n\n'
-    '<action name="action1_suffix2_suffix3_suffix4">\n'
-    '  <owner>name1@chromium.org</owner>\n'
-    '  <description>\n'
-    '    Description. Suffix Description 2. Suffix Description 3. '
-    'Suffix Description\n'
-    '    4.\n'
-    '  </description>\n'
-    '</action>\n\n'
-    '<action name="action2">\n'
-    '  <owner>name2@chromium.org</owner>\n'
-    '  <description>Description.</description>\n'
-    '</action>\n\n'
-    '<action name="action2_suffix1">\n'
-    '  <owner>name2@chromium.org</owner>\n'
-    '  <description>Description. Suffix Description 1.</description>\n'
-    '</action>\n\n'
-    '<action name="action2_suffix2">\n'
-    '  <owner>name2@chromium.org</owner>\n'
-    '  <description>Description. Suffix Description 2.</description>\n'
-    '</action>\n\n'
-    '</actions>\n')
-
-SUFFIX_CUSTOM_SEPARATOR = (
-    '<actions>\n\n'
-    '<action name="action1">\n'
-    '  <owner>name1@chromium.org</owner>\n'
-    '  <description>Description.</description>\n'
-    '</action>\n\n'
-    '<action name="action1.suffix1">\n'
-    '  <owner>name1@chromium.org</owner>\n'
-    '  <description>Description. Suffix Description 1.</description>\n'
-    '</action>\n\n'
-    '</actions>\n')
-
-SUFFIX_OREDERING_PREFIX = (
-    '<actions>\n\n'
-    '<action name="action1.prefix1_remainder">\n'
-    '  <owner>name1@chromium.org</owner>\n'
-    '  <description>Description. Prefix Description 1.</description>\n'
-    '</action>\n\n'
-    '<action name="action1.remainder">\n'
-    '  <owner>name1@chromium.org</owner>\n'
-    '  <description>Description.</description>\n'
-    '</action>\n\n'
-    '</actions>\n')
-
-AFFECTED_ACTION_WITH_SUFFIX_TAG = (
-    '<actions>\n\n'
-    '<action name="action1">\n'
-    '  <owner>name1@chromium.org</owner>\n'
-    '  <description>Description.</description>\n'
-    '</action>\n\n'
-    '<action name="action1_suffix1">\n'
-    '  <owner>name1@chromium.org</owner>\n'
-    '  <description>Description. Suffix Description 1.</description>\n'
-    '</action>\n\n'
-    '<action name="action1_suffix2">\n'
-    '  <owner>name1@chromium.org</owner>\n'
-    '  <description>Description. Suffix Description 2.</description>\n'
-    '</action>\n\n'
-    '<action name="action2">\n'
-    '  <owner>name2@chromium.org</owner>\n'
-    '  <description>Description.</description>\n'
-    '</action>\n\n'
-    '<action name="action2_suffix2">\n'
-    '  <owner>name2@chromium.org</owner>\n'
-    '  <description>Description. Suffix Description 2.</description>\n'
-    '</action>\n\n'
-    '</actions>\n')
 
 BASIC_VARIANT_EXPANDED_XML = (
     '<actions>\n\n'
@@ -311,12 +210,11 @@ class ActionXmlTest(unittest.TestCase):
                                      obsolete=obsolete,
                                      comment=comment,
                                      not_user_triggered=not_user_triggered)
-    actions_dict, comments, variants_dict, suffixes = \
-      extract_actions.ParseActionFile(current_xml)
+    actions_dict, comments, variants_dict = extract_actions.ParseActionFile(
+        current_xml)
     for action_name in new_actions:
       actions_dict[action_name] = action_utils.Action(action_name, None, [])
-    return extract_actions.PrettyPrint(actions_dict, comments, variants_dict,
-                                       suffixes)
+    return extract_actions.PrettyPrint(actions_dict, comments, variants_dict)
 
   def _ExpandVariantsInActionsXML(self, actions_xml):
     """Parses the given actions XML, expands variants and pretty prints it.
@@ -327,29 +225,11 @@ class ActionXmlTest(unittest.TestCase):
     Returns:
       An updated and pretty-printed actions XML string with variants expanded.
     """
-    actions_dict, comments, variants_dict, action_suffix_nodes = \
-      extract_actions.ParseActionFile(actions_xml)
-    action_utils.CreateActionsFromVariants(actions_dict, variants_dict)
-    return extract_actions.PrettyPrint(actions_dict, comments, variants_dict,
-                                       action_suffix_nodes)
-
-  def _ExpandSuffixesInActionsXML(self, actions_xml):
-    """Parses the given actions XML, expands suffixes and pretty prints it.
-
-    Args:
-      actions_xml: actions XML string.
-
-    Returns:
-      An updated and pretty-printed actions XML string with suffixes expanded.
-    """
-    actions, comments, variants, suffixes = extract_actions.ParseActionFile(
+    actions_dict, comments, variants_dict = extract_actions.ParseActionFile(
         actions_xml)
-    # Clear suffixes and mark actions as not coming from suffixes, so that
-    # the returned XML file is the expanded one.
-    suffixes = []
-    for action in actions.values():
-      action.from_suffix = False
-    return extract_actions.PrettyPrint(actions, comments, variants, suffixes)
+    action_utils.CreateActionsFromVariants(actions_dict, variants_dict)
+    return extract_actions.PrettyPrint(actions_dict, comments, variants_dict)
+
 
   def _PrettyPrintActionsXML(self, actions_xml):
     """Parses the given actions XML and pretty prints it.
@@ -360,10 +240,9 @@ class ActionXmlTest(unittest.TestCase):
     Returns:
       A pretty-printed actions XML string.
     """
-    actions_dict, comments, variants_dict, action_suffix_nodes = \
-      extract_actions.ParseActionFile(actions_xml)
-    return extract_actions.PrettyPrint(actions_dict, comments, variants_dict,
-                                       action_suffix_nodes)
+    actions_dict, comments, variants_dict = extract_actions.ParseActionFile(
+        actions_xml)
+    return extract_actions.PrettyPrint(actions_dict, comments, variants_dict)
 
   def testNoOwner(self):
     xml_result = self._GetProcessedAction(NO_VALUE, DESCRIPTION, NO_VALUE)
@@ -428,201 +307,6 @@ class ActionXmlTest(unittest.TestCase):
     xml_result = self._GetProcessedAction(NO_VALUE, DESCRIPTION, NO_VALUE,
                                           NOT_USER_TRIGGERED)
     self.assertEqual(NOT_USER_TRIGGERED_EXPECTED_XML, xml_result)
-
-  def testBasicSuffix(self):
-    original_xml = """
-    <actions>
-    <action name="action1">
-      <owner>name1@chromium.org</owner>
-      <description>Description.</description>
-    </action>
-    <action-suffix separator="_">
-      <suffix name="suffix1" label="Suffix Description 1." />
-      <affected-action name="action1" />
-    </action-suffix>
-    </actions>
-    """
-    xml_result = self._ExpandSuffixesInActionsXML(original_xml)
-    self.assertMultiLineEqual(BASIC_SUFFIX_EXPECTED_XML, xml_result)
-
-  def testSuffixPrettyPrint(self):
-    """Tests that suffixes are preserved when pretty-printing."""
-    original_xml = """
-    <actions>
-    <action name="action1">
-      <owner>name1@chromium.org</owner>
-      <description>Description.</description>
-    </action>
-    <action name="action2">
-      <owner>name1@chromium.org</owner>
-      <description>Description.</description>
-    </action>
-    <action-suffix separator="_">
-      <suffix name="suffix1" label="Suffix Description 1." />
-      <affected-action name="action2"/>
-      <suffix name="suffix2" label="Suffix Description 2."/>
-      <affected-action name="action1" />
-    </action-suffix>
-    </actions>
-    """
-    xml_result = self._PrettyPrintActionsXML(original_xml)
-    expected_pretty_xml = """<actions>
-
-<action name="action1">
-  <owner>name1@chromium.org</owner>
-  <description>Description.</description>
-</action>
-
-<action name="action2">
-  <owner>name1@chromium.org</owner>
-  <description>Description.</description>
-</action>
-
-<action-suffix separator="_">
-  <suffix name="suffix1" label="Suffix Description 1."/>
-  <suffix name="suffix2" label="Suffix Description 2."/>
-  <affected-action name="action1"/>
-  <affected-action name="action2"/>
-</action-suffix>
-
-</actions>
-"""
-    self.assertMultiLineEqual(expected_pretty_xml, xml_result)
-
-  def testMultiActionMultiSuffixChain(self):
-    original_xml = """
-    <actions>
-    <action name="action1">
-      <owner>name1@chromium.org</owner>
-      <description>Description.</description>
-    </action>
-      <action name="action2">
-      <owner>name2@chromium.org</owner>
-      <description>Description.</description>
-    </action>
-    <action-suffix separator="_">
-      <suffix name="suffix1" label="Suffix Description 1." />
-      <suffix name="suffix2" label="Suffix Description 2." />
-      <affected-action name="action1" />
-      <affected-action name="action2" />
-    </action-suffix>
-    <action-suffix separator="_">
-      <suffix name="suffix3" label="Suffix Description 3." />
-      <affected-action name="action1_suffix2" />
-    </action-suffix>
-    <action-suffix separator="_">
-      <suffix name="suffix4" label="Suffix Description 4." />
-      <affected-action name="action1_suffix2_suffix3" />
-    </action-suffix>
-    </actions>
-    """
-    xml_result = self._ExpandSuffixesInActionsXML(original_xml)
-    self.assertMultiLineEqual(MULTI_ACTION_MULTI_SUFFIX_CHAIN, xml_result)
-
-  def testSuffixCustomSeparator(self):
-    original_xml = """
-    <actions>
-    <action name="action1">
-      <owner>name1@chromium.org</owner>
-      <description>Description.</description>
-    </action>
-    <action-suffix separator=".">
-      <suffix name="suffix1" label="Suffix Description 1." />
-      <affected-action name="action1" />
-    </action-suffix>
-    </actions>
-    """
-    xml_result = self._ExpandSuffixesInActionsXML(original_xml)
-    self.assertMultiLineEqual(SUFFIX_CUSTOM_SEPARATOR, xml_result)
-
-  def testSuffixOrderingPrefix(self):
-    original_xml = """
-    <actions>
-    <action name="action1.remainder">
-      <owner>name1@chromium.org</owner>
-      <description>Description.</description>
-    </action>
-    <action-suffix ordering="prefix" separator="_">
-      <suffix name="prefix1" label="Prefix Description 1." />
-      <affected-action name="action1.remainder" />
-    </action-suffix>
-    </actions>
-    """
-    xml_result = self._ExpandSuffixesInActionsXML(original_xml)
-    self.assertMultiLineEqual(SUFFIX_OREDERING_PREFIX, xml_result)
-
-  def testAffectedActionWithSuffixTag(self):
-    original_xml = """
-    <actions>
-    <action name="action1">
-      <owner>name1@chromium.org</owner>
-      <description>Description.</description>
-    </action>
-      <action name="action2">
-      <owner>name2@chromium.org</owner>
-      <description>Description.</description>
-    </action>
-    <action-suffix separator="_">
-      <suffix name="suffix1" label="Suffix Description 1." />
-      <suffix name="suffix2" label="Suffix Description 2." />
-      <affected-action name="action1" />
-      <affected-action name="action2" >
-        <with-suffix name="suffix2" />
-      </affected-action>
-    </action-suffix>
-    </actions>
-    """
-    xml_result = self._ExpandSuffixesInActionsXML(original_xml)
-    self.assertMultiLineEqual(AFFECTED_ACTION_WITH_SUFFIX_TAG, xml_result)
-
-  def testErrorActionMissing(self):
-    original_xml = """
-    <actions>
-    <action name="action1">
-      <owner>name1@chromium.org</owner>
-      <description>Description.</description>
-    </action>
-    <action-suffix>
-      <suffix name="suffix1" label="Suffix Description 1." />
-      <affected-action name="action1" />
-      <affected-action name="action2" />
-    </action-suffix>
-    </actions>
-    """
-    with self.assertRaises(action_utils.UndefinedActionItemError) as cm:
-      extract_actions.ParseActionFile(original_xml)
-
-  def testErrorSuffixNameMissing(self):
-    original_xml = """
-    <actions>
-    <action name="action1">
-      <owner>name1@chromium.org</owner>
-      <description>Description.</description>
-    </action>
-    <action-suffix>
-      <suffix label="Suffix Description 1." />
-      <affected-action name="action1" />
-    </action-suffix>
-    </actions>
-    """
-    with self.assertRaises(action_utils.SuffixNameEmptyError) as cm:
-      extract_actions.ParseActionFile(original_xml)
-
-  def testErrorBadActionName(self):
-    original_xml = """
-    <actions>
-    <action name="action1">
-      <owner>name1@chromium.org</owner>
-      <description>Description.</description>
-    </action>
-    <action-suffix ordering="prefix">
-      <suffix name="prefix1" label="Prefix Description 1." />
-      <affected-action name="action1" />
-    </action-suffix>
-    </actions>
-    """
-    with self.assertRaises(action_utils.InvalidAffecteddActionNameError) as cm:
-      extract_actions.ParseActionFile(original_xml)
 
   def testUserMetricsActionSpanningTwoLines(self):
     code = 'base::UserMetricsAction(\n"Foo.Bar"));'
