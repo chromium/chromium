@@ -834,7 +834,7 @@ const base::FeatureParam<int> kGlicTabFocusDataMaxDebounces{
 // Kill switch for activateTab API.
 BASE_FEATURE(kGlicActivateTabApi, base::FEATURE_ENABLED_BY_DEFAULT);
 // Kill switch for getTabById API.
-BASE_FEATURE(kGlicGetTabByIdApi, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kGlicGetTabByIdApi, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGlicAssetsV2, base::FEATURE_ENABLED_BY_DEFAULT);
 
