@@ -159,6 +159,24 @@ webview:not([hidden]) {
   border-radius: 12px;
 }
 
+#sidePanelLoading.from-fre .center-group {
+  justify-content: start;
+  margin-top: 20px;
+}
+
+#loadingPanel #sidePanelLoading.from-fre .p3 {
+  margin-bottom: 17px;
+}
+
+#loadingPanel #sidePanelLoading.from-fre .p4 {
+  margin-bottom: 2px;
+  height: 64px;
+}
+
+#loadingPanel #sidePanelLoading.from-fre .p5 {
+  height: 64px;
+}
+
 .panel .header {
   padding: 12px 20px 12px 12px;
   height: 24px;
