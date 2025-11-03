@@ -205,6 +205,9 @@ class SpellcheckCustomDictionary final : public SpellcheckDictionary,
   // LoadDictionaryFile finishes reading the dictionary file.
   void OnLoaded(std::unique_ptr<LoadFileResult> result);
 
+  // Applies the `dictionary_change` to the given set of words.
+  void ApplyToSet(const Change& dictionary_change,
+                  std::set<std::string>* words);
   // Applies the `dictionary_change` to the in-memory copy of the dictionary.
   // This applies the change to both local and account words if syncing,
   // otherwise only to local words.

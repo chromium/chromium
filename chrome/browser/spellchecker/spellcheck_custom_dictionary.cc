@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/files/important_file_writer.h"
 #include "base/functional/bind.h"
@@ -26,6 +27,7 @@
 #include "chrome/common/chrome_constants.h"
 #include "components/spellcheck/browser/spellcheck_host_metrics.h"
 #include "components/spellcheck/common/spellcheck_common.h"
+#include "components/sync/base/features.h"
 #include "components/sync/model/sync_change.h"
 #include "components/sync/model/sync_change_processor.h"
 #include "components/sync/protocol/dictionary_specifics.pb.h"
@@ -487,16 +489,28 @@ void SpellcheckCustomDictionary::OnLoaded(
   }
 }
 
-void SpellcheckCustomDictionary::Apply(const Change& dictionary_change) {
+void SpellcheckCustomDictionary::ApplyToSet(const Change& dictionary_change,
+                                            std::set<std::string>* words) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (dictionary_change.clear())
-    words_.clear();
-  if (!dictionary_change.to_add().empty()) {
-    words_.insert(dictionary_change.to_add().begin(),
-                  dictionary_change.to_add().end());
+  if (dictionary_change.clear()) {
+    words->clear();
   }
-  for (const auto& word : dictionary_change.to_remove())
-    words_.erase(word);
+  const std::set<std::string>& to_add = dictionary_change.to_add();
+  if (!to_add.empty()) {
+    words->insert(to_add.begin(), to_add.end());
+  }
+  for (const auto& word : dictionary_change.to_remove()) {
+    words->erase(word);
+  }
+}
+
+void SpellcheckCustomDictionary::Apply(const Change& dictionary_change) {
+  ApplyToSet(dictionary_change, &words_);
+  if (base::FeatureList::IsEnabled(
+          syncer::kSpellcheckSeparateLocalAndAccountDictionaries) &&
+      IsSyncing()) {
+    ApplyToSet(dictionary_change, &account_words_);
+  }
 }
 
 void SpellcheckCustomDictionary::FixInvalidFile(
