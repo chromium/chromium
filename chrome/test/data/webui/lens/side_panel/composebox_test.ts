@@ -582,6 +582,27 @@ suite('Composebox', () => {
         url.url, `https://www.google.com/search?q=${query.replace(/ /g, '+')}`);
   });
 
+  test('SubmitButtonNoopWhenDisabled', async () => {
+    loadTimeData.overrideValues({enableAimSearchbox: true});
+    const composebox = await setupTest();
+
+    const submitButton =
+        composebox.shadowRoot!.querySelector<HTMLElement>('#submitContainer');
+    assertTrue(!!submitButton);
+
+    // The button should be disabled initially with no input.
+    assertTrue(submitButton.hasAttribute('disabled'));
+
+    // Click the submit button.
+    submitButton.click();
+    await waitAfterNextRender(composebox);
+
+    // Verify that neither of the submit handlers were called.
+    assertEquals(0, mockSearchboxPageHandler.getCallCount('submitQuery'));
+    assertEquals(
+        0, mockSearchboxPageHandler.getCallCount('openAutocompleteMatch'));
+  });
+
   test('SelectingMatchPopulatesComposebox', async () => {
     loadTimeData.overrideValues({
       enableAimSearchbox: true,

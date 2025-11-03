@@ -919,6 +919,28 @@ suite('NewTabPageComposeboxTest', () => {
     assertEquals(searchboxHandler.getCallCount('openAutocompleteMatch'), 1);
   });
 
+  test('submit button is a no-op when disabled', async () => {
+    createComposeboxElement();
+    assertEquals(searchboxHandler.getCallCount('submitQuery'), 0);
+    assertEquals(searchboxHandler.getCallCount('openAutocompleteMatch'), 0);
+
+    // Arrange.
+    composeboxElement.$.input.value = '';
+    composeboxElement.$.input.dispatchEvent(new Event('input'));
+    await microtasksFinished();
+
+    // Assert submit is disabled.
+    assertTrue(composeboxElement.$.submitContainer.hasAttribute('disabled'));
+
+    // Act.
+    composeboxElement.$.submitContainer.click();
+    await microtasksFinished();
+
+    // Assert no calls were made.
+    assertEquals(searchboxHandler.getCallCount('submitQuery'), 0);
+    assertEquals(searchboxHandler.getCallCount('openAutocompleteMatch'), 0);
+  });
+
   test('empty input has disabled submit container', async () => {
     createComposeboxElement();
 

@@ -771,6 +771,11 @@ export class ComposeboxElement extends I18nMixinLit
   }
 
   protected submitQuery_(e: KeyboardEvent|MouseEvent) {
+    // If the submit button is disabled, do nothing.
+    if (!this.submitEnabled_) {
+      return;
+    }
+
     // Users are allowed to submit queries that consist of only files with no
     // input. `selectedMatchIndex_` will be >= 0 when there is non-empty input
     // since the verbatim match is present.
