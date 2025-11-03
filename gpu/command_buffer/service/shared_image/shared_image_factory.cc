@@ -931,7 +931,7 @@ void SharedImageFactory::LogGetFactoryFailed(gpu::SharedImageUsageSet usage,
 #endif
   SCOPED_CRASH_KEY_STRING64("SIFactory", "DebugLabel", new_debug_label);
   SCOPED_CRASH_KEY_STRING64("SIFactory", "Format", format.ToString());
-  SCOPED_CRASH_KEY_NUMBER("SIFactory", "Usage", usage);
+  SCOPED_CRASH_KEY_NUMBER("SIFactory", "Usage", static_cast<uint32_t>(usage));
   SCOPED_CRASH_KEY_STRING64("SIFactory", "GMBType", GmbTypeToString(gmb_type));
   SCOPED_CRASH_KEY_STRING64("SIFactory", "Size", size.ToString());
   SCOPED_CRASH_KEY_BOOL("SIFactory", "SharedBwThreads",

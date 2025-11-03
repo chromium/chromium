@@ -60,21 +60,20 @@ TEST_F(SharedImageCopyManagerTest, CopyUsingSharedMemoryStrategy) {
 
   constexpr viz::SharedImageFormat format = viz::SinglePlaneFormat::kRGBA_8888;
   constexpr gfx::Size size(100, 100);
-  constexpr uint32_t usage =
+  constexpr auto usage =
       SHARED_IMAGE_USAGE_CPU_READ | SHARED_IMAGE_USAGE_CPU_WRITE_ONLY;
 
   // Create a shared memory backing.
   auto shm_backing = SharedMemoryImageBackingFactory().CreateSharedImage(
       Mailbox::Generate(), format, kNullSurfaceHandle, size,
       gfx::ColorSpace::CreateSRGB(), kTopLeft_GrSurfaceOrigin,
-      kPremul_SkAlphaType, SharedImageUsageSet(usage), "TestLabel",
+      kPremul_SkAlphaType, usage, "TestLabel",
       /*is_thread_safe=*/false, gfx::BufferUsage::GPU_READ_CPU_READ_WRITE);
 
   // Create a generic test backing.
   auto test_backing = std::make_unique<TestImageBacking>(
       Mailbox::Generate(), format, size, gfx::ColorSpace::CreateSRGB(),
-      kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, SharedImageUsageSet(usage),
-      1024);
+      kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage, 1024);
 
   // Test copy from Shared Memory to Test backing.
   EXPECT_TRUE(copy_manager_->CopyImage(shm_backing.get(), test_backing.get()));

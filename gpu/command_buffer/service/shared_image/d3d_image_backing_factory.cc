@@ -964,9 +964,10 @@ D3DImageBackingFactory::CreateSharedBufferD3D12(
   // The passed usages AND-ed with the compliment of the OR-d valid usages
   // should be zero.
   // TODO(crbug.com/345352987): replace with IsSupported().
-  if (usage &
-      ~(SHARED_IMAGE_USAGE_WEBGPU_READ | SHARED_IMAGE_USAGE_WEBGPU_WRITE |
-        SHARED_IMAGE_USAGE_WEBGPU_SHARED_BUFFER)) {
+  constexpr auto kValidWebNNUsage = SHARED_IMAGE_USAGE_WEBGPU_READ |
+                                    SHARED_IMAGE_USAGE_WEBGPU_WRITE |
+                                    SHARED_IMAGE_USAGE_WEBGPU_SHARED_BUFFER;
+  if (!kValidWebNNUsage.HasAll(usage)) {
     LOG(ERROR) << "Only shared image usages SHARED_IMAGE_USAGE_WEBGPU_READ, "
                   "SHARED_IMAGE_USAGE_WEBGPU_WRITE, and "
                   "SHARED_IMAGE_USAGE_WEBGPU_SHARED_BUFFER are allowed when "
@@ -1083,12 +1084,12 @@ bool D3DImageBackingFactory::IsSupported(SharedImageUsageSet usage,
                                          base::span<const uint8_t> pixel_data) {
   // Only usages for WebNN is allowed if D3D shared images are disabled.
   if (enable_webnn_only_d3d_factory_) {
-    constexpr uint32_t kAllowedUsages =
+    constexpr auto kAllowedUsages =
         gpu::SHARED_IMAGE_USAGE_WEBNN_SHARED_TENSOR |
         gpu::SHARED_IMAGE_USAGE_WEBGPU_SHARED_BUFFER |
         gpu::SHARED_IMAGE_USAGE_WEBNN_SHARED_TENSOR_READ |
         gpu::SHARED_IMAGE_USAGE_WEBNN_SHARED_TENSOR_WRITE;
-    return (usage & ~kAllowedUsages) == 0;
+    return kAllowedUsages.HasAll(usage);
   }
 
   if (!pixel_data.empty() && !IsFormatSupportedForInitialData(format)) {

@@ -125,19 +125,6 @@ TEST(SharedImageUsage, GlobalOperatorSetUnion) {
                                      SHARED_IMAGE_USAGE_WEBGPU_READ));
 }
 
-TEST(SharedImageUsage, ImplicitCasting) {
-  SharedImageUsageSet as_usage_set =
-      SHARED_IMAGE_USAGE_CPU_WRITE_ONLY | SHARED_IMAGE_USAGE_WEBGPU_READ;
-  // TODO(crbug.com/343347288): Remove after all usage has been converted to
-  // `SharedImageUsageSet`.
-  // Temporary exception to allow for existing, non type safe, conversions.
-  uint32_t as_uint32_t = as_usage_set;
-
-  EXPECT_EQ(static_cast<uint32_t>(SHARED_IMAGE_USAGE_CPU_WRITE_ONLY) |
-                static_cast<uint32_t>(SHARED_IMAGE_USAGE_WEBGPU_READ),
-            as_uint32_t);
-}
-
 TEST(SharedImageUsage, EqualityTest) {
   SharedImageUsageSet usage_a =
       SHARED_IMAGE_USAGE_CPU_WRITE_ONLY | SHARED_IMAGE_USAGE_WEBGPU_READ;

@@ -1575,7 +1575,7 @@ std::unique_ptr<DawnImageRepresentation> IOSurfaceImageBacking::ProduceDawn(
         // it might if the kernel chooses to create a separate allocation for
         // the GPU.
         io_surface_desc.allowStorageBinding =
-            (usage() & SHARED_IMAGE_USAGE_WEBGPU_STORAGE_TEXTURE) &&
+            (usage().Has(SHARED_IMAGE_USAGE_WEBGPU_STORAGE_TEXTURE)) &&
             !is_graphite_device;
 
         wgpu::SharedTextureMemoryDescriptor desc = {};
@@ -1772,7 +1772,7 @@ gfx::GpuMemoryBufferHandle IOSurfaceImageBacking::GetGpuMemoryBufferHandle() {
 std::unique_ptr<WebNNTensorRepresentation>
 IOSurfaceImageBacking::ProduceWebNNTensor(SharedImageManager* manager,
                                           MemoryTypeTracker* tracker) {
-  CHECK(usage() & SHARED_IMAGE_USAGE_WEBNN_SHARED_TENSOR);
+  CHECK(usage().Has(SHARED_IMAGE_USAGE_WEBNN_SHARED_TENSOR));
   return std::make_unique<WebNNIOSurfaceTensorRepresentation>(manager, this,
                                                               tracker);
 }

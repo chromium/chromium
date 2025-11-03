@@ -181,12 +181,7 @@ class GPU_COMMAND_BUFFER_COMMON_EXPORT SharedImageUsageSet {
     PutAll(mask_b);
   }
 
-  // Temporary exception to allow for existing, non type safe, conversions.
-  // TODO(crbug.com/343347288): Remove after all usage has been converted to
-  // `SharedImageUsageSet`.
-  // NOLINTBEGIN(google-explicit-constructor)
-  inline constexpr operator uint32_t() const { return set_storage_; }
-  // NOLINTEND(google-explicit-constructor)
+  inline explicit constexpr operator uint32_t() const { return set_storage_; }
 
   std::string ToString() const;
 

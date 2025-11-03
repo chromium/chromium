@@ -1688,7 +1688,7 @@ bool D3DImageBacking::ValidateBeginAccess(bool write_access) const {
 std::unique_ptr<WebNNTensorRepresentation> D3DImageBacking::ProduceWebNNTensor(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker) {
-  CHECK(usage() & SHARED_IMAGE_USAGE_WEBNN_SHARED_TENSOR);
+  CHECK(usage().Has(SHARED_IMAGE_USAGE_WEBNN_SHARED_TENSOR));
   DCHECK(d3d12_resource_.Get() != nullptr);
   return std::make_unique<WebNND3DTensorRepresentation>(manager, this, tracker);
 }
