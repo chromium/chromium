@@ -601,16 +601,30 @@ HelpBubbleHandler::HelpBubbleHandler(
     mojo::PendingRemote<help_bubble::mojom::HelpBubbleClient> pending_client,
     content::WebUIController* controller,
     const std::vector<ui::ElementIdentifier>& identifiers)
+    : HelpBubbleHandler(
+          std::move(pending_handler),
+          std::move(pending_client),
+          base::BindRepeating(&GetWebContentsCallbackForWebUIController,
+                              controller),
+          controller,
+          identifiers) {
+  DCHECK(controller);
+}
+
+HelpBubbleHandler::HelpBubbleHandler(
+    mojo::PendingReceiver<help_bubble::mojom::HelpBubbleHandler>
+        pending_handler,
+    mojo::PendingRemote<help_bubble::mojom::HelpBubbleClient> pending_client,
+    GetWebContentsCallback get_web_contents_callback,
+    void* context,
+    const std::vector<ui::ElementIdentifier>& identifiers)
     : HelpBubbleHandlerBase(
           std::make_unique<ClientProvider>(std::move(pending_client)),
           std::make_unique<VisibilityProvider>(),
-          base::BindRepeating(&GetWebContentsCallbackForWebUIController,
-                              controller),
+          std::move(get_web_contents_callback),
           identifiers,
-          ui::ElementContext(controller, base::PassKey<HelpBubbleHandler>())),
-      receiver_(this, std::move(pending_handler)) {
-  DCHECK(controller);
-}
+          ui::ElementContext(context, base::PassKey<HelpBubbleHandler>())),
+      receiver_(this, std::move(pending_handler)) {}
 
 HelpBubbleHandler::~HelpBubbleHandler() = default;
 

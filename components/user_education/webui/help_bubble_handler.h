@@ -223,6 +223,17 @@ class HelpBubbleHandler : public HelpBubbleHandlerBase {
       content::WebUIController* controller,
       const std::vector<ui::ElementIdentifier>& identifiers);
 
+  // Alternative constructor for when the factory wants to use something other
+  // than content::WebUIController. In which case, the factory specifies a
+  // custom GetWebContentsCallback and a `context` for use with
+  // ui::ElementContext.
+  HelpBubbleHandler(
+      mojo::PendingReceiver<help_bubble::mojom::HelpBubbleHandler>
+          pending_handler,
+      mojo::PendingRemote<help_bubble::mojom::HelpBubbleClient> pending_client,
+      GetWebContentsCallback get_web_contents_callback,
+      void* context,
+      const std::vector<ui::ElementIdentifier>& identifiers);
   ~HelpBubbleHandler() override;
 
  private:
