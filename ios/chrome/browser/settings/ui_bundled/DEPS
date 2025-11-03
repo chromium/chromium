@@ -50,7 +50,7 @@ include_rules = [
   "+ios/chrome/browser/sync/model",
   "+ios/chrome/browser/tabs/model/inactive_tabs",
   "+ios/chrome/browser/translate/model",
-  "+ios/chrome/browser/authentication/ui_bundled",
+  "+ios/chrome/browser/authentication",
   "+ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_feature.h",
   "+ios/chrome/browser/upgrade/model",
   "+ios/chrome/browser/voice/model",

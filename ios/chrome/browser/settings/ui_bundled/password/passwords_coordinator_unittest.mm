@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/settings/ui_bundled/password/passwords_coordinator.h"
 
-#import "ios/chrome/browser/authentication/ui_bundled/trusted_vault_reauthentication/trusted_vault_reauthentication_coordinator.h"
+#import "ios/chrome/browser/authentication/trusted_vault_reauthentication/coordinator/trusted_vault_reauthentication_coordinator.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/passwords_coordinator+Testing.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/reauthentication/local_reauthentication_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"

@@ -4,7 +4,7 @@
 
 import("//build/config/chrome_build.gni")
 
-source_set("trusted_vault_reauthentication") {
+source_set("coordinator") {
   sources = [
     "trusted_vault_reauthentication_coordinator.h",
     "trusted_vault_reauthentication_coordinator.mm",
@@ -33,7 +33,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [ "trusted_vault_reauthentication_coordinator_unittest.mm" ]
   deps = [
-    ":trusted_vault_reauthentication",
+    ":coordinator",
     "//base/test:test_support",
     "//components/sync/service",
     "//ios/chrome/browser/shared/model/application_context",
