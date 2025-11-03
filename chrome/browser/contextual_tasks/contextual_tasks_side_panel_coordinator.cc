@@ -52,7 +52,10 @@ DEFINE_USER_DATA(ContextualTasksSidePanelCoordinator);
 class ContextualTasksWebView : public views::WebView {
  public:
   explicit ContextualTasksWebView(content::BrowserContext* browser_context)
-      : views::WebView(browser_context) {}
+      : views::WebView(browser_context) {
+    SetProperty(views::kElementIdentifierKey,
+                kContextualTasksSidePanelWebViewElementId);
+  }
   ~ContextualTasksWebView() override = default;
 
   base::WeakPtr<ContextualTasksWebView> GetWeakPtr() {
@@ -130,6 +133,13 @@ bool ContextualTasksSidePanelCoordinator::IsSidePanelOpenForContextualTask() {
       SidePanelEntry::Key(SidePanelEntry::Id::kContextualTasks));
 }
 
+void ContextualTasksSidePanelCoordinator::TransferWebContentsFromTab(
+    const base::Uuid& task_id,
+    std::unique_ptr<content::WebContents> web_contents) {
+  task_id_to_web_contents_cache_.emplace(task_id, std::move(web_contents));
+  UpdateWebContentsForActiveTab();
+}
+
 content::WebContents*
 ContextualTasksSidePanelCoordinator::GetActiveWebContentsForTesting() {
   return web_view_ ? web_view_->web_contents() : nullptr;
@@ -139,8 +149,7 @@ int ContextualTasksSidePanelCoordinator::GetPreferredDefaultSidePanelWidth() {
   return kSidePanelPreferredDefaultWidth;
 }
 
-void ContextualTasksSidePanelCoordinator::OnActiveTabChanged(
-    BrowserWindowInterface* browser_interface) {
+void ContextualTasksSidePanelCoordinator::UpdateWebContentsForActiveTab() {
   if (!web_view_) {
     return;
   }
@@ -152,21 +161,18 @@ void ContextualTasksSidePanelCoordinator::OnActiveTabChanged(
   }
 }
 
+void ContextualTasksSidePanelCoordinator::OnActiveTabChanged(
+    BrowserWindowInterface* browser_interface) {
+  UpdateWebContentsForActiveTab();
+}
+
 std::unique_ptr<views::View>
 ContextualTasksSidePanelCoordinator::CreateSidePanelView(
     SidePanelEntryScope& scope) {
   std::unique_ptr<ContextualTasksWebView> web_view =
       std::make_unique<ContextualTasksWebView>(browser_window_->GetProfile());
-
-  content::WebContents* web_contents =
-      MaybeGetOrCreateSidePanelWebContentsForActiveTab();
-  if (web_contents) {
-    web_view->SetWebContents(web_contents);
-  }
-
   web_view_ = web_view->GetWeakPtr();
-  web_view->SetProperty(views::kElementIdentifierKey,
-                        kContextualTasksSidePanelWebViewElementId);
+  UpdateWebContentsForActiveTab();
   return web_view;
 }
 

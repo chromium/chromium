@@ -179,16 +179,34 @@ void ContextualTasksUiService::OnThreadLinkClicked(
   // Open the linked page in a tab directly after this one.
   std::unique_ptr<content::WebContents> new_contents =
       content::WebContents::Create(content::WebContents::CreateParams(profile));
+  content::WebContents* new_contents_ptr = new_contents.get();
   new_contents->GetController().LoadURLWithParams(
       content::NavigationController::LoadURLParams(url));
   tab_strip_model->InsertWebContentsAt(
       current_index + 1, std::move(new_contents), AddTabTypes::ADD_ACTIVE);
 
-  // Detach the WebContents for and put it in the cache.
-  std::unique_ptr<content::WebContents> detached_contents =
+  // Detach the WebContents from tab.
+  std::unique_ptr<content::WebContents> contextual_task_contents =
       tab_strip_model->DetachWebContentsAtForInsertion(current_index);
 
-  // TODO: Add the detached WebContents to the cache.
+  // Get the current task, early return if no task found.
+  std::optional<ContextualTask> task =
+      context_controller_->GetContextualTaskForTab(
+          SessionTabHelper::IdForTab(contextual_task_contents.get()));
+  if (!task) {
+    return;
+  }
+
+  // Associate the active tab to the task.
+  base::Uuid task_id = task->GetTaskId();
+  CHECK(new_contents_ptr == tab_strip_model->GetActiveWebContents());
+  SessionID session_id = SessionTabHelper::IdForTab(new_contents_ptr);
+  context_controller_->AssociateTabWithTask(task_id, session_id);
+
+  // Transfer the contextual task contents into the side panel cache.
+  ContextualTasksSidePanelCoordinator::From(browser_window_interface)
+      ->TransferWebContentsFromTab(task_id,
+                                   std::move(contextual_task_contents));
 
   // Open the side panel.
   // TODO: This currently should be passed the bounds of the

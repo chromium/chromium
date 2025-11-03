@@ -60,10 +60,19 @@ class ContextualTasksSidePanelCoordinator {
   // feature might also show side panel.
   bool IsSidePanelOpenForContextualTask();
 
+  // Transfer WebContents from tab to side panel.
+  // This is called before a tab is converted to the side panel.
+  void TransferWebContentsFromTab(
+      const base::Uuid& task_id,
+      std::unique_ptr<content::WebContents> web_contents);
+
   content::WebContents* GetActiveWebContentsForTesting();
 
  private:
   int GetPreferredDefaultSidePanelWidth();
+
+  // Update the associated WebContents for active tab.
+  void UpdateWebContentsForActiveTab();
 
   // Handle swapping WebContents if thread changes.
   void OnActiveTabChanged(BrowserWindowInterface* browser_interface);
