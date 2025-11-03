@@ -14,7 +14,6 @@ import android.view.View;
 import android.widget.RadioGroup;
 
 import androidx.annotation.VisibleForTesting;
-import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
 
 import org.chromium.base.metrics.RecordUserAction;
@@ -22,6 +21,7 @@ import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.components.browser_ui.settings.ContainedRadioButtonGroupPreference;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionAndAuxButton;
 import org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables;
@@ -29,7 +29,7 @@ import org.chromium.components.content_settings.CookieControlsMode;
 
 /** A 3-state radio group Preference used for the Third-Party Cookies subpage of SiteSettings. */
 @NullMarked
-public class TriStateCookieSettingsPreference extends Preference
+public class TriStateCookieSettingsPreference extends ContainedRadioButtonGroupPreference
         implements RadioGroup.OnCheckedChangeListener,
                 RadioButtonWithDescriptionAndAuxButton.OnAuxButtonClickedListener {
     @SuppressWarnings("NullAway.Init")

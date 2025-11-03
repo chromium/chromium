@@ -10,11 +10,11 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.RadioGroup;
 
-import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.components.browser_ui.settings.ContainedRadioButtonGroupPreference;
 import org.chromium.components.browser_ui.settings.ManagedPreferenceDelegate;
 import org.chromium.components.browser_ui.settings.ManagedPreferencesUtils;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
@@ -22,7 +22,7 @@ import org.chromium.components.content_settings.ContentSetting;
 
 /** A binary state radio group preference for components/permissions/features.cc */
 @NullMarked
-public class BinaryStatePermissionPreference extends Preference
+public class BinaryStatePermissionPreference extends ContainedRadioButtonGroupPreference
         implements RadioGroup.OnCheckedChangeListener {
 
     private @Nullable RadioButtonWithDescription mPositive;
