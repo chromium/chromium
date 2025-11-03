@@ -10,7 +10,6 @@
 #include <memory>
 #include <set>
 
-#include "base/memory/ref_counted.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"

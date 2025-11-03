@@ -22,7 +22,6 @@
 #include "base/gtest_prod_util.h"
 #include "base/logging.h"
 #include "base/memory/raw_ref.h"
-#include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"

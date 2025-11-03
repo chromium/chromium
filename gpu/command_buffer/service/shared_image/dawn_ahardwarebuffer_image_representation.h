@@ -9,7 +9,6 @@
 #include <dawn/webgpu.h>
 
 #include "base/android/scoped_hardware_buffer_handle.h"
-#include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "gpu/command_buffer/service/shared_image/android_image_backing.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"

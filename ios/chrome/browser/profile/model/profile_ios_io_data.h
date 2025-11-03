@@ -12,7 +12,6 @@
 
 #import "base/files/file_path.h"
 #import "base/memory/raw_ptr.h"
-#import "base/memory/ref_counted.h"
 #import "base/memory/scoped_refptr.h"
 #import "base/memory/weak_ptr.h"
 #import "components/content_settings/core/common/content_settings_types.h"

@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/byte_count.h"
-#include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/scoped_observation.h"

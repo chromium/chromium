@@ -16,7 +16,6 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/functional/function_ref.h"
-#include "base/memory/ref_counted.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "base/version.h"
 #include "build/build_config.h"

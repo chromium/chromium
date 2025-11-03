@@ -27,7 +27,6 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/lazy_instance.h"
-#include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/keyed_service/core/simple_factory_key.h"

@@ -11,7 +11,6 @@
 #include <memory>
 #include <string_view>
 
-#include "base/memory/ref_counted.h"
 #include "base/synchronization/atomic_flag.h"
 #include "components/persistent_cache/backend_params.h"
 #include "gpu/gpu_gles2_export.h"
