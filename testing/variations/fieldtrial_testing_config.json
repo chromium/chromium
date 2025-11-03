@@ -926,8 +926,9 @@
             ],
             "experiments": [
                 {
-                    "name": "EnabledBothReadabilityDistillerAndTriggering",
+                    "name": "EnabledReadabilityDistillerWithNoTriggering",
                     "params": {
+                        "min_content_length": "100",
                         "show_cpa": "false",
                         "use_distiller": "true",
                         "use_heuristic": "false"
