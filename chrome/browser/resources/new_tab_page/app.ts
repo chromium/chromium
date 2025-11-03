@@ -88,7 +88,8 @@ export enum NtpElement {
   CUSTOMIZE_BUTTON = 9,
   CUSTOMIZE_DIALOG = 10,  // Obsolete
   WALLPAPER_SEARCH_BUTTON = 11,
-  MAX_VALUE = WALLPAPER_SEARCH_BUTTON,
+  ACTION_CHIPS = 12,
+  MAX_VALUE = ACTION_CHIPS,
 }
 
 /**
@@ -1260,6 +1261,9 @@ export class AppElement extends AppElementBase {
           return;
         case $$(this, 'cr-searchbox'):
           recordClick(NtpElement.REALBOX);
+          return;
+        case $$(this, 'ntp-action-chips'):
+          recordClick(NtpElement.ACTION_CHIPS);
           return;
         case $$(this, 'cr-most-visited'):
           recordClick(NtpElement.MOST_VISITED);

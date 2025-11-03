@@ -113,6 +113,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NewTabPage.ActionChips.Click" enum="ActionChipsType"
+    expires_after="2026-05-01">
+  <owner>giannich@chromium.org</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>Logged when any Action Chips was clicked by the user.</summary>
+</histogram>
+
+<histogram name="NewTabPage.ActionChips.Shown" enum="ActionChipsType"
+    expires_after="2026-05-01">
+  <owner>giannich@chromium.org</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>Logged when any Action Chips was shown to the user.</summary>
+</histogram>
+
 <histogram name="NewTabPage.ActioniOS" enum="NewTabPageActioniOS"
     expires_after="2026-02-01">
   <owner>justincohen@chromium.org</owner>
