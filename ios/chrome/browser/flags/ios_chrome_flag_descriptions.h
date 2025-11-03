@@ -506,6 +506,9 @@ extern const char kIPHPriceNotificationsWhileBrowsingDescription[];
 extern const char kIdentityConfirmationSnackbarName[];
 extern const char kIdentityConfirmationSnackbarDescription[];
 
+extern const char kImageContextMenuGeminiEntryPointName[];
+extern const char kImageContextMenuGeminiEntryPointDescription[];
+
 extern const char kImportPasswordsFromSafariName[];
 extern const char kImportPasswordsFromSafariDescription[];
 

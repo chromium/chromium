@@ -2877,6 +2877,10 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
     {"ios-fusebox", flag_descriptions::kIOSFuseboxName,
      flag_descriptions::kIOSFuseboxDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kIOSFusebox)},
+    {"image-context-menu-gemini-entry-point",
+     flag_descriptions::kImageContextMenuGeminiEntryPointName,
+     flag_descriptions::kImageContextMenuGeminiEntryPointDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kImageContextMenuGeminiEntryPoint)},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

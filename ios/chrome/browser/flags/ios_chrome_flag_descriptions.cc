@@ -857,6 +857,11 @@ const char kIdentityConfirmationSnackbarName[] =
 const char kIdentityConfirmationSnackbarDescription[] =
     "When enabled, the identity confirmation snackbar will show on startup.";
 
+const char kImageContextMenuGeminiEntryPointName[] =
+    "Context menu Gemini entrypoint";
+const char kImageContextMenuGeminiEntryPointDescription[] =
+    "Enables the long-press image context menu entry point for Gemini floaty.";
+
 const char kImportPasswordsFromSafariName[] = "Import Passwords From Safari";
 const char kImportPasswordsFromSafariDescription[] =
     "When enabled, allows users to import passwords from Safari.";

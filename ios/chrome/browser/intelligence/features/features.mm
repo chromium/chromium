@@ -255,3 +255,10 @@ BASE_FEATURE(kWebPageReportedImagesSheet, base::FEATURE_DISABLED_BY_DEFAULT);
 bool IsWebPageReportedImagesSheetEnabled() {
   return base::FeatureList::IsEnabled(kWebPageReportedImagesSheet);
 }
+
+BASE_FEATURE(kImageContextMenuGeminiEntryPoint,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsImageContextMenuGeminiEntryPointEnabled() {
+  return base::FeatureList::IsEnabled(kImageContextMenuGeminiEntryPoint);
+}

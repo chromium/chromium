@@ -205,4 +205,9 @@ BASE_DECLARE_FEATURE(kPageContextExtractorRefactored);
 BASE_DECLARE_FEATURE(kWebPageReportedImagesSheet);
 bool IsWebPageReportedImagesSheetEnabled();
 
+// Feature flag for enabling passing an image from the long-press context menu
+// to Gemini.
+BASE_DECLARE_FEATURE(kImageContextMenuGeminiEntryPoint);
+bool IsImageContextMenuGeminiEntryPointEnabled();
+
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_FEATURES_FEATURES_H_
