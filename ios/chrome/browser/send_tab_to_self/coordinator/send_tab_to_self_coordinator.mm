@@ -173,6 +173,14 @@ void OpenManageDevicesTab(CommandDispatcher* dispatcher) {
 #pragma mark - ChromeCoordinator Methods
 
 - (void)start {
+  AuthenticationService* authService =
+      AuthenticationServiceFactory::GetForProfile(self.profile);
+  if (!authService->SigninEnabled()) {
+    // Sign-in was disabled after the list of action was opened. Let’s abort.
+    // Don’t call anything after this, as `self` is not retained anymore.
+    [_browserCoordinatorHandler hideSendTabToSelfUI];
+    return;
+  }
   [self show];
 }
 
