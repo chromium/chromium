@@ -171,20 +171,7 @@ export class SettingsAutofillAiEntriesListElement extends
     this.entityDataManager_.getOptInStatus().then(
         optedIn => this.allowEditing_ = !this.ineligibleUser && optedIn);
 
-    this.entityInstancesChangedListener_ = (entityInstances => {
-      this.entityInstances_ =
-          entityInstances.sort(this.entityInstancesWithLabelsComparator_);
-    });
-    this.entityDataManager_.addEntityInstancesChangedListener(
-        this.entityInstancesChangedListener_);
-
-    this.entityDataManager_.getWritableEntityTypes().then(
-        (entityTypes: EntityType[]) => {
-          this.completeEntityTypesList_ =
-              entityTypes.sort(this.entityTypesComparator_);
-        });
-
-    this.entityDataManager_.loadEntityInstances().then(
+    this.entityInstancesChangedListener_ =
         (entityInstances: EntityInstanceWithLabels[]) => {
           // Filter only if the filter was set
           const filteredEntityInstaces = this.allowedEntityTypes ?
@@ -195,6 +182,24 @@ export class SettingsAutofillAiEntriesListElement extends
 
           this.entityInstances_ = filteredEntityInstaces.sort(
               this.entityInstancesWithLabelsComparator_);
+        };
+
+    this.entityDataManager_.loadEntityInstances().then(
+        this.entityInstancesChangedListener_);
+
+    this.entityDataManager_.addEntityInstancesChangedListener(
+        this.entityInstancesChangedListener_);
+
+    this.entityDataManager_.getWritableEntityTypes().then(
+        (entityTypes: EntityType[]) => {
+          // Filter only if the filter was set
+          const filteredEntities = this.allowedEntityTypes ?
+              entityTypes.filter(
+                  instance => this.allowedEntityTypes!.has(instance.typeName)) :
+              entityTypes;
+
+          this.completeEntityTypesList_ =
+              filteredEntities.sort(this.entityTypesComparator_);
         });
 
     this.addWebUiListener(

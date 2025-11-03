@@ -521,6 +521,33 @@ suite('AutofillAiEntriesListUiTest', function() {
     }
   });
 
+  test('AddButtonShowsSortedEntityInstancesList', async function() {
+    // Exclude passports
+    const allowedEntityTypes =
+        testEntityTypes.filter((type) => type.typeNameAsString !== 'Passport');
+    assertEquals(allowedEntityTypes.length, testEntityTypes.length - 1);
+
+    await createPage(
+        new Set<number>(allowedEntityTypes.map((type) => type.typeName)));
+
+    const addButton = entriesList.shadowRoot!.querySelector<HTMLElement>(
+        '#addEntityInstance');
+    assertTrue(!!addButton);
+    addButton.click();
+    await flushTasks();
+
+    const addSpecificEntityTypeButtons =
+        entriesList.shadowRoot!.querySelectorAll<HTMLElement>(
+            '#addSpecificEntityType, #addEntityInstanceFromWallet');
+    assertEquals(
+        allowedEntityTypes.length, addSpecificEntityTypeButtons.length);
+    for (let i = 0; i < allowedEntityTypes.length; i++) {
+      assertTrue(
+          addSpecificEntityTypeButtons[i]!.textContent.includes(
+              allowedEntityTypes[i]!.typeNameAsString));
+    }
+  });
+
   test('EntityTypesStorableInWalletHaveOpenInNewIcon', async function() {
     await createPage();
     const addButton = entriesList.shadowRoot!.querySelector<HTMLElement>(
@@ -548,14 +575,16 @@ suite('AutofillAiEntriesListUiTest', function() {
             chrome.autofillPrivate.EntityInstanceWithLabels[] = [
           {
             guid: 'a521fc41-d672-4947-ab39-8bc9d49b08d2',
-            type: testEntityTypes[0]!,
+            type: testEntityTypes.find(
+                (type) => type.typeNameAsString === 'Password')!,
             entityInstanceLabel: 'Tom Clark',
             entityInstanceSubLabel: 'Passport',
             storedInWallet: false,
           },
           {
             guid: 'db56681d-9598-4e37-825c-7977f52fbcee',
-            type: testEntityTypes[1]!,
+            type: testEntityTypes.find(
+                (type) => type.typeNameAsString === 'Car')!,
             entityInstanceLabel: 'Honda',
             entityInstanceSubLabel: 'Car',
             storedInWallet: false,
@@ -587,6 +616,58 @@ suite('AutofillAiEntriesListUiTest', function() {
         assertTrue(listItems[2]!.textContent.includes('Tom Clark'));
         assertTrue(listItems[2]!.textContent.includes('Passport'));
         assertFalse(isVisible(listItems[3]!));
+      });
+
+  test(
+      'EntityInstancesChangedListenerUpdatesAndFiltersEntries',
+      async function() {
+        // Only passports
+        const allowedEntityTypes = testEntityTypes.filter(
+            (type) => type.typeNameAsString === 'Passport');
+        assertEquals(allowedEntityTypes.length, 1);
+
+        await createPage(
+            new Set<number>(allowedEntityTypes.map((type) => type.typeName)));
+
+        const newTestEntityInstancesWithLabels:
+            chrome.autofillPrivate.EntityInstanceWithLabels[] = [
+          {
+            guid: 'a521fc41-d672-4947-ab39-8bc9d49b08d2',
+            type: testEntityTypes.find(
+                (type) => type.typeNameAsString === 'Passport')!,
+            entityInstanceLabel: 'Tom Clark',
+            entityInstanceSubLabel: 'Passport',
+            storedInWallet: false,
+          },
+          {
+            guid: 'db56681d-9598-4e37-825c-7977f52fbcee',
+            type: testEntityTypes.find(
+                (type) => type.typeNameAsString === 'Car')!,
+            entityInstanceLabel: 'Honda',
+            entityInstanceSubLabel: 'Car',
+            storedInWallet: false,
+          },
+          {
+            guid: '1a89869f-dff2-461a-8ef8-769e0e1c66f7',
+            type: testEntityInstance.type,
+            entityInstanceLabel: 'Tom Clark',
+            entityInstanceSubLabel: 'Driver\'s license',
+            storedInWallet: false,
+          },
+        ];
+
+        entityDataManager.callEntityInstancesChangedListener(
+            newTestEntityInstancesWithLabels);
+        await flushTasks();
+
+        const listItems =
+            entityInstancesListElement.querySelectorAll<HTMLElement>(
+                '.list-item');
+        // One entity instance and a hidden element should be present.
+        assertEquals(2, listItems.length);
+        assertTrue(listItems[0]!.textContent.includes('Tom Clark'));
+        assertTrue(listItems[0]!.textContent.includes('Passport'));
+        assertFalse(isVisible(listItems[1]!));
       });
 
   test('EntriesDoNotDisappearAfterOptInStatusChange', async function() {
