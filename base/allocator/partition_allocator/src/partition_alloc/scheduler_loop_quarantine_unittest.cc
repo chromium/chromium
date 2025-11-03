@@ -104,11 +104,6 @@ class SchedulerLoopQuarantineTest : public testing::Test {
     return stats;
   }
 
-  internal::SchedulerLoopQuarantineRuntimeStats& GetRuntimeStats() {
-    return root_->GetAllocatorRoot()
-        .GetStatsForSchedulerLoopQuarantineForCurrentThread();
-  }
-
   std::unique_ptr<PartitionAllocatorForTesting> allocator_;
   std::optional<QuarantineRoot> root_;
   QuarantineBranch* branch_;
@@ -122,7 +117,6 @@ struct SchedulerLoopQuarantineTestParamSmall {
       .branch_capacity_in_bytes = 256,
       .enable_quarantine = true,
       .enable_zapping = true,
-      .enable_quarantine_runtime_stats = true,
   };
 };
 struct SchedulerLoopQuarantineTestParamLarge {
@@ -131,7 +125,6 @@ struct SchedulerLoopQuarantineTestParamLarge {
       .branch_capacity_in_bytes = 2048,
       .enable_quarantine = true,
       .enable_zapping = true,
-      .enable_quarantine_runtime_stats = true,
   };
 };
 struct SchedulerLoopQuarantineTestParamSmallThreadBound {
@@ -140,7 +133,6 @@ struct SchedulerLoopQuarantineTestParamSmallThreadBound {
       .branch_capacity_in_bytes = 256,
       .enable_quarantine = true,
       .enable_zapping = true,
-      .enable_quarantine_runtime_stats = true,
   };
 };
 struct SchedulerLoopQuarantineTestParamLargeThreadBound {
@@ -149,7 +141,6 @@ struct SchedulerLoopQuarantineTestParamLargeThreadBound {
       .branch_capacity_in_bytes = 2048,
       .enable_quarantine = true,
       .enable_zapping = true,
-      .enable_quarantine_runtime_stats = true,
   };
 };
 
@@ -224,64 +215,6 @@ TYPED_TEST(SchedulerLoopQuarantineTest, ScopedOptOut) {
 
   this->Quarantine(object2);
   ASSERT_TRUE(this->GetQuarantineBranch()->IsQuarantinedForTesting(object2));
-}
-
-TYPED_TEST(SchedulerLoopQuarantineTest, PauseOnLargeZaps) {
-  if (!this->GetQuarantineBranch()->kThreadBound) {
-    // Supported only on lock-less mode.
-    GTEST_SKIP();
-  }
-  using internal::base::Microseconds;
-  const internal::base::TimeDelta kPauseDuration = Microseconds(100);
-  const internal::base::TimeDelta kMaxZapAboveAvgBeforePause =
-      internal::base::Milliseconds(100);
-  this->GetRuntimeStats().InitOrResetStats(kPauseDuration,
-                                           kMaxZapAboveAvgBeforePause);
-
-  constexpr size_t kObjectSize = 200;
-  std::array<void*,
-             internal::SchedulerLoopQuarantineRuntimeStats::kMaxTimesToTrack>
-      objects;
-  for (auto& object : objects) {
-    object = this->GetPartitionRoot()->Alloc(kObjectSize);
-  }
-  for (auto& object : objects) {
-    this->Quarantine(object);
-    ASSERT_TRUE(this->GetQuarantineBranch()->IsQuarantinedForTesting(object));
-  }
-  auto& stats = this->GetRuntimeStats();
-  internal::base::TimeTicks now = internal::base::TimeTicks::Now();
-  EXPECT_FALSE(stats.ShouldPause(now));
-  // Artificially add stats to cause a pause. We do this by deliberately using
-  // the average_ns zap time as microseconds (making it a much larger zap), and
-  // add `kMaxZapAboveAvgBeforePause` to ensure that the pause is triggered.
-  size_t bucket_index =
-      BucketIndexLookup::GetIndexForDenserBuckets(kObjectSize) + 1;
-  const internal::base::TimeTicks kQuarantineEnd =
-      now + Microseconds(3) +
-      Microseconds(stats.zap_buckets()[bucket_index].average_ns()) +
-      kMaxZapAboveAvgBeforePause;
-  stats.AddStats(bucket_index,
-                 /* quarantine_start= */ now,
-                 /* purge_start= */ now + Microseconds(1),
-                 /* zap_start= */ now + Microseconds(2), kQuarantineEnd);
-  EXPECT_TRUE(stats.ShouldPause(now));
-  EXPECT_FALSE(stats.ShouldPause(kQuarantineEnd + kPauseDuration));
-  // Verify that now a new object won't be quarantined.
-  void* object = this->GetPartitionRoot()->Alloc(kObjectSize);
-  this->Quarantine(object);
-  ASSERT_FALSE(this->GetQuarantineBranch()->IsQuarantinedForTesting(object));
-  // Actually progress `kPauseDuration` beyond `kQuarantineEnd`, 10 microseconds
-  // is just for fudging.
-  internal::base::PlatformThread::Sleep((kQuarantineEnd - now) +
-                                        kPauseDuration + Microseconds(10));
-  // Verify that after the sleep we can quarantine again.
-  internal::base::TimeTicks after = internal::base::TimeTicks::Now();
-  EXPECT_FALSE(stats.ShouldPause(after));
-  void* after_object = this->GetPartitionRoot()->Alloc(kObjectSize);
-  this->Quarantine(after_object);
-  ASSERT_TRUE(
-      this->GetQuarantineBranch()->IsQuarantinedForTesting(after_object));
 }
 
 }  // namespace

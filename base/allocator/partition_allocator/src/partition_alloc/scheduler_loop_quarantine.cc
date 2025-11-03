@@ -79,13 +79,6 @@ void SchedulerLoopQuarantineBranch<thread_bound>::Configure(
     PurgeInternal(0);
     PA_CHECK(slots_.empty());
     slots_.shrink_to_fit();
-    if constexpr (kThreadBound) {
-      if (config.enable_quarantine_runtime_stats) {
-        runtime_stats_.InitOrResetStats(
-            base::Microseconds(config.pause_duration_us),
-            base::Microseconds(config.max_zap_above_avg_before_pause_us));
-      }
-    }
   }
 
   root_ = &root;
@@ -140,15 +133,7 @@ void SchedulerLoopQuarantineBranch<thread_bound>::Quarantine(
 #if PA_BUILDFLAG(DCHECKS_ARE_ON)
   PA_DCHECK(!being_destructed_);
 #endif  // PA_BUILDFLAG(DCHECKS_ARE_ON)
-  // We only support tracking times on the same thread for now, thus to avoid
-  // impact on other code bind it to `thread_bound`, in addition if disabled a
-  // null base::TimeTicks, will be returned avoiding the overhead of calling
-  // base::TimeTicks::Now().
-  base::TimeTicks quarantine_start =
-      internal::SchedulerLoopQuarantineRuntimeStats::ThreadScopedStatTracker<
-          thread_bound>::MaybeGetNow(runtime_stats_);
   if (!enable_quarantine_ || pause_quarantine_ ||
-      runtime_stats_.ShouldPause(quarantine_start) ||
       allocator_root_->IsDirectMappedBucket(slot_span->bucket)) [[unlikely]] {
     return allocator_root_->RawFreeWithThreadCache(slot_start, object,
                                                    slot_span);
@@ -159,10 +144,6 @@ void SchedulerLoopQuarantineBranch<thread_bound>::Quarantine(
       static_cast<size_t>(slot_span->bucket - allocator_root_->buckets);
   const size_t capacity_in_bytes =
       branch_capacity_in_bytes_.load(std::memory_order_relaxed);
-  internal::SchedulerLoopQuarantineRuntimeStats::ThreadScopedStatTracker<
-      /*enabled = */ thread_bound>
-      tracker(quarantine_start, runtime_stats_, bucket_index);
-
   if (capacity_in_bytes < slot_size) [[unlikely]] {
     // Even if this branch dequarantines all entries held by it, this entry
     // cannot fit within the capacity.
@@ -174,7 +155,6 @@ void SchedulerLoopQuarantineBranch<thread_bound>::Quarantine(
   ScopedGuardIfNeeded<kThreadBound> guard(lock_);
 
   // Dequarantine some entries as required.
-  tracker.ReportPurgeStart();
   PurgeInternal(capacity_in_bytes - slot_size);
 
   // Put the entry onto the list.
@@ -197,7 +177,6 @@ void SchedulerLoopQuarantineBranch<thread_bound>::Quarantine(
                                              std::memory_order_relaxed);
 
   if (enable_zapping_) {
-    tracker.ReportZapStart();
     internal::SecureMemset(object, internal::kFreedByte, slot_size);
   }
 }

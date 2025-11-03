@@ -33,10 +33,6 @@ BASE_EXPORT void StartThreadCachePeriodicPurge();
 BASE_EXPORT void StartMemoryReclaimer(
     scoped_refptr<SequencedTaskRunner> task_runner);
 
-BASE_EXPORT void StartSchedulerLoopPeriodicStatsReporting(
-    base::TimeDelta interval,
-    partition_alloc::PartitionRoot* root);
-
 BASE_EXPORT std::map<std::string, std::string> ProposeSyntheticFinchTrials();
 
 // Install handlers for when dangling raw_ptr(s) have been detected. This prints

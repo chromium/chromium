@@ -466,8 +466,6 @@ if (is_clang_or_gcc) {
       "reverse_bytes.h",
       "scheduler_loop_quarantine.cc",
       "scheduler_loop_quarantine.h",
-      "scheduler_loop_quarantine_runtime_stats.cc",
-      "scheduler_loop_quarantine_runtime_stats.h",
       "scheduler_loop_quarantine_support.cc",
       "scheduler_loop_quarantine_support.h",
       "spinning_mutex.cc",

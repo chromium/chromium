@@ -62,7 +62,6 @@
 #include "partition_alloc/partition_alloc_forward.h"
 #include "partition_alloc/partition_lock.h"
 #include "partition_alloc/partition_stats.h"
-#include "partition_alloc/scheduler_loop_quarantine_runtime_stats.h"
 
 namespace partition_alloc {
 
@@ -79,10 +78,6 @@ struct SchedulerLoopQuarantineConfig {
   bool leak_on_destruction = false;
   bool enable_quarantine = false;
   bool enable_zapping = false;
-  // For the following two variables, zero means disabled.
-  bool enable_quarantine_runtime_stats = false;
-  int64_t pause_duration_us = 0;
-  int64_t max_zap_above_avg_before_pause_us = 0;
   // For informational purposes only.
   char branch_name[32] = "";
 };
@@ -162,10 +157,6 @@ class SchedulerLoopQuarantineBranch {
   void Quarantine(void* object,
                   SlotSpanMetadata* slot_span,
                   uintptr_t slot_start) PA_LOCKS_EXCLUDED(lock_);
-
-  SchedulerLoopQuarantineRuntimeStats& runtime_stats() {
-    return runtime_stats_;
-  }
 
   void AllowScanlessPurge();
   void DisallowScanlessPurge();
@@ -250,7 +241,6 @@ class SchedulerLoopQuarantineBranch {
   // optimization.
   uint32_t disallow_scanless_purge_ PA_GUARDED_BY(lock_) = 0;
 
-  SchedulerLoopQuarantineRuntimeStats runtime_stats_;
   // Debug and testing data.
 #if PA_BUILDFLAG(DCHECKS_ARE_ON)
   std::atomic_bool being_destructed_ = false;

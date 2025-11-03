@@ -863,13 +863,6 @@ struct alignas(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
         scheduler_loop_quarantine_root, config);
   }
 
-  internal::SchedulerLoopQuarantineRuntimeStats&
-  GetStatsForSchedulerLoopQuarantineForCurrentThread() {
-    ThreadCache* thread_cache = this->EnsureThreadCache();
-    PA_CHECK(ThreadCache::IsValid(thread_cache));
-    return thread_cache->GetSchedulerLoopQuarantineBranch().runtime_stats();
-  }
-
 #if PA_CONFIG(MOVE_METADATA_OUT_OF_GIGACAGE)
   PA_ALWAYS_INLINE std::ptrdiff_t MetadataOffset() const {
     return settings.metadata_offset_;
