@@ -1107,7 +1107,6 @@ crbug.com/1360067 external/wpt/css/css-text-decor/text-decoration-skip-spaces-00
 # CSS Masonry failing tests
 crbug.com/1076027 external/wpt/css/css-grid/masonry/tentative/baseline/* [ Failure ]
 crbug.com/1076027 external/wpt/css/css-grid/masonry/tentative/fragmentation/* [ Failure Skip ]
-crbug.com/1076027 external/wpt/css/css-grid/masonry/tentative/masonry-grid-template-columns-computed-withcontent.html [ Failure ]
 crbug.com/1076027 external/wpt/css/css-grid/masonry/tentative/subgrid/* [ Failure ]
 # Masonry sizing test failures
 crbug.com/1076027 external/wpt/css/css-grid/masonry/tentative/intrinsic-sizing/masonry-intrinsic-sizing-rows-003-mix1.html [ Failure ]
