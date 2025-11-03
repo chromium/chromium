@@ -178,7 +178,7 @@ class MappableBufferTest : public testing::Test {
     return handle.type != gfx::EMPTY_BUFFER;
   }
 
-  std::array<gfx::BufferUsage, 11> usages() { return usages_; }
+  base::span<gfx::BufferUsage> usages() { return usages_; }
   base::span<const viz::SharedImageFormat> formats() {
     return viz::GetMappableSharedImageFormatForTesting();
   }
@@ -186,19 +186,40 @@ class MappableBufferTest : public testing::Test {
  private:
   bool run_gpu_test_ = false;
   raw_ptr<gl::GLDisplay> display_ = nullptr;
-  std::array<gfx::BufferUsage, 11> usages_ = {
+
+  // The BufferUsages that are valid to pass when creating a MappableBuffers
+  // vary by platform.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
+  std::array<gfx::BufferUsage, 2> usages_ = {
+      gfx::BufferUsage::GPU_READ,
+      gfx::BufferUsage::SCANOUT,
+  };
+#elif BUILDFLAG(IS_MAC)
+  std::array<gfx::BufferUsage, 6> usages_ = {
+      gfx::BufferUsage::GPU_READ,
+      gfx::BufferUsage::SCANOUT,
+      gfx::BufferUsage::SCANOUT_CPU_READ_WRITE,
+      gfx::BufferUsage::GPU_READ_CPU_READ_WRITE,
+      gfx::BufferUsage::SCANOUT_FRONT_RENDERING,
+      gfx::BufferUsage::SCANOUT_VEA_CPU_READ,
+  };
+#elif BUILDFLAG(IS_OZONE)
+  // This is the possible set of valid usages on Ozone; whether a given (usage,
+  // format) pair is valid is determined dynamically via
+  // ui::OzonePlatform::IsNativePixmapConfigSupported().
+  std::array<gfx::BufferUsage, 9> usages_ = {
       gfx::BufferUsage::GPU_READ,
       gfx::BufferUsage::SCANOUT,
       gfx::BufferUsage::SCANOUT_CAMERA_READ_WRITE,
       gfx::BufferUsage::CAMERA_AND_CPU_READ_WRITE,
       gfx::BufferUsage::SCANOUT_CPU_READ_WRITE,
-      gfx::BufferUsage::SCANOUT_VDA_WRITE,
-      gfx::BufferUsage::PROTECTED_SCANOUT,
-      gfx::BufferUsage::PROTECTED_SCANOUT_VDA_WRITE,
       gfx::BufferUsage::GPU_READ_CPU_READ_WRITE,
+      gfx::BufferUsage::SCANOUT_FRONT_RENDERING,
       gfx::BufferUsage::SCANOUT_VEA_CPU_READ,
       gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE,
   };
+#endif
+
 #if BUILDFLAG(IS_OZONE)
   std::unique_ptr<gfx::ClientNativePixmapFactory> client_native_pixmap_factory_;
 #endif
