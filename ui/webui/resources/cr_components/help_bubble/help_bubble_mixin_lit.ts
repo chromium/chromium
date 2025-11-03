@@ -32,6 +32,7 @@ import {HelpBubbleClosedReason} from './help_bubble.mojom-webui.js';
 import type {Trackable} from './help_bubble_controller.js';
 import {HelpBubbleController} from './help_bubble_controller.js';
 import {HelpBubbleProxyImpl} from './help_bubble_proxy.js';
+import type {HelpBubbleProxy} from './help_bubble_proxy.js';
 
 type Constructor<T> = new (...args: any[]) => T;
 
@@ -60,11 +61,14 @@ export const HelpBubbleMixinLit = <T extends Constructor<CrLitElement>>(
     constructor(...args: any[]) {
       super(...args);
 
-      this.trackedElementHandler_ =
-          HelpBubbleProxyImpl.getInstance().getTrackedElementHandler();
-      this.helpBubbleHandler_ = HelpBubbleProxyImpl.getInstance().getHandler();
-      this.helpBubbleCallbackRouter_ =
-          HelpBubbleProxyImpl.getInstance().getCallbackRouter();
+      const proxy = this.createHelpBubbleProxy();
+      this.trackedElementHandler_ = proxy.getTrackedElementHandler();
+      this.helpBubbleHandler_ = proxy.getHandler();
+      this.helpBubbleCallbackRouter_ = proxy.getCallbackRouter();
+    }
+
+    createHelpBubbleProxy() {
+      return HelpBubbleProxyImpl.getInstance();
     }
 
     override connectedCallback() {
@@ -561,6 +565,7 @@ export const HelpBubbleMixinLit = <T extends Constructor<CrLitElement>>(
 };
 
 export interface HelpBubbleMixinLitInterface {
+  createHelpBubbleProxy(): HelpBubbleProxy;
   registerHelpBubble(nativeId: string, trackable: Trackable, options?: Options):
       HelpBubbleController|null;
   unregisterHelpBubble(nativeId: string): void;

@@ -95,6 +95,25 @@ interface HelpBubbleHandlerFactory {
            pending_receiver<HelpBubbleHandler> handler);
 };
 
+// TODO(thestig): Move this into //pdf.
+// PDF-specific interface for creating HelpBubbleHandlers. This is equivalent
+// to HelpBubbleHandlerFactory, but needs to be separate because the PDF Viewer
+// does not have a WebUIController.
+//
+// Binding this interface, as seen in https://crrev.com/c/7056325, uses a
+// well-estabilished Mojo pattern.
+
+// Without this interface, trying to bind HelpBubbleHandlerFactory for
+// WebUIControllers and a non-WebUIController use case, as seen in
+// https://crrev.com/c/6997232 and https://crrev.com/c/7031463, requires adding
+// a bespoke Mojo binding mechanism.
+interface PdfHelpBubbleHandlerFactory {
+  // This method is called on bootstrap to create the browser-side handler.
+  CreateHelpBubbleHandler(
+           pending_remote<help_bubble.mojom.HelpBubbleClient> client,
+           pending_receiver<help_bubble.mojom.HelpBubbleHandler> handler);
+};
+
 // Object which handles the C++/browser side of help bubble management for a
 // WebUIController.
 //

@@ -38,6 +38,9 @@ build_webui("build") {
     "new_badge.ts",
   ]
 
+  # TODO(thestig): Move this into //pdf.
+  ts_files += [ "pdf_help_bubble_proxy.ts" ]
+
   css_files = [
     "help_bubble.css",
     "new_badge.css",
