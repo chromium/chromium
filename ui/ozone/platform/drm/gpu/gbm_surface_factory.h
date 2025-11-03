@@ -60,6 +60,13 @@ class GbmSurfaceFactory : public SurfaceFactoryOzone {
       gfx::AcceleratedWidget window) override;
   std::unique_ptr<SurfaceOzoneCanvas> CreateCanvasForWidget(
       gfx::AcceleratedWidget widget) override;
+  scoped_refptr<gfx::NativePixmap> CreateNativePixmap(
+      gfx::AcceleratedWidget widget,
+      gpu::VulkanDeviceQueue* device_queue,
+      gfx::Size size,
+      viz::SharedImageFormat format,
+      gfx::BufferUsage usage,
+      std::optional<gfx::Size> framebuffer_size = std::nullopt) override;
   scoped_refptr<gfx::NativePixmap> CreateNativePixmapFromHandle(
       gfx::AcceleratedWidget widget,
       gfx::Size size,
@@ -81,13 +88,6 @@ class GbmSurfaceFactory : public SurfaceFactoryOzone {
       const override;
 
  private:
-  scoped_refptr<gfx::NativePixmap> CreateNativePixmap(
-      gfx::AcceleratedWidget widget,
-      gpu::VulkanDeviceQueue* device_queue,
-      gfx::Size size,
-      gfx::BufferFormat format,
-      gfx::BufferUsage usage,
-      std::optional<gfx::Size> framebuffer_size = std::nullopt) override;
   scoped_refptr<gfx::NativePixmap> CreateNativePixmapFromHandleInternal(
       gfx::AcceleratedWidget widget,
       gfx::Size size,

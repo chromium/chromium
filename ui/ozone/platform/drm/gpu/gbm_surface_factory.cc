@@ -389,7 +389,7 @@ scoped_refptr<gfx::NativePixmap> GbmSurfaceFactory::CreateNativePixmap(
     gfx::AcceleratedWidget widget,
     gpu::VulkanDeviceQueue* device_queue,
     gfx::Size size,
-    gfx::BufferFormat format,
+    viz::SharedImageFormat format,
     gfx::BufferUsage usage,
     std::optional<gfx::Size> framebuffer_size) {
   if (framebuffer_size &&
@@ -401,8 +401,9 @@ scoped_refptr<gfx::NativePixmap> GbmSurfaceFactory::CreateNativePixmap(
   std::unique_ptr<GbmBuffer> buffer;
   scoped_refptr<DrmFramebuffer> framebuffer;
   drm_thread_proxy_->CreateBuffer(
-      widget, size, framebuffer_size ? *framebuffer_size : size, format,
-      native_pixmap_usage, /*flags=*/0, &buffer, &framebuffer);
+      widget, size, framebuffer_size ? *framebuffer_size : size,
+      viz::SharedImageFormatToBufferFormat(format), native_pixmap_usage,
+      /*flags=*/0, &buffer, &framebuffer);
   if (!buffer)
     return nullptr;
   return base::MakeRefCounted<GbmPixmap>(this, std::move(buffer),
