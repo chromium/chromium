@@ -147,7 +147,7 @@ class AutofillDriverRouter {
   // be destructed. Typically, the driver dies on cross-origin navigations but
   // survives same-origin navigations (but more precisely this depends on the
   // lifecycle of the content::RenderFrameHost). If the driver survives, the
-  // router may keep the meta data is collected about the frame (in particular,
+  // router may keep the metadata it collected about the frame (in particular,
   // the parent frame).
   void UnregisterDriver(AutofillDriver& driver, bool driver_is_dying);
 

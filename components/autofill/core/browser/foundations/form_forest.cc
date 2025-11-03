@@ -80,7 +80,7 @@ void FormForest::EraseReferencesTo(
                ? std::get<LocalFrameToken>(frame_or_form) == form.frame_token
                : std::get<FormGlobalId>(frame_or_form) == form;
   };
-  for (std::unique_ptr<FrameData>& some_frame : frame_datas_) {
+  for (const std::unique_ptr<FrameData>& some_frame : frame_datas_) {
     for (FormData& some_form : some_frame->child_forms) {
       size_t num_removed =
           std::erase_if(some_form.mutable_fields(/*pass_key=*/{}),
