@@ -332,11 +332,12 @@ void BrowserAccessibilityManagerAndroid::FireGeneratedEvent(
     case ui::AXEventGenerator::Event::LIVE_REGION_NODE_CHANGED: {
       // This event is fired when an object appears in a live region.
       // Speak its text unless the experimental deprecation of the announce
-      // approach is enabled, in which case we do nothing. The node will have a
-      // live region type set, and the window content change event will inform
-      // the framework of the node change.
-      if (!base::FeatureList::IsEnabled(
+      // approach is enabled, in which case we fire a window content
+      // changed event will inform the framework of the node change.
+      if (base::FeatureList::IsEnabled(
               features::kAccessibilityDeprecateTypeAnnounce)) {
+        wcax->HandleLiveRegionNodeChanged(android_node->GetUniqueId());
+      } else {
         std::u16string text = android_node->GetTextContentUTF16();
         wcax->AnnounceLiveRegionText(text);
       }

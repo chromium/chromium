@@ -400,6 +400,8 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
   void HandleScrollPositionChanged(int32_t unique_id);
   void HandleScrolledToAnchor(int32_t unique_id);
   void HandlePaneOpened(int32_t unique_id);
+  // Dispatches LIVE_REGION_NODE_CHANGED AxGeneratedEvents over the JNI Bridge.
+  void HandleLiveRegionNodeChanged(int32_t unique_id);
   void AnnounceLiveRegionText(const std::u16string& text);
   void HandleActiveDescendantChanged(int32_t unique_id);
   void HandleTextSelectionChanged(int32_t unique_id);

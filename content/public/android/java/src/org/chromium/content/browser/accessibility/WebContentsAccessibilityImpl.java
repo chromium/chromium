@@ -102,6 +102,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.content.browser.WindowEventObserver;
 import org.chromium.content.browser.WindowEventObserverManager;
+import org.chromium.content.browser.accessibility.AccessibilityActionAndEventTracker.WindowContentChangedSubtype;
 import org.chromium.content.browser.accessibility.AccessibilityDelegate.AccessibilityCoordinates;
 import org.chromium.content.browser.accessibility.AccessibilityNodeInfoBuilder.BuilderDelegate;
 import org.chromium.content.browser.accessibility.AutoDisableAccessibilityHandler.Client;
@@ -2167,6 +2168,24 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
     }
 
     @CalledByNative
+    private void handleLiveRegionNodeChanged(int id) {
+        // If TYPE_ANNOUNCEMENT is not disabled, our node change will be routed through
+        // announceLiveRegionText() instead.
+        if (ContentFeatureMap.isEnabled(ContentFeatureList.ACCESSIBILITY_DEPRECATE_TYPE_ANNOUNCE)) {
+            if (isAccessibilityEnabled()) {
+                AccessibilityEvent event =
+                        buildAccessibilityEvent(id, AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED);
+                if (event == null) return;
+                // If the event is LIVE_REGION_NODE_CHANGED, we want the
+                // Android system to know about every single node that was affected. Therefore, we
+                // do not queue these events, but instead send them right away.
+                requestSendAccessibilityEvent(
+                        event, WindowContentChangedSubtype.LIVE_REGION_NODE_CHANGED);
+            }
+        }
+    }
+
+    @CalledByNative
     private void announceLiveRegionText(String text) {
         assert !ContentFeatureMap.isEnabled(
                         ContentFeatureList.ACCESSIBILITY_DEPRECATE_TYPE_ANNOUNCE)
@@ -2200,7 +2219,14 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
                         mNativeObj, virtualViewId, positionInfoStartIndex, positionInfoLength);
     }
 
+    // Most calls to requestSendAccessibilityEvent() do not require a WindowContentChangedSubtype to
+    // be specified. This information is only used for testing.
     protected void requestSendAccessibilityEvent(AccessibilityEvent event) {
+        requestSendAccessibilityEvent(event, WindowContentChangedSubtype.NONE);
+    }
+
+    protected void requestSendAccessibilityEvent(
+            AccessibilityEvent event, @WindowContentChangedSubtype int subtype) {
         // If there is no parent, then the event can be ignored. In general the parent is only
         // transiently null (such as during teardown, switching tabs...). Also ensure that
         // accessibility is still enabled, throttling may result in events sent late.
@@ -2209,7 +2235,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
             if (event.getEventType() == AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED) {
                 mHistogramRecorder.recordTimeToFirstAccessibilityFocus();
             }
-            if (mTracker != null) mTracker.addEvent(event);
+            if (mTracker != null) mTracker.addEvent(event, subtype);
             try {
                 mView.getParent().requestSendAccessibilityEvent(mView, event);
             } catch (IllegalStateException ignored) {

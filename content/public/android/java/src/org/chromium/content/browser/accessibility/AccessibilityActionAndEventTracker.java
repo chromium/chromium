@@ -7,9 +7,13 @@ package org.chromium.content.browser.accessibility;
 import android.os.Bundle;
 import android.view.accessibility.AccessibilityEvent;
 
+import androidx.annotation.IntDef;
+
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.concurrent.CountDownLatch;
 
@@ -36,25 +40,50 @@ public class AccessibilityActionAndEventTracker {
         mShouldFilterTrivialEvents = shouldFilterTrivialEvents;
     }
 
+    // This interface allows us to store additional information about WINDOW_CONTENT_CHANGED events
+    // that do not have an assigned content type (i.e. LIVE_REGION_NODE_CHANGED events).
+    @IntDef({
+        WindowContentChangedSubtype.NONE,
+        WindowContentChangedSubtype.LIVE_REGION_NODE_CHANGED
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface WindowContentChangedSubtype {
+        int NONE = 0;
+        int LIVE_REGION_NODE_CHANGED = 1;
+    }
+
+    // WINDOW_CONTENT_CHANGED events are eligible to be tracked if they have a specific subtype.
+    public boolean shouldWindowContentChangedSubtypeBeTracked(
+            @WindowContentChangedSubtype int subtype) {
+        return subtype == WindowContentChangedSubtype.LIVE_REGION_NODE_CHANGED;
+    }
+
     public void setEventLatch(@Nullable CountDownLatch latch) {
         mEventLatch = latch;
     }
 
-    public void addEvent(AccessibilityEvent event) {
+    public void addEvent(AccessibilityEvent event, @WindowContentChangedSubtype int subtype) {
         // In rare cases there may be a lingering event, so only add if the test is not complete.
         if (!mTestComplete) {
             if (mShouldFilterTrivialEvents) {
                 // Convert event type to a human readable String (except TYPE_WINDOW_CONTENT_CHANGED
-                // with no CONTENT_CHANGE_TYPE_STATE_DESCRIPTION flag or
+                // with an ineligible subtype, no CONTENT_CHANGE_TYPE_STATE_DESCRIPTION flag, and no
                 // CONTENT_CHANGE_TYPE_PANE_TITLE flag)
-                if (event.getEventType() == AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED
-                        && (event.getContentChangeTypes()
-                                        & AccessibilityEvent.CONTENT_CHANGE_TYPE_STATE_DESCRIPTION)
-                                == 0
-                        && (event.getContentChangeTypes()
-                                        & AccessibilityEvent.CONTENT_CHANGE_TYPE_PANE_TITLE)
-                                == 0) {
-                    return;
+                if (event.getEventType() == AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED) {
+                    boolean hasNoStateDescriptionChange =
+                            (event.getContentChangeTypes()
+                                            & AccessibilityEvent
+                                                    .CONTENT_CHANGE_TYPE_STATE_DESCRIPTION)
+                                    == 0;
+                    boolean hasNoPaneTitleChange =
+                            (event.getContentChangeTypes()
+                                            & AccessibilityEvent.CONTENT_CHANGE_TYPE_PANE_TITLE)
+                                    == 0;
+                    if (hasNoStateDescriptionChange
+                            && hasNoPaneTitleChange
+                            && !shouldWindowContentChangedSubtypeBeTracked(subtype)) {
+                        return;
+                    }
                 }
             }
             mEvents.add(eventToString(event));
