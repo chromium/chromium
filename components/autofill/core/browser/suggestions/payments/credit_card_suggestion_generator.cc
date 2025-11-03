@@ -190,7 +190,8 @@ void CreditCardSuggestionGenerator::FetchSuggestionData(
     std::u16string autofilled_last_four_digits_in_form_for_filtering = u"";
 
     if (is_card_number_autofilled && card_number_field_value.size() >= 4) {
-      card_number_field_value.substr(card_number_field_value.size() - 4);
+      autofilled_last_four_digits_in_form_for_filtering =
+          card_number_field_value.substr(card_number_field_value.size() - 4);
     }
 
     credit_cards = FetchCreditCardsForCreditCardOrCvcField(
