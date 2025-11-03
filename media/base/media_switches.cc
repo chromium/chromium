@@ -394,9 +394,7 @@ BASE_FEATURE(kWebrtcMediaCapabilitiesParameters,
 // widevine.
 BASE_FEATURE(kWidevinePersistentLicenseSupport,
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
-             // TODO(crbug.com/423458074): This will rollout slowly as an
-             // experiment eventually becoming disabled by default.
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #else
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
