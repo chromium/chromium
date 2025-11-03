@@ -610,23 +610,6 @@ class PopupViewViewsPlusAddressSuggestionBrowsertest
 };
 
 IN_PROC_BROWSER_TEST_P(PopupViewViewsPlusAddressSuggestionBrowsertest,
-                       FirstTimeCreation) {
-  setting_service().set_has_accepted_notice(false);
-  PrepareSuggestions(
-      GetPlusAddressSuggestion(/*affiliated_plus_addresses=*/{}));
-  ShowAndVerifyUi();
-}
-
-IN_PROC_BROWSER_TEST_P(PopupViewViewsPlusAddressSuggestionBrowsertest,
-                       InlineGenerationWithPreallocatedAddresses) {
-  setting_service().set_has_accepted_notice(true);
-  allocator().set_is_next_allocation_synchronous(true);
-  PrepareSuggestions(
-      GetPlusAddressSuggestion(/*affiliated_plus_addresses=*/{}));
-  ShowAndVerifyUi();
-}
-
-IN_PROC_BROWSER_TEST_P(PopupViewViewsPlusAddressSuggestionBrowsertest,
                        Filling) {
   setting_service().set_has_accepted_notice(true);
   PrepareSuggestions(

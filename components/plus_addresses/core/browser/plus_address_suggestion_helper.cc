@@ -37,93 +37,6 @@ using autofill::PasswordFormClassification;
 using autofill::Suggestion;
 using autofill::SuggestionType;
 
-bool IsPasswordFieldVisible(
-    const autofill::FormData& focused_form,
-    const PasswordFormClassification& form_classification) {
-  if (!form_classification.password_field) {
-    return false;
-  }
-  // This visibility check is far from perfect - for example, fields may still
-  // be transparent, have tiny sizes, etc., and this will not pick up on it.
-  const FormFieldData* const pw_field =
-      focused_form.FindFieldByGlobalId(*form_classification.password_field);
-  return pw_field && pw_field->is_visible();
-}
-
-// Returns `true` when we wish to offer plus address creation on a form with
-// password manager classification `form_classification` and a focused field
-// with id `focused_field_id`.
-// If password manager did not recognize a username field or the username field
-// is different from the focused field, this is always `true`. Otherwise,
-// whether we offer plus address creation depends on the form type.
-bool ShouldOfferPlusAddressCreationOnForm(
-    const autofill::FormData& focused_form,
-    const base::flat_map<autofill::FieldGlobalId, autofill::FieldTypeGroupSet>&
-        form_field_type_groups,
-    const PasswordFormClassification& form_classification,
-    autofill::FieldGlobalId focused_field_id) {
-  if ((!form_classification.username_field ||
-       *form_classification.username_field != focused_field_id) &&
-      base::FeatureList::IsEnabled(
-          features::kPlusAddressOfferCreationOnAllNonUsernameFields)) {
-    return true;
-  }
-
-  auto form_has_unexpected_field_types_for_login_form = [&]() {
-    // This check can be eliminated once
-    // `kPlusAddressOfferCreationOnAllNonUsernameFields` is launched.
-    if (!form_classification.username_field) {
-      // This should not normally happen - but if it does, we might as well
-      // offer generation.
-      return true;
-    }
-    const autofill::FormGlobalId focused_renderer_form_id =
-        CHECK_DEREF(focused_form.FindFieldByGlobalId(focused_field_id))
-            .renderer_form_id();
-    if (!focused_renderer_form_id.renderer_id) {
-      // If the focused field is part of an unowned form, then we do not
-      // override the login form prediction - it seems likely that the unowned
-      // form consists of unrelated fields.
-      return false;
-    }
-    // If there are name or address fields in the form, there is a high chance
-    // that PWM got the classification incorrect.
-    static constexpr autofill::FieldTypeGroupSet
-        kUnexpectedFieldTypeGroupsInLoginForm = {
-            autofill::FieldTypeGroup::kName,
-            autofill::FieldTypeGroup::kAddress};
-    return std::ranges::any_of(
-        focused_form.fields(), [&](const FormFieldData& field) {
-          if (field.renderer_form_id() != focused_renderer_form_id) {
-            // Usually, PWM-forms are not spread across multiple frames -
-            // therefore disregard all form elements that come from a different
-            // renderer form.
-            return false;
-          }
-          auto it = form_field_type_groups.find(field.global_id());
-          return it != form_field_type_groups.end() &&
-                 it->second.contains_any(kUnexpectedFieldTypeGroupsInLoginForm);
-        });
-  };
-
-  switch (form_classification.type) {
-    case PasswordFormClassification::Type::kNoPasswordForm:
-    case PasswordFormClassification::Type::kSignupForm:
-      return true;
-    case PasswordFormClassification::Type::kLoginForm:
-      if (!IsPasswordFieldVisible(focused_form, form_classification)) {
-        return true;
-      }
-      return form_has_unexpected_field_types_for_login_form();
-    case PasswordFormClassification::Type::kChangePasswordForm:
-    case PasswordFormClassification::Type::kResetPasswordForm:
-      return false;
-    case PasswordFormClassification::Type::kSingleUsernameForm:
-      return true;
-  }
-  NOTREACHED();
-}
-
 // Returns a suggestion to fill an existing plus address.
 Suggestion CreateFillPlusAddressSuggestion(std::u16string plus_address) {
   Suggestion suggestion = Suggestion(std::move(plus_address),
@@ -192,22 +105,7 @@ std::vector<autofill::Suggestion> PlusAddressSuggestionHelper::GetSuggestions(
       normalized_field_value.empty() || focused_field.is_autofilled();
 
   if (affiliated_plus_addresses.empty()) {
-    // Do not offer creation if disabled.
-    if (!is_creation_enabled) {
-      return {};
-    }
-
-    // Do not offer creation on non-empty fields and certain form types (e.g.
-    // login forms).
-    if (!is_plus_address_manually_triggered &&
-        (!is_field_empty_or_autofilled ||
-         !ShouldOfferPlusAddressCreationOnForm(
-             focused_form, form_field_type_groups, focused_form_classification,
-             focused_field.global_id()))) {
-      return {};
-    }
-
-    return {CreateNewPlusAddressSuggestion()};
+    return {};
   }
 
   std::vector<Suggestion> suggestions;
