@@ -14,6 +14,8 @@ static_library("core") {
   sources = [
     "confirm_infobar_delegate.cc",
     "confirm_infobar_delegate.h",
+    "features.cc",
+    "features.h",
     "infobar.cc",
     "infobar.h",
     "infobar_container.cc",
