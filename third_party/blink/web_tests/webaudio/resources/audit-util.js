@@ -401,3 +401,44 @@ function assert_array_constant_value(
         arr[i], value, epsilon, `${desc} sample[${i}]`);
   }
 }
+
+/**
+ * Loads a file from the specified URL using an XMLHttpRequest and returns its
+ * contents as an ArrayBuffer.
+ *
+ * This function is typically used to fetch binary resources
+ * (such as audio files) for web audio tests.
+ * It resolves with the file's ArrayBuffer on success, or rejects with an
+ * error message on failure.
+ *
+ * @param {string} fileUrl - The URL of the file to load.
+ * @returns {Promise<ArrayBuffer>} A promise that resolves with the file's
+ * ArrayBuffer if the request is successful, or rejects with an error
+ * message if it fails.
+ */
+function loadFileFromUrl(fileUrl) {
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', fileUrl, true);
+    xhr.responseType = 'arraybuffer';
+
+    xhr.onload = () => {
+      // |status = 0| workaround for certain test servers.
+      if (xhr.status === 200 || xhr.status === 0) {
+        resolve(xhr.response);
+      } else {
+        reject(
+          'loadFile: Request failed when loading ' +
+          fileUrl + '. ' + xhr.statusText +
+          '. (status = ' + xhr.status + ')'
+        );
+      }
+    };
+
+    xhr.onerror = () => {
+      reject('loadFile: Network failure when loading ' + fileUrl + '.');
+    };
+
+    xhr.send();
+  });
+}
