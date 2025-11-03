@@ -4,6 +4,7 @@
 
 #include "chrome/browser/glic/actor/glic_actor_task_manager.h"
 
+#include "base/base64.h"
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -62,6 +63,12 @@ void GlicActorTaskManager::PerformActionsFinished(
     std::vector<actor::ActionResultWithLatencyInfo> action_results) {
   actor::ActorTask* task = actor_keyed_service_->GetTask(task_id);
 
+  actor_keyed_service_->GetJournal().Log(
+      GURL::EmptyGURL(), task_id, "PerformActionsFinished",
+      actor::JournalDetailsBuilder()
+          .Add("result_code", base::ToString(result_code))
+          .Build());
+
   // Task is checked when calling PerformActions and it doesn't go away.
   CHECK(task);
 
@@ -93,6 +100,10 @@ void GlicActorTaskManager::PerformActions(
   // wrapper for proto-to-actor conversion.
   optimization_guide::proto::Actions actions;
   if (!actions.ParseFromArray(actions_proto.data(), actions_proto.size())) {
+    // TODO(bokan): include the base64 proto in the error
+    actor_keyed_service_->GetJournal().Log(
+        GURL(), actor::TaskId(), "GlicPerformActions",
+        actor::JournalDetailsBuilder().AddError("Invalid Proto").Build());
     std::move(callback).Run(
         base::unexpected(mojom::PerformActionsErrorReason::kInvalidProto));
     return;
@@ -105,6 +116,9 @@ void GlicActorTaskManager::PerformActions(
           .Build());
 
   if (!actions.has_task_id()) {
+    actor_keyed_service_->GetJournal().Log(
+        GURL(), actor::TaskId(actions.task_id()), "GlicPerformActions",
+        actor::JournalDetailsBuilder().AddError("Missing Task Id").Build());
     std::move(callback).Run(
         base::unexpected(mojom::PerformActionsErrorReason::kMissingTaskId));
     return;

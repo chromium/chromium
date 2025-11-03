@@ -427,8 +427,17 @@ void ActorTask::ObserveTabOnce(tabs::TabHandle tab_handle) {
 
   tabs::TabInterface* tab = tab_handle.Get();
   if (!tab) {
+    journal_->Log(GURL(), id(), "ObserveTabOnce",
+                  JournalDetailsBuilder()
+                      .Add("tab_id", tab_handle.raw_value())
+                      .AddError("Tab is gone")
+                      .Build());
     return;
   }
+
+  journal_->Log(
+      GURL(), id(), "ObserveTabOnce",
+      JournalDetailsBuilder().Add("tab_id", tab_handle.raw_value()).Build());
 
   auto itr =
       to_observe_tabs_

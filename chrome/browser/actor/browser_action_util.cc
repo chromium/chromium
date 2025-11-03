@@ -804,7 +804,15 @@ void BuildActionsResultWithObservations(
   std::unique_ptr<actor::AggregatedJournal::PendingAsyncEntry> journal_entry =
       actor_service->GetJournal().CreatePendingAsyncEntry(
           GURL(), task.id(), MakeBrowserTrackUUID(task.id()),
-          "BuildActionsResultWithObservations", {});
+          "BuildActionsResultWithObservations",
+          JournalDetailsBuilder()
+              .Add("result_code", base::ToString(result_code))
+              .Add("index_of_failed_action",
+                   (index_of_failed_action.has_value() ? *index_of_failed_action : -1))
+              .Add("skip_async_observation_information",
+                   skip_async_observation_information)
+              .Add("action_results", action_results.size())
+              .Build());
 
   auto response = std::make_unique<apc::ActionsResult>();
 
@@ -862,7 +870,8 @@ void BuildActionsResultWithObservations(
 
   absl::flat_hash_map<tabs::TabInterface*, apc::TabObservation*> tabs_to_fetch;
 
-  for (const tabs::TabHandle& handle : task.GetLastActedTabs()) {
+  ActorTask::TabHandleSet last_acted_tabs = task.GetLastActedTabs();
+  for (const tabs::TabHandle& handle : last_acted_tabs) {
     // Include a TabObservation entry for acted on tabs. If the tab no longer
     // exists or the fetch context failed, the observation will be empty.
     // TODO(crbug.com/434263095): We should probably avoid capturing
@@ -904,6 +913,14 @@ void BuildActionsResultWithObservations(
       }
     }
   }
+
+  actor_service->GetJournal().Log(
+      GURL(), TaskId(), "Observing Tabs",
+      JournalDetailsBuilder()
+          .Add("tab_observations", last_acted_tabs.size())
+          .Add("tabs_to_fetch", tabs_to_fetch.size())
+          .Build());
+
   base::UmaHistogramCounts1000("Actor.PageContext.TabCount",
                                tabs_to_fetch.size());
 
