@@ -306,9 +306,10 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
         if (tab_strip_->IsTabSelected(other_tab)) {
           if (other_tab->group().has_value()) {
             const tab_groups::TabGroupId group = other_tab->group().value();
-            if (fully_selected_groups.contains(group)) {
-              dragging_views.push_back(fully_selected_groups[group]);
-              fully_selected_groups.erase(group);
+            if (auto it = fully_selected_groups.find(group);
+                it != fully_selected_groups.end()) {
+              dragging_views.push_back(it->second);
+              fully_selected_groups.erase(it);
             }
           }
 
