@@ -150,6 +150,46 @@ chromium-metrics-reviews@google.com.
                version number."/>
 </variants>
 
+<!-- LINT.IfChange(PromosManagerPromo) -->
+
+<variants name="PromosManagerPromo">
+  <variant name="AllTabsDefaultBrowser"
+      summary="&quot;All Tabs&quot; default browser promo."/>
+  <variant name="AppStoreRating" summary="App Store Rating Prompt"/>
+  <variant name="BWGPromo" summary="BWG promo."/>
+  <variant name="CredentialProviderExtension"
+      summary="Credential Provider Extension"/>
+  <variant name="DefaultBrowser" summary="Fullscreen Default Browser Promo"/>
+  <variant name="DefaultBrowserOffCycle"
+      summary="Off-cycle fullscreen default browser promo."/>
+  <variant name="DefaultBrowserRemindMeLater"
+      summary="Remind me later for default browser."/>
+  <variant name="DockingPromo" summary="Docking Promo."/>
+  <variant name="DockingPromoRemindMeLater"
+      summary="Docking Promo (Remind Me Later version)."/>
+  <variant name="FullscreenSignin" summary="Fullscreen sign-in promo."/>
+  <variant name="MadeForIOSDefaultBrowser"
+      summary="&quot;Made For iOS&quot; default browser promo."/>
+  <variant name="PostDefaultAbandonment"
+      summary="Post-default browser abandonment alert."/>
+  <variant name="PostRestoreDefaultBrowserAlert"
+      summary="Post Restore Default Browser (native iOS alert)"/>
+  <variant name="PostRestoreSignInAlert"
+      summary="Post Restore Sign-In (native iOS alert)"/>
+  <variant name="PostRestoreSignInFullscreen"
+      summary="Post Restore Sign-In (fullscreen, FRE-like promo)"/>
+  <variant name="SafariImportRemindMeLater"
+      summary="Reminder for the Safari import entry point."/>
+  <variant name="StaySafeDefaultBrowser"
+      summary="&quot;Stay Safe&quot; default browser promo."/>
+  <variant name="Test"
+      summary="Test promo used for testing purposes (e.g. unit tests)"/>
+  <variant name="WelcomeBack" summary="Welcome Back promo."/>
+  <variant name="WhatsNew" summary="What's New Promo"/>
+</variants>
+
+<!-- LINT.ThenChange(/ios/chrome/browser/promos_manager/model/constants.h:Promo) -->
+
 <histogram name="IOS.AIHub.Action" enum="IOSAIHubAction"
     expires_after="2026-06-01">
   <owner>sebsg@chromium.org</owner>
@@ -4992,6 +5032,18 @@ chromium-metrics-reviews@google.com.
     Logs which type of promo is displayed when the Promos Manager decides to
     display a promo.
   </summary>
+</histogram>
+
+<histogram name="IOS.PromosManager.{Promo}.RegistrationStateChanged"
+    enum="IOSPromoRegistrationState" expires_after="2026-03-22">
+  <owner>cheickcisse@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <summary>
+    ogs the registration state change for a given promo. This is emitted when a
+    promo is registered, deregistered after being displayed, or deregistered
+    because its eligibility changed.
+  </summary>
+  <token key="Promo" variants="PromosManagerPromo"/>
 </histogram>
 
 <histogram name="IOS.PushNotification.APNSDeviceRegistration"

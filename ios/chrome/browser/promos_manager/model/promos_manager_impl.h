@@ -75,6 +75,9 @@ class PromosManagerImpl : public PromosManager {
   int GetEligiblePromoCount(
       const std::vector<promos_manager::Promo>& promo_queue);
 
+  // The internal implementation that performs the actual deregistration logic.
+  void DeregisterPromoInternal(promos_manager::Promo promo);
+
   // PromosManager implementation.
   void Init() override;
   void InitializePromoConfigs(PromoConfigsSet promo_configs) override;

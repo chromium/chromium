@@ -1088,6 +1088,18 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Dismiss"/>
 </enum>
 
+<!-- LINT.IfChange(IOSPromoRegistrationState) -->
+
+<enum name="IOSPromoRegistrationState">
+  <int value="0" label="kRegistration"/>
+  <int value="1" label="kDeregistrationBeforePromoDisplay"/>
+  <int value="2" label="kDeregistrationAfterPromoDisplay"/>
+</enum>
+
+<!-- LINT.ThenChange(/ios/chrome/browser/promos_manager/model/constants.h:PromoRegistrationState) -->
+
+<!-- LINT.IfChange(IOSPromosManagerPromo) -->
+
 <enum name="IOSPromosManagerPromo">
   <int value="0" label="Test Promo"/>
 <!--  Default Browser (Fullscreen) not in use, yet.-->
@@ -1109,11 +1121,15 @@ chromium-metrics-reviews@google.com.
   <int value="13" label="All Tabs default browser promo"/>
   <int value="14" label="Made for iOS default browser promo"/>
   <int value="15" label="Stay Safe default browser promo"/>
+  <int value="16" label="Post-default browser abandonment alert."/>
+  <int value="17" label="Fullscreen sign-in promo."/>
   <int value="18" label="Welcome Back promo"/>
   <int value="19" label="BWG promo"/>
   <int value="20" label="Safari Import (Remind Me Later)"/>
   <int value="21" label="Default Browser off cycle promo"/>
 </enum>
+
+<!-- LINT.ThenChange(/ios/chrome/browser/promos_manager/model/constants.h:Promo) -->
 
 <enum name="IOSPromosManagerPromoType">
   <int value="0" label="StandardPromoViewProvider"/>
