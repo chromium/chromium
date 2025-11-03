@@ -1366,6 +1366,7 @@ class LocationBarMediator
     }
 
     private boolean shouldShowZoomButton() {
+        if (mUrlHasFocus || mIsUrlFocusChangeInProgress) return false;
         if (!ChromeFeatureList.sAndroidZoomIndicator.isEnabled()
                 || !DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)
                 || mPageZoomIndicatorCoordinator == null
