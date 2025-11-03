@@ -3315,6 +3315,7 @@ data/accessibility/html/aside-inside-section-role-generic-expected-uia-win.txt
 data/accessibility/html/aside-inside-section-role-generic-expected-win.txt
 data/accessibility/html/aside-inside-section-role-generic.html
 data/accessibility/html/aside.html
+data/accessibility/html/audio-expected-android-external.txt
 data/accessibility/html/audio-expected-android.txt
 data/accessibility/html/audio-expected-auralinux.txt
 data/accessibility/html/audio-expected-mac.txt

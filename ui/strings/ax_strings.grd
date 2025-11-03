@@ -824,10 +824,6 @@ need to be translated for each locale.-->
         media control
       </message>
 
-      <message name="IDS_AX_MEDIA_AUDIO_ELEMENT" desc="Accessibility label of audio">
-        audio
-      </message>
-
       <message name="IDS_AX_MEDIA_VIDEO_ELEMENT" desc="Accessibility label of video">
         video
       </message>
@@ -918,10 +914,6 @@ need to be translated for each locale.-->
 
       <message name="IDS_AX_MEDIA_OVERFLOW_BUTTON" desc="Accessibility label for media controls overflow button.">
         show more media controls
-      </message>
-
-      <message name="IDS_AX_MEDIA_AUDIO_ELEMENT_HELP" desc="Accessibility label for help of audio controls">
-        audio
       </message>
 
       <message name="IDS_AX_MEDIA_VIDEO_ELEMENT_HELP" desc="Accessibility label for help of video">

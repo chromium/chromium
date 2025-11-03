@@ -1431,6 +1431,12 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    public void test_audio() {
+        performHtmlTest("audio.html");
+    }
+
+    @Test
+    @SmallTest
     public void test_b() {
         performHtmlTest("b.html");
     }
