@@ -1589,16 +1589,25 @@
             ]
         }
     ],
-    "ArcOnDemandV2_holdback": [
+    "ArcOnDemandV2_4GBTuning": [
         {
             "platforms": [
                 "chromeos"
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "enabled_1days_20251029",
+                    "params": {
+                        "inactive_interval": "1d"
+                    },
                     "enable_features": [
                         "ArcOnDemandV2"
+                    ],
+                    "hardware_classes": [
+                        "dedede",
+                        "grunt",
+                        "hana",
+                        "octopus"
                     ]
                 }
             ]
