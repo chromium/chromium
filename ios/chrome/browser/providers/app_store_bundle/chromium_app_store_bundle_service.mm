@@ -27,8 +27,13 @@
   __weak ChromiumAppStoreBundlePromo* weakSelf = self;
   UIAction* dismissAction = [UIAction actionWithHandler:^(UIAction* action) {
     ChromiumAppStoreBundlePromo* strongSelf = weakSelf;
-    [strongSelf.presentingViewController dismissViewControllerAnimated:YES
-                                                            completion:nil];
+    [strongSelf.presentingViewController
+        dismissViewControllerAnimated:YES
+                           completion:^{
+                             if (strongSelf.dismissHandler) {
+                               strongSelf.dismissHandler();
+                             }
+                           }];
   }];
   UINavigationItem* navigationItem = [[UINavigationItem alloc] init];
   navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc]

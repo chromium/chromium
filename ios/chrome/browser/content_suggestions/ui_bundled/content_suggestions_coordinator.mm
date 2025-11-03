@@ -693,13 +693,9 @@ using segmentation_platform::TipIdentifier;
 
 // Presents the Best of Google bundle install page in the App Store.
 - (void)presentAppStoreBundlePage {
-  // TODO(crbug.com/442590744): Fix crash when passing `nil` completion. This
-  // method call is intentionally passed an empty completion block. Passing a
-  // `nil` completion results in a crash from the `AppStoreBundleService` API.
   [_appBundlePromoMediator
       presentAppStoreBundlePage:self.magicStackCollectionView
-                 withCompletion:^{
-                 }];
+                 withCompletion:nil];
 }
 
 - (void)didTapDefaultBrowserPromo {
