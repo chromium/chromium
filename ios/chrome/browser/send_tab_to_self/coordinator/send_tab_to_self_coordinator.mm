@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/send_tab_to_self/ui_bundled/send_tab_to_self_coordinator.h"
+#import "ios/chrome/browser/send_tab_to_self/coordinator/send_tab_to_self_coordinator.h"
 
 #import <memory>
 #import <optional>
@@ -28,9 +28,9 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signin_presenter.h"
 #import "ios/chrome/browser/infobars/ui_bundled/presentation/infobar_modal_positioner.h"
 #import "ios/chrome/browser/send_tab_to_self/model/send_tab_to_self_browser_agent.h"
-#import "ios/chrome/browser/send_tab_to_self/ui_bundled/send_tab_to_self_modal_delegate.h"
-#import "ios/chrome/browser/send_tab_to_self/ui_bundled/send_tab_to_self_modal_presentation_controller.h"
-#import "ios/chrome/browser/send_tab_to_self/ui_bundled/send_tab_to_self_table_view_controller.h"
+#import "ios/chrome/browser/send_tab_to_self/ui/send_tab_to_self_modal_delegate.h"
+#import "ios/chrome/browser/send_tab_to_self/ui/send_tab_to_self_modal_presentation_controller.h"
+#import "ios/chrome/browser/send_tab_to_self/ui/send_tab_to_self_table_view_controller.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -62,9 +62,10 @@ class TargetDeviceListWaiter : public syncer::SyncServiceObserver {
   using GetDisplayReasonCallback = base::RepeatingCallback<
       std::optional<send_tab_to_self::EntryPointDisplayReason>()>;
 
-  // Queries `get_display_reason_callback` until it indicates the device list is
-  // known (i.e. until it returns kOfferFeature or kInformNoTargetDevice), then
-  // calls `on_list_known_callback`. Destroying the object aborts the waiting.
+  // Queries `get_display_reason_callback` until it indicates the device list
+  // is known (i.e. until it returns kOfferFeature or kInformNoTargetDevice),
+  // then calls `on_list_known_callback`. Destroying the object aborts the
+  // waiting.
   TargetDeviceListWaiter(
       syncer::SyncService* sync_service,
       const GetDisplayReasonCallback& get_display_reason_callback,
