@@ -4090,13 +4090,12 @@ SkColorType test_color_types[] = {kN32_SkColorType, kARGB_4444_SkColorType,
                                   kRGBA_F16_SkColorType};
 
 INSTANTIATE_TEST_SUITE_P(
-    GpuImageDecodeCacheTestsOOPR,
+    GpuImageDecodeCacheTests,
     GpuImageDecodeCacheTest,
-    testing::Combine(
-        testing::ValuesIn(test_color_types),
-        testing::Bool() /* do_yuv_decode */,
-        testing::Values(false) /* enable_clipped_image_scaling */,
-        testing::Values(false) /* no_discardable_memory */));
+    testing::Combine(testing::ValuesIn(test_color_types),
+                     testing::Bool() /* do_yuv_decode */,
+                     testing::Values(false) /* enable_clipped_image_scaling */,
+                     testing::Values(false) /* no_discardable_memory */));
 
 class GpuImageDecodeCachePurgeOnTimerTest : public GpuImageDecodeCacheTest {
  public:
@@ -4358,7 +4357,7 @@ TEST_P(GpuImageDecodeCachePurgeOnTimerTest, NoCache) {
 }
 
 INSTANTIATE_TEST_SUITE_P(
-    GpuImageDecodeCacheTestsOOPR,
+    GpuImageDecodeCacheTests,
     GpuImageDecodeCachePurgeOnTimerTest,
     testing::Combine(testing::Values(kN32_SkColorType),
                      testing::Bool() /* do_yuv_decode */,
