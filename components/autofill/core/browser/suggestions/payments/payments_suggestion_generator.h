@@ -186,10 +186,6 @@ std::vector<Suggestion> GetSuggestionsForIbans(const std::vector<Iban>& ibans);
 std::vector<Suggestion> GetPromoCodeSuggestionsFromPromoCodeOffers(
     const std::vector<const AutofillOfferData*>& promo_code_offers);
 
-//  Returns true if all the conditions for enabling the upload of credit card
-//  are satisfied.
-bool IsCreditCardUploadEnabled(const AutofillClient& client);
-
 // Returns true if the suggestion created from the card can be accepted by the
 // user. Returns false when merchant does not accept the given card for example
 // when merchants opt-out of VCNs.
