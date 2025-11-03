@@ -256,11 +256,8 @@ source_set("session_restoration_service_factory") {
     "session_restoration_service_factory.mm",
   ]
   deps = [
-    ":legacy_session_restoration_service",
     ":session_constants",
     ":session_restoration_service_impl",
-    ":session_service",
-    ":session_state",
     "//base",
     "//components/pref_registry",
     "//components/prefs",
