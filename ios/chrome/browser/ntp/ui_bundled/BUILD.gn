@@ -201,6 +201,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/signin/model:system_identity_manager",
     "//ios/chrome/browser/supervised_user/model:capabilities",
     "//ios/chrome/browser/sync/model",
+    "//ios/chrome/browser/tab_switcher/tab_grid/base_grid/coordinator:scene_agent",
     "//ios/chrome/browser/toolbar/ui_bundled/public",
     "//ios/chrome/browser/toolbar/ui_bundled/tab_groups/coordinator",
     "//ios/chrome/browser/url_loading/model",

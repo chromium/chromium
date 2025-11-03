@@ -112,6 +112,18 @@ source_set("mediator") {
   ]
 }
 
+source_set("scene_agent") {
+  sources = [
+    "tab_grid_observing.h",
+    "tab_grid_scene_agent.h",
+    "tab_grid_scene_agent.mm",
+  ]
+  deps = [
+    "//ios/chrome/browser/shared/coordinator/scene:observing_scene_agent",
+    "//ui/base",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [ "base_grid_mediator_unittest.mm" ]

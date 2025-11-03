@@ -197,6 +197,7 @@
 #import "ios/chrome/browser/start_surface/ui_bundled/start_surface_util.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/tab_insertion/model/tab_insertion_browser_agent.h"
+#import "ios/chrome/browser/tab_switcher/tab_grid/base_grid/coordinator/tab_grid_scene_agent.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_coordinator.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_coordinator_delegate.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_utils.h"
@@ -587,6 +588,7 @@ void OnListFamilyMembersResponse(
   [_sceneState addAgent:[[StartSurfaceSceneAgent alloc] init]];
   [_sceneState addAgent:[[SessionSavingSceneAgent alloc] init]];
   [_sceneState addAgent:[[LayoutGuideSceneAgent alloc] init]];
+  [_sceneState addAgent:[[TabGridSceneAgent alloc] init]];
 
   if (IsShareExtensionForMultiprofileEnabled()) {
     [_sceneState addAgent:[[ShareExtensionSceneAgent alloc] init]];

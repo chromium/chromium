@@ -100,6 +100,7 @@
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/synced_sessions/model/distant_session.h"
 #import "ios/chrome/browser/synced_sessions/model/synced_sessions_util.h"
+#import "ios/chrome/browser/tab_switcher/tab_grid/base_grid/coordinator/tab_grid_scene_agent.h"
 #import "ios/chrome/browser/tab_switcher/tab_grid/base_grid/ui/base_grid_view_controller.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_commands.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_constants.h"
@@ -412,6 +413,9 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   CHECK_NE(page, TabGridPageTabGroups);
   [_mediator setActivePage:page];
 
+  SceneState* sceneState = self.regularBrowser->GetSceneState();
+  [[TabGridSceneAgent agentFromScene:sceneState] willEnterTabGrid];
+
   if (IsDiamondPrototypeEnabled()) {
     [[NSNotificationCenter defaultCenter]
         postNotificationName:kDiamondEnterTabGridNotification
@@ -420,7 +424,6 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 
   BOOL animated = !self.animationsDisabledForTesting;
 
-  SceneState* sceneState = self.regularBrowser->GetSceneState();
   [[NonModalDefaultBrowserPromoSchedulerSceneAgent agentFromScene:sceneState]
       logTabGridEntered];
 
@@ -570,6 +573,9 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
                    completion:(ProceduralBlock)completion {
   DCHECK(viewController || self.bvcContainer);
 
+  SceneState* sceneState = self.regularBrowser->GetSceneState();
+  [[TabGridSceneAgent agentFromScene:sceneState] willExitTabGrid];
+
   __weak TabGridCoordinator* weakSelf = self;
 
   if (IsDiamondPrototypeEnabled()) {
@@ -613,7 +619,6 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
     self.tabGridEnterTime = base::TimeTicks();
   }
 
-  SceneState* sceneState = self.regularBrowser->GetSceneState();
   sceneState.window.overrideUserInterfaceStyle =
       UIUserInterfaceStyleUnspecified;
 

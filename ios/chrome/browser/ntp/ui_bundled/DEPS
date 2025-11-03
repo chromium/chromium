@@ -64,6 +64,7 @@ include_rules = [
   "+ios/chrome/browser/sync/model/sync_service_factory.h",
   "+ios/chrome/browser/url_loading/model/url_loading_browser_agent.h",
   "+ios/chrome/browser/url_loading/model/url_loading_params.h",
+  "+ios/chrome/browser/tab_switcher/tab_grid/base_grid/coordinator",
   "+ios/chrome/browser/toolbar/ui_bundled/tab_groups/coordinator/tab_group_indicator_coordinator.h",
   "+ios/chrome/browser/toolbar/ui_bundled/tab_groups/ui/tab_group_indicator_constants.h",
   "+ios/chrome/browser/toolbar/ui_bundled/tab_groups/ui/tab_group_indicator_view.h",
@@ -71,7 +72,7 @@ include_rules = [
   "+ios/chrome/browser/push_notification/model/constants.h",
   "+ios/chrome/browser/web/model/web_navigation_util.h",
   "+third_party/omnibox_proto",
-  "+third_party/material_color_utilities/src/cpp"
+  "+third_party/material_color_utilities/src/cpp",
 ]
 
 specific_include_rules = {
