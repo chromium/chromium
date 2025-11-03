@@ -149,6 +149,7 @@ import org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialC
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
+import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.history.BrowsingHistoryBridge;
@@ -2260,6 +2261,16 @@ public class CustomTabActivityTest {
         String actualHeader = webServer.getLastRequest("/ok.html").headerValue("X-CCT-Client-Data");
         assertEquals(expectedHeader, actualHeader);
         webServer.shutdown();
+    }
+
+    @Test
+    @SmallTest
+    public void testActivityTypeForWarmupSession() throws Exception {
+        var session = warmUpAndLaunchUrlWithSession();
+        assertEquals(getActivity().getIntentDataProvider().getSession(), session);
+        assertEquals(
+                ActivityType.CUSTOM_TAB,
+                getActivity().getCurrentTabModel().getActivityTypeForTesting());
     }
 
     @Test

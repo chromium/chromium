@@ -618,6 +618,13 @@ public abstract class TabModelJniBridge implements TabModelInternal {
         return soundSetting == ContentSetting.BLOCK;
     }
 
+    @Override
+    public int getActivityTypeForTesting() {
+        return TabModelJniBridgeJni.get()
+                .getActivityTypeForTesting( // IN-TEST
+                        mNativeTabModelJniBridge);
+    }
+
     @NativeMethods
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public interface Natives {
@@ -658,5 +665,9 @@ public abstract class TabModelJniBridge implements TabModelInternal {
                 int newIndex);
 
         int getSessionIdForTesting(long nativeTabModelJniBridge);
+
+        @JniType("chrome::android::ActivityType")
+        @ActivityType
+        int getActivityTypeForTesting(long nativeTabModelJniBridge);
     }
 }

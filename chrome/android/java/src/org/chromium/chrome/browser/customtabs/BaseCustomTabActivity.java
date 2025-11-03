@@ -636,6 +636,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
                         getCipherFactory(),
                         getLifecycleDispatcher());
 
+        getCustomTabActivityTabFactory().setActivityType(getActivityType());
         // Finish reparenting as soon as possible as it may be blocking navigation.
         getCustomTabActivityTabController()
                 .setUpInitialTab(hiddenTab != null ? hiddenTab.tab : null);
@@ -749,7 +750,6 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
         if (intentDataProvider.isWebappOrWebApkActivity()) initializeForWebappOrWebApk();
         if (mIntentDataProvider.isTrustedWebActivity()) initializeForTwa();
 
-        getCustomTabActivityTabFactory().setActivityType(getActivityType());
         getCustomTabDelegateFactory()
                 .setEphemeralTabCoordinatorSupplier(
                         mRootUiCoordinator.getEphemeralTabCoordinatorSupplier());
