@@ -8,7 +8,6 @@
 #include <array>
 #include <memory>
 
-#include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
 #include "gpu/command_buffer/tests/gl_manager.h"
 #include "gpu/command_buffer/tests/gl_test_utils.h"
@@ -38,10 +37,10 @@ class GLCubeMapTextureTest : public testing::TestWithParam<GLenum> {
     gl_.InitializeWithWorkarounds(GLManager::Options(), workarounds);
     DCHECK(gl_.workarounds().force_cube_complete);
     for (int i = 0; i < 256; i++) {
-      UNSAFE_TODO(pixels_[i * 4]) = 255u;
-      UNSAFE_TODO(pixels_[(i * 4) + 1]) = 0;
-      UNSAFE_TODO(pixels_[(i * 4) + 2]) = 0;
-      UNSAFE_TODO(pixels_[(i * 4) + 3]) = 255u;
+      pixels_[i * 4] = 255u;
+      pixels_[(i * 4) + 1] = 0;
+      pixels_[(i * 4) + 2] = 0;
+      pixels_[(i * 4) + 3] = 255u;
     }
 
     glGenTextures(1, &texture_);
@@ -64,7 +63,7 @@ class GLCubeMapTextureTest : public testing::TestWithParam<GLenum> {
   }
 
   GLManager gl_;
-  uint8_t pixels_[256 * 4];
+  std::array<uint8_t, 256 * 4> pixels_;
   const int width_ = 16;
   GLuint texture_;
   GLuint framebuffer_id_;
@@ -86,7 +85,7 @@ TEST_P(GLCubeMapTextureTest, TexImage2DAfterFBOBinding) {
   // force_cube_map_positive_x_allocation workaround prevents Nexus 5 crash.
   // TODO(dshwang): remove the workaround when it's fixed. crbug.com/518889
   glTexImage2D(cube_map_target, 0, GL_RGBA, width_, width_, 0, GL_RGBA,
-               GL_UNSIGNED_BYTE, pixels_);
+               GL_UNSIGNED_BYTE, pixels_.data());
   EXPECT_EQ(static_cast<GLenum>(GL_NO_ERROR), glGetError());
 }
 
@@ -100,7 +99,7 @@ TEST_P(GLCubeMapTextureTest, DISABLED_ReadPixels) {
   // Make a cube texture complete
   for (unsigned i = 0; i < std::size(kCubeMapTextureTargets); i++) {
     glTexImage2D(kCubeMapTextureTargets[i], 0, GL_RGBA, width_, width_, 0,
-                 GL_RGBA, GL_UNSIGNED_BYTE, pixels_);
+                 GL_RGBA, GL_UNSIGNED_BYTE, pixels_.data());
     EXPECT_EQ(static_cast<GLenum>(GL_NO_ERROR), glGetError());
   }
 
@@ -113,7 +112,7 @@ TEST_P(GLCubeMapTextureTest, DISABLED_ReadPixels) {
   EXPECT_EQ(static_cast<GLenum>(GL_FRAMEBUFFER_COMPLETE),
             glCheckFramebufferStatus(GL_FRAMEBUFFER));
 
-  GLTestHelper::CheckPixels(0, 0, width_, width_, 0, pixels_, nullptr);
+  GLTestHelper::CheckPixels(0, 0, width_, width_, 0, pixels_.data(), nullptr);
   EXPECT_EQ(static_cast<GLenum>(GL_NO_ERROR), glGetError());
 }
 
@@ -125,7 +124,7 @@ TEST_P(GLCubeMapTextureTest, DISABLED_ReadPixelsFromIncompleteCubeTexture) {
   EXPECT_EQ(static_cast<GLenum>(GL_NO_ERROR), glGetError());
 
   glTexImage2D(cube_map_target, 0, GL_RGBA, width_, width_, 0, GL_RGBA,
-               GL_UNSIGNED_BYTE, pixels_);
+               GL_UNSIGNED_BYTE, pixels_.data());
   EXPECT_EQ(static_cast<GLenum>(GL_NO_ERROR), glGetError());
 
   glBindFramebuffer(GL_FRAMEBUFFER, framebuffer_id_);
