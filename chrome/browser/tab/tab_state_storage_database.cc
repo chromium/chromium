@@ -225,19 +225,21 @@ bool TabStateStorageDatabase::CloseTransaction(
   DCHECK(open_transaction_) << "There is no open transaction.";
   sql::Transaction* transaction = open_transaction->GetTransaction();
 
+  bool success = false;
   if (open_transaction->HasFailed()) {
     transaction->Rollback();
     DLOG(ERROR) << "Transaction rolled back.";
-    return false;
-  } else if (bool commit_success = transaction->Commit()) {
-    DLOG(ERROR) << "Failed to commit transaction.";
-    // TODO(crbug.com/454005648): If possible, record the reason for commit
-    // failure here.
-    return commit_success;
   } else {
-    open_transaction_.reset();
-    return false;
+    success = transaction->Commit();
+    if (!success) {
+      DLOG(ERROR) << "Failed to commit transaction.";
+      // TODO(crbug.com/454005648): If possible, record the reason for commit
+      // failure here.
+    }
   }
+
+  open_transaction_.reset();
+  return success;
 }
 
 std::vector<NodeState> TabStateStorageDatabase::LoadAllNodes() {
