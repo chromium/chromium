@@ -43,6 +43,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.ChromeTabbedActivity.SupportedProfileType;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingTabGroupTask;
 import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingTabsTask;
@@ -883,7 +884,14 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
         ChromeSharedPreferences.getInstance().writeInt(taskMapKey(instanceId), taskId);
     }
 
-    static Set<Integer> getPersistedInstanceIds(@PersistedInstanceType int type) {
+    /**
+     * Gets instance ids filtered by one or more specified {@link PersistedInstanceType}s. To get
+     * all persisted ids irrespective of type, use {@link PersistedInstanceType.ANY}.
+     *
+     * @param type A bit-int representing one or more {@link PersistedInstanceType}s.
+     * @return A set of instance ids of the specified {@code type}.
+     */
+    static Set<Integer> getPersistedInstanceIds(int type) {
         Context context = ContextUtils.getApplicationContext();
         Set<Integer> activeTaskIds = getAllAppTaskIds(context);
 
@@ -893,21 +901,33 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
                         .readLongsWithPrefix(
                                 ChromePreferenceKeys.MULTI_INSTANCE_LAST_ACCESSED_TIME);
         Pattern pattern = Pattern.compile("(\\d+)$");
+        boolean includeAny = type == PersistedInstanceType.ANY;
+        boolean includeOtr = (type & PersistedInstanceType.OFF_THE_RECORD) != 0;
+        boolean includeActive = (type & PersistedInstanceType.ACTIVE) != 0;
+        boolean includeInactive = (type & PersistedInstanceType.INACTIVE) != 0;
+        assert !includeActive || !includeInactive
+                : "To filter both ACTIVE and INACTIVE instance types, use"
+                        + " PersistedInstanceType.ANY.";
         for (String prefKey : lastAccessedTimeMap.keySet()) {
             Matcher matcher = pattern.matcher(prefKey);
             boolean matchFound = matcher.find();
             assert matchFound : "Key should be suffixed with the instance id.";
             int id = Integer.parseInt(matcher.group(1));
-            int taskIdFromMap = getTaskFromMap(id);
-            boolean includeId =
-                    type == PersistedInstanceType.ANY
-                            || (type == PersistedInstanceType.ACTIVE
-                                    && activeTaskIds.contains(taskIdFromMap))
-                            || (type == PersistedInstanceType.INACTIVE
-                                    && !activeTaskIds.contains(taskIdFromMap));
-            if (includeId) {
+
+            if (includeAny) {
                 ids.add(id);
+                continue;
             }
+
+            int taskIdFromMap = getTaskFromMap(id);
+
+            // Exclude ids not satisfying requirements.
+            int profileType = readProfileType(id);
+            if (includeOtr && profileType != SupportedProfileType.OFF_THE_RECORD) continue;
+            if (includeActive && !activeTaskIds.contains(taskIdFromMap)) continue;
+            if (includeInactive && activeTaskIds.contains(taskIdFromMap)) continue;
+
+            ids.add(id);
         }
         return ids;
     }
@@ -1171,6 +1191,11 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
     @VisibleForTesting
     static String profileTypeKey(int index) {
         return ChromePreferenceKeys.MULTI_INSTANCE_PROFILE_TYPE.createKey(String.valueOf(index));
+    }
+
+    @VisibleForTesting
+    static int readProfileType(int index) {
+        return ChromeSharedPreferences.getInstance().readInt(profileTypeKey(index));
     }
 
     /**

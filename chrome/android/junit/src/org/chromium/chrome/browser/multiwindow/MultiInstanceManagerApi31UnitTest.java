@@ -89,6 +89,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.CloseWindowAppSource;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
 import org.chromium.chrome.browser.multiwindow.UiUtils.NameWindowDialogSource;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -134,6 +135,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 /** Unit tests for {@link MultiInstanceManagerApi31}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -779,6 +781,82 @@ public class MultiInstanceManagerApi31UnitTest {
         info = mMultiInstanceManager.getInstanceInfo();
         assertEquals(3, info.size());
         assertEquals(InstanceInfo.Type.CURRENT, info.get(0).type);
+    }
+
+    @Test
+    public void testGetInstanceInfo_filters() {
+        mMultiInstanceManager.mTestBuildInstancesList = true;
+        MultiWindowTestUtils.enableMultiInstance();
+
+        // Instance 0: Active, Regular
+        assertEquals(0, allocInstanceIndex(0, mTabbedActivityPool[0]));
+        ChromeSharedPreferences.getInstance()
+                .writeInt(
+                        MultiInstanceManagerApi31.profileTypeKey(0),
+                        ChromeTabbedActivity.SupportedProfileType.REGULAR);
+
+        // Instance 1: Active, Incognito
+        assertEquals(1, allocInstanceIndex(1, mTabbedActivityPool[1]));
+        ChromeSharedPreferences.getInstance()
+                .writeInt(
+                        MultiInstanceManagerApi31.profileTypeKey(1),
+                        ChromeTabbedActivity.SupportedProfileType.OFF_THE_RECORD);
+
+        // Instance 2: Inactive, Regular
+        assertEquals(2, allocInstanceIndex(2, mTabbedActivityPool[2]));
+        ChromeSharedPreferences.getInstance()
+                .writeInt(
+                        MultiInstanceManagerApi31.profileTypeKey(2),
+                        ChromeTabbedActivity.SupportedProfileType.REGULAR);
+        removeTaskOnRecentsScreen(mTabbedActivityPool[2]);
+
+        // Instance 3: Inactive, Incognito
+        assertEquals(3, allocInstanceIndex(3, mTabbedActivityPool[3]));
+        ChromeSharedPreferences.getInstance()
+                .writeInt(
+                        MultiInstanceManagerApi31.profileTypeKey(3),
+                        ChromeTabbedActivity.SupportedProfileType.OFF_THE_RECORD);
+        removeTaskOnRecentsScreen(mTabbedActivityPool[3]);
+
+        // Test PersistedInstanceType.ANY
+        List<InstanceInfo> allInstances =
+                mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.ANY);
+        assertEquals("ANY should return 4 instances", 4, allInstances.size());
+        Set<Integer> allIds =
+                allInstances.stream().map(i -> i.instanceId).collect(Collectors.toSet());
+        assertTrue(allIds.containsAll(Arrays.asList(0, 1, 2, 3)));
+
+        // Test PersistedInstanceType.ACTIVE
+        List<InstanceInfo> activeInstances =
+                mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.ACTIVE);
+        assertEquals("ACTIVE should return 2 instances", 2, activeInstances.size());
+        Set<Integer> activeIds =
+                activeInstances.stream().map(i -> i.instanceId).collect(Collectors.toSet());
+        assertTrue(activeIds.containsAll(Arrays.asList(0, 1)));
+
+        // Test PersistedInstanceType.INACTIVE
+        List<InstanceInfo> inactiveInstances =
+                mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.INACTIVE);
+        assertEquals("INACTIVE should return 2 instances", 2, inactiveInstances.size());
+        Set<Integer> inactiveIds =
+                inactiveInstances.stream().map(i -> i.instanceId).collect(Collectors.toSet());
+        assertTrue(inactiveIds.containsAll(Arrays.asList(2, 3)));
+
+        // Test PersistedInstanceType.OFF_THE_RECORD
+        List<InstanceInfo> otrInstances =
+                mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.OFF_THE_RECORD);
+        assertEquals("OFF_THE_RECORD should return 2 instances", 2, otrInstances.size());
+        Set<Integer> otrIds =
+                otrInstances.stream().map(i -> i.instanceId).collect(Collectors.toSet());
+        assertTrue(otrIds.containsAll(Arrays.asList(1, 3)));
+
+        // Test combined filter: ACTIVE and OFF_THE_RECORD
+        List<InstanceInfo> activeOtrInstances =
+                mMultiInstanceManager.getInstanceInfo(
+                        PersistedInstanceType.ACTIVE | PersistedInstanceType.OFF_THE_RECORD);
+        assertEquals(
+                "ACTIVE | OFF_THE_RECORD should return 1 instance", 1, activeOtrInstances.size());
+        assertEquals(1, activeOtrInstances.get(0).instanceId);
     }
 
     @Test
@@ -2106,7 +2184,7 @@ public class MultiInstanceManagerApi31UnitTest {
                 mTabbedActivityTask62, tabGroupMetadata, /* tabAtIndex= */ 0);
 
         // Verify we pause the TabGroupSyncService to stop observing local changes.
-        verify(mTabGroupSyncService).setLocalObservationMode(/* observeLocalChanges */ false);
+        verify(mTabGroupSyncService).setLocalObservationMode(/* observeLocalChanges= */ false);
 
         // Verify we pause the TabPersistentStore.
         verify(mTabPersistentStore).pauseSaveTabList();
@@ -2118,7 +2196,7 @@ public class MultiInstanceManagerApi31UnitTest {
         verify(mTabbedActivityTask62).onNewIntent(any());
 
         // Verify we resume the TabGroupSyncService to begin observing local changes.
-        verify(mTabGroupSyncService).setLocalObservationMode(/* observeLocalChanges */ true);
+        verify(mTabGroupSyncService).setLocalObservationMode(/* observeLocalChanges= */ true);
     }
 
     @Test

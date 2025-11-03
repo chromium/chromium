@@ -393,15 +393,26 @@ public abstract class MultiInstanceManager {
     public abstract void setTabModelObserverForTesting(
             TabModelSelectorTabModelObserver tabModelObserver);
 
+    // The instance types are defined as bit flags, so they can be or-ed to reflect
+    // more than one value. Or-ed values should be validated at points of access.
     @IntDef({
         PersistedInstanceType.ANY,
         PersistedInstanceType.ACTIVE,
-        PersistedInstanceType.INACTIVE
+        PersistedInstanceType.INACTIVE,
+        PersistedInstanceType.OFF_THE_RECORD
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface PersistedInstanceType {
+        // Represents any instance not bound by any specific type.
         int ANY = 0;
+
+        // Represents an active instance that is associated with a live task.
         int ACTIVE = 1;
+
+        // Represents an inactive instance that is not associated with a live task.
         int INACTIVE = 2;
+
+        // Represents an instance for an incognito-only window.
+        int OFF_THE_RECORD = 4;
     }
 }
