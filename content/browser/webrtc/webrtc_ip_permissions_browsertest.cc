@@ -35,6 +35,17 @@ const char kPeerConnectionHtml[] = "/media/peerconnection-call.html";
 #define MAYBE_WebRtcIPPolicyPublicInterfaceOnlyTest \
   DISABLED_WebRtcIPPolicyPublicInterfaceOnlyTest
 #define MAYBE_WebRtcIPPolicyDisableUdpTest DISABLED_WebRtcIPPolicyDisableUdpTest
+#elif BUILDFLAG(IS_FUCHSIA)
+// This test is mysteriously failing on Fuchsia starting from
+// https://ci.chromium.org/b/8700182931583028385
+#define MAYBE_WebRtcIPPermissionDeniedTest DISALBED_WebRtcIPPermissionDeniedTest
+
+#define MAYBE_WebRtcIPPermissionGrantedTest WebRtcIPPermissionGrantedTest
+#define MAYBE_WebRtcIPPolicyPublicAndPrivateInterfacesTest \
+  WebRtcIPPolicyPublicAndPrivateInterfacesTest
+#define MAYBE_WebRtcIPPolicyPublicInterfaceOnlyTest \
+  WebRtcIPPolicyPublicInterfaceOnlyTest
+#define MAYBE_WebRtcIPPolicyDisableUdpTest WebRtcIPPolicyDisableUdpTest
 #else
 #define MAYBE_WebRtcIPPermissionGrantedTest WebRtcIPPermissionGrantedTest
 #define MAYBE_WebRtcIPPermissionDeniedTest WebRtcIPPermissionDeniedTest
