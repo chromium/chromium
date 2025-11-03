@@ -219,31 +219,6 @@ void RemoveExpiredLocalCreditCardsNotUsedSinceTimestamp(
       num_cards_suppressed);
 }
 
-// Return a nickname for the |card| to display. This is generally the nickname
-// stored in |card|, unless |card| exists as a local and a server copy. In
-// this case, we prefer the nickname of the local if it is defined. If only
-// one copy has a nickname, take that.
-std::u16string GetDisplayNicknameForCreditCard(
-    const CreditCard& card,
-    const PaymentsDataManager& payments_data) {
-  // Always prefer a local nickname if available.
-  if (card.HasNonEmptyValidNickname() &&
-      card.record_type() == CreditCard::RecordType::kLocalCard) {
-    return card.nickname();
-  }
-  // Either the card a) has no nickname or b) is a server card and we would
-  // prefer to use the nickname of a local card.
-  for (const CreditCard* candidate : payments_data.GetCreditCards()) {
-    if (candidate->guid() != card.guid() &&
-        candidate->MatchingCardDetails(card) &&
-        candidate->HasNonEmptyValidNickname()) {
-      return candidate->nickname();
-    }
-  }
-  // Fall back to nickname of |card|, which may be empty.
-  return card.nickname();
-}
-
 // Return the texts shown as the first line of the suggestion, based on the
 // `credit_card` and the `trigger_field_type`. The first index in the pair
 // represents the main text, and the second index represents the minor text.
@@ -328,31 +303,6 @@ Suggestion::Text GetBenefitTextWithTermsAppended(
       IDS_AUTOFILL_CREDIT_CARD_BENEFIT_TEXT_FOR_SUGGESTIONS, benefit_text));
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
-
-// Returns the benefit text to display in credit card suggestions if it is
-// available.
-std::optional<Suggestion::Text> GetCreditCardBenefitSuggestionLabel(
-    const CreditCard& credit_card,
-    const AutofillClient& client) {
-  const std::u16string& benefit_description =
-      client.GetPersonalDataManager()
-          .payments_data_manager()
-          .GetApplicableBenefitDescriptionForCardAndOrigin(
-              credit_card, client.GetLastCommittedPrimaryMainFrameOrigin(),
-              client.GetAutofillOptimizationGuideDecider());
-  if (benefit_description.empty()) {
-    return std::nullopt;
-  }
-#if BUILDFLAG(IS_ANDROID)
-  // The TTF bottom sheet displays a separate `Terms apply for card benefits`
-  // message after listing all card suggestion, so it should not be appended
-  // to each one like on Desktop.
-  return std::optional<Suggestion::Text>(benefit_description);
-#else
-  return std::optional<Suggestion::Text>(
-      GetBenefitTextWithTermsAppended(benefit_description));
-#endif  // BUILDFLAG(IS_ANDROID)
-}
 
 // Set the labels to be shown in the suggestion. Note that this does not
 // account for virtual cards or card-linked offers.
@@ -617,31 +567,6 @@ void AdjustVirtualCardSuggestionContent(Suggestion& suggestion,
         Suggestion::Text(virtual_card_disabled_label)});
   }
 #endif  // BUILDFLAG(IS_IOS)
-}
-
-// Set the URL for the card art image to be shown in the `suggestion`.
-void SetCardArtURL(Suggestion& suggestion,
-                   const CreditCard& credit_card,
-                   const PaymentsDataManager& payments_data,
-                   bool virtual_card_option) {
-  const GURL card_art_url = payments_data.GetCardArtURL(credit_card);
-  // The Capital One icon for virtual cards is not card metadata, it only helps
-  // distinguish FPAN from virtual cards when metadata is unavailable. FPANs
-  // should only ever use the network logo or rich card art. The Capital One
-  // logo is reserved for virtual cards only.
-  if (!virtual_card_option && card_art_url == kCapitalOneCardArtUrl) {
-    return;
-  }
-
-  if constexpr (BUILDFLAG(IS_ANDROID)) {
-    suggestion.custom_icon = Suggestion::CustomIconUrl(card_art_url);
-  } else {
-    const gfx::Image* image =
-        payments_data.GetCachedCardArtImageForUrl(card_art_url);
-    if (image) {
-      suggestion.custom_icon = *image;
-    }
-  }
 }
 
 // Returns non credit card suggestions which are displayed below credit card
@@ -1016,6 +941,81 @@ std::vector<const CreditCard*> GetCreditCardsToSuggest(
         return a->HasGreaterRankingThan(*b, comparison_time);
       });
   return cards_to_suggest;
+}
+
+// Set the URL for the card art image to be shown in the `suggestion`.
+void SetCardArtURL(Suggestion& suggestion,
+                   const CreditCard& credit_card,
+                   const PaymentsDataManager& payments_data,
+                   bool virtual_card_option) {
+  const GURL card_art_url = payments_data.GetCardArtURL(credit_card);
+  // The Capital One icon for virtual cards is not card metadata, it only helps
+  // distinguish FPAN from virtual cards when metadata is unavailable. FPANs
+  // should only ever use the network logo or rich card art. The Capital One
+  // logo is reserved for virtual cards only.
+  if (!virtual_card_option && card_art_url == kCapitalOneCardArtUrl) {
+    return;
+  }
+
+  if constexpr (BUILDFLAG(IS_ANDROID)) {
+    suggestion.custom_icon = Suggestion::CustomIconUrl(card_art_url);
+  } else {
+    const gfx::Image* image =
+        payments_data.GetCachedCardArtImageForUrl(card_art_url);
+    if (image) {
+      suggestion.custom_icon = *image;
+    }
+  }
+}
+
+// Return a nickname for the |card| to display. This is generally the nickname
+// stored in |card|, unless |card| exists as a local and a server copy. In
+// this case, we prefer the nickname of the local if it is defined. If only
+// one copy has a nickname, take that.
+std::u16string GetDisplayNicknameForCreditCard(
+    const CreditCard& card,
+    const PaymentsDataManager& payments_data) {
+  // Always prefer a local nickname if available.
+  if (card.HasNonEmptyValidNickname() &&
+      card.record_type() == CreditCard::RecordType::kLocalCard) {
+    return card.nickname();
+  }
+  // Either the card a) has no nickname or b) is a server card and we would
+  // prefer to use the nickname of a local card.
+  for (const CreditCard* candidate : payments_data.GetCreditCards()) {
+    if (candidate->guid() != card.guid() &&
+        candidate->MatchingCardDetails(card) &&
+        candidate->HasNonEmptyValidNickname()) {
+      return candidate->nickname();
+    }
+  }
+  // Fall back to nickname of |card|, which may be empty.
+  return card.nickname();
+}
+
+// Returns the benefit text to display in credit card suggestions if it is
+// available.
+std::optional<Suggestion::Text> GetCreditCardBenefitSuggestionLabel(
+    const CreditCard& credit_card,
+    const AutofillClient& client) {
+  const std::u16string& benefit_description =
+      client.GetPersonalDataManager()
+          .payments_data_manager()
+          .GetApplicableBenefitDescriptionForCardAndOrigin(
+              credit_card, client.GetLastCommittedPrimaryMainFrameOrigin(),
+              client.GetAutofillOptimizationGuideDecider());
+  if (benefit_description.empty()) {
+    return std::nullopt;
+  }
+#if BUILDFLAG(IS_ANDROID)
+  // The TTF bottom sheet displays a separate `Terms apply for card benefits`
+  // message after listing all card suggestion, so it should not be appended
+  // to each one like on Desktop.
+  return std::optional<Suggestion::Text>(benefit_description);
+#else
+  return std::optional<Suggestion::Text>(
+      GetBenefitTextWithTermsAppended(benefit_description));
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 std::vector<Suggestion> GetSuggestionsForCreditCards(
