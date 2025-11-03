@@ -179,6 +179,9 @@ class MappableBufferTest : public testing::Test {
   }
 
   std::array<gfx::BufferUsage, 11> usages() { return usages_; }
+  base::span<const viz::SharedImageFormat> formats() {
+    return viz::GetMappableSharedImageFormatForTesting();
+  }
 
  private:
   bool run_gpu_test_ = false;
@@ -206,7 +209,7 @@ TYPED_TEST_SUITE_P(MappableBufferTest);
 TYPED_TEST_P(MappableBufferTest, CreateFromHandle) {
   const gfx::Size kBufferSize(8, 8);
 
-  for (auto format : viz::GetMappableSharedImageFormatForTesting()) {
+  for (auto format : TestFixture::formats()) {
     for (auto usage : TestFixture::usages()) {
       if (TypeParam::kBufferType != gfx::SHARED_MEMORY_BUFFER &&
 #if BUILDFLAG(IS_ANDROID)
@@ -238,7 +241,7 @@ TYPED_TEST_P(MappableBufferTest, CreateFromHandle) {
 TYPED_TEST_P(MappableBufferTest, CreateFromHandleSmallBuffer) {
   const gfx::Size kBufferSize(8, 8);
 
-  for (auto format : viz::GetMappableSharedImageFormatForTesting()) {
+  for (auto format : TestFixture::formats()) {
     for (auto usage : TestFixture::usages()) {
       if (TypeParam::kBufferType != gfx::SHARED_MEMORY_BUFFER &&
           !GpuMemoryBufferSupport::
@@ -275,7 +278,7 @@ TYPED_TEST_P(MappableBufferTest, Map) {
   // Use a multiple of 4 for both dimensions to support compressed formats.
   const gfx::Size kBufferSize(4, 4);
 
-  for (auto format : viz::GetMappableSharedImageFormatForTesting()) {
+  for (auto format : TestFixture::formats()) {
     if (TypeParam::kBufferType != gfx::SHARED_MEMORY_BUFFER &&
         !GpuMemoryBufferSupport::
             IsNativeGpuMemoryBufferConfigurationSupportedForTesting(
@@ -336,7 +339,7 @@ TYPED_TEST_P(MappableBufferTest, PersistentMap) {
   // Use a multiple of 4 for both dimensions to support compressed formats.
   const gfx::Size kBufferSize(4, 4);
 
-  for (auto format : viz::GetMappableSharedImageFormatForTesting()) {
+  for (auto format : TestFixture::formats()) {
     if (TypeParam::kBufferType != gfx::SHARED_MEMORY_BUFFER &&
         !GpuMemoryBufferSupport::
             IsNativeGpuMemoryBufferConfigurationSupportedForTesting(
@@ -416,7 +419,7 @@ TYPED_TEST_P(MappableBufferTest, SerializeAndDeserialize) {
   const gfx::Size kBufferSize(8, 8);
   const gfx::GpuMemoryBufferType kBufferType = TypeParam::kBufferType;
 
-  for (auto format : viz::GetMappableSharedImageFormatForTesting()) {
+  for (auto format : TestFixture::formats()) {
     for (auto usage : TestFixture::usages()) {
       if (TypeParam::kBufferType != gfx::SHARED_MEMORY_BUFFER &&
 #if BUILDFLAG(IS_ANDROID)
