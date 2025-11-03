@@ -158,8 +158,12 @@ class VIZ_SERVICE_EXPORT LayerContextImpl : public cc::LayerTreeHostImplClient,
   void HandleBadMojoMessage(const std::string& function,
                             const std::string& error);
 
+  // Draws and submits a frame if there is damage. When |expects_to_draw|
+  // is set, this will force draw even if there is no computed damage, or
+  // other conditions would make us abort drawing.
   void DoDrawInternal(const BeginFrameArgs& begin_frame_args,
-                      base::TimeTicks start_update_display_tree);
+                      base::TimeTicks start_update_display_tree,
+                      bool expects_to_draw);
 
   void SendTilingsCleanupNotificationToClient();
 

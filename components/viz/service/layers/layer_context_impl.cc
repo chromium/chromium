@@ -1459,7 +1459,7 @@ void LayerContextImpl::BeginFrame(const BeginFrameArgs& args) {
     // Consider using a difference name, so it works for TreeAnimationsInViz
     // mode as well.
     base::TimeTicks start_begin_frame = base::TimeTicks::Now();
-    DoDrawInternal(args, start_begin_frame);
+    DoDrawInternal(args, start_begin_frame, /*expects_to_draw=*/false);
   }
 }
 
@@ -1973,13 +1973,14 @@ void LayerContextImpl::DoDraw(const BeginFrameArgs& begin_frame_args,
   if (base::FeatureList::IsEnabled(features::kTreeAnimationsInViz)) {
     compositor_sink_->SetLayerContextWantsBeginFrames(true);
   } else {
-    DoDrawInternal(begin_frame_args, start_update_display_tree);
+    DoDrawInternal(begin_frame_args, start_update_display_tree,
+                   /*expects_to_draw=*/true);
   }
 }
 
-void LayerContextImpl::DoDrawInternal(
-    const BeginFrameArgs& begin_frame_args,
-    base::TimeTicks start_update_display_tree) {
+void LayerContextImpl::DoDrawInternal(const BeginFrameArgs& begin_frame_args,
+                                      base::TimeTicks start_update_display_tree,
+                                      bool expects_to_draw) {
   TRACE_EVENT0("viz", "LayerContextImpl::DoDrawInternal");
   if (!host_impl_->CanDraw()) {
     return;
@@ -1995,7 +1996,7 @@ void LayerContextImpl::DoDrawInternal(
   frame.begin_frame_ack = BeginFrameAck(begin_frame_args, has_damage);
   frame.origin_begin_main_frame_args = begin_frame_args;
   stage_breakdown.start_prepare_to_draw = base::TimeTicks::Now();
-  host_impl_->PrepareToDraw(&frame);
+  host_impl_->PrepareToDraw(&frame, /*expects_to_draw=*/expects_to_draw);
 
   // Notifies the client which of the tilings it nominated for deletion are
   // actually safe to delete. This is done after PrepareToDraw() so that we have

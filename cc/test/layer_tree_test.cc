@@ -253,7 +253,7 @@ class LayerTreeHostImplForTesting : public LayerTreeHostImpl {
     return LayerTreeHostImpl::PrepareTiles();
   }
 
-  DrawResult PrepareToDraw(FrameData* frame) override {
+  DrawResult PrepareToDraw(FrameData* frame, bool expects_to_draw) override {
     test_hooks_->WillPrepareToDrawOnThread(this);
 
     if (!active_tree()->local_surface_id_from_parent().is_valid()) {
@@ -263,7 +263,8 @@ class LayerTreeHostImplForTesting : public LayerTreeHostImpl {
       UpdateChildLocalSurfaceId();
     }
 
-    DrawResult draw_result = LayerTreeHostImpl::PrepareToDraw(frame);
+    DrawResult draw_result =
+        LayerTreeHostImpl::PrepareToDraw(frame, expects_to_draw);
     return test_hooks_->PrepareToDrawOnThread(this, frame, draw_result);
   }
 

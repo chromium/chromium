@@ -418,7 +418,13 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   // frame, and we should try to avoid displaying the frame. If
   // `PrepareToDraw()` is called, `DidDrawAllLayers()` must also be called,
   // regardless of whether `DrawLayers()` is called between the two.
-  virtual DrawResult PrepareToDraw(FrameData* frame);
+  //
+  // |expects_to_draw| will force DrawResult::kSuccess state, and damage to be
+  // set for this frame. This is only used in the trees_in_viz_in_viz_process
+  // mode, internally, CalculateRenderPasses will DCHECK if |expects_to_draw|
+  // does not match the actual behavior.
+  virtual DrawResult PrepareToDraw(FrameData* frame,
+                                   bool expects_to_draw = false);
 
   // If there is no damage, returns `std::nullopt`; otherwise, returns
   // information about the submitted frame including submit time and a set of
@@ -980,7 +986,13 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   // This function should only be called from PrepareToDraw, as DidDrawAllLayers
   // must be called if this helper function is called.  Returns
   // DrawResult::kSuccess if the frame should be drawn.
-  DrawResult CalculateRenderPasses(FrameData* frame);
+  //
+  // |expects_to_draw| will force DrawResult::kSuccess state, and damage to be
+  // set for this frame. This is only used in the trees_in_viz_in_viz_process
+  // mode, and CalculateRenderPasses will DCHECK if |expects_to_draw| does not
+  // match the actual behavior.
+  DrawResult CalculateRenderPasses(FrameData* frame,
+                                   bool expects_to_draw = false);
 
   // Once a resource is uploaded or deleted, it is no longer an evicted id, this
   // removes it from the evicted set, and updates if we're able to draw now that

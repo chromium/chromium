@@ -1383,10 +1383,12 @@ bool LayerTreeHostImpl::HasDamage() const {
          hud_wants_to_draw_ || active_tree_->HasViewTransitionRequests();
 }
 
-DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame) {
+DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame,
+                                                    bool expects_to_draw) {
   DCHECK(frame->render_passes.empty());
   DCHECK(CanDraw());
   DCHECK(!active_tree_->LayerListIsEmpty());
+  DCHECK(!expects_to_draw || settings_.trees_in_viz_in_viz_process);
 
   // For now, we use damage tracking to compute a global scissor. To do this, we
   // must compute all damage tracking before drawing anything, so that we know
@@ -1396,7 +1398,16 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame) {
   frame->damage_reasons =
       active_tree_->RootRenderSurface()->damage_tracker()->GetDamageReasons();
 
-  if (HasDamage()) {
+  bool has_damage = HasDamage();
+
+  if (expects_to_draw) {
+    // Force drawing, but assert in DCHECK builds.
+    DUMP_WILL_BE_CHECK(has_damage)
+        << "crbug.com/454680865: Has no damage while expects_to_draw is set";
+    has_damage = true;
+  }
+
+  if (has_damage) {
     consecutive_frame_with_damage_count_++;
   } else {
     TRACE_EVENT0("cc",
@@ -1642,7 +1653,14 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame) {
   // so there's no reason to stop the draw now (and this is not supported by
   // SingleThreadProxy).
   if (have_missing_animated_tiles && !CommitsToActiveTree()) {
-    draw_result = DrawResult::kAbortedCheckerboardAnimations;
+    if (expects_to_draw) {
+      // Force drawing, but assert in DCHECK builds.
+      DUMP_WILL_BE_CHECK(false)
+          << "crbug.com/454680865: Has checkerboarded animations "
+             "while expects_to_draw is set";
+    } else {
+      draw_result = DrawResult::kAbortedCheckerboardAnimations;
+    }
   }
 
   // When we require high res to draw, abort the draw (almost) always. This does
@@ -1650,8 +1668,16 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame) {
   // drawing until we finally complete, so the copy request will not be lost.
   // TODO(weiliangc): Remove RequiresHighResToDraw. crbug.com/469175
   if (frame->checkerboarded_needs_raster) {
-    if (RequiresHighResToDraw())
-      draw_result = DrawResult::kAbortedMissingHighResContent;
+    if (RequiresHighResToDraw()) {
+      if (expects_to_draw) {
+        // Force drawing, but assert in DCHECK builds.
+        DUMP_WILL_BE_CHECK(false)
+            << "crbug.com/454680865: Is missing high res content "
+               "while expects_to_draw is set";
+      } else {
+        draw_result = DrawResult::kAbortedMissingHighResContent;
+      }
+    }
   }
 
   // When doing a resourceless software draw, we don't have control over the
@@ -1757,7 +1783,10 @@ void LayerTreeHostImpl::InvalidateLayerTreeFrameSink(bool needs_redraw) {
   layer_tree_frame_sink()->Invalidate(needs_redraw);
 }
 
-DrawResult LayerTreeHostImpl::PrepareToDraw(FrameData* frame) {
+DrawResult LayerTreeHostImpl::PrepareToDraw(FrameData* frame,
+                                            bool expects_to_draw) {
+  DCHECK(!expects_to_draw || settings_.trees_in_viz_in_viz_process);
+
   TRACE_EVENT1("cc", "LayerTreeHostImpl::PrepareToDraw", "SourceFrameNumber",
                active_tree_->source_frame_number());
   if (input_delegate_)
@@ -1808,13 +1837,20 @@ DrawResult LayerTreeHostImpl::PrepareToDraw(FrameData* frame) {
         viewport_damage_rect_);
   }
 
-  DrawResult draw_result = CalculateRenderPasses(frame);
+  DrawResult draw_result = CalculateRenderPasses(frame, expects_to_draw);
 
   // Dump render passes and draw quads if VerboseLogEnabled().
   VERBOSE_LOG() << "Prepare to draw\n" << frame->ToString();
 
   if (draw_result != DrawResult::kSuccess) {
     DCHECK(!resourceless_software_draw_);
+    if (expects_to_draw) {
+      // Force drawing, but assert in DCHECK builds.
+      DUMP_WILL_BE_CHECK(false)
+          << "crbug.com/454680865: Draw result is not success while "
+             "expects_to_draw is set";
+      return DrawResult::kSuccess;
+    }
     return draw_result;
   }
 
