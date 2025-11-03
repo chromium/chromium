@@ -403,8 +403,10 @@ void ReplacedPainter::PaintBoxDecorationBackgroundWithRect(
   // shadow should paint, since controls could have custom shadows of their
   // own.
   if (box_decoration_data.ShouldPaintShadow()) {
+    std::optional<BorderShapeReferenceRects> border_shape_rects =
+        ComputeBorderShapeReferenceRects(paint_rect, style, layout_replaced_);
     BoxPainterBase::PaintNormalBoxShadow(
-        paint_info, paint_rect, style, PhysicalBoxSides(),
+        paint_info, paint_rect, style, border_shape_rects, PhysicalBoxSides(),
         !box_decoration_data.ShouldPaintBackground());
   }
 
