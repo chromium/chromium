@@ -338,7 +338,11 @@ constexpr CGFloat kLocationBarCompactBottomPadding = 10.0;
   if (omnibox::ShouldFocusedOmniboxFollowSteadyStatePosition()) {
     editStatePosition = _steadyStateOmniboxPosition;
   } else if (omnibox::ForceBottomOmniboxInEditState()) {
-    editStatePosition = ToolbarType::kSecondary;
+    if (IsCompactHeight(self.traitEnvironment.traitCollection)) {
+      editStatePosition = ToolbarType::kPrimary;
+    } else {
+      editStatePosition = ToolbarType::kSecondary;
+    }
   } else {
     editStatePosition = ToolbarType::kPrimary;
   }

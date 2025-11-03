@@ -380,7 +380,7 @@ const CGFloat kFadeAnimationVerticalOffset = 12;
 
 - (BOOL)useBottomOmniboxInPopup {
   if (omnibox::ForceBottomOmniboxInEditState()) {
-    return YES;
+    return IsPortrait(self.viewController.view.window);
   }
 
   return omnibox::ShouldFocusedOmniboxFollowSteadyStatePosition() &&
