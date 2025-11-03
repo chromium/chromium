@@ -336,7 +336,7 @@ void TranslateBubbleView::ShowOptionsMenu(views::Button* source) {
   options_menu_model_ = std::make_unique<ui::SimpleMenuModel>(this);
 
   options_menu_model_->AddItemWithStringId(
-      OptionsMenuItem::CHANGE_TARGET_LANGUAGE,
+      static_cast<int>(OptionsMenuItem::kChangeTargetLanguage),
       IDS_TRANSLATE_BUBBLE_CHANGE_TARGET_LANGUAGE);
   options_menu_model_->SetElementIdentifierAt(
       options_menu_model_->GetItemCount() - 1, kChangeTargetLanguage);
@@ -350,26 +350,26 @@ void TranslateBubbleView::ShowOptionsMenu(views::Button* source) {
   if (!is_in_incognito_window_ &&
       source_language_code != language_detection::kUnknownLanguageCode) {
     options_menu_model_->AddCheckItem(
-        OptionsMenuItem::ALWAYS_TRANSLATE_LANGUAGE,
+        static_cast<int>(OptionsMenuItem::kAlwaysTranslateLanguage),
         l10n_util::GetStringFUTF16(IDS_TRANSLATE_BUBBLE_ALWAYS_TRANSLATE_LANG,
                                    source_language));
   }
 
   if (source_language_code != language_detection::kUnknownLanguageCode) {
     options_menu_model_->AddCheckItem(
-        OptionsMenuItem::NEVER_TRANSLATE_LANGUAGE,
+        static_cast<int>(OptionsMenuItem::kNeverTranslateLanguage),
         l10n_util::GetStringFUTF16(IDS_TRANSLATE_BUBBLE_NEVER_TRANSLATE_LANG,
                                    source_language));
   }
 
   if (model_->CanAddSiteToNeverPromptList()) {
     options_menu_model_->AddCheckItem(
-        OptionsMenuItem::NEVER_TRANSLATE_SITE,
+        static_cast<int>(OptionsMenuItem::kNeverTranslateSite),
         l10n_util::GetStringUTF16(IDS_TRANSLATE_BUBBLE_NEVER_TRANSLATE_SITE));
   }
 
   options_menu_model_->AddItem(
-      OptionsMenuItem::CHANGE_SOURCE_LANGUAGE,
+      static_cast<int>(OptionsMenuItem::kChangeSourceLanguage),
       l10n_util::GetStringFUTF16(IDS_TRANSLATE_BUBBLE_CHANGE_SOURCE_LANGUAGE,
                                  source_language));
   options_menu_model_->SetElementIdentifierAt(
@@ -378,7 +378,7 @@ void TranslateBubbleView::ShowOptionsMenu(views::Button* source) {
   if (!is_in_incognito_window_ &&
       base::FeatureList::IsEnabled(language::kTranslateOpenSettings)) {
     options_menu_model_->AddItem(
-        OptionsMenuItem::OPEN_LANGUAGE_SETTINGS,
+        static_cast<int>(OptionsMenuItem::kOpenLanguageSettings),
         l10n_util::GetStringUTF16(IDS_TRANSLATE_BUBBLE_OPEN_LANGUAGE_SETTINGS));
     options_menu_model_->SetElementIdentifierAt(
         options_menu_model_->GetItemCount() - 1, kOpenLanguageSettings);
@@ -394,11 +394,11 @@ void TranslateBubbleView::ShowOptionsMenu(views::Button* source) {
 
 bool TranslateBubbleView::IsCommandIdChecked(int command_id) const {
   switch (command_id) {
-    case OptionsMenuItem::NEVER_TRANSLATE_LANGUAGE:
+    case static_cast<int>(OptionsMenuItem::kNeverTranslateLanguage):
       return should_never_translate_language_;
-    case OptionsMenuItem::NEVER_TRANSLATE_SITE:
+    case static_cast<int>(OptionsMenuItem::kNeverTranslateSite):
       return should_never_translate_site_;
-    case OptionsMenuItem::ALWAYS_TRANSLATE_LANGUAGE:
+    case static_cast<int>(OptionsMenuItem::kAlwaysTranslateLanguage):
       return should_always_translate_;
     default:
       NOTREACHED();
@@ -411,7 +411,7 @@ bool TranslateBubbleView::IsCommandIdEnabled(int command_id) const {
 
 void TranslateBubbleView::ExecuteCommand(int command_id, int event_flags) {
   switch (command_id) {
-    case OptionsMenuItem::ALWAYS_TRANSLATE_LANGUAGE:
+    case static_cast<int>(OptionsMenuItem::kAlwaysTranslateLanguage):
       should_always_translate_ = !should_always_translate_;
       model_->SetAlwaysTranslate(should_always_translate_);
       if (should_always_translate_) {
@@ -426,7 +426,7 @@ void TranslateBubbleView::ExecuteCommand(int command_id, int event_flags) {
       UpdateChildVisibilities();
       break;
 
-    case OptionsMenuItem::NEVER_TRANSLATE_LANGUAGE:
+    case static_cast<int>(OptionsMenuItem::kNeverTranslateLanguage):
       should_never_translate_language_ = !should_never_translate_language_;
       if (should_never_translate_language_) {
         should_always_translate_ = false;
@@ -438,7 +438,7 @@ void TranslateBubbleView::ExecuteCommand(int command_id, int event_flags) {
       }
       break;
 
-    case OptionsMenuItem::NEVER_TRANSLATE_SITE:
+    case static_cast<int>(OptionsMenuItem::kNeverTranslateSite):
       should_never_translate_site_ = !should_never_translate_site_;
       if (should_never_translate_site_) {
         model_->SetNeverTranslateSite(true);
@@ -448,15 +448,15 @@ void TranslateBubbleView::ExecuteCommand(int command_id, int event_flags) {
       }
       break;
 
-    case OptionsMenuItem::CHANGE_TARGET_LANGUAGE:
+    case static_cast<int>(OptionsMenuItem::kChangeTargetLanguage):
       SwitchView(TranslateBubbleModel::VIEW_STATE_TARGET_LANGUAGE);
       break;
 
-    case OptionsMenuItem::CHANGE_SOURCE_LANGUAGE:
+    case static_cast<int>(OptionsMenuItem::kChangeSourceLanguage):
       SwitchView(TranslateBubbleModel::VIEW_STATE_SOURCE_LANGUAGE);
       break;
 
-    case OptionsMenuItem::OPEN_LANGUAGE_SETTINGS:
+    case static_cast<int>(OptionsMenuItem::kOpenLanguageSettings):
       OpenLanguageSettings(model(), web_contents());
       break;
 

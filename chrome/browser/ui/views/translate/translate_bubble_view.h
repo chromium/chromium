@@ -53,13 +53,13 @@ class TranslateBubbleView : public LocationBarBubbleDelegateView,
 
  public:
   // Item IDs for the option button's menu.
-  enum OptionsMenuItem {
-    ALWAYS_TRANSLATE_LANGUAGE,
-    NEVER_TRANSLATE_LANGUAGE,
-    NEVER_TRANSLATE_SITE,
-    CHANGE_TARGET_LANGUAGE,
-    CHANGE_SOURCE_LANGUAGE,
-    OPEN_LANGUAGE_SETTINGS
+  enum class OptionsMenuItem {
+    kAlwaysTranslateLanguage,
+    kNeverTranslateLanguage,
+    kNeverTranslateSite,
+    kChangeTargetLanguage,
+    kChangeSourceLanguage,
+    kOpenLanguageSettings
   };
 
   // Element IDs for ui::ElementTracker.
