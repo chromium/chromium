@@ -12,6 +12,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/sessions/content/session_tab_helper.h"
+#include "components/tabs/public/mock_tab_interface.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
@@ -41,19 +42,20 @@ class MockUiServiceForUrlIntercept : public ContextualTasksUiService {
  public:
   explicit MockUiServiceForUrlIntercept(
       ContextualTasksContextController* context_controller)
-      : ContextualTasksUiService(context_controller) {}
+      : ContextualTasksUiService(nullptr, context_controller) {}
   ~MockUiServiceForUrlIntercept() override = default;
 
   MOCK_METHOD(void,
               OnNavigationToAiPageIntercepted,
               (const GURL& url,
-               const content::FrameTreeNodeId& source_frame_tree_node_id,
+               base::WeakPtr<tabs::TabInterface> tab,
                bool is_to_new_tab),
               (override));
   MOCK_METHOD(void,
               OnThreadLinkClicked,
               (const GURL& url,
-               const content::FrameTreeNodeId& source_frame_tree_node_id),
+               base::Uuid task_id,
+               base::WeakPtr<tabs::TabInterface> tab),
               (override));
 };
 
@@ -94,7 +96,7 @@ TEST_F(ContextualTasksUiServiceTest, LinkFromWebUiIntercepted) {
   GURL navigated_url(kTestUrl);
   GURL host_web_content_url(chrome::kChromeUIContextualTasksURL);
 
-  EXPECT_CALL(*service_for_nav_, OnThreadLinkClicked(navigated_url, _))
+  EXPECT_CALL(*service_for_nav_, OnThreadLinkClicked(navigated_url, _, _))
       .Times(1);
   EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
       .Times(0);
@@ -106,7 +108,7 @@ TEST_F(ContextualTasksUiServiceTest, LinkFromWebUiIntercepted) {
 // Ensure we're not intercepting a link when it doesn't meet any of our
 // conditions.
 TEST_F(ContextualTasksUiServiceTest, NormalLinkNotIntercepted) {
-  EXPECT_CALL(*service_for_nav_, OnThreadLinkClicked(_, _)).Times(0);
+  EXPECT_CALL(*service_for_nav_, OnThreadLinkClicked(_, _, _)).Times(0);
   EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
       .Times(0);
   EXPECT_FALSE(service_for_nav_->HandleNavigation(
@@ -116,7 +118,7 @@ TEST_F(ContextualTasksUiServiceTest, NormalLinkNotIntercepted) {
 }
 
 TEST_F(ContextualTasksUiServiceTest, AiHostNotIntercepted_BadPath) {
-  EXPECT_CALL(*service_for_nav_, OnThreadLinkClicked(_, _)).Times(0);
+  EXPECT_CALL(*service_for_nav_, OnThreadLinkClicked(_, _, _)).Times(0);
   EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
       .Times(0);
   EXPECT_FALSE(service_for_nav_->HandleNavigation(
@@ -129,7 +131,7 @@ TEST_F(ContextualTasksUiServiceTest, AiPageIntercepted_FromTab) {
   GURL ai_url(kAiPageUrl);
   GURL tab_url(kTestUrl);
 
-  EXPECT_CALL(*service_for_nav_, OnThreadLinkClicked(_, _)).Times(0);
+  EXPECT_CALL(*service_for_nav_, OnThreadLinkClicked(_, _, _)).Times(0);
   EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(ai_url, _, _))
       .Times(1);
   EXPECT_TRUE(service_for_nav_->HandleNavigation(
@@ -140,7 +142,7 @@ TEST_F(ContextualTasksUiServiceTest, AiPageIntercepted_FromTab) {
 TEST_F(ContextualTasksUiServiceTest, AiPageIntercepted_FromOmnibox) {
   GURL ai_url(kAiPageUrl);
 
-  EXPECT_CALL(*service_for_nav_, OnThreadLinkClicked(_, _)).Times(0);
+  EXPECT_CALL(*service_for_nav_, OnThreadLinkClicked(_, _, _)).Times(0);
   EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(ai_url, _, _))
       .Times(1);
   EXPECT_TRUE(service_for_nav_->HandleNavigation(
@@ -152,7 +154,7 @@ TEST_F(ContextualTasksUiServiceTest, AiPageIntercepted_FromOmnibox) {
 TEST_F(ContextualTasksUiServiceTest, AiPageNotIntercepted) {
   GURL webui_url(chrome::kChromeUIContextualTasksURL);
 
-  EXPECT_CALL(*service_for_nav_, OnThreadLinkClicked(_, _)).Times(0);
+  EXPECT_CALL(*service_for_nav_, OnThreadLinkClicked(_, _, _)).Times(0);
   EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
       .Times(0);
   EXPECT_FALSE(service_for_nav_->HandleNavigation(
@@ -220,7 +222,7 @@ TEST_F(ContextualTasksUiServiceTest,
 }
 
 TEST_F(ContextualTasksUiServiceTest, OnNavigationToAiPageIntercepted_SameTab) {
-  ContextualTasksUiService service(context_controller_.get());
+  ContextualTasksUiService service(nullptr, context_controller_.get());
   GURL intercepted_url("https://google.com/search?udm=50&q=test+query");
 
   TestingProfile profile;
@@ -232,6 +234,9 @@ TEST_F(ContextualTasksUiServiceTest, OnNavigationToAiPageIntercepted_SameTab) {
         return static_cast<sessions::SessionTabHelperDelegate*>(nullptr);
       }));
 
+  tabs::MockTabInterface tab;
+  ON_CALL(tab, GetContents).WillByDefault(Return(web_contents.get()));
+
   ContextualTask task(base::Uuid::GenerateRandomV4());
   EXPECT_CALL(*context_controller_, CreateTaskFromUrl(intercepted_url))
       .WillOnce(Return(task));
@@ -240,10 +245,10 @@ TEST_F(ContextualTasksUiServiceTest, OnNavigationToAiPageIntercepted_SameTab) {
                   task.GetTaskId(),
                   sessions::SessionTabHelper::IdForTab(web_contents.get())))
       .Times(1);
+  base::WeakPtrFactory weak_factory(&tab);
 
-  service.OnNavigationToAiPageIntercepted(
-      intercepted_url,
-      web_contents->GetPrimaryMainFrame()->GetFrameTreeNodeId(), false);
+  service.OnNavigationToAiPageIntercepted(intercepted_url,
+                                          weak_factory.GetWeakPtr(), false);
 
   GURL expected_initial_url(
       "https://www.google.com/search?udm=50&gsc=2&gl=us&q=test+query");

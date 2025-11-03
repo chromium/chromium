@@ -77,9 +77,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUiServiceInteractiveUiTest,
 
         // Call the OnThreadLinkClicked() method.
         const GURL clicked_url("https://google.com/");
-        service->OnThreadLinkClicked(
-            clicked_url,
-            panel_contents->GetPrimaryMainFrame()->GetFrameTreeNodeId());
+        service->OnThreadLinkClicked(clicked_url, task1.GetTaskId(), nullptr);
 
         content::WebContents* new_content =
             browser()->tab_strip_model()->GetWebContentsAt(2);

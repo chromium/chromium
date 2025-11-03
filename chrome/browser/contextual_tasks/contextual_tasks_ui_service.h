@@ -13,6 +13,8 @@
 #include "content/public/browser/frame_tree_node_id.h"
 #include "url/gurl.h"
 
+class Profile;
+
 namespace base {
 class Uuid;
 }  // namespace base
@@ -20,6 +22,10 @@ class Uuid;
 namespace content {
 class WebContents;
 }  // namespace content
+
+namespace tabs {
+class TabInterface;
+}  // namespace tabs
 
 namespace contextual_tasks {
 
@@ -30,7 +36,8 @@ class ContextualTasksContextController;
 // sidepanel and omnibox will be routed here.
 class ContextualTasksUiService : public KeyedService {
  public:
-  explicit ContextualTasksUiService(
+  ContextualTasksUiService(
+      Profile* profile,
       ContextualTasksContextController* context_controller);
   ContextualTasksUiService(const ContextualTasksUiService&) = delete;
   ContextualTasksUiService operator=(const ContextualTasksUiService&) = delete;
@@ -41,14 +48,14 @@ class ContextualTasksUiService : public KeyedService {
   // should be processed by this method.
   virtual void OnNavigationToAiPageIntercepted(
       const GURL& url,
-      const content::FrameTreeNodeId& source_frame_tree_node_id,
+      base::WeakPtr<tabs::TabInterface> tab,
       bool is_to_new_tab);
 
   // A notification to this service that a link in the AI thread was clicked by
   // the user. This will open a tab and associate it with the visible thread.
-  virtual void OnThreadLinkClicked(
-      const GURL& url,
-      const content::FrameTreeNodeId& source_frame_tree_node_id);
+  virtual void OnThreadLinkClicked(const GURL& url,
+                                   base::Uuid task_id,
+                                   base::WeakPtr<tabs::TabInterface> tab);
 
   // A notification that a navigation is occurring. This method gives the
   // service the opportunity to prevent the navigation from happening in order
@@ -86,6 +93,8 @@ class ContextualTasksUiService : public KeyedService {
   // main frame or side panel is a contextual task URL.
   void AssociateWebContentsToTask(content::WebContents* web_contents,
                                   const base::Uuid& task_id);
+
+  const raw_ptr<Profile> profile_;
 
   raw_ptr<contextual_tasks::ContextualTasksContextController>
       context_controller_;

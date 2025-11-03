@@ -52,7 +52,7 @@ ContextualTasksUiServiceFactory::BuildServiceInstanceForBrowserContext(
 
   Profile* profile = Profile::FromBrowserContext(context);
   return std::make_unique<ContextualTasksUiService>(
-      ContextualTasksContextControllerFactory::GetForProfile(profile));
+      profile, ContextualTasksContextControllerFactory::GetForProfile(profile));
 }
 
 bool ContextualTasksUiServiceFactory::ServiceIsCreatedWithBrowserContext()
