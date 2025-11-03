@@ -291,6 +291,15 @@ config("enable_swift_cxx_interop") {
   }
 }
 
+config("swift_cxx_interop_includes") {
+  if (swift_toolchain_path == "") {
+    _swift_compatibility_libs_prefix = ios_toolchains_path
+  } else {
+    _swift_compatibility_libs_prefix = swift_toolchain_path
+  }
+  include_dirs = [ "$_swift_compatibility_libs_prefix/usr/lib/swift" ]
+}
+
 group("xctest") {
   public_configs = [ ":xctest_config" ]
 }

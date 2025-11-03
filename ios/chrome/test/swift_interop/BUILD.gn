@@ -17,8 +17,26 @@ config("swift_interop_tests_modulemap") {
 source_set("objc_interop_tests") {
   testonly = true
   configs += [ "//build/config/ios:xctest_config" ]
+
+  # TODO(crbug.com/456806155): Find a better solution to suppress errors from
+  # chromium clang on headers that come from the iOS SDK. Ideally, we'd want
+  # a suppression that is inherited implicitly from swift_source_set
+  # dependencies. Unfortunately, the gn language does not allow child targets
+  # to do things like `invoker.configs -= [...]`. Also, we'd ideally want a
+  # suppression that is scoped to just the SDK headers rather than the entire
+  # target that includes the headers. We can't use the
+  # "build/config/compiler:no_chromium_code" config to solve this problem
+  # because we don't have any build targets that have the SDK headers as direct
+  # sources.
+  if (is_clang) {
+    configs -= [ "//build/config/clang:find_bad_constructs" ]
+  }
+
   sources = [ "objc_xctest.mm" ]
-  deps = [ "//base" ]
+  deps = [
+    ":swift_interop_tests",
+    "//base",
+  ]
   frameworks = [ "Foundation.framework" ]
 }
 

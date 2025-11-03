@@ -59,6 +59,11 @@ template("swift_source_set") {
       # Write the information for the module using `write_file(...)`.
       write_file("$_output_path.module_info.json", _module_info, "json")
     }
+
+    # Build targets with a direct dependency on a swift_source_set need to be
+    # able to indirectly include headers for the SDK that are needed for
+    # swift C++ interop.
+    public_configs = [ "//build/config/ios:swift_cxx_interop_includes" ]
   }
 }
 
