@@ -305,21 +305,19 @@
 #pragma mark - ToolbarAnimatee
 
 - (void)expandLocationBar {
-  self.view.expanded = YES;
-  [self.view layoutIfNeeded];
+  // NO-OP
 }
 
 - (void)contractLocationBar {
-  self.view.expanded = NO;
-  [self.view layoutIfNeeded];
+  // NO-OP
 }
 
 - (void)showCancelButton {
-  self.view.cancelButton.hidden = NO;
+  // NO-OP
 }
 
 - (void)hideCancelButton {
-  self.view.cancelButton.hidden = YES;
+  // NO-OP
 }
 
 - (void)showControlButtons {

@@ -28,6 +28,7 @@
 #import "ios/chrome/browser/omnibox/ui/popup/row/omnibox_popup_row_delegate.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/shared/ui/elements/self_sizing_table_view.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -58,7 +59,12 @@ const CGFloat kHeaderPaddingBottom = 10.0f;
 const CGFloat kHeaderPadding = 2.0f;
 /// Top padding for table view headers.
 const CGFloat kHeaderTopPadding = 16.0f;
-
+/// The size for the close button.
+const CGFloat kCloseButtonSize = 30.0f;
+/// The alpha for the close button.
+const CGFloat kCloseButtonAlpha = 0.6f;
+/// The padding for the close button.
+const CGFloat kCloseButtonPadding = 16.0f;
 }  // namespace
 
 @interface OmniboxPopupViewController () <OmniboxPopupActionsRowDelegate,
@@ -137,6 +143,10 @@ const CGFloat kHeaderTopPadding = 16.0f;
   CGFloat _keyboardAttachedBottomOmniboxHeight;
   // The context in which the omnibox is presented.
   OmniboxPresentationContext _presentationContext;
+  // Close button.
+  UIButton* _closeButton;
+  // Top constraints for the table view.
+  NSLayoutConstraint* _constraintTableToCloseButton;
 }
 
 @synthesize omniboxGuide = _omniboxGuide;
@@ -166,22 +176,6 @@ const CGFloat kHeaderTopPadding = 16.0f;
                         object:nil];
   }
   return self;
-}
-
-- (void)loadView {
-  if (self.largeIconService) {
-    _carouselAttributeProvider = [[FaviconAttributesProvider alloc]
-        initWithFaviconSize:kMaxTileFaviconSize
-             minFaviconSize:kMinTileFaviconSize
-           largeIconService:self.largeIconService];
-    _carouselAttributeProvider.cache = self.largeIconCache;
-  }
-  self.tableView =
-      [[SelfSizingTableView alloc] initWithFrame:CGRectZero
-                                           style:UITableViewStyleGrouped];
-  self.tableView.delegate = self;
-  self.tableView.dataSource = self;
-  self.view = self.tableView;
 }
 
 - (void)toggleOmniboxDebuggerView {
@@ -233,6 +227,7 @@ const CGFloat kHeaderTopPadding = 16.0f;
   }
 
   _useBottomOmniboxInPopup = useBottomOmniboxInPopup;
+  [self updateCloseButtonVisibility];
   [self.tableView reloadData];
 }
 
@@ -241,9 +236,33 @@ const CGFloat kHeaderTopPadding = 16.0f;
 - (void)viewDidLoad {
   [super viewDidLoad];
 
-  self.tableView.accessibilityIdentifier =
-      kOmniboxPopupTableViewAccessibilityIdentifier;
-  self.tableView.insetsContentViewsToSafeArea = YES;
+  [self configureCarouselAttributeProvider];
+  [self setupTableView];
+  [self setupCloseButton];
+  [self.view addSubview:self.tableView];
+  [self.view addSubview:_closeButton];
+
+  AddSameConstraintsToSides(
+      self.tableView, self.view,
+      LayoutSides::kLeading | LayoutSides::kTrailing | LayoutSides::kBottom);
+  AddSameConstraintsToSidesWithInsets(
+      _closeButton, self.view, LayoutSides::kTop | LayoutSides::kTrailing,
+      NSDirectionalEdgeInsetsMake(kCloseButtonPadding, 0, 0,
+                                  kCloseButtonPadding));
+  AddSizeConstraints(_closeButton,
+                     CGSizeMake(kCloseButtonSize, kCloseButtonSize));
+
+  _constraintTableToCloseButton = [self.tableView.topAnchor
+      constraintEqualToAnchor:_closeButton.bottomAnchor];
+  _constraintTableToCloseButton.priority = UILayoutPriorityRequired;
+
+  [self updateCloseButtonVisibility];
+
+  NSLayoutConstraint* constraintTableToContainerTop =
+      [self.tableView.topAnchor constraintEqualToAnchor:self.view.topAnchor];
+  constraintTableToContainerTop.priority =
+      _constraintTableToCloseButton.priority - 1;
+  [NSLayoutConstraint activateConstraints:@[ constraintTableToContainerTop ]];
 
   // Initialize the same size as the parent view, autoresize will correct this.
   [self.view setFrame:CGRectZero];
@@ -252,46 +271,7 @@ const CGFloat kHeaderTopPadding = 16.0f;
 
   [self updateBackgroundColor];
 
-  // Table configuration.
-  self.tableView.allowsMultipleSelectionDuringEditing = NO;
-  self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-  self.tableView.separatorInset = UIEdgeInsetsZero;
-  if ([self.tableView respondsToSelector:@selector(setLayoutMargins:)]) {
-    [self.tableView setLayoutMargins:UIEdgeInsetsZero];
-  }
-  self.tableView.contentInsetAdjustmentBehavior =
-      UIScrollViewContentInsetAdjustmentAutomatic;
-
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-    self.tableView.tableFooterView =
-        [[UIView alloc] initWithFrame:CGRectMake(0, 0, 0, FLT_MIN)];
-    [self.tableView
-        setDirectionalLayoutMargins:NSDirectionalEdgeInsetsMake(
-                                        kTopPadding, 0, kBottomPadding, 0)];
-    self.tableView.contentInset =
-        UIEdgeInsetsMake(kTopPadding, 0, kBottomPadding, 0);
-  } else {
-    [self.tableView setDirectionalLayoutMargins:NSDirectionalEdgeInsetsMake(
-                                                    0, 0, kBottomPadding, 0)];
-    self.tableView.contentInset = UIEdgeInsetsMake(kTopPadding, 0, 0, 0);
-  }
-
-  self.tableView.sectionHeaderHeight = 0.1;
-  self.tableView.estimatedRowHeight = 0;
-
-  self.tableView.rowHeight = UITableViewAutomaticDimension;
-  self.tableView.estimatedRowHeight = kOmniboxPopupCellMinimumHeight;
-
-  [self.tableView registerClass:[UITableViewCell class]
-         forCellReuseIdentifier:OmniboxPopupRowCellReuseIdentifier];
-  [self.tableView registerClass:[UITableViewCell class]
-         forCellReuseIdentifier:OmniboxPopupActionsRowCellReuseIdentifier];
-  [self.tableView registerClass:[UITableViewHeaderFooterView class]
-      forHeaderFooterViewReuseIdentifier:NSStringFromClass(
-                                             [UITableViewHeaderFooterView
-                                                 class])];
   self.shouldUpdateVisibleSuggestionCount = YES;
-  self.tableView.sectionHeaderTopPadding = 0;
 
   NSArray<UITrait>* traits = TraitCollectionSetForTraits(nil);
   [self registerForTraitChanges:traits
@@ -1012,11 +992,15 @@ const CGFloat kHeaderTopPadding = 16.0f;
 /// class.
 - (void)updateBackgroundColor {
   if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-    self.view.backgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
+    UIColor* primaryBackgroundColor =
+        [UIColor colorNamed:kPrimaryBackgroundColor];
+    self.view.backgroundColor = primaryBackgroundColor;
+    self.tableView.backgroundColor = primaryBackgroundColor;
     return;
   }
 
   self.view.backgroundColor = [UIColor clearColor];
+  self.tableView.backgroundColor = [UIColor clearColor];
 }
 
 #pragma mark - UIScrollViewDelegate
@@ -1066,6 +1050,105 @@ const CGFloat kHeaderTopPadding = 16.0f;
 }
 
 #pragma mark - Private Methods
+
+- (BOOL)showCloseButton {
+  return _useBottomOmniboxInPopup && IsPortrait(self.view.window);
+}
+
+- (void)updateCloseButtonVisibility {
+  _constraintTableToCloseButton.active = [self showCloseButton];
+  _closeButton.hidden = ![self showCloseButton];
+}
+
+- (void)configureCarouselAttributeProvider {
+  if (self.largeIconService) {
+    _carouselAttributeProvider = [[FaviconAttributesProvider alloc]
+        initWithFaviconSize:kMaxTileFaviconSize
+             minFaviconSize:kMinTileFaviconSize
+           largeIconService:self.largeIconService];
+    _carouselAttributeProvider.cache = self.largeIconCache;
+  }
+}
+
+- (void)setupTableView {
+  self.tableView =
+      [[SelfSizingTableView alloc] initWithFrame:CGRectZero
+                                           style:UITableViewStyleGrouped];
+  self.tableView.translatesAutoresizingMaskIntoConstraints = NO;
+  self.tableView.delegate = self;
+  self.tableView.dataSource = self;
+
+  self.tableView.accessibilityIdentifier =
+      kOmniboxPopupTableViewAccessibilityIdentifier;
+  self.tableView.insetsContentViewsToSafeArea = YES;
+
+  // Table configuration.
+  self.tableView.allowsMultipleSelectionDuringEditing = NO;
+  self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+  self.tableView.separatorInset = UIEdgeInsetsZero;
+  if ([self.tableView respondsToSelector:@selector(setLayoutMargins:)]) {
+    [self.tableView setLayoutMargins:UIEdgeInsetsZero];
+  }
+  self.tableView.contentInsetAdjustmentBehavior =
+      UIScrollViewContentInsetAdjustmentAutomatic;
+
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+    self.tableView.tableFooterView =
+        [[UIView alloc] initWithFrame:CGRectMake(0, 0, 0, FLT_MIN)];
+    [self.tableView
+        setDirectionalLayoutMargins:NSDirectionalEdgeInsetsMake(
+                                        kTopPadding, 0, kBottomPadding, 0)];
+    self.tableView.contentInset =
+        UIEdgeInsetsMake(kTopPadding, 0, kBottomPadding, 0);
+  } else {
+    [self.tableView setDirectionalLayoutMargins:NSDirectionalEdgeInsetsMake(
+                                                    0, 0, kBottomPadding, 0)];
+    self.tableView.contentInset = UIEdgeInsetsMake(kTopPadding, 0, 0, 0);
+  }
+
+  self.tableView.sectionHeaderHeight = 0.1;
+  self.tableView.estimatedRowHeight = 0;
+
+  self.tableView.rowHeight = UITableViewAutomaticDimension;
+  self.tableView.estimatedRowHeight = kOmniboxPopupCellMinimumHeight;
+
+  [self.tableView registerClass:[UITableViewCell class]
+         forCellReuseIdentifier:OmniboxPopupRowCellReuseIdentifier];
+  [self.tableView registerClass:[UITableViewCell class]
+         forCellReuseIdentifier:OmniboxPopupActionsRowCellReuseIdentifier];
+  [self.tableView registerClass:[UITableViewHeaderFooterView class]
+      forHeaderFooterViewReuseIdentifier:NSStringFromClass(
+                                             [UITableViewHeaderFooterView
+                                                 class])];
+
+  self.tableView.sectionHeaderTopPadding = 0;
+}
+
+- (void)setupCloseButton {
+  _closeButton = [UIButton buttonWithType:UIButtonTypeSystem];
+  _closeButton.translatesAutoresizingMaskIntoConstraints = NO;
+  UIImageSymbolConfiguration* symbolConfiguration = [UIImageSymbolConfiguration
+      configurationWithPointSize:kCloseButtonSize
+                          weight:UIImageSymbolWeightRegular
+                           scale:UIImageSymbolScaleMedium];
+  UIImage* buttonImage =
+      SymbolWithPalette(DefaultSymbolWithConfiguration(kXMarkCircleFillSymbol,
+                                                       symbolConfiguration),
+                        @[
+                          [[UIColor tertiaryLabelColor]
+                              colorWithAlphaComponent:kCloseButtonAlpha],
+                          [UIColor tertiarySystemFillColor]
+                        ]);
+  [_closeButton setImage:buttonImage forState:UIControlStateNormal];
+
+  [_closeButton addTarget:self
+                   action:@selector(closeButtonTapped)
+         forControlEvents:UIControlEventTouchUpInside];
+}
+
+- (void)closeButtonTapped {
+  [self.mutator closeButtonTapped];
+}
 
 /// Returns suggestion at `indexPath` if available.
 - (id<AutocompleteSuggestion>)suggestionAtIndexPath:(NSIndexPath*)indexPath {
@@ -1200,6 +1283,7 @@ const CGFloat kHeaderTopPadding = 16.0f;
   if (omnibox::ShouldFocusedOmniboxFollowSteadyStatePosition() ||
       omnibox::ForceBottomOmniboxInEditState() ||
       ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+    [self updateCloseButtonVisibility];
     [self.mutator onTraitCollectionChange];
   }
 }
