@@ -61,6 +61,12 @@ void RegisterWhatsNewModules(whats_new::WhatsNewRegistry* registry) {
   registry->RegisterModule(
       WhatsNewModule(chrome_pdf::features::kPdfInk2, "andyphan@chromium.org"));
 #endif  // BUILDFLAG(ENABLE_PDF)
+
+  // M144
+#if BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
+  registry->RegisterModule(WhatsNewModule(chrome_pdf::features::kPdfSaveToDrive,
+                                          "faizur@google.com"));
+#endif  // BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
 }
 
 void RegisterWhatsNewEditions(whats_new::WhatsNewRegistry* registry) {

@@ -897,6 +897,7 @@ should be able to be added at any place in this file.
   <variant name=".LensOverlayTranslateButton"
       summary="Lens Overlay Translate Button"/>
   <variant name=".PdfInk2" summary="PDF Ink Signatures"/>
+  <variant name=".PdfSaveToDrive" summary="PDF Save to Drive"/>
   <variant name=".PerformanceInterventionUI"
       summary="Performance Intervention"/>
   <variant name=".ReadAnythingReadAloud" summary="Read Anything Read Aloud"/>

@@ -135,6 +135,7 @@ chromium-metrics-reviews@google.com.
   <variant name="Mobilepasswords"
       summary="the module for getting passwords on mobile"/>
   <variant name="PdfInk2" summary="the module for PDF Ink Signatures"/>
+  <variant name="PdfSaveToDrive" summary="the module for PDF Save to Drive"/>
   <variant name="PerformanceInterventionUI"
       summary="the module for Performance Intervention"/>
   <variant name="ReadAnythingReadAloud" summary="Read Anything Read Aloud"/>
