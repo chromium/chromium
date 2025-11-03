@@ -4,6 +4,7 @@
 
 #include "chromeos/components/cdm_factory_daemon/output_protection_impl.h"
 
+#include <array>
 #include <utility>
 
 #include "base/compiler_specific.h"
@@ -23,7 +24,7 @@ using testing::Return;
 using testing::ReturnRef;
 
 constexpr uint64_t kFakeClientId = 1;
-constexpr int64_t kDisplayIds[] = {123, 234, 345, 456};
+constexpr std::array<int64_t, 4> kDisplayIds = {123, 234, 345, 456};
 const display::DisplayMode kDisplayMode({1366, 768}, false, 60.0f);
 
 namespace chromeos {
@@ -73,17 +74,17 @@ class OutputProtectionImplTest : public testing::Test {
         std::move(delegate));
     task_environment_.RunUntilIdle();
 
-    display::DisplayConnectionType conn_types[] = {
+    constexpr std::array conn_types = {
         display::DISPLAY_CONNECTION_TYPE_INTERNAL,
         display::DISPLAY_CONNECTION_TYPE_HDMI,
         display::DISPLAY_CONNECTION_TYPE_DISPLAYPORT,
         display::DISPLAY_CONNECTION_TYPE_VGA};
-    for (size_t i = 0; i < std::size(kDisplayIds); ++i) {
-      UNSAFE_TODO(displays_[i]) = display::FakeDisplaySnapshot::Builder()
-                                      .SetId(UNSAFE_TODO(kDisplayIds[i]))
-                                      .SetType(UNSAFE_TODO(conn_types[i]))
-                                      .SetCurrentMode(kDisplayMode.Clone())
-                                      .Build();
+    for (size_t i = 0; i < kDisplayIds.size(); ++i) {
+      displays_[i] = display::FakeDisplaySnapshot::Builder()
+                         .SetId(kDisplayIds[i])
+                         .SetType(conn_types[i])
+                         .SetCurrentMode(kDisplayMode.Clone())
+                         .Build();
     }
 
     UpdateDisplays(2);
@@ -93,11 +94,11 @@ class OutputProtectionImplTest : public testing::Test {
   }
 
   void UpdateDisplays(size_t count) {
-    ASSERT_LE(count, std::size(displays_));
+    ASSERT_LE(count, displays_.size());
 
     cached_displays_.clear();
     for (size_t i = 0; i < count; ++i)
-      cached_displays_.push_back(UNSAFE_TODO(displays_[i]).get());
+      cached_displays_.push_back(displays_[i].get());
   }
 
   ~OutputProtectionImplTest() override {
@@ -137,7 +138,8 @@ class OutputProtectionImplTest : public testing::Test {
   mojo::Remote<OutputProtection> output_protection_mojo_;
   raw_ptr<MockDisplaySystemDelegate, AcrossTasksDanglingUntriaged>
       delegate_;  // Not owned.
-  std::unique_ptr<display::DisplaySnapshot> displays_[std::size(kDisplayIds)];
+  std::array<std::unique_ptr<display::DisplaySnapshot>, kDisplayIds.size()>
+      displays_;
   std::vector<raw_ptr<display::DisplaySnapshot, VectorExperimental>>
       cached_displays_;
 
@@ -163,7 +165,7 @@ TEST_F(OutputProtectionImplTest, ApplyToMultipleDisplays) {
   EXPECT_CALL(*delegate_, cached_displays())
       .WillOnce(ReturnRef(cached_displays_));
   for (int i = 0; i < 4; i++)
-    ExpectProtectionCall(UNSAFE_TODO(kDisplayIds[i]),
+    ExpectProtectionCall(kDisplayIds[i],
                          display::CONTENT_PROTECTION_METHOD_HDCP_TYPE_0, true);
 
   base::MockCallback<cdm::mojom::OutputProtection::EnableProtectionCallback>
@@ -179,9 +181,8 @@ TEST_F(OutputProtectionImplTest, ApplyToMultipleDisplaysOneFails) {
   EXPECT_CALL(*delegate_, cached_displays())
       .WillOnce(ReturnRef(cached_displays_));
   for (int i = 0; i < 4; i++) {
-    ExpectProtectionCall(UNSAFE_TODO(kDisplayIds[i]),
-                         display::CONTENT_PROTECTION_METHOD_HDCP_TYPE_0,
-                         i != 2);
+    ExpectProtectionCall(
+        kDisplayIds[i], display::CONTENT_PROTECTION_METHOD_HDCP_TYPE_0, i != 2);
   }
   base::MockCallback<cdm::mojom::OutputProtection::EnableProtectionCallback>
       callback_mock;
@@ -195,22 +196,22 @@ TEST_F(OutputProtectionImplTest, ApplyDoesNotAggregateTypes) {
   UpdateDisplays(1);
   EXPECT_CALL(*delegate_, cached_displays())
       .WillOnce(ReturnRef(cached_displays_));
-  OutputProtection::ProtectionType applied_types[] = {
+  constexpr std::array applied_types = {
       OutputProtection::ProtectionType::HDCP_TYPE_0,
       OutputProtection::ProtectionType::HDCP_TYPE_1,
       OutputProtection::ProtectionType::NONE};
-  display::ContentProtectionMethod expected_types[] = {
+  constexpr std::array expected_types = {
       display::CONTENT_PROTECTION_METHOD_HDCP_TYPE_0,
       display::CONTENT_PROTECTION_METHOD_HDCP_TYPE_1,
       display::CONTENT_PROTECTION_METHOD_NONE};
 
-  for (size_t i = 0; i < std::size(applied_types); ++i) {
-    ExpectProtectionCall(kDisplayIds[0], UNSAFE_TODO(expected_types[i]), true);
+  for (size_t i = 0; i < applied_types.size(); ++i) {
+    ExpectProtectionCall(kDisplayIds[0], expected_types[i], true);
 
     base::MockCallback<OutputProtection::EnableProtectionCallback>
         callback_mock;
     EXPECT_CALL(callback_mock, Run(true));
-    output_protection_mojo_->EnableProtection(UNSAFE_TODO(applied_types[i]),
+    output_protection_mojo_->EnableProtection(applied_types[i],
                                               callback_mock.Get());
     base::RunLoop().RunUntilIdle();
   }
