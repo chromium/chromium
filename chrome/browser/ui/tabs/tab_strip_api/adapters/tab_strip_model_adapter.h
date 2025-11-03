@@ -31,8 +31,12 @@ class TabStripModelAdapter {
  public:
   virtual ~TabStripModelAdapter() {}
 
-  virtual void AddObserver(TabStripModelObserver* observer) = 0;
-  virtual void RemoveObserver(TabStripModelObserver* observer) = 0;
+  virtual void AddModelObserver(TabStripModelObserver* observer) = 0;
+  virtual void RemoveModelObserver(TabStripModelObserver* observer) = 0;
+  virtual void AddCollectionObserver(
+      tabs::TabCollectionObserver* collection_observer) = 0;
+  virtual void RemoveCollectionObserver(
+      tabs::TabCollectionObserver* collection_observer) = 0;
   virtual std::vector<tabs::TabHandle> GetTabs() const = 0;
   virtual TabRendererData GetTabRendererData(int index) const = 0;
   virtual converters::TabStates GetTabStates(tabs::TabHandle) const = 0;
@@ -43,7 +47,8 @@ class TabStripModelAdapter {
   virtual void ActivateTab(size_t index) = 0;
   virtual void MoveTab(tabs::TabHandle handle, const Position& position) = 0;
   virtual void MoveCollection(const NodeId& id, const Position& position) = 0;
-  virtual mojom::ContainerPtr GetTabStripTopology() = 0;
+  virtual mojom::ContainerPtr GetTabStripTopology(
+      tabs::TabCollection::Handle root) const = 0;
   virtual std::optional<const tab_groups::TabGroupId> FindGroupIdFor(
       const tabs::TabCollection::Handle& collection_handle) const = 0;
   virtual void UpdateTabGroupVisuals(
@@ -60,6 +65,7 @@ class TabStripModelAdapter {
       int absolute_index) const = 0;
   virtual InsertionParams CalculateInsertionParams(
       const std::optional<tabs_api::Position>& pos) const = 0;
+  virtual const tabs::TabCollection* GetRoot() const = 0;
 };
 
 }  // namespace tabs_api

@@ -15,8 +15,15 @@ namespace tabs_api::testing {
 ToyTabStripModelAdapter::ToyTabStripModelAdapter(ToyTabStrip* tab_strip)
     : tab_strip_(tab_strip) {}
 
-void ToyTabStripModelAdapter::AddObserver(TabStripModelObserver*) {}
-void ToyTabStripModelAdapter::RemoveObserver(TabStripModelObserver*) {}
+void ToyTabStripModelAdapter::AddModelObserver(
+    TabStripModelObserver* observer) {}
+void ToyTabStripModelAdapter::RemoveModelObserver(
+    TabStripModelObserver* observer) {}
+void ToyTabStripModelAdapter::AddCollectionObserver(
+    tabs::TabCollectionObserver* collection_observer) {}
+
+void ToyTabStripModelAdapter::RemoveCollectionObserver(
+    tabs::TabCollectionObserver* collection_observer) {}
 
 std::vector<tabs::TabHandle> ToyTabStripModelAdapter::GetTabs() const {
   return tab_strip_->GetTabs();
@@ -65,7 +72,8 @@ void ToyTabStripModelAdapter::MoveCollection(const NodeId& id,
   return;
 }
 
-mojom::ContainerPtr ToyTabStripModelAdapter::GetTabStripTopology() {
+mojom::ContainerPtr ToyTabStripModelAdapter::GetTabStripTopology(
+    tabs::TabCollection::Handle root) const {
   auto mojo_tab_strip = tabs_api::mojom::TabStrip::New();
   mojo_tab_strip->id =
       tabs_api::NodeId(tabs_api::NodeId::Type::kCollection, "0");
@@ -131,6 +139,10 @@ InsertionParams ToyTabStripModelAdapter::CalculateInsertionParams(
     const std::optional<tabs_api::Position>& pos) const {
   NOTIMPLEMENTED();
   return tabs_api::InsertionParams();
+}
+
+const tabs::TabCollection* ToyTabStripModelAdapter::GetRoot() const {
+  return tab_strip_->GetRoot().Get();
 }
 
 }  // namespace tabs_api::testing

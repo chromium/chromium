@@ -714,7 +714,11 @@ class TabStripModel {
 
   // Gets the root of the tab strip model. Used to traverse the tab topology.
   const tabs::TabCollection* Root(
-      base::PassKey<tabs_api::MojoTreeBuilder> key) const;
+      std::variant<base::PassKey<tabs_api::MojoTreeBuilder>,
+                   base::PassKey<tabs_api::TabStripModelAdapterImpl>> key)
+      const;
+
+  const tabs::TabCollection* GetRootForTesting() const;
 
   // Finds the group id for a tab collection. Note that this API can be error
   // prone. Make sure to read and understand the potential problems with

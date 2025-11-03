@@ -54,11 +54,12 @@ tabs::TabCollection* GetCommonAncestor(tabs::TabCollection* collection_a,
 
 namespace tabs {
 
-TabStripCollection::TabStripCollection()
+TabStripCollection::TabStripCollection(bool send_notifications_immediately)
     : TabCollection(
           TabCollection::Type::TABSTRIP,
           {TabCollection::Type::PINNED, TabCollection::Type::UNPINNED},
-          /*supports_tabs=*/false) {
+          /*supports_tabs=*/false,
+          send_notifications_immediately) {
   pinned_collection_ =
       AddCollection(std::make_unique<PinnedTabCollection>(), 0);
   unpinned_collection_ =

@@ -175,15 +175,16 @@ export class TabListPlaygroundElement extends CustomElement implements
   }
 
   onCollectionCreated(event: OnCollectionCreatedEvent) {
-    if (event.data.splitTab) {
-      this.createSplitTabElement_(event.data.splitTab);
-    } else if (event.data.tabGroup) {
+    const data = event.collection.data;
+
+    if (data.splitTab) {
+      this.createSplitTabElement_(data.splitTab);
+    } else if (data.tabGroup) {
       // Intentionally not creating a TabGroupElement here. The TabGroupElement
       // will be created when a tab is added to the group in onNodeMoved_, which
       // is fired after this event.
     }
   }
-
   private onDragEnd_(draggedElement: HTMLElement, x: number, y: number) {
     draggedElement.style.display = 'none';
     const dropTarget = this.shadowRoot!.elementFromPoint(x, y) as HTMLElement;

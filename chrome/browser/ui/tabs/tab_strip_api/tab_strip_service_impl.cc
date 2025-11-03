@@ -92,10 +92,14 @@ TabStripServiceImpl::TabStripServiceImpl(
   session_controller_ =
       std::make_unique<SessionControllerImpl>(recorder_.get());
 
-  tab_strip_model_adapter_->AddObserver(recorder_.get());
+  tab_strip_model_adapter_->AddModelObserver(recorder_.get());
+  tab_strip_model_adapter_->AddCollectionObserver(recorder_.get());
 }
 
-TabStripServiceImpl::~TabStripServiceImpl() = default;
+TabStripServiceImpl::~TabStripServiceImpl() {
+  tab_strip_model_adapter_->RemoveModelObserver(recorder_.get());
+  tab_strip_model_adapter_->RemoveCollectionObserver(recorder_.get());
+}
 
 void TabStripServiceImpl::BroadcastEvents(
     const std::vector<events::Event>& events) const {
@@ -106,7 +110,8 @@ void TabStripServiceImpl::BroadcastEvents(
 TabStripService::GetTabsResult TabStripServiceImpl::GetTabs() {
   auto session = session_controller_->CreateSession();
 
-  return tab_strip_model_adapter_->GetTabStripTopology();
+  return tab_strip_model_adapter_->GetTabStripTopology(
+      tab_strip_model_adapter_->GetRoot()->GetHandle());
 }
 
 mojom::TabStripService::GetTabResult TabStripServiceImpl::GetTab(

@@ -24,9 +24,9 @@ struct OnDataChangedEvent {
 };
 
 struct OnCollectionCreatedEvent {
-  Data data;
   // Position of the node in the tab strip.
   Position position;
+  Container collection;
 };
 
 // Fired when any node in the tab strip tree is moved.

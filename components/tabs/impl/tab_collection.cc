@@ -73,19 +73,23 @@ void TabCollection::TabIterator::Next() {
 TabCollection::TabCollection(
     Type type,
     std::unordered_set<Type> supported_child_collections,
-    bool supports_tabs)
+    bool supports_tabs,
+    bool send_notifications_immediately)
     : type_(type),
       supported_child_collections_(supported_child_collections),
       supports_tabs_{supports_tabs},
+      notify_immediately_{send_notifications_immediately},
       impl_(std::make_unique<TabCollectionStorage>(*this)) {}
 
-TabCollection::~TabCollection() = default;
+TabCollection::~TabCollection() {
+  DispatchPendingNotifications();
+}
 
-void TabCollection::AddObserver(TabCollectionObserver* observer) {
+void TabCollection::AddObserver(TabCollectionObserver* observer) const {
   observers_.AddObserver(observer);
 }
 
-void TabCollection::RemoveObserver(TabCollectionObserver* observer) {
+void TabCollection::RemoveObserver(TabCollectionObserver* observer) const {
   observers_.RemoveObserver(observer);
 }
 
@@ -314,8 +318,18 @@ void TabCollection::NotifyOnChildrenAdded(base::PassKey<TabCollection> pass_key,
                                           const TabCollectionNodes& handles,
                                           const Position& insertion_position,
                                           TabCollection* notification_root) {
-  observers_.Notify(&TabCollectionObserver::OnChildrenAdded, insertion_position,
-                    handles);
+  if (notify_immediately_) {
+    observers_.Notify(&TabCollectionObserver::OnChildrenAdded,
+                      insertion_position, handles);
+  } else if (!observers_.empty()) {
+    pending_notifications_.push_back(base::BindOnce(
+        [](base::ObserverList<TabCollectionObserver>& observers,
+           const Position& position, const TabCollectionNodes& handles) {
+          observers.Notify(&TabCollectionObserver::OnChildrenAdded, position,
+                           handles);
+        },
+        std::ref(observers_), insertion_position, handles));
+  }
 
   if (this != notification_root) {
     parent_->NotifyOnChildrenAdded(pass_key, handles, insertion_position,
@@ -327,7 +341,16 @@ void TabCollection::NotifyOnChildrenRemoved(
     base::PassKey<TabCollection> pass_key,
     const TabCollectionNodes& handles,
     TabCollection* notification_root) {
-  observers_.Notify(&TabCollectionObserver::OnChildrenRemoved, handles);
+  if (notify_immediately_) {
+    observers_.Notify(&TabCollectionObserver::OnChildrenRemoved, handles);
+  } else if (!observers_.empty()) {
+    pending_notifications_.push_back(base::BindOnce(
+        [](base::ObserverList<TabCollectionObserver>& observers,
+           const TabCollectionNodes& handles) {
+          observers.Notify(&TabCollectionObserver::OnChildrenRemoved, handles);
+        },
+        std::ref(observers_), handles));
+  }
 
   if (this != notification_root) {
     parent_->NotifyOnChildrenRemoved(pass_key, handles, notification_root);
@@ -342,13 +365,32 @@ void TabCollection::NotifyOnChildMoved(base::PassKey<TabCollection> pass_key,
   TabCollectionObserver::NodeData src_data =
       TabCollectionObserver::NodeData(src_position, handle);
 
-  observers_.Notify(&TabCollectionObserver::OnChildMoved, dst_position,
-                    src_data);
+  if (notify_immediately_) {
+    observers_.Notify(&TabCollectionObserver::OnChildMoved, dst_position,
+                      src_data);
+  } else if (!observers_.empty()) {
+    pending_notifications_.push_back(base::BindOnce(
+        [](base::ObserverList<TabCollectionObserver>& observers,
+           const Position& dst_position,
+           const TabCollectionObserver::NodeData& src_data) {
+          observers.Notify(&TabCollectionObserver::OnChildMoved, dst_position,
+                           src_data);
+        },
+        std::ref(observers_), dst_position, src_data));
+  }
 
   if (this != notification_root) {
     parent_->NotifyOnChildMoved(pass_key, handle, src_position, dst_position,
                                 notification_root);
   }
+}
+
+void TabCollection::DispatchPendingNotifications() {
+  for (auto& notification : pending_notifications_) {
+    std::move(notification).Run();
+  }
+
+  pending_notifications_.clear();
 }
 
 TabInterface* TabCollection::AddTab(std::unique_ptr<TabInterface> tab,
@@ -397,5 +439,4 @@ const ChildrenVector& TabCollection::GetChildren(
     base::PassKey<DirectChildWalker> pass_key) const {
   return GetChildren();
 }
-
 }  // namespace tabs

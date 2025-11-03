@@ -256,7 +256,7 @@ TabStripModel::TabStripModel(TabStripModelDelegate* delegate,
       selection_model_(std::make_unique<ui::ListSelectionModel>()) {
   DCHECK(delegate_);
 
-  contents_data_ = std::make_unique<tabs::TabStripCollection>();
+  contents_data_ = std::make_unique<tabs::TabStripCollection>(false);
 
   if (group_model_factory) {
     group_model_ = group_model_factory->Create();
@@ -2300,7 +2300,12 @@ TabStripModel::TabIterator TabStripModel::end() const {
 }
 
 const tabs::TabCollection* TabStripModel::Root(
-    base::PassKey<tabs_api::MojoTreeBuilder> key) const {
+    std::variant<base::PassKey<tabs_api::MojoTreeBuilder>,
+                 base::PassKey<tabs_api::TabStripModelAdapterImpl>> key) const {
+  return contents_data_.get();
+}
+
+const tabs::TabCollection* TabStripModel::GetRootForTesting() const {
   return contents_data_.get();
 }
 
@@ -4564,6 +4569,9 @@ void TabStripModel::ValidateTabStripModel() {
   }
 
   contents_data_->ValidateData();
+
+  // Send the notifications for the root collection.
+  contents_data_->DispatchPendingNotifications();
 }
 
 void TabStripModel::SendMoveNotificationForTab(

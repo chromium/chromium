@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_api/adapters/tab_strip_model_adapter.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/events/event.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
+#include "components/tabs/public/tab_collection_observer.h"
 
 namespace tabs_api::events {
 
@@ -22,7 +23,8 @@ namespace tabs_api::events {
 // then replay them at a specific time.
 //
 // The notification mechanism is a simple |RepeatingCallback|.
-class TabStripEventRecorder : public TabStripModelObserver {
+class TabStripEventRecorder : public TabStripModelObserver,
+                              public tabs::TabCollectionObserver {
  public:
   using EventNotificationCallback =
       base::RepeatingCallback<void(const std::vector<Event>&)>;
@@ -56,12 +58,15 @@ class TabStripEventRecorder : public TabStripModelObserver {
   void TabBlockedStateChanged(content::WebContents* contents,
                               int index) override;
   void OnTabGroupChanged(const TabGroupChange& change) override;
-  void TabGroupedStateChanged(TabStripModel* tab_strip_model,
-                              std::optional<tab_groups::TabGroupId> old_group,
-                              std::optional<tab_groups::TabGroupId> new_group,
-                              tabs::TabInterface* tab,
-                              int index) override;
-  void OnSplitTabChanged(const SplitTabChange& change) override;
+
+  // tabs::TabCollectionObserver
+  void OnChildrenAdded(const tabs::TabCollection::Position& position,
+                       const tabs::TabCollectionNodes& handles) override;
+
+  void OnChildrenRemoved(const tabs::TabCollectionNodes& handles) override;
+
+  void OnChildMoved(const tabs::TabCollection::Position& to_position,
+                    const NodeData& node_data) override;
 
  protected:
   // Consumes the event.

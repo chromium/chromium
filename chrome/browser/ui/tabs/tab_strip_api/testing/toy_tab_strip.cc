@@ -8,6 +8,13 @@
 
 namespace tabs_api::testing {
 
+ToyTabStrip::ToyTabStrip()
+    : tab_strip_collection_(std::make_unique<tabs::TabStripCollection>()),
+      root_{tab_strip_collection_->GetHandle(), std::vector<ToyTab>()} {
+  // Increment id since tab_strip_collection_ uses the next handle as its id.
+  GetNextId();
+}
+
 ToyTab ToyTabStrip::GetToyTabFor(tabs::TabHandle handle) const {
   for (auto& tab : root_.tabs) {
     if (tab.tab_handle == handle) {

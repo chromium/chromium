@@ -31,7 +31,7 @@ class SplitTabCollection;
 // collection which then contain different tabs and group.
 class TabStripCollection : public TabCollection {
  public:
-  TabStripCollection();
+  explicit TabStripCollection(bool send_notifications_immediately = true);
   ~TabStripCollection() override;
   TabStripCollection(const TabStripCollection&) = delete;
   TabStripCollection& operator=(const TabStripCollection&) = delete;

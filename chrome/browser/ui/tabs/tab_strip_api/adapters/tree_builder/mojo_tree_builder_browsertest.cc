@@ -44,7 +44,9 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceMojoTreeBuilderBrowserTest,
   GetTabStripModel()->AddToNewGroup({1});
   GetTabStripModel()->AddToNewGroup({2, 3});
 
-  auto result = MojoTreeBuilder(GetTabStripModel()).Build();
+  auto result =
+      MojoTreeBuilder(GetTabStripModel())
+          .Build(GetTabStripModel()->GetRootForTesting()->GetHandle());
 
   // First layer is just pinned/unpinned.
   // Pinned is idx 0, unpinned is idx1.

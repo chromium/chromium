@@ -11,6 +11,7 @@
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "components/tabs/public/tab_collection.h"
 #include "components/tabs/public/tab_interface.h"
+#include "components/tabs/public/tab_strip_collection.h"
 #include "url/gurl.h"
 
 namespace tabs_api::testing {
@@ -36,7 +37,7 @@ struct ToyTabGroupData {
 // shallow tree backed by a vector of "tabs."
 class ToyTabStrip {
  public:
-  ToyTabStrip() = default;
+  ToyTabStrip();
   ToyTabStrip(const ToyTabStrip&) = delete;
   ToyTabStrip& operator=(const ToyTabStrip&) = delete;
   ~ToyTabStrip() = default;
@@ -63,6 +64,7 @@ class ToyTabStrip {
 
   void SetActiveTab(tabs::TabHandle handle);
   void SetTabSelection(std::set<tabs::TabHandle> selection);
+  tabs::TabCollectionHandle GetRoot() { return root_.collection_handle; }
 
  protected:
   // An ever incrementing id.
@@ -70,9 +72,8 @@ class ToyTabStrip {
 
  private:
   std::vector<ToyTabGroupData> groups_with_visuals_;
-
-  ToyTabCollection root_{tabs::TabCollection::Handle(GetNextId()),
-                         std::vector<ToyTab>()};
+  std::unique_ptr<tabs::TabStripCollection> tab_strip_collection_;
+  ToyTabCollection root_;
 };
 
 }  // namespace tabs_api::testing

@@ -11,58 +11,87 @@
 #include "chrome/browser/ui/tabs/tab_strip_api/converters/tab_converters.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/browser_apis/tab_strip/types/node_id.h"
+#include "components/tabs/public/tab_collection_observer.h"
 #include "components/tabs/public/tab_group.h"
 #include "components/tabs/public/tab_group_tab_collection.h"
 
 namespace tabs_api::events {
 
 mojom::OnTabsCreatedEventPtr ToEvent(
-    const TabStripModelChange::Insert& insert,
+    const tabs::TabHandle& handle,
+    const tabs::TabCollection::Position& position,
     const tabs_api::TabStripModelAdapter* adapter) {
   auto event = mojom::OnTabsCreatedEvent::New();
-  for (auto& content : insert.contents) {
+
     auto tab_created = tabs_api::mojom::TabCreatedContainer::New();
-    auto pos = adapter->GetPositionForAbsoluteIndex(content.index);
-    tab_created->position = std::move(pos);
-    auto renderer_data = adapter->GetTabRendererData(content.index);
+    tab_created->position = tabs_api::Position(
+        position.index,
+        NodeId::FromTabCollectionHandle(position.parent_handle));
+    auto renderer_data =
+        adapter->GetTabRendererData(adapter->GetIndexForHandle(handle).value());
     const ui::ColorProvider& provider = adapter->GetColorProvider();
     auto mojo_tab = tabs_api::converters::BuildMojoTab(
-        content.tab->GetHandle(), renderer_data, provider,
-        adapter->GetTabStates(content.tab->GetHandle()));
+        handle, renderer_data, provider, adapter->GetTabStates(handle));
 
     tab_created->tab = std::move(mojo_tab);
     event->tabs.emplace_back(std::move(tab_created));
-  }
+
+    return event;
+}
+
+mojom::OnCollectionCreatedEventPtr ToEvent(
+    const tabs::TabCollectionHandle& handle,
+    const tabs::TabCollection::Position& position,
+    const tabs_api::TabStripModelAdapter* adapter) {
+  auto event = mojom::OnCollectionCreatedEvent::New();
+  event->position = tabs_api::Position(
+      position.index, NodeId::FromTabCollectionHandle(position.parent_handle));
+  event->collection = adapter->GetTabStripTopology(handle);
   return event;
 }
 
-mojom::OnTabsClosedEventPtr ToEvent(const TabStripModelChange::Remove& remove) {
+mojom::OnTabsClosedEventPtr ToEvent(
+    const tabs::TabCollectionNodes& removed_handles) {
   auto event = mojom::OnTabsClosedEvent::New();
 
-  for (auto& content : remove.contents) {
-    event->tabs.emplace_back(
-        NodeId::Type::kContent,
-        base::NumberToString(content.tab->GetHandle().raw_value()));
+  for (const auto& handle_variant : removed_handles) {
+    if (auto* tab_handle = std::get_if<tabs::TabHandle>(&handle_variant)) {
+      event->tabs.emplace_back(NodeId::Type::kContent,
+                               base::NumberToString(tab_handle->raw_value()));
+    } else if (auto* collection_handle =
+                   std::get_if<tabs::TabCollectionHandle>(&handle_variant)) {
+      event->tabs.emplace_back(
+          NodeId::Type::kCollection,
+          base::NumberToString(collection_handle->raw_value()));
+    }
   }
 
   return event;
 }
 
 mojom::OnNodeMovedEventPtr ToEvent(
-    const TabStripModelChange::Move& move,
-    const tabs_api::TabStripModelAdapter* adapter) {
-  NodeId id(NodeId::Type::kContent,
-            base::NumberToString(move.tab->GetHandle().raw_value()));
-
-  auto from = tabs_api::Position(move.from_index);
-
-  std::optional<tabs_api::NodeId> to_parent_id;
-  auto tab_group_id = adapter->GetTabGroupForTab(move.to_index);
-  if (tab_group_id.has_value()) {
-    to_parent_id = NodeId::FromTabCollectionHandle(
-        adapter->GetCollectionHandleForTabGroupId(tab_group_id.value()));
+    const tabs::TabCollection::Position& to_position,
+    const tabs::TabCollection::Position& from_position,
+    const tabs::TabCollection::NodeHandle node_handle) {
+  enum NodeId::Type node_type;
+  std::string handle;
+  if (auto* tab_handle = std::get_if<tabs::TabHandle>(&node_handle)) {
+    node_type = NodeId::Type::kContent;
+    handle = base::NumberToString(tab_handle->raw_value());
+  } else {
+    auto* collection_handle =
+        std::get_if<tabs::TabCollectionHandle>(&node_handle);
+    node_type = NodeId::Type::kCollection;
+    handle = base::NumberToString(collection_handle->raw_value());
   }
-  auto to = tabs_api::Position(move.to_index, to_parent_id);
+  NodeId id(node_type, handle);
+
+  auto from = tabs_api::Position(
+      from_position.index,
+      NodeId::FromTabCollectionHandle(from_position.parent_handle));
+  auto to = tabs_api::Position(
+      to_position.index,
+      NodeId::FromTabCollectionHandle(to_position.parent_handle));
 
   auto event = mojom::OnNodeMovedEvent::New();
   event->id = id;
@@ -141,54 +170,6 @@ std::vector<Event> ToEvent(const TabStripSelectionChange& selection,
   return events;
 }
 
-mojom::OnCollectionCreatedEventPtr FromTabGroupToDataCreatedEvent(
-    const TabGroupChange& tab_group_change) {
-  CHECK_EQ(tab_group_change.type, TabGroupChange::Type::kCreated);
-  TabGroup* tab_group = tab_group_change.model->group_model()->GetTabGroup(
-      tab_group_change.group);
-  auto event = mojom::OnCollectionCreatedEvent::New();
-  event->data = tabs_api::converters::BuildMojoTabCollectionData(
-      tab_group->GetCollectionHandle());
-  // TODO(crbug.com/412935315): Determine whether a position is necessary in a
-  // OnCollectionCreated event. This will have no tabs unless it has been
-  // inserted from another tabstrip.
-  event->position = tabs_api::Position(0);
-  // When TabGroupChange::kCreated is fired, the TabGroupTabCollection is
-  // empty. Then, TabGroupedStateChanged() is fired, which adds tabs to the
-  // group.
-  return event;
-}
-
-mojom::OnNodeMovedEventPtr FromTabGroupedStateChangedToNodeMovedEvent(
-    TabStripModel* tab_strip_model,
-    std::optional<tab_groups::TabGroupId> old_group_id,
-    std::optional<tab_groups::TabGroupId> new_group_id,
-    tabs::TabInterface* tab,
-    int index) {
-  auto event = mojom::OnNodeMovedEvent::New();
-  event->id = NodeId::FromTabHandle(tab->GetHandle());
-  std::optional<tabs_api::NodeId> old_parent_id;
-  if (old_group_id.has_value()) {
-    TabGroup* old_group =
-        tab_strip_model->group_model()->GetTabGroup(old_group_id.value());
-    old_parent_id = tabs_api::NodeId(
-        tabs_api::NodeId::Type::kCollection,
-        base::NumberToString(old_group->GetCollectionHandle().raw_value()));
-  }
-  event->from = tabs_api::Position(0, old_parent_id);
-
-  std::optional<tabs_api::NodeId> new_parent_id;
-  if (new_group_id.has_value()) {
-    TabGroup* new_group =
-        tab_strip_model->group_model()->GetTabGroup(new_group_id.value());
-    new_parent_id = tabs_api::NodeId(
-        tabs_api::NodeId::Type::kCollection,
-        base::NumberToString(new_group->GetCollectionHandle().raw_value()));
-  }
-  event->to = tabs_api::Position(index, new_parent_id);
-  return event;
-}
-
 mojom::OnDataChangedEventPtr ToEvent(const TabGroupChange& tab_group_change) {
   CHECK_EQ(tab_group_change.type, TabGroupChange::Type::kVisualsChanged);
   TabGroup* tab_group = tab_group_change.model->group_model()->GetTabGroup(
@@ -196,41 +177,6 @@ mojom::OnDataChangedEventPtr ToEvent(const TabGroupChange& tab_group_change) {
   auto event = mojom::OnDataChangedEvent::New();
   event->data = tabs_api::converters::BuildMojoTabCollectionData(
       tab_group->GetCollectionHandle());
-  return event;
-}
-
-mojom::OnNodeMovedEventPtr ToTabGroupMovedEvent(
-    const TabGroupChange& tab_group_change) {
-  CHECK_EQ(tab_group_change.type, TabGroupChange::Type::kMoved);
-  const TabGroup* tab_group =
-      tab_group_change.model->group_model()->GetTabGroup(
-          tab_group_change.group);
-
-  auto event = mojom::OnNodeMovedEvent::New();
-  event->id = NodeId(
-      NodeId::Type::kCollection,
-      base::NumberToString(tab_group->GetCollectionHandle().raw_value()));
-  // The position of a group is defined by the index of its first tab.
-  const gfx::Range tab_indices = tab_group->ListTabs();
-  CHECK(!tab_indices.is_empty());
-  // There is no start position for a TabGroup.
-  event->from = tabs_api::Position(0);
-  event->to = tabs_api::Position(tab_indices.start());
-  return event;
-}
-
-mojom::OnCollectionCreatedEventPtr FromSplitTabToDataCreatedEvent(
-    const SplitTabChange& split_tab_change) {
-  auto event = mojom::OnCollectionCreatedEvent::New();
-  const SplitTabChange::AddedChange* added_change =
-      split_tab_change.GetAddedChange();
-  CHECK(added_change);
-  tabs::TabInterface* first_tab = added_change->tabs()[0].first;
-  const tabs::TabCollection* split_collection =
-      first_tab->GetParentCollection();
-  event->data = tabs_api::converters::BuildMojoTabCollectionData(
-      split_collection->GetHandle());
-  event->position = tabs_api::Position(added_change->tabs()[0].second);
   return event;
 }
 

@@ -19,8 +19,12 @@ class ToyTabStripModelAdapter : public TabStripModelAdapter {
   ToyTabStripModelAdapter operator=(const ToyTabStripModelAdapter&&) = delete;
   ~ToyTabStripModelAdapter() override = default;
 
-  void AddObserver(TabStripModelObserver* observer) override;
-  void RemoveObserver(TabStripModelObserver* observer) override;
+  void AddModelObserver(TabStripModelObserver* observer) override;
+  void RemoveModelObserver(TabStripModelObserver* observer) override;
+  void AddCollectionObserver(
+      tabs::TabCollectionObserver* collection_observer) override;
+  void RemoveCollectionObserver(
+      tabs::TabCollectionObserver* collection_observer) override;
   std::vector<tabs::TabHandle> GetTabs() const override;
   TabRendererData GetTabRendererData(int index) const override;
   tabs_api::converters::TabStates GetTabStates(
@@ -32,7 +36,8 @@ class ToyTabStripModelAdapter : public TabStripModelAdapter {
   void ActivateTab(size_t index) override;
   void MoveTab(tabs::TabHandle handle, const Position& position) override;
   void MoveCollection(const NodeId& id, const Position& position) override;
-  mojom::ContainerPtr GetTabStripTopology() override;
+  mojom::ContainerPtr GetTabStripTopology(
+      tabs::TabCollection::Handle root) const override;
   std::optional<const tab_groups::TabGroupId> FindGroupIdFor(
       const tabs::TabCollection::Handle& collection_handle) const override;
   void UpdateTabGroupVisuals(
@@ -48,6 +53,7 @@ class ToyTabStripModelAdapter : public TabStripModelAdapter {
       int absolute_index) const override;
   InsertionParams CalculateInsertionParams(
       const std::optional<tabs_api::Position>& pos) const override;
+  const tabs::TabCollection* GetRoot() const override;
 
  private:
   raw_ptr<ToyTabStrip> tab_strip_;

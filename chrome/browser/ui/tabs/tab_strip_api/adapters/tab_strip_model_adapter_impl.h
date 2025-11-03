@@ -23,8 +23,12 @@ class TabStripModelAdapterImpl : public TabStripModelAdapter {
   TabStripModelAdapterImpl operator=(const TabStripModelAdapterImpl&) = delete;
   ~TabStripModelAdapterImpl() override {}
 
-  void AddObserver(TabStripModelObserver* observer) override;
-  void RemoveObserver(TabStripModelObserver* observer) override;
+  void AddModelObserver(TabStripModelObserver* observer) override;
+  void RemoveModelObserver(TabStripModelObserver* observer) override;
+  void AddCollectionObserver(
+      tabs::TabCollectionObserver* collection_observer) override;
+  void RemoveCollectionObserver(
+      tabs::TabCollectionObserver* collection_observer) override;
   std::vector<tabs::TabHandle> GetTabs() const override;
   TabRendererData GetTabRendererData(int index) const override;
   converters::TabStates GetTabStates(tabs::TabHandle) const override;
@@ -35,7 +39,8 @@ class TabStripModelAdapterImpl : public TabStripModelAdapter {
   void ActivateTab(size_t index) override;
   void MoveTab(tabs::TabHandle handle, const Position& position) override;
   void MoveCollection(const NodeId& id, const Position& position) override;
-  mojom::ContainerPtr GetTabStripTopology() override;
+  mojom::ContainerPtr GetTabStripTopology(
+      tabs::TabCollection::Handle root) const override;
   std::optional<const tab_groups::TabGroupId> FindGroupIdFor(
       const tabs::TabCollection::Handle& collection_handle) const override;
   void UpdateTabGroupVisuals(
@@ -51,6 +56,8 @@ class TabStripModelAdapterImpl : public TabStripModelAdapter {
       int absolute_index) const override;
   InsertionParams CalculateInsertionParams(
       const std::optional<tabs_api::Position>& pos) const override;
+  const tabs::TabCollection* GetRoot() const override;
+
   // TabStripModelAdapterImpl uses passkeys to access experimental API methods
   // in TabStripModel or TabCollections.
   // PassKeyForTesting provides a passkey for testing purposes. Note that by

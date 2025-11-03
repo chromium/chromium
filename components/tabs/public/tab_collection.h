@@ -128,9 +128,9 @@ class TabCollection : public SupportsHandles<TabCollectionHandleFactory> {
   TabCollection(const TabCollection&) = delete;
   TabCollection& operator=(const TabCollection&) = delete;
 
-  void AddObserver(TabCollectionObserver* observer);
+  void AddObserver(TabCollectionObserver* observer) const;
 
-  void RemoveObserver(TabCollectionObserver* observer);
+  void RemoveObserver(TabCollectionObserver* observer) const;
 
   bool HasObserver(TabCollectionObserver* observer) const;
 
@@ -267,10 +267,13 @@ class TabCollection : public SupportsHandles<TabCollectionHandleFactory> {
                           const Position& dst_position,
                           TabCollection* notification_root);
 
+  void DispatchPendingNotifications();
+
  protected:
   explicit TabCollection(Type type,
                          std::unordered_set<Type> supported_child_collections,
-                         bool supports_tabs);
+                         bool supports_tabs,
+                         bool send_notifications_immediately = true);
 
   // Returns the pass key to be used by derived classes as operations such as
   // setting the parent of a tab can only be performed by a `TabCollection`.
@@ -289,7 +292,14 @@ class TabCollection : public SupportsHandles<TabCollectionHandleFactory> {
   std::unordered_set<Type> supported_child_collections_;
   bool supports_tabs_;
 
-  base::ObserverList<TabCollectionObserver> observers_;
+  // Mutable to allow adding/removing `TabCollectionObserver`'s through a const
+  // TabCollection inorder to avoid updates to the collection.
+  mutable base::ObserverList<TabCollectionObserver> observers_;
+
+  // batched notifications to allow for delayed propagation.
+  std::vector<base::OnceClosure> pending_notifications_;
+
+  bool notify_immediately_ = true;
 
   // Underlying implementation for the storage of children.
   std::unique_ptr<TabCollectionStorage> impl_;

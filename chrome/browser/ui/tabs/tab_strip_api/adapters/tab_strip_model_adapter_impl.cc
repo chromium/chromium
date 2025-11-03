@@ -13,16 +13,31 @@
 #include "components/tabs/public/tab_collection.h"
 #include "components/tabs/public/tab_group.h"
 #include "components/tabs/public/tab_interface.h"
+#include "components/tabs/public/tab_strip_collection.h"
 #include "content/public/browser/web_contents.h"
 
 namespace tabs_api {
 
-void TabStripModelAdapterImpl::AddObserver(TabStripModelObserver* observer) {
-  tab_strip_model_->AddObserver(observer);
+void TabStripModelAdapterImpl::AddModelObserver(
+    TabStripModelObserver* tab_strip_model_observer) {
+  tab_strip_model_->AddObserver(tab_strip_model_observer);
 }
 
-void TabStripModelAdapterImpl::RemoveObserver(TabStripModelObserver* observer) {
+void TabStripModelAdapterImpl::RemoveModelObserver(
+    TabStripModelObserver* observer) {
   tab_strip_model_->RemoveObserver(observer);
+}
+
+void TabStripModelAdapterImpl::AddCollectionObserver(
+    tabs::TabCollectionObserver* collection_observer) {
+  tab_strip_model_->Root(base::PassKey<TabStripModelAdapterImpl>())
+      ->AddObserver(collection_observer);
+}
+
+void TabStripModelAdapterImpl::RemoveCollectionObserver(
+    tabs::TabCollectionObserver* collection_observer) {
+  tab_strip_model_->Root(base::PassKey<TabStripModelAdapterImpl>())
+      ->RemoveObserver(collection_observer);
 }
 
 std::vector<tabs::TabHandle> TabStripModelAdapterImpl::GetTabs() const {
@@ -169,8 +184,9 @@ void TabStripModelAdapterImpl::MoveCollection(const NodeId& id,
   }
 }
 
-tabs_api::mojom::ContainerPtr TabStripModelAdapterImpl::GetTabStripTopology() {
-  return MojoTreeBuilder(tab_strip_model_).Build();
+tabs_api::mojom::ContainerPtr TabStripModelAdapterImpl::GetTabStripTopology(
+    tabs::TabCollection::Handle root) const {
+  return MojoTreeBuilder(tab_strip_model_).Build(root);
 }
 
 std::optional<const tab_groups::TabGroupId>
@@ -268,6 +284,10 @@ InsertionParams TabStripModelAdapterImpl::CalculateInsertionParams(
   }
 
   return params;
+}
+
+const tabs::TabCollection* TabStripModelAdapterImpl::GetRoot() const {
+  return tab_strip_model_->Root(base::PassKey<TabStripModelAdapterImpl>());
 }
 
 tabs::TabCollectionHandle

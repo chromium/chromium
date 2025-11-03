@@ -12,12 +12,11 @@ namespace tabs_api {
 
 MojoTreeBuilder::MojoTreeBuilder(const TabStripModel* model) : model_(model) {}
 
-mojom::ContainerPtr MojoTreeBuilder::Build() const {
-  auto* root = model_->Root(base::PassKey<MojoTreeBuilder>());
-  CHECK(root != nullptr);
+mojom::ContainerPtr MojoTreeBuilder::Build(
+    tabs::TabCollection::Handle root) const {
   auto factory = WalkerFactory(model_, base::PassKey<MojoTreeBuilder>());
 
-  return factory.WalkerForCollection(root).Walk();
+  return factory.WalkerForCollection(root.Get()).Walk();
 }
 
 }  // namespace tabs_api
