@@ -51,6 +51,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/download/download_prefs.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/prefs/pref_service_syncable_util.h"
 #include "chrome/browser/ui/ash/system/system_tray_client_impl.h"
 #include "chrome/common/chrome_features.h"
@@ -69,6 +70,7 @@
 #include "chromeos/components/disks/disks_prefs.h"
 #include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
 #include "chromeos/constants/pref_names.h"
+#include "components/application_locale_storage/application_locale_storage.h"
 #include "components/feedback/content/content_tracing_manager.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
@@ -827,8 +829,11 @@ void Preferences::Init(Profile* profile, const user_manager::User* user) {
     input_method_manager_->SetState(ime_state_);
   }
 
-  input_method_syncer_ =
-      std::make_unique<input_method::InputMethodSyncer>(prefs, ime_state_);
+  ApplicationLocaleStorage* application_locale_storage =
+      g_browser_process->GetFeatures()->application_locale_storage();
+
+  input_method_syncer_ = std::make_unique<input_method::InputMethodSyncer>(
+      application_locale_storage, prefs, ime_state_);
   input_method_syncer_->Initialize();
 
   // If a guest is logged in, initialize the prefs as if this is the first
@@ -855,8 +860,11 @@ void Preferences::InitUserPrefsForTesting(
 
   UpdateEngineClient::Get()->AddObserver(this);
 
-  input_method_syncer_ =
-      std::make_unique<input_method::InputMethodSyncer>(prefs, ime_state_);
+  ApplicationLocaleStorage* application_locale_storage =
+      g_browser_process->GetFeatures()->application_locale_storage();
+
+  input_method_syncer_ = std::make_unique<input_method::InputMethodSyncer>(
+      application_locale_storage, prefs, ime_state_);
   input_method_syncer_->Initialize();
 }
 

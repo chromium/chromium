@@ -12,14 +12,15 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "base/check_deref.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/task/task_runner.h"
 #include "base/task/thread_pool.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/common/pref_names.h"
+#include "components/application_locale_storage/application_locale_storage.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/sync_preferences/pref_service_syncable.h"
@@ -103,9 +104,13 @@ void MergeLists(std::vector<std::string_view>* dest,
 }  // anonymous namespace
 
 InputMethodSyncer::InputMethodSyncer(
+    ApplicationLocaleStorage* application_locale_storage,
     sync_preferences::PrefServiceSyncable* prefs,
     scoped_refptr<InputMethodManager::State> ime_state)
-    : prefs_(prefs), ime_state_(ime_state), merging_(false) {}
+    : application_locale_storage_(CHECK_DEREF(application_locale_storage)),
+      prefs_(prefs),
+      ime_state_(ime_state),
+      merging_(false) {}
 
 InputMethodSyncer::~InputMethodSyncer() {
   prefs_->RemoveObserver(this);
@@ -211,7 +216,7 @@ void InputMethodSyncer::MergeSyncedPrefs() {
       prefs::kLanguageEnabledImes));
 
   // Remove unsupported locales before updating the local languages preference.
-  const std::string& app_locale = g_browser_process->GetApplicationLocale();
+  const std::string& app_locale = application_locale_storage_->Get();
   std::string languages(AddSupportedInputMethodValues(
       preferred_languages_.GetValue(), preferred_languages_syncable,
       language::prefs::kPreferredLanguages));
