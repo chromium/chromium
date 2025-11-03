@@ -4900,7 +4900,8 @@ const FeatureEntry::FeatureVariation kNtpCustomizeChromeAutoOpenVariations[] = {
 };
 
 const FeatureEntry::FeatureParam kNtpEnterpriseShortcutsWithFakeData[] = {
-    {"use_fake_data", "true"}};
+    {"use_fake_data", "true"},
+    {"allow_mixing", "false"}};
 const FeatureEntry::FeatureParam
     kNtpEnterpriseShortcutsWithFakeDataWithMixing[] = {
         {"use_fake_data", "true"},
