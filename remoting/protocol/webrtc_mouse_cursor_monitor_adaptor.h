@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "remoting/protocol/mouse_cursor_monitor.h"
@@ -21,7 +22,8 @@ namespace remoting::protocol {
 // OnMouseCursorFractionalPosition() for client side cursor rendering. It will
 // need to take a map of screen_id => DesktopCapturer to convert the global
 // cursor coordinate into the fractional coordinate.
-class WebrtcMouseCursorMonitorAdaptor : public MouseCursorMonitor {
+class WebrtcMouseCursorMonitorAdaptor : public MouseCursorMonitor,
+                                        webrtc::MouseCursorMonitor::Callback {
  public:
   static base::TimeDelta GetDefaultCaptureInterval();
 
@@ -34,13 +36,18 @@ class WebrtcMouseCursorMonitorAdaptor : public MouseCursorMonitor {
   WebrtcMouseCursorMonitorAdaptor& operator=(
       const WebrtcMouseCursorMonitorAdaptor&) = delete;
 
-  void Init(Callback* callback, Mode mode) override;
+  void Init(MouseCursorMonitor::Callback* callback) override;
   void SetPreferredCaptureInterval(base::TimeDelta interval) override;
 
  private:
+  // webrtc::MouseCursorMonitor::Callback implementation.
+  void OnMouseCursor(webrtc::MouseCursor* cursor) override;
+  void OnMouseCursorPosition(const webrtc::DesktopVector& position) override;
+
   void StartCaptureTimer(base::TimeDelta capture_interval);
 
   std::unique_ptr<webrtc::MouseCursorMonitor> monitor_;
+  raw_ptr<MouseCursorMonitor::Callback> callback_;
   base::RepeatingTimer capture_timer_;
 };
 

@@ -53,7 +53,7 @@ class ThreadCheckMouseCursorMonitor : public protocol::MouseCursorMonitor {
     EXPECT_TRUE(task_runner_->BelongsToCurrentThread());
   }
 
-  void Init(Callback* callback, Mode mode) override {
+  void Init(Callback* callback) override {
     EXPECT_TRUE(task_runner_->BelongsToCurrentThread());
     EXPECT_FALSE(callback_);
     EXPECT_TRUE(callback);
@@ -76,7 +76,7 @@ class ThreadCheckMouseCursorMonitor : public protocol::MouseCursorMonitor {
             webrtc::FOURCC_ARGB),
         webrtc::DesktopVector(kHotspotX, kHotspotY));
 
-    callback_->OnMouseCursor(mouse_cursor.release());
+    callback_->OnMouseCursor(std::move(mouse_cursor));
   }
 
   base::TimeDelta capture_interval() const { return capture_interval_; }
@@ -102,7 +102,8 @@ class MouseCursorMonitorProxyTest
   }
 
   // MouseCursorMonitor::Callback implementation.
-  void OnMouseCursor(webrtc::MouseCursor* mouse_cursor) override;
+  void OnMouseCursor(
+      std::unique_ptr<webrtc::MouseCursor> mouse_cursor) override;
 
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_;
@@ -114,14 +115,13 @@ class MouseCursorMonitorProxyTest
 };
 
 void MouseCursorMonitorProxyTest::OnMouseCursor(
-    webrtc::MouseCursor* mouse_cursor) {
+    std::unique_ptr<webrtc::MouseCursor> mouse_cursor) {
   DCHECK(task_environment_.GetMainThreadTaskRunner()->BelongsToCurrentThread());
 
   EXPECT_EQ(kCursorWidth, mouse_cursor->image()->size().width());
   EXPECT_EQ(kCursorHeight, mouse_cursor->image()->size().height());
   EXPECT_EQ(kHotspotX, mouse_cursor->hotspot().x());
   EXPECT_EQ(kHotspotY, mouse_cursor->hotspot().y());
-  delete mouse_cursor;
 
   run_loop_.Quit();
 }
@@ -135,7 +135,7 @@ TEST_F(MouseCursorMonitorProxyTest, CursorShape) {
       capture_thread_.task_runner(),
       base::ReturnValueOnce<std::unique_ptr<protocol::MouseCursorMonitor>>(
           std::move(monitor)));
-  proxy_->Init(this, webrtc::MouseCursorMonitor::SHAPE_ONLY);
+  proxy_->Init(this);
   capture_thread_.task_runner()->PostTask(
       FROM_HERE, base::BindOnce(&ThreadCheckMouseCursorMonitor::Capture,
                                 base::Unretained(unowned_monitor)));
@@ -152,7 +152,7 @@ TEST_F(MouseCursorMonitorProxyTest, PreferredCaptureInterval) {
       capture_thread_.task_runner(),
       base::ReturnValueOnce<std::unique_ptr<protocol::MouseCursorMonitor>>(
           std::move(monitor)));
-  proxy_->Init(this, webrtc::MouseCursorMonitor::SHAPE_ONLY);
+  proxy_->Init(this);
   proxy_->SetPreferredCaptureInterval(base::Milliseconds(16));
 
   base::RunLoop run_loop;

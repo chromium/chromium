@@ -108,7 +108,7 @@ class DesktopSessionAgent
       mojo::ScopedInterfaceEndpointHandle handle) override;
 
   // MouseCursorMonitor::Callback implementation.
-  void OnMouseCursor(webrtc::MouseCursor* cursor) override;
+  void OnMouseCursor(std::unique_ptr<webrtc::MouseCursor> cursor) override;
   void OnMouseCursorPosition(const webrtc::DesktopVector& position) override;
 
   // Forwards a local clipboard event to the network process over IPC.

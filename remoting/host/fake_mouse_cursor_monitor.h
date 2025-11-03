@@ -19,7 +19,7 @@ class FakeMouseCursorMonitor : public protocol::MouseCursorMonitor {
 
   ~FakeMouseCursorMonitor() override;
 
-  void Init(Callback* callback, Mode mode) override;
+  void Init(Callback* callback) override;
   void SetPreferredCaptureInterval(base::TimeDelta interval) override;
 
  private:

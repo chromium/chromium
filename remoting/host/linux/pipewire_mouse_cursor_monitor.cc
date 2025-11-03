@@ -22,12 +22,11 @@ PipewireMouseCursorMonitor::PipewireMouseCursorMonitor(
 
 PipewireMouseCursorMonitor::~PipewireMouseCursorMonitor() = default;
 
-void PipewireMouseCursorMonitor::Init(Callback* callback, Mode mode) {
+void PipewireMouseCursorMonitor::Init(Callback* callback) {
   if (!capturer_) {
     return;
   }
   callback_ = callback;
-  mode_ = mode;
   subscription_ = capturer_->AddObserver(this);
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
@@ -47,13 +46,13 @@ void PipewireMouseCursorMonitor::OnCursorShapeChanged(
   }
   auto cursor = capturer->GetLatestCursor();
   if (cursor) {
-    callback_->OnMouseCursor(cursor.release());
+    callback_->OnMouseCursor(std::move(cursor));
   }
 }
 
 void PipewireMouseCursorMonitor::OnCursorPositionChanged(
     PipewireMouseCursorCapturer* capturer) {
-  if (!callback_ || mode_ != Mode::SHAPE_AND_POSITION) {
+  if (!callback_) {
     return;
   }
   auto position = capturer->GetLatestFractionalCursorPosition();

@@ -944,14 +944,13 @@ void ClientSession::SetComposeEnabled(bool enabled) {
   }
 }
 
-void ClientSession::OnMouseCursor(webrtc::MouseCursor* mouse_cursor) {
+void ClientSession::OnMouseCursor(
+    std::unique_ptr<webrtc::MouseCursor> mouse_cursor) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // This method should take ownership of |mouse_cursor|.
-  std::unique_ptr<webrtc::MouseCursor> owned_cursor(mouse_cursor);
 
   for (const auto& [_, video_stream] : video_streams_) {
     video_stream->SetMouseCursor(
-        base::WrapUnique(webrtc::MouseCursor::CopyOf(*owned_cursor)));
+        base::WrapUnique(webrtc::MouseCursor::CopyOf(*mouse_cursor)));
   }
 }
 

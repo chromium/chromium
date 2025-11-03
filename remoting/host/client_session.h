@@ -202,7 +202,8 @@ class ClientSession : public protocol::HostStub,
   void SetComposeEnabled(bool enabled) override;
 
   // MouseCursorMonitor::Callback implementation.
-  void OnMouseCursor(webrtc::MouseCursor* mouse_cursor) override;
+  void OnMouseCursor(
+      std::unique_ptr<webrtc::MouseCursor> mouse_cursor) override;
   void OnMouseCursorPosition(const webrtc::DesktopVector& position) override;
 
   // mojom::ChromotingSessionServices implementation.

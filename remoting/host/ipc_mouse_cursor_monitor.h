@@ -30,7 +30,7 @@ class IpcMouseCursorMonitor : public protocol::MouseCursorMonitor {
   ~IpcMouseCursorMonitor() override;
 
   // MouseCursorMonitor interface.
-  void Init(Callback* callback, Mode mode) override;
+  void Init(Callback* callback) override;
   void SetPreferredCaptureInterval(base::TimeDelta interval) override;
 
   // Called when the cursor shape has changed.

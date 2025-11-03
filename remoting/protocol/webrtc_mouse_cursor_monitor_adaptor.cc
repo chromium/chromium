@@ -4,6 +4,7 @@
 
 #include "remoting/protocol/webrtc_mouse_cursor_monitor_adaptor.h"
 
+#include "base/memory/ptr_util.h"
 #include "third_party/webrtc/modules/desktop_capture/mouse_cursor_monitor.h"
 
 namespace remoting::protocol {
@@ -27,8 +28,10 @@ WebrtcMouseCursorMonitorAdaptor::WebrtcMouseCursorMonitorAdaptor(
 
 WebrtcMouseCursorMonitorAdaptor::~WebrtcMouseCursorMonitorAdaptor() = default;
 
-void WebrtcMouseCursorMonitorAdaptor::Init(Callback* callback, Mode mode) {
-  monitor_->Init(callback, mode);
+void WebrtcMouseCursorMonitorAdaptor::Init(
+    MouseCursorMonitor::Callback* callback) {
+  callback_ = callback;
+  monitor_->Init(this, webrtc::MouseCursorMonitor::SHAPE_AND_POSITION);
   StartCaptureTimer(GetDefaultCaptureInterval());
 }
 
@@ -36,6 +39,16 @@ void WebrtcMouseCursorMonitorAdaptor::SetPreferredCaptureInterval(
     base::TimeDelta interval) {
   StartCaptureTimer(std::clamp(interval, kMinCursorCaptureInterval,
                                kMaxCursorCaptureInterval));
+}
+
+void WebrtcMouseCursorMonitorAdaptor::OnMouseCursor(
+    webrtc::MouseCursor* cursor) {
+  callback_->OnMouseCursor(base::WrapUnique(cursor));
+}
+
+void WebrtcMouseCursorMonitorAdaptor::OnMouseCursorPosition(
+    const webrtc::DesktopVector& position) {
+  callback_->OnMouseCursorPosition(position);
 }
 
 void WebrtcMouseCursorMonitorAdaptor::StartCaptureTimer(

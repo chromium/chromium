@@ -30,7 +30,7 @@ class MockMouseCursorMonitorCallback : public MouseCursorMonitor::Callback {
  public:
   MOCK_METHOD(void,
               OnMouseCursor,
-              (webrtc::MouseCursor * mouse_cursor),
+              (std::unique_ptr<webrtc::MouseCursor> mouse_cursor),
               (override));
   MOCK_METHOD(void,
               OnMouseCursorPosition,
@@ -108,13 +108,13 @@ TEST_F(WebrtcMouseCursorMonitorAdaptorTest, CaptureCursorShape) {
   fake_monitor->set_cursor_to_send(std::move(cursor_to_send));
   std::unique_ptr<webrtc::MouseCursor> captured_cursor;
   EXPECT_CALL(callback_, OnMouseCursor(_))
-      .WillOnce([&](webrtc::MouseCursor* owned_cursor) {
-        captured_cursor = base::WrapUnique(owned_cursor);
+      .WillOnce([&](std::unique_ptr<webrtc::MouseCursor> owned_cursor) {
+        captured_cursor = std::move(owned_cursor);
         run_loop.Quit();
       });
 
   WebrtcMouseCursorMonitorAdaptor adaptor(std::move(fake_monitor));
-  adaptor.Init(&callback_, MouseCursorMonitor::Mode::SHAPE_ONLY);
+  adaptor.Init(&callback_);
   run_loop.Run();
 
   ASSERT_TRUE(captured_cursor);
@@ -134,7 +134,7 @@ TEST_F(WebrtcMouseCursorMonitorAdaptorTest, CaptureCursorPosition) {
       });
 
   WebrtcMouseCursorMonitorAdaptor adaptor(std::move(fake_monitor));
-  adaptor.Init(&callback_, MouseCursorMonitor::Mode::SHAPE_AND_POSITION);
+  adaptor.Init(&callback_);
   run_loop.Run();
 
   ASSERT_TRUE(captured_position.equals({100, 200}));
@@ -145,7 +145,7 @@ TEST_F(WebrtcMouseCursorMonitorAdaptorTest, DefaultCaptureInterval) {
   FakeMouseCursorMonitor* fake_monitor_ptr = fake_monitor.get();
 
   WebrtcMouseCursorMonitorAdaptor adaptor(std::move(fake_monitor));
-  adaptor.Init(&callback_, MouseCursorMonitor::Mode::SHAPE_ONLY);
+  adaptor.Init(&callback_);
   ASSERT_EQ(fake_monitor_ptr->get_capture_call_count(), 0);
 
   task_environment_.FastForwardBy(
@@ -166,7 +166,7 @@ TEST_F(WebrtcMouseCursorMonitorAdaptorTest, SetPreferredCaptureInterval) {
   FakeMouseCursorMonitor* fake_monitor_ptr = fake_monitor.get();
 
   WebrtcMouseCursorMonitorAdaptor adaptor(std::move(fake_monitor));
-  adaptor.Init(&callback_, MouseCursorMonitor::Mode::SHAPE_ONLY);
+  adaptor.Init(&callback_);
 
   base::TimeDelta test_capture_interval = base::Milliseconds(15);
   adaptor.SetPreferredCaptureInterval(test_capture_interval);

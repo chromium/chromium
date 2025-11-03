@@ -5,33 +5,34 @@
 #ifndef REMOTING_PROTOCOL_MOUSE_CURSOR_MONITOR_H_
 #define REMOTING_PROTOCOL_MOUSE_CURSOR_MONITOR_H_
 
+#include <memory>
+
 #include "base/time/time.h"
 #include "remoting/proto/coordinates.pb.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
-#include "third_party/webrtc/modules/desktop_capture/mouse_cursor_monitor.h"
+#include "third_party/webrtc/modules/desktop_capture/mouse_cursor.h"
 
 namespace remoting::protocol {
 
 // This class is similar to webrtc::MouseCursorMonitor, but provides a
-// OnMouseCursorFractionalPosition() method in the callback. We can't make
-// this class extend webrtc::MouseCursorMonitor, because Chromium C++ has RTTI
-// disabled so we can't just pass webrtc::MouseCursorMonitor::Callback to Init()
-// and have subclasses to do dynamic casts.
-//
-// The plan is to update all subclasses to only call
-// OnMouseCursorFractionalPosition(), and remove OnMouseCursorPosition() from
-// Callback. Currently if a subclass calls OnMouseCursorPosition() then the
-// position will be passed to DesktopAndCursorConditionalComposer for host side
-// cursor rendering in relative mouse mode, meanwhile if a subclass calls
-// OnMouseCursorFractionalPosition(), it will be sent to the client for client
-// side rendering of the cursor. In the longer term, all host platforms should
-// do client side cursor rendering in relative mouse mode.
+// OnMouseCursorFractionalPosition() method in the callback, and does not
+// require calling Capture() in a constant interval.
 class MouseCursorMonitor {
  public:
-  using Mode = webrtc::MouseCursorMonitor::Mode;
-
-  class Callback : public webrtc::MouseCursorMonitor::Callback {
+  class Callback {
    public:
+    virtual ~Callback() = default;
+
+    // Called when the cursor shape has changed.
+    virtual void OnMouseCursor(std::unique_ptr<webrtc::MouseCursor> cursor) {}
+
+    // Called when the cursor position has changed. `position` indicates cursor
+    // absolute position on the system in fullscreen coordinate, i.e. the
+    // top-left monitor always starts from (0, 0).
+    // The coordinates of the position is controlled by OS, but it's always
+    // consistent with DesktopFrame.rect().top_left().
+    virtual void OnMouseCursorPosition(const webrtc::DesktopVector& position) {}
+
     // See comment in remoting/proto/coordinates.proto.
     virtual void OnMouseCursorFractionalPosition(
         const FractionalCoordinate& fractional_position) {}
@@ -42,7 +43,7 @@ class MouseCursorMonitor {
   // Initializes the monitor with the `callback`, which must remain valid until
   // capturer is destroyed.
   // `callback` will be called whenever the cursor shape or position is changed.
-  virtual void Init(Callback* callback, Mode mode) = 0;
+  virtual void Init(Callback* callback) = 0;
 
   // Sets the preferred interval between two cursor captures. Note that not all
   // implementations may honor this value; an implementation could either

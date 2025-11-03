@@ -21,7 +21,7 @@ class PipewireMouseCursorMonitor
   ~PipewireMouseCursorMonitor() override;
 
   // MouseCursorMonitor implementation.
-  void Init(Callback* callback, Mode mode) override;
+  void Init(Callback* callback) override;
   void SetPreferredCaptureInterval(base::TimeDelta interval) override;
 
  private:
@@ -34,7 +34,6 @@ class PipewireMouseCursorMonitor
   PipewireMouseCursorCapturer::Observer::Subscription subscription_;
   base::WeakPtr<PipewireMouseCursorCapturer> capturer_;
   raw_ptr<Callback> callback_;
-  Mode mode_;
   base::WeakPtrFactory<PipewireMouseCursorMonitor> weak_ptr_factory_{this};
 };
 

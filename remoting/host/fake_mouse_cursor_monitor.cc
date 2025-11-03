@@ -18,8 +18,7 @@ FakeMouseCursorMonitor::FakeMouseCursorMonitor() : callback_(nullptr) {}
 
 FakeMouseCursorMonitor::~FakeMouseCursorMonitor() = default;
 
-void FakeMouseCursorMonitor::Init(MouseCursorMonitor::Callback* callback,
-                                  MouseCursorMonitor::Mode mode) {
+void FakeMouseCursorMonitor::Init(MouseCursorMonitor::Callback* callback) {
   DCHECK(!callback_);
   DCHECK(callback);
 

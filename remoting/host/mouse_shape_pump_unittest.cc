@@ -45,7 +45,7 @@ class TestMouseCursorMonitor : public protocol::MouseCursorMonitor {
 
   ~TestMouseCursorMonitor() override = default;
 
-  void Init(Callback* callback, Mode mode) override {
+  void Init(Callback* callback) override {
     EXPECT_FALSE(callback_);
     EXPECT_TRUE(callback);
 
@@ -65,7 +65,7 @@ class TestMouseCursorMonitor : public protocol::MouseCursorMonitor {
             webrtc::FOURCC_ARGB),
         webrtc::DesktopVector(kHotspotX, kHotspotY));
 
-    callback_->OnMouseCursor(mouse_cursor.release());
+    callback_->OnMouseCursor(std::move(mouse_cursor));
   }
 
   void SendFractionalCursorPosition(

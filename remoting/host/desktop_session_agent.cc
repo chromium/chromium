@@ -254,16 +254,15 @@ void DesktopSessionAgent::Start(
                      std::move(callback)));
 }
 
-void DesktopSessionAgent::OnMouseCursor(webrtc::MouseCursor* cursor) {
+void DesktopSessionAgent::OnMouseCursor(
+    std::unique_ptr<webrtc::MouseCursor> cursor) {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
 
-  std::unique_ptr<webrtc::MouseCursor> owned_cursor(cursor);
-
   if (desktop_session_event_handler_) {
-    desktop_session_event_handler_->OnMouseCursorChanged(*owned_cursor);
+    desktop_session_event_handler_->OnMouseCursorChanged(*cursor);
   }
 
-  video_capturers_.SetMouseCursor(*owned_cursor);
+  video_capturers_.SetMouseCursor(*cursor);
 }
 
 void DesktopSessionAgent::OnMouseCursorPosition(

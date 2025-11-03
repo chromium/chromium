@@ -25,8 +25,7 @@ MouseShapePump::MouseShapePump(
     protocol::CursorShapeStub* cursor_shape_stub)
     : mouse_cursor_monitor_(std::move(mouse_cursor_monitor)),
       cursor_shape_stub_(cursor_shape_stub) {
-  mouse_cursor_monitor_->Init(this,
-                              webrtc::MouseCursorMonitor::SHAPE_AND_POSITION);
+  mouse_cursor_monitor_->Init(this);
 }
 
 MouseShapePump::~MouseShapePump() {
@@ -56,14 +55,13 @@ void MouseShapePump::SetMouseCursorMonitorCallback(
   callback_ = callback;
 }
 
-void MouseShapePump::OnMouseCursor(webrtc::MouseCursor* cursor) {
+void MouseShapePump::OnMouseCursor(
+    std::unique_ptr<webrtc::MouseCursor> cursor) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
   if (!cursor) {
     return;
   }
-
-  std::unique_ptr<webrtc::MouseCursor> owned_cursor(cursor);
 
   if (cursor_shape_stub_) {
     std::unique_ptr<protocol::CursorShapeInfo> cursor_proto(
@@ -99,7 +97,7 @@ void MouseShapePump::OnMouseCursor(webrtc::MouseCursor* cursor) {
   }
 
   if (callback_) {
-    callback_->OnMouseCursor(owned_cursor.release());
+    callback_->OnMouseCursor(std::move(cursor));
   }
 }
 

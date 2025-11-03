@@ -316,8 +316,7 @@ class MockMouseCursorMonitor : public protocol::MouseCursorMonitor {
 
   MOCK_METHOD(void,
               Init,
-              (protocol::MouseCursorMonitor::Callback*,
-               protocol::MouseCursorMonitor::Mode),
+              (protocol::MouseCursorMonitor::Callback*),
               (override));
   MOCK_METHOD(void, SetPreferredCaptureInterval, (base::TimeDelta), (override));
 };
