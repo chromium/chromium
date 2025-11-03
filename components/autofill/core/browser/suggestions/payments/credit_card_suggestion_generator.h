@@ -176,13 +176,13 @@ class CreditCardSuggestionGenerator : public SuggestionGenerator {
   // Generates suggestions for credit card or CVC fields from the given
   // `credit_cards`.
   std::vector<Suggestion> GenerateSuggestionsForCreditCardOrCvcField(
-      const FormData& form,
       const FormFieldData& trigger_field,
       const FieldType& trigger_field_type,
       const AutofillField* trigger_autofill_field,
       const AutofillClient& client,
       const std::vector<CreditCard>& credit_cards,
-      CreditCardSuggestionSummary& summary);
+      CreditCardSuggestionSummary& summary,
+      bool should_show_scan_credit_card);
 
   // Creates a suggestion for the given `credit_card`. `virtual_card_option`
   // suggests whether the suggestion is a virtual card option.
