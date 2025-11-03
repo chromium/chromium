@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/android/config.gni")
+
 declare_args() {
-  clank_accessibility_custom_overrides = false
+  clank_accessibility_custom_overrides = enable_chrome_android_internal
 }

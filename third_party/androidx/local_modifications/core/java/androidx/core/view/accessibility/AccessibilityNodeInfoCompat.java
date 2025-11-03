@@ -49,7 +49,6 @@ import androidx.annotation.RequiresApi;
 import androidx.annotation.RestrictTo;
 import androidx.core.R;
 import androidx.core.accessibilityservice.AccessibilityServiceInfoCompat;
-import androidx.core.os.BuildCompat;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.accessibility.AccessibilityViewCommand.CommandArguments;
 import androidx.core.view.accessibility.AccessibilityViewCommand.MoveAtGranularityArguments;
@@ -1368,7 +1367,7 @@ public class AccessibilityNodeInfoCompat {
          * @return The current sort direction.
          */
         public @SortDirection int getSortDirection() {
-            if (BuildCompat.isAtLeastB_1()) {
+            if (isAtLeastB_1()) {
                 return Api36MinorImpl.getCollectionItemSortDirection(mInfo);
             }
 
@@ -1497,7 +1496,7 @@ public class AccessibilityNodeInfoCompat {
 
             /** Builds and returns a {@link AccessibilityNodeInfo.CollectionItemInfo}. */
             public @NonNull CollectionItemInfoCompat build() {
-                if (BuildCompat.isAtLeastB_1()) {
+                if (isAtLeastB_1()) {
                     return Api36MinorImpl.buildCollectionItemInfoCompat(
                             mHeading,
                             mColumnIndex,
@@ -1529,6 +1528,11 @@ public class AccessibilityNodeInfoCompat {
                                     mSelected));
                 }
             }
+        }
+
+        private static boolean isAtLeastB_1() {
+            return Build.VERSION.SDK_INT >= Build.VERSION_CODES.BAKLAVA
+                    && Build.VERSION.SDK_INT_FULL >= Build.VERSION_CODES_FULL.BAKLAVA_1;
         }
     }
 
