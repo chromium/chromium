@@ -12,6 +12,7 @@
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/extensions/settings_api_helpers.h"
+#include "chrome/browser/new_tab_page/feature_promo_helper/new_tab_page_feature_promo_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/background/ntp_custom_background_service_factory.h"
 #include "chrome/browser/themes/theme_service.h"
@@ -57,6 +58,7 @@ NewTabFooterHandler::NewTabFooterHandler(
       web_contents_(web_contents),
       ntp_custom_background_service_(ntp_custom_background_service),
       theme_provider_(&ThemeService::GetThemeProviderForProfile(profile_)),
+      feature_promo_helper_{std::make_unique<NewTabPageFeaturePromoHelper>()},
       document_(std::move(pending_document)),
       handler_{this, std::move(pending_handler)} {
   extension_registry_observation_.Observe(
@@ -137,6 +139,11 @@ void NewTabFooterHandler::ShowContextMenu(const gfx::Point& point) {
     embedder_->ShowContextMenu(point,
                                std::make_unique<FooterContextMenu>(browser));
   }
+}
+
+void NewTabFooterHandler::NotifyCustomizationButtonVisible() {
+  feature_promo_helper_->MaybeTriggerAutomaticCustomizeChromePromo(
+      web_contents_);
 }
 
 void NewTabFooterHandler::UpdateManagementNotice() {

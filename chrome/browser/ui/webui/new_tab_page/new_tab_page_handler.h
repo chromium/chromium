@@ -16,7 +16,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
-#include "chrome/browser/new_tab_page/feature_promo_helper/new_tab_page_feature_promo_helper.h"
 #include "chrome/browser/new_tab_page/microsoft_auth/microsoft_auth_service.h"
 #include "chrome/browser/new_tab_page/microsoft_auth/microsoft_auth_service_observer.h"
 #include "chrome/browser/new_tab_page/modules/new_tab_page_modules.h"
@@ -75,21 +74,6 @@ class SyncService;
 namespace ui {
 class ThemeProvider;
 }  // namespace ui
-
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-//
-// LINT.IfChange(NTPCustomizeChromePromoEligibility)
-enum class NTPCustomizeChromePromoEligibility {
-  kCanShowPromo = 0,
-  kReachedTotalMaxCountAlready = 1,
-  kReachedSessionMaxCountAlready = 2,
-  kChromeCustomizedAlready = 3,
-  kCustomizeChromeClosedExplicitlyByUser = 4,
-  kCustomizeChromeOpenedByUser = 5,
-  kMaxValue = kCustomizeChromeOpenedByUser,
-};
-// LINT.ThenChange(//tools/metrics/histograms/metadata/new_tab_page/enums.xml:NTPCustomizeChromePromoEligibility)
 
 class NewTabPageHandler
     : public new_tab_page::mojom::PageHandler,
@@ -208,12 +192,6 @@ class NewTabPageHandler
 
   // Called when the embedding BrowserWindowInterface has changed.
   void OnBrowserWindowInterfaceChanged();
-
-  void OnShowPromoResult(user_education::FeaturePromoResult result);
-
-  void ShowCustomizeChromeSidePanel();
-
-  NTPCustomizeChromePromoEligibility CanShowCustomizeChromePromo();
 
   void LogEvent(NTPLoggingEventType event);
 

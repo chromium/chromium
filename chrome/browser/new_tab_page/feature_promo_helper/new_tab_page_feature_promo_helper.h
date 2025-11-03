@@ -12,6 +12,22 @@ namespace user_education {
 struct FeaturePromoParams;
 }  // namespace user_education
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(NTPCustomizeChromePromoEligibility)
+enum class NTPCustomizeChromePromoEligibility {
+  kCanShowPromo = 0,
+  kReachedTotalMaxCountAlready = 1,
+  kReachedSessionMaxCountAlready = 2,
+  kChromeCustomizedAlready = 3,
+  kCustomizeChromeClosedExplicitlyByUser = 4,
+  kCustomizeChromeOpenedByUser = 5,
+  kFeatureConfigMismatch = 6,
+  kMaxValue = kFeatureConfigMismatch,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/new_tab_page/enums.xml:NTPCustomizeChromePromoEligibility)
+
 class NewTabPageFeaturePromoHelper {
  public:
   virtual void RecordPromoFeatureUsageAndClosePromo(
@@ -22,6 +38,8 @@ class NewTabPageFeaturePromoHelper {
   virtual void MaybeShowFeaturePromo(user_education::FeaturePromoParams params,
                                      content::WebContents* web_contents);
   virtual bool IsSigninModalDialogOpen(content::WebContents* web_contents);
+  virtual void MaybeTriggerAutomaticCustomizeChromePromo(
+      content::WebContents* web_contents);
 
   virtual ~NewTabPageFeaturePromoHelper() = default;
 

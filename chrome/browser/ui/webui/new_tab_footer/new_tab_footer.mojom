@@ -65,6 +65,8 @@ interface NewTabFooterHandler {
   OpenUrlInCurrentTab(url.mojom.Url url);
   // Shows context menu.
   ShowContextMenu(gfx.mojom.Point point);
+  // Notifies that the customization button just got visible on the WebUI.
+  NotifyCustomizationButtonVisible();
 };
 
 // WebUI-side handler for requests from the browser.

@@ -379,9 +379,10 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Chrome customized already."/>
   <int value="4" label="Customize Chrome closed explicitly by the user."/>
   <int value="5" label="Customize Chrome opened via button before."/>
+  <int value="6" label="Feature config mismatch."/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/browser/ui/webui/new_tab_page/new_tab_page_handler.h:NTPCustomizeChromePromoEligibility) -->
+<!-- LINT.ThenChange(//chrome/browser/new_tab_page/feature_promo_helper/new_tab_page_feature_promo_helper.h:NTPCustomizeChromePromoEligibility) -->
 
 <enum name="NTPCustomizeChromeSidePanelAction">
   <int value="0" label="Button to edit theme selected."/>

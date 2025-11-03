@@ -367,8 +367,10 @@ IN_PROC_BROWSER_TEST_F(NewTabPageHandlerWithCustomizeChromeIPHAutoOpenTest,
   RunTestSequence(
       InAnyContext(WaitForShow(
           CustomizeButtonsHandler::kCustomizeChromeButtonElementId)),
+      // Promo was requested, but not necessarily shown. When fixing
+      // crbug.com/454919411, that could be properly checked.
       CheckPromoRequested(
-          feature_engagement::kIPHDesktopCustomizeChromeAutoOpenFeature, false),
+          feature_engagement::kIPHDesktopCustomizeChromeAutoOpenFeature, true),
       WaitForShow(kSidePanelElementId));
 
   EXPECT_TRUE(IsCustomizeChromeEntryShowing());
