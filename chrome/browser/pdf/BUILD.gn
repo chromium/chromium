@@ -26,6 +26,7 @@ source_set("pdf") {
     "//mojo/public/cpp/bindings",
     "//pdf:buildflags",
     "//ui/base/interaction",
+    "//ui/webui/resources/cr_components/help_bubble:mojo_bindings",
   ]
   deps = [
     "//build:chromeos_buildflags",
@@ -34,10 +35,12 @@ source_set("pdf") {
     "//chrome/browser/pdf:pdf_pref_names",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/pdf:resources",
+    "//chrome/browser/ui:browser_element_identifiers",
     "//chrome/common",
     "//components/pdf/browser:interceptors",
     "//components/pdf/common:util",
     "//components/prefs",
+    "//components/user_education/webui",
     "//components/zoom",
     "//extensions/browser",
     "//extensions/common:common_constants",
