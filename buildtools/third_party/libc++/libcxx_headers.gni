@@ -11,7 +11,7 @@
 import("//buildtools/deps_revisions.gni")
 
 assert(
-    libcxx_revision == "7ecf96c74a655e9416fa2e5c2ac05816d76d792f",
+    libcxx_revision == "d9c5c325fbcea46eb3e92b698d657e9eb11797a6",
     "libcxx_headers.gni and third_party/libc++ are out of sync.$0x0A$0x0AIf you were messing around with the libc++ repository, run:$0x0A`buildtools/third_party/libc++/generate_libcxx_headers.py`$0x0A$0x0AIf the script doesn't resolve the error, file a bug to msta@ with reproduction details.$0x0A")
 
 libcxx_headers = [
@@ -895,6 +895,7 @@ libcxx_headers = [
   "//third_party/libc++/src/include/__type_traits/is_valid_expansion.h",
   "//third_party/libc++/src/include/__type_traits/is_void.h",
   "//third_party/libc++/src/include/__type_traits/is_volatile.h",
+  "//third_party/libc++/src/include/__type_traits/is_within_lifetime.h",
   "//third_party/libc++/src/include/__type_traits/lazy.h",
   "//third_party/libc++/src/include/__type_traits/make_32_64_or_128_bit.h",
   "//third_party/libc++/src/include/__type_traits/make_const_lvalue_ref.h",
