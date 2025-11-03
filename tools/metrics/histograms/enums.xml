@@ -25766,6 +25766,18 @@ Called by update_net_error_codes.py.-->
   <int value="2" label="Enabled"/>
 </enum>
 
+<enum name="SubresourceFilterDisabledReason">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="NoMatchingConfiguration"/>
+  <int value="2" label="DisabledByConfiguration"/>
+  <int value="3" label="UrlAllowlisted"/>
+  <int value="4" label="WarningMode"/>
+  <int value="5" label="NavigationError"/>
+  <int value="6" label="FilterNeverCreated"/>
+  <int value="7" label="RulesetUnavailableOrCorrupt"/>
+  <int value="8" label="UrlNotHandledByNetworkStack"/>
+</enum>
+
 <enum name="SubresourceFilterVerifyStatus">
   <int value="0" label="Pass, Checksum Valid"/>
   <int value="1" label="Checksum Failed, Verifier Passed"/>

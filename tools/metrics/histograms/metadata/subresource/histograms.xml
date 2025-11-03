@@ -203,9 +203,8 @@ chromium-metrics-reviews@google.com.
   <owner>alexmt@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
-    Whenever a document load is committed in a root frame, records whether
-    subresource filtering should be activated for that load. Also records the
-    same for the initial document load, even if it was not committed.
+    Whenever a navigation finishes in a root frame, records whether subresource
+    filtering should be activated for that load.
   </summary>
 </histogram>
 
@@ -214,10 +213,20 @@ chromium-metrics-reviews@google.com.
   <owner>alexmt@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
-    Whenever a document load is committed in a root frame that inherits from its
+    Whenever a navigation finishes in a root frame that inherits from its
     same-origin opener, records whether subresource filtering should be
-    activated for that load. Also records the same for the initial document load
-    (if it inherits its activation) even if it was not committed.
+    activated for that load.
+  </summary>
+</histogram>
+
+<histogram name="SubresourceFilter.PageLoad.ActivationState.DisabledReason"
+    enum="SubresourceFilterDisabledReason" expires_after="2026-10-30">
+  <owner>yaoxia@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Whenever a navigation finishes in a root frame, and when subresource
+    filtering should be disabled for that load, record the disabled reason.
+    committed.
   </summary>
 </histogram>
 

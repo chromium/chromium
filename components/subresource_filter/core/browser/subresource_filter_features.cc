@@ -377,9 +377,11 @@ void Configuration::AddToValue(base::trace_event::TracedValue* value) const {
 }
 
 mojom::ActivationState Configuration::GetActivationState(
-    mojom::ActivationLevel effective_activation_level) const {
+    mojom::ActivationLevel effective_activation_level,
+    mojom::SubresourceFilterDisabledReason disabled_reason) const {
   mojom::ActivationState state;
   state.activation_level = effective_activation_level;
+  state.disabled_reason = disabled_reason;
 
   double measurement_rate = activation_options.performance_measurement_rate;
   state.measure_performance =
