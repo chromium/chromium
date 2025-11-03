@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_GUEST_FRAME_IMPL_H_
-#define CONTENT_BROWSER_GUEST_FRAME_IMPL_H_
+#ifndef CONTENT_BROWSER_SECURE_EMBED_CONNECTOR_IMPL_H_
+#define CONTENT_BROWSER_SECURE_EMBED_CONNECTOR_IMPL_H_
 
 #include <memory>
 
@@ -11,7 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "cc/input/touch_action.h"
 #include "content/browser/renderer_host/cross_process_frame_connector_base.h"
-#include "content/public/browser/guest_frame.h"
+#include "content/public/browser/secure_embed_connector.h"
 #include "content/public/browser/visibility.h"
 #include "third_party/blink/public/common/frame/frame_visual_properties.h"
 #include "third_party/blink/public/mojom/frame/intrinsic_sizing_info.mojom-forward.h"
@@ -25,15 +25,27 @@
 namespace content {
 
 class RenderFrameHostImpl;
+class WebContentsImpl;
 
-class GuestFrameImpl : public GuestFrame,
-                       public CrossProcessFrameConnectorBase {
+class SecureEmbedConnectorImpl : public SecureEmbedConnector,
+                                 public CrossProcessFrameConnectorBase {
  public:
-  GuestFrameImpl(WebContents* guest_web_contents,
-                 GuestFrame::Delegate* delegate);
-  ~GuestFrameImpl() override;
+  // `embedded_web_contents` will have ownership of this.
+  SecureEmbedConnectorImpl(WebContentsImpl* embedder_web_contents,
+                           WebContentsImpl* embedded_web_contents);
+  ~SecureEmbedConnectorImpl() override;
 
-  // GuestFrame:
+  WebContents* GetEmbedderWebContents() override;
+
+  // Convenience wrapper for GetDelegate()->FocusInEmbedder that null-checks
+  // the delegate.
+  void FocusInEmbedder(FocusOperation focus_op);
+
+  // SecureEmbedConnector:
+  void SetDelegate(SecureEmbedConnector::Delegate* delegate) override;
+  SecureEmbedConnector::Delegate* GetDelegate() override;
+
+  // CrossProcessFrameConnectorBase:
   // TODO(secure-embed): Some of the methods that we override here don't need to
   // be on CrossProcessFrameConnectorBase class at all. Go through them and
   // remove anything that isn't directly used by the view from the base class.
@@ -44,7 +56,6 @@ class GuestFrameImpl : public GuestFrame,
       const blink::WebKeyboardEvent& keyboard_event) override;
   void SetFocus(bool focused, blink::mojom::FocusType focus_type) override;
 
-  // CrossProcessFrameConnectorBase:
   void SetView(RenderWidgetHostViewChildFrame* view,
                bool allow_paint_holding) override;
   RenderWidgetHostViewBase* GetParentRenderWidgetHostView() override;
@@ -133,9 +144,10 @@ class GuestFrameImpl : public GuestFrame,
   RenderFrameHostImpl* current_child_frame_host() const;
 
   std::unique_ptr<Observer> observer_;
-  raw_ptr<GuestFrame::Delegate> delegate_ = nullptr;
+  raw_ptr<SecureEmbedConnector::Delegate> delegate_ = nullptr;
 
-  base::WeakPtr<WebContents> guest_web_contents_ = nullptr;
+  base::WeakPtr<WebContents> embedder_web_contents_;
+  raw_ptr<WebContentsImpl> guest_web_contents_ = nullptr;  // Owns us.
   raw_ptr<RenderWidgetHostViewChildFrame> view_ = nullptr;
 
   // This is here rather than in the implementation class so that
@@ -185,4 +197,4 @@ class GuestFrameImpl : public GuestFrame,
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_GUEST_FRAME_IMPL_H_
+#endif  // #define CONTENT_BROWSER_SECURE_EMBED_CONNECTOR_IMPL_H_

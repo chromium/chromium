@@ -9,9 +9,8 @@
 #include "base/no_destructor.h"
 #include "base/supports_user_data.h"
 #include "components/guest_contents/browser/guest_contents_handle.h"
-#include "content/public/browser/guest_frame.h"
 #include "content/public/browser/render_frame_host.h"
-#include "content/public/browser/secure_embed_delegate.h"
+#include "content/public/browser/secure_embed_connector.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"
@@ -20,26 +19,19 @@
 
 namespace secure_embed {
 
-struct SecureEmbedHostUserData : public base::SupportsUserData::Data {
-  constexpr static char kKey[] = "secure-embed-host-user-data";
-  explicit SecureEmbedHostUserData(SecureEmbedHost* secure_embed_host)
-      : secure_embed_host(secure_embed_host) {}
-
-  raw_ptr<SecureEmbedHost> secure_embed_host;
-};
-
 // static
 size_t SecureEmbedHost::instance_count_for_testing_ = 0;
 
-SecureEmbedHost::SecureEmbedHost(content::RenderFrameHost*) : secure_embed_() {
+SecureEmbedHost::SecureEmbedHost(content::RenderFrameHost* render_frame_host)
+    : render_frame_host_(render_frame_host), secure_embed_() {
   ++instance_count_for_testing_;
 }
 
 SecureEmbedHost::~SecureEmbedHost() {
-  if (guest_contents_) {
-    guest_contents_->RemoveUserData(SecureEmbedHostUserData::kKey);
-  }
   --instance_count_for_testing_;
+  if (content::SecureEmbedConnector* connector = GetConnector()) {
+    connector->SetDelegate(nullptr);
+  }
 }
 
 // static
@@ -51,12 +43,6 @@ void SecureEmbedHost::Create(
       std::move(receiver));
 }
 
-// static
-SecureEmbedHost* SecureEmbedHost::GetFrom(content::WebContents* web_contents) {
-  auto* user_data = static_cast<SecureEmbedHostUserData*>(
-      web_contents->GetUserData(SecureEmbedHostUserData::kKey));
-  return user_data ? user_data->secure_embed_host : nullptr;
-}
 
 void SecureEmbedHost::SetSecureEmbed(
     mojo::PendingAssociatedRemote<mojom::SecureEmbed> secure_embed) {
@@ -87,8 +73,20 @@ void SecureEmbedHost::Attach(int64_t content_id) {
     return;
   }
 
-  if (!web_contents_to_attach->GetSecureEmbedDelegate()) {
-    LOG(ERROR) << "WebContents doesn't have a SecureEmbedDelegate";
+  if (!web_contents_to_attach->GetSecureEmbedConnector()) {
+    LOG(ERROR) << "WebContents doesn't have a SecureEmbedConnector";
+    return;
+  }
+
+  if (web_contents_to_attach->GetSecureEmbedConnector()->GetDelegate()) {
+    LOG(ERROR) << "WebContents already embedded by someone";
+    return;
+  }
+
+  if (web_contents_to_attach->GetSecureEmbedConnector()
+          ->GetEmbedderWebContents() !=
+      content::WebContents::FromRenderFrameHost(render_frame_host_)) {
+    LOG(ERROR) << "WebContents not configured to embed here";
     return;
   }
 
@@ -96,21 +94,17 @@ void SecureEmbedHost::Attach(int64_t content_id) {
   LOG(INFO) << "Successfully retrieved WebContents for content_id: "
             << content_id;
 
-  if (guest_contents_) {
-    guest_contents_->RemoveUserData(SecureEmbedHostUserData::kKey);
-  }
   know_have_focus_ = false;
   guest_contents_ = web_contents_to_attach->GetWeakPtr();
-  guest_contents_->SetUserData(SecureEmbedHostUserData::kKey,
-                               std::make_unique<SecureEmbedHostUserData>(this));
-  guest_frame_ = content::GuestFrame::Create(web_contents_to_attach, this);
-  secure_embed_->SetFrameSinkId(guest_frame_->GetFrameSinkId());
+  auto* connector = GetConnector();
+  connector->SetDelegate(this);
+  secure_embed_->SetFrameSinkId(connector->GetFrameSinkId());
 }
 
 void SecureEmbedHost::SynchronizeVisualProperties(
     const blink::FrameVisualProperties& visual_properties) {
-  if (guest_frame_) {
-    guest_frame_->OnSynchronizeVisualProperties(visual_properties);
+  if (content::SecureEmbedConnector* connector = GetConnector()) {
+    connector->OnSynchronizeVisualProperties(visual_properties);
   }
 }
 
@@ -123,8 +117,8 @@ void SecureEmbedHost::DispatchKeyboardEvent(
         "Unexpected message type in SecureEmbedHost::DispatchKeyboardEvent");
     return;
   }
-  if (guest_frame_) {
-    guest_frame_->ForwardKeyboardEvent(
+  if (content::SecureEmbedConnector* connector = GetConnector()) {
+    connector->ForwardKeyboardEvent(
         static_cast<const blink::WebKeyboardEvent&>(key_event->Event()));
   }
 }
@@ -132,8 +126,8 @@ void SecureEmbedHost::DispatchKeyboardEvent(
 void SecureEmbedHost::SetFocus(bool focused,
                                blink::mojom::FocusType focus_type) {
   know_have_focus_ = false;
-  if (guest_frame_) {
-    guest_frame_->SetFocus(focused, focus_type);
+  if (content::SecureEmbedConnector* connector = GetConnector()) {
+    connector->SetFocus(focused, focus_type);
     if (focused) {
       know_have_focus_ = true;
     }
@@ -158,31 +152,35 @@ void SecureEmbedHost::SetFrameSinkId(const viz::FrameSinkId& frame_sink_id) {
   }
 }
 
-void SecureEmbedHost::RequestFocus(
-    content::SecureEmbedDelegate::FocusOperation focus_op) {
+void SecureEmbedHost::FocusInEmbedder(
+    content::SecureEmbedConnector::FocusOperation focus_op) {
   if (!secure_embed_) {
     return;
   }
 
-  if (focus_op == content::SecureEmbedDelegate::FocusOperation::kFocusPlugin &&
+  if (focus_op == content::SecureEmbedConnector::FocusOperation::kFocusPlugin &&
       know_have_focus_) {
     return;
   }
 
   mojom::FocusOperation mojo_focus_op;
   switch (focus_op) {
-    case content::SecureEmbedDelegate::FocusOperation::kFocusPlugin:
+    case content::SecureEmbedConnector::FocusOperation::kFocusPlugin:
       mojo_focus_op = mojom::FocusOperation::kFocusPlugin;
       break;
-    case content::SecureEmbedDelegate::FocusOperation::kFocusBeforePlugin:
+    case content::SecureEmbedConnector::FocusOperation::kFocusBeforePlugin:
       mojo_focus_op = mojom::FocusOperation::kFocusBeforePlugin;
       break;
-    case content::SecureEmbedDelegate::FocusOperation::kFocusAfterPlugin:
+    case content::SecureEmbedConnector::FocusOperation::kFocusAfterPlugin:
       mojo_focus_op = mojom::FocusOperation::kFocusAfterPlugin;
       break;
   }
 
   secure_embed_->RequestFocus(mojo_focus_op);
+}
+
+content::SecureEmbedConnector* SecureEmbedHost::GetConnector() {
+  return guest_contents_ ? guest_contents_->GetSecureEmbedConnector() : nullptr;
 }
 
 }  // namespace secure_embed

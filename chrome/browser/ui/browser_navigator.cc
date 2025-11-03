@@ -54,6 +54,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
+#include "content/public/browser/secure_embed_connector.h"
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/buildflags/buildflags.h"
@@ -532,8 +533,8 @@ std::unique_ptr<content::WebContents> CreateTargetContents(
   }
 
 #if BUILDFLAG(ENABLE_SECURE_EMBED)
-  create_params.secure_embed_delegate =
-      params.browser->window()->GetSecureEmbedDelegate();
+  create_params.secure_embed_embedder =
+      params.browser->window()->GetSecureEmbedEmbedder();
 #endif
 
 #if defined(USE_AURA)

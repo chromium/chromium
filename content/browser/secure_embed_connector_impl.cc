@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/guest_frame_impl.h"
+#include "content/browser/secure_embed_connector_impl.h"
 
 #include "base/notimplemented.h"
 #include "components/input/cursor_manager.h"
@@ -25,16 +25,17 @@
 // use the public APIs if there are /content implementations. It should just use
 // the implementation directly. Review all such includes below.
 #include "content/public/browser/render_frame_host.h"
-#include "content/public/browser/secure_embed_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
 
 namespace content {
 
-// Nested observer class that forwards relevant events to GuestFrameImpl.
-// This avoids function name collisions with CrossProcessFrameConnectorBase.
-class GuestFrameImpl::Observer : public WebContentsObserver {
+// Nested observer class that forwards relevant events to
+// SecureEmbedConnectorImpl. This avoids function name collisions with
+// CrossProcessFrameConnectorBase.
+class SecureEmbedConnectorImpl::Observer : public WebContentsObserver {
  public:
-  explicit Observer(GuestFrameImpl* guest_frame, WebContents* web_contents)
+  explicit Observer(SecureEmbedConnectorImpl* guest_frame,
+                    WebContents* web_contents)
       : WebContentsObserver(web_contents), guest_frame_(guest_frame) {}
 
   ~Observer() override = default;
@@ -48,20 +49,15 @@ class GuestFrameImpl::Observer : public WebContentsObserver {
   }
 
  private:
-  raw_ptr<GuestFrameImpl> guest_frame_;
+  raw_ptr<SecureEmbedConnectorImpl> guest_frame_;
 };
 
-// static
-std::unique_ptr<GuestFrame> GuestFrame::Create(WebContents* guest_web_contents,
-                                               GuestFrame::Delegate* delegate) {
-  return std::make_unique<GuestFrameImpl>(guest_web_contents, delegate);
-}
-
-GuestFrameImpl::GuestFrameImpl(WebContents* guest_web_contents,
-                               GuestFrame::Delegate* delegate)
-    : delegate_(delegate),
-      guest_web_contents_(guest_web_contents->GetWeakPtr()) {
-  observer_ = std::make_unique<Observer>(this, guest_web_contents);
+SecureEmbedConnectorImpl::SecureEmbedConnectorImpl(
+    WebContentsImpl* embedder_web_contents,
+    WebContentsImpl* embedded_web_contents)
+    : embedder_web_contents_(embedder_web_contents->GetWeakPtr()),
+      guest_web_contents_(embedded_web_contents) {
+  observer_ = std::make_unique<Observer>(this, embedded_web_contents);
 
   // TODO(secure-embed): There may not be a view yet, depending on if the
   // WebContents has been shown or navigated. That means calling GetScreenInfos
@@ -79,12 +75,32 @@ GuestFrameImpl::GuestFrameImpl(WebContents* guest_web_contents,
   UpdateViewForCurrentRenderFrameHost();
 }
 
-GuestFrameImpl::~GuestFrameImpl() {
+SecureEmbedConnectorImpl::~SecureEmbedConnectorImpl() {
   // Notify the view of this object being destroyed, if the view still exists.
   SetView(nullptr, /*allow_paint_holding=*/false);
 }
 
-void GuestFrameImpl::ForwardKeyboardEvent(
+WebContents* SecureEmbedConnectorImpl::GetEmbedderWebContents() {
+  return embedder_web_contents_.get();
+}
+
+void SecureEmbedConnectorImpl::FocusInEmbedder(FocusOperation focus_op) {
+  if (delegate_) {
+    delegate_->FocusInEmbedder(focus_op);
+  }
+}
+
+void SecureEmbedConnectorImpl::SetDelegate(
+    SecureEmbedConnector::Delegate* delegate) {
+  CHECK(!(delegate && delegate_));
+  delegate_ = delegate;
+}
+
+SecureEmbedConnector::Delegate* SecureEmbedConnectorImpl::GetDelegate() {
+  return delegate_;
+}
+
+void SecureEmbedConnectorImpl::ForwardKeyboardEvent(
     const blink::WebKeyboardEvent& keyboard_event) {
   input::NativeWebKeyboardEvent native_event(
       keyboard_event, GetParentRenderWidgetHostView()->GetNativeView());
@@ -104,8 +120,8 @@ void GuestFrameImpl::ForwardKeyboardEvent(
   target_host->ForwardKeyboardEvent(native_event);
 }
 
-void GuestFrameImpl::SetFocus(bool focused,
-                              blink::mojom::FocusType focus_type) {
+void SecureEmbedConnectorImpl::SetFocus(bool focused,
+                                        blink::mojom::FocusType focus_type) {
   if (!guest_web_contents_) {
     return;
   }
@@ -119,12 +135,12 @@ void GuestFrameImpl::SetFocus(bool focused,
   }
 }
 
-const viz::FrameSinkId& GuestFrameImpl::GetFrameSinkId() const {
+const viz::FrameSinkId& SecureEmbedConnectorImpl::GetFrameSinkId() const {
   return frame_sink_id_;
 }
 
-void GuestFrameImpl::SetView(RenderWidgetHostViewChildFrame* view,
-                             bool allow_paint_holding) {
+void SecureEmbedConnectorImpl::SetView(RenderWidgetHostViewChildFrame* view,
+                                       bool allow_paint_holding) {
   // Detach ourselves from the previous |view_|.
   if (view_) {
     RenderWidgetHostViewBase* root_view = GetRootRenderWidgetHostView();
@@ -163,41 +179,43 @@ void GuestFrameImpl::SetView(RenderWidgetHostViewChildFrame* view,
     }
 
     frame_sink_id_ = view_->GetFrameSinkId();
-    delegate_->SetFrameSinkId(frame_sink_id_);
+    if (delegate_) {
+      delegate_->SetFrameSinkId(frame_sink_id_);
+    }
   }
 }
 
-RenderWidgetHostViewBase* GuestFrameImpl::GetParentRenderWidgetHostView() {
-  if (!guest_web_contents_) {
+RenderWidgetHostViewBase*
+SecureEmbedConnectorImpl::GetParentRenderWidgetHostView() {
+  if (!embedder_web_contents_) {
     return nullptr;
   }
   return static_cast<RenderWidgetHostViewBase*>(
-      guest_web_contents_->GetSecureEmbedDelegate()
-          ->GetEmbedderWebContents()
-          ->GetRenderWidgetHostView());
+      embedder_web_contents_->GetRenderWidgetHostView());
 }
 
-RenderWidgetHostViewBase* GuestFrameImpl::GetRootRenderWidgetHostView() {
+RenderWidgetHostViewBase*
+SecureEmbedConnectorImpl::GetRootRenderWidgetHostView() {
   // TODO(secure-embed): Do we support multiple levels of embedding?
   // Mixed kinds?
   return GetParentRenderWidgetHostView();
 }
 
-void GuestFrameImpl::RenderProcessGone() {
+void SecureEmbedConnectorImpl::RenderProcessGone() {
   NOTIMPLEMENTED();
 }
 
-void GuestFrameImpl::FirstSurfaceActivation(
+void SecureEmbedConnectorImpl::FirstSurfaceActivation(
     const viz::SurfaceInfo& surface_info) {
   NOTIMPLEMENTED();
 }
 
-void GuestFrameImpl::SendIntrinsicSizingInfoToParent(
+void SecureEmbedConnectorImpl::SendIntrinsicSizingInfoToParent(
     blink::mojom::IntrinsicSizingInfoPtr) {
   NOTIMPLEMENTED();
 }
 
-void GuestFrameImpl::SynchronizeVisualProperties(
+void SecureEmbedConnectorImpl::SynchronizeVisualProperties(
     const blink::FrameVisualProperties& visual_properties,
     bool propagate) {
   last_received_zoom_level_ = visual_properties.zoom_level;
@@ -237,7 +255,7 @@ void GuestFrameImpl::SynchronizeVisualProperties(
   render_widget_host->UpdateVisualProperties(propagate);
 }
 
-void GuestFrameImpl::UpdateCursor(const ui::Cursor& cursor) {
+void SecureEmbedConnectorImpl::UpdateCursor(const ui::Cursor& cursor) {
   RenderWidgetHostViewBase* root_view = GetRootRenderWidgetHostView();
   // UpdateCursor messages are ignored if the root view does not support
   // cursors.
@@ -246,103 +264,105 @@ void GuestFrameImpl::UpdateCursor(const ui::Cursor& cursor) {
   }
 }
 
-CrossProcessFrameConnectorBase::RootViewFocusState GuestFrameImpl::HasFocus() {
+CrossProcessFrameConnectorBase::RootViewFocusState
+SecureEmbedConnectorImpl::HasFocus() {
   NOTIMPLEMENTED();
   return CrossProcessFrameConnectorBase::RootViewFocusState::kNullView;
 }
 
-void GuestFrameImpl::FocusRootView() {
+void SecureEmbedConnectorImpl::FocusRootView() {
   NOTIMPLEMENTED();
 }
 
-blink::mojom::PointerLockResult GuestFrameImpl::LockPointer(
+blink::mojom::PointerLockResult SecureEmbedConnectorImpl::LockPointer(
     bool request_unadjusted_movement) {
   NOTIMPLEMENTED();
   return blink::mojom::PointerLockResult::kUnknownError;
 }
 
-blink::mojom::PointerLockResult GuestFrameImpl::ChangePointerLock(
+blink::mojom::PointerLockResult SecureEmbedConnectorImpl::ChangePointerLock(
     bool request_unadjusted_movement) {
   NOTIMPLEMENTED();
   return blink::mojom::PointerLockResult::kUnknownError;
 }
 
-void GuestFrameImpl::UnlockPointer() {
+void SecureEmbedConnectorImpl::UnlockPointer() {
   NOTIMPLEMENTED();
 }
 
-bool GuestFrameImpl::HasSize() const {
+bool SecureEmbedConnectorImpl::HasSize() const {
   return has_size_;
 }
 
-const display::ScreenInfos& GuestFrameImpl::GetScreenInfos() const {
+const display::ScreenInfos& SecureEmbedConnectorImpl::GetScreenInfos() const {
   return screen_infos_;
 }
 
-const viz::LocalSurfaceId& GuestFrameImpl::GetLocalSurfaceId() const {
+const viz::LocalSurfaceId& SecureEmbedConnectorImpl::GetLocalSurfaceId() const {
   return local_surface_id_;
 }
 
 const blink::mojom::ViewportIntersectionState&
-GuestFrameImpl::GetIntersectionState() const {
+SecureEmbedConnectorImpl::GetIntersectionState() const {
   return intersection_state_;
 }
 
-uint32_t GuestFrameImpl::GetCaptureSequenceNumber() const {
+uint32_t SecureEmbedConnectorImpl::GetCaptureSequenceNumber() const {
   NOTIMPLEMENTED();
   return 0;
 }
 
-const gfx::Rect& GuestFrameImpl::GetRectInParentViewInDip() const {
+const gfx::Rect& SecureEmbedConnectorImpl::GetRectInParentViewInDip() const {
   return rect_in_parent_view_in_dip_;
 }
 
-const gfx::Size& GuestFrameImpl::GetLocalFrameSizeInDip() const {
+const gfx::Size& SecureEmbedConnectorImpl::GetLocalFrameSizeInDip() const {
   return local_frame_size_in_dip_;
 }
 
-const gfx::Size& GuestFrameImpl::GetLocalFrameSizeInPixels() const {
+const gfx::Size& SecureEmbedConnectorImpl::GetLocalFrameSizeInPixels() const {
   return local_frame_size_in_pixels_;
 }
 
-double GuestFrameImpl::GetCssZoomFactor() const {
+double SecureEmbedConnectorImpl::GetCssZoomFactor() const {
   return last_received_css_zoom_factor_;
 }
 
-void GuestFrameImpl::EnableAutoResize(const gfx::Size& min_size,
-                                      const gfx::Size& max_size) {
+void SecureEmbedConnectorImpl::EnableAutoResize(const gfx::Size& min_size,
+                                                const gfx::Size& max_size) {
   NOTIMPLEMENTED();
 }
 
-void GuestFrameImpl::DisableAutoResize() {
+void SecureEmbedConnectorImpl::DisableAutoResize() {
   NOTIMPLEMENTED();
 }
 
-bool GuestFrameImpl::IsInert() const {
+bool SecureEmbedConnectorImpl::IsInert() const {
   return is_inert_;
 }
 
-cc::TouchAction GuestFrameImpl::InheritedEffectiveTouchAction() const {
+cc::TouchAction SecureEmbedConnectorImpl::InheritedEffectiveTouchAction()
+    const {
   return inherited_effective_touch_action_;
 }
 
-bool GuestFrameImpl::IsHidden() const {
+bool SecureEmbedConnectorImpl::IsHidden() const {
   return visibility_ == blink::mojom::FrameVisibility::kNotRendered;
 }
 
-bool GuestFrameImpl::IsThrottled() const {
+bool SecureEmbedConnectorImpl::IsThrottled() const {
   return is_throttled_;
 }
 
-bool GuestFrameImpl::IsSubtreeThrottled() const {
+bool SecureEmbedConnectorImpl::IsSubtreeThrottled() const {
   return subtree_throttled_;
 }
 
-bool GuestFrameImpl::IsDisplayLocked() const {
+bool SecureEmbedConnectorImpl::IsDisplayLocked() const {
   return display_locked_;
 }
 
-void GuestFrameImpl::DidUpdateVisualProperties(
+void SecureEmbedConnectorImpl::DidUpdateVisualProperties(
     const cc::RenderFrameMetadata& metadata) {
   NOTIMPLEMENTED();
   // TODO(secure-embed): Need to pass the visual properties update to the
@@ -351,11 +371,12 @@ void GuestFrameImpl::DidUpdateVisualProperties(
   // frame_proxy_in_parent_renderer_->DidUpdateVisualProperties(metadata);
 }
 
-void GuestFrameImpl::SetVisibilityForChildViews(bool visible) const {
+void SecureEmbedConnectorImpl::SetVisibilityForChildViews(bool visible) const {
   current_child_frame_host()->SetVisibilityForChildViews(visible);
 }
 
-void GuestFrameImpl::SetLocalFrameSize(const gfx::Size& local_frame_size) {
+void SecureEmbedConnectorImpl::SetLocalFrameSize(
+    const gfx::Size& local_frame_size) {
   has_size_ = true;
   const float dsf = screen_infos_.current().device_scale_factor;
   local_frame_size_in_pixels_ = local_frame_size;
@@ -363,7 +384,8 @@ void GuestFrameImpl::SetLocalFrameSize(const gfx::Size& local_frame_size) {
       gfx::ScaleToRoundedSize(local_frame_size, 1.f / dsf);
 }
 
-void GuestFrameImpl::SetRectInParentView(const gfx::Rect& rect_in_parent_view) {
+void SecureEmbedConnectorImpl::SetRectInParentView(
+    const gfx::Rect& rect_in_parent_view) {
   const float dsf = screen_infos_.current().device_scale_factor;
   rect_in_parent_view_in_dip_ = gfx::Rect(
       gfx::ScaleToFlooredPoint(rect_in_parent_view.origin(), 1.f / dsf),
@@ -396,7 +418,7 @@ void GuestFrameImpl::SetRectInParentView(const gfx::Rect& rect_in_parent_view) {
   }
 }
 
-void GuestFrameImpl::SetIsInert(bool inert) {
+void SecureEmbedConnectorImpl::SetIsInert(bool inert) {
   // TODO(secure-embed): Do we want to support inert and other throttling states
   // across embedder/guest boundaries?
   is_inert_ = inert;
@@ -405,7 +427,7 @@ void GuestFrameImpl::SetIsInert(bool inert) {
   }
 }
 
-void GuestFrameImpl::OnSetInheritedEffectiveTouchAction(
+void SecureEmbedConnectorImpl::OnSetInheritedEffectiveTouchAction(
     cc::TouchAction touch_action) {
   // TODO(secure-embed): Do we want to support inheriting touch actions?
   inherited_effective_touch_action_ = touch_action;
@@ -414,7 +436,7 @@ void GuestFrameImpl::OnSetInheritedEffectiveTouchAction(
   }
 }
 
-void GuestFrameImpl::OnVisibilityChanged(
+void SecureEmbedConnectorImpl::OnVisibilityChanged(
     blink::mojom::FrameVisibility visibility) {
   bool visible = visibility != blink::mojom::FrameVisibility::kNotRendered;
   visibility_ = visibility;
@@ -446,9 +468,10 @@ void GuestFrameImpl::OnVisibilityChanged(
   }
 }
 
-void GuestFrameImpl::UpdateRenderThrottlingStatus(bool is_throttled,
-                                                  bool subtree_throttled,
-                                                  bool display_locked) {
+void SecureEmbedConnectorImpl::UpdateRenderThrottlingStatus(
+    bool is_throttled,
+    bool subtree_throttled,
+    bool display_locked) {
   if (is_throttled != is_throttled_ ||
       subtree_throttled != subtree_throttled_ ||
       display_locked != display_locked_) {
@@ -461,7 +484,7 @@ void GuestFrameImpl::UpdateRenderThrottlingStatus(bool is_throttled,
   }
 }
 
-void GuestFrameImpl::UpdateViewportIntersection(
+void SecureEmbedConnectorImpl::UpdateViewportIntersection(
     const blink::mojom::ViewportIntersectionState& intersection_state,
     const std::optional<blink::FrameVisualProperties>& visual_properties) {
   // TODO(secure-embed): Implementation was copied from CPFC but need to dig
@@ -493,7 +516,7 @@ void GuestFrameImpl::UpdateViewportIntersection(
   }
 }
 
-bool GuestFrameImpl::IsVisible() {
+bool SecureEmbedConnectorImpl::IsVisible() {
   if (visibility_ == blink::mojom::FrameVisibility::kNotRendered ||
       GetIntersectionState().viewport_intersection.IsEmpty()) {
     return false;
@@ -506,8 +529,8 @@ bool GuestFrameImpl::IsVisible() {
   return true;
 }
 
-Visibility GuestFrameImpl::EmbedderVisibility() {
-  if (!guest_web_contents_) {
+Visibility SecureEmbedConnectorImpl::EmbedderVisibility() {
+  if (!embedder_web_contents_) {
     return Visibility::HIDDEN;
   }
 
@@ -516,14 +539,12 @@ Visibility GuestFrameImpl::EmbedderVisibility() {
   // SecureEmbedDelegate for this or ensure that visibility state is pushed to
   // the GuestFrame when it changes.
   NOTIMPLEMENTED();
-  return guest_web_contents_->GetSecureEmbedDelegate()
-      ->GetEmbedderWebContents()
-      ->GetVisibility();
+  return embedder_web_contents_->GetVisibility();
 }
 
-void GuestFrameImpl::OnSynchronizeVisualProperties(
+void SecureEmbedConnectorImpl::OnSynchronizeVisualProperties(
     const blink::FrameVisualProperties& visual_properties) {
-  if (!guest_web_contents_) {
+  if (!embedder_web_contents_) {
     return;
   }
 
@@ -537,10 +558,7 @@ void GuestFrameImpl::OnSynchronizeVisualProperties(
        last_received_css_zoom_factor_ != visual_properties.css_zoom_factor) &&
       local_surface_id_ == visual_properties.local_surface_id) {
     bad_message::ReceivedBadMessage(
-        guest_web_contents_->GetSecureEmbedDelegate()
-            ->GetEmbedderWebContents()
-            ->GetPrimaryMainFrame()
-            ->GetProcess(),
+        embedder_web_contents_->GetPrimaryMainFrame()->GetProcess(),
         bad_message::CPFC_RESIZE_PARAMS_CHANGED_LOCAL_SURFACE_ID_UNCHANGED);
     return;
   }
@@ -548,27 +566,29 @@ void GuestFrameImpl::OnSynchronizeVisualProperties(
   SynchronizeVisualProperties(visual_properties);
 }
 
-input::RenderWidgetHostViewInput* GuestFrameImpl::GetParentViewInput() {
+input::RenderWidgetHostViewInput*
+SecureEmbedConnectorImpl::GetParentViewInput() {
   return GetParentRenderWidgetHostView();
 }
 
-input::RenderWidgetHostViewInput* GuestFrameImpl::GetRootViewInput() {
+input::RenderWidgetHostViewInput* SecureEmbedConnectorImpl::GetRootViewInput() {
   return GetRootRenderWidgetHostView();
 }
 
-void GuestFrameImpl::OnRenderViewReady() {
+void SecureEmbedConnectorImpl::OnRenderViewReady() {
   // When the RenderView is ready, update the view in case it has changed.
   UpdateViewForCurrentRenderFrameHost();
 }
 
-void GuestFrameImpl::OnRenderFrameHostChanged(RenderFrameHost* old_host,
-                                              RenderFrameHost* new_host) {
+void SecureEmbedConnectorImpl::OnRenderFrameHostChanged(
+    RenderFrameHost* old_host,
+    RenderFrameHost* new_host) {
   // When the RenderFrameHost changes, we need to update the view to track
   // the new RenderWidgetHostView associated with the new RenderFrameHost.
   UpdateViewForCurrentRenderFrameHost();
 }
 
-void GuestFrameImpl::UpdateViewForCurrentRenderFrameHost() {
+void SecureEmbedConnectorImpl::UpdateViewForCurrentRenderFrameHost() {
   CHECK(guest_web_contents_);  // Should not get here w/o WebContents.
 
   // Get the current RenderWidgetHostView for the guest WebContents.
@@ -591,17 +611,17 @@ void GuestFrameImpl::UpdateViewForCurrentRenderFrameHost() {
   }
 }
 
-void GuestFrameImpl::ResetRectInParentView() {
+void SecureEmbedConnectorImpl::ResetRectInParentView() {
   local_surface_id_ = viz::LocalSurfaceId();
   rect_in_parent_view_in_dip_ = gfx::Rect();
   last_received_local_frame_size_ = gfx::Size();
 }
 
-void GuestFrameImpl::DelegateWasShown() {
+void SecureEmbedConnectorImpl::DelegateWasShown() {
   NOTIMPLEMENTED();
 }
 
-void GuestFrameImpl::UpdateViewportIntersectionInternal(
+void SecureEmbedConnectorImpl::UpdateViewportIntersectionInternal(
     const blink::mojom::ViewportIntersectionState& intersection_state,
     bool include_visual_properties) {
   intersection_state_ = intersection_state;
@@ -623,11 +643,12 @@ void GuestFrameImpl::UpdateViewportIntersectionInternal(
   }
 }
 
-RenderFrameHostImpl* GuestFrameImpl::current_child_frame_host() const {
-  if (!guest_web_contents_) {
+RenderFrameHostImpl* SecureEmbedConnectorImpl::current_child_frame_host()
+    const {
+  if (!embedder_web_contents_) {
     return nullptr;
   }
-  return static_cast<WebContentsImpl*>(guest_web_contents_.get())
+  return static_cast<WebContentsImpl*>(embedder_web_contents_.get())
       ->GetPrimaryMainFrame();
 }
 

@@ -124,6 +124,7 @@
 #include "content/browser/renderer_host/visible_time_request_trigger.h"
 #include "content/browser/screen_details/screen_change_monitor.h"
 #include "content/browser/screen_orientation/screen_orientation_provider.h"
+#include "content/browser/secure_embed_connector_impl.h"
 #include "content/browser/shared_storage/shared_storage_budget_charger.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/browser/tpcd_heuristics/opener_heuristic_tab_helper.h"
@@ -164,7 +165,6 @@
 #include "content/public/browser/render_widget_host_observer.h"
 #include "content/public/browser/restore_type.h"
 #include "content/public/browser/scoped_accessibility_mode.h"
-#include "content/public/browser/secure_embed_delegate.h"
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/ssl_status.h"
 #include "content/public/browser/storage_partition.h"
@@ -1815,8 +1815,8 @@ void WebContentsImpl::SetDelegate(WebContentsDelegate* delegate) {
   }
 }
 
-SecureEmbedDelegate* WebContentsImpl::GetSecureEmbedDelegate() {
-  return secure_embed_delegate_;
+SecureEmbedConnector* WebContentsImpl::GetSecureEmbedConnector() {
+  return secure_embed_connector_.get();
 }
 
 const RenderFrameHostImpl* WebContentsImpl::GetPrimaryMainFrame() const {
@@ -4189,11 +4189,13 @@ void WebContentsImpl::Init(const WebContents::CreateParams& params,
   std::unique_ptr<WebContentsViewDelegate> delegate =
       GetContentClient()->browser()->GetWebContentsViewDelegate(this);
 
-  if (params.secure_embed_delegate) {
-    secure_embed_delegate_ = params.secure_embed_delegate;
+  if (params.secure_embed_embedder) {
+    secure_embed_connector_ = std::make_unique<SecureEmbedConnectorImpl>(
+        static_cast<WebContentsImpl*>(params.secure_embed_embedder.get()),
+        this);
   }
 
-  if (browser_plugin_guest_ || secure_embed_delegate_) {
+  if (browser_plugin_guest_ || secure_embed_connector_) {
     view_ = std::make_unique<WebContentsViewChildFrame>(
         this, std::move(delegate), &render_view_host_delegate_view_);
   } else {
@@ -4554,9 +4556,9 @@ WebContentsImpl::GetInputEventRouter() {
       return GetOuterWebContents()->GetInputEventRouter();
     }
 
-    if (secure_embed_delegate_) {
+    if (secure_embed_connector_) {
       return static_cast<WebContentsImpl*>(
-                 secure_embed_delegate_->GetEmbedderWebContents())
+                 secure_embed_connector_->GetEmbedderWebContents())
           ->GetInputEventRouter();
     }
 
@@ -10219,9 +10221,9 @@ void WebContentsImpl::FocusOwningWebContents(
   RenderWidgetHostImpl* focused_widget =
       GetFocusedRenderWidgetHost(main_frame_widget_host);
 
-  if (secure_embed_delegate_) {
-    secure_embed_delegate_->FocusInEmbedder(
-        this, SecureEmbedDelegate::FocusOperation::kFocusPlugin);
+  if (secure_embed_connector_) {
+    secure_embed_connector_->FocusInEmbedder(
+        SecureEmbedConnector::FocusOperation::kFocusPlugin);
   }
 
   if (focused_widget != render_widget_host &&

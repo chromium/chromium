@@ -10,8 +10,8 @@
 #include "build/build_config.h"
 #include "content/browser/renderer_host/render_frame_proxy_host.h"
 #include "content/browser/renderer_host/render_widget_host_view_child_frame.h"
+#include "content/browser/secure_embed_connector_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
-#include "content/public/browser/secure_embed_delegate.h"
 #include "content/public/browser/web_contents_view_delegate.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
@@ -53,9 +53,10 @@ WebContentsImpl* WebContentsViewChildFrame::GetHostingWebContents() {
   if (auto* outer_web_contents = web_contents_->GetOuterWebContents()) {
     return outer_web_contents;
   }
-  if (auto* secure_embed_delegate = web_contents_->GetSecureEmbedDelegate()) {
+  if (auto* secure_embed_connector = web_contents_->GetSecureEmbedConnector()) {
     return static_cast<WebContentsImpl*>(
-        secure_embed_delegate->GetEmbedderWebContents());
+        static_cast<SecureEmbedConnectorImpl*>(secure_embed_connector)
+            ->GetEmbedderWebContents());
   }
   return nullptr;
 }
@@ -228,13 +229,12 @@ void WebContentsViewChildFrame::GotFocus(
 }
 
 void WebContentsViewChildFrame::TakeFocus(bool reverse) {
-  if (SecureEmbedDelegate* secure_embed_delegate =
-          web_contents_->GetSecureEmbedDelegate();
-      secure_embed_delegate) {
-    secure_embed_delegate->FocusInEmbedder(
-        web_contents_,
-        reverse ? SecureEmbedDelegate::FocusOperation::kFocusBeforePlugin
-                : SecureEmbedDelegate::FocusOperation::kFocusAfterPlugin);
+  if (SecureEmbedConnector* secure_embed_connector =
+          web_contents_->GetSecureEmbedConnector()) {
+    static_cast<SecureEmbedConnectorImpl*>(secure_embed_connector)
+        ->FocusInEmbedder(
+            reverse ? SecureEmbedConnector::FocusOperation::kFocusBeforePlugin
+                    : SecureEmbedConnector::FocusOperation::kFocusAfterPlugin);
   } else {
     // This is handled in RenderFrameHostImpl::TakeFocus we shouldn't
     // end up here.

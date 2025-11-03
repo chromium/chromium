@@ -6,7 +6,6 @@
 
 #include "components/guest_contents/browser/guest_contents_handle.h"
 #include "components/guest_contents/browser/guest_contents_host_impl.h"
-#include "components/secure_embed/browser/secure_embed_host.h"
 #include "components/secure_embed/buildflags/buildflags.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_process_host.h"
@@ -49,7 +48,7 @@ Browser::Browser(content::WebUI* web_ui)
   html_source->SetDefaultResource(IDR_WEBUI_EXAMPLES_BROWSER_INDEX_HTML);
 
   content::WebContents::CreateParams params(browser_context);
-  params.secure_embed_delegate = this;
+  params.secure_embed_embedder = web_ui->GetWebContents();
   guest_contents_ = content::WebContents::Create(params);
 
   guest_contents::GuestContentsHandle::CreateForWebContents(
@@ -75,19 +74,6 @@ void Browser::BindInterface(
     mojo::PendingReceiver<guest_contents::mojom::GuestContentsHost> receiver) {
   guest_contents::GuestContentsHostImpl::Create(web_ui()->GetWebContents(),
                                                 std::move(receiver));
-}
-
-content::WebContents* Browser::GetEmbedderWebContents() {
-  return web_ui()->GetWebContents();
-}
-
-void Browser::FocusInEmbedder(
-    content::WebContents* embedded,
-    content::SecureEmbedDelegate::FocusOperation focus_op) {
-  auto* secure_embed_host = secure_embed::SecureEmbedHost::GetFrom(embedded);
-  if (secure_embed_host) {
-    secure_embed_host->RequestFocus(focus_op);
-  }
 }
 
 void Browser::CreatePageHandler(

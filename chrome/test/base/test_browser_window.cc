@@ -397,7 +397,7 @@ void TestBrowserWindow::SetIsTabModalPopupDeprecated(
   is_tab_modal_popup_deprecated_ = is_tab_modal_popup_deprecated;
 }
 
-content::SecureEmbedDelegate* TestBrowserWindow::GetSecureEmbedDelegate() {
+content::WebContents* TestBrowserWindow::GetSecureEmbedEmbedder() {
   return nullptr;
 }
 

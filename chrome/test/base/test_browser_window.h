@@ -265,7 +265,7 @@ class TestBrowserWindow : public BrowserWindow, public BrowserListObserver {
   void SetIsTabModalPopupDeprecated(
       bool is_tab_modal_popup_deprecated) override;
 
-  content::SecureEmbedDelegate* GetSecureEmbedDelegate() override;
+  content::WebContents* GetSecureEmbedEmbedder() override;
 
   void set_workspace(std::string workspace) { workspace_ = workspace; }
   void set_visible_on_all_workspaces(bool visible_on_all_workspaces) {

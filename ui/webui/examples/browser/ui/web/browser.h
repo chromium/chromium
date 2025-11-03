@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "components/guest_contents/common/guest_contents.mojom.h"
-#include "content/public/browser/secure_embed_delegate.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -20,7 +19,6 @@ namespace webui_examples {
 class BrowserPageHandler;
 
 class Browser : public ui::MojoWebUIController,
-                public content::SecureEmbedDelegate,
                 public webui_examples::mojom::PageHandlerFactory {
  public:
   static constexpr char kHost[] = "browser";
@@ -37,12 +35,6 @@ class Browser : public ui::MojoWebUIController,
       mojo::PendingReceiver<guest_contents::mojom::GuestContentsHost> receiver);
 
   content::WebContents* guest_contents() { return guest_contents_.get(); }
-
-  // SecureEmbedDelegate:
-  content::WebContents* GetEmbedderWebContents() override;
-  void FocusInEmbedder(
-      content::WebContents* embedded,
-      content::SecureEmbedDelegate::FocusOperation focus_op) override;
 
  private:
   // webui_examples::mojom::PageHandlerFactory:

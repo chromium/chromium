@@ -8,8 +8,7 @@
 #include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
 #include "components/secure_embed/common/secure_embed.mojom.h"
-#include "content/public/browser/guest_frame.h"
-#include "content/public/browser/secure_embed_delegate.h"
+#include "content/public/browser/secure_embed_connector.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"
@@ -25,7 +24,7 @@ namespace secure_embed {
 
 class COMPONENT_EXPORT(SECURE_EMBED) SecureEmbedHost
     : public mojom::SecureEmbedHost,
-      public content::GuestFrame::Delegate {
+      public content::SecureEmbedConnector::Delegate {
  public:
   ~SecureEmbedHost() override;
 
@@ -52,29 +51,24 @@ class COMPONENT_EXPORT(SECURE_EMBED) SecureEmbedHost
       std::unique_ptr<blink::WebCoalescedInputEvent> key_event) override;
   void SetFocus(bool focused, blink::mojom::FocusType focus_type) override;
 
-  // content::GuestFrame::Delegate implementation:
+  // content::SecureEmbedConnector::Delegate implementation:
   void SetFrameSinkId(const viz::FrameSinkId& frame_sink_id) override;
-
-  // Requests that the <embed> element hosting the plugin, or elements
-  // before or after it in tab focus order (based on `focus_op`) be focused
-  // (which will in turn cause the embedded page to receive or lose page focus).
-  //
-  // This should be called by implementations of
-  // `SecureEmbedDelegate::FocusInEmbedder()`, in order to help give
-  // focus to embedded page in response to mouse clicks, and to help
-  // transfer focus out of it to the embedder based on tab or shift-tab.
-  void RequestFocus(content::SecureEmbedDelegate::FocusOperation focus_op);
+  void FocusInEmbedder(
+      content::SecureEmbedConnector::FocusOperation focus_op) override;
 
  private:
   explicit SecureEmbedHost(content::RenderFrameHost*);
 
   void OnSecureEmbedDisconnected();
 
+  // May return null.
+  content::SecureEmbedConnector* GetConnector();
+
   // Count of all alive instances for testing.
   static size_t instance_count_for_testing_;
 
+  raw_ptr<content::RenderFrameHost> render_frame_host_ = nullptr;
   base::WeakPtr<content::WebContents> guest_contents_ = nullptr;
-  std::unique_ptr<content::GuestFrame> guest_frame_;
   bool know_have_focus_ = false;
 
   mojo::AssociatedRemote<mojom::SecureEmbed> secure_embed_;

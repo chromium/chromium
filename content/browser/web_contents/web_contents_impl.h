@@ -156,7 +156,8 @@ class SavePackage;
 class ScopedAccessibilityMode;
 class ScreenChangeMonitor;
 class ScreenOrientationProvider;
-class SecureEmbedDelegate;
+class SecureEmbedConnector;
+class SecureEmbedConnectorImpl;
 class SiteInstanceGroup;
 // For web_contents_impl_browsertest.cc
 class TestWCDelegateForDialogsAndFullscreen;
@@ -386,7 +387,7 @@ class CONTENT_EXPORT WebContentsImpl
   // WebContents ------------------------------------------------------
   WebContentsDelegate* GetDelegate() final;
   void SetDelegate(WebContentsDelegate* delegate) override;
-  SecureEmbedDelegate* GetSecureEmbedDelegate() override;
+  SecureEmbedConnector* GetSecureEmbedConnector() override;
 
   NavigationControllerImpl& GetController() override;
   const NavigationControllerImpl& GetController() const override;
@@ -2285,7 +2286,7 @@ class CONTENT_EXPORT WebContentsImpl
   std::unique_ptr<BrowserPluginGuest> browser_plugin_guest_;
 
   // Helps manage being embeded with SecureEmbed.
-  raw_ptr<SecureEmbedDelegate> secure_embed_delegate_;
+  std::unique_ptr<SecureEmbedConnectorImpl> secure_embed_connector_;
 
   // Helper classes ------------------------------------------------------------
 

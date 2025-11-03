@@ -58,7 +58,6 @@ class AutofillBubbleHandler;
 }  // namespace autofill
 
 namespace content {
-class SecureEmbedDelegate;
 class WebContents;
 struct NativeWebKeyboardEvent;
 enum class KeyboardEventProcessingResult;
@@ -660,9 +659,8 @@ class BrowserWindow : public ui::BaseWindow {
 
   // If the browser window is going to use the secure embed functionality
   // to embed user content inside an HTML-based UI, it should return the
-  // appropriate delegate to help the embedding here. It will be set on
-  // the WebContents for user content.
-  virtual content::SecureEmbedDelegate* GetSecureEmbedDelegate() = 0;
+  // hosting WebContents here. Otherwise, it should return nullptr.
+  virtual content::WebContents* GetSecureEmbedEmbedder() = 0;
 
  protected:
   friend struct BrowserWindowDeleter;

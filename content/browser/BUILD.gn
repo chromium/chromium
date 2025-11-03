@@ -1179,8 +1179,6 @@ source_set("browser") {
     "gpu/gpu_process_host_receiver_bindings.cc",
     "gpu/peak_gpu_memory_tracker_impl.cc",
     "gpu/peak_gpu_memory_tracker_impl.h",
-    "guest_frame_impl.cc",
-    "guest_frame_impl.h",
     "guest_page_holder_impl.cc",
     "guest_page_holder_impl.h",
     "handwriting/handwriting_recognition_service_factory.cc",
@@ -1391,6 +1389,8 @@ source_set("browser") {
     "media/capture/desktop_streams_registry_impl.cc",
     "media/capture/desktop_streams_registry_impl.h",
     "permissions/permission_descriptor_util.cc",
+    "secure_embed_connector_impl.cc",
+    "secure_embed_connector_impl.h",
 
     # TODO(crbug.com/202736352): This is built even if enable_screen_capture is
     # false. Consider better separation of the screen capture and the other

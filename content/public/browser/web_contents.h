@@ -132,7 +132,7 @@ class RenderViewHost;
 class RenderWidgetHost;
 class RenderWidgetHostView;
 class ScreenOrientationDelegate;
-class SecureEmbedDelegate;
+class SecureEmbedConnector;
 class SiteInstance;
 class UnownedInnerWebContentsClient;
 class WebContentsDelegate;
@@ -233,13 +233,9 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
     // If non-null then this WebContents will be hosted by a BrowserPlugin.
     raw_ptr<BrowserPluginGuestDelegate> guest_delegate = nullptr;
 
-    // If non-null then this WebContents will be configured to be hosted
-    // by a different one via the Secure Embed mechanism. The delegate
-    // must outlive this WebContents.
-    // TODO(secure-embed): There needs to be a way of updating this for when
-    // tabs are moved between windows (including potentially an in-between
-    // windows detached tab state).
-    raw_ptr<SecureEmbedDelegate> secure_embed_delegate = nullptr;
+    // If non-null then this WebContents will be configured to be hosted inside
+    // `secure_embed_embedder` via the Secure Embed mechanism.
+    raw_ptr<WebContents> secure_embed_embedder = nullptr;
 
     // Used to specify the location context which display the new view should
     // belong. This can be unset if not needed.
@@ -447,7 +443,7 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
   virtual WebContentsDelegate* GetDelegate() = 0;
   virtual void SetDelegate(WebContentsDelegate* delegate) = 0;
 
-  virtual SecureEmbedDelegate* GetSecureEmbedDelegate() = 0;
+  virtual SecureEmbedConnector* GetSecureEmbedConnector() = 0;
 
   // Gets the NavigationController for primary frame tree of this WebContents.
   // See comments on NavigationController for more details.
