@@ -1943,10 +1943,17 @@ export class BrowsingContextImpl {
     );
   }
 
-  async setUserAgentOverride(userAgent: string | null) {
+  async setUserAgentAndAcceptLanguage(
+    userAgent: string | null | undefined,
+    acceptLanguage: string | null | undefined,
+  ) {
     await Promise.all(
       this.#getAllRelatedCdpTargets().map(
-        async (cdpTarget) => await cdpTarget.setUserAgent(userAgent),
+        async (cdpTarget) =>
+          await cdpTarget.setUserAgentAndAcceptLanguage(
+            userAgent,
+            acceptLanguage,
+          ),
       ),
     );
   }

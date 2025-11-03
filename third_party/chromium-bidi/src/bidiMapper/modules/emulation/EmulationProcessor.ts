@@ -138,9 +138,23 @@ export class EmulationProcessor {
     }
 
     await Promise.all(
-      browsingContexts.map(
-        async (context) => await context.setLocaleOverride(locale),
-      ),
+      browsingContexts.map(async (context) => {
+        // Actual value can be different from the one in params, e.g. in case of already
+        // existing more granular setting.
+        const config = this.#contextConfigStorage.getActiveConfig(
+          context.id,
+          context.userContext,
+        );
+
+        await Promise.all([
+          context.setLocaleOverride(config.locale ?? null),
+          // Set `AcceptLanguage` to locale.
+          context.setUserAgentAndAcceptLanguage(
+            config.userAgent,
+            config.locale,
+          ),
+        ]);
+      }),
     );
     return {};
   }
@@ -350,9 +364,18 @@ export class EmulationProcessor {
     }
 
     await Promise.all(
-      browsingContexts.map(
-        async (context) => await context.setUserAgentOverride(params.userAgent),
-      ),
+      browsingContexts.map(async (context) => {
+        // Actual value can be different from the one in params, e.g. in case of already
+        // existing more granular setting.
+        const config = this.#contextConfigStorage.getActiveConfig(
+          context.id,
+          context.userContext,
+        );
+        await context.setUserAgentAndAcceptLanguage(
+          config.userAgent,
+          config.locale,
+        );
+      }),
     );
     return {};
   }
