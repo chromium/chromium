@@ -16,7 +16,6 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 
 import java.util.Set;
@@ -38,6 +37,7 @@ public class TabArchiveSettings {
     private static final int DEFAULT_ALLOWED_IPH_SHOWS = 3;
     // The default max simultaneous archives to allow in a single pass.
     static final int DEFAULT_MAX_SIMULTANEOUS_ARCHIVES = 150;
+    static final int DEFAULT_AUTODELETE_TIME_HOURS = 90 * 24; // 90 days.
     private static boolean sIphShownThisSession;
 
     /** Sets whether the iph was shown this session. */
@@ -150,7 +150,6 @@ public class TabArchiveSettings {
     /** Returns whether auto-deletion of archived tabs is enabled. */
     public boolean isAutoDeleteEnabled() {
         return getArchiveEnabled()
-                && ChromeFeatureList.sAndroidTabDeclutterAutoDeleteKillSwitch.isEnabled()
                 && mPrefsManager.readBoolean(
                         ChromePreferenceKeys.TAB_DECLUTTER_AUTO_DELETE_ENABLED, false);
     }
@@ -179,7 +178,7 @@ public class TabArchiveSettings {
     public int getAutoDeleteTimeDeltaHours() {
         return mPrefsManager.readInt(
                 ChromePreferenceKeys.TAB_DECLUTTER_AUTO_DELETE_TIME_DELTA_HOURS,
-                ChromeFeatureList.sAndroidTabDeclutterAutoDeleteTimeDeltaHours.getValue());
+                DEFAULT_AUTODELETE_TIME_HOURS);
     }
 
     /** Similar to above, but the return value is in days. */
@@ -247,9 +246,5 @@ public class TabArchiveSettings {
         mPrefsManager.removeKey(ChromePreferenceKeys.TAB_DECLUTTER_AUTO_DELETE_TIME_DELTA_HOURS);
         mPrefsManager.removeKey(ChromePreferenceKeys.TAB_DECLUTTER_DIALOG_IPH_DISMISS_COUNT);
         mPrefsManager.removeKey(ChromePreferenceKeys.TAB_DECLUTTER_AUTO_DELETE_DECISION_MADE);
-    }
-
-    public boolean isInTestingMode() {
-        return ChromeFeatureList.sAndroidTabDeclutterAutoDeletePromoTest.getValue();
     }
 }

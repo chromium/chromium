@@ -26,9 +26,6 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabArchiveSettings;
 import org.chromium.chrome.browser.tab.TabSelectionType;
@@ -95,57 +92,36 @@ public class ArchivedTabsAutoDeletePromoManagerTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_TAB_DECLUTTER_AUTO_DELETE) // Main feature ON
     public void testConstructor_ConditionsMet_AddsObserverToReadyModel() {
         createManager(false, true, false, 1);
         verify(mMockRegularTabModel).addObserver(any(TabModelObserver.class));
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.ANDROID_TAB_DECLUTTER_AUTO_DELETE) // Main feature OFF
-    public void testConstructor_MainFeatureDisabled_NoObserverAdded() {
-        createManager(false, true, false, 1);
-        verify(mMockRegularTabModel, never()).addObserver(any(TabModelObserver.class));
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_TAB_DECLUTTER_AUTO_DELETE)
-    @DisableFeatures(ChromeFeatureList.ANDROID_TAB_DECLUTTER_AUTO_DELETE_KILL_SWITCH)
-    public void testConstructor_KillSwitchDisabled_NoObserverAdded() {
-        createManager(false, true, false, 1);
-        verify(mMockRegularTabModel, never()).addObserver(any(TabModelObserver.class));
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_TAB_DECLUTTER_AUTO_DELETE)
     public void testConstructor_DecisionAlreadyMade_NoObserverAdded() {
         createManager(true, true, false, 1);
         verify(mMockRegularTabModel, never()).addObserver(any(TabModelObserver.class));
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_TAB_DECLUTTER_AUTO_DELETE)
     public void testConstructor_ArchivingDisabled_NoObserverAdded() {
         createManager(false, false, false, 1);
         verify(mMockRegularTabModel, never()).addObserver(any(TabModelObserver.class));
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_TAB_DECLUTTER_AUTO_DELETE)
     public void testConstructor_AutoDeleteAlreadyEnabled_NoObserverAdded() {
         createManager(false, true, true, 1);
         verify(mMockRegularTabModel, never()).addObserver(any(TabModelObserver.class));
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_TAB_DECLUTTER_AUTO_DELETE)
     public void testConstructor_NoArchivedTabs_NoObserverAdded() {
         createManager(false, true, false, 0);
         verify(mMockRegularTabModel, never()).addObserver(any(TabModelObserver.class));
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_TAB_DECLUTTER_AUTO_DELETE) // Main feature ON
     public void testOnNtpSelected_AllConditionsMet_ShowsPromo() {
         createManager(false, true, false, 1);
         verify(mMockRegularTabModel).addObserver(mTabModelObserverCaptor.capture());
@@ -160,7 +136,6 @@ public class ArchivedTabsAutoDeletePromoManagerTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_TAB_DECLUTTER_AUTO_DELETE)
     public void testOnNtpSelected_DecisionMadeElseWhere_NoPromo() {
         createManager(false, true, false, 1);
         verify(mMockRegularTabModel).addObserver(mTabModelObserverCaptor.capture());
@@ -174,7 +149,6 @@ public class ArchivedTabsAutoDeletePromoManagerTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_TAB_DECLUTTER_AUTO_DELETE)
     public void testOnNtpSelected_ArchivingDisabled_NoPromo() {
         createManager(false, true, false, 1);
         verify(mMockRegularTabModel).addObserver(mTabModelObserverCaptor.capture());
@@ -188,7 +162,6 @@ public class ArchivedTabsAutoDeletePromoManagerTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_TAB_DECLUTTER_AUTO_DELETE)
     public void testOnNtpSelected_AutoDeleteEnabled_NoPromo() {
         createManager(false, true, false, 1);
         verify(mMockRegularTabModel).addObserver(mTabModelObserverCaptor.capture());
@@ -202,7 +175,6 @@ public class ArchivedTabsAutoDeletePromoManagerTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_TAB_DECLUTTER_AUTO_DELETE)
     public void testOnNtpSelected_NoArchivedTabs_NoPromo() {
         createManager(false, true, false, 1);
         verify(mMockRegularTabModel).addObserver(mTabModelObserverCaptor.capture());
@@ -216,7 +188,6 @@ public class ArchivedTabsAutoDeletePromoManagerTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_TAB_DECLUTTER_AUTO_DELETE)
     public void testOnNonNtpSelected_NoPromo() {
         createManager(false, true, false, 1);
         verify(mMockRegularTabModel).addObserver(mTabModelObserverCaptor.capture());

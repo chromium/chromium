@@ -4994,16 +4994,6 @@ inline constexpr char kAndroidTabDeclutterArchiveTabGroupsName[] =
 inline constexpr char kAndroidTabDeclutterArchiveTabGroupsDescription[] =
     "Enables auto-archival of inactive tab groups and their inactive tabs.";
 
-inline constexpr char kAndroidTabDeclutterAutoDeleteName[] =
-    "Android Tab Declutter Auto Delete Promo";
-inline constexpr char kAndroidTabDeclutterAutoDeleteDescription[] =
-    "Enables the Android Tab Declutter Auto Delete Promo";
-
-inline constexpr char kAndroidTabDeclutterAutoDeleteKillSwitchName[] =
-    "Android Tab Declutter Auto Delete Kill Switch";
-inline constexpr char kAndroidTabDeclutterAutoDeleteKillSwitchDescription[] =
-    "Kill switch for auto delete archived tabs.";
-
 inline constexpr char kAndroidTabDeclutterPerformanceImprovementsName[] =
     "Android Tab Declutter performance improvements";
 inline constexpr char kAndroidTabDeclutterPerformanceImprovementsDescription[] =

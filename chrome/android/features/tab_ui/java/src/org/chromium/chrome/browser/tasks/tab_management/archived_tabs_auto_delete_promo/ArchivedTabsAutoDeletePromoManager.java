@@ -10,7 +10,6 @@ import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabArchiveSettings;
 import org.chromium.chrome.browser.tab.TabSelectionType;
@@ -113,10 +112,7 @@ public class ArchivedTabsAutoDeletePromoManager implements Destroyable {
      * 6. There is at least one tab in the archive.
      */
     private boolean checkConditions() {
-        if (mTabArchiveSettings.isInTestingMode()) return true;
-        return ChromeFeatureList.sAndroidTabDeclutterAutoDelete.isEnabled()
-                && ChromeFeatureList.sAndroidTabDeclutterAutoDeleteKillSwitch.isEnabled()
-                && !mTabArchiveSettings.getAutoDeleteDecisionMade()
+        return !mTabArchiveSettings.getAutoDeleteDecisionMade()
                 && mTabArchiveSettings.getArchiveEnabled()
                 && !mTabArchiveSettings.isAutoDeleteEnabled()
                 && mArchivedTabCountSupplier.get() >= 1;

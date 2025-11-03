@@ -414,16 +414,6 @@
     "expiry_milestone": 145
   },
   {
-    "name": "android-tab-declutter-auto-delete",
-    "owners": [ "wylieb@google.com", "clank-tab-dev@google.com" ],
-    "expiry_milestone": 145
-  },
-  {
-    "name": "android-tab-declutter-auto-delete-kill-switch",
-    "owners": [ "hitarthkothari@google.com", "ckitagawa@google.com", "clank-tab-dev@google.com" ],
-    "expiry_milestone": 145
-  },
-  {
     "name": "android-tab-declutter-performance-improvements",
     "owners": [ "wylieb@google.com", "clank-tab-dev@google.com" ],
     "expiry_milestone": 140

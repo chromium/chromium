@@ -1278,7 +1278,6 @@ public class TabSwitcherPaneUnitTest {
 
     /** Tests that the AutoDeleteDecisionPromo is shown when all conditions are met */
     @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_TAB_DECLUTTER_AUTO_DELETE)
     public void testTryToShowPromo_ConditionsMet_ShowsPromo() {
         setupPromoEligibilityConditions(
                 /* promoChoiceMade= */ false,
@@ -1293,46 +1292,8 @@ public class TabSwitcherPaneUnitTest {
                 .requestShowContent(any(ArchivedTabsAutoDeletePromoSheetContent.class), eq(true));
     }
 
-    /** Tests that the AutoDeleteDecisionPromo is not shown when the promo flag is off */
-    @Test
-    @DisableFeatures(ChromeFeatureList.ANDROID_TAB_DECLUTTER_AUTO_DELETE)
-    public void testTryToShowPromo_FlagSetToFalse_DoesNotShow() {
-        setupPromoEligibilityConditions(
-                /* promoChoiceMade= */ false,
-                /* autoDeleteEnabled= */ false,
-                /* archivingFeatureEnabled= */ true,
-                /* archivedTabCount= */ 1);
-
-        mTabSwitcherPane.notifyLoadHint(LoadHint.HOT);
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
-
-        verify(mMockBottomSheetController, never())
-                .requestShowContent(
-                        any(ArchivedTabsAutoDeletePromoSheetContent.class), anyBoolean());
-    }
-
-    /** Tests that the AutoDeleteDecisionPromo is not shown when the promo kill switch is off */
-    @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_TAB_DECLUTTER_AUTO_DELETE)
-    @DisableFeatures(ChromeFeatureList.ANDROID_TAB_DECLUTTER_AUTO_DELETE_KILL_SWITCH)
-    public void testTryToShowPromo_KillSwitchSetToFalse_DoesNotShow() {
-        setupPromoEligibilityConditions(
-                /* promoChoiceMade= */ false,
-                /* autoDeleteEnabled= */ false,
-                /* archivingFeatureEnabled= */ true,
-                /* archivedTabCount= */ 1);
-
-        mTabSwitcherPane.notifyLoadHint(LoadHint.HOT);
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
-
-        verify(mMockBottomSheetController, never())
-                .requestShowContent(
-                        any(ArchivedTabsAutoDeletePromoSheetContent.class), anyBoolean());
-    }
-
     /** Tests that the promo is NOT shown if the user has already made a choice. */
     @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_TAB_DECLUTTER_AUTO_DELETE)
     public void testTryToShowPromo_DecisionAlreadyMade_DoesNotShow() {
         setupPromoEligibilityConditions(
                 /* promoChoiceMade= */ true,
@@ -1350,7 +1311,6 @@ public class TabSwitcherPaneUnitTest {
 
     /** Tests that the promo is NOT shown if auto-delete is already effectively enabled. */
     @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_TAB_DECLUTTER_AUTO_DELETE)
     public void testTryToShowPromo_AutoDeleteAlreadyEnabled_DoesNotShow() {
         setupPromoEligibilityConditions(
                 /* promoChoiceMade= */ false,
@@ -1368,7 +1328,6 @@ public class TabSwitcherPaneUnitTest {
 
     /** Tests that the promo is NOT shown if the main archiving feature is disabled. */
     @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_TAB_DECLUTTER_AUTO_DELETE)
     public void testTryToShowPromo_ArchivingFeatureDisabled_DoesNotShow() {
         setupPromoEligibilityConditions(
                 /* promoChoiceMade= */ false,
@@ -1386,7 +1345,6 @@ public class TabSwitcherPaneUnitTest {
 
     /** Tests that the promo is NOT shown if there are no archived tabs. */
     @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_TAB_DECLUTTER_AUTO_DELETE)
     public void testTryToShowPromo_NoArchivedTabs_DoesNotShow() {
         setupPromoEligibilityConditions(
                 /* promoChoiceMade= */ false,
