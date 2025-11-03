@@ -273,7 +273,8 @@ FT_BEGIN_HEADER
    *   options set by those programs have precedence, overwriting the value
    *   here with the configured one.
    */
-#define FT_CONFIG_OPTION_USE_PNG
+/* Not needed since PDFs do not support fonts with PNGs. */
+/* #define FT_CONFIG_OPTION_USE_PNG */
 
 
   /**************************************************************************
