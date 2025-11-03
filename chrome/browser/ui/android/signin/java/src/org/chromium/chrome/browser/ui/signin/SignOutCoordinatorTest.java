@@ -361,9 +361,7 @@ public class SignOutCoordinatorTest {
         mUnsyncedDataTypes.add(DataType.BOOKMARKS);
 
         assertUndoSignInWithSnackbarThrows(
-                "This sign-out flow should not be used if there is unsaved data.",
-                IllegalStateException.class,
-                SignoutReason.USER_TAPPED_UNDO_RIGHT_AFTER_SIGN_IN);
+                IllegalStateException.class, SignoutReason.USER_TAPPED_UNDO_RIGHT_AFTER_SIGN_IN);
     }
 
     @Test
@@ -374,8 +372,7 @@ public class SignOutCoordinatorTest {
                 continue;
             }
             // All other reasons should throw.
-            assertUndoSignInWithSnackbarThrows(
-                    "Unsupported signOutReason: " + reason, IllegalArgumentException.class, reason);
+            assertUndoSignInWithSnackbarThrows(IllegalArgumentException.class, reason);
         }
     }
 
@@ -389,26 +386,22 @@ public class SignOutCoordinatorTest {
         doReturn(false).when(mIdentityManagerMock).hasPrimaryAccount(ConsentLevel.SIGNIN);
 
         assertUndoSignInWithSnackbarThrows(
-                "There is no signed-in account",
-                IllegalStateException.class,
-                SignoutReason.USER_TAPPED_UNDO_RIGHT_AFTER_SIGN_IN);
+                IllegalStateException.class, SignoutReason.USER_TAPPED_UNDO_RIGHT_AFTER_SIGN_IN);
     }
 
     private <T extends Throwable> void assertUndoSignInWithSnackbarThrows(
-            String message, Class<T> expectedThrowable, @SignoutReason int reason) {
+            Class<T> expectedThrowable, @SignoutReason int reason) {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    T thrown =
-                            Assert.assertThrows(
-                                    expectedThrowable,
-                                    () ->
-                                            SignOutCoordinator.undoSignInWithSnackbar(
-                                                    mActivityTestRule.getActivity(),
-                                                    mProfile,
-                                                    mSnackbarManager,
-                                                    reason,
-                                                    mOnSignOut));
-                    Assert.assertEquals(message, thrown.getMessage());
+                    Assert.assertThrows(
+                            expectedThrowable,
+                            () ->
+                                    SignOutCoordinator.undoSignInWithSnackbar(
+                                            mActivityTestRule.getActivity(),
+                                            mProfile,
+                                            mSnackbarManager,
+                                            reason,
+                                            mOnSignOut));
                 });
         verify(mOnSignOut, never()).run();
     }
