@@ -35,7 +35,7 @@
 #include "cc/tiles/raster_dark_mode_filter.h"
 #include "components/viz/test/test_context_provider.h"
 #include "components/viz/test/test_gles2_interface.h"
-#include "gpu/command_buffer/client/raster_implementation_gles.h"
+#include "components/viz/test/test_raster_interface.h"
 #include "gpu/command_buffer/common/command_buffer_id.h"
 #include "gpu/command_buffer/common/constants.h"
 #include "gpu/config/gpu_finch_features.h"
@@ -174,8 +174,7 @@ class GPUImageDecodeTestMockContextProvider : public viz::TestContextProvider {
         transfer_cache_helper);
     auto gl = std::make_unique<FakeGPUImageDecodeTestGLES2Interface>(
         transfer_cache_helper);
-    auto raster = std::make_unique<gpu::raster::RasterImplementationGLES>(
-        gl.get(), support.get(), gpu::Capabilities());
+    auto raster = std::make_unique<viz::TestRasterInterface>();
     return new GPUImageDecodeTestMockContextProvider(
         std::move(support), std::move(gl), std::move(raster));
   }
