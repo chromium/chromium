@@ -197,7 +197,7 @@ double Interpolate( double a, double x, double b, double y)
 
 #endif
 
-#define Swap(a,b)	if (1) { TESSvertex *t = a; a = b; b = t; } else
+#define Swap(a,b)	do { TESSvertex *t = a; a = b; b = t; } while (0)
 
 void tesedgeIntersect( TESSvertex *o1, TESSvertex *d1,
 					  TESSvertex *o2, TESSvertex *d2,

@@ -30,6 +30,7 @@
 */
 
 #include "libtess2/tess_assert.h"
+#include <float.h>
 #include <stddef.h>
 #include <setjmp.h>		/* longjmp */
 
@@ -605,11 +606,14 @@ static int CheckForIntersect( TESStesselator *tess, ActiveRegion *regUp )
 	DebugEvent( tess );
 
 	tesedgeIntersect( dstUp, orgUp, dstLo, orgLo, &isect );
-	/* The following properties are guaranteed: */
-	tess_assert( MIN( orgUp->t, dstUp->t ) <= isect.t );
-	tess_assert( isect.t <= MAX( orgLo->t, dstLo->t ));
-	tess_assert( MIN( dstLo->s, dstUp->s ) <= isect.s );
-	tess_assert( isect.s <= MAX( orgLo->s, orgUp->s ));
+	/*
+	 * The following properties are guaranteed (with a little wiggle-room to
+	 * account for loss of precision if the values are subnormal.)
+	 */
+	tess_assert( MIN( orgUp->t, dstUp->t ) <= isect.t + FLT_MIN);
+	tess_assert( isect.t <= MAX( orgLo->t, dstLo->t ) + FLT_MIN);
+	tess_assert( MIN( dstLo->s, dstUp->s ) <= isect.s + FLT_MIN);
+	tess_assert( isect.s <= MAX( orgLo->s, orgUp->s ) + FLT_MIN);
 
 	if( VertLeq( &isect, tess->event )) {
 		/* The intersection point lies slightly to the left of the sweep line,
@@ -1143,7 +1147,9 @@ static void InitEdgeDict( TESStesselator *tess )
 static void DoneEdgeDict( TESStesselator *tess )
 {
 	ActiveRegion *reg;
+#ifndef NDEBUG
 	int fixedEdges = 0;
+#endif
 
 	while( (reg = (ActiveRegion *)dictKey( dictMin( tess->dict ))) != NULL ) {
 		/*
@@ -1153,7 +1159,9 @@ static void DoneEdgeDict( TESStesselator *tess )
 		*/
 		if( ! reg->sentinel ) {
 			tess_assert( reg->fixUpperEdge );
+#ifndef NDEBUG
 			tess_assert( ++fixedEdges == 1 );
+#endif
 		}
 		tess_assert( reg->windingNumber == 0 );
 		DeleteRegion( tess, reg );
