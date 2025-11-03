@@ -150,6 +150,7 @@
   _isNTP = YES;
   if (IsBottomOmniboxAvailable()) {
     [self updateOmniboxPosition];
+    [self.omniboxConsumer setIsNTP:_isNTP];
   }
 }
 
@@ -215,6 +216,7 @@
       [self checkSafariSwitcherOnFRE];
     }
     [self updateOmniboxPosition];
+    [self.omniboxConsumer setIsNTP:_isNTP];
   }
 }
 
@@ -269,6 +271,7 @@
 
   [self.omniboxConsumer setKeyboardAttachedBottomOmniboxHeight:
                             self.delegate.keyboardAttachedBottomOmniboxHeight];
+  [self.omniboxConsumer setPreferredOmniboxPosition:_preferredOmniboxPosition];
 
   self.omniboxPosition = [self omniboxPositionInCurrentState];
   self.steadyStateOmniboxPosition =
