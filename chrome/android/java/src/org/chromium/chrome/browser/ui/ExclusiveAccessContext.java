@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.ui;
 
-import android.app.Activity;
+import android.content.Context;
 
 import org.jni_zero.CalledByNative;
 
@@ -25,24 +25,24 @@ import org.chromium.content_public.browser.WebContents;
  */
 @NullMarked
 public class ExclusiveAccessContext implements Destroyable {
-    private final Activity mActivity;
+    private final Context mContext;
     private final FullscreenManager mFullscreenManager;
     private final ActivityTabProvider.ActivityTabTabObserver mActiveTabObserver;
     @Nullable private Tab mActiveTab;
 
     @CalledByNative
     public static ExclusiveAccessContext create(
-            Activity activity,
+            Context context,
             FullscreenManager fullscreenManager,
             ActivityTabProvider activityTabProvider) {
-        return new ExclusiveAccessContext(activity, fullscreenManager, activityTabProvider);
+        return new ExclusiveAccessContext(context, fullscreenManager, activityTabProvider);
     }
 
     public ExclusiveAccessContext(
-            Activity activity,
+            Context context,
             FullscreenManager fullscreenManager,
             ActivityTabProvider activityTabProvider) {
-        mActivity = activity;
+        mContext = context;
         mFullscreenManager = fullscreenManager;
         mActiveTabObserver =
                 new ActivityTabProvider.ActivityTabTabObserver(activityTabProvider) {
@@ -53,8 +53,8 @@ public class ExclusiveAccessContext implements Destroyable {
                 };
     }
 
-    Activity getActivity() {
-        return mActivity;
+    Context getAppContext() {
+        return mContext;
     }
 
     @Override

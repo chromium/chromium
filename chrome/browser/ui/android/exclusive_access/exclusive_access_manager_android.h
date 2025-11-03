@@ -21,7 +21,7 @@ class ExclusiveAccessManagerAndroid {
   ExclusiveAccessManagerAndroid(
       JNIEnv* env,
       const jni_zero::JavaRef<jobject>& jeam,
-      const jni_zero::JavaRef<jobject>& j_activity,
+      const jni_zero::JavaRef<jobject>& j_context,
       const jni_zero::JavaRef<jobject>& j_fullscreen_manager,
       const jni_zero::JavaRef<jobject>& j_activity_tab_provider);
   ~ExclusiveAccessManagerAndroid();

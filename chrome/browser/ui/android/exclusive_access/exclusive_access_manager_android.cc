@@ -16,12 +16,12 @@
 ExclusiveAccessManagerAndroid::ExclusiveAccessManagerAndroid(
     JNIEnv* env,
     const jni_zero::JavaRef<jobject>& j_eam,
-    const jni_zero::JavaRef<jobject>& j_activity,
+    const jni_zero::JavaRef<jobject>& j_context,
     const jni_zero::JavaRef<jobject>& j_fullscreen_manager,
     const jni_zero::JavaRef<jobject>& j_activity_tab_provider)
     : eac_(std::make_unique<ExclusiveAccessContextAndroid>(
           env,
-          j_activity,
+          j_context,
           j_fullscreen_manager,
           j_activity_tab_provider)),
       eam_(eac_.get()) {
@@ -146,10 +146,10 @@ void ExclusiveAccessManagerAndroid::Destroy(JNIEnv* env) {
 jlong JNI_ExclusiveAccessManager_Init(
     JNIEnv* env,
     const jni_zero::JavaParamRef<jobject>& jeam,
-    const jni_zero::JavaParamRef<jobject>& j_activity,
+    const jni_zero::JavaParamRef<jobject>& j_context,
     const jni_zero::JavaParamRef<jobject>& j_fullscreen_manager,
     const jni_zero::JavaParamRef<jobject>& j_activity_tab_provider) {
   ExclusiveAccessManagerAndroid* content = new ExclusiveAccessManagerAndroid(
-      env, jeam, j_activity, j_fullscreen_manager, j_activity_tab_provider);
+      env, jeam, j_context, j_fullscreen_manager, j_activity_tab_provider);
   return reinterpret_cast<intptr_t>(content);
 }

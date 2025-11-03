@@ -6,11 +6,11 @@ package org.chromium.chrome.browser.ui;
 
 import android.view.Gravity;
 
-import org.chromium.ui.base.DeviceInput;
 import org.jni_zero.CalledByNative;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.ui.base.DeviceInput;
 import org.chromium.ui.widget.Toast;
 
 /**
@@ -43,7 +43,7 @@ public class ExclusiveAccessBubble {
         hide();
         mNotificationToast =
                 Toast.makeTextWithPriority(
-                        mParentContext.getActivity(),
+                        mParentContext.getAppContext(),
                         text,
                         Toast.LENGTH_LONG,
                         Toast.ToastPriority.HIGH);
