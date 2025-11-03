@@ -7,10 +7,13 @@
 #import <utility>
 
 #import "base/check.h"
+#import "components/enterprise/connectors/core/reporting_event_router.h"
 #import "components/enterprise/data_controls/core/browser/rule.h"
 #import "components/enterprise/data_controls/core/browser/verdict.h"
+#import "ios/chrome/browser/enterprise/connectors/reporting/ios_reporting_event_router_factory.h"
 #import "ios/chrome/browser/enterprise/data_controls/model/ios_rules_service.h"
 #import "ios/chrome/browser/enterprise/data_controls/model/ios_rules_service_factory.h"
+#import "ios/chrome/browser/enterprise/data_controls/utils/ios_clipboard_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "url/gurl.h"
 
@@ -79,6 +82,50 @@ Verdict IsShareAllowedByPolicy(const GURL& source_url,
   // the selected content to the os clipboard. Treat the share intent as a copy
   // to os clipboard intent.
   return rules_service->GetCopyToOSClipboardVerdict(source_url);
+}
+
+void MaybeReportDataControlsPaste(const GURL& source_url,
+                                  const GURL& destination_url,
+                                  ProfileIOS* source_profile,
+                                  ProfileIOS* destination_profile,
+                                  const ui::ClipboardMetadata& metadata,
+                                  const Verdict& verdict,
+                                  bool bypassed) {
+  auto* router =
+      enterprise_connectors::IOSReportingEventRouterFactory::GetForProfile(
+          destination_profile);
+  if (!router) {
+    return;
+  }
+
+  IOSClipboardContext context(source_url, destination_url, source_profile,
+                              destination_profile, metadata);
+  if (bypassed) {
+    router->ReportPasteWarningBypassed(context, verdict);
+  } else {
+    router->ReportPaste(context, verdict);
+  }
+}
+
+void MaybeReportDataControlsCopy(const GURL& source_url,
+                                 ProfileIOS* source_profile,
+                                 const ui::ClipboardMetadata& metadata,
+                                 const Verdict& verdict,
+                                 bool bypassed) {
+  auto* router =
+      enterprise_connectors::IOSReportingEventRouterFactory::GetForProfile(
+          source_profile);
+  if (!router) {
+    return;
+  }
+
+  IOSClipboardContext context(source_url, GURL(), source_profile, nullptr,
+                              metadata);
+  if (bypassed) {
+    router->ReportCopyWarningBypassed(context, verdict);
+  } else {
+    router->ReportCopy(context, verdict);
+  }
 }
 
 }  // namespace data_controls
