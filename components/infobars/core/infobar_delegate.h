@@ -50,6 +50,22 @@ class InfoBar;
 // InfoBar variety.
 class InfoBarDelegate {
  public:
+  // Used to arbitrate visibility and queueing order of InfoBars on a
+  // per-WebContents basis.
+  enum class InfobarPriority {
+    // Promotional or non-urgent surfaces.
+    kLow = 0,
+
+    // Standard feature-driven prompts. Examples: Translate, Save Password,
+    // Send Tab to Self, Extensions web auth flow.
+    kDefault = 1,
+
+    // Security/safety-critical surfaces. Examples:  tab-sharing warnings, other
+    // critical banners. May stack up to a small cap and are never preempted by
+    // lower tiers.
+    kCriticalSecurity = 2,
+  };
+
   // The type of the infobar. It controls its appearance, such as its background
   // color.
   enum Type {
@@ -232,6 +248,9 @@ class InfoBarDelegate {
   // New implementers must append a new value to the InfoBarIdentifier enum here
   // and in histograms/enums.xml.
   virtual InfoBarIdentifier GetIdentifier() const = 0;
+
+  // Returns the priority tier for this infobar delegate. Default is kDefault.
+  virtual InfobarPriority GetPriority() const;
 
   // Returns the resource ID of the icon to be shown for this InfoBar.  If the
   // value is equal to |kNoIconID|, GetIcon() will not show an icon by default.

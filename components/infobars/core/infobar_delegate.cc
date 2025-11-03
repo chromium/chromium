@@ -21,6 +21,10 @@ const int InfoBarDelegate::kNoIconID = 0;
 
 InfoBarDelegate::~InfoBarDelegate() = default;
 
+InfoBarDelegate::InfobarPriority InfoBarDelegate::GetPriority() const {
+  return InfobarPriority::kDefault;
+}
+
 int InfoBarDelegate::GetIconId() const {
   return kNoIconID;
 }
