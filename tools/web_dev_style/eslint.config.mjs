@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import eslintPluginLit from '../../third_party/node/node_modules/eslint-plugin-lit/lib/index.js';
 import stylistic from '../../third_party/node/node_modules/@stylistic/eslint-plugin/dist/index.js';
 import typescriptEslint from '../../third_party/node/node_modules/@typescript-eslint/eslint-plugin/dist/index.js';
 import tsParser from '../../third_party/node/node_modules/@typescript-eslint/parser/dist/index.js';
@@ -423,6 +424,15 @@ export default [
           'ts-nocheck': true,
         }
       ],
+    },
+  },
+  {
+    'files': ['**/*.html.ts'],
+    'plugins': {
+      'eslint-plugin-lit': eslintPluginLit,
+    },
+    'rules': {
+      'eslint-plugin-lit/quoted-expressions': ['error', 'always'],
     },
   },
   {
