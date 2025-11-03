@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_BOOKMARKS_UI_BUNDLED_CELLS_TABLE_VIEW_BOOKMARKS_FOLDER_ITEM_H_
-#define IOS_CHROME_BROWSER_BOOKMARKS_UI_BUNDLED_CELLS_TABLE_VIEW_BOOKMARKS_FOLDER_ITEM_H_
+#ifndef IOS_CHROME_BROWSER_BOOKMARKS_FOLDER_CHOOSER_UI_TABLE_VIEW_BOOKMARKS_FOLDER_ITEM_H_
+#define IOS_CHROME_BROWSER_BOOKMARKS_FOLDER_CHOOSER_UI_TABLE_VIEW_BOOKMARKS_FOLDER_ITEM_H_
 
 #import "ios/chrome/browser/bookmarks/ui_bundled/cells/bookmark_table_cell_title_editing.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_item.h"
@@ -63,4 +63,4 @@ typedef NS_ENUM(NSInteger, TableViewBookmarksFolderAccessoryType) {
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_BOOKMARKS_UI_BUNDLED_CELLS_TABLE_VIEW_BOOKMARKS_FOLDER_ITEM_H_
+#endif  // IOS_CHROME_BROWSER_BOOKMARKS_FOLDER_CHOOSER_UI_TABLE_VIEW_BOOKMARKS_FOLDER_ITEM_H_
