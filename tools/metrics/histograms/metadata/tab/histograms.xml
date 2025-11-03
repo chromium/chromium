@@ -3820,6 +3820,63 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Tabs.TabStateStore.LoadAllTabsDuration" units="ms"
+    expires_after="2026-10-28">
+  <owner>skym@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <summary>
+    [Android] Records the duration of reading all tab state information from
+    disk via the TabStateStorageService and creating Java representations of
+    them. This does not include creating full tabs. Recorded when all tab states
+    have been loaded from the service.
+  </summary>
+</histogram>
+
+<histogram name="Tabs.TabStateStore.TabCountDelta.AuthoritativeHigher"
+    units="tabs" expires_after="2026-10-28">
+  <owner>skym@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <summary>
+    [Android] Records the delta in tab count between the authoritative and
+    shadow tab models when the authoritative model has more tabs. Recorded when
+    both models have finished loading.
+  </summary>
+</histogram>
+
+<histogram name="Tabs.TabStateStore.TabCountDelta.ShadowHigher" units="tabs"
+    expires_after="2026-10-28">
+  <owner>skym@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <summary>
+    [Android] Records the delta in tab count between the authoritative and
+    shadow tab models when the shadow model has more tabs. Recorded when both
+    models have finished loading.
+  </summary>
+</histogram>
+
+<histogram name="Tabs.TabStateStore.TimeDeltaOnMismatch.AuthoritativeNewer"
+    units="ms" expires_after="2026-10-28">
+  <owner>skym@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <summary>
+    [Android] Records the time delta when a URL mismatch occurs between the
+    authoritative and shadow tab models, and the authoritative tab is newer.
+    Recorded when both models have finished loading and a URL mismatch is
+    detected.
+  </summary>
+</histogram>
+
+<histogram name="Tabs.TabStateStore.TimeDeltaOnMismatch.ShadowNewer" units="ms"
+    expires_after="2026-10-28">
+  <owner>skym@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <summary>
+    [Android] Records the time delta when a URL mismatch occurs between the
+    authoritative and shadow tab models, and the shadow tab is newer. Recorded
+    when both models have finished loading and a URL mismatch is detected.
+  </summary>
+</histogram>
+
 <histogram name="Tabs.TabThumbnailCleanupAbortedByArchive" enum="Boolean"
     expires_after="2026-01-11">
   <owner>wylieb@google.com</owner>
