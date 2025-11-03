@@ -152,14 +152,14 @@ void TabStateStorageService::ClearState() {
 
 void TabStateStorageService::OnAllNodesLoaded(LoadDataCallback callback,
                                               std::vector<NodeState> entries) {
-  StorageLoadedData loaded_data;
+  auto loaded_data = std::make_unique<StorageLoadedData>();
   int max_storage_id = 0;
   for (auto& entry : entries) {
     max_storage_id = std::max(max_storage_id, entry.id);
     if (entry.type == TabStorageType::kTab) {
       tabs_pb::TabState tab_state;
       if (tab_state.ParseFromString(entry.payload)) {
-        loaded_data.loaded_tabs.emplace_back(
+        loaded_data->loaded_tabs.emplace_back(
             std::move(tab_state),
             base::BindOnce(&TabStateStorageService::OnTabCreated,
                            weak_ptr_factory_.GetWeakPtr(), entry.id));
@@ -167,7 +167,7 @@ void TabStateStorageService::OnAllNodesLoaded(LoadDataCallback callback,
     } else if (entry.type == TabStorageType::kGroup) {
       tabs_pb::TabGroupCollectionState group_state;
       if (group_state.ParseFromString(entry.payload)) {
-        loaded_data.loaded_groups.emplace_back(
+        loaded_data->loaded_groups.emplace_back(
             std::make_unique<TabGroupCollectionData>(group_state));
       }
     }

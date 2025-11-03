@@ -28,6 +28,8 @@
 
 namespace tabs {
 
+namespace {
+
 using ScopedJavaLocalRef = base::android::ScopedJavaLocalRef<jobject>;
 
 base::OnceCallback<void(TabAndroid*)> WrapCallbackForJni(
@@ -113,16 +115,40 @@ base::android::ScopedJavaLocalRef<jobjectArray> CreateGroupCollectionData(
                                                   type.obj());
 }
 
-// static
-base::android::ScopedJavaLocalRef<jobject>
-StorageLoadedDataAndroid::CreateLoadedData(JNIEnv* env,
-                                           StorageLoadedData loaded_data) {
+}  // namespace
+
+StorageLoadedDataAndroid::StorageLoadedDataAndroid(
+    JNIEnv* env,
+    std::unique_ptr<StorageLoadedData> data)
+    : data_(std::move(data)) {
   base::android::ScopedJavaLocalRef<jobjectArray> loaded_tab_states =
-      CreateLoadedTabStates(env, loaded_data.loaded_tabs);
+      CreateLoadedTabStates(env, data_->loaded_tabs);
   base::android::ScopedJavaLocalRef<jobjectArray> loaded_groups =
-      CreateGroupCollectionData(env, loaded_data.loaded_groups);
-  return Java_StorageLoadedData_createData(env, loaded_tab_states,
-                                           loaded_groups);
+      CreateGroupCollectionData(env, data_->loaded_groups);
+  j_object_ = Java_StorageLoadedData_createData(
+      env, reinterpret_cast<intptr_t>(this), loaded_tab_states, loaded_groups);
+}
+
+StorageLoadedDataAndroid::~StorageLoadedDataAndroid() = default;
+
+void StorageLoadedDataAndroid::Destroy(JNIEnv* env) {
+  delete this;
+}
+
+base::android::ScopedJavaLocalRef<jobject>
+StorageLoadedDataAndroid::GetJavaObject() const {
+  return j_object_;
+}
+
+// static
+StorageLoadedDataAndroid* StorageLoadedDataAndroid::FromJavaObject(
+    JNIEnv* env,
+    const jni_zero::JavaRef<jobject>& obj) {
+  if (!obj) {
+    return nullptr;
+  }
+  return reinterpret_cast<StorageLoadedDataAndroid*>(
+      Java_StorageLoadedData_getNativePtr(env, obj));
 }
 
 }  // namespace tabs

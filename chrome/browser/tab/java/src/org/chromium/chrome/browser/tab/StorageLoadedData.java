@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.tab;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
+import org.jni_zero.NativeMethods;
 
 import org.chromium.base.JniOnceCallback;
 import org.chromium.base.Token;
@@ -41,13 +42,15 @@ public class StorageLoadedData implements Destroyable {
         }
     }
 
+    private long mNativePtr;
     private final LoadedTabState[] mLoadedTabStates;
     private final TabGroupCollectionData[] mGroupsData;
 
     private StorageLoadedData(
-            LoadedTabState[] loadedTabStates, TabGroupCollectionData[] groupsData) {
-        this.mLoadedTabStates = loadedTabStates;
-        this.mGroupsData = groupsData;
+            long nativePtr, LoadedTabState[] loadedTabStates, TabGroupCollectionData[] groupsData) {
+        mNativePtr = nativePtr;
+        mLoadedTabStates = loadedTabStates;
+        mGroupsData = groupsData;
     }
 
     @Override
@@ -60,12 +63,21 @@ public class StorageLoadedData implements Destroyable {
         for (TabGroupCollectionData groupData : getGroupsData()) {
             groupData.destroy();
         }
+
+        assert mNativePtr != 0;
+        StorageLoadedDataJni.get().destroy(mNativePtr);
+        mNativePtr = 0;
+    }
+
+    @CalledByNative
+    public long getNativePtr() {
+        return mNativePtr;
     }
 
     @CalledByNative
     public static StorageLoadedData createData(
-            LoadedTabState[] loadedTabStates, TabGroupCollectionData[] groups) {
-        return new StorageLoadedData(loadedTabStates, groups);
+            long nativePtr, LoadedTabState[] loadedTabStates, TabGroupCollectionData[] groups) {
+        return new StorageLoadedData(nativePtr, loadedTabStates, groups);
     }
 
     @CalledByNative
@@ -123,5 +135,10 @@ public class StorageLoadedData implements Destroyable {
     /** Returns the data for the tab groups. */
     public TabGroupCollectionData[] getGroupsData() {
         return mGroupsData;
+    }
+
+    @NativeMethods
+    interface Natives {
+        void destroy(long nativeStorageLoadedDataAndroid);
     }
 }

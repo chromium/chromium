@@ -37,13 +37,11 @@ namespace {
 void RunJavaCallbackLoadAll(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& j_loaded_data_callback,
-    StorageLoadedData loaded_data) {
-  base::android::ScopedJavaLocalRef<jclass> type = base::android::GetClass(
-      env, "org/chromium/chrome/browser/tab/StorageLoadedData");
-  base::android::ScopedJavaLocalRef<jobject> j_loaded_data =
-      StorageLoadedDataAndroid::CreateLoadedData(env, std::move(loaded_data));
+    std::unique_ptr<StorageLoadedData> loaded_data) {
+  StorageLoadedDataAndroid* data_android =
+      new StorageLoadedDataAndroid(env, std::move(loaded_data));
   base::android::RunObjectCallbackAndroid(j_loaded_data_callback,
-                                          j_loaded_data);
+                                          data_android->GetJavaObject());
 }
 
 }  // namespace

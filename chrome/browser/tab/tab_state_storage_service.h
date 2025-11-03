@@ -31,7 +31,8 @@ class TabStateStorageService : public KeyedService,
                                public base::SupportsUserData,
                                public StorageIdMapping {
  public:
-  using LoadDataCallback = base::OnceCallback<void(StorageLoadedData)>;
+  using LoadDataCallback =
+      base::OnceCallback<void(std::unique_ptr<StorageLoadedData>)>;
 
   explicit TabStateStorageService(
       std::unique_ptr<TabStateStorageBackend> tab_backend,
