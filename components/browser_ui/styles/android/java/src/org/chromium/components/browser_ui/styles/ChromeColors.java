@@ -188,6 +188,6 @@ public class ChromeColors {
      * @return The {@link ColorInt} for the settings container background.
      */
     public static @ColorInt int getSettingsContainerBackgroundColor(Context context) {
-        return SemanticColorUtils.getColorSurface(context);
+        return SemanticColorUtils.getColorSurfaceBright(context);
     }
 }
