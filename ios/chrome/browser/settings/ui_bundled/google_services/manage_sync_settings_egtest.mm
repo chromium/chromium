@@ -112,14 +112,6 @@ void SignOutFromAccountSettings() {
       performAction:grey_tap()];
 }
 
-void DismissSignOutSnackbar() {
-  // The tap checks the existence of the snackbar and also closes it.
-  NSString* snackbar_label = l10n_util::GetNSString(
-      IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_SIGN_OUT_SNACKBAR_MESSAGE);
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(snackbar_label)]
-      performAction:grey_tap()];
-}
-
 // Adds a bookmark. The storage type is determined based on if the user is
 // signed in or not.
 void SaveBookmark(NSString* title, NSString* url) {
@@ -234,7 +226,7 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
   [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
 
   SignOutFromAccountSettings();
-  DismissSignOutSnackbar();
+  [SigninEarlGreyUI dismissSignoutSnackbar];
   [ChromeEarlGreyUI waitForAppToIdle];
 
   [SigninEarlGrey verifySignedOut];
@@ -410,7 +402,7 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
       performAction:chrome_test_util::TurnTableViewSwitchOn(/*on=*/NO)];
 
   SignOutFromAccountSettings();
-  DismissSignOutSnackbar();
+  [SigninEarlGreyUI dismissSignoutSnackbar];
 
   [SigninEarlGrey verifySignedOut];
 
@@ -451,7 +443,7 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
       performAction:chrome_test_util::TurnTableViewSwitchOn(/*on=*/NO)];
 
   SignOutFromAccountSettings();
-  DismissSignOutSnackbar();
+  [SigninEarlGreyUI dismissSignoutSnackbar];
 
   [SigninEarlGrey verifySignedOut];
   [[EarlGrey
@@ -1576,7 +1568,7 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 
   // Sign out.
   SignOutFromAccountSettings();
-  DismissSignOutSnackbar();
+  [SigninEarlGreyUI dismissSignoutSnackbar];
   [ChromeEarlGreyUI waitForAppToIdle];
   [SigninEarlGrey verifySignedOut];
 

@@ -1521,11 +1521,7 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
       assertWithMatcher:grey_notVisible()];
 
   // Dismiss sign out snackbar.
-  [[EarlGrey
-      selectElementWithMatcher:
-          grey_accessibilityLabel(l10n_util::GetNSString(
-              IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_SIGN_OUT_SNACKBAR_MESSAGE))]
-      performAction:grey_tap()];
+  [SigninEarlGreyUI dismissSignoutSnackbar];
 
   // Sign in promo shows and try to sign in succeeds.
   [SigninEarlGreyUI
