@@ -108,6 +108,7 @@ source_set("unit_tests") {
 
   deps = [
     ":image_decoders",
+    "//crypto",
     "//skia",
     "//third_party/blink/renderer/platform:test_support",
   ]

@@ -6,19 +6,20 @@
 
 #include <stddef.h>
 
+#include <array>
 #include <memory>
 
 #include "base/compiler_specific.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/hash/md5.h"
 #include "base/logging.h"
 #include "base/path_service.h"
 #include "base/strings/pattern.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "crypto/obsolete/md5.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder.h"
 
 // Uncomment this to recalculate the MD5 sums; see header comments.
@@ -52,14 +53,11 @@ void ReadFileToVector(const base::FilePath& path,
       memcpy(&contents->front(), raw_image_data.data(), raw_image_data.size()));
 }
 
-base::MD5Digest ComputeMD5Sum(const blink::ImageFrame& frame_buffer) {
+std::array<uint8_t, 16> ComputeMD5Sum(const blink::ImageFrame& frame_buffer) {
   SkBitmap bitmap = frame_buffer.Bitmap();
-  base::MD5Digest digest;
-  base::MD5Sum(
+  return crypto::obsolete::Md5::HashForTesting(
       UNSAFE_TODO(base::span(static_cast<const uint8_t*>(bitmap.getPixels()),
-                             bitmap.computeByteSize())),
-      &digest);
-  return digest;
+                             bitmap.computeByteSize())));
 }
 
 #if defined(CALCULATE_MD5_SUMS)
@@ -67,7 +65,7 @@ void SaveMD5Sum(const base::FilePath& path,
                 const blink::ImageFrame* frame_buffer) {
   // Calculate MD5 sum.
   ASSERT_TRUE(frame_buffer);
-  base::MD5Digest digest = ComputeMD5Sum(*frame_buffer);
+  std::array<uint8_t, 16> digest = ComputeMD5Sum(*frame_buffer);
 
   // Write sum to disk.
   ASSERT_TRUE(base::WriteFile(path, base::byte_span_from_ref(digest)));
@@ -90,12 +88,12 @@ void VerifyImage(blink::ImageDecoder& decoder,
   EXPECT_FALSE(decoder.Failed());
 
   // Calculate MD5 sum.
-  base::MD5Digest actual_digest = ComputeMD5Sum(*frame_buffer);
+  std::array<uint8_t, 16> actual_digest = ComputeMD5Sum(*frame_buffer);
 
   // Read the MD5 sum off disk.
   std::string file_bytes;
   base::ReadFileToString(md5_sum_path, &file_bytes);
-  base::MD5Digest expected_digest;
+  std::array<uint8_t, 16> expected_digest;
   ASSERT_EQ(sizeof expected_digest, file_bytes.size());
   UNSAFE_TODO(
       memcpy(&expected_digest, file_bytes.data(), sizeof expected_digest));
