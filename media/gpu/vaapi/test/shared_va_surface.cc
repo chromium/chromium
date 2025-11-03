@@ -287,8 +287,7 @@ std::string SharedVASurface::GetMD5Sum(FetchPolicy fetch_policy) const {
   res = vaDestroyImage(va_device_->display(), image.image_id);
   VA_LOG_ASSERT(res, "vaDestroyImage");
 
-  return base::ToLowerASCII(
-      base::HexEncode(crypto::obsolete::Md5::HashForTesting(i420_data)));
+  return base::HexEncodeLower(crypto::obsolete::Md5::HashForTesting(i420_data));
 }
 
 }  // namespace vaapi_test

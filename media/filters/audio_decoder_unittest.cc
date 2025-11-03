@@ -370,7 +370,7 @@ class AudioDecoderTest
     }
     std::array<uint8_t, crypto::hash::kSha256Size> digest;
     hasher.Finish(digest);
-    return base::ToLowerASCII(base::HexEncode(digest));
+    return base::HexEncodeLower(digest);
   }
 
   void ExpectDecodedAudio(size_t i, const std::string& exact_hash) {

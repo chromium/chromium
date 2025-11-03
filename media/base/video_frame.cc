@@ -1232,7 +1232,7 @@ std::string VideoFrame::HexHashOfFrameForTesting(const VideoFrame& frame,
   UpdateHashWithFrameForTesting(hasher, frame, visible_data_only);  // IN-TEST
   std::array<uint8_t, crypto::hash::kSha256Size> hash;
   hasher.Finish(hash);
-  return base::ToLowerASCII(base::HexEncode(hash));
+  return base::HexEncodeLower(hash);
 }
 
 void VideoFrame::BackWithSharedMemory(

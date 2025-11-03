@@ -97,8 +97,8 @@ bool Image::Load() {
   }
 
   // Verify that the image's checksum matches the checksum in the metadata.
-  const std::string actual_checksum = base::ToLowerASCII(base::HexEncode(
-      crypto::obsolete::Md5::HashForTesting(mapped_file_.bytes())));
+  const std::string actual_checksum = base::HexEncodeLower(
+      crypto::obsolete::Md5::HashForTesting(mapped_file_.bytes()));
   if (actual_checksum != checksum_) {
     LOG(ERROR) << "Image checksum not matching metadata";
     return false;

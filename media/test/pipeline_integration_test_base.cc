@@ -694,7 +694,7 @@ std::string PipelineIntegrationTestBase::GetVideoHash() {
   DCHECK(hashing_enabled_);
   std::array<uint8_t, crypto::hash::kSha256Size> digest;
   hash_context_->Finish(digest);
-  return base::ToLowerASCII(base::HexEncode(digest));
+  return base::HexEncodeLower(digest);
 }
 
 const AudioHash& PipelineIntegrationTestBase::GetAudioHash() const {

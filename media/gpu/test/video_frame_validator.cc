@@ -355,7 +355,7 @@ std::string MD5VideoFrameValidator::ComputeMD5FromVideoFrame(
       hasher.Update(plane.subspan(stride * row, visible_row_bytes));
     }
   }
-  return base::ToLowerASCII(base::HexEncode(hasher.Finish()));
+  return base::HexEncodeLower(hasher.Finish());
 }
 
 struct RawVideoFrameValidator::RawMismatchedFrameInfo
