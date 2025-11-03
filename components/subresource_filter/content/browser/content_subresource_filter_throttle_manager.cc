@@ -189,26 +189,12 @@ mojom::ActivationState
 ContentSubresourceFilterThrottleManager::ActivationStateForNextCommittedLoad(
     content::NavigationHandle* navigation_handle) {
   if (navigation_handle->GetNetErrorCode() != net::OK) {
-    if (IsInSubresourceFilterRoot(navigation_handle)) {
-      root_navigation_disabled_reason_ =
-          mojom::SubresourceFilterDisabledReason::kNavigationError;
-    }
     return mojom::ActivationState();
   }
 
   auto it =
       ongoing_activation_throttles_.find(navigation_handle->GetNavigationId());
   if (it == ongoing_activation_throttles_.end()) {
-    if (IsInSubresourceFilterRoot(navigation_handle)) {
-      // Navigation throttles are never created for URLs that aren't handled by
-      // the network stack (e.g., about:blank). Since plumbing the reason
-      // earlier would be complex/invasive, we retroactively assign the reason
-      // here to ensure our metrics cover this potentially common case.
-      if (!content::IsURLHandledByNetworkStack(navigation_handle->GetURL())) {
-        root_navigation_disabled_reason_ = mojom::
-            SubresourceFilterDisabledReason::kUrlNotHandledByNetworkStack;
-      }
-    }
     return mojom::ActivationState();
   }
 
@@ -217,20 +203,12 @@ ContentSubresourceFilterThrottleManager::ActivationStateForNextCommittedLoad(
   ActivationStateComputingNavigationThrottle* throttle = it->second;
   AsyncDocumentSubresourceFilter* filter = throttle->filter();
   if (!filter) {
-    if (IsInSubresourceFilterRoot(navigation_handle)) {
-      root_navigation_disabled_reason_ =
-          mojom::SubresourceFilterDisabledReason::kFilterNeverCreated;
-    }
     return mojom::ActivationState();
   }
 
   // A filter with DISABLED activation indicates a corrupted ruleset.
   if (filter->activation_state().activation_level ==
       mojom::ActivationLevel::kDisabled) {
-    if (IsInSubresourceFilterRoot(navigation_handle)) {
-      root_navigation_disabled_reason_ =
-          mojom::SubresourceFilterDisabledReason::kRulesetUnavailableOrCorrupt;
-    }
     return mojom::ActivationState();
   }
 
@@ -361,7 +339,7 @@ void ContentSubresourceFilterThrottleManager::DidFinishInFrameNavigation(
         navigation_handle,
         filter ? filter->activation_state().activation_level
                : mojom::ActivationLevel::kDisabled,
-        root_navigation_disabled_reason_, did_inherit_opener_activation);
+        did_inherit_opener_activation);
   }
 
   DestroyRulesetHandleIfNoLongerUsed();
@@ -445,19 +423,11 @@ void ContentSubresourceFilterThrottleManager::
     RecordUmaHistogramsForRootNavigation(
         content::NavigationHandle* navigation_handle,
         const mojom::ActivationLevel& activation_level,
-        const mojom::SubresourceFilterDisabledReason& disabled_reason,
         bool did_inherit_opener_activation) {
   CHECK(IsInSubresourceFilterRoot(navigation_handle));
 
   UMA_HISTOGRAM_ENUMERATION("SubresourceFilter.PageLoad.ActivationState",
                             activation_level);
-
-  if (activation_level == mojom::ActivationLevel::kDisabled) {
-    UMA_HISTOGRAM_ENUMERATION(
-        "SubresourceFilter.PageLoad.ActivationState.DisabledReason",
-        disabled_reason);
-  }
-
   if (did_inherit_opener_activation) {
     UMA_HISTOGRAM_ENUMERATION(
         "SubresourceFilter.PageLoad.ActivationState.DidInherit",
@@ -518,9 +488,6 @@ void ContentSubresourceFilterThrottleManager::OnPageActivationComputed(
   // intentionally disables AdTagging and all dependent features for this
   // navigation/frame.
   if (activation_state.activation_level == mojom::ActivationLevel::kDisabled) {
-    // Cache the reason for metrics recording on navigation finish.
-    root_navigation_disabled_reason_ = activation_state.disabled_reason;
-
     ongoing_activation_throttles_.erase(it);
     return;
   }

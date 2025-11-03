@@ -104,7 +104,6 @@ subresource_filter::WebDocumentSubresourceFilterImpl* CreateSubresourceFilter(
     scoped_refptr<const subresource_filter::MemoryMappedRuleset> ruleset) {
   subresource_filter::mojom::ActivationState activation_state(
       subresource_filter::mojom::ActivationLevel::kDryRun,
-      subresource_filter::mojom::SubresourceFilterDisabledReason::kUnknown,
       /*filtering_disabled_for_document=*/false,
       /*generic_blocking_rules_disabled=*/false,
       /*measure_performance=*/false,

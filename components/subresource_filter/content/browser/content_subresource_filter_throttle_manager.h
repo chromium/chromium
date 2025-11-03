@@ -342,7 +342,6 @@ class ContentSubresourceFilterThrottleManager
   void RecordUmaHistogramsForRootNavigation(
       content::NavigationHandle* navigation_handle,
       const mojom::ActivationLevel& activation_level,
-      const mojom::SubresourceFilterDisabledReason& disabled_reason,
       bool did_inherit_opener_activation);
 
   // Sets whether the frame is considered an ad frame. If the value has changed,
@@ -364,12 +363,6 @@ class ContentSubresourceFilterThrottleManager
   std::map<int64_t,
            raw_ptr<ActivationStateComputingNavigationThrottle, CtnExperimental>>
       ongoing_activation_throttles_;
-
-  // Stores the reason for disabling the subresource filter for the root
-  // navigation. This value is determined during the navigation and represents
-  // the final outcome for this page load.
-  mojom::SubresourceFilterDisabledReason root_navigation_disabled_reason_ =
-      mojom::SubresourceFilterDisabledReason::kUnknown;
 
   // Set of frames that have been identified as ads, identified by FrameTreeNode
   // ID. A RenderFrameHost is an ad frame iff the FrameAdEvidence

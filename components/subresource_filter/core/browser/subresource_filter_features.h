@@ -112,8 +112,7 @@ struct Configuration {
   // different from this config's activation level due to things like warning
   // mode or client allowlisting.
   mojom::ActivationState GetActivationState(
-      mojom::ActivationLevel effective_activation_level,
-      mojom::SubresourceFilterDisabledReason disabled_reason) const;
+      mojom::ActivationLevel effective_activation_level) const;
 
   // Factory methods for preset configurations.
   //

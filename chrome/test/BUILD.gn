@@ -3594,7 +3594,6 @@ if (!is_android) {
       "../browser/subresource_filter/ruleset_browsertest.cc",
       "../browser/subresource_filter/subresource_filter_browsertest.cc",
       "../browser/subresource_filter/subresource_filter_devtools_browsertest.cc",
-      "../browser/subresource_filter/subresource_filter_disabled_reason_uma_browsertest.cc",
       "../browser/subresource_filter/subresource_filter_dns_alias_browsertest.cc",
       "../browser/subresource_filter/subresource_filter_fenced_frame_browsertest.cc",
       "../browser/subresource_filter/subresource_filter_intercepting_browsertest.cc",

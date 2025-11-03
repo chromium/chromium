@@ -1498,7 +1498,6 @@ void TestRunnerBindings::SetDisallowedSubresourcePathSuffixes(
   // Some tests rely on console loggings.
   subresource_filter::mojom::ActivationState activation_state(
       activation_level,
-      subresource_filter::mojom::SubresourceFilterDisabledReason::kUnknown,
       /*filtering_disabled_for_document=*/false,
       /*generic_blocking_rules_disabled=*/false,
       /*measure_performance=*/false,

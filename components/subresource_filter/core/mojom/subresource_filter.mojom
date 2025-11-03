@@ -24,56 +24,9 @@ enum AdsViolation {
     kOverlayPopupAd,
 };
 
-// Provides a breakdown of why the subresource filter was not activated for a
-// page load.
-//
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused. Please update the enum named
-// SubresourceFilterDisabledReason in enums.xml when adding a new entry here.
-enum SubresourceFilterDisabledReason {
-  // A placeholder for untracked or default cases.
-  kUnknown,
-
-  // The root frame document URL did not meet the activation conditions of any
-  // enabled configurations. For example, the URL was not on the activation
-  // list, or it had a non-http(s) scheme (e.g., chrome://newtab).
-  kNoMatchingConfiguration,
-
-  // Activation was disabled by the highest-priority configuration that the
-  // page load matched.
-  kDisabledByConfiguration,
-
-  // The root frame URL was explicitly allowlisted by the user in settings,
-  // overriding any matching activation conditions.
-  kUrlAllowlisted,
-
-  // The subresource filter is in "warning" mode for this page load. It will
-  // not block resources but will log messages to the DevTools console about
-  // what would have been blocked.
-  kWarningMode,
-
-  // The navigation failed to commit (e.g., due to a network error).
-  kNavigationError,
-
-  // The subresource filter could not be created for the page load, e.g.,
-  // because the Safe Browsing database was unavailable.
-  kFilterNeverCreated,
-
-  // The ruleset file was unavailable or corrupt.
-  kRulesetUnavailableOrCorrupt,
-
-  // The URL is not eligible to be handled by the network stack (e.g.,
-  // about:blank), which prevents the creation of the NavigationThrottle that
-  // tracks the activation state.
-  kUrlNotHandledByNetworkStack,
-};
-
 struct ActivationState {
   // The degree to which subresource filtering is activated for the page load.
   ActivationLevel activation_level = kDisabled;
-
-  // The reason why the subresource filter was disabled.
-  SubresourceFilterDisabledReason disabled_reason = SubresourceFilterDisabledReason.kUnknown;
 
   // Even when subresource filtering is activated at the page level, a document
   // in the current frame (and/or ancestors thereof) may still match special
