@@ -314,10 +314,6 @@ void ManifestUpdateManager::StartCheckAfterPageAndManifestUrlLoad(
   update_stage.observer.reset();
   update_stage.stage = UpdateStage::Stage::kCheckingManifestDiff;
 
-  if (load_finished_callback_) {
-    std::move(load_finished_callback_).Run();
-  }
-
   // TODO(crbug.com/442643377): Don't do this here, and instead use a per-page
   // class to be notified when a valid manifest is attached to a page.
   if (base::FeatureList::IsEnabled(features::kWebAppPredictableAppUpdating) &&
@@ -332,15 +328,22 @@ void ManifestUpdateManager::StartCheckAfterPageAndManifestUrlLoad(
         *web_contents, previous_time_for_silent_icon_update,
         base::BindOnce(&ManifestUpdateManager::OnManifestSilentUpdateComplete,
                        weak_factory_.GetWeakPtr(), web_contents, url, app_id));
-    return;
+  } else {
+    auto app_window_close_await_callback = base::BindOnce(
+        &ManifestUpdateManager::OnManifestCheckAwaitAppWindowClose,
+        weak_factory_.GetWeakPtr(), web_contents, url, app_id);
+    provider_->scheduler().ScheduleManifestUpdateCheck(
+        url, app_id, check_time, web_contents,
+        std::move(app_window_close_await_callback));
   }
 
-  auto app_window_close_await_callback =
-      base::BindOnce(&ManifestUpdateManager::OnManifestCheckAwaitAppWindowClose,
-                     weak_factory_.GetWeakPtr(), web_contents, url, app_id);
-  provider_->scheduler().ScheduleManifestUpdateCheck(
-      url, app_id, check_time, web_contents,
-      std::move(app_window_close_await_callback));
+  // Run the `load_finished_callback_` after it is guaranteed that the command
+  // has been scheduled, to prevent flakiness in case the callback runs before
+  // the command is scheduled, and any subsequent
+  // `AwaitAllCommandsCompleteForTesting()` ends instantly.
+  if (load_finished_callback_) {
+    std::move(load_finished_callback_).Run();
+  }
 }
 
 void ManifestUpdateManager::OnManifestSilentUpdateComplete(
