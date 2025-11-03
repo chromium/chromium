@@ -348,7 +348,7 @@ TEST_F(VideoResourceUpdaterTest, SoftwareFrameRGB) {
 #if BUILDFLAG(IS_MAC)
     EXPECT_EQ(resource.resource.format, viz::SinglePlaneFormat::kBGRA_8888);
 #else
-    EXPECT_EQ(resource.resource.size, video_frame->coded_size());
+    EXPECT_EQ(resource.resource.GetSize(), video_frame->coded_size());
 
     if (fmt == PIXEL_FORMAT_XBGR) {
       EXPECT_EQ(resource.resource.format, viz::SinglePlaneFormat::kRGBA_8888);
@@ -374,7 +374,7 @@ TEST_F(VideoResourceUpdaterTest, SoftwareFrameRGBNonOrigin) {
     VideoFrameExternalResource resource =
         updater->CreateExternalResourceFromVideoFrame(video_frame);
     EXPECT_EQ(VideoFrameResourceType::RGB, resource.type);
-    EXPECT_EQ(resource.resource.size, video_frame->coded_size());
+    EXPECT_EQ(resource.resource.GetSize(), video_frame->coded_size());
 
     auto rect = video_frame->visible_rect();
 
@@ -403,7 +403,7 @@ TEST_F(VideoResourceUpdaterTest, SoftwareFrameY16NonOrigin) {
   VideoFrameExternalResource resource =
       updater->CreateExternalResourceFromVideoFrame(video_frame);
   EXPECT_EQ(VideoFrameResourceType::RGB, resource.type);
-  EXPECT_EQ(resource.resource.size, video_frame->coded_size());
+  EXPECT_EQ(resource.resource.GetSize(), video_frame->coded_size());
 
   auto rect = video_frame->visible_rect();
 
@@ -439,7 +439,7 @@ TEST_F(VideoResourceUpdaterTest, SoftwareFrameRGBAF16) {
   VideoFrameExternalResource resource =
       updater->CreateExternalResourceFromVideoFrame(video_frame);
   EXPECT_EQ(VideoFrameResourceType::RGB, resource.type);
-  EXPECT_EQ(resource.resource.size, video_frame->coded_size());
+  EXPECT_EQ(resource.resource.GetSize(), video_frame->coded_size());
 }
 
 TEST_F(VideoResourceUpdaterTest, HighBitFrameNoF16) {
