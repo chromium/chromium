@@ -364,6 +364,25 @@ void WebRtcTextLogHandler::LogToCircularBuffer(const std::string& message) {
   }
 }
 
+base::RepeatingCallback<void(const std::string&)>
+WebRtcTextLogHandler::GetLogMessageCallback() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (logging_state_ != STARTED) {
+    return {};
+  }
+
+  if (channel_is_closing_) {
+    return {};
+  }
+
+  return base::BindRepeating(
+      &ForwardMessageViaTaskRunner,
+      base::SequencedTaskRunner::GetCurrentDefault(),
+      base::BindRepeating(&WebRtcTextLogHandler::LogMessage,
+                          weak_factory_.GetWeakPtr()));
+}
+
 void WebRtcTextLogHandler::LogMessage(const std::string& message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (logging_state_ == STARTED && !channel_is_closing_) {

@@ -483,7 +483,7 @@ IN_PROC_BROWSER_TEST_P(TabSharingUIViewsBrowserTest, StopSharing) {
   ASSERT_EQ(browser()->tab_strip_model()->count(), 3);
   CreateUiAndStartSharing(browser(), /*capturing_tab=*/0, /*captured_tab=*/1);
 
-  tab_sharing_ui_views()->StopSharing();
+  tab_sharing_ui_views()->StopSharing("reason");
 
   // Test that the infobars have been removed, and the contents border and tab
   // capture indicator are no longer visible.
@@ -609,7 +609,7 @@ IN_PROC_BROWSER_TEST_P(TabSharingUIViewsBrowserTest, KillTab) {
   EXPECT_EQ(0u, infobar_manager->infobars().size());
 
   // Stop sharing should not result in a crash.
-  tab_sharing_ui_views()->StopSharing();
+  tab_sharing_ui_views()->StopSharing("reason");
 }
 
 IN_PROC_BROWSER_TEST_P(TabSharingUIViewsBrowserTest, KillSharedTab) {
@@ -972,7 +972,7 @@ IN_PROC_BROWSER_TEST_F(MultipleTabSharingUIViewsBrowserTest, StopSharing) {
   // Stop sharing tabs one by one and check that infobars are removed as well.
   size_t shared_tab_count = 3;
   while (shared_tab_count) {
-    tab_sharing_ui_views(--shared_tab_count)->StopSharing();
+    tab_sharing_ui_views(--shared_tab_count)->StopSharing("reason");
     for (int j = 0; j < browser()->tab_strip_model()->count(); ++j) {
       ASSERT_EQ(shared_tab_count,
                 GetInfoBarManager(browser(), j)->infobars().size());

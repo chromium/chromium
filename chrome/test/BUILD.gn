@@ -8130,6 +8130,7 @@ test("unit_tests") {
       "../browser/media/webrtc/webrtc_logging_controller_unittest.cc",
       "../browser/media/webrtc/webrtc_rtp_dump_handler_unittest.cc",
       "../browser/media/webrtc/webrtc_rtp_dump_writer_unittest.cc",
+      "../browser/media/webrtc/webrtc_text_log_handler_unittest.cc",
       "../browser/media_galleries/fileapi/native_media_file_util_unittest.cc",
       "../browser/media_galleries/gallery_watch_manager_unittest.cc",
       "../browser/media_galleries/media_file_system_registry_unittest.cc",

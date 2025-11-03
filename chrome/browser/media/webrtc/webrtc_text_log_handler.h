@@ -94,6 +94,8 @@ class WebRtcTextLogHandler {
   void ReleaseLog(std::unique_ptr<WebRtcLogBuffer>* log_buffer,
                   std::unique_ptr<WebRtcLogMetaDataMap>* meta_data);
 
+  base::RepeatingCallback<void(const std::string&)> GetLogMessageCallback();
+
   // Adds a message to the log.
   void LogMessage(const std::string& message);
 

@@ -305,6 +305,11 @@ void WebRtcLoggingController::StartEventLogging(
       web_app_id, callback);
 }
 
+base::RepeatingCallback<void(const std::string&)>
+WebRtcLoggingController::GetLogMessageCallback() {
+  return text_log_handler_->GetLogMessageCallback();
+}
+
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 void WebRtcLoggingController::GetLogsDirectory(
     LogsDirectoryCallback callback,

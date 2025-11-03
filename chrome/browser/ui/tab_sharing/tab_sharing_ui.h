@@ -31,7 +31,7 @@ class TabSharingUI : public MediaStreamUI {
       bool captured_surface_control_active);
 
   virtual void StartSharing(infobars::InfoBar* infobar) = 0;
-  virtual void StopSharing() = 0;
+  virtual void StopSharing(std::string_view reason) = 0;
   virtual ScreensharingControlsHistogramLogger& GetUmaLogger() = 0;
 };
 

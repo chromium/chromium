@@ -16,7 +16,7 @@ class MockTabSharingUI : public TabSharingUI {
   ~MockTabSharingUI() override;
 
   MOCK_METHOD(void, StartSharing, (infobars::InfoBar * infobar));
-  MOCK_METHOD(void, StopSharing, ());
+  MOCK_METHOD(void, StopSharing, (std::string_view));
 
   gfx::NativeViewId OnStarted(
       base::OnceClosure stop_callback,

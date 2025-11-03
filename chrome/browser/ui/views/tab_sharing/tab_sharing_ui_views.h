@@ -73,7 +73,7 @@ class TabSharingUIViews : public TabSharingUI,
 
   // Runs |stop_callback_| to stop sharing |shared_tab_|. Removes infobars on
   // all tabs.
-  void StopSharing() override;
+  void StopSharing(std::string_view reason) override;
 
   // TabSharingUI:
   // Returns the object that coordinates UMA logging from multiple infobars,
@@ -208,6 +208,7 @@ class TabSharingUIViews : public TabSharingUI,
 
   content::MediaStreamUI::SourceCallback source_callback_;
   base::OnceClosure stop_callback_;
+  base::RepeatingCallback<void(const std::string&)> log_message_callback_;
 
   const bool app_preferred_current_tab_;
 
