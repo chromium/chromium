@@ -47,7 +47,7 @@ std::string HexEncode(uint16_t v) {
   uint8_t bytes[sizeof(uint16_t)];
   bytes[1] = v & 0xFF;
   bytes[0] = v >> 8;
-  return base::ToLowerASCII(base::HexEncode(bytes));
+  return base::HexEncodeLower(bytes);
 }
 
 bool ExistingSettingsHasValue(std::string_view setting_key,
