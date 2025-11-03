@@ -190,6 +190,8 @@ HRESULT TSFTextStore::GetACPFromPoint(TsViewCookie view_cookie,
       return TS_E_INVALIDPOINT;
     }
     *acp = index.value();
+    TRACE_EVENT2("ime", "TSFTextStore::GetACPFromPoint", "POINT",
+                 gfx::Point(*point).ToString(), "ACP", acp);
     return S_OK;
   }
 
@@ -1577,6 +1579,8 @@ void TSFTextStore::CommitTextAndEndCompositionIfAny(size_t old_size,
     text_input_client_->InsertText(
         new_committed_string,
         ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
+    TRACE_EVENT1("ime", "TSFTextStore::CommitTextAndEndCompositionIfAny",
+                 "data", new_committed_string);
   } else {
     text_input_client_->ClearCompositionText();
   }
