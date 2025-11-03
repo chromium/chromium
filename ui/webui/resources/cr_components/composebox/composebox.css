@@ -449,13 +449,8 @@
   height: var(--cr-icon-button-size);
   bottom: var(--input-bottom-spacing);
   position: absolute;
-  right: 16px;
+  inset-inline-end: 12px;
   width: var(--cr-icon-button-size);
-}
-
-:host-context([dir='rtl']) #submitContainer {
-  left: 16px;
-  right: unset;
 }
 
 :host([show-submit_][submit-enabled_]:not([ntp-realbox-next-enabled])) #submitContainer {
@@ -481,13 +476,8 @@
   background-color: var(--color-composebox-submit-button);
   bottom: 0;
   opacity: 30%; /* For Lens side panel. */
-  right: 0;
+  inset-inline-end: 0;
   transition: var(--submit-enabled-transition);
-}
-
-:host-context([dir='rtl']) #submitIcon {
-  left: 0;
-  right: unset;
 }
 
 #submitIcon:focus-visible:focus {
