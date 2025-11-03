@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
-import static org.chromium.chrome.browser.tasks.tab_management.ArchivedTabsCardViewProperties.ARCHIVE_TIME_DELTA_DAYS;
 import static org.chromium.chrome.browser.tasks.tab_management.ArchivedTabsCardViewProperties.ICON_HIGHLIGHTED;
 import static org.chromium.chrome.browser.tasks.tab_management.ArchivedTabsCardViewProperties.NUMBER_OF_ARCHIVED_TABS;
 import static org.chromium.chrome.browser.tasks.tab_management.ArchivedTabsCardViewProperties.WIDTH;
@@ -362,7 +361,6 @@ public class ArchivedTabsMessageService
 
     private void updateModelProperties(int tabCount) {
         mModel.set(NUMBER_OF_ARCHIVED_TABS, tabCount);
-        mModel.set(ARCHIVE_TIME_DELTA_DAYS, mTabArchiveSettings.getArchiveTimeDeltaDays());
     }
 
     private void maybeResizeCard(int spanCount, Size cardSize) {

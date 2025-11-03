@@ -16,7 +16,6 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
-import androidx.annotation.PluralsRes;
 import androidx.annotation.Px;
 
 import org.chromium.build.annotations.NullMarked;
@@ -52,6 +51,7 @@ public class ArchivedTabsCardView extends FrameLayout {
         mCardContainer = findViewById(R.id.card);
         mTitleView = findViewById(R.id.title);
         mSubtitleView = findViewById(R.id.subtitle);
+        setSubtitleText();
         mEndIconView = findViewById(R.id.end_image);
 
         mEndIconView.setScaleX(isLayoutRtl() ? -1 : 1);
@@ -95,24 +95,6 @@ public class ArchivedTabsCardView extends FrameLayout {
     }
 
     /**
-     * Sets the subtitle text based on the archive time delta.
-     *
-     * @param inactiveTimeDeltaDays The number of days after which tabs are archived.
-     */
-    public void setArchiveTimeDeltaDays(int inactiveTimeDeltaDays) {
-        @PluralsRes
-        int tabCardSubtitleRes =
-                ChromeFeatureList.sAndroidTabDeclutterArchiveTabGroups.isEnabled()
-                        ? R.plurals.archived_tab_card_subtitle_with_tab_groups
-                        : R.plurals.archived_tab_card_subtitle;
-        String subtitle =
-                getResources()
-                        .getQuantityString(
-                                tabCardSubtitleRes, inactiveTimeDeltaDays, inactiveTimeDeltaDays);
-        mSubtitleView.setText(subtitle);
-    }
-
-    /**
      * Sets the click handler for the entire card.
      *
      * @param handler The {@link Runnable} to execute on click.
@@ -152,5 +134,15 @@ public class ArchivedTabsCardView extends FrameLayout {
         scaleAnimator.playTogether(scaleX, scaleY);
 
         mAnimationHandler.startAnimation(scaleAnimator);
+    }
+
+    /** Sets the subtitle text based on the archive time delta. */
+    private void setSubtitleText() {
+        mSubtitleView.setText(
+                getResources()
+                        .getString(
+                                ChromeFeatureList.sAndroidTabDeclutterArchiveTabGroups.isEnabled()
+                                        ? R.string.archived_tab_card_subtitle_with_tab_groups
+                                        : R.string.archived_tab_card_subtitle));
     }
 }

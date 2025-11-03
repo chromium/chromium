@@ -18,7 +18,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import static org.chromium.chrome.browser.tasks.tab_management.ArchivedTabsCardViewProperties.ARCHIVE_TIME_DELTA_DAYS;
 import static org.chromium.chrome.browser.tasks.tab_management.ArchivedTabsCardViewProperties.CLICK_HANDLER;
 import static org.chromium.chrome.browser.tasks.tab_management.ArchivedTabsCardViewProperties.NUMBER_OF_ARCHIVED_TABS;
 
@@ -197,13 +196,11 @@ public class ArchivedTabsMessageServiceUnitTest {
 
         mTabCountSupplier.set(1);
         assertEquals(1, customCardPropertyModel.get(NUMBER_OF_ARCHIVED_TABS));
-        assertEquals(10, customCardPropertyModel.get(ARCHIVE_TIME_DELTA_DAYS));
         verify(mMessageObserver, times(1))
                 .messageReady(eq(MessageType.ARCHIVED_TABS_MESSAGE), any());
 
         mTabCountSupplier.set(0);
         assertEquals(0, customCardPropertyModel.get(NUMBER_OF_ARCHIVED_TABS));
-        assertEquals(10, customCardPropertyModel.get(ARCHIVE_TIME_DELTA_DAYS));
         verify(mMessageObserver, times(1)).messageInvalidate(MessageType.ARCHIVED_TABS_MESSAGE);
         verify(mAppendMessageRunnable).run();
     }
@@ -216,13 +213,11 @@ public class ArchivedTabsMessageServiceUnitTest {
 
         mTabCountSupplier.set(12);
         assertEquals(12, customCardPropertyModel.get(NUMBER_OF_ARCHIVED_TABS));
-        assertEquals(10, customCardPropertyModel.get(ARCHIVE_TIME_DELTA_DAYS));
 
         verify(mMessageObserver, times(1))
                 .messageReady(eq(MessageType.ARCHIVED_TABS_MESSAGE), any());
         mTabCountSupplier.set(8);
         assertEquals(8, customCardPropertyModel.get(NUMBER_OF_ARCHIVED_TABS));
-        assertEquals(10, customCardPropertyModel.get(ARCHIVE_TIME_DELTA_DAYS));
         // Sending another message to the queue should exit early without sending a message.
         verify(mMessageObserver, times(1))
                 .messageReady(eq(MessageType.ARCHIVED_TABS_MESSAGE), any());
@@ -255,7 +250,6 @@ public class ArchivedTabsMessageServiceUnitTest {
 
         doReturn(15).when(mTabArchiveSettings).getArchiveTimeDeltaDays();
         mTabArchiveSettingsObserverCaptor.getValue().onSettingChanged();
-        assertEquals(15, customCardPropertyModel.get(ARCHIVE_TIME_DELTA_DAYS));
     }
 
     @Test
@@ -322,7 +316,6 @@ public class ArchivedTabsMessageServiceUnitTest {
 
         mTabCountSupplier.set(12);
         assertEquals(12, customCardPropertyModel.get(NUMBER_OF_ARCHIVED_TABS));
-        assertEquals(10, customCardPropertyModel.get(ARCHIVE_TIME_DELTA_DAYS));
 
         verify(mMessageObserver).messageReady(eq(MessageType.ARCHIVED_TABS_MESSAGE), any());
         mTabCountSupplier.set(8);

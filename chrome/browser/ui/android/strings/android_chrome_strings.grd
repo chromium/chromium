@@ -7212,26 +7212,22 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
           other {(#) inactive items}}
       </message>
       <message name="IDS_ARCHIVED_TAB_CARD_SUBTITLE" desc="Shown in the tab switcher to inform the user how long the relevant tabs have been inactive for.">
-        {INACTIVE_TIME_DAYS, plural,
-          =1 {Not used for 1 day or more}
-          other {Not used for # days or more}}
+        Unused or duplicate tabs
       </message>
-      <message name="IDS_ARCHIVED_TAB_CARD_SUBTITLE_WITH_TAB_GROUPS" desc="Shown in the tab switcher to inform the user how long the relevant tabs and tab groups have been inactive for. [CHAR_LIMIT=32]">
-        {INACTIVE_TIME_DAYS, plural,
-          =1 {Tabs and groups not used for 1 day or more}
-          other {Tabs and groups not used for # days or more}}
+      <message name="IDS_ARCHIVED_TAB_CARD_SUBTITLE_WITH_TAB_GROUPS" desc="Shown in the tab switcher to inform the user of their inactive tabs and groups. [CHAR_LIMIT=32]">
+        Unused or duplicate tabs and groups
       </message>
       <message name="IDS_ARCHIVED_TAB_IPH_CARD_SUBTITLE" desc="In product help shown as a message in the archived tabs dialog.">
-        Tabs you haven’t used for <ph name="DAYS_INACTIVE">%1$d<ex>14</ex></ph> days are moved here<ph name="AUTODELETE_SECTION">%2$s<ex>and deleted after 3 months</ex></ph>. You can change this anytime in <ph name="SETTINGS_TITLE">%3$s<ex>Settings</ex></ph>.
+        Duplicate tabs or those unused for <ph name="DAYS_INACTIVE">%1$d<ex>14</ex></ph> days are moved here<ph name="AUTODELETE_SECTION">%2$s<ex>and closed after 3 months</ex></ph>. You can change this anytime in <ph name="DECLUTTER_SETTINGS_TITLE">%3$s<ex>settings</ex></ph>.
       </message>
       <message name="IDS_ARCHIVED_TAB_IPH_CARD_SUBTITLE_WITH_TAB_GROUPS" desc="In product help shown as a message in the archived tabs dialog.">
-        Tabs and tab groups you haven’t used for <ph name="DAYS_INACTIVE">%1$d<ex>14</ex></ph> days are moved here<ph name="AUTODELETE_SECTION">%2$s<ex>and deleted after 3 months</ex></ph>. You can change this anytime in <ph name="SETTINGS_TITLE">%3$s<ex>Settings</ex></ph>.
+        Duplicate tabs and groups or those unused for <ph name="DAYS_INACTIVE">%1$d<ex>14</ex></ph> days are moved here<ph name="AUTODELETE_SECTION">%2$s<ex>and closed after 3 months</ex></ph>. You can change this anytime in <ph name="DECLUTTER_SETTINGS_TITLE">%3$s<ex>settings</ex></ph>.
       </message>
       <message name="IDS_ARCHIVED_TAB_IPH_CARD_SUBTITLE_AUTODELETE_SECTION" desc="A section describing auto-delete, shown if it's enabled.">
         \u0020and closed after <ph name="MONTHS_ARCHIVED">%1$d<ex>3</ex></ph> months
       </message>
       <message name="IDS_ARCHIVED_TAB_IPH_CARD_SUBTITLE_SETTINGS_TITLE" desc="The word for settings, used in IDS_ARCHIVED_TAB_IPH_CARD_SUBTITLE.">
-        Settings
+        settings
       </message>
 
       <!-- Hub search -->

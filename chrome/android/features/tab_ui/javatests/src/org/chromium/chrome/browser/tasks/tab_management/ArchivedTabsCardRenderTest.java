@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
-import static org.chromium.chrome.browser.tasks.tab_management.ArchivedTabsCardViewProperties.ARCHIVE_TIME_DELTA_DAYS;
 import static org.chromium.chrome.browser.tasks.tab_management.ArchivedTabsCardViewProperties.NUMBER_OF_ARCHIVED_TABS;
 
 import android.graphics.Color;
@@ -55,7 +54,8 @@ public class ArchivedTabsCardRenderTest {
     public final ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(RenderTestRule.Component.UI_BROWSER_MOBILE_TAB_SWITCHER_GRID)
-                    .setRevision(7)
+                    .setRevision(8)
+                    .setDescription("Update strings to take duplicate tab archive into account.")
                     .build();
 
     @Rule
@@ -95,7 +95,6 @@ public class ArchivedTabsCardRenderTest {
                             ArchivedTabsCardViewBinder.createPropertyModel(
                                     new ArchivedTabsMessageData(mCallbackHelper::notifyCalled));
                     mModel.set(NUMBER_OF_ARCHIVED_TABS, 12);
-                    mModel.set(ARCHIVE_TIME_DELTA_DAYS, 14);
 
                     PropertyModelChangeProcessor.create(
                             mModel, mArchivedTabsCardView, ArchivedTabsCardViewBinder::bind);
@@ -127,7 +126,6 @@ public class ArchivedTabsCardRenderTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.set(NUMBER_OF_ARCHIVED_TABS, 99999999);
-                    mModel.set(ARCHIVE_TIME_DELTA_DAYS, 99999999);
                 });
         mRenderTestRule.render(mArchivedTabsCardView, "plural_huge");
     }
@@ -139,7 +137,6 @@ public class ArchivedTabsCardRenderTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.set(NUMBER_OF_ARCHIVED_TABS, 1);
-                    mModel.set(ARCHIVE_TIME_DELTA_DAYS, 1);
                 });
 
         mRenderTestRule.render(mArchivedTabsCardView, "singular");

@@ -23,8 +23,6 @@ public class ArchivedTabsCardViewProperties {
             new WritableIntPropertyKey();
     public static final WritableBooleanPropertyKey ICON_HIGHLIGHTED =
             new WritableBooleanPropertyKey();
-    public static final WritableIntPropertyKey ARCHIVE_TIME_DELTA_DAYS =
-            new WritableIntPropertyKey();
     public static final ReadableObjectPropertyKey<Runnable> CLICK_HANDLER =
             new ReadableObjectPropertyKey<>();
     public static final WritableIntPropertyKey WIDTH = new WritableIntPropertyKey();
@@ -33,7 +31,6 @@ public class ArchivedTabsCardViewProperties {
             new PropertyKey[] {
                 NUMBER_OF_ARCHIVED_TABS,
                 ICON_HIGHLIGHTED,
-                ARCHIVE_TIME_DELTA_DAYS,
                 CLICK_HANDLER,
                 WIDTH,
                 MESSAGE_CARD_VISIBILITY_CONTROL_IN_REGULAR_AND_INCOGNITO_MODE,
