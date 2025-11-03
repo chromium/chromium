@@ -184,6 +184,22 @@ void UnexportableKeyServiceImpl::DeleteKeySlowlyAsync(
   std::move(callback).Run(base::ok());
 }
 
+void UnexportableKeyServiceImpl::CopyKeyFromOtherService(
+    const UnexportableKeyService& other_service,
+    UnexportableKeyId key_id_from_other_service,
+    BackgroundTaskPriority priority,
+    base::OnceCallback<void(ServiceErrorOr<UnexportableKeyId>)> callback) {
+  ServiceErrorOr<std::vector<uint8_t>> wrapped_key =
+      other_service.GetWrappedKey(key_id_from_other_service);
+  if (!wrapped_key.has_value()) {
+    std::move(callback).Run(base::unexpected(wrapped_key.error()));
+    return;
+  }
+
+  // TODO: crbug.com/455538141 - Implement key copy in the task manager.
+  FromWrappedSigningKeySlowlyAsync(*wrapped_key, priority, std::move(callback));
+}
+
 void UnexportableKeyServiceImpl::DeleteAllKeysSlowlyAsync(
     BackgroundTaskPriority priority,
     base::OnceCallback<void(ServiceErrorOr<void>)> callback) {

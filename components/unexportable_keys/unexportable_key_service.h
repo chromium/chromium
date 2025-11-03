@@ -127,6 +127,17 @@ class COMPONENT_EXPORT(UNEXPORTABLE_KEYS) UnexportableKeyService {
       base::OnceCallback<void(ServiceErrorOr<std::vector<UnexportableKeyId>>)>
           callback) = 0;
 
+// Copies a key from another service.
+  //
+  // Invokes `callback` with a `ServiceError` if `key_id_from_other_service` is
+  // not found. Otherwise, returns a new key ID that can be used to refer to the
+  // same key.
+  virtual void CopyKeyFromOtherService(
+      const UnexportableKeyService& other_service,
+      UnexportableKeyId key_id_from_other_service,
+      BackgroundTaskPriority priority,
+      base::OnceCallback<void(ServiceErrorOr<UnexportableKeyId>)> callback) = 0;
+
   // Schedules a new asynchronous signing task.
   // Might return a cached result if a task with the same combination of
   // `signing_key` and `data` has been completed recently.
