@@ -1062,8 +1062,8 @@ void NewWindow(BrowserWindowInterface* browser) {
   Profile* const profile = browser->GetProfile();
 #if BUILDFLAG(IS_MAC)
   // Web apps should open a window to their launch page.
-  if (web_app::AppBrowserController* const app_browser_controller =
-          browser->GetFeatures().app_browser_controller()) {
+  if (auto* const app_browser_controller =
+          web_app::AppBrowserController::From(browser)) {
     const webapps::AppId app_id = app_browser_controller->app_id();
 
     auto launch_container = apps::LaunchContainer::kLaunchContainerWindow;
@@ -2478,7 +2478,7 @@ bool IsWebAppOrCustomTab(const BrowserWindowInterface* bwi) {
 #if BUILDFLAG(IS_CHROMEOS)
       bwi->GetType() == BrowserWindowInterface::TYPE_CUSTOM_TAB ||
 #endif
-      !!bwi->GetAppBrowserController();
+      web_app::AppBrowserController::IsWebApp(bwi);
 }
 
 Browser* OpenInChrome(Browser* hosted_app_browser) {

@@ -76,6 +76,10 @@ class WebAppBrowserController : public AppBrowserController,
   WebAppBrowserController& operator=(const WebAppBrowserController&) = delete;
   ~WebAppBrowserController() override;
 
+  // Returns the web app controller if `browser` is a web app and the controller
+  // is a WebAppBrowserController, otherwise null.
+  static WebAppBrowserController* From(BrowserWindowInterface* browser);
+
   // AppBrowserController:
   using HomeTabCallbackList = base::OnceCallbackList<void()>;
   bool HasMinimalUiButtons() const override;

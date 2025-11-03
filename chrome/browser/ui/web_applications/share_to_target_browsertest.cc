@@ -105,7 +105,7 @@ class ShareToTargetBrowserTest : public WebAppBrowserTestBase,
     ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
         [&app_id](BrowserWindowInterface* browser) {
           const web_app::AppBrowserController* const app_controller =
-              browser->GetAppBrowserController();
+              web_app::AppBrowserController::From(browser);
           if (app_controller && app_controller->app_id() == app_id) {
             browser->GetWindow()->Close();
           }

@@ -93,8 +93,13 @@ END_METADATA
 bool ShouldShowNewTabButton(BrowserWindowInterface* browser) {
   // `browser` can be null in tests and `app_controller` will be null if
   // the browser is not for an app.
-  return !browser || !browser->GetAppBrowserController() ||
-         !browser->GetAppBrowserController()->ShouldHideNewTabButton();
+  if (browser) {
+    auto* const controller = web_app::AppBrowserController::From(browser);
+    if (controller && controller->ShouldHideNewTabButton()) {
+      return false;
+    }
+  }
+  return true;
 }
 
 // Updates the border of `view` if the insets need to be updated.

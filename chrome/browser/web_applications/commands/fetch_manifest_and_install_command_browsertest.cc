@@ -385,7 +385,8 @@ IN_PROC_BROWSER_TEST_F(FetchManifestAndInstallCommandTest,
   BrowserWindowInterface* app_browser =
       AppBrowserController::FindForWebApp(*profile(), app_id);
   ASSERT_TRUE(app_browser);
-  EXPECT_TRUE(app_browser->GetAppBrowserController()->ShouldShowCustomTabBar());
+  EXPECT_TRUE(
+      AppBrowserController::From(app_browser)->ShouldShowCustomTabBar());
 
   BrowserView* app_view = BrowserView::GetBrowserViewForBrowser(
       app_browser->GetBrowserForMigrationOnly());

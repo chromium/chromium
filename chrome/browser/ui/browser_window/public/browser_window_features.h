@@ -226,15 +226,6 @@ class BrowserWindowFeatures {
   // Called exactly once to tear down state that depends on the window object.
   void TearDownPreBrowserWindowDestruction();
 
-  // Public accessors for features:
-  web_app::AppBrowserController* app_browser_controller() {
-    return app_browser_controller_.get();
-  }
-
-  const web_app::AppBrowserController* app_browser_controller() const {
-    return app_browser_controller_.get();
-  }
-
   BrowserActions* browser_actions() { return browser_actions_.get(); }
 
   chrome::BrowserCommandController* browser_command_controller() {

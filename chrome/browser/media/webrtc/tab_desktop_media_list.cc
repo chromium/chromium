@@ -17,6 +17,7 @@
 #include "chrome/browser/media/webrtc/desktop_media_list_layout_config.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker_utils.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
@@ -151,8 +152,8 @@ void TabDesktopMediaList::Refresh(bool update_thumnails) {
       [&browsers, profile](BrowserWindowInterface* browser) {
         // Omit all the IWAs for TabDesktopMediaList as they are already
         // present in NativeDesktopMediaList.
-        web_app::AppBrowserController* const app_controller =
-            browser->GetAppBrowserController();
+        auto* const app_controller =
+            web_app::AppBrowserController::From(browser);
         bool is_isolated_web_app =
             app_controller && app_controller->IsIsolatedWebApp();
 

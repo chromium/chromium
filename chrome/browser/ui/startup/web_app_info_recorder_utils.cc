@@ -170,7 +170,7 @@ base::Value GetWebApps::GetOpenWebApps() {
         }
         base::Value::Dict web_app_info;
         const web_app::AppBrowserController* const app_controller =
-            browser->GetAppBrowserController();
+            web_app::AppBrowserController::From(browser);
         web_app_info.Set("id", app_controller->app_id());
         web_app_info.Set("name",
                          base::UTF16ToUTF8(app_controller->GetAppShortName()));

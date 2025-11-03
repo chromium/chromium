@@ -1278,7 +1278,7 @@ IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest, AppIDForPWA) {
   ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
       [app_id, &native_window](BrowserWindowInterface* browser) {
         if (web_app::AppBrowserController* const app_controller =
-                browser->GetAppBrowserController();
+                web_app::AppBrowserController::From(browser);
             app_controller && app_controller->app_id() == app_id) {
           native_window = browser->GetWindow()->GetNativeWindow();
         }

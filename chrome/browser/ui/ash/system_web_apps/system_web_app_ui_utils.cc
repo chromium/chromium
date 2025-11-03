@@ -361,7 +361,7 @@ bool IsBrowserForSystemWebApp(BrowserWindowInterface* browser,
                               SystemWebAppType type) {
   DCHECK(browser);
   web_app::AppBrowserController* const app_controller =
-      browser->GetAppBrowserController();
+      web_app::AppBrowserController::From(browser);
   return app_controller && app_controller->system_app() &&
          app_controller->system_app()->GetType() == type;
 }

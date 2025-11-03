@@ -103,16 +103,29 @@ void SetWebContentsCanAcceptLoadDrops(content::WebContents* contents,
 
 namespace web_app {
 
+DEFINE_USER_DATA(AppBrowserController);
+
+// static
+const AppBrowserController* AppBrowserController::From(
+    const BrowserWindowInterface* browser) {
+  return Get(browser->GetUnownedUserDataHost());
+}
+
+// static
+AppBrowserController* AppBrowserController::From(
+    BrowserWindowInterface* browser) {
+  return Get(browser->GetUnownedUserDataHost());
+}
+
 // static
 bool AppBrowserController::IsWebApp(const BrowserWindowInterface* browser) {
-  return browser && browser->GetFeatures().app_browser_controller();
+  return browser && From(browser);
 }
 
 // static
 bool AppBrowserController::IsForWebApp(const BrowserWindowInterface* browser,
                                        const webapps::AppId& app_id) {
-  return IsWebApp(browser) &&
-         browser->GetFeatures().app_browser_controller()->app_id() == app_id;
+  return IsWebApp(browser) && From(browser)->app_id() == app_id;
 }
 
 // static
@@ -160,7 +173,7 @@ std::optional<int> AppBrowserController::FindTabIndexForApp(
       return true;
     }
     return (home_tab_scope == HomeTabScope::kInScope) ==
-           (browser->GetAppBrowserController()->GetPinnedHomeTab() == contents);
+           (From(browser)->GetPinnedHomeTab() == contents);
   };
   // The active web contents should have preference if it is in scope.
   if (browser->GetFeatures().tab_strip_model()->active_index() !=
@@ -185,7 +198,7 @@ std::optional<AppBrowserController::BrowserAndTabIndex>
 AppBrowserController::FindTopLevelBrowsingContextForWebApp(
     const Profile& profile,
     const webapps::AppId& app_id,
-    Browser::Type browser_type,
+    bool for_app_browser,
     bool for_focus_existing,
     HomeTabScope home_tab_scope) {
   std::optional<AppBrowserController::BrowserAndTabIndex>
@@ -196,7 +209,7 @@ AppBrowserController::FindTopLevelBrowsingContextForWebApp(
                 ->IsAttemptingToCloseBrowser()) {
           return true;  // continue iterating
         }
-        if (browser->GetType() != browser_type) {
+        if (IsWebApp(browser) != for_app_browser) {
           return true;  // continue iterating
         }
         if (browser->GetProfile() != &profile) {
@@ -238,7 +251,8 @@ AppBrowserController::AppBrowserController(Browser* browser,
       app_id_(std::move(app_id)),
       has_tab_strip_(has_tab_strip),
       theme_provider_(
-          ThemeService::CreateBoundThemeProvider(browser_->profile(), this)) {
+          ThemeService::CreateBoundThemeProvider(browser_->profile(), this)),
+      scoped_unowned_user_data_(browser->GetUnownedUserDataHost(), *this) {
   CHECK(browser->tab_strip_model()->empty());
   browser->tab_strip_model()->AddObserver(this);
 }

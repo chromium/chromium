@@ -459,12 +459,11 @@ class Browser : public TabStripModelObserver,
   bool should_trigger_session_restore() const {
     return should_trigger_session_restore_;
   }
-  const web_app::AppBrowserController* app_controller() const {
-    return GetAppBrowserController();
-  }
-  web_app::AppBrowserController* app_controller() {
-    return GetAppBrowserController();
-  }
+
+  // Remove these functions and migrate to using
+  // AppBrowserController::IsWebApp()` and `AppBrowserController::From()`.
+  const web_app::AppBrowserController* app_controller() const;
+  web_app::AppBrowserController* app_controller();
   BrowserWindowFeatures* browser_window_features() const {
     return features_.get();
   }
@@ -810,8 +809,6 @@ class Browser : public TabStripModelObserver,
   ExclusiveAccessManager* GetExclusiveAccessManager() override;
   BrowserActions* GetActions() override;
   Type GetType() const override;
-  web_app::AppBrowserController* GetAppBrowserController() override;
-  const web_app::AppBrowserController* GetAppBrowserController() const override;
   std::vector<tabs::TabInterface*> GetAllTabInterfaces() override;
   Browser* GetBrowserForMigrationOnly() override;
   const Browser* GetBrowserForMigrationOnly() const override;

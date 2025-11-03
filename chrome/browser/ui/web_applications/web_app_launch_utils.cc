@@ -326,7 +326,7 @@ void ReparentWebContentsIntoBrowserImpl(Browser* source_browser,
           : std::optional<webapps::AppId>(std::nullopt);
   const std::optional<webapps::AppId> target_app_id =
       AppBrowserController::IsWebApp(target_browser)
-          ? target_browser->GetAppBrowserController()->app_id()
+          ? AppBrowserController::From(target_browser)->app_id()
           : std::optional<webapps::AppId>(std::nullopt);
 
   // Always reset the window controls overlay titlebar area when going to a
@@ -436,7 +436,7 @@ bool MaybeHandleIntentPickerFocusExistingOrNavigateExisting(
   }
   std::optional<AppBrowserController::BrowserAndTabIndex> existing_app_host =
       AppBrowserController::FindTopLevelBrowsingContextForWebApp(
-          *profile, app_id, Browser::TYPE_APP,
+          *profile, app_id, /*for_app_browser=*/true,
           /*for_focus_existing=*/client_mode ==
               LaunchHandler::ClientMode::kFocusExisting);
   if (!existing_app_host.has_value()) {
@@ -586,12 +586,13 @@ BrowserWindowInterface* ReparentWebContentsIntoAppBrowser(
 
     // If the current url isn't in scope, then set the initial url on the
     // AppBrowserController so that the 'x' button still shows up.
-    CHECK(browser->GetAppBrowserController());
-    browser->GetAppBrowserController()->MaybeSetInitialUrlOnReparentTab();
+    auto* const app_controller = AppBrowserController::From(browser);
+    CHECK(app_controller);
+    app_controller->MaybeSetInitialUrlOnReparentTab();
   }
 
   bool as_pinned_home_tab =
-      browser->GetAppBrowserController()->IsUrlInHomeTabScope(launch_url);
+      AppBrowserController::From(browser)->IsUrlInHomeTabScope(launch_url);
 
   BrowserWindowInterface* reparented_browser =
       ReparentWebContentsIntoAppBrowser(contents, browser, app_id,

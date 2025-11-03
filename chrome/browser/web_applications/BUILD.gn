@@ -698,6 +698,7 @@ if (!is_android) {
       ":web_applications",
       "//chrome/browser/apps/app_service",
       "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/web_applications",
     ]
     public_deps = [ "//base" ]
   }

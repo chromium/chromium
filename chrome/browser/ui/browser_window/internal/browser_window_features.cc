@@ -202,7 +202,9 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
   // later.
   browser_ = browser;
 
-  app_browser_controller_ = web_app::MaybeCreateAppBrowserController(browser);
+  app_browser_controller_ =
+      GetUserDataFactory().CreateInstanceWithFactoryMethod(
+          *browser, &web_app::MaybeCreateAppBrowserController, browser);
 
   browser_actions_ = std::make_unique<BrowserActions>(browser);
 

@@ -54,7 +54,7 @@ void TabbedWebAppNavigationThrottle::MaybeCreateAndAdd(
 
   const BrowserWindowInterface* browser_window =
       tab->GetBrowserWindowInterface();
-  if (!browser_window || !browser_window->GetAppBrowserController()) {
+  if (!browser_window || !AppBrowserController::IsWebApp(browser_window)) {
     return;
   }
 
@@ -69,7 +69,7 @@ void TabbedWebAppNavigationThrottle::MaybeCreateAndAdd(
   CHECK(provider);
 
   const webapps::AppId& app_id =
-      browser_window->GetAppBrowserController()->app_id();
+      AppBrowserController::From(browser_window)->app_id();
 
   std::optional<GURL> home_tab_url =
       provider->registrar_unsafe().GetAppPinnedHomeTabUrl(app_id);
@@ -91,7 +91,7 @@ TabbedWebAppNavigationThrottle::WillStartRequest() {
   BrowserWindowInterface* browser_window = tab->GetBrowserWindowInterface();
   CHECK(browser_window);
   const AppBrowserController* app_controller =
-      browser_window->GetAppBrowserController();
+      AppBrowserController::From(browser_window);
   CHECK(app_controller);
   const WebAppProvider* provider =
       WebAppProvider::GetForWebContents(web_contents);

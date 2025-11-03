@@ -9,10 +9,8 @@
 #include <optional>
 #include <string>
 
-#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/themes/theme_service.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/themes/browser_theme_provider_delegate.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "components/url_formatter/url_formatter.h"
@@ -23,6 +21,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkRegion.h"
 #include "ui/actions/action_id.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 #include "ui/color/color_provider_key.h"
 #include "url/gurl.h"
 
@@ -68,9 +67,15 @@ class AppBrowserController : public ui::ColorProviderKey::InitializerSupplier,
                              public content::WebContentsObserver,
                              public BrowserThemeProviderDelegate {
  public:
+  DECLARE_USER_DATA(AppBrowserController);
+
   AppBrowserController(const AppBrowserController&) = delete;
   AppBrowserController& operator=(const AppBrowserController&) = delete;
   ~AppBrowserController() override;
+
+  static const AppBrowserController* From(
+      const BrowserWindowInterface* browser);
+  static AppBrowserController* From(BrowserWindowInterface* browser);
 
   // Returns whether |browser| is a web app window/pop-up.
   static bool IsWebApp(const BrowserWindowInterface* browser);
@@ -98,7 +103,7 @@ class AppBrowserController : public ui::ColorProviderKey::InitializerSupplier,
   static std::optional<BrowserAndTabIndex> FindTopLevelBrowsingContextForWebApp(
       const Profile& profile,
       const webapps::AppId& app_id,
-      BrowserWindowInterface::Type browser_type,
+      bool for_app_browser,
       bool for_focus_existing,
       HomeTabScope home_tab_scope = HomeTabScope::kDontCare);
   static std::optional<int> FindTabIndexForApp(
@@ -365,6 +370,8 @@ class AppBrowserController : public ui::ColorProviderKey::InitializerSupplier,
   std::optional<SkRegion> draggable_region_ = std::nullopt;
 
   base::OnceClosure on_draggable_region_set_for_testing_;
+
+  ui::ScopedUnownedUserData<AppBrowserController> scoped_unowned_user_data_;
 };
 
 }  // namespace web_app

@@ -4211,7 +4211,7 @@ WebAppIntegrationTestDriver::ConstructStateSnapshot() {
 
           webapps::AppId app_id;
           if (is_app_browser) {
-            app_id = browser->GetAppBrowserController()->app_id();
+            app_id = web_app::AppBrowserController::From(browser)->app_id();
           }
 
           Browser* const raw_browser = browser->GetBrowserForMigrationOnly();

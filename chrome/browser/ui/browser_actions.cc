@@ -828,7 +828,7 @@ void BrowserActions::InitializeBrowserActions() {
 
   // TODO(crbug.com/435220196): Ideally this action would have
   // ChromeLabsCoordinator passed in as a dependency directly.
-  if (IsChromeLabsEnabled() && !bwi->GetAppBrowserController()) {
+  if (IsChromeLabsEnabled() && !web_app::AppBrowserController::IsWebApp(bwi)) {
     root_action_item_->AddChild(
         ChromeMenuAction(
             base::BindRepeating(

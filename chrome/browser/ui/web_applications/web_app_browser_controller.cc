@@ -140,6 +140,12 @@ WebAppBrowserController::WebAppBrowserController(
 
 WebAppBrowserController::~WebAppBrowserController() = default;
 
+WebAppBrowserController* WebAppBrowserController::From(
+    BrowserWindowInterface* browser) {
+  auto* result = AppBrowserController::From(browser);
+  return result ? result->AsWebAppBrowserController() : nullptr;
+}
+
 bool WebAppBrowserController::HasMinimalUiButtons() const {
   if (has_tab_strip()) {
     return false;

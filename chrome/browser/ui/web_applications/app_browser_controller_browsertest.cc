@@ -21,9 +21,8 @@ using AppBrowserControllerBrowserTest = WebAppBrowserTestBase;
 IN_PROC_BROWSER_TEST_F(AppBrowserControllerBrowserTest,
                        HighContrastThemeColor) {
   const AppBrowserController* const controller =
-      web_app::LaunchWebAppBrowser(
-          profile(), InstallPWA(GURL("https://app.site.test/example/index")))
-          ->app_controller();
+      AppBrowserController::From(web_app::LaunchWebAppBrowser(
+          profile(), InstallPWA(GURL("https://app.site.test/example/index"))));
 
   // Enable high contrast theme.
   static constexpr SkColor kWindowColor = SK_ColorBLUE;

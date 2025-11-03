@@ -1995,7 +1995,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, ReparentLastBrowserTab) {
 
   BrowserWindowInterface* const app_browser =
       ReparentWebAppForActiveTab(browser());
-  ASSERT_EQ(app_browser->GetAppBrowserController()->app_id(), app_id);
+  ASSERT_EQ(AppBrowserController::From(app_browser)->app_id(), app_id);
 
   ASSERT_TRUE(IsBrowserOpen(browser()));
   EXPECT_EQ(browser()->tab_strip_model()->count(), 1);
@@ -2069,11 +2069,8 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, ReparentDisplayBrowserApp) {
 
   BrowserWindowInterface* const app_browser =
       GetLastActiveBrowserWindowInterfaceWithAnyProfile();
-  ASSERT_EQ(app_browser->GetFeatures().app_browser_controller()->app_id(),
-            app_id);
-  EXPECT_TRUE(app_browser->GetFeatures()
-                  .app_browser_controller()
-                  ->HasMinimalUiButtons());
+  ASSERT_EQ(AppBrowserController::From(app_browser)->app_id(), app_id);
+  EXPECT_TRUE(AppBrowserController::From(app_browser)->HasMinimalUiButtons());
 
   auto* provider = WebAppProvider::GetForTest(profile());
   EXPECT_EQ(provider->registrar_unsafe().GetAppUserDisplayMode(app_id),

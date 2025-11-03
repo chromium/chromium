@@ -16,6 +16,7 @@
 #include "base/scoped_observation.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "chrome/browser/search/background/theme_delegate.h"
+#include "chrome/browser/themes/browser_theme_provider_delegate.h"
 #include "chrome/browser/themes/theme_helper.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -26,7 +27,6 @@
 #include "ui/color/system_theme.h"
 
 class BrowserThemePack;
-class CustomThemeSupplier;
 class NtpCustomBackgroundService;
 class Profile;
 class ThemeServiceObserver;
@@ -43,12 +43,6 @@ class ThemeServiceTest;
 namespace ui {
 class ColorProvider;
 }  // namespace ui
-
-class BrowserThemeProviderDelegate {
- public:
-  virtual CustomThemeSupplier* GetThemeSupplier() const = 0;
-  virtual bool ShouldUseCustomFrame() const = 0;
-};
 
 // A theme consists of a set of colors and images, including the NTP background
 // image. See CustomThemeSupplier for details. There are multiple sources for

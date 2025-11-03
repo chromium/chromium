@@ -302,8 +302,9 @@ void MaybeShowProfileSwitchIPH(Profile* profile) {
 
   // Try to show promo only if there is profile menu button and there are
   // multiple profiles.
-  if (launched_app && launched_app->GetAppBrowserController() &&
-      launched_app->GetAppBrowserController()->HasProfileMenuButton() &&
+  if (launched_app && web_app::AppBrowserController::IsWebApp(launched_app) &&
+      web_app::AppBrowserController::From(launched_app)
+          ->HasProfileMenuButton() &&
       extensions::profile_util::GetNumberOfProfiles() > 1) {
     launched_app->GetBrowserForMigrationOnly()
         ->window()

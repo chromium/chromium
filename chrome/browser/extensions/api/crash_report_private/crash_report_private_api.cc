@@ -34,11 +34,13 @@ JavaScriptErrorReport::WindowType GetWindowType(
     return JavaScriptErrorReport::WindowType::kNoBrowser;
   }
 
-  if (!browser->GetAppBrowserController()) {
+  const auto* const app_controller =
+      web_app::AppBrowserController::From(browser);
+  if (!app_controller) {
     return JavaScriptErrorReport::WindowType::kRegularTabbed;
   }
 
-  if (browser->GetAppBrowserController()->system_app()) {
+  if (app_controller->system_app()) {
     return JavaScriptErrorReport::WindowType::kSystemWebApp;
   }
 

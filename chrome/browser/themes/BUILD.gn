@@ -9,6 +9,7 @@ assert(is_win || is_mac || is_linux || is_chromeos)
 source_set("themes") {
   public = [
     "browser_theme_pack.h",
+    "browser_theme_provider_delegate.h",
     "custom_theme_supplier.h",
     "theme_helper.h",
     "theme_local_data_batch_uploader.h",

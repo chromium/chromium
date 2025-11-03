@@ -144,7 +144,7 @@ void ReparentToAppBrowser(content::WebContents* old_web_contents,
     // might be possible if the manifest updated while a window is open),
     // don't return it to use for new tabs.
     if (target_browser &&
-        !target_browser->GetAppBrowserController()->has_tab_strip()) {
+        !AppBrowserController::From(target_browser)->has_tab_strip()) {
       target_browser = nullptr;
     }
   }
@@ -155,11 +155,11 @@ void ReparentToAppBrowser(content::WebContents* old_web_contents,
                            gfx::Rect(), main_browser->profile(),
                            /*user_gesture=*/true));
   }
-  CHECK(target_browser->GetAppBrowserController());
-  ReparentWebContentsIntoBrowserImpl(
-      main_browser, old_web_contents, target_browser,
-      target_browser->GetAppBrowserController()->IsUrlInHomeTabScope(
-          target_url));
+  CHECK(AppBrowserController::IsWebApp(target_browser));
+  ReparentWebContentsIntoBrowserImpl(main_browser, old_web_contents,
+                                     target_browser,
+                                     AppBrowserController::From(target_browser)
+                                         ->IsUrlInHomeTabScope(target_url));
   CHECK(old_web_contents);
 }
 
@@ -1372,7 +1372,8 @@ NavigationCapturingProcess::GetEffectiveClientModeAndBrowser(
         }
         existing_app_host =
             AppBrowserController::FindTopLevelBrowsingContextForWebApp(
-                *profile_, app_id, Browser::TYPE_NORMAL, for_focus_existing);
+                *profile_, app_id, /*for_app_browser=*/false,
+                for_focus_existing);
         break;
       case blink::mojom::DisplayMode::kMinimalUi:
       case blink::mojom::DisplayMode::kStandalone:
@@ -1406,14 +1407,15 @@ NavigationCapturingProcess::GetEffectiveClientModeAndBrowser(
         }
         existing_app_host =
             AppBrowserController::FindTopLevelBrowsingContextForWebApp(
-                *profile_, app_id, Browser::TYPE_APP, for_focus_existing,
+                *profile_, app_id, /*for_app_browser=*/true, for_focus_existing,
                 home_tab_scope);
         // If no app tab was found, fall back to looking for a regular browser
         // tab.
         if (!existing_app_host) {
           existing_app_host =
               AppBrowserController::FindTopLevelBrowsingContextForWebApp(
-                  *profile_, app_id, Browser::TYPE_NORMAL, for_focus_existing);
+                  *profile_, app_id, /*for_app_browser=*/false,
+                  for_focus_existing);
         }
         break;
       }

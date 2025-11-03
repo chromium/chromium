@@ -230,8 +230,8 @@ void WebAppUiManagerImpl::CloseAppWindows(const webapps::AppId& app_id) {
 
   ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
       [&app_id](BrowserWindowInterface* browser_window_interface) {
-        const AppBrowserController* const app_controller =
-            browser_window_interface->GetAppBrowserController();
+        const auto* const app_controller =
+            AppBrowserController::From(browser_window_interface);
         if (app_controller && app_controller->app_id() == app_id) {
           browser_window_interface->GetWindow()->Close();
         }
@@ -703,7 +703,7 @@ bool WebAppUiManagerImpl::IsBrowserForInstalledApp(
     return false;
   }
 
-  if (!browser->GetFeatures().app_browser_controller()) {
+  if (!web_app::AppBrowserController::IsWebApp(browser)) {
     return false;
   }
 
@@ -712,7 +712,7 @@ bool WebAppUiManagerImpl::IsBrowserForInstalledApp(
 
 webapps::AppId WebAppUiManagerImpl::GetAppIdForBrowser(
     const BrowserWindowInterface* browser) const {
-  return browser->GetFeatures().app_browser_controller()->app_id();
+  return web_app::AppBrowserController::From(browser)->app_id();
 }
 
 void WebAppUiManagerImpl::OnIconsReadForUninstall(
@@ -812,7 +812,7 @@ void WebAppUiManagerImpl::ClearWebAppSiteDataIfNeeded(
 
 const base::Feature& GetPromoFeatureEngagementFromBrowser(
     const BrowserWindowInterface* browser) {
-  return browser->GetFeatures().app_browser_controller() != nullptr
+  return web_app::AppBrowserController::IsWebApp(browser)
              ? feature_engagement::kIPHDesktopPWAsLinkCapturingLaunch
              : feature_engagement::kIPHDesktopPWAsLinkCapturingLaunchAppInTab;
 }

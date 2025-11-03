@@ -253,7 +253,7 @@ bool SettingsWindowManager::IsSettingsBrowser(
   Profile* const profile = browser->GetProfile();
   if (!UseDeprecatedSettingsWindow(profile)) {
     const web_app::AppBrowserController* const app_controller =
-        browser->GetAppBrowserController();
+        web_app::AppBrowserController::From(browser);
     if (!app_controller) {
       return false;
     }

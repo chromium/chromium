@@ -38,7 +38,7 @@ BrowserTabMenuModelDelegate::GetOtherBrowserWindows(bool is_app) {
             browser->GetProfile() == profile_) {
           if (is_app &&
               browser->GetType() == BrowserWindowInterface::TYPE_APP &&
-              browser->GetAppBrowserController()->app_id() ==
+              web_app::AppBrowserController::From(browser)->app_id() ==
                   app_controller_->app_id()) {
             browsers.push_back(browser);
           } else if (!is_app && browser->GetType() ==

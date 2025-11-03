@@ -191,7 +191,7 @@ IN_PROC_BROWSER_TEST_F(ManifestSilentUpdateCommandBrowserTest, PendingUpdate) {
   EXPECT_EQ(menu_button->GetViewAccessibility().GetCachedName(),
             l10n_util::GetStringFUTF16(
                 IDS_WEB_APP_MENU_BUTTON_TOOLTIP_UPDATE_AVAILABLE,
-                app_browser->GetAppBrowserController()->GetAppShortName()));
+                AppBrowserController::From(app_browser)->GetAppShortName()));
 }
 
 IN_PROC_BROWSER_TEST_F(ManifestSilentUpdateCommandBrowserTest,

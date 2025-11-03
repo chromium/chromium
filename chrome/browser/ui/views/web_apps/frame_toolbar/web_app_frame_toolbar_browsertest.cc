@@ -248,10 +248,8 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest, SpaceConstrained) {
   std::vector<const views::View*> page_action_views = {};
   const auto& properties_provider =
       page_actions::PageActionPropertiesProvider();
-  for (auto action_id : helper()
-                            ->app_browser()
-                            ->GetAppBrowserController()
-                            ->GetTitleBarPageActions()) {
+  for (auto action_id :
+       helper()->app_browser()->app_controller()->GetTitleBarPageActions()) {
     const auto& properties = properties_provider.GetProperties(action_id);
 
     // When the page action migration is not enabled, the view should not be

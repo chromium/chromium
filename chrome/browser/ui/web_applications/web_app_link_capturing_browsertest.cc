@@ -205,7 +205,7 @@ class WebAppLinkCapturingBrowserTest
           debug_info += "  ";
           if (browser == this->browser()) {
             debug_info += "Main browser";
-          } else if (browser->GetAppBrowserController()) {
+          } else if (web_app::AppBrowserController::IsWebApp(browser)) {
             debug_info += "App browser";
           } else {
             debug_info += "Browser";

@@ -47,8 +47,7 @@ std::optional<std::string> MatchAppByManifestId(
     const Selector& selector,
     const GURL& canonicalized_selector_url,
     web_app::WebAppRegistrar* registrar) {
-  web_app::AppBrowserController* app_controller =
-      browser_window.GetAppBrowserController();
+  auto* app_controller = web_app::AppBrowserController::From(&browser_window);
   // Ensure this is specifically a WebAppBrowserController, not just any
   // AppBrowserController.
   web_app::WebAppBrowserController* web_app_controller =
