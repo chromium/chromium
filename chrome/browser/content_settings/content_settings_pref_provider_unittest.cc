@@ -157,6 +157,8 @@ TEST_F(PrefProviderTest, DiscardObsoletePreferences) {
 #endif
   static char kObsoletePrivateNetworkChooserDataPref[] =
       "profile.content_settings.exceptions.private_network_chooser_data";
+  static char kObsoleteTpcdTrialExceptionsPref[] =
+      "profile.content_settings.exceptions.3pcd_support";
   static char kObsoleteTopLevelTpcdTrialExceptionsPref[] =
       "profile.content_settings.exceptions.top_level_3pcd_support";
   static char kObsoleteTopLevelTpcdOriginTrialExceptionsPref[] =
@@ -187,6 +189,7 @@ TEST_F(PrefProviderTest, DiscardObsoletePreferences) {
                  pref_data.Clone());
 #endif
   prefs->SetDict(kObsoletePrivateNetworkChooserDataPref, pref_data.Clone());
+  prefs->SetDict(kObsoleteTpcdTrialExceptionsPref, pref_data.Clone());
   prefs->SetDict(kObsoleteTopLevelTpcdTrialExceptionsPref, pref_data.Clone());
   prefs->SetDict(kObsoleteTopLevelTpcdOriginTrialExceptionsPref,
                  pref_data.Clone());
@@ -206,6 +209,7 @@ TEST_F(PrefProviderTest, DiscardObsoletePreferences) {
       prefs->HasPrefPath(kObsoleteInstalledWebAppMetadataExceptionsPref));
 #endif
   EXPECT_FALSE(prefs->HasPrefPath(kObsoletePrivateNetworkChooserDataPref));
+  EXPECT_FALSE(prefs->HasPrefPath(kObsoleteTpcdTrialExceptionsPref));
   EXPECT_FALSE(prefs->HasPrefPath(kObsoleteTopLevelTpcdTrialExceptionsPref));
   EXPECT_FALSE(
       prefs->HasPrefPath(kObsoleteTopLevelTpcdOriginTrialExceptionsPref));

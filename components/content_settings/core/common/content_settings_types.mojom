@@ -354,9 +354,6 @@ enum ContentSettingsType {
   // `net::features::kTpcdMetadataGrants` is enabled.
   TPCD_METADATA_GRANTS,
 
-  // Content Setting for 3PC accesses granted via 3PC deprecation trial.
-  TPCD_TRIAL,
-
   // Content setting used to indicate whether entering picture-in-picture
   // automatically should be enabled.
   AUTO_PICTURE_IN_PICTURE,

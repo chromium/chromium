@@ -304,9 +304,6 @@ NET_EXPORT BASE_DECLARE_FEATURE(kCookieDomainRejectNonASCII);
 
 NET_EXPORT BASE_DECLARE_FEATURE(kThirdPartyStoragePartitioning);
 
-// Feature to enable consideration of 3PC deprecation trial settings.
-NET_EXPORT BASE_DECLARE_FEATURE(kTpcdTrialSettings);
-
 // Whether to enable the use of 3PC based on 3PCD metadata grants delivered via
 // component updater.
 NET_EXPORT BASE_DECLARE_FEATURE(kTpcdMetadataGrants);

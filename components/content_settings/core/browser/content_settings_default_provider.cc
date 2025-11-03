@@ -75,6 +75,8 @@ constexpr char kGeolocationMigrateDefaultValue[] =
     "profile.default_content_setting_values.migrate_geolocation";
 
 #if !BUILDFLAG(IS_IOS)
+constexpr char kObsoleteTpcdTrialDefaultPref[] =
+    "profile.default_content_setting_values.3pcd_support";
 constexpr char kObsoleteTopLevelTpcdTrialDefaultPref[] =
     "profile.default_content_setting_values.top_level_3pcd_support";
 constexpr char kObsoleteTopLevelTpcdOriginTrialDefaultPref[] =
@@ -134,6 +136,7 @@ void DefaultProvider::RegisterProfilePrefs(
   // be deleted on startup (see DiscardOrMigrateObsoletePreferences).
 #if !BUILDFLAG(IS_IOS)
   registry->RegisterIntegerPref(kObsoleteNfcDefaultPref, 0);
+  registry->RegisterIntegerPref(kObsoleteTpcdTrialDefaultPref, 0);
   registry->RegisterIntegerPref(kObsoleteTopLevelTpcdTrialDefaultPref, 0);
   registry->RegisterIntegerPref(kObsoleteTopLevelTpcdOriginTrialDefaultPref, 0);
 #if !BUILDFLAG(IS_ANDROID)
@@ -390,6 +393,7 @@ void DefaultProvider::DiscardOrMigrateObsoletePreferences() {
   // deleted.
 #if !BUILDFLAG(IS_IOS)
   prefs_->ClearPref(kObsoleteNfcDefaultPref);
+  prefs_->ClearPref(kObsoleteTpcdTrialDefaultPref);
   prefs_->ClearPref(kObsoleteTopLevelTpcdTrialDefaultPref);
   prefs_->ClearPref(kObsoleteTopLevelTpcdOriginTrialDefaultPref);
 #if !BUILDFLAG(IS_ANDROID)

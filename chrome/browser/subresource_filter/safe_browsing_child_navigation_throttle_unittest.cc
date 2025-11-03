@@ -54,7 +54,6 @@ class SafeBrowsingChildNavigationThrottleAdTaggingTest
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{subresource_filter::kTPCDAdHeuristicSubframeRequestTagging,
           {{"check_exceptions", "true"}}},
-         {net::features::kTpcdTrialSettings, {}},
          {content_settings::features::kTrackingProtection3pcd, {}}},
         {});
 
@@ -118,9 +117,9 @@ class SafeBrowsingChildNavigationThrottleAdTaggingTest
     navigation_simulator_->SetAutoAdvance(false);
   }
 
-  void Create3pTrialSetting(GURL first_party_url, GURL third_party_url) {
+  void Create3pCookieException(GURL first_party_url, GURL third_party_url) {
     settings_map_->SetContentSettingDefaultScope(
-        third_party_url, first_party_url, ContentSettingsType::TPCD_TRIAL,
+        third_party_url, first_party_url, ContentSettingsType::COOKIES,
         CONTENT_SETTING_ALLOW);
   }
 
@@ -153,8 +152,8 @@ TEST_F(SafeBrowsingChildNavigationThrottleAdTaggingTest,
 TEST_F(SafeBrowsingChildNavigationThrottleAdTaggingTest,
        FrameNavigationDeferredIfExceptionMatch) {
   base::HistogramTester histogram_tester;
-  Create3pTrialSetting(GURL("https://example.test"),
-                       GURL("https://excepted-child-frame.test"));
+  Create3pCookieException(GURL("https://example.test"),
+                          GURL("https://excepted-child-frame.test"));
 
   InitializeDocumentSubresourceFilter(GURL("https://example.test"),
                                       mojom::ActivationLevel::kDryRun);
@@ -168,8 +167,8 @@ TEST_F(SafeBrowsingChildNavigationThrottleAdTaggingTest,
 
 TEST_F(SafeBrowsingChildNavigationThrottleAdTaggingTest,
        FrameRedirectNavigationDeferredIfExceptionMatch) {
-  Create3pTrialSetting(GURL("https://example.test"),
-                       GURL("https://excepted-child-frame.test"));
+  Create3pCookieException(GURL("https://example.test"),
+                          GURL("https://excepted-child-frame.test"));
 
   InitializeDocumentSubresourceFilter(GURL("https://example.test"),
                                       mojom::ActivationLevel::kDryRun);
@@ -208,7 +207,6 @@ class SafeBrowsingChildNavigationThrottleExceptionCheckDisabledTest
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{subresource_filter::kTPCDAdHeuristicSubframeRequestTagging,
           {{"check_exceptions", "false"}}},
-         {net::features::kTpcdTrialSettings, {}},
          {content_settings::features::kTrackingProtection3pcd, {}}},
         {});
 

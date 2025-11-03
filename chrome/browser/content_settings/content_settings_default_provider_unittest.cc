@@ -184,6 +184,8 @@ TEST_F(ContentSettingsDefaultProviderTest, DiscardObsoletePreferences) {
       "profile.default_content_setting_values.nfc";
   static const char kObsoletePrivateNetworkGuardDefaultPref[] =
       "profile.default_content_setting_values.private_network_guard";
+  static const char kObsoleteTpcdTrialDefaultPref[] =
+      "profile.default_content_setting_values.3pcd_support";
   static const char kObsoleteTopLevelTpcdTrialDefaultPref[] =
       "profile.default_content_setting_values.top_level_3pcd_support";
   static const char kObsoleteTopLevelTpcdOriginTrialDefaultPref[] =
@@ -216,6 +218,7 @@ TEST_F(ContentSettingsDefaultProviderTest, DiscardObsoletePreferences) {
   prefs->SetInteger(kGeolocationPrefPath, CONTENT_SETTING_BLOCK);
   prefs->SetInteger(kObsoletePrivateNetworkGuardDefaultPref,
                     CONTENT_SETTING_BLOCK);
+  prefs->SetInteger(kObsoleteTpcdTrialDefaultPref, CONTENT_SETTING_ALLOW);
   prefs->SetInteger(kObsoleteTopLevelTpcdTrialDefaultPref,
                     CONTENT_SETTING_ALLOW);
   prefs->SetInteger(kObsoleteTopLevelTpcdOriginTrialDefaultPref,
@@ -228,6 +231,7 @@ TEST_F(ContentSettingsDefaultProviderTest, DiscardObsoletePreferences) {
   // Check that obsolete prefs have been deleted.
   EXPECT_FALSE(prefs->HasPrefPath(kNfcPrefPath));
   EXPECT_FALSE(prefs->HasPrefPath(kObsoletePrivateNetworkGuardDefaultPref));
+  EXPECT_FALSE(prefs->HasPrefPath(kObsoleteTpcdTrialDefaultPref));
   EXPECT_FALSE(prefs->HasPrefPath(kObsoleteTopLevelTpcdTrialDefaultPref));
   EXPECT_FALSE(prefs->HasPrefPath(kObsoleteTopLevelTpcdOriginTrialDefaultPref));
 #if !BUILDFLAG(IS_ANDROID)

@@ -18,7 +18,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_test_util.h"
-#include "chrome/browser/tpcd/support/validity_service.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/profile_waiter.h"
@@ -93,10 +92,6 @@ class ManagerBrowserTest : public InProcessBrowserTest {
          net::features::kTpcdMetadataGrants,
          net::features::kTpcdMetadataStageControl},
         {});
-
-    // Disable the validity service so it doesn't remove manually created
-    // trial settings.
-    tpcd::trial::ValidityService::DisableForTesting();
   }
   ~ManagerBrowserTest() override = default;
 

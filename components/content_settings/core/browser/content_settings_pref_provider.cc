@@ -64,6 +64,8 @@ constexpr char kGeolocationMigrateExceptionsPref[] =
     "profile.content_settings.exceptions.migrate_geolocation";
 
 #if !BUILDFLAG(IS_IOS)
+constexpr char kObsoleteTpcdTrialExceptionsPref[] =
+    "profile.content_settings.exceptions.3pcd_support";
 constexpr char kObsoleteTopLevelTpcdTrialExceptionsPref[] =
     "profile.content_settings.exceptions.top_level_3pcd_support";
 constexpr char kObsoleteTopLevelTpcdOriginTrialExceptionsPref[] =
@@ -116,6 +118,7 @@ void PrefProvider::RegisterProfilePrefs(
       kObsoleteFederatedIdentityActiveSesssionExceptionsPref);
   registry->RegisterDictionaryPref(kObsoletePrivateNetworkChooserDataPref);
 #if !BUILDFLAG(IS_IOS)
+  registry->RegisterDictionaryPref(kObsoleteTpcdTrialExceptionsPref);
   registry->RegisterDictionaryPref(kObsoleteTopLevelTpcdTrialExceptionsPref);
   registry->RegisterDictionaryPref(
       kObsoleteTopLevelTpcdOriginTrialExceptionsPref);
@@ -443,6 +446,7 @@ void PrefProvider::DiscardOrMigrateObsoletePreferences() {
   prefs_->ClearPref(kObsoletePrivateNetworkChooserDataPref);
 
 #if !BUILDFLAG(IS_IOS)
+  prefs_->ClearPref(kObsoleteTpcdTrialExceptionsPref);
   prefs_->ClearPref(kObsoleteTopLevelTpcdTrialExceptionsPref);
   prefs_->ClearPref(kObsoleteTopLevelTpcdOriginTrialExceptionsPref);
   // TODO(https://crbug.com/367181093): clean this up.

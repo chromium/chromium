@@ -1389,8 +1389,6 @@ source_set("platform_browser_tests") {
     "../browser/storage/shared_storage_browsertest.cc",
     "../browser/task_manager/mock_web_contents_task_manager.cc",
     "../browser/task_manager/mock_web_contents_task_manager.h",
-    "../browser/tpcd/support/tpcd_support_browsertest.cc",
-    "../browser/tpcd/support/validity_service_browsertest.cc",
   ]
 
   deps = [

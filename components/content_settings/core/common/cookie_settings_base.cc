@@ -189,7 +189,6 @@ CookieSettingsBase::GetContentSettingsTypes() {
           ContentSettingsType::STORAGE_ACCESS,
           ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS,
           ContentSettingsType::TPCD_HEURISTICS_GRANTS,
-          ContentSettingsType::TPCD_TRIAL,
           ContentSettingsType::FEDERATED_IDENTITY_SHARING,
           ContentSettingsType::TRACKING_PROTECTION,
           ContentSettingsType::LEGACY_COOKIE_SCOPE,
@@ -475,17 +474,6 @@ bool CookieSettingsBase::ShouldConsiderMitigationsFor3pcd(
          MitigationsEnabledFor3pcd();
 }
 
-bool CookieSettingsBase::IsAllowedBy3pcdTrialSettings(
-    const GURL& url,
-    const GURL& first_party_url,
-    net::CookieSettingOverrides overrides) const {
-  return base::FeatureList::IsEnabled(net::features::kTpcdTrialSettings) &&
-         !overrides.Has(net::CookieSettingOverride::kSkipTPCDTrial) &&
-         ShouldConsiderMitigationsFor3pcd(overrides) &&
-         GetContentSetting(url, first_party_url,
-                           ContentSettingsType::TPCD_TRIAL,
-                           /*info=*/nullptr) == CONTENT_SETTING_ALLOW;
-}
 
 CookieSettingsBase::ModifierMode CookieSettingsBase::GetModifierMode(
     base::optional_ref<const url::Origin> top_frame_origin,
@@ -656,15 +644,6 @@ CookieSettingsBase::DecideAccess(const GURL& url,
   if (is_explicit_setting) {
     return AllowAllCookies{
         ThirdPartyCookieAllowMechanism::kAllowByExplicitSetting};
-  }
-
-  // 3PCD 3P DT
-  // New registrations are not supported for the deprecation trial, but the
-  // tokens are still valid until they expire.
-  // TODO(https://crbug.com/364917750): Remove this check once the trial are no
-  // longer relevant.
-  if (IsAllowedBy3pcdTrialSettings(url, first_party_url, overrides)) {
-    return AllowAllCookies{ThirdPartyCookieAllowMechanism::kAllowBy3PCD};
   }
 
   return AllowPartitionedCookies{};
