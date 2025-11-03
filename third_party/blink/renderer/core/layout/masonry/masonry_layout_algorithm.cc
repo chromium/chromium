@@ -39,14 +39,15 @@ MasonryLayoutAlgorithm::MasonryLayoutAlgorithm(
 
 MinMaxSizesResult MasonryLayoutAlgorithm::ComputeMinMaxSizes(
     const MinMaxSizesFloatInput&) {
+  const ComputedStyle& style = Style();
+  const bool is_for_columns =
+      style.MasonryTrackSizingDirection() == kForColumns;
+
   auto ComputeIntrinsicInlineSize = [&](SizingConstraint sizing_constraint) {
     bool needs_intrinsic_track_size = false;
     wtf_size_t start_offset;
     GridItems masonry_items;
     Vector<wtf_size_t> collapsed_track_indexes;
-    const ComputedStyle& style = Style();
-    const bool is_for_columns =
-        style.MasonryTrackSizingDirection() == kForColumns;
 
     GridSizingTrackCollection track_collection = ComputeGridAxisTracks(
         sizing_constraint, /*intrinsic_repeat_track_sizes=*/nullptr,
@@ -105,9 +106,17 @@ MinMaxSizesResult MasonryLayoutAlgorithm::ComputeMinMaxSizes(
     }
   };
 
-  MinMaxSizes intrinsic_sizes{
-      ComputeIntrinsicInlineSize(SizingConstraint::kMinContent),
-      ComputeIntrinsicInlineSize(SizingConstraint::kMaxContent)};
+  // The min-content size of the stacking axis of a masonry container should
+  // be the same as its max-content size, similar to the "stacking" axis
+  // in block layout. As such, for row containers, the min-content size is set
+  // to max-content.
+  const LayoutUnit max_content =
+      ComputeIntrinsicInlineSize(SizingConstraint::kMaxContent);
+  MinMaxSizes intrinsic_sizes{max_content, max_content};
+  if (is_for_columns) {
+    intrinsic_sizes.min_size =
+        ComputeIntrinsicInlineSize(SizingConstraint::kMinContent);
+  }
   intrinsic_sizes += BorderScrollbarPadding().InlineSum();
 
   // TODO(ethavar): Compute `depends_on_block_constraints` by checking if any
