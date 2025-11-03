@@ -36,6 +36,9 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/theme_tracking_animated_image_view.h"
 #include "ui/views/layout/box_layout_view.h"
+#include "ui/views/layout/layout_provider.h"
+#include "ui/views/style/typography.h"
+#include "ui/views/style/typography_provider.h"
 #include "ui/views/widget/widget.h"
 
 namespace {
@@ -284,10 +287,21 @@ void DigitalIdentityProviderDesktop::ShowQrCodeDialog(
       dialog_body_id = IDS_WEB_DIGITAL_CREDENTIALS_ISSUANCE_QR_BODY;
       break;
   }
-  std::u16string dialog_body = l10n_util::GetStringFUTF16(
-      dialog_body_id,
-      url_formatter::FormatOriginForSecurityDisplay(
-          rp_origin_, url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC));
+  const views::LayoutProvider* layout_provider = views::LayoutProvider::Get();
+  // The dialog content width is used as an approximation of the available
+  // width for the origin.
+  const int dialog_width = layout_provider->GetDistanceMetric(
+      views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH);
+  const gfx::Insets dialog_insets =
+      layout_provider->GetInsetsMetric(views::INSETS_DIALOG);
+  const float content_width = dialog_width - dialog_insets.width();
+  const gfx::FontList& font_list = views::TypographyProvider::Get().GetFont(
+      views::style::CONTEXT_LABEL, views::style::STYLE_PRIMARY);
+  std::u16string formatted_origin =
+      url_formatter::ElideUrl(rp_origin_.GetURL(), font_list, content_width);
+
+  std::u16string dialog_body =
+      l10n_util::GetStringFUTF16(dialog_body_id, formatted_origin);
   EnsureDialogCreated()->TryShow(
       /*accept_button=*/std::nullopt, base::OnceClosure(),
       /*cancel_button=*/
