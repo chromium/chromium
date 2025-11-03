@@ -112,31 +112,26 @@ void ColorProfileReader::BuildDisplayIdToPathMapCompleted(
 }
 
 // static
-ColorProfileReader::DisplayIdToDataMap
+ColorProfileReader::DisplayIdToProfileMap
 ColorProfileReader::ReadProfilesOnBackgroundThread(
     DisplayIdToPathMap new_display_id_to_path_map) {
-  DisplayIdToDataMap new_display_id_to_data_map;
+  DisplayIdToProfileMap new_display_id_to_profile_map;
   for (const auto& [display_id, profile_path] : new_display_id_to_path_map) {
     std::string profile_data;
     base::ReadFileToString(base::FilePath(profile_path), &profile_data);
-    new_display_id_to_data_map[display_id] = profile_data;
-  }
-  return new_display_id_to_data_map;
-}
-
-void ColorProfileReader::ReadProfilesCompleted(
-    DisplayIdToDataMap display_id_to_data_map) {
-  DCHECK(update_in_flight_);
-  update_in_flight_ = false;
-
-  display_id_to_profile_map_.clear();
-  for (const auto& [display_id, profile_data] : display_id_to_data_map) {
     if (!profile_data.empty()) {
-      display_id_to_profile_map_[display_id] =
+      new_display_id_to_profile_map[display_id] =
           gfx::ICCProfile::FromData(profile_data.data(), profile_data.size());
     }
   }
+  return new_display_id_to_profile_map;
+}
 
+void ColorProfileReader::ReadProfilesCompleted(
+    DisplayIdToProfileMap display_id_to_profile_map) {
+  DCHECK(update_in_flight_);
+  update_in_flight_ = false;
+  display_id_to_profile_map_ = std::move(display_id_to_profile_map);
   client_->OnColorProfilesChanged();
 }
 

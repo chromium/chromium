@@ -43,7 +43,7 @@ class DISPLAY_EXPORT ColorProfileReader {
 
  private:
   using DisplayIdToPathMap = std::map<int64_t, std::wstring>;
-  using DisplayIdToDataMap = std::map<int64_t, std::string>;
+  using DisplayIdToProfileMap = std::map<int64_t, gfx::ICCProfile>;
 
   // Enumerate displays and return a map to their ICC profile path. This
   // needs to be run off of the main thread.
@@ -56,16 +56,16 @@ class DISPLAY_EXPORT ColorProfileReader {
 
   // Do the actual reading from the filesystem. This needs to be run off of the
   // main thread.
-  static DisplayIdToDataMap ReadProfilesOnBackgroundThread(
+  static DisplayIdToProfileMap ReadProfilesOnBackgroundThread(
       DisplayIdToPathMap new_display_id_to_path_map);
 
   // Called on the main thread when the read has completed.
-  void ReadProfilesCompleted(DisplayIdToDataMap display_id_to_data_map);
+  void ReadProfilesCompleted(DisplayIdToProfileMap display_id_to_profile_map);
 
   const raw_ptr<Client> client_ = nullptr;
   bool update_in_flight_ = false;
   DisplayIdToPathMap display_id_to_path_map_;
-  std::map<int64_t, gfx::ICCProfile> display_id_to_profile_map_;
+  DisplayIdToProfileMap display_id_to_profile_map_;
   base::WeakPtrFactory<ColorProfileReader> weak_factory_{this};
 };
 
