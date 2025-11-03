@@ -10,6 +10,7 @@
 #include <array>
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <utility>
@@ -29,6 +30,7 @@
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
@@ -54,6 +56,7 @@
 #include "components/services/storage/storage_service_impl.h"
 #include "content/browser/aggregation_service/aggregation_service_test_utils.h"
 #include "content/browser/attribution_reporting/test/mock_attribution_manager.h"
+#include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/code_cache/generated_code_cache.h"
 #include "content/browser/code_cache/generated_code_cache_context.h"
 #include "content/browser/gpu/gpu_disk_cache_factory.h"
@@ -62,6 +65,7 @@
 #include "content/browser/interest_group/interest_group_permissions_checker.h"
 #include "content/browser/private_aggregation/private_aggregation_manager.h"
 #include "content/browser/private_aggregation/private_aggregation_test_utils.h"
+#include "content/browser/process_lock.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -72,6 +76,7 @@
 #include "content/public/browser/storage_usage_info.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/common/url_constants.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/navigation_simulator.h"
@@ -505,110 +510,122 @@ class RemoveLocalStorageTester {
 
 class RemoveCodeCacheTester {
  public:
-  explicit RemoveCodeCacheTester(GeneratedCodeCacheContext* code_cache_context)
-      : code_cache_context_(code_cache_context) {}
+  enum Cache { kJs, kWebAssembly };
 
+  explicit RemoveCodeCacheTester(RenderFrameHost& rfh)
+      : render_frame_host_(static_cast<RenderFrameHostImpl&>(rfh)) {
+    render_frame_host_->CreateCodeCacheHost(
+        code_cache_host_.BindNewPipeAndPassReceiver());
+  }
   RemoveCodeCacheTester(const RemoveCodeCacheTester&) = delete;
   RemoveCodeCacheTester& operator=(const RemoveCodeCacheTester&) = delete;
 
-  enum Cache { kJs, kWebAssembly, kWebUiJs };
+  // Returns the entry for `url` if it is found in the code cache for `cache`,
+  // or nullopt if not found.
+  std::optional<std::string> GetEntry(Cache cache, const GURL& url) {
+    // A TestFuture that will get the entry for `url` if there is one, or
+    // nullopt otherwise;
+    base::test::TestFuture<std::optional<std::string>> future;
 
-  bool ContainsEntry(Cache cache, const GURL& url, const GURL& origin_lock) {
-    entry_exists_ = false;
-    base::RunLoop loop;
+    code_cache_host_->FetchCachedCode(
+        CacheToCodeCacheType(cache), url,
+        base::BindOnce(
+            [](base::OnceCallback<void(std::optional<std::string>)> callback,
+               base::Time response_time, mojo_base::BigBuffer data) {
+              if (!response_time.is_null()) {
+                // Cache hit.
+                std::move(callback).Run(
+                    std::string(base::as_string_view(base::span(data))));
+              } else {
+                std::move(callback).Run(std::nullopt);  // Cache miss.
+              }
+            },
+            future.GetCallback()));
+
+    return future.Get();
+  }
+
+  // Adds `data` to `cache` for a resource generated from `url`.
+  void AddEntry(Cache cache, const GURL& url, const std::string& data) {
+    code_cache_host_->DidGenerateCacheableMetadata(
+        CacheToCodeCacheType(cache), url, base::Time::Now(),
+        mojo_base::BigBuffer(base::as_byte_span(data)));
+  }
+
+  // Sets the time-of-last-use in `cache` for the resource generated from `url`
+  // to `time`. Not supported when UsePersistentCacheForCodeCache is enabled.
+  void SetLastUseTime(Cache cache, const GURL& url, base::Time time) {
+    if (blink::features::IsPersistentCacheForCodeCacheEnabled()) {
+      // PersistentCache does not track time of last use.
+      return;
+    }
+    base::test::TestFuture<void> future;
     GeneratedCodeCacheContext::RunOrPostTask(
-        code_cache_context_.get(), FROM_HERE,
-        base::BindOnce(&RemoveCodeCacheTester::ContainsEntryOnThread,
-                       base::Unretained(this), cache, url, origin_lock,
-                       loop.QuitClosure()));
-    loop.Run();
-    return entry_exists_;
+        GetCodeCacheContext(), FROM_HERE,
+        base::BindOnce(
+            [](GeneratedCodeCacheContext* code_cache_context, Cache cache,
+               const GURL& url, const GURL& origin_lock, base::Time time,
+               base::OnceClosure closure) {
+              GetCache(code_cache_context, cache, origin_lock)
+                  ->SetLastUsedTimeForTest(url, origin_lock,
+                                           net::NetworkIsolationKey(), time,
+                                           std::move(closure));
+            },
+            base::Unretained(GetCodeCacheContext()), cache, url,
+            GetOriginLock(), time,
+            base::BindPostTaskToCurrentDefault(future.GetCallback())));
+    (void)future.Wait();
   }
-
-  void ContainsEntryOnThread(Cache cache,
-                             const GURL& url,
-                             const GURL& origin_lock,
-                             base::OnceClosure quit) {
-    GeneratedCodeCache::ReadDataCallback callback =
-        base::BindOnce(&RemoveCodeCacheTester::FetchEntryCallback,
-                       base::Unretained(this), std::move(quit));
-    GetCache(cache)->FetchEntry(url, origin_lock, net::NetworkIsolationKey(),
-                                std::move(callback));
-  }
-
-  void AddEntry(Cache cache,
-                const GURL& url,
-                const GURL& origin_lock,
-                const std::string& data) {
-    base::RunLoop loop;
-    GeneratedCodeCacheContext::RunOrPostTask(
-        code_cache_context_.get(), FROM_HERE,
-        base::BindOnce(&RemoveCodeCacheTester::AddEntryOnThread,
-                       base::Unretained(this), cache, url, origin_lock, data,
-                       loop.QuitClosure()));
-    loop.Run();
-  }
-
-  void AddEntryOnThread(Cache cache,
-                        const GURL& url,
-                        const GURL& origin_lock,
-                        const std::string& data,
-                        base::OnceClosure quit) {
-    GetCache(cache)->WriteEntry(url, origin_lock, net::NetworkIsolationKey(),
-                                base::Time::Now(), base::as_byte_span(data));
-    std::move(quit).Run();
-  }
-
-  void SetLastUseTime(Cache cache,
-                      const GURL& url,
-                      const GURL& origin_lock,
-                      base::Time time) {
-    base::RunLoop loop;
-    GeneratedCodeCacheContext::RunOrPostTask(
-        code_cache_context_.get(), FROM_HERE,
-        base::BindOnce(&RemoveCodeCacheTester::SetLastUseTimeOnThread,
-                       base::Unretained(this), cache, url, origin_lock, time,
-                       loop.QuitClosure()));
-    loop.Run();
-  }
-
-  void SetLastUseTimeOnThread(Cache cache,
-                              const GURL& url,
-                              const GURL& origin_lock,
-                              base::Time time,
-                              base::OnceClosure quit) {
-    GetCache(cache)->SetLastUsedTimeForTest(
-        url, origin_lock, net::NetworkIsolationKey(), time, std::move(quit));
-  }
-
-  std::string received_data() { return received_data_; }
 
  private:
-  GeneratedCodeCache* GetCache(Cache cache) {
-    if (cache == kJs)
-      return code_cache_context_->generated_js_code_cache();
-    else if (cache == kWebAssembly)
-      return code_cache_context_->generated_wasm_code_cache();
-    else
-      return code_cache_context_->generated_webui_js_code_cache();
-  }
-
-  void FetchEntryCallback(base::OnceClosure quit,
-                          const base::Time& response_time,
-                          mojo_base::BigBuffer data) {
-    if (!response_time.is_null()) {
-      entry_exists_ = true;
-      received_data_ =
-          std::string(data.data(), UNSAFE_TODO(data.data() + data.size()));
-    } else {
-      entry_exists_ = false;
+  // Returns the blink CodeCacheType corresponding to `cache`.
+  static blink::mojom::CodeCacheType CacheToCodeCacheType(Cache cache) {
+    switch (cache) {
+      case kJs:
+        return blink::mojom::CodeCacheType::kJavascript;
+      case kWebAssembly:
+        return blink::mojom::CodeCacheType::kWebAssembly;
     }
-    std::move(quit).Run();
   }
 
-  bool entry_exists_;
-  raw_ptr<GeneratedCodeCacheContext> code_cache_context_;
-  std::string received_data_;
+  // Returns the render frame host's GeneratedCodeCacheContext.
+  GeneratedCodeCacheContext* GetCodeCacheContext() {
+    return render_frame_host_->GetBrowserContext()
+        ->GetDefaultStoragePartition()
+        ->GetGeneratedCodeCacheContext();
+  }
+
+  // Returns the GeneratedCodeCache to use in `code_cache_context` for `cache`
+  // data when the render frame host is locked to `origin_lock`.
+  static GeneratedCodeCache* GetCache(
+      GeneratedCodeCacheContext* code_cache_context,
+      Cache cache,
+      const GURL& origin_lock) {
+    CHECK(!blink::features::IsPersistentCacheForCodeCacheEnabled());
+    const bool is_locked_to_webui =
+        origin_lock.SchemeIs(kChromeUIScheme) ||
+        origin_lock.SchemeIs(kChromeUIUntrustedScheme);
+    switch (cache) {
+      case kJs:
+        return is_locked_to_webui
+                   ? code_cache_context->generated_webui_js_code_cache()
+                   : code_cache_context->generated_js_code_cache();
+      case kWebAssembly:
+        return is_locked_to_webui
+                   ? nullptr
+                   : code_cache_context->generated_wasm_code_cache();
+    }
+  }
+
+  // Returns the origin to which the render frame host is locked.
+  GURL GetOriginLock() {
+    return ChildProcessSecurityPolicyImpl::GetInstance()
+        ->GetProcessLock(render_frame_host_->GetProcess()->GetDeprecatedID())
+        .GetProcessLockURL();
+  }
+
+  const raw_ref<RenderFrameHostImpl> render_frame_host_;
+  mojo::Remote<blink::mojom::CodeCacheHost> code_cache_host_;
 };
 
 class MockDataRemovalObserver : public StoragePartition::DataRemovalObserver {
@@ -1565,242 +1582,269 @@ TEST_F(StoragePartitionImplTest, RemoveLocalStorageForOneOrigin) {
   EXPECT_TRUE(tester.DOMStorageExistsForOrigin(kOrigin3));
 }
 
-// TODO(crbug.com/450397707): Re-enable this test
-TEST_F(StoragePartitionImplTest, DISABLED_ClearCodeCache) {
+using StoragePartitionCodeCacheTest = RenderViewHostTestHarness;
+
+TEST_F(StoragePartitionCodeCacheTest, ClearCodeCache) {
+  const GURL kSiteUrl("http://host1:1/");
   const GURL kResourceURL("http://host4/script.js");
 
-  StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
-      browser_context()->GetDefaultStoragePartition());
-  // Ensure code cache is initialized.
-  base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(partition->GetGeneratedCodeCacheContext() != nullptr);
+  NavigateAndCommit(kSiteUrl);
 
-  RemoveCodeCacheTester tester(partition->GetGeneratedCodeCacheContext());
+  RemoveCodeCacheTester tester(*main_rfh());
 
-  GURL origin = GURL("http://host1:1/");
   std::string data("SomeData");
-  tester.AddEntry(RemoveCodeCacheTester::kJs, kResourceURL, origin, data);
-  EXPECT_TRUE(
-      tester.ContainsEntry(RemoveCodeCacheTester::kJs, kResourceURL, origin));
-  EXPECT_EQ(tester.received_data(), data);
+  tester.AddEntry(RemoveCodeCacheTester::kJs, kResourceURL, data);
+  EXPECT_THAT(tester.GetEntry(RemoveCodeCacheTester::kJs, kResourceURL),
+              testing::Optional(data));
 
   base::RunLoop run_loop;
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
-      base::BindOnce(&ClearCodeCache, partition, base::Time(), base::Time(),
+      base::BindOnce(&ClearCodeCache,
+                     browser_context()->GetDefaultStoragePartition(),
+                     base::Time(), base::Time(),
                      base::RepeatingCallback<bool(const GURL&)>(), &run_loop));
   run_loop.Run();
 
-  EXPECT_FALSE(
-      tester.ContainsEntry(RemoveCodeCacheTester::kJs, kResourceURL, origin));
+  EXPECT_EQ(tester.GetEntry(RemoveCodeCacheTester::kJs, kResourceURL),
+            std::nullopt);
 
   // Make sure there isn't a second invalid callback sitting in the queue.
   // (this used to be a bug).
   base::RunLoop().RunUntilIdle();
 }
 
-// TODO(crbug.com/450397707): Re-enable this test
-TEST_F(StoragePartitionImplTest, DISABLED_ClearCodeCacheSpecificURL) {
+TEST_F(StoragePartitionCodeCacheTest, ClearCodeCacheSpecificURL) {
+  const GURL kSiteUrl("http://host1:1/");
   const GURL kResourceURL("http://host4/script.js");
   const GURL kFilterResourceURLForCodeCache("http://host5/script.js");
 
-  StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
-      browser_context()->GetDefaultStoragePartition());
-  // Ensure code cache is initialized.
-  base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(partition->GetGeneratedCodeCacheContext() != nullptr);
+  NavigateAndCommit(kSiteUrl);
 
-  RemoveCodeCacheTester tester(partition->GetGeneratedCodeCacheContext());
+  RemoveCodeCacheTester tester(*main_rfh());
 
-  GURL origin = GURL("http://host1:1/");
   std::string data("SomeData");
-  tester.AddEntry(RemoveCodeCacheTester::kJs, kResourceURL, origin, data);
+  tester.AddEntry(RemoveCodeCacheTester::kJs, kResourceURL, data);
   tester.AddEntry(RemoveCodeCacheTester::kJs, kFilterResourceURLForCodeCache,
-                  origin, data);
-  EXPECT_TRUE(
-      tester.ContainsEntry(RemoveCodeCacheTester::kJs, kResourceURL, origin));
-  EXPECT_TRUE(tester.ContainsEntry(RemoveCodeCacheTester::kJs,
-                                   kFilterResourceURLForCodeCache, origin));
-  EXPECT_EQ(tester.received_data(), data);
+                  data);
+  EXPECT_THAT(tester.GetEntry(RemoveCodeCacheTester::kJs, kResourceURL),
+              testing::Optional(data));
+  EXPECT_THAT(tester.GetEntry(RemoveCodeCacheTester::kJs,
+                              kFilterResourceURLForCodeCache),
+              testing::Optional(data));
 
   base::RunLoop run_loop;
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(
-          &ClearCodeCache, partition, base::Time(), base::Time(),
+          &ClearCodeCache, browser_context()->GetDefaultStoragePartition(),
+          base::Time(), base::Time(),
           base::BindRepeating(&FilterURL, kFilterResourceURLForCodeCache),
           &run_loop));
   run_loop.Run();
 
-  EXPECT_TRUE(
-      tester.ContainsEntry(RemoveCodeCacheTester::kJs, kResourceURL, origin));
-  EXPECT_FALSE(tester.ContainsEntry(RemoveCodeCacheTester::kJs,
-                                    kFilterResourceURLForCodeCache, origin));
+  if (blink::features::IsPersistentCacheForCodeCacheEnabled()) {
+    // TODO(crbug.com/456537775): PersistentCache unconditionally empties the
+    // whole cache.
+    EXPECT_EQ(tester.GetEntry(RemoveCodeCacheTester::kJs, kResourceURL),
+              std::nullopt);
+  } else {
+    EXPECT_THAT(tester.GetEntry(RemoveCodeCacheTester::kJs, kResourceURL),
+                testing::Optional(data));
+  }
+  EXPECT_EQ(tester.GetEntry(RemoveCodeCacheTester::kJs,
+                            kFilterResourceURLForCodeCache),
+            std::nullopt);
 
   // Make sure there isn't a second invalid callback sitting in the queue.
   // (this used to be a bug).
   base::RunLoop().RunUntilIdle();
 }
 
-// TODO(crbug.com/450397707): Re-enable this test
-TEST_F(StoragePartitionImplTest, DISABLED_ClearCodeCacheDateRange) {
+TEST_F(StoragePartitionCodeCacheTest, ClearCodeCacheDateRange) {
+  const GURL kSiteUrl("http://host1:1/");
   const GURL kResourceURL("http://host4/script.js");
   const GURL kFilterResourceURLForCodeCache("http://host5/script.js");
 
-  StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
-      browser_context()->GetDefaultStoragePartition());
-  // Ensure code cache is initialized.
-  base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(partition->GetGeneratedCodeCacheContext() != nullptr);
+  NavigateAndCommit(kSiteUrl);
 
-  RemoveCodeCacheTester tester(partition->GetGeneratedCodeCacheContext());
+  RemoveCodeCacheTester tester(*main_rfh());
 
   base::Time current_time = base::Time::NowFromSystemTime();
   base::Time out_of_range_time = current_time - base::Hours(3);
   base::Time begin_time = current_time - base::Hours(2);
   base::Time in_range_time = current_time - base::Hours(1);
 
-  GURL origin = GURL("http://host1:1/");
   std::string data("SomeData");
-  tester.AddEntry(RemoveCodeCacheTester::kJs, kResourceURL, origin, data);
-  EXPECT_TRUE(
-      tester.ContainsEntry(RemoveCodeCacheTester::kJs, kResourceURL, origin));
-  EXPECT_EQ(tester.received_data(), data);
-  tester.SetLastUseTime(RemoveCodeCacheTester::kJs, kResourceURL, origin,
+  tester.AddEntry(RemoveCodeCacheTester::kJs, kResourceURL, data);
+  EXPECT_THAT(tester.GetEntry(RemoveCodeCacheTester::kJs, kResourceURL),
+              testing::Optional(data));
+  tester.SetLastUseTime(RemoveCodeCacheTester::kJs, kResourceURL,
                         out_of_range_time);
 
   // Add a new entry.
   tester.AddEntry(RemoveCodeCacheTester::kJs, kFilterResourceURLForCodeCache,
-                  origin, data);
-  EXPECT_TRUE(tester.ContainsEntry(RemoveCodeCacheTester::kJs,
-                                   kFilterResourceURLForCodeCache, origin));
+                  data);
+  EXPECT_THAT(tester.GetEntry(RemoveCodeCacheTester::kJs,
+                              kFilterResourceURLForCodeCache),
+              testing::Optional(data));
   tester.SetLastUseTime(RemoveCodeCacheTester::kJs,
-                        kFilterResourceURLForCodeCache, origin, in_range_time);
+                        kFilterResourceURLForCodeCache, in_range_time);
 
   base::RunLoop run_loop;
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(
-          &ClearCodeCache, partition, begin_time, current_time,
+          &ClearCodeCache, browser_context()->GetDefaultStoragePartition(),
+          begin_time, current_time,
           base::BindRepeating(&FilterURL, kFilterResourceURLForCodeCache),
           &run_loop));
   run_loop.Run();
 
-  EXPECT_TRUE(
-      tester.ContainsEntry(RemoveCodeCacheTester::kJs, kResourceURL, origin));
-  EXPECT_FALSE(tester.ContainsEntry(RemoveCodeCacheTester::kJs,
-                                    kFilterResourceURLForCodeCache, origin));
+  if (blink::features::IsPersistentCacheForCodeCacheEnabled()) {
+    // TODO(crbug.com/456537775): PersistentCache unconditionally empties the
+    // whole cache.
+    EXPECT_EQ(tester.GetEntry(RemoveCodeCacheTester::kJs, kResourceURL),
+              std::nullopt);
+  } else {
+    EXPECT_THAT(tester.GetEntry(RemoveCodeCacheTester::kJs, kResourceURL),
+                testing::Optional(data));
+  }
+  EXPECT_EQ(tester.GetEntry(RemoveCodeCacheTester::kJs,
+                            kFilterResourceURLForCodeCache),
+            std::nullopt);
 
   // Make sure there isn't a second invalid callback sitting in the queue.
   // (this used to be a bug).
   base::RunLoop().RunUntilIdle();
 }
 
-TEST_F(StoragePartitionImplTest, ClearWasmCodeCache) {
+TEST_F(StoragePartitionCodeCacheTest, ClearWasmCodeCache) {
+  const GURL kSiteUrl("http://host1:1/");
   const GURL kResourceURL("http://host4/script.js");
 
-  StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
-      browser_context()->GetDefaultStoragePartition());
-  // Ensure code cache is initialized.
-  base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(partition->GetGeneratedCodeCacheContext() != nullptr);
+  NavigateAndCommit(kSiteUrl);
 
-  RemoveCodeCacheTester tester(partition->GetGeneratedCodeCacheContext());
+  RemoveCodeCacheTester tester(*main_rfh());
 
-  GURL origin = GURL("http://host1:1/");
   std::string data("SomeData.wasm");
-  tester.AddEntry(RemoveCodeCacheTester::kWebAssembly, kResourceURL, origin,
-                  data);
-  EXPECT_TRUE(tester.ContainsEntry(RemoveCodeCacheTester::kWebAssembly,
-                                   kResourceURL, origin));
-  EXPECT_EQ(tester.received_data(), data);
+  tester.AddEntry(RemoveCodeCacheTester::kWebAssembly, kResourceURL, data);
+  EXPECT_THAT(
+      tester.GetEntry(RemoveCodeCacheTester::kWebAssembly, kResourceURL),
+      testing::Optional(data));
 
   base::RunLoop run_loop;
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
-      base::BindOnce(&ClearCodeCache, partition, base::Time(), base::Time(),
+      base::BindOnce(&ClearCodeCache,
+                     browser_context()->GetDefaultStoragePartition(),
+                     base::Time(), base::Time(),
                      base::RepeatingCallback<bool(const GURL&)>(), &run_loop));
   run_loop.Run();
 
-  EXPECT_FALSE(tester.ContainsEntry(RemoveCodeCacheTester::kWebAssembly,
-                                    kResourceURL, origin));
+  EXPECT_EQ(tester.GetEntry(RemoveCodeCacheTester::kWebAssembly, kResourceURL),
+            std::nullopt);
 
   // Make sure there isn't a second invalid callback sitting in the queue.
   // (this used to be a bug).
   base::RunLoop().RunUntilIdle();
 }
 
-TEST_F(StoragePartitionImplTest, ClearWebUICodeCache) {
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeature(features::kWebUICodeCache);
+class StoragePartitionCodeCacheWithWebUiTest
+    : public RenderViewHostTestHarness {
+ private:
+  base::test::ScopedFeatureList feature_list_{features::kWebUICodeCache};
+};
 
+TEST_F(StoragePartitionCodeCacheWithWebUiTest, ClearWebUICodeCache) {
+  const GURL kSiteUrl("chrome://settings/");
   const GURL kResourceURL("chrome://host4/script.js");
 
-  StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
-      browser_context()->GetDefaultStoragePartition());
-  // Ensure code cache is initialized.
-  base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(partition->GetGeneratedCodeCacheContext() != nullptr);
+  NavigateAndCommit(kSiteUrl);
 
-  RemoveCodeCacheTester tester(partition->GetGeneratedCodeCacheContext());
+  RemoveCodeCacheTester tester(*main_rfh());
 
-  GURL origin = GURL("chrome://host1:1/");
   std::string data("SomeData");
-  tester.AddEntry(RemoveCodeCacheTester::kWebUiJs, kResourceURL, origin, data);
-  EXPECT_TRUE(tester.ContainsEntry(RemoveCodeCacheTester::kWebUiJs,
-                                   kResourceURL, origin));
-  EXPECT_EQ(tester.received_data(), data);
+  tester.AddEntry(RemoveCodeCacheTester::kJs, kResourceURL, data);
+  EXPECT_THAT(tester.GetEntry(RemoveCodeCacheTester::kJs, kResourceURL),
+              testing::Optional(data));
 
   base::RunLoop run_loop;
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
-      base::BindOnce(&ClearCodeCache, partition, base::Time(), base::Time(),
+      base::BindOnce(&ClearCodeCache,
+                     browser_context()->GetDefaultStoragePartition(),
+                     base::Time(), base::Time(),
                      base::RepeatingCallback<bool(const GURL&)>(), &run_loop));
   run_loop.Run();
 
-  EXPECT_FALSE(tester.ContainsEntry(RemoveCodeCacheTester::kWebUiJs,
-                                    kResourceURL, origin));
+  EXPECT_EQ(tester.GetEntry(RemoveCodeCacheTester::kJs, kResourceURL),
+            std::nullopt);
 
   // Make sure there isn't a second invalid callback sitting in the queue.
   // (this used to be a bug).
   base::RunLoop().RunUntilIdle();
 }
 
-TEST_F(StoragePartitionImplTest, WebUICodeCacheDisabled) {
-  base::test::ScopedFeatureList features;
-  features.InitAndDisableFeature(features::kWebUICodeCache);
+class StoragePartitionCodeCacheWithoutWebUiTest
+    : public RenderViewHostTestHarness {
+ protected:
+  StoragePartitionCodeCacheWithoutWebUiTest() {
+    feature_list_.InitAndDisableFeature(features::kWebUICodeCache);
+  }
 
-  StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
-      browser_context()->GetDefaultStoragePartition());
-  // Ensure code cache is initialized.
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(StoragePartitionCodeCacheWithoutWebUiTest, WebUICodeCacheDisabled) {
+  const GURL kSiteUrl("chrome://settings/");
+  const GURL kResourceURL("chrome://host4/script.js");
+
+  NavigateAndCommit(kSiteUrl);
+
+  RemoveCodeCacheTester tester(*main_rfh());
+
+  std::string data("SomeData");
+  tester.AddEntry(RemoveCodeCacheTester::kJs, kResourceURL, data);
+  EXPECT_EQ(tester.GetEntry(RemoveCodeCacheTester::kJs, kResourceURL),
+            std::nullopt);
+
+  // Make sure there isn't a second invalid callback sitting in the queue.
+  // (this used to be a bug).
   base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(partition->GetGeneratedCodeCacheContext() != nullptr);
-  base::RunLoop run_loop;
-  auto* context = partition->GetGeneratedCodeCacheContext();
-  GeneratedCodeCacheContext::RunOrPostTask(
-      context, FROM_HERE, base::BindLambdaForTesting([&]() {
-        EXPECT_EQ(partition->GetGeneratedCodeCacheContext()
-                      ->generated_webui_js_code_cache(),
-                  nullptr);
-        run_loop.Quit();
-      }));
-  run_loop.Run();
 }
 
-TEST_F(StoragePartitionImplTest, ClearCodeCacheIncognito) {
-  browser_context()->set_is_off_the_record(true);
+class StoragePartitionCodeCacheOffTheRecordTest
+    : public RenderViewHostTestHarness {
+ protected:
+  std::unique_ptr<BrowserContext> CreateBrowserContext() override {
+    auto browser_context = std::make_unique<TestBrowserContext>();
+    browser_context->set_is_off_the_record(true);
+    return browser_context;
+  }
+};
 
-  StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
-      browser_context()->GetDefaultStoragePartition());
-  base::RunLoop().RunUntilIdle();
-  // We should not create GeneratedCodeCacheContext for off the record mode.
-  EXPECT_EQ(nullptr, partition->GetGeneratedCodeCacheContext());
+TEST_F(StoragePartitionCodeCacheOffTheRecordTest, ClearCodeCache) {
+  const GURL kSiteUrl("http://host1:1/");
+  const GURL kResourceURL("http://host4/script.js");
+
+  NavigateAndCommit(kSiteUrl);
+
+  RemoveCodeCacheTester tester(*main_rfh());
+
+  std::string data("SomeData");
+  tester.AddEntry(RemoveCodeCacheTester::kJs, kResourceURL, data);
+  EXPECT_EQ(tester.GetEntry(RemoveCodeCacheTester::kJs, kResourceURL),
+            std::nullopt);
 
   base::RunLoop run_loop;
   // This shouldn't crash.
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
-      base::BindOnce(&ClearCodeCache, partition, base::Time(), base::Time(),
+      base::BindOnce(&ClearCodeCache,
+                     browser_context()->GetDefaultStoragePartition(),
+                     base::Time(), base::Time(),
                      base::RepeatingCallback<bool(const GURL&)>(), &run_loop));
   run_loop.Run();
 }
