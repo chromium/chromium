@@ -22,6 +22,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/observer_list.h"
+#include "base/run_loop.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -352,7 +353,8 @@ DeviceInfoSyncBridge::DeviceInfoSyncBridge(
     std::unique_ptr<MutableLocalDeviceInfoProvider> local_device_info_provider,
     OnceDataTypeStoreFactory store_factory,
     std::unique_ptr<DataTypeLocalChangeProcessor> change_processor,
-    std::unique_ptr<DeviceInfoPrefs> device_info_prefs)
+    std::unique_ptr<DeviceInfoPrefs> device_info_prefs,
+    scoped_refptr<base::SequencedTaskRunner> pulse_task_runner)
     : DataTypeSyncBridge(std::move(change_processor)),
       local_device_info_provider_(std::move(local_device_info_provider)),
       device_info_prefs_(std::move(device_info_prefs)) {
@@ -361,6 +363,9 @@ DeviceInfoSyncBridge::DeviceInfoSyncBridge(
 
   // Provider must not be initialized, the bridge takes care.
   DCHECK(!local_device_info_provider_->GetLocalDeviceInfo());
+
+  DCHECK(pulse_task_runner);
+  pulse_timer_.SetTaskRunner(std::move(pulse_task_runner));
 
   std::move(store_factory)
       .Run(DEVICE_INFO, base::BindOnce(&DeviceInfoSyncBridge::OnStoreCreated,
@@ -385,11 +390,13 @@ void DeviceInfoSyncBridge::RefreshLocalDeviceInfoIfNeeded() {
 
 void DeviceInfoSyncBridge::SetCommittedAdditionalInterestedDataTypesCallback(
     base::RepeatingCallback<void(const DataTypeSet&)> callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   new_interested_data_types_callback_ = std::move(callback);
 }
 
 void DeviceInfoSyncBridge::OnSyncStarting(
     const DataTypeActivationRequest& request) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Store the cache GUID, mainly in case MergeFullSyncData() is executed later.
   local_cache_guid_ = request.cache_guid;
   // Garbage-collect old local cache GUIDs, for privacy reasons.
@@ -420,6 +427,7 @@ DeviceInfoSyncBridge::CreateMetadataChangeList() {
 std::optional<ModelError> DeviceInfoSyncBridge::MergeFullSyncData(
     std::unique_ptr<MetadataChangeList> metadata_change_list,
     EntityChangeList entity_data) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(change_processor()->IsTrackingMetadata());
   DCHECK(all_data_.empty());
   DCHECK(!local_cache_guid_.empty());
@@ -455,6 +463,7 @@ std::optional<ModelError> DeviceInfoSyncBridge::MergeFullSyncData(
 std::optional<ModelError> DeviceInfoSyncBridge::ApplyIncrementalSyncChanges(
     std::unique_ptr<MetadataChangeList> metadata_change_list,
     EntityChangeList entity_changes) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!local_cache_guid_.empty());
   std::unique_ptr<WriteBatch> batch = store_->CreateWriteBatch();
   bool has_changes = false;
@@ -506,6 +515,7 @@ std::optional<ModelError> DeviceInfoSyncBridge::ApplyIncrementalSyncChanges(
 
 std::unique_ptr<DataBatch> DeviceInfoSyncBridge::GetDataForCommit(
     StorageKeyList storage_keys) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto batch = std::make_unique<MutableDataBatch>();
   for (const auto& key : storage_keys) {
     const auto& iter = all_data_.find(key);
@@ -518,6 +528,7 @@ std::unique_ptr<DataBatch> DeviceInfoSyncBridge::GetDataForCommit(
 }
 
 std::unique_ptr<DataBatch> DeviceInfoSyncBridge::GetAllDataForDebugging() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto batch = std::make_unique<MutableDataBatch>();
   for (const auto& [cache_guid, device_info] : all_data_) {
     batch->Put(cache_guid, CopyToEntityData(device_info.specifics()));
@@ -545,6 +556,7 @@ bool DeviceInfoSyncBridge::IsEntityDataValid(
 
 void DeviceInfoSyncBridge::ApplyDisableSyncChanges(
     std::unique_ptr<MetadataChangeList> delete_metadata_change_list) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Sync is being disabled, so the local DeviceInfo is no longer valid and
   // should be cleared.
   local_device_info_provider_->Clear();
@@ -581,6 +593,7 @@ DeviceInfoSyncBridge::OnCommitAttemptFailed(
 }
 
 bool DeviceInfoSyncBridge::IsSyncing() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Both conditions are neecessary due to the following possible cases:
   // 1. This method is called from MergeFullSyncData() when IsTrackingMetadata()
   // returns true but |all_data_| is not initialized.
@@ -593,6 +606,7 @@ bool DeviceInfoSyncBridge::IsSyncing() const {
 
 const DeviceInfo* DeviceInfoSyncBridge::GetDeviceInfo(
     const std::string& client_id) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const ClientIdToDeviceInfo::const_iterator iter = all_data_.find(client_id);
   if (iter == all_data_.end()) {
     return nullptr;
@@ -604,6 +618,7 @@ const DeviceInfo* DeviceInfoSyncBridge::GetDeviceInfo(
 }
 
 std::vector<const DeviceInfo*> DeviceInfoSyncBridge::GetAllDeviceInfo() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TRACE_EVENT1("sync", "DeviceInfoSyncBridge::GetAllDeviceInfo", "size",
                all_data_.size());
   std::vector<const DeviceInfo*> list;
@@ -615,6 +630,7 @@ std::vector<const DeviceInfo*> DeviceInfoSyncBridge::GetAllDeviceInfo() const {
 
 std::vector<const DeviceInfo*> DeviceInfoSyncBridge::GetAllChromeDeviceInfo()
     const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TRACE_EVENT1("sync", "DeviceInfoSyncBridge::GetAllChromeDeviceInfo", "size",
                all_data_.size());
   std::vector<const DeviceInfo*> list;
@@ -627,10 +643,12 @@ std::vector<const DeviceInfo*> DeviceInfoSyncBridge::GetAllChromeDeviceInfo()
 }
 
 void DeviceInfoSyncBridge::AddObserver(Observer* observer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   observers_.AddObserver(observer);
 }
 
 void DeviceInfoSyncBridge::RemoveObserver(Observer* observer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   observers_.RemoveObserver(observer);
 }
 
@@ -640,12 +658,30 @@ bool DeviceInfoSyncBridge::IsRecentLocalCacheGuid(
 }
 
 bool DeviceInfoSyncBridge::IsPulseTimerRunningForTest() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return pulse_timer_.IsRunning();
 }
 
 void DeviceInfoSyncBridge::ForcePulseForTest() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (pulse_timer_.IsRunning()) {
-    pulse_timer_.FireNow();
+    // FireNow() can't be used with SetTaskRunner, so re-set the timer to fire
+    // with no delay, and don't return until it's done.
+
+    // `timer_task` will be posted to the timer's task runner.
+    auto timer_task = base::BindOnce(&DeviceInfoSyncBridge::SendLocalData,
+                                     base::Unretained(this));
+
+    // Save the RunLoop's QuitClosure to invoke from the next call to
+    // SendLocalData[WithBatch]. Usually that's from `timer_task`, but it's
+    // possible that another caller is already in the task queue. In that case
+    // SendLocalData will run once (which counts as the "pulse" so should quit
+    // the RunLoop) and then re-schedule the timer without running `timer_task`.
+    base::RunLoop run_loop;
+    done_pulse_timer_callback_for_test_ = run_loop.QuitClosure();
+
+    pulse_timer_.Start(FROM_HERE, base::TimeDelta(), std::move(timer_task));
+    run_loop.Run();
     return;
   }
 
@@ -656,6 +692,7 @@ void DeviceInfoSyncBridge::ForcePulseForTest() {
 }
 
 void DeviceInfoSyncBridge::NotifyObservers() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TRACE_EVENT0("sync", "DeviceInfoSyncBridge::NotifyObservers");
   for (auto& observer : observers_) {
     observer.OnDeviceInfoChange();
@@ -686,6 +723,7 @@ std::optional<ModelError> DeviceInfoSyncBridge::ParseSpecificsOnBackendSequence(
 
 void DeviceInfoSyncBridge::StoreSpecifics(DeviceInfoSpecifics specifics,
                                           WriteBatch* batch) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const std::string guid = specifics.cache_guid();
   batch->WriteData(guid, specifics.SerializeAsString());
   all_data_.erase(guid);
@@ -694,6 +732,7 @@ void DeviceInfoSyncBridge::StoreSpecifics(DeviceInfoSpecifics specifics,
 
 bool DeviceInfoSyncBridge::DeleteSpecifics(const std::string& guid,
                                            WriteBatch* batch) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ClientIdToDeviceInfo::const_iterator iter = all_data_.find(guid);
   if (iter != all_data_.end()) {
     batch->DeleteData(guid);
@@ -705,6 +744,7 @@ bool DeviceInfoSyncBridge::DeleteSpecifics(const std::string& guid,
 }
 
 std::string DeviceInfoSyncBridge::GetLocalClientName() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // |sync_mode_| may not be ready when this function is called.
   if (!sync_mode_) {
     auto device_it = all_data_.find(local_cache_guid_);
@@ -734,6 +774,7 @@ std::string DeviceInfoSyncBridge::GetLocalClientName() const {
 void DeviceInfoSyncBridge::OnStoreCreated(
     const std::optional<syncer::ModelError>& error,
     std::unique_ptr<DataTypeStore> store) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (error) {
     change_processor()->ReportError(
         {FROM_HERE, ModelError::Type::kDeviceInfoStoreCreationFailed});
@@ -750,6 +791,7 @@ void DeviceInfoSyncBridge::OnStoreCreated(
 
 void DeviceInfoSyncBridge::OnLocalDeviceNameInfoRetrieved(
     LocalDeviceNameInfo local_device_name_info) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   local_device_name_info_ = std::move(local_device_name_info);
 
   auto all_data = std::make_unique<ClientIdToDeviceInfo>();
@@ -765,6 +807,7 @@ void DeviceInfoSyncBridge::OnLocalDeviceNameInfoRetrieved(
 void DeviceInfoSyncBridge::OnReadAllData(
     std::unique_ptr<ClientIdToDeviceInfo> all_data,
     const std::optional<syncer::ModelError>& error) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(all_data);
 
   if (error) {
@@ -782,6 +825,7 @@ void DeviceInfoSyncBridge::OnReadAllData(
 void DeviceInfoSyncBridge::OnReadAllMetadata(
     const std::optional<ModelError>& error,
     std::unique_ptr<MetadataBatch> metadata_batch) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TRACE_EVENT0("sync", "DeviceInfoSyncBridge::OnReadAllMetadata");
   if (error) {
     change_processor()->ReportError(*error);
@@ -867,6 +911,7 @@ void DeviceInfoSyncBridge::OnCommit(
 }
 
 bool DeviceInfoSyncBridge::ReconcileLocalAndStored() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TRACE_EVENT0("sync", "DeviceInfoSyncBridge::ReconcileLocalAndStored");
   CHECK(store_);
 
@@ -915,6 +960,7 @@ bool DeviceInfoSyncBridge::ReconcileLocalAndStored() {
 }
 
 void DeviceInfoSyncBridge::SendLocalData() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(store_);
   CHECK(IsSyncing());
   SendLocalDataWithBatch(store_->CreateWriteBatch());
@@ -922,6 +968,7 @@ void DeviceInfoSyncBridge::SendLocalData() {
 
 void DeviceInfoSyncBridge::SendLocalDataWithBatch(
     std::unique_ptr<DataTypeStore::WriteBatch> batch) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(store_);
   DCHECK(local_device_info_provider_->GetLocalDeviceInfo());
   DCHECK(change_processor()->IsTrackingMetadata());
@@ -936,10 +983,14 @@ void DeviceInfoSyncBridge::SendLocalDataWithBatch(
   pulse_timer_.Start(FROM_HERE, DeviceInfoUtil::GetPulseInterval(),
                      base::BindOnce(&DeviceInfoSyncBridge::SendLocalData,
                                     base::Unretained(this)));
+  if (done_pulse_timer_callback_for_test_) {
+    std::move(done_pulse_timer_callback_for_test_).Run();
+  }
 }
 
 void DeviceInfoSyncBridge::CommitAndNotify(std::unique_ptr<WriteBatch> batch,
                                            bool should_notify) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(store_);
   store_->CommitWriteBatch(std::move(batch),
                            base::BindOnce(&DeviceInfoSyncBridge::OnCommit,
@@ -951,6 +1002,7 @@ void DeviceInfoSyncBridge::CommitAndNotify(std::unique_ptr<WriteBatch> batch,
 
 absl::flat_hash_map<DeviceInfo::FormFactor, int>
 DeviceInfoSyncBridge::CountActiveDevicesByType() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // The algorithm below leverages sync timestamps to give a tight lower bound
   // (modulo clock skew) on how many distinct devices are currently active
   // (where active means being used recently enough as specified by
@@ -1007,6 +1059,7 @@ DeviceInfoSyncBridge::CountActiveDevicesByType() const {
 }
 
 void DeviceInfoSyncBridge::ExpireOldEntries() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(store_);
   TRACE_EVENT0("sync", "DeviceInfoSyncBridge::ExpireOldEntries");
   const base::Time expiration_threshold =
