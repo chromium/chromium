@@ -111,7 +111,10 @@ _APKS = {
         ('WEBVIEW_DESKTOP', 'WEBVIEW_DESKTOP', '64'),
     ],
     'hybrid': [
-        ('CHROME', 'CHROME', '64'),
+        ('CHROME', 'CHROME', '64_32'),
+        ('CHROME_HIGH', 'CHROME', '64'),
+        # Obsolete Chrome Modern version code being used for Chrome
+        ('CHROME_HIGH_BETA', 'CHROME_MODERN', '64'),
         ('CHROME_32', 'CHROME', '32'),
         ('CHROME_MODERN', 'CHROME_MODERN', '64'),
         ('MONOCHROME', 'MONOCHROME', '32_64'),
