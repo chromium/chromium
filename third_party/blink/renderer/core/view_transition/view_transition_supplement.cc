@@ -30,6 +30,15 @@
 
 namespace blink {
 
+namespace {
+
+bool CompareTransitions(const Member<ViewTransition>& left,
+                        const Member<ViewTransition>& right) {
+  return left->Id() < right->Id();
+}
+
+}  // namespace
+
 // static
 const char ViewTransitionSupplement::kSupplementName[] = "ViewTransition";
 
@@ -335,6 +344,20 @@ void ViewTransitionSupplement::OnSkippedTransitionDOMCallback(
   skipped_with_pending_dom_callback_.erase(transition->Scope());
 }
 
+void ViewTransitionSupplement::OnTransitionCaptured(
+    ViewTransition* transition) {
+  CHECK(transition);
+  captured_transitions_.push_back(transition);
+  if (--in_flight_capture_requests_ == 0) {
+    std::sort(captured_transitions_.begin(), captured_transitions_.end(),
+              CompareTransitions);
+    for (auto captured_transition : captured_transitions_) {
+      captured_transition->OnCapturePhaseComplete();
+    }
+    captured_transitions_.clear();
+  }
+}
+
 ViewTransition* ViewTransitionSupplement::GetTransition() {
   return document_transition_.Get();
 }
@@ -412,12 +435,16 @@ void ViewTransitionSupplement::Trace(Visitor* visitor) const {
   visitor->Trace(document_transition_);
   visitor->Trace(element_transitions_);
   visitor->Trace(skipped_with_pending_dom_callback_);
+  visitor->Trace(captured_transitions_);
 
   Supplement<Document>::Trace(visitor);
 }
 
 void ViewTransitionSupplement::AddPendingRequest(
     std::unique_ptr<ViewTransitionRequest> request) {
+  if (request->type() == ViewTransitionRequest::Type::kSave) {
+    in_flight_capture_requests_++;
+  }
   pending_requests_.push_back(std::move(request));
 
   auto* document = GetSupplementable();

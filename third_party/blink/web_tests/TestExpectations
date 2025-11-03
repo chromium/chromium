@@ -9650,9 +9650,6 @@ crbug.com/421782213 [ Mac14-arm64 ] fast/inline/vertical-align-with-fallback-fon
 # Susceptible to subtle timing flakes
 crbug.com/415870039 external/wpt/web-animations/interfaces/Animation/finished.html [ Failure Pass ]
 
-# view-transitions do not trigger DOM callbacks in creation order
-crbug.com/424474086 external/wpt/css/css-view-transitions/scoped/callback-order.tentative.html [ Failure Pass ]
-
 # DCHECK starting simultaneous outer + inner transitions with snapshot capture
 crbug.com/449920603 external/wpt/css/css-view-transitions/scoped/crashtests/implicit-stacking-context.html [ Crash Pass Timeout ]
 

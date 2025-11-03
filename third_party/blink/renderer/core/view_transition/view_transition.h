@@ -53,6 +53,7 @@ class CORE_EXPORT ViewTransition : public GarbageCollected<ViewTransition>,
     virtual void OnTransitionFinished(ViewTransition*) = 0;
     virtual void OnSkipTransitionWithPendingCallback(ViewTransition*) = 0;
     virtual void OnSkippedTransitionDOMCallback(ViewTransition*) = 0;
+    virtual void OnTransitionCaptured(ViewTransition*) = 0;
   };
 
   // Creates and starts a same-document ViewTransition initiated using the
@@ -295,6 +296,17 @@ class CORE_EXPORT ViewTransition : public GarbageCollected<ViewTransition>,
 
   bool IsCapturing() const { return state_ == State::kCapturing; }
 
+  // Each view transition is assigned a unique id in ascending order to
+  // facilitate triggering callbacks on transitions in creation order. Imposing
+  // and order on the fallback prevents non-deterministic behavior with DOM
+  // callbacks when there are multiple view transitions.
+  int Id() { return id_; }
+
+  // Multiple transitions could have captures running concurrently.This method
+  // is called once all captures are complete to advance to DOM callback in
+  // deterministic (creation) order.
+  void OnCapturePhaseComplete();
+
  private:
   friend class ViewTransitionTest;
   friend class AXViewTransitionTest;
@@ -392,6 +404,8 @@ class CORE_EXPORT ViewTransition : public GarbageCollected<ViewTransition>,
 
   void LogIfDocumentElementChanged() const;
 
+  static int NextId() { return next_id_++; }
+
   State state_ = State::kInitial;
   const CreationType creation_type_;
 
@@ -441,6 +455,10 @@ class CORE_EXPORT ViewTransition : public GarbageCollected<ViewTransition>,
 
   Member<ViewTransitionTypeSet> types_;
 
+  // Id is used for sorting transition callbacks in creation order, to provide
+  // deterministic behavior for DOM update callbacks.
+  int id_ = NextId();
+
   // Synchronization of view-transitions. When starting a view transition, we
   // cancel the previously active one. These members are used to ensure proper
   // synchronization of the old and new transition. The old VT's DOM callback
@@ -456,6 +474,8 @@ class CORE_EXPORT ViewTransition : public GarbageCollected<ViewTransition>,
   bool pending_skip_view_transitions_ = false;
 
   int wait_until_pending_promise_count_ = 0;
+
+  static int next_id_;
 };
 
 }  // namespace blink
