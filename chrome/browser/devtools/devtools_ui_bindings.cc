@@ -2039,8 +2039,10 @@ void DevToolsUIBindings::GetHostConfig(DispatchCallback callback) {
                     std::move(starting_style_debugging));
 
   base::Value::Dict prompt_api_dict;
-  prompt_api_dict.Set("enabled", base::FeatureList::IsEnabled(
-                                     ::features::kDevToolsAiPromptApi));
+  prompt_api_dict.Set(
+      "enabled",
+      base::FeatureList::IsEnabled(::features::kDevToolsAiPromptApi) &&
+          base::FeatureList::IsEnabled(blink::features::kBuiltInAIAPI));
   prompt_api_dict.Set("allowWithoutGpu",
                       features::kDevToolsAiPromptApiAllowWithoutGpu.Get());
   response_dict.Set("devToolsAiPromptApi", std::move(prompt_api_dict));
