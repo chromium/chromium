@@ -56,6 +56,12 @@ extern const char kCustomUiChipIphV2UtmSource[];
 extern const char kCustomUiChipIphV3UtmSource[];
 // From the Extensions Zero State Promo, custom UI IPH, text link variant.
 extern const char kCustomUiPlainLinkIphUtmSource[];
+// From the New Tab Page browser feature promo, single-promo variant.
+extern const char kNtpPromo1pUtmSource[];
+// From the New Tab Page browser feature promo, two-promo variant.
+extern const char kNtpPromo2pUtmSource[];
+// From the New Tab Page browser feature promo, setup-list variant.
+extern const char kNtpPromoSlUtmSource[];
 
 // Returns the URL prefix for the extension/apps gallery. Can be set via the
 // --apps-gallery-url switch. The URL returned will not contain a trailing

@@ -27,6 +27,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/user_education/common/ntp_promo/ntp_promo_registry.h"
 #include "components/user_education/common/ntp_promo/ntp_promo_specification.h"
+#include "components/user_education/common/user_education_features.h"
 #include "components/user_education/common/user_education_metadata.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/common/extension_urls.h"
@@ -105,11 +106,31 @@ NtpPromoSpecification::Eligibility CheckExtensionsPromoEligibility(
 }
 
 void InvokeExtensionsPromo(ContextPtr context) {
-  // TODO(crbug.com/443062679): Use the BrowserWindowInterface version when it
-  // becomes available.
+  std::string_view utm_source;
+  switch (user_education::features::GetNtpBrowserPromoType()) {
+    case user_education::features::NtpBrowserPromoType::kSimple:
+      if (user_education::features::GetNtpBrowserPromoIndividualPromoLimit() >
+          1) {
+        utm_source = extension_urls::kNtpPromo2pUtmSource;
+      } else {
+        utm_source = extension_urls::kNtpPromo1pUtmSource;
+      }
+      break;
+    case user_education::features::NtpBrowserPromoType::kSetupList:
+      utm_source = extension_urls::kNtpPromoSlUtmSource;
+      break;
+    default:
+      NOTREACHED();
+  }
+
+  GURL url_with_utm = extension_urls::AppendUtmSource(
+      extension_urls::GetWebstoreLaunchURL(), utm_source);
+
+  // TODO(crbug.com/443062679): Use the BrowserWindowInterface version when
+  // it becomes available.
   NavigateParams params(
       context->AsA<BrowserUserEducationContext>()->GetBrowserView().browser(),
-      extension_urls::GetWebstoreLaunchURL(), ui::PAGE_TRANSITION_LINK);
+      url_with_utm, ui::PAGE_TRANSITION_LINK);
   params.disposition = WindowOpenDisposition::CURRENT_TAB;
   Navigate(&params);
 }
