@@ -9,5 +9,5 @@ struct Transform {
   // Column major order.
   // The identity matrix is considered null and will not be serialized. This
   // saves the cost of serialization and deserialization.
-  array<float, 16>? matrix;
+  array<double, 16>? matrix;
 };

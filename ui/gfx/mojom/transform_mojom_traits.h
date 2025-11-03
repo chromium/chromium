@@ -15,23 +15,23 @@ namespace mojo {
 
 template <>
 struct StructTraits<gfx::mojom::TransformDataView, gfx::Transform> {
-  static std::optional<std::array<float, 16>> matrix(
+  static std::optional<std::array<double, 16>> matrix(
       const gfx::Transform& transform) {
     if (transform.IsIdentity())
       return std::nullopt;
-    std::array<float, 16> matrix;
-    transform.GetColMajorF(matrix);
+    std::array<double, 16> matrix;
+    transform.GetColMajor(matrix);
     return matrix;
   }
 
   static bool Read(gfx::mojom::TransformDataView data, gfx::Transform* out) {
-    ArrayDataView<float> matrix;
+    ArrayDataView<double> matrix;
     data.GetMatrixDataView(&matrix);
     if (matrix.is_null()) {
       out->MakeIdentity();
       return true;
     }
-    *out = gfx::Transform::ColMajorF(base::span(matrix).first<16>());
+    *out = gfx::Transform::ColMajor(base::span(matrix).first<16>());
     return true;
   }
 };

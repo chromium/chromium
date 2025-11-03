@@ -1619,8 +1619,8 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
               kScaleTolerance);
   EXPECT_NEAR(0.5f * scale_factor, transform_from_child.rc(1, 1),
               kScaleTolerance);
-  EXPECT_EQ(child_origin.x(), transform_from_child.rc(0, 3));
-  EXPECT_EQ(child_origin.y(), transform_from_child.rc(1, 3));
+  EXPECT_NEAR(child_origin.x(), transform_from_child.rc(0, 3), kScaleTolerance);
+  EXPECT_NEAR(child_origin.y(), transform_from_child.rc(1, 3), kScaleTolerance);
 
   gfx::Transform transform_child_to_child =
       transform_from_child * transform_to_child;
