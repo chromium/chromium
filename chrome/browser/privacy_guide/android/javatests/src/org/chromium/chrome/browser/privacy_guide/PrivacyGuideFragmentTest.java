@@ -52,8 +52,8 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -90,12 +90,12 @@ import java.util.Set;
 
 /** Tests {@link PrivacyGuideFragment} */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @EnableFeatures({
     ChromeFeatureList.PRIVACY_SANDBOX_AD_TOPICS_CONTENT_PARITY,
 })
 @DisableFeatures({ChromeFeatureList.TRACKING_PROTECTION_3PCD})
+@DoNotBatch(reason = "Manages sign-in state, which is global.")
 public class PrivacyGuideFragmentTest {
     private static final String SETTINGS_STATES_HISTOGRAM = "Settings.PrivacyGuide.SettingsStates";
     private static final String NEXT_NAVIGATION_HISTOGRAM = "Settings.PrivacyGuide.NextNavigation";

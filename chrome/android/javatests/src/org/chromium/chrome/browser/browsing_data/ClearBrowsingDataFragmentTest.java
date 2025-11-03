@@ -63,11 +63,11 @@ import org.mockito.junit.MockitoRule;
 import org.mockito.stubbing.Answer;
 
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -105,7 +105,7 @@ import java.util.Set;
 /** Tests for ClearBrowsingDataFragment interaction with underlying data model. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@Batch(Batch.PER_CLASS)
+@DoNotBatch(reason = "Manages sign-in state, which is global.")
 public class ClearBrowsingDataFragmentTest {
     @Rule
     public FreshCtaTransitTestRule mActivityTestRule =
