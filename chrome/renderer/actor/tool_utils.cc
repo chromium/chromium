@@ -48,30 +48,42 @@ std::vector<gfx::Rect> getNewHitBoxesFor(gfx::Rect& rect,
   DCHECK(rect.Intersects(exclusion));
   DCHECK(!exclusion.Contains(rect));
 
-  // There are 4 possible rects. Note that these rects may overlap, but that's
-  // okay.
+  // There are 4 possible rects. We handle the top and bottom first so that we
+  // can assign the corners to them.
 
-  // Handle left of the exclusion.
-  if (rect.x() < exclusion.x()) {
-    new_rects.emplace_back(rect.x(), rect.y(), exclusion.x() - rect.x(),
-                           rect.height());
-  }
+  // The y position and height of the left and right rects. We may have to
+  // adjust the y position if the top or bottom are assigned to avoid
+  // overlapping.
+  int side_y = rect.y();
+  int side_height = rect.height();
+
   // Handle above the exclusion.
   if (rect.y() < exclusion.y()) {
+    // Left and right rects will start at the exclusion y position.
+    side_y = exclusion.y();
+    side_height -= exclusion.y() - rect.y();
+
     new_rects.emplace_back(rect.x(), rect.y(), rect.width(),
                            exclusion.y() - rect.y());
   }
-  // Handle to the right of the exclusion.
-  if (rect.x() + rect.width() > exclusion.x() + exclusion.width()) {
-    int x = exclusion.x() + exclusion.width();
-    new_rects.emplace_back(x, rect.y(), rect.x() + rect.width() - x,
-                           rect.height());
-  }
   // Handle below the exclusion.
-  if (rect.y() + rect.height() > exclusion.y() + exclusion.height()) {
-    int y = exclusion.y() + exclusion.height();
-    new_rects.emplace_back(rect.x(), y, rect.width(),
-                           rect.y() + rect.height() - y);
+  if (rect.bottom() > exclusion.bottom()) {
+    // Left and right rects end at the exclusion y position + height.
+    side_height -= rect.bottom() - exclusion.bottom();
+
+    new_rects.emplace_back(rect.x(), exclusion.bottom(), rect.width(),
+                           rect.bottom() - exclusion.bottom());
+  }
+
+  // Handle left of the exclusion.
+  if (rect.x() < exclusion.x()) {
+    new_rects.emplace_back(rect.x(), side_y, exclusion.x() - rect.x(),
+                           side_height);
+  }
+  // Handle to the right of the exclusion.
+  if (rect.right() > exclusion.right()) {
+    new_rects.emplace_back(exclusion.right(), side_y,
+                           rect.right() - exclusion.right(), side_height);
   }
   return new_rects;
 }
