@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_metrics.h"
 #import "ios/chrome/browser/shared/public/commands/page_action_menu_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
 namespace {
@@ -22,12 +23,18 @@ void SetViewHiddenIfNecessary(UIView* view, BOOL hidden) {
     view.hidden = hidden;
   }
 }
+// The unified badge background height multiplier.
+const CGFloat kBackgroundHeightMultiplier = 0.72;
+
+// The horizontal inset for unified badge background leading and trailing edges.
+const CGFloat kBackgroundHorizontalInset = 5.0;
 
 }  // namespace
 
 @implementation LocationBarBadgesContainerView {
   UIStackView* _containerStackView;
   UIButton* _tapOverlayButton;
+  UIView* _badgeBackgroundView;
 
   /// Whether the contextual panel entrypoint should be visible. The placeholder
   /// view trumps the entrypoint when kLensOverlayPriceInsightsCounterfactual is
@@ -55,6 +62,7 @@ void SetViewHiddenIfNecessary(UIView* view, BOOL hidden) {
     AddSameConstraints(self, _containerStackView);
 
     if (IsProactiveSuggestionsFrameworkEnabled()) {
+      [self setupUnifiedBadgeBackground];
       _containerStackView.userInteractionEnabled = NO;
       [self setupTapOverlay];
     }
@@ -266,6 +274,9 @@ void SetViewHiddenIfNecessary(UIView* view, BOOL hidden) {
       RecordLensEntrypointHidden(IOSLocationBarLeadingIconType::kReaderMode);
     }
   }
+  if (IsProactiveSuggestionsFrameworkEnabled()) {
+    [self updateBackgroundVisibility];
+  }
 }
 
 // Creates and configures transparent overlay button for unified badge tapping.
@@ -285,6 +296,62 @@ void SetViewHiddenIfNecessary(UIView* view, BOOL hidden) {
 // Handles tap events on the overlay button and shows the page action menu.
 - (void)handleOverlayTap:(id)sender {
   [self.pageActionMenuHandler showPageActionMenu];
+}
+
+// Creates blue background container for unified badge state.
+- (void)setupUnifiedBadgeBackground {
+  _badgeBackgroundView = [[UIView alloc] init];
+  _badgeBackgroundView.translatesAutoresizingMaskIntoConstraints = NO;
+  _badgeBackgroundView.backgroundColor = [UIColor colorNamed:kBlue600Color];
+  _badgeBackgroundView.userInteractionEnabled = NO;
+  _badgeBackgroundView.hidden = YES;
+
+  [self insertSubview:_badgeBackgroundView atIndex:0];
+
+  [NSLayoutConstraint activateConstraints:@[
+    [_badgeBackgroundView.leadingAnchor
+        constraintEqualToAnchor:self.leadingAnchor
+                       constant:kBackgroundHorizontalInset],
+    [_badgeBackgroundView.trailingAnchor
+        constraintEqualToAnchor:self.trailingAnchor
+                       constant:-kBackgroundHorizontalInset],
+
+    [_badgeBackgroundView.heightAnchor
+        constraintEqualToAnchor:self.heightAnchor
+                     multiplier:kBackgroundHeightMultiplier],
+    [_badgeBackgroundView.centerYAnchor
+        constraintEqualToAnchor:self.centerYAnchor],
+  ]];
+}
+
+// Updates background visibility and badge tint colors.
+- (void)updateBackgroundVisibility {
+  if (!IsProactiveSuggestionsFrameworkEnabled() || !_badgeBackgroundView) {
+    return;
+  }
+
+  BOOL hasVisibleBadges = [self hasVisibleBadges];
+
+  _badgeBackgroundView.hidden = !hasVisibleBadges;
+
+  if (hasVisibleBadges) {
+    self.tintColor = [UIColor whiteColor];
+
+    _badgeBackgroundView.layer.cornerRadius =
+        _badgeBackgroundView.bounds.size.height / 2.0;
+  } else {
+    self.tintColor = nil;
+  }
+}
+
+// Returns YES if any badges are currently visible.
+- (BOOL)hasVisibleBadges {
+  for (UIView* subview in _containerStackView.arrangedSubviews) {
+    if (!subview.hidden) {
+      return YES;
+    }
+  }
+  return NO;
 }
 
 @end

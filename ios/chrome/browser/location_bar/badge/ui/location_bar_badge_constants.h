@@ -35,6 +35,9 @@ extern const CGSize kBadgeContainerShadowOffset;
 // The point size of the badge's symbol.
 extern const CGFloat kBadgeSymbolPointSize;
 
+// The point size of the unified badge symbol.
+extern const CGFloat kUnifiedBadgeSymbolPointSize;
+
 // Accessibility identifier for the badge's image view.
 extern NSString* const kLocationBarBadgeImageViewIdentifier;
 

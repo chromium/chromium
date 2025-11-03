@@ -216,9 +216,15 @@
 // Returns the button configuration with the given background color.
 - (UIButtonConfiguration*)buttonConfigurationWithBackgroundColor:
     (UIColor*)backgroundColor {
-  UIButtonConfiguration* configuration =
-      [UIButtonConfiguration filledButtonConfiguration];
-  configuration.baseBackgroundColor = backgroundColor;
+  UIButtonConfiguration* configuration;
+
+  if (IsProactiveSuggestionsFrameworkEnabled()) {
+    configuration = [UIButtonConfiguration plainButtonConfiguration];
+  } else {
+    configuration = [UIButtonConfiguration filledButtonConfiguration];
+    configuration.baseBackgroundColor = backgroundColor;
+  }
+
   configuration.cornerStyle = UIButtonConfigurationCornerStyleCapsule;
   return configuration;
 }
@@ -227,7 +233,10 @@
 - (UIButton*)configuredButtonContainer {
   UIButton* button = [[UIButton alloc] init];
   button.translatesAutoresizingMaskIntoConstraints = NO;
-  UIColor* defaultBackgroundColor = [UIColor colorNamed:kBackgroundColor];
+
+  UIColor* defaultBackgroundColor = IsProactiveSuggestionsFrameworkEnabled()
+                                        ? [UIColor clearColor]
+                                        : [UIColor colorNamed:kBackgroundColor];
   button.configuration =
       [self buttonConfigurationWithBackgroundColor:defaultBackgroundColor];
   button.clipsToBounds = NO;
@@ -267,13 +276,16 @@
   imageView.contentMode = UIViewContentModeCenter;
   imageView.tintColor = [UIColor colorNamed:kBlue600Color];
   imageView.accessibilityIdentifier = kLocationBarBadgeImageViewIdentifier;
-
   [imageView
       setContentCompressionResistancePriority:UILayoutPriorityDefaultHigh + 1
                                       forAxis:UILayoutConstraintAxisHorizontal];
 
+  CGFloat symbolPointSize = IsProactiveSuggestionsFrameworkEnabled()
+                                ? kUnifiedBadgeSymbolPointSize
+                                : kBadgeSymbolPointSize;
+
   UIImageSymbolConfiguration* symbolConfig = [UIImageSymbolConfiguration
-      configurationWithPointSize:kBadgeSymbolPointSize
+      configurationWithPointSize:symbolPointSize
                           weight:UIImageSymbolWeightRegular
                            scale:UIImageSymbolScaleMedium];
   imageView.preferredSymbolConfiguration = symbolConfig;
@@ -435,25 +447,36 @@
       _infobarBadgesCurrentlyShown && !IsReaderModeAvailable();
   BOOL shouldShowMutedColors =
       shouldAccountForVisibleInfobarBadges || _badgeTapped;
+  BOOL isInUnifiedContainer =
+      IsProactiveSuggestionsFrameworkEnabled() && [self isBadgeVisible];
 
   // Badge icon tint color.
-  _badgeIcon.tintColor = shouldShowMutedColors
-                             ? [UIColor colorNamed:kGrey600Color]
-                             : [UIColor colorNamed:kBlue600Color];
+  if (isInUnifiedContainer) {
+    _badgeIcon.tintColor = [UIColor whiteColor];
+  } else {
+    _badgeIcon.tintColor = shouldShowMutedColors
+                               ? [UIColor colorNamed:kGrey600Color]
+                               : [UIColor colorNamed:kBlue600Color];
+  }
 
   // Button container shadow.
-  _buttonContainer.layer.shadowOpacity =
-      shouldShowMutedColors ? 0 : kBadgeContainerShadowOpacity;
+  if (isInUnifiedContainer || shouldShowMutedColors) {
+    _buttonContainer.layer.shadowOpacity = 0;
+  } else {
+    _buttonContainer.layer.shadowOpacity = kBadgeContainerShadowOpacity;
+  }
 
   // Button container background color.
-  UIColor* untappedBackgroundColor =
-      shouldAccountForVisibleInfobarBadges
-          ? nil
-          : [UIColor colorNamed:kBackgroundColor];
-
-  UIColor* buttonContainerBackgroundColor =
-      _badgeTapped ? [UIColor colorNamed:kGrey100Color]
-                   : untappedBackgroundColor;
+  UIColor* buttonContainerBackgroundColor;
+  if (isInUnifiedContainer) {
+    buttonContainerBackgroundColor = [UIColor clearColor];
+  } else {
+    UIColor* untappedBackgroundColor =
+        shouldAccountForVisibleInfobarBadges ? nil : [UIColor clearColor];
+    buttonContainerBackgroundColor = _badgeTapped
+                                         ? [UIColor colorNamed:kGrey100Color]
+                                         : untappedBackgroundColor;
+  }
   _buttonContainer.configuration = [self
       buttonConfigurationWithBackgroundColor:buttonContainerBackgroundColor];
 
@@ -541,16 +564,19 @@
         base::SysUTF8ToNSString(config->accessibility_label);
 
     UIImage* image;
+    CGFloat symbolPointSize = IsProactiveSuggestionsFrameworkEnabled()
+                                  ? kUnifiedBadgeSymbolPointSize
+                                  : kBadgeSymbolPointSize;
     switch (config->image_type) {
       case ContextualPanelItemConfiguration::EntrypointImageType::SFSymbol:
         image = DefaultSymbolWithPointSize(
             base::SysUTF8ToNSString(config->entrypoint_image_name),
-            kBadgeSymbolPointSize);
+            symbolPointSize);
         break;
       case ContextualPanelItemConfiguration::EntrypointImageType::Image:
         image = CustomSymbolWithPointSize(
             base::SysUTF8ToNSString(config->entrypoint_image_name),
-            kBadgeSymbolPointSize);
+            symbolPointSize);
         break;
     }
 
@@ -582,16 +608,19 @@
     _label.text = base::SysUTF8ToNSString(config->entrypoint_message);
 
     UIImage* image;
+    CGFloat symbolPointSize = IsProactiveSuggestionsFrameworkEnabled()
+                                  ? kUnifiedBadgeSymbolPointSize
+                                  : kBadgeSymbolPointSize;
     switch (config->image_type) {
       case ContextualPanelItemConfiguration::EntrypointImageType::SFSymbol:
         image = DefaultSymbolWithPointSize(
             base::SysUTF8ToNSString(config->entrypoint_image_name),
-            kBadgeSymbolPointSize);
+            symbolPointSize);
         break;
       case ContextualPanelItemConfiguration::EntrypointImageType::Image:
         image = CustomSymbolWithPointSize(
             base::SysUTF8ToNSString(config->entrypoint_image_name),
-            kBadgeSymbolPointSize);
+            symbolPointSize);
         break;
     }
 

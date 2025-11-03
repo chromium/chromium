@@ -23,6 +23,8 @@ const CGSize kBadgeContainerShadowOffset = {0, 3};
 
 const CGFloat kBadgeSymbolPointSize = 15;
 
+const CGFloat kUnifiedBadgeSymbolPointSize = 18;
+
 NSString* const kLocationBarBadgeImageViewIdentifier =
     @"LocationBarBadgeImageViewAXID";
 

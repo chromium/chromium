@@ -150,6 +150,7 @@ source_set("badges") {
     "//ios/chrome/browser/reader_mode/ui:chip",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",
   ]
 }
