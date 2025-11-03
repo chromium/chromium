@@ -273,27 +273,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram
-    name="Setup.Install.UnbufferedFileWriter.DeterminePhysicalSectorSizeResult"
-    enum="DeterminePhysicalSectorSizeResult" expires_after="2026-09-28">
-  <owner>grt@chromium.org</owner>
-  <owner>catan-team@chromium.org</owner>
-  <summary>
-    The result of an attempt to determine the size of a physical sector of the
-    disk to which a file is to be written. Recorded once per process.
-  </summary>
-</histogram>
-
-<histogram name="Setup.Install.UnbufferedFileWriter.PhysicalSectorSize"
-    units="bytes" expires_after="2026-09-28">
-  <owner>grt@chromium.org</owner>
-  <owner>catan-team@chromium.org</owner>
-  <summary>
-    The number of bytes per physical sector reported for the disk to which a
-    file is to be written. Recorded once per process.
-  </summary>
-</histogram>
-
 <histogram name="Setup.Install.UnbufferedFileWriter.{Operation}.Error"
     enum="WinGetLastError" expires_after="2026-09-28">
   <owner>grt@chromium.org</owner>
@@ -306,6 +285,7 @@ chromium-metrics-reviews@google.com.
     <variant name="Allocate"/>
     <variant name="ClearDelete"/>
     <variant name="Create"/>
+    <variant name="GetInfo"/>
     <variant name="SetInfo"/>
     <variant name="Write"/>
   </token>

@@ -130,25 +130,6 @@ chromium-metrics-reviews@google.com.
   <int value="255" label="Unspecified/unknown error in user-mode"/>
 </enum>
 
-<enum name="DeterminePhysicalSectorSizeResult">
-  <summary>
-    The result of an attempt to determine the size of a physical sector of the
-    disk to which a file is to be written.
-  </summary>
-  <int value="0" label="Success">
-    The size was determined and recorded in
-    Setup.Install.UnbufferedFileWriter.PhysicalSectorSize.
-  </int>
-  <int value="1" label="DriveInfoFailed">GetFileDriveInfo() failed.</int>
-  <int value="2" label="NoSizeValue">
-    GetFileDriveInfo() did not report the sector size.
-  </int>
-  <int value="3" label="GreaterThanFourK">
-    The device reported a sector size larger than 4096, which has been recorded
-    in Setup.Install.UnbufferedFileWriter.PhysicalSectorSize.
-  </int>
-</enum>
-
 <enum name="SetupInstallResult">
   <summary>
     Return status of the Windows installer. The values in this enum must be kept
