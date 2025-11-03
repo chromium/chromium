@@ -30,7 +30,7 @@ from blinkpy.common.net.git_cl import (
 from blinkpy.common.net.network_transaction import NetworkTimeout
 from blinkpy.common.path_finder import PathFinder
 from blinkpy.common.system.log_utils import configure_logging
-from blinkpy.w3c.buganizer import BuganizerClient, BuganizerIssue
+from blinkpy.w3c.buganizer import BuganizerIssue
 from blinkpy.w3c.chromium_commit import ChromiumCommit
 from blinkpy.w3c.chromium_exportable_commits import exportable_commits_over_last_n_commits
 from blinkpy.w3c.common import (
@@ -69,7 +69,6 @@ class TestImporter:
                  host,
                  github=None,
                  wpt_manifests=None,
-                 buganizer_client: Optional[BuganizerClient] = None,
                  builders: list[str] | None = None):
         self.host = host
         self.github = github
@@ -87,7 +86,6 @@ class TestImporter:
         self.wpt_git = None
         self.verbose = False
         self.wpt_manifests = wpt_manifests
-        self._buganizer_client = buganizer_client or BuganizerClient()
         self._builders = builders or WPTExpectationsUpdater.DEFAULT_BUILDERS
         self._cleanup = contextlib.ExitStack()
 
@@ -150,11 +148,12 @@ class TestImporter:
 
         # File bugs for the previous imported CL. This is done at the start so
         # that manually revived CLs still receive bugs.
-        gerrit_api = GerritAPI.from_credentials(self.host, credentials)
-        notifier = ImportNotifier(self.host, self.project_git, local_wpt,
-                                  gerrit_api, self._buganizer_client)
-        self.file_and_record_bugs(notifier,
-                                  auto_file_bugs=options.auto_file_bugs)
+        if options.auto_update or options.auto_upload:
+            gerrit_api = GerritAPI.from_credentials(self.host, credentials)
+            notifier = ImportNotifier(self.host, self.project_git, local_wpt,
+                                      gerrit_api)
+            self.file_and_record_bugs(notifier,
+                                      auto_file_bugs=options.auto_file_bugs)
 
         if options.revision is not None:
             _log.info('Checking out %s', options.revision)
@@ -172,7 +171,8 @@ class TestImporter:
                 _log.error('Could not apply some exportable commits cleanly.')
                 _log.error('Aborting import to prevent clobbering commits.')
                 return 1
-        last_wpt_revision, _ = notifier.latest_wpt_import()
+        last_wpt_revision, _ = ImportNotifier.latest_wpt_import(
+            self.project_git)
         wpt_range = CommitRange(last_wpt_revision, new_wpt_revision)
         commit_message = self.commit_message(chromium_revision,
                                              wpt_range,
@@ -752,14 +752,16 @@ class TestImporter:
             ])
             # Get back on an issue-less branch for the `Import wpt@...` CL.
             self.project_git.new_branch('import-wpt')
-            self._cleanup.callback(self._notify_if_cl_blocked, referenced_bugs,
-                                   fixup_cl_issue, self.host.time())
+            self._cleanup.callback(self._notify_if_cl_blocked, notifier,
+                                   referenced_bugs, fixup_cl_issue,
+                                   self.host.time())
 
         diff_from_tracking = self.project_git.changed_files(
             CommitRange('@{u}', 'HEAD'))
         assert not diff_from_tracking, diff_from_tracking
 
-    def _notify_if_cl_blocked(self, referenced_bugs: Set[int], issue: int,
+    def _notify_if_cl_blocked(self, notifier: ImportNotifier,
+                              referenced_bugs: Set[int], issue: int,
                               start: float):
         assert referenced_bugs
         # If both CL types were created, it's likely this timeout has already
@@ -781,7 +783,7 @@ class TestImporter:
             'resubmitting. You may need to rebase that CL on tip-of-tree and '
             'resolve any resulting merge conflicts.')
         for issue_id in referenced_bugs:
-            self._buganizer_client.NewComment(issue_id, comment)
+            notifier.buganizer_client.NewComment(issue_id, comment)
         self._ensure_cl_closed(issue)
 
     def _update_bugs_in_expectations(
