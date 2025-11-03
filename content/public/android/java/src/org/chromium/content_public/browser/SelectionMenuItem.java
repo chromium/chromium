@@ -100,8 +100,8 @@ public final class SelectionMenuItem implements Comparable<SelectionMenuItem> {
     }
 
     /** Convenience method to return the icon, if any. */
-    public @Nullable Drawable getIcon(Context context) {
-        if (mIconAttr != 0) {
+    public @Nullable Drawable getIcon(@Nullable Context context) {
+        if (mIconAttr != 0 && context != null) {
             try {
                 TypedArray a = context.obtainStyledAttributes(new int[] {mIconAttr});
                 int iconResId = a.getResourceId(0, 0);
