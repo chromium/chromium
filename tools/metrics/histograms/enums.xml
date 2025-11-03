@@ -3921,6 +3921,17 @@ shown properly on the user-facing crash UI.
   <int value="106" label="IppUsbXerox"/>
   <int value="107" label="CanonLide70"/>
   <int value="108" label="EpsonDs"/>
+  <int value="109" label="CanonP208ii"/>
+  <int value="110" label="CanonDrm260"/>
+  <int value="111" label="CanonDrp208ii"/>
+  <int value="112" label="CanonP215ii"/>
+  <int value="113" label="CanonDrp215ii"/>
+  <int value="114" label="CanonDrc225ii"/>
+  <int value="115" label="CanonDrc230"/>
+  <int value="116" label="CanonDrc240"/>
+  <int value="117" label="CanonR40"/>
+  <int value="118" label="CanonR50"/>
+  <int value="119" label="Pfufs"/>
 </enum>
 
 <enum name="DownloadMimeTypeResult">
