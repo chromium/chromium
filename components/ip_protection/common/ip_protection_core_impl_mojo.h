@@ -12,7 +12,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/ip_protection/common/ip_protection_core_impl.h"
-#include "components/ip_protection/common/ip_protection_probabilistic_reveal_token_manager.h"
 #include "components/ip_protection/common/ip_protection_proxy_config_manager_impl.h"
 #include "components/ip_protection/mojom/core.mojom.h"
 #include "components/ip_protection/mojom/core_test.mojom.h"
@@ -24,7 +23,6 @@ namespace ip_protection {
 
 class IpProtectionCoreHostRemote;
 class IpProtectionProxyConfigManager;
-class ProbabilisticRevealTokenRegistry;
 
 // The Mojo implementation of IpProtectionCore, providing methods for CoreHost
 // to call on the core, and supporting initialization.
@@ -37,11 +35,9 @@ class IpProtectionCoreImplMojo : public IpProtectionCoreImpl,
       mojo::PendingReceiver<ip_protection::mojom::CoreControl> pending_receiver,
       scoped_refptr<IpProtectionCoreHostRemote> core_host_remote,
       MaskedDomainListManager* masked_domain_list_manager,
-      ProbabilisticRevealTokenRegistry* probabilistic_reveal_token_registry,
       bool is_ip_protection_enabled,
       bool ip_protection_incognito,
-      InitialTokensMap initial_tokens,
-      std::optional<base::FilePath> data_directory);
+      InitialTokensMap initial_tokens);
   ~IpProtectionCoreImplMojo() override;
 
   // Create an instance with parameters for IpProtectionCoreImpl and a
@@ -51,9 +47,6 @@ class IpProtectionCoreImplMojo : public IpProtectionCoreImpl,
       std::unique_ptr<IpProtectionProxyConfigManager>
           ip_protection_proxy_config_manager,
       IpProtectionCoreImpl::ProxyTokenManagerMap ip_protection_token_managers,
-      ProbabilisticRevealTokenRegistry* probabilistic_reveal_token_registry,
-      std::unique_ptr<IpProtectionProbabilisticRevealTokenManager>
-          ipp_prt_manager,
       bool is_ip_protection_enabled,
       bool ip_protection_incognito);
 
@@ -87,9 +80,6 @@ class IpProtectionCoreImplMojo : public IpProtectionCoreImpl,
       std::unique_ptr<IpProtectionProxyConfigManager>
           ip_protection_proxy_config_manager,
       IpProtectionCoreImpl::ProxyTokenManagerMap ip_protection_token_managers,
-      ProbabilisticRevealTokenRegistry* probabilistic_reveal_token_registry,
-      std::unique_ptr<IpProtectionProbabilisticRevealTokenManager>
-          ipp_prt_manager,
       bool is_ip_protection_enabled,
       bool ip_protection_incognito);
 

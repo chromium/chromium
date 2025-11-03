@@ -286,57 +286,6 @@ BASE_FEATURE(kAsyncMultiPortPath,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-// Probabilistic reveal tokens configuration settings
-BASE_FEATURE(kEnableProbabilisticRevealTokens,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-const base::FeatureParam<std::string> kProbabilisticRevealTokenServer{
-    &kEnableProbabilisticRevealTokens,
-    /*name=*/"ProbabilisticRevealTokenServer",
-    /*default_value=*/"https://aaftokenissuer.pa.googleapis.com"};
-
-const base::FeatureParam<std::string> kProbabilisticRevealTokenServerPath{
-    &kEnableProbabilisticRevealTokens,
-    /*name=*/"ProbabilisticRevealTokenServerPath",
-    /*default_value=*/"/v1/issueprts"};
-
-const base::FeatureParam<bool> kBypassProbabilisticRevealTokenRegistry{
-    &kEnableProbabilisticRevealTokens,
-    /*name=*/"BypassProbabilisticRevealTokenRegistry",
-    /*default_value=*/false};
-
-const base::FeatureParam<bool> kUseCustomProbabilisticRevealTokenRegistry{
-    &kEnableProbabilisticRevealTokens,
-    /*name=*/"UseCustomProbabilisticRevealTokenRegistry",
-    /*default_value=*/false};
-
-const base::FeatureParam<std::string> kCustomProbabilisticRevealTokenRegistry{
-    &kEnableProbabilisticRevealTokens,
-    /*name=*/"CustomProbabilisticRevealTokenRegistry",
-    /*default_value=*/""};
-
-const base::FeatureParam<bool> kProbabilisticRevealTokensOnlyInIncognito{
-    &kEnableProbabilisticRevealTokens,
-    /*name=*/"ProbabilisticRevealTokensOnlyInIncognito",
-    /*default_value=*/false};
-
-const base::FeatureParam<bool> kProbabilisticRevealTokenFetchOnly{
-    &kEnableProbabilisticRevealTokens,
-    /*name=*/"ProbabilisticRevealTokenFetchOnly",
-    /*default_value=*/false};
-
-const base::FeatureParam<bool>
-    kEnableProbabilisticRevealTokensForNonProxiedRequests{
-        &kEnableProbabilisticRevealTokens,
-        /*name=*/"EnableProbabilisticRevealTokensForNonProxiedRequests",
-        /*default_value=*/false};
-
-const base::FeatureParam<bool>
-    kProbabilisticRevealTokensAddHeaderToProxiedRequests{
-        &kEnableProbabilisticRevealTokens,
-        /*name=*/"ProbabilisticRevealTokensAddHeaderToProxiedRequests",
-        /*default_value=*/false};
-
 // IP protection experiment configuration settings
 BASE_FEATURE(kEnableIpProtectionProxy,
              "EnableIpPrivacyProxy",

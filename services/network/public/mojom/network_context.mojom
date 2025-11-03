@@ -462,13 +462,6 @@ struct NetworkContextParams {
       array<ip_protection.mojom.BlindSignedAuthToken>>
           initial_ip_protection_tokens;
 
-  // Points to the user-data directory of the active profile, where
-  // Probabilistic Reveal Tokens will be stored if the
-  // `StoreProbabilisticRevealTokens` switch is enabled. This path will be
-  // populated when the IP Protection feature and the PRT storage switch are
-  // enabled, even for incognito contexts when `file_paths` is empty.
-  mojo_base.mojom.FilePath? ip_protection_data_directory;
-
   // When PAC quick checking is enabled, DNS lookups for PAC script's host are
   // timed out aggressively. This prevents hanging all network request on DNS
   // lookups that are slow or are blockholed, at the cost of making it more

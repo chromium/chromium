@@ -144,9 +144,4 @@ const char kDisableSharedDictionaryStorageCleanupForTesting[] =
 // The switch to ignore bad mojo message reports. Only for testing.
 const char kIgnoreBadMessageForTesting[] = "ignore-bad-message-for-testing";
 
-// The switch to enable storing probabilistic reveal tokens to disk. This should
-// only be enabled for testing and debugging.
-const char kStoreProbabilisticRevealTokens[] =
-    "store-probabilistic-reveal-tokens";
-
 }  // namespace network::switches

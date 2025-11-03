@@ -34,7 +34,6 @@ static_library("ip_protection") {
     "//chrome/common:channel_info",
     "//components/ip_protection:get_proxy_config_proto",
     "//components/ip_protection/common:ip_protection_data_types",
-    "//components/ip_protection/common:ip_protection_probabilistic_reveal_token_direct_fetcher",
     "//components/ip_protection/common:ip_protection_proxy_config_direct_fetcher",
     "//components/ip_protection/common:ip_protection_telemetry",
     "//components/ip_protection/common:ip_protection_telemetry_uma",

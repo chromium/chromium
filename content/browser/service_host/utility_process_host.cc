@@ -390,7 +390,6 @@ bool UtilityProcessHost::StartProcess() {
       network::switches::kIgnoreCertificateErrorsSPKIList,
       network::switches::kTestThirdPartyCookiePhaseout,
       network::switches::kDisableSharedDictionaryStorageCleanupForTesting,
-      network::switches::kStoreProbabilisticRevealTokens,
       sandbox::policy::switches::kNoSandbox,
       sandbox::policy::switches::kDisableLandlockSandbox,
       sandbox::policy::switches::kDisableSeccompFilterSandbox,

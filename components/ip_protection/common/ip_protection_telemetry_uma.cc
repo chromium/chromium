@@ -243,42 +243,6 @@ void IpProtectionTelemetryUma::MdlMatchesTime(base::TimeDelta duration) {
       "NetworkService.MaskedDomainList.MatchesTime", duration);
 }
 
-void IpProtectionTelemetryUma::GetProbabilisticRevealTokensComplete(
-    TryGetProbabilisticRevealTokensStatus status,
-    base::TimeDelta duration) {
-  base::UmaHistogramEnumeration(
-      "NetworkService.IpProtection.GetProbabilisticRevealTokensResult", status);
-
-  if (status == TryGetProbabilisticRevealTokensStatus::kSuccess) {
-    base::UmaHistogramTimes(
-        "NetworkService.IpProtection.ProbabilisticRevealTokensRequestTime",
-        duration);
-  }
-}
-
-void IpProtectionTelemetryUma::IsProbabilisticRevealTokenAvailable(
-    bool is_initial_request,
-    bool is_token_available) {
-  if (is_initial_request) {
-    base::UmaHistogramBoolean(
-        "NetworkService.IpProtection."
-        "IsProbabilisticRevealTokenAvailableOnInitialRequest",
-        is_token_available);
-  } else {
-    base::UmaHistogramBoolean(
-        "NetworkService.IpProtection."
-        "IsProbabilisticRevealTokenAvailableOnSubsequentRequest",
-        is_token_available);
-  }
-}
-
-void IpProtectionTelemetryUma::ProbabilisticRevealTokenRandomizationTime(
-    base::TimeDelta duration) {
-  base::UmaHistogramTimes(
-      "NetworkService.IpProtection.ProbabilisticRevealTokenRandomizationTime",
-      duration);
-}
-
 void IpProtectionTelemetryUma::QuicProxiesFailed(int after_requests) {
   base::UmaHistogramCounts1000("NetworkService.IpProtection.QuicProxiesFailed",
                                after_requests);

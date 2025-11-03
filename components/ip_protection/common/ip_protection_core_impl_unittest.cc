@@ -26,13 +26,10 @@
 #include "components/content_settings/core/common/content_settings_metadata.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
-#include "components/ip_protection/common/ip_protection_probabilistic_reveal_token_fetcher.h"
-#include "components/ip_protection/common/ip_protection_probabilistic_reveal_token_manager.h"
 #include "components/ip_protection/common/ip_protection_proxy_config_manager.h"
 #include "components/ip_protection/common/ip_protection_proxy_config_manager_impl.h"
 #include "components/ip_protection/common/ip_protection_token_manager.h"
 #include "components/ip_protection/common/masked_domain_list_manager.h"
-#include "components/ip_protection/common/probabilistic_reveal_token_registry.h"
 #include "components/privacy_sandbox/masked_domain_list/masked_domain_list.pb.h"
 #include "net/base/features.h"
 #include "net/base/network_change_notifier.h"
@@ -144,52 +141,6 @@ class MockIpProtectionProxyConfigManager
   base::OnceClosure on_force_refresh_proxy_list_;
 };
 
-class FakePRTFetcher : public IpProtectionProbabilisticRevealTokenFetcher {
- public:
-  FakePRTFetcher() = default;
-  ~FakePRTFetcher() override = default;
-  void TryGetProbabilisticRevealTokens(
-      TryGetProbabilisticRevealTokensCallback callback) override {
-    NOTREACHED();
-  }
-};
-
-class FakePRTManager : public IpProtectionProbabilisticRevealTokenManager {
- public:
-  explicit FakePRTManager(
-      std::unique_ptr<IpProtectionProbabilisticRevealTokenFetcher> fetcher)
-      : IpProtectionProbabilisticRevealTokenManager(std::move(fetcher),
-                                                    std::nullopt) {}
-  ~FakePRTManager() override = default;
-  bool IsTokenAvailable() override { return response_.has_value(); }
-  std::optional<std::string> GetToken(
-      const GURL& url,
-      const net::SchemefulSite& top_frame_site) override {
-    return response_;
-  }
-  void SetMockResponse(std::optional<std::string> mock_response) {
-    mock_response_ = mock_response;
-  }
-  // If SetMockResponse() is called and GetTokens() returns nullopt, this
-  // indicates manager did not call RequestTokens().
-  void RequestTokens() override { response_ = mock_response_; }
-  std::optional<std::string> response_ = std::nullopt;
-  std::optional<std::string> mock_response_ = std::nullopt;
-};
-
-class FakeProbabilisticRevealTokenRegistry
-    : public ProbabilisticRevealTokenRegistry {
- public:
-  FakeProbabilisticRevealTokenRegistry() = default;
-  ~FakeProbabilisticRevealTokenRegistry() override = default;
-  bool IsRegistered(const GURL& url) override { return registered_url_ == url; }
-  void UpdateRegistry(base::Value::Dict registry) override { NOTREACHED(); }
-  void SetRegisteredUrl(const GURL& url) { registered_url_ = url; }
-
- private:
-  GURL registered_url_;
-};
-
 class IpProtectionCoreImplTest : public testing::Test {
  protected:
   IpProtectionCoreImplTest()
@@ -206,8 +157,6 @@ class IpProtectionCoreImplTest : public testing::Test {
         /*masked_domain_list_manager=*/nullptr,
         /*ip_protection_proxy_config_manager=*/nullptr,
         std::move(ip_protection_token_managers),
-        /*probabilistic_reveal_token_registry=*/nullptr,
-        /*ipp_prt_manager=*/nullptr,
         /*is_ip_protection_enabled=*/true, /*ip_protection_incognito=*/true);
   }
 
@@ -219,8 +168,6 @@ class IpProtectionCoreImplTest : public testing::Test {
         /*ip_protection_proxy_config_manager=*/nullptr,
         /*ip_protection_token_managers=*/
         IpProtectionCoreImpl::ProxyTokenManagerMap(),
-        /*probabilistic_reveal_token_registry=*/nullptr,
-        /*ipp_prt_manager=*/nullptr,
         /*is_ip_protection_enabled=*/true,
         /*ip_protection_incognito=*/ip_protection_incognito);
   }
@@ -234,8 +181,6 @@ class IpProtectionCoreImplTest : public testing::Test {
         /*masked_domain_list_manager=*/nullptr,
         std::move(ip_protection_proxy_config_manager),
         std::move(ip_protection_token_managers),
-        /*probabilistic_reveal_token_registry=*/nullptr,
-        /*ipp_prt_manager=*/nullptr,
         /*is_ip_protection_enabled=*/true, /*ip_protection_incognito=*/true);
   }
 
@@ -812,177 +757,6 @@ TEST_F(
   EXPECT_TRUE(ip_protection_core->RequestShouldBeProxied(
       GURL(base::StrCat({"http://", example_com})),
       net::NetworkAnonymizationKey()));
-}
-
-TEST_F(IpProtectionCoreImplTest,
-       IncognitoCoreCallsPRTRequestWhenIncognitoOnlyFeatureParamIsTrue) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      net::features::kEnableProbabilisticRevealTokens,
-      {{net::features::kProbabilisticRevealTokensOnlyInIncognito.name,
-        base::ToString(true)}});
-
-  auto ipp_prt_manager =
-      std::make_unique<FakePRTManager>(std::make_unique<FakePRTFetcher>());
-  std::string expected_token = "expected_token";
-  ipp_prt_manager->SetMockResponse(expected_token);
-
-  auto core = std::make_unique<IpProtectionCoreImpl>(
-      /*masked_domain_list_manager=*/nullptr,
-      /*ip_protection_proxy_config_manager=*/nullptr,
-      IpProtectionCoreImpl::ProxyTokenManagerMap(),
-      /*probabilistic_reveal_token_registry=*/nullptr,
-      std::move(ipp_prt_manager),
-      /*is_ip_protection_enabled=*/true, /*ip_protection_incognito=*/true);
-  const GURL destination_url("https://thirdparty.com");
-  const net::SchemefulSite top_level_site(GURL("https://toplevel.com"));
-  auto maybe_token =
-      core->GetProbabilisticRevealToken(destination_url, top_level_site);
-  ASSERT_TRUE(maybe_token.has_value());
-  EXPECT_EQ(maybe_token.value(), expected_token);
-}
-
-TEST_F(IpProtectionCoreImplTest,
-       RegularCoreDoesNotCallPRTRequesWhenIncognitoOnlyFeatureParamIsTrue) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      net::features::kEnableProbabilisticRevealTokens,
-      {{net::features::kProbabilisticRevealTokensOnlyInIncognito.name,
-        base::ToString(true)}});
-
-  auto ipp_prt_manager =
-      std::make_unique<FakePRTManager>(std::make_unique<FakePRTFetcher>());
-  std::string expected_token = "expected_token";
-  ipp_prt_manager->SetMockResponse(expected_token);
-
-  auto core = std::make_unique<IpProtectionCoreImpl>(
-      /*masked_domain_list_manager=*/nullptr,
-      /*ip_protection_proxy_config_manager=*/nullptr,
-      IpProtectionCoreImpl::ProxyTokenManagerMap(),
-      /*probabilistic_reveal_token_registry=*/nullptr,
-      std::move(ipp_prt_manager),
-      /*is_ip_protection_enabled=*/true, /*ip_protection_incognito=*/false);
-  const GURL destination_url("https://thirdparty.com");
-  const net::SchemefulSite top_level_site(GURL("https://toplevel.com"));
-  auto maybe_token =
-      core->GetProbabilisticRevealToken(destination_url, top_level_site);
-  EXPECT_FALSE(maybe_token.has_value());
-}
-
-TEST_F(IpProtectionCoreImplTest,
-       RegularCoreCallsPRTRequestWhenIncognitoOnlyFeatureParamIsFalse) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      net::features::kEnableProbabilisticRevealTokens,
-      {{net::features::kProbabilisticRevealTokensOnlyInIncognito.name,
-        base::ToString(false)}});
-
-  auto ipp_prt_manager =
-      std::make_unique<FakePRTManager>(std::make_unique<FakePRTFetcher>());
-  std::string expected_token = "expected_token";
-  ipp_prt_manager->SetMockResponse(expected_token);
-
-  auto core = std::make_unique<IpProtectionCoreImpl>(
-      /*masked_domain_list_manager=*/nullptr,
-      /*ip_protection_proxy_config_manager=*/nullptr,
-      IpProtectionCoreImpl::ProxyTokenManagerMap(),
-      /*probabilistic_reveal_token_registry=*/nullptr,
-      std::move(ipp_prt_manager),
-      /*is_ip_protection_enabled=*/true, /*ip_protection_incognito=*/false);
-  const GURL destination_url("https://thirdparty.com");
-  const net::SchemefulSite top_level_site(GURL("https://toplevel.com"));
-  auto maybe_token =
-      core->GetProbabilisticRevealToken(destination_url, top_level_site);
-  ASSERT_TRUE(maybe_token.has_value());
-  EXPECT_EQ(maybe_token.value(), expected_token);
-}
-
-TEST_F(IpProtectionCoreImplTest, GetPrtReturnsNulloptWhenNoManager) {
-  auto core = std::make_unique<IpProtectionCoreImpl>(
-      /*masked_domain_list_manager=*/nullptr,
-      /*ip_protection_proxy_config_manager=*/nullptr,
-      IpProtectionCoreImpl::ProxyTokenManagerMap(),
-      /*probabilistic_reveal_token_registry=*/nullptr,
-      /*ipp_prt_manager=*/nullptr,
-      /*is_ip_protection_enabled=*/true, /*ip_protection_incognito=*/true);
-  const GURL destination_url("https://thirdparty.com");
-  const net::SchemefulSite top_level_site(GURL("https://toplevel.com"));
-  auto maybe_token =
-      core->GetProbabilisticRevealToken(destination_url, top_level_site);
-  EXPECT_FALSE(maybe_token.has_value());
-}
-
-TEST_F(IpProtectionCoreImplTest,
-       RequestShouldNotIncludePRTWhenFeatureDisabled) {
-  FakeProbabilisticRevealTokenRegistry ipp_prt_registry;
-  GURL example_com = GURL("https://example.com");
-  ipp_prt_registry.SetRegisteredUrl(example_com);
-
-  auto core = std::make_unique<IpProtectionCoreImpl>(
-      /*masked_domain_list_manager=*/nullptr,
-      /*ip_protection_proxy_config_manager=*/nullptr,
-      IpProtectionCoreImpl::ProxyTokenManagerMap(), &ipp_prt_registry,
-      /*ipp_prt_manager=*/nullptr,
-      /*is_ip_protection_enabled=*/true, /*ip_protection_incognito=*/true);
-  EXPECT_FALSE(core->ShouldRequestIncludeProbabilisticRevealToken(example_com));
-}
-
-TEST_F(IpProtectionCoreImplTest,
-       RequestShouldIncludePRTWhenFeatureEnabledAndDomainIsRegistered) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      net::features::kEnableProbabilisticRevealTokens);
-  FakeProbabilisticRevealTokenRegistry ipp_prt_registry;
-  GURL example_com = GURL("https://example.com");
-  ipp_prt_registry.SetRegisteredUrl(example_com);
-
-  auto core = std::make_unique<IpProtectionCoreImpl>(
-      /*masked_domain_list_manager=*/nullptr,
-      /*ip_protection_proxy_config_manager=*/nullptr,
-      IpProtectionCoreImpl::ProxyTokenManagerMap(), &ipp_prt_registry,
-      /*ipp_prt_manager=*/nullptr,
-      /*is_ip_protection_enabled=*/true, /*ip_protection_incognito=*/true);
-  EXPECT_TRUE(core->ShouldRequestIncludeProbabilisticRevealToken(example_com));
-}
-
-TEST_F(IpProtectionCoreImplTest,
-       RequestShouldNotIncludePRTWhenFeatureEnabledAndDomainIsNotRegistered) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      net::features::kEnableProbabilisticRevealTokens);
-  FakeProbabilisticRevealTokenRegistry ipp_prt_registry;
-  GURL example_com = GURL("https://example.com");
-  ipp_prt_registry.SetRegisteredUrl(example_com);
-
-  auto core = std::make_unique<IpProtectionCoreImpl>(
-      /*masked_domain_list_manager=*/nullptr,
-      /*ip_protection_proxy_config_manager=*/nullptr,
-      IpProtectionCoreImpl::ProxyTokenManagerMap(), &ipp_prt_registry,
-      /*ipp_prt_manager=*/nullptr,
-      /*is_ip_protection_enabled=*/true, /*ip_protection_incognito=*/true);
-  GURL other_com = GURL("https://other.com");
-  EXPECT_FALSE(core->ShouldRequestIncludeProbabilisticRevealToken(other_com));
-}
-
-TEST_F(IpProtectionCoreImplTest,
-       RequestShouldIncludePRTWhenFeatureEnabledToBypassRegistry) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      net::features::kEnableProbabilisticRevealTokens,
-      {{net::features::kBypassProbabilisticRevealTokenRegistry.name,
-        base::ToString(true)}});
-  FakeProbabilisticRevealTokenRegistry ipp_prt_registry;
-  GURL example_com = GURL("https://example.com");
-  ipp_prt_registry.SetRegisteredUrl(example_com);
-
-  auto core = std::make_unique<IpProtectionCoreImpl>(
-      /*masked_domain_list_manager=*/nullptr,
-      /*ip_protection_proxy_config_manager=*/nullptr,
-      IpProtectionCoreImpl::ProxyTokenManagerMap(), &ipp_prt_registry,
-      /*ipp_prt_manager=*/nullptr,
-      /*is_ip_protection_enabled=*/true, /*ip_protection_incognito=*/true);
-  GURL other_com = GURL("https://other.com");
-  EXPECT_TRUE(core->ShouldRequestIncludeProbabilisticRevealToken(other_com));
 }
 
 }  // namespace

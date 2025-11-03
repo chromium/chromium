@@ -63,11 +63,9 @@ source_set("ip_protection_core_impl") {
   public_deps = [
     ":ip_protection_core",
     ":ip_protection_data_types",
-    ":ip_protection_probabilistic_reveal_token_manager",
     ":ip_protection_proxy_config_manager",
     ":ip_protection_token_manager",
     ":masked_domain_list_manager",
-    ":probabilistic_reveal_token_registry",
     "//base",
     "//net",
   ]
@@ -108,7 +106,6 @@ source_set("ip_protection_core_impl_mojo") {
   ]
   deps = [
     ":ip_protection_core_host_remote",
-    ":ip_protection_probabilistic_reveal_token_mojo_fetcher",
     ":ip_protection_proxy_config_manager_impl",
     ":ip_protection_proxy_config_mojo_fetcher",
     ":ip_protection_token_manager_impl",
@@ -321,7 +318,6 @@ source_set("ip_protection_proxy_delegate") {
     ":ip_protection_proxy_config_manager_impl",
     ":ip_protection_telemetry",
     ":ip_protection_token_manager_impl",
-    ":probabilistic_reveal_token_registry",
   ]
 }
 
@@ -331,16 +327,11 @@ source_set("ip_protection_proxy_delegate_unittest") {
   deps = [
     ":ip_protection_core",
     ":ip_protection_data_types",
-    ":ip_protection_probabilistic_reveal_token_direct_fetcher",
-    ":ip_protection_probabilistic_reveal_token_manager",
     ":ip_protection_proxy_config_manager",
     ":ip_protection_proxy_delegate",
     ":ip_protection_telemetry",
     ":ip_protection_token_manager",
     ":masked_domain_list_manager",
-    ":probabilistic_reveal_token_registry",
-    ":probabilistic_reveal_token_test_consumer",
-    ":probabilistic_reveal_token_test_issuer",
     "//base",
     "//base/test:test_support",
     "//components/privacy_sandbox/masked_domain_list:masked_domain_list_proto",
@@ -594,284 +585,6 @@ source_set("mock_blind_sign_auth") {
   public_deps = [
     "//net/third_party/quiche:blind_sign_auth",
     "//third_party/abseil-cpp:absl",
-  ]
-}
-
-source_set("ip_protection_probabilistic_reveal_token_direct_fetcher") {
-  sources = [
-    "ip_protection_probabilistic_reveal_token_direct_fetcher.cc",
-    "ip_protection_probabilistic_reveal_token_direct_fetcher.h",
-  ]
-  public_deps = [
-    ":ip_protection_probabilistic_reveal_token_fetcher",
-    "//base",
-    "//services/network/public/cpp",
-    "//services/network/public/mojom",
-  ]
-  deps = [
-    ":ip_protection_probabilistic_reveal_token_crypter",
-    "//components/ip_protection:get_probabilistic_reveal_token_proto",
-    "//google_apis/common:request_util",
-    "//net",
-    "//third_party/abseil-cpp:absl",
-  ]
-}
-
-source_set("ip_protection_probabilistic_reveal_token_direct_fetcher_unittest") {
-  testonly = true
-  sources =
-      [ "ip_protection_probabilistic_reveal_token_direct_fetcher_unittest.cc" ]
-  deps = [
-    ":ip_protection_probabilistic_reveal_token_crypter",
-    ":ip_protection_probabilistic_reveal_token_direct_fetcher",
-    ":probabilistic_reveal_token_test_issuer",
-    "//base",
-    "//base/test:test_support",
-    "//components/ip_protection:get_probabilistic_reveal_token_proto",
-    "//net",
-    "//services/network:test_support",
-    "//services/network/public/cpp",
-    "//services/network/public/mojom",
-    "//testing/gmock",
-    "//testing/gtest",
-    "//third_party/private-join-and-compute/src:ec_commutative_cipher",
-  ]
-}
-
-source_set("ip_protection_probabilistic_reveal_token_mojo_fetcher") {
-  sources = [
-    "ip_protection_probabilistic_reveal_token_mojo_fetcher.cc",
-    "ip_protection_probabilistic_reveal_token_mojo_fetcher.h",
-  ]
-  public_deps = [
-    ":ip_protection_core_host_remote",
-    ":ip_protection_probabilistic_reveal_token_fetcher",
-  ]
-}
-
-source_set("ip_protection_probabilistic_reveal_token_mojo_fetcher_unittest") {
-  testonly = true
-  sources =
-      [ "ip_protection_probabilistic_reveal_token_mojo_fetcher_unittest.cc" ]
-  deps = [
-    ":ip_protection_probabilistic_reveal_token_mojo_fetcher",
-    "//base",
-    "//base/test:test_support",
-    "//components/ip_protection/mojom",
-    "//testing/gmock",
-    "//testing/gtest",
-  ]
-}
-
-source_set("ip_protection_probabilistic_reveal_token_fetcher") {
-  sources = [ "ip_protection_probabilistic_reveal_token_fetcher.h" ]
-  public_deps = [
-    ":ip_protection_data_types",
-    "//base",
-  ]
-}
-
-source_set("ip_protection_probabilistic_reveal_token_crypter") {
-  sources = [
-    "ip_protection_probabilistic_reveal_token_crypter.cc",
-    "ip_protection_probabilistic_reveal_token_crypter.h",
-  ]
-  public_deps = [
-    ":ip_protection_data_types",
-    "//third_party/abseil-cpp:absl",
-  ]
-  deps = [
-    ":ip_protection_telemetry",
-    "//base",
-    "//third_party/private-join-and-compute/src:ec_commutative_cipher",
-  ]
-}
-
-source_set("ip_protection_probabilistic_reveal_token_crypter_unittest") {
-  testonly = true
-  sources = [ "ip_protection_probabilistic_reveal_token_crypter_unittest.cc" ]
-  deps = [
-    ":ip_protection_probabilistic_reveal_token_crypter",
-    ":probabilistic_reveal_token_test_issuer",
-    "//base",
-    "//base/test:test_support",
-    "//components/ip_protection:get_probabilistic_reveal_token_proto",
-    "//testing/gmock",
-    "//testing/gtest",
-  ]
-}
-
-source_set("ip_protection_probabilistic_reveal_token_manager") {
-  sources = [
-    "ip_protection_probabilistic_reveal_token_manager.cc",
-    "ip_protection_probabilistic_reveal_token_manager.h",
-  ]
-  public_deps = [
-    ":ip_protection_data_types",
-    ":ip_protection_probabilistic_reveal_token_fetcher",
-  ]
-  deps = [
-    ":ip_protection_probabilistic_reveal_token_crypter",
-    ":ip_protection_probabilistic_reveal_token_data_storage",
-    ":ip_protection_telemetry",
-    "//base",
-    "//net",
-    "//services/network/public/cpp",
-    "//third_party/boringssl",
-  ]
-}
-
-source_set("ip_protection_probabilistic_reveal_token_manager_unittest") {
-  testonly = true
-  sources = [ "ip_protection_probabilistic_reveal_token_manager_unittest.cc" ]
-  deps = [
-    ":ip_protection_probabilistic_reveal_token_crypter",
-    ":ip_protection_probabilistic_reveal_token_fetcher",
-    ":ip_protection_probabilistic_reveal_token_manager",
-    ":probabilistic_reveal_token_test_consumer",
-    ":probabilistic_reveal_token_test_issuer",
-    "//base",
-    "//base/test:test_support",
-    "//net",
-    "//services/network:test_support",
-    "//services/network/public/cpp",
-    "//services/network/public/mojom",
-    "//sql",
-    "//sql:test_support",
-    "//testing/gmock",
-    "//testing/gtest",
-    "//third_party/boringssl",
-    "//third_party/private-join-and-compute/src:ec_commutative_cipher",
-  ]
-}
-
-source_set("ip_protection_probabilistic_reveal_token_data_storage") {
-  sources = [
-    "ip_protection_probabilistic_reveal_token_data_storage.cc",
-    "ip_protection_probabilistic_reveal_token_data_storage.h",
-  ]
-  public_deps = [
-    "//base",
-    "//sql",
-  ]
-  deps = [
-    ":ip_protection_probabilistic_reveal_token_fetcher",
-    "//third_party/sqlite",
-  ]
-}
-
-source_set("ip_protection_probabilistic_reveal_token_data_storage_unittest") {
-  testonly = true
-  sources =
-      [ "ip_protection_probabilistic_reveal_token_data_storage_unittest.cc" ]
-  deps = [
-    ":ip_protection_data_types",
-    ":ip_protection_probabilistic_reveal_token_data_storage",
-    ":ip_protection_probabilistic_reveal_token_fetcher",
-    ":tests_bundle_data",
-    "//base",
-    "//base/test:test_support",
-    "//sql",
-    "//sql:test_support",
-    "//testing/gmock",
-    "//testing/gtest",
-  ]
-}
-
-bundle_data("tests_bundle_data") {
-  visibility =
-      [ ":ip_protection_probabilistic_reveal_token_data_storage_unittest" ]
-  testonly = true
-  sources = [
-    "//components/test/data/ip_protection/probabilistic_reveal_tokens_v4.too_old.sql",
-    "//components/test/data/ip_protection/probabilistic_reveal_tokens_v5.sql",
-    "//components/test/data/ip_protection/probabilistic_reveal_tokens_v6.too_new.sql",
-  ]
-  outputs = [ "{{bundle_resources_dir}}/" +
-              "{{source_root_relative_dir}}/{{source_file_part}}" ]
-}
-
-source_set("probabilistic_reveal_token_registry") {
-  sources = [
-    "probabilistic_reveal_token_registry.cc",
-    "probabilistic_reveal_token_registry.h",
-  ]
-  public_deps = [
-    "//base",
-    "//url",
-  ]
-  deps = [ "//net" ]
-}
-
-source_set("probabilistic_reveal_token_registry_unittest") {
-  testonly = true
-  sources = [ "probabilistic_reveal_token_registry_unittest.cc" ]
-  deps = [
-    ":probabilistic_reveal_token_registry",
-    "//base",
-    "//base/test:test_support",
-    "//net",
-    "//testing/gmock",
-    "//testing/gtest",
-    "//url",
-  ]
-}
-
-source_set("probabilistic_reveal_token_test_issuer") {
-  testonly = true
-  sources = [
-    "probabilistic_reveal_token_test_issuer.cc",
-    "probabilistic_reveal_token_test_issuer.h",
-  ]
-  public_deps = [
-    ":ip_protection_data_types",
-    "//components/ip_protection:get_probabilistic_reveal_token_proto",
-  ]
-  deps = [
-    "//base",
-    "//third_party/abseil-cpp:absl",
-    "//third_party/private-join-and-compute/src:ec_commutative_cipher",
-  ]
-}
-
-source_set("probabilistic_reveal_token_test_issuer_unittest") {
-  testonly = true
-  sources = [ "probabilistic_reveal_token_test_issuer_unittest.cc" ]
-  deps = [
-    ":probabilistic_reveal_token_test_issuer",
-    "//testing/gmock",
-    "//testing/gtest",
-    "//third_party/abseil-cpp:absl",
-  ]
-}
-
-source_set("probabilistic_reveal_token_test_consumer") {
-  testonly = true
-  sources = [
-    "probabilistic_reveal_token_test_consumer.cc",
-    "probabilistic_reveal_token_test_consumer.h",
-  ]
-  public_deps = [ ":ip_protection_data_types" ]
-  deps = [
-    "//base",
-    "//third_party/boringssl",
-  ]
-}
-
-source_set("probabilistic_reveal_token_test_consumer_unittest") {
-  testonly = true
-  sources = [ "probabilistic_reveal_token_test_consumer_unittest.cc" ]
-  deps = [
-    ":ip_protection_data_types",
-    ":ip_protection_probabilistic_reveal_token_fetcher",
-    ":ip_protection_probabilistic_reveal_token_manager",
-    ":probabilistic_reveal_token_test_consumer",
-    ":probabilistic_reveal_token_test_issuer",
-    "//base",
-    "//base/test:test_support",
-    "//net",
-    "//testing/gmock",
-    "//testing/gtest",
   ]
 }
 

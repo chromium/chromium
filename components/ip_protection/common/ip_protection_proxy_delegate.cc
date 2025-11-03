@@ -168,19 +168,6 @@ void IpProtectionProxyDelegate::OnResolveProxy(
 
   const std::optional<net::SchemefulSite>& top_frame_site =
       network_anonymization_key.GetTopFrameSite();
-  if (bool is_prt_eligible =
-          resolution_result == ProxyResolutionResult::kAttemptProxy ||
-          net::features::kEnableProbabilisticRevealTokensForNonProxiedRequests
-              .Get();
-      is_prt_eligible &&
-      !net::features::kProbabilisticRevealTokenFetchOnly.Get() &&
-      top_frame_site.has_value()) {
-    result->set_prt_header_value(
-        GetPRTHeaderValue(url, top_frame_site.value()));
-  } else {
-    result->set_prt_header_value(std::nullopt);
-  }
-
   if (resolution_result != ProxyResolutionResult::kAttemptProxy) {
     return;
   }
@@ -427,30 +414,6 @@ net::ProxyList IpProtectionProxyDelegate::MergeProxyRules(
   }
 
   return merged_proxy_list;
-}
-
-/*
-  Sec-Probabilistic-Reveal-Token header is a structured header of type Byte
-  Sequence (rfc8941 section 3.3.5) and holds a serialized PRT.
-
-  `GetPRTHeaderValue()` will return nullopt if destination is not
-  registered for PRTs or there is no PRTs in the manager.
-*/
-std::optional<std::string> IpProtectionProxyDelegate::GetPRTHeaderValue(
-    const GURL& url,
-    const net::SchemefulSite& top_frame_site) const {
-  if (!ip_protection_core_->ShouldRequestIncludeProbabilisticRevealToken(url)) {
-    return std::nullopt;
-  }
-  const std::optional<std::string> prt =
-      ip_protection_core_->GetProbabilisticRevealToken(url, top_frame_site);
-  if (!prt.has_value()) {
-    return std::nullopt;
-  }
-  auto item = net::structured_headers::Item(
-      std::move(prt).value(),
-      net::structured_headers::Item::ItemType::kByteSequenceType);
-  return net::structured_headers::SerializeItem(item);
 }
 
 void IpProtectionProxyDelegate::OnStreamCreationAttempted(

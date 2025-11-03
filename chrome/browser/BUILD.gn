@@ -325,8 +325,6 @@ static_library("browser") {
     "component_updater/pnacl_component_installer.h",
     "component_updater/privacy_sandbox_attestations_component_installer.cc",
     "component_updater/privacy_sandbox_attestations_component_installer.h",
-    "component_updater/probabilistic_reveal_token_component_installer.cc",
-    "component_updater/probabilistic_reveal_token_component_installer.h",
     "component_updater/recovery_component_installer.cc",
     "component_updater/recovery_component_installer.h",
     "component_updater/recovery_improved_component_installer.cc",

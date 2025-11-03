@@ -229,29 +229,6 @@ chromium-metrics-reviews@google.com.
   <int value="10" label="Disabled by User"/>
 </enum>
 
-<!-- LINT.IfChange(ProbabilisticRevealTokensResult) -->
-
-<enum name="ProbabilisticRevealTokensResult">
-  <int value="0" label="Success"/>
-  <int value="1" label="Net Not Ok"/>
-  <int value="2" label="Net Ok Null Response"/>
-  <int value="3" label="Null Response"/>
-  <int value="4" label="Response Parsing Failed"/>
-  <int value="5" label="Invalid Token Version"/>
-  <int value="6" label="Invalid Token Size"/>
-  <int value="7" label="Too Few Tokens"/>
-  <int value="8" label="Too Many Tokens"/>
-  <int value="9" label="Expiration Too Soon"/>
-  <int value="10" label="Expiration Too Late"/>
-  <int value="11" label="Invalid Public Key"/>
-  <int value="12" label="Invalid Num Tokens With Signal"/>
-  <int value="13" label="Request Backed Off"/>
-  <int value="14" label="No Google Chrome Branding"/>
-  <int value="15" label="Invalid Epoch ID Size"/>
-</enum>
-
-<!-- LINT.ThenChange(//components/ip_protection/common/ip_protection_data_types.h:TryGetProbabilisticRevealTokensStatus) -->
-
 </enums>
 
 </histogram-configuration>

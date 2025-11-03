@@ -16,7 +16,6 @@
 #include "components/content_settings/core/common/host_indexed_content_settings.h"
 #include "components/ip_protection/common/ip_protection_core.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
-#include "components/ip_protection/common/ip_protection_probabilistic_reveal_token_manager.h"
 #include "net/base/network_change_notifier.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
@@ -24,7 +23,6 @@ namespace net {
 
 class NetworkAnonymizationKey;
 class ProxyChain;
-class SchemefulSite;
 
 }  // namespace net
 
@@ -33,7 +31,6 @@ namespace ip_protection {
 class IpProtectionProxyConfigManager;
 class IpProtectionTokenManager;
 class MaskedDomainListManager;
-class ProbabilisticRevealTokenRegistry;
 enum class ProxyLayer;
 
 // The generic implementation of IpProtectionCore. Subclasses provide additional
@@ -54,9 +51,6 @@ class IpProtectionCoreImpl
       std::unique_ptr<IpProtectionProxyConfigManager>
           ip_protection_proxy_config_manager,
       ProxyTokenManagerMap ip_protection_token_managers,
-      ProbabilisticRevealTokenRegistry* probabilistic_reveal_token_registry,
-      std::unique_ptr<IpProtectionProbabilisticRevealTokenManager>
-          ipp_prt_manager,
       bool is_ip_protection_enabled,
       bool ip_protection_incognito);
   ~IpProtectionCoreImpl() override;
@@ -79,8 +73,6 @@ class IpProtectionCoreImpl
       const GURL& first_party_url) const override;
   void SetTrackingProtectionContentSetting(
       const ContentSettingsForOneType& settings) override;
-  bool ShouldRequestIncludeProbabilisticRevealToken(
-      const GURL& request_url) override;
 
   IpProtectionTokenManager* GetIpProtectionTokenManagerForTesting(
       ProxyLayer proxy_layer);
@@ -88,10 +80,6 @@ class IpProtectionCoreImpl
   std::optional<BlindSignedAuthToken> GetAuthTokenForTesting(
       ProxyLayer proxy_layer,
       const std::string& geo_id);
-
-  std::optional<std::string> GetProbabilisticRevealToken(
-      const GURL& url,
-      const net::SchemefulSite& top_frame_site) override;
 
   // `NetworkChangeNotifier::NetworkChangeObserver` implementation.
   void OnNetworkChanged(
@@ -131,11 +119,6 @@ class IpProtectionCoreImpl
 
   // Proxy layer managers for cache of blind-signed auth tokens.
   ProxyTokenManagerMap ipp_token_managers_;
-
-  // The PRT registry, owned by the NetworkService.
-  raw_ptr<ProbabilisticRevealTokenRegistry>
-      probabilistic_reveal_token_registry_;
-  std::unique_ptr<IpProtectionProbabilisticRevealTokenManager> ipp_prt_manager_;
 
   bool is_ip_protection_enabled_;
 

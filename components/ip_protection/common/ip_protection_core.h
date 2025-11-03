@@ -18,7 +18,6 @@ namespace net {
 
 class ProxyChain;
 class NetworkAnonymizationKey;
-class SchemefulSite;
 
 }  // namespace net
 
@@ -61,15 +60,6 @@ class IpProtectionCore {
   virtual std::optional<BlindSignedAuthToken> GetAuthToken(
       size_t chain_index) = 0;
 
-  // Get a serialized and base64 encoded probabilistic reveal token if one is
-  // available.
-  //
-  // Returns `nullopt` if no token is available, whether for a transient or
-  // permanent reason, or if the serialization fails.
-  virtual std::optional<std::string> GetProbabilisticRevealToken(
-      const GURL& url,
-      const net::SchemefulSite& top_frame_site) = 0;
-
   // Check whether a proxy chain list is available.
   virtual bool IsProxyListAvailable() = 0;
 
@@ -100,11 +90,6 @@ class IpProtectionCore {
   // Sets the TRACKING_PROTECTION content settings list to `settings`.
   virtual void SetTrackingProtectionContentSetting(
       const ContentSettingsForOneType& settings) = 0;
-
-  // Check whether the given request URL is eligible to receive
-  // ProbabilisticRevealToken headers.
-  virtual bool ShouldRequestIncludeProbabilisticRevealToken(
-      const GURL& request_url) = 0;
 
   // Returns the status of the IP Protection Proxy.
   virtual IpProxyStatus GetIpProxyStatus() = 0;

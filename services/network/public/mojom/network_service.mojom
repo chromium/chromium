@@ -400,11 +400,6 @@ interface NetworkService {
                          mojo_base.mojom.File regular_browsing_file,
                          uint64 regular_browsing_file_size);
 
-  // Updates the Probabilistic Reveal Token registry used to determine whether a
-  // request should include a PRT in the headers.
-  UpdateProbabilisticRevealTokenRegistry(
-      mojo_base.mojom.DictionaryValue registry);
-
   // Parses response headers and returns a structured version to the caller.
   // This call originates from the browser process. Used for navigations when
   // the URLLoader didn't provide ParsedHeader in the first place. This happens

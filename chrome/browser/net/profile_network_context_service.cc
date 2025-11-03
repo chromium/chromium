@@ -96,7 +96,6 @@
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
 #include "services/network/public/cpp/cors/origin_access_list.h"
 #include "services/network/public/cpp/features.h"
-#include "services/network/public/cpp/network_switches.h"
 #include "services/network/public/mojom/cert_verifier_service.mojom.h"
 #include "services/network/public/mojom/first_party_sets_access_delegate.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
@@ -1611,11 +1610,6 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
     if (profile_->IsIncognitoProfile()) {
       network_context_params->initial_ip_protection_tokens =
           ipp_core_host->TakeRecycledTokens();
-    }
-    if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-            network::switches::kStoreProbabilisticRevealTokens)) {
-      network_context_params->ip_protection_data_directory =
-          profile_->GetPath();
     }
 
     ContentSettingsForOneType tracking_protection_content_settings =

@@ -196,12 +196,6 @@ const char* const kBadFlags[] = {
     // service process instead of collecting dump about their occurrence.
     network::switches::kIgnoreBadMessageForTesting,
 
-    // This flag enables storing Probabilistic Reveal Tokens to disk during
-    // incognito sessions. It is meant to be used only for testing and
-    // debugging due to privacy concerns with storing data during an incognito
-    // session.
-    network::switches::kStoreProbabilisticRevealTokens,
-
     // This flag bypasses several safety checks in the glic actor (e.g. an
     // origin blocklist) for testing purposes.
     actor::switches::kDisableActorSafetyChecks,

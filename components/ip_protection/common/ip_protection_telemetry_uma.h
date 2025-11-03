@@ -16,7 +16,6 @@ namespace ip_protection {
 
 enum class TryGetAuthTokensResult;
 enum class TryGetAuthTokensAndroidResult;
-enum class TryGetProbabilisticRevealTokensStatus;
 enum class ProxyLayer;
 
 // Implementation of IpProtectionTelemetry using UMA.
@@ -48,13 +47,6 @@ class IpProtectionTelemetryUma final : public IpProtectionTelemetry {
   void MdlUpdateSuccess(bool success) override;
   void MdlFirstUpdateTime(base::TimeDelta duration) override;
   void MdlMatchesTime(base::TimeDelta duration) override;
-  void GetProbabilisticRevealTokensComplete(
-      TryGetProbabilisticRevealTokensStatus status,
-      base::TimeDelta duration) override;
-  void IsProbabilisticRevealTokenAvailable(bool is_initial_request,
-                                           bool is_token_available) override;
-  void ProbabilisticRevealTokenRandomizationTime(
-      base::TimeDelta duration) override;
   void QuicProxiesFailed(int after_requests) override;
   void RecordTokenCountEvent(ProxyLayer layer,
                              IpProtectionTokenCountEvent event,

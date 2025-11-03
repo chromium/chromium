@@ -21,21 +21,6 @@ requests. These tokens are blind-signed, meaning that the signer cannot
 correlate the (user-authenticated) token signature with the (otherwise
 un-authenticated) token sent to the proxy.
 
-*Probabilistic Reveal Tokens* (PRT) are added for IP-Protected requests to
-registered domains (through PRT Registry) to be used for measuring and
-preventing fraud. PRTs are obtained from
-`net::features::kProbabilisticRevealTokenServer` through request/response
-pair defined in `get_probabilistic_reveal_token.proto`. PRTs are stored in
-`IpProtectionProbabilisticRevealTokenManager::crypter_` of type
-`IpProtectionProbabilisticRevealTokenCrypter`. Randomized tokens are
-retrieved using `IpProtectionProbabilisticRevealTokenManager::GetToken()`.
-Check `GetToken()` docstring for details of token randomization.
-Unlike authentication tokens PRTs can be re-used, see `GetToken()` docstring.
-
-Domains are registered to receive PRTs through following the registration
-process. Registration list is obtained through component updater.
-For more details see [PRT explainer](https://github.com/GoogleChrome/ip-protection/blob/main/prt_explainer.md#probabilistic-reveal-tokens).
-
 See [the IP Protection
 explainer](https://github.com/GoogleChrome/ip-protection/blob/main/README.md)
 for more details on the design.
@@ -86,9 +71,6 @@ The delegate's`OnResolveProxy` determines whether the request should be
 proxied, and if so configures the proxy chain for the request. If the network
 stack determines that a new proxy connection is required,
 `OnBeforeTunnelRequest` adds an authentication token to the request headers.
-
-The delegate's `OnResolveProxy` adds a PRT to the request headers for the
-proxied requests to the registered domains.
 
 #### QUIC Fallback
 
@@ -141,8 +123,6 @@ Blind-signed tokens are fetched using authentication associated with the
 signed-in Chrome profile. Core host profile keyed service profile selection
 includes `ProfileSelection::kRedirectedToOriginal`, and it uses authentication
 from the original profile's signed-in user.
-
-PRTs are fetched for incognito profiles at the start of the incognito session.
 
 ### IP Protection Status
 

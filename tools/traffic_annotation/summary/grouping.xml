@@ -359,7 +359,6 @@ after discussions on the right group.
       <annotation id="omnibox_search_aggregator_suggest"/>
       <annotation id="microsoft_files_page_handler"/>
       <annotation id="outlook_calendar_event_attachment"/>
-      <annotation id="ip_protection_service_get_probabilistic_reveal_token"/>
       <annotation id="remoting_compute_engine_instance_identity_token"/>
       <annotation id="remoting_compute_engine_instance_access_token"/>
       <annotation id="remoting_compute_engine_instance_access_token_scopes"/>

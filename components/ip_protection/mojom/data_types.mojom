@@ -54,53 +54,6 @@ struct BlindSignedAuthToken {
   GeoHint geo_hint;
 };
 
-// Elgamal encrypted token that might contain the non-proxy IP.
-// A PRT batch will contain the non-proxy IP in a small percent of tokens
-// issued.
-struct ProbabilisticRevealToken {
-  int32 version;
-  // Compress-serialized `elgamal::Ciphertext` elliptic curve point `u`.
-  string u;
-  // Compress-serialized `elgamal::Ciphertext` elliptic curve point `e`.
-  string e;
-};
-
-enum TryGetProbabilisticRevealTokensStatus {
-  kSuccess,
-  kNetNotOk,
-  kNetOkNullResponse,
-  kNullResponse,
-  kResponseParsingFailed,
-  kInvalidTokenVersion,
-  kInvalidTokenSize,
-  kTooFewTokens,
-  kTooManyTokens,
-  kExpirationTooSoon,
-  kExpirationTooLate,
-  kInvalidPublicKey,
-  kInvalidNumTokensWithSignal,
-  kRequestBackedOff,
-  kNoGoogleChromeBranding,
-  kInvalidEpochIdSize
-};
-
-struct TryGetProbabilisticRevealTokensResult {
-  TryGetProbabilisticRevealTokensStatus status;
-  int32 network_error_code;
-  mojo_base.mojom.Time? try_again_after;
-};
-
-struct TryGetProbabilisticRevealTokensOutcome {
-  array<ProbabilisticRevealToken> tokens;
-  string public_key;
-  uint64 expiration_time_seconds;
-  uint64 next_epoch_start_time_seconds;
-  int32 num_tokens_with_signal;
-  // The id of the epoch in which the tokens were issued, used to identify the
-  // corresponding key used to decrypt the tokens.
-  string epoch_id;
-};
-
 enum IpProxyStatus {
   kOk,
   kFeatureNotEnabled,

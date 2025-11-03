@@ -34,22 +34,6 @@ mojom("mojom") {
           cpp = "::ip_protection::GeoHint"
         },
         {
-          mojom = "ip_protection.mojom.TryGetProbabilisticRevealTokensStatus"
-          cpp = "::ip_protection::TryGetProbabilisticRevealTokensStatus"
-        },
-        {
-          mojom = "ip_protection.mojom.TryGetProbabilisticRevealTokensResult"
-          cpp = "::ip_protection::TryGetProbabilisticRevealTokensResult"
-        },
-        {
-          mojom = "ip_protection.mojom.ProbabilisticRevealToken"
-          cpp = "::ip_protection::ProbabilisticRevealToken"
-        },
-        {
-          mojom = "ip_protection.mojom.TryGetProbabilisticRevealTokensOutcome"
-          cpp = "::ip_protection::TryGetProbabilisticRevealTokensOutcome"
-        },
-        {
           mojom = "ip_protection.mojom.IpProxyStatus"
           cpp = "::ip_protection::IpProxyStatus"
         },

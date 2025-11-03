@@ -381,18 +381,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="NetworkService.IpProtection.GetProbabilisticRevealTokensResult"
-    enum="ProbabilisticRevealTokensResult" expires_after="2026-03-08">
-  <owner>ryankalla@google.com</owner>
-  <owner>kiln-eng@google.com</owner>
-  <owner>src/components/ip_protection/OWNERS</owner>
-  <summary>
-    The result of a call to `IpProtectionProbabilisticRevealTokenFetcher::
-    TryGetProbabilisticRevealTokens()`.
-  </summary>
-</histogram>
-
 <histogram name="NetworkService.IpProtection.GetProxyListResult"
     enum="IpProtectionGetProxyListResult" expires_after="2026-03-08">
   <owner>awillia@chromium.org</owner>
@@ -414,42 +402,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="NetworkService.IpProtection.IsProbabilisticRevealTokenAvailableOnInitialRequest"
-    enum="BooleanSuccess" expires_after="2026-03-08">
-  <owner>ryankalla@google.com</owner>
-  <owner>kiln-eng@google.com</owner>
-  <owner>src/components/ip_protection/OWNERS</owner>
-  <summary>
-    The result of a call to
-    `IpProtectionProbabilisticRevealTokenManager::IsTokenAvailable()` when
-    `IpProtectionProbabilisticRevealTokenManager::GetToken()` is determining if
-    the token cache contains any non-expired tokens. If this fails, the request
-    will not include a probabilistic reveal token.
-
-    This histogram is only emitted the first time `GetToken()` is called after
-    the PRT manager is constructed.
-  </summary>
-</histogram>
-
-<histogram
-    name="NetworkService.IpProtection.IsProbabilisticRevealTokenAvailableOnSubsequentRequest"
-    enum="BooleanSuccess" expires_after="2026-03-08">
-  <owner>ryankalla@google.com</owner>
-  <owner>kiln-eng@google.com</owner>
-  <owner>src/components/ip_protection/OWNERS</owner>
-  <summary>
-    The result of a call to
-    `IpProtectionProbabilisticRevealTokenManager::IsTokenAvailable()` when
-    `IpProtectionProbabilisticRevealTokenManager::GetToken()` is determining if
-    the token cache contains any non-expired tokens. If this fails, the request
-    will not include a probabilistic reveal token.
-
-    This histogram is not emitted the first time `GetToken()` is called after
-    the PRT manager is constructed, but is emitted on all subsequent calls.
-  </summary>
-</histogram>
-
 <histogram name="NetworkService.IpProtection.OAuthTokenFetchTime" units="ms"
     expires_after="2026-03-08">
   <owner>awillia@chromium.org</owner>
@@ -457,34 +409,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the elapsed time for successful requests by IpProtectionConfigGetter
     for an OAuth token.
-  </summary>
-</histogram>
-
-<histogram
-    name="NetworkService.IpProtection.ProbabilisticRevealTokenRandomizationTime"
-    units="ms" expires_after="2026-03-08">
-  <owner>ryankalla@google.com</owner>
-  <owner>kiln-eng@google.com</owner>
-  <owner>src/components/ip_protection/OWNERS</owner>
-  <summary>
-    Records the elapsed time for successfully re-randomizing a probabilistic
-    reveal token.
-  </summary>
-</histogram>
-
-<histogram
-    name="NetworkService.IpProtection.ProbabilisticRevealTokensRequestTime"
-    units="ms" expires_after="2026-03-08">
-  <owner>ryankalla@google.com</owner>
-  <owner>kiln-eng@google.com</owner>
-  <owner>src/components/ip_protection/OWNERS</owner>
-  <summary>
-    Records the elapsed time for successful requests by
-    IpProtectionProbabilisticRevealTokenFetcher for a batch of probabilistic
-    reveal tokens. This represents the total time taken from the moment we call
-    the TokenFetcher until PRTs are available in the browser. This includes the
-    IPC between the browser and the network service, the network request itself
-    (including any scheduling/queuing delay), and the token validation checks.
   </summary>
 </histogram>
 

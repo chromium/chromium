@@ -77,34 +77,4 @@ std::vector<MdlType> FromMdlResourceProto(
   return mdl_types;
 }
 
-TryGetProbabilisticRevealTokensOutcome::
-    TryGetProbabilisticRevealTokensOutcome() = default;
-TryGetProbabilisticRevealTokensOutcome::
-    ~TryGetProbabilisticRevealTokensOutcome() = default;
-TryGetProbabilisticRevealTokensOutcome::TryGetProbabilisticRevealTokensOutcome(
-    const TryGetProbabilisticRevealTokensOutcome& other) = default;
-TryGetProbabilisticRevealTokensOutcome::TryGetProbabilisticRevealTokensOutcome(
-    TryGetProbabilisticRevealTokensOutcome&& other) = default;
-TryGetProbabilisticRevealTokensOutcome&
-TryGetProbabilisticRevealTokensOutcome::operator=(
-    const TryGetProbabilisticRevealTokensOutcome&) = default;
-TryGetProbabilisticRevealTokensOutcome&
-TryGetProbabilisticRevealTokensOutcome::operator=(
-    TryGetProbabilisticRevealTokensOutcome&&) = default;
-
-ProbabilisticRevealToken::ProbabilisticRevealToken() = default;
-ProbabilisticRevealToken::ProbabilisticRevealToken(std::int32_t version,
-                                                   std::string u,
-                                                   std::string e)
-    : version(version), u(std::move(u)), e(std::move(e)) {}
-ProbabilisticRevealToken::ProbabilisticRevealToken(
-    const ProbabilisticRevealToken&) = default;
-ProbabilisticRevealToken::ProbabilisticRevealToken(ProbabilisticRevealToken&&) =
-    default;
-ProbabilisticRevealToken& ProbabilisticRevealToken::operator=(
-    const ProbabilisticRevealToken&) = default;
-ProbabilisticRevealToken& ProbabilisticRevealToken::operator=(
-    ProbabilisticRevealToken&&) = default;
-ProbabilisticRevealToken::~ProbabilisticRevealToken() = default;
-
 }  // namespace ip_protection

@@ -1446,20 +1446,6 @@ int HttpNetworkTransaction::BuildRequestHeaders(
     request_headers_.SetHeader("IP-Protection", "1");
   }
 
-  if (bool is_prt_eligible =
-          features::kEnableProbabilisticRevealTokensForNonProxiedRequests
-              .Get() ||
-          is_proxied_request;
-      features::kProbabilisticRevealTokensAddHeaderToProxiedRequests.Get() &&
-      is_prt_eligible) {
-    if (std::optional<std::string> maybe_prt_header_value =
-            proxy_info_.prt_header_value();
-        maybe_prt_header_value.has_value()) {
-      request_headers_.SetHeader("Sec-Probabilistic-Reveal-Token",
-                                 std::move(maybe_prt_header_value.value()));
-    }
-  }
-
   request_headers_.MergeFrom(request_->extra_headers);
 
   if (modify_headers_callbacks_) {

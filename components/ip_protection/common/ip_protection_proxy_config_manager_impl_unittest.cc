@@ -110,11 +110,6 @@ class MockIpProtectionCore : public IpProtectionCore {
       size_t chain_index) override {
     return std::nullopt;
   }
-  std::optional<std::string> GetProbabilisticRevealToken(
-      const GURL& url,
-      const net::SchemefulSite& top_frame_site) override {
-    NOTREACHED();
-  }
   bool IsProxyListAvailable() override { return false; }
   void QuicProxiesFailed() override {}
   std::vector<net::ProxyChain> GetProxyChainList() override { return {}; }
@@ -125,10 +120,6 @@ class MockIpProtectionCore : public IpProtectionCore {
   }
   void SetTrackingProtectionContentSetting(
       const ContentSettingsForOneType& settings) override {}
-  bool ShouldRequestIncludeProbabilisticRevealToken(
-      const GURL& request_url) override {
-    return false;
-  }
   IpProxyStatus GetIpProxyStatus() override {
     return IpProxyStatus::kUnavailable;
   }
