@@ -1144,6 +1144,8 @@ const CGFloat kCloseButtonPadding = 16.0f;
   [_closeButton addTarget:self
                    action:@selector(closeButtonTapped)
          forControlEvents:UIControlEventTouchUpInside];
+  _closeButton.accessibilityIdentifier =
+      kOmniboxPopupCloseButtonAccessibilityIdentifier;
 }
 
 - (void)closeButtonTapped {

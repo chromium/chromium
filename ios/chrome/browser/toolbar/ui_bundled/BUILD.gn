@@ -282,6 +282,7 @@ source_set("eg2_tests") {
     "//components/strings",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/content_suggestions/ui_bundled:content_suggestions_constant",
+    "//ios/chrome/browser/omnibox/public:constants",
     "//ios/chrome/browser/popup_menu/ui_bundled:constants",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/public/features",

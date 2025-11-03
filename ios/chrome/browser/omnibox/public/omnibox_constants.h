@@ -16,6 +16,8 @@ extern NSString* const kOmniboxLeadingImageEmptyTextAccessibilityIdentifier;
 extern NSString* const
     kOmniboxLeadingImageSuggestionImageAccessibilityIdentifier;
 
+extern NSString* const kOmniboxPopupCloseButtonAccessibilityIdentifier;
+
 // Size of the leading image view.
 extern const CGFloat kOmniboxLeadingImageSize;
 

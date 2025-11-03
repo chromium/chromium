@@ -7,6 +7,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/omnibox/browser/omnibox_pref_names.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/omnibox/public/omnibox_constants.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/adaptive_toolbar_app_interface.h"
@@ -311,8 +312,9 @@ void CheckCurrentURLContainsString(std::string string) {
         performAction:grey_tap()];
 
   } else {
-    id<GREYMatcher> cancelButton =
-        grey_accessibilityID(kToolbarCancelOmniboxEditButtonIdentifier);
+    id<GREYMatcher> cancelButton = grey_anyOf(
+        grey_accessibilityID(kOmniboxPopupCloseButtonAccessibilityIdentifier),
+        grey_accessibilityID(kToolbarCancelOmniboxEditButtonIdentifier), nil);
     [[EarlGrey
         selectElementWithMatcher:grey_allOf(cancelButton,
                                             grey_sufficientlyVisible(), nil)]
