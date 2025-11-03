@@ -9,6 +9,7 @@
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/logging.h"
 #include "base/path_service.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
@@ -33,6 +34,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/test/base/save_desktop_snapshot.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/signin/public/identity_manager/test_accounts.h"
 #include "components/sync/base/features.h"
@@ -190,6 +192,12 @@ void GlicE2ETest::SetUpInProcessBrowserTestFixture() {
 }
 
 void GlicE2ETest::TearDownOnMainThread() {
+  if (HasFailure()) {
+    base::FilePath snapshot_path = SaveDesktopSnapshot();
+    if (!snapshot_path.empty()) {
+      LOG(WARNING) << "Saved desktop snapshot to: " << snapshot_path;
+    }
+  }
   for (auto& client : devtools_clients_) {
     client.second->DetachProtocolClient();
   }
