@@ -8383,6 +8383,16 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </token>
 </histogram>
 
+<histogram name="Autofill.ValuableMetadata.OrphanEntriesRemovedCount"
+    units="entries" expires_after="2026-11-30">
+  <owner>vizcay@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records the number of orphan valuable metadata entries that were removed
+    during cleanup. Recorded on startup.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.Vcn3ds.FlowEvents" enum="Vcn3dsFlowEvents"
     expires_after="2026-06-01">
   <owner>vinnypersky@google.com</owner>

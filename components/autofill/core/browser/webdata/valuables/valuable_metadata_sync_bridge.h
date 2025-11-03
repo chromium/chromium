@@ -92,6 +92,12 @@ class ValuableMetadataSyncBridge
   void UploadInitialLocalData(syncer::MetadataChangeList* metadata_change_list,
                               const syncer::EntityChangeList& entity_data);
 
+  // This routine performs cleanup by deleting old metadata records that have
+  // become orphaned (i.e., they have no matching data entity). It's primarily
+  // here to handle uncommon scenarios, like receiving metadata for an entity
+  // that was deleted before the entity data itself could reach the client.
+  void DeleteOrphanMetadata();
+
   // To ensures that metadata and model data is  committed in a single
   // transaction, `CreateMetadataChangeList()` is implemented using an
   // `InMemoryMetadataChangeList`. This function transfers the changes from the
