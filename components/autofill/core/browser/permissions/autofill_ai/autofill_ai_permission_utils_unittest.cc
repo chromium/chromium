@@ -461,6 +461,19 @@ TEST_P(AutofillAiMayPerformActionTest, AppLocaleWithOverride) {
   EXPECT_EQ(MayPerformAutofillAiAction(client(), GetParam()), is_allowed);
 }
 
+// Tests that Wallet-related actions are not available on non-supported
+// countries.
+TEST_P(AutofillAiMayPerformActionTest, kWalletSupportedCountries) {
+  base::test::ScopedFeatureList feature_list{features::kAutofillAiIgnoreGeoIp};
+  // Wallet is not supported in India.
+  client().SetVariationConfigCountryCode(GeoIpCountryCode("IN"));
+  const bool is_allowed =
+      GetParam() != AutofillAiAction::kAddServerEntityInstanceInSettings &&
+      GetParam() != AutofillAiAction::kImportToWallet &&
+      GetParam() != AutofillAiAction::kIphForOptIn;
+  EXPECT_EQ(MayPerformAutofillAiAction(client(), GetParam()), is_allowed);
+}
+
 // Tests that listing, editing and removing entities is permitted even if the
 // app locale is unsupported as long as there is data saved.
 TEST_P(AutofillAiMayPerformActionTest, AppLocaleWithDataSaved) {
