@@ -68,8 +68,13 @@ class LensComposeboxController {
   void ShowLensSelectionOverlay();
 
   // Adds the visual selection context to the compose box context carousel.
-  void AddVisualSelectionContext(const std::string& image_data_url,
-                                 bool is_deletable);
+  void AddVisualSelectionContext(const std::string& image_data_url);
+
+  // Deletes the context associated with the given id.
+  void DeleteContext(const base::UnguessableToken& id);
+
+  // Clears all files.
+  void ClearFiles();
 
   // Returns the session metrics logger for the current Lens session.
   LensSessionMetricsLogger* GetSessionMetricsLogger();
@@ -87,6 +92,11 @@ class LensComposeboxController {
 
   void UpdateSuggestInputs(
       const lens::proto::LensOverlaySuggestInputs& suggest_inputs);
+
+  std::optional<base::UnguessableToken> vsc_image_data_id_for_testing() const {
+    return vsc_image_data_ ? std::make_optional(vsc_image_data_->id)
+                           : std::nullopt;
+  }
 
  private:
   // A struct to hold the visual selection context.
@@ -112,6 +122,9 @@ class LensComposeboxController {
   searchbox::mojom::SelectedFileInfoPtr BuildVisualSelectionFileInfo(
       const std::string& image_data_url,
       bool is_deletable);
+
+  // Clears the visual selection context.
+  void ClearVisualSelectionContext();
 
   // Owns this.
   const raw_ptr<LensSearchController> lens_search_controller_;

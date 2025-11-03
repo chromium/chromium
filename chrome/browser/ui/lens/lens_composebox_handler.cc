@@ -195,4 +195,13 @@ void LensComposeboxHandler::OnThumbnailRemoved() {
   NOTREACHED();
 }
 
+void LensComposeboxHandler::DeleteContext(
+    const base::UnguessableToken& file_token) {
+  lens_composebox_controller_->DeleteContext(file_token);
+}
+
+void LensComposeboxHandler::ClearFiles() {
+  lens_composebox_controller_->ClearFiles();
+}
+
 }  // namespace lens

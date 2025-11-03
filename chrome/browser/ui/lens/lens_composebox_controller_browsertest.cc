@@ -894,8 +894,7 @@ IN_PROC_BROWSER_TEST_F(LensComposeboxControllerBrowserTest,
                     searchbox::mojom::SelectedFileInfoPtr info) {
         captured_file_info = std::move(info);
       });
-  composebox_controller->AddVisualSelectionContext(thumbnail_uri,
-                                                   /*is_deletable=*/true);
+  composebox_controller->AddVisualSelectionContext(thumbnail_uri);
 
   ASSERT_TRUE(
       base::test::RunUntil([&]() { return !captured_file_info.is_null(); }));
@@ -903,4 +902,72 @@ IN_PROC_BROWSER_TEST_F(LensComposeboxControllerBrowserTest,
   ASSERT_EQ(captured_file_info->mime_type, "image/png");
   ASSERT_EQ(captured_file_info->image_data_url, thumbnail_uri);
   ASSERT_EQ(captured_file_info->is_deletable, true);
+}
+
+IN_PROC_BROWSER_TEST_F(LensComposeboxControllerBrowserTest,
+                       DeleteVisualSelectionContext) {
+  WaitForPaint();
+
+  auto* lens_controller = GetLensSearchController();
+  ASSERT_TRUE(lens_controller);
+  auto* composebox_controller = GetLensComposeboxController();
+  auto* overlay_controller = GetLensOverlayController();
+
+  // Open the overlay directly to the side panel so composebox is visible. This
+  // will add a visual selection context.
+  SkBitmap initial_bitmap = CreateNonEmptyBitmap(100, 100);
+  lens_controller->OpenLensOverlayWithPendingRegion(
+      lens::LensOverlayInvocationSource::kContentAreaContextMenuImage,
+      kTestRegion->Clone(), initial_bitmap);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return overlay_controller->state() == State::kOverlayAndResults;
+  }));
+
+  // A visual selection context should have been added.
+  auto vsc_id = composebox_controller->vsc_image_data_id_for_testing();
+  ASSERT_TRUE(vsc_id.has_value());
+  ASSERT_TRUE(overlay_controller->HasRegionSelection());
+
+  // Delete with a random token should not clear the selection.
+  composebox_controller->DeleteContext(base::UnguessableToken::Create());
+  ASSERT_TRUE(overlay_controller->HasRegionSelection());
+  ASSERT_TRUE(
+      composebox_controller->vsc_image_data_id_for_testing().has_value());
+
+  // Delete with the correct token should clear the selection.
+  composebox_controller->DeleteContext(vsc_id.value());
+  ASSERT_FALSE(overlay_controller->HasRegionSelection());
+  ASSERT_FALSE(
+      composebox_controller->vsc_image_data_id_for_testing().has_value());
+}
+
+IN_PROC_BROWSER_TEST_F(LensComposeboxControllerBrowserTest,
+                       ClearFilesDeletesVisualSelectionContext) {
+  WaitForPaint();
+
+  auto* lens_controller = GetLensSearchController();
+  ASSERT_TRUE(lens_controller);
+  auto* composebox_controller = GetLensComposeboxController();
+  auto* overlay_controller = GetLensOverlayController();
+
+  // Open the overlay directly to the side panel so composebox is visible. This
+  // will add a visual selection context.
+  SkBitmap initial_bitmap = CreateNonEmptyBitmap(100, 100);
+  lens_controller->OpenLensOverlayWithPendingRegion(
+      lens::LensOverlayInvocationSource::kContentAreaContextMenuImage,
+      kTestRegion->Clone(), initial_bitmap);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return overlay_controller->state() == State::kOverlayAndResults;
+  }));
+
+  // A visual selection context should have been added.
+  ASSERT_TRUE(
+      composebox_controller->vsc_image_data_id_for_testing().has_value());
+  ASSERT_TRUE(overlay_controller->HasRegionSelection());
+
+  // ClearFiles should clear the selection.
+  composebox_controller->ClearFiles();
+  ASSERT_FALSE(overlay_controller->HasRegionSelection());
+  ASSERT_FALSE(
+      composebox_controller->vsc_image_data_id_for_testing().has_value());
 }
