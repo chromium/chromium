@@ -4,17 +4,28 @@
 
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 
+#include <memory>
+#include <optional>
+#include <string>
+#include <utility>
+
+#include "base/containers/flat_map.h"
+#include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/test/test_timeouts.h"
+#include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/optimization_guide/content/browser/mock_media_transcript_provider.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/media_session.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
@@ -26,13 +37,21 @@
 #include "content/public/test/media_start_stop_observer.h"
 #include "content/shell/browser/shell.h"
 #include "content/shell/common/shell_switches.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
 #include "services/media_session/public/cpp/test/mock_media_session.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/service_manager/public/cpp/interface_provider.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/features_generated.h"
+#include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom-test-utils.h"
+#include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom.h"
 #include "ui/display/display_switches.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 namespace optimization_guide {
 
@@ -192,15 +211,22 @@ class PageContentProtoProviderBrowserTest : public content::ContentBrowserTest {
     return document_identifiers_;
   }
 
-  void LoadData(blink::mojom::AIPageContentOptionsPtr request =
-                    GetAIPageContentOptions()) {
+  // If `quit_closure` is null, will block until the load is complete.
+  void LoadData(
+      blink::mojom::AIPageContentOptionsPtr request = GetAIPageContentOptions(),
+      base::OnceClosure quit_closure = base::OnceClosure()) {
+    bool should_wait_for_page_content = quit_closure.is_null();
     base::RunLoop run_loop;
     GetAIPageContent(
         web_contents(), std::move(request),
-        base::BindOnce(&PageContentProtoProviderBrowserTest::SetPageContent,
-                       base::Unretained(this), run_loop.QuitClosure()));
-    run_loop.Run();
-    CHECK(page_content_);
+        base::BindOnce(
+            &PageContentProtoProviderBrowserTest::SetPageContent,
+            base::Unretained(this),
+            quit_closure ? std::move(quit_closure) : run_loop.QuitClosure()));
+    if (should_wait_for_page_content) {
+      run_loop.Run();
+      CHECK(page_content_);
+    }
   }
 
   void LoadPage(GURL url,
@@ -1947,6 +1973,248 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderPopupBrowserTest, ColorPicker) {
             color_node.content_attributes().common_ancestor_dom_node_id());
 }
 #endif
+
+// Overrides the AIPageContentAgent interface for the given frame to simulate a
+// non-responsive renderer. Saves the arguments to respond later.
+class NoResponseAIPageContentAgent
+    : public blink::mojom::AIPageContentAgentInterceptorForTesting {
+ public:
+  explicit NoResponseAIPageContentAgent(
+      content::RenderFrameHost* render_frame_host)
+      : render_frame_host_(render_frame_host) {
+    service_manager::InterfaceProvider::TestApi(
+        render_frame_host_->GetRemoteInterfaces())
+        .SetBinderForName(
+            blink::mojom::AIPageContentAgent::Name_,
+            base::BindRepeating(&NoResponseAIPageContentAgent::Bind,
+                                base::Unretained(this)));
+  }
+  ~NoResponseAIPageContentAgent() override = default;
+
+  void Bind(mojo::ScopedMessagePipeHandle handle) {
+    receiver_.Bind(mojo::PendingReceiver<blink::mojom::AIPageContentAgent>(
+        std::move(handle)));
+  }
+
+  void GetAIPageContent(blink::mojom::AIPageContentOptionsPtr options,
+                        GetAIPageContentCallback callback) override {
+    // Do nothing, simulating a non-responsive renderer, but save the arguments
+    // to allow later processing.
+    saved_options_ = std::move(options);
+    saved_callback_ = std::move(callback);
+  }
+
+  void Respond() {
+    service_manager::InterfaceProvider::TestApi test_api(
+        render_frame_host_->GetRemoteInterfaces());
+
+    CHECK(test_api.HasBinderForName(blink::mojom::AIPageContentAgent::Name_));
+    test_api.ClearBinderForName(blink::mojom::AIPageContentAgent::Name_);
+
+    render_frame_host_->GetRemoteInterfaces()->GetInterface(
+        agent_.BindNewPipeAndPassReceiver());
+    agent_->GetAIPageContent(std::move(saved_options_),
+                             std::move(saved_callback_));
+  }
+
+  blink::mojom::AIPageContentAgent* GetForwardingInterface() override {
+    NOTREACHED();
+  }
+
+ private:
+  blink::mojom::AIPageContentOptionsPtr saved_options_;
+  GetAIPageContentCallback saved_callback_;
+  raw_ptr<content::RenderFrameHost> render_frame_host_;
+  mojo::Receiver<blink::mojom::AIPageContentAgent> receiver_{this};
+  mojo::Remote<blink::mojom::AIPageContentAgent> agent_;
+};
+
+class PageContentProtoProviderSubframeTimeoutBrowserTest
+    : public PageContentProtoProviderBrowserTestMultiProcess {
+ public:
+  PageContentProtoProviderSubframeTimeoutBrowserTest() {
+    // Shorter timeout for quicker tests
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kGetAIPageContentSubframeTimeoutEnabled,
+        {{"timeout", "100ms"}});
+  }
+
+  base::TimeDelta GetTimeout() { return base::Milliseconds(100); }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         PageContentProtoProviderSubframeTimeoutBrowserTest,
+                         testing::Bool());
+
+class PageContentProtoProviderSubframeTimeoutDisabledBrowserTest
+    : public PageContentProtoProviderBrowserTestMultiProcess {
+ public:
+  PageContentProtoProviderSubframeTimeoutDisabledBrowserTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        features::kGetAIPageContentSubframeTimeoutEnabled);
+  }
+
+  base::TimeDelta GetTimeout() { return base::Milliseconds(100); }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    PageContentProtoProviderSubframeTimeoutDisabledBrowserTest,
+    testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(PageContentProtoProviderSubframeTimeoutBrowserTest,
+                       IFrameAIPageContentAgentRespondsSlowly) {
+  // Load the page, but don't load the APC yet.
+  LoadPage(https_server()->GetURL("a.com", "/iframe_cross_site.html"),
+           /*options=*/nullptr);
+
+  // Make the second child frame non-responsive.
+  content::RenderFrameHost* child_frame_2 =
+      ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 1);
+  ASSERT_TRUE(child_frame_2);
+  NoResponseAIPageContentAgent no_response_agent(child_frame_2);
+
+  base::TimeTicks start = base::TimeTicks::Now();
+
+  // Request the APC for the main frame.
+  LoadData(GetActionableAIPageContentOptions());
+
+  base::TimeDelta elapsed_time = base::TimeTicks::Now() - start;
+
+  // The APC should have waited for the subframe to timeout.
+  EXPECT_GE(elapsed_time, GetTimeout());
+
+  const auto& root_node = ActionableContentRootNode();
+  EXPECT_EQ(root_node.children_nodes().size(), 2);
+
+  const auto& b_frame = root_node.children_nodes()[0];
+  EXPECT_EQ(b_frame.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_IFRAME);
+  const auto& b_frame_data = b_frame.content_attributes().iframe_data();
+  AssertValidOrigin(b_frame_data.frame_data().security_origin(),
+                    ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0)
+                        ->GetLastCommittedOrigin());
+  EXPECT_FALSE(b_frame.content_attributes().is_ad_related());
+
+  const auto& c_frame = root_node.children_nodes()[1];
+  EXPECT_EQ(c_frame.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_IFRAME);
+
+  // We didn't wait for the frame to respond, so the iframe data is defaulted.
+  const auto& c_frame_data = c_frame.content_attributes().iframe_data();
+  EXPECT_FALSE(c_frame_data.frame_data().has_security_origin());
+  EXPECT_EQ(c_frame.children_nodes_size(), 0);
+  EXPECT_FALSE(c_frame.content_attributes().is_ad_related());
+}
+
+IN_PROC_BROWSER_TEST_P(
+    PageContentProtoProviderSubframeTimeoutDisabledBrowserTest,
+    InFrameAIPageContentAgentRespondsSlowly) {
+  // Load the page, but don't load the APC yet.
+  LoadPage(https_server()->GetURL("a.com", "/iframe_cross_site.html"),
+           /*options=*/nullptr);
+
+  // Make the second child frame non-responsive.
+  content::RenderFrameHost* child_frame_2 =
+      ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 1);
+  ASSERT_TRUE(child_frame_2);
+  NoResponseAIPageContentAgent no_response_agent(child_frame_2);
+
+  // Request the APC for the main frame, but don't wait for a response.
+  base::RunLoop loading_run_loop;
+  LoadData(GetActionableAIPageContentOptions(), loading_run_loop.QuitClosure());
+
+  // Wait for the default timeout to pass.
+  base::RunLoop timer_run_loop;
+  base::OneShotTimer timer;
+  base::TimeDelta default_timeout =
+      features::kGetAIPageContentSubframeTimeoutParam.default_value;
+  timer.Start(FROM_HERE, default_timeout, timer_run_loop.QuitClosure());
+  timer_run_loop.Run();
+
+  // The APC should still be pending as the timeout was disabled.
+  EXPECT_FALSE(loading_run_loop.AnyQuitCalled());
+
+  // Now, let the subframe respond.
+  no_response_agent.Respond();
+  loading_run_loop.Run();
+
+  const auto& root_node = ActionableContentRootNode();
+  EXPECT_EQ(root_node.children_nodes().size(), 2);
+
+  const auto& b_frame = root_node.children_nodes()[0];
+  EXPECT_EQ(b_frame.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_IFRAME);
+  const auto& b_frame_data = b_frame.content_attributes().iframe_data();
+  AssertValidOrigin(b_frame_data.frame_data().security_origin(),
+                    ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0)
+                        ->GetLastCommittedOrigin());
+  EXPECT_FALSE(b_frame.content_attributes().is_ad_related());
+
+  const auto& c_frame = root_node.children_nodes()[1];
+  EXPECT_EQ(c_frame.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_IFRAME);
+  const auto& c_frame_data = c_frame.content_attributes().iframe_data();
+  AssertValidOrigin(c_frame_data.frame_data().security_origin(),
+                    ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 1)
+                        ->GetLastCommittedOrigin());
+  EXPECT_FALSE(c_frame.content_attributes().is_ad_related());
+}
+
+IN_PROC_BROWSER_TEST_P(PageContentProtoProviderSubframeTimeoutBrowserTest,
+                       MainFrameAIPageContentAgentRespondsSlowly) {
+  // Load the page, but don't load the APC yet.
+  LoadPage(https_server()->GetURL("a.com", "/iframe_cross_site.html"),
+           /*options=*/nullptr);
+
+  // Make the main frame non-responsive.
+  NoResponseAIPageContentAgent no_response_agent(
+      web_contents()->GetPrimaryMainFrame());
+
+  // Request the APC for the main frame, but don't wait for a response.
+  base::RunLoop loading_run_loop;
+  LoadData(GetActionableAIPageContentOptions(), loading_run_loop.QuitClosure());
+
+  // Wait for the timeout time to pass.
+  base::RunLoop timer_run_loop;
+  base::OneShotTimer timer;
+  timer.Start(FROM_HERE, GetTimeout(), timer_run_loop.QuitClosure());
+  timer_run_loop.Run();
+
+  // The APC should still be pending as the timeout only applies to subframes.
+  EXPECT_FALSE(loading_run_loop.AnyQuitCalled());
+
+  // Now, let the main frame respond.
+  no_response_agent.Respond();
+  loading_run_loop.Run();
+
+  const auto& root_node = ActionableContentRootNode();
+  EXPECT_EQ(root_node.children_nodes().size(), 2);
+
+  const auto& b_frame = root_node.children_nodes()[0];
+  EXPECT_EQ(b_frame.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_IFRAME);
+  const auto& b_frame_data = b_frame.content_attributes().iframe_data();
+  AssertValidOrigin(b_frame_data.frame_data().security_origin(),
+                    ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0)
+                        ->GetLastCommittedOrigin());
+  EXPECT_FALSE(b_frame.content_attributes().is_ad_related());
+
+  const auto& c_frame = root_node.children_nodes()[1];
+  EXPECT_EQ(c_frame.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_IFRAME);
+  const auto& c_frame_data = c_frame.content_attributes().iframe_data();
+  AssertValidOrigin(c_frame_data.frame_data().security_origin(),
+                    ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 1)
+                        ->GetLastCommittedOrigin());
+  EXPECT_FALSE(c_frame.content_attributes().is_ad_related());
+}
 
 }  // namespace
 

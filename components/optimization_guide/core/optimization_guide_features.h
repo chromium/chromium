@@ -113,6 +113,12 @@ BASE_DECLARE_FEATURE(kOptimizationGuideIconView);
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 BASE_DECLARE_FEATURE(kBrokerModelSessionsForUntrustedProcesses);
 
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+BASE_DECLARE_FEATURE(kGetAIPageContentSubframeTimeoutEnabled);
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+extern const base::FeatureParam<base::TimeDelta>
+    kGetAIPageContentSubframeTimeoutParam;
+
 typedef base::EnumSet<proto::RequestContext,
                       proto::RequestContext_MIN,
                       proto::RequestContext_MAX>
@@ -371,6 +377,11 @@ std::vector<uint32_t> GetOnDeviceModelAllowedAdaptationRanks();
 // Returns whether the icon view should be enabled.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 bool ShouldEnableOptimizationGuideIconView();
+
+// Returns what the timeout for calls to GetAIPageContent should be for
+// subframes. An empty return value indicates no timeout should be applied.
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+std::optional<base::TimeDelta> GetSubframeGetAIPageContentTimeout();
 
 }  // namespace features
 }  // namespace optimization_guide

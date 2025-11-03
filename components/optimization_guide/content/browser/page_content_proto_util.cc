@@ -912,9 +912,9 @@ class Converter {
             page_content_map_->find(render_frame_info->global_frame_token);
         if (it == page_content_map_->end()) {
           // This may happen either because the remote renderer responsible for
-          // this frame was destroyed before we were able to query it, or
-          // because the supplied frame token was manipulated by a compromised
-          // renderer.
+          // this frame was destroyed before we were able to query it, because
+          // the renderer did not return before a timeout, or because the
+          // supplied frame token was manipulated by a compromised renderer.
           return base::ok();
         }
 

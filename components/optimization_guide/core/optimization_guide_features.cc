@@ -5,6 +5,7 @@
 #include "components/optimization_guide/core/optimization_guide_features.h"
 
 #include <cstring>
+#include <optional>
 
 #include "base/byte_count.h"
 #include "base/command_line.h"
@@ -20,6 +21,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/to_string.h"
 #include "base/system/sys_info.h"
+#include "base/time/time.h"
 #include "components/optimization_guide/core/feature_registry/mqls_feature_registry.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
@@ -163,6 +165,14 @@ BASE_FEATURE(kOptimizationGuideProactivePersonalizedHintsFetching,
 
 BASE_FEATURE(kOptimizationGuideBypassFormsClassificationAuth,
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Controls whether to enforce a timeout for subframe page content extraction.
+// If enabled, defaults to 1 second. If disabled, wait indefinitely for all
+// subframes to respond.
+BASE_FEATURE(kGetAIPageContentSubframeTimeoutEnabled,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+const base::FeatureParam<base::TimeDelta> kGetAIPageContentSubframeTimeoutParam{
+    &kGetAIPageContentSubframeTimeoutEnabled, "timeout", base::Seconds(1)};
 
 // The default value here is a bit of a guess.
 // TODO(crbug.com/40163041): This should be tuned once metrics are available.
@@ -572,6 +582,13 @@ std::vector<uint32_t> GetOnDeviceModelAllowedAdaptationRanks() {
 
 bool ShouldEnableOptimizationGuideIconView() {
   return base::FeatureList::IsEnabled(kOptimizationGuideIconView);
+}
+
+std::optional<base::TimeDelta> GetSubframeGetAIPageContentTimeout() {
+  if (!base::FeatureList::IsEnabled(kGetAIPageContentSubframeTimeoutEnabled)) {
+    return std::nullopt;
+  }
+  return kGetAIPageContentSubframeTimeoutParam.Get();
 }
 
 }  // namespace features

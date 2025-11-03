@@ -4,12 +4,22 @@
 
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 
+#include <memory>
+#include <optional>
+#include <utility>
+
+#include "base/barrier_closure.h"
+#include "base/cancelable_callback.h"
 #include "base/check.h"
+#include "base/functional/callback.h"
 #include "base/functional/concurrent_closures.h"
 #include "base/i18n/char_iterator.h"
+#include "base/location.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/timer/elapsed_timer.h"
 #include "components/optimization_guide/content/browser/autofill_annotations_provider.h"
@@ -43,6 +53,89 @@ constexpr size_t kMaxNodeLimit = 100000;
 struct ContentNodeMetrics {
   size_t word_count = 0;
   size_t node_count = 0;
+};
+
+// To avoid blocking on subframe responses for too long, we proceed on a timeout
+// (if provided) as long as we have received a response from the main frame.
+class GetAIPageContentTimeoutHelper {
+ public:
+  GetAIPageContentTimeoutHelper()
+      : page_content_map_(
+            std::make_unique<optimization_guide::AIPageContentMap>()) {}
+
+  // Must be called before `Start()`.
+  base::OnceClosure GetClosureForSubframe() {
+    return concurrent_for_subframes_.CreateClosure();
+  }
+  base::OnceClosure GetClosureForMainFrame() {
+    return base::BindOnce(&GetAIPageContentTimeoutHelper::OnMainFrameRun,
+                          weak_ptr_factory_.GetWeakPtr());
+  }
+
+  void Start(base::OnceClosure callback,
+             std::optional<base::TimeDelta> timeout) {
+    CHECK(callback);
+    callback_ = std::move(callback);
+    if (timeout.has_value()) {
+      // `base::Unretained` is safe here because `this` owns `timeout_timer_`.
+      timeout_timer_.Start(
+          FROM_HERE, timeout.value(),
+          base::BindOnce(
+              &GetAIPageContentTimeoutHelper::OnAllSubframesRespondedOrTimeout,
+              base::Unretained(this)));
+    }
+    std::move(concurrent_for_subframes_)
+        .Done(base::BindOnce(
+            &GetAIPageContentTimeoutHelper::OnAllSubframesRespondedOrTimeout,
+            weak_ptr_factory_.GetWeakPtr()));
+  }
+
+  void OnGotAIPageContentForFrame(
+      content::GlobalRenderFrameHostToken frame_token,
+      mojo::Remote<blink::mojom::AIPageContentAgent> remote_interface,
+      base::OnceClosure continue_callback,
+      blink::mojom::AIPageContentPtr result) {
+    CHECK(page_content_map_->find(frame_token) == page_content_map_->end());
+
+    if (result) {
+      (*page_content_map_)[frame_token] = std::move(result);
+    }
+    std::move(continue_callback).Run();
+  }
+
+  void OnMainFrameRun() {
+    CHECK(!has_main_frame_run_);
+    has_main_frame_run_ = true;
+
+    if (have_all_subframes_responded_or_timed_out_) {
+      std::move(callback_).Run();
+    }
+  }
+
+  void OnAllSubframesRespondedOrTimeout() {
+    have_all_subframes_responded_or_timed_out_ = true;
+    timeout_timer_.Stop();
+    if (has_main_frame_run_ && callback_) {
+      std::move(callback_).Run();
+    }
+  }
+
+  base::WeakPtr<GetAIPageContentTimeoutHelper> AsWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+  optimization_guide::AIPageContentMap* raw_page_content_map() {
+    return page_content_map_.get();
+  }
+
+ private:
+  base::OneShotTimer timeout_timer_;
+  bool has_main_frame_run_ = false;
+  bool have_all_subframes_responded_or_timed_out_ = false;
+  std::unique_ptr<optimization_guide::AIPageContentMap> page_content_map_;
+  base::ConcurrentClosures concurrent_for_subframes_;
+  base::OnceClosure callback_;
+  base::WeakPtrFactory<GetAIPageContentTimeoutHelper> weak_ptr_factory_{this};
 };
 
 void ApplyOptionsOverridesForWebContents(
@@ -327,13 +420,13 @@ void ConvertViewportGeometry(
   viewport_geometry->set_height(viewport.height());
 }
 
-void OnGotAIPageContentForAllFrames(
+void OnGotAIPageContentOrTimedOutForAllFrames(
     blink::mojom::AIPageContentOptionsPtr main_frame_options,
     base::ElapsedTimer elapsed_timer,
     content::GlobalRenderFrameHostToken main_frame_token,
     ukm::SourceId source_id,
     const gfx::Size& main_frame_viewport,
-    std::unique_ptr<optimization_guide::AIPageContentMap> page_content_map,
+    std::unique_ptr<GetAIPageContentTimeoutHelper> timeout_helper,
     OnAIPageContentDone done_callback) {
   optimization_guide::AIPageContentResult page_content;
   optimization_guide::FrameTokenSet frame_token_set;
@@ -341,7 +434,8 @@ void OnGotAIPageContentForAllFrames(
   bool on_critical_path = main_frame_options->on_critical_path;
 
   if (auto result = optimization_guide::ConvertAIPageContentToProto(
-          std::move(main_frame_options), main_frame_token, *page_content_map,
+          std::move(main_frame_options), main_frame_token,
+          *timeout_helper->raw_page_content_map(),
           base::BindRepeating(&GetRenderFrameInfo), frame_token_set,
           page_content);
       !result.has_value()) {
@@ -396,20 +490,6 @@ void OnGotAIPageContentForAllFrames(
   std::move(done_callback).Run(std::move(page_content));
 }
 
-void OnGotAIPageContentForFrame(
-    content::GlobalRenderFrameHostToken frame_token,
-    mojo::Remote<blink::mojom::AIPageContentAgent> remote_interface,
-    optimization_guide::AIPageContentMap* page_content_map,
-    base::OnceClosure continue_callback,
-    blink::mojom::AIPageContentPtr result) {
-  CHECK(page_content_map->find(frame_token) == page_content_map->end());
-
-  if (result) {
-    (*page_content_map)[frame_token] = std::move(result);
-  }
-  std::move(continue_callback).Run();
-}
-
 }  // namespace
 
 AIPageContentResult::AIPageContentResult() {
@@ -448,9 +528,8 @@ void GetAIPageContent(content::WebContents* web_contents,
   }
 
   ApplyOptionsOverridesForWebContents(web_contents, *options);
-  auto page_content_map =
-      std::make_unique<optimization_guide::AIPageContentMap>();
-  base::ConcurrentClosures concurrent;
+  auto timeout_helper = std::make_unique<GetAIPageContentTimeoutHelper>();
+
   const auto* main_frame_rph =
       web_contents->GetPrimaryMainFrame()->GetProcess();
 
@@ -477,8 +556,9 @@ void GetAIPageContent(content::WebContents* web_contents,
         if (options->include_same_site_only &&
             (!net::SchemefulSite::IsSameSite(top_level_origin, frame_origin) ||
              rfh->IsFencedFrameRoot())) {
-          CHECK(page_content_map->find(frame_token) == page_content_map->end());
-          (*page_content_map)[frame_token] =
+          CHECK(timeout_helper->raw_page_content_map()->find(frame_token) ==
+                timeout_helper->raw_page_content_map()->end());
+          (*timeout_helper->raw_page_content_map())[frame_token] =
               blink::mojom::RedactedFrameMetadata::New(
                   blink::mojom::RedactedFrameMetadata_Reason::kCrossSite);
           return;
@@ -500,6 +580,9 @@ void GetAIPageContent(content::WebContents* web_contents,
             is_subframe ? ApplyOptionsOverridesForSubframe(
                               main_frame_rph, rfh->GetProcess(), *options)
                         : options.Clone();
+        base::OnceClosure continue_closure =
+            is_subframe ? timeout_helper->GetClosureForSubframe()
+                        : timeout_helper->GetClosureForMainFrame();
 
         options_to_use->main_frame_view_rect_in_dips =
             main_frame_view_rect_dips;
@@ -511,20 +594,23 @@ void GetAIPageContent(content::WebContents* web_contents,
         agent_ptr->GetAIPageContent(
             std::move(options_to_use),
             mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-                base::BindOnce(&OnGotAIPageContentForFrame, frame_token,
-                               std::move(agent), page_content_map.get(),
-                               concurrent.CreateClosure()),
+                base::BindOnce(
+                    &GetAIPageContentTimeoutHelper::OnGotAIPageContentForFrame,
+                    timeout_helper->AsWeakPtr(), frame_token, std::move(agent),
+                    std::move(continue_closure)),
                 nullptr));
       });
 
-  std::move(concurrent)
-      .Done(base::BindOnce(
-          &OnGotAIPageContentForAllFrames, options.Clone(),
-          base::ElapsedTimer(),
-          web_contents->GetPrimaryMainFrame()->GetGlobalFrameToken(),
-          web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId(),
-          web_contents->GetSize(), std::move(page_content_map),
-          std::move(done_callback)));
+  GetAIPageContentTimeoutHelper* timeout_helper_ptr = timeout_helper.get();
+
+  timeout_helper_ptr->Start(
+      base::BindOnce(&OnGotAIPageContentOrTimedOutForAllFrames, options.Clone(),
+                     base::ElapsedTimer(),
+                     web_contents->GetPrimaryMainFrame()->GetGlobalFrameToken(),
+                     web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId(),
+                     web_contents->GetSize(), std::move(timeout_helper),
+                     std::move(done_callback)),
+      features::GetSubframeGetAIPageContentTimeout());
 }
 
 // Allows for a DocumentIdentifier to be reused across calls to convert
