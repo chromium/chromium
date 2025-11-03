@@ -28,6 +28,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
+#include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/buildflags.h"
 #include "ui/gfx/geometry/size.h"
@@ -78,7 +79,12 @@ void SetFocusState(content::WebContents* contents,
 
 ActorTask::ActorControlledTabState::ActorControlledTabState(ActorTask* task)
     : task(task) {}
-ActorTask::ActorControlledTabState::~ActorControlledTabState() = default;
+ActorTask::ActorControlledTabState::~ActorControlledTabState() {
+  // Stop observing the Webcontents immediately to prevent reentrant calls to
+  // OnVisibilityChanged() when other members (e.g. `actuation_runner`) are
+  // destroyed.
+  Observe(nullptr);
+}
 
 void ActorTask::ActorControlledTabState::SetContents(
     content::WebContents* contents) {
@@ -94,6 +100,15 @@ void ActorTask::ActorControlledTabState::PrimaryPageChanged(
   } else {
     task->DidContentsExitActorControl(this, contents);
   }
+}
+
+void ActorTask::ActorControlledTabState::OnVisibilityChanged(
+    content::Visibility visibility) {
+  if (!task->IsUnderActorControl()) {
+    return;
+  }
+  task->UpdateVisibilityTimes();
+  task->RecomputeHasVisibleTab();
 }
 
 ActorTask::ActorTask(Profile* profile,
@@ -181,12 +196,18 @@ void ActorTask::SetState(State new_state) {
   state_ = new_state;
   current_state_timer_ = base::ElapsedTimer();
   actions_in_current_state_ = 0;
+  // When transitioning into an actor-controlled state, start the timer for
+  // visibility metrics and prepare each tab for actuation.
   if (IsStateActorControlled(new_state) && !IsStateActorControlled(old_state)) {
+    visibility_timer_ = base::ElapsedTimer();
     for (const auto& [tab, _] : controlled_tabs_) {
       DidTabEnterActorControl(tab);
     }
+    // When transitioning out of an actor-controlled state, record the final
+    // visibility duration and clean up each tab.
   } else if (!IsStateActorControlled(new_state) &&
              IsStateActorControlled(old_state)) {
+    UpdateVisibilityTimes();
     for (const auto& [tab, _] : controlled_tabs_) {
       DidTabExitActorControl(tab);
     }
@@ -202,20 +223,24 @@ void ActorTask::SetState(State new_state) {
   actor::ActorKeyedService::Get(profile_)->NotifyTaskStateChanged(*this);
 
   // If the state is to be finished/cancelled record a histogram.
-  if (state_ == kFinished) {
-    base::UmaHistogramCounts1000("Actor.Task.Count.Completed",
-                                 total_number_of_actions_);
-    base::UmaHistogramLongTimes100("Actor.Task.Duration.Completed",
-                                   total_actor_controlled_active_time_);
-    base::UmaHistogramCounts1000("Actor.Task.Interruptions.Completed",
-                                 total_number_of_interruptions_);
-  } else if (state_ == kCancelled) {
-    base::UmaHistogramCounts1000("Actor.Task.Count.Cancelled",
-                                 total_number_of_actions_);
-    base::UmaHistogramLongTimes100("Actor.Task.Duration.Cancelled",
-                                   total_actor_controlled_active_time_);
-    base::UmaHistogramCounts1000("Actor.Task.Interruptions.Cancelled",
-                                 total_number_of_interruptions_);
+  if (state_ == kFinished || state_ == kCancelled) {
+    RecordActorTaskVisibilityDurationHistograms(
+        total_time_visible_, total_time_not_visible_, state_);
+    if (state_ == kFinished) {
+      base::UmaHistogramCounts1000("Actor.Task.Count.Completed",
+                                   total_number_of_actions_);
+      base::UmaHistogramLongTimes100("Actor.Task.Duration.Completed",
+                                     total_actor_controlled_active_time_);
+      base::UmaHistogramCounts1000("Actor.Task.Interruptions.Completed",
+                                   total_number_of_interruptions_);
+    } else if (state_ == kCancelled) {
+      base::UmaHistogramCounts1000("Actor.Task.Count.Cancelled",
+                                   total_number_of_actions_);
+      base::UmaHistogramLongTimes100("Actor.Task.Duration.Cancelled",
+                                     total_actor_controlled_active_time_);
+      base::UmaHistogramCounts1000("Actor.Task.Interruptions.Cancelled",
+                                   total_number_of_interruptions_);
+    }
   }
 }
 
@@ -399,9 +424,12 @@ void ActorTask::HandleDiscardContents(tabs::TabInterface* tab,
 
 void ActorTask::RemoveTab(tabs::TabHandle tab_handle) {
   if (IsActingOnTab(tab_handle)) {
+    // Record the tab visibility duration.
+    UpdateVisibilityTimes();
     DidTabExitActorControl(tab_handle);
   }
   auto num_removed = controlled_tabs_.erase(tab_handle);
+  RecomputeHasVisibleTab();
 
   if (num_removed > 0) {
     journal_->Log(
@@ -468,6 +496,29 @@ void ActorTask::OnTabWillDetach(tabs::TabInterface* tab,
   actor::ActorKeyedService::Get(profile_)->StopTask(id(), /*success=*/false);
 }
 
+void ActorTask::UpdateVisibilityTimes() {
+  if (has_visible_tab_) {
+    total_time_visible_ += visibility_timer_.Elapsed();
+  } else {
+    total_time_not_visible_ += visibility_timer_.Elapsed();
+  }
+  visibility_timer_ = base::ElapsedTimer();
+}
+
+void ActorTask::RecomputeHasVisibleTab() {
+  bool has_any_visible_tab = false;
+  for (const auto& [handle, controlled_state] : controlled_tabs_) {
+    if (controlled_state->web_contents() &&
+        controlled_state->web_contents()->GetVisibility() ==
+            content::Visibility::VISIBLE) {
+      has_any_visible_tab = true;
+      break;
+    }
+  }
+
+  has_visible_tab_ = has_any_visible_tab;
+}
+
 void ActorTask::ResetToObserveTabsSet() {
   for (const auto& [tab_handle, state] : to_observe_tabs_) {
     tabs::TabInterface* tab = tab_handle.Get();
@@ -517,7 +568,7 @@ void ActorTask::DidTabEnterActorControl(tabs::TabHandle handle) {
   DCHECK(IsActingOnTab(handle));
   tabs::TabInterface* tab = handle.Get();
   if (!tab) {
-    // This happens in unitttests.
+    // This happens in unittests.
     return;
   }
   ActorControlledTabState* state = controlled_tabs_[handle].get();
@@ -536,6 +587,8 @@ void ActorTask::DidTabEnterActorControl(tabs::TabHandle handle) {
       tab->RegisterWillDiscardContents(base::BindRepeating(
           &ActorTask::HandleDiscardContents, weak_ptr_factory_.GetWeakPtr()));
   DidContentsEnterActorControl(state, contents);
+
+  RecomputeHasVisibleTab();
 }
 
 void ActorTask::DidContentsEnterActorControl(
@@ -561,7 +614,7 @@ void ActorTask::DidTabExitActorControl(tabs::TabHandle handle) {
   DCHECK(controlled_tabs_.contains(handle));
   tabs::TabInterface* tab = handle.Get();
   if (!tab) {
-    // This happens in unitttests.
+    // This happens in unittests.
     return;
   }
   ActorControlledTabState* state = controlled_tabs_[handle].get();

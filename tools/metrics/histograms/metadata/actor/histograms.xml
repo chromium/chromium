@@ -303,6 +303,60 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Actor.Task.Duration.NotVisible.Cancelled" units="ms"
+    expires_after="2026-08-11">
+  <owner>kenok@google.com</owner>
+  <owner>chrstne@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    Recorded when a task is cancelled. This captures the total time the task was
+    actuating while all of its controlled tabs are not visible (when tab
+    contents are OCCLUDED or HIDDEN).
+
+    This excludes time spent in paused states.
+  </summary>
+</histogram>
+
+<histogram name="Actor.Task.Duration.NotVisible.Completed" units="ms"
+    expires_after="2026-08-11">
+  <owner>kenok@google.com</owner>
+  <owner>chrstne@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    Recorded when a task is completed. This captures the total time the task was
+    actuating while all of its controlled tabs are not visible (when tab
+    contents are OCCLUDED or HIDDEN).
+
+    This excludes time spent in paused states.
+  </summary>
+</histogram>
+
+<histogram name="Actor.Task.Duration.Visible.Cancelled" units="ms"
+    expires_after="2026-08-11">
+  <owner>kenok@google.com</owner>
+  <owner>chrstne@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    Recorded when a task is cancelled. This captures the total time the task was
+    actuating while at least one of its controlled tabs is visible.
+
+    This excludes time spent in paused states.
+  </summary>
+</histogram>
+
+<histogram name="Actor.Task.Duration.Visible.Completed" units="ms"
+    expires_after="2026-08-11">
+  <owner>kenok@google.com</owner>
+  <owner>chrstne@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    Recorded when a task is completed. This captures the total time the task was
+    actuating while at least one of its controlled tabs is visible.
+
+    This excludes time spent in paused states.
+  </summary>
+</histogram>
+
 <histogram name="Actor.Task.Interruptions.Cancelled" units="count"
     expires_after="2026-08-11">
   <owner>dtapuska@google.com</owner>

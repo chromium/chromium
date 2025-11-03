@@ -25,6 +25,7 @@
 #include "chrome/common/actor/task_id.h"
 #include "chrome/common/actor_webui.mojom.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/visibility.h"
 #include "content/public/common/buildflags.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
@@ -178,6 +179,7 @@ class ActorTask {
 
     // content::WebContentsObserver overrides
     void PrimaryPageChanged(content::Page& page) override;
+    void OnVisibilityChanged(content::Visibility visibility) override;
 
     // Parent task
     raw_ptr<ActorTask> task;
@@ -221,6 +223,12 @@ class ActorTask {
 
   void ResetToObserveTabsSet();
 
+  // Recomputes the visible tab. This is necessary to capture the previous
+  // visibility state for UpdateVisibilityTimes() when called after
+  // ActorControlledTabState::OnVisibilityChanged() is fired.
+  void RecomputeHasVisibleTab();
+  void UpdateVisibilityTimes();
+
   State state_ = State::kCreated;
   raw_ptr<Profile> profile_;
 
@@ -245,6 +253,15 @@ class ActorTask {
   // An accumulation of elapsed times for previous "active" states. i.e. the
   // actor is controlling the task and not waiting on a user action.
   base::TimeDelta total_actor_controlled_active_time_;
+
+  // A timer for the current actuation period.
+  base::ElapsedTimer visibility_timer_;
+  // Whether any of the controlled tabs is visible.
+  bool has_visible_tab_ = false;
+  // Total time this task has been actuating while a tab was visible.
+  base::TimeDelta total_time_visible_;
+  // Total time this task has been actuating with no tabs visible.
+  base::TimeDelta total_time_not_visible_;
 
   // A map from a tab's handle to state associated with that tab. The presence
   // of a tab in this map signifies that it is part of this task.
