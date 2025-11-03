@@ -9,68 +9,63 @@ import("//third_party/protobuf/proto_library.gni")
 source_set("background") {
   public = [
     "ntp_background_service_factory.h",
+    "ntp_custom_background_service.h",
+    "ntp_custom_background_service_factory.h",
+    "ntp_custom_background_service_observer.h",
     "theme_delegate.h",
   ]
   sources = [
     "ntp_background_service_factory.cc",
+    "ntp_custom_background_service.cc",
+    "ntp_custom_background_service_factory.cc",
     "theme_delegate.cc",
   ]
   public_deps = [
     "//base",
     "//chrome/browser/profiles:profile",
+    "//components/image_fetcher/core",
     "//components/keyed_service/core",
+    "//components/prefs",
+    "//components/signin/public/identity_manager",
     "//components/themes:ntp_background_proto",
     "//content/public/browser",
+    "//net",
+    "//services/network/public/cpp",
+    "//skia",
     "//ui/gfx:color_utils",
+    "//url",
   ]
   deps = [
+    ":constants",
     "//chrome/browser:browser_process",
     "//chrome/browser:global_features",
+    "//chrome/browser/image_fetcher",
+    "//chrome/common",
     "//components/application_locale_storage",
+    "//components/pref_registry",
     "//components/search",
     "//components/themes",
+    "//components/version_info",
+    "//ui/base:features",
+    "//ui/base/mojom",
+    "//ui/gfx",
+    "//ui/gfx/codec",
   ]
 
-  # TODO(crbug.com/423579377): Edit this when using
-  # NtpCustomBackgroundServiceFactory, should be similar to original version.
   if (!is_android) {
     public += [
-      "ntp_custom_background_service.h",
-      "ntp_custom_background_service_factory.h",
-      "ntp_custom_background_service_observer.h",
       "wallpaper_search/wallpaper_search_background_manager.h",
       "wallpaper_search/wallpaper_search_background_manager_observer.h",
       "wallpaper_search/wallpaper_search_data.h",
     ]
     sources += [
-      "ntp_custom_background_service.cc",
-      "ntp_custom_background_service_factory.cc",
       "wallpaper_search/wallpaper_search_background_manager.cc",
       "wallpaper_search/wallpaper_search_data.cc",
     ]
     public_deps += [
       "//chrome/browser/ui/webui/side_panel/customize_chrome:mojo_bindings",
-      "//components/image_fetcher/core",
-      "//components/prefs",
-      "//components/signin/public/identity_manager",
-      "//net",
-      "//services/network/public/cpp",
-      "//skia",
-      "//ui/gfx:color_utils",
-      "//url",
     ]
-    deps += [
-      ":constants",
-      "//chrome/browser/image_fetcher",
-      "//chrome/common",
-      "//components/optimization_guide/core:features",
-      "//components/pref_registry",
-      "//components/version_info",
-      "//ui/base:features",
-      "//ui/base/mojom",
-      "//ui/gfx",
-      "//ui/gfx/codec",
-    ]
+    deps += [ "//components/optimization_guide/core:features" ]
   }
 }
 

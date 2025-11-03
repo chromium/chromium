@@ -23,15 +23,13 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ntp_customization.BottomSheetDelegate;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.ntp_customization.R;
 import org.chromium.chrome.browser.ntp_customization.theme.NtpThemeBridge;
 import org.chromium.chrome.browser.ntp_customization.theme.NtpThemeBridge.ThemeCollectionSelectionListener;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
-import org.chromium.components.browser_ui.util.GlobalDiscardableReferencePool;
 import org.chromium.components.image_fetcher.ImageFetcher;
-import org.chromium.components.image_fetcher.ImageFetcherConfig;
-import org.chromium.components.image_fetcher.ImageFetcherFactory;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
@@ -55,7 +53,6 @@ public class NtpThemeCollectionsCoordinator {
     private final NtpThemeBridge mNtpThemeBridge;
     private final ImageFetcher mImageFetcher;
     private final ThemeCollectionSelectionListener mThemeCollectionSelectionListener;
-    private final Runnable mOnThemeImageSelectedCallback;
     private final ComponentCallbacks mComponentCallbacks;
     private final int mItemMaxWidth;
     private final int mSpacing;
@@ -69,23 +66,17 @@ public class NtpThemeCollectionsCoordinator {
      * @param context The context for inflating views and accessing resources.
      * @param delegate The delegate to handle bottom sheet interactions.
      * @param profile The profile for which this coordinator is created.
-     * @param onThemeImageSelectedCallback The callback to run when a theme image is selected.
+     * @param ntpThemeBridge The bridge to fetch theme data from native.
      */
     public NtpThemeCollectionsCoordinator(
             Context context,
             BottomSheetDelegate delegate,
             Profile profile,
-            Runnable onThemeImageSelectedCallback) {
+            NtpThemeBridge ntpThemeBridge) {
         mContext = context;
         mBottomSheetDelegate = delegate;
-        mOnThemeImageSelectedCallback = onThemeImageSelectedCallback;
-
-        mNtpThemeBridge = new NtpThemeBridge(profile);
-        mImageFetcher =
-                ImageFetcherFactory.createImageFetcher(
-                        ImageFetcherConfig.IN_MEMORY_WITH_DISK_CACHE,
-                        profile.getProfileKey(),
-                        GlobalDiscardableReferencePool.getReferencePool());
+        mImageFetcher = NtpCustomizationUtils.createImageFetcher(profile);
+        mNtpThemeBridge = ntpThemeBridge;
 
         mItemMaxWidth =
                 mContext.getResources()
@@ -182,7 +173,6 @@ public class NtpThemeCollectionsCoordinator {
             mContext.unregisterComponentCallbacks(mComponentCallbacks);
         }
 
-        mNtpThemeBridge.destroy();
         mImageFetcher.destroy();
 
         mBackButton.setOnClickListener(null);
@@ -243,8 +233,7 @@ public class NtpThemeCollectionsCoordinator {
                             mImageFetcher,
                             collectionId,
                             themeCollectionTitle,
-                            currentBottomSheetState,
-                            mOnThemeImageSelectedCallback);
+                            currentBottomSheetState);
         }
 
         mBottomSheetDelegate.showBottomSheet(BottomSheetType.SINGLE_THEME_COLLECTION);

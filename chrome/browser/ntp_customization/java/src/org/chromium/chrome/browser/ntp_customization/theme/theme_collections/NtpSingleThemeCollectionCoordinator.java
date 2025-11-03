@@ -27,6 +27,7 @@ import org.chromium.chrome.browser.ntp_customization.R;
 import org.chromium.chrome.browser.ntp_customization.theme.NtpThemeBridge;
 import org.chromium.chrome.browser.ntp_customization.theme.NtpThemeBridge.ThemeCollectionSelectionListener;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
+import org.chromium.components.browser_ui.widget.MaterialSwitchWithText;
 import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.url.GURL;
 
@@ -51,13 +52,13 @@ public class NtpSingleThemeCollectionCoordinator {
     private final View mBackButton;
     private final ImageView mLearnMoreButton;
     private final TextView mTitle;
+    private final MaterialSwitchWithText mDailyUpdateSwitchButton;
     private final RecyclerView mSingleThemeCollectionBottomSheetRecyclerView;
     private NtpThemeCollectionsAdapter mNtpThemeCollectionsAdapter;
     private final NtpThemeBridge mNtpThemeBridge;
     private final ImageFetcher mImageFetcher;
     private final BottomSheetDelegate mBottomSheetDelegate;
     private final ThemeCollectionSelectionListener mThemeCollectionSelectionListener;
-    private final Runnable mOnThemeImageSelectedCallback;
     private final ComponentCallbacks mComponentCallbacks;
     private final int mItemMaxWidth;
     private final int mSpacing;
@@ -75,7 +76,6 @@ public class NtpSingleThemeCollectionCoordinator {
      * @param themeCollectionTitle The title of the current theme collection.
      * @param previousBottomSheetState The bottom sheet state in the previous theme collections
      *     bottom sheet.
-     * @param onThemeImageSelectedCallback The callback to run when a theme image is selected.
      */
     NtpSingleThemeCollectionCoordinator(
             Context context,
@@ -84,15 +84,13 @@ public class NtpSingleThemeCollectionCoordinator {
             ImageFetcher imageFetcher,
             String collectionId,
             String themeCollectionTitle,
-            @SheetState int previousBottomSheetState,
-            Runnable onThemeImageSelectedCallback) {
+            @SheetState int previousBottomSheetState) {
         mContext = context;
         mBottomSheetDelegate = delegate;
         mNtpThemeBridge = ntpThemeBridge;
         mImageFetcher = imageFetcher;
         mThemeCollectionId = collectionId;
         mThemeCollectionTitle = themeCollectionTitle;
-        mOnThemeImageSelectedCallback = onThemeImageSelectedCallback;
 
         mItemMaxWidth =
                 context.getResources()
@@ -129,6 +127,12 @@ public class NtpSingleThemeCollectionCoordinator {
         // Update the title of the bottom sheet.
         mTitle = mNtpSingleThemeCollectionBottomSheetView.findViewById(R.id.bottom_sheet_title);
         mTitle.setText(mThemeCollectionTitle);
+
+        // Update the daily update switch of the bottom sheet.
+        mDailyUpdateSwitchButton =
+                mNtpSingleThemeCollectionBottomSheetView.findViewById(
+                        R.id.daily_update_switch_button);
+        mDailyUpdateSwitchButton.setChecked(isDailyRefreshEnabledForCurrentCollection());
 
         // Build the RecyclerView containing the images of this particular theme collection in the
         // bottom sheet.
@@ -228,6 +232,7 @@ public class NtpSingleThemeCollectionCoordinator {
         mThemeCollectionTitle = themeCollectionTitle;
 
         mTitle.setText(mThemeCollectionTitle);
+        mDailyUpdateSwitchButton.setChecked(isDailyRefreshEnabledForCurrentCollection());
         fetchImagesForCollection(previousBottomSheetState);
     }
 
@@ -236,11 +241,7 @@ public class NtpSingleThemeCollectionCoordinator {
         if (position == RecyclerView.NO_POSITION) return;
 
         CollectionImage image = mThemeCollectionImageList.get(position);
-
-        // TODO(crbug.com/423579377): This will trigger the notification to all listeners, updating
-        // both adapters. Should be updated to the service.
-        mNtpThemeBridge.setSelectedTheme(image.collectionId, image.imageUrl);
-        mOnThemeImageSelectedCallback.run();
+        mNtpThemeBridge.setCollectionTheme(image);
     }
 
     private void handleLearnMoreClick(View view) {
@@ -277,10 +278,16 @@ public class NtpSingleThemeCollectionCoordinator {
                         mNtpThemeCollectionsAdapter.setSelection(
                                 mNtpThemeBridge.getSelectedThemeCollectionId(),
                                 mNtpThemeBridge.getSelectedThemeCollectionImageUrl());
+                        mHasDisplayedBefore = true;
                     }
-
-                    mHasDisplayedBefore = true;
                 });
+    }
+
+    /** Returns whether daily refresh is enabled for the current theme collection. */
+    private boolean isDailyRefreshEnabledForCurrentCollection() {
+        return mNtpThemeBridge.getSelectedThemeCollectionId() != null
+                && mNtpThemeBridge.getSelectedThemeCollectionId().equals(mThemeCollectionId)
+                && mNtpThemeBridge.getIsDailyRefreshEnabled();
     }
 
     NtpThemeCollectionsAdapter getNtpThemeCollectionsAdapterForTesting() {

@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.ntp_customization.theme;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.NativeMethods;
 
@@ -13,6 +15,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.BackgroundCollection;
 import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.CollectionImage;
+import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.CustomBackgroundInfo;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.url.GURL;
 
@@ -24,13 +27,16 @@ import java.util.List;
 @NullMarked
 public class NtpThemeBridge {
 
+    private final Runnable mOnThemeImageSelectedCallback;
+    private final ObserverList<ThemeCollectionSelectionListener> mThemeCollectionSelectionListeners;
     private long mNativeNtpThemeBridge;
 
+    // Whether the theme collection that the user has currently chosen is daily refresh enabled.
+    private boolean mIsDailyRefreshEnabled;
     // The theme collection that the user has currently chosen.
     private @Nullable String mSelectedThemeCollectionId;
     // The theme collection image that the user has currently chosen.
     private @Nullable GURL mSelectedThemeCollectionImageUrl;
-    private final ObserverList<ThemeCollectionSelectionListener> mThemeCollectionSelectionListeners;
 
     /** An interface to get theme collection updates. */
     public interface ThemeCollectionSelectionListener {
@@ -48,12 +54,25 @@ public class NtpThemeBridge {
      * Constructs a new NtpThemeBridge.
      *
      * @param profile The profile for which this bridge is created.
+     * @param onThemeImageSelectedCallback The callback to run when a theme image is selected.
      */
-    public NtpThemeBridge(Profile profile) {
-        mNativeNtpThemeBridge = NtpThemeBridgeJni.get().init(profile);
+    public NtpThemeBridge(Profile profile, Runnable onThemeImageSelectedCallback) {
+        mNativeNtpThemeBridge = NtpThemeBridgeJni.get().init(profile, this);
         mThemeCollectionSelectionListeners = new ObserverList<>();
-        // TODO(crbug.com/423579377): Load selected theme collection information from
-        // SharedPreferences here
+        mOnThemeImageSelectedCallback = onThemeImageSelectedCallback;
+
+        if (mNativeNtpThemeBridge == 0) return;
+
+        CustomBackgroundInfo customBackgroundInfo =
+                NtpThemeBridgeJni.get().getCustomBackgroundInfo(mNativeNtpThemeBridge);
+        if (customBackgroundInfo == null
+                || !customBackgroundInfo.backgroundUrl.isValid()
+                || customBackgroundInfo.backgroundUrl.isEmpty()) {
+            return;
+        }
+
+        setSelectedTheme(customBackgroundInfo.collectionId, customBackgroundInfo.backgroundUrl);
+        mIsDailyRefreshEnabled = customBackgroundInfo.isDailyRefreshEnabled;
     }
 
     /** Cleans up the C++ side of this class. */
@@ -166,6 +185,10 @@ public class NtpThemeBridge {
         return mSelectedThemeCollectionImageUrl;
     }
 
+    public boolean getIsDailyRefreshEnabled() {
+        return mIsDailyRefreshEnabled;
+    }
+
     /**
      * Sets the currently selected theme collection image from a theme collection.
      *
@@ -200,9 +223,86 @@ public class NtpThemeBridge {
         mThemeCollectionSelectionListeners.removeObserver(listener);
     }
 
+    /**
+     * Sets the New Tab Page background to a specific image from a theme collection.
+     *
+     * @param image The {@link CollectionImage} selected by the user.
+     */
+    public void setCollectionTheme(CollectionImage image) {
+        String attributionLine1 = image.attribution.size() > 0 ? image.attribution.get(0) : null;
+        String attributionLine2 = image.attribution.size() > 1 ? image.attribution.get(1) : null;
+        NtpThemeBridgeJni.get()
+                .setCollectionTheme(
+                        mNativeNtpThemeBridge,
+                        image.collectionId,
+                        image.imageUrl,
+                        image.previewImageUrl,
+                        attributionLine1,
+                        attributionLine2,
+                        image.attributionUrl);
+    }
+
+    /**
+     * Callback from native code, triggered when the custom background image has been successfully
+     * updated. This can occur after a new theme is selected or when a daily refresh happens.
+     */
+    @CalledByNative
+    @VisibleForTesting
+    void onCustomBackgroundImageUpdated() {
+        if (mNativeNtpThemeBridge == 0) return;
+
+        CustomBackgroundInfo info =
+                NtpThemeBridgeJni.get().getCustomBackgroundInfo(mNativeNtpThemeBridge);
+
+        if (info == null || !info.backgroundUrl.isValid() || info.backgroundUrl.isEmpty()) {
+            setSelectedTheme(/* themeCollectionId= */ null, /* themeCollectionImageUrl= */ null);
+            return;
+        }
+
+        setSelectedTheme(info.collectionId, info.backgroundUrl);
+        mOnThemeImageSelectedCallback.run();
+        mIsDailyRefreshEnabled = info.isDailyRefreshEnabled;
+
+        // TODO: update(turn on or turn off) daily update button if the current page is that
+        // particular single theme collection bottom sheet.
+    }
+
+    /** Sets the user-selected background image. */
+    public void selectLocalBackgroundImage() {
+        if (mNativeNtpThemeBridge == 0) return;
+
+        NtpThemeBridgeJni.get().selectLocalBackgroundImage(mNativeNtpThemeBridge);
+    }
+
+    /** Resets the custom background. */
+    public void resetCustomBackground() {
+        if (mNativeNtpThemeBridge == 0) return;
+
+        NtpThemeBridgeJni.get().resetCustomBackground(mNativeNtpThemeBridge);
+    }
+
+    /**
+     * Factory method called by native code to construct a {@link CustomBackgroundInfo} object.
+     *
+     * @param backgroundUrl The URL of the currently set background image.
+     * @param collectionId The identifier for the theme collection, if the image is from one.
+     * @param isUploadedImage True if the image was uploaded by the user from their local device.
+     * @param isDailyRefreshEnabled True if the "Refresh daily" option is enabled for the
+     *     collection.
+     */
+    @CalledByNative
+    private static CustomBackgroundInfo createCustomBackgroundInfo(
+            GURL backgroundUrl,
+            String collectionId,
+            boolean isUploadedImage,
+            boolean isDailyRefreshEnabled) {
+        return new CustomBackgroundInfo(
+                backgroundUrl, collectionId, isUploadedImage, isDailyRefreshEnabled);
+    }
+
     @NativeMethods
     public interface Natives {
-        long init(Profile profile);
+        long init(Profile profile, NtpThemeBridge caller);
 
         void destroy(long nativeNtpThemeBridge);
 
@@ -210,5 +310,20 @@ public class NtpThemeBridge {
 
         void getBackgroundImages(
                 long nativeNtpThemeBridge, String collectionId, Callback<Object[]> callback);
+
+        void setCollectionTheme(
+                long nativeNtpThemeBridge,
+                String collectionId,
+                GURL imageUrl,
+                GURL previewImageUrl,
+                @Nullable String attributionLine1,
+                @Nullable String attributionLine2,
+                GURL attributionUrl);
+
+        @Nullable CustomBackgroundInfo getCustomBackgroundInfo(long nativeNtpThemeBridge);
+
+        void selectLocalBackgroundImage(long nativeNtpThemeBridge);
+
+        void resetCustomBackground(long nativeNtpThemeBridge);
     }
 }

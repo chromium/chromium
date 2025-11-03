@@ -49,6 +49,7 @@ import org.chromium.chrome.browser.ntp_customization.theme.NtpThemeBridge;
 import org.chromium.chrome.browser.ntp_customization.theme.NtpThemeBridge.ThemeCollectionSelectionListener;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
+import org.chromium.components.browser_ui.widget.MaterialSwitchWithText;
 import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
@@ -63,6 +64,7 @@ public class NtpSingleThemeCollectionCoordinatorUnitTest {
 
     private static final String TEST_COLLECTION_ID = "Test Collection Id";
     private static final String TEST_COLLECTION_TITLE = "Test Collection";
+    private static final String TEST_COLLECTION_TITLE_NEW = "Test Collection New";
     private static final String NEW_TEST_COLLECTION_ID = "New Test Collection Id";
     private static final String NEW_TEST_COLLECTION_TITLE = "New Test Collection";
 
@@ -72,7 +74,6 @@ public class NtpSingleThemeCollectionCoordinatorUnitTest {
     @Mock private NtpThemeBridge mNtpThemeBridge;
     @Mock private ImageFetcher mImageFetcher;
     @Mock private BottomSheetController mBottomSheetController;
-    @Mock private Runnable mOnThemeImageSelectedCallback;
     @Captor private ArgumentCaptor<Callback<List<CollectionImage>>> mCallbackCaptor;
     @Captor private ArgumentCaptor<ThemeCollectionSelectionListener> mListenerCaptor;
     @Captor private ArgumentCaptor<ComponentCallbacks> mComponentCallbacksCaptor;
@@ -100,8 +101,7 @@ public class NtpSingleThemeCollectionCoordinatorUnitTest {
                         mImageFetcher,
                         TEST_COLLECTION_ID,
                         TEST_COLLECTION_TITLE,
-                        SheetState.FULL,
-                        mOnThemeImageSelectedCallback);
+                        SheetState.FULL);
 
         ArgumentCaptor<View> viewCaptor = ArgumentCaptor.forClass(View.class);
         verify(mBottomSheetDelegate)
@@ -280,9 +280,7 @@ public class NtpSingleThemeCollectionCoordinatorUnitTest {
         assertNotNull(themeCollectionView);
 
         themeCollectionView.performClick();
-        verify(mNtpThemeBridge)
-                .setSelectedTheme(eq(imageToClick.collectionId), eq(imageToClick.imageUrl));
-        verify(mOnThemeImageSelectedCallback).run();
+        verify(mNtpThemeBridge).setCollectionTheme(eq(imageToClick));
     }
 
     @Test
@@ -337,5 +335,37 @@ public class NtpSingleThemeCollectionCoordinatorUnitTest {
                 "Screen width should be updated to the new value.",
                 500,
                 mCoordinator.getScreenWidthForTesting());
+    }
+
+    @Test
+    public void testDailyUpdateSwitchState() {
+        // Case 1: Daily refresh is enabled for the current collection.
+        when(mNtpThemeBridge.getSelectedThemeCollectionId()).thenReturn(TEST_COLLECTION_ID);
+        when(mNtpThemeBridge.getIsDailyRefreshEnabled()).thenReturn(true);
+        mCoordinator.updateThemeCollection(
+                TEST_COLLECTION_ID, TEST_COLLECTION_TITLE_NEW, SheetState.FULL);
+        assertTrue(
+                ((MaterialSwitchWithText)
+                                mBottomSheetView.findViewById(R.id.daily_update_switch_button))
+                        .isChecked());
+
+        // Case 2: Daily refresh is disabled for the current collection.
+        when(mNtpThemeBridge.getIsDailyRefreshEnabled()).thenReturn(false);
+        mCoordinator.updateThemeCollection(
+                TEST_COLLECTION_ID, TEST_COLLECTION_TITLE, SheetState.FULL);
+        assertFalse(
+                ((MaterialSwitchWithText)
+                                mBottomSheetView.findViewById(R.id.daily_update_switch_button))
+                        .isChecked());
+
+        // Case 3: Another collection is selected.
+        when(mNtpThemeBridge.getSelectedThemeCollectionId()).thenReturn("another_id");
+        when(mNtpThemeBridge.getIsDailyRefreshEnabled()).thenReturn(true);
+        mCoordinator.updateThemeCollection(
+                TEST_COLLECTION_ID, TEST_COLLECTION_TITLE_NEW, SheetState.FULL);
+        assertFalse(
+                ((MaterialSwitchWithText)
+                                mBottomSheetView.findViewById(R.id.daily_update_switch_button))
+                        .isChecked());
     }
 }

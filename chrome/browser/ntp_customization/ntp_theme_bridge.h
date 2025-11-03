@@ -11,17 +11,25 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/search/background/ntp_custom_background_service_observer.h"
 #include "components/themes/ntp_background_service_observer.h"
 
 class NtpBackgroundService;
+class NtpCustomBackgroundService;
 
 using base::android::JavaParamRef;
 
-// The C++ counterpart of `NtpThemeBridge.java`. It is responsible for dealing
-// with theme collections for the NTP.
-class NtpThemeBridge : public NtpBackgroundServiceObserver {
+// The C++ counterpart to NtpThemeBridge.java. This class serves as a bridge
+// to the NTP theme services, handling theme collections and custom backgrounds
+// for the New Tab Page. It observes changes from NtpBackgroundService and
+// NtpCustomBackgroundService and communicates with the Java layer.
+class NtpThemeBridge : public NtpBackgroundServiceObserver,
+                       public NtpCustomBackgroundServiceObserver {
  public:
-  explicit NtpThemeBridge(Profile* profile);
+  // Creates an instance of NtpThemeBridge.
+  NtpThemeBridge(JNIEnv* env,
+                 Profile* profile,
+                 const base::android::JavaParamRef<jobject>& j_java_obj);
 
   NtpThemeBridge(const NtpThemeBridge&) = delete;
   NtpThemeBridge& operator=(const NtpThemeBridge&) = delete;
@@ -42,8 +50,38 @@ class NtpThemeBridge : public NtpBackgroundServiceObserver {
       const base::android::JavaParamRef<jstring>& j_collection_id,
       const base::android::JavaParamRef<jobject>& j_callback);
 
+  // Sets the New Tab Page background to a specific image from a theme
+  // collection.
+  // @param env The JNI environment.
+  // @param j_collection_id The ID of the collection the image belongs to.
+  // @param j_image_url The URL of the image to set as the background.
+  // @param j_preview_image_url The URL of a smaller preview image.
+  // @param j_attribution_line_1 The first line of attribution text.
+  // @param j_attribution_line_2 The second line of attribution text.
+  // @param j_attribution_url A URL associated with the attribution text.
+  void SetCollectionTheme(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jstring>& j_collection_id,
+      const base::android::JavaParamRef<jobject>& j_image_url,
+      const base::android::JavaParamRef<jobject>& j_preview_image_url,
+      const base::android::JavaParamRef<jstring>& j_attribution_line_1,
+      const base::android::JavaParamRef<jstring>& j_attribution_line_2,
+      const base::android::JavaParamRef<jobject>& j_attribution_url);
+
+  // Fetches the current custom background information (e.g., URL, collection
+  // ID) from the NtpCustomBackgroundService.
+  base::android::ScopedJavaLocalRef<jobject> GetCustomBackgroundInfo(
+      JNIEnv* env);
+
+  // Sets the New Tab Page background to an image chosen by the user from their
+  // local device.
+  void SelectLocalBackgroundImage(JNIEnv* env);
+
+  // Resets the New Tab Page background to the default theme.
+  void ResetCustomBackground(JNIEnv* env);
+
  private:
-  virtual ~NtpThemeBridge();
+  ~NtpThemeBridge() override;
 
   // NtpBackgroundServiceObserver:
   void OnCollectionInfoAvailable() override;
@@ -51,11 +89,16 @@ class NtpThemeBridge : public NtpBackgroundServiceObserver {
   void OnNextCollectionImageAvailable() override;
   void OnNtpBackgroundServiceShuttingDown() override;
 
+  // NtpCustomBackgroundServiceObserver:
+  void OnCustomBackgroundImageUpdated() override;
+
   raw_ptr<Profile> profile_;
   raw_ptr<NtpBackgroundService> ntp_background_service_;
+  raw_ptr<NtpCustomBackgroundService> ntp_custom_background_service_;
   base::android::ScopedJavaGlobalRef<jobject>
       j_background_collections_callback_;
   base::android::ScopedJavaGlobalRef<jobject> j_background_images_callback_;
+  base::android::ScopedJavaGlobalRef<jobject> j_java_obj_;
 };
 
 #endif  // CHROME_BROWSER_NTP_CUSTOMIZATION_NTP_THEME_BRIDGE_H_

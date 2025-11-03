@@ -38,11 +38,13 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.Callback;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
@@ -61,7 +63,11 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
+import org.chromium.components.image_fetcher.ImageFetcher;
+import org.chromium.components.image_fetcher.ImageFetcher.Params;
 import org.chromium.ui.util.ColorUtils;
+import org.chromium.url.GURL;
+import org.chromium.url.JUnitTestGURLs;
 
 import java.io.File;
 
@@ -608,5 +614,20 @@ public class NtpCustomizationUtilsUnitTest {
                 R.style.TextAppearance_ComposeplateTextMedium,
                 NtpCustomizationUtils.getSearchBoxTextStyleResId(
                         /* shouldApplyWhiteBackgroundOnSearchBox= */ false));
+    }
+
+    @Test
+    public void testFetchThemeCollectionImage() {
+        ImageFetcher imageFetcher = mock(ImageFetcher.class);
+        GURL imageUrl = JUnitTestGURLs.URL_1;
+        Callback<Bitmap> callback = mock(Callback.class);
+
+        NtpCustomizationUtils.fetchThemeCollectionImage(imageFetcher, imageUrl, callback);
+
+        ArgumentCaptor<Params> paramsCaptor = ArgumentCaptor.forClass(ImageFetcher.Params.class);
+        verify(imageFetcher).fetchImage(paramsCaptor.capture(), eq(callback));
+
+        ImageFetcher.Params params = paramsCaptor.getValue();
+        assertEquals(imageUrl.getSpec(), params.url);
     }
 }

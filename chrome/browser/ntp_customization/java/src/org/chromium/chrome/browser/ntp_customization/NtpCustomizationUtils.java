@@ -55,12 +55,18 @@ import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThem
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorUtils;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
+import org.chromium.components.browser_ui.util.GlobalDiscardableReferencePool;
+import org.chromium.components.image_fetcher.ImageFetcher;
+import org.chromium.components.image_fetcher.ImageFetcherConfig;
+import org.chromium.components.image_fetcher.ImageFetcherFactory;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.edge_to_edge.EdgeToEdgeStateProvider;
 import org.chromium.ui.util.ColorUtils;
+import org.chromium.url.GURL;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -669,6 +675,33 @@ public class NtpCustomizationUtils {
         }
 
         defaultGoogleLogoDrawable.mutate().setTint(tintColor);
+    }
+
+    /**
+     * Creates an {@link ImageFetcher} for fetching theme collection images.
+     *
+     * @param profile The profile to create the image fetcher for.
+     */
+    public static ImageFetcher createImageFetcher(Profile profile) {
+        return ImageFetcherFactory.createImageFetcher(
+                ImageFetcherConfig.IN_MEMORY_WITH_DISK_CACHE,
+                profile.getProfileKey(),
+                GlobalDiscardableReferencePool.getReferencePool());
+    }
+
+    /**
+     * Fetches an image for the theme collection.
+     *
+     * @param imageFetcher The {@link ImageFetcher} to use.
+     * @param imageUrl The URL of the image to fetch.
+     * @param callback The callback to be invoked with the bitmap.
+     */
+    public static void fetchThemeCollectionImage(
+            ImageFetcher imageFetcher, GURL imageUrl, Callback<@Nullable Bitmap> callback) {
+        ImageFetcher.Params params =
+                ImageFetcher.Params.create(
+                        imageUrl, ImageFetcher.NTP_CUSTOMIZATION_THEME_COLLECTION_NAME);
+        imageFetcher.fetchImage(params, callback);
     }
 
     public static void resetSharedPreferenceForTesting() {

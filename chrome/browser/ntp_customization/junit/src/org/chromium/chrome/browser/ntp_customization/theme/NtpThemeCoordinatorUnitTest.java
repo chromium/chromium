@@ -12,6 +12,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import android.content.Context;
 import android.view.ContextThemeWrapper;
@@ -40,6 +41,7 @@ public class NtpThemeCoordinatorUnitTest {
     @Mock private BottomSheetDelegate mBottomSheetDelegate;
     @Mock private Profile mProfile;
     @Mock private Runnable mDismissBottomSheet;
+    @Mock private NtpThemeBridge.Natives mNtpThemeBridgeJniMock;
 
     private Context mContext;
     private NtpThemeCoordinator mCoordinator;
@@ -50,6 +52,8 @@ public class NtpThemeCoordinatorUnitTest {
                 new ContextThemeWrapper(
                         ApplicationProvider.getApplicationContext(),
                         R.style.Theme_BrowserUI_DayNight);
+        NtpThemeBridgeJni.setInstanceForTesting(mNtpThemeBridgeJniMock);
+        when(mNtpThemeBridgeJniMock.init(any(), any())).thenReturn(1L);
         mCoordinator =
                 new NtpThemeCoordinator(
                         mContext, mBottomSheetDelegate, mProfile, mDismissBottomSheet);

@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.ntp_customization.R;
 import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.url.GURL;
@@ -207,11 +208,9 @@ public class NtpThemeCollectionsAdapter extends RecyclerView.Adapter<RecyclerVie
         // Clear the previous image to avoid showing stale images in recycled views.
         viewHolder.mImage.setImageDrawable(null);
 
-        ImageFetcher.Params params =
-                ImageFetcher.Params.create(
-                        imageUrl, ImageFetcher.NTP_CUSTOMIZATION_THEME_COLLECTION_NAME);
-        mImageFetcher.fetchImage(
-                params,
+        NtpCustomizationUtils.fetchThemeCollectionImage(
+                mImageFetcher,
+                imageUrl,
                 (bitmap) -> {
                     // Before setting the bitmap, check if the ImageView is still
                     // supposed to display this image.

@@ -2388,6 +2388,15 @@ inline constexpr char kDisableExtensions[] = "extensions.disabled";
 inline constexpr char kNtpCollapsedForeignSessions[] =
     "ntp.collapsed_foreign_sessions";
 
+inline constexpr char kNtpCustomBackgroundDict[] =
+    "ntp.custom_background_dict2";
+inline constexpr char kNtpCustomBackgroundLocalToDevice[] =
+    "ntp.custom_background_local_to_device";
+inline constexpr char kNtpCustomBackgroundLocalToDeviceId[] =
+    "ntp.custom_background_local_to_device_id";
+inline constexpr char kNtpCustomBackgroundInspiration[] =
+    "ntp.custom_background_inspiration";
+
 #if BUILDFLAG(IS_ANDROID)
 // Keeps track of recently closed tabs collapsed state in the Other Devices
 // menu.
@@ -2408,14 +2417,6 @@ inline const char kNtpComposeButtonShownCountPrefName[] =
 // Use `kNtpCustomBackgroundDict` only.
 inline constexpr char kDeprecatedNtpCustomBackgroundDictDoNotUse[] =
     "ntp.custom_background_dict";
-inline constexpr char kNtpCustomBackgroundDict[] =
-    "ntp.custom_background_dict2";
-inline constexpr char kNtpCustomBackgroundLocalToDevice[] =
-    "ntp.custom_background_local_to_device";
-inline constexpr char kNtpCustomBackgroundLocalToDeviceId[] =
-    "ntp.custom_background_local_to_device_id";
-inline constexpr char kNtpCustomBackgroundInspiration[] =
-    "ntp.custom_background_inspiration";
 // Number of times the user has opened the side panel with the customize chrome
 // button.
 inline constexpr char kNtpCustomizeChromeButtonOpenCount[] =
