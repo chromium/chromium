@@ -58,7 +58,7 @@ class SecureChannelImpl : public SecureChannel {
   };
 
   // Helper function to handle state transitions and errors.
-  void FailAllPendingRequests(ResultCode result_code);
+  void FailAllPendingRequests(ErrorCode error_code);
   void ResetState();
   void StartSessionEstablishment();
   void ProcessNextRequest();

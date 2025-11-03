@@ -48,7 +48,7 @@ class ClientTest : public ::testing::Test {
   ~ClientTest() override = default;
 
   using RequestFuture =
-      base::test::TestFuture<ResultCode, std::optional<Response>>;
+      base::test::TestFuture<base::expected<Response, ErrorCode>>;
 
   void SetUp() override {
     auto mock_secure_channel = std::make_unique<MockSecureChannelClient>();
@@ -69,15 +69,14 @@ TEST_F(ClientTest, SendRequestSuccess) {
   Response expected_response_data = {4, 5, 6};
 
   EXPECT_CALL(*mock_secure_channel_, Write(Eq(request), _))
-      .WillOnce(
-          RunOnceCallback<1>(ResultCode::kSuccess, expected_response_data));
+      .WillOnce(RunOnceCallback<1>(base::ok(expected_response_data)));
 
   RequestFuture future;
   client_->SendRequest(request, future.GetCallback());
 
-  EXPECT_EQ(future.Get<0>(), ResultCode::kSuccess);
-  ASSERT_TRUE(future.Get<1>().has_value());
-  EXPECT_EQ(*future.Get<1>(), expected_response_data);
+  const auto& result = future.Get();
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result.value(), expected_response_data);
 }
 
 // Test the flow where the SecureChannel indicates a network error.
@@ -85,13 +84,14 @@ TEST_F(ClientTest, SendRequestNetworkError) {
   Request request = {7, 8, 9};
 
   EXPECT_CALL(*mock_secure_channel_, Write(Eq(request), _))
-      .WillOnce(RunOnceCallback<1>(ResultCode::kNetworkError, std::nullopt));
+      .WillOnce(RunOnceCallback<1>(base::unexpected(ErrorCode::kNetworkError)));
 
   RequestFuture future;
   client_->SendRequest(request, future.GetCallback());
 
-  EXPECT_EQ(future.Get<0>(), ResultCode::kNetworkError);
-  EXPECT_FALSE(future.Get<1>().has_value());
+  const auto& result = future.Get();
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), ErrorCode::kNetworkError);
 }
 
 // Test the flow where the SecureChannel indicates a generic error.
@@ -99,13 +99,14 @@ TEST_F(ClientTest, SendRequestGenericError) {
   Request request = {10, 11, 12};
 
   EXPECT_CALL(*mock_secure_channel_, Write(Eq(request), _))
-      .WillOnce(RunOnceCallback<1>(ResultCode::kError, std::nullopt));
+      .WillOnce(RunOnceCallback<1>(base::unexpected(ErrorCode::kError)));
 
   RequestFuture future;
   client_->SendRequest(request, future.GetCallback());
 
-  EXPECT_EQ(future.Get<0>(), ResultCode::kError);
-  EXPECT_FALSE(future.Get<1>().has_value());
+  const auto& result = future.Get();
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), ErrorCode::kError);
 }
 
 // Test the flow where authentication fails due to an empty API key.
@@ -114,16 +115,17 @@ TEST_F(ClientTest, SendRequestAuthenticationFailed) {
   EXPECT_CALL(*mock_secure_channel, Write(_, _)).Times(0);
 
   // Create a client with an empty API key.
-  auto client = std::make_unique<Client>(
-      std::move(mock_secure_channel), "");
+  auto client =
+      std::make_unique<Client>(std::move(mock_secure_channel), "");
 
   Request request = {13, 14, 15};
 
   RequestFuture future;
   client->SendRequest(request, future.GetCallback());
 
-  EXPECT_EQ(future.Get<0>(), ResultCode::kAuthenticationFailed);
-  EXPECT_FALSE(future.Get<1>().has_value());
+  const auto& result = future.Get();
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), ErrorCode::kAuthenticationFailed);
 }
 
 }  // namespace legion

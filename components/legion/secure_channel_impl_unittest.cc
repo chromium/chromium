@@ -171,12 +171,12 @@ TEST_F(SecureChannelImplTest, WriteAndEstablishSessionSucceeds) {
                                    "encrypted_response")))
       .WillOnce(Return(decrypted_response));
 
-  base::test::TestFuture<ResultCode, std::optional<Response>> future;
+  base::test::TestFuture<base::expected<Response, ErrorCode>> future;
   secure_channel_->Write(request_data, future.GetCallback());
 
-  EXPECT_EQ(future.Get<0>(), ResultCode::kSuccess);
-  ASSERT_TRUE(future.Get<1>().has_value());
-  EXPECT_EQ(future.Get<1>().value(), decrypted_response);
+  const auto& result = future.Get();
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result.value(), decrypted_response);
 }
 
 // Tests that multiple requests are queued and processed sequentially after the
@@ -235,18 +235,18 @@ TEST_F(SecureChannelImplTest, WritesQueuedDuringSessionEstablishment) {
                                    "encrypted_response2")))
       .WillOnce(Return(decrypted_response2));
 
-  base::test::TestFuture<ResultCode, std::optional<Response>> future1;
+  base::test::TestFuture<base::expected<Response, ErrorCode>> future1;
   secure_channel_->Write(request_data1, future1.GetCallback());
-  base::test::TestFuture<ResultCode, std::optional<Response>> future2;
+  base::test::TestFuture<base::expected<Response, ErrorCode>> future2;
   secure_channel_->Write(request_data2, future2.GetCallback());
 
-  EXPECT_EQ(future1.Get<0>(), ResultCode::kSuccess);
-  ASSERT_TRUE(future1.Get<1>().has_value());
-  EXPECT_EQ(future1.Get<1>().value(), decrypted_response1);
+  const auto& result1 = future1.Get();
+  ASSERT_TRUE(result1.has_value());
+  EXPECT_EQ(result1.value(), decrypted_response1);
 
-  EXPECT_EQ(future2.Get<0>(), ResultCode::kSuccess);
-  ASSERT_TRUE(future2.Get<1>().has_value());
-  EXPECT_EQ(future2.Get<1>().value(), decrypted_response2);
+  const auto& result2 = future2.Get();
+  ASSERT_TRUE(result2.has_value());
+  EXPECT_EQ(result2.value(), decrypted_response2);
 }
 
 // Tests the case where attestation verification fails, leading to a session
@@ -269,11 +269,12 @@ TEST_F(SecureChannelImplTest, AttestationErrorFailsWrite) {
   EXPECT_CALL(*attestation_handler_, VerifyAttestationResponse(_))
       .WillOnce(Return(false));
 
-  base::test::TestFuture<ResultCode, std::optional<Response>> future;
+  base::test::TestFuture<base::expected<Response, ErrorCode>> future;
   secure_channel_->Write(request_data, future.GetCallback());
 
-  EXPECT_EQ(future.Get<0>(), ResultCode::kAttestationFailed);
-  EXPECT_FALSE(future.Get<1>().has_value());
+  const auto& result = future.Get();
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), ErrorCode::kAttestationFailed);
 }
 
 // Tests a transport-level error during the attestation phase of session
@@ -293,11 +294,12 @@ TEST_F(SecureChannelImplTest, TransportErrorDuringAttestationFailsRequest) {
             base::unexpected(Transport::TransportError::kError));
       });
 
-  base::test::TestFuture<ResultCode, std::optional<Response>> future;
+  base::test::TestFuture<base::expected<Response, ErrorCode>> future;
   secure_channel_->Write(request_data, future.GetCallback());
 
-  EXPECT_EQ(future.Get<0>(), ResultCode::kAttestationFailed);
-  EXPECT_FALSE(future.Get<1>().has_value());
+  const auto& result = future.Get();
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), ErrorCode::kAttestationFailed);
 }
 
 // Tests a transport-level error during the handshake phase of session
@@ -338,11 +340,12 @@ TEST_F(SecureChannelImplTest, TransportErrorDuringHandshakeFailsRequest) {
   }
 
   Request request_data = {1};
-  base::test::TestFuture<ResultCode, std::optional<Response>> future;
+  base::test::TestFuture<base::expected<Response, ErrorCode>> future;
   secure_channel_->Write(request_data, future.GetCallback());
 
-  EXPECT_EQ(future.Get<0>(), ResultCode::kHandshakeFailed);
-  EXPECT_FALSE(future.Get<1>().has_value());
+  const auto& result = future.Get();
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), ErrorCode::kHandshakeFailed);
 }
 
 // Tests a transport-level error after the session is established.
@@ -366,11 +369,12 @@ TEST_F(SecureChannelImplTest, TransportErrorAfterSessionEstablished) {
             base::unexpected(Transport::TransportError::kError));
       });
 
-  base::test::TestFuture<ResultCode, std::optional<Response>> future;
+  base::test::TestFuture<base::expected<Response, ErrorCode>> future;
   secure_channel_->Write(request_data, future.GetCallback());
 
-  EXPECT_EQ(future.Get<0>(), ResultCode::kNetworkError);
-  EXPECT_FALSE(future.Get<1>().has_value());
+  const auto& result = future.Get();
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), ErrorCode::kNetworkError);
 }
 
 // Tests a failure in generating the initial attestation request.
@@ -378,11 +382,12 @@ TEST_F(SecureChannelImplTest, GetAttestationRequestFails) {
   EXPECT_CALL(*attestation_handler_, GetAttestationRequest())
       .WillOnce(Return(std::nullopt));
 
-  base::test::TestFuture<ResultCode, std::optional<Response>> future;
+  base::test::TestFuture<base::expected<Response, ErrorCode>> future;
   secure_channel_->Write({1}, future.GetCallback());
 
-  EXPECT_EQ(future.Get<0>(), ResultCode::kAttestationFailed);
-  EXPECT_FALSE(future.Get<1>().has_value());
+  const auto& result = future.Get();
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), ErrorCode::kAttestationFailed);
 }
 
 // Tests a failure in generating the handshake message.
@@ -405,11 +410,12 @@ TEST_F(SecureChannelImplTest, GetHandshakeMessageFails) {
   EXPECT_CALL(*secure_session_, GetHandshakeMessage())
       .WillOnce(Return(std::nullopt));
 
-  base::test::TestFuture<ResultCode, std::optional<Response>> future;
+  base::test::TestFuture<base::expected<Response, ErrorCode>> future;
   secure_channel_->Write({1}, future.GetCallback());
 
-  EXPECT_EQ(future.Get<0>(), ResultCode::kHandshakeFailed);
-  EXPECT_FALSE(future.Get<1>().has_value());
+  const auto& result = future.Get();
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), ErrorCode::kHandshakeFailed);
 }
 
 // Tests a failure in processing the handshake response.
@@ -444,11 +450,12 @@ TEST_F(SecureChannelImplTest, ProcessHandshakeResponseFails) {
   EXPECT_CALL(*secure_session_, ProcessHandshakeResponse(_))
       .WillOnce(Return(false));
 
-  base::test::TestFuture<ResultCode, std::optional<Response>> future;
+  base::test::TestFuture<base::expected<Response, ErrorCode>> future;
   secure_channel_->Write({1}, future.GetCallback());
 
-  EXPECT_EQ(future.Get<0>(), ResultCode::kHandshakeFailed);
-  EXPECT_FALSE(future.Get<1>().has_value());
+  const auto& result = future.Get();
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), ErrorCode::kHandshakeFailed);
 }
 
 // Tests a failure to encrypt a request after the session is established.
@@ -459,11 +466,12 @@ TEST_F(SecureChannelImplTest, EncryptRequestFails) {
   EXPECT_CALL(*secure_session_, Encrypt(request_data))
       .WillOnce(Return(std::nullopt));
 
-  base::test::TestFuture<ResultCode, std::optional<Response>> future;
+  base::test::TestFuture<base::expected<Response, ErrorCode>> future;
   secure_channel_->Write(request_data, future.GetCallback());
 
-  EXPECT_EQ(future.Get<0>(), ResultCode::kEncryptionFailed);
-  EXPECT_FALSE(future.Get<1>().has_value());
+  const auto& result = future.Get();
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), ErrorCode::kEncryptionFailed);
 }
 
 // Tests a failure to decrypt a response from the server.
@@ -488,11 +496,12 @@ TEST_F(SecureChannelImplTest, DecryptResponseFails) {
       });
   EXPECT_CALL(*secure_session_, Decrypt(_)).WillOnce(Return(std::nullopt));
 
-  base::test::TestFuture<ResultCode, std::optional<Response>> future;
+  base::test::TestFuture<base::expected<Response, ErrorCode>> future;
   secure_channel_->Write(request_data, future.GetCallback());
 
-  EXPECT_EQ(future.Get<0>(), ResultCode::kDecryptionFailed);
-  EXPECT_FALSE(future.Get<1>().has_value());
+  const auto& result = future.Get();
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), ErrorCode::kDecryptionFailed);
 }
 
 // Tests receiving an empty response from the server after session
@@ -516,11 +525,12 @@ TEST_F(SecureChannelImplTest, EmptyResponseFailsRequest) {
         std::move(callback).Run(oak::session::v1::SessionResponse());
       });
 
-  base::test::TestFuture<ResultCode, std::optional<Response>> future;
+  base::test::TestFuture<base::expected<Response, ErrorCode>> future;
   secure_channel_->Write(request_data, future.GetCallback());
 
-  EXPECT_EQ(future.Get<0>(), ResultCode::kNetworkError);
-  EXPECT_FALSE(future.Get<1>().has_value());
+  const auto& result = future.Get();
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), ErrorCode::kNetworkError);
 }
 
 // Tests that new requests are failed immediately if the channel enters a
@@ -540,17 +550,20 @@ TEST_F(SecureChannelImplTest, WriteInPermanentFailureState) {
       });
 
   // First write triggers the failure.
-  base::test::TestFuture<ResultCode, std::optional<Response>> future1;
+  base::test::TestFuture<base::expected<Response, ErrorCode>> future1;
   secure_channel_->Write({1}, future1.GetCallback());
 
   // Second write should fail immediately.
-  base::test::TestFuture<ResultCode, std::optional<Response>> future2;
+  base::test::TestFuture<base::expected<Response, ErrorCode>> future2;
   secure_channel_->Write({2}, future2.GetCallback());
 
-  EXPECT_EQ(future1.Get<0>(), ResultCode::kAttestationFailed);
-  EXPECT_FALSE(future1.Get<1>().has_value());
-  EXPECT_EQ(future2.Get<0>(), ResultCode::kError);
-  EXPECT_FALSE(future2.Get<1>().has_value());
+  const auto& result1 = future1.Get();
+  ASSERT_FALSE(result1.has_value());
+  EXPECT_EQ(result1.error(), ErrorCode::kAttestationFailed);
+
+  const auto& result2 = future2.Get();
+  ASSERT_FALSE(result2.has_value());
+  EXPECT_EQ(result2.error(), ErrorCode::kError);
 }
 
 }  // namespace

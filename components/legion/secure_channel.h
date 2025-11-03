@@ -5,17 +5,14 @@
 #ifndef COMPONENTS_LEGION_SECURE_CHANNEL_H_
 #define COMPONENTS_LEGION_SECURE_CHANNEL_H_
 
-#include <optional>
-
 #include "base/functional/callback.h"
+#include "base/types/expected.h"
 #include "components/legion/legion_common.h"
 
 namespace legion {
 
-// Represents the result of an operation.
-enum class ResultCode {
-  // Operation completed successfully.
-  kSuccess,
+// Represents errors that can occur during a secure channel operation.
+enum class ErrorCode {
   // A non-transient error occurred. The client should not retry the request.
   kError,
   // Authentication failed, e.g., due to an invalid API key.
@@ -39,7 +36,7 @@ enum class ResultCode {
 class SecureChannel {
  public:
   using OnResponseReceivedCallback =
-      base::OnceCallback<void(ResultCode, std::optional<Response>)>;
+      base::OnceCallback<void(base::expected<Response, ErrorCode>)>;
 
   virtual ~SecureChannel() = default;
 

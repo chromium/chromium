@@ -36,16 +36,13 @@ bool Client::Authenticate() {
   return true;
 }
 
-void Client::SendRequest(
-    Request request,
-    OnRequestCompletedCallback callback) {
+void Client::SendRequest(Request request, OnRequestCompletedCallback callback) {
   DVLOG(1) << "SendRequest started.";
 
   // Authentication Step (currently placeholder for API key)
   if (!Authenticate()) {
     LOG(ERROR) << "Authentication failed.";
-    std::move(callback).Run(ResultCode::kAuthenticationFailed,
-                              std::nullopt);
+    std::move(callback).Run(base::unexpected(ErrorCode::kAuthenticationFailed));
     return;
   }
   DVLOG(1) << "Authentication successful.";
@@ -54,18 +51,7 @@ void Client::SendRequest(
   // The SecureChannel is responsible for using the underlying
   // transport (WebSocketClient) to communicate with the service,
   // including adding the api_key_ to the request headers/parameters.
-  secure_channel_->Write(
-      std::move(request),
-      base::BindOnce(
-          [](OnRequestCompletedCallback cb, ResultCode result,
-             std::optional<Response> response) {
-            if (result == ResultCode::kSuccess) {
-              // A success result should always be accompanied by a response.
-              CHECK(response.has_value());
-            }
-            std::move(cb).Run(result, std::move(response));
-          },
-          std::move(callback)));
+  secure_channel_->Write(std::move(request), std::move(callback));
 }
 
 }  // namespace legion

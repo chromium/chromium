@@ -6,10 +6,10 @@
 #define COMPONENTS_LEGION_CLIENT_H_
 
 #include <memory>
-#include <optional>
 #include <string>
 
 #include "base/functional/callback.h"
+#include "base/types/expected.h"
 #include "components/legion/legion_common.h"
 #include "components/legion/secure_channel.h"
 
@@ -19,12 +19,10 @@ namespace legion {
 class Client {
  public:
   // Callback for when a `SendRequest` operation completes.
-  // `result_code` indicates the status of the operation.
-  // If `result_code` is not `kSuccess`, `response` will be `std::nullopt`.
-  // Otherwise, `response` will contain the server's response.
+  // If the operation is successful, the result will contain the server's
+  // response. Otherwise, it will contain an `ErrorCode` error.
   using OnRequestCompletedCallback =
-      base::OnceCallback<void(ResultCode result_code,
-                              std::optional<Response> response)>;
+      base::OnceCallback<void(base::expected<Response, ErrorCode> result)>;
 
   Client(
       std::unique_ptr<SecureChannel> secure_channel,

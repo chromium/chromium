@@ -66,7 +66,7 @@ void SecureChannelImpl::Write(Request request,
       break;
     case State::kPermanentFailure:
       DLOG(ERROR) << "SecureChannel is in a permanent failure state.";
-      FailAllPendingRequests(ResultCode::kError);
+      FailAllPendingRequests(ErrorCode::kError);
       break;
   }
 }
@@ -87,16 +87,16 @@ void SecureChannelImpl::OnResponseReceived(
     DLOG(ERROR) << "Transport error: " << static_cast<int>(response.error())
                 << " in state: " << static_cast<int>(state_);
 
-    ResultCode result_code;
+    ErrorCode error_code;
     switch (state_) {
       case State::kPerformingAttestation:
-        result_code = ResultCode::kAttestationFailed;
+        error_code = ErrorCode::kAttestationFailed;
         break;
       case State::kPerformingHandshake:
-        result_code = ResultCode::kHandshakeFailed;
+        error_code = ErrorCode::kHandshakeFailed;
         break;
       case State::kEstablished:
-        result_code = ResultCode::kNetworkError;
+        error_code = ErrorCode::kNetworkError;
         break;
       case State::kUninitialized:
       case State::kPermanentFailure:
@@ -106,7 +106,7 @@ void SecureChannelImpl::OnResponseReceived(
                      << static_cast<int>(state_);
     }
 
-    FailAllPendingRequests(result_code);
+    FailAllPendingRequests(error_code);
     state_ = State::kPermanentFailure;
     return;
   }
@@ -123,7 +123,7 @@ void SecureChannelImpl::OnResponseReceived(
     if (state_ == State::kEstablished) {
       request_in_flight_ = false;
     }
-    FailAllPendingRequests(ResultCode::kNetworkError);
+    FailAllPendingRequests(ErrorCode::kNetworkError);
     ResetState();
   }
 }
@@ -135,7 +135,7 @@ void SecureChannelImpl::OnAttestationResponse(
   // Step 2: Verify Attestation Response
   if (!attestation_handler_->VerifyAttestationResponse(response)) {
     DLOG(ERROR) << "Attestation verification failed.";
-    FailAllPendingRequests(ResultCode::kAttestationFailed);
+    FailAllPendingRequests(ErrorCode::kAttestationFailed);
     ResetState();
     return;
   }
@@ -147,7 +147,7 @@ void SecureChannelImpl::OnAttestationResponse(
       secure_session_->GetHandshakeMessage();
   if (!handshake_request.has_value()) {
     DLOG(ERROR) << "Failed to get handshake request.";
-    FailAllPendingRequests(ResultCode::kHandshakeFailed);
+    FailAllPendingRequests(ErrorCode::kHandshakeFailed);
     ResetState();
     return;
   }
@@ -165,7 +165,7 @@ void SecureChannelImpl::OnHandshakeResponse(
   // Step 4: Process Handshake Response
   if (!secure_session_->ProcessHandshakeResponse(response)) {
     DLOG(ERROR) << "Failed to handle handshake response.";
-    FailAllPendingRequests(ResultCode::kHandshakeFailed);
+    FailAllPendingRequests(ErrorCode::kHandshakeFailed);
     ResetState();
     return;
   }
@@ -185,7 +185,7 @@ void SecureChannelImpl::OnEncryptedResponse(
       secure_session_->Decrypt(response);
   if (!decrypted_response.has_value()) {
     DLOG(ERROR) << "Failed to decrypt response.";
-    FailAllPendingRequests(ResultCode::kDecryptionFailed);
+    FailAllPendingRequests(ErrorCode::kDecryptionFailed);
     ResetState();
     return;
   }
@@ -193,7 +193,7 @@ void SecureChannelImpl::OnEncryptedResponse(
 
   DCHECK(!pending_requests_.empty());
   std::move(pending_requests_.front().callback)
-      .Run(ResultCode::kSuccess, std::move(decrypted_response));
+      .Run(base::ok(std::move(*decrypted_response)));
   pending_requests_.pop_front();
 
   ProcessNextRequest();
@@ -204,9 +204,9 @@ void SecureChannelImpl::ResetState() {
   request_in_flight_ = false;
 }
 
-void SecureChannelImpl::FailAllPendingRequests(ResultCode result_code) {
+void SecureChannelImpl::FailAllPendingRequests(ErrorCode error_code) {
   for (auto& pending_request : pending_requests_) {
-    std::move(pending_request.callback).Run(result_code, std::nullopt);
+    std::move(pending_request.callback).Run(base::unexpected(error_code));
   }
   pending_requests_.clear();
 }
@@ -220,7 +220,7 @@ void SecureChannelImpl::StartSessionEstablishment() {
       attestation_handler_->GetAttestationRequest();
   if (!attestation_req.has_value()) {
     DLOG(ERROR) << "Failed to get attestation request.";
-    FailAllPendingRequests(ResultCode::kAttestationFailed);
+    FailAllPendingRequests(ErrorCode::kAttestationFailed);
     ResetState();
     return;
   }
@@ -244,7 +244,7 @@ void SecureChannelImpl::ProcessNextRequest() {
       secure_session_->Encrypt(pending_requests_.front().request);
   if (!encrypted_request.has_value()) {
     DLOG(ERROR) << "Failed to encrypt request.";
-    FailAllPendingRequests(ResultCode::kEncryptionFailed);
+    FailAllPendingRequests(ErrorCode::kEncryptionFailed);
     ResetState();
     return;
   }
