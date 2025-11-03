@@ -6313,8 +6313,9 @@
                     "name": "Enabled",
                     "params": {
                         "HCAcceptanceRate": "1.0",
-                        "MaxLength": "100",
-                        "MinLength": "30",
+                        "MaxLength": "1000",
+                        "MinLength": "50",
+                        "ProcessPayload": "false",
                         "SampleRate": "1.0"
                     },
                     "enable_features": [
