@@ -627,6 +627,9 @@ extern const base::FeatureParam<bool> kGlicEntrypointVariationsHighlightNudge;
 COMPONENT_EXPORT(CHROME_FEATURES) BASE_DECLARE_FEATURE(kGlicDaisyChainNewTabs);
 
 COMPONENT_EXPORT(CHROME_FEATURES)
+BASE_DECLARE_FEATURE(kGlicUseToolbarHeightSidePanel);
+
+COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kGlicButtonPressedState);
 
 #endif  // BUILDFLAG(ENABLE_GLIC)

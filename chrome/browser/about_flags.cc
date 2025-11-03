@@ -11687,6 +11687,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kGlicDaisyChainNewTabsDescription,
      kOsMac | kOsWin | kOsLinux,
      FEATURE_VALUE_TYPE(features::kGlicDaisyChainNewTabs)},
+    {"glic-toolbar-height-side-panel",
+     flag_descriptions::kGlicUseToolbarHeightSidePanelName,
+     flag_descriptions::kGlicUseToolbarHeightSidePanelDescription,
+     kOsMac | kOsWin | kOsLinux,
+     FEATURE_VALUE_TYPE(features::kGlicUseToolbarHeightSidePanel)},
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
 #if BUILDFLAG(IS_ANDROID)

@@ -1406,12 +1406,16 @@ inline constexpr char kGlicButtonPressedStateName[] =
     "Glic Button Pressed State";
 inline constexpr char kGlicButtonPressedStateDescription[] =
     "Enables visual changes to the Glic entry button when Glic is open.";
-
 inline constexpr char kGlicDaisyChainNewTabsName[] =
     "Glic Daisy chain new tabs";
 inline constexpr char kGlicDaisyChainNewTabsDescription[] =
     "Daisy chains new tabs if the active tab when the new tab was create has an"
     " open glic side panel";
+inline constexpr char kGlicUseToolbarHeightSidePanelName[] =
+    "Glic Use Toolbar Height Side Panel";
+inline constexpr char kGlicUseToolbarHeightSidePanelDescription[] =
+    "Enables Glic to use the toolbar height side panel instead of content "
+    "height side panel when enabled to use side panel";
 
 inline constexpr char kContextualSearchWithCredentialsForDebugName[] =
     "Contextual Search within credentials for debug";

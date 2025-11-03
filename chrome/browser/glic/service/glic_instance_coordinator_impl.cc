@@ -502,10 +502,16 @@ void GlicInstanceCoordinatorImpl::OnTabCreated(tabs::TabInterface& old_tab,
     return;
   }
 
+  SidePanelEntry* glic_side_panel_entry =
+      registry->GetEntryForKey(SidePanelEntryKey(SidePanelEntry::Id::kGlic));
+  if (!glic_side_panel_entry) {
+    return;
+  }
+
   const auto& active_entry =
-      registry->GetActiveEntryFor(SidePanelEntry::PanelType::kContent);
+      registry->GetActiveEntryFor(glic_side_panel_entry->type());
   if (!active_entry.has_value() ||
-      active_entry.value()->key().id() != SidePanelEntry::Id::kGlic) {
+      active_entry.value() != glic_side_panel_entry) {
     return;
   }
 

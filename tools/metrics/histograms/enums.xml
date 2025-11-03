@@ -12803,6 +12803,7 @@ from previous Chrome versions.
   <int value="-534221085" label="LazyImageLoading:disabled"/>
   <int value="-533552313"
       label="AutofillUpstreamEditableCardholderName:enabled"/>
+  <int value="-533320253" label="GlicUseToolbarHeightSidePanel:enabled"/>
   <int value="-532827723" label="AVFoundationCaptureV2:enabled"/>
   <int value="-531869865" label="DeprecatedExternalPickerFunction:disabled"/>
   <int value="-531810064" label="saveas-menu-label"/>
@@ -13571,6 +13572,7 @@ from previous Chrome versions.
   <int value="-262368430" label="PersistShareHubOnAppSwitch:enabled"/>
   <int value="-262180853" label="AccessibilityAccelerator:disabled"/>
   <int value="-262122630" label="ArcEnableDocumentsProviderInFilesApp:enabled"/>
+  <int value="-261444685" label="GlicUseToolbarHeightSidePanel:disabled"/>
   <int value="-261398170" label="ChromeLabs:enabled"/>
   <int value="-261089705" label="ViewTransitionLayeredCapture:disabled"/>
   <int value="-259952983"
