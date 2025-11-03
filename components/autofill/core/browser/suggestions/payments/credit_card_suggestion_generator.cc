@@ -1155,6 +1155,12 @@ CreditCardSuggestionGenerator::GetCreditCardFooterSuggestions(
   std::vector<Suggestion> footer_suggestions;
 
   if (should_show_bnpl_suggestion) {
+    if (base::FeatureList::IsEnabled(
+            features::
+                kAutofillEnableBuyNowPayLaterUpdatedSuggestionSecondLineString)) {
+      footer_suggestions.emplace_back(SuggestionType::kSeparator);
+    }
+
     footer_suggestions.push_back(
         CreateBnplSuggestion(client.GetPersonalDataManager()
                                  .payments_data_manager()
