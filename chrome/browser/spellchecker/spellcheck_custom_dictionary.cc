@@ -351,6 +351,17 @@ SpellcheckCustomDictionary::MergeDataAndStartSyncing(
     to_change_locally->AddWord(data.GetSpecifics().dictionary().word());
   }
 
+  // The account words set should be empty right now, irrespective of if feature
+  // kSpellcheckSeparateLocalAndAccountDictionaries is enabled.
+  CHECK(account_words_.empty());
+  if (base::FeatureList::IsEnabled(
+          syncer::kSpellcheckSeparateLocalAndAccountDictionaries)) {
+    // Add remote words to the in-memory account dictionary.
+    ApplyToSet(*to_change_locally, &account_words_);
+    Notify(*to_change_locally);
+    return std::nullopt;
+  }
+
   // Add as many as possible local words remotely.
   to_change_locally->Sanitize(GetWords());
   Change to_change_remotely;
@@ -369,6 +380,7 @@ void SpellcheckCustomDictionary::StopSyncing(syncer::DataType type) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK_EQ(syncer::DICTIONARY, type);
   sync_processor_.reset();
+  account_words_.clear();
 }
 
 syncer::SyncDataList SpellcheckCustomDictionary::GetAllSyncDataForTesting(
@@ -471,9 +483,12 @@ void SpellcheckCustomDictionary::OnLoaded(
   DCHECK(result);
   Change dictionary_change;
   dictionary_change.AddWords(result->words);
-  dictionary_change.Sanitize(GetWords());
-  Apply(dictionary_change);
-  Sync(dictionary_change);
+  dictionary_change.Sanitize(words_);
+  ApplyToSet(dictionary_change, &words_);
+  if (!base::FeatureList::IsEnabled(
+          syncer::kSpellcheckSeparateLocalAndAccountDictionaries)) {
+    Sync(dictionary_change);
+  }
   is_loaded_ = true;
   if (wait_until_ready_to_sync_cb_)
     std::move(wait_until_ready_to_sync_cb_).Run();

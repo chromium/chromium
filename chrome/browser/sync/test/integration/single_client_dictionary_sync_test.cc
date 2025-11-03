@@ -4,6 +4,7 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "chrome/browser/spellchecker/spellcheck_custom_dictionary.h"
 #include "chrome/browser/sync/test/integration/dictionary_helper.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
@@ -18,6 +19,10 @@ namespace {
 
 using testing::ElementsAre;
 using testing::IsEmpty;
+using testing::UnorderedElementsAre;
+
+constexpr char kLocalWord[] = "local";
+constexpr char kAccountWord[] = "account";
 
 class SingleClientDictionarySyncTest
     : public SyncTest,
@@ -85,5 +90,136 @@ IN_PROC_BROWSER_TEST_P(SingleClientDictionaryTransportModeSyncTest,
 INSTANTIATE_TEST_SUITE_P(,
                          SingleClientDictionaryTransportModeSyncTest,
                          ::testing::Bool());
+
+class SingleClientDictionaryWithAccountStorageSyncTest : public SyncTest {
+ protected:
+  SingleClientDictionaryWithAccountStorageSyncTest()
+      : SyncTest(SINGLE_CLIENT) {}
+
+  base::test::ScopedFeatureList feature_list_{
+      syncer::kSpellcheckSeparateLocalAndAccountDictionaries};
+};
+
+IN_PROC_BROWSER_TEST_F(SingleClientDictionaryWithAccountStorageSyncTest,
+                       ShouldNotUploadLocalWordsToTheAccount) {
+  ASSERT_TRUE(SetupClients());
+  dictionary_helper::LoadDictionaries();
+
+  EXPECT_TRUE(dictionary_helper::GetDictionary(0)->AddWord(kLocalWord));
+  EXPECT_THAT(dictionary_helper::GetDictionaryWords(0),
+              UnorderedElementsAre(kLocalWord));
+
+  // Enable Sync.
+  ASSERT_TRUE(SetupSync());
+  ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::DICTIONARY));
+
+  // No data is uploaded to the account.
+  EXPECT_FALSE(
+      dictionary_helper::HasWordInFakeServer(kLocalWord, GetFakeServer()));
+  // Local words are still in the local dictionary.
+  EXPECT_THAT(dictionary_helper::GetDictionaryWords(0),
+              UnorderedElementsAre(kLocalWord));
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientDictionaryWithAccountStorageSyncTest,
+                       ShouldCleanUpAccountWordsOnDisable) {
+  ASSERT_TRUE(SetupClients());
+  dictionary_helper::LoadDictionaries();
+
+  EXPECT_TRUE(dictionary_helper::GetDictionary(0)->AddWord(kLocalWord));
+  EXPECT_THAT(dictionary_helper::GetDictionaryWords(0),
+              UnorderedElementsAre(kLocalWord));
+
+  sync_pb::EntitySpecifics specifics;
+  specifics.mutable_dictionary()->set_word(kAccountWord);
+  GetFakeServer()->InjectEntity(
+      syncer::PersistentUniqueClientEntity::CreateFromSpecificsForTesting(
+          /*non_unique_name=*/kAccountWord,
+          /*client_tag=*/kAccountWord, specifics,
+          /*creation_time=*/0, /*last_modified_time=*/0));
+
+  // Enable Sync.
+  ASSERT_TRUE(SetupSync());
+  ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::DICTIONARY));
+
+  EXPECT_THAT(dictionary_helper::GetDictionaryWords(0),
+              UnorderedElementsAre(kLocalWord, kAccountWord));
+
+  // Disable syncing dictionary, which is behind the preferences toggle.
+  ASSERT_TRUE(GetClient(0)->DisableSyncForType(
+      syncer::UserSelectableType::kPreferences));
+  ASSERT_FALSE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::DICTIONARY));
+
+  // Account words should be cleared.
+  EXPECT_THAT(dictionary_helper::GetDictionaryWords(0),
+              UnorderedElementsAre(kLocalWord));
+  // No data is uploaded to the account.
+  ASSERT_FALSE(
+      dictionary_helper::HasWordInFakeServer(kLocalWord, GetFakeServer()));
+  // ... but the account word is still there.
+  ASSERT_TRUE(
+      dictionary_helper::HasWordInFakeServer(kAccountWord, GetFakeServer()));
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientDictionaryWithAccountStorageSyncTest,
+                       PRE_ShouldPersistAccountWordsOverRestarts) {
+  ASSERT_TRUE(SetupClients());
+  dictionary_helper::LoadDictionaries();
+
+  EXPECT_TRUE(dictionary_helper::GetDictionary(0)->AddWord(kLocalWord));
+  EXPECT_THAT(dictionary_helper::GetDictionaryWords(0),
+              UnorderedElementsAre(kLocalWord));
+
+  sync_pb::EntitySpecifics specifics;
+  specifics.mutable_dictionary()->set_word(kAccountWord);
+  GetFakeServer()->InjectEntity(
+      syncer::PersistentUniqueClientEntity::CreateFromSpecificsForTesting(
+          /*non_unique_name=*/kAccountWord,
+          /*client_tag=*/kAccountWord, specifics,
+          /*creation_time=*/0, /*last_modified_time=*/0));
+
+  // Enable Sync.
+  ASSERT_TRUE(SetupSync());
+  ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::DICTIONARY));
+
+  ASSERT_THAT(dictionary_helper::GetDictionaryWords(0),
+              UnorderedElementsAre(kLocalWord, kAccountWord));
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientDictionaryWithAccountStorageSyncTest,
+                       ShouldPersistAccountWordsOverRestarts) {
+  // Mimics network issues on restart.
+  GetFakeServer()->SetHttpError(net::HTTP_REQUEST_TIMEOUT);
+
+  ASSERT_TRUE(SetupClients());
+  dictionary_helper::LoadDictionaries();
+
+  // Wait for the account dictionary to be loaded from sync data. Account words
+  // are loaded despite network issues, indicating that they're persisted.
+  ASSERT_TRUE(dictionary_helper::NumDictionaryEntriesChecker(/*index=*/0,
+                                                             /*num_words=*/2)
+                  .Wait());
+
+  // Account words should be present.
+  EXPECT_THAT(dictionary_helper::GetDictionaryWords(0),
+              UnorderedElementsAre(kLocalWord, kAccountWord));
+
+  // Clear the error to allow sync to become active again.
+  GetFakeServer()->ClearHttpError();
+  // Disable syncing dictionary, which is behind the preferences toggle.
+  ASSERT_TRUE(GetClient(0)->DisableSyncForType(
+      syncer::UserSelectableType::kPreferences));
+  ASSERT_FALSE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::DICTIONARY));
+
+  // Account words should be cleared.
+  EXPECT_THAT(dictionary_helper::GetDictionaryWords(0),
+              UnorderedElementsAre(kLocalWord));
+  // No data is uploaded to the account.
+  ASSERT_FALSE(
+      dictionary_helper::HasWordInFakeServer(kLocalWord, GetFakeServer()));
+  // ... but the account word is still there.
+  ASSERT_TRUE(
+      dictionary_helper::HasWordInFakeServer(kAccountWord, GetFakeServer()));
+}
 
 }  // namespace
