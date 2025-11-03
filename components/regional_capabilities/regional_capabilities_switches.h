@@ -53,12 +53,6 @@ BASE_DECLARE_FEATURE(kRestrictLegacySearchEnginePromoOnFormFactors);
 BASE_DECLARE_FEATURE(kResolveRegionalCapabilitiesFromDevice);
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
-// Use finch permanent country instead of finch latest country for fetching
-// country ID.
-BASE_DECLARE_FEATURE(kUseFinchPermanentCountryForFetchCountryId);
-#endif
-
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
 // Describes UI surfaces that can receive the choice screen.

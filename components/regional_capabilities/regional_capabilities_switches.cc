@@ -23,12 +23,6 @@ BASE_FEATURE(kResolveRegionalCapabilitiesFromDevice,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
-BASE_FEATURE(kUseFinchPermanentCountryForFetchCountryId,
-             "UseFinchPermanentCountyForFetchCountryId",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
-
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 BASE_FEATURE(kTaiyaki,
 #if BUILDFLAG(IS_ANDROID)
