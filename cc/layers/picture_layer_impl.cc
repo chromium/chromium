@@ -219,6 +219,62 @@ void PictureLayerImpl::PushPropertiesTo(LayerImpl* base_layer) {
   layer_impl->SanityCheckTilingState();
 }
 
+void PictureLayerImpl::AppendQuadsForResourcelessSoftwareDraw(
+    const AppendQuadsContext& context,
+    viz::CompositorRenderPass* render_pass,
+    AppendQuadsData* append_quads_data,
+    viz::SharedQuadState* shared_quad_state,
+    const Occlusion& scaled_occlusion) {
+  DCHECK(shared_quad_state->quad_layer_rect.origin() == gfx::Point(0, 0));
+
+  float max_contents_scale = GetMaximumContentsScaleForUseInAppendQuads();
+  float device_scale_factor = layer_tree_impl()->device_scale_factor();
+
+  AppendDebugBorderQuad(
+      render_pass, shared_quad_state->quad_layer_rect, shared_quad_state,
+      append_quads_data, DebugColors::DirectPictureBorderColor(),
+      DebugColors::DirectPictureBorderWidth(device_scale_factor));
+
+  gfx::Rect geometry_rect = shared_quad_state->visible_quad_layer_rect;
+  gfx::Rect visible_geometry_rect =
+      scaled_occlusion.GetUnoccludedContentRect(geometry_rect);
+  bool needs_blending = !contents_opaque();
+
+  // The raster source may not be valid over the entire visible rect,
+  // and rastering outside of that may cause incorrect pixels.
+  gfx::Rect scaled_recorded_bounds = gfx::ScaleToEnclosingRect(
+      raster_source_->recorded_bounds(), max_contents_scale);
+  geometry_rect.Intersect(scaled_recorded_bounds);
+  visible_geometry_rect.Intersect(scaled_recorded_bounds);
+
+  if (visible_geometry_rect.IsEmpty()) {
+    return;
+  }
+
+  DCHECK(raster_source_->HasRecordings());
+  gfx::Rect quad_content_rect = shared_quad_state->visible_quad_layer_rect;
+  gfx::Size texture_size = quad_content_rect.size();
+  gfx::RectF texture_rect = gfx::RectF(gfx::SizeF(texture_size));
+
+  viz::PictureDrawQuad::ImageAnimationMap image_animation_map;
+  const auto* controller = layer_tree_impl()->image_animation_controller();
+  WhichTree tree = layer_tree_impl()->IsPendingTree() ? WhichTree::PENDING_TREE
+                                                      : WhichTree::ACTIVE_TREE;
+  for (const auto& image_data :
+       discardable_image_map_->animated_images_metadata()) {
+    image_animation_map[image_data.paint_image_id] =
+        controller->GetFrameIndexForImage(image_data.paint_image_id, tree);
+  }
+
+  auto* quad = render_pass->CreateAndAppendDrawQuad<viz::PictureDrawQuad>();
+  quad->SetNew(
+      shared_quad_state, geometry_rect, visible_geometry_rect, needs_blending,
+      texture_rect, nearest_neighbor_, quad_content_rect, max_contents_scale,
+      std::move(image_animation_map), raster_source_->GetDisplayItemList(),
+      GetRasterInducingScrollOffsets());
+  ValidateQuadResources(quad);
+}
+
 void PictureLayerImpl::AppendQuadsSpecialization(
     const AppendQuadsContext& context,
     viz::CompositorRenderPass* render_pass,
@@ -232,50 +288,9 @@ void PictureLayerImpl::AppendQuadsSpecialization(
   // and its handling is thus specific to PictureLayerImpl rather than being
   // done in TileBasedLayerImpl.
   if (context.draw_mode == DRAW_MODE_RESOURCELESS_SOFTWARE) {
-    DCHECK(shared_quad_state->quad_layer_rect.origin() == gfx::Point(0, 0));
-    AppendDebugBorderQuad(
-        render_pass, shared_quad_state->quad_layer_rect, shared_quad_state,
-        append_quads_data, DebugColors::DirectPictureBorderColor(),
-        DebugColors::DirectPictureBorderWidth(device_scale_factor));
-
-    gfx::Rect geometry_rect = shared_quad_state->visible_quad_layer_rect;
-    gfx::Rect visible_geometry_rect =
-        scaled_occlusion.GetUnoccludedContentRect(geometry_rect);
-    bool needs_blending = !contents_opaque();
-
-    // The raster source may not be valid over the entire visible rect,
-    // and rastering outside of that may cause incorrect pixels.
-    gfx::Rect scaled_recorded_bounds = gfx::ScaleToEnclosingRect(
-        raster_source_->recorded_bounds(), max_contents_scale);
-    geometry_rect.Intersect(scaled_recorded_bounds);
-    visible_geometry_rect.Intersect(scaled_recorded_bounds);
-
-    if (visible_geometry_rect.IsEmpty())
-      return;
-
-    DCHECK(raster_source_->HasRecordings());
-    gfx::Rect quad_content_rect = shared_quad_state->visible_quad_layer_rect;
-    gfx::Size texture_size = quad_content_rect.size();
-    gfx::RectF texture_rect = gfx::RectF(gfx::SizeF(texture_size));
-
-    viz::PictureDrawQuad::ImageAnimationMap image_animation_map;
-    const auto* controller = layer_tree_impl()->image_animation_controller();
-    WhichTree tree = layer_tree_impl()->IsPendingTree()
-                         ? WhichTree::PENDING_TREE
-                         : WhichTree::ACTIVE_TREE;
-    for (const auto& image_data :
-         discardable_image_map_->animated_images_metadata()) {
-      image_animation_map[image_data.paint_image_id] =
-          controller->GetFrameIndexForImage(image_data.paint_image_id, tree);
-    }
-
-    auto* quad = render_pass->CreateAndAppendDrawQuad<viz::PictureDrawQuad>();
-    quad->SetNew(
-        shared_quad_state, geometry_rect, visible_geometry_rect, needs_blending,
-        texture_rect, nearest_neighbor_, quad_content_rect, max_contents_scale,
-        std::move(image_animation_map), raster_source_->GetDisplayItemList(),
-        GetRasterInducingScrollOffsets());
-    ValidateQuadResources(quad);
+    AppendQuadsForResourcelessSoftwareDraw(context, render_pass,
+                                           append_quads_data, shared_quad_state,
+                                           scaled_occlusion);
     return;
   }
 

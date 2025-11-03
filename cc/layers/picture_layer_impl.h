@@ -403,6 +403,13 @@ class CC_EXPORT PictureLayerImpl
                                  viz::SharedQuadState* shared_quad_state,
                                  const Occlusion& scaled_occlusion) override;
   float GetMaximumContentsScaleForUseInAppendQuads() override;
+
+  void AppendQuadsForResourcelessSoftwareDraw(
+      const AppendQuadsContext& context,
+      viz::CompositorRenderPass* render_pass,
+      AppendQuadsData* append_quads_data,
+      viz::SharedQuadState* shared_quad_state,
+      const Occlusion& scaled_occlusion);
 };
 
 }  // namespace cc
