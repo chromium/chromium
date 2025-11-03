@@ -59,6 +59,7 @@ class UI_ANDROID_EXPORT ModalDialogWrapper : public DialogModelHost,
   void NegativeButtonClicked(JNIEnv* env);
   void CheckboxToggled(JNIEnv* env, jboolean is_checked);
   void MenuItemClicked(JNIEnv* env, jint index);
+  void ParagraphLinkClicked(JNIEnv* env, jint index);
   void Dismissed(JNIEnv* env);
   void Destroy(JNIEnv* env);
 

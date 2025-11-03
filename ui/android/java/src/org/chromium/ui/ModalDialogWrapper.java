@@ -10,11 +10,17 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.text.SpannableString;
+import android.text.SpannableStringBuilder;
+import android.text.Spanned;
+import android.text.style.ClickableSpan;
+import android.view.View;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.JniRepeatingCallback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.base.WindowAndroid;
@@ -24,7 +30,6 @@ import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 @JNINamespace("ui")
 @NullMarked
@@ -37,6 +42,8 @@ public class ModalDialogWrapper implements ModalDialogProperties.Controller {
     private final PropertyModel.Builder mPropertyModelBuilder;
 
     private final @Nullable Context mContext;
+
+    private final ArrayList<JniRepeatingCallback> mLinkCallbacks = new ArrayList<>();
 
     @CalledByNative
     private static ModalDialogWrapper create(long nativeDelegatePtr, WindowAndroid window) {
@@ -73,11 +80,55 @@ public class ModalDialogWrapper implements ModalDialogProperties.Controller {
         mPropertyModelBuilder.with(ModalDialogProperties.TITLE_ICON, iconDrawable);
     }
 
+    /**
+     * Sets the message paragraphs building from text spans.
+     *
+     * @param paragraphSpans A 2D array of strings. The outer array represents paragraphs. Each
+     *     inner array contains the text for each span within that paragraph.
+     * @param paragraphCallbacks A 2D array of JniRepeatingCallback objects with the exact same
+     *     dimensions as {@code paragraphSpans}. For each text span, this array holds either null
+     *     for plain text, or a callback for a clickable link.
+     */
     @CalledByNative
-    private void withMessageParagraphs(String[] paragraphs) {
-        mPropertyModelBuilder.with(
-                ModalDialogProperties.MESSAGE_PARAGRAPHS,
-                new ArrayList<>(Arrays.asList(paragraphs)));
+    private void withMessageParagraphs(
+            String[][] paragraphSpans,
+            JniRepeatingCallback<@Nullable Void>[][] paragraphCallbacks) {
+        ArrayList<CharSequence> charSequences = new ArrayList<>();
+        for (int i = 0; i < paragraphSpans.length; i++) {
+            SpannableStringBuilder paragraphBuilder = new SpannableStringBuilder();
+            String[] spans = paragraphSpans[i];
+            JniRepeatingCallback<@Nullable Void>[] callbacks = assumeNonNull(paragraphCallbacks[i]);
+            assert spans.length == callbacks.length
+                    : "ModalDialogWrapper.withMessageParagraphs() received invalid inputs:"
+                            + " paragraphSpans and paragraphCallbacks did not have the same"
+                            + " dimension";
+
+            for (int j = 0; j < spans.length; j++) {
+                String text = spans[j];
+                JniRepeatingCallback<@Nullable Void> callback = callbacks[j];
+
+                if (callback == null) {
+                    paragraphBuilder.append(text);
+                } else {
+                    mLinkCallbacks.add(callback);
+                    SpannableString clickableText = new SpannableString(text);
+                    clickableText.setSpan(
+                            new ClickableSpan() {
+                                @Override
+                                public void onClick(View view) {
+                                    callback.onResult(null);
+                                }
+                            },
+                            0,
+                            text.length(),
+                            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    paragraphBuilder.append(clickableText);
+                }
+            }
+            charSequences.add(paragraphBuilder);
+        }
+
+        mPropertyModelBuilder.with(ModalDialogProperties.MESSAGE_PARAGRAPHS, charSequences);
     }
 
     @CalledByNative
@@ -135,6 +186,10 @@ public class ModalDialogWrapper implements ModalDialogProperties.Controller {
                 ModalDialogWrapperJni.get().dismissed(mNativeDelegatePtr);
                 break;
         }
+        for (JniRepeatingCallback callback : mLinkCallbacks) {
+            callback.destroy();
+        }
+        mLinkCallbacks.clear();
         ModalDialogWrapperJni.get().destroy(mNativeDelegatePtr);
     }
 

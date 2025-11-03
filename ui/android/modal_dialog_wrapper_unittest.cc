@@ -19,6 +19,7 @@
 #include "ui/android/window_android.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/models/dialog_model.h"
+#include "ui/base/resource/resource_bundle.h"
 #include "ui/color/color_provider.h"
 #include "ui/color/color_provider_key.h"
 #include "ui/color/color_provider_manager.h"
@@ -26,6 +27,7 @@
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/gfx/vector_icon_types.h"
+#include "ui/strings/grit/ui_strings.h"
 
 namespace ui {
 
@@ -410,6 +412,103 @@ TEST_F(ModalDialogWrapperTest, ParagraphsAreSetAndReplaced) {
       fake_dialog_manager_->GetMessageParagraphs();
   ASSERT_EQ(displayed_paragraphs_2.size(), 1u);
   EXPECT_EQ(displayed_paragraphs_2.front(), paragraphs.front());
+}
+
+TEST_F(ModalDialogWrapperTest, ParagraphsContainReplacements) {
+  // Use a vector of booleans to track the invocation of distinct callbacks.
+  std::vector<bool> callbacks_called = {false, false, false};
+
+  // In unit tests, the full resource pack isn't loaded.
+  ResourceBundle::GetSharedInstance().OverrideLocaleStringResource(IDS_APP_OK,
+                                                                   u"OK");
+  ResourceBundle::GetSharedInstance().OverrideLocaleStringResource(
+      IDS_APP_CANCEL, u"Cancel");
+  ResourceBundle::GetSharedInstance().OverrideLocaleStringResource(
+      IDS_APP_CLOSE, u"Close");
+
+  ui::DialogModel::Builder dialog_builder;
+  dialog_builder.SetTitle(u"Mixed Content Paragraph Test")
+      .SetDialogDestroyingCallback(
+          base::BindLambdaForTesting([&]() { dialog_destroyed_ = true; }));
+
+  // Paragraph 0: A standard paragraph with only plain text.
+  dialog_builder.AddParagraph(
+      DialogModelLabel(u"This is a paragraph with no links."));
+
+  // Paragraph 1: Contains multiple links and plain text spans to test
+  // correct callback indexing across a single paragraph.
+  auto replacements = std::vector<DialogModelLabel::TextReplacement>();
+
+  // Helper lambda to create the correct callback type, avoiding ambiguity.
+  auto make_callback = [&](int index) -> DialogModelLabel::Callback {
+    return base::BindRepeating(
+        [](std::vector<bool>* callbacks, int i, const ui::Event& event) {
+          (*callbacks)[i] = true;
+        },
+        &callbacks_called, index);
+  };
+
+  // Link with global index 0.
+  replacements.push_back(
+      DialogModelLabel::CreateLink(IDS_APP_OK, make_callback(0)));
+  replacements.push_back(
+      DialogModelLabel::CreatePlainText(u" is the first link. "));
+  // Link with global index 1.
+  replacements.push_back(
+      DialogModelLabel::CreateLink(IDS_APP_CANCEL, make_callback(1)));
+  replacements.push_back(
+      DialogModelLabel::CreatePlainText(u" is the second. Finally, "));
+  // Link with global index 2.
+  replacements.push_back(
+      DialogModelLabel::CreateLink(IDS_APP_CLOSE, make_callback(2)));
+  dialog_builder.AddParagraph(
+      DialogModelLabel::CreateWithReplacements(0, std::move(replacements)));
+
+  // Paragraph 2: An empty paragraph to test this edge case.
+  dialog_builder.AddParagraph(DialogModelLabel(u""));
+
+  // Paragraph 3: A trailing plain text paragraph to ensure correct handling
+  // after paragraphs with links and empty ones.
+  dialog_builder.AddParagraph(
+      DialogModelLabel(u"This is a final plain paragraph."));
+
+  auto dialog_model = dialog_builder.Build();
+
+  // Trigger Dialog.
+  ModalDialogWrapper::ShowTabModal(std::move(dialog_model), window_->get());
+
+  // Verify the paragraphs text.
+  std::vector<std::u16string> displayed_paragraphs =
+      fake_dialog_manager_->GetMessageParagraphs();
+  ASSERT_EQ(displayed_paragraphs.size(), 4u);
+  EXPECT_EQ(displayed_paragraphs[0], u"This is a paragraph with no links.");
+  EXPECT_EQ(displayed_paragraphs[1],
+            u"OK is the first link. Cancel is the second. Finally, Close");
+  EXPECT_EQ(displayed_paragraphs[2], u"");
+  EXPECT_EQ(displayed_paragraphs[3], u"This is a final plain paragraph.");
+
+  // Simulate link clicks.
+  EXPECT_FALSE(callbacks_called[0]);
+  EXPECT_FALSE(callbacks_called[1]);
+  EXPECT_FALSE(callbacks_called[2]);
+
+  // Click the middle link.
+  fake_dialog_manager_->ClickLinkInMessageParagraphs(1);
+  EXPECT_FALSE(callbacks_called[0]);
+  EXPECT_TRUE(callbacks_called[1]);
+  EXPECT_FALSE(callbacks_called[2]);
+
+  // Click the last link.
+  fake_dialog_manager_->ClickLinkInMessageParagraphs(2);
+  EXPECT_FALSE(callbacks_called[0]);
+  EXPECT_TRUE(callbacks_called[1]);
+  EXPECT_TRUE(callbacks_called[2]);
+
+  // Click the first link.
+  fake_dialog_manager_->ClickLinkInMessageParagraphs(0);
+  EXPECT_TRUE(callbacks_called[0]);
+  EXPECT_TRUE(callbacks_called[1]);
+  EXPECT_TRUE(callbacks_called[2]);
 }
 
 TEST_F(ModalDialogWrapperTest, Checkbox_InitialStateUnchecked) {

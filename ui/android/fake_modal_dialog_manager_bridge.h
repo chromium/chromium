@@ -41,6 +41,7 @@ class UI_ANDROID_EXPORT FakeModalDialogManagerBridge {
   int GetButtonStyles();
 
   std::vector<std::u16string> GetMessageParagraphs();
+  void ClickLinkInMessageParagraphs(int index);
 
   std::vector<std::u16string> GetMenuItemTexts();
   std::vector<SkBitmap> GetMenuItemIcons();
