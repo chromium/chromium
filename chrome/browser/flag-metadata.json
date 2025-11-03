@@ -5155,7 +5155,7 @@
   {
     "name": "files-local-image-search",
     "owners": [ "majewski@chromium.org", "//ui/file_manager/OWNERS" ],
-    "expiry_milestone": 140
+    "expiry_milestone": 150
   },
   {
     "name": "files-materialized-views",
