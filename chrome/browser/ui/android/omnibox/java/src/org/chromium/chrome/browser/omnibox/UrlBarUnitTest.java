@@ -28,6 +28,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import android.graphics.Paint;
+import android.graphics.Rect;
 import android.text.InputType;
 import android.text.Layout;
 import android.text.SpannableStringBuilder;
@@ -1005,7 +1006,7 @@ public class UrlBarUnitTest {
     @Test
     @EnableFeatures(OmniboxFeatureList.MULTILINE_EDIT_FIELD)
     public void setInputIsMultilineEligible() {
-        mUrlBar.requestFocus();
+        mUrlBar.onFocusChanged(true, View.LAYOUT_DIRECTION_LTR, new Rect());
         mUrlBar.setInputIsMultilineEligible(true);
         assertEquals(UrlBar.MULTILINE_EDIT_MAX_LINES, mUrlBar.getMaxLines());
         assertFalse(mUrlBar.isSingleLine());
@@ -1014,6 +1015,10 @@ public class UrlBarUnitTest {
         assertEquals(1, mUrlBar.getMaxLines());
         assertTrue(mUrlBar.isSingleLine());
 
-        mUrlBar.clearFocus();
+        // Defocused omnibox - never multiline
+        mUrlBar.onFocusChanged(false, View.LAYOUT_DIRECTION_LTR, new Rect());
+        mUrlBar.setInputIsMultilineEligible(true);
+        assertEquals(1, mUrlBar.getMaxLines());
+        assertTrue(mUrlBar.isSingleLine());
     }
 }

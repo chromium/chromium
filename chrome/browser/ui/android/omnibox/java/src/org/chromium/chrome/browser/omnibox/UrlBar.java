@@ -474,6 +474,7 @@ public class UrlBar extends AutocompleteEditText {
 
     @Override
     public void setInputIsMultilineEligible(boolean isMultilineEligible) {
+        isMultilineEligible &= mFocused;
         if (OmniboxFeatures.allowMultilineEditField() && !mIsInCct) {
             // Only act if the caller wants multiline, but is single line - or the other way around.
             if (isMultilineEligible != !isSingleLine()) {
