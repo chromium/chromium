@@ -118,6 +118,10 @@ class TouchTransformControllerTest : public testing::Test {
         display, touch_display, touchscreen);
   }
 
+  void SetIsCalibrating(bool is_calibrating) {
+    touch_transform_controller_->SetForCalibration(is_calibrating);
+  }
+
   double GetTouchResolutionScale(
       const ManagedDisplayInfo& touch_display,
       const ui::TouchscreenDevice& touch_device) const {
@@ -685,6 +689,65 @@ TEST_F(TouchTransformControllerTest, RotationInTabletMirrorMode) {
   }
 
   SetTabletState(TabletState::kInClamshellMode);
+}
+
+// Test that the controller doesn't apply any mirror mode transformation while
+// calibrating.
+TEST_F(TouchTransformControllerTest, NoMirrorTransformWhileCalibrating) {
+  constexpr gfx::Size kDisplaySize(1920, 1200);
+
+  ui::TouchscreenDevice touchscreen1 =
+      CreateTouchscreenDevice(kTouchId1, kDisplaySize);
+  ui::TouchscreenDevice touchscreen2 =
+      CreateTouchscreenDevice(kTouchId2, kDisplaySize);
+
+  ManagedDisplayInfo display1 = CreateDisplayInfo(
+      kDisplayId1, touchscreen1, {kDisplaySize.width(), kDisplaySize.height()});
+  ManagedDisplayInfo display2 = CreateDisplayInfo(
+      kDisplayId2, touchscreen2,
+      {0, kDisplaySize.height(), kDisplaySize.width(), kDisplaySize.height()});
+
+  ui::DeviceDataManager* device_manager = ui::DeviceDataManager::GetInstance();
+
+  std::vector<ui::TouchDeviceTransform> transforms;
+
+  // Test the general case of mirror Mode, primary is display 2, touch display 1
+  // associated with display 2.
+  transforms.push_back(CreateTouchDeviceTransform(
+      display2.id(), touchscreen1.id,
+      GetTouchTransform(display2, display1, touchscreen1)));
+
+  device_manager->ConfigureTouchDevices(transforms);
+
+  EXPECT_EQ(kDisplayId2,
+            device_manager->GetTargetDisplayForTouchDevice(kTouchId1));
+
+  float x, y;
+  x = y = 0.0;
+
+  device_manager->ApplyTouchTransformer(kTouchId1, &x, &y);
+  EXPECT_NEAR(0, x, 0.5);
+  EXPECT_NEAR(kDisplaySize.height(), y, 0.5);
+
+  // Calibration mode.
+  SetIsCalibrating(true);
+
+  // Refresh the touch transformer with the same parameters.
+  transforms.push_back(CreateTouchDeviceTransform(
+      display2.id(), touchscreen1.id,
+      GetTouchTransform(display2, display1, touchscreen1)));
+
+  device_manager->ConfigureTouchDevices(transforms);
+
+  x = y = 0.0;
+
+  // No transform should be applied.
+  device_manager->ApplyTouchTransformer(kTouchId1, &x, &y);
+  EXPECT_NEAR(0, x, 0.5);
+  EXPECT_NEAR(0, y, 0.5);
+
+  // Exit calibration mode.
+  SetIsCalibrating(false);
 }
 
 TEST_F(TouchTransformControllerTest, AccurateUserTouchCalibration) {
