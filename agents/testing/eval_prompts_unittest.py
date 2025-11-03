@@ -399,6 +399,39 @@ class GetTestsToRunUnittest(fake_filesystem_unittest.TestCase):
         result = eval_prompts._get_tests_to_run(None, None, None)
         self.assertEqual(len(result), 0)
 
+    def test_get_tests_to_run_with_negative_tag_filter(self):
+        """Tests that tests are filtered correctly by negative tags."""
+        self.mock_determine_shard_values.return_value = (0, 1)
+        test_configs = [
+            eval_config.TestConfig(test_file=pathlib.Path('/test/a.yaml'),
+                                   tags=['t1']),
+            eval_config.TestConfig(test_file=pathlib.Path('/test/b.yaml'),
+                                   tags=['t2']),
+            eval_config.TestConfig(test_file=pathlib.Path('/test/c.yaml'),
+                                   tags=['t1', 't3']),
+        ]
+        self.mock_discover_testcase_files.return_value = test_configs
+
+        result = eval_prompts._get_tests_to_run(None, None, None, '-t1')
+        result_paths = [c.test_file for c in result]
+        self.assertEqual(len(result_paths), 1)
+        self.assertIn(pathlib.Path('/test/b.yaml'), result_paths)
+
+        result = eval_prompts._get_tests_to_run(None, None, None, '-t2')
+        result_paths = [c.test_file for c in result]
+        self.assertEqual(len(result_paths), 2)
+        self.assertIn(pathlib.Path('/test/a.yaml'), result_paths)
+        self.assertIn(pathlib.Path('/test/c.yaml'), result_paths)
+
+        result = eval_prompts._get_tests_to_run(None, None, None, 't1,-t3')
+        result_paths = [c.test_file for c in result]
+        self.assertEqual(len(result_paths), 1)
+        self.assertIn(pathlib.Path('/test/a.yaml'), result_paths)
+
+        result = eval_prompts._get_tests_to_run(None, None, None, '-t1,-t2')
+        result_paths = [c.test_file for c in result]
+        self.assertEqual(len(result_paths), 0)
+
     def test_get_tests_to_run_with_tag_filter(self):
         """Tests that tests are filtered correctly by metadata."""
         self.mock_determine_shard_values.return_value = (0, 1)

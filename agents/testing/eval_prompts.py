@@ -178,10 +178,24 @@ def _get_tests_to_run(
             c for c in configs_to_run if c.matches_filter(filters)
         ]
     if tag_filter:
-        tag_list = tag_filter.split(',')
-        configs_to_run = [
-            c for c in configs_to_run if any(tag in c.tags for tag in tag_list)
-        ]
+        positive_filters = []
+        negative_filters = []
+        for f in tag_filter.split(','):
+            if f.startswith('-'):
+                negative_filters.append(f[1:])
+            else:
+                positive_filters.append(f)
+
+        if positive_filters:
+            configs_to_run = [
+                c for c in configs_to_run
+                if any(tag in c.tags for tag in positive_filters)
+            ]
+        if negative_filters:
+            configs_to_run = [
+                c for c in configs_to_run
+                if not any(tag in c.tags for tag in negative_filters)
+            ]
     configs_to_run.sort()
     configs_to_run = configs_to_run[shard_index::total_shards]
     return configs_to_run
