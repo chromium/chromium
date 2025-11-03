@@ -44,6 +44,14 @@
   [_consumer setUserEmail:_userEmail];
 }
 
+#pragma mark - Public
+
+- (void)startImportingCredentialsWithSecurityDomainSecrets:
+    (NSArray<NSData*>*)securityDomainSecrets {
+  [_credentialImporter
+      startImportingCredentialsWithSecurityDomainSecrets:securityDomainSecrets];
+}
+
 #pragma mark - CredentialImporterDelegate
 
 - (void)showImportScreenWithPasswordCount:(NSInteger)passwordCount

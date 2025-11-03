@@ -41,6 +41,13 @@
   }
 }
 
+#pragma mark - Public
+
+- (void)startImportingCredentialsWithSecurityDomainSecrets:
+    (NSArray<NSData*>*)securityDomainSecrets {
+  // TODO(crbug.com/449701042): Import passwords and passkeys.
+}
+
 #pragma mark - CredentialImportManagerDelegate
 
 - (void)onCredentialsParsedWithPasswords:

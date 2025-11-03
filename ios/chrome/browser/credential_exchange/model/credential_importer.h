@@ -29,6 +29,12 @@
 // data to be imported.
 - (void)startImport:(NSUUID*)UUID;
 
+// Called when the user confirms the import. `securityDomainSecrets` is needed
+// to encrypt passkeys if there are any to be imported.
+// TODO(crbug.com/449701042): Document this method better.
+- (void)startImportingCredentialsWithSecurityDomainSecrets:
+    (NSArray<NSData*>*)securityDomainSecrets;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_CREDENTIAL_EXCHANGE_MODEL_CREDENTIAL_IMPORTER_H_

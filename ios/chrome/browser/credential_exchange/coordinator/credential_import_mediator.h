@@ -32,6 +32,12 @@
 // Consumer of this mediator.
 @property(nonatomic, weak) id<CredentialImportConsumer> consumer;
 
+// Notifies the model to starts importing credentials to the user's account.
+// `securityDomainSecrets` is needed to encrypt passkeys if there are any to be
+// imported.
+- (void)startImportingCredentialsWithSecurityDomainSecrets:
+    (NSArray<NSData*>*)securityDomainSecrets;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_CREDENTIAL_EXCHANGE_COORDINATOR_CREDENTIAL_IMPORT_MEDIATOR_H_
