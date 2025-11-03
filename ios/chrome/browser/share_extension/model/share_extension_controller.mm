@@ -85,11 +85,11 @@ void OnProfileLoaded(std::unique_ptr<T> adder,
 }
 
 template <typename Adder, typename... Args>
-void AddDataToProfileByGaiaID(NSString* gaiaID, Args&&... args) {
+void AddDataToProfileByGaiaID(const GaiaId& gaiaID, Args&&... args) {
   std::optional<std::string> profileName =
       GetApplicationContext()
           ->GetAccountProfileMapper()
-          ->FindProfileNameForGaiaID(GaiaId(gaiaID));
+          ->FindProfileNameForGaiaID(gaiaID);
 
   if (profileName.has_value()) {
     ProfileManagerIOS* profileManager =
@@ -352,7 +352,7 @@ void AddDataToProfileByGaiaID(NSString* gaiaID, Args&&... args) {
 
 - (void)processEntryWithType:(app_group::ShareExtensionItemType)entryType
                        title:(NSString*)entryTitle
-                      gaiaID:(NSString*)gaiaID
+                      gaiaID:(const GaiaId&)gaiaID
                          URL:(NSURL*)entryURL
                   completion:(ProceduralBlock)completion {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
@@ -403,7 +403,7 @@ void AddDataToProfileByGaiaID(NSString* gaiaID, Args&&... args) {
   }
 }
 
-- (void)addBookmarkToProfileByGaiaID:(NSString*)gaiaID
+- (void)addBookmarkToProfileByGaiaID:(const GaiaId&)gaiaID
                                  URL:(NSURL*)URL
                        bookmarkTitle:(NSString*)bookmarkTitle {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
@@ -411,7 +411,7 @@ void AddDataToProfileByGaiaID(NSString* gaiaID, Args&&... args) {
       gaiaID, net::GURLWithNSURL(URL), base::SysNSStringToUTF8(bookmarkTitle));
 }
 
-- (void)addReadingListToProfileByGaiaID:(NSString*)gaiaID
+- (void)addReadingListToProfileByGaiaID:(const GaiaId&)gaiaID
                                     URL:(NSURL*)URL
                        readingListTitle:(NSString*)readingListTitle {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);

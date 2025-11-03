@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/share_extension/model/parsed_share_extension_entry.h"
 
+#import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
 #import "net/base/apple/url_conversions.h"
 #import "url/gurl.h"

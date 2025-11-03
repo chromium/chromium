@@ -80,7 +80,7 @@
       ChromeAccountManagerServiceFactory::GetForProfile(self.profile);
 
   id<SystemIdentity> identity =
-      accountManagerService->GetIdentityOnDeviceWithGaiaID(GaiaId(gaiaID));
+      accountManagerService->GetIdentityOnDeviceWithGaiaID(gaiaID);
   DCHECK(identity);
   _mediator.selectedIdentity = identity;
   [self.delegate accountPickerSelectionScreenCoordinatorIdentitySelected:self];

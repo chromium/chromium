@@ -61,6 +61,7 @@ source_set("utils") {
   ]
   deps = [
     "//base",
+    "//google_apis",
     "//ios/chrome/common/app_group",
     "//net",
     "//url",

@@ -9,6 +9,8 @@
 
 #import "ios/chrome/common/app_group/app_group_constants.h"
 
+class GaiaId;
+
 // An interface that represents a parsed share extension entry.
 @interface ParsedShareExtensionEntry : NSObject
 
@@ -18,7 +20,7 @@
 @property(nonatomic, strong) NSDate* date;
 @property(nonatomic, assign) app_group::ShareExtensionItemType type;
 @property(nonatomic, copy) NSString* source;
-@property(nonatomic, copy) NSString* gaiaID;
+@property(nonatomic, assign) GaiaId gaiaID;
 
 // Check whether a parsed entry is valid. An entry is considered valid if it has
 // a source, a date and a type, if it represents a URL, the URL should be valid
