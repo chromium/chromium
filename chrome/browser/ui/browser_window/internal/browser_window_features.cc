@@ -919,6 +919,16 @@ ToastController* BrowserWindowFeatures::toast_controller() {
   return toast_service_ ? toast_service_->toast_controller() : nullptr;
 }
 
+LocationBar* BrowserWindowFeatures::location_bar() {
+  CHECK(browser_);
+  return browser_->GetBrowserForMigrationOnly()->window()->GetLocationBar();
+}
+
+const LocationBar* BrowserWindowFeatures::location_bar() const {
+  CHECK(browser_);
+  return browser_->GetBrowserForMigrationOnly()->window()->GetLocationBar();
+}
+
 FindBarController* BrowserWindowFeatures::GetFindBarController() {
   if (!find_bar_controller_.get()) {
     CHECK(browser_);

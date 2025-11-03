@@ -45,6 +45,7 @@ class BrowserView;
 class BrowserWindowInterface;
 class ChromeLabsCoordinator;
 class ColorProviderBrowserHelper;
+class LocationBar;
 class CommentsSidePanelCoordinator;
 class ContentsBorderController;
 class CookieControlsBubbleCoordinator;
@@ -392,6 +393,12 @@ class BrowserWindowFeatures {
     location_bar_model->swap(location_bar_model_);
   }
 #endif
+
+  // Returns the LocationBar for this browser window. Currently delegates to
+  // BrowserWindow::GetLocationBar() via downcast, but should eventually become
+  // an owned member of BrowserWindowFeatures.
+  LocationBar* location_bar();
+  const LocationBar* location_bar() const;
 
   ReadingListSidePanelCoordinator* reading_list_side_panel_coordinator() {
     return reading_list_side_panel_coordinator_.get();
