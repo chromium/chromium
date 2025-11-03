@@ -24,10 +24,8 @@ const WrapperTypeInfo DOMSharedArrayBuffer::wrapper_type_info_body_{
     nullptr,
     "SharedArrayBuffer",
     nullptr,
-    static_cast<v8::CppHeapPointerTag>(
-        ScriptWrappableArrayTag::kDOMSharedArrayBufferTag),
-    static_cast<v8::CppHeapPointerTag>(
-        ScriptWrappableArrayTag::kDOMSharedArrayBufferTag),
+    kDOMWrappersTag,
+    kDOMWrappersTag,
     WrapperTypeInfo::kWrapperTypeObjectPrototype,
     WrapperTypeInfo::kObjectClassId,
     WrapperTypeInfo::kIdlOtherType,

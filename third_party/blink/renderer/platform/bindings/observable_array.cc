@@ -26,10 +26,8 @@ const WrapperTypeInfo kWrapperTypeInfoBody{
     /*install_context_dependent_props_func=*/nullptr,
     "ObservableArrayExoticObject",
     /*parent_class=*/nullptr,
-    static_cast<v8::CppHeapPointerTag>(
-        ScriptWrappableArrayTag::kObservableArrayExoticObjectTag),
-    static_cast<v8::CppHeapPointerTag>(
-        ScriptWrappableArrayTag::kObservableArrayExoticObjectTag),
+    kDOMWrappersTag,
+    kDOMWrappersTag,
     WrapperTypeInfo::kWrapperTypeNoPrototype,
     // v8::Proxy (without an internal field) is used as a (pseudo) wrapper.
     WrapperTypeInfo::kNoInternalFieldClassId,

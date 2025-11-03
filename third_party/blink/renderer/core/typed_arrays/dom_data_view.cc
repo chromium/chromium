@@ -27,10 +27,8 @@ const WrapperTypeInfo DOMDataView::wrapper_type_info_body_{
     nullptr,
     "DataView",
     nullptr,
-    static_cast<v8::CppHeapPointerTag>(
-        ScriptWrappableArrayTag::kDOMDataViewTag),
-    static_cast<v8::CppHeapPointerTag>(
-        ScriptWrappableArrayTag::kDOMDataViewTag),
+    kDOMWrappersTag,
+    kDOMWrappersTag,
     WrapperTypeInfo::kWrapperTypeObjectPrototype,
     WrapperTypeInfo::kObjectClassId,
     WrapperTypeInfo::kIdlOtherType,
