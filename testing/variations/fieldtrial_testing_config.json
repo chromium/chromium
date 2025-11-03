@@ -10440,21 +10440,6 @@
             ]
         }
     ],
-    "ExtendedReportingRemovePrefDependencyIos": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledRemovePrefDependencyIos",
-                    "enable_features": [
-                        "ExtendedReportingRemovePrefDependencyIos"
-                    ]
-                }
-            ]
-        }
-    ],
     "ExtensionManifestV2Deprecation": [
         {
             "platforms": [
@@ -21520,6 +21505,21 @@
                     },
                     "enable_features": [
                         "SafeBrowsingDailyPhishingReportsLimit"
+                    ]
+                }
+            ]
+        }
+    ],
+    "SafeBrowsingExtendedReportingRemovePrefDependencyIos": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledRemovePrefDependencyIos",
+                    "enable_features": [
+                        "ExtendedReportingRemovePrefDependencyIos"
                     ]
                 }
             ]
