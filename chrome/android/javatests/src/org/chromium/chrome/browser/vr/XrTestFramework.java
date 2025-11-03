@@ -541,7 +541,11 @@ public abstract class XrTestFramework {
         // It is possible, particularly with multiple sessions and navigations within a single test,
         // for the page to get zoomed in on navigation. So, ensure that we are always zoomed out
         // enough to see all page content after we do a page load.
-        ThreadUtils.runOnUiThreadBlocking(() -> ZoomController.zoomReset(mRule.getWebContents()));
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        ZoomController.zoomReset(
+                                mRule.getWebContents(),
+                                mRule.getProfile(/* incognito= */ false).getOriginalProfile()));
         return result;
     }
 

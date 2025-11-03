@@ -37,6 +37,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
+import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.content_public.browser.WebContents;
@@ -978,6 +979,8 @@ public class KeyboardShortcuts {
         TabModel currentTabModel = tabModelSelector.getCurrentModel();
         Tab currentTab = tabModelSelector.getCurrentTab();
         WebContents currentWebContents = currentTab == null ? null : currentTab.getWebContents();
+        BrowserContextHandle browserContextHandle =
+                currentTab == null ? null : currentTab.getProfile().getOriginalProfile();
 
         int tabCount = currentTabModel.getCount();
 
@@ -1141,7 +1144,7 @@ public class KeyboardShortcuts {
                     ZoomController.zoomOut(currentWebContents);
                     return true;
                 case KeyboardShortcutsSemanticMeaning.ZOOM_RESET:
-                    ZoomController.zoomReset(currentWebContents);
+                    ZoomController.zoomReset(currentWebContents, browserContextHandle);
                     return true;
                 case KeyboardShortcutsSemanticMeaning.RELOAD_TAB:
                     if (currentTab != null) {

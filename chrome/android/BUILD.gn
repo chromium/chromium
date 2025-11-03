@@ -1525,6 +1525,7 @@ if (_is_default_toolchain) {
       "//chrome/android:chrome_java",
       "//chrome/android:delegate_public_impl_java",
       "//chrome/browser/flags:java",
+      "//chrome/browser/profiles/android:java",
       "//chrome/browser/tab:java",
       "//chrome/browser/tabmodel:java",
       "//chrome/browser/tabwindow:java",

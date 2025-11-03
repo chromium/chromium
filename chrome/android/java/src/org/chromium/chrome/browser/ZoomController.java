@@ -4,12 +4,17 @@
 
 package org.chromium.chrome.browser;
 
+import static org.chromium.content_public.browser.HostZoomMap.AVAILABLE_ZOOM_FACTORS;
 
 import android.os.SystemClock;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.components.browser_ui.accessibility.PageZoomUtils;
 import org.chromium.components.zoom.ZoomConstants;
+import org.chromium.content_public.browser.BrowserContextHandle;
+import org.chromium.content_public.browser.HostZoomMap;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.EventForwarder;
 import org.chromium.ui.base.GestureEventType;
@@ -29,7 +34,10 @@ public class ZoomController {
      * @return True if there was a zoom change, false otherwise.
      */
     public static boolean zoomIn(@Nullable WebContents webContents) {
-        return pinchByDelta(webContents, ZoomConstants.ZOOM_IN_DELTA);
+        if (!ChromeFeatureList.sAndroidZoomIndicator.isEnabled()) {
+            return pinchByDelta(webContents, ZoomConstants.ZOOM_IN_DELTA);
+        }
+        return changeZoomLevel(webContents, /* zoomIn= */ false);
     }
 
     /**
@@ -40,7 +48,10 @@ public class ZoomController {
      * @return True if there was a zoom change, false otherwise.
      */
     public static boolean zoomOut(@Nullable WebContents webContents) {
-        return pinchByDelta(webContents, ZoomConstants.ZOOM_OUT_DELTA);
+        if (!ChromeFeatureList.sAndroidZoomIndicator.isEnabled()) {
+            return pinchByDelta(webContents, ZoomConstants.ZOOM_OUT_DELTA);
+        }
+        return changeZoomLevel(webContents, /* zoomIn= */ true);
     }
 
     /**
@@ -49,9 +60,16 @@ public class ZoomController {
      * @param webContents {@link WebContents} to reset the zoom of.
      * @return True if there was a zoom change, false otherwise.
      */
-    public static boolean zoomReset(@Nullable WebContents webContents) {
-        // Negative value to reset zoom level.
-        return pinchByDelta(webContents, ZoomConstants.ZOOM_RESET_DELTA);
+    public static boolean zoomReset(
+            @Nullable WebContents webContents,
+            @Nullable BrowserContextHandle browserContextHandle) {
+        if (!ChromeFeatureList.sAndroidZoomIndicator.isEnabled()) {
+            return pinchByDelta(webContents, ZoomConstants.ZOOM_RESET_DELTA);
+        }
+        if (webContents == null || browserContextHandle == null) return false;
+        double defaultZoomFactor = HostZoomMap.getDefaultZoomLevel(browserContextHandle);
+        HostZoomMap.setZoomLevel(webContents, defaultZoomFactor);
+        return true;
     }
 
     private static boolean pinchByDelta(@Nullable WebContents webContents, float delta) {
@@ -62,5 +80,21 @@ public class ZoomController {
         eventForwarder.onGestureEvent(GestureEventType.PINCH_BY, timeMs, delta);
         eventForwarder.onGestureEvent(GestureEventType.PINCH_END, timeMs, 0.f);
         return true;
+    }
+
+    private static boolean changeZoomLevel(@Nullable WebContents webContents, boolean zoomIn) {
+        if (webContents == null) return false;
+        double currentZoomFactor = HostZoomMap.getZoomLevel(webContents);
+        int index = PageZoomUtils.getNextIndex(zoomIn, currentZoomFactor);
+
+        if (index >= 0) {
+            snapToIndex(index, webContents);
+        }
+        return true;
+    }
+
+    private static void snapToIndex(int index, WebContents webContents) {
+        double newZoomFactor = AVAILABLE_ZOOM_FACTORS[index];
+        HostZoomMap.setZoomLevel(webContents, newZoomFactor);
     }
 }

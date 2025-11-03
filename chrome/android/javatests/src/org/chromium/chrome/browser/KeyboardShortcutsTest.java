@@ -39,6 +39,7 @@ import org.chromium.base.test.util.Features;
 import org.chromium.base.ui.KeyboardUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabClosingSource;
@@ -81,6 +82,7 @@ public class KeyboardShortcutsTest {
     @Mock private TabRemover mTabRemover;
     @Mock private ToolbarManager mToolbarManager;
     @Mock private WebContents mWebContents;
+    @Mock private Profile mProfile;
 
     @Before
     public void setUp() {
@@ -96,6 +98,8 @@ public class KeyboardShortcutsTest {
     private void setUpTabModelSelector(List<Tab> tabs) {
         when(mTabModelSelector.getCurrentModel()).thenReturn(mTabModel);
         when(mTabModelSelector.getCurrentTab()).thenReturn(mTab);
+        when(mTab.getProfile()).thenReturn(mProfile);
+        when(mProfile.getOriginalProfile()).thenReturn(mProfile);
 
         when(mTabModel.getCount()).thenReturn(tabs.size());
         when(mTabModel.index()).thenReturn(0);
