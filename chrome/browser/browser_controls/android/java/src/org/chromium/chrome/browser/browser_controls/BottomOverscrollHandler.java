@@ -115,10 +115,11 @@ public class BottomOverscrollHandler {
 
     /** Resets a gesture as the result of the successful overscroll or cancellation. */
     public void reset() {
-        // TODO: Implement
+        if (mOverscrollStarted) {
+            recordDidTriggerOverscroll(false);
+        }
         mOverscrollStarted = false;
         mHandler.removeCallbacks(mShowControlsRunnable);
-        recordDidTriggerOverscroll(false);
     }
 
     private void showControlsTransient() {

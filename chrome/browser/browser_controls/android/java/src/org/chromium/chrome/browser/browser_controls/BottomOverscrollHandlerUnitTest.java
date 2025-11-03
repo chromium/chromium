@@ -182,4 +182,20 @@ public class BottomOverscrollHandlerUnitTest {
             verify(mDelegate, never()).showControlsTransient();
         }
     }
+
+    @Test
+    public void testReset_notStarted() {
+        doReturn(BrowserControlsState.BOTH).when(mDelegate).get();
+        doReturn(0).when(mBrowserControls).getTopControlOffset();
+        doReturn(0).when(mBrowserControls).getBottomControlOffset();
+        try (var watcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords(DID_TRIGGER_OVERSCROLL_UMA_NAME)
+                        .build()) {
+            assertFalse(mHandler.start());
+            mHandler.reset();
+            mHandler.release(true);
+            ShadowLooper.runUiThreadTasks();
+        }
+    }
 }
