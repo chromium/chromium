@@ -584,6 +584,7 @@ should be able to be added at any place in this file.
       summary="For PasswordSuggestions feature."/>
   <variant name="_PasswordsWebAppProfileSwitch"
       summary="For PasswordsWebAppProfileSwitch feature."/>
+  <variant name="_PdfInkSignatures" summary="For PDF Ink Signatures feature."/>
   <variant name="_PdfPageDownload" summary="For the PdfPageDownload feature."/>
   <variant name="_PdfSearchifyFeature" summary="For PDF Searchify feature."/>
   <variant name="_PerformanceInterventionDialog"

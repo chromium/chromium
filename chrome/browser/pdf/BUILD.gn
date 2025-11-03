@@ -13,6 +13,8 @@ source_set("pdf") {
     "chrome_pdf_stream_delegate.h",
     "pdf_extension_util.cc",
     "pdf_extension_util.h",
+    "pdf_help_bubble_handler_factory.cc",
+    "pdf_help_bubble_handler_factory.h",
     "pdf_viewer_stream_manager.cc",
     "pdf_viewer_stream_manager.h",
   ]
@@ -23,6 +25,7 @@ source_set("pdf") {
     "//extensions/common/api",
     "//mojo/public/cpp/bindings",
     "//pdf:buildflags",
+    "//ui/base/interaction",
   ]
   deps = [
     "//build:chromeos_buildflags",

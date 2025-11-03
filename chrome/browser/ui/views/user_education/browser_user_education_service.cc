@@ -113,6 +113,7 @@
 #include "components/user_education/webui/help_bubble_webui.h"
 #include "components/vector_icons/vector_icons.h"
 #include "extensions/common/extension_urls.h"
+#include "pdf/buildflags.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -140,6 +141,10 @@
 #if BUILDFLAG(ENABLE_GLIC)
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
+#endif
+
+#if BUILDFLAG(ENABLE_PDF_INK2)
+#include "chrome/browser/pdf/pdf_help_bubble_handler_factory.h"
 #endif
 
 namespace {
@@ -817,6 +822,19 @@ void MaybeRegisterChromeFeaturePromos(
           .SetBubbleArrow(HelpBubbleArrow::kBottomRight)
           .SetBubbleIcon(kLightbulbOutlineIcon)
           .SetBubbleTitleText(IDS_PASSWORD_MANAGER_IPH_CREATE_SHORTCUT_TITLE)));
+
+#if BUILDFLAG(ENABLE_PDF_INK2)
+  // kIPHPdfInkSignaturesFeature:
+  registry.RegisterFeature(std::move(
+      FeaturePromoSpecification::CreateForSnoozePromo(
+          feature_engagement::kIPHPdfInkSignaturesFeature,
+          pdf::PdfHelpBubbleHandlerFactory::kPdfInkSignaturesDrawElementId,
+          IDS_PDF_INK_SIGNATURES_IPH_BODY)
+          .SetBubbleArrow(HelpBubbleArrow::kTopRight)
+          .SetInAnyContext(true)
+          .SetMetadata(138, "thestig@chromium.org",
+                       "Triggered when the PDF Viewer opens.")));
+#endif
 
   // kIPHPdfSearchifyFeature:
   registry.RegisterFeature(std::move(
