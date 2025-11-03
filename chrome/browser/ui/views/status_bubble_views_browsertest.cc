@@ -4,6 +4,9 @@
 
 #include "chrome/browser/ui/views/status_bubble_views.h"
 
+#include <utility>
+
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -35,15 +38,33 @@ class StatusBubbleViewsTest : public InProcessBrowserTest {
   gfx::Animation* GetShowHideAnimationForTesting() {
     return GetBubble()->GetShowHideAnimationForTest();
   }
-  void SetTaskRunner(base::SequencedTaskRunner* task_runner) {
-    GetBubble()->task_runner_ = task_runner;
+  void SetTaskRunners(
+      scoped_refptr<base::SequencedTaskRunner> task_runner,
+      scoped_refptr<base::SequencedTaskRunner> best_effort_task_runner) {
+    ASSERT_FALSE(orig_task_runner_);
+    ASSERT_FALSE(orig_best_effort_task_runner_);
+    orig_task_runner_ = std::exchange(GetBubble()->task_runner_, task_runner);
+    orig_best_effort_task_runner_ = std::exchange(
+        GetBubble()->best_effort_task_runner_, best_effort_task_runner);
   }
+  void ResetTaskRunners() {
+    ASSERT_TRUE(orig_task_runner_);
+    ASSERT_TRUE(orig_best_effort_task_runner_);
+    GetBubble()->task_runner_ = std::exchange(orig_task_runner_, nullptr);
+    GetBubble()->best_effort_task_runner_ =
+        std::exchange(orig_best_effort_task_runner_, nullptr);
+  }
+
+ private:
+  scoped_refptr<base::SequencedTaskRunner> orig_task_runner_;
+  scoped_refptr<base::SequencedTaskRunner> orig_best_effort_task_runner_;
 };
 
 IN_PROC_BROWSER_TEST_F(StatusBubbleViewsTest, WidgetLifetime) {
-  scoped_refptr<base::TestSimpleTaskRunner> task_runner =
+  auto task_runner = base::MakeRefCounted<base::TestSimpleTaskRunner>();
+  auto best_effort_task_runner =
       base::MakeRefCounted<base::TestSimpleTaskRunner>();
-  SetTaskRunner(task_runner.get());
+  SetTaskRunners(task_runner, best_effort_task_runner);
 
   // The widget does not exist until it needs to be shown.
   StatusBubble* bubble = GetBubble();
@@ -83,20 +104,25 @@ IN_PROC_BROWSER_TEST_F(StatusBubbleViewsTest, WidgetLifetime) {
   EXPECT_TRUE(IsDestroyPopupTimerRunning());
 
   // Run until idle, which should trigger deleting the widget.
-  task_runner->RunUntilIdle();
+  while (task_runner->HasPendingTask() ||
+         best_effort_task_runner->HasPendingTask()) {
+    task_runner->RunPendingTasks();
+    best_effort_task_runner->RunPendingTasks();
+  }
   EXPECT_FALSE(IsDestroyPopupTimerRunning());
   EXPECT_FALSE(GetWidget());
 #endif
-  SetTaskRunner(base::SingleThreadTaskRunner::GetCurrentDefault().get());
+  ResetTaskRunners();
 }
 
 // Mac does not delete the widget after a delay, so this test only runs on
 // non-mac platforms.
 #if !BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(StatusBubbleViewsTest, ShowHideDestroyShow) {
-  scoped_refptr<base::TestSimpleTaskRunner> task_runner =
+  auto task_runner = base::MakeRefCounted<base::TestSimpleTaskRunner>();
+  auto best_effort_task_runner =
       base::MakeRefCounted<base::TestSimpleTaskRunner>();
-  SetTaskRunner(task_runner.get());
+  SetTaskRunners(task_runner, best_effort_task_runner);
 
   // The widget does not exist until it needs to be shown.
   StatusBubble* bubble = GetBubble();
@@ -123,7 +149,11 @@ IN_PROC_BROWSER_TEST_F(StatusBubbleViewsTest, ShowHideDestroyShow) {
   EXPECT_TRUE(IsDestroyPopupTimerRunning());
 
   // Run until idle, which should trigger deleting the widget.
-  task_runner->RunUntilIdle();
+  while (task_runner->HasPendingTask() ||
+         best_effort_task_runner->HasPendingTask()) {
+    task_runner->RunPendingTasks();
+    best_effort_task_runner->RunPendingTasks();
+  }
   EXPECT_FALSE(IsDestroyPopupTimerRunning());
   EXPECT_FALSE(GetWidget());
 
@@ -133,6 +163,6 @@ IN_PROC_BROWSER_TEST_F(StatusBubbleViewsTest, ShowHideDestroyShow) {
   ASSERT_TRUE(widget);
   EXPECT_TRUE(widget->IsVisible());
 
-  SetTaskRunner(base::SingleThreadTaskRunner::GetCurrentDefault().get());
+  ResetTaskRunners();
 }
 #endif

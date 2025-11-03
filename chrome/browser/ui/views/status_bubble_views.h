@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/status_bubble.h"
 #include "ui/gfx/geometry/rect.h"
@@ -162,7 +163,11 @@ class StatusBubbleViews : public StatusBubble {
   // Used for posting tasks. This is typically
   // base::SingleThreadTaskRunner::GetCurrentDefault(), but may be set to
   // something else for tests.
-  raw_ptr<base::SequencedTaskRunner> task_runner_;
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
+
+  // Used for posting best-effort tasks. This is typically a sequence from the
+  // ThreadPool, but may be set to something else for tests.
+  scoped_refptr<base::SequencedTaskRunner> best_effort_task_runner_;
 
   // Times expansion of status bubble when URL is too long for standard width.
   base::WeakPtrFactory<StatusBubbleViews> expand_timer_factory_{this};
