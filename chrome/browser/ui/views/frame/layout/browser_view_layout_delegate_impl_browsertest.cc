@@ -114,19 +114,6 @@ class BrowserViewLayoutDelegateImplBrowsertest
     InteractiveBrowserTest::TearDownOnMainThread();
   }
 
-  void SetUseLayoutDelegate(Browser* browser, bool use_new_delegate) {
-    auto* const browser_view = BrowserView::GetBrowserViewForBrowser(browser);
-    auto* const layout = browser_view->GetBrowserViewLayout();
-    if (use_new_delegate) {
-      layout->SetDelegateForTesting(
-          std::make_unique<BrowserViewLayoutDelegateImpl>(*browser_view));
-    } else {
-      layout->SetDelegateForTesting(
-          std::make_unique<BrowserViewLayoutDelegateImplOld>(*browser_view));
-    }
-    views::test::RunScheduledLayout(browser_view);
-  }
-
   Browser* CreateAppBrowser() {
     const GURL kAppUrl("https://test.com");
     const auto app_id = web_app::test::InstallDummyWebApp(browser()->profile(),
@@ -159,69 +146,7 @@ INSTANTIATE_TEST_SUITE_P(,
                          });
 
 IN_PROC_BROWSER_TEST_P(BrowserViewLayoutDelegateImplBrowsertest,
-                       CompareOldAndNewLayout_TabbedBrowser) {
-  BrowserView* const browser_view =
-      BrowserView::GetBrowserViewForBrowser(browser());
-  TabStrip* const tabstrip = browser_view->tabstrip();
-  ToolbarView* const toolbar = browser_view->toolbar();
-  gfx::Rect tabstrip_bounds;
-  gfx::Rect toolbar_bounds;
-
-  ApplyWindowState(browser());
-
-  // Get the bounds using the old layout.
-  {
-    SetUseLayoutDelegate(browser(), false);
-    tabstrip_bounds = GetBoundsInWindow(tabstrip);
-    toolbar_bounds = GetBoundsInWindow(toolbar);
-  }
-
-  // Get the bounds in the new layout and confirm that they match.
-  {
-    SetUseLayoutDelegate(browser(), true);
-
-    // Ensure the tabstrip is in the correct location.
-    const gfx::Rect actual_tabstrip_bounds = GetBoundsInWindow(tabstrip);
-    EXPECT_EQ(tabstrip_bounds, actual_tabstrip_bounds);
-
-    // Because the position of the tabstrip can vary, normalize expected toolbar
-    // location by the bottom of the actual tabstrip.
-    gfx::Rect expected_toolbar_bounds = toolbar_bounds;
-    expected_toolbar_bounds.Offset(
-        0, actual_tabstrip_bounds.bottom() - tabstrip_bounds.bottom());
-    EXPECT_EQ(expected_toolbar_bounds, GetBoundsInWindow(toolbar))
-        << "Toolbar bounds differ.";
-  }
-}
-
-IN_PROC_BROWSER_TEST_P(BrowserViewLayoutDelegateImplBrowsertest,
-                       CompareOldAndNewLayout_AppBrowser) {
-  Browser* const app_browser = CreateAppBrowser();
-  WebAppFrameToolbarView* const toolbar =
-      BrowserView::GetBrowserViewForBrowser(app_browser)
-          ->web_app_frame_toolbar_for_testing();
-  gfx::Rect toolbar_bounds;
-
-  ApplyWindowState(app_browser);
-
-  // Get the bounds using the old layout.
-  {
-    SetUseLayoutDelegate(app_browser, false);
-    toolbar_bounds = GetBoundsInWindow(toolbar);
-  }
-
-  // Get the bounds in the new layout and confirm that they match.
-  {
-    SetUseLayoutDelegate(app_browser, true);
-    EXPECT_EQ(toolbar_bounds, GetBoundsInWindow(toolbar))
-        << "Toolbar bounds differ.";
-  }
-}
-
-IN_PROC_BROWSER_TEST_P(BrowserViewLayoutDelegateImplBrowsertest,
                        Screenshot_TabbedBrowser) {
-  SetUseLayoutDelegate(browser(), true);
-
   ApplyWindowState(browser());
 
   gfx::Rect bounds;

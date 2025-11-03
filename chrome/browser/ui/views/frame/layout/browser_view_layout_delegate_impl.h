@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_FRAME_LAYOUT_BROWSER_VIEW_LAYOUT_DELEGATE_IMPL_H_
 #define CHROME_BROWSER_UI_VIEWS_FRAME_LAYOUT_BROWSER_VIEW_LAYOUT_DELEGATE_IMPL_H_
 
-#include <optional>
-
 #include "base/auto_reset.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ref.h"
@@ -16,15 +14,18 @@ class BrowserFrameView;
 
 // Base class for concrete implementations of layout delegate used in live
 // browsers. Use `CreateDelegate()` to generate an appropriate delegate.
-class BrowserViewLayoutDelegateImplBase : public BrowserViewLayoutDelegate {
+class BrowserViewLayoutDelegateImpl : public BrowserViewLayoutDelegate {
  public:
-  BrowserViewLayoutDelegateImplBase(const BrowserViewLayoutDelegateImplBase&) =
-      delete;
-  void operator=(const BrowserViewLayoutDelegateImplBase&) = delete;
-  ~BrowserViewLayoutDelegateImplBase() override;
+  explicit BrowserViewLayoutDelegateImpl(BrowserView& browser_view);
+  BrowserViewLayoutDelegateImpl(const BrowserViewLayoutDelegateImpl&) = delete;
+  void operator=(const BrowserViewLayoutDelegateImpl&) = delete;
+  ~BrowserViewLayoutDelegateImpl() override;
 
   bool ShouldDrawTabStrip() const override;
   bool GetBorderlessModeEnabled() const override;
+  gfx::Rect GetBoundsForTabStripRegionInBrowserView() const override;
+  gfx::Rect GetBoundsForToolbarInVerticalTabBrowserView() const override;
+  gfx::Rect GetBoundsForWebAppFrameToolbarInBrowserView() const override;
   BrowserLayoutParams GetBrowserLayoutParams() const override;
   int GetTopInsetInBrowserView() const override;
   void LayoutWebAppWindowTitle(const gfx::Rect& available_space,
@@ -48,13 +49,7 @@ class BrowserViewLayoutDelegateImplBase : public BrowserViewLayoutDelegate {
   bool ShouldLayoutTabStrip() const override;
   int GetExtraInfobarOffset() const override;
 
-  // Creates the appropriate delegate for the browser to use given flags, etc.
-  static std::unique_ptr<BrowserViewLayoutDelegate> CreateDelegate(
-      BrowserView& browser_view);
-
  protected:
-  explicit BrowserViewLayoutDelegateImplBase(BrowserView& browser_view);
-
   BrowserView& browser_view() { return browser_view_.get(); }
   const BrowserView& browser_view() const { return browser_view_.get(); }
 
@@ -62,31 +57,6 @@ class BrowserViewLayoutDelegateImplBase : public BrowserViewLayoutDelegate {
 
  private:
   const raw_ref<BrowserView> browser_view_;
-};
-
-// The original implementation of the layout delegate; uses obsolete
-// BrowserFrameView APIs.
-class BrowserViewLayoutDelegateImplOld
-    : public BrowserViewLayoutDelegateImplBase {
- public:
-  explicit BrowserViewLayoutDelegateImplOld(BrowserView& browser_view);
-  ~BrowserViewLayoutDelegateImplOld() override;
-
-  gfx::Rect GetBoundsForTabStripRegionInBrowserView() const override;
-  gfx::Rect GetBoundsForToolbarInVerticalTabBrowserView() const override;
-  gfx::Rect GetBoundsForWebAppFrameToolbarInBrowserView() const override;
-};
-
-// The new implementation of the layout delegate; uses new BrowserLayoutParams
-// API.
-class BrowserViewLayoutDelegateImpl : public BrowserViewLayoutDelegateImplBase {
- public:
-  explicit BrowserViewLayoutDelegateImpl(BrowserView& browser_view);
-  ~BrowserViewLayoutDelegateImpl() override;
-
-  gfx::Rect GetBoundsForTabStripRegionInBrowserView() const override;
-  gfx::Rect GetBoundsForToolbarInVerticalTabBrowserView() const override;
-  gfx::Rect GetBoundsForWebAppFrameToolbarInBrowserView() const override;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_LAYOUT_BROWSER_VIEW_LAYOUT_DELEGATE_IMPL_H_

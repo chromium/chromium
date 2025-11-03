@@ -5174,7 +5174,7 @@ void BrowserView::AddedToWidget() {
   // LINT.ThenChange(//chrome/browser/ui/views/frame/layout/browser_view_layout.h:BrowserViewLayoutViews)
 
   SetLayoutManager(BrowserViewLayout::CreateLayout(
-      BrowserViewLayoutDelegateImplBase::CreateDelegate(*this), browser(),
+      std::make_unique<BrowserViewLayoutDelegateImpl>(*this), browser(),
       std::move(layout_views)));
 
   EnsureFocusOrder();
