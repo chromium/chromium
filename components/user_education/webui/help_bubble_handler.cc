@@ -108,6 +108,16 @@ std::string GetFileNameFromIcon(const gfx::VectorIcon* icon) {
   return SnakeCaseFromCamelCase(icon_name);
 }
 
+content::WebContents* GetWebContentsCallbackForWebUIController(
+    content::WebUIController* controller) {
+  // A WebContents is always associated with a WebUIController, so this never
+  // returns nullptr in production code. The only possible reason for
+  // returning nullptr is in unit tests where the test WebUIController
+  // implementation is not set up correctly. If that happens, the test support
+  // code should be fixed.
+  return controller->web_ui()->GetWebContents();
+}
+
 }  // namespace
 
 struct HelpBubbleHandlerBase::ElementData {
@@ -143,13 +153,20 @@ void HelpBubbleHandlerBase::VisibilityProvider::SetLastKnownVisibility(
 HelpBubbleHandlerBase::HelpBubbleHandlerBase(
     std::unique_ptr<ClientProvider> client_provider,
     std::unique_ptr<VisibilityProvider> visibility_provider,
+    GetWebContentsCallback get_web_contents_callback,
     const std::vector<ui::ElementIdentifier>& identifiers,
     ui::ElementContext context)
     : client_provider_(std::move(client_provider)),
       visibility_provider_(std::move(visibility_provider)),
+      get_web_contents_callback_(std::move(get_web_contents_callback)),
       context_(context) {
-  visibility_provider_->set_handler(this);
+  DCHECK(client_provider_);
+  DCHECK(visibility_provider_);
+  DCHECK(get_web_contents_callback_);
   DCHECK(context_);
+
+  visibility_provider_->set_handler(this);
+
   for (auto identifier : identifiers) {
     DCHECK(identifier);
     const auto it = element_data_.emplace(identifier, ElementData());
@@ -162,13 +179,14 @@ HelpBubbleHandlerBase::HelpBubbleHandlerBase(
 
 HelpBubbleHandlerBase::~HelpBubbleHandlerBase() {
   for (auto& [id, data] : element_data_) {
-    if (data.help_bubble)
+    if (data.help_bubble) {
       data.help_bubble->Close();
+    }
   }
 }
 
 content::WebContents* HelpBubbleHandlerBase::GetWebContents() {
-  return GetController()->web_ui()->GetWebContents();
+  return get_web_contents_callback_.Run();
 }
 
 bool HelpBubbleHandlerBase::IsHelpBubbleShowingForTesting(
@@ -586,18 +604,15 @@ HelpBubbleHandler::HelpBubbleHandler(
     : HelpBubbleHandlerBase(
           std::make_unique<ClientProvider>(std::move(pending_client)),
           std::make_unique<VisibilityProvider>(),
+          base::BindRepeating(&GetWebContentsCallbackForWebUIController,
+                              controller),
           identifiers,
           ui::ElementContext(controller, base::PassKey<HelpBubbleHandler>())),
-      receiver_(this, std::move(pending_handler)),
-      controller_(controller) {
+      receiver_(this, std::move(pending_handler)) {
   DCHECK(controller);
 }
 
 HelpBubbleHandler::~HelpBubbleHandler() = default;
-
-content::WebUIController* HelpBubbleHandler::GetController() {
-  return controller_;
-}
 
 void HelpBubbleHandler::ReportBadMessage(std::string_view error) {
   receiver_.ReportBadMessage(std::move(error));

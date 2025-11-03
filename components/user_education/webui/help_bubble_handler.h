@@ -11,6 +11,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -39,27 +40,25 @@ class HelpBubbleHandlerBase
     : public help_bubble::mojom::HelpBubbleHandler,
       public tracked_element::mojom::TrackedElementHandler {
  public:
+  // Returns the WebContents associated with the HelpBubbleHandle. The return
+  // value must never be null.
+  using GetWebContentsCallback =
+      base::RepeatingCallback<content::WebContents*()>;
+
   HelpBubbleHandlerBase(const HelpBubbleHandlerBase&) = delete;
   HelpBubbleHandlerBase(const std::vector<ui::ElementIdentifier>& identifiers,
                         ui::ElementContext context);
   HelpBubbleHandlerBase& operator=(const HelpBubbleHandlerBase&) = delete;
   ~HelpBubbleHandlerBase() override;
 
-  // Returns the context. Currently this is tied to the WebUIController and not
-  // the browser that holds it, as (at least for tab contents) the owning
-  // browser can change during the handler's lifespan.
+  // Returns the context. In the common case, currently this is tied to the
+  // WebUIController and not the browser that holds it, as (at least for tab
+  // contents) the owning browser can change during the handler's lifespan.
+  // For special cases without a WebUIController, the HelpBubbleHandle creator
+  // must provide a unique context of their own choosing.
   ui::ElementContext context() const { return context_; }
 
-  // Returns the associated `WebUIController`. This should not change over the
-  // lifetime of the handler.
-  virtual content::WebUIController* GetController() = 0;
-
-  // Returns the WebContents associated with the WebUIController. This is a
-  // convenience method. A WebContents is always associated with a
-  // WebUIController, so this never returns nullptr in production code. The only
-  // possible reason for returning nullptr is in unit tests where the test
-  // WebUIController implementation is not set up correctly. If that happens,
-  // the test support code should be fixed.
+  // See `GetWebContentsCallback` above.
   content::WebContents* GetWebContents();
 
   // Returns whether a help bubble is showing for a given element.
@@ -111,6 +110,7 @@ class HelpBubbleHandlerBase
 
   HelpBubbleHandlerBase(std::unique_ptr<ClientProvider> client_provider,
                         std::unique_ptr<VisibilityProvider> visibility_provider,
+                        GetWebContentsCallback get_web_contents_callback,
                         const std::vector<ui::ElementIdentifier>& identifiers,
                         ui::ElementContext context);
 
@@ -177,6 +177,7 @@ class HelpBubbleHandlerBase
 
   const std::unique_ptr<ClientProvider> client_provider_;
   const std::unique_ptr<VisibilityProvider> visibility_provider_;
+  const GetWebContentsCallback get_web_contents_callback_;
   const ui::ElementContext context_;
   std::map<ui::ElementIdentifier, ElementData> element_data_;
 
@@ -221,10 +222,8 @@ class HelpBubbleHandler : public HelpBubbleHandlerBase {
       mojo::PendingRemote<help_bubble::mojom::HelpBubbleClient> pending_client,
       content::WebUIController* controller,
       const std::vector<ui::ElementIdentifier>& identifiers);
-  ~HelpBubbleHandler() override;
 
-  // HelpBubbleHandlerBase:
-  content::WebUIController* GetController() override;
+  ~HelpBubbleHandler() override;
 
  private:
   class ClientProvider;
@@ -233,7 +232,6 @@ class HelpBubbleHandler : public HelpBubbleHandlerBase {
   void ReportBadMessage(std::string_view error) override;
 
   mojo::Receiver<help_bubble::mojom::HelpBubbleHandler> receiver_;
-  const raw_ptr<content::WebUIController> controller_;
 };
 
 }  // namespace user_education

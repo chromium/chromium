@@ -64,12 +64,14 @@ class MockHelpBubbleClient : public help_bubble::mojom::HelpBubbleClient {
 // method.
 class TestHelpBubbleHandler : public HelpBubbleHandlerBase {
  public:
-  explicit TestHelpBubbleHandler(
-      const std::vector<ui::ElementIdentifier>& identifiers,
-      std::unique_ptr<VisibilityProvider> visibility_provider)
+  TestHelpBubbleHandler(const std::vector<ui::ElementIdentifier>& identifiers,
+                        std::unique_ptr<VisibilityProvider> visibility_provider)
       : HelpBubbleHandlerBase(
             std::make_unique<ClientProvider>(),
             std::move(visibility_provider),
+            base::BindRepeating([]() -> content::WebContents* {
+              NOTREACHED() << "Should not call this in tests.";
+            }),
             identifiers,
             ui::ElementContext::CreateFakeContextForTesting(this)) {}
 
@@ -79,10 +81,6 @@ class TestHelpBubbleHandler : public HelpBubbleHandlerBase {
   // macros.
   testing::StrictMock<MockHelpBubbleClient>& mock() {
     return static_cast<ClientProvider*>(client_provider())->client_;
-  }
-
-  content::WebUIController* GetController() override {
-    NOTREACHED() << "Should not call this in tests.";
   }
 
   class MockVisibilityProvider

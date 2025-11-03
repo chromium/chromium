@@ -41,8 +41,7 @@ gfx::Rect TrackedElementHelpBubbleWebUIAnchor::GetScreenBounds() const {
 
   // To get the screen coordinates, have to offset by the coordinates of the
   // viewport.
-  content::WebContents* const contents =
-      handler_->GetController()->web_ui()->GetWebContents();
+  content::WebContents* const contents = handler_->GetWebContents();
   result.Offset(contents->GetContainerBounds().OffsetFromOrigin());
   return result;
 }
