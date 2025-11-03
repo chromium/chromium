@@ -171,6 +171,7 @@
   [self.recentTabsNavigationController
       dismissViewControllerAnimated:YES
                          completion:self.completion];
+  [self stopSigninCoordinator];
   self.recentTabsNavigationController = nil;
   self.recentTabsContextMenuHelper = nil;
   [self.sharingCoordinator stop];
