@@ -31,7 +31,9 @@ source_set("export_coordinator") {
   ]
   public_deps = [ "//ios/chrome/browser/shared/coordinator/chrome_coordinator" ]
   deps = [
+    "//components/metrics:metrics_pref_names",
     "//components/password_manager/core/browser/ui",
+    "//components/prefs",
     "//components/signin/public/identity_manager",
     "//components/webauthn/core/browser:passkey_model",
     "//ios/chrome/app/strings",
@@ -39,6 +41,7 @@ source_set("export_coordinator") {
     "//ios/chrome/browser/credential_exchange/ui",
     "//ios/chrome/browser/settings/ui_bundled/password:title_view",
     "//ios/chrome/browser/settings/ui_bundled/password:ui",
+    "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/webauthn/public",
     "//ios/chrome/common/credential_provider:passkey_keychain_provider_bridge_chrome",

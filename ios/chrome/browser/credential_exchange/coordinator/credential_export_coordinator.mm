@@ -7,13 +7,16 @@
 #import <string>
 
 #import "base/memory/raw_ptr.h"
+#import "components/metrics/metrics_pref_names.h"
 #import "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
+#import "components/prefs/pref_service.h"
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/credential_exchange/coordinator/credential_export_mediator.h"
 #import "ios/chrome/browser/credential_exchange/ui/credential_export_view_controller.h"
 #import "ios/chrome/browser/credential_exchange/ui/credential_export_view_controller_presentation_delegate.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/create_password_manager_title_view.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/webauthn/public/passkey_welcome_screen_util.h"
 #import "ios/chrome/common/credential_provider/passkey_keychain_provider_bridge.h"
@@ -90,8 +93,11 @@
 
 - (void)userDidStartExport {
   // TODO(crbug.com/449701042): Only fetch keys if there are selected passkeys.
+  bool metricsReportingEnabled =
+      GetApplicationContext()->GetLocalState()->GetBoolean(
+          metrics::prefs::kMetricsReportingEnabled);
   _passkeyKeychainProviderBridge = [[PasskeyKeychainProviderBridge alloc]
-        initWithEnableLogging:NO
+        initWithEnableLogging:metricsReportingEnabled
          navigationController:_baseNavigationController
       navigationItemTitleView:password_manager::CreatePasswordManagerTitleView(
                                   l10n_util::GetNSString(
