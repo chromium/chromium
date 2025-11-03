@@ -195,7 +195,12 @@ cc::SkottieColorMap CreateColorMap(const ui::ColorProvider* color_provider) {
           color_provider->GetColor(ui::kColorSysIlloNeutralHigh)),
       cc::SkottieMapColor(
           "cdds.sys.color.illo-neutral-max",
-          color_provider->GetColor(ui::kColorSysIlloNeutralMax))};
+          color_provider->GetColor(ui::kColorSysIlloNeutralMax)),
+      cc::SkottieMapColor("cdds.sys.color.error",
+                          color_provider->GetColor(ui::kColorSysError)),
+      cc::SkottieMapColor(
+          "cdds.sys.color.error-container",
+          color_provider->GetColor(ui::kColorSysErrorContainer))};
 }
 
 // Used for a |ui::ImageModel::ImageGenerator|.
