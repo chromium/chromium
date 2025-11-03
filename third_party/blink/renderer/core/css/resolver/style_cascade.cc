@@ -2351,11 +2351,23 @@ bool StyleCascade::ResolveAutoBaseInto(CSSParserTokenStream& stream,
   }
   LookupAndApply(appearance, resolver);
 
-  // Note that the InBaseSelectAppearance() flag is set by StyleAdjuster,
+  // Note that the InBaseAppearance() flag is set by StyleAdjuster,
   // which hasn't happened yet. Therefore we also need to check
-  // HasBaseSelectAppearance() here.
-  bool has_base_appearance = state_.StyleBuilder().HasBaseAppearance() ||
-                             state_.StyleBuilder().InBaseAppearance();
+  // state_.StyleBuilder().Appearance() here, which we are using instead of
+  // EffectiveAppearance() because EffectiveAppearance hasn't been calculated
+  // from Appearance yet.
+  Element& element = state_.GetElement();
+  bool has_base_appearance = false;
+  if (element.SupportsBaseAppearance(state_.StyleBuilder().Appearance())) {
+    has_base_appearance = true;
+  } else if (state_.StyleBuilder().InBaseAppearance()) {
+    // Don't allow base appearance to be inherited to elements which actually
+    // support the appearance property.
+    bool could_support_base_appearance =
+        element.SupportsBaseAppearance(AppearanceValue::kBase) ||
+        element.SupportsBaseAppearance(AppearanceValue::kBaseSelect);
+    has_base_appearance = !could_support_base_appearance;
+  }
 
   if (has_base_appearance) {
     // We want to the second argument.

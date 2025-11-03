@@ -1990,18 +1990,16 @@ bool HTMLSelectElement::SupportsBaseAppearanceInternal(
       appearance_value == BaseAppearanceValue::kBase) {
     return false;
   }
-  if (!IsMultiple() ||
-      RuntimeEnabledFeatures::CustomizableSelectMultiplePopupEnabled()) {
-    // Single-selects are always supported. When
-    // CustomizableSelectMultiplePopup is enabled, then all modes are
-    // supported.
+  if (RuntimeEnabledFeatures::CustomizableSelectMultiplePopupEnabled()) {
     return true;
-  } else if (RuntimeEnabledFeatures::CustomizableSelectInPageEnabled()) {
-    // CustomizableSelectInPage allows multi-selects to be base appearance
-    // but only if they are in-page ListBox selects.
-    return !UsesMenuList();
   }
-  return false;
+  if (RuntimeEnabledFeatures::CustomizableSelectInPageEnabled()) {
+    if (UsesMenuList() && IsMultiple()) {
+      return false;
+    }
+    return true;
+  }
+  return !IsMultiple() && UsesMenuList();
 }
 
 // static

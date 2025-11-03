@@ -2898,6 +2898,7 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
   // Access to Appearance().
   friend class LayoutTheme;
   friend class StyleAdjuster;
+  friend class StyleCascade;
   friend class StyleResolverState;
   friend class StyleResolver;
   // Access to UserModify().

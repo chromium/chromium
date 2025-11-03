@@ -513,11 +513,15 @@ static void AdjustStyleForMarker(ComputedStyleBuilder& builder,
 // static
 void StyleAdjuster::AdjustStyleForHTMLElement(ComputedStyleBuilder& builder,
                                               HTMLElement& element) {
-  if (builder.HasBaseAppearance()) {
-    if (element.SupportsBaseAppearance(builder.Appearance())) {
-      builder.SetInBaseAppearance(true);
-    } else {
-      // TODO(crbug.com/393500003): Don't set InBaseAppearance to false here.
+  if (builder.HasBaseAppearance() &&
+      element.SupportsBaseAppearance(builder.Appearance())) {
+    builder.SetInBaseAppearance(true);
+  }
+  if (builder.InBaseAppearance() && !builder.HasBaseAppearance()) {
+    // Don't allow base appearance to be inherited to elements which actually
+    // support the appearance property.
+    if (element.SupportsBaseAppearance(AppearanceValue::kBase) ||
+        element.SupportsBaseAppearance(AppearanceValue::kBaseSelect)) {
       builder.SetInBaseAppearance(false);
     }
   }
