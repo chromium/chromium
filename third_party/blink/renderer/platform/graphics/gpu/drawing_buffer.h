@@ -133,7 +133,6 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
   static scoped_refptr<DrawingBuffer> Create(
       std::unique_ptr<WebGraphicsContext3DProvider>,
       const Platform::WebGLContextInfo&,
-      bool using_swap_chain,
       Client*,
       const gfx::Size&,
       bool premultiplied_alpha,

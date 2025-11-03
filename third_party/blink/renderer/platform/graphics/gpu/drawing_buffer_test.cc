@@ -606,15 +606,13 @@ TEST(DrawingBufferDepthStencilTest, packedDepthStencilSupported) {
     bool want_depth_buffer = cases[i].request_depth;
     bool want_stencil_buffer = cases[i].request_stencil;
     bool want_antialiasing = false;
-    bool using_swap_chain = false;
     bool desynchronized = false;
     scoped_refptr<DrawingBuffer> drawing_buffer = DrawingBuffer::Create(
-        std::move(provider), context_info, using_swap_chain, nullptr,
-        gfx::Size(10, 10), premultiplied_alpha, want_alpha_channel,
-        want_depth_buffer, want_stencil_buffer, want_antialiasing,
-        desynchronized, preserve, Platform::kWebGL1ContextType,
-        DrawingBuffer::kAllowChromiumImage, PredefinedColorSpace::kSRGB,
-        gl::GpuPreference::kHighPerformance);
+        std::move(provider), context_info, nullptr, gfx::Size(10, 10),
+        premultiplied_alpha, want_alpha_channel, want_depth_buffer,
+        want_stencil_buffer, want_antialiasing, desynchronized, preserve,
+        Platform::kWebGL1ContextType, DrawingBuffer::kAllowChromiumImage,
+        PredefinedColorSpace::kSRGB, gl::GpuPreference::kHighPerformance);
 
     // When we request a depth or a stencil buffer, we will get both.
     EXPECT_EQ(cases[i].request_depth || cases[i].request_stencil,
@@ -692,8 +690,8 @@ TEST_F(DrawingBufferTest,
   Platform::WebGLContextInfo context_info;
   context_info.using_gpu_compositing = true;
   scoped_refptr<DrawingBuffer> too_big_drawing_buffer = DrawingBuffer::Create(
-      nullptr, context_info, false /* using_swap_chain */, nullptr,
-      too_big_size, false, false, false, false, false,
+      nullptr, context_info, nullptr, too_big_size, false, false, false, false,
+      false,
       /*desynchronized=*/false, DrawingBuffer::kDiscard,
       Platform::kWebGL1ContextType, DrawingBuffer::kAllowChromiumImage,
       PredefinedColorSpace::kSRGB, gl::GpuPreference::kHighPerformance);

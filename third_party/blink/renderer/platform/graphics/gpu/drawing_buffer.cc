@@ -49,6 +49,7 @@
 #include "gpu/command_buffer/client/context_support.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/capabilities.h"
+#include "gpu/command_buffer/common/shared_image_capabilities.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/config/gpu_driver_bug_workaround_type.h"
 #include "gpu/config/gpu_feature_info.h"
@@ -157,7 +158,6 @@ void ForceNextDrawingBufferCreationToFailForTest() {
 scoped_refptr<DrawingBuffer> DrawingBuffer::Create(
     std::unique_ptr<WebGraphicsContext3DProvider> context_provider,
     const Platform::WebGLContextInfo& context_info,
-    bool using_swap_chain,
     Client* client,
     const gfx::Size& size,
     bool premultiplied_alpha,
@@ -220,6 +220,10 @@ scoped_refptr<DrawingBuffer> DrawingBuffer::Create(
   bool texture_storage_enabled =
       extensions_util->IsExtensionEnabled("GL_EXT_texture_storage");
 
+  bool using_swap_chain = context_provider->SharedImageInterface()
+                              ->GetCapabilities()
+                              .shared_image_swap_chain &&
+                          desynchronized;
   scoped_refptr<DrawingBuffer> drawing_buffer =
       base::AdoptRef(new DrawingBuffer(
           std::move(context_provider), context_info, using_swap_chain,

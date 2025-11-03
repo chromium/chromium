@@ -47,7 +47,6 @@
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/capabilities.h"
-#include "gpu/command_buffer/common/shared_image_capabilities.h"
 #include "gpu/config/gpu_driver_bug_workaround_type.h"
 #include "gpu/config/gpu_feature_info.h"
 #include "media/base/video_frame.h"
@@ -1331,21 +1330,16 @@ scoped_refptr<DrawingBuffer> WebGLRenderingContextBase::CreateDrawingBuffer(
           ? DrawingBuffer::kAllowChromiumImage
           : DrawingBuffer::kDisallowChromiumImage;
 
-  bool using_swap_chain = context_provider->SharedImageInterface()
-                              ->GetCapabilities()
-                              .shared_image_swap_chain &&
-                          desynchronized;
-
   gl::GpuPreference gpu_preference =
       PowerPreferenceToGpuPreference(attrs.power_preference);
 
   ScopedPixelLocalStorageInterrupt scoped_pls_interrupt(this);
   return DrawingBuffer::Create(
-      std::move(context_provider), context_info, using_swap_chain, this,
-      ClampedCanvasSize(), premultiplied_alpha, want_alpha_channel,
-      want_depth_buffer, want_stencil_buffer, want_antialiasing, desynchronized,
-      preserve, context_type_, chromium_image_usage,
-      drawing_buffer_color_space_, gpu_preference);
+      std::move(context_provider), context_info, this, ClampedCanvasSize(),
+      premultiplied_alpha, want_alpha_channel, want_depth_buffer,
+      want_stencil_buffer, want_antialiasing, desynchronized, preserve,
+      context_type_, chromium_image_usage, drawing_buffer_color_space_,
+      gpu_preference);
 }
 
 void WebGLRenderingContextBase::InitializeNewContext() {
