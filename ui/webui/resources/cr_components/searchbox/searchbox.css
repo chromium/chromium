@@ -409,6 +409,7 @@ cr-searchbox-icon {
 
 :host([ntp-realbox-next-enabled]) contextual-entrypoint-and-carousel::part(context-menu-entrypoint-icon) {
   --cr-icon-button-icon-size: 24px;
+  --cr-icon-button-margin-start: 2px;
   --cr-icon-button-size: 36px;
 }
 

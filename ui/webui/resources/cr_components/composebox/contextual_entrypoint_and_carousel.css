@@ -28,12 +28,11 @@
   align-items: center;
   display: flex;
   gap: 4px;
-  padding-inline-start: 4px;
 }
 
 #contextEntrypoint {
   color: var(--color-searchbox-results-foreground);
-  padding-inline-end: 8px;
+  padding-inline: 8px;
 }
 
 #toolChipsContainer {
