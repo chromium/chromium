@@ -551,6 +551,11 @@ void Populate3PcExceptions(BrowserContext* browser_context,
                            const GURL& initial_url,
                            const GURL& final_url,
                            base::span<BtmRedirectInfoPtr> redirects) {
+  // For non-HTTP(S) URLs, we create a StorageKey with an empty URL. This
+  // prevents IsFullCookieAccessAllowed() from returning true because the
+  // initial or final URL has a non-HTTP(S) scheme. This is the desired behavior
+  // because we don't want to grant exceptions to a redirect because the initial
+  // or final URL of the redirect chain was non-HTTP(S).
   const blink::StorageKey initial_url_key =
       blink::StorageKey::CreateFirstParty(url::Origin::Create(
           initial_url.SchemeIsHTTPOrHTTPS() ? initial_url : GURL()));

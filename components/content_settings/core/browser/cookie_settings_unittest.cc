@@ -1873,6 +1873,28 @@ TEST_F(CookieSettingsTest, ThirdPartySettingObserver) {
   EXPECT_EQ(kSupports3pcBlocking, observer.last_value());
 }
 
+TEST_F(CookieSettingsTest, IsFullCookieAccessAllowedForEmptyFirstParty) {
+  // 1. 3PCs are allowed globally.
+  prefs_.SetInteger(prefs::kCookieControlsMode,
+                    static_cast<int>(CookieControlsMode::kOff));
+  EXPECT_TRUE(cookie_settings_->IsFullCookieAccessAllowed(
+      GURL(kAllowedSite), net::SiteForCookies(), url::Origin(),
+      net::CookieSettingOverrides(), std::nullopt));
+
+  // 2. 3PCs are blocked.
+  prefs_.SetInteger(prefs::kCookieControlsMode,
+                    static_cast<int>(CookieControlsMode::kBlockThirdParty));
+  EXPECT_EQ(
+#if BUILDFLAG(IS_IOS)
+      true,
+#else
+      false,
+#endif
+      cookie_settings_->IsFullCookieAccessAllowed(
+          GURL(kAllowedSite), net::SiteForCookies(), url::Origin(),
+          net::CookieSettingOverrides(), std::nullopt));
+}
+
 TEST_F(CookieSettingsTest, LegacyCookieAccessAllowAll) {
   settings_map_->SetDefaultContentSetting(
       ContentSettingsType::LEGACY_COOKIE_ACCESS, CONTENT_SETTING_ALLOW);
