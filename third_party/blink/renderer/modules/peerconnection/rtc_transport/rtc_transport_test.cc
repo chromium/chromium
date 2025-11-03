@@ -32,11 +32,17 @@ webrtc::Timestamp GetWebRTCTimeOrigin(LocalDOMWindow* window) {
 }
 
 RtcTransportConfig* CreateRtcTransportConfig() {
-  auto* ice_server = RTCIceServer::Create();
-  ice_server->setUrls(MakeGarbageCollected<V8UnionStringOrStringSequence>(
+  auto* stun_server = RTCIceServer::Create();
+  stun_server->setUrls(MakeGarbageCollected<V8UnionStringOrStringSequence>(
       "stun:stun1.example.net:19302"));
+  auto* turn_server = RTCIceServer::Create();
+  turn_server->setUrls(MakeGarbageCollected<V8UnionStringOrStringSequence>(
+      "turn:turn.example.net:12345"));
+  turn_server->setUsername("user");
+  turn_server->setCredential("password");
   HeapVector<Member<RTCIceServer>> ice_servers;
-  ice_servers.push_back(ice_server);
+  ice_servers.push_back(stun_server);
+  ice_servers.push_back(turn_server);
 
   auto* config = RtcTransportConfig::Create();
   config->setIceServers(ice_servers);
@@ -357,6 +363,24 @@ TEST_F(RtcTransportParseStunServersTest, FailureInvalidUrl) {
   EXPECT_EQ(transport, nullptr);
 }
 
+TEST_F(RtcTransportParseStunServersTest, FailureMissingTurnCredentials) {
+  DummyExceptionStateForTesting exception_state;
+  auto* config = RtcTransportConfig::Create();
+  auto* ice_server = RTCIceServer::Create();
+  ice_server->setUrls(MakeGarbageCollected<V8UnionStringOrStringSequence>(
+      "turn:turn.example.org:12345"));
+  HeapVector<Member<RTCIceServer>> ice_servers;
+  ice_servers.push_back(ice_server);
+  config->setIceServers(ice_servers);
+
+  auto* transport = RtcTransport::CreateForTests(
+      context_, config, exception_state, std::move(mock_connection_));
+  EXPECT_TRUE(exception_state.HadException());
+  EXPECT_EQ(exception_state.Code(),
+            ToExceptionCode(DOMExceptionCode::kNotSupportedError));
+  EXPECT_EQ(transport, nullptr);
+}
+
 TEST_F(RtcTransportTest, SetRemoteDtlsParameters) {
   CreateInitializedTransport();
   auto* params = CreateRtcDtlsParameters();
@@ -388,24 +412,6 @@ TEST_F(RtcTransportTest, AddRemoteCandidateInvalidAddress) {
   EXPECT_EQ(exception_state.Code(),
             static_cast<int>(DOMExceptionCode::kSyntaxError));
   EXPECT_EQ("Invalid address", exception_state.Message());
-}
-
-TEST_F(RtcTransportTest, AddRemoteCandidateUnsupportedType) {
-  CreateInitializedTransport();
-  auto* init = RtcTransportICECandidateInit::Create();
-  init->setType(V8RTCIceCandidateType(V8RTCIceCandidateType::Enum::kRelay));
-  init->setAddress("1.2.3.4");
-  init->setPort(1234);
-  init->setUsernameFragment("username");
-  init->setPassword("password");
-
-  DummyExceptionStateForTesting exception_state;
-  transport_->addRemoteCandidate(init, exception_state);
-  EXPECT_TRUE(exception_state.HadException());
-  EXPECT_EQ(exception_state.Code(),
-            static_cast<int>(DOMExceptionCode::kSyntaxError));
-  EXPECT_EQ("Only Host and Srflx candidates currently supported",
-            exception_state.Message());
 }
 
 TEST_F(RtcTransportTest, OnIceCandidate) {

@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_transport/rtc_received_packet.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_transport/rtc_transport_dependencies.h"
+#include "third_party/blink/renderer/platform/allow_discouraged_type.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/webrtc/api/candidate.h"
 #include "third_party/webrtc/api/datagram_connection.h"
@@ -107,9 +108,18 @@ class MODULES_EXPORT RtcTransport final
 
  private:
   friend class RtcTransportTest;
+
+  struct StunAndTurnServers {
+    webrtc::ServerAddresses stun_servers;
+    std::vector<webrtc::RelayServerConfig> turn_servers
+        ALLOW_DISCOURAGED_TYPE("Interacting with webrtc library APIs");
+  };
+  static std::unique_ptr<StunAndTurnServers> ParseStunServers(
+      const RtcTransportConfig* config,
+      ExceptionState& exception_state);
   void ContinueInitialization(
       bool ice_controlling,
-      webrtc::ServerAddresses stun_servers,
+      std::unique_ptr<StunAndTurnServers> stun_and_turn_servers,
       webrtc::scoped_refptr<webrtc::DatagramConnection>
           injected_datagram_connection,
       webrtc::DatagramConnection::WireProtocol wire_protocol,
