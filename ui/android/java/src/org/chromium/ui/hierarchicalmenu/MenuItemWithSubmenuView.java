@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.ui.listmenu;
+package org.chromium.ui.hierarchicalmenu;
 
 import static android.view.accessibility.AccessibilityNodeInfo.EXPANDED_STATE_COLLAPSED;
 
@@ -21,26 +21,26 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
 /**
- * View for a menu item with submenu (of type {@code ListItemType.CONTEXT_MENU_ITEM_WITH_SUBMENU},
- * with property keys {@link ListMenuSubmenuItemProperties}).
+ * View for a menu item with submenu (of types of e.g. {@code
+ * AppMenuItemType.MENU_ITEM_WITH_SUBMENU}, {@code ListItemType.MENU_ITEM_WITH_SUBMENU}).
  */
 @NullMarked
-class ListMenuItemWithSubmenuView extends LinearLayout {
+class MenuItemWithSubmenuView extends LinearLayout {
 
-    public ListMenuItemWithSubmenuView(Context context) {
+    public MenuItemWithSubmenuView(Context context) {
         super(context);
     }
 
-    public ListMenuItemWithSubmenuView(Context context, @Nullable AttributeSet attrs) {
+    public MenuItemWithSubmenuView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public ListMenuItemWithSubmenuView(
+    public MenuItemWithSubmenuView(
             Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
 
-    public ListMenuItemWithSubmenuView(
+    public MenuItemWithSubmenuView(
             Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
     }

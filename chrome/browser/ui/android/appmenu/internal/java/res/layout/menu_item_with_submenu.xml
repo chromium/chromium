@@ -5,7 +5,8 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 <!-- Layout for each item in the menu popup -->
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<org.chromium.ui.hierarchicalmenu.MenuItemWithSubmenuView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     style="@style/AppMenuItem"
     android:layout_width="match_parent"
@@ -44,4 +45,4 @@ found in the LICENSE file.
         android:layout_height="match_parent"
         android:scaleType="fitCenter"
         android:background="@android:color/transparent" />
-</LinearLayout>
+</org.chromium.ui.hierarchicalmenu.MenuItemWithSubmenuView>
