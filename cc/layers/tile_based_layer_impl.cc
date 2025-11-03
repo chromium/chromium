@@ -5,6 +5,7 @@
 #include "cc/layers/tile_based_layer_impl.h"
 
 #include "cc/base/math_util.h"
+#include "cc/layers/append_quads_context.h"
 #include "cc/layers/solid_color_layer_impl.h"
 #include "cc/trees/layer_tree_impl.h"
 
@@ -66,6 +67,13 @@ void TileBasedLayerImpl::AppendQuads(const AppendQuadsContext& context,
       draw_properties()
           .occlusion_in_content_space.GetOcclusionWithGivenDrawTransform(
               shared_quad_state->quad_to_target_transform);
+
+  if (context.draw_mode == DRAW_MODE_RESOURCELESS_SOFTWARE) {
+    AppendQuadsForResourcelessSoftwareDraw(context, render_pass,
+                                           append_quads_data, shared_quad_state,
+                                           scaled_occlusion);
+    return;
+  }
 
   AppendQuadsSpecialization(context, render_pass, append_quads_data,
                             shared_quad_state, scaled_occlusion);

@@ -42,6 +42,14 @@ class CC_EXPORT TileBasedLayerImpl : public LayerImpl {
   std::optional<SkColor4f> solid_color() const { return solid_color_; }
 
  private:
+  // Invoked when the draw mode is DRAW_MODE_RESOURCELESS_SOFTWARE.
+  virtual void AppendQuadsForResourcelessSoftwareDraw(
+      const AppendQuadsContext& context,
+      viz::CompositorRenderPass* render_pass,
+      AppendQuadsData* append_quads_data,
+      viz::SharedQuadState* shared_quad_state,
+      const Occlusion& scaled_occlusion) = 0;
+
   // Called when AppendQuads() goes through a flow for which behavior is
   // subclass-specific (i.e., not defined in TileBasedLayerImpl::AppendQuads()
   // itself).

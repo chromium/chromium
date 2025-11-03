@@ -400,4 +400,15 @@ std::vector<float> TileDisplayLayerImpl::GetSafeToDeleteTilings() {
   return safe_to_delete_scales;
 }
 
+void TileDisplayLayerImpl::AppendQuadsForResourcelessSoftwareDraw(
+    const AppendQuadsContext& context,
+    viz::CompositorRenderPass* render_pass,
+    AppendQuadsData* append_quads_data,
+    viz::SharedQuadState* shared_quad_state,
+    const Occlusion& scaled_occlusion) {
+  // `DRAW_MODE_RESOURCELESS_SOFTWARE` is a renderer-only software draw mode,
+  // and its handling is thus specific to the renderer-side PictureLayerImpl. It
+  // should never be propagated to the Viz side.
+}
+
 }  // namespace cc

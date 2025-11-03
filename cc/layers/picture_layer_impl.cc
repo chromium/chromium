@@ -284,16 +284,6 @@ void PictureLayerImpl::AppendQuadsSpecialization(
   float device_scale_factor = layer_tree_impl()->device_scale_factor();
   float max_contents_scale = GetMaximumContentsScaleForUseInAppendQuads();
 
-  // `DRAW_MODE_RESOURCELESS_SOFTWARE` is a renderer-only software draw mode,
-  // and its handling is thus specific to PictureLayerImpl rather than being
-  // done in TileBasedLayerImpl.
-  if (context.draw_mode == DRAW_MODE_RESOURCELESS_SOFTWARE) {
-    AppendQuadsForResourcelessSoftwareDraw(context, render_pass,
-                                           append_quads_data, shared_quad_state,
-                                           scaled_occlusion);
-    return;
-  }
-
   // If we're doing a regular AppendQuads (ie, not solid color or resourceless
   // software draw, and if the visible rect is scrolled far enough away, then we
   // may run into a floating point precision in AA calculations in the renderer.

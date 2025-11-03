@@ -32,6 +32,12 @@ class TestTileBasedLayerImpl : public TileBasedLayerImpl {
                                  const Occlusion& scaled_occlusion) override {}
   float GetMaximumContentsScaleForUseInAppendQuads() override { return 1.f; }
   bool IsDirectlyCompositedImage() const override { return false; }
+  void AppendQuadsForResourcelessSoftwareDraw(
+      const AppendQuadsContext& context,
+      viz::CompositorRenderPass* render_pass,
+      AppendQuadsData* append_quads_data,
+      viz::SharedQuadState* shared_quad_state,
+      const Occlusion& scaled_occlusion) override {}
 };
 
 class TileBasedLayerImplTest : public TestLayerTreeHostBase {};
@@ -313,6 +319,34 @@ class OcclusionTestTileBasedLayerImpl : public TestTileBasedLayerImpl {
   float max_contents_scale_ = 1.f;
 };
 
+class ResourcelessSoftwareDrawTileBasedLayerImpl
+    : public TestTileBasedLayerImpl {
+ public:
+  ResourcelessSoftwareDrawTileBasedLayerImpl(LayerTreeImpl* tree_impl, int id)
+      : TestTileBasedLayerImpl(tree_impl, id) {}
+
+  bool append_quads_for_resourceless_software_draw_called() const {
+    return append_quads_for_resourceless_software_draw_called_;
+  }
+
+ private:
+  void AppendQuadsForResourcelessSoftwareDraw(
+      const AppendQuadsContext& context,
+      viz::CompositorRenderPass* render_pass,
+      AppendQuadsData* append_quads_data,
+      viz::SharedQuadState* shared_quad_state,
+      const Occlusion& scaled_occlusion) override {
+    append_quads_for_resourceless_software_draw_called_ = true;
+    // Create a dummy quad to avoid tripping debug checks.
+    auto* quad =
+        render_pass->CreateAndAppendDrawQuad<viz::SolidColorDrawQuad>();
+    quad->SetNew(shared_quad_state, gfx::Rect(1, 1), gfx::Rect(1, 1),
+                 SkColors::kTransparent, false);
+  }
+
+  bool append_quads_for_resourceless_software_draw_called_ = false;
+};
+
 TEST_F(TileBasedLayerImplTest, AppendQuadsScalesOcclusion) {
   const float scale = 2.0f;
   const gfx::Rect layer_rect(0, 0, 10, 10);
@@ -356,6 +390,54 @@ TEST_F(TileBasedLayerImplTest, AppendQuadsScalesOcclusion) {
   EXPECT_EQ(
       raw_layer->scaled_occlusion().GetUnoccludedContentRect(enclosing_rect),
       gfx::SubtractRects(enclosing_rect, expected_occluded_rect));
+}
+
+TEST_F(TileBasedLayerImplTest,
+       AppendQuadsInvokesAppendQuadsForResourcelessSoftwareDraw) {
+  constexpr gfx::Size kLayerBounds(100, 200);
+  constexpr gfx::Rect kLayerRect(kLayerBounds);
+
+  auto layer = std::make_unique<ResourcelessSoftwareDrawTileBasedLayerImpl>(
+      host_impl()->active_tree(), /*id=*/1);
+  auto* raw_layer = layer.get();
+  host_impl()->active_tree()->AddLayer(std::move(layer));
+
+  raw_layer->SetBounds(kLayerBounds);
+  raw_layer->draw_properties().visible_layer_rect = kLayerRect;
+
+  SetupRootProperties(host_impl()->active_tree()->root_layer());
+
+  auto render_pass = viz::CompositorRenderPass::Create();
+  AppendQuadsData data;
+  raw_layer->AppendQuads(
+      AppendQuadsContext{DRAW_MODE_RESOURCELESS_SOFTWARE, {}, false},
+      render_pass.get(), &data);
+
+  EXPECT_TRUE(raw_layer->append_quads_for_resourceless_software_draw_called());
+}
+
+TEST_F(
+    TileBasedLayerImplTest,
+    AppendQuadsDoesNotInvokeAppendQuadsForResourcelessSoftwareDrawWhenNotExpected) {
+  constexpr gfx::Size kLayerBounds(100, 200);
+  constexpr gfx::Rect kLayerRect(kLayerBounds);
+
+  auto layer = std::make_unique<ResourcelessSoftwareDrawTileBasedLayerImpl>(
+      host_impl()->active_tree(), /*id=*/1);
+  auto* raw_layer = layer.get();
+  host_impl()->active_tree()->AddLayer(std::move(layer));
+
+  raw_layer->SetBounds(kLayerBounds);
+  raw_layer->draw_properties().visible_layer_rect = kLayerRect;
+
+  SetupRootProperties(host_impl()->active_tree()->root_layer());
+
+  auto render_pass = viz::CompositorRenderPass::Create();
+  AppendQuadsData data;
+  raw_layer->AppendQuads(AppendQuadsContext{DRAW_MODE_SOFTWARE, {}, false},
+                         render_pass.get(), &data);
+
+  EXPECT_FALSE(raw_layer->append_quads_for_resourceless_software_draw_called());
 }
 
 }  // namespace
