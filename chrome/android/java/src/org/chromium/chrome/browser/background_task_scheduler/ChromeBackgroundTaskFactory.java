@@ -27,6 +27,7 @@ import org.chromium.components.background_task_scheduler.BackgroundTaskScheduler
 import org.chromium.components.background_task_scheduler.NativeBackgroundTask;
 import org.chromium.components.background_task_scheduler.TaskIds;
 import org.chromium.components.component_updater.UpdateTask;
+import org.chromium.components.enterprise.reporting.SignalsReportingBackgroundTask;
 
 /**
  * Implementation of {@link BackgroundTaskFactory} for //chrome. Maps all task ids used in //chrome
@@ -89,9 +90,8 @@ public class ChromeBackgroundTaskFactory implements BackgroundTaskFactory {
                 return new SafetyHubFetchTask();
             case TaskIds.AUXILIARY_SEARCH_DONATE_JOB_ID:
                 return new AuxiliarySearchBackgroundTask();
-            // TODO(b:454680284): Add this once the required background task is implemented.
-            // case TaskIds.CHROME_SIGNALS_REPORTING_JOB_ID:
-            //     return new ChromeSignalsReportingBackgroundTask();
+            case TaskIds.CHROME_SIGNALS_REPORTING_JOB_ID:
+                return new SignalsReportingBackgroundTask();
             // End of Java tasks. All native tasks should be listed here.
             case TaskIds.QUERY_TILE_JOB_ID:
             case TaskIds.FEEDV2_REFRESH_JOB_ID:

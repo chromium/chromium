@@ -37,6 +37,7 @@ include_rules = [
   "+components/browser_ui/desktop_windowing/android",
   "+components/download",
   "+components/embedder_support/android",
+  "+components/enterprise/browser/reporting/android",
   "+components/external_intents/android",
   "+components/externalauth/android",
   "+components/favicon/android",
