@@ -79,19 +79,20 @@ using AnchorKey = std::variant<const AnchorScopedName*, const Element*>;
 // key types but the same value type. To save memory, we don't implement it as
 // one hash map with a unified key type; Otherwise, the size of each key will be
 // increased by at least one pointer, which is undesired.
-template <typename AnchorReference>
-class AnchorQueryBase : public GarbageCollectedMixin {
-  using NamedAnchorMap =
-      HeapHashMap<Member<const AnchorScopedName>, Member<AnchorReference>>;
+class CORE_EXPORT PhysicalAnchorQuery
+    : public GarbageCollected<PhysicalAnchorQuery> {
+  using NamedAnchorMap = HeapHashMap<Member<const AnchorScopedName>,
+                                     Member<PhysicalAnchorReference>>;
   using ImplicitAnchorMap =
-      HeapHashMap<Member<const Element>, Member<AnchorReference>>;
+      HeapHashMap<Member<const Element>, Member<PhysicalAnchorReference>>;
 
  public:
   bool IsEmpty() const {
     return named_anchors_.empty() && implicit_anchors_.empty();
   }
 
-  const AnchorReference* GetAnchorReference(const AnchorKey& key) const {
+  const PhysicalAnchorReference* GetAnchorReference(
+      const AnchorKey& key) const {
     if (const AnchorScopedName* const* name =
             std::get_if<const AnchorScopedName*>(&key)) {
       return GetAnchorReference(named_anchors_, *name);
@@ -100,11 +101,11 @@ class AnchorQueryBase : public GarbageCollectedMixin {
   }
 
   struct AddResult {
-    Member<AnchorReference>* stored_value;
+    Member<PhysicalAnchorReference>* stored_value;
     bool is_new_entry;
     STACK_ALLOCATED();
   };
-  AddResult insert(const AnchorKey& key, AnchorReference* reference) {
+  AddResult insert(const AnchorKey& key, PhysicalAnchorReference* reference) {
     if (const AnchorScopedName* const* name =
             std::get_if<const AnchorScopedName*>(&key)) {
       return insert(named_anchors_, *name, reference);
@@ -115,11 +116,8 @@ class AnchorQueryBase : public GarbageCollectedMixin {
   class Iterator {
     STACK_ALLOCATED();
 
-    using NamedAnchorMap = typename AnchorQueryBase::NamedAnchorMap;
-    using ImplicitAnchorMap = typename AnchorQueryBase::ImplicitAnchorMap;
-
    public:
-    Iterator(const AnchorQueryBase* anchor_query,
+    Iterator(const PhysicalAnchorQuery* anchor_query,
              typename NamedAnchorMap::const_iterator named_map_iterator,
              typename ImplicitAnchorMap::const_iterator implicit_map_iterator)
         : anchor_query_(anchor_query),
@@ -128,7 +126,7 @@ class AnchorQueryBase : public GarbageCollectedMixin {
 
     struct Entry {
       AnchorKey key;
-      AnchorReference* value;
+      PhysicalAnchorReference* value;
       STACK_ALLOCATED();
     };
     Entry operator*() const {
@@ -151,7 +149,7 @@ class AnchorQueryBase : public GarbageCollectedMixin {
     }
 
    private:
-    const AnchorQueryBase* anchor_query_;
+    const PhysicalAnchorQuery* anchor_query_;
     typename NamedAnchorMap::const_iterator named_map_iterator_;
     typename ImplicitAnchorMap::const_iterator implicit_map_iterator_;
   };
@@ -162,38 +160,10 @@ class AnchorQueryBase : public GarbageCollectedMixin {
     return Iterator{this, named_anchors_.end(), implicit_anchors_.end()};
   }
 
-  void Trace(Visitor* visitor) const override {
+  void Trace(Visitor* visitor) const {
     visitor->Trace(named_anchors_);
     visitor->Trace(implicit_anchors_);
   }
-
- private:
-  friend class Iterator;
-
-  template <typename AnchorMapType, typename KeyType>
-  static const AnchorReference* GetAnchorReference(const AnchorMapType& anchors,
-                                                   const KeyType& key) {
-    auto it = anchors.find(key);
-    return it != anchors.end() ? it->value : nullptr;
-  }
-
-  template <typename AnchorMapType, typename KeyType>
-  static AddResult insert(AnchorMapType& anchors,
-                          const KeyType& key,
-                          AnchorReference* reference) {
-    auto result = anchors.insert(key, reference);
-    return AddResult{&result.stored_value->value, result.is_new_entry};
-  }
-
-  NamedAnchorMap named_anchors_;
-  ImplicitAnchorMap implicit_anchors_;
-};
-
-class CORE_EXPORT PhysicalAnchorQuery
-    : public GarbageCollected<PhysicalAnchorQuery>,
-      public AnchorQueryBase<PhysicalAnchorReference> {
- public:
-  using Base = AnchorQueryBase<PhysicalAnchorReference>;
 
   enum class SetOptions {
     // An in-flow entry.
@@ -230,6 +200,26 @@ class CORE_EXPORT PhysicalAnchorQuery
                     PhysicalSize container_size,
                     SetOptions,
                     Element* element_for_display_lock);
+
+ private:
+  template <typename AnchorMapType, typename KeyType>
+  static const PhysicalAnchorReference* GetAnchorReference(
+      const AnchorMapType& anchors,
+      const KeyType& key) {
+    auto it = anchors.find(key);
+    return it != anchors.end() ? it->value : nullptr;
+  }
+
+  template <typename AnchorMapType, typename KeyType>
+  static AddResult insert(AnchorMapType& anchors,
+                          const KeyType& key,
+                          PhysicalAnchorReference* reference) {
+    auto result = anchors.insert(key, reference);
+    return AddResult{&result.stored_value->value, result.is_new_entry};
+  }
+
+  NamedAnchorMap named_anchors_;
+  ImplicitAnchorMap implicit_anchors_;
 };
 
 class CORE_EXPORT AnchorEvaluatorImpl : public AnchorEvaluator {

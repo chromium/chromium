@@ -242,7 +242,7 @@ const PhysicalAnchorReference* PhysicalAnchorQuery::AnchorReference(
     const LayoutBox& query_box,
     const LayoutObject* query_box_actual_containing_block,
     const AnchorKey& key) const {
-  const PhysicalAnchorReference* reference = Base::GetAnchorReference(key);
+  const PhysicalAnchorReference* reference = GetAnchorReference(key);
   if (!reference) {
     return nullptr;
   }
@@ -303,7 +303,7 @@ void PhysicalAnchorQuery::Set(const AnchorKey& key,
                               PhysicalAnchorReference* reference) {
   DCHECK(reference);
   DCHECK(!reference->next);
-  const auto result = Base::insert(key, reference);
+  const auto result = insert(key, reference);
   if (result.is_new_entry)
     return;
 
