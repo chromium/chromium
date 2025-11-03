@@ -1192,6 +1192,11 @@
   <message name="IDS_AUTOFILL_BNPL_ERROR_OK_BUTTON" desc="The label of the button which would close the error screen of the touch to fill bottomsheet and reset the Buy Now Pay Later flow." formatter_data="android_java">
     OK
   </message>
+  <if expr="is_android">
+    <message name="IDS_AUTOFILL_BNPL_SETTINGS_TOGGLE_SUBLABEL" desc="Sublabel for the Buy Now Pay Later toggle in the payments settings page. When enabled, users can checkout with external BNPL issuers using a Buy Now Pay Later option." formatter_data="android_java">
+      Show pay later options at checkout
+    </message>
+  </if>
 
   <!-- Credit card benefits-related strings -->
   <message name="IDS_AUTOFILL_CREDIT_CARD_BENEFIT_TEXT_FOR_SUGGESTIONS" desc="benefit text string shown in suggestion dropdown indicating that the credit card has an applicable benefit for this purchase with `terms apply` appended.">
