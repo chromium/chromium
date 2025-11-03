@@ -86,36 +86,20 @@ PlusAddressSuggestionHelper::~PlusAddressSuggestionHelper() = default;
 
 std::vector<autofill::Suggestion> PlusAddressSuggestionHelper::GetSuggestions(
     const std::vector<std::string>& affiliated_plus_addresses,
-    bool is_creation_enabled,
-    const autofill::FormData& focused_form,
     const autofill::FormFieldData& focused_field,
-    const base::flat_map<autofill::FieldGlobalId, autofill::FieldTypeGroupSet>&
-        form_field_type_groups,
-    const autofill::PasswordFormClassification& focused_form_classification,
     bool is_plus_address_manually_triggered) {
-  using enum autofill::AutofillSuggestionTriggerSource;
   const std::u16string normalized_field_value =
       autofill::RemoveDiacriticsAndConvertToLowerCase(focused_field.value());
-
-  // Generally, plus address suggestions are only available on empty fields. In
-  // cases where the field was previously autofilled, plus address suggestions
-  // should be among the single field suggestions offered and no prefix matching
-  // should be applied.
-  const bool is_field_empty_or_autofilled =
-      normalized_field_value.empty() || focused_field.is_autofilled();
-
-  if (affiliated_plus_addresses.empty()) {
-    return {};
-  }
 
   std::vector<Suggestion> suggestions;
   suggestions.reserve(affiliated_plus_addresses.size());
   for (const std::string& affiliated_plus_address : affiliated_plus_addresses) {
     std::u16string plus_address = base::UTF8ToUTF16(affiliated_plus_address);
-    // Only suggest filling a plus address whose prefix matches the field's
-    // value.
-    if (is_plus_address_manually_triggered || is_field_empty_or_autofilled ||
-        // Apply prefix matching if the field is not empty and not autofilled.
+    // Generally, plus address suggestions are only available on fields whose
+    // content matches the suggestion text. In cases where the field was
+    // previously autofilled or suggestions were manually triggered, no prefix
+    // matching should be applied.
+    if (is_plus_address_manually_triggered || focused_field.is_autofilled() ||
         plus_address.starts_with(normalized_field_value)) {
       suggestions.push_back(
           CreateFillPlusAddressSuggestion(std::move(plus_address)));

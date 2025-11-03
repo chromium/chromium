@@ -14,7 +14,6 @@
 #include "url/origin.h"
 
 namespace autofill {
-class FormData;
 struct Suggestion;
 }  // namespace autofill
 
@@ -43,12 +42,7 @@ class PlusAddressSuggestionHelper final {
   // contained in `focused_form`.
   [[nodiscard]] std::vector<autofill::Suggestion> GetSuggestions(
       const std::vector<std::string>& affiliated_plus_addresses,
-      bool is_creation_enabled,
-      const autofill::FormData& focused_form,
       const autofill::FormFieldData& focused_field,
-      const base::flat_map<autofill::FieldGlobalId,
-                           autofill::FieldTypeGroupSet>& form_field_type_groups,
-      const autofill::PasswordFormClassification& focused_form_classification,
       bool is_plus_address_manually_triggered);
 
   // Updates `suggestion` with a refreshed plus address by setting a new

@@ -34,20 +34,9 @@
 namespace plus_addresses {
 namespace {
 
-using autofill::AutofillSuggestionTriggerSource;
-using autofill::EqualsSuggestion;
-using autofill::FieldGlobalId;
-using autofill::FormData;
-using autofill::PasswordFormClassification;
 using autofill::Suggestion;
 using autofill::SuggestionType;
-using autofill::test::CreateTestSignupFormData;
-using ::testing::AllOf;
 using ::testing::ElementsAre;
-using ::testing::Field;
-using ::testing::IsEmpty;
-using ::testing::Property;
-using ::testing::SizeIs;
 
 class PlusAddressSuggestionHelperTest : public ::testing::Test {
  public:
@@ -149,24 +138,17 @@ TEST_F(PlusAddressSuggestionHelperTest,
       url::Origin::Create(GURL("https://foo.bar")));
   const std::string plus_address = "test+plus@test.com";
 
-  autofill::FormData form;
   autofill::FormFieldData focused_field;
-  form.set_fields({focused_field});
   EXPECT_THAT(generator.GetSuggestions(
-                  /*affiliated_plus_addresses=*/{plus_address},
-                  /*is_creation_enabled=*/true, form, focused_field,
-                  /*form_field_type_groups=*/{}, PasswordFormClassification(),
+                  /*affiliated_plus_addresses=*/{plus_address}, focused_field,
                   /*is_plus_address_manually_triggered=*/false),
               test::IsSingleFillPlusAddressSuggestion(plus_address));
 
   // Field got autofilled. The values does not prefix-match any plus address.
   focused_field.set_is_autofilled(true);
   focused_field.set_value(u"pp");
-  form.set_fields({focused_field});
   EXPECT_THAT(generator.GetSuggestions(
-                  /*affiliated_plus_addresses=*/{plus_address},
-                  /*is_creation_enabled=*/true, form, focused_field,
-                  /*form_field_type_groups=*/{}, PasswordFormClassification(),
+                  /*affiliated_plus_addresses=*/{plus_address}, focused_field,
                   /*is_plus_address_manually_triggered=*/false),
               test::IsSingleFillPlusAddressSuggestion(plus_address));
 }
