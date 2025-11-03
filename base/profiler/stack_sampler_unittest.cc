@@ -430,7 +430,16 @@ TEST_F(StackSamplerTest, UnwinderInvokedWhileRecordingStackFrames) {
   EXPECT_TRUE(unwinder->update_modules_was_invoked());
 }
 
-TEST_F(StackSamplerTest, AuxUnwinderInvokedWhileRecordingStackFrames) {
+// TODO(crbug.com/455972314): Failed on ChromeOS builders.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_AuxUnwinderInvokedWhileRecordingStackFrames \
+  DISABLED_AuxUnwinderInvokedWhileRecordingStackFrames
+#else
+#define MAYBE_AuxUnwinderInvokedWhileRecordingStackFrames \
+  AuxUnwinderInvokedWhileRecordingStackFrames
+#endif
+
+TEST_F(StackSamplerTest, MAYBE_AuxUnwinderInvokedWhileRecordingStackFrames) {
   base::test::TestFuture<void> sample_completed;
   std::unique_ptr<StackBuffer> stack_buffer = std::make_unique<StackBuffer>(10);
   auto unwind_data = std::make_unique<StackUnwindData>(
