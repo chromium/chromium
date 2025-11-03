@@ -137,7 +137,7 @@ jobs:
           FAIL_NO_TEST: false
       - name: Upload artifacts
         if: ${{ !cancelled() }}
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
         with:
           name: ${{ matrix.kind }}-${{ matrix.head }}-${{ matrix.this_chunk }}.${{ matrix.total_chunks }}-artifacts
           path: |
@@ -187,7 +187,7 @@ jobs:
       - name: Download Artifact
         # Get all the artifacts from the previous WPT run in order to get all the
         # test reports.
-        uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # v5.0.0
+        uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v6.0.0
         with:
           path: wpt_artifacts
           # Merge the artifacts from all jobs in the same file.
@@ -238,7 +238,7 @@ jobs:
           mkdir -p ./artifacts/updated-wpt-metadata/${{ steps.paths.outputs.src_dir_name }}
           mv ./wpt-metadata/${{ steps.paths.outputs.src_dir_name }}/* ./artifacts/updated-wpt-metadata/${{ steps.paths.outputs.src_dir_name }}/
       - name: Upload artifacts
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
         with:
           name: updated-wpt-metadata-${{ matrix.kind }}-${{ matrix.head }}
           path: ./artifacts
@@ -261,7 +261,7 @@ jobs:
         # There is no way to download artifacts by wildcard, so we need to download
         # all of them. The `updated-wpt-metadata` directory should contain all the
         # updated expectations from the `update_expectations` matrix.
-        uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # v5.0.0
+        uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v6.0.0
         with:
           path: all-artifacts
           merge-multiple: true
@@ -304,7 +304,7 @@ jobs:
       - uses: google/wireit@f21db1f3a6a4db31f42787a958cf2a18308effed # setup-github-actions-caching/v2.0.3
       - name: Install and build npm dependencies
         run: npm ci
-      - uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # v5.0.0
+      - uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v6.0.0
         with:
           pattern: cd-headful-*
           merge-multiple: true

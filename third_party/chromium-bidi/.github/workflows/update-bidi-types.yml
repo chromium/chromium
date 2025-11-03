@@ -41,7 +41,7 @@ jobs:
         run: ./scripts/test.sh
         working-directory: webdriver-bidi
       - name: Upload WebDriverBidi CDDL
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
         with:
           name: all-cddl
           path: webdriver-bidi/all.cddl
@@ -70,7 +70,7 @@ jobs:
         run: ../webdriver-bidi/scripts/cddl/generate.js ./index.html && mv all.cddl permissions.cddl
         working-directory: permissions
       - name: Upload WebDriverBidi CDDL for Permissions
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
         with:
           name: permissions-cddl
           path: permissions/permissions.cddl
@@ -99,7 +99,7 @@ jobs:
         run: ../webdriver-bidi/scripts/cddl/generate.js ./index.bs && mv all.cddl web-bluetooth.cddl
         working-directory: web-bluetooth
       - name: Upload WebDriverBidi CDDL for web-bluetooth
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
         with:
           name: web-bluetooth-cddl
           path: web-bluetooth/web-bluetooth.cddl
@@ -128,7 +128,7 @@ jobs:
         run: ../webdriver-bidi/scripts/cddl/generate.js ./prefetch.bs && mv all.cddl nav-speculation.cddl
         working-directory: nav-speculation
       - name: Upload WebDriverBidi CDDL for nav-speculation
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
         with:
           name: nav-speculation-cddl
           path: nav-speculation/nav-speculation.cddl
@@ -168,25 +168,25 @@ jobs:
       - name: Install and build npm dependencies
         run: npm ci
       - name: Download WebDriverBidi CDDL
-        uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # v5.0.0
+        uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v6.0.0
         with:
           name: all-cddl
         # Tolerate missing files.
         continue-on-error: true
       - name: Download WebDriverBidi CDDL for Permissions
-        uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # v5.0.0
+        uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v6.0.0
         with:
           name: permissions-cddl
         # Tolerate missing files.
         continue-on-error: true
       - name: Download WebDriverBidi CDDL for web-bluetooth
-        uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # v5.0.0
+        uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v6.0.0
         with:
           name: web-bluetooth-cddl
         # Tolerate missing files.
         continue-on-error: true
       - name: Download WebDriverBidi CDDL for nav-speculation
-        uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # v5.0.0
+        uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v6.0.0
         with:
           name: nav-speculation-cddl
         # Tolerate missing files.
