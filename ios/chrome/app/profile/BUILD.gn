@@ -359,8 +359,8 @@ source_set("synced_set_up_profile_agent") {
     "//ios/chrome/browser/shared/coordinator/scene:scene_activation_level",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
-    "//ios/chrome/browser/synced_set_up/coordinator",
     "//ios/chrome/browser/synced_set_up/utils",
   ]
 }

@@ -89,6 +89,7 @@ source_set("commands") {
     "show_signin_command.h",
     "show_signin_command.mm",
     "snackbar_commands.h",
+    "synced_set_up_commands.h",
     "tab_grid_commands.h",
     "tab_grid_toolbar_commands.h",
     "tab_group_confirmation_commands.h",

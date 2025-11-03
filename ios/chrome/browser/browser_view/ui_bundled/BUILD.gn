@@ -256,6 +256,7 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/supervised_user/coordinator",
     "//ios/chrome/browser/supervised_user/model",
     "//ios/chrome/browser/sync/model:sync_error_browser_agent",
+    "//ios/chrome/browser/synced_set_up/coordinator",
     "//ios/chrome/browser/tab_insertion/model",
     "//ios/chrome/browser/tab_switcher/tab_strip/coordinator",
     "//ios/chrome/browser/tab_switcher/tab_strip/ui:swift_constants_for_objective_c",

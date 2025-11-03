@@ -13,20 +13,18 @@
 #import "ios/chrome/browser/shared/coordinator/scene/scene_activation_level.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/synced_set_up_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/synced_set_up/coordinator/synced_set_up_coordinator.h"
-#import "ios/chrome/browser/synced_set_up/coordinator/synced_set_up_coordinator_delegate.h"
 #import "ios/chrome/browser/synced_set_up/utils/utils.h"
 
-@interface SyncedSetUpProfileAgent () <SyncedSetUpCoordinatorDelegate>
+@interface SyncedSetUpProfileAgent ()
 @end
 
 @implementation SyncedSetUpProfileAgent {
-  // Coordinator responsible for managing the Synced Set Up flow.
-  SyncedSetUpCoordinator* _coordinator;
-
   // Ensures the Synced Set Up confirmation is triggered only once per
   // foreground activation cycle. This prevents duplicate UIs in multi-window
   // scenarios (e.g., iPad split-screen).
@@ -64,27 +62,14 @@
   }
 }
 
-#pragma mark - SyncedSetUpCoordinatorDelegate
-
-- (void)syncedSetUpCoordinatorWantsToBeDismissed:
-    (SyncedSetUpCoordinator*)coordinator {
-  CHECK_EQ(_coordinator, coordinator);
-
-  [_coordinator stop];
-  _coordinator.delegate = nil;
-  _coordinator = nil;
-}
-
 #pragma mark - Private
 
 // Evaluates all preconditions and triggers the Synced Set Up flow if
 // applicable.
 - (void)maybeTriggerSyncedSetUp {
-  if (_activationAlreadyHandled) {
-    return;
-  }
+  CHECK(IsSyncedSetUpEnabled());
 
-  if (_coordinator) {
+  if (_activationAlreadyHandled) {
     return;
   }
 
@@ -99,38 +84,16 @@
     return;
   }
 
-  BOOL started = [self startSyncedSetUpCoordinatorForScene:activeScene];
+  CommandDispatcher* dispatcher =
+      activeScene.browserProviderInterface.mainBrowserProvider.browser
+          ->GetCommandDispatcher();
+  id<SyncedSetUpCommands> handler =
+      HandlerForProtocol(dispatcher, SyncedSetUpCommands);
 
-  if (started) {
-    // Mark as handled for this activation cycle only if successful.
+  if (handler) {
+    [handler showSyncedSetUp];
     _activationAlreadyHandled = YES;
   }
-}
-
-// Starts the `SyncedSetUpCoordinator` for the given `sceneState`.
-- (BOOL)startSyncedSetUpCoordinatorForScene:(SceneState*)sceneState {
-  CHECK(IsSyncedSetUpEnabled());
-
-  id<BrowserProviderInterface> interface = sceneState.browserProviderInterface;
-  id<BrowserProvider> regularProvider = interface.mainBrowserProvider;
-
-  Browser* browser = regularProvider.browser;
-  UIViewController* viewController = regularProvider.viewController;
-
-  if (!browser || !viewController) {
-    return NO;
-  }
-
-  AppStartupParameters* startupParams = sceneState.controller.startupParameters;
-
-  _coordinator =
-      [[SyncedSetUpCoordinator alloc] initWithBaseViewController:viewController
-                                                         browser:browser
-                                               startupParameters:startupParams];
-  _coordinator.delegate = self;
-  [_coordinator start];
-
-  return YES;
 }
 
 @end

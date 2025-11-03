@@ -155,14 +155,8 @@ constexpr base::TimeDelta kDismissalDelay = base::Seconds(5);
     return;
   }
 
-  __weak __typeof(self) weakSelf = self;
-  [_viewController.presentingViewController
-      dismissViewControllerAnimated:YES
-                         completion:^{
-                           [weakSelf.delegate
-                               syncedSetUpCoordinatorWantsToBeDismissed:
-                                   weakSelf];
-                         }];
+  [_viewController.presentingViewController dismissViewControllerAnimated:YES
+                                                               completion:nil];
 }
 
 @end

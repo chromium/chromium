@@ -265,6 +265,7 @@
 #import "ios/chrome/browser/shared/public/commands/shared_tab_group_last_tab_closed_alert_commands.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
+#import "ios/chrome/browser/shared/public/commands/synced_set_up_commands.h"
 #import "ios/chrome/browser/shared/public/commands/text_zoom_commands.h"
 #import "ios/chrome/browser/shared/public/commands/toolbar_commands.h"
 #import "ios/chrome/browser/shared/public/commands/unit_conversion_commands.h"
@@ -296,6 +297,8 @@
 #import "ios/chrome/browser/store_kit/model/store_kit_coordinator_delegate.h"
 #import "ios/chrome/browser/supervised_user/coordinator/parent_access_coordinator.h"
 #import "ios/chrome/browser/sync/model/sync_error_browser_agent.h"
+#import "ios/chrome/browser/synced_set_up/coordinator/synced_set_up_coordinator.h"
+#import "ios/chrome/browser/synced_set_up/coordinator/synced_set_up_coordinator_delegate.h"
 #import "ios/chrome/browser/tab_insertion/model/tab_insertion_browser_agent.h"
 #import "ios/chrome/browser/tab_switcher/tab_strip/coordinator/tab_strip_coordinator.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_group_action_type.h"
@@ -401,6 +404,8 @@ const char kChromeAppStoreUrl[] =
     PriceTrackedItemsCommands,
     PromosManagerCommands,
     PolicyChangeCommands,
+    SyncedSetUpCoordinatorDelegate,
+    SyncedSetUpCommands,
     PrerenderBrowserAgentDelegate,
     QuickDeleteCommands,
     ReaderModeBrowserAgentDelegate,
@@ -744,6 +749,9 @@ const char kChromeAppStoreUrl[] =
 
   // The coordinator for displaying Enterprise Data Controls dialogs.
   DataControlsDialogCoordinator* _dataControlsDialogCoordinator;
+
+  // The coordinator for managing the Synced Set Up flow.
+  SyncedSetUpCoordinator* _syncedSetUpCoordinator;
 }
 
 #pragma mark - ReaderModeBrowserAgentDelegate
@@ -995,6 +1003,10 @@ const char kChromeAppStoreUrl[] =
   [_dataControlsDialogCoordinator stop];
   _dataControlsDialogCoordinator = nil;
 
+  if (IsSyncedSetUpEnabled()) {
+    [self stopSyncedSetUpCoordinator];
+  }
+
   [self hideGoogleOne];
   [self updateLensUIForBackground];
 
@@ -1018,6 +1030,13 @@ const char kChromeAppStoreUrl[] =
 }
 
 #pragma mark - Private
+
+// Stops the Synced Set Up coordinator.
+- (void)stopSyncedSetUpCoordinator {
+  [_syncedSetUpCoordinator stop];
+  _syncedSetUpCoordinator.delegate = nil;
+  _syncedSetUpCoordinator = nil;
+}
 
 - (void)stopSigninCoordinator {
   [_signinCoordinator stop];
@@ -1224,6 +1243,7 @@ const char kChromeAppStoreUrl[] =
     @protocol(SaveToDriveCommands),
     @protocol(SaveToPhotosCommands),
     @protocol(SharedTabGroupLastTabAlertCommands),
+    @protocol(SyncedSetUpCommands),
     @protocol(TextZoomCommands),
     @protocol(WebContentCommands),
     @protocol(DefaultBrowserGenericPromoCommands),
@@ -1793,6 +1813,10 @@ const char kChromeAppStoreUrl[] =
 
   [_dataControlsDialogCoordinator stop];
   _dataControlsDialogCoordinator = nil;
+
+  if (IsSyncedSetUpEnabled()) {
+    [self stopSyncedSetUpCoordinator];
+  }
 
   [self hideDriveFilePicker];
   if (@available(iOS 18.4, *)) {
@@ -3628,6 +3652,35 @@ const char kChromeAppStoreUrl[] =
                      [weakSelf showRestrictAccountSignedOutPrompt];
                    });
   }
+}
+
+#pragma mark - SyncedSetUpCoordinatorDelegate
+
+- (void)syncedSetUpCoordinatorWantsToBeDismissed:
+    (SyncedSetUpCoordinator*)coordinator {
+  CHECK(IsSyncedSetUpEnabled());
+  CHECK_EQ(_syncedSetUpCoordinator, coordinator);
+  [self stopSyncedSetUpCoordinator];
+}
+
+#pragma mark - SyncedSetUpCommands
+
+- (void)showSyncedSetUp {
+  CHECK(IsSyncedSetUpEnabled());
+
+  if (_syncedSetUpCoordinator) {
+    return;
+  }
+
+  AppStartupParameters* startupParams =
+      self.sceneState.controller.startupParameters;
+
+  _syncedSetUpCoordinator = [[SyncedSetUpCoordinator alloc]
+      initWithBaseViewController:self.viewController
+                         browser:self.browser
+               startupParameters:startupParams];
+  _syncedSetUpCoordinator.delegate = self;
+  [_syncedSetUpCoordinator start];
 }
 
 #pragma mark - SaveToDriveCommands
