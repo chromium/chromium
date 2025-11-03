@@ -66,12 +66,13 @@ import java.util.Set;
  */
 @NullMarked
 public class TabListEditorCoordinator {
-    @IntDef({CreationMode.FULL_SCREEN, CreationMode.DIALOG})
+    @IntDef({CreationMode.FULL_SCREEN, CreationMode.DIALOG, CreationMode.ITEM_PICKER})
     @Target(ElementType.TYPE_USE)
     @Retention(RetentionPolicy.SOURCE)
     public @interface CreationMode {
         int FULL_SCREEN = 0;
         int DIALOG = 1;
+        int ITEM_PICKER = 2;
     }
 
     static final String COMPONENT_NAME = "TabListEditor";

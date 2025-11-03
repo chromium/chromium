@@ -38,6 +38,9 @@ public class TabListEditorProperties {
     public static final PropertyModel.WritableIntPropertyKey TOP_MARGIN =
             new PropertyModel.WritableIntPropertyKey();
 
+    public static final PropertyModel.WritableIntPropertyKey CREATION_MODE =
+            new PropertyModel.WritableIntPropertyKey();
+
     public static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
                 IS_VISIBLE,
@@ -47,6 +50,7 @@ public class TabListEditorProperties {
                 TOOLBAR_TEXT_TINT,
                 TOOLBAR_BUTTON_TINT,
                 TOOLBAR_TITLE,
-                TOP_MARGIN
+                TOP_MARGIN,
+                CREATION_MODE
             };
 }

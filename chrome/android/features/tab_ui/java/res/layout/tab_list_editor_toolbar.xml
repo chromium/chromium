@@ -16,6 +16,20 @@ found in the LICENSE file.
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="horizontal">
+        <org.chromium.ui.widget.ButtonCompat
+            android:id="@+id/done_button"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:minWidth="115dp"
+            android:layout_marginHorizontal="16dp"
+            android:maxLines="1"
+            android:text="@string/done_button_text"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:visibility="gone"
+            android:gravity="center"
+            android:layout_gravity="center_vertical|end"
+            android:textAppearance="@style/TextAppearance.TextAccentMediumThick.Primary"
+            />
         <org.chromium.ui.listmenu.ListMenuButton
             style="@style/ToolbarMenuButton"
             android:id="@+id/list_menu_button"

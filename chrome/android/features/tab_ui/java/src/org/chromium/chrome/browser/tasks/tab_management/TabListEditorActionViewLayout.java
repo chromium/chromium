@@ -17,10 +17,12 @@ import androidx.collection.ArraySet;
 import org.chromium.base.MathUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.CreationMode;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.NumberRollView;
 import org.chromium.ui.listmenu.ListMenuButton;
 import org.chromium.ui.listmenu.ListMenuDelegate;
+import org.chromium.ui.widget.ButtonCompat;
 
 import java.util.ArrayList;
 import java.util.Set;
@@ -31,19 +33,29 @@ import java.util.Set;
  */
 @NullMarked
 public class TabListEditorActionViewLayout extends LinearLayout {
-    /** All {@link TabListEditoreMenuItem} action views with menu items. */
+    /** All {@link TabListEditorMenuItem} action views with menu items. */
     private final ArrayList<TabListEditorMenuItem> mMenuItemsWithActionView = new ArrayList<>();
 
     /** The {@link TabListEditoreMenuItem}s with visible action views. */
     private final Set<TabListEditorMenuItem> mVisibleActions = new ArraySet<>();
 
-    /** {@link ListMenuButton} for showing the {@link TabListEditorMenu}. */
+    /**
+     * {@link ListMenuButton} for showing the {@link TabListEditorMenu}. Only one of mMenuButton and
+     * mDoneButton will be visible.
+     */
     private ListMenuButton mMenuButton;
+
+    /**
+     * {@link View} for showing the done button. Only one of mMenuButton and mDoneButton will be
+     * visible.
+     */
+    private ButtonCompat mDoneButton;
 
     private final LinearLayout.LayoutParams mActionViewParams;
 
     private @Nullable ActionViewLayoutDelegate mDelegate;
     private boolean mHasMenuOnlyItems;
+    private @CreationMode int mCreationMode;
 
     /** Delegate updates in response to which action views are visible. */
     public interface ActionViewLayoutDelegate {
@@ -69,6 +81,7 @@ public class TabListEditorActionViewLayout extends LinearLayout {
         super.onFinishInflate();
         mMenuButton = findViewById(R.id.list_menu_button);
         mMenuButton.tryToFitLargestItem(true);
+        mDoneButton = findViewById(R.id.done_button);
     }
 
     ListMenuButton getListMenuButtonForTesting() {
@@ -80,6 +93,11 @@ public class TabListEditorActionViewLayout extends LinearLayout {
      */
     public void setListMenuDelegate(ListMenuDelegate delegate) {
         mMenuButton.setDelegate(delegate);
+    }
+
+    public void setCreationMode(@CreationMode int creationMode) {
+        mCreationMode = creationMode;
+        update();
     }
 
     /**
@@ -133,9 +151,7 @@ public class TabListEditorActionViewLayout extends LinearLayout {
 
     @Override
     public void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        // Get empty size without action views.
         removeAllActionViews();
-        mMenuButton.setVisibility(View.VISIBLE);
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         final int width = getMeasuredWidth();
 
@@ -150,32 +166,42 @@ public class TabListEditorActionViewLayout extends LinearLayout {
         boolean hasForcedAnyActionViewToMenu = false;
         final int childMeasureSpec =
                 View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
-        for (TabListEditorMenuItem menuItem : mMenuItemsWithActionView) {
-            final View actionView = assumeNonNull(menuItem.getActionView());
-            actionView.measure(childMeasureSpec, childMeasureSpec);
-            final int actionViewWidth = actionView.getMeasuredWidth();
-            if (usedWidth + actionViewWidth > width || hasForcedAnyActionViewToMenu) {
-                // The ActionView doesn't fit. Ensure it still has a LayoutParams.
-                actionView.setLayoutParams(mActionViewParams);
-                hasForcedAnyActionViewToMenu = true;
-                continue;
-            }
+        if (mCreationMode != CreationMode.ITEM_PICKER) {
+            for (TabListEditorMenuItem menuItem : mMenuItemsWithActionView) {
+                final View actionView = assumeNonNull(menuItem.getActionView());
+                actionView.measure(childMeasureSpec, childMeasureSpec);
+                final int actionViewWidth = actionView.getMeasuredWidth();
+                if (usedWidth + actionViewWidth > width || hasForcedAnyActionViewToMenu) {
+                    // The ActionView doesn't fit. Ensure it still has a LayoutParams.
+                    actionView.setLayoutParams(mActionViewParams);
+                    hasForcedAnyActionViewToMenu = true;
+                    continue;
+                }
 
-            // Add views in front of the menu button.
-            addView(actionView, getChildCount() - 1, mActionViewParams);
-            mVisibleActions.add(menuItem);
-            usedWidth += actionViewWidth;
-            requiredWidth += actionViewWidth;
+                // Add views in front of the menu button.
+                addView(actionView, getChildCount() - 1, mActionViewParams);
+                mVisibleActions.add(menuItem);
+                usedWidth += actionViewWidth;
+                requiredWidth += actionViewWidth;
+            }
         }
+
         if (mDelegate != null) {
             // Any items in mVisibleActions will appear in the Toolbar. The remaining items will be
             // forced into the overflow menu.
             mDelegate.setVisibleActionViews(mVisibleActions);
         }
-        if (mHasMenuOnlyItems || hasForcedAnyActionViewToMenu) {
+        if (mCreationMode == CreationMode.ITEM_PICKER) {
+            mDoneButton.setVisibility(View.VISIBLE);
+            mMenuButton.setVisibility(View.GONE);
+            mDoneButton.measure(childMeasureSpec, childMeasureSpec);
+            requiredWidth += mDoneButton.getMeasuredWidth();
+        } else if (mHasMenuOnlyItems || hasForcedAnyActionViewToMenu) {
+            mDoneButton.setVisibility(View.GONE);
             mMenuButton.setVisibility(View.VISIBLE);
             requiredWidth += mMenuButton.getMeasuredWidth();
         } else {
+            mDoneButton.setVisibility(View.GONE);
             mMenuButton.setVisibility(View.GONE);
         }
 
