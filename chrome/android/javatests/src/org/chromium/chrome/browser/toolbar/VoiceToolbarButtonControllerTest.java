@@ -158,7 +158,7 @@ public final class VoiceToolbarButtonControllerTest {
                         isEnabled(),
                         withContentDescription(mButtonString)));
 
-        mActivityTestRule.newIncognitoTabFromMenu();
+        mPage.openNewIncognitoTabOrWindowFast();
 
         assertButtonMissingOrNonVoice();
     }
