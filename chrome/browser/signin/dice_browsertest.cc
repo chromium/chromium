@@ -49,6 +49,7 @@
 #include "chrome/browser/signin/dice_web_signin_interceptor.h"
 #include "chrome/browser/signin/dice_web_signin_interceptor_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/sync/user_event_service_factory.h"
@@ -57,6 +58,8 @@
 #include "chrome/browser/ui/signin/signin_view_controller.h"
 #include "chrome/browser/ui/simple_message_box_internal.h"
 #include "chrome/browser/ui/views/profiles/dice_web_signin_interception_bubble_view.h"
+#include "chrome/browser/ui/webui/signin/history_sync_optin_service.h"
+#include "chrome/browser/ui/webui/signin/history_sync_optin_service_factory.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
 #include "chrome/browser/ui/webui/signin/login_ui_test_utils.h"
@@ -1547,6 +1550,56 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTestWithSyncOptinScreen,
 
   // Dismiss the History Sync Optin UI.
   EXPECT_TRUE(login_ui_test_utils::ConfirmHistorySyncOptinDialog(browser()));
+  EXPECT_TRUE(sync_service->GetUserSettings()->GetSelectedTypes().Has(
+      syncer::UserSelectableType::kHistory));
+  EXPECT_TRUE(sync_service->GetUserSettings()->GetSelectedTypes().Has(
+      syncer::UserSelectableType::kTabs));
+  EXPECT_TRUE(sync_service->GetUserSettings()->GetSelectedTypes().Has(
+      syncer::UserSelectableType::kSavedTabGroups));
+}
+
+// Regression test for crbug.com/454921096.
+// Tests that if the entry point for a sign in tab is updated to a value
+// that should not offer the history sync optin flow, then the initialized
+// history sync optin flow is aborted.
+IN_PROC_BROWSER_TEST_F(DiceBrowserTestWithSyncOptinScreen,
+                       SkipsHistorySyncScreenOnUnexpectedEntryPoint) {
+  EXPECT_EQ(0, reconcilor_started_count_);
+
+  // Open the sign-in tab from the settings page but do not complete the signin.
+  signin_metrics::AccessPoint access_point =
+      signin_metrics::AccessPoint::kSettings;
+  browser()->GetFeatures().signin_view_controller()->ShowDiceEnableSyncTab(
+      access_point,
+      signin_metrics::PromoAction::PROMO_ACTION_NEW_ACCOUNT_NO_EXISTING_ACCOUNT,
+      /*email_hint=*/std::string());
+
+  // Open the signin tab from the tabs history page (reuses the previous sign
+  // in tab with an updated entry point).
+  access_point = signin_metrics::AccessPoint::kRecentTabs;
+  signin_ui_util::TriggerSignInForHistorySyncOptIn(
+      browser(), browser()->profile(), access_point);
+  // Receive token.
+  SendRefreshTokenResponse();
+
+  // Receive ENABLE_SYNC.
+  SendEnableSyncResponse();
+  WaitForSigninSucceeded();
+
+  EXPECT_EQ(GetMainAccountID(), GetIdentityManager()->GetPrimaryAccountId(
+                                    signin::ConsentLevel::kSignin));
+
+  EXPECT_EQ(1, reconcilor_blocked_count_);
+  WaitForReconcilorUnblockedCount(1);
+  EXPECT_EQ(1, reconcilor_started_count_);
+  auto* sync_service = SyncServiceFactory::GetForProfile(browser()->profile());
+
+  // The history sync screen should not be shown, the history and tabs syncing
+  // is auto-enabled post-signin.
+  base::test::RunUntil([&] {
+    return HistorySyncOptinServiceFactory::GetForProfile(browser()->profile())
+               ->GetHistorySyncOptinHelperForTesting() == nullptr;
+  });
   EXPECT_TRUE(sync_service->GetUserSettings()->GetSelectedTypes().Has(
       syncer::UserSelectableType::kHistory));
   EXPECT_TRUE(sync_service->GetUserSettings()->GetSelectedTypes().Has(

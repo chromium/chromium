@@ -205,6 +205,9 @@ bool ProcessDiceHeaderDelegateImpl::ShouldEnableHistorySync() {
                "flow in progress].";
     return false;
   }
+  if (!signin_util::IsValidAccessPointForHistoryOptinScreen(access_point_)) {
+    return false;
+  }
   return true;
 }
 

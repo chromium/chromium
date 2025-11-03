@@ -225,6 +225,13 @@ ShouldShowHistorySyncOptinResult ShouldShowHistorySyncOptinScreen(
 // this does not do anything for that type.
 void EnableHistorySync(syncer::SyncService* sync_service);
 
+// Returns true if the history sync optin screen could be offered via the given
+// `access_point`. Returns false if enabling history sync is expected to be done
+// via other means for the given access point and the history sync screen should
+// not be shown.
+bool IsValidAccessPointForHistoryOptinScreen(
+    signin_metrics::AccessPoint access_point);
+
 // The avatar sync promo is only shown to users with specific sign in states.
 // Requires the feature enabling through
 // `switches::IsAvatarSyncPromoFeatureEnabled()`.
