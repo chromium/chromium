@@ -292,7 +292,6 @@ class MockAutofillClient : public TestAutofillClient {
   MockAutofillClient() {
     TestPersonalDataManager& pdm = GetPersonalDataManager();
     pdm.set_payments_data_manager(std::make_unique<MockPaymentsDataManager>());
-    pdm.test_payments_data_manager().SetPrefService(GetPrefs());
     set_payments_autofill_client(
         std::make_unique<MockPaymentsAutofillClient>(this));
   }
@@ -310,12 +309,12 @@ class CreditCardSaveManagerTest
   void SetUp() override {
     // Change the year to be 20XX.
     task_environment_.FastForwardBy(base::Days(365) * 31);
-
     InitAutofillClient();
     autofill_client().set_test_strike_database(
         std::make_unique<TestStrikeDatabase>());
     test_api(personal_data().address_data_manager())
         .set_auto_accept_address_imports(true);
+    personal_data().SetPrefService(autofill_client().GetPrefs());
     personal_data().SetSyncServiceForTest(&sync_service_);
     CreateAutofillDriver();
     autofill_client()
@@ -345,6 +344,9 @@ class CreditCardSaveManagerTest
 
   void TearDown() override {
     DeleteAllAutofillDrivers();
+    personal_data().SetPrefService(nullptr);
+    personal_data().test_payments_data_manager().ClearCreditCards();
+    DestroyAutofillClient();
   }
 
   // TODO(crbug.com/40818490): Refactor to use the real CreditCardSaveManager.
