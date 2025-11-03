@@ -32,6 +32,13 @@ base::TimeDelta GetQuicHandshakeTimeout(const QuicParams& params) {
   return params.max_time_before_crypto_handshake;
 }
 
+base::TimeDelta GetMaxIdleTimeBeforeCryptoHandshake(const QuicParams& params) {
+  if (base::FeatureList::IsEnabled(features::kExtendQuicHandshakeTimeout)) {
+    return features::kMaxIdleTimeBeforeCryptoHandshake.Get();
+  }
+  return params.max_idle_time_before_crypto_handshake;
+}
+
 }  // namespace
 
 QuicParams::QuicParams() = default;
@@ -82,7 +89,7 @@ quic::QuicConfig InitializeQuicConfig(const QuicParams& params) {
           GetQuicHandshakeTimeout(params).InMicroseconds()));
   config.set_max_idle_time_before_crypto_handshake(
       quic::QuicTime::Delta::FromMicroseconds(
-          params.max_idle_time_before_crypto_handshake.InMicroseconds()));
+          GetMaxIdleTimeBeforeCryptoHandshake(params).InMicroseconds()));
   config.SetConnectionOptionsToSend(params.connection_options);
   config.SetClientConnectionOptions(params.client_connection_options);
   config.set_max_undecryptable_packets(kMaxUndecryptablePackets);
