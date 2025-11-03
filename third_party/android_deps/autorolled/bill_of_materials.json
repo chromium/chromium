@@ -927,27 +927,27 @@
     {
         "name": "savedstate",
         "group": "androidx.savedstate",
-        "version": "1.4.0-rc01"
+        "version": "1.5.0-SNAPSHOT"
     },
     {
         "name": "savedstate-android",
         "group": "androidx.savedstate",
-        "version": "1.4.0-rc01"
+        "version": "1.5.0-SNAPSHOT"
     },
     {
         "name": "savedstate-compose",
         "group": "androidx.savedstate",
-        "version": "1.4.0-SNAPSHOT"
+        "version": "1.5.0-SNAPSHOT"
     },
     {
         "name": "savedstate-compose-android",
         "group": "androidx.savedstate",
-        "version": "1.4.0-SNAPSHOT"
+        "version": "1.5.0-SNAPSHOT"
     },
     {
         "name": "savedstate-ktx",
         "group": "androidx.savedstate",
-        "version": "1.4.0-SNAPSHOT"
+        "version": "1.5.0-SNAPSHOT"
     },
     {
         "name": "slidingpanelayout",
@@ -1067,17 +1067,17 @@
     {
         "name": "tracing-perfetto",
         "group": "androidx.tracing",
-        "version": "1.0.0"
+        "version": "1.0.1-SNAPSHOT"
     },
     {
         "name": "tracing-perfetto-binary",
         "group": "androidx.tracing",
-        "version": "1.0.0"
+        "version": "1.0.1-SNAPSHOT"
     },
     {
         "name": "tracing-perfetto-handshake",
         "group": "androidx.tracing",
-        "version": "1.0.0"
+        "version": "1.0.1-SNAPSHOT"
     },
     {
         "name": "transition",
