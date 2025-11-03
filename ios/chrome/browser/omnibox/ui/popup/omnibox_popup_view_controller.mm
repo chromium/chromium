@@ -281,6 +281,7 @@ const CGFloat kCloseButtonPadding = 16.0f;
 - (void)viewDidAppear:(BOOL)animated {
   [super viewDidAppear:animated];
   [self adjustMarginsToMatchOmniboxWidth];
+  [self updateCloseButtonVisibility];
 }
 
 - (void)viewWillTransitionToSize:(CGSize)size
