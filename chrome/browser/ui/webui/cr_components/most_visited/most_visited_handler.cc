@@ -112,6 +112,8 @@ void MostVisitedHandler::DeleteMostVisitedTile(
   if (IsFromEnterpriseShortcut(tile->source)) {
     CHECK(most_visited_sites_->IsEnterpriseShortcutsEnabled());
     most_visited_sites_->DeleteEnterpriseShortcut(tile->url);
+    logger_.LogEvent(NTP_CUSTOMIZE_ENTERPRISE_SHORTCUT_REMOVE,
+                     base::TimeDelta() /* unused */);
     return;
   }
 
@@ -130,6 +132,8 @@ void MostVisitedHandler::RestoreMostVisitedDefaults(
   if (IsFromEnterpriseShortcut(source)) {
     CHECK(most_visited_sites_->IsEnterpriseShortcutsEnabled());
     most_visited_sites_->RestoreEnterpriseShortcutsDefaults();
+    logger_.LogEvent(NTP_CUSTOMIZE_ENTERPRISE_SHORTCUT_RESTORE_ALL,
+                     base::TimeDelta() /* unused */);
     return;
   }
 
@@ -157,6 +161,8 @@ void MostVisitedHandler::UndoMostVisitedTileAction(
     ntp_tiles::TileSource source) {
   if (IsFromEnterpriseShortcut(source)) {
     CHECK(most_visited_sites_->IsEnterpriseShortcutsEnabled());
+    logger_.LogEvent(NTP_CUSTOMIZE_ENTERPRISE_SHORTCUT_UNDO,
+                     base::TimeDelta() /* unused */);
     most_visited_sites_->UndoEnterpriseShortcutAction();
     return;
   }
@@ -185,6 +191,8 @@ void MostVisitedHandler::UpdateMostVisitedTile(
     bool success = most_visited_sites_->UpdateEnterpriseShortcut(
         tile->url, base::UTF8ToUTF16(new_title));
     std::move(callback).Run(success);
+    logger_.LogEvent(NTP_CUSTOMIZE_ENTERPRISE_SHORTCUT_UPDATE,
+                     base::TimeDelta() /* unused */);
   } else if (most_visited_sites_->IsCustomLinksEnabled()) {
     bool success = most_visited_sites_->UpdateCustomLink(
         tile->url, new_url != tile->url ? new_url : GURL(),
@@ -206,7 +214,9 @@ void MostVisitedHandler::OnMostVisitedTilesRendered(
   logger_.LogMostVisitedLoaded(
       base::Time::FromMillisecondsSinceUnixEpoch(time) -
           ntp_navigation_start_time_,
-      !most_visited_sites_->IsCustomLinksEnabled(),
+      most_visited_sites_->IsTopSitesEnabled(),
+      most_visited_sites_->IsCustomLinksEnabled(),
+      most_visited_sites_->IsEnterpriseShortcutsEnabled(),
       most_visited_sites_->IsShortcutsVisible());
 }
 

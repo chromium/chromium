@@ -8783,7 +8783,10 @@ test("unit_tests") {
   }
 
   if (!is_android) {
-    deps += [ "//chrome/browser/ui/views/location_bar" ]
+    deps += [
+      "//chrome/browser/ui/search",
+      "//chrome/browser/ui/views/location_bar",
+    ]
   }
 
   if (is_chromeos) {

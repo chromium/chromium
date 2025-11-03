@@ -35,6 +35,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/chrome_select_file_policy.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/search/ntp_user_data_types.h"
 #include "chrome/browser/ui/webui/new_tab_page/ntp_pref_names.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome.mojom.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_section.h"
@@ -366,6 +367,15 @@ class CustomizeChromePageHandlerTest : public testing::Test {
                   ntp_prefs::kNtpPersonalShortcutsVisible));
   }
 
+  void CheckHistograms(const std::string& name, const auto& counts) {
+    int total = 0;
+    for (const auto& [action, count] : counts) {
+      histogram_tester().ExpectBucketCount(name, action, count);
+      total += count;
+    }
+    histogram_tester().ExpectTotalCount(name, total);
+  }
+
   void SetEnterpriseShortcutsPolicy(bool has_policy) {
     if (has_policy) {
       base::Value::List enterprise_shortcuts;
@@ -440,7 +450,7 @@ struct SetMostVisitedSettingsTestCase {
   bool expected_enterprise_shortcuts_visible;
   bool expected_shortcuts_visible;
   bool expected_personal_shortcuts_visible;
-  int expected_histogram_count;
+  std::map<CustomizeShortcutAction, int> expected_histogram_counts;
 };
 
 class CustomizeChromePageHandlerSetMostVisitedTest
@@ -484,8 +494,10 @@ TEST_P(CustomizeChromePageHandlerSetMostVisitedTest, SetMostVisitedSettings) {
                         test_case.expected_enterprise_shortcuts_visible,
                         test_case.expected_shortcuts_visible,
                         test_case.expected_personal_shortcuts_visible);
-  histogram_tester().ExpectTotalCount("NewTabPage.CustomizeShortcutAction",
-                                      test_case.expected_histogram_count);
+
+  // Validate histograms.
+  CheckHistograms("NewTabPage.CustomizeShortcutAction",
+                  test_case.expected_histogram_counts);
 }
 
 const SetMostVisitedSettingsTestCase kSetMostVisitedSettingsTestCases[] = {
@@ -502,7 +514,11 @@ const SetMostVisitedSettingsTestCase kSetMostVisitedSettingsTestCases[] = {
      .expected_enterprise_shortcuts_visible = false,
      .expected_shortcuts_visible = true,
      .expected_personal_shortcuts_visible = true,
-     .expected_histogram_count = 1},
+     .expected_histogram_counts =
+         {{CustomizeShortcutAction::CUSTOMIZE_SHORTCUT_ACTION_TOGGLE_TYPE, 1},
+          {CustomizeShortcutAction::
+               CUSTOMIZE_ENTERPRISE_SHORTCUT_ACTION_TOGGLE_VISIBILITY,
+           1}}},
     {.test_name = "SetSingleType_EnterprisePolicyEmpty",
      .initial_custom_links_visible = true,
      .initial_enterprise_shortcuts_visible = true,
@@ -516,7 +532,8 @@ const SetMostVisitedSettingsTestCase kSetMostVisitedSettingsTestCases[] = {
      .expected_enterprise_shortcuts_visible = true,
      .expected_shortcuts_visible = true,
      .expected_personal_shortcuts_visible = true,
-     .expected_histogram_count = 1},
+     .expected_histogram_counts =
+         {{CustomizeShortcutAction::CUSTOMIZE_SHORTCUT_ACTION_TOGGLE_TYPE, 1}}},
     {.test_name = "SetMultipleTypes",
      .initial_custom_links_visible = true,
      .initial_enterprise_shortcuts_visible = false,
@@ -531,7 +548,11 @@ const SetMostVisitedSettingsTestCase kSetMostVisitedSettingsTestCases[] = {
      .expected_enterprise_shortcuts_visible = true,
      .expected_shortcuts_visible = true,
      .expected_personal_shortcuts_visible = true,
-     .expected_histogram_count = 1},
+     .expected_histogram_counts =
+         {{CustomizeShortcutAction::CUSTOMIZE_SHORTCUT_ACTION_TOGGLE_TYPE, 1},
+          {CustomizeShortcutAction::
+               CUSTOMIZE_ENTERPRISE_SHORTCUT_ACTION_TOGGLE_VISIBILITY,
+           1}}},
     {.test_name = "SetMultipleTypes_EnterprisePolicyEmpty",
      .initial_custom_links_visible = true,
      .initial_enterprise_shortcuts_visible = false,
@@ -546,7 +567,8 @@ const SetMostVisitedSettingsTestCase kSetMostVisitedSettingsTestCases[] = {
      .expected_enterprise_shortcuts_visible = false,
      .expected_shortcuts_visible = true,
      .expected_personal_shortcuts_visible = true,
-     .expected_histogram_count = 1},
+     .expected_histogram_counts =
+         {{CustomizeShortcutAction::CUSTOMIZE_SHORTCUT_ACTION_TOGGLE_TYPE, 1}}},
     {.test_name = "SetShortcutsVisible",
      .initial_custom_links_visible = true,
      .initial_enterprise_shortcuts_visible = false,
@@ -560,7 +582,9 @@ const SetMostVisitedSettingsTestCase kSetMostVisitedSettingsTestCases[] = {
      .expected_enterprise_shortcuts_visible = false,
      .expected_shortcuts_visible = true,
      .expected_personal_shortcuts_visible = true,
-     .expected_histogram_count = 1},
+     .expected_histogram_counts =
+         {{CustomizeShortcutAction::CUSTOMIZE_SHORTCUT_ACTION_TOGGLE_VISIBILITY,
+           1}}},
     {.test_name = "SetPersonalShortcutsVisible",
      .initial_custom_links_visible = true,
      .initial_enterprise_shortcuts_visible = false,
@@ -574,7 +598,10 @@ const SetMostVisitedSettingsTestCase kSetMostVisitedSettingsTestCases[] = {
      .expected_enterprise_shortcuts_visible = false,
      .expected_shortcuts_visible = true,
      .expected_personal_shortcuts_visible = false,
-     .expected_histogram_count = 0}};
+     .expected_histogram_counts = {
+         {CustomizeShortcutAction::
+              CUSTOMIZE_PERSONAL_SHORTCUT_ACTION_TOGGLE_VISIBILITY,
+          1}}}};
 
 INSTANTIATE_TEST_SUITE_P(
     All,

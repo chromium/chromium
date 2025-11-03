@@ -476,30 +476,41 @@ void CustomizeChromePageHandler::SetMostVisitedSettings(
     bool visible,
     bool personal_shortcuts_visible) {
   std::set<ntp_tiles::TileType> types_set(types.begin(), types.end());
-  if (GetTileTypes() != types_set) {
-    profile_->GetPrefs()->SetBoolean(
+  std::set<ntp_tiles::TileType> current_tile_types = GetTileTypes();
+
+  if ((base::Contains(current_tile_types, ntp_tiles::TileType::kCustomLinks) !=
+           base::Contains(types_set, ntp_tiles::TileType::kCustomLinks) ||
+       (base::Contains(current_tile_types, ntp_tiles::TileType::kTopSites) !=
+        base::Contains(types_set, ntp_tiles::TileType::kTopSites)))) {
+    UpdatePrefAndLogEvent(
         ntp_prefs::kNtpCustomLinksVisible,
-        base::Contains(types_set, ntp_tiles::TileType::kCustomLinks));
+        base::Contains(types_set, ntp_tiles::TileType::kCustomLinks),
+        NTP_CUSTOMIZE_SHORTCUT_TOGGLE_TYPE);
+  }
+
+  if (base::Contains(current_tile_types,
+                     ntp_tiles::TileType::kEnterpriseShortcuts) !=
+      base::Contains(types_set, ntp_tiles::TileType::kEnterpriseShortcuts)) {
     // If enterprise shortcuts are disabled or the policy is not set, skip this
     // update.
     if (base::FeatureList::IsEnabled(ntp_tiles::kNtpEnterpriseShortcuts) &&
         !IsEnterpriseShortcutsEmpty()) {
-      profile_->GetPrefs()->SetBoolean(
+      UpdatePrefAndLogEvent(
           ntp_prefs::kNtpEnterpriseShortcutsVisible,
-          base::Contains(types_set, ntp_tiles::TileType::kEnterpriseShortcuts));
+          base::Contains(types_set, ntp_tiles::TileType::kEnterpriseShortcuts),
+          NTP_CUSTOMIZE_ENTERPRISE_SHORTCUT_TOGGLE_VISIBILITY);
     }
-    LogEvent(NTP_CUSTOMIZE_SHORTCUT_TOGGLE_TYPE);
   }
 
   if (IsShortcutsVisible() != visible) {
-    profile_->GetPrefs()->SetBoolean(ntp_prefs::kNtpShortcutsVisible, visible);
-    LogEvent(NTP_CUSTOMIZE_SHORTCUT_TOGGLE_VISIBILITY);
+    UpdatePrefAndLogEvent(ntp_prefs::kNtpShortcutsVisible, visible,
+                          NTP_CUSTOMIZE_SHORTCUT_TOGGLE_VISIBILITY);
   }
 
   if (IsPersonalShortcutsVisible() != personal_shortcuts_visible) {
-    profile_->GetPrefs()->SetBoolean(ntp_prefs::kNtpPersonalShortcutsVisible,
-                                     personal_shortcuts_visible);
-    // TODO(crbug.com/438304285): Add logging event here for toggle.
+    UpdatePrefAndLogEvent(ntp_prefs::kNtpPersonalShortcutsVisible,
+                          personal_shortcuts_visible,
+                          NTP_CUSTOMIZE_PERSONAL_SHORTCUT_TOGGLE_VISIBILITY);
   }
 }
 
@@ -686,9 +697,29 @@ void CustomizeChromePageHandler::LogEvent(NTPLoggingEventType event) {
           "NewTabPage.CustomizeShortcutAction",
           CustomizeShortcutAction::CUSTOMIZE_SHORTCUT_ACTION_TOGGLE_VISIBILITY);
       break;
+    case NTP_CUSTOMIZE_PERSONAL_SHORTCUT_TOGGLE_VISIBILITY:
+      UMA_HISTOGRAM_ENUMERATION(
+          "NewTabPage.CustomizeShortcutAction",
+          CustomizeShortcutAction::
+              CUSTOMIZE_PERSONAL_SHORTCUT_ACTION_TOGGLE_VISIBILITY);
+      break;
+    case NTP_CUSTOMIZE_ENTERPRISE_SHORTCUT_TOGGLE_VISIBILITY:
+      UMA_HISTOGRAM_ENUMERATION(
+          "NewTabPage.CustomizeShortcutAction",
+          CustomizeShortcutAction::
+              CUSTOMIZE_ENTERPRISE_SHORTCUT_ACTION_TOGGLE_VISIBILITY);
+      break;
     default:
       break;
   }
+}
+
+void CustomizeChromePageHandler::UpdatePrefAndLogEvent(
+    const char* pref_name,
+    bool new_value,
+    NTPLoggingEventType event) {
+  profile_->GetPrefs()->SetBoolean(pref_name, new_value);
+  LogEvent(event);
 }
 
 std::set<ntp_tiles::TileType> CustomizeChromePageHandler::GetTileTypes() const {

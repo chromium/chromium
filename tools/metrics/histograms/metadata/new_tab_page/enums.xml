@@ -420,6 +420,9 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Most Visited is enabled"/>
   <int value="1" label="Custom links is enabled"/>
   <int value="2" label="Shortcuts are hidden"/>
+  <int value="3" label="Enterprise shortcuts are enabled"/>
+  <int value="4" label="Enterprise shortcuts and most visited are enabled"/>
+  <int value="5" label="Enterprise shortcuts and custom links are enabled"/>
 </enum>
 
 <enum name="NTPCustomizeLocalImageBackgroundAction">
@@ -438,6 +441,14 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="A custom shortcut was updated."/>
   <int value="7" label="The type of shortcuts displayed was changed."/>
   <int value="8" label="The visibility of shortcuts was changed."/>
+  <int value="9" label="The visibility of personal shortcuts was changed."/>
+  <int value="10" label="The visibility of enterprise shortcuts was changed."/>
+  <int value="11" label="An enterprise shortcut was removed."/>
+  <int value="12" label="An enterprise shortcut action was undone."/>
+  <int value="13"
+      label="All enterprise shortcuts were restored (via menu or message
+             pop-up)."/>
+  <int value="14" label="An enterprise shortcut was updated."/>
 </enum>
 
 <enum name="NTPElement">
