@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] Permission denied state is hidden
+  assert_equals: expected "prompt" but got "denied"
+Harness: the test ran to completion.
