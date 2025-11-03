@@ -154,6 +154,7 @@ public abstract class ChromeFeatureList {
     }
 
     // Feature names.
+    // LINT.IfChange(FeaturesExposedToJava)
     // keep-sorted start group_prefixes=["public static final String"]
     public static final String ACCESSIBILITY_MAGNIFICATION_FOLLOWS_INPUT_FOCUS =
             "AccessibilityMagnificationFollowsInputFocus";
@@ -717,6 +718,7 @@ public abstract class ChromeFeatureList {
     public static final String WEB_OTP_CROSS_DEVICE_SIMPLE_STRING = "WebOtpCrossDeviceSimpleString";
     public static final String XSURFACE_METRICS_REPORTING = "XsurfaceMetricsReporting";
     // keep-sorted end
+    // LINT.ThenChange(//chrome/browser/flags/android/chrome_feature_list.cc:FeaturesExposedToJava)
 
     // keep-sorted start group_prefixes=["public static final CachedFlag"]
 

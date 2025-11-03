@@ -102,6 +102,7 @@ namespace {
 // clang-format off
 
 // Alphabetical:
+// LINT.IfChange(FeaturesExposedToJava)
 const base::Feature* const kFeaturesExposedToJava[] = {
 // FEATURE_EXPORT_LIST_START
 // go/keep-sorted start
@@ -511,6 +512,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &switches::kMitigateLegacySearchEnginePromoOverlap,
     &switches::kRestrictLegacySearchEnginePromoOnFormFactors,
     &sync_sessions::kOptimizeAssociateWindowsAndroid,
+    &syncer::kSyncEnableNewSyncDashboardUrl,
     &syncer::kSyncEnablePasswordsSyncErrorMessageAlternative,
     &syncer::kUnoPhase2FollowUp,
     &syncer::kWebApkBackupAndRestoreBackend,
@@ -523,6 +525,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
 // go/keep-sorted end
 // FEATURE_EXPORT_LIST_END
 };
+// LINT.ThenChange(//chrome/browser/flags/android/java/src/org/chromium/chrome/browser/flags/ChromeFeatureList.java:FeaturesExposedToJava)
 
 // static
 base::android::FeatureMap* GetFeatureMap() {
