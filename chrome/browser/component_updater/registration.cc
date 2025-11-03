@@ -31,6 +31,7 @@
 #include "chrome/browser/component_updater/pki_metadata_component_installer.h"
 #include "chrome/browser/component_updater/pnacl_component_installer.h"
 #include "chrome/browser/component_updater/privacy_sandbox_attestations_component_installer.h"
+#include "chrome/browser/component_updater/probabilistic_reveal_token_component_remover.h"
 #include "chrome/browser/component_updater/ssl_error_assistant_component_installer.h"
 #include "chrome/browser/component_updater/subresource_filter_component_installer.h"
 #include "chrome/browser/component_updater/tpcd_metadata_component_installer.h"
@@ -155,7 +156,8 @@ void RegisterComponentsForUpdate() {
     // Clean up any remaining desktop sharing hub state.
     component_updater::DeleteDesktopSharingHub(path);
 
-    // TODO: crbug.com/456742487 - Add cleanup component for PRT registry files.
+    // TODO: crbug.com/456742487 - Remove this after M148.
+    DeleteProbabilisticRevealTokenRegistry(path);
 
     if (!history_embeddings::IsHistoryEmbeddingsFeatureEnabled()) {
       DeleteHistorySearchStringsComponent(path);
