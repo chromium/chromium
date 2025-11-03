@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
 #include "ui/base/clipboard/clipboard_constants.h"
 
 namespace blink {
@@ -42,7 +43,8 @@ class UnionToBlobResolverFunction final
     } else if (union_value->IsString()) {
       // ClipboardItem::getType() returns a Blob, so we need to convert the
       // string to a Blob here.
-      return Blob::Create(union_value->GetAsString().Span8(), mime_type_);
+      StringUtf8Adaptor utf8_text(union_value->GetAsString());
+      return Blob::Create(base::as_byte_span(utf8_text), mime_type_);
     }
     return nullptr;
   }
