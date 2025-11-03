@@ -5,16 +5,16 @@
 #include "net/websockets/websocket_handshake_challenge.h"
 
 #include "base/base64.h"
-#include "base/hash/sha1.h"
-#include "base/strings/strcat.h"
+#include "crypto/obsolete/sha1.h"
 #include "net/websockets/websocket_handshake_constants.h"
 
 namespace net {
 
 std::string ComputeSecWebSocketAccept(std::string_view key) {
-  std::string hash =
-      base::SHA1HashString(base::StrCat({key, websockets::kWebSocketGuid}));
-  return base::Base64Encode(hash);
+  crypto::obsolete::Sha1 hash;
+  hash.Update(key);
+  hash.Update(websockets::kWebSocketGuid);
+  return base::Base64Encode(hash.Finish());
 }
 
 }  // namespace net

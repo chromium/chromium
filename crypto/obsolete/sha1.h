@@ -32,6 +32,10 @@ namespace ash::quick_start {
 std::string GetHashedAuthToken(std::string_view authentication_token);
 }  // namespace ash::quick_start
 
+namespace net {
+std::string ComputeSecWebSocketAccept(std::string_view key);
+}  // namespace net
+
 namespace crypto::obsolete {
 
 // This class is used for computing SHA-1 hashes, either one-shot via
@@ -75,6 +79,7 @@ class CRYPTO_EXPORT Sha1 {
 
   friend std::string ash::quick_start::GetHashedAuthToken(
       std::string_view authentication_token);
+  friend std::string net::ComputeSecWebSocketAccept(std::string_view key);
 
   Sha1();
   static std::array<uint8_t, kSize> Hash(std::string_view data);
