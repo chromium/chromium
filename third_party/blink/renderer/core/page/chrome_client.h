@@ -490,7 +490,9 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
   virtual void ClosePagePopup(PagePopup*) = 0;
   virtual DOMWindow* PagePopupWindowForTesting() const = 0;
 
-  virtual void SetUseExternalPopupMenusForTesting(bool) {}
+  // Allow overriding whether external popup menus are used.
+  virtual void SetUseExternalPopupMenus(bool) {}
+  virtual bool UseExternalPopupMenus() const { return false; }
 
   virtual void SetBrowserControlsState(float top_height,
                                        float bottom_height,

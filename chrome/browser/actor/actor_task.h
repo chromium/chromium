@@ -16,6 +16,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/types/pass_key.h"
+#include "build/build_config.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_task_delegate.h"
 #include "chrome/browser/actor/aggregated_journal.h"
@@ -24,6 +25,7 @@
 #include "chrome/common/actor/task_id.h"
 #include "chrome/common/actor_webui.mojom.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/common/buildflags.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
@@ -182,6 +184,11 @@ class ActorTask {
     // Keeps the tab in "actuation mode". The runner is present when the tab is
     // actively being kept awake and is reset during pause.
     base::ScopedClosureRunner actuation_runner;
+    // When a tab is active, external popup menus are disabled. This runner
+    // allows external popups to be created again.
+#if BUILDFLAG(IS_MAC) && BUILDFLAG(USE_EXTERNAL_POPUP_MENU)
+    base::ScopedClosureRunner reenable_external_popups;
+#endif  // BUILDFLAG(IS_MAC) && BUILDFLAG(USE_EXTERNAL_POPUP_MENU)
     // Subscription for TabInterface::WillDetach.
     base::CallbackListSubscription will_detach_subscription;
     // Subscription for TabInterface::WillDiscardContents.

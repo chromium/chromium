@@ -67,6 +67,7 @@ source_set("actor") {
     "//components/password_manager/core/browser/actor_login:common",
     "//components/tabs:public",
     "//content/public/browser",
+    "//content/public/common:buildflags",
     "//ui/base/unowned_user_data",
   ]
 }

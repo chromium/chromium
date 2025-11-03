@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0">
+  </head>
+  <body>
+    <script>
+const frameOrigin = decodeURIComponent(window.location.search.substring(1));
+
+function createIframe() {
+  const iframe = document.createElement('iframe');
+  iframe.src = frameOrigin + '/actor/red_dropdown.html';
+  iframe.width = 800;
+  iframe.height = 800;
+  iframe.id = 'iframe';
+  document.body.appendChild(iframe);
+
+  const iframe_loaded = new Promise((resolve) => {
+    iframe.addEventListener('load', function() {
+      resolve();
+    });
+  });
+  return iframe_loaded;
+}
+    </script>
+  </body>
+</html>

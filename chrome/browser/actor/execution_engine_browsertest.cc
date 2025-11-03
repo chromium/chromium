@@ -6,10 +6,14 @@
 
 #include <optional>
 #include <string_view>
+#include <tuple>
 
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
@@ -18,6 +22,7 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/actor/actor_features.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/tools/click_tool_request.h"
 #include "chrome/browser/actor/tools/tab_management_tool_request.h"
@@ -51,7 +56,9 @@
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/core/filters/optimization_hints_component_update_listener.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
+#include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
 #include "content/public/test/browser_test.h"
@@ -62,9 +69,16 @@
 #include "content/public/test/test_utils.h"
 #include "net/base/features.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkColor.h"
+#include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/point_conversions.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 #include "url/gurl.h"
 
@@ -136,6 +150,10 @@ class ExecutionEngineBrowserTest : public InProcessBrowserTest {
     InProcessBrowserTest::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(embedded_test_server()->Start());
+    if (UseCertTestNames()) {
+      embedded_https_test_server().SetSSLConfig(
+          net::EmbeddedTestServer::CERT_TEST_NAMES);
+    }
     ASSERT_TRUE(embedded_https_test_server().Start());
 
     StartNewTask();
@@ -155,6 +173,8 @@ class ExecutionEngineBrowserTest : public InProcessBrowserTest {
 
     content::SetBrowserClientForTesting(&mock_browser_client_);
   }
+
+  virtual bool UseCertTestNames() const { return false; }
 
  protected:
   void StartNewTask() {
@@ -187,12 +207,14 @@ class ExecutionEngineBrowserTest : public InProcessBrowserTest {
 
   void ClickTarget(
       std::string_view query_selector,
-      mojom::ActionResultCode expected_code = mojom::ActionResultCode::kOk) {
-    std::optional<int> dom_node_id =
-        content::GetDOMNodeId(*main_frame(), query_selector);
+      mojom::ActionResultCode expected_code = mojom::ActionResultCode::kOk,
+      content::RenderFrameHost* execution_target = nullptr) {
+    content::RenderFrameHost& rfh =
+        execution_target ? *execution_target : *main_frame();
+    std::optional<int> dom_node_id = content::GetDOMNodeId(rfh, query_selector);
     ASSERT_TRUE(dom_node_id);
     std::unique_ptr<ToolRequest> click =
-        MakeClickRequest(*main_frame(), dom_node_id.value());
+        MakeClickRequest(rfh, dom_node_id.value());
     ActResultFuture result;
     actor_task().Act(ToRequestList(click), result.GetCallback());
     if (expected_code == mojom::ActionResultCode::kOk) {
@@ -448,6 +470,293 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineBrowserTest,
 
   EXPECT_FALSE(browser_client().external_protocol_result().value());
 }
+
+// Android uses a different dropdown UI that doesn't respect styling.
+#if !BUILDFLAG(IS_ANDROID)
+class ExecutionEnginePixelBrowserTest : public ExecutionEngineBrowserTest {
+ public:
+  ExecutionEnginePixelBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kGlicActorInternalPopups);
+  }
+
+  void SetUp() override {
+    EnablePixelOutput();
+    ExecutionEngineBrowserTest::SetUp();
+  }
+
+  // Captures the page with CopyFromSurface() and returns true if any red
+  // pixels are found.
+  bool HasRedPixels() {
+    bool found_red = false;
+    base::RunLoop run_loop;
+    web_contents()->GetRenderWidgetHostView()->CopyFromSurface(
+        gfx::Rect(), gfx::Size(),
+        base::BindLambdaForTesting(
+            [&](const viz::CopyOutputBitmapWithMetadata& result) {
+              const SkBitmap& bitmap = result.bitmap;
+              ASSERT_FALSE(bitmap.drawsNothing());
+              for (int x = 0; x < bitmap.width() && !found_red; ++x) {
+                for (int y = 0; y < bitmap.height() && !found_red; ++y) {
+                  if (bitmap.getColor(x, y) == SK_ColorRED) {
+                    found_red = true;
+                  }
+                }
+              }
+              base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+                  FROM_HERE, run_loop.QuitClosure());
+            }));
+    run_loop.Run();
+    return found_red;
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// TODO: b/456801048 - Fix test flakiness on Linux.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_DropdownCapturedWhenActing DISABLED_DropdownCapturedWhenActing
+#else
+#define MAYBE_DropdownCapturedWhenActing DropdownCapturedWhenActing
+#endif  // BUILDFLAG(IS_LINUX)
+
+// Tests that dropdown menus are visible in captures during an actor-controlled
+// state.
+IN_PROC_BROWSER_TEST_F(ExecutionEnginePixelBrowserTest,
+                       MAYBE_DropdownCapturedWhenActing) {
+  // Render an HTML <select> element whose second item appears red.
+  // The second item should appear when the element is clicked.
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/actor/red_dropdown.html")));
+  EXPECT_TRUE(WaitForRenderFrameReady(web_contents()->GetPrimaryMainFrame()));
+  content::SimulateEndOfPaintHoldingOnPrimaryMainFrame(web_contents());
+
+  base::RunLoop loop;
+  actor_task().AddTab(
+      active_tab()->GetHandle(),
+      base::BindLambdaForTesting([&](mojom::ActionResultPtr result) {
+        EXPECT_TRUE(IsOk(*result));
+        loop.Quit();
+      }));
+  loop.Run();
+
+  // Set the actor task to an actor-controlled state.
+  actor_task().SetState(ActorTask::State::kActing);
+
+  {
+    content::ShowPopupWidgetWaiter dropdown_waiter(web_contents(),
+                                                   main_frame());
+    ClickTarget("#select");
+    dropdown_waiter.Wait();
+    ASSERT_FALSE(dropdown_waiter.last_initial_rect().IsEmpty());
+  }
+  content::WaitForCopyableViewInFrame(main_frame());
+
+  // CopyFromSurface() should have seen red pixels from the dropdown.
+  EXPECT_TRUE(HasRedPixels());
+
+  // Dismissing popups only happens on Mac -- it happens to shift back to the
+  // external UI.
+#if BUILDFLAG(IS_MAC)
+  // Move to a non-actor-controlled state, which should dismiss the popup.
+  actor_task().SetState(ActorTask::State::kPausedByUser);
+
+  // Capture again, and expect no red pixels.
+  EXPECT_FALSE(HasRedPixels());
+
+  // Re-open the popup. Since the actor is not in an actor-controlled state,
+  // the popup should be external and not styled.
+  {
+    content::ShowPopupWidgetWaiter dropdown_waiter(web_contents(),
+                                                   main_frame());
+    content::SimulateMouseClickAt(
+        web_contents(), /*modifiers=*/0, blink::WebMouseEvent::Button::kLeft,
+        gfx::ToFlooredPoint(content::GetCenterCoordinatesOfElementWithId(
+            web_contents(), "select")));
+    dropdown_waiter.Wait();
+    ASSERT_FALSE(dropdown_waiter.last_initial_rect().IsEmpty());
+    content::WaitForCopyableViewInFrame(main_frame());
+  }
+
+  // Capture again, and expect no red pixels.
+  EXPECT_FALSE(HasRedPixels());
+
+  // Now, go back to an actor-controlled state again, and re-open the popup. We
+  // should get red pixels again.
+  actor_task().SetState(ActorTask::State::kReflecting);
+  actor_task().SetState(ActorTask::State::kActing);
+
+  {
+    content::ShowPopupWidgetWaiter dropdown_waiter(web_contents(),
+                                                   main_frame());
+    ClickTarget("#select");
+    dropdown_waiter.Wait();
+    ASSERT_FALSE(dropdown_waiter.last_initial_rect().IsEmpty());
+  }
+  content::WaitForCopyableViewInFrame(main_frame());
+
+  // CopyFromSurface() should have seen red pixels from the dropdown.
+  EXPECT_TRUE(HasRedPixels());
+#endif  // BUILDFLAG(IS_MAC)
+}
+
+// Only Mac switches between internal and external popups, so this test only
+// makes sense on that platform.
+#if BUILDFLAG(IS_MAC)
+
+// Determines the ordering of when the the cross-origin iframe is created.
+enum class CreateFrameHappens {
+  kBeforeStateTransistions,
+  kAfterStateTransistions,
+};
+
+// Determines if expecting the popup to use internal (when actor controlled) or
+// external (when user controlled) popup UI. Only the internal UI is stylable
+// with red.
+enum class ExpectedPopupType {
+  kInternal,
+  kExternal,
+};
+
+class ExecutionEngineDropdownCaptureOopifBrowserTest
+    : public ExecutionEnginePixelBrowserTest,
+      public ::testing::WithParamInterface<
+          std::tuple<CreateFrameHappens, ExpectedPopupType>> {
+ public:
+  bool UseCertTestNames() const override { return true; }
+
+  CreateFrameHappens GetCreateFrameHappens() const {
+    return std::get<0>(GetParam());
+  }
+
+  ExpectedPopupType GetExpectedPopupType() const {
+    return std::get<1>(GetParam());
+  }
+
+  // Helper function that clicks and opens a popup. This function works both in
+  // actor-controlled and non-actor-controlled states.
+  void ClickSelect(std::string_view select_id,
+                   content::RenderFrameHost* execution_target = nullptr) {
+    content::RenderFrameHost& rfh =
+        execution_target ? *execution_target : *main_frame();
+    content::ShowPopupWidgetWaiter dropdown_waiter(web_contents(), &rfh);
+    if (actor_task().IsUnderActorControl()) {
+      ClickTarget(base::StrCat({"#", select_id}),
+                  /*expected_code=*/mojom::ActionResultCode::kOk,
+                  /*execution_target=*/&rfh);
+    } else {
+      blink::WebMouseEvent mouse_event(
+          blink::WebInputEvent::Type::kMouseDown,
+          blink::WebInputEvent::kNoModifiers,
+          blink::WebInputEvent::GetStaticTimeStampForTests());
+      mouse_event.button = blink::WebPointerProperties::Button::kLeft;
+      mouse_event.SetPositionInWidget(
+          content::GetCenterCoordinatesOfElementWithId(&rfh, select_id));
+      rfh.GetRenderWidgetHost()->ForwardMouseEvent(mouse_event);
+    }
+    dropdown_waiter.Wait();
+    ASSERT_FALSE(dropdown_waiter.last_initial_rect().IsEmpty());
+  }
+
+  void DoStateTransitions() {
+    base::RunLoop loop;
+    actor_task().AddTab(
+        active_tab()->GetHandle(),
+        base::BindLambdaForTesting([&](mojom::ActionResultPtr result) {
+          EXPECT_TRUE(IsOk(*result));
+          loop.Quit();
+        }));
+    loop.Run();
+
+    // Set the actor task to an actor-controlled state.
+    actor_task().SetState(ActorTask::State::kActing);
+
+    if (GetExpectedPopupType() == ExpectedPopupType::kExternal) {
+      // Now, transition back to a user-controlled state.
+      actor_task().SetState(ActorTask::State::kPausedByUser);
+    }
+  }
+};
+
+// Ensure that internal / external popup mode correctly propagates to
+// newly-created out-of-process (cross-origin) iframes, even those created after
+// moving to an actor-controlled state.
+//
+// Transition to an actor-controlled state, then create a new out-of-process
+// iframe that contains a <select> tag.
+//
+// When the actor opens the select dropdown, it uses the internal UI (styled
+// with red) and is visible in the screenshot.
+IN_PROC_BROWSER_TEST_P(ExecutionEngineDropdownCaptureOopifBrowserTest,
+                       OutOfProcIframeDropdowns) {
+  // The main frame is a.test, the iframe with the popup (created dynamically)
+  // is in b.test.
+  const url::Origin origin_b =
+      url::Origin::Create(embedded_https_test_server().GetURL("b.test", "/"));
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_https_test_server().GetURL(
+                     "a.test", base::StrCat({"/actor/oopif_red_dropdown.html?",
+                                             origin_b.Serialize()}))));
+  EXPECT_TRUE(WaitForRenderFrameReady(web_contents()->GetPrimaryMainFrame()));
+  content::SimulateEndOfPaintHoldingOnPrimaryMainFrame(web_contents());
+
+  switch (GetCreateFrameHappens()) {
+    case CreateFrameHappens::kBeforeStateTransistions:
+      EXPECT_TRUE(content::ExecJs(web_contents(), "createIframe();"));
+      DoStateTransitions();
+      break;
+    case CreateFrameHappens::kAfterStateTransistions:
+      DoStateTransitions();
+      EXPECT_TRUE(content::ExecJs(web_contents(), "createIframe();"));
+      break;
+  }
+
+  // Get a handle to the out of process iframe.
+  content::RenderFrameHost* iframe =
+      ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0);
+  ASSERT_NE(iframe, nullptr);
+
+  // Now click on the <select> in the out of process iframe, and then look for
+  // red pixels.
+  ClickSelect("select", /*execution_target=*/iframe);
+  content::WaitForCopyableViewInFrame(iframe);
+
+  // CopyFromSurface() should have seen red pixels from the dropdown.
+  switch (GetExpectedPopupType()) {
+    case ExpectedPopupType::kInternal:
+      EXPECT_TRUE(HasRedPixels());
+      break;
+    case ExpectedPopupType::kExternal:
+      EXPECT_FALSE(HasRedPixels());
+      break;
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    ExecutionEngineDropdownCaptureOopifBrowserTest,
+    ::testing::Combine(
+        ::testing::Values(CreateFrameHappens::kBeforeStateTransistions,
+                          CreateFrameHappens::kAfterStateTransistions),
+        ::testing::Values(ExpectedPopupType::kInternal,
+                          ExpectedPopupType::kExternal)),
+    [](const testing::TestParamInfo<
+        std::tuple<CreateFrameHappens, ExpectedPopupType>>& info) {
+      return base::StrCat(
+          {"CreateFrameHappens_",
+           std::get<0>(info.param) ==
+                   CreateFrameHappens::kBeforeStateTransistions
+               ? "BeforeStateTransistions"
+               : "AfterStateTransitions",
+           "__ExpectedPopupType_",
+           std::get<1>(info.param) == ExpectedPopupType::kInternal
+               ? "Internal"
+               : "External"});
+    });
+
+#endif  // BUILDFLAG(IS_MAC)
+
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 class ExecutionEngineFileSystemAccessApiBrowserTest
     : public ExecutionEngineBrowserTest,

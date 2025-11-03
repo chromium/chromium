@@ -8,6 +8,7 @@
 
 #include "base/check.h"
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
@@ -39,6 +40,7 @@
 #include "content/browser/renderer_host/text_input_manager.h"
 #include "content/browser/renderer_host/visible_time_request_trigger.h"
 #include "content/common/content_switches_internal.h"
+#include "content/common/features.h"
 #include "content/public/common/page_visibility_state.h"
 #include "third_party/blink/public/mojom/frame/intrinsic_sizing_info.mojom.h"
 #include "ui/base/ui_base_types.h"
@@ -172,8 +174,14 @@ void RenderWidgetHostViewBase::CopyMainAndPopupFromSurface(
     float scale_factor,
     base::OnceCallback<void(const viz::CopyOutputBitmapWithMetadata&)>
         callback) {
-  if (!main_host || !main_frame_host)
+  if (!main_host || !main_frame_host) {
+    if (base::FeatureList::IsEnabled(
+            features::kCopyFromSurfaceAlwaysCallCallback)) {
+      viz::CopyOutputBitmapWithMetadata empty;
+      std::move(callback).Run(empty);
+    }
     return;
+  }
 
 #if BUILDFLAG(IS_ANDROID)
   NOTREACHED()
@@ -216,8 +224,15 @@ void RenderWidgetHostViewBase::CopyMainAndPopupFromSurface(
          base::WeakPtr<DelegatedFrameHost> popup_frame_host,
          const gfx::Rect src_subrect, const gfx::Size dst_size,
          const viz::CopyOutputBitmapWithMetadata& main_result) {
-        if (!popup_frame_host)
+        if (!popup_frame_host) {
+          if (base::FeatureList::IsEnabled(
+                  features::kCopyFromSurfaceAlwaysCallCallback)) {
+            // There was a popup but it went away before we could capture it, so
+            // there's no need to capture more images.
+            std::move(final_callback).Run(main_result);
+          }
           return;
+        }
 
         // Build a new callback that actually combines images.
         auto popup_done_callback = base::BindOnce(

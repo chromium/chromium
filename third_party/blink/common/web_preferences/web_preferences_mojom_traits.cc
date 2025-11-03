@@ -244,6 +244,10 @@ bool StructTraits<blink::mojom::WebPreferencesDataView,
       data.content_based_fingerprinting_protection_enabled();
   out->ai_prompt_api_enabled = data.ai_prompt_api_enabled();
 
+#if BUILDFLAG(IS_MAC)
+  out->should_disable_external_popups = data.should_disable_external_popups();
+#endif  // BUILDFLAG(IS_MAC)
+
 #if BUILDFLAG(IS_ANDROID)
   out->should_screenshot_on_mainframe_same_doc_navigation =
       data.should_screenshot_on_mainframe_same_doc_navigation();
