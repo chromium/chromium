@@ -246,7 +246,7 @@ int main() {
   install_static::InitializeFromPrimaryModule();
   SignalInitializeCrashReporting();
   if (IsBrowserProcess())
-    chrome::DisableDelayLoadFailureHooksForMainExecutable();
+    DisableDelayLoadFailureHooksForMainExecutable();
 #if defined(ARCH_CPU_32_BITS)
   // Intentionally crash if converting to a fiber failed.
   CHECK_EQ(fiber_status, FiberStatus::kSuccess);
