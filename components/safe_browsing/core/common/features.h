@@ -60,6 +60,7 @@ extern const base::FeatureParam<double> kCsdClipboardCopyApiHCAcceptanceRate;
 extern const base::FeatureParam<int> kCsdClipboardCopyApiMaxLength;
 extern const base::FeatureParam<int> kCsdClipboardCopyApiMinLength;
 extern const base::FeatureParam<double> kCsdClipboardCopyApiSampleRate;
+extern const base::FeatureParam<bool> kCSDClipboardCopyApiProcessPayload;
 
 // Enables sending a CSD ping on the detection of a credit card form.
 BASE_DECLARE_FEATURE(kClientSideDetectionCreditCardForm);

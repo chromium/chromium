@@ -558,6 +558,42 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
+<histogram
+    name="SBClientPhishing.ClipboardCopyApi.PayloadExtraction.SplitStringDuration"
+    units="ms" expires_after="2026-10-23">
+  <owner>liu@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the duration it took to split the clipboard payload string into
+    tokens. This is recorded each time the clipboard payload is processed for
+    client-side detection.
+  </summary>
+</histogram>
+
+<histogram
+    name="SBClientPhishing.ClipboardCopyApi.PayloadExtraction.SuspiciousTokenCount"
+    units="tokens" expires_after="2026-10-23">
+  <owner>liu@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the number of suspicious tokens discovered in the clipboard payload.
+    This is recorded each time the clipboard payload is processed for
+    client-side detection.
+  </summary>
+</histogram>
+
+<histogram
+    name="SBClientPhishing.ClipboardCopyApi.PayloadExtraction.TokenCount"
+    units="tokens" expires_after="2026-10-23">
+  <owner>liu@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the number of tokens created when splitting the clipboard payload.
+    This is recorded each time the clipboard payload is processed for
+    client-side detection.
+  </summary>
+</histogram>
+
 <histogram name="SBClientPhishing.ClipboardCopyApi.PayloadLength"
     units="characters" expires_after="2026-08-25">
   <owner>liu@chromium.org</owner>
