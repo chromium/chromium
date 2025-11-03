@@ -116,7 +116,6 @@ class Worker : public Listener {
   }
   Channel::Mode mode() { return mode_; }
   WaitableEvent* done_event() { return done_.get(); }
-  WaitableEvent* shutdown_event() { return &shutdown_event_; }
   void ResetChannel() { channel_.reset(); }
   // Derived classes need to call this when they've completed their part of
   // the test.

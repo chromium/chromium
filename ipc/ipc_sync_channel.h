@@ -68,10 +68,6 @@ class COMPONENT_EXPORT(IPC) SyncChannel : public ChannelProxy {
  public:
   class ReceivedSyncMsgQueue;
 
-  enum RestrictDispatchGroup {
-    kRestrictDispatchGroup_None = 0,
-  };
-
   // Creates an uninitialized sync channel. Call ChannelProxy::Init() to
   // initialize the channel after creation.
   static std::unique_ptr<SyncChannel> Create(
@@ -102,8 +98,6 @@ class COMPONENT_EXPORT(IPC) SyncChannel : public ChannelProxy {
     // Returns a Mojo Event that signals when an incoming message that's not the
     // pending reply needs to get dispatched (by calling DispatchMessages.)
     base::WaitableEvent* GetDispatchEvent();
-
-    base::WaitableEvent* shutdown_event() { return shutdown_event_; }
 
    private:
     ~SyncContext() override;
