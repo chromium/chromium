@@ -9,10 +9,12 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.graphics.Color;
 import android.view.View;
 import android.view.ViewPropertyAnimator;
 
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -86,5 +88,12 @@ public class PinnedTabStripViewBinderTest {
     public void testSetScrollToPosition_invalidPosition() {
         mPropertyModel.set(PinnedTabStripProperties.SCROLL_TO_POSITION, -1);
         verify(mRecyclerView, never()).smoothScrollToPosition(-1);
+    }
+
+    @Test
+    @SmallTest
+    public void testSetBackgroundColor() {
+        mPropertyModel.set(PinnedTabStripProperties.BACKGROUND_COLOR, Color.RED);
+        verify(mRecyclerView).setBackgroundColor(Color.RED);
     }
 }

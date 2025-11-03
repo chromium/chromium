@@ -14,6 +14,7 @@ import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 class PinnedTabStripProperties {
     public static final WritableBooleanPropertyKey IS_VISIBLE = new WritableBooleanPropertyKey();
     public static final WritableIntPropertyKey SCROLL_TO_POSITION = new WritableIntPropertyKey();
+    public static final WritableIntPropertyKey BACKGROUND_COLOR = new WritableIntPropertyKey();
 
-    public static final PropertyKey[] ALL_KEYS = {IS_VISIBLE, SCROLL_TO_POSITION};
+    public static final PropertyKey[] ALL_KEYS = {IS_VISIBLE, SCROLL_TO_POSITION, BACKGROUND_COLOR};
 }

@@ -580,4 +580,18 @@ public class TabUiThemeProvider {
         return TabCardThemeUtil.getCardViewBackgroundColor(
                 context, isIncognito, isSelected, colorId);
     }
+
+    /**
+     * Returns the color used for the tab switcher pane hairline.
+     *
+     * @param context {@link Context} used to retrieve color.
+     * @param isIncognito Whether the color is used for incognito mode.
+     * @return The color for the pane hairline.
+     */
+    public static @ColorInt int getPaneHairlineColor(Context context, boolean isIncognito) {
+        return isIncognito
+                ? ContextCompat.getColor(
+                        context, org.chromium.chrome.tab_ui.R.color.divider_line_bg_color_light)
+                : SemanticColorUtils.getDividerLineBgColor(context);
+    }
 }

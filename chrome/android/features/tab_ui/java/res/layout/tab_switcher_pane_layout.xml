@@ -23,7 +23,7 @@ found in the LICENSE file.
             android:id="@+id/pinned_tabs_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@macro/default_bg_color" />
+            android:background="@android:color/transparent" />
         <ImageView
             android:id="@+id/pane_hairline"
             android:layout_width="match_parent"
