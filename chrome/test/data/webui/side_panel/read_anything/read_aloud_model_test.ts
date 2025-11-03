@@ -365,6 +365,181 @@ suite('ReadAloudModel', () => {
         assertSentenceMatchesEntireSegment(sentence2.textContent);
       });
 
+  test('getCurrentText after reset starts speech over', async () => {
+    const div = document.createElement('div');
+    const sentence1 = document.createElement('b');
+    sentence1.textContent = 'I\'ve got the wind in my hair. ';
+
+    const sentence2 = document.createElement('a');
+    sentence2.textContent = 'And a gleam in my eyes. ';
+
+    const sentence3 = document.createElement('b');
+    sentence3.textContent = 'And an endless horizon. ';
+
+    div.appendChild(sentence1);
+    div.appendChild(sentence2);
+    div.appendChild(sentence3);
+    document.body.appendChild(div);
+
+    await microtasksFinished();
+    getReadAloudModel().init(ReadAloudNode.create(document.body)!);
+    assertEquals(
+        sentence1.textContent.trim(),
+        getReadAloudModel().getCurrentTextContent().trim());
+
+    getReadAloudModel().moveSpeechForward();
+    assertEquals(
+        sentence2.textContent.trim(),
+        getReadAloudModel().getCurrentTextContent().trim());
+
+    // If we init without restarting we should just go to the next sentence.
+    getReadAloudModel().init(ReadAloudNode.create(document.body)!);
+    getReadAloudModel().moveSpeechForward();
+    assertEquals(
+        sentence3.textContent.trim(),
+        getReadAloudModel().getCurrentTextContent().trim());
+
+    // After reset, we should get the first sentence again.
+    getReadAloudModel().resetSpeechToBeginning();
+    assertEquals(
+        sentence1.textContent.trim(),
+        getReadAloudModel().getCurrentTextContent().trim());
+
+    // Speech progresses as expected after a reset.
+    getReadAloudModel().moveSpeechForward();
+    assertEquals(
+        sentence2.textContent.trim(),
+        getReadAloudModel().getCurrentTextContent().trim());
+
+    getReadAloudModel().moveSpeechForward();
+    assertEquals(
+        sentence3.textContent.trim(),
+        getReadAloudModel().getCurrentTextContent().trim());
+
+    getReadAloudModel().moveSpeechForward();
+    assertTextEmpty();
+  });
+
+  test('getCurrentText after restart starts speech over', async () => {
+    const div = document.createElement('div');
+    const sentence1 = document.createElement('b');
+    sentence1.textContent = 'I\'ve got the wind in my hair. ';
+
+    const sentence2 = document.createElement('a');
+    sentence2.textContent = 'And a gleam in my eyes. ';
+
+    const sentence3 = document.createElement('b');
+    sentence3.textContent = 'And an endless horizon. ';
+
+    div.appendChild(sentence1);
+    div.appendChild(sentence2);
+    div.appendChild(sentence3);
+    document.body.appendChild(div);
+
+    await microtasksFinished();
+    getReadAloudModel().init(ReadAloudNode.create(document.body)!);
+    assertEquals(
+        sentence1.textContent.trim(),
+        getReadAloudModel().getCurrentTextContent().trim());
+
+    getReadAloudModel().moveSpeechForward();
+    assertEquals(
+        sentence2.textContent.trim(),
+        getReadAloudModel().getCurrentTextContent().trim());
+
+    // If we init without restarting we should just go to the next sentence.
+    getReadAloudModel().init(ReadAloudNode.create(document.body)!);
+    getReadAloudModel().moveSpeechForward();
+    assertEquals(
+        sentence3.textContent.trim(),
+        getReadAloudModel().getCurrentTextContent().trim());
+
+    // After a restart, current text is empty.
+    getReadAloudModel().resetModel?.();
+    assertTextEmpty();
+
+    // After init, we should get the first sentence again.
+    getReadAloudModel().init(ReadAloudNode.create(document.body)!);
+    assertEquals(
+        sentence1.textContent.trim(),
+        getReadAloudModel().getCurrentTextContent().trim());
+
+    // Speech progresses as expected after a reset.
+    getReadAloudModel().moveSpeechForward();
+    assertEquals(
+        sentence2.textContent.trim(),
+        getReadAloudModel().getCurrentTextContent().trim());
+
+    getReadAloudModel().moveSpeechForward();
+    assertEquals(
+        sentence3.textContent.trim(),
+        getReadAloudModel().getCurrentTextContent().trim());
+
+    getReadAloudModel().moveSpeechForward();
+    assertTextEmpty();
+  });
+
+
+  test('getCurrentText with multiple sentences in same node', async () => {
+    const div = document.createElement('div');
+    const sentence1 = document.createElement('b');
+    sentence1.textContent = 'But from up here. The ';
+
+    const sentence2 = document.createElement('a');
+    sentence2.textContent = 'world ';
+
+    const sentence3 = document.createElement('b');
+    sentence3.textContent =
+        'looks so small. And suddenly life seems so clear. And from up here. ' +
+        'You coast past it all. The obstacles just disappear. ';
+
+    div.appendChild(sentence1);
+    div.appendChild(sentence2);
+    div.appendChild(sentence3);
+    document.body.appendChild(div);
+
+    await microtasksFinished();
+    getReadAloudModel().init(ReadAloudNode.create(document.body)!);
+
+    // The first segment was returned correctly.
+    assertEquals(
+        'But from up here.',
+        getReadAloudModel().getCurrentTextContent().trim());
+
+    // The second segment was returned correctly, across three nodes.
+    getReadAloudModel().moveSpeechForward();
+    assertEquals(
+        'The world looks so small.',
+        getReadAloudModel().getCurrentTextContent().trim());
+
+    // The third sentence was returned correctly.
+    getReadAloudModel().moveSpeechForward();
+    assertEquals(
+        'And suddenly life seems so clear.',
+        getReadAloudModel().getCurrentTextContent().trim());
+
+    // The fourth sentence was returned correctly.
+    getReadAloudModel().moveSpeechForward();
+    assertEquals(
+        'And from up here.',
+        getReadAloudModel().getCurrentTextContent().trim());
+
+    // The fifth sentence was returned correctly.
+    getReadAloudModel().moveSpeechForward();
+    assertEquals(
+        'You coast past it all.',
+        getReadAloudModel().getCurrentTextContent().trim());
+
+    // The last sentence was returned correctly.
+    getReadAloudModel().moveSpeechForward();
+    assertEquals(
+        'The obstacles just disappear.',
+        getReadAloudModel().getCurrentTextContent().trim());
+
+    getReadAloudModel().moveSpeechForward();
+    assertTextEmpty();
+  });
+
   test('getCurrentText when sentence split across multiple nodes', async () => {
     const div = document.createElement('div');
     const sentence1 = document.createElement('b');

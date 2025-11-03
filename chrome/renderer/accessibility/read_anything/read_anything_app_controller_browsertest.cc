@@ -2647,77 +2647,6 @@ TEST_F(ReadAnythingAppControllerTest,
   MoveToNextAndAssertEmpty();
 }
 
-TEST_F(ReadAnythingAppControllerTest,
-       GetCurrentText_AfterRestartReadAloud_StartsOver) {
-  std::u16string sentence1 = u"I've got the wind in my hair. ";
-  std::u16string sentence2 = u"And a gleam in my eyes. ";
-  std::u16string sentence3 = u"And an endless horizon. ";
-
-  ui::AXNodeData static_text1 = test::TextNode(kId1, sentence1);
-  ui::AXNodeData static_text2 = test::TextNode(kId2, sentence2);
-  ui::AXNodeData static_text3 = test::TextNode(kId3, sentence3);
-
-  SendUpdateAndDistillNodes({std::move(static_text1), std::move(static_text2),
-                             std::move(static_text3)});
-
-  std::vector<ReadAloudTextSegment> next_segments = GetCurrentTextSegments();
-
-  EXPECT_EQ(next_segments[0].id, kId1);
-
-  // Move to the next sentence.
-  next_segments = MoveToNextGranularityAndGetSegments();
-  EXPECT_EQ(next_segments[0].id, kId2);
-
-  // If we init without restarting we should just go to the next sentence.
-  controller().InitAXPositionWithNode(kId1);
-  next_segments = MoveToNextGranularityAndGetSegments();
-  EXPECT_EQ(next_segments[0].id, kId3);
-
-  // After reset and before an init, the current text should be empty.
-  read_aloud_model().ResetReadAloudState();
-  std::vector<ReadAloudTextSegment> after_reset_segments =
-      GetCurrentTextSegments();
-  EXPECT_EQ(after_reset_segments.size(), 0u);
-
-  // After an init, we should get the first sentence again.
-  controller().InitAXPositionWithNode(kId1);
-  after_reset_segments = GetCurrentTextSegments();
-  EXPECT_EQ(after_reset_segments.size(), 1u);
-  EXPECT_EQ(after_reset_segments[0].id, kId1);
-}
-
-TEST_F(ReadAnythingAppControllerTest,
-       GetCurrentText_AfterResetGranularityIndex_StartsOver) {
-  std::u16string sentence1 = u"I've got the wind in my hair. ";
-  std::u16string sentence2 = u"And a gleam in my eyes. ";
-  std::u16string sentence3 = u"And an endless horizon. ";
-  ui::AXNodeData static_text1 = test::TextNode(kId1, sentence1);
-  ui::AXNodeData static_text2 = test::TextNode(kId2, sentence2);
-  ui::AXNodeData static_text3 = test::TextNode(kId3, sentence3);
-  SendUpdateAndDistillNodes({std::move(static_text1), std::move(static_text2),
-                             std::move(static_text3)});
-
-  std::vector<ReadAloudTextSegment> next_segments = GetCurrentTextSegments();
-
-  EXPECT_EQ(next_segments[0].id, kId1);
-
-  // Move to the next sentence.
-  next_segments = MoveToNextGranularityAndGetSegments();
-  EXPECT_EQ(next_segments[0].id, kId2);
-
-  // If we init without restarting we should just go to the next sentence.
-  controller().InitAXPositionWithNode(kId1);
-  next_segments = MoveToNextGranularityAndGetSegments();
-  EXPECT_EQ(next_segments[0].id, kId3);
-
-  // After reset, we should get the first sentence again.
-  controller().ResetGranularityIndex();
-  std::vector<ReadAloudTextSegment> after_reset_segments =
-      GetCurrentTextSegments();
-  EXPECT_EQ(after_reset_segments.size(), 1u);
-  EXPECT_EQ(after_reset_segments[0].id, kId1);
-}
-
 TEST_F(ReadAnythingAppControllerTest, GetCurrentText_AfterAXTreeRefresh) {
   std::u16string sentence1 = u"This is a sentence. ";
   std::u16string sentence2 = u"This is another sentence. ";
@@ -3234,81 +3163,6 @@ TEST_F(ReadAnythingAppControllerTest,
   MoveToNextAndAssertEmpty();
 }
 
-TEST_F(ReadAnythingAppControllerTest,
-       GetCurrentText_MultipleSentencesInSameNode) {
-  std::u16string sentence1 = u"But from up here. The ";
-  std::u16string sentence2 = u"world ";
-  std::u16string sentence3 =
-      u"looks so small. And suddenly life seems so clear. And from up here. "
-      u"You coast past it all. The obstacles just disappear.";
-
-  ui::AXNodeData static_text1 = test::TextNode(kId1, sentence1);
-  ui::AXNodeData static_text2 = test::TextNode(kId2, sentence2);
-  ui::AXNodeData static_text3 = test::TextNode(kId3, sentence3);
-
-  SendUpdateAndDistillNodes({std::move(static_text1), std::move(static_text2),
-                             std::move(static_text3)});
-
-  std::vector<ReadAloudTextSegment> next_segments = GetCurrentTextSegments();
-
-  // The first segment was returned correctly.
-  EXPECT_EQ(next_segments[0].id, kId1);
-  std::vector<ReadAloudTextSegment> expected_segments = {
-      ReadAloudTextSegment(kId1, 0, sentence1.find(u"The")),
-  };
-  ExpectCurrentSegments(expected_segments);
-
-  // The second segment was returned correctly, across 3 nodes.
-  next_segments = MoveToNextGranularityAndGetSegments();
-  EXPECT_EQ(next_segments.size(), 3u);
-  EXPECT_EQ(next_segments[0].id, kId1);
-  expected_segments = {
-      ReadAloudTextSegment(kId1, sentence1.find(u"The"), sentence1.length()),
-      ReadAloudTextSegment(kId2, 0, sentence2.length()),
-      ReadAloudTextSegment(kId3, 0, sentence3.find(u"And")),
-  };
-  ExpectCurrentSegments(expected_segments);
-
-  // The next sentence "And suddenly life seems so clear" was returned
-  // correctly
-  next_segments = MoveToNextGranularityAndGetSegments();
-  EXPECT_EQ(next_segments[0].id, kId3);
-  expected_segments = {
-      ReadAloudTextSegment(kId3, sentence3.find(u"And"),
-                           sentence3.find(u"And from")),
-  };
-  ExpectCurrentSegments(expected_segments);
-
-  // The next sentence "And from up here" was returned correctly
-  next_segments = MoveToNextGranularityAndGetSegments();
-  EXPECT_EQ(next_segments[0].id, kId3);
-  expected_segments = {
-      ReadAloudTextSegment(kId3, sentence3.find(u"And from"),
-                           sentence3.find(u"You")),
-  };
-  ExpectCurrentSegments(expected_segments);
-
-  // The next sentence "You coast past it all" was returned correctly
-  next_segments = MoveToNextGranularityAndGetSegments();
-  EXPECT_EQ(next_segments[0].id, kId3);
-  expected_segments = {
-      ReadAloudTextSegment(kId3, sentence3.find(u"You"),
-                           sentence3.find(u"The")),
-  };
-  ExpectCurrentSegments(expected_segments);
-
-  // The next sentence "The obstacles just disappear" was returned correctly
-  next_segments = MoveToNextGranularityAndGetSegments();
-  EXPECT_EQ(next_segments[0].id, kId3);
-  expected_segments = {
-      ReadAloudTextSegment(kId3, sentence3.find(u"The"), sentence3.length()),
-  };
-  ExpectCurrentSegments(expected_segments);
-
-  // Nodes are empty at the end of the new tree.
-  MoveToNextAndAssertEmpty();
-}
-
 TEST_F(ReadAnythingAppControllerTest, GetCurrentText_EmptyTree) {
   // If InitAXPosition hasn't been called, GetCurrentText should return nothing.
   EXPECT_THAT(GetCurrentTextSegments(), IsEmpty());
@@ -3541,6 +3395,153 @@ class ReadAnythingAppControllerV8SegmentationTest
         {features::kReadAnythingReadAloudTSTextSegmentation});
   }
 };
+
+TEST_F(ReadAnythingAppControllerV8SegmentationTest,
+       GetCurrentText_AfterRestartReadAloud_StartsOver) {
+  std::u16string sentence1 = u"I've got the wind in my hair. ";
+  std::u16string sentence2 = u"And a gleam in my eyes. ";
+  std::u16string sentence3 = u"And an endless horizon. ";
+
+  ui::AXNodeData static_text1 = test::TextNode(kId1, sentence1);
+  ui::AXNodeData static_text2 = test::TextNode(kId2, sentence2);
+  ui::AXNodeData static_text3 = test::TextNode(kId3, sentence3);
+
+  SendUpdateAndDistillNodes({std::move(static_text1), std::move(static_text2),
+                             std::move(static_text3)});
+
+  std::vector<ReadAloudTextSegment> next_segments = GetCurrentTextSegments();
+
+  EXPECT_EQ(next_segments[0].id, kId1);
+
+  // Move to the next sentence.
+  next_segments = MoveToNextGranularityAndGetSegments();
+  EXPECT_EQ(next_segments[0].id, kId2);
+
+  // If we init without restarting we should just go to the next sentence.
+  controller().InitAXPositionWithNode(kId1);
+  next_segments = MoveToNextGranularityAndGetSegments();
+  EXPECT_EQ(next_segments[0].id, kId3);
+
+  // After reset and before an init, the current text should be empty.
+  read_aloud_model().ResetReadAloudState();
+  std::vector<ReadAloudTextSegment> after_reset_segments =
+      GetCurrentTextSegments();
+  EXPECT_EQ(after_reset_segments.size(), 0u);
+
+  // After an init, we should get the first sentence again.
+  controller().InitAXPositionWithNode(kId1);
+  after_reset_segments = GetCurrentTextSegments();
+  EXPECT_EQ(after_reset_segments.size(), 1u);
+  EXPECT_EQ(after_reset_segments[0].id, kId1);
+}
+
+TEST_F(ReadAnythingAppControllerV8SegmentationTest,
+       GetCurrentText_AfterResetGranularityIndex_StartsOver) {
+  std::u16string sentence1 = u"I've got the wind in my hair. ";
+  std::u16string sentence2 = u"And a gleam in my eyes. ";
+  std::u16string sentence3 = u"And an endless horizon. ";
+  ui::AXNodeData static_text1 = test::TextNode(kId1, sentence1);
+  ui::AXNodeData static_text2 = test::TextNode(kId2, sentence2);
+  ui::AXNodeData static_text3 = test::TextNode(kId3, sentence3);
+  SendUpdateAndDistillNodes({std::move(static_text1), std::move(static_text2),
+                             std::move(static_text3)});
+
+  std::vector<ReadAloudTextSegment> next_segments = GetCurrentTextSegments();
+
+  EXPECT_EQ(next_segments[0].id, kId1);
+
+  // Move to the next sentence.
+  next_segments = MoveToNextGranularityAndGetSegments();
+  EXPECT_EQ(next_segments[0].id, kId2);
+
+  // If we init without restarting we should just go to the next sentence.
+  controller().InitAXPositionWithNode(kId1);
+  next_segments = MoveToNextGranularityAndGetSegments();
+  EXPECT_EQ(next_segments[0].id, kId3);
+
+  // After reset, we should get the first sentence again.
+  controller().ResetGranularityIndex();
+  std::vector<ReadAloudTextSegment> after_reset_segments =
+      GetCurrentTextSegments();
+  EXPECT_EQ(after_reset_segments.size(), 1u);
+  EXPECT_EQ(after_reset_segments[0].id, kId1);
+}
+
+TEST_F(ReadAnythingAppControllerV8SegmentationTest,
+       GetCurrentText_MultipleSentencesInSameNode) {
+  std::u16string sentence1 = u"But from up here. The ";
+  std::u16string sentence2 = u"world ";
+  std::u16string sentence3 =
+      u"looks so small. And suddenly life seems so clear. And from up here. "
+      u"You coast past it all. The obstacles just disappear.";
+
+  ui::AXNodeData static_text1 = test::TextNode(kId1, sentence1);
+  ui::AXNodeData static_text2 = test::TextNode(kId2, sentence2);
+  ui::AXNodeData static_text3 = test::TextNode(kId3, sentence3);
+
+  SendUpdateAndDistillNodes({std::move(static_text1), std::move(static_text2),
+                             std::move(static_text3)});
+
+  std::vector<ReadAloudTextSegment> next_segments = GetCurrentTextSegments();
+
+  // The first segment was returned correctly.
+  EXPECT_EQ(next_segments[0].id, kId1);
+  std::vector<ReadAloudTextSegment> expected_segments = {
+      ReadAloudTextSegment(kId1, 0, sentence1.find(u"The")),
+  };
+  ExpectCurrentSegments(expected_segments);
+
+  // The second segment was returned correctly, across 3 nodes.
+  next_segments = MoveToNextGranularityAndGetSegments();
+  EXPECT_EQ(next_segments.size(), 3u);
+  EXPECT_EQ(next_segments[0].id, kId1);
+  expected_segments = {
+      ReadAloudTextSegment(kId1, sentence1.find(u"The"), sentence1.length()),
+      ReadAloudTextSegment(kId2, 0, sentence2.length()),
+      ReadAloudTextSegment(kId3, 0, sentence3.find(u"And")),
+  };
+  ExpectCurrentSegments(expected_segments);
+
+  // The next sentence "And suddenly life seems so clear" was returned
+  // correctly
+  next_segments = MoveToNextGranularityAndGetSegments();
+  EXPECT_EQ(next_segments[0].id, kId3);
+  expected_segments = {
+      ReadAloudTextSegment(kId3, sentence3.find(u"And"),
+                           sentence3.find(u"And from")),
+  };
+  ExpectCurrentSegments(expected_segments);
+
+  // The next sentence "And from up here" was returned correctly
+  next_segments = MoveToNextGranularityAndGetSegments();
+  EXPECT_EQ(next_segments[0].id, kId3);
+  expected_segments = {
+      ReadAloudTextSegment(kId3, sentence3.find(u"And from"),
+                           sentence3.find(u"You")),
+  };
+  ExpectCurrentSegments(expected_segments);
+
+  // The next sentence "You coast past it all" was returned correctly
+  next_segments = MoveToNextGranularityAndGetSegments();
+  EXPECT_EQ(next_segments[0].id, kId3);
+  expected_segments = {
+      ReadAloudTextSegment(kId3, sentence3.find(u"You"),
+                           sentence3.find(u"The")),
+  };
+  ExpectCurrentSegments(expected_segments);
+
+  // The next sentence "The obstacles just disappear" was returned correctly
+  next_segments = MoveToNextGranularityAndGetSegments();
+  EXPECT_EQ(next_segments[0].id, kId3);
+  expected_segments = {
+      ReadAloudTextSegment(kId3, sentence3.find(u"The"), sentence3.length()),
+  };
+  ExpectCurrentSegments(expected_segments);
+
+  // Nodes are empty at the end of the new tree.
+  MoveToNextAndAssertEmpty();
+}
+
 TEST_F(ReadAnythingAppControllerV8SegmentationTest,
        DrawSelection_ResetsReadAloudState) {
   ui::AXNodeData node1 = test::TextNode(/* id= */ 2, u"Not like you- ");
