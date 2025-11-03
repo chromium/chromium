@@ -18,15 +18,15 @@ namespace em = enterprise_management;
 namespace policy {
 namespace {
 
-// After the first failure, retry after 1 minute, then after 2, 4 etc up to a
-// maximum of 1 day.
+// After the first failure, retry after 5 minutes, then after 10, 20, etc up to
+// a maximum of 1 day.
 static constexpr net::BackoffEntry::Policy kUploadRetryBackoffPolicy = {
     .num_errors_to_ignore = 0,
-    .initial_delay_ms = base::Minutes(1).InMilliseconds(),
+    .initial_delay_ms = base::Minutes(5).InMilliseconds(),
     .multiply_factor = 2,
     .jitter_factor = 0.1,
     .maximum_backoff_ms = base::Days(1).InMilliseconds(),
-    .always_use_initial_delay = true,
+    .always_use_initial_delay = false,
 };
 
 std::string ToString(PolicyInvalidationScope scope) {
@@ -271,11 +271,13 @@ void FmRegistrationTokenUploader::OnRegistrationTokenUploaded(
         invalidation::InvalidationListener::RegistrationTokenUploadStatus::
             kFailed);
 
+    // Report the current failure before requesting the retry.
+    upload_retry_backoff_.InformOfRequest(/*succeeded=*/false);
+
     // Retry failed upload after timeout.
     DoAsyncUploadRegistrationToken(
         std::move(token_data),
         /*delay=*/upload_retry_backoff_.GetTimeUntilRelease());
-    upload_retry_backoff_.InformOfRequest(/*succeeded=*/false);
     return;
   }
 
