@@ -190,6 +190,7 @@ class ReadAnythingOmniboxTest
     InteractiveBrowserTest::TearDownOnMainThread();
   }
 
+  using PageActionInteractiveTestMixin::InvokePageAction;
   using PageActionInteractiveTestMixin::WaitForPageActionChipNotVisible;
   using PageActionInteractiveTestMixin::WaitForPageActionChipVisible;
 
@@ -202,6 +203,12 @@ class ReadAnythingOmniboxTest
   auto WaitForPageActionChipNotVisible() {
     MultiStep steps;
     steps += WaitForPageActionChipNotVisible(kActionSidePanelShowReadAnything);
+    return steps;
+  }
+
+  auto InvokePageAction() {
+    MultiStep steps;
+    steps += InvokePageAction(kActionSidePanelShowReadAnything);
     return steps;
   }
 
@@ -236,4 +243,13 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingOmniboxTest,
       WaitForWebContentsReady(kActiveTab), WaitForPageActionChipVisible(),
       NavigateWebContents(kActiveTab, non_distillable_url_),
       WaitForWebContentsReady(kActiveTab), WaitForPageActionChipNotVisible());
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingOmniboxTest, HideOmniboxAfterEntryShown) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
+  RunTestSequence(InstrumentTab(kActiveTab),
+                  NavigateWebContents(kActiveTab, distillable_url_),
+                  WaitForWebContentsReady(kActiveTab),
+                  WaitForPageActionChipVisible(), InvokePageAction(),
+                  WaitForPageActionChipNotVisible());
 }

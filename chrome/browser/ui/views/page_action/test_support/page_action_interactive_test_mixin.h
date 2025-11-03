@@ -43,6 +43,18 @@ class PageActionInteractiveTestMixin : public T {
                     T::WaitForShow(kPageActionId));
   }
 
+  // Utility to invoke the page action.
+  auto InvokePageAction(actions::ActionId action_id) {
+    IconLabelBubbleView* page_action =
+        BrowserView::GetBrowserViewForBrowser(T::browser())
+            ->toolbar_button_provider()
+            ->GetPageActionView(action_id);
+
+    constexpr char kPageActionId[] = "page action view";
+    return T::Steps(T::NameView(kPageActionId, page_action),
+                    T::PressButton(kPageActionId));
+  }
+
   // Utility to reliably wait for the page action view to be visible in chip
   // state.
   auto WaitForPageActionChipVisible(actions::ActionId action_id) {

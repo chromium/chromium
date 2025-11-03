@@ -131,6 +131,12 @@ void ReadAnythingSidePanelController::RemoveObserver(
 void ReadAnythingSidePanelController::OnEntryShown(SidePanelEntry* entry) {
   CHECK_EQ(entry->key().id(), SidePanelEntry::Id::kReadAnything);
 
+  // Hide the omnibox entrypoint now that RM is already showing.
+  // TODO(crbug.com/447418049): Also hide the omnibox entrypoint when the
+  // immersive overlay shows.
+  read_anything::ReadAnythingEntryPointController::UpdatePageActionVisibility(
+      /*should_show_page_action=*/false, tab_->GetBrowserWindowInterface());
+
   auto* service =
       ReadAnythingService::Get(tab_->GetBrowserWindowInterface()->GetProfile());
   // At the moment, services are created for normal, incognito, and guest
