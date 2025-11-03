@@ -195,7 +195,20 @@ public class DisplayAndroidManager {
 
     @CalledByNative
     private static void onNativeSideCreated(long nativePointer) {
-        DisplayAndroidManager singleton = getInstance();
+        final DisplayAndroidManager singleton = getInstance();
+
+        // In Browser Tests CommandLine is overridden when the Java DisplayAndroidManager has
+        // already been created and initialized, so we should update ForcedDIPScale to synchronize
+        // the two states.
+        if (PhysicalDisplayAndroid.isForcedDIPScaleChanged()) {
+            for (int i = 0; i < singleton.mIdMap.size(); ++i) {
+                final DisplayAndroid display = singleton.mIdMap.valueAt(i);
+                if (display instanceof PhysicalDisplayAndroid) {
+                    singleton.updateDisplay(display.getDisplayId());
+                }
+            }
+        }
+
         singleton.setNativePointer(nativePointer);
     }
 
