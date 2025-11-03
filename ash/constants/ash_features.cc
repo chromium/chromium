@@ -1506,10 +1506,6 @@ BASE_FEATURE(kOobeChoobe, base::FEATURE_ENABLED_BY_DEFAULT);
 // If enabled, CrOS events for OOBE and onboarding flow will be recorded.
 BASE_FEATURE(kOobeCrosEvents, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// If enabled, Drive Pinning Screen will be shown during
-// the new user onboarding flow.
-BASE_FEATURE(kOobeDrivePinning, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // If enabled , Personalized Onboarding + App Recommendations
 // will be shown if eligible during user onboarding flow.
 BASE_FEATURE(kOobePersonalizedOnboarding, base::FEATURE_ENABLED_BY_DEFAULT);

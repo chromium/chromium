@@ -61,7 +61,7 @@ class DrivePinningBaseScreenTest : public OobeBaseTest {
  public:
   DrivePinningBaseScreenTest() {
     feature_list_.InitWithFeatures(
-        {ash::features::kOobeChoobe, ash::features::kOobeDrivePinning,
+        {ash::features::kOobeChoobe,
          ash::features::kFeatureManagementDriveFsBulkPinning},
         {});
   }
