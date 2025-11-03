@@ -110,8 +110,10 @@ class PageZoomIndicatorMediator {
                         .getResources()
                         .getDimensionPixelSize(R.dimen.page_zoom_indicator_popup_width);
 
-        // Show the popup with an offset to align the top-right corner.
-        popupWindow.showAsDropDown(anchorView, -popupWidth, 0);
+        popupWindow.showAsDropDown(
+                anchorView,
+                Math.round((anchorView.getWidth() - popupWidth) / 2.f - popupWidth / 3.f),
+                0);
     }
 
     private void handleIndexChanged(int index) {

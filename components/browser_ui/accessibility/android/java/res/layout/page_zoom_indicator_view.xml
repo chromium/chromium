@@ -49,7 +49,6 @@ found in the LICENSE file.
         android:layout_height="wrap_content"
         android:minHeight="@dimen/min_touch_target_size"
         android:text="@string/reset"
-        android:textAlignment="center"
         android:padding="@dimen/symbol_padding"
         android:layout_gravity="center_vertical" />
 </LinearLayout>
