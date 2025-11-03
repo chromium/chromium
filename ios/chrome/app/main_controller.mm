@@ -1052,7 +1052,6 @@ std::string GetProfileNameForChoice(ProfileChoice choice,
         NOTREACHED();
 
       case ProfileInitStage::kLoadProfile:
-      case ProfileInitStage::kMigrateStorage:
       case ProfileInitStage::kPurgeDiscardedSessionsData:
       case ProfileInitStage::kProfileLoaded:
       case ProfileInitStage::kPrepareUI:
@@ -1091,7 +1090,6 @@ std::string GetProfileNameForChoice(ProfileChoice choice,
         NOTREACHED();
 
       case ProfileInitStage::kLoadProfile:
-      case ProfileInitStage::kMigrateStorage:
       case ProfileInitStage::kPurgeDiscardedSessionsData:
         // Nothing to do.
         break;

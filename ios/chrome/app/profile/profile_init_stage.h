@@ -14,11 +14,6 @@ enum class ProfileInitStage {
   // Perform all asynch operation to load profile's preferences from disk.
   kLoadProfile,
 
-  // Migrate the session storage for the profile.
-  // TODO(crbug.com/40945317): remove when migrating legacy session storage
-  // is no longer supported (i.e. all users have migrated).
-  kMigrateStorage,
-
   // Delete all data for previously discarded sessions. If no sessions was
   // recently discarded, this will transition immediately to the next stage.
   kPurgeDiscardedSessionsData,

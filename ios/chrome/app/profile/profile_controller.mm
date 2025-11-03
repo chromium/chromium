@@ -329,7 +329,6 @@ void RecordDiscardedSceneConnectedAfterBeingPurged(
       NOTREACHED();
 
     case ProfileInitStage::kLoadProfile:
-    case ProfileInitStage::kMigrateStorage:
     case ProfileInitStage::kPurgeDiscardedSessionsData:
     case ProfileInitStage::kProfileLoaded:
     case ProfileInitStage::kPrepareUI:
@@ -366,10 +365,6 @@ void RecordDiscardedSceneConnectedAfterBeingPurged(
 
     case ProfileInitStage::kLoadProfile:
       // Nothing to do.
-      break;
-
-    case ProfileInitStage::kMigrateStorage:
-      [self migrateSessionStorageIfNeeded];
       break;
 
     case ProfileInitStage::kPurgeDiscardedSessionsData:
@@ -570,17 +565,6 @@ void RecordDiscardedSceneConnectedAfterBeingPurged(
 
   [_state setProfile:profile];
   [_state queueTransitionToNextInitStage];
-}
-
-- (void)migrateSessionStorageIfNeeded {
-  DCHECK(_state.profile);
-
-  __weak ProfileController* weakSelf = self;
-  SessionRestorationServiceFactory::GetInstance()->MigrateSessionStorageFormat(
-      _state.profile, SessionRestorationServiceFactory::kOptimized,
-      base::BindOnce(^{
-        [weakSelf.state queueTransitionToNextInitStage];
-      }));
 }
 
 - (void)purgeDiscardedSessionsData {
