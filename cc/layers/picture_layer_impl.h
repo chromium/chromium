@@ -171,15 +171,6 @@ class CC_EXPORT PictureLayerImpl
                                const PaintWorkletInput::PropertyValue& prev,
                                const PaintWorkletInput::PropertyValue& next);
 
-  void SetContentsScaleForTesting(float scale) {
-    ideal_contents_scale_ = raster_contents_scale_ =
-        gfx::Vector2dF(scale, scale);
-  }
-
-  void AddLastAppendQuadsTilingForTesting(PictureLayerTiling* tiling) {
-    last_append_quads_tilings_.push_back(tiling);
-  }
-
   void set_has_non_animated_image_update_rect() {
     has_non_animated_image_update_rect_ = true;
   }
@@ -206,6 +197,21 @@ class CC_EXPORT PictureLayerImpl
     return should_batch_updated_tiles_;
   }
 
+  // For testing.
+  void SetContentsScaleForTesting(float scale) {
+    ideal_contents_scale_ = raster_contents_scale_ =
+        gfx::Vector2dF(scale, scale);
+  }
+
+  std::vector<raw_ptr<PictureLayerTiling, VectorExperimental>>&
+  GetLastAppendQuadsTilingsForTesting() {
+    return last_append_quads_tilings_;
+  }
+
+  void ClearLastAppendQuadsTilingsForTesting() {
+    last_append_quads_tilings_.clear();
+  }
+
  protected:
   friend class RasterizeAndRecordBenchmarkImpl;
 
@@ -222,9 +228,7 @@ class CC_EXPORT PictureLayerImpl
   float MinimumRasterContentsScaleForWillChangeTransform() const;
   // Returns false if raster translation is not applicable.
   bool CalculateRasterTranslation(gfx::Vector2dF& raster_translation) const;
-  void CleanUpTilingsOnActiveLayer(
-      const std::vector<raw_ptr<PictureLayerTiling, VectorExperimental>>&
-          used_tilings);
+  void CleanUpTilingsOnActiveLayer();
   float MinimumContentsScale() const;
   float MaximumContentsScale() const;
   void UpdateViewportRectForTilePriorityInContentSpace();

@@ -552,7 +552,7 @@ void PictureLayerImpl::AppendQuadsSpecialization(
   // that this is at the expense of doing cause more frequent re-painting. A
   // better scheme would be to maintain a tighter visible_layer_rect for the
   // finer tilings.
-  CleanUpTilingsOnActiveLayer(last_append_quads_tilings_);
+  CleanUpTilingsOnActiveLayer();
   SanityCheckTilingState();
 
   // Adjust shared_quad_state with the quad_offset, since we've adjusted each
@@ -582,7 +582,7 @@ bool PictureLayerImpl::UpdateTiles() {
   // crbug.com/448683984.
   if (layer_tree_impl()->IsActiveTree() &&
       !layer_tree_impl()->settings().TreesInVizInClientProcess()) {
-    CleanUpTilingsOnActiveLayer(last_append_quads_tilings_);
+    CleanUpTilingsOnActiveLayer();
   }
 
   UpdateIdealScales();
@@ -1665,9 +1665,7 @@ void PictureLayerImpl::AdjustRasterScaleForTransformAnimation(
   }
 }
 
-void PictureLayerImpl::CleanUpTilingsOnActiveLayer(
-    const std::vector<raw_ptr<PictureLayerTiling, VectorExperimental>>&
-        used_tilings) {
+void PictureLayerImpl::CleanUpTilingsOnActiveLayer() {
   DCHECK(layer_tree_impl()->IsActiveTree());
   if (tilings_->num_tilings() == 0)
     return;
@@ -1696,8 +1694,8 @@ void PictureLayerImpl::CleanUpTilingsOnActiveLayer(
       continue;
     }
 
-    // Don't remove tilings that are required.
-    if (base::Contains(used_tilings, tiling)) {
+    // Don't remove tilings that are required based on most recent draw.
+    if (base::Contains(last_append_quads_tilings_, tiling)) {
       continue;
     }
 
