@@ -18,6 +18,7 @@
 #include "components/sync/base/legacy_directory_deletion.h"
 #include "components/sync/base/sync_invalidation_adapter.h"
 #include "components/sync/base/sync_stop_metadata_fate.h"
+#include "components/sync/engine/configure_reason.h"
 #include "components/sync/engine/cycle/sync_cycle_snapshot.h"
 #include "components/sync/engine/data_type_activation_response.h"
 #include "components/sync/engine/engine_components_factory.h"
@@ -183,8 +184,8 @@ void SyncEngineBackend::DoInitialize(
   LoadAndConnectNigoriController();
 
   ConfigureReason reason = sync_manager_->InitialSyncEndedTypes().empty()
-                               ? CONFIGURE_REASON_NEW_CLIENT
-                               : CONFIGURE_REASON_EXISTING_CLIENT_RESTART;
+                               ? ConfigureReason::kNewClient
+                               : ConfigureReason::kExistingClientRestart;
 
   DataTypeSet new_control_types =
       Difference(ControlTypes(), sync_manager_->InitialSyncEndedTypes());

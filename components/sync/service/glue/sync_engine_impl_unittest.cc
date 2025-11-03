@@ -246,7 +246,7 @@ class SyncEngineImplTest : public testing::Test {
 
   DataTypeSet ConfigureDataTypesWithUnready(DataTypeSet unready_types) {
     DataTypeConfigurer::ConfigureParams params;
-    params.reason = CONFIGURE_REASON_RECONFIGURATION;
+    params.reason = ConfigureReason::kReconfiguration;
     DataTypeSet enabled_types = Difference(enabled_types_, unready_types);
     params.to_download = Difference(enabled_types, engine_types_);
     if (!params.to_download.empty()) {
@@ -485,7 +485,7 @@ TEST_F(SyncEngineImplTest, ForwardLocalRefreshRequest) {
 // Test that configuration on signin sends the proper GU source.
 TEST_F(SyncEngineImplTest, DownloadControlTypesNewClient) {
   InitializeBackend();
-  EXPECT_EQ(CONFIGURE_REASON_NEW_CLIENT,
+  EXPECT_EQ(ConfigureReason::kNewClient,
             fake_manager_->GetAndResetConfigureReason());
 }
 
@@ -494,7 +494,7 @@ TEST_F(SyncEngineImplTest, DownloadControlTypesRestart) {
   fake_manager_factory_->set_progress_marker_types(enabled_types_);
   fake_manager_factory_->set_initial_sync_ended_types(enabled_types_);
   InitializeBackend();
-  EXPECT_EQ(CONFIGURE_REASON_EXISTING_CLIENT_RESTART,
+  EXPECT_EQ(ConfigureReason::kExistingClientRestart,
             fake_manager_->GetAndResetConfigureReason());
 }
 

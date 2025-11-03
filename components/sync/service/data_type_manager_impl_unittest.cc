@@ -212,13 +212,13 @@ class DataTypeManagerImplTest : public testing::Test {
 
   // Configure the given DTM with the given desired types.
   void Configure(DataTypeSet desired_types,
-                 ConfigureReason reason = CONFIGURE_REASON_RECONFIGURATION) {
+                 ConfigureReason reason = ConfigureReason::kReconfiguration) {
     dtm_->Configure(desired_types, BuildConfigureContext(reason));
   }
 
   void Configure(DataTypeSet desired_types,
                  SyncMode sync_mode,
-                 ConfigureReason reason = CONFIGURE_REASON_RECONFIGURATION) {
+                 ConfigureReason reason = ConfigureReason::kReconfiguration) {
     dtm_->Configure(desired_types, BuildConfigureContext(reason, sync_mode));
   }
 
@@ -1558,7 +1558,7 @@ TEST_F(DataTypeManagerImplTest, ShouldRecordInitialConfigureTimeHistogram) {
   EXPECT_CALL(observer_, OnConfigureStart());
   EXPECT_CALL(observer_, OnConfigureDone(ConfigureSucceeded()));
 
-  Configure({BOOKMARKS}, SyncMode::kFull, CONFIGURE_REASON_NEW_CLIENT);
+  Configure({BOOKMARKS}, SyncMode::kFull, ConfigureReason::kNewClient);
 
   EXPECT_EQ(DataTypeSet(), FinishDownload());
   EXPECT_EQ(AddControlTypesTo({BOOKMARKS}), FinishDownload());
@@ -1574,7 +1574,7 @@ TEST_F(DataTypeManagerImplTest, ShouldRecordSubsequentConfigureTimeHistogram) {
   EXPECT_CALL(observer_, OnConfigureStart());
   EXPECT_CALL(observer_, OnConfigureDone(ConfigureSucceeded()));
 
-  Configure({BOOKMARKS}, SyncMode::kFull, CONFIGURE_REASON_RECONFIGURATION);
+  Configure({BOOKMARKS}, SyncMode::kFull, ConfigureReason::kReconfiguration);
 
   EXPECT_EQ(DataTypeSet(), FinishDownload());
   EXPECT_EQ(AddControlTypesTo({BOOKMARKS}), FinishDownload());

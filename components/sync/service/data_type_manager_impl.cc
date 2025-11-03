@@ -57,9 +57,9 @@ ConfigureReason GetReasonForProgrammaticReconfigure(
   // This reconfiguration can happen within the first configure cycle and in
   // this case we want to stick to the original reason -- doing the first sync
   // cycle.
-  return (original_reason == ConfigureReason::CONFIGURE_REASON_NEW_CLIENT)
-             ? ConfigureReason::CONFIGURE_REASON_NEW_CLIENT
-             : ConfigureReason::CONFIGURE_REASON_PROGRAMMATIC;
+  return (original_reason == ConfigureReason::kNewClient)
+             ? ConfigureReason::kNewClient
+             : ConfigureReason::kProgrammatic;
 }
 
 // Divides `types` into sets by their priorities and return the sets from
@@ -267,16 +267,17 @@ void DataTypeManagerImpl::ResetDataTypeErrors() {
 void DataTypeManagerImpl::PurgeForMigration(DataTypeSet undesired_types) {
   CHECK(configurer_);
   preferred_types_ = Difference(preferred_types_, undesired_types);
-  last_requested_context_.reason = CONFIGURE_REASON_MIGRATION;
+  last_requested_context_.reason = ConfigureReason::kMigration;
   ConfigureImpl();
 }
 
 void DataTypeManagerImpl::ConfigureImpl() {
   CHECK(configurer_);
-  CHECK_NE(last_requested_context_.reason, CONFIGURE_REASON_UNKNOWN);
+  CHECK_NE(last_requested_context_.reason, ConfigureReason::kUnknown);
 
   DVLOG(1) << "Configuring for " << DataTypeSetToDebugString(preferred_types_)
-           << " with reason " << last_requested_context_.reason;
+           << " with reason "
+           << static_cast<int>(last_requested_context_.reason);
   if (state_ == STOPPING) {
     // You can not set a configuration while stopping.
     LOG(ERROR) << "Configuration set while stopping.";
@@ -484,9 +485,9 @@ void DataTypeManagerImpl::Restart() {
 
   // Only record the type histograms for user-triggered configurations or
   // restarts.
-  if (reason == CONFIGURE_REASON_RECONFIGURATION ||
-      reason == CONFIGURE_REASON_NEW_CLIENT ||
-      reason == CONFIGURE_REASON_EXISTING_CLIENT_RESTART) {
+  if (reason == ConfigureReason::kReconfiguration ||
+      reason == ConfigureReason::kNewClient ||
+      reason == ConfigureReason::kExistingClientRestart) {
     for (DataType type : preferred_types_) {
       UMA_HISTOGRAM_ENUMERATION("Sync.ConfigureDataTypes",
                                 DataTypeHistogramValue(type));
@@ -811,7 +812,7 @@ void DataTypeManagerImpl::NotifyDone(ConfigureStatus status) {
                             .requested_types = preferred_types_};
 
   const std::string prefix_uma =
-      (last_requested_context_.reason == CONFIGURE_REASON_NEW_CLIENT)
+      (last_requested_context_.reason == ConfigureReason::kNewClient)
           ? "Sync.ConfigureTime_Initial"
           : "Sync.ConfigureTime_Subsequent";
 
@@ -981,12 +982,12 @@ void DataTypeManagerImpl::TriggerLocalDataMigrationForItems(
     std::map<DataType, std::vector<syncer::LocalDataItemModel::DataId>> items) {
   DataTypeSet supported_types = base::Intersection(
       GetDataTypesWithLocalDataBatchUploader(), GetActiveDataTypes());
-  std::erase_if(items,
-              [&supported_types](const std::pair<const DataType,
-                                                std::vector<syncer::LocalDataItemModel::DataId>>&
-                                     map_entry) {
-                return !supported_types.Has(map_entry.first);
-              });
+  std::erase_if(
+      items,
+      [&supported_types](
+          const std::pair<const DataType,
+                          std::vector<syncer::LocalDataItemModel::DataId>>&
+              map_entry) { return !supported_types.Has(map_entry.first); });
 
   for (auto& [type, item_list] : items) {
     controllers_.at(type)

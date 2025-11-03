@@ -29,7 +29,7 @@ FakeSyncManager::FakeSyncManager(DataTypeSet initial_sync_ended_types,
     : initial_sync_ended_types_(initial_sync_ended_types),
       progress_marker_types_(progress_marker_types),
       configure_fail_types_(configure_fail_types),
-      last_configure_reason_(CONFIGURE_REASON_UNKNOWN) {
+      last_configure_reason_(ConfigureReason::kUnknown) {
   sync_task_runner_ = base::SequencedTaskRunner::GetCurrentDefault();
 }
 
@@ -43,7 +43,7 @@ DataTypeSet FakeSyncManager::GetAndResetDownloadedTypes() {
 
 ConfigureReason FakeSyncManager::GetAndResetConfigureReason() {
   ConfigureReason reason = last_configure_reason_;
-  last_configure_reason_ = CONFIGURE_REASON_UNKNOWN;
+  last_configure_reason_ = ConfigureReason::kUnknown;
   return reason;
 }
 

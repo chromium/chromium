@@ -1060,7 +1060,7 @@ void SyncServiceImpl::OnEngineInitialized(bool success,
   // to CONFIGURE_REASON_NEW_CLIENT. The overriding code is needed
   // anyway in case sync setup is in progress and configuration cannot
   // be started right away.
-  ConfigureDataTypeManager(CONFIGURE_REASON_EXISTING_CLIENT_RESTART,
+  ConfigureDataTypeManager(ConfigureReason::kExistingClientRestart,
                            /*bypass_setup_in_progress_check=*/false);
 }
 
@@ -1278,7 +1278,7 @@ void SyncServiceImpl::SyncAuthAccountStateChanged() {
       TryStart();
       NotifyObservers();
     } else {
-      ConfigureDataTypeManager(CONFIGURE_REASON_RECONFIGURATION,
+      ConfigureDataTypeManager(ConfigureReason::kReconfiguration,
                                /*bypass_setup_in_progress_check=*/false);
     }
   }
@@ -1378,7 +1378,7 @@ void SyncServiceImpl::MaybeRecordTrustedVaultHistograms() {
 
 void SyncServiceImpl::ReconfigureDataTypesDueToCrypto() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  ConfigureDataTypeManager(CONFIGURE_REASON_CRYPTO,
+  ConfigureDataTypeManager(ConfigureReason::kCrypto,
                            /*bypass_setup_in_progress_check=*/false);
 }
 
@@ -1458,7 +1458,7 @@ void SyncServiceImpl::OnSyncFeatureDisabledViaDashboardCleared() {
   // If the Sync engine was already initialized (probably running in transport
   // mode), just reconfigure.
   if (engine_ && engine_->IsInitialized()) {
-    ConfigureDataTypeManager(CONFIGURE_REASON_RECONFIGURATION,
+    ConfigureDataTypeManager(ConfigureReason::kReconfiguration,
                              /*bypass_setup_in_progress_check=*/false);
   } else {
     // Otherwise try to start up. Note that there might still be other disable
@@ -1549,7 +1549,7 @@ base::Time SyncServiceImpl::GetLastSyncedTimeForDebugging() const {
 void SyncServiceImpl::OnSelectedTypesChanged() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  ConfigureDataTypeManager(CONFIGURE_REASON_RECONFIGURATION,
+  ConfigureDataTypeManager(ConfigureReason::kReconfiguration,
                            /*bypass_setup_in_progress_check=*/false);
 }
 
@@ -1705,21 +1705,21 @@ void SyncServiceImpl::ConfigureDataTypeManager(
     migrator_ = std::make_unique<BackendMigrator>(
         debug_identifier_, data_type_manager_.get(),
         base::BindRepeating(&SyncServiceImpl::ConfigureDataTypeManager,
-                            base::Unretained(this), CONFIGURE_REASON_MIGRATION,
+                            base::Unretained(this), ConfigureReason::kMigration,
                             /*bypass_setup_in_progress_check=*/true),
         base::BindRepeating(&SyncServiceImpl::StartSyncingWithServer,
                             base::Unretained(this)));
 
     // Override reason if no configuration has completed ever.
     if (is_first_time_sync_configure_) {
-      configure_context.reason = CONFIGURE_REASON_NEW_CLIENT;
+      configure_context.reason = ConfigureReason::kNewClient;
     }
   }
 
   DCHECK(!configure_context.authenticated_gaia_id.empty() ||
          IsLocalSyncEnabled());
   DCHECK(!configure_context.cache_guid.empty());
-  DCHECK_NE(configure_context.reason, CONFIGURE_REASON_UNKNOWN);
+  DCHECK_NE(configure_context.reason, ConfigureReason::kUnknown);
 
   data_type_manager_->Configure(GetPreferredDataTypes(), configure_context);
 
@@ -1888,7 +1888,7 @@ void SyncServiceImpl::OnSyncClientDisabledByPolicyChanged() {
 
 #if !BUILDFLAG(IS_CHROMEOS)
 void SyncServiceImpl::OnInitialSyncFeatureSetupCompleted() {
-  ConfigureDataTypeManager(CONFIGURE_REASON_RECONFIGURATION,
+  ConfigureDataTypeManager(ConfigureReason::kReconfiguration,
                            /*bypass_setup_in_progress_check=*/false);
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
@@ -2316,11 +2316,12 @@ void SyncServiceImpl::OnSetupInProgressHandleDestroyed() {
   // The user closed a setup UI, and will expect their changes to actually
   // take effect now. So we reconfigure here even if another setup UI happens
   // to be open right now.
-  ConfigureDataTypeManager(CONFIGURE_REASON_RECONFIGURATION,
+  ConfigureDataTypeManager(ConfigureReason::kReconfiguration,
                            /*bypass_setup_in_progress_check=*/true);
 }
 
-void SyncServiceImpl::RunOrQueueTaskOnEngineInitialized(base::OnceClosure task) {
+void SyncServiceImpl::RunOrQueueTaskOnEngineInitialized(
+    base::OnceClosure task) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (engine_ && engine_->IsInitialized()) {
     std::move(task).Run();

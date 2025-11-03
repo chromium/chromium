@@ -1608,13 +1608,13 @@ TEST_F(SyncServiceImplTest, ConfigureDataTypeManagerReason) {
 
   ASSERT_EQ(SyncService::TransportState::ACTIVE,
             service()->GetTransportState());
-  EXPECT_EQ(CONFIGURE_REASON_NEW_CLIENT, engine()->last_configure_reason());
+  EXPECT_EQ(ConfigureReason::kNewClient, engine()->last_configure_reason());
 
   // Reconfiguration.
   // Trigger a reconfig by grabbing a SyncSetupInProgressHandle and immediately
   // releasing it again (via the temporary unique_ptr going away).
   std::ignore = service()->GetSetupInProgressHandle();
-  EXPECT_EQ(CONFIGURE_REASON_RECONFIGURATION,
+  EXPECT_EQ(ConfigureReason::kReconfiguration,
             engine()->last_configure_reason());
   ShutdownAndReleaseService();
 
@@ -1625,14 +1625,14 @@ TEST_F(SyncServiceImplTest, ConfigureDataTypeManagerReason) {
 
   ASSERT_EQ(SyncService::TransportState::ACTIVE,
             service()->GetTransportState());
-  EXPECT_EQ(CONFIGURE_REASON_EXISTING_CLIENT_RESTART,
+  EXPECT_EQ(ConfigureReason::kExistingClientRestart,
             engine()->last_configure_reason());
 
   // Reconfiguration.
   // Trigger a reconfig by grabbing a SyncSetupInProgressHandle and immediately
   // releasing it again (via the temporary unique_ptr going away).
   std::ignore = service()->GetSetupInProgressHandle();
-  EXPECT_EQ(CONFIGURE_REASON_RECONFIGURATION,
+  EXPECT_EQ(ConfigureReason::kReconfiguration,
             engine()->last_configure_reason());
   ShutdownAndReleaseService();
 }
@@ -2916,7 +2916,6 @@ TEST_F(SyncServiceImplTest, ShouldQueueTaskUntilEngineInitialized) {
   base::MockCallback<base::OnceClosure> mock_task2;
   EXPECT_CALL(mock_task2, Run()).Times(1);
   service()->RunOrQueueTaskOnEngineInitializedForTest(mock_task2.Get());
-
 }
 
 }  // namespace

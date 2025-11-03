@@ -42,23 +42,23 @@ namespace {
 sync_pb::SyncEnums::GetUpdatesOrigin GetOriginFromReason(
     ConfigureReason reason) {
   switch (reason) {
-    case CONFIGURE_REASON_RECONFIGURATION:
+    case ConfigureReason::kReconfiguration:
       return sync_pb::SyncEnums::RECONFIGURATION;
-    case CONFIGURE_REASON_MIGRATION:
+    case ConfigureReason::kMigration:
       return sync_pb::SyncEnums::MIGRATION;
-    case CONFIGURE_REASON_NEW_CLIENT:
+    case ConfigureReason::kNewClient:
       return sync_pb::SyncEnums::NEW_CLIENT;
-    case CONFIGURE_REASON_EXISTING_CLIENT_RESTART:
-    case CONFIGURE_REASON_CRYPTO:
+    case ConfigureReason::kExistingClientRestart:
+    case ConfigureReason::kCrypto:
       // Mapping these cases to NEWLY_SUPPORTED_DATATYPE is rather wrong, as it
       // includes common cases like sync being unpaused or a crypto error having
       // been resolved, if initial sync didn't complete earlier (or data was
       // cleared while paused). The legacy behavior is kept until a better
       // solution is found.
       return sync_pb::SyncEnums::NEWLY_SUPPORTED_DATATYPE;
-    case CONFIGURE_REASON_PROGRAMMATIC:
+    case ConfigureReason::kProgrammatic:
       return sync_pb::SyncEnums::PROGRAMMATIC;
-    case CONFIGURE_REASON_UNKNOWN:
+    case ConfigureReason::kUnknown:
       NOTREACHED();
   }
   return sync_pb::SyncEnums::UNKNOWN_ORIGIN;

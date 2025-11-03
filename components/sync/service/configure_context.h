@@ -31,7 +31,7 @@ struct ConfigureContext {
       signin::AccountManagedStatusFinderOutcome::kPending;
   std::string cache_guid;
   SyncMode sync_mode = SyncMode::kFull;
-  ConfigureReason reason = CONFIGURE_REASON_UNKNOWN;
+  ConfigureReason reason = ConfigureReason::kUnknown;
   base::Time configuration_start_time;
 };
 

@@ -242,7 +242,7 @@ TEST_F(SyncManagerImplTest, BasicConfiguration) {
   EXPECT_CALL(ready_task, Run).Times(0);
 
   sync_manager()->ConfigureSyncer(
-      CONFIGURE_REASON_RECONFIGURATION, types_to_download,
+      ConfigureReason::kReconfiguration, types_to_download,
       SyncManager::SyncFeatureState::ON, ready_task.Get());
 }
 

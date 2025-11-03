@@ -65,7 +65,7 @@ TEST_F(PasswordDataTypeControllerTest, OverrideFullSyncMode) {
   context.authenticated_gaia_id = GaiaId("gaia");
   context.cache_guid = "cache_guid";
   context.sync_mode = syncer::SyncMode::kFull;
-  context.reason = syncer::CONFIGURE_REASON_RECONFIGURATION;
+  context.reason = syncer::ConfigureReason::kReconfiguration;
   context.configuration_start_time = base::Time::Now();
   controller()->LoadModels(context, base::DoNothing());
 }
