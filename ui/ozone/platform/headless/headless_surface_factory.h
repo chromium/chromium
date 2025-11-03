@@ -33,16 +33,15 @@ class HeadlessSurfaceFactory : public SurfaceFactoryOzone {
 #endif  // BUILDFLAG(ENABLE_VULKAN)
   std::unique_ptr<SurfaceOzoneCanvas> CreateCanvasForWidget(
       gfx::AcceleratedWidget widget) override;
-
- private:
   scoped_refptr<gfx::NativePixmap> CreateNativePixmap(
       gfx::AcceleratedWidget widget,
       gpu::VulkanDeviceQueue* device_queue,
       gfx::Size size,
-      gfx::BufferFormat format,
+      viz::SharedImageFormat format,
       gfx::BufferUsage usage,
-      std::optional<gfx::Size> framebuffer_size = std::nullopt) override;
+      std::optional<gfx::Size> framebuffer_size) override;
 
+ private:
   void CheckBasePath() const;
 
   // Base path for window output PNGs.

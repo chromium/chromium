@@ -259,10 +259,10 @@ scoped_refptr<gfx::NativePixmap> HeadlessSurfaceFactory::CreateNativePixmap(
     gfx::AcceleratedWidget widget,
     gpu::VulkanDeviceQueue* device_queue,
     gfx::Size size,
-    gfx::BufferFormat format,
+    viz::SharedImageFormat format,
     gfx::BufferUsage usage,
     std::optional<gfx::Size> framebuffer_size) {
-  return new TestPixmap(viz::GetSharedImageFormat(format));
+  return new TestPixmap(format);
 }
 
 void HeadlessSurfaceFactory::CheckBasePath() const {
