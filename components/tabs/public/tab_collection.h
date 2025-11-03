@@ -9,6 +9,7 @@
 #include <list>
 #include <memory>
 #include <optional>
+#include <set>
 #include <unordered_set>
 #include <variant>
 #include <vector>
@@ -239,6 +240,17 @@ class TabCollection : public SupportsHandles<TabCollectionHandleFactory> {
     TabCollection::Handle parent_handle;
     size_t index;
   };
+
+  // Recursively searches the tab hierarchy to find the insertion position for
+  // the tabs and collections being moved. Note that this position is different
+  // from the position assuming the nodes are not present in the tab collection
+  // hierarchy.
+  std::optional<TabCollection::Position> FindMovePositionRecursive(
+      size_t destination_index,
+      TabCollection* dst_collection,
+      size_t& curr_insertion_index,
+      const std::set<tabs::TabInterface*>& tabs_moved,
+      const std::set<tabs::TabCollection*>& collections_moved);
 
   void NotifyOnChildrenAdded(base::PassKey<TabCollection> pass_key,
                              const NodeHandles& handles,

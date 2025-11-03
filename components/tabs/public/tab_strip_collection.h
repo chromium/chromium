@@ -90,7 +90,6 @@ class TabStripCollection : public TabCollection {
   // Returns a list of all tab group IDs, the order of the IDs is not
   // guaranteed.
   std::vector<tab_groups::TabGroupId> GetAllTabGroupIds() const;
-  void MoveTabGroupTo(const tab_groups::TabGroupId& group, int to_index);
 
   // Detached tab group operations.
 
@@ -117,23 +116,20 @@ class TabStripCollection : public TabCollection {
       base::PassKey<TabStripModel>) const;
 
  private:
-  // Adds a tab to a particular recursive index in the collection.
-  void AddTabRecursiveImpl(std::unique_ptr<TabInterface> tab,
-                           size_t index,
-                           std::optional<tab_groups::TabGroupId> new_group_id,
-                           bool new_pinned_state);
-
-  // Removes the tab from the collection. If `close_empty_group_collection` is
-  // true then group collection is closed when the last tab is removed from
-  // the group collection.
-  std::unique_ptr<TabInterface> RemoveTabRecursiveImpl(
-      TabInterface* tab,
-      bool close_empty_group_collection = true);
-
   // Removes the group collection with `group_id` from
   // `detached_group_collections_`.
   std::unique_ptr<tabs::TabGroupTabCollection> PopDetachedGroupCollection(
       const tab_groups::TabGroupId& group_id);
+
+  // Find the move position recursively by calling
+  // TabCollection::FindMovePositionRecursive. Note that this position is
+  // different from the position assuming the nodes are not present in the tab
+  // collection hierarchy.
+  TabCollection::Position GetMovePosition(
+      ChildrenPtrs tab_or_collections,
+      size_t destination_index,
+      std::optional<tab_groups::TabGroupId> new_group_id,
+      bool new_pinned_state);
 
   // Returns the list of tabs and collection to remove for `MoveTabsRecursive`.
   // `retain_collection_types` adds the fully selected collections based on the
@@ -149,25 +145,54 @@ class TabStripCollection : public TabCollection {
   void AddCollectionMapping(TabCollection* root_collection);
   void RemoveCollectionMapping(TabCollection* root_collection);
 
+  // Adds a tab or collection to the collection specified by 'position'.
+  // This is the final step for node addition, responsible for:
+  // 1. Adding the node to the target collection at the specified direct index.
+  // 2. Notifying observers that a node has been added.
+  // The 'position' must specify a valid parent collection handle and direct
+  // index.
+  // TODO(crbug.com/457463822): Look into combining these to single node
+  // methods.
   void AddTabImpl(std::unique_ptr<TabInterface> tab,
                   const TabCollection::Position& position);
-  std::unique_ptr<TabInterface> RemoveTabImpl(TabInterface* tab);
   void AddTabCollectionImpl(std::unique_ptr<TabCollection> collection,
                             const TabCollection::Position& position);
+
+  // Removes a tab or collection from the tab collection hierarchy.
+  // This is the final step for node removal, responsible for:
+  // 1. Removing the node to the target collection at the specified direct
+  // index.
+  // 2. Notifying observers that a node has been removed.
+  std::unique_ptr<TabInterface> RemoveTabImpl(TabInterface* tab);
   std::unique_ptr<TabCollection> RemoveTabCollectionImpl(
       TabCollection* collection);
-  void MoveTabImpl(TabInterface* tab_ptr,
-                   const TabCollection::Position& position);
+
+  // Moves a tab or collection from the tab collection hierarchy.
+  // This is the final step for moving a node, responsible for:
+  // 1. Moving the node to the target collection.
+  // 2. Notifying observers that a node has been moved.
+  // The node is removed and added to the hierarchy. Position cannot be used the
+  // same as the insertion position here since removal of a node can update this
+  // position. The position determines where in the tree the node is moving to.
+  // Specifically, the target 'position' index needs to be adjusted if the
+  // source and
+  // destination parent collections are the same. If the node is moved to an
+  // index after its current location, the remove step affects the position as
+  // well and needs to be adjusted.
+  void MoveTabImpl(TabInterface* tab_ptr, TabCollection::Position& position);
   void MoveCollectionImpl(TabCollection* collection_ptr,
-                          const TabCollection::Position& position);
+                          TabCollection::Position& position);
 
   // Helper to compute the parent collection and direct index in the collection
-  // to insert a tab or collection based on insertion properties like the
   // recursive index, pinned state and group to insert.
   TabCollection::Position GetInsertionDetails(
       int index,
       int pinned,
       std::optional<tab_groups::TabGroupId> group);
+
+  // Returns the parent collection and the direct child index within that
+  // collection for the given tab or collection.
+  TabCollection::Position GetNodePosition(ChildPtr tab_or_collection);
 
   // All of the pinned tabs for this tabstrip is present in this collection.
   // This should be below `impl_` to avoid being a dangling pointer during

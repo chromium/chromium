@@ -301,7 +301,22 @@ int TabCollectionTabModelImpl::MoveTabGroupTo(JNIEnv* env,
     to_index -= range.length() - 1;
     CHECK_GE(to_index, 0);
   }
-  tab_strip_collection_->MoveTabGroupTo(tab_group_id, to_index);
+
+  std::vector<int> tab_indices;
+  tab_indices.reserve(range.length());
+  for (size_t i = range.start(); i < range.end(); ++i) {
+    tab_indices.push_back(base::checked_cast<int>(i));
+  }
+
+  const std::set<tabs::TabCollection::Type> kRetainCollectionTypes =
+      std::set<tabs::TabCollection::Type>(
+          {tabs::TabCollection::Type::SPLIT, tabs::TabCollection::Type::GROUP});
+
+  tab_strip_collection_->MoveTabsRecursive(
+      tab_indices, static_cast<size_t>(to_index),
+      /*new_group_id=*/std::nullopt,
+      /*new_pinned_state=*/false, kRetainCollectionTypes);
+
   return base::checked_cast<int>(to_index);
 }
 

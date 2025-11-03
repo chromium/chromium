@@ -4052,6 +4052,126 @@ TEST_P(TabStripModelTest, MoveSelectedTabsTo_ForgetOpeners) {
   tabstrip()->CloseAllTabs();
 }
 
+TEST_P(TabStripModelTest, MoveTwoUngroupedTabsIntoGroupLeftToRight) {
+  PrepareTabs(tabstrip(), 6);
+  const tab_groups::TabGroupId existing_group_id =
+      tabstrip()->AddToNewGroup({3, 4});
+  EXPECT_EQ("0 1 2 3g0 4g0 5", GetTabStripStateString(tabstrip(), true));
+
+  tabstrip()->AddToExistingGroup({1, 2}, existing_group_id);
+
+  EXPECT_EQ("0 1g0 2g0 3g0 4g0 5", GetTabStripStateString(tabstrip(), true));
+
+  // Verify grouping: all four tabs should be in the same group.
+  EXPECT_EQ(tabstrip()->GetTabGroupForTab(1), existing_group_id);
+  EXPECT_EQ(tabstrip()->GetTabGroupForTab(2), existing_group_id);
+  EXPECT_EQ(tabstrip()->GetTabGroupForTab(3), existing_group_id);
+  EXPECT_EQ(tabstrip()->GetTabGroupForTab(4), existing_group_id);
+
+  tabstrip()->CloseAllTabs();
+}
+
+TEST_P(TabStripModelTest, MoveTwoUngroupedTabsIntoGroupRightToLeft) {
+  PrepareTabs(tabstrip(), 7);
+  const tab_groups::TabGroupId existing_group_id =
+      tabstrip()->AddToNewGroup({3, 4});
+  EXPECT_EQ("0 1 2 3g0 4g0 5 6", GetTabStripStateString(tabstrip(), true));
+
+  tabstrip()->AddToExistingGroup({5, 6}, existing_group_id);
+
+  EXPECT_EQ("0 1 2 3g0 4g0 5g0 6g0", GetTabStripStateString(tabstrip(), true));
+
+  // Verify grouping: all four tabs should be in the same group.
+  EXPECT_EQ(tabstrip()->GetTabGroupForTab(3), existing_group_id);
+  EXPECT_EQ(tabstrip()->GetTabGroupForTab(4), existing_group_id);
+  EXPECT_EQ(tabstrip()->GetTabGroupForTab(5), existing_group_id);
+  EXPECT_EQ(tabstrip()->GetTabGroupForTab(6), existing_group_id);
+
+  tabstrip()->CloseAllTabs();
+}
+
+TEST_P(TabStripModelTest, MoveTwoGroupedTabsOutOfGroupLeft) {
+  PrepareTabs(tabstrip(), 6);
+  const tab_groups::TabGroupId existing_group_id =
+      tabstrip()->AddToNewGroup({1, 2, 3, 4});
+  EXPECT_EQ("0 1g0 2g0 3g0 4g0 5", GetTabStripStateString(tabstrip(), true));
+
+  tabstrip()->ActivateTabAt(1);
+  tabstrip()->SelectTabAt(2);
+  ExpectSelectionIsExactly(tabstrip(), {1, 2});
+
+  tabstrip()->MoveSelectedTabsTo(1, std::nullopt);
+
+  EXPECT_EQ("0 1 2 3g0 4g0 5", GetTabStripStateString(tabstrip(), true));
+
+  EXPECT_FALSE(tabstrip()->GetTabGroupForTab(1).has_value());
+  EXPECT_FALSE(tabstrip()->GetTabGroupForTab(2).has_value());
+  EXPECT_EQ(tabstrip()->GetTabGroupForTab(3), existing_group_id);
+  EXPECT_EQ(tabstrip()->GetTabGroupForTab(4), existing_group_id);
+
+  tabstrip()->CloseAllTabs();
+}
+
+TEST_P(TabStripModelTest, MoveTwoGroupedTabsOutOfGroupRight) {
+  PrepareTabs(tabstrip(), 6);
+  const tab_groups::TabGroupId existing_group_id =
+      tabstrip()->AddToNewGroup({1, 2, 3, 4});
+  EXPECT_EQ("0 1g0 2g0 3g0 4g0 5", GetTabStripStateString(tabstrip(), true));
+
+  tabstrip()->ActivateTabAt(3);
+  tabstrip()->SelectTabAt(4);
+  ExpectSelectionIsExactly(tabstrip(), {3, 4});
+
+  tabstrip()->MoveSelectedTabsTo(3, std::nullopt);
+
+  EXPECT_EQ("0 1g0 2g0 3 4 5", GetTabStripStateString(tabstrip(), true));
+
+  EXPECT_EQ(tabstrip()->GetTabGroupForTab(1), existing_group_id);
+  EXPECT_EQ(tabstrip()->GetTabGroupForTab(2), existing_group_id);
+  EXPECT_FALSE(tabstrip()->GetTabGroupForTab(3).has_value());
+  EXPECT_FALSE(tabstrip()->GetTabGroupForTab(4).has_value());
+
+  tabstrip()->CloseAllTabs();
+}
+
+TEST_P(TabStripModelTest, MoveTwoPinnedTabsToGroupWithoutChangingIndex) {
+  ASSERT_NO_FATAL_FAILURE(
+      PrepareTabstripForSelectionTest(tabstrip(), 4, 2, {0, 1}));
+  EXPECT_EQ("0p 1p 2 3", GetTabStripStateString(tabstrip()));
+
+  tab_groups::TabGroupId group_id = tabstrip()->AddToNewGroup({0, 1});
+
+  EXPECT_EQ("0g0 1g0 2 3", GetTabStripStateString(tabstrip(), true));
+
+  EXPECT_EQ(tabstrip()->GetTabGroupForTab(0), group_id);
+  EXPECT_EQ(tabstrip()->GetTabGroupForTab(1), group_id);
+  EXPECT_FALSE(tabstrip()->GetTabGroupForTab(2).has_value());
+
+  tabstrip()->CloseAllTabs();
+}
+
+TEST_P(TabStripModelTest, MoveTwoGroupTabs) {
+  PrepareTabs(tabstrip(), 5);
+  const tab_groups::TabGroupId group_id = tabstrip()->AddToNewGroup({1, 2, 3});
+  EXPECT_EQ("0 1g0 2g0 3g0 4", GetTabStripStateString(tabstrip(), true));
+
+  tabstrip()->ActivateTabAt(2);
+  tabstrip()->SelectTabAt(3);
+  ExpectSelectionIsExactly(tabstrip(), {2, 3});
+
+  tabstrip()->MoveSelectedTabsTo(1, group_id);
+
+  EXPECT_EQ("0 2g0 3g0 1g0 4", GetTabStripStateString(tabstrip(), true));
+
+  EXPECT_FALSE(tabstrip()->GetTabGroupForTab(0).has_value());
+  EXPECT_EQ(tabstrip()->GetTabGroupForTab(1), group_id);
+  EXPECT_EQ(tabstrip()->GetTabGroupForTab(2), group_id);
+  EXPECT_EQ(tabstrip()->GetTabGroupForTab(3), group_id);
+  EXPECT_FALSE(tabstrip()->GetTabGroupForTab(4).has_value());
+
+  tabstrip()->CloseAllTabs();
+}
+
 TEST_P(TabStripModelTest, CloseSelectedTabs) {
   for (int i = 0; i < 3; ++i) {
     tabstrip()->AppendWebContents(CreateWebContents(), true);
