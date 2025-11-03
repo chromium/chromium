@@ -10,24 +10,16 @@ import static org.chromium.ui.listmenu.ListItemType.MENU_ITEM;
 import static org.chromium.ui.listmenu.ListItemType.MENU_ITEM_WITH_SUBMENU;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.CLICK_LISTENER;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.ENABLED;
-import static org.chromium.ui.listmenu.ListMenuItemProperties.MENU_ITEM_ID;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.TITLE;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.TITLE_ID;
 import static org.chromium.ui.listmenu.ListMenuSubmenuItemProperties.SUBMENU_ITEMS;
-import static org.chromium.ui.listmenu.ListMenuUtils.createAdapter;
 
 import android.app.Activity;
-import android.content.ComponentCallbacks;
 import android.content.Context;
 import android.content.res.ColorStateList;
-import android.content.res.Configuration;
 import android.content.res.Resources;
-import android.database.DataSetObserver;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.GradientDrawable;
-import android.view.ContextThemeWrapper;
-import android.view.LayoutInflater;
 import android.view.View;
 
 import androidx.annotation.DimenRes;
@@ -38,8 +30,6 @@ import androidx.annotation.PluralsRes;
 import androidx.annotation.StyleRes;
 import androidx.appcompat.content.res.AppCompatResources;
 
-import org.chromium.base.Callback;
-import org.chromium.base.lifetime.LifetimeAssert;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.build.annotations.RequiresNonNull;
@@ -53,21 +43,18 @@ import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.ListItemBuilder;
 import org.chromium.components.browser_ui.widget.list_view.ListViewTouchTracker;
-import org.chromium.components.browser_ui.widget.list_view.TouchTrackingListView;
 import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.data_sharing.member_role.MemberRole;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.hierarchicalmenu.HierarchicalMenuController;
 import org.chromium.ui.hierarchicalmenu.HierarchicalMenuController.AccessibilityListObserver;
-import org.chromium.ui.listmenu.ListMenuItemAdapter;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.listmenu.ListMenuSubmenuItemProperties;
 import org.chromium.ui.listmenu.ListMenuUtils;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.util.AttrUtils;
 import org.chromium.ui.widget.AnchoredPopupWindow;
 import org.chromium.ui.widget.AnchoredPopupWindow.HorizontalOrientation;
 import org.chromium.ui.widget.RectProvider;
@@ -75,7 +62,6 @@ import org.chromium.ui.widget.ViewRectProvider;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.function.Supplier;
 
 /**
@@ -104,147 +90,6 @@ public abstract class TabOverflowMenuCoordinator<T> {
                 @Nullable ListViewTouchTracker listViewTouchTracker);
     }
 
-    private static class OverflowMenuHolder<T> {
-        private final Context mContext;
-        private final View mContentView;
-        private final ComponentCallbacks mComponentCallbacks;
-        private final ModelList mModelList;
-        private final @Nullable LifetimeAssert mLifetimeAssert = LifetimeAssert.create(this);
-        private AnchoredPopupWindow mMenuWindow;
-
-        OverflowMenuHolder(
-                RectProvider anchorViewRectProvider,
-                boolean horizontalOverlapAnchor,
-                boolean verticalOverlapAnchor,
-                @StyleRes int animStyle,
-                @HorizontalOrientation int horizontalOrientation,
-                @LayoutRes int menuLayout,
-                Drawable menuBackground,
-                ModelList modelList,
-                OnItemClickedCallback<T> onItemClickedCallback,
-                T id,
-                @Nullable String collaborationId,
-                int popupWidthPx,
-                @Nullable Callback<OverflowMenuHolder<T>> onDismiss,
-                Activity activity) {
-            mModelList = modelList;
-            mContext = new ContextThemeWrapper(activity, R.style.OverflowMenuThemeOverlay);
-            mComponentCallbacks =
-                    new ComponentCallbacks() {
-                        @Override
-                        public void onConfigurationChanged(Configuration newConfig) {
-                            if (mMenuWindow == null || !mMenuWindow.isShowing()) return;
-                            mMenuWindow.dismiss();
-                        }
-
-                        @Override
-                        public void onLowMemory() {}
-                    };
-            mContext.registerComponentCallbacks(mComponentCallbacks);
-
-            mContentView = LayoutInflater.from(mContext).inflate(menuLayout, null);
-            clipContentViewOutline();
-
-            TouchTrackingListView touchTrackingListView =
-                    mContentView.findViewById(R.id.tab_group_action_menu_list);
-            ListMenuItemAdapter adapter =
-                    createAdapter(
-                            modelList,
-                            Set.of(),
-                            (model, view) -> {
-                                // Because ListMenuItemAdapter always uses the delegate if there is
-                                // one, we need to manually call click listeners.
-                                if (model.containsKey(CLICK_LISTENER)
-                                        && model.get(CLICK_LISTENER) != null) {
-                                    model.get(CLICK_LISTENER).onClick(mContentView);
-                                    return;
-                                }
-                                onItemClickedCallback.onClick(
-                                        model.get(MENU_ITEM_ID),
-                                        id,
-                                        collaborationId,
-                                        /* listViewTouchTracker= */ touchTrackingListView);
-                                mMenuWindow.dismiss();
-                            });
-            touchTrackingListView.setItemsCanFocus(true);
-            touchTrackingListView.setAdapter(adapter);
-
-            View decorView = activity.getWindow().getDecorView();
-
-            mMenuWindow =
-                    new AnchoredPopupWindow(
-                            mContext,
-                            decorView,
-                            menuBackground,
-                            mContentView,
-                            anchorViewRectProvider);
-            mMenuWindow.setFocusable(true);
-            mMenuWindow.setHorizontalOverlapAnchor(horizontalOverlapAnchor);
-            mMenuWindow.setVerticalOverlapAnchor(verticalOverlapAnchor);
-            mMenuWindow.setPreferredHorizontalOrientation(horizontalOrientation);
-            mMenuWindow.setElevation(
-                    mContentView.getResources().getDimension(R.dimen.tab_overflow_menu_elevation));
-            // Override animation style or animate from anchor as default.
-            if (animStyle == Resources.ID_NULL) {
-                mMenuWindow.setAnimateFromAnchor(true);
-            } else {
-                mMenuWindow.setAnimationStyle(animStyle);
-            }
-            mMenuWindow.setMaxWidth(popupWidthPx);
-
-            // Resize if any new elements are added.
-            adapter.registerDataSetObserver(
-                    new DataSetObserver() {
-                        @Override
-                        public void onChanged() {
-                            resize();
-                        }
-                    });
-
-            // When the menu is dismissed, call destroy to unregister the orientation listener.
-            mMenuWindow.addOnDismissListener(
-                    () -> {
-                        if (onDismiss != null) {
-                            onDismiss.onResult(this);
-                        }
-                        destroy();
-                    });
-        }
-
-        View getContentView() {
-            return mContentView;
-        }
-
-        void show() {
-            mMenuWindow.show();
-        }
-
-        void resize() {
-            mMenuWindow.onRectChanged();
-        }
-
-        void dismiss() {
-            mMenuWindow.dismiss();
-        }
-
-        void destroy() {
-            mContext.unregisterComponentCallbacks(mComponentCallbacks);
-            // If mLifetimeAssert is GC'ed before this is called, it will throw an exception
-            // with a stack trace showing the stack during LifetimeAssert.create().
-            LifetimeAssert.destroy(mLifetimeAssert);
-        }
-
-        private void clipContentViewOutline() {
-            GradientDrawable outlineDrawable = new GradientDrawable();
-            outlineDrawable.setShape(GradientDrawable.RECTANGLE);
-            outlineDrawable.setCornerRadius(
-                    AttrUtils.getDimensionPixelSize(
-                            mContentView.getContext(), R.attr.popupBgCornerRadius));
-            mContentView.setBackground(outlineDrawable);
-            mContentView.setClipToOutline(true);
-        }
-    }
-
     protected final CollaborationService mCollaborationService;
     protected final Supplier<TabModel> mTabModelSupplier;
     protected final @Nullable MultiInstanceManager mMultiInstanceManager;
@@ -253,7 +98,7 @@ public abstract class TabOverflowMenuCoordinator<T> {
     private final @LayoutRes int mMenuLayout;
     private final Context mContext;
     private final OnItemClickedCallback<T> mOnItemClickedCallback;
-    private @Nullable OverflowMenuHolder<T> mMenuHolder;
+    private @Nullable TabOverflowMenuHolder<T> mMenuHolder;
     private final HierarchicalMenuController mHierarchicalMenuController;
 
     /**
@@ -438,7 +283,7 @@ public abstract class TabOverflowMenuCoordinator<T> {
             offsetPopupRect(mContext, isIncognito, anchorViewRectProvider.getRect());
         }
         mMenuHolder =
-                new OverflowMenuHolder<>(
+                new TabOverflowMenuHolder<>(
                         anchorViewRectProvider,
                         horizontalOverlapAnchor,
                         verticalOverlapAnchor,
@@ -491,7 +336,7 @@ public abstract class TabOverflowMenuCoordinator<T> {
     /** Returns true if the menu is currently showing. */
     public boolean isMenuShowing() {
         if (mMenuHolder == null) return false;
-        return mMenuHolder.mMenuWindow.isShowing();
+        return mMenuHolder.getMenuWindow().isShowing();
     }
 
     protected void onMenuDismissed() {}
@@ -508,7 +353,7 @@ public abstract class TabOverflowMenuCoordinator<T> {
         return mContext.getResources().getDimensionPixelSize(dimenRes);
     }
 
-    private void onDismiss(OverflowMenuHolder<T> menuHolder) {
+    private void onDismiss(TabOverflowMenuHolder<T> menuHolder) {
         assert mMenuHolder == menuHolder;
         mMenuHolder = null;
         onMenuDismissed();
@@ -553,13 +398,13 @@ public abstract class TabOverflowMenuCoordinator<T> {
      */
     public void setMenuFocusable(boolean focusable) {
         if (mMenuHolder != null) {
-            mMenuHolder.mMenuWindow.setFocusable(focusable);
+            mMenuHolder.getMenuWindow().setFocusable(focusable);
         }
     }
 
     public @Nullable ModelList getModelListForTesting() {
         if (mMenuHolder == null) return null;
-        return mMenuHolder.mModelList;
+        return mMenuHolder.getModelList();
     }
 
     public @Nullable View getContentViewForTesting() {
