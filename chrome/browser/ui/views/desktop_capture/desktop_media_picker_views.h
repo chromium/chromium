@@ -59,6 +59,13 @@ class DesktopMediaPickerDialogView : public views::DialogDelegateView,
   // Called by parent (DesktopMediaPickerImpl) when it's destroyed.
   void DetachParent();
 
+#if BUILDFLAG(IS_MAC)
+  void SetAudioCapturePermissionCheckerForTest(
+      std::unique_ptr<AudioCapturePermissionChecker> checker) {
+    audio_capture_permission_checker_ = std::move(checker);
+  }
+#endif
+
   // Called by DesktopMediaListController.
   void OnSelectionChanged();
   void AcceptSource();
@@ -85,6 +92,7 @@ class DesktopMediaPickerDialogView : public views::DialogDelegateView,
 
  private:
   friend class DesktopMediaPickerViewsTestApi;
+  friend class DesktopMediaPickerAudioPermissionTest;
 
   struct DisplaySurfaceCategory {
     DisplaySurfaceCategory(
@@ -184,7 +192,7 @@ class DesktopMediaPickerDialogView : public views::DialogDelegateView,
 #if BUILDFLAG(IS_MAC)
   void OnPermissionUpdate(bool has_permission);
   void RecordPermissionInteractionUma() const;
-  void OnTriggerAudioPermissionCheck();
+  void OnAudioSharingApprovedByUserUpdate();
   void OnAudioPermissionUpdate();
 #endif
 

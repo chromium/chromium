@@ -867,7 +867,7 @@ std::unique_ptr<views::View> DesktopMediaPickerDialogView::SetupPane(
       (type == DesktopMediaList::Type::kScreen ||
        type == DesktopMediaList::Type::kWindow)) {
     trigger_audio_permission_check = base::BindRepeating(
-        &DesktopMediaPickerDialogView::OnTriggerAudioPermissionCheck,
+        &DesktopMediaPickerDialogView::OnAudioSharingApprovedByUserUpdate,
         weak_factory_.GetWeakPtr());
   }
 #endif
@@ -1272,7 +1272,7 @@ void DesktopMediaPickerDialogView::RecordPermissionInteractionUma() const {
   RecordUma(permission_interaction);
 }
 
-void DesktopMediaPickerDialogView::OnTriggerAudioPermissionCheck() {
+void DesktopMediaPickerDialogView::OnAudioSharingApprovedByUserUpdate() {
   const int index = GetSelectedTabIndex();
   CHECK_GE(index, 0);
   CHECK_LT(static_cast<size_t>(index), categories_.size());
@@ -1280,16 +1280,40 @@ void DesktopMediaPickerDialogView::OnTriggerAudioPermissionCheck() {
     return;
   }
 
-  // TODO(crbug.com/447521447): Update UI depending on permission status.
-  if (categories_[index].pane->IsAudioSharingApprovedByUser() &&
-      audio_capture_permission_checker_->GetState() ==
-          AudioCapturePermissionChecker::State::kUnknown) {
-    audio_capture_permission_checker_->RunCheck();
+  if (categories_[index].pane->IsAudioSharingApprovedByUser()) {
+    switch (audio_capture_permission_checker_->GetState()) {
+      case AudioCapturePermissionChecker::State::kUnknown:
+        audio_capture_permission_checker_->RunCheck();
+        break;
+      case AudioCapturePermissionChecker::State::kDenied:
+        categories_[index].pane->SetAudioWarningVisible(true);
+        break;
+      case AudioCapturePermissionChecker::State::kGranted:
+      case AudioCapturePermissionChecker::State::kChecking:
+        // Do nothing.
+        break;
+    }
+  } else {
+    categories_[index].pane->SetAudioWarningVisible(false);
   }
 }
 
 void DesktopMediaPickerDialogView::OnAudioPermissionUpdate() {
-  // TODO(crbug.com/447521447): Update UI depending on permission status.
+  if (audio_capture_permission_checker_->GetState() !=
+      AudioCapturePermissionChecker::State::kDenied) {
+    return;
+  }
+
+  for (auto& category : categories_) {
+    if (!category.pane || (category.type != DesktopMediaList::Type::kScreen &&
+                           category.type != DesktopMediaList::Type::kWindow)) {
+      continue;
+    }
+
+    if (category.pane->IsAudioSharingApprovedByUser()) {
+      category.pane->SetAudioWarningVisible(true);
+    }
+  }
 }
 
 #endif

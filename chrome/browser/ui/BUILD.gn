@@ -4895,6 +4895,8 @@ static_library("ui") {
         "views/chrome_views_delegate_mac.cc",
         "views/desktop_capture/audio_capture_permission_checker_mac.h",
         "views/desktop_capture/audio_capture_permission_checker_mac.mm",
+        "views/desktop_capture/audio_permission_warning_view.h",
+        "views/desktop_capture/audio_permission_warning_view.mm",
         "views/desktop_capture/desktop_media_permission_pane_view_mac.h",
         "views/desktop_capture/desktop_media_permission_pane_view_mac.mm",
         "views/desktop_capture/screen_capture_permission_checker_mac.h",
