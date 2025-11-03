@@ -52,6 +52,7 @@ const char kExtensionsSidebarUtmSource[] = "ext_sidebar";
 const char kCustomActionIphUtmSource[] = "ext_zero_state_promo_generic_iph";
 const char kCustomUiChipIphV1UtmSource[] = "ext_zero_state_promo_chips_iph";
 const char kCustomUiChipIphV2UtmSource[] = "ext_zero_state_promo_chips_iph_v2";
+const char kCustomUiChipIphV3UtmSource[] = "ext_zero_state_promo_chips_iph_v3";
 const char kCustomUiPlainLinkIphUtmSource[] = "ext_zero_state_promo_links_iph";
 
 GURL GetWebstoreLaunchURL() {

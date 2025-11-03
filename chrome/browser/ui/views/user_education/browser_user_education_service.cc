@@ -664,6 +664,7 @@ void MaybeRegisterChromeFeaturePromos(
       break;
     case feature_engagement::kCustomUiChipIphV1:
     case feature_engagement::kCustomUiChipIphV2:
+    case feature_engagement::kCustomUiChipIphV3:
     case feature_engagement::kCustomUIPlainLinkIph:
       registry.RegisterFeature(std::move(
           user_education::FeaturePromoSpecification::CreateForCustomUi(

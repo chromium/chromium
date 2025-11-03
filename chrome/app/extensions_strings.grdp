@@ -730,8 +730,17 @@
   <message name="IDS_EXTENSIONS_ZERO_STATE_IPH_HEADER" desc="Header of the extensions zero state in-product help promo.">
     Enhance your browser with extensions
   </message>
+  <message name="IDS_EXTENSIONS_ZERO_STATE_IPH_HEADER_V2" desc="Header of the extensions zero state in-product help promo.">
+    Supercharge your browser with extensions and themes
+  </message>
   <message name="IDS_EXTENSIONS_ZERO_STATE_CHIPS_IPH_DESCRIPTION" desc="An one line description for the extensions zero state in-product-help promo.">
     Extensions are add-ons for Chrome that can help you do more
+  </message>
+  <message name="IDS_EXTENSIONS_ZERO_STATE_CHIPS_WITH_LINK_IPH_LINK_LABEL" desc="A label of extensions links to chrome web store home page.">
+    Extensions
+  </message>
+  <message name="IDS_EXTENSIONS_ZERO_STATE_CHIPS_WITH_LINK_IPH_DESCRIPTION" desc="An one line description for the extensions zero state in-product-help promo with links to chrome web store home page.">
+    are add-ons for Chrome that can help you do more
   </message>
   <message name="IDS_EXTENSIONS_ZERO_STATE_PLAIN_LINK_IPH_DESCRIPTION" desc="An one line description for the extensions zero state in-product-help promo.">
     Extensions are add-ons to Chrome that can help you
