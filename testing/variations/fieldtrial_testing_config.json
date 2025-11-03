@@ -26305,17 +26305,13 @@
             ],
             "experiments": [
                 {
-                    "name": "Time180Sparkplug",
+                    "name": "Time180",
                     "params": {
                         "bytecode_old_time": "180"
                     },
                     "enable_features": [
-                        "V8Flag_flush_baseline_code",
                         "V8Flag_flush_code_based_on_time",
                         "V8Flag_ineffective_gcs_forces_last_resort"
-                    ],
-                    "disable_features": [
-                        "V8Flag_flush_code_based_on_tab_visibility"
                     ]
                 }
             ]
