@@ -57,6 +57,7 @@ class ReloadButtonWebView : public views::View,
  private:
   void UpdateAccessibleHasPopup();
   void SetReloadButtonUIState();
+  void UpdateTooltipText();
 
   raw_ptr<ReloadButtonUI> reload_button_ui_ = nullptr;
   const raw_ptr<chrome::BrowserCommandController> controller_;
