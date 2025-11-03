@@ -862,6 +862,55 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
                                       1);
 }
 
+IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
+                       BlockedNavigationNotAddedToAllowlist) {
+  const GURL start_url =
+      embedded_https_test_server().GetURL("example.com", "/actor/blank.html");
+  const GURL blocked_origin_url = embedded_https_test_server().GetURL(
+      "blocked.example.com", "/actor/blank.html");
+
+  CreateMockUserConfirmationDialogResponse(
+      url::Origin::Create(blocked_origin_url),
+      /*permission_granted=*/true);
+
+  // Start on example.com.
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), start_url));
+  // Navigate to blocked
+  std::unique_ptr<ToolRequest> navigate_to_blocked =
+      MakeNavigateRequest(*active_tab(), blocked_origin_url.spec());
+  // Navigate from back to start
+  std::unique_ptr<ToolRequest> navigate_back_to_start =
+      MakeNavigateRequest(*active_tab(), start_url.spec());
+  // Navigate from back to blocked
+  std::unique_ptr<ToolRequest> navigate_back_to_blocked =
+      MakeNavigateRequest(*active_tab(), blocked_origin_url.spec());
+
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(navigate_to_blocked, navigate_back_to_start,
+                                 navigate_back_to_blocked),
+                   result.GetCallback());
+  if (!origin_gating_enabled()) {
+    ExpectErrorResult(result, mojom::ActionResultCode::kUrlBlocked);
+    return;
+  }
+
+  ExpectOkResult(result);
+  actor_keyed_service()->ResetForTesting();
+
+  // We should have applied the gate twice. Once for each navigation to blocked.
+  histogram_tester_.ExpectBucketCount("Actor.NavigationGating.AppliedGate",
+                                      false, 1);
+  histogram_tester_.ExpectBucketCount("Actor.NavigationGating.AppliedGate",
+                                      true, 2);
+  // Permission should have been explicitly granted twice. Once for each
+  // navigation to blocked.
+  histogram_tester_.ExpectBucketCount(
+      "Actor.NavigationGating.PermissionGranted", true, 2);
+  // The allow-list should have 2 entries at the end of the task.
+  histogram_tester_.ExpectBucketCount("Actor.NavigationGating.AllowListSize", 2,
+                                      1);
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          ExecutionEngineOriginGatingBrowserTest,
                          testing::Bool());
