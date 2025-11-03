@@ -14,6 +14,7 @@
 #include "base/functional/callback_helpers.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile.h"
@@ -91,8 +92,8 @@
 #include "components/lens/lens_features.h"
 #include "components/media_router/browser/media_router_dialog_controller.h"
 #include "components/media_router/browser/media_router_metrics.h"
+#include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/vector_icons.h"
-#include "components/omnibox/common/omnibox_features.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
@@ -1044,7 +1045,10 @@ void BrowserActions::InitializeBrowserActions() {
               kPersonFilledPaddedSmallIcon, ui::kColorIcon))
           .Build());
 
-  if (base::FeatureList::IsEnabled(omnibox::kAiModeOmniboxEntryPoint)) {
+  const auto* aim_eligibility_service =
+      AimEligibilityServiceFactory::GetForProfile(bwi->GetProfile());
+  if (OmniboxFieldTrial::IsAimOmniboxEntrypointEnabled(
+          aim_eligibility_service)) {
     root_action_item_->AddChild(
         actions::ActionItem::Builder(
             base::BindRepeating(
