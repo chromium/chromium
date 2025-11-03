@@ -11,7 +11,7 @@ source_set("coordinator") {
   deps = [
     "//base",
     "//components/signin/public/identity_manager",
-    "//ios/chrome/browser/authentication/ui_bundled/fullscreen_signin_screen/coordinator",
+    "//ios/chrome/browser/authentication/fullscreen_signin_screen/coordinator",
     "//ios/chrome/browser/authentication/ui_bundled/signin:signin_headers",
     "//ios/chrome/browser/authentication/ui_bundled/signin:signin_in_progress",
     "//ios/chrome/browser/authentication/ui_bundled/signin:signin_protected",

@@ -11,7 +11,7 @@ source_set("ui") {
   deps = [
     "//base",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/authentication/ui_bundled/fullscreen_signin_screen/ui/resources",
+    "//ios/chrome/browser/authentication/fullscreen_signin_screen/ui/resources",
     "//ios/chrome/browser/authentication/ui_bundled/signin:constants",
     "//ios/chrome/browser/authentication/ui_bundled/views",
     "//ios/chrome/browser/first_run/ui_bundled:constants",

@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_FULLSCREEN_SIGNIN_SCREEN_UI_FULLSCREEN_SIGNIN_SCREEN_VIEW_CONTROLLER_H_
-#define IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_FULLSCREEN_SIGNIN_SCREEN_UI_FULLSCREEN_SIGNIN_SCREEN_VIEW_CONTROLLER_H_
+#ifndef IOS_CHROME_BROWSER_AUTHENTICATION_FULLSCREEN_SIGNIN_SCREEN_UI_FULLSCREEN_SIGNIN_SCREEN_VIEW_CONTROLLER_H_
+#define IOS_CHROME_BROWSER_AUTHENTICATION_FULLSCREEN_SIGNIN_SCREEN_UI_FULLSCREEN_SIGNIN_SCREEN_VIEW_CONTROLLER_H_
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/authentication/ui_bundled/fullscreen_signin_screen/ui/fullscreen_signin_screen_consumer.h"
+#import "ios/chrome/browser/authentication/fullscreen_signin_screen/ui/fullscreen_signin_screen_consumer.h"
 #import "ios/chrome/common/ui/promo_style/promo_style_view_controller.h"
 
 enum class SigninContextStyle;
@@ -38,4 +38,4 @@ enum class SigninContextStyle;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_FULLSCREEN_SIGNIN_SCREEN_UI_FULLSCREEN_SIGNIN_SCREEN_VIEW_CONTROLLER_H_
+#endif  // IOS_CHROME_BROWSER_AUTHENTICATION_FULLSCREEN_SIGNIN_SCREEN_UI_FULLSCREEN_SIGNIN_SCREEN_VIEW_CONTROLLER_H_
