@@ -6376,8 +6376,8 @@ def make_wrapper_type_info(cg_context, function_name,
 
     public_defs.append(
         TextNode("""\
-  static_assert(static_cast<v8::CppHeapPointerTag>({this_tag}) <
-                 blink::kLastScriptWrappableTag,
+  static_assert({this_tag} <
+                 blink::kLastGeneratedScriptWrappableTag,
                  "There are more ScriptWrappable types than available type tags."
                  "You have to increase the kLastScirptWrappableTag in wrapper_type_info.h");
   static constexpr v8::CppHeapPointerTag kThisTag =

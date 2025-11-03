@@ -22,8 +22,10 @@ const WrapperTypeInfo DOMArrayBufferView::wrapper_type_info_body_{
     nullptr,
     "ArrayBufferView",
     nullptr,
-    kDOMWrappersTag,
-    kDOMWrappersTag,
+    static_cast<v8::CppHeapPointerTag>(
+        ScriptWrappableArrayTag::kDOMArrayBufferViewTag),
+    static_cast<v8::CppHeapPointerTag>(
+        ScriptWrappableArrayTag::kDOMArrayBufferViewTag),
     WrapperTypeInfo::kWrapperTypeObjectPrototype,
     WrapperTypeInfo::kObjectClassId,
     WrapperTypeInfo::kIdlOtherType,
