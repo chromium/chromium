@@ -135,6 +135,11 @@ namespace spellcheck {
 std::string Md5AsHexForDictionaryChecksum(std::string_view data);
 }
 
+namespace spotlight {
+std::array<uint8_t, crypto::obsolete::kMd5Size> Md5ForSpotlightId(
+    std::string_view data);
+}
+
 namespace trusted_vault {
 std::string MD5StringForTrustedVault(const std::string& local_trusted_value);
 }
@@ -250,6 +255,10 @@ class CRYPTO_EXPORT Md5 {
 
   // TODO(crbug.com/455854083): get rid of this.
   friend std::array<uint8_t, kSize> segmentation_platform::Md5ForUrlId(
+      std::string_view data);
+
+  // TODO(crbug.com/456473948): get rid of this.
+  friend std::array<uint8_t, kSize> spotlight::Md5ForSpotlightId(
       std::string_view data);
 
   // TODO(https://crbug.com/425990763): get rid of this.

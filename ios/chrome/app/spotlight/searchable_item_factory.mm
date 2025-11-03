@@ -10,7 +10,6 @@
 
 #import "base/containers/span.h"
 #import "base/functional/bind.h"
-#import "base/hash/md5.h"
 #import "base/memory/raw_ptr.h"
 #import "base/numerics/byte_conversions.h"
 #import "base/strings/sys_string_conversions.h"
@@ -20,11 +19,21 @@
 #import "components/favicon/core/large_icon_service.h"
 #import "components/favicon_base/fallback_icon_style.h"
 #import "components/favicon_base/favicon_types.h"
+#import "crypto/obsolete/md5.h"
 #import "ios/chrome/app/spotlight/spotlight_logger.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "net/base/apple/url_conversions.h"
 #import "skia/ext/skia_utils_ios.h"
 #import "ui/base/l10n/l10n_util.h"
+
+namespace spotlight {
+
+std::array<uint8_t, crypto::obsolete::kMd5Size> Md5ForSpotlightId(
+    std::string_view data) {
+  return crypto::obsolete::Md5::Hash(data);
+}
+
+}  // namespace spotlight
 
 namespace {
 // Minimum size of the icon to be used in Spotlight.
@@ -293,9 +302,9 @@ UIImage* GetFallbackImageWithStringAndColor(NSString* string,
       stringWithFormat:@"%@ %@", base::SysUTF8ToNSString(URL.spec()), title];
   const std::string clipboard = base::SysNSStringToUTF8(key);
 
-  base::MD5Digest hash;
-  base::MD5Sum(base::as_byte_span(clipboard), &hash);
-  return base::U64FromLittleEndian(base::span(hash.a).first<8u>());
+  std::array<uint8_t, crypto::obsolete::kMd5Size> hash =
+      spotlight::Md5ForSpotlightId(clipboard);
+  return base::U64FromLittleEndian(base::span(hash).first<8u>());
 }
 
 @end
