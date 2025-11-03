@@ -443,7 +443,6 @@ class DrawingBufferForTests : public DrawingBuffer {
       : DrawingBuffer(
             std::move(context_provider),
             context_info,
-            false /* usingSwapChain */,
             desynchronized,
             std::move(extensions_util),
             client,

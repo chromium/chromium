@@ -328,7 +328,6 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
  protected:  // For unittests
   DrawingBuffer(std::unique_ptr<WebGraphicsContext3DProvider>,
                 const Platform::WebGLContextInfo&,
-                bool using_swap_chain,
                 bool desynchronized,
                 std::unique_ptr<Extensions3DUtil>,
                 Client*,

@@ -220,18 +220,13 @@ scoped_refptr<DrawingBuffer> DrawingBuffer::Create(
   bool texture_storage_enabled =
       extensions_util->IsExtensionEnabled("GL_EXT_texture_storage");
 
-  bool using_swap_chain = context_provider->SharedImageInterface()
-                              ->GetCapabilities()
-                              .shared_image_swap_chain &&
-                          desynchronized;
   scoped_refptr<DrawingBuffer> drawing_buffer =
       base::AdoptRef(new DrawingBuffer(
-          std::move(context_provider), context_info, using_swap_chain,
-          desynchronized, std::move(extensions_util), client,
-          discard_framebuffer_supported, texture_storage_enabled,
-          want_alpha_channel, premultiplied_alpha, preserve, webgl_version,
-          want_depth_buffer, want_stencil_buffer, chromium_image_usage,
-          color_space, gpu_preference));
+          std::move(context_provider), context_info, desynchronized,
+          std::move(extensions_util), client, discard_framebuffer_supported,
+          texture_storage_enabled, want_alpha_channel, premultiplied_alpha,
+          preserve, webgl_version, want_depth_buffer, want_stencil_buffer,
+          chromium_image_usage, color_space, gpu_preference));
   if (!drawing_buffer->Initialize(size, multisample_supported)) {
     drawing_buffer->BeginDestruction();
     return scoped_refptr<DrawingBuffer>();
@@ -242,7 +237,6 @@ scoped_refptr<DrawingBuffer> DrawingBuffer::Create(
 DrawingBuffer::DrawingBuffer(
     std::unique_ptr<WebGraphicsContext3DProvider> context_provider,
     const Platform::WebGLContextInfo& context_info,
-    bool using_swap_chain,
     bool desynchronized,
     std::unique_ptr<Extensions3DUtil> extensions_util,
     Client* client,
@@ -272,7 +266,11 @@ DrawingBuffer::DrawingBuffer(
                                 : kOpaque_SkAlphaType),
       requested_format_(want_alpha_channel ? GL_RGBA8 : GL_RGB8),
       context_info_(context_info),
-      using_swap_chain_(using_swap_chain),
+      using_swap_chain_(ContextProvider()
+                            ->SharedImageInterface()
+                            ->GetCapabilities()
+                            .shared_image_swap_chain &&
+                        desynchronized),
       low_latency_enabled_(desynchronized),
       want_depth_(want_depth),
       want_stencil_(want_stencil),
