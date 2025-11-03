@@ -55,7 +55,9 @@ constexpr ui::ColorId kHighlightColorId = ui::kColorSysPrimary;
 constexpr ui::ColorId kTextOnHighlight = ui::kColorSysOnPrimary;
 constexpr ui::ColorId kTextDisabledOnHighlight = kTextOnHighlight;
 constexpr ui::ColorId kTextDisabled = ui::kColorLabelForegroundDisabled;
-constexpr ui::ColorId kDefaultTextColorV2 = ui::kColorSysOnSurface;
+
+constexpr ui::ColorId kForeground = kColorNewTabButtonForegroundFrameActive;
+constexpr ui::ColorId kForegroundOnAltBackground = ui::kColorSysOnSurface;
 
 constexpr int kIconSize = 16;
 
@@ -95,8 +97,9 @@ ui::ImageModel GetNormalIcon() {
         *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
             IDR_GLIC_BUTTON_ALT_ICON));
   }
-  return ui::ImageModel::FromVectorIcon(GlicVectorIcon(),
-                                        ui::kColorSysOnSurface, kIconSize);
+  return ui::ImageModel::FromVectorIcon(
+      GlicVectorIcon(),
+      ShouldUseAltIcon() ? kForegroundOnAltBackground : kForeground, kIconSize);
 }
 
 ui::ImageModel GetIconForHighlight() {
@@ -448,9 +451,7 @@ void GlicButton::HighlightGlicButton() {
 }
 
 void GlicButton::SetDefaultColors() {
-  SetForegroundFrameActiveColorId(
-      EntrypointVariationsEnabled() ? kDefaultTextColorV2
-                                    : kColorNewTabButtonForegroundFrameActive);
+  SetForegroundFrameActiveColorId(kColorNewTabButtonForegroundFrameActive);
   SetForegroundFrameInactiveColorId(kColorNewTabButtonForegroundFrameInactive);
   SetBackgroundFrameActiveColorId(kColorNewTabButtonCRBackgroundFrameActive);
   SetBackgroundFrameInactiveColorId(
@@ -472,12 +473,12 @@ void GlicButton::UpdateTextAndBackgroundColors() {
       SetForegroundFrameActiveColorId(kTextOnHighlight);
       SetTextColor(STATE_DISABLED, kTextDisabledOnHighlight);
     } else {
-      SetForegroundFrameActiveColorId(kDefaultTextColorV2);
+      SetForegroundFrameActiveColorId(kForegroundOnAltBackground);
       SetTextColor(STATE_DISABLED, kTextDisabled);
     }
   } else {
     SetBackgroundFrameActiveColorId(kColorNewTabButtonCRBackgroundFrameActive);
-    SetForegroundFrameActiveColorId(kDefaultTextColorV2);
+    SetForegroundFrameActiveColorId(kForeground);
     SetTextColor(STATE_DISABLED, kTextDisabled);
   }
 
