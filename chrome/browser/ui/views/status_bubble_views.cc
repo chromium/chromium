@@ -9,6 +9,8 @@
 #include <string_view>
 #include <utility>
 
+#include "base/feature_list.h"
+#include "base/features.h"
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
 #include "base/location.h"
@@ -436,16 +438,24 @@ void StatusView::StartShowing() {
 void StatusView::StartDestroyTimer() {
   CancelDestroyTimer();
 
-  // The widget resources can be destroyed on a best-effort basis, but must be
-  // sequenced with the UI code. So schedule the time of destruction with a
-  // best-effort task, and post an immediate task to the correct sequence at
-  // that time.
-  status_bubble_->best_effort_task_runner_->PostDelayedTask(
-      FROM_HERE,
-      base::BindPostTask(status_bubble_->task_runner_,
-                         base::BindOnce(&StatusView::OnDestroyTimer,
-                                        destroy_timer_factory_.GetWeakPtr())),
-      kDestroyPopupDelay);
+  if (base::FeatureList::IsEnabled(base::features::kReducePPMs)) {
+    // The widget resources can be destroyed on a best-effort basis, but must be
+    // sequenced with the UI code. So schedule the time of destruction with a
+    // best-effort task, and post an immediate task to the correct sequence at
+    // that time.
+    status_bubble_->best_effort_task_runner_->PostDelayedTask(
+        FROM_HERE,
+        base::BindPostTask(status_bubble_->task_runner_,
+                           base::BindOnce(&StatusView::OnDestroyTimer,
+                                          destroy_timer_factory_.GetWeakPtr())),
+        kDestroyPopupDelay);
+  } else {
+    status_bubble_->task_runner_->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&StatusView::OnDestroyTimer,
+                       destroy_timer_factory_.GetWeakPtr()),
+        kDestroyPopupDelay);
+  }
 }
 
 void StatusView::OnDestroyTimer() {
