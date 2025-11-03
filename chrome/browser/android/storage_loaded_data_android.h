@@ -29,6 +29,8 @@ class StorageLoadedDataAndroid {
   // by it.
   void Destroy(JNIEnv* env);
 
+  StorageLoadedData* GetData() const;
+
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject() const;
 
   static StorageLoadedDataAndroid* FromJavaObject(

@@ -140,6 +140,10 @@ StorageLoadedDataAndroid::GetJavaObject() const {
   return j_object_;
 }
 
+StorageLoadedData* StorageLoadedDataAndroid::GetData() const {
+  return data_.get();
+}
+
 // static
 StorageLoadedDataAndroid* StorageLoadedDataAndroid::FromJavaObject(
     JNIEnv* env,
