@@ -890,6 +890,7 @@ class MockTouchToFillDelegate : public TouchToFillDelegate {
               OnBnplIssuerSuggestionSelected,
               (const std::string& issuer_id),
               (override));
+  MOCK_METHOD(void, OnBnplTosAccepted, (), (override));
   MOCK_METHOD(void,
               LogMetricsAfterSubmission,
               (const FormStructure&),
@@ -901,6 +902,10 @@ class MockTouchToFillDelegate : public TouchToFillDelegate {
   MOCK_METHOD(void,
               SetSelectedIssuerCallback,
               (base::OnceCallback<void(BnplIssuer)> selected_issuer_callback),
+              (override));
+  MOCK_METHOD(void,
+              SetBnplTosAcceptCallback,
+              (base::OnceClosure cancel_callback),
               (override));
 };
 

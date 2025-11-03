@@ -474,6 +474,11 @@ void TouchToFillDelegateAndroidImpl::OnBnplIssuerSuggestionSelected(
   }
 }
 
+void TouchToFillDelegateAndroidImpl::OnBnplTosAccepted() {
+  CHECK(bnpl_callbacks_.accept_tos_callback);
+  std::move(bnpl_callbacks_.accept_tos_callback).Run();
+}
+
 void TouchToFillDelegateAndroidImpl::LogTriggerOutcomeMetrics(
     const FormGlobalId& form_id,
     const FieldGlobalId& field_id,
@@ -526,6 +531,11 @@ void TouchToFillDelegateAndroidImpl::SetSelectedIssuerCallback(
     base::OnceCallback<void(BnplIssuer)> selected_issuer_callback) {
   bnpl_callbacks_.selected_issuer_callback =
       std::move(selected_issuer_callback);
+}
+
+void TouchToFillDelegateAndroidImpl::SetBnplTosAcceptCallback(
+    base::OnceClosure accept_tos_callback) {
+  bnpl_callbacks_.accept_tos_callback = std::move(accept_tos_callback);
 }
 
 base::WeakPtr<TouchToFillDelegateAndroidImpl>

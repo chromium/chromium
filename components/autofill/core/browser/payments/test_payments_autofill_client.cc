@@ -393,6 +393,13 @@ bool TestPaymentsAutofillClient::ShowTouchToFillError(
   return false;
 }
 
+bool TestPaymentsAutofillClient::ShowTouchToFillBnplTos(
+    BnplTosModel bnpl_tos_model,
+    base::OnceClosure accept_callback,
+    base::OnceClosure cancel_callback) {
+  return false;
+}
+
 void TestPaymentsAutofillClient::HideTouchToFillPaymentMethod() {}
 
 void TestPaymentsAutofillClient::SetTouchToFillVisible(bool visible) {}

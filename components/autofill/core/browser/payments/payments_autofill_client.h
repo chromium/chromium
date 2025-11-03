@@ -36,6 +36,7 @@ enum class AutofillProgressDialogType;
 class AutofillSaveCardBottomSheetBridge;
 class AutofillSaveIbanBottomSheetBridge;
 class BnplIssuer;
+struct BnplTosModel;
 struct CardUnmaskChallengeOption;
 class CardUnmaskDelegate;
 class AutofillProgressDialogController;
@@ -656,6 +657,13 @@ class PaymentsAutofillClient : public RiskDataLoader {
       const std::string& app_locale,
       base::OnceCallback<void(BnplIssuer)> selected_issuer_callback,
       base::OnceClosure cancel_callback) = 0;
+
+  // Shows the Touch To Fill surface with terms for linking a new BNPL issuer,
+  // if possible, returning `true` on success. This function is not implemented
+  // on iOS and iOS WebView, and should not be used on those platforms.
+  virtual bool ShowTouchToFillBnplTos(BnplTosModel bnpl_tos_model,
+                                      base::OnceClosure accept_callback,
+                                      base::OnceClosure cancel_callback) = 0;
 
   // Shows the BNPL error screen, if possible, returning `true` on success.
   // Should be called only on Android if the feature is supported by the

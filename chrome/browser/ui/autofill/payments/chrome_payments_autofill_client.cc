@@ -59,6 +59,7 @@
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/ui/payments/autofill_error_dialog_controller_impl.h"
 #include "components/autofill/core/browser/ui/payments/autofill_progress_dialog_controller_impl.h"
+#include "components/autofill/core/browser/ui/payments/bnpl_tos_controller.h"
 #include "components/autofill/core/browser/ui/payments/bubble_show_options.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_authentication_selection_dialog_controller_impl.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_otp_input_dialog_controller_impl.h"
@@ -1007,6 +1008,20 @@ bool ChromePaymentsAutofillClient::ShowTouchToFillBnplIssuers(
 #if BUILDFLAG(IS_ANDROID)
   return GetTouchToFillPaymentMethodController()->ShowBnplIssuers(
       bnpl_issuer_contexts, app_locale, std::move(selected_issuer_callback),
+      std::move(cancel_callback));
+#else
+  // Touch To Fill is not supported on Desktop.
+  NOTREACHED();
+#endif
+}
+
+bool ChromePaymentsAutofillClient::ShowTouchToFillBnplTos(
+    BnplTosModel bnpl_tos_model,
+    base::OnceClosure accept_callback,
+    base::OnceClosure cancel_callback) {
+#if BUILDFLAG(IS_ANDROID)
+  return GetTouchToFillPaymentMethodController()->ShowBnplIssuerTos(
+      std::move(bnpl_tos_model), std::move(accept_callback),
       std::move(cancel_callback));
 #else
   // Touch To Fill is not supported on Desktop.

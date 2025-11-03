@@ -24,6 +24,7 @@ namespace autofill {
 
 class AutofillProgressDialogController;
 class BnplIssuer;
+struct BnplTosModel;
 class CardUnmaskOtpInputDialogController;
 class CardUnmaskPromptController;
 class CreditCardCvcAuthenticator;
@@ -169,6 +170,9 @@ class IOSWebViewPaymentsAutofillClient : public PaymentsAutofillClient {
       base::OnceCallback<void(autofill::BnplIssuer)> selected_issuer_callback,
       base::OnceClosure cancel_callback) override;
   bool ShowTouchToFillError(const AutofillErrorDialogContext& context) override;
+  bool ShowTouchToFillBnplTos(BnplTosModel model,
+                              base::OnceClosure accept_callback,
+                              base::OnceClosure cancel_callback) override;
   void HideTouchToFillPaymentMethod() override;
   void SetTouchToFillVisible(bool visible) override;
   PaymentsDataManager& GetPaymentsDataManager() final;

@@ -23,10 +23,10 @@ namespace autofill {
 
 namespace payments {
 struct BnplIssuerContext;
-struct BnplIssuerTosDetail;
 }  // namespace payments
 
 class BnplIssuer;
+struct BnplTosModel;
 class ContentAutofillClient;
 class Iban;
 class LoyaltyCard;
@@ -74,8 +74,9 @@ class TouchToFillPaymentMethodControllerImpl
   bool ShowErrorScreen(std::unique_ptr<TouchToFillPaymentMethodView> view,
                        const std::u16string& title,
                        const std::u16string& description) override;
-  bool ShowBnplIssuerTos(
-      const payments::BnplIssuerTosDetail& bnpl_issuer_tos_detail) override;
+  bool ShowBnplIssuerTos(BnplTosModel bnpl_tos_model,
+                         base::OnceClosure accept_callback,
+                         base::OnceClosure cancel_callback) override;
   void Hide() override;
   void SetVisible(bool visible) override;
 
@@ -107,6 +108,7 @@ class TouchToFillPaymentMethodControllerImpl
   void OnErrorOkPressed(JNIEnv* env) override;
   void OnBnplIssuerSuggestionSelected(JNIEnv* env,
                                       const std::string& issuer_id) override;
+  void OnBnplTosAccepted(JNIEnv* env) override;
   int GetJavaResourceId(int native_resource_id) const override;
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject() override;
   void ResetJavaObject();

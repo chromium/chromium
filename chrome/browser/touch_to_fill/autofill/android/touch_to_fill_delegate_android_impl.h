@@ -135,6 +135,7 @@ class TouchToFillDelegateAndroidImpl : public TouchToFillDelegate {
   void CreditCardSuggestionSelected(std::string unique_id,
                                     bool is_virtual) override;
   void BnplSuggestionSelected(std::optional<int64_t> extracted_amount) override;
+  void OnBnplTosAccepted() override;
   void IbanSuggestionSelected(
       std::variant<Iban::Guid, Iban::InstrumentId> backend_id) override;
   void LoyaltyCardSuggestionSelected(const LoyaltyCard& loyalty_card) override;
@@ -147,6 +148,7 @@ class TouchToFillDelegateAndroidImpl : public TouchToFillDelegate {
   void SetCancelCallback(base::OnceClosure cancel_callback) override;
   void SetSelectedIssuerCallback(
       base::OnceCallback<void(BnplIssuer)> selected_issuer_callback) override;
+  void SetBnplTosAcceptCallback(base::OnceClosure accept_tos_callback) override;
 
   base::WeakPtr<TouchToFillDelegateAndroidImpl> GetWeakPtr();
 
@@ -188,6 +190,9 @@ class TouchToFillDelegateAndroidImpl : public TouchToFillDelegate {
     // This callback is set when the issuer selection screen is shown,
     // and it runs when the user selects a BNPL issuer.
     base::OnceCallback<void(BnplIssuer)> selected_issuer_callback;
+    // This callback is set when the issuer ToS screen is shown, and it runs
+    // when the user accepts the ToS.
+    base::OnceClosure accept_tos_callback;
     // This callback runs when the user dismisses the bottom sheet. It is set
     // for multiple screens, including the Issuer Selection, Terms of Service,
     // and Progress screens.

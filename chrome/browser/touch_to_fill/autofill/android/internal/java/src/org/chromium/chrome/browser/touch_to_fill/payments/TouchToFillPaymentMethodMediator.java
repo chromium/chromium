@@ -694,13 +694,13 @@ class TouchToFillPaymentMethodMediator {
                         FILL_BUTTON,
                         createButtonModel(
                                 R.string.autofill_bnpl_tos_ok_button_label,
-                                this::onBnplIssuerTosAccepted)));
+                                this::onBnplTosAccepted)));
         sheetItems.add(
                 new ListItem(
                         TEXT_BUTTON,
                         createButtonModel(
                                 R.string.autofill_bnpl_tos_bottom_sheet_cancel_button_label,
-                                this::onBnplIssuerTosCancelled)));
+                                () -> onDismissed(BottomSheetController.StateChangeReason.SWIPE))));
         mModel.set(
                 SHEET_CONTENT_DESCRIPTION_ID,
                 R.string.autofill_bnpl_issuer_tos_bottom_sheet_content_description);
@@ -882,12 +882,12 @@ class TouchToFillPaymentMethodMediator {
         mDelegate.onErrorOkPressed();
     }
 
-    private void onBnplIssuerTosAccepted() {
-        // TODO(crbug.com/438784697): Handle ToS accepted event.
-    }
-
-    private void onBnplIssuerTosCancelled() {
-        // TODO(crbug.com/438784697): Dismiss the screen and reset the BNPL flow.
+    private void onBnplTosAccepted() {
+        if (!mInputProtector.shouldInputBeProcessed()) {
+            return;
+        }
+        showProgressScreen();
+        mDelegate.onBnplTosAccepted();
     }
 
     private void showAllLoyaltyCards() {

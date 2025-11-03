@@ -152,6 +152,14 @@ class TouchToFillPaymentMethodControllerBridge
         }
     }
 
+    @Override
+    public void onBnplTosAccepted() {
+        if (mNativeTouchToFillPaymentMethodViewController != 0) {
+            TouchToFillPaymentMethodControllerBridgeJni.get()
+                    .onBnplTosAccepted(mNativeTouchToFillPaymentMethodViewController);
+        }
+    }
+
     @NativeMethods
     interface Natives {
         void onDismissed(
@@ -186,5 +194,7 @@ class TouchToFillPaymentMethodControllerBridge
         void onBnplIssuerSuggestionSelected(
                 long nativeTouchToFillPaymentMethodViewController,
                 @JniType("std::string") String issuerId);
+
+        void onBnplTosAccepted(long nativeTouchToFillPaymentMethodViewController);
     }
 }

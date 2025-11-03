@@ -11,13 +11,13 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ref.h"
+#include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
 #include "components/autofill/core/browser/ui/payments/bnpl_ui_delegate.h"
 
 namespace autofill {
 
 struct AutofillErrorDialogContext;
 enum class AutofillProgressDialogType;
-class BnplIssuer;
 struct BnplTosModel;
 
 namespace payments {
@@ -49,6 +49,11 @@ class AndroidBnplUiDelegate : public BnplUiDelegate {
                       base::OnceClosure cancel_callback) override;
   void CloseProgressUi(bool credit_card_fetched_successfully) override;
   void ShowAutofillErrorUi(AutofillErrorDialogContext context) override;
+
+  // Returns icons for showing BNPL issuer ToS screen based on the selected
+  // issuer.
+  static int GetDuoBrandedIconForBnplIssuer(BnplIssuer::IssuerId issuer_id,
+                                            bool is_dark_mode);
 
  private:
   const raw_ref<PaymentsAutofillClient> client_;

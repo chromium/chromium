@@ -49,6 +49,7 @@ class AutofillOfferManager;
 class AutofillSaveCardBottomSheetBridge;
 class AutofillSaveIbanBottomSheetBridge;
 class BnplIssuer;
+struct BnplTosModel;
 class CardUnmaskAuthenticationSelectionDialogControllerImpl;
 struct CardUnmaskChallengeOption;
 class CardUnmaskOtpInputDialogControllerImpl;
@@ -218,6 +219,9 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
       base::OnceCallback<void(autofill::BnplIssuer)> selected_issuer_callback,
       base::OnceClosure cancel_callback) override;
   bool ShowTouchToFillError(const AutofillErrorDialogContext& context) override;
+  bool ShowTouchToFillBnplTos(BnplTosModel bnpl_tos_model,
+                              base::OnceClosure accept_callback,
+                              base::OnceClosure cancel_callback) override;
   void HideTouchToFillPaymentMethod() override;
   void SetTouchToFillVisible(bool visible) override;
   PaymentsDataManager& GetPaymentsDataManager() final;

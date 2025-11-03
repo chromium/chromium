@@ -94,6 +94,9 @@ interface TouchToFillPaymentMethodComponent {
          * @param issuerId The selected BNPL issuer Id.
          */
         void onBnplIssuerSuggestionSelected(String issuerId);
+
+        /** Called when the user clicks the "Continue" button on the BNPL ToS screen. */
+        void onBnplTosAccepted();
     }
 
     /**

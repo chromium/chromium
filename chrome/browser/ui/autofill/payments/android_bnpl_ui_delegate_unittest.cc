@@ -13,7 +13,10 @@
 #include "components/autofill/core/browser/autofill_progress_dialog_type.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
+#include "components/autofill/core/browser/payments/test_legal_message_line.h"
 #include "components/autofill/core/browser/payments/test_payments_autofill_client.h"
+#include "components/autofill/core/browser/ui/payments/bnpl_tos_controller.h"
+#include "components/autofill/core/common/autofill_test_utils.h"
 #include "content/public/browser/web_contents.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -36,6 +39,10 @@ class MockPaymentsAutofillClient : public payments::TestPaymentsAutofillClient {
               (override));
   MOCK_METHOD(void, HideTouchToFillPaymentMethod, (), (override));
   MOCK_METHOD(void, SetTouchToFillVisible, (bool visible), (override));
+  MOCK_METHOD(bool,
+              ShowTouchToFillBnplTos,
+              (BnplTosModel, base::OnceClosure, base::OnceClosure),
+              (override));
 };
 
 class AndroidBnplUiDelegateTest : public ChromeRenderViewHostTestHarness {
@@ -121,6 +128,23 @@ TEST_F(AndroidBnplUiDelegateTest, RemoveSelectBnplIssuerOrProgressUi) {
               SetTouchToFillVisible(/*visible=*/false));
 
   delegate_->RemoveSelectBnplIssuerOrProgressUi();
+}
+
+// Tests that ShowBnplTosUi calls the client's ShowTouchToFillBnplTos.
+TEST_F(AndroidBnplUiDelegateTest, ShowBnplTosUi) {
+  BnplTosModel bnpl_tos_model;
+  bnpl_tos_model.issuer = test::GetTestUnlinkedBnplIssuer();
+  bnpl_tos_model.legal_message_lines = {
+      TestLegalMessageLine("This is the entire message.")};
+
+  EXPECT_CALL(
+      payments_autofill_client(),
+      ShowTouchToFillBnplTos(bnpl_tos_model, testing::An<base::OnceClosure>(),
+                             testing::An<base::OnceClosure>()));
+
+  delegate_->ShowBnplTosUi(bnpl_tos_model,
+                           /*accept_callback=*/base::DoNothing(),
+                           /*cancel_callback=*/base::DoNothing());
 }
 
 }  // namespace autofill::payments

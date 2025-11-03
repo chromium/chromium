@@ -31,6 +31,7 @@
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/browser/test_utils/valuables_data_test_utils.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
+#include "components/grit/components_scaled_resources.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/range/range.h"
@@ -41,6 +42,7 @@ namespace {
 using ::testing::_;
 using ::testing::ElementsAreArray;
 using ::testing::Field;
+using ::testing::FieldsAre;
 using ::testing::Matcher;
 using ::testing::Ref;
 using ::testing::Return;
@@ -144,10 +146,12 @@ class MockTouchToFillDelegateAndroidImpl
               SetSelectedIssuerCallback,
               (base::OnceCallback<void(BnplIssuer)> selected_issuer_callback),
               (override));
+  MOCK_METHOD(void, SetBnplTosAcceptCallback, (base::OnceClosure), (override));
   MOCK_METHOD(void,
               OnBnplIssuerSuggestionSelected,
               (const std::string& issuer_id),
               (override));
+  MOCK_METHOD(void, OnBnplTosAccepted, (), (override));
 
  private:
   std::unique_ptr<TouchToFillKeyboardSuppressor> suppressor_;
@@ -512,21 +516,58 @@ TEST_F(TouchToFillPaymentMethodControllerTest,
 }
 
 TEST_F(TouchToFillPaymentMethodControllerTest,
-       ShowBnplIssuerTosPassesTextsAndIconsToTheView) {
-  const payments::BnplIssuerTosDetail bnpl_issuer_tos_detail(
-      /*header_icon_id=*/1, /*header_icon_id_dark=*/2,
-      /*is_linked_issuer=*/false, /*issuer_name=*/u"Affirm",
-      {TestLegalMessageLine("This is the entire message.")});
+       ShowBnplIssuerTosPassesTextsAndIconsToTheView_LinkedIssuer) {
+  BnplTosModel bnpl_tos_model;
+  bnpl_tos_model.issuer =
+      test::GetTestLinkedBnplIssuer(BnplIssuer::IssuerId::kBnplAffirm);
+  bnpl_tos_model.legal_message_lines = {
+      TestLegalMessageLine("This is the entire message.")};
 
   // Test that the BNPL issuer ToS info have propagated to the view.
-  EXPECT_CALL(*mock_view_, ShowBnplIssuerTos(Ref(payment_method_controller()),
-                                             bnpl_issuer_tos_detail));
+  EXPECT_CALL(*mock_view_,
+              ShowBnplIssuerTos(
+                  Ref(payment_method_controller()),
+                  FieldsAre(IDR_AUTOFILL_GOOGLE_PAY_AFFIRM,
+                            IDR_AUTOFILL_GOOGLE_PAY_AFFIRM_DARK, true,
+                            u"Affirm", bnpl_tos_model.legal_message_lines)));
+  EXPECT_CALL(ttf_delegate(), SetCancelCallback);
+  EXPECT_CALL(ttf_delegate(), SetBnplTosAcceptCallback);
 
   OnBeforeAskForValuesToFill();
   payment_method_controller().ShowPaymentMethods(
       std::move(mock_view_), ttf_delegate().GetWeakPointer(), suggestions_);
   OnAfterAskForValuesToFill();
-  payment_method_controller().ShowBnplIssuerTos(bnpl_issuer_tos_detail);
+  payment_method_controller().ShowBnplIssuerTos(
+      bnpl_tos_model, /*accept_callback=*/base::DoNothing(),
+      /*cancel_callback=*/base::DoNothing());
+  OnAfterAskForValuesToFill();
+}
+
+TEST_F(TouchToFillPaymentMethodControllerTest,
+       ShowBnplIssuerTosPassesTextsAndIconsToTheView_UnlinkedIssuer) {
+  BnplTosModel bnpl_tos_model;
+  bnpl_tos_model.issuer = test::GetTestUnlinkedBnplIssuer();
+  bnpl_tos_model.legal_message_lines = {
+      TestLegalMessageLine("This is the entire message.")};
+  bnpl_tos_model.issuer.set_issuer_id(BnplIssuer::IssuerId::kBnplZip);
+
+  // Test that the BNPL issuer ToS info have propagated to the view.
+  EXPECT_CALL(
+      *mock_view_,
+      ShowBnplIssuerTos(Ref(payment_method_controller()),
+                        FieldsAre(IDR_AUTOFILL_GOOGLE_PAY_ZIP,
+                                  IDR_AUTOFILL_GOOGLE_PAY_ZIP_DARK, false,
+                                  u"Zip", bnpl_tos_model.legal_message_lines)));
+  EXPECT_CALL(ttf_delegate(), SetCancelCallback);
+  EXPECT_CALL(ttf_delegate(), SetBnplTosAcceptCallback);
+
+  OnBeforeAskForValuesToFill();
+  payment_method_controller().ShowPaymentMethods(
+      std::move(mock_view_), ttf_delegate().GetWeakPointer(), suggestions_);
+  OnAfterAskForValuesToFill();
+  payment_method_controller().ShowBnplIssuerTos(
+      bnpl_tos_model, /*accept_callback=*/base::DoNothing(),
+      /*cancel_callback=*/base::DoNothing());
   OnAfterAskForValuesToFill();
 }
 
@@ -679,6 +720,29 @@ TEST_F(TouchToFillPaymentMethodControllerTest,
 
   payment_method_controller().OnBnplIssuerSuggestionSelected(
       nullptr, /*issuer_id=*/"affirm");
+}
+
+TEST_F(TouchToFillPaymentMethodControllerTest,
+       OnBnplTosAccepted_ForwardsCallToDelegate) {
+  BnplTosModel bnpl_tos_model;
+  bnpl_tos_model.issuer = test::GetTestUnlinkedBnplIssuer();
+  bnpl_tos_model.legal_message_lines = {
+      TestLegalMessageLine("This is the entire message.")};
+
+  // Test that the BNPL issuer ToS info have propagated to the view.
+  EXPECT_CALL(*mock_view_, ShowBnplIssuerTos).WillOnce(Return(true));
+  EXPECT_CALL(ttf_delegate(), OnBnplTosAccepted());
+
+  OnBeforeAskForValuesToFill();
+  payment_method_controller().ShowPaymentMethods(
+      std::move(mock_view_), ttf_delegate().GetWeakPointer(), suggestions_);
+  OnAfterAskForValuesToFill();
+  payment_method_controller().ShowBnplIssuerTos(
+      bnpl_tos_model, /*accept_callback=*/base::DoNothing(),
+      /*cancel_callback=*/base::DoNothing());
+  OnAfterAskForValuesToFill();
+
+  payment_method_controller().OnBnplTosAccepted(nullptr);
 }
 
 TEST_F(TouchToFillPaymentMethodControllerTest, SetVisibleHidesSheet) {

@@ -22,6 +22,7 @@
 #import "components/autofill/core/browser/payments/payments_network_interface.h"
 #import "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
 #import "components/autofill/core/browser/ui/payments/autofill_progress_dialog_controller.h"
+#import "components/autofill/core/browser/ui/payments/bnpl_tos_controller.h"
 #import "components/autofill/core/browser/ui/payments/card_unmask_otp_input_dialog_controller.h"
 #import "components/autofill/core/browser/ui/payments/card_unmask_prompt_controller.h"
 #import "components/prefs/pref_service.h"
@@ -351,6 +352,13 @@ bool IOSWebViewPaymentsAutofillClient::ShowTouchToFillBnplIssuers(
     base::span<const payments::BnplIssuerContext> bnpl_issuer_contexts,
     const std::string& app_locale,
     base::OnceCallback<void(BnplIssuer)> selected_issuer_callback,
+    base::OnceClosure cancel_callback) {
+  return false;
+}
+
+bool IOSWebViewPaymentsAutofillClient::ShowTouchToFillBnplTos(
+    BnplTosModel bnpl_tos_model,
+    base::OnceClosure accept_callback,
     base::OnceClosure cancel_callback) {
   return false;
 }

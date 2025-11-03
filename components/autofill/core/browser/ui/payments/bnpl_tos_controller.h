@@ -28,6 +28,7 @@ struct BnplTosModel {
   BnplTosModel(BnplTosModel&& other);
   BnplTosModel& operator=(const BnplTosModel& other);
   BnplTosModel& operator=(BnplTosModel&& other);
+  bool operator==(const BnplTosModel&) const;
 
   ~BnplTosModel();
 

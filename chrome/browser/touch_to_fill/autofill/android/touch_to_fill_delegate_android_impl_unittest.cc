@@ -1229,6 +1229,18 @@ TEST_F(TouchToFillDelegateAndroidImplCreditCardUnitTest,
       /*issuer_id=*/"invalidIssuerId");
 }
 
+TEST_F(TouchToFillDelegateAndroidImplCreditCardUnitTest, OnBnplTosAccepted) {
+  TryToShowTouchToFill(/*expected_success=*/true);
+
+  base::MockCallback<base::OnceClosure> mock_accept_tos_callback;
+  touch_to_fill_delegate_->SetBnplTosAcceptCallback(
+      mock_accept_tos_callback.Get());
+
+  EXPECT_CALL(mock_accept_tos_callback, Run);
+
+  touch_to_fill_delegate_->OnBnplTosAccepted();
+}
+
 class TouchToFillDelegateAndroidImplIbanUnitTest
     : public TouchToFillDelegateAndroidImplUnitTest {
  protected:

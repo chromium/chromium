@@ -44,6 +44,8 @@ BnplTosModel& BnplTosModel::operator=(BnplTosModel&& other) = default;
 
 BnplTosModel::~BnplTosModel() = default;
 
+bool BnplTosModel::operator==(const BnplTosModel&) const = default;
+
 BnplTosControllerImpl::BnplTosControllerImpl(AutofillClient* client)
     : client_(CHECK_DEREF(client)) {}
 

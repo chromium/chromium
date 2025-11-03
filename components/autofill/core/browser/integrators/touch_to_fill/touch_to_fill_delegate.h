@@ -54,6 +54,7 @@ class TouchToFillDelegate {
   // Called when a BNPL suggestion was selected.
   virtual void BnplSuggestionSelected(
       std::optional<int64_t> extracted_amount) = 0;
+  virtual void OnBnplTosAccepted() = 0;
   // Called when an IBAN suggestion was selected.
   // An Iban::Guid is passed in case of a locally stored IBAN and an
   // Iban::InstrumentId for server IBANs.
@@ -73,6 +74,8 @@ class TouchToFillDelegate {
   virtual void SetCancelCallback(base::OnceClosure cancel_callback) = 0;
   virtual void SetSelectedIssuerCallback(
       base::OnceCallback<void(BnplIssuer)> selected_issuer_callback) = 0;
+  virtual void SetBnplTosAcceptCallback(
+      base::OnceClosure accept_tos_callback) = 0;
 };
 
 }  // namespace autofill

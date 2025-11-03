@@ -47,6 +47,9 @@ class TouchToFillPaymentMethodViewController {
   // bottom sheet.
   virtual void OnBnplIssuerSuggestionSelected(JNIEnv* env,
                                               const std::string& issuer_id) = 0;
+  // Called when the user accepted the terms of service for linking a BNPL
+  // issuer.
+  virtual void OnBnplTosAccepted(JNIEnv* env) = 0;
   virtual int GetJavaResourceId(int native_resource_id) const = 0;
   virtual base::android::ScopedJavaLocalRef<jobject> GetJavaObject() = 0;
 };
