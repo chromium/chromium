@@ -30,6 +30,49 @@ class LayoutObject;
 class PaintLayer;
 class PhysicalFragment;
 
+struct CORE_EXPORT PhysicalAnchorReference
+    : public GarbageCollected<PhysicalAnchorReference> {
+  PhysicalAnchorReference(const Element& element,
+                          const TransformState& transform_state,
+                          const PhysicalRect& rect_without_transforms,
+                          bool is_out_of_flow,
+                          GCedHeapHashSet<Member<Element>>* display_locks)
+      : transform_state(transform_state),
+        rect_without_transforms(rect_without_transforms),
+        element(&element),
+        display_locks(display_locks),
+        is_out_of_flow(is_out_of_flow) {}
+
+  LayoutObject* GetLayoutObject() const { return element->GetLayoutObject(); }
+
+  PhysicalRect TransformedBoundingRect() const {
+    gfx::RectF rect_f = transform_state.MappedQuad().BoundingBox();
+    return PhysicalRect::EnclosingRect(rect_f);
+  }
+
+  PhysicalRect RectWithoutTransforms() const { return rect_without_transforms; }
+
+  // Insert |this| into the given singly linked list in the reverse tree order.
+  void InsertInReverseTreeOrderInto(Member<PhysicalAnchorReference>* head_ptr);
+
+  void Trace(Visitor* visitor) const;
+
+  // For now, store both the transform state (to provide the bounding box after
+  // applying transforms), and also the raw border box rectangle of the anchor
+  // (without transforms). It may be possible that we can drop the latter, once
+  // the CSSAnchorWithTransforms runtime feature sticks, but there are spec
+  // discussions to be had first, if nothing else.
+  TransformState transform_state;
+  PhysicalRect rect_without_transforms;
+
+  Member<const Element> element;
+  // A singly linked list in the reverse tree order. There can be at most one
+  // in-flow reference, which if exists must be at the end of the list.
+  Member<PhysicalAnchorReference> next;
+  Member<GCedHeapHashSet<Member<Element>>> display_locks;
+  bool is_out_of_flow = false;
+};
+
 using AnchorKey = std::variant<const AnchorScopedName*, const Element*>;
 
 // This class is conceptually a concatenation of two hash maps with different
@@ -144,49 +187,6 @@ class AnchorQueryBase : public GarbageCollectedMixin {
 
   NamedAnchorMap named_anchors_;
   ImplicitAnchorMap implicit_anchors_;
-};
-
-struct CORE_EXPORT PhysicalAnchorReference
-    : public GarbageCollected<PhysicalAnchorReference> {
-  PhysicalAnchorReference(const Element& element,
-                          const TransformState& transform_state,
-                          const PhysicalRect& rect_without_transforms,
-                          bool is_out_of_flow,
-                          GCedHeapHashSet<Member<Element>>* display_locks)
-      : transform_state(transform_state),
-        rect_without_transforms(rect_without_transforms),
-        element(&element),
-        display_locks(display_locks),
-        is_out_of_flow(is_out_of_flow) {}
-
-  LayoutObject* GetLayoutObject() const { return element->GetLayoutObject(); }
-
-  PhysicalRect TransformedBoundingRect() const {
-    gfx::RectF rect_f = transform_state.MappedQuad().BoundingBox();
-    return PhysicalRect::EnclosingRect(rect_f);
-  }
-
-  PhysicalRect RectWithoutTransforms() const { return rect_without_transforms; }
-
-  // Insert |this| into the given singly linked list in the reverse tree order.
-  void InsertInReverseTreeOrderInto(Member<PhysicalAnchorReference>* head_ptr);
-
-  void Trace(Visitor* visitor) const;
-
-  // For now, store both the transform state (to provide the bounding box after
-  // applying transforms), and also the raw border box rectangle of the anchor
-  // (without transforms). It may be possible that we can drop the latter, once
-  // the CSSAnchorWithTransforms runtime feature sticks, but there are spec
-  // discussions to be had first, if nothing else.
-  TransformState transform_state;
-  PhysicalRect rect_without_transforms;
-
-  Member<const Element> element;
-  // A singly linked list in the reverse tree order. There can be at most one
-  // in-flow reference, which if exists must be at the end of the list.
-  Member<PhysicalAnchorReference> next;
-  Member<GCedHeapHashSet<Member<Element>>> display_locks;
-  bool is_out_of_flow = false;
 };
 
 class CORE_EXPORT PhysicalAnchorQuery
