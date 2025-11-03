@@ -8,10 +8,14 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "chrome/browser/component_updater/soda_component_installer.h"
 #include "components/live_caption/pref_names.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/soda/constants.h"
 #include "components/soda/pref_names.h"
+#include "components/soda/soda_installer.h"
+#include "components/update_client/crx_update_item.h"
+#include "components/update_client/update_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -289,6 +293,47 @@ TEST_F(SodaInstallerImplTest, InstalledForHeadlessCaption) {
   SetHeadlessCaptionEnabled(true);
   Init();
   ASSERT_TRUE(IsSodaInstalled());
+}
+
+class SodaInstallerImplProgressTest : public testing::Test,
+                                      public SodaInstaller::Observer {
+ protected:
+  void SetUp() override {
+    soda_installer_impl_ = std::make_unique<SodaInstallerImpl>();
+    soda_installer_impl_->AddObserver(this);
+  }
+
+  void TearDown() override {
+    soda_installer_impl_->RemoveObserver(this);
+    soda_installer_impl_.reset();
+  }
+
+  // SodaInstaller::Observer
+  void OnSodaInstalled(LanguageCode language_code) override {}
+  void OnSodaInstallError(LanguageCode language_code,
+                          SodaInstaller::ErrorCode error_code) override {}
+  void OnSodaProgress(LanguageCode language_code, int progress) override {
+    last_progress_ = progress;
+  }
+
+  std::unique_ptr<SodaInstallerImpl> soda_installer_impl_;
+  std::optional<int> last_progress_;
+
+ private:
+  base::test::TaskEnvironment task_environment_;
+};
+
+TEST_F(SodaInstallerImplProgressTest,
+       UpdateAndNotifyOnSodaProgressClampsProgress) {
+  update_client::CrxUpdateItem item;
+  item.id = component_updater::SodaComponentInstallerPolicy::GetExtensionId();
+  item.state = update_client::ComponentState::kDownloading;
+  item.total_bytes = 100;
+  item.downloaded_bytes = 110;
+
+  soda_installer_impl_->OnEvent(item);
+  ASSERT_TRUE(last_progress_.has_value());
+  EXPECT_EQ(100, last_progress_.value());
 }
 
 }  // namespace speech

@@ -10191,6 +10191,7 @@ test("unit_tests") {
       "../browser/ui/webui/password_manager:unit_tests",
       "../browser/ui/webui/whats_new:mojo_bindings",
       "//chrome/browser/browser_switcher",
+      "//components/soda:soda",
       "//chrome/browser/browser_switcher:unit_tests",
       "//chrome/browser/ui/webui/whats_new:unit_tests",
       "//components/user_education/webui",

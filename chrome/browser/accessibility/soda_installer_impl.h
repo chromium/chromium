@@ -47,6 +47,9 @@ class SodaInstallerImpl : public SodaInstaller,
   std::vector<std::string> GetAvailableLanguages() const override;
 
  protected:
+  FRIEND_TEST_ALL_PREFIXES(SodaInstallerImplProgressTest,
+                           UpdateAndNotifyOnSodaProgressClampsProgress);
+
   // SodaInstaller:
   void InstallSoda(PrefService* global_prefs) override;
   void UninstallSoda(PrefService* global_prefs) override;

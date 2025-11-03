@@ -258,7 +258,6 @@ void SodaInstallerImpl::UpdateAndNotifyOnSodaProgress(
   if (total_bytes == 0)
     return;
 
-  DCHECK_LE(downloaded_bytes, total_bytes);
   int progress =
       100 * std::clamp(static_cast<double>(downloaded_bytes) / total_bytes,
                         0.0, 1.0);
