@@ -180,6 +180,7 @@ class ASH_EXPORT UnifiedSystemTrayController
   }
 
   void ShutDownDetailedViewController();
+  void PrepareBubbleDestroy();
 
   // Enable or disable the brightness slider view.
   void UpdateBrightnessSlider() const;
@@ -209,7 +210,7 @@ class ASH_EXPORT UnifiedSystemTrayController
   scoped_refptr<UnifiedSystemTrayModel> model_;
 
   // Unowned. Owned by Views hierarchy.
-  raw_ptr<QuickSettingsView, DanglingUntriaged> quick_settings_view_ = nullptr;
+  raw_ptr<QuickSettingsView> quick_settings_view_ = nullptr;
 
   // Unowned.
   raw_ptr<UnifiedSystemTrayBubble> bubble_ = nullptr;
@@ -228,12 +229,12 @@ class ASH_EXPORT UnifiedSystemTrayController
 
   // Controller of volume slider. Owned.
   std::unique_ptr<UnifiedVolumeSliderController> volume_slider_controller_;
-  raw_ptr<views::View, DanglingUntriaged> unified_volume_view_ = nullptr;
+  raw_ptr<views::View> unified_volume_view_ = nullptr;
 
   // Controller of brightness slider. Owned.
   std::unique_ptr<UnifiedBrightnessSliderController>
       brightness_slider_controller_;
-  raw_ptr<views::View, DanglingUntriaged> unified_brightness_view_ = nullptr;
+  raw_ptr<views::View> unified_brightness_view_ = nullptr;
 
   bool showing_accessibility_detailed_view_ = false;
 

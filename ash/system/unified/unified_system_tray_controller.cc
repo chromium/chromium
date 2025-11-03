@@ -499,6 +499,13 @@ void UnifiedSystemTrayController::ShutDownDetailedViewController() {
   }
 }
 
+void UnifiedSystemTrayController::PrepareBubbleDestroy() {
+  ShutDownDetailedViewController();
+  quick_settings_view_ = nullptr;
+  unified_volume_view_ = nullptr;
+  unified_brightness_view_ = nullptr;
+}
+
 void UnifiedSystemTrayController::UpdateBrightnessSlider() const {
   if (!unified_brightness_view_) {
     return;
