@@ -9891,11 +9891,6 @@
     "expiry_milestone": 138
   },
   {
-    "name": "text-in-shelf",
-    "owners": [ "wcwang@google.com", "//ash/shelf/OWNERS"  ],
-    "expiry_milestone": 120
-  },
-  {
     "name": "text-safety-classifier",
     "owners": [ "sophiechang@chromium.org", "robertogden@chromium.org", "chrome-intelligence-core@google.com" ],
     "expiry_milestone": 150

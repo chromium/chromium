@@ -1088,9 +1088,6 @@ BASE_FEATURE(kHindiInscriptLayout, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kHomeButtonQuickAppAccess, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables a call-to-action label beside the home button.
-BASE_FEATURE(kHomeButtonWithText, base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Helpful notifications for devices with Hybrid Chargers.
 BASE_FEATURE(kHybridChargerNotifications, base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -2958,10 +2955,6 @@ bool IsHideShelfControlsInTabletModeEnabled() {
 bool IsHomeButtonQuickAppAccessEnabled() {
   return base::FeatureList::IsEnabled(kHomeButtonQuickAppAccess) ||
          base::FeatureList::IsEnabled(kQuickAppAccessTestUI);
-}
-
-bool IsHomeButtonWithTextEnabled() {
-  return base::FeatureList::IsEnabled(kHomeButtonWithText);
 }
 
 bool IsHybridChargerNotificationsEnabled() {

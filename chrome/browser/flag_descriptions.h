@@ -4182,10 +4182,6 @@ inline constexpr char kTearOffWebAppAppTabOpensWebAppWindowDescription[] =
     "Open Web App window when tearing off a tab that's displaying a url "
     "handled by an installed Web App.";
 
-inline constexpr char kTextInShelfName[] = "Internal test: text in shelf";
-inline constexpr char kTextInShelfDescription[] =
-    "Extend text in shelf timeout to learn about user education";
-
 inline constexpr char kTextSafetyClassifierName[] = "Text Safety Classifier";
 inline constexpr char kTextSafetyClassifierDescription[] =
     "Enables text safety classifier for on-device models";
