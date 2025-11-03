@@ -425,8 +425,13 @@ void NavigationEntryScreenshot::OnReadBack(SkBitmap bitmap, bool success) {
       screenshot_callback_.Run({}, false, override_unused);
     }
     if (cache_) {
-      // Destroys this.
-      cache_->RemoveFailedScreenshot(this);
+      // This has to run after the readback is completed, otherwise, if this
+      // operation destroys the context provider, it will crash trying to clean
+      // up this ReadBack callback that is currently being processed.
+      GetUIThreadTaskRunner({})->PostTask(
+          FROM_HERE,
+          base::BindOnce(&NavigationEntryScreenshot::DestroyOnFailure,
+                         weak_factory_.GetWeakPtr()));
     }
     return;
   }
@@ -443,6 +448,13 @@ void NavigationEntryScreenshot::OnReadBack(SkBitmap bitmap, bool success) {
   bitmap_ = cc::UIResourceBitmap(bitmap);
 
   SetupCompressionTask(bitmap, supports_etc_non_power_of_two_);
+}
+
+void NavigationEntryScreenshot::DestroyOnFailure() {
+  if (cache_) {
+    // Destroys this.
+    cache_->RemoveFailedScreenshot(this);
+  }
 }
 
 void NavigationEntryScreenshot::OnCompressionFinished(

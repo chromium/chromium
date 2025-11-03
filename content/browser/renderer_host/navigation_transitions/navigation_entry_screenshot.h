@@ -139,6 +139,7 @@ class CONTENT_EXPORT NavigationEntryScreenshot
 
   void ReadBack();
   void OnReadBack(SkBitmap bitmap, bool success);
+  void DestroyOnFailure();
   void OnCompressionFinished(sk_sp<SkPixelRef> compressed_bitmap);
 
   void SetupCompressionTask(const SkBitmap& bitmap,
