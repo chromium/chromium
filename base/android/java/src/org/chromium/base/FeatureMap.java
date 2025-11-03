@@ -33,7 +33,7 @@ public abstract class FeatureMap {
     protected FeatureMap() {}
 
     /**
-     * Should return the native pointer to the specific base::FeatureMap for the component/layer.
+     * Returns the native pointer to the specific base::android::FeatureMap for the component/layer.
      */
     protected abstract long getNativeMap();
 
