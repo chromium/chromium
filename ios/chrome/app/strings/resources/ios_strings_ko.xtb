@@ -677,7 +677,6 @@
 <translation id="3642060527569456384">탭 그룹이 모든 기기에서 자동으로 저장되고 업데이트됩니다.</translation>
 <translation id="3643338347976071250">{count,plural, =1{비밀번호 {count}개가 이 기기에만 저장됩니다. 다른 기기에서 사용하려면 Google 계정({email})에 저장하세요.}other{비밀번호 {count}개가 이 기기에만 저장됩니다. 다른 기기에서 사용하려면 Google 계정({email})에 저장하세요.}}</translation>
 <translation id="3659297405161482746">결제 수단을 찾을 수 없음</translation>
-<translation id="3662966164093827811">{count,plural, =1{1개 선택됨}other{#개 선택됨}}</translation>
 <translation id="3668816008081204991">읽기 목록이 숨겨져 있음</translation>
 <translation id="3670030362669914947">번호</translation>
 <translation id="3679163990085797665">읽은 항목 삭제</translation>

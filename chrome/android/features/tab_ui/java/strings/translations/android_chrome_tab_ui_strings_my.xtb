@@ -64,7 +64,6 @@
 <translation id="2918484639460781603">ဆက်တင်များသို့ သွားနိုင်သည်</translation>
 <translation id="2928243913527329289">Google | ဤဆိုင်အကြောင်း</translation>
 <translation id="2978860912612699943">{ITEMS_COUNT,plural, =1{<ph name="ITEMS_COUNT_ONE" /> ခု ရွေးထားသည်}other{<ph name="ITEMS_COUNT_MANY" /> ခု ရွေးထားသည်}}</translation>
-<translation id="2991702137079525605">{TABS_COUNT,plural, =1{တဘ်ကို ပင်ထိုးရန်}other{တဘ်များကို ပင်ထိုးရန်}}</translation>
 <translation id="3008554597174452548">ထုတ်ကုန်စောင့်ကြည့်ခြင်း ရပ်ရန်</translation>
 <translation id="3026391124054406831">သင့်တဘ်များကို စီမံရန် အုပ်စုဖွဲ့ပါ။</translation>
 <translation id="3051031624272448591">၎င်းတို့ကို မှတ်တမ်းတွင် အချိန်မရွေးပြန်ယူနိုင်သည်</translation>
@@ -86,7 +85,6 @@
 <translation id="3940195383040445971">တဘ်များတွင် ဈေးနှုန်းများစောင့်ကြည့်ရန်</translation>
 <translation id="3940717704786481856">{NUMBER_OF_TABS_ADDED,plural, =1{တဘ်အသစ် <ph name="ONE_ADDED" /> ခု၊ <ph name="ANY_CLOSED" /> ခု ပိတ်ထားသည်}other{တဘ်အသစ် <ph name="MANY_ADDED" /> ခု၊ <ph name="ANY_CLOSED" /> ခု ပိတ်ထားသည်}}</translation>
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{တဘ် အုပ်စုဖွဲ့ရန်}other{တဘ်များ အုပ်စုဖွဲ့ရန်}}</translation>
-<translation id="3962134438902735041">{TABS_COUNT,plural, =1{ရွေးထားသောတဘ် <ph name="TABS_COUNT_ONE" /> ခုကို ပင်ဖြုတ်ရန်}other{ရွေးထားသောတဘ် <ph name="TABS_COUNT_MANY" /> ခုကို ပင်ဖြုတ်ရန်}}</translation>
 <translation id="4009732926939031387">{NUM_DAYS,plural, =1{ပြီးခဲ့သော <ph name="NUM_DAYS_ONE" /> ရက်က ပြုလုပ်ထားသည်}other{ပြီးခဲ့သော <ph name="NUM_DAYS_MANY" /> ရက်က ပြုလုပ်ထားသည်}}</translation>
 <translation id="4076226664360336092">စာမျက်နှာအမြင့်ကို အပြည့် ဖွင့်ထားသော တဘ်အုပ်စု စာရင်း</translation>
 <translation id="4133493477912226187">တဘ် <ph name="NUMBER_OF_TABS" /> ခုက ဆက်စပ်ပုံပေါ်သည်။ ၎င်းတို့ကို အုပ်စုဖွဲ့မလား။</translation>
@@ -142,7 +140,6 @@
 <translation id="625996437999624951">{TAB_COUNT,plural, =1{တဘ်ကို အုပ်စုမှ ဖယ်ရှားရန်}other{တဘ်များကို အုပ်စုမှ ဖယ်ရှားရန်}}</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{တဘ်ကို အုပ်စုအသစ်တွင် ထည့်ရန်}other{တဘ်ကို အုပ်စုအသစ်တွင် ထည့်ရန်}}</translation>
 <translation id="6333260925957816943">ဤဆိုင်အကြောင်း</translation>
-<translation id="6344715021569694246">{TABS_COUNT,plural, =1{ရွေးထားသောတဘ် <ph name="TABS_COUNT_ONE" /> ခုကို ပင်ထိုးရန်}other{ရွေးထားသောတဘ် <ph name="TABS_COUNT_MANY" /> ခုကို ပင်ထိုးရန်}}</translation>
 <translation id="6381032505162537930">တဘ်အုပ်စုများကို ဤနေရာတွင် မြင်ရမည်</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{ရွေးထားသည့်တဘ် <ph name="TABS_COUNT_ONE" /> ခုကို အုပ်စုဖြုတ်ရန်}other{ရွေးထားသည့်တဘ် <ph name="TABS_COUNT_MANY" /> ခုကို အုပ်စုဖြုတ်ရန်}}</translation>
 <translation id="6499296376514955580">‘မျှဝေထားသော တဘ်အုပ်စု’ အပြောင်းအလဲများအကြောင်း သတိပေးချက်ကို ပိတ်ထားသည်</translation>
@@ -201,7 +198,6 @@
 <translation id="805809603610022708">{TABS_COUNT,plural, =1{တဘ်ကို အုပ်စုတွင် ထည့်ရန်}other{တဘ်များကို အုပ်စုတွင် ထည့်ရန်}}</translation>
 <translation id="8138067144082174140">၁၄ ရက်ကြာ အသုံးမပြုသည့်နောက်</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{တဘ် <ph name="TABS_COUNT_ONE" /> ခု၊ <ph name="COLOR_NAME" /> ရောင်ဖြင့် <ph name="TITLE_OF_GROUP" /> တဘ်အုပ်စုကို ဖြန့်ပါ။}other{တဘ် <ph name="TABS_COUNT_MANY" /> ခု၊ <ph name="COLOR_NAME" /> ရောင်ဖြင့် <ph name="TITLE_OF_GROUP" /> တဘ်အုပ်စုကို ဖြန့်ပါ။}}</translation>
-<translation id="8195186926670288294">{TABS_COUNT,plural, =1{တဘ်ကို ပင်ဖြုတ်ရန်}other{တဘ်များကို ပင်ဖြုတ်ရန်}}</translation>
 <translation id="8205266828577616993">တဘ်အပေါ်သို့ ရွှေ့ရန်</translation>
 <translation id="8207688828622594111">{NUM_MINS,plural, =1{ပြီးခဲ့သည့် <ph name="NUM_MINS_ONE" /> မိနစ်က အပ်ဒိတ်လုပ်ထားသည်}other{ပြီးခဲ့သည့် <ph name="NUM_MINS_MANY" /> မိနစ်က အပ်ဒိတ်လုပ်ထားသည်}}</translation>
 <translation id="8236097722223016103">လိပ်စာများသို့ ထည့်ရန်</translation>

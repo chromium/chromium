@@ -145,7 +145,6 @@ Seus dados são criptografados com a senha longa. Digite-a para usar e salvar os
 <translation id="420541179527342563">Desative o modo de Bloqueio total no Chromium para desativá-lo no seu iPad.</translation>
 <translation id="4272892696084633551">Ajude a melhorar os recursos e o desempenho do Chromium</translation>
 <translation id="4302397443352897529">Configurações do Chromium</translation>
-<translation id="4304713468139749426">Gerenciador de Senhas</translation>
 <translation id="4408912345039114853">Realizar a Confirmação de segurança do Chromium</translation>
 <translation id="4432744876818348753">Faça login para aproveitar o Chromium ao máximo.</translation>
 <translation id="4445228361214254027">Sua organização desativou a capacidade de usar e salvar dados do Chromium na Conta do Google. Novos favoritos, senhas e outros itens serão salvos apenas neste dispositivo.</translation>
@@ -237,6 +236,7 @@ Considerações:
 <translation id="6154098560469640583">Use o Chromium sempre que abrir links em mensagens, documentos e outros apps.</translation>
 <translation id="6157162508956739031">Preencha automaticamente suas senhas e chaves de acesso do Chromium para fazer login em apps e sites com rapidez</translation>
 <translation id="6170619162539716595">Permita que o Chromium use o Google Maps para fornecer rotas e informações locais sobre os endereços detectados.</translation>
+<translation id="6247557882553405851">Gerenciador de Senhas do Google</translation>
 <translation id="6268381023930128611">Sair do Chromium?</translation>
 <translation id="6301717043141881464">Para acessar com facilidade suas senhas salvas em outros apps, use o preenchimento automático do Chromium</translation>
 <translation id="6324041800010509197">Acessar a grade de guias no Chromium</translation>

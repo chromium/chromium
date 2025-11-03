@@ -145,7 +145,6 @@ Dataene dine er kryptert med passordfrasen din. Skriv den inn for å bruke og la
 <translation id="420541179527342563">For å deaktivere låsingsmodus i Chromium, slå den av på iPad.</translation>
 <translation id="4272892696084633551">Bidra til å gjøre Chromium bedre og raskere</translation>
 <translation id="4302397443352897529">Chromium-innstillinger</translation>
-<translation id="4304713468139749426">Passordlagring</translation>
 <translation id="4408912345039114853">Kjør Chromium-sikkerhetssjekk</translation>
 <translation id="4432744876818348753">Logg på for å få mest mulig ut av Chromium.</translation>
 <translation id="4445228361214254027">Organisasjonen din har slått av muligheten til å bruke og lagre Chromium-data i Google-kontoen din. Nye bokmerker, passord med mer lagres bare på denne enheten.</translation>
@@ -237,6 +236,7 @@ Du bør tenke på følgende:
 <translation id="6154098560469640583">Bruk Chromium hver gang du klikker på linker i meldinger, dokumenter og andre apper.</translation>
 <translation id="6157162508956739031">Logg på apper og nettsteder raskt ved å autofylle passordene og passnøklene dine fra Chromium</translation>
 <translation id="6170619162539716595">La Chromium bruke Google Maps for å gi deg veibeskrivelser og lokal informasjon om registrerte adresser.</translation>
+<translation id="6247557882553405851">Google Passordlagring</translation>
 <translation id="6268381023930128611">Vil du logge av Chromium?</translation>
 <translation id="6301717043141881464">Bruk Chromium for Autoutfyll for å få enkel tilgang til de lagrede passordene dine i de andre appene dine</translation>
 <translation id="6324041800010509197">Gå til fanerutenettet i Chromium</translation>

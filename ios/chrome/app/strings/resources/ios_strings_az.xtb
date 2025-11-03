@@ -677,7 +677,6 @@
 <translation id="3642060527569456384">Tab qrupları bütün cihazlarda avtomatik yadda saxlanılır və güncəllənir.</translation>
 <translation id="3643338347976071250">{count,plural, =1{{count} parol yalnız bu cihazda yadda saxlanır. Onu digər cihazlarda istifadə etmək üçün Google Hesabında ({email}) yadda saxlayın.}other{{count} parol yalnız bu cihazda yadda saxlanır. Onları digər cihazlarda istifadə etmək üçün Google Hesabında ({email}) yadda saxlayın.}}</translation>
 <translation id="3659297405161482746">Ödəniş metodu tapılmadı</translation>
-<translation id="3662966164093827811">{count,plural, =1{1 seçilib}other{# seçilib}}</translation>
 <translation id="3668816008081204991">Oxu siyahısı gizlədilib</translation>
 <translation id="3670030362669914947">Nömrə</translation>
 <translation id="3679163990085797665">Oxunmuşları silin</translation>

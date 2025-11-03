@@ -3452,7 +3452,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6652101503459149953">Usar o Windows Hello</translation>
 <translation id="6654224358955673568">Tornar mais formal</translation>
 <translation id="6654244995031366386">Vidro (com textura)</translation>
-<translation id="6655085656059574817">Manter a conta associada ajuda a pagar mais rapidamente com a <ph name="BNPL_ISSUER_NAME" />, mas pode desassociá-la em <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" /></translation>
 <translation id="6657585470893396449">Palavra-passe</translation>
 <translation id="6659246032834639189">Este preço é baixo</translation>
 <translation id="6660413144148052430">localização</translation>
@@ -3662,7 +3661,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6989256887001961296">Este conteúdo está bloqueado.</translation>
 <translation id="6989763994942163495">Mostrar definições avançadas...</translation>
 <translation id="6991376411634620997">Chave de acesso • Windows Hello</translation>
-<translation id="6997288673234694149">Equipamento de beisebol e softbol</translation>
+<translation id="6997288673234694149">Equipamento de basebol e softbol</translation>
 <translation id="6998512609912910179">Preencha formulários mais rapidamente</translation>
 <translation id="6999480632062519056">Ensino de fitness e treino pessoal</translation>
 <translation id="7002897669829306463">Morada de casa, <ph name="ADDRESS" /></translation>
@@ -4100,7 +4099,7 @@ Detalhes adicionais:
 <translation id="7676643023259824263">Pesquisar texto da área de transferência, <ph name="TEXT" /></translation>
 <translation id="7679287273775285018">Pague com a carteira eletrónica</translation>
 <translation id="7679367271685653708">Veja e faça a gestão do histórico de navegação nas definições do Chrome</translation>
-<translation id="7679947978757153706">Beisebol</translation>
+<translation id="7679947978757153706">Basebol</translation>
 <translation id="7680990533995586733"><ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, expira a <ph name="CARD_EXPIRATION" /></translation>
 <translation id="7682287625158474539">Envio</translation>
 <translation id="7682451652090915298">Râguebi</translation>

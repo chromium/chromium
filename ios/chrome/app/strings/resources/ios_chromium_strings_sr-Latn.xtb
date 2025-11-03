@@ -25,7 +25,6 @@
 <translation id="1502360822835740515">Podesite Chromium za podrazumevani pregledač</translation>
 <translation id="1503199973012840174">Chromium je zastareo. Ažurirajte ga da biste bili bezbedni.</translation>
 <translation id="1515748263297244785">Podrazumevano koristite Chromium za iPad</translation>
-<translation id="1530961174488670696">Chromium ne može da traži ažuriranja. Probajte ponovo kasnije.</translation>
 <translation id="1531155317299575425">Prikazuje upite za prijavljivanje u Chromium.</translation>
 <translation id="1553657876656159572">Prilagođeni fid napravljen za vas. Uključujući vesti, sport i vreme.</translation>
 <translation id="1561849081734670621">Da biste onemogućili režim zaključavanja u Chromium-u, isključite ga na iPhone-u.</translation>
@@ -146,7 +145,6 @@ Podaci se šifruju pomoću pristupne fraze. Unesite je da biste koristili i sa�
 <translation id="420541179527342563">Da biste onemogućili režim zaključavanja u Chromium-u, isključite ga na iPad-u.</translation>
 <translation id="4272892696084633551">Pomozite nam da poboljšamo Chromium-ove funkcije i učinak</translation>
 <translation id="4302397443352897529">Podešavanja Chromium-a</translation>
-<translation id="4304713468139749426">Menadžer lozinki</translation>
 <translation id="4408912345039114853">Pokreni Chromium proveru bezbednosti</translation>
 <translation id="4432744876818348753">Prijavite se da biste iskoristili Chromium na najbolji način.</translation>
 <translation id="4445228361214254027">Organizacija je isključila mogućnost korišćenja i čuvanja Chromium podataka na Google nalogu. Novi obeleživači, lozinke i drugi sadržaj će se čuvati samo na ovom uređaju.</translation>
@@ -238,6 +236,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />izbrišite Chromium
 <translation id="6154098560469640583">Koristite Chromium svaki put kada dodirujete linkove u porukama, dokumentima i drugim aplikacijama.</translation>
 <translation id="6157162508956739031">Brzo se prijavljujte u aplikacije i na sajtove automatskim popunjavanjem lozinki i pristupnih ključeva iz Chromium-a</translation>
 <translation id="6170619162539716595">Dozvolite Chromium-u da koristi Google mape da bi vam pružao uputstva i lokalne informacije o otkrivenim adresama.</translation>
+<translation id="6247557882553405851">Google menadžeru lozinki</translation>
 <translation id="6268381023930128611">Želite li da se odjavite iz Chromium-a?</translation>
 <translation id="6301717043141881464">Da biste lako pristupali sačuvanim lozinkama u drugim aplikacijama, koristite Chromium za automatsko popunjavanje</translation>
 <translation id="6324041800010509197">Posetite mrežu kartica u Chromium-u</translation>

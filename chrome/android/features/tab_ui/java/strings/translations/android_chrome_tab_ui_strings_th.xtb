@@ -64,7 +64,6 @@
 <translation id="2918484639460781603">ไปที่การตั้งค่า</translation>
 <translation id="2928243913527329289">Google | เกี่ยวกับร้านนี้</translation>
 <translation id="2978860912612699943">{ITEMS_COUNT,plural, =1{เลือกไว้ <ph name="ITEMS_COUNT_ONE" /> รายการ}other{เลือกไว้ <ph name="ITEMS_COUNT_MANY" /> รายการ}}</translation>
-<translation id="2991702137079525605">{TABS_COUNT,plural, =1{ปักหมุดแท็บ}other{ปักหมุดแท็บ}}</translation>
 <translation id="3008554597174452548">หยุดติดตามผลิตภัณฑ์</translation>
 <translation id="3026391124054406831">สร้างกลุ่มเพื่อจัดระเบียบแท็บ</translation>
 <translation id="3051031624272448591">คุณกู้คืนแท็บเหล่านี้ได้เสมอในประวัติการเข้าชม</translation>
@@ -86,7 +85,6 @@
 <translation id="3940195383040445971">ติดตามราคาในแท็บ</translation>
 <translation id="3940717704786481856">{NUMBER_OF_TABS_ADDED,plural, =1{แท็บใหม่ <ph name="ONE_ADDED" /> แท็บ ปิดไปแล้ว <ph name="ANY_CLOSED" /> แท็บ}other{แท็บใหม่ <ph name="MANY_ADDED" /> แท็บ ปิดไปแล้ว <ph name="ANY_CLOSED" /> แท็บ}}</translation>
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{จัดกลุ่มแท็บ}other{จัดกลุ่มแท็บ}}</translation>
-<translation id="3962134438902735041">{TABS_COUNT,plural, =1{เลิกปักหมุดแท็บที่เลือก <ph name="TABS_COUNT_ONE" /> แท็บ}other{เลิกปักหมุดแท็บที่เลือก <ph name="TABS_COUNT_MANY" /> แท็บ}}</translation>
 <translation id="4009732926939031387">{NUM_DAYS,plural, =1{สร้างเมื่อ <ph name="NUM_DAYS_ONE" /> วันที่ผ่านมา}other{สร้างเมื่อ <ph name="NUM_DAYS_MANY" /> วันที่ผ่านมา}}</translation>
 <translation id="4076226664360336092">รายการกลุ่มแท็บที่เปิดอยู่แบบเต็มความสูง</translation>
 <translation id="4133493477912226187">ดูเหมือนว่ามีแท็บที่เกี่ยวข้อง <ph name="NUMBER_OF_TABS" /> แท็บ ต้องการจัดกลุ่มแท็บไหม</translation>
@@ -142,7 +140,6 @@
 <translation id="625996437999624951">{TAB_COUNT,plural, =1{นำแท็บออกจากกลุ่ม}other{นำแท็บออกจากกลุ่ม}}</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{เพิ่มแท็บไปยังกลุ่มใหม่}other{เพิ่มแท็บไปยังกลุ่มใหม่}}</translation>
 <translation id="6333260925957816943">ข้อมูลเกี่ยวกับร้านนี้</translation>
-<translation id="6344715021569694246">{TABS_COUNT,plural, =1{ปักหมุดแท็บที่เลือก <ph name="TABS_COUNT_ONE" /> แท็บ}other{ปักหมุดแท็บที่เลือก <ph name="TABS_COUNT_MANY" /> แท็บ}}</translation>
 <translation id="6381032505162537930">คุณจะเห็นกลุ่มแท็บที่นี่</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{เลิกจัดกลุ่มแท็บที่เลือก <ph name="TABS_COUNT_ONE" /> แท็บ}other{เลิกจัดกลุ่มแท็บที่เลือก <ph name="TABS_COUNT_MANY" /> แท็บ}}</translation>
 <translation id="6499296376514955580">ปิดประกาศเกี่ยวกับการเปลี่ยนแปลงกลุ่มแท็บที่แชร์ไว้แล้ว</translation>
@@ -201,7 +198,6 @@
 <translation id="805809603610022708">{TABS_COUNT,plural, =1{เพิ่มแท็บไปยังกลุ่ม}other{เพิ่มแท็บไปยังกลุ่ม}}</translation>
 <translation id="8138067144082174140">หลังจากไม่มีการใช้งาน 14 วัน</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{ขยายกลุ่มแท็บ<ph name="TITLE_OF_GROUP" />ที่มี <ph name="TABS_COUNT_ONE" /> แท็บ สี<ph name="COLOR_NAME" />}other{ขยายกลุ่มแท็บ<ph name="TITLE_OF_GROUP" />ที่มี <ph name="TABS_COUNT_MANY" /> แท็บ สี<ph name="COLOR_NAME" />}}</translation>
-<translation id="8195186926670288294">{TABS_COUNT,plural, =1{เลิกปักหมุดแท็บ}other{เลิกปักหมุดแท็บ}}</translation>
 <translation id="8205266828577616993">เลื่อนแท็บขึ้น</translation>
 <translation id="8207688828622594111">{NUM_MINS,plural, =1{อัปเดตเมื่อ <ph name="NUM_MINS_ONE" /> นาทีที่ผ่านมา}other{อัปเดตเมื่อ <ph name="NUM_MINS_MANY" /> นาทีที่ผ่านมา}}</translation>
 <translation id="8236097722223016103">เพิ่มลงในบุ๊กมาร์ก</translation>
