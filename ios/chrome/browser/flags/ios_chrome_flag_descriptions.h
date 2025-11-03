@@ -816,9 +816,6 @@ extern const char kRcapsDynamicProfileCountryDescription[];
 extern const char kReaderModeDebugInfoName[];
 extern const char kReaderModeDebugInfoDescription[];
 
-extern const char kReaderModeDefaultBrowserPromoName[];
-extern const char kReaderModeDefaultBrowserPromoDescription[];
-
 extern const char kReaderModeName[];
 extern const char kReaderModeDescription[];
 

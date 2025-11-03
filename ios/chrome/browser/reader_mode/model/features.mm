@@ -21,16 +21,6 @@ constexpr int kReaderModeDefaultBrowserPromoNumDaysCriteria = 14;
 // browser promo.
 constexpr int kReaderModeDefaultBrowserPromoActiveDaysCriteria = 2;
 
-// Name to configure the number of days a user should be active in Reading Mode
-// to display a default browser promo.
-const char kReaderModeDefaultBrowserActiveDaysCriteriaStringName[] =
-    "reader-mode-default-browser-active-days";
-
-// Name to configure the number of days to span for determining the Reading Mode
-// default browser eligibility criteria.
-const char kReaderModeDefaultBrowserNumDaysCriteriaStringName[] =
-    "reader-mode-default-browser-num-days";
-
 }  // namespace
 
 BASE_FEATURE(kEnableReaderMode, base::FEATURE_DISABLED_BY_DEFAULT);
@@ -49,9 +39,6 @@ BASE_FEATURE(kEnableReaderModePageEligibilityForToolsMenu,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEnableReaderModeDebugInfo, base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kEnableReaderModeDefaultBrowserPromo,
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 const char kReaderModeHeuristicPageLoadDelayDurationStringName[] =
     "reader-mode-heuristic-page-load-delay-duration-string";
@@ -89,17 +76,11 @@ bool IsReaderModeSnackbarEnabled() {
 }
 
 int ReaderModeDefaultBrowserActiveDaysCriteria() {
-  return base::GetFieldTrialParamByFeatureAsInt(
-      kEnableReaderModeDefaultBrowserPromo,
-      /*name=*/kReaderModeDefaultBrowserActiveDaysCriteriaStringName,
-      /*default_value=*/kReaderModeDefaultBrowserPromoActiveDaysCriteria);
+  return kReaderModeDefaultBrowserPromoActiveDaysCriteria;
 }
 
 int ReaderModeDefaultBrowserNumDaysCriteria() {
-  return base::GetFieldTrialParamByFeatureAsInt(
-      kEnableReaderModeDefaultBrowserPromo,
-      /*name=*/kReaderModeDefaultBrowserNumDaysCriteriaStringName,
-      /*default_value=*/kReaderModeDefaultBrowserPromoNumDaysCriteria);
+  return kReaderModeDefaultBrowserPromoNumDaysCriteria;
 }
 
 bool IsReaderModeTranslationAvailable() {

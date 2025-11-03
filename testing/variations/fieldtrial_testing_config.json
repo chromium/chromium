@@ -13635,7 +13635,6 @@
                         "ReaderModeUseReadability"
                     ],
                     "disable_features": [
-                        "EnableReaderModeDefaultBrowserPromo",
                         "EnableReaderModePageEligibilityForToolsMenu"
                     ]
                 }

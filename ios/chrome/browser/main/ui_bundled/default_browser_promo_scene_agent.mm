@@ -52,44 +52,6 @@
 
 #pragma mark - Private
 
-// Registers the generic default browser promo if the user is eligible.
-// Otherwise, deregisters. Eligibility depends on the latest usage of the
-// Reading Mode feature.
-- (void)updateReaderModeRegistration {
-  if (IsReaderModeAvailable() &&
-      base::FeatureList::IsEnabled(kEnableReaderModeDefaultBrowserPromo)) {
-    if (self.isEligibleForReaderModeDefaultBrowserPromo) {
-      self.promosManager->RegisterPromoForSingleDisplay(
-          promos_manager::Promo::DefaultBrowser);
-      // Only for the duration of the reader mode experiment, deregister other
-      // Default Browser promos.
-      // TODO(crbug.com/435671056): Remove this logic as soon as the experiment
-      // is over, to avoid accidentally preventing Default Browser promos to a
-      // substantial portion of the user base.
-      self.promosManager->DeregisterPromo(
-          promos_manager::Promo::PostRestoreDefaultBrowserAlert);
-      self.promosManager->DeregisterPromo(
-          promos_manager::Promo::DefaultBrowserRemindMeLater);
-      self.promosManager->DeregisterPromo(
-          promos_manager::Promo::PostDefaultAbandonment);
-      self.promosManager->DeregisterPromo(
-          promos_manager::Promo::AllTabsDefaultBrowser);
-      self.promosManager->DeregisterPromo(
-          promos_manager::Promo::MadeForIOSDefaultBrowser);
-      self.promosManager->DeregisterPromo(
-          promos_manager::Promo::StaySafeDefaultBrowser);
-      self.promosManager->DeregisterPromo(
-          promos_manager::Promo::DefaultBrowserOffCycle);
-    } else {
-      // TODO(crbug.com/435671056): Remove this logic as soon as the experiment
-      // is over, to avoid accidentally preventing Default Browser promos to a
-      // substantial portion of the user base.
-      self.promosManager->DeregisterPromo(
-          promos_manager::Promo::DefaultBrowser);
-    }
-  }
-}
-
 // Registers the post restore default browser promo if the user is eligible.
 // Otherwise, deregisters. To be eligible, they must be in the first session
 // after an iOS restore and have previously set Chrome as their default browser.
@@ -402,11 +364,6 @@
   // The off-cycle promo registration must be checked after the generic promo
   // because the off-cycle promo can deregister the generic one.
   [self updateOffCyclePromoRegistration];
-
-  // The reader-mode promo registration must happen after all other
-  // registrations because it can deregister all the other fullscreen default
-  // browser promo, for experiment purposes.
-  [self updateReaderModeRegistration];
 
   [self notifyFETSigninStatus];
   [self maybeSetTriggerCriteriaExperimentStartTimestamp];

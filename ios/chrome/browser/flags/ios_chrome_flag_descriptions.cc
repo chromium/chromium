@@ -1377,12 +1377,6 @@ const char kReaderModeDebugInfoDescription[] =
     "Enables additional debug information for the Reader Mode feature such as "
     "latency metrics.";
 
-const char kReaderModeDefaultBrowserPromoName[] =
-    "Enables the default browser promo with Reader Mode criteria";
-const char kReaderModeDefaultBrowserPromoDescription[] =
-    "Enables the Reader Mode eligibility criteria for displaying the default "
-    "browser promo and disables all other criteria.";
-
 const char kReaderModeName[] = "Enables Reader Mode";
 const char kReaderModeDescription[] =
     "Enables Reader Mode UI and entry points.";

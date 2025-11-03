@@ -44,13 +44,6 @@ id<GREYMatcher> SecondaryActionMatcher() {
 
 @implementation PostRestoreDefaultBrowserPromoTestCase
 
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config = [super appConfigurationForTestCase];
-  config.features_disabled.push_back(kEnableReaderMode);
-  config.features_disabled.push_back(kEnableReaderModeDefaultBrowserPromo);
-  return config;
-}
-
 #pragma mark - Helpers
 
 - (void)checkThatCommonElementsAreVisible {
