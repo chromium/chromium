@@ -348,6 +348,15 @@ public class ImeAdapterImpl
                             DeleteRangeGesture.class);
             outAttrs.setSupportedHandwritingGestures(supportedGestures);
         }
+        // Update whether stylus handwriting should be enabled in editor info.
+        // This prevents the stylus handwriting toolbar from appearing and ensures the
+        // keyboard appears normally on views that do not support stylus handwriting.
+        // The null check for StylusWritingHandler indicates whether the feature is
+        // enabled and supported for this device.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM
+                && mWebContents.getStylusWritingHandler() != null) {
+            outAttrs.setStylusHandwritingEnabled(true);
+        }
         return inputConnection;
     }
 
