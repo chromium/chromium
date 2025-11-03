@@ -619,7 +619,7 @@ std::string ManagedDisplayInfo::ToString() const {
 
   std::string result = base::StringPrintf(
       "ManagedDisplayInfo[%lld] port_display_id=%lld, edid_display_id=%lld, "
-      "native bounds=%s, size=%s, device-scale=%g, "
+      "native bounds=%s, size=%s, refresh-rate=%f, device-scale=%g, "
       "display-zoom=%g, overscan=%s, rotation=%d, touchscreen=%s, "
       "panel_corners_radii=%s, panel_orientation=%s, detected=%s, "
       "color_space=%s",
@@ -627,7 +627,7 @@ std::string ManagedDisplayInfo::ToString() const {
       static_cast<long long int>(port_display_id_),
       static_cast<long long int>(edid_display_id_),
       bounds_in_native_.ToString().c_str(), size_in_pixel_.ToString().c_str(),
-      device_scale_factor_, zoom_factor_,
+      refresh_rate_, device_scale_factor_, zoom_factor_,
       overscan_insets_in_dip_.ToString().c_str(), rotation_degree,
       touch_support_ == Display::TouchSupport::AVAILABLE     ? "yes"
       : touch_support_ == Display::TouchSupport::UNAVAILABLE ? "no"
