@@ -11,8 +11,8 @@
 #include <string_view>
 
 #include "base/android/jni_string.h"
+#include "base/logging.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/notreached.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "base/features_jni/FeatureMap_jni.h"
@@ -40,8 +40,8 @@ const Feature* FeatureMap::FindFeatureExposedToJava(
     return it->second;
   }
 
-  NOTREACHED() << "Queried feature cannot be found in FeatureMap: "
-               << feature_name;
+  LOG(FATAL) << "Queried feature cannot be found in FeatureMap: "
+             << feature_name;
 }
 
 static jboolean JNI_FeatureMap_IsEnabled(JNIEnv* env,
