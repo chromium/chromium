@@ -475,10 +475,6 @@ std::string ResourceBundle::LoadLocaleResources(const std::string& pref_locale,
   // "en" locale can be problematic on some systems, pre-win10 at least.
   if (app_locale == "en")
     app_locale = "en-GB";
-  if (app_locale == "pl-PL")
-    app_locale = "pl";
-  if (app_locale == "ru-RU")
-    app_locale = "ru";
   base::FilePath locale_file_path = GetOverriddenPakPath();
   if (locale_file_path.empty())
     locale_file_path = GetLocaleFilePath(app_locale);
@@ -506,34 +502,41 @@ std::string ResourceBundle::LoadLocaleResources(const std::string& pref_locale,
 
   if (auto result = data_pack->LoadFromPathWithError(locale_file_path);
       !result.has_value() && crash_on_failure) {
-    DataPack::ErrorState& error = result.error();
-    // https://crbug.com/40688225 and https://crbug.com/394631579: Chrome can't
-    // start when the locale file cannot be loaded. Crash early and gather some
-    // data. Also print on screen for rapid verification.
-    LOG(ERROR) << locale_file_path;
-    // The local contained in prefs; provided by the caller.
-    SCOPED_CRASH_KEY_STRING32("LoadLocaleResources", "pref_locale",
-                              pref_locale);
-    // The app locale resolved from the pref value.
-    SCOPED_CRASH_KEY_STRING32("LoadLocaleResources", "app_locale", app_locale);
-    // The path to the (possibly overridden) file that could not be opened.
-    SCOPED_CRASH_KEY_STRING1024("LoadLocaleResources", "locale_filepath",
-                                locale_file_path.AsUTF8Unsafe());
+    // Try again with alternative path.
+    size_t hypen = app_locale.find("-");
+	if (hypen != std::string::npos) {
+        locale_file_path = GetLocaleFilePath(app_locale.substr(0, hypen));
+        result = data_pack->LoadFromPathWithError(locale_file_path);
+    }
+    if (!result.has_value() && crash_on_failure) {
+        DataPack::ErrorState& error = result.error();
+        // https://crbug.com/40688225 and https://crbug.com/394631579: Chrome can't
+        // start when the locale file cannot be loaded. Crash early and gather some
+        // data.
+        // The local contained in prefs; provided by the caller.
+        SCOPED_CRASH_KEY_STRING32("LoadLocaleResources", "pref_locale",
+                                  pref_locale);
+        // The app locale resolved from the pref value.
+        SCOPED_CRASH_KEY_STRING32("LoadLocaleResources", "app_locale", app_locale);
+        // The path to the (possibly overridden) file that could not be opened.
+        SCOPED_CRASH_KEY_STRING1024("LoadLocaleResources", "locale_filepath",
+                                    locale_file_path.AsUTF8Unsafe());
 
-    // A ui::DataPack::FailureReason indicating what step during the attempt to
-    // load the file failed.
-    SCOPED_CRASH_KEY_NUMBER("LoadLocaleResources", "reason",
-                            static_cast<int>(error.reason));
-    // A last-error code on Windows; otherwise, errno. Only relevant if `reason`
-    // is `kOpenFile` (0) or `kMapFile` (1).
-    SCOPED_CRASH_KEY_NUMBER("LoadLocaleResources", "error", error.error);
-    // The base::File::Error from opening the file. Only relevant if `reason` is
-    // `kOpenFile` (0). Most likely redundant given `error` above, but reporting
-    // anyway just in case.
-    SCOPED_CRASH_KEY_NUMBER("LoadLocaleResources", "file_error",
-                            error.file_error);
+        // A ui::DataPack::FailureReason indicating what step during the attempt to
+        // load the file failed.
+        SCOPED_CRASH_KEY_NUMBER("LoadLocaleResources", "reason",
+                                static_cast<int>(error.reason));
+        // A last-error code on Windows; otherwise, errno. Only relevant if `reason`
+        // is `kOpenFile` (0) or `kMapFile` (1).
+        SCOPED_CRASH_KEY_NUMBER("LoadLocaleResources", "error", error.error);
+        // The base::File::Error from opening the file. Only relevant if `reason` is
+        // `kOpenFile` (0). Most likely redundant given `error` above, but reporting
+        // anyway just in case.
+        SCOPED_CRASH_KEY_NUMBER("LoadLocaleResources", "file_error",
+                                error.file_error);
 
-    NOTREACHED();
+        NOTREACHED();
+    }
   }
 
   locale_resources_data_ = std::move(data_pack);
