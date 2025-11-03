@@ -294,4 +294,22 @@ TEST_F(HistorySyncOptinHandlerTest, OnScreenModeTimeout) {
       "Signin.AccountCapabilities.ImmediatelyAvailable", false, 1);
 }
 
+// Tests that the dialog does not crash if a button is pressed more than once.
+// Regression test for crbug.com/449140137.
+TEST_F(HistorySyncOptinHandlerTest, DoubleClickingDoesNotCrash) {
+  AccountInfo account_info = SignInAndSetUpSyncService();
+  DisableAllSyncedDataTypes();
+
+  // The extended account info that sets the screen mode info must be updated,
+  // otherwise we may hit a metrics check.
+  AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
+  mutator.set_can_show_history_sync_opt_ins_without_minor_mode_restrictions(
+      false);
+  signin::UpdateAccountInfoForAccount(identity_manager(), account_info);
+  handler_->RequestAccountInfo();
+
+  handler_->Accept();
+  handler_->Reject();
+}
+
 }  // namespace

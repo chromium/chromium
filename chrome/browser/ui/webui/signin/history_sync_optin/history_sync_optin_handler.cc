@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/signin/history_sync_optin/history_sync_optin_handler.h"
 
 #include "base/check_op.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/metrics/histogram_functions.h"
@@ -123,7 +124,7 @@ HistorySyncOptinHandler::HistorySyncOptinHandler(
 }
 
 HistorySyncOptinHandler::~HistorySyncOptinHandler() {
-  if (history_optin_completed_callback_.value()) {
+  if (!history_optin_completed_callback_->is_null()) {
     // Runs the callback in case the dialog is not dismissed via the buttons,
     // but e.g. using an accelerator or close button.
     std::move(history_optin_completed_callback_.value())
@@ -194,8 +195,15 @@ void HistorySyncOptinHandler::FinishAndCloseDialog(
   if (browser_) {
     browser_->GetFeatures().signin_view_controller()->CloseModalSignin();
   }
-  CHECK(history_optin_completed_callback_.value());
-  std::move(history_optin_completed_callback_.value()).Run(result);
+  if (!history_optin_completed_callback_->is_null()) {
+    std::move(history_optin_completed_callback_.value()).Run(result);
+  } else {
+    // The user may have double-clicked on an action, which could have
+    // caused the callback to execute already.
+    // TODO(crbug.com/456458942): Disabled the buttons so that this is not
+    // possible.
+    base::debug::DumpWithoutCrashing();
+  }
 }
 
 void HistorySyncOptinHandler::AddHistorySyncConsent() {
