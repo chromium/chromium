@@ -59,6 +59,8 @@ class DwaService {
   void Purge();
 
   // Adds an observer to be notified of changes to the encryption public key.
+  // Adding an observer will also dispatch the current key to the observer so
+  // the initial state can be determined.
   void AddObserver(Observer* observer);
 
   // Removes an observer to be notified of changes to the encryption public key.
@@ -187,6 +189,9 @@ class DwaService {
   void HandleEncryptionPublicKeyRefresh(
       std::optional<fcp::confidentialcompute::DataUploadConfig>
           maybe_data_upload_config);
+
+  // Returns true if the decoded public key is valid. Otherwise, returns false.
+  bool IsValidCwt(const fcp::confidential_compute::OkpCwt& cwt);
 
   // Manages on-device recording of events.
   raw_ptr<DwaRecorder> recorder_;

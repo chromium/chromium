@@ -153,6 +153,11 @@ void DwaService::Purge() {
 
 void DwaService::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
+  auto cwt = fcp::confidential_compute::OkpCwt::Decode(encryption_public_key_);
+  if (cwt.ok() && IsValidCwt(*cwt)) {
+    // Call the observer with the current public key if it is valid.
+    observer->OnEncryptionPublicKeyChanged(*cwt);
+  }
 }
 
 void DwaService::RemoveObserver(Observer* observer) {
@@ -209,9 +214,7 @@ void DwaService::HandleEncryptionPublicKeyRefresh(
     // generally considered to be more efficient than the decoding of JSON Web
     // Token (JWT) decoding due to CBOR's binary nature.
     auto cwt = fcp::confidential_compute::OkpCwt::Decode(encryption_public_key);
-    if (!cwt.ok() || !cwt->algorithm.has_value() ||
-        !cwt->public_key.has_value() ||
-        !encryption_public_key_verifier_.Run(*cwt)) {
+    if (!cwt.ok() || !IsValidCwt(*cwt)) {
       return;
     }
 
@@ -220,6 +223,11 @@ void DwaService::HandleEncryptionPublicKeyRefresh(
       observer.OnEncryptionPublicKeyChanged(*cwt);
     }
   }
+}
+
+bool DwaService::IsValidCwt(const fcp::confidential_compute::OkpCwt& cwt) {
+  return cwt.algorithm.has_value() && cwt.public_key.has_value() &&
+         encryption_public_key_verifier_.Run(cwt);
 }
 
 // static
@@ -518,13 +526,7 @@ void DwaService::BuildPrivateMetricReportAndStoreLog(
   }
 
   auto cwt = fcp::confidential_compute::OkpCwt::Decode(encryption_public_key_);
-  if (!cwt.ok() || !cwt->algorithm.has_value() ||
-      !cwt->public_key.has_value()) {
-    RefreshEncryptionPublicKey();
-    return;
-  }
-
-  if (!encryption_public_key_verifier_.Run(*cwt)) {
+  if (!cwt.ok() || !IsValidCwt(*cwt)) {
     RefreshEncryptionPublicKey();
     return;
   }
