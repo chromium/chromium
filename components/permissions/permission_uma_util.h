@@ -20,6 +20,7 @@
 #include "components/permissions/permission_request_enums.h"
 #include "components/permissions/prediction_service/permission_ui_selector.h"
 #include "components/permissions/request_type.h"
+#include "components/permissions/resolvers/permission_prompt_options.h"
 #include "content/public/browser/permission_result.h"
 #include "url/gurl.h"
 
@@ -1002,7 +1003,8 @@ class PermissionUmaUtil {
       std::optional<PermissionRequestRelevance> permission_request_relevance,
       std::optional<permissions::PermissionAiRelevanceModel>
           permission_ai_relevance_model,
-      std::optional<bool> prediction_decision_held_back);
+      std::optional<bool> prediction_decision_held_back,
+      const PromptOptions& prompt_options);
 
   // Records |count| total prior actions for a prompt of type |permission|
   // for a single origin using |prefix| for the metric.
