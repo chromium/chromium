@@ -51,26 +51,8 @@ std::vector<autofill::Suggestion>
 FakePlusAddressService::GetSuggestionsFromPlusAddresses(
     const std::vector<std::string>& plus_addresses,
     const url::Origin& last_committed_primary_main_frame_origin,
-    bool is_off_the_record,
-    const autofill::FormData& focused_form,
     const autofill::FormFieldData& focused_field,
-    const base::flat_map<autofill::FieldGlobalId, autofill::FieldTypeGroupSet>&
-        form_field_type_groups,
-    const autofill::PasswordFormClassification& focused_form_classification,
     bool is_plus_address_manually_triggered) {
-  if (IsPlusAddressCreationEnabled(last_committed_primary_main_frame_origin,
-                                   is_off_the_record)) {
-    Suggestion suggestion(
-        l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_CREATE_SUGGESTION_MAIN_TEXT),
-        SuggestionType::kCreateNewPlusAddress);
-    suggestion.labels = {{Suggestion::Text(l10n_util::GetStringUTF16(
-        IDS_PLUS_ADDRESS_CREATE_SUGGESTION_SECONDARY_TEXT))}};
-    suggestion.icon = Suggestion::Icon::kPlusAddress;
-    suggestion.iph_metadata = Suggestion::IPHMetadata(
-        &feature_engagement::kIPHPlusAddressCreateSuggestionFeature);
-    return {suggestion};
-  }
-
   if (IsPlusAddressFillingEnabled(last_committed_primary_main_frame_origin)) {
     Suggestion suggestion =
         Suggestion(plus_addresses::test::kFakePlusAddressU16,

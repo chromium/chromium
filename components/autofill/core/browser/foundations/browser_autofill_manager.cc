@@ -596,18 +596,6 @@ std::optional<std::string> GetPlusAddressOverride(
   return plus_addresses[0];
 }
 
-base::flat_map<FieldGlobalId, FieldTypeGroupSet>
-GetFieldTypeGroupsFromFormStructure(const FormStructure* form_structure) {
-  return form_structure
-             ? base::MakeFlatMap<FieldGlobalId, FieldTypeGroupSet>(
-                   form_structure->fields(), /*comp=*/{},
-                   [](const std::unique_ptr<AutofillField>& field) {
-                     return std::make_pair(field->global_id(),
-                                           field->Type().GetGroups());
-                   })
-             : base::flat_map<FieldGlobalId, FieldTypeGroupSet>();
-}
-
 // Returns if the email address was modified on any of the suggested addresses
 // using a plus profile.
 bool WasEmailOverrideAppliedOnSuggestions(
@@ -1493,7 +1481,7 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase3(
   // suggestions are not shown if the plus address email override was applied on
   // at least one address suggestion.
   const bool should_offer_plus_addresses_with_profiles =
-      plus_addresses && autofill_field &&
+      plus_addresses && !plus_addresses->empty() && autofill_field &&
       autofill_field->Type().GetGroups().contains(FieldTypeGroup::kEmail) &&
       !suggestions.empty() &&
       !WasEmailOverrideAppliedOnSuggestions(suggestions);
@@ -1514,10 +1502,7 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase3(
     std::vector<Suggestion> plus_address_suggestions =
         client().GetPlusAddressDelegate()->GetSuggestionsFromPlusAddresses(
             *plus_addresses, client().GetLastCommittedPrimaryMainFrameOrigin(),
-            client().IsOffTheRecord(), form, field,
-            GetFieldTypeGroupsFromFormStructure(form_structure),
-            password_form_classification,
-            IsPlusAddressesManuallyTriggered(trigger_source));
+            field, IsPlusAddressesManuallyTriggered(trigger_source));
 
     MixPlusAddressAndAddressSuggestions(
         std::move(plus_address_suggestions), std::move(suggestions),
@@ -1574,7 +1559,7 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase3(
   }
 
   const bool should_offer_plus_addresses =
-      plus_addresses && autofill_field &&
+      plus_addresses && !plus_addresses->empty() && autofill_field &&
       (autofill_field->Type().GetGroups().contains(FieldTypeGroup::kEmail) ||
        autofill_field->Type().GetTypes().contains(FieldType::USERNAME) ||
        autofill_field->Type().GetTypes().contains(FieldType::SINGLE_USERNAME));
@@ -1588,10 +1573,7 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase3(
     plus_address_suggestions =
         client().GetPlusAddressDelegate()->GetSuggestionsFromPlusAddresses(
             *plus_addresses, client().GetLastCommittedPrimaryMainFrameOrigin(),
-            client().IsOffTheRecord(), form, field,
-            GetFieldTypeGroupsFromFormStructure(form_structure),
-            password_form_classification,
-            IsPlusAddressesManuallyTriggered(trigger_source));
+            field, IsPlusAddressesManuallyTriggered(trigger_source));
   }
 
   auto on_single_field_suggestions_callback = base::BindOnce(

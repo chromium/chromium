@@ -157,9 +157,6 @@ class PlusAddressServiceTest : public ::testing::Test {
 
   std::vector<Suggestion> FetchPlusAddressSuggestions(
       const url::Origin& origin,
-      bool is_off_the_record,
-      const PasswordFormClassification& focused_form_classification,
-      const FormData& form,
       const FormFieldData& focused_field,
       autofill::AutofillSuggestionTriggerSource trigger_source) {
     // Empty psl extension by default.
@@ -186,9 +183,7 @@ class PlusAddressServiceTest : public ::testing::Test {
     run_loop.Quit();
 
     return service().GetSuggestionsFromPlusAddresses(
-        affiliated_plus_addresses, origin, is_off_the_record, form,
-        focused_field,
-        /*form_field_type_groups=*/{}, focused_form_classification,
+        affiliated_plus_addresses, origin, focused_field,
         trigger_source == autofill::mojom::AutofillSuggestionTriggerSource::
                               kManualFallbackPlusAddresses);
   }
@@ -1478,8 +1473,7 @@ TEST_F(PlusAddressSuggestionsTest, SuggestionsForExistingPlusAddress) {
   FormData form;
   form.set_fields({focused_field});
   EXPECT_THAT(FetchPlusAddressSuggestions(
-                  origin, /*is_off_the_record=*/false,
-                  PasswordFormClassification(), form, focused_field,
+                  origin, focused_field,
                   AutofillSuggestionTriggerSource::kFormControlElementClicked),
               IsSingleFillPlusAddressSuggestion(*profile.plus_address));
   histogram_tester.ExpectUniqueSample(
@@ -1492,8 +1486,7 @@ TEST_F(PlusAddressSuggestionsTest, SuggestionsForExistingPlusAddress) {
   // normalization), the plus address continues to be offered.
   focused_field.set_value(u"P");
   EXPECT_THAT(FetchPlusAddressSuggestions(
-                  origin, /*is_off_the_record=*/false,
-                  PasswordFormClassification(), form, focused_field,
+                  origin, focused_field,
                   AutofillSuggestionTriggerSource::kFormControlElementClicked),
               IsSingleFillPlusAddressSuggestion(*profile.plus_address));
   histogram_tester.ExpectUniqueSample(
@@ -1506,8 +1499,7 @@ TEST_F(PlusAddressSuggestionsTest, SuggestionsForExistingPlusAddress) {
   // shown.
   focused_field.set_value(u"pp");
   EXPECT_THAT(FetchPlusAddressSuggestions(
-                  origin, /*is_off_the_record=*/false,
-                  PasswordFormClassification(), form, focused_field,
+                  origin, focused_field,
                   AutofillSuggestionTriggerSource::kFormControlElementClicked),
               IsEmpty());
   histogram_tester.ExpectUniqueSample(
@@ -1531,8 +1523,7 @@ TEST_F(PlusAddressSuggestionsTest,
   form.set_fields({focused_field});
   EXPECT_THAT(
       FetchPlusAddressSuggestions(
-          origin, /*is_off_the_record=*/false, PasswordFormClassification(),
-          form, focused_field,
+          origin, focused_field,
           AutofillSuggestionTriggerSource::kManualFallbackPlusAddresses),
       IsSingleFillPlusAddressSuggestion(*profile.plus_address));
   histogram_tester.ExpectUniqueSample(
@@ -1546,8 +1537,7 @@ TEST_F(PlusAddressSuggestionsTest,
   focused_field.set_value(u"pp");
   EXPECT_THAT(
       FetchPlusAddressSuggestions(
-          origin, /*is_off_the_record=*/false, PasswordFormClassification(),
-          form, focused_field,
+          origin, focused_field,
           AutofillSuggestionTriggerSource::kManualFallbackPlusAddresses),
       IsSingleFillPlusAddressSuggestion(*profile.plus_address));
   histogram_tester.ExpectUniqueSample(
@@ -1575,9 +1565,7 @@ TEST_F(PlusAddressSuggestionsTest, NoSuggestionsWhenDisabled) {
   feature_list.InitAndDisableFeature(features::kPlusAddressesEnabled);
 
   EXPECT_THAT(FetchPlusAddressSuggestions(
-                  url::Origin::Create(GURL("https://foo.com")),
-                  /*is_off_the_record=*/false, PasswordFormClassification(),
-                  FormData(), FormFieldData(),
+                  url::Origin::Create(GURL("https://foo.com")), FormFieldData(),
                   AutofillSuggestionTriggerSource::kFormControlElementClicked),
               IsEmpty());
 }
@@ -1592,14 +1580,8 @@ TEST_F(PlusAddressSuggestionsTest, SuggestionsOnPasswordFormsUsernameField) {
   auto get_suggestions_for_form_type =
       [&](PasswordFormClassification::Type type) {
         FormData form = autofill::test::CreateTestPasswordFormData();
-        auto form_classification = PasswordFormClassification{
-            .type = type,
-            .username_field = form.fields()[0].global_id(),
-            .password_field = form.fields()[1].global_id()};
         return FetchPlusAddressSuggestions(
-            origin,
-            /*is_off_the_record=*/false, form_classification, form,
-            form.fields()[0],
+            origin, form.fields()[0],
             AutofillSuggestionTriggerSource::kFormControlElementClicked);
       };
 
@@ -1885,9 +1867,7 @@ TEST_F(PlusAddressAffiliationsTest, GetEmptyAffiliatedSuggestionMatches) {
 
   const url::Origin origin = url::Origin::Create(GURL("https://example.com"));
   EXPECT_THAT(FetchPlusAddressSuggestions(
-                  origin,
-                  /*is_off_the_record=*/false, PasswordFormClassification(),
-                  FormData(), FormFieldData(),
+                  origin, FormFieldData(),
                   AutofillSuggestionTriggerSource::kFormControlElementClicked),
               // There are no PLS, group or exact matches.
               IsEmpty());

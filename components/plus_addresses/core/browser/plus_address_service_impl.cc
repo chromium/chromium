@@ -322,14 +322,9 @@ void PlusAddressServiceImpl::GetAffiliatedPlusAddresses(
 std::vector<Suggestion> PlusAddressServiceImpl::GetSuggestionsFromPlusAddresses(
     const std::vector<std::string>& plus_addresses,
     const url::Origin& origin,
-    bool is_off_the_record,
-    const autofill::FormData& focused_form,
     const autofill::FormFieldData& focused_field,
-    const base::flat_map<autofill::FieldGlobalId, autofill::FieldTypeGroupSet>&
-        form_field_type_groups,
-    const autofill::PasswordFormClassification& focused_form_classification,
     bool is_plus_address_manually_triggered) {
-  if (!IsPlusAddressFillingEnabled(origin) || plus_addresses.empty()) {
+  if (!IsPlusAddressFillingEnabled(origin)) {
     return {};
   }
 
