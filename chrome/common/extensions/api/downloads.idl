@@ -144,7 +144,12 @@ namespace downloads {
     promptForScanning,
     promptForLocalPasswordScanning,
     accountCompromise,
-    blockedScanFailed
+    blockedScanFailed,
+
+    // For use by the Secure Enterprise Browser extension. When required, Chrome
+    // will block the download to disc and download the file directly to Google
+    // Drive.
+    forceSaveToGdrive
   };
 
   // <dl><dt>in_progress</dt>
