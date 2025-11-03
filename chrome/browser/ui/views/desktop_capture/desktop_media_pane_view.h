@@ -45,8 +45,6 @@ class DesktopMediaPaneView : public views::View {
 #if BUILDFLAG(IS_MAC)
   void OnScreenCapturePermissionUpdate(bool has_permission);
   bool WasPermissionButtonClicked() const;
-  void SetAudioWarningVisible(bool visible);
-  bool IsAudioWarningVisible() const;
 #endif
 
  private:

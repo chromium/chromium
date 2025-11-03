@@ -39,8 +39,8 @@ class AudioCapturePermissionCheckerMac : public AudioCapturePermissionChecker,
       mojo::PendingRemote<media::mojom::AudioStreamFactory>
           audio_stream_factory);
 
-  // AudioCapturePermissionChecker implementation.
   State GetState() const override;
+
   void RunCheck() override;
 
  private:
