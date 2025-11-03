@@ -146,10 +146,6 @@
 
 namespace {
 
-// Deprecated 12/2024.
-inline constexpr char kPageContentCollectionEnabled[] =
-    "page_content_collection.enabled";
-
 // Deprecated 02/2025.
 inline constexpr char kNumberOfProfiles[] = "profile.profiles_created";
 inline constexpr char kLastActiveProfiles[] = "profile.last_active_profiles";
@@ -1070,9 +1066,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterListPref(policy::policy_prefs::kIncognitoModeBlocklist);
   registry->RegisterListPref(policy::policy_prefs::kIncognitoModeAllowlist);
 
-  // Deprecated 12/2024.
-  registry->RegisterBooleanPref(kPageContentCollectionEnabled, false);
-
   // Deprecated 02/2025 (migrated to LocalState pref).
   registry->RegisterIntegerPref(prefs::kNTPLensEntryPointNewBadgeShownCount, 0);
 
@@ -1218,9 +1211,6 @@ void MigrateObsoleteProfilePrefs(PrefService* prefs) {
 
   // Added 09/2024.
   browsing_data::prefs::MaybeMigrateToQuickDeletePrefValues(prefs);
-
-  // Added 12/2024.
-  prefs->ClearPref(kPageContentCollectionEnabled);
 
   // Added 02/2025
   // TODO(crbug.com/395840121): Remove migration call below after successfully
