@@ -13,7 +13,6 @@
 #include "third_party/blink/renderer/core/layout/table/layout_table_cell.h"
 #include "third_party/blink/renderer/core/layout/table/layout_table_column.h"
 #include "third_party/blink/renderer/core/layout/table/table_borders.h"
-#include "third_party/blink/renderer/core/paint/border_shape_utils.h"
 #include "third_party/blink/renderer/core/paint/box_background_paint_context.h"
 #include "third_party/blink/renderer/core/paint/box_border_painter.h"
 #include "third_party/blink/renderer/core/paint/box_decoration_data.h"
@@ -734,12 +733,9 @@ void TableSectionPainter::PaintBoxDecorationBackground(
     const BoxDecorationData& box_decoration_data) {
   DCHECK(box_decoration_data.ShouldPaint());
   if (box_decoration_data.ShouldPaintShadow()) {
-    std::optional<BorderShapeReferenceRects> border_shape_rects =
-        ComputeBorderShapeReferenceRects(paint_rect, fragment_.Style(),
-                                         *fragment_.GetLayoutObject());
     BoxPainterBase::PaintNormalBoxShadow(
-        paint_info, paint_rect, fragment_.Style(), border_shape_rects,
-        PhysicalBoxSides(), !box_decoration_data.ShouldPaintBackground());
+        paint_info, paint_rect, fragment_.Style(), PhysicalBoxSides(),
+        !box_decoration_data.ShouldPaintBackground());
   }
 
   // If we are fragmented - determine the total part size, relative to the
@@ -786,12 +782,9 @@ void TableRowPainter::PaintBoxDecorationBackground(
     const BoxDecorationData& box_decoration_data) {
   DCHECK(box_decoration_data.ShouldPaint());
   if (box_decoration_data.ShouldPaintShadow()) {
-    std::optional<BorderShapeReferenceRects> border_shape_rects =
-        ComputeBorderShapeReferenceRects(paint_rect, fragment_.Style(),
-                                         *fragment_.GetLayoutObject());
     BoxPainterBase::PaintNormalBoxShadow(
-        paint_info, paint_rect, fragment_.Style(), border_shape_rects,
-        PhysicalBoxSides(), !box_decoration_data.ShouldPaintBackground());
+        paint_info, paint_rect, fragment_.Style(), PhysicalBoxSides(),
+        !box_decoration_data.ShouldPaintBackground());
   }
 
   // If we are fragmented - determine the total part size, relative to the

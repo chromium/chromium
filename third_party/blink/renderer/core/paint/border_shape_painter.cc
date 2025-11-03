@@ -59,39 +59,28 @@ DerivedStroke RelevantSideForBorderShape(const ComputedStyle& style) {
                        edges_in_order[0].GetColor()};
 }
 
-Path OuterPathWithoutStroke(const ComputedStyle& style,
-                            const PhysicalRect& outer_reference_rect) {
-  CHECK(style.HasBorderShape());
-
-  const StyleBorderShape& border_shape = *style.BorderShape();
-  return border_shape.OuterShape().GetPath(gfx::RectF(outer_reference_rect),
-                                           style.EffectiveZoom(), 1);
-}
-
 }  // namespace
 
 Path BorderShapePainter::OuterPath(const ComputedStyle& style,
                                    const PhysicalRect& outer_reference_rect) {
   CHECK(style.HasBorderShape());
-  Path outer_path = OuterPathWithoutStroke(style, outer_reference_rect);
-  if (style.BorderShape()->HasSeparateInnerShape()) {
-    return outer_path;
-  }
 
-  // A stroke thickness of 0 renders a hairline path, but we want to render
-  // nothing.
-  DerivedStroke derived_stroke = RelevantSideForBorderShape(style);
-  if (!derived_stroke.thickness) {
+  const StyleBorderShape& border_shape = *style.BorderShape();
+  Path outer_path = border_shape.OuterShape().GetPath(
+      gfx::RectF(outer_reference_rect), style.EffectiveZoom(), 1);
+
+  if (border_shape.HasSeparateInnerShape()) {
     return outer_path;
   }
 
   // Add stroke to the outer path, if we don't have an inner one.
+  DerivedStroke derived_stroke = RelevantSideForBorderShape(style);
   StrokeData stroke_data;
   stroke_data.SetThickness(derived_stroke.thickness);
   SkOpBuilder builder;
   builder.add(outer_path.GetSkPath(), SkPathOp::kUnion_SkPathOp);
   Path stroke_path = outer_path.StrokePath(stroke_data, AffineTransform());
-  builder.add(stroke_path.GetSkPath(), SkPathOp::kUnion_SkPathOp);
+  builder.add(stroke_path.GetSkPath(), kDifference_SkPathOp);
   SkPath result;
   return builder.resolve(&result) ? Path(result) : outer_path;
 }
@@ -105,6 +94,7 @@ Path BorderShapePainter::InnerPath(const ComputedStyle& style,
                                            style.EffectiveZoom(), 1);
 }
 
+// static
 bool BorderShapePainter::Paint(GraphicsContext& context,
                                const ComputedStyle& style,
                                const PhysicalRect& outer_reference_rect,
@@ -114,7 +104,8 @@ bool BorderShapePainter::Paint(GraphicsContext& context,
     return false;
   }
 
-  const Path outer_path = OuterPathWithoutStroke(style, outer_reference_rect);
+  const Path outer_path = OuterPath(style, outer_reference_rect);
+  const Path inner_path = InnerPath(style, inner_reference_rect);
 
   DerivedStroke derived_stroke = RelevantSideForBorderShape(style);
   const AutoDarkMode auto_dark_mode(
@@ -126,19 +117,12 @@ bool BorderShapePainter::Paint(GraphicsContext& context,
   if (border_shape->HasSeparateInnerShape()) {
     SkOpBuilder builder;
     builder.add(outer_path.GetSkPath(), SkPathOp::kUnion_SkPathOp);
-    const Path inner_path = InnerPath(style, inner_reference_rect);
     builder.add(inner_path.GetSkPath(), SkPathOp::kDifference_SkPathOp);
     SkPath result;
     builder.resolve(&result);
     Path fill_path(result);
     context.SetFillColor(derived_stroke.color);
     context.FillPath(fill_path, auto_dark_mode);
-    return true;
-  }
-
-  // A stroke thickness of 0 renders a hairline path, but we want to render
-  // nothing.
-  if (!derived_stroke.thickness) {
     return true;
   }
 

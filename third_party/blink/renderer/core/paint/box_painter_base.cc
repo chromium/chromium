@@ -249,13 +249,11 @@ bool ShadowIsFullyObscured(const ShadowData& shadow) {
 
 }  // namespace
 
-void BoxPainterBase::PaintNormalBoxShadow(
-    const PaintInfo& info,
-    const PhysicalRect& paint_rect,
-    const ComputedStyle& style,
-    std::optional<BorderShapeReferenceRects> border_shape_rects,
-    PhysicalBoxSides sides_to_include,
-    bool background_is_skipped) {
+void BoxPainterBase::PaintNormalBoxShadow(const PaintInfo& info,
+                                          const PhysicalRect& paint_rect,
+                                          const ComputedStyle& style,
+                                          PhysicalBoxSides sides_to_include,
+                                          bool background_is_skipped) {
   if (!style.BoxShadow())
     return;
   GraphicsContext& context = info.context;
@@ -303,10 +301,8 @@ void BoxPainterBase::PaintNormalBoxShadow(
     if (!state_saver.Saved()) {
       state_saver.Save();
       if (style.HasBorderShape()) {
-        PhysicalRect outer_reference_rect =
-            border_shape_rects ? border_shape_rects->outer : paint_rect;
         const Path border_shape_outer_path =
-            BorderShapePainter::OuterPath(style, outer_reference_rect);
+            BorderShapePainter::OuterPath(style, paint_rect);
         context.ClipPath(border_shape_outer_path.GetSkPath(), kAntiAliased,
                          SkClipOp::kDifference);
       } else {
@@ -339,10 +335,8 @@ void BoxPainterBase::PaintNormalBoxShadow(
     if (style.HasBorderShape()) {
       context.SetFillColor(Color::kBlack);
       // TODO(nrosenthal): apply spread to border-shape once the spec is clear.
-      PhysicalRect outer_reference_rect =
-          border_shape_rects ? border_shape_rects->outer : paint_rect;
       const Path border_shape_outer_path =
-          BorderShapePainter::OuterPath(style, outer_reference_rect);
+          BorderShapePainter::OuterPath(style, paint_rect);
       context.FillPath(border_shape_outer_path, auto_dark_mode);
     } else if (has_border_radius) {
       ContouredRect rounded_fill_rect(
