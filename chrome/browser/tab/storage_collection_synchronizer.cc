@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/tab/collection_structure_tracker.h"
+#include "chrome/browser/tab/storage_collection_synchronizer.h"
 
 #include <memory>
 #include <variant>
@@ -37,22 +37,32 @@ class CollectionSaveCrawler : public DirectChildWalker::Processor {
   raw_ptr<TabStateStorageService> service_;
 };
 
-CollectionStructureTracker::CollectionStructureTracker(
+StorageCollectionSynchronizer::StorageCollectionSynchronizer(
     TabStripCollection* collection,
     TabStateStorageService* service)
-    : collection_(collection), service_(service) {
-  observer_ = std::make_unique<CollectionStorageObserver>(service);
-  collection_->AddObserver(observer_.get());
-}
+    : collection_(collection), service_(service) {}
 
-void CollectionStructureTracker::FullSave() {
+void StorageCollectionSynchronizer::FullSave() {
   CollectionSaveCrawler crawler(service_);
   DirectChildWalker walker(collection_, &crawler);
   walker.Walk();
 }
 
-CollectionStructureTracker::~CollectionStructureTracker() {
-  collection_->RemoveObserver(observer_.get());
+void StorageCollectionSynchronizer::SetCollectionObserver(
+    std::unique_ptr<TabCollectionObserver> new_observer) {
+  if (observer_) {
+    collection_->RemoveObserver(observer_.get());
+  }
+  observer_ = std::move(new_observer);
+  if (observer_) {
+    collection_->AddObserver(observer_.get());
+  }
+}
+
+StorageCollectionSynchronizer::~StorageCollectionSynchronizer() {
+  if (observer_) {
+    collection_->RemoveObserver(observer_.get());
+  }
 }
 
 }  // namespace tabs

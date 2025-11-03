@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/android/collection_structure_tracker_android.h"
+#include "chrome/browser/android/storage_collection_synchronizer_android.h"
 
 #include <jni.h>
 
@@ -13,37 +13,38 @@
 #include "third_party/jni_zero/jni_zero.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
-// This JNI header is generated from CollectionStructureTracker.java.
-#include "chrome/browser/tab/jni_headers/CollectionStructureTracker_jni.h"
+// This JNI header is generated from StorageCollectionSynchronizer.java.
+#include "chrome/browser/tab/jni_headers/StorageCollectionSynchronizer_jni.h"
 
 namespace tabs {
 
-CollectionStructureTrackerAndroid::CollectionStructureTrackerAndroid(
+StorageCollectionSynchronizerAndroid::StorageCollectionSynchronizerAndroid(
     Profile* profile,
     tabs::TabStripCollection* collection) {
   TabStateStorageService* service =
       TabStateStorageServiceFactory::GetForProfile(profile);
-  tracker_ = std::make_unique<CollectionStructureTracker>(collection, service);
+  tracker_ =
+      std::make_unique<StorageCollectionSynchronizer>(collection, service);
 }
 
-CollectionStructureTrackerAndroid::~CollectionStructureTrackerAndroid() =
+StorageCollectionSynchronizerAndroid::~StorageCollectionSynchronizerAndroid() =
     default;
 
-void CollectionStructureTrackerAndroid::FullSave(JNIEnv* env) {
+void StorageCollectionSynchronizerAndroid::FullSave(JNIEnv* env) {
   tracker_->FullSave();
 }
 
-static jlong JNI_CollectionStructureTracker_Init(
+static jlong JNI_StorageCollectionSynchronizer_Init(
     JNIEnv* env,
     const jni_zero::JavaParamRef<jobject>& j_object,
     Profile* profile,
     tabs::TabStripCollection* collection) {
-  CollectionStructureTrackerAndroid* tracker =
-      new CollectionStructureTrackerAndroid(profile, collection);
+  StorageCollectionSynchronizerAndroid* tracker =
+      new StorageCollectionSynchronizerAndroid(profile, collection);
   return reinterpret_cast<intptr_t>(tracker);
 }
 
-void CollectionStructureTrackerAndroid::Destroy(JNIEnv* env) {
+void StorageCollectionSynchronizerAndroid::Destroy(JNIEnv* env) {
   delete this;
 }
 

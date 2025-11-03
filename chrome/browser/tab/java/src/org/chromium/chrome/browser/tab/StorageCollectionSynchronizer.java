@@ -16,39 +16,39 @@ import org.chromium.components.tabs.TabStripCollection;
 /** Synchronizes the state of a {@link TabStripCollection} with storage. */
 @NullMarked
 @JNINamespace("tabs")
-public class CollectionStructureTracker implements Destroyable {
+public class StorageCollectionSynchronizer implements Destroyable {
     private long mNativePtr;
 
     /**
      * @param profile The profile associated with the collection.
      * @param collection The {@link TabStripCollection} to track.
      */
-    public CollectionStructureTracker(Profile profile, TabStripCollection collection) {
-        mNativePtr = CollectionStructureTrackerJni.get().init(this, profile, collection);
+    public StorageCollectionSynchronizer(Profile profile, TabStripCollection collection) {
+        mNativePtr = StorageCollectionSynchronizerJni.get().init(this, profile, collection);
     }
 
     @Override
     public void destroy() {
         assert mNativePtr != 0;
-        CollectionStructureTrackerJni.get().destroy(mNativePtr);
+        StorageCollectionSynchronizerJni.get().destroy(mNativePtr);
         mNativePtr = 0;
     }
 
     /** Fully synchronizes the state of the collection and descendants with the storage layer. */
     public void fullSave() {
         assert mNativePtr != 0;
-        CollectionStructureTrackerJni.get().fullSave(mNativePtr);
+        StorageCollectionSynchronizerJni.get().fullSave(mNativePtr);
     }
 
     @NativeMethods
     interface Natives {
         long init(
-                CollectionStructureTracker self,
+                StorageCollectionSynchronizer self,
                 @JniType("Profile*") Profile profile,
                 @JniType("tabs::TabStripCollection*") TabStripCollection collection);
 
-        void fullSave(long nativeCollectionStructureTrackerAndroid);
+        void fullSave(long nativeStorageCollectionSynchronizerAndroid);
 
-        void destroy(long nativeCollectionStructureTrackerAndroid);
+        void destroy(long nativeStorageCollectionSynchronizerAndroid);
     }
 }

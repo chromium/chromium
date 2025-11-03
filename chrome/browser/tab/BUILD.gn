@@ -10,11 +10,11 @@ import("//third_party/jni_zero/jni_zero.gni")
 android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/tab/CollectionSaveForwarder.java",
-    "java/src/org/chromium/chrome/browser/tab/CollectionStructureTracker.java",
     "java/src/org/chromium/chrome/browser/tab/CurrentTabObserver.java",
     "java/src/org/chromium/chrome/browser/tab/EmptyTabObserver.java",
     "java/src/org/chromium/chrome/browser/tab/SadTab.java",
     "java/src/org/chromium/chrome/browser/tab/SadTabView.java",
+    "java/src/org/chromium/chrome/browser/tab/StorageCollectionSynchronizer.java",
     "java/src/org/chromium/chrome/browser/tab/StorageLoadedData.java",
     "java/src/org/chromium/chrome/browser/tab/Tab.java",
     "java/src/org/chromium/chrome/browser/tab/TabAssociatedApp.java",
@@ -144,7 +144,7 @@ android_resources("java_resources") {
 generate_jni("jni_headers") {
   sources = [
     "java/src/org/chromium/chrome/browser/tab/CollectionSaveForwarder.java",
-    "java/src/org/chromium/chrome/browser/tab/CollectionStructureTracker.java",
+    "java/src/org/chromium/chrome/browser/tab/StorageCollectionSynchronizer.java",
     "java/src/org/chromium/chrome/browser/tab/StorageLoadedData.java",
     "java/src/org/chromium/chrome/browser/tab/TabGroupCollectionData.java",
     "java/src/org/chromium/chrome/browser/tab/TabStateStorageService.java",
@@ -206,8 +206,8 @@ source_set("tab") {
     "collection_save_forwarder.h",
     "collection_storage_observer.h",
     "collection_storage_package.h",
-    "collection_structure_tracker.h",
     "payload.h",
+    "storage_collection_synchronizer.h",
     "storage_id_mapping.h",
     "storage_loaded_data.h",
     "storage_package.h",
@@ -243,7 +243,7 @@ source_set("impl") {
     "collection_save_forwarder.cc",
     "collection_storage_observer.cc",
     "collection_storage_package.cc",
-    "collection_structure_tracker.cc",
+    "storage_collection_synchronizer.cc",
     "storage_loaded_data.cc",
     "tab_group_collection_data.cc",
     "tab_state_storage_backend.cc",
