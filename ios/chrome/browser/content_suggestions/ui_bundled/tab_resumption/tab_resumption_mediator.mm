@@ -322,9 +322,17 @@ class TabResumptionMediatorProxy {
       optimization_guide::proto::RequestContext request_context,
       optimization_guide::OnDemandOptimizationGuideDecisionRepeatingCallback
           callback) {
-    optimizationGuideService->CanApplyOptimizationOnDemand(
-        {url}, {optimization_type}, request_context, std::move(callback),
-        std::nullopt);
+    // It is possible for this method to be called with a null pointer as
+    // the some blocks end up calling those methods after -disconnect has
+    // been called on the TabResumptionMediator (which clears all the C++
+    // pointers).
+    //
+    // See https://crbug.com/457339557 for a sample crash.
+    if (optimizationGuideService) {
+      optimizationGuideService->CanApplyOptimizationOnDemand(
+          {url}, {optimization_type}, request_context, std::move(callback),
+          std::nullopt);
+    }
   }
 };
 
