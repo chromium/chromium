@@ -11,9 +11,9 @@ small devices.
 <merge xmlns:android="http://schemas.android.com/apk/res/android">
     <include layout="@layout/location_status"/>
     <include
-        android:nextFocusForward="@+id/tab_switcher_button"
-        layout="@layout/url_bar"/>
+        layout="@layout/url_bar"
+        android:nextFocusForward="@+id/tab_switcher_button"/>
 
     <include layout="@layout/url_action_container"/>
-    <include layout="@layout/navigation_attachments_bar"/>
+    <include layout="@layout/fusebox_layout"/>
 </merge>

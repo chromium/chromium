@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.omnibox.navattach;
+package org.chromium.chrome.browser.omnibox.fusebox;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -36,8 +36,7 @@ class NavigationAttachmentsPopup {
 
     NavigationAttachmentsPopup(
             Context context, View anchorView, ModelList tabAttachmentsModelList) {
-        mContentView =
-                LayoutInflater.from(context).inflate(R.layout.navigation_attachments_popup, null);
+        mContentView = LayoutInflater.from(context).inflate(R.layout.fusebox_context_popup, null);
         ViewRectProvider rectProvider = new ViewRectProvider(anchorView);
         mPopupWindow =
                 new AnchoredPopupWindow(
@@ -51,9 +50,7 @@ class NavigationAttachmentsPopup {
         // sizing, and asking for `match_parent` results in text wrapping, as the parent is unable
         // to determine the minimum child size accurately.
         mPopupWindow.setDesiredContentSize(
-                context.getResources()
-                        .getDimensionPixelSize(R.dimen.navigation_attachments_popup_width),
-                0);
+                context.getResources().getDimensionPixelSize(R.dimen.fusebox_popup_width), 0);
         mPopupWindow.setHorizontalOverlapAnchor(true);
         mTabAttachmentView = mContentView.findViewById(R.id.tab_attachment_recycler_view);
         mCameraButton = mContentView.findViewById(R.id.navigation_attachments_camera_button);

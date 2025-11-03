@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.omnibox.navattach;
+package org.chromium.chrome.browser.omnibox.fusebox;
 
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
@@ -91,7 +91,7 @@ public class NavigationAttachmentsCoordinatorUnitTest {
         mWindowAndroid = new WindowAndroid(mActivity, false);
         mParent = new ConstraintLayout(mActivity);
         mActivity.setContentView(mParent);
-        LayoutInflater.from(mActivity).inflate(R.layout.navigation_attachments_bar, mParent, true);
+        LayoutInflater.from(mActivity).inflate(R.layout.fusebox_layout, mParent, true);
 
         OmniboxResourceProvider.setTabFaviconFactory(mTabFaviconFunction);
 

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.omnibox.navattach;
+package org.chromium.chrome.browser.omnibox.fusebox;
 
 import static org.junit.Assert.assertEquals;
 
@@ -57,7 +57,7 @@ public class NavigationAttachmentItemViewBinderUnitTest {
                                     (ConstraintLayout)
                                             LayoutInflater.from(activity)
                                                     .inflate(
-                                                            R.layout.navigation_attachment_item,
+                                                            R.layout.fusebox_attachment_layout,
                                                             null);
                             PropertyModelChangeProcessor.create(
                                     mModel, mView, NavigationAttachmentItemViewBinder::bind);

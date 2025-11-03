@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.omnibox.navattach;
+package org.chromium.chrome.browser.omnibox.fusebox;
 
 import android.view.ViewGroup;
 
@@ -38,8 +38,7 @@ class NavigationAttachmentsViewHolder {
         var outline =
                 new RoundedCornerOutlineProvider(
                         parent.getResources()
-                                .getDimensionPixelSize(
-                                        R.dimen.navigation_attachments_button_corner_radius));
+                                .getDimensionPixelSize(R.dimen.fusebox_button_corner_radius));
         outline.setClipPaddedArea(true);
         addButton.setOutlineProvider(outline);
         settingsButton.setOutlineProvider(outline);

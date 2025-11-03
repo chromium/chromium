@@ -166,11 +166,11 @@ found in the LICENSE file.
         8%
     </item>
 
-    <!-- Navigation attachments bar -->
-    <dimen name="navigation_attachments_popup_width">250dp</dimen>
-    <dimen name="navigation_attachments_button_size">56dp</dimen>
-    <dimen name="navigation_attachments_button_padding">10dp</dimen>
-    <dimen name="navigation_attachments_button_corner_radius">8dp</dimen>
+    <!-- Fusebox bar -->
+    <dimen name="fusebox_popup_width">250dp</dimen>
+    <dimen name="fusebox_button_size">56dp</dimen>
+    <dimen name="fusebox_button_padding">10dp</dimen>
+    <dimen name="fusebox_button_corner_radius">8dp</dimen>
 
     <!-- Search engine logo. -->
     <dimen name="omnibox_search_engine_logo_composed_size">24dp</dimen>

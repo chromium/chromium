@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.omnibox.navattach;
+package org.chromium.chrome.browser.omnibox.fusebox;
 
 import androidx.annotation.IntDef;
 
@@ -36,7 +36,7 @@ class NavigationAttachmentsRecyclerViewAdapter extends SimpleRecyclerViewAdapter
                 (parent) -> {
                     return parent.getContext()
                             .getSystemService(android.view.LayoutInflater.class)
-                            .inflate(R.layout.navigation_attachment_item, parent, false);
+                            .inflate(R.layout.fusebox_attachment_layout, parent, false);
                 },
                 NavigationAttachmentItemViewBinder::bind);
         registerType(
@@ -44,7 +44,7 @@ class NavigationAttachmentsRecyclerViewAdapter extends SimpleRecyclerViewAdapter
                 (parent) -> {
                     return parent.getContext()
                             .getSystemService(android.view.LayoutInflater.class)
-                            .inflate(R.layout.navigation_attachment_item, parent, false);
+                            .inflate(R.layout.fusebox_attachment_layout, parent, false);
                 },
                 NavigationAttachmentItemViewBinder::bind);
         registerType(
@@ -52,7 +52,7 @@ class NavigationAttachmentsRecyclerViewAdapter extends SimpleRecyclerViewAdapter
                 (parent) -> {
                     return parent.getContext()
                             .getSystemService(android.view.LayoutInflater.class)
-                            .inflate(R.layout.navigation_attachment_item, parent, false);
+                            .inflate(R.layout.fusebox_attachment_layout, parent, false);
                 },
                 NavigationAttachmentItemViewBinder::bind);
     }

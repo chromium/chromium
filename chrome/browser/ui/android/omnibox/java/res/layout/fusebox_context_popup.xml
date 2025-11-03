@@ -18,9 +18,9 @@ found in the LICENSE file.
     <TextView
         style="@style/NavigationAttachments.PopupMenu.Header"
         android:id="@+id/navigation_attachments_recent_tabs_header"
+        android:visibility="gone"
         android:paddingEnd="@dimen/omnibox_suggestion_content_padding"
         android:text="@string/recent_tabs"
-        android:visibility="gone"
         app:layout_constraintTop_toTopOf="parent"/>
 
     <androidx.recyclerview.widget.RecyclerView
@@ -43,18 +43,18 @@ found in the LICENSE file.
     <org.chromium.ui.widget.ButtonCompat
         style="@style/NavigationAttachments.PopupMenu.Item"
         android:id="@+id/navigation_attachments_paste_from_clipboard_button"
+        android:visibility="gone"
         android:drawableStart="@drawable/ic_content_copy"
         android:text="@string/clipboard_permission_title"
-        android:visibility="gone"
         app:layout_constraintTop_toBottomOf="@id/tab_attachment_recycler_view"/>
 
     <org.chromium.ui.widget.ButtonCompat
         style="@style/NavigationAttachments.PopupMenu.Item"
         android:id="@+id/navigation_attachments_pick_tabs_button"
+        android:visibility="gone"
         android:drawableStart="@drawable/tab"
         android:text="@string/omnibox_navattach_tabs"
         android:contentDescription="@string/accessibility_omnibox_add_tabs"
-        android:visibility="gone"
         app:layout_constraintTop_toBottomOf="@id/navigation_attachments_paste_from_clipboard_button"/>
 
     <org.chromium.ui.widget.ButtonCompat
