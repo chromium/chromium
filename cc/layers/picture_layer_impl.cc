@@ -535,12 +535,6 @@ void PictureLayerImpl::AppendQuadsSpecialization(
     }
   }
 
-  // Adjust shared_quad_state with the quad_offset, since we've adjusted each
-  // quad we've appended by it.
-  shared_quad_state->quad_to_target_transform.Translate(-quad_offset);
-  shared_quad_state->quad_layer_rect.Offset(quad_offset);
-  shared_quad_state->visible_quad_layer_rect.Offset(quad_offset);
-
   if (missing_tile_count) {
     append_quads_data->num_missing_tiles += missing_tile_count;
     append_quads_data->checkerboarded_needs_raster = true;
@@ -555,6 +549,12 @@ void PictureLayerImpl::AppendQuadsSpecialization(
   // finer tilings.
   CleanUpTilingsOnActiveLayer(last_append_quads_tilings_);
   SanityCheckTilingState();
+
+  // Adjust shared_quad_state with the quad_offset, since we've adjusted each
+  // quad we've appended by it.
+  shared_quad_state->quad_to_target_transform.Translate(-quad_offset);
+  shared_quad_state->quad_layer_rect.Offset(quad_offset);
+  shared_quad_state->visible_quad_layer_rect.Offset(quad_offset);
 }
 
 bool PictureLayerImpl::UpdateTiles() {
