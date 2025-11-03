@@ -2147,7 +2147,7 @@ public class ToolbarPhone extends ToolbarLayout
 
         // If the refactored animations are enabled, we want to update the bg only after we've
         // started the delayed transition in order to grab the correct starting properties.
-        if (ChromeFeatureList.sToolbarPhoneAnimationRefactor.isEnabled()) {
+        if (!ChromeFeatureList.sToolbarPhoneAnimationRefactor.isEnabled()) {
             updateBackground(hasFocus);
         }
         updateLocationBarForNtp(mVisualState, urlHasFocus());
