@@ -2,14 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #import "ios/chrome/browser/variations/model/ios_chrome_variations_seed_store.h"
 
+#import <optional>
+
+#import "base/check.h"
 #import "base/no_destructor.h"
+#import "base/notreached.h"
 #import "components/variations/seed_response.h"
 #import "ios/chrome/browser/variations/model/ios_chrome_variations_seed_store+fetcher.h"
 #import "ios/chrome/browser/variations/model/ios_chrome_variations_seed_store+testing.h"
@@ -19,44 +18,39 @@ namespace {
 using ::variations::SeedApplicationStage;
 using ::variations::SeedResponse;
 
-// Seed application stages in the order of sequence they should happen.
-const SeedApplicationStage kSeedApplicationStages[] = {
-    SeedApplicationStage::kNoSeed, SeedApplicationStage::kSeedStored,
-    SeedApplicationStage::kSeedImported, SeedApplicationStage::kSeedApplied};
+// Initial seed application stage.
+constexpr SeedApplicationStage kInitialStage = SeedApplicationStage::kNoSeed;
 
-// Convenience getter and setter for the seed application stage. If
-// `increment=true`, increment the stage before returning; if
-// `reset_for_testing=true`, the seed application stage would be reset to
-// `kNoSeed`.
-//
-// NOTE:`reset_for_testing` has precedence over `increment`, and setting this
-// parameter explicitly should ONLY be done for testing purpose.
-SeedApplicationStage SeedApplicationStageAccessor(
-    bool increment,
-    bool reset_for_testing = false) {
-  // Index of the current seed application stage in `kSeedApplicationStages`.
-  static int g_shared_seed_application_stage_idx = 0;
+// Returns the seed application stage following `stage`.
+constexpr std::optional<SeedApplicationStage> NextStage(
+    SeedApplicationStage stage) {
+  switch (stage) {
+    case SeedApplicationStage::kNoSeed:
+      return SeedApplicationStage::kSeedStored;
 
-  if (reset_for_testing) {
-    g_shared_seed_application_stage_idx = 0;
-  } else if (increment) {
-    g_shared_seed_application_stage_idx++;
+    case SeedApplicationStage::kSeedStored:
+      return SeedApplicationStage::kSeedImported;
+
+    case SeedApplicationStage::kSeedImported:
+      return SeedApplicationStage::kSeedApplied;
+
+    case SeedApplicationStage::kSeedApplied:
+      return std::nullopt;
   }
-  CHECK_LE(g_shared_seed_application_stage_idx,
-           static_cast<int>(SeedApplicationStage::kMaxValue));
-  return kSeedApplicationStages[g_shared_seed_application_stage_idx];
+
+  NOTREACHED();
 }
 
-// Getter for seed application stage extracted for readability purpose.
-SeedApplicationStage GetSeedApplicationStage() {
-  return SeedApplicationStageAccessor(/*increment=*/false);
-}
+// Stores the current seed application stage.
+SeedApplicationStage g_current_stage = kInitialStage;
 
-// Increment the seed application stage if the current stage equals `stage`,
-// otherwise do nothing; extracted for readability purpose.
-void IncrementSeedApplicationStageIfAt(SeedApplicationStage stage) {
-  if (GetSeedApplicationStage() == stage) {
-    SeedApplicationStageAccessor(/*increment=*/true);
+// Sets the current application stage to `next_stage` if currently at `stage`.
+inline void IncrementSeedApplicationStageIfAt(SeedApplicationStage stage) {
+  std::optional<SeedApplicationStage> next_stage = NextStage(stage);
+  CHECK(next_stage.has_value());
+
+  if (g_current_stage == stage) {
+    g_current_stage = next_stage.value();
   }
 }
 
@@ -90,7 +84,7 @@ std::unique_ptr<SeedResponse> SwapSeedWithSharedSeed(
 }
 
 + (SeedApplicationStage)seedApplicationStage {
-  return GetSeedApplicationStage();
+  return g_current_stage;
 }
 
 #pragma mark - Private Setter (exposed to fetcher only)
@@ -107,7 +101,7 @@ std::unique_ptr<SeedResponse> SwapSeedWithSharedSeed(
 
 + (void)resetForTesting {
   SwapSeedWithSharedSeed(nullptr);
-  SeedApplicationStageAccessor(false, /*reset_for_testing=*/true);
+  g_current_stage = kInitialStage;
 }
 
 @end
