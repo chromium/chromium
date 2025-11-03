@@ -2365,7 +2365,6 @@ select::-internal-select-autofill-preview-text {
   menubar, menulist {
     menuitem {
       align-items: center;
-      user-select: none;
 
       /* The min-*-size rules below were inspired by the same rules for
        * customizable select, and mostly cater to WCAG accessibility guidelines

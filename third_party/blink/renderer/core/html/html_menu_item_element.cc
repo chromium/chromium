@@ -4,15 +4,12 @@
 
 #include "third_party/blink/renderer/core/html/html_menu_item_element.h"
 
-#include "third_party/blink/public/common/input/web_pointer_properties.h"
 #include "third_party/blink/renderer/core/css/selector_checker.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/popover_data.h"
-#include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/events/command_event.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
-#include "third_party/blink/renderer/core/events/mouse_event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/html/forms/html_field_set_element.h"
 #include "third_party/blink/renderer/core/html/html_menu_bar_element.h"
@@ -68,6 +65,31 @@ bool HTMLMenuItemElement::checked() const {
   return is_checked_;
 }
 
+void HTMLMenuItemElement::setChecked(bool checked) {
+  // Some menu items are not "checkable", and the `checked` IDL attribute is
+  // only stateful for checkable menu items.
+  if (is_checked_ == checked || (checked && !IsCheckable())) {
+    return;
+  }
+
+  is_checked_ = checked;
+  PseudoStateChanged(CSSSelector::kPseudoChecked);
+
+  // Only update the exclusivity of all other menu items rooted under the same
+  // fieldset *if* `this` is becoming checked under a fieldset that enforces
+  // exclusivity. If it is becoming unchecked, we don't have to worry about
+  // manually unchecking other menu items in the exclusive set, because it is
+  // permitted to have zero menu items checked.
+  DCHECK(nearest_ancestor_field_set_);
+  const AtomicString& checkable =
+      nearest_ancestor_field_set_->FastGetAttribute(html_names::kCheckableAttr);
+  if (is_checked_ && EqualIgnoringASCIICase(checkable, keywords::kSingle)) {
+    nearest_ancestor_field_set_->UpdateMenuItemCheckableExclusivity(this);
+  }
+
+  // TODO(crbug.com/425682466): Accessibility mapping.
+}
+
 bool HTMLMenuItemElement::ShouldAppearChecked() const {
   // `this` should only appear checked if we are checked, and we're in a
   // checkable <fieldset> in a <menulist>.
@@ -102,78 +124,21 @@ bool HTMLMenuItemElement::ShouldHaveFocusAppearance() const {
   return SelectorChecker::MatchesFocusVisiblePseudoClass(*this);
 }
 
-HTMLElement* HTMLMenuItemElement::InvokesSubmenuOrPopover() const {
-  HTMLElement* invoked_element = DynamicTo<HTMLElement>(commandForElement());
-  if (!invoked_element || !invoked_element->IsPopover()) {
+HTMLMenuListElement* HTMLMenuItemElement::InvokesSubmenu() const {
+  auto* invoked_menulist = DynamicTo<HTMLMenuListElement>(commandForElement());
+  if (!invoked_menulist) {
     return nullptr;
   }
   CommandEventType type = GetCommandEventType(
       FastGetAttribute(html_names::kCommandAttr), GetExecutionContext());
   if (type != CommandEventType::kTogglePopover &&
       type != CommandEventType::kShowPopover &&
-      type != CommandEventType::kHidePopover &&
       type != CommandEventType::kToggleMenu &&
-      type != CommandEventType::kShowMenu &&
-      type != CommandEventType::kHideMenu) {
+      type != CommandEventType::kShowMenu) {
     return nullptr;
   }
-  return invoked_element;
-}
-
-HTMLMenuListElement* HTMLMenuItemElement::InvokesSubmenu() const {
-  return DynamicTo<HTMLMenuListElement>(InvokesSubmenuOrPopover());
-}
-
-bool HTMLMenuItemElement::CanBeCommandInvoker() const {
-  return !FastHasAttribute(html_names::kDisabledAttr);
-}
-
-bool HTMLMenuItemElement::setChecked(bool checked) {
-  bool checkable = IsCheckable();
-  is_checked_ = checked && checkable;
-  PseudoStateChanged(CSSSelector::kPseudoChecked);
-
-  if (!checkable) {
-    // Not checkable - close the containing menulist unless this item invokes
-    // a sub-menu or a popover.
-    return !InvokesSubmenuOrPopover();
-  }
-
-  // Only update the exclusivity of all other menu items rooted under the same
-  // fieldset *if* `this` is becoming checked under a fieldset that enforces
-  // exclusivity. If it is becoming unchecked, we don't have to worry about
-  // manually unchecking other menu items in the exclusive set, because it is
-  // permitted to have zero menu items checked.
-  DCHECK(nearest_ancestor_field_set_);
-  const AtomicString& checkable_keyword =
-      nearest_ancestor_field_set_->FastGetAttribute(html_names::kCheckableAttr);
-  if (is_checked_ &&
-      EqualIgnoringASCIICase(checkable_keyword, keywords::kSingle)) {
-    nearest_ancestor_field_set_->UpdateMenuItemCheckableExclusivity(this);
-    // Exclusive checkbox - close the containing menulist after changing.
-    return true;
-  } else {
-    // Nop-exclusive checkbox - don't close the containing menulist, so that
-    // multiple values can be chosen.
-    return false;
-  }
-}
-
-void HTMLMenuItemElement::ActivateMenuItem() {
-  // A menu item's checkability and ability to invoke a command are
-  // exclusive. If the item is checkable, that takes precedence, and the sub-
-  // menu invoker will NOT be respected.
-  bool close_containing_menulist = setChecked(!checked());
-
-  // If this menu item isn't a submenu invoker, or it's a checkable menu item
-  // that wants us to close after changing, then close the containing menu.
-  if (close_containing_menulist) {
-    DCHECK(IsCheckable() || !InvokesSubmenu());
-    CloseOutermostContainingMenuList();
-  }
-  if (!IsCheckable() && InvokesSubmenuOrPopover()) {
-    HandleCommandForActivation();
-  }
+  DCHECK(invoked_menulist->IsPopover());
+  return invoked_menulist;
 }
 
 HTMLMenuListElement* HTMLMenuItemElement::CloseOutermostContainingMenuList(
@@ -399,79 +364,22 @@ void HTMLMenuItemElement::HandleMenuKeyboardEvents(Event& event) {
   }
 }
 
-bool HTMLMenuItemElement::HandleMenuPointerEvents(Event& event) {
-  // This implements the special "mouse down, drag to menu item, mouse up"
-  // behavior. This is a mouse-only behavior - it should not apply to pointer
-  // events for touchscreens. Touch events will be handled by the normal input
-  // system behavior of sending a DOMActivate event. This also does not apply
-  // to checkable menu items, which also rely on DOMActivate.
-  const auto* mouse_event = DynamicTo<MouseEvent>(event);
-  if (!mouse_event || mouse_event->FromTouch() ||
-      mouse_event->button() !=
-          static_cast<int16_t>(WebPointerProperties::Button::kLeft) ||
-      (event.type() != event_type_names::kMouseup &&
-       event.type() != event_type_names::kMousedown)) {
-    return false;
-  }
-
-  if (event.type() == event_type_names::kMouseup) {
-    // We leave the picker open, and do not "pick" a menu item, iff:
-    //  1. The mousedown was on a <menuitem> that triggers a sub-menu via
-    //     `commandfor`, so we have a mousedown location stored, and
-    //  2. The mouseup on this <menuitem> was within kEpsilon layout units
-    //     (post zoom, page-relative) of the location of the mousedown. I.e.
-    //     the mouse was not dragged between mousedown and mouseup. I.e. this
-    //     was just a "click" to open the menuitem's sub-menu - it shouldn't
-    //     pick anything yet.
-    std::optional<gfx::PointF> mouse_down_loc =
-        GetDocument().PopoverPickerMousedownLocation();
-    GetDocument().SetPopoverPickerMousedownLocation(std::nullopt);
-    // TODO(masonf) This kEpsilon should be combined with the one in
-    // html_option_element.cc.
-    constexpr float kEpsilon = 5;  // 5 pixels in any direction
-    bool activate_menu_item = !mouse_down_loc.has_value() ||
-                              !mouse_down_loc->IsWithinDistance(
-                                  mouse_event->AbsoluteLocation(), kEpsilon);
-    if (activate_menu_item) {
-      // The mouse moved, so select this menu item.
-      ActivateMenuItem();
-    }
-    // TODO(crbug.com/406566432): This is a hack, and isn't strictly correct.
-    // We need a better way to ignore the synthetic `click` that triggers the
-    // `DOMActivate` that would double-trigger the menu in this case.
-    ignore_next_dom_activate_ = true;
-  } else {
-    DCHECK_EQ(event.type(), event_type_names::kMousedown);
-    if (!InvokesSubmenu()) {
-      return false;
-    }
-    GetDocument().SetPopoverPickerMousedownLocation(
-        mouse_event->FromTouch()
-            ? std::nullopt
-            : std::optional(mouse_event->AbsoluteLocation()));
-    // Activate sub-menus on mouse *down*, so that the user can drag and release
-    // to choose a sub-menu item.
-    ActivateMenuItem();
-  }
-  return true;
-}
-
 void HTMLMenuItemElement::DefaultEventHandler(Event& event) {
+  // Let Element handle some basic keyboard events first.
   if (HandleKeyboardActivation(event)) {
     return;
   }
-  if (event.type() == event_type_names::kDOMActivate) {
-    if (ignore_next_dom_activate_) {
-      ignore_next_dom_activate_ = false;
-    } else {
-      ActivateMenuItem();
-    }
-    return;
-  }
-  if (HandleMenuPointerEvents(event)) {
+  HandleCommandForActivation(event);
+  if (event.DefaultHandled()) {
     return;
   }
   HandleMenuKeyboardEvents(event);
+  if (event.type() == event_type_names::kDOMActivate) {
+    // If a menuitem is a sub-menu invoker, then it will not respect the
+    // parent fieldset's checkable attribute. I.e. you can't be both a sub-menu
+    // invoker and a checkable menu item.
+    setChecked(!checked());
+  }
   HTMLElement::DefaultEventHandler(event);
 }
 

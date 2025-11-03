@@ -2588,16 +2588,17 @@ bool HTMLElement::CanBeCommandInvoker() const {
          IsCustomButton();
 }
 
-bool HTMLElement::HandleCommandForActivation() {
-  if (!CanBeCommandInvoker()) {
-    return false;
+void HTMLElement::HandleCommandForActivation(Event& event) {
+  if (!CanBeCommandInvoker() ||
+      event.type() != event_type_names::kDOMActivate) {
+    return;
   }
 
   // Buttons with a commandfor will dispatch a CommandEvent on the target of the
   // invoker, and run `HandleCommandInternal` to perform default logic.
   Element* command_target = commandForElement();
   if (!command_target) {
-    return false;
+    return;
   }
   // commandfor & popovertarget shouldn't be combined, so warn.
   if (FastHasAttribute(html_names::kPopovertargetAttr)) {
@@ -2607,7 +2608,7 @@ bool HTMLElement::HandleCommandForActivation() {
   }
   const AtomicString& action = command();
   if (action.empty()) {
-    return false;
+    return;
   }
   DCHECK_NE(GetCommandEventType(FastGetAttribute(html_names::kCommandAttr),
                                 GetExecutionContext()),
@@ -2621,7 +2622,7 @@ bool HTMLElement::HandleCommandForActivation() {
       command_event_type != CommandEventType::kCustom) {
     command_target->HandleCommandInternal(*this, command_event_type);
   }
-  return true;
+  event.SetDefaultHandled();
 }
 
 Element* HTMLElement::commandForElement() const {
@@ -3270,10 +3271,9 @@ bool HTMLElement::IsInteractiveContent() const {
 void HTMLElement::DefaultEventHandler(Event& event) {
   auto* keyboard_event = DynamicTo<KeyboardEvent>(event);
 
-  if (event.type() == event_type_names::kDOMActivate) {
-    if (HandleCommandForActivation()) {
-      return;
-    }
+  HandleCommandForActivation(event);
+  if (event.DefaultHandled()) {
+    return;
   }
 
   if (RuntimeEnabledFeatures::ElementInternalsDotTypeEnabled() &&
