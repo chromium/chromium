@@ -2620,10 +2620,25 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.Fonts.LastResortAttemptsUntilStaticMatch"
+    units="attempts" expires_after="2026-03-01">
+  <owner>andresrperez@chromium.org</owner>
+  <owner>anthonyvd@chromium.org</owner>
+  <owner>chrome-catan@google.com</owner>
+  <summary>
+    Records how many attempts it took to find a last resort fallback font. This
+    is attempted when no other specified font could be instantiated to render a
+    character. The last resort font from the FontDescription is tried first, and
+    then hardcoded system fonts if needed. This histogram counts those hardcoded
+    fonts attempts. If no fallback is found, the overflow bucket is recorded.
+  </summary>
+</histogram>
+
 <histogram name="Blink.Fonts.LastResortFallbackFound" enum="Boolean"
     expires_after="2026-03-01">
   <owner>andresrperez@chromium.org</owner>
   <owner>anthonyvd@chromium.org</owner>
+  <owner>chrome-catan@google.com</owner>
   <summary>
     Records whether a last resort fallback font was found. This is attempted
     when no other specified font could be instantiated to render a character.
