@@ -197,7 +197,7 @@
     "chai": "4.5.0",
     "chai-as-promised": "7.1.2",
     "debug": "4.4.3",
-    "devtools-protocol": "0.0.1528500",
+    "devtools-protocol": "0.0.1537100",
     "eslint": "9.31.0",
     "eslint-config-prettier": "10.1.8",
     "eslint-import-resolver-typescript": "4.4.4",
