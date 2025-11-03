@@ -18,6 +18,7 @@
 #include "chrome/browser/glic/glic_zero_state_suggestions_manager.h"
 #include "chrome/browser/glic/host/context/glic_active_pinned_focused_tab_manager.h"
 #include "chrome/browser/glic/host/context/glic_empty_focused_browser_manager.h"
+#include "chrome/browser/glic/host/context/glic_empty_focused_tab_manager.h"
 #include "chrome/browser/glic/host/context/glic_screenshot_capturer.h"
 #include "chrome/browser/glic/host/context/glic_sharing_manager_impl.h"
 #include "chrome/browser/glic/host/host.h"
@@ -127,19 +128,43 @@ GlicInstanceImpl::GlicInstanceImpl(
     base::WeakPtr<InstanceCoordinatorDelegate> coordinator_delegate,
     GlicMetrics* metrics,
     contextual_cueing::ContextualCueingService* contextual_cueing_service)
+    : GlicInstanceImpl(profile,
+                       instance_id,
+                       coordinator_delegate,
+                       metrics,
+                       contextual_cueing_service,
+                       new GlicFocusedBrowserManager(this, profile)) {}
+
+GlicInstanceImpl::GlicInstanceImpl(
+    Profile* profile,
+    InstanceId instance_id,
+    base::WeakPtr<InstanceCoordinatorDelegate> coordinator_delegate,
+    GlicMetrics* metrics,
+    contextual_cueing::ContextualCueingService* contextual_cueing_service,
+    GlicFocusedBrowserManager* focused_browser_manager)
     : profile_(profile),
       service_(GlicKeyedService::Get(profile)),
       coordinator_delegate_(coordinator_delegate),
       id_(instance_id),
       host_(profile_, this, this, this),
-      sharing_manager_(
+      pinned_tab_manager_(profile, this, metrics),
+      detached_mode_sharing_manager_(
+          std::make_unique<GlicPinAwareDetachedFocusedTabManager>(
+              &sharing_manager_,
+              focused_browser_manager),
+          base::WrapUnique<GlicFocusedBrowserManager>(focused_browser_manager),
+          &pinned_tab_manager_,
+          profile,
+          metrics),
+      attached_mode_sharing_manager_(
           std::make_unique<GlicActivePinnedFocusedTabManager>(
               profile,
               &sharing_manager_),
           std::make_unique<GlicEmptyFocusedBrowserManager>(),
-          std::make_unique<GlicPinnedTabManager>(profile, this, metrics),
+          &pinned_tab_manager_,
           profile,
           metrics),
+      sharing_manager_(&attached_mode_sharing_manager_),
       last_non_hidden_panel_state_kind_(mojom::PanelStateKind::kAttached),
       zero_state_suggestions_manager_(
           std::make_unique<GlicZeroStateSuggestionsManager>(
@@ -181,6 +206,10 @@ bool GlicInstanceImpl::IsShowing() const {
 
 bool GlicInstanceImpl::IsAttached() {
   return GetPanelState().kind == mojom::PanelStateKind::kAttached;
+}
+
+bool GlicInstanceImpl::IsDetached() {
+  return GetPanelState().kind == mojom::PanelStateKind::kDetached;
 }
 
 gfx::Size GlicInstanceImpl::GetPanelSize() {
@@ -610,9 +639,15 @@ void GlicInstanceImpl::ShowInactiveSidePanelEmbedderFor(
 void GlicInstanceImpl::SetActiveEmbedderAndNotifyStateChange(
     std::optional<EmbedderKey> new_key) {
   active_embedder_key_ = new_key;
-  if (last_non_hidden_panel_state_kind_ != GetPanelState().kind &&
-      GetPanelState().kind != mojom::PanelStateKind::kHidden) {
-    last_non_hidden_panel_state_kind_ = GetPanelState().kind;
+  mojom::PanelStateKind panel_state_kind = GetPanelState().kind;
+  if (last_non_hidden_panel_state_kind_ != panel_state_kind &&
+      panel_state_kind != mojom::PanelStateKind::kHidden) {
+    last_non_hidden_panel_state_kind_ = panel_state_kind;
+    if (panel_state_kind == mojom::PanelStateKind::kDetached) {
+      sharing_manager_.SetDelegate(&detached_mode_sharing_manager_);
+    } else if (panel_state_kind == mojom::PanelStateKind::kAttached) {
+      sharing_manager_.SetDelegate(&attached_mode_sharing_manager_);
+    }
   }
   NotifyStateChange();
   NotifyPanelStateChanged();
@@ -813,6 +848,7 @@ void GlicInstanceImpl::NotifyInstanceActivationChanged(bool is_active) {
         base::BindOnce(&GlicInstanceImpl::Hibernate, base::Unretained(this)));
   }
 
+  sharing_manager_.OnGlicWindowActivationChanged(is_active && IsDetached());
   if (coordinator_delegate_) {
     coordinator_delegate_->OnInstanceActivationChanged(this, is_active);
   }

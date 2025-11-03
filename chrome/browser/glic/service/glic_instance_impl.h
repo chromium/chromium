@@ -14,6 +14,7 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/glic/actor/glic_actor_task_manager.h"
+#include "chrome/browser/glic/host/context/glic_delegating_sharing_manager.h"
 #include "chrome/browser/glic/host/context/glic_sharing_manager_impl.h"
 #include "chrome/browser/glic/host/context/glic_sharing_manager_provider.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
@@ -109,6 +110,7 @@ class GlicInstanceImpl : public GlicInstance,
   gfx::Size GetPanelSize() override;
   bool IsActive() override;
 
+  bool IsDetached();
   bool IsActuating() const;
 
   // These methods should only be called by the GlicInstanceCoordinator.
@@ -210,6 +212,17 @@ class GlicInstanceImpl : public GlicInstance,
   views::View* GetActiveEmbedderGlicViewForTesting();
 
  private:
+  // We use a delegating constructor pattern so we can hand off ownership of the
+  // focused browser manager as well as provide a reference to it to another
+  // object.
+  GlicInstanceImpl(
+      Profile* profile,
+      InstanceId instance_id,
+      base::WeakPtr<InstanceCoordinatorDelegate> coordinator_delegate,
+      GlicMetrics* metrics,
+      contextual_cueing::ContextualCueingService* contextual_cueing_service,
+      GlicFocusedBrowserManager* focused_browser_manager);
+
   struct EmbedderEntry {
     EmbedderEntry();
     ~EmbedderEntry();
@@ -262,6 +275,8 @@ class GlicInstanceImpl : public GlicInstance,
       base::RepeatingCallbackList<void(bool, mojom::CurrentView view)>;
   StateChangeCallbackList state_change_callback_list_;
 
+  base::ObserverList<PanelStateObserver> state_observers_;
+
   raw_ptr<Profile> profile_;
   raw_ptr<GlicKeyedService> service_;
 
@@ -282,14 +297,25 @@ class GlicInstanceImpl : public GlicInstance,
   glic::EmptyEmbedderDelegate empty_embedder_delegate_;
   Host host_;
   std::optional<ConversationInfo> conversation_info_;
-  GlicSharingManagerImpl sharing_manager_;
+
+  // The pinned tab manager for the instance.
+  // TODO (crbug.com/452150693): move ownership of this instance into the
+  // GlicStablePinningDelegatingSharingManager.
+  GlicPinnedTabManager pinned_tab_manager_;
+
+  // The sharing manager used internally for detached mode.
+  GlicSharingManagerImpl detached_mode_sharing_manager_;
+
+  // The sharing manager used internally for attached mode.
+  GlicSharingManagerImpl attached_mode_sharing_manager_;
+
+  // The source of truth sharing manager for the instance.
+  GlicStablePinningDelegatingSharingManager sharing_manager_;
 
   // Tracks the last non-hidden panel state kind for the instance. This is
   // useful for responding to changes in attached/detached state.
   mojom::PanelStateKind last_non_hidden_panel_state_kind_;
   mojom::WebClientMode interaction_mode_;
-
-  base::ObserverList<PanelStateObserver> state_observers_;
 
   base::ScopedObservation<BrowserList, BrowserListObserver>
       browser_list_observation_{this};
