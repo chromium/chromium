@@ -155,7 +155,14 @@ IN_PROC_BROWSER_TEST_F(WebUIWebViewBrowserTest, MediaRequestDenyOnGlic) {
                    GetTestUrl("webview/mediarequest.html").spec());
 }
 
-IN_PROC_BROWSER_TEST_F(WebUIWebViewBrowserTest, MediaRequestAllowOnSignIn) {
+// TODO(crbug.com/444024595): Flaky on Linux and Windows
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+#define MAYBE_MediaRequestAllowOnSignIn DISABLED_MediaRequestAllowOnSignIn
+#else
+#define MAYBE_MediaRequestAllowOnSignIn MediaRequestAllowOnSignIn
+#endif
+IN_PROC_BROWSER_TEST_F(WebUIWebViewBrowserTest,
+                       MAYBE_MediaRequestAllowOnSignIn) {
   RunBasicTestCase("MediaRequestAllowOnSignIn",
                    GetTestUrl("webview/mediarequest.html").spec());
 }
