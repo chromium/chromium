@@ -680,7 +680,7 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
             // top. We restrict its position and height to allow scrolling and avoid rendering
             // offscreen.
             int windowHeight = mWindowAndroid.getDisplay().getDisplayHeight();
-            int maxHeight = windowHeight - keyboardHeight;
+            int maxHeight = windowHeight - keyboardHeight - statusBarHeight;
             mControlContainer.setMaxHeight(maxHeight);
 
             int maxTranslation = -(windowHeight - layer.getHeight() - statusBarHeight);
