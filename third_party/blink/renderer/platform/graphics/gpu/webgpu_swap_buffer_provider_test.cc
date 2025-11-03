@@ -361,7 +361,7 @@ TEST_F(WebGPUSwapBufferProviderTest, VerifyResizingProperlyAffectsResources) {
   provider_->GetNewTexture(kSize);
   EXPECT_TRUE(
       provider_->PrepareTransferableResource(&resource, &release_callback));
-  EXPECT_EQ(kSize, resource.size);
+  EXPECT_EQ(kSize, resource.GetSize());
   std::move(release_callback).Run(gpu::SyncToken(), false /* lostResource */);
 
   // Produce one resource of size kOtherSize.
@@ -372,7 +372,7 @@ TEST_F(WebGPUSwapBufferProviderTest, VerifyResizingProperlyAffectsResources) {
   provider_->GetNewTexture(kOtherSize);
   EXPECT_TRUE(
       provider_->PrepareTransferableResource(&resource, &release_callback));
-  EXPECT_EQ(kOtherSize, resource.size);
+  EXPECT_EQ(kOtherSize, resource.GetSize());
   std::move(release_callback).Run(gpu::SyncToken(), false /* lostResource */);
 
   // Produce one resource of size kSize again.
@@ -383,7 +383,7 @@ TEST_F(WebGPUSwapBufferProviderTest, VerifyResizingProperlyAffectsResources) {
   provider_->GetNewTexture(kSize);
   EXPECT_TRUE(
       provider_->PrepareTransferableResource(&resource, &release_callback));
-  EXPECT_EQ(kSize, resource.size);
+  EXPECT_EQ(kSize, resource.GetSize());
   std::move(release_callback).Run(gpu::SyncToken(), false /* lostResource */);
 }
 
@@ -681,7 +681,7 @@ TEST_F(WebGPUSwapBufferProviderTest, ReserveTextureDescriptorForReflection) {
   provider_->GetNewTexture(kSize);
   EXPECT_TRUE(
       provider_->PrepareTransferableResource(&resource, &release_callback));
-  EXPECT_EQ(kSize, resource.size);
+  EXPECT_EQ(kSize, resource.GetSize());
   std::move(release_callback).Run(gpu::SyncToken(), false /* lostResource */);
 
   // Produce one resource of size kOtherSize. The descriptor passed to
@@ -697,7 +697,7 @@ TEST_F(WebGPUSwapBufferProviderTest, ReserveTextureDescriptorForReflection) {
   provider_->GetNewTexture(kOtherSize);
   EXPECT_TRUE(
       provider_->PrepareTransferableResource(&resource, &release_callback));
-  EXPECT_EQ(kOtherSize, resource.size);
+  EXPECT_EQ(kOtherSize, resource.GetSize());
   std::move(release_callback).Run(gpu::SyncToken(), false /* lostResource */);
 }
 

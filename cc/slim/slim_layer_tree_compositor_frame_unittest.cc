@@ -679,7 +679,7 @@ TEST_F(SlimLayerTreeCompositorFrameTest, UIResourceLayerAppendQuads) {
 
     ASSERT_EQ(frame.resource_list.size(), 1u);
     EXPECT_EQ(frame.resource_list[0].id, texture_quad->resource_id);
-    EXPECT_EQ(frame.resource_list[0].size, gfx::Size(1, 1));
+    EXPECT_EQ(frame.resource_list[0].GetSize(), gfx::Size(1, 1));
     first_resource_id = texture_quad->resource_id;
 
     ASSERT_EQ(frame_sink_->uploaded_resources().size(), 1u);
@@ -713,7 +713,7 @@ TEST_F(SlimLayerTreeCompositorFrameTest, UIResourceLayerAppendQuads) {
 
     ASSERT_EQ(frame.resource_list.size(), 1u);
     EXPECT_EQ(frame.resource_list[0].id, texture_quad->resource_id);
-    EXPECT_EQ(frame.resource_list[0].size, gfx::Size(2, 2));
+    EXPECT_EQ(frame.resource_list[0].GetSize(), gfx::Size(2, 2));
     EXPECT_NE(first_resource_id, texture_quad->resource_id);
   }
 }
@@ -783,7 +783,7 @@ TEST_F(SlimLayerTreeCompositorFrameTest, NinePatchLayerAppendQuads) {
 
   viz::CompositorFrame frame = ProduceFrame();
   ASSERT_EQ(frame.resource_list.size(), 1u);
-  EXPECT_EQ(frame.resource_list[0].size, gfx::Size(10, 10));
+  EXPECT_EQ(frame.resource_list[0].GetSize(), gfx::Size(10, 10));
   ASSERT_EQ(frame_sink_->uploaded_resources().size(), 1u);
   ASSERT_EQ(frame.render_pass_list.size(), 1u);
   auto& pass = frame.render_pass_list.back();
