@@ -82,6 +82,13 @@ namespace history {
 std::string Md5AsHexForTopSites(std::string_view url_spec);
 }
 
+namespace hunspell {
+std::array<uint8_t, crypto::obsolete::kMd5Size> Md5ForBdict(
+    base::span<const uint8_t> data);
+std::array<uint8_t, crypto::obsolete::kMd5Size> Md5ForBdictWriter(
+    base::span<const uint8_t> data);
+}  // namespace hunspell
+
 namespace media::test {
 crypto::obsolete::Md5 MakeMd5HasherForVideoFrameValidation();
 }
@@ -182,6 +189,10 @@ class CRYPTO_EXPORT Md5 {
   friend Md5 drive::MakeMd5HasherForDriveFsAccount();
   friend Md5 drive::util::MakeMd5HasherForDriveApi();
   friend Md5 extensions::image_writer::MakeMd5HasherForImageWriter();
+  friend std::array<uint8_t, kSize> hunspell::Md5ForBdict(
+      base::span<const uint8_t> data);
+  friend std::array<uint8_t, kSize> hunspell::Md5ForBdictWriter(
+      base::span<const uint8_t> data);
   friend std::array<uint8_t, kSize> nearby::Md5ForNearby(
       std::string_view input);
   friend Md5 policy::MakeMd5HasherForPolicyEventId();

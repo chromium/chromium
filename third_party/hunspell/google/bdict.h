@@ -8,8 +8,9 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
+
 #include "base/containers/span.h"
-#include "base/hash/md5.h"
 
 // BDict (binary dictionary) format. All offsets are little endian.
 //
@@ -121,7 +122,9 @@ class BDict {
     uint32_t dic_offset;  // Offset of the dic data.
 
     // Added by version 2.0.
-    base::MD5Digest digest;  // MD5 digest of the aff data and the dic data.
+
+    // MD5 digest of the aff data and the dic data.
+    std::array<uint8_t, 16> digest;
   };
 
   // AFF section ===============================================================

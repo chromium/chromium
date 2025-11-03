@@ -10,9 +10,15 @@
 #include "base/check.h"
 #include "base/containers/span.h"
 #include "base/strings/stringprintf.h"
+#include "crypto/obsolete/md5.h"
 #include "third_party/hunspell/google/bdict.h"
 
 namespace hunspell {
+
+std::array<uint8_t, crypto::obsolete::kMd5Size> Md5ForBdictWriter(
+    base::span<const uint8_t> data) {
+  return crypto::obsolete::Md5::Hash(data);
+}
 
 // Represents one node the word trie in memory. This does not have to be very
 // efficient since it is only used when building.
@@ -454,8 +460,10 @@ std::string BDictWriter::GetBDict() const {
 
   // Write the MD5 digest of the affix information and the dictionary words at
   // the end of the BDic header.
-  if (header->major_version >= 2)
-    base::MD5Sum(base::as_byte_span(ret).subspan(aff_offset), &header->digest);
+  if (header->major_version >= 2) {
+    header->digest =
+        Md5ForBdictWriter(base::as_byte_span(ret).subspan(aff_offset));
+  }
 
   return ret;
 }
