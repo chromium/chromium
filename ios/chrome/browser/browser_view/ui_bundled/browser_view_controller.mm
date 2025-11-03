@@ -1323,13 +1323,13 @@ const CGFloat kMultilineOmniboxAnimationDuration = 0.3f;
   if (omnibox::ForceBottomOmniboxInEditState() ||
       omnibox::ShouldFocusedOmniboxFollowSteadyStatePosition()) {
     if ([self.toolbarCoordinator inEditState]) {
+      CGFloat safeAreaBottom = self.view.safeAreaInsets.bottom;
       if (IsMultilineBrowserOmniboxEnabled() &&
           [self.toolbarCoordinator omniboxPosition] ==
               ToolbarType::kSecondary) {
-        return self.secondaryToolbarKeyboardHeight +
+        return MAX(safeAreaBottom, self.secondaryToolbarKeyboardHeight) +
                self.toolbarCoordinator.keyboardAttachedBottomOmniboxHeight;
       }
-      CGFloat safeAreaBottom = self.view.safeAreaInsets.bottom;
       CGFloat locationBarDisplayHeight =
           self.toolbarCoordinator.locationBarCompactDisplayHeight;
       return safeAreaBottom + locationBarDisplayHeight;
