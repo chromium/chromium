@@ -4,16 +4,11 @@
 
 #include "third_party/blink/renderer/core/layout/anchor_evaluator_impl.h"
 
-#include <variant>
-
 #include "base/auto_reset.h"
 #include "third_party/blink/renderer/core/css/anchor_query.h"
-#include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
+#include "third_party/blink/renderer/core/layout/anchor_map.h"
 #include "third_party/blink/renderer/core/layout/anchor_position_scroll_data.h"
-#include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
-#include "third_party/blink/renderer/core/layout/physical_fragment.h"
-#include "third_party/blink/renderer/core/layout/transform_utils.h"
 #include "third_party/blink/renderer/core/style/anchor_specifier_value.h"
 #include "third_party/blink/renderer/core/style/position_area.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -222,161 +217,6 @@ LayoutUnit ResolveAnchorSizeValue(const PhysicalSize& anchor_size,
 
 }  // namespace
 
-void PhysicalAnchorReference::InsertInReverseTreeOrderInto(
-    Member<PhysicalAnchorReference>* head_ptr) {
-  for (;;) {
-    PhysicalAnchorReference* const head = *head_ptr;
-    DCHECK(!head || head->GetLayoutObject());
-    DCHECK(GetLayoutObject());
-    if (!head ||
-        head->GetLayoutObject()->IsBeforeInPreOrder(*GetLayoutObject())) {
-      next = head;
-      *head_ptr = this;
-      break;
-    }
-
-    head_ptr = &head->next;
-  }
-}
-
-const PhysicalAnchorReference* AnchorMap::AnchorReference(
-    const LayoutBox& query_box,
-    const LayoutObject* query_box_actual_containing_block,
-    const AnchorKey& key) const {
-  const PhysicalAnchorReference* reference = GetAnchorReference(key);
-  if (!reference) {
-    return nullptr;
-  }
-  for (const PhysicalAnchorReference* result = reference; result;
-       result = result->next) {
-    const LayoutObject* layout_object = result->GetLayoutObject();
-    // TODO(crbug.com/384523570): If the layout object has been detached, we
-    // really shouldn't be here.
-    if (!layout_object || layout_object == &query_box ||
-        (result->is_out_of_flow &&
-         !layout_object->IsBeforeInPreOrder(query_box))) {
-      continue;
-    }
-
-    // If an actual containing block has been specified, it means that we may
-    // have found an anchor that isn't acceptable, due to an inconsistency
-    // between the actual (CSS) containing block chain, and the physical
-    // fragment tree structure. This happens for OOFs in block fragmentation.
-    if (query_box_actual_containing_block &&
-        !layout_object->Container()->IsContainedBy(
-            query_box_actual_containing_block)) {
-      continue;
-    }
-
-    return result;
-  }
-  return nullptr;
-}
-
-const LayoutObject* AnchorMap::AnchorLayoutObject(const LayoutBox& query_box,
-                                                  const AnchorKey& key) const {
-  if (const PhysicalAnchorReference* reference = AnchorReference(
-          query_box, /*query_box_actual_containing_block=*/nullptr, key)) {
-    return reference->GetLayoutObject();
-  }
-  return nullptr;
-}
-
-void AnchorMap::Set(const AnchorKey& key,
-                    const LayoutObject& layout_object,
-                    const TransformState& transform_state,
-                    const PhysicalRect& rect_without_transforms,
-                    SetOptions options,
-                    Element* element_for_display_lock) {
-  GCedHeapHashSet<Member<Element>>* display_locks = nullptr;
-  if (element_for_display_lock) {
-    display_locks = MakeGarbageCollected<GCedHeapHashSet<Member<Element>>>();
-    display_locks->insert(element_for_display_lock);
-  }
-  Set(key, MakeGarbageCollected<PhysicalAnchorReference>(
-               *To<Element>(layout_object.GetNode()), transform_state,
-               rect_without_transforms, options == SetOptions::kOutOfFlow,
-               display_locks));
-}
-
-void AnchorMap::Set(const AnchorKey& key, PhysicalAnchorReference* reference) {
-  DCHECK(reference);
-  DCHECK(!reference->next);
-  const auto result = insert(key, reference);
-  if (result.is_new_entry)
-    return;
-
-  // If this is a fragment of the existing |LayoutObject|, unite the rect.
-  Member<PhysicalAnchorReference>* const existing_head_ptr =
-      result.stored_value;
-  DCHECK(*existing_head_ptr);
-  DCHECK(reference->GetLayoutObject());
-  for (PhysicalAnchorReference* existing = *existing_head_ptr; existing;
-       existing = existing->next) {
-    DCHECK(existing->GetLayoutObject());
-    if (existing->GetLayoutObject() == reference->GetLayoutObject()) {
-      existing->rect_without_transforms.Unite(
-          reference->rect_without_transforms);
-
-      gfx::RectF rect = existing->transform_state.MappedQuad().BoundingBox();
-      rect.Union(reference->transform_state.MappedQuad().BoundingBox());
-      existing->transform_state =
-          TransformState(TransformState::kApplyTransformDirection,
-                         gfx::QuadF(gfx::RectF(rect)));
-      return;
-    }
-  }
-
-  // When out-of-flow objects are involved, callers can't guarantee the call
-  // order. Insert into the list in the reverse tree order.
-  reference->InsertInReverseTreeOrderInto(existing_head_ptr);
-}
-
-void AnchorMap::SetFromChild(const PhysicalFragment& child_fragment,
-                             PhysicalOffset additional_offset,
-                             const LayoutObject& container_object,
-                             PhysicalSize container_size,
-                             SetOptions options,
-                             Element* element_for_display_lock) {
-  const AnchorMap* child_anchor_map = child_fragment.GetAnchorMap();
-  DCHECK(child_anchor_map);
-
-  for (auto entry : *child_anchor_map) {
-    // For each key, only the last reference in tree order is reachable
-    // under normal circumstances. However, the presence of anchor-scope
-    // can make it necessary to skip past any number of references to reach
-    // an earlier one. Therefore, all references must be propagated.
-    //
-    // See also InSameAnchorScope.
-    for (PhysicalAnchorReference* reference = entry.value; reference;
-         reference = reference->next) {
-      PhysicalRect rect_without_transforms = reference->rect_without_transforms;
-      rect_without_transforms.offset += additional_offset;
-
-      TransformState transform_state(reference->transform_state);
-      UpdateTransformState(child_fragment, additional_offset, container_object,
-                           container_size, &transform_state);
-
-      GCedHeapHashSet<Member<Element>>* display_locks = nullptr;
-      if (reference->display_locks || element_for_display_lock) {
-        display_locks =
-            MakeGarbageCollected<GCedHeapHashSet<Member<Element>>>();
-      }
-      if (reference->display_locks) {
-        *display_locks = *reference->display_locks;
-      }
-      if (element_for_display_lock) {
-        display_locks->insert(element_for_display_lock);
-      }
-      DCHECK(reference->GetLayoutObject());
-      Set(entry.key,
-          MakeGarbageCollected<PhysicalAnchorReference>(
-              *reference->element, transform_state, rect_without_transforms,
-              options == SetOptions::kOutOfFlow, display_locks));
-    }
-  }
-}
-
 std::optional<LayoutUnit> AnchorEvaluatorImpl::Evaluate(
     const AnchorQuery& anchor_query,
     const ScopedCSSName* position_anchor,
@@ -505,8 +345,8 @@ std::optional<LayoutUnit> AnchorEvaluatorImpl::EvaluateAnchor(
 
   UpdateAccessibilityAnchor(anchor_reference->GetLayoutObject());
 
-  if (anchor_reference->display_locks) {
-    for (auto& display_lock : *anchor_reference->display_locks) {
+  if (anchor_reference->GetDisplayLocks()) {
+    for (auto& display_lock : *anchor_reference->GetDisplayLocks()) {
       display_locks_affected_by_anchors_->insert(display_lock);
     }
   }
@@ -561,8 +401,8 @@ std::optional<LayoutUnit> AnchorEvaluatorImpl::EvaluateAnchorSize(
 
   UpdateAccessibilityAnchor(anchor_reference->GetLayoutObject());
 
-  if (anchor_reference->display_locks) {
-    for (auto& display_lock : *anchor_reference->display_locks) {
+  if (anchor_reference->GetDisplayLocks()) {
+    for (auto& display_lock : *anchor_reference->GetDisplayLocks()) {
       display_locks_affected_by_anchors_->insert(display_lock);
     }
   }
@@ -592,20 +432,20 @@ PhysicalRect AnchorEvaluatorImpl::GetAnchorRect(
   PhysicalOffset scroll_offset = [&]() {
     if (remembered_scroll_offsets_) {
       if (auto offset = remembered_scroll_offsets_->GetOffsetForAnchor(
-              anchor_reference.element)) {
+              &anchor_reference.GetElement())) {
         return *offset;
       }
     }
 
     if (used_scroll_offsets_) {
       if (auto offset = used_scroll_offsets_->GetOffsetForAnchor(
-              anchor_reference.element)) {
+              &anchor_reference.GetElement())) {
         return *offset;
       }
     }
 
     Element* anchored_element = To<Element>(query_box_->GetNode());
-    LayoutObject* anchor_object = anchor_reference.element->GetLayoutObject();
+    LayoutObject* anchor_object = anchor_reference.GetLayoutObject();
     CHECK(anchored_element && anchor_object);
 
     return AnchorPositionScrollData::ComputeAdjustmentContainersData(
@@ -619,7 +459,7 @@ PhysicalRect AnchorEvaluatorImpl::GetAnchorRect(
     used_scroll_offsets_ =
         MakeGarbageCollected<OutOfFlowData::RememberedScrollOffsets>();
   }
-  used_scroll_offsets_->SetOffsetForAnchor(anchor_reference.element,
+  used_scroll_offsets_->SetOffsetForAnchor(&anchor_reference.GetElement(),
                                            scroll_offset);
   return result;
 }
@@ -795,12 +635,6 @@ PhysicalRect AnchorEvaluatorImpl::PositionAreaModifiedContainingBlock(
   DCHECK_GE(rect.size.width, LayoutUnit());
   DCHECK_GE(rect.size.height, LayoutUnit());
   return rect;
-}
-
-void PhysicalAnchorReference::Trace(Visitor* visitor) const {
-  visitor->Trace(element);
-  visitor->Trace(next);
-  visitor->Trace(display_locks);
 }
 
 }  // namespace blink

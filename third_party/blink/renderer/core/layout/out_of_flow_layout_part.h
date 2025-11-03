@@ -24,6 +24,7 @@
 
 namespace blink {
 
+class AnchorEvaluatorImpl;
 class BlockBreakToken;
 class LayoutBox;
 class LayoutObject;

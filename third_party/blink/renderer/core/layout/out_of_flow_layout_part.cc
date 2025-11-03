@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/layout/absolute_utils.h"
+#include "third_party/blink/renderer/core/layout/anchor_evaluator_impl.h"
 #include "third_party/blink/renderer/core/layout/anchor_position_scroll_data.h"
 #include "third_party/blink/renderer/core/layout/anchor_position_visibility_observer.h"
 #include "third_party/blink/renderer/core/layout/column_layout_algorithm.h"
@@ -415,8 +416,8 @@ const Element* GetPositionAnchorElement(const BlockNode& node,
     if (const PhysicalAnchorReference* reference = anchor_map->AnchorReference(
             anchored_box, actual_containing_block,
             ToAnchorScopedName(*specifier, anchored_box))) {
-      DCHECK(!reference->element || reference->GetLayoutObject());
-      return reference->element;
+      DCHECK(reference->GetLayoutObject());
+      return &reference->GetElement();
     }
     return nullptr;
   }

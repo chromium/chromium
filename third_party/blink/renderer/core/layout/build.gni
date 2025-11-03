@@ -29,6 +29,8 @@ blink_core_sources_layout = [
   "absolute_utils.h",
   "anchor_evaluator_impl.cc",
   "anchor_evaluator_impl.h",
+  "anchor_map.cc",
+  "anchor_map.h",
   "anchor_position_scroll_data.cc",
   "anchor_position_scroll_data.h",
   "anchor_position_visibility_observer.cc",
