@@ -436,7 +436,10 @@ export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
   /**
    * @return A CSS image-set for multiple scale factors.
    */
-  private getIconImageSet_(iconUrl: string): string {
+  private getIconImageSet_(iconUrl?: string): string {
+    if (!iconUrl) {
+      return '';
+    }
     return getImage(iconUrl);
   }
 
