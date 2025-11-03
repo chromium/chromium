@@ -210,8 +210,7 @@ bool ServerCertificateDatabase::DeleteCertificate(
 ServerCertificateDatabase::CertInformation::CertInformation(
     base::span<const uint8_t> cert) {
   der_cert = base::ToVector(cert);
-  sha256hash_hex =
-      base::ToLowerASCII(base::HexEncode(crypto::SHA256Hash(cert)));
+  sha256hash_hex = base::HexEncodeLower(crypto::SHA256Hash(cert));
 }
 ServerCertificateDatabase::CertInformation::CertInformation() = default;
 ServerCertificateDatabase::CertInformation::~CertInformation() = default;

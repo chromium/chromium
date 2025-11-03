@@ -116,8 +116,7 @@ void LogMostVisitedScores(const MostVisitedURLList& sites) {
 }  // namespace
 
 std::string Md5AsHexForTopSites(std::string_view url_spec) {
-  return base::ToLowerASCII(
-      base::HexEncode(crypto::obsolete::Md5::Hash(url_spec)));
+  return base::HexEncodeLower(crypto::obsolete::Md5::Hash(url_spec));
 }
 
 // Stores the most visited sites and the most repeated queries returned from

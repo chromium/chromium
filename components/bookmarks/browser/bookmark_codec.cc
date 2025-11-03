@@ -552,11 +552,10 @@ void BookmarkCodec::InitializeChecksum() {
 }
 
 void BookmarkCodec::FinalizeChecksum() {
-  computed_checksum_ =
-      base::ToLowerASCII(base::HexEncode(md5_hasher_.Finish()));
+  computed_checksum_ = base::HexEncodeLower(md5_hasher_.Finish());
   std::string result(crypto::hash::kSha256Size, 0);
   sha256_hasher_.Finish(base::as_writable_byte_span(result));
-  computed_sha256_checksum_ = base::ToLowerASCII(base::HexEncode(result));
+  computed_sha256_checksum_ = base::HexEncodeLower(result);
 }
 
 }  // namespace bookmarks

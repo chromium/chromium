@@ -36,7 +36,7 @@ static const uint32_t kMaxBodySizeBytes = 1024;
 namespace safe_browsing {
 
 std::string Md5AsHexForBodyDigest(std::string_view data) {
-  return base::ToLowerASCII(base::HexEncode(crypto::obsolete::Md5::Hash(data)));
+  return base::HexEncodeLower(crypto::obsolete::Md5::Hash(data));
 }
 
 ThreatDetailsCacheCollector::ThreatDetailsCacheCollector()

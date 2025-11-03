@@ -38,10 +38,6 @@ GetFileSystemInfoOptions CreateOptions(const base::FilePath& path,
   return options;
 }
 
-std::string HexEncodeHash(const std::string& hashed_data) {
-  return base::ToLowerASCII(base::HexEncode(hashed_data));
-}
-
 std::optional<size_t> FindItemIndexByFilePath(
     const base::FilePath& expected_file_path,
     const std::vector<FileSystemItem>& items) {
@@ -195,7 +191,8 @@ TEST_F(FileSystemServiceTest, GetSignals_Hash_Success) {
   FileSystemItem& item = file_system_items[index.value()];
   EXPECT_EQ(item.presence, PresenceValue::kFound);
   ASSERT_TRUE(item.sha256_hash.has_value());
-  EXPECT_EQ(HexEncodeHash(item.sha256_hash.value()), expected_sha256_hash);
+  EXPECT_EQ(base::HexEncodeLower(item.sha256_hash.value()),
+            expected_sha256_hash);
 
   // The directory does not have a hash.
   index = FindItemIndexByFilePath(scoped_dir.GetPath(), file_system_items);

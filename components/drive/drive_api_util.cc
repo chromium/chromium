@@ -160,7 +160,7 @@ std::string GetMd5Digest(const base::FilePath& file_path) {
     return std::string();
   }
 
-  return base::ToLowerASCII(base::HexEncode(md5.Finish()));
+  return base::HexEncodeLower(md5.Finish());
 }
 
 bool IsKnownHostedDocumentMimeType(const std::string& mime_type) {

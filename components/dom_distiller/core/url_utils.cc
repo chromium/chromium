@@ -30,7 +30,7 @@ const char kSeparator[] = "_";
 
 std::string SHA256InHex(std::string_view str) {
   std::string sha256 = crypto::SHA256HashString(str);
-  return base::ToLowerASCII(base::HexEncode(sha256));
+  return base::HexEncodeLower(sha256);
 }
 
 }  // namespace

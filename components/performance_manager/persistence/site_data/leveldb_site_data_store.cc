@@ -30,8 +30,7 @@
 namespace performance_manager {
 
 std::string Md5AsHexForDatabaseKey(std::string_view input) {
-  return base::ToLowerASCII(
-      base::HexEncode(crypto::obsolete::Md5::Hash(input)));
+  return base::HexEncodeLower(crypto::obsolete::Md5::Hash(input));
 }
 
 namespace {

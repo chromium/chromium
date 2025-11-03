@@ -114,9 +114,8 @@ bool EntryMatchWithQuery(const ChangeResource& entry,
 }
 
 std::string GetMd5Checksum(std::string_view input) {
-  return base::ToLowerASCII(
-      base::HexEncode(crypto::obsolete::Md5::HashForTesting(
-          base::as_bytes(base::span(input)))));
+  return base::HexEncodeLower(
+      crypto::obsolete::Md5::HashForTesting(base::as_byte_span(input)));
 }
 
 void ScheduleUploadRangeCallback(UploadRangeCallback callback,

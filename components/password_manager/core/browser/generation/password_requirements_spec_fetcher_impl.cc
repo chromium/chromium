@@ -88,7 +88,7 @@ std::string GetHashPrefix(const GURL& origin, size_t prefix_length) {
     }
   }
 
-  return base::ToLowerASCII(base::HexEncode(digest)).substr(0, 4);
+  return base::HexEncodeLower(base::span(digest).first(2u));
 }
 
 // Returns the URL on gstatic.com where the passwords spec file can be found

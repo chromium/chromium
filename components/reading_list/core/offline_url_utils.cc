@@ -20,7 +20,7 @@ const base::FilePath::CharType kPDFFileName[] = FILE_PATH_LITERAL("file.pdf");
 namespace reading_list {
 
 std::string Md5AsHexForOfflineUrlUtils(std::string_view url) {
-  return base::ToLowerASCII(base::HexEncode(crypto::obsolete::Md5::Hash(url)));
+  return base::HexEncodeLower(crypto::obsolete::Md5::Hash(url));
 }
 
 base::FilePath OfflineRootDirectoryPath(const base::FilePath& profile_path) {
