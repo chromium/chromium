@@ -50,7 +50,6 @@
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/document_fragment.h"
-#include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/element_rare_data_vector.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/events/event_listener.h"
@@ -73,7 +72,6 @@
 #include "third_party/blink/renderer/core/editing/serializers/serialization.h"
 #include "third_party/blink/renderer/core/editing/spellcheck/spell_checker.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
-#include "third_party/blink/renderer/core/events/command_event.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/core/events/pointer_event.h"
 #include "third_party/blink/renderer/core/events/toggle_event.h"
@@ -133,7 +131,6 @@
 #include "third_party/blink/renderer/platform/scheduler/public/post_cancellable_task.h"
 #include "third_party/blink/renderer/platform/text/bidi_paragraph.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
-#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
@@ -2488,9 +2485,8 @@ bool HTMLElement::IsValidBuiltinCommand(HTMLElement& invoker,
 
 bool HTMLElement::HandleCommandInternal(HTMLElement& invoker,
                                         CommandEventType command) {
-  if (!IsValidBuiltinCommand(invoker, command)) {
-    return false;
-  }
+  CHECK(IsValidBuiltinCommand(invoker, command));
+
   if (Element::HandleCommandInternal(invoker, command)) {
     return true;
   }
@@ -2522,13 +2518,19 @@ bool HTMLElement::HandleCommandInternal(HTMLElement& invoker,
                      /*exception_state=*/nullptr,
                      /*include_event_handler_text=*/true, &document) &&
       (command == CommandEventType::kTogglePopover ||
-       command == CommandEventType::kShowPopover);
+       command == CommandEventType::kShowPopover ||
+       (RuntimeEnabledFeatures::MenuElementsEnabled() &&
+        (command == CommandEventType::kToggleMenu ||
+         command == CommandEventType::kShowMenu)));
   bool can_hide =
       IsPopoverReady(PopoverTriggerAction::kHide,
                      /*exception_state=*/nullptr,
                      /*include_event_handler_text=*/true, &document) &&
       (command == CommandEventType::kTogglePopover ||
-       command == CommandEventType::kHidePopover);
+       command == CommandEventType::kHidePopover ||
+       (RuntimeEnabledFeatures::MenuElementsEnabled() &&
+        (command == CommandEventType::kToggleMenu ||
+         command == CommandEventType::kHideMenu)));
   if (can_hide) {
     HidePopoverInternal(
         &invoker, HidePopoverFocusBehavior::kFocusPreviousElement,
@@ -2581,187 +2583,6 @@ bool HTMLElement::HandleCommandInternal(HTMLElement& invoker,
     return true;
   }
   return false;
-}
-
-bool HTMLElement::CanBeCommandInvoker() const {
-  return RuntimeEnabledFeatures::ElementInternalsDotTypeEnabled() &&
-         IsCustomButton();
-}
-
-void HTMLElement::HandleCommandForActivation(Event& event) {
-  if (!CanBeCommandInvoker() ||
-      event.type() != event_type_names::kDOMActivate) {
-    return;
-  }
-
-  // Buttons with a commandfor will dispatch a CommandEvent on the target of the
-  // invoker, and run `HandleCommandInternal` to perform default logic.
-  Element* command_target = commandForElement();
-  if (!command_target) {
-    return;
-  }
-  // commandfor & popovertarget shouldn't be combined, so warn.
-  if (FastHasAttribute(html_names::kPopovertargetAttr)) {
-    AddConsoleMessage(mojom::blink::ConsoleMessageSource::kOther,
-                      mojom::blink::ConsoleMessageLevel::kWarning,
-                      "popovertarget is ignored on elements with commandfor.");
-  }
-  const AtomicString& action = command();
-  if (action.empty()) {
-    return;
-  }
-  DCHECK_NE(GetCommandEventType(FastGetAttribute(html_names::kCommandAttr),
-                                GetExecutionContext()),
-            CommandEventType::kNone);
-  const auto command_event_type =
-      GetCommandEventType(action, GetExecutionContext());
-  Event* command_event =
-      CommandEvent::Create(event_type_names::kCommand, action, this);
-  command_target->DispatchEvent(*command_event);
-  if (!command_event->defaultPrevented() &&
-      command_event_type != CommandEventType::kCustom) {
-    command_target->HandleCommandInternal(*this, command_event_type);
-  }
-  event.SetDefaultHandled();
-}
-
-Element* HTMLElement::commandForElement() const {
-  if (!IsInTreeScope() || IsDisabledFormControl()) {
-    return nullptr;
-  }
-  if (!CanBeCommandInvoker()) {
-    return nullptr;
-  }
-  return GetElementAttributeResolvingReferenceTarget(
-      html_names::kCommandforAttr);
-}
-
-AtomicString HTMLElement::command() const {
-  if (!CanBeCommandInvoker()) {
-    return g_empty_atom;
-  }
-  const AtomicString& action = FastGetAttribute(html_names::kCommandAttr);
-  CommandEventType type = GetCommandEventType(action, GetExecutionContext());
-  switch (type) {
-    case CommandEventType::kNone:
-      return g_empty_atom;
-    case CommandEventType::kCustom:
-      return action;
-    default: {
-      const AtomicString& lower_action = action.LowerASCII();
-      DCHECK_EQ(GetCommandEventType(lower_action, GetExecutionContext()), type);
-      return lower_action;
-    }
-  }
-}
-
-void HTMLElement::setCommand(const AtomicString& type) {
-  setAttribute(html_names::kCommandAttr, type);
-}
-
-CommandEventType HTMLElement::GetCommandEventType(
-    const AtomicString& action,
-    ExecutionContext* execution_context) const {
-  if (action.IsNull() || action.empty()) {
-    return CommandEventType::kNone;
-  }
-
-  // Custom Invoke Action
-  if (action.StartsWith("--")) {
-    return CommandEventType::kCustom;
-  }
-
-  // Popover Cases
-  if (EqualIgnoringASCIICase(action, keywords::kTogglePopover)) {
-    return CommandEventType::kTogglePopover;
-  }
-  if (EqualIgnoringASCIICase(action, keywords::kShowPopover)) {
-    return CommandEventType::kShowPopover;
-  }
-  if (EqualIgnoringASCIICase(action, keywords::kHidePopover)) {
-    return CommandEventType::kHidePopover;
-  }
-
-  // Dialog Cases
-  if (EqualIgnoringASCIICase(action, keywords::kClose)) {
-    return CommandEventType::kClose;
-  }
-  if (EqualIgnoringASCIICase(action, keywords::kShowModal)) {
-    return CommandEventType::kShowModal;
-  }
-
-  if (RuntimeEnabledFeatures::HTMLCommandRequestCloseEnabled() &&
-      EqualIgnoringASCIICase(action, keywords::kRequestClose)) {
-    return CommandEventType::kRequestClose;
-  }
-
-  // Menu Cases
-  if (RuntimeEnabledFeatures::MenuElementsEnabled()) {
-    if (EqualIgnoringASCIICase(action, keywords::kToggleMenu)) {
-      return CommandEventType::kToggleMenu;
-    }
-    if (EqualIgnoringASCIICase(action, keywords::kShowMenu)) {
-      return CommandEventType::kShowMenu;
-    }
-    if (EqualIgnoringASCIICase(action, keywords::kHideMenu)) {
-      return CommandEventType::kHideMenu;
-    }
-  }
-
-  // V2 commands go below this point
-
-  if (!RuntimeEnabledFeatures::HTMLCommandActionsV2Enabled()) {
-    return CommandEventType::kNone;
-  }
-
-  // Input/Select Cases
-  if (EqualIgnoringASCIICase(action, keywords::kShowPicker)) {
-    return CommandEventType::kShowPicker;
-  }
-
-  // Number Input Cases
-  if (EqualIgnoringASCIICase(action, keywords::kStepUp)) {
-    return CommandEventType::kStepUp;
-  }
-  if (EqualIgnoringASCIICase(action, keywords::kStepDown)) {
-    return CommandEventType::kStepDown;
-  }
-
-  // Fullscreen Cases
-  if (EqualIgnoringASCIICase(action, keywords::kToggleFullscreen)) {
-    return CommandEventType::kToggleFullscreen;
-  }
-  if (EqualIgnoringASCIICase(action, keywords::kRequestFullscreen)) {
-    return CommandEventType::kRequestFullscreen;
-  }
-  if (EqualIgnoringASCIICase(action, keywords::kExitFullscreen)) {
-    return CommandEventType::kExitFullscreen;
-  }
-
-  // Details cases
-  if (EqualIgnoringASCIICase(action, keywords::kToggle)) {
-    return CommandEventType::kToggle;
-  }
-  if (EqualIgnoringASCIICase(action, keywords::kOpen)) {
-    return CommandEventType::kOpen;
-  }
-  // CommandEventType::kClose handled above in Dialog
-
-  // Media cases
-  if (EqualIgnoringASCIICase(action, keywords::kPlayPause)) {
-    return CommandEventType::kPlayPause;
-  }
-  if (EqualIgnoringASCIICase(action, keywords::kPause)) {
-    return CommandEventType::kPause;
-  }
-  if (EqualIgnoringASCIICase(action, keywords::kPlay)) {
-    return CommandEventType::kPlay;
-  }
-  if (EqualIgnoringASCIICase(action, keywords::kToggleMuted)) {
-    return CommandEventType::kToggleMuted;
-  }
-
-  return CommandEventType::kNone;
 }
 
 PopoverTriggerSupport HTMLElement::SupportsPopoverTriggering() const {
@@ -3271,13 +3092,12 @@ bool HTMLElement::IsInteractiveContent() const {
 void HTMLElement::DefaultEventHandler(Event& event) {
   auto* keyboard_event = DynamicTo<KeyboardEvent>(event);
 
-  HandleCommandForActivation(event);
-  if (event.DefaultHandled()) {
-    return;
-  }
-
   if (RuntimeEnabledFeatures::ElementInternalsDotTypeEnabled() &&
       IsCustomButton()) {
+    HTMLButtonElement::HandleCommandForActivation(event, *this);
+    if (event.DefaultHandled()) {
+      return;
+    }
     HTMLFormControlElement::HandlePopoverActivation(event, *this);
   }
 

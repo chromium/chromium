@@ -18,9 +18,6 @@ class HTMLMenuListElement final : public HTMLElement {
 
   bool IsValidBuiltinCommand(HTMLElement& invoker,
                              CommandEventType command) override;
-  bool HandleCommandInternal(HTMLElement& invoker,
-                             CommandEventType command) override;
-
   // This returns an iterable list of menuitems whose owner is this.
   MenuItemList GetItemList() const { return MenuItemList(*this); }
 };

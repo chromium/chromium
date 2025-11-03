@@ -182,7 +182,7 @@ class CORE_EXPORT HTMLFormControlElement : public HTMLElement,
                                PopoverTriggerAction action);
   // Checks if the element exists, is a valid Popover element, and (if it's a
   // form control) supports popover triggering.
-  static bool IsValidPopoverTrigger(const HTMLElement& element);
+  static bool IsValidPopoverElement(const HTMLElement& element);
 
   enum WebAutofillState autofill_state_;
 

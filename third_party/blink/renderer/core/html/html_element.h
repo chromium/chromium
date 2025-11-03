@@ -361,18 +361,6 @@ class CORE_EXPORT HTMLElement : public Element {
                                     CommandEventType command);
   bool HandleCommandInternal(HTMLElement& invoker,
                              CommandEventType command) override;
-  // This is true if this element *can* be a command invoker: it is an element
-  // type that supports command invokers (e.g. buttons and menuitems), and the
-  // element isn't in a state that disqualifies it (e.g. a disabled state). This
-  // function doesn't connect directly to the `command*` attributes themselves;
-  // i.e. this will not change state if the `commandfor` attribute is changed.
-  virtual bool CanBeCommandInvoker() const;
-  CommandEventType GetCommandEventType(const AtomicString& type,
-                                       ExecutionContext*) const;
-  void HandleCommandForActivation(Event& event);
-  Element* commandForElement() const;
-  AtomicString command() const;
-  void setCommand(const AtomicString& type);
 
   // This allows developers to enable or disable browser-provided writing
   // suggestions. If the attribute is not explicitly set on an element, it

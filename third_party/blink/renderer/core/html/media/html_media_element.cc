@@ -1515,9 +1515,8 @@ bool HTMLMediaElement::IsValidBuiltinCommand(HTMLElement& invoker,
 
 bool HTMLMediaElement::HandleCommandInternal(HTMLElement& invoker,
                                              CommandEventType command) {
-  if (!IsValidBuiltinCommand(invoker, command)) {
-    return false;
-  }
+  CHECK(IsValidBuiltinCommand(invoker, command));
+
   if (HTMLElement::HandleCommandInternal(invoker, command)) {
     return true;
   }

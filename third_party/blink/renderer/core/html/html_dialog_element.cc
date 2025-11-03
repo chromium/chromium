@@ -345,9 +345,8 @@ bool HTMLDialogElement::IsValidBuiltinCommand(HTMLElement& invoker,
 
 bool HTMLDialogElement::HandleCommandInternal(HTMLElement& invoker,
                                               CommandEventType command) {
-  if (!IsValidBuiltinCommand(invoker, command)) {
-    return false;
-  }
+  CHECK(IsValidBuiltinCommand(invoker, command));
+
   if (HTMLElement::HandleCommandInternal(invoker, command)) {
     return true;
   }

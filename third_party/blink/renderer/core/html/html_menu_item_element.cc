@@ -55,6 +55,69 @@ void HTMLMenuItemElement::ParseAttribute(
   }
 }
 
+Element* HTMLMenuItemElement::commandForElement() const {
+  if (!IsInTreeScope() || IsDisabledFormControl()) {
+    return nullptr;
+  }
+
+  return GetElementAttributeResolvingReferenceTarget(
+      html_names::kCommandforAttr);
+}
+
+void HTMLMenuItemElement::setCommand(const AtomicString& type) {
+  setAttribute(html_names::kCommandAttr, type);
+}
+
+AtomicString HTMLMenuItemElement::command() const {
+  const AtomicString& action = FastGetAttribute(html_names::kCommandAttr);
+  CommandEventType type = GetCommandEventType(action);
+  switch (type) {
+    case CommandEventType::kNone:
+      return g_empty_atom;
+    case CommandEventType::kCustom:
+      return action;
+    default: {
+      const AtomicString& lower_action = action.LowerASCII();
+      DCHECK_EQ(GetCommandEventType(lower_action), type);
+      return lower_action;
+    }
+  }
+}
+
+CommandEventType HTMLMenuItemElement::GetCommandEventType(
+    const AtomicString& action) const {
+  if (action.IsNull() || action.empty()) {
+    return CommandEventType::kNone;
+  }
+
+  // Custom Invoke Action
+  if (action.StartsWith("--")) {
+    return CommandEventType::kCustom;
+  }
+
+  // Popover cases.
+  if (EqualIgnoringASCIICase(action, keywords::kTogglePopover)) {
+    return CommandEventType::kTogglePopover;
+  }
+  if (EqualIgnoringASCIICase(action, keywords::kShowPopover)) {
+    return CommandEventType::kShowPopover;
+  }
+  if (EqualIgnoringASCIICase(action, keywords::kHidePopover)) {
+    return CommandEventType::kHidePopover;
+  }
+  // Menu specific cases.
+  if (EqualIgnoringASCIICase(action, keywords::kToggleMenu)) {
+    return CommandEventType::kToggleMenu;
+  }
+  if (EqualIgnoringASCIICase(action, keywords::kShowMenu)) {
+    return CommandEventType::kShowMenu;
+  }
+  if (EqualIgnoringASCIICase(action, keywords::kHideMenu)) {
+    return CommandEventType::kHideMenu;
+  }
+  return CommandEventType::kNone;
+}
+
 bool HTMLMenuItemElement::IsCheckable() const {
   return nearest_ancestor_menu_list_ && nearest_ancestor_field_set_ &&
          nearest_ancestor_field_set_->FastGetAttribute(
@@ -129,8 +192,8 @@ HTMLMenuListElement* HTMLMenuItemElement::InvokesSubmenu() const {
   if (!invoked_menulist) {
     return nullptr;
   }
-  CommandEventType type = GetCommandEventType(
-      FastGetAttribute(html_names::kCommandAttr), GetExecutionContext());
+  CommandEventType type =
+      GetCommandEventType(FastGetAttribute(html_names::kCommandAttr));
   if (type != CommandEventType::kTogglePopover &&
       type != CommandEventType::kShowPopover &&
       type != CommandEventType::kToggleMenu &&
@@ -190,7 +253,6 @@ void HTMLMenuItemElement::HandleMenuKeyboardEvents(Event& event) {
   const AtomicString key(keyboard_event->key());
   if ((key == " " || key == keywords::kCapitalEnter)) {
     // TODO(crbug.com/425682465): implement chooseItem(event).
-    // TODO: Do we need this?
     return;
   }
 
@@ -369,16 +431,34 @@ void HTMLMenuItemElement::DefaultEventHandler(Event& event) {
   if (HandleKeyboardActivation(event)) {
     return;
   }
-  HandleCommandForActivation(event);
-  if (event.DefaultHandled()) {
-    return;
-  }
   HandleMenuKeyboardEvents(event);
   if (event.type() == event_type_names::kDOMActivate) {
-    // If a menuitem is a sub-menu invoker, then it will not respect the
-    // parent fieldset's checkable attribute. I.e. you can't be both a sub-menu
-    // invoker and a checkable menu item.
+    // A menu item's checkability and ability to invoke a command are
+    // exclusive. That is, we don't explicitly disallow checkable menu items
+    // that do both, so we always give `setChecked()` the chance to set `this`
+    // as checked—this will only take effect if `IsCheckable()` is true.
     setChecked(!checked());
+
+    // Menuitems with a commandfor will dispatch a CommandEvent on the
+    // target of the invoker, and run HandleCommandInternal to perform default
+    // logic.
+    if (auto* command_target = commandForElement()) {
+      auto action =
+          GetCommandEventType(FastGetAttribute(html_names::kCommandAttr));
+      bool is_valid_builtin =
+          command_target->IsValidBuiltinCommand(*this, action);
+      bool should_dispatch =
+          is_valid_builtin || action == CommandEventType::kCustom;
+      if (should_dispatch) {
+        Event* commandEvent =
+            CommandEvent::Create(event_type_names::kCommand, command(), this);
+        command_target->DispatchEvent(*commandEvent);
+        if (is_valid_builtin && !commandEvent->defaultPrevented()) {
+          command_target->HandleCommandInternal(*this, action);
+        }
+      }
+      return;
+    }
   }
   HTMLElement::DefaultEventHandler(event);
 }
