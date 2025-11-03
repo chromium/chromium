@@ -1124,6 +1124,7 @@ source_set("payments_sync_utils") {
 static_library("test_support") {
   testonly = true
   sources = [
+    "autofill_field_test_api.h",
     "crowdsourcing/autofill_crowdsourcing_manager_test_api.h",
     "crowdsourcing/mock_autofill_crowdsourcing_manager.cc",
     "crowdsourcing/mock_autofill_crowdsourcing_manager.h",

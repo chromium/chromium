@@ -452,6 +452,7 @@ class AutofillField : public FormFieldData {
 #endif
 
  private:
+  friend class AutofillFieldTestApi;
   struct PredictionResult {
     // The type may be a union type, i.e., hold multiple FieldTypes.
     AutofillType type;

@@ -11,6 +11,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "base/types/zip.h"
+#include "components/autofill/core/browser/autofill_field_test_api.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_i18n_api.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
@@ -117,19 +118,17 @@ Matcher<const PossibleTypes&> HasFlightNumberFormats(Ts&&... formats) {
 // then values have been entered. Returns the resulting FormStructure.
 std::unique_ptr<FormStructure> ConstructFormStructureFromFormData(
     const FormData& form) {
-  auto cached_form_structure =
-      std::make_unique<FormStructure>(test::WithoutValues(form));
+  auto form_structure = std::make_unique<FormStructure>(form);
   const RegexPredictions regex_predictions =
       DetermineRegexTypes(GeoIpCountryCode(""), LanguageCode(""),
-                          cached_form_structure->ToFormData(), nullptr);
-  regex_predictions.ApplyTo(cached_form_structure->fields());
-  cached_form_structure->RationalizeAndAssignSections(
-      GeoIpCountryCode(""), LanguageCode(""), nullptr);
+                          form_structure->ToFormData(), nullptr);
+  regex_predictions.ApplyTo(form_structure->fields());
+  form_structure->RationalizeAndAssignSections(GeoIpCountryCode(""),
+                                               LanguageCode(""), nullptr);
 
-  auto form_structure = std::make_unique<FormStructure>(form);
-  form_structure->RetrieveFromCache(
-      *cached_form_structure,
-      FormStructure::RetrieveFromCacheReason::kFormImport);
+  for (size_t i = 0; i < form_structure->field_count(); ++i) {
+    test_api(*form_structure->field(i)).set_initial_value(u"");
+  }
   return form_structure;
 }
 

@@ -33,6 +33,7 @@
 #include "base/uuid.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_field.h"
+#include "components/autofill/core/browser/autofill_field_test_api.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager_test_api.h"
@@ -210,19 +211,15 @@ FormData ConstructFormDateFromTypeValuePairs(
 std::unique_ptr<FormStructure> ConstructFormStructureFromFormData(
     const FormData& form,
     GeoIpCountryCode geo_country = GeoIpCountryCode("")) {
-  auto cached_form_structure =
-      std::make_unique<FormStructure>(test::WithoutValues(form));
-  const RegexPredictions regex_predictions =
-      DetermineRegexTypes(geo_country, LanguageCode(""),
-                          cached_form_structure->ToFormData(), nullptr);
-  regex_predictions.ApplyTo(cached_form_structure->fields());
-  cached_form_structure->RationalizeAndAssignSections(
-      geo_country, LanguageCode(""), nullptr);
-
   auto form_structure = std::make_unique<FormStructure>(form);
-  form_structure->RetrieveFromCache(
-      *cached_form_structure,
-      FormStructure::RetrieveFromCacheReason::kFormImport);
+  const RegexPredictions regex_predictions = DetermineRegexTypes(
+      geo_country, LanguageCode(""), form_structure->ToFormData(), nullptr);
+  regex_predictions.ApplyTo(form_structure->fields());
+  form_structure->RationalizeAndAssignSections(geo_country, LanguageCode(""),
+                                               nullptr);
+  for (size_t i = 0; i < form_structure->field_count(); ++i) {
+    test_api(*form_structure->field(i)).set_initial_value(u"");
+  }
   return form_structure;
 }
 
