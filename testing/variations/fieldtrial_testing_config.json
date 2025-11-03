@@ -11546,6 +11546,8 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
+                        "GlicIntro",
+                        "GlicLearnMore",
                         "GlicRollout"
                     ]
                 }
