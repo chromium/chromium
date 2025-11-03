@@ -7679,6 +7679,7 @@ test("unit_tests") {
       "../browser/notifications/mac/stub_notification_dispatcher_mac.h",
       "../browser/policy/browser_dm_token_storage_mac_unittest.cc",
       "../browser/renderer_host/chrome_render_widget_host_view_mac_history_swiper_unittest.mm",
+      "../browser/shell_integration_mac_unittest.mm",
       "../browser/ui/accelerator_table_unittest_mac.mm",
       "../browser/ui/cocoa/applescript/apple_event_util_unittest.mm",
       "../browser/ui/cocoa/bookmarks/bookmark_menu_bridge_unittest.mm",
@@ -8892,6 +8893,7 @@ test("unit_tests") {
       "../browser/push_notification/server_client/push_notification_server_client_desktop_impl_unittest.cc",
       "../browser/renderer_context_menu/read_write_card_observer_unittest.cc",
       "../browser/sharesheet/share_action/share_action_unittest.cc",
+      "../browser/shell_integration_chromeos_unittest.cc",
       "../browser/speech/cros_speech_recognition_service_factory_unittest.cc",
       "../browser/speech/cros_speech_recognition_service_unittest.cc",
       "../browser/speech/tts_chromeos_unittest.cc",
@@ -9813,12 +9815,6 @@ test("unit_tests") {
     ]
   }
 
-  if (is_chromeos) {
-    sources += [ "../browser/shell_integration_chromeos_unittest.cc" ]
-  }
-  if (is_mac) {
-    sources += [ "../browser/shell_integration_mac_unittest.mm" ]
-  }
   if (is_linux) {
     sources += [ "../browser/shell_integration_linux_unittest.cc" ]
 
