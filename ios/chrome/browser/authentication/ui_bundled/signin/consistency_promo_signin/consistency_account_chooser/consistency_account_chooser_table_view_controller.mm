@@ -119,12 +119,8 @@ CGFloat kSectionFooterHeight = 8.;
           [self.tableView cellForRowAtIndexPath:indexPath];
       __weak ConsistencyAccountChooserTableViewController* weakSelf = self;
       ProceduralBlock completionBlock = ^{
-        ConsistencyAccountChooserTableViewController* strongSelf = weakSelf;
-        if (!strongSelf) {
-          return;
-        }
-        [strongSelf.actionDelegate
-            consistencyAccountChooserTableViewController:strongSelf
+        [weakSelf.actionDelegate
+            consistencyAccountChooserTableViewController:weakSelf
                              didSelectIdentityWithGaiaID:GaiaId(identityItem
                                                                     .gaiaID)];
       };
