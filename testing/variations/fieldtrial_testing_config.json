@@ -170,6 +170,24 @@
             ]
         }
     ],
+    "AccessibilityCheckJavaNodeCacheFreshness": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "//1": "Experiment checks correctness of cache by bypassing it;",
+                    "//2": "Not intended for wide release.",
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AccessibilityCheckJavaNodeCacheFreshness"
+                    ],
+                    "disable_benchmarking": true
+                }
+            ]
+        }
+    ],
     "AccessibilityDeprecateJavaNodeCache": [
         {
             "platforms": [
