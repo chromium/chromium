@@ -389,6 +389,11 @@
     display: block;
   }
 
+  #composebox:not([expanded_])::part(cancel),
+  #composebox:not([expanded_])::part(submit) {
+    pointer-events: none;
+  }
+
   :host([show-submit-button]) #composebox::part(submit) {
     --cr-icon-button-size: 48px;
     display: block;
