@@ -40,6 +40,7 @@
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_options.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
+#include "third_party/webrtc/modules/desktop_capture/mouse_cursor_monitor.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "remoting/host/chromeos/frame_sink_desktop_capturer.h"
@@ -153,19 +154,17 @@ LegacyInteractionStrategy::CreateMouseCursorMonitor() {
 
   auto creator = base::BindOnce(
       [](webrtc::DesktopCaptureOptions options)
-          -> std::unique_ptr<protocol::MouseCursorMonitor> {
+          -> std::unique_ptr<webrtc::MouseCursorMonitor> {
 #if BUILDFLAG(IS_CHROMEOS)
-        return std::make_unique<protocol::WebrtcMouseCursorMonitorAdaptor>(
-            std::make_unique<MouseCursorMonitorAura>());
+        return std::make_unique<MouseCursorMonitorAura>();
 #else   // BUILDFLAG(IS_CHROMEOS)
-        return std::make_unique<protocol::WebrtcMouseCursorMonitorAdaptor>(
-            webrtc::MouseCursorMonitor::Create(options));
+        return webrtc::MouseCursorMonitor::Create(options);
 #endif  // BUILDFLAG(IS_CHROMEOS)
       },
       *options_.desktop_capture_options());
-
-  return std::make_unique<MouseCursorMonitorProxy>(video_capture_task_runner_,
-                                                   std::move(creator));
+  return std::make_unique<protocol::WebrtcMouseCursorMonitorAdaptor>(
+      std::make_unique<MouseCursorMonitorProxy>(video_capture_task_runner_,
+                                                std::move(creator)));
 }
 
 std::unique_ptr<KeyboardLayoutMonitor>

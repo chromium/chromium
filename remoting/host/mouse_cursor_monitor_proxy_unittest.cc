@@ -8,22 +8,20 @@
 
 #include "base/check.h"
 #include "base/functional/callback_helpers.h"
-#include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
-#include "base/time/time.h"
 #include "remoting/host/mouse_cursor_monitor_proxy.h"
-#include "remoting/protocol/mouse_cursor_monitor.h"
 #include "remoting/protocol/protocol_mock_objects.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 #include "third_party/webrtc/modules/desktop_capture/mouse_cursor.h"
+#include "third_party/webrtc/modules/desktop_capture/mouse_cursor_monitor.h"
 
 using ::remoting::protocol::MockClientStub;
 
@@ -39,7 +37,7 @@ static const int kCursorHeight = 32;
 static const int kHotspotX = 11;
 static const int kHotspotY = 12;
 
-class ThreadCheckMouseCursorMonitor : public protocol::MouseCursorMonitor {
+class ThreadCheckMouseCursorMonitor : public webrtc::MouseCursorMonitor {
  public:
   explicit ThreadCheckMouseCursorMonitor(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner)
@@ -53,7 +51,7 @@ class ThreadCheckMouseCursorMonitor : public protocol::MouseCursorMonitor {
     EXPECT_TRUE(task_runner_->BelongsToCurrentThread());
   }
 
-  void Init(Callback* callback) override {
+  void Init(Callback* callback, Mode mode) override {
     EXPECT_TRUE(task_runner_->BelongsToCurrentThread());
     EXPECT_FALSE(callback_);
     EXPECT_TRUE(callback);
@@ -61,36 +59,27 @@ class ThreadCheckMouseCursorMonitor : public protocol::MouseCursorMonitor {
     callback_ = callback;
   }
 
-  void SetPreferredCaptureInterval(base::TimeDelta interval) override {
-    EXPECT_TRUE(task_runner_->BelongsToCurrentThread());
-    capture_interval_ = interval;
-  }
-
-  void Capture() {
+  void Capture() override {
     EXPECT_TRUE(task_runner_->BelongsToCurrentThread());
     ASSERT_TRUE(callback_);
 
-    auto mouse_cursor = std::make_unique<webrtc::MouseCursor>(
+    std::unique_ptr<webrtc::MouseCursor> mouse_cursor(new webrtc::MouseCursor(
         new webrtc::BasicDesktopFrame(
-            webrtc::DesktopSize(kCursorWidth, kCursorHeight),
-            webrtc::FOURCC_ARGB),
-        webrtc::DesktopVector(kHotspotX, kHotspotY));
+            webrtc::DesktopSize(kCursorWidth, kCursorHeight)),
+        webrtc::DesktopVector(kHotspotX, kHotspotY)));
 
-    callback_->OnMouseCursor(std::move(mouse_cursor));
+    callback_->OnMouseCursor(mouse_cursor.release());
   }
-
-  base::TimeDelta capture_interval() const { return capture_interval_; }
 
  private:
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
   raw_ptr<Callback> callback_;
-  base::TimeDelta capture_interval_;
 };
 
 class MouseCursorMonitorProxyTest
     : public testing::Test,
-      public protocol::MouseCursorMonitor::Callback {
+      public webrtc::MouseCursorMonitor::Callback {
  public:
   MouseCursorMonitorProxyTest() : capture_thread_("test capture thread") {
     capture_thread_.Start();
@@ -101,9 +90,8 @@ class MouseCursorMonitorProxyTest
     base::RunLoop().RunUntilIdle();
   }
 
-  // MouseCursorMonitor::Callback implementation.
-  void OnMouseCursor(
-      std::unique_ptr<webrtc::MouseCursor> mouse_cursor) override;
+  // webrtc::MouseCursorMonitor::Callback implementation.
+  void OnMouseCursor(webrtc::MouseCursor* mouse_cursor) override;
 
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_;
@@ -115,51 +103,30 @@ class MouseCursorMonitorProxyTest
 };
 
 void MouseCursorMonitorProxyTest::OnMouseCursor(
-    std::unique_ptr<webrtc::MouseCursor> mouse_cursor) {
+    webrtc::MouseCursor* mouse_cursor) {
   DCHECK(task_environment_.GetMainThreadTaskRunner()->BelongsToCurrentThread());
 
   EXPECT_EQ(kCursorWidth, mouse_cursor->image()->size().width());
   EXPECT_EQ(kCursorHeight, mouse_cursor->image()->size().height());
   EXPECT_EQ(kHotspotX, mouse_cursor->hotspot().x());
   EXPECT_EQ(kHotspotY, mouse_cursor->hotspot().y());
+  delete mouse_cursor;
 
   run_loop_.Quit();
 }
 
 TEST_F(MouseCursorMonitorProxyTest, CursorShape) {
   // Initialize the proxy.
-  auto monitor = std::make_unique<ThreadCheckMouseCursorMonitor>(
-      capture_thread_.task_runner());
-  ThreadCheckMouseCursorMonitor* unowned_monitor = monitor.get();
   proxy_ = std::make_unique<MouseCursorMonitorProxy>(
       capture_thread_.task_runner(),
-      base::ReturnValueOnce<std::unique_ptr<protocol::MouseCursorMonitor>>(
-          std::move(monitor)));
-  proxy_->Init(this);
-  capture_thread_.task_runner()->PostTask(
-      FROM_HERE, base::BindOnce(&ThreadCheckMouseCursorMonitor::Capture,
-                                base::Unretained(unowned_monitor)));
+      base::ReturnValueOnce<std::unique_ptr<webrtc::MouseCursorMonitor>>(
+          std::make_unique<ThreadCheckMouseCursorMonitor>(
+              capture_thread_.task_runner())));
+  proxy_->Init(this, webrtc::MouseCursorMonitor::SHAPE_ONLY);
+  proxy_->Capture();
 
   // |run_loop_| will be stopped when the first cursor is received.
   run_loop_.Run();
-}
-
-TEST_F(MouseCursorMonitorProxyTest, PreferredCaptureInterval) {
-  auto monitor = std::make_unique<ThreadCheckMouseCursorMonitor>(
-      capture_thread_.task_runner());
-  ThreadCheckMouseCursorMonitor* unowned_monitor = monitor.get();
-  proxy_ = std::make_unique<MouseCursorMonitorProxy>(
-      capture_thread_.task_runner(),
-      base::ReturnValueOnce<std::unique_ptr<protocol::MouseCursorMonitor>>(
-          std::move(monitor)));
-  proxy_->Init(this);
-  proxy_->SetPreferredCaptureInterval(base::Milliseconds(16));
-
-  base::RunLoop run_loop;
-  capture_thread_.task_runner()->PostTaskAndReply(FROM_HERE, base::DoNothing(),
-                                                  run_loop.QuitClosure());
-  run_loop.Run();
-  ASSERT_EQ(unowned_monitor->capture_interval(), base::Milliseconds(16));
 }
 
 }  // namespace remoting

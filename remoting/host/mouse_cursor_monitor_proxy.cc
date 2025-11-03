@@ -17,10 +17,9 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "build/build_config.h"
-#include "remoting/proto/coordinates.pb.h"
-#include "remoting/protocol/mouse_cursor_monitor.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 #include "third_party/webrtc/modules/desktop_capture/mouse_cursor.h"
+#include "third_party/webrtc/modules/desktop_capture/mouse_cursor_monitor.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "remoting/host/chromeos/mouse_cursor_monitor_aura.h"
@@ -29,7 +28,7 @@
 namespace remoting {
 
 class MouseCursorMonitorProxy::Core
-    : public protocol::MouseCursorMonitor::Callback {
+    : public webrtc::MouseCursorMonitor::Callback {
  public:
   explicit Core(base::WeakPtr<MouseCursorMonitorProxy> proxy);
 
@@ -39,24 +38,22 @@ class MouseCursorMonitorProxy::Core
   ~Core() override;
 
   void CreateMouseCursorMonitor(
-      base::OnceCallback<std::unique_ptr<MouseCursorMonitor>()> creator);
+      base::OnceCallback<std::unique_ptr<webrtc::MouseCursorMonitor>()>
+          creator);
 
-  void Init();
-  void SetPreferredCaptureInterval(base::TimeDelta interval);
+  void Init(webrtc::MouseCursorMonitor::Mode mode);
+  void Capture();
 
  private:
-  // MouseCursorMonitor::Callback implementation.
-  void OnMouseCursor(
-      std::unique_ptr<webrtc::MouseCursor> mouse_cursor) override;
+  // webrtc::MouseCursorMonitor::Callback implementation.
+  void OnMouseCursor(webrtc::MouseCursor* mouse_cursor) override;
   void OnMouseCursorPosition(const webrtc::DesktopVector& position) override;
-  void OnMouseCursorFractionalPosition(
-      const protocol::FractionalCoordinate& position) override;
 
   base::ThreadChecker thread_checker_;
 
   base::WeakPtr<MouseCursorMonitorProxy> proxy_;
   scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner_;
-  std::unique_ptr<MouseCursorMonitor> mouse_cursor_monitor_;
+  std::unique_ptr<webrtc::MouseCursorMonitor> mouse_cursor_monitor_;
 };
 
 MouseCursorMonitorProxy::Core::Core(
@@ -71,7 +68,7 @@ MouseCursorMonitorProxy::Core::~Core() {
 }
 
 void MouseCursorMonitorProxy::Core::CreateMouseCursorMonitor(
-    base::OnceCallback<std::unique_ptr<MouseCursorMonitor>()> creator) {
+    base::OnceCallback<std::unique_ptr<webrtc::MouseCursorMonitor>()> creator) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
   mouse_cursor_monitor_ = std::move(creator).Run();
@@ -81,30 +78,30 @@ void MouseCursorMonitorProxy::Core::CreateMouseCursorMonitor(
   }
 }
 
-void MouseCursorMonitorProxy::Core::Init() {
+void MouseCursorMonitorProxy::Core::Init(
+    webrtc::MouseCursorMonitor::Mode mode) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
   if (mouse_cursor_monitor_) {
-    mouse_cursor_monitor_->Init(this);
+    mouse_cursor_monitor_->Init(this, mode);
   }
 }
 
-void MouseCursorMonitorProxy::Core::SetPreferredCaptureInterval(
-    base::TimeDelta interval) {
+void MouseCursorMonitorProxy::Core::Capture() {
   DCHECK(thread_checker_.CalledOnValidThread());
 
   if (mouse_cursor_monitor_) {
-    mouse_cursor_monitor_->SetPreferredCaptureInterval(interval);
+    mouse_cursor_monitor_->Capture();
   }
 }
 
-void MouseCursorMonitorProxy::Core::OnMouseCursor(
-    std::unique_ptr<webrtc::MouseCursor> cursor) {
+void MouseCursorMonitorProxy::Core::OnMouseCursor(webrtc::MouseCursor* cursor) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
+  std::unique_ptr<webrtc::MouseCursor> owned_cursor(cursor);
   caller_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&MouseCursorMonitorProxy::OnMouseCursor, proxy_,
-                                std::move(cursor)));
+                                std::move(owned_cursor)));
 }
 
 void MouseCursorMonitorProxy::Core::OnMouseCursorPosition(
@@ -116,19 +113,9 @@ void MouseCursorMonitorProxy::Core::OnMouseCursorPosition(
                                 proxy_, position));
 }
 
-void MouseCursorMonitorProxy::Core::OnMouseCursorFractionalPosition(
-    const protocol::FractionalCoordinate& position) {
-  DCHECK(thread_checker_.CalledOnValidThread());
-
-  caller_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&MouseCursorMonitorProxy::OnMouseCursorFractionalPosition,
-                     proxy_, position));
-}
-
 MouseCursorMonitorProxy::MouseCursorMonitorProxy(
     scoped_refptr<base::SingleThreadTaskRunner> capture_task_runner,
-    base::OnceCallback<std::unique_ptr<MouseCursorMonitor>()> creator)
+    base::OnceCallback<std::unique_ptr<webrtc::MouseCursorMonitor>()> creator)
     : capture_task_runner_(capture_task_runner) {
   core_ = std::make_unique<Core>(weak_factory_.GetWeakPtr());
   capture_task_runner_->PostTask(
@@ -141,37 +128,30 @@ MouseCursorMonitorProxy::~MouseCursorMonitorProxy() {
   capture_task_runner_->DeleteSoon(FROM_HERE, core_.release());
 }
 
-void MouseCursorMonitorProxy::Init(Callback* callback) {
+void MouseCursorMonitorProxy::Init(Callback* callback, Mode mode) {
   DCHECK(thread_checker_.CalledOnValidThread());
   callback_ = callback;
   capture_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&Core::Init, base::Unretained(core_.get())));
+      FROM_HERE,
+      base::BindOnce(&Core::Init, base::Unretained(core_.get()), mode));
 }
 
-void MouseCursorMonitorProxy::SetPreferredCaptureInterval(
-    base::TimeDelta interval) {
+void MouseCursorMonitorProxy::Capture() {
   DCHECK(thread_checker_.CalledOnValidThread());
   capture_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&Core::SetPreferredCaptureInterval,
-                                base::Unretained(core_.get()), interval));
+      FROM_HERE, base::BindOnce(&Core::Capture, base::Unretained(core_.get())));
 }
 
 void MouseCursorMonitorProxy::OnMouseCursor(
     std::unique_ptr<webrtc::MouseCursor> cursor) {
   DCHECK(thread_checker_.CalledOnValidThread());
-  callback_->OnMouseCursor(std::move(cursor));
+  callback_->OnMouseCursor(cursor.release());
 }
 
 void MouseCursorMonitorProxy::OnMouseCursorPosition(
     const webrtc::DesktopVector& position) {
   DCHECK(thread_checker_.CalledOnValidThread());
   callback_->OnMouseCursorPosition(position);
-}
-
-void MouseCursorMonitorProxy::OnMouseCursorFractionalPosition(
-    const protocol::FractionalCoordinate& position) {
-  DCHECK(thread_checker_.CalledOnValidThread());
-  callback_->OnMouseCursorFractionalPosition(position);
 }
 
 }  // namespace remoting

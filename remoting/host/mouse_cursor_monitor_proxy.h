@@ -12,9 +12,8 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
-#include "remoting/proto/coordinates.pb.h"
-#include "remoting/protocol/mouse_cursor_monitor.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
+#include "third_party/webrtc/modules/desktop_capture/mouse_cursor_monitor.h"
 
 namespace base {
 class SingleThreadTaskRunner;
@@ -22,28 +21,27 @@ class SingleThreadTaskRunner;
 
 namespace remoting {
 
-class MouseCursorMonitorProxy : public protocol::MouseCursorMonitor {
+class MouseCursorMonitorProxy : public webrtc::MouseCursorMonitor {
  public:
   MouseCursorMonitorProxy(
       scoped_refptr<base::SingleThreadTaskRunner> capture_task_runner,
-      base::OnceCallback<std::unique_ptr<MouseCursorMonitor>()> creator);
+      base::OnceCallback<std::unique_ptr<webrtc::MouseCursorMonitor>()>
+          creator);
 
   MouseCursorMonitorProxy(const MouseCursorMonitorProxy&) = delete;
   MouseCursorMonitorProxy& operator=(const MouseCursorMonitorProxy&) = delete;
 
   ~MouseCursorMonitorProxy() override;
 
-  // MouseCursorMonitor interface.
-  void Init(Callback* callback) override;
-  void SetPreferredCaptureInterval(base::TimeDelta interval) override;
+  // webrtc::MouseCursorMonitor interface.
+  void Init(Callback* callback, Mode mode) override;
+  void Capture() override;
 
  private:
   class Core;
 
   void OnMouseCursor(std::unique_ptr<webrtc::MouseCursor> cursor);
   void OnMouseCursorPosition(const webrtc::DesktopVector& position);
-  void OnMouseCursorFractionalPosition(
-      const protocol::FractionalCoordinate& position);
 
   base::ThreadChecker thread_checker_;
 
