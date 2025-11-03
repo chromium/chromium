@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/recent_tabs/ui_bundled/recent_tabs_table_view_controller.h"
+#import "ios/chrome/browser/recent_tabs/ui/recent_tabs_table_view_controller.h"
 
 #import <objc/runtime.h>
 
@@ -46,9 +46,9 @@
 #import "ios/chrome/browser/metrics/model/new_tab_page_uma.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
-#import "ios/chrome/browser/recent_tabs/ui_bundled/recent_tabs_constants.h"
-#import "ios/chrome/browser/recent_tabs/ui_bundled/recent_tabs_menu_provider.h"
-#import "ios/chrome/browser/recent_tabs/ui_bundled/recent_tabs_presentation_delegate.h"
+#import "ios/chrome/browser/recent_tabs/public/recent_tabs_constants.h"
+#import "ios/chrome/browser/recent_tabs/ui/recent_tabs_menu_provider.h"
+#import "ios/chrome/browser/recent_tabs/ui/recent_tabs_presentation_delegate.h"
 #import "ios/chrome/browser/sessions/model/live_tab_context_browser_agent.h"
 #import "ios/chrome/browser/sessions/model/session_util.h"
 #import "ios/chrome/browser/settings/model/sync/utils/sync_presenter.h"

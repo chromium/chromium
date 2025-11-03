@@ -134,7 +134,7 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/content_suggestions/ui_bundled:eg_test_support+eg2",
     "//ios/chrome/browser/content_suggestions/ui_bundled/magic_stack:constants",
     "//ios/chrome/browser/ntp_tiles/model/tab_resumption:tab_resumption_prefs",
-    "//ios/chrome/browser/recent_tabs/ui_bundled:ui_constants",
+    "//ios/chrome/browser/recent_tabs/public:ui_constants",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/signin/model:fake_system_identity",
     "//ios/chrome/browser/start_surface/ui_bundled:feature_flags",

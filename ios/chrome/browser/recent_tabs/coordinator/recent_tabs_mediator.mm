@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/recent_tabs/ui_bundled/recent_tabs_mediator.h"
+#import "ios/chrome/browser/recent_tabs/coordinator/recent_tabs_mediator.h"
 
 #import "base/debug/dump_without_crashing.h"
 #import "base/memory/raw_ptr.h"
@@ -22,8 +22,8 @@
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/net/model/crurl.h"
-#import "ios/chrome/browser/recent_tabs/ui_bundled/recent_tabs_consumer.h"
-#import "ios/chrome/browser/recent_tabs/ui_bundled/sessions_sync_user_state.h"
+#import "ios/chrome/browser/recent_tabs/ui/recent_tabs_consumer.h"
+#import "ios/chrome/browser/recent_tabs/ui/sessions_sync_user_state.h"
 #import "ios/chrome/browser/sessions/model/ios_chrome_tab_restore_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"

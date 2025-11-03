@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/recent_tabs/ui_bundled/closed_tabs_observer_bridge.h"
+#import "ios/chrome/browser/recent_tabs/model/closed_tabs_observer_bridge.h"
 
 namespace recent_tabs {
 

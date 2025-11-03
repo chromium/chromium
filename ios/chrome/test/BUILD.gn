@@ -404,7 +404,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/reader_mode/model:unit_tests",
     "//ios/chrome/browser/reading_list/model:unit_tests",
     "//ios/chrome/browser/reading_list/ui_bundled:unit_tests",
-    "//ios/chrome/browser/recent_tabs/ui_bundled:unit_tests",
+    "//ios/chrome/browser/recent_tabs/coordinator:unit_tests",
     "//ios/chrome/browser/regional_capabilities/model:unit_tests",
     "//ios/chrome/browser/reminder_notifications/coordinator:unit_tests",
     "//ios/chrome/browser/reminder_notifications/model:unit_tests",

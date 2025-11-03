@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_RECENT_TABS_UI_BUNDLED_RECENT_TABS_MENU_HELPER_H_
-#define IOS_CHROME_BROWSER_RECENT_TABS_UI_BUNDLED_RECENT_TABS_MENU_HELPER_H_
+#ifndef IOS_CHROME_BROWSER_RECENT_TABS_COORDINATOR_RECENT_TABS_MENU_HELPER_H_
+#define IOS_CHROME_BROWSER_RECENT_TABS_COORDINATOR_RECENT_TABS_MENU_HELPER_H_
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/recent_tabs/ui_bundled/recent_tabs_menu_provider.h"
+#import "ios/chrome/browser/recent_tabs/ui/recent_tabs_menu_provider.h"
 
 class Browser;
 @class RecentTabsTableViewController;
@@ -29,4 +29,4 @@ class Browser;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_RECENT_TABS_UI_BUNDLED_RECENT_TABS_MENU_HELPER_H_
+#endif  // IOS_CHROME_BROWSER_RECENT_TABS_COORDINATOR_RECENT_TABS_MENU_HELPER_H_

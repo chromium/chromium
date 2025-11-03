@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/recent_tabs/ui_bundled/recent_tabs_coordinator.h"
+#import "ios/chrome/browser/recent_tabs/coordinator/recent_tabs_coordinator.h"
 
 #import <UIKit/UIKit.h>
 
@@ -31,9 +31,9 @@
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_large_icon_service_factory.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
-#import "ios/chrome/browser/recent_tabs/ui_bundled/recent_tabs_presentation_delegate.h"
-#import "ios/chrome/browser/recent_tabs/ui_bundled/recent_tabs_table_view_controller.h"
-#import "ios/chrome/browser/recent_tabs/ui_bundled/sessions_sync_user_state.h"
+#import "ios/chrome/browser/recent_tabs/ui/recent_tabs_presentation_delegate.h"
+#import "ios/chrome/browser/recent_tabs/ui/recent_tabs_table_view_controller.h"
+#import "ios/chrome/browser/recent_tabs/ui/sessions_sync_user_state.h"
 #import "ios/chrome/browser/sessions/model/ios_chrome_tab_restore_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -182,8 +182,7 @@ class RecentTabsTableCoordinatorTest : public BlockCleanupTest {
     BlockCleanupTest::TearDown();
   }
 
-  void SetupSyncState(BOOL signed_in,
-                      BOOL has_foreign_sessions) {
+  void SetupSyncState(BOOL signed_in, BOOL has_foreign_sessions) {
     SessionSyncServiceMockForRecentTabsTableCoordinator* session_sync_service =
         static_cast<SessionSyncServiceMockForRecentTabsTableCoordinator*>(
             SessionSyncServiceFactory::GetForProfile(profile_.get()));

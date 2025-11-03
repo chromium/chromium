@@ -201,7 +201,7 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/autofill/ui_bundled:eg_test_support+eg2",
     "//ios/chrome/browser/metrics/model:eg_test_support+eg2",
     "//ios/chrome/browser/popup_menu/ui_bundled:constants",
-    "//ios/chrome/browser/recent_tabs/ui_bundled:ui_constants",
+    "//ios/chrome/browser/recent_tabs/public:ui_constants",
     "//ios/chrome/browser/settings/ui_bundled/password:eg_test_support+eg2",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/public/features",

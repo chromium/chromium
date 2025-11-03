@@ -86,7 +86,7 @@ source_set("eg_test_support+eg2") {
     "//ios/chrome/browser/first_run/ui_bundled:constants",
     "//ios/chrome/browser/metrics/model:eg_test_support+eg2",
     "//ios/chrome/browser/ntp/ui_bundled:constants",
-    "//ios/chrome/browser/recent_tabs/ui_bundled:ui_constants",
+    "//ios/chrome/browser/recent_tabs/public:ui_constants",
     "//ios/chrome/browser/settings/ui_bundled:constants",
     "//ios/chrome/browser/settings/ui_bundled/google_services:constants",
     "//ios/chrome/browser/settings/ui_bundled/google_services/manage_accounts:constants",
