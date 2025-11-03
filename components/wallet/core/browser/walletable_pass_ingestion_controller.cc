@@ -37,9 +37,8 @@ std::string GetWalletablePassCategory(const WalletablePass& walletable_pass) {
 WalletablePassIngestionController::WalletablePassIngestionController(
     WalletablePassClient* client)
     : client_(CHECK_DEREF(client)),
-      save_strike_db_(
-          std::make_unique<WalletablePassSaveStrikeDatabaseByCategory>(
-              client->GetStrikeDatabase())) {
+      save_strike_db_(std::make_unique<WalletablePassSaveStrikeDatabaseByHost>(
+          client->GetStrikeDatabase())) {
   RegisterOptimizationTypes();
 }
 
@@ -147,10 +146,11 @@ void WalletablePassIngestionController::ExtractWalletablePass(
       /*execution_timeout=*/std::nullopt,
       base::BindOnce(
           &WalletablePassIngestionController::OnExtractWalletablePass,
-          weak_ptr_factory_.GetWeakPtr()));
+          weak_ptr_factory_.GetWeakPtr(), url));
 }
 
 void WalletablePassIngestionController::OnExtractWalletablePass(
+    const GURL& url,
     optimization_guide::OptimizationGuideModelExecutionResult result,
     std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry) {
   // Handle model execution failure first.
@@ -181,13 +181,16 @@ void WalletablePassIngestionController::OnExtractWalletablePass(
 
   auto walletable_pass =
       std::make_unique<WalletablePass>(parsed_response->walletable_pass(0));
-  ShowSaveBubble(std::move(walletable_pass));
+  ShowSaveBubble(url, std::move(walletable_pass));
 }
 
 void WalletablePassIngestionController::ShowSaveBubble(
+    const GURL& url,
     std::unique_ptr<WalletablePass> walletable_pass) {
   const std::string category = GetWalletablePassCategory(*walletable_pass);
-  if (save_strike_db_->ShouldBlockFeature(category)) {
+  if (save_strike_db_->ShouldBlockFeature(
+          WalletablePassSaveStrikeDatabaseByHost::GetId(category,
+                                                        url.GetHost()))) {
     // TODO(crbug.com/452779539): Report save bubble blocked to UMA
     return;
   }
@@ -196,23 +199,27 @@ void WalletablePassIngestionController::ShowSaveBubble(
   client_->ShowWalletablePassSaveBubble(
       *pass_ptr,
       base::BindOnce(&WalletablePassIngestionController::OnGetSaveBubbleResult,
-                     weak_ptr_factory_.GetWeakPtr(),
+                     weak_ptr_factory_.GetWeakPtr(), url,
                      std::move(walletable_pass)));
 }
 
 void WalletablePassIngestionController::OnGetSaveBubbleResult(
+    const GURL& url,
     std::unique_ptr<WalletablePass> walletable_pass,
     WalletablePassClient::WalletablePassBubbleResult result) {
   const std::string category = GetWalletablePassCategory(*walletable_pass);
   switch (result) {
     case kAccepted:
       // TODO(crbug.com/452579752): Save pass to Wallet.
-      save_strike_db_->ClearStrikes(category);
+      save_strike_db_->ClearStrikes(
+          WalletablePassSaveStrikeDatabaseByHost::GetId(category,
+                                                        url.GetHost()));
       break;
     case kDeclined:
     case kClosed:
       // Add strikes for cases where user rejects explicitly
-      save_strike_db_->AddStrike(category);
+      save_strike_db_->AddStrike(WalletablePassSaveStrikeDatabaseByHost::GetId(
+          category, url.GetHost()));
       // TODO(crbug.com/452779539): Report user rejects explicitly to UMA.
       break;
     case kLostFocus:

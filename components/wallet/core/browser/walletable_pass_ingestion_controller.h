@@ -13,7 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/optimization_guide/proto/features/walletable_pass_extraction.pb.h"
-#include "components/wallet/core/browser/strike_databases/walletable_pass_save_strike_database_by_category.h"
+#include "components/wallet/core/browser/strike_databases/walletable_pass_save_strike_database_by_host.h"
 #include "components/wallet/core/browser/walletable_pass_client.h"
 
 class GURL;
@@ -83,7 +83,8 @@ class WalletablePassIngestionController {
 
   // Shows the "Save" bubble to the user, allowing them to save the provided
   // pass.
-  void ShowSaveBubble(std::unique_ptr<optimization_guide::proto::WalletablePass>
+  void ShowSaveBubble(const GURL& url,
+                      std::unique_ptr<optimization_guide::proto::WalletablePass>
                           walletable_pass);
 
  private:
@@ -98,6 +99,7 @@ class WalletablePassIngestionController {
 
   // Callback for when the pass extraction from the model executor is complete.
   void OnExtractWalletablePass(
+      const GURL& url,
       optimization_guide::OptimizationGuideModelExecutionResult result,
       std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry);
 
@@ -111,6 +113,7 @@ class WalletablePassIngestionController {
   // Callback invoked when the user interacts with the save bubble (e.g.,
   // accepts, declines, or dismisses).
   void OnGetSaveBubbleResult(
+      const GURL& url,
       std::unique_ptr<optimization_guide::proto::WalletablePass>
           walletable_pass,
       WalletablePassClient::WalletablePassBubbleResult result);
@@ -119,7 +122,7 @@ class WalletablePassIngestionController {
   // it.
   const raw_ref<WalletablePassClient> client_;
 
-  std::unique_ptr<WalletablePassSaveStrikeDatabaseByCategory> save_strike_db_;
+  std::unique_ptr<WalletablePassSaveStrikeDatabaseByHost> save_strike_db_;
 
   base::WeakPtrFactory<WalletablePassIngestionController> weak_ptr_factory_{
       this};

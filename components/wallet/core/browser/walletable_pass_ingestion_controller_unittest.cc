@@ -291,75 +291,86 @@ TEST_F(WalletablePassIngestionControllerTest,
 
 TEST_F(WalletablePassIngestionControllerTest,
        ShowSaveBubble_StrikesExceed_BubbleNotShown) {
+  GURL url("https://example.com");
   WalletablePass walletable_pass = CreateLoyaltyCard();
-  test_strike_database().SetStrikeData("WalletablePassSave__LoyaltyCard", 3);
+  test_strike_database().SetStrikeData(
+      "WalletablePassSaveByHost__LoyaltyCard;example.com", 3);
 
   EXPECT_CALL(mock_client(),
               ShowWalletablePassSaveBubble(EqualsProto(walletable_pass), _))
       .Times(0);
 
   test_api(controller())
-      .ShowSaveBubble(std::make_unique<WalletablePass>(walletable_pass));
+      .ShowSaveBubble(url, std::make_unique<WalletablePass>(walletable_pass));
 }
 
 TEST_F(WalletablePassIngestionControllerTest,
        ShowSaveBubble_Accept_ClearsStrikes) {
+  GURL url("https://example.com");
   WalletablePass walletable_pass = CreateLoyaltyCard();
-  test_strike_database().SetStrikeData("WalletablePassSave__LoyaltyCard", 2);
+  test_strike_database().SetStrikeData(
+      "WalletablePassSaveByHost__LoyaltyCard;example.com", 2);
 
   WalletablePassClient::WalletablePassBubbleResultCallback bubble_callback;
   ExpectSaveBubbleOnClient(walletable_pass, &bubble_callback);
 
   test_api(controller())
-      .ShowSaveBubble(std::make_unique<WalletablePass>(walletable_pass));
+      .ShowSaveBubble(url, std::make_unique<WalletablePass>(walletable_pass));
 
   // Simulate accepting the bubble.
   std::move(bubble_callback)
       .Run(WalletablePassClient::WalletablePassBubbleResult::kAccepted);
 
   // Verify strikes are cleared.
-  EXPECT_EQ(
-      test_strike_database().GetStrikes("WalletablePassSave__LoyaltyCard"), 0);
+  EXPECT_EQ(test_strike_database().GetStrikes(
+                "WalletablePassSaveByHost__LoyaltyCard;example.com"),
+            0);
 }
 
 TEST_F(WalletablePassIngestionControllerTest,
        ShowSaveBubble_Reject_AddsStrikes) {
+  GURL url("https://example.com");
   WalletablePass walletable_pass = CreateLoyaltyCard();
-  test_strike_database().SetStrikeData("WalletablePassSave__LoyaltyCard", 1);
+  test_strike_database().SetStrikeData(
+      "WalletablePassSaveByHost__LoyaltyCard;example.com", 1);
 
   WalletablePassClient::WalletablePassBubbleResultCallback bubble_callback;
   ExpectSaveBubbleOnClient(walletable_pass, &bubble_callback);
 
   test_api(controller())
-      .ShowSaveBubble(std::make_unique<WalletablePass>(walletable_pass));
+      .ShowSaveBubble(url, std::make_unique<WalletablePass>(walletable_pass));
 
   // Simulate declining the bubble.
   std::move(bubble_callback)
       .Run(WalletablePassClient::WalletablePassBubbleResult::kDeclined);
 
   // Verify strikes are added.
-  EXPECT_EQ(
-      test_strike_database().GetStrikes("WalletablePassSave__LoyaltyCard"), 2);
+  EXPECT_EQ(test_strike_database().GetStrikes(
+                "WalletablePassSaveByHost__LoyaltyCard;example.com"),
+            2);
 }
 
 TEST_F(WalletablePassIngestionControllerTest,
        ShowSaveBubble_UnintendedClose_StrikesUnchanged) {
+  GURL url("https://example.com");
   WalletablePass walletable_pass = CreateLoyaltyCard();
-  test_strike_database().SetStrikeData("WalletablePassSave__LoyaltyCard", 1);
+  test_strike_database().SetStrikeData(
+      "WalletablePassSaveByHost__LoyaltyCard;example.com", 1);
 
   WalletablePassClient::WalletablePassBubbleResultCallback bubble_callback;
   ExpectSaveBubbleOnClient(walletable_pass, &bubble_callback);
 
   test_api(controller())
-      .ShowSaveBubble(std::make_unique<WalletablePass>(walletable_pass));
+      .ShowSaveBubble(url, std::make_unique<WalletablePass>(walletable_pass));
 
   // Simulate lost focus.
   std::move(bubble_callback)
       .Run(WalletablePassClient::WalletablePassBubbleResult::kLostFocus);
 
   // Verify strikes are the same.
-  EXPECT_EQ(
-      test_strike_database().GetStrikes("WalletablePassSave__LoyaltyCard"), 1);
+  EXPECT_EQ(test_strike_database().GetStrikes(
+                "WalletablePassSaveByHost__LoyaltyCard;example.com"),
+            1);
 }
 
 }  // namespace

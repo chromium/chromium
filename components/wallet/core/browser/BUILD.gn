@@ -6,7 +6,8 @@ import("//components/optimization_guide/features.gni")
 
 static_library("browser") {
   sources = [
-    "strike_databases/walletable_pass_save_strike_database_by_category.h",
+    "strike_databases/walletable_pass_save_strike_database_by_host.cc",
+    "strike_databases/walletable_pass_save_strike_database_by_host.h",
     "walletable_pass_client.h",
     "walletable_pass_ingestion_controller.cc",
     "walletable_pass_ingestion_controller.h",
