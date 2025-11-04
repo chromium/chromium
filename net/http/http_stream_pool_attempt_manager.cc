@@ -738,7 +738,6 @@ void HttpStreamPool::AttemptManager::OnTcpBasedAttemptComplete(
   CHECK_NE(tcp_based_attempt_state_, TcpBasedAttemptState::kAllEndpointsFailed);
   if (tcp_based_attempt_state_ == TcpBasedAttemptState::kAttempting) {
     tcp_based_attempt_state_ = TcpBasedAttemptState::kSucceededAtLeastOnce;
-    MaybeMarkQuicBroken();
   }
 
   LoadTimingInfo::ConnectTiming connect_timing =
@@ -859,8 +858,6 @@ void HttpStreamPool::AttemptManager::OnQuicAttemptComplete(
         }
         return dict;
       });
-
-  MaybeMarkQuicBroken();
 
   if (is_shutting_down()) {
     MaybeCompleteLater();
@@ -2219,6 +2216,8 @@ void HttpStreamPool::AttemptManager::MaybeComplete() {
 
   CHECK(limit_ignoring_jobs_.empty());
   CHECK(ip_based_pooling_disabling_jobs_.empty());
+
+  MaybeMarkQuicBroken();
 
   if (on_complete_callback_for_testing_) {
     std::move(on_complete_callback_for_testing_).Run();
