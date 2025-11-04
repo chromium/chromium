@@ -123,7 +123,7 @@ ContentRootNodeForFrameActionableMode(
   return body;
 }
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_MAC)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_FUCHSIA)
 // Helper function to generate a click on the given RenderWidgetHost. The
 // mouse event is forwarded directly to the RenderWidgetHost without any
 // hit-testing.
@@ -137,7 +137,8 @@ void SimulateMouseClickAt(content::RenderWidgetHost* rwh, gfx::PointF point) {
   rwh->ForwardMouseEvent(mouse_event);
 }
 
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_MAC)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_MAC) &&
+        // !BUILDFLAG(IS_FUCHSIA)
 
 class PageContentProtoProviderBrowserTest : public content::ContentBrowserTest {
  public:
@@ -1211,7 +1212,9 @@ IN_PROC_BROWSER_TEST_P(PageContentProtoProviderBrowserTestMultiProcess,
 }
 
 // Popups may be rendered as native OS-level widgets on Android and MacOS.
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_MAC)
+//
+// TODO: b/450618828 - Enable on Fuchsia with proper geometry comparison.
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_FUCHSIA)
 IN_PROC_BROWSER_TEST_P(PageContentProtoProviderBrowserTestMultiProcess,
                        SelectInCrossOriginIframe) {
   LoadPage(https_server()->GetURL(
@@ -1228,9 +1231,11 @@ IN_PROC_BROWSER_TEST_P(PageContentProtoProviderBrowserTestMultiProcess,
 
   WaitForPopup();
 
+  LoadData(GetActionableAIPageContentOptions());
+
   const auto& popup_window = page_content().popup_window();
 
-  const auto& iframe_node = page_content().root_node().children_nodes()[0];
+  const auto& iframe_node = ActionableContentRootNode().children_nodes()[0];
   EXPECT_EQ(popup_window.opener_document_id().serialized_token(),
             iframe_node.content_attributes()
                 .iframe_data()
@@ -1239,21 +1244,47 @@ IN_PROC_BROWSER_TEST_P(PageContentProtoProviderBrowserTestMultiProcess,
                 .serialized_token());
 
   EXPECT_EQ(iframe_node.children_nodes().size(), 1);
-  const auto& iframe_node_root = iframe_node.children_nodes()[0];
+  const auto& iframe_node_root =
+      ContentRootNodeForFrameActionableMode(iframe_node.children_nodes()[0]);
   const auto& select_node = iframe_node_root.children_nodes()[0];
+  EXPECT_EQ(select_node.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_FORM_CONTROL);
   EXPECT_EQ(popup_window.opener_common_ancestor_dom_node_id(),
             select_node.content_attributes().common_ancestor_dom_node_id());
 
-  const auto& select_node_in_popup =
-      popup_window.root_node().children_nodes()[0];
+  const auto& popup_root = ContentRootNodeForFrameActionableMode(
+      popup_window.root_node().children_nodes()[0]);
+  const auto& select_node_in_popup = popup_root.children_nodes()[0];
   EXPECT_EQ(select_node_in_popup.content_attributes().attribute_type(),
             optimization_guide::proto::CONTENT_ATTRIBUTE_FORM_CONTROL);
+
+  const auto& select_node_geometry =
+      select_node.content_attributes().geometry();
+  const auto& select_node_in_popup_geometry =
+      select_node_in_popup.content_attributes().geometry();
+  // The y value is the bottom edge of the form element. The height of the form
+  // element is 10px.
+  EXPECT_EQ(select_node_in_popup_geometry.outer_bounding_box().x(),
+            select_node_geometry.outer_bounding_box().x());
+  EXPECT_EQ(select_node_in_popup_geometry.outer_bounding_box().y(),
+            select_node_geometry.outer_bounding_box().y() + 10);
+  EXPECT_EQ(select_node_in_popup_geometry.visible_bounding_box().x(),
+            select_node_geometry.visible_bounding_box().x());
+  EXPECT_EQ(select_node_in_popup_geometry.visible_bounding_box().y(),
+            select_node_geometry.visible_bounding_box().y() + 10);
 }
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_MAC)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_MAC) &&
+        // !BUILDFLAG(IS_FUCHSIA)
 
 class ScaledPageContentProtoProviderBrowserTest
     : public PageContentProtoProviderBrowserTest {
  public:
+  ScaledPageContentProtoProviderBrowserTest() {
+    feature_list_.InitAndEnableFeature(
+        blink::features::kAIPageContentIncludePopupWindows);
+  }
+  ~ScaledPageContentProtoProviderBrowserTest() override = default;
+
   void SetUpCommandLine(base::CommandLine* command_line) override {
     content::ContentBrowserTest::SetUpCommandLine(command_line);
 
@@ -1263,6 +1294,9 @@ class ScaledPageContentProtoProviderBrowserTest
 
     command_line->AppendSwitchASCII(switches::kForceDeviceScaleFactor, "2.0");
   }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(ScaledPageContentProtoProviderBrowserTest, ScaleSizes) {
@@ -1283,6 +1317,49 @@ IN_PROC_BROWSER_TEST_F(ScaledPageContentProtoProviderBrowserTest, ScaleSizes) {
   EXPECT_EQ(page_content().viewport_geometry().height(),
             window_bounds.height());
 }
+
+// Popups may be rendered as native OS-level widgets on Android and MacOS.
+//
+// TODO: b/450618828 - Enable on Fuchsia with proper geometry comparison.
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_FUCHSIA)
+IN_PROC_BROWSER_TEST_F(ScaledPageContentProtoProviderBrowserTest,
+                       SelectInMainFrame) {
+  LoadPage(https_server()->GetURL("/open_popup.html"));
+
+  ASSERT_TRUE(content::ExecJs(
+      web_contents(), "document.getElementById('select_input').showPicker();"));
+
+  WaitForPopup();
+
+  LoadData(GetActionableAIPageContentOptions());
+
+  const auto& select_node = ActionableContentRootNode().children_nodes()[0];
+  EXPECT_EQ(select_node.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_FORM_CONTROL);
+
+  const auto& popup_root = ContentRootNodeForFrameActionableMode(
+      page_content().popup_window().root_node().children_nodes()[0]);
+  const auto& select_node_in_popup = popup_root.children_nodes()[0];
+  EXPECT_EQ(select_node_in_popup.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_FORM_CONTROL);
+
+  const auto& select_node_geometry =
+      select_node.content_attributes().geometry();
+  const auto& select_node_in_popup_geometry =
+      select_node_in_popup.content_attributes().geometry();
+  // The y value is the bottom edge of the form element. The height of the form
+  // element is 10px.
+  EXPECT_EQ(select_node_in_popup_geometry.outer_bounding_box().x(),
+            select_node_geometry.outer_bounding_box().x());
+  EXPECT_EQ(select_node_in_popup_geometry.outer_bounding_box().y(),
+            select_node_geometry.outer_bounding_box().y() + 10 * 2);
+  EXPECT_EQ(select_node_in_popup_geometry.visible_bounding_box().x(),
+            select_node_geometry.visible_bounding_box().x());
+  EXPECT_EQ(select_node_in_popup_geometry.visible_bounding_box().y(),
+            select_node_geometry.visible_bounding_box().y() + 10 * 2);
+}
+#endif  //  !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_MAC) &&
+        //  !BUILDFLAG(IS_FUCHSIA)
 
 bool ContainsRole(const optimization_guide::proto::ContentNode& node,
                   optimization_guide::proto::AnnotatedRole role) {
@@ -1679,6 +1756,8 @@ class PageContentProtoProviderPopupBrowserTest
   base::test::ScopedFeatureList feature_list_;
 };
 
+// TODO: b/450618828 - Enable on Fuchsia with proper geometry comparison.
+#if !BUILDFLAG(IS_FUCHSIA)
 IN_PROC_BROWSER_TEST_F(PageContentProtoProviderPopupBrowserTest,
                        SelectInMainFrame) {
   LoadPage(https_server()->GetURL("/open_popup.html"));
@@ -1698,6 +1777,8 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderPopupBrowserTest,
                 .serialized_token());
 
   const auto& select_node = ActionableContentRootNode().children_nodes()[0];
+  EXPECT_EQ(select_node.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_FORM_CONTROL);
   EXPECT_EQ(popup_window.opener_common_ancestor_dom_node_id(),
             select_node.content_attributes().common_ancestor_dom_node_id());
 
@@ -1711,6 +1792,21 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderPopupBrowserTest,
                 .interaction_info()
                 .document_scoped_z_order(),
             0);
+
+  const auto& select_node_geometry =
+      select_node.content_attributes().geometry();
+  const auto& select_node_in_popup_geometry =
+      select_node_in_popup.content_attributes().geometry();
+  // The y value is the bottom edge of the form element. The height of the form
+  // element is 10px.
+  EXPECT_EQ(select_node_in_popup_geometry.outer_bounding_box().x(),
+            select_node_geometry.outer_bounding_box().x());
+  EXPECT_EQ(select_node_in_popup_geometry.outer_bounding_box().y(),
+            select_node_geometry.outer_bounding_box().y() + 10);
+  EXPECT_EQ(select_node_in_popup_geometry.visible_bounding_box().x(),
+            select_node_geometry.visible_bounding_box().x());
+  EXPECT_EQ(select_node_in_popup_geometry.visible_bounding_box().y(),
+            select_node_geometry.visible_bounding_box().y() + 10);
 }
 
 IN_PROC_BROWSER_TEST_F(PageContentProtoProviderPopupBrowserTest,
@@ -1740,6 +1836,8 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderPopupBrowserTest,
   const auto& iframe_node_root =
       ContentRootNodeForFrameActionableMode(iframe_node.children_nodes()[0]);
   const auto& select_node = iframe_node_root.children_nodes()[0];
+  EXPECT_EQ(select_node.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_FORM_CONTROL);
   EXPECT_EQ(popup_window.opener_common_ancestor_dom_node_id(),
             select_node.content_attributes().common_ancestor_dom_node_id());
 
@@ -1752,6 +1850,21 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderPopupBrowserTest,
                 .interaction_info()
                 .document_scoped_z_order(),
             0);
+
+  const auto& select_node_geometry =
+      select_node.content_attributes().geometry();
+  const auto& select_node_in_popup_geometry =
+      select_node_in_popup.content_attributes().geometry();
+  // The y value is the bottom edge of the form element. The height of the form
+  // element is 10px.
+  EXPECT_EQ(select_node_in_popup_geometry.outer_bounding_box().x(),
+            select_node_geometry.outer_bounding_box().x());
+  EXPECT_EQ(select_node_in_popup_geometry.outer_bounding_box().y(),
+            select_node_geometry.outer_bounding_box().y() + 10);
+  EXPECT_EQ(select_node_in_popup_geometry.visible_bounding_box().x(),
+            select_node_geometry.visible_bounding_box().x());
+  EXPECT_EQ(select_node_in_popup_geometry.visible_bounding_box().y(),
+            select_node_geometry.visible_bounding_box().y() + 10);
 }
 
 IN_PROC_BROWSER_TEST_F(PageContentProtoProviderPopupBrowserTest,
@@ -1786,6 +1899,8 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderPopupBrowserTest,
   const auto& iframe_node_root =
       ContentRootNodeForFrameActionableMode(iframe_node.children_nodes()[0]);
   const auto& select_node = iframe_node_root.children_nodes()[0];
+  EXPECT_EQ(select_node.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_FORM_CONTROL);
   EXPECT_EQ(popup_window.opener_common_ancestor_dom_node_id(),
             select_node.content_attributes().common_ancestor_dom_node_id());
 
@@ -1794,7 +1909,23 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderPopupBrowserTest,
   const auto& select_node_in_popup = popup_root.children_nodes()[0];
   EXPECT_EQ(select_node_in_popup.content_attributes().attribute_type(),
             optimization_guide::proto::CONTENT_ATTRIBUTE_FORM_CONTROL);
+
+  const auto& select_node_geometry =
+      select_node.content_attributes().geometry();
+  const auto& select_node_in_popup_geometry =
+      select_node_in_popup.content_attributes().geometry();
+  // The y value is the bottom edge of the form element. The height of the form
+  // element is 10px.
+  EXPECT_EQ(select_node_in_popup_geometry.outer_bounding_box().x(),
+            select_node_geometry.outer_bounding_box().x());
+  EXPECT_EQ(select_node_in_popup_geometry.outer_bounding_box().y(),
+            select_node_geometry.outer_bounding_box().y() + 10);
+  EXPECT_EQ(select_node_in_popup_geometry.visible_bounding_box().x(),
+            select_node_geometry.visible_bounding_box().x());
+  EXPECT_EQ(select_node_in_popup_geometry.visible_bounding_box().y(),
+            select_node_geometry.visible_bounding_box().y() + 10);
 }
+#endif  // !BUILDFLAG(IS_FUCHSIA)
 
 IN_PROC_BROWSER_TEST_F(PageContentProtoProviderPopupBrowserTest, ColorPicker) {
   LoadPage(https_server()->GetURL("/open_popup.html"), nullptr);

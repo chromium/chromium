@@ -62,6 +62,7 @@
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
+#include "third_party/blink/renderer/platform/widget/frame_widget.h"
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -821,6 +822,25 @@ const mojom::blink::AIPageContentNode* FindContentNode(
     }
   }
   return nullptr;
+}
+
+// Recursively traverses the content node tree, applying the given `offset` to
+// all geometry fields. This is used to translate the coordinates of a subtree
+// from one coordinate space to another, for example, to adjust a popup's
+// geometry to be relative to the main frame's viewport.
+void OffsetNodeGeometry(mojom::blink::AIPageContentNode& node,
+                        const gfx::Vector2d& offset) {
+  if (node.content_attributes && node.content_attributes->geometry) {
+    node.content_attributes->geometry->outer_bounding_box.Offset(offset);
+    node.content_attributes->geometry->visible_bounding_box.Offset(offset);
+    for (gfx::Rect& rect :
+         node.content_attributes->geometry->fragment_visible_bounding_boxes) {
+      rect.Offset(offset);
+    }
+  }
+  for (mojom::blink::AIPageContentNodePtr& child : node.children_nodes) {
+    OffsetNodeGeometry(*child, offset);
+  }
 }
 
 }  // namespace
@@ -1838,6 +1858,20 @@ void AIPageContentAgent::ContentBuilder::MaybeAddPopupData(
   CHECK(web_popup_root_node);
   WalkChildren(*web_popup_layout_view, *web_popup_root_node,
                *web_popup_layout_view->Style());
+
+  // Offset the geometry relative to the main frame.
+  gfx::Rect main_frame_view_rect_dips = options_->main_frame_view_rect_in_dips;
+  gfx::Rect popup_view_rect_in_dips =
+      static_cast<WebPagePopup*>(web_popup)->ViewRect();
+  gfx::Vector2d offset_in_dips = popup_view_rect_in_dips.OffsetFromOrigin() -
+                                 main_frame_view_rect_dips.OffsetFromOrigin();
+
+  FrameWidget* local_frame_widget = frame.GetWidgetForLocalRoot();
+  CHECK(local_frame_widget);
+  gfx::Point offset_in_pixels =
+      gfx::ToFlooredPoint(local_frame_widget->DIPsToBlinkSpace(
+          gfx::PointF(gfx::Point() + offset_in_dips)));
+  OffsetNodeGeometry(*web_popup_root_node, offset_in_pixels.OffsetFromOrigin());
 
   mojom_popup->root_node = std::move(web_popup_root_node);
 
