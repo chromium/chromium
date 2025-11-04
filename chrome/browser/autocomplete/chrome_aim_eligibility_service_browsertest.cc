@@ -143,6 +143,21 @@ class AimEligibilityServiceFriend {
  public:
   using EligibilityRequestStatus =
       AimEligibilityService::EligibilityRequestStatus;
+  using EligibilityResponseSource =
+      AimEligibilityService::EligibilityResponseSource;
+  using RequestSource = AimEligibilityService::RequestSource;
+
+  void ProcessServerEligibilityResponse(
+      AimEligibilityService* service,
+      RequestSource request_source,
+      int response_code,
+      bool was_fetched_via_cache,
+      int num_retries,
+      std::unique_ptr<std::string> response_string) {
+    service->ProcessServerEligibilityResponse(
+        request_source, response_code, was_fetched_via_cache, num_retries,
+        std::move(response_string));
+  }
 };
 
 class ChromeAimEligibilityServiceBrowserTest
@@ -815,4 +830,67 @@ IN_PROC_BROWSER_TEST_F(ChromeAimEligibilityServiceRetryRequestBrowserTest,
   histogram_tester.ExpectUniqueSample(
       "Omnibox.AimEligibility.EligibilityRequestRetries.Failed", max_retries,
       1);
+}
+
+class ChromeAimEligibilityServiceCacheBrowserTest
+    : public InProcessBrowserTest {
+ public:
+  ChromeAimEligibilityServiceCacheBrowserTest() = default;
+  ~ChromeAimEligibilityServiceCacheBrowserTest() override = default;
+
+ protected:
+  void SetUp() override {
+    feature_list_.InitWithFeatures(
+        // Enabled features.
+        {omnibox::kAimEnabled,
+         omnibox::kAimServerEligibilityChangedNotification,
+         omnibox::kAimServerEligibilityEnabled,
+         omnibox::kAimServerRequestOnStartupEnabled},
+        // Disabled features.
+        {});
+
+    InProcessBrowserTest::SetUp();
+  }
+
+  void SetUpOnMainThread() override {
+    SetUpDefaultSearchEngine(browser()->profile(), /*is_google_dse=*/true);
+
+    AimEligibilityServiceFactory::GetInstance()->SetTestingFactory(
+        browser()->profile(),
+        base::BindOnce(AimEligibilityServiceFactory::GetDefaultFactory()));
+
+    InProcessBrowserTest::SetUpOnMainThread();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(ChromeAimEligibilityServiceCacheBrowserTest,
+                       RequestFromCache) {
+  auto* service =
+      AimEligibilityServiceFactory::GetForProfile(browser()->profile());
+
+  omnibox::AimEligibilityResponse response;
+  response.set_is_eligible(true);
+  std::string response_string;
+  response.SerializeToString(&response_string);
+
+  base::HistogramTester histogram_tester;
+
+  AimEligibilityServiceFriend aim_eligibility_service_friend;
+  aim_eligibility_service_friend.ProcessServerEligibilityResponse(
+      service, AimEligibilityServiceFriend::RequestSource::kStartup, 200,
+      /*was_fetched_via_cache=*/true,
+      /*num_retries=*/0, std::make_unique<std::string>(response_string));
+  service->IsAimEligible();
+
+  histogram_tester.ExpectUniqueSample(
+      "Omnibox.AimEligibility.EligibilityRequestStatus.Startup",
+      AimEligibilityServiceFriend::EligibilityRequestStatus::
+          kSuccessBrowserCache,
+      1);
+  histogram_tester.ExpectUniqueSample(
+      "Omnibox.AimEligibility.EligibilityResponseSource",
+      AimEligibilityServiceFriend::EligibilityResponseSource::kBrowserCache, 1);
 }

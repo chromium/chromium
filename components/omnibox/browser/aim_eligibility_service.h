@@ -126,7 +126,8 @@ class AimEligibilityService
     kErrorResponse = 1,
     kFailedToParse = 2,
     kSuccess = 3,
-    kMaxValue = kSuccess,
+    kSuccessBrowserCache = 4,
+    kMaxValue = kSuccessBrowserCache,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/omnibox/enums.xml:AimEligibilityRequestStatus)
 
@@ -138,7 +139,8 @@ class AimEligibilityService
     kDefault = 0,
     kPrefs = 1,
     kServer = 2,
-    kMaxValue = kServer,
+    kBrowserCache = 3,
+    kMaxValue = kBrowserCache,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/omnibox/enums.xml:AimEligibilityResponseSource)
 
@@ -163,7 +165,8 @@ class AimEligibilityService
 
   // Updates `most_recent_response_` and the prefs with `response_proto`.
   void UpdateMostRecentResponse(
-      const omnibox::AimEligibilityResponse& response_proto);
+      const omnibox::AimEligibilityResponse& response_proto,
+      bool was_fetched_via_cache = false);
   // Loads `most_recent_response_` from the prefs, if valid.
   void LoadMostRecentResponse();
 
@@ -172,6 +175,12 @@ class AimEligibilityService
   void OnServerEligibilityResponse(
       std::unique_ptr<network::SimpleURLLoader> loader,
       RequestSource request_source,
+      std::unique_ptr<std::string> response_string);
+  void ProcessServerEligibilityResponse(
+      RequestSource request_source,
+      int response_code,
+      bool was_fetched_via_cache,
+      int num_retries,
       std::unique_ptr<std::string> response_string);
 
   // Returns the given histogram name sliced by the given request source.

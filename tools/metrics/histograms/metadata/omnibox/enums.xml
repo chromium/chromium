@@ -48,6 +48,7 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="kErrorResponse"/>
   <int value="2" label="kFailedToParse"/>
   <int value="3" label="kSuccess"/>
+  <int value="4" label="kSuccessBrowserCache"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/omnibox/browser/aim_eligibility_service.h:EligibilityRequestStatus) -->
@@ -59,6 +60,7 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="kDefault"/>
   <int value="1" label="kPrefs"/>
   <int value="2" label="kServer"/>
+  <int value="3" label="kBrowserCache"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/omnibox/browser/aim_eligibility_service.h:EligibilityResponseSource) -->

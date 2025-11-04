@@ -12,6 +12,7 @@
 #include "base/base64.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
@@ -419,16 +420,18 @@ void AimEligibilityService::OnEligibilityResponseChanged() {
 }
 
 void AimEligibilityService::UpdateMostRecentResponse(
-    const omnibox::AimEligibilityResponse& response_proto) {
+    const omnibox::AimEligibilityResponse& response_proto,
+    bool was_fetched_via_cache) {
   CHECK(initialized_);
 
   std::string response_string;
   response_proto.SerializeToString(&response_string);
   std::string encoded_response = base::Base64Encode(response_string);
   pref_service_->SetString(kResponsePrefName, encoded_response);
-
   most_recent_response_ = response_proto;
-  most_recent_response_source_ = EligibilityResponseSource::kServer;
+  most_recent_response_source_ = was_fetched_via_cache
+                                     ? EligibilityResponseSource::kBrowserCache
+                                     : EligibilityResponseSource::kServer;
 }
 
 void AimEligibilityService::LoadMostRecentResponse() {
@@ -493,31 +496,45 @@ void AimEligibilityService::OnServerEligibilityResponse(
     std::unique_ptr<std::string> response_string) {
   CHECK(initialized_);
 
-  const bool custom_retry_policy_enabled = base::FeatureList::IsEnabled(
-      omnibox::kAimServerEligibilityCustomRetryPolicyEnabled);
-
   const int response_code =
       loader->ResponseInfo() && loader->ResponseInfo()->headers
           ? loader->ResponseInfo()->headers->response_code()
           : 0;
+  const bool was_fetched_via_cache =
+      loader->ResponseInfo() ? loader->ResponseInfo()->was_fetched_via_cache
+                             : false;
 
+  ProcessServerEligibilityResponse(
+      request_source, response_code, was_fetched_via_cache,
+      loader->GetNumRetries(), std::move(response_string));
+}
+
+void AimEligibilityService::ProcessServerEligibilityResponse(
+    RequestSource request_source,
+    int response_code,
+    bool was_fetched_via_cache,
+    int num_retries,
+    std::unique_ptr<std::string> response_string) {
   LogEligibilityRequestResponseCode(response_code, request_source);
+
+  const bool custom_retry_policy_enabled = base::FeatureList::IsEnabled(
+      omnibox::kAimServerEligibilityCustomRetryPolicyEnabled);
 
   if (response_code != 200 || !response_string) {
     LogEligibilityRequestStatus(EligibilityRequestStatus::kErrorResponse,
                                 request_source);
     if (custom_retry_policy_enabled) {
       base::UmaHistogramExactLinear(
-          kEligibilityRequestRetriesFailedHistogramName,
-          loader->GetNumRetries(), kMaxRetries + 1);
+          kEligibilityRequestRetriesFailedHistogramName, num_retries,
+          kMaxRetries + 1);
     }
     return;
   }
 
   if (custom_retry_policy_enabled) {
     base::UmaHistogramExactLinear(
-        kEligibilityRequestRetriesSucceededHistogramName,
-        loader->GetNumRetries(), kMaxRetries + 1);
+        kEligibilityRequestRetriesSucceededHistogramName, num_retries,
+        kMaxRetries + 1);
   }
 
   omnibox::AimEligibilityResponse response_proto;
@@ -526,10 +543,12 @@ void AimEligibilityService::OnServerEligibilityResponse(
                                 request_source);
     return;
   }
-  LogEligibilityRequestStatus(EligibilityRequestStatus::kSuccess,
-                              request_source);
 
-  UpdateMostRecentResponse(response_proto);
+  LogEligibilityRequestStatus(
+      was_fetched_via_cache ? EligibilityRequestStatus::kSuccessBrowserCache
+                            : EligibilityRequestStatus::kSuccess,
+      request_source);
+  UpdateMostRecentResponse(response_proto, was_fetched_via_cache);
   LogEligibilityResponse(request_source);
 }
 
