@@ -29,9 +29,10 @@ import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.Log;
+import org.chromium.base.MathUtils;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.ThreadUtils;
-import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
@@ -62,8 +63,11 @@ import java.util.function.Consumer;
         return display.isHdr() && display.isHdrSdrRatioAvailable();
     }
 
-    @EnsuresNonNull("sForcedDIPScale")
     private static boolean hasForcedDIPScale() {
+        return getForcedDIPScale() > 0;
+    }
+
+    private static float getForcedDIPScale() {
         if (sForcedDIPScale == null) {
             float value = 0.0f;
             String forcedScaleAsString =
@@ -83,7 +87,14 @@ import java.util.function.Consumer;
             }
             sForcedDIPScale = value;
         }
-        return sForcedDIPScale.floatValue() > 0;
+        return sForcedDIPScale.floatValue();
+    }
+
+    /* package */ static boolean isForcedDIPScaleChanged() {
+        final float forcedDIPScale = getForcedDIPScale();
+        sForcedDIPScale = null;
+
+        return !MathUtils.areFloatsEqual(getForcedDIPScale(), forcedDIPScale);
     }
 
     /**
@@ -229,6 +240,22 @@ import java.util.function.Consumer;
         assumeNonNull(mWindowManager);
 
         final DisplayMetrics displayMetrics = mWindowContext.getResources().getDisplayMetrics();
+        final float initialDensity = displayMetrics.density;
+
+        if (hasForcedDIPScale()) {
+            DisplayUtil.forcedScaleUpDisplayMetrics(getForcedDIPScale(), displayMetrics);
+        } else if (DeviceInfo.isAutomotive()
+                && CommandLine.getInstance()
+                        .hasSwitch(DisplaySwitches.AUTOMOTIVE_WEB_UI_SCALE_UP_ENABLED)) {
+            mDisplay.getRealMetrics(displayMetrics);
+            DisplayUtil.scaleUpDisplayMetricsForAutomotive(mWindowContext, displayMetrics);
+        } else if (DeviceInfo.isXr()
+                && CommandLine.getInstance()
+                        .hasSwitch(DisplaySwitches.XR_WEB_UI_SCALE_UP_ENABLED)) {
+            mDisplay.getRealMetrics(displayMetrics);
+            DisplayUtil.scaleUpDisplayMetricsForXr(mWindowContext, displayMetrics);
+        }
+
         final Insets insets =
                 mWindowManager
                         .getCurrentWindowMetrics()
@@ -241,16 +268,22 @@ import java.util.function.Consumer;
         Rect bounds;
         Rect workArea;
         if (mDisplayAbsoluteCoordinates != null) {
+            final float scalingFactor = initialDensity / displayMetrics.density;
+            final RectF scaledAbsoluteBounds =
+                    new RectF(
+                            mDisplayAbsoluteCoordinates.left * scalingFactor,
+                            mDisplayAbsoluteCoordinates.top * scalingFactor,
+                            mDisplayAbsoluteCoordinates.right * scalingFactor,
+                            mDisplayAbsoluteCoordinates.bottom * scalingFactor);
             bounds = new Rect();
-            mDisplayAbsoluteCoordinates.roundOut(bounds);
+            scaledAbsoluteBounds.roundOut(bounds);
+
             final RectF workAreaAbsoluteCoordinates =
                     new RectF(
-                            mDisplayAbsoluteCoordinates.left + insets.left / displayMetrics.density,
-                            mDisplayAbsoluteCoordinates.top + insets.top / displayMetrics.density,
-                            mDisplayAbsoluteCoordinates.right
-                                    - insets.right / displayMetrics.density,
-                            mDisplayAbsoluteCoordinates.bottom
-                                    - insets.bottom / displayMetrics.density);
+                            scaledAbsoluteBounds.left + insets.left / displayMetrics.density,
+                            scaledAbsoluteBounds.top + insets.top / displayMetrics.density,
+                            scaledAbsoluteBounds.right - insets.right / displayMetrics.density,
+                            scaledAbsoluteBounds.bottom - insets.bottom / displayMetrics.density);
             workArea = new Rect();
             workAreaAbsoluteCoordinates.roundOut(workArea);
         } else {
@@ -264,18 +297,6 @@ import java.util.function.Consumer;
                                     boundsInPixels.right - insets.right,
                                     boundsInPixels.bottom - insets.bottom),
                             1.0f / displayMetrics.density);
-        }
-
-        if (DeviceInfo.isAutomotive()
-                && CommandLine.getInstance()
-                        .hasSwitch(DisplaySwitches.AUTOMOTIVE_WEB_UI_SCALE_UP_ENABLED)) {
-            mDisplay.getRealMetrics(displayMetrics);
-            DisplayUtil.scaleUpDisplayMetricsForAutomotive(mWindowContext, displayMetrics);
-        } else if (DeviceInfo.isXr()
-                && CommandLine.getInstance()
-                        .hasSwitch(DisplaySwitches.XR_WEB_UI_SCALE_UP_ENABLED)) {
-            mDisplay.getRealMetrics(displayMetrics);
-            DisplayUtil.scaleUpDisplayMetricsForXr(mWindowContext, displayMetrics);
         }
 
         updateCommon(
@@ -316,12 +337,9 @@ import java.util.function.Consumer;
         display.getRealSize(size);
         display.getRealMetrics(displayMetrics);
 
-        Rect bounds =
-                DisplayUtil.scaleToEnclosingRect(
-                        new Rect(0, 0, size.x, size.y), 1.0f / displayMetrics.density);
-        Rect workArea = new Rect(bounds);
-
-        if (DeviceInfo.isAutomotive()
+        if (hasForcedDIPScale()) {
+            DisplayUtil.forcedScaleUpDisplayMetrics(getForcedDIPScale(), displayMetrics);
+        } else if (DeviceInfo.isAutomotive()
                 && CommandLine.getInstance()
                         .hasSwitch(DisplaySwitches.AUTOMOTIVE_WEB_UI_SCALE_UP_ENABLED)) {
             DisplayUtil.scaleUpDisplayMetricsForAutomotive(
@@ -332,6 +350,11 @@ import java.util.function.Consumer;
             DisplayUtil.scaleUpDisplayMetricsForXr(
                     ContextUtils.getApplicationContext(), displayMetrics);
         }
+
+        Rect bounds =
+                DisplayUtil.scaleToEnclosingRect(
+                        new Rect(0, 0, size.x, size.y), 1.0f / displayMetrics.density);
+        Rect workArea = new Rect(bounds);
 
         updateCommon(
                 bounds,
@@ -378,7 +401,6 @@ import java.util.function.Consumer;
             float xdpi,
             float ydpi,
             Display display) {
-        if (hasForcedDIPScale()) density = sForcedDIPScale.floatValue();
         boolean isWideColorGamut = display.isWideColorGamut();
 
         int pixelFormatId = PixelFormat.RGBA_8888;
@@ -440,5 +462,10 @@ import java.util.function.Consumer;
                 getHdrSdrRatio(display),
                 isInternal,
                 arrInfo);
+    }
+
+    public static void setHasForcedDIPScaleForTesting(float forcedDIPScale) {
+        sForcedDIPScale = forcedDIPScale;
+        ResettersForTesting.register(() -> sForcedDIPScale = null);
     }
 }

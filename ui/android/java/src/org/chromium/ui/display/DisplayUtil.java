@@ -155,6 +155,25 @@ public abstract class DisplayUtil {
     }
 
     /**
+     * Forces a {@link DisplayMetrics} object to a new density, scaling related DPI values.
+     *
+     * <p>This function modifies the passed-in {@link DisplayMetrics} object in-place.
+     *
+     * <p>This function updates {@link DisplayMetrics#density}, {@link DisplayMetrics#xdpi} and
+     * {@link DisplayMetrics#ydpi}, but it doesn't update {@link DisplayMetrics#densityDpi} to
+     * match. Use this only if you specifically require this partial update.
+     *
+     * @param density The new target density to set.
+     * @param displayMetrics The DisplayMetrics object to modify in-place.
+     */
+    public static void forcedScaleUpDisplayMetrics(float density, DisplayMetrics displayMetrics) {
+        float scaling = density / displayMetrics.density;
+        displayMetrics.density *= scaling;
+        displayMetrics.xdpi *= scaling;
+        displayMetrics.ydpi *= scaling;
+    }
+
+    /**
      * Scales up the UI for the {@link DisplayMetrics} by the scaling factor for automotive devices.
      *
      * @param displayMetrics The DisplayMetrics to scale up density for.

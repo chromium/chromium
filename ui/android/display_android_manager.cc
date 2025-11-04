@@ -225,10 +225,6 @@ void DisplayAndroidManager::UpdateDisplay(
     jboolean isHdr,
     jfloat hdrMaxLuminanceRatio,
     jboolean isInternal) {
-  if (Display::HasForceDeviceScaleFactor()) {
-    dipScale = Display::GetForcedDeviceScaleFactor();
-  }
-
   std::vector<int> bounds_array, work_area_array;
   base::android::JavaIntArrayToIntVector(env, jBounds, &bounds_array);
   base::android::JavaIntArrayToIntVector(env, jWorkArea, &work_area_array);

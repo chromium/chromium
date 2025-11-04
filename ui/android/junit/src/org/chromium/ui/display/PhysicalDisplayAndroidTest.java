@@ -8,6 +8,7 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
@@ -27,6 +28,7 @@ import android.view.WindowInsets;
 import android.view.WindowManager;
 import android.view.WindowMetrics;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -37,6 +39,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -51,13 +54,20 @@ public class PhysicalDisplayAndroidTest {
 
     private static final Rect TEST_DISPLAY_PIXEL_BOUNDS = new Rect(0, 0, 1920, 1080);
     private static final Insets TEST_DISPLAY_INSETS = Insets.of(10, 20, 30, 40);
+    private static final RectF TEST_DISPLAY_DIP_ABSOLUTE_COORDINATES =
+            new RectF(100f, 200f, 1636f, 1064f);
 
     private static final int TEST_DISPLAY_ROTATION = Surface.ROTATION_180;
     private static final int TEST_DISPLAY_ROTATION_DEGREES = 180;
 
     private static final float TEST_DISPLAY_DIP_SCALE = 1.25f;
+    private static final int TEST_DISPLAY_DENSITY_DPI = DisplayMetrics.DENSITY_HIGH;
     private static final float TEST_DISPLAY_XDPI = 1.15f;
     private static final float TEST_DISPLAY_YDPI = 1.35f;
+
+    private static final float TEST_FORCERD_DIP_SCALE = 2.5f;
+    private static final float TEST_AUTOMOTIVE_UI_SCALING_FACTOR = 4f;
+    private static final float TEST_XR_UI_SCALING_FACTOR = 0.5f;
 
     // TEST_DISPLAY_PIXEL_BOUNDS = {0, 0, 1920, 1080}, TEST_DISPLAY_DIP_SCALE = 1.25.
     private static final Rect TEST_DISPLAY_DIP_BOUNDS = new Rect(0, 0, 1536, 864);
@@ -100,6 +110,7 @@ public class PhysicalDisplayAndroidTest {
 
     // Mocks
     @Mock private Display mDisplay;
+    @Mock private DisplayAndroidManager mDisplayAndroidManager;
     @Spy Context mAppContext = ContextUtils.getApplicationContext();
     @Mock private Context mWindowContext;
     @Mock private WindowManager mWindowManager;
@@ -112,6 +123,11 @@ public class PhysicalDisplayAndroidTest {
     public void setup() {
         DeviceInfo.setIsAutomotiveForTesting(false);
         DeviceInfo.setIsXrForTesting(false);
+
+        // This is necessary because, when DisplayAndroidManager is created, another default
+        // PhysicalDisplayAndroid is constructed, this produces unwanted logs.
+        DisplayAndroidManager.setInstanceForTesting(mDisplayAndroidManager);
+        doNothing().when(mDisplayAndroidManager).updateDisplayOnNativeSide(any());
 
         doReturn(TEST_DISPLAY_ID).when(mDisplay).getDisplayId();
         doReturn(TEST_DISPLAY_NAME).when(mDisplay).getName();
@@ -140,6 +156,7 @@ public class PhysicalDisplayAndroidTest {
 
         DisplayMetrics displayMetrics = new DisplayMetrics();
         displayMetrics.density = TEST_DISPLAY_DIP_SCALE;
+        displayMetrics.densityDpi = TEST_DISPLAY_DENSITY_DPI;
         displayMetrics.xdpi = TEST_DISPLAY_XDPI;
         displayMetrics.ydpi = TEST_DISPLAY_YDPI;
         doReturn(displayMetrics).when(mResources).getDisplayMetrics();
@@ -171,6 +188,7 @@ public class PhysicalDisplayAndroidTest {
                         invocation -> {
                             DisplayMetrics outMetrics = invocation.getArgument(0);
                             outMetrics.density = TEST_DISPLAY_DIP_SCALE;
+                            outMetrics.densityDpi = TEST_DISPLAY_DENSITY_DPI;
                             outMetrics.xdpi = TEST_DISPLAY_XDPI;
                             outMetrics.ydpi = TEST_DISPLAY_YDPI;
 
@@ -178,6 +196,27 @@ public class PhysicalDisplayAndroidTest {
                         })
                 .when(mDisplay)
                 .getRealMetrics(any(DisplayMetrics.class));
+    }
+
+    @After
+    public void teardown() {
+        CommandLine.getInstance().removeSwitch(DisplaySwitches.AUTOMOTIVE_WEB_UI_SCALE_UP_ENABLED);
+        CommandLine.getInstance().removeSwitch(DisplaySwitches.XR_WEB_UI_SCALE_UP_ENABLED);
+        DisplayUtil.resetUiScalingFactorForAutomotiveForTesting();
+        DisplayUtil.resetUiScalingFactorForXrForTesting();
+    }
+
+    private void setupAutomotive() {
+        DeviceInfo.setIsAutomotiveForTesting(true);
+        DisplayUtil.setCarmaPhase1Version2ComplianceForTesting(false);
+        DisplayUtil.setUiScalingFactorForAutomotiveForTesting(TEST_AUTOMOTIVE_UI_SCALING_FACTOR);
+        CommandLine.getInstance().appendSwitch(DisplaySwitches.AUTOMOTIVE_WEB_UI_SCALE_UP_ENABLED);
+    }
+
+    private void setupXr() {
+        DeviceInfo.setIsXrForTesting(true);
+        DisplayUtil.setUiScalingFactorForXrForTesting(TEST_XR_UI_SCALING_FACTOR);
+        CommandLine.getInstance().appendSwitch(DisplaySwitches.XR_WEB_UI_SCALE_UP_ENABLED);
     }
 
     @Test
@@ -193,6 +232,60 @@ public class PhysicalDisplayAndroidTest {
                 TEST_DISPLAY_DIP_BOUNDS,
                 TEST_DISPLAY_DIP_BOUNDS);
         checkDisplayIsInternal(physicalDisplayAndroid, DEFAULT_DISPLAY_IS_INTERNAL);
+    }
+
+    @Test
+    public void testPhysicalDisplayAndroidUpdateFromDisplayWithForcedDIPScale() {
+        PhysicalDisplayAndroid.setHasForcedDIPScaleForTesting(TEST_FORCERD_DIP_SCALE);
+
+        final PhysicalDisplayAndroid physicalDisplayAndroid =
+                new PhysicalDisplayAndroid(mDisplay, null, false);
+
+        // The TEST_FORCERD_DIP_SCALE is two times bigger than the TEST_DISPLAY_DIP_SCALE, so the
+        // coordinate should be two times smaller.
+        final Rect dipGlobalBounds = new Rect(0, 0, 768, 432);
+
+        checkDisplaySize(
+                physicalDisplayAndroid,
+                TEST_DISPLAY_PIXEL_BOUNDS,
+                dipGlobalBounds,
+                dipGlobalBounds);
+    }
+
+    @Test
+    public void testPhysicalDisplayAndroidUpdateFromDisplayForAutomotive() {
+        setupAutomotive();
+
+        final PhysicalDisplayAndroid physicalDisplayAndroid =
+                new PhysicalDisplayAndroid(mDisplay, null, false);
+
+        // The TEST_AUTOMOTIVE_UI_SCALING_FACTOR is 4, so the coordinate should be 4 times
+        // smaller.
+        final Rect dipGlobalBounds = new Rect(0, 0, 384, 216);
+
+        checkDisplaySize(
+                physicalDisplayAndroid,
+                TEST_DISPLAY_PIXEL_BOUNDS,
+                dipGlobalBounds,
+                dipGlobalBounds);
+    }
+
+    @Test
+    public void testPhysicalDisplayAndroidUpdateFromDisplayForXr() {
+        setupXr();
+
+        final PhysicalDisplayAndroid physicalDisplayAndroid =
+                new PhysicalDisplayAndroid(mDisplay, null, false);
+
+        // The TEST_XR_UI_SCALING_FACTOR is 0.5, so the coordinate should be 2 times
+        // bigger.
+        final Rect dipGlobalBounds = new Rect(0, 0, 3072, 1728);
+
+        checkDisplaySize(
+                physicalDisplayAndroid,
+                TEST_DISPLAY_PIXEL_BOUNDS,
+                dipGlobalBounds,
+                dipGlobalBounds);
     }
 
     @Test
@@ -212,16 +305,117 @@ public class PhysicalDisplayAndroidTest {
 
     @Test
     @Config(sdk = Build.VERSION_CODES.S)
-    public void testPhysicalDisplayAndroidWithAbsoluteCoordinates() {
-        final RectF displayDipAbsoluteCoordinates = new RectF(100f, 200f, 1636f, 1064f);
-        final PhysicalDisplayAndroid physicalDisplayAndroid =
-                new PhysicalDisplayAndroid(mDisplay, displayDipAbsoluteCoordinates, false);
+    public void testPhysicalDisplayAndroidUpdateFromConfigurationWithForcedDIPScale() {
+        PhysicalDisplayAndroid.setHasForcedDIPScaleForTesting(TEST_FORCERD_DIP_SCALE);
 
-        // displayDipAbsoluteCoordinates = {0, 0, 1636, 1064}.
+        final PhysicalDisplayAndroid physicalDisplayAndroid =
+                new PhysicalDisplayAndroid(mDisplay, null, false);
+
+        // The TEST_FORCERD_DIP_SCALE is two times bigger than the TEST_DISPLAY_DIP_SCALE, so the
+        // coordinate should be two times smaller.
+        final Rect dipGlobalBounds = new Rect(0, 0, 768, 432);
+        final Rect dipWorkArea = new Rect(4, 8, 756, 416);
+
+        checkDisplaySize(
+                physicalDisplayAndroid, TEST_DISPLAY_PIXEL_BOUNDS, dipGlobalBounds, dipWorkArea);
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.S)
+    public void testPhysicalDisplayAndroidlUpdateFromConfigurationForAutomotive() {
+        setupAutomotive();
+
+        final PhysicalDisplayAndroid physicalDisplayAndroid =
+                new PhysicalDisplayAndroid(mDisplay, null, false);
+
+        // The TEST_AUTOMOTIVE_UI_SCALING_FACTOR is 4, so the coordinate should be 4 times
+        // smaller.
+        final Rect dipGlobalBounds = new Rect(0, 0, 384, 216);
+        final Rect dipWorkArea = new Rect(2, 4, 378, 208);
+
+        checkDisplaySize(
+                physicalDisplayAndroid, TEST_DISPLAY_PIXEL_BOUNDS, dipGlobalBounds, dipWorkArea);
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.S)
+    public void testPhysicalDisplayAndroidlUpdateFromConfigurationForXr() {
+        setupXr();
+
+        final PhysicalDisplayAndroid physicalDisplayAndroid =
+                new PhysicalDisplayAndroid(mDisplay, null, false);
+
+        // The TEST_XR_UI_SCALING_FACTOR is 0.5, so the coordinate should be 2 times
+        // bigger.
+        final Rect dipGlobalBounds = new Rect(0, 0, 3072, 1728);
+        final Rect dipWorkArea = new Rect(16, 32, 3024, 1664);
+
+        checkDisplaySize(
+                physicalDisplayAndroid, TEST_DISPLAY_PIXEL_BOUNDS, dipGlobalBounds, dipWorkArea);
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.S)
+    public void testPhysicalDisplayAndroidWithAbsoluteCoordinates() {
+        final PhysicalDisplayAndroid physicalDisplayAndroid =
+                new PhysicalDisplayAndroid(mDisplay, TEST_DISPLAY_DIP_ABSOLUTE_COORDINATES, false);
+
+        // TEST_DISPLAY_DIP_ABSOLUTE_COORDINATES = {0, 0, 1636, 1064}.
         final Rect dipGlobalBounds = new Rect(100, 200, 1636, 1064);
-        // displayDipAbsoluteCoordinates = {0, 0, 1636, 1064}, insets = {10, 20, 30, 40}, dipScale =
-        // 1.25.
+        // TEST_DISPLAY_DIP_ABSOLUTE_COORDINATES = {0, 0, 1636, 1064},
+        // TEST_DISPLAY_INSETS = {10, 20, 30, 40}, TEST_DISPLAY_DIP_SCALE = 1.25.
         final Rect dipWorkArea = new Rect(108, 216, 1612, 1032);
+        checkDisplaySize(
+                physicalDisplayAndroid, TEST_DISPLAY_PIXEL_BOUNDS, dipGlobalBounds, dipWorkArea);
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.S)
+    public void testPhysicalDisplayAndroidWithAbsoluteCoordinatesAndForcedDIPScale() {
+        PhysicalDisplayAndroid.setHasForcedDIPScaleForTesting(TEST_FORCERD_DIP_SCALE);
+
+        final PhysicalDisplayAndroid physicalDisplayAndroid =
+                new PhysicalDisplayAndroid(mDisplay, TEST_DISPLAY_DIP_ABSOLUTE_COORDINATES, false);
+
+        // The TEST_FORCERD_DIP_SCALE is two times bigger than the TEST_DISPLAY_DIP_SCALE, so the
+        // coordinate should be two times smaller.
+        final Rect dipGlobalBounds = new Rect(50, 100, 818, 532);
+        final Rect dipWorkArea = new Rect(54, 108, 806, 516);
+
+        checkDisplaySize(
+                physicalDisplayAndroid, TEST_DISPLAY_PIXEL_BOUNDS, dipGlobalBounds, dipWorkArea);
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.S)
+    public void testPhysicalDisplayAndroidlWithAbsoluteCoordinatesForAutomotive() {
+        setupAutomotive();
+
+        final PhysicalDisplayAndroid physicalDisplayAndroid =
+                new PhysicalDisplayAndroid(mDisplay, TEST_DISPLAY_DIP_ABSOLUTE_COORDINATES, false);
+
+        // The TEST_AUTOMOTIVE_UI_SCALING_FACTOR is 4, so the coordinate should be 4 times
+        // smaller.
+        final Rect dipGlobalBounds = new Rect(25, 50, 409, 266);
+        final Rect dipWorkArea = new Rect(27, 54, 403, 258);
+
+        checkDisplaySize(
+                physicalDisplayAndroid, TEST_DISPLAY_PIXEL_BOUNDS, dipGlobalBounds, dipWorkArea);
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.S)
+    public void testPhysicalDisplayAndroidlWithAbsoluteCoordinatesForXr() {
+        setupXr();
+
+        final PhysicalDisplayAndroid physicalDisplayAndroid =
+                new PhysicalDisplayAndroid(mDisplay, TEST_DISPLAY_DIP_ABSOLUTE_COORDINATES, false);
+
+        // The TEST_XR_UI_SCALING_FACTOR is 0.5, so the coordinate should be 2 times
+        // bigger.
+        final Rect dipGlobalBounds = new Rect(200, 400, 3272, 2128);
+        final Rect dipWorkArea = new Rect(216, 432, 3224, 2064);
+
         checkDisplaySize(
                 physicalDisplayAndroid, TEST_DISPLAY_PIXEL_BOUNDS, dipGlobalBounds, dipWorkArea);
     }
