@@ -2,6 +2,7 @@ include_rules = [
   "+base/containers/heap_array.h",
   "+base/notimplemented.h",
   "+base/types/fixed_array.h",
+  "+components/viz/common/resources/shared_image_format.h",
   "+gpu/command_buffer/client/client_shared_image.h",
   "+gpu/command_buffer/client/shared_image_interface.h",
   "+gpu/command_buffer/common/sync_token.h",

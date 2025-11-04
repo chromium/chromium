@@ -9,6 +9,7 @@
 #include "base/types/cxx23_to_underlying.h"
 #include "base/types/expected_macros.h"
 #include "base/types/pass_key.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "services/webnn/public/cpp/context_properties.h"
@@ -148,6 +149,15 @@ base::expected<gfx::Size, String> ShapeToSharedImageSize(
 
 base::expected<viz::SharedImageFormat, String>
 OperandDataTypeToSharedImageFormat(webnn::OperandDataType data_type) {
+// TODO(crbug.com/427252761): Support other data types in CoreML backend.
+#if BUILDFLAG(IS_MAC)
+  if (data_type != webnn::OperandDataType::kFloat16) {
+    return base::unexpected(String::Format(
+        "Invalid operand data type: %s", ToBlinkDataType(data_type).AsCStr()));
+  }
+  // The only format supported by CoreML `MLMultiArray::initWithPixelBuffer`.
+  return viz::SinglePlaneFormat::kR_F16;
+#else
   // Maps data_type to equivalent element size.
   switch (data_type) {
     // 1 byte per element
@@ -161,7 +171,7 @@ OperandDataTypeToSharedImageFormat(webnn::OperandDataType data_type) {
     case webnn::OperandDataType::kUint32:
     case webnn::OperandDataType::kInt32:
     case webnn::OperandDataType::kFloat32:
-      // TODO(crbug.com/345352987): use shared image formats with 32 bits per
+      // TODO(crbug.com/345352987): Use shared image formats with 32 bits per
       // channel for float32/int32/uint32 instead of RGBA_8888, which only
       // matches the size.
       return viz::SinglePlaneFormat::kRGBA_8888;
@@ -171,6 +181,7 @@ OperandDataTypeToSharedImageFormat(webnn::OperandDataType data_type) {
           String::Format("Invalid operand data type: %s",
                          ToBlinkDataType(data_type).AsCStr()));
   }
+#endif  // BUILDFLAG(IS_MAC)
 }
 
 gpu::SharedImageUsageSet OperandUsageToSharedImageUsageSet(

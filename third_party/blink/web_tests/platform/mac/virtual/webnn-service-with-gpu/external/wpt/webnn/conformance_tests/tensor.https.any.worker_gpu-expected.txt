@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Harness Error. harness_status.status = 1 , harness_status.message = UnknownError: Failed to execute 'createExportableTensor' on 'MLContext': Failed to create tensor.
+Harness Error. harness_status.status = 1 , harness_status.message = TypeError: Failed to execute 'createExportableTensor' on 'MLContext': Invalid operand data type: float32
 Found 0 FAIL, 0 TIMEOUT, 13 NOTRUN.
 [NOTRUN] interop / export tensor
 [NOTRUN] interop / export wrong tensor

@@ -2610,6 +2610,7 @@ _CONFIG = [
             'blink_mojom::.+',
             'webnn::.+',
             'gpu::SharedImageInterface',
+            'viz::SinglePlaneFormat',
         ]
     },
     {
