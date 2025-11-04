@@ -738,6 +738,48 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Navigation.AndroidSpareRendererNavigationThrottle.DeferTime"
+    units="microseconds" expires_after="2026-03-31">
+  <owner>gjc@google.com</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Records the deferred time caused by the
+    AndroidSpareRendererNavigaionThrottle. The UMA is recorded each time
+    AndroidSpareRendererNavigationThrottle::WillStartRequest resumes the
+    navigation. The UMA will only be sent if the Android spare renderer feature
+    and the navigation throttle for the Android spare renderer are enabled. The
+    UMA only records metrics on machines with high-resolution clocks.
+  </summary>
+</histogram>
+
+<histogram
+    name="Navigation.AndroidSpareRendererNavigationThrottle.ProcessAliveWhenResume"
+    enum="Boolean" expires_after="2026-03-31">
+  <owner>gjc@google.com</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Records whether the renderer process for the navigation is still alive when
+    resuming the navigation in AndroidSpareRendererNavigaionThrottle. The UMA is
+    recorded each time AndroidSpareRendererNavigationThrottle::WillStartRequest
+    resumes the navigation. The UMA will only be sent if the Android spare
+    renderer feature and the navigation throttle for the Android spare renderer
+    are enabled.
+  </summary>
+</histogram>
+
+<histogram name="Navigation.AndroidSpareRendererNavigationThrottle.WillDefer"
+    enum="Boolean" expires_after="2026-03-31">
+  <owner>gjc@google.com</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Records if a navigation is deferred by the
+    AndroidSpareRendererNavigaionThrottle. The UMA is recorded each time
+    AndroidSpareRendererNavigationThrottle::WillStartRequest is called. The UMA
+    will only be sent if the Android spare renderer feature and the navigation
+    throttle for the Android spare renderer are enabled.
+  </summary>
+</histogram>
+
 <histogram name="Navigation.AnonymousIframeIsSandboxed" enum="Boolean"
     expires_after="2023-10-01">
   <owner>arthursonzogni@chromium.org</owner>

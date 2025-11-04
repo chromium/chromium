@@ -7,6 +7,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/timer/elapsed_timer.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_process_host_observer.h"
@@ -49,7 +50,7 @@ class CONTENT_EXPORT AndroidSpareRendererNavigationThrottle
   virtual RenderProcessHost* GetSpeculativeRenderProcessHost();
 
  private:
-  void MaybeResume();
+  void MaybeResume(bool is_alive);
 
   // The speculative render process host the throttle is observing.
   // The RPH is saved for removing the RenderProcessHostObserver.
@@ -57,6 +58,8 @@ class CONTENT_EXPORT AndroidSpareRendererNavigationThrottle
   // reset in RenderProcessHostDestroyed first so it is safe to keep a raw_ptr
   // here.
   raw_ptr<RenderProcessHost> render_process_host_;
+
+  std::unique_ptr<base::ElapsedTimer> defer_timer_;
 };
 
 }  // namespace content

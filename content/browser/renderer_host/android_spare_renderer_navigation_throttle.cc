@@ -4,6 +4,7 @@
 
 #include "content/browser/renderer_host/android_spare_renderer_navigation_throttle.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
@@ -33,11 +34,19 @@ AndroidSpareRendererNavigationThrottle::
 NavigationThrottle::ThrottleCheckResult
 AndroidSpareRendererNavigationThrottle::WillStartRequest() {
   RenderProcessHost* rph = GetSpeculativeRenderProcessHost();
-  if (!rph || !rph->ShouldThrottleNavigationForSpareRendererGraduation()) {
+  bool will_defer =
+      rph && rph->ShouldThrottleNavigationForSpareRendererGraduation();
+  base::UmaHistogramBoolean(
+      "Navigation.AndroidSpareRendererNavigationThrottle.WillDefer",
+      will_defer);
+  if (!will_defer) {
     return NavigationThrottle::PROCEED;
   }
   rph->AddObserver(this);
   render_process_host_ = rph;
+  if (base::TimeTicks::IsHighResolution()) {
+    defer_timer_ = std::make_unique<base::ElapsedTimer>();
+  }
   return NavigationThrottle::DEFER;
 }
 
@@ -62,7 +71,7 @@ void AndroidSpareRendererNavigationThrottle::SpareRendererPriorityGraduated(
   // If the process is killed, we will wait for RenderProcessExited before
   // resuming the navigation.
   if (is_alive) {
-    MaybeResume();
+    MaybeResume(/*is_alive=*/true);
   }
 }
 
@@ -74,19 +83,29 @@ void AndroidSpareRendererNavigationThrottle::RenderProcessExited(
   // ResumeNavigationWithSpeculativeRFHProcessGone is enabled, the browser is
   // able to resume the navigation with a new renderer process. Otherwise the
   // navigation will be aborted.
-  MaybeResume();
+  MaybeResume(/*is_alive=*/false);
 }
 
 void AndroidSpareRendererNavigationThrottle::RenderProcessHostDestroyed(
     RenderProcessHost* host) {
   // RenderProcessHostDestroyed can be called without RenderProcessExited. We
   // need to resume the navigation even in that case.
-  MaybeResume();
+  MaybeResume(/*is_alive=*/false);
 }
 
-void AndroidSpareRendererNavigationThrottle::MaybeResume() {
+void AndroidSpareRendererNavigationThrottle::MaybeResume(bool is_alive) {
   if (render_process_host_) {
     render_process_host_->RemoveObserver(this);
+    base::UmaHistogramBoolean(
+        "Navigation.AndroidSpareRendererNavigationThrottle."
+        "ProcessAliveWhenResume",
+        is_alive);
+    if (defer_timer_) {
+      base::UmaHistogramMicrosecondsTimes(
+          "Navigation.AndroidSpareRendererNavigationThrottle.DeferTime",
+          defer_timer_->Elapsed());
+      defer_timer_.reset();
+    }
     render_process_host_ = nullptr;
     Resume();
   }
