@@ -237,7 +237,12 @@ void MockClipboardHost::RegisterClipboardListener(
 
 void MockClipboardHost::OnClipboardDataChanged() {
   if (clipboard_listener_) {
-    clipboard_listener_->OnClipboardDataChanged();
+    auto sequence_number_bytes = sequence_number_.value().AsBytes();
+    clipboard_listener_->OnClipboardDataChanged(
+        ReadStandardFormatNames(),
+        absl::MakeUint128(
+            base::U64FromLittleEndian(sequence_number_bytes.first<8>()),
+            base::U64FromLittleEndian(sequence_number_bytes.last<8>())));
   }
 }
 

@@ -846,7 +846,11 @@ class MockClipboardListener : public blink::mojom::ClipboardListener {
   ~MockClipboardListener() override = default;
 
   // Implementation of blink::mojom::ClipboardListener
-  MOCK_METHOD(void, OnClipboardDataChanged, (), (override));
+  MOCK_METHOD(void,
+              OnClipboardDataChanged,
+              (const std::vector<std::u16string>& types,
+               const absl::uint128& change_id),
+              (override));
 
   mojo::PendingRemote<blink::mojom::ClipboardListener> GetRemote() {
     mojo::PendingRemote<blink::mojom::ClipboardListener> remote;
@@ -868,7 +872,7 @@ TEST_F(ClipboardHostImplChangeTest, AddClipboardListener) {
   auto mock_listener = std::make_unique<MockClipboardListener>();
 
   // Set up the expectation that OnClipboardDataChanged will be called once
-  EXPECT_CALL(*mock_listener, OnClipboardDataChanged()).Times(1);
+  EXPECT_CALL(*mock_listener, OnClipboardDataChanged).Times(1);
 
   // Add the clipboard listener to the clipboard host
   clipboard_host_impl()->RegisterClipboardListener(mock_listener->GetRemote());
@@ -891,7 +895,7 @@ TEST_F(ClipboardHostImplChangeTest, ClipboardListenerDisconnect) {
   auto mock_listener = std::make_unique<MockClipboardListener>();
 
   // Set up the expectation that OnClipboardDataChanged will not be called
-  EXPECT_CALL(*mock_listener, OnClipboardDataChanged()).Times(0);
+  EXPECT_CALL(*mock_listener, OnClipboardDataChanged).Times(0);
 
   // Add the clipboard listener to the clipboard host
   clipboard_host_impl()->RegisterClipboardListener(mock_listener->GetRemote());

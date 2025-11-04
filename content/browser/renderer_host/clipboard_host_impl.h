@@ -163,6 +163,11 @@ class CONTENT_EXPORT ClipboardHostImpl
       GetPlatformPermissionStateCallback callback) override;
 #endif
 
+  std::vector<std::u16string> ReadAvailableTypesImpl(
+      ui::ClipboardBuffer clipboard_buffer);
+
+  absl::uint128 GetSequenceNumberImpl(ui::ClipboardBuffer clipboard_buffer);
+
   // Checks if the renderer allows pasting.  This check is skipped if called
   // soon after a successful content allowed request.
   bool IsRendererPasteAllowed(ui::ClipboardBuffer clipboard_buffer,
@@ -231,6 +236,8 @@ class CONTENT_EXPORT ClipboardHostImpl
 
   // Tracks whether this instance is currently observing clipboard changes.
   bool listening_to_clipboard_ = false;
+
+  std::optional<absl::uint128> last_change_id_;
 
   // Single clipboard listener that will be notified on clipboard changes
   mojo::Remote<blink::mojom::ClipboardListener> clipboard_listener_;

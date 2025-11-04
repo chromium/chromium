@@ -635,12 +635,19 @@ void SystemClipboard::Snapshot::SetCustomData(
   custom_data_.Set(type, data);
 }
 
-void SystemClipboard::OnClipboardDataChanged() {
-  // If we're not listening (receiver not bound), don't notify controllers
-  if (!clipboard_listener_receiver_.is_bound()) {
-    return;
-  }
+void SystemClipboard::OnClipboardDataChanged(const Vector<String>& types,
+                                             const absl::uint128& change_id) {
+  clipboard_change_data_.emplace(types, BigInt(change_id));
+
+  // TODO(crbug.com/457463706): Reevaluate whether this is the right
+  // abstraction, possibly use a clipboard-specific interface here.
   NotifyControllers();
+}
+
+const SystemClipboard::ClipboardChangeData&
+SystemClipboard::GetClipboardChangeEventData() {
+  CHECK(!!clipboard_change_data_);
+  return clipboard_change_data_.value();
 }
 
 void SystemClipboard::StartListening(LocalDOMWindow* window) {

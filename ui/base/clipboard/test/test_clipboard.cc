@@ -398,6 +398,14 @@ void TestClipboard::WriteData(const ClipboardFormatType& format,
   ClipboardMonitor::GetInstance()->NotifyClipboardDataChanged();
 }
 
+void TestClipboard::StopUpdatingSequenceNumberForTesting() {
+  should_update_sequence_number_ = false;
+}
+
+void TestClipboard::UpdateSequenceManuallyForTesting(ClipboardBuffer buffer) {
+  GetStore(buffer).sequence_number = ClipboardSequenceNumberToken();
+}
+
 TestClipboard::DataStore::DataStore() = default;
 
 TestClipboard::DataStore::DataStore(const DataStore& other) {
@@ -450,7 +458,9 @@ const TestClipboard::DataStore& TestClipboard::GetStore(
 TestClipboard::DataStore& TestClipboard::GetStore(ClipboardBuffer buffer) {
   CHECK(IsSupportedClipboardBuffer(buffer));
   DataStore& store = stores_[buffer];
-  store.sequence_number = ClipboardSequenceNumberToken();
+  if (should_update_sequence_number_) {
+    store.sequence_number = ClipboardSequenceNumberToken();
+  }
   return store;
 }
 

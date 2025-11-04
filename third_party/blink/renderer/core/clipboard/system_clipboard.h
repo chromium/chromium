@@ -12,6 +12,7 @@
 #include "third_party/blink/public/mojom/clipboard/clipboard.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/frame/platform_event_dispatcher.h"
+#include "third_party/blink/renderer/platform/bindings/bigint.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
@@ -49,7 +50,14 @@ class CORE_EXPORT SystemClipboard final
   void StopListening() override;
 
   // Inherited from ClipboardListener.
-  void OnClipboardDataChanged() override;
+  void OnClipboardDataChanged(const Vector<String>& types,
+                              const absl::uint128& changeId) override;
+
+  struct ClipboardChangeData {
+    const Vector<String> types;
+    const BigInt change_id;
+  };
+  const ClipboardChangeData& GetClipboardChangeEventData();
 
   absl::uint128 SequenceNumber();
   bool IsSelectionMode() const;
@@ -235,6 +243,12 @@ class CORE_EXPORT SystemClipboard final
   // made.
   std::unique_ptr<Snapshot> snapshot_;
   size_t snapshot_count_ = 0;
+
+  // A data from the most recent clipboard change notification.
+  // TODO(crbug.com/457463706): Possibly move this data somewhere within
+  // `ClipboardChangeEventController` or similar place.
+  std::optional<ClipboardChangeData> clipboard_change_data_;
+
   // Declared SystemClipboardTest class as friend to access the private members
   // of this class as we need to use clipboard_ and buffer_ for unbound remote
   // tests.

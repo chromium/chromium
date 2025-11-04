@@ -113,6 +113,9 @@ class TestClipboard : public Clipboard {
   void WriteData(const ClipboardFormatType& format,
                  base::span<const uint8_t> data) override;
 
+  void StopUpdatingSequenceNumberForTesting();
+  void UpdateSequenceManuallyForTesting(ClipboardBuffer buffer);
+
  private:
   struct DataStore {
     DataStore();
@@ -137,6 +140,7 @@ class TestClipboard : public Clipboard {
   DataStore& GetStore(ClipboardBuffer buffer);
   DataStore& GetDefaultStore();
 
+  bool should_update_sequence_number_ = true;
   ClipboardBuffer default_store_buffer_;
   mutable base::flat_map<ClipboardBuffer, DataStore> stores_;
   base::Time last_modified_time_;

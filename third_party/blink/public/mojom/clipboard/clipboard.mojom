@@ -58,7 +58,9 @@ struct ClipboardFiles {
 // Implemented by clients that want to be notified when the clipboard contents change.
 interface ClipboardListener {
   // Called when the clipboard data has changed.
-  OnClipboardDataChanged();
+  OnClipboardDataChanged(
+      array<mojo_base.mojom.String16> types,
+      mojo_base.mojom.Uint128 change_id);
 };
 
 // Implemented by the browser to allow the renderer to use the system clipboard.
