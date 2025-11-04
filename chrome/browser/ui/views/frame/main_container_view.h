@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ref.h"
 #include "ui/views/view.h"
+#include "ui/views/view_shadow.h"
 
 class BrowserView;
 
@@ -29,8 +30,15 @@ class MainContainerView : public views::View {
   MainContainerView& operator=(const MainContainerView&) = delete;
   ~MainContainerView() override;
 
+  void SetShadowVisiblityAndRoundedCorners(bool visibile);
+
  private:
   const raw_ref<BrowserView> browser_view_;
+
+  // The shadow and elevation around main_container to visually separate the
+  // container from MainRegionBackground when the toolbar_height_side_panel is
+  // visible.
+  std::unique_ptr<views::ViewShadow> view_shadow_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_MAIN_CONTAINER_VIEW_H_

@@ -5025,6 +5025,9 @@ void BrowserView::Layout(PassKey) {
 
   LayoutSuperclass<views::View>(this);
 
+  main_container_->SetShadowVisiblityAndRoundedCorners(
+      toolbar_height_side_panel_->GetVisible());
+
   // TODO(jamescook): Why was this in the middle of layout code?
   toolbar_->location_bar()->omnibox_view()->SetFocusBehavior(
       IsToolbarVisible() ? FocusBehavior::ALWAYS : FocusBehavior::NEVER);

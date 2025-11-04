@@ -30,6 +30,7 @@
 #include "chrome/browser/ui/views/frame/contents_container_view.h"
 #include "chrome/browser/ui/views/frame/contents_web_view.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
+#include "chrome/browser/ui/views/frame/main_container_view.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/intent_picker_bubble_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_closer.h"
@@ -1145,7 +1146,7 @@ class BrowserView : public BrowserWindow,
 
   // The view that contains the primary UI (Toolbar, BookmarksBar, InfoBar,
   // WebContents, and Side panel).
-  raw_ptr<views::View> main_container_ = nullptr;
+  raw_ptr<MainContainerView> main_container_ = nullptr;
 
   // The view that manages the tab strip, toolbar, and sometimes the bookmark
   // bar. Stacked top in the view hiearachy so it can be used to slide out
