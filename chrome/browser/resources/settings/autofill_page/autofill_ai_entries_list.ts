@@ -63,7 +63,7 @@ const SettingsAutofillAiEntriesListElementBase = SettingsViewMixin(
 export class SettingsAutofillAiEntriesListElement extends
     SettingsAutofillAiEntriesListElementBase {
   static get is() {
-    return 'settings-autofill-ai-entries-list-element';
+    return 'settings-autofill-ai-entries-list';
   }
 
   static get template() {
@@ -365,8 +365,7 @@ export class SettingsAutofillAiEntriesListElement extends
 
 declare global {
   interface HTMLElementTagNameMap {
-    'settings-autofill-ai-entries-list-element':
-        SettingsAutofillAiEntriesListElement;
+    'settings-autofill-ai-entries-list': SettingsAutofillAiEntriesListElement;
   }
 }
 

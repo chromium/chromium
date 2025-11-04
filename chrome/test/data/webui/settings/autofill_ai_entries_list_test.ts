@@ -74,8 +74,7 @@ suite('AutofillAiEntriesListUiReflectsEligibilityStatus', function() {
     // By default, the user is not opted in.
     entityDataManager.setGetOptInStatusResponse(false);
 
-    entriesList =
-        document.createElement('settings-autofill-ai-entries-list-element');
+    entriesList = document.createElement('settings-autofill-ai-entries-list');
     entriesList.prefs = settingsPrefs.prefs;
     document.body.appendChild(entriesList);
     return flushTasks();
@@ -276,8 +275,7 @@ suite('AutofillAiEntriesListUiTest', function() {
   });
 
   async function createPage(allowedEntityTypes: Set<number>|null = null) {
-    entriesList =
-        document.createElement('settings-autofill-ai-entries-list-element');
+    entriesList = document.createElement('settings-autofill-ai-entries-list');
     entriesList.prefs = settingsPrefs.prefs;
     entriesList.allowedEntityTypes = allowedEntityTypes;
     document.body.appendChild(entriesList);
@@ -795,8 +793,7 @@ suite('AutofillAiEntriesListLongLabelsUiTest', function() {
     settingsPrefs.set(
         `prefs.${AiEnterpriseFeaturePrefName.AUTOFILL_AI}.value`,
         ModelExecutionEnterprisePolicyValue.ALLOW);
-    entriesList =
-        document.createElement('settings-autofill-ai-entries-list-element');
+    entriesList = document.createElement('settings-autofill-ai-entries-list');
     entriesList.prefs = settingsPrefs.prefs;
     document.body.appendChild(entriesList);
 
