@@ -136,12 +136,11 @@ PrivateNetworkAccessUrlLoaderInterceptor::DoCheck(
   mojom::IPAddressSpace response_address_space =
       *checker_.ResponseAddressSpace();
   mojom::IPAddressSpace client_address_space = checker_.ClientAddressSpace();
-  mojom::IPAddressSpace target_address_space = checker_.TargetAddressSpace();
 
   net_log.AddEvent(net::NetLogEventType::PRIVATE_NETWORK_ACCESS_CHECK, [&] {
     return base::Value::Dict()
         .Set("client_address_space",
-             IPAddressSpaceToStringPiece(checker_.ClientAddressSpace()))
+             IPAddressSpaceToStringPiece(client_address_space))
         .Set("resource_address_space",
              IPAddressSpaceToStringPiece(response_address_space))
         .Set("result", PrivateNetworkAccessCheckResultToStringPiece(result));
@@ -150,9 +149,12 @@ PrivateNetworkAccessUrlLoaderInterceptor::DoCheck(
   if (url_loader_network_observer) {
     if (response_address_space == mojom::IPAddressSpace::kLoopback ||
         response_address_space == mojom::IPAddressSpace::kLocal) {
+      // We use the required_address_space as opposed to the
+      // target_address_space here because target_address_space is an overloaded
+      // term and has to do with PNA preflights.
       url_loader_network_observer->OnUrlLoaderConnectedToPrivateNetwork(
           url, response_address_space, client_address_space,
-          target_address_space);
+          checker_.RequiredAddressSpace());
     }
   }
 
