@@ -91,8 +91,6 @@ source_set("ipc_common_sources") {
     "gpu_disk_cache_type.cc",
     "gpu_disk_cache_type.h",
     "gpu_memory_buffer_handle_info.h",
-    "gpu_memory_buffer_support.cc",
-    "gpu_memory_buffer_support.h",
     "gpu_param_traits.cc",
     "gpu_param_traits.h",
     "gpu_param_traits_macros.h",
