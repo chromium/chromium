@@ -10,6 +10,7 @@
 
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversion_utils.h"
@@ -26,7 +27,7 @@ namespace {
 // Does quick bit-flicking to lookup needed characters.
 struct Charmap {
   bool Contains(unsigned char c) const {
-    return UNSAFE_TODO((map[c >> 5] & (1 << (c & 31))) != 0);
+    return (map[c >> 5] & (1 << (c & 31))) != 0;
   }
 
   std::array<uint32_t, 8> map;
@@ -211,7 +212,7 @@ bool UnescapeUTF8CharacterAtIndex(std::string_view escaped_text,
                                   std::string* unescaped_out) {
   DCHECK(unescaped_out->empty());
 
-  unsigned char bytes[CBU8_MAX_LENGTH];
+  std::array<unsigned char, CBU8_MAX_LENGTH> bytes{};
   if (!UnescapeUnsignedByteAtIndex(escaped_text, index, &bytes[0])) {
     return false;
   }
@@ -226,24 +227,25 @@ bool UnescapeUTF8CharacterAtIndex(std::string_view escaped_text,
     // UnescapeUnsignedByteAtIndex checks lengths.
     while (num_bytes < std::size(bytes) &&
            UnescapeUnsignedByteAtIndex(escaped_text, index + num_bytes * 3,
-                                       UNSAFE_TODO(&bytes[num_bytes])) &&
-           CBU8_IS_TRAIL(UNSAFE_TODO(bytes[num_bytes]))) {
+                                       &bytes[num_bytes]) &&
+           CBU8_IS_TRAIL(bytes[num_bytes])) {
       ++num_bytes;
     }
   }
 
+  base::span<char> bytes_span = base::as_writable_chars(base::span(bytes));
   size_t char_index = 0;
   // Check if the unicode "character" that was just unescaped is valid.
-  if (!ReadUnicodeCharacter(reinterpret_cast<char*>(bytes), num_bytes,
-                            &char_index, code_point_out)) {
+  if (!ReadUnicodeCharacter(bytes_span.data(), num_bytes, &char_index,
+                            code_point_out)) {
     return false;
   }
 
   // It's possible that a prefix of |bytes| forms a valid UTF-8 character,
   // and the rest are not valid UTF-8, so need to update |num_bytes| based
   // on the result of ReadUnicodeCharacter().
-  num_bytes = char_index + 1;
-  *unescaped_out = std::string(reinterpret_cast<char*>(bytes), num_bytes);
+  bytes_span = bytes_span.first(char_index + 1);
+  *unescaped_out = std::string(bytes_span.begin(), bytes_span.end());
   return true;
 }
 
@@ -253,7 +255,7 @@ bool ShouldUnescapeCodePoint(UnescapeRule::Type rules,
                              base_icu::UChar32 code_point) {
   // If this is an ASCII character, use the lookup table.
   if (code_point >= 0 && code_point < 0x80) {
-    return UNSAFE_TODO(kUrlUnescape[static_cast<size_t>(code_point)]) ||
+    return kUrlUnescape[static_cast<size_t>(code_point)] ||
            // Allow some additional unescaping when flags are set.
            (code_point == ' ' && (rules & UnescapeRule::SPACES)) ||
            // Allow any of the prohibited but non-control characters when doing
@@ -403,10 +405,11 @@ std::string UnescapeURLWithAdjustmentsImpl(
   result.reserve(escaped_text.length());
 
   // Locations of adjusted text.
+  std::string unescaped;
   for (size_t i = 0, max = escaped_text.size(); i < max;) {
     // Try to unescape the character.
     base_icu::UChar32 code_point;
-    std::string unescaped;
+    unescaped.clear();
     if (!UnescapeUTF8CharacterAtIndex(escaped_text, i, &code_point,
                                       &unescaped)) {
       // Check if the next character can be unescaped, but not as a valid UTF-8
@@ -655,16 +658,14 @@ std::u16string UnescapeForHTML(std::u16string_view input) {
     if (*iter == '&') {
       // Potential ampersand encode char.
       size_t index = static_cast<size_t>(iter - text.begin());
-      for (size_t i = 0; i < std::size(kEscapeToChars); i++) {
-        if (UNSAFE_TODO(ampersand_chars[i].empty())) {
-          UNSAFE_TODO(ampersand_chars[i] =
-                          ASCIIToUTF16(kEscapeToChars[i].ampersand_code));
+      for (size_t i = 0; i < kEscapeToCharsCount; i++) {
+        if (ampersand_chars[i].empty()) {
+          ampersand_chars[i] = ASCIIToUTF16(kEscapeToChars[i].ampersand_code);
         }
-        if (text.find(UNSAFE_TODO(ampersand_chars[i]), index) == index) {
-          text.replace(iter,
-                       iter + static_cast<ptrdiff_t>(
-                                  UNSAFE_TODO(ampersand_chars[i]).length()),
-                       1, UNSAFE_TODO(kEscapeToChars[i].replacement));
+        if (text.find(ampersand_chars[i], index) == index) {
+          text.replace(
+              iter, iter + static_cast<ptrdiff_t>(ampersand_chars[i].length()),
+              1, kEscapeToChars[i].replacement);
           break;
         }
       }
