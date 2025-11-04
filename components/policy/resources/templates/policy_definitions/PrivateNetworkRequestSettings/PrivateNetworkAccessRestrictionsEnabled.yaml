@@ -1,6 +1,6 @@
 owners:
 - phao@chromium.org
-- file://chrome/browser/private_network_access/OWNERS
+- chrome-product-security@google.com
 
 caption: Specifies whether to apply restrictions to requests to more-private
   network endpoints
