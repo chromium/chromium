@@ -5,16 +5,20 @@
 #include "chrome/browser/glic/service/glic_instance_metrics.h"
 
 #include <cmath>
+#include <memory>
 #include <string>
 #include <string_view>
 
+#include "base/containers/enum_set.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/strcat.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/glic/glic_metrics.h"
-#include "chrome/browser/glic/host/glic.mojom.h"
-#include "chrome/browser/glic/service/glic_ui_types.h"
 #include "components/tabs/public/tab_interface.h"
 
 namespace glic {
@@ -50,7 +54,7 @@ std::string GetDaisyChainSourceString(DaisyChainSource source) {
 GlicInstanceMetrics::GlicInstanceEventCounts::GlicInstanceEventCounts() =
     default;
 
-GlicInstanceMetrics::GlicInstanceMetrics() = default;
+GlicInstanceMetrics::GlicInstanceMetrics() : session_manager_(this) {}
 
 GlicInstanceMetrics::~GlicInstanceMetrics() {
   OnInstanceDestroyed();
@@ -65,15 +69,16 @@ void GlicInstanceMetrics::OnInstanceCreated() {
 }
 
 void GlicInstanceMetrics::OnInstanceDestroyed() {
+  session_manager_.OnOwnerDestroyed();
+
   base::RecordAction(base::UserMetricsAction("Glic.Instance.Destroyed"));
 
   // Add the time spent in the final state before destruction.
   if (is_active_) {
-    total_active_time_ += base::TimeTicks::Now() - last_activation_change_time_;
+    OnActivationChanged(false);
   }
   if (is_visible_) {
-    total_visible_time_ +=
-        base::TimeTicks::Now() - last_visibility_change_time_;
+    OnVisibilityChanged(false);
   }
 
   const base::TimeDelta lifetime = base::TimeTicks::Now() - creation_time_;
@@ -104,6 +109,7 @@ void GlicInstanceMetrics::OnInstanceDestroyed() {
                               max_concurrently_bound_tabs_);
   base::UmaHistogramCounts100("Glic.Instance.TurnCount",
                               event_counts_.turn_count);
+  base::UmaHistogramCounts100("Glic.Instance.SessionCount", session_count_);
 
   InputModesUsed modes_used = InputModesUsed::kNone;
   if (!inputs_modes_used_.empty()) {
@@ -123,6 +129,8 @@ void GlicInstanceMetrics::OnActivationChanged(bool is_active) {
     return;
   }
 
+  session_manager_.OnActivationChanged(is_active);
+
   base::TimeDelta time_in_state =
       base::TimeTicks::Now() - last_activation_change_time_;
   // if is_active_ then activation changed to false.
@@ -141,6 +149,8 @@ void GlicInstanceMetrics::OnVisibilityChanged(bool is_visible) {
   if (is_visible == is_visible_) {
     return;
   }
+
+  session_manager_.OnVisibilityChanged(is_visible);
 
   base::TimeDelta time_in_state =
       base::TimeTicks::Now() - last_visibility_change_time_;
@@ -476,6 +486,7 @@ void GlicInstanceMetrics::LogEvent(GlicInstanceEvent event,
 }
 
 void GlicInstanceMetrics::OnUserInputSubmitted(mojom::WebClientMode mode) {
+  session_manager_.OnUserInputSubmitted(mode);
   LogEvent(GlicInstanceEvent::kUserInputSubmitted,
            event_counts_.user_input_submitted);
   turn_.input_submitted_time_ = base::TimeTicks::Now();
@@ -549,6 +560,8 @@ void GlicInstanceMetrics::OnResponseStopped(mojom::ResponseStopCause cause) {
 
 void GlicInstanceMetrics::OnTurnCompleted(mojom::WebClientModel model,
                                           base::TimeDelta duration) {
+  session_manager_.OnTurnCompleted();
+
   LogEvent(GlicInstanceEvent::kTurnCompleted, event_counts_.turn_completed);
   event_counts_.turn_count++;
   base::UmaHistogramMediumTimes(model == mojom::WebClientModel::kActor
@@ -585,6 +598,27 @@ void GlicInstanceMetrics::OnReaction(
       }
       return;
   }
+}
+
+void GlicInstanceMetrics::OnSessionStarted() {
+  session_count_++;
+
+  // If `last_session_end_time_` is not null, we can record the time between
+  // sessions.
+  if (!last_session_end_time_.is_null()) {
+    const base::TimeDelta time_between_sessions =
+        base::TimeTicks::Now() - last_session_end_time_;
+    base::UmaHistogramCustomTimes("Glic.Instance.TimeBetweenSessions.7D",
+                                  time_between_sessions, base::Seconds(1),
+                                  base::Days(7), 50);
+    base::UmaHistogramCustomTimes("Glic.Instance.TimeBetweenSessions.24H",
+                                  time_between_sessions, base::Seconds(1),
+                                  base::Hours(24), 50);
+  }
+}
+
+void GlicInstanceMetrics::OnSessionFinished() {
+  last_session_end_time_ = base::TimeTicks::Now();
 }
 
 }  // namespace glic

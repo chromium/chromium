@@ -450,6 +450,23 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/glic/glic_metrics.h:Error) -->
 
+<!-- LINT.IfChange(GlicMultiInstanceSessionEndReason) -->
+
+<enum name="GlicMultiInstanceSessionEndReason">
+  <summary>The reason a Glic multi-instance session ended.</summary>
+  <int value="0" label="Inactivity">
+    The session ended due to user inactivity.
+  </int>
+  <int value="1" label="Hidden">
+    The session ended because the UI was hidden for too long.
+  </int>
+  <int value="2" label="OwnerDestroyed">
+    The session ended because the GlicInstance was destroyed.
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/glic/service/glic_metrics_session_manager.h:GlicMultiInstanceSessionEndReason) -->
+
 <!-- LINT.IfChange(GlicPrewarmingChecksResult) -->
 
 <enum name="GlicPrewarmingChecksResult">

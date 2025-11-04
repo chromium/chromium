@@ -14110,6 +14110,22 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Glic.Instance.Session.End">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <description>
+    Recorded when a Glic Multi Instance Session is ended.
+  </description>
+</action>
+
+<action name="Glic.Instance.Session.Start">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <description>
+    Recorded when a Glic Multi Instance Session is started.
+  </description>
+</action>
+
 <action name="Glic.Instance.Show.Floaty">
   <owner>birnie@google.com</owner>
   <owner>perrier@google.com</owner>

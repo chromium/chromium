@@ -182,6 +182,8 @@ source_set("impl") {
     "service/glic_instance_impl.h",
     "service/glic_instance_metrics.cc",
     "service/glic_instance_metrics.h",
+    "service/glic_metrics_session_manager.cc",
+    "service/glic_metrics_session_manager.h",
     "service/glic_tab_creation_observer.cc",
     "service/glic_tab_creation_observer.h",
     "service/glic_ui_embedder.h",
@@ -333,6 +335,7 @@ source_set("unit_tests") {
     "host/glic_cookie_synchronizer_unittest.cc",
     "host/guest_util_unittest.cc",
     "public/glic_enabling_unittest.cc",
+    "service/glic_metrics_session_manager_unittest.cc",
     "widget/glic_panel_hotkey_delegate_unittest.cc",
     "widget/local_hotkey_manager_unittest.cc",
   ]
@@ -445,6 +448,7 @@ source_set("interactive_ui_tests") {
     "host/glic_api_interactive_uitest.cc",
     "host/glic_permission_enforcement_interactive_uitest.cc",
     "host/glic_ui_interactive_uitest.cc",
+    "service/glic_instance_metrics_ui_test.cc",
     "widget/glic_window_controller_interactive_uitest.cc",
     "widget/glic_window_resize_animation_interactive_uitest.cc",
   ]
