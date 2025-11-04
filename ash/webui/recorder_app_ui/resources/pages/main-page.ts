@@ -141,7 +141,7 @@ export class MainPage extends ReactiveLitElement {
 
     #start-record-nudge {
       flex-flow: column;
-      position: absolute;
+      position: fixed;
       position-anchor: --record-button;
       position-area: top span-all;
     }
