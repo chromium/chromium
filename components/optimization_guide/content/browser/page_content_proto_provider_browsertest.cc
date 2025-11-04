@@ -1814,6 +1814,13 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderPopupBrowserTest,
   const auto& select_node_in_popup = popup_root.children_nodes()[0];
   EXPECT_EQ(select_node_in_popup.content_attributes().attribute_type(),
             optimization_guide::proto::CONTENT_ATTRIBUTE_FORM_CONTROL);
+  const auto& select_options_in_popup =
+      select_node_in_popup.content_attributes()
+          .form_control_data()
+          .select_options();
+  ASSERT_EQ(select_options_in_popup.size(), 2);
+  EXPECT_EQ(select_options_in_popup[0].text(), "Option 1");
+  EXPECT_EQ(select_options_in_popup[1].text(), "Option 2");
   EXPECT_GT(select_node_in_popup.content_attributes()
                 .interaction_info()
                 .document_scoped_z_order(),
@@ -1872,6 +1879,13 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderPopupBrowserTest,
   const auto& select_node_in_popup = popup_root.children_nodes()[0];
   EXPECT_EQ(select_node_in_popup.content_attributes().attribute_type(),
             optimization_guide::proto::CONTENT_ATTRIBUTE_FORM_CONTROL);
+  const auto& select_options_in_popup =
+      select_node_in_popup.content_attributes()
+          .form_control_data()
+          .select_options();
+  ASSERT_EQ(select_options_in_popup.size(), 2);
+  EXPECT_EQ(select_options_in_popup[0].text(), "Option 1");
+  EXPECT_EQ(select_options_in_popup[1].text(), "Option 2");
   EXPECT_GT(select_node_in_popup.content_attributes()
                 .interaction_info()
                 .document_scoped_z_order(),

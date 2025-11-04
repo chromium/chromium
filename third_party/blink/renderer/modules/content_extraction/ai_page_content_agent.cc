@@ -706,6 +706,9 @@ void ProcessFormControlNode(const HTMLFormControlElement& form_control_element,
       auto select_option = mojom::blink::AIPageContentSelectOption::New();
       select_option->value = option_element.value();
       select_option->text = option_element.text();
+      if (select_option->text.empty()) {
+        select_option->text = option_element.DisplayLabel();
+      }
       select_option->is_selected = option_element.Selected();
       select_option->disabled = option_element.IsDisabledFormControl();
       form_control_data->select_options.push_back(std::move(select_option));
