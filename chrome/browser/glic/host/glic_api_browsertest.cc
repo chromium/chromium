@@ -211,6 +211,7 @@ class GlicApiTest : public NonInteractiveGlicApiTest, public WithTestParams {
         {
             features::kGlicWarming,
         });
+    SetUseElementIdentifiers(false);
   }
 
   void SetUpOnMainThread() override {
@@ -905,6 +906,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testCreateTabByClickingOnLink) {
   // Have the test track this tab's glic instance.
   TrackGlicInstanceWithId(GetGlicInstance()->id());
   content::RenderFrameHost* guest_frame = FindGlicGuestMainFrame();
+  ASSERT_TRUE(guest_frame);
   ExecuteJsTest();
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return InProcessBrowserTest::browser()->tab_strip_model()->GetTabCount() ==
@@ -1102,9 +1104,8 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestRuntimeFeatureOff,
                                        9 /*MOJO_PIPE_CLOSED_UNEXPECTEDLY*/, 1);
 
   // Verify the reload button works.
-  RunTestSequence(ExecuteJsAt(
-      test::kGlicHostElementId, {"#reload"}, "(el)=>el.click()",
-      InteractiveBrowserTestApi::ExecuteJsMode::kWaitForCompletion));
+  RunTestSequence(
+      ClickWebElement(TargetWebContents::kGlicWebUi, "#reload", false));
 
   WaitForWebUiState(mojom::WebUiState::kReady);
   ExecuteJsTest();
