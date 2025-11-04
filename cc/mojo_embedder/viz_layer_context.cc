@@ -1499,7 +1499,12 @@ void VizLayerContext::OnRequestCommitForFrame(const viz::BeginFrameArgs& args) {
 
 void VizLayerContext::OnTilingsReadyForCleanup(
     int32_t layer_id,
-    const std::vector<float>& tiling_scales_to_clean_up) {}
+    const std::vector<float>& tiling_scales_to_clean_up) {
+  if (auto* layer = static_cast<PictureLayerImpl*>(
+          host_impl_->active_tree()->LayerById(layer_id))) {
+    layer->CleanUpTilings(tiling_scales_to_clean_up);
+  }
+}
 
 void VizLayerContext::SerializeAnimationUpdates(
     LayerTreeImpl& tree,

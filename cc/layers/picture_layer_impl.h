@@ -362,6 +362,10 @@ class CC_EXPORT PictureLayerImpl
   LCDTextDisallowedReason lcd_text_disallowed_reason_ =
       LCDTextDisallowedReason::kNoText;
 
+ public:
+  void CleanUpTilings(const std::vector<float>& tiling_scales_to_clean_up);
+
+ protected:
   // If this scale is not zero, it indicates that this layer is a directly
   // composited image layer (i.e. the only thing drawn into this layer is an
   // image). The rasterized pixels will be the same as the image's original

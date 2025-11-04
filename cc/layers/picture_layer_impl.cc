@@ -559,11 +559,7 @@ bool PictureLayerImpl::UpdateTiles() {
   // only have the high-res tiling, so only clean up the active layer. This
   // cleans it up here in case AppendQuads didn't run.  If it did run, this
   // would not remove any additional tilings.
-  // Note that we are currently disabling this optimization for TreesInViz case
-  // since it casuses flash during pinch zoom. More details on
-  // crbug.com/448683984.
-  if (layer_tree_impl()->IsActiveTree() &&
-      !layer_tree_impl()->settings().TreesInVizInClientProcess()) {
+  if (layer_tree_impl()->IsActiveTree()) {
     CleanUpTilingsOnActiveLayer();
   }
 
@@ -1649,8 +1645,9 @@ void PictureLayerImpl::AdjustRasterScaleForTransformAnimation(
 
 void PictureLayerImpl::CleanUpTilingsOnActiveLayer() {
   DCHECK(layer_tree_impl()->IsActiveTree());
-  if (tilings_->num_tilings() == 0)
+  if (tilings_->num_tilings() == 0) {
     return;
+  }
 
   float min_acceptable_high_res_scale =
       std::min(raster_contents_scale_key(), ideal_contents_scale_key());
@@ -1667,6 +1664,14 @@ void PictureLayerImpl::CleanUpTilingsOnActiveLayer() {
          twin->ideal_contents_scale_key()});
   }
 
+  // TODO(crbug.com/7107398): Ideally |last_append_quads_tilings_| here should
+  // be empty for TreesInViz mode since it's not populated in PictureLayerImpl
+  // for that mode. But many cc_unittests currently calls AppendQuads() directly
+  // on PictureLayerImpl via FakePictureLayerImpl resulting in non empty
+  // |last_append_quads_tilings_| in this mode. Hence not enabling the CHECK for
+  // now. CHECK(!layer_tree_impl()->settings().TreesInVizInClientProcess() ||
+  //      last_append_quads_tilings_.empty());
+
   std::vector<PictureLayerTiling*> to_remove;
   for (size_t i = 0; i < tilings_->num_tilings(); ++i) {
     PictureLayerTiling* tiling = tilings_->tiling_at(i);
@@ -1681,7 +1686,18 @@ void PictureLayerImpl::CleanUpTilingsOnActiveLayer() {
       continue;
     }
 
-    to_remove.push_back(tiling);
+    // For TreesInViz mode, we accumulate the tiling content scale in
+    // |proposed_tiling_scales_for_deletion_| instead of deleting it. It is then
+    // sent to Viz to check if those are safe to delete.
+    if (layer_tree_impl()->settings().TreesInVizInClientProcess()) {
+      proposed_tiling_scales_for_deletion_.insert(tiling->contents_scale_key());
+    } else {
+      to_remove.push_back(tiling);
+    }
+  }
+
+  if (layer_tree_impl()->settings().TreesInVizInClientProcess()) {
+    return;
   }
 
   for (auto* tiling : to_remove) {
@@ -1711,6 +1727,15 @@ float PictureLayerImpl::MinimumRasterContentsScaleForWillChangeTransform()
     return ideal_scale * kMinScaleRatioForWillChangeTransform;
   }
   return native_scale;
+}
+
+void PictureLayerImpl::CleanUpTilings(
+    const std::vector<float>& tiling_scales_to_clean_up) {
+  for (float scale : tiling_scales_to_clean_up) {
+    if (auto* tiling = tilings_->FindTilingWithScaleKey(scale)) {
+      tilings_->Remove(tiling);
+    }
+  }
 }
 
 bool PictureLayerImpl::CalculateRasterTranslation(
