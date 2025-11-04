@@ -30,6 +30,7 @@
 #include "ui/compositor/animation_throughput_reporter.h"
 #include "ui/compositor/presentation_time_recorder.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
+#include "ui/display/screen.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/transform_util.h"
@@ -679,10 +680,10 @@ void ScrollableShelfView::StartShelfScrollAnimation(float scroll_distance) {
 
   ui::AnimationThroughputReporter reporter(
       animation_settings.GetAnimator(),
-      metrics_util::ForSmoothnessV3(
-          base::BindRepeating(&ReportSmoothness, Shell::Get()->IsInTabletMode(),
-                              Shell::Get()->app_list_controller()->IsVisible(
-                                  GetDisplayIdForView(this)))));
+      metrics_util::ForSmoothnessV3(base::BindRepeating(
+          &ReportSmoothness, display::Screen::Get()->InTabletMode(),
+          Shell::Get()->app_list_controller()->IsVisible(
+              GetDisplayIdForView(this)))));
 
   shelf_container_view_->TranslateShelfView(scroll_offset_);
 }
@@ -995,7 +996,7 @@ void ScrollableShelfView::OnShelfButtonAboutToRequestFocusFromTabTraversal(
   ShelfWidget* shelf_widget = GetShelf()->shelf_widget();
   // In tablet mode, when the hotseat is not extended but one of the buttons
   // gets focused, it should update the visibility of the hotseat.
-  if (Shell::Get()->IsInTabletMode() &&
+  if (display::Screen::Get()->InTabletMode() &&
       !shelf_widget->hotseat_widget()->IsExtended()) {
     shelf_widget->shelf_layout_manager()->UpdateVisibilityState(
         /*force_layout=*/false);
@@ -1361,7 +1362,7 @@ bool ScrollableShelfView::ProcessGestureEvent(const ui::GestureEvent& event) {
   // end.
   if (event.type() == ui::EventType::kGestureScrollBegin) {
     DCHECK(!presentation_time_recorder_);
-    if (Shell::Get()->IsInTabletMode()) {
+    if (display::Screen::Get()->InTabletMode()) {
       if (Shell::Get()->app_list_controller()->IsVisible(
               GetDisplayIdForView(this))) {
         presentation_time_recorder_ = CreatePresentationTimeHistogramRecorder(
@@ -2019,7 +2020,7 @@ void ScrollableShelfView::UpdateAvailableSpace() {
 
 gfx::Rect ScrollableShelfView::CalculateVisibleSpace(
     LayoutStrategy layout_strategy) const {
-  const bool in_tablet_mode = Shell::Get()->IsInTabletMode();
+  const bool in_tablet_mode = display::Screen::Get()->InTabletMode();
   if (layout_strategy == kNotShowArrowButtons && !in_tablet_mode)
     return GetAvailableLocalBounds(/*use_target_bounds=*/false);
 

@@ -499,7 +499,7 @@ void WorkspaceLayoutManager::OnAppListVisibilityChanged(bool shown,
       display_id) {
     return;
   }
-  if (!Shell::Get()->IsInTabletMode()) {
+  if (!display::Screen::Get()->InTabletMode()) {
     MaybeUpdateA11yFloatingPanelOrPipBounds();
   }
 }

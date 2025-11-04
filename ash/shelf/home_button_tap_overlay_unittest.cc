@@ -92,7 +92,7 @@ class HomeButtonTapOverlayTest
     const TestVariant test_variant = GetParam();
     switch (test_variant) {
       case kClamshell:
-        ASSERT_FALSE(Shell::Get()->IsInTabletMode());
+        ASSERT_FALSE(display::Screen::Get()->InTabletMode());
         break;
       case kTablet:
         Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(

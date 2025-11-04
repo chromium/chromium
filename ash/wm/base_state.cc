@@ -213,7 +213,7 @@ gfx::Rect BaseState::GetSnappedWindowBoundsInParent(
 
   if (auto* split_view_controller = SplitViewController::Get(window);
       split_view_controller->IsWindowInSplitView(window) ||
-      Shell::Get()->IsInTabletMode()) {
+      display::Screen::Get()->InTabletMode()) {
     // In tablet mode `SplitViewController` always manages snapped windows, in
     // clamshell state it only manages windows in split view.
     return split_view_controller->GetSnappedWindowBoundsInParent(

@@ -23,6 +23,7 @@
 #include "base/i18n/rtl.h"
 #include "ui/aura/window_targeter.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
+#include "ui/display/screen.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -155,7 +156,8 @@ bool DeskButtonWidget::ShouldReserveSpaceFromShelf() const {
   PrefService* prefs =
       shell->session_controller()->GetLastActiveUserPrefService();
   return layout_manager->is_active_session_state() &&
-         !shell->IsInTabletMode() && prefs && GetDeskButtonVisibility(prefs);
+         !display::Screen::Get()->InTabletMode() && prefs &&
+         GetDeskButtonVisibility(prefs);
 }
 
 bool DeskButtonWidget::ShouldBeVisible() const {

@@ -920,7 +920,7 @@ void RootWindowController::StartSplitViewOverviewSession(
     return;
   }
 
-  if (Shell::Get()->IsInTabletMode()) {
+  if (display::Screen::Get()->InTabletMode()) {
     OverviewController::Get()->StartOverview(
         action.value_or(OverviewStartAction::kSplitView),
         type.value_or(OverviewEnterExitType::kNormal));

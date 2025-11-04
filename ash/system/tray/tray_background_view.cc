@@ -1002,7 +1002,8 @@ gfx::Insets TrayBackgroundView::GetBackgroundInsets() const {
   MirrorInsetsIfNecessary(&local_contents_insets);
   insets += local_contents_insets;
 
-  if (Shell::Get()->IsInTabletMode() && ShelfConfig::Get()->is_in_app()) {
+  if (display::Screen::Get()->InTabletMode() &&
+      ShelfConfig::Get()->is_in_app()) {
     insets +=
         gfx::Insets(ShelfConfig::Get()->in_app_control_button_height_inset());
   }
@@ -1056,7 +1057,8 @@ void TrayBackgroundView::UpdateBackgroundColor(bool active) {
   // The shelf is not transparent when 1)the shelf is in app mode OR 2) the
   // shelf is in the regular logged in page (not session blocked).
   const bool is_shelf_opaque =
-      (!Shell::Get()->IsInTabletMode() || ShelfConfig::Get()->is_in_app()) &&
+      (!display::Screen::Get()->InTabletMode() ||
+       ShelfConfig::Get()->is_in_app()) &&
       !Shell::Get()->session_controller()->IsUserSessionBlocked();
 
   const ui::ColorId non_active_color_id =

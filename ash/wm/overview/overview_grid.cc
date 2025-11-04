@@ -3325,7 +3325,7 @@ int OverviewGrid::GetDesksBarHeight() const {
 }
 
 bool OverviewGrid::ShouldUseScrollingLayout(size_t ignored_items_size) const {
-  if (Shell::Get()->IsInTabletMode()) {
+  if (display::Screen::Get()->InTabletMode()) {
     return item_list_.size() - ignored_items_size >=
            kMinimumItemsForScrollingLayout;
   }

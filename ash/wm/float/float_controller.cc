@@ -167,7 +167,7 @@ class FloatLayoutManager : public WmDefaultLayoutManager {
     // called when the window is moved into the float container from a desk
     // container. This happens during a state change, and we can let the
     // transition event handle setting the floated window bounds instead.
-    if (Shell::Get()->IsInTabletMode()) {
+    if (display::Screen::Get()->InTabletMode()) {
       return;
     }
 
@@ -495,7 +495,7 @@ class FloatController::FloatedWindowInfo : public aura::WindowObserver,
       return;
     }
 
-    if (Shell::Get()->IsInTabletMode()) {
+    if (display::Screen::Get()->InTabletMode()) {
       // Prevent recursive bounds update calls. The
       // `UpdateWindowBoundsForTablet` can trigger widget minimum size change
       // which then trigger the call of `OnWidgetSizeConstraintsChanged`, which
@@ -902,7 +902,7 @@ void FloatController::OnDeskActivationChanged(const Desk* activated,
       floated_window_info_map_.end()) {
     // If we are currently not in tablet mode, no need to untuck, which would
     // update the window bounds.
-    if (Shell::Get()->IsInTabletMode()) {
+    if (display::Screen::Get()->InTabletMode()) {
       deactivated_desk_floated_window_info_iter->second->MaybeUntuckWindow(
           /*animate=*/false);
     }
@@ -1092,7 +1092,7 @@ FloatController::MagnetismCorner FloatController::GetMagnetismCornerForBounds(
 
 void FloatController::FloatForTablet(aura::Window* window,
                                      chromeos::WindowStateType old_state_type) {
-  CHECK(Shell::Get()->IsInTabletMode());
+  CHECK(display::Screen::Get()->InTabletMode());
 
   FloatImpl(window);
 

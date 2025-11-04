@@ -114,14 +114,14 @@ void VerifySplitViewOverviewSession(aura::Window* window) {
         std::max(expected_grid_bounds.height(), min_length));
   }
 
-  if (!Shell::Get()->IsInTabletMode()) {
+  if (!display::Screen::Get()->InTabletMode()) {
     EXPECT_EQ(expected_grid_bounds, GetOverviewGridBounds(root_window));
   }
 
   EXPECT_TRUE(
       expected_grid_bounds.Contains(GetOverviewGridBounds(root_window)));
 
-  if (!Shell::Get()->IsInTabletMode()) {
+  if (!display::Screen::Get()->InTabletMode()) {
     auto* overview_grid = GetOverviewGridForRoot(window->GetRootWindow());
     EXPECT_TRUE(overview_grid->split_view_setup_widget());
     EXPECT_FALSE(overview_grid->no_windows_widget());

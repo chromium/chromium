@@ -32,7 +32,7 @@ namespace {
 std::optional<float> CalculateAutoSnapRatio(
     SplitViewController* split_view_controller,
     aura::Window* window) {
-  if (Shell::Get()->IsInTabletMode()) {
+  if (display::Screen::Get()->InTabletMode()) {
     return split_view_controller->ComputeAutoSnapRatio(window);
   }
 

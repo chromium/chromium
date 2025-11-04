@@ -50,6 +50,7 @@
 #include "ui/compositor/layer_owner.h"
 #include "ui/compositor/paint_recorder.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
+#include "ui/display/screen.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/dip_util.h"
@@ -474,7 +475,7 @@ void ShelfWidgetDelegateView::UpdateOpaqueBackground() {
   const Shelf* shelf = shelf_widget_->shelf();
   const ShelfBackgroundType background_type =
       shelf_widget_->shelf_layout_manager()->shelf_background_type();
-  const bool tablet_mode = Shell::Get()->IsInTabletMode();
+  const bool tablet_mode = display::Screen::Get()->InTabletMode();
   const bool in_app = ShelfConfig::Get()->is_in_app();
 
   const bool in_overview_mode = ShelfConfig::Get()->in_overview_mode();
@@ -521,7 +522,7 @@ void ShelfWidgetDelegateView::UpdateOpaqueBackground() {
 }
 
 void ShelfWidgetDelegateView::UpdateDragHandle() {
-  if (!Shell::Get()->IsInTabletMode()) {
+  if (!display::Screen::Get()->InTabletMode()) {
     drag_handle_->SetVisible(false);
     return;
   }
@@ -907,8 +908,9 @@ void ShelfWidget::UpdateLayout(bool animate) {
 
 void ShelfWidget::UpdateTargetBoundsForGesture(int shelf_position) {
   if (shelf_->IsHorizontalAlignment()) {
-    if (!Shell::Get()->IsInTabletMode())
+    if (!display::Screen::Get()->InTabletMode()) {
       target_bounds_.set_y(shelf_position);
+    }
   } else {
     target_bounds_.set_x(shelf_position);
   }

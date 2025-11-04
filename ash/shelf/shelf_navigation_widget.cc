@@ -34,6 +34,7 @@
 #include "ui/compositor/paint_recorder.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
+#include "ui/display/screen.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/transform_util.h"
@@ -99,7 +100,8 @@ bool IsBackButtonShown(bool horizontal_alignment) {
   if (!ShelfConfig::Get()->shelf_controls_shown())
     return false;
 
-  return Shell::Get()->IsInTabletMode() && ShelfConfig::Get()->is_in_app();
+  return display::Screen::Get()->InTabletMode() &&
+         ShelfConfig::Get()->is_in_app();
 }
 
 bool IsHomeButtonShown() {
@@ -687,7 +689,7 @@ void ShelfNavigationWidget::UpdateButtonVisibility(
 
 gfx::Rect ShelfNavigationWidget::CalculateClipRectAfterRTL() const {
   gfx::Rect clip_bounds;
-  if (Shell::Get()->IsInTabletMode()) {
+  if (display::Screen::Get()->InTabletMode()) {
     clip_bounds = gfx::Rect(CalculateIdealSize(/*only_visible_area=*/true));
   } else {
     clip_bounds = gfx::Rect(target_bounds_.size());
@@ -713,7 +715,7 @@ gfx::Size ShelfNavigationWidget::CalculateIdealSize(
   int controls_space = 0;
   const int control_size = ShelfConfig::Get()->control_size();
 
-  if (Shell::Get()->IsInTabletMode() && !only_visible_area) {
+  if (display::Screen::Get()->InTabletMode() && !only_visible_area) {
     // There are home button and back button. So the maximum is 2.
     controls_space = control_size * 2 + ShelfConfig::Get()->button_spacing();
   } else {

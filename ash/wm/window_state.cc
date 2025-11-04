@@ -226,7 +226,7 @@ WMEventType WMEventTypeFromShowState(
 // before committing the snap event if needed.
 float GetTargetSnapRatio(aura::Window* window,
                          const WindowSnapWMEvent* snap_event) {
-  if (Shell::Get()->IsInTabletMode()) {
+  if (display::Screen::Get()->InTabletMode()) {
     return snap_event->snap_ratio();
   }
 

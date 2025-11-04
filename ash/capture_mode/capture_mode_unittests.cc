@@ -2866,7 +2866,7 @@ TEST_P(CaptureModeSaveFileTest, CaptureModeSaveToLocationMetric) {
   }
   // Set four different save-to locations in clamshell mode and check the
   // histogram results.
-  EXPECT_FALSE(Shell::Get()->IsInTabletMode());
+  EXPECT_FALSE(display::Screen::Get()->InTabletMode());
   for (auto test_case : kTestCases) {
     StartCaptureSessionWithParam();
     controller->SetCustomCaptureFolder(test_case.set_save_file_folder);
@@ -2878,7 +2878,7 @@ TEST_P(CaptureModeSaveFileTest, CaptureModeSaveToLocationMetric) {
   // Set four different save-to locations in tablet mode and check the histogram
   // results.
   SwitchToTabletMode();
-  EXPECT_TRUE(Shell::Get()->IsInTabletMode());
+  EXPECT_TRUE(display::Screen::Get()->InTabletMode());
   for (auto test_case : kTestCases) {
     StartCaptureSessionWithParam();
     controller->SetCustomCaptureFolder(test_case.set_save_file_folder);
@@ -6348,9 +6348,9 @@ TEST_P(ProjectorCaptureModeIntegrationTestsWithSource,
   for (const bool tablet_enabled : kTabletEnabledStates) {
     if (tablet_enabled) {
       SwitchToTabletMode();
-      EXPECT_TRUE(Shell::Get()->IsInTabletMode());
+      EXPECT_TRUE(display::Screen::Get()->InTabletMode());
     } else {
-      EXPECT_FALSE(Shell::Get()->IsInTabletMode());
+      EXPECT_FALSE(display::Screen::Get()->InTabletMode());
     }
 
     const std::string histogram_name =
@@ -6391,9 +6391,9 @@ TEST_P(ProjectorCaptureModeIntegrationTestsWithSource,
   for (const bool tablet_enabled : kTabletEnabledStates) {
     if (tablet_enabled) {
       SwitchToTabletMode();
-      EXPECT_TRUE(Shell::Get()->IsInTabletMode());
+      EXPECT_TRUE(display::Screen::Get()->InTabletMode());
     } else {
-      EXPECT_FALSE(Shell::Get()->IsInTabletMode());
+      EXPECT_FALSE(display::Screen::Get()->InTabletMode());
     }
 
     StartRecordingForProjectorFromSource(capture_source);
@@ -6448,9 +6448,9 @@ TEST_P(ProjectorCaptureModeIntegrationTests,
   for (const bool tablet_enabled : kTabletEnabledStates) {
     if (tablet_enabled) {
       SwitchToTabletMode();
-      EXPECT_TRUE(Shell::Get()->IsInTabletMode());
+      EXPECT_TRUE(display::Screen::Get()->InTabletMode());
     } else {
-      EXPECT_FALSE(Shell::Get()->IsInTabletMode());
+      EXPECT_FALSE(display::Screen::Get()->InTabletMode());
     }
 
     StartProjectorModeSession();

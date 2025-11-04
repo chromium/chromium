@@ -152,8 +152,9 @@ bool LauncherNudgeController::ShouldShowNudge(base::Time& recheck_time) const {
   }
 
   // Only show the launcher nudge in clamshell mode.
-  if (Shell::Get()->IsInTabletMode())
+  if (display::Screen::Get()->InTabletMode()) {
     return false;
+  }
 
   // If the shown count meets the limit or the launcher has been opened before,
   // don't show the nudge.
@@ -287,8 +288,9 @@ void LauncherNudgeController::OnAppListVisibilityChanged(bool shown,
   // require explicit user action. As a result, don't track app list visibility
   // changes in tablet mode as actions affecting nudge availability in clamshell
   // mode.
-  if (Shell::Get()->IsInTabletMode())
+  if (display::Screen::Get()->InTabletMode()) {
     return;
+  }
 
   if (!WasLauncherShownPreviously(prefs) && shown) {
     ScopedDictPrefUpdate update(prefs, prefs::kShelfLauncherNudge);

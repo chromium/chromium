@@ -145,7 +145,7 @@ void HomeButtonController::StartAssistantAnimation() {
 void HomeButtonController::OnAppListShown() {
   // Do not show the button as toggled in tablet mode, since the home screen
   // view is always open in the background.
-  if (!Shell::Get()->IsInTabletMode()) {
+  if (!display::Screen::Get()->InTabletMode()) {
     button_->SetToggled(true);
   }
   button_->UpdateTooltipText();

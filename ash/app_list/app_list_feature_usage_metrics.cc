@@ -92,7 +92,7 @@ void AppListFeatureUsageMetrics::OnAppListVisibilityChanged(
 }
 
 void AppListFeatureUsageMetrics::OnAppListShown() {
-  if (Shell::Get()->IsInTabletMode()) {
+  if (display::Screen::Get()->InTabletMode()) {
     StartTabletUsage();
   } else {
     StartClamshellUsage();

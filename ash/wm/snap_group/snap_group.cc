@@ -563,7 +563,7 @@ void SnapGroup::StopObservingWindows() {
 void SnapGroup::UpdateGroupWindowsBounds(bool account_for_divider_width) {
   // Return early if in tablet mode, `SplitViewController` will handle window
   // bounds update.
-  if (Shell::Get()->IsInTabletMode()) {
+  if (display::Screen::Get()->InTabletMode()) {
     return;
   }
 

@@ -1072,9 +1072,9 @@ TEST_F(CaptureModeDemoToolsTest,
   for (const auto test_case : kTestCases) {
     if (test_case.enable_tablet_mode) {
       SwitchToTabletMode();
-      EXPECT_TRUE(Shell::Get()->IsInTabletMode());
+      EXPECT_TRUE(display::Screen::Get()->InTabletMode());
     } else {
-      EXPECT_FALSE(Shell::Get()->IsInTabletMode());
+      EXPECT_FALSE(display::Screen::Get()->InTabletMode());
     }
 
     const auto histogram_name =
@@ -1440,9 +1440,9 @@ TEST_F(ProjectorCaptureModeDemoToolsTest,
   for (const auto test_case : kTestCases) {
     if (test_case.enable_tablet_mode) {
       SwitchToTabletMode();
-      EXPECT_TRUE(Shell::Get()->IsInTabletMode());
+      EXPECT_TRUE(display::Screen::Get()->InTabletMode());
     } else {
-      EXPECT_FALSE(Shell::Get()->IsInTabletMode());
+      EXPECT_FALSE(display::Screen::Get()->InTabletMode());
     }
 
     const std::string histogram_name = BuildHistogramName(

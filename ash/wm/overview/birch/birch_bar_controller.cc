@@ -170,7 +170,7 @@ void BirchBarController::ShowChipContextMenu(
       chip->GetWidget(), source_type,
       base::BindOnce(&BirchBarController::OnChipContextMenuClosed,
                      weak_ptr_factory_.GetWeakPtr()),
-      Shell::Get()->IsInTabletMode(), /*for_chip_menu=*/true);
+      display::Screen::Get()->InTabletMode(), /*for_chip_menu=*/true);
   BirchPrivacyNudgeController::DidShowContextMenu();
   chip_menu_model_adapter_->Run(gfx::Rect(point, gfx::Size()),
                                 views::MenuAnchorPosition::kBubbleTopRight,

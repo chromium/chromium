@@ -96,8 +96,9 @@ std::string BuildHistogramNameInternal(const char* root_word,
   }
   histogram_name.append(root_word);
   if (append_ui_mode_suffix) {
-    histogram_name.append(Shell::Get()->IsInTabletMode() ? ".TabletMode"
-                                                         : ".ClamshellMode");
+    histogram_name.append(display::Screen::Get()->InTabletMode()
+                              ? ".TabletMode"
+                              : ".ClamshellMode");
   }
   return histogram_name;
 }

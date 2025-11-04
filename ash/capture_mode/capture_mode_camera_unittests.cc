@@ -2334,9 +2334,9 @@ TEST_F(CaptureModeCameraTest, RecordingStartsWithCameraHistogramTest) {
   for (const auto test_case : kTestCases) {
     if (test_case.tablet_enabled) {
       SwitchToTabletMode();
-      EXPECT_TRUE(Shell::Get()->IsInTabletMode());
+      EXPECT_TRUE(display::Screen::Get()->InTabletMode());
     } else {
-      EXPECT_FALSE(Shell::Get()->IsInTabletMode());
+      EXPECT_FALSE(display::Screen::Get()->InTabletMode());
     }
 
     const std::string histogram_name =
@@ -2379,9 +2379,9 @@ TEST_F(CaptureModeCameraTest,
   for (const bool tablet_enabled : {false, true}) {
     if (tablet_enabled) {
       SwitchToTabletMode();
-      EXPECT_TRUE(Shell::Get()->IsInTabletMode());
+      EXPECT_TRUE(display::Screen::Get()->InTabletMode());
     } else {
-      EXPECT_FALSE(Shell::Get()->IsInTabletMode());
+      EXPECT_FALSE(display::Screen::Get()->InTabletMode());
     }
 
     auto* controller = StartCaptureSession(CaptureModeSource::kFullscreen,
@@ -2457,9 +2457,9 @@ TEST_F(CaptureModeCameraTest,
   for (const bool tablet_enabled : {false, true}) {
     if (tablet_enabled) {
       SwitchToTabletMode();
-      EXPECT_TRUE(Shell::Get()->IsInTabletMode());
+      EXPECT_TRUE(display::Screen::Get()->InTabletMode());
     } else {
-      EXPECT_FALSE(Shell::Get()->IsInTabletMode());
+      EXPECT_FALSE(display::Screen::Get()->InTabletMode());
     }
 
     AddAndRemoveCameraAndTriggerGracePeriod();
@@ -2488,9 +2488,9 @@ TEST_F(CaptureModeCameraTest, RecordingCameraSizeOnStartHistogramTest) {
   for (const bool tablet_enabled : {false, true}) {
     if (tablet_enabled) {
       SwitchToTabletMode();
-      EXPECT_TRUE(Shell::Get()->IsInTabletMode());
+      EXPECT_TRUE(display::Screen::Get()->InTabletMode());
     } else {
-      EXPECT_FALSE(Shell::Get()->IsInTabletMode());
+      EXPECT_FALSE(display::Screen::Get()->InTabletMode());
     }
 
     const std::string histogram_name =
@@ -2555,9 +2555,9 @@ TEST_F(CaptureModeCameraTest, RecordingCameraPositionOnStartHistogramTest) {
   for (const bool tablet_enabled : {false, true}) {
     if (tablet_enabled) {
       SwitchToTabletMode();
-      EXPECT_TRUE(Shell::Get()->IsInTabletMode());
+      EXPECT_TRUE(display::Screen::Get()->InTabletMode());
     } else {
-      EXPECT_FALSE(Shell::Get()->IsInTabletMode());
+      EXPECT_FALSE(display::Screen::Get()->InTabletMode());
     }
 
     const std::string histogram_name = BuildHistogramName(
@@ -4099,7 +4099,7 @@ TEST_P(CaptureModeCameraPreviewTest,
   UpdateDisplay("1366x768");
 
   SwitchToTabletMode();
-  EXPECT_TRUE(Shell::Get()->IsInTabletMode());
+  EXPECT_TRUE(display::Screen::Get()->InTabletMode());
 
   CaptureModeCameraController* camera_controller = GetCameraController();
   AddDefaultCamera();
@@ -4460,9 +4460,9 @@ TEST_F(ProjectorCaptureModeCameraTest,
   for (const auto test_case : kTestCases) {
     if (test_case.tablet_enabled) {
       SwitchToTabletMode();
-      EXPECT_TRUE(Shell::Get()->IsInTabletMode());
+      EXPECT_TRUE(display::Screen::Get()->InTabletMode());
     } else {
-      EXPECT_FALSE(Shell::Get()->IsInTabletMode());
+      EXPECT_FALSE(display::Screen::Get()->InTabletMode());
     }
 
     const std::string histogram_name = BuildHistogramName(

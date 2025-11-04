@@ -183,7 +183,7 @@ void SanityCheckSearchResultsAnchoredDialogBounds(
 // Returns the search box view from either the clamshell bubble or the tablet
 // mode fullscreen launcher.
 SearchBoxView* GetSearchBoxViewFromHelper(AppListTestHelper* helper) {
-  if (!Shell::Get()->IsInTabletMode()) {
+  if (!display::Screen::Get()->InTabletMode()) {
     DCHECK(Shell::Get()->app_list_controller()->IsVisible());
     return helper->GetBubbleSearchBoxView();
   }
@@ -504,7 +504,7 @@ class AppListBubbleAndTabletTestBase : public AshTestBase {
   }
 
   void EnsureLauncherShown() {
-    const bool in_tablet_mode = Shell::Get()->IsInTabletMode();
+    const bool in_tablet_mode = display::Screen::Get()->InTabletMode();
 
     // App list always visible in tablet mode, so launcher needs to explicitly
     // be shown only when in clamshell mode.

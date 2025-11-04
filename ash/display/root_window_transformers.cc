@@ -239,7 +239,7 @@ class MirrorRootWindowTransformer : public RootWindowTransformer {
 
     // In tablet mode, we want to keep the active rotation of the mirroring
     // display.
-    if (Shell::Get()->IsInTabletMode() &&
+    if (display::Screen::Get()->InTabletMode() &&
         (active_mirror_rotation == display::Display::ROTATE_90 ||
          active_mirror_rotation == display::Display::ROTATE_270)) {
       mirror_display_rect.Transpose();

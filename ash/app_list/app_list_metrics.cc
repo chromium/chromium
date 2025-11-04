@@ -518,7 +518,7 @@ void ResetContinueSectionFileRemovedCountForTest() {
 void RecordHideContinueSectionMetric() {
   const bool hide_continue_section =
       Shell::Get()->app_list_controller()->ShouldHideContinueSection();
-  if (Shell::Get()->IsInTabletMode()) {
+  if (display::Screen::Get()->InTabletMode()) {
     base::UmaHistogramBoolean(
         "Apps.AppList.ContinueSectionHiddenByUser.TabletMode",
         hide_continue_section);

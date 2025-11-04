@@ -337,7 +337,7 @@ ui::SimpleMenuModel* ContinueTaskView::BuildMenuModel() {
                                        ui::kColorAshSystemUIMenuIcon));
   }
 
-  if (Shell::Get()->IsInTabletMode()) {
+  if (display::Screen::Get()->InTabletMode()) {
     context_menu_model_->AddSeparator(ui::NORMAL_SEPARATOR);
     context_menu_model_->AddItemWithIcon(
         ContinueTaskCommandId::kHideContinueSection,
