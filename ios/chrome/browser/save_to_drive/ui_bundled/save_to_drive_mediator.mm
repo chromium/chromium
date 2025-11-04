@@ -56,9 +56,9 @@ void StorageQuotaCompletionHelper(__weak SaveToDriveMediator* mediator,
   std::unique_ptr<web::DownloadTaskObserverBridge> _downloadTaskObserverBridge;
   raw_ptr<web::WebState> _webState;
   std::unique_ptr<web::WebStateObserverBridge> _webStateObserverBridge;
-  id<SaveToDriveCommands> _saveToDriveHandler;
-  id<ManageStorageAlertCommands> _manageStorageAlertHandler;
-  id<AccountPickerCommands> _accountPickerHandler;
+  __weak id<SaveToDriveCommands> _saveToDriveHandler;
+  __weak id<ManageStorageAlertCommands> _manageStorageAlertHandler;
+  __weak id<AccountPickerCommands> _accountPickerHandler;
   raw_ptr<drive::DriveService> _driveService;
   raw_ptr<PrefService> _prefService;
   raw_ptr<ChromeAccountManagerService> _accountManagerService;
@@ -119,6 +119,8 @@ void StorageQuotaCompletionHelper(__weak SaveToDriveMediator* mediator,
   _accountManagerService = nullptr;
   _driveService = nullptr;
   _saveToDriveHandler = nil;
+  _manageStorageAlertHandler = nil;
+  _accountPickerHandler = nil;
 }
 
 - (void)saveWithSelectedIdentity:(id<SystemIdentity>)identity {
