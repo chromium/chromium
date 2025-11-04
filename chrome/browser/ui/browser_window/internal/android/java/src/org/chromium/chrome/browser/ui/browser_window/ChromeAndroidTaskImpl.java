@@ -305,7 +305,7 @@ final class ChromeAndroidTaskImpl
 
     @Override
     public boolean isActive() {
-        @Nullable Boolean isActiveFuture = isActiveFuture();
+        @Nullable Boolean isActiveFuture = mPendingActionManager.isActiveFuture(mState.get());
         if (isActiveFuture != null) {
             return isActiveFuture;
         }
@@ -519,7 +519,7 @@ final class ChromeAndroidTaskImpl
 
     @Override
     public void activate() {
-        if (Boolean.TRUE.equals(isActiveFuture())) return;
+        if (Boolean.TRUE.equals(mPendingActionManager.isActiveFuture(mState.get()))) return;
 
         if (mState.get() == State.PENDING_CREATE) {
             mPendingActionManager.requestAction(PendingAction.ACTIVATE);
@@ -855,16 +855,6 @@ final class ChromeAndroidTaskImpl
     private void assertAlive() {
         assert mState.get() == State.IDLE || mState.get() == State.PENDING_UPDATE
                 : "This Task is not alive.";
-    }
-
-    @VisibleForTesting
-    @Nullable Boolean isActiveFuture() {
-        if (mState.get() == State.PENDING_CREATE) {
-            return Boolean.TRUE.equals(mPendingActionManager.isActiveFuture());
-        } else if (mState.get() == State.PENDING_UPDATE) {
-            return mPendingActionManager.isActiveFuture();
-        }
-        return null;
     }
 
     @GuardedBy("mActivityScopedObjectsLock")

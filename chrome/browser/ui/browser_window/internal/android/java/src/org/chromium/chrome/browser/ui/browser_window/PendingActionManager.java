@@ -11,6 +11,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskImpl.State;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -186,9 +187,14 @@ final class PendingActionManager {
         }
     }
 
-    @Nullable Boolean isActiveFuture() {
+    @Nullable Boolean isActiveFuture(@Nullable State state) {
         synchronized (mPendingActionsLock) {
-            return mIsActiveFuture;
+            if (state == State.PENDING_CREATE) {
+                return Boolean.TRUE.equals(mIsActiveFuture);
+            } else if (state == State.PENDING_UPDATE) {
+                return mIsActiveFuture;
+            }
+            return null;
         }
     }
 

@@ -1152,13 +1152,12 @@ public class ChromeAndroidTaskImplUnitTest {
 
         // Act.
         chromeAndroidTask.activate();
-        Assert.assertTrue(
+        assertEquals(
                 "Activate should be pending after #activate is triggered",
-                chromeAndroidTask.getPendingActionManagerForTesting().isActiveFuture());
-        Assert.assertEquals(
-                "isActivePendingOrFuture should be true after #activate is triggered",
                 true,
-                chromeAndroidTask.isActiveFuture());
+                chromeAndroidTask
+                        .getPendingActionManagerForTesting()
+                        .isActiveFuture(chromeAndroidTask.getState()));
         assertTrue("isActive is true while pending", chromeAndroidTask.isActive());
 
         chromeAndroidTask.activate();
@@ -1345,7 +1344,9 @@ public class ChromeAndroidTaskImplUnitTest {
         chromeAndroidTask.activate();
         Assert.assertTrue(
                 "Activate should be pending after #activate is triggered",
-                chromeAndroidTask.getPendingActionManagerForTesting().isActiveFuture());
+                chromeAndroidTask
+                        .getPendingActionManagerForTesting()
+                        .isActiveFuture(chromeAndroidTask.getState()));
         assertTrue("isActive is true while pending", chromeAndroidTask.isActive());
 
         chromeAndroidTask.onTopResumedActivityChangedWithNative(true);
@@ -1354,7 +1355,9 @@ public class ChromeAndroidTaskImplUnitTest {
         // Assert
         Assert.assertNull(
                 "Activate should be pending after #activate is triggered",
-                chromeAndroidTask.getPendingActionManagerForTesting().isActiveFuture());
+                chromeAndroidTask
+                        .getPendingActionManagerForTesting()
+                        .isActiveFuture(chromeAndroidTask.getState()));
         assertTrue(chromeAndroidTask.isActive());
     }
 

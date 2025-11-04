@@ -17,6 +17,7 @@ import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskImpl.State;
 import org.chromium.chrome.browser.ui.browser_window.PendingActionManager.PendingAction;
 
 /** Unit tests for {@link PendingActionManager}. */
@@ -434,7 +435,7 @@ public class PendingActionManagerUnitTest {
         mManager.requestAction(PendingAction.ACTIVATE);
 
         // Assert.
-        Assert.assertTrue(mManager.isActiveFuture());
+        Assert.assertEquals(true, mManager.isActiveFuture(State.PENDING_CREATE));
     }
 
     @Test
@@ -450,11 +451,12 @@ public class PendingActionManagerUnitTest {
     public void testGetAndClearTargetPendingActions_afterClear_stateReturnsNull() {
         // Arrange.
         mManager.requestAction(PendingAction.ACTIVATE);
-        Assert.assertTrue(mManager.isActiveFuture());
+        assertEquals(true, mManager.isActiveFuture(State.PENDING_UPDATE));
 
         mManager.getAndClearTargetPendingActions(PendingAction.ACTIVATE);
         Assert.assertNull(
-                "No pending action affecting isActive's future state", mManager.isActiveFuture());
+                "No pending action affecting isActive's future state",
+                mManager.isActiveFuture(State.PENDING_UPDATE));
     }
 
     private void doTestActionOverridesLowerPrecedenceAction(
