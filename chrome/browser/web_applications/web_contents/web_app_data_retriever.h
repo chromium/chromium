@@ -13,6 +13,8 @@
 #include "base/callback_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_contents/web_app_icon_downloader.h"
 #include "components/webapps/browser/installable/installable_logging.h"
@@ -39,7 +41,8 @@ enum class IconsDownloadedResult;
 struct WebAppInstallInfo;
 
 // Class used by the WebApp system to retrieve the necessary information to
-// install an app. Should only be called from the UI thread.
+// install an app. Should only be called from the UI thread. This should not be
+// used for multiple fetches at the same time.
 class WebAppDataRetriever : content::WebContentsObserver {
  public:
   // Returns nullptr for WebAppInstallInfo if error.
@@ -91,7 +94,9 @@ class WebAppDataRetriever : content::WebContentsObserver {
   // this web contents. This will continue to execute even if the page becomes
   // not primary, so the caller must handle any edge cases with primary page
   // changes in the web contents.
-  virtual base::CallbackListSubscription GetPrimaryPageFirstSpecifiedManifest(
+  // Note: This will automatically abandon the request if a timeout of
+  // kSpecifiedManifestWaitTimeout is reached.
+  virtual void GetPrimaryPageFirstSpecifiedManifest(
       content::WebContents& web_contents,
       GetManifestOnceCallbackList::CallbackType callback);
 
@@ -110,13 +115,20 @@ class WebAppDataRetriever : content::WebContentsObserver {
   void PrimaryMainFrameRenderProcessGone(
       base::TerminationStatus status) override;
 
+  void SetManifestWaitTimeoutForTesting(base::TimeDelta timeout);
+
  private:
+  bool HasPendingCall() const;
   void OnGetWebPageMetadata(
       mojo::AssociatedRemote<webapps::mojom::WebPageMetadataAgent>
           metadata_agent,
       int last_committed_nav_entry_unique_id,
       webapps::mojom::WebPageMetadataPtr web_page_metadata);
   void OnDidPerformInstallableCheck(const webapps::InstallableData& data);
+  void OnGotDeveloperSpecifiedManifest(
+      const base::expected<blink::mojom::ManifestPtr,
+                           blink::mojom::RequestManifestErrorPtr>& result);
+  void OnDeveloperSpecifiedManifestTimeout();
   void OnIconsDownloaded(IconsDownloadedResult result,
                          IconsMap icons_map,
                          DownloadedIconsHttpResults icons_http_results);
@@ -128,6 +140,13 @@ class WebAppDataRetriever : content::WebContentsObserver {
   GetWebAppInstallInfoCallback get_web_app_info_callback_;
 
   CheckInstallabilityCallback check_installability_callback_;
+
+  static constexpr base::TimeDelta kSpecifiedManifestWaitTimeout =
+      base::Seconds(30);
+  base::TimeDelta manifest_wait_timeout_ = kSpecifiedManifestWaitTimeout;
+  base::OneShotTimer get_specified_manifest_timeout_timer_;
+  base::CallbackListSubscription get_specified_manifest_subscription_;
+  GetManifestOnceCallbackList::CallbackType get_specified_manifest_callback_;
 
   GetIconsCallback get_icons_callback_;
 

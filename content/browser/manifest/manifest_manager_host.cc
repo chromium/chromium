@@ -68,11 +68,7 @@ std::optional<std::string> MaybeGetBadMessageStringForManifest(
 }  // namespace
 
 ManifestManagerHost::ManifestManagerHost(Page& page)
-    : PageUserData<ManifestManagerHost>(page),
-      last_manifest_success_result_(
-          base::unexpected(blink::mojom::RequestManifestError::New(
-              blink::mojom::ManifestRequestResult::kManifestFailedToFetch,
-              std::vector<blink::mojom::ManifestErrorPtr>()))) {}
+    : PageUserData<ManifestManagerHost>(page) {}
 
 ManifestManagerHost::~ManifestManagerHost() {
   std::vector<GetManifestCallback> callbacks = ExtractPendingCallbacks();
@@ -218,18 +214,15 @@ void ManifestManagerHost::OnRequestManifestAndErrors(
     }
   }
   if (result.has_value()) {
-    last_manifest_success_result_ = std::move(result);
-    developer_manifest_callback_list_.Notify(last_manifest_success_result_);
+    last_manifest_success_result_ = std::move(result.value());
+    NotifySubscriptionsIfSuccessCached();
   } else {
     developer_manifest_callback_list_.Notify(result);
   }
 }
 
 void ManifestManagerHost::ManifestUrlChanged(const GURL& manifest_url) {
-  last_manifest_success_result_ =
-      base::unexpected(blink::mojom::RequestManifestError::New(
-          blink::mojom::ManifestRequestResult::kManifestFailedToFetch,
-          std::vector<blink::mojom::ManifestErrorPtr>()));
+  last_manifest_success_result_ = std::nullopt;
   static_cast<PageImpl&>(page()).UpdateManifestUrl(manifest_url);
   if (!developer_manifest_callback_list_.empty()) {
     MaybeFetchManifestForSubscriptions();
@@ -237,7 +230,8 @@ void ManifestManagerHost::ManifestUrlChanged(const GURL& manifest_url) {
 }
 
 void ManifestManagerHost::MaybeFetchManifestForSubscriptions() {
-  if (!page().GetManifestUrl().has_value()) {
+  if (!page().GetManifestUrl().has_value() ||
+      !page().GetManifestUrl()->is_valid()) {
     return;
   }
   auto& manifest_manager = GetManifestManager();
@@ -248,7 +242,14 @@ void ManifestManagerHost::MaybeFetchManifestForSubscriptions() {
 
 void ManifestManagerHost::NotifySubscriptionsIfSuccessCached() {
   if (last_manifest_success_result_.has_value()) {
-    developer_manifest_callback_list_.Notify(last_manifest_success_result_);
+    // This Clone COULD be avoided if we cached the full expected result.
+    // However - that gets really confusing if we also have it be optional.
+    // Since we only care about caching success, it is simpler to clone here,
+    // and just cache the success results as an optional.
+    base::expected<blink::mojom::ManifestPtr,
+                   blink::mojom::RequestManifestErrorPtr>
+        result = base::ok(last_manifest_success_result_->Clone());
+    developer_manifest_callback_list_.Notify(result);
   }
 }
 

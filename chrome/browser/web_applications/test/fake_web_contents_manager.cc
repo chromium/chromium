@@ -329,7 +329,7 @@ class FakeWebContentsManager::FakeWebAppDataRetriever
                        page.valid_manifest_for_web_app, page.error_code));
   }
 
-  base::CallbackListSubscription GetPrimaryPageFirstSpecifiedManifest(
+  void GetPrimaryPageFirstSpecifiedManifest(
       content::WebContents& web_contents,
       GetManifestOnceCallbackList::CallbackType callback) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -357,7 +357,6 @@ class FakeWebContentsManager::FakeWebAppDataRetriever
                       blink::mojom::ManifestRequestResult::
                           kManifestFailedToFetch,
                       std::vector<blink::mojom::ManifestErrorPtr>()))));
-      return base::CallbackListSubscription();
     }
     FakeWebContentsManager::FakePageState& page = page_it->second;
     if (page.on_manifest_fetch) {
@@ -368,7 +367,6 @@ class FakeWebContentsManager::FakeWebAppDataRetriever
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback), base::ok(std::move(manifest))));
-    return base::CallbackListSubscription();
   }
 
   void GetIcons(content::WebContents* web_contents,

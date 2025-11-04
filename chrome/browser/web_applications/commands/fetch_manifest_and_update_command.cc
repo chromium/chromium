@@ -24,6 +24,7 @@
 #include "content/public/browser/page_manifest_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
+#include "third_party/blink/public/mojom/manifest/manifest_manager.mojom.h"
 #include "url/gurl.h"
 
 namespace web_app {
@@ -83,17 +84,23 @@ void FetchManifestAndUpdateCommand::OnUrlLoaded(
       return;
   }
   data_retriever_ = lock_->web_contents_manager().CreateDataRetriever();
-  manifest_fetch_subscription_ =
-      data_retriever_->GetPrimaryPageFirstSpecifiedManifest(
-          lock_->shared_web_contents(),
-          base::BindOnce(&FetchManifestAndUpdateCommand::OnManifestRetrieved,
-                         weak_factory_.GetWeakPtr()));
+  data_retriever_->GetPrimaryPageFirstSpecifiedManifest(
+      lock_->shared_web_contents(),
+      base::BindOnce(&FetchManifestAndUpdateCommand::OnManifestRetrieved,
+                     weak_factory_.GetWeakPtr()));
 }
 
 void FetchManifestAndUpdateCommand::OnManifestRetrieved(
     const base::expected<blink::mojom::ManifestPtr,
                          blink::mojom::RequestManifestErrorPtr>& result) {
   if (!result.has_value()) {
+    GetMutableDebugValue().Set("manifest_error",
+                               base::ToString(result.error()->error));
+    for (const auto& error : result.error()->details) {
+      GetMutableDebugValue()
+          .EnsureList("manifest_error_details")
+          ->Append(error->message);
+    }
     CompleteAndSelfDestruct(
         CommandResult::kSuccess,
         FetchManifestAndUpdateResult::kManifestRetrievalError);
@@ -103,18 +110,23 @@ void FetchManifestAndUpdateCommand::OnManifestRetrieved(
 
   const blink::mojom::Manifest& manifest = *result.value();
   if (blink::IsEmptyManifest(manifest)) {
+    GetMutableDebugValue().Set("manifest_error", "empty");
     CompleteAndSelfDestruct(CommandResult::kSuccess,
                             FetchManifestAndUpdateResult::kInvalidManifest);
     return;
   }
 
   if (manifest.id != expected_manifest_id_) {
+    GetMutableDebugValue().Set("manifest_id",
+                               manifest.id.possibly_invalid_spec());
+    GetMutableDebugValue().Set("manifest_error", "manifest_id_mismatch");
     CompleteAndSelfDestruct(CommandResult::kSuccess,
                             FetchManifestAndUpdateResult::kInvalidManifest);
     return;
   }
 
   if (!manifest.has_valid_specified_start_url) {
+    GetMutableDebugValue().Set("manifest_error", "no_specified_start_url");
     CompleteAndSelfDestruct(CommandResult::kSuccess,
                             FetchManifestAndUpdateResult::kInvalidManifest);
     return;
@@ -129,6 +141,7 @@ void FetchManifestAndUpdateCommand::OnManifestRetrieved(
     }
   }
   if (!has_any_icon) {
+    GetMutableDebugValue().Set("manifest_error", "no_any_icon");
     CompleteAndSelfDestruct(CommandResult::kFailure,
                             FetchManifestAndUpdateResult::kInvalidManifest);
     return;

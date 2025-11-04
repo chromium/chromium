@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_COMMANDS_FETCH_MANIFEST_AND_UPDATE_COMMAND_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_COMMANDS_FETCH_MANIFEST_AND_UPDATE_COMMAND_H_
 
-#include "base/callback_list.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/web_applications/commands/fetch_manifest_and_update_result.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
@@ -70,7 +69,6 @@ class FetchManifestAndUpdateCommand
   std::unique_ptr<WebAppInstallInfo> install_info_;
 
   std::unique_ptr<ManifestToWebAppInstallInfoJob> manifest_to_install_info_job_;
-  base::CallbackListSubscription manifest_fetch_subscription_;
 
   base::WeakPtrFactory<FetchManifestAndUpdateCommand> weak_factory_{this};
 };
