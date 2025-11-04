@@ -9723,11 +9723,8 @@ test("unit_tests") {
     }
 
     if (is_win) {
-      sources += [
-        "../browser/extensions/external_registry_loader_win_unittest.cc",
-        "../browser/media_galleries/win/mtp_device_delegate_impl_win_unittest.cc",
-        "../browser/media_galleries/win/mtp_device_object_enumerator_unittest.cc",
-      ]
+      sources +=
+          [ "../browser/extensions/external_registry_loader_win_unittest.cc" ]
     }
 
     if (is_chromeos && use_cups) {

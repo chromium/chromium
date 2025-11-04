@@ -209,6 +209,7 @@ class MTPDeviceAsyncDelegate {
   virtual ~MTPDeviceAsyncDelegate() = default;
 };
 
+#if !BUILDFLAG(IS_WIN)
 typedef base::OnceCallback<void(MTPDeviceAsyncDelegate*)>
     CreateMTPDeviceAsyncDelegateCallback;
 
@@ -216,5 +217,6 @@ void CreateMTPDeviceAsyncDelegate(
     const base::FilePath::StringType& device_location,
     const bool read_only,
     CreateMTPDeviceAsyncDelegateCallback callback);
+#endif
 
 #endif  // CHROME_BROWSER_MEDIA_GALLERIES_FILEAPI_MTP_DEVICE_ASYNC_DELEGATE_H_
