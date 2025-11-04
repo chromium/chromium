@@ -126,11 +126,14 @@ bool PasswordProtectionServiceBase::ShouldShowModalWarning(
          IsWarningEnabled(password_type);
 }
 
+// TODO(crbug.com/415273169): Update the OTP callback to be tied to the request.
+// And remove these checks.
 bool PasswordProtectionServiceBase::ShouldRunOtpPhishingVerdictCallback(
     LoginReputationClientRequest::TriggerType trigger_type) const {
   return trigger_type ==
              LoginReputationClientRequest::ONE_TIME_PASSWORD_FIELD_DETECTED &&
-         otp_phishing_verdict_callback_.has_value();
+         otp_phishing_verdict_callback_.has_value() &&
+         !otp_phishing_verdict_callback_.value().is_null();
 }
 
 LoginReputationClientResponse::VerdictType
@@ -197,6 +200,7 @@ void PasswordProtectionServiceBase::RequestFinished(
                    LoginReputationClientResponse::PHISHING ||
                response->verdict_type() ==
                    LoginReputationClientResponse::LOW_REPUTATION);
+      otp_phishing_verdict_callback_.reset();
     }
   }
 

@@ -193,8 +193,11 @@ void PasswordProtectionService::OnOtpHighConfidenceAllowlistCheckCompleted(
             LoginReputationClientRequest::ONE_TIME_PASSWORD_FIELD_DETECTED,
             main_frame_url, reused_password_account_type),
         reused_password_account_type);
-    std::move(otp_phishing_verdict_callback_.value()).Run(false);
-    otp_phishing_verdict_callback_.reset();
+    if (ShouldRunOtpPhishingVerdictCallback(
+            LoginReputationClientRequest::ONE_TIME_PASSWORD_FIELD_DETECTED)) {
+      std::move(otp_phishing_verdict_callback_.value()).Run(false);
+      otp_phishing_verdict_callback_.reset();
+    }
   }
 }
 
