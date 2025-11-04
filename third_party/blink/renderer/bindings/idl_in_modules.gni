@@ -1340,7 +1340,7 @@ if (!target_os_is_android) {
 # generating the snapshot for android, blink is compiled with
 # current_os="linux" and target_os="android". Using target_os is necessary as
 # we need to compile in the same way as would happen when current_os="android".
-if (!target_os_is_android) {
+if (!target_os_is_android && !is_ios) {
   static_idl_files_in_modules += [ "//third_party/blink/renderer/modules/awc/additional_windowing_controls.idl" ]
 }
 

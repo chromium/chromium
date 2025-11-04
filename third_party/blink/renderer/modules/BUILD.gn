@@ -177,11 +177,13 @@ component("modules") {
     sub_modules += [ "//third_party/blink/renderer/modules/remote_objects" ]
   } else {
     sub_modules += [
-      "//third_party/blink/renderer/modules/awc",
       "//third_party/blink/renderer/modules/direct_sockets",
       "//third_party/blink/renderer/modules/printing",
       "//third_party/blink/renderer/modules/smart_card",
     ]
+  }
+  if (!is_ios && !target_os_is_android) {
+    sub_modules += [ "//third_party/blink/renderer/modules/awc" ]
   }
 
   if (enable_compute_pressure) {
