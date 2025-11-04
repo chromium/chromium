@@ -179,7 +179,8 @@ ExtensionActionViewController::ExtensionActionViewController(
     extensions::ExtensionRegistry* extension_registry,
     ExtensionsContainerViews* extensions_container,
     std::unique_ptr<ExtensionActionPlatformDelegate> platform_delegate)
-    : extension_(std::move(extension)),
+    : extension_id_(extension->id()),
+      extension_(std::move(extension)),
       browser_(browser),
       profile_(browser->GetProfile()),
       extension_action_(extension_action),
@@ -203,7 +204,7 @@ ExtensionActionViewController::~ExtensionActionViewController() {
 }
 
 std::string ExtensionActionViewController::GetId() const {
-  return extension_->id();
+  return extension_id_;
 }
 
 void ExtensionActionViewController::SetDelegate(
@@ -586,8 +587,14 @@ bool ExtensionActionViewController::GetExtensionCommand(
 ToolbarActionViewController::HoverCardState
 ExtensionActionViewController::GetHoverCardState(
     content::WebContents* web_contents) const {
-  DCHECK(ExtensionIsValid());
   DCHECK(web_contents);
+
+  if (!ExtensionIsValid()) {
+    HoverCardState state;
+    state.site_access = HoverCardState::SiteAccess::kExtensionDoesNotWantAccess;
+    state.policy = HoverCardState::AdminPolicy::kNone;
+    return state;
+  }
 
   url::Origin origin =
       web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin();
@@ -638,7 +645,9 @@ ExtensionActionViewController::GetIconImageSourceForTesting(
 void ExtensionActionViewController::TriggerPopup(PopupShowAction show_action,
                                                  bool by_user,
                                                  ShowPopupCallback callback) {
-  DCHECK(ExtensionIsValid());
+  if (!ExtensionIsValid()) {
+    return;
+  }
 
   content::WebContents* const web_contents = GetCurrentWebContents();
   const int tab_id = sessions::SessionTabHelper::IdForTab(web_contents).id();

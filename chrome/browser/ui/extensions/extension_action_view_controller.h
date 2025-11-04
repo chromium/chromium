@@ -40,10 +40,12 @@ class ImageModel;
 }
 
 // The Views controller for an ExtensionAction that is shown on the toolbar
-// (such as a page or browser action). Since this class doesn't own the
-// extension or extension action in question, be sure to check for validity
-// using ExtensionIsValid() before using those members (see also comments above
-// ExtensionIsValid()).
+// (such as a page or browser action).
+//
+// This class doesn't own the extension or extension action in question. It is
+// safe to call methods after the extension is uninstalled, but they will return
+// undefined values, except GetId().
+//
 // TODO(crbug.com/437774758): Enable this class on Desktop Android.
 class ExtensionActionViewController
     : public ToolbarActionViewController,
@@ -192,6 +194,9 @@ class ExtensionActionViewController
   std::unique_ptr<IconWithBadgeImageSource> GetIconImageSource(
       content::WebContents* web_contents,
       const gfx::Size& size);
+
+  // The extension ID.
+  extensions::ExtensionId extension_id_;
 
   // The extension associated with the action we're displaying.
   scoped_refptr<const extensions::Extension> extension_;
