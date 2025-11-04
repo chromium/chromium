@@ -138,7 +138,7 @@ export function getHtml(this: ContextualEntrypointAndCarouselElement) {
       @change="${this.onFileChange_}"
       hidden>
   </input>
-  ${this.realboxLayoutMode === 'TallBottomContext' && this.showVoiceSearch ?
+  ${(this.realboxLayoutMode === 'TallBottomContext' || !this.realboxLayoutMode) && this.showVoiceSearch ?
           voiceSearchButton :
           ''}
 <!--_html_template_end_-->`;
