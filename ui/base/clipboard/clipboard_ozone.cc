@@ -324,10 +324,12 @@ class ClipboardOzone::AsyncClipboardOzone {
            platform_clipboard_->IsSelectionBufferAvailable());
     if (buffer == ClipboardBuffer::kCopyPaste) {
       clipboard_sequence_number_ = ClipboardSequenceNumberToken();
+      // Only notify clipboard observers for regular clipboard changes,
+      // not primary selection changes (e.g., double-click text selection).
+      ClipboardMonitor::GetInstance()->NotifyClipboardDataChanged();
     } else {
       selection_sequence_number_ = ClipboardSequenceNumberToken();
     }
-    ClipboardMonitor::GetInstance()->NotifyClipboardDataChanged();
   }
 
   bool IsBufferSupported(ClipboardBuffer buffer) const {
