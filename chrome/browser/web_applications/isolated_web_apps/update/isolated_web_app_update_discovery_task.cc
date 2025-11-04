@@ -15,7 +15,6 @@
 #include "base/containers/to_value_list.h"
 #include "base/containers/to_vector.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/json/values_util.h"

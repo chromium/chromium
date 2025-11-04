@@ -4,7 +4,6 @@
 
 #include <string_view>
 
-#include "base/files/file_util.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/test_future.h"
 #include "base/types/expected.h"

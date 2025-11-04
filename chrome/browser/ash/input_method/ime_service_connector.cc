@@ -9,7 +9,6 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/feature_list.h"
-#include "base/files/file_util.h"
 #include "chromeos/ash/services/ime/constants.h"
 #include "chromeos/ash/services/ime/public/mojom/ime_service.mojom.h"
 #include "chromeos/ash/services/ime/public/mojom/input_method_user_data.mojom.h"

@@ -13,7 +13,6 @@
 #include "base/auto_reset.h"
 #include "base/command_line.h"
 #include "base/containers/fixed_flat_map.h"
-#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"

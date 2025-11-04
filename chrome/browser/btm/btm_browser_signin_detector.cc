@@ -7,7 +7,6 @@
 #include <cstddef>
 
 #include "base/check.h"
-#include "base/files/file_util.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "components/signin/public/identity_manager/account_info.h"

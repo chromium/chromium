@@ -6,7 +6,6 @@
 
 #include "base/base_paths.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "chrome/installer/util/initial_preferences.h"
 

@@ -11,7 +11,6 @@
 #include "ash/sensor_info/sensor_types.h"
 #include "base/containers/span.h"
 #include "base/files/file.h"
-#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"

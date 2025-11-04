@@ -6,7 +6,6 @@
 
 #include <array>
 
-#include "base/files/file_util.h"
 #include "base/format_macros.h"
 #include "base/functional/bind.h"
 #include "base/location.h"

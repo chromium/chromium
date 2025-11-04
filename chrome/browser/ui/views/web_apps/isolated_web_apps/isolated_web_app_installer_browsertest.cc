@@ -6,7 +6,6 @@
 #include <string_view>
 #include <variant>
 
-#include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"

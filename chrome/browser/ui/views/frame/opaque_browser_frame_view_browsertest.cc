@@ -6,7 +6,6 @@
 
 #include <tuple>
 
-#include "base/files/file_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"

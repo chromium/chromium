@@ -11,7 +11,6 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ambient_time_of_day_constants.h"
-#include "base/files/file_util.h"
 #include "base/system/sys_info.h"
 #include "chrome/common/chrome_paths.h"
 #endif

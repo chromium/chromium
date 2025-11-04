@@ -5,7 +5,6 @@
 #include "chrome/browser/ash/child_accounts/time_limit_consistency_test/consistency_golden_loader.h"
 
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/test/protobuf_matchers.h"
 #include "chrome/browser/ash/child_accounts/time_limit_test_utils.h"

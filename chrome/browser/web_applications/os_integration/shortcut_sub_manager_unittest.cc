@@ -6,7 +6,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/files/file_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/profiles/profile.h"

@@ -8,7 +8,6 @@
 
 #include "apps/ui/views/app_window_frame_view.h"
 #include "base/command_line.h"
-#include "base/files/file_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/shell_integration_win.h"

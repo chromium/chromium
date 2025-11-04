@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/policy/dlp/test/dlp_files_test_with_mounts.h"
 
+#include "base/files/file_util.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/crostini/fake_crostini_features.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"

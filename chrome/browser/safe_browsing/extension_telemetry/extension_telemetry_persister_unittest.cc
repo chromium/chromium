@@ -5,7 +5,6 @@
 
 #include <sstream>
 
-#include "base/files/file_util.h"
 #include "base/functional/concurrent_closures.h"
 #include "base/logging.h"
 #include "base/path_service.h"

@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/containers/flat_set.h"
-#include "base/files/file_util.h"
 #include "base/strings/string_util.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"

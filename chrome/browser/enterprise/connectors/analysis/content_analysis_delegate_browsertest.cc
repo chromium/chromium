@@ -9,7 +9,6 @@
 #include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/files/file.h"
-#include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/to_string.h"

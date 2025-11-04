@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/views/plugin_vm/plugin_vm_installer_view.h"
 
-#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"

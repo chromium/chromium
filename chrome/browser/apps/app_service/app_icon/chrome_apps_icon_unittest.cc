@@ -7,7 +7,6 @@
 
 #include "base/barrier_callback.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/run_loop.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"

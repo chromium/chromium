@@ -9,7 +9,6 @@
 #include <memory>
 #include <string>
 
-#include "base/files/file_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"

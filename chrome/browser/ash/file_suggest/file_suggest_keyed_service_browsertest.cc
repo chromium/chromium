@@ -5,7 +5,6 @@
 #include "chrome/browser/ash/file_suggest/file_suggest_keyed_service.h"
 
 #include "ash/constants/ash_features.h"
-#include "base/files/file_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"

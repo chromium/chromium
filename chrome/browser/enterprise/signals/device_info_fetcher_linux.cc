@@ -8,7 +8,6 @@
 
 #include "base/files/dir_reader_posix.h"
 #include "base/files/file.h"
-#include "base/files/file_util.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"

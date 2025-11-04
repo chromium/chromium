@@ -6,7 +6,6 @@
 #include <optional>
 #include <string>
 
-#include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/scoped_feature_list.h"

@@ -5,7 +5,6 @@
 #include "chrome/browser/profile_resetter/reset_report_uploader.h"
 
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/task_environment.h"
 #include "content/public/test/test_utils.h"

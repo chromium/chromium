@@ -5,7 +5,6 @@
 #include <memory>
 
 #include "base/base_paths.h"
-#include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/test_future.h"

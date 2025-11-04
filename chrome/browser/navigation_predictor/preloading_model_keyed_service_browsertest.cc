@@ -4,7 +4,6 @@
 
 #include "chrome/browser/navigation_predictor/preloading_model_keyed_service.h"
 
-#include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/navigation_predictor/preloading_model_keyed_service_factory.h"

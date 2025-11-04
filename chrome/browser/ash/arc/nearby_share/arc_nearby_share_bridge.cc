@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "ash/public/cpp/app_types_util.h"
-#include "base/files/file_util.h"
 #include "base/memory/singleton.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/arc/arc_util.h"

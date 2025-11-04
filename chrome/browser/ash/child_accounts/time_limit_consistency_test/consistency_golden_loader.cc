@@ -7,7 +7,6 @@
 #include "base/containers/contains.h"
 #include "base/files/dir_reader_posix.h"
 #include "base/files/file.h"
-#include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"

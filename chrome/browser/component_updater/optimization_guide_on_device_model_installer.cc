@@ -12,7 +12,6 @@
 
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/functional/callback_forward.h"
 #include "base/logging.h"
 #include "base/values.h"

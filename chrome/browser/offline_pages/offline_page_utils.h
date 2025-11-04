@@ -6,10 +6,10 @@
 #define CHROME_BROWSER_OFFLINE_PAGES_OFFLINE_PAGE_UTILS_H_
 
 #include <stdint.h>
+
 #include <string>
 #include <vector>
 
-#include "base/files/file_util.h"
 #include "base/functional/callback.h"
 #include "components/offline_pages/core/offline_page_model.h"
 #include "components/offline_pages/core/offline_page_types.h"

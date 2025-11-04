@@ -6,7 +6,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
-#include "base/files/file_util.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "third_party/perfetto/include/perfetto/ext/tracing/core/trace_packet.h"
