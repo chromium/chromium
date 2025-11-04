@@ -1057,9 +1057,23 @@ bool PasswordFormManager::ProvisionallySave(
     is_saving_allowed_ = false;
   }
 
-  bool have_password_to_save =
+  // Check if the password field was autofilled with an OTP value.
+  const bool password_field_is_otp_field =
       form_parsing_result.password_form &&
-      form_parsing_result.password_form->HasNonEmptyPasswordValue();
+      std::ranges::any_of(
+          submitted_form.fields(), [&](const FormFieldData& submitted_field) {
+            return submitted_field.renderer_id() ==
+                       form_parsing_result.password_form
+                           ->password_element_renderer_id &&
+                   client_->IsFieldFilledWithOtp(submitted_form.global_id(),
+                                                 submitted_field.global_id());
+          });
+
+  const bool have_password_to_save =
+      form_parsing_result.password_form &&
+      form_parsing_result.password_form->HasNonEmptyPasswordValue() &&
+      !password_field_is_otp_field;
+
   if (!have_password_to_save) {
     // In case of error during parsing, reset the state.
     parsed_submitted_form_.reset();
@@ -1084,21 +1098,6 @@ bool PasswordFormManager::ProvisionallySave(
                             form_parsing_result.username_detection_method);
   }
   HandleForgotPasswordFormData();
-
-  // Check if the password field was filled by the OTP product.
-  const auto it = std::ranges::find_if(
-      submitted_form.fields(), [&](const autofill::FormFieldData& field) {
-        return field.renderer_id() ==
-               parsed_submitted_form_->password_element_renderer_id;
-      });
-
-  if (it != submitted_form.fields().end()) {
-    const autofill::FormFieldData& password_field = *it;
-    if (client_->IsFieldFilledWithOtp(submitted_form.global_id(),
-                                      password_field.global_id())) {
-      return false;
-    }
-  }
 
   CreatePendingCredentials();
   return true;
