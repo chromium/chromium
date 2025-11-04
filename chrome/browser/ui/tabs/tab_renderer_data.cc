@@ -77,12 +77,6 @@ TabRendererData TabRendererData::FromTabInModel(const TabStripModel* model,
       !security_interstitial_tab_helper->IsDisplayingInterstitial() ||
       security_interstitial_tab_helper->ShouldDisplayURL();
 
-  content::NavigationEntry* entry =
-      contents->GetController().GetLastCommittedEntry();
-  if (!entry || entry->IsInitialEntry()) {
-    should_display_url = false;
-  }
-
   TabRendererData data;
 
   tabs::TabFeatures* const features = tab->GetTabFeatures();
@@ -118,7 +112,15 @@ TabRendererData TabRendererData::FromTabInModel(const TabStripModel* model,
 
   data.collaboration_messaging = GetCollaborationMessage(tab);
   data.network_state = TabNetworkStateForWebContents(contents);
-  data.visible_url = contents->GetVisibleURL();
+
+  // In the case of reverted uncommitted navigations, there might not be a valid
+  // NavigationEntry. In that case, show about:blank to match the omnibox.
+  content::NavigationEntry* entry =
+      contents->GetController().GetLastCommittedEntry();
+  const bool missing_navigation_entry = !entry || entry->IsInitialEntry();
+  data.visible_url = missing_navigation_entry ? GURL(url::kAboutBlankURL)
+                                              : contents->GetVisibleURL();
+
   // Allow empty title for chrome-untrusted:// URLs.
   if (data.title.empty() &&
       data.visible_url.SchemeIs(content::kChromeUIUntrustedScheme)) {
