@@ -36,6 +36,7 @@ namespace autofill {
 namespace {
 
 using ::base::test::ErrorIs;
+using ::base::test::HasValue;
 using ::base::test::ValueIs;
 using ::testing::AllOf;
 using ::testing::Each;
@@ -46,10 +47,13 @@ using ::testing::Matcher;
 using ::testing::Not;
 using ::testing::Return;
 using ::testing::SizeIs;
+
 using FillRequest = ActorFormFillingService::FillRequest;
 using GetSuggestionsFuture =
     base::test::TestFuture<base::expected<std::vector<ActorFormFillingRequest>,
                                           ActorFormFillingError>>;
+using FillSuggestionsFuture =
+    base::test::TestFuture<base::expected<void, ActorFormFillingError>>;
 
 [[nodiscard]] Matcher<ActorSuggestion> NonEmptyActorSuggestion() {
   return AllOf(Field(&ActorSuggestion::title, Not(IsEmpty())),
@@ -144,7 +148,8 @@ TEST_F(ActorFormFillingServiceTest, InvalidRequestData) {
   EXPECT_THAT(future.Get(), ErrorIs(ActorFormFillingError::kOther));
 }
 
-// Tests that a suggestion is returned when invoking on an address form.
+// Tests that a suggestion is returned when invoking on an address form and
+// that the suggestion can be used for filling.
 TEST_F(ActorFormFillingServiceTest, SimpleAddressForm) {
   FormData form = SeeForm({.fields = {{.server_type = NAME_FULL},
                                       {.server_type = ADDRESS_HOME_LINE1},
@@ -158,6 +163,46 @@ TEST_F(ActorFormFillingServiceTest, SimpleAddressForm) {
               ValueIs(ElementsAre(IsActorFormFillingRequest(
                   ActorFormFillingRequest::RequestedData::
                       FormFillingRequest_RequestedData_ADDRESS))));
+
+  std::vector<ActorFormFillingRequest> requests = future.Take().value();
+  FillSuggestionsFuture fill_future;
+  service().FillSuggestions(
+      tab(), {ActorFormFillingSelection(requests[0].suggestions[0].id)},
+      fill_future.GetCallback());
+  EXPECT_THAT(fill_future.Get(), HasValue());
+}
+
+// Tests that a `kOther` error is returned if an invalid suggestion id is passed
+// for filling.
+TEST_F(ActorFormFillingServiceTest, FillWithInvalidSuggestionId) {
+  FillSuggestionsFuture fill_future;
+  service().FillSuggestions(tab(),
+                            {ActorFormFillingSelection(ActorSuggestionId(123))},
+                            fill_future.GetCallback());
+  EXPECT_THAT(fill_future.Get(), ErrorIs(ActorFormFillingError::kOther));
+}
+
+// Tests that a `kOther` error is returned if an invalid suggestion id is passed
+// for filling.
+TEST_F(ActorFormFillingServiceTest, FillButFormIsGone) {
+  FormData form = SeeForm({.fields = {{.server_type = NAME_FULL},
+                                      {.server_type = ADDRESS_HOME_LINE1},
+                                      {.server_type = ADDRESS_HOME_CITY}}});
+
+  GetSuggestionsFuture future;
+  service().GetSuggestions(tab(),
+                           {AddressFillRequest({form.fields()[0].global_id()})},
+                           future.GetCallback());
+  EXPECT_THAT(future.Get(), ValueIs(SizeIs(1)));
+
+  manager().OnFormsSeen(/*updated_forms=*/{},
+                        /*removed_forms=*/{form.global_id()});
+  std::vector<ActorFormFillingRequest> requests = future.Take().value();
+  FillSuggestionsFuture fill_future;
+  service().FillSuggestions(
+      tab(), {ActorFormFillingSelection(requests[0].suggestions[0].id)},
+      fill_future.GetCallback());
+  EXPECT_THAT(fill_future.Get(), ErrorIs(ActorFormFillingError::kNoForm));
 }
 
 // Tests that `kAutofillNotAvailable` is returned if the tab has no web

@@ -72,6 +72,7 @@ struct ActorFormFillingRequest {
 // Represents the suggestion that the user selected to be filled.
 struct ActorFormFillingSelection {
   ActorFormFillingSelection();
+  explicit ActorFormFillingSelection(ActorSuggestionId id);
   ActorFormFillingSelection(const ActorFormFillingSelection&);
   ActorFormFillingSelection& operator=(const ActorFormFillingSelection&);
   ActorFormFillingSelection(ActorFormFillingSelection&&);

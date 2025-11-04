@@ -51,13 +51,16 @@ class ActorFormFillingServiceImpl : public ActorFormFillingService {
     FillData();
     FillData(std::vector<FieldGlobalId> field_ids,
              std::variant<std::monostate, AutofillProfile> filling_payload);
+    FillData(const FillData&);
+    FillData& operator=(const FillData&);
     FillData(FillData&&);
     FillData& operator=(FillData&&);
     ~FillData();
 
     // Fields that represents the form sections that are supposed to be filled.
     std::vector<FieldGlobalId> field_ids;
-    std::variant<std::monostate, AutofillProfile> filling_payload;
+    using Payload = std::variant<std::monostate, AutofillProfile>;
+    Payload filling_payload;
   };
 
  private:

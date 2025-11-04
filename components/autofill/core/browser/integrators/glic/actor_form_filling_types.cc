@@ -43,6 +43,10 @@ ActorFormFillingRequest& ActorFormFillingRequest::operator=(
 ActorFormFillingRequest::~ActorFormFillingRequest() = default;
 
 ActorFormFillingSelection::ActorFormFillingSelection() = default;
+
+ActorFormFillingSelection::ActorFormFillingSelection(ActorSuggestionId id)
+    : selected_suggestion_id(id) {}
+
 ActorFormFillingSelection::ActorFormFillingSelection(
     const ActorFormFillingSelection&) = default;
 ActorFormFillingSelection& ActorFormFillingSelection::operator=(
