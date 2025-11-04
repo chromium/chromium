@@ -170,6 +170,15 @@ def _GenerateAndroidManifest(manifest_paths, min_sdk_version,
     for node in extra_app_node:
       app_node.append(node)
 
+  # Remove FingerprintDialogActivity, since it is not used. A hack until
+  # https://crbug.com/457436186 is fixed in a better way.
+  for activity in app_node.findall('activity'):
+    if activity.get(
+        '{%s}name' %
+        manifest_utils.ANDROID_NAMESPACE) == ('androidx.biometric.internal.ui'
+                                              '.FingerprintDialogActivity'):
+      app_node.remove(activity)
+
   uses_sdk = manifest.find('./uses-sdk')
   if uses_sdk is None:
     uses_sdk = ElementTree.Element('uses-sdk')
