@@ -49,8 +49,7 @@ SessionRestorationServiceFactory::BuildServiceInstanceFor(
       kSaveDelay, IsPinnedTabsEnabled(), profile->GetStatePath(),
       base::ThreadPool::CreateSingleThreadTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
-           base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
-          base::SingleThreadTaskRunnerThreadMode::DEDICATED));
+           base::TaskShutdownBehavior::BLOCK_SHUTDOWN}));
 }
 
 void SessionRestorationServiceFactory::RegisterProfilePrefs(
