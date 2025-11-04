@@ -440,6 +440,12 @@ cr-progress {
   align-self: flex-start;
 }
 
+#panelContainer #fre-app-container .g {
+  width: auto;
+  flex: 1;
+  height: 32px;
+}
+
 #freLoadingPanel .container {
   background: var(--color--surface);
 }
