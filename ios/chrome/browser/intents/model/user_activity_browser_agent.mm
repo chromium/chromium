@@ -825,6 +825,14 @@ void UserActivityBrowserAgent::OverloadContinueUserActivityURL(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   BOOL is_active = [[UIApplication sharedApplication] applicationState] ==
                    UIApplicationStateActive;
+  if (!connection_information_.startupParameters) {
+    AppStartupParameters* startup_params = [[AppStartupParameters alloc]
+         initWithExternalURL:net::GURLWithNSURL(webpage_url)
+                 completeURL:net::GURLWithNSURL(webpage_url)
+             applicationMode:ApplicationModeForTabOpening::UNDETERMINED
+        forceApplicationMode:NO];
+    connection_information_.startupParameters = startup_params;
+  }
   ContinueUserActivityURL(webpage_url, is_active, open_existing_tab);
 }
 
