@@ -98,13 +98,6 @@ inline constexpr char kAllowInsecureLocalhostDescription[] =
     "Allows requests to localhost over HTTPS even when an invalid certificate "
     "is presented.";
 
-inline constexpr char kAllowLegacyMV2ExtensionsName[] =
-    "Allow legacy extension manifest versions";
-inline constexpr char kAllowLegacyMV2ExtensionsDescription[] =
-    "Allows extensions with legacy (unsupported) manifest versions to be loaded"
-    " as unpacked extensions. This should only be used for maintaining legacy "
-    "extensions and will be removed in the future.";
-
 inline constexpr char kAndroidAppIntegrationModuleName[] =
     "Integrate with Android App Search and shows a notice card";
 inline constexpr char kAndroidAppIntegrationModuleDescription[] =

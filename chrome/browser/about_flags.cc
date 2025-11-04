@@ -11580,13 +11580,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kMacAccessibilityAPIMigration)},
 #endif  // BUILDFLAG(IS_MAC)
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-    {"allow-legacy-mv2-extensions",
-     flag_descriptions::kAllowLegacyMV2ExtensionsName,
-     flag_descriptions::kAllowLegacyMV2ExtensionsDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(extensions_features::kAllowLegacyMV2Extensions)},
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
-
 #if !BUILDFLAG(IS_ANDROID)
     {"enable-lens-overlay-translate-languages",
      flag_descriptions::kLensOverlayTranslateLanguagesName,

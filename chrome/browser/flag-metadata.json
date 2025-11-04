@@ -203,11 +203,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "allow-legacy-mv2-extensions",
-    "owners": ["emiliapaz@chromium.org", "rdevlin.cronin@chromium.org", "extensions-core@chromium.org"],
-    "expiry_milestone": 139
-  },
-  {
     "name": "allow-non-family-link-url-filter-mode",
     "owners": ["tju@google.com", "chrome-signin-team@google.com"],
     "expiry_milestone": 150
