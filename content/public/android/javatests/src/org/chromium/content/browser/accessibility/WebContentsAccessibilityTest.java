@@ -675,6 +675,7 @@ public class WebContentsAccessibilityTest {
     @Test
     @SmallTest
     @DisableFeatures(ContentFeatures.ACCESSIBILITY_DEPRECATE_JAVA_NODE_CACHE)
+    @DisabledTest(message = "Flaky, see crbug.com/457725708")
     public void testUMAHistograms_Cache() throws Throwable {
         // Build a simple web page with a few nodes to traverse.
         setupTestWithHTML(
