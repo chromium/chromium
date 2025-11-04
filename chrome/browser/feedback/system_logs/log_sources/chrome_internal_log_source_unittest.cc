@@ -66,10 +66,17 @@ class ChromeInternalLogSourceTest : public BrowserWithTestWindowTest {
   ~ChromeInternalLogSourceTest() override = default;
 
   void SetUp() override {
+    BrowserWithTestWindowTest::SetUp();
 #if BUILDFLAG(IS_CHROMEOS)
     auth_events_recorder_ = ash::AuthEventsRecorder::CreateForTesting();
 #endif
-    BrowserWithTestWindowTest::SetUp();
+  }
+
+  void TearDown() override {
+#if BUILDFLAG(IS_CHROMEOS)
+    auth_events_recorder_.reset();
+#endif
+    BrowserWithTestWindowTest::TearDown();
   }
 
  protected:

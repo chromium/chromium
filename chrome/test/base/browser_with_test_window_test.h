@@ -36,6 +36,8 @@
 #include "chrome/browser/ash/app_mode/kiosk_cryptohome_remover.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
+#include "components/session_manager/core/fake_session_manager_delegate.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -58,8 +60,12 @@ class NavigationController;
 #if BUILDFLAG(IS_CHROMEOS)
 namespace crosapi {
 class CrosapiManager;
-}
-#endif
+}  // namespace crosapi
+
+namespace session_manager {
+class SessionManager;
+}  // namespace session_manager
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 class TestingProfileManager;
 
@@ -292,6 +298,11 @@ class BrowserWithTestWindowTest : public testing::Test, public ProfileObserver {
   void PostUserProfileCreation(const std::string& email, Profile* profile);
 
   ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
+
+  std::unique_ptr<session_manager::SessionManager> session_manager_ =
+      std::make_unique<session_manager::SessionManager>(
+          std::make_unique<session_manager::FakeSessionManagerDelegate>());
+
   user_manager::TypedScopedUserManager<user_manager::FakeUserManager>
       user_manager_;
   std::vector<

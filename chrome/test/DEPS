@@ -96,6 +96,7 @@ include_rules = [
   "+components/services/app_service",
   "+components/services/quarantine",
   "+components/services/storage/shared_storage",
+  "+components/session_manager",
   "+components/sessions",
   "+components/sharing_message",
   "+components/signin/core/browser",

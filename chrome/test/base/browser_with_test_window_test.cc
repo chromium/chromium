@@ -47,6 +47,8 @@
 #include "chromeos/ash/components/dbus/cros_disks/cros_disks_client.h"
 #include "chromeos/ash/components/disks/disk_mount_manager.h"
 #include "chromeos/ash/components/disks/fake_disk_mount_manager.h"
+#include "components/session_manager/core/fake_session_manager_delegate.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/test_helper.h"
@@ -78,8 +80,8 @@ void BrowserWithTestWindowTest::SetUp() {
         new ash::disks::FakeDiskMountManager());
   }
 
-  // Construct AshTestHelper here so that SessionManager gets created before
-  // UserManager (as in production).
+  CHECK(session_manager::SessionManager::Get());
+
   ash_test_helper_.emplace();
 
   if (!user_manager::UserManager::IsInitialized()) {
@@ -183,10 +185,12 @@ void BrowserWithTestWindowTest::TearDown() {
   profile_manager_.reset();
 
 #if BUILDFLAG(IS_CHROMEOS)
-  // To match production behavior, AshTestHelper (containing e.g.
-  // SessionManager) must be destroyed before UserManager even though it got
-  // created first.
   ash_test_helper_.reset();
+
+  // To match production behavior, SessionManager must be destroyed before
+  // UserManager even though it got created first.
+  session_manager_.reset();
+
   test_views_delegate_.reset();
   user_manager_.Reset();
   ash::disks::DiskMountManager::Shutdown();

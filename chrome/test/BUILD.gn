@@ -1069,6 +1069,7 @@ static_library("test_support") {
       "//components/component_updater/ash",
       "//components/component_updater/ash:test_support",
       "//components/policy/test_support",
+      "//components/session_manager/core:test_support",
       "//crypto:test_support",
       "//google_apis",
       "//google_apis:test_support",
@@ -10192,9 +10193,9 @@ test("unit_tests") {
       "../browser/ui/webui/password_manager:unit_tests",
       "../browser/ui/webui/whats_new:mojo_bindings",
       "//chrome/browser/browser_switcher",
-      "//components/soda:soda",
       "//chrome/browser/browser_switcher:unit_tests",
       "//chrome/browser/ui/webui/whats_new:unit_tests",
+      "//components/soda",
       "//components/user_education/webui",
     ]
   }
