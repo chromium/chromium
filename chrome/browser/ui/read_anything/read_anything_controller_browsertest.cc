@@ -7,6 +7,7 @@
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -61,6 +62,35 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingControllerBrowserTest,
       SidePanelEntryKey(SidePanelEntryId::kReadAnything)));
 
   chrome::ExecuteCommand(browser(), IDC_SHOW_READING_MODE_SIDE_PANEL);
+
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return side_panel_ui->IsSidePanelEntryShowing(
+        SidePanelEntryKey(SidePanelEntryId::kReadAnything));
+  }));
+}
+
+IN_PROC_BROWSER_TEST_P(ReadAnythingControllerBrowserTest,
+                       ShowSidePanelFromContextMenu) {
+  tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
+  ASSERT_TRUE(tab);
+
+  auto* controller = ReadAnythingController::From(tab);
+
+  if (is_immersive_read_anything_enabled_) {
+    ASSERT_TRUE(controller);
+  } else {
+    ASSERT_FALSE(controller);
+  }
+
+  auto* side_panel_ui = browser()->GetFeatures().side_panel_ui();
+  ASSERT_FALSE(side_panel_ui->IsSidePanelEntryShowing(
+      SidePanelEntryKey(SidePanelEntryId::kReadAnything)));
+
+  content::WebContents* web_contents = tab->GetContents();
+  TestRenderViewContextMenu menu(*web_contents->GetPrimaryMainFrame(),
+                                 content::ContextMenuParams());
+  menu.Init();
+  menu.ExecuteCommand(IDC_CONTENT_CONTEXT_OPEN_IN_READING_MODE, 0);
 
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return side_panel_ui->IsSidePanelEntryShowing(

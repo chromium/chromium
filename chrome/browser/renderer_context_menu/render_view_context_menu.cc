@@ -104,6 +104,7 @@
 #include "chrome/browser/ui/profiles/profile_colors_util.h"
 #include "chrome/browser/ui/profiles/profile_view_utils.h"
 #include "chrome/browser/ui/qrcode_generator/qrcode_generator_bubble_controller.h"
+#include "chrome/browser/ui/read_anything/read_anything_controller.h"
 #include "chrome/browser/ui/read_anything/read_anything_side_panel_controller_utils.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_bubble.h"
 #include "chrome/browser/ui/tab_contents/core_tab_helper.h"
@@ -4215,8 +4216,16 @@ void RenderViewContextMenu::ExecOpenInReadAnything() {
   if (!browser) {
     return;
   }
-  ShowReadAnythingSidePanel(browser,
-                            SidePanelOpenTrigger::kReadAnythingContextMenu);
+  if (features::IsImmersiveReadAnythingEnabled()) {
+    if (tabs::TabInterface* tab = browser->tab_strip_model()->GetActiveTab()) {
+      auto* controller = ReadAnythingController::From(tab);
+      CHECK(controller);
+      controller->ShowUI(SidePanelOpenTrigger::kReadAnythingContextMenu);
+    }
+  } else {
+    ShowReadAnythingSidePanel(browser,
+                              SidePanelOpenTrigger::kReadAnythingContextMenu);
+  }
 }
 
 void RenderViewContextMenu::ExecInspectElement() {
