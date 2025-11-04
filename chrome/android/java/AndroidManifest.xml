@@ -1229,6 +1229,12 @@ by a child template that "extends" this file.
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize" >
         </activity>
 
+        <!-- This activity is Android P- only which is not supported by Chrome now. -->
+        <activity
+            android:name="androidx.biometric.internal.ui.FingerprintDialogActivity"
+            tools:node="remove">
+        </activity>
+
         <property android:name="android.adservices.AD_SERVICES_CONFIG"
             android:resource="@xml/ad_services_config" />
 
@@ -1408,6 +1414,7 @@ by a child template that "extends" this file.
           android:name="androidx.startup.InitializationProvider"
           tools:node="remove">
       </provider>
+
       <!-- We call FirebaseApp.initializeApp() explicitly rather than relying on this hook for better control over when it happens. -->
       <provider
           android:name="com.google.firebase.provider.FirebaseInitProvider"
