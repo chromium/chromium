@@ -60,7 +60,7 @@ if (enable_extensions) {
     "audio.webidl",
     "automation_internal.idl",
     "automation.idl",
-    "bluetooth_low_energy.idl",
+    "bluetooth_low_energy.webidl",
     "bluetooth_private.idl",
     "bluetooth_socket.idl",
     "bluetooth.webidl",
