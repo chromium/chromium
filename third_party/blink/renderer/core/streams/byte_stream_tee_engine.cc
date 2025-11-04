@@ -629,6 +629,11 @@ void ByteStreamTeeEngine::Start(ScriptState* script_state,
   reader_ = ReadableStream::AcquireDefaultReader(script_state, stream,
                                                  exception_state);
 
+  if (exception_state.HadException()) {
+    return;
+  }
+  CHECK(reader_);
+
   // 4. Let reading be false.
   DCHECK(!reading_);
 
