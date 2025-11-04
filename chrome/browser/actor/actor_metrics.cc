@@ -11,6 +11,12 @@
 
 namespace actor {
 
+namespace {
+std::string_view ToCancelledOrCompleted(bool success) {
+  return success ? "Completed" : "Cancelled";
+}
+}  // namespace
+
 void RecordActorTaskStateTransitionActionCount(size_t action_count,
                                                ActorTask::State from_state,
                                                ActorTask::State to_state) {
@@ -41,27 +47,36 @@ void RecordToolTimings(std::string_view tool_name,
 void RecordActorTaskVisibilityDurationHistograms(
     base::TimeDelta visible_duration,
     base::TimeDelta non_visible_duration,
-    ActorTask::State state) {
-  std::string state_string;
-  switch (state) {
-    case ActorTask::State::kCancelled:
-      state_string = ToString(state);
-      break;
-    case ActorTask::State::kFinished:
-      state_string = "Completed";
-      break;
-    default:
-      NOTREACHED() << "ActorTask must be in Finished or Cancelled State to "
-                      "record these histograms.";
-  }
-
+    bool success) {
   base::UmaHistogramLongTimes100(
-      base::StrCat({"Actor.Task.Duration.Visible.", state_string}),
+      base::StrCat(
+          {"Actor.Task.Duration.Visible.", ToCancelledOrCompleted(success)}),
       visible_duration);
 
   base::UmaHistogramLongTimes100(
-      base::StrCat({"Actor.Task.Duration.NotVisible.", state_string}),
+      base::StrCat(
+          {"Actor.Task.Duration.NotVisible.", ToCancelledOrCompleted(success)}),
       non_visible_duration);
+}
+
+void RecordActorTaskCompletion(bool success,
+                               base::TimeDelta total_time,
+                               base::TimeDelta controlled_time,
+                               size_t interruptions_count,
+                               size_t actions_count) {
+  base::UmaHistogramLongTimes100(
+      base::StrCat(
+          {"Actor.Task.Duration.WallClock.", ToCancelledOrCompleted(success)}),
+      total_time);
+  base::UmaHistogramLongTimes100(
+      base::StrCat({"Actor.Task.Duration.", ToCancelledOrCompleted(success)}),
+      controlled_time);
+  base::UmaHistogramCounts1000(base::StrCat({"Actor.Task.Interruptions.",
+                                             ToCancelledOrCompleted(success)}),
+                               interruptions_count);
+  base::UmaHistogramCounts1000(
+      base::StrCat({"Actor.Task.Count.", ToCancelledOrCompleted(success)}),
+      actions_count);
 }
 
 }  // namespace actor

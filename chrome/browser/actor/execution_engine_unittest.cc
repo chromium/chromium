@@ -72,6 +72,10 @@ constexpr char kActorFakeToolDurationHistogram[] =
     "Actor.Tools.ExecutionDuration.FakeTool";
 constexpr char kActorTaskInterruptionCompletedHistogram[] =
     "Actor.Task.Interruptions.Completed";
+constexpr char kActorTaskDurationWallClockCompletedHistogram[] =
+    "Actor.Task.Duration.WallClock.Completed";
+constexpr char kActorTaskDurationWallClockCancelledHistogram[] =
+    "Actor.Task.Duration.WallClock.Cancelled";
 
 constexpr char kActorTaskDurationVisibleCompletedHistogram[] =
     "Actor.Task.Duration.Visible.Completed";
@@ -442,6 +446,8 @@ TEST_F(ExecutionEngineTest, ActorTaskCompletedHistogram) {
   histograms_.ExpectTimeBucketCount(kActorTaskDurationCompletedHistogram,
                                     task_duration, 1);
   histograms_.ExpectBucketCount(kActorTaskCountCompletedHistogram, 4, 1);
+  histograms_.ExpectTimeBucketCount(
+      kActorTaskDurationWallClockCompletedHistogram, task_duration, 1);
 }
 
 TEST_F(ExecutionEngineTest, ActorTaskCompletedWithPauseHistogram) {
@@ -476,6 +482,9 @@ TEST_F(ExecutionEngineTest, ActorTaskCompletedWithPauseHistogram) {
   histograms_.ExpectTimeBucketCount(kActorTaskDurationCompletedHistogram,
                                     active_duration1 + active_duration2, 1);
   histograms_.ExpectBucketCount(kActorTaskCountCompletedHistogram, 1, 1);
+  histograms_.ExpectTimeBucketCount(
+      kActorTaskDurationWallClockCompletedHistogram, base::Milliseconds(650),
+      1);
 }
 
 TEST_F(ExecutionEngineTest, ActorTaskCancelledHistogram) {
@@ -500,6 +509,8 @@ TEST_F(ExecutionEngineTest, ActorTaskCancelledHistogram) {
   histograms_.ExpectTimeBucketCount(kActorTaskDurationCancelledHistogram,
                                     task_duration, 1);
   histograms_.ExpectBucketCount(kActorTaskCountCancelledHistogram, 2, 1);
+  histograms_.ExpectTimeBucketCount(
+      kActorTaskDurationWallClockCancelledHistogram, task_duration, 1);
 }
 
 TEST_F(ExecutionEngineTest, ActorTaskCountAndDurationHistograms) {
@@ -639,6 +650,9 @@ TEST_F(ExecutionEngineTest, CompletedWithInterruptHistogram) {
                                     active_duration1 + active_duration2, 1);
   histograms_.ExpectBucketCount(kActorTaskCountCompletedHistogram, 1, 1);
   histograms_.ExpectBucketCount(kActorTaskInterruptionCompletedHistogram, 1, 1);
+  histograms_.ExpectTimeBucketCount(
+      kActorTaskDurationWallClockCompletedHistogram, base::Milliseconds(650),
+      1);
 }
 
 TEST_F(ExecutionEngineTest, VisibleNotVisibleActuationCompletedHistogram) {

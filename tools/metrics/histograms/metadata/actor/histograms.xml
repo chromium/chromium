@@ -357,6 +357,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Actor.Task.Duration.WallClock.Cancelled" units="ms"
+    expires_after="2026-08-11">
+  <owner>dtapuska@google.com</owner>
+  <owner>bokan@google.com</owner>
+  <owner>chrome-synapse-team@google.com</owner>
+  <summary>
+    Recorded when a task is cancelled. This captures the runtime of the task
+    including any paused state.
+  </summary>
+</histogram>
+
+<histogram name="Actor.Task.Duration.WallClock.Completed" units="ms"
+    expires_after="2026-08-11">
+  <owner>dtapuska@google.com</owner>
+  <owner>bokan@google.com</owner>
+  <owner>chrome-synapse-team@google.com</owner>
+  <summary>
+    Recorded when a task is completed. This captures the runtime of the task
+    including any paused state.
+  </summary>
+</histogram>
+
 <histogram name="Actor.Task.Interruptions.Cancelled" units="count"
     expires_after="2026-08-11">
   <owner>dtapuska@google.com</owner>

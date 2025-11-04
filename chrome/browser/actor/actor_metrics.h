@@ -38,7 +38,14 @@ void RecordToolTimings(std::string_view tool_name,
 void RecordActorTaskVisibilityDurationHistograms(
     base::TimeDelta visible_duration,
     base::TimeDelta non_visible_duration,
-    ActorTask::State state);
+    bool success);
+
+// Record task completion metrics.
+void RecordActorTaskCompletion(bool success,
+                               base::TimeDelta total_time,
+                               base::TimeDelta controlled_time,
+                               size_t interruptions_count,
+                               size_t actions_count);
 
 }  // namespace actor
 #endif  // CHROME_BROWSER_ACTOR_ACTOR_METRICS_H_
