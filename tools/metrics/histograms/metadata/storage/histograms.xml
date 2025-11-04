@@ -611,6 +611,31 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IndexedDB.NumConnections.OnCreateAbove10k" units="connections"
+    expires_after="2026-03-30">
+  <owner>fdoray@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    Number of content::indexed_db::Connection objects alive in the browser
+    process when a new Connection is created. Recorded every time a Connection
+    object is created and the number of existing Connection objects is greater
+    than 10k. Will be used to diagnose crbug.com/381086791.
+  </summary>
+</histogram>
+
+<histogram name="IndexedDB.NumPendingConnections.OnCreateAbove10k"
+    units="connections" expires_after="2026-03-30">
+  <owner>fdoray@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    Number of content::indexed_db::PendingConnection objects alive in the
+    browser process when a new PendingConnection is created. Recorded every time
+    a PendingConnection object is created and the number of existing
+    PendingConnection objects is greater than 10k. Will be used to diagnose
+    crbug.com/381086791.
+  </summary>
+</histogram>
+
 <histogram
     name="IndexedDB.NumTransactionsInIDBDatabaseOnTransactionCreated.10kTransactions"
     units="transactions" expires_after="2026-03-30">

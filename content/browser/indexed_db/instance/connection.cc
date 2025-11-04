@@ -5,6 +5,7 @@
 #include "content/browser/indexed_db/instance/connection.h"
 
 #include <algorithm>
+#include <atomic>
 #include <cstddef>
 #include <cstdint>
 #include <memory>
@@ -79,6 +80,31 @@ std::optional<int64_t> IndexIsOptional(int64_t index_id) {
   return index_id;
 }
 
+// Number of connections in the process, across all BucketContexts. All
+// operations use std::memory_order_relaxed since there is no dependency with
+// other data.
+//
+// TODO(crbug.com/381086791): Remove after the bug is understood.
+std::atomic_int64_t g_num_connections = 0;
+
+void IncrementNumConnections() {
+  int64_t new_connection_count =
+      g_num_connections.fetch_add(1, std::memory_order_relaxed) + 1;
+
+  // Report the number of connections when it's high. This will be used to
+  // determine the proportion of clients with elevated number of connections and
+  // as a trace trigger to understand how clients get into that state.
+  constexpr int64_t kHighPendingConnectionCount = 10000;
+  if (new_connection_count > kHighPendingConnectionCount) {
+    base::UmaHistogramCounts100000("IndexedDB.NumConnections.OnCreateAbove10k",
+                                   new_connection_count);
+  }
+}
+
+void DecrementNumConnections() {
+  g_num_connections.fetch_sub(1, std::memory_order_relaxed);
+}
+
 }  // namespace
 
 // static
@@ -110,12 +136,17 @@ Connection::Connection(BucketContext& bucket_context,
       client_state_checker_(std::move(client_state_checker)),
       client_token_(client_token),
       scheduling_priority_(scheduling_priority) {
+  IncrementNumConnections();
+
   bucket_context_handle_->quota_manager()->NotifyBucketAccessed(
       bucket_context_handle_->bucket_locator(), base::Time::Now());
 }
 
 Connection::~Connection() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  DecrementNumConnections();
+
   is_shutting_down_ = true;
   if (!IsConnected()) {
     return;
