@@ -194,7 +194,7 @@ class MappableBufferTest : public testing::Test {
       gfx::BufferUsage::GPU_READ,
       gfx::BufferUsage::SCANOUT,
   };
-#elif BUILDFLAG(IS_MAC)
+#elif BUILDFLAG(IS_APPLE)
   std::array<gfx::BufferUsage, 6> usages_ = {
       gfx::BufferUsage::GPU_READ,
       gfx::BufferUsage::SCANOUT,
