@@ -89,15 +89,6 @@ if (is_win && use_fuzzing_engine) {
     deps = [ ":skia_fuzzer_sources" ]
   }
 
-  fuzzer_test("skia_png_encoder_fuzzer") {
-    sources = [ "//third_party/skia/fuzz/oss_fuzz/FuzzPNGEncoder.cpp" ]
-    defines = [ "SK_BUILD_FOR_LIBFUZZER" ]
-    deps = [
-      ":skia_encoder_fuzzer_lib",
-      ":skia_fuzzer_sources",
-    ]
-  }
-
   fuzzer_test("skia_jpeg_encoder_fuzzer") {
     sources = [ "//third_party/skia/fuzz/oss_fuzz/FuzzJPEGEncoder.cpp" ]
     defines = [ "SK_BUILD_FOR_LIBFUZZER" ]
