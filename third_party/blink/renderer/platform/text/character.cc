@@ -43,10 +43,12 @@
 #include "third_party/blink/renderer/platform/text/character_break_iterator.h"
 #include "third_party/blink/renderer/platform/text/character_property_data.h"
 #include "third_party/blink/renderer/platform/text/icu_error.h"
+#include "third_party/blink/renderer/platform/text/justification_opportunity.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/unicode.h"
+#include "third_party/blink/renderer/platform/wtf/text/utf16.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_uchar.h"
 
 namespace blink {
@@ -143,21 +145,13 @@ unsigned Character::ExpansionOpportunityCount(
   unsigned count = 0;
   if (direction == TextDirection::kLtr) {
     for (size_t i = 0; i < characters.size(); ++i) {
-      if (TreatAsSpace(characters[i])) {
-        count++;
-        is_after_expansion = true;
-      } else {
-        is_after_expansion = false;
-      }
+      count +=
+          CountJustificationOpportunity8(characters[i], is_after_expansion);
     }
   } else {
     for (size_t i = characters.size(); i > 0; --i) {
-      if (TreatAsSpace(characters[i - 1])) {
-        count++;
-        is_after_expansion = true;
-      } else {
-        is_after_expansion = false;
-      }
+      count +=
+          CountJustificationOpportunity8(characters[i - 1], is_after_expansion);
     }
   }
 
@@ -175,52 +169,19 @@ unsigned Character::ExpansionOpportunityCount(
 
   if (!RuntimeEnabledFeatures::EmojiJustificationEnabled()) {
     if (direction == TextDirection::kLtr) {
-      for (size_t i = 0; i < characters.size(); ++i) {
-        UChar32 character = characters[i];
-        if (TreatAsSpace(character)) {
-          count++;
-          is_after_expansion = true;
-          continue;
-        }
-        if (U16_IS_LEAD(character) && i + 1 < characters.size() &&
-            U16_IS_TRAIL(characters[i + 1])) {
-          character = U16_GET_SUPPLEMENTARY(character, characters[i + 1]);
-          i++;
-        }
-        if (IsCJKIdeographOrSymbol(character)) {
-          if (!is_after_expansion) {
-            count++;
-          }
-          count++;
-          is_after_expansion = true;
-          continue;
-        } else if (!IsDefaultIgnorable(character)) {
-          is_after_expansion = false;
-        }
+      for (size_t i = 0; i < characters.size();) {
+        UChar32 character = CodePointAtAndNext(characters, i);
+        count += CountJustificationOpportunity16(character, is_after_expansion);
       }
     } else {
       for (size_t i = characters.size(); i > 0; --i) {
         UChar32 character = characters[i - 1];
-        if (TreatAsSpace(character)) {
-          count++;
-          is_after_expansion = true;
-          continue;
-        }
         if (U16_IS_TRAIL(character) && i > 1 &&
             U16_IS_LEAD(characters[i - 2])) {
           character = U16_GET_SUPPLEMENTARY(characters[i - 2], character);
           i--;
         }
-        if (IsCJKIdeographOrSymbol(character)) {
-          if (!is_after_expansion) {
-            count++;
-          }
-          count++;
-          is_after_expansion = true;
-          continue;
-        } else if (!IsDefaultIgnorable(character)) {
-          is_after_expansion = false;
-        }
+        count += CountJustificationOpportunity16(character, is_after_expansion);
       }
     }
     return count;
@@ -229,50 +190,14 @@ unsigned Character::ExpansionOpportunityCount(
   if (direction == TextDirection::kLtr) {
     for (int i = 0; static_cast<size_t>(i) < characters.size();
          i = iter.Next()) {
-      UChar32 character = characters[i];
-      if (TreatAsSpace(character)) {
-        count++;
-        is_after_expansion = true;
-        continue;
-      }
-      if (U16_IS_LEAD(character) &&
-          static_cast<size_t>(i + 1) < characters.size() &&
-          U16_IS_TRAIL(characters[i + 1])) {
-        character = U16_GET_SUPPLEMENTARY(character, characters[i + 1]);
-      }
-      if (IsCJKIdeographOrSymbol(character)) {
-        if (!is_after_expansion)
-          count++;
-        count++;
-        is_after_expansion = true;
-        continue;
-      } else if (!IsDefaultIgnorable(character)) {
-        is_after_expansion = false;
-      }
+      UChar32 character = CodePointAt(characters, i);
+      count += CountJustificationOpportunity16(character, is_after_expansion);
     }
   } else {
     for (int i = iter.Preceding(characters.size()); i != kTextBreakDone;
          i = iter.Preceding(i)) {
-      UChar32 character = characters[i];
-      if (TreatAsSpace(character)) {
-        count++;
-        is_after_expansion = true;
-        continue;
-      }
-      if (U16_IS_LEAD(character) &&
-          static_cast<size_t>(i + 1) < characters.size() &&
-          U16_IS_TRAIL(characters[i + 1])) {
-        character = U16_GET_SUPPLEMENTARY(character, characters[i + 1]);
-      }
-      if (IsCJKIdeographOrSymbol(character)) {
-        if (!is_after_expansion)
-          count++;
-        count++;
-        is_after_expansion = true;
-        continue;
-      } else if (!IsDefaultIgnorable(character)) {
-        is_after_expansion = false;
-      }
+      UChar32 character = CodePointAt(characters, i);
+      count += CountJustificationOpportunity16(character, is_after_expansion);
     }
   }
   return count;

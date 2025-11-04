@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
+#include "third_party/blink/renderer/platform/text/justification_opportunity.h"
 
 namespace blink {
 
@@ -128,26 +129,23 @@ TextRunLayoutUnit ShapeResultSpacing::ComputeSpacing(
   if (!HasExpansion())
     return spacing;
 
-  if (treat_as_space)
-    return spacing + NextExpansion();
-
-  if (text_.Is8Bit())
-    return spacing;
-
-  // isCJKIdeographOrSymbol() has expansion opportunities both before and
-  // after each character.
-  // http://www.w3.org/TR/jlreq/#line_adjustment
-  if (U16_IS_LEAD(character) && index + 1 < text_.length() &&
-      U16_IS_TRAIL(text_[index + 1]))
-    character = U16_GET_SUPPLEMENTARY(character, text_[index + 1]);
-  if (!Character::IsCJKIdeographOrSymbol(character)) {
-    if (!Character::IsDefaultIgnorable(character)) {
-      is_after_expansion_ = false;
+  bool opportunity_before = false;
+  bool opportunity_after = false;
+  if (text_.Is8Bit()) {
+    auto pair = CheckJustificationOpportunity8(character, is_after_expansion_);
+    opportunity_before = pair.first;
+    opportunity_after = pair.second;
+  } else {
+    if (U16_IS_LEAD(character) && index + 1 < text_.length() &&
+        U16_IS_TRAIL(text_[index + 1])) {
+      character = U16_GET_SUPPLEMENTARY(character, text_[index + 1]);
     }
-    return spacing;
+    auto pair = CheckJustificationOpportunity16(character, is_after_expansion_);
+    opportunity_before = pair.first;
+    opportunity_after = pair.second;
   }
 
-  if (!is_after_expansion_) {
+  if (opportunity_before) {
     // Take the expansion opportunity before this ideograph.
     TextRunLayoutUnit expand_before = NextExpansion();
     if (expand_before) {
@@ -157,8 +155,10 @@ TextRunLayoutUnit ShapeResultSpacing::ComputeSpacing(
     if (!HasExpansion())
       return spacing;
   }
-
-  return spacing + NextExpansion();
+  if (opportunity_after) {
+    return spacing + NextExpansion();
+  }
+  return spacing;
 }
 
 }  // namespace blink

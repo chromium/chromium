@@ -1503,6 +1503,8 @@ component("platform") {
     "text/hyphenation.h",
     "text/icu_error.cc",
     "text/icu_error.h",
+    "text/justification_opportunity.cc",
+    "text/justification_opportunity.h",
     "text/layout_locale.cc",
     "text/layout_locale.h",
     "text/locale_icu.cc",
