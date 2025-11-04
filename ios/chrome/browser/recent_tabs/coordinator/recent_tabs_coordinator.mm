@@ -79,6 +79,18 @@
   SigninCoordinator* _signinCoordinator;
 }
 
+- (void)dealloc {
+  CHECK(!self.recentTabsNavigationController, base::NotFatalUntil::M150);
+  CHECK(!self.recentTabsTableViewController, base::NotFatalUntil::M150);
+  CHECK(!self.mediator, base::NotFatalUntil::M150);
+  CHECK(!self.sharingCoordinator, base::NotFatalUntil::M150);
+  CHECK(!_authenticationService, base::NotFatalUntil::M150);
+  CHECK(!_syncService, base::NotFatalUntil::M150);
+  CHECK(!_signinCoordinator, base::NotFatalUntil::M150);
+}
+
+#pragma mark - ChromeCoordinator
+
 - (void)start {
   // Initialize and configure RecentTabsTableViewController.
   self.recentTabsTableViewController =
@@ -162,12 +174,12 @@
 }
 
 - (void)stop {
-  [_historySyncPopupCoordinator stop];
-  _historySyncPopupCoordinator = nil;
+  [self stopHistorySyncPopupCoordinator];
   [self.recentTabsTableViewController dismissModals];
   self.recentTabsTableViewController.imageDataSource = nil;
   self.recentTabsTableViewController.browser = nil;
   self.recentTabsTableViewController = nil;
+  [self stopSigninCoordinator];
   [self.recentTabsNavigationController
       dismissViewControllerAnimated:YES
                          completion:self.completion];
@@ -177,13 +189,9 @@
   [self.sharingCoordinator stop];
   self.sharingCoordinator = nil;
   [self.mediator disconnect];
+  self.mediator = nil;
   _syncService = nullptr;
   _authenticationService = nullptr;
-}
-
-- (void)dismissButtonTapped {
-  base::RecordAction(base::UserMetricsAction("MobileRecentTabsClose"));
-  [self.delegate recentTabsCoordinatorWantsToBeDismissed:self];
 }
 
 #pragma mark - RecentTabsPresentationDelegate
@@ -192,7 +200,7 @@
   if (_signinCoordinator.viewWillPersist) {
     return;
   }
-  [_signinCoordinator stop];
+  [self stopSigninCoordinator];
   signin_metrics::AccessPoint accessPoint =
       signin_metrics::AccessPoint::kRecentTabs;
   signin_metrics::PromoAction promoAction =
@@ -315,6 +323,11 @@
 }
 
 #pragma mark - Private
+
+- (void)dismissButtonTapped {
+  base::RecordAction(base::UserMetricsAction("MobileRecentTabsClose"));
+  [self.delegate recentTabsCoordinatorWantsToBeDismissed:self];
+}
 
 - (void)stopHistorySyncPopupCoordinator {
   [_historySyncPopupCoordinator stop];
