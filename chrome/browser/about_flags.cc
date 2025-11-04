@@ -4858,24 +4858,6 @@ const FeatureEntry::FeatureVariation kNtpCustomizeChromeAutoOpenVariations[] = {
     {"- IPH only", kNtpCustomizeChromeAutoOpenIPHOnly,
      std::size(kNtpCustomizeChromeAutoOpenIPHOnly), nullptr},
 };
-
-const FeatureEntry::FeatureParam kNtpEnterpriseShortcutsWithFakeData[] = {
-    {"use_fake_data", "true"},
-    {"allow_mixing", "false"}};
-const FeatureEntry::FeatureParam
-    kNtpEnterpriseShortcutsWithFakeDataWithMixing[] = {
-        {"use_fake_data", "true"},
-        {"allow_mixing", "true"}};
-const FeatureEntry::FeatureParam kNtpEnterpriseShortcutsWithMixing[] = {
-    {"allow_mixing", "true"}};
-const FeatureEntry::FeatureVariation kNtpEnterpriseShortcutsVariations[] = {
-    {"with fake data", kNtpEnterpriseShortcutsWithFakeData,
-     std::size(kNtpEnterpriseShortcutsWithFakeData), nullptr},
-    {"with fake data with mixing",
-     kNtpEnterpriseShortcutsWithFakeDataWithMixing,
-     std::size(kNtpEnterpriseShortcutsWithFakeDataWithMixing), nullptr},
-    {"with mixing", kNtpEnterpriseShortcutsWithMixing,
-     std::size(kNtpEnterpriseShortcutsWithMixing), nullptr}};
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
         // BUILDFLAG(IS_CHROMEOS)
 
@@ -12930,9 +12912,7 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableNtpEnterpriseShortcutsName,
      flag_descriptions::kEnableNtpEnterpriseShortcutsDescription,
      static_cast<unsigned short>(kOsCrOS | kOsLinux | kOsMac | kOsWin),
-     FEATURE_WITH_PARAMS_VALUE_TYPE(ntp_tiles::kNtpEnterpriseShortcuts,
-                                    kNtpEnterpriseShortcutsVariations,
-                                    "NtpEnterpriseShortcuts")},
+     FEATURE_VALUE_TYPE(ntp_tiles::kNtpEnterpriseShortcuts)},
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) ||\
         // BUILDFLAG(IS_CHROMEOS)
 

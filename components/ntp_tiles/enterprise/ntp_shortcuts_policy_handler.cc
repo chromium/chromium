@@ -95,69 +95,6 @@ bool UrlAlreadySeen(const std::string& policy_name,
   return true;
 }
 
-// Used for applying fake shortcuts for testing purposes only.
-void ApplyFakeDataForManualTesting(PrefValueMap* prefs) {
-  base::Value::List shortcuts;
-  {
-    base::Value::Dict shortcut;
-    shortcut.Set("name", "Google Search");
-    shortcut.Set("url", "https://www.google.com/");
-    shortcuts.Append(NTPShortcutsDictFromPolicyValue(shortcut));
-  }
-  {
-    base::Value::Dict shortcut;
-    shortcut.Set("name", "Workday");
-    shortcut.Set("url", "https://workday.com");
-    shortcuts.Append(NTPShortcutsDictFromPolicyValue(shortcut));
-  }
-  {
-    base::Value::Dict shortcut;
-    shortcut.Set("name", "Concur");
-    shortcut.Set("url", "https://www.concur.com");
-    shortcuts.Append(NTPShortcutsDictFromPolicyValue(shortcut));
-  }
-  {
-    base::Value::Dict shortcut;
-    shortcut.Set("name", "JIRA");
-    shortcut.Set("url", "https://www.jira.com");
-    shortcuts.Append(NTPShortcutsDictFromPolicyValue(shortcut));
-  }
-  {
-    base::Value::Dict shortcut;
-    shortcut.Set("name", "Google Drive (E/D)");
-    shortcut.Set("url", "https://drive.google.com");
-    shortcut.Set("allow_user_edit", true);
-    shortcut.Set("allow_user_delete", true);
-    shortcuts.Append(NTPShortcutsDictFromPolicyValue(shortcut));
-  }
-  {
-    base::Value::Dict shortcut;
-    shortcut.Set("name", "Zoom (E/D)");
-    shortcut.Set("url", "https://zoom.com");
-    shortcut.Set("allow_user_edit", true);
-    shortcut.Set("allow_user_delete", true);
-    shortcuts.Append(NTPShortcutsDictFromPolicyValue(shortcut));
-  }
-  {
-    base::Value::Dict shortcut;
-    shortcut.Set("name", "Google Calendar (E)");
-    shortcut.Set("url", "https://calendar.google.com");
-    shortcut.Set("allow_user_edit", true);
-    shortcut.Set("allow_user_delete", false);
-    shortcuts.Append(NTPShortcutsDictFromPolicyValue(shortcut));
-  }
-  {
-    base::Value::Dict shortcut;
-    shortcut.Set("name", "Gmail (D)");
-    shortcut.Set("url", "https://mail.google.com");
-    shortcut.Set("allow_user_edit", false);
-    shortcut.Set("allow_user_delete", true);
-    shortcuts.Append(NTPShortcutsDictFromPolicyValue(shortcut));
-  }
-  prefs->SetValue(ntp_tiles::prefs::kEnterpriseShortcutsPolicyList,
-                  base::Value(std::move(shortcuts)));
-}
-
 }  // namespace
 
 const char NTPShortcutsPolicyHandler::kName[] = "name";
@@ -289,11 +226,6 @@ void NTPShortcutsPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
   // shortcuts from appearing.
   if (!IsNTPEnterpriseShortcutsEnabled()) {
     prefs->RemoveValue(ntp_tiles::prefs::kEnterpriseShortcutsPolicyList);
-    return;
-  }
-
-  if (ntp_tiles::kNtpEnterpriseShortcutsUseFakeDataParam.Get()) {
-    ApplyFakeDataForManualTesting(prefs);
     return;
   }
 
