@@ -35,6 +35,85 @@ suite('ReadAloudModel', () => {
   });
 
   test(
+      'getCurrentTextContent when called many times returns same text',
+      async () => {
+        const header = document.createElement('h1');
+        header.textContent =
+            'Run, run brother- you gotta get out while you can.';
+
+        const paragraph = document.createElement('div');
+        const bold = document.createElement('strong');
+        bold.textContent = 'Run, take cover. I\'m gonna come up with a plan';
+
+        const textAfterBold = document.createTextNode('I hate to make you go.');
+        paragraph.appendChild(bold);
+        paragraph.appendChild(textAfterBold);
+
+        document.body.appendChild(header);
+        document.body.appendChild(paragraph);
+
+        await microtasksFinished();
+
+        getReadAloudModel().init(ReadAloudNode.create(document.body)!);
+
+        // Returned text is the same no matter how many times
+        // getCurrentTextContent is called.
+        for (let i = 0; i < 10; i++) {
+          assertEquals(
+              header.textContent.trim(),
+              getReadAloudModel().getCurrentTextContent().trim());
+        }
+
+        // After moving speech forward, text is the same  no matter how many
+        // times getCurrentTextContent is called, when the sentence does not
+        // span the entire node.
+        getReadAloudModel().moveSpeechForward();
+        for (let i = 0; i < 10; i++) {
+          assertEquals(
+              'Run, take cover.',
+              getReadAloudModel().getCurrentTextContent().trim());
+        }
+      });
+
+  test('getCurrentTextContent returns expected text', async () => {
+    const header = document.createElement('a');
+    header.textContent = 'But there ain\'t no other way.';
+
+    const paragraph = document.createElement('div');
+    const bold = document.createElement('i');
+    bold.textContent = 'Even though it kills me to say... ';
+
+    const textAfterBold = document.createTextNode('Run, run brother.');
+    paragraph.appendChild(bold);
+    paragraph.appendChild(textAfterBold);
+
+    document.body.appendChild(header);
+    document.body.appendChild(paragraph);
+
+    await microtasksFinished();
+
+    getReadAloudModel().init(ReadAloudNode.create(document.body)!);
+    assertEquals(
+        header.textContent.trim(),
+        getReadAloudModel().getCurrentTextContent().trim());
+
+    // Move to the next node.
+    getReadAloudModel().moveSpeechForward();
+    assertEquals(
+        bold.textContent.trim(),
+        getReadAloudModel().getCurrentTextContent().trim());
+
+    // Move to the last node.
+    getReadAloudModel().moveSpeechForward();
+    assertEquals(
+        textAfterBold.textContent.trim(),
+        getReadAloudModel().getCurrentTextContent().trim());
+
+    getReadAloudModel().moveSpeechForward();
+    assertTextEmpty();
+  });
+
+  test(
       'getTextContent splits sentences across line-breaking items',
       async () => {
         const header = document.createElement('h3');

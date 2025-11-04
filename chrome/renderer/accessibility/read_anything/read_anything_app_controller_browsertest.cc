@@ -2572,22 +2572,6 @@ TEST_F(ReadAnythingAppControllerTest,
   ASSERT_EQ(controller().GetLanguageCodeForSpeech(), "yue");
 }
 
-TEST_F(ReadAnythingAppControllerTest,
-       GetCurrentTextContent_WhenCalledManyTimes_ReturnsSameText) {
-  std::u16string sentence1 = u"This is a sentence. ";
-  std::u16string sentence2 = u"This is another sentence. ";
-  ui::AXNodeData static_text1 = test::TextNode(kId1, sentence1);
-  ui::AXNodeData static_text2 = test::TextNode(kId2, sentence2);
-
-  SendUpdateAndDistillNodes({std::move(static_text1), std::move(static_text2)});
-
-  EXPECT_EQ(controller().GetCurrentTextContent(), sentence1);
-  EXPECT_EQ(controller().GetCurrentTextContent(), sentence1);
-  EXPECT_EQ(controller().GetCurrentTextContent(), sentence1);
-  EXPECT_EQ(controller().GetCurrentTextContent(), sentence1);
-  EXPECT_EQ(controller().GetCurrentTextContent(), sentence1);
-}
-
 TEST_F(ReadAnythingAppControllerTest, GetCurrentText_WithMultipleTrees) {
   std::u16string sentence1 = u"Trials and tribulations, I\'ve had my share. ";
   std::u16string sentence2 = u"There ain\'t nothing gonna stop me now. ";
@@ -3182,35 +3166,6 @@ class ReadAnythingAppControllerV8SegmentationTest
         {features::kReadAnythingReadAloudTSTextSegmentation});
   }
 };
-
-TEST_F(ReadAnythingAppControllerV8SegmentationTest,
-       GetCurrentTextContent_ReturnsExpectedText) {
-  // TODO(crbug.com/40927698): Investigate if we can improve in scenarios when
-  // there's not a space between sentences.
-  std::u16string sentence1 = u"This is a sentence. ";
-  std::u16string sentence2 = u"This is another sentence. ";
-  std::u16string sentence3 = u"And this is yet another sentence. ";
-  ui::AXNodeData static_text1 = test::TextNode(kId1, sentence1);
-  ui::AXNodeData static_text2 = test::TextNode(kId2, sentence2);
-  ui::AXNodeData static_text3 = test::TextNode(kId3, sentence3);
-
-  SendUpdateAndDistillNodes({std::move(static_text1), std::move(static_text2),
-                             std::move(static_text3)});
-
-  std::u16string content = controller().GetCurrentTextContent();
-  EXPECT_EQ(content, sentence1);
-
-  // Move to the next node
-  content = MoveToNextGranularityAndGetText();
-  EXPECT_EQ(content, sentence2);
-
-  // Move to the last node
-  content = MoveToNextGranularityAndGetText();
-  EXPECT_EQ(content, sentence3);
-
-  // Attempt to move to another node.
-  MoveToNextAndAssertEmpty();
-}
 
 TEST_F(ReadAnythingAppControllerV8SegmentationTest,
        GetCurrentTextSegments_ReturnsExpectedText) {
@@ -3963,6 +3918,51 @@ TEST_F(ReadAnythingAppControllerV8SegmentationTest,
   ExpectNodesMapToEntireText(next_segments, {kId3}, {sentence3});
 
   // Nodes are empty at the end of the tree.
+  MoveToNextAndAssertEmpty();
+}
+
+TEST_F(ReadAnythingAppControllerV8SegmentationTest,
+       GetCurrentTextContent_WhenCalledManyTimes_ReturnsSameText) {
+  std::u16string sentence1 = u"This is a sentence. ";
+  std::u16string sentence2 = u"This is another sentence. ";
+  ui::AXNodeData static_text1 = test::TextNode(kId1, sentence1);
+  ui::AXNodeData static_text2 = test::TextNode(kId2, sentence2);
+
+  SendUpdateAndDistillNodes({std::move(static_text1), std::move(static_text2)});
+
+  EXPECT_EQ(controller().GetCurrentTextContent(), sentence1);
+  EXPECT_EQ(controller().GetCurrentTextContent(), sentence1);
+  EXPECT_EQ(controller().GetCurrentTextContent(), sentence1);
+  EXPECT_EQ(controller().GetCurrentTextContent(), sentence1);
+  EXPECT_EQ(controller().GetCurrentTextContent(), sentence1);
+}
+
+TEST_F(ReadAnythingAppControllerV8SegmentationTest,
+       GetCurrentTextContent_ReturnsExpectedText) {
+  // TODO(crbug.com/40927698): Investigate if we can improve in scenarios when
+  // there's not a space between sentences.
+  std::u16string sentence1 = u"This is a sentence. ";
+  std::u16string sentence2 = u"This is another sentence. ";
+  std::u16string sentence3 = u"And this is yet another sentence. ";
+  ui::AXNodeData static_text1 = test::TextNode(kId1, sentence1);
+  ui::AXNodeData static_text2 = test::TextNode(kId2, sentence2);
+  ui::AXNodeData static_text3 = test::TextNode(kId3, sentence3);
+
+  SendUpdateAndDistillNodes({std::move(static_text1), std::move(static_text2),
+                             std::move(static_text3)});
+
+  std::u16string content = controller().GetCurrentTextContent();
+  EXPECT_EQ(content, sentence1);
+
+  // Move to the next node
+  content = MoveToNextGranularityAndGetText();
+  EXPECT_EQ(content, sentence2);
+
+  // Move to the last node
+  content = MoveToNextGranularityAndGetText();
+  EXPECT_EQ(content, sentence3);
+
+  // Attempt to move to another node.
   MoveToNextAndAssertEmpty();
 }
 
