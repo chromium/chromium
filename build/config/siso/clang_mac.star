@@ -47,6 +47,11 @@ def __step_config(ctx, step_config):
                     rule["platform_ref"] = "clang"
                 elif rule["platform_ref"] == "large":
                     rule["platform_ref"] = "clang_large"
+
+            inputs = rule.setdefault("inputs", [])
+            inputs.extend(reproxy_config.get("inputs", []))
+            inputs.extend(reproxy_config.get("toolchain_inputs", []))
+
             step_config["rules"].append(rule)
     elif gn_logs.read(ctx).get("use_remoteexec") == "true":
         fail("remoteexec requires rewrapper config")
