@@ -220,6 +220,7 @@ class GlicActorTaskIconManagerCompletedTasksTest
     GlicActorTaskIconManagerTest::SetUp();
     TaskId task_id = actor_service()->CreateTaskForTesting();
     actor_service()->StopTask(task_id, /*success=*/true);
+    manager()->OnActorTaskCompleted(task_id, true);
   }
 };
 

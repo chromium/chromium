@@ -28,6 +28,10 @@ class MockActorUiStateManager : public ActorUiStateManagerInterface {
               RegisterActorTaskStateChange,
               (ActorTaskStateChangeCallback callback),
               (override));
+  MOCK_METHOD(base::CallbackListSubscription,
+              RegisterActorTaskCompleted,
+              (ActorTaskCompletedCallback callback),
+              (override));
 };
 
 }  // namespace actor::ui

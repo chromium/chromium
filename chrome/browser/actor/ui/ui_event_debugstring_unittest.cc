@@ -31,11 +31,11 @@ TEST_F(UiEventDebugStringTest, StartTask) {
 }
 
 TEST_F(UiEventDebugStringTest, TaskStateChanged) {
-  EXPECT_EQ(DebugString(SyncUiEvent(
-                TaskStateChanged(TaskId(123), ActorTask::State::kActing))),
+  EXPECT_EQ(DebugString(SyncUiEvent(TaskStateChanged(
+                TaskId(123), ActorTask::State::kActing, /*title=*/""))),
             "TaskStateChanged[task_id=123, state=Acting]");
   EXPECT_EQ(DebugString(UiEvent(TaskStateChanged(
-                TaskId(8675), ActorTask::State::kPausedByActor))),
+                TaskId(8675), ActorTask::State::kPausedByActor, /*title=*/""))),
             "TaskStateChanged[task_id=8675, state=PausedByActor]");
 }
 

@@ -38,8 +38,9 @@ struct StartTask {
 struct TaskStateChanged {
   actor::TaskId task_id;
   ActorTask::State state;
+  std::string title;
 
-  TaskStateChanged(actor::TaskId, ActorTask::State);
+  TaskStateChanged(actor::TaskId, ActorTask::State, const std::string& title);
   TaskStateChanged(const TaskStateChanged&);
   ~TaskStateChanged();
 };

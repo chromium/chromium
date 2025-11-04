@@ -124,18 +124,18 @@ class ActorUiStateManagerTest : public testing::Test {
   void PauseActorTask(TaskId task_id, bool from_actor) {
     actor_keyed_service()->GetTask(task_id)->Pause(from_actor);
     if (from_actor) {
-      actor_ui_state_manager()->OnUiEvent(
-          TaskStateChanged(task_id, ActorTask::State::kPausedByActor));
+      actor_ui_state_manager()->OnUiEvent(TaskStateChanged(
+          task_id, ActorTask::State::kPausedByActor, /*title=*/""));
     } else {
-      actor_ui_state_manager()->OnUiEvent(
-          TaskStateChanged(task_id, ActorTask::State::kPausedByUser));
+      actor_ui_state_manager()->OnUiEvent(TaskStateChanged(
+          task_id, ActorTask::State::kPausedByUser, /*title=*/""));
     }
   }
 
   void ResumeActorTask(TaskId task_id) {
     actor_keyed_service()->GetTask(task_id)->Resume();
-    TaskStateChanged reflecting_task_event(task_id,
-                                           ActorTask::State::kReflecting);
+    TaskStateChanged reflecting_task_event(
+        task_id, ActorTask::State::kReflecting, /*title=*/"");
     actor_ui_state_manager()->OnUiEvent(reflecting_task_event);
   }
 
@@ -143,10 +143,10 @@ class ActorUiStateManagerTest : public testing::Test {
     actor_keyed_service()->StopTask(task_id, success);
     if (success) {
       actor_ui_state_manager()->OnUiEvent(
-          TaskStateChanged(task_id, ActorTask::State::kFinished));
+          TaskStateChanged(task_id, ActorTask::State::kFinished, /*title=*/""));
     } else {
-      actor_ui_state_manager()->OnUiEvent(
-          TaskStateChanged(task_id, ActorTask::State::kCancelled));
+      actor_ui_state_manager()->OnUiEvent(TaskStateChanged(
+          task_id, ActorTask::State::kCancelled, /*title=*/""));
     }
   }
 
@@ -188,8 +188,8 @@ TEST_F(ActorUiStateManagerTest, SingleTask_RapidTaskStateChanges_Debounced) {
 }
 
 TEST_F(ActorUiStateManagerTest, OnActorTaskState_kCreatedNewStateCrashes) {
-  EXPECT_DEATH(actor_ui_state_manager()->OnUiEvent(
-                   TaskStateChanged(TaskId(123), ActorTask::State::kCreated)),
+  EXPECT_DEATH(actor_ui_state_manager()->OnUiEvent(TaskStateChanged(
+                   TaskId(123), ActorTask::State::kCreated, /*title=*/"")),
                "");
 }
 
@@ -216,7 +216,8 @@ TEST_P(ActorUiStateManagerActorTaskUiTabScopedTest,
 
   auto [task_state, expected_ui_tab_state] = GetParam();
   ExpectUiTabStateChange(expected_ui_tab_state);
-  actor_ui_state_manager()->OnUiEvent(TaskStateChanged(task_id, task_state));
+  actor_ui_state_manager()->OnUiEvent(
+      TaskStateChanged(task_id, task_state, /*title=*/""));
 }
 
 const auto kActorTaskTestValues = std::vector<

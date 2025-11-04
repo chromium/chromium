@@ -120,7 +120,8 @@ ActorUiStateManager::~ActorUiStateManager() = default;
 // accept a callback.
 void ActorUiStateManager::OnActorTaskStateChange(
     TaskId task_id,
-    ActorTask::State new_task_state) {
+    ActorTask::State new_task_state,
+    const std::string& title) {
   TRACE_EVENT("actor", "UiStateManager::OnActorTaskStateChange", "new_state",
               new_task_state);
   // TODO(crbug.com/424495020): Look into converting this switch into a
@@ -164,6 +165,11 @@ void ActorUiStateManager::OnActorTaskStateChange(
       FROM_HERE, kProfileScopedUiUpdateDebounceDelay,
       base::BindOnce(&ActorUiStateManager::NotifyActorTaskStateChange,
                      weak_factory_.GetWeakPtr(), task_id));
+
+  if (new_task_state == ActorTask::State::kFinished ||
+      new_task_state == ActorTask::State::kCancelled) {
+    NotifyActorTaskCompleted(task_id, new_task_state, title);
+  }
 }
 
 std::vector<tabs::TabInterface*> ActorUiStateManager::GetTabs(TaskId id) {
@@ -223,7 +229,7 @@ void ActorUiStateManager::OnUiEvent(SyncUiEvent event) {
                                weak_factory_.GetWeakPtr(), e.task_id));
           },
           [this](const TaskStateChanged& e) {
-            this->OnActorTaskStateChange(e.task_id, e.state);
+            this->OnActorTaskStateChange(e.task_id, e.state, e.title);
           },
           [](const StoppedActingOnTab& e) {
             auto* tab = e.tab_handle.Get();
@@ -271,10 +277,21 @@ void ActorUiStateManager::NotifyActorTaskStateChange(TaskId task_id) {
   actor_task_state_change_callback_list_.Notify(task_id);
 }
 
+void ActorUiStateManager::NotifyActorTaskCompleted(TaskId task_id,
+                                                   ActorTask::State final_state,
+                                                   const std::string& title) {
+  actor_task_completed_callback_list_.Notify(task_id, final_state, title);
+}
+
 base::CallbackListSubscription
 ActorUiStateManager::RegisterActorTaskStateChange(
     ActorTaskStateChangeCallback callback) {
   return actor_task_state_change_callback_list_.Add(std::move(callback));
+}
+
+base::CallbackListSubscription ActorUiStateManager::RegisterActorTaskCompleted(
+    ActorTaskCompletedCallback callback) {
+  return actor_task_completed_callback_list_.Add(std::move(callback));
 }
 
 }  // namespace actor::ui

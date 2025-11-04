@@ -70,6 +70,9 @@ class GlicActorTaskIconManager : public KeyedService {
   // Called whenever actor task state updates.
   void OnActorTaskStateUpdate(actor::TaskId task_id);
 
+  // Called whenever an actor task is completed.
+  void OnActorTaskCompleted(actor::TaskId task_id, bool success);
+
   // TODO(crbug.com/431015299): Clean up after redesign is launched.
   // Determines the state the task icon should be in.
   void UpdateTaskIcon(bool is_showing, glic::mojom::CurrentView current_view);
@@ -96,6 +99,8 @@ class GlicActorTaskIconManager : public KeyedService {
   ActorTaskNudgeState GetCurrentActorTaskNudgeState() const;
 
   raw_ptr<tabs::TabInterface> GetLastUpdatedTab();
+
+  void ClearCompletedTasks();
 
   // KeyedService:
   void Shutdown() override;
@@ -126,6 +131,9 @@ class GlicActorTaskIconManager : public KeyedService {
 
   // TODO(mjenn): Update implementation for multi-tab actuation.
   actor::TaskId current_task_id_;
+
+  // Whether there is an unprocessed completed task.
+  bool has_unprocessed_completed_tasks_ = false;
 };
 
 }  // namespace tabs
