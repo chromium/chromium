@@ -2572,7 +2572,9 @@ TEST_F(ReadAnythingAppControllerTest,
   ASSERT_EQ(controller().GetLanguageCodeForSpeech(), "yue");
 }
 
-TEST_F(ReadAnythingAppControllerTest, GetCurrentText_WithMultipleTrees) {
+TEST_F(ReadAnythingAppControllerTest, DisplayNodes_WithMultipleTrees) {
+  // Set up a parent tree and a child tree, where the child tree represents an
+  // ad. The ad content should not be displayed in reading mode.
   std::u16string sentence1 = u"Trials and tribulations, I\'ve had my share. ";
   std::u16string sentence2 = u"There ain\'t nothing gonna stop me now. ";
   std::u16string sentence3 = u"\'Cause I\'m almost there. ";
@@ -2585,13 +2587,15 @@ TEST_F(ReadAnythingAppControllerTest, GetCurrentText_WithMultipleTrees) {
   ui::AXNodeData static_text_with_duplicate_id = test::TextNode(kId2, ad_break);
 
   ui::AXNodeData ad_child_node;
-  ad_child_node.id = 333;
+  static constexpr ui::AXNodeID kAdChildNodeId = 333;
+  ad_child_node.id = kAdChildNodeId;
   ui::AXNodeData ad_child_root;
 
   ui::AXTreeID ad_child_tree_id = ui::AXTreeID::CreateNewAXTreeID();
   ui::AXTreeUpdate ad_child_update;
   test::SetUpdateTreeID(&ad_child_update, ad_child_tree_id);
-  ad_child_root.id = 150;
+  static constexpr ui::AXNodeID kAdChildRootId = 150;
+  ad_child_root.id = kAdChildRootId;
   ad_child_root.child_ids = {kId2};
   ad_child_update.root_id = ad_child_root.id;
   ad_child_update.nodes = {std::move(ad_child_root),
@@ -2619,23 +2623,20 @@ TEST_F(ReadAnythingAppControllerTest, GetCurrentText_WithMultipleTrees) {
   AccessibilityEventReceived({std::move(parent_update)});
   controller().OnAXTreeDistilled(parent_tree_id,
                                  {kId1, ad_child_node.id, kId2, kId3});
-  controller().InitAXPositionWithNode(kId1);
 
-  std::vector<ReadAloudTextSegment> next_segments = GetCurrentTextSegments();
+  // Check the display nodes.
+  const auto& display_node_ids = model().display_node_ids();
+  EXPECT_TRUE(base::Contains(display_node_ids, kId1));
+  EXPECT_TRUE(base::Contains(display_node_ids, kId2));
+  EXPECT_TRUE(base::Contains(display_node_ids, kId3));
 
-  ExpectNodesMapToEntireText(next_segments, {kId1}, {sentence1});
+  // The ad content from the child tree should not be in the display nodes.
+  EXPECT_FALSE(base::Contains(display_node_ids, kAdChildNodeId));
+  EXPECT_FALSE(base::Contains(display_node_ids, kAdChildRootId));
 
-  // Move to the 2nd sentence
-  next_segments = MoveToNextGranularityAndGetSegments();
-  ExpectNodesMapToEntireText(next_segments, {kId2}, {sentence2});
-
-  // Move to the third sentence- the content on a different tree should be
-  // skipped.
-  next_segments = MoveToNextGranularityAndGetSegments();
-  ExpectNodesMapToEntireText(next_segments, {kId3}, {sentence3});
-
-  // Nodes are empty at the end of the new tree.
-  MoveToNextAndAssertEmpty();
+  // The text content for the duplicate id returns the actual content, not the
+  // ad content.
+  EXPECT_EQ(sentence2, controller().GetTextContent(kId2));
 }
 
 TEST_F(ReadAnythingAppControllerTest,
@@ -3963,6 +3964,72 @@ TEST_F(ReadAnythingAppControllerV8SegmentationTest,
   EXPECT_EQ(content, sentence3);
 
   // Attempt to move to another node.
+  MoveToNextAndAssertEmpty();
+}
+TEST_F(ReadAnythingAppControllerV8SegmentationTest,
+       GetCurrentText_WithMultipleTrees) {
+  std::u16string sentence1 = u"Trials and tribulations, I\'ve had my share. ";
+  std::u16string sentence2 = u"There ain\'t nothing gonna stop me now. ";
+  std::u16string sentence3 = u"\'Cause I\'m almost there. ";
+  std::u16string ad_break = u"Click here to learn more! ";
+
+  ui::AXNodeData static_text1 = test::TextNode(kId1, sentence1);
+  ui::AXNodeData static_text2 = test::TextNode(kId2, sentence2);
+  ui::AXNodeData static_text3 = test::TextNode(kId3, sentence3);
+  // This should have the same id as one of the other text nodes.
+  ui::AXNodeData static_text_with_duplicate_id = test::TextNode(kId2, ad_break);
+
+  ui::AXNodeData ad_child_node;
+  ad_child_node.id = 333;
+  ui::AXNodeData ad_child_root;
+
+  ui::AXTreeID ad_child_tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  ui::AXTreeUpdate ad_child_update;
+  test::SetUpdateTreeID(&ad_child_update, ad_child_tree_id);
+  ad_child_root.id = 150;
+  ad_child_root.child_ids = {kId2};
+  ad_child_update.root_id = ad_child_root.id;
+  ad_child_update.nodes = {std::move(ad_child_root),
+                           std::move(static_text_with_duplicate_id)};
+  ad_child_node.AddChildTreeId(ad_child_tree_id);
+
+  ui::AXTreeID parent_tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  ui::AXTreeUpdate parent_update;
+  test::SetUpdateTreeID(&parent_update, parent_tree_id);
+  ui::AXNodeData root;
+  root.id = 1;
+  root.child_ids = {kId1, ad_child_node.id, kId2, kId3};
+
+  ad_child_update.tree_data.parent_tree_id = parent_tree_id;
+
+  parent_update.root_id = root.id;
+  parent_update.nodes = {std::move(root), std::move(static_text1),
+                         std::move(ad_child_node), std::move(static_text2),
+                         std::move(static_text3)};
+  controller().OnActiveAXTreeIDChanged(ad_child_tree_id, ukm::kInvalidSourceId,
+                                       false);
+  AccessibilityEventReceived({std::move(ad_child_update)});
+  controller().OnActiveAXTreeIDChanged(parent_tree_id, ukm::kInvalidSourceId,
+                                       false);
+  AccessibilityEventReceived({std::move(parent_update)});
+  controller().OnAXTreeDistilled(parent_tree_id,
+                                 {kId1, ad_child_node.id, kId2, kId3});
+  controller().InitAXPositionWithNode(kId1);
+
+  std::vector<ReadAloudTextSegment> next_segments = GetCurrentTextSegments();
+
+  ExpectNodesMapToEntireText(next_segments, {kId1}, {sentence1});
+
+  // Move to the 2nd sentence
+  next_segments = MoveToNextGranularityAndGetSegments();
+  ExpectNodesMapToEntireText(next_segments, {kId2}, {sentence2});
+
+  // Move to the third sentence- the content on a different tree should be
+  // skipped.
+  next_segments = MoveToNextGranularityAndGetSegments();
+  ExpectNodesMapToEntireText(next_segments, {kId3}, {sentence3});
+
+  // Nodes are empty at the end of the new tree.
   MoveToNextAndAssertEmpty();
 }
 
