@@ -6497,6 +6497,25 @@ TEST_P(TabStripModelTest, IteratorTestGroupOnlyTabs) {
   EXPECT_EQ(i, tabstrip()->count());
 }
 
+TEST_P(TabStripModelTest, GetTabsAtIndices) {
+  // Add a bunch of tabs.
+  PrepareTabstripForSelectionTest(tabstrip(), 7, 2, {0});
+  tabstrip()->AddToNewGroup({3, 4, 5});
+  tabstrip()->ActivateTabAt(
+      4, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
+  tabstrip()->AddToNewSplit(std::vector<int>{5},
+                            split_tabs::SplitTabVisualData(),
+                            split_tabs::SplitTabCreatedSource::kToolbarButton);
+  ASSERT_EQ("0p 1p 2 3g0 4g0s 5g0s 6",
+            GetTabStripStateString(tabstrip(), true));
+
+  std::vector<tabs::TabInterface*> tabs{
+      tabstrip()->GetTabAtIndex(1), tabstrip()->GetTabAtIndex(3),
+      tabstrip()->GetTabAtIndex(4), tabstrip()->GetTabAtIndex(6)};
+  EXPECT_EQ(tabs, tabstrip()->GetTabsAtIndices({1, 3, 4, 6}));
+}
+
 INSTANTIATE_TEST_SUITE_P(SelectionWithPointers,
                          TabStripModelTest,
                          testing::Bool(),

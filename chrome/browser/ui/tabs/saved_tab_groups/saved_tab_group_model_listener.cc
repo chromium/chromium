@@ -359,8 +359,8 @@ SavedTabGroupModelListener::CreateSavedTabGroupAndTabMapping(
 
   const gfx::Range tab_range = tab_group->ListTabs();
   std::map<tabs::TabInterface*, base::Uuid> tab_guid_mapping;
-  for (auto i = tab_range.start(); i < tab_range.end(); ++i) {
-    tabs::TabInterface* tab = tab_strip_model->GetTabAtIndex(i);
+  for (tabs::TabInterface* tab :
+       tab_strip_model->GetTabsAtIndices(tab_range.ToIntVector())) {
     CHECK(tab);
 
     tab_groups::SavedTabGroupTab saved_tab_group_tab =

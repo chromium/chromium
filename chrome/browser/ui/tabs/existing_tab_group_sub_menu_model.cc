@@ -392,8 +392,7 @@ void ExistingTabGroupSubMenuModel::AddSelectedTabsToSavedGroup(
   CHECK(group_opt.has_value());
 
   std::vector<int> selected_indices = GetSelectedIndices();
-  for (int selected_index : selected_indices) {
-    tabs::TabInterface* tab = model()->GetTabAtIndex(selected_index);
+  for (tabs::TabInterface* tab : model()->GetTabsAtIndices(selected_indices)) {
     CHECK(tab);
     tgss->AddUrl(group_opt->saved_guid(),
                  tab->GetTabFeatures()->tab_ui_helper()->GetTitle(),
@@ -429,12 +428,10 @@ void ExistingTabGroupSubMenuModel::AddSelectedTabsToOpenGroup(
     return;
   }
 
-  std::vector<int> selected_indices = GetSelectedIndices();
   // Collect the selected tab indices from the source model into a list.
-  std::vector<tabs::TabInterface*> tabs;
-  std::transform(selected_indices.begin(), selected_indices.end(),
-                 std::back_inserter(tabs),
-                 [this](int index) { return model()->GetTabAtIndex(index); });
+  std::vector<int> selected_indices = GetSelectedIndices();
+  std::vector<tabs::TabInterface*> tabs =
+      model()->GetTabsAtIndices(selected_indices);
 
   // Unpin the tabs before moving from end
   for (int i = selected_indices.size() - 1; i >= 0; --i) {

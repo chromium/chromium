@@ -149,10 +149,9 @@ TabOrganizationSession::CreateSessionForBrowser(
     std::u16string title = group->visual_data()->title();
     std::vector<std::unique_ptr<TabData>> tabs;
     const gfx::Range tab_indices = group->ListTabs();
-    for (size_t index = tab_indices.start(); index < tab_indices.end();
-         index++) {
-      tabs.push_back(
-          std::make_unique<TabData>(tab_strip_model->GetTabAtIndex(index)));
+    for (tabs::TabInterface* tab :
+         tab_strip_model->GetTabsAtIndices(tab_indices.ToIntVector())) {
+      tabs.push_back(std::make_unique<TabData>(tab));
     }
     request->AddGroupData(group_id, title, std::move(tabs));
   }
@@ -288,10 +287,9 @@ void TabOrganizationSession::PopulateOrganizations(
       TabGroupModel* tab_group_model = tab_strip_model->group_model();
       TabGroup* group = tab_group_model->GetTabGroup(group_id.value());
       const gfx::Range tab_indices = group->ListTabs();
-      for (size_t index = tab_indices.start(); index < tab_indices.end();
-           index++) {
-        tab_datas_for_org.emplace_back(
-            std::make_unique<TabData>(tab_strip_model->GetTabAtIndex(index)));
+      for (tabs::TabInterface* tab :
+           tab_strip_model->GetTabsAtIndices(tab_indices.ToIntVector())) {
+        tab_datas_for_org.emplace_back(std::make_unique<TabData>(tab));
       }
     }
     const int first_new_tab_index = tab_datas_for_org.size();

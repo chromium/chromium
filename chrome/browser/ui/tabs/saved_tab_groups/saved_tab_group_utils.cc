@@ -500,9 +500,9 @@ std::vector<tabs::TabInterface*> SavedTabGroupUtils::GetTabsInGroup(
   const gfx::Range local_tab_group_indices =
       SavedTabGroupUtils::GetTabGroupWithId(group_id)->ListTabs();
   std::vector<tabs::TabInterface*> local_tabs;
-  for (size_t index = local_tab_group_indices.start();
-       index < local_tab_group_indices.end(); index++) {
-    local_tabs.push_back(browser->tab_strip_model()->GetTabAtIndex(index));
+  for (tabs::TabInterface* tab : browser->tab_strip_model()->GetTabsAtIndices(
+           local_tab_group_indices.ToIntVector())) {
+    local_tabs.push_back(tab);
   }
   return local_tabs;
 }
@@ -772,10 +772,8 @@ tabs::TabInterface* SavedTabGroupUtils::GetGroupedTab(LocalTabGroupID group_id,
   TabStripModel* tab_strip_model = browser->tab_strip_model();
   const gfx::Range tab_indices =
       tab_strip_model->group_model()->GetTabGroup(group_id)->ListTabs();
-  for (size_t grouped_tab_index = tab_indices.start();
-       grouped_tab_index < tab_indices.end(); grouped_tab_index++) {
-    tabs::TabInterface* const tab =
-        tab_strip_model->GetTabAtIndex(grouped_tab_index);
+  for (tabs::TabInterface* tab : browser->tab_strip_model()->GetTabsAtIndices(
+           tab_indices.ToIntVector())) {
     if (tab->GetHandle().raw_value() == tab_id) {
       return tab;
     }

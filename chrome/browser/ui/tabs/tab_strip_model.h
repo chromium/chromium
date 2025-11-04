@@ -874,6 +874,11 @@ class TabStripModel {
   // Convert between tabs and indices.
   int GetIndexOfTab(const tabs::TabInterface* tab) const;
   tabs::TabInterface* GetTabAtIndex(int index) const;
+  // Gets the tabs at the specified indices using two pointers instead of
+  // calling GetTabAtIndex repeatedly, making the runtime O(count()) instead of
+  // O(indices.size() * count()). Requires indices to be strictly ascending.
+  std::vector<tabs::TabInterface*> GetTabsAtIndices(
+      const std::vector<int>& indices) const;
 
   // TODO(349161508) remove this method once tabs dont need to be converted
   // into webcontents.
@@ -1118,10 +1123,10 @@ class TabStripModel {
                           uint32_t close_types,
                           DetachNotifications* notifications);
 
-  // Returns the WebContentses at the specified indices. This does no checking
-  // of the indices, it is assumed they are valid.
+  // Returns the WebContentses at the specified indices. Requires indices to be
+  // strictly ascending or descending.
   std::vector<content::WebContents*> GetWebContentsesByIndices(
-      const std::vector<int>& indices) const;
+      std::vector<int> indices) const;
 
   // Sets the selection to |new_model| and notifies any observers.
   // Note: This function might end up sending 0 to 3 notifications in the
