@@ -12,6 +12,7 @@
       "type": "image/webp"
     }
   ],
+  "id": "webapps_integration/tabbed/basic.html",
   "start_url": "/webapps_integration/tabbed/basic.html",
   "scope": "/webapps_integration/tabbed/",
   "display": "standalone",
