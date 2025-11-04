@@ -38,6 +38,10 @@ class SystemWebDialogDelegate : public ui::WebDialogDelegate {
   // Returns true if there is a system dialog with |url| loaded.
   static bool HasInstance(const GURL& url);
 
+  // Returns a pointer to a vector containing all currently active
+  // SystemWebDialogDelegate instances.
+  static const std::vector<SystemWebDialogDelegate*>& GetAllInstances();
+
   // Generates a dialog size which fits within the device's internal screen. If
   // possible, this function simply returns |preferred_size|, but if that size
   // does not fit within the screen's bounds with a margin of
