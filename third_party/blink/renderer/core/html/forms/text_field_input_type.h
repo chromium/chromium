@@ -74,7 +74,7 @@ class TextFieldInputType : public InputType,
   AppearanceValue AutoAppearance() const override;
 
   virtual bool NeedsContainer() const { return false; }
-  String ConvertFromVisibleValue(const String&) const override;
+  virtual String ConvertFromVisibleValue(const String&) const;
   virtual void DidSetValueByUserEdit();
 
   void HandleKeydownEventForSpinButton(KeyboardEvent&);
