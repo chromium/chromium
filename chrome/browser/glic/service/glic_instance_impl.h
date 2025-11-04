@@ -295,6 +295,8 @@ class GlicInstanceImpl : public GlicInstance,
   // The empty embedder delegate is owned by this instance and its lifetime is
   // guaranteed to be longer than `host_` because it is declared before `host_`.
   glic::EmptyEmbedderDelegate empty_embedder_delegate_;
+  // `IsActive` can be called by `host_`, so the member needs to outlive it.
+  bool is_active_ = false;
   Host host_;
   std::optional<ConversationInfo> conversation_info_;
 
@@ -328,7 +330,6 @@ class GlicInstanceImpl : public GlicInstance,
 
   base::OneShotTimer inactivity_timer_;
   base::TimeTicks last_active_time_;
-  bool is_active_ = false;
 
   base::WeakPtrFactory<GlicInstanceImpl> weak_ptr_factory_{this};
 };
