@@ -1587,7 +1587,6 @@ class PolicyTemplateChecker(object):
         continue
 
       self.schema_compatible_errors = []
-      old_schema = {}
       if policy_change['old_policy'] is not None:
         old_schema = policy_change['old_policy']['schema']
         self._CheckSchemasAreCompatible([policy['name']], old_schema,
@@ -1632,6 +1631,7 @@ class PolicyTemplateChecker(object):
                 'for a launched policy \'%s\'. This will certainly break the '
                 ' contract if the policy is already supported in the Admin '
                 'Console. Please consider contacting '
-                'chromium-enterprise@chromium.org for guidance' % policy['name'])
+                'chromium-enterprise@chromium.org for guidance' %
+                policy['name'])
 
     return self.errors, self.warnings
