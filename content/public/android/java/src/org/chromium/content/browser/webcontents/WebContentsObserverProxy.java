@@ -559,17 +559,6 @@ class WebContentsObserverProxy extends WebContentsObserver {
 
     @Override
     @CalledByNative
-    public void didUpdateAudioMutingState(boolean muted) {
-        handleObserverCall();
-        Iterator<WebContentsObserver> observersIterator = mObservers.iterator();
-        for (; observersIterator.hasNext(); ) {
-            observersIterator.next().didUpdateAudioMutingState(muted);
-        }
-        finishObserverCall();
-    }
-
-    @Override
-    @CalledByNative
     public void wasDiscarded() {
         handleObserverCall();
         Iterator<WebContentsObserver> observersIterator = mObservers.iterator();

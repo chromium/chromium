@@ -323,9 +323,6 @@ public abstract class WebContentsObserver {
     /** Called when a MediaSession is created for the WebContents. */
     public void mediaSessionCreated(MediaSession mediaSession) {}
 
-    /** Called when the WebContents is muted/unmuted. */
-    public void didUpdateAudioMutingState(boolean muted) {}
-
     /** Called when the WebContents is discarded. */
     public void wasDiscarded() {}
 

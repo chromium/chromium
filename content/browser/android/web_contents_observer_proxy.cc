@@ -388,10 +388,4 @@ void WebContentsObserverProxy::WasDiscarded() {
   Java_WebContentsObserverProxy_wasDiscarded(env, java_observer_);
 }
 
-void WebContentsObserverProxy::DidUpdateAudioMutingState(bool muted) {
-  JNIEnv* env = AttachCurrentThread();
-  Java_WebContentsObserverProxy_didUpdateAudioMutingState(env, java_observer_,
-                                                          muted);
-}
-
 }  // namespace content
