@@ -192,52 +192,20 @@ class SidePanelBorder : public views::Border {
 
 // ContentParentView is the parent view for views hosted in the
 // side panel.
-class ContentParentView : public views::View, public views::ViewObserver {
+class ContentParentView : public views::View {
   METADATA_HEADER(ContentParentView, views::View)
 
  public:
-  explicit ContentParentView(bool should_round_corners)
-      : should_round_corners_(should_round_corners) {
+  ContentParentView() {
     SetUseDefaultFillLayout(true);
-    SetBackground(views::CreateRoundedRectBackground(kColorSidePanelBackground,
-                                                     GetRoundedCorners()));
+    SetBackground(views::CreateSolidBackground(kColorSidePanelBackground));
     SetProperty(
         views::kFlexBehaviorKey,
         views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
                                  views::MaximumFlexSizeRule::kUnbounded));
-    if (should_round_corners_) {
-      view_observation_.Observe(this);
-    }
   }
 
   ~ContentParentView() override = default;
-
-  // views::ViewObserver:
-  void OnChildViewAdded(View* observed_view, View* child) override {
-    CHECK(should_round_corners_);
-    // If the child is a WebView or paints to a layer, round its corners.
-    if (views::IsViewClass<views::WebView>(child)) {
-      views::AsViewClass<views::WebView>(child)->holder()->SetCornerRadii(
-          GetRoundedCorners());
-    }
-    if (child->layer()) {
-      child->layer()->SetRoundedCornerRadius(GetRoundedCorners());
-      child->layer()->SetIsFastRoundedCorner(true);
-    }
-  }
-
- private:
-  gfx::RoundedCornersF GetRoundedCorners() {
-    return should_round_corners_
-               ? gfx::RoundedCornersF(
-                     GetLayoutProvider()->GetCornerRadiusMetric(
-                         views::ShapeContextTokens::kSidePanelContentRadius))
-               : gfx::RoundedCornersF();
-  }
-
-  bool should_round_corners_ = false;
-  base::ScopedObservation<views::View, views::ViewObserver> view_observation_{
-      this};
 };
 
 BEGIN_METADATA(ContentParentView)
@@ -391,8 +359,7 @@ SidePanel::SidePanel(BrowserView* browser_view,
 
   SetProperty(views::kElementIdentifierKey, kSidePanelElementId);
 
-  content_parent_view_ = AddChildView(std::make_unique<ContentParentView>(
-      /*should_round_corners=*/!has_border));
+  content_parent_view_ = AddChildView(std::make_unique<ContentParentView>());
   content_parent_view_->SetVisible(false);
 }
 
