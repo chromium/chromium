@@ -5426,7 +5426,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="FirstUserAction.BackgroundTime{FirstUserActionType}"
+<histogram name="FirstUserAction.BackgroundTime{ActionType}{DeviceType}"
     units="minutes" expires_after="2026-08-07">
   <owner>justincohen@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
@@ -5437,9 +5437,9 @@ chromium-metrics-reviews@google.com.
     with a grain of salt. Was expired for M85, M86.
 
     The amount of time (in seconds) that the app was in the background before
-    the user started it {FirstUserActionType}
+    the user started it {ActionType}. {DeviceType}
   </summary>
-  <token key="FirstUserActionType">
+  <token key="ActionType">
     <variant name=""/>
     <variant name="Continuation"
         summary="and performed an user action indicating that they were
@@ -5450,6 +5450,10 @@ chromium-metrics-reviews@google.com.
     <variant name="NewTask"
         summary="and performed an user action indicating that they were
                  beginning a new task from the last time they used the app"/>
+  </token>
+  <token key="DeviceType">
+    <variant name="Handset" summary="(handset only)"/>
+    <variant name="Tablet" summary="(tablet only)"/>
   </token>
 </histogram>
 

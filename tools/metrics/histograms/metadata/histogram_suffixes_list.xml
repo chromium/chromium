@@ -385,14 +385,6 @@ chromium-metrics-reviews@google.com.
       name="Autofill.FieldPredictionQuality.ByFieldType.Server"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="FirstUserActionTypeDevice" separator="">
-  <suffix name="Handset" label="(handset only)"/>
-  <suffix name="Tablet" label="(tablet only)"/>
-  <affected-histogram name="FirstUserAction.BackgroundTimeContinuation"/>
-  <affected-histogram name="FirstUserAction.BackgroundTimeExpiration"/>
-  <affected-histogram name="FirstUserAction.BackgroundTimeNewTask"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="HiddenWhileFlushing" separator=".">
   <suffix name="HiddenWhileFlushing"
       label="Tab hidden while flushing FCP value."/>
