@@ -24,10 +24,6 @@ import("//tools/grit/grit_rule.gni")
 assert(enable_supervised_users)
 assert(!is_fuchsia, "Fuchsia shouldn't use anything in //chrome")
 
-declare_args() {
-  enable_android_site_isolation = is_desktop_android
-}
-
 fuzzer_test("ini_parser_fuzzer") {
   sources = [ "ini_parser_fuzzer.cc" ]
   deps = [
@@ -54,7 +50,6 @@ buildflag_header("buildflags") {
   flags = [
     "CHROME_ENABLE_LOGGING_BY_DEFAULT=$chrome_enable_logging_by_default",
     "CHROME_ROOT_STORE_CERT_MANAGEMENT_UI=$chrome_root_store_cert_management_ui",
-    "ENABLE_ANDROID_SITE_ISOLATION=$enable_android_site_isolation",
     "ENABLE_BACKGROUND_MODE=$enable_background_mode",
     "ENABLE_BACKGROUND_CONTENTS=$enable_background_contents",
     "ENABLE_CHROME_NOTIFICATIONS=$enable_chrome_notifications",
