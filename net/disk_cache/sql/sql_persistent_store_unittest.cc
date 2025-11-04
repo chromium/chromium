@@ -18,6 +18,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/run_loop.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_view_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/sys_byteorder.h"
@@ -58,8 +59,8 @@ class SqlPersistentStoreTest : public testing::Test {
   // Sets up a temporary directory and a background task runner for each test.
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-    background_task_runner_ =
-        base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()});
+    background_task_runners_.emplace_back(
+        base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}));
   }
 
   // Cleans up the store and ensures all background tasks are completed.
@@ -83,7 +84,7 @@ class SqlPersistentStoreTest : public testing::Test {
     store_ = std::make_unique<SqlPersistentStore>(
         GetTempPath(), max_bytes, net::CacheType::DISK_CACHE,
         std::vector<scoped_refptr<base::SequencedTaskRunner>>(
-            {background_task_runner_}));
+            background_task_runners_));
   }
 
   // Initializes the store and waits for the operation to complete.
@@ -139,9 +140,11 @@ class SqlPersistentStoreTest : public testing::Test {
 
   // Ensures all tasks on the background thread have completed.
   void FlushPendingTask() {
-    base::RunLoop run_loop;
-    background_task_runner_->PostTask(FROM_HERE, run_loop.QuitClosure());
-    run_loop.Run();
+    for (auto background_task_runner : background_task_runners_) {
+      base::RunLoop run_loop;
+      background_task_runner->PostTask(FROM_HERE, run_loop.QuitClosure());
+      run_loop.Run();
+    }
   }
 
   // Custom deleter for the unique_ptr returned by ManuallyOpenDatabase.
@@ -602,7 +605,8 @@ class SqlPersistentStoreTest : public testing::Test {
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::ScopedTempDir temp_dir_;
-  scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
+  std::vector<scoped_refptr<base::SequencedTaskRunner>>
+      background_task_runners_;
   std::unique_ptr<SqlPersistentStore> store_;
   std::unique_ptr<base::FilePermissionRestorer> file_permissions_restorer_;
 };
@@ -676,7 +680,7 @@ TEST_F(SqlPersistentStoreTest, InitFailsWithCreationDirectoryFailure) {
   store_ = std::make_unique<SqlPersistentStore>(
       db_dir_path, kDefaultMaxBytes, net::CacheType::DISK_CACHE,
       std::vector<scoped_refptr<base::SequencedTaskRunner>>(
-          {background_task_runner_}));
+          background_task_runners_));
   ASSERT_EQ(Init(), SqlPersistentStore::Error::kFailedToCreateDirectory);
 }
 
@@ -1436,6 +1440,55 @@ TEST_F(SqlPersistentStoreTest, MaybeRunCleanupDoomedEntries) {
   ASSERT_TRUE(open_result1.has_value());
   ASSERT_TRUE(open_result1->has_value());
   EXPECT_EQ(open_result1.value()->res_id, res_id_to_keep);
+}
+
+TEST_F(SqlPersistentStoreTest, MaybeRunCleanupDoomedEntriesMultipleShards) {
+  // Add more task runners to have more shards.
+  background_task_runners_.emplace_back(
+      base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}));
+  background_task_runners_.emplace_back(
+      base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}));
+  EXPECT_EQ(background_task_runners_.size(), 3);
+
+  CreateAndInitStore();
+
+  const CacheEntryKey kKeyToDoom1("key-to-doom1");
+  const auto shared1 = store_->GetShardIdForHash(kKeyToDoom1.hash());
+
+  // Find a key that belongs to a different shard.
+  CacheEntryKey key_to_doom_2;
+  for (int key_prefix = 2;; key_prefix++) {
+    key_to_doom_2 = CacheEntryKey(base::NumberToString(key_prefix));
+    if (store_->GetShardIdForHash(key_to_doom_2.hash()) != shared1) {
+      break;
+    }
+  }
+
+  // Create and doom the first entry.
+  auto create_result1 = CreateEntry(kKeyToDoom1);
+  ASSERT_TRUE(create_result1.has_value());
+  const auto res_id_to_doom1 = create_result1->res_id;
+  ASSERT_EQ(DoomEntry(kKeyToDoom1, res_id_to_doom1),
+            SqlPersistentStore::Error::kOk);
+
+  // Create and doom the second entry.
+  auto create_result2 = CreateEntry(key_to_doom_2);
+  ASSERT_TRUE(create_result2.has_value());
+  const auto res_id_to_doom2 = create_result2->res_id;
+  ASSERT_EQ(DoomEntry(key_to_doom_2, res_id_to_doom2),
+            SqlPersistentStore::Error::kOk);
+
+  // Reload the store and the doomed entries will be marked for deletion.
+  ClearStore();
+  CreateAndInitStore();
+
+  // Load the in-memory index to get the list of doomed entry.
+  EXPECT_TRUE(LoadInMemoryIndex());
+
+  // Cleanup the doomed eintries.
+  base::test::TestFuture<SqlPersistentStore::Error> future;
+  EXPECT_TRUE(store_->MaybeRunCleanupDoomedEntries(future.GetCallback()));
+  EXPECT_EQ(future.Get(), SqlPersistentStore::Error::kOk);
 }
 
 TEST_F(SqlPersistentStoreTest, MaybeRunCleanupDoomedEntriesNoDeletion) {
@@ -3888,7 +3941,7 @@ int SqlPersistentStoreTest::GetNumberForWritesRequiredForCheckpoint(
   store_ = std::make_unique<SqlPersistentStore>(
       temp_dir.GetPath(), kDefaultMaxBytes, net::CacheType::DISK_CACHE,
       std::vector<scoped_refptr<base::SequencedTaskRunner>>(
-          {background_task_runner_}));
+          background_task_runners_));
   CHECK_EQ(Init(), SqlPersistentStore::Error::kOk);
 
   const base::FilePath db_path =
@@ -3979,7 +4032,7 @@ TEST_F(SqlPersistentStoreTest, WalCheckpoint) {
   store_ = std::make_unique<SqlPersistentStore>(
       GetTempPath(), kDefaultMaxBytes, net::CacheType::DISK_CACHE,
       std::vector<scoped_refptr<base::SequencedTaskRunner>>(
-          {background_task_runner_}));
+          background_task_runners_));
   CHECK_EQ(Init(), SqlPersistentStore::Error::kOk);
   const base::FilePath db_path = GetDatabaseFilePath();
   int64_t previous_db_size = CheckedGetFileSize(db_path);
