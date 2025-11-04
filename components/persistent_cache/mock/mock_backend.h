@@ -2,34 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_PERSISTENT_CACHE_MOCK_MOCK_BACKEND_IMPL_H_
-#define COMPONENTS_PERSISTENT_CACHE_MOCK_MOCK_BACKEND_IMPL_H_
-
-#include <memory>
-#include <optional>
+#ifndef COMPONENTS_PERSISTENT_CACHE_MOCK_MOCK_BACKEND_H_
+#define COMPONENTS_PERSISTENT_CACHE_MOCK_MOCK_BACKEND_H_
 
 #include "components/persistent_cache/backend.h"
-#include "components/persistent_cache/backend_params.h"
 #include "components/persistent_cache/entry.h"
-#include "components/persistent_cache/entry_metadata.h"
-#include "components/persistent_cache/transaction_error.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace persistent_cache {
 
-class MockBackendImpl : public Backend {
+class MockBackend : public Backend {
  public:
-  explicit MockBackendImpl(const BackendParams& backend_params);
-  ~MockBackendImpl() override;
-  BackendType GetType() const override;
-  bool IsReadOnly() const override;
+  MockBackend();
+  ~MockBackend() override;
 
-  MockBackendImpl(const MockBackendImpl&) = delete;
-  MockBackendImpl(MockBackendImpl&&) = delete;
-  MockBackendImpl& operator=(const MockBackendImpl&) = delete;
-  MockBackendImpl& operator=(MockBackendImpl&&) = delete;
-
-  // `Backend` overrides
   MOCK_METHOD(bool, Initialize, (), (override));
   MOCK_METHOD((base::expected<std::unique_ptr<Entry>, TransactionError>),
               Find,
@@ -37,8 +23,12 @@ class MockBackendImpl : public Backend {
               (override));
   MOCK_METHOD((base::expected<void, TransactionError>),
               Insert,
-              (std::string_view, base::span<const uint8_t>, EntryMetadata),
+              (std::string_view key,
+               base::span<const uint8_t> content,
+               EntryMetadata metadata),
               (override));
+  MOCK_METHOD(BackendType, GetType, (), (const, override));
+  MOCK_METHOD(bool, IsReadOnly, (), (const, override));
   MOCK_METHOD(std::optional<BackendParams>,
               ExportReadOnlyParams,
               (),
@@ -52,4 +42,4 @@ class MockBackendImpl : public Backend {
 
 }  // namespace persistent_cache
 
-#endif  // COMPONENTS_PERSISTENT_CACHE_MOCK_MOCK_BACKEND_IMPL_H_
+#endif  // COMPONENTS_PERSISTENT_CACHE_MOCK_MOCK_BACKEND_H_

@@ -20,7 +20,7 @@
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
 #include "components/persistent_cache/backend_params.h"
-#include "components/persistent_cache/mock/mock_backend_impl.h"
+#include "components/persistent_cache/mock/mock_backend.h"
 #include "components/persistent_cache/sqlite/sqlite_backend_impl.h"
 #include "components/persistent_cache/sqlite/test_utils.h"
 #include "components/persistent_cache/test_utils.h"
@@ -38,7 +38,7 @@ using testing::Return;
 class PersistentCacheMockedBackendTest : public testing::Test {
  protected:
   void SetUp() override {
-    backend_ = std::make_unique<persistent_cache::MockBackendImpl>(params_);
+    backend_ = std::make_unique<persistent_cache::MockBackend>();
   }
 
   void CreateCache(bool successful) {
@@ -47,15 +47,15 @@ class PersistentCacheMockedBackendTest : public testing::Test {
         std::move(backend_));
   }
 
-  persistent_cache::MockBackendImpl* GetBackend() {
+  persistent_cache::MockBackend* GetBackend() {
     // Can't be called without a cache.
     CHECK(cache_);
-    return static_cast<persistent_cache::MockBackendImpl*>(
+    return static_cast<persistent_cache::MockBackend*>(
         cache_->GetBackendForTesting());
   }
 
   persistent_cache::BackendParams params_;
-  std::unique_ptr<persistent_cache::MockBackendImpl> backend_;
+  std::unique_ptr<persistent_cache::MockBackend> backend_;
   std::unique_ptr<persistent_cache::PersistentCache> cache_;
 };
 

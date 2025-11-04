@@ -16,6 +16,8 @@
 #include "base/types/expected.h"
 #include "components/persistent_cache/backend.h"
 #include "components/persistent_cache/entry.h"
+#include "components/persistent_cache/mock/mock_backend.h"
+#include "components/persistent_cache/mock/mock_backend_storage_delegate.h"
 #include "components/persistent_cache/transaction_error.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -27,50 +29,6 @@ namespace {
 using testing::EndsWith;
 using testing::Property;
 using testing::Return;
-
-class MockBackendStorageDelegate : public BackendStorage::Delegate {
- public:
-  MOCK_METHOD(base::FilePath,
-              GetBaseName,
-              (const base::FilePath& file),
-              (override));
-  MOCK_METHOD(int64_t,
-              DeleteFiles,
-              (const base::FilePath& directory,
-               const base::FilePath& base_name),
-              (override));
-  MOCK_METHOD(std::unique_ptr<Backend>,
-              MakeBackend,
-              (const base::FilePath& directory,
-               const base::FilePath& base_name),
-              (override));
-};
-
-class MockBackend : public Backend {
- public:
-  MOCK_METHOD(bool, Initialize, (), (override));
-  MOCK_METHOD((base::expected<std::unique_ptr<Entry>, TransactionError>),
-              Find,
-              (std::string_view),
-              (override));
-  MOCK_METHOD((base::expected<void, TransactionError>),
-              Insert,
-              (std::string_view key,
-               base::span<const uint8_t> content,
-               EntryMetadata metadata),
-              (override));
-  MOCK_METHOD(BackendType, GetType, (), (const, override));
-  MOCK_METHOD(bool, IsReadOnly, (), (const, override));
-  MOCK_METHOD(std::optional<BackendParams>,
-              ExportReadOnlyParams,
-              (),
-              (override));
-  MOCK_METHOD(std::optional<BackendParams>,
-              ExportReadWriteParams,
-              (),
-              (override));
-  MOCK_METHOD(void, Abandon, (), (override));
-};
 
 class BackendStorageTest : public testing::Test {
  protected:
