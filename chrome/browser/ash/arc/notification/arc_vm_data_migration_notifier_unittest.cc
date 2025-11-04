@@ -10,6 +10,7 @@
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/login/users/scoped_account_id_annotator.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
@@ -64,11 +65,14 @@ class ArcVmDataMigrationNotifierTest : public ChromeAshTestBase {
     profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(profile_manager_->SetUp());
-    testing_profile_ = profile_manager_->CreateTestingProfile(kProfileName);
-    const AccountId account_id = AccountId::FromUserEmailGaiaId(
-        testing_profile_->GetProfileUserName(), kGaiaId);
+
+    const AccountId account_id =
+        AccountId::FromUserEmailGaiaId(kProfileName, kGaiaId);
     fake_user_manager_->AddUser(account_id);
     fake_user_manager_->LoginUser(account_id);
+    ash::ScopedAccountIdAnnotator annotator(profile_manager_->profile_manager(),
+                                            account_id);
+    testing_profile_ = profile_manager_->CreateTestingProfile(kProfileName);
     DCHECK(ash::ProfileHelper::IsPrimaryProfile(testing_profile_));
 
     arc_vm_data_migration_notifier_ =

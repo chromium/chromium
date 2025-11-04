@@ -15,6 +15,7 @@
 #include "chrome/browser/ash/guest_os/guest_os_session_tracker.h"
 #include "chrome/browser/ash/guest_os/guest_os_session_tracker_factory.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/login/users/scoped_account_id_annotator.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/dbus/concierge/fake_concierge_client.h"
@@ -71,11 +72,14 @@ class ArcAdbdMonitorBridgeTest : public testing::Test {
     profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(profile_manager_->SetUp());
-    Profile* profile = profile_manager_->CreateTestingProfile(kProfileName);
-    const AccountId account_id(
-        AccountId::FromUserEmail(profile->GetProfileUserName()));
+
+    const AccountId account_id(AccountId::FromUserEmail(kProfileName));
     fake_user_manager_->AddUser(account_id);
     fake_user_manager_->LoginUser(account_id);
+
+    ash::ScopedAccountIdAnnotator annotator(profile_manager_->profile_manager(),
+                                            account_id);
+    Profile* profile = profile_manager_->CreateTestingProfile(kProfileName);
 
     arc_session_manager_->SetProfile(profile);
     arc_session_manager_->Initialize();

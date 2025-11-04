@@ -12,6 +12,7 @@
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/login/users/scoped_account_id_annotator.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -44,6 +45,9 @@ class ArcEnterpriseReportingServiceTest : public testing::Test {
   ~ArcEnterpriseReportingServiceTest() override = default;
 
   void SetUp() override {
+    SetArcAvailableCommandLineForTesting(
+        base::CommandLine::ForCurrentProcess());
+
     // Set up user manager and profile and for ReportCloudDpcOperationTime tests
     fake_user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
 
@@ -51,17 +55,17 @@ class ArcEnterpriseReportingServiceTest : public testing::Test {
         TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(profile_manager_->SetUp());
 
-    profile_ = profile_manager_->CreateTestingProfile(kTestProfileName);
-
-    const auto account_id = AccountId::FromUserEmailGaiaId(
-        profile_->GetProfileUserName(), kTestGaiaId);
+    const auto account_id =
+        AccountId::FromUserEmailGaiaId(kTestProfileName, kTestGaiaId);
     fake_user_manager_->AddUser(account_id);
     fake_user_manager_->LoginUser(account_id);
 
+    ash::ScopedAccountIdAnnotator annotator(profile_manager_->profile_manager(),
+                                            account_id);
+    profile_ = profile_manager_->CreateTestingProfile(kTestProfileName);
+
     // Set up ArcSessionManager for ReportManagementState tests
     ash::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
-    SetArcAvailableCommandLineForTesting(
-        base::CommandLine::ForCurrentProcess());
     ArcSessionManager::SetUiEnabledForTesting(false);
     arc_service_manager_ = std::make_unique<ArcServiceManager>();
     arc_session_manager_ =

@@ -16,10 +16,12 @@
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
+#include "chrome/browser/ash/login/users/scoped_account_id_annotator.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
@@ -77,6 +79,8 @@ class ArcActivationNecessityCheckerTest : public testing::Test {
   ~ArcActivationNecessityCheckerTest() override = default;
 
   void SetUp() override {
+    ASSERT_TRUE(testing_profile_manager_.SetUp());
+
     SetArcAvailableCommandLineForTesting(
         base::CommandLine::ForCurrentProcess());
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
@@ -101,8 +105,10 @@ class ArcActivationNecessityCheckerTest : public testing::Test {
     user_manager_->UserLoggedIn(
         account_id, user_manager::TestHelper::GetFakeUsernameHash(account_id));
 
-    profile_ = std::make_unique<TestingProfile>();
-    ash::AnnotatedAccountId::Set(profile_.get(), account_id);
+    ash::ScopedAccountIdAnnotator annotator(
+        testing_profile_manager_.profile_manager(), account_id);
+    profile_ = testing_profile_manager_.CreateTestingProfile(
+        TestingProfile::kDefaultProfileUserName);
 
     profile_->GetProfilePolicyConnector()->OverrideIsManagedForTesting(true);
     profile_->GetPrefs()->SetBoolean(prefs::kArcEnabled, true);
@@ -130,13 +136,18 @@ class ArcActivationNecessityCheckerTest : public testing::Test {
     app_instance_.reset();
     arc_session_manager_.reset();
     arc_service_manager_.reset();
-    profile_.reset();
+
+    profile_ = nullptr;
+    testing_profile_manager_.DeleteAllTestingProfiles();
+
     ash::ConciergeClient::Shutdown();
   }
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
   base::test::ScopedFeatureList feature_list_;
+  TestingProfileManager testing_profile_manager_{
+      TestingBrowserProcess::GetGlobal()};
   ash::ScopedStubInstallAttributes install_attributes_;
   ash::ScopedTestingCrosSettings testing_cros_settings_;
   session_manager::SessionManager session_manager_{
@@ -145,7 +156,7 @@ class ArcActivationNecessityCheckerTest : public testing::Test {
   std::unique_ptr<ArcSessionManager> arc_session_manager_;
   user_manager::ScopedUserManager user_manager_;
 
-  std::unique_ptr<TestingProfile> profile_;
+  raw_ptr<TestingProfile> profile_ = nullptr;
   std::unique_ptr<arc::FakeAppInstance> app_instance_;
   FakeAdbSideloadingAvailabilityDelegate adb_sideloading_availability_delegate_;
   std::unique_ptr<ArcActivationNecessityChecker> checker_;

@@ -10,9 +10,11 @@
 #include "chrome/browser/ash/arc/session/arc_provisioning_result.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
+#include "chrome/browser/ash/login/users/scoped_account_id_annotator.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
@@ -57,6 +59,8 @@ class ArcProvisioningThrottleObserverTest : public testing::Test {
       const ArcProvisioningThrottleObserverTest&) = delete;
 
   void SetUp() override {
+    ASSERT_TRUE(testing_profile_manager_.SetUp());
+
     arc_session_manager_ =
         CreateTestArcSessionManager(std::make_unique<ArcSessionRunner>(
             base::BindRepeating(FakeArcSession::Create)));
@@ -75,8 +79,10 @@ class ArcProvisioningThrottleObserverTest : public testing::Test {
     user_manager_->UserLoggedIn(
         account_id, user_manager::TestHelper::GetFakeUsernameHash(account_id));
 
-    testing_profile_ = std::make_unique<TestingProfile>();
-    ash::AnnotatedAccountId::Set(testing_profile_.get(), account_id);
+    ash::ScopedAccountIdAnnotator annotator(
+        testing_profile_manager_.profile_manager(), account_id);
+    testing_profile_ = testing_profile_manager_.CreateTestingProfile(
+        TestingProfile::kDefaultProfileUserName);
 
     arc_session_manager_->SetProfile(profile());
     arc_session_manager_->Initialize();
@@ -85,7 +91,10 @@ class ArcProvisioningThrottleObserverTest : public testing::Test {
   void TearDown() override {
     observer()->StopObserving();
     arc_session_manager_->Shutdown();
-    testing_profile_.reset();
+
+    testing_profile_ = nullptr;
+    testing_profile_manager_.DeleteAllTestingProfiles();
+
     user_manager_.Reset();
     arc_session_manager_.reset();
   }
@@ -125,6 +134,8 @@ class ArcProvisioningThrottleObserverTest : public testing::Test {
 
  private:
   content::BrowserTaskEnvironment task_environment_;
+  TestingProfileManager testing_profile_manager_{
+      TestingBrowserProcess::GetGlobal()};
   ash::ScopedStubInstallAttributes install_attributes_;
   ash::ScopedTestingCrosSettings testing_cros_settings_;
   session_manager::SessionManager session_manager_{
@@ -133,7 +144,7 @@ class ArcProvisioningThrottleObserverTest : public testing::Test {
   user_manager::ScopedUserManager user_manager_;
   ArcServiceManager service_manager_;
   ArcProvisioningThrottleObserver observer_;
-  std::unique_ptr<TestingProfile> testing_profile_;
+  raw_ptr<TestingProfile> testing_profile_ = nullptr;
 };
 
 TEST_F(ArcProvisioningThrottleObserverTest, DefaultFlow) {

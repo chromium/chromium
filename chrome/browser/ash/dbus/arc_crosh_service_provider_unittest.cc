@@ -14,6 +14,7 @@
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/login/users/scoped_account_id_annotator.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -68,7 +69,7 @@ class MockArcShellExecutionInstance
 };
 
 constexpr char kPrimaryUserProfileName[] = "primary@gmail.com";
-constexpr char KSecondaryUserProfileName[] = "secondary@gmail.com";
+constexpr char kSecondaryUserProfileName[] = "secondary@gmail.com";
 
 class ArcCroshServiceProviderTest : public testing::Test {
  public:
@@ -102,22 +103,33 @@ class ArcCroshServiceProviderTest : public testing::Test {
         TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(profile_manager_->SetUp());
 
-    const AccountId primary_user_account_id =
-        AccountId::FromUserEmail(kPrimaryUserProfileName);
-    user_manager::User* primary_user =
-        fake_user_manager_->AddUser(primary_user_account_id);
-    primary_username_hash_ = primary_user->username_hash();
-    Profile* primary_user_profile =
-        profile_manager_->CreateTestingProfile(kPrimaryUserProfileName);
+    Profile* primary_user_profile;
+    {
+      const AccountId primary_user_account_id =
+          AccountId::FromUserEmail(kPrimaryUserProfileName);
+      user_manager::User* primary_user =
+          fake_user_manager_->AddUser(primary_user_account_id);
+      primary_username_hash_ = primary_user->username_hash();
+      fake_user_manager_->LoginUser(primary_user_account_id);
 
-    const AccountId secondary_user_account_id =
-        AccountId::FromUserEmail(KSecondaryUserProfileName);
-    user_manager::User* secondary_user =
-        fake_user_manager_->AddUser(secondary_user_account_id);
-    secondary_username_hash_ = secondary_user->username_hash();
-    profile_manager_->CreateTestingProfile(KSecondaryUserProfileName);
+      ash::ScopedAccountIdAnnotator annotator1(
+          profile_manager_->profile_manager(), primary_user_account_id);
+      primary_user_profile =
+          profile_manager_->CreateTestingProfile(kPrimaryUserProfileName);
+    }
 
-    fake_user_manager_->LoginUser(primary_user_account_id);
+    {
+      const AccountId secondary_user_account_id =
+          AccountId::FromUserEmail(kSecondaryUserProfileName);
+      user_manager::User* secondary_user =
+          fake_user_manager_->AddUser(secondary_user_account_id);
+      secondary_username_hash_ = secondary_user->username_hash();
+
+      ash::ScopedAccountIdAnnotator annotator2(
+          profile_manager_->profile_manager(), secondary_user_account_id);
+      profile_manager_->CreateTestingProfile(kSecondaryUserProfileName);
+    }
+
     arc_session_manager_->SetProfile(primary_user_profile);
 
     arc_session_manager_->Initialize();
@@ -141,7 +153,7 @@ class ArcCroshServiceProviderTest : public testing::Test {
         &mock_arc_shell_execution_instance_);
     arc_session_manager_->Shutdown();
     profile_manager_->DeleteTestingProfile(kPrimaryUserProfileName);
-    profile_manager_->DeleteTestingProfile(KSecondaryUserProfileName);
+    profile_manager_->DeleteTestingProfile(kSecondaryUserProfileName);
     arc_session_manager_.reset();
     arc_service_manager_.reset();
     service_provider_.reset();
