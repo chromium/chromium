@@ -1843,6 +1843,7 @@
 <translation id="4014895360827978999">የነጋዴ አገልግሎቶች እና የክፍያ ስርዓቶች</translation>
 <translation id="4018819349042761761">ይፋዊ ቁልፍ</translation>
 <translation id="4023431997072828269">ይህ ቅጽ ደህንነቱ በማያስተማምን ግንኙነት በመጠቀም እየገባ ያለ ስለሆነ የእርስዎ መረጃ ለሌሎች የሚታይ ይሆናል።</translation>
+<translation id="4024673763872230929">መረጃዎን ያስቀምጡ እና ቅጾችን በፍጥነት ይሙሉ። ወደ መሣሪያዎ ያስቀምጣል።</translation>
 <translation id="4025325634010721551">መመሪያዎች እንደገና ተጭነዋል</translation>
 <translation id="4025338605225449265">ምንዛሬዎች እና የውጪ ምንዛሬ</translation>
 <translation id="4025777154208238692">የተገላቢጦሽ ቅደም ተከተል</translation>
@@ -2276,6 +2277,7 @@
 <translation id="4732860731866514038">የ<ph name="LANGUAGE" /> የቋንቋ ጥቅልን በማውረድ ላይ...<ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992"><ph name="URL" /> የመሣሪያዎን አካባቢ መጠቀም ይፈልጋል</translation>
 <translation id="473414950835101501">ካሜራዎቾን መጠቀም</translation>
+<translation id="4734343956394152985"><ph name="BEGIN_BOLD" />የአሁን ነባሪ<ph name="END_BOLD" /> · <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="4736825316280949806">Chromiumን ዳግም ያስጀምሩት</translation>
 <translation id="4736934858538408121">ምናባዊ ካርድ</translation>
 <translation id="473775607612524610">አዘምን</translation>
@@ -2338,6 +2340,7 @@
 <translation id="4822493756793346865">የተለመዱ ዋጋዎች ባለፉት 90 ቀናት በመላው ድር ላይ ባሉ መደብሮች ላይ የተመሠረቱ ናቸው።</translation>
 <translation id="4822922322149719535">የስህተት ምዝግብ ማስታወሻን ገምግም</translation>
 <translation id="4823699521959851389"><ph name="SHORT_PRODUCT_NAME" /> የመሣሪያዎ <ph name="PERMISSION" /> መዳረሻ ያስፈልገዋል</translation>
+<translation id="4825311006392962663">ክፍያ ማጠናቀቅ ላይ የበኋላ መክፈል አማራጮችን አሳይ</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />፣ አዲስ Google ሉህ በፍጥነት ለመፍጠር ትርን ከዚያ አስገባን ይጫኑ</translation>
 <translation id="4826588772550366629">ካሜራ እና ማይክሮፎን</translation>
 <translation id="4827283332383516812">ካርድ ይሰርዙ</translation>
@@ -2429,6 +2432,7 @@
 <translation id="4961708452830821006">ማይክሮፎንዎን ለመጠቀም በ<ph name="LINK" /> ውስጥ ለChrome መዳረሻ ይስጡ።</translation>
 <translation id="4963413887558778009">የመሬት ገጽታ ንድፍ</translation>
 <translation id="4967366744630699583">አድራሻ አርትዕ ያድርጉ</translation>
+<translation id="4968046291688599384"><ph name="BNPL_ISSUER_NAME" /> የአንድ ጊዜ ምናባዊ ካርድ ቁጥር ተሞልቷል።</translation>
 <translation id="4968522289500246572">ይህ መተግበሪያ ለሞባይል የተነደፈ ነው፣ እና በጥሩ ሁኔታ መጠን ላይቀይር ይችላል። መተግበሪያው ችግሮች ሊያጋጥሙት ወይም ዳግም ሊነሳ ይችላል።</translation>
 <translation id="4968665849807487749">በሁሉም የእርስዎ ማሳያዎች ላይ መስኮቶችን ለማስተዳደር መጠየቅ ይችላል</translation>
 <translation id="4969341057194253438">ቀረጻ ሰርዝ</translation>
@@ -3385,6 +3389,7 @@
 <translation id="6521745193039995384">ገባሪ አይደለም</translation>
 <translation id="6522682797352430154">ክላሲካል ሙዚቃ</translation>
 <translation id="6524830701589638230">የተደራሽነት ቅንብሮች አዝራርን ያስተዳድሩ፣ በChrome ቅንብሮች ውስጥ የተደራሽነት መሣሪያዎችዎን ግላዊነት ለማላበስ ያግብሩ</translation>
+<translation id="6525222262307262764">የአሁኑን ነባሪ ያቆዩ</translation>
 <translation id="6527049834925947126">የምግብ ምርት</translation>
 <translation id="6529173248185917884">ሰባተኛ ጥቅልል</translation>
 <translation id="6529602333819889595">&amp;ሰርዝን ድገም</translation>
@@ -3405,6 +3410,7 @@
 <translation id="6567832540451970450">አስተዳዳሪዎ <ph name="PERMISSION" />ን ለዚህ ጣቢያ ፈቅደዋል</translation>
 <translation id="6568793038316600992">የመክፈያ ዘዴዎች አዝራርን ያስተዳድሩ፣ የእርስዎን ክፍያዎች እና የክሬዲት ካርድ መረጃ በChrome ቅንብሮች ውስጥ ለማስተዳደር ያግብሩ</translation>
 <translation id="6569060085658103619">የቅጥያ ገፅ እየተመለከቱ ነው</translation>
+<translation id="6571992525120410251"><ph name="ENGINE_NAME" />ን ማንኛውንም ነገር ይጠይቁ</translation>
 <translation id="6572867903637058088">ይህ አጋዥ ነው?</translation>
 <translation id="6573200754375280815">ድርብ ብስ ቀኝ</translation>
 <translation id="6575408526598156416">በመለያ ውስጥ አስቀምጥ</translation>
@@ -3453,6 +3459,7 @@
 <translation id="666259744093848177">(x86_64 የተተረጎመ)</translation>
 <translation id="6665553082534466207">ሦስቴ ብስ ቀኝ</translation>
 <translation id="6668389483194953109">«ብጁ» የሚል ስም ያለው የወረቀት መጠን ተገኝቷል ነገር ግን የ«custom_size» ባህሪ ባዶ ወይም ልክ ያልኾነ ነው።</translation>
+<translation id="6670729408462528018">ማዕከለ-ሥዕላት</translation>
 <translation id="6671169470640320959">ራስ ሰር ፋይናንሲንግ</translation>
 <translation id="6671697161687535275">የአስተያየት ጥቆማ ከChromium ይወገድ?</translation>
 <translation id="6675846980676550611">የላቀ እውነታ አይፈቀድም</translation>

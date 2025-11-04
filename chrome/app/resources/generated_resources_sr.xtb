@@ -7943,6 +7943,7 @@
 <translation id="6512759338201777379">Генерисана је <ph name="INDEX" />. слика од <ph name="SUBJECT" />, са расположењем <ph name="MOOD" />.</translation>
 <translation id="6513247462497316522">Google Chrome ће користити мобилне податке ако нисте повезани са другом мрежом.</translation>
 <translation id="6514010653036109809">Доступан уређај:</translation>
+<translation id="6515620015470298987">Пријављивање није успело због проблема са провером конфигурације уређаја. Извршите Powerwash уређаја <ph name="DEVICE_TYPE" /> и пробајте поново.</translation>
 <translation id="6516990372629061585">Прегледајте увезене сертификате из Linux-а</translation>
 <translation id="6517382055541687102">Изабрани уређај је промењен у <ph name="DEVICE_NAME" /></translation>
 <translation id="6517420300299531857">Фајлови на Мом диску се аутоматски синхронизују са Chromebook-ом, па можете да им приступате без интернет везе. То ће заузети око <ph name="REQUIRED_SPACE" />. Тренутно вам је доступно <ph name="FREE_SPACE_AVAILABLE" />.</translation>
@@ -8172,6 +8173,7 @@
 <translation id="6667187897999649121">За сада лозинке можете да делите само са члановима породице. <ph name="BEGIN_LINK" />Направите групу за породицу<ph name="END_LINK" /> са највише 6 чланова и добијте више из производа и претплата у свим Google услугама.</translation>
 <translation id="666731172850799929">Отвори у <ph name="APP_NAME" /></translation>
 <translation id="6669195257625975787">Подаци се третирају исто као и сајт који прегледате</translation>
+<translation id="6669865825859209286">Кликните овде да бисте раздвојили или распоредили подељени приказ</translation>
 <translation id="6670142487971298264">Апликација <ph name="APP_NAME" /> је сада доступна</translation>
 <translation id="6670767097276846646">Неки додаци могу да додају претраживаче у Chrome</translation>
 <translation id="6670983860904543332">Аутоматска ажурирања вам пружају најновије функције. Истражите истакнуте функције из недавних ажурирања.</translation>
@@ -11654,6 +11656,7 @@
 <translation id="9032004780329249150">Користите лозинке на iOS уређајима</translation>
 <translation id="9032097289595078011">Онемогући Брзо упаривање</translation>
 <translation id="9032513103438497286">Блокирајте апликације инсталиране на овом уређају <ph name="DEVICE_TYPE" />. Да бисте ограничили преузимање апликација или садржаја, идите у подешавања Google Play-а.</translation>
+<translation id="9033204084988490464">Скупи вертикалне картице</translation>
 <translation id="9033765790910064284">Ипак настави</translation>
 <translation id="9033857511263905942">&amp;Налепи</translation>
 <translation id="903480517321259405">Поново унесите PIN</translation>

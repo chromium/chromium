@@ -677,6 +677,7 @@
 <translation id="3642060527569456384">A rendszer automatikusan menti a lapcsoportokat, és frissíti őket az Ön összes eszközén.</translation>
 <translation id="3643338347976071250">{count,plural, =1{{count} jelszót csak erre az eszközre ment a rendszer. Ha a többi eszközén is használni szeretné, mentse Google-fiókjába ({email}).}other{{count} jelszót csak erre az eszközre ment a rendszer. Ha a többi eszközén is használni szeretné őket, mentse őket Google-fiókjába ({email}).}}</translation>
 <translation id="3659297405161482746">Nem találhatók fizetési módok</translation>
+<translation id="3662966164093827811">{count,plural, =1{1 kiválasztva}other{# kiválasztva}}</translation>
 <translation id="3668816008081204991">Az Olvasólista el van rejtve</translation>
 <translation id="3670030362669914947">Szám</translation>
 <translation id="3679163990085797665">Olvasottak törlése</translation>
@@ -741,6 +742,7 @@
 <translation id="3926703470020109118">Letöltés megszakítva</translation>
 <translation id="3929457972718048006">Címek</translation>
 <translation id="3931215329146376310">{count,plural, =1{Új jelszó ehhez a webhelyhez}other{Új jelszavak ehhez a webhelyhez}}</translation>
+<translation id="3933372629914873850">Bejelentkezik ide: <ph name="URL" /></translation>
 <translation id="3934905113567851655">Húzza össze ujjait az átméretezéshez</translation>
 <translation id="3940195383040445971">Árkövetés a megnyitott lapokon</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{{COUNT} lap bezárása}other{{COUNT} lap bezárása}}</translation>
@@ -1330,6 +1332,7 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="6103540626693881831">Eszközalapú titkosítás</translation>
 <translation id="611361228753138223">Az ezen az eszközön nemrégiben felkeresett webhelyek</translation>
 <translation id="611705554202268369">Lapcsoporthoz való hozzáadáshoz nyomja meg hosszan</translation>
+<translation id="6117260878488959646">Hiba történt. Próbálja újra később.</translation>
 <translation id="6122191549521593678">Online</translation>
 <translation id="6122831415929794347">Kikapcsolja a Biztonságos Böngészést?</translation>
 <translation id="6123514585040403489">A rendszer bezárja a lapokat</translation>

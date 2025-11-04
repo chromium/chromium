@@ -1676,7 +1676,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3723316892512143176">IBAN</translation>
 <translation id="3723663469265383848">Não será possível usar o dispositivo por até 10 minutos durante a atualização.</translation>
 <translation id="372429172604983730">Entre os apps que podem causar esse erro estão antivírus, firewall e softwares de filtros ou proxy da Web.</translation>
-<translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione Tab e depois Enter para criar rapidamente um novo arquivo no Apresentações Google</translation>
+<translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione Tab e depois Enter para criar um novo arquivo no Google Slides em instantes</translation>
 <translation id="3727309136762649052">Namespace</translation>
 <translation id="3727850735097852673">Para usar o Gerenciador de senhas do Google com o Acesso às Chaves do macOS, reinicie o Chrome e permita o acesso. Suas guias serão reabertas após a reinicialização.</translation>
 <translation id="3728173127485570463">O navegador Chrome não vai mais exigir sua impressão digital para preencher senhas automaticamente</translation>
@@ -1844,6 +1844,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4014895360827978999">Sistemas de pagamento e serviços para comerciantes</translation>
 <translation id="4018819349042761761">Chave pública</translation>
 <translation id="4023431997072828269">Como o formulário é enviado por uma conexão que não é segura, suas informações ficarão visíveis para outras pessoas.</translation>
+<translation id="4024673763872230929">Guarde suas informações e preencha formulários mais rapidamente. Os dados ficam salvos no seu dispositivo.</translation>
 <translation id="4025325634010721551">Políticas atualizadas</translation>
 <translation id="4025338605225449265">Moedas e câmbio</translation>
 <translation id="4025777154208238692">Inverter a ordem</translation>
@@ -2244,7 +2245,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4675391562155186035">Chave de acesso • seu perfil do Chrome</translation>
 <translation id="467662567472608290">Este servidor não conseguiu provar que é <ph name="DOMAIN" />. O certificado de segurança contém erros. Isso pode ser causado por uma configuração incorreta ou pela interceptação da sua conexão por um invasor.</translation>
 <translation id="4677585247300749148"><ph name="URL" /> quer responder a eventos de acessibilidade</translation>
-<translation id="467809019005607715">Apresentações Google</translation>
+<translation id="467809019005607715">Google Slides</translation>
 <translation id="4678379207584374453"><ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="4682496302933121474">Traduzir página?</translation>
 <translation id="468314109939257734">Ver o número do seu cartão virtual</translation>
@@ -2277,6 +2278,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4732860731866514038">Baixando o pacote de idioma <ph name="LANGUAGE" />… <ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992"><ph name="URL" /> quer acessar o local do seu dispositivo</translation>
 <translation id="473414950835101501">Usar as câmeras</translation>
+<translation id="4734343956394152985"><ph name="BEGIN_BOLD" />Padrão atual<ph name="END_BOLD" /> · <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="4736825316280949806">Reiniciar o Chromium</translation>
 <translation id="4736934858538408121">Cartão virtual</translation>
 <translation id="473775607612524610">Atualizar</translation>
@@ -2339,6 +2341,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4822493756793346865">Os preços normais são baseados em lojas na Web nos últimos 90 dias.</translation>
 <translation id="4822922322149719535">Revisar o registro de erros</translation>
 <translation id="4823699521959851389">O <ph name="SHORT_PRODUCT_NAME" /> precisa da seguinte permissão do seu dispositivo: <ph name="PERMISSION" /></translation>
+<translation id="4825311006392962663">Mostrar opções de pagar depois ao finalizar a compra</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione Tab e depois Enter para criar rapidamente um novo arquivo do Planilhas Google</translation>
 <translation id="4826588772550366629">a câmera e o microfone</translation>
 <translation id="4827283332383516812">Excluir cartão</translation>
@@ -2430,6 +2433,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4961708452830821006">Para usar o microfone, permita o acesso ao Chrome em <ph name="LINK" />.</translation>
 <translation id="4963413887558778009">Paisagismo</translation>
 <translation id="4967366744630699583">Editar endereço</translation>
+<translation id="4968046291688599384">Número do cartão virtual de uso único (<ph name="BNPL_ISSUER_NAME" />) preenchido.</translation>
 <translation id="4968522289500246572">Este app foi criado para dispositivos móveis e pode não ser redimensionado corretamente. Pode haver erros ou talvez o app seja reiniciado.</translation>
 <translation id="4968665849807487749">Pode pedir para gerenciar janelas em todas as suas telas</translation>
 <translation id="4969341057194253438">Excluir gravação</translation>
@@ -3386,6 +3390,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6521745193039995384">não ativa</translation>
 <translation id="6522682797352430154">Música clássica</translation>
 <translation id="6524830701589638230">Botão "Gerenciar configurações de acessibilidade". Pressione para personalizar as ferramentas de acessibilidade nas configurações do Chrome</translation>
+<translation id="6525222262307262764">Manter padrão atual</translation>
 <translation id="6527049834925947126">Produção de alimentos</translation>
 <translation id="6529173248185917884">Sétimo rolo</translation>
 <translation id="6529602333819889595">&amp;Refazer excluir</translation>
@@ -3406,6 +3411,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6567832540451970450">O administrador dá a permissão de <ph name="PERMISSION" /> para este site</translation>
 <translation id="6568793038316600992">Botão "Gerenciar formas de pagamento". Ative para gerenciar suas informações de pagamento e de cartão de crédito nas configurações do Chrome</translation>
 <translation id="6569060085658103619">Você está vendo uma página de extensões</translation>
+<translation id="6571992525120410251">Pergunte o que quiser a <ph name="ENGINE_NAME" /></translation>
 <translation id="6572867903637058088">A informação foi útil?</translation>
 <translation id="6573200754375280815">Perfuração dupla no lado direito</translation>
 <translation id="6575408526598156416">Salvar na conta</translation>
@@ -3454,6 +3460,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="666259744093848177">(x86_64 com tradução)</translation>
 <translation id="6665553082534466207">Perfuração tripla no lado direito</translation>
 <translation id="6668389483194953109">O nome do tamanho do papel foi encontrado como "custom", mas a propriedade "custom_size" está vazia ou é inválida.</translation>
+<translation id="6670729408462528018">Galeria</translation>
 <translation id="6671169470640320959">Financiamento de automóveis</translation>
 <translation id="6671697161687535275">Remover sugestão de formulário do Chromium?</translation>
 <translation id="6675846980676550611">RA não permitida</translation>
@@ -3641,7 +3648,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="696703987787944103">Perceptivo</translation>
 <translation id="6967851206780867018">1 arquivo foi bloqueado devido ao conteúdo</translation>
 <translation id="6970885655016700774">Tecido (permanente)</translation>
-<translation id="6971439137020188025">Criar rapidamente um novo arquivo no Apresentações Google</translation>
+<translation id="6971439137020188025">Criar um novo arquivo no Google Slides em instantes</translation>
 <translation id="6972629891077993081">Dispositivos HID</translation>
 <translation id="6972867931824045907">Para usar sua área de transferência, permita o acesso ao Chrome em <ph name="LINK" />.</translation>
 <translation id="6973656660372572881">Ambos os servidores proxy fixo e um URL de script .pac foram especificados.</translation>
@@ -4728,7 +4735,7 @@ Mais detalhes:
 <translation id="8766943070169463815">A página de autenticação de credenciais para pagamento seguro está aberta</translation>
 <translation id="8767765348545497220">Fechar balão de ajuda</translation>
 <translation id="8767881944435256294">{COUNT,plural, =1{1 forma de pagamento}one{# forma de pagamento}other{# formas de pagamento}}</translation>
-<translation id="8768225988514678921">Botão "Criar apresentação". Ative para criar rapidamente um novo arquivo no Apresentações Google</translation>
+<translation id="8768225988514678921">Botão "Criar apresentação". Ative para criar rapidamente um novo arquivo no Google Slides</translation>
 <translation id="8769662576926275897">Detalhes do cartão</translation>
 <translation id="8769858749286369844">Marrom-claro 2</translation>
 <translation id="8770286973007342895">Cortadores de grama</translation>

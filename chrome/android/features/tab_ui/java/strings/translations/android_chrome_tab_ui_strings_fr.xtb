@@ -64,6 +64,7 @@
 <translation id="2918484639460781603">Accéder aux paramètres</translation>
 <translation id="2928243913527329289">Google | À propos de ce magasin</translation>
 <translation id="2978860912612699943">{ITEMS_COUNT,plural, =1{<ph name="ITEMS_COUNT_ONE" /> sélectionné}one{<ph name="ITEMS_COUNT_MANY" /> sélectionné}other{<ph name="ITEMS_COUNT_MANY" /> sélectionnés}}</translation>
+<translation id="2991702137079525605">{TABS_COUNT,plural, =1{Épingler l'onglet}one{Épingler l'onglet}other{Épingler les onglets}}</translation>
 <translation id="3008554597174452548">Arrêter de suivre le produit</translation>
 <translation id="3026391124054406831">Créez des groupes pour organiser vos onglets.</translation>
 <translation id="3051031624272448591">Vous pouvez toujours les récupérer dans l'historique</translation>
@@ -85,6 +86,7 @@
 <translation id="3940195383040445971">Suivi des prix dans les onglets</translation>
 <translation id="3940717704786481856">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> nouvel onglet, <ph name="ANY_CLOSED" /> fermé(s)}one{<ph name="MANY_ADDED" /> nouvel onglet, <ph name="ANY_CLOSED" /> fermé(s)}other{<ph name="MANY_ADDED" /> nouveaux onglets, <ph name="ANY_CLOSED" /> fermé(s)}}</translation>
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{Ajouter l'onglet au groupe}one{Ajouter l'onglet au groupe}other{Regrouper les onglets}}</translation>
+<translation id="3962134438902735041">{TABS_COUNT,plural, =1{Retirer <ph name="TABS_COUNT_ONE" /> onglet sélectionné}one{Retirer <ph name="TABS_COUNT_MANY" /> onglet sélectionné}other{Retirer <ph name="TABS_COUNT_MANY" /> onglets sélectionnés}}</translation>
 <translation id="4009732926939031387">{NUM_DAYS,plural, =1{Créé il y a <ph name="NUM_DAYS_ONE" /> jour}one{Créé il y a <ph name="NUM_DAYS_MANY" /> jour}other{Créé il y a <ph name="NUM_DAYS_MANY" /> jours}}</translation>
 <translation id="4076226664360336092">Liste de groupes d'onglets, ouverte à pleine hauteur</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> onglets semblent liés. Voulez-vous les regrouper ?</translation>
@@ -140,6 +142,7 @@
 <translation id="625996437999624951">{TAB_COUNT,plural, =1{Supprimer l'onglet du groupe}one{Supprimer l'onglet du groupe}other{Supprimer les onglets du groupe}}</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Ajouter l'onglet à un nouveau groupe}one{Ajouter l'onglet à un nouveau groupe}other{Ajouter les onglets à un nouveau groupe}}</translation>
 <translation id="6333260925957816943">Infos sur ce magasin</translation>
+<translation id="6344715021569694246">{TABS_COUNT,plural, =1{Épingler <ph name="TABS_COUNT_ONE" /> onglet sélectionné}one{Épingler <ph name="TABS_COUNT_MANY" /> onglet sélectionné}other{Épingler <ph name="TABS_COUNT_MANY" /> onglets sélectionnés}}</translation>
 <translation id="6381032505162537930">Vos groupes d'onglets s'afficheront ici</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Dégrouper <ph name="TABS_COUNT_ONE" /> onglet sélectionné}one{Dégrouper <ph name="TABS_COUNT_MANY" /> onglet sélectionné}other{Dégrouper <ph name="TABS_COUNT_MANY" /> onglets sélectionnés}}</translation>
 <translation id="6499296376514955580">Avis fermé sur les modifications apportées au groupe d'onglets partagés</translation>
@@ -198,6 +201,7 @@
 <translation id="805809603610022708">{TABS_COUNT,plural, =1{Ajouter l'onglet à un groupe}one{Ajouter l'onglet à un groupe}other{Ajouter les onglets à un groupe}}</translation>
 <translation id="8138067144082174140">Après 14 jours d'inactivité</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{Développer le groupe d'onglets <ph name="TITLE_OF_GROUP" /> de couleur <ph name="COLOR_NAME" /> comprenant <ph name="TABS_COUNT_ONE" /> onglet.}one{Développer le groupe d'onglets <ph name="TITLE_OF_GROUP" /> de couleur <ph name="COLOR_NAME" /> comprenant <ph name="TABS_COUNT_MANY" /> onglet.}other{Développer le groupe d'onglets <ph name="TITLE_OF_GROUP" /> de couleur <ph name="COLOR_NAME" /> comprenant <ph name="TABS_COUNT_MANY" /> onglets.}}</translation>
+<translation id="8195186926670288294">{TABS_COUNT,plural, =1{Retirer l'onglet}one{Retirer l'onglet}other{Retirer les onglets}}</translation>
 <translation id="8205266828577616993">Déplacer l'onglet vers le haut</translation>
 <translation id="8207688828622594111">{NUM_MINS,plural, =1{Mis à jour il y a <ph name="NUM_MINS_ONE" /> minute}one{Mis à jour il y a <ph name="NUM_MINS_MANY" /> minute}other{Mis à jour il y a <ph name="NUM_MINS_MANY" /> minutes}}</translation>
 <translation id="8236097722223016103">Ajouter aux favoris</translation>

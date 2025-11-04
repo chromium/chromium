@@ -25,6 +25,7 @@
 <translation id="1502360822835740515">Chromium als Standardbrowser festlegen</translation>
 <translation id="1503199973012840174">Deine Chromium-Version ist veraltet. Aktualisiere sie, um deine Daten besser zu schützen.</translation>
 <translation id="1515748263297244785">Standardmäßig Chromium für iPad verwenden</translation>
+<translation id="1530961174488670696">Chromium konnte nicht nach Updates suchen. Versuche es später noch einmal.</translation>
 <translation id="1531155317299575425">Aufforderungen für die Anmeldung in Chromium werden angezeigt.</translation>
 <translation id="1553657876656159572">Ein personalisierter Feed für dich. Er enthält Nachrichten, Sport und das Wetter.</translation>
 <translation id="1561849081734670621">Wenn du den Blockierungsmodus in Chromium deaktivieren möchtest, musst du ihn auf deinem iPhone ausschalten.</translation>
@@ -144,6 +145,7 @@ Deine Daten werden mit deiner Passphrase verschlüsselt. Gib sie ein, um Chromiu
 <translation id="420541179527342563">Wenn du den Blockierungsmodus in Chromium deaktivieren möchtest, musst du ihn auf deinem iPad ausschalten.</translation>
 <translation id="4272892696084633551">Ich möchte dabei helfen, die Funktionen und die Leistung von Chromium zu verbessern</translation>
 <translation id="4302397443352897529">Chromium-Einstellungen</translation>
+<translation id="4304713468139749426">Passwort­manager</translation>
 <translation id="4408912345039114853">Chromium-Sicherheitscheck ausführen</translation>
 <translation id="4432744876818348753">Wenn du Chromium optimal nutzen möchtest, melde dich an.</translation>
 <translation id="4445228361214254027">Deine Organisation hat die Möglichkeit deaktiviert, Chromium-Daten in deinem Google-Konto zu speichern und zu nutzen. Neue Lesezeichen, Passwörter und weitere Informationen werden nur auf diesem Gerät gespeichert.</translation>
@@ -235,7 +237,6 @@ Wichtige Hinweise:
 <translation id="6154098560469640583">Du kannst Chromium jederzeit nutzen, wenn du in Nachrichten, Dokumenten und anderen Apps auf Links tippst.</translation>
 <translation id="6157162508956739031">Melde dich schnell in Apps und auf Websites an, indem du deine Passwörter und Passkeys aus Chromium automatisch ausfüllen lässt</translation>
 <translation id="6170619162539716595">Erlaube Chromium, über Google Maps Wegbeschreibungen und lokale Informationen zu erkannten Adressen bereitzustellen.</translation>
-<translation id="6247557882553405851">Google Passwortmanager</translation>
 <translation id="6268381023930128611">Von Chromium abmelden?</translation>
 <translation id="6301717043141881464">Wähle „Autofill“ in Chromium, um deine gespeicherten Passwörter ganz einfach in deinen anderen Apps abzurufen</translation>
 <translation id="6324041800010509197">Tab-Raster in Chromium aufrufen</translation>

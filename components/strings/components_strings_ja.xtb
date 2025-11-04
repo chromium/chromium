@@ -1844,6 +1844,7 @@
 <translation id="4014895360827978999">取引サービス、決済システム</translation>
 <translation id="4018819349042761761">公開鍵</translation>
 <translation id="4023431997072828269">このフォームは安全ではない接続を使用して送信されているため、情報が他人に読み取られる可能性があります。</translation>
+<translation id="4024673763872230929">情報を保存すると、フォームにすばやく入力できます。情報はデバイスに保存されます。</translation>
 <translation id="4025325634010721551">ポリシーを再読み込みしました</translation>
 <translation id="4025338605225449265">通貨、為替</translation>
 <translation id="4025777154208238692">最終ページから印刷</translation>
@@ -2277,6 +2278,7 @@
 <translation id="4732860731866514038"><ph name="LANGUAGE" /> の言語パックをダウンロードしています... <ph name="PERCENT" />% 完了</translation>
 <translation id="4733082559415072992">デバイスの現在地情報について、<ph name="URL" /> が使用許可を求めています</translation>
 <translation id="473414950835101501">カメラの使用</translation>
+<translation id="4734343956394152985"><ph name="BEGIN_BOLD" />現在のデフォルト設定<ph name="END_BOLD" /> · <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="4736825316280949806">Chromium を再起動する</translation>
 <translation id="4736934858538408121">仮想カード</translation>
 <translation id="473775607612524610">更新</translation>
@@ -2339,6 +2341,7 @@
 <translation id="4822493756793346865">一般的な価格帯は、ウェブ上のショップから過去 90 日間の価格情報を収集し、算出しています。</translation>
 <translation id="4822922322149719535">エラーログを確認</translation>
 <translation id="4823699521959851389"><ph name="SHORT_PRODUCT_NAME" /> がデバイスの <ph name="PERMISSION" /> へのアクセスを求めています</translation>
+<translation id="4825311006392962663">購入手続き時に後払いオプションを表示する</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab キー、Enter キーの順に押すと、新しい Google スプレッドシートをすばやく作成します</translation>
 <translation id="4826588772550366629">カメラとマイク</translation>
 <translation id="4827283332383516812">カードを削除</translation>
@@ -2430,6 +2433,7 @@
 <translation id="4961708452830821006">マイクを使用するには、<ph name="LINK" /> で Chrome にアクセスを許可してください。</translation>
 <translation id="4963413887558778009">造園設計</translation>
 <translation id="4967366744630699583">住所を編集</translation>
+<translation id="4968046291688599384"><ph name="BNPL_ISSUER_NAME" /> の 1 回限りの仮想カード番号が入力されました。</translation>
 <translation id="4968522289500246572">このアプリはモバイル向けに設計されているため、適切にサイズ変更されない可能性があります。アプリに問題が生じたり、再起動したりすることがあります。</translation>
 <translation id="4968665849807487749">全ディスプレイのウィンドウ管理をリクエストできます</translation>
 <translation id="4969341057194253438">録画を削除</translation>
@@ -3386,6 +3390,7 @@
 <translation id="6521745193039995384">無効</translation>
 <translation id="6522682797352430154">クラシック音楽</translation>
 <translation id="6524830701589638230">[ユーザー補助設定を管理] ボタンです。実行すると、Chrome の設定でユーザー補助ツールをカスタマイズできます</translation>
+<translation id="6525222262307262764">現在のデフォルト設定を使用</translation>
 <translation id="6527049834925947126">食品産業</translation>
 <translation id="6529173248185917884">ロール 7</translation>
 <translation id="6529602333819889595">削除のやり直し（&amp;R）</translation>
@@ -3406,6 +3411,7 @@
 <translation id="6567832540451970450">このサイトの <ph name="PERMISSION" /> の使用は管理者が許可しています</translation>
 <translation id="6568793038316600992">[お支払い方法を管理] ボタンです。実行すると、Chrome の設定でお支払いとクレジット カードの情報を管理できます</translation>
 <translation id="6569060085658103619">拡張機能のページを表示しています</translation>
+<translation id="6571992525120410251"><ph name="ENGINE_NAME" /> に質問する</translation>
 <translation id="6572867903637058088">お役に立ちましたか？</translation>
 <translation id="6573200754375280815">2 穴パンチ（右）</translation>
 <translation id="6575408526598156416">アカウントに保存</translation>
@@ -3454,6 +3460,7 @@
 <translation id="666259744093848177">（x86_64 翻訳）</translation>
 <translation id="6665553082534466207">3 穴パンチ（右）</translation>
 <translation id="6668389483194953109">用紙サイズ名「custom」が見つかりましたが、「custom_size」プロパティが空であるか無効です。</translation>
+<translation id="6670729408462528018">ギャラリー</translation>
 <translation id="6671169470640320959">自動車ローン</translation>
 <translation id="6671697161687535275">Chromium から候補を削除してもよろしいですか？</translation>
 <translation id="6675846980676550611">AR は許可されていません</translation>

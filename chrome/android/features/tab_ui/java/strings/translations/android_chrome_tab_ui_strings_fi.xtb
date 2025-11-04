@@ -64,6 +64,7 @@
 <translation id="2918484639460781603">Avaa asetukset</translation>
 <translation id="2928243913527329289">Google | Tietoja tästä kaupasta</translation>
 <translation id="2978860912612699943">{ITEMS_COUNT,plural, =1{<ph name="ITEMS_COUNT_ONE" /> valittu}other{<ph name="ITEMS_COUNT_MANY" /> valittu}}</translation>
+<translation id="2991702137079525605">{TABS_COUNT,plural, =1{Kiinnitä välilehti}other{Kiinnitä välilehdet}}</translation>
 <translation id="3008554597174452548">Lopeta tuotteen seuraaminen</translation>
 <translation id="3026391124054406831">Luo ryhmiä, niin voit järjestellä välilehtiä.</translation>
 <translation id="3051031624272448591">Voit milloin tahansa palauttaa ne historiasta</translation>
@@ -85,6 +86,7 @@
 <translation id="3940195383040445971">Seuraa hintoja välilehdillä</translation>
 <translation id="3940717704786481856">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> uusi välilehti, <ph name="ANY_CLOSED" /> suljettu}other{<ph name="MANY_ADDED" /> uutta välilehteä, <ph name="ANY_CLOSED" /> suljettu}}</translation>
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{Ryhmittele välilehti}other{Ryhmittele välilehdet}}</translation>
+<translation id="3962134438902735041">{TABS_COUNT,plural, =1{Irrota <ph name="TABS_COUNT_ONE" /> valittu välilehti}other{Irrota <ph name="TABS_COUNT_MANY" /> valittua välilehteä}}</translation>
 <translation id="4009732926939031387">{NUM_DAYS,plural, =1{Luotu <ph name="NUM_DAYS_ONE" /> päivä sitten}other{Luotu <ph name="NUM_DAYS_MANY" /> päivää sitten}}</translation>
 <translation id="4076226664360336092">Välilehtiryhmälista avattu kokonaan</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> välilehteä vaikuttaa liittyvän toisiinsa. Lisätäänkö ne ryhmäksi?</translation>
@@ -140,6 +142,7 @@
 <translation id="625996437999624951">{TAB_COUNT,plural, =1{Poista välilehti ryhmästä}other{Poista välilehdet ryhmästä}}</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Lisää välilehti uuteen ryhmään}other{Lisää välilehtiä uuteen ryhmään}}</translation>
 <translation id="6333260925957816943">Tietoja tästä kaupasta</translation>
+<translation id="6344715021569694246">{TABS_COUNT,plural, =1{Kiinnitä <ph name="TABS_COUNT_ONE" /> valittu välilehti}other{Kiinnitä <ph name="TABS_COUNT_MANY" /> valittua välilehteä}}</translation>
 <translation id="6381032505162537930">Näet välilehtiryhmäsi täällä</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Poista <ph name="TABS_COUNT_ONE" /> valitun välilehden ryhmittely}other{Poista <ph name="TABS_COUNT_MANY" /> valitun välilehden ryhmittely}}</translation>
 <translation id="6499296376514955580">Ilmoitus jaetun välilehtiryhmän muutoksista suljettu</translation>
@@ -198,6 +201,7 @@
 <translation id="805809603610022708">{TABS_COUNT,plural, =1{Lisää välilehti ryhmään}other{Lisää välilehtiä ryhmään}}</translation>
 <translation id="8138067144082174140">Kun välilehti on ollut ei-aktiivinen 14 päivää</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{Laajenna välilehtiryhmä (<ph name="TITLE_OF_GROUP" />), jossa on <ph name="TABS_COUNT_ONE" /> välilehti, väri <ph name="COLOR_NAME" />.}other{Laajenna välilehtiryhmä (<ph name="TITLE_OF_GROUP" />), jossa on <ph name="TABS_COUNT_MANY" /> välilehteä, väri <ph name="COLOR_NAME" />.}}</translation>
+<translation id="8195186926670288294">{TABS_COUNT,plural, =1{Irrota välilehti}other{Irrota välilehdet}}</translation>
 <translation id="8205266828577616993">Siirrä välilehti ylöspäin</translation>
 <translation id="8207688828622594111">{NUM_MINS,plural, =1{Päivitetty <ph name="NUM_MINS_ONE" /> minuutti sitten}other{Päivitetty <ph name="NUM_MINS_MANY" /> minuuttia sitten}}</translation>
 <translation id="8236097722223016103">Lisää kirjanmerkkeihin</translation>

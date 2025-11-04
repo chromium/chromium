@@ -2341,6 +2341,7 @@
 <translation id="4822493756793346865">قیمت‌های معمول براساس فروشگاه‌های سراسر وب درطول ۹۰ روز گذشته ارائه شده است.</translation>
 <translation id="4822922322149719535">مرور کردن گزارش خطا</translation>
 <translation id="4823699521959851389">‫<ph name="SHORT_PRODUCT_NAME" /> باید به <ph name="PERMISSION" /> دستگاهتان دسترسی داشته باشد</translation>
+<translation id="4825311006392962663">گزینه‌های «بعداً پرداخت کنید» هنگام تسویه‌حساب نمایش داده شود</translation>
 <translation id="4825496307559726072">‏<ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />؛ برای ایجاد سریع «کاربرگ‌نگار Google» جدید، کلید «جهش» و سپس «ورود» را فشار دهید</translation>
 <translation id="4826588772550366629">دوربین و میکروفون</translation>
 <translation id="4827283332383516812">حذف کارت</translation>
@@ -2432,6 +2433,7 @@
 <translation id="4961708452830821006">‏برای استفاده از میکروفون، در <ph name="LINK" /> به Chrome دسترسی دهید.</translation>
 <translation id="4963413887558778009">طراحی چشم‌انداز</translation>
 <translation id="4967366744630699583">ویرایش نشانی</translation>
+<translation id="4968046291688599384">شماره کارت مجازی یک‌باره <ph name="BNPL_ISSUER_NAME" /> تکمیل شد.</translation>
 <translation id="4968522289500246572">این برنامه برای تلفن همراه طراحی شده است و ممکن است با تغییر اندازه سازگار نباشد. برنامه ممکن است با مشکلاتی روبرو شود یا بازراه‌اندازی شود.</translation>
 <translation id="4968665849807487749">می‌تواند درخواست کند پنجره‌های همه نمایشگرهایتان را مدیریت کند</translation>
 <translation id="4969341057194253438">حذف ویدیو  ضبط‌شده</translation>
@@ -3451,6 +3453,7 @@
 <translation id="6652101503459149953">‏استفاده از Windows Hello</translation>
 <translation id="6654224358955673568">رسمی کردن</translation>
 <translation id="6654244995031366386">شیشه (مشجر)</translation>
+<translation id="6655085656059574817">حفظ پیوند حسابتان به پرداخت سریع‌تر با <ph name="BNPL_ISSUER_NAME" /> کمک می‌کند، اما می‌توانید با رفتن به <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" />، پیوند آن را لغو کنید.</translation>
 <translation id="6657585470893396449">گذرواژه</translation>
 <translation id="6659246032834639189">این قیمت پایین است</translation>
 <translation id="6660413144148052430">مکان</translation>
@@ -3866,7 +3869,7 @@
 <translation id="7359588939039777303">آگهی‌ها مسدود شدند.</translation>
 <translation id="7360451453306104998">‏وقتی Google تخفیف‌های موجود را پیدا کرد، این تخفیف‌ها هنگام تسویه‌حساب نشان داده می‌شود</translation>
 <translation id="7362281996276843968">این گروه بسته شد</translation>
-<translation id="7363096869660964304">اما، شما نامرئی نمی‌شوید. با استفاده از «حالت ناشناس»، مرورتان از چشمان کارفرمای شما، رساننده خدمات اینترنتی یا وب‌سایت‌هایی که بازدید می‌کنید پنهان نمی‌ماند.</translation>
+<translation id="7363096869660964304">اما، شما نامرئی نمی‌شوید. بااستفاده از «حالت ناشناس»، مرورتان از چشمان کارفرمای شما، فراهم‌ساز خدمات اینترنتی یا وب‌سایت‌هایی که بازدید می‌کنید پنهان نمی‌ماند.</translation>
 <translation id="7365596969960773405">‏<ph name="MANAGE_ADDRESSES_FOCUSED_FRIENDLY_MATCH_TEXT" />، کلید «جهش» و سپس «ورود» را فشار دهید و نشانی‌ها را در تنظیمات Chrome اضافه و مدیریت کنید</translation>
 <translation id="7365849542400970216">می‌توانیم موارد استفاده از دستگاهتان را بدانیم؟</translation>
 <translation id="736592699917579616">غذا</translation>
@@ -4753,7 +4756,7 @@
 <translation id="8798099450830957504">پیش‌فرض</translation>
 <translation id="8800034312320686233">سایت کار نمی‌کند؟</translation>
 <translation id="8805819170075074995">‏ورودی فهرست «<ph name="LANGUAGE_ID" />»: ورودی نادیده گرفته شد زیرا در خط‌مشی SpellcheckLanguage نیز لحاظ شده است.</translation>
-<translation id="8806062468703310719">رساننده خدمات تلفن</translation>
+<translation id="8806062468703310719">فراهم‌ساز خدمات تلفن</translation>
 <translation id="8806696968588872703">پلاستیک (ساتن)</translation>
 <translation id="8807160976559152894">برش دادن بعد از چاپ هر صفحه</translation>
 <translation id="8811470563853401328">نشانی در حساب ذخیره شود؟</translation>
@@ -4917,7 +4920,7 @@
 <translation id="9090218457905363312">موسیقی کارائیبی و رگِی</translation>
 <translation id="9090243919347147717">پیوست‌ها</translation>
 <translation id="9090548458280093580">جستجوی سابقه، با بهره‌گیری از هوش مصنوعی</translation>
-<translation id="9090993752571911635">‏رساننده خدمات اینترنتی (ISP)</translation>
+<translation id="9090993752571911635">‏فراهم‌ساز خدمات اینترنتی (ISP)</translation>
 <translation id="9093723786115107672">لباس خواب</translation>
 <translation id="9094544726794842788">«رأی مخالف» فرمی را برای ارسال بازخورد دقیق درباره علت نپسندیدن این نتایج باز می‌کند</translation>
 <translation id="9094809883254050729">دفعه بعد به‌طور خودکار تکمیل می‌شود. کارت پس‌از ذخیره شدن رمزگذاری می‌شود.</translation>

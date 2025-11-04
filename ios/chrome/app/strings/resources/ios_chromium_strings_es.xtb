@@ -25,6 +25,7 @@
 <translation id="1502360822835740515">Establece Chromium como navegador predeterminado</translation>
 <translation id="1503199973012840174">Chromium no está actualizado. Actualízalo para protegerte.</translation>
 <translation id="1515748263297244785">Usa Chromium para iPad de forma predeterminada</translation>
+<translation id="1530961174488670696">Chromium no ha podido comprobar si hay actualizaciones. Inténtalo de nuevo más tarde.</translation>
 <translation id="1531155317299575425">Muestra solicitudes para iniciar sesión en Chromium.</translation>
 <translation id="1553657876656159572">Un feed personalizado creado para ti. Incluye noticias, deportes y el tiempo.</translation>
 <translation id="1561849081734670621">Para inhabilitar el modo Bloqueo de seguridad en Chromium, desactívalo en tu iPhone.</translation>
@@ -145,6 +146,7 @@ Tus datos se han cifrado con tu frase de contraseña. Introdúcela para usar y g
 <translation id="420541179527342563">Para inhabilitar el modo Bloqueo de seguridad en Chromium, desactívalo en tu iPad.</translation>
 <translation id="4272892696084633551">Ayudar a mejorar las funciones y el rendimiento de Chromium</translation>
 <translation id="4302397443352897529">Configuración de Chromium</translation>
+<translation id="4304713468139749426">Gestor de contraseñas</translation>
 <translation id="4408912345039114853">Ejecutar comprobación de seguridad de Chromium</translation>
 <translation id="4432744876818348753">Inicia sesión para sacarle el máximo partido a Chromium.</translation>
 <translation id="4445228361214254027">Tu organización ha desactivado la opción de usar y guardar datos de Chromium en tu cuenta de Google. Los marcadores, las contraseñas y otros elementos nuevos solo se guardarán en este dispositivo.</translation>
@@ -236,7 +238,6 @@ Notas importantes:
 <translation id="6154098560469640583">Usa Chromium siempre que toques enlaces de mensajes, documentos y otras aplicaciones.</translation>
 <translation id="6157162508956739031">Inicia sesión rápidamente en aplicaciones y sitios con el autocompletado de contraseñas y llaves de acceso de Chromium</translation>
 <translation id="6170619162539716595">Permite que Chromium use Google Maps para ofrecerte indicaciones e información local sobre las direcciones detectadas.</translation>
-<translation id="6247557882553405851">Gestor de contraseñas de Google</translation>
 <translation id="6268381023930128611">¿Cerrar sesión en Chromium?</translation>
 <translation id="6301717043141881464">Para obtener fácilmente tus contraseñas guardadas en tus otras aplicaciones, elige Autocompletar en Chromium</translation>
 <translation id="6324041800010509197">Acceder a la cuadrícula de pestañas en Chromium</translation>

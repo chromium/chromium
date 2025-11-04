@@ -2341,6 +2341,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="4822493756793346865">Les prix habituels sont obtenus en fonction des magasins sur le Web au cours des trois derniers mois.</translation>
 <translation id="4822922322149719535">Examiner le journal des erreurs</translation>
 <translation id="4823699521959851389"><ph name="SHORT_PRODUCT_NAME" /> a besoin d'accéder à l'élément suivant de votre appareil : <ph name="PERMISSION" /></translation>
+<translation id="4825311006392962663">Affichez les options de paiement différé au moment du paiement</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur Tabulation, puis sur Entrée pour rapidement créer une feuille Google</translation>
 <translation id="4826588772550366629">caméra et microphone</translation>
 <translation id="4827283332383516812">Supprimer la carte</translation>
@@ -2432,6 +2433,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="4961708452830821006">Pour utiliser votre microphone, accordez l'accès à Chrome dans <ph name="LINK" />.</translation>
 <translation id="4963413887558778009">Aménagement paysager</translation>
 <translation id="4967366744630699583">Modifier l'adresse</translation>
+<translation id="4968046291688599384">Numéro de carte virtuelle unique <ph name="BNPL_ISSUER_NAME" /> rempli.</translation>
 <translation id="4968522289500246572">Cette application est développée pour les appareils mobiles et elle ne sera peut-être pas bien redimensionnée. L'application peut rencontrer des problèmes ou redémarrer.</translation>
 <translation id="4968665849807487749">Peut demander à gérer les fenêtres sur tous vos écrans</translation>
 <translation id="4969341057194253438">Supprimer l'enregistrement</translation>

@@ -2341,6 +2341,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4822493756793346865">Typical prices are based on shops across the web over the past 90 days.</translation>
 <translation id="4822922322149719535">Review error log</translation>
 <translation id="4823699521959851389"><ph name="SHORT_PRODUCT_NAME" /> needs access to your device's <ph name="PERMISSION" /></translation>
+<translation id="4825311006392962663">Show pay later options at checkout</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />: press Tab then Enter to create a new Google Sheet quickly</translation>
 <translation id="4826588772550366629">camera and microphone</translation>
 <translation id="4827283332383516812">Delete card</translation>
@@ -2432,6 +2433,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4961708452830821006">To use your microphone, give Chrome access in <ph name="LINK" />.</translation>
 <translation id="4963413887558778009">Landscape design</translation>
 <translation id="4967366744630699583">Edit address</translation>
+<translation id="4968046291688599384"><ph name="BNPL_ISSUER_NAME" /> one-time virtual card number filled.</translation>
 <translation id="4968522289500246572">This app is designed for mobile and may not resize well. The app may experience issues or restart.</translation>
 <translation id="4968665849807487749">Can ask to manage windows on all your displays</translation>
 <translation id="4969341057194253438">Delete recording</translation>

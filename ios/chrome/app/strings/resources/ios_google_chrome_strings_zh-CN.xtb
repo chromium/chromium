@@ -169,6 +169,7 @@
 <translation id="5162467219239570114">Chrome 版本太旧。如果 <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> 中无任何可用更新，则可能是因为您的设备不再支持新版 Chrome。</translation>
 <translation id="5184329579814168207">在 Chrome 中打开</translation>
 <translation id="5190139289262548459">您的组织 (<ph name="DOMAIN" />) 负责管理您登录的账号以及 Chrome 的使用方式。</translation>
+<translation id="5209238444239954363">Chrome 无法检查是否有更新，请稍后重试。</translation>
 <translation id="5305440589062022504">在 Chrome 中打开密码管理工具</translation>
 <translation id="5310957470610282541">部分 Chrome 数据尚未保存到您的 Google 账号。
 请尝试等待几分钟，然后再退出账号。如果现在就退出账号，这些数据将被删除。</translation>

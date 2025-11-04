@@ -1908,6 +1908,7 @@
 <translation id="2287704681286152065">{NUM_SITES,plural, =1{আপনার ডেটা সুরক্ষিত রাখতে, আপনি সম্প্রতি ভিজিট করেননি এমন একটি সাইট থেকে অনুমতি সরানো হয়েছে}one{আপনার ডেটা সুরক্ষিত রাখতে, আপনি সম্প্রতি ভিজিট করেননি এমন সাইট থেকে অনুমতি সরানো হয়েছে}other{আপনার ডেটা সুরক্ষিত রাখতে, আপনি সম্প্রতি ভিজিট করেননি এমন সাইট থেকে অনুমতি সরানো হয়েছে}}</translation>
 <translation id="2287944065963043964">লগ-ইন করার স্ক্রিন</translation>
 <translation id="2290615375132886363">ট্যাবলেট মোডে নেভিগেশন বোতাম</translation>
+<translation id="2290703778620332549">নতুন গ্রুপ তৈরি করবেন নাকি পরিবর্তন করবেন?</translation>
 <translation id="2291452790265535215">বুকমার্ক, অ্যাক্টিভিটির সিরিজ এবং আরও অনেক কিছুর জন্য সাইড প্যানেল ব্যবহার করার চেষ্টা করুন</translation>
 <translation id="229182044471402145">কোনও মানানসই ফন্ট খুঁজে পাওয়া যাচ্ছে না</translation>
 <translation id="2292590498047171967">ট্যাব শেয়ার করে অন্যদের সাথে কোলাবরেট করতে, আপনার ইতিহাস ও ট্যাব <ph name="EMAIL" />-এর সাথে সিঙ্ক করুন</translation>
@@ -2749,6 +2750,7 @@
 <translation id="2852045827873867442">ইন্টারনেট কানেকশন প্রয়োজন।</translation>
 <translation id="285237063405807022">(লোড হচ্ছে)</translation>
 <translation id="2853121255651601031">পাসওয়ার্ড সেভ করা হয়েছে</translation>
+<translation id="2854453262159518435">আগে থেকে থাকা ট্যাব গ্রুপ পরিবর্তন করুন</translation>
 <translation id="2855243985454069333">সিঙ্ক করা সব ডিভাইস থেকে ইতিহাস মুুছে দিন</translation>
 <translation id="2855812646048059450"><ph name="CREDENTIAL_PROVIDER" /> দিয়ে সাইন-ইন করুন</translation>
 <translation id="2856776373509145513">নতুন একটি কন্টেনার তৈরি করুন</translation>
@@ -3862,6 +3864,7 @@
 <translation id="3643962751030964445"><ph name="DEVICE_MANAGER" /> এই ডিভাইস ম্যানেজ করে। <ph name="USER_EMAIL_ADDRESS" /> অ্যাকাউন্টের জন্য, <ph name="DEVICE_MANAGER" />-এর একটি নতুন প্রোফাইল প্রয়োজন</translation>
 <translation id="364418405912311456">সার্চ করতে ছবি ক্লিক করে টেনে আনুন অথবা টেক্সট হাইলাইট করুন</translation>
 <translation id="3645372836428131288">আঙ্গুলের ছাপের বিভিন্ন অংশ ক্যাপচার করতে একটু এদিক-ওদিক সরান৷</translation>
+<translation id="3645951915068244649">এই বুকমার্ক ফোল্ডার দিয়ে আগেই একটি ট্যাব গ্রুপ তৈরি করা হয়েছে। আপনি কি নতুন ট্যাব গ্রুপ তৈরি করতে চান নাকি আগে থেকে থাকা ট্যাব গ্রুপটি পরিবর্তন করতে চান?</translation>
 <translation id="3646789916214779970">ডিফল্ট থিম রিসেট করুন</translation>
 <translation id="3647654707956482440">এই লিঙ্ক ব্যবহার করা যাচ্ছে না। লিখতে গিয়ে কিছু ভুল হয়েছে কিনা চেক করুন অথবা আবার চেষ্টা করতে অন্য একটি লিঙ্ক ব্যবহার করুন।</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> থেকে <ph name="ATTACHMENTS" /> এসেছে}one{<ph name="DEVICE_NAME" /> থেকে <ph name="ATTACHMENTS" /> এসেছে}other{<ph name="DEVICE_NAME" /> থেকে <ph name="ATTACHMENTS" /> এসেছে}}</translation>
@@ -5842,6 +5845,7 @@
 <translation id="5010886807652684893">ভিজ্যুয়াল ভিউ</translation>
 <translation id="5012523644916800014">পাসওয়ার্ড ও 'পাসকী' ম্যানেজ করুন</translation>
 <translation id="501394389332262641">ব্যাটারিতে চার্জ কম থাকার সাউন্ড</translation>
+<translation id="5014286001996333986">নতুন গ্রুপ তৈরি করবেন নাকি পরিবর্তন করবেন?</translation>
 <translation id="5015344424288992913">প্রক্সি স্থির করা হচ্ছে...</translation>
 <translation id="5016305686459575361">ফোন কানেক্ট করার মাধ্যমে আপনি এগুলি করতে পারবেন:</translation>
 <translation id="5016491575926936899">আপনার কম্পিউটার থেকে টেক্সট, ইন্টারনেট কানেকশন শেয়ার, কথোপকথনের বিজ্ঞপ্তির উত্তর এবং আপনার ফোনের সাহায্যে <ph name="DEVICE_TYPE" /> আনলক করতে পারবেন।<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />আরও জানুন<ph name="LINK_END" /></translation>
@@ -6544,6 +6548,7 @@
 <translation id="5499453227627332024">Linux কন্টেনারের আপগ্রেড ভার্সন এখন উপলভ্য। 'সেটিংস' অ্যাপ থেকে পরে এটি আপগ্রেড করে নিতে পারবেন।</translation>
 <translation id="5499476581866658341">আপনি এখন আপনার ফোনের সাম্প্রতিক ফটো এবং মিডিয়া দেখতে পারবেন</translation>
 <translation id="549957179819296104">নতুন আইকন</translation>
+<translation id="5499634624419508916">আগে থেকে থাকা ট্যাব গ্রুপ পরিবর্তন করুন</translation>
 <translation id="5500163593833085874">মাউসের বাঁদিকের বোতামটি বেছে নেওয়া থাকলে, ডবল ক্লিক করতে “+” ব্যবহার করুন</translation>
 <translation id="5500168250243071806">আপনি সাইন-ইন করে থাকলে <ph name="BEGIN_LINK_SEARCH" />সার্চ ইতিহাস<ph name="END_LINK_SEARCH" /> এবং <ph name="BEGIN_LINK_GOOGLE" />অন্যান্য অ্যাক্টিভিটি<ph name="END_LINK_GOOGLE" /> আপনার Google অ্যাকাউন্টে সেভ হয়ে যেতে পারে। আপনি যেকোনও সময় সেগুলি মুছে দিতে পারেন।</translation>
 <translation id="5501322521654567960">বাঁদিক বরাবর অ্যালাইন করা সাইড প্যানেল</translation>
@@ -8356,6 +8361,7 @@
 <translation id="6787839852456839824">কীবোর্ড শর্টকাটগুলি</translation>
 <translation id="6788210894632713004">এক্সটেনশন আনপ্যাক করুন</translation>
 <translation id="6789592661892473991">হরিজন্টাল স্প্লিট করুন</translation>
+<translation id="6789665473250283877"><ph name="TOOL_NAME" /> সরান</translation>
 <translation id="6789834167207639931">রিকভারি শেষ করার জন্য পরের স্ক্রিনে আবার Google অ্যাকাউন্ট পাসওয়ার্ড লিখুন</translation>
 <translation id="6790428901817661496">চালু করুন</translation>
 <translation id="6790497603648687708"><ph name="EXTENSION_NAME" /> কে দূরবর্তী লোকেশন থেকে যোগ করা হয়েছিল</translation>
@@ -11610,6 +11616,7 @@
 <translation id="90033698482696970">উপলভ্য থাকা ই-সিম প্রোফাইলের জন্য অটোমেটিক স্ক্যান করবেন?</translation>
 <translation id="9003647077635673607">সমস্ত ওয়েবসাইটে অনুমতি দিন</translation>
 <translation id="9005774573776346118">আপনার সব ডিভাইসে পাসওয়ার্ড, বুকমার্ক ও আরও অনেক কিছু পেতে, <ph name="EMAIL" /> হিসেবে সাইন-ইন করুন</translation>
+<translation id="9008133509889712539"><ph name="ORIGIN" /> কোনও অ্যাপে এই লিঙ্ক খুলতে চায়।</translation>
 <translation id="9008201768610948239">উপেক্ষা করুন</translation>
 <translation id="9008201858626224558"><ph name="SUBPAGE_TITLE" />-এর বিবরণ পৃষ্ঠাতে ফিরে যাওয়ার বোতাম</translation>
 <translation id="9008828754342192581"><ph name="ORIGIN" />-এ সমস্ত এক্সটেনশনে অনুমতি দেওয়ার বিষয়টি আপনি আগে বেছে নিয়েছেন</translation>
@@ -11662,6 +11669,7 @@
 <translation id="9032004780329249150">আপনার iOS ডিভাইসে নিজের পাসওয়ার্ড ব্যবহার করুন</translation>
 <translation id="9032097289595078011">'দ্রুত পেয়ার' ফিচার বন্ধ করুন</translation>
 <translation id="9032513103438497286">এই <ph name="DEVICE_TYPE" /> ডিভাইসে ইনস্টল করা অ্যাপ ব্লক করুন। অ্যাপ বা কন্টেন্ট ডাউনলোড করাতে বিধিনিষেধ আরোপ করতে, Google Play সেটিংসে যান।</translation>
+<translation id="9033204084988490464">ভার্টিক্যাল ট্যাব আড়াল করুন</translation>
 <translation id="9033765790910064284">যাই হোক, চালিয়ে যান</translation>
 <translation id="9033857511263905942">&amp;প্রতিলেপন</translation>
 <translation id="903480517321259405">পিন আবার টাইপ করুন</translation>

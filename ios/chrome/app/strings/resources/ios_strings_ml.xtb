@@ -742,6 +742,7 @@
 <translation id="3926703470020109118">ഡൗൺലോഡ് റദ്ദാക്കി</translation>
 <translation id="3929457972718048006">വിലാസങ്ങള്‍</translation>
 <translation id="3931215329146376310">{count,plural, =1{ഈ സൈറ്റിനായുള്ള പുതിയ പാസ്‌വേഡ്}other{ഈ സൈറ്റിനായുള്ള പുതിയ പാസ്‌വേഡുകൾ}}</translation>
+<translation id="3933372629914873850">നിങ്ങൾ <ph name="URL" /> -ലേക്ക് സൈൻ ഇൻ ചെയ്യും</translation>
 <translation id="3934905113567851655">വലുപ്പം മാറ്റാൻ പിഞ്ച് ചെയ്യുക</translation>
 <translation id="3940195383040445971">ടാബുകളിൽ നിരക്കുകൾ ട്രാക്ക് ചെയ്യുക</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{{COUNT} ടാബ് അടയ്ക്കുക}other{{COUNT} ടാബുകൾ അടയ്ക്കുക}}</translation>
@@ -1331,6 +1332,7 @@
 <translation id="6103540626693881831">ഉപകരണത്തിലെ എൻക്രിപ്ഷൻ</translation>
 <translation id="611361228753138223">ഈ ഉപകരണത്തിൽ നിങ്ങൾ അടുത്തിടെ സന്ദർശിച്ച സൈറ്റുകൾ</translation>
 <translation id="611705554202268369">ഒരു ടാബ് ഗ്രൂപ്പിലേക്ക് ചേർക്കാൻ ദീർഘനേരം അമർത്തുക</translation>
+<translation id="6117260878488959646">ഒരു പിശക് സംഭവിച്ചു. പിന്നീട് വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="6122191549521593678">ഓൺലൈൻ</translation>
 <translation id="6122831415929794347">സുരക്ഷിത ബ്രൗസിംഗ് ഓഫാക്കണോ?</translation>
 <translation id="6123514585040403489">നിങ്ങളുടെ ടാബുകൾ അടയ്ക്കും</translation>
@@ -1353,6 +1355,7 @@
 <translation id="6172428250974276014">ഉവ്വ്, ഡാറ്റ വെവ്വേറെ സൂക്ഷിക്കുക (നിർദ്ദേശിക്കുന്നത്)</translation>
 <translation id="6173499589275053515">നിങ്ങളുടെ <ph name="EMAIL" /> എന്ന Google അക്കൗണ്ടിൽ സംരക്ഷിച്ച പാസ്‌വേഡ്</translation>
 <translation id="6181969657494915430">തിരയൽ സ്‌ക്രീൻ</translation>
+<translation id="6182851675249594487">ഇഷ്‌ടാനുസൃത കളർ തീം</translation>
 <translation id="6187302354554850004">അവസാനം സമന്വയിപ്പിച്ചത്: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319"><ph name="DATE" />-ന് സൃഷ്‌ടിച്ചത്</translation>
 <translation id="6189413832092199491">വായിക്കാത്തവ</translation>

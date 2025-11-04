@@ -136,6 +136,7 @@ A partire dalla versione 140 di <ph name="PRODUCT_NAME" />, se la policy non vie
 
       Se la policy non viene configurata, viene utilizzata la directory del profilo predefinito.</translation>
 <translation id="1053981429146436598">Un gruppo di policy relative alle impostazioni delle richieste di rete privata.  Visita la pagina https://wicg.github.io/private-network-access/.</translation>
+<translation id="1055159224864957792">Password locale</translation>
 <translation id="1059069692400941670">Disabilita l'importazione del motore di ricerca predefinito alla prima esecuzione</translation>
 <translation id="1060020040574767394">Configura le impostazioni della filigrana personalizzata</translation>
 <translation id="1062011392452772310">Attivazione dell'attestazione da remoto per il dispositivo</translation>
@@ -1286,6 +1287,17 @@ Questa policy non ha effetto se l'opzione per mantenere i dati di navigazione es
 <translation id="1834796168555733063">Disattiva il salvataggio delle passkey utilizzando Gestore delle password</translation>
 <translation id="1836380138559328229">Salva le credenziali Wi-Fi attive a livello di dispositivo</translation>
 <translation id="1837165432382702436">L'altezza della pagina in micron.</translation>
+<translation id="1838075279369174832">L'impostazione della policy consente di stabilire quali fattori di autenticazione locali è possibile usare sia per l'accesso che per la riautenticazione su <ph name="PRODUCT_OS_NAME" />.
+
+      Per consentire:
+
+      * Ogni fattore di autenticazione locale, usa ["ALL"] (sono inclusi anche i fattori aggiunti in futuro).
+
+      * Solo il PIN, usa ["PIN"].
+
+      * Solo le password locali, usa ["LOCAL_PASSWORD"].
+
+      Se la policy non viene configurata o è impostata su un elenco vuoto, non sono disponibili fattori di autenticazione locali per gli utenti gestiti.</translation>
 <translation id="1838910874018595451">Configurazione precompilata per i ticket Kerberos</translation>
 <translation id="1839042185432919430">Consenti all'app web kiosk di mostrare la richiesta di accesso alla rete all'avvio dell'app se il dispositivo è offline</translation>
 <translation id="1839711547980672664">Elenco di pattern URL per i quali è consentita l'apertura degli <ph name="CHROME_DEVTOOLS_NAME" /></translation>
@@ -8893,6 +8905,7 @@ NOTA: le modifiche apportate a questa policy verranno applicate soltanto ai proc
 Se la policy viene attivata, l'utente verrà disconnesso dalla sessione precedente dopo aver eseguito l'accesso a un nuovo dispositivo <ph name="PRODUCT_OS_NAME" />.
 
 Se la policy viene disattivata o se non viene configurata, l'utente verrà disconnesso dalla sessione precedente solo se la policy <ph name="FLOATING_SSO_ENABLED_POLICY_NAME" /> o <ph name="FLOATING_WORKSPACE_V2_ENABLED_POLICY_NAME" /> è attivata.</translation>
+<translation id="6854694645176150141">Configura i fattori di autenticazione locali consentiti</translation>
 <translation id="6854767649023671426">Se la policy viene attivata o se non viene configurata, agli utenti viene richiesto l'accesso al dispositivo di acquisizione video, fatta eccezione per gli URL configurati nell'elenco VideoCaptureAllowedUrls.
 
       Se la policy viene disattivata, le richieste vengono disabilitate e l'acquisizione video è disponibile solo per gli URL configurati nell'elenco VideoCaptureAllowedUrls.
@@ -9819,6 +9832,7 @@ Se la policy non viene configurata, in pratica equivale a impostarla su "<ph nam
 <translation id="7491720878670299691">La velocità di interrogazione e controllo della rete per eventi. Il valore minimo consentito è 1 minuto.
 
       Se la policy non viene impostata, viene applicata la velocità predefinita di 1 minuto.</translation>
+<translation id="7496284563199466390">Controlla quali utenti gestiti possono impostare la policy <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" />.</translation>
 <translation id="7498595166686106721">
       La policy relativa alle autorizzazioni display-capture consente di dare o meno l'accesso a getDisplayMedia(), in base a questa specifica: https://www.w3.org/TR/screen-capture/#feature-policy-integration. Se questa policy viene impostata su Disattivata, questo requisito non viene applicato e l'accesso a getDisplayMedia() è consentito da contesti che altrimenti sarebbero vietati. Questa policy aziendale è temporanea ed è destinata a essere rimossa dopo la versione 100 di <ph name="PRODUCT_NAME" />. Ha lo scopo di sbloccare gli utenti aziendali la cui applicazione non è conforme alla specifica, ma che richiede tempo per essere sistemata.
 
@@ -10781,6 +10795,9 @@ Questa policy viene applicata alla modalità di navigazione in incognito. Ciò s
 <translation id="8225579382697740712">Controlla l'utilizzo dell'API WebHID</translation>
 <translation id="8229912067600517877">Attiva Strumenti per sviluppatori</translation>
 <translation id="8238421250255592181">Un flag booleano che indica se la tastiera sullo schermo può offrire la funzionalità di completamento automatico.</translation>
+<translation id="8238558579601006178">Quando questa policy viene impostata su 0 o non viene configurata, la policy <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> verrà applicata solo all'ambito utente per gli utenti affiliati.
+Quando questa policy viene impostata su 1, la policy <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> verrà applicata all'ambito utente, anche se l'utente non è affiliato.
+Quando questa policy viene impostata su 2, la policy <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> non verrà mai applicata se la sua origine è un utente.</translation>
 <translation id="8239109177194627162">Disattiva la compilazione automatica per le carte di credito</translation>
 <translation id="8239143983379015783">Forza l'attivazione della quota permanente</translation>
 <translation id="8240976615241583524">Questa policy permette di applicare restrizioni agli indirizzi IP e alle interfacce che WebRTC utilizza quando prova a trovare la migliore connessione disponibile.

@@ -1844,6 +1844,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="4014895360827978999">Servicios comerciales y sistemas de pago</translation>
 <translation id="4018819349042761761">Clave pública</translation>
 <translation id="4023431997072828269">Se está usando una conexión no segura para enviar este formulario, por lo que otros usuarios podrán ver tu información.</translation>
+<translation id="4024673763872230929">Guarda tu información y rellena formularios más rápido. Se guarda en tu dispositivo.</translation>
 <translation id="4025325634010721551">Políticas cargadas de nuevo</translation>
 <translation id="4025338605225449265">Divisas y cambio de moneda extranjera</translation>
 <translation id="4025777154208238692">Orden invertido</translation>
@@ -2277,6 +2278,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="4732860731866514038">Descargando el paquete de idioma <ph name="LANGUAGE" />... <ph name="PERCENT" /> %</translation>
 <translation id="4733082559415072992"><ph name="URL" /> quiere usar la ubicación de tu dispositivo</translation>
 <translation id="473414950835101501">Usar tus cámaras</translation>
+<translation id="4734343956394152985"><ph name="BEGIN_BOLD" />Predeterminado<ph name="END_BOLD" /> · <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="4736825316280949806">Reinicia Chromium</translation>
 <translation id="4736934858538408121">Tarjeta virtual</translation>
 <translation id="473775607612524610">Actualizar</translation>
@@ -2339,6 +2341,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="4822493756793346865">Los precios habituales se basan en tiendas en la Web y corresponde a los últimos 90 días.</translation>
 <translation id="4822922322149719535">Revisar registro de errores</translation>
 <translation id="4823699521959851389"><ph name="SHORT_PRODUCT_NAME" /> necesita acceder a tu <ph name="PERMISSION" /> de tu dispositivo</translation>
+<translation id="4825311006392962663">Muestra las opciones de pago aplazado al tramitar la compra</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, pulsa Tabulador y luego Intro para crear una nueva Hoja de cálculo de Google rápidamente</translation>
 <translation id="4826588772550366629">cámara y micrófono</translation>
 <translation id="4827283332383516812">Eliminar tarjeta</translation>
@@ -2430,6 +2433,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="4961708452830821006">Para usar el micrófono, concede acceso a Chrome en la <ph name="LINK" />.</translation>
 <translation id="4963413887558778009">Paisajismo</translation>
 <translation id="4967366744630699583">Editar dirección</translation>
+<translation id="4968046291688599384">Número de tarjeta virtual de un solo uso de <ph name="BNPL_ISSUER_NAME" /> introducido.</translation>
 <translation id="4968522289500246572">Esta aplicación se ha diseñado para móviles y es posible que su tamaño no se cambie correctamente. Puede que la aplicación dé problemas o se reinicie.</translation>
 <translation id="4968665849807487749">Puede solicitar permiso para gestionar las ventanas en todas tus pantallas</translation>
 <translation id="4969341057194253438">Eliminar grabación</translation>
@@ -3386,6 +3390,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="6521745193039995384">Inactiva</translation>
 <translation id="6522682797352430154">Música clásica</translation>
 <translation id="6524830701589638230">Botón Gestionar la configuración de accesibilidad: actívalo para personalizar las herramientas de accesibilidad en la configuración de Chrome</translation>
+<translation id="6525222262307262764">Conservar el predeterminado</translation>
 <translation id="6527049834925947126">Producción alimentaria</translation>
 <translation id="6529173248185917884">Séptimo rollo</translation>
 <translation id="6529602333819889595">&amp;Rehacer eliminación</translation>
@@ -3406,6 +3411,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="6567832540451970450">Tu administrador acepta el permiso de <ph name="PERMISSION" /> en este sitio</translation>
 <translation id="6568793038316600992">Botón Gestionar métodos de pago: actívalo para gestionar tus pagos y la información de tu tarjeta de crédito en la configuración de Chrome</translation>
 <translation id="6569060085658103619">Estas viendo la página de una extensión</translation>
+<translation id="6571992525120410251">Pregunta lo que quieras a <ph name="ENGINE_NAME" /></translation>
 <translation id="6572867903637058088">¿Es útil esta información?</translation>
 <translation id="6573200754375280815">Perforado doble en la parte derecha</translation>
 <translation id="6575408526598156416">Guardar en la cuenta</translation>
@@ -3454,6 +3460,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="666259744093848177">(x86_64 traducido)</translation>
 <translation id="6665553082534466207">Perforado triple en la parte derecha</translation>
 <translation id="6668389483194953109">Se ha encontrado el nombre de tamaño de papel "custom", pero la propiedad "custom_size" está vacía o no es válida.</translation>
+<translation id="6670729408462528018">Galería</translation>
 <translation id="6671169470640320959">Financiación de automóviles</translation>
 <translation id="6671697161687535275">¿Quitar sugerencia de formulario de Chromium?</translation>
 <translation id="6675846980676550611">Realidad aumentada no permitida</translation>

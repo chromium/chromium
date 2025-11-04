@@ -1008,6 +1008,7 @@
 <translation id="2627847595568876492">‏מתבצע חילוץ טקסט מקובץ PDF…</translation>
 <translation id="2628025184666666186">‏השרת הזה לא הצליח להוכיח שהוא <ph name="DOMAIN" /> כי הוא משתמש באישור אבטחה שלא נחשב לאמין לפי Chrome או לפי הגדרות המערכת שלך להצפנת תעבורת אינטרנט. יכול להיות שהסיבה לכך היא הגדרה שגויה או שתוקף מיירט את החיבור שלך.</translation>
 <translation id="2628224721443278970">‏כניסה ל-Microsoft OneDrive</translation>
+<translation id="2631387782019878060">קוד אימות: <ph name="OTP" /></translation>
 <translation id="2634124572758952069">‏לא ניתן היה למצוא את כתובת ה-IP של השרת של <ph name="HOST_NAME" />.</translation>
 <translation id="2638567100095052009">אפשר להזין @ כדי לחפש ב-<ph name="FEATURED_SEARCH_LIST" /></translation>
 <translation id="2639739919103226564">סטטוס:</translation>
@@ -2345,6 +2346,7 @@ Del</translation>
 <translation id="4822493756793346865">המחירים האופייניים מבוססים על חנויות מרחבי האינטרנט במהלך 90 הימים האחרונים.</translation>
 <translation id="4822922322149719535">עיון ביומן השגיאות</translation>
 <translation id="4823699521959851389">נדרשת ל-<ph name="SHORT_PRODUCT_NAME" /> גישה ל<ph name="PERMISSION" /> של המכשיר</translation>
+<translation id="4825311006392962663">הצגת אפשרויות לתשלום אחר כך בשלב התשלום בקופה</translation>
 <translation id="4825496307559726072">‏<ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, מקישים על Tab ואז על Enter כדי ליצור במהירות גיליון אלקטרוני חדש ב-Google Sheets</translation>
 <translation id="4826588772550366629">מצלמה ומיקרופון</translation>
 <translation id="4827283332383516812">מחיקת הכרטיס</translation>
@@ -2805,6 +2807,7 @@ Del</translation>
 <translation id="5558083606899411167">מזגנים</translation>
 <translation id="5558125320634132440">האתר נחסם מאחר שהוא עשוי להכיל תוכן למבוגרים בלבד</translation>
 <translation id="5559311991468302423">מחיקת הכתובת</translation>
+<translation id="5561747310506483298">תעודות זהות</translation>
 <translation id="55635442646131152">ראשי הפרקים של המסמך</translation>
 <translation id="5563589142503817291">‏כדי להשתמש בשירותי המיקום, צריך להיכנס אל <ph name="LINK" /> ולתת ל-Chrome גישה</translation>
 <translation id="5565613213060953222">פתיחת כרטיסייה פרטית</translation>
