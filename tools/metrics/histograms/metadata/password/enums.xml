@@ -302,7 +302,7 @@ chromium-metrics-reviews@google.com.
   <int value="14" label="Passkey hybrid flow"/>
 </enum>
 
-<!-- LINT.ThenChange(//content/public/browser/login_metrics.h:BrowserAssistedLoginType) -->
+<!-- LINT.ThenChange(//components/password_manager/core/browser/metrics/login_metrics.h:BrowserAssistedLoginType) -->
 
 <enum name="CharacterClassPresenceChange">
   <int value="0" label="No change"/>

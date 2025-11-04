@@ -1206,6 +1206,9 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       content::WebContents* web_contents) override;
 #endif  //! BUILDFLAG(IS_ANDROID)
 
+  void RecordAssistedLogin(
+      content::ContentBrowserClient::AssistedLoginType login_type) override;
+
  protected:
   static bool HandleWebUI(GURL* url, content::BrowserContext* browser_context);
   static bool HandleWebUIReverse(GURL* url,

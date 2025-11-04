@@ -11,10 +11,10 @@
 #include "chrome/browser/login_detection/login_detection_type.h"
 #include "chrome/browser/login_detection/login_detection_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/site_isolation/site_isolation_policy.h"
 #include "content/public/browser/browser_context.h"
-#include "content/public/browser/login_metrics.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
@@ -52,9 +52,8 @@ void RecordLoginDetectionMetrics(LoginDetectionType type,
   if (type == LoginDetectionType::kNoLogin) {
     return;
   }
-  base::UmaHistogramEnumeration(
-      content::kBrowserAssistedLoginTypeHistogram,
-      content::BrowserAssistedLoginType::kNonFedCmOAuth);
+  password_manager::metrics_util::RecordBrowserAssistedLogin(
+      password_manager::metrics_util::BrowserAssistedLoginType::kNonFedCmOAuth);
   ukm::builders::LoginDetectionV2 builder(ukm_source_id);
   builder.SetPage_LoginType(static_cast<int64_t>(type))
       .Record(ukm::UkmRecorder::Get());

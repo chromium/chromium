@@ -666,4 +666,9 @@ void LogPrimaryPasswordUpdatedWithBackup(ukm::SourceId ukm_source_id) {
       .Record(ukm::UkmRecorder::Get());
 }
 
+void RecordBrowserAssistedLogin(BrowserAssistedLoginType login_type) {
+  base::UmaHistogramEnumeration("PasswordManager.BrowserAssistedLogin.Type",
+                                login_type);
+}
+
 }  // namespace password_manager::metrics_util

@@ -260,6 +260,7 @@
 #include "components/no_state_prefetch/common/no_state_prefetch_url_loader_throttle.h"
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
 #include "components/password_manager/core/browser/features/password_features.h"
+#include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/payments/content/payment_request_display_manager.h"
 #include "components/payments/content/secure_payment_confirmation_service_factory.h"
 #include "components/pdf/common/pdf_util.h"
@@ -8799,4 +8800,39 @@ bool ChromeContentBrowserClient::ShouldSkipBeforeUnloadDialog(
 #else
   return false;
 #endif
+}
+
+void ChromeContentBrowserClient::RecordAssistedLogin(
+    content::ContentBrowserClient::AssistedLoginType login_type) {
+  using AssistedLoginType = content::ContentBrowserClient::AssistedLoginType;
+  using BrowserAssistedLoginType =
+      password_manager::metrics_util::BrowserAssistedLoginType;
+  BrowserAssistedLoginType pwm_login_type = BrowserAssistedLoginType::kUnknown;
+  switch (login_type) {
+    case AssistedLoginType::kFedCmPassive:
+      pwm_login_type = BrowserAssistedLoginType::kFedCmPassive;
+      break;
+    case AssistedLoginType::kFedCmActive:
+      pwm_login_type = BrowserAssistedLoginType::kFedCmActive;
+      break;
+    case AssistedLoginType::kPasskeyStoredInGPM:
+      pwm_login_type = BrowserAssistedLoginType::kPasskeyStoredInGPM;
+      break;
+    case AssistedLoginType::kPasskeyStoredInWindowsHello:
+      pwm_login_type = BrowserAssistedLoginType::kPasskeyStoredInWindowsHello;
+      break;
+    case AssistedLoginType::kPasskeyStoredInICloudKeychain:
+      pwm_login_type = BrowserAssistedLoginType::kPasskeyStoredInICloudKeychain;
+      break;
+    case AssistedLoginType::kPasskeyStoredInChromeProfile:
+      pwm_login_type = BrowserAssistedLoginType::kPasskeyStoredInChromeProfile;
+      break;
+    case AssistedLoginType::kPasskeyHybrid:
+      pwm_login_type = BrowserAssistedLoginType::kPasskeyHybrid;
+      break;
+    case AssistedLoginType::kPasskeySecurityKey:
+      pwm_login_type = BrowserAssistedLoginType::kPasskeySecurityKey;
+      break;
+  }
+  password_manager::metrics_util::RecordBrowserAssistedLogin(pwm_login_type);
 }

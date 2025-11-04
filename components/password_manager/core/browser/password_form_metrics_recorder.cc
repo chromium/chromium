@@ -31,10 +31,6 @@
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 
-#if !BUILDFLAG(IS_IOS)
-#include "content/public/browser/login_metrics.h"
-#endif  // !BUILDFLAG(IS_IOS)
-
 using autofill::FieldPropertiesFlags;
 using autofill::FormData;
 using autofill::FormFieldData;
@@ -280,40 +276,37 @@ std::string PasswordFieldTypeToString(
   }
 }
 
-#if !BUILDFLAG(IS_IOS)
-
-content::BrowserAssistedLoginType FillingAssistanceToLoginAssistance(
+metrics_util::BrowserAssistedLoginType FillingAssistanceToLoginAssistance(
     PasswordFormMetricsRecorder::FillingAssistance filling_assistance) {
   using FillingAssistance = PasswordFormMetricsRecorder::FillingAssistance;
+  using BrowserAssistedLoginType = metrics_util::BrowserAssistedLoginType;
   switch (filling_assistance) {
     case FillingAssistance::kAutomatic:
     case FillingAssistance::kManual:
       // Fully assisted means that the username and password are filled either
       // automatically or from the default selection UI (e.g. autofill popup).
-      return content::BrowserAssistedLoginType::kPasswordFullyAssisted;
+      return BrowserAssistedLoginType::kPasswordFullyAssisted;
     case FillingAssistance::kUsernameTypedPasswordFilled:
     case FillingAssistance::kManualFallbackUsed:
       // Partially assisted means that the user interacted with the form or the
       // browser UI.
-      return content::BrowserAssistedLoginType::kPasswordPartiallyAssisted;
+      return BrowserAssistedLoginType::kPasswordPartiallyAssisted;
     case FillingAssistance::kKnownPasswordTyped:
     case FillingAssistance::kNoSavedCredentials:
     case FillingAssistance::kNewPasswordTypedWhileCredentialsExisted:
     case FillingAssistance::kNoSavedCredentialsAndBlocklisted:
     case FillingAssistance::kNoSavedCredentialsAndBlocklistedBySmartBubble:
-      return content::BrowserAssistedLoginType::kPasswordManuallyEntered;
+      return BrowserAssistedLoginType::kPasswordManuallyEntered;
     case FillingAssistance::kNoUserInputNoFillingInPasswordFields:
       // If the password was not typed by the user and not filled by Chrome,
       // then it was filled by an extension.
-      return content::BrowserAssistedLoginType::
+      return BrowserAssistedLoginType::
           kPasswordNeitherManuallyEnteredNorGPMAssisted;
 
     default:
-      return content::BrowserAssistedLoginType::kUnknown;
+      return BrowserAssistedLoginType::kUnknown;
   }
 }
-
-#endif  // !BUILDFLAG(IS_IOS)
 
 }  // namespace
 
@@ -437,12 +430,8 @@ PasswordFormMetricsRecorder::~PasswordFormMetricsRecorder() {
     UMA_HISTOGRAM_ENUMERATION("PasswordManager.FillingAssistance",
                               filling_assistance);
 
-#if !BUILDFLAG(IS_IOS)
-    // TODO(crbug.com/395030973): Also emit on iOS.
-    UMA_HISTOGRAM_ENUMERATION(
-        content::kBrowserAssistedLoginTypeHistogram,
+    metrics_util::RecordBrowserAssistedLogin(
         FillingAssistanceToLoginAssistance(filling_assistance));
-#endif  // !BUILDFLAG(IS_IOS)
 
     ukm_entry_builder_.SetManagerFill_Assistance(
         static_cast<int64_t>(filling_assistance));

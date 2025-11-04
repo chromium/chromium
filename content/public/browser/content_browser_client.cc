@@ -2033,4 +2033,6 @@ blink::mojom::PerformanceTier ContentBrowserClient::GetCpuPerformanceTier() {
   return content::cpu_performance::GetTier();
 }
 
+void ContentBrowserClient::RecordAssistedLogin(AssistedLoginType login_type) {}
+
 }  // namespace content

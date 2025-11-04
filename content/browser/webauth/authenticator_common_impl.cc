@@ -59,7 +59,6 @@
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
-#include "content/public/browser/login_metrics.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_authentication_delegate.h"
 #include "content/public/browser/web_authentication_request_proxy.h"
@@ -752,28 +751,28 @@ void MaybeRecordBrowserAssistedLogin(
     AuthenticatorCommonImpl::CredentialRequestResult request_result) {
   using CredentialRequestResult =
       AuthenticatorCommonImpl::CredentialRequestResult;
-  using BrowserAssistedLoginType = content::BrowserAssistedLoginType;
-  std::optional<content::BrowserAssistedLoginType> login_type;
+  using AssistedLoginType = ContentBrowserClient::AssistedLoginType;
+  std::optional<AssistedLoginType> login_type;
 
   switch (request_result) {
     case CredentialRequestResult::kWinNativeSuccess:
-      login_type = BrowserAssistedLoginType::kPasskeyStoredInWindowsHello;
+      login_type = AssistedLoginType::kPasskeyStoredInWindowsHello;
       break;
     case CredentialRequestResult::kChromeOSSuccess:
     case CredentialRequestResult::kTouchIDSuccess:
-      login_type = BrowserAssistedLoginType::kPasskeyStoredInChromeProfile;
+      login_type = AssistedLoginType::kPasskeyStoredInChromeProfile;
       break;
     case CredentialRequestResult::kPhoneSuccess:
-      login_type = BrowserAssistedLoginType::kPasskeyHybrid;
+      login_type = AssistedLoginType::kPasskeyHybrid;
       break;
     case CredentialRequestResult::kICloudKeychainSuccess:
-      login_type = BrowserAssistedLoginType::kPasskeyStoredIniCloudKeychain;
+      login_type = AssistedLoginType::kPasskeyStoredInICloudKeychain;
       break;
     case CredentialRequestResult::kEnclaveSuccess:
-      login_type = content::BrowserAssistedLoginType::kPasskeyStoredInGPM;
+      login_type = AssistedLoginType::kPasskeyStoredInGPM;
       break;
     case CredentialRequestResult::kOtherSuccess:
-      login_type = content::BrowserAssistedLoginType::kPasskeySecurityKey;
+      login_type = AssistedLoginType::kPasskeySecurityKey;
       break;
     case CredentialRequestResult::kTimeout:
     case CredentialRequestResult::kUserCancelled:
@@ -788,8 +787,7 @@ void MaybeRecordBrowserAssistedLogin(
       break;
   }
   if (login_type.has_value()) {
-    base::UmaHistogramEnumeration(content::kBrowserAssistedLoginTypeHistogram,
-                                  *login_type);
+    GetContentClient()->browser()->RecordAssistedLogin(*login_type);
   }
 }
 }  // namespace

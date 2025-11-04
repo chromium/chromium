@@ -33,7 +33,6 @@
 #include "content/browser/webid/test/mock_permission_delegate.h"
 #include "content/browser/webid/webid_utils.h"
 #include "content/common/content_navigation_policy.h"
-#include "content/public/browser/login_metrics.h"
 #include "content/public/browser/webid/identity_request_dialog_controller.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/back_forward_cache_util.h"
@@ -1494,12 +1493,6 @@ class RequestServiceTest : public RenderViewHostImplTestHarness {
                                          status, 1);
     histogram_tester_.ExpectUniqueSample(
         "Blink.FedCm.Status.MediationRequirement", requirement, 1);
-    if (status == RequestIdTokenStatus::kSuccessUsingTokenInHttpResponse ||
-        status == RequestIdTokenStatus::kSuccessUsingIdentityProviderResolve) {
-      histogram_tester_.ExpectUniqueSample(
-          kBrowserAssistedLoginTypeHistogram,
-          BrowserAssistedLoginType::kFedCmPassive, 1);
-    }
     ExpectStatusUKMInternal(status, requirement, FedCmEntry::kEntryName);
     ExpectStatusUKMInternal(status, requirement, FedCmIdpEntry::kEntryName);
   }
@@ -1905,10 +1898,6 @@ class RequestServiceTest : public RenderViewHostImplTestHarness {
     histogram_tester_.ExpectTotalCount(
         "Blink.FedCm.Timing.ShowAccountsDialogBreakdown.ClientMetadataFetch",
         0);
-
-    histogram_tester_.ExpectUniqueSample(kBrowserAssistedLoginTypeHistogram,
-                                         BrowserAssistedLoginType::kFedCmActive,
-                                         1);
   }
 
  protected:

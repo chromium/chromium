@@ -3360,6 +3360,7 @@ class CONTENT_EXPORT ContentBrowserClient {
   // experiments. For more details, see
   // https://docs.google.com/document/d/1bBhfhO7BotUB7Myy_8mtFF_4lI5N8hUyNayV_gI019Y/edit?tab=t.0#heading=h.9osmajzfan4b
   virtual bool UsePreloadServingMetrics();
+
 #if !BUILDFLAG(IS_ANDROID)
   // Gives the content embedder a chance to disallow a credential request,
   // for example if there's an active actor task in the tab associated with
@@ -3374,6 +3375,23 @@ class CONTENT_EXPORT ContentBrowserClient {
   // Returns the CPU performance tier, which exposes some information about how
   // powerful the user device is.
   virtual blink::mojom::PerformanceTier GetCpuPerformanceTier();
+
+  // Describes the type of logins assisted by the browser via passkeys or
+  // federation.
+  enum class AssistedLoginType {
+    kFedCmPassive,
+    kFedCmActive,
+    kPasskeyStoredInGPM,
+    kPasskeyStoredInWindowsHello,
+    kPasskeyStoredInICloudKeychain,
+    kPasskeyStoredInChromeProfile,
+    kPasskeyHybrid,
+    kPasskeySecurityKey,
+  };
+
+  // Records a browser-assisted login. This is used to record metrics in the
+  // embedder. This covers federated and webauthn assisted logins.
+  virtual void RecordAssistedLogin(AssistedLoginType login_type);
 };
 
 }  // namespace content

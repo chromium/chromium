@@ -627,6 +627,32 @@ enum class PasswordDropdownDuplicateCredentialsType {
   kMaxValue = kDuplicatePasswordsAndPasskeys,
 };
 
+// This enum describes the type of logins assisted by the browser. e.g. via
+// passwords, passkeys or federation.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(BrowserAssistedLoginType)
+enum class BrowserAssistedLoginType {
+  kFedCmPassive = 0,
+  kFedCmActive = 1,
+  kNonFedCmOAuth = 2,
+  kUnknown = 3,
+  kPasswordFullyAssisted = 4,
+  kPasswordPartiallyAssisted = 5,
+  kPasswordManuallyEntered = 6,
+  kPasswordNeitherManuallyEnteredNorGPMAssisted = 7,
+  kPasskeyStoredInGPM = 8,
+  kPasskeyStoredInWindowsHello = 9,
+  kPasskeyStoredInICloudKeychain = 10,
+  kPasskeyStoredInChromeProfile = 11,
+  kPasskeyHybrid = 12,
+  kPasskeySecurityKey = 13,
+
+  kMaxValue = kPasskeySecurityKey,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/password/enums.xml:BrowserAssistedLoginType)
+
 std::string GetPasswordAccountStorageUsageLevelHistogramSuffix(
     password_manager::features_util::PasswordAccountStorageUsageLevel
         usage_level);
@@ -886,6 +912,9 @@ void LogPageContentCaptureFailure(PasswordChangeFlowStep step);
 
 // Logs the metrics for when a backup password is being promoted to primary.
 void LogPrimaryPasswordUpdatedWithBackup(ukm::SourceId ukm_source_id);
+
+// Records the detected `login_type`.
+void RecordBrowserAssistedLogin(BrowserAssistedLoginType login_type);
 
 }  // namespace password_manager::metrics_util
 
