@@ -31,7 +31,6 @@
 #include "gpu/config/gpu_feature_info.h"
 #include "gpu/config/gpu_preferences.h"
 #include "gpu/config/gpu_test_config.h"
-#include "gpu/ipc/common/gpu_memory_buffer_support.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
@@ -186,13 +185,21 @@ TEST_F(IOSurfaceImageBackingFactoryTest, GL_SkiaGL) {
 }
 
 TEST_F(IOSurfaceImageBackingFactoryTest, CreateGpuMemoryBuffer) {
-  for (auto format : viz::GetMappableSharedImageFormatForTesting()) {
-    if (!gpu::GpuMemoryBufferSupport::
-            IsNativeGpuMemoryBufferConfigurationSupportedForTesting(
-                format, gfx::BufferUsage::GPU_READ)) {
-      continue;
-    }
-
+  for (auto format : {
+           viz::SinglePlaneFormat::kRGBA_8888,
+           viz::SinglePlaneFormat::kRGBX_8888,
+           viz::SinglePlaneFormat::kBGRA_8888,
+           viz::SinglePlaneFormat::kBGRX_8888,
+           viz::SinglePlaneFormat::kR_8,
+           viz::SinglePlaneFormat::kRG_88,
+           viz::SinglePlaneFormat::kR_16,
+           viz::SinglePlaneFormat::kRG_1616,
+           viz::SinglePlaneFormat::kRGBA_F16,
+           viz::SinglePlaneFormat::kBGRA_1010102,
+           viz::MultiPlaneFormat::kNV12,
+           viz::MultiPlaneFormat::kNV12A,
+           viz::MultiPlaneFormat::kP010,
+       }) {
     gfx::GpuMemoryBufferHandle handle =
         IOSurfaceImageBackingFactory::CreateGpuMemoryBufferHandle(
             gfx::Size(2, 2), format);
