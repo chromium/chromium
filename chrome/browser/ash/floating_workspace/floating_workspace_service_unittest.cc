@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/desk_template.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/session/test_session_controller_client.h"
@@ -19,6 +20,7 @@
 #include "ash/test/ash_test_helper.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "base/check_deref.h"
+#include "base/command_line.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -289,6 +291,7 @@ class FloatingWorkspaceServiceTest : public testing::Test {
         FloatingWorkspaceServiceFactory::GetForProfile(profile());
     floating_workspace_service->Init(test_sync_service(),
                                      fake_desk_sync_service());
+    EXPECT_TRUE(floating_workspace_service->IsObservingForTesting());
     // TODO(crbug.com/419250389): we should properly mimic entering user session
     // instead of just calling these methods manually.
     session_manager::SessionManager::Get()
@@ -1846,6 +1849,27 @@ TEST_F(FloatingWorkspaceServiceV2WithCookiesTest,
   EXPECT_TRUE(mock_desks_client()->restored_desk_template());
   EXPECT_EQ(mock_desks_client()->restored_desk_template()->template_name(),
             base::UTF8ToUTF16(template_name));
+}
+
+class FloatingWorkspaceServiceSafeModeTest
+    : public FloatingWorkspaceServiceTest {
+ protected:
+  FloatingWorkspaceServiceSafeModeTest() = default;
+  ~FloatingWorkspaceServiceSafeModeTest() override = default;
+
+  void SetUp() override {
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(switches::kSafeMode);
+    FloatingWorkspaceServiceTest::SetUp();
+  }
+};
+
+TEST_F(FloatingWorkspaceServiceSafeModeTest, NoFwsInSafeMode) {
+  CreateFloatingWorkspaceServiceForTesting(profile());
+  auto* floating_workspace_service =
+      FloatingWorkspaceServiceFactory::GetForProfile(profile());
+  floating_workspace_service->Init(test_sync_service(),
+                                   fake_desk_sync_service());
+  EXPECT_FALSE(floating_workspace_service->IsObservingForTesting());
 }
 
 }  // namespace ash::floating_workspace

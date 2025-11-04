@@ -87,25 +87,15 @@ FloatingWorkspaceService::FloatingWorkspaceService(Profile* profile)
 FloatingWorkspaceService::~FloatingWorkspaceService() {
   StopCaptureAndUploadActiveDesk();
   ShutDownServicesAndObservers();
-  if (ash::SessionController::Get()) {
-    ash::SessionController::Get()->RemoveObserver(this);
-  }
 }
 
 void FloatingWorkspaceService::OnSyncShutdown(syncer::SyncService* sync) {
-  if (sync_service_ && sync_service_->HasObserver(this)) {
-    sync_service_->RemoveObserver(this);
-  }
+  sync_service_observation_.Reset();
   sync_service_ = nullptr;
 }
 
 void FloatingWorkspaceService::OnShuttingDown() {
-  if (ash::NetworkHandler::IsInitialized()) {
-    auto* network_handler = NetworkHandler::Get();
-    if (network_handler->network_state_handler()->HasObserver(this)) {
-      network_handler->network_state_handler()->RemoveObserver(this);
-    }
-  }
+  network_state_observation_.Reset();
 }
 
 void FloatingWorkspaceService::MaybeShowNetworkScreen() {
@@ -142,9 +132,6 @@ void FloatingWorkspaceService::InitiateSigninTask() {
 void FloatingWorkspaceService::Init(
     syncer::SyncService* sync_service,
     desks_storage::DeskSyncService* desk_sync_service) {
-  if (ash::SessionController::Get()) {
-    ash::SessionController::Get()->AddObserver(this);
-  }
   InitImpl(sync_service, desk_sync_service);
 }
 
@@ -784,11 +771,11 @@ void FloatingWorkspaceService::OnAppRegistryCacheWillBeDestroyed(
   // Set the cache readiness to false. If this is happening, then it's very
   // likely the service will be destroyed soon.
   is_cache_ready_ = false;
-  app_cache_obs_.Reset();
+  app_cache_observation_.Reset();
 }
 
 bool FloatingWorkspaceService::AreRequiredAppTypesInitialized() {
-  if (!app_cache_obs_.IsObserving()) {
+  if (!app_cache_observation_.IsObserving()) {
     return false;
   }
   apps::AppRegistryCache* cache =
@@ -820,12 +807,12 @@ void FloatingWorkspaceService::OnAppTypeInitialized(apps::AppType app_type) {
 void FloatingWorkspaceService::OnAppRegistryCacheAdded(
     const AccountId& account_id) {
   if (account_id != multi_user_util::GetAccountIdFromProfile(profile_) ||
-      app_cache_obs_.IsObserving()) {
+      app_cache_observation_.IsObserving()) {
     return;
   }
   auto* apps_cache =
       apps::AppRegistryCacheWrapper::Get().GetAppRegistryCache(account_id);
-  app_cache_obs_.Observe(apps_cache);
+  app_cache_observation_.Observe(apps_cache);
   is_cache_ready_ = AreRequiredAppTypesInitialized();
 }
 
@@ -885,26 +872,13 @@ void FloatingWorkspaceService::ShutDownServicesAndObservers() {
   OnShuttingDown();
   // If we don't have an apps cache then we observe the wrapper to
   // wait for it to be ready.
-  if (app_cache_obs_.IsObserving()) {
-    app_cache_obs_.Reset();
-  }
-  if (app_cache_wrapper_obs_.IsObserving()) {
-    app_cache_wrapper_obs_.Reset();
-  }
+  app_cache_observation_.Reset();
+  app_cache_wrapper_observation_.Reset();
   StopCaptureAndUploadActiveDesk();
-  if (Shell::HasInstance()) {
-    if (SystemTrayNotifier* system_tray_notifier =
-            Shell::Get()->system_tray_notifier()) {
-      system_tray_notifier->RemoveSystemTrayObserver(this);
-    }
-    if (LogoutConfirmationController* logout_confirmation_controller =
-            Shell::Get()->logout_confirmation_controller()) {
-      logout_confirmation_controller->RemoveObserver(this);
-    }
-  }
-  if (chromeos::PowerManagerClient::Get()) {
-    chromeos::PowerManagerClient::Get()->RemoveObserver(this);
-  }
+  session_observation_.Reset();
+  system_tray_observation_.Reset();
+  logout_confirmation_observation_.Reset();
+  power_manager_observation_.Reset();
 }
 
 void FloatingWorkspaceService::SetUpServiceAndObservers(
@@ -917,28 +891,15 @@ void FloatingWorkspaceService::SetUpServiceAndObservers(
   if (!tab_sync_enabled_) {
     should_run_restore_ = false;
   }
-  if (ash::NetworkHandler::IsInitialized()) {
-    auto* network_handler = NetworkHandler::Get();
-    if (!network_handler->network_state_handler()->HasObserver(this)) {
-      network_handler->network_state_handler()->AddObserver(this);
-    }
-  }
-  if (Shell::HasInstance()) {
-    if (SystemTrayNotifier* system_tray_notifier =
-            Shell::Get()->system_tray_notifier()) {
-      system_tray_notifier->AddSystemTrayObserver(this);
-    }
-    if (LogoutConfirmationController* logout_confirmation_controller =
-            Shell::Get()->logout_confirmation_controller()) {
-      logout_confirmation_controller->AddObserver(this);
-    }
-  }
-  if (sync_service_ && !sync_service_->HasObserver(this)) {
-    sync_service_->AddObserver(this);
-  }
-  if (chromeos::PowerManagerClient::Get()) {
-    chromeos::PowerManagerClient::Get()->AddObserver(this);
-  }
+
+  session_observation_.Observe(ash::SessionController::Get());
+  network_state_observation_.Observe(
+      NetworkHandler::Get()->network_state_handler());
+  system_tray_observation_.Observe(Shell::Get()->system_tray_notifier());
+  logout_confirmation_observation_.Observe(
+      Shell::Get()->logout_confirmation_controller());
+  sync_service_observation_.Observe(sync_service_);
+  power_manager_observation_.Observe(chromeos::PowerManagerClient::Get());
 
   // If we don't have an apps cache then we observe the wrapper to
   // wait for it to be ready.
@@ -947,9 +908,9 @@ void FloatingWorkspaceService::SetUpServiceAndObservers(
   auto* apps_cache = apps_cache_wrapper.GetAppRegistryCache(
       multi_user_util::GetAccountIdFromProfile(profile_));
   if (apps_cache) {
-    app_cache_obs_.Observe(apps_cache);
+    app_cache_observation_.Observe(apps_cache);
   } else {
-    app_cache_wrapper_obs_.Observe(&apps_cache_wrapper);
+    app_cache_wrapper_observation_.Observe(&apps_cache_wrapper);
   }
   is_cache_ready_ = AreRequiredAppTypesInitialized();
   // Explicitly start the capture if we do not need to run restore. This means
@@ -1010,4 +971,18 @@ void FloatingWorkspaceService::MaybeStartOrStopCaptureBasedOnTabSyncSetting() {
 void FloatingWorkspaceService::StopRestoringSession() {
   should_run_restore_ = false;
 }
+
+bool FloatingWorkspaceService::IsObservingForTesting() const {
+  bool is_observing = session_observation_.IsObserving();
+  CHECK_EQ(is_observing, network_state_observation_.IsObserving());
+  CHECK_EQ(is_observing, system_tray_observation_.IsObserving());
+  CHECK_EQ(is_observing, system_tray_observation_.IsObserving());
+  CHECK_EQ(is_observing, logout_confirmation_observation_.IsObserving());
+  CHECK_EQ(is_observing, sync_service_observation_.IsObserving());
+  CHECK_EQ(is_observing, power_manager_observation_.IsObserving());
+  CHECK_EQ(is_observing, app_cache_observation_.IsObserving() ||
+                             app_cache_wrapper_observation_.IsObserving());
+  return is_observing;
+}
+
 }  // namespace ash

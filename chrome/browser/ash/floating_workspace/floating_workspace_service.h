@@ -11,6 +11,7 @@
 #include "ash/public/cpp/desk_template.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/system/session/logout_confirmation_controller.h"
+#include "ash/system/tray/system_tray_notifier.h"
 #include "ash/system/tray/system_tray_observer.h"
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
@@ -35,6 +36,8 @@
 class Profile;
 
 namespace ash {
+
+class SessionController;
 
 // How long do we wait before showing the network screen in case there is no
 // connection.
@@ -115,6 +118,12 @@ class FloatingWorkspaceService
 
   // Prevents floating workspace service from restoring the session.
   void StopRestoringSession();
+
+  // Whether the service is currently observing anything, Allows to verify calls
+  // to `SetUpServiceAndObservers` and `ShutDownServicesAndObservers` from
+  // tests. It will also CHECK that the state of all scoped observations is
+  // consistent witch each other.
+  bool IsObservingForTesting() const;
 
  protected:
   std::unique_ptr<DeskTemplate> previously_captured_desk_template_;
@@ -295,12 +304,27 @@ class FloatingWorkspaceService
   std::optional<base::Uuid> floating_workspace_uuid_;
 
   // scoped Observations
+  base::ScopedObservation<SessionController, SessionObserver>
+      session_observation_{this};
+  base::ScopedObservation<NetworkStateHandler, NetworkStateHandlerObserver>
+      network_state_observation_{this};
+  base::ScopedObservation<SystemTrayNotifier, SystemTrayObserver>
+      system_tray_observation_{this};
+  base::ScopedObservation<LogoutConfirmationController,
+                          LogoutConfirmationController::Observer>
+      logout_confirmation_observation_{this};
+  base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>
+      sync_service_observation_{this};
+  base::ScopedObservation<chromeos::PowerManagerClient,
+                          chromeos::PowerManagerClient::Observer>
+      power_manager_observation_{this};
   base::ScopedObservation<apps::AppRegistryCache,
                           apps::AppRegistryCache::Observer>
-      app_cache_obs_{this};
+      app_cache_observation_{this};
   base::ScopedObservation<apps::AppRegistryCacheWrapper,
                           apps::AppRegistryCacheWrapper::Observer>
-      app_cache_wrapper_obs_{this};
+      app_cache_wrapper_observation_{this};
+
   // Weak pointer factory used to provide references to this service.
   base::WeakPtrFactory<FloatingWorkspaceService> weak_pointer_factory_{this};
 };
