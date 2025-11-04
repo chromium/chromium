@@ -12,6 +12,7 @@
 #import "base/functional/bind.h"
 #import "base/memory/raw_ptr.h"
 #import "base/numerics/byte_conversions.h"
+#import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/cancelable_task_tracker.h"
 #import "build/branding_buildflags.h"
@@ -19,21 +20,12 @@
 #import "components/favicon/core/large_icon_service.h"
 #import "components/favicon_base/fallback_icon_style.h"
 #import "components/favicon_base/favicon_types.h"
-#import "crypto/obsolete/md5.h"
+#import "crypto/hash.h"
 #import "ios/chrome/app/spotlight/spotlight_logger.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "net/base/apple/url_conversions.h"
 #import "skia/ext/skia_utils_ios.h"
 #import "ui/base/l10n/l10n_util.h"
-
-namespace spotlight {
-
-std::array<uint8_t, crypto::obsolete::kMd5Size> Md5ForSpotlightId(
-    std::string_view data) {
-  return crypto::obsolete::Md5::Hash(data);
-}
-
-}  // namespace spotlight
 
 namespace {
 // Minimum size of the icon to be used in Spotlight.
@@ -170,7 +162,7 @@ UIImage* GetFallbackImageWithStringAndColor(NSString* string,
 
 - (NSString*)spotlightIDForURL:(const GURL&)URL title:(NSString*)title {
   NSString* spotlightID = [NSString
-      stringWithFormat:@"%@.%016llx",
+      stringWithFormat:@"%@.%@",
                        spotlight::StringFromSpotlightDomain(_spotlightDomain),
                        [self hashForURL:URL title:title]];
   return spotlightID;
@@ -295,16 +287,15 @@ UIImage* GetFallbackImageWithStringAndColor(NSString* string,
   [[item attributeSet] setKeywords:[itemKeywords allObjects]];
 }
 
-// Compute a hash consisting of the first 8 bytes of the MD5 hash of a string
-// containing `URL` and `title`.
-- (int64_t)hashForURL:(const GURL&)URL title:(NSString*)title {
+// Computes a hash consisting of the SHA256 hash of a string containing `URL`
+// and `title`. Returns an Hex encoded string.
+- (NSString*)hashForURL:(const GURL&)URL title:(NSString*)title {
   NSString* key = [NSString
       stringWithFormat:@"%@ %@", base::SysUTF8ToNSString(URL.spec()), title];
-  const std::string clipboard = base::SysNSStringToUTF8(key);
+  const std::string keyAsString = base::SysNSStringToUTF8(key);
 
-  std::array<uint8_t, crypto::obsolete::kMd5Size> hash =
-      spotlight::Md5ForSpotlightId(clipboard);
-  return base::U64FromLittleEndian(base::span(hash).first<8u>());
+  std::string hash = base::HexEncode(crypto::hash::Sha256(keyAsString));
+  return base::SysUTF8ToNSString(hash);
 }
 
 @end
