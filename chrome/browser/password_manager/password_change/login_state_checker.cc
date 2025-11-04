@@ -5,6 +5,7 @@
 #include "chrome/browser/password_manager/password_change/login_state_checker.h"
 
 #include "base/check_deref.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/password_manager/password_change/annotated_page_content_capturer.h"
@@ -16,6 +17,7 @@
 #include "components/optimization_guide/core/model_quality/model_execution_logging_wrappers.h"
 #include "components/optimization_guide/proto/features/password_change_submission.pb.h"
 #include "components/password_manager/core/browser/browser_save_password_progress_logger.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
@@ -30,6 +32,10 @@ using QualityStatus = optimization_guide::proto::
 constexpr optimization_guide::proto::PasswordChangeRequest::FlowStep
     kLoginCheckStep = optimization_guide::proto::PasswordChangeRequest::
         FlowStep::PasswordChangeRequest_FlowStep_IS_LOGGED_IN_STEP;
+
+constexpr optimization_guide::proto::IsLoggedInResponseData::ErrorCase
+    kNoError = optimization_guide::proto::IsLoggedInResponseData::ErrorCase::
+        IsLoggedInResponseData_ErrorCase_NO_ERROR;
 
 blink::mojom::AIPageContentOptionsPtr GetAIPageContentOptions() {
   return optimization_guide::DefaultAIPageContentOptions(
@@ -165,6 +171,8 @@ void LoginStateChecker::OnExecutionResponseCallback(
   is_request_in_flight_ = false;
   // Increase the count of login checks.
   state_checks_count_++;
+  logs_uploader_->SetLoggedInCheckQuality(state_checks_count_,
+                                          std::move(logging_data));
 
   LogMessage(
       client_,
@@ -184,6 +192,14 @@ void LoginStateChecker::OnExecutionResponseCallback(
   if (!response) {
     LogMessage(client_,
                SavePasswordProgressLogger::STRING_LOGIN_STATE_CHECK_FAILURE);
+    TerminateLoginChecks();
+    return;
+  }
+
+  // Terminate the flow immediately in case of an error.
+  if (response->is_logged_in_data().error_case() != kNoError &&
+      base::FeatureList::IsEnabled(
+          password_manager::features::kStopLoginCheckOnFailedLogin)) {
     TerminateLoginChecks();
     return;
   }

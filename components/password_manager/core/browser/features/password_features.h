@@ -191,6 +191,10 @@ BASE_DECLARE_FEATURE(kShowTabWithPasswordChangeOnSuccess);
 // manager
 BASE_DECLARE_FEATURE(kSkipUndecryptablePasswords);
 
+// Immediately terminates password change whenever the model detects login
+// failed due to incorrect password.
+BASE_DECLARE_FEATURE(kStopLoginCheckOnFailedLogin);
+
 // Starts passwords resync after undecryptable passwords were removed. This flag
 // is enabled by default and should be treaded as a killswitch.
 BASE_DECLARE_FEATURE(kTriggerPasswordResyncAfterDeletingUndecryptablePasswords);

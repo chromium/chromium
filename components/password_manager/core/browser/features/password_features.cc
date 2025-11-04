@@ -163,6 +163,8 @@ BASE_FEATURE(kSkipUndecryptablePasswords,
 #endif
 );
 
+BASE_FEATURE(kStopLoginCheckOnFailedLogin, base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kTriggerPasswordResyncAfterDeletingUndecryptablePasswords,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
