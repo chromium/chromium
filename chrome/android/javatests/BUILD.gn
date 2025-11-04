@@ -1374,6 +1374,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.tabmodel") {
     "src/org/chromium/chrome/browser/tabmodel/TabModelSelectorObserverTestRule.java",
     "src/org/chromium/chrome/browser/tabmodel/TabModelSelectorTabModelObserverTest.java",
     "src/org/chromium/chrome/browser/tabmodel/TabModelSelectorTabObserverTest.java",
+    "src/org/chromium/chrome/browser/tabmodel/TabPersistentStoreIntegrationTest.java",
     "src/org/chromium/chrome/browser/tabmodel/TabPersistentStoreTest.java",
     "src/org/chromium/chrome/browser/tabmodel/TabbedModeTabPersistencePolicyTest.java",
     "src/org/chromium/chrome/browser/tabmodel/UndoTabModelTest.java",

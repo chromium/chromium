@@ -1402,7 +1402,8 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
         }
     }
 
-    private File getStateDirectory() {
+    @VisibleForTesting
+    File getStateDirectory() {
         return mPersistencePolicy.getOrCreateStateDirectory();
     }
 
