@@ -148,6 +148,7 @@ public class SigninPromoMediatorTest {
         assertEquals(newSecondaryButtonText, secondaryButtonText);
     }
 
+    // TODO(crbug.com/457486594): Remove this test as it tests implementation details.
     @Test
     public void testStringsSetByDelegate_noAccountsOnDevice() {
         createSigninPromoMediator();

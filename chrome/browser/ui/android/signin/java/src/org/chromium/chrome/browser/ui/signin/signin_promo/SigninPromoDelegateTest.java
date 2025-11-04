@@ -12,6 +12,7 @@ import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 
 import android.content.Context;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.text.format.DateUtils;
 
@@ -441,6 +442,41 @@ public class SigninPromoDelegateTest {
         setupDelegate(SigninAccessPoint.RECENT_TABS, /* visibleAccount= */ null);
 
         assertFalse(mDelegate.canShowPromo());
+    }
+
+    @Test
+    @EnableFeatures({
+        "EnableSeamlessSignin"
+                + ":seamless-signin-promo-type/twoButtons"
+                + "/seamless-signin-string-type/signinButton"
+    })
+    public void testRecentTabsPromoShown_accountAvailableOnDevice() {
+        HistorySyncHelper.setInstanceForTesting(mHistorySyncHelper);
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
+        DisplayableProfileData profileData =
+                new DisplayableProfileData(
+                        TestAccounts.ACCOUNT1.getEmail(),
+                        new BitmapDrawable(TestAccounts.ACCOUNT1.getAccountImage()),
+                        TestAccounts.ACCOUNT1.getFullName(),
+                        TestAccounts.ACCOUNT1.getGivenName(),
+                        true);
+        doReturn(true).when(mHistorySyncHelper).shouldDisplayHistorySync();
+        doReturn(true).when(mSigninManager).isSigninAllowed();
+        setupDelegate(SigninAccessPoint.RECENT_TABS, TestAccounts.ACCOUNT1);
+
+        assertTrue(mDelegate.canShowPromo());
+        assertEquals(
+                mDelegate.getTitle(/* hasAccountsOnDevice= */ true),
+                mContext.getString(R.string.signin_history_sync_promo_title_recent_tabs));
+        assertEquals(
+                mDelegate.getDescription(/* accountEmail= */ TestAccounts.ACCOUNT1.getEmail()),
+                mContext.getString(
+                        R.string.signin_promo_description_recent_tabs_group3,
+                        TestAccounts.ACCOUNT1.getEmail()));
+        assertEquals(
+                mDelegate.getTextForPrimaryButton(/* profileData= */ profileData),
+                mContext.getString(
+                        R.string.signin_promo_sign_in_as, TestAccounts.ACCOUNT1.getGivenName()));
     }
 
     private void setupDelegate(
