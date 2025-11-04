@@ -287,7 +287,7 @@ bool IsSystemWebApp(Profile* profile, const webapps::AppId& app_id) {
   ash::SystemWebAppManager* swa_manager =
       ash::SystemWebAppManager::Get(profile);
   if (!swa_manager) {
-    CHECK_IS_TEST();
+    // `swa_manager` might be nullptr in tests and during kiosk mode.
     return false;
   }
   return swa_manager->IsSystemWebApp(app_id);
