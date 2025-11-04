@@ -25,7 +25,6 @@
 <translation id="1502360822835740515">Đặt Chromium làm trình duyệt mặc định của bạn</translation>
 <translation id="1503199973012840174">Phiên bản Chromium bạn đang sử dụng đã lỗi thời. Hãy cập nhật để đảm bảo an toàn.</translation>
 <translation id="1515748263297244785">Sử dụng Chromium cho iPad theo mặc định</translation>
-<translation id="1530961174488670696">Chromium không thể kiểm tra xem có bản cập nhật mới nào không. Hãy thử lại sau.</translation>
 <translation id="1531155317299575425">Hiện lời nhắc đăng nhập vào Chromium.</translation>
 <translation id="1553657876656159572">Nguồn cấp dữ liệu thiết kế riêng cho bạn. Nguồn cấp này sẽ có các mục tin tức, thể thao và thời tiết.</translation>
 <translation id="1561849081734670621">Để vô hiệu hoá Chế độ khoá trong Chromium, hãy tắt chế độ này trên iPhone.</translation>
@@ -146,7 +145,6 @@ Dữ liệu của bạn được mã hoá bằng cụm mật khẩu. Nhập cụ
 <translation id="420541179527342563">Để vô hiệu hoá Chế độ khoá trong Chromium, hãy tắt chế độ này trên iPad.</translation>
 <translation id="4272892696084633551">Giúp cải thiện hiệu suất cũng như các tính năng của Chromium</translation>
 <translation id="4302397443352897529">Cài đặt Chromium</translation>
-<translation id="4304713468139749426">Trình quản lý mật khẩu</translation>
 <translation id="4408912345039114853">Chạy quy trình Kiểm tra an toàn trên Chromium</translation>
 <translation id="4432744876818348753">Đăng nhập để khai thác tối đa Chromium.</translation>
 <translation id="4445228361214254027">Tổ chức của bạn đã tắt tính năng sử dụng và lưu dữ liệu Chromium vào Tài khoản Google. Dấu trang, mật khẩu mới và các nội dung khác sẽ chỉ được lưu trên thiết bị này.</translation>
@@ -238,6 +236,7 @@ Những yếu tố cần xem xét:
 <translation id="6154098560469640583">Dùng Chromium mỗi khi bạn nhấn vào đường liên kết trong thư/tin nhắn, tài liệu và các ứng dụng khác.</translation>
 <translation id="6157162508956739031">Đăng nhập nhanh vào các ứng dụng và trang web bằng cách tự động điền mật khẩu và khoá truy cập trên Chromium</translation>
 <translation id="6170619162539716595">Cho phép Chromium sử dụng Google Maps để chỉ đường và cung cấp thông tin ở địa phương về các địa chỉ phát hiện được.</translation>
+<translation id="6247557882553405851">Trình quản lý mật khẩu</translation>
 <translation id="6268381023930128611">Đăng xuất khỏi Chromium?</translation>
 <translation id="6301717043141881464">Để dễ dàng sử dụng mật khẩu đã lưu trong các ứng dụng khác, hãy dùng Chromium làm dịch vụ tự động điền</translation>
 <translation id="6324041800010509197">Truy cập lưới thẻ trong Chromium</translation>

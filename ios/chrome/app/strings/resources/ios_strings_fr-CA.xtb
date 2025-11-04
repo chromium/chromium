@@ -277,7 +277,7 @@
 <translation id="199425419756152024">Afficher le mot de passe</translation>
 <translation id="1996318269856535896">Vous pouvez toujours utiliser vos données de navigation existantes sur cet appareil. Pour les utiliser, déconnectez-vous de votre compte géré.</translation>
 <translation id="2010008505735295285">Actualiser</translation>
-<translation id="2012723204723845092">Nous sommes ravis de vous revoir!</translation>
+<translation id="2012723204723845092">Bon retour!</translation>
 <translation id="2015722694326466240">Pour afficher vos mots de passe, vous devez d'abord définir un mot de passe sur votre appareil.</translation>
 <translation id="201759455285471444">Développer le groupe d'onglets.</translation>
 <translation id="202070562065520783">Explique-moi ceci</translation>
@@ -742,7 +742,6 @@
 <translation id="3926703470020109118">Téléchargement annulé</translation>
 <translation id="3929457972718048006">Adresses</translation>
 <translation id="3931215329146376310">{count,plural, =1{Nouveau mot de passe pour ce site}one{Nouveau mot de passe pour ce site}other{Nouveaux mots de passe pour ce site}}</translation>
-<translation id="3933372629914873850">Vous serez connecté à <ph name="URL" /></translation>
 <translation id="3934905113567851655">Pincez l'écran pour effectuer un redimensionnement</translation>
 <translation id="3940195383040445971">Suivi des prix dans des onglets</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{Fermer {COUNT} onglet}one{Fermer {COUNT} onglet}other{Fermer {COUNT} onglets}}</translation>
@@ -1056,7 +1055,7 @@
 <translation id="508645147179720015">La note contient plus de 1 000 caractères</translation>
 <translation id="5087098519049306025">Suivi des prix</translation>
 <translation id="5090832849094901128">Supprimer ce mot de passe ne supprimera pas également votre compte sur <ph name="WEBSITE" />.</translation>
-<translation id="5113960131843706315">Récupération de vos données en cours…</translation>
+<translation id="5113960131843706315">Récupération de vos contenus en cours…</translation>
 <translation id="5118462200606189584">Ajouter un compte…</translation>
 <translation id="5118764316110575523">Désactivé</translation>
 <translation id="5119329531859909472">Pour suivre le produit, touchez Suivre</translation>
@@ -1332,7 +1331,6 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="6103540626693881831">Chiffrement sur l'appareil</translation>
 <translation id="611361228753138223">Sites que vous avez visités récemment sur cet appareil</translation>
 <translation id="611705554202268369">Maintenir le doigt sur l'onglet pour l'ajouter à un groupe d'onglets</translation>
-<translation id="6117260878488959646">Une erreur s'est produite. Réessayez plus tard.</translation>
 <translation id="6122191549521593678">En ligne</translation>
 <translation id="6122831415929794347">Désactiver la navigation sécurisée?</translation>
 <translation id="6123514585040403489">Vos onglets seront fermés</translation>
@@ -1763,7 +1761,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="7696316012653762532">Options pour traduire la page</translation>
 <translation id="7700527812567437847">Rechercher du contenu sur l'écran avec Lentille Google</translation>
 <translation id="7701040980221191251">Aucun</translation>
-<translation id="7708668404222666001">Préférences de votre page Nouvel onglet appliquées</translation>
+<translation id="7708668404222666001">Vos préférences de page Nouvel onglet ont été appliquées</translation>
 <translation id="7708994397325774423">Obtenez tous vos mots de passe</translation>
 <translation id="7711440461521638739">Vous ne réutilisez aucun mot de passe</translation>
 <translation id="7712361583414030698">Affichage de la version hors ligne</translation>

@@ -25,7 +25,6 @@
 <translation id="1502360822835740515">Chromium'u varsayılan tarayıcı yapma</translation>
 <translation id="1503199973012840174">Chromium'unuz güncel değil. Güvenliğiniz için güncelleyin.</translation>
 <translation id="1515748263297244785">iPad'de varsayılan olarak Chromium'u kullanın</translation>
-<translation id="1530961174488670696">Chromium, güncellemeleri denetleyemedi. Daha sonra tekrar deneyin.</translation>
 <translation id="1531155317299575425">Chromium'da oturum açmak için istekleri gösterir.</translation>
 <translation id="1553657876656159572">Sizin için oluşturulmuş özel feed. Haberler, spor ve hava durumuyla ilgili içerikler yer alır.</translation>
 <translation id="1561849081734670621">Chromium'da Tam Gizlilik Modu'nu devre dışı bırakmak için bu ayarı iPhone'unuzda kapatın.</translation>
@@ -146,7 +145,6 @@ Verileriniz parolanızla şifrelenir. Chromium verilerini kullanmak ve Google He
 <translation id="420541179527342563">Chromium'da Tam Gizlilik Modu'nu devre dışı bırakmak için bu ayarı iPad'inizde kapatın.</translation>
 <translation id="4272892696084633551">Chromium'un özelliklerini ve performansını iyileştirmeye yardımcı olun</translation>
 <translation id="4302397443352897529">Chromium ayarları</translation>
-<translation id="4304713468139749426">Şifre Yöneticisi</translation>
 <translation id="4408912345039114853">Chromium Güvenlik Kontrolü yürüt</translation>
 <translation id="4432744876818348753">Chromium'dan en iyi şekilde yararlanmak için oturum açın.</translation>
 <translation id="4445228361214254027">Kuruluşunuz, Chromium verilerini Google Hesabınızda kullanma ve kaydetme özelliğini devre dışı bıraktı. Yeni yer işaretleri, şifreler ve diğer öğeler yalnızca bu cihaza kaydedilecek.</translation>
@@ -238,6 +236,7 @@ Dikkate alınması gereken noktalar:
 <translation id="6154098560469640583">Mesajlardaki, dokümanlardaki ve diğer uygulamalardaki bağlantılara dokunduğunuzda Chromium'u kullanabilirsiniz</translation>
 <translation id="6157162508956739031">Chromium'daki şifrelerinizi ve geçiş anahtarlarınızı otomatik doldurarak uygulamalarda ve sitelerde hızlıca oturum açın</translation>
 <translation id="6170619162539716595">Chromium'un, algılanan adreslerle ilgili yol tarifleri ve yerel bilgiler sağlaması için Google Haritalar'ı kullanmasına izin verin.</translation>
+<translation id="6247557882553405851">Google Şifre Yöneticisi</translation>
 <translation id="6268381023930128611">Chromium oturumunu kapatıyor musunuz?</translation>
 <translation id="6301717043141881464">Kayıtlı şifrelerinizi diğer uygulamalarınızda da kolayca görmek amacıyla Otomatik Doldurma için Chromium'u kullanın</translation>
 <translation id="6324041800010509197">Chromium'daki Sekme Izgarasına Git</translation>

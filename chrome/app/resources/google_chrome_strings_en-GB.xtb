@@ -158,6 +158,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="2753623023919742414">Click to search</translation>
 <translation id="2757826245013442432">{COUNT,plural, =0{Advanced Protection requires that you relaunch Chrome to apply an update}=1{Advanced Protection requires that you relaunch Chrome to apply an update. Your Incognito window won't reopen.}other{Advanced Protection requires that you relaunch Chrome to apply an update. Your # Incognito windows won't reopen.}}</translation>
 <translation id="2765403129283291972">Chrome needs permission to access your microphone for this site</translation>
+<translation id="2770231113462710648">Change default browser to:</translation>
 <translation id="2775140325783767197">Chrome can't check your passwords. Try checking your Internet connection.</translation>
 <translation id="2797864378188255696">When signing in to Google services like Gmail or YouTube with <ph name="USER_EMAIL" />, you can automatically sign in to Chrome with the same account</translation>
 <translation id="2799162042226656283">Your Chrome</translation>

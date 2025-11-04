@@ -2455,7 +2455,6 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2667463864537187133">Gerir verificação ortográfica</translation>
 <translation id="2668604389652548400">Remova-a ou substitua-a por extensões semelhantes da <ph name="BEGIN_LINK" />Web Store do Chrome<ph name="END_LINK" /></translation>
 <translation id="2669241540496514785">Não foi possível abrir a app <ph name="APP_NAME" /></translation>
-<translation id="2669250147452250961">Ative esta opção para ver o histórico de navegação e os separadores de outros dispositivos</translation>
 <translation id="2669454659051515572">Qualquer pessoa que use este dispositivo pode ver os ficheiros transferidos</translation>
 <translation id="2670102641511624474"><ph name="APP_NAME" /> está a partilhar um separador do Chrome.</translation>
 <translation id="2670168377011445813">Se o Chrome encontrar uma das suas palavras-passe numa violação de dados pública, o Gestor de Palavras-passe da Google pode oferecer-se para a alterar por si se tiver sessão iniciada. <ph name="BEGIN_LINK" />Mais informações sobre a alteração automática de palavras-passe<ph name="END_LINK" /></translation>
@@ -7949,7 +7948,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6512759338201777379">Imagem <ph name="INDEX" /> de <ph name="SUBJECT" /> gerada, com o estado de espírito <ph name="MOOD" />.</translation>
 <translation id="6513247462497316522">O Google Chrome irá utilizar dados móveis se não estiver ligado a outra rede.</translation>
 <translation id="6514010653036109809">Dispositivo disponível:</translation>
-<translation id="6515620015470298987">O início de sessão falhou devido a um problema de verificação da configuração do dispositivo. Faça o Powerwash ao seu <ph name="DEVICE_TYPE" /> e tente novamente.</translation>
 <translation id="6516990372629061585">Veja os certificados importados do Linux</translation>
 <translation id="6517382055541687102">O dispositivo selecionado foi alterado para <ph name="DEVICE_NAME" /></translation>
 <translation id="6517420300299531857">Os seus ficheiros em O meu disco são sincronizados automaticamente com o Chromebook para que possa aceder-lhes sem uma ligação à Internet. Vai usar cerca de <ph name="REQUIRED_SPACE" />. Atualmente, tem <ph name="FREE_SPACE_AVAILABLE" /> de espaço disponível.</translation>
@@ -8175,7 +8173,6 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="6667187897999649121">Por enquanto, só pode partilhar palavras-passe com membros da família. <ph name="BEGIN_LINK" />Crie um grupo familiar<ph name="END_LINK" /> com um máximo de 6 membros e obtenha mais dos seus produtos e subscrições na rede Google.</translation>
 <translation id="666731172850799929">Abrir no <ph name="APP_NAME" /></translation>
 <translation id="6669195257625975787">Os dados são tratados da mesma forma que o site que está a ver</translation>
-<translation id="6669865825859209286">Clique aqui para separar ou organizar a vista dividida</translation>
 <translation id="6670142487971298264"><ph name="APP_NAME" /> está agora disponível.</translation>
 <translation id="6670767097276846646">Algumas extensões podem adicionar motores de pesquisa ao Chrome</translation>
 <translation id="6670983860904543332">As atualizações automáticas fornecem-lhe as funcionalidades mais recentes. Explore os destaques de atualizações recentes.</translation>
@@ -10748,7 +10745,6 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8427213022735114808">A introdução por voz envia a sua voz para o Google para permitir a digitação por voz em qualquer campo de texto.</translation>
 <translation id="8427292751741042100">incorporada em qualquer anfitrião</translation>
 <translation id="8428213095426709021">Definições</translation>
-<translation id="8428257636009471988">Visitar Web Store do Chrome</translation>
 <translation id="8428271547607112339">Adicionar conta escolar</translation>
 <translation id="8428634594422941299">OK</translation>
 <translation id="84297032718407999">A sessão será terminada dentro de <ph name="LOGOUT_TIME_LEFT" /></translation>
@@ -11657,7 +11653,6 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="9032004780329249150">Use as suas palavras-passe nos dispositivos iOS</translation>
 <translation id="9032097289595078011">Desative o Fast Pair</translation>
 <translation id="9032513103438497286">Bloqueie apps instaladas neste <ph name="DEVICE_TYPE" />. Para restringir a transferência de apps ou conteúdo, aceda às Definições do Google Play.</translation>
-<translation id="9033204084988490464">Reduzir separadores verticais</translation>
 <translation id="9033765790910064284">Continuar mesmo assim</translation>
 <translation id="9033857511263905942">C&amp;olar</translation>
 <translation id="903480517321259405">Introduza novamente o PIN</translation>

@@ -1840,7 +1840,7 @@
 <translation id="4014895360827978999">商户服务与付款系统</translation>
 <translation id="4018819349042761761">公钥</translation>
 <translation id="4023431997072828269">由于系统正在使用不安全的连接提交此表单，他人将能看到您的信息。</translation>
-<translation id="4024673763872230929">保存您的信息，以便更快地填写表单。这些信息会保存在您的设备上。</translation>
+<translation id="4024673763872230929">保存您的信息，以便更快地填写表单。保存在您的设备上。</translation>
 <translation id="4025325634010721551">已重新加载政策</translation>
 <translation id="4025338605225449265">货币与外汇</translation>
 <translation id="4025777154208238692">反向排序</translation>
@@ -2337,7 +2337,6 @@
 <translation id="4822493756793346865">一般价格是基于过去 90 天网上各个商店中的价格得出的。</translation>
 <translation id="4822922322149719535">查看错误日志</translation>
 <translation id="4823699521959851389"><ph name="SHORT_PRODUCT_NAME" /> 需要访问设备的<ph name="PERMISSION" /></translation>
-<translation id="4825311006392962663">在结账时显示先买后付选项</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可快速创建新的 Google 表格</translation>
 <translation id="4826588772550366629">摄像头和麦克风</translation>
 <translation id="4827283332383516812">删除卡</translation>
@@ -2429,7 +2428,6 @@
 <translation id="4961708452830821006">如需使用麦克风，请在<ph name="LINK" />中授予 Chrome 访问权限。</translation>
 <translation id="4963413887558778009">景观设计</translation>
 <translation id="4967366744630699583">修改地址</translation>
-<translation id="4968046291688599384">已填写<ph name="BNPL_ISSUER_NAME" />的一次性虚拟卡号。</translation>
 <translation id="4968522289500246572">此应用是专为移动设备设计的，可能无法妥当地调整大小。此应用可能会出现问题或重启。</translation>
 <translation id="4968665849807487749">可以询问能否管理您的所有显示屏上的窗口</translation>
 <translation id="4969341057194253438">删除录屏</translation>
@@ -4396,7 +4394,7 @@
 <translation id="8208363704094329105">300 x 400 毫米</translation>
 <translation id="8208629719488976364">系统会将您打印的页面内容和您的打印机相关信息发送到 Google Cloud 或第三方以供分析。例如，这些内容和信息可能会被扫描以确定其是否包含敏感数据，并且可能会被根据公司政策存储起来并对您的管理员可见。</translation>
 <translation id="8210490490377416373">选择政策名称</translation>
-<translation id="8211406090763984747">连接是安全的</translation>
+<translation id="8211406090763984747">连接安全</translation>
 <translation id="8213853114485953510">JIS Exec</translation>
 <translation id="8216640997712497593">14 x 18 英寸</translation>
 <translation id="8218327578424803826">分配的位置：</translation>

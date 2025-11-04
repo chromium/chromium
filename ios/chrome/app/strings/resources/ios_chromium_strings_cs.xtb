@@ -25,7 +25,6 @@
 <translation id="1502360822835740515">Nastavte si Chromium jako výchozí prohlížeč</translation>
 <translation id="1503199973012840174">Váš prohlížeč Chromium je zastaralý. Aktualizujte ho, abyste byli v bezpečí.</translation>
 <translation id="1515748263297244785">Používejte Chromium pro iPad jako výchozí prohlížeč</translation>
-<translation id="1530961174488670696">Chromium nemůže vyhledat dostupné aktualizace. Zkuste to znovu později.</translation>
 <translation id="1531155317299575425">Zobrazuje výzvy k přihlášení do Chromia.</translation>
 <translation id="1553657876656159572">Feed přizpůsobený pro vás – včetně zpráv, sportu a počasí.</translation>
 <translation id="1561849081734670621">Pokud chcete v prohlížeči Chromium deaktivovat režim blokování, vypněte ho na svém iPhonu.</translation>
@@ -145,7 +144,6 @@ Vaše data jsou šifrována pomocí heslové fráze. Pokud chcete používat a 
 <translation id="420541179527342563">Pokud chcete v prohlížeči Chromium deaktivovat režim blokování, vypněte ho na svém iPadu.</translation>
 <translation id="4272892696084633551">Pomoci s vylepšováním funkcí a výkonu prohlížeče Chromium</translation>
 <translation id="4302397443352897529">Nastavení prohlížeče Chromium</translation>
-<translation id="4304713468139749426">Správce hesel</translation>
 <translation id="4408912345039114853">Spustit bezpečnostní kontrolu prohlížeče Chromium</translation>
 <translation id="4432744876818348753">Pokud z Chromia chcete získat maximum, přihlaste se.</translation>
 <translation id="4445228361214254027">Vaše organizace vypnula možnost používat a ukládat data prohlížeče Chromium v účtu Google. Nové záložky, hesla a další položky se budou ukládat pouze do tohoto zařízení.</translation>
@@ -237,6 +235,7 @@ Co je třeba zvážit:
 <translation id="6154098560469640583">Používejte Chromium pokaždé, když klepnete na odkazy ve zprávách, dokumentech a dalších aplikacích</translation>
 <translation id="6157162508956739031">Přihlašujte se do aplikací a na weby rychle automatickým vyplňováním hesel a přístupových klíčů z prohlížeče Chromium</translation>
 <translation id="6170619162539716595">Povolte prohlížeči Chromium používat Mapy Google k poskytování tras a místních informací o zjištěných adresách.</translation>
+<translation id="6247557882553405851">Správce hesel Google</translation>
 <translation id="6268381023930128611">Odhlásit se z prohlížeče Chromium?</translation>
 <translation id="6301717043141881464">Pokud chcete mít uložená hesla snadno k dispozici v jiných aplikacích, vyberte Chromium pro automatické vyplňování</translation>
 <translation id="6324041800010509197">Navštívit mřížku karet v prohlížeči Chromium</translation>

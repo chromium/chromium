@@ -136,7 +136,6 @@ Politika, "1 - İzin verme" değerine ayarlanırsa bu özellik kullanılamaz.
 
       Bu ayar kurulmadan bırakılırsa varsayılan profil dizini kullanılır.</translation>
 <translation id="1053981429146436598">Özel ağ isteği ayarlarıyla ilgili politika grubu.  https://wicg.github.io/private-network-access/ adresine göz atın.</translation>
-<translation id="1055159224864957792">Yerel Şifre</translation>
 <translation id="1059069692400941670">İlk çalıştırmada varsayılan arama motorunun içe aktarılmasını devre dışı bırak</translation>
 <translation id="1060020040574767394">Özel Filigran Ayarlarını Yapılandırma</translation>
 <translation id="1062011392452772310">Cihaz için uzaktan doğrulamayı etkinleştir</translation>
@@ -1245,17 +1244,6 @@ Kurumsal profil ayrımının katı bir şekilde zorunlu tutulması ya da ilgili 
 <translation id="1834796168555733063">Şifre yöneticisini kullanarak geçiş anahtarı kaydetmeyi devre dışı bırak</translation>
 <translation id="1836380138559328229">Etkin kablosuz ağ kimlik bilgilerini cihaz düzeyinde kaydet</translation>
 <translation id="1837165432382702436">Mikrometre cinsinden sayfanın yüksekliği</translation>
-<translation id="1838075279369174832">Politikanın ayarlanması, <ph name="PRODUCT_OS_NAME" /> üzerinde hem giriş hem de yeniden kimlik doğrulama için hangi yerel kimlik doğrulama faktörlerinin kullanılabileceğini kontrol eder.
-
-      Aşağıdaki kontroller kullanılabilir:
-
-      * Her yerel kimlik doğrulama faktörüne izin vermek için ["ALL"] öğesini kullanın (ileride eklenecek faktörlere de izin verilir).
-
-      * Yalnızca PIN'e izin vermek için ["PIN"] öğesini kullanın.
-
-      * Yalnızca yerel şifrelere izin vermek için ["LOCAL_PASSWORD"] öğesini kullanın.
-
-      Politika ayarlanmaz veya boş listeye ayarlanırsa yönetilen kullanıcı hesaplarında yerel kimlik doğrulama faktörleri kullanılamaz.</translation>
 <translation id="1838910874018595451">Kerberos kayıtları için önceden doldurulmuş yapılandırma</translation>
 <translation id="1839042185432919430">Kiosk web uygulamasının, uygulama başlatılırken cihaz çevrimdışıysa ağ istemini göstermesine izin ver</translation>
 <translation id="1839711547980672664"><ph name="CHROME_DEVTOOLS_NAME" /> kullanılmasına izin verilen URL kalıplarının listesi</translation>
@@ -8897,7 +8885,6 @@ yeni başlatılan oluşturucu işlemleri yansıtır.</translation>
 Politika, Etkin değerine ayarlanırsa yeni bir <ph name="PRODUCT_OS_NAME" /> cihazda başarıyla oturum açıldığında kullanıcının önceki oturumu kapatılır.
 
 Politika, Devre Dışı değerine ayarlanır veya ayarlanmadan bırakılırsa yalnızca <ph name="FLOATING_SSO_ENABLED_POLICY_NAME" /> veya <ph name="FLOATING_WORKSPACE_V2_ENABLED_POLICY_NAME" /> politikalarından biri Etkin değerine ayarlandığında kullanıcının önceki oturumu kapatılır.</translation>
-<translation id="6854694645176150141">İzin verilen yerel kimlik doğrulama faktörlerini yapılandır</translation>
 <translation id="6854767649023671426">Politika, Etkin değerine ayarlanırsa veya ayarlanmadan bırakılırsa kullanıcılardan video yakalama için erişim izni istenir (VideoCaptureAllowedUrls listesinde ayarlanan URL'ler hariç).
 
       Politika, Devre dışı değerine ayarlanırsa istemler kapatılır ve video yakalama yalnızca VideoCaptureAllowedUrls listesinde ayarlanan URL'ler tarafından kullanılabilir.
@@ -9837,7 +9824,6 @@ bırakılırsa sesli okuma etkinleştirilir.</translation>
 <translation id="7491720878670299691">Ağ verilerinin etkinlikler için sorgulanma ve kontrol edilme hızı. İzin verilen minimum sıklık 1 dakikadır.
 
       Ayarlanmazsa 1 dakikalık varsayılan süre geçerli olur.</translation>
-<translation id="7496284563199466390"><ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> politikasını hangi yönetilen kullanıcı hesaplarının ayarlayabileceğini kontrol eder.</translation>
 <translation id="7498595166686106721">
       Görüntü yakalama izinleri politikası, https://www.w3.org/TR/screen-capture/#feature-policy-integration spesifikasyonuna göre getDisplayMedia() işlevine erişim sağlar. Ancak bu politika devre dışı ise bu şart zorunlu kılınmaz ve normalde yasaklanacak bağlamlardan kaynaklanan getDisplayMedia() işlevine izin verilir. Bu kurumsal politika geçici olup <ph name="PRODUCT_NAME" /> 100 sürümünden sonra kaldırılması planlanmaktadır. Uygulaması spesifikasyonlarla uyumlu olmayan ancak uygulamanın düzeltilmesi için zaman gereken Kurumsal kullanıcıların engelinin kaldırılması amaçlanmaktadır.
 
@@ -10810,9 +10796,6 @@ Bu politika, Gizli moda uygulanır. Dolayısıyla, tarayıcıda Gizli mod etkinl
 <translation id="8225579382697740712">WebHID API'nin kullanımını kontrol et</translation>
 <translation id="8229912067600517877">Geliştirici Araçları'nı etkinleştir</translation>
 <translation id="8238421250255592181">Dokunmatik klavyede otomatik tamamlama özelliği sunulup sunulamayacağını gösteren bir boole flag'i.</translation>
-<translation id="8238558579601006178">Bu politika 0 değerine ayarlanır veya ayarlanmadan bırakılırsa <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> politikası yalnızca ilişkili kullanıcılar için kullanıcı kapsamına uygulanır.
-Bu politika 1 değerine ayarlanırsa <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> politikası, ilişkili olmayan kullanıcılar için bile kullanıcı kapsamına uygulanır.
-Bu politika 2 değerine ayarlanırsa <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> politikası, kaynağı kullanıcı olduğunda hiçbir zaman uygulanmaz.</translation>
 <translation id="8239109177194627162">Kredi kartlarını otomatik doldurmayı devre dışı bırak</translation>
 <translation id="8239143983379015783">Kalıcı kotanın etkinleştirilmesini zorunlu tut</translation>
 <translation id="8240976615241583524">Bu politika, mevcut en iyi bağlantıyı ararken WebRTC'nin kullandığı hem IP adreslerinin hem de arayüzlerin kısıtlanmasına olanak tanır.

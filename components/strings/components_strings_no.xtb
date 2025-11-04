@@ -1844,7 +1844,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="4014895360827978999">Handelstjenester og betalingssystemer</translation>
 <translation id="4018819349042761761">Offentlig nøkkel</translation>
 <translation id="4023431997072828269">Siden dette skjemaet blir sendt over en tilkobling som ikke er sikker, kommer informasjonen din til å være synlig for andre.</translation>
-<translation id="4024673763872230929">Lagre informasjonen din, og fyll ut skjemaer raskere. Lagres på enheten din.</translation>
 <translation id="4025325634010721551">Reglene er lastet inn på nytt</translation>
 <translation id="4025338605225449265">Valuta og veksling</translation>
 <translation id="4025777154208238692">Omvendt rekkefølge</translation>
@@ -2278,7 +2277,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="4732860731866514038">Laster ned språkpakke for <ph name="LANGUAGE" /> … <ph name="PERCENT" /> %</translation>
 <translation id="4733082559415072992"><ph name="URL" /> ber om å bruke posisjonen til enheten din</translation>
 <translation id="473414950835101501">Bruk kameraene dine</translation>
-<translation id="4734343956394152985"><ph name="BEGIN_BOLD" />Gjeldende standard<ph name="END_BOLD" /> · <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="4736825316280949806">Start Chromium på nytt</translation>
 <translation id="4736934858538408121">Virtuelt kort</translation>
 <translation id="473775607612524610">Oppdater</translation>
@@ -2341,7 +2339,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="4822493756793346865">Vanlige priser er basert på butikker fra hele nettet de siste 90 dagene.</translation>
 <translation id="4822922322149719535">Gå gjennom feilloggen</translation>
 <translation id="4823699521959851389"><ph name="SHORT_PRODUCT_NAME" /> trenger tilgang til enhetens <ph name="PERMISSION" /></translation>
-<translation id="4825311006392962663">Vis alternativer for betaling senere i kassen</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" /> – trykk på Tab og deretter på Enter for å opprette et nytt Google-regneark raskt</translation>
 <translation id="4826588772550366629">kamera og mikrofon</translation>
 <translation id="4827283332383516812">Slett kortet</translation>
@@ -2433,7 +2430,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="4961708452830821006">For å bruke mikrofonen må du gi Chrome tilgang i <ph name="LINK" />.</translation>
 <translation id="4963413887558778009">Landskapsarkitektur</translation>
 <translation id="4967366744630699583">Endre adressen</translation>
-<translation id="4968046291688599384"><ph name="BNPL_ISSUER_NAME" /> virtuelt engangskortnummer er fylt ut.</translation>
 <translation id="4968522289500246572">Denne appen er designet for mobil, så det fungerer kanskje ikke så bra å endre størrelse på den. Det kan hende appen støter på problemer eller startes på nytt.</translation>
 <translation id="4968665849807487749">Kan be om å få administrere vinduer på alle skjermene dine</translation>
 <translation id="4969341057194253438">Slett opptak</translation>
@@ -3390,7 +3386,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6521745193039995384">Ikke aktiv</translation>
 <translation id="6522682797352430154">Klassisk musikk</translation>
 <translation id="6524830701589638230">Knappen «Administrer tilgjengelighetsinnstillinger» – aktiver for å gi tilgjengelighetsverktøyene dine personlig preg i Chrome-innstillingene</translation>
-<translation id="6525222262307262764">Behold gjeldende standard</translation>
 <translation id="6527049834925947126">Matproduksjon</translation>
 <translation id="6529173248185917884">Sjuende rull</translation>
 <translation id="6529602333819889595">&amp;Slett likevel</translation>
@@ -3411,7 +3406,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6567832540451970450">Administratoren din tillater at dette nettstedet bruker <ph name="PERMISSION" /></translation>
 <translation id="6568793038316600992">Knappen «Administrer betalingsmåter» – aktiver for å administrere betalingene og kredittkortopplysningene dine i Chrome-innstillingene</translation>
 <translation id="6569060085658103619">Du ser på en utvidelsesside</translation>
-<translation id="6571992525120410251">Spør <ph name="ENGINE_NAME" /> om hva som helst</translation>
 <translation id="6572867903637058088">Er dette nyttig?</translation>
 <translation id="6573200754375280815">To hull høyre</translation>
 <translation id="6575408526598156416">Lagre i kontoen</translation>
@@ -3453,7 +3447,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6652101503459149953">Bruk Windows Hello</translation>
 <translation id="6654224358955673568">Formaliser</translation>
 <translation id="6654244995031366386">Glass (teksturert)</translation>
-<translation id="6655085656059574817">Hvis du beholder tilknytningen til kontoen din, kan du betale raskere med <ph name="BNPL_ISSUER_NAME" />. Du kan fjerne tilknytningen ved å gå til <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" /></translation>
 <translation id="6657585470893396449">Passord</translation>
 <translation id="6659246032834639189">Denne prisen er lav</translation>
 <translation id="6660413144148052430">posisjon</translation>
@@ -3461,7 +3454,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="666259744093848177">(x86_64 oversatt)</translation>
 <translation id="6665553082534466207">Tre hull høyre</translation>
 <translation id="6668389483194953109">Fant en papirstørrelse med navnet «custom», men «custom_size»-egenskapen er tom eller ugyldig.</translation>
-<translation id="6670729408462528018">Galleri</translation>
 <translation id="6671169470640320959">Billån</translation>
 <translation id="6671697161687535275">Vil du fjerne forslaget fra Chromium?</translation>
 <translation id="6675846980676550611">AR er ikke tillatt</translation>

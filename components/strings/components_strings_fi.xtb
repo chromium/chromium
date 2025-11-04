@@ -1845,7 +1845,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="4014895360827978999">Palvelut kauppiaille ja maksujärjestelmät</translation>
 <translation id="4018819349042761761">Julkinen avain</translation>
 <translation id="4023431997072828269">Koska lomake lähetetään suojaamattomalla yhteydellä, tietosi näkyvät muille.</translation>
-<translation id="4024673763872230929">Tallenna tietosi, niin voit täyttää lomakkeita nopeammin. Tiedot tallennetaan laitteelle.</translation>
 <translation id="4025325634010721551">Käytännöt päivitetty</translation>
 <translation id="4025338605225449265">Valuutat ja valuutanvaihto</translation>
 <translation id="4025777154208238692">Käänteinen järjestys</translation>
@@ -2279,7 +2278,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="4732860731866514038">Ladataan kielipakettia (<ph name="LANGUAGE" />)… <ph name="PERCENT" /> %</translation>
 <translation id="4733082559415072992"><ph name="URL" /> haluaa käyttää laitteesi sijaintia.</translation>
 <translation id="473414950835101501">Käyttää kameraasi</translation>
-<translation id="4734343956394152985"><ph name="BEGIN_BOLD" />Nykyinen oletus<ph name="END_BOLD" /> · <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="4736825316280949806">Käynnistä Chromium uudelleen.</translation>
 <translation id="4736934858538408121">Virtuaalinen kortti</translation>
 <translation id="473775607612524610">Päivitä</translation>
@@ -2342,7 +2340,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="4822493756793346865">Tyypilliset hinnat perustuvat verkossa olevien kauppojen hintoihin 90 viime päivän aikana.</translation>
 <translation id="4822922322149719535">Tarkista virheloki</translation>
 <translation id="4823699521959851389"><ph name="SHORT_PRODUCT_NAME" /> tarvitsee pääsyoikeuden tähän laitteen ominaisuuteen: <ph name="PERMISSION" /></translation>
-<translation id="4825311006392962663">Näytä maksa myöhemmin -vaihtoehdot kassalla</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, luo uusi Google Sheets -taulukko nopeasti painamalla sarkainta ja sitten Enter</translation>
 <translation id="4826588772550366629">kameraasi ja mikrofoniasi</translation>
 <translation id="4827283332383516812">Poista kortti</translation>
@@ -2434,7 +2431,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="4961708452830821006">Jos haluat käyttää mikrofonia, anna Chromelle pääsyoikeus täältä: <ph name="LINK" />.</translation>
 <translation id="4963413887558778009">Maisemasuunnittelu</translation>
 <translation id="4967366744630699583">Muokkaa osoitetta</translation>
-<translation id="4968046291688599384"><ph name="BNPL_ISSUER_NAME" /> kertakäyttöinen virtuaalikortin numero täytetty.</translation>
 <translation id="4968522289500246572">Sovellus on suunniteltu mobiililaitteille eikä se ehkä näy oikein, jos muutat sen kokoa. Sovellus voi käynnistyä uudelleen tai siinä voi esiintyä ongelmia.</translation>
 <translation id="4968665849807487749">Saa pyytää lupaa hallinnoida ikkunoita kaikilla näytöillä</translation>
 <translation id="4969341057194253438">Poista tallenne</translation>
@@ -3391,7 +3387,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="6521745193039995384">Ei aktiivinen</translation>
 <translation id="6522682797352430154">Klassinen musiikki</translation>
 <translation id="6524830701589638230">Muuta esteettömyysasetuksia ‑painike, aktivoi personoidaksesi esteettömyystyökaluja Chromen asetuksista</translation>
-<translation id="6525222262307262764">Säilytä nykyinen oletus</translation>
 <translation id="6527049834925947126">Elintarviketuotanto</translation>
 <translation id="6529173248185917884">Seitsemäs rulla</translation>
 <translation id="6529602333819889595">&amp;Toista poisto</translation>
@@ -3412,7 +3407,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="6567832540451970450">Järjestelmänvalvoja sallii <ph name="PERMISSION" />n käytön tällä sivustolla</translation>
 <translation id="6568793038316600992">Ylläpidä maksutapoja ‑painike, aktivoi ylläpitääksesi maksu- ja credit-korttitietoja Chromen asetuksissa</translation>
 <translation id="6569060085658103619">Tämä on laajennussivu.</translation>
-<translation id="6571992525120410251">Kysy mitä tahansa, niin <ph name="ENGINE_NAME" /> vastaa</translation>
 <translation id="6572867903637058088">Oliko tästä apua?</translation>
 <translation id="6573200754375280815">Kaksi reikää oikealla</translation>
 <translation id="6575408526598156416">Tallenna tilille</translation>
@@ -3461,7 +3455,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="666259744093848177">(x86_64 käännetty)</translation>
 <translation id="6665553082534466207">Kolme reikää oikealla</translation>
 <translation id="6668389483194953109">Paperin kokoa kuvaava nimi "custom" löytyi, mutta "custom_size"-muuttuja on tyhjä tai virheellinen.</translation>
-<translation id="6670729408462528018">Galleria</translation>
 <translation id="6671169470640320959">Autorahoitus</translation>
 <translation id="6671697161687535275">Poistetaanko lomake-ehdotus Chromiumista?</translation>
 <translation id="6675846980676550611">AR ei sallittu</translation>

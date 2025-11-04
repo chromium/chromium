@@ -7943,7 +7943,6 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6512759338201777379">Generisana je <ph name="INDEX" />. slika od <ph name="SUBJECT" />, sa raspoloženjem <ph name="MOOD" />.</translation>
 <translation id="6513247462497316522">Google Chrome će koristiti mobilne podatke ako niste povezani sa drugom mrežom.</translation>
 <translation id="6514010653036109809">Dostupan uređaj:</translation>
-<translation id="6515620015470298987">Prijavljivanje nije uspelo zbog problema sa proverom konfiguracije uređaja. Izvršite Powerwash uređaja <ph name="DEVICE_TYPE" /> i probajte ponovo.</translation>
 <translation id="6516990372629061585">Pregledajte uvezene sertifikate iz Linux-a</translation>
 <translation id="6517382055541687102">Izabrani uređaj je promenjen u <ph name="DEVICE_NAME" /></translation>
 <translation id="6517420300299531857">Fajlovi na Mom disku se automatski sinhronizuju sa Chromebook-om, pa možete da im pristupate bez internet veze. To će zauzeti oko <ph name="REQUIRED_SPACE" />. Trenutno vam je dostupno <ph name="FREE_SPACE_AVAILABLE" />.</translation>
@@ -8173,7 +8172,6 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="6667187897999649121">Za sada lozinke možete da delite samo sa članovima porodice. <ph name="BEGIN_LINK" />Napravite grupu za porodicu<ph name="END_LINK" /> sa najviše 6 članova i dobijte više iz proizvoda i pretplata u svim Google uslugama.</translation>
 <translation id="666731172850799929">Otvori u <ph name="APP_NAME" /></translation>
 <translation id="6669195257625975787">Podaci se tretiraju isto kao i sajt koji pregledate</translation>
-<translation id="6669865825859209286">Kliknite ovde da biste razdvojili ili rasporedili podeljeni prikaz</translation>
 <translation id="6670142487971298264">Aplikacija <ph name="APP_NAME" /> je sada dostupna</translation>
 <translation id="6670767097276846646">Neki dodaci mogu da dodaju pretraživače u Chrome</translation>
 <translation id="6670983860904543332">Automatska ažuriranja vam pružaju najnovije funkcije. Istražite istaknute funkcije iz nedavnih ažuriranja.</translation>
@@ -11656,7 +11654,6 @@ To može da obuhvata informacije o instaliranom softveru, fajlovima, pregledaču
 <translation id="9032004780329249150">Koristite lozinke na iOS uređajima</translation>
 <translation id="9032097289595078011">Onemogući Brzo uparivanje</translation>
 <translation id="9032513103438497286">Blokirajte aplikacije instalirane na ovom uređaju <ph name="DEVICE_TYPE" />. Da biste ograničili preuzimanje aplikacija ili sadržaja, idite u podešavanja Google Play-a.</translation>
-<translation id="9033204084988490464">Skupi vertikalne kartice</translation>
 <translation id="9033765790910064284">Ipak nastavi</translation>
 <translation id="9033857511263905942">&amp;Nalepi</translation>
 <translation id="903480517321259405">Ponovo unesite PIN</translation>

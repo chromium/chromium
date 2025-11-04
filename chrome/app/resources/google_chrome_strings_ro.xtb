@@ -152,8 +152,8 @@
 <translation id="2738871930057338499">Nu se poate realiza conexiunea la internet. HTTP Eroare 403 – Acces interzis. Verifică-ți configurația de proxy.</translation>
 <translation id="2742320827292110288">Avertisment: Google Chrome nu poate împiedica extensiile să înregistreze istoricul navigării. Pentru a dezactiva această extensie în modul incognito, debifează această opțiune.</translation>
 <translation id="2753623023919742414">Dă clic pentru a căuta</translation>
-<translation id="2757826245013442432">{COUNT,plural, =0{Protecția avansată necesită relansarea Chrome pentru a aplica o actualizare}=1{Protecția avansată necesită relansarea Chrome pentru a aplica o actualizare. Fereastra incognito nu se va mai deschide.}few{Protecția avansată necesită relansarea Chrome pentru a aplica o actualizare. Cele # ferestre incognito nu se vor mai deschide.}other{Protecția avansată necesită relansarea Chrome pentru a aplica o actualizare. Cele # de ferestre incognito nu se vor mai deschide.}}</translation>
 <translation id="2765403129283291972">Chrome are nevoie de permisiune ca să acceseze microfonul pentru acest site</translation>
+<translation id="2770231113462710648">Schimbă browserul prestabilit la:</translation>
 <translation id="2775140325783767197">Chrome nu îți poate verifica parolele. Verifică-ți conexiunea la internet.</translation>
 <translation id="2797864378188255696">Când te conectezi la Servicii Google, cum ar fi Gmail sau YouTube, cu <ph name="USER_EMAIL" />, te poți conecta automat la Chrome cu același cont</translation>
 <translation id="2799162042226656283">Browserul tău Chrome</translation>
@@ -645,7 +645,6 @@
 <translation id="8255190535488645436">Google Chrome utilizează camera foto și microfonul.</translation>
 <translation id="8267953129876836456">Chrome a găsit câteva recomandări privind siguranța pe care să le examinezi</translation>
 <translation id="8286862437124483331">Google Chrome încearcă să afișeze parolele. Pentru a permite acest lucru, introduceți parola pentru Windows.</translation>
-<translation id="8289399803055125418">Folosește <ph name="BEGIN_LINK" />propria expresie de acces<ph name="END_LINK" /> pentru a cripta toate datele Chrome din Contul Google. Adresele și datele salvate în Portofel Google nu vor fi criptate cu expresia de acces. Istoricul de navigare din Chrome nu se va sincroniza.</translation>
 <translation id="829923460755755423">Adaugă o comandă rapidă către Managerul de parole Google</translation>
 <translation id="8313851650939857356">Eroare la pornire: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8321888067342493336">Salvează ca imagine</translation>

@@ -1844,7 +1844,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="4014895360827978999">Kaubandusteenused ja maksesüsteemid</translation>
 <translation id="4018819349042761761">Avalik võti</translation>
 <translation id="4023431997072828269">Kuna see vorm esitatakse ühenduse kaudu, mis pole turvaline, on teie teave teistele nähtav.</translation>
-<translation id="4024673763872230929">Salvestage oma teave, et vormide täitmist kiirendada. Salvestatakse teie seadmesse.</translation>
 <translation id="4025325634010721551">Eeskirjad on uuesti laaditud</translation>
 <translation id="4025338605225449265">Valuutad ja välisbörsid</translation>
 <translation id="4025777154208238692">Vastupidine järjestus</translation>
@@ -2278,7 +2277,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="4732860731866514038"><ph name="LANGUAGE" /> keele paketi allalaadimine... <ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992"><ph name="URL" /> soovib kasutada teie seadme asukohta</translation>
 <translation id="473414950835101501">Kasutada teie kaameraid</translation>
-<translation id="4734343956394152985"><ph name="BEGIN_BOLD" />Praegune vaikeseade<ph name="END_BOLD" /> · <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="4736825316280949806">Taaskäivitage Chromium</translation>
 <translation id="4736934858538408121">Virtuaalkaart</translation>
 <translation id="473775607612524610">Värskenda</translation>
@@ -2341,7 +2339,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="4822493756793346865">Tavalised hinnad põhinevad veebipoodide viimase 90 päeva teabel.</translation>
 <translation id="4822922322149719535">Vaata vealogi üle</translation>
 <translation id="4823699521959851389">Teenusel <ph name="SHORT_PRODUCT_NAME" /> on vajalik teie seadme <ph name="PERMISSION" /></translation>
-<translation id="4825311006392962663">Kuvab kassas hiljem maksmise võimalused</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, kiirelt uue Google'i arvutustabeli loomiseks vajutage tabulaatorit ja seejärel sisestusklahvi</translation>
 <translation id="4826588772550366629">kaamerat ja mikrofoni</translation>
 <translation id="4827283332383516812">Kaardi kustutamine</translation>
@@ -2433,7 +2430,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="4961708452830821006">Mikrofoni kasutamiseks andke Chrome'ile juurdepääs jaotises <ph name="LINK" />.</translation>
 <translation id="4963413887558778009">Maastikukujundus</translation>
 <translation id="4967366744630699583">Muutke aadressi</translation>
-<translation id="4968046291688599384"><ph name="BNPL_ISSUER_NAME" />i ühekordse virtuaalkaardi number on täidetud.</translation>
 <translation id="4968522289500246572">Rakendus on loodud mobiilseadmetele ja selle suuruse muutmine võib rakendusele halvasti mõjuda. Rakenduse töös võib esineda probleeme või rakendus võib taaskäivituda.</translation>
 <translation id="4968665849807487749">Sait võib küsida luba teie ekraanidel akende haldamiseks</translation>
 <translation id="4969341057194253438">Kustuta salvestis</translation>
@@ -3390,7 +3386,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="6521745193039995384">Pole aktiivne</translation>
 <translation id="6522682797352430154">Klassikaline muusika</translation>
 <translation id="6524830701589638230">Nupp Juurdepääsetavuse seadete haldamine, aktiveerige nupp Chrome'i seadetes oma juurdepääsetavuse tööriistade isikupärastamiseks</translation>
-<translation id="6525222262307262764">Säilita praegune vaikeväärtus</translation>
 <translation id="6527049834925947126">Toiduainetööstus</translation>
 <translation id="6529173248185917884">Seitsmes rull</translation>
 <translation id="6529602333819889595">&amp;Kustuta uuesti</translation>
@@ -3411,7 +3406,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="6567832540451970450">Teie administraator on loa (<ph name="PERMISSION" />) selle saidi jaoks lubanud</translation>
 <translation id="6568793038316600992">Nupp Makseviiside haldamine, aktiveerige nupp, et hallata Chrome'i seadetes oma makseid ja krediitkaardi teavet</translation>
 <translation id="6569060085658103619">Vaatate laienduse lehte</translation>
-<translation id="6571992525120410251">Küsige ja <ph name="ENGINE_NAME" /> vastab</translation>
 <translation id="6572867903637058088">Kas see on kasulik?</translation>
 <translation id="6573200754375280815">Kaks auku paremal</translation>
 <translation id="6575408526598156416">Salvestage kontole</translation>
@@ -3453,7 +3447,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="6652101503459149953">Kasuta Windows Hello autentimist</translation>
 <translation id="6654224358955673568">Kirjuta ümber ametlikus stiilis</translation>
 <translation id="6654244995031366386">Klaas (reljeefne)</translation>
-<translation id="6655085656059574817">Konto lingituna hoidmine võimaldab teenusega <ph name="BNPL_ISSUER_NAME" /> kiiremini maksta, aga kui soovite linkimise tühistada, minge saidile <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" />.</translation>
 <translation id="6657585470893396449">Parool</translation>
 <translation id="6659246032834639189">See hind on madal</translation>
 <translation id="6660413144148052430">asukoht</translation>
@@ -3461,7 +3454,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="666259744093848177">(x86_64 tõlgitud)</translation>
 <translation id="6665553082534466207">Kolm auku paremal</translation>
 <translation id="6668389483194953109">Leiti paberi suurus „custom“, kuid atribuut „custom_size“ on tühi või sobimatu.</translation>
-<translation id="6670729408462528018">Galerii</translation>
 <translation id="6671169470640320959">Sõidukite finantseerimisteenused</translation>
 <translation id="6671697161687535275">Kas eemaldada Chromiumist vormi soovitus?</translation>
 <translation id="6675846980676550611">AR ei ole lubatud</translation>

@@ -537,7 +537,6 @@
 <translation id="3331974543021145906">פרטי האפליקציה</translation>
 <translation id="3334729583274622784">לשנות את סיומת הקובץ?</translation>
 <translation id="333863344734218290">קבלת אזהרה לגבי אתרים ציבוריים ופרטיים לא מאובטחים</translation>
-<translation id="3340978935015468852">הגדרות</translation>
 <translation id="3341262203274374114">לא ניתן לבטל את המעקב. משהו השתבש.</translation>
 <translation id="3359667936385849800">שימוש בספק השירות הנוכחי</translation>
 <translation id="3373701465337594448">כשההגדרה מופעלת, מוצגת כאן רשימה של אתרים שיכולים להעריך את תחומי העניין שלך</translation>
@@ -600,7 +599,6 @@
 <translation id="3635073343384702370">‏ל-Chrome יש אפשרות לבדוק את הסיסמאות שלך רק אם שמרת אותן</translation>
 <translation id="3636940436873918441">השפות המועדפות</translation>
 <translation id="3637744895182738742">‏אם שכחת את ביטוי הסיסמה או שברצונך לשנות את ההגדרה הזו, <ph name="BEGIN_LINK" />עליך למחוק את נתוני Chrome בחשבון<ph name="END_LINK" />.</translation>
-<translation id="3647019414263135904">פתיחה או סגירת החלון הקופץ של ההקשר</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3674208116086565128">‏מעבר לדף הבית של אפליקציית Google</translation>
 <translation id="368329460027487650">החשבון לא מחובר. ייפתחו אפשרויות הכניסה.</translation>
@@ -674,7 +672,6 @@
 <translation id="3985022125189960801">ניתן להוסיף אתר בחזרה כדי שייכלל במאגר האתרים שיכולים להעריך מה מעניין אותך</translation>
 <translation id="3985215325736559418">האם להוריד שוב את <ph name="FILE_NAME" />?</translation>
 <translation id="3987993985790029246">העתקת קישור</translation>
-<translation id="3994236846568425219">הפעלת העיצוב הכהה כשהוא מופעל במכשיר</translation>
 <translation id="4000212216660919741">דף הבית במצב אופליין</translation>
 <translation id="4000670338830950598">‏התאמה אישית של Google Chrome ושליטה בו באמצעות פריט מודגש</translation>
 <translation id="4015643064997321279">{NUM_PASSWORDS,plural, =1{‏סיסמה אחת שנחשפה בחשבון שלך ב-Google}one{‏‫# סיסמאות שנחשפו בחשבון שלך ב-Google}two{‏‫# סיסמאות שנחשפו בחשבון שלך ב-Google}other{‏‫# סיסמאות שנחשפו בחשבון שלך ב-Google}}</translation>
@@ -767,6 +764,7 @@
 <translation id="4387647248986092471">יצירה של נעילת פרופיל ברכב</translation>
 <translation id="4387817230000841154">לפתיחת התיקייה "הורדות"</translation>
 <translation id="4398561997852463382">‫<ph name="TAB_TITLE" />, נבחרה כרטיסייה פרטית מוצמדת להקלטה</translation>
+<translation id="4401432223274567153">{INACTIVE_TIME_DAYS,plural, =1{כרטיסיות וקבוצות של כרטיסיות שלא היו בשימוש במשך יום אחד או יותר}one{כרטיסיות וקבוצות של כרטיסיות שלא היו בשימוש במשך # ימים או יותר}two{כרטיסיות וקבוצות של כרטיסיות שלא היו בשימוש במשך יומיים (#) או יותר}other{כרטיסיות וקבוצות של כרטיסיות שלא היו בשימוש במשך # ימים או יותר}}</translation>
 <translation id="4402611456429872546"><ph name="LANG" /> - ההורדה מתבצעת…</translation>
 <translation id="4404568932422911380">ללא סימניות</translation>
 <translation id="4405224443901389797">העברה אל…</translation>
@@ -811,7 +809,6 @@
 <translation id="4587589328781138893">אתרים</translation>
 <translation id="4594952190837476234">הדף האופליין הזה נוצר ב-<ph name="CREATION_TIME" /> ויכול להיות שהגרסה המקוונת שלו שונה.</translation>
 <translation id="4595237294768457124">פותחים את הדף "כרטיסייה חדשה"</translation>
-<translation id="4595276580892809760">צירוף תמונות מהגלריה</translation>
 <translation id="4595805675102978678">‏שגיאה בחשבון Google</translation>
 <translation id="4601095002996233687">סריקות מעמיקות לאיתור הורדות חשודות.</translation>
 <translation id="4606559747793337066">‏כשאתר או אפליקציה מבקשים לטעון מראש קישורים בדף שלהם באופן פרטי, דפדפן Chrome מצפין וטוען מראש את הדפים באמצעות השרתים של Google ללא קובצי Cookie. כך מוסתרת הזהות שלך מהאתר שנטען מראש.</translation>
@@ -888,7 +885,6 @@
 <translation id="4864369630010738180">מתבצעת כניסה...</translation>
 <translation id="4866368707455379617">‏לא ניתן להתקין את <ph name="MODULE" /> ל-Chrome</translation>
 <translation id="4871568871368204250">כיבוי הסינכרון</translation>
-<translation id="487567923005969537">‏הפעלת מצב AI</translation>
 <translation id="4875775213178255010">תוכן מוצע</translation>
 <translation id="4877678010818027629">מעבר למצב אנונימי</translation>
 <translation id="4878404682131129617">‏יצירת מנהרה בעזרת שרת proxy נכשלה</translation>
@@ -1102,6 +1098,7 @@
 <translation id="5833984609253377421">שיתוף קישור</translation>
 <translation id="5839058148541733625">Chrome Dino</translation>
 <translation id="5841444063256914865">רוצה להוריד את <ph name="FILE_NAME" /> בכל זאת?</translation>
+<translation id="5842871376175639063">כרטיסיות וקבוצות כרטיסיות שלא השתמשת בהן במשך <ph name="DAYS_INACTIVE" /> ימים מועברות לכאן<ph name="AUTODELETE_SECTION" />. תמיד אפשר לשנות את זה ב<ph name="SETTINGS_TITLE" />.</translation>
 <translation id="5848257610304005265">‏לפתוח את קובץ ה-PDF באמצעות <ph name="APP_NAME" />?</translation>
 <translation id="5849288995120328556">להפסיק את השיתוף?</translation>
 <translation id="5853623416121554550">ההורדה בהשהיה</translation>
@@ -1145,7 +1142,6 @@
 <translation id="6026538407078977628">הרחבה למסך מלא</translation>
 <translation id="6030719887161080597">ניהול המידע שמשמש אתרים למדידת ביצועי מודעות</translation>
 <translation id="6039379616847168523">מעבר לכרטיסייה הבאה</translation>
-<translation id="6040143037577758943">סגירה</translation>
 <translation id="604124094241169006">אוטומטי</translation>
 <translation id="6042308850641462728">עוד</translation>
 <translation id="604996488070107836">הורדת <ph name="FILE_NAME" /> נכשלה עקב שגיאה לא ידועה.</translation>
@@ -1308,7 +1304,6 @@
 <translation id="6636623428211296678">אפשר לעיין למטה בהגדרות נוספות או לסיים עכשיו.</translation>
 <translation id="6637100877383020115">‏כדי לעזור בשיפור האפליקציה, Chrome ישלח נתוני שימוש וקריסות אל Google. <ph name="BEGIN_UMA_LINK" />ניהול<ph name="END_UMA_LINK" /></translation>
 <translation id="6641780377503683465">הסרה של תחום העניין '<ph name="INTEREST" />'</translation>
-<translation id="6642299196749785472">צירוף כרטיסיות</translation>
 <translation id="6647441008198474441">‏כתובות URL שבהן ביקרת יישלחו אל Google כדי לחזות את האתרים הבאים שאליהם תתבצע כניסה על ידך</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{‏<ph name="CONTACT_PREVIEW" />‎\u2026‎ ו-<ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> נוסף}one{‏<ph name="CONTACT_PREVIEW" />‎\u2026‎ ו-<ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> נוספים}two{‏<ph name="CONTACT_PREVIEW" />‎\u2026‎ ו-<ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> נוספים}other{‏<ph name="CONTACT_PREVIEW" />‎\u2026‎ ו-<ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> נוספים}}</translation>
 <translation id="6649642165559792194">הצגת התמונה בתצוגה מקדימה <ph name="BEGIN_NEW" />חדש<ph name="END_NEW" /></translation>
@@ -1718,7 +1713,6 @@
 <translation id="8236097722223016103">הוספה לסימניות</translation>
 <translation id="8243077599929149377">הוספה של שם המשתמש</translation>
 <translation id="8244387390464017490">התאמה אישית של דף הכרטיסייה החדשה</translation>
-<translation id="8244444485683708655">צירוף תמונה מהמצלמה</translation>
 <translation id="8250920743982581267">מסמכים</translation>
 <translation id="8258999165172757081">נוסף</translation>
 <translation id="8259179246279078674">‏מפני שהדפים שנטענים מראש מוצפנים, Google לא תקבל מידע על תוכן הדף שנטען מראש. שרתי Google יגלו אילו אתרים נטענים מראש באופן פרטי. המידע הזה משמש רק לטעינה מראש של הדפים והוא לא מקושר למידע אחר מחשבון Google שלך.</translation>
@@ -1859,6 +1853,7 @@
 <translation id="8856931513242997049">תהליך ההרשאה לשליחת התראות נסגר</translation>
 <translation id="8863714995118816041">הרשאות ניתנו מחדש לאתר <ph name="SITE_NAME" /></translation>
 <translation id="8865415417596392024">‏נתוני Chrome בחשבון שלך</translation>
+<translation id="8888527824584402177">כרטיסיות שלא השתמשת בהן במשך <ph name="DAYS_INACTIVE" /> ימים מועברות לכאן<ph name="AUTODELETE_SECTION" />. תמיד אפשר לשנות את זה ב'<ph name="SETTINGS_TITLE" />'.</translation>
 <translation id="8890668505403261809">חיפוש בכרטיסיות הפרטיות</translation>
 <translation id="8894890673032951011">‫<ph name="TAB_TITLE" />, נבחרה כרטיסייה פרטית להקלטה</translation>
 <translation id="8898822736010347272">‏שולח ל-Google כתובות URL של חלק מהדפים שאליהם נכנסת, פרטים מוגבלים לגבי המערכת וחלק מתוכן הדפים. פעולה זו עוזרת לזהות איומים חדשים ולהגן על כל המשתמשים באינטרנט.</translation>
@@ -1916,6 +1911,7 @@
 <translation id="9102803872260866941">כרטיסיית התצוגה המקדימה נפתחה</translation>
 <translation id="9102864637938129124">האתרים והמפרסמים יכולים להבין את רמת הביצועים של המודעות. ההגדרה הזו פועלת.</translation>
 <translation id="9104217018994036254">רשימת המכשירים שאפשר לשתף איתם כרטיסייה.</translation>
+<translation id="9104858485806491627">{INACTIVE_TIME_DAYS,plural, =1{לא נעשה שימוש במשך יום אחד או יותר}one{לא נעשה שימוש במשך # ימים או יותר}two{לא נעשה שימוש במשך # ימים או יותר}other{לא נעשה שימוש במשך # ימים או יותר}}</translation>
 <translation id="9106148373857059373">תהליך שמירת הסימנייה נסגר</translation>
 <translation id="9108808586816295166">‏ה-DNS המאובטח לא יהיה בהכרח זמין תמיד</translation>
 <translation id="9124978074365039456">קונים, מתרגמים ומזהים את מה שרואים באמצעות המצלמה וגלריית התמונות</translation>
@@ -1948,7 +1944,6 @@
 <translation id="927968626442779827">‏כדאי להשתמש במצב הטעינה המהירה ב-Google Chrome</translation>
 <translation id="928550791203542716">האתר <ph name="SITE_NAME" /> נמצא במעקב</translation>
 <translation id="930124987204876019">‏מחיקת ההיסטוריה, קובצי ה-Cookie, נתוני האתרים, המטמון…</translation>
-<translation id="930834144334005936">איפוס המצב הנוכחי <ph name="MODE_NAME" /> ל"חיפוש"</translation>
 <translation id="938850635132480979">שגיאה: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">הזנת ביטוי סיסמה</translation>
 <translation id="945522503751344254"> שליחת משוב</translation>

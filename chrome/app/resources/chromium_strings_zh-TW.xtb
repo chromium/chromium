@@ -144,7 +144,6 @@
 <translation id="2620436844016719705">系統</translation>
 <translation id="2629740064077610681">貴機構可以查看及管理瀏覽資料 (例如書籤、歷史記錄和密碼)，但無法查看其他 Chromium 設定檔中的瀏覽資料</translation>
 <translation id="2635452620547538388">請驗證身分，才能將 Chromium 資料儲存到帳戶 (<ph name="ACCOUNT_EMAIL" />)，或使用帳戶中的 Chromium 資料</translation>
-<translation id="2637732208198500597">{COUNT,plural, =0{「進階保護」要求你重新啟動 Chromium，以套用更新}=1{「進階保護」要求你重新啟動 Chromium，以套用更新。無痕視窗不會重新開啟。}other{「進階保護」要求你重新啟動 Chromium，以套用更新。# 個無痕視窗不會重新開啟。}}</translation>
 <translation id="2648074677641340862">安裝期間發生作業系統錯誤，請重新下載 Chromium。</translation>
 <translation id="2661879430930417727">如果你與親朋好友共用裝置，人人皆可享有獨立的瀏覽空間，依照自己的偏好設定 Chromium</translation>
 <translation id="2711502716910134313">Chromium 分頁</translation>
@@ -155,6 +154,7 @@
 <translation id="2738871930057338499">無法連線至網際網路。發生 HTTP 403 禁止錯誤，請檢查 Proxy 設定。</translation>
 <translation id="2753623023919742414">按一下即可搜尋</translation>
 <translation id="2768103863314748511">將 Chromium 設為預設 PDF 檢視器</translation>
+<translation id="2770231113462710648">將預設瀏覽器變更為：</translation>
 <translation id="2785438272836277133">這項擴充功能含有惡意軟體且不安全。請從 Chromium 中移除這項擴充功能，使其無法再查看及變更你造訪的網站相關資料，包括你的個人資訊。</translation>
 <translation id="2799223571221894425">重新啟動</translation>
 <translation id="2803971713792056305">你的 Chromium</translation>
@@ -380,7 +380,6 @@
 <translation id="5605834417512968703">請選取任何要使用「圖片搜尋」尋找的內容，或按下 Escape 鍵退出「圖片搜尋」</translation>
 <translation id="5618818588972826921">選取要使用「圖片搜尋」尋找的文字或圖片，或按下 Escape 鍵退出「圖片搜尋」</translation>
 <translation id="5623402015214259806">{0,plural, =0{有可用的 Chromium 更新}=1{有可用的 Chromium 更新}other{Chromium 更新已發布 # 天}}</translation>
-<translation id="5633450273457573375">使用<ph name="BEGIN_LINK" />通關密語<ph name="END_LINK" />加密 Google 帳戶的所有 Chromium 資料。地址和儲存在 Google 錢包中的資料都不會使用通關密語加密，Chromium 中的瀏覽記錄也不會同步。</translation>
 <translation id="5643865575100044307">在 Chromium 關閉後一律刪除裝置上的網站資料</translation>
 <translation id="5653831366781983928">請立即重新啟動 Chromium</translation>
 <translation id="5690427481109656848">Google LLC</translation>

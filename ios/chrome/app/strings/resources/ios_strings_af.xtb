@@ -742,7 +742,6 @@
 <translation id="3926703470020109118">Aflaai is gekanselleer</translation>
 <translation id="3929457972718048006">Adresse</translation>
 <translation id="3931215329146376310">{count,plural, =1{Nuwe wagwoord vir hierdie werf}other{Nuwe wagwoorde vir hierdie werf}}</translation>
-<translation id="3933372629914873850">Jy sal aanmeld by <ph name="URL" /></translation>
 <translation id="3934905113567851655">Knyp om grootte te verander</translation>
 <translation id="3940195383040445971">Spoor pryse na in oortjies</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{Maak {COUNT} oortjie toe}other{Maak {COUNT} oortjies toe}}</translation>
@@ -1332,7 +1331,6 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="6103540626693881831">Enkripsie op toestel</translation>
 <translation id="611361228753138223">Webwerwe wat jy onlangs op hierdie toestel besoek het</translation>
 <translation id="611705554202268369">Langdruk om by ’n oortjiegroep te voeg</translation>
-<translation id="6117260878488959646">Iets was fout. Probeer later weer.</translation>
 <translation id="6122191549521593678">Aanlyn</translation>
 <translation id="6122831415929794347">Skakel Veiligblaai af?</translation>
 <translation id="6123514585040403489">Jou oortjies sal toegemaak word</translation>

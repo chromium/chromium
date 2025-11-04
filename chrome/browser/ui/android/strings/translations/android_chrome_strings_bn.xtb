@@ -33,7 +33,6 @@
 <translation id="1111673857033749125">আপনার অন্যান্য ডিভাইসে সেভ করা বুকমার্কগুলি এখানে দেখা যাবে।</translation>
 <translation id="1126696498560056882">এই ডিভাইসে থাকা অ্যাকাউন্ট ম্যানেজ করুন</translation>
 <translation id="1135018701024399762">আপনার ডিভাইস যারা ব্যবহার করেন, 'ছদ্মবেশী' মোড আপনার করা ব্রাউজিং অ্যাক্টিভিটি তাদের কাছে গোপন রাখে</translation>
-<translation id="113752097246673894">নিজের সব ডিভাইসে বুকমার্ক ও আরও অনেক কিছু পেতে, <ph name="EMAIL" /> হিসেবে Chrome-এ সাইন-ইন করুন</translation>
 <translation id="1138458427267715730">ওয়েব জুড়ে কোনও সাইটের দাম কমে গেলে সতর্কতা পান</translation>
 <translation id="1140317858355046628">আপনি এটি মুছে দিলে, প্রত্যেক ব্যক্তি, সঙ্গে সঙ্গে "<ph name="GROUP_NAME" />" ট্যাব গ্রুপের অ্যাক্সেস হারাবেন এবং এটি সব ডিভাইস থেকেই মুছে দেওয়া হবে।</translation>
 <translation id="1142732900304639782">এইসব সাইট অনুবাদ হবে না</translation>
@@ -396,7 +395,6 @@
 <translation id="2723001399770238859">অডিও</translation>
 <translation id="2739887572830526131">পরে ট্যাব যোগ করার জন্য এই গ্রুপ রেখে দিন অথবা এটি আপনার আর প্রয়োজন না থাকলে মুছে দিন।</translation>
 <translation id="2742373789128106053">এই মুহুর্তে <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> উপলভ্য নয়।</translation>
-<translation id="2751271371269891762">আপনার সব ডিভাইসে বুকমার্ক ও আরও অনেক কিছু পেতে, <ph name="EMAIL" /> হিসেবে সাইন-ইন করুন</translation>
 <translation id="2760805590727089264">MM / YY</translation>
 <translation id="2762000892062317888">এখনই</translation>
 <translation id="276969039800130567"><ph name="USER_EMAIL_ADDRESS" /> রূপে প্রবেশ করেছেন৷</translation>
@@ -406,7 +404,6 @@
 <translation id="2789486458103222910">ঠিক আছে</translation>
 <translation id="2791129728587938169">{NUM_PASSWORDS,plural, =1{Chrome, একই পাসওয়ার্ড যা আবার ব্যবহার করা হয়েছে এমন একটি পাসওয়ার্ড খুঁজে পেয়েছে, যা আপনি শক্তিশালী করতে পারবেন}one{Chrome, একই পাসওয়ার্ড যা আবার ব্যবহার করা হয়েছে এমন #টি পাসওয়ার্ড খুঁজে পেয়েছে, যা আপনি শক্তিশালী করতে পারবেন}other{Chrome, একই পাসওয়ার্ড যা আবার ব্যবহার করা হয়েছে এমন #টি পাসওয়ার্ড খুঁজে পেয়েছে, যা আপনি শক্তিশালী করতে পারবেন}}</translation>
 <translation id="2800066122460699237"><ph name="TAB_TITLE" /> নামের ট্যাবটি বন্ধ করা হবে</translation>
-<translation id="2805210243313393104">আপনার সবকটি ডিভাইসে বুকমার্ক ও আরও অনেক কিছু পান</translation>
 <translation id="2805756323405976993">অ্যাপ্স</translation>
 <translation id="2819849308549746319">সব আনসাবস্ক্রাইব করুন</translation>
 <translation id="2820047235535485532">আপনার Google অ্যাকাউন্ট <ph name="ACCOUNT_EMAIL" />-এ কোন কোন ডেটা সেভ করা হবে তা আপনি বেছে নিতে পারেন।\nআপনার বুকমার্ক, পড়ার তালিকা অথবা পাসওয়ার্ড ম্যানেজারেও এইসব আইটেম দেখতে এবং ম্যানেজ করতে পারবেন।</translation>
@@ -537,7 +534,6 @@
 <translation id="3331974543021145906">অ্যাপ্লিকেশানের তথ্য</translation>
 <translation id="3334729583274622784">ফাইলের এক্সটেনশন পরিবর্তন করতে চান?</translation>
 <translation id="333863344734218290">এর ফলে আপনি অসুরক্ষিত সাইট সম্পর্কে বিজ্ঞপ্তি পেতে পারেন</translation>
-<translation id="3340978935015468852">সেটিংস</translation>
 <translation id="3341262203274374114">ফলো করা থামানো যাচ্ছে না। কোনও সমস্যা হয়েছে।</translation>
 <translation id="3359667936385849800">আপনার বর্তমান পরিষেবা প্রদানকারী ব্যবহার করুন</translation>
 <translation id="3373701465337594448">চালু থাকাকালীন, আপনার পছন্দ অনুমান করতে পারে এমন সাইটের তালিকা এখানে দেখা যাবে</translation>
@@ -600,7 +596,6 @@
 <translation id="3635073343384702370">আপনি পাসওয়ার্ড সেভ করলে Chrome তা চেক করতে পারবে</translation>
 <translation id="3636940436873918441">পছন্দের ভাষা</translation>
 <translation id="3637744895182738742">আপনি নিজের পাসফ্রেজ ভুলে গেলে অথবা এই সেটিং পরিবর্তন করতে চাইলে, <ph name="BEGIN_LINK" />আপনার অ্যাকাউন্টে থাকা Chrome ডেটা মুছে দিন<ph name="END_LINK" />।</translation>
-<translation id="3647019414263135904">কন্টেক্সট পপ-আপ খুলুন বা বন্ধ করুন</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3674208116086565128">Google অ্যাপের হোম ট্যাবে যান</translation>
 <translation id="368329460027487650">সাইন-আউট হয়ে গেছেন। সাইন-ইন করার জন্য বিকল্প খোলে।</translation>
@@ -674,12 +669,10 @@
 <translation id="3985022125189960801">আপনি কী পছন্দ করেন তা অনুমান করতে পারে এমন সাইটগুলির পুলে আপনি চাইলে একটি সাইট আবার যোগ করুন</translation>
 <translation id="3985215325736559418">আপনি কি আবার <ph name="FILE_NAME" /> ডাউনলোড করতে চান?</translation>
 <translation id="3987993985790029246">লিঙ্ক কপি করুন</translation>
-<translation id="3994236846568425219">আপনার ডিভাইসের ডার্ক থিম চালু থাকলে ডার্ক থিম চালু করুন</translation>
 <translation id="4000212216660919741">অফলাইন হোম</translation>
 <translation id="4000670338830950598">হাইলাইট করা আইটেমের সাহায্যে Google Chrome কাস্টমাইজ এবং নিয়ন্ত্রণ করুন</translation>
 <translation id="4015643064997321279">{NUM_PASSWORDS,plural, =1{আপনার Google অ্যাকাউন্টের চুরি হয়ে যাওয়া ১টি পাসওয়ার্ড}one{আপনার Google অ্যাকাউন্টের চুরি হয়ে যাওয়া #টি পাসওয়ার্ড}other{আপনার Google অ্যাকাউন্টের চুরি হয়ে যাওয়া #টি পাসওয়ার্ড}}</translation>
 <translation id="4016425174436051808">ফলো করা যাচ্ছে না। কোনও সমস্যা হয়েছে।</translation>
-<translation id="4023638601467301498">নিজের সব ডিভাইসে বুকমার্ক ও আরও অনেক কিছু পেতে, Chrome-এ সাইন-ইন করুন</translation>
 <translation id="4024768890073681126">আপনার অভিভাবক ব্রাউজার ম্যানেজ করছেন</translation>
 <translation id="4027569221211770437"><ph name="FOLDER_TITLE" /> ফোল্ডার</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# ঘণ্টা}one{# ঘণ্টা}other{# ঘণ্টা}}</translation>
@@ -767,6 +760,7 @@
 <translation id="4387647248986092471">গাড়ির জন্য প্রোফাইল লক তৈরি করুন</translation>
 <translation id="4387817230000841154">ডাউনলোড পৃষ্ঠা খুলুন</translation>
 <translation id="4398561997852463382"><ph name="TAB_TITLE" />, বেছে নেওয়া পিন করা রেকর্ডিং ছদ্মবেশী ট্যাব</translation>
+<translation id="4401432223274567153">{INACTIVE_TIME_DAYS,plural, =1{ট্যাব ও গ্রুপ ১ দিন বা তার চেয়ে বেশি সময় ধরে ব্যবহার করা হয়নি}one{ট্যাব ও গ্রুপ # দিন বা তার চেয়ে বেশি সময় ধরে ব্যবহার করা হয়নি}other{ট্যাব ও গ্রুপ # দিন বা তার চেয়ে বেশি সময় ধরে ব্যবহার করা হয়নি}}</translation>
 <translation id="4402611456429872546"><ph name="LANG" /> - ডাউনলোড করা হচ্ছে…</translation>
 <translation id="4404568932422911380">কোনও বুকমার্ক নেই</translation>
 <translation id="4405224443901389797">এই ফোল্ডারে সরান…</translation>
@@ -811,7 +805,6 @@
 <translation id="4587589328781138893">সাইট</translation>
 <translation id="4594952190837476234">এই অফলাইন পৃষ্ঠাটি <ph name="CREATION_TIME" />-এ তৈরি করা হয়েছিল এবং এটি অনলাইন ভার্সনের থেকে আলাদা হতে পারে।</translation>
 <translation id="4595237294768457124">নতুন ট্যাব পৃষ্ঠা খুলুন</translation>
-<translation id="4595276580892809760">গ্যালারি থেকে ছবি অ্যাটাচ করুন</translation>
 <translation id="4595805675102978678">Google অ্যাকাউন্ট সম্পর্কিত সমস্যা</translation>
 <translation id="4601095002996233687">এই সুবিধা সন্দেহজনক ডাউনলোড যাচাই করতে ভালভাবে স্ক্যান করে।</translation>
 <translation id="4606559747793337066">কোনও সাইট বা অ্যাপ তার পৃষ্ঠার লিঙ্ক ব্যক্তিগতভাবে প্রিলোড করা হোক বলে নির্দেশ দিলে, কুকি ছাড়াই Google সার্ভারের মাধ্যমে Chrome, সেইসব পৃষ্ঠা এনক্রিপ্ট ও প্রিলোড করে। এর ফলে প্রিলোড করা সাইট আপনার পরিচয় দেখতে পায় না।</translation>
@@ -888,7 +881,6 @@
 <translation id="4864369630010738180">প্রবেশ করা হচ্ছে...</translation>
 <translation id="4866368707455379617">Chrome-এর জন্য <ph name="MODULE" /> ইনস্টল করা যাচ্ছে না</translation>
 <translation id="4871568871368204250">সিঙ্ক করা বন্ধ করুন</translation>
-<translation id="487567923005969537">AI মোড চালু করুন</translation>
 <translation id="4875775213178255010">কন্টেন্টের প্রস্তাবনা</translation>
 <translation id="4877678010818027629">ছদ্মবেশী মোড চালু করুন</translation>
 <translation id="4878404682131129617">প্রক্সি সার্ভারের মাধ্যমে টানেল তৈরি করা যায়নি</translation>
@@ -1102,6 +1094,7 @@
 <translation id="5833984609253377421">লিঙ্ক শেয়ার করুন</translation>
 <translation id="5839058148541733625">Chrome ডাইনো গেম</translation>
 <translation id="5841444063256914865">আপনি কি তবুও "<ph name="FILE_NAME" />" ডাউনলোড করতে চান?</translation>
+<translation id="5842871376175639063">আপনি যেসব ট্যাব ও ট্যাব গ্রুপ <ph name="DAYS_INACTIVE" /> দিন ব্যবহার করেননি সেগুলি সরিয়ে দেওয়া হবে এখানে <ph name="AUTODELETE_SECTION" />। আপনি যেকোনও সময় <ph name="SETTINGS_TITLE" /> থেকে এটি পরিবর্তন করতে পারবেন।</translation>
 <translation id="5848257610304005265"><ph name="APP_NAME" /> অ্যাপের সাহায্যে পিডিএফ ফাইল খুলতে চান?</translation>
 <translation id="5849288995120328556">শেয়ার করা বন্ধ করতে চান?</translation>
 <translation id="5853623416121554550">পজ করা হয়েছে</translation>
@@ -1145,7 +1138,6 @@
 <translation id="6026538407078977628">'ফুল-স্ক্রিন' মোডে পরিবর্তন করুন</translation>
 <translation id="6030719887161080597">বিজ্ঞাপন সংক্রান্ত পারফর্ম্যান্স পরিমাপ করতে সাইটের মাধ্যমে ব্যবহার করা তথ্য ম্যানেজ করুন</translation>
 <translation id="6039379616847168523">পরবর্তী ট্যাবে চলে যান</translation>
-<translation id="6040143037577758943">বন্ধ</translation>
 <translation id="604124094241169006">স্বয়ংক্রিয়</translation>
 <translation id="6042308850641462728">আরও</translation>
 <translation id="604996488070107836">একটি অজানা ত্রুটির কারনে <ph name="FILE_NAME" /> ডাউনলোড করা যায়নি।</translation>
@@ -1308,7 +1300,6 @@
 <translation id="6636623428211296678">নিচে দেওয়া আরও সেটিংস দেখুন অথবা এখনই শেষ করুন</translation>
 <translation id="6637100877383020115">অ্যাপ উন্নত করার জন্য সাহায্য করতে, Chrome ব্যবহার সম্পর্কিত ও ক্র্যাশ ডেটা Google-এ পাঠায়। <ph name="BEGIN_UMA_LINK" />ম্যানেজ করুন<ph name="END_UMA_LINK" /></translation>
 <translation id="6641780377503683465"><ph name="INTEREST" /> সরিয়ে দিন</translation>
-<translation id="6642299196749785472">ট্যাব অ্যাটাচ করুন</translation>
 <translation id="6647441008198474441">আপনি পরে কোন কোন সাইট ভিজিট করতে পারেন তা অনুমান করার জন্য আপনি যেসব URL দেখেন তা Google-এ পাঠানো হয়</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 এবং <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> আরও অনেক}one{<ph name="CONTACT_PREVIEW" />\u2026 এবং <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> আরও অনেক}other{<ph name="CONTACT_PREVIEW" />\u2026 এবং <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> আরও অনেক}}</translation>
 <translation id="6649642165559792194"><ph name="BEGIN_NEW" />নতুন<ph name="END_NEW" /> ছবির প্রিভিউ দেখুন</translation>
@@ -1718,7 +1709,6 @@
 <translation id="8236097722223016103">বুকমার্কে যোগ করুন</translation>
 <translation id="8243077599929149377">আপনার ইউজারনেম যোগ করুন</translation>
 <translation id="8244387390464017490">'নতুন ট্যাব' পৃষ্ঠা কাস্টমাইজ করুন</translation>
-<translation id="8244444485683708655">ক্যামেরার ছবি অ্যাটাচ করুন</translation>
 <translation id="8250920743982581267">দস্তাবেজগুলি</translation>
 <translation id="8258999165172757081">যোগ করা্ হয়েছে</translation>
 <translation id="8259179246279078674">প্রিলোড করা পৃষ্ঠা এনক্রিপ্ট করা থাকে বলে সেটির কন্টেন্ট Google জানতে পারে না। কোন সাইট ব্যক্তিগতভাবে প্রিলোড করা হয়েছে সেটি Google সার্ভার জানতে পারে। এই তথ্য শুধু পৃষ্ঠা প্রিলোড করার জন্য ব্যবহার করা হয় এবং আপনার Google অ্যাকাউন্টের অন্য তথ্যের সাথে যুক্ত থাকে না।</translation>
@@ -1859,6 +1849,7 @@
 <translation id="8856931513242997049">বিজ্ঞপ্তির অনুমতি ফ্লো বন্ধ করা হয়েছে</translation>
 <translation id="8863714995118816041"><ph name="SITE_NAME" />-এর জন্য আবার অনুমতি দেওয়া হয়েছে</translation>
 <translation id="8865415417596392024">আপনার অ্যাকাউন্টের Chrome ডেটা</translation>
+<translation id="8888527824584402177"><ph name="DAYS_INACTIVE" /> দিন ধরে কোনও ট্যাব ব্যবহার না করলে সেটি এখানে সরানো হয়<ph name="AUTODELETE_SECTION" />। আপনি যেকোনও সময় <ph name="SETTINGS_TITLE" /> থেকে এটি পরিবর্তন করতে পারবেন।</translation>
 <translation id="8890668505403261809">আপনার ছদ্মবেশী ট্যাব সার্চ করুন</translation>
 <translation id="8894890673032951011"><ph name="TAB_TITLE" />, বেছে নেওয়া রেকর্ডিং ছদ্মবেশী ট্যাব</translation>
 <translation id="8898822736010347272">আপনার দেখা কিছু পৃষ্ঠার ইউআরএল, সীমিত সিস্টেম সম্পর্কিত তথ্য এবং কিছু পৃষ্ঠার কন্টেন্ট Google-এর কাছে পাঠান যাতে নতুন ঝুঁকি চিহ্নিত করে ওয়েব ব্যবহারকারীর প্রত্যেককে সুরক্ষিত রাখা যায়।</translation>
@@ -1916,6 +1907,7 @@
 <translation id="9102803872260866941">প্রিভিউ ট্যাব খোলা হয়েছে</translation>
 <translation id="9102864637938129124">বিজ্ঞাপনগুলি কীভাবে কাজ করে তা সাইট এবং বিজ্ঞাপনদাতারা বুঝতে পারেন। এই সেটিংটি চালু করা আছে।</translation>
 <translation id="9104217018994036254">ট্যাব শেয়ার করা যাবে এমন ডিভাইসের সূচি।</translation>
+<translation id="9104858485806491627">{INACTIVE_TIME_DAYS,plural, =1{১ দিন বা তার বেশি সময় ধরে ব্যবহার করা হয়নি}one{# দিন বা তার বেশি সময় ধরে ব্যবহার করা হয়নি}other{# দিন বা তার বেশি সময় ধরে ব্যবহার করা হয়নি}}</translation>
 <translation id="9106148373857059373">বুকমার্ক সেভ ফ্লো বন্ধ করা হয়েছে</translation>
 <translation id="9108808586816295166">নিরাপদ ডিএনএস সবসময় উপলভ্য নাও থাকতে পারে</translation>
 <translation id="9124978074365039456">আপনার ক্যামেরা ও ফটো গ্যালারি ব্যবহার করে যা দেখেন তা কিনুন, অনুবাদ ও শনাক্ত করুন</translation>
@@ -1948,7 +1940,6 @@
 <translation id="927968626442779827">Google Chrome-এ 'লাইট' মোড ব্যবহার করুন</translation>
 <translation id="928550791203542716"><ph name="SITE_NAME" /> অনুসরণ করা হচ্ছে</translation>
 <translation id="930124987204876019">ইতিহাস, কুকি, সাইট ডেটা, ক্যাশে মুছুন…</translation>
-<translation id="930834144334005936">বর্তমান মোড <ph name="MODE_NAME" /> থেকে Search-এ রিসেট করুন</translation>
 <translation id="938850635132480979">ত্রুটি: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">পাসফ্রেজ প্রবেশ করান</translation>
 <translation id="945522503751344254">মতামত জানান</translation>

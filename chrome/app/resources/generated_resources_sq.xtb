@@ -1889,7 +1889,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2287704681286152065">{NUM_SITES,plural, =1{Për të mbrojtur të dhënat e tua, lejet u hoqën nga një sajt që nuk e ke vizituar së fundi}other{Për të mbrojtur të dhënat e tua, lejet u hoqën nga sajtet që nuk i ke vizituar së fundi}}</translation>
 <translation id="2287944065963043964">Ekrani i identifikimit</translation>
 <translation id="2290615375132886363">Butonat e navigimit të tabletit</translation>
-<translation id="2290703778620332549">Të zëvendësohet apo të krijohet një grup i ri?</translation>
 <translation id="2291452790265535215">Provo të përdorësh panelin anësor për faqeshënuesit, udhëtimet etj.</translation>
 <translation id="229182044471402145">Nuk u gjet asnjë font që përputhet.</translation>
 <translation id="2292590498047171967">Për të ndarë skedat dhe për të bashkëpunuar me të tjerët, sinkronizo historikun dhe skedat te <ph name="EMAIL" /></translation>
@@ -2729,7 +2728,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2852045827873867442">Kërkohet lidhja e internetit.</translation>
 <translation id="285237063405807022">(po ngarkohet)</translation>
 <translation id="2853121255651601031">Fjalëkalimi u ruajt</translation>
-<translation id="2854453262159518435">Zëvendëso grupin ekzistues të skedave</translation>
 <translation id="2855243985454069333">Fshin historikun nga të gjitha pajisjet e sinkronizuara</translation>
 <translation id="2855812646048059450">Identifikohu me <ph name="CREDENTIAL_PROVIDER" /></translation>
 <translation id="2856776373509145513">Krijo një kontejner të ri</translation>
@@ -3837,7 +3835,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3643962751030964445">Kjo pajisje menaxhohet nga <ph name="DEVICE_MANAGER" />. Një profil i ri kërkohet për llogarinë <ph name="USER_EMAIL_ADDRESS" /> nga <ph name="DEVICE_MANAGER" /></translation>
 <translation id="364418405912311456">Kliko dhe zvarrit mbi imazhe ose thekso tekstin për të kërkuar</translation>
 <translation id="3645372836428131288">Lëvize pak për të kapur një pjesë tjetër të gjurmës së gishtit.</translation>
-<translation id="3645951915068244649">Një grup skedash është krijuar tashmë me këtë dosje faqeshënuesish. Dëshiron të krijosh një grup të ri skedash apo ta zëvendësosh grupin ekzistues?</translation>
 <translation id="3646789916214779970">Rivendose në motivin e parazgjedhur</translation>
 <translation id="3647654707956482440">Kjo lidhje nuk mund të përdoret. Kontrollo për gabime ose përdor një lidhje tjetër për ta provuar përsëri.</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{Marrja nga <ph name="DEVICE_NAME" /> me sukses: <ph name="ATTACHMENTS" />}other{Marrja nga <ph name="DEVICE_NAME" /> me sukses: <ph name="ATTACHMENTS" />}}</translation>
@@ -5811,7 +5808,6 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="5010886807652684893">Pamja vizuale</translation>
 <translation id="5012523644916800014">Menaxho fjalëkalimet dhe çelësat e kalimit</translation>
 <translation id="501394389332262641">Tingulli i nivelit të ulët të baterisë</translation>
-<translation id="5014286001996333986">Të zëvendësohet apo të krijohet një grup i ri?</translation>
 <translation id="5015344424288992913">Po zgjidh përfaqësuesin...</translation>
 <translation id="5016305686459575361">Duke lidhur telefonin, mund të bësh sa më poshtë:</translation>
 <translation id="5016491575926936899">Mund të dërgosh mesazhe me tekst nga kompjuteri yt, të ndash lidhjen tënde të internetit, t'u përgjigjesh njoftimeve të bisedës dhe ta shkyçësh <ph name="DEVICE_TYPE" /> me telefonin tënd.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
@@ -6512,7 +6508,6 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="5499453227627332024">Ofrohet një përditësim për kontejnerin tënd Linux. Mund ta përditësosh gjithashtu më vonë nga aplikacioni "Cilësimet".</translation>
 <translation id="5499476581866658341">Tani mund të shikosh mediat dhe fotografitë më të fundit të telefonit</translation>
 <translation id="549957179819296104">Ikonë e re</translation>
-<translation id="5499634624419508916">Zëvendëso grupin ekzistues të skedave</translation>
 <translation id="5500163593833085874">Kur butoni i majtë i miut është i zgjedhur, përdor “+” për të klikuar dy herë</translation>
 <translation id="5500168250243071806"><ph name="BEGIN_LINK_SEARCH" />Historiku i kërkimeve<ph name="END_LINK_SEARCH" /> dhe <ph name="BEGIN_LINK_GOOGLE" />forma të tjera aktiviteti<ph name="END_LINK_GOOGLE" /> mund të ruhen në "Llogarinë tënde të Google" kur je i identifikuar. Mund t'i fshish ato në çdo kohë.</translation>
 <translation id="5501322521654567960">Paneli anësor i bashkërenditur majtas</translation>
@@ -8316,7 +8311,6 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="6787839852456839824">Shkurtoret e tastierës</translation>
 <translation id="6788210894632713004">Shtesë e shpaketuar</translation>
 <translation id="6789592661892473991">Horizontal i ndarë</translation>
-<translation id="6789665473250283877">Hiq <ph name="TOOL_NAME" /></translation>
 <translation id="6789834167207639931">Fut përsëri fjalëkalimin e "Llogarisë sate të Google" në ekranin tjetër për të përfunduar rikuperimin</translation>
 <translation id="6790428901817661496">Luaj</translation>
 <translation id="6790497603648687708"><ph name="EXTENSION_NAME" /> u shtua në distancë</translation>
@@ -11558,7 +11552,6 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="90033698482696970">Të skanohet automatikisht për profilet e disponueshme të kartës eSIM?</translation>
 <translation id="9003647077635673607">Lejo në të gjitha uebsajtet</translation>
 <translation id="9005774573776346118">Për t'i marrë fjalëkalimet, faqeshënuesit etj. në të gjitha pajisjet e tua, identifikohu si <ph name="EMAIL" /></translation>
-<translation id="9008133509889712539"><ph name="ORIGIN" /> dëshiron ta hapë këtë lidhje në një aplikacion.</translation>
 <translation id="9008201768610948239">Shpërfill</translation>
 <translation id="9008201858626224558">Butoni "pas" i faqes së detajeve të "<ph name="SUBPAGE_TITLE" />"</translation>
 <translation id="9008828754342192581">Më herët ti zgjodhe të lejoje të gjitha shtesat në <ph name="ORIGIN" /></translation>
@@ -11611,7 +11604,6 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="9032004780329249150">Përdor fjalëkalimet e tua në pajisjet e tua iOS</translation>
 <translation id="9032097289595078011">Çaktivizo "Çiftimin e shpejtë"</translation>
 <translation id="9032513103438497286">Blloko aplikacionet e instaluara në këtë <ph name="DEVICE_TYPE" />. Për të kufizuar shkarkimin e aplikacioneve ose përmbajtjeve, shko te "Cilësimet" e Google Play.</translation>
-<translation id="9033204084988490464">Palos skedat vertikale</translation>
 <translation id="9033765790910064284">Vazhdo gjithsesi</translation>
 <translation id="9033857511263905942">&amp;Ngjite</translation>
 <translation id="903480517321259405">Shkruaj përsëri PIN-in</translation>

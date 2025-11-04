@@ -156,6 +156,7 @@
 <translation id="2738871930057338499">Povezivanje s internetom nije moguće. HTTP 403 Zabranjeno je. Provjerite konfiguraciju proxyja.</translation>
 <translation id="2753623023919742414">Kliknite za pretraživanje</translation>
 <translation id="2768103863314748511">Postavite Chromium kao zadani preglednik za PDF</translation>
+<translation id="2770231113462710648">Promijeni zadani preglednik na:</translation>
 <translation id="2785438272836277133">Ovo proširenje sadrži zlonamjerni softver i nije sigurno. Uklonite ga iz Chromiuma kako više ne bi moglo vidjeti i mijenjati vaše podatke na web-lokacijama koje posjećujete, uključujući vaše osobne podatke.</translation>
 <translation id="2799223571221894425">Pokreni ponovo</translation>
 <translation id="2803971713792056305">Vaš Chromium</translation>
@@ -381,7 +382,6 @@
 <translation id="5605834417512968703">Odaberite bilo što za pretraživanje pomoću pretraživanja slika ili pritisnite Escape da biste zatvorili pretraživanje slika</translation>
 <translation id="5618818588972826921">Odaberite bilo koji tekst ili sliku za pretraživanje pomoću pretraživanja slika ili pritisnite Escape da biste zatvorili pretraživanje slika</translation>
 <translation id="5623402015214259806">{0,plural, =0{Dostupno je ažuriranje Chromiuma}=1{Dostupno je ažuriranje Chromiuma}one{Ažuriranje Chromiuma dostupno je već # dan}few{Ažuriranje Chromiuma dostupno je već # dana}other{Ažuriranje Chromiuma dostupno je već # dana}}</translation>
-<translation id="5633450273457573375">Koristi <ph name="BEGIN_LINK" />moju šifru<ph name="END_LINK" /> za šifriranje svih Chromeovih podataka spremljenih na mojem Google računu. Adrese i svi podaci spremljeni u Google Wallet neće se šifrirati vašom šifrom. Povijest pregledavanja iz Chromiuma neće se sinkronizirati.</translation>
 <translation id="5643865575100044307">Podaci web-lokacije uvijek se brišu s uređaja kada zatvorite Chromium</translation>
 <translation id="5653831366781983928">Sada ponovo pokrenite Chromium</translation>
 <translation id="5690427481109656848">Google LLC</translation>

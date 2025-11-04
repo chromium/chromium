@@ -742,7 +742,6 @@
 <translation id="3926703470020109118">ಡೌನ್‌ಲೋಡ್ ರದ್ದುಪಡಿಸಲಾಗಿದೆ</translation>
 <translation id="3929457972718048006">ವಿಳಾಸಗಳು</translation>
 <translation id="3931215329146376310">{count,plural, =1{ಈ ಸೈಟ್‌ನ ಹೊಸ ಪಾಸ್‌ವರ್ಡ್‌}one{ಈ ಸೈಟ್‌ಗಳ ಹೊಸ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು}other{ಈ ಸೈಟ್‌ಗಳ ಹೊಸ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು}}</translation>
-<translation id="3933372629914873850">ನೀವು <ph name="URL" /> ಗೆ ಸೈನ್ ಇನ್ ಮಾಡುತ್ತೀರಿ</translation>
 <translation id="3934905113567851655">ಮರುಗಾತ್ರಗೊಳಿಸಲು ಪಿಂಚ್ ಮಾಡಿ</translation>
 <translation id="3940195383040445971">ಟ್ಯಾಬ್‌ಗಳಲ್ಲಿ ಬೆಲೆಗಳನ್ನು ಟ್ರ್ಯಾಕ್ ಮಾಡಿ</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{{COUNT} ಟ್ಯಾಬ್‌ ಅನ್ನು ಮುಚ್ಚಿರಿ}one{{COUNT} ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚಿರಿ}other{{COUNT} ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚಿರಿ}}</translation>
@@ -1332,7 +1331,6 @@
 <translation id="6103540626693881831">ಸಾಧನದಲ್ಲಿನ ಎನ್‌ಕ್ರಿಪ್ಶನ್</translation>
 <translation id="611361228753138223">ಈ ಸಾಧನದಲ್ಲಿ ನೀವು ಇತ್ತೀಚೆಗೆ ಭೇಟಿ ನೀಡಿದ ಸೈಟ್‌ಗಳು</translation>
 <translation id="611705554202268369">ಟ್ಯಾಬ್ ಗುಂಪಿಗೆ ಸೇರಿಸಲು ಲಾಂಗ್ ಪ್ರೆಸ್ ಮಾಡಿ</translation>
-<translation id="6117260878488959646">ದೋಷ ಸಂಭವಿಸಿದೆ. ನಂತರ ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="6122191549521593678">ಆನ್‌ಲೈನ್</translation>
 <translation id="6122831415929794347">ಸುರಕ್ಷಿತ ಬ್ರೌಸಿಂಗ್ ಅನ್ನು ಆಫ್ ಮಾಡಬೇಕೆ?</translation>
 <translation id="6123514585040403489">ನಿಮ್ಮ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚಲಾಗುತ್ತದೆ</translation>
@@ -1355,7 +1353,6 @@
 <translation id="6172428250974276014">ಹೌದು, ಡೇಟಾವನ್ನು ಪ್ರತ್ಯೇಕವಾಗಿ ಇರಿಸಿ (ಶಿಫಾರಸು ಮಾಡಲಾಗಿದೆ)</translation>
 <translation id="6173499589275053515">ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಸೇವ್ ಮಾಡಲಾಗಿದೆ, <ph name="EMAIL" /></translation>
 <translation id="6181969657494915430">ಹುಡುಕಾಟ ಸ್ಕ್ರೀನ್</translation>
-<translation id="6182851675249594487">ಕಸ್ಟಮ್ ಕಲರ್ ಥೀಮ್</translation>
 <translation id="6187302354554850004">ಕೊನೆಯದಾಗಿ ಸಿಂಕ್ ಮಾಡಿರುವುದು: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319"><ph name="DATE" /> ರಂದು ರಚಿಸಲಾಗಿದೆ</translation>
 <translation id="6189413832092199491">ಓದದಿರುವುದು</translation>

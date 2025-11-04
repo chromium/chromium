@@ -1845,7 +1845,6 @@
 <translation id="4014895360827978999">Худалдааны үйлчилгээ болон төлбөрийн системүүд</translation>
 <translation id="4018819349042761761">Нийтийн түлхүүр</translation>
 <translation id="4023431997072828269">Энэ маягтыг аюулгүй байдлыг хангаагүй холболт ашиглан илгээж байгаа тул таны мэдээлэл бусдад харагдана.</translation>
-<translation id="4024673763872230929">Мэдээллээ хадгалж, маягтуудыг илүү хурдан бөглөөрэй. Таны төхөөрөмжид хадгална.</translation>
 <translation id="4025325634010721551">Бодлогыг дахин ачаалсан</translation>
 <translation id="4025338605225449265">Мөнгөн тэмдэгт, гадаад валютын арилжаа</translation>
 <translation id="4025777154208238692">Урвуу дарааллаар</translation>
@@ -2279,7 +2278,6 @@
 <translation id="4732860731866514038"><ph name="LANGUAGE" /> хэлний багцыг татаж байна... <ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992"><ph name="URL" /> таны төхөөрөмжийн байршлыг ашиглах хүсэлтэй байна</translation>
 <translation id="473414950835101501">Таны камеруудыг ашиглах</translation>
-<translation id="4734343956394152985"><ph name="BEGIN_BOLD" />Одоогийн өгөгдмөл тохиргоо<ph name="END_BOLD" /> · <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="4736825316280949806">Chromium-г дахин эхлүүлэх</translation>
 <translation id="4736934858538408121">Виртуал карт</translation>
 <translation id="473775607612524610">Шинэчлэх</translation>
@@ -2342,7 +2340,6 @@
 <translation id="4822493756793346865">Ердийн үнийг сүүлийн 90 хоногийн хугацаанд веб дээрх дэлгүүрүүдэд тулгуурласан.</translation>
 <translation id="4822922322149719535">Алдааны логийг хянах</translation>
 <translation id="4823699521959851389"><ph name="SHORT_PRODUCT_NAME" />-д таны төхөөрөмжийн <ph name="PERMISSION" />-д хандах эрх шаардлагатай</translation>
-<translation id="4825311006392962663">Тооцоо хийх үед дараа төлөх сонголтуудыг харуулах</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, Шинэ Google Хүснэгт шуурхай үүсгэхийн тулд эхлээд Tab, дараа нь Enter дээр дарна уу</translation>
 <translation id="4826588772550366629">камер, микрофон</translation>
 <translation id="4827283332383516812">Картыг устгах</translation>
@@ -2434,7 +2431,6 @@
 <translation id="4961708452830821006">Микрофоноо ашиглахын тулд <ph name="LINK" />-д Chrome-д хандах эрх өгнө үү.</translation>
 <translation id="4963413887558778009">Цэцэрлэгжүүлэлтийн дизайн</translation>
 <translation id="4967366744630699583">Хаяг засах</translation>
-<translation id="4968046291688599384"><ph name="BNPL_ISSUER_NAME" />-н нэг удаагийн виртуал картын дугаарыг бөглөсөн.</translation>
 <translation id="4968522289500246572">Энэ апп мобайлд зориулагдсан бөгөөд үүний хэмжээ сайн өөрчлөгдөхгүй байж магадгүй. Энэ апп асуудалтай тулгарч эсвэл дахин эхэлж магадгүй.</translation>
 <translation id="4968665849807487749">Таны бүх дэлгэц дээр цонх удирдахыг хүсэх боломжтой</translation>
 <translation id="4969341057194253438">Бичлэгийг устгах</translation>
@@ -3390,7 +3386,6 @@
 <translation id="6521745193039995384">Идэвхгүй</translation>
 <translation id="6522682797352430154">Сонгодог хөгжим</translation>
 <translation id="6524830701589638230">Хандалтын тохиргоог удирдах товчлуур, Chrome-н тохиргоонд хандалтын хэрэгслээ хувийн болгохын тулд идэвхжүүлнэ үү</translation>
-<translation id="6525222262307262764">Одоогийн өгөгдмөл тохиргоог хадгалах</translation>
 <translation id="6527049834925947126">Хүнсний үйлдвэрлэл</translation>
 <translation id="6529173248185917884">Долоо дахь хуйлмал</translation>
 <translation id="6529602333819889595">&amp; Устгах үйлдлийг дахин хийх</translation>
@@ -3411,7 +3406,6 @@
 <translation id="6567832540451970450">Танай администратор энэ сайтад <ph name="PERMISSION" />-г зөвшөөрдөг</translation>
 <translation id="6568793038316600992">Төлбөрийн хэрэгсэл удирдах товчлуур, төлбөр болон кредит картаа Chrome-н тохиргоонд удирдахын тулд идэвхжүүлнэ үү</translation>
 <translation id="6569060085658103619">Та өргөтгөлийн хуудсыг харж байна.</translation>
-<translation id="6571992525120410251"><ph name="ENGINE_NAME" />-с хүссэн зүйлээ асуугаарай</translation>
 <translation id="6572867903637058088">Энэ тус болсон уу?</translation>
 <translation id="6573200754375280815">Баруун ирмэг дагуу хоёр нүх цоолох</translation>
 <translation id="6575408526598156416">Бүртгэлд хадгалах</translation>
@@ -3453,7 +3447,6 @@
 <translation id="6652101503459149953">Windows Hello-г ашиглах</translation>
 <translation id="6654224358955673568">Албан ёсны болгох</translation>
 <translation id="6654244995031366386">Шил (бүтэцтэй)</translation>
-<translation id="6655085656059574817">Бүртгэлээ холбоотой байлгах нь танд <ph name="BNPL_ISSUER_NAME" />-р илүү хурдан төлөхөд туслах ч та <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" /> руу очиж салгах боломжтой</translation>
 <translation id="6657585470893396449">Нууц үг</translation>
 <translation id="6659246032834639189">Энэ нь хямд үнэ юм</translation>
 <translation id="6660413144148052430">байршил</translation>
@@ -3461,7 +3454,6 @@
 <translation id="666259744093848177">(хөрвүүлсэн x86_64)</translation>
 <translation id="6665553082534466207">Баруун ирмэг дагуу гурван нүх цоолох</translation>
 <translation id="6668389483194953109">"Custom" нэртэй хуудасны хэмжээ олсон ч "custom_size" шинж чанар хоосон эсвэл буруу байна.</translation>
-<translation id="6670729408462528018">Зургийн цомог</translation>
 <translation id="6671169470640320959">Автомашины санхүүжүүлэлт</translation>
 <translation id="6671697161687535275">Маягтын зөвлөмжийг Chromium-с устгах уу?</translation>
 <translation id="6675846980676550611">AR-г ашиглахыг зөвшөөрөөгүй</translation>

@@ -152,8 +152,8 @@
 <translation id="2738871930057338499">No se puede conectar a Internet. HTTP 403 no permitido. Comprueba la configuración del proxy.</translation>
 <translation id="2742320827292110288">Advertencia: Google Chrome no puede impedir que las extensiones guarden tu historial de navegación. Para inhabilitar esta extensión en modo Incógnito, anula la selección de esta opción.</translation>
 <translation id="2753623023919742414">Hacer clic para buscar</translation>
-<translation id="2757826245013442432">{COUNT,plural, =0{La Protección avanzada requiere que reinicies Chrome para aplicar una actualización.}=1{La Protección avanzada requiere que reinicies Chrome para aplicar una actualización. No se volverá a abrir la ventana de incógnito.}other{La Protección avanzada requiere que reinicies Chrome para aplicar una actualización. No se volverán a abrir las # ventanas de incógnito.}}</translation>
 <translation id="2765403129283291972">Chrome necesita permiso para acceder a tu micrófono para este sitio</translation>
+<translation id="2770231113462710648">Cambiar el navegador predeterminado a:</translation>
 <translation id="2775140325783767197">Chrome no puede revisar las contraseñas. Revisa la conexión a Internet.</translation>
 <translation id="2797864378188255696">Cuando accedes a servicios de Google, como Gmail o YouTube, con <ph name="USER_EMAIL" />, puedes ingresar automáticamente a Chrome con la misma cuenta</translation>
 <translation id="2799162042226656283">Tu Chrome</translation>
@@ -645,7 +645,6 @@
 <translation id="8255190535488645436">Google Chrome está usando tu cámara y tu micrófono.</translation>
 <translation id="8267953129876836456">Chrome encontró algunas recomendaciones de seguridad para que revises</translation>
 <translation id="8286862437124483331">Google Chrome está intentando mostrar contraseñas. Para permitirlo, ingresa tu contraseña de Windows.</translation>
-<translation id="8289399803055125418">Usar tu <ph name="BEGIN_LINK" />propia frase de contraseña<ph name="END_LINK" /> para encriptar todos los datos de Chrome en tu Cuenta de Google. Las direcciones y los datos guardados en la Billetera de Google no se encriptarán con tu frase de contraseña. No se sincronizará el historial de navegación de Chrome.</translation>
 <translation id="829923460755755423">Agrega un acceso directo al Administrador de contraseñas de Google</translation>
 <translation id="8313851650939857356">Error de inicio: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8321888067342493336">Guardar como imagen</translation>

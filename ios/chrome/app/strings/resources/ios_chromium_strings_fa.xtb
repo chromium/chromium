@@ -25,7 +25,6 @@
 <translation id="1502360822835740515">‏Chromium مرورگر پیش‌فرض شود</translation>
 <translation id="1503199973012840174">‏‫Chromium شما قدیمی است. برای حفظ ایمنی، آن را به‌روز کنید.</translation>
 <translation id="1515748263297244785">‏استفاده از Chromium برای iPad به‌طور پیش‌فرض</translation>
-<translation id="1530961174488670696">‏‫Chromium موفق نشد به‌روزرسانی‌ها را بررسی کند. بعداً دوباره امتحان کنید.</translation>
 <translation id="1531155317299575425">‏درخواست‌های ورود به سیستم Chromium را نشان می‌دهد.</translation>
 <translation id="1553657876656159572">یک فید سفارشی که برای شما ساخته می‌شود. شامل اخبار، ورزش، و آب‌وهوا.</translation>
 <translation id="1561849081734670621">‏برای غیرفعال کردن «حالت قفل همه» در Chromium، آن را در iPhone خود خاموش کنید.</translation>
@@ -146,7 +145,6 @@
 <translation id="420541179527342563">‏برای غیرفعال کردن حالت «قفل همه» در Chromium، آن را در iPad خود خاموش کنید.</translation>
 <translation id="4272892696084633551">‏کمک به بهبود ویژگی‌ها و عملکرد Chromium</translation>
 <translation id="4302397443352897529">‏تنظیمات Chromium</translation>
-<translation id="4304713468139749426">مدیر گذرواژه</translation>
 <translation id="4408912345039114853">‏اجرای «کنترل ایمنی» در Chromium</translation>
 <translation id="4432744876818348753">‏برای اینکه بیشترین بهره را از Chromium ببرید، به سیستم وارد شوید.</translation>
 <translation id="4445228361214254027">‏سازمانتان امکان استفاده از داده‌های Chromium و ذخیره کردن آن‌ها در «حساب Google» را خاموش کرده است. نشانک‌ها، گذرواژه‌ها، و سایر اطلاعات جدید فقط در این دستگاه ذخیره خواهند شد.</translation>
@@ -238,6 +236,7 @@
 <translation id="6154098560469640583">‏برای باز کردن پیوندهای موجود در پیام‌ها، اسناد، و برنامه‌های دیگر، از Chromium استفاده کنید.</translation>
 <translation id="6157162508956739031">‏بااستفاده از تکمیل خودکار گذرواژه‌ها و گذرکلیدها در Chromium، سریع‌تر به سیستم برنامه‌ها و سایت‌ها وارد شوید</translation>
 <translation id="6170619162539716595">‏به Chromium اجازه می‌دهد برای ارائه مسیرها و اطلاعات محلی به شما در نشانی‌های شناسایی‌شده از Google Maps استفاده کند.</translation>
+<translation id="6247557882553405851">‏مدیر گذرواژه Google</translation>
 <translation id="6268381023930128611">‏از Chromium خارج می‌شوید؟</translation>
 <translation id="6301717043141881464">‏برای دریافت آسان گذرواژه‌های ذخیره‌شده در برنامه‌های دیگر، «Chromium برای تکمیل خودکار» را انتخاب کنید</translation>
 <translation id="6324041800010509197">‏رفتن به شبکه زبانه‌ها در Chromium</translation>

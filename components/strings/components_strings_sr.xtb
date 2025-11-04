@@ -2341,7 +2341,6 @@
 <translation id="4822493756793346865">Уобичајене цене се заснивају на информацијама из продавница широм веба током последњих 90 дана.</translation>
 <translation id="4822922322149719535">Прикажи евиденцију грешака</translation>
 <translation id="4823699521959851389"><ph name="SHORT_PRODUCT_NAME" /> тражи приступ дозволи <ph name="PERMISSION" /> на уређају</translation>
-<translation id="4825311006392962663">Прикажи опције за касније плаћање приликом плаћања</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, притисните Tab, па Enter да бисте брзо направили нову Google табелу</translation>
 <translation id="4826588772550366629">камера и микрофон</translation>
 <translation id="4827283332383516812">Избришите картицу</translation>
@@ -3452,7 +3451,6 @@
 <translation id="6652101503459149953">Користи Windows Hello</translation>
 <translation id="6654224358955673568">Формално</translation>
 <translation id="6654244995031366386">Стакло (са текстуром)</translation>
-<translation id="6655085656059574817">Ако налог остане повезан, брже ћете плаћати користећи <ph name="BNPL_ISSUER_NAME" />, али можете да опозовете везу ако одете на <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" /></translation>
 <translation id="6657585470893396449">Лозинка</translation>
 <translation id="6659246032834639189">Ова цена је ниска</translation>
 <translation id="6660413144148052430">локација</translation>

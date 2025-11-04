@@ -23,7 +23,6 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="1184145431117212167">De installatie is mislukt omdat je versie van Windows niet wordt ondersteund.</translation>
 <translation id="1185134272377778587">Over Chromium</translation>
 <translation id="1203500561924088507">Bedankt voor het installeren. Je moet de browser opnieuw opstarten voordat je <ph name="BUNDLE_NAME" /> kunt gebruiken.</translation>
-<translation id="123265588161106468">Terwijl je bent ingelogd, kun je onder andere de wachtwoorden uit je Google-account gebruiken in Chromium. Als je dit wilt wijzigen, ga je naar Je account in Chromium.</translation>
 <translation id="1262876892872089030">Terwijl dit tabblad inactief was, is er geheugen vrijgemaakt om Chromium snel te houden. Je kunt ervoor kiezen deze site altijd uit te sluiten van inactiviteit.</translation>
 <translation id="1265577313130862557">Chromium heeft deze download geblokkeerd, omdat het bestand gevaarlijk is</translation>
 <translation id="126567311906253476">Als je met <ph name="USER_EMAIL" /> inlogt bij Google-services zoals Gmail of YouTube, kun je met hetzelfde account automatisch inloggen bij Chromium</translation>
@@ -147,7 +146,6 @@ Dit heeft geen gevolgen voor bookmarks, geschiedenis en opgeslagen wachtwoorden.
 <translation id="2620436844016719705">Systeem</translation>
 <translation id="2629740064077610681">Je organisatie kan browsegegevens bekijken en beheren, zoals je bookmarks, geschiedenis en wachtwoorden. Je organisatie kan geen browsegegevens in andere Chromium-profielen bekijken.</translation>
 <translation id="2635452620547538388">Laat verifiëren dat jij het bent om Chromium-gegevens in je account <ph name="ACCOUNT_EMAIL" /> te gebruiken en op te slaan</translation>
-<translation id="2637732208198500597">{COUNT,plural, =0{Voor Geavanceerde beveiliging moet je Chromium herstarten om een update toe te passen}=1{Voor Geavanceerde beveiliging moet je Chromium herstarten om een update toe te passen. Je incognitovenster kan niet opnieuw worden geopend.}other{Voor Geavanceerde beveiliging moet je Chromium herstarten om een update toe te passen. Je # incognitovensters kunnen niet opnieuw worden geopend.}}</translation>
 <translation id="2648074677641340862">Er is tijdens de installatie een fout opgetreden in het besturingssysteem. Download Chromium opnieuw.</translation>
 <translation id="2661879430930417727">Als je een apparaat deelt, kunnen vrienden en familie afzonderlijk surfen en Chromium instellen zoals zij dat willen.</translation>
 <translation id="2711502716910134313">Chromium-tabblad</translation>
@@ -158,6 +156,7 @@ Dit heeft geen gevolgen voor bookmarks, geschiedenis en opgeslagen wachtwoorden.
 <translation id="2738871930057338499">Kan geen verbinding maken met internet. HTTP 403 Verboden. Check je proxyconfiguratie.</translation>
 <translation id="2753623023919742414">Klik om te zoeken</translation>
 <translation id="2768103863314748511">Chromium instellen als standaard pdf-viewer</translation>
+<translation id="2770231113462710648">Standaardbrowser wijzigen in:</translation>
 <translation id="2785438272836277133">Deze extensie bevat malware en is onveilig. Verwijder de extensie van Chromium zodat deze je gegevens (waaronder je persoonlijke informatie) niet meer kan bekijken en wijzigen op sites die je bezoekt.</translation>
 <translation id="2799223571221894425">Opnieuw starten</translation>
 <translation id="2803971713792056305">Je Chromium</translation>

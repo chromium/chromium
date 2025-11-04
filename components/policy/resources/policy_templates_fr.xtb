@@ -136,7 +136,6 @@ Si la règle est définie sur 1 (Ne pas autoriser), la fonctionnalité n'est pas
 
       Si ce paramètre n'est pas configuré, le répertoire de profil par défaut est utilisé.</translation>
 <translation id="1053981429146436598">Groupe de règles liées aux paramètres des requêtes à un réseau privé.  Consultez https://wicg.github.io/private-network-access/.</translation>
-<translation id="1055159224864957792">Mot de passe local</translation>
 <translation id="1059069692400941670">Désactiver l'importation du moteur de recherche par défaut à la première exécution</translation>
 <translation id="1060020040574767394">Configurer les paramètres de filigrane personnalisés</translation>
 <translation id="1062011392452772310">Activer l'attestation à distance pour l'appareil</translation>
@@ -1226,17 +1225,6 @@ Cette règle n'a aucun effet si l'option permettant de conserver les données de
 <translation id="1834796168555733063">Désactiver l'enregistrement des clés d'accès avec le gestionnaire de mots de passe</translation>
 <translation id="1836380138559328229">Enregistrer les identifiants Wi-Fi actifs au niveau de l'appareil</translation>
 <translation id="1837165432382702436">Hauteur de la page en micromètres.</translation>
-<translation id="1838075279369174832">Cette règle permet de contrôler les facteurs d'authentification locaux qui peuvent être utilisés pour la connexion et la réauthentification sur <ph name="PRODUCT_OS_NAME" />.
-
-      Procédure à suivre :
-
-      * Pour autoriser tous les facteurs d'authentification locaux, utilisez ["ALL"] (cela inclut les facteurs ajoutés par la suite).
-
-      * Pour autoriser uniquement le déverrouillage par code, utilisez ["PIN"].
-
-      * Pour autoriser uniquement les mots de passe locaux, utilisez ["LOCAL_PASSWORD"].
-
-      Si cette règle n'est pas configurée, ou si elle est définie sur une liste vide, aucun facteur d'authentification local n'est disponible pour les utilisateurs gérés.</translation>
 <translation id="1838910874018595451">Configuration préremplie pour les demandes Kerberos</translation>
 <translation id="1839042185432919430">Autoriser l'appli Web kiosque à afficher une invite réseau au lancement de l'appli si l'appareil est hors connexion</translation>
 <translation id="1839711547980672664">Liste des formats d'URL pour lesquels les <ph name="CHROME_DEVTOOLS_NAME" /> peuvent être ouverts</translation>
@@ -8749,7 +8737,6 @@ REMARQUE : Seuls les nouveaux processus du moteur de rendu refléteront les mod
 Si cette règle est activée, l'utilisateur est déconnecté de sa session précédente lorsqu'il se connecte à un nouvel appareil <ph name="PRODUCT_OS_NAME" />.
 
 Si elle est désactivée ou n'est pas configurée, l'utilisateur est déconnecté de sa session précédente uniquement si les règles <ph name="FLOATING_SSO_ENABLED_POLICY_NAME" /> ou <ph name="FLOATING_WORKSPACE_V2_ENABLED_POLICY_NAME" /> sont activées.</translation>
-<translation id="6854694645176150141">Configurer les facteurs d'authentification locaux autorisés</translation>
 <translation id="6854767649023671426">Si cette règle est activée ou qu'elle n'est pas configurée, l'utilisateur est invité à autoriser ou non l'accès à la capture vidéo, sauf si l'URL concernée figure dans la liste VideoCaptureAllowedUrls.
 
       Si cette règle est désactivée, aucune invite ne s'affiche à ce sujet, et la capture vidéo n'est possible que si l'URL concernée figure dans la liste VideoCaptureAllowedUrls.
@@ -9656,7 +9643,6 @@ Si cette règle n'est pas configurée, cela revient à la définir sur "<ph name
 <translation id="7491720878670299691">Fréquence à laquelle les données du réseau sont interrogées pour vérifier la présence d'événements. La valeur minimale autorisée est de 1 minute.
 
       Si cette règle n'est pas configurée, la fréquence par défaut (1 minute) est appliquée.</translation>
-<translation id="7496284563199466390">Contrôle les utilisateurs gérés autorisés à définir la règle <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" />.</translation>
 <translation id="7498595166686106721">
       La règle display-capture permissions-policy restreint l'accès à getDisplayMedia(), conformément à cette spécification : https://www.w3.org/TR/screen-capture/#feature-policy-integration. Mais, si cette règle est désactivée, cette exigence n'est pas appliquée, et getDisplayMedia() est autorisé depuis des contextes qui seraient autrement interdits. Cette règle d'entreprise est temporaire et sera normalement supprimée après la version 100 de <ph name="PRODUCT_NAME" />. Elle permet de débloquer les utilisateurs de la version Enterprise dont l'application ne respecte pas les spécifications, mais qui a besoin de temps pour être résolue.
 
@@ -10603,9 +10589,6 @@ Cette règle s'applique au mode navigation privée. Cela signifie que la navigat
 <translation id="8225579382697740712">Contrôler l'utilisation de l'API WebHID</translation>
 <translation id="8229912067600517877">Activer les Outils pour les développeurs</translation>
 <translation id="8238421250255592181">Flag booléen spécifiant si la saisie semi-automatique est disponible ou non avec le clavier à l'écran.</translation>
-<translation id="8238558579601006178">Si cette règle est définie sur 0 ou n'est pas configurée, la règle <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> ne s'applique qu'au niveau de l'utilisateur à condition qu'il soit affilié.
-Si cette règle est définie sur 1, la règle <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> s'applique au niveau de l'utilisateur, même si celui-ci n'est pas affilié.
-Si cette règle est définie sur 2, la règle <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> ne s'applique jamais lorsque sa source est un utilisateur.</translation>
 <translation id="8239109177194627162">Désactiver la saisie automatique pour les cartes de crédit</translation>
 <translation id="8239143983379015783">Forcer l'activation du quota persistant</translation>
 <translation id="8240976615241583524">Cette règle permet de limiter les adresses IP et interfaces utilisées par WebRTC pour tenter d'identifier la meilleure connexion disponible.

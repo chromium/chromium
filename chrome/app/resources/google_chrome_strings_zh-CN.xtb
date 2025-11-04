@@ -154,6 +154,7 @@
 <translation id="2753623023919742414">点击即可搜索</translation>
 <translation id="2757826245013442432">{COUNT,plural, =0{高级保护计划要求您重新启动 Chrome 以应用一项更新}=1{高级保护计划要求您重新启动 Chrome 以应用一项更新。无痕式窗口将不会重新打开。}other{高级保护计划要求您重新启动 Chrome 以应用一项更新。# 个无痕式窗口将不会重新打开。}}</translation>
 <translation id="2765403129283291972">Chrome 需要获得相应权限，才能允许此网站使用您的麦克风</translation>
+<translation id="2770231113462710648">将默认浏览器更改为：</translation>
 <translation id="2775140325783767197">Chrome 无法检查您的密码。请检查您的互联网连接。</translation>
 <translation id="2797864378188255696">使用 <ph name="USER_EMAIL" /> 登录 Gmail 或 YouTube 等 Google 服务时，您可以使用同一账号自动登录 Chrome</translation>
 <translation id="2799162042226656283">您的 Chrome</translation>
@@ -644,7 +645,6 @@
 <translation id="8255190535488645436">Google Chrome 正在使用您的摄像头和麦克风。</translation>
 <translation id="8267953129876836456">Chrome 找到了一些安全建议需要您审核</translation>
 <translation id="8286862437124483331">Google Chrome正在尝试显示密码，请输入您的Windows密码以允许此操作。</translation>
-<translation id="8289399803055125418">使用您<ph name="BEGIN_LINK" />自己的口令<ph name="END_LINK" />加密 Google 账号中的所有 Chrome 数据。地址和 Google 钱包中保存的任何数据都不会使用口令加密，Chrome 中的浏览记录也不会同步。</translation>
 <translation id="829923460755755423">为 Google 密码管理工具添加快捷方式</translation>
 <translation id="8313851650939857356">启动错误：<ph name="STARTUP_ERROR" />。</translation>
 <translation id="8321888067342493336">另存为图片</translation>

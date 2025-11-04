@@ -1844,7 +1844,6 @@
 <translation id="4014895360827978999">판매자 서비스 및 결제 시스템</translation>
 <translation id="4018819349042761761">공개 키</translation>
 <translation id="4023431997072828269">안전하지 않은 연결을 통해 이 양식이 제출되므로 내 정보가 다른 사용자에게 표시됩니다.</translation>
-<translation id="4024673763872230929">더 빠르게 정보를 저장하고 양식을 작성하세요. 기기에 저장됩니다.</translation>
 <translation id="4025325634010721551">정책 새로고침됨</translation>
 <translation id="4025338605225449265">환거래 및 환전</translation>
 <translation id="4025777154208238692">역순 정렬</translation>
@@ -2278,7 +2277,6 @@
 <translation id="4732860731866514038"><ph name="LANGUAGE" /> 언어 팩 다운로드 중…<ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992"><ph name="URL" />에서 기기의 위치에 액세스하려고 합니다.</translation>
 <translation id="473414950835101501">카메라 사용</translation>
-<translation id="4734343956394152985"><ph name="BEGIN_BOLD" />현재 기본값<ph name="END_BOLD" /> · <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="4736825316280949806">Chromium 다시 시작</translation>
 <translation id="4736934858538408121">가상 카드</translation>
 <translation id="473775607612524610">업데이트</translation>
@@ -2341,7 +2339,6 @@
 <translation id="4822493756793346865">일반적인 가격은 지난 90일 동안의 웹 스토어를 기반으로 합니다.</translation>
 <translation id="4822922322149719535">오류 로그 검토</translation>
 <translation id="4823699521959851389"><ph name="SHORT_PRODUCT_NAME" />에서 기기의 <ph name="PERMISSION" /> 권한에 액세스해야 합니다.</translation>
-<translation id="4825311006392962663">결제 시 나중에 결제 옵션 표시</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab을 누른 다음 Enter를 눌러 빠르게 새 Google 시트 만들기</translation>
 <translation id="4826588772550366629">카메라 및 마이크</translation>
 <translation id="4827283332383516812">카드 삭제</translation>
@@ -2433,7 +2430,6 @@
 <translation id="4961708452830821006">마이크를 사용하려면 <ph name="LINK" />에서 Chrome에 액세스 권한을 부여하세요.</translation>
 <translation id="4963413887558778009">조경 디자인</translation>
 <translation id="4967366744630699583">주소 수정</translation>
-<translation id="4968046291688599384"><ph name="BNPL_ISSUER_NAME" /> 일회용 가상 카드 번호가 입력되었습니다.</translation>
 <translation id="4968522289500246572">모바일용 앱이므로 크기가 제대로 조절되지 않을 수도 있습니다. 문제가 발생하거나 앱이 다시 시작될 수 있습니다.</translation>
 <translation id="4968665849807487749">모든 디스플레이의 창 관리를 허용할지 확인할 수 있음</translation>
 <translation id="4969341057194253438">녹음 파일 삭제</translation>
@@ -3390,7 +3386,6 @@
 <translation id="6521745193039995384">활성화되지 않음</translation>
 <translation id="6522682797352430154">클래식 음악</translation>
 <translation id="6524830701589638230">접근성 설정 관리 버튼, Chrome 설정에서 접근성 도구를 맞춤설정하려면 활성화하세요.</translation>
-<translation id="6525222262307262764">현재 기본값 유지</translation>
 <translation id="6527049834925947126">식품 생산</translation>
 <translation id="6529173248185917884">7번째 롤</translation>
 <translation id="6529602333819889595">삭제 다시 실행(&amp;R)</translation>
@@ -3411,7 +3406,6 @@
 <translation id="6567832540451970450">관리자가 이 사이트에 <ph name="PERMISSION" /> 권한을 허용합니다</translation>
 <translation id="6568793038316600992">결제 수단 관리 버튼, Chrome 설정에서 결제 및 신용카드 정보를 관리하려면 활성화하세요.</translation>
 <translation id="6569060085658103619">확장 프로그램 페이지를 보는 중</translation>
-<translation id="6571992525120410251"><ph name="ENGINE_NAME" />에게 무엇이든 물어보세요</translation>
 <translation id="6572867903637058088">도움이 되었나요?</translation>
 <translation id="6573200754375280815">오른쪽 2공 펀칭</translation>
 <translation id="6575408526598156416">계정에 저장</translation>
@@ -3460,7 +3454,6 @@
 <translation id="666259744093848177">(x86_64 번역 버전)</translation>
 <translation id="6665553082534466207">오른쪽 3공 펀칭</translation>
 <translation id="6668389483194953109">이름이 'custom'인 용지 크기를 찾았으나 'custom_size' 속성이 비어 있거나 유효하지 않습니다.</translation>
-<translation id="6670729408462528018">갤러리</translation>
 <translation id="6671169470640320959">자동차 금융</translation>
 <translation id="6671697161687535275">Chromium에서 자동완성 항목 추천을 삭제하시겠습니까?</translation>
 <translation id="6675846980676550611">AR 허용되지 않음</translation>

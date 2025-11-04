@@ -2341,7 +2341,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4822493756793346865">Običajne cene izhajajo iz trgovin v spletu v zadnjih 90 dneh.</translation>
 <translation id="4822922322149719535">Pregled dnevnika napak</translation>
 <translation id="4823699521959851389"><ph name="SHORT_PRODUCT_NAME" /> potrebuje dostop za <ph name="PERMISSION" /></translation>
-<translation id="4825311006392962663">Pri zaključku nakupa prikaži možnosti poznejšega plačila</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite tabulatorko, nato Enter, če želite hitro ustvariti novo Google Preglednico</translation>
 <translation id="4826588772550366629">kamero in mikrofon</translation>
 <translation id="4827283332383516812">Izbrišite kartico</translation>
@@ -2433,7 +2432,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4961708452830821006">Če želite uporabljati mikrofon, omogočite Chromu dostop v <ph name="LINK" />.</translation>
 <translation id="4963413887558778009">Krajinska arhitektura</translation>
 <translation id="4967366744630699583">Urejanje naslova</translation>
-<translation id="4968046291688599384">Enkratna številka navidezne kartice ponudnika <ph name="BNPL_ISSUER_NAME" /> je izpolnjena.</translation>
 <translation id="4968522289500246572">Ta aplikacija je zasnovana za mobilne naprave in sprememba velikosti morda ne bo delovala pravilno. Z aplikacijo bodo morda težave ali pa se bo znova zagnala.</translation>
 <translation id="4968665849807487749">Lahko zahteva upravljanje oken na vseh zaslonih.</translation>
 <translation id="4969341057194253438">Izbriši posnetek</translation>
@@ -3453,7 +3451,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6652101503459149953">Uporabi Windows Hello</translation>
 <translation id="6654224358955673568">Oblikuj bolj formalno</translation>
 <translation id="6654244995031366386">Glass (Textured)</translation>
-<translation id="6655085656059574817">Če je vaš račun povezan, lahko hitreje plačujete s ponudnikom <ph name="BNPL_ISSUER_NAME" />, vendar lahko povezavo prekinete na <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" /></translation>
 <translation id="6657585470893396449">Geslo</translation>
 <translation id="6659246032834639189">Ta cena je nizka</translation>
 <translation id="6660413144148052430">lokacija</translation>

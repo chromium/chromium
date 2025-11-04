@@ -33,7 +33,6 @@
 <translation id="1111673857033749125">သင်၏ အခြားစက်ပစ္စည်းများပေါ်တွင် သိမ်းဆည်းထားသည့် ဝဘ်လိပ်စာများ ဤနေရာတွင် ပေါ်ပါမည်။</translation>
 <translation id="1126696498560056882">ဤစက်ပေါ်ရှိ အကောင့်များကို စီမံခန့်ခွဲခြင်း</translation>
 <translation id="1135018701024399762">ရုပ်ဖျက်မုဒ်သည် သင့်စက်သုံးသူများအား သင်၏ ဘရောက်စ်လုပ်မှုကို မပြပါ</translation>
-<translation id="113752097246673894">သင့်စက်အားလုံးတွင် ဝဘ်လိပ်စာနှင့် အခြားအရာများ ရယူရန် <ph name="EMAIL" /> အဖြစ် Chrome သို့ လက်မှတ်ထိုးဝင်ပါ</translation>
 <translation id="1138458427267715730">ဝဘ်ပေါ်ရှိ ဝဘ်ဆိုက်တစ်ခုခုတွင် ဈေးကျသွားပါက သတိပေးချက်များ ရယူနိုင်သည်</translation>
 <translation id="1140317858355046628">ဖျက်လိုက်ပါက လူတိုင်းသည် “<ph name="GROUP_NAME" />” တဘ်အုပ်စုသုံးခွင့် ချက်ချင်းဆုံးရှုံးမည်ဖြစ်ပြီး ၎င်းကို စက်အားလုံးမှ ဖျက်ပါမည်။</translation>
 <translation id="1142732900304639782">ဤဝဘ်ဆိုက်များကို ပြန်ဆိုရန် မကမ်းလှမ်းပါနှင့်</translation>
@@ -144,8 +143,6 @@
 <translation id="1578591621182011812">{NUM_PASSWORDS,plural, =1{ဤစက်တွင် ကျိုးပေါက်ထားသည့် စကားဝှက် ၁ ခုရှိသည်}other{ဤစက်တွင် ကျိုးပေါက်ထားသည့် စကားဝှက် # ခုရှိသည်}}</translation>
 <translation id="1594635596540195766">အောက်ပါစာရင်းတွင် အကြံပြုအရာ<ph name="SUGGESTIONS_COUNT" /> ခု ရှိသည်။</translation>
 <translation id="1598163867407640634"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ဖြင့် <ph name="SITE_ETLD_PLUS_ONE" /> ကို အသုံးပြုပါ</translation>
-<translation id="1598770407402123677"><ph name="TAB_TITLE" />၊ ပင်ထိုးထားသည့် ရိုက်ကူးနေသောတဘ်</translation>
-<translation id="1600756129506222718"><ph name="TAB_TITLE" />၊ မျှဝေနေသောတဘ်</translation>
 <translation id="160275202205869636">ဖွင့်ထားချိန်၌ ဒေတာကို သင့် Google Account တွင် သုံးပြီး သိမ်းပါသည်။ ပိတ်ထားချိန်၌ ဒေတာကို ဤစက်တွင်သာ သိမ်းပါသည်။</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{ရွေးချယ်ထားသည့် အကြောင်းအရာ ၁ ခုကို ဖယ်ရှားရန်}other{ရွေးချယ်ထားသည့် အကြောင်းအရာ # ခုကို ဖယ်ရှားရန်}}</translation>
 <translation id="1639239467298939599">တင်ပေးနေ</translation>
@@ -187,7 +184,6 @@
 <translation id="1807709131360304325">ဝင်းဒိုးအသစ် ဖွင့်ရန်</translation>
 <translation id="1810845389119482123">စင့်ခ်စတင်လုပ်ရန် စနစ်ထည့်သွင်းခြင်းကို အပြီးသတ်မထားပါ</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> က <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ကို ဆက်သုံး၍မရပါ</translation>
-<translation id="1815975907734103433"><ph name="TAB_TITLE" />၊ ရိုက်ကူးနေသောတဘ်</translation>
 <translation id="1820408774134375111">လက်မှတ်ထိုးဝင်သည့် အောက်ခြေအပိုဆောင်း စာမျက်နှာ</translation>
 <translation id="1823492026305965829"><ph name="USER_FULL_NAME" /> အဖြစ် လက်မှတ်ထိုးဝင်ရန်</translation>
 <translation id="1824902652744048041">ဖွင့်ကြည့်ထားသည့်မှတ်တမ်းဒေတာ ‘ဖျက်ရန်’ ကို တို့ပါ</translation>
@@ -202,7 +198,6 @@
 <translation id="1877073879466606884">သင်လက်မှတ်ထိုးဝင်ထားသည့် ပရိုဖိုင်သည် စီမံထားသော ပရိုဖိုင်ဖြစ်သည်။ သင်၏စီမံခန့်ခွဲသူသည် သင့်ပရိုဖိုင်ဆက်တင်များကို အဝေးမှပြောင်းခြင်း၊ သတင်းပေးပို့ခြင်းမှတစ်ဆင့် ဘရောင်ဇာနှင့်ဆိုင်သော အချက်အလက်ကို ပိုင်းခြားစိတ်ဖြာခြင်း၊ လိုအပ်သော အခြားလုပ်ဆောင်စရာများကို ဆောင်ရွက်ခြင်းတို့ ပြုလုပ်နိုင်သည်။</translation>
 <translation id="1879904908408734349">လက်မှတ်ထိုးဝင်သည့် အောက်ခြေအပိုဆောင်း စာမျက်နှာကို ပိတ်ထားသည်</translation>
 <translation id="1883903952484604915">ကျွန်ုပ်၏ဖိုင်များ</translation>
-<translation id="1889626070177134359">အထက်ပါစာရင်းတွင် အကြံပြုထားသောအရာ <ph name="SUGGESTIONS_COUNT" /> ခု ပါဝင်သည်။</translation>
 <translation id="189358972401248634">အခြား ဘာသာစကားများ</translation>
 <translation id="1899175549411605574">ဈေးနှုန်းသိကောင်းစရာများ အောက်ခြေအပိုဆောင်း စာမျက်နှာ</translation>
 <translation id="1900260903084164610">ရှေ့ဆက်ခြင်းဖြင့် သင်သည် <ph name="BEGIN_TOS_LINK" />ဝန်ဆောင်မှုစည်းမျဉ်းများ<ph name="END_TOS_LINK" /> ကို သဘောတူရာရောက်သည်။</translation>
@@ -221,7 +216,6 @@
 <translation id="1957557050935255529">PDF ဖွင့်နေသည်…</translation>
 <translation id="1959679933317802873">အကြောင်းအရာကို စောင့်နေသည်</translation>
 <translation id="1960290143419248813">Chrome အပ်ဒိတ်များကို ဤ Android ဗားရှင်းတွင် ပံ့ပိုးထားခြင်း မရှိတော့ပါ</translation>
-<translation id="1962061488333185936"><ph name="TAB_TITLE" />၊ တစ်ခုထက်ပိုရွေးထားသည့် အသံထွက်နေသောတဘ်</translation>
 <translation id="1963056249988316027">Identity Check ဖွင့်ထားပြီး သင်ဖြစ်ကြောင်း အတည်ပြု၍မရပါ</translation>
 <translation id="1963976881984600709">ပုံမှန်ကာကွယ်မှု</translation>
 <translation id="1966710179511230534">ကျေးဇူးပြု၍ သင်၏ လက်မှတ်ထိုးဝင်ရောက်မှု အသေးစိတ်ကို မွမ်းမံပါ။</translation>
@@ -234,7 +228,6 @@
 <translation id="1984417487208496350">ကာကွယ်မှုမရှိပါ (အကြံပြုမထားပါ)</translation>
 <translation id="1986685561493779662">အမည်မှာ ရှိနှင့်ပြီးဖြစ်သည်</translation>
 <translation id="200114059308480249">Google ရှာဖွေမှုများတွင် ဝန်းကျင်ရှိစာသားကို ထည့်သွင်းမလား။</translation>
-<translation id="2004096469149679223"><ph name="TAB_TITLE" />၊ ပင်ထိုးထားသည့် အသံပိတ်ထားသော ရုပ်ဖျက်တဘ်</translation>
 <translation id="2021896219286479412">မျက်နှာပြင်အပြည့် ထိန်းချုပ်မှု</translation>
 <translation id="2038563949887743358">ဆိုဒ်ကြီး တောင်းဆိုမှု ဖွင့်မည်</translation>
 <translation id="204321170514947529"><ph name="APP_NAME" /> သည် Chrome တွင်လည်း ဒေတာများရှိသည်</translation>
@@ -256,10 +249,8 @@
 <translation id="2111511281910874386">စာမျက်နှာ သို့သွားရန်</translation>
 <translation id="2119609734654412418">သင်၏လိပ်စာများကို ဤနေရာတွင် ပြပါမည်</translation>
 <translation id="2122601567107267586">အက်ပ်ကို ဖွင့်၍မရပါ</translation>
-<translation id="2128579426409352593"><ph name="TAB_TITLE" />၊ တစ်ခုထက်ပိုရွေးထားပြီး ပင်ထိုးထားသည့် မျှဝေနေသောတဘ်</translation>
 <translation id="213279576345780926"><ph name="TAB_TITLE" /> ပိတ်ထား၏</translation>
 <translation id="2138283760993967204">စီမံရန် သင်္ကေတ</translation>
-<translation id="2138632817776076519"><ph name="TAB_TITLE" />၊ ရွေးထားသည့် ရိုက်ကူးနေသောတဘ်</translation>
 <translation id="2141396931810938595">သင့်အသုံးပြုမှုကို အခြေခံသည်</translation>
 <translation id="2145315049852051678">သင့်ဘရောင်ဇာတွင် အလုံခြုံဆုံး ဆက်တင်များ ရှိနေကြောင်း သေချာစေရန် Chrome က ပုံမှန်စစ်ဆေးသည်။ စစ်ဆေးရန် လိုအပ်ပါက ကျွန်ုပ်တို့ အသိပေးပါမည်။</translation>
 <translation id="2149973817440762519">စာညှပ် တည်းဖြတ်ရန်</translation>
@@ -274,7 +265,6 @@
 <translation id="2186779861549045980">သင်၏ Google Account ၌ သိမ်းမည့်ဒေတာကို ရွေးနိုင်သည်။\nဤအချက်အလက်များကို သင်၏ ဝဘ်လိပ်စာ၊ ဖတ်ရန်စာရင်း (သို့) Password Manager တွင်လည်း ကြည့်ရှုစီမံနိုင်သည်။</translation>
 <translation id="219283042927675668">အုပ်စုလိုက် တဘ်များ</translation>
 <translation id="2194856509914051091">စဉ်းစားရန် အချက်များ</translation>
-<translation id="2205701497928406883"><ph name="TAB_TITLE" />၊ ပင်ထိုးထားသည့် မျှဝေနေသောတဘ်</translation>
 <translation id="22091350895006575">အသုံးပြုသူအမည် ထည့်ရန်</translation>
 <translation id="221494669172414749">ပရိုဖိုင်လော့ခ်ချခြင်းမပါဘဲ Chrome ကိုဖွင့်ပါက သိမ်းထားသော စကားဝှက်နှင့် ငွေပေးချေနည်းလမ်းများကို သင့်ကားမှ ဖယ်ရှားပါမည်။ ပရိုဖိုင်လော့ခ်ချခြင်း သုံးပါက ဤဒေတာအား လုံခြုံမှုရှိစေသည်။</translation>
 <translation id="2227179592712503583">အကြံပြုချက် ဖယ်ရှားရန်</translation>
@@ -314,9 +304,7 @@
 <translation id="2385605401818128172">အကြောင်းကြားချက်များစွာ ပို့သည့် ဝဘ်ဆိုက်များကို စစ်ဆေးနိုင်ပြီး နောက်ထပ်အကြောင်းကြားချက်များပို့ခြင်းမှ ၎င်းတို့ကိုရပ်နိုင်သည်</translation>
 <translation id="2386938421315164605">အကြောင်းအရာများ ဖျောက်ပြီး ပြန်ပြနိုင်သည်</translation>
 <translation id="2390510615457643724"><ph name="FILE_NAME" /><ph name="FILE_SIZE" /> ကို ထပ်မံဒေါင်းလုဒ်လုပ်လိုပါသလား။</translation>
-<translation id="2397175985681716533"><ph name="TAB_TITLE" />၊ ရိုက်ကူးနေသော ရုပ်ဖျက်တဘ်</translation>
 <translation id="2410754283952462441">အကောင့်တစ်ခု ရွေးပါ</translation>
-<translation id="2411239243988279592"><ph name="TAB_TITLE" />၊ ရွေးထားသည့် အသံထွက်နေသောတဘ်</translation>
 <translation id="2413014528833954543">ဤစက်တွင် စကားဝှက်များကို စစ်ဆေး၍မရပါ</translation>
 <translation id="2414886740292270097">အမှောင်</translation>
 <translation id="2421705177906985956">ယခုပြရန် ဝဘ်ဆိုက် မရှိပါ</translation>
@@ -331,7 +319,6 @@
 <translation id="2453860139492968684">ပြီးပြီ</translation>
 <translation id="2461378706168271257">သင်၏ တဘ်များကို ရှာရန်</translation>
 <translation id="2461822463642141190">လက်ရှိ</translation>
-<translation id="2466378451804467735"><ph name="TAB_TITLE" />၊ တစ်ခုထက်ပိုရွေးထားသည့် အသံပိတ်ထားသောတဘ်</translation>
 <translation id="2468444275314013497">သင့်ဘရောင်ဇာသည် အဆင်ပြေပုံပေါ်သည်</translation>
 <translation id="2472163211318554013">Chrome ကို အကောင်းဆုံးသုံးနိုင်ရန် လက်မှတ်ထိုးဝင်ပါ</translation>
 <translation id="247737702124049222">ပုံအကြောင်းအရာများကို ဖွင့်ထားသည်</translation>
@@ -355,7 +342,6 @@
 <translation id="2535807170289627159">တဘ်အားလုံး</translation>
 <translation id="2536728043171574184">ဤစာမျက်နှာ၏ အော့ဖ်လိုင်း မိတ္တူကို ကြည့်ရှုနေ</translation>
 <translation id="2539002604555291451">Sans serif</translation>
-<translation id="2542094237868555728"><ph name="TAB_TITLE" />၊ ရွေးထားပြီး ပင်ထိုးထားသည့် အသံပိတ်ထားသော ရုပ်ဖျက်တဘ်</translation>
 <translation id="2542548955756682219"><ph name="TAB_TITLE" />၊ တဘ်</translation>
 <translation id="2546283357679194313">ကူကီးများ နှင့် ဆိုက် ဒေတာ</translation>
 <translation id="2547843573592965873">ပရိုဖိုင်လော့ခ်သည် သင်၏ Google Account တွင် သိမ်းထားသော စကားဝှက်၊ ငွေပေးချေမှု စသည်တို့အပါအဝင် သင့်အချက်အလက်များကို ကားထဲတွင် လုံခြုံစေသည်။</translation>
@@ -387,7 +373,6 @@
 <translation id="2669454659051515572">ဒေါင်းလုဒ်လုပ်သည့်ဖိုင်များကို ဤစက်အသုံးပြုသူတိုင်း တွေ့နိုင်သည်</translation>
 <translation id="2677748264148917807">ထွက်ခွာရန်</translation>
 <translation id="2687009626279857299">ဤစက်တွင် အလုပ်မလုပ်တော့ပါ</translation>
-<translation id="2693387519545954740"><ph name="TAB_TITLE" />၊ အသံထွက်နေသောတဘ်</translation>
 <translation id="2702516483241149200">အသစ်- ဤစာသားသို့ လှိမ့်သွားသည့် လင့်ခ်ကို မျှဝေနိုင်သည်</translation>
 <translation id="2708226184420201102"><ph name="PRODUCT_NAME" /> ဘရောက်ဇာတွင် ဖွင့်ရန်</translation>
 <translation id="271033894570825754">အသစသ်</translation>
@@ -396,7 +381,6 @@
 <translation id="2723001399770238859">အသံ</translation>
 <translation id="2739887572830526131">တဘ်များကို နောက်မှထည့်ရန် ဤအုပ်စုကို ဆက်ထားနိုင်သည်။ သို့မဟုတ် ၎င်းကို သင်မလိုအပ်တော့ပါက ဖျက်နိုင်သည်။</translation>
 <translation id="2742373789128106053"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ကို ယခုမရနိုင်ပါ။</translation>
-<translation id="2751271371269891762">သင့်စက်အားလုံးတွင် ဝဘ်လိပ်စာနှင့် အခြားအရာများ ရယူရန် <ph name="EMAIL" /> အဖြစ် လက်မှတ်ထိုးဝင်ပါ</translation>
 <translation id="2760805590727089264">လ / နှစ်</translation>
 <translation id="2762000892062317888">ယခုလေးတင်</translation>
 <translation id="276969039800130567"><ph name="USER_EMAIL_ADDRESS" /> သုံး၍ ၐင်ပါ။</translation>
@@ -406,7 +390,6 @@
 <translation id="2789486458103222910">OK</translation>
 <translation id="2791129728587938169">{NUM_PASSWORDS,plural, =1{ပိုကောင်းအောင်လုပ်သင့်သော ပြန်သုံးထားသည့် စကားဝှက်ကို Chrome က တွေ့ထားသည်}other{ပိုကောင်းအောင်လုပ်သင့်သော ပြန်သုံးထားသည့် စကားဝှက် # ခုကို Chrome က တွေ့ထားသည်}}</translation>
 <translation id="2800066122460699237"><ph name="TAB_TITLE" /> တဘ်ကို ပိတ်ပါမည်</translation>
-<translation id="2805210243313393104">သင့်စက်အားလုံးတွင် ဝဘ်လိပ်စာနှင့် အခြားအရာများ ရယူနိုင်သည်</translation>
 <translation id="2805756323405976993">အက်ပ်များ</translation>
 <translation id="2819849308549746319">မှာယူမှုအားလုံး ရပ်ဆိုင်းရန်</translation>
 <translation id="2820047235535485532">သင်၏ Google Account <ph name="ACCOUNT_EMAIL" /> ၌ သိမ်းမည့်ဒေတာကို ရွေးနိုင်သည်။\nဤအချက်အလက်များကို သင်၏ ဝဘ်လိပ်စာ၊ ဖတ်ရန်စာရင်း (သို့) Password Manager တွင်လည်း ကြည့်ရှုစီမံနိုင်သည်။</translation>
@@ -428,13 +411,11 @@
 <translation id="2871733351037274014">စာမျက်နှာများကို ကြိုဖွင့်ခြင်း</translation>
 <translation id="2876136027428473467"><ph name="CHILD_NAME" /> က ဤဝဘ်ဆိုက်ကို ခွင့်ပြုရန် သင့်ထံ ခွင့်တောင်းနေသည်-</translation>
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Chrome က သင့်ဒေတာကို သီးသန့်ထားပေးပုံ<ph name="END_LINK" /> အကြောင်း ပိုမိုလေ့လာရန်</translation>
-<translation id="2878607776582720720"><ph name="TAB_TITLE" />၊ တစ်ခုထက်ပိုရွေးထားသည့် မျှဝေနေသော ရုပ်ဖျက်တဘ်</translation>
 <translation id="2885355868600171871">လိပ်စာဘားသို့ တိုက်ရိုက်သွားရန်</translation>
 <translation id="2888126860611144412">Chrome အကြောင်း</translation>
 <translation id="2891154217021530873">စာမျက်နှာ တင်ပေးမှု ရပ်ရန်</translation>
 <translation id="2894821468041866720">သင့်ဘရောင်ဇာ (သို့) စက်ကို သိသာစွာ နှေးကွေးစေခြင်း မရှိပါ။</translation>
 <translation id="2895521649038438824">ဤစာမျက်နှာကို နားထောင်နိုင်သည်</translation>
-<translation id="289596984386220317"><ph name="TAB_TITLE" />၊ ပင်ထိုးထားသည့် အသံထွက်နေသောတဘ်</translation>
 <translation id="2900528713135656174">ဖြစ်ရပ် ဖန်တီးပါ</translation>
 <translation id="2901411048554510387"><ph name="WEBSITE_TITLE" /> အတွက် အကြံပြုချက်များ ပြထားသည်</translation>
 <translation id="2904300462646366554">ဒေါင်းလုဒ်လုပ်ထားသော PDF များကို သင့်စက်ပေါ်ရှိ PDF ကြည့်ရန်စနစ်တစ်ခုတွင် အလိုအလျောက်ဖွင့်သည်</translation>
@@ -443,7 +424,6 @@
 <translation id="2909615210195135082">Google အကြောင်းကြားချက်များ စနစ်</translation>
 <translation id="2912345083818861431">ဖွင့်ထားသောရုပ်ဖျက်တဘ်များ ကြည့်ရန် ဖန်သားပြင်လော့ခ် သုံးနိုင်သည်</translation>
 <translation id="2918484639460781603">ဆက်တင်များသို့ သွားနိုင်သည်</translation>
-<translation id="2920713489113095380"><ph name="TAB_TITLE" />၊ အသံပိတ်ထားသောတဘ်</translation>
 <translation id="2923908459366352541">အမည် မမှန်ကန်ပါ</translation>
 <translation id="2932150158123903946">Google <ph name="APP_NAME" /> သိုလှောင်ခန်း</translation>
 <translation id="2932222164150889403">သင်၏ကီးဘုတ် ပြောင်းသွားမည် မဟုတ်ပါ</translation>
@@ -474,7 +454,6 @@
 <translation id="3029276696788198026">ကြိုဖွင့်မှု မရှိပါ</translation>
 <translation id="3029704984691124060">စကားစုဝှက်များ မတိုက်ဆိုင်ပါ</translation>
 <translation id="3029829659829245765"><ph name="TAB_TITLE" />၊ ပင်ထိုးထားသော ရွေးထားသည့် တဘ်</translation>
-<translation id="3035527385626181784"><ph name="TAB_TITLE" />၊ ရွေးထားသည့် မျှဝေနေသောတဘ်</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />အကူအညီရယူရန်<ph name="END_LINK" /></translation>
 <translation id="3037177537145227281">ဈေးနှုန်း စောင့်ကြည့်နေသည်</translation>
 <translation id="3037517125981011456">Chrome သို့ လက်မှတ်ထိုးဝင်ရန် အတည်ပြုခြင်းစနစ်များ ပြသည်</translation>
@@ -500,7 +479,6 @@
 <translation id="316694332262407393">Chrome ဖွင့်ထားပြီးသားဖြစ်သည်။</translation>
 <translation id="3167258285411721858"><ph name="HOST_NAME" /> အတွက် မိုဘိုင်းဝဘ်ဆိုက်ကို တောင်းဆိုနိုင်သည်</translation>
 <translation id="3169472444629675720">Discover</translation>
-<translation id="3181145110929454111"><ph name="TAB_TITLE" />၊ တစ်ခုထက်ပိုရွေးထားပြီး ပင်ထိုးထားသည့် အသံပိတ်ထားသော ရုပ်ဖျက်တဘ်</translation>
 <translation id="3187472288455401631">ကြော်ငြာတိုင်းတာခြင်း</translation>
 <translation id="3189635831478931757"><ph name="GROUP_TITLE" /> တဘ်အုပ်စု</translation>
 <translation id="3200536777393523575">သင့်လက်ရှိဝင်းဒိုးကို ပိတ်မလား။</translation>
@@ -537,7 +515,6 @@
 <translation id="3331974543021145906">အက်ပ်အင်ဖို</translation>
 <translation id="3334729583274622784">ဖိုင်နောက်ဆက်တွဲ ပြောင်းမလား။</translation>
 <translation id="333863344734218290">မလုံခြုံသော အများသုံးနှင့် သီးသန့် ဝဘ်ဆိုက်များအကြောင်း သတိပေးရန်</translation>
-<translation id="3340978935015468852">ဆက်တင်များ</translation>
 <translation id="3341262203274374114">လိုက်မကြည့်တော့၍ မရပါ။ တစ်ခုခုမှားသွားသည်။</translation>
 <translation id="3359667936385849800">သင်၏လက်ရှိ ဝန်ဆောင်မှုပေးသူကို သုံးရန်</translation>
 <translation id="3373701465337594448">ဖွင့်ထားပါက သင့်စိတ်ဝင်စားမှုများကို ခန့်မှန်းသော သင်ဝင်ကြည့်သည့် ဝဘ်ဆိုက်စာရင်းကို ဤနေရာတွင်ပြသည်</translation>
@@ -600,7 +577,6 @@
 <translation id="3635073343384702370">သင်စကားဝှက်များကို သိမ်းသည့်အခါ Chrome က၎င်းတို့ကို စစ်ဆေးနိုင်သည်</translation>
 <translation id="3636940436873918441">ဦးစားပေး ဘာသာစကားများ</translation>
 <translation id="3637744895182738742">သင့်စကားဝှက်စာ မေ့သွားပါက (သို့) ဤဆက်တင်ကို ပြောင်းလိုပါက <ph name="BEGIN_LINK" />သင့်အကောင့်ရှိ Chrome ဒေတာကို ဖျက်ပါ<ph name="END_LINK" />။</translation>
-<translation id="3647019414263135904">ဆက်စပ်အကြောင်းအရာ ပေါ့ပ်အပ်ကို ဖွင့်ရန် (သို့) ပိတ်ရန်</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />− <ph name="WEBSITE_URL" /></translation>
 <translation id="3674208116086565128">‘Google အက်ပ်’ ပင်မစာမျက်နှာသို့ သွားရန်</translation>
 <translation id="368329460027487650">အကောင့်ထွက်ထားသည်။ လက်မှတ်ထိုးဝင်ရန် နည်းလမ်းများ ဖွင့်နိုင်သည်။</translation>
@@ -613,7 +589,6 @@
 <translation id="3701515417135397388">ဒေတာကျိုးပေါက်မှုတွင် စကားဝှက် ပါဝင်နေပါက သတိပေးရန်</translation>
 <translation id="3703166520839776970">ဤပြဿနာဆက်ဖြစ်နေပါက <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ထံမှ နောက်ထပ်အချက်အလက်များ ရယူရန်အတွက် “နောက်ထပ်အသေးစိတ်” ကိုရွေးပါ။</translation>
 <translation id="3708100450779900829">စက်ပစ္စည်းကို ခေါက်ထားသောအခါ တစ်ခုရွေးချယ်နိုင်သည် (သို့) လိပ်စာဘားကို တည်နေရာပြောင်းရန် ထိ၍ ဖိထားပါ</translation>
-<translation id="3709577906275923507"><ph name="FILE_NAME" /> တွင် သတိထားရမည့် အချက်အလက်များ ပါဝင်နိုင်ပြီး ၎င်းကို မမျှဝေသင့်ပါ</translation>
 <translation id="3710501561113687889">ရှေ့ဆက်ရန် <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> က သင့် <ph name="FIELDS_STRING" /> ကို ဤဝဘ်ဆိုက်နှင့် မျှဝေမည်။</translation>
 <translation id="3710560693796335511">ပူးတွဲလုပ်ကိုင်ခြင်း</translation>
 <translation id="3718765429352682176">Chrome တွင် လင့်ခ်များဖွင့်သော အခြားအက်ပ်များမှ မှတ်တမ်းများကို မြင်ရနိုင်သည်။</translation>
@@ -632,7 +607,6 @@
 <translation id="3777796259512476958">ဝက်ဆိုက်အများစုမှ သင်ထွက်သွားပါမည်</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{တဘ် ၁ ခု}other{တဘ် # ခု}}</translation>
 <translation id="3795154175078851242">ပုံကို လင့်ခ်နှင့်အတူ မိတ္တူကူးရန်</translation>
-<translation id="3807999512799921804"><ph name="TAB_TITLE" />၊ ရွေးထားပြီး ပင်ထိုးထားသည့် အသံထွက်နေသော ရုပ်ဖျက်တဘ်</translation>
 <translation id="3810973564298564668">စီမံရန်</translation>
 <translation id="3819178904835489326">ဒေါင်းလုဒ် <ph name="NUMBER_OF_DOWNLOADS" /> ခုကို ဖျက်လိုက်သည်</translation>
 <translation id="3819183753496523827">သင် အော့ဖ်လိုင်းဖြစ်နေသည်။ အင်တာနက်ချိတ်ဆက်မှုကို စစ်ဆေးပြီး ထပ်စမ်းကြည့်ပါ။</translation>
@@ -656,7 +630,6 @@
 <translation id="3900966090527141178">စကားဝှက်များကို တင်ပို့ရန်</translation>
 <translation id="3902562446536395999">A မှ Z သို့ စီနေသည်</translation>
 <translation id="3908308510347173149"><ph name="PRODUCT_NAME" /> ကို အပ်ဒိတ်လုပ်ပါ</translation>
-<translation id="3908347685661140825"><ph name="TAB_TITLE" />၊ ရွေးထားသည့် အသံပိတ်ထားသောတဘ်</translation>
 <translation id="3911609878849982353">Z မှ A သို့ စီနေသည်</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> ကို ဖွင့်ထားသည်</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
@@ -674,12 +647,10 @@
 <translation id="3985022125189960801">ဝဘ်ဆိုက်တစ်ခုကို သင်နှစ်သက်သည့်အရာအား ခန့်မှန်းနိုင်သော ဝဘ်ဆိုက်များစာရင်းသို့ ပြန်ထည့်လိုက ထည့်နိုင်သည်</translation>
 <translation id="3985215325736559418"><ph name="FILE_NAME" /> ကို ထပ်မံဒေါင်းလုဒ်လုပ်လိုပါသလား။</translation>
 <translation id="3987993985790029246">လင့်ခ်ကူးယူမည်</translation>
-<translation id="3994236846568425219">သင့်စက်၏ အမှောင်အပြင်အဆင် ဖွင့်ထားသောအခါ အမှောင်အပြင်အဆင်ကို ဖွင့်သည်</translation>
 <translation id="4000212216660919741">အော့ဖ်လိုင်း ပင်မစာမျက်နှာ</translation>
 <translation id="4000670338830950598">မြင်သာအောင်လုပ်ထားသည့်အရာဖြင့် Google Chrome ကို စိတ်ကြိုက်လုပ်ပြီး ထိန်းချုပ်ပါ</translation>
 <translation id="4015643064997321279">{NUM_PASSWORDS,plural, =1{သင့် Google Account တွင် ကျိုးပေါက်ထားသည့် စကားဝှက် ၁ ခု ရှိသည်}other{သင့် Google Account တွင် ကျိုးပေါက်ထားသည့် စကားဝှက် # ခု ရှိသည်}}</translation>
 <translation id="4016425174436051808">လိုက်ကြည့်၍ မရပါ။ တစ်ခုခုမှားသွားသည်။</translation>
-<translation id="4023638601467301498">သင့်စက်အားလုံးတွင် ဝဘ်လိပ်စာနှင့် အခြားအရာများ ရယူရန် Chrome သို့ လက်မှတ်ထိုးဝင်ပါ</translation>
 <translation id="4024768890073681126">သင့်ဘရောင်ဇာကို သင့်မိဘက စီမံခန့်ခွဲသည်</translation>
 <translation id="4027569221211770437"><ph name="FOLDER_TITLE" /> ဖိုင်တွဲ</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# နာရီ}other{# နာရီ}}</translation>
@@ -707,7 +678,6 @@
 <translation id="4124152339699379357">အကြောင်းကြားခွင့် လုပ်ငန်းစဉ်ကို မြင်ကွင်းအပြည့် ဖွင့်ထားသည်</translation>
 <translation id="4132137475637520539">လင့်ခ်ရှိသူတိုင်းအား ပါဝင်ခွင့်ပြုရန်</translation>
 <translation id="4135200667068010335">တဘ်မျှဝေရန် စက်ပစ္စည်းစာရင်းကို ပိတ်ထားသည်။</translation>
-<translation id="4136632885151622181"><ph name="TAB_TITLE" />၊ တစ်ခုထက်ပိုရွေးထားပြီး ပင်ထိုးထားသည့် ရိုက်ကူးနေသောတဘ်</translation>
 <translation id="4137746084635924146">စက်၏ လက်ရှိဘာသာစကား</translation>
 <translation id="414128724510021958">မူရင်းသတ်မှတ်ချက်အရ ဒက်စ်တော့ဝဘ်ဆိုက်များ တောင်းဆိုထားသည်</translation>
 <translation id="4162867837470729563">မျှဝေရန် ရွေးချယ်စရာစာရင်းကို မြင်ကွင်းအပြည့် ဖွင့်ထားသည်။</translation>
@@ -744,7 +714,6 @@
 <translation id="4298161202289999785"><ph name="TAB_TITLE" />၊ တစ်ခုထက်ပိုရွေးထားသည့် ရုပ်ဖျက်တဘ်</translation>
 <translation id="4298388696830689168">လင့်ခ်ချိတ်ထားသော ဝဘ်ဆိုက်များ</translation>
 <translation id="4300632303535881174">ယခင်စာမျက်နှာသို့ သွားရန်</translation>
-<translation id="4300949869324911380"><ph name="TAB_TITLE" />၊ တစ်ခုထက်ပိုရွေးထားသည့် ရိုက်ကူးနေသောတဘ်</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4306489587293957491">ရိုက်ထည့်ပါ</translation>
 <translation id="4307992518367153382">အခြေခံများ</translation>
@@ -766,7 +735,7 @@
 <translation id="4384468725000734951">ရှာဖွေမှုအတွက် Sogou ကို အသုံးပြုသည်</translation>
 <translation id="4387647248986092471">ကားပရိုဖိုင်လော့ခ် ပြုလုပ်ရန်</translation>
 <translation id="4387817230000841154">ဒေါင်းလုဒ်များကို ဖွင့်ရန်</translation>
-<translation id="4398561997852463382"><ph name="TAB_TITLE" />၊ ရွေးထားပြီး ပင်ထိုးထားသည့် ရိုက်ကူးနေသော ရုပ်ဖျက်တဘ်</translation>
+<translation id="4401432223274567153">{INACTIVE_TIME_DAYS,plural, =1{၁ ရက်နှင့်အထက် အသုံးမပြုသော တဘ်နှင့် တဘ်အုပ်စုများ}other{# ရက်နှင့်အထက် အသုံးမပြုသော တဘ်နှင့် တဘ်အုပ်စုများ}}</translation>
 <translation id="4402611456429872546"><ph name="LANG" /> - ဒေါင်းလုဒ်လုပ်နေသည်…</translation>
 <translation id="4404568932422911380">မည်သည့်လိပ်စာမျှ မရှိပါ</translation>
 <translation id="4405224443901389797">ဤနေရာသို့ ရွှေ့ရန်…</translation>
@@ -782,7 +751,6 @@
 <translation id="4430277756566635951"><ph name="EMAIL" /> ကို လောလောဆယ် ရွေးထားသည်။ အကောင့်ရွေးပါ။</translation>
 <translation id="4452411734226507615"><ph name="TAB_TITLE" /> တဘ်ကို ပိတ်ရန်</translation>
 <translation id="4452548195519783679"><ph name="FOLDER_NAME" />သို့ စာညှပ်ကို သိမ်းထားပါသည်</translation>
-<translation id="4460822871039013969"><ph name="TAB_TITLE" />၊ ရွေးထားပြီး ပင်ထိုးထားသည့် ရိုက်ကူးနေသောတဘ်</translation>
 <translation id="4460861538906892109">{ITEMS_COUNT,plural, =1{လိပ်စာ ၁ ခု}other{လိပ်စာ # ခု}}</translation>
 <translation id="4478161224666880173">သင်၏ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> အကောင့်ကို ဤဝဘ်ဆိုက်တွင် သုံးနိုင်သည်။ ရှေ့ဆက်ရန် <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> သို့ လက်မှတ်ထိုးဝင်ပါ။</translation>
 <translation id="4479972344484327217"><ph name="MODULE" /> ကို Chrome အတွက် စနစ်ထည့်သွင်းနေသည်…</translation>
@@ -811,7 +779,6 @@
 <translation id="4587589328781138893">ဝဘ်ဆိုက်များ</translation>
 <translation id="4594952190837476234">ဤအော့ဖ်လိုင်း စာမျက်နှာသည် <ph name="CREATION_TIME" /> က ဖြစ်ပြီး အွန်လိုင်းဗားရှင်းနှင့် ကွဲပြားနိုင်ပါသည်။</translation>
 <translation id="4595237294768457124">တဘ်စာမျက်နှာ ‘အသစ်’ ဖွင့်ပါ</translation>
-<translation id="4595276580892809760">ပြခန်းမှ ပုံများ ပူးတွဲရန်</translation>
 <translation id="4595805675102978678">Google Account အမှားအယွင်း</translation>
 <translation id="4601095002996233687">သံသယဖြစ်ဖွယ် ဒေါင်းလုဒ်များအတွက် အသေးစိတ် စကင်ဖတ်ခြင်း။</translation>
 <translation id="4606559747793337066">ဝဘ်ဆိုက် (သို့) အက်ပ်က ၎င်း၏စာမျက်နှာရှိ လင့်ခ်များကို သီးသန့်ကြိုဖွင့်ရန် တောင်းဆိုသောအခါ Chrome သည် Google ဆာဗာများမှတစ်ဆင့် ကွတ်ကီးများမပါဘဲ စာမျက်နှာများကို အသွင်ဝှက်ပြီး ကြိုဖွင့်သည်။ ၎င်းက ကြိုဖွင့်ထားသော ဝဘ်ဆိုက်မှ သင့်အထောက်အထားကို ဖျောက်ပေးသည်။</translation>
@@ -888,7 +855,6 @@
 <translation id="4864369630010738180">လက်မှတ်ထိုးဝင်နေသည်...</translation>
 <translation id="4866368707455379617">Chrome အတွက် <ph name="MODULE" /> ကို စနစ်ထည့်သွင်း၍ မရပါ</translation>
 <translation id="4871568871368204250">စင့်ခ်လုပ်ခြင်းကို ပိတ်ရန်</translation>
-<translation id="487567923005969537">AI မုဒ် ဖွင့်ရန်</translation>
 <translation id="4875775213178255010">အကြောင်းအရာ အကြံပြုချက်များ</translation>
 <translation id="4877678010818027629">ရုပ်ဖျက်မုဒ်သို့ ဝင်ရန်</translation>
 <translation id="4878404682131129617">ပရောက်စီဆာဗာမှ လမ်းကြောင်းတစ်ခု စတင်မှု မအောင်မြင်ပါ</translation>
@@ -903,7 +869,6 @@
 <translation id="4912413785358399818">တဘ်ကို ရွှေ့ရန်</translation>
 <translation id="4913169188695071480">ပြန်လည်စတင်ခြင်းကို ရပ်ရန်</translation>
 <translation id="4921224083091001889">သင့်စက်အားလုံးတွင် စကားဝှက်နှင့် အခြားအရာများရယူရန် <ph name="EMAIL" /> အဖြစ် Chrome သို့ လက်မှတ်ထိုးဝင်ပါ</translation>
-<translation id="4923173329789776645">သင့်အဖွဲ့အစည်းက ဒေါင်းလုဒ်လုပ်ရန် အကြံမပြုပါ</translation>
 <translation id="4925120120285606924">ဖန်သားပြင်ဓာတ်ပုံ <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="4926901776383726965">ပုံနှင့်ဖိုင်များကို သိမ်းကာ အော့ဖ်လိုင်းကြည့်နိုင်သည် (သို့) အခြားအက်ပ်များတွင် မျှဝေနိုင်သည်</translation>
 <translation id="492699891214363151">{BOOKMARKS_COUNT,plural, =1{ဝဘ်လိပ်စာ ၁ ခုနှင့် အခြားအချက်အလက်များကို ဤစက်တွင်သာ သိမ်းသည်။ အခြားစက်များ၌သုံးရန် ၎င်းတို့ကို သင်၏ Google Account တွင် သိမ်းပါ။}other{ဝဘ်လိပ်စာ # ခုနှင့် အခြားအချက်အလက်များကို ဤစက်တွင်သာ သိမ်းသည်။ အခြားစက်များ၌သုံးရန် ၎င်းတို့ကို သင်၏ Google Account တွင် သိမ်းပါ။}}</translation>
@@ -995,12 +960,10 @@
 <translation id="5326246328175179736">ဤအကောင့်သုံးပြီး လက်မှတ်ထိုးဝင်၍မရပါ</translation>
 <translation id="5327248766486351172">အမည်</translation>
 <translation id="5328542107300944283"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ဖြင့် အသုံးပြုပါ</translation>
-<translation id="5338596104773193991"><ph name="TAB_TITLE" />၊ မျှဝေနေသော ရုပ်ဖျက်တဘ်</translation>
 <translation id="5342314432463739672">ခွင့်ပြုချက် တောင်းဆိုမှုများ</translation>
 <translation id="534580735623577507"><ph name="TIME_PERIOD" /> အတွင်း ဝဘ်ဆိုက်များမရှိပါ</translation>
 <translation id="5354716139000094027">AI ဖြင့် အနှစ်ချုပ်ရန်</translation>
 <translation id="5355191726083956201">'အဆင့်မြှင့်တင်ထားသော ကာကွယ်မှု' ကို ဖွင့်ထားသည်</translation>
-<translation id="5370504953185181057"><ph name="TAB_TITLE" />၊ ပင်ထိုးထားသည့် မျှဝေနေသော ရုပ်ဖျက်တဘ်</translation>
 <translation id="5375374982898812658">သင်သည် “<ph name="GROUP_NAME" />” တဘ်အုပ်စုသုံးခွင့်ကို ချက်ချင်းဆုံးရှုံးမည်ဖြစ်ပြီး ၎င်းကို သင့်စက်အားလုံးမှ ဖျက်ပါမည်</translation>
 <translation id="5375577065097716013">Google Lens ဖြင့် ပုံရှာရန် <ph name="BEGIN_NEW" />အသစ်<ph name="END_NEW" /></translation>
 <translation id="5390367025924544771"><ph name="WEBSITE_ORIGIN" /> က သင့်ဒစ်ဂျစ်တယ် ပိုက်ဆံအိတ်ရှိ ကိုယ်ရေးအချက်အလက်ကို သုံးလိုသည်။ ဤဝဘ်ဆိုက်ကို ယုံကြည်ရမှသာ ရှေ့ဆက်ပါ။ အန္တရာယ်ရှိသော ဝဘ်ဆိုက်များက သင့်တရားဝင်အမည် (သို့) ID နံပါတ်ကဲ့သို့ အရာများကို ဖော်ထုတ်ရန် လှည့်စားနိုင်သည်။</translation>
@@ -1072,7 +1035,6 @@
 <translation id="571930967925877633">သင်၏ လိပ်စာ၊ မှတ်တမ်းနှင့် အခြား Chrome ဒေတာကို သင့် Google Account နှင့် စင့်ခ်လုပ်တော့မည် မဟုတ်ပါ</translation>
 <translation id="572328651809341494">မကြာမီက တဲဘ်များ</translation>
 <translation id="5728072125198221967">လင့်ခ်ချိတ်ထားသော Google ဝန်ဆောင်မှုများ</translation>
-<translation id="5734658507307260911"><ph name="TAB_TITLE" />၊ ပင်ထိုးထားသည့် အသံထွက်နေသော ရုပ်ဖျက်တဘ်</translation>
 <translation id="5744751019568455640">အောက်ပါတို့မှာ သင့်အင်တာနက်စာမျက်နှာကို အသံထွက်ဖတ်ရန် ရွေးနိုင်သည့်အသံများဖြစ်သည်။ ဤအသံကို ကြိုက်နှစ်သက်ပြီး ဆက်လက်အသုံးပြုစေလိုပါက အသံအမည်ကို တို့လိုက်ပါ။</translation>
 <translation id="574845902699630049"><ph name="OWNER_FULL_NAME" /> အဖြစ် မျှဝေရန်</translation>
 <translation id="5749068826913805084">Chrome သည် ဖိုင်များကို ဒေါင်းလုဒ် လုပ်ရန် သိုလှောင်ခန်းကို သုံးရန် လိုအပ်သည်။</translation>
@@ -1092,7 +1054,6 @@
 <translation id="5809361687334836369">{HOURS,plural, =1{လွန်ခဲ့သည့် # နာရီက}other{လွန်ခဲ့သည့် # နာရီက}}</translation>
 <translation id="5810288467834065221">မူပိုင် <ph name="YEAR" /> Google LLC. မူပိုင်ခွင့်အားလုံး ယူထားသည်။</translation>
 <translation id="581030587084991751">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{အကြောင်းကြားချက် ပြပါ}other{အကြောင်းကြားချက်များ ပြပါ}}</translation>
-<translation id="5811144606237321538"><ph name="TAB_TITLE" />၊ တစ်ခုထက်ပိုရွေးထားပြီး ပင်ထိုးထားသည့် အသံပိတ်ထားသောတဘ်</translation>
 <translation id="5814749351757353073">သင်၏အကြိုက်ဆုံးဝဘ်ဆိုက်များကို မျက်ခြည်မပြတ်ကြည့်ပါ</translation>
 <translation id="5823093032261493462">မည်သို့ပင်ဖြစ်စေ “<ph name="FILE_NAME" />” ကို <ph name="DOWNLOAD_DOMAIN" /> မှ ဒေါင်းလုဒ်လုပ်လိုသလား။</translation>
 <translation id="5825135637446025843">Chrome ကို ပြန်စပြီးနောက် စကားဝှက်၊ လျှို့ဝှက်ကီး၊ လိပ်စာ၊ ငွေပေးချေနည်းလမ်းနှင့် အခြားအချက်အလက်များ အော်တိုဖြည့်ရန်အတွက် သင်၏ ပံ့ပိုးသူအသစ်ထံမှ သိမ်းထားသော သင့်အချက်အလက်ကို သုံးပါမည်။</translation>
@@ -1102,11 +1063,11 @@
 <translation id="5833984609253377421">လင့်ခ်ကို မျှဝေရန်</translation>
 <translation id="5839058148541733625">Chrome Dino</translation>
 <translation id="5841444063256914865">မည်သို့ပင်ဖြစ်စေ “<ph name="FILE_NAME" />” ကို ဒေါင်းလုဒ်လုပ်လိုသလား။</translation>
+<translation id="5842871376175639063"><ph name="DAYS_INACTIVE" /> ရက်ကြာ အသုံးမပြုသော တဘ်နှင့် တဘ်အုပ်စုများကို ဤနေရာသို့ ရွှေ့ပြီး<ph name="AUTODELETE_SECTION" />။ ၎င်းကို <ph name="SETTINGS_TITLE" /> တွင် အချိန်မရွေး ပြောင်းနိုင်သည်။</translation>
 <translation id="5848257610304005265">PDF ကို <ph name="APP_NAME" /> ဖြင့် ဖွင့်မလား။</translation>
 <translation id="5849288995120328556">မျှဝေခြင်းကို ရပ်မလား။</translation>
 <translation id="5853623416121554550">ခဏရပ်ထားသည်</translation>
 <translation id="5855546874025048181">ပိုမိုတိကျအောင် ပြုလုပ်မှု - <ph name="REFINE_TEXT" /></translation>
-<translation id="585617462962753911"><ph name="TAB_TITLE" />၊ တစ်ခုထက်ပိုရွေးထားသည့် ရိုက်ကူးနေသော ရုပ်ဖျက်တဘ်</translation>
 <translation id="5857447844686706637">တစ်ခုခုမှားသွားသည်။ ‘ဈေးနှုန်းစောင့်ကြည့်ခြင်း’ ကို အပ်ဒိတ်လုပ်၍မရပါ။</translation>
 <translation id="5859968346865909126">၎င်းကို ဆက်တင်များတွင် ဖွင့်နိုင်သည် (သို့) ပိတ်နိုင်သည်</translation>
 <translation id="5860033963881614850">ပိတ်ထား</translation>
@@ -1119,7 +1080,6 @@
 <translation id="5885378508678660271">အကြောင်းကြားချက်များ <ph name="SEPARATOR" /> ဤဝဘ်ဆိုက်သည် အန္တရာယ်ရှိသဖြင့် Chrome က ဤခွင့်ပြုချက်များကို ဖယ်ရှားလိုက်သည်</translation>
 <translation id="5899667542927581604">ပိတ်ထားသော လျှို့ဝှက်ကီးစာမျက်နှာများ မရှိပါ</translation>
 <translation id="5907542076239273525">လိပ်စာကို <ph name="FOLDER_NAME" /> တွင် သိမ်းလိုက်သည်</translation>
-<translation id="5911301511366365629"><ph name="TAB_TITLE" />၊ ရွေးထားသည့် အသံထွက်နေသော ရုပ်ဖျက်တဘ်</translation>
 <translation id="5916664084637901428">ဖွင့်ရန်</translation>
 <translation id="5919204609460789179">စင့်ခ်လုပ်ရန် <ph name="PRODUCT_NAME" /> ကို အပ်ဒိတ်လုပ်ပါ</translation>
 <translation id="5932881020239635062">အမှတ်စဉ်</translation>
@@ -1145,7 +1105,6 @@
 <translation id="6026538407078977628">ဖန်သားပြင်အပြည့် ချဲ့ရန်</translation>
 <translation id="6030719887161080597">ကြော်ငြာစွမ်းဆောင်ရည်ကို တိုင်းတာရန်အတွက် ဝဘ်ဆိုက်များမှ သုံးသော အချက်အလက်ကို စီမံရန်</translation>
 <translation id="6039379616847168523">နောက်တဘ်သို့ သွားရန်</translation>
-<translation id="6040143037577758943">ပိတ်ရန်</translation>
 <translation id="604124094241169006">အလိုအလျောက်</translation>
 <translation id="6042308850641462728">နောက်ထပ်</translation>
 <translation id="604996488070107836"><ph name="FILE_NAME" /> ဒေါင်းလုဒ်မှာ မသိရသည့် အမှားတစ်ခုကြောင့် မအောင်မြင်ခဲ့ပါ။</translation>
@@ -1183,7 +1142,6 @@
 <translation id="6162892189396105610">Chrome က သင်ဝင်ကြည့်လိုသည်ဟု ထင်သည့် စာမျက်နှာများကို ကြိုဖွင့်ပေးသည်။</translation>
 <translation id="6165508094623778733">ပိုမိုလေ့လာရန်</translation>
 <translation id="6170675927290506430">အကြောင်းကြားချက် ဆက်တင်များသို့ သွားရန်</translation>
-<translation id="6184972259157699660"><ph name="TAB_TITLE" />၊ အသံပိတ်ထားသော ရုပ်ဖျက်တဘ်</translation>
 <translation id="6186394685773237175">ကျိုးပေါက်ထားသည့် စကားဝှက် မရှိပါ</translation>
 <translation id="6192907950379606605">ပုံရှင်းလင်းချက်များ ရယူရန်</translation>
 <translation id="6193448654517602979">တဘ်ရွေးရန်</translation>
@@ -1217,7 +1175,6 @@
 <translation id="630308129961693966">လိပ်စာဘားနေရာ ပြောင်းခြင်း</translation>
 <translation id="6303969859164067831">ထွက်ပြီးနောက် စင့်ခ်လုပ်ခြင်းကို ပိတ်ပါ</translation>
 <translation id="6307241780749477694">ဤစက်ရှိ စကားဝှက်အားလုံး ရယူရန်အတွက် သင်ဖြစ်ကြောင်း အတည်ပြုပါ</translation>
-<translation id="6309082029962045994"><ph name="TAB_TITLE" />၊ တစ်ခုထက်ပိုရွေးထားပြီး ပင်ထိုးထားသည့် အသံထွက်နေသောတဘ်</translation>
 <translation id="6312687380483398334">ဝဘ်အက်ပ်များ (ငြိမ်)</translation>
 <translation id="6315386555979018699">ဖျက်ပြီး ဆက်လုပ်ရန်</translation>
 <translation id="6316139424528454185">Android ဗားရှင်းကို ပံ့ပိုးမထားပါ</translation>
@@ -1227,7 +1184,6 @@
 <translation id="6333140779060797560"><ph name="APPLICATION" /> မှတစ်ဆင့် မျှဝေရန်</translation>
 <translation id="6335454563754888572">ဤလိပ်စာရှိ စာမျက်နှာသို့ ညွှန်ပြသော URL ကို ပြင်ရန်- <ph name="PAGE_URL" /></translation>
 <translation id="6337234675334993532">လျှို့ဝှက်ကုဒ်သွင်းခြင်း</translation>
-<translation id="6338345532044450921"><ph name="TAB_TITLE" />၊ အသံထွက်နေသော ရုပ်ဖျက်တဘ်</translation>
 <translation id="6340526405444716530">ပုဂ္ဂိုလ်ရေးသီးသန့်ပြုလုပ်ခြင်း</translation>
 <translation id="6341580099087024258">ဖိုင်များ သိမ်းရန် နေရာကို မေးမြန်းပါ</translation>
 <translation id="6342069812937806050">ယခုပင်</translation>
@@ -1245,7 +1201,6 @@
 <translation id="6401458660421980302">အခြားစက်သို့ ဤတဘ်ကို ပို့ရန် ထိုနေရာတွင် Chrome သို့ လက်မှတ်ထိုးဝင်ပါ</translation>
 <translation id="6404511346730675251">စာညှပ် တည်းဖြတ်ရန်</translation>
 <translation id="6406506848690869874">ထပ်တူပြုမည်</translation>
-<translation id="6408370409308816490"><ph name="TAB_TITLE" />၊ ရွေးထားပြီး ပင်ထိုးထားသည့် မျှဝေနေသော ရုပ်ဖျက်တဘ်</translation>
 <translation id="6410883413783534063">စာမျက်နှာအမျိုးမျိုး တစ်ပြိုင်နက်ဝင်ကြည့်ရန် တဘ်များကိုဖွင့်ပါ</translation>
 <translation id="6411009031428071896">ဖိဒ်ကို နားဆင်ရန်</translation>
 <translation id="6411219469806822692">အပေါ်သို့ထပ်မြှင့်၍ မရပါ။ စာမျက်နှာ၏ အပေါ်ဘက်ခပ်ဝေးဝေးမှ စကြည့်ပါ။</translation>
@@ -1307,7 +1262,6 @@
 <translation id="6636623428211296678">အောက်ရှိ နောက်ထပ်ဆက်တင်များကို စူးစမ်းလေ့လာပါ (သို့) ယခုအပြီးသတ်ပါ</translation>
 <translation id="6637100877383020115">အက်ပ်ပိုကောင်းမွန်စေရန် Chrome သည်အသုံးပြုမှုနှင့် ရပ်တန့်မှုဒေတာများကို Google သို့ ပို့သည်။ <ph name="BEGIN_UMA_LINK" />စီမံခန့်ခွဲရန်<ph name="END_UMA_LINK" /></translation>
 <translation id="6641780377503683465"><ph name="INTEREST" /> ဖယ်ရှားရန်</translation>
-<translation id="6642299196749785472">တဘ်များ ပူးတွဲရန်</translation>
 <translation id="6647441008198474441">နောက်တစ်ကြိမ် သင်ဝင်ကြည့်မည့် ဝဘ်ဆိုက်များကို ခန့်မှန်းရန် သင်ကြည့်ထားသော URL များကို Google သို့ ပို့သည်</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 နှင့် နောက်ထပ် <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> ခု}other{<ph name="CONTACT_PREVIEW" />\u2026 နှင့် နောက်ထပ် <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> ခု}}</translation>
 <translation id="6649642165559792194">ပုံအစမ်းကြည့်ရန် <ph name="BEGIN_NEW" />အသစ်<ph name="END_NEW" /></translation>
@@ -1326,7 +1280,6 @@
 <translation id="671928215901716392">လော့ခ်မျက်နှာပြင်</translation>
 <translation id="6723740634201835758">သင့် Google အကောင့်တွင်-</translation>
 <translation id="6734310707649923383">သင်ဝင်ကြည့်ထားသော စာမျက်နှာများကို ကြည့်နိုင်သည် (သို့) ၎င်းတို့ကို သင့်မှတ်တမ်းမှ ဖျက်နိုင်သည်</translation>
-<translation id="6737429434215739253"><ph name="TAB_TITLE" />၊ ပင်ထိုးထားသည့် ရိုက်ကူးနေသော ရုပ်ဖျက်တဘ်</translation>
 <translation id="6738867403308150051">ဒေါင်းလုဒ် လုပ်နေ…</translation>
 <translation id="6745063744988317486">Mono</translation>
 <translation id="6746338529702829275">သင့်အကောင့်ဒေတာ ပြန်ကြည့်ရန်</translation>
@@ -1394,7 +1347,6 @@
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> လတ်တလော သင်ဝင်ကြည့်ခြင်းမရှိသဖြင့် Chrome က ဤခွင့်ပြုချက်များကို ဖယ်ရှားလိုက်သည်</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{တဘ် ၁ ခု}other{တဘ် <ph name="NUMBER_OF_TABS" /> ခု}}</translation>
 <translation id="6929224077895306814">သင့်စက်ပေါ်နှင့် Google Account တွင် သိမ်းထားသော လုံခြုံရေးကုဒ်အားလုံးကို ဖျက်ပါမည်</translation>
-<translation id="6933180670536678127"><ph name="TAB_TITLE" />၊ ရွေးထားပြီး ပင်ထိုးထားသည့် အသံထွက်နေသောတဘ်</translation>
 <translation id="6937524809504266803">သီးသန့်လုပ်ခြင်း၊ လင့်ခ်ချိတ်ခြင်း</translation>
 <translation id="6937876069006524083">အမည်ပြောင်(ချန်လှပ်နိုင်)</translation>
 <translation id="6942665639005891494">'ဆက်တင်များ' မီနူးရွေးစရာကို အသုံးပြုပြီး ဒေါင်းလုဒ်လုပ်ရန် နေရာမူရင်းကို အချိန်မရွေး ပြောင်းနိုင်သည်</translation>
@@ -1429,11 +1381,9 @@
 <translation id="707155805709242880">စင့်ခ်လုပ်ရမည်များကို အောက်တွင်ရွေးပါ</translation>
 <translation id="7077143737582773186">SD ကတ်</translation>
 <translation id="7078916049958741685">ဤစက်ရှိ သင်၏ Chrome ဒေတာများကိုလည်း ဖျက်ရန်</translation>
-<translation id="7080145768121641840"><ph name="TAB_TITLE" />၊ ရွေးထားပြီး ပင်ထိုးထားသည့် အသံပိတ်ထားသောတဘ်</translation>
 <translation id="7084115944294706056">လိပ်စာဘားနေရာ ရွေးခြင်း</translation>
 <translation id="7085332316435785646">Google ဝန်ဆောင်မှုများရှိ ပုဂ္ဂိုလ်ရေးသီးသန့် အတွေ့အကြုံများ ပိုရရှိရန်အတွက် Chrome မှတ်တမ်းကို ထည့်၊ မထည့် ရွေးနိုင်သည်</translation>
 <translation id="7088681679121566888">Chrome က အပ်ဒိတ်ဖြစ်နေပြီ</translation>
-<translation id="7098100324909062850"><ph name="TAB_TITLE" />၊ တစ်ခုထက်ပိုရွေးထားသည့် အသံပိတ်ထားသော ရုပ်ဖျက်တဘ်</translation>
 <translation id="7106762743910369165">သင့်ဘရောင်ဇာကို သင့်အဖွဲ့အစည်းက စီမံခန့်ခွဲသည်</translation>
 <translation id="7111394291981742152">Chrome သည် သင်မြင်ရသည့် ကြော်ငြာများကို ပိုမိုထိန်းချုပ်ခွင့်ပေးပြီး ဝဘ်ဆိုက်များက သင့်အား ပုဂ္ဂိုလ်ရေးသီးသန့် ကြော်ငြာများ ပြသောအခါ သင့်အကြောင်း လေ့လာနိုင်သည့် ဝဘ်ဆိုက်များကို ကန့်သတ်သည်။</translation>
 <translation id="7111822978084196600">ဤဝင်းဒိုးကို အမည်ပေးပါ</translation>
@@ -1486,7 +1436,6 @@
 <translation id="7290209999329137901">အမည်ပြောင်း၍ မရပါ</translation>
 <translation id="7291910923717764901">ဤစာမျက်နှာအတွက် ပုံအကြောင်းအရာများကို ထည့်လိုက်သည်</translation>
 <translation id="7293429513719260019">ဘာသာစကားရွေးချယ်ရန်</translation>
-<translation id="7298319215489933099"><ph name="TAB_TITLE" />၊ ရွေးထားပြီး ပင်ထိုးထားသည့် မျှဝေနေသောတဘ်</translation>
 <translation id="7304072650267745798">သင့် Android စက်တွင် အလားတူဆက်တင် ပါဝင်နိုင်သည်။ Chrome နှင့် သင့် Android စက်တွင် ဤဆက်တင်ကို ဖွင့်ထားပါက ကုမ္ပဏီသည် သင်ဝင်ရောက်ကြည့်ရှုသည့် ဝဘ်ဆိုက်များနှင့် သင်အသုံးပြုသည့် အက်ပ်များတွင် ကြော်ငြာတစ်ခု၏ထိရောက်မှုကို တိုင်းတာနိုင်သည်။</translation>
 <translation id="7313188324932846546">စင့်ခ်လုပ်ခြင်းကို စနစ်ထည့်သွင်းရန် တို့ပါ</translation>
 <translation id="7314734791127433392">စကားဝှက်များကို စစ်ဆေး၍မရပါ</translation>
@@ -1536,7 +1485,6 @@
 <translation id="749294055653435199">Google Lens ကို ဤစက်ပစ္စည်းတွင် အသုံးမပြုနိုင်ပါ</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (မွမ်းမံပြင်ဆင်ပြီး<ph name="TIME_SINCE_UPDATE" /> )</translation>
 <translation id="7498271377022651285">ကျေးဇူးပြုပြီး စောင့်ပါ…</translation>
-<translation id="7499065150275272675"><ph name="TAB_TITLE" />၊ ပင်ထိုးထားသည့် အသံပိတ်ထားသောတဘ်</translation>
 <translation id="7501135638693251872">စာညှပ်များအားလုံး</translation>
 <translation id="750228856503700085">အပ်ဒိတ်များ မရနိုင်ပါ</translation>
 <translation id="7507207699631365376">ဤဝန်ဆောင်မှုပေးသူ၏ <ph name="BEGIN_LINK" />ကိုယ်ရေးအချက်အလက် လုံခြုံမှုဆိုင်ရာ မူဝါဒ<ph name="END_LINK" /> ကို ကြည့်ရန်</translation>
@@ -1553,7 +1501,6 @@
 <translation id="7573665567024262965">သင့်မူရင်းအက်ပ်များကို ရွေးပါ</translation>
 <translation id="7577900504646297215">စိတ်ဝင်စားမှုများ စီမံရန်</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> ဖိုင် ဒေါင်းလုဒ်လုပ်ပြီးပြီ}other{<ph name="FILES_DOWNLOADED_MANY" /> ဖိုင် ဒေါင်းလုဒ်လုပ်ပြီးပြီ}}</translation>
-<translation id="7579341427377004341"><ph name="TAB_TITLE" />၊ တစ်ခုထက်ပိုရွေးထားသည့် အသံထွက်နေသော ရုပ်ဖျက်တဘ်</translation>
 <translation id="7581273696622423628">စစ်တမ်းကောက်ယူမှုကို ဖြေဆိုရန်</translation>
 <translation id="7583262514280211622">သင့်ဖတ်ရန်စာရင်းကို ဤနေရာတွင် ပြပါမည်</translation>
 <translation id="758603037873046260">ဤစာမျက်နှာကို သိမ်းရန် လက်မှတ်ထိုးဝင်ပါ</translation>
@@ -1591,7 +1538,6 @@
 <translation id="7708994397325774423">သင့်စကားဝှက်အားလုံး ရယူခြင်း</translation>
 <translation id="7714077993070342304">Chrome မီနူး ဖွင့်ရန်</translation>
 <translation id="7733878270780732638">စက်တွင် နေရာမလောက်ပါ။</translation>
-<translation id="774403695779169686"><ph name="TAB_TITLE" />၊ ရွေးထားသည့် မျှဝေနေသော ရုပ်ဖျက်တဘ်</translation>
 <translation id="774876555279732384">အော်တိုဖြည့် ဝန်ဆောင်မှုများကို <ph name="BEGIN_LINK" />Android ဆက်တင်များ<ph name="END_LINK" /> တွင်လည်း စီမံနိုင်သည်။</translation>
 <translation id="7759809451544302770">လိုချင်မှ လုပ်ရန်</translation>
 <translation id="7762668264895820836">SD ကတ် <ph name="SD_CARD_NUMBER" /></translation>
@@ -1657,12 +1603,10 @@
 <translation id="7998918019931843664">ပိတ်ထားသည့် တဲဘ်ကို ပြန်ဖွင့်ရန်</translation>
 <translation id="8001245658307297681">သင်သည် စက်အတွင်းရှိဖိုင်ကို ကြည့်နေပါသည်</translation>
 <translation id="8004582292198964060">ဘရောင်ဇာ</translation>
-<translation id="8023190977980579548"><ph name="TAB_TITLE" />၊ တစ်ခုထက်ပိုရွေးထားပြီး ပင်ထိုးထားသည့် မျှဝေနေသော ရုပ်ဖျက်တဘ်</translation>
 <translation id="8025972204417227828">အသစ်ထည့်ရန်</translation>
 <translation id="8027863900915310177">ဒေါင်းလုဒ်လုပ်ရန်နေရာ ရွေးခြင်း</translation>
 <translation id="8030852056903932865">အတည်ပြုရန်</translation>
 <translation id="8032569120109842252">လိုက်ကြည့်နေသည်</translation>
-<translation id="8035522026858423976"><ph name="TAB_TITLE" />၊ ရွေးထားသည့် အသံပိတ်ထားသော ရုပ်ဖျက်တဘ်</translation>
 <translation id="8037750541064988519"><ph name="DAYS" /> ရက် ကျန်သည်</translation>
 <translation id="8037801708772278989">ယခုလေးတင် စစ်ဆေးခဲ့သည်</translation>
 <translation id="804335162455518893">SD ကတ် မတွေ့ပါ</translation>
@@ -1717,7 +1661,6 @@
 <translation id="8236097722223016103">လိပ်စာများသို့ ထည့်ရန်</translation>
 <translation id="8243077599929149377">သင့်အသုံးပြုသူအမည်ကို ထည့်ခြင်း</translation>
 <translation id="8244387390464017490">တဘ်အသစ်စာမျက်နှာ စိတ်ကြိုက်လုပ်ရန်</translation>
-<translation id="8244444485683708655">ကင်မရာဓာတ်ပုံ ပူးတွဲရန်</translation>
 <translation id="8250920743982581267">စာရွက်စာတမ်းများ</translation>
 <translation id="8258999165172757081">ထည့်ပြီးပါပြီ</translation>
 <translation id="8259179246279078674">ကြိုဖွင့်ထားသည့် စာမျက်နှာများကို အသွင်ဝှက်ထားသောကြောင့် Google က ကြိုဖွင့်ထားသော မည်သည့် စာမျက်နှာအကြောင်းအရာကိုမျှ လေ့လာသွားမည်မဟုတ်ပါ။ Google ဆာဗာများက မည်သည့် ဝဘ်ဆိုက်များကို သီးသန့် ကြိုဖွင့်ထားကြောင်း လေ့လာသွားပါမည်။ ဤအချက်အလက်ကို စာမျက်နှာများ ကြိုဖွင့်ရန်အတွက်သာ သုံးပြီး သင့် Google Account မှ အခြားအချက်အလက်များနှင့် လင့်ခ်ချိတ်မထားပါ။</translation>
@@ -1740,7 +1683,6 @@
 <translation id="832514020744584629"><ph name="PREF_TITLE" />  <ph name="BEGIN_NEW" />အသစ်<ph name="END_NEW" /></translation>
 <translation id="8342727528718219152">အကြောင်းကြားချက်များစွာ ပို့နိုင်သည့် ဝဘ်ဆိုက်များနှင့် ပတ်သက်ပြီး Chrome က အသိပေးပါမည်</translation>
 <translation id="834313815369870491">ဝဘ်ဆိုက်များကို ဘယ်တော့မှ ဘာသာမပြန်ပါနှင့်</translation>
-<translation id="8348215005712416247"><ph name="TAB_TITLE" />၊ တစ်ခုထက်ပိုရွေးထားပြီး ပင်ထိုးထားသည့် ရိုက်ကူးနေသော ရုပ်ဖျက်တဘ်</translation>
 <translation id="8348430946834215779">ရနိုင်ချိန်တိုင်း HTTPS ကိုသုံးပြီး ၎င်းက ပံ့ပိုးမထားသော ဝဘ်ဆိုက်များကို မဖွင့်မီ သတိပေးချက်ရယူပါ</translation>
 <translation id="8354977102499939946">သင့်အသံဖြင့် အမြန်ရှာပါ။ ဤဖြတ်လမ်းလင့်ခ်ကို ပြင်ဆင်ရန် ‘ဆက်တင်များ’ သို့ သွားပါ။</translation>
 <translation id="8361737703487394103">သီးခြားတဘ်တစ်ခုသို့ သွားရန် (၁–၈)</translation>
@@ -1858,8 +1800,8 @@
 <translation id="8856931513242997049">အကြောင်းကြားခွင့် လုပ်ငန်းစဉ် ပိတ်ထားသည်</translation>
 <translation id="8863714995118816041"><ph name="SITE_NAME" /> အတွက် ခွင့်ပြုချက်များ ပြန်ပေးလိုက်သည်</translation>
 <translation id="8865415417596392024">သင့်အကောင့်ရှိ Chrome ဒေတာ</translation>
+<translation id="8888527824584402177"><ph name="DAYS_INACTIVE" /> ရက်ကြာ အသုံးမပြုသော တဘ်များကို ဤနေရာသို့ ရွှေ့ပြီး<ph name="AUTODELETE_SECTION" />။ ၎င်းကို <ph name="SETTINGS_TITLE" /> တွင် အချိန်မရွေး ပြောင်းနိုင်သည်။</translation>
 <translation id="8890668505403261809">သင့်ရုပ်ဖျက်တဘ်များကို ရှာရန်</translation>
-<translation id="8894890673032951011"><ph name="TAB_TITLE" />၊ ရွေးထားသည့် ရိုက်ကူးနေသော ရုပ်ဖျက်တဘ်</translation>
 <translation id="8898822736010347272">အန္တရာယ်အသစ်များ ရှာဖွေရာ၌ အထောက်အကူဖြစ်စေရန်နှင့် ဝဘ်ပေါ်ရှိလူတိုင်းကို ကာကွယ်ရန် သင်ဝင်ကြည့်သည့် အချို့ဝဘ်ဆိုက်များ၏ URL များ၊ ကန့်သတ်ထားသည့် စနစ်အချက်အလက်များနှင့် အချို့သော ဝဘ်ဆိုက်ပါအကြောင်းအရာတို့ကို Google သို့ ပို့သည်။</translation>
 <translation id="8903921497873541725">ချဲ့ကြည့်ပါ</translation>
 <translation id="8909135823018751308">ၐေမျှရန်...</translation>
@@ -1900,10 +1842,8 @@
 <translation id="9065383040763568503">Chrome က အရေးကြီးသည်ဟု မယူဆသည့် သိမ်းထားသောဒေတာများ (ဥပမာ - သိမ်းထားသောဆက်တင်များ မရှိသည့် သို့မဟုတ် သင် မကြာခဏ ဝင်ကြည့်လေ့မရှိသည့် ဝဘ်ဆိုက်များ)</translation>
 <translation id="9067341854474068781">မြင်ကွင်းအပြည့် ဖွင့်ထားသော လျှို့ဝှက်ကီးစာမျက်နှာများ မရှိပါ</translation>
 <translation id="906781307897697745"><ph name="PRODUCT_NAME" /> တွင်</translation>
-<translation id="9068568736932147490"><ph name="TAB_TITLE" />၊ တစ်ခုထက်ပိုရွေးထားပြီး ပင်ထိုးထားသည့် အသံထွက်နေသော ရုပ်ဖျက်တဘ်</translation>
 <translation id="9069999660519089861">မဖတ်ရသေးသော စာမျက်နှာ မရှိပါ</translation>
 <translation id="9070377983101773829">အသံဖြင့် ရှာဖွေမှု စတင်ရန်</translation>
-<translation id="9073805459138993880"><ph name="TAB_TITLE" />၊ တစ်ခုထက်ပိုရွေးထားသည့် မျှဝေနေသောတဘ်</translation>
 <translation id="9074739597929991885">ဘလူးတုသ်</translation>
 <translation id="9081543426177426948">ရုပ်ဖျက်မုဒ်တွင် သင်ဝင်ကြည့်ထားသော ဝဘ်ဆိုက်များကို မသိမ်းပါ</translation>
 <translation id="9086302186042011942">စင့်က် လုပ်နေ</translation>
@@ -1915,6 +1855,7 @@
 <translation id="9102803872260866941">အစမ်းကြည့်ရှုမှုတဘ်ကို ဖွင့်ထားသည်</translation>
 <translation id="9102864637938129124">ဝဘ်ဆိုက်နှင့် ကြော်ငြာရှင်များက ကြော်ငြာလုပ်ဆောင်ပုံကို နားလည်နိုင်သည်။ ဤဆက်တင်ကို ဖွင့်ထားသည်။</translation>
 <translation id="9104217018994036254">တဘ်မျှဝေရန် စက်ပစ္စည်းစာရင်း။</translation>
+<translation id="9104858485806491627">{INACTIVE_TIME_DAYS,plural, =1{၁ ရက်နှင့်အထက်ကြာ အသုံးမပြုပါ}other{# ရက်နှင့်အထက်ကြာ အသုံးမပြုပါ}}</translation>
 <translation id="9106148373857059373">လိပ်စာသိမ်းရန် လုပ်ငန်းစဉ် ပိတ်ထားသည်</translation>
 <translation id="9108808586816295166">လုံခြုံသော DNS ကို အမြဲမရနိုင်ပါ</translation>
 <translation id="9124978074365039456">ဈေးဝယ်နိုင်သည်၊ ဘာသာပြန်နိုင်သည်၊ ကင်မရာနှင့် ဓာတ်ပုံပြခန်းသုံး၍ မြင်ရသောအရာများကို ဖော်ထုတ်နိုင်သည်</translation>
@@ -1947,7 +1888,6 @@
 <translation id="927968626442779827">Google Chrome တွင် အပေါ့စားမုဒ် သုံးရန်</translation>
 <translation id="928550791203542716"><ph name="SITE_NAME" /> ကို လိုက်ကြည့်နေသည်</translation>
 <translation id="930124987204876019">မှတ်တမ်း၊ ကွတ်ကီးများ၊ ဝဘ်ဆိုက် ဒေတာ၊ ကက်ရှ်များ ဖျက်သည်…</translation>
-<translation id="930834144334005936">လက်ရှိမုဒ် <ph name="MODE_NAME" /> ကို ‘ရှာဖွေရန်’ သို့ ပြင်ဆင်သတ်မှတ်ရန်</translation>
 <translation id="938850635132480979">အမှား- <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">စကားစုဝှက်ကို ရိုက်ထည့်ရန်</translation>
 <translation id="945522503751344254">အကြံပြုချက် ပေးပို့မည်</translation>

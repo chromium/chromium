@@ -677,7 +677,6 @@
 <translation id="3642060527569456384">Els grups de pestanyes es desen i s'actualitzen automàticament en tots els teus dispositius.</translation>
 <translation id="3643338347976071250">{count,plural, =1{{count} contrasenya s'ha desat només en aquest dispositiu. Per utilitzar-la en altres dispositius, desa-la al teu Compte de Google {email}.}other{{count} contrasenyes s'han desat només en aquest dispositiu. Per utilitzar-les en altres dispositius, desa-les al teu Compte de Google {email}.}}</translation>
 <translation id="3659297405161482746">No s'ha trobat cap forma de pagament</translation>
-<translation id="3662966164093827811">{count,plural, =1{1 element seleccionat}other{# elements seleccionats}}</translation>
 <translation id="3668816008081204991">La llista de lectura està amagada</translation>
 <translation id="3670030362669914947">Número</translation>
 <translation id="3679163990085797665">Suprimeix els elements llegits</translation>
@@ -742,7 +741,6 @@
 <translation id="3926703470020109118">Baixada cancel·lada</translation>
 <translation id="3929457972718048006">Adreces</translation>
 <translation id="3931215329146376310">{count,plural, =1{Contrasenya nova per a aquest lloc web}other{Contrasenyes noves per a aquest lloc web}}</translation>
-<translation id="3933372629914873850">Iniciaràs la sessió a <ph name="URL" /></translation>
 <translation id="3934905113567851655">Pinça per canviar la mida</translation>
 <translation id="3940195383040445971">Seguiment dels preus a les pestanyes</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{Tanca {COUNT} pestanya}other{Tanca {COUNT} pestanyes}}</translation>
@@ -1332,7 +1330,6 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="6103540626693881831">Encriptació al dispositiu</translation>
 <translation id="611361228753138223">Llocs web que has visitat darrerament en aquest dispositiu</translation>
 <translation id="611705554202268369">Mantén-la premuda per afegir-la a un grup de pestanyes</translation>
-<translation id="6117260878488959646">Hi ha hagut un error. Torna-ho a provar més tard.</translation>
 <translation id="6122191549521593678">En línia</translation>
 <translation id="6122831415929794347">Vols desactivar Navegació segura?</translation>
 <translation id="6123514585040403489">Les pestanyes es tancaran</translation>
