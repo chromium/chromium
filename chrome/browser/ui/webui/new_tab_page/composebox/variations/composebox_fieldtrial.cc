@@ -192,7 +192,6 @@ CreateQueryControllerConfigParams() {
   config_params->enable_viewport_images = kEnableViewportImages.Get();
   config_params->use_separate_request_ids_for_multi_context_viewport_images =
       kUseSeparateRequestIdsForMultiContextViewportImages.Get();
-  config_params->clear_previous_state_on_session_start = true;
   return config_params;
 }
 

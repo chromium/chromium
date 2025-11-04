@@ -75,8 +75,7 @@ class ComposeboxQueryController
   ~ComposeboxQueryController() override;
 
   // ContextualSearchContextController:
-  void NotifySessionStarted() override;
-  void NotifySessionAbandoned() override;
+  void InitializeIfNeeded() override;
   GURL CreateSearchUrl(std::unique_ptr<CreateSearchUrlRequestInfo>
                            search_url_request_info) override;
   void AddObserver(FileUploadStatusObserver* obs) override;
@@ -108,7 +107,7 @@ class ComposeboxQueryController
 
   // Enum for testing to track the state of the query controller.
   enum class QueryControllerState {
-    // The initial state, before NotifySessionStarted() is called.
+    // The initial state, before InitializeIfNeeded() is called.
     kOff = 0,
     // The cluster info request is in flight.
     kAwaitingClusterInfoResponse = 1,
@@ -226,9 +225,8 @@ class ComposeboxQueryController
   void ClearClusterInfo();
 
   // Resets the request cluster info state. Protected to allow tests to
-  // override. `session_id` is used to determine if the async timer is
-  // from an old, invalid session.
-  virtual void ResetRequestClusterInfoState(int session_id);
+  // override.
+  virtual void ResetRequestClusterInfoState();
 
   // The internal state of the query controller. Protected to allow tests to
   // access the state. Do not modify this state directly, use
@@ -248,9 +246,6 @@ class ComposeboxQueryController
   scoped_refptr<base::TaskRunner> create_request_task_runner_;
 
  private:
-  // Clears all state for this session.
-  void ClearAllState();
-
   // Returns a mutable pointer to allow internal modifications.
   FileInfo* GetMutableFileInfo(const base::UnguessableToken& file_token);
 
@@ -426,15 +421,7 @@ class ComposeboxQueryController
   // `enable_viewport_images_` is false.
   bool use_separate_request_ids_for_multi_context_viewport_images_;
 
-  // Whether or not to clear state upon starting a new session.
-  bool clear_previous_state_on_session_start_;
-
   lens::proto::LensOverlaySuggestInputs suggest_inputs_;
-
-  // The session counter, incremented when the session is stopped. This is used
-  // to determine if the session is active when handling cluster info
-  // expiration.
-  int session_id_ = 0;
 
   // The number of files that are sent in the AIM request.
   int num_files_in_request_ = 0;

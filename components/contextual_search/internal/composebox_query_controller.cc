@@ -223,8 +223,6 @@ ComposeboxQueryController::ComposeboxQueryController(
   use_separate_request_ids_for_multi_context_viewport_images_ =
       feature_params
           ->use_separate_request_ids_for_multi_context_viewport_images;
-  clear_previous_state_on_session_start_ =
-      feature_params->clear_previous_state_on_session_start;
   create_request_task_runner_ = base::ThreadPool::CreateTaskRunner(
       {base::TaskPriority::USER_VISIBLE,
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
@@ -232,22 +230,13 @@ ComposeboxQueryController::ComposeboxQueryController(
 
 ComposeboxQueryController::~ComposeboxQueryController() = default;
 
-void ComposeboxQueryController::NotifySessionStarted() {
-  if (clear_previous_state_on_session_start_) {
-    ClearAllState();
+void ComposeboxQueryController::InitializeIfNeeded() {
+  if (query_controller_state_ == QueryControllerState::kOff) {
+    // The query controller state starts at kOff. If it is set to any other
+    // state by the call to FetchClusterInfo(), this indicates that the
+    // handshake has already been initialized.
+    FetchClusterInfo();
   }
-  FetchClusterInfo();
-}
-
-void ComposeboxQueryController::NotifySessionAbandoned() {
-  ClearAllState();
-  SetQueryControllerState(QueryControllerState::kOff);
-  session_id_++;
-}
-
-void ComposeboxQueryController::ClearAllState() {
-  ClearFiles();
-  ClearClusterInfo();
 }
 
 std::unique_ptr<lens::LensOverlayRequestId>
@@ -454,7 +443,7 @@ void ComposeboxQueryController::StartFileUploadFlow(
   // for all the necessary flows to complete before performing the request.
   // Async Flow 1: Fetching the cluster info, which is shared across all
   // requests. This flow only occurs once per session and occurs in
-  // NotifySessionStarted().
+  // InitializeIfNeeded().
   // Async Flow 2: Retrieve the OAuth headers.
   current_file_info.file_upload_access_token_fetcher_ =
       CreateOAuthHeadersAndContinue(base::BindOnce(
@@ -631,11 +620,7 @@ void ComposeboxQueryController::ClearClusterInfo() {
   suggest_inputs_.Clear();
 }
 
-void ComposeboxQueryController::ResetRequestClusterInfoState(int session_id) {
-  if (session_id != session_id_) {
-    // The session associated with this timer has been invalidated.
-    return;
-  }
+void ComposeboxQueryController::ResetRequestClusterInfoState() {
   ClearClusterInfo();
   // Iterate through any existing files and mark them as expired.
   // TODO(crbug.com/432125987): Handle file reupload after cluster info
@@ -764,7 +749,7 @@ void ComposeboxQueryController::HandleClusterInfoResponse(
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&ComposeboxQueryController::ResetRequestClusterInfoState,
-                     weak_ptr_factory_.GetWeakPtr(), session_id_),
+                     weak_ptr_factory_.GetWeakPtr()),
       base::Seconds(
           lens::features::GetLensOverlayClusterInfoLifetimeSeconds()));
 }

@@ -69,7 +69,8 @@ class TestComposeboxQueryController : public ComposeboxQueryController {
       TemplateURLService* template_url_service,
       variations::VariationsClient* variations_client,
       std::unique_ptr<ContextualSearchContextController::ConfigParams>
-          config_params);
+          config_params,
+      bool enable_cluster_info_ttl);
   ~TestComposeboxQueryController() override;
 
   // Mutators.
@@ -158,7 +159,7 @@ class TestComposeboxQueryController : public ComposeboxQueryController {
       const std::vector<std::string>& cors_exempt_headers,
       UploadProgressCallback upload_progress_callback) override;
 
-  void ResetRequestClusterInfoState(int session_id) override;
+  void ResetRequestClusterInfoState() override;
 
   // The fake response to return for cluster info requests.
   lens::LensOverlayServerClusterInfoResponse fake_cluster_info_response_;
@@ -178,7 +179,7 @@ class TestComposeboxQueryController : public ComposeboxQueryController {
   // If true, the cluster info will expire when the TTL expires as normal.
   // Set to false by default to prevent flakiness in tests that expect the
   // cluster info to be available.
-  bool enable_cluster_info_ttl_ = false;
+  bool enable_cluster_info_ttl_;
 
   // The last url for which a fetch request was sent by the query controller.
   GURL last_sent_fetch_url_;

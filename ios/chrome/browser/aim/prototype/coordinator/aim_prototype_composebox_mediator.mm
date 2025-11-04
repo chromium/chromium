@@ -278,7 +278,7 @@ CreateInputDataFromAnnotatedPageContent(
     _composeboxObserverBridge =
         std::make_unique<ComposeboxFileUploadObserverBridge>(
             self, _composeboxQueryController.get());
-    _composeboxQueryController->NotifySessionStarted();
+    _composeboxQueryController->InitializeIfNeeded();
     _webStateList = webStateList;
     _faviconLoader = faviconLoader;
     _webStateDefferedExecutor = [[WebStateDefferedExecutor alloc] init];
@@ -289,7 +289,6 @@ CreateInputDataFromAnnotatedPageContent(
 
 - (void)disconnect {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  _composeboxQueryController->NotifySessionAbandoned();
   _faviconLoader = nullptr;
   _composeboxObserverBridge.reset();
   _composeboxQueryController.reset();
@@ -788,7 +787,6 @@ CreateInputDataFromAnnotatedPageContent(
   }
   return nil;
 }
-
 
 // Handles uploading the context after the snapshot is generated.
 - (void)didRetrieveColorSnapshot:(UIImage*)image

@@ -56,14 +56,16 @@ TestComposeboxQueryController::TestComposeboxQueryController(
     TemplateURLService* template_url_service,
     variations::VariationsClient* variations_client,
     std::unique_ptr<ContextualSearchContextController::ConfigParams>
-        config_params)
+        config_params,
+    bool enable_cluster_info_ttl)
     : ComposeboxQueryController(identity_manager,
                                 url_loader_factory,
                                 channel,
                                 locale,
                                 template_url_service,
                                 variations_client,
-                                std::move(config_params)) {}
+                                std::move(config_params)),
+      enable_cluster_info_ttl_(enable_cluster_info_ttl) {}
 TestComposeboxQueryController::~TestComposeboxQueryController() = default;
 
 std::unique_ptr<EndpointFetcher>
@@ -122,12 +124,11 @@ TestComposeboxQueryController::CreateEndpointFetcher(
   return response;
 }
 
-void TestComposeboxQueryController::ResetRequestClusterInfoState(
-    int session_id) {
+void TestComposeboxQueryController::ResetRequestClusterInfoState() {
   if (!enable_cluster_info_ttl_) {
     return;
   }
-  ComposeboxQueryController::ResetRequestClusterInfoState(session_id);
+  ComposeboxQueryController::ResetRequestClusterInfoState();
 }
 
 }  // namespace contextual_search
