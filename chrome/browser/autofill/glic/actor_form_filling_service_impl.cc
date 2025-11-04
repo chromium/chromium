@@ -4,6 +4,7 @@
 
 #include "chrome/browser/autofill/glic/actor_form_filling_service_impl.h"
 
+#include <functional>
 #include <utility>
 #include <vector>
 
@@ -122,6 +123,26 @@ std::vector<ActorSuggestionWithFillData> GetAddressSuggestions(
   return result;
 }
 
+// Retrieves the `AutofillManager` of the `tab`'s primary main frame.
+[[nodiscard]] base::expected<std::reference_wrapper<AutofillManager>,
+                             ActorFormFillingError>
+GetAutofillManager(const tabs::TabInterface& tab) {
+  using enum ActorFormFillingError;
+  if (!tab.GetContents()) {
+    return base::unexpected(kAutofillNotAvailable);
+  }
+  ContentAutofillClient* const client =
+      ContentAutofillClient::FromWebContents(tab.GetContents());
+  if (!client) {
+    return base::unexpected(kAutofillNotAvailable);
+  }
+  if (AutofillManager* autofill_manager =
+          client->GetAutofillManagerForPrimaryMainFrame()) {
+    return *autofill_manager;
+  }
+  return base::unexpected(kAutofillNotAvailable);
+}
+
 }  // namespace
 
 ActorFormFillingServiceImpl::FillData::FillData() = default;
@@ -149,22 +170,13 @@ void ActorFormFillingServiceImpl::GetSuggestions(
     base::OnceCallback<void(base::expected<std::vector<ActorFormFillingRequest>,
                                            ActorFormFillingError>)> callback) {
   using enum ActorFormFillingError;
-  if (!tab.GetContents()) {
-    std::move(callback).Run(base::unexpected(kAutofillNotAvailable));
+  base::expected<std::reference_wrapper<AutofillManager>, ActorFormFillingError>
+      maybe_client = GetAutofillManager(tab);
+  if (!maybe_client.has_value()) {
+    std::move(callback).Run(base::unexpected(maybe_client.error()));
     return;
   }
-  ContentAutofillClient* const client =
-      ContentAutofillClient::FromWebContents(tab.GetContents());
-  if (!client) {
-    std::move(callback).Run(base::unexpected(kAutofillNotAvailable));
-    return;
-  }
-  const AutofillManager* const autofill_manager =
-      client->GetAutofillManagerForPrimaryMainFrame();
-  if (!autofill_manager) {
-    std::move(callback).Run(base::unexpected(kAutofillNotAvailable));
-    return;
-  }
+  const AutofillManager& autofill_manager = maybe_client.value();
 
   // Fill requests should not be empty.
   if (fill_requests.empty()) {
@@ -183,7 +195,7 @@ void ActorFormFillingServiceImpl::GetSuggestions(
       case FormFillingRequest_RequestedData_BILLING_ADDRESS:
       case FormFillingRequest_RequestedData_HOME_ADDRESS:
       case FormFillingRequest_RequestedData_WORK_ADDRESS:
-        data = GetAddressSuggestions(representative_fields, *autofill_manager);
+        data = GetAddressSuggestions(representative_fields, autofill_manager);
         break;
       case FormFillingRequest_RequestedData_CREDIT_CARD:
         // TODO(crbug.com/455788947): Add credit card suggestions.
@@ -218,6 +230,13 @@ void ActorFormFillingServiceImpl::FillSuggestions(
     const tabs::TabInterface& tab,
     base::span<const ActorFormFillingSelection> chosen_suggestions,
     base::OnceCallback<void(base::expected<void, ActorFormFillingError>)>
-        callback) {}
+        callback) {
+  base::expected<std::reference_wrapper<AutofillManager>, ActorFormFillingError>
+      maybe_client = GetAutofillManager(tab);
+  if (!maybe_client.has_value()) {
+    std::move(callback).Run(base::unexpected(maybe_client.error()));
+    return;
+  }
+}
 
 }  // namespace autofill
