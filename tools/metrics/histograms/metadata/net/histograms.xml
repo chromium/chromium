@@ -2053,6 +2053,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.DeviceBoundSessions.RefreshChallengeCount"
+    units="challenges" expires_after="2026-02-18">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    This records the number of challenge signings done during one Device Bound
+    Session refresh (https://github.com/w3c/webappsec-dbsc/blob/main/README.md).
+    This is logged at the end of each session refresh.
+  </summary>
+</histogram>
+
 <histogram name="Net.DeviceBoundSessions.RefreshQuotaExceededLastResult"
     enum="DeviceBoundSessionError" expires_after="2026-04-19">
   <owner>drubery@chromium.org</owner>

@@ -720,6 +720,11 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
 
   void RunCallback(RegistrationResult registration_result) {
     AddNetLogResult(registration_result);
+    if (IsForRefreshRequest()) {
+      base::UmaHistogramCounts100(
+          "Net.DeviceBoundSessions.RefreshChallengeCount",
+          number_of_challenges_);
+    }
     std::move(callback_).Run(this, std::move(registration_result));
     // `this` may be deleted.
   }
