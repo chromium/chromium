@@ -18,8 +18,11 @@
  */
 
 [
+    SecureContext,
     ImplementedAs=NavigatorStorageQuota
-] partial interface WorkerNavigator {
+] interface mixin NavigatorStorage {
     // https://storage.spec.whatwg.org/#api
-    [SecureContext] readonly attribute StorageManager storage;
+    [SameObject] readonly attribute StorageManager storage;
 };
+Navigator includes NavigatorStorage;
+WorkerNavigator includes NavigatorStorage;

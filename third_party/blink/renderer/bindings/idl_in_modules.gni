@@ -690,7 +690,7 @@ static_idl_files_in_modules = [
   "//third_party/blink/renderer/modules/quota/storage_estimate.idl",
   "//third_party/blink/renderer/modules/quota/storage_manager.idl",
   "//third_party/blink/renderer/modules/quota/storage_usage_details.idl",
-  "//third_party/blink/renderer/modules/quota/worker_navigator_storage_quota.idl",
+  "//third_party/blink/renderer/modules/quota/navigator_storage.idl",
   "//third_party/blink/renderer/modules/remoteplayback/html_media_element_remote_playback.idl",
   "//third_party/blink/renderer/modules/remoteplayback/remote_playback.idl",
   "//third_party/blink/renderer/modules/screen_details/screen_detailed.idl",
