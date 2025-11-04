@@ -45,7 +45,6 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/command_buffer/service/shared_image/shared_memory_copy_strategy.h"
 #include "gpu/config/gpu_finch_features.h"
-#include "gpu/ipc/common/gpu_memory_buffer_support.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkAlphaType.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -2241,28 +2240,17 @@ TEST_F(D3DImageBackingFactoryBufferTest, CreateSharedImageImportToDawn) {
 
 // Disabled by default as it requires DX11.
 TEST_F(D3DImageBackingFactoryTest, DISABLED_CreateGpuMemoryBuffer) {
-  for (auto format : viz::GetMappableSharedImageFormatForTesting()) {
+  for (auto format : {
+           viz::SinglePlaneFormat::kRGBA_8888,
+           viz::SinglePlaneFormat::kRGBX_8888,
+           viz::SinglePlaneFormat::kBGRA_8888,
+           viz::SinglePlaneFormat::kBGRX_8888,
+       }) {
     gfx::BufferUsage usages[] = {
         gfx::BufferUsage::GPU_READ,
         gfx::BufferUsage::SCANOUT,
-        gfx::BufferUsage::SCANOUT_CAMERA_READ_WRITE,
-        gfx::BufferUsage::CAMERA_AND_CPU_READ_WRITE,
-        gfx::BufferUsage::SCANOUT_CPU_READ_WRITE,
-        gfx::BufferUsage::SCANOUT_VDA_WRITE,
-        gfx::BufferUsage::PROTECTED_SCANOUT,
-        gfx::BufferUsage::PROTECTED_SCANOUT_VDA_WRITE,
-        gfx::BufferUsage::GPU_READ_CPU_READ_WRITE,
-        gfx::BufferUsage::SCANOUT_VEA_CPU_READ,
-        gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE,
-        gfx::BufferUsage::SCANOUT_FRONT_RENDERING,
     };
     for (auto usage : usages) {
-      if (!gpu::GpuMemoryBufferSupport::
-              IsNativeGpuMemoryBufferConfigurationSupportedForTesting(format,
-                                                                      usage)) {
-        continue;
-      }
-
       gfx::GpuMemoryBufferHandle handle =
           D3DImageBackingFactory::CreateGpuMemoryBufferHandle(
               /*io_runner=*/nullptr, gfx::Size(2, 2), format, usage);
