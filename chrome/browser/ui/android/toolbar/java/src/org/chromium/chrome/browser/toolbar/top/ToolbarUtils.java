@@ -43,6 +43,7 @@ public class ToolbarUtils {
                 ToolbarComponentId.FORWARD,
                 ToolbarComponentId.HOME,
                 ToolbarComponentId.OMNIBOX_BOOKMARK,
+                ToolbarComponentId.OMNIBOX_ZOOM,
                 ToolbarComponentId.OMNIBOX_INSTALL,
                 ToolbarComponentId.OMNIBOX_MIC,
                 ToolbarComponentId.OMNIBOX_LENS,
@@ -62,6 +63,7 @@ public class ToolbarUtils {
         ToolbarComponentId.RELOAD,
         ToolbarComponentId.LOCATION_BAR_MINIMUM,
         ToolbarComponentId.OMNIBOX_BOOKMARK,
+        ToolbarComponentId.OMNIBOX_ZOOM,
         ToolbarComponentId.OMNIBOX_INSTALL,
         ToolbarComponentId.OMNIBOX_MIC,
         ToolbarComponentId.OMNIBOX_LENS,
@@ -80,15 +82,16 @@ public class ToolbarUtils {
         int RELOAD = 3;
         int LOCATION_BAR_MINIMUM = 4;
         int OMNIBOX_BOOKMARK = 5;
-        int OMNIBOX_INSTALL = 6;
-        int OMNIBOX_MIC = 7;
-        int OMNIBOX_LENS = 8;
-        int ADAPTIVE_BUTTON = 9;
-        int INCOGNITO_INDICATOR = 10;
-        int TAB_SWITCHER = 11;
-        int MENU = 12;
-        int PADDING = 13;
-        int COUNT = 14;
+        int OMNIBOX_ZOOM = 6;
+        int OMNIBOX_INSTALL = 7;
+        int OMNIBOX_MIC = 8;
+        int OMNIBOX_LENS = 9;
+        int ADAPTIVE_BUTTON = 10;
+        int INCOGNITO_INDICATOR = 11;
+        int TAB_SWITCHER = 12;
+        int MENU = 13;
+        int PADDING = 14;
+        int COUNT = 15;
     }
 
     /**

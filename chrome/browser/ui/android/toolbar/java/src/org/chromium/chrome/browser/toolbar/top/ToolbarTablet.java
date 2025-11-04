@@ -143,6 +143,8 @@ public class ToolbarTablet extends ToolbarLayout {
 
         mToolbarWidthConsumers[ToolbarComponentId.OMNIBOX_BOOKMARK] =
                 mLocationBar.getBookmarkButtonToolbarWidthConsumer();
+        mToolbarWidthConsumers[ToolbarComponentId.OMNIBOX_ZOOM] =
+                mLocationBar.getZoomButtonToolbarWidthConsumer();
         mToolbarWidthConsumers[ToolbarComponentId.OMNIBOX_INSTALL] =
                 mLocationBar.getInstallButtonToolbarWidthConsumer();
         mToolbarWidthConsumers[ToolbarComponentId.OMNIBOX_MIC] =

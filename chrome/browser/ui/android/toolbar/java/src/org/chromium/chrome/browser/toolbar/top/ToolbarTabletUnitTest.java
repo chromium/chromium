@@ -31,6 +31,7 @@ import static org.chromium.chrome.browser.toolbar.top.ToolbarUtils.ToolbarCompon
 import static org.chromium.chrome.browser.toolbar.top.ToolbarUtils.ToolbarComponentId.OMNIBOX_INSTALL;
 import static org.chromium.chrome.browser.toolbar.top.ToolbarUtils.ToolbarComponentId.OMNIBOX_LENS;
 import static org.chromium.chrome.browser.toolbar.top.ToolbarUtils.ToolbarComponentId.OMNIBOX_MIC;
+import static org.chromium.chrome.browser.toolbar.top.ToolbarUtils.ToolbarComponentId.OMNIBOX_ZOOM;
 import static org.chromium.chrome.browser.toolbar.top.ToolbarUtils.ToolbarComponentId.PADDING;
 import static org.chromium.chrome.browser.toolbar.top.ToolbarUtils.ToolbarComponentId.RELOAD;
 import static org.chromium.chrome.browser.toolbar.top.ToolbarUtils.ToolbarComponentId.TAB_SWITCHER;
@@ -139,6 +140,7 @@ public final class ToolbarTabletUnitTest {
     @Mock private ToolbarWidthConsumer mLocationBarInstallButtonWidthConsumer;
     @Mock private ToolbarWidthConsumer mLocationBarMicButtonWidthConsumer;
     @Mock private ToolbarWidthConsumer mLocationBarLensButtonWidthConsumer;
+    @Mock private ToolbarWidthConsumer mLocationBarZoomButtonWidthConsumer;
 
     private Activity mActivity;
     private ToolbarTablet mToolbarTablet;
@@ -196,6 +198,8 @@ public final class ToolbarTabletUnitTest {
                 .thenReturn(mLocationBarMicButtonWidthConsumer);
         when(mLocationBar.getLensButtonToolbarWidthConsumer())
                 .thenReturn(mLocationBarLensButtonWidthConsumer);
+        when(mLocationBar.getZoomButtonToolbarWidthConsumer())
+                .thenReturn(mLocationBarZoomButtonWidthConsumer);
         mToolbarTablet.setLocationBarCoordinator(mLocationBar);
         LocationBarLayout locationBarLayout = mToolbarTablet.findViewById(R.id.location_bar);
         locationBarLayout.setStatusCoordinatorForTesting(mStatusCoordinator);
@@ -257,6 +261,7 @@ public final class ToolbarTabletUnitTest {
         mockToolbarWidthConsumer(mLocationBarInstallButtonWidthConsumer, buttonWidth);
         mockToolbarWidthConsumer(mLocationBarMicButtonWidthConsumer, buttonWidth);
         mockToolbarWidthConsumer(mLocationBarLensButtonWidthConsumer, buttonWidth);
+        mockToolbarWidthConsumer(mLocationBarZoomButtonWidthConsumer, buttonWidth);
 
         mForwardButtonCoordinator =
                 new ForwardButtonCoordinator(
@@ -929,7 +934,7 @@ public final class ToolbarTabletUnitTest {
                         TAB_SWITCHER,
                         MENU,
                         OMNIBOX_BOOKMARK,
-                        OMNIBOX_INSTALL));
+                        OMNIBOX_ZOOM));
     }
 
     @SuppressLint("WrongCall")
@@ -969,7 +974,7 @@ public final class ToolbarTabletUnitTest {
                         TAB_SWITCHER,
                         MENU,
                         OMNIBOX_BOOKMARK,
-                        OMNIBOX_INSTALL));
+                        OMNIBOX_ZOOM));
 
         mToolbarTablet.onMeasure(
                 MeasureSpec.makeMeasureSpec(
@@ -1215,6 +1220,12 @@ public final class ToolbarTabletUnitTest {
                     .updateVisibility(geq(buttonWidth));
         }
 
+        if (visibleComponents.contains(OMNIBOX_ZOOM)) {
+            verify(mLocationBarZoomButtonWidthConsumer).updateVisibility(geq(buttonWidth));
+        } else {
+            verify(mLocationBarZoomButtonWidthConsumer, never()).updateVisibility(geq(buttonWidth));
+        }
+
         if (visibleComponents.contains(OMNIBOX_INSTALL)) {
             verify(mLocationBarInstallButtonWidthConsumer).updateVisibility(geq(buttonWidth));
         } else {
@@ -1241,6 +1252,7 @@ public final class ToolbarTabletUnitTest {
                 mTabSwitcherButtonCoordinator,
                 mMenuButtonCoordinator,
                 mLocationBarBookmarkButtonWidthConsumer,
+                mLocationBarZoomButtonWidthConsumer,
                 mLocationBarInstallButtonWidthConsumer,
                 mLocationBarMicButtonWidthConsumer,
                 mLocationBarLensButtonWidthConsumer);

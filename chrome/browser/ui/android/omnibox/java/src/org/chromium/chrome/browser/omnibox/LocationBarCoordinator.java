@@ -444,6 +444,7 @@ public class LocationBarCoordinator
         }
 
         mZoomButton.setOnClickListener(null);
+        mZoomButton = null;
 
         mInstallButton.setOnClickListener(null);
         mInstallButton = null;
@@ -1021,6 +1022,14 @@ public class LocationBarCoordinator
      */
     public ToolbarWidthConsumer getLensButtonToolbarWidthConsumer() {
         return mLocationBarMediator.getLensButtonToolbarWidthConsumer();
+    }
+
+    /**
+     * Returns a {@link ToolbarWidthConsumer} that handles width on the toolbar allocated to showing
+     * the zoom button on the omnibox.
+     */
+    public ToolbarWidthConsumer getZoomButtonToolbarWidthConsumer() {
+        return mLocationBarMediator.getZoomButtonToolbarWidthConsumer();
     }
 
     /**

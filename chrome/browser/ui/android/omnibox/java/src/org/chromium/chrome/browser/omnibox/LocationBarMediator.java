@@ -237,6 +237,7 @@ class LocationBarMediator
     private final ButtonToolbarWidthConsumer mInstallButtonToolbarWidthConsumer;
     private final ButtonToolbarWidthConsumer mMicButtonToolbarWidthConsumer;
     private final ButtonToolbarWidthConsumer mLensButtonToolbarWidthConsumer;
+    private final ButtonToolbarWidthConsumer mZoomButtonToolbarWidthConsumer;
 
     /*package */ LocationBarMediator(
             Context context,
@@ -315,6 +316,12 @@ class LocationBarMediator
                         mIsTablet,
                         this::shouldShowLensButton,
                         this::updateLensButtonVisibility);
+        mZoomButtonToolbarWidthConsumer =
+                new ButtonToolbarWidthConsumer(
+                        mContext,
+                        mIsTablet,
+                        this::shouldShowZoomButton,
+                        this::updateZoomButtonVisibility);
 
         mPersistEditingState =
                 OmniboxFeatures.sOmniboxImprovementForLFF.isEnabled()
@@ -1365,10 +1372,11 @@ class LocationBarMediator
         updateZoomButtonVisibility();
     }
 
-    private boolean shouldShowZoomButton() {
+    @VisibleForTesting
+    boolean shouldShowZoomButton() {
         if (mUrlHasFocus || mIsUrlFocusChangeInProgress) return false;
         if (!ChromeFeatureList.sAndroidZoomIndicator.isEnabled()
-                || !DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)
+                || !mIsTablet
                 || mPageZoomIndicatorCoordinator == null
                 || getWebContentsForCurrentTab() == null
                 || mPageZoomIndicatorCoordinator.isZoomLevelDefault()) {
@@ -1379,8 +1387,13 @@ class LocationBarMediator
 
     private void updateZoomButtonVisibility() {
         if (mPageZoomIndicatorCoordinator == null) return;
-        mLocationBarLayout.setZoomButtonVisibility(
+        setZoomButtonVisibility(
                 shouldShowZoomButton() || mPageZoomIndicatorCoordinator.isPopupWindowShowing());
+    }
+
+    private void setZoomButtonVisibility(boolean shouldShowZoomButton) {
+        mLocationBarLayout.setZoomButtonVisibility(
+                shouldShowZoomButton && mZoomButtonToolbarWidthConsumer.hasSpaceToShow());
     }
 
     public void updateZoomButtonVisibilityForTesting() {
@@ -2103,6 +2116,10 @@ class LocationBarMediator
 
     /* package */ ToolbarWidthConsumer getLensButtonToolbarWidthConsumer() {
         return mLensButtonToolbarWidthConsumer;
+    }
+
+    /* package */ ToolbarWidthConsumer getZoomButtonToolbarWidthConsumer() {
+        return mZoomButtonToolbarWidthConsumer;
     }
 
     private static class ButtonToolbarWidthConsumer implements ToolbarWidthConsumer {

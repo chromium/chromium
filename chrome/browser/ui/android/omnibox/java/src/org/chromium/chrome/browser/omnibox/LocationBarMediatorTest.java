@@ -344,6 +344,7 @@ public class LocationBarMediatorTest {
         locationBarMediator.getLensButtonToolbarWidthConsumer().updateVisibility(buttonWidth);
         locationBarMediator.getInstallButtonToolbarWidthConsumer().updateVisibility(buttonWidth);
         locationBarMediator.getBookmarkButtonToolbarWidthConsumer().updateVisibility(buttonWidth);
+        locationBarMediator.getZoomButtonToolbarWidthConsumer().updateVisibility(buttonWidth);
     }
 
     @Test
@@ -2023,6 +2024,58 @@ public class LocationBarMediatorTest {
 
         installButtonConsumer.updateVisibility(0);
         verify(mLocationBarTablet).setInstallButtonVisibility(false);
+        Mockito.clearInvocations(mLocationBarTablet);
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.TOOLBAR_TABLET_RESIZE_REFACTOR,
+        ChromeFeatureList.ANDROID_ZOOM_INDICATOR
+    })
+    public void testZoomButtonToolbarWidthConsumer_notVisible() {
+        int buttonWidth =
+                mContext.getResources()
+                        .getDimensionPixelSize(R.dimen.location_bar_action_icon_width);
+        mTabletMediator.onFinishNativeInitialization();
+        when(mPageZoomIndicatorCoordinator.isZoomLevelDefault()).thenReturn(true);
+        assertFalse(mTabletMediator.shouldShowZoomButton());
+
+        ToolbarWidthConsumer zoomButtonConsumer =
+                mTabletMediator.getZoomButtonToolbarWidthConsumer();
+        Mockito.clearInvocations(mLocationBarTablet);
+
+        zoomButtonConsumer.updateVisibility(buttonWidth);
+        verify(mLocationBarTablet).setZoomButtonVisibility(false);
+        Mockito.clearInvocations(mLocationBarTablet);
+
+        zoomButtonConsumer.updateVisibility(0);
+        verify(mLocationBarTablet).setZoomButtonVisibility(false);
+        Mockito.clearInvocations(mLocationBarTablet);
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.TOOLBAR_TABLET_RESIZE_REFACTOR,
+        ChromeFeatureList.ANDROID_ZOOM_INDICATOR
+    })
+    public void testZoomButtonToolbarWidthConsumer() {
+        int buttonWidth =
+                mContext.getResources()
+                        .getDimensionPixelSize(R.dimen.location_bar_action_icon_width);
+        mTabletMediator.onFinishNativeInitialization();
+        when(mPageZoomIndicatorCoordinator.isZoomLevelDefault()).thenReturn(false);
+        assertTrue(mTabletMediator.shouldShowZoomButton());
+
+        ToolbarWidthConsumer zoomButtonConsumer =
+                mTabletMediator.getZoomButtonToolbarWidthConsumer();
+        Mockito.clearInvocations(mLocationBarTablet);
+
+        zoomButtonConsumer.updateVisibility(buttonWidth);
+        verify(mLocationBarTablet).setZoomButtonVisibility(true);
+        Mockito.clearInvocations(mLocationBarTablet);
+
+        zoomButtonConsumer.updateVisibility(0);
+        verify(mLocationBarTablet).setZoomButtonVisibility(false);
         Mockito.clearInvocations(mLocationBarTablet);
     }
 }
