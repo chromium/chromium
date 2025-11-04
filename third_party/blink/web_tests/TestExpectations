@@ -9937,3 +9937,10 @@ crbug.com/455817545 [ Mac ] virtual/threaded/wpt_internal/view-transition/browse
 # of the feature on Linux. If enabling the feature, please check `TouchDragEndContextMenu` works as expected.
 crbug.com/451651623 [ Linux ] fast/events/touch/gesture/long-press-on-image-triggers-drag.html [ Failure ]
 crbug.com/451651623 [ Linux ] fast/events/touch/gesture/long-press-on-link-triggers-drag.html [ Failure ]
+
+# Gardener 2025-11-04
+crbug.com/457578724 [ Mac12-arm64 ] external/wpt/webxr/xrView_visibility_mask_change.https.html [ Failure Pass ]
+crbug.com/457578724 [ Mac13-arm64 ] external/wpt/webxr/xrView_visibility_mask_change.https.html [ Failure Pass ]
+crbug.com/457578724 [ Mac14-arm64 ] external/wpt/webxr/xrView_visibility_mask_change.https.html [ Failure Pass ]
+crbug.com/457578724 [ Mac15-arm64 ] external/wpt/webxr/xrView_visibility_mask_change.https.html [ Failure Pass ]
+crbug.com/457578724 [ Win11-arm64 ] external/wpt/webxr/xrView_visibility_mask_change.https.html [ Failure Pass ]
