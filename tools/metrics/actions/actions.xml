@@ -48446,6 +48446,11 @@ should be able to be added at any place in this file.
     <variant name=".SharedTabsListAsTextList"
         summary="Users tapped on the share button for multiple tabs in
                  TabSelectionEditorV2."/>
+    <variant name=".TabsPinned"
+        summary="Users tapped on the pin tabs button in TabSelectionEditorV2."/>
+    <variant name=".TabsUnpinned"
+        summary="Users tapped on the unpin tabs button in
+                 TabSelectionEditorV2."/>
     <variant name=".UngroupTabs"
         summary="Users tapped on the ungroup tabs button in
                  TabSelectionEditorV2."/>

@@ -248,7 +248,7 @@ public abstract class TabListEditorAction {
             @Nullable MotionEventInfo triggeringMotion);
 
     /**
-     * @return Whether to hide the editor after tabking the action.
+     * @return Whether to hide the editor after taking the action.
      */
     public abstract boolean shouldHideEditorAfterAction();
 

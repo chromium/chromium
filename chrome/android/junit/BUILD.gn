@@ -1242,6 +1242,7 @@ if (is_android) {
       "//chrome/android/features/tab_ui/junit/src/org/chromium/chrome/browser/tasks/tab_management/TabListEditorCloseActionUnitTest.java",
       "//chrome/android/features/tab_ui/junit/src/org/chromium/chrome/browser/tasks/tab_management/TabListEditorCloseArchivedTabsActionUnitTest.java",
       "//chrome/android/features/tab_ui/junit/src/org/chromium/chrome/browser/tasks/tab_management/TabListEditorLegacyGroupActionUnitTest.java",
+      "//chrome/android/features/tab_ui/junit/src/org/chromium/chrome/browser/tasks/tab_management/TabListEditorPinActionUnitTest.java",
       "//chrome/android/features/tab_ui/junit/src/org/chromium/chrome/browser/tasks/tab_management/TabListEditorRestoreAllArchivedTabsActionUnitTest.java",
       "//chrome/android/features/tab_ui/junit/src/org/chromium/chrome/browser/tasks/tab_management/TabListEditorRestoreArchivedTabsActionUnitTest.java",
       "//chrome/android/features/tab_ui/junit/src/org/chromium/chrome/browser/tasks/tab_management/TabListEditorSelectArchivedTabsActionUnitTest.java",
