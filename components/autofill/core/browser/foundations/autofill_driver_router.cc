@@ -54,14 +54,8 @@ AutofillDriver* AutofillDriverRouter::DriverOfFrame(LocalFrameToken frame) {
 
 void AutofillDriverRouter::UnregisterDriver(AutofillDriver& driver,
                                             bool driver_is_dying) {
-  for (const std::unique_ptr<internal::FormForest::FrameData>& frame :
-       form_forest_.frame_datas()) {
-    if (frame->driver == &driver) {
-      form_forest_.EraseFormsOfFrame(frame->frame_token,
-                                     /*keep_frame=*/!driver_is_dying);
-      break;
-    }
-  }
+  form_forest_.EraseFormsOfFrame(driver.GetFrameToken(),
+                                 /*keep_frame=*/!driver_is_dying);
 }
 
 // Routing of events called by the renderer:
