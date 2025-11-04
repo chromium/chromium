@@ -2475,22 +2475,28 @@ void PermissionUmaUtil::RecordPostPromptSessionDuration(
     base::UmaHistogramCustomTimes(
         base::StrCat({"Permissions.PredictionService.", permission_string,
                       ".PostPromptSessionDuration10s"}),
-        duration, base::Milliseconds(1), base::Milliseconds(10), 10);
+        duration, base::Milliseconds(1), base::Milliseconds(10),
+        /*buckets=*/10);
   } else if (duration <= base::Minutes(1)) {
     base::UmaHistogramCustomTimes(
         base::StrCat({"Permissions.PredictionService.", permission_string,
                       ".PostPromptSessionDuration1m"}),
-        duration, base::Milliseconds(11), base::Minutes(1), 25);
+        duration, base::Milliseconds(11), base::Minutes(1), /*buckets=*/25);
   } else if (duration <= base::Minutes(5)) {
     base::UmaHistogramCustomTimes(
         base::StrCat({"Permissions.PredictionService.", permission_string,
                       ".PostPromptSessionDuration5m"}),
-        duration, base::Minutes(1), base::Minutes(5), 15);
+        duration, base::Minutes(1), base::Minutes(5), /*buckets=*/15);
   } else if (duration <= base::Minutes(10)) {
     base::UmaHistogramCustomTimes(
         base::StrCat({"Permissions.PredictionService.", permission_string,
                       ".PostPromptSessionDuration10m"}),
-        duration, base::Minutes(5), base::Minutes(10), 10);
+        duration, base::Minutes(5), base::Minutes(10), /*buckets=*/10);
+  } else if (duration <= base::Minutes(30)) {
+    base::UmaHistogramCustomTimes(
+        base::StrCat({"Permissions.PredictionService.", permission_string,
+                      ".PostPromptSessionDuration30m"}),
+        duration, base::Minutes(10), base::Minutes(30), /*buckets=*/20);
   }
 }
 
