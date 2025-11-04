@@ -1036,6 +1036,131 @@ suite('Modification', () => {
       await leaveUrlInput();
       assertFalse(inputUrl.invalid);
     });
+
+    test(
+        'shortcut already exists (enterprise and custom link with same url)',
+        async () => {
+          await addTiles(
+              [
+                {
+                  title: 'e1',
+                  titleDirection: TextDirection.LEFT_TO_RIGHT,
+                  url: {url: `https://e1/`},
+                  source: TileSource.ENTERPRISE_SHORTCUTS,
+                  titleSource: 0,
+                  isQueryTile: false,
+                  allowUserEdit: true,
+                  allowUserDelete: true,
+                },
+                {
+                  title: 'c1',
+                  titleDirection: TextDirection.LEFT_TO_RIGHT,
+                  url: {url: `https://e1/`},
+                  source: TileSource.CUSTOM_LINKS,
+                  titleSource: 1,
+                  isQueryTile: false,
+                  allowUserEdit: true,
+                  allowUserDelete: true,
+                },
+              ],
+              /*customLinksEnabled=*/ true, /*visible=*/ true,
+              /*enterpriseShortcutsEnabled=*/ true);
+
+          // Open edit dialog for the enteprise shortcut (index 0).
+          const enterpriseShortcutTile = queryTiles()[0]!;
+          enterpriseShortcutTile
+              .querySelector<HTMLElement>('#actionMenuButton')!.click();
+          $$<HTMLElement>(mostVisited, '#actionMenuViewOrEdit').click();
+          await microtasksFinished();
+
+          // Action button should be visible and clickable.
+          assertTrue(mostVisited.$.dialog.open);
+          const actionButton =
+              mostVisited.$.dialog.querySelector<CrButtonElement>(
+                  '.action-button')!;
+          assertFalse(actionButton.disabled);
+          actionButton.click();
+          await microtasksFinished();
+          assertFalse(mostVisited.$.dialog.open);
+
+          // Open edit dialog for the custom link (index 1).
+          const customLinkTile = queryTiles()[1]!;
+          customLinkTile.querySelector<HTMLElement>(
+                            '#actionMenuButton')!.click();
+          $$<HTMLElement>(mostVisited, '#actionMenuViewOrEdit').click();
+          await microtasksFinished();
+
+          // Try to set its URL to the enterprise shortcut's URL (which is the
+          // same as its own, but we're testing the logic).
+          inputUrl.value = 'https://e1/';
+          await inputUrl.updateComplete;
+          assertFalse(mostVisited['dialogShortcutAlreadyExists_']);
+          assertFalse(inputUrl.invalid);
+          await leaveUrlInput();
+          assertFalse(inputUrl.invalid);
+
+          // Save button should be visible and clickable.
+          assertTrue(mostVisited.$.dialog.open);
+          const saveButton =
+              mostVisited.$.dialog.querySelector<CrButtonElement>(
+                  '.action-button')!;
+          assertFalse(saveButton.disabled);
+          saveButton.click();
+          await microtasksFinished();
+          assertFalse(mostVisited.$.dialog.open);
+        });
+
+    test('edit custom link to duplicate enterprise shortcut url', async () => {
+      await addTiles(
+          [
+            {
+              title: 'e1',
+              titleDirection: TextDirection.LEFT_TO_RIGHT,
+              url: {url: `https://e1/`},
+              source: TileSource.ENTERPRISE_SHORTCUTS,
+              titleSource: 0,
+              isQueryTile: false,
+              allowUserEdit: true,
+              allowUserDelete: true,
+            },
+            {
+              title: 'c1',
+              titleDirection: TextDirection.LEFT_TO_RIGHT,
+              url: {url: `https://c1/`},
+              source: TileSource.CUSTOM_LINKS,
+              titleSource: 1,
+              isQueryTile: false,
+              allowUserEdit: true,
+              allowUserDelete: true,
+            },
+          ],
+          /*customLinksEnabled=*/ true, /*visible=*/ true,
+          /*enterpriseShortcutsEnabled=*/ true);
+
+      // Open edit dialog for the custom link (index 1).
+      const customLinkTile = queryTiles()[1]!;
+      customLinkTile.querySelector<HTMLElement>('#actionMenuButton')!.click();
+      $$<HTMLElement>(mostVisited, '#actionMenuViewOrEdit').click();
+      await microtasksFinished();
+
+      // Try to set its URL to the enterprise shortcut's URL.
+      // Save button should be visible and clickable.
+      inputUrl.value = 'https://e1/';
+      await inputUrl.updateComplete;
+      assertFalse(mostVisited['dialogShortcutAlreadyExists_']);
+      assertFalse(inputUrl.invalid);
+      await leaveUrlInput();
+      assertFalse(inputUrl.invalid);
+
+      const saveButton = mostVisited.$.dialog.querySelector<CrButtonElement>(
+          '.action-button')!;
+      assertFalse(saveButton.disabled);
+      const updateCalled = handler.whenCalled('updateMostVisitedTile');
+      saveButton.click();
+      const [_oldTile, newUrl, _newTitle] = await updateCalled;
+      assertEquals('https://e1/', newUrl.url);
+      assertFalse(mostVisited.$.dialog.open);
+    });
   });
 
   test('remove with action menu', async () => {
@@ -1743,6 +1868,62 @@ suite('EnterpriseShortcuts', () => {
     await microtasksFinished();
     assertFalse(mostVisited.$.dialog.open);
     assertEquals(0, handler.getCallCount('updateMostVisitedTile'));
+  });
+
+  test('view enterprise shortcut then add shortcut', async () => {
+    await addTiles(
+        [
+          createEnterpriseShortcut(
+              0, /*allowUserEdit=*/ false, /*allowUserDelete=*/ true),
+          {
+            title: 'c',
+            titleDirection: TextDirection.LEFT_TO_RIGHT,
+            url: {url: `https://c/`},
+            source: TileSource.CUSTOM_LINKS,
+            titleSource: 1,
+            isQueryTile: false,
+            allowUserEdit: true,
+            allowUserDelete: true,
+          },
+        ],
+        /*customLinksEnabled=*/ true, /*visible=*/ true,
+        /*enterpriseShortcutsEnabled=*/ true);
+    const enterpriseTile = queryTiles()[0]!;
+    enterpriseTile.querySelector<HTMLElement>('#actionMenuButton')!.click();
+    $$<HTMLElement>(mostVisited, '#actionMenuViewOrEdit').click();
+    await microtasksFinished();
+
+    // Verify dialog state for enterprise shortcut.
+    assertTrue(mostVisited.$.dialog.open);
+    let policySubtitleContainer =
+        mostVisited.$.dialog.querySelector<HTMLElement>(
+            '#policySubtitleContainer');
+    assertTrue(isVisible(policySubtitleContainer));
+    let urlInput = $$<CrInputElement>(mostVisited, '#dialogInputUrl');
+    assertTrue(urlInput.readonly);
+    let nameInput = $$<CrInputElement>(mostVisited, '#dialogInputName');
+    assertTrue(nameInput.readonly);
+
+    // Close the dialog.
+    const saveButton =
+        mostVisited.$.dialog.querySelector<CrButtonElement>('.action-button')!;
+    saveButton.click();
+    await microtasksFinished();
+    assertFalse(mostVisited.$.dialog.open);
+
+    // Open the add shortcut dialog.
+    mostVisited.$.addShortcut.click();
+    await microtasksFinished();
+
+    // Verify dialog state for adding a new shortcut.
+    assertTrue(mostVisited.$.dialog.open);
+    policySubtitleContainer = mostVisited.$.dialog.querySelector<HTMLElement>(
+        '#policySubtitleContainer');
+    assertFalse(isVisible(policySubtitleContainer));
+    urlInput = $$<CrInputElement>(mostVisited, '#dialogInputUrl');
+    assertFalse(urlInput.readonly);
+    nameInput = $$<CrInputElement>(mostVisited, '#dialogInputName');
+    assertFalse(nameInput.readonly);
   });
 
   test('action menu enabled/disabled based on permissions', async () => {

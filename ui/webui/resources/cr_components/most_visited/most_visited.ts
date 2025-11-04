@@ -468,12 +468,17 @@ export class MostVisitedElement extends MostVisitedElementBase {
     if (!dialogTileHref) {
       return false;
     }
+    // Bypass check for enteprise shortcuts.
+    if (this.dialogSource_ === TileSource.ENTERPRISE_SHORTCUTS) {
+      return false;
+    }
     return (this.tiles_ || []).some(({url: {url}}, index) => {
       if (index === this.actionMenuTargetIndex_) {
         return false;
       }
       const otherUrl = normalizeUrl(url);
-      return otherUrl && otherUrl.href === dialogTileHref;
+      return otherUrl && otherUrl.href === dialogTileHref &&
+          this.tiles_[index]!.source !== TileSource.ENTERPRISE_SHORTCUTS;
     });
   }
 
@@ -723,6 +728,8 @@ export class MostVisitedElement extends MostVisitedElementBase {
   }
 
   protected onAdd_() {
+    this.dialogIsReadonly_ = false;
+    this.dialogSource_ = TileSource.CUSTOM_LINKS;
     this.dialogTitle_ = loadTimeData.getString('addLinkTitle');
     this.dialogTileTitle_ = '';
     this.dialogTileUrl_ = '';
