@@ -2197,7 +2197,7 @@ Unknown properties are collapsed to zero. -->
   <int value="4" label="Hihglight sentence"/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/browser/resources/side_panel/read_anything/metrics_browser_proxy.ts:ReadAloudHighlightGranularity) -->
+<!-- LINT.ThenChange(//chrome/browser/resources/side_panel/read_anything/shared/metrics_browser_proxy.ts:ReadAloudHighlightGranularity) -->
 
 <!-- LINT.IfChange(ReadAnythingLetterSpacing) -->
 
@@ -2228,7 +2228,7 @@ Unknown properties are collapsed to zero. -->
   <int value="1" label="Speech played on new page"/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/browser/resources/side_panel/read_anything/metrics_browser_proxy.ts:ReadAnythingNewPage) -->
+<!-- LINT.ThenChange(//chrome/browser/resources/side_panel/read_anything/shared/metrics_browser_proxy.ts:ReadAnythingNewPage) -->
 
 <!-- LINT.IfChange(ReadAnythingReadAloudSettingsChange) -->
 
@@ -2238,7 +2238,7 @@ Unknown properties are collapsed to zero. -->
   <int value="2" label="Highlight change"/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/browser/resources/side_panel/read_anything/metrics_browser_proxy.ts:ReadAloudSettingsChange) -->
+<!-- LINT.ThenChange(//chrome/browser/resources/side_panel/read_anything/shared/metrics_browser_proxy.ts:ReadAloudSettingsChange) -->
 
 <!-- LINT.IfChange(ReadAnythingReadAloudVoice2) -->
 
@@ -2249,7 +2249,7 @@ Unknown properties are collapsed to zero. -->
   <int value="3" label="System voice"/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/browser/resources/side_panel/read_anything/metrics_browser_proxy.ts:ReadAnythingVoiceType) -->
+<!-- LINT.ThenChange(//chrome/browser/resources/side_panel/read_anything/shared/metrics_browser_proxy.ts:ReadAnythingVoiceType) -->
 
 <!-- LINT.IfChange(ReadAnythingScrollEvent) -->
 
@@ -2274,7 +2274,7 @@ Unknown properties are collapsed to zero. -->
   <int value="6" label="Images enabled change"/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/browser/resources/side_panel/read_anything/metrics_browser_proxy.ts:ReadAnythingSettingsChange) -->
+<!-- LINT.ThenChange(//chrome/browser/resources/side_panel/read_anything/shared/metrics_browser_proxy.ts:ReadAnythingSettingsChange) -->
 
 <!-- LINT.IfChange(ReadAnythingSpeechError) -->
 
@@ -2290,7 +2290,7 @@ Unknown properties are collapsed to zero. -->
   <int value="8" label="Network"/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/browser/resources/side_panel/read_anything/metrics_browser_proxy.ts:ReadAnythingSpeechError) -->
+<!-- LINT.ThenChange(//chrome/browser/resources/side_panel/read_anything/shared/metrics_browser_proxy.ts:ReadAnythingSpeechError) -->
 
 <!-- LINT.IfChange(ReadAnythingSpeechStopSource) -->
 
