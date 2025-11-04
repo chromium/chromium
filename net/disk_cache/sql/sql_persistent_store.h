@@ -485,6 +485,10 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
 
   void OnInitializeFinished(ErrorCallback callback,
                             std::vector<InitResultOrError> results);
+  void OnEvictionFinished(bool is_idle_time_eviction,
+                          base::TimeTicks start_time,
+                          std::vector<ResIdListOrError> results);
+
   const std::vector<scoped_refptr<base::SequencedTaskRunner>>
       background_task_runners_;
   const std::vector<std::unique_ptr<BackendShard>> backend_shards_;
@@ -496,7 +500,9 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
   int64_t idle_time_high_watermark_ = 0;
   int64_t low_watermark_ = 0;
   int64_t max_file_size_ = 0;
-  bool eviction_in_progress_ = false;
+
+  // A callback to be called when the eviction is finished.
+  ErrorCallback eviction_result_callback_;
 
   // Whether loading of the in-memory index has been triggered.
   bool in_memory_load_trigered_ = false;
