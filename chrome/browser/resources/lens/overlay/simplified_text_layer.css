@@ -31,6 +31,10 @@
   opacity: 0;
 }
 
+:host(:not([enable-highlights])) .highlighted-line {
+  display: none;
+}
+
 /* Set styles for high contrast mode in Windows. */
 @media (forced-colors: active) {
   .highlighted-line {

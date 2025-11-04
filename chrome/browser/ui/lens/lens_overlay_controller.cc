@@ -928,9 +928,10 @@ void LensOverlayController::ShowUI(
     return;
   }
 
-  // If the search controller is already active, then visual selections
+  // If the side panel is already showing, then visual selections
   // are considered follow ups that should be fulfilled by AIM.
-  use_aim_for_visual_search_ = lens_search_controller_->IsActive();
+  use_aim_for_visual_search_ =
+      GetLensOverlaySidePanelCoordinator()->IsEntryShowing();
 
   // Increment the counter for the number of times the Lens Overlay has been
   // started.

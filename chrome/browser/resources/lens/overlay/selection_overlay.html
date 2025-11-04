@@ -239,6 +239,10 @@
     visibility: visible;
   }
 
+  :host(:not([enable-region-context-menu])) #selectedRegionContextMenu {
+    display: none;
+  }
+
   .context-menu-item {
     align-items: center;
     align-self: stretch;
