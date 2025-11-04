@@ -237,14 +237,13 @@ class MappableBufferTest : public testing::Test {
   // dynamically via ui::OzonePlatform::IsNativePixmapConfigSupported(). Here we
   // specify the set of possibly-valid usages. We pass all possibly-valid
   // formats in formats().
-  std::array<gfx::BufferUsage, 9> usages_ = {
+  std::array<gfx::BufferUsage, 8> usages_ = {
       gfx::BufferUsage::GPU_READ,
       gfx::BufferUsage::SCANOUT,
       gfx::BufferUsage::SCANOUT_CAMERA_READ_WRITE,
       gfx::BufferUsage::CAMERA_AND_CPU_READ_WRITE,
       gfx::BufferUsage::SCANOUT_CPU_READ_WRITE,
       gfx::BufferUsage::GPU_READ_CPU_READ_WRITE,
-      gfx::BufferUsage::SCANOUT_FRONT_RENDERING,
       gfx::BufferUsage::SCANOUT_VEA_CPU_READ,
       gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE,
   };
