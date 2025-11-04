@@ -928,6 +928,9 @@ struct PanelOpeningData {
   // If set, the textbox for user input will be populated with the given string
   // before the panel opens.
   string? prompt_suggestion;
+  // Up to 3 most recently active conversations, ordered by most recently active
+  // first.
+  array<ConversationInfo>? recently_active_conversations;
 };
 
 // @generate glic_api

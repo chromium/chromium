@@ -179,6 +179,10 @@ class Host : public GlicSharingManagerProvider {
     // If set, the textbox for user input will be populated with the given
     // string before the panel opens.
     std::optional<std::string> prompt_suggestion;
+    // Up to 3 most recently active conversations, ordered by most recently
+    // active first.
+    std::optional<std::vector<glic::mojom::ConversationInfoPtr>>
+        recently_active_conversations;
   };
   void PanelWillOpen(mojom::InvocationSource invocation_source,
                      PanelWillOpenOptions options);

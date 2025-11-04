@@ -80,6 +80,8 @@ class GlicInstanceCoordinatorImpl
   // per profile.
   void OnWillCreateFloaty() override;
   void UnbindTabFromAnyInstance(tabs::TabInterface* tab) override;
+  std::vector<glic::mojom::ConversationInfoPtr> GetRecentlyActiveConversations()
+      override;
 
   // GlicWindowController implementation
   HostManager& host_manager() override;

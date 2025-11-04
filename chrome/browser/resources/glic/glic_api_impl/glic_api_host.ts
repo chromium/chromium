@@ -19,7 +19,7 @@ import type {ConfirmationRequestErrorReason as ConfirmationRequestErrorReasonMoj
 import type {PageMetadata as PageMetadataMojo} from '../ai_page_content_metadata.mojom-webui.js';
 import type {BrowserProxy} from '../browser_proxy.js';
 import {ContentSettingsType} from '../content_settings_types.mojom-webui.js';
-import type {ActorTaskPauseReason as ActorTaskPauseReasonMojo, ActorTaskState as ActorTaskStateMojo, ActorTaskStopReason as ActorTaskStopReasonMojo, AdditionalContext as AdditionalContextMojo, AnnotatedPageData as AnnotatedPageDataMojo, CaptureRegionObserver, CaptureRegionResult as CaptureRegionResultMojo, ContextData as ContextDataMojo, FocusedTabData as FocusedTabDataMojo, GetPinCandidatesOptions as GetPinCandidatesOptionsMojo, GetTabContextOptions as TabContextOptionsMojo, HostCapability as HostCapabilityMojo, OpenPanelInfo as OpenPanelInfoMojo, OpenSettingsOptions as OpenSettingsOptionsMojo, PanelOpeningData as PanelOpeningDataMojo, PanelState as PanelStateMojo, PdfDocumentData as PdfDocumentDataMojo, PinCandidate as PinCandidateMojo, PinCandidatesObserver, Screenshot as ScreenshotMojo, ScrollToSelector as ScrollToSelectorMojo, TabContext as TabContextMojo, TabData as TabDataMojo, ViewChangeRequest as ViewChangeRequestMojo, WebClientHandlerInterface, WebClientInitialState, WebClientInterface, WebPageData as WebPageDataMojo, ZeroStateSuggestionsOptions as ZeroStateSuggestionsOptionsMojo, ZeroStateSuggestionsV2 as ZeroStateSuggestionsV2Mojo} from '../glic.mojom-webui.js';
+import type {ActorTaskPauseReason as ActorTaskPauseReasonMojo, ActorTaskState as ActorTaskStateMojo, ActorTaskStopReason as ActorTaskStopReasonMojo, AdditionalContext as AdditionalContextMojo, AnnotatedPageData as AnnotatedPageDataMojo, CaptureRegionObserver, CaptureRegionResult as CaptureRegionResultMojo, ContextData as ContextDataMojo, ConversationInfo as ConversationInfoMojo, FocusedTabData as FocusedTabDataMojo, GetPinCandidatesOptions as GetPinCandidatesOptionsMojo, GetTabContextOptions as TabContextOptionsMojo, HostCapability as HostCapabilityMojo, OpenPanelInfo as OpenPanelInfoMojo, OpenSettingsOptions as OpenSettingsOptionsMojo, PanelOpeningData as PanelOpeningDataMojo, PanelState as PanelStateMojo, PdfDocumentData as PdfDocumentDataMojo, PinCandidate as PinCandidateMojo, PinCandidatesObserver, Screenshot as ScreenshotMojo, ScrollToSelector as ScrollToSelectorMojo, TabContext as TabContextMojo, TabData as TabDataMojo, ViewChangeRequest as ViewChangeRequestMojo, WebClientHandlerInterface, WebClientInitialState, WebClientInterface, WebPageData as WebPageDataMojo, ZeroStateSuggestionsOptions as ZeroStateSuggestionsOptionsMojo, ZeroStateSuggestionsV2 as ZeroStateSuggestionsV2Mojo} from '../glic.mojom-webui.js';
 import {CaptureRegionErrorReason as CaptureRegionErrorReasonMojo, CaptureRegionObserverReceiver, CurrentView as CurrentViewMojo, PinCandidatesObserverReceiver, ResponseStopCause as ResponseStopCauseMojo, SettingsPageField as SettingsPageFieldMojo, WebClientHandlerRemote, WebClientMode as WebClientModeMojo, WebClientReceiver} from '../glic.mojom-webui.js';
 import type {ActorTaskPauseReason, ActorTaskState, ActorTaskStopReason, CaptureRegionErrorReason, CaptureRegionResult, ConversationInfo, DraggableArea, GetPinCandidatesOptions, HostCapability, Journal, OnResponseStoppedDetails, OpenSettingsOptions, PageMetadata, PanelOpeningData, PanelState, Screenshot, ScrollToParams, TabContextOptions, TaskOptions, ViewChangedNotification, ViewChangeRequest, WebPageData, ZeroStateSuggestions, ZeroStateSuggestionsOptions, ZeroStateSuggestionsV2} from '../glic_api/glic_api.js';
 import {CaptureScreenshotErrorReason, ClientView, CreateTaskErrorReason, DEFAULT_INNER_TEXT_BYTES_LIMIT, DEFAULT_PDF_SIZE_LIMIT, PerformActionsErrorReason, ResponseStopCause, ScrollToErrorReason, WebClientMode} from '../glic_api/glic_api.js';
@@ -2124,6 +2124,18 @@ function panelOpeningDataToClient(panelOpeningData: PanelOpeningDataMojo):
     invocationSource: panelOpeningData.invocationSource as number,
     conversationId: optionalToClient(panelOpeningData.conversationId),
     promptSuggestion: optionalToClient(panelOpeningData.promptSuggestion),
+    recentlyActiveConversations: panelOpeningData.recentlyActiveConversations ?
+        panelOpeningData.recentlyActiveConversations.map(
+            conversationInfoToClient) :
+        undefined,
+  };
+}
+
+function conversationInfoToClient(conversationInfo: ConversationInfoMojo):
+    ConversationInfo {
+  return {
+    conversationId: conversationInfo.conversationId,
+    conversationTitle: conversationInfo.conversationTitle,
   };
 }
 
