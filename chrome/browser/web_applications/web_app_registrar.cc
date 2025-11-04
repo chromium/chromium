@@ -782,6 +782,12 @@ WebAppRegistrar::GetSingleTrustedAppIconForSecuritySurfaces(
     }
     size_to_info.emplace(icon.square_size_px.value(), icon);
   }
+
+  // Exit early if there are no sizes specified in the metadata.
+  if (size_to_info.empty()) {
+    return std::nullopt;
+  }
+
   auto icon_size_greater_or_equal = size_to_info.lower_bound(input_size);
   if (icon_size_greater_or_equal != size_to_info.end()) {
     return icon_size_greater_or_equal->second;
