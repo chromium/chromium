@@ -26332,6 +26332,26 @@
             ]
         }
     ],
+    "V8DisableScavengerUpdatesAllocationLimit": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "V8Flag_scavenger_updates_allocation_limit"
+                    ]
+                }
+            ]
+        }
+    ],
     "V8ExternalMemoryAccountedInGlobalLimit": [
         {
             "platforms": [
