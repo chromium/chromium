@@ -1124,6 +1124,7 @@ source_set("web_applications_browser_tests") {
     "commands/compute_app_size_command_browsertest.cc",
     "commands/externally_managed_install_command_browsertest.cc",
     "commands/fetch_manifest_and_install_command_browsertest.cc",
+    "commands/fetch_manifest_and_update_command_browsertest.cc",
     "commands/install_from_info_command_browsertest.cc",
     "commands/install_from_sync_command_browsertest.cc",
     "commands/launch_web_app_command_browsertest.cc",
