@@ -5152,6 +5152,39 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram name="Autofill.OneTimeTokens.PhishGuard.CheckPerformed"
+    enum="Boolean" expires_after="2026-10-31">
+  <owner>luchenpeng@google.com</owner>
+  <owner>koerber@google.com</owner>
+  <owner>battre@chromium.org</owner>
+  <summary>
+    Whether a PhishGuard check was performed before offering to autofill
+    one-time tokens. Recorded every time a one-time token field is detected.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.OneTimeTokens.PhishGuard.Latency" units="ms"
+    expires_after="2026-10-31">
+  <owner>luchenpeng@google.com</owner>
+  <owner>koerber@google.com</owner>
+  <owner>battre@chromium.org</owner>
+  <summary>
+    The latency of a PhishGuard check before offering to autofill one-time
+    tokens. Recorded every time a PhishGuard check is completed.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.OneTimeTokens.PhishGuard.Verdict"
+    enum="OneTimeTokensPhishGuardVerdict" expires_after="2026-10-31">
+  <owner>luchenpeng@google.com</owner>
+  <owner>koerber@google.com</owner>
+  <owner>battre@chromium.org</owner>
+  <summary>
+    The verdict of a PhishGuard check before offering to autofill one-time
+    tokens. Recorded every time a PhishGuard check is completed.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.OtpAuth.{CardType}.{OtpAuthType}.Attempt"
     enum="BooleanAttempted" expires_after="2026-06-01">
   <owner>siyua@chromium.org</owner>
