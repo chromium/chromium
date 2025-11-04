@@ -321,6 +321,19 @@ void ExtensionsMenuViewPlatformDelegateViews::OnActionUpdated() {
   UpdatePage(GetActiveWebContents());
 }
 
+void ExtensionsMenuViewPlatformDelegateViews::OnToolbarModelInit() {
+  CHECK(current_page_);
+
+  // Toolbar model should have been initialized if site permissions page is
+  // open, since this page can only be reached after main page was populated
+  // after toolbar model was initialized.
+  CHECK(!GetSitePermissionsPage(current_page_.view()));
+
+  auto* main_page = GetMainPage(current_page_.view());
+  CHECK(main_page);
+  PopulateMainPage(main_page);
+}
+
 void ExtensionsMenuViewPlatformDelegateViews::OnPinnedActionsChanged() {
   CHECK(current_page_);
 
@@ -683,18 +696,7 @@ void ExtensionsMenuViewPlatformDelegateViews::OnToolbarActionRemoved(
 void ExtensionsMenuViewPlatformDelegateViews::OnToolbarActionUpdated(
     const ToolbarActionsModel::ActionId& action_id) {}
 
-void ExtensionsMenuViewPlatformDelegateViews::OnToolbarModelInitialized() {
-  DCHECK(current_page_);
-
-  // Toolbar model should have been initialized if site permissions page is
-  // open, since this page can only be reached after main page was populated
-  // after toolbar model was initialized.
-  CHECK(!GetSitePermissionsPage(current_page_.view()));
-
-  auto* main_page = GetMainPage(current_page_.view());
-  DCHECK(main_page);
-  PopulateMainPage(main_page);
-}
+void ExtensionsMenuViewPlatformDelegateViews::OnToolbarModelInitialized() {}
 
 void ExtensionsMenuViewPlatformDelegateViews::OnToolbarPinnedActionsChanged() {}
 

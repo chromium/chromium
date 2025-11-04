@@ -50,6 +50,7 @@ class TestPlatformDelegate : public ExtensionsMenuViewPlatformDelegate {
   void OnActionAdded(const ToolbarActionsModel::ActionId& action_id) override {}
   void OnActionRemoved(
       const ToolbarActionsModel::ActionId& action_id) override {}
+  void OnToolbarModelInit() override {}
   void OnActionUpdated() override {}
   void OnPinnedActionsChanged() override {}
 };

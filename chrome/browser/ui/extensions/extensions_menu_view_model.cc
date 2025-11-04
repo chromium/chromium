@@ -494,8 +494,7 @@ void ExtensionsMenuViewModel::OnToolbarActionUpdated(
 }
 
 void ExtensionsMenuViewModel::OnToolbarModelInitialized() {
-  // TODO(crbug.com/449814184): implement and remove observer from
-  // ExtensionsMenuViewPlatformDelegateViews.
+  platform_delegate_->OnToolbarModelInit();
 }
 
 void ExtensionsMenuViewModel::OnToolbarPinnedActionsChanged() {
