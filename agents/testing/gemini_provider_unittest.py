@@ -479,8 +479,7 @@ class RunGeminiCliWithOutputStreamingUnittest(unittest.TestCase):
             universal_newlines=True,
             env=args.env,
         )
-        process.stdin.write.assert_called_once_with(
-            'system prompt\n\nuser prompt')
+        process.stdin.write.assert_called_once_with('user prompt')
         process.stdin.close.assert_called_once()
         process.wait.assert_called_once_with(timeout=10)
         self.assertEqual(combined_output, ['test output\n'])
@@ -643,10 +642,12 @@ class ExtractTokenUsageUnittest(fake_filesystem_unittest.TestCase):
 
 
 
-class CallApiUnittest(unittest.TestCase):
+class CallApiUnittest(fake_filesystem_unittest.TestCase):
     """Unit tests for the call_api function."""
 
     def setUp(self):
+        super().setUpPyfakefs()
+
         run_patcher = unittest.mock.patch('subprocess.run')
         self.mock_run = run_patcher.start()
         self.mock_run.return_value = unittest.mock.MagicMock(returncode=0)
@@ -704,6 +705,8 @@ class CallApiUnittest(unittest.TestCase):
         self.mock_configure_gemini_cli.assert_called_once_with(
             pathlib.Path('/fake/home'), unittest.mock.ANY)
         self.mock_run_gemini_cli_with_output_streaming.assert_called_once()
+        with pathlib.Path('GEMINI.md').open(encoding='utf-8') as prompt_file:
+            self.assertEqual(prompt_file.read(), 'system prompt')
 
     def test_get_gemini_cli_arguments_fails(self):
         """Tests when _get_gemini_cli_arguments returns an error."""

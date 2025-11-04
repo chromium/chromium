@@ -379,8 +379,7 @@ def _run_gemini_cli_with_output_streaming(
             universal_newlines=True,
             env=arguments.env,
         )
-        process.stdin.write(f'{arguments.system_prompt}\n\n'
-                            f'{arguments.user_prompt}')
+        process.stdin.write(arguments.user_prompt)
         process.stdin.close()
         logging.info('--- Streaming Output (Timeout: %ss) ---',
                      arguments.timeout_seconds)
@@ -502,6 +501,9 @@ def _run_gemini_cli_with_telemetry_output(
     _install_extensions(provider_config.get('extensions', DEFAULT_EXTENSIONS),
                         home_dir=gcli_arguments.home_dir)
     _apply_changes(provider_config.get('changes', []))
+    # CWD should be the repo root.
+    with pathlib.Path('GEMINI.md').open('w', encoding='utf-8') as prompt_file:
+        prompt_file.write(gcli_arguments.system_prompt)
 
     process = None
     combined_output: list[str] = []
