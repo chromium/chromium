@@ -28430,7 +28430,9 @@
                         "WebrtcAcceleratedScaling"
                     ],
                     "disable_features": [
-                        "BreakoutBoxConversionWithoutSinkSignal"
+                        "BreakoutBoxConversionWithoutSinkSignal",
+                        "MediaFoundationD3DVideoProcessing",
+                        "MediaFoundationSharedImageEncode"
                     ]
                 },
                 {
@@ -28440,7 +28442,8 @@
                         "MediaFoundationSharedImageEncode"
                     ],
                     "disable_features": [
-                        "BreakoutBoxConversionWithoutSinkSignal"
+                        "BreakoutBoxConversionWithoutSinkSignal",
+                        "WebrtcAcceleratedScaling"
                     ]
                 },
                 {
