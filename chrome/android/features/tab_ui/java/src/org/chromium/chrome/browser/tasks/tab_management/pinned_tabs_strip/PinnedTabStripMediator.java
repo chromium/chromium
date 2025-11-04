@@ -8,6 +8,7 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.tasks.tab_management.TabProperties.ALL_KEYS_TAB_GRID;
 import static org.chromium.chrome.browser.tasks.tab_management.TabProperties.FAVICON_FETCHER;
 import static org.chromium.chrome.browser.tasks.tab_management.TabProperties.GRID_CARD_SIZE;
+import static org.chromium.chrome.browser.tasks.tab_management.TabProperties.IS_INCOGNITO;
 import static org.chromium.chrome.browser.tasks.tab_management.TabProperties.IS_PINNED;
 import static org.chromium.chrome.browser.tasks.tab_management.TabProperties.IS_SELECTED;
 import static org.chromium.chrome.browser.tasks.tab_management.TabProperties.TAB_ACTION_BUTTON_DATA;
@@ -15,6 +16,7 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabProperties.TAB
 import static org.chromium.chrome.browser.tasks.tab_management.TabProperties.TAB_CONTEXT_CLICK_LISTENER;
 import static org.chromium.chrome.browser.tasks.tab_management.TabProperties.TAB_ID;
 import static org.chromium.chrome.browser.tasks.tab_management.TabProperties.TITLE;
+import static org.chromium.chrome.browser.tasks.tab_management.pinned_tabs_strip.PinnedTabStripProperties.BACKGROUND_COLOR;
 
 import static java.lang.Math.max;
 
@@ -52,6 +54,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabLi
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
@@ -280,6 +283,7 @@ public class PinnedTabStripMediator {
                                 TAB_ACTION_BUTTON_DATA,
                                 new TabActionButtonData(TabActionButtonType.PIN, null))
                         .with(TAB_CONTEXT_CLICK_LISTENER, mContextClickTabItemEventListener)
+                        .with(IS_INCOGNITO, model.get(IS_INCOGNITO))
                         .build();
         return new ListItem(UiType.TAB, newModel);
     }
@@ -374,6 +378,7 @@ public class PinnedTabStripMediator {
         if (newFilter != null) {
             newFilter.addObserver(mTabModelObserver);
             Profile profile = mTabGroupModelFilterSupplier.get().getTabModel().getProfile();
+            boolean isIncognito = newFilter.getTabModel().isIncognitoBranded();
             assumeNonNull(profile);
 
             TabGroupCreationDialogManager tabGroupCreationDialogManager =
@@ -397,6 +402,9 @@ public class PinnedTabStripMediator {
                             newFilter,
                             mTabGroupListBottomSheetCoordinator,
                             tabGroupCreationDialogManager);
+
+            mStripPropertyModel.set(
+                    BACKGROUND_COLOR, ChromeColors.getDefaultBgColor(mActivity, isIncognito));
         }
     }
 

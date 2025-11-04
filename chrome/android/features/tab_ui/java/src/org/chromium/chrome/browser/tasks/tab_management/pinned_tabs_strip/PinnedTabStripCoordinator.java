@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.tasks.tab_management.pinned_tabs_strip;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
+import static org.chromium.chrome.browser.tasks.tab_management.pinned_tabs_strip.PinnedTabStripProperties.IS_VISIBLE;
+import static org.chromium.chrome.browser.tasks.tab_management.pinned_tabs_strip.PinnedTabStripProperties.SCROLL_TO_POSITION;
 
 import android.app.Activity;
 import android.view.LayoutInflater;
@@ -68,8 +70,8 @@ public class PinnedTabStripCoordinator {
         TabListModel pinnedTabsModelList = new TabListModel();
         PropertyModel pinnedTabStripPropertyModel =
                 new PropertyModel.Builder(PinnedTabStripProperties.ALL_KEYS)
-                        .with(PinnedTabStripProperties.IS_VISIBLE, false)
-                        .with(PinnedTabStripProperties.SCROLL_TO_POSITION, -1)
+                        .with(IS_VISIBLE, false)
+                        .with(SCROLL_TO_POSITION, -1)
                         .build();
 
         // Setup the adapter.

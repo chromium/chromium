@@ -17,6 +17,7 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerP
 
 import android.app.Activity;
 import android.content.ComponentCallbacks;
+import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Color;
@@ -26,6 +27,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.VisibleForTesting;
@@ -229,7 +231,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
     private final Callback<Boolean> mOnContextMenuFocusableChanged =
             this::onContextMenuFocusableChanged;
     private final ObservableSupplierImpl<Boolean> mHubSearchBoxVisibilitySupplier;
-    private final @Nullable View mPaneHairline;
+    private final @Nullable ImageView mPaneHairline;
     private @Nullable TabGridContextMenuCoordinator mContextMenuCoordinator;
     private @Nullable TabGroupListBottomSheetCoordinator mTabGroupListBottomSheetCoordinator;
 
@@ -1112,6 +1114,12 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                         tabGroupCreationDialogManager,
                         mShareDelegateSupplier,
                         showTabListEditor);
+        if (mPaneHairline != null) {
+            mPaneHairline.setImageTintList(
+                    ColorStateList.valueOf(
+                            TabUiThemeProvider.getPaneHairlineColor(
+                                    mActivity, profile.isIncognitoBranded())));
+        }
     }
 
     private void addOnLayoutChangedAfterInitialScrollListener() {

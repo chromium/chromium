@@ -4,6 +4,10 @@
 
 package org.chromium.chrome.browser.tasks.tab_management.pinned_tabs_strip;
 
+import static org.chromium.chrome.browser.tasks.tab_management.pinned_tabs_strip.PinnedTabStripProperties.BACKGROUND_COLOR;
+import static org.chromium.chrome.browser.tasks.tab_management.pinned_tabs_strip.PinnedTabStripProperties.IS_VISIBLE;
+import static org.chromium.chrome.browser.tasks.tab_management.pinned_tabs_strip.PinnedTabStripProperties.SCROLL_TO_POSITION;
+
 import android.view.View;
 
 import androidx.recyclerview.widget.RecyclerView;
@@ -16,8 +20,8 @@ import org.chromium.ui.modelutil.PropertyModel;
 @NullMarked
 class PinnedTabStripViewBinder {
     public static void bind(PropertyModel model, RecyclerView view, PropertyKey propertyKey) {
-        if (PinnedTabStripProperties.IS_VISIBLE.equals(propertyKey)) {
-            boolean shouldBeVisible = model.get(PinnedTabStripProperties.IS_VISIBLE);
+        if (IS_VISIBLE.equals(propertyKey)) {
+            boolean shouldBeVisible = model.get(IS_VISIBLE);
             boolean isVisible = view.getVisibility() == View.VISIBLE;
 
             if (shouldBeVisible && !isVisible) {
@@ -39,11 +43,13 @@ class PinnedTabStripViewBinder {
                 // Already visible, just ensure it's in the right state.
                 view.animate().alpha(1.0f).translationY(0).withEndAction(null);
             }
-        } else if (PinnedTabStripProperties.SCROLL_TO_POSITION.equals(propertyKey)) {
-            int position = model.get(PinnedTabStripProperties.SCROLL_TO_POSITION);
+        } else if (SCROLL_TO_POSITION.equals(propertyKey)) {
+            int position = model.get(SCROLL_TO_POSITION);
             if (position != -1) {
                 view.scrollToPosition(position);
             }
+        } else if (BACKGROUND_COLOR.equals(propertyKey)) {
+            view.setBackgroundColor(model.get(BACKGROUND_COLOR));
         }
     }
 }
