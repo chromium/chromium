@@ -171,37 +171,6 @@ void LogStoredProfileTokenQualityMetrics(
   }
 }
 
-void LogObservationCountBeforeSubmissionMetric(const FormStructure& form,
-                                               const AddressDataManager& adm) {
-  std::set<const AutofillProfile*> profiles_used;
-  // Emit per-type metrics for all autofilled fields.
-  for (const std::unique_ptr<AutofillField>& field : form) {
-    if (!field->autofill_source_profile_guid()) {
-      // The field was not autofilled.
-      continue;
-    }
-    if (const AutofillProfile* profile =
-            adm.GetProfileByGUID(*field->autofill_source_profile_guid())) {
-      profiles_used.insert(profile);
-      FieldType field_type = field->Type().GetAddressType();
-      base::UmaHistogramExactLinear(
-          base::StrCat({kHistogramPrefix, "ObservationCountBeforeSubmission.",
-                        FieldTypeToStringView(field_type)}),
-          profile->token_quality()
-              .GetObservationTypesForFieldType(field_type)
-              .size(),
-          ProfileTokenQuality::kMaxObservationsPerToken + 1);
-    }
-  }
-  // Emit the total observation counts for all `profiles_used`.
-  for (const AutofillProfile* profile : profiles_used) {
-    base::UmaHistogramCounts1000(
-        base::StrCat(
-            {kHistogramPrefix, "ObservationCountBeforeSubmission.PerProfile"}),
-        GetTotalObservationCount(*profile, GetMetricRelevantTypes(*profile)));
-  }
-}
-
 void LogProfileTokenQualityScoreMetric(const FormStructure& form,
                                        const AddressDataManager& adm) {
   for (const std::unique_ptr<AutofillField>& field : form) {

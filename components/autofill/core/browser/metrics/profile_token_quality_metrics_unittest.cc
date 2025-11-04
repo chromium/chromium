@@ -91,37 +91,6 @@ TEST(ProfileTokenQualityMetricsTest, LogStoredTokenQuality) {
                                       33, 1);
 }
 
-TEST(ProfileTokenQualityMetricsTest,
-     LogObservationCountBeforeSubmissionMetric) {
-  AutofillProfile profile = test::GetFullProfile();
-  test_api(profile.token_quality())
-      .AddObservation(NAME_FIRST, ObservationType::kAccepted);
-  test_api(profile.token_quality())
-      .AddObservation(NAME_LAST, ObservationType::kAccepted);
-  test_api(profile.token_quality())
-      .AddObservation(NAME_LAST, ObservationType::kEditedFallback);
-  TestAddressDataManager test_adm;
-  test_adm.AddProfile(profile);
-
-  // Create a dummy FormStructure and simulate that the first two fields were
-  // filled.
-  FormData form_data;
-  form_data.set_fields({FormFieldData(), FormFieldData(), FormFieldData()});
-  FormStructure form(form_data);
-  test_api(form).SetFieldTypes({NAME_FIRST, NAME_LAST, ADDRESS_HOME_CITY});
-  form.field(0)->set_autofill_source_profile_guid(profile.guid());
-  form.field(1)->set_autofill_source_profile_guid(profile.guid());
-
-  base::HistogramTester histogram_tester;
-  LogObservationCountBeforeSubmissionMetric(form, test_adm);
-  const std::string kBaseMetricName =
-      "Autofill.ProfileTokenQuality.ObservationCountBeforeSubmission.";
-  histogram_tester.ExpectUniqueSample(kBaseMetricName + "NAME_FIRST", 1, 1);
-  histogram_tester.ExpectUniqueSample(kBaseMetricName + "NAME_LAST", 2, 1);
-  histogram_tester.ExpectTotalCount(kBaseMetricName + "ADDRESS_HOME_CITY", 0);
-  histogram_tester.ExpectUniqueSample(kBaseMetricName + "PerProfile", 3, 1);
-}
-
 // Tests that "Autofill.ProfileTokenQualityScore" is emitted with
 // correctly calculated bucket values and quality scores.
 TEST(ProfileTokenQualityMetricsTest, LogProfileTokenQualityScoreMetric) {

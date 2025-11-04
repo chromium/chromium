@@ -20,14 +20,6 @@ namespace autofill_metrics {
 void LogStoredProfileTokenQualityMetrics(
     const std::vector<const AutofillProfile*>& profiles);
 
-// Considers all autofilled fields of the `form`. For each of them, it emits
-// the total number of observations that the profile used for filling had for
-// the field's type.
-// Additionally, for every profile that was used to fill at least one field in
-// the form, the total number of stored observations are emitted.
-void LogObservationCountBeforeSubmissionMetric(const FormStructure& form,
-                                               const AddressDataManager& adm);
-
 // Records the {number of observations (bits 0-3, capped at 10), quality score
 // (bits 4-7), profile token (bits 8-15)} as a bitmask, if there were any
 // observations. The score is an integer ranging from 0 to 10, as is the number

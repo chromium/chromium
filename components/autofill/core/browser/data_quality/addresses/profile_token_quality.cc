@@ -181,9 +181,6 @@ void ProfileTokenQuality::SaveObservationsForFilledFormForAllSubmittedProfiles(
     const FormStructure& form_structure,
     const FormData& form_data,
     AddressDataManager& adm) {
-  autofill_metrics::LogObservationCountBeforeSubmissionMetric(form_structure,
-                                                              adm);
-
   std::set<std::string> guids_seen;
   for (const std::unique_ptr<AutofillField>& field : form_structure) {
     if (!field->autofill_source_profile_guid() ||

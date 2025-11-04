@@ -6155,31 +6155,6 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
-<histogram
-    name="Autofill.ProfileTokenQuality.ObservationCountBeforeSubmission.PerProfile"
-    units="Observations" expires_after="2025-12-12">
-  <owner>fleimgruber@google.com</owner>
-  <owner>chrome-autofill-alerts@google.com</owner>
-  <summary>
-    At form submission, for every profile that was used to fill at least one
-    field, records the total number of observation it has stored. Emitted once
-    for every profile used, before collecting new observations.
-  </summary>
-</histogram>
-
-<histogram
-    name="Autofill.ProfileTokenQuality.ObservationCountBeforeSubmission.{Type}"
-    units="Observations" expires_after="2026-04-12">
-  <owner>fleimgruber@google.com</owner>
-  <owner>chrome-autofill-alerts@google.com</owner>
-  <summary>
-    At form submission, for every autofilled field, records the number of
-    observation that the filled profile has for the field's type. Emitted once
-    per autofilled field at submission, before collecting new observations.
-  </summary>
-  <token key="Type" variants="AutofillProfile.StorableTypes"/>
-</histogram>
-
 <histogram name="Autofill.ProfileTokenQuality.PerProfile" units="Percents"
     expires_after="2026-03-01">
   <owner>fleimgruber@google.com</owner>
