@@ -222,15 +222,6 @@ class COMPONENT_EXPORT(OZONE_BASE) SurfaceFactoryOzone {
  protected:
   SurfaceFactoryOzone();
   virtual ~SurfaceFactoryOzone();
-
- private:
-  virtual scoped_refptr<gfx::NativePixmap> CreateNativePixmap(
-      gfx::AcceleratedWidget widget,
-      gpu::VulkanDeviceQueue* device_queue,
-      gfx::Size size,
-      gfx::BufferFormat format,
-      gfx::BufferUsage usage,
-      std::optional<gfx::Size> framebuffer_size = std::nullopt);
 };
 
 }  // namespace ui
