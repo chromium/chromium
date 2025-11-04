@@ -3104,9 +3104,6 @@ crbug.com/41482962 external/wpt/svg/styling/css-linked-parameters/img-with-url-f
 
 crbug.com/418804914 virtual/close-watcher/external/wpt/close-watcher/iframes/dialog-same-origin-nn.html [ Skip Timeout ]
 
-# Duplicate subtest names
-crbug.com/457527725 external/wpt/css/css-anchor-position/try-tactic-basic.html [ Failure Skip ]
-
 # ====== New tests from wpt-importer added here ======
 crbug.com/453781784 external/wpt/css/css-text/text-transform/text-transform-fullwidth-001.xht [ Failure ]
 crbug.com/453781784 external/wpt/css/css-text/text-transform/text-transform-fullwidth-002.xht [ Failure ]

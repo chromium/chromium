@@ -79,9 +79,10 @@ class CORE_EXPORT TryTacticTransform {
  public:
   TryTacticTransform() = default;
 
-  explicit TryTacticTransform(const TryTacticList& tactic_list) {
+  TryTacticTransform(const TryTacticList& tactic_list,
+                     WritingMode writing_mode) {
     for (TryTactic tactic : tactic_list) {
-      FlipTactic(tactic);
+      FlipTactic(tactic, writing_mode);
     }
   }
 
@@ -167,7 +168,7 @@ class CORE_EXPORT TryTacticTransform {
  private:
   explicit TryTacticTransform(unsigned bits) : bits_(bits) {}
 
-  void FlipTactic(TryTactic tactic) {
+  void FlipTactic(TryTactic tactic, WritingMode writing_mode) {
     switch (tactic) {
       case TryTactic::kNone:
         break;
@@ -179,6 +180,12 @@ class CORE_EXPORT TryTacticTransform {
         break;
       case TryTactic::kFlipStart:
         FlipStart();
+        break;
+      case TryTactic::kFlipX:
+        IsHorizontalWritingMode(writing_mode) ? FlipInline() : FlipBlock();
+        break;
+      case TryTactic::kFlipY:
+        IsHorizontalWritingMode(writing_mode) ? FlipBlock() : FlipInline();
         break;
     }
   }

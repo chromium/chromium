@@ -590,6 +590,8 @@ enum class TryTactic : uint8_t {
   kFlipBlock,
   kFlipInline,
   kFlipStart,
+  kFlipX,
+  kFlipY,
 };
 
 typedef V8AnimationTriggerBehavior::Enum EAnimationTriggerBehavior;

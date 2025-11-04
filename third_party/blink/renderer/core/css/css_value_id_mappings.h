@@ -522,6 +522,10 @@ inline TryTactic CssValueIDToPlatformEnum(CSSValueID v) {
       return TryTactic::kFlipInline;
     case CSSValueID::kFlipStart:
       return TryTactic::kFlipStart;
+    case CSSValueID::kFlipX:
+      return TryTactic::kFlipX;
+    case CSSValueID::kFlipY:
+      return TryTactic::kFlipY;
     default:
       NOTREACHED();
   }
@@ -538,6 +542,10 @@ inline CSSValueID PlatformEnumToCSSValueID(TryTactic v) {
       return CSSValueID::kFlipInline;
     case TryTactic::kFlipStart:
       return CSSValueID::kFlipStart;
+    case TryTactic::kFlipX:
+      return CSSValueID::kFlipX;
+    case TryTactic::kFlipY:
+      return CSSValueID::kFlipY;
   }
 }
 

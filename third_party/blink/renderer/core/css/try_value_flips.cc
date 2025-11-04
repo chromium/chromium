@@ -19,12 +19,13 @@
 namespace blink {
 
 const CSSPropertyValueSet* TryValueFlips::FlipSet(
-    const TryTacticList& tactic_list) const {
+    const TryTacticList& tactic_list,
+    WritingMode writing_mode) const {
   if (tactic_list == kNoTryTactics) {
     return nullptr;
   }
 
-  TryTacticTransform transform(tactic_list);
+  TryTacticTransform transform(tactic_list, writing_mode);
   // We don't store the kNoTryTactics/nullptr case explicitly, i.e. the entry
   // at cached_flip_sets_[0] corresponds to CacheIndex()==1.
   unsigned index = transform.CacheIndex() - 1;

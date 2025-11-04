@@ -8898,22 +8898,24 @@ CSSValue* ConsumeFontSizeAdjust(CSSParserTokenStream& stream,
 
 namespace {
 
-// Consume 'flip-block || flip-inline || flip-start' into `flips`,
-// in the order that they appear.
+// Consume 'flip-block || flip-inline || flip-start || flip-x || flip-y'
+// into `flips`, in the order that they appear.
 //
 // Returns true if anything was set in `flip`.
 //
 // https://drafts.csswg.org/css-anchor-position-1/#typedef-position-try-fallbacks-try-tactic
 bool ConsumeFlipsInto(CSSParserTokenStream& stream,
-                      std::array<CSSValue*, 3>& flips) {
+                      std::array<CSSValue*, 5>& flips) {
   bool seen_flip_block = false;
   bool seen_flip_inline = false;
   bool seen_flip_start = false;
+  bool seen_flip_x = false;
+  bool seen_flip_y = false;
 
   wtf_size_t i = 0;
 
   while (!stream.AtEnd()) {
-    CHECK_LE(i, 3u);
+    CHECK_LE(i, 5u);
     if (!seen_flip_block &&
         (flips[i] = ConsumeIdent<CSSValueID::kFlipBlock>(stream))) {
       seen_flip_block = true;
@@ -8932,6 +8934,16 @@ bool ConsumeFlipsInto(CSSParserTokenStream& stream,
       ++i;
       continue;
     }
+    if (!seen_flip_x && (flips[i] = ConsumeIdent<CSSValueID::kFlipX>(stream))) {
+      seen_flip_x = true;
+      ++i;
+      continue;
+    }
+    if (!seen_flip_y && (flips[i] = ConsumeIdent<CSSValueID::kFlipY>(stream))) {
+      seen_flip_y = true;
+      ++i;
+      continue;
+    }
     break;
   }
   return i != 0;
@@ -8941,7 +8953,7 @@ bool ConsumeFlipsInto(CSSParserTokenStream& stream,
 CSSValue* ConsumeDashedIdentOrTactic(CSSParserTokenStream& stream,
                                      const CSSParserContext& context) {
   CSSValue* dashed_ident = nullptr;
-  std::array<CSSValue*, 3> flips = {nullptr};
+  std::array<CSSValue*, 5> flips = {nullptr};
   while (!stream.AtEnd()) {
     if (!dashed_ident && (dashed_ident = ConsumeDashedIdent(stream, context))) {
       continue;
@@ -8953,7 +8965,7 @@ CSSValue* ConsumeDashedIdentOrTactic(CSSParserTokenStream& stream,
         continue;
       }
     }
-    // flip-block || flip-inline || flip-start
+    // flip-block || flip-inline || flip-start || flip-x || flip-y
     if (!flips[0] && ConsumeFlipsInto(stream, flips)) {
       CHECK(flips[0]);
       continue;

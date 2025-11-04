@@ -1981,6 +1981,8 @@
     "flip-block",
     "flip-inline",
     "flip-start",
+    "flip-x",
+    "flip-y",
 
     // position-visibility
     // always

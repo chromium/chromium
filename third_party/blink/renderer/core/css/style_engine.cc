@@ -3857,8 +3857,8 @@ bool StyleEngine::UpdateStyleAndLayoutTreeForOutOfFlow(
     position_try_fallback = *fallback;
   }
 
-  const CSSPropertyValueSet* try_tactics_set =
-      try_value_flips_.FlipSet(try_tactics);
+  const CSSPropertyValueSet* try_tactics_set = try_value_flips_.FlipSet(
+      try_tactics, element.ComputedStyleRef().GetWritingMode());
 
   base::AutoReset<bool> pt_recalc(&in_position_try_style_recalc_, true);
 
