@@ -31,4 +31,5 @@ public @interface AutocompleteRequestType {
 
     /** AI-powered fulfillment. */
     int AI_MODE = 2;
+    /* Note: account for new types in {@link NavigationAttachmentsCoordinator#doesRequestTypeOverrideUrlFulfillment}. */
 }
