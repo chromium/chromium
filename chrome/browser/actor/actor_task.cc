@@ -11,6 +11,7 @@
 #include "base/no_destructor.h"
 #include "base/state_transitions.h"
 #include "base/task/sequenced_task_runner.h"
+#include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_metrics.h"
 #include "chrome/browser/actor/execution_engine.h"
 #include "chrome/browser/actor/ui/event_dispatcher.h"
@@ -18,6 +19,7 @@
 #include "chrome/common/actor.mojom-data-view.h"
 #include "chrome/common/actor.mojom-forward.h"
 #include "chrome/common/actor/action_result.h"
+#include "chrome/common/actor/journal_details_builder.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/render_frame_host.h"
@@ -98,6 +100,7 @@ ActorTask::ActorTask(Profile* profile,
     : profile_(profile),
       execution_engine_(std::move(execution_engine)),
       ui_event_dispatcher_(std::move(ui_event_dispatcher)),
+      journal_(ActorKeyedService::Get(profile)->GetJournal().GetSafeRef()),
       title_(options && options->title.has_value() ? options->title.value()
                                                    : ""),
       delegate_(std::move(delegate)),
@@ -123,7 +126,11 @@ ActorTask::State ActorTask::GetState() const {
 
 void ActorTask::SetState(State new_state) {
   using enum State;
-  VLOG(1) << "ActorTask state change: " << state_ << " -> " << new_state;
+  journal_->Log(GURL(), id(), "ActorTask::SetState",
+                JournalDetailsBuilder()
+                    .Add("current_state", ToString(state_))
+                    .Add("new_state", ToString(new_state))
+                    .Build());
 #if DCHECK_IS_ON()
   static const base::NoDestructor<base::StateTransitions<State>>
       allowed_transitions(base::StateTransitions<State>(
@@ -240,6 +247,11 @@ void ActorTask::OnFinishedAct(
     std::optional<size_t> index_of_failed_action,
     std::vector<ActionResultWithLatencyInfo> action_results) {
   if (state_ != State::kActing) {
+    journal_->Log(GURL(), id(), "ActorTask::OnFinishedAct",
+                  JournalDetailsBuilder()
+                      .Add("result", ToDebugString(*result))
+                      .AddError("Not in kActing state")
+                      .Build());
     std::move(callback).Run(MakeErrorResult(), std::nullopt, {});
     return;
   }
@@ -324,6 +336,9 @@ base::Time ActorTask::GetEndTime() const {
 
 void ActorTask::AddTab(tabs::TabHandle tab_handle, AddTabCallback callback) {
   if (!IsUnderActorControl()) {
+    journal_->Log(
+        GURL(), id(), "ActorTask::AddTab",
+        JournalDetailsBuilder().AddError("Not Under Actor Control").Build());
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(
@@ -338,6 +353,10 @@ void ActorTask::AddTab(tabs::TabHandle tab_handle, AddTabCallback callback) {
         FROM_HERE, base::BindOnce(std::move(callback), MakeOkResult()));
     return;
   }
+
+  journal_->Log(
+      GURL(), id(), "ActorTask::AddTab",
+      JournalDetailsBuilder().Add("tab_id", tab_handle.raw_value()).Build());
 
   controlled_tabs_.emplace(tab_handle,
                            std::make_unique<ActorControlledTabState>(this));
@@ -381,6 +400,10 @@ void ActorTask::RemoveTab(tabs::TabHandle tab_handle) {
   auto num_removed = controlled_tabs_.erase(tab_handle);
 
   if (num_removed > 0) {
+    journal_->Log(
+        GURL(), id(), "ActorTask::RemoveTab",
+        JournalDetailsBuilder().Add("tab_id", tab_handle.raw_value()).Build());
+
     // Notify the UI of the tab removal.
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&ui::UiEventDispatcher::OnActorTaskSyncChange,
@@ -423,6 +446,11 @@ void ActorTask::OnTabWillDetach(tabs::TabInterface* tab,
 
   // TODO(mcnee): This will also stop a task that's paused. Should we leave
   // paused tasks as is?
+
+  journal_->Log(GURL(), id(), "Acting Tab Deleted",
+                JournalDetailsBuilder()
+                    .Add("tab_id", tab->GetHandle().raw_value())
+                    .Build());
 
   actor::ActorKeyedService::Get(profile_)->StopTask(id(), /*success=*/false);
 }
