@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef REMOTING_PROTOCOL_WEBRTC_MOUSE_CURSOR_MONITOR_ADAPTOR_H_
-#define REMOTING_PROTOCOL_WEBRTC_MOUSE_CURSOR_MONITOR_ADAPTOR_H_
+#ifndef REMOTING_HOST_WEBRTC_MOUSE_CURSOR_MONITOR_ADAPTOR_H_
+#define REMOTING_HOST_WEBRTC_MOUSE_CURSOR_MONITOR_ADAPTOR_H_
 
 #include <memory>
 
@@ -13,7 +13,7 @@
 #include "remoting/protocol/mouse_cursor_monitor.h"
 #include "third_party/webrtc/modules/desktop_capture/mouse_cursor_monitor.h"
 
-namespace remoting::protocol {
+namespace remoting {
 
 // An adaptor that adapts webrtc::MouseCursorMonitor to
 // remoting::MouseCursorMonitor.
@@ -22,7 +22,7 @@ namespace remoting::protocol {
 // OnMouseCursorFractionalPosition() for client side cursor rendering. It will
 // need to take a map of screen_id => DesktopCapturer to convert the global
 // cursor coordinate into the fractional coordinate.
-class WebrtcMouseCursorMonitorAdaptor : public MouseCursorMonitor,
+class WebrtcMouseCursorMonitorAdaptor : public protocol::MouseCursorMonitor,
                                         webrtc::MouseCursorMonitor::Callback {
  public:
   static base::TimeDelta GetDefaultCaptureInterval();
@@ -36,7 +36,7 @@ class WebrtcMouseCursorMonitorAdaptor : public MouseCursorMonitor,
   WebrtcMouseCursorMonitorAdaptor& operator=(
       const WebrtcMouseCursorMonitorAdaptor&) = delete;
 
-  void Init(MouseCursorMonitor::Callback* callback) override;
+  void Init(protocol::MouseCursorMonitor::Callback* callback) override;
   void SetPreferredCaptureInterval(base::TimeDelta interval) override;
 
  private:
@@ -47,10 +47,10 @@ class WebrtcMouseCursorMonitorAdaptor : public MouseCursorMonitor,
   void StartCaptureTimer(base::TimeDelta capture_interval);
 
   std::unique_ptr<webrtc::MouseCursorMonitor> monitor_;
-  raw_ptr<MouseCursorMonitor::Callback> callback_;
+  raw_ptr<protocol::MouseCursorMonitor::Callback> callback_;
   base::RepeatingTimer capture_timer_;
 };
 
-}  // namespace remoting::protocol
+}  // namespace remoting
 
-#endif  // REMOTING_PROTOCOL_WEBRTC_MOUSE_CURSOR_MONITOR_ADAPTOR_H_
+#endif  // REMOTING_HOST_WEBRTC_MOUSE_CURSOR_MONITOR_ADAPTOR_H_

@@ -484,6 +484,8 @@ static_library("common") {
     "test_echo_extension_session.h",
     "video_memory_utils.cc",
     "video_memory_utils.h",
+    "webrtc_mouse_cursor_monitor_adaptor.cc",
+    "webrtc_mouse_cursor_monitor_adaptor.h",
     "xsession_chooser_ui.inc",
     "zombie_host_detector.cc",
     "zombie_host_detector.h",
@@ -844,6 +846,7 @@ source_set("unit_tests") {
     "setup/host_starter_oauth_helper_unittest.cc",
     "setup/me2me_native_messaging_host_unittest.cc",
     "setup/pin_validator_unittest.cc",
+    "webrtc_mouse_cursor_monitor_adaptor_unittest.cc",
     "zombie_host_detector_unittest.cc",
   ]
 

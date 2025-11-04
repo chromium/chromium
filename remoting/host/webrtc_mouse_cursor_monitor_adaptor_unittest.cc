@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "remoting/protocol/webrtc_mouse_cursor_monitor_adaptor.h"
+#include "remoting/host/webrtc_mouse_cursor_monitor_adaptor.h"
 
 #include <memory>
 #include <utility>
@@ -22,11 +22,12 @@
 
 using ::testing::_;
 
-namespace remoting::protocol {
+namespace remoting {
 
 namespace {
 
-class MockMouseCursorMonitorCallback : public MouseCursorMonitor::Callback {
+class MockMouseCursorMonitorCallback
+    : public protocol::MouseCursorMonitor::Callback {
  public:
   MOCK_METHOD(void,
               OnMouseCursor,
@@ -38,7 +39,7 @@ class MockMouseCursorMonitorCallback : public MouseCursorMonitor::Callback {
               (override));
   MOCK_METHOD(void,
               OnMouseCursorFractionalPosition,
-              (const FractionalCoordinate& position),
+              (const protocol::FractionalCoordinate& position),
               (override));
 };
 
@@ -183,4 +184,4 @@ TEST_F(WebrtcMouseCursorMonitorAdaptorTest, SetPreferredCaptureInterval) {
   ASSERT_EQ(fake_monitor_ptr->get_capture_call_count(), 2);
 }
 
-}  // namespace remoting::protocol
+}  // namespace remoting

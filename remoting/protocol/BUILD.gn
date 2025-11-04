@@ -224,8 +224,6 @@ static_library("protocol") {
     "webrtc_data_stream_adapter.h",
     "webrtc_event_log_data.cc",
     "webrtc_event_log_data.h",
-    "webrtc_mouse_cursor_monitor_adaptor.cc",
-    "webrtc_mouse_cursor_monitor_adaptor.h",
     "webrtc_transport.cc",
     "webrtc_transport.h",
     "webrtc_video_renderer_adapter.cc",
@@ -433,7 +431,6 @@ source_set("unit_tests") {
     "ssl_hmac_channel_authenticator_unittest.cc",
     "validating_authenticator_unittest.cc",
     "webrtc_event_log_data_unittest.cc",
-    "webrtc_mouse_cursor_monitor_adaptor_unittest.cc",
   ]
 
   if (enable_remoting_host) {

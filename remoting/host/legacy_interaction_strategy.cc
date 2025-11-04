@@ -35,8 +35,8 @@
 #include "remoting/host/input_monitor/local_input_monitor.h"
 #include "remoting/host/keyboard_layout_monitor.h"
 #include "remoting/host/mouse_cursor_monitor_proxy.h"
+#include "remoting/host/webrtc_mouse_cursor_monitor_adaptor.h"
 #include "remoting/protocol/mouse_cursor_monitor.h"
-#include "remoting/protocol/webrtc_mouse_cursor_monitor_adaptor.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_options.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
@@ -162,7 +162,7 @@ LegacyInteractionStrategy::CreateMouseCursorMonitor() {
 #endif  // BUILDFLAG(IS_CHROMEOS)
       },
       *options_.desktop_capture_options());
-  return std::make_unique<protocol::WebrtcMouseCursorMonitorAdaptor>(
+  return std::make_unique<WebrtcMouseCursorMonitorAdaptor>(
       std::make_unique<MouseCursorMonitorProxy>(video_capture_task_runner_,
                                                 std::move(creator)));
 }

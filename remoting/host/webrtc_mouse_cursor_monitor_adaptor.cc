@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "remoting/protocol/webrtc_mouse_cursor_monitor_adaptor.h"
+#include "remoting/host/webrtc_mouse_cursor_monitor_adaptor.h"
 
 #include "base/memory/ptr_util.h"
 #include "third_party/webrtc/modules/desktop_capture/mouse_cursor_monitor.h"
 
-namespace remoting::protocol {
+namespace remoting {
 
 namespace {
 // Poll mouse shape at least 10 times a second.
@@ -29,7 +29,7 @@ WebrtcMouseCursorMonitorAdaptor::WebrtcMouseCursorMonitorAdaptor(
 WebrtcMouseCursorMonitorAdaptor::~WebrtcMouseCursorMonitorAdaptor() = default;
 
 void WebrtcMouseCursorMonitorAdaptor::Init(
-    MouseCursorMonitor::Callback* callback) {
+    protocol::MouseCursorMonitor::Callback* callback) {
   callback_ = callback;
   monitor_->Init(this, webrtc::MouseCursorMonitor::SHAPE_AND_POSITION);
   StartCaptureTimer(GetDefaultCaptureInterval());
@@ -58,4 +58,4 @@ void WebrtcMouseCursorMonitorAdaptor::StartCaptureTimer(
                                            base::Unretained(monitor_.get())));
 }
 
-}  // namespace remoting::protocol
+}  // namespace remoting
