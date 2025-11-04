@@ -16,14 +16,14 @@
 namespace blink {
 
 MailboxTextureBacking::MailboxTextureBacking(
-    gpu::ClientSharedImage* shared_image,
+    scoped_refptr<gpu::ClientSharedImage> shared_image,
     scoped_refptr<MailboxRef> mailbox_ref,
     const gfx::Size& size,
     const viz::SharedImageFormat& format,
     SkAlphaType alpha_type,
     const gfx::ColorSpace& color_space,
     scoped_refptr<viz::RasterContextProvider> context_provider)
-    : mailbox_(shared_image->mailbox()),
+    : shared_image_(std::move(shared_image)),
       mailbox_ref_(std::move(mailbox_ref)),
       sk_image_info_(SkImageInfo::Make(gfx::SizeToSkISize(size),
                                        ToClosestSkColorType(format),
@@ -32,7 +32,7 @@ MailboxTextureBacking::MailboxTextureBacking(
       context_provider_(std::move(context_provider)) {
   CHECK(context_provider_);
   gpu::raster::RasterInterface* ri = context_provider_->RasterInterface();
-  scoped_access_ = shared_image->BeginRasterAccess(
+  scoped_access_ = shared_image_->BeginRasterAccess(
       ri, mailbox_ref_->sync_token(), /*readonly=*/true);
 }
 
@@ -51,12 +51,12 @@ const SkImageInfo& MailboxTextureBacking::GetSkImageInfo() {
 }
 
 gpu::Mailbox MailboxTextureBacking::GetMailbox() const {
-  return mailbox_;
+  return shared_image_->mailbox();
 }
 
 sk_sp<SkImage> MailboxTextureBacking::GetSkImageViaReadback() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  if (!mailbox_.IsZero()) {
+  if (!GetMailbox().IsZero()) {
     // TODO(jochin): Consider doing some caching and using discardable memory.
     sk_sp<SkData> image_pixels =
         TryAllocateSkData(sk_image_info_.computeMinByteSize());
@@ -66,7 +66,7 @@ sk_sp<SkImage> MailboxTextureBacking::GetSkImageViaReadback() {
         static_cast<uint8_t*>(image_pixels->writable_data());
     gpu::raster::RasterInterface* ri = context_provider_->RasterInterface();
     if (!ri->ReadbackImagePixels(
-            mailbox_, sk_image_info_,
+            GetMailbox(), sk_image_info_,
             static_cast<GLuint>(sk_image_info_.minRowBytes()), 0, 0,
             /*plane_index=*/0, writable_pixels)) {
       return nullptr;
@@ -84,9 +84,9 @@ bool MailboxTextureBacking::readPixels(const SkImageInfo& dst_info,
                                        int src_x,
                                        int src_y) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  if (!mailbox_.IsZero()) {
+  if (!GetMailbox().IsZero()) {
     gpu::raster::RasterInterface* ri = context_provider_->RasterInterface();
-    return ri->ReadbackImagePixels(mailbox_, dst_info,
+    return ri->ReadbackImagePixels(GetMailbox(), dst_info,
                                    static_cast<GLuint>(dst_info.minRowBytes()),
                                    src_x, src_y, /*plane_index=*/0, dst_pixels);
   }

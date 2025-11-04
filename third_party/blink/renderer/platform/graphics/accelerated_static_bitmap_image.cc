@@ -299,7 +299,7 @@ void AcceleratedStaticBitmapImage::CreateImageFromMailboxIfNeeded() {
 
   skia_context_provider_wrapper_ = context_provider_wrapper;
   texture_backing_ = sk_make_sp<MailboxTextureBacking>(
-      shared_image_.get(), mailbox_ref_, GetSize(), GetSharedImageFormat(),
+      shared_image_, mailbox_ref_, GetSize(), GetSharedImageFormat(),
       GetAlphaType(), GetColorSpace(),
       base::WrapRefCounted<viz::RasterContextProvider>(
           context_provider_wrapper->ContextProvider().RasterContextProvider()));

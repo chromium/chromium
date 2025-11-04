@@ -28,7 +28,7 @@ class MailboxRef;
 class MailboxTextureBacking : public TextureBacking {
  public:
   explicit MailboxTextureBacking(
-      gpu::ClientSharedImage* shared_image,
+      scoped_refptr<gpu::ClientSharedImage> shared_image,
       scoped_refptr<MailboxRef> mailbox_ref,
       const gfx::Size& size,
       const viz::SharedImageFormat& format,
@@ -46,7 +46,7 @@ class MailboxTextureBacking : public TextureBacking {
                   int src_y) override;
 
  private:
-  const gpu::Mailbox mailbox_;
+  scoped_refptr<gpu::ClientSharedImage> shared_image_;
   scoped_refptr<MailboxRef> mailbox_ref_;
   std::unique_ptr<gpu::RasterScopedAccess> scoped_access_;
   const SkImageInfo sk_image_info_;
