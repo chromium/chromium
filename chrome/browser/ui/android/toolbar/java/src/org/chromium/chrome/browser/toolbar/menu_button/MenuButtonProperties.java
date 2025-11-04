@@ -50,6 +50,8 @@ class MenuButtonProperties {
     public static final WritableBooleanPropertyKey IS_CLICKABLE = new WritableBooleanPropertyKey();
     public static final WritableBooleanPropertyKey IS_HIGHLIGHTING =
             new WritableBooleanPropertyKey();
+    public static final WritableBooleanPropertyKey HAS_SPACE_TO_SHOW =
+            new WritableBooleanPropertyKey();
     public static final WritableBooleanPropertyKey IS_VISIBLE = new WritableBooleanPropertyKey();
     public static final WritableObjectPropertyKey<Supplier<MenuButtonState>> STATE_SUPPLIER =
             new WritableObjectPropertyKey<>();
@@ -68,6 +70,7 @@ class MenuButtonProperties {
                 CONTENT_DESCRIPTION,
                 IS_CLICKABLE,
                 IS_HIGHLIGHTING,
+                HAS_SPACE_TO_SHOW,
                 IS_VISIBLE,
                 STATE_SUPPLIER,
                 SHOW_UPDATE_BADGE,

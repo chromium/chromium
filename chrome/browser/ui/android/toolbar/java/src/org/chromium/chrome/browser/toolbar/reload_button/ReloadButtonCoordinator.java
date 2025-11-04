@@ -78,6 +78,7 @@ public class ReloadButtonCoordinator extends ToolbarChildButton {
                         .with(
                                 ReloadButtonProperties.IS_VISIBLE,
                                 mView.getVisibility() == View.VISIBLE)
+                        .with(ReloadButtonProperties.HAS_SPACE_TO_SHOW, true)
                         .with(
                                 ReloadButtonProperties.CONTENT_DESCRIPTION,
                                 mView.getContentDescription())
@@ -108,9 +109,18 @@ public class ReloadButtonCoordinator extends ToolbarChildButton {
         mMediator.onTintChanged(tint, activityFocusTint, brandedColorScheme);
     }
 
-    @Override
+    /**
+     * Sets reload button visibility.
+     *
+     * @param isVisible indicated whether view should be visible or gone.
+     */
     public void setVisibility(boolean isVisible) {
         mMediator.setVisibility(isVisible);
+    }
+
+    @Override
+    public void setHasSpaceToShow(boolean hasSpaceToShow) {
+        mMediator.setHasSpaceToShow(hasSpaceToShow);
     }
 
     /**

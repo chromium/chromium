@@ -34,6 +34,8 @@ class ReloadButtonProperties {
     public static final WritableObjectPropertyKey<Callback<MotionEvent>> TOUCH_LISTENER =
             new WritableObjectPropertyKey<>();
     public static final WritableBooleanPropertyKey IS_ENABLED = new WritableBooleanPropertyKey();
+    public static final WritableBooleanPropertyKey HAS_SPACE_TO_SHOW =
+            new WritableBooleanPropertyKey();
     public static final WritableBooleanPropertyKey IS_VISIBLE = new WritableBooleanPropertyKey();
     public static final WritableObjectPropertyKey<CharSequence> CONTENT_DESCRIPTION =
             new WritableObjectPropertyKey<>();
@@ -53,6 +55,7 @@ class ReloadButtonProperties {
                 LONG_CLICK_LISTENER,
                 TOUCH_LISTENER,
                 IS_ENABLED,
+                HAS_SPACE_TO_SHOW,
                 IS_VISIBLE,
                 CONTENT_DESCRIPTION,
                 TINT_LIST,

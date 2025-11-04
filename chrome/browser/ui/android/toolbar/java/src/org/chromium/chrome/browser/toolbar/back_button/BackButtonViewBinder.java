@@ -62,13 +62,20 @@ class BackButtonViewBinder {
             button.setEnabled(model.get(BackButtonProperties.IS_ENABLED));
         } else if (key == BackButtonProperties.IS_FOCUSABLE) {
             button.setFocusable(model.get(BackButtonProperties.IS_FOCUSABLE));
+        } else if (key == BackButtonProperties.HAS_SPACE_TO_SHOW) {
+            updateVisibility(model, button);
         } else if (key == BackButtonProperties.IS_VISIBLE) {
-            button.setVisibility(
-                    model.get(BackButtonProperties.IS_VISIBLE) ? View.VISIBLE : View.GONE);
+            updateVisibility(model, button);
         } else if (key == BackButtonProperties.ALPHA) {
             button.setAlpha(model.get(BackButtonProperties.ALPHA));
         } else {
             assert false : String.format("Unsupported property key %s", key.toString());
         }
+    }
+
+    private static void updateVisibility(PropertyModel model, ChromeImageButton button) {
+        boolean hasSpaceToShow = model.get(BackButtonProperties.HAS_SPACE_TO_SHOW);
+        boolean shouldBeVisible = model.get(BackButtonProperties.IS_VISIBLE);
+        button.setVisibility(hasSpaceToShow && shouldBeVisible ? View.VISIBLE : View.GONE);
     }
 }
