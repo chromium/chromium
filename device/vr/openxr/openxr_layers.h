@@ -13,6 +13,7 @@
 
 namespace device {
 class OpenXrCompositionLayer;
+class OpenXrApiWrapper;
 
 // A wrapper around all of the layers to be submitted to a certain frame. Each
 // frame creates its own OpenXrLayers object and populates it with all the
@@ -29,6 +30,7 @@ class OpenXrLayers {
       const void* xr_next_struct);
 
   void AddCompositionLayer(
+      OpenXrApiWrapper* openxr,
       const OpenXrCompositionLayer& layer,
       std::vector<XrCompositionLayerProjectionView> projection_views,
       const void* xr_next_struct);

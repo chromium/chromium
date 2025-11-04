@@ -125,8 +125,7 @@ void OpenXrSpatialAnchorManager::DetachAnchor(AnchorId anchor_id) {
   cached_anchor_poses_.erase(anchor_id);
 }
 
-std::optional<OpenXrAnchorManager::XrLocation>
-OpenXrSpatialAnchorManager::GetXrLocationFromAnchor(
+std::optional<XrLocation> OpenXrSpatialAnchorManager::GetXrLocationFromAnchor(
     AnchorId anchor_id,
     const gfx::Transform& anchor_id_from_new_anchor) const {
   auto it = cached_anchor_poses_.find(anchor_id);
@@ -139,29 +138,6 @@ OpenXrSpatialAnchorManager::GetXrLocationFromAnchor(
   gfx::Transform mojo_from_new_anchor =
       mojo_from_anchor_id * anchor_id_from_new_anchor;
 
-  return XrLocation{GfxTransformToXrPose(mojo_from_new_anchor), mojo_space_};
-}
-
-std::optional<OpenXrAnchorManager::XrLocation>
-OpenXrSpatialAnchorManager::GetXrLocationFromPlane(
-    PlaneId plane_id,
-    const gfx::Transform& plane_id_from_new_anchor) const {
-  // It should actually be impossible to *not* have a Plane Manager, since the
-  // PlaneId had to come from somewhere, but it could have been spoofed.
-  if (!plane_manager_) {
-    return std::nullopt;
-  }
-
-  // We don't have an xr_space_ for the plane, so we'll just locate the pose
-  // in mojo_space_ and send that up as the base of the XrLocation.
-  std::optional<device::Pose> mojo_from_plane =
-      plane_manager_->TryGetMojoFromPlane(plane_id);
-  if (!mojo_from_plane) {
-    return std::nullopt;
-  }
-
-  gfx::Transform mojo_from_new_anchor =
-      mojo_from_plane->ToTransform() * plane_id_from_new_anchor;
   return XrLocation{GfxTransformToXrPose(mojo_from_new_anchor), mojo_space_};
 }
 

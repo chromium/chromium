@@ -10,6 +10,7 @@
 
 #include "base/types/expected.h"
 #include "device/vr/openxr/openxr_anchor_manager.h"
+#include "device/vr/openxr/openxr_api_wrapper.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
 
@@ -29,9 +30,6 @@ class OpenXrSpaceBasedAnchorManager : public OpenXrAnchorManager {
   std::optional<XrLocation> GetXrLocationFromAnchor(
       AnchorId anchor_id,
       const gfx::Transform& anchor_id_from_new_anchor) const override;
-  std::optional<XrLocation> GetXrLocationFromPlane(
-      PlaneId plane_id,
-      const gfx::Transform& plane_id_from_new_anchor) const override;
   mojom::XRAnchorsDataPtr GetCurrentAnchorsData(
       XrTime predicted_display_time) override;
 

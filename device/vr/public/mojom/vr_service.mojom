@@ -731,18 +731,18 @@ struct XRProjectionLayerData {
   // There is nothing here yet.
 };
 struct XRQuadLayerData {
-  gfx.mojom.Transform transform;
+  gfx.mojom.Transform native_origin_from_layer;
   float width;
   float height;
 };
 struct XRCylinderLayerData {
-  gfx.mojom.Transform transform;
+  gfx.mojom.Transform native_origin_from_layer;
   float radius;
   float central_angle;
   float aspect_ratio;
 };
 struct XREquirectLayerData {
-  gfx.mojom.Transform transform;
+  gfx.mojom.Transform native_origin_from_layer;
   float radius;
   float central_horizontal_angle;
   float upper_vertical_angle;
@@ -772,7 +772,7 @@ struct XRLayerReadOnlyData {
 struct XRLayerMutableData {
   bool blend_texture_source_alpha;
   float opacity;
-  XRReferenceSpaceType reference_space_type;
+  XRNativeOriginInformation native_origin_information;
   XRLayerSpecificData layer_data;
 };
 

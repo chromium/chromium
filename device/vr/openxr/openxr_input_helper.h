@@ -12,11 +12,13 @@
 
 #include "device/vr/openxr/openxr_controller.h"
 #include "device/vr/openxr/openxr_interaction_profiles.h"
+#include "device/vr/public/mojom/vr_service.mojom-forward.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
 
 namespace device {
 
 class OpenXrExtensionHelper;
+struct XrLocation;
 
 class OpenXRInputHelper {
  public:
@@ -49,6 +51,15 @@ class OpenXRInputHelper {
 
   // Called when the device is going to hide input sources from the page.
   void OnHideInputSources();
+
+  std::optional<XrLocation> GetXrLocationFromHandJoint(
+      XrSpace mojo_space,
+      const mojom::XRHandJointSpaceInfo& hand_joint_space_info,
+      const gfx::Transform& joint_from_object) const;
+
+  std::optional<XrLocation> GetXrLocationFromInputSource(
+      const mojom::XRInputSourceSpaceInfo& input_source_space_info,
+      const gfx::Transform& input_space_from_object) const;
 
  private:
   XrResult Initialize(XrInstance instance,

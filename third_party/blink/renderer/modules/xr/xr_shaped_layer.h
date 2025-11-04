@@ -35,7 +35,7 @@ class XRShapedLayer : public XRCompositionLayer {
 
  protected:
   void UpdateLayerBackend() override;
-  device::mojom::blink::XRReferenceSpaceType GetReferenceSpaceType()
+  device::mojom::blink::XRNativeOriginInformationPtr NativeOrigin()
       const override;
 
  private:

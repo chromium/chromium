@@ -134,7 +134,7 @@ XRCompositionLayer::CreateLayerData() const {
   layer_data->mutable_data->blend_texture_source_alpha =
       blendTextureSourceAlpha();
   layer_data->mutable_data->opacity = opacity();
-  layer_data->mutable_data->reference_space_type = GetReferenceSpaceType();
+  layer_data->mutable_data->native_origin_information = NativeOrigin();
 
   // Layer Specific data.
   layer_data->mutable_data->layer_data = CreateLayerSpecificData();

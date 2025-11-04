@@ -58,7 +58,8 @@ XRCylinderLayer::CreateLayerSpecificData() const {
   cylinder_layer_data->radius = radius();
   cylinder_layer_data->central_angle = centralAngle();
   cylinder_layer_data->aspect_ratio = aspectRatio();
-  cylinder_layer_data->transform = transform()->TransformMatrix();
+  cylinder_layer_data->native_origin_from_layer =
+      transform()->TransformMatrix();
   return device::mojom::blink::XRLayerSpecificData::NewCylinder(
       std::move(cylinder_layer_data));
 }

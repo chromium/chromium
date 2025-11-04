@@ -33,7 +33,7 @@ class XRProjectionLayer : public XRCompositionLayer {
 
  protected:
   void UpdateLayerBackend() override;
-  device::mojom::blink::XRReferenceSpaceType GetReferenceSpaceType()
+  device::mojom::blink::XRNativeOriginInformationPtr NativeOrigin()
       const override;
   device::mojom::blink::XRLayerSpecificDataPtr CreateLayerSpecificData()
       const override;

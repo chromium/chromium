@@ -806,6 +806,40 @@ XrSpace OpenXrApiWrapper::GetReferenceSpace(
   NOTREACHED();
 }
 
+std::optional<XrLocation>
+OpenXrApiWrapper::GetXrLocationFromNativeOriginInformation(
+    const mojom::XRNativeOriginInformation& native_origin,
+    const gfx::Transform& native_origin_from_object) {
+  switch (native_origin.which()) {
+    case mojom::XRNativeOriginInformation::Tag::kReferenceSpaceType:
+      return XrLocation{
+          GfxTransformToXrPose(native_origin_from_object),
+          GetReferenceSpace(native_origin.get_reference_space_type())};
+    case mojom::XRNativeOriginInformation::Tag::kAnchorId:
+      if (auto* anchor_manager = GetAnchorManager(); anchor_manager) {
+        return anchor_manager->GetXrLocationFromAnchor(
+            native_origin.get_anchor_id(), native_origin_from_object);
+      }
+      return std::nullopt;
+    case mojom::XRNativeOriginInformation::Tag::kPlaneId:
+      if (auto* plane_manager = GetPlaneManager(); plane_manager) {
+        return plane_manager->GetXrLocationFromPlane(
+            native_origin.get_plane_id(), native_origin_from_object);
+      }
+      return std::nullopt;
+    case mojom::XRNativeOriginInformation::Tag::kHandJointSpaceInfo:
+      return input_helper_->GetXrLocationFromHandJoint(
+          local_space_, *native_origin.get_hand_joint_space_info(),
+          native_origin_from_object);
+    case mojom::XRNativeOriginInformation::Tag::kInputSourceSpaceInfo:
+      return input_helper_->GetXrLocationFromInputSource(
+          *native_origin.get_input_source_space_info(),
+          native_origin_from_object);
+    case mojom::XRNativeOriginInformation::Tag::kImageIndex:
+      NOTREACHED();
+  }
+}
+
 // Based on the capabilities of the system and runtime, determine whether
 // to use shared images to draw into OpenXR swap chain buffers.
 bool OpenXrApiWrapper::ShouldCreateSharedImages() const {
@@ -1113,7 +1147,7 @@ XrResult OpenXrApiWrapper::EndFrame() {
   // layers created by clients. All the projection layers will use
   // the same view configuration defined by primary_view_config_.
   std::unique_ptr<OpenXrLayers> layers =
-      graphics_binding_->GetLayersForViewConfig(primary_view_config_);
+      graphics_binding_->GetLayersForViewConfig(this, primary_view_config_);
 
   // Gather all the layers for active secondary views.
   if (IsFeatureEnabled(mojom::XRSessionFeature::SECONDARY_VIEWS)) {

@@ -45,7 +45,8 @@ OpenXrSpatialFrameworkManager::OpenXrSpatialFrameworkManager(
   if (supported_features.contains(
           device::mojom::XRSessionFeature::PLANE_DETECTION)) {
     plane_manager_ = std::make_unique<OpenXrSpatialPlaneManager>(
-        extension_helper_.get(), *this, openxr_->instance(), openxr_->system());
+        base_space_, extension_helper_.get(), *this, openxr_->instance(),
+        openxr_->system());
     plane_manager_->PopulateCapabilityConfiguration(capability_configuration);
   }
 

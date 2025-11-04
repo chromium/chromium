@@ -5,6 +5,7 @@
 #include "device/vr/openxr/openxr_layers.h"
 
 #include "base/notreached.h"
+#include "device/vr/openxr/openxr_api_wrapper.h"
 #include "device/vr/openxr/openxr_composition_layer.h"
 #include "device/vr/openxr/openxr_util.h"
 #include "ui/gfx/geometry/decomposed_transform.h"
@@ -28,14 +29,35 @@ void FillSubImage(XrLayerDataType& xr_layer,
   };
 }
 
+const gfx::Transform GetNativeOriginFromLayer(
+    const OpenXrCompositionLayer& layer) {
+  switch (layer.type()) {
+    case OpenXrCompositionLayer::Type::kProjection:
+      return gfx::Transform();
+    case OpenXrCompositionLayer::Type::kQuad:
+      return layer.mutable_data()
+          .layer_data->get_quad()
+          ->native_origin_from_layer;
+    case OpenXrCompositionLayer::Type::kCylinder:
+      return layer.mutable_data()
+          .layer_data->get_cylinder()
+          ->native_origin_from_layer;
+    case OpenXrCompositionLayer::Type::kEquirect:
+      return layer.mutable_data()
+          .layer_data->get_equirect()
+          ->native_origin_from_layer;
+  }
+}
+
 XrCompositionLayerProjection BuildProjectionLayerData(
+    const XrLocation& location,
     const OpenXrCompositionLayer& layer,
     const std::vector<XrCompositionLayerProjectionView>& projection_views,
     const void* xr_next_struct) {
   // Zero-initialize everything.
   XrCompositionLayerProjection projection{XR_TYPE_COMPOSITION_LAYER_PROJECTION};
   projection.next = xr_next_struct;
-  projection.space = layer.space();
+  projection.space = location.space;
   projection.viewCount = projection_views.size();
   projection.views = projection_views.data();
   if (layer.mutable_data().blend_texture_source_alpha) {
@@ -45,7 +67,8 @@ XrCompositionLayerProjection BuildProjectionLayerData(
   return projection;
 }
 
-XrCompositionLayerQuad BuildQuadLayerData(const OpenXrCompositionLayer& layer,
+XrCompositionLayerQuad BuildQuadLayerData(const XrLocation& location,
+                                          const OpenXrCompositionLayer& layer,
                                           const void* xr_next_struct) {
   CHECK(layer.mutable_data().layer_data->is_quad());
   const auto& layer_specific_data =
@@ -54,12 +77,12 @@ XrCompositionLayerQuad BuildQuadLayerData(const OpenXrCompositionLayer& layer,
   // Zero-initialize everything.
   XrCompositionLayerQuad quad{XR_TYPE_COMPOSITION_LAYER_QUAD};
   quad.next = xr_next_struct;
-  quad.space = layer.space();
+  quad.space = location.space;
   quad.size = {
       .width = layer_specific_data.width,
       .height = layer_specific_data.height,
   };
-  quad.pose = GfxTransformToXrPose(layer_specific_data.transform);
+  quad.pose = location.pose;
   if (layer.mutable_data().blend_texture_source_alpha) {
     quad.layerFlags |= XR_COMPOSITION_LAYER_BLEND_TEXTURE_SOURCE_ALPHA_BIT;
   }
@@ -69,6 +92,7 @@ XrCompositionLayerQuad BuildQuadLayerData(const OpenXrCompositionLayer& layer,
 }
 
 XrCompositionLayerCylinderKHR BuildCylinderLayerData(
+    const XrLocation& location,
     const OpenXrCompositionLayer& layer,
     const void* xr_next_struct) {
   CHECK(layer.mutable_data().layer_data->is_cylinder());
@@ -79,11 +103,11 @@ XrCompositionLayerCylinderKHR BuildCylinderLayerData(
   XrCompositionLayerCylinderKHR cylinder{
       XR_TYPE_COMPOSITION_LAYER_CYLINDER_KHR};
   cylinder.next = xr_next_struct;
-  cylinder.space = layer.space();
+  cylinder.space = location.space;
   cylinder.radius = layer_specific_data.radius;
   cylinder.centralAngle = layer_specific_data.central_angle;
   cylinder.aspectRatio = layer_specific_data.aspect_ratio;
-  cylinder.pose = GfxTransformToXrPose(layer_specific_data.transform);
+  cylinder.pose = location.pose;
   if (layer.mutable_data().blend_texture_source_alpha) {
     cylinder.layerFlags |= XR_COMPOSITION_LAYER_BLEND_TEXTURE_SOURCE_ALPHA_BIT;
   }
@@ -93,6 +117,7 @@ XrCompositionLayerCylinderKHR BuildCylinderLayerData(
 }
 
 XrCompositionLayerEquirect2KHR BuildEquirectLayerData(
+    const XrLocation& location,
     const OpenXrCompositionLayer& layer,
     const void* xr_next_struct) {
   CHECK(layer.mutable_data().layer_data->is_equirect());
@@ -103,13 +128,13 @@ XrCompositionLayerEquirect2KHR BuildEquirectLayerData(
   XrCompositionLayerEquirect2KHR equirect{
       XR_TYPE_COMPOSITION_LAYER_EQUIRECT2_KHR};
   equirect.next = xr_next_struct;
-  equirect.space = layer.space();
+  equirect.space = location.space;
   equirect.radius = layer_specific_data.radius;
   equirect.centralHorizontalAngle =
       layer_specific_data.central_horizontal_angle;
   equirect.upperVerticalAngle = layer_specific_data.upper_vertical_angle;
   equirect.lowerVerticalAngle = layer_specific_data.lower_vertical_angle;
-  equirect.pose = GfxTransformToXrPose(layer_specific_data.transform);
+  equirect.pose = location.pose;
   if (layer.mutable_data().blend_texture_source_alpha) {
     equirect.layerFlags |= XR_COMPOSITION_LAYER_BLEND_TEXTURE_SOURCE_ALPHA_BIT;
   }
@@ -198,6 +223,7 @@ void OpenXrLayers::InitializeBaseLayer(
 }
 
 void OpenXrLayers::AddCompositionLayer(
+    OpenXrApiWrapper* openxr,
     const OpenXrCompositionLayer& layer,
     std::vector<XrCompositionLayerProjectionView> projection_views,
     const void* xr_next_struct) {
@@ -206,22 +232,33 @@ void OpenXrLayers::AddCompositionLayer(
     return;
   }
 
+  std::optional<XrLocation> location =
+      openxr->GetXrLocationFromNativeOriginInformation(
+          layer.native_origin_information(), GetNativeOriginFromLayer(layer));
+  if (!location) {
+    // There is no information on where to show the layer.
+    return;
+  }
+
   XrCompositionLayerUnion xr_layer_union;
   switch (layer.type()) {
     case OpenXrCompositionLayer::Type::kProjection:
       CHECK(!projection_views.empty());
-      xr_layer_union.projection =
-          BuildProjectionLayerData(layer, projection_views, xr_next_struct);
+      xr_layer_union.projection = BuildProjectionLayerData(
+          *location, layer, projection_views, xr_next_struct);
       projection_views_pool_.push_back(std::move(projection_views));
       break;
     case OpenXrCompositionLayer::Type::kQuad:
-      xr_layer_union.quad = BuildQuadLayerData(layer, xr_next_struct);
+      xr_layer_union.quad =
+          BuildQuadLayerData(*location, layer, xr_next_struct);
       break;
     case OpenXrCompositionLayer::Type::kCylinder:
-      xr_layer_union.cylinder = BuildCylinderLayerData(layer, xr_next_struct);
+      xr_layer_union.cylinder =
+          BuildCylinderLayerData(*location, layer, xr_next_struct);
       break;
     case OpenXrCompositionLayer::Type::kEquirect:
-      xr_layer_union.equirect = BuildEquirectLayerData(layer, xr_next_struct);
+      xr_layer_union.equirect =
+          BuildEquirectLayerData(*location, layer, xr_next_struct);
       break;
     default:
       NOTREACHED();

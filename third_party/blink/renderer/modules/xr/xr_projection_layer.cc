@@ -48,9 +48,10 @@ void XRProjectionLayer::UpdateLayerBackend() {
   session()->xr()->frameProvider()->UpdateLayerViewports(this);
 }
 
-device::mojom::blink::XRReferenceSpaceType
-XRProjectionLayer::GetReferenceSpaceType() const {
-  return device::mojom::blink::XRReferenceSpaceType::kLocal;
+device::mojom::blink::XRNativeOriginInformationPtr
+XRProjectionLayer::NativeOrigin() const {
+  return device::mojom::blink::XRNativeOriginInformation::NewReferenceSpaceType(
+      device::mojom::blink::XRReferenceSpaceType::kLocal);
 }
 
 device::mojom::blink::XRLayerSpecificDataPtr

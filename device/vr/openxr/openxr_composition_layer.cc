@@ -27,12 +27,10 @@ OpenXrCompositionLayer::Type OpenXrCompositionLayer::GetTypeFromMojomData(
 }
 
 OpenXrCompositionLayer::OpenXrCompositionLayer(
-    XrSpace space,
     mojom::XRCompositionLayerDataPtr layer_data,
     OpenXrGraphicsBinding* graphics_binding,
     std::unique_ptr<GraphicsBindingData> graphics_binding_data)
-    : space_(space),
-      graphics_binding_(graphics_binding),
+    : graphics_binding_(graphics_binding),
       graphics_binding_data_(std::move(graphics_binding_data)),
       creation_data_(std::move(layer_data)) {
   type_ = GetTypeFromMojomData(*creation_data_->mutable_data->layer_data);
@@ -190,10 +188,8 @@ LayerId OpenXrCompositionLayer::GetLayerId() const {
 }
 
 void OpenXrCompositionLayer::UpdateMutableLayerData(
-    XrSpace space,
     mojom::XRLayerMutableDataPtr data) {
   CHECK_EQ(type_, GetTypeFromMojomData(*data->layer_data));
-  space_ = space;
   creation_data_->mutable_data = std::move(data);
 }
 

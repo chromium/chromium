@@ -1042,11 +1042,8 @@ void OpenXrRenderLoop::CreateCompositionLayer(
     return;
   }
 
-  XrSpace space = openxr_->GetReferenceSpace(
-      layer_data->mutable_data->reference_space_type);
   if (!graphics_binding_->CreateCompositionLayer(
-          space, std::move(layer_data),
-          context_provider_->SharedImageInterface())) {
+          std::move(layer_data), context_provider_->SharedImageInterface())) {
     return;
   }
 
@@ -1075,8 +1072,7 @@ void OpenXrRenderLoop::UpdateCompositionLayer(
     return;
   }
 
-  XrSpace space = openxr_->GetReferenceSpace(layer_data->reference_space_type);
-  layer->UpdateMutableLayerData(space, std::move(layer_data));
+  layer->UpdateMutableLayerData(std::move(layer_data));
 }
 
 void OpenXrRenderLoop::DestroyCompositionLayer(const LayerId& layer_id) {

@@ -23,6 +23,13 @@ constexpr mojom::XRHandJoint OpenXRHandJointToMojomJoint(
   return static_cast<mojom::XRHandJoint>(openxr_joint - 1);
 }
 
+constexpr XrHandJointEXT MojomJointToOpenXRJoint(
+    mojom::XRHandJoint mojom_joint) {
+  // The OpenXR joints have palm at 0, but from that point are the same as the
+  // mojom joints. Hence they are offset by 1.
+  return static_cast<XrHandJointEXT>(static_cast<int>(mojom_joint) + 1);
+}
+
 bool DEVICE_VR_EXPORT
 AnonymizeHand(base::span<mojom::XRHandJointDataPtr> hand_data);
 

@@ -54,7 +54,7 @@ XRQuadLayer::CreateLayerSpecificData() const {
   auto quad_layer_data = device::mojom::blink::XRQuadLayerData::New();
   quad_layer_data->width = width();
   quad_layer_data->height = height();
-  quad_layer_data->transform = transform()->TransformMatrix();
+  quad_layer_data->native_origin_from_layer = transform()->TransformMatrix();
 
   return device::mojom::blink::XRLayerSpecificData::NewQuad(
       std::move(quad_layer_data));

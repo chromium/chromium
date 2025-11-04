@@ -172,6 +172,17 @@ mojom::XRHandTrackingDataPtr OpenXrHandTracker::GetHandTrackingData() const {
   return hand_tracking_data;
 }
 
+std::optional<gfx::Transform> OpenXrHandTracker::GetMojoFromJoint(
+    XrHandJointEXT joint) const {
+  if (!IsDataValid()) {
+    return std::nullopt;
+  }
+
+  CHECK(joint < XR_HAND_JOINT_COUNT_EXT);
+
+  return XrPoseToGfxTransform(joint_locations_buffer_[joint].pose);
+}
+
 const OpenXrHandController* OpenXrHandTracker::controller() const {
   return nullptr;
 }

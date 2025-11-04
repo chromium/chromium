@@ -64,7 +64,8 @@ XREquirectLayer::CreateLayerSpecificData() const {
   equirect_layer_data->central_horizontal_angle = centralHorizontalAngle();
   equirect_layer_data->upper_vertical_angle = upperVerticalAngle();
   equirect_layer_data->lower_vertical_angle = lowerVerticalAngle();
-  equirect_layer_data->transform = transform()->TransformMatrix();
+  equirect_layer_data->native_origin_from_layer =
+      transform()->TransformMatrix();
   return device::mojom::blink::XRLayerSpecificData::NewEquirect(
       std::move(equirect_layer_data));
 }

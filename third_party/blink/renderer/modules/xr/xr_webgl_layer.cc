@@ -522,8 +522,9 @@ device::mojom::blink::XRCompositionLayerDataPtr XRWebGLLayer::CreateLayerData()
   layer_data->mutable_data = device::mojom::blink::XRLayerMutableData::New();
   layer_data->mutable_data->blend_texture_source_alpha = false;
   layer_data->mutable_data->opacity = 1UL;
-  layer_data->mutable_data->reference_space_type =
-      device::mojom::blink::XRReferenceSpaceType::kLocal;
+  layer_data->mutable_data->native_origin_information =
+      device::mojom::blink::XRNativeOriginInformation::NewReferenceSpaceType(
+          device::mojom::blink::XRReferenceSpaceType::kLocal);
 
   // Applies an empty projection layer data.
   layer_data->mutable_data->layer_data =

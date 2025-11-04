@@ -5,6 +5,7 @@
 #include "device/vr/openxr/openxr_spatial_plane_manager.h"
 
 #include "base/containers/contains.h"
+#include "device/vr/openxr/openxr_api_wrapper.h"
 #include "device/vr/openxr/openxr_extension_helper.h"
 #include "device/vr/openxr/openxr_spatial_framework_manager.h"
 #include "device/vr/openxr/openxr_spatial_utils.h"
@@ -70,11 +71,13 @@ bool OpenXrSpatialPlaneManager::IsSupported(
 }
 
 OpenXrSpatialPlaneManager::OpenXrSpatialPlaneManager(
+    XrSpace mojo_space,
     const OpenXrExtensionHelper& extension_helper,
     const OpenXrSpatialFrameworkManager& framework_manager,
     XrInstance instance,
     XrSystemId system)
-    : extension_helper_(extension_helper),
+    : mojo_space_(mojo_space),
+      extension_helper_(extension_helper),
       framework_manager_(framework_manager),
       enabled_components_({// Begin by enabling the two components required to
                            // be present for the
@@ -303,6 +306,21 @@ XrSpatialEntityIdEXT OpenXrSpatialPlaneManager::GetEntityId(
   }
 
   return entity_id;
+}
+
+std::optional<XrLocation> OpenXrSpatialPlaneManager::GetXrLocationFromPlane(
+    PlaneId plane_id,
+    const gfx::Transform& plane_id_from_object) const {
+  // We don't have an xr_space_ for the plane, so we'll just locate the pose
+  // in mojo_space_ and send that up as the base of the XrLocation.
+  std::optional<device::Pose> mojo_from_plane = TryGetMojoFromPlane(plane_id);
+  if (!mojo_from_plane) {
+    return std::nullopt;
+  }
+
+  gfx::Transform mojo_from_new_anchor =
+      mojo_from_plane->ToTransform() * plane_id_from_object;
+  return XrLocation{GfxTransformToXrPose(mojo_from_new_anchor), mojo_space_};
 }
 
 }  // namespace device

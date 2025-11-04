@@ -57,6 +57,12 @@ using SessionEndedCallback = base::RepeatingCallback<void(ExitXrPresentReason)>;
 using VisibilityChangedCallback =
     base::RepeatingCallback<void(mojom::XRVisibilityState)>;
 
+// An XrPosef with the space it is relative to.
+struct XrLocation {
+  XrPosef pose;
+  XrSpace space;
+};
+
 class OpenXrApiWrapper {
  public:
   using XrFutureReadyCallback = base::OnceCallback<void(XrFutureEXT)>;
@@ -92,7 +98,10 @@ class OpenXrApiWrapper {
                        SessionEndedCallback on_session_ended_callback,
                        VisibilityChangedCallback visibility_changed_callback);
 
-  XrSpace GetReferenceSpace(device::mojom::XRReferenceSpaceType type) const;
+  XrSpace GetReferenceSpace(mojom::XRReferenceSpaceType type) const;
+  std::optional<XrLocation> GetXrLocationFromNativeOriginInformation(
+      const mojom::XRNativeOriginInformation& native_origin,
+      const gfx::Transform& native_origin_from_object);
 
   XrInstance instance() const { return instance_; }
   XrSession session() const { return session_; }

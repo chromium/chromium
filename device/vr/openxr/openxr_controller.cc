@@ -314,6 +314,16 @@ device::mojom::XRHandedness OpenXrController::GetHandness() const {
   }
 }
 
+XrSpace OpenXrController::GetInputSpace(
+    mojom::XRInputSourceSpaceType space_type) const {
+  switch (space_type) {
+    case mojom::XRInputSourceSpaceType::kGrip:
+      return grip_pose_space_;
+    case mojom::XRInputSourceSpaceType::kTargetRay:
+      return pointer_pose_space_;
+  }
+}
+
 XrResult OpenXrController::Update(XrSpace base_space,
                                   XrTime predicted_display_time) {
   if (interaction_profile_ == mojom::OpenXrInteractionProfileType::kInvalid) {
@@ -557,6 +567,14 @@ std::optional<gfx::Transform> OpenXrController::GetMojoFromGripTransform(
 
   return GetOriginFromTarget(predicted_display_time, local_space,
                              grip_pose_space_, emulated_position);
+}
+
+std::optional<gfx::Transform> OpenXrController::GetMojoFromJoint(
+    XrHandJointEXT joint) const {
+  if (!IsHandTrackingEnabled()) {
+    return std::nullopt;
+  }
+  return hand_tracker_->GetMojoFromJoint(joint);
 }
 
 std::optional<gfx::Transform> OpenXrController::GetGripFromPointerTransform(

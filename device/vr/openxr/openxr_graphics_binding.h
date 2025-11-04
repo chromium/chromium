@@ -160,6 +160,7 @@ class OpenXrGraphicsBinding {
   // Build an OpenXrLayers object that provides data needed for xrEndFrame
   // (e.g. a list of XrCompositionLayerBaseHeader).
   std::unique_ptr<OpenXrLayers> GetLayersForViewConfig(
+      OpenXrApiWrapper* openxr,
       const OpenXrViewConfiguration& view_config) const;
 
   // A few methods that only operate on the base layer.
@@ -228,7 +229,6 @@ class OpenXrGraphicsBinding {
 
   // Create a composition layer. The id is given in layer_data.
   bool CreateCompositionLayer(
-      XrSpace space,
       mojom::XRCompositionLayerDataPtr layer_data,
       gpu::SharedImageInterface* shared_image_interface);
 

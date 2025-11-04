@@ -57,9 +57,6 @@ class OpenXrSpatialAnchorManager : public OpenXrAnchorManager {
   std::optional<XrLocation> GetXrLocationFromAnchor(
       AnchorId anchor_id,
       const gfx::Transform& anchor_id_from_new_anchor) const override;
-  std::optional<XrLocation> GetXrLocationFromPlane(
-      PlaneId plane_id,
-      const gfx::Transform& plane_id_from_new_anchor) const override;
   mojom::XRAnchorsDataPtr GetCurrentAnchorsData(
       XrTime predicted_display_time) override;
 

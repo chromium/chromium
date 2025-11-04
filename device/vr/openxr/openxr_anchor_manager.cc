@@ -45,10 +45,16 @@ void OpenXrAnchorManager::ProcessCreateAnchorRequests(
     const std::vector<mojom::XRInputSourceStatePtr>& input_state) {
   XrTime display_time = openxr->GetPredictedDisplayTime();
   for (auto& request : create_anchor_requests_) {
+    if (!IsSupportedOrigin(request.GetNativeOriginInformation())) {
+      // Unsupported for now.
+      request.TakeCallback().Run(std::nullopt);
+      continue;
+    }
+
     std::optional<XrLocation> anchor_location =
-        GetXrLocationFromNativeOriginInformation(
-            openxr, request.GetNativeOriginInformation(),
-            request.GetNativeOriginFromAnchor(), input_state);
+        openxr->GetXrLocationFromNativeOriginInformation(
+            request.GetNativeOriginInformation(),
+            request.GetNativeOriginFromAnchor());
 
     if (!anchor_location.has_value()) {
       request.TakeCallback().Run(std::nullopt);
@@ -71,41 +77,14 @@ void OpenXrAnchorManager::DisposeActiveAnchorCallbacks() {
   create_anchor_requests_.clear();
 }
 
-std::optional<OpenXrAnchorManager::XrLocation>
-OpenXrAnchorManager::GetXrLocationFromNativeOriginInformation(
-    OpenXrApiWrapper* openxr,
-    const mojom::XRNativeOriginInformation& native_origin_information,
-    const gfx::Transform& native_origin_from_anchor,
-    const std::vector<mojom::XRInputSourceStatePtr>& input_state) const {
-  switch (native_origin_information.which()) {
-    case mojom::XRNativeOriginInformation::Tag::kInputSourceSpaceInfo:
-      // Currently unimplemented as only anchors are supported and are never
-      // created relative to input sources
-      return std::nullopt;
-    case mojom::XRNativeOriginInformation::Tag::kReferenceSpaceType:
-      return GetXrLocationFromReferenceSpace(openxr, native_origin_information,
-                                             native_origin_from_anchor);
-    case mojom::XRNativeOriginInformation::Tag::kHandJointSpaceInfo:
-    case mojom::XRNativeOriginInformation::Tag::kImageIndex:
-      // Unsupported for now
-      return std::nullopt;
-    case mojom::XRNativeOriginInformation::Tag::kAnchorId:
-      return GetXrLocationFromAnchor(native_origin_information.get_anchor_id(),
-                                     native_origin_from_anchor);
-    case mojom::XRNativeOriginInformation::Tag::kPlaneId:
-      return GetXrLocationFromPlane(native_origin_information.get_plane_id(),
-                                    native_origin_from_anchor);
-  }
-}
-
-std::optional<OpenXrAnchorManager::XrLocation>
-OpenXrAnchorManager::GetXrLocationFromReferenceSpace(
-    OpenXrApiWrapper* openxr,
-    const mojom::XRNativeOriginInformation& native_origin_information,
-    const gfx::Transform& native_origin_from_anchor) const {
-  return XrLocation{GfxTransformToXrPose(native_origin_from_anchor),
-                    openxr->GetReferenceSpace(
-                        native_origin_information.get_reference_space_type())};
+bool OpenXrAnchorManager::IsSupportedOrigin(
+    const mojom::XRNativeOriginInformation& native_origin_info) const {
+  const auto space_type = native_origin_info.which();
+  return !(space_type ==
+               mojom::XRNativeOriginInformation::Tag::kInputSourceSpaceInfo ||
+           space_type ==
+               mojom::XRNativeOriginInformation::Tag::kHandJointSpaceInfo ||
+           space_type == mojom::XRNativeOriginInformation::Tag::kImageIndex);
 }
 
 }  // namespace device

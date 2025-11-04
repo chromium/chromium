@@ -56,20 +56,12 @@ void OpenXrSpaceBasedAnchorManager::DetachAnchor(AnchorId anchor_id) {
   openxr_anchors_.erase(it);
 }
 
-std::optional<OpenXrAnchorManager::XrLocation>
+std::optional<XrLocation>
 OpenXrSpaceBasedAnchorManager::GetXrLocationFromAnchor(
     AnchorId anchor_id,
     const gfx::Transform& anchor_id_from_new_anchor) const {
   return XrLocation{GfxTransformToXrPose(anchor_id_from_new_anchor),
                     GetAnchorSpace(anchor_id)};
-}
-
-std::optional<OpenXrAnchorManager::XrLocation>
-OpenXrSpaceBasedAnchorManager::GetXrLocationFromPlane(
-    PlaneId plane_id,
-    const gfx::Transform& plane_id_from_new_anchor) const {
-  // We don't support planes, so this should never be called.
-  return std::nullopt;
 }
 
 mojom::XRAnchorsDataPtr OpenXrSpaceBasedAnchorManager::GetCurrentAnchorsData(

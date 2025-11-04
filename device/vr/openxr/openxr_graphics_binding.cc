@@ -5,6 +5,7 @@
 #include "device/vr/openxr/openxr_graphics_binding.h"
 
 #include "components/viz/common/gpu/context_provider.h"
+#include "device/vr/openxr/openxr_api_wrapper.h"
 #include "device/vr/openxr/openxr_extension_helper.h"
 #include "device/vr/openxr/openxr_util.h"
 #include "device/vr/openxr/openxr_view_configuration.h"
@@ -60,12 +61,12 @@ void OpenXrGraphicsBinding::OnSessionCreated(XrSpace local_space,
           std::move(projection_layer_data));
   layer_data->mutable_data->blend_texture_source_alpha = true;
   layer_data->mutable_data->opacity = 1.f;
-  layer_data->mutable_data->reference_space_type =
-      mojom::XRReferenceSpaceType::kLocal;
+  layer_data->mutable_data->native_origin_information =
+      mojom::XRNativeOriginInformation::NewReferenceSpaceType(
+          mojom::XRReferenceSpaceType::kLocal);
 
   base_layer_ = std::make_unique<OpenXrCompositionLayer>(
-      local_space, std::move(layer_data), this,
-      CreateLayerGraphicsBindingData());
+      std::move(layer_data), this, CreateLayerGraphicsBindingData());
 }
 
 void OpenXrGraphicsBinding::OnSessionDestroyed(gpu::SharedImageInterface* sii) {
@@ -181,6 +182,7 @@ void OpenXrGraphicsBinding::SetOverlayAndWebXrVisibility(bool overlay_visible,
 }
 
 std::unique_ptr<OpenXrLayers> OpenXrGraphicsBinding::GetLayersForViewConfig(
+    OpenXrApiWrapper* openxr,
     const OpenXrViewConfiguration& view_config) const {
   auto openxr_layers = std::make_unique<OpenXrLayers>();
   for (const auto& layer_id : layers_sequence_) {
@@ -190,17 +192,18 @@ std::unique_ptr<OpenXrLayers> OpenXrGraphicsBinding::GetLayersForViewConfig(
     }
     if (layer_it->second->type() == OpenXrCompositionLayer::Type::kProjection) {
       openxr_layers->AddCompositionLayer(
-          *layer_it->second, GetProjectionViews(view_config, *layer_it->second),
+          openxr, *layer_it->second,
+          GetProjectionViews(view_config, *layer_it->second),
           GetFlipLayerLayout());
     } else {
-      openxr_layers->AddCompositionLayer(*layer_it->second, {},
+      openxr_layers->AddCompositionLayer(openxr, *layer_it->second, {},
                                          GetFlipLayerLayout());
     }
   }
   if (ShouldRenderBaseLayer()) {
-    openxr_layers->AddBaseLayer(base_layer_->space(),
-                                GetBaseLayerProjectionViews(view_config),
-                                GetFlipLayerLayout());
+    openxr_layers->AddBaseLayer(
+        openxr->GetReferenceSpace(mojom::XRReferenceSpaceType::kLocal),
+        GetBaseLayerProjectionViews(view_config), GetFlipLayerLayout());
   }
   return openxr_layers;
 }
@@ -392,7 +395,6 @@ bool OpenXrGraphicsBinding::Render(
 }
 
 bool OpenXrGraphicsBinding::CreateCompositionLayer(
-    XrSpace space,
     mojom::XRCompositionLayerDataPtr layer_data,
     gpu::SharedImageInterface* sii) {
   if (!SupportsLayers()) {
@@ -403,7 +405,7 @@ bool OpenXrGraphicsBinding::CreateCompositionLayer(
   CHECK(!layers_.contains(layer_id));
 
   auto new_layer = std::make_unique<OpenXrCompositionLayer>(
-      space, std::move(layer_data), this, CreateLayerGraphicsBindingData());
+      std::move(layer_data), this, CreateLayerGraphicsBindingData());
 
   if (new_layer->type() == OpenXrCompositionLayer::Type::kProjection) {
     // All projection layers should have same size.

@@ -32,6 +32,7 @@ class OpenXrSpatialPlaneManager : public OpenXrPlaneManager {
       const std::vector<XrSpatialCapabilityEXT>& capabilities);
 
   OpenXrSpatialPlaneManager(
+      XrSpace mojo_space,
       const OpenXrExtensionHelper& extension_helper,
       const OpenXrSpatialFrameworkManager& framework_manager,
       XrInstance instance,
@@ -55,6 +56,10 @@ class OpenXrSpatialPlaneManager : public OpenXrPlaneManager {
   // |kInvalidPlaneId| if the entity is not currently tracked.
   PlaneId GetPlaneId(XrSpatialEntityIdEXT entity_id) const;
 
+  std::optional<XrLocation> GetXrLocationFromPlane(
+      PlaneId plane_id,
+      const gfx::Transform& plane_id_from_object) const override;
+
   // Return the `XrSpatialEntityIdEXT` of the corresponding |plane_id|. Will
   // return XR_NULL_SPATIAL_ENTITY_ID_EXT if the |plane_id| is not currently
   // tracked or otherwise invalid.
@@ -63,6 +68,7 @@ class OpenXrSpatialPlaneManager : public OpenXrPlaneManager {
   bool can_parent_anchors() const { return can_parent_anchors_; }
 
  private:
+  XrSpace mojo_space_;
   const raw_ref<const OpenXrExtensionHelper> extension_helper_;
   const raw_ref<const OpenXrSpatialFrameworkManager> framework_manager_;
 

@@ -63,7 +63,7 @@ class XRCompositionLayer : public XRLayer {
   // Used to create the layer data.
   virtual device::mojom::blink::XRLayerSpecificDataPtr CreateLayerSpecificData()
       const = 0;
-  virtual device::mojom::blink::XRReferenceSpaceType GetReferenceSpaceType()
+  virtual device::mojom::blink::XRNativeOriginInformationPtr NativeOrigin()
       const = 0;
   // Used to sync layer-specific data to the backend.
   virtual void UpdateLayerBackend() = 0;

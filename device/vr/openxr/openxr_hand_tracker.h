@@ -63,6 +63,8 @@ class OpenXrHandTracker {
   // Must not be overridden by subclasses.
   mojom::XRHandTrackingDataPtr GetHandTrackingData() const;
 
+  std::optional<gfx::Transform> GetMojoFromJoint(XrHandJointEXT joint) const;
+
   // Gets an `OpenXrHandController` for this hand tracker if it supports parsing
   // data separately from any interaction profile implementation. A hand tracker
   // should either always return null or always return non-null.
