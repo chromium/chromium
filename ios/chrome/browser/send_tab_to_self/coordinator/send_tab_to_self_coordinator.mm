@@ -25,6 +25,7 @@
 #import "components/sync/service/sync_service_observer.h"
 #import "ios/chrome/browser/authentication/ui_bundled/change_profile/change_profile_send_tab.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_presenter.h"
 #import "ios/chrome/browser/infobars/ui_bundled/presentation/infobar_modal_positioner.h"
 #import "ios/chrome/browser/send_tab_to_self/coordinator/send_tab_to_self_coordinator_delegate.h"
@@ -149,6 +150,7 @@ void OpenManageDevicesTab(CommandDispatcher* dispatcher) {
 
 @implementation SendTabToSelfCoordinator {
   id<BrowserCoordinatorCommands> __weak _browserCoordinatorHandler;
+  SigninCoordinator* _signinCoordinator;
 }
 
 #pragma mark - Public
@@ -192,6 +194,7 @@ void OpenManageDevicesTab(CommandDispatcher* dispatcher) {
   self.stopped = YES;
   // Abort the waiting if it's still ongoing.
   _targetDeviceListWaiter.reset();
+  [self stopSigninCoordinator];
   [self.baseViewController
       dismissViewControllerAnimated:YES
                          completion:self.dismissedCompletion];
@@ -275,6 +278,12 @@ void OpenManageDevicesTab(CommandDispatcher* dispatcher) {
 
 #pragma mark - Private
 
+// Stops the signin-coordiantor
+- (void)stopSigninCoordinator {
+  [_signinCoordinator stop];
+  _signinCoordinator = nil;
+}
+
 // Shows a snackbar message confirming that the tab was sent to `deviceName`.
 - (void)showSnackbarMessageWithDeviceName:(NSString*)deviceName {
   CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
@@ -355,18 +364,20 @@ void OpenManageDevicesTab(CommandDispatcher* dispatcher) {
         [weakSelf prepareForChangeProfile];
       };
 
-      ShowSigninCommand* command = [[ShowSigninCommand alloc]
-                          initWithOperation:AuthenticationOperation::kSigninOnly
-                                   identity:nil
-                                accessPoint:signin_metrics::AccessPoint::
-                                                kSendTabToSelfPromo
-                                promoAction:signin_metrics::PromoAction::
-                                                PROMO_ACTION_NO_SIGNIN_PROMO
-                                 completion:completion
-
-                       prepareChangeProfile:prepareChangeProfile
-          changeProfileContinuationProvider:provider];
-      [self.signinPresenter showSignin:command];
+      SigninContextStyle style = SigninContextStyle::kDefault;
+      signin_metrics::AccessPoint accessPoint =
+          signin_metrics::AccessPoint::kSendTabToSelfPromo;
+      _signinCoordinator = [SigninCoordinator
+          consistencyPromoSigninCoordinatorWithBaseViewController:
+              self.baseViewController
+                                                          browser:self.browser
+                                                     contextStyle:style
+                                                      accessPoint:accessPoint
+                                             prepareChangeProfile:
+                                                 prepareChangeProfile
+                                             continuationProvider:provider];
+      _signinCoordinator.signinCompletion = completion;
+      [_signinCoordinator start];
       break;
     }
   }
@@ -374,6 +385,7 @@ void OpenManageDevicesTab(CommandDispatcher* dispatcher) {
 
 // Called when the sign-in flow is complete.
 - (void)onSigninComplete:(BOOL)succeeded {
+  [self stopSigninCoordinator];
   if (!succeeded) {
     [self.delegate sendTabToSelfCoordinatorWantsToBeStopped:self];
     return;
