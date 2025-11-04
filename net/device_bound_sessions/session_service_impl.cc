@@ -715,8 +715,7 @@ void SessionServiceImpl::AddSession(const SchemefulSite& site,
     session_store_->SaveSession(site, *session);
   }
 
-  unpartitioned_sessions_.emplace(SessionKey{site, session->id()},
-                                  std::move(session));
+  unpartitioned_sessions_[SessionKey{site, session->id()}] = std::move(session);
 }
 
 void SessionServiceImpl::DeleteAllSessions(
@@ -865,14 +864,16 @@ SessionError::ErrorType SessionServiceImpl::OnRefreshRequestCompletionInternal(
     bool is_proactive_refresh_candidate =
         IsProactiveRefreshCandidate(*existing_session, *new_session,
                                     registration_result.maybe_stored_cookies());
+    std::optional<base::TimeDelta> minimum_cookie_lifetime =
+        existing_session
+            ->TakeLastProactiveRefreshOpportunityMinimumCookieLifetime();
 
     SchemefulSite new_site(new_session->origin());
     AddSession(new_site, std::move(new_session));
     // The session has been refreshed, restart the request.
-    UnblockDeferredRequests(
-        session_key, RefreshResult::kRefreshed, is_proactive_refresh_candidate,
-        existing_session
-            ->TakeLastProactiveRefreshOpportunityMinimumCookieLifetime());
+    UnblockDeferredRequests(session_key, RefreshResult::kRefreshed,
+                            is_proactive_refresh_candidate,
+                            std::move(minimum_cookie_lifetime));
   } else if (registration_result.is_no_session_config_change()) {
     Session* existing_session = GetSession(session_key);
     CHECK(existing_session);

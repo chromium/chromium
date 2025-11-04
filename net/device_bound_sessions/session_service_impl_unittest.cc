@@ -925,6 +925,35 @@ TEST_F(SessionServiceImplTest, NetLogRefresh) {
       1u);
 }
 
+TEST_F(SessionServiceImplTest, RefreshUpdatesConfig) {
+  AddSessionsForTesting({{kSessionId, kRefreshUrlString, kOrigin}});
+
+  SchemefulSite site(kTestUrl);
+  ASSERT_TRUE(service().GetSession({site, Session::Id(kSessionId)}));
+
+  net::TestDelegate delegate;
+  std::unique_ptr<URLRequest> request =
+      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
+  request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
+
+  base::test::TestFuture<SessionService::RefreshResult> future;
+
+  RecordingNetLogObserver observer;
+  // The refresh endpoint will return a config with a different refresh
+  // URL, which we can use to test for persistence of the session config.
+  auto scoped_test_fetcher = ScopedTestRegistrationFetcher::CreateWithSuccess(
+      kSessionId, "https://example.com/migrated-refresh", kOrigin);
+  service().DeferRequestForRefresh(
+      request.get(), SessionService::DeferralParams(Session::Id(kSessionId)),
+      future.GetCallback());
+
+  const Session* session =
+      service().GetSession({SchemefulSite(kTestUrl), Session::Id(kSessionId)});
+  ASSERT_TRUE(session);
+  EXPECT_EQ(session->refresh_url(),
+            GURL("https://example.com/migrated-refresh"));
+}
+
 TEST_F(SessionServiceImplTest, SessionRefreshQuota) {
   AddSessionsForTesting({{kSessionId, kRefreshUrlString, kOrigin}});
   auto scoped_test_fetcher = ScopedTestRegistrationFetcher::CreateWithSuccess(
