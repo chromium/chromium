@@ -2439,7 +2439,7 @@ void AXObject::SerializeComputedDetailsRelation(
   }
 
   // Add aria-details for a command invoker.
-  if (AXObject* command_for = GetCommandForElement()) {
+  if (AXObject* command_for = GetCommandForElementForDetailsRelation()) {
     node_data->AddIntListAttribute(
         ax::mojom::blink::IntListAttribute::kDetailsIds,
         {static_cast<int32_t>(command_for->AXObjectID())});
@@ -2531,59 +2531,55 @@ AXObject* AXObject::GetPopoverTargetForInvoker() const {
 // their target element, when: a) the element is valid, and the command
 // attribute is a valid command b) not the next element in the DOM (depth first
 // search order), and c) either not a hint or a rich hint.
-AXObject* AXObject::GetCommandForElement() const {
-  auto* button_element = DynamicTo<HTMLButtonElement>(GetElement());
-  if (!button_element) {
+AXObject* AXObject::GetCommandForElementForDetailsRelation() const {
+  auto* html_element = DynamicTo<HTMLElement>(GetElement());
+  if (!html_element) {
+    return nullptr;
+  }
+  auto* command_for = DynamicTo<HTMLElement>(html_element->commandForElement());
+  if (!command_for || !command_for->popoverOpen()) {
     return nullptr;
   }
 
-  auto* command_for =
-      DynamicTo<HTMLElement>(button_element->commandForElement());
-  if (!command_for) {
+  // The next element is already the target element.
+  if (ElementTraversal::NextSkippingChildren(*html_element) == command_for) {
     return nullptr;
   }
 
-  if (command_for->popoverOpen()) {
-    // A button with commandfor might point to an open popover, but the command
-    // might be unrelated - for example `show-modal`. Commands that aren't related
-    // to the showing or hiding of popovers should not establish a details relation
-    // in these cases.
-    const AtomicString& action =
-        button_element->FastGetAttribute(html_names::kCommandAttr);
-    if (!command_for->IsValidBuiltinPopoverCommand(
-            *button_element,
-            HTMLButtonElement::GetCommandEventType(
-                action, command_for->GetDocument().GetExecutionContext()))) {
-      return nullptr;
-    }
-
-    // The next element is already the popover.
-    if (ElementTraversal::NextSkippingChildren(*button_element) ==
-        command_for) {
-      return nullptr;
-    }
-
-    // Hint popovers that represent plain text content should not estbablish a details
-    // relation - as they are used to derive the text alternative - as if they are a
-    // tooltip. See the TextAlternativeFromTooltip function for more on this.
-    AXObject* ax_popover = AXObjectCache().Get(command_for);
-    if (command_for->PopoverType() == PopoverValueType::kHint &&
-        ax_popover->IsPlainContent()) {
-      return nullptr;
-    }
-
-    // Only expose a details relationship if the trigger isn't
-    // contained within the popover itself (shadow-including). E.g. a close
-    // button within the popover should not get a details relationship back
-    // to the containing popover.
-    if (button_element->IsDescendantOrShadowDescendantOf(command_for)) {
-      return nullptr;
-    }
-
-    return ax_popover;
+  // Only expose a details relationship if the trigger isn't
+  // contained within the popover itself (shadow-including). E.g. a close
+  // button within the popover should not get a details relationship back
+  // to the containing popover.
+  if (html_element->IsDescendantOrShadowDescendantOf(command_for)) {
+    return nullptr;
   }
 
-  return nullptr;
+  // A button with commandfor might point to an open popover, but the command
+  // might be unrelated - for example `show-modal`. Commands that aren't related
+  // to the showing or hiding of popovers should not establish a details
+  // relation in these cases.
+  CommandEventType action = html_element->GetCommandEventType(
+      html_element->command(), html_element->GetExecutionContext());
+  if (action != CommandEventType::kTogglePopover &&
+      action != CommandEventType::kShowPopover &&
+      action != CommandEventType::kHidePopover &&
+      action != CommandEventType::kToggleMenu &&
+      action != CommandEventType::kShowMenu &&
+      action != CommandEventType::kHideMenu) {
+    return nullptr;
+  }
+
+  // Hint popovers that represent plain text content should not estbablish a
+  // details relation - as they are used to derive the text alternative - as if
+  // they are a tooltip. See the TextAlternativeFromTooltip function for more on
+  // this.
+  AXObject* ax_popover = AXObjectCache().Get(command_for);
+  if (command_for->PopoverType() == PopoverValueType::kHint &&
+      ax_popover->IsPlainContent()) {
+    return nullptr;
+  }
+
+  return ax_popover;
 }
 
 // Interest for invoking elements (with the `interestfor` attribute) should

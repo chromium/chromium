@@ -305,8 +305,9 @@ bool HTMLDetailsElement::IsValidBuiltinCommand(HTMLElement& invoker,
 
 bool HTMLDetailsElement::HandleCommandInternal(HTMLElement& invoker,
                                                CommandEventType command) {
-  CHECK(IsValidBuiltinCommand(invoker, command));
-
+  if (!IsValidBuiltinCommand(invoker, command)) {
+    return false;
+  }
   if (HTMLElement::HandleCommandInternal(invoker, command)) {
     return true;
   }

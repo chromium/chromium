@@ -33,12 +33,7 @@ class CORE_EXPORT HTMLMenuItemElement final : public HTMLElement {
   HTMLMenuBarElement* OwnerMenuBarElement() const;
   HTMLMenuListElement* OwnerMenuListElement() const;
 
-  // Invoker Commands (https://github.com/whatwg/html/pull/9841)
-  // TODO: Have command and commandfor attributes specced for menuitem.
-  Element* commandForElement() const;
-  AtomicString command() const;
-  void setCommand(const AtomicString& type);
-  CommandEventType GetCommandEventType(const AtomicString& type) const;
+  bool CanBeCommandInvoker() const override { return true; }
 
   Node::InsertionNotificationRequest InsertedInto(ContainerNode&) override;
   void RemovedFrom(ContainerNode&) override;
