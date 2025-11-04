@@ -13,18 +13,6 @@
         "cros": {
             "description": "beta/stable",
             "gardener_rotation": "chrome_browser_release"
-        },
-        "fuchsia": {
-            "description": "beta/stable",
-            "gardener_rotation": "chrome_browser_release"
-        },
-        "mac": {
-            "description": "beta/stable",
-            "gardener_rotation": "chrome_browser_release"
-        },
-        "windows": {
-            "description": "beta/stable",
-            "gardener_rotation": "chrome_browser_release"
         }
     }
 }
