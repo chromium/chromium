@@ -21,6 +21,7 @@
 #include "chrome/browser/ash/app_restore/app_restore_arc_task_handler.h"
 #include "chrome/browser/ash/app_restore/app_restore_arc_task_handler_factory.h"
 #include "chrome/browser/ash/apps/apk_web_app_service.h"
+#include "chrome/browser/ash/apps/webapk/webapk_manager.h"
 #include "chrome/browser/ash/arc/accessibility/arc_accessibility_helper_bridge.h"
 #include "chrome/browser/ash/arc/adbd/arc_adbd_monitor_bridge.h"
 #include "chrome/browser/ash/arc/arc_util.h"
@@ -71,6 +72,7 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
 #include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/channel/channel_info.h"
 #include "chromeos/ash/components/memory/swap_configuration.h"
@@ -413,6 +415,10 @@ void ArcServiceLauncher::OnPrimaryUserProfilePrepared(Profile* profile) {
     ArcObbMounterBridge::GetForBrowserContext(profile);
   }
 
+  if (web_app::AreWebAppsEnabled(profile)) {
+    web_apk_manager_ = std::make_unique<apps::WebApkManager>(profile);
+  }
+
   arc_session_manager_->Initialize();
   arc_play_store_enabled_preference_handler_ =
       std::make_unique<ArcPlayStoreEnabledPreferenceHandler>(
@@ -428,6 +434,7 @@ void ArcServiceLauncher::Shutdown() {
 
   arc_play_store_enabled_preference_handler_.reset();
   arc_session_manager_->Shutdown();
+  web_apk_manager_.reset();
   arc_net_url_opener_.reset();
   arc_icon_cache_delegate_provider_.reset();
   arc_dlc_installer_.reset();

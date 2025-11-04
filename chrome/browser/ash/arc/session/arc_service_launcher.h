@@ -23,6 +23,10 @@ namespace ash {
 class SchedulerConfigurationManagerBase;
 }
 
+namespace apps {
+class WebApkManager;
+}  // namespace apps
+
 namespace arc {
 
 class ArcDiskSpaceMonitor;
@@ -132,6 +136,8 @@ class ArcServiceLauncher {
       scheduler_configuration_manager_;
 
   std::unique_ptr<ArcDlcInstaller> arc_dlc_installer_;
+
+  std::unique_ptr<apps::WebApkManager> web_apk_manager_;
 
   base::WeakPtrFactory<ArcServiceLauncher> weak_factory_{this};
 };

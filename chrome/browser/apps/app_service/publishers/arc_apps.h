@@ -52,7 +52,6 @@ class Profile;
 namespace apps {
 
 class PublisherTest;
-class WebApkManager;
 struct AppLaunchParams;
 
 // An app publisher (in the App Service sense) of ARC++ apps,
@@ -72,8 +71,6 @@ class ArcApps : public KeyedService,
   ArcApps(const ArcApps&) = delete;
   ArcApps& operator=(const ArcApps&) = delete;
   ~ArcApps() override;
-
-  WebApkManager* GetWebApkManagerForTesting() { return web_apk_manager_.get(); }
 
   // TODO(crbug.com/450429333, crbug.com/451841683): Remove this once we've
   // completed the refactoring of ArcNotificationManager, and moved out
@@ -253,8 +250,6 @@ class ArcApps : public KeyedService,
 
   // Handles requesting app shortcuts from Android.
   std::unique_ptr<arc::ArcAppShortcutsRequest> arc_app_shortcuts_request_;
-
-  std::unique_ptr<apps::WebApkManager> web_apk_manager_;
 
   base::ScopedObservation<arc::ArcSessionManager,
                           arc::ArcSessionManagerObserver>

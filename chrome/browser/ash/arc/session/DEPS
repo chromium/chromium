@@ -51,6 +51,10 @@ include_rules = [
 ]
 
 specific_include_rules = {
+  "arc_service_launcher\\.cc": [
+    "+chrome/browser/web_applications/web_app_utils.h",
+  ],
+
   "arc_session_manager_browsertest\.cc": [
     "+chrome/browser/ash/test",
     "+chrome/browser/ui/browser_window.h",
