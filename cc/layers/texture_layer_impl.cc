@@ -264,7 +264,7 @@ void TextureLayerImpl::SetInInvisibleLayerTree() {
   //
   // In this case, main is responsible for giving us the transferable resource
   // (and making sure that the layer properties are pushed) next time the tree
-  // becomes visible. See Canvas2DLayerBridge::PageVisibilityChanged().
+  // becomes visible. See CanvasRenderingContext2D::PageVisibilityChanged().
   if (base::FeatureList::IsEnabled(
           features::kClearCanvasResourcesInBackground) &&
       transferable_resource_.resource_source ==
