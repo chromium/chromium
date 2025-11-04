@@ -1,23 +1,11 @@
 This is a testharness.js-based test.
-Found 18 FAIL, 0 TIMEOUT, 0 NOTRUN.
-[FAIL] Property box-shadow value 'inherit' no zoom
-  assert_equals: expected "rgb(0, 0, 0) 5px 5px 5px 0px" but got "rgb(0, 0, 0) 2.5px 2.5px 2.5px 0px"
+Found 12 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Property box-shadow value 'inherit' zoom: 2
   assert_equals: expected "rgb(0, 0, 0) 5px 5px 5px 0px" but got "rgb(0, 0, 0) 2.5px 2.5px 2.5px 0px"
-[FAIL] Property filter value 'inherit' no zoom
-  assert_equals: expected "drop-shadow(rgb(0, 0, 0) 5px 5px 5px)" but got "drop-shadow(rgb(0, 0, 0) 2.5px 2.5px 2.5px)"
 [FAIL] Property filter value 'inherit' zoom: 2
   assert_equals: expected "drop-shadow(rgb(0, 0, 0) 5px 5px 5px)" but got "drop-shadow(rgb(0, 0, 0) 2.5px 2.5px 2.5px)"
-[FAIL] Property height value 'inherit' no zoom
-  assert_equals: expected "9x" but got "0px"
-[FAIL] Property height value 'inherit' zoom: 2
-  assert_equals: expected "9x" but got "0px"
-[FAIL] Property margin value 'inherit' no zoom
-  assert_equals: expected "-10px 20px 30px -40px" but got "-5px 10px 15px -20px"
 [FAIL] Property margin value 'inherit' zoom: 2
   assert_equals: expected "-10px 20px 30px -40px" but got "-5px 10px 15px -20px"
-[FAIL] Property padding value 'inherit' no zoom
-  assert_equals: expected "10px 20px 30px 40px" but got "5px 10px 15px 20px"
 [FAIL] Property padding value 'inherit' zoom: 2
   assert_equals: expected "10px 20px 30px 40px" but got "5px 10px 15px 20px"
 [FAIL] Property text-decoration-thickness value '4px' no zoom
