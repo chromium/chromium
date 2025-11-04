@@ -519,6 +519,39 @@ TEST_P(PersistentCacheTest, AbandonementDetected) {
       base::test::ErrorIs(TransactionError::kConnectionError));
 }
 
+TEST_P(PersistentCacheTest, RecoveryFromTransientError) {
+  auto cache = OpenCache();
+
+  ASSERT_OK_AND_ASSIGN(auto reader_params,
+                       cache->ExportReadOnlyBackendParams());
+
+  // Baseline insert works.
+  EXPECT_THAT(
+      cache->Insert(kKey, base::byte_span_from_cstring("1"), EntryMetadata{}),
+      base::test::HasValue());
+
+  // Lock the db file in shared mode.
+  auto reader_vfs_file_set =
+      SqliteBackendImpl::GetVfsFileSetFromParams(std::move(reader_params));
+  auto reader_files = reader_vfs_file_set.GetFiles();
+  auto reader_db_file = reader_files[0].second;
+  ASSERT_EQ(reader_db_file->Lock(SQLITE_LOCK_SHARED), SQLITE_OK);
+
+  // Held lock causes transient error.
+  EXPECT_THAT(
+      cache->Insert(kKey, base::byte_span_from_cstring("1"), EntryMetadata{}),
+      base::test::ErrorIs(TransactionError::kTransient));
+
+  // Unlock works.
+  ASSERT_EQ(reader_db_file->Unlock(SQLITE_LOCK_NONE), SQLITE_OK);
+  ASSERT_EQ(reader_db_file->LockModeForTesting(), SQLITE_LOCK_NONE);
+
+  // Insert now succeeds.
+  EXPECT_THAT(
+      cache->Insert(kKey, base::byte_span_from_cstring("1"), EntryMetadata{}),
+      base::test::HasValue());
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          PersistentCacheTest,
                          testing::Values(BackendType::kSqlite));

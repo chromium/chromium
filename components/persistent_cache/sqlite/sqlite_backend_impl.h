@@ -50,6 +50,8 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) SqliteBackendImpl : public Backend {
   void Abandon() override;
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(PersistentCacheTest, RecoveryFromTransientError);
+
   // Translate error codes from `db_` into a `TransactionError`.
   TransactionError TranslateError(int error_code);
 
