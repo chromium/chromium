@@ -17,6 +17,7 @@ import static org.chromium.chrome.browser.ntp_customization.theme.NtpThemeProper
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.util.Pair;
 import android.view.View;
 
@@ -31,7 +32,9 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ntp_customization.BottomSheetDelegate;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationMetricsUtils;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType;
 import org.chromium.chrome.browser.ntp_customization.R;
@@ -130,18 +133,7 @@ public class NtpThemeMediator {
                     mActivityResultRegistry.register(
                             UPLOAD_IMAGE_KEY,
                             new ActivityResultContracts.GetContent(),
-                            uri -> {
-                                // If users didn't select any file, the returned uri is null.
-                                if (uri == null) return;
-
-                                // When a new image is selected, store it and
-                                // reset any existing crop settings from a previous
-                                // image.
-                                ShareImageFileUtils.getBitmapFromUriAsync(
-                                        mContext, uri, mOnImageSelectedCallback);
-                                updateTrailingIconVisibilityForSectionType(IMAGE_FROM_DISK);
-                                mNtpThemeBridge.selectLocalBackgroundImage();
-                            });
+                            this::onUploadImageResult);
         }
 
         mThemePropertyModel.set(
@@ -180,6 +172,27 @@ public class NtpThemeMediator {
                 mThemePropertyModel.set(IS_SECTION_TRAILING_ICON_VISIBLE, new Pair<>(i, false));
             }
         }
+    }
+
+    /**
+     * Handles the result of the activity launched to upload an image. If a URI is provided, it
+     * attempts to decode the image and updates the UI.
+     *
+     * @param uri The URI of the selected image, or null if no image was selected.
+     */
+    @VisibleForTesting
+    void onUploadImageResult(Uri uri) {
+        // If users didn't select any file, the returned uri is null.
+        if (uri != null) {
+            // When a new image is selected, store it and reset any existing crop settings from a
+            // previous image.
+            ShareImageFileUtils.getBitmapFromUriAsync(mContext, uri, mOnImageSelectedCallback);
+            updateTrailingIconVisibilityForSectionType(IMAGE_FROM_DISK);
+            mNtpThemeBridge.selectLocalBackgroundImage();
+        }
+
+        NtpCustomizationMetricsUtils.recordBottomSheetShown(
+                NtpCustomizationCoordinator.BottomSheetType.UPLOAD_IMAGE);
     }
 
     /**

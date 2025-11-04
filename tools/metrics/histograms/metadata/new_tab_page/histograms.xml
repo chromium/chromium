@@ -761,6 +761,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NewTabPage.Customization.Theme.UploadImage.PreviewShow"
+    enum="BooleanVisible" expires_after="2026-11-03">
+  <owner>hanxi@chromium.org</owner>
+  <owner>yyanting@google.com</owner>
+  <owner>clank-start@google.com</owner>
+  <summary>
+    Records the total number of impressions of the theme upload image preview
+    dialog. The histogram is logged every time when the theme upload image
+    preview dialog is shown, regardless of whether the preview dialog has been
+    shown before. This metric is logged on Android only.
+  </summary>
+</histogram>
+
 <histogram name="NewTabPage.Customization.{ModuleToggleState}"
     enum="ModuleType" expires_after="2026-03-22">
   <owner>hanxi@chromium.org</owner>

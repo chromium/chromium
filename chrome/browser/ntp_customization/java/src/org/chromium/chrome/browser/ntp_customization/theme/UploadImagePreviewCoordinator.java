@@ -25,6 +25,7 @@ import androidx.core.view.WindowInsetsCompat;
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationMetricsUtils;
 import org.chromium.chrome.browser.ntp_customization.R;
 import org.chromium.components.browser_ui.widget.ChromeDialog;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -91,6 +92,7 @@ public class UploadImagePreviewCoordinator {
                 });
 
         dialog.show();
+        NtpCustomizationMetricsUtils.recordThemeUploadImagePreviewShow();
     }
 
     PropertyModel getPropertyModelForTesting() {

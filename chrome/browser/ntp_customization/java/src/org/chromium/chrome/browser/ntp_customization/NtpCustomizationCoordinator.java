@@ -74,7 +74,8 @@ public class NtpCustomizationCoordinator {
         BottomSheetType.MVT,
         BottomSheetType.CHROME_COLORS,
         BottomSheetType.THEME_COLLECTIONS,
-        BottomSheetType.SINGLE_THEME_COLLECTION
+        BottomSheetType.SINGLE_THEME_COLLECTION,
+        BottomSheetType.UPLOAD_IMAGE
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface BottomSheetType {
@@ -86,7 +87,8 @@ public class NtpCustomizationCoordinator {
         int THEME_COLLECTIONS = 5;
         int SINGLE_THEME_COLLECTION = 6;
         int CHROME_COLORS = 7;
-        int NUM_ENTRIES = 8;
+        int UPLOAD_IMAGE = 8; // No dedicated bottom sheet for upload image.
+        int NUM_ENTRIES = 9;
     }
 
     /**

@@ -31,6 +31,7 @@ import org.robolectric.shadows.ShadowDialog;
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType;
@@ -50,14 +51,16 @@ public class UploadImagePreviewCoordinatorUnitTest {
     private View mSaveButton;
     private View mCancelButton;
     private NtpCustomizationConfigManager mConfigManager;
+    private Activity mActivity;
+    private Bitmap mBitmap;
 
     @Before
     public void setUp() {
-        Activity activity = Robolectric.buildActivity(Activity.class).create().get();
-        activity.setTheme(R.style.Theme_BrowserUI_DayNight);
-        Bitmap bitmap = Bitmap.createBitmap(10, 10, Bitmap.Config.ARGB_8888);
+        mActivity = Robolectric.buildActivity(Activity.class).create().get();
+        mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
+        mBitmap = Bitmap.createBitmap(10, 10, Bitmap.Config.ARGB_8888);
         mUploadImagePreviewCoordinator =
-                new UploadImagePreviewCoordinator(activity, bitmap, mOnClickedCallback);
+                new UploadImagePreviewCoordinator(mActivity, mBitmap, mOnClickedCallback);
         mDialog = ShadowDialog.getLatestDialog();
         View contentView = mDialog.findViewById(android.R.id.content);
         mSaveButton = contentView.findViewById(R.id.save_button);
@@ -77,6 +80,17 @@ public class UploadImagePreviewCoordinatorUnitTest {
     public void testConstructor_showsDialog() {
         assertNotNull("Dialog should have been created and shown.", mDialog);
         assertTrue("Dialog should be showing.", mDialog.isShowing());
+    }
+
+    @Test
+    public void testMetricThemeUploadImagePreviewShow() {
+        String histogramName = "NewTabPage.Customization.Theme.UploadImage.PreviewShow";
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(histogramName, true);
+        mUploadImagePreviewCoordinator =
+                new UploadImagePreviewCoordinator(mActivity, mBitmap, mOnClickedCallback);
+
+        histogramWatcher.assertExpected();
     }
 
     @Test

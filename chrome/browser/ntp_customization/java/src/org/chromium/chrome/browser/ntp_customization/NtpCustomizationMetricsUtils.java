@@ -33,6 +33,10 @@ public class NtpCustomizationMetricsUtils {
     @VisibleForTesting
     static final String HISTOGRAM_CUSTOMIZATION_TURN_OFF_MODULE = ".TurnOffModule";
 
+    @VisibleForTesting
+    static final String HISTOGRAM_THEME_UPLOAD_IMAGE_PREVIEW_SHOW =
+            HISTOGRAM_NTP_CUSTOMIZATION_PREFIX + ".Theme.UploadImage.PreviewShow";
+
     /**
      * Records the total number of times each NTP customization bottom sheet is shown. Each opening
      * of the bottom sheet is counted, regardless of whether it has been opened previously.
@@ -89,5 +93,10 @@ public class NtpCustomizationMetricsUtils {
      */
     public static void recordMvtToggledInBottomSheet(boolean isEnabled) {
         RecordHistogram.recordBooleanHistogram(HISTOGRAM_NTP_CUSTOMIZATION_MVT_ENABLED, isEnabled);
+    }
+
+    /** Records the total number of times the Upload Image Preview is shown. */
+    public static void recordThemeUploadImagePreviewShow() {
+        RecordHistogram.recordBooleanHistogram(HISTOGRAM_THEME_UPLOAD_IMAGE_PREVIEW_SHOW, true);
     }
 }

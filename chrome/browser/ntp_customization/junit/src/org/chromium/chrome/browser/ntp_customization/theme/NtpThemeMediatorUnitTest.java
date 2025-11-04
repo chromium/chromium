@@ -29,6 +29,7 @@ import static org.chromium.chrome.browser.ntp_customization.theme.NtpThemeProper
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.util.Pair;
 import android.view.ContextThemeWrapper;
 import android.view.View;
@@ -46,6 +47,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.ntp_customization.BottomSheetDelegate;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType;
@@ -73,6 +75,7 @@ public class NtpThemeMediatorUnitTest {
     @Mock private NtpCustomizationConfigManager mNtpCustomizationConfigManager;
     @Mock private NtpThemeCollectionsCoordinator mNtpThemeCollectionsCoordinator;
     @Mock private NtpChromeColorsCoordinator mNtpChromeColorsCoordinator;
+    @Mock private Uri mUri;
 
     private PropertyModel mBottomSheetPropertyModel;
     private PropertyModel mThemePropertyModel;
@@ -254,6 +257,30 @@ public class NtpThemeMediatorUnitTest {
                 .thenReturn(NtpBackgroundImageType.CHROME_COLOR);
         mMediator.handleChromeDefaultSectionClick(mView);
         verify(mBottomSheetDelegate, times(2)).onNewColorSelected(eq(true));
+    }
+
+    @Test
+    public void testOnUploadImageResult_nullUri() {
+        createMediator(true);
+        String histogramName = "NewTabPage.Customization.BottomSheet.Shown";
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        histogramName, BottomSheetType.UPLOAD_IMAGE);
+
+        mMediator.onUploadImageResult(null);
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    public void testOnUploadImageResult_validUri() {
+        createMediator(true);
+        String histogramName = "NewTabPage.Customization.BottomSheet.Shown";
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        histogramName, BottomSheetType.UPLOAD_IMAGE);
+
+        mMediator.onUploadImageResult(mUri);
+        histogramWatcher.assertExpected();
     }
 
     private void createMediator(boolean shouldShowAlone) {

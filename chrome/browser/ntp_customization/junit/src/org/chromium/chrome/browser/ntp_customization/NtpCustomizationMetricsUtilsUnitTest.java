@@ -87,4 +87,14 @@ public class NtpCustomizationMetricsUtilsUnitTest {
         NtpCustomizationMetricsUtils.recordMvtToggledInBottomSheet(isEnabled);
         histogramWatcher.assertExpected();
     }
+
+    @Test
+    public void testRecordThemeUploadImagePreviewShow() {
+        String histogramName = "NewTabPage.Customization.Theme.UploadImage.PreviewShow";
+
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(histogramName, true);
+        NtpCustomizationMetricsUtils.recordThemeUploadImagePreviewShow();
+        histogramWatcher.assertExpected();
+    }
 }

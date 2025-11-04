@@ -353,6 +353,7 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="New Tab Page Theme Collections Bottom Sheet"/>
   <int value="6" label="New Tab Page Single Theme Collection Bottom Sheet"/>
   <int value="7" label="New Tab Page Chrome Colors Bottom Sheet"/>
+  <int value="8" label="New Tab Page Upload Image Photo Picker"/>
 </enum>
 
 <enum name="NtpCustomizationEntryPoint">
