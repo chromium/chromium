@@ -10,6 +10,9 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
+// <if expr="not is_chromeos">
+import {isChildVisible} from 'chrome://webui-test/test_util.js';
+// </if>
 
 import {TestBrowserService} from './test_browser_service.js';
 
@@ -372,4 +375,18 @@ suite('HistoryAppTest', function() {
     await microtasksFinished();
     assertFalse(historyEmbeddingsElement.showRelativeTimes);
   });
+
+  // <if expr="not is_chromeos">
+  // history sync promo is not shown for ChromeOS.
+  test('ShowsRelevantHistorySyncPromoElementsWhenSignedOut', async () => {
+    loadTimeData.overrideValues({unoPhase2FollowUp: true});
+    element = document.createElement('history-app');
+    document.body.appendChild(element);
+    await microtasksFinished();
+    const historySyncPromo =
+        element.shadowRoot.querySelector('history-sync-promo');
+    assertTrue(!!historySyncPromo);
+    assertTrue(isChildVisible(historySyncPromo, '#signed-out-description'));
+  });
+  // </if>
 });

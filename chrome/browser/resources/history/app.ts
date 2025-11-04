@@ -9,6 +9,9 @@ import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render_lit.js';
 import 'chrome://resources/cr_elements/cr_tabs/cr_tabs.js';
 import 'chrome://resources/cr_elements/cr_page_selector/cr_page_selector.js';
 import './history_embeddings_promo.js';
+// <if expr="not is_chromeos">
+import './history_sync_promo.js';
+// </if>
 import './history_list.js';
 import './history_toolbar.js';
 import './query_manager.js';
@@ -150,6 +153,9 @@ export class HistoryAppElement extends HistoryAppElementBase {
         type: Boolean,
         reflect: true,
       },
+      // <if expr="not is_chromeos">
+      unoPhase2FollowUpEnabled_: {type: Boolean},
+      // </if>
       contentPage_: {type: String},
       tabsContentPage_: {type: String},
       // The id of the currently selected page.
@@ -200,6 +206,10 @@ export class HistoryAppElement extends HistoryAppElementBase {
   };
   protected accessor enableHistoryEmbeddings_: boolean =
       loadTimeData.getBoolean('enableHistoryEmbeddings');
+  // <if expr="not is_chromeos">
+  protected accessor unoPhase2FollowUpEnabled_: boolean =
+      loadTimeData.getBoolean('unoPhase2FollowUp');
+  // </if>
   protected accessor hasDrawer_: boolean;
   protected accessor historyClustersEnabled_: boolean =
       loadTimeData.getBoolean('isHistoryClustersEnabled');
@@ -749,6 +759,14 @@ export class HistoryAppElement extends HistoryAppElementBase {
   setHasDrawerForTesting(enabled: boolean) {
     this.hasDrawer_ = enabled;
   }
+
+  // <if expr="not is_chromeos">
+  // TODO(https://crbug.com/418144407): add more conditions e.g. prefs, sync
+  // disabled etc.
+  protected shouldShowHistorySyncPromo_(): boolean {
+    return this.unoPhase2FollowUpEnabled_;
+  }
+  // </if>
 
   protected shouldShowHistoryEmbeddings_(): boolean {
     if (!loadTimeData.getBoolean('enableHistoryEmbeddings')) {

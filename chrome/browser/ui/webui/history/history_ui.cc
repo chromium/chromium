@@ -82,6 +82,11 @@ content::WebUIDataSource* CreateAndAddHistoryUIHTMLSource(Profile* profile) {
       "replaceSyncPromosWithSignInPromos",
       base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos));
 
+#if !BUILDFLAG(IS_CHROMEOS)
+  source->AddBoolean("unoPhase2FollowUp",
+                     base::FeatureList::IsEnabled(syncer::kUnoPhase2FollowUp));
+#endif  // BUILDFLAG!(IS_CHROMEOS)
+
   HistoryUtil::PopulateCommonSourceForHistory(source, profile);
 
   static constexpr webui::LocalizedString kStrings[] = {
@@ -152,6 +157,10 @@ content::WebUIDataSource* CreateAndAddHistoryUIHTMLSource(Profile* profile) {
   AccountInfo account_info =
       signin_ui_util::GetSingleAccountForPromos(identity_manager);
   source->AddString(
+      "historySyncPromoBodySignedIn",
+      l10n_util::GetStringFUTF16(IDS_HISTORY_SYNC_PROMO_BODY_SIGNED_IN,
+                                 base::UTF8ToUTF16(account_info.email)));
+  source->AddString(
       "turnOnSignedInSyncHistoryPromoBodySignInSyncOff",
       l10n_util::GetStringFUTF16(
           IDS_RECENT_TABS_SYNC_HISTORY_PROMO_BODY_SIGNED_IN_SYNC_OFF,
@@ -169,6 +178,16 @@ content::WebUIDataSource* CreateAndAddHistoryUIHTMLSource(Profile* profile) {
     source->AddLocalizedString("turnOnSyncButton",
                                IDS_HISTORY_TURN_ON_SYNC_BUTTON);
   }
+
+  static constexpr webui::LocalizedString kHistorySyncStrings[] = {
+      {"historySyncPromoTitle", IDS_HISTORY_SYNC_PROMO_TITLE},
+      {"historySyncPromoBodySignedOut", IDS_HISTORY_SYNC_PROMO_BODY_SIGNED_OUT},
+      {"historySyncPromoBodySignInPending",
+       IDS_HISTORY_SYNC_PROMO_BODY_SIGN_IN_PENDING},
+      {"historySyncPromoBodySignInPendingSyncHistoryOn",
+       IDS_HISTORY_SYNC_PROMO_BODY_SIGN_IN_PENDING_SYNC_HISTORY_ON},
+  };
+  source->AddLocalizedStrings(kHistorySyncStrings);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   bool enable_history_embeddings =
