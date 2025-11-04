@@ -4707,7 +4707,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "DelayFirstPeriodicPAPurgeOrReclaim",
-                        "DelayFirstWorkerWake",
                         "MainThreadCompositingPriority",
                         "QuickIntensiveWakeUpThrottlingAfterLoading",
                         "ReduceCookieIPCs",
@@ -4729,7 +4728,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "DelayFirstPeriodicPAPurgeOrReclaim",
-                        "DelayFirstWorkerWake",
                         "QuickIntensiveWakeUpThrottlingAfterLoading",
                         "ReduceCookieIPCs",
                         "RunTasksByBatches",
@@ -4752,7 +4750,6 @@
                     "enable_features": [
                         "CacheMacSandboxProfiles",
                         "DelayFirstPeriodicPAPurgeOrReclaim",
-                        "DelayFirstWorkerWake",
                         "MacSetDefaultTaskRole",
                         "MainThreadCompositingPriority",
                         "QuickIntensiveWakeUpThrottlingAfterLoading",
@@ -4777,7 +4774,6 @@
                     "enable_features": [
                         "AboveNormalCompositingBrowserWin",
                         "DelayFirstPeriodicPAPurgeOrReclaim",
-                        "DelayFirstWorkerWake",
                         "ExplicitHighResolutionTimerWin",
                         "MainThreadCompositingPriority",
                         "QuickIntensiveWakeUpThrottlingAfterLoading",
