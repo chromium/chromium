@@ -154,6 +154,20 @@ TEST_F(LaunchModeRecorderTest, SlowModeChromeAppId) {
   ComputeLaunchModeAndVerify(cmd_line, LaunchMode::kWithAppId);
 }
 
+// Launch with --source-app-id and a file to make sure the launch mode is
+// kWithFile instead of kWithAppId.
+TEST_F(LaunchModeRecorderTest, SlowModeChromeAppIdAndFile) {
+  base::CommandLine cmd_line(base::CommandLine::NO_PROGRAM);
+  cmd_line.AppendSwitchNative(switches::kSourceAppId, L"ChromeAppId");
+  base::ScopedTempDir test_dir;
+  ASSERT_TRUE(test_dir.CreateUniqueTempDir());
+  base::FilePath test_file;
+  base::CreateTemporaryFileInDir(test_dir.GetPath(), &test_file);
+  ASSERT_TRUE(base::PathExists(test_file));
+  cmd_line.AppendArgPath(test_file);
+  ComputeLaunchModeAndVerify(cmd_line, LaunchMode::kWithFile);
+}
+
 TEST_F(LaunchModeRecorderTest, SlowModeWebAppShortcut) {
   static constexpr struct PathKeyAndLaunchMode kPathKeysAndModes[] = {
       {base::DIR_COMMON_START_MENU, LaunchMode::kWebAppShortcutStartMenu},
