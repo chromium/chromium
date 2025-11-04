@@ -268,12 +268,6 @@ bool WebUIBrowserExtensionsContainer::HasAnyExtensions() const {
   return !actions_.empty();
 }
 
-void WebUIBrowserExtensionsContainer::UpdateToolbarActionHoverCard(
-    ToolbarActionView* action_view,
-    ToolbarActionHoverCardUpdateType update_type) {
-  NOTIMPLEMENTED();
-}
-
 void WebUIBrowserExtensionsContainer::ShowContextMenuAsFallback(
     const extensions::ExtensionId& action_id) {
   ShowContextMenu(ui::mojom::MenuSourceType::kNone, action_id);

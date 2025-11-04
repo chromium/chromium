@@ -96,8 +96,6 @@ class ExtensionActionViewController
           context_menu_source) override;
   void ExecuteUserAction(InvocationSource source) override;
   void TriggerPopupForAPI(ShowPopupCallback callback) override;
-  void UpdateHoverCard(ToolbarActionView* action_view,
-                       ToolbarActionHoverCardUpdateType update_type) override;
   void RegisterCommand() override;
   void UnregisterCommand() override;
 

@@ -15,7 +15,6 @@
 #include "extensions/common/extension_id.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
-class ToolbarActionView;
 class ToolbarActionViewController;
 
 namespace views {
@@ -50,11 +49,6 @@ class ExtensionsContainerViews : public ExtensionsContainer {
   // any animation is complete.
   virtual void PopOutAction(const extensions::ExtensionId& action_id,
                             base::OnceClosure closure) = 0;
-
-  // Updates the hover card for `action_view` based on `update_type`.
-  virtual void UpdateToolbarActionHoverCard(
-      ToolbarActionView* action_view,
-      ToolbarActionHoverCardUpdateType update_type) = 0;
 
   // Collapses the confirmation on the request access button, effectively
   // hiding the button. Does nothing if the confirmation is not showing

@@ -26,7 +26,6 @@ class MenuModel;
 }
 
 class ToolbarActionViewDelegate;
-class ToolbarActionView;
 
 // The basic controller class for an action that is shown on the toolbar -
 // an extension action (like browser actions) or a component action (like
@@ -154,10 +153,6 @@ class ToolbarActionViewController {
   // caller's responsibility to guarantee it is valid to show a popup (i.e.,
   // the action is enabled, has a popup, etc).
   virtual void TriggerPopupForAPI(ShowPopupCallback callback) = 0;
-
-  // Updates the hover card for `action_view` based on `update_type`.
-  virtual void UpdateHoverCard(ToolbarActionView* action_view,
-                               ToolbarActionHoverCardUpdateType update_type) {}
 
   // Registers an accelerator. Called when the view is added to a widget.
   virtual void RegisterCommand() {}

@@ -54,6 +54,11 @@ class ToolbarActionView : public views::MenuButton,
     virtual void MovePinnedActionBy(const std::string& action_id,
                                     int move_by) = 0;
 
+    // Updates the hover card for `action_view` based on `update_type`.
+    virtual void UpdateHoverCard(
+        ToolbarActionView* action_view,
+        ToolbarActionHoverCardUpdateType update_type) = 0;
+
     // Called when a context menu is shown.
     virtual void OnContextMenuShown(const std::string& action_id) = 0;
 

@@ -44,9 +44,6 @@ class WebUIBrowserExtensionsContainer
                                         ShowPopupCallback callback) override;
   void ToggleExtensionsMenu() override;
   bool HasAnyExtensions() const override;
-  void UpdateToolbarActionHoverCard(
-      ToolbarActionView* action_view,
-      ToolbarActionHoverCardUpdateType update_type) override;
   void ShowContextMenuAsFallback(
       const extensions::ExtensionId& action_id) override;
   void OnPopupShown(const extensions::ExtensionId& action_id,

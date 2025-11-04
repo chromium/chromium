@@ -727,6 +727,12 @@ void ExtensionsToolbarContainer::MovePinnedActionBy(
   model_->MovePinnedAction(action_id, new_index);
 }
 
+void ExtensionsToolbarContainer::UpdateHoverCard(
+    ToolbarActionView* action_view,
+    ToolbarActionHoverCardUpdateType update_type) {
+  action_hover_card_controller_->UpdateHoverCard(action_view, update_type);
+}
+
 void ExtensionsToolbarContainer::OnContextMenuShown(
     const std::string& action_id) {
 #if BUILDFLAG(IS_MAC)
@@ -1073,12 +1079,6 @@ void ExtensionsToolbarContainer::CloseSidePanelButtonPressed() {
       extensions::ExtensionSidePanelCoordinator::GetPanelType());
 }
 
-void ExtensionsToolbarContainer::UpdateToolbarActionHoverCard(
-    ToolbarActionView* action_view,
-    ToolbarActionHoverCardUpdateType update_type) {
-  action_hover_card_controller_->UpdateHoverCard(action_view, update_type);
-}
-
 void ExtensionsToolbarContainer::CollapseConfirmation() {
   if (!request_access_button_->IsShowingConfirmation()) {
     return;
@@ -1115,8 +1115,7 @@ views::BubbleAnchor ExtensionsToolbarContainer::GetReferenceButtonForPopup(
 }
 
 void ExtensionsToolbarContainer::OnMouseExited(const ui::MouseEvent& event) {
-  UpdateToolbarActionHoverCard(nullptr,
-                               ToolbarActionHoverCardUpdateType::kHover);
+  UpdateHoverCard(nullptr, ToolbarActionHoverCardUpdateType::kHover);
 }
 
 void ExtensionsToolbarContainer::OnMouseMoved(const ui::MouseEvent& event) {
@@ -1127,8 +1126,7 @@ void ExtensionsToolbarContainer::OnMouseMoved(const ui::MouseEvent& event) {
   // know when the mouse leaves a toolbar action view and enters a toolbar
   // control. Therefore, listening for on mouse moved in the container reflects
   // moving the mouse from toolbar action view to toolbar controls.
-  UpdateToolbarActionHoverCard(nullptr,
-                               ToolbarActionHoverCardUpdateType::kHover);
+  UpdateHoverCard(nullptr, ToolbarActionHoverCardUpdateType::kHover);
 }
 
 void ExtensionsToolbarContainer::UpdateCloseSidePanelButtonIcon() {

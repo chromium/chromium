@@ -159,8 +159,7 @@ void ToolbarActionView::MaybeUpdateHoverCardStatus(
     return;
   }
 
-  view_controller_->UpdateHoverCard(this,
-                                    ToolbarActionHoverCardUpdateType::kHover);
+  delegate_->UpdateHoverCard(this, ToolbarActionHoverCardUpdateType::kHover);
 }
 
 void ToolbarActionView::UpdateState() {
@@ -201,8 +200,7 @@ gfx::Size ToolbarActionView::CalculatePreferredSize(
 }
 
 bool ToolbarActionView::OnMousePressed(const ui::MouseEvent& event) {
-  view_controller_->UpdateHoverCard(nullptr,
-                                    ToolbarActionHoverCardUpdateType::kEvent);
+  delegate_->UpdateHoverCard(nullptr, ToolbarActionHoverCardUpdateType::kEvent);
   if (event.IsOnlyLeftMouseButton()) {
     if (view_controller()->IsShowingPopup()) {
       // Left-clicking the button should always hide the popup.  In most cases,

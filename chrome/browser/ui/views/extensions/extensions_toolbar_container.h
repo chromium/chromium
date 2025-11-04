@@ -204,9 +204,6 @@ class ExtensionsToolbarContainer : public ToolbarIconContainerView,
                                         ShowPopupCallback callback) override;
   void ToggleExtensionsMenu() override;
   bool HasAnyExtensions() const override;
-  void UpdateToolbarActionHoverCard(
-      ToolbarActionView* action_view,
-      ToolbarActionHoverCardUpdateType update_type) override;
   void CollapseConfirmation() override;
   void ShowContextMenuAsFallback(
       const extensions::ExtensionId& action_id) override;
@@ -222,6 +219,8 @@ class ExtensionsToolbarContainer : public ToolbarIconContainerView,
   views::LabelButton* GetOverflowReferenceView() const override;
   gfx::Size GetToolbarActionSize() override;
   void MovePinnedActionBy(const std::string& action_id, int move_by) override;
+  void UpdateHoverCard(ToolbarActionView* action_view,
+                       ToolbarActionHoverCardUpdateType update_type) override;
   void OnContextMenuShown(const std::string& action_id) override;
   void OnContextMenuClosed(const std::string& action_id) override;
   void WriteDragDataForView(View* sender,

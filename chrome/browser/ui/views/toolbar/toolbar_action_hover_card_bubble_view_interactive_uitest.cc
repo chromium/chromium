@@ -102,7 +102,7 @@ class ToolbarActionHoverCardBubbleViewUITest : public ExtensionsToolbarUITest {
     // We don't use ToolbarActionView::OnMouseEntered here to invoke the hover
     // card because that path is disabled in browser tests. If we enabled it,
     // the real mouse might interfere with the test.
-    GetExtensionsToolbarContainer()->UpdateToolbarActionHoverCard(
+    GetExtensionsToolbarContainer()->UpdateHoverCard(
         action_view, ToolbarActionHoverCardUpdateType::kHover);
   }
 
