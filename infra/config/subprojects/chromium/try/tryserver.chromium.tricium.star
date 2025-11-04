@@ -9,6 +9,7 @@ load("@chromium-luci//gn_args.star", "gn_args")
 load("@chromium-luci//try.star", "SOURCELESS_BUILDER_CACHE", "try_")
 load("//lib/siso.star", "siso")
 load("//lib/try_constants.star", "try_constants")
+load("//lib/xcode.star", "xcode")
 
 try_.defaults.set(
     executable = try_constants.DEFAULT_EXECUTABLE,
@@ -140,6 +141,9 @@ try_.builder(
     cpu = cpu.ARM64,
     ssd = True,
     siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CQ,
+    # TODO(gbiv): Determine why this needs a system xcode and things like `Mac
+    # Builder` don't.
+    xcode = xcode.xcode_default,
 )
 
 try_.builder(
