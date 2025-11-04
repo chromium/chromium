@@ -7,6 +7,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/memory/free_deleter.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/scoped_process_information.h"
@@ -104,13 +105,7 @@ SBOX_TESTS_COMMAND int Process_Crash(int argc, wchar_t** argv) {
 }
 // Generate a event name, used to test thread creation.
 std::wstring GenerateEventName(DWORD pid) {
-  wchar_t buff[30] = {};
-  int res = UNSAFE_TODO(swprintf_s(buff, sizeof(buff) / sizeof(buff[0]),
-                                   L"ProcessPolicyTest_%08x", pid));
-  if (-1 != res) {
-    return std::wstring(buff);
-  }
-  return std::wstring();
+  return base::SysUTF8ToWide(base::StringPrintf("ProcessPolicyTest_%08x", pid));
 }
 
 // This is the function that is called when testing thread creation.
