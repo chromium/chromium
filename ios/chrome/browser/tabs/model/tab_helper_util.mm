@@ -119,6 +119,7 @@
 #import "ios/chrome/browser/web/model/web_performance_metrics/web_performance_metrics_tab_helper.h"
 #import "ios/chrome/browser/web/model/web_view_proxy/web_view_proxy_tab_helper.h"
 #import "ios/chrome/browser/web_selection/model/web_selection_tab_helper.h"
+#import "ios/chrome/browser/webauthn/model/ios_chrome_passkey_client.h"
 #import "ios/chrome/browser/webauthn/model/ios_passkey_model_factory.h"
 #import "ios/chrome/browser/webui/model/net_export_tab_helper.h"
 #import "ios/components/security_interstitials/https_only_mode/feature.h"
@@ -310,7 +311,7 @@ void AttachTabHelpers(web::WebState* web_state, TabHelperFilter filter_flags) {
     if (base::FeatureList::IsEnabled(kIOSPasskeyShim)) {
       PasskeyTabHelper::CreateForWebState(
           web_state, IOSPasskeyModelFactory::GetForProfile(profile),
-          base::FeatureList::IsEnabled(kIOSPasskeyModalLoginWithShim));
+          std::make_unique<IOSChromePasskeyClient>(web_state));
     }
   }
 

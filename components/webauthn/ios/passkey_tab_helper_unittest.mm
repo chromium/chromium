@@ -22,11 +22,30 @@ constexpr char kWebAuthenticationIOSContentAreaEventHistogram[] =
 
 }  // namespace
 
+class FakeIOSPasskeyClient : public IOSPasskeyClient {
+ public:
+  FakeIOSPasskeyClient() = default;
+  ~FakeIOSPasskeyClient() override = default;
+
+  bool IsModalLoginWithShimAllowed() const override { return false; }
+  bool IsConditionalLoginWithShimAllowed() const override { return false; }
+  bool PerformUserVerification() override { return false; }
+  void FetchKeys(webauthn::ReauthenticatePurpose purpose,
+                 webauthn::KeysFetchedCallback callback) override {
+    if (!callback.is_null()) {
+      std::move(callback).Run({});
+    }
+  }
+  void ShowSuggestionBottomSheet() override {}
+  void AllowPasskeyCreationInfobar(bool allowed) override {}
+};
+
 class PasskeyTabHelperTest : public PlatformTest {
  public:
   PasskeyTabHelperTest() {
-    PasskeyTabHelper::CreateForWebState(&fake_web_state_, passkey_model_.get(),
-                                        /*allow_modal_login*/ false);
+    PasskeyTabHelper::CreateForWebState(
+        &fake_web_state_, passkey_model_.get(),
+        std::make_unique<FakeIOSPasskeyClient>());
   }
 
  protected:

@@ -75,14 +75,14 @@ void PasskeyTabHelper::HandleGetResolvedEvent(
 
 PasskeyTabHelper::PasskeyTabHelper(web::WebState* web_state,
                                    webauthn::PasskeyModel* passkey_model,
-                                   bool allow_modal_login)
-    : passkey_model_(CHECK_DEREF(passkey_model)),
-      allow_modal_login_(allow_modal_login) {
+                                   std::unique_ptr<IOSPasskeyClient> client)
+    : passkey_model_(CHECK_DEREF(passkey_model)), client_(std::move(client)) {
+  CHECK(client_);
   CHECK(web_state);
   web_state->AddObserver(this);
 
   PasskeyJavaScriptFeature::GetInstance()->SetAllowModalLogin(
-      web_state, allow_modal_login);
+      web_state, client_->IsModalLoginWithShimAllowed());
 }
 
 // WebStateObserver
@@ -91,7 +91,7 @@ void PasskeyTabHelper::DidFinishNavigation(
     web::WebState* web_state,
     web::NavigationContext* navigation_context) {
   PasskeyJavaScriptFeature::GetInstance()->SetAllowModalLogin(
-      web_state, allow_modal_login_);
+      web_state, client_->IsModalLoginWithShimAllowed());
 }
 
 void PasskeyTabHelper::WebStateDestroyed(web::WebState* web_state) {

@@ -23,3 +23,15 @@ source_set("model") {
     "//ios/web/public",
   ]
 }
+
+source_set("ios_chrome_passkey_client") {
+  sources = [
+    "ios_chrome_passkey_client.h",
+    "ios_chrome_passkey_client.mm",
+  ]
+  deps = [
+    "//components/webauthn/ios",
+    "//components/webauthn/ios:features",
+    "//ios/web/public",
+  ]
+}
