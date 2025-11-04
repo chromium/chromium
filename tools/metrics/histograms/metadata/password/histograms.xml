@@ -3688,7 +3688,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="PasswordManager.PasswordViewPage.UserActions"
-    enum="PasswordViewPageInteractions" expires_after="2025-11-16">
+    enum="PasswordViewPageInteractions" expires_after="2026-05-16">
   <owner>derinel@google.com</owner>
   <owner>mamir@chromium.org</owner>
   <summary>
