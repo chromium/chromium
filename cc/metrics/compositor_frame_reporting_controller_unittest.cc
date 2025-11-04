@@ -2796,7 +2796,11 @@ constexpr const char kScrollJankMetricArgsQuery[] =
       EXTRACT_ARG(
         arg_set_id,
         'event_latency.scroll_jank_v4.current_delivery_cutoff_us'
-      ) AS current_delivery_cutoff_us
+      ) AS current_delivery_cutoff_us,
+      EXTRACT_ARG(
+        arg_set_id,
+        'event_latency.scroll_jank_v4.is_damaging_frame'
+      ) AS is_damaging_frame
     FROM slice
     WHERE name = 'EventLatency'
     ORDER BY ts ASC;
@@ -2905,19 +2909,20 @@ TEST_F(CompositorFrameReportingControllerTest, ScrollJankMetricArgs) {
               "is_janky", "is_janky_v4", "jank_reasons",
               "abs_total_raw_delta_pixels", "max_abs_inertial_raw_delta_pixels",
               "vsyncs_since_previous_frame", "running_delivery_cutoff_us",
-              "adjusted_delivery_cutoff_us", "current_delivery_cutoff_us"},
+              "adjusted_delivery_cutoff_us", "current_delivery_cutoff_us",
+              "is_damaging_frame"},
           std::vector<std::string>{"0", "0", "[NULL]", "10", "0", "[NULL]",
-                                   "[NULL]", "[NULL]", "86000"},
+                                   "[NULL]", "[NULL]", "86000", "1"},
           std::vector<std::string>{
               "1", "1",
               "MISSED_VSYNC_DUE_TO_DECELERATING_INPUT_FRAME_DELIVERY(1),MISSED_"
               "VSYNC_DURING_FAST_SCROLL(1)",
-              "10", "0", "2", "86000", "84000", "129000"},
+              "10", "0", "2", "86000", "84000", "129000", "1"},
           std::vector<std::string>{"0", "0", "[NULL]", "10", "10", "1",
-                                   "129000", "[NULL]", "129000"},
+                                   "129000", "[NULL]", "129000", "1"},
           std::vector<std::string>{"[NULL]", "[NULL]", "[NULL]", "[NULL]",
                                    "[NULL]", "[NULL]", "[NULL]", "[NULL]",
-                                   "[NULL]"}));
+                                   "[NULL]", "[NULL]"}));
 }
 
 /*
@@ -3001,16 +3006,18 @@ TEST_F(CompositorFrameReportingControllerTest, JankyThrottledScrolledFrame) {
               "is_janky", "is_janky_v4", "jank_reasons",
               "abs_total_raw_delta_pixels", "max_abs_inertial_raw_delta_pixels",
               "vsyncs_since_previous_frame", "running_delivery_cutoff_us",
-              "adjusted_delivery_cutoff_us", "current_delivery_cutoff_us"},
+              "adjusted_delivery_cutoff_us", "current_delivery_cutoff_us",
+              "is_damaging_frame"},
           std::vector<std::string>{"0", "0", "[NULL]", "10", "0", "[NULL]",
-                                   "[NULL]", "[NULL]", "86000"},
+                                   "[NULL]", "[NULL]", "86000", "1"},
           std::vector<std::string>{
               "[NULL]", "1",
               "MISSED_VSYNC_DUE_TO_DECELERATING_INPUT_FRAME_DELIVERY(1),MISSED_"
               "VSYNC_DURING_FAST_SCROLL(1)",
-              "20", "0", "2", "86000", "84000", "86000"},
+              "20", "0", "2", "86000", "84000", "86000", "1"},
           std::vector<std::string>{"0", "[NULL]", "[NULL]", "[NULL]", "[NULL]",
-                                   "[NULL]", "[NULL]", "[NULL]", "[NULL]"}));
+                                   "[NULL]", "[NULL]", "[NULL]", "[NULL]",
+                                   "[NULL]"}));
 }
 
 /*

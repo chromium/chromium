@@ -84,6 +84,43 @@ ToProtoEnum(JankReason reason) {
 #undef CASE
 }
 
+void PopulateScrollJankV4ResultProto(
+    const ScrollUpdateEventMetrics::ScrollJankV4Result& result,
+    perfetto::protos::pbzero::EventLatency_ScrollJankV4Result& out) {
+  bool is_janky = false;
+  for (int i = 0; i <= static_cast<int>(JankReason::kMaxValue); i++) {
+    int missed_vsyncs_for_reason = result.missed_vsyncs_per_reason[i];
+    if (missed_vsyncs_for_reason == 0) {
+      continue;
+    }
+    is_janky = true;
+    auto* entry = out.add_missed_vsyncs_per_jank_reason();
+    entry->set_jank_reason(ToProtoEnum(static_cast<JankReason>(i)));
+    entry->set_missed_vsyncs(missed_vsyncs_for_reason);
+  }
+  out.set_is_janky(is_janky);
+
+  out.set_abs_total_raw_delta_pixels(result.abs_total_raw_delta_pixels);
+  out.set_max_abs_inertial_raw_delta_pixels(
+      result.max_abs_inertial_raw_delta_pixels);
+  if (result.vsyncs_since_previous_frame.has_value()) {
+    out.set_vsyncs_since_previous_frame(*result.vsyncs_since_previous_frame);
+  }
+  if (result.running_delivery_cutoff.has_value()) {
+    out.set_running_delivery_cutoff_us(
+        result.running_delivery_cutoff->InNanoseconds());
+  }
+  if (result.adjusted_delivery_cutoff.has_value()) {
+    out.set_adjusted_delivery_cutoff_us(
+        result.adjusted_delivery_cutoff->InNanoseconds());
+  }
+  if (result.current_delivery_cutoff.has_value()) {
+    out.set_current_delivery_cutoff_us(
+        result.current_delivery_cutoff->InNanoseconds());
+  }
+  out.set_is_damaging_frame(result.is_damaging_frame);
+}
+
 const char* GetVizBreakdownToPresentationName(
     CompositorFrameReporter::VizBreakdown breakdown) {
   switch (breakdown) {
@@ -298,42 +335,9 @@ void EventLatencyTracingRecorder::RecordEventLatencyTraceEvent(
                 scroll_update->is_janky_scrolled_frame().value());
           }
           if (scroll_update->scroll_jank_v4().has_value()) {
-            const auto& result = *scroll_update->scroll_jank_v4();
-            auto* proto_result = event_latency->set_scroll_jank_v4();
-
-            bool is_janky = false;
-            for (int i = 0; i <= static_cast<int>(JankReason::kMaxValue); i++) {
-              int missed_vsyncs_for_reason = result.missed_vsyncs_per_reason[i];
-              if (missed_vsyncs_for_reason == 0) {
-                continue;
-              }
-              is_janky = true;
-              auto* entry = proto_result->add_missed_vsyncs_per_jank_reason();
-              entry->set_jank_reason(ToProtoEnum(static_cast<JankReason>(i)));
-              entry->set_missed_vsyncs(missed_vsyncs_for_reason);
-            }
-            proto_result->set_is_janky(is_janky);
-
-            proto_result->set_abs_total_raw_delta_pixels(
-                result.abs_total_raw_delta_pixels);
-            proto_result->set_max_abs_inertial_raw_delta_pixels(
-                result.max_abs_inertial_raw_delta_pixels);
-            if (result.vsyncs_since_previous_frame.has_value()) {
-              proto_result->set_vsyncs_since_previous_frame(
-                  *result.vsyncs_since_previous_frame);
-            }
-            if (result.running_delivery_cutoff.has_value()) {
-              proto_result->set_running_delivery_cutoff_us(
-                  result.running_delivery_cutoff->InNanoseconds());
-            }
-            if (result.adjusted_delivery_cutoff.has_value()) {
-              proto_result->set_adjusted_delivery_cutoff_us(
-                  result.adjusted_delivery_cutoff->InNanoseconds());
-            }
-            if (result.current_delivery_cutoff.has_value()) {
-              proto_result->set_current_delivery_cutoff_us(
-                  result.current_delivery_cutoff->InNanoseconds());
-            }
+            PopulateScrollJankV4ResultProto(
+                *scroll_update->scroll_jank_v4(),
+                *event_latency->set_scroll_jank_v4());
           }
         }
         if (args) {

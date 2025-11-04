@@ -887,11 +887,15 @@ message EventLatency {
   // https://docs.google.com/document/d/1AaBvTIf8i-c-WTKkjaL4vyhQMkSdynxo3XEiwpofdeA
   // and the Event.ScrollJank.DelayedFramesPercentage4.FixedWindow histogram's
   // documentation for more information.
+  //
+  // To simplify the documentation below, we use "this frame" to refer to the
+  // frame in which the scroll update was presented.
   message ScrollJankV4Result {
     // This field is a new version of `EventLatency.is_janky_scrolled_frame`
     // based on the Event.ScrollJank.DelayedFramesPercentage4.FixedWindow
     // metric. This field aims to address the old field's shortcomings and
-    // eventually replace it.
+    // eventually replace it. True if and only if at least one value in
+    // `missed_vsyncs_per_jank_reason` is greater than zero.
     optional bool is_janky = 1;
 
     // Reason why Chrome's scroll jank v4 metric marked a scroll update as
@@ -926,36 +930,57 @@ message EventLatency {
     repeated MissedVsyncsForJankReason missed_vsyncs_per_jank_reason = 2;
 
     // The absolute total raw (unpredicted) delta of all scroll updates included
-    // in the frame in which the scroll update was presented (in pixels).
+    // in this frame (in pixels).
     optional float abs_total_raw_delta_pixels = 3;
 
     // The maximum absolute raw (unpredicted) delta out of all inertial (fling)
-    // scroll updates included in the frame in which the scroll update was
-    // presented (in pixels). Zero if there were no inertial scroll updates in
-    // the frame.
+    // scroll updates included in this frame (in pixels). Zero if there were no
+    // inertial scroll updates in this frame.
     optional float max_abs_inertial_raw_delta_pixels = 4;
 
-    // How many VSync were between (A) the frame in which the scroll update was
-    // presented and (B) the previous frame. If this value is greater than one,
-    // then Chrome potentially missed one or more VSyncs (i.e. might have been
-    // able to present this scroll update earlier). Empty if this scroll update
-    // was presented in the first scroll update of a scroll.
+    // How many VSyncs were between (A) this frame and (B) the previous frame.
+    // If this value is greater than one, then Chrome potentially missed one or
+    // more VSyncs (i.e. might have been able to present this scroll update
+    // earlier). Empty if this frame is the first frame in a scroll.
     optional int32 vsyncs_since_previous_frame = 5;
 
-    // The running delivery cut-off based on frames preceding the frame in which
-    // the scroll update was presented. Empty if this scroll update was
-    // presented in the first scroll update of a scroll.
+    // The running delivery cut-off based on frames preceding this frame. Empty
+    // if ANY of the following holds:
+    //
+    //   * This frame is the first frame in a scroll.
+    //   * All frames since the beginning of the scroll up to and including the
+    //     previous frame have been non-damaging.
+    //   * The most recent janky frame was non-damaging and all frames since
+    //     then up to and including the previous frame have been non-damaging.
     optional int64 running_delivery_cutoff_us = 6;
 
-    // The running delivery cut-off adjusted for the frame that the scroll
-    // update was presented in. Empty if this scroll update was presented in the
-    // first scroll update of a scroll or if `vsyncs_since_previous_frame` is
-    // one.
+    // The running delivery cut-off adjusted for this frame. Empty if ANY of the
+    // following holds:
+    //
+    //   * This frame is the first frame in a scroll.
+    //   * This frame is non-damaging.
+    //   * All frames since the beginning of the scroll up to and including the
+    //     previous frame have been non-damaging.
+    //   * The most recent janky frame was non-damaging and all frames since
+    //     then up to and including the previous frame have been non-damaging.
+    //   * `vsyncs_since_previous_frame` is equal to one.
     optional int64 adjusted_delivery_cutoff_us = 7;
 
-    // The delivery cut-off of the frame that the scroll update was presented
-    // in.
+    // The delivery cut-off of this frame. Empty if this frame is non-damaging.
     optional int64 current_delivery_cutoff_us = 8;
+
+    // Whether this frame is damaging. This frame is non-damaging if the
+    // following conditions are BOTH true:
+    //
+    //   1. All scroll updates in this frame are non-damaging. A scroll update
+    //      is non-damaging if it didn't cause a frame update and/or didn't
+    //      change the scroll offset.
+    //
+    //   2. All frames between (both ends exclusive):
+    //        a. the last frame presented by Chrome before this frame and
+    //        b. this frame
+    //      are non-damaging.
+    optional bool is_damaging_frame = 9;
   }
   optional ScrollJankV4Result scroll_jank_v4 = 10;
 }

@@ -531,13 +531,12 @@ class CC_EXPORT ScrollUpdateEventMetrics : public ScrollEventMetrics {
     bool is_damaging_frame;
 
     // The absolute total raw (unpredicted) delta of all scroll updates
-    // included in this frame (in
-    // pixels).
+    // included in this frame (in pixels).
     float abs_total_raw_delta_pixels;
 
     // The maximum absolute raw (unpredicted) delta out of all inertial (fling)
     // scroll updates included in this frame (in pixels). Zero if there were no
-    // inertial scroll updates in this the frame.
+    // inertial scroll updates in this frame.
     float max_abs_inertial_raw_delta_pixels;
 
     // How many VSyncs were between (A) this frame and (B) the previous frame.
