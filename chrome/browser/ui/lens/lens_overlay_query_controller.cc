@@ -2206,7 +2206,20 @@ LensOverlayQueryController::BuildVisualSearchInteractionLogData(
     interaction_data.mutable_text_select()->set_selected_texts(
         selected_text.value());
   }
-
+  // If the interaction type of the request is either a PDF_QUERY or
+  // WEPAGE_QUERY, a zoomed crop consisting of the full image should be sent.
+  if (interaction_data.interaction_type() ==
+          lens::LensOverlayInteractionRequestMetadata::PDF_QUERY ||
+      interaction_data.interaction_type() ==
+          lens::LensOverlayInteractionRequestMetadata::WEBPAGE_QUERY) {
+    interaction_data.mutable_zoomed_crop()->mutable_crop()->set_center_x(0.5f);
+    interaction_data.mutable_zoomed_crop()->mutable_crop()->set_center_y(0.5f);
+    interaction_data.mutable_zoomed_crop()->mutable_crop()->set_width(1);
+    interaction_data.mutable_zoomed_crop()->mutable_crop()->set_height(1);
+    interaction_data.mutable_zoomed_crop()->mutable_crop()->set_coordinate_type(
+        ::lens::CoordinateType::NORMALIZED);
+    interaction_data.mutable_zoomed_crop()->set_zoom(1);
+  }
   return interaction_data;
 }
 
