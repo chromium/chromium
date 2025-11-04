@@ -29,6 +29,7 @@ void LegacyTechURLMatcher::OnPrefUpdated() {
   base::MatcherStringPattern::ID id = 0;
   url_matcher::URLMatcherConditionSet::Vector conditions;
   url_matcher_ = std::make_unique<url_matcher::URLMatcher>();
+  path_length_.clear();
   for (const auto& url :
        profile_->GetPrefs()->GetList(kCloudLegacyTechReportAllowlist)) {
     url_matcher::util::FilterComponents components;
