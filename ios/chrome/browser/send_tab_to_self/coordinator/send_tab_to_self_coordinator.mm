@@ -151,6 +151,8 @@ void OpenManageDevicesTab(CommandDispatcher* dispatcher) {
 @implementation SendTabToSelfCoordinator {
   id<BrowserCoordinatorCommands> __weak _browserCoordinatorHandler;
   SigninCoordinator* _signinCoordinator;
+  // The navigation controller displaying the send tab to self.
+  UINavigationController* _navigationController;
 }
 
 #pragma mark - Public
@@ -195,11 +197,12 @@ void OpenManageDevicesTab(CommandDispatcher* dispatcher) {
   // Abort the waiting if it's still ongoing.
   _targetDeviceListWaiter.reset();
   [self stopSigninCoordinator];
-  [self.baseViewController
+  [_navigationController.presentingViewController
       dismissViewControllerAnimated:YES
                          completion:self.dismissedCompletion];
   // Embedders currently don't wait for the dismissal to finish, so might as
   // well reset fields immediately.
+  _navigationController = nil;
   self.sendTabToSelfViewController = nil;
   self.dismissedCompletion = nil;
 }
@@ -339,13 +342,12 @@ void OpenManageDevicesTab(CommandDispatcher* dispatcher) {
                                          account,
                                          IdentityAvatarSize::TableViewIcon)
                     accountEmail:account.userEmail];
-      UINavigationController* navigationController =
-          [[UINavigationController alloc]
-              initWithRootViewController:self.sendTabToSelfViewController];
+      _navigationController = [[UINavigationController alloc]
+          initWithRootViewController:self.sendTabToSelfViewController];
 
-      navigationController.transitioningDelegate = self;
-      navigationController.modalPresentationStyle = UIModalPresentationCustom;
-      [self.baseViewController presentViewController:navigationController
+      _navigationController.transitioningDelegate = self;
+      _navigationController.modalPresentationStyle = UIModalPresentationCustom;
+      [self.baseViewController presentViewController:_navigationController
                                             animated:YES
                                           completion:nil];
       break;
