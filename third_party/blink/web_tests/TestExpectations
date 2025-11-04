@@ -1143,7 +1143,6 @@ crbug.com/1356336 fast/block/float/shrink-to-avoid-float-complexity.html [ Failu
 
 crbug.com/448472314 external/wpt/css/css-anchor-position/align-dialog-002.html [ Failure ]
 crbug.com/448472314 external/wpt/css/css-anchor-position/anchor-scroll-chained-003.html [ Failure ]
-crbug.com/374574260 external/wpt/css/css-anchor-position/auto-margins-position-area.html [ Failure ]
 crbug.com/431611648 external/wpt/css/css-anchor-position/position-area-percents-001.html [ Failure ]
 crbug.com/332933527 external/wpt/css/css-anchor-position/position-visibility-anchors-valid.tentative.html [ Failure ]
 
