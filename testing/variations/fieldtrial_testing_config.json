@@ -16293,6 +16293,7 @@
     "NetworkQualityEstimatorAsync": [
         {
             "platforms": [
+                "android_webview",
                 "android",
                 "chromeos",
                 "linux",
@@ -16302,6 +16303,9 @@
             "experiments": [
                 {
                     "name": "Experiment",
+                    "params": {
+                        "defer_until_next_step": "false"
+                    },
                     "enable_features": [
                         "NetworkQualityEstimatorAsyncNotifyStartTransaction"
                     ]

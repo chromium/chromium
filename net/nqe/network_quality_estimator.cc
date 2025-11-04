@@ -288,9 +288,6 @@ void NetworkQualityEstimator::NotifyStartTransactionInternalAsync(
 
 void NetworkQualityEstimator::WaitNotifyStartTransactionDone(
     const URLRequest& request) {
-  TRACE_EVENT(NetTracingCategory(),
-              "NetworkQualityEstimator::NotifyStartTransaction");
-  SCOPED_UMA_HISTOGRAM_TIMER("NQE.Duration.NotifyStartTransaction");
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(base::FeatureList::IsEnabled(
       kNetworkQualityEstimatorAsyncNotifyStartTransaction));
@@ -308,7 +305,9 @@ void NetworkQualityEstimator::WaitNotifyStartTransactionDone(
 void NetworkQualityEstimator::NotifyStartTransactionInternal(
     const URLRequest& request,
     const base::TimeTicks& time) {
-  TRACE_EVENT("loading", "NetworkQualityEstimator::NotifyStartTransaction");
+  TRACE_EVENT(NetTracingCategory(),
+              "NetworkQualityEstimator::NotifyStartTransaction");
+  SCOPED_UMA_HISTOGRAM_TIMER("NQE.Duration.NotifyStartTransaction");
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!RequestSchemeIsHTTPOrHTTPS(request))
