@@ -379,12 +379,15 @@ class VisitDatabase {
 };
 
 // Columns, in order, of the visit table.
-#define HISTORY_VISIT_ROW_FIELDS                                    \
-  " id,url,visit_time,from_visit,external_referrer_url,transition," \
-  "segment_id,visit_duration,incremented_omnibox_typed_score,"      \
-  "opener_visit,originator_cache_guid,originator_visit_id,"         \
-  "originator_from_visit,originator_opener_visit,is_known_to_sync," \
-  "consider_for_ntp_most_visited,visited_link_id,app_id "
+#define HISTORY_VISIT_ROW_FIELDS                                      \
+  " visits.id,visits.url,visits.visit_time,visits.from_visit,"        \
+  "visits.external_referrer_url,visits.transition,visits.segment_id," \
+  "visits.visit_duration,visits.incremented_omnibox_typed_score,"     \
+  "visits.opener_visit,visits.originator_cache_guid,"                 \
+  "visits.originator_visit_id,visits.originator_from_visit,"          \
+  "visits.originator_opener_visit,visits.is_known_to_sync,"           \
+  "visits.consider_for_ntp_most_visited,visits.visited_link_id,"      \
+  "visits.app_id "
 
 }  // namespace history
 

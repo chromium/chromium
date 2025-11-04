@@ -14,11 +14,13 @@
 #include <string>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "components/google/core/common/google_util.h"
+#include "components/history/core/browser/features.h"
 #include "components/history/core/browser/history_backend.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/url_database.h"
@@ -577,6 +579,17 @@ bool VisitDatabase::GetVisibleVisitsForURL(URLID url_id,
         "OR context_annotations.response_code != 404)");
   }
 
+// TODO(crbug.com/457641486) Clean up preprocessor statements once feature is
+// rolled out.
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  if (base::FeatureList::IsEnabled(kBrowsingHistoryActorIntegrationM2) &&
+      !options.include_actor_visits) {
+    sql += "LEFT JOIN visit_source ON visits.id = visit_source.id ";
+    where_clauses.push_back(
+        "(visit_source.source IS NULL OR visit_source.source != ?)");
+  }
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
   where_clauses.push_back("visits.url = ?");
 
   if (options.visit_order == QueryOptions::RECENT_FIRST) {
@@ -605,6 +618,13 @@ bool VisitDatabase::GetVisibleVisitsForURL(URLID url_id,
   CHECK(statement.is_valid());
 
   int bind_index = 0;
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  if (base::FeatureList::IsEnabled(kBrowsingHistoryActorIntegrationM2) &&
+      !options.include_actor_visits) {
+    statement.BindInt(bind_index++, SOURCE_ACTOR);
+  }
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
   statement.BindInt64(bind_index++, url_id);
   statement.BindInt64(bind_index++, options.EffectiveBeginTime());
@@ -750,6 +770,15 @@ bool VisitDatabase::GetVisibleVisitsInRange(const QueryOptions& options,
         "OR context_annotations.response_code != 404)");
   }
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  if (base::FeatureList::IsEnabled(kBrowsingHistoryActorIntegrationM2) &&
+      !options.include_actor_visits) {
+    sql += "LEFT JOIN visit_source ON visits.id = visit_source.id ";
+    where_clauses.push_back(
+        "(visit_source.source IS NULL OR visit_source.source != ?)");
+  }
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
   if (options.visit_order == QueryOptions::RECENT_FIRST) {
     where_clauses.push_back("visits.visit_time >= ?");
     where_clauses.push_back("visits.visit_time < ?");
@@ -775,6 +804,13 @@ bool VisitDatabase::GetVisibleVisitsInRange(const QueryOptions& options,
   sql::Statement statement(GetDB().GetUniqueStatement(base::cstring_view(sql)));
   CHECK(statement.is_valid());
   int bind_index = 0;
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  if (base::FeatureList::IsEnabled(kBrowsingHistoryActorIntegrationM2) &&
+      !options.include_actor_visits) {
+    statement.BindInt(bind_index++, SOURCE_ACTOR);
+  }
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
   statement.BindInt64(bind_index++, options.EffectiveBeginTime());
   statement.BindInt64(bind_index++, options.EffectiveEndTime());
@@ -852,11 +888,11 @@ bool VisitDatabase::GetMostRecentVisitsForURL(
       statement.Assign(GetDB().GetCachedStatement(
           SQL_FROM_HERE,
           "SELECT" HISTORY_VISIT_ROW_FIELDS
-          "FROM visits v "
-          "LEFT OUTER JOIN context_annotations ca ON v.id=ca.visit_id "
-          "WHERE v.url=? "
+          "FROM visits "
+          "LEFT OUTER JOIN context_annotations ca ON visits.id=ca.visit_id "
+          "WHERE visits.url=? "
           "AND (ca.response_code IS NULL OR ca.response_code!=404) "
-          "ORDER BY v.visit_time DESC, v.id DESC "
+          "ORDER BY visits.visit_time DESC, visits.id DESC "
           "LIMIT ?"));
       break;
   }

@@ -430,6 +430,10 @@ struct QueryOptions {
   // If nullopt, search doesn't take app_id into consideration.
   std::optional<std::string> app_id;
 
+  // If true, visits with a source of SOURCE_ACTOR are included.
+  // Defaults to false, filtering them out.
+  bool include_actor_visits = false;
+
   // Helpers to get the effective parameters values, since a value of 0 means
   // "unspecified".
   int EffectiveMaxCount() const;

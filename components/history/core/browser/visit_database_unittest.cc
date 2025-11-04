@@ -10,7 +10,9 @@
 #include <vector>
 
 #include "base/strings/string_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "components/history/core/browser/features.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/url_database.h"
 #include "components/history/core/browser/visit_annotations_database.h"
@@ -1170,6 +1172,61 @@ TEST_F(VisitDatabaseTest, GetVisibleVisitsForURL) {
   EXPECT_THAT(results[0], MatchesVisitInfo(test_visit_rows[1]));
   EXPECT_THAT(results[1], MatchesVisitInfo(test_visit_rows[5]));
 }
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+TEST_F(VisitDatabaseTest, GetVisibleVisits_ActorVisits) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kBrowsingHistoryActorIntegrationM2);
+
+  const URLID kUrlId1 = 1U;
+  VisitRow visit_browsed(
+      kUrlId1, Time::Now(), 0,
+      ui::PageTransitionFromInt(ui::PAGE_TRANSITION_LINK |
+                                ui::PAGE_TRANSITION_CHAIN_START |
+                                ui::PAGE_TRANSITION_CHAIN_END),
+      0, false, 0);
+  ASSERT_TRUE(AddVisit(&visit_browsed, SOURCE_BROWSED));
+
+  VisitRow visit_actor(
+      kUrlId1, Time::Now() + base::Seconds(1), 0,
+      ui::PageTransitionFromInt(ui::PAGE_TRANSITION_LINK |
+                                ui::PAGE_TRANSITION_CHAIN_START |
+                                ui::PAGE_TRANSITION_CHAIN_END),
+      0, false, 0);
+  EXPECT_TRUE(AddVisit(&visit_actor, SOURCE_ACTOR));
+
+  QueryOptions options;
+  options.duplicate_policy = QueryOptions::KEEP_ALL_DUPLICATES;
+  VisitVector results;
+
+  // By default, actor visits should be excluded from GetVisibleVisitsForURL.
+  GetVisibleVisitsForURL(kUrlId1, options, &results);
+  ASSERT_EQ(1U, results.size());
+  EXPECT_THAT(results[0], MatchesVisitInfo(visit_browsed));
+
+  // When explicitly requested, they should be included.
+  options.include_actor_visits = true;
+  GetVisibleVisitsForURL(kUrlId1, options, &results);
+  ASSERT_EQ(2U, results.size());
+  EXPECT_THAT(results[0], MatchesVisitInfo(visit_actor));
+  EXPECT_THAT(results[1], MatchesVisitInfo(visit_browsed));
+
+  options = QueryOptions();
+  options.duplicate_policy = QueryOptions::KEEP_ALL_DUPLICATES;
+
+  // By default, actor visits should be excluded from GetVisibleVisitsInRange.
+  GetVisibleVisitsInRange(options, &results);
+  ASSERT_EQ(1U, results.size());
+  EXPECT_THAT(results[0], MatchesVisitInfo(visit_browsed));
+
+  // When explicitly requested, they should be included.
+  options.include_actor_visits = true;
+  GetVisibleVisitsInRange(options, &results);
+  ASSERT_EQ(2U, results.size());
+  EXPECT_THAT(results[0], MatchesVisitInfo(visit_actor));
+  EXPECT_THAT(results[1], MatchesVisitInfo(visit_browsed));
+}
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 TEST_F(VisitDatabaseTest, GetHistoryCount) {
   // Start with a day in the middle of summer, so that we are nowhere near
