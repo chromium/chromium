@@ -801,7 +801,7 @@ IN_PROC_BROWSER_TEST_P(OmniboxApiTest, SetDefaultSuggestionFailures) {
                  resolve(e.message);
                }
              });
-             let expectedError = /Opening and ending tag mismatch/;
+             let expectedError = /(Opening and ending tag mismatch|Unexpected closing tag)/;
              chrome.test.assertTrue(expectedError.test(error), error);
              chrome.test.succeed();
            }

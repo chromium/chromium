@@ -933,6 +933,10 @@ IN_PROC_BROWSER_TEST_P(WebNavigationApiTestWithContextType, Crash) {
 #define MAYBE_Xslt Xslt
 #endif
 IN_PROC_BROWSER_TEST_P(WebNavigationApiTestWithContextType, MAYBE_Xslt) {
+  if (!base::FeatureList::IsEnabled(blink::features::kXSLT) ||
+      base::FeatureList::IsEnabled(blink::features::kXMLParsingRust)) {
+    return;
+  }
   content::IsolateAllSitesForTesting(base::CommandLine::ForCurrentProcess());
   ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(RunExtensionTest("webnavigation/xslt")) << message_;
