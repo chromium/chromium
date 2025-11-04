@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.ui;
 
-import android.content.Context;
+import android.app.Activity;
 
 import org.jni_zero.NativeMethods;
 
@@ -45,16 +45,17 @@ public class ExclusiveAccessManager
     private final TabModelObserver mTabModelObserver;
     private final ObservableSupplierImpl<Boolean> mExclusiveAccessState =
             new ObservableSupplierImpl<>(false);
-    private final Context mContext;
+    // TODO(https://crbug.com/456395886): use Context instead of Activity.
+    private final Activity mActivity;
     private final ActivityTabProvider mActivityTabProvider;
 
     public ExclusiveAccessManager(
-            Context context,
+            Activity activity,
             FullscreenManager fullscreenManager,
             ActivityTabProvider activityTabProvider,
             @Nullable DesktopWindowStateManager desktopWindowStateManager) {
         mFullscreenManager = fullscreenManager;
-        mContext = context;
+        mActivity = activity;
         mActivityTabProvider = activityTabProvider;
         if (desktopWindowStateManager != null) {
             mDesktopWindowStateManager = desktopWindowStateManager;
@@ -111,7 +112,7 @@ public class ExclusiveAccessManager
 
         mExclusiveAccessManagerAndroidNativePointer =
                 ExclusiveAccessManagerJni.get()
-                        .init(this, mContext, mFullscreenManager, mActivityTabProvider);
+                        .init(this, mActivity, mFullscreenManager, mActivityTabProvider);
     }
 
     public ObservableSupplier<Boolean> getExclusiveAccessStateSupplier() {
@@ -297,7 +298,7 @@ public class ExclusiveAccessManager
     public interface Natives {
         long init(
                 ExclusiveAccessManager caller,
-                Context context,
+                Activity activity,
                 FullscreenManager fullscreenManager,
                 ActivityTabProvider activityTabProvider);
 
