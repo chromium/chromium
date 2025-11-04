@@ -78,4 +78,7 @@ specific_include_rules = {
   "search_engine_settings_test_case_base\.mm": [
     "+ios/chrome/browser/search_engine_choice/test/search_engine_choice_earl_grey_ui_test_util.h",
   ],
+  "table_cell_catalog_view_controller\.mm": [
+    "+ios/chrome/browser/reading_list/ui_bundled/reading_list_table_view_item.h",
+  ]
 }

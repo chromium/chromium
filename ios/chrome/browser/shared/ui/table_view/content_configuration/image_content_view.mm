@@ -67,6 +67,7 @@
 - (void)applyConfiguration {
   self.image = _configuration.image;
   self.contentMode = _configuration.imageContentMode;
+  self.accessibilityIdentifier = _configuration.accessibilityID;
   _widthConstraint.constant = _configuration.imageSize.width;
   _heightConstraint.constant = _configuration.imageSize.height;
 

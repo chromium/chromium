@@ -25,6 +25,7 @@ source_set("coordinator") {
     "reading_list_utils.mm",
   ]
   deps = [
+    ":reading_list_constants",
     ":ui",
     "//base",
     "//components/favicon/core",
@@ -66,6 +67,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/shared/ui/table_view",
     "//ios/chrome/browser/shared/ui/table_view:styler",
     "//ios/chrome/browser/shared/ui/table_view/cells",
+    "//ios/chrome/browser/shared/ui/table_view/content_configuration",
     "//ios/chrome/browser/shared/ui/util:url_with_title",
     "//ios/chrome/browser/sharing/ui_bundled",
     "//ios/chrome/browser/sharing/ui_bundled/activity_services",
@@ -207,6 +209,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/ui/table_view:styler",
     "//ios/chrome/browser/shared/ui/table_view/cells",
+    "//ios/chrome/browser/shared/ui/table_view/content_configuration",
     "//ios/chrome/browser/signin/model:authentication_service_factory",
     "//ios/chrome/browser/signin/model:test_support",
     "//ios/chrome/browser/tabs/model",

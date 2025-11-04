@@ -35,6 +35,7 @@
   // LINT.IfChange(Copy)
   copy.faviconAttributes = self.faviconAttributes;
   copy.badgeImage = self.badgeImage;
+  copy.badgeAccessibilityID = self.badgeAccessibilityID;
   // LINT.ThenChange(favicon_content_configuration.h:Copy)
 
   return copy;

@@ -41,6 +41,7 @@
   copy.image = self.image;
   copy.imageSize = self.imageSize;
   copy.imageContentMode = self.imageContentMode;
+  copy.accessibilityID = self.accessibilityID;
   // LINT.ThenChange(image_content_configuration.h:Copy)
   return copy;
 }

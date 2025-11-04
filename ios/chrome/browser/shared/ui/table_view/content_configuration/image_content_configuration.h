@@ -24,6 +24,9 @@
 // The content mode of the image. Default is UIViewContentModeScaleAspectFit.
 @property(nonatomic, assign) UIViewContentMode imageContentMode;
 
+// Accessibility identifier of the image view, to be used in tests.
+@property(nonatomic, copy) NSString* accessibilityID;
+
 // LINT.ThenChange(image_content_configuration.mm:Copy)
 
 @end

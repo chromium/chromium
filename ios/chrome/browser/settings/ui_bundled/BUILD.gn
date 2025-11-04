@@ -154,6 +154,7 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/photos/model:photos_service_factory",
     "//ios/chrome/browser/push_notification/model:push_notification_client_id",
     "//ios/chrome/browser/push_notification/model:push_notification_settings_util_header",
+    "//ios/chrome/browser/reading_list/ui_bundled:coordinator",
     "//ios/chrome/browser/regional_capabilities/model",
     "//ios/chrome/browser/safari_data_import/model:features",
     "//ios/chrome/browser/safari_data_import/public",

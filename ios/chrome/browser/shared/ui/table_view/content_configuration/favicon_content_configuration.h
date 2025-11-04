@@ -23,6 +23,9 @@
 // The badge image to be displayed.
 @property(nonatomic, strong) UIImage* badgeImage;
 
+// The accessibility identifier of the badge, to be used in tests.
+@property(nonatomic, copy) NSString* badgeAccessibilityID;
+
 // LINT.ThenChange(favicon_content_configuration.mm:Copy)
 
 @end

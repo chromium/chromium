@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/cells/table_view_account_item.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/table_view_signin_promo_item.h"
 #import "ios/chrome/browser/net/model/crurl.h"
+#import "ios/chrome/browser/reading_list/ui_bundled/reading_list_table_view_item.h"
 #import "ios/chrome/browser/settings/ui_bundled/address_bar_preference/cells/address_bar_options_item.h"
 #import "ios/chrome/browser/settings/ui_bundled/cells/account_sign_in_item.h"
 #import "ios/chrome/browser/settings/ui_bundled/cells/inline_promo_item.h"
@@ -72,6 +73,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeURLWithMetadata,
   ItemTypeURLWithMetadataImage,
   ItemTypeURLWithBadgeImage,
+  ItemTypeReadingList,
   ItemTypeTextSettingsDetail,
   ItemTypeTableViewWithBlueDot,
   ItemTypeLinkFooter,
@@ -729,6 +731,22 @@ typedef NS_ENUM(NSInteger, ItemType) {
   item.URL =
       [[CrURL alloc] initWithGURL:GURL("https://blog.google/products/chrome/")];
   [model addItem:item toSectionWithIdentifier:SectionIdentifierURL];
+
+  ReadingListTableViewItem* readingListItem =
+      [[ReadingListTableViewItem alloc] initWithType:ItemTypeReadingList];
+  readingListItem.title = @"Reading List item";
+  readingListItem.entryURL = GURL("https://lemonde.fr/my-article");
+  readingListItem.distillationState = ReadingListUIDistillationStatusSuccess;
+  readingListItem.distillationDateText = @"1min ago";
+  [model addItem:readingListItem toSectionWithIdentifier:SectionIdentifierURL];
+
+  readingListItem =
+      [[ReadingListTableViewItem alloc] initWithType:ItemTypeReadingList];
+  readingListItem.title = @"Local Reading List item";
+  readingListItem.entryURL = GURL("https://lemonde.fr/my-article");
+  readingListItem.distillationState = ReadingListUIDistillationStatusFailure;
+  readingListItem.showCloudSlashIcon = YES;
+  [model addItem:readingListItem toSectionWithIdentifier:SectionIdentifierURL];
 }
 
 #pragma mark - Actions

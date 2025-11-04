@@ -30,9 +30,6 @@ NSString* const kTableViewCellInfoButtonViewId =
 NSString* const kTableViewURLCellFaviconBadgeViewID =
     @"TableViewURLCellFaviconBadgeView";
 
-NSString* const kTableViewURLCellMetadataImageID =
-    @"TableViewURLCellMetadataImageID";
-
 NSString* const kImproveChromeItemAccessibilityIdentifier =
     @"ImproveChromeItemAccessibilityIdentifier";
 

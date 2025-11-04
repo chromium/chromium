@@ -26,19 +26,17 @@ id<GREYMatcher> AddedToLocalReadingListSnackbar() {
 }
 
 id<GREYMatcher> ReadingListItem(NSString* entryTitle) {
-  return grey_allOf(grey_accessibilityID(entryTitle),
-                    grey_kindOfClassName(@"TableViewURLCell"), nil);
+  return grey_accessibilityID(entryTitle);
 }
 
 id<GREYMatcher> VisibleReadingListItem(NSString* entryTitle) {
-  return grey_allOf(grey_accessibilityID(entryTitle),
-                    grey_kindOfClassName(@"TableViewURLCell"),
+  return grey_allOf(ReadingListItem(entryTitle),
                     grey_minimumVisiblePercent(0.95), nil);
 }
 
 id<GREYMatcher> VisibleLocalItemIcon(NSString* title) {
   return grey_allOf(grey_ancestor(ReadingListItem(title)),
-                    grey_accessibilityID(kTableViewURLCellMetadataImageID),
+                    grey_accessibilityID(kReadingListLocalImageID),
                     grey_minimumVisiblePercent(0.95), nil);
 }
 

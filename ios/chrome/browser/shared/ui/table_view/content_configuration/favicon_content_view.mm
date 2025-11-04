@@ -72,6 +72,7 @@
   [_faviconContainer.faviconView
       configureWithAttributes:_configuration.faviconAttributes];
   _badgeImageView.image = _configuration.badgeImage;
+  _badgeImageView.accessibilityIdentifier = _configuration.badgeAccessibilityID;
   _badgeImageView.hidden = !_configuration.badgeImage;
 }
 
