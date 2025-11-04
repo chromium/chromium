@@ -1,0 +1,12 @@
+{% macro declare_struct(name, struct, is_pub) -%}
+
+{%set pub = "pub " if is_pub else ""%}
+
+#[derive(Debug, MojomParse)]
+{{pub}}struct {{name}} {
+{%- for field in struct.fields %}
+  {{pub}}{{field.name}}: {{field.kind|to_rust_type}},
+{%- endfor %}
+}
+
+{%- endmacro -%}

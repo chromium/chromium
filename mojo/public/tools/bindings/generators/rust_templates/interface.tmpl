@@ -1,0 +1,31 @@
+{%- from "struct.tmpl" import declare_struct -%}
+
+{% macro declare_interface(interface) -%}
+// FOR_RELEASE: This implementation only serves to demonstrate the interface
+// with Mojom (define _Args structs, stuff all the arguments into them, and then
+// called the derived parser code).
+// Figuring out the actual way we want to present this to users will be a
+// nontrivial task!
+{%- for method in interface.methods %}
+{%- set request_name  = "%s_%s_Request" |format(interface.name, method.name) -%}
+{%- set response_name = "%s_%s_Response"|format(interface.name, method.name) -%}
+
+{{declare_struct("%s_Args"|format(request_name), method.param_struct)}}
+{%- if method.response_parameters %}
+{{declare_struct("%s_Args"|format(response_name), method.response_param_struct)}}
+{%- endif %}
+
+pub fn {{"%s_Send"|format(request_name)}}(
+  {%- for field in method.param_struct.fields %}
+    {{field.name}}: {{field.kind|to_rust_type}},
+  {% endfor %}) {
+  let args = {{request_name}}_Args {
+    {%- for field in method.param_struct.fields %}
+      {{field.name}},
+    {% endfor -%}};
+  let _data = mojom_parser::serialize(args);
+  // FOR_RELEASE: Send the data somewhere!
+}
+{% endfor %}
+
+{%- endmacro -%}

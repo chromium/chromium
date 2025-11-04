@@ -9,6 +9,8 @@
 
 chromium::import! {
     "//mojo/public/rust/mojom_parser:mojom_parser_core";
+    "//mojo/public/rust/mojom_parser:parsing_attribute";
 }
 
 pub use mojom_parser_core::*;
+pub use parsing_attribute::*;
