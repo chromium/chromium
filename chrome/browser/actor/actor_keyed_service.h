@@ -269,6 +269,10 @@ class ActorKeyedService : public KeyedService {
   // Fails all the active tasks.
   void FailAllTasks();
 
+  // The jounrnal should be last in destruction order since other things like
+  // ActorTask might be using a SafeRef to this object.
+  AggregatedJournal journal_;
+
   // Needs to be declared before the tasks, as they will indirectly have a
   // reference to it. This ensures the correct destruction order.
   std::unique_ptr<ui::ActorUiStateManagerInterface> actor_ui_state_manager_;
@@ -278,8 +282,6 @@ class ActorKeyedService : public KeyedService {
   std::map<TaskId, std::unique_ptr<ActorTask>> inactive_tasks_;
 
   TaskId::Generator next_task_id_;
-
-  AggregatedJournal journal_;
 
   std::unique_ptr<ActorPolicyChecker> policy_checker_;
 
