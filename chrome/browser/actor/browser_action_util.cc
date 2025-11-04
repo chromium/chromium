@@ -472,8 +472,8 @@ std::unique_ptr<ToolRequest> CreateScriptToolRequest(
 
   return std::make_unique<ScriptToolRequest>(
       tab_handle,
-      PageTarget(DomNode{.node_id = kRootElementDomNodeId,
-                         .document_identifier = document_identifier}),
+      DomNode{.node_id = kRootElementDomNodeId,
+              .document_identifier = document_identifier},
       action.tool_name(), action.input_arguments());
 }
 

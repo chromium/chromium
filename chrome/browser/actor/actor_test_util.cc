@@ -562,8 +562,12 @@ std::unique_ptr<ToolRequest> MakeScriptToolRequest(
     const std::string& name,
     const std::string& input_arguments) {
   return std::make_unique<ScriptToolRequest>(
-      GetTabHandleForFrame(rfh), MakeTarget(rfh, kRootElementDomNodeId), name,
-      input_arguments);
+      GetTabHandleForFrame(rfh),
+      DomNode{.node_id = kRootElementDomNodeId,
+              .document_identifier =
+                  *DocumentIdentifierUserData::GetDocumentIdentifier(
+                      rfh.GetGlobalFrameToken())},
+      name, input_arguments);
 }
 
 std::unique_ptr<ToolRequest> MakeMediaControlRequest(

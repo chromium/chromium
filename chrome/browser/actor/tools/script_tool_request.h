@@ -13,11 +13,13 @@
 
 namespace actor {
 
+struct DomNode;
+
 // Executes a script tool in the renderer.
 class ScriptToolRequest : public PageToolRequest {
  public:
   ScriptToolRequest(tabs::TabHandle tab_handle,
-                    const PageTarget& target,
+                    const DomNode& target,
                     const std::string& name,
                     const std::string& input_arguments);
   ~ScriptToolRequest() override;
