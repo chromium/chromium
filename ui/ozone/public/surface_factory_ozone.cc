@@ -83,10 +83,22 @@ scoped_refptr<gfx::NativePixmap> SurfaceFactoryOzone::CreateNativePixmap(
     gfx::AcceleratedWidget widget,
     gpu::VulkanDeviceQueue* device_queue,
     gfx::Size size,
-    viz::SharedImageFormat format,
+    gfx::BufferFormat format,
     gfx::BufferUsage usage,
     std::optional<gfx::Size> framebuffer_size) {
   return nullptr;
+}
+
+scoped_refptr<gfx::NativePixmap> SurfaceFactoryOzone::CreateNativePixmap(
+    gfx::AcceleratedWidget widget,
+    gpu::VulkanDeviceQueue* device_queue,
+    gfx::Size size,
+    viz::SharedImageFormat format,
+    gfx::BufferUsage usage,
+    std::optional<gfx::Size> framebuffer_size) {
+  return CreateNativePixmap(widget, device_queue, size,
+                            viz::SharedImageFormatToBufferFormat(format), usage,
+                            framebuffer_size);
 }
 
 bool SurfaceFactoryOzone::CanCreateNativePixmapForFormat(
