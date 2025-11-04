@@ -451,13 +451,25 @@ void LocationBarView::Init() {
   params.types_enabled.push_back(PageActionIconType::kVirtualCardEnroll);
   params.types_enabled.push_back(PageActionIconType::kMandatoryReauth);
 
-  if (browser_ &&
-      base::FeatureList::IsEnabled(omnibox::kAiModeOmniboxEntryPoint)) {
+  // The state of the AIM eligibility service can change during runtime but the
+  // construction of the location bar happens only once, at window creation. In
+  // order to accommodate changing eligibility, the AIM entrypoint is always
+  // added here and whether it's enabled or not only affects its visibility.
+  // Unless the main AIM omnibox entrypoint Feature is explicitly disabled,
+  // which can be used as a kill switch in case of any unanticipated issues with
+  // this approach.
+  auto* feature_list = base::FeatureList::GetInstance();
+  bool aim_omnibox_entrypoint_explicitly_disabled =
+      feature_list &&
+      feature_list->IsFeatureOverridden(
+          omnibox::kAiModeOmniboxEntryPoint.name) &&
+      !base::FeatureList::IsEnabled(omnibox::kAiModeOmniboxEntryPoint);
+  if (!aim_omnibox_entrypoint_explicitly_disabled) {
     // Position in the leading position, like the entrypoint for
     // kLensOverlayHomework below. While both chips may be enabled, they will
     // not appear at the same time due to different focus behavior. The
     // visibility of this entrypoint is dependent on whether or not the user
-    // meets AIM eligibility criteria.
+    // meets AIM eligibility criteria (checked elsewhere).
     params.types_enabled.insert(params.types_enabled.begin(),
                                 PageActionIconType::kAiMode);
   }

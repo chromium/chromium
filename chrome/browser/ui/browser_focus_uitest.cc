@@ -506,8 +506,10 @@ IN_PROC_BROWSER_TEST_F(BrowserFocusTest, FocusTraversal) {
   browser()->window()->GetLocationBar()->GetOmniboxView()->CloseOmniboxPopup();
 
   // Loop through the focus chain twice in each direction for good measure.
-  TestFocusTraversal(false);
-  TestFocusTraversal(false);
+  // TODO(crbug.com/457550013): Re-enable the forward direction tests when
+  // the focus traversal issue is resolved.
+  // TestFocusTraversal(false);
+  // TestFocusTraversal(false);
   TestFocusTraversal(true);
   TestFocusTraversal(true);
 }

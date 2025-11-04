@@ -51,7 +51,6 @@ AiModePageActionIconView::AiModePageActionIconView(
                          "AiMode",
                          kActionAiMode),
       browser_(browser) {
-  CHECK(browser_);
   image_container_view()->SetFlipCanvasOnPaintForRTLUI(false);
 
   SetProperty(views::kElementIdentifierKey, kAiModePageActionIconElementId);
@@ -118,6 +117,11 @@ void AiModePageActionIconView::UpdateImpl() {
 }
 
 bool AiModePageActionIconView::ShouldShow() {
+  // browser_ can be null in tests
+  if (!browser_) {
+    return false;
+  }
+
   const auto* aim_eligibility_service =
       AimEligibilityServiceFactory::GetForProfile(browser_->GetProfile());
   if (!OmniboxFieldTrial::IsAimOmniboxEntrypointEnabled(
