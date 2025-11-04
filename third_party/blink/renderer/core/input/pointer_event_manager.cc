@@ -7,6 +7,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom-blink.h"
 #include "third_party/blink/public/mojom/input/input_handler.mojom-blink.h"
+#include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/events/event_path.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/events/mouse_event.h"
@@ -310,16 +311,27 @@ void PointerEventManager::SetElementUnderPointer(PointerEvent* pointer_event,
                      pointer_event);
 }
 
-void PointerEventManager::NodeWillBeRemoved(Node& node_to_be_removed) {
+void PointerEventManager::NodeChildrenWillBeRemoved(ContainerNode& container) {
+  HandleRemoveSubtree(container, /*include_root=*/false);
+}
+
+void PointerEventManager::NodeWillBeRemoved(Node& node) {
+  HandleRemoveSubtree(node, /*include_root=*/true);
+}
+
+void PointerEventManager::HandleRemoveSubtree(Node& node, bool include_root) {
   if (!RuntimeEnabledFeatures::
           BoundaryEventDispatchTracksNodeRemovalEnabled()) {
     return;
   }
+  Node* remaining_node = include_root ? node.parentNode() : &node;
+  Element* remaining_element =
+      remaining_node->IsElementNode()
+          ? To<Element>(remaining_node)
+          : remaining_node->ParentOrShadowHostElement();
   for (const auto& [pointer_id, element] : element_under_pointer_) {
-    if (element &&
-        node_to_be_removed.IsShadowIncludingInclusiveAncestorOf(*element)) {
-      element_under_pointer_.Set(
-          pointer_id, node_to_be_removed.ParentOrShadowHostElement());
+    if (element && node.IsShadowIncludingInclusiveAncestorOf(*element)) {
+      element_under_pointer_.Set(pointer_id, remaining_element);
       original_element_under_pointer_removed_.insert(pointer_id);
       // TODO(https://crbug.com/1496482): Do we need something similar to the
       // logic in EventPath::CalculatePath()?

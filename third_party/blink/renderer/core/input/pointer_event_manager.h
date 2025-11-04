@@ -77,7 +77,8 @@ class CORE_EXPORT PointerEventManager final
 
   void ElementRemoved(Element*);
 
-  void NodeWillBeRemoved(Node& node_to_be_removed);
+  void NodeChildrenWillBeRemoved(ContainerNode&);
+  void NodeWillBeRemoved(Node&);
   void SetHandwritingRadius(int handwriting_radius);
 
   // Starts capturing of all events with the given |PointerId| to the given
@@ -192,6 +193,8 @@ class CORE_EXPORT PointerEventManager final
                           EventTarget* entered_target,
                           PointerEvent*);
   void SetElementUnderPointer(PointerEvent*, Element*);
+
+  void HandleRemoveSubtree(Node&, bool include_root);
 
   // First movement after entering a new frame should be 0 as the new frame
   // doesn't have the info for the previous events. This function sets the

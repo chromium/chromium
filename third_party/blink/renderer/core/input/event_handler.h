@@ -86,7 +86,9 @@ class CORE_EXPORT EventHandler final : public GarbageCollected<EventHandler> {
 
   void NodeChildrenWillBeRemoved(ContainerNode& container) {
     mouse_event_manager_->NodeChildrenWillBeRemoved(container);
+    pointer_event_manager_->NodeChildrenWillBeRemoved(container);
   }
+
   void NodeWillBeRemoved(Node& node) {
     mouse_event_manager_->NodeWillBeRemoved(node);
     pointer_event_manager_->NodeWillBeRemoved(node);
