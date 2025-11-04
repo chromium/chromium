@@ -3203,6 +3203,21 @@ OAuth Multilogin call. -->
   </summary>
 </histogram>
 
+<histogram name="Signin.SigninPending.Offered" enum="SigninAccessPoint"
+    expires_after="2026-03-15">
+  <owner>rsult@google.com</owner>
+  <owner>droger@chromium.org</owner>
+  <owner>chrome-signin-desktop-team@google.com</owner>
+  <summary>
+    Records that the option to re-authenticate to the Signed in account in
+    Chrome was offered to the user while in Sign-in Pending state and logs the
+    original access point associated with this event.
+
+    This histogram is still in development and has a limited coverage of the
+    Signin access points for now.
+  </summary>
+</histogram>
+
 <histogram name="Signin.SigninPending.Resolution"
     enum="PendingResolutionSource" expires_after="2026-03-01">
   <owner>rsult@google.com</owner>

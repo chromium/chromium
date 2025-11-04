@@ -176,6 +176,10 @@ void LogSignInStarted(AccessPoint access_point) {
   base::UmaHistogramEnumeration("Signin.SignIn.Started", access_point);
 }
 
+void LogSigninPendingOffered(AccessPoint access_point) {
+  base::UmaHistogramEnumeration("Signin.SigninPending.Offered", access_point);
+}
+
 #if BUILDFLAG(IS_IOS)
 void LogSigninWithAccountType(SigninAccountType account_type) {
   base::UmaHistogramEnumeration("Signin.AccountType.SigninConsent",
