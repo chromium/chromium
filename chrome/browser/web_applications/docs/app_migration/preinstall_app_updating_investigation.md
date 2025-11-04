@@ -1,11 +1,11 @@
-# Investigation: Default App Update-on-Failure Mechanisms
+# Investigation: Preinstalled App Update-on-Failure Mechanisms
 
 - **Author(s):** dmurph@google.com
 - **Team:** Web Apps
 - **Status:** In Progress
-- **Last modified:** 2025-10-24
+- **Last modified:** 2025-10-27
 - **Tracking Bug:** https://crbug.com/450002138, https://crbug.com/452416687
-- **Design Doc:** [link](default_app_updating_design.md)
+- **Design Doc:** [link](preinstalled_app_updating_design.md)
 
 This document is not intended to be reviewed by a code reviewer, but instead
 document the investigation and design of this feature. It can be referenced if
@@ -69,12 +69,12 @@ the app window.
 3.  **`ManifestUpdateManager` Special Case for Extended Scope.** Introduce a
     special case in `ManifestUpdateManager`. The trigger would be a navigation
     to an extended scope where the origin does not match the app's `start_url`
-    origin, for a default app. The action would be to trigger a background
+    origin, for a preinstalled app. The action would be to trigger a background
     update against the app's original install URL.
 
 4.  **Redirect-Aware Trigger in `WebAppTabHelper`.** This is the most refined
     idea so far. The trigger would be detecting a completed navigation that was
-    redirected from an in-scope URL of a default app to an out-of-scope URL.
+    redirected from an in-scope URL of a preinstalled app to an out-of-scope URL.
     This would be implemented by observing `content::NavigationHandle` in
     `WebAppTabHelper` and would trigger an update against the app's original
     install URL.
@@ -90,38 +90,17 @@ the app window.
     the check would fail due to a fundamental identity mismatch, not a transient
     error, making this approach incorrect.
 
-## Proposed Solution
+## Summary of Findings and Proposed Approach
 
-Based on the investigation, the proposed solution combines and refines several
-of the discovered ideas into a concrete implementation plan. The solution
-introduces two new throttled update triggers for default web apps:
+The investigation confirms that a robust update trigger is feasible and necessary.
 
-1.  **Periodic Update on Startup:** A throttled, periodic update check will be
-    performed on browser startup for default apps. This builds upon **Idea 1**
-    but adds robust throttling to prevent excessive checks.
+-   **Findings:**
+    1.  `WebAppTabHelper` is the correct place to observe navigation events for any given tab, as it is a per-`WebContents` object.
+    2.  `content::NavigationHandle` provides the necessary `GetRedirectChain()` method to reliably detect the specific in-scope to out-of-scope redirect that motivates this feature.
+    3.  `AppBrowserController` is *not* suitable for observing navigations on all tabs within a window, as its `WebContentsObserver` role is limited to the active tab. It is, however, the authority for window-level state.
 
-2.  **Update on Out-of-Scope Navigation:** If a default app is launched and a
-    navigation results in an out-of-scope URL, a throttled update check will be
-    triggered. This directly addresses the primary redirect problem and is a
-    more concrete implementation of **Idea 4**.
-
-### Implementation Details
-
--   **Throttling:** Both update triggers will be rate-limited using the
-    infrastructure provided in
-    `//chrome/browser/web_applications/web_app_pref_guardrails.h`. This will
-    prevent excessive network requests.
-
--   **Navigation-based Trigger:** The logic for the out-of-scope navigation
-    trigger will be implemented in `WebAppBrowserController`. It will track the
-    completion of the first navigation within the app window. If the first
-    navigation completes and the resulting URL is outside of the app's primary
-    scope, it will trigger the update check for default apps.
-    -   A boolean member like `did_first_navigation_in_window_complete_` will be
-        added to `WebAppBrowserController`.
-    -   An `OnNavigationComplete` listener (or similar mechanism observing
-        `content::NavigationHandle`) will be used to detect the first navigation
-        completion.
+-   **Proposed Approach:**
+    Based on these findings, the proposed solution is a **one-shot update trigger** that fires only on the initial navigation within a newly created app window. This approach requires collaboration between the window-level `WebAppBrowserController` and the per-tab `WebAppTabHelper`. The controller will identify the initial tab, and that tab's helper will be responsible for checking its first navigation for the specific redirect scenario. This design correctly separates window-level and tab-level concerns and precisely targets the failure case without creating an overly broad or complex mechanism. This will be implemented alongside the periodic startup check to provide a comprehensive solution.
 
 ### Testing Plan
 
@@ -220,7 +199,83 @@ serving as a fallback for active users.
 **Conclusion:** It is feasible to implement the "Redirect-Aware Trigger" (Idea
 4) by inspecting the `NavigationHandle` in `WebAppTabHelper`.
 
-## Summary of Findings
+### Step 3 (2025-10-27): Analyze `AppBrowserController` Observation Scope
+
+**Questions:**
+
+-   How does `AppBrowserController` observe navigations across all tabs in an app window?
+-   Can it reliably detect the first navigation *in the window* even if it occurs in a background tab?
+
+**Findings:**
+
+-   `AppBrowserController` is both a `TabStripModelObserver` and a `content::WebContentsObserver`.
+-   As a `TabStripModelObserver`, it is notified of all tab insertions and removals via `OnTabInserted` and `OnTabRemoved`.
+-   However, its role as a `content::WebContentsObserver` is explicitly limited to the **active tab only**. The key code is in `AppBrowserController::OnTabStripModelChanged`: when the active tab changes, it calls `content::WebContentsObserver::Observe(selection.new_contents)`.
+-   A `WebContentsObserver` can only observe a single `WebContents` instance at a time. This call directs all navigation-related event listening (like `DidFinishNavigation`) to the newly activated tab and implicitly stops listening to the previous one.
+-   This means `AppBrowserController` is blind to navigation events happening in any background tab. If an app opens and the initial navigation completes in a tab before it becomes active, the controller will miss that event entirely.
+
+**Conclusion:** The initial idea of placing the "first navigation" detection logic solely within `WebAppBrowserController` is flawed. It cannot reliably detect the first navigation in the window because it does not observe events in background tabs. The logic to detect an out-of-scope navigation must reside in a per-tab observer like `WebAppTabHelper`. `WebAppBrowserController`'s role should be limited to managing window-level state, such as ensuring an update check is triggered only once per window instance.
+
+### Step 4 (2025-10-27): Investigate Throttling Mechanisms
+
+**Questions:**
+
+-   What are the requirements for throttling these new update triggers?
+-   Are there existing, reusable throttling systems within web apps?
+
+**Findings:**
+
+-   **Requirement:** The throttling mechanism must be persistent across browser
+    restarts. This is critical for the periodic startup check to ensure it
+    doesn't run on every startup, and it's important for the navigation check
+    to respect the user's machine over time.
+-   **`ManifestUpdateManager`:** This system has its own internal, in-memory
+    throttling to prevent repeated update checks for the same app within a
+    short time frame. However, because it is in-memory, it does not persist
+    across restarts and is therefore unsuitable for our needs.
+-   **`WebAppPrefGuardrails`:** This is a persistent, pref-based system
+    designed for exactly this type of scenario: limiting how often an action
+    can be taken based on user behavior or time.
+    -   It supports time-based muting on a per-app basis (e.g., "do not perform
+        this action for app X if it was already done in the last 7 days").
+    -   It is configurable and can be set up to never permanently block an
+        action, which is required for a periodic check.
+    -   The system is already used for the existing preinstalled app startup update
+        check, setting a clear precedent.
+
+**Conclusion:** `WebAppPrefGuardrails` is the correct and existing mechanism to
+use for throttling both the startup and the new navigation-based update
+triggers. A new configuration will be needed for the navigation-based trigger to
+keep its state separate from the startup trigger.
+
+### Step 5 (2025-10-27): Refine Trigger Scope
+
+**Questions:**
+
+-   Should the update trigger fire on *any* out-of-scope navigation within an
+    app window, or only under more specific circumstances?
+-   What are the potential downsides of an overly broad trigger?
+
+**Findings:**
+
+-   An initial proposal considered triggering the update check every time a tab
+    navigated out of scope.
+-   **Downside Analysis:** This was determined to be too aggressive. While the
+    update command itself is throttled, the logic to check the navigation would
+    run on every out-of-scope navigation. This is unnecessary complexity and
+    could have unforeseen performance implications or interactions with other app
+    features.
+-   **Refinement:** The core problem we are solving is a failure case that
+    happens immediately upon app launch (a redirect to a new, out-of-scope
+    origin). A user navigating out-of-scope later in the app's lifecycle is a
+    different, and expected, user action.
+-   **Conclusion:** The trigger mechanism should be narrowed to a **one-shot**
+    check that only targets the **initial navigation** in a new app window. This
+    precisely targets the bug we are trying to fix without adding unnecessary,
+    continuous checks, resulting in a simpler, safer, and more performant
+    solution.
+
+## Summary of Findings and Proposed Approach
 
 The current implementation correctly identifies when a user navigates into an
 extended scope of an installed web app. However, it is designed to *prevent*
@@ -235,13 +290,19 @@ original install URL.
 ## Relevant Context
 
 *   **Files:**
-    *   `//chrome/browser/web_applications/web_app_tab_helper.cc`
-    *   `//chrome/browser/web_applications/manifest_update_manager.cc`
-    *   `//content/public/browser/navigation_handle.h`
-    *   `//chrome/browser/web_applications/web_app_pref_guardrails.h`
+    *   `//chrome/browser/ui/web_applications/app_browser_controller.h`
+    *   `//chrome/browser/ui/web_applications/web_app_browser_controller.cc`
     *   `//chrome/browser/ui/web_applications/web_app_browser_controller.h`
+    *   `//chrome/browser/web_applications/manifest_update_manager.cc`
     *   `//chrome/browser/web_applications/preinstalled_web_app_manager_unittest.cc`
+    *   `//chrome/browser/web_applications/preinstalled_web_app_manager.h`
     *   `//chrome/browser/web_applications/preinstalled_web_apps/google_chat.cc`
+    *   `//chrome/browser/web_applications/web_app_pref_guardrails.cc`
+    *   `//chrome/browser/web_applications/web_app_pref_guardrails.h`
+    *   `//chrome/browser/web_applications/web_app_provider.cc`
+    *   `//chrome/browser/web_applications/web_app_tab_helper.cc`
+    *   `//chrome/browser/web_applications/web_app_tab_helper.h`
+    *   `//content/public/browser/navigation_handle.h`
 *   **Key Bugs:**
     *   https://crbug.com/450002138
     *   https://crbug.com/452416687
@@ -258,3 +319,4 @@ original install URL.
 | 2025-10-24 | Refined Subject to be specific to the Google Chat app migration. |
 | 2025-10-24 | Corrected inaccurate description of out-of-scope navigation behavior. |
 | 2025-10-24 | Clarified that inactive users are the primary motivation for the feature. |
+| 2025-10-27 | Investigated `AppBrowserController` observation behavior and found it unsuitable for the initial design. Refined the proposed approach to a collaboration between the controller and `WebAppTabHelper`. Added investigation steps for controller behavior, throttling, and trigger scope refinement. |

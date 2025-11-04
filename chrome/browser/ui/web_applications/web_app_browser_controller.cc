@@ -661,6 +661,12 @@ void WebAppBrowserController::OnTabInserted(content::WebContents* contents) {
 
   WebAppTabHelper* tab_helper = WebAppTabHelper::FromWebContents(contents);
   tab_helper->SetIsInAppWindow(app_id());
+
+  if (!did_notify_first_tab_) {
+    did_notify_first_tab_ = true;
+    tab_helper->NotifyIsFirstWebContentsInAppWindow(
+        base::PassKey<WebAppBrowserController>());
+  }
 }
 
 void WebAppBrowserController::OnTabRemoved(content::WebContents* contents) {

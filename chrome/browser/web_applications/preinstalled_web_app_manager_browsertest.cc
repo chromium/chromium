@@ -16,6 +16,7 @@
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/to_string.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
@@ -48,6 +49,7 @@
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/user_uninstalled_preinstalled_web_app_prefs.h"
 #include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -61,6 +63,7 @@
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_update.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_launcher.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "extensions/browser/extension_registry.h"
@@ -1853,6 +1856,10 @@ class PreinstalledWebAppManagerSimpleBrowserTest
       FILE_PATH_LITERAL("web_apps/simple/basic-192.png");
   static constexpr std::u16string_view kWrongName = u"Wrong App Name";
 
+  // Just a page that is out of scope.
+  static constexpr std::string_view kOutOfScopeUrl =
+      "/web_apps/install_url/index.html";
+
   PreinstalledWebAppManagerSimpleBrowserTest() {
     fake_provider_creator_ =
         std::make_unique<FakeWebAppProviderCreator>(base::BindRepeating(
@@ -1879,6 +1886,10 @@ class PreinstalledWebAppManagerSimpleBrowserTest
 
   GURL GetStartUrl() {
     return embedded_https_test_server().GetURL(kHostname, kStartUrl);
+  }
+
+  GURL GetOutOfScopeUrl() {
+    return embedded_https_test_server().GetURL(kHostname, kOutOfScopeUrl);
   }
 
   GURL GetInstallUrl() {
@@ -1961,10 +1972,34 @@ class PreinstalledWebAppManagerSimpleBrowserTest
     test::WaitUntilWebAppProviderAndSubsystemsReady(&provider());
   }
 
+  void StartRedirecting() { is_redirection_on_ = true; }
+
+  // Handler to redirect from the GetStartUrl() to GetOutOfScopeUrl()
+  std::unique_ptr<net::test_server::HttpResponse> SetRedirectHandler(
+      const net::test_server::HttpRequest& request) {
+    if (!is_redirection_on_) {
+      return nullptr;
+    }
+    if (request.relative_url != GetStartUrl()) {
+      return nullptr;
+    }
+    auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+    std::string destination = request.GetURL().spec() + "/redirected";
+    response->set_code(net::HTTP_TEMPORARY_REDIRECT);
+    response->set_content_type("text/html");
+    response->AddCustomHeader("Location", GetOutOfScopeUrl().spec());
+    response->AddCustomHeader("Access-Control-Allow-Origin", "*");
+    response->set_content(
+        base::StringPrintf("<!doctype html><p>Redirecting to %s",
+                           GetOutOfScopeUrl().spec().c_str()));
+    return response;
+  }
+
  protected:
   base::RepeatingClosure run_delayed_startup_tasks_;
 
  private:
+  bool is_redirection_on_;
   base::test::ScopedFeatureList scoped_feature_list_{
       features::kWebAppPeriodicPreinstallUpdate};
 
@@ -1988,6 +2023,30 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerSimpleBrowserTest,
       GetAppId(), WebAppFilter::InstalledInChrome()));
 
   run_delayed_startup_tasks_.Run();
+  provider().command_manager().AwaitAllCommandsCompleteForTesting();
+
+  EXPECT_EQ(provider().registrar_unsafe().GetAppShortName(GetAppId()),
+            "Simple web app");
+}
+
+IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerSimpleBrowserTest,
+                       UpdateOnFirstLaunchRedirect) {
+  EXPECT_TRUE(provider().registrar_unsafe().AppMatches(
+      GetAppId(), WebAppFilter::InstalledInChrome()));
+
+  StartRedirecting();
+
+  base::test::TestFuture<base::WeakPtr<Browser>,
+                         base::WeakPtr<content::WebContents>,
+                         apps::LaunchContainer>
+      launch;
+  provider().scheduler().LaunchApp(GetAppId(), /*url=*/std::nullopt,
+                                   launch.GetCallback());
+  ASSERT_TRUE(launch.Wait());
+  base::WeakPtr<content::WebContents> web_contents =
+      launch.Get<base::WeakPtr<content::WebContents>>();
+  ASSERT_TRUE(web_contents);
+  content::WaitForLoadStop(web_contents.get());
   provider().command_manager().AwaitAllCommandsCompleteForTesting();
 
   EXPECT_EQ(provider().registrar_unsafe().GetAppShortName(GetAppId()),

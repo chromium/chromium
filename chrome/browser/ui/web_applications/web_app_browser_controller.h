@@ -157,6 +157,8 @@ class WebAppBrowserController : public AppBrowserController,
   void OnTabRemoved(content::WebContents* contents) override;
 
  private:
+  bool did_notify_first_tab_ = false;
+
   mutable HomeTabCallbackList home_tab_callback_list_;
   const WebAppRegistrar& registrar() const;
   const WebAppInstallManager& install_manager() const;
