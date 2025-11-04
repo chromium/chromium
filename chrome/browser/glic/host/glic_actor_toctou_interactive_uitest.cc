@@ -265,11 +265,8 @@ class GlicActorToctouInteractionPointDiscoveryUiTest
     : public GlicActorToctouUiTest {
  public:
   GlicActorToctouInteractionPointDiscoveryUiTest() {
-    scoped_features_.InitWithFeatures(
-        {features::kGlicActorIterativeInteractionPointDiscovery},
-        // TODO (crbug.com/454665367): Re-enable Multi-Instance for this test
-        // suite.
-        /*disabled_features=*/{features::kGlicMultiInstance});
+    scoped_features_.InitAndEnableFeature(
+        features::kGlicActorIterativeInteractionPointDiscovery);
   }
 
  private:

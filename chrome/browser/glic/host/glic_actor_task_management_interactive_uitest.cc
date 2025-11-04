@@ -32,9 +32,7 @@ class GlicActorTaskManagementUiTest : public GlicActorUiTest {
         /*enabled_features=*/
         {features::kGlicActivateTabApi, features::kGlicGetTabByIdApi},
         /*disabled_features=*/
-        // TODO (crbug.com/454665367): Re-enable Multi-Instance for this test
-        // suite.
-        {features::kGlicMultiInstance});
+        {});
   }
 
   // Note that CloseTab does not actually wait for the tab to close, as that is
@@ -76,8 +74,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorTaskManagementUiTest, StopActorTask) {
   // clang-format on
 }
 
-// Tests that closing a tab that's being acted on stops the associated
-// task.
+// Tests that closing a tab that's being acted on stops the associated task.
 IN_PROC_BROWSER_TEST_F(GlicActorTaskManagementUiTest, StopActorTaskOnTabClose) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
 

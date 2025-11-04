@@ -1343,6 +1343,10 @@ class GlicAnnotationManagerWithScrollToDisabledUiTest
  public:
   GlicAnnotationManagerWithScrollToDisabledUiTest() {
     scoped_feature_list_.InitAndDisableFeature(features::kGlicScrollTo);
+    // TODO(b/453696965): These tests need fixed to work with
+    // kGlicMultiInstance.
+    no_multi_instance_feature_list_.InitAndDisableFeature(
+        features::kGlicMultiInstance);
   }
   ~GlicAnnotationManagerWithScrollToDisabledUiTest() override = default;
 

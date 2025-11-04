@@ -81,9 +81,12 @@ GlicActorUiTest::GlicActorUiTest() {
        {features::kGlicActorToctouValidation, {}},
        {optimization_guide::features::
             kAnnotatedPageContentWithActionableElements,
-        {}},
-       {features::kGlicMultiInstance, {}}},
-      /*disabled_features=*/{});
+        {}}},
+      /*disabled_features=*/{
+          // TODO(b/454665367): Most GlicActorUiTest tests are broken for
+          // multi-instance. Temporarily disable glic multi-instance.
+          features::kGlicMultiInstance,
+      });
 }
 GlicActorUiTest::~GlicActorUiTest() = default;
 
@@ -98,94 +101,8 @@ const actor::ActorTask* GlicActorUiTest::GetActorTask() {
   return actor_service->GetTask(task_id_);
 }
 
-MultiStep GlicActorUiTest::ExecuteActionWithGlicInstance(
-    ActionProtoProvider proto_provider,
-    ExpectedErrorResult expected_result) {
-  static constexpr int kResultSuccess =
-      base::to_underlying(actor::mojom::ActionResultCode::kOk);
-  static constexpr std::string_view kSuccessString = "<Success>";
-
-  const std::string expected_result_string = std::visit(
-      absl::Overload{
-          [](std::monostate) { return std::string(kSuccessString); },
-          [](actor::mojom::ActionResultCode r) {
-            EXPECT_FALSE(actor::IsOk(r));
-            return base::ToString(r);
-          },
-          [](mojom::PerformActionsErrorReason r) { return base::ToString(r); },
-      },
-      expected_result);
-
-  auto result_buffer = std::make_unique<std::optional<int>>();
-  std::optional<int>* buffer_raw = result_buffer.get();
-  return Steps(
-      Do([this, buffer_raw,
-          proto_provider = std::move(proto_provider)]() mutable {
-        actor::ActorKeyedService* service =
-            actor::ActorKeyedService::Get(browser()->profile());
-
-        actor::ActorTask* task = service->GetTask(task_id_);
-        glic::GlicInstanceImpl* instance =
-            static_cast<glic::GlicInstanceImpl*>(task->delegate().get());
-
-        std::string b64_proto = std::move(proto_provider).Run();
-        std::string proto_string;
-        CHECK(base::Base64Decode(b64_proto, &proto_string));
-
-        base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
-        instance->PerformActions(
-            std::vector<uint8_t>(proto_string.begin(), proto_string.end()),
-            base::BindLambdaForTesting(
-                [this, buffer_raw, &run_loop](
-                    base::expected<mojo_base::ProtoWrapper,
-                                   mojom::PerformActionsErrorReason> result) {
-                  if (result.has_value()) {
-                    auto actions_result =
-                        result.value()
-                            .As<optimization_guide::proto::ActionsResult>();
-                    if (actions_result) {
-                      last_execution_result_ = actions_result;
-                      *buffer_raw = actions_result->action_result();
-                    } else {
-                      *buffer_raw = -static_cast<int>(
-                          mojom::PerformActionsErrorReason::kInvalidProto);
-                    }
-                  } else {
-                    *buffer_raw = -static_cast<int>(result.error());
-                  }
-                  run_loop.Quit();
-                }));
-        run_loop.Run();
-      }),
-      CheckResult(
-          [result_in = std::move(result_buffer)]() {
-            CHECK(result_in->has_value());
-
-            int result = result_in->value();
-            if (result == kResultSuccess) {
-              return std::string(kSuccessString);
-            }
-            if (result < 0) {
-              auto result_enum =
-                  static_cast<mojom::PerformActionsErrorReason>(-result);
-              EXPECT_TRUE(mojom::IsKnownEnumValue(result_enum));
-              return base::ToString(result_enum);
-            }
-            auto result_enum =
-                static_cast<actor::mojom::ActionResultCode>(result);
-            EXPECT_TRUE(actor::mojom::IsKnownEnumValue(result_enum));
-            return base::ToString(result_enum);
-          },
-          expected_result_string, "ExecuteActionWithGlicInstance"));
-}
-
 MultiStep GlicActorUiTest::ExecuteAction(ActionProtoProvider proto_provider,
                                          ExpectedErrorResult expected_result) {
-  if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
-    return ExecuteActionWithGlicInstance(std::move(proto_provider),
-                                         std::move(expected_result));
-  }
-
   static constexpr int kResultSuccess =
       base::to_underlying(actor::mojom::ActionResultCode::kOk);
   static constexpr std::string_view kSuccessString = "<Success>";
@@ -297,20 +214,8 @@ MultiStep GlicActorUiTest::CreateTabAction(
         create_tab.set_task_id(task_id.value());
         return EncodeActionProto(create_tab);
       });
-
-  auto steps = Steps(ExecuteAction(std::move(create_tab_provider),
-                                   std::move(expected_result)));
-
-  if (foreground) {
-    steps = Steps(std::move(steps), WaitForGlicContentsShownInTab());
-  }
-
-  return steps;
-}
-
-MultiStep GlicActorUiTest::WaitForGlicContentsShownInTab() {
-  return Steps(WaitForHide(kGlicContentsElementId),
-               WaitForAndInstrumentGlic(GlicInstrumentMode::kHostAndContents));
+  return ExecuteAction(std::move(create_tab_provider),
+                       std::move(expected_result));
 }
 
 MultiStep GlicActorUiTest::GetClientRect(ui::ElementIdentifier tab_id,
@@ -598,7 +503,7 @@ MultiStep GlicActorUiTest::ActivateTaskTab() {
                                             tab_handle.raw_value());
                      ASSERT_TRUE(content::ExecJs(glic_contents, script));
                    })),
-               WaitForGlicContentsShownInTab(), RoundTrip());
+               RoundTrip());
 }
 
 MultiStep GlicActorUiTest::WaitForTaskTabForground(bool expected_foreground) {
