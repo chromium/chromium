@@ -5,6 +5,7 @@
 #ifndef BASE_TEST_TASK_ENVIRONMENT_H_
 #define BASE_TEST_TASK_ENVIRONMENT_H_
 
+#include <array>
 #include <memory>
 
 #include "base/compiler_specific.h"
@@ -17,6 +18,7 @@
 #include "base/task/sequence_manager/sequence_manager.h"
 #include "base/task/sequence_manager/task_queue.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/task/task_traits.h"
 #include "base/test/scoped_run_loop_timeout.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
@@ -550,6 +552,53 @@ class SingleThreadTaskEnvironment : public TaskEnvironment {
   template <class... ArgTypes>
   SingleThreadTaskEnvironment(ArgTypes... args)
       : TaskEnvironment(ThreadingMode::MAIN_THREAD_ONLY, args...) {}
+};
+
+// TaskEnvironment that orders tasks on the main thread by priority. For
+// convenience the list of priorities is taken from base::TaskPriority.
+class TaskEnvironmentWithMainThreadPriorities : public TaskEnvironment {
+ public:
+  // Constructor accepts zero or more traits which customize the testing
+  // environment.
+  template <typename... TaskEnvironmentTraits>
+    requires trait_helpers::AreValidTraits<ValidTraits,
+                                           TaskEnvironmentTraits...>
+  NOINLINE explicit TaskEnvironmentWithMainThreadPriorities(
+      TaskEnvironmentTraits... traits)
+      : TaskEnvironment(CreateBaseTaskPrioritySettings(),
+                        SubclassCreatesDefaultTaskRunner{},
+                        traits...) {
+    InitTaskQueues();
+  }
+
+  ~TaskEnvironmentWithMainThreadPriorities() override;
+
+  // Returns a TaskRunner that schedules tasks on the main thread with priority
+  // `task_priority`. The inherited GetMainThreadTaskRunner() returns the
+  // default (USER_BLOCKING) task runner.
+  scoped_refptr<base::SingleThreadTaskRunner>
+  GetMainThreadTaskRunnerWithPriority(TaskPriority task_priority);
+
+ private:
+  using QueuePriority = sequence_manager::TaskQueue::QueuePriority;
+
+  static constexpr QueuePriority kMaxPriority =
+      static_cast<QueuePriority>(TaskPriority::HIGHEST) -
+      static_cast<QueuePriority>(TaskPriority::LOWEST);
+
+  // Returns PrioritySettings based on priorities from base::TaskPriority.
+  static sequence_manager::SequenceManager::PrioritySettings
+  CreateBaseTaskPrioritySettings();
+
+  static constexpr QueuePriority GetDefaultQueuePriority();
+  static constexpr QueuePriority BaseTaskPriorityToQueuePriority(
+      TaskPriority task_priority);
+
+  // Initializes a TaskQueue and TaskRunner for each priority.
+  void InitTaskQueues();
+
+  std::array<sequence_manager::TaskQueue::Handle, kMaxPriority + 1>
+      task_queues_;
 };
 
 }  // namespace test

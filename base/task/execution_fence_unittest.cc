@@ -17,8 +17,6 @@
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/synchronization/lock.h"
-#include "base/task/sequence_manager/sequence_manager.h"
-#include "base/task/sequence_manager/task_queue.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -35,8 +33,6 @@ namespace base {
 namespace {
 
 using ::testing::_;
-using SequenceManager = sequence_manager::SequenceManager;
-using TaskQueue = sequence_manager::TaskQueue;
 
 // Types of task to post while a fence is up.
 enum class TaskType {
@@ -75,50 +71,6 @@ std::ostream& operator<<(std::ostream& os, TaskTypeSet task_types) {
   }
   return os << "]";
 }
-
-enum class TestTaskQueuePriority : TaskQueue::QueuePriority {
-  kDefault = 0,
-  kBestEffort = 1,
-  // Must be last.
-  kCount = 2,
-};
-
-// A TaskEnvironment that creates some extra TaskQueues, to give a destination
-// for PostTask while the test runs on the main thread.
-class TaskEnvironmentWithExtraTaskQueues final : public test::TaskEnvironment {
- public:
-  // Don't use MOCK_TIME since it doesn't run ThreadPool tasks without using
-  // RunUntilIdle, which spins forever if there are any tasks blocked by fences.
-  TaskEnvironmentWithExtraTaskQueues()
-      : test::TaskEnvironment(
-            SequenceManager::PrioritySettings(TestTaskQueuePriority::kCount,
-                                              TestTaskQueuePriority::kDefault),
-            SubclassCreatesDefaultTaskRunner{},
-            ScopedExecutionFenceBehaviour::MAIN_THREAD_AND_THREAD_POOL) {
-    extra_task_queue_->SetQueuePriority(TestTaskQueuePriority::kDefault);
-    best_effort_task_queue_->SetQueuePriority(
-        TestTaskQueuePriority::kBestEffort);
-    DeferredInitFromSubclass(default_task_queue_->task_runner());
-  }
-
-  scoped_refptr<SequencedTaskRunner> task_queue_task_runner() {
-    return extra_task_queue_->task_runner();
-  }
-
-  scoped_refptr<SequencedTaskRunner> best_effort_task_queue_task_runner() {
-    return best_effort_task_queue_->task_runner();
-  }
-
- private:
-  TaskQueue::Handle default_task_queue_ =
-      sequence_manager()->CreateTaskQueue(TaskQueue::Spec(
-          sequence_manager::QueueName::TASK_ENVIRONMENT_DEFAULT_TQ));
-  TaskQueue::Handle extra_task_queue_ = sequence_manager()->CreateTaskQueue(
-      TaskQueue::Spec(sequence_manager::QueueName::TEST_TQ));
-  TaskQueue::Handle best_effort_task_queue_ =
-      sequence_manager()->CreateTaskQueue(
-          TaskQueue::Spec(sequence_manager::QueueName::TEST2_TQ));
-};
 
 }  // namespace
 
@@ -209,16 +161,19 @@ class ExecutionFenceTest : public ::testing::TestWithParam<TestParams> {
 
  protected:
   test::ScopedFeatureList scoped_feature_list_;
-  TaskEnvironmentWithExtraTaskQueues task_env_;
+  test::TaskEnvironmentWithMainThreadPriorities task_env_{
+      test::TaskEnvironment::ScopedExecutionFenceBehaviour::
+          MAIN_THREAD_AND_THREAD_POOL};
 
   // A TaskRunner for each TaskType.
   std::map<TaskType, scoped_refptr<SequencedTaskRunner>> task_runners_{
       {TaskType::kThreadPoolDefault, ThreadPool::CreateSequencedTaskRunner({})},
       {TaskType::kThreadPoolBestEffort,
        ThreadPool::CreateSequencedTaskRunner({TaskPriority::BEST_EFFORT})},
-      {TaskType::kTaskQueueDefault, task_env_.task_queue_task_runner()},
+      {TaskType::kTaskQueueDefault, task_env_.GetMainThreadTaskRunner()},
       {TaskType::kTaskQueueBestEffort,
-       task_env_.best_effort_task_queue_task_runner()},
+       task_env_.GetMainThreadTaskRunnerWithPriority(
+           TaskPriority::BEST_EFFORT)},
   };
 
   // Lock protecting `tasks_that_ran_`. This doesn't need to be held while
