@@ -2487,14 +2487,17 @@ if (_is_default_toolchain) {
       deps = [ ":chrome_test_ar_java" ]
 
       if (target_cpu == "arm64") {
-        arcore_current_path = "//third_party/arcore-android-sdk/test-apks/arcore/arcore_current_arm64.apk"
+        _arcore_current_path = "//third_party/arcore-android-sdk/test-apks/arcore/arcore_current_arm64.apk"
       } else {
-        arcore_current_path = "//third_party/arcore-android-sdk/test-apks/arcore/arcore_current_arm32.apk"
+        _arcore_current_path = "//third_party/arcore-android-sdk/test-apks/arcore/arcore_current_arm32.apk"
       }
+
+      _rebased_arcore_current_path =
+          rebase_path(_arcore_current_path, root_build_dir)
 
       extra_args = [
         "--additional-apk",
-        rebase_path(arcore_current_path, root_build_dir),
+        "@WrappedPath($_rebased_arcore_current_path)",
         "--remove-system-package=com.google.ar.core",
       ]
     }
