@@ -3032,6 +3032,11 @@
     "expiry_milestone": 155
   },
   {
+    "name": "enable-audio-monitoring-on-android",
+    "owners": [ "polardz@google.com", "ckitagawa@google.com", "clank-tab-dev@google.com"],
+    "expiry_milestone": 148
+  },
+  {
     "name": "enable-auto-disable-accessibility",
     "owners": [ "abigailbklein@google.com", "//ui/accessibility/OWNERS" ],
     "expiry_milestone": 130

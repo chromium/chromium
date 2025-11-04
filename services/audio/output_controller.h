@@ -23,7 +23,6 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/unguessable_token.h"
-#include "build/build_config.h"
 #include "media/audio/audio_io.h"
 #include "media/audio/audio_manager.h"
 #include "media/base/audio_power_monitor.h"
@@ -143,16 +142,6 @@ class OutputController : public media::AudioOutputStream::AudioSourceCallback,
 
   ~OutputController() override;
 
-  // Indicates whether audio power level analysis will be performed.  If false,
-  // ReadCurrentPowerAndClip() can not be called.
-  static constexpr bool will_monitor_audio_levels() {
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-    return false;
-#else
-    return true;
-#endif
-  }
-
   // Methods to control playback of the stream.
 
   // Creates the audio output stream. This must be called before Play(). Returns
@@ -202,6 +191,10 @@ class OutputController : public media::AudioOutputStream::AudioSourceCallback,
 
   // Recreates the output stream to play audio to specified device.
   void SwitchAudioOutputDeviceId(const std::string& new_output_device_id);
+
+  // Indicates whether audio power level analysis will be performed.  If false,
+  // ReadCurrentPowerAndClip() can not be called.
+  bool will_monitor_audio_levels() const { return will_monitor_audio_levels_; }
 
  protected:
   // Time constant for AudioPowerMonitor.  See AudioPowerMonitor ctor comments
@@ -361,6 +354,10 @@ class OutputController : public media::AudioOutputStream::AudioSourceCallback,
 
   // Request and read data in the same OnMoreData call, to reduce latency.
   const bool request_before_read_;
+
+  // Indicates whether audio power level analysis will be performed.  If false,
+  // ReadCurrentPowerAndClip() can not be called.
+  const bool will_monitor_audio_levels_;
 };
 
 }  // namespace audio

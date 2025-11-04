@@ -1463,6 +1463,14 @@ inline constexpr char kDisallowDocWrittenScriptsUiDescription[] =
     "Disallows fetches for third-party parser-blocking scripts inserted into "
     "the main frame via document.write.";
 
+inline constexpr char kEnableAudioMonitoringOnAndroidName[] =
+    "Enable Audio Levels Monitoring on Android";
+inline constexpr char kEnableAudioMonitoringOnAndroidDescription[] =
+    "Enables audio power level analysis on Android to determine webcontents "
+    "audibility changes. This modifies the behavior of the "
+    "#media-indicators-android flag to achieve a more responsive UI "
+    "update when audio starts or stops.";
+
 inline constexpr char kEnableAutoDisableAccessibilityName[] =
     "Auto-disable Accessibility";
 inline constexpr char kEnableAutoDisableAccessibilityDescription[] =

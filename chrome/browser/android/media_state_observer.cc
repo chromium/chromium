@@ -6,8 +6,10 @@
 
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
+#include "chrome/browser/ui/recently_audible_helper.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "media/base/media_switches.h"
 
 namespace {
 // Values defined in Tab.java and must be kept in sync.
@@ -20,10 +22,11 @@ enum MediaState {
 };
 }  // namespace
 
-// TODO(crbug.com/454045510): Add unit tests.
+// TODO(crbug.com/454045510): Add tests.
 MediaStateObserver::MediaStateObserver(content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
-      content::WebContentsUserData<MediaStateObserver>(*web_contents) {
+      content::WebContentsUserData<MediaStateObserver>(*web_contents),
+      recently_audible_subscription_(MaybeSubscribeToRecentlyAudible()) {
   media_stream_capture_indicator_observation_.Observe(
       MediaCaptureDevicesDispatcher::GetInstance()
           ->GetMediaStreamCaptureIndicator()
@@ -41,11 +44,10 @@ void MediaStateObserver::DidUpdateAudioMutingState(bool muted) {
 }
 
 void MediaStateObserver::OnAudioStateChanged(bool audible) {
-  if (is_audible_ == audible) {
+  if (recently_audible_subscription_) {
     return;
   }
-  is_audible_ = audible;
-  UpdateMediaState();
+  UpdateAudibleState(audible);
 }
 
 void MediaStateObserver::OnIsCapturingAudioChanged(
@@ -67,6 +69,29 @@ void MediaStateObserver::OnIsCapturingVideoChanged(
     return;
   }
   is_capturing_video_ = is_capturing_video;
+  UpdateMediaState();
+}
+
+base::CallbackListSubscription
+MediaStateObserver::MaybeSubscribeToRecentlyAudible() {
+  if (base::FeatureList::IsEnabled(media::kEnableAudioMonitoringOnAndroid)) {
+    return RecentlyAudibleHelper::FromWebContents(web_contents())
+        ->RegisterRecentlyAudibleChangedCallback(base::BindRepeating(
+            &MediaStateObserver::OnRecentlyAudibleStateChanged,
+            base::Unretained(this)));
+  }
+  return base::CallbackListSubscription();
+}
+
+void MediaStateObserver::OnRecentlyAudibleStateChanged(bool was_audible) {
+  UpdateAudibleState(was_audible);
+}
+
+void MediaStateObserver::UpdateAudibleState(bool audible) {
+  if (is_audible_ == audible) {
+    return;
+  }
+  is_audible_ = audible;
   UpdateMediaState();
 }
 

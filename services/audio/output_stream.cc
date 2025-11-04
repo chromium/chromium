@@ -346,7 +346,7 @@ void OutputStream::OnControllerPlaying() {
   playing_ = true;
   if (observer_)
     observer_->DidStartPlaying();
-  if (OutputController::will_monitor_audio_levels()) {
+  if (controller_.will_monitor_audio_levels()) {
     const auto get_power_level = [](OutputStream* self) {
       return self->controller_.ReadCurrentPowerAndClip().first;
     };
@@ -371,7 +371,7 @@ void OutputStream::OnControllerPaused() {
     return;
 
   playing_ = false;
-  if (OutputController::will_monitor_audio_levels()) {
+  if (controller_.will_monitor_audio_levels()) {
     audibility_helper_->StopPolling();
   }
   if (observer_)
