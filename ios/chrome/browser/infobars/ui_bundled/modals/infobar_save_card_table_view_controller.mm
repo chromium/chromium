@@ -246,7 +246,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   self.saveCardButtonItem =
       [[TableViewTextButtonItem alloc] initWithType:ItemTypeCardSave];
-  self.saveCardButtonItem.textAlignment = NSTextAlignmentNatural;
   self.saveCardButtonItem.buttonText =
       l10n_util::GetNSString(IDS_IOS_AUTOFILL_SAVE_CARD);
   self.saveCardButtonItem.enabled = !self.currentCardSaveAccepted;

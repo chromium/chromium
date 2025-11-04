@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/infobars/ui_bundled/modals/infobar_password_modal_delegate.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_infobar_metrics_recorder.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_button_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_edit_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_styler.h"
@@ -25,17 +26,20 @@
 namespace {
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
   SectionIdentifierContent = kSectionIdentifierEnumZero,
+  SectionIdentifierButton,
 };
 
 typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeURL = kItemTypeEnumZero,
   ItemTypeUsername,
   ItemTypePassword,
+  ItemTypeDetails,
   ItemTypeSaveCredentials,
   ItemTypeCancel,
 };
 
 const CGFloat kSymbolSize = 15;
+const CGFloat kTableViewSeparatorInsetHide = 10000;
 }  // namespace
 
 @interface InfobarPasswordTableViewController () <UITextFieldDelegate>
@@ -195,15 +199,20 @@ const CGFloat kSymbolSize = 15;
 
   self.passwordMasked = YES;
 
+  TableViewDetailTextItem* detailItem =
+      [[TableViewDetailTextItem alloc] initWithType:ItemTypeDetails];
+  detailItem.detailText = self.detailsTextMessage;
+  [model addItem:detailItem toSectionWithIdentifier:SectionIdentifierContent];
+
+  [model addSectionWithIdentifier:SectionIdentifierButton];
+
   self.saveCredentialsItem =
       [[TableViewTextButtonItem alloc] initWithType:ItemTypeSaveCredentials];
-  self.saveCredentialsItem.textAlignment = NSTextAlignmentNatural;
-  self.saveCredentialsItem.text = self.detailsTextMessage;
   self.saveCredentialsItem.buttonText = self.saveButtonText;
   self.saveCredentialsItem.enabled = !self.currentCredentialsSaved;
   self.saveCredentialsItem.disableButtonIntrinsicWidth = YES;
   [model addItem:self.saveCredentialsItem
-      toSectionWithIdentifier:SectionIdentifierContent];
+      toSectionWithIdentifier:SectionIdentifierButton];
 
   if ([self.cancelButtonText length]) {
     self.cancelInfobarItem =
@@ -213,7 +222,7 @@ const CGFloat kSymbolSize = 15;
     self.cancelInfobarItem.buttonBackgroundColor = [UIColor clearColor];
     self.cancelInfobarItem.boldButtonText = NO;
     [model addItem:self.cancelInfobarItem
-        toSectionWithIdentifier:SectionIdentifierContent];
+        toSectionWithIdentifier:SectionIdentifierButton];
   }
 }
 
@@ -275,6 +284,11 @@ const CGFloat kSymbolSize = 15;
     }
     case ItemTypeURL:
       cell.selectionStyle = UITableViewCellSelectionStyleNone;
+      break;
+    case ItemTypeDetails:
+      cell.selectionStyle = UITableViewCellSelectionStyleNone;
+      cell.separatorInset =
+          UIEdgeInsetsMake(0, kTableViewSeparatorInsetHide, 0, 0);
       break;
   }
 

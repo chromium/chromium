@@ -568,7 +568,6 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
   CHECK(_addressContext != SaveAddressContext::kEditingSavedAddress);
   _modalSaveUpdateButton = [[TableViewTextButtonItem alloc]
       initWithType:AutofillProfileDetailsItemTypeSaveButton];
-  _modalSaveUpdateButton.textAlignment = NSTextAlignmentNatural;
   if (self.migrationPrompt) {
     _modalSaveUpdateButton.buttonText = l10n_util::GetNSString(
         IDS_AUTOFILL_ADDRESS_MIGRATION_TO_ACCOUNT_PROMPT_OK_BUTTON_LABEL);

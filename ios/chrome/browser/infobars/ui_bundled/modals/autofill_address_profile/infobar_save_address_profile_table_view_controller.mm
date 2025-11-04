@@ -401,7 +401,6 @@ const CGFloat kInfobarSaveAddressProfileSeparatorInset = 54;
 - (TableViewTextButtonItem*)saveUpdateButton {
   TableViewTextButtonItem* saveUpdateButton = [[TableViewTextButtonItem alloc]
       initWithType:ItemTypeAddressProfileSaveUpdateButton];
-  saveUpdateButton.textAlignment = NSTextAlignmentNatural;
 
   if (self.isMigrationToAccount) {
     saveUpdateButton.buttonText = l10n_util::GetNSString(
@@ -431,7 +430,6 @@ const CGFloat kInfobarSaveAddressProfileSeparatorInset = 54;
 - (TableViewTextButtonItem*)noThanksButton {
   TableViewTextButtonItem* noThanksButton = [[TableViewTextButtonItem alloc]
       initWithType:ItemTypeAddressProfileNoThanksButton];
-  noThanksButton.textAlignment = NSTextAlignmentNatural;
   noThanksButton.buttonBackgroundColor = [UIColor colorNamed:kBackgroundColor];
   noThanksButton.buttonTextColor = [UIColor colorNamed:kBlueColor];
   noThanksButton.buttonText = l10n_util::GetNSString(

@@ -207,39 +207,19 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   TableViewTextButtonItem* textActionButtonItem =
       [[TableViewTextButtonItem alloc] initWithType:ItemTypeTextButton];
-  textActionButtonItem.text = @"Hello, you should do something. Also as you "
-                              @"can see this text is centered.";
   textActionButtonItem.buttonText = @"Do something";
   [model addItem:textActionButtonItem
       toSectionWithIdentifier:SectionIdentifierText];
 
-  TableViewTextButtonItem* textActionButtonAlignmentItem =
-      [[TableViewTextButtonItem alloc] initWithType:ItemTypeTextButton];
-  textActionButtonAlignmentItem.text =
-      @"Hello, you should do something. Also as you can see this text is using "
-      @"NSTextAlignmentNatural";
-  textActionButtonAlignmentItem.textAlignment = NSTextAlignmentNatural;
-  textActionButtonAlignmentItem.buttonText = @"Do something";
-  [model addItem:textActionButtonAlignmentItem
-      toSectionWithIdentifier:SectionIdentifierText];
-
   TableViewTextButtonItem* textActionButtoExpandedItem =
       [[TableViewTextButtonItem alloc] initWithType:ItemTypeTextButton];
-  textActionButtoExpandedItem.text = @"Hello, you should do something.";
   textActionButtoExpandedItem.disableButtonIntrinsicWidth = YES;
   textActionButtoExpandedItem.buttonText = @"Expanded Button";
   [model addItem:textActionButtoExpandedItem
       toSectionWithIdentifier:SectionIdentifierText];
 
-  TableViewTextButtonItem* textActionButtonNoTextItem =
-      [[TableViewTextButtonItem alloc] initWithType:ItemTypeTextButton];
-  textActionButtonNoTextItem.buttonText = @"Do something, no Top Text";
-  [model addItem:textActionButtonNoTextItem
-      toSectionWithIdentifier:SectionIdentifierText];
-
   TableViewTextButtonItem* textActionButtonColorItem =
       [[TableViewTextButtonItem alloc] initWithType:ItemTypeTextButton];
-  textActionButtonColorItem.text = @"Hello, you should do something.";
   textActionButtonColorItem.disableButtonIntrinsicWidth = YES;
   textActionButtonColorItem.buttonBackgroundColor = [UIColor lightGrayColor];
   textActionButtonColorItem.buttonTextColor =
