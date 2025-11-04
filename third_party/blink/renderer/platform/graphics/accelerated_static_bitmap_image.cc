@@ -297,14 +297,12 @@ void AcceleratedStaticBitmapImage::CreateImageFromMailboxIfNeeded() {
   if (!context_provider_wrapper)
     return;
 
-  gpu::raster::RasterInterface* shared_ri =
-      context_provider_wrapper->ContextProvider().RasterInterface();
-  shared_ri->WaitSyncTokenCHROMIUM(mailbox_ref_->sync_token().GetConstData());
-
   skia_context_provider_wrapper_ = context_provider_wrapper;
   texture_backing_ = sk_make_sp<MailboxTextureBacking>(
-      shared_image_->mailbox(), mailbox_ref_, GetSize(), GetSharedImageFormat(),
-      GetAlphaType(), GetColorSpace(), std::move(context_provider_wrapper));
+      shared_image_.get(), mailbox_ref_, GetSize(), GetSharedImageFormat(),
+      GetAlphaType(), GetColorSpace(),
+      base::WrapRefCounted<viz::RasterContextProvider>(
+          context_provider_wrapper->ContextProvider().RasterContextProvider()));
 }
 
 void AcceleratedStaticBitmapImage::EnsureSyncTokenVerified() {

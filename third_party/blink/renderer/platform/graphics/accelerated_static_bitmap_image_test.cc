@@ -78,7 +78,7 @@ class AcceleratedStaticBitmapImageTest : public Test {
 };
 
 TEST_F(AcceleratedStaticBitmapImageTest, SkImageCached) {
-  auto bitmap = CreateBitmap();
+  auto bitmap = CreateBitmap(gpu::SHARED_IMAGE_USAGE_RASTER_READ);
 
   cc::PaintImage stored_image = bitmap->PaintImageForCurrentFrame();
   auto stored_image2 = bitmap->PaintImageForCurrentFrame();

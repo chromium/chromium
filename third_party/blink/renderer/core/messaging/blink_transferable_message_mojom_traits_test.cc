@@ -244,7 +244,8 @@ class BlinkTransferableMessageStructTraitsWithFakeGpuTest : public Test {
   }
 
   ImageBitmap* CreateAcceleratedStaticImageBitmap() {
-    auto client_si = gpu::ClientSharedImage::CreateForTesting();
+    auto client_si = gpu::ClientSharedImage::CreateForTesting(
+        gpu::SHARED_IMAGE_USAGE_RASTER_READ);
 
     return MakeGarbageCollected<ImageBitmap>(
         AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(

@@ -34,7 +34,8 @@ class StaticBitmapImageTransformTest : public ::testing::Test {
       gfx::ColorSpace color_space) {
     auto client_si = test_sii_->CreateSharedImage(
         {format, size, color_space, kTopLeft_GrSurfaceOrigin, alpha_type,
-         gpu::SharedImageUsageSet(gpu::SHARED_IMAGE_USAGE_DISPLAY_READ),
+         gpu::SharedImageUsageSet(gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
+                                  gpu::SHARED_IMAGE_USAGE_RASTER_READ),
          "CanvasResourceRaster"},
         gpu::kNullSurfaceHandle);
     return AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
