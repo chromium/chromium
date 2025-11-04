@@ -214,19 +214,19 @@ scoped_refptr<gfx::NativePixmap> X11SurfaceFactory::CreateNativePixmap(
     gfx::AcceleratedWidget widget,
     gpu::VulkanDeviceQueue* device_queue,
     gfx::Size size,
-    gfx::BufferFormat format,
+    viz::SharedImageFormat format,
     gfx::BufferUsage usage,
     std::optional<gfx::Size> framebuffer_size) {
   scoped_refptr<gfx::NativePixmapDmaBuf> pixmap;
   auto buffer = ui::GpuMemoryBufferSupportX11::GetInstance()->CreateBuffer(
-      format, size, usage);
+      viz::SharedImageFormatToBufferFormat(format), size, usage);
   if (buffer) {
     gfx::NativePixmapHandle handle = buffer->ExportHandle();
     if (handle.planes.empty()) {
       return nullptr;
     }
-    pixmap = base::MakeRefCounted<gfx::NativePixmapDmaBuf>(
-        size, viz::GetSharedImageFormat(format), std::move(handle));
+    pixmap = base::MakeRefCounted<gfx::NativePixmapDmaBuf>(size, format,
+                                                           std::move(handle));
   }
 
   // CreateNativePixmap is non-blocking operation. Thus, it is safe to call it
