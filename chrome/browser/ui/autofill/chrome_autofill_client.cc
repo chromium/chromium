@@ -57,6 +57,7 @@
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/autofill/address_bubbles_controller.h"
 #include "chrome/browser/ui/autofill/autofill_suggestion_controller.h"
+#include "chrome/browser/ui/autofill/chrome_otp_phish_guard_delegate.h"
 #include "chrome/browser/ui/autofill/edit_address_profile_dialog_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/chrome_payments_autofill_client.h"
 #include "chrome/browser/ui/autofill/payments/credit_card_scanner_controller.h"
@@ -1261,7 +1262,9 @@ ChromeAutofillClient::ChromeAutofillClient(content::WebContents* web_contents)
       ablation_study_(g_browser_process->local_state()),
       identity_credential_delegate_(web_contents),
       otp_field_detector_(std::make_unique<OtpFieldDetector>(this)),
-      email_verifier_delegate_(std::make_unique<EmailVerifierDelegate>(this)) {
+      email_verifier_delegate_(std::make_unique<EmailVerifierDelegate>(this)),
+      otp_phish_guard_delegate_(
+          std::make_unique<ChromeOtpPhishGuardDelegate>(web_contents)) {
   // Initialize StrikeDatabase so its cache will be loaded and ready to use
   // when requested by other Autofill classes.
   GetStrikeDatabase();
@@ -1350,6 +1353,16 @@ ChromeAutofillClient::GetContentCredentialManager() {
 
 OtpFieldDetector* ChromeAutofillClient::GetOtpFieldDetector() {
   return otp_field_detector_.get();
+}
+
+OtpPhishGuardDelegate* ChromeAutofillClient::GetOtpPhishGuardDelegate() {
+#if BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kOtpPhishGuard)) {
+    return otp_phish_guard_delegate_.get();
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
+  return nullptr;
 }
 
 one_time_tokens::OneTimeTokenService*

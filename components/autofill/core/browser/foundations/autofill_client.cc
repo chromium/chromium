@@ -339,4 +339,8 @@ AutofillManager* AutofillClient::GetAutofillManagerForPrimaryMainFrame() {
   return nullptr;
 }
 
+OtpPhishGuardDelegate* AutofillClient::GetOtpPhishGuardDelegate() {
+  return nullptr;
+}
+
 }  // namespace autofill

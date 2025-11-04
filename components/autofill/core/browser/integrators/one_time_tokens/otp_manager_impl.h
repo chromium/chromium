@@ -61,6 +61,10 @@ class OtpManagerImpl : public OtpManager, public AutofillManager::Observer {
       std::variant<one_time_tokens::OneTimeToken,
                    one_time_tokens::OneTimeTokenRetrievalError>);
 
+  // Callback for `OtpPhishGuardDelegate::StartOtpPhishGuardCheck`.
+  void MaybeShowOtpSuggestions(one_time_tokens::OneTimeToken token,
+                               bool is_phishing_site);
+
   // Returns true if an OTP must not be delivered to the caller in an autofill
   // context, e.g., because the page called the WebOTP API.
   bool IsOtpDeliveryBlocked();
@@ -79,6 +83,10 @@ class OtpManagerImpl : public OtpManager, public AutofillManager::Observer {
   // a callback corresponds to the desire to show an autofill dropdown. A new
   // call to `GetOtpSuggestions()` invalidates the previous call.
   GetOtpSuggestionsCallback last_pending_get_suggestions_callback_;
+
+  // The last received OTP. This is used to store the OTP between the phishing
+  // check and the actual display of the suggestions.
+  std::optional<one_time_tokens::OneTimeToken> last_received_otp_;
 
   base::ScopedObservation<BrowserAutofillManager, AutofillManager::Observer>
       autofill_manager_observation_{this};
