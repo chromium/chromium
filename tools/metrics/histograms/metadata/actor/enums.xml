@@ -55,6 +55,7 @@ chromium-metrics-reviews@google.com.
   <int value="34" label="kFilePickerTriggered"/>
   <int value="35" label="kFilePickerConfirmed"/>
   <int value="36" label="kFilePickerCancelled"/>
+  <int value="37" label="ExecutionEngineExistingAction"/>
   <int value="100" label="NavigateInvalidUrl"/>
   <int value="200" label="ClickSuppressed"/>
   <int value="300" label="DragAndReleaseFromOffscreen"/>

@@ -439,11 +439,10 @@ void ExecutionEngine::Act(std::vector<std::unique_ptr<ToolRequest>>&& actions,
             .AddError(
                 "Unable to perform action: task already has action in progress")
             .Build());
-    PostTaskForActCallback(std::move(callback),
-                           MakeResult(mojom::ActionResultCode::kError,
-                                      /*requires_page_stabilization=*/false,
-                                      "Task already has action in progress"),
-                           std::nullopt, {});
+    PostTaskForActCallback(
+        std::move(callback),
+        MakeResult(mojom::ActionResultCode::kExecutionEngineExistingAction),
+        std::nullopt, {});
     return;
   }
 
