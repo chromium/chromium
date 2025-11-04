@@ -285,14 +285,14 @@ void Location::SetLocation(const String& url,
       exception_state->ThrowSecurityError(
           StrCat({"The current window does not have permission to navigate the "
                   "target frame to '",
-                  url, "'."}));
+                  completed_url.GetString(), "'."}));
     }
     return;
   }
   if (exception_state && !completed_url.IsValid()) {
     exception_state->ThrowDOMException(
         DOMExceptionCode::kSyntaxError,
-        StrCat({"'", url, "' is not a valid URL."}));
+        StrCat({"'", completed_url.GetString(), "' is not a valid URL."}));
     return;
   }
 

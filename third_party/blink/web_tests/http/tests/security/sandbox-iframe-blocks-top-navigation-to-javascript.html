@@ -16,7 +16,7 @@
                  "Uncaught SecurityError: Failed to set the 'href' " +
                  "property on 'Location': The current window does not " +
                  "have permission to navigate the target frame to " +
-                 "'/security/frameNavigation/resources/fail.html'.";
+                 "'http://127.0.0.1:8000/security/frameNavigation/resources/fail.html'.";
             assert_equals(e.data, expected, "The 'javascript:' navigation threw.");
             assert_equals(i.contentDocument.body.innerText, "click", "The page contents did not change.");
         });
