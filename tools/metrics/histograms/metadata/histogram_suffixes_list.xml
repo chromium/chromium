@@ -934,6 +934,16 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="PasswordProtection.Verdict"/>
 </histogram_suffixes>
 
+<histogram_suffixes
+    name="PasswordProtectionTriggerForOneTimePasswordFieldDetected"
+    separator=".">
+  <suffix name="OneTimePasswordFieldDetected"
+      label="Password protection triggered by one time password field
+             detected."/>
+  <affected-histogram name="PasswordProtection.RequestOutcome"/>
+  <affected-histogram name="PasswordProtection.Verdict"/>
+</histogram_suffixes>
+
 <histogram_suffixes name="PasswordProtectionTriggerForSavedPasswordEntry"
     separator=".">
   <suffix name="SavedPasswordEntry"

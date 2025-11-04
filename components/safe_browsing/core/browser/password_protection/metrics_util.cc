@@ -89,6 +89,10 @@ const char kPasswordOnFocusRequestOutcomeHistogram[] =
     "PasswordProtection.RequestOutcome.PasswordFieldOnFocus";
 const char kPasswordOnFocusVerdictHistogram[] =
     "PasswordProtection.Verdict.PasswordFieldOnFocus";
+const char kOneTimePasswordFieldDetectedRequestOutcomeHistogram[] =
+    "PasswordProtection.RequestOutcome.OneTimePasswordFieldDetected";
+const char kOneTimePasswordFieldDetectedVerdictHistogram[] =
+    "PasswordProtection.Verdict.OneTimePasswordFieldDetected";
 const char kNonSyncPasswordEntryRequestOutcomeHistogram[] =
     "PasswordProtection.RequestOutcome.NonSyncPasswordEntry";
 const char kSyncPasswordEntryRequestOutcomeHistogram[] =
@@ -169,6 +173,11 @@ void LogPasswordOnFocusRequestOutcome(RequestOutcome outcome) {
   UMA_HISTOGRAM_ENUMERATION(kPasswordOnFocusRequestOutcomeHistogram, outcome);
 }
 
+void LogOneTimePasswordFieldDetectedRequestOutcome(RequestOutcome outcome) {
+  UMA_HISTOGRAM_ENUMERATION(
+      kOneTimePasswordFieldDetectedRequestOutcomeHistogram, outcome);
+}
+
 void LogPasswordAlertModeOutcome(
     RequestOutcome outcome,
     ReusedPasswordAccountType password_account_type) {
@@ -198,7 +207,8 @@ void LogNoPingingReason(LoginReputationClientRequest::TriggerType trigger_type,
     UMA_HISTOGRAM_ENUMERATION(kPasswordOnFocusRequestOutcomeHistogram, reason);
   } else if (trigger_type ==
              LoginReputationClientRequest::ONE_TIME_PASSWORD_FIELD_DETECTED) {
-    // TODO(crbug.com/415273169): Add metrics.
+    UMA_HISTOGRAM_ENUMERATION(
+        kOneTimePasswordFieldDetectedRequestOutcomeHistogram, reason);
   } else {
     LogPasswordEntryRequestOutcome(reason, password_account_type);
   }
@@ -277,7 +287,9 @@ void LogPasswordProtectionVerdict(
       }
       break;
     case LoginReputationClientRequest::ONE_TIME_PASSWORD_FIELD_DETECTED:
-      // TODO(crbug.com/415273169): Add metrics.
+      UMA_HISTOGRAM_ENUMERATION(
+          kOneTimePasswordFieldDetectedVerdictHistogram, verdict_type,
+          (LoginReputationClientResponse_VerdictType_VerdictType_MAX + 1));
       break;
     default:
       NOTREACHED();

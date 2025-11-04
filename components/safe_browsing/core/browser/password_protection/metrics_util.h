@@ -46,6 +46,8 @@ extern const char kGSuiteSyncPasswordWarningDialogHistogram[];
 extern const char kGSuiteNonSyncPasswordWarningDialogHistogram[];
 extern const char kPasswordOnFocusRequestOutcomeHistogram[];
 extern const char kPasswordOnFocusVerdictHistogram[];
+extern const char kOneTimePasswordFieldDetectedRequestOutcomeHistogram[];
+extern const char kOneTimePasswordFieldDetectedVerdictHistogram[];
 extern const char kNonSyncPasswordEntryRequestOutcomeHistogram[];
 extern const char kNonSyncPasswordEntryVerdictHistogram[];
 extern const char kSyncPasswordChromeSettingsHistogram[];
@@ -187,6 +189,9 @@ void LogPasswordEntryRequestOutcome(
 
 // Logs the |outcome| to several UMA metrics for password on focus pings.
 void LogPasswordOnFocusRequestOutcome(RequestOutcome outcome);
+
+// Logs the |outcome| to UMA for when a one time password field is detected.
+void LogOneTimePasswordFieldDetectedRequestOutcome(RequestOutcome outcome);
 
 // Logs the |outcome| to several UMA metrics for password alert mode.
 void LogPasswordAlertModeOutcome(
