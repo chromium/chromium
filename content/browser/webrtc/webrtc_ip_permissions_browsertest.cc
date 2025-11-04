@@ -38,7 +38,7 @@ const char kPeerConnectionHtml[] = "/media/peerconnection-call.html";
 #elif BUILDFLAG(IS_FUCHSIA)
 // This test is mysteriously failing on Fuchsia starting from
 // https://ci.chromium.org/b/8700182931583028385
-#define MAYBE_WebRtcIPPermissionDeniedTest DISALBED_WebRtcIPPermissionDeniedTest
+#define MAYBE_WebRtcIPPermissionDeniedTest DISABLED_WebRtcIPPermissionDeniedTest
 
 #define MAYBE_WebRtcIPPermissionGrantedTest WebRtcIPPermissionGrantedTest
 #define MAYBE_WebRtcIPPolicyPublicAndPrivateInterfacesTest \
