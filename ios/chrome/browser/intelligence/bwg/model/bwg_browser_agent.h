@@ -70,6 +70,9 @@ class BwgBrowserAgent : public BrowserUserData<BwgBrowserAgent> {
       ios::provider::BWGPageContextComputationState computation_state,
       ios::provider::BWGPageContextAttachmentState attachment_state);
 
+  // Fetches the favicon for the page or a default favicon if not available.
+  UIImage* FetchPageFavicon();
+
   // Adjusts the configuration around the Gemini page context based on user
   // prefs.
   void ApplyUserPrefsToPageContext(GeminiPageContext* gemini_page_context);
