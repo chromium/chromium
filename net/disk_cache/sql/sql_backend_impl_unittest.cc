@@ -2079,5 +2079,56 @@ TEST_F(SqlBackendImplTest, DelayedPostInitializationTasks) {
   EXPECT_EQ(OpenDatabaseAndGetBlobsCount(shard_id2, res_id2), 1);
 }
 
+// Regression test for https://crbug.com/456384561
+// Tests that the dangling pointer warning does not occur when the backend is
+// destroyed with a pending operation that holds the last reference to an entry.
+// This test reproduces the scenario where the destruction order of
+// `SqlBackendImpl` members (`exclusive_operation_coordinator_` before
+// `active_entries_`) could lead to a dangling `raw_ref` in `active_entries_`.
+TEST_F(SqlBackendImplTest, DestructionWithPendingOperationOnEntry) {
+  auto backend = CreateBackendAndInit();
+
+  // 1. Create an entry.
+  TestEntryResultCompletionCallback cb_create;
+  disk_cache::EntryResult create_result = cb_create.GetResult(
+      backend->CreateEntry("key", net::HIGHEST, cb_create.callback()));
+  ASSERT_THAT(create_result.net_error(), IsOk());
+  auto* entry = create_result.ReleaseEntry();
+
+  // 2. Post a separate async exclusive operation. This ensures that the
+  //    subsequent `Doom()` call will be queued and not run synchronously.
+  backend->CalculateSizeOfAllEntries(base::DoNothing());
+
+  // 3. Call `entry->Doom()`. This queues a `HandleDoomActiveEntryOperation`
+  //    task in the `ExclusiveOperationCoordinator`. The task's callback
+  //    captures a `scoped_refptr` to the `SqlEntryImpl`.
+  entry->Doom();
+
+  // 4. Close the entry. The last owning `scoped_refptr` is now held by the
+  //    pending `Doom` operation inside the coordinator. The `active_entries_`
+  //    map only holds a non-owning `raw_ref`.
+  entry->Close();
+  entry = nullptr;
+
+  // 5. Destroy the backend. This triggers the destruction sequence that could
+  //    cause the bug if member declaration order is incorrect.
+  //    a. `weak_factory_` is destroyed, invalidating the entry's `backend_`
+  //       WeakPtr.
+  //    b. `exclusive_operation_coordinator_` is destroyed, which destroys the
+  //       pending `Doom` task. This releases the last `scoped_refptr`.
+  //    c. `~SqlEntryImpl()` is called.
+  //    d. Inside `~SqlEntryImpl()`, the `if (!backend_)` check now passes,
+  //       causing `ReleaseActiveEntry()` to be skipped.
+  //    e. `active_entries_` is destroyed, but it still contains a `raw_ref` to
+  //       the now-deleted entry, causing a dangling pointer issue.
+  // If the bug exists, this test will crash here.
+  auto task_runners = backend->GetBackgroundTaskRunnersForTest();
+  backend.reset();
+
+  // 6. If the bug is fixed, destruction completes safely. Run any remaining
+  //    tasks to ensure clean shutdown and prevent leaks.
+  FlushQueueInTaskRunners(task_runners);
+}
+
 }  // namespace
 }  // namespace disk_cache
