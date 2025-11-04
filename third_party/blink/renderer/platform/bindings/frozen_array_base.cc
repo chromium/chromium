@@ -21,8 +21,10 @@ const WrapperTypeInfo frozen_array_wrapper_type_info_{
     nullptr,  // install_context_dependent_props_func
     "FrozenArray",
     nullptr,  // parent_class
-    kDOMWrappersTag,
-    kDOMWrappersTag,
+    static_cast<v8::CppHeapPointerTag>(
+        ScriptWrappableArrayTag::kFrozenArrayTag),
+    static_cast<v8::CppHeapPointerTag>(
+        ScriptWrappableArrayTag::kFrozenArrayTag),
     WrapperTypeInfo::kWrapperTypeNoPrototype,
     WrapperTypeInfo::kNoInternalFieldClassId,
     WrapperTypeInfo::kIdlOtherType,

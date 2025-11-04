@@ -82,8 +82,10 @@ const WrapperTypeInfo ${class_name}::wrapper_type_info_body_{
     nullptr,
     "${class_name}",
     nullptr,  // parent_class
-    kDOMWrappersTag,
-    kDOMWrappersTag,
+    static_cast<v8::CppHeapPointerTag>(
+        ScriptWrappableArrayTag::k${class_name}Tag),
+    static_cast<v8::CppHeapPointerTag>(
+        ScriptWrappableArrayTag::k${class_name}Tag),
     WrapperTypeInfo::kWrapperTypeNoPrototype,
     WrapperTypeInfo::kObjectClassId,
     WrapperTypeInfo::kIdlOtherType,

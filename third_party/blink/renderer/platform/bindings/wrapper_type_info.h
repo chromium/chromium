@@ -52,15 +52,46 @@ constexpr std::underlying_type_t<v8::CppHeapPointerTag>
     kScriptWrappableStartTag = 256;
 // LINT.ThenChange(third_party/blink/renderer/bindings/scripts/web_idl/idl_compiler.py:ScriptWrappableStartTag)
 
-static constexpr v8::CppHeapPointerTag kDOMWrappersTag =
-    static_cast<v8::CppHeapPointerTag>(1500);
+static constexpr std::underlying_type_t<v8::CppHeapPointerTag>
+    kLastGeneratedScriptWrappableTag = 1500;
+
+enum class ScriptWrappableArrayTag : std::underlying_type_t<
+    v8::CppHeapPointerTag> {
+  kFirst = kLastGeneratedScriptWrappableTag,
+  kDOMArrayBufferTag,
+  // Start of DOMArrayBufferView subclasses
+  kDOMArrayBufferViewTag,
+  kDOMDataViewTag,
+  kDOMBigInt64ArrayTag,
+  kDOMBigUint64ArrayTag,
+  kDOMInt8ArrayTag,
+  kDOMInt16ArrayTag,
+  kDOMInt32ArrayTag,
+  kDOMUint8ArrayTag,
+  kDOMUint8ClampedArrayTag,
+  kDOMUint16ArrayTag,
+  kDOMUint32ArrayTag,
+  kDOMFloat16ArrayTag,
+  kDOMFloat32ArrayTag,
+  kDOMFloat64ArrayTag,
+  // End of DOMArrayBufferView subclasses
+  kDOMSharedArrayBufferTag,
+  kFrozenArrayTag,
+  kScriptFunctionHolderTag,
+  // Start of ObservableArrayExoticObject subclasses
+  kObservableArrayExoticObjectTag,
+  kV8ObservableArrayCSSStyleSheetTag,
+  kV8ObservableArraySpeechRecognitionPhraseTag,
+  // End of ObservableArrayExoticObject subclasses
+  kLastTag,
+};
 
 // `kLastScriptWrappableTag` is an upper bound on the number of ScriptWrappable
 // sub-types. If more sub-types are added, the number can be increased
 // accordingly. Ideally this upper bound would be generated automatically, but
 // that may be difficult.
 static constexpr v8::CppHeapPointerTag kLastScriptWrappableTag =
-    kDOMWrappersTag;
+    static_cast<v8::CppHeapPointerTag>(ScriptWrappableArrayTag::kLastTag);
 
 static_assert(static_cast<uint16_t>(kLastScriptWrappableTag) <
                   static_cast<uint16_t>(gin::kFirstPointerTag),
