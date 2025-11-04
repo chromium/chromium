@@ -529,12 +529,6 @@ void AutofillAiSuggestionGenerator::FetchSuggestionData(
         void(std::pair<SuggestionDataSource,
                        std::vector<SuggestionGenerator::SuggestionData>>)>
         callback) {
-  // TODO(crbug.com/450060416): Remove this MayPerformAutofillAiAction() check.
-  if (!MayPerformAutofillAiAction(client, AutofillAiAction::kFilling)) {
-    callback({SuggestionDataSource::kAutofillAi, {}});
-    return;
-  }
-
   const EntityDataManager* entity_manager = client.GetEntityDataManager();
   if (!entity_manager || !form_structure || !trigger_autofill_field) {
     callback({SuggestionDataSource::kAutofillAi, {}});

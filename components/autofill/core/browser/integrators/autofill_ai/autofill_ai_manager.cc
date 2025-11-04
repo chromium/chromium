@@ -311,11 +311,6 @@ bool AutofillAiManager::OnFormSubmitted(const FormStructure& form,
 
 bool AutofillAiManager::MaybeImportForm(const FormStructure& form,
                                         ukm::SourceId ukm_source_id) {
-  // TODO(crbug.com/450060416): Remove this MayPerformAutofillAiAction() check.
-  if (!MayPerformAutofillAiAction(*client_, AutofillAiAction::kImport)) {
-    return false;
-  }
-
   std::vector<EntityImportPromptCandidate> prompt_candidates =
       GetEntityPromptCandidates(form);
 
@@ -418,8 +413,11 @@ std::vector<Suggestion> AutofillAiManager::GetSuggestions(
 
 bool AutofillAiManager::ShouldDisplayIph(const FormStructure& form,
                                          FieldGlobalId field_id) const {
-  // TODO(crbug.com/450060416): Remove this MayPerformAutofillAiAction() check.
-  if (!MayPerformAutofillAiAction(*client_, AutofillAiAction::kIphForOptIn)) {
+  // This early return is just a performance optimization:
+  // AutofillAiAction::kIphForOptIn requires an EntityType, which we don't know
+  // at this point yet. Since kIphForOptIn is a stronger requirement than
+  // kOptIn, we can check kOptIn first.
+  if (!MayPerformAutofillAiAction(*client_, AutofillAiAction::kOptIn)) {
     return false;
   }
 

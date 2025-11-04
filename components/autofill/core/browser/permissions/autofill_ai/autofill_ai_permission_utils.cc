@@ -270,8 +270,10 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
     case AutofillAiAction::kFilling:
     case AutofillAiAction::kImport:
     case AutofillAiAction::kIphForOptIn:
-      // TODO(crbug.com/450060416): Make `entity_type.has_value()` mandatory.
-      return !entity_type || entity_type_is_enabled_in_settings(*entity_type) ||
+      CHECK(entity_type)
+          << "An entity type is required to check if an entity "
+             "can be filled or imported, and IPH requires import";
+      return entity_type_is_enabled_in_settings(*entity_type) ||
              !base::FeatureList::IsEnabled(
                  features::kAutofillAiIdentityAndTravelPrefs);
     case AutofillAiAction::kServerClassificationModel:

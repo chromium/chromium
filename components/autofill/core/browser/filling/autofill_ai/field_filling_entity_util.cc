@@ -186,8 +186,7 @@ std::u16string GetValueForSelect(const AttributeInstance& attribute,
 std::vector<const EntityInstance*> GetFillableEntityInstances(
     const AutofillClient& client) {
   const EntityDataManager* const edm = client.GetEntityDataManager();
-  // TODO(crbug.com/450060416): Remove this MayPerformAutofillAiAction() check.
-  if (!MayPerformAutofillAiAction(client, AutofillAiAction::kFilling) || !edm) {
+  if (!edm) {
     return {};
   }
 
@@ -213,12 +212,6 @@ std::vector<const EntityInstance*> GetFillableEntityInstances(
 base::flat_set<FieldGlobalId> GetFieldsFillableByAutofillAi(
     const FormStructure& form,
     const AutofillClient& client) {
-  const EntityDataManager* const edm = client.GetEntityDataManager();
-  // TODO(crbug.com/450060416): Remove this MayPerformAutofillAiAction() check.
-  if (!MayPerformAutofillAiAction(client, AutofillAiAction::kFilling) || !edm) {
-    return {};
-  }
-
   std::vector<const EntityInstance*> entities =
       GetFillableEntityInstances(client);
   if (entities.empty()) {

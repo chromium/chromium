@@ -70,8 +70,8 @@ enum class AutofillAiOptInStatus {
 //   prefs.)
 // - Account state (sign-in status, model execution capabilities).
 // - Whether the `action` can be performed for the `entity_type`.
-//   `entity_type` is only considered to kImportToWallet and must be non-empty
-//   in that case.
+//   `entity_type` is only considered to kFilling, kIphForOptIn, kImport,
+//   kImportToWallet and must be non-empty in these cases.
 // - Miscellaneous state (OTR, locale, GeoIP).
 //
 // See go/forms-ai:permissions for more detail.
