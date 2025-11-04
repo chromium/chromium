@@ -8693,6 +8693,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="412" label="Webnn"/>
   <int value="413" label="TextDetect"/>
   <int value="414" label="TextJustify"/>
+  <int value="415" label="Summarizer"/>
+  <int value="416" label="TranslationApi"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom:WebDXFeature) -->

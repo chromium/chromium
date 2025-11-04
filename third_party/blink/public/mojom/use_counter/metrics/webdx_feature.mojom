@@ -474,6 +474,8 @@ enum WebDXFeature {
   kWebnn = 412,
   kTextDetect = 413,
   kTextJustify = 414,
+  kSummarizer = 415,
+  kTranslationApi = 416,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
