@@ -1041,9 +1041,9 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   //
   // Returns the enclosed rect with default allowed conversion error
   // (0.00001f).
-  static gfx::Rect ConvertRectToTarget(const View* source,
-                                       const View* target,
-                                       const gfx::Rect& rect);
+  [[nodiscard]] static gfx::Rect ConvertRectToTarget(const View* source,
+                                                     const View* target,
+                                                     const gfx::Rect& rect);
 
   // Converts a point from a View's coordinate system to that of its Widget.
   static void ConvertPointToWidget(const View* src, gfx::Point* point);
@@ -1073,11 +1073,11 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
 
   // Applies transformation on the rectangle, which is in the view's coordinate
   // system, to convert it into the parent's coordinate system.
-  gfx::Rect ConvertRectToParent(const gfx::Rect& rect) const;
+  [[nodiscard]] gfx::Rect ConvertRectToParent(const gfx::Rect& rect) const;
 
   // Converts a rectangle from this views coordinate system to its widget
   // coordinate system.
-  gfx::Rect ConvertRectToWidget(const gfx::Rect& rect) const;
+  [[nodiscard]] gfx::Rect ConvertRectToWidget(const gfx::Rect& rect) const;
 
   // Painting ------------------------------------------------------------------
 

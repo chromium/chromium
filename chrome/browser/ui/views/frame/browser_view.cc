@@ -5547,10 +5547,9 @@ int BrowserView::GetClientAreaTop() {
   }
 #endif
 
-  gfx::Rect bounds_in_browser_view_coords = top_view->bounds();
-  views::View::ConvertRectToTarget(top_view, this,
-                                   bounds_in_browser_view_coords);
-  return bounds_in_browser_view_coords.y();
+  // Get the top of the top view in browser view coordinates.
+  return views::View::ConvertPointToTarget(top_view, this, top_view->origin())
+      .y();
 }
 
 void BrowserView::PrepareFullscreen(bool fullscreen) {
