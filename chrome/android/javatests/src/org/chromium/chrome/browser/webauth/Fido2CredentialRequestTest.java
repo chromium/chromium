@@ -338,6 +338,11 @@ public class Fido2CredentialRequestTest {
             mSuccessCallback = successListener;
         }
 
+        @Override
+        public boolean arePlayServicesAvailable() {
+            return true;
+        }
+
         public void setReturnedCredentialDetails(List<WebauthnCredentialDetails> details) {
             mReturnedCredentialDetails = details;
         }
