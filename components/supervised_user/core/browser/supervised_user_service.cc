@@ -216,24 +216,6 @@ SupervisedUserService::SupervisedUserService(
          "a dependency of this service.";
 
 #if BUILDFLAG(IS_ANDROID)
-  if (!UseLocalSupervision() &&
-      (base::FeatureList::IsEnabled(
-          kSupervisedUserClearDeviceContentFiltersPrefsOnStartup))) {
-    // Users with disabled experiment cannot have these prefs set in user space
-    // - the experiment is currently disabled, and that's the only one which
-    // could had set them. These prefs as "user settings" are artifacts of
-    // previous run with the experiment enabled. That's required only because
-    // with the experiment disabled, the Init() calls below are no-ops.
-    for (const auto& pref :
-         {prefs::kSupervisedUserSafeSites,
-          prefs::kDefaultSupervisedUserFilteringBehavior,
-          policy::policy_prefs::kForceGoogleSafeSearch,
-          policy::policy_prefs::kIncognitoModeAvailability}) {
-      if (user_prefs.FindPreference(pref)->HasUserSetting()) {
-        user_prefs.ClearPref(pref);
-      }
-    }
-  }
   browser_content_filters_observer_->Init();
   search_content_filters_observer_->Init();
 #endif  // BUILDFLAG(IS_ANDROID)

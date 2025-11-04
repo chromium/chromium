@@ -67,15 +67,11 @@ BASE_DECLARE_FEATURE(kEnableSupervisedUserVersionSignOutDialog);
 // kSupervisedUserSearchContentFiltersKillSwitch are subswitches of
 // kPropagateDeviceContentFiltersToSupervisedUser that control individual
 // content filter settings.
-//
-// - kSupervisedUserClearDeviceContentFiltersPrefsOnStartup is a kill switch
-// for clearing device content filters prefs from user store on startup.
 
 BASE_DECLARE_FEATURE(kAllowNonFamilyLinkUrlFilterMode);
 BASE_DECLARE_FEATURE(kPropagateDeviceContentFiltersToSupervisedUser);
 BASE_DECLARE_FEATURE(kSupervisedUserBrowserContentFiltersKillSwitch);
 BASE_DECLARE_FEATURE(kSupervisedUserSearchContentFiltersKillSwitch);
-BASE_DECLARE_FEATURE(kSupervisedUserClearDeviceContentFiltersPrefsOnStartup);
 BASE_DECLARE_FEATURE(kSupervisedUserInterstitialWithoutApprovals);
 BASE_DECLARE_FEATURE(kSupervisedUserLocalSupervisionPreview);
 
