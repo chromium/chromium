@@ -6,10 +6,6 @@
 
 #import "base/functional/callback.h"
 #import "components/webauthn/ios/features.h"
-#import "ios/chrome/browser/credential_provider/model/credential_provider_browser_agent.h"
-#import "ios/chrome/browser/shared/model/browser/browser_list.h"
-#import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/web/public/web_state.h"
 
 IOSChromePasskeyClient::IOSChromePasskeyClient(web::WebState* web_state) {
@@ -45,18 +41,6 @@ void IOSChromePasskeyClient::ShowSuggestionBottomSheet() {
 }
 
 void IOSChromePasskeyClient::AllowPasskeyCreationInfobar(bool allowed) {
-  if (!web_state_) {
-    return;
-  }
-
-  ProfileIOS* const profile =
-      ProfileIOS::FromBrowserState(web_state_->GetBrowserState());
-
-  BrowserList* browserList = BrowserListFactory::GetForProfile(profile);
-  for (Browser* browser :
-       browserList->BrowsersOfType(BrowserList::BrowserType::kAll)) {
-    if (auto* agent = CredentialProviderBrowserAgent::FromBrowser(browser)) {
-      agent->SetInfobarAllowed(allowed);
-    }
-  }
+  // TODO(crbug.com/385174410): Set whether the Passkey Creation Infobar.
+  // See CredentialProviderBrowserAgent::SetInfobarAllowed().
 }

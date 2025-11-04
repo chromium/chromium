@@ -32,9 +32,6 @@ source_set("ios_chrome_passkey_client") {
   deps = [
     "//components/webauthn/ios",
     "//components/webauthn/ios:features",
-    "//ios/chrome/browser/credential_provider/model",
-    "//ios/chrome/browser/shared/model/browser",
-    "//ios/chrome/browser/shared/model/profile",
     "//ios/web/public",
   ]
 }

@@ -9,10 +9,6 @@
 #import "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
 
-namespace sync_pb {
-class WebauthnCredentialSpecifics;
-}  // namespace sync_pb
-
 namespace webauthn {
 class PasskeyModel;
 }  // namespace webauthn
@@ -37,10 +33,6 @@ class PasskeyTabHelper : public web::WebStateObserver,
   void HandleGetResolvedEvent(
       const std::string& credential_id_base64url_encoded,
       const std::string& rp_id);
-
-  // Adds a passkey to the passkey model while enabling the passkey creation
-  // infobar to be displayed if possible.
-  void AddNewPasskey(sync_pb::WebauthnCredentialSpecifics& passkey);
 
  private:
   friend class web::WebStateUserData<PasskeyTabHelper>;
