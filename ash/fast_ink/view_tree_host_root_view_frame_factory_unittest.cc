@@ -194,7 +194,7 @@ TEST_P(ViewTreeHostRootViewFrameResourceTest, CorrectResourceCreated) {
   ASSERT_EQ(frame->resource_list.size(), 1u);
 
   auto& resource = frame->resource_list.back();
-  EXPECT_EQ(resource.size, expected_resource_size_);
+  EXPECT_EQ(resource.GetSize(), expected_resource_size_);
 }
 
 INSTANTIATE_TEST_SUITE_P(

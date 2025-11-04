@@ -1733,7 +1733,7 @@ void Surface::AppendContentsToFrame(const gfx::PointF& parent_to_root_px,
       // pass them through the inverse of the buffer transformation.
       uv_crop = gfx::RectF(state_.basic_state.crop);
       gfx::Size transformed_buffer_size(ToTransformedSize(
-          current_resource_->size, state_.basic_state.buffer_transform));
+          current_resource_->GetSize(), state_.basic_state.buffer_transform));
       if (!transformed_buffer_size.IsEmpty()) {
         uv_crop.InvScale(transformed_buffer_size.width(),
                          transformed_buffer_size.height());
