@@ -115,16 +115,16 @@ bool AddDestinationMatchers(const base::Value::Dict& value,
 }
 
 // Returns false if an unexpected value was found in the passed `value`, or if
-// the "ProxyChain" key is missing.
+// the "ProxyList" key is missing.
 bool AddProxyChain(const base::Value::Dict& value,
                    net::ProxyConfig::ProxyOverrideRule& rule) {
   // Expected schema:
   // {
   //   ...
-  //   "ProxyChain": [ "HTTPS proxy.app:443", "DIRECT" ],
+  //   "ProxyList": [ "HTTPS proxy.app:443", "DIRECT" ],
   //   ...
   // }
-  auto* proxy_chain_value = value.FindList("ProxyChain");
+  auto* proxy_chain_value = value.FindList("ProxyList");
   if (!proxy_chain_value) {
     return false;
   }
@@ -184,7 +184,7 @@ std::optional<net::ProxyConfig::ProxyOverrideRule> ValueToOverrideRule(
   // Expected schema:
   // {
   //   "DestinationMatchers": [ "https://app1.com", "https://app2.com" ],
-  //   "ProxyChain": [ "HTTPS proxy.app:443", "DIRECT" ],
+  //   "ProxyList": [ "HTTPS proxy.app:443", "DIRECT" ],
   //   "Conditions": [
   //        {
   //            "DnsProbe": {

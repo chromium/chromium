@@ -20,7 +20,7 @@ example_value:
 - DestinationMatchers:
   - 'https://some.app.com'
   - 'https://other.app.org'
-  ProxyChain:
+  ProxyList:
   - 'HTTPS proxy.app:443'
   - 'DIRECT'
   Conditions:
@@ -48,7 +48,7 @@ schema:
         type: array
         items:
           type: string
-      ProxyChain:
+      ProxyList:
         type: array
         items:
           type: string

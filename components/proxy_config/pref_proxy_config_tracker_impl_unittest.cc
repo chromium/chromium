@@ -507,7 +507,7 @@ TEST_F(PrefProxyConfigOverrideRulesTest, DynamicPolicy) {
                                                  "https://some.app.com",
                                                  "https://other.app.com",
                                              ],
-                                             "ProxyChain": [
+                                             "ProxyList": [
                                                  "HTTPS proxy.app:443",
                                                  "DIRECT",
                                              ],
@@ -559,7 +559,7 @@ TEST_F(PrefProxyConfigOverrideRulesTest, DynamicPolicy) {
                                              "DestinationMatchers": [
                                                  "https://some.other.app.com",
                                              ],
-                                             "ProxyChain": [
+                                             "ProxyList": [
                                                  "DIRECT",
                                                  "PROXY some.host:123",
                                                  "HTTPS proxy.app:443",
@@ -584,7 +584,7 @@ TEST_F(PrefProxyConfigOverrideRulesTest, DynamicPolicy) {
                                              "DestinationMatchers": [
                                                  "https://some.special.app.com",
                                              ],
-                                             "ProxyChain": [
+                                             "ProxyList": [
                                                  "DIRECT",
                                              ],
                                          }

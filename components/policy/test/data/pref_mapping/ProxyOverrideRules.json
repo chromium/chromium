@@ -14,13 +14,13 @@
           [
               {
                   "DestinationMatchers": [ "https://app1.com", "https://app2.com" ],
-                  "ProxyChain": [ "HTTPS proxy.app:443" ]
+                  "ProxyList": [ "HTTPS proxy.app:443" ]
               }
           ],
           [
               {
                   "DestinationMatchers": [ "https://some.app.com" ],
-                  "ProxyChain": [ "DIRECT" ],
+                  "ProxyList": [ "DIRECT" ],
                   "Conditions": [
                       {
                           "DnsProbe": {
@@ -32,7 +32,7 @@
               },
               {
                   "DestinationMatchers": [ "https://some.app.com" ],
-                  "ProxyChain": [ "HTTPS proxy.app:443" ],
+                  "ProxyList": [ "HTTPS proxy.app:443" ],
                   "Conditions": [
                       {
                           "DnsProbe": {
