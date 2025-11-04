@@ -28,6 +28,8 @@
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_observer_jni_bridge.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
+#include "chrome/browser/ui/tabs/tab_muted_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
@@ -204,7 +206,8 @@ void TabModelJniBridge::SetMuteSetting(JNIEnv* env,
       if (web_contents) {
         // chrome:// URLs don't have content settings but can be muted, so just
         // mute the WebContents.
-        web_contents->SetAudioMuted(mute);
+        SetTabAudioMuted(web_contents, mute,
+                         TabMutedReason::kContentSettingChrome, std::string());
       }
       continue;
     }

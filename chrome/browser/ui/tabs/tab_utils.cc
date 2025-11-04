@@ -4,46 +4,14 @@
 
 #include "chrome/browser/ui/tabs/tab_utils.h"
 
-#include <utility>
-
-#include "base/feature_list.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
+#include "chrome/browser/ui/tabs/tab_muted_utils.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
-#include "content/public/common/content_features.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
-
-TabMutedReason GetTabAudioMutedReason(content::WebContents* contents) {
-  LastMuteMetadata::CreateForWebContents(contents);  // Ensures metadata exists.
-  LastMuteMetadata* const metadata =
-      LastMuteMetadata::FromWebContents(contents);
-  return metadata->reason;
-}
-
-bool SetTabAudioMuted(content::WebContents* contents,
-                      bool mute,
-                      TabMutedReason reason,
-                      const std::string& extension_id) {
-  DCHECK(contents);
-  DCHECK(TabMutedReason::kNone != reason);
-
-  contents->SetAudioMuted(mute);
-
-  LastMuteMetadata::CreateForWebContents(contents);  // Ensures metadata exists.
-  LastMuteMetadata* const metadata =
-      LastMuteMetadata::FromWebContents(contents);
-  metadata->reason = reason;
-  if (reason == TabMutedReason::kExtension) {
-    DCHECK(!extension_id.empty());
-    metadata->extension_id = extension_id;
-  } else {
-    metadata->extension_id.clear();
-  }
-
-  return true;
-}
 
 bool IsSiteMuted(const TabStripModel& tab_strip, const int index) {
   content::WebContents* web_contents = tab_strip.GetWebContentsAt(index);
@@ -80,9 +48,3 @@ bool AreAllSitesMuted(const TabStripModel& tab_strip,
   }
   return true;
 }
-
-LastMuteMetadata::LastMuteMetadata(content::WebContents* contents)
-    : content::WebContentsUserData<LastMuteMetadata>(*contents) {}
-LastMuteMetadata::~LastMuteMetadata() = default;
-
-WEB_CONTENTS_USER_DATA_KEY_IMPL(LastMuteMetadata);

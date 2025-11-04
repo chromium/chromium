@@ -8,6 +8,8 @@
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
+#include "chrome/browser/ui/tabs/tab_muted_utils.h"
 #include "chrome/common/pref_names.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/common/content_settings.h"
@@ -21,11 +23,6 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/mojom/autoplay/autoplay.mojom.h"
-
-#if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/ui/tabs/tab_enums.h"
-#include "chrome/browser/ui/tabs/tab_utils.h"
-#endif
 
 using content_settings::SettingSource;
 
@@ -117,10 +114,6 @@ void SoundContentSettingObserver::OnContentSettingChanged(
 void SoundContentSettingObserver::MuteOrUnmuteIfNecessary() {
   bool mute = GetCurrentContentSetting() == CONTENT_SETTING_BLOCK;
 
-// TabMutedReason does not exist on Android.
-#if BUILDFLAG(IS_ANDROID)
-  web_contents()->SetAudioMuted(mute);
-#else
   // We don't want to overwrite TabMutedReason with no change.
   if (mute == web_contents()->IsAudioMuted())
     return;
@@ -147,7 +140,6 @@ void SoundContentSettingObserver::MuteOrUnmuteIfNecessary() {
 
   SetTabAudioMuted(web_contents(), mute, TabMutedReason::kContentSetting,
                    std::string());
-#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 ContentSetting SoundContentSettingObserver::GetCurrentContentSetting() {

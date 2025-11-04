@@ -30,6 +30,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_list_interface.h"
+#include "chrome/browser/ui/tabs/tab_muted_utils.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/tabs/public/split_tab_id.h"

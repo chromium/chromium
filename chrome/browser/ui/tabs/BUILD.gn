@@ -36,6 +36,16 @@ source_set("tab_enums") {
   sources = [ "tab_enums.h" ]
 }
 
+# Shared tab utilities for both desktop and android.
+source_set("utils") {
+  sources = [
+    "tab_muted_utils.cc",
+    "tab_muted_utils.h",
+  ]
+  public_deps = [ ":tab_enums" ]
+  deps = [ "//content/public/browser" ]
+}
+
 # A common interface for operating on tabs for use by both desktop and android.
 # This is temporary until the tabstrip api is implemented on both platforms.
 source_set("tab_list_interface") {
@@ -491,6 +501,7 @@ if (!is_android) {
       ":tab_model",
       ":tab_strip",
       ":tabs",
+      ":utils",
       "//chrome/app:command_ids",
       "//chrome/app/vector_icons",
       "//chrome/browser/actor",

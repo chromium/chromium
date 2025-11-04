@@ -647,7 +647,10 @@ source_set("extensions") {
       "api/tabs/tabs_api_non_android.cc",
       "chrome_extension_host_delegate_non_android.cc",
     ]
-    public_deps += [ "//components/app_icon_loader" ]
+    public_deps += [
+      "//chrome/browser/ui/tabs:utils",
+      "//components/app_icon_loader",
+    ]
     deps += [
       "//chrome/browser/ui/user_education",
       "//chrome/browser/ui/web_applications:launch_utils",
