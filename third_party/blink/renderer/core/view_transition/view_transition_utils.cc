@@ -229,30 +229,6 @@ ViewTransition* ViewTransitionUtils::GetOutgoingCrossDocumentTransition(
 }
 
 // static
-DOMViewTransition* ViewTransitionUtils::GetTransitionScriptDelegate(
-    const Document& document) {
-  ViewTransition* view_transition =
-      ViewTransitionUtils::GetTransition(document);
-  if (!view_transition) {
-    return nullptr;
-  }
-
-  return view_transition->GetScriptDelegate();
-}
-
-// static
-PseudoElement* ViewTransitionUtils::GetRootPseudo(const Document& document) {
-  if (!document.documentElement()) {
-    return nullptr;
-  }
-
-  PseudoElement* view_transition_pseudo =
-      document.documentElement()->GetPseudoElement(kPseudoIdViewTransition);
-  DCHECK(!view_transition_pseudo || GetTransition(document));
-  return view_transition_pseudo;
-}
-
-// static
 VectorOf<std::unique_ptr<ViewTransitionRequest>>
 ViewTransitionUtils::GetPendingRequests(const Document& document) {
   auto* supplement = ViewTransitionSupplement::FromIfExists(document);

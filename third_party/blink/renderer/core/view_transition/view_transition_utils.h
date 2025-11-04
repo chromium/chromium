@@ -13,7 +13,6 @@
 
 namespace blink {
 
-class DOMViewTransition;
 class Document;
 class Element;
 class LayoutObject;
@@ -72,16 +71,6 @@ class CORE_EXPORT ViewTransitionUtils {
   // Return the outgoing cross-document view transition, if one exists.
   static ViewTransition* GetOutgoingCrossDocumentTransition(
       const Document& document);
-
-  // If the given document has an in-progress view transition, this will return
-  // the script delegate associated with that view transition (which may be
-  // null).
-  static DOMViewTransition* GetTransitionScriptDelegate(
-      const Document& document);
-
-  // Returns the ::view-transition pseudo-element that is the root of the
-  // view-transition DOM hierarchy.
-  static PseudoElement* GetRootPseudo(const Document& document);
 
   // Returns any queued view transition requests.
   static VectorOf<std::unique_ptr<ViewTransitionRequest>> GetPendingRequests(
