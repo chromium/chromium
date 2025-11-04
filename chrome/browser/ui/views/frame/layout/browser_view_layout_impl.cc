@@ -291,16 +291,7 @@ gfx::Size BrowserViewLayoutImpl::GetMinimumSize(const views::View* host) const {
 }
 
 int BrowserViewLayoutImpl::GetMinWebContentsWidthForTesting() const {
-  int min_width = kMainBrowserContentsMinimumWidth;
-  if (views().multi_contents_view &&
-      views().multi_contents_view->IsInSplitView()) {
-    // TODO(https://crbug.com/454583671): Eliminate
-    // `MultiContentsView::GetMinViewWidth()` in favor of a functional
-    // implementation of `GetMinimumSize()`.
-    min_width =
-        std::max(min_width, 2 * views().multi_contents_view->GetMinViewWidth());
-  }
-  return min_width;
+  return kMainBrowserContentsMinimumWidth;
 }
 
 BrowserViewLayoutImpl::ProposedLayout
@@ -462,17 +453,19 @@ void BrowserViewLayoutImpl::CalculateMainContainerLayout(
       min_contents_width += views::Separator::kThickness;
       show_left_separator = !is_right_aligned;
       show_right_separator = is_right_aligned;
+
+      // Maximum width is the lesser of preferred width and the largest width
+      // that doesn't shrink the contents pane past its own minimum size.
       const int min_width = side_panel->GetMinimumSize().width();
       const int preferred_width = side_panel->GetPreferredSize().width();
-      // TODO(https://crbug.com/453717426): This is logic carried over from the
-      // old layout and feels extremely wrong. Also the unrestricted size
-      // computation is simplified because the limits are arbitrary anyway.
-      const int max_width =
-          side_panel->ShouldRestrictMaxWidth()
-              ? horizontal_space.length() * 2 / 3
-              : horizontal_space.length() - min_contents_width;
-      side_panel_width =
-          std::max(min_width, std::min(preferred_width, max_width));
+      int max_width = std::min(preferred_width,
+                               horizontal_space.length() - min_contents_width);
+      if (side_panel->ShouldRestrictMaxWidth()) {
+        max_width = std::min(max_width, horizontal_space.length() * 2 / 3);
+      }
+
+      // Side panel always gets at least its minimum width.
+      side_panel_width = std::max(min_width, max_width);
       side_panel_visible_width = base::ClampFloor(
           side_panel_width *
           views().contents_height_side_panel->GetAnimationValue());
@@ -494,7 +487,8 @@ void BrowserViewLayoutImpl::CalculateMainContainerLayout(
       side_panel_leading ? horizontal_space.start() : horizontal_space.end();
 
   // Maybe show separators in multi-contents view. If this happens, the
-  // separators aren't shown in the main container.
+  // separators aren't shown in the main container. Note that the multi-contents
+  // view is inside the main container so doesn't need to be laid out.
   if (views().multi_contents_view) {
     bool show_leading_separator = false;
     bool show_trailing_separator = false;
@@ -570,11 +564,13 @@ void BrowserViewLayoutImpl::CalculateMainContainerLayout(
   CHECK(views().multi_contents_view == nullptr ||
         views().contents_container->Contains(views().multi_contents_view));
 
-  // Because certain side panels can grow to the point where the contents area
-  // does not get its minimum required width, it may need to be placed partially
-  // underneath the panel or its separator.
+  // Because side panels have minimum width, in a small browser, it is possible
+  // for the combination of minimum-sized contents pane and minimum-sized side
+  // panel may exceed the width of the window. In this case, the contents pane
+  // slides under the side panel.
   if (const int deficit = min_contents_width - horizontal_space.length();
       deficit > 0) {
+    // Expand the contents by the deficit on the side with the side panel.
     Inset(horizontal_space, -deficit, side_panel_leading);
   }
   layout.AddChild(
