@@ -2,6 +2,17 @@
 <settings-subpage page-title="$i18n{identityDocsCardTitle}"
     class="multi-card">
 
+  <div class="card">
+    <settings-toggle-button id="optInToggle"
+        disabled="[[optInToggleDisabled_(
+            enhancedAutofillEligibleUser_, enhancedAutofillOptedIn_)]]"
+        on-settings-boolean-control-change="onOptInToggleChange_"
+        pref="[[identityDocsOptedIn_]]"
+        no-extension-indicator
+        label="$i18n{identityDocsOptInToggleLabel}"
+        sub-label="$i18n{identityDocsOptInToggleSubLabel}">
+  </div>
+
   <!-- Entities list card -->
   <div class="card">
     <settings-autofill-ai-entries-list

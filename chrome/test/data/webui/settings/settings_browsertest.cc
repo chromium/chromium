@@ -1763,3 +1763,7 @@ IN_PROC_BROWSER_TEST_F(YourSavedInfoTest, YourSavedInfoPage) {
 IN_PROC_BROWSER_TEST_F(YourSavedInfoTest, YourSavedInfoPageIndex) {
   RunTest("settings/your_saved_info_page_index_test.js", "mocha.run()");
 }
+
+IN_PROC_BROWSER_TEST_F(YourSavedInfoTest, IdentityDocsPageTest) {
+  RunTest("settings/identity_docs_page_test.js", "mocha.run()");
+}
