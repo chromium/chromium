@@ -2013,35 +2013,32 @@ TEST_F(VideoCaptureDeviceMFWinTest, GetPhotoStateViaPhotoStream) {
   EXPECT_EQ(state->red_eye_reduction, mojom::RedEyeReduction::NEVER);
   EXPECT_EQ(state->fill_light_mode.size(), 0u);
 
-  ASSERT_TRUE(state->supported_background_blur_modes);
-  EXPECT_EQ(state->supported_background_blur_modes->size(), 2u);
-  EXPECT_EQ(std::ranges::count(*state->supported_background_blur_modes,
+  EXPECT_EQ(state->supported_background_blur_modes.size(), 2u);
+  EXPECT_EQ(std::ranges::count(state->supported_background_blur_modes,
                                mojom::BackgroundBlurMode::OFF),
             1);
-  EXPECT_EQ(std::ranges::count(*state->supported_background_blur_modes,
+  EXPECT_EQ(std::ranges::count(state->supported_background_blur_modes,
                                mojom::BackgroundBlurMode::BLUR),
             1);
   EXPECT_EQ(state->background_blur_mode, mojom::BackgroundBlurMode::OFF);
 
-  ASSERT_TRUE(state->supported_eye_gaze_correction_modes);
-  EXPECT_EQ(state->supported_eye_gaze_correction_modes->size(), 3u);
-  EXPECT_EQ(std::ranges::count(*state->supported_eye_gaze_correction_modes,
+  EXPECT_EQ(state->supported_eye_gaze_correction_modes.size(), 3u);
+  EXPECT_EQ(std::ranges::count(state->supported_eye_gaze_correction_modes,
                                mojom::EyeGazeCorrectionMode::OFF),
             1);
-  EXPECT_EQ(std::ranges::count(*state->supported_eye_gaze_correction_modes,
+  EXPECT_EQ(std::ranges::count(state->supported_eye_gaze_correction_modes,
                                mojom::EyeGazeCorrectionMode::ON),
             1);
-  EXPECT_EQ(std::ranges::count(*state->supported_eye_gaze_correction_modes,
+  EXPECT_EQ(std::ranges::count(state->supported_eye_gaze_correction_modes,
                                mojom::EyeGazeCorrectionMode::STARE),
             1);
   EXPECT_EQ(state->current_eye_gaze_correction_mode,
             mojom::EyeGazeCorrectionMode::OFF);
 
-  ASSERT_TRUE(state->supported_face_framing_modes);
-  EXPECT_EQ(2u, state->supported_face_framing_modes->size());
-  EXPECT_EQ(1, std::ranges::count(*state->supported_face_framing_modes,
+  EXPECT_EQ(2u, state->supported_face_framing_modes.size());
+  EXPECT_EQ(1, std::ranges::count(state->supported_face_framing_modes,
                                   mojom::MeteringMode::CONTINUOUS));
-  EXPECT_EQ(1, std::ranges::count(*state->supported_face_framing_modes,
+  EXPECT_EQ(1, std::ranges::count(state->supported_face_framing_modes,
                                   mojom::MeteringMode::NONE));
   EXPECT_EQ(mojom::MeteringMode::NONE, state->current_face_framing_mode);
 }

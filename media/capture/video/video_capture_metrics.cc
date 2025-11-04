@@ -221,8 +221,7 @@ VideoEffectStatus GetStatus(bool is_supported, bool is_enabled) {
 
 void LogCaptureDeviceEffects(mojom::PhotoStatePtr photo_state) {
   const bool has_background_blur =
-      photo_state->supported_background_blur_modes &&
-      base::Contains(photo_state->supported_background_blur_modes.value(),
+      base::Contains(photo_state->supported_background_blur_modes,
                      mojom::BackgroundBlurMode::BLUR);
   const bool background_blur_enabled =
       photo_state->background_blur_mode != mojom::BackgroundBlurMode::OFF;
@@ -231,19 +230,18 @@ void LogCaptureDeviceEffects(mojom::PhotoStatePtr photo_state) {
       GetStatus(has_background_blur, background_blur_enabled));
 
   const bool has_face_framing =
-      photo_state->supported_face_framing_modes &&
-      photo_state->supported_face_framing_modes.value().size() > 0;
+      photo_state->supported_face_framing_modes.size() > 0;
   const bool face_framing_enabled =
       photo_state->current_face_framing_mode != mojom::MeteringMode::NONE;
   UMA_HISTOGRAM_ENUMERATION("Media.VideoCapture.Device.Effect2.FaceFraming",
                             GetStatus(has_face_framing, face_framing_enabled));
 
   const bool has_eye_gaze_correction =
-      photo_state->supported_eye_gaze_correction_modes &&
-      (base::Contains(photo_state->supported_eye_gaze_correction_modes.value(),
-                      mojom::EyeGazeCorrectionMode::ON) ||
-       base::Contains(photo_state->supported_eye_gaze_correction_modes.value(),
-                      mojom::EyeGazeCorrectionMode::STARE));
+
+      base::Contains(photo_state->supported_eye_gaze_correction_modes,
+                     mojom::EyeGazeCorrectionMode::ON) ||
+      base::Contains(photo_state->supported_eye_gaze_correction_modes,
+                     mojom::EyeGazeCorrectionMode::STARE);
   const bool eye_gaze_correction_enabled =
       photo_state->current_eye_gaze_correction_mode !=
       mojom::EyeGazeCorrectionMode::OFF;

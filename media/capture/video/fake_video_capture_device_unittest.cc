@@ -375,29 +375,25 @@ TEST_F(FakeVideoCaptureDeviceTest, GetAndSetCapabilities) {
   EXPECT_GE(state->zoom->max, state->zoom->current);
   EXPECT_TRUE(state->fill_light_mode.empty());
 
-  ASSERT_TRUE(state->supported_background_blur_modes);
-  EXPECT_EQ(2u, state->supported_background_blur_modes->size());
-  EXPECT_EQ(1, std::ranges::count(*state->supported_background_blur_modes,
+  EXPECT_EQ(2u, state->supported_background_blur_modes.size());
+  EXPECT_EQ(1, std::ranges::count(state->supported_background_blur_modes,
                                   mojom::BackgroundBlurMode::OFF));
-  EXPECT_EQ(1, std::ranges::count(*state->supported_background_blur_modes,
+  EXPECT_EQ(1, std::ranges::count(state->supported_background_blur_modes,
                                   mojom::BackgroundBlurMode::BLUR));
   EXPECT_EQ(mojom::BackgroundBlurMode::OFF, state->background_blur_mode);
 
-  ASSERT_TRUE(state->supported_background_segmentation_mask_states);
-  EXPECT_EQ(2u, state->supported_background_segmentation_mask_states->size());
+  EXPECT_EQ(2u, state->supported_background_segmentation_mask_states.size());
   EXPECT_EQ(1,
             std::ranges::count(
-                *state->supported_background_segmentation_mask_states, false));
-  EXPECT_EQ(1,
-            std::ranges::count(
-                *state->supported_background_segmentation_mask_states, true));
+                state->supported_background_segmentation_mask_states, false));
+  EXPECT_EQ(1, std::ranges::count(
+                   state->supported_background_segmentation_mask_states, true));
   EXPECT_FALSE(state->current_background_segmentation_mask_state);
 
-  ASSERT_TRUE(state->supported_eye_gaze_correction_modes);
-  EXPECT_EQ(2u, state->supported_eye_gaze_correction_modes->size());
-  EXPECT_EQ(1, std::ranges::count(*state->supported_eye_gaze_correction_modes,
+  EXPECT_EQ(2u, state->supported_eye_gaze_correction_modes.size());
+  EXPECT_EQ(1, std::ranges::count(state->supported_eye_gaze_correction_modes,
                                   mojom::EyeGazeCorrectionMode::OFF));
-  EXPECT_EQ(1, std::ranges::count(*state->supported_eye_gaze_correction_modes,
+  EXPECT_EQ(1, std::ranges::count(state->supported_eye_gaze_correction_modes,
                                   mojom::EyeGazeCorrectionMode::ON));
   EXPECT_EQ(mojom::EyeGazeCorrectionMode::OFF,
             state->current_eye_gaze_correction_mode);

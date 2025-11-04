@@ -2826,10 +2826,9 @@ void ImageCapture::UpdateMediaTrackSettingsAndCapabilities(
   if (photo_state->supports_torch)
     settings_->setTorch(photo_state->torch);
 
-  if (photo_state->supported_background_blur_modes &&
-      !photo_state->supported_background_blur_modes->empty()) {
+  if (!photo_state->supported_background_blur_modes.empty()) {
     Vector<bool> supported_background_blur_modes;
-    for (auto mode : *photo_state->supported_background_blur_modes) {
+    for (auto mode : photo_state->supported_background_blur_modes) {
       bool boolean_mode = ToBooleanMode(mode);
       if (!base::Contains(supported_background_blur_modes, boolean_mode)) {
         supported_background_blur_modes.push_back(boolean_mode);
@@ -2841,18 +2840,16 @@ void ImageCapture::UpdateMediaTrackSettingsAndCapabilities(
         ToBooleanMode(photo_state->background_blur_mode));
   }
 
-  if (photo_state->supported_background_segmentation_mask_states &&
-      !photo_state->supported_background_segmentation_mask_states->empty()) {
+  if (!photo_state->supported_background_segmentation_mask_states.empty()) {
     capabilities_->setBackgroundSegmentationMask(
-        *photo_state->supported_background_segmentation_mask_states);
+        photo_state->supported_background_segmentation_mask_states);
     settings_->setBackgroundSegmentationMask(
         photo_state->current_background_segmentation_mask_state);
   }
 
-  if (photo_state->supported_eye_gaze_correction_modes &&
-      !photo_state->supported_eye_gaze_correction_modes->empty()) {
+  if (!photo_state->supported_eye_gaze_correction_modes.empty()) {
     Vector<bool> supported_eye_gaze_correction_modes;
-    for (const auto& mode : *photo_state->supported_eye_gaze_correction_modes) {
+    for (const auto& mode : photo_state->supported_eye_gaze_correction_modes) {
       bool boolean_mode = ToBooleanMode(mode);
       if (!base::Contains(supported_eye_gaze_correction_modes, boolean_mode)) {
         supported_eye_gaze_correction_modes.push_back(boolean_mode);
@@ -2864,10 +2861,9 @@ void ImageCapture::UpdateMediaTrackSettingsAndCapabilities(
         ToBooleanMode(photo_state->current_eye_gaze_correction_mode));
   }
 
-  if (photo_state->supported_face_framing_modes &&
-      !photo_state->supported_face_framing_modes->empty()) {
+  if (!photo_state->supported_face_framing_modes.empty()) {
     Vector<bool> supported_face_framing_modes;
-    for (auto mode : *photo_state->supported_face_framing_modes) {
+    for (auto mode : photo_state->supported_face_framing_modes) {
       if (mode == MeteringMode::CONTINUOUS ||
           mode == MeteringMode::SINGLE_SHOT) {
         supported_face_framing_modes.push_back(true);
