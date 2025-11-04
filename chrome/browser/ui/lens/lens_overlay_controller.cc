@@ -200,6 +200,14 @@ LensOverlayController* GetLensOverlayControllerFromTabInterface(
              : nullptr;
 }
 
+bool IsVisualSelectionType(lens::LensOverlaySelectionType selection_type) {
+  return selection_type == lens::REGION_SEARCH ||
+         selection_type == lens::TAP_ON_EMPTY ||
+         selection_type == lens::TAP_ON_REGION_GLEAM ||
+         selection_type == lens::TAP_ON_OBJECT ||
+         selection_type == lens::INJECTED_IMAGE;
+}
+
 }  // namespace
 
 class LensOverlayController::UnderlyingWebContentsObserver
@@ -2529,8 +2537,18 @@ void LensOverlayController::HandleStartQueryResponse(
 void LensOverlayController::HandleInteractionURLResponse(
     lens::proto::LensOverlayUrlResponse response) {
   MaybeOpenSidePanel();
-  auto* results_side_panel_coordinator =
-      GetLensOverlaySidePanelCoordinator();
+  auto* results_side_panel_coordinator = GetLensOverlaySidePanelCoordinator();
+
+  if (lens::IsAimQuery(
+          results_side_panel_coordinator->GetSidePanelNewTabUrl()) &&
+      IsVisualSelectionType(lens_selection_type_) &&
+      lens::features::GetEnableLensButtonInSearchbox()) {
+    // The latest vsint is stored in the query controller. By returning here,
+    // the URL will not be loaded into the side panel. Instead, when the user
+    // makes a query in the composebox, the vsint will be sent to the results.
+    return;
+  }
+
   results_side_panel_coordinator->SetLatestPageUrlWithResponse(
       GURL(response.page_url()));
   results_side_panel_coordinator->LoadURLInResultsFrame(GURL(response.url()));

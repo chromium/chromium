@@ -905,6 +905,91 @@ IN_PROC_BROWSER_TEST_F(LensComposeboxControllerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(LensComposeboxControllerBrowserTest,
+                       UpdatesVisualSearchInteractionDataBetweenInteractions) {
+  WaitForPaint();
+
+  auto* lens_controller = GetLensSearchController();
+  ASSERT_TRUE(lens_controller);
+
+  // Open the overlay directly to the side panel so composebox is visible.
+  SkBitmap initial_bitmap = CreateNonEmptyBitmap(100, 100);
+  lens_controller->OpenLensOverlayWithPendingRegion(
+      lens::LensOverlayInvocationSource::kContentAreaContextMenuImage,
+      kTestRegion->Clone(), initial_bitmap);
+  auto* overlay_controller = GetLensOverlayController();
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return overlay_controller->state() == State::kOverlayAndResults;
+  }));
+
+  // Wait for the composebox handler to be set.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return GetLensComposeboxController()->composebox_handler_for_testing() !=
+           nullptr;
+  }));
+
+  // Also need to run until the query controller has sent all requests to avoid
+  // flakiness.
+  auto* fake_query_controller =
+      static_cast<lens::TestLensOverlayQueryController*>(
+          lens_controller->lens_overlay_query_controller());
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return fake_query_controller->num_full_image_requests_sent() == 1 &&
+           fake_query_controller->num_page_content_update_requests_sent() ==
+               1 &&
+           fake_query_controller->num_interaction_requests_sent() == 1;
+  }));
+
+  // Mock a handshake call so the composebox controller can send query messages.
+  lens::AimToClientMessage aim_to_client_message;
+  aim_to_client_message.mutable_handshake_response()->add_capabilities(
+      lens::FeatureCapability::DEFAULT);
+  MockAimToClientMessage(aim_to_client_message);
+
+  // Send a query.
+  GetLensComposeboxController()->composebox_handler_for_testing()->SubmitQuery(
+      "test query", /*mouse_button=*/0, /*alt_key=*/false, /*ctrl_key=*/false,
+      /*meta_key=*/false,
+      /*shift_key=*/false);
+
+  // Verify the client message sent.
+  auto* test_side_panel_coordinator = GetLensSidePanelCoordinator();
+  ASSERT_TRUE(test_side_panel_coordinator);
+  ASSERT_TRUE(test_side_panel_coordinator->last_sent_client_message_to_aim_
+                  .has_submit_query());
+
+  // Verify the visual search interaction data has the region.
+  auto submit_query = test_side_panel_coordinator
+                          ->last_sent_client_message_to_aim_.submit_query();
+  auto lens_image_query_data = submit_query.payload().lens_image_query_data(0);
+  ASSERT_TRUE(lens_image_query_data.has_visual_search_interaction_data());
+  ASSERT_TRUE(
+      lens_image_query_data.visual_search_interaction_data().has_zoomed_crop());
+  auto zoomed_crop =
+      lens_image_query_data.visual_search_interaction_data().zoomed_crop();
+  const float tolerance = 0.01f;
+  EXPECT_NEAR(zoomed_crop.crop().center_x(), 0.5f, tolerance);
+  EXPECT_NEAR(zoomed_crop.crop().center_y(), 0.5f, tolerance);
+  EXPECT_NEAR(zoomed_crop.crop().width(), 0.8f, tolerance);
+  EXPECT_NEAR(zoomed_crop.crop().height(), 0.8f, tolerance);
+
+  // Clear the region selection.
+  overlay_controller->ClearRegionSelectionForTesting();
+
+  // Send another query.
+  GetLensComposeboxController()->composebox_handler_for_testing()->SubmitQuery(
+      "test query 2", /*mouse_button=*/0, /*alt_key=*/false,
+      /*ctrl_key=*/false,
+      /*meta_key=*/false,
+      /*shift_key=*/false);
+
+  // Verify the new message.
+  submit_query = test_side_panel_coordinator->last_sent_client_message_to_aim_
+                     .submit_query();
+  lens_image_query_data = submit_query.payload().lens_image_query_data(0);
+  ASSERT_FALSE(lens_image_query_data.has_visual_search_interaction_data());
+}
+
+IN_PROC_BROWSER_TEST_F(LensComposeboxControllerBrowserTest,
                        DeleteVisualSelectionContext) {
   WaitForPaint();
 
