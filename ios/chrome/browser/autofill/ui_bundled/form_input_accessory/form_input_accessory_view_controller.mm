@@ -215,10 +215,9 @@ void LogManualFallbackEntryThroughExpandIcon(ManualFillDataType data_type,
       suggestions.count > 0 &&
       (_mainFillingProduct != FillingProduct::kAutocomplete);
   [self.formInputAccessoryView
-      setManualFillMode:
-          hasSingleManualFillButton
-              ? FormInputAccessoryViewManualFillMode::kExpandButtonOnly
-              : FormInputAccessoryViewManualFillMode::kDetailedButtons];
+      showGroup:hasSingleManualFillButton
+                    ? FormInputAccessoryViewSubitemGroup::kExpandButton
+                    : FormInputAccessoryViewSubitemGroup::kManualFillButtons];
 
   [self createFormSuggestionViewIfNeeded];
   [self forceUserInterfaceStyle];

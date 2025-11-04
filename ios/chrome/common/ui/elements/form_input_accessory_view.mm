@@ -210,6 +210,8 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
   BOOL _splitViewEnabled;
   // The close button for closing the keyboard accessory.
   UIButton* _closeButton;
+  // Current subitem group that is visible.
+  FormInputAccessoryViewSubitemGroup _currentGroup;
 }
 
 #pragma mark - Public
@@ -217,19 +219,6 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
 // Override `intrinsicContentSize` so Auto Layout hugs the content of this view.
 - (CGSize)intrinsicContentSize {
   return CGSizeZero;
-}
-
-- (void)setUpWithLeadingView:(UIView*)leadingView
-          customTrailingView:(UIView*)customTrailingView {
-  [self setSmallWidthAccessoryViewEnabled:!leadingView];
-  [self setUpWithLeadingView:leadingView
-              customTrailingView:customTrailingView
-              navigationDelegate:nil
-                manualFillSymbol:nil
-        passwordManualFillSymbol:nil
-      creditCardManualFillSymbol:nil
-         addressManualFillSymbol:nil
-               closeButtonSymbol:nil];
 }
 
 - (void)setUpWithLeadingView:(UIView*)leadingView
@@ -285,14 +274,24 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
   [self setHorizontalConstraints];
 }
 
-- (void)setManualFillMode:(FormInputAccessoryViewManualFillMode)mode {
-  BOOL expandButtonOnly =
-      mode == FormInputAccessoryViewManualFillMode::kExpandButtonOnly;
-  self.manualFillButton.hidden = !expandButtonOnly;
-  self.passwordManualFillButton.hidden = expandButtonOnly;
-  self.creditCardManualFillButton.hidden = expandButtonOnly;
-  self.addressManualFillButton.hidden = expandButtonOnly;
+- (void)showGroup:(FormInputAccessoryViewSubitemGroup)group {
+  if (_currentGroup == group) {
+    return;
+  }
+  _currentGroup = group;
+
+  BOOL hideManualFillByCategoryButtons =
+      (group != FormInputAccessoryViewSubitemGroup::kManualFillButtons);
+  self.passwordManualFillButton.hidden = hideManualFillByCategoryButtons;
+  self.creditCardManualFillButton.hidden = hideManualFillByCategoryButtons;
+  self.addressManualFillButton.hidden = hideManualFillByCategoryButtons;
+
+  BOOL hideManualFillButton =
+      (group != FormInputAccessoryViewSubitemGroup::kExpandButton);
+  self.manualFillButton.hidden = hideManualFillButton;
+
   if ([self isSplitViewActive]) {
+    BOOL fixedSpacing = !hideManualFillButton;
     if (_isTabletFormFactor) {
       // iPad:
       // The close button is hidden for iPad. The spacing constraint isn't
@@ -303,9 +302,9 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
       // the leading edge of the keyboard accessary has to be disabled. The
       // `_trailingViewCenteringConstraint` then centers the manual fill buttons
       // to the center of the keyboard accessory.
-      _effectViewLeadingConstraint.active = expandButtonOnly;
-      _trailingViewCenteringConstraint.active = !expandButtonOnly;
-      _trailingConstraint.active = expandButtonOnly;
+      _effectViewLeadingConstraint.active = fixedSpacing;
+      _trailingViewCenteringConstraint.active = !fixedSpacing;
+      _trailingConstraint.active = fixedSpacing;
     } else {
       // iPhone:
       // The effect view is always aligned to the leading anchor of the keyboard
@@ -319,7 +318,7 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
       // A fixed space between `trailingView` and the close button is needed.
       // In `kDetailedButtons` mode:
       // The space between `trailingView` and the close button is flexible.
-      _splitViewSpacingConstraint.active = expandButtonOnly;
+      _splitViewSpacingConstraint.active = fixedSpacing;
     }
   }
 }

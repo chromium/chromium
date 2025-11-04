@@ -13,15 +13,17 @@ extern const CGFloat kLargeKeyboardAccessoryHeight;
 @class FormInputAccessoryView;
 @class FormInputAccessoryViewTextData;
 
-// Enum to determine which set of manual fill buttons from
-// FormInputAccessoryView are visible.
-enum class FormInputAccessoryViewManualFillMode {
-  // Three specialized manual fill buttons are visible. The expand button is
-  // hidden.
-  kDetailedButtons = 0,
-  // Only the expand button is visible. The specialized manual fill buttons are
-  // hidden.
-  kExpandButtonOnly
+// Enum for groups of subitems (UIButtons for now) in `FormInputAccessoryView`.
+enum class FormInputAccessoryViewSubitemGroup {
+  // Empty group, the default uninitialized value.
+  kEmpty = 0,
+  // The expand button.
+  kExpandButton,
+  // Manual fill buttons: the password button, the credit card button and the
+  // address button.
+  kManualFillButtons,
+  // Navigation buttons: the previous button and the next button.
+  kNavigationButtons
 };
 
 // Informs the receiver of actions in the accessory view.
@@ -129,11 +131,6 @@ extern NSString* const
               splitViewEnabled:(BOOL)splitViewEnabled
             isTabletFormFactor:(BOOL)isTabletFormFactor;
 
-// Sets up the view with the given `leadingView`. Navigation controls are
-// replaced with `customTrailingView`.
-- (void)setUpWithLeadingView:(UIView*)leadingView
-          customTrailingView:(UIView*)customTrailingView;
-
 // Sets the height of the omnibox typing shield. Set a height of 0 to hide the
 // typing shield. The omnibox typing shield is a transparent view on the top
 // edge of the input accessory view for the collapsed bottom omnibox
@@ -144,8 +141,9 @@ extern NSString* const
 // adapt to the compact size class if necessary.
 - (void)setIsCompact:(BOOL)isCompact;
 
-// Sets the manual fill mode.
-- (void)setManualFillMode:(FormInputAccessoryViewManualFillMode)mode;
+// Shows the group passed in, and hides other elements. If it is already the
+// current group, then it simply returns.
+- (void)showGroup:(FormInputAccessoryViewSubitemGroup)group;
 
 @end
 
