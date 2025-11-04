@@ -169,8 +169,6 @@ class ActorTask {
 
   void SetExecutionEngineForTesting(std::unique_ptr<ExecutionEngine> engine);
 
-  base::WeakPtr<ActorTask> GetWeakPtr();
-
  private:
   class ActorControlledTabState : public content::WebContentsObserver {
    public:

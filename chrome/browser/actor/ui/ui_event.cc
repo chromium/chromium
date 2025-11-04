@@ -10,10 +10,8 @@ StartTask::StartTask(actor::TaskId id) : task_id(id) {}
 StartTask::~StartTask() = default;
 StartTask::StartTask(const StartTask&) = default;
 
-TaskStateChanged::TaskStateChanged(actor::TaskId id,
-                                   ActorTask::State state,
-                                   const std::string& title)
-    : task_id(id), state(state), title(title) {}
+TaskStateChanged::TaskStateChanged(actor::TaskId id, ActorTask::State state)
+    : task_id(id), state(state) {}
 TaskStateChanged::TaskStateChanged(const TaskStateChanged&) = default;
 TaskStateChanged::~TaskStateChanged() = default;
 

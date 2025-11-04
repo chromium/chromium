@@ -13,7 +13,6 @@
 #include "base/state_transitions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
-#include "chrome/browser/actor/actor_features.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_metrics.h"
 #include "chrome/browser/actor/execution_engine.h"
@@ -145,10 +144,6 @@ ActorTask::State ActorTask::GetState() const {
   return state_;
 }
 
-base::WeakPtr<ActorTask> ActorTask::GetWeakPtr() {
-  return weak_ptr_factory_.GetWeakPtr();
-}
-
 void ActorTask::SetState(State new_state) {
   using enum State;
   journal_->Log(GURL(), id(), "ActorTask::SetState",
@@ -223,10 +218,8 @@ void ActorTask::SetState(State new_state) {
     ++total_number_of_interruptions_;
   }
   ui_event_dispatcher_->OnActorTaskSyncChange(
-      ui::UiEventDispatcher::ChangeTaskState{.task_id = id_,
-                                             .old_state = old_state,
-                                             .new_state = new_state,
-                                             .title = title_});
+      ui::UiEventDispatcher::ChangeTaskState{
+          .task_id = id_, .old_state = old_state, .new_state = new_state});
 
   actor::ActorKeyedService::Get(profile_)->NotifyTaskStateChanged(*this);
 
@@ -434,22 +427,11 @@ void ActorTask::RemoveTab(tabs::TabHandle tab_handle) {
         JournalDetailsBuilder().Add("tab_id", tab_handle.raw_value()).Build());
 
     // Notify the UI of the tab removal.
-    if (base::FeatureList::IsEnabled(kActorDoNotStoreCompletedTasks)) {
-      // We call this synchronously since a Stop will destroy the ActorTask
-      // in the same event pump and the UIEventDispatcher will be destroyed
-      // before dispatching the event.
-      ui_event_dispatcher_->OnActorTaskSyncChange(
-          ui::UiEventDispatcher::RemoveTab{.task_id = id_,
-                                           .handle = tab_handle});
-
-    } else {
-      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE,
-          base::BindOnce(&ui::UiEventDispatcher::OnActorTaskSyncChange,
-                         ui_weak_ptr_factory_.GetWeakPtr(),
-                         ui::UiEventDispatcher::RemoveTab{
-                             .task_id = id_, .handle = tab_handle}));
-    }
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(&ui::UiEventDispatcher::OnActorTaskSyncChange,
+                                  ui_weak_ptr_factory_.GetWeakPtr(),
+                                  ui::UiEventDispatcher::RemoveTab{
+                                      .task_id = id_, .handle = tab_handle}));
   }
 }
 

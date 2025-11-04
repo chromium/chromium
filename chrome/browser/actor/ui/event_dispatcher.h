@@ -55,7 +55,6 @@ class UiEventDispatcher {
     TaskId task_id;
     ActorTask::State old_state;
     ActorTask::State new_state;
-    std::string title;
   };
   struct RemoveTab {
     TaskId task_id;

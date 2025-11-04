@@ -31,7 +31,6 @@
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/actor/journal_details_builder.h"
 #include "chrome/common/actor/task_id.h"
-#include "chrome/common/chrome_features.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
 
@@ -356,15 +355,10 @@ void ActorKeyedService::StopTask(TaskId task_id, bool success) {
                        .Add("task_id", task_id)
                        .Add("success", success)
                        .Build());
-
   auto task = active_tasks_.extract(task_id);
   if (!task.empty()) {
-    if (base::FeatureList::IsEnabled(kActorDoNotStoreCompletedTasks)) {
-      task.mapped()->Stop(success);
-    } else {
-      auto ret = inactive_tasks_.insert(std::move(task));
-      ret.position->second->Stop(success);
-    }
+    auto ret = inactive_tasks_.insert(std::move(task));
+    ret.position->second->Stop(success);
   }
 }
 

@@ -33,18 +33,10 @@ class ActorUiStateManagerInterface {
   virtual void MaybeShowToast(BrowserWindowInterface* bwi) = 0;
 
   // Register for this callback to be notified whenever the actor task state
-  // changes. This callback may be debounced by a delay.
+  // changes.
   using ActorTaskStateChangeCallback = base::RepeatingCallback<void(TaskId)>;
   virtual base::CallbackListSubscription RegisterActorTaskStateChange(
       ActorTaskStateChangeCallback callback) = 0;
-
-  // Register for this callback to be notified whenever the actor task is
-  // completed. This callback will occur immediately once the task enters
-  // a completed state.
-  using ActorTaskCompletedCallback = base::RepeatingCallback<
-      void(TaskId, ActorTask::State, std::string /*title*/)>;
-  virtual base::CallbackListSubscription RegisterActorTaskCompleted(
-      ActorTaskCompletedCallback callback) = 0;
 };
 
 }  // namespace actor::ui

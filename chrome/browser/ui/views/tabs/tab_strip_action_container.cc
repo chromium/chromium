@@ -635,13 +635,11 @@ void TabStripActionContainer::OnGlicActorTaskIconClicked() {
       /*prevent_close=*/false, glic::mojom::InvocationSource::kActorTaskIcon);
 
   if (glic_actor_task_icon_->GetIsShowingNudge()) {
-    auto* icon_manager =
-        tabs::GlicActorTaskIconManagerFactory::GetForProfile(profile);
-    icon_manager->ClearCompletedTasks();
     // If a nudge is showing, activate the last actuated tab on click of the
     // Task Icon.
     if (tabs::TabInterface* last_updated_tab =
-            icon_manager->GetLastUpdatedTab()) {
+            tabs::GlicActorTaskIconManagerFactory::GetForProfile(profile)
+                ->GetLastUpdatedTab()) {
       TabStripModel* tab_strip_model =
           tab_strip_controller_->GetBrowserWindowInterface()
               ->GetTabStripModel();
