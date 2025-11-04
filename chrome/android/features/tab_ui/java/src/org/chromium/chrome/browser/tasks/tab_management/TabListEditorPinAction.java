@@ -24,11 +24,20 @@ import java.util.List;
 /** TabListEditor action for pinning and unpinning tabs. */
 @NullMarked
 public class TabListEditorPinAction extends TabListEditorAction {
+    /**
+     * The state of the pin action. The action can be to pin, unpin, or unsupported if the selection
+     * contains a mix of pinned and unpinned tabs.
+     */
     @IntDef({State.UNSUPPORTED, State.PIN, State.UNPIN})
     @Retention(RetentionPolicy.SOURCE)
     private @interface State {
+        /** The selection contains a mix of pinned and unpinned tabs, or contains tab groups. */
         int UNSUPPORTED = 2;
+
+        /** The selection contains only unpinned tabs. */
         int PIN = 0;
+
+        /** The selection contains only pinned tabs. */
         int UNPIN = 1;
     }
 
@@ -80,6 +89,14 @@ public class TabListEditorPinAction extends TabListEditorAction {
         setEnabledAndItemCount(mState != State.UNSUPPORTED, selectedTabs.size());
     }
 
+    private void setIcon(Context context) {
+        if (mState == State.UNSUPPORTED) return;
+
+        int iconId = mState == State.PIN ? R.drawable.ic_keep_24dp : R.drawable.ic_keep_off_24dp;
+        Drawable icon = AppCompatResources.getDrawable(context, iconId);
+        getPropertyModel().set(TabListEditorActionProperties.ICON, icon);
+    }
+
     @Override
     public boolean performAction(
             List<Tab> tabs,
@@ -111,6 +128,11 @@ public class TabListEditorPinAction extends TabListEditorAction {
     }
 
     private void updateState(List<Tab> selectedTabs) {
+        if (selectedTabs.isEmpty()) {
+            mState = State.UNSUPPORTED;
+            return;
+        }
+
         boolean allPinned = true;
         boolean allUnpinned = true;
         boolean hasGroups = false;
@@ -136,11 +158,13 @@ public class TabListEditorPinAction extends TabListEditorAction {
             setActionText(
                     R.plurals.tab_selection_editor_unpin_tabs,
                     R.plurals.accessibility_tab_selection_editor_unpin_tabs);
+            setIcon(selectedTabs.get(0).getContext());
         } else if (allUnpinned) {
             mState = State.PIN;
             setActionText(
                     R.plurals.tab_selection_editor_pin_tabs,
                     R.plurals.accessibility_tab_selection_editor_pin_tabs);
+            setIcon(selectedTabs.get(0).getContext());
         } else {
             mState = State.UNSUPPORTED;
         }

@@ -332,11 +332,12 @@ public class TabGridContextMenuCoordinator extends TabOverflowMenuCoordinator<@T
         boolean isTabPinned = tab.getIsPinned();
         @StringRes int titleRes = isTabPinned ? R.string.unpin_tab : R.string.pin_tab;
         @IdRes int menuId = isTabPinned ? R.id.unpin_tab : R.id.pin_tab;
+        int iconRes = isTabPinned ? R.drawable.ic_keep_off_24dp : R.drawable.ic_keep_24dp;
 
         return new ListItemBuilder()
                 .withTitleRes(titleRes)
                 .withMenuId(menuId)
-                .withStartIconRes(R.drawable.ic_keep_24dp)
+                .withStartIconRes(iconRes)
                 .withIsIncognito(tab.isIncognitoBranded())
                 .build();
     }

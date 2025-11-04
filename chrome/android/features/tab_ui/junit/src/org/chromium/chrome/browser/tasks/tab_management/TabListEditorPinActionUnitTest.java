@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -23,6 +24,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Token;
@@ -117,12 +119,35 @@ public class TabListEditorPinActionUnitTest {
         assertEquals(
                 R.plurals.tab_selection_editor_pin_tabs,
                 mAction.getPropertyModel().get(TabListEditorActionProperties.TITLE_RESOURCE_ID));
+        assertEquals(
+                R.drawable.ic_keep_24dp,
+                Shadows.shadowOf(mAction.getPropertyModel().get(TabListEditorActionProperties.ICON))
+                        .getCreatedFromResId());
+
+        for (Tab tab : tabs) {
+            doAnswer(
+                            (invocation) -> {
+                                tab.setIsPinned(true);
+                                return null;
+                            })
+                    .when(mTabModel)
+                    .pinTab(tab.getId(), false);
+        }
 
         assertTrue(mAction.perform());
 
         for (Tab tab : tabs) {
             verify(mTabModel).pinTab(tab.getId(), false);
         }
+
+        // After pinning, the action should be to unpin.
+        assertEquals(
+                R.plurals.tab_selection_editor_unpin_tabs,
+                mAction.getPropertyModel().get(TabListEditorActionProperties.TITLE_RESOURCE_ID));
+        assertEquals(
+                R.drawable.ic_keep_off_24dp,
+                Shadows.shadowOf(mAction.getPropertyModel().get(TabListEditorActionProperties.ICON))
+                        .getCreatedFromResId());
     }
 
     @Test
@@ -147,12 +172,35 @@ public class TabListEditorPinActionUnitTest {
         assertEquals(
                 R.plurals.tab_selection_editor_unpin_tabs,
                 mAction.getPropertyModel().get(TabListEditorActionProperties.TITLE_RESOURCE_ID));
+        assertEquals(
+                R.drawable.ic_keep_off_24dp,
+                Shadows.shadowOf(mAction.getPropertyModel().get(TabListEditorActionProperties.ICON))
+                        .getCreatedFromResId());
+
+        for (Tab tab : tabs) {
+            doAnswer(
+                            (invocation) -> {
+                                tab.setIsPinned(false);
+                                return null;
+                            })
+                    .when(mTabModel)
+                    .unpinTab(tab.getId());
+        }
 
         assertTrue(mAction.perform());
 
         for (Tab tab : tabs) {
             verify(mTabModel).unpinTab(tab.getId());
         }
+
+        // After unpinning, the action should be to pin.
+        assertEquals(
+                R.plurals.tab_selection_editor_pin_tabs,
+                mAction.getPropertyModel().get(TabListEditorActionProperties.TITLE_RESOURCE_ID));
+        assertEquals(
+                R.drawable.ic_keep_24dp,
+                Shadows.shadowOf(mAction.getPropertyModel().get(TabListEditorActionProperties.ICON))
+                        .getCreatedFromResId());
     }
 
     @Test
