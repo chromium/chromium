@@ -15,15 +15,16 @@ import androidx.annotation.Px;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.SelectionMenuItem;
+import org.chromium.ui.hierarchicalmenu.HierarchicalMenuController;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /**
- * Interface that provides dropdown text selection context menu functionality.
- * Each content embedder will need to provide an implementation of this to enable
- * the behavior when showing the context menu for mouse & trackpad.
+ * Interface that provides dropdown text selection context menu functionality. Each content embedder
+ * will need to provide an implementation of this to enable the behavior when showing the context
+ * menu for mouse & trackpad.
  */
 @NullMarked
 public interface SelectionDropdownMenuDelegate {
@@ -35,13 +36,16 @@ public interface SelectionDropdownMenuDelegate {
     }
 
     /**
-     * Attempts to show the dropdown anchored by its top-left corner at the passed in
-     * x and y offset if there is room. Otherwise it will pick another corner to
-     * ensure the entire dropdown fits on the screen.
-     * @param context the context needed to show the dropdown menu.
-     * @param rootView the root view of the dropdown menu.
-     * @param items the items that will be shown inside the dropdown menu.
-     * @param clickListener the click listener for the items in the dropdown menu.
+     * Attempts to show the dropdown anchored by its top-left corner at the passed in x and y offset
+     * if there is room. Otherwise it will pick another corner to ensure the entire dropdown fits on
+     * the screen.
+     *
+     * @param context The context needed to show the dropdown menu.
+     * @param rootView The root view of the dropdown menu.
+     * @param items The items that will be shown inside the dropdown menu.
+     * @param clickListener The click listener for the items in the dropdown menu.
+     * @param hierarchicalMenuController The {@code HierarchicalMenuController} to use to display
+     *     nested menus.
      * @param x The x offset of the dropdown menu relative to the container View.
      * @param y The y offset of the dropdown menu relative to the container View.
      */
@@ -50,6 +54,7 @@ public interface SelectionDropdownMenuDelegate {
             View rootView,
             MVCListAdapter.ModelList items,
             ItemClickListener clickListener,
+            HierarchicalMenuController hierarchicalMenuController,
             @Px int x,
             @Px int y);
 

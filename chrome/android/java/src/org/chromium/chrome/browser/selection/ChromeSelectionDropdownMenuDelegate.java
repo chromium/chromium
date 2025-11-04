@@ -11,29 +11,38 @@ import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.view.View;
+import android.view.ViewGroup;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
 import org.chromium.content_public.browser.selection.SelectionDropdownMenuDelegate;
+import org.chromium.ui.hierarchicalmenu.FlyoutController;
+import org.chromium.ui.hierarchicalmenu.FlyoutController.FlyoutHandler;
+import org.chromium.ui.hierarchicalmenu.HierarchicalMenuController;
 import org.chromium.ui.listmenu.BasicListMenu;
 import org.chromium.ui.listmenu.ListItemType;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
+import org.chromium.ui.listmenu.ListMenuUtils;
 import org.chromium.ui.listmenu.ListSectionDividerProperties;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.widget.AnchoredPopupWindow;
+import org.chromium.ui.widget.FlyoutPopupSpecCalculator;
 import org.chromium.ui.widget.RectProvider;
 
 /**
- * Chrome implementation of dropdown context menu which leverages {@link BasicListMenu}
- * and {@link AnchoredPopupWindow}.
+ * Chrome implementation of dropdown context menu which leverages {@link BasicListMenu} and {@link
+ * AnchoredPopupWindow}.
  */
 @NullMarked
-public class ChromeSelectionDropdownMenuDelegate implements SelectionDropdownMenuDelegate {
-    private @Nullable AnchoredPopupWindow mPopupWindow;
+public class ChromeSelectionDropdownMenuDelegate
+        implements SelectionDropdownMenuDelegate, FlyoutHandler<AnchoredPopupWindow> {
+    private @Nullable ItemClickListener mClickListener;
+    private @Nullable View mRootView;
+    private @Nullable HierarchicalMenuController mHierarchicalMenuController;
 
     @Override
     public void show(
@@ -41,47 +50,133 @@ public class ChromeSelectionDropdownMenuDelegate implements SelectionDropdownMen
             View rootView,
             MVCListAdapter.ModelList items,
             ItemClickListener clickListener,
+            HierarchicalMenuController hierarchicalMenuController,
             int x,
             int y) {
-        assert mPopupWindow == null : "Dismiss previous popup window before calling show()";
+        mRootView = rootView;
+        mClickListener = clickListener;
+        mHierarchicalMenuController = hierarchicalMenuController;
 
         Rect dropdownRect = new Rect(x, y, x + 1, y + 1);
         BasicListMenu menu =
                 BrowserUiListMenuUtils.getBasicListMenu(
                         context, items, (model, view) -> clickListener.onItemClick(model));
 
-        mPopupWindow =
+        AnchoredPopupWindow popupWindow =
                 new AnchoredPopupWindow(
                         context,
                         rootView,
                         new ColorDrawable(Color.TRANSPARENT),
                         menu.getContentView(),
                         new RectProvider(dropdownRect));
-        // Create a local alias for mPopupWindow to be used in the lambda.
-        AnchoredPopupWindow popupWindow = mPopupWindow;
         AnchoredPopupWindow.LayoutObserver layoutObserver =
                 (positionBelow, x2, y2, width, height, anchorRect) ->
                         popupWindow.setAnimationStyle(
                                 positionBelow
                                         ? R.style.StartIconMenuAnim
                                         : R.style.StartIconMenuAnimBottom);
-        mPopupWindow.setLayoutObserver(layoutObserver);
-        mPopupWindow.setVerticalOverlapAnchor(true);
-        mPopupWindow.setHorizontalOverlapAnchor(true);
-        mPopupWindow.setMaxWidth(
+        popupWindow.setLayoutObserver(layoutObserver);
+        popupWindow.setVerticalOverlapAnchor(true);
+        popupWindow.setHorizontalOverlapAnchor(true);
+        popupWindow.setMaxWidth(
                 context.getResources().getDimensionPixelSize(R.dimen.home_button_list_menu_width));
-        mPopupWindow.setFocusable(true);
-        mPopupWindow.setOutsideTouchable(true);
-        mPopupWindow.addOnDismissListener(() -> mPopupWindow = null);
-        mPopupWindow.show();
+        popupWindow.setFocusable(true);
+        popupWindow.setOutsideTouchable(true);
+        popupWindow.addOnDismissListener(
+                () -> {
+                    assert mHierarchicalMenuController != null;
+                    assert mHierarchicalMenuController.getFlyoutController() != null;
+                    mHierarchicalMenuController.destroyFlyoutController();
+                });
+
+        popupWindow.show();
+
+        mHierarchicalMenuController.setupFlyoutController(
+                /* flyoutHandler= */ this, popupWindow, /* drillDownOverrideValue= */ null);
     }
 
     @Override
     public void dismiss() {
-        if (mPopupWindow != null) {
-            mPopupWindow.dismiss();
+        if (mHierarchicalMenuController == null) {
+            return;
         }
-        mPopupWindow = null;
+
+        assert mHierarchicalMenuController.getFlyoutController() != null;
+        mHierarchicalMenuController.destroyFlyoutController();
+    }
+
+    @Override
+    public Rect getPopupRect(AnchoredPopupWindow popupWindow) {
+        View contentView = popupWindow.getContentView();
+
+        if (contentView == null) {
+            return new Rect();
+        }
+
+        return ListMenuUtils.getViewRectRelativeToItsRootView(contentView);
+    }
+
+    @Override
+    public void dismissPopup(AnchoredPopupWindow popupWindow) {
+        popupWindow.dismiss();
+    }
+
+    @Override
+    public void setWindowFocus(AnchoredPopupWindow popupWindow, boolean hasFocus) {
+        ViewGroup contentView = (ViewGroup) popupWindow.getContentView();
+        if (contentView == null) return;
+
+        HierarchicalMenuController.setWindowFocusForFlyoutMenus(contentView, hasFocus);
+    }
+
+    @Override
+    public AnchoredPopupWindow createAndShowFlyoutPopup(
+            ListItem item, View view, Runnable dismissRunnable) {
+        Context context = view.getContext();
+
+        BasicListMenu menu =
+                BrowserUiListMenuUtils.getBasicListMenu(
+                        context,
+                        ListMenuUtils.getModelListSubtree(item),
+                        (model, unusedView) -> {
+                            assert mClickListener != null;
+                            mClickListener.onItemClick(model);
+                        });
+
+        final View contentView = menu.getContentView();
+
+        final int lateralPadding = contentView.getPaddingLeft() + contentView.getPaddingRight();
+
+        assert mRootView != null;
+        assert mHierarchicalMenuController != null;
+        AnchoredPopupWindow popupMenu =
+                new AnchoredPopupWindow.Builder(
+                                context,
+                                mRootView,
+                                new ColorDrawable(Color.TRANSPARENT),
+                                () -> contentView,
+                                new RectProvider(
+                                        FlyoutController.calculateFlyoutAnchorRect(
+                                                view, mRootView)))
+                        .setVerticalOverlapAnchor(true)
+                        .setHorizontalOverlapAnchor(false)
+                        .setMaxWidth(
+                                context.getResources()
+                                        .getDimensionPixelSize(R.dimen.home_button_list_menu_width))
+                        .setFocusable(true)
+                        .setTouchModal(false)
+                        .setAnimateFromAnchor(false)
+                        .setAnimationStyle(R.style.PopupWindowAnimFade)
+                        .setSpecCalculator(new FlyoutPopupSpecCalculator())
+                        .setDesiredContentWidth(menu.getMaxItemWidth() + lateralPadding)
+                        .addOnDismissListener(
+                                () -> {
+                                    dismissRunnable.run();
+                                })
+                        .build();
+
+        popupMenu.show();
+        return popupMenu;
     }
 
     @Override

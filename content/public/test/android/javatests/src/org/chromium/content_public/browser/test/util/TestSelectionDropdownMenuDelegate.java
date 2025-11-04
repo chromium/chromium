@@ -14,6 +14,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.content_public.browser.SelectionMenuItem;
 import org.chromium.content_public.browser.selection.SelectionDropdownMenuDelegate;
+import org.chromium.ui.hierarchicalmenu.HierarchicalMenuController;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -35,6 +36,7 @@ public class TestSelectionDropdownMenuDelegate implements SelectionDropdownMenuD
             View rootView,
             MVCListAdapter.ModelList items,
             ItemClickListener clickListener,
+            HierarchicalMenuController hierarchicalMenuController,
             int x,
             int y) {}
 

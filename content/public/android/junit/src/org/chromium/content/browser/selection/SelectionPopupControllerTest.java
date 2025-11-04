@@ -734,7 +734,7 @@ public class SelectionPopupControllerTest {
         Mockito.verify(spyController, times(1)).destroyActionModeAndKeepSelection();
         Mockito.verify(dropdownMenuDelegate, times(1)).dismiss();
         Mockito.verify(dropdownMenuDelegate, times(1))
-                .show(any(), any(), any(), any(), anyInt(), anyInt());
+                .show(any(), any(), any(), any(), any(), anyInt(), anyInt());
         Mockito.verify(spyController, never()).showActionModeOrClearOnFailure();
     }
 
@@ -1055,7 +1055,7 @@ public class SelectionPopupControllerTest {
                 MenuSourceType.MOUSE);
         ArgumentCaptor<ModelList> modelList = ArgumentCaptor.captor();
         Mockito.verify(dropdownMenuDelegate, times(1))
-                .show(any(), any(), modelList.capture(), any(), anyInt(), anyInt());
+                .show(any(), any(), modelList.capture(), any(), any(), anyInt(), anyInt());
         // Assert that extra item inserted at end.
         ModelList result = modelList.getValue();
         ListItem lastItem = result.get(result.size() - 1);
@@ -1102,7 +1102,14 @@ public class SelectionPopupControllerTest {
         ArgumentCaptor<SelectionDropdownMenuDelegate.ItemClickListener> clickListenerCaptor =
                 ArgumentCaptor.forClass(SelectionDropdownMenuDelegate.ItemClickListener.class);
         Mockito.verify(dropdownMenuDelegate, times(1))
-                .show(any(), any(), any(), clickListenerCaptor.capture(), anyInt(), anyInt());
+                .show(
+                        any(),
+                        any(),
+                        any(),
+                        clickListenerCaptor.capture(),
+                        any(),
+                        anyInt(),
+                        anyInt());
         SelectionDropdownMenuDelegate.ItemClickListener listener = clickListenerCaptor.getValue();
 
         // Click on the main menu item with submenu, menu should not be dismissed.
