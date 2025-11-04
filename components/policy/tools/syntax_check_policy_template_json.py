@@ -1596,7 +1596,9 @@ class PolicyTemplateChecker(object):
         schema_compatible_error_message = '\n  '.join(
             self.schema_compatible_errors)
         self._PolicyError(
-            'Schema compatible errors.\n'
+            'Schema compatible errors. If this is intentional, add '
+            'BYPASS_POLICY_COMPATIBILITY_CHECK=<reason> to your CL '
+            'description.\n'
             f'  {schema_compatible_error_message}', policy)
 
       # Check that defaults have not changed for a launched policy.
