@@ -195,6 +195,7 @@
 
   self.pasteDelegate = [[OmniboxTextFieldPasteDelegate alloc] init];
   [textInput setPasteDelegate:self.pasteDelegate];
+  self.pasteDelegate.textInput = textInput;
 
   _keyboardMediator = [[OmniboxAssistiveKeyboardMediator alloc] init];
   _keyboardMediator.applicationCommandsHandler =
