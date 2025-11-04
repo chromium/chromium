@@ -3766,6 +3766,22 @@
       "features": [
         "disable_program_caching_for_transform_feedback"
       ]
+    },
+    {
+      "id": 467,
+      "cr_bugs": [417604761],
+      "description": "Share nv12 texture from D3D11 to D3D12 may show corruption on some Intel GPUs.",
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x8086",
+      "intel_gpu_series": [
+        "meteorlake",
+        "arrowlake"
+      ],
+      "features": [
+        "disable_sharing_nv12_from_d3d11_to_d3d12"
+      ]
     }
   ]
 }

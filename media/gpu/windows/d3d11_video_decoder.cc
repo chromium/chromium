@@ -944,7 +944,10 @@ bool D3D11VideoDecoder::OutputResult(const CodecPicture* picture,
                                                     : config_.hdr_metadata());
   }
 
-  frame->metadata().is_webgpu_compatible = use_shared_handle_;
+  frame->metadata().is_webgpu_compatible =
+      !(gpu_workarounds_.disable_sharing_nv12_from_d3d11_to_d3d12 &&
+        texture_selector_->OutputDXGIFormat() == DXGI_FORMAT_NV12) &&
+      use_shared_handle_;
 
   output_cb_.Run(frame);
   return true;
