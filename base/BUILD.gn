@@ -5344,6 +5344,7 @@ if (is_android) {
         "//third_party/android_sdk:public_framework_system_java"
 
     deps = [
+      ":promise_java",
       ":service_loader_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
     ]

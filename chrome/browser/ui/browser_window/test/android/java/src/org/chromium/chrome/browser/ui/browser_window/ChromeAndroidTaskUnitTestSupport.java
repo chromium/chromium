@@ -19,6 +19,7 @@ import android.content.Intent;
 import android.graphics.Insets;
 import android.graphics.Rect;
 import android.os.Build.VERSION_CODES;
+import android.util.Pair;
 import android.view.Window;
 import android.view.WindowInsets;
 import android.view.WindowInsetsController;
@@ -30,6 +31,7 @@ import androidx.core.view.WindowInsetsControllerCompat;
 
 import org.chromium.base.AconfigFlaggedApiDelegate;
 import org.chromium.base.JniOnceCallback;
+import org.chromium.base.Promise;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -206,6 +208,8 @@ public final class ChromeAndroidTaskUnitTestSupport {
         var mockApiDelegate = mock(AconfigFlaggedApiDelegate.class);
         AconfigFlaggedApiDelegate.setInstanceForTesting(mockApiDelegate);
         when(mockApiDelegate.isTaskMoveAllowedOnDisplay(any(), anyInt())).thenReturn(true);
+        when(mockApiDelegate.moveTaskToWithPromise(any(), anyInt(), any()))
+                .thenReturn(Promise.fulfilled(Pair.create(-1, new Rect())));
 
         return new ChromeAndroidTaskWithMockDeps(
                 chromeAndroidTask,

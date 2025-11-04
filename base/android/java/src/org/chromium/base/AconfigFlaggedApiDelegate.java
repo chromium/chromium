@@ -12,7 +12,9 @@ import android.content.ServiceConnection;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.hardware.display.DisplayManager;
+import android.util.Pair;
 import android.util.SparseArray;
+import android.view.Display;
 import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.Window;
@@ -65,6 +67,22 @@ public interface AconfigFlaggedApiDelegate {
      *     display.
      */
     default void moveTaskTo(AppTask at, int displayId, Rect bounds) {}
+
+    /**
+     * Calls the {@link android.app.ActivityManager.AppTask#moveTaskTo} method if supported,
+     * otherwise no-op. Trigger callback when this succeeds or fails.
+     *
+     * @param at {@link android.app.ActivityManager.AppTask} on which the method should be called.
+     * @param displayId identifier of the target display.
+     * @param bounds pixel-based target coordinates relative to the top-left corner of the target
+     *     display.
+     * @return A promise fulfilled with a pair of the actual target display id and actual updated
+     *     bounds.
+     */
+    default Promise<Pair<Integer, Rect>> moveTaskToWithPromise(
+            AppTask at, int displayId, Rect bounds) {
+        return Promise.fulfilled(Pair.create(Display.INVALID_DISPLAY, new Rect()));
+    }
 
     // Helper interfaces and methods for calling the unreleased Display Topology Android API, used
     // within {@link ui.display.DisplayAndroidManager}.

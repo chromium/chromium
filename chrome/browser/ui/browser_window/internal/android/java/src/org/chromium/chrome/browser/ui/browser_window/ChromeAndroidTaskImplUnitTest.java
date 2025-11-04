@@ -795,7 +795,7 @@ public class ChromeAndroidTaskImplUnitTest {
 
         // Assert.
         var boundsCaptor = ArgumentCaptor.forClass(Rect.class);
-        verify(apiDelegate).moveTaskTo(any(), anyInt(), boundsCaptor.capture());
+        verify(apiDelegate).moveTaskToWithPromise(any(), anyInt(), boundsCaptor.capture());
 
         var capturedBounds = boundsCaptor.getValue();
         assertEquals(
@@ -891,9 +891,9 @@ public class ChromeAndroidTaskImplUnitTest {
         // Assert.
         Rect expectedNewBoundsInPx = DisplayUtil.scaleToEnclosingRect(newBoundsInDp, dipScale);
         var boundsCaptor = ArgumentCaptor.forClass(Rect.class);
-        verify(apiDelegate).moveTaskTo(any(), anyInt(), boundsCaptor.capture());
+        verify(apiDelegate).moveTaskToWithPromise(any(), anyInt(), boundsCaptor.capture());
         assertEquals(
-                "Bounds passed to moveTaskTo() should be in pixels",
+                "Bounds passed to moveTaskToWithPromise() should be in pixels",
                 expectedNewBoundsInPx,
                 boundsCaptor.getValue());
     }
@@ -919,7 +919,7 @@ public class ChromeAndroidTaskImplUnitTest {
 
         // Assert
         var boundsCaptor = ArgumentCaptor.forClass(Rect.class);
-        verify(apiDelegate).moveTaskTo(any(), anyInt(), boundsCaptor.capture());
+        verify(apiDelegate).moveTaskToWithPromise(any(), anyInt(), boundsCaptor.capture());
         assertEquals(
                 "Bounds that are too large should be clamped to the maximized bounds",
                 DEFAULT_MAXIMIZED_WINDOW_BOUNDS_IN_PX,
@@ -965,7 +965,7 @@ public class ChromeAndroidTaskImplUnitTest {
                                 + ChromeAndroidTaskBoundsConstraints.MINIMAL_TASK_SIZE_DP);
         Rect expectedBoundsInPx = DisplayUtil.scaleToEnclosingRect(expectedBoundsInDp, dipScale);
         var boundsCaptor = ArgumentCaptor.forClass(Rect.class);
-        verify(apiDelegate).moveTaskTo(any(), anyInt(), boundsCaptor.capture());
+        verify(apiDelegate).moveTaskToWithPromise(any(), anyInt(), boundsCaptor.capture());
         assertEquals(
                 "Bounds that are too small should be adjusted to the minimum size",
                 expectedBoundsInPx,
@@ -999,7 +999,8 @@ public class ChromeAndroidTaskImplUnitTest {
 
         // Assert
         var boundsCaptor = ArgumentCaptor.forClass(Rect.class);
-        verify(apiDelegate, times(2)).moveTaskTo(any(), anyInt(), boundsCaptor.capture());
+        verify(apiDelegate, times(2))
+                .moveTaskToWithPromise(any(), anyInt(), boundsCaptor.capture());
 
         var capturedBounds = boundsCaptor.getValue();
         assertEquals(
@@ -1047,7 +1048,7 @@ public class ChromeAndroidTaskImplUnitTest {
 
         // Verify moveTaskTo is called with the restored bounds.
         var boundsCaptor = ArgumentCaptor.forClass(Rect.class);
-        inOrder.verify(apiDelegate).moveTaskTo(any(), anyInt(), boundsCaptor.capture());
+        inOrder.verify(apiDelegate).moveTaskToWithPromise(any(), anyInt(), boundsCaptor.capture());
         assertEquals(
                 "moveTaskTo should be called with the restored bounds",
                 DEFAULT_CURRENT_WINDOW_BOUNDS_IN_PX,
@@ -1699,7 +1700,7 @@ public class ChromeAndroidTaskImplUnitTest {
 
         // Assert.
         var boundsCaptor = ArgumentCaptor.forClass(Rect.class);
-        verify(apiDelegate).moveTaskTo(any(), anyInt(), boundsCaptor.capture());
+        verify(apiDelegate).moveTaskToWithPromise(any(), anyInt(), boundsCaptor.capture());
         var capturedBounds = boundsCaptor.getValue();
         assertEquals(DEFAULT_MAXIMIZED_WINDOW_BOUNDS_IN_PX, capturedBounds);
     }
@@ -1751,7 +1752,7 @@ public class ChromeAndroidTaskImplUnitTest {
         // Assert.
         Rect expectedBoundsInPx = DisplayUtil.scaleToEnclosingRect(pendingBoundsInDp, dipScale);
         var boundsCaptor = ArgumentCaptor.forClass(Rect.class);
-        verify(apiDelegate).moveTaskTo(any(), anyInt(), boundsCaptor.capture());
+        verify(apiDelegate).moveTaskToWithPromise(any(), anyInt(), boundsCaptor.capture());
         assertEquals(expectedBoundsInPx, boundsCaptor.getValue());
     }
 
@@ -1772,7 +1773,7 @@ public class ChromeAndroidTaskImplUnitTest {
                 chromeAndroidTaskWithMockDeps.mActivityScopedObjects);
 
         // Assert.
-        verify(apiDelegate, never()).moveTaskTo(any(), anyInt(), any());
+        verify(apiDelegate, never()).moveTaskToWithPromise(any(), anyInt(), any());
     }
 
     @Test
@@ -1804,7 +1805,7 @@ public class ChromeAndroidTaskImplUnitTest {
         // Assert.
         Rect expectedBoundsInPx = DisplayUtil.scaleToEnclosingRect(pendingBoundsInDp, dipScale);
         var boundsCaptor = ArgumentCaptor.forClass(Rect.class);
-        verify(apiDelegate).moveTaskTo(any(), anyInt(), boundsCaptor.capture());
+        verify(apiDelegate).moveTaskToWithPromise(any(), anyInt(), boundsCaptor.capture());
         assertEquals(expectedBoundsInPx, boundsCaptor.getValue());
     }
 

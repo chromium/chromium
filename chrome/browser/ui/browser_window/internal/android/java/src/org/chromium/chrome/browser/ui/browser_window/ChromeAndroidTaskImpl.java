@@ -329,6 +329,9 @@ final class ChromeAndroidTaskImpl
             return mPendingActionManager.isActionRequested(PendingAction.MAXIMIZE)
                     || assumeNonNull(mPendingTaskInfo).mCreateParams.getInitialShowState()
                             == WindowShowState.MAXIMIZED;
+        } else if (mState.get() == State.PENDING_UPDATE) {
+            Boolean isMaximized = mPendingActionManager.isMaximizedFuture();
+            if (isMaximized != null) return isMaximized;
         }
 
         synchronized (mActivityScopedObjectsLock) {
@@ -419,6 +422,10 @@ final class ChromeAndroidTaskImpl
                 return assertNonNull(mPendingActionManager.getPendingBoundsInDp());
             }
             return assumeNonNull(mPendingTaskInfo).mCreateParams.getInitialBounds();
+
+        } else if (mState.get() == State.PENDING_UPDATE) {
+            var bounds = mPendingActionManager.getFutureBoundsInDp();
+            if (bounds != null) return bounds;
         }
 
         synchronized (mActivityScopedObjectsLock) {
@@ -607,6 +614,8 @@ final class ChromeAndroidTaskImpl
         }
 
         synchronized (mActivityScopedObjectsLock) {
+            mPendingActionManager.requestSetBounds(boundsInDp);
+            mState.set(State.PENDING_UPDATE);
             setBoundsInDpInternalLocked(boundsInDp);
         }
     }
@@ -939,7 +948,19 @@ final class ChromeAndroidTaskImpl
             return;
         }
 
-        aconfigFlaggedApiDelegate.moveTaskTo(appTask, displayId, boundsInPx);
+        aconfigFlaggedApiDelegate
+                .moveTaskToWithPromise(appTask, displayId, boundsInPx)
+                .then(
+                        (pair) -> {
+                            var actions =
+                                    mPendingActionManager.getAndClearTargetPendingActions(
+                                            PendingAction.MAXIMIZE, PendingAction.SET_BOUNDS);
+                            maybeSetStateIdle(actions);
+                        },
+                        (e) -> {
+                            if (e == null) return;
+                            Log.w(TAG, "Fail to move task to bounds: %s", e.getMessage());
+                        });
     }
 
     @GuardedBy("mActivityScopedObjectsLock")
@@ -995,6 +1016,8 @@ final class ChromeAndroidTaskImpl
         }
         Rect maxBoundsInPx =
                 ChromeAndroidTaskBoundsConstraints.getMaxBoundsInPx(activity.getWindowManager());
+        mPendingActionManager.requestAction(PendingAction.MAXIMIZE);
+        mState.set(State.PENDING_UPDATE);
         setBoundsInPxLocked(activity, activityWindowAndroid.getDisplay(), maxBoundsInPx);
     }
 
