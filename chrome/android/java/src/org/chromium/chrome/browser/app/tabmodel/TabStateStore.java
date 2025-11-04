@@ -11,6 +11,8 @@ import android.os.SystemClock;
 import org.chromium.base.ObserverList;
 import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -19,7 +21,6 @@ import org.chromium.chrome.browser.tab.CollectionSaveForwarder;
 import org.chromium.chrome.browser.tab.StorageLoadedData;
 import org.chromium.chrome.browser.tab.StorageLoadedData.LoadedTabState;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabGroupCollectionData;
 import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tab.TabStateAttributes;
@@ -46,6 +47,7 @@ import java.util.Set;
 @NullMarked
 public class TabStateStore implements TabPersistentStore {
     private static final String TAG = "TabStateStore";
+    private static final int RESTORE_BATCH_SIZE = 5;
 
     private final TabStateStorageService mTabStateStorageService;
     private final TabCreatorManager mTabCreatorManager;
@@ -344,7 +346,6 @@ public class TabStateStore implements TabPersistentStore {
 
     private void onDataLoaded(StorageLoadedData data, long loadStartTime) {
         LoadedTabState[] loadedTabStates = data.getLoadedTabStates();
-        TabGroupCollectionData[] groupsData = data.getGroupsData();
 
         long duration = SystemClock.elapsedRealtime() - loadStartTime;
         RecordHistogram.recordTimesHistogram("Tabs.TabStateStore.LoadAllTabsDuration", duration);
@@ -355,10 +356,28 @@ public class TabStateStore implements TabPersistentStore {
         }
 
         if (ChromeFeatureList.sTabStorageSqlitePrototypeAuthoritativeReadSource.getValue()) {
-            TabGroupVisualDataStore.cacheGroups(groupsData);
+            TabGroupVisualDataStore.cacheGroups(data.getGroupsData());
         }
 
-        for (int i = 0; i < loadedTabStates.length; i++) {
+        // TODO(crbug.com/457771677): Special case the first batch to restore only the selected tab
+        // then restore the remainder in posted batches.
+        restoreNextBatchOfTabs(data, /* startIndex= */ 0, /* batchSize= */ loadedTabStates.length);
+    }
+
+    /**
+     * Restores tabs in range {@code [startIndex, startIndex + batchSize)} from {@code data} or
+     * until data is exhausted. Will post a task to restore the next batch if there are more tabs to
+     * restore otherwise will signal the end of restoration.
+     *
+     * @param data The data to restore tabs from.
+     * @param startIndex The index of the first tab to restore.
+     * @param batchSize The number of tabs to restore.
+     */
+    private void restoreNextBatchOfTabs(StorageLoadedData data, int startIndex, int batchSize) {
+        LoadedTabState[] loadedTabStates = data.getLoadedTabStates();
+        int endIndex = Math.min(startIndex + batchSize, loadedTabStates.length);
+
+        for (int i = startIndex; i < endIndex; i++) {
             LoadedTabState loadedTabState = loadedTabStates[i];
             @TabId int tabId = loadedTabState.tabId;
             Tab tab = resolveTab(loadedTabState.tabState, tabId, i);
@@ -383,8 +402,21 @@ public class TabStateStore implements TabPersistentStore {
             }
         }
 
+        if (endIndex < loadedTabStates.length) {
+            // TODO(crbug.com/457771677): This is currently unreachable as we just fake restoring
+            // everything in one batch.
+            PostTask.postTask(
+                    TaskTraits.UI_DEFAULT,
+                    () -> restoreNextBatchOfTabs(data, endIndex, RESTORE_BATCH_SIZE));
+        } else {
+            // TODO(crbug.com/457771677): Consider posting this to prevent jank.
+            onFinishedCreatingAllTabs(data);
+        }
+    }
+
+    private void onFinishedCreatingAllTabs(StorageLoadedData data) {
         if (ChromeFeatureList.sTabStorageSqlitePrototypeAuthoritativeReadSource.getValue()) {
-            TabGroupVisualDataStore.removeCachedGroups(groupsData);
+            TabGroupVisualDataStore.removeCachedGroups(data.getGroupsData());
         }
 
         for (TabPersistentStoreObserver observer : mObservers) {
