@@ -112,13 +112,10 @@ bool IsAuxiliaryBrowsingContext(const NavigateParams& nav_params) {
 
 Browser* CreateWebAppWindowFromNavigationParams(
     const webapps::AppId& app_id,
-    const NavigateParams& navigate_params,
-    std::optional<bool> trusted_source_override = std::nullopt) {
+    const NavigateParams& navigate_params) {
   Browser::CreateParams app_browser_params = CreateParamsForApp(
       app_id, /*is_popup=*/false,
-      /*trusted_source=*/
-      trusted_source_override.value_or(navigate_params.trusted_source),
-      navigate_params.window_features.bounds,
+      /*trusted_source=*/true, navigate_params.window_features.bounds,
       navigate_params.initiating_profile, navigate_params.user_gesture);
   Browser* created_browser =
       CreateWebAppWindowMaybeWithHomeTab(app_id, app_browser_params);
@@ -467,8 +464,8 @@ NavigationCapturingProcess::GetInitialNavigationParamsOverride(
     if (std::optional<webapps::AppId> app_id =
             web_app::FindInstalledAppWithUrlInScope(&profile_.get(), params.url,
                                                     /*window_only=*/true)) {
-      Browser* host_window = CreateWebAppWindowFromNavigationParams(
-          *app_id, params, /*trusted_source_override=*/true);
+      Browser* host_window =
+          CreateWebAppWindowFromNavigationParams(*app_id, params);
       return NoCapturingOverrideBrowser(host_window);
     }
 
@@ -773,8 +770,8 @@ NavigationCapturingProcess::HandleIsolatedWebAppNavigation(
 
     if (IsAuxiliaryBrowsingContext(params)) {
       debug_data_.Set("is_auxiliary_browsing_context", true);
-      Browser* aux_window = CreateWebAppWindowFromNavigationParams(
-          iwa_id, params, /*trusted_source_override=*/true);
+      Browser* aux_window =
+          CreateWebAppWindowFromNavigationParams(iwa_id, params);
       return AuxiliaryContextInAppWindow(aux_window);
     }
   }
@@ -789,8 +786,7 @@ NavigationCapturingProcess::HandleIsolatedWebAppNavigation(
   if (is_user_modified_click()) {
     return ForcedNewAppContext(
         app_display_mode,
-        CreateWebAppWindowFromNavigationParams(
-            iwa_id, params, /*trusted_source_override=*/true));
+        CreateWebAppWindowFromNavigationParams(iwa_id, params));
   }
 
   ClientModeAndBrowser client_mode_and_browser =
@@ -815,8 +811,8 @@ NavigationCapturingProcess::HandleIsolatedWebAppNavigation(
     case LaunchHandler::ClientMode::kNavigateNew: {
       debug_data_.Set("client_mode",
                       base::ToString(LaunchHandler::ClientMode::kNavigateNew));
-      Browser* host_window = CreateWebAppWindowFromNavigationParams(
-          iwa_id, params, /*trusted_source_override=*/true);
+      Browser* host_window =
+          CreateWebAppWindowFromNavigationParams(iwa_id, params);
       return CapturedNewClient(app_display_mode, host_window);
     }
   }
