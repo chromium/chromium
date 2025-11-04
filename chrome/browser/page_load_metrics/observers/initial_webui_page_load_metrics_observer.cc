@@ -72,7 +72,7 @@ WaapUIMetricsService* InitialWebUIPageLoadMetricsObserver::service() const {
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 InitialWebUIPageLoadMetricsObserver::ShouldObserveScheme(
     const GURL& url) const {
-  if (IsForInitialWebUI(url)) {
+  if (waap::IsForInitialWebUI(url)) {
     return CONTINUE_OBSERVING;
   }
   return STOP_OBSERVING;

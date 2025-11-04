@@ -11,6 +11,8 @@
 #include "content/public/common/url_constants.h"
 #include "url/gurl.h"
 
+namespace waap {
+
 bool IsForInitialWebUI(const GURL& url) {
   if (base::FeatureList::IsEnabled(features::kInitialWebUI) &&
       base::FeatureList::IsEnabled(features::kWebUIReloadButton)) {
@@ -23,3 +25,5 @@ bool IsForInitialWebUI(const GURL& url) {
 bool IsInitialWebUIMetricsLoggingEnabled() {
   return base::FeatureList::IsEnabled(features::kInitialWebUIMetrics);
 }
+
+}  // namespace waap

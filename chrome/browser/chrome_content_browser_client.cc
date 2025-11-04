@@ -2568,7 +2568,7 @@ bool ChromeContentBrowserClient::ShouldUrlUseApplicationIsolationLevel(
 
 #if !BUILDFLAG(IS_ANDROID)
 bool ChromeContentBrowserClient::IsInitialWebUIScheme(const GURL& url) {
-  return IsForInitialWebUI(url);
+  return waap::IsForInitialWebUI(url);
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

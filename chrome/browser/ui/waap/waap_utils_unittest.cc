@@ -11,6 +11,9 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
+namespace waap {
+namespace {
+
 TEST(IsForInitialWebUITest, FeaturesDisabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
@@ -69,3 +72,6 @@ TEST(IsInitialWebUIMetricsLoggingEnabledTest, FeaturesEnabled) {
 
   EXPECT_TRUE(IsInitialWebUIMetricsLoggingEnabled());
 }
+
+}  // namespace
+}  // namespace waap

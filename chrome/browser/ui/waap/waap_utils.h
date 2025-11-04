@@ -7,6 +7,8 @@
 
 #include "url/gurl.h"
 
+namespace waap {
+
 // Returns true if the given URL is the initial WebUI scheme.
 // This is only relevant on non-Android platforms.
 // TODO(crbug.com/448794588): Some callers of this function assume that
@@ -24,5 +26,7 @@ bool IsForInitialWebUI(const GURL& url);
 // experiment, which includes both the existing C++ version (not a InitialWebUI)
 // and the WebUI version.
 bool IsInitialWebUIMetricsLoggingEnabled();
+
+}  // namespace waap
 
 #endif  // CHROME_BROWSER_UI_WAAP_WAAP_UTILS_H_
