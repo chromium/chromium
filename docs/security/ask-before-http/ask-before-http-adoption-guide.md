@@ -2,6 +2,11 @@
 
 ![Screenshot of Chrome's 'Ask-before-HTTP' warning](ask-before-http-warning.png)
 
+**Chrome will start asking for users’ permission before navigating to HTTP pages
+by default in Chrome 154.** For more background on Chrome’s “Always Use Secure
+Connections” setting and the motivations for requiring user permission see our
+[blog post](https://security.googleblog.com/2025/10/https-by-default.html).
+
 If you have a website that is served over HTTP (either directly or for any
 possible redirect steps a user may go through before reaching your site), this
 document tries to answer common questions and provide guidance on how to adapt
