@@ -195,7 +195,8 @@ class CC_EXPORT TileDisplayLayerImpl : public TileBasedLayerImpl {
                                  viz::CompositorRenderPass* render_pass,
                                  AppendQuadsData* append_quads_data,
                                  viz::SharedQuadState* shared_quad_state,
-                                 const Occlusion& scaled_occlusion) override;
+                                 const Occlusion& scaled_occlusion,
+                                 const gfx::Vector2d& quad_offset) override;
   float GetMaximumContentsScaleForUseInAppendQuads() override;
   void AppendQuadsForResourcelessSoftwareDraw(
       const AppendQuadsContext& context,

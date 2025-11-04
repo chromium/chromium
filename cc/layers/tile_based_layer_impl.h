@@ -52,13 +52,15 @@ class CC_EXPORT TileBasedLayerImpl : public LayerImpl {
 
   // Called when AppendQuads() goes through a flow for which behavior is
   // subclass-specific (i.e., not defined in TileBasedLayerImpl::AppendQuads()
-  // itself).
+  // itself). `quad_offset` is the offset by which appended quads should be
+  // adjusted.
   virtual void AppendQuadsSpecialization(
       const AppendQuadsContext& context,
       viz::CompositorRenderPass* render_pass,
       AppendQuadsData* append_quads_data,
       viz::SharedQuadState* shared_quad_state,
-      const Occlusion& scaled_occlusion) = 0;
+      const Occlusion& scaled_occlusion,
+      const gfx::Vector2d& quad_offset) = 0;
 
   virtual float GetMaximumContentsScaleForUseInAppendQuads() = 0;
 

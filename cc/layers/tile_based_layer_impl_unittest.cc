@@ -29,7 +29,8 @@ class TestTileBasedLayerImpl : public TileBasedLayerImpl {
                                  viz::CompositorRenderPass* render_pass,
                                  AppendQuadsData* append_quads_data,
                                  viz::SharedQuadState* shared_quad_state,
-                                 const Occlusion& scaled_occlusion) override {}
+                                 const Occlusion& scaled_occlusion,
+                                 const gfx::Vector2d& quad_offset) override {}
   float GetMaximumContentsScaleForUseInAppendQuads() override { return 1.f; }
   bool IsDirectlyCompositedImage() const override { return false; }
   void AppendQuadsForResourcelessSoftwareDraw(
@@ -303,7 +304,8 @@ class OcclusionTestTileBasedLayerImpl : public TestTileBasedLayerImpl {
                                  viz::CompositorRenderPass* render_pass,
                                  AppendQuadsData* append_quads_data,
                                  viz::SharedQuadState* shared_quad_state,
-                                 const Occlusion& scaled_occlusion) override {
+                                 const Occlusion& scaled_occlusion,
+                                 const gfx::Vector2d& quad_offset) override {
     scaled_occlusion_ = scaled_occlusion;
     // Create a dummy quad to avoid tripping debug checks.
     auto* quad =
@@ -438,6 +440,79 @@ TEST_F(
                          render_pass.get(), &data);
 
   EXPECT_FALSE(raw_layer->append_quads_for_resourceless_software_draw_called());
+}
+
+class QuadOffsetTestTileBasedLayerImpl : public TestTileBasedLayerImpl {
+ public:
+  QuadOffsetTestTileBasedLayerImpl(LayerTreeImpl* tree_impl, int id)
+      : TestTileBasedLayerImpl(tree_impl, id) {}
+
+  const gfx::Vector2d& quad_offset() const { return quad_offset_; }
+
+ private:
+  void AppendQuadsSpecialization(const AppendQuadsContext& context,
+                                 viz::CompositorRenderPass* render_pass,
+                                 AppendQuadsData* append_quads_data,
+                                 viz::SharedQuadState* shared_quad_state,
+                                 const Occlusion& scaled_occlusion,
+                                 const gfx::Vector2d& quad_offset) override {
+    quad_offset_ = quad_offset;
+    // Create a dummy quad to avoid tripping debug checks.
+    auto* quad =
+        render_pass->CreateAndAppendDrawQuad<viz::SolidColorDrawQuad>();
+    quad->SetNew(shared_quad_state, gfx::Rect(1, 1), gfx::Rect(1, 1),
+                 SkColors::kTransparent, false);
+  }
+
+  gfx::Vector2d quad_offset_;
+};
+
+TEST_F(TileBasedLayerImplTest, AppendQuadsComputesQuadOffset) {
+  const gfx::Size layer_bounds(100, 100);
+  const gfx::Rect visible_layer_rect(10, 20, 50, 60);
+
+  auto layer = std::make_unique<QuadOffsetTestTileBasedLayerImpl>(
+      host_impl()->active_tree(), /*id=*/1);
+  auto* raw_layer = layer.get();
+  host_impl()->active_tree()->AddLayer(std::move(layer));
+
+  raw_layer->SetBounds(layer_bounds);
+  raw_layer->draw_properties().visible_layer_rect = visible_layer_rect;
+
+  SetupRootProperties(host_impl()->active_tree()->root_layer());
+
+  auto render_pass = viz::CompositorRenderPass::Create();
+  AppendQuadsData data;
+  raw_layer->AppendQuads(AppendQuadsContext{DRAW_MODE_SOFTWARE, {}, false},
+                         render_pass.get(), &data);
+
+  // The quad_offset should be the additive inverse of the visible_layer_rect's
+  // origin.
+  const gfx::Vector2d expected_quad_offset(-visible_layer_rect.x(),
+                                           -visible_layer_rect.y());
+  EXPECT_EQ(raw_layer->quad_offset(), expected_quad_offset);
+
+  ASSERT_EQ(render_pass->shared_quad_state_list.size(), 1u);
+  const viz::SharedQuadState* shared_quad_state =
+      render_pass->shared_quad_state_list.front();
+
+  // The quad_to_target_transform should be translated by the additive inverse
+  // of the quad_offset, as the quads themselves are shifted by quad_offset.
+  gfx::Transform expected_transform =
+      raw_layer->draw_properties().target_space_transform;
+  expected_transform.Translate(-expected_quad_offset);
+  EXPECT_EQ(shared_quad_state->quad_to_target_transform, expected_transform);
+
+  // The quad_layer_rect should be offset by the quad_offset.
+  gfx::Rect expected_quad_layer_rect = gfx::Rect(layer_bounds);
+  expected_quad_layer_rect.Offset(expected_quad_offset);
+  EXPECT_EQ(shared_quad_state->quad_layer_rect, expected_quad_layer_rect);
+
+  // The visible_quad_layer_rect should be offset by the quad_offset.
+  gfx::Rect expected_visible_quad_layer_rect = visible_layer_rect;
+  expected_visible_quad_layer_rect.Offset(expected_quad_offset);
+  EXPECT_EQ(shared_quad_state->visible_quad_layer_rect,
+            expected_visible_quad_layer_rect);
 }
 
 }  // namespace

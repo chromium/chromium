@@ -280,22 +280,10 @@ void PictureLayerImpl::AppendQuadsSpecialization(
     viz::CompositorRenderPass* render_pass,
     AppendQuadsData* append_quads_data,
     viz::SharedQuadState* shared_quad_state,
-    const Occlusion& scaled_occlusion) {
+    const Occlusion& scaled_occlusion,
+    const gfx::Vector2d& quad_offset) {
   float device_scale_factor = layer_tree_impl()->device_scale_factor();
   float max_contents_scale = GetMaximumContentsScaleForUseInAppendQuads();
-
-  // If we're doing a regular AppendQuads (ie, not solid color or resourceless
-  // software draw, and if the visible rect is scrolled far enough away, then we
-  // may run into a floating point precision in AA calculations in the renderer.
-  // See crbug.com/765297. In order to avoid this, we shift the quads up from
-  // where they logically reside and adjust the shared_quad_state's transform
-  // instead. We only do this in a scale/translate matrices to ensure the math
-  // is correct.
-  gfx::Vector2d quad_offset;
-  if (shared_quad_state->quad_to_target_transform.IsScaleOrTranslation()) {
-    const auto& visible_rect = shared_quad_state->visible_quad_layer_rect;
-    quad_offset = gfx::Vector2d(-visible_rect.x(), -visible_rect.y());
-  }
 
   gfx::Rect debug_border_rect(shared_quad_state->quad_layer_rect);
   debug_border_rect.Offset(quad_offset);
@@ -554,12 +542,6 @@ void PictureLayerImpl::AppendQuadsSpecialization(
   // finer tilings.
   CleanUpTilingsOnActiveLayer();
   SanityCheckTilingState();
-
-  // Adjust shared_quad_state with the quad_offset, since we've adjusted each
-  // quad we've appended by it.
-  shared_quad_state->quad_to_target_transform.Translate(-quad_offset);
-  shared_quad_state->quad_layer_rect.Offset(quad_offset);
-  shared_quad_state->visible_quad_layer_rect.Offset(quad_offset);
 }
 
 bool PictureLayerImpl::UpdateTiles() {

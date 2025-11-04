@@ -75,8 +75,25 @@ void TileBasedLayerImpl::AppendQuads(const AppendQuadsContext& context,
     return;
   }
 
+  // If the visible rect is scrolled far enough away, then we may run into a
+  // floating point precision in AA calculations in the renderer. See
+  // crbug.com/765297. In order to avoid this, we shift the quads up from where
+  // they logically reside and adjust the shared_quad_state's transform instead.
+  // We only do this in scale/translate matrices to ensure the math is correct.
+  gfx::Vector2d quad_offset;
+  if (shared_quad_state->quad_to_target_transform.IsScaleOrTranslation()) {
+    const auto& visible_rect = shared_quad_state->visible_quad_layer_rect;
+    quad_offset = gfx::Vector2d(-visible_rect.x(), -visible_rect.y());
+  }
+
   AppendQuadsSpecialization(context, render_pass, append_quads_data,
-                            shared_quad_state, scaled_occlusion);
+                            shared_quad_state, scaled_occlusion, quad_offset);
+
+  // Adjust shared_quad_state with the quad_offset, since by contract
+  // AppendQuadsSpecialization() has adjusted each quad appended by that offset.
+  shared_quad_state->quad_to_target_transform.Translate(-quad_offset);
+  shared_quad_state->quad_layer_rect.Offset(quad_offset);
+  shared_quad_state->visible_quad_layer_rect.Offset(quad_offset);
 }
 
 void TileBasedLayerImpl::AppendSolidQuad(viz::CompositorRenderPass* render_pass,
