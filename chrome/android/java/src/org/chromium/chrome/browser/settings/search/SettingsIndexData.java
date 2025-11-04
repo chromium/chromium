@@ -263,6 +263,17 @@ public class SettingsIndexData {
         return mDisabledFragments.contains(fragment);
     }
 
+    /** Set the flag indicating the index became stale and needs reindexing. */
+    public void setNeedsIndexing() {
+        // TODO(crbug.com/456817438): Implement this.
+    }
+
+    /** Return whether the index data needs to be refreshed. */
+    public boolean needsIndexing() {
+        // TODO(crbug.com/456817438): Implement this.
+        return false;
+    }
+
     /**
      * Initializes the in-memory search index for all settings. It uses the providers found in
      * {@link SearchIndexProviderRegistry.ALL_PROVIDERS}.

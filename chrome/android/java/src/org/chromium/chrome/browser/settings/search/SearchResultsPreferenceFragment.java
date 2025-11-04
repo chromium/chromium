@@ -16,6 +16,7 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
+import org.chromium.chrome.browser.settings.MainSettings;
 import org.chromium.chrome.browser.settings.search.SettingsIndexData.SearchResults;
 
 /** A simple Fragment to display a list of search results. */
@@ -73,7 +74,14 @@ public class SearchResultsPreferenceFragment extends ChromeBaseSettingsFragment 
             preference.setSummary(info.summary);
             preference.setOnPreferenceClickListener(
                     pref -> {
-                        mSelectedCallback.onSelected(info.parentFragment, info.key);
+                        // For top-level entries, open the fragment itself, not MainSettings.
+                        String fragmentToOpen = info.parentFragment;
+                        if (TextUtils.equals(info.parentFragment, MainSettings.class.getName())) {
+                            fragmentToOpen = info.fragment;
+                        }
+                        if (fragmentToOpen != null) {
+                            mSelectedCallback.onSelected(fragmentToOpen, info.key);
+                        }
                         return true;
                     });
             preference.setIconSpaceReserved(false);

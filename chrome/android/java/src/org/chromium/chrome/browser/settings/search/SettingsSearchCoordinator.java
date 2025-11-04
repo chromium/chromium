@@ -6,9 +6,11 @@ package org.chromium.chrome.browser.settings.search;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
+import android.content.Context;
 import android.content.res.Configuration;
 import android.os.Handler;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -25,8 +27,10 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.preference.PreferenceFragmentCompat;
 import androidx.window.layout.WindowMetricsCalculator;
 
+import org.chromium.base.Log;
 import org.chromium.base.ui.KeyboardUtils;
 import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.Initializer;
@@ -35,18 +39,25 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.settings.MultiColumnSettings;
 import org.chromium.chrome.browser.settings.search.SettingsIndexData.SearchResults;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.function.BooleanSupplier;
 
 /** The coordinator of search in Settings. TODO(jinsukkim): Build a proper MVC structure. */
 @NullMarked
 public class SettingsSearchCoordinator {
+    private static final String TAG = "SettingsSearch";
+
+    // Tag for Fragment backstack entry loading the search results into the display fragment.
+    // Popping the entry means we are transitioning from result -> search state.
+    private static final String FRAGMENT_TAG_RESULT = "enter_result_settings";
+
     private final AppCompatActivity mActivity;
     private final BooleanSupplier mUseMultiColumnSupplier;
     private @Nullable final MultiColumnSettings mMultiColumnSettings;
     private final Handler mHandler = new Handler();
     private @Nullable Fragment mResultsFragment;
     private @Nullable Runnable mSearchRunnable;
-    private @Nullable Fragment mEmptyFragment;
 
     // Whether the back action handler for MultiColumnSettings was set. This is set lazily when
     // search UI gets focus for the first time.
@@ -138,8 +149,19 @@ public class SettingsSearchCoordinator {
         } else if (mFragmentState == FS_SEARCH) {
             exitSearchState();
         } else if (mFragmentState == FS_RESULTS) {
-            // TODO(jinsukkim): Handle this state in which user taps one of the search results to
-            //    update/navigate through the chosen settings.
+            FragmentManager fragmentManager = getSettingsFragmentManager();
+            int stackCount = fragmentManager.getBackStackEntryCount();
+            if (stackCount > 0) {
+                // Switch back to 'search' state if we go all the way back to the fragment
+                // where we display the search results.
+                String topStackEntry =
+                        fragmentManager.getBackStackEntryAt(stackCount - 1).getName();
+                if (TextUtils.equals(FRAGMENT_TAG_RESULT, topStackEntry)) {
+                    mFragmentState = FS_SEARCH;
+                }
+            }
+            clearFragment(/* addToBackStack= */ false);
+            fragmentManager.popBackStack();
         } else {
             assert false : "Unreachable state.";
         }
@@ -151,9 +173,9 @@ public class SettingsSearchCoordinator {
         if (mIndexData == null) {
             mIndexData = new SettingsIndexData();
         } else {
-            // (crbug.com/456817438): Index only when stale.
-            mIndexData.initIndex(mActivity);
+            if (!mIndexData.needsIndexing()) return;
         }
+        mIndexData.initIndex(mActivity);
     }
 
     private void enterSearchState() {
@@ -214,10 +236,9 @@ public class SettingsSearchCoordinator {
     private void clearFragment(boolean addToBackStack) {
         var fragmentManager = getSettingsFragmentManager();
         int viewId = getViewIdForSearchDisplay();
-        if (mEmptyFragment == null) mEmptyFragment = new EmptyFragment();
         var transaction = fragmentManager.beginTransaction();
         transaction.setReorderingAllowed(true);
-        transaction.replace(viewId, mEmptyFragment);
+        transaction.replace(viewId, new EmptyFragment());
         transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
         if (addToBackStack) transaction.addToBackStack(null);
         transaction.commit();
@@ -344,10 +365,12 @@ public class SettingsSearchCoordinator {
      * @param results search results to display.
      */
     private void displayResultsFragment(SearchResults results) {
+        mSearchRunnable = null;
+
         // TODO(jinsukkim): Group the results by their header.
 
         // Create a new instance of the fragment and pass the results
-        mResultsFragment = new SearchResultsPreferenceFragment(results, (fragment, key) -> {});
+        mResultsFragment = new SearchResultsPreferenceFragment(results, this::onResultSelected);
 
         // Get the FragmentManager and replace the current fragment in the container
         FragmentManager fragmentManager = getSettingsFragmentManager();
@@ -356,5 +379,50 @@ public class SettingsSearchCoordinator {
                 .replace(getViewIdForSearchDisplay(), mResultsFragment)
                 .setReorderingAllowed(true)
                 .commit();
+    }
+
+    /**
+     * Open the PreferenceFragment chosen from the search results.
+     *
+     * @param preferenceFragment Settings fragment to show.
+     * @param key The key of the chosen preference in the fragment.
+     */
+    private void onResultSelected(String preferenceFragment, String key) {
+        try {
+            EditText queryEdit = mActivity.findViewById(R.id.search_query);
+            KeyboardUtils.hideAndroidSoftKeyboard(queryEdit);
+            Class fragment = Class.forName(preferenceFragment);
+            Constructor constructor = fragment.getConstructor();
+            var pf = (PreferenceFragmentCompat) constructor.newInstance();
+            FragmentManager fragmentManager = getSettingsFragmentManager();
+            fragmentManager
+                    .beginTransaction()
+                    .replace(getViewIdForSearchDisplay(), pf)
+                    .addToBackStack(FRAGMENT_TAG_RESULT)
+                    .setReorderingAllowed(true)
+                    .commit();
+
+            // Scroll to the chosen preference after the new fragment is ready.
+            fragmentManager.registerFragmentLifecycleCallbacks(
+                    new FragmentManager.FragmentLifecycleCallbacks() {
+                        @Override
+                        public void onFragmentAttached(
+                                @NonNull FragmentManager fm,
+                                @NonNull Fragment f,
+                                @NonNull Context context) {
+                            mHandler.post(() -> pf.scrollToPreference(pf.findPreference(key)));
+                            fm.unregisterFragmentLifecycleCallbacks(this);
+                        }
+                    },
+                    false);
+        } catch (ClassNotFoundException
+                | InstantiationException
+                | NoSuchMethodException
+                | IllegalAccessException
+                | InvocationTargetException e) {
+            Log.e(TAG, "Search result fragment cannot be opened: " + preferenceFragment);
+            return;
+        }
+        if (mFragmentState != FS_RESULTS) mFragmentState = FS_RESULTS;
     }
 }
