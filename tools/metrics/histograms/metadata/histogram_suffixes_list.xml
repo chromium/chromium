@@ -291,13 +291,6 @@ chromium-metrics-reviews@google.com.
       name="ContentSettings.RegularProfile.Exceptions.tracking-protection"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="ContextMenuShoppingDomain" separator=".">
-  <suffix name="ShoppingDomain"
-      label="The context menu was shown for a link that its domain is on the
-             Shopping domain allowlist in the Lens experiment."/>
-  <affected-histogram name="ContextMenu.Shown"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="Cras_ClientType" separator=".">
   <suffix name="ARC" label="A client created by ARC++."/>
   <suffix name="ARCVM" label="A client created by ARCVM."/>
