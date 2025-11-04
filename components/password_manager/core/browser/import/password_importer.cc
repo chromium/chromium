@@ -465,6 +465,9 @@ void PasswordImporter::ParseCSVPasswordsInSandbox(
 void PasswordImporter::Import(std::string csv_data,
                               password_manager::PasswordForm::Store to_store,
                               ImportResultsCallback results_callback) {
+  // Blocks concurrent import requests.
+  state_ = kInProgress;
+
   // Posting with USER_VISIBLE priority, because the result of the import is
   // visible to the user in the password settings page.
   base::ThreadPool::PostTaskAndReplyWithResult(

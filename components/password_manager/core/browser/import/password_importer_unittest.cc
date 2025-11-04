@@ -80,6 +80,7 @@ class PasswordImporterTest : public testing::Test {
     importer_.Import(input_file, to_store,
                      base::BindOnce(&PasswordImporterTest::OnPasswordsConsumed,
                                     base::Unretained(this)));
+    AssertInProgressState();
     WaitUntilResultsCallbackIsCalled();
   }
 
@@ -91,6 +92,7 @@ class PasswordImporterTest : public testing::Test {
     importer_.Import(csv_input, to_store,
                      base::BindOnce(&PasswordImporterTest::OnPasswordsConsumed,
                                     base::Unretained(this)));
+    AssertInProgressState();
     WaitUntilResultsCallbackIsCalled();
   }
 
@@ -104,6 +106,10 @@ class PasswordImporterTest : public testing::Test {
 
   void AssertConflictsState() {
     ASSERT_TRUE(importer_.IsState(PasswordImporter::kUserInteractionRequired));
+  }
+
+  void AssertInProgressState() {
+    ASSERT_TRUE(importer_.IsState(PasswordImporter::kInProgress));
   }
 
   void ContinueImportAndWaitForCompletion(
