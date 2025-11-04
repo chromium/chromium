@@ -1070,7 +1070,7 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sToolbarStaleCaptureBugFix =
             newCachedFlag(
                     TOOLBAR_STALE_CAPTURE_BUG_FIX,
-                    /* defaultValue= */ false,
+                    /* defaultValue= */ true,
                     /* defaultValueInTests= */ true);
     public static final CachedFlag sToolbarTabletResizeRefactor =
             newCachedFlag(

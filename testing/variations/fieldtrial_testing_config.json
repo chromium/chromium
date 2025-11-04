@@ -25522,21 +25522,6 @@
             ]
         }
     ],
-    "ToolbarStaleCaptureBugFix": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20251008",
-                    "enable_features": [
-                        "ToolbarStaleCaptureBugFix"
-                    ]
-                }
-            ]
-        }
-    ],
     "ToolbarTabletResizeRefactor": [
         {
             "platforms": [
