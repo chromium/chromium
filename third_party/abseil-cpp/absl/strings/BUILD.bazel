@@ -182,6 +182,7 @@ cc_library(
         ":resize_and_overwrite",
         "//absl/base:config",
         "//absl/base:core_headers",
+        "//absl/base:throw_delegate",
     ],
 )
 

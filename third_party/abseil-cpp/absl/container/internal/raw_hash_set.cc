@@ -131,6 +131,16 @@ inline void* PrevSlot(void* slot, size_t slot_size) {
 
 }  // namespace
 
+// Must be defined out-of-line to avoid MSVC error C2482 on some platforms,
+// which is caused by non-constexpr initialization.
+uint16_t HashtableSize::NextSeed() {
+  static_assert(PerTableSeed::kBitCount == 16);
+  thread_local uint16_t seed =
+      static_cast<uint16_t>(reinterpret_cast<uintptr_t>(&seed));
+  seed += uint16_t{0xad53};
+  return seed;
+}
+
 GenerationType* EmptyGeneration() {
   if (SwisstableGenerationsEnabled()) {
     constexpr size_t kNumEmptyGenerations = 1024;

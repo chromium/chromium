@@ -183,6 +183,7 @@ absl_cc_library(
     absl::config
     absl::core_headers
     absl::strings_resize_and_overwrite
+    absl::throw_delegate
 )
 
 absl_cc_test(

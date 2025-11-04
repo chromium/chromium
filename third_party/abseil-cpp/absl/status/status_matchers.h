@@ -26,7 +26,7 @@
 //   ABSL_ASSERT_OK(s)
 //   =================
 //   Convenience macros for `EXPECT_THAT(s, IsOk())`, where `s` is either
-//   a `Status` or a `StatusOr<T>` or a `StatusProto`.
+//   a `Status` or a `StatusOr<T>`.
 //
 //   There are no EXPECT_NOT_OK/ASSERT_NOT_OK macros since they would not
 //   provide much value (when they fail, they would just print the OK status

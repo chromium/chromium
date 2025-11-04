@@ -159,7 +159,7 @@ void StringResizeAndOverwriteImpl(T& str, typename T::size_type n, Op op) {
   } else if constexpr (strings_internal::has_Resize_and_overwrite<T>::value) {
     str._Resize_and_overwrite(n, std::move(op));
   } else {
-    strings_internal::StringResizeAndOverwriteFallback(str, n, op);
+    strings_internal::StringResizeAndOverwriteFallback(str, n, std::move(op));
   }
 #endif
 }
