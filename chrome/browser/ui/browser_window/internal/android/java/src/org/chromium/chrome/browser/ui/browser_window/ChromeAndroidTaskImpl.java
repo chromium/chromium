@@ -305,18 +305,16 @@ final class ChromeAndroidTaskImpl
 
     @Override
     public boolean isActive() {
-        if (mState.get() == State.PENDING_CREATE) {
-            return Boolean.TRUE.equals(mPendingActionManager.isActiveFuture());
-        } else if (mState.get() == State.PENDING_UPDATE) {
-            Boolean isActive = mPendingActionManager.isActiveFuture();
-            if (isActive != null) return isActive;
+        @Nullable Boolean isActiveFuture = isActiveFuture();
+        if (isActiveFuture != null) {
+            return isActiveFuture;
         }
 
         synchronized (mActivityScopedObjectsLock) {
             var activityWindowAndroid =
                     getActivityWindowAndroidInternalLocked(/* assertAlive= */ true);
             if (activityWindowAndroid == null) return false;
-            return activityWindowAndroid.isTopResumedActivity();
+            return isActiveInternalLocked(activityWindowAndroid);
         }
     }
 
@@ -521,12 +519,19 @@ final class ChromeAndroidTaskImpl
 
     @Override
     public void activate() {
+        if (Boolean.TRUE.equals(isActiveFuture())) return;
+
         if (mState.get() == State.PENDING_CREATE) {
             mPendingActionManager.requestAction(PendingAction.ACTIVATE);
             return;
         }
 
         synchronized (mActivityScopedObjectsLock) {
+            var activityWindowAndroid =
+                    getActivityWindowAndroidInternalLocked(/* assertAlive= */ true);
+            if (activityWindowAndroid == null || isActiveInternalLocked(activityWindowAndroid)) {
+                return;
+            }
             activateInternalLocked();
         }
     }
@@ -850,6 +855,21 @@ final class ChromeAndroidTaskImpl
     private void assertAlive() {
         assert mState.get() == State.IDLE || mState.get() == State.PENDING_UPDATE
                 : "This Task is not alive.";
+    }
+
+    @VisibleForTesting
+    @Nullable Boolean isActiveFuture() {
+        if (mState.get() == State.PENDING_CREATE) {
+            return Boolean.TRUE.equals(mPendingActionManager.isActiveFuture());
+        } else if (mState.get() == State.PENDING_UPDATE) {
+            return mPendingActionManager.isActiveFuture();
+        }
+        return null;
+    }
+
+    @GuardedBy("mActivityScopedObjectsLock")
+    private boolean isActiveInternalLocked(ActivityWindowAndroid activityWindowAndroid) {
+        return activityWindowAndroid.isTopResumedActivity();
     }
 
     @GuardedBy("mActivityScopedObjectsLock")

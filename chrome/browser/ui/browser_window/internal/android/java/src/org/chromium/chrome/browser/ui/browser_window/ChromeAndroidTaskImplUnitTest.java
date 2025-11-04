@@ -1136,6 +1136,73 @@ public class ChromeAndroidTaskImplUnitTest {
     }
 
     @Test
+    public void activate_whenPendingUpdate_ignoresRedundantCall() {
+        // Arrange.
+        var chromeAndroidTaskWithMockDeps = createChromeAndroidTaskWithMockDeps(/* taskId= */ 1);
+        var chromeAndroidTask =
+                (ChromeAndroidTaskImpl) chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
+        var mockWindowAndroid =
+                chromeAndroidTaskWithMockDeps
+                        .mActivityWindowAndroidMocks
+                        .mMockActivityWindowAndroid;
+        when(mockWindowAndroid.isTopResumedActivity()).thenReturn(false);
+        var mockActivity = chromeAndroidTaskWithMockDeps.mActivityWindowAndroidMocks.mMockActivity;
+        var mockActivityManager =
+                (ActivityManager) mockActivity.getSystemService(Context.ACTIVITY_SERVICE);
+
+        // Act.
+        chromeAndroidTask.activate();
+        Assert.assertTrue(
+                "Activate should be pending after #activate is triggered",
+                chromeAndroidTask.getPendingActionManagerForTesting().isActiveFuture());
+        Assert.assertEquals(
+                "isActivePendingOrFuture should be true after #activate is triggered",
+                true,
+                chromeAndroidTask.isActiveFuture());
+        assertTrue("isActive is true while pending", chromeAndroidTask.isActive());
+
+        chromeAndroidTask.activate();
+
+        // Assert
+        verify(
+                        mockActivityManager,
+                        times(1).description("Redundant calls to #activate should be ignored"))
+                .moveTaskToFront(anyInt(), anyInt());
+    }
+
+    @Test
+    public void activate_alreadyActive_ignoresRedundantCall() {
+        // Arrange.
+        var chromeAndroidTaskWithMockDeps = createChromeAndroidTaskWithMockDeps(/* taskId= */ 1);
+        var chromeAndroidTask =
+                (ChromeAndroidTaskImpl) chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
+        var mockActivity = chromeAndroidTaskWithMockDeps.mActivityWindowAndroidMocks.mMockActivity;
+        var mockActivityManager =
+                (ActivityManager) mockActivity.getSystemService(Context.ACTIVITY_SERVICE);
+        var mockWindowAndroid =
+                chromeAndroidTaskWithMockDeps
+                        .mActivityWindowAndroidMocks
+                        .mMockActivityWindowAndroid;
+        when(mockWindowAndroid.isTopResumedActivity()).thenReturn(false);
+
+        // Act.
+        chromeAndroidTask.activate();
+
+        chromeAndroidTask.onTopResumedActivityChangedWithNative(true);
+        when(mockWindowAndroid.isTopResumedActivity()).thenReturn(true);
+        chromeAndroidTask.activate();
+
+        // Assert.
+        verify(mockWindowAndroid, times(2).description("Called twice to verify if task is active"))
+                .isTopResumedActivity();
+        verify(
+                        mockActivityManager,
+                        times(1).description(
+                                        "Redundant #activate should be ignored if task is active"))
+                .moveTaskToFront(anyInt(), anyInt());
+    }
+
+    @Test
     public void deactivate_whenPendingCreate_enqueuesPendingAction() {
         // Arrange.
         var task =
