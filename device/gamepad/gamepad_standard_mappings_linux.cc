@@ -9,7 +9,6 @@
 #include <algorithm>
 #include <iterator>
 
-#include "base/compiler_specific.h"
 #include "device/gamepad/gamepad_id_list.h"
 
 namespace device {
@@ -182,17 +181,17 @@ void MapperXboxElite2Bluetooth(const Gamepad& input, Gamepad* mapped) {
   // the mappings are shifted by 1
   int axis_shift = mapped->axes_length > 8 ? 1 : 0;
   mapped->buttons[BUTTON_INDEX_LEFT_TRIGGER] =
-      AxisToButton(UNSAFE_TODO(input.axes[5 + axis_shift]));
+      AxisToButton(input.axes[5 + axis_shift]);
   mapped->buttons[BUTTON_INDEX_RIGHT_TRIGGER] =
-      AxisToButton(UNSAFE_TODO(input.axes[4 + axis_shift]));
+      AxisToButton(input.axes[4 + axis_shift]);
   mapped->buttons[BUTTON_INDEX_DPAD_UP] =
-      AxisNegativeAsButton(UNSAFE_TODO(input.axes[7 + axis_shift]));
+      AxisNegativeAsButton(input.axes[7 + axis_shift]);
   mapped->buttons[BUTTON_INDEX_DPAD_DOWN] =
-      AxisPositiveAsButton(UNSAFE_TODO(input.axes[7 + axis_shift]));
+      AxisPositiveAsButton(input.axes[7 + axis_shift]);
   mapped->buttons[BUTTON_INDEX_DPAD_LEFT] =
-      AxisNegativeAsButton(UNSAFE_TODO(input.axes[6 + axis_shift]));
+      AxisNegativeAsButton(input.axes[6 + axis_shift]);
   mapped->buttons[BUTTON_INDEX_DPAD_RIGHT] =
-      AxisPositiveAsButton(UNSAFE_TODO(input.axes[6 + axis_shift]));
+      AxisPositiveAsButton(input.axes[6 + axis_shift]);
 
   // The Xbox (meta) button does not generate an input event for this device.
   mapped->buttons_length = BUTTON_INDEX_COUNT - 1;
