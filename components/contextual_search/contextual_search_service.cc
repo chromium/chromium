@@ -8,6 +8,7 @@
 #include "base/unguessable_token.h"
 #include "components/contextual_search/contextual_search_context_controller.h"
 #include "components/contextual_search/contextual_search_metrics_recorder.h"
+#include "components/contextual_search/contextual_search_session_entry.h"
 #include "components/contextual_search/internal/composebox_query_controller.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -16,8 +17,6 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace contextual_search {
-
-// ContextualSearchService ----------------------------------------------------
 
 ContextualSearchService::ContextualSearchService(
     signin::IdentityManager* identity_manager,
@@ -35,7 +34,7 @@ ContextualSearchService::ContextualSearchService(
 
 ContextualSearchService::~ContextualSearchService() = default;
 
-std::unique_ptr<ContextualSearchService::SessionHandle>
+std::unique_ptr<ContextualSearchSessionHandle>
 ContextualSearchService::CreateSession(
     std::unique_ptr<ContextualSearchContextController::ConfigParams>
         query_controller_config_params,
@@ -47,33 +46,35 @@ ContextualSearchService::CreateSession(
       std::move(query_controller_config_params));
   auto recorder = std::make_unique<ContextualSearchMetricsRecorder>(
       contextual_search_metric_name);
-  sessions_.emplace(session_id,
-                    SessionEntry(std::move(controller), std::move(recorder)));
+  sessions_.emplace(
+      session_id,
+      ContextualSearchSessionEntry(std::move(controller), std::move(recorder)));
 
-  return base::WrapUnique(
-      new SessionHandle(weak_ptr_factory_.GetWeakPtr(), session_id));
+  return base::WrapUnique(new ContextualSearchSessionHandle(
+      weak_ptr_factory_.GetWeakPtr(), session_id));
 }
 
-std::unique_ptr<ContextualSearchService::SessionHandle>
+std::unique_ptr<ContextualSearchSessionHandle>
 ContextualSearchService::GetSession(const base::UnguessableToken& session_id) {
   if (auto it = sessions_.find(session_id); it != sessions_.end()) {
     it->second.ref_count_++;
-    return base::WrapUnique(
-        new SessionHandle(weak_ptr_factory_.GetWeakPtr(), session_id));
+    return base::WrapUnique(new ContextualSearchSessionHandle(
+        weak_ptr_factory_.GetWeakPtr(), session_id));
   }
   return nullptr;
 }
 
-std::unique_ptr<ContextualSearchService::SessionHandle>
+std::unique_ptr<ContextualSearchSessionHandle>
 ContextualSearchService::CreateSessionForTesting(
     std::unique_ptr<ContextualSearchContextController> controller,
     std::unique_ptr<ContextualSearchMetricsRecorder> metrics_recorder) {
   base::UnguessableToken session_id = base::UnguessableToken::Create();
-  sessions_.emplace(session_id, SessionEntry(std::move(controller),
-                                             std::move(metrics_recorder)));
+  sessions_.emplace(session_id,
+                    ContextualSearchSessionEntry(std::move(controller),
+                                                 std::move(metrics_recorder)));
 
-  return base::WrapUnique(
-      new SessionHandle(weak_ptr_factory_.GetWeakPtr(), session_id));
+  return base::WrapUnique(new ContextualSearchSessionHandle(
+      weak_ptr_factory_.GetWeakPtr(), session_id));
 }
 
 ContextualSearchContextController*
@@ -113,47 +114,5 @@ void ContextualSearchService::ReleaseSession(
     }
   }
 }
-
-// ContextualSearchService::SessionHandle -------------------------------------
-
-ContextualSearchService::SessionHandle::SessionHandle(
-    base::WeakPtr<ContextualSearchService> service,
-    const base::UnguessableToken& session_id)
-    : service_(service), session_id_(session_id) {}
-
-ContextualSearchService::SessionHandle::~SessionHandle() {
-  if (service_) {
-    service_->ReleaseSession(session_id_);
-  }
-}
-
-ContextualSearchContextController*
-ContextualSearchService::SessionHandle::GetController() const {
-  return service_ ? service_->GetSessionController(session_id_) : nullptr;
-}
-
-ContextualSearchMetricsRecorder*
-ContextualSearchService::SessionHandle::GetMetricsRecorder() const {
-  return service_ ? service_->GetSessionMetricsRecorder(session_id_) : nullptr;
-}
-
-std::string ContextualSearchService::SessionHandle::GetMetricsRecorderName()
-    const {
-  return service_ ? service_->GetSessionMetricsRecorderName(session_id_) : "";
-}
-
-// ContextualSearchService::SessionEntry --------------------------------------
-
-ContextualSearchService::SessionEntry::SessionEntry(SessionEntry&&) = default;
-ContextualSearchService::SessionEntry&
-ContextualSearchService::SessionEntry::operator=(SessionEntry&&) = default;
-
-ContextualSearchService::SessionEntry::SessionEntry(
-    std::unique_ptr<ContextualSearchContextController> controller,
-    std::unique_ptr<ContextualSearchMetricsRecorder> metrics_recorder)
-    : controller_(std::move(controller)),
-      metrics_recorder_(std::move(metrics_recorder)) {}
-
-ContextualSearchService::SessionEntry::~SessionEntry() = default;
 
 }  // namespace contextual_search
