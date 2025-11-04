@@ -15,23 +15,12 @@
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/timer/wall_clock_timer.h"
-#include "build/build_config.h"
-#include "build/buildflag.h"
 #include "content/public/browser/network_service_instance.h"
 #include "services/network/public/mojom/network_change_manager.mojom.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "base/android/application_status_listener.h"
-#endif
-
 namespace content {
 
-ReportSchedulerTimer::ReportSchedulerTimer(std::unique_ptr<Delegate> delegate
-#if BUILDFLAG(IS_ANDROID)
-                                           ,
-                                           bool observe_app_state
-#endif
-                                           )
+ReportSchedulerTimer::ReportSchedulerTimer(std::unique_ptr<Delegate> delegate)
     : delegate_(std::move(delegate)) {
   CHECK(delegate_);
 
@@ -43,17 +32,6 @@ ReportSchedulerTimer::ReportSchedulerTimer(std::unique_ptr<Delegate> delegate
       &connection_type,
       base::BindOnce(&ReportSchedulerTimer::OnConnectionChanged,
                      weak_ptr_factory_.GetWeakPtr()));
-
-#if BUILDFLAG(IS_ANDROID)
-  if (observe_app_state) {
-    application_status_listener_ =
-        base::android::ApplicationStatusListener::New(base::BindRepeating(
-            &ReportSchedulerTimer::OnApplicationStateChanged,
-            weak_ptr_factory_.GetWeakPtr()));
-
-    app_state_ = base::android::ApplicationStatusListener::GetState();
-  }
-#endif
 
   if (synchronous_return) {
     OnConnectionChanged(connection_type);
@@ -105,25 +83,13 @@ void ReportSchedulerTimer::OnConnectionChanged(
     network::mojom::ConnectionType connection_type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-#if BUILDFLAG(IS_ANDROID)
-  UpdateState(connection_type, app_state_);
-#else
   UpdateState(connection_type);
-#endif
 }
 
 void ReportSchedulerTimer::UpdateState(
-    network::mojom::ConnectionType connection_type
-#if BUILDFLAG(IS_ANDROID)
-    ,
-    base::android::ApplicationState app_state
-#endif
-) {
+    network::mojom::ConnectionType connection_type) {
   bool was_offline = IsOffline();
   connection_type_ = connection_type;
-#if BUILDFLAG(IS_ANDROID)
-  app_state_ = app_state;
-#endif
 
   if (IsOffline()) {
     reporting_time_reached_timer_.Stop();
@@ -138,27 +104,7 @@ void ReportSchedulerTimer::UpdateState(
 }
 
 bool ReportSchedulerTimer::IsOffline() const {
-#if BUILDFLAG(IS_ANDROID)
-  switch (app_state_) {
-    case base::android::APPLICATION_STATE_HAS_STOPPED_ACTIVITIES:
-    case base::android::APPLICATION_STATE_HAS_DESTROYED_ACTIVITIES:
-      return true;
-    case base::android::APPLICATION_STATE_HAS_RUNNING_ACTIVITIES:
-    case base::android::APPLICATION_STATE_HAS_PAUSED_ACTIVITIES:
-    case base::android::APPLICATION_STATE_UNKNOWN:
-      break;
-  }
-#endif
-
   return connection_type_ == network::mojom::ConnectionType::CONNECTION_NONE;
 }
-
-#if BUILDFLAG(IS_ANDROID)
-void ReportSchedulerTimer::OnApplicationStateChanged(
-    base::android::ApplicationState state) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  UpdateState(connection_type_, state);
-}
-#endif
 
 }  // namespace content

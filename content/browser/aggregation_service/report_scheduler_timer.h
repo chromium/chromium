@@ -14,15 +14,9 @@
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "base/timer/wall_clock_timer.h"
-#include "build/build_config.h"
-#include "build/buildflag.h"
 #include "content/common/content_export.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
 #include "services/network/public/mojom/network_change_manager.mojom.h"
-
-#if BUILDFLAG(IS_ANDROID)
-#include "base/android/application_status_listener.h"
-#endif
 
 namespace base {
 class Time;
@@ -66,12 +60,7 @@ class CONTENT_EXPORT ReportSchedulerTimer
         base::OnceCallback<void(std::optional<base::Time>)>) = 0;
   };
 
-  explicit ReportSchedulerTimer(std::unique_ptr<Delegate> delegate
-#if BUILDFLAG(IS_ANDROID)
-                                ,
-                                bool observe_app_state = false
-#endif
-  );
+  explicit ReportSchedulerTimer(std::unique_ptr<Delegate> delegate);
 
   ReportSchedulerTimer(const ReportSchedulerTimer&) = delete;
   ReportSchedulerTimer& operator=(const ReportSchedulerTimer&) = delete;
@@ -100,16 +89,8 @@ class CONTENT_EXPORT ReportSchedulerTimer
 
   bool IsOffline() const VALID_CONTEXT_REQUIRED(sequence_checker_);
 
-  void UpdateState(network::mojom::ConnectionType
-#if BUILDFLAG(IS_ANDROID)
-                   ,
-                   base::android::ApplicationState
-#endif
-                   ) VALID_CONTEXT_REQUIRED(sequence_checker_);
-
-#if BUILDFLAG(IS_ANDROID)
-  void OnApplicationStateChanged(base::android::ApplicationState);
-#endif
+  void UpdateState(network::mojom::ConnectionType)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Fires whenever a reporting time is reached for a report. Must be updated
   // whenever the next report time changes.
@@ -126,15 +107,6 @@ class CONTENT_EXPORT ReportSchedulerTimer
       network::NetworkConnectionTracker,
       network::NetworkConnectionTracker::NetworkConnectionObserver>
       obs_ GUARDED_BY_CONTEXT(sequence_checker_){this};
-
-#if BUILDFLAG(IS_ANDROID)
-  base::android::ApplicationState app_state_
-      GUARDED_BY_CONTEXT(sequence_checker_) =
-          base::android::ApplicationState::APPLICATION_STATE_UNKNOWN;
-
-  std::unique_ptr<base::android::ApplicationStatusListener>
-      application_status_listener_ GUARDED_BY_CONTEXT(sequence_checker_);
-#endif
 
   SEQUENCE_CHECKER(sequence_checker_);
 

@@ -21,10 +21,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "base/android/application_status_listener.h"
-#endif
-
 namespace content {
 
 namespace {
@@ -223,50 +219,6 @@ TEST(ReportSchedulerTimer, Constructor_AdjustsOfflineReportTimes) {
     }
   }
 }
-
-#if BUILDFLAG(IS_ANDROID)
-class ObserveAppStateReportSchedulerTimerTest
-    : public ReportSchedulerTimerTest {
- public:
-  void SetUp() override {
-    auto timer_delegate = std::make_unique<MockReportSchedulerTimerDelegate>();
-    timer_delegate_ = timer_delegate.get();
-    timer_ = std::make_unique<ReportSchedulerTimer>(std::move(timer_delegate),
-                                                    /*observe_app_state=*/true);
-  }
-};
-
-TEST_F(ObserveAppStateReportSchedulerTimerTest, AndroidAppStatus) {
-  base::RunLoop run_loop;
-
-  Checkpoint checkpoint;
-  {
-    InSequence seq;
-
-    EXPECT_CALL(*timer_delegate_, OnReportingTimeReached).Times(0);
-    EXPECT_CALL(checkpoint, Call(1));
-    EXPECT_CALL(*timer_delegate_, AdjustOfflineReportTimes).WillOnce([&](auto) {
-      run_loop.Quit();
-    });
-  }
-
-  timer_->MaybeSet(kExampleTime);
-
-  // Go offline
-  base::android::ApplicationStatusListener::NotifyApplicationStateChange(
-      base::android::APPLICATION_STATE_HAS_STOPPED_ACTIVITIES);
-
-  task_environment_.FastForwardBy(kExampleTime - base::Time::Now());
-
-  checkpoint.Call(1);
-
-  // Go back online.
-  base::android::ApplicationStatusListener::NotifyApplicationStateChange(
-      base::android::APPLICATION_STATE_HAS_RUNNING_ACTIVITIES);
-
-  run_loop.Run();
-}
-#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 
