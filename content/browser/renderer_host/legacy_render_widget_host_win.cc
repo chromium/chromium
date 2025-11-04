@@ -30,6 +30,7 @@
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/view_prop.h"
+#include "ui/base/win/hidden_window.h"
 #include "ui/base/win/internal_constants.h"
 #include "ui/base/win/window_event_target.h"
 #include "ui/display/win/screen_win.h"
@@ -112,6 +113,15 @@ void LegacyRenderWidgetHostHWND::UpdateParent(HWND new_parent) {
     // Reset tooltips when parent changed; otherwise tooltips could stay open as
     // the former parent wouldn't be forwarded any mouse leave messages.
     host_->UpdateTooltip(std::u16string());
+
+    // Store parent before hide to reroute pointer events while hidden.
+    // See comment in OnPointer for more details.
+    if (new_parent == ui::GetHiddenWindow() &&
+        down_pointers_before_hide_.size() > 0) {
+      parent_before_hide_ = current_parent;
+    } else if (current_parent == ui::GetHiddenWindow()) {
+      parent_before_hide_ = nullptr;
+    }
   } else {
     // The first call to UpdateParent may have the parent correctly set on
     // account of InitOrDeleteSelf having just created the correctly parented
@@ -480,7 +490,25 @@ LRESULT LegacyRenderWidgetHostHWND::OnMouseActivate(UINT message,
 LRESULT LegacyRenderWidgetHostHWND::OnPointer(UINT message,
                                               WPARAM w_param,
                                               LPARAM l_param) {
-  auto* event_target = GetWindowEventTarget(GetParent());
+  // When this window is occluded, it is reparented to the global hidden window
+  // parent by RWHVA::HideImpl. This means any WM_POINTER* messages received
+  // while hidden will be ignored because the global hidden window has no
+  // WindowEventTarget. So if this window is hidden during an ongoing touch
+  // gesture and that gesture ends while hidden, any WM_POINTERUPs will be
+  // ignored.
+  // When this window is shown again, the web page that had been handling the
+  // pointer event sequence(s) will end up unresponsive to touch because it is
+  // stuck waiting for pointer up event(s) that never come.
+  // To prevent this, we track the down pointers and the parent before hide.
+  // We ensure the parent before hide handles any ongoing pointer events while
+  // hidden.
+  const uint32_t pointer_id = GET_POINTERID_WPARAM(w_param);
+  const HWND parent =
+      (parent_before_hide_ && down_pointers_before_hide_.contains(pointer_id))
+          ? parent_before_hide_
+          : GetParent();
+
+  auto* event_target = GetWindowEventTarget(parent);
   if (!event_target) {
     return 0;
   }
@@ -489,6 +517,15 @@ LRESULT LegacyRenderWidgetHostHWND::OnPointer(UINT message,
   LRESULT ret = event_target->HandlePointerMessage(message, w_param, l_param,
                                                    &msg_handled);
   SetMsgHandled(msg_handled);
+
+  if (message == WM_POINTERDOWN) {
+    // We should never be adding to the down pointers set if we are hidden.
+    CHECK(!parent_before_hide_);
+    down_pointers_before_hide_.insert(pointer_id);
+  } else if (message == WM_POINTERUP) {
+    down_pointers_before_hide_.erase(pointer_id);
+  }
+
   return ret;
 }
 

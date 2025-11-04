@@ -139,6 +139,7 @@
 #include "ui/base/win/window_event_target.h"
 #include "ui/events/keycodes/keyboard_codes_win.h"
 #include "ui/events/test/keyboard_layout.h"
+#include "ui/gfx/win/window_impl.h"
 #endif
 
 #if BUILDFLAG(IS_OZONE)
@@ -5457,6 +5458,7 @@ class MockWindowEventTarget : public ui::WindowEventTarget {
                                WPARAM w_param,
                                LPARAM l_param,
                                bool* handled) override {
+    handle_pointer_count_++;
     return S_OK;
   }
 
@@ -5504,6 +5506,8 @@ class MockWindowEventTarget : public ui::WindowEventTarget {
   void ApplyPanGestureFlingBegin() override {}
   void ApplyPanGestureFlingEnd() override {}
   void ApplyPanGestureScrollEnd(bool tranisitioning_to_pinch) override {}
+
+  uint32_t handle_pointer_count_ = 0;
 };
 
 // On Windows, a native HWND (Chrome_RenderWidgetHostHWND) forwards mouse events
@@ -5557,6 +5561,84 @@ TEST_F(RenderWidgetHostViewAuraTest, LegacyRenderWidgetHostHWNDAuraLookup) {
   auto* window_tree_host = aura::WindowTreeHost::GetForAcceleratedWidget(hwnd);
   EXPECT_TRUE(window_tree_host);
   EXPECT_EQ(view_->GetNativeView()->GetHost(), window_tree_host);
+}
+
+// This test ensures that if the RWHVA is hidden because of occlusion during
+// an ongoing touch sequence, all WM_POINTER* messages are handled by the
+// WindowEventTarget that handled WM_POINTERDOWN. Similar issue as
+// OcclusionHidesTooltip.
+TEST_F(RenderWidgetHostViewAuraTest,
+       LegacyRenderWidgetHostHWNDPointerEventsWhileHidden) {
+  // Give the host window an event target, which allows the view to create the
+  // LegacyRenderWidgetHostHWND Chrome_RenderWidgetHostHWND window.
+  MockWindowEventTarget event_target;
+  auto prop_window_target = std::make_unique<ui::ViewProp>(
+      parent_view_->GetHostWindowHWND(),
+      ui::WindowEventTarget::kWin32InputEventTarget,
+      static_cast<ui::WindowEventTarget*>(&event_target));
+
+  // Initialize the view.
+  InitViewForFrame(nullptr);
+  ParentHostView(view_, parent_view_);
+  view_->Show();
+
+  // Test scenario: 2 touch points, hide the view after down, show the view
+  // after the 1st touch point up, hide the view again, then show after 2nd
+  // touch point up. All events should be handled by the same target.
+  const uint32_t pointer_id_a = 1;
+  const uint32_t pointer_id_b = 2;
+  legacy_render_widget_host_HWND()->OnPointer(WM_POINTERDOWN, pointer_id_a, 0);
+  legacy_render_widget_host_HWND()->OnPointer(WM_POINTERDOWN, pointer_id_b, 0);
+  view_->Hide();
+  legacy_render_widget_host_HWND()->OnPointer(WM_POINTERUPDATE, pointer_id_a,
+                                              0);
+  legacy_render_widget_host_HWND()->OnPointer(WM_POINTERUPDATE, pointer_id_b,
+                                              0);
+  legacy_render_widget_host_HWND()->OnPointer(WM_POINTERUP, pointer_id_a, 0);
+  view_->Show();
+  legacy_render_widget_host_HWND()->OnPointer(WM_POINTERUPDATE, pointer_id_b,
+                                              0);
+  view_->Hide();
+  legacy_render_widget_host_HWND()->OnPointer(WM_POINTERUPDATE, pointer_id_b,
+                                              0);
+  legacy_render_widget_host_HWND()->OnPointer(WM_POINTERUP, pointer_id_b, 0);
+  EXPECT_EQ(8, event_target.handle_pointer_count_);
+
+  // Check that on reparent pointer events are handled by new parent ie. verify
+  // pointer re-route behavior is not persistent.
+  class TestParentWindow : public gfx::WindowImpl {
+   public:
+    TestParentWindow() = default;
+    TestParentWindow(const TestParentWindow&) = delete;
+    TestParentWindow& operator=(const TestParentWindow&) = delete;
+    ~TestParentWindow() override = default;
+    BOOL ProcessWindowMessage(HWND window,
+                              UINT message,
+                              WPARAM w_param,
+                              LPARAM l_param,
+                              LRESULT& result,
+                              DWORD msg_map_id = 0) override {
+      // Keep default processing minimal; no special handling needed.
+      return FALSE;  // Not handled.
+    }
+  };
+
+  TestParentWindow new_parent_window;
+  new_parent_window.Init(nullptr, gfx::Rect());
+  ASSERT_TRUE(new_parent_window.hwnd());
+
+  MockWindowEventTarget new_event_target;
+  auto new_prop_window_target = std::make_unique<ui::ViewProp>(
+      new_parent_window.hwnd(), ui::WindowEventTarget::kWin32InputEventTarget,
+      static_cast<ui::WindowEventTarget*>(&new_event_target));
+
+  legacy_render_widget_host_HWND()->UpdateParent(new_parent_window.hwnd());
+
+  legacy_render_widget_host_HWND()->OnPointer(WM_POINTERDOWN, pointer_id_a, 0);
+  legacy_render_widget_host_HWND()->OnPointer(WM_POINTERUPDATE, pointer_id_a,
+                                              0);
+  legacy_render_widget_host_HWND()->OnPointer(WM_POINTERUP, pointer_id_a, 0);
+  EXPECT_EQ(3, new_event_target.handle_pointer_count_);
 }
 #endif
 

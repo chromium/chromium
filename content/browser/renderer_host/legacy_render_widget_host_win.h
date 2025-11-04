@@ -15,7 +15,9 @@
 #include <wrl/client.h>
 
 #include <memory>
+#include <set>
 
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "content/common/content_export.h"
 #include "ui/accessibility/platform/ax_fragment_root_delegate_win.h"
@@ -36,6 +38,8 @@ namespace content {
 class DirectManipulationBrowserTestBase;
 class DirectManipulationHelper;
 class RenderWidgetHostViewAura;
+FORWARD_DECLARE_TEST(RenderWidgetHostViewAuraTest,
+                     LegacyRenderWidgetHostHWNDPointerEventsWhileHidden);
 
 // Reasons for the existence of this class outlined below:
 // 1. Some screen readers expect every tab / every unique web content container
@@ -138,6 +142,8 @@ class CONTENT_EXPORT LegacyRenderWidgetHostHWND
  private:
   friend class AccessibilityObjectLifetimeWinBrowserTest;
   friend class DirectManipulationBrowserTestBase;
+  FRIEND_TEST_ALL_PREFIXES(RenderWidgetHostViewAuraTest,
+                           LegacyRenderWidgetHostHWNDPointerEventsWhileHidden);
 
   explicit LegacyRenderWidgetHostHWND(RenderWidgetHostViewAura* host);
   ~LegacyRenderWidgetHostHWND() override;
@@ -203,6 +209,13 @@ class CONTENT_EXPORT LegacyRenderWidgetHostHWND
 
   // Instruct aura::WindowTreeHost to use the HWND's parent for lookup.
   std::unique_ptr<ui::ViewProp> window_tree_host_prop_;
+
+  // Track pointers that were down before hide and parent window before hide.
+  // This is to ensure any touch gestures initiated before hide and ended
+  // during hide are routed to the correct WindowEventTarget.
+  // See comment in OnPointer.
+  std::set<uint32_t> down_pointers_before_hide_;
+  HWND parent_before_hide_ = nullptr;
 
   CR_MSG_MAP_CLASS_DECLARATIONS(LegacyRenderWidgetHostHWND)
 };
