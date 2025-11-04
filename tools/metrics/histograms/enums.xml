@@ -24525,6 +24525,7 @@ Called by update_net_error_codes.py.-->
   <int value="412" label="ZST"/>
   <int value="413" label="IQY"/>
   <int value="414" label="LIBRARY-MS"/>
+  <int value="415" label="DNG"/>
 </enum>
 
 <enum name="ScanFailureProgress">
