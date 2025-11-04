@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_MEDIA_GALLERIES_CHROMEOS_MTP_READ_FILE_WORKER_H_
-#define CHROME_BROWSER_MEDIA_GALLERIES_CHROMEOS_MTP_READ_FILE_WORKER_H_
+#ifndef CHROME_BROWSER_MEDIA_GALLERIES_MTP_READ_FILE_WORKER_H_
+#define CHROME_BROWSER_MEDIA_GALLERIES_MTP_READ_FILE_WORKER_H_
 
 #include <stdint.h>
 
@@ -85,4 +85,4 @@ class MTPReadFileWorker {
   base::WeakPtrFactory<MTPReadFileWorker> weak_ptr_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_MEDIA_GALLERIES_CHROMEOS_MTP_READ_FILE_WORKER_H_
+#endif  // CHROME_BROWSER_MEDIA_GALLERIES_MTP_READ_FILE_WORKER_H_

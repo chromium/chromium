@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/media_galleries/chromeos/snapshot_file_details.h"
+#include "chrome/browser/media_galleries/snapshot_file_details.h"
 
 #include <limits>
 
@@ -46,8 +46,9 @@ void SnapshotFileDetails::set_error_occurred(bool error) {
 bool SnapshotFileDetails::AddBytesWritten(uint32_t bytes_written) {
   if ((bytes_written == 0) ||
       (bytes_written_ > std::numeric_limits<uint32_t>::max() - bytes_written) ||
-      (bytes_written_ + bytes_written > file_info_.size))
+      (bytes_written_ + bytes_written > file_info_.size)) {
     return false;
+  }
 
   bytes_written_ += bytes_written;
   return true;

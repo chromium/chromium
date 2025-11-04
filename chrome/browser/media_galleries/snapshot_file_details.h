@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_MEDIA_GALLERIES_CHROMEOS_SNAPSHOT_FILE_DETAILS_H_
-#define CHROME_BROWSER_MEDIA_GALLERIES_CHROMEOS_SNAPSHOT_FILE_DETAILS_H_
+#ifndef CHROME_BROWSER_MEDIA_GALLERIES_SNAPSHOT_FILE_DETAILS_H_
+#define CHROME_BROWSER_MEDIA_GALLERIES_SNAPSHOT_FILE_DETAILS_H_
 
 #include <stdint.h>
 
@@ -58,9 +58,7 @@ class SnapshotFileDetails {
 
   uint32_t bytes_written() const { return bytes_written_; }
 
-  const base::File::Info& file_info() const {
-    return file_info_;
-  }
+  const base::File::Info& file_info() const { return file_info_; }
 
   MTPDeviceAsyncDelegate::CreateSnapshotFileSuccessCallback success_callback() {
     return std::move(request_info_.success_callback);
@@ -70,9 +68,7 @@ class SnapshotFileDetails {
     return std::move(request_info_.error_callback);
   }
 
-  bool error_occurred() const {
-    return error_occurred_;
-  }
+  bool error_occurred() const { return error_occurred_; }
 
   void set_error_occurred(bool error);
 
@@ -105,4 +101,4 @@ class SnapshotFileDetails {
   bool error_occurred_;
 };
 
-#endif  // CHROME_BROWSER_MEDIA_GALLERIES_CHROMEOS_SNAPSHOT_FILE_DETAILS_H_
+#endif  // CHROME_BROWSER_MEDIA_GALLERIES_SNAPSHOT_FILE_DETAILS_H_

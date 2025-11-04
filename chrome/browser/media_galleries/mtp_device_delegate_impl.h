@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_MEDIA_GALLERIES_CHROMEOS_MTP_DEVICE_DELEGATE_IMPL_CHROMEOS_H_
-#define CHROME_BROWSER_MEDIA_GALLERIES_CHROMEOS_MTP_DEVICE_DELEGATE_IMPL_CHROMEOS_H_
+#ifndef CHROME_BROWSER_MEDIA_GALLERIES_MTP_DEVICE_DELEGATE_IMPL_H_
+#define CHROME_BROWSER_MEDIA_GALLERIES_MTP_DEVICE_DELEGATE_IMPL_H_
 
 #include <stdint.h>
 
@@ -21,8 +21,8 @@
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/media_galleries/chromeos/mtp_device_task_helper.h"
 #include "chrome/browser/media_galleries/fileapi/mtp_device_async_delegate.h"
+#include "chrome/browser/media_galleries/mtp_device_task_helper.h"
 #include "content/public/browser/browser_thread.h"
 #include "storage/browser/file_system/async_file_util.h"
 
@@ -514,4 +514,4 @@ class MTPDeviceDelegateImpl : public MTPDeviceAsyncDelegate {
   base::WeakPtrFactory<MTPDeviceDelegateImpl> weak_ptr_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_MEDIA_GALLERIES_CHROMEOS_MTP_DEVICE_DELEGATE_IMPL_CHROMEOS_H_
+#endif  // CHROME_BROWSER_MEDIA_GALLERIES_MTP_DEVICE_DELEGATE_IMPL_H_

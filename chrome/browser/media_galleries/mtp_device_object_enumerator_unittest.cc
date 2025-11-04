@@ -7,7 +7,7 @@
 #pragma allow_unsafe_buffers
 #endif
 
-#include "chrome/browser/media_galleries/chromeos/mtp_device_object_enumerator.h"
+#include "chrome/browser/media_galleries/mtp_device_object_enumerator.h"
 
 #include <stddef.h>
 #include <stdint.h>
