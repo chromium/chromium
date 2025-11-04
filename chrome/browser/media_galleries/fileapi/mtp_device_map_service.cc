@@ -30,7 +30,7 @@ void MTPDeviceMapService::RegisterMTPFileSystem(
     const base::FilePath::StringType& device_location,
     const std::string& filesystem_id,
     const bool read_only) {
-#if !BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   DCHECK(!device_location.empty());
   DCHECK(!filesystem_id.empty());
@@ -49,7 +49,7 @@ void MTPDeviceMapService::RegisterMTPFileSystem(
 
   mtp_device_usage_map_[key]++;
   mtp_device_map_[filesystem_id] = make_pair(device_location, read_only);
-#endif  // !BUILDFLAG(IS_WIN)
+#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 }
 
 void MTPDeviceMapService::RevokeMTPFileSystem(

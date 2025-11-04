@@ -10626,7 +10626,6 @@ test("unit_tests") {
     }
     if (is_mac) {
       sources += [
-        "../browser/media_galleries/mac/mtp_device_delegate_impl_mac_unittest.mm",
         "../browser/ui/views/desktop_capture/audio_capture_permission_checker_mac_unittest.mm",
         "../browser/ui/views/desktop_capture/desktop_media_permission_pane_view_mac_unittest.mm",
         "../browser/ui/views/desktop_capture/screen_capture_permission_checker_mac_unittest.mm",

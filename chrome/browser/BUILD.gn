@@ -6627,8 +6627,6 @@ static_library("browser") {
       "mac/nsprocessinfo_additions.mm",
       "mac/relauncher.h",
       "mac/relauncher.mm",
-      "media_galleries/mac/mtp_device_delegate_impl_mac.h",
-      "media_galleries/mac/mtp_device_delegate_impl_mac.mm",
       "memory_details_mac.cc",
       "metrics/chrome_browser_main_extra_parts_metrics_mac.mm",
       "metrics/google_update_metrics_provider_mac.cc",
