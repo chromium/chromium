@@ -120,8 +120,7 @@ void GlicInstanceCoordinatorImpl::OnInstanceActivationChanged(
 void GlicInstanceCoordinatorImpl::OnInstanceVisibilityChanged(
     GlicInstanceImpl* instance,
     bool is_showing) {
-  // TODO(crbug.com/452963408): We think this will be useful, but if we find
-  // that we're not using it, we should remove it.
+  global_show_hide_callback_list_.Notify();
 }
 
 void GlicInstanceCoordinatorImpl::NotifyActiveInstanceChanged() {
@@ -202,13 +201,6 @@ void GlicInstanceCoordinatorImpl::CloseFloaty() {
   }
 }
 
-mojom::PanelState GlicInstanceCoordinatorImpl::GetGlobalPanelState() {
-  // TODO: Currently called from GlicButtonController. Needs implemented or
-  // refactored and removed.
-  NOTIMPLEMENTED();
-  return panel_state_;
-}
-
 void GlicInstanceCoordinatorImpl::AddGlobalStateObserver(
     StateObserver* observer) {
   // TODO(b:448604727): The StateObserver needs to be split into two: one for if
@@ -243,6 +235,12 @@ GlicInstanceCoordinatorImpl::AddWindowActivationChangedCallback(
     WindowActivationChangedCallback callback) {
   // TODO: Notification of this callback list is not yet implemented.
   return window_activation_callback_list_.Add(std::move(callback));
+}
+
+base::CallbackListSubscription
+GlicInstanceCoordinatorImpl::AddGlobalShowHideCallback(
+    base::RepeatingClosure callback) {
+  return global_show_hide_callback_list_.Add(std::move(callback));
 }
 
 void GlicInstanceCoordinatorImpl::Preload() {
@@ -421,6 +419,7 @@ void GlicInstanceCoordinatorImpl::ToggleSidePanel(
 
 void GlicInstanceCoordinatorImpl::RemoveInstance(GlicInstanceImpl* instance) {
   OnInstanceActivationChanged(instance, false);
+
   // Remove the instance first, and then delete. This way, GetInstances() will
   // not return the instance being deleted while it's being deleted.
   InstanceId id = instance->id();
@@ -545,4 +544,5 @@ void GlicInstanceCoordinatorImpl::OnMemoryPressure(
     least_recently_active_instance->Hibernate();
   }
 }
+
 }  // namespace glic

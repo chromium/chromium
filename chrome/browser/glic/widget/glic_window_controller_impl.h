@@ -93,7 +93,6 @@ class GlicWindowControllerImpl
   void RemoveStateObserver(StateObserver* observer) override;
   void AddGlobalStateObserver(PanelStateObserver* observer) override;
   void RemoveGlobalStateObserver(PanelStateObserver* observer) override;
-  mojom::PanelState GetGlobalPanelState() override;
   bool IsPanelShowingForBrowser(
       const BrowserWindowInterface& bwi) const override;
 
@@ -103,6 +102,8 @@ class GlicWindowControllerImpl
   bool IsDetached() const override;
   base::CallbackListSubscription AddWindowActivationChangedCallback(
       WindowActivationChangedCallback callback) override;
+  base::CallbackListSubscription AddGlobalShowHideCallback(
+      base::RepeatingClosure callback) override;
   void Preload() override;
   void Reload(content::RenderFrameHost* render_frame_host) override;
   bool IsWarmed() const override;

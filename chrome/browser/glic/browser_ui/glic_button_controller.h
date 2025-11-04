@@ -22,22 +22,16 @@ class GlicKeyedService;
 
 // Controller class for the button entry point. Manages visibility, icon
 // and attachment indicator for the button.
-class GlicButtonController : public GlicWindowController::StateObserver {
+class GlicButtonController {
  public:
   GlicButtonController(Profile* profile,
                        BrowserWindowInterface& browser,
                        GlicButtonControllerDelegate* delegate,
                        GlicKeyedService* service);
-  ~GlicButtonController() override;
-
-  // GlicWindowController::StateObserver:
-  void PanelStateChanged(
-      const mojom::PanelState& panel_state,
-      const GlicWindowController::PanelStateContext& context) override;
+  ~GlicButtonController();
 
  private:
-  void OnPrefsChanged();
-  void UpdateShowState(bool detached);
+  void UpdateButton();
 
   raw_ptr<Profile> profile_;
   raw_ref<BrowserWindowInterface> browser_;
