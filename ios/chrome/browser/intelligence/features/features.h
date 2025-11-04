@@ -185,6 +185,13 @@ bool IsGeminiLoadingStateRedesignEnabled();
 BASE_DECLARE_FEATURE(kGeminiLatencyImprovement);
 bool IsGeminiLatencyImprovementEnabled();
 
+// Feature flag for showing the Gemini floaty immediately.
+//
+// This feature exists so the overlay can open without having to wait for the
+// page to finish loading.
+BASE_DECLARE_FEATURE(kGeminiImmediateOverlay);
+bool IsGeminiImmediateOverlayEnabled();
+
 // Feature flag for the discovery onboarding cards.
 BASE_DECLARE_FEATURE(kGeminiOnboardingCards);
 bool IsGeminiOnboardingCardsEnabled();

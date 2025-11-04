@@ -236,6 +236,12 @@ bool IsGeminiLatencyImprovementEnabled() {
   return base::FeatureList::IsEnabled(kGeminiLatencyImprovement);
 }
 
+BASE_FEATURE(kGeminiImmediateOverlay, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsGeminiImmediateOverlayEnabled() {
+  return base::FeatureList::IsEnabled(kGeminiImmediateOverlay);
+}
+
 BASE_FEATURE(kGeminiOnboardingCards, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsGeminiOnboardingCardsEnabled() {

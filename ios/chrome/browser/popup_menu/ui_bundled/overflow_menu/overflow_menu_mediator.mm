@@ -1571,7 +1571,8 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
   }
 
   if ([self isGeminiAvailable]) {
-    self.askBWGAction.enabled = !_webState->IsLoading();
+    self.askBWGAction.enabled =
+        IsGeminiImmediateOverlayEnabled() || !_webState->IsLoading();
   }
 
   if (base::FeatureList::IsEnabled(kHideToolbarsInOverflowMenu)) {

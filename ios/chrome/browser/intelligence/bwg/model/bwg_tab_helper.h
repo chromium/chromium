@@ -86,9 +86,14 @@ class BwgTabHelper : public web::WebStateObserver,
   // Setter for `prevent_contextual_panel_entry_point_`.
   void SetPreventContextualPanelEntryPoint(bool should_prevent);
 
+  // Sets a callback to be run when the page has finished loading.
+  void SetPageLoadedCallback(base::OnceClosure callback);
+
   // WebStateObserver:
   void WasShown(web::WebState* web_state) override;
   void WasHidden(web::WebState* web_state) override;
+  void DidStartNavigation(web::WebState* web_state,
+                          web::NavigationContext* navigation_context) override;
   void DidFinishNavigation(web::WebState* web_state,
                            web::NavigationContext* navigation_context) override;
   void PageLoaded(
@@ -175,6 +180,12 @@ class BwgTabHelper : public web::WebStateObserver,
 
   // The zero-state suggestions service.
   std::unique_ptr<ZeroStateSuggestionsService> zero_state_suggestions_service_;
+
+  // The zero-state suggestions for the current page.
+  std::optional<std::vector<std::string>> zero_state_suggestions_;
+
+  // Callback to be run when the page has finished loading.
+  base::OnceClosure page_loaded_callback_;
 
   base::WeakPtrFactory<BwgTabHelper> weak_ptr_factory_{this};
 };
