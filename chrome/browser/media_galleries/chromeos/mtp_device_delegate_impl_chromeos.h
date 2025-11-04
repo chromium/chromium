@@ -28,13 +28,13 @@
 
 struct SnapshotRequestInfo;
 
-// MTPDeviceDelegateImplLinux communicates with the media transfer protocol
+// MTPDeviceDelegateImpl communicates with the media transfer protocol
 // (MTP) device to complete file system operations. These operations are
 // performed asynchronously. Instantiate this class per MTP device storage.
-// MTPDeviceDelegateImplLinux lives on the IO thread.
-// MTPDeviceDelegateImplLinux does a call-and-reply to the UI thread
+// MTPDeviceDelegateImpl lives on the IO thread.
+// MTPDeviceDelegateImpl does a call-and-reply to the UI thread
 // to dispatch the requests to MediaTransferProtocolManager.
-class MTPDeviceDelegateImplLinux : public MTPDeviceAsyncDelegate {
+class MTPDeviceDelegateImpl : public MTPDeviceAsyncDelegate {
  private:
   friend void CreateMTPDeviceAsyncDelegate(
       const std::string&,
@@ -75,15 +75,14 @@ class MTPDeviceDelegateImplLinux : public MTPDeviceAsyncDelegate {
   // Should only be called by CreateMTPDeviceAsyncDelegate() factory call.
   // Defer the device initializations until the first file operation request.
   // Do all the initializations in EnsureInitAndRunTask() function.
-  MTPDeviceDelegateImplLinux(const std::string& device_location,
-                             const bool read_only);
+  MTPDeviceDelegateImpl(const std::string& device_location,
+                        const bool read_only);
 
-  MTPDeviceDelegateImplLinux(const MTPDeviceDelegateImplLinux&) = delete;
-  MTPDeviceDelegateImplLinux& operator=(const MTPDeviceDelegateImplLinux&) =
-      delete;
+  MTPDeviceDelegateImpl(const MTPDeviceDelegateImpl&) = delete;
+  MTPDeviceDelegateImpl& operator=(const MTPDeviceDelegateImpl&) = delete;
 
   // Destructed via CancelPendingTasksAndDeleteDelegate().
-  ~MTPDeviceDelegateImplLinux() override;
+  ~MTPDeviceDelegateImpl() override;
 
   // MTPDeviceAsyncDelegate:
   void GetFileInfo(const base::FilePath& file_path,
@@ -512,7 +511,7 @@ class MTPDeviceDelegateImplLinux : public MTPDeviceAsyncDelegate {
   FileInfoCache file_info_cache_;
 
   // For callbacks that may run after destruction.
-  base::WeakPtrFactory<MTPDeviceDelegateImplLinux> weak_ptr_factory_{this};
+  base::WeakPtrFactory<MTPDeviceDelegateImpl> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_MEDIA_GALLERIES_CHROMEOS_MTP_DEVICE_DELEGATE_IMPL_CHROMEOS_H_
