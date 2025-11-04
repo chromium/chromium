@@ -1556,7 +1556,7 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="7612619742409846846">Google жүйесіне келесі пайдаланушы атымен кірген:</translation>
 <translation id="7612989789287281429">Аккаунтқа кіруде…</translation>
 <translation id="7619072057915878432">Желідегі ақаулықтар себебінен <ph name="FILE_NAME" /> жүктелмеді.</translation>
-<translation id="7620958983792650214">{NUM_REVOKED_PERMISSIONS,plural, =1{Бір сайт жазылымы тоқтатылды.}other{# сайт жазылымын тоқтаттыңыз.}}</translation>
+<translation id="7620958983792650214">{NUM_REVOKED_PERMISSIONS,plural, =1{Бір сайт жазылымын тоқтаттыңыз}other{# сайт жазылымын тоқтаттыңыз}}</translation>
 <translation id="7626032353295482388">Chrome жүйесіне қош келдіңіз</translation>
 <translation id="7628417132421583481">Password Manager қызметіне өту</translation>
 <translation id="7630202231528827509">Провайдердің URL мекенжайы</translation>

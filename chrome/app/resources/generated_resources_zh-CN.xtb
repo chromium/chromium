@@ -6445,7 +6445,7 @@
 <translation id="5457082343331641453">添加到您的搜索内容中</translation>
 <translation id="5457113250005438886">无效</translation>
 <translation id="5457459357461771897">读取和删除您计算机上的照片、音乐和其他媒体</translation>
-<translation id="5457795687441958389">保持退出账号状态</translation>
+<translation id="5457795687441958389">保持未登录状态</translation>
 <translation id="5458214261780477893">Dvorak</translation>
 <translation id="5458716506062529991">您输错 PIN 码的次数过多。如需访问您的通行密钥和密码，请更改 PIN 码。</translation>
 <translation id="5459470938885464873">导入证书时出错</translation>
@@ -8601,7 +8601,7 @@
 <translation id="6973611239564315524">可以升级至 Debian 10 (Buster)</translation>
 <translation id="69739764870135975">如果 Google 也是您的默认搜索引擎，您将会看到更实用、与上下文更相关的建议</translation>
 <translation id="697508444536771064">关闭 Linux</translation>
-<translation id="6977008555972361928"><ph name="WEBSITE_ORIGIN" /> 想在您的移动设备上保存信息</translation>
+<translation id="6977008555972361928"><ph name="WEBSITE_ORIGIN" /> 想将信息保存到您的移动设备上</translation>
 <translation id="6978121630131642226">搜索引擎</translation>
 <translation id="6978717888677691380">您已屏蔽的网站</translation>
 <translation id="6979041727349121225">节能模式</translation>
