@@ -31,6 +31,10 @@
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/proposed_layout.h"
 
+#if BUILDFLAG(IS_MAC)
+#include "chrome/browser/ui/fullscreen_util_mac.h"
+#endif
+
 namespace {
 
 // The insets for main region and its containing views when the
@@ -238,9 +242,22 @@ bool BrowserViewLayoutImpl::ContentsSeparatorInTopContainer() const {
     return true;
   }
 
-  // In immersive mode, the separator goes with the container to the overlay.
-  if (delegate().GetImmersiveModeController()->IsEnabled()) {
-    // TODO(https://crbug.com/7089871): handle "toolbar always visible" mode.
+  // In immersive mode, when the top container is visually separate, the
+  // separator goes with the container to the overlay.
+  bool top_container_is_visually_separate =
+      delegate().GetImmersiveModeController()->IsEnabled();
+#if BUILDFLAG(IS_MAC)
+  // On Mac, when in full browser fullscreen (but not content fullscreen), the
+  // entire top container is always visible and does not look like an
+  // immersive mode overlay, so in this case the top container isn't visually
+  // separate from the browser.
+  if (top_container_is_visually_separate &&
+      fullscreen_utils::IsAlwaysShowToolbarEnabled(browser()) &&
+      !fullscreen_utils::IsInContentFullscreen(browser())) {
+    top_container_is_visually_separate = false;
+  }
+#endif
+  if (top_container_is_visually_separate) {
     return true;
   }
 
@@ -613,9 +630,9 @@ gfx::Rect BrowserViewLayoutImpl::CalculateTopContainerLayout(
 
   // Lay out toolbar. If tabstrip is completely absent (or vertical), this can
   // go in the top exclusion area.
+  const bool toolbar_visible = delegate().IsToolbarVisible();
   if (IsParentedTo(views().toolbar, views().top_container)) {
     gfx::Rect toolbar_bounds;
-    const bool toolbar_visible = delegate().IsToolbarVisible();
     if (toolbar_visible) {
       toolbar_bounds =
           needs_exclusion
@@ -630,8 +647,8 @@ gfx::Rect BrowserViewLayoutImpl::CalculateTopContainerLayout(
   }
 
   // Lay out the bookmarks bar if one is present.
+  const bool bookmarks_visible = delegate().IsBookmarkBarVisible();
   if (IsParentedTo(views().bookmark_bar, views().top_container)) {
-    const bool bookmarks_visible = delegate().IsBookmarkBarVisible();
     const gfx::Rect bookmarks_bounds(
         params.visual_client_area.x(), y, params.visual_client_area.width(),
         bookmarks_visible ? views().bookmark_bar->GetPreferredSize().height()
@@ -641,9 +658,11 @@ gfx::Rect BrowserViewLayoutImpl::CalculateTopContainerLayout(
   }
 
   // The top separator may need to be shown in the top container or the
-  // multi-contents view.
-  const bool show_top_separator = delegate().IsContentsSeparatorEnabled();
-  const bool separator_in_top_container = ContentsSeparatorInTopContainer();
+  // multi-contents view. It is shown when the toolbar or bookmarks are present
+  // in the top container.
+  const bool show_top_separator = toolbar_visible || bookmarks_visible;
+  const bool separator_in_top_container =
+      show_top_separator && ContentsSeparatorInTopContainer();
 
   // Maybe show the separator in the multi-contents view. If this happens, it
   // does not appear in the top container.
@@ -654,17 +673,15 @@ gfx::Rect BrowserViewLayoutImpl::CalculateTopContainerLayout(
 
   // Maybe show the separator in the top container.
   if (IsParentedTo(views().top_container_separator, views().top_container)) {
-    const bool separator_visible =
-        show_top_separator && separator_in_top_container;
     gfx::Rect separator_bounds;
-    if (separator_visible) {
+    if (separator_in_top_container) {
       separator_bounds = gfx::Rect(
           params.visual_client_area.x(), y, params.visual_client_area.width(),
           views().top_container_separator->GetPreferredSize().height());
       y = separator_bounds.bottom();
     }
     layout.AddChild(views().top_container_separator, separator_bounds,
-                    separator_visible);
+                    separator_in_top_container);
   }
 
   // In certain circumstances, the top container bounds require adjustment.
