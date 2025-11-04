@@ -5,13 +5,11 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_ROUTE_QUERY_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_ROUTE_QUERY_H_
 
-#include <variant>
-
 #include "third_party/blink/renderer/core/css/conditional_exp_node.h"
 #include "third_party/blink/renderer/core/route_matching/route_preposition.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
-#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 namespace blink {
 
@@ -23,34 +21,42 @@ class URLPattern;
 // https://wicg.github.io/declarative-partial-updates/css-route-matching/#at-route
 class RouteTest : public GarbageCollected<RouteTest> {
  public:
-  RouteTest(const String& route_name, RoutePreposition);
-  RouteTest(URLPattern*, RoutePreposition);
+  RouteTest(const AtomicString& route_name, RoutePreposition);
+  RouteTest(URLPattern*,
+            const AtomicString& original_url_pattern_string,
+            RoutePreposition);
 
   void Trace(Visitor*) const;
 
   RoutePreposition GetPreposition() const { return preposition_; }
 
-  URLPattern* GetURLPattern() const {
-    if (auto* pattern = std::get_if<Member<URLPattern>>(&location_)) {
-      return *pattern;
+  URLPattern* GetURLPattern() const { return url_pattern_; }
+
+  const AtomicString& OriginalURLPatternString() const {
+    if (url_pattern_) {
+      return string_;
     }
-    return nullptr;
+    return g_null_atom;
   }
 
-  String GetRouteName() const {
-    if (const String* str = std::get_if<String>(&location_)) {
-      return *str;
+  const AtomicString& GetRouteName() const {
+    if (url_pattern_) {
+      return g_null_atom;
     }
-    return String();
+    return string_;
   }
 
   bool Matches(Document&) const;
 
  private:
-  // URLPattern or route name.
-  using RouteLocation = std::variant<Member<URLPattern>, String>;
+  Member<URLPattern> url_pattern_;
 
-  RouteLocation location_;
+  // Route name, or, if `url_pattern_` is set, the original URLPattern
+  // string. The reason for storing the original string is for
+  // serialization. The URLPattern API deliberately doesn't support
+  // serialization.
+  AtomicString string_;
+
   RoutePreposition preposition_;
 };
 

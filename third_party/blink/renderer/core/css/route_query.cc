@@ -7,19 +7,23 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/route_matching/route_map.h"
 #include "third_party/blink/renderer/core/url_pattern/url_pattern.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
 
-RouteTest::RouteTest(const String& route_name, RoutePreposition preposition)
-    : location_(route_name), preposition_(preposition) {}
+RouteTest::RouteTest(const AtomicString& route_name,
+                     RoutePreposition preposition)
+    : string_(route_name), preposition_(preposition) {}
 
-RouteTest::RouteTest(URLPattern* pattern, RoutePreposition preposition)
-    : location_(pattern), preposition_(preposition) {}
+RouteTest::RouteTest(URLPattern* url_pattern,
+                     const AtomicString& original_url_pattern_string,
+                     RoutePreposition preposition)
+    : url_pattern_(url_pattern),
+      string_(original_url_pattern_string),
+      preposition_(preposition) {}
 
 void RouteTest::Trace(Visitor* v) const {
-  if (const auto* pattern = std::get_if<Member<URLPattern>>(&location_)) {
-    v->Trace(*pattern);
-  }
+  v->Trace(url_pattern_);
 }
 
 bool RouteTest::Matches(Document& document) const {
@@ -51,8 +55,25 @@ KleeneValue RouteQueryExpNode::Evaluate(
 }
 
 void RouteQueryExpNode::SerializeTo(StringBuilder& builder) const {
-  // TODO(crbug.com/436805487): Implement this.
-  NOTREACHED() << "Not yet implemented.";
+  switch (route_test_->GetPreposition()) {
+    case RoutePreposition::kAt:
+      builder.Append("at: ");
+      break;
+    case RoutePreposition::kFrom:
+      builder.Append("from: ");
+      break;
+    case RoutePreposition::kTo:
+      builder.Append("to: ");
+      break;
+  }
+  if (route_test_->GetURLPattern()) {
+    builder.Append("urlpattern(\"");
+    builder.Append(route_test_->OriginalURLPatternString());
+    builder.Append("\")");
+  } else {
+    DCHECK(!route_test_->GetRouteName().IsNull());
+    builder.Append(route_test_->GetRouteName());
+  }
 }
 
 void RouteQuery::Trace(Visitor* v) const {

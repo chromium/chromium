@@ -16,28 +16,48 @@ namespace blink {
 
 namespace {
 
-URLPattern* ParseURLPattern(CSSParserTokenStream& stream,
-                            const Document& document) {
+// Even if the URLPattern is parsed now, we need to keep the original string for
+// serialization. The URLPattern API deliberately doesn't provide this.
+struct URLPatternResult {
+  STACK_ALLOCATED();
+
+ public:
+  URLPatternResult() = default;
+  URLPatternResult(URLPattern* url_pattern, const AtomicString& original_string)
+      : url_pattern(url_pattern), original_string(original_string) {
+    DCHECK(url_pattern);
+  }
+
+  bool IsSuccess() const { return !!url_pattern; }
+
+  URLPattern* url_pattern = nullptr;
+  AtomicString original_string;
+};
+
+URLPatternResult ParseURLPattern(CSSParserTokenStream& stream,
+                                 const Document& document) {
   if (stream.Peek().GetType() != kFunctionToken ||
       stream.Peek().Value() != "urlpattern") {
-    return nullptr;
+    return URLPatternResult();
   }
 
   CSSParserTokenStream::BlockGuard guard(stream);
   stream.ConsumeWhitespace();
   if (stream.Peek().GetType() != kStringToken) {
-    return nullptr;
+    return URLPatternResult();
   }
   const CSSParserToken& pattern = stream.ConsumeIncludingWhitespace();
   if (pattern.GetType() == kBadStringToken || !stream.UncheckedAtEnd()) {
-    return nullptr;
+    return URLPatternResult();
   }
 
+  AtomicString pattern_str = pattern.Value().ToAtomicString();
   V8URLPatternInput* url_pattern_input =
-      MakeGarbageCollected<V8URLPatternInput>(pattern.Value().ToAtomicString());
-  return URLPattern::Create(document.GetExecutionContext()->GetIsolate(),
-                            url_pattern_input, document.Url(),
-                            IGNORE_EXCEPTION);
+      MakeGarbageCollected<V8URLPatternInput>(pattern_str);
+  return URLPatternResult(
+      URLPattern::Create(document.GetExecutionContext()->GetIsolate(),
+                         url_pattern_input, document.Url(), IGNORE_EXCEPTION),
+      pattern_str);
 }
 
 // https://wicg.github.io/declarative-partial-updates/css-route-matching/#at-route
@@ -48,14 +68,14 @@ URLPattern* ParseURLPattern(CSSParserTokenStream& stream,
 // <route-name> = <custom-ident>
 RouteTest* ParseRouteTest(CSSParserTokenStream& stream,
                           const Document& document) {
-  String route_name;
+  AtomicString route_name;
   RoutePreposition preposition = RoutePreposition::kAt;
-  URLPattern* url_pattern = nullptr;
+  URLPatternResult url_pattern_result;
 
   bool header_valid = [&]() {
     if (stream.Peek().GetType() == kIdentToken) {
-      String first_string =
-          stream.ConsumeIncludingWhitespace().Value().ToString();
+      AtomicString first_string(
+          stream.ConsumeIncludingWhitespace().Value().ToString());
       if (stream.Peek().GetType() == kColonToken) {
         if (first_string == "at") {
           preposition = RoutePreposition::kAt;
@@ -68,10 +88,11 @@ RouteTest* ParseRouteTest(CSSParserTokenStream& stream,
         }
         stream.ConsumeIncludingWhitespace();
         if (stream.Peek().GetType() == kIdentToken) {
-          route_name = stream.ConsumeIncludingWhitespace().Value().ToString();
+          route_name = AtomicString(
+              stream.ConsumeIncludingWhitespace().Value().ToString());
         } else {
-          url_pattern = ParseURLPattern(stream, document);
-          if (!url_pattern) {
+          url_pattern_result = ParseURLPattern(stream, document);
+          if (!url_pattern_result.IsSuccess()) {
             return false;
           }
         }
@@ -82,8 +103,8 @@ RouteTest* ParseRouteTest(CSSParserTokenStream& stream,
         return true;
       }
     } else {
-      url_pattern = ParseURLPattern(stream, document);
-      return url_pattern && stream.AtEnd();
+      url_pattern_result = ParseURLPattern(stream, document);
+      return url_pattern_result.IsSuccess() && stream.AtEnd();
     }
     return false;
   }();
@@ -92,8 +113,10 @@ RouteTest* ParseRouteTest(CSSParserTokenStream& stream,
     return nullptr;
   }
 
-  if (url_pattern) {
-    return MakeGarbageCollected<RouteTest>(url_pattern, preposition);
+  if (url_pattern_result.IsSuccess()) {
+    return MakeGarbageCollected<RouteTest>(url_pattern_result.url_pattern,
+                                           url_pattern_result.original_string,
+                                           preposition);
   }
   DCHECK(!route_name.empty());
   return MakeGarbageCollected<RouteTest>(route_name, preposition);

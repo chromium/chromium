@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/css/css_route_rule.h"
 
+#include "third_party/blink/renderer/core/css/conditional_exp_node.h"
+#include "third_party/blink/renderer/core/css/route_query.h"
 #include "third_party/blink/renderer/core/css/style_rule.h"
 
 namespace blink {
@@ -14,8 +16,11 @@ CSSRouteRule::CSSRouteRule(StyleRuleRoute* route_rule, CSSStyleSheet* parent)
 CSSRouteRule::~CSSRouteRule() = default;
 
 String CSSRouteRule::cssText() const {
-  // TODO(crbug.com/436805487): Implement this.
-  NOTREACHED() << "Not yet implemented.";
+  StringBuilder result;
+  result.Append("@route ");
+  route_rule_->GetRouteQuery().GetRootExp()->SerializeTo(result);
+  AppendCSSTextForItems(result);
+  return result.ToString();
 }
 
 void CSSRouteRule::Reattach(StyleRuleBase* rule) {
