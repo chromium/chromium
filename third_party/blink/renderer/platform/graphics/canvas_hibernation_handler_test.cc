@@ -135,7 +135,7 @@ void SetPageVisible(
   if (!page_visible) {
     // Trigger hibernation.
     scoped_refptr<StaticBitmapImage> snapshot =
-        delegate->GetResourceProvider()->Snapshot(FlushReason::kHibernating);
+        delegate->GetResourceProvider()->Snapshot(FlushReason::kOther);
     hibernation_handler->SaveForHibernation(
         snapshot->PaintImageForCurrentFrame().GetSwSkImage(),
         delegate->GetResourceProvider()->ReleaseRecorder());
