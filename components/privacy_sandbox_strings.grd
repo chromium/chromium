@@ -402,9 +402,6 @@
       <message name="IDS_PAGE_INFO_PRIVACY_SITE_DATA_DESCRIPTION" desc="Descriptive text in the 'Privacy and site data' subpage explaining that third-party cookies are blocked and that there are additional tracking protections available in Incognito.">
         Third-party cookies are blocked. Incognito can also provide additional tracking protections.
       </message>
-      <message name="IDS_PAGE_INFO_PRIVACY_SITE_DATA_DESCRIPTION_ANDROID" desc="Descriptive text in the 'Privacy and site data' subpage explaining that third-party cookies are blocked and that there are additional tracking protections available in Incognito. Contains a link to the 'Incognito tracking protections' settings page where these features can be managed." formatter_data="android_java">
-        Third-party cookies are blocked. Incognito can also provide additional tracking protections. Manage Incognito tracking protections in <ph name="BEGIN_LINK">&lt;link&gt;</ph>Settings<ph name="END_LINK">&lt;/link&gt;</ph>.
-      </message>
       <message name="IDS_PAGE_INFO_PRIVACY_SITE_DATA_PAUSED_PROTECTIONS_DESCRIPTION_ANDROID" formatter_data="android_java" desc="Descriptive text in the 'Privacy and site data' subpage shown when tracking protections are paused on the current site. Explains that tracking protections will remain paused on this site until the user closes all Incognito tabs. Additionally contains a feedback link so the user can given feedback as to why they paused tracking protections on this site.">
         Protections are paused until all Incognito tabs are closed. <ph name="BEGIN_LINK">&lt;link&gt;</ph>Send feedback<ph name="END_LINK">&lt;/link&gt;</ph>
       </message>
@@ -419,12 +416,6 @@
           <message name="IDS_PAGE_INFO_PRIVACY_SITE_DATA_3PCS_USER_ALLOWED_DESCRIPTION" desc="Descriptive text in the 'Privacy and site data' subpage explaining that third-party cookies are allowed on the current site due to an exception made by the user. Also mentions that there are additional tracking protections available in Incognito.">
             Chrome blocks third-party cookies in Incognito, but you made an exception for this site. Incognito can also provide additional tracking protections.
           </message>
-          <message name="IDS_PAGE_INFO_PRIVACY_SITE_DATA_3PCS_ENTERPRISE_ALLOWED_DESCRIPTION_ANDROID" desc="Descriptive text in the 'Privacy and site data' subpage explaining that third-party cookies are allowed on the current site due to an exception made by the user's administrator. Also mentions that there are additional tracking protections available in Incognito. Contains a link to the 'Incognito tracking protections' settings page where these features can be managed." formatter_data="android_java">
-            Chrome blocks third-party cookies in Incognito, but your administrator allowed third-party cookies for this site. Incognito can also provide additional tracking protections. Manage Incognito tracking protections in <ph name="BEGIN_LINK">&lt;link&gt;</ph>Settings<ph name="END_LINK">&lt;/link&gt;</ph>.
-          </message>
-          <message name="IDS_PAGE_INFO_PRIVACY_SITE_DATA_3PCS_USER_ALLOWED_DESCRIPTION_ANDROID" desc="Descriptive text in the 'Privacy and site data' subpage explaining that third-party cookies are allowed on the current site due to an exception made by the user. Also mentions that there are additional tracking protections available in Incognito. Contains a link to the 'Incognito tracking protections' settings page where these features can be managed." formatter_data="android_java">
-            Chrome blocks third-party cookies in Incognito, but you made an exception for this site. Incognito can also provide additional tracking protections. Manage Incognito tracking protections in <ph name="BEGIN_LINK">&lt;link&gt;</ph>Settings<ph name="END_LINK">&lt;/link&gt;</ph>.
-          </message>
         </then>
         <else>
           <message name="IDS_PAGE_INFO_PRIVACY_SITE_DATA_3PCS_ENTERPRISE_ALLOWED_DESCRIPTION" desc="Descriptive text in the 'Privacy and site data' subpage explaining that third-party cookies are allowed on the current site due to an exception made by the user's administrator. Also mentions that there are additional tracking protections available in Incognito.">
@@ -435,12 +426,6 @@
           </message>
           <message name="IDS_PAGE_INFO_PRIVACY_SITE_DATA_3PCS_USER_ALLOWED_DESCRIPTION" desc="Descriptive text in the 'Privacy and site data' subpage explaining that third-party cookies are allowed on the current site due to an exception made by the user. Also mentions that there are additional tracking protections available in Incognito.">
             Chromium blocks third-party cookies in Incognito, but you made an exception for this site. Incognito can also provide additional tracking protections.
-          </message>
-          <message name="IDS_PAGE_INFO_PRIVACY_SITE_DATA_3PCS_ENTERPRISE_ALLOWED_DESCRIPTION_ANDROID" desc="Descriptive text in the 'Privacy and site data' subpage explaining that third-party cookies are allowed on the current site due to an exception made by the user's administrator. Also mentions that there are additional tracking protections available in Incognito. Contains a link to the 'Incognito tracking protections' settings page where these features can be managed." formatter_data="android_java">
-            Chromium blocks third-party cookies in Incognito, but your administrator allowed third-party cookies for this site. Incognito can also provide additional tracking protections. Manage Incognito tracking protections in <ph name="BEGIN_LINK">&lt;link&gt;</ph>Settings<ph name="END_LINK">&lt;/link&gt;</ph>.
-          </message>
-          <message name="IDS_PAGE_INFO_PRIVACY_SITE_DATA_3PCS_USER_ALLOWED_DESCRIPTION_ANDROID" desc="Descriptive text in the 'Privacy and site data' subpage explaining that third-party cookies are allowed on the current site due to an exception made by the user. Also mentions that there are additional tracking protections available in Incognito. Contains a link to the 'Incognito tracking protections' settings page where these features can be managed." formatter_data="android_java">
-            Chromium blocks third-party cookies in Incognito, but you made an exception for this site. Incognito can also provide additional tracking protections. Manage Incognito tracking protections in <ph name="BEGIN_LINK">&lt;link&gt;</ph>Settings<ph name="END_LINK">&lt;/link&gt;</ph>.
           </message>
         </else>
       </if>
@@ -1016,125 +1001,6 @@
       <message name="IDS_INCOGNITO_NTP_BLOCK_THIRD_PARTY_COOKIES_DESCRIPTION_ANDROID" desc="This text is for the body of the “Third-party cookies are blocked” section. It specifies the scope of blocking third-party cookies and informs the user of possible functional impacts, a means of addressing it, and a link to learn how to do so." formatter_data="android_java">
         When you're in Incognito mode, sites can't use third-party cookies. If a site that relies on these cookies isn't working, you can <ph name="BEGIN_LINK">&lt;link&gt;</ph>try giving that site temporary access to third-party cookies<ph name="END_LINK">&lt;/link&gt;</ph>.
       </message>
-
-      <!-- ACT - Incognito Tracking Protections Settings Page -->
-      <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_PAGE_TITLE" desc="Title for the 'Incognito tracking protections' settings page." formatter_data="android_java">
-        Incognito tracking protections
-      </message>
-      <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_LINK_ROW_LABEL" desc="Label for the 'Incognito tracking protections' settings link row." formatter_data="android_java">
-        Incognito tracking protections
-      </message>
-      <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_LINK_ROW_SUBLABEL" desc="Sublabel for the 'Incognito tracking protections' settings link row." formatter_data="android_java">
-        Manage information sites can use to learn about you in Incognito
-      </message>
-      <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_HEADER" desc="Header for the 'Tracking protections' section of the Incognito tracking protections settings page. 'Tracking protections' is the term used for features that try to protect users from being tracked across different websites." formatter_data="android_java">
-        Tracking protections
-      </message>
-      <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_DESCRIPTION_DESKTOP" desc="Description for the 'Tracking protections' section. Explains that when the user visits a website, third-party sites might gather information about them through embedded content and services (e.g. images, ads, or text). Also provides a help center link for settings contained in the 'Tracking protections' section.">
-        Sites you visit may embed content and services from other sites (like images, ads, and text) which can be used to learn about you. Learn more about managing <ph name="START_LINK">&lt;a target="_blank" href="$1" aria-description="$2"&gt;</ph>Incognito tracking protections<ph name="END_LINK">&lt;/a&gt;</ph>
-      </message>
-      <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_DESCRIPTION_ANDROID" desc="Description for the 'Tracking protections' section. Explains that when the user visits a website, third-party sites might gather information about them through embedded content and services (e.g. images, ads, or text). Also provides a help center link for settings contained in the 'Tracking protections' section." formatter_data="android_java">
-        Sites you visit may embed content and services from other sites (like images, ads, and text) which can be used to learn about you. Learn more about managing <ph name="BEGIN_LINK">&lt;link&gt;</ph>Incognito tracking protections<ph name="END_LINK">&lt;/link&gt;</ph>
-      </message>
-      <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_BLOCK_3PCS_TOGGLE_LABEL" desc="Label for the Block third-party cookies settings toggle." formatter_data="android_java">
-        Block third-party cookies
-      </message>
-      <message name="IDS_IP_PROTECTION_TOGGLE_LABEL" desc="Label for the IP protection settings toggle." formatter_data="android_java">
-        Protect your IP address
-      </message>
-      <message name="IDS_IP_PROTECTION_TOGGLE_SUBLABEL" desc="Sublabel for the IP protection settings toggle." formatter_data="android_java">
-        Limit access to your IP address
-      </message>
-      <message name="IDS_IP_PROTECTION_PAGE_TITLE" desc="Title for the IP protection settings page." formatter_data="android_java">
-        Protect your IP address
-      </message>
-      <message name="IDS_IP_PROTECTION_LINK_ROW_LABEL" desc="Label for the IP protection settings link row." formatter_data="android_java">
-        Protect your IP address
-      </message>
-      <message name="IDS_IP_PROTECTION_LINK_ROW_SUBLABEL_ENABLED" desc="Sublabel for the IP protection settings row when the setting is enabled." formatter_data="android_java">
-        Limit access to your IP address. This setting is on.
-      </message>
-      <message name="IDS_IP_PROTECTION_LINK_ROW_SUBLABEL_DISABLED" desc="Sublabel for the IP protection settings row when the setting is disabled." formatter_data="android_java">
-        Limit access to your IP address. This setting is off.
-      </message>
-      <message name="IDS_IP_PROTECTION_THINGS_TO_CONSIDER_BULLET_ONE" desc="Bullet point under the 'Things to consider' section for IP protection. Explains that the feature will only apply to embedded websites, not the website the user is directly on." formatter_data="android_java">
-        Applies to embedded sites, not the site you're directly visiting
-      </message>
-      <message name="IDS_IP_PROTECTION_THINGS_TO_CONSIDER_BULLET_THREE" desc="Bullet point under the 'Things to consider' section for IP protection. Explains that when the setting is on, Google's privacy servers cannot see the sites a user is visiting, only their IP address." formatter_data="android_java">
-        Google's privacy servers can see your IP address but not your browsing destination when protecting your IP address
-      </message>
-      <message name="IDS_FINGERPRINTING_PROTECTION_TOGGLE_LABEL" desc="Label for the tracking script blocking settings toggle." formatter_data="android_java">
-        Block tracking scripts
-      </message>
-      <message name="IDS_FINGERPRINTING_PROTECTION_TOGGLE_SUBLABEL" desc="Sublabel for the tracking script blocking settings toggle." formatter_data="android_java">
-        Limit access to device and browser data
-      </message>
-      <message name="IDS_FINGERPRINTING_PROTECTION_PAGE_TITLE" desc="Title for the tracking script blocking settings page." formatter_data="android_java">
-        Block tracking scripts
-      </message>
-      <message name="IDS_FINGERPRINTING_PROTECTION_LINK_ROW_LABEL" desc="Label for the tracking script blocking settings link row." formatter_data="android_java">
-        Block tracking scripts
-      </message>
-      <message name="IDS_FINGERPRINTING_PROTECTION_LINK_ROW_SUBLABEL" desc="Sublabel for the tracking script blocking settings link row." translateable="false">
-          Limit access to device and browser data
-      </message>
-      <message name="IDS_FINGERPRINTING_PROTECTION_LINK_ROW_SUBLABEL_ENABLED" desc="Sublabel for the tracking script blocking settings row when the setting is enabled." formatter_data="android_java">
-        Limit access to device and browser data. This setting is on.
-      </message>
-      <message name="IDS_FINGERPRINTING_PROTECTION_LINK_ROW_SUBLABEL_DISABLED" desc="Sublabel for the tracking script blocking settings row when the setting is disabled." formatter_data="android_java">
-        Limit access to device and browser data. This setting is off.
-      </message>
-      <message name="IDS_FINGERPRINTING_PROTECTION_THINGS_TO_CONSIDER" desc="Bullet point under the 'Things to consider' section for script blocking. Explains that the feature will only apply to embedded websites, not the website the user is directly on." formatter_data="android_java">
-        Applies to embedded sites, not the site you're directly visiting
-      </message>
-      <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_WHEN_ON" desc="The header used above a bulleted section for a specific setting explaining functionality when the setting is on." formatter_data="android_java">
-        When on
-      </message>
-      <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_THINGS_TO_CONSIDER" desc="The header used above a bulleted section for a specific setting explaining things the user might want to consider when turning the setting on or off." formatter_data="android_java">
-        Things to consider
-      </message>
-      <if expr="_google_chrome">
-        <then>
-          <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_PAGE_DESCRIPTION" desc="Description for the 'Incognito tracking protections' settings page. Explains the behavior that Incognito provides by default and mentions that there are additional features that can limit information accessed by third-party sites via embedded content (e.g. images, ads, or text)." formatter_data="android_java">
-            When you browse in Incognito, Chrome won't save your browsing history, cookies and site data, and the information you enter in forms. Incognito also provides features that can limit the information available to embedded sites.
-          </message>
-          <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_BLOCK_3PCS_TOGGLE_SUBLABEL" desc="Sublabel for the Block third-party cookies settings toggle." formatter_data="android_java">
-            Chrome blocks sites from using third-party cookies in Incognito
-          </message>
-          <message name="IDS_IP_PROTECTION_WHEN_ON" desc="Bullet point under the 'When on' section for IP protection. Explains that the feature can hide the user's IP address from embedded sites attempting to access information about them." formatter_data="android_java">
-            Chrome can protect your IP address from embedded sites that may be trying to learn about you
-          </message>
-          <message name="IDS_IP_PROTECTION_THINGS_TO_CONSIDER_BULLET_TWO" desc="Bullet point under the 'Things to consider' section for IP protection. Explains that the feature will only be available in Incognito when opened from a signed-in tab." formatter_data="android_java">
-            Only available when Incognito is opened from a signed-in Chrome tab
-          </message>
-          <message name="IDS_IP_PROTECTION_THINGS_TO_CONSIDER_BULLET_TWO_DESKTOP" desc="Bullet point under the 'Things to consider' section for IP protection. Explains that the feature will only be available in Incognito when opened from a signed-in window.">
-            Only available when Incognito is opened from a signed-in Chrome window
-          </message>
-          <message name="IDS_FINGERPRINTING_PROTECTION_WHEN_ON" desc="Bullet point under the 'When on' section for script blocking. Explains that the feature will try to restrict data related to the user's device and browser from embedded sites attempting to access information about them." formatter_data="android_java">
-            Chrome will try to limit device and browser data, like installed fonts or your time zone, from embedded sites that may be trying to learn about you
-          </message>
-        </then>
-        <else>
-          <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_PAGE_DESCRIPTION" desc="Description for the 'Incognito tracking protections' settings page. Explains the behavior that Incognito provides by default and mentions that there are additional features that can limit information accessed by third-party sites via embedded content (e.g. images, ads, or text)." formatter_data="android_java">
-            When you browse in Incognito, Chromium won't save your browsing history, cookies and site data, and the information you enter in forms. Incognito also provides features that can limit the information available to embedded sites.
-          </message>
-          <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_BLOCK_3PCS_TOGGLE_SUBLABEL" desc="Sublabel for the Block third-party cookies settings toggle." formatter_data="android_java">
-            Chromium blocks sites from using third-party cookies in Incognito
-          </message>
-          <message name="IDS_IP_PROTECTION_WHEN_ON" desc="Bullet point under the 'When on' section for IP protection. Explains that the feature can hide the user's IP address from embedded sites attempting to access information about them." formatter_data="android_java">
-            Chromium can protect your IP address from embedded sites that may be trying to learn about you
-          </message>
-          <message name="IDS_IP_PROTECTION_THINGS_TO_CONSIDER_BULLET_TWO" desc="Bullet point under the 'Things to consider' section for IP protection. Explains that the feature will only be available in Incognito when opened from a signed-in tab." formatter_data="android_java">
-            Only available when Incognito is opened from a signed-in Chromium tab
-          </message>
-          <message name="IDS_IP_PROTECTION_THINGS_TO_CONSIDER_BULLET_TWO_DESKTOP" desc="Bullet point under the 'Things to consider' section for IP protection. Explains that the feature will only be available in Incognito when opened from a signed-in window.">
-            Only available when Incognito is opened from a signed-in Chromium window
-          </message>
-          <message name="IDS_FINGERPRINTING_PROTECTION_WHEN_ON" desc="Bullet point under the 'When on' section for script blocking. Explains that the feature will try to restrict data related to the user's device and browser from embedded sites attempting to access information about them." formatter_data="android_java">
-            Chromium will try to limit device and browser data, like installed fonts or your time zone, from embedded sites that may be trying to learn about you
-          </message>
-        </else>
-      </if>
     </messages>
   </release>
 </grit>

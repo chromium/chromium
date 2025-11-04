@@ -53,9 +53,6 @@ import org.chromium.components.browser_ui.settings.FragmentSettingsNavigation;
 import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
 import org.chromium.components.browser_ui.site_settings.BaseSiteSettingsFragment;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
-import org.chromium.components.privacy_sandbox.FingerprintingProtectionSettingsFragment;
-import org.chromium.components.privacy_sandbox.IncognitoTrackingProtectionsFragment;
-import org.chromium.components.privacy_sandbox.IpProtectionSettingsFragment;
 import org.chromium.components.privacy_sandbox.TrackingProtectionSettings;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
@@ -188,21 +185,6 @@ public class FragmentDependencyProvider extends FragmentManager.FragmentLifecycl
         if (fragment instanceof TopicsManageFragment) {
             ((TopicsManageFragment) fragment)
                     .setModalDialogManagerSupplier(mModalDialogManagerSupplier);
-        }
-        if (fragment instanceof IpProtectionSettingsFragment) {
-            IpProtectionSettingsFragment ipProtectionSettingsFragment =
-                    ((IpProtectionSettingsFragment) fragment);
-            ipProtectionSettingsFragment.setTrackingProtectionDelegate(
-                    new ChromeTrackingProtectionDelegate(mProfile));
-        }
-        if (fragment
-                instanceof FingerprintingProtectionSettingsFragment fpProtectionSettingsFragment) {
-            fpProtectionSettingsFragment.setTrackingProtectionDelegate(
-                    new ChromeTrackingProtectionDelegate(mProfile));
-        }
-        if (fragment instanceof IncognitoTrackingProtectionsFragment itpFragment) {
-            itpFragment.setTrackingProtectionDelegate(
-                    new ChromeTrackingProtectionDelegate(mProfile));
         }
         if (fragment instanceof AutofillLocalIbanEditor) {
             ((AutofillLocalIbanEditor) fragment)

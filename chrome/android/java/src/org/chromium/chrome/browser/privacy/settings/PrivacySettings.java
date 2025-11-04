@@ -95,16 +95,10 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
     private static final String PREF_PRIVACY_GUIDE = "privacy_guide";
     private static final String PREF_INCOGNITO_LOCK = "incognito_lock";
     private static final String PREF_JAVASCRIPT_OPTIMIZER = "javascript_optimizer";
-    private static final String PREF_INCOGNITO_TRACKING_PROTECTIONS =
-            "incognito_tracking_protections";
     @VisibleForTesting static final String PREF_DO_NOT_TRACK = "do_not_track";
     @VisibleForTesting static final String PREF_THIRD_PARTY_COOKIES = "third_party_cookies";
     @VisibleForTesting static final String PREF_TRACKING_PROTECTION = "tracking_protection";
     private static final String PREF_ADVANCED_PROTECTION_INFO = "advanced_protection_info";
-
-    @VisibleForTesting
-    static final String TRACKING_PROTECTIONS_OPENED_USER_ACTION =
-            "Settings.TrackingProtections.OpenedFromPrivacyPage";
 
     private IncognitoLockSettings mIncognitoLockSettings;
     private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
@@ -136,16 +130,6 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
         mPageTitle.set(getString(R.string.prefs_privacy_security));
 
         SettingsUtils.addPreferencesFromResource(this, R.xml.privacy_preferences);
-
-        Preference incognitoTrackingProtectionsPreference =
-                findPreference(PREF_INCOGNITO_TRACKING_PROTECTIONS);
-        incognitoTrackingProtectionsPreference.setVisible(
-                shouldShowIncognitoTrackingProtectionsUi());
-        incognitoTrackingProtectionsPreference.setOnPreferenceClickListener(
-                preference -> {
-                    RecordUserAction.record(TRACKING_PROTECTIONS_OPENED_USER_ACTION);
-                    return false;
-                });
 
         Preference sandboxPreference = findPreference(PREF_PRIVACY_SANDBOX);
         // Overwrite the click listener to pass a correct referrer to the fragment.
@@ -477,11 +461,6 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
     private boolean showTrackingProtectionUi() {
         return UserPrefs.get(getProfile()).getBoolean(Pref.TRACKING_PROTECTION3PCD_ENABLED)
                 || ChromeFeatureList.isEnabled(ChromeFeatureList.TRACKING_PROTECTION_3PCD);
-    }
-
-    private boolean shouldShowIncognitoTrackingProtectionsUi() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.FINGERPRINTING_PROTECTION_UX)
-                || ChromeFeatureList.isEnabled(ChromeFeatureList.IP_PROTECTION_UX);
     }
 
     /** Shows the advanced-protection-section if needed. */

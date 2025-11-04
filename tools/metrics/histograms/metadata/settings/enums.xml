@@ -58,7 +58,7 @@ chromium-metrics-reviews@google.com.
   <int value="-571101369" label="SafeBrowsingSettingsFragment"/>
   <int value="-518410470" label="GoogleServicesSettings"/>
   <int value="-515033038" label="AutofillServerCardEditor"/>
-  <int value="-475543757" label="IpProtectionSettingsFragment"/>
+  <int value="-475543757" label="(Obsolete) IpProtectionSettingsFragment"/>
   <int value="-460802969" label="PriceNotificationSettingsFragment"/>
   <int value="-275160283" label="ExtendedPreloadingSettingsFragment"/>
   <int value="-273029950" label="PasswordCheckFragmentView"/>
@@ -96,7 +96,8 @@ chromium-metrics-reviews@google.com.
   <int value="790603956" label="ChosenObjectSettings"/>
   <int value="851266805" label="RwsCookieSettings"/>
   <int value="853227285" label="ImageDescriptionsSettings"/>
-  <int value="887082954" label="FingerprintingProtectionSettingsFragment"/>
+  <int value="887082954"
+      label="(Obsolete) FingerprintingProtectionSettingsFragment"/>
   <int value="894297033" label="SingleCategorySettings"/>
   <int value="903277107" label="FledgeBlockedSitesFragment"/>
   <int value="1015549581" label="AlwaysTranslateListFragment"/>
@@ -118,7 +119,8 @@ chromium-metrics-reviews@google.com.
   <int value="1968319616" label="(Obsolete) ClearBrowsingDataFragmentBasic"/>
   <int value="1969661266" label="AddressBarSettingsFragment"/>
   <int value="2070921964" label="(Obsolete) ClearBrowsingDataTabsFragment"/>
-  <int value="2084696263" label="IncognitoTrackingProtectionsFragment"/>
+  <int value="2084696263"
+      label="(Obsolete) IncognitoTrackingProtectionsFragment"/>
 </enum>
 
 <enum name="BooleanRedirected">

@@ -65,7 +65,6 @@ import org.chromium.components.page_info.PageInfoMainController;
 import org.chromium.components.page_info.PageInfoRowView;
 import org.chromium.components.page_info.PageInfoSubpageController;
 import org.chromium.components.page_info.PageInfoView;
-import org.chromium.components.privacy_sandbox.IncognitoTrackingProtectionsFragment;
 import org.chromium.components.privacy_sandbox.TrackingProtectionSettings;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.BrowserContextHandle;
@@ -258,14 +257,6 @@ public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate
         SettingsNavigation settingsNavigation =
                 SettingsNavigationFactory.createSettingsNavigation();
         settingsNavigation.startSettings(mContext, TrackingProtectionSettings.class);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void showIncognitoTrackingProtectionsSettings() {
-        SettingsNavigation settingsNavigation =
-                SettingsNavigationFactory.createSettingsNavigation();
-        settingsNavigation.startSettings(mContext, IncognitoTrackingProtectionsFragment.class);
     }
 
     /** {@inheritDoc} */

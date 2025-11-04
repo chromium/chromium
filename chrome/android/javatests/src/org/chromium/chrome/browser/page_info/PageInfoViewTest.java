@@ -248,33 +248,6 @@ public class PageInfoViewTest {
         }
     }
 
-    public static class EnforcementRenderParams implements ParameterProvider {
-        @Override
-        public Iterable<ParameterSet> getParameters() {
-            return Arrays.asList(
-                    new ParameterSet()
-                            .value(
-                                    CookieControlsEnforcement.ENFORCED_BY_POLICY,
-                                    "PageInfo_PrivacySubpage_3pcsAllowed_ByEnterprise",
-                                    R.string
-                                            .page_info_privacy_site_data_3pcs_enterprise_allowed_description_android)
-                            .name("ByEnterprise"),
-                    new ParameterSet()
-                            .value(
-                                    CookieControlsEnforcement.ENFORCED_BY_COOKIE_SETTING,
-                                    "PageInfo_PrivacySubpage_3pcsAllowed_ByUserSetting",
-                                    R.string
-                                            .page_info_privacy_site_data_3pcs_user_allowed_description_android)
-                            .name("ByUserSetting"),
-                    new ParameterSet()
-                            .value(
-                                    CookieControlsEnforcement.NO_ENFORCEMENT,
-                                    "PageInfo_PrivacySubpage_ProtectionsActive",
-                                    R.string.page_info_privacy_site_data_description_android)
-                            .name("ProtectionsActive"));
-        }
-    }
-
     private FakePrivacySandboxBridge mFakePrivacySandboxBridge;
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -1340,35 +1313,6 @@ public class PageInfoViewTest {
         onView(withText(buttonLabelId)).perform(click());
         assertEquals(1, userActionTester.getActionCount(metric));
         userActionTester.tearDown();
-    }
-
-    /** Tests the "Privacy and site data" PageInfo UI subpage when protections are active. */
-    @Test
-    @MediumTest
-    @Feature({"RenderTest"})
-    @ParameterAnnotations.UseMethodParameter(EnforcementRenderParams.class)
-    public void displaysPrivacySubpage_protectionsActive(
-            int enforcement, String renderId, int expectedDescriptionResId) throws IOException {
-        loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
-        // Manually call `onStatusChanged` to correctly set the value of CookieControlsState and
-        // CookieControlsEnforcement.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    getCookiesController()
-                            .onStatusChanged(CookieControlsState.ACTIVE_TP, enforcement, 0, 0L);
-                });
-        onView(withId(R.id.page_info_cookies_row)).perform(click());
-        Context context = ApplicationProvider.getApplicationContext();
-        String description =
-                context.getString(expectedDescriptionResId).replaceAll("<link>|</link>", "");
-        onView(withText(description)).check(matches(isDisplayed()));
-        onViewWaiting(
-                allOf(
-                        withText(R.string.tracking_protections_button_pause_protections_label),
-                        isDisplayed()));
-        int resId = R.string.tracking_protections_active_protections_description;
-        onViewWaiting(allOf(withText(resId), isDisplayed()));
-        mRenderTestRule.render(getPageInfoView(), renderId);
     }
 
     /** Tests the "Privacy and site data" PageInfo UI subpage when protections are paused. */

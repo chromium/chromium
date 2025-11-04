@@ -61,7 +61,6 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
     private TextMessagePreference mTrackingProtectionsSummary;
     private Runnable mOnClearCallback;
     private Runnable mOnCookieSettingsLinkClicked;
-    private Runnable mOnIncognitoSettingsLinkClicked;
     private Callback<Activity> mOnFeedbackClicked;
     private @Nullable Dialog mConfirmationDialog;
     private boolean mDeleteDisabled;
@@ -79,7 +78,6 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
         public final Runnable onTrackingProtectionsButtonPressed;
         public final Runnable onClearCallback;
         public final Runnable onCookieSettingsLinkClicked;
-        public final Runnable onIncognitoSettingsLinkClicked;
         public final Callback<Activity> onFeedbackLinkClicked;
         public final boolean disableCookieDeletion;
         public final CharSequence hostName;
@@ -93,7 +91,6 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
                 Runnable onTrackingProtectionsButtonPressed,
                 Runnable onClearCallback,
                 Runnable onCookieSettingsLinkClicked,
-                Runnable onIncognitoSettingsLinkClicked,
                 Callback<Activity> onFeedbackLinkClicked,
                 boolean disableCookieDeletion,
                 CharSequence hostName,
@@ -105,7 +102,6 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
             this.onTrackingProtectionsButtonPressed = onTrackingProtectionsButtonPressed;
             this.onClearCallback = onClearCallback;
             this.onCookieSettingsLinkClicked = onCookieSettingsLinkClicked;
-            this.onIncognitoSettingsLinkClicked = onIncognitoSettingsLinkClicked;
             this.onFeedbackLinkClicked = onFeedbackLinkClicked;
             this.disableCookieDeletion = disableCookieDeletion;
             this.hostName = hostName;
@@ -160,7 +156,6 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
     @Initializer
     public void setParams(PageInfoCookiesViewParams params, PageInfoControllerDelegate delegate) {
         mOnCookieSettingsLinkClicked = params.onCookieSettingsLinkClicked;
-        mOnIncognitoSettingsLinkClicked = params.onIncognitoSettingsLinkClicked;
         mBlockAll3pc = params.blockAll3pc;
         mIsIncognito = params.isIncognito;
         mIsModeBUi = params.isModeBUi;
@@ -273,7 +268,7 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
 
         switch (controlsState) {
             case CookieControlsState.ACTIVE_TP:
-                setTrackingProtectionsSummary(enforcement);
+                setTrackingProtectionsSummary();
                 setActiveTrackingProtectionsTitleAndSummary();
                 updateTrackingProtectionsButton(/* protectionsPaused= */ false);
                 break;
@@ -298,27 +293,7 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
         updateContentDescriptionsForA11y();
     }
 
-    private void setTrackingProtectionsSummary(int enforcement) {
-        mTrackingProtectionsSummary.setVisible(true);
-        int id;
-        if (enforcement == CookieControlsEnforcement.ENFORCED_BY_POLICY) {
-            id = R.string.page_info_privacy_site_data_3pcs_enterprise_allowed_description_android;
-        } else if (enforcement == CookieControlsEnforcement.ENFORCED_BY_COOKIE_SETTING) {
-            id = R.string.page_info_privacy_site_data_3pcs_user_allowed_description_android;
-        } else {
-            id = R.string.page_info_privacy_site_data_description_android;
-        }
-        mTrackingProtectionsSummary.setSummary(
-                SpanApplier.applySpans(
-                        getString(id),
-                        new SpanApplier.SpanInfo(
-                                "<link>",
-                                "</link>",
-                                new ChromeClickableSpan(
-                                        getContext(),
-                                        (view) -> {
-                                            mOnIncognitoSettingsLinkClicked.run();
-                                        }))));
+    private void setTrackingProtectionsSummary() {
         // Cookie summary should be hidden if tracking protections summary is shown.
         mCookieSummary.setVisible(false);
     }

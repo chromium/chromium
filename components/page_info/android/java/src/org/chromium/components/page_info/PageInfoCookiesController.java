@@ -105,8 +105,6 @@ public class PageInfoCookiesController extends PageInfoPreferenceSubpageControll
                                 ::onTrackingProtectionsButtonPressed,
                         /* onClearCallback= */ this::onClearCookiesClicked,
                         /* onCookieSettingsLinkClicked= */ delegate::showCookieSettings,
-                        /* onIncognitoSettingsLinkClicked */ delegate
-                                ::showIncognitoTrackingProtectionsSettings,
                         /* onFeedbackLinkClicked= */ delegate::showCookieFeedback,
                         /* disableCookieDeletion= */ isDeletionDisabled(),
                         /* hostName= */ mMainController.getURL().getHost(),

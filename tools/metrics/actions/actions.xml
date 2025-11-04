@@ -40427,6 +40427,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Settings.TrackingProtections.FingerprintingProtection.Disabled">
+  <obsolete>Deprecated 10/2025 because the project was discontinued.</obsolete>
   <owner>mjenn@google.com</owner>
   <owner>koilos@google.com</owner>
   <description>
@@ -40436,6 +40437,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Settings.TrackingProtections.FingerprintingProtection.Enabled">
+  <obsolete>Deprecated 10/2025 because the project was discontinued.</obsolete>
   <owner>mjenn@google.com</owner>
   <owner>koilos@google.com</owner>
   <description>
@@ -40445,6 +40447,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Settings.TrackingProtections.IpProtection.Disabled">
+  <obsolete>Deprecated 10/2025 because the project was discontinued.</obsolete>
   <owner>mjenn@google.com</owner>
   <owner>koilos@google.com</owner>
   <description>
@@ -40454,6 +40457,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Settings.TrackingProtections.IpProtection.Enabled">
+  <obsolete>Deprecated 10/2025 because the project was discontinued.</obsolete>
   <owner>mjenn@google.com</owner>
   <owner>koilos@google.com</owner>
   <description>
@@ -40463,6 +40467,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Settings.TrackingProtections.OpenedFromPrivacyPage">
+  <obsolete>Deprecated 10/2025 because the project was discontinued.</obsolete>
   <owner>mjenn@google.com</owner>
   <owner>koilos@google.com</owner>
   <description>
