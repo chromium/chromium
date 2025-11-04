@@ -57,15 +57,19 @@
 }
 
 - (UIAction*)actionToCopyURL:(CrURL*)URL {
+  return [self actionToCopyURLWithBlock:^{
+    StoreURLInPasteboard(URL.gurl);
+  }];
+}
+
+- (UIAction*)actionToCopyURLWithBlock:(ProceduralBlock)block {
   UIImage* image =
       DefaultSymbolWithPointSize(kLinkActionSymbol, kSymbolActionPointSize);
   return [self
       actionWithTitle:l10n_util::GetNSString(IDS_IOS_COPY_LINK_ACTION_TITLE)
                 image:image
                  type:MenuActionType::CopyURL
-                block:^{
-                  StoreURLInPasteboard(URL.gurl);
-                }];
+                block:block];
 }
 
 - (UIAction*)actionToShowFullURL:(NSString*)URLString

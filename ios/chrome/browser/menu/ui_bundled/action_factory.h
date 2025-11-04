@@ -34,6 +34,10 @@ class TabGroup;
 // pasteboard.
 - (UIAction*)actionToCopyURL:(CrURL*)URL;
 
+// Creates a UIAction instance configured to copy a URL which will invoke the
+// given copy `block` upon execution.
+- (UIAction*)actionToCopyURLWithBlock:(ProceduralBlock)block;
+
 // Creates a UIAction instance configured for sharing which will invoke
 // the given `block` upon execution.
 - (UIAction*)actionToShareWithBlock:(ProceduralBlock)block;

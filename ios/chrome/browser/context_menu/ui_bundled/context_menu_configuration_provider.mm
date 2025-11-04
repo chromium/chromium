@@ -457,8 +457,9 @@ NSString* const kAlertAccessibilityIdentifier = @"AlertAccessibilityIdentifier";
   }
 
   // Copy Link.
-  UIAction* copyLink =
-      [actionFactory actionToCopyURL:[[CrURL alloc] initWithGURL:linkURL]];
+  UIAction* copyLink = [actionFactory actionToCopyURLWithBlock:^{
+    [weakSelf copyLinkWithURL:linkURL];
+  }];
   [linkMenuElements addObject:copyLink];
 
   // Share Link.
@@ -976,6 +977,28 @@ NSString* const kAlertAccessibilityIdentifier = @"AlertAccessibilityIdentifier";
                                     base::BindOnce(^(bool allowed) {
                                       if (allowed) {
                                         finishCopyImage();
+                                      }
+                                    }));
+}
+
+// Checks enterprise policy and copies the given `linkURL` to the pasteboard.
+- (void)copyLinkWithURL:(GURL)linkURL {
+  if (!self.webState) {
+    return;
+  }
+
+  web::WebStateDelegate* webStateDelegate = self.webState->GetDelegate();
+  if (!webStateDelegate) {
+    StoreURLInPasteboard(linkURL);
+    return;
+  }
+
+  // Check if copying content from the current web page is allowed by
+  // policies.
+  webStateDelegate->ShouldAllowCopy(self.webState,
+                                    base::BindOnce(^(bool allowed) {
+                                      if (allowed) {
+                                        StoreURLInPasteboard(linkURL);
                                       }
                                     }));
 }

@@ -244,6 +244,12 @@ id<GREYMatcher> CopyImageButton() {
       IDS_IOS_CONTENT_CONTEXT_COPYIMAGE);
 }
 
+// Matcher for the copy link button in the context menu.
+id<GREYMatcher> CopyLinkButton() {
+  return ContextMenuItemWithAccessibilityLabelId(
+      IDS_IOS_COPY_LINK_ACTION_TITLE);
+}
+
 // Matcher for the open link in an existing tab group (a group containing one
 // tab) button in the context menu.
 id<GREYMatcher> OpenLinkInOneTabGroupButton() {
@@ -339,7 +345,10 @@ void RelaunchApp() {
 
   if ([self isRunningTest:@selector(testCopyImageBlockedByPolicy)] ||
       [self isRunningTest:@selector(testCopyImageWarnByPolicyProceed)] ||
-      [self isRunningTest:@selector(testCopyImageWarnByPolicyCancel)]) {
+      [self isRunningTest:@selector(testCopyImageWarnByPolicyCancel)] ||
+      [self isRunningTest:@selector(testCopyLinkBlockedByPolicy)] ||
+      [self isRunningTest:@selector(testCopyLinkWarnByPolicyProceed)] ||
+      [self isRunningTest:@selector(testCopyLinkWarnByPolicyCancel)]) {
     config.features_enabled.push_back(
         data_controls::kEnableClipboardDataControlsIOS);
   }
@@ -470,6 +479,119 @@ void RelaunchApp() {
   // Check that the image was not copied.
   GREYAssertFalse([ChromeEarlGrey pasteboardHasImages],
                   @"Image should not have been copied");
+  [DataControlsAppInterface clearDataControlRules];
+}
+
+// Tests that selecting "Copy Link" from the context menu properly copies the
+// link in the pasteboard.
+- (void)testCopyLink {
+  [ChromeEarlGrey clearPasteboard];
+  const GURL initialURL = self.testServer->GetURL(kInitialPageUrl);
+  [ChromeEarlGrey loadURL:initialURL];
+  [ChromeEarlGrey
+      waitForWebStateContainingText:kInitialPageDestinationLinkText];
+
+  [ChromeEarlGreyUI
+      longPressElementOnWebView:InitialPageDestinationLinkIdSelector()];
+
+  TapOnContextMenuButton(CopyLinkButton());
+
+  // Check that the link was copied.
+  const GURL destinationURL = self.testServer->GetURL(kDestinationPageUrl);
+  GREYCondition* copyCondition = [GREYCondition
+      conditionWithName:@"Link copied condition"
+                  block:^BOOL {
+                    return [ChromeEarlGrey pasteboardURL] == destinationURL;
+                  }];
+  GREYAssertTrue([copyCondition waitWithTimeout:5], @"Copying link failed");
+  [ChromeEarlGrey clearPasteboard];
+}
+
+// Tests that copying a link is blocked when the DataControlsRule policy is
+// set to do so.
+- (void)testCopyLinkBlockedByPolicy {
+  [DataControlsAppInterface setBlockCopyRule];
+
+  [ChromeEarlGrey clearPasteboard];
+  const GURL initialURL = self.testServer->GetURL(kInitialPageUrl);
+  [ChromeEarlGrey loadURL:initialURL];
+  [ChromeEarlGrey
+      waitForWebStateContainingText:kInitialPageDestinationLinkText];
+
+  [ChromeEarlGreyUI
+      longPressElementOnWebView:InitialPageDestinationLinkIdSelector()];
+
+  TapOnContextMenuButton(CopyLinkButton());
+
+  // Check that the snackbar is shown.
+  id<GREYMatcher> snackbarMessage = grey_text(
+      l10n_util::GetNSString(IDS_POLICY_ACTION_BLOCKED_BY_ORGANIZATION));
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:snackbarMessage];
+
+  // Check that the link was not copied.
+  GREYAssertTrue([ChromeEarlGrey pasteboardURL].is_empty(),
+                 @"Link should not have been copied");
+  [DataControlsAppInterface clearDataControlRules];
+}
+
+// Tests that copying a link is allowed after the user proceeds through the
+// warning triggered by DataControlRules policy.
+- (void)testCopyLinkWarnByPolicyProceed {
+  [DataControlsAppInterface setWarnCopyRule];
+
+  [ChromeEarlGrey clearPasteboard];
+  const GURL initialURL = self.testServer->GetURL(kInitialPageUrl);
+  [ChromeEarlGrey loadURL:initialURL];
+  [ChromeEarlGrey
+      waitForWebStateContainingText:kInitialPageDestinationLinkText];
+
+  [ChromeEarlGreyUI
+      longPressElementOnWebView:InitialPageDestinationLinkIdSelector()];
+
+  TapOnContextMenuButton(CopyLinkButton());
+
+  // Tap the "Copy anyways" button on the warning dialog.
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::AlertItemWithAccessibilityLabelId(
+                     IDS_DATA_CONTROLS_COPY_WARN_CONTINUE_BUTTON)]
+      performAction:grey_tap()];
+
+  // Check that the link was copied.
+  const GURL destinationURL = self.testServer->GetURL(kDestinationPageUrl);
+  GREYCondition* copyCondition = [GREYCondition
+      conditionWithName:@"Link copied condition"
+                  block:^BOOL {
+                    return [ChromeEarlGrey pasteboardURL] == destinationURL;
+                  }];
+  GREYAssertTrue([copyCondition waitWithTimeout:5], @"Copying link failed");
+  [ChromeEarlGrey clearPasteboard];
+  [DataControlsAppInterface clearDataControlRules];
+}
+
+// Tests that copying a link is cancelled when the user cancels on the warning
+// triggered by DataControlRules policy.
+- (void)testCopyLinkWarnByPolicyCancel {
+  [DataControlsAppInterface setWarnCopyRule];
+
+  [ChromeEarlGrey clearPasteboard];
+  const GURL initialURL = self.testServer->GetURL(kInitialPageUrl);
+  [ChromeEarlGrey loadURL:initialURL];
+  [ChromeEarlGrey
+      waitForWebStateContainingText:kInitialPageDestinationLinkText];
+
+  [ChromeEarlGreyUI
+      longPressElementOnWebView:InitialPageDestinationLinkIdSelector()];
+
+  TapOnContextMenuButton(CopyLinkButton());
+
+  // Tap the "cancel" button on the warning dialog.
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::AlertItemWithAccessibilityLabelId(
+                     IDS_DATA_CONTROLS_COPY_WARN_CANCEL_BUTTON)]
+      performAction:grey_tap()];
+  // Check that the link was not copied.
+  GREYAssertTrue([ChromeEarlGrey pasteboardURL].is_empty(),
+                 @"Link should not have been copied");
   [DataControlsAppInterface clearDataControlRules];
 }
 
