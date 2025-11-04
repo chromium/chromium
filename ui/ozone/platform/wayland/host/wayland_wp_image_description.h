@@ -43,9 +43,6 @@ class WaylandWpImageDescription
 
   wp_image_description_v1* object() const { return image_description_.get(); }
 
-  const gfx::ColorSpace& gfx_color_space() const { return color_space_; }
-  const gfx::HDRMetadata& hdr_metadata() const { return hdr_metadata_; }
-
  private:
   friend class base::RefCounted<WaylandWpImageDescription>;
   ~WaylandWpImageDescription();
@@ -112,11 +109,14 @@ class WaylandWpImageDescription
 
   void HandleReady();
 
+  gfx::ColorSpace CreateColorSpaceFromPendingInfo(bool is_hdr) const;
+
   wl::Object<wp_image_description_v1> image_description_;
   const raw_ptr<WaylandConnection> connection_;
 
   gfx::ColorSpace color_space_;
-  gfx::HDRMetadata hdr_metadata_;
+  float sdr_max_luminance_nits_ = gfx::ColorSpace::kDefaultSDRWhiteLevel;
+  float hdr_max_luminance_relative_ = 1.f;
   CreationCallback creation_callback_;
 
   // Intermediate state for parsing information events.
@@ -124,6 +124,8 @@ class WaylandWpImageDescription
   std::optional<skcms_TransferFunction> pending_custom_transfer_fn_;
   std::optional<gfx::ColorSpace::PrimaryID> pending_primary_id_;
   std::optional<gfx::ColorSpace::TransferID> pending_transfer_id_;
+  std::optional<uint32_t> pending_reference_lum_;
+  std::optional<uint32_t> pending_target_max_lum_;
 
   // Holds the info object while its information is being parsed.
   wl::Object<wp_image_description_info_v1> info_;

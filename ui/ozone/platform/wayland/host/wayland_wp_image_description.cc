@@ -10,6 +10,7 @@
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "ui/gfx/display_color_spaces.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
+#include "ui/ozone/platform/wayland/host/wayland_wp_color_manager.h"
 
 namespace ui {
 
@@ -87,6 +88,38 @@ gfx::ColorSpace::TransferID ToGfxTransferID(
   }
 }
 
+bool TransferIsPowerCurve(gfx::ColorSpace::TransferID transfer) {
+  switch (transfer) {
+    case gfx::ColorSpace::TransferID::LINEAR:
+    case gfx::ColorSpace::TransferID::LINEAR_HDR:
+    case gfx::ColorSpace::TransferID::SCRGB_LINEAR_80_NITS:
+    case gfx::ColorSpace::TransferID::BT709_APPLE:
+    case gfx::ColorSpace::TransferID::GAMMA18:
+    case gfx::ColorSpace::TransferID::GAMMA22:
+    case gfx::ColorSpace::TransferID::GAMMA24:
+    case gfx::ColorSpace::TransferID::GAMMA28:
+    case gfx::ColorSpace::TransferID::SMPTEST428_1:
+      return true;
+    case gfx::ColorSpace::TransferID::INVALID:
+    case gfx::ColorSpace::TransferID::BT709:
+    case gfx::ColorSpace::TransferID::SMPTE170M:
+    case gfx::ColorSpace::TransferID::SMPTE240M:
+    case gfx::ColorSpace::TransferID::LOG:
+    case gfx::ColorSpace::TransferID::LOG_SQRT:
+    case gfx::ColorSpace::TransferID::IEC61966_2_4:
+    case gfx::ColorSpace::TransferID::BT1361_ECG:
+    case gfx::ColorSpace::TransferID::SRGB:
+    case gfx::ColorSpace::TransferID::BT2020_10:
+    case gfx::ColorSpace::TransferID::BT2020_12:
+    case gfx::ColorSpace::TransferID::PQ:
+    case gfx::ColorSpace::TransferID::HLG:
+    case gfx::ColorSpace::TransferID::SRGB_HDR:
+    case gfx::ColorSpace::TransferID::CUSTOM:
+    case gfx::ColorSpace::TransferID::CUSTOM_HDR:
+      return false;
+  }
+}
+
 }  // namespace
 
 WaylandWpImageDescription::WaylandWpImageDescription(
@@ -114,24 +147,8 @@ WaylandWpImageDescription::~WaylandWpImageDescription() = default;
 scoped_refptr<gfx::DisplayColorSpacesRef>
 WaylandWpImageDescription::AsDisplayColorSpaces() const {
   auto display_color_spaces = gfx::DisplayColorSpaces(color_space_);
-
-  // GetContentMaxLuminance returns a default of 1000 if the metadata does
-  // not contain a peak luminance. Avoid this by checking first.
-  if ((hdr_metadata_.cta_861_3 &&
-       hdr_metadata_.cta_861_3->max_content_light_level > 0) ||
-      (hdr_metadata_.smpte_st_2086 &&
-       hdr_metadata_.smpte_st_2086->luminance_max > 0)) {
-    float peak_brightness =
-        gfx::HDRMetadata::GetContentMaxLuminance(hdr_metadata_);
-    float sdr_nits = hdr_metadata_.ndwl
-                         ? hdr_metadata_.ndwl->nits
-                         : gfx::ColorSpace::kDefaultSDRWhiteLevel;
-    if (sdr_nits > 0.f) {
-      display_color_spaces.SetHDRMaxLuminanceRelative(peak_brightness /
-                                                      sdr_nits);
-    }
-  }
-
+  display_color_spaces.SetSDRMaxLuminanceNits(sdr_max_luminance_nits_);
+  display_color_spaces.SetHDRMaxLuminanceRelative(hdr_max_luminance_relative_);
   return base::MakeRefCounted<gfx::DisplayColorSpacesRef>(
       std::move(display_color_spaces));
 }
@@ -140,6 +157,79 @@ void WaylandWpImageDescription::HandleReady() {
   if (creation_callback_) {
     std::move(creation_callback_).Run(this);
   }
+}
+
+gfx::ColorSpace WaylandWpImageDescription::CreateColorSpaceFromPendingInfo(
+    bool is_hdr) const {
+  std::optional<gfx::ColorSpace::PrimaryID> primaries;
+  std::optional<gfx::ColorSpace::TransferID> transfer;
+  const skcms_Matrix3x3* custom_primaries = nullptr;
+  const skcms_TransferFunction* custom_transfer_fn = nullptr;
+
+  if (pending_primary_id_) {
+    primaries = *pending_primary_id_;
+  } else if (pending_custom_primaries_) {
+    primaries = gfx::ColorSpace::PrimaryID::CUSTOM;
+    custom_primaries = &*pending_custom_primaries_;
+  }
+  if (pending_transfer_id_) {
+    transfer = *pending_transfer_id_;
+  } else if (pending_custom_transfer_fn_) {
+    transfer = is_hdr ? gfx::ColorSpace::TransferID::CUSTOM_HDR
+                      : gfx::ColorSpace::TransferID::CUSTOM;
+    custom_transfer_fn = &*pending_custom_transfer_fn_;
+  }
+
+  if (!primaries || !transfer) {
+    LOG(ERROR) << "Incomplete image description info from compositor.";
+    return gfx::ColorSpace::CreateSRGB();
+  }
+
+  gfx::ColorSpace color_space(
+      *primaries, *transfer, gfx::ColorSpace::MatrixID::RGB,
+      gfx::ColorSpace::RangeID::FULL, custom_primaries, custom_transfer_fn);
+
+  // gfx::ColorSpace decides HDR based on the transfer function. If there's
+  // any HDR headroom but the transfer function is something like gamma 2.2,
+  // force a different transfer function. This workaround may be removed once
+  // gfx::ColorSpace::IsHDR() is removed.
+  if (!is_hdr || color_space_.IsHDR()) {
+    return color_space;
+  }
+
+  auto* color_manager = connection_->wp_color_manager();
+  if (color_manager->IsSupportedFeature(
+          WP_COLOR_MANAGER_V1_FEATURE_SET_TF_POWER) &&
+      TransferIsPowerCurve(*transfer)) {
+    // Convert to a CUSTOM_HDR transfer function if it's supported by the
+    // compositor.
+    return color_space.GetAsHDR();
+  }
+
+  constexpr struct {
+    wp_color_manager_v1_transfer_function wl_transfer;
+    gfx::ColorSpace::TransferID gfx_transfer;
+  } kFallbackHdrTransfers[] = {
+      {WP_COLOR_MANAGER_V1_TRANSFER_FUNCTION_ST2084_PQ,
+       gfx::ColorSpace::TransferID::PQ},
+      {WP_COLOR_MANAGER_V1_TRANSFER_FUNCTION_HLG,
+       gfx::ColorSpace::TransferID::HLG},
+      {WP_COLOR_MANAGER_V1_TRANSFER_FUNCTION_EXT_SRGB,
+       gfx::ColorSpace::TransferID::SRGB_HDR},
+      {WP_COLOR_MANAGER_V1_TRANSFER_FUNCTION_EXT_LINEAR,
+       gfx::ColorSpace::TransferID::LINEAR_HDR},
+  };
+
+  for (const auto& fallback : kFallbackHdrTransfers) {
+    if (color_manager->IsSupportedTransferFunction(fallback.wl_transfer)) {
+      return gfx::ColorSpace(
+          *primaries, fallback.gfx_transfer, gfx::ColorSpace::MatrixID::RGB,
+          gfx::ColorSpace::RangeID::FULL, custom_primaries, custom_transfer_fn);
+    }
+  }
+
+  LOG(ERROR) << "No valid fallback HDR transfer function.";
+  return gfx::ColorSpace::CreateSRGB();
 }
 
 // static
@@ -197,33 +287,21 @@ void WaylandWpImageDescription::OnInfoDone(
   auto* self = static_cast<WaylandWpImageDescription*>(data);
   DCHECK(self);
 
-  // Construct ColorSpace from gathered info.
-  if (self->pending_custom_primaries_ && self->pending_custom_transfer_fn_) {
-    self->color_space_ = gfx::ColorSpace::CreateCustom(
-        *self->pending_custom_primaries_, *self->pending_custom_transfer_fn_);
-  } else if (self->pending_custom_primaries_ && self->pending_transfer_id_) {
-    self->color_space_ = gfx::ColorSpace::CreateCustom(
-        *self->pending_custom_primaries_, *self->pending_transfer_id_);
-  } else if (self->pending_primary_id_ && self->pending_custom_transfer_fn_) {
-    skcms_Matrix3x3 to_xyz;
-    gfx::ColorSpace(*self->pending_primary_id_,
-                    gfx::ColorSpace::TransferID::SRGB)
-        .GetPrimaryMatrix(&to_xyz);
-    self->color_space_ = gfx::ColorSpace::CreateCustom(
-        to_xyz, *self->pending_custom_transfer_fn_);
-  } else if (self->pending_primary_id_ && self->pending_transfer_id_) {
-    self->color_space_ = gfx::ColorSpace(
-        *self->pending_primary_id_, *self->pending_transfer_id_,
-        gfx::ColorSpace::MatrixID::RGB, gfx::ColorSpace::RangeID::FULL);
-  } else {
-    LOG(ERROR) << "Incomplete image description info from compositor.";
-    self->color_space_ = gfx::ColorSpace::CreateSRGB();
-  }
+  self->sdr_max_luminance_nits_ = self->pending_reference_lum_.value_or(
+      gfx::ColorSpace::kDefaultSDRWhiteLevel);
+  const uint32_t max_lum =
+      self->pending_target_max_lum_.value_or(self->sdr_max_luminance_nits_);
+  self->hdr_max_luminance_relative_ = max_lum / self->sdr_max_luminance_nits_;
+
+  bool is_hdr = self->hdr_max_luminance_relative_ > 1.f;
+  self->color_space_ = self->CreateColorSpaceFromPendingInfo(is_hdr);
 
   self->pending_custom_primaries_.reset();
   self->pending_custom_transfer_fn_.reset();
   self->pending_primary_id_.reset();
   self->pending_transfer_id_.reset();
+  self->pending_reference_lum_.reset();
+  self->pending_target_max_lum_.reset();
 
   // The info object is implicitly destroyed by the server after done.
   self->info_.reset();
@@ -275,6 +353,7 @@ void WaylandWpImageDescription::OnInfoTfNamed(
       ToGfxTransferID(static_cast<wp_color_manager_v1_transfer_function>(tf));
 }
 
+// static
 void WaylandWpImageDescription::OnInfoTfPower(
     void* data,
     wp_image_description_info_v1* info,
@@ -285,6 +364,7 @@ void WaylandWpImageDescription::OnInfoTfPower(
       .g = eexp / 10000.f, .a = 1.0f, .b = 0, .c = 0, .d = 0, .e = 0, .f = 0};
 }
 
+// static
 void WaylandWpImageDescription::OnInfoLuminances(
     void* data,
     wp_image_description_info_v1* info,
@@ -293,11 +373,12 @@ void WaylandWpImageDescription::OnInfoLuminances(
     uint32_t reference_lum) {
   auto* self = static_cast<WaylandWpImageDescription*>(data);
   DCHECK(self);
-  // The reference white luminance corresponds to SDR white level (or nominal
-  // diffuse white level).
-  self->hdr_metadata_.ndwl = gfx::HdrMetadataNdwl(reference_lum);
+  if (reference_lum) {
+    self->pending_reference_lum_ = reference_lum;
+  }
 }
 
+// static
 void WaylandWpImageDescription::OnInfoTargetPrimaries(
     void* data,
     wp_image_description_info_v1* info,
@@ -308,17 +389,9 @@ void WaylandWpImageDescription::OnInfoTargetPrimaries(
     int32_t b_x,
     int32_t b_y,
     int32_t w_x,
-    int32_t w_y) {
-  auto* self = static_cast<WaylandWpImageDescription*>(data);
-  DCHECK(self);
-  if (!self->hdr_metadata_.smpte_st_2086) {
-    self->hdr_metadata_.smpte_st_2086.emplace();
-  }
-  self->hdr_metadata_.smpte_st_2086->primaries = {
-      r_x / 1000000.f, r_y / 1000000.f, g_x / 1000000.f, g_y / 1000000.f,
-      b_x / 1000000.f, b_y / 1000000.f, w_x / 1000000.f, w_y / 1000000.f};
-}
+    int32_t w_y) {}
 
+// static
 void WaylandWpImageDescription::OnInfoTargetLuminance(
     void* data,
     wp_image_description_info_v1* info,
@@ -326,36 +399,22 @@ void WaylandWpImageDescription::OnInfoTargetLuminance(
     uint32_t max_lum) {
   auto* self = static_cast<WaylandWpImageDescription*>(data);
   DCHECK(self);
-  if (!self->hdr_metadata_.smpte_st_2086) {
-    self->hdr_metadata_.smpte_st_2086.emplace();
+  if (max_lum) {
+    self->pending_target_max_lum_ = max_lum;
   }
-  self->hdr_metadata_.smpte_st_2086->luminance_min = min_lum / 10000.f;
-  self->hdr_metadata_.smpte_st_2086->luminance_max = max_lum;
 }
 
+// static
 void WaylandWpImageDescription::OnInfoTargetMaxCll(
     void* data,
     wp_image_description_info_v1* info,
-    uint32_t max_cll) {
-  auto* self = static_cast<WaylandWpImageDescription*>(data);
-  DCHECK(self);
-  if (!self->hdr_metadata_.cta_861_3) {
-    self->hdr_metadata_.cta_861_3.emplace();
-  }
-  self->hdr_metadata_.cta_861_3->max_content_light_level = max_cll;
-}
+    uint32_t max_cll) {}
 
+// static
 void WaylandWpImageDescription::OnInfoTargetMaxFall(
     void* data,
     wp_image_description_info_v1* info,
-    uint32_t max_fall) {
-  auto* self = static_cast<WaylandWpImageDescription*>(data);
-  DCHECK(self);
-  if (!self->hdr_metadata_.cta_861_3) {
-    self->hdr_metadata_.cta_861_3.emplace();
-  }
-  self->hdr_metadata_.cta_861_3->max_frame_average_light_level = max_fall;
-}
+    uint32_t max_fall) {}
 
 // static
 void WaylandWpImageDescription::OnInfoPrimariesNamed(
