@@ -214,6 +214,8 @@ TEST_F(FamilyUserParentalControlMetricsTest, OverrideTimeLimitMetrics) {
 TEST_F(FamilyUserParentalControlMetricsTest, AppTimeLimitMetrics) {
   apps::AppServiceTest app_service_test_;
   ArcAppTest arc_app_test_;
+  // TODO(crbug.com/454468678): This should be called before profile is created.
+  arc_app_test_.PreProfileSetUp();
 
   // During tests, AppService doesn't notify AppActivityRegistry that chrome
   // app is installed. Mark chrome as installed here.

@@ -129,11 +129,7 @@ void ArcAppTest::PreProfileSetUp() {
 }
 
 void ArcAppTest::SetUp(Profile* profile) {
-  // TODO(crbug.com/442761233): Update tests that use ArcAppTest to call
-  // PreProfileSetUp and replace this with a CHECK.
-  if (!is_pre_profile_setup_called_) {
-    PreProfileSetUp();
-  }
+  CHECK(is_pre_profile_setup_called_);
 
   DCHECK(!profile_);
   profile_ = profile;

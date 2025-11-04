@@ -32,7 +32,8 @@ namespace apps {
 class ArcAppsIconFactoryTest : public testing::Test {
  public:
   void SetUp() override {
-    testing::Test::SetUp();
+    arc_app_test_.PreProfileSetUp();
+    profile_ = std::make_unique<TestingProfile>();
     arc_app_test_.SetUp(profile());
     task_environment_.RunUntilIdle();
   }
@@ -40,6 +41,7 @@ class ArcAppsIconFactoryTest : public testing::Test {
   void TearDown() override {
     arc_app_test_.StopArcInstance();
     arc_app_test_.TearDown();
+    profile_.reset();
   }
 
   arc::mojom::RawIconPngDataPtr GenerateRawArcAppIcon(
@@ -62,14 +64,14 @@ class ArcAppsIconFactoryTest : public testing::Test {
     return result.Take();
   }
 
-  TestingProfile* profile() { return &profile_; }
+  TestingProfile* profile() { return profile_.get(); }
 
   ArcAppTest* arc_app_test() { return &arc_app_test_; }
 
  private:
   content::BrowserTaskEnvironment task_environment_;
   ArcAppTest arc_app_test_;
-  TestingProfile profile_;
+  std::unique_ptr<TestingProfile> profile_;
 };
 
 TEST_F(ArcAppsIconFactoryTest, GetArcAppCompressedIconData) {
@@ -104,6 +106,12 @@ class AppServiceArcAppIconTest : public ArcAppsIconFactoryTest,
     ArcAppsIconFactoryTest::SetUp();
 
     proxy_ = AppServiceProxyFactory::GetForProfile(profile());
+  }
+
+  void TearDown() override {
+    proxy_ = nullptr;
+
+    ArcAppsIconFactoryTest::TearDown();
   }
 
   void GenerateArcAppUncompressedIcon(const std::string& app_id,

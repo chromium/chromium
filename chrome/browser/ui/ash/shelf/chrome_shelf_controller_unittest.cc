@@ -507,6 +507,10 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
 
     app_list::AppListSyncableServiceFactory::SetUseInTesting(true);
 
+    if (auto_start_arc_app_test_) {
+      arc_app_test_.PreProfileSetUp();
+    }
+
     BrowserWithTestWindowTest::SetUp();
 
     // WallpaperControllerClientImpl should be created before Profile
@@ -726,11 +730,11 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
   void TearDown() override {
     browser_controller_.reset();
     app_registry_cache_observer_.Reset();
+    shelf_controller_.reset();
+    wallpaper_controller_client_.reset();
     if (auto_start_arc_app_test_) {
       arc_app_test_.TearDown();
     }
-    shelf_controller_ = nullptr;
-    wallpaper_controller_client_.reset();
     multi_user_window_manager_browser_adaptor_.reset();
     BrowserWithTestWindowTest::TearDown();
     ash::ConciergeClient::Shutdown();
@@ -4701,6 +4705,8 @@ class ChromeShelfControllerPlayStoreAvailabilityTest
 #define MAYBE_DefaultApps DefaultApps
 #endif
 TEST_F(ChromeShelfControllerArcDefaultAppsTest, MAYBE_DefaultApps) {
+  // TODO(crbug.com/454468678): This should be called before profile is created.
+  arc_app_test_.PreProfileSetUp();
   arc_app_test_.SetUp(profile());
   InitShelfController();
 
@@ -4763,6 +4769,8 @@ TEST_F(ChromeShelfControllerArcDefaultAppsTest, MAYBE_DefaultApps) {
 TEST_F(ChromeShelfControllerArcDefaultAppsTest, PlayStoreDeferredLaunch) {
   // Add ARC host app to enable Play Store default app.
   extension_registrar_->AddExtension(arc_support_host_.get());
+  // TODO(crbug.com/454468678): This should be called before profile is created.
+  arc_app_test_.PreProfileSetUp();
   arc_app_test_.SetUp(profile());
   ArcAppListPrefs* const prefs = arc_app_test_.arc_app_list_prefs();
   EXPECT_TRUE(prefs->IsRegistered(arc::kPlayStoreAppId));
@@ -4791,6 +4799,8 @@ TEST_F(ChromeShelfControllerArcDefaultAppsTest, PlayStoreDeferredLaunch) {
 
 TEST_F(ChromeShelfControllerArcDefaultAppsTest, PlayStoreLaunchMetric) {
   extension_registrar_->AddExtension(arc_support_host_.get());
+  // TODO(crbug.com/454468678): This should be called before profile is created.
+  arc_app_test_.PreProfileSetUp();
   arc_app_test_.SetUp(profile());
   ArcAppListPrefs* const prefs = arc_app_test_.arc_app_list_prefs();
 
@@ -4847,6 +4857,8 @@ TEST_F(ChromeShelfControllerArcDefaultAppsTest, PlayStoreLaunchMetric) {
 
 TEST_F(ChromeShelfControllerArcDefaultAppsTest, DeferredLaunchMetric) {
   extension_registrar_->AddExtension(arc_support_host_.get());
+  // TODO(crbug.com/454468678): This should be called before profile is created.
+  arc_app_test_.PreProfileSetUp();
   arc_app_test_.SetUp(profile());
 
   InitShelfController();
@@ -4891,6 +4903,8 @@ TEST_F(ChromeShelfControllerArcDefaultAppsTest, DeferredLaunchMetric) {
 // images.
 TEST_P(ChromeShelfControllerPlayStoreAvailabilityTest, Visible) {
   extension_registrar_->AddExtension(arc_support_host_.get());
+  // TODO(crbug.com/454468678): This should be called before profile is created.
+  arc_app_test_.PreProfileSetUp();
   arc_app_test_.SetUp(profile());
 
   InitShelfController();

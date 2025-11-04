@@ -111,8 +111,10 @@ class WebApkInstallTaskTest : public testing::Test {
   WebApkInstallTaskTest& operator=(const WebApkInstallTaskTest&) = delete;
 
   void SetUp() override {
-    testing::Test::SetUp();
     EXPECT_TRUE(profile_manager_->SetUp());
+
+    arc_app_test_.PreProfileSetUp();
+
     profile_ = profile_manager_->CreateTestingProfile("test");
 
     app_service_test_.SetUp(profile());
@@ -126,6 +128,7 @@ class WebApkInstallTaskTest : public testing::Test {
         apps::webapk_prefs::kGeneratedWebApksEnabled, false);
 
     arc_app_test_.SetUp(profile());
+
     auto* arc_bridge_service =
         arc_app_test_.arc_service_manager()->arc_bridge_service();
     fake_webapk_instance_ = std::make_unique<arc::FakeWebApkInstance>();

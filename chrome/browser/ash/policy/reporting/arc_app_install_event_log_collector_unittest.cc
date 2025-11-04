@@ -142,6 +142,7 @@ class ArcAppInstallEventLogCollectorTest : public testing::Test {
 
   void SetUp() override {
     chromeos::PowerManagerClient::InitializeFake();
+    arc_app_test_.PreProfileSetUp();
     profile_ = std::make_unique<TestingProfile>();
     arc_app_test_.SetUp(profile_.get());
 

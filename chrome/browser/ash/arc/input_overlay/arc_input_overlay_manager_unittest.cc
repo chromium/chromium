@@ -174,8 +174,10 @@ class ArcInputOverlayManagerTest : public ChromeAshTestBase {
     arc_test_input_overlay_manager_ =
         base::WrapUnique(new TestArcInputOverlayManager());
 
-    profile_ = std::make_unique<TestingProfile>();
     arc_app_test_.set_wait_compatibility_mode(true);
+    arc_app_test_.PreProfileSetUp();
+
+    profile_ = std::make_unique<TestingProfile>();
     arc_app_test_.SetUp(profile_.get());
 
     SimulatedAppInstalled(task_environment(), arc_app_test_,

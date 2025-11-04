@@ -67,13 +67,13 @@ class AndroidAppInfoGeneratorTest : public ::testing::Test {
   ~AndroidAppInfoGeneratorTest() override = default;
 
   void SetUp() override {
-    testing::Test::SetUp();
-    arc_app_test_.SetUp(&profile_);
+    arc_app_test_.PreProfileSetUp();
+    profile_ = std::make_unique<TestingProfile>();
+    arc_app_test_.SetUp(profile_.get());
   }
 
   void TearDown() override {
     arc_app_test_.TearDown();
-    testing::Test::TearDown();
   }
 
   void AddArcApp(am::AppInfoPtr arc_app_ptr) {
@@ -92,7 +92,7 @@ class AndroidAppInfoGeneratorTest : public ::testing::Test {
 
  private:
   content::BrowserTaskEnvironment task_environment_;
-  TestingProfile profile_;
+  std::unique_ptr<TestingProfile> profile_;
   AndroidAppInfoGenerator app_info_generator_;
   ArcAppTest arc_app_test_;
 };

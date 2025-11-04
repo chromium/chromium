@@ -95,6 +95,8 @@ TEST_F(AppZeroStateProviderTest, DefaultRecommendedAppRanking) {
 
   profile_->SetIsNewProfile(true);
   ASSERT_TRUE(profile()->IsNewProfile());
+  // TODO(crbug.com/454468678): This should be called before profile is created.
+  arc_app_test().PreProfileSetUp();
   arc_app_test().SetUp(profile());
 
   // There are four default web apps. We use real app IDs here, as these are

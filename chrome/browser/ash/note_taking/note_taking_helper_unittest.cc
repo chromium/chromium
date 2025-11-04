@@ -180,6 +180,8 @@ class NoteTakingHelperTest : public BrowserWithTestWindowTest {
     SessionManagerClient::InitializeFakeInMemory();
     FakeSessionManagerClient::Get()->set_arc_available(true);
 
+    arc_app_test_.PreProfileSetUp();
+
     BrowserWithTestWindowTest::SetUp();
     InitExtensionService(profile());
     InitWebAppProvider(profile());

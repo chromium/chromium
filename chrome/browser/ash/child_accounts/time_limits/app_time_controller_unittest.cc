@@ -139,18 +139,18 @@ class AppTimeControllerTest : public testing::Test {
   }
 
   NotificationDisplayServiceTester& notification_tester() {
-    return notification_tester_;
+    return *notification_tester_.get();
   }
 
   apps::AppServiceTest& app_service_test() { return app_service_test_; }
 
-  Profile& profile() { return profile_; }
+  Profile& profile() { return *profile_.get(); }
 
  private:
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  TestingProfile profile_;
-  NotificationDisplayServiceTester notification_tester_{&profile_};
+  std::unique_ptr<TestingProfile> profile_;
+  std::unique_ptr<NotificationDisplayServiceTester> notification_tester_;
   FakeIconLoader icon_loader_;
   apps::AppServiceTest app_service_test_;
   ArcAppTest arc_app_test_;
@@ -161,7 +161,6 @@ class AppTimeControllerTest : public testing::Test {
 
 void AppTimeControllerTest::SetUp() {
   SystemClockClient::InitializeFake();
-  testing::Test::SetUp();
 
   // The tests are going to start at local midnight on January 1.
   base::Time time;
@@ -170,11 +169,16 @@ void AppTimeControllerTest::SetUp() {
   base::TimeDelta forward_by = local_midnight - base::Time::Now();
   task_environment_.FastForwardBy(forward_by);
 
-  app_service_test_.SetUp(&profile_);
-  apps::AppServiceProxyFactory::GetForProfile(&profile_)
+  arc_app_test_.PreProfileSetUp();
+  profile_ = std::make_unique<TestingProfile>();
+  notification_tester_ =
+      std::make_unique<NotificationDisplayServiceTester>(profile_.get());
+
+  app_service_test_.SetUp(profile_.get());
+  apps::AppServiceProxyFactory::GetForProfile(profile_.get())
       ->OverrideInnerIconLoaderForTesting(&icon_loader_);
 
-  arc_app_test_.SetUp(&profile_);
+  arc_app_test_.SetUp(profile_.get());
   arc_app_test_.app_instance()->set_icon_response_type(
       arc::FakeAppInstance::IconResponseType::ICON_RESPONSE_SKIP);
   task_environment_.RunUntilIdle();
@@ -189,7 +193,6 @@ void AppTimeControllerTest::TearDown() {
   controller_.reset();
   arc_app_test_.TearDown();
   SystemClockClient::Shutdown();
-  testing::Test::TearDown();
 }
 
 void AppTimeControllerTest::CreateActivityForApp(const AppId& app_id,
@@ -241,18 +244,18 @@ bool AppTimeControllerTest::HasNotificationFor(
   notification_id = base::StrCat({notification_id, app_name});
 
   std::optional<message_center::Notification> message_center_notification =
-      notification_tester_.GetNotification(notification_id);
+      notification_tester_->GetNotification(notification_id);
   return message_center_notification.has_value();
 }
 
 size_t AppTimeControllerTest::GetNotificationsCount() {
   return notification_tester_
-      .GetDisplayedNotificationsForType(NotificationHandler::Type::TRANSIENT)
+      ->GetDisplayedNotificationsForType(NotificationHandler::Type::TRANSIENT)
       .size();
 }
 
 void AppTimeControllerTest::DismissNotifications() {
-  notification_tester_.RemoveAllNotifications(
+  notification_tester_->RemoveAllNotifications(
       NotificationHandler::Type::TRANSIENT, true /* by_user */);
 }
 
@@ -263,7 +266,7 @@ void AppTimeControllerTest::DeleteController() {
 
 void AppTimeControllerTest::InstantiateController() {
   controller_ =
-      std::make_unique<AppTimeController>(&profile_, base::DoNothing());
+      std::make_unique<AppTimeController>(profile_.get(), base::DoNothing());
   controller_->Init();
   test_api_ = std::make_unique<AppTimeController::TestApi>(controller_.get());
 }

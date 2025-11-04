@@ -501,6 +501,7 @@ class ArcAppModelBuilderTest : public extensions::ExtensionServiceTestBase,
     model_ = std::make_unique<ash::ShelfModel>();
     browser_controller_.emplace();
 
+    arc_app_test_.set_initialize_real_intent_helper_bridge(true);
     arc_app_test_.PreProfileSetUp();
 
     extensions::ExtensionServiceTestBase::SetUp();
@@ -509,7 +510,6 @@ class ArcAppModelBuilderTest : public extensions::ExtensionServiceTestBase,
 
     OnBeforeArcTestSetup();
 
-    arc_app_test_.set_initialize_real_intent_helper_bridge(true);
     arc_app_test_.SetUp(profile_.get());
 
     web_app::FakeWebAppProvider::Get(profile_.get())->Start();
@@ -945,6 +945,9 @@ class ArcAppModelBuilderRecreate : public ArcAppModelBuilderTest {
   void StartArc() {
     ArcAppListPrefsFactory::GetInstance()->RecreateServiceInstanceForTesting(
         profile_.get());
+    // TODO(crbug.com/454468678): This should be called before profile is
+    // created.
+    arc_app_test()->PreProfileSetUp();
     arc_app_test()->SetUp(profile_.get());
     CreateBuilder();
   }

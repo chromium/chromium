@@ -98,12 +98,17 @@ class AppInfoDialogViewsTest : public BrowserWithTestWindowTest,
 
   // Overridden from testing::Test:
   void SetUp() override {
-    BrowserWithTestWindowTest::SetUp();
 #if BUILDFLAG(IS_CHROMEOS)
     // Sets up a fake user manager over |BrowserWithTestWindowTest| user
     // manager.
     arc_app_test_ =
         std::make_unique<ArcAppTest>(ArcAppTest::UserManagerMode::kDoNothing);
+    arc_app_test_->PreProfileSetUp();
+#endif
+
+    BrowserWithTestWindowTest::SetUp();
+
+#if BUILDFLAG(IS_CHROMEOS)
     arc_app_test_->SetUp(extension_environment_.profile());
 
     shelf_model_ = std::make_unique<ash::ShelfModel>();

@@ -126,6 +126,8 @@ class ArcAppPerformanceTracingTest : public BrowserWithTestWindowTest {
       ForgetAppMetrics(app.name);
     }
 
+    arc_app_test_.PreProfileSetUp();
+
     BrowserWithTestWindowTest::SetUp();
 
     arc_app_test_.SetUp(profile());

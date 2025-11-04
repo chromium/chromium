@@ -23,10 +23,11 @@ class ArcPackageInstallPiroirtyHanlderTest : public testing::Test {
  public:
   void SetUp() override {
     feature_list_.InitAndEnableFeature(arc::kSyncInstallPriority);
-    testing::Test::SetUp();
 
     arc_app_test_ = std::make_unique<ArcAppTest>();
-    arc_app_test_->SetUp(&testing_profile_);
+    arc_app_test_->PreProfileSetUp();
+    testing_profile_ = std::make_unique<TestingProfile>();
+    arc_app_test_->SetUp(testing_profile_.get());
   }
 
   void TearDown() override {
@@ -39,7 +40,7 @@ class ArcPackageInstallPiroirtyHanlderTest : public testing::Test {
  private:
   base::test::ScopedFeatureList feature_list_;
   content::BrowserTaskEnvironment task_environment_;
-  TestingProfile testing_profile_;
+  std::unique_ptr<TestingProfile> testing_profile_;
   std::unique_ptr<ArcAppTest> arc_app_test_;
 };
 

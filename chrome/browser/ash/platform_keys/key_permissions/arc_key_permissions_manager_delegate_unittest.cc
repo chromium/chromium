@@ -68,6 +68,8 @@ class ArcKeyPermissionsManagerDelegateTest : public testing::Test {
     auto policy_service_ =
         std::make_unique<policy::PolicyServiceImpl>(providers);
 
+    arc_app_test_.PreProfileSetUp();
+
     TestingProfile::Builder builder;
     builder.SetPolicyService(std::move(policy_service_));
     profile_ = builder.Build();

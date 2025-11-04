@@ -96,6 +96,9 @@ class FetchManifestAndInstallCommandTest : public WebAppTest {
   const SkColor kDefaultIconColor = SK_ColorYELLOW;
 
   void SetUp() override {
+#if BUILDFLAG(IS_CHROMEOS)
+    arc_app_test_.PreProfileSetUp();
+#endif
     WebAppTest::SetUp();
 
     FakeWebAppProvider::Get(profile())->UseRealOsIntegrationManager();

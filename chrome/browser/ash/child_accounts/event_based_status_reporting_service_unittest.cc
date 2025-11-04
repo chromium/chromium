@@ -127,6 +127,8 @@ class EventBasedStatusReportingServiceTest : public testing::Test {
     chromeos::PowerManagerClient::InitializeFake();
     SystemClockClient::InitializeFake();
 
+    arc_app_test_.PreProfileSetUp();
+
     session_manager_->SetSessionState(
         session_manager::SessionState::LOGIN_PRIMARY);
 

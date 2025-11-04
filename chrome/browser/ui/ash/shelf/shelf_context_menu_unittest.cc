@@ -148,6 +148,8 @@ class ShelfContextMenuTest : public ChromeAshTestBase {
     ChromeAshTestBase::SetUp();
     browser_controller_.emplace();
 
+    arc_app_test_.PreProfileSetUp();
+
     SimulateUserLogin(kPrimaryUserId);
     user_manager_->UserLoggedIn(
         kPrimaryUserId,

@@ -75,16 +75,20 @@ class WebApkManagerTest : public apps::AppRegistryCache::Observer,
   WebApkManagerTest() = default;
 
   void SetUp() override {
-    testing::Test::SetUp();
+    arc_app_test_.PreProfileSetUp();
+    profile_ = std::make_unique<TestingProfile>();
     web_app::test::AwaitStartWebAppProviderAndSubsystems(profile());
   }
 
-  void TearDown() override { arc_app_test_.TearDown(); }
+  void TearDown() override {
+    arc_app_test_.TearDown();
+    profile_.reset();
+  }
 
   void StartWebApkManager() {
-    app_service_test_.SetUp(&profile_);
+    app_service_test_.SetUp(profile());
     // This starts the ArcApps publisher, which owns the WebApkManager.
-    arc_app_test_.SetUp(&profile_);
+    arc_app_test_.SetUp(profile());
   }
 
   void AssertNoPendingInstalls() {
@@ -128,7 +132,7 @@ class WebApkManagerTest : public apps::AppRegistryCache::Observer,
     app_registry_cache_observer_.Reset();
   }
 
-  TestingProfile* profile() { return &profile_; }
+  TestingProfile* profile() { return profile_.get(); }
   apps::AppServiceTest* app_service_test() { return &app_service_test_; }
   apps::WebApkManager* webapk_manager() {
     // TODO(crbug.com/451841683): WebApkManager should not be owned by ArcApps.
@@ -142,7 +146,7 @@ class WebApkManagerTest : public apps::AppRegistryCache::Observer,
 
  private:
   content::BrowserTaskEnvironment task_environment_;
-  TestingProfile profile_;
+  std::unique_ptr<TestingProfile> profile_;
   ArcAppTest arc_app_test_;
   apps::AppServiceTest app_service_test_;
   std::string app_id_;

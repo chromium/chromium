@@ -57,14 +57,15 @@ class ArcUiAvailabilityReporterTest : public testing::Test {
   ~ArcUiAvailabilityReporterTest() override = default;
 
   void SetUp() override {
-    testing::Test::SetUp();
     arc::SetArcAvailableCommandLineForTesting(
         base::CommandLine::ForCurrentProcess());
-    // arc_service_manager_ = std::make_unique<arc::ArcServiceManager>();
-    profile_ = TestingProfile::Builder().Build();
 
     // Use ArcAppTest to initialize infrastructure.
     arc_app_test_.set_activate_arc_on_start(false);
+    arc_app_test_.PreProfileSetUp();
+
+    profile_ = TestingProfile::Builder().Build();
+
     arc_app_test_.SetUp(profile());
     app_instance_ = std::make_unique<FakeAppInstance>(
         arc_app_test_.arc_app_list_prefs() /* app_host */);
@@ -80,7 +81,6 @@ class ArcUiAvailabilityReporterTest : public testing::Test {
     arc_app_test_.TearDown();
     profile_.reset();
     // arc_service_manager_.reset();
-    testing::Test::TearDown();
   }
 
   TestingProfile* profile() { return profile_.get(); }

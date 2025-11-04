@@ -17,21 +17,25 @@ namespace apps {
 class ArcAppInstallerTest : public testing::Test {
  protected:
   void SetUp() override {
-    testing::Test::SetUp();
-    arc_app_test_.SetUp(&profile_);
+    arc_app_test_.PreProfileSetUp();
+    profile_ = std::make_unique<TestingProfile>();
+    arc_app_test_.SetUp(profile_.get());
   }
 
-  void TearDown() override { arc_app_test_.TearDown(); }
+  void TearDown() override {
+    arc_app_test_.TearDown();
+    profile_.reset();
+  }
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
-  TestingProfile profile_;
+  std::unique_ptr<TestingProfile> profile_;
   ArcAppTest arc_app_test_;
 };
 
 TEST_F(ArcAppInstallerTest, Install) {
   base::HistogramTester histograms;
-  ArcAppInstaller installer(&profile_);
+  ArcAppInstaller installer(profile_.get());
   AppInstallData data(PackageId::FromString("android:com.example.app").value());
   data.app_type_data.emplace<AndroidAppInstallData>();
   base::test::TestFuture<bool> result;

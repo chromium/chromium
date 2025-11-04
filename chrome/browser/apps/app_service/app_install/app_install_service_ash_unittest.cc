@@ -33,19 +33,23 @@ namespace apps {
 class AppInstallServiceAshTest : public testing::Test {
  public:
   void SetUp() override {
-    testing::Test::SetUp();
-
     url_loader_factory_ = std::make_unique<network::TestURLLoaderFactory>();
+
+    arc_app_test_.set_initialize_real_intent_helper_bridge(true);
+    arc_app_test_.PreProfileSetUp();
+
     TestingProfile::Builder profile_builder;
     profile_builder.SetSharedURLLoaderFactory(
         url_loader_factory_->GetSafeWeakWrapper());
     profile_ = profile_builder.Build();
 
-    arc_app_test_.set_initialize_real_intent_helper_bridge(true);
     arc_app_test_.SetUp(profile_.get());
   }
 
-  void TearDown() override { arc_app_test_.TearDown(); }
+  void TearDown() override {
+    arc_app_test_.TearDown();
+    profile_.reset();
+  }
 
   Profile* profile() { return profile_.get(); }
 

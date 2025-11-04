@@ -42,6 +42,7 @@ class ArcAppShortcutsMenuBuilderTest : public testing::Test {
   ~ArcAppShortcutsMenuBuilderTest() override = default;
 
   void SetUp() override {
+    arc_app_test_.PreProfileSetUp();
     profile_ = std::make_unique<TestingProfile>();
     arc_app_test_.SetUp(profile_.get());
     IconDecodeRequest::DisableSafeDecodingForTesting();

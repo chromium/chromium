@@ -874,11 +874,12 @@ class AppManagementPageHandlerArcTest
     : public AppManagementPageHandlerTestBase {
  public:
   void SetUp() override {
-    AppManagementPageHandlerTestBase::SetUp();
     // We want to set up the real ArcIntentHelper KeyedService with a fake
     // ArcIntentHelperBridge, so that it's the same object that ArcApps
     // uses to launch apps.
     arc_app_test_.set_initialize_real_intent_helper_bridge(true);
+    arc_app_test_.PreProfileSetUp();
+    AppManagementPageHandlerTestBase::SetUp();
     arc_app_test_.SetUp(profile());
   }
 

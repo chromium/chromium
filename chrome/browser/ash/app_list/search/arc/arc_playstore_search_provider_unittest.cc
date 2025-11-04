@@ -39,6 +39,7 @@ class ArcPlayStoreSearchProviderTest : public AppListTestBase {
 
   // AppListTestBase:
   void SetUp() override {
+    arc_app_test_.PreProfileSetUp();
     AppListTestBase::SetUp();
     arc_app_test_.SetUp(profile());
     controller_ = std::make_unique<::test::TestAppListControllerDelegate>();

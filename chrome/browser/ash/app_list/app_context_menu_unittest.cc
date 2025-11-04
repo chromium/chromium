@@ -434,6 +434,8 @@ TEST_F(AppContextMenuTest, NonExistingExtensionApp) {
 TEST_F(AppContextMenuTest, ArcMenu) {
   app_service_test().SetUp(profile());
   ArcAppTest arc_app_test;
+  // TODO(crbug.com/454468678): This should be called before profile is created.
+  arc_app_test.PreProfileSetUp();
   arc_app_test.SetUp(profile());
 
   const auto& app_info = arc_app_test.fake_apps()[1];
@@ -549,6 +551,8 @@ TEST_F(AppContextMenuTest, ArcMenu) {
 TEST_F(AppContextMenuTest, ArcMenuShortcut) {
   app_service_test().SetUp(profile());
   ArcAppTest arc_app_test;
+  // TODO(crbug.com/454468678): This should be called before profile is created.
+  arc_app_test.PreProfileSetUp();
   arc_app_test.SetUp(profile());
 
   const arc::mojom::ShortcutInfo& shortcut_info =
@@ -616,6 +620,8 @@ TEST_F(AppContextMenuTest, ArcMenuShortcut) {
 TEST_F(AppContextMenuTest, ArcMenuStickyItem) {
   app_service_test().SetUp(profile());
   ArcAppTest arc_app_test;
+  // TODO(crbug.com/454468678): This should be called before profile is created.
+  arc_app_test.PreProfileSetUp();
   arc_app_test.SetUp(profile());
 
   arc_app_test.app_instance()->SendRefreshAppList(arc_app_test.fake_apps());
@@ -659,6 +665,8 @@ TEST_F(AppContextMenuTest, ArcMenuStickyItem) {
 TEST_F(AppContextMenuTest, ArcMenuSuspendedItem) {
   app_service_test().SetUp(profile());
   ArcAppTest arc_app_test;
+  // TODO(crbug.com/454468678): This should be called before profile is created.
+  arc_app_test.PreProfileSetUp();
   arc_app_test.SetUp(profile());
 
   std::vector<arc::mojom::AppInfoPtr> apps;

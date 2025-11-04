@@ -93,9 +93,11 @@ class KioskArcvmAppServiceTest : public testing::Test {
     ash_test_helper_.SetUp();
     wm_helper_ = std::make_unique<exo::WMHelper>();
 
+    arc_app_test_.set_persist_service_manager(true);
+    arc_app_test_.PreProfileSetUp();
+
     profile_ = std::make_unique<TestingProfile>();
     profile_->set_profile_name(kAppEmail);
-    arc_app_test_.set_persist_service_manager(true);
     arc_app_test_.SetUp(profile_.get());
     app_info_ = arc::mojom::AppInfo::New(kAppName, kAppPackageName,
                                          kAppClassName, /*sticky=*/true);

@@ -41,6 +41,7 @@ class DualBadgeMapTest : public ExtensionServiceTestBase {
 
   void SetUp() override {
     extensions::ExtensionServiceTestBase::SetUp();
+    arc_app_test_.PreProfileSetUp();
     InitializeEmptyExtensionService();
     arc_app_test_.SetUp(profile_.get());
   }

@@ -416,6 +416,8 @@ class PublisherTest : public extensions::ExtensionServiceTestBase {
 #if BUILDFLAG(IS_CHROMEOS)
 TEST_F(PublisherTest, ArcAppsOnApps) {
   ArcAppTest arc_app_test;
+  // TODO(crbug.com/454468678): This should be called before profile is created.
+  arc_app_test.PreProfileSetUp();
   arc_app_test.SetUp(profile());
 
   // Install fake apps.
@@ -452,6 +454,8 @@ TEST_F(PublisherTest, ArcAppsOnApps) {
 
 TEST_F(PublisherTest, ArcAppsRemoveApps) {
   ArcAppTest arc_app_test;
+  // TODO(crbug.com/454468678): This should be called before profile is created.
+  arc_app_test.PreProfileSetUp();
   arc_app_test.SetUp(profile());
 
   // Install fake apps.
@@ -476,6 +480,8 @@ TEST_F(PublisherTest, ArcAppsRemoveApps) {
 
 TEST_F(PublisherTest, ArcAppsSetLaunchTime) {
   ArcAppTest arc_app_test;
+  // TODO(crbug.com/454468678): This should be called before profile is created.
+  arc_app_test.PreProfileSetUp();
   arc_app_test.SetUp(profile());
 
   // Install fake apps.
@@ -506,6 +512,8 @@ TEST_F(PublisherTest, ArcAppsSetLaunchTime) {
 
 TEST_F(PublisherTest, ArcApps_CapabilityAccess) {
   ArcAppTest arc_app_test;
+  // TODO(crbug.com/454468678): This should be called before profile is created.
+  arc_app_test.PreProfileSetUp();
   arc_app_test.SetUp(profile());
 
   const auto& fake_apps = arc_app_test.fake_apps();

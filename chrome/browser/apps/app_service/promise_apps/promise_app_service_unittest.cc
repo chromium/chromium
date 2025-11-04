@@ -50,21 +50,25 @@ class PromiseAppServiceTest : public testing::Test,
  public:
   void SetUp() override {
     url_loader_factory_ = std::make_unique<network::TestURLLoaderFactory>();
-    testing::Test::SetUp();
+    arc_app_test_.PreProfileSetUp();
+
     TestingProfile::Builder profile_builder;
     profile_builder.SetSharedURLLoaderFactory(
         url_loader_factory_->GetSafeWeakWrapper());
     profile_ = profile_builder.Build();
+
     arc_app_test_.SetUp(profile_.get());
-    test_shared_loader_factory_ = url_loader_factory_->GetSafeWeakWrapper();
     service_ = proxy()->PromiseAppService();
     service_->SetSkipApiKeyCheckForTesting(true);
     service_->SetSkipAlmanacForTesting(false);
   }
 
   void TearDown() override {
+    service_ = nullptr;
     arc_app_test_.StopArcInstance();
     arc_app_test_.TearDown();
+    profile_.reset();
+    url_loader_factory_.reset();
   }
 
   network::TestURLLoaderFactory* url_loader_factory() {
@@ -154,7 +158,6 @@ class PromiseAppServiceTest : public testing::Test,
   base::ScopedObservation<PromiseAppRegistryCache,
                           PromiseAppRegistryCache::Observer>
       obs_{this};
-  scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
   ash::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
   base::HistogramTester histogram_tester_;

@@ -25,13 +25,16 @@ AppControlsTestBase::AppControlsTestBase() = default;
 AppControlsTestBase::~AppControlsTestBase() = default;
 
 void AppControlsTestBase::SetUp() {
+  arc_app_test_.PreProfileSetUp();
+  profile_ = std::make_unique<TestingProfile>();
+
   ChromeViewsTestBase::SetUp();
 
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kDisableDefaultApps);
 
-  app_service_test_.SetUp(&profile_);
-  arc_app_test_.SetUp(&profile_);
+  app_service_test_.SetUp(profile_.get());
+  arc_app_test_.SetUp(profile_.get());
   task_environment()->RunUntilIdle();
 }
 
@@ -50,7 +53,7 @@ std::string AppControlsTestBase::InstallArcApp(const std::string& package_name,
   arc_app_test_.app_instance()->SendPackageAppListRefreshed(package_name, apps);
   task_environment()->RunUntilIdle();
 
-  return arc::ArcPackageNameToAppId(package_name, &profile_);
+  return arc::ArcPackageNameToAppId(package_name, profile_.get());
 }
 
 void AppControlsTestBase::UninstallArcApp(const std::string& package_name) {

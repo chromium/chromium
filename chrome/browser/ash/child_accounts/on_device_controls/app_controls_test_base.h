@@ -26,7 +26,7 @@ class AppControlsTestBase : public ChromeViewsTestBase {
 
   ArcAppTest& arc_app_test() { return arc_app_test_; }
   apps::AppServiceTest& app_service_test() { return app_service_test_; }
-  Profile& profile() { return profile_; }
+  Profile& profile() { return *profile_.get(); }
 
   // Installs ARC++ app with the given `package_name` and `app_name`.
   // Returns AppService id of the installed app.
@@ -42,7 +42,7 @@ class AppControlsTestBase : public ChromeViewsTestBase {
  private:
   base::test::ScopedCommandLine scoped_command_line_;
 
-  TestingProfile profile_;
+  std::unique_ptr<TestingProfile> profile_;
   apps::AppServiceTest app_service_test_;
   ArcAppTest arc_app_test_;
 };
