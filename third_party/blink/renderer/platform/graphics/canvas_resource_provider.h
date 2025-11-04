@@ -231,6 +231,9 @@ class PLATFORM_EXPORT CanvasResourceProvider
   SkAlphaType GetAlphaType() const { return alpha_type_; }
   gfx::Size Size() const { return size_; }
   virtual bool IsValid() const = 0;
+  virtual base::ByteCount EstimatedSizeInBytes() const {
+    return base::ByteCount(format_.EstimatedSizeInBytes(size_));
+  }
   virtual bool IsAccelerated() const = 0;
   // Returns true if the resource can be used by the display compositor.
   virtual bool SupportsDirectCompositing() const = 0;
@@ -519,6 +522,7 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
     return this;
   }
   bool IsAccelerated() const final { return is_accelerated_; }
+  base::ByteCount EstimatedSizeInBytes() const override;
   bool SupportsDirectCompositing() const override { return true; }
   scoped_refptr<CanvasResource> ProduceCanvasResource(
       FlushReason reason) override;

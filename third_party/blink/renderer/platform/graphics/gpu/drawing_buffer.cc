@@ -874,6 +874,10 @@ void DrawingBuffer::ColorBuffer::BeginAccess(const gpu::SyncToken& sync_token,
       shared_image_texture_->BeginAccess(sync_token, readonly);
 }
 
+base::ByteCount DrawingBuffer::ColorBuffer::EstimatedSizeInBytes() const {
+  return shared_image->EstimatedSizeInBytes();
+}
+
 gpu::SyncToken DrawingBuffer::ColorBuffer::EndAccess() {
   return gpu::SharedImageTexture::ScopedAccess::EndAccess(
       std::move(scoped_shared_image_access_));
@@ -1193,6 +1197,29 @@ bool DrawingBuffer::CopyToVideoFrame(
   return CopyToPlatformInternal(raster_interface, /*dst_is_unpremul_gl=*/false,
                                 src_buffer, copy_function)
       .has_value();
+}
+
+base::ByteCount DrawingBuffer::EstimatedSizeInBytes() const {
+  base::ByteCount result;
+  if (back_color_buffer_) {
+    result += back_color_buffer_->EstimatedSizeInBytes();
+  }
+  for (const auto& buffer : recycled_color_buffer_queue_) {
+    result += buffer->EstimatedSizeInBytes();
+  }
+  for (const auto& buffer : exported_color_buffers_) {
+    result += buffer->EstimatedSizeInBytes();
+  }
+  if (staging_texture_needed_ || SampleCount() > 0) {
+    result +=
+        base::ByteCount(color_buffer_format_.EstimatedSizeInBytes(size_)) *
+        (SampleCount() + staging_texture_needed_);
+  }
+  if (HasDepthBuffer() || HasStencilBuffer()) {
+    result += std::max(SampleCount(), 1) *
+              base::ByteCount(4 * size_.width() * size_.height());
+  }
+  return result;
 }
 
 cc::Layer* DrawingBuffer::CcLayer() {

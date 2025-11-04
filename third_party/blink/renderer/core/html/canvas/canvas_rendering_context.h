@@ -307,7 +307,7 @@ class CORE_EXPORT CanvasRenderingContext
                                                    const String& func_name,
                                                    ExceptionState&);
 
-  intptr_t AllocatedBufferSize() const;
+  virtual base::ByteCount AllocatedBufferSize() const;
   virtual int AllocatedBufferCountPerPixel() const { return 1; }
   virtual gfx::Size DrawingBufferSize() const {
     const CanvasRenderingContextHost* host = Host();

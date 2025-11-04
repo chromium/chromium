@@ -201,7 +201,7 @@ TEST_P(HTMLCanvasElementTest, CanvasMemoryUsageGpuAccelerated) {
   GetDocument().body()->appendChild(script);
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(
-      base::ByteCount(10 * 10 * /* Buffer Count */ 3 * /* Bytes per pixel */ 4),
+      base::ByteCount(10 * 10 * /* Buffer Count */ 1 * /* Bytes per pixel */ 4),
       canvas->GetMemoryUsage());
 
   canvas->NotifyGpuContextLost();

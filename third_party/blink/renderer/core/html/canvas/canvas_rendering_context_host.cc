@@ -50,9 +50,9 @@ CanvasRenderingContextHost::CanvasRenderingContextHost(HostType host_type,
     : size_(size), host_type_(host_type) {}
 
 CanvasRenderingContextHost::~CanvasRenderingContextHost() {
-  if (externally_allocated_memory_ > 0) {
+  if (externally_allocated_memory_.is_positive()) {
     external_memory_accounter_.Decrease(v8::Isolate::GetCurrent(),
-                                        externally_allocated_memory_);
+                                        externally_allocated_memory_.InBytes());
   }
 }
 
@@ -90,12 +90,13 @@ void CanvasRenderingContextHost::NotifyCachesOfSwitchingFrame() {
 }
 
 void CanvasRenderingContextHost::UpdateMemoryUsage() {
-  intptr_t externally_allocated_memory =
-      RenderingContext() ? RenderingContext()->AllocatedBufferSize() : 0;
+  base::ByteCount externally_allocated_memory =
+      RenderingContext() ? RenderingContext()->AllocatedBufferSize()
+                         : base::ByteCount(0);
 
   // Subtracting two intptr_t that are known to be positive will never
   // underflow.
-  intptr_t delta_bytes =
+  base::ByteCount delta_bytes =
       externally_allocated_memory - externally_allocated_memory_;
 
   // TODO(junov): We assume that it is impossible to be inside a FastAPICall
@@ -105,8 +106,10 @@ void CanvasRenderingContextHost::UpdateMemoryUsage() {
 
   // ExternalMemoryAccounter::Update() with a positive delta can trigger a GC,
   // which is not allowed when `IsAllocationAllowed() == false`.
-  CHECK(delta_bytes <= 0 || ThreadState::Current()->IsAllocationAllowed());
-  external_memory_accounter_.Update(v8::Isolate::GetCurrent(), delta_bytes);
+  CHECK(!delta_bytes.is_positive() ||
+        ThreadState::Current()->IsAllocationAllowed());
+  external_memory_accounter_.Update(v8::Isolate::GetCurrent(),
+                                    delta_bytes.InBytes());
   externally_allocated_memory_ = externally_allocated_memory;
 }
 

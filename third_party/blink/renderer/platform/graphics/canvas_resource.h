@@ -87,6 +87,9 @@ class PLATFORM_EXPORT CanvasResource
 
   // The bounds for this resource.
   gfx::Size Size() const { return GetClientSharedImage()->size(); }
+  base::ByteCount EstimatedSizeInBytes() const {
+    return GetClientSharedImage()->EstimatedSizeInBytes();
+  }
 
   // The ClientSharedImage containing information on the SharedImage
   // attached to the resource.

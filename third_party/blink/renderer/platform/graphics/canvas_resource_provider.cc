@@ -658,6 +658,15 @@ bool CanvasResourceProviderSharedImage::OverwriteImage(
   return true;
 }
 
+base::ByteCount CanvasResourceProviderSharedImage::EstimatedSizeInBytes()
+    const {
+  base::ByteCount result;
+  if (resource_) {
+    result += resource_->EstimatedSizeInBytes() * num_inflight_resources_;
+  }
+  return result;
+}
+
 scoped_refptr<CanvasResource>
 CanvasResourceProviderSharedImage::ProduceCanvasResource(FlushReason reason) {
   TRACE_EVENT0("blink",
