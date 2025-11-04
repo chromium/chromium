@@ -50,6 +50,11 @@ namespace {
 BASE_FEATURE(kSyncClearMetadataOnEmptyStorageKeys,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// A kill switch for clearing metadata for full update data types if they have
+// any unsynced entities.
+BASE_FEATURE(kSyncClearMetadataOnUnsyncedEntitiesForFullUpdateTypes,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 const char kErrorSiteHistogramPrefix[] = "Sync.DataTypeErrorSite.";
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -1514,6 +1519,22 @@ bool ClientTagBasedDataTypeProcessor::ShouldClearPersistedMetadata(
       if (storage_key.empty()) {
         base::UmaHistogramEnumeration("Sync.ClearMetadataDueToEmptyStorageKey",
                                       DataTypeHistogramValue(type_));
+        return true;
+      }
+    }
+  }
+
+  if (!bridge_->SupportsIncrementalUpdates() &&
+      base::FeatureList::IsEnabled(
+          kSyncClearMetadataOnUnsyncedEntitiesForFullUpdateTypes)) {
+    for (const auto& [_, entity_metadata] : metadata_map) {
+      // Bridges that do not support incremental updates (i.e. full-update
+      // types) must be read-only and therefore should not have any unsynced
+      // entities. It might happen in some rare cases (e.g. due to a bug), so
+      // clear the metadata to restore the client's state. This is equivalent
+      // to ProcessorEntity::IsUnsynced().
+      if (entity_metadata->sequence_number() >
+          entity_metadata->acked_sequence_number()) {
         return true;
       }
     }
