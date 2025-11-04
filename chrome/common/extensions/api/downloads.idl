@@ -130,7 +130,7 @@ namespace downloads {
     // The user has accepted the dangerous download.
     accepted,
 
-    // Eneterprise-related values.
+    // Enterprise-related values.
     allowlistedByPolicy,
     asyncScanning,
     asyncLocalPasswordScanning,
