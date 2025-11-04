@@ -85,6 +85,7 @@ void ContextualTasksComposeboxHandler::AddFileContext(
 }
 
 void ContextualTasksComposeboxHandler::AddTabContext(int32_t tab_id,
+                                                     bool delay_upload,
                                                      AddTabContextCallback) {
   // noop.
 }

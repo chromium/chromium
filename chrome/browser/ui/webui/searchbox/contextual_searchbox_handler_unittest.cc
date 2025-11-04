@@ -101,6 +101,10 @@ class FakeContextualSearchboxHandler : public ContextualSearchboxHandler {
   contextual_search::ContextualSearchMetricsRecorder* GetMetricsRecorder() {
     return ContextualSearchboxHandler::GetMetricsRecorder();
   }
+
+  std::set<base::UnguessableToken> deleted_context_tokens() {
+    return ContextualSearchboxHandler::deleted_context_tokens();
+  }
 };
 }  // namespace
 
@@ -441,17 +445,98 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest, AddTabContext) {
   auto sample_contextual_input_data =
       std::make_unique<lens::ContextualInputData>();
   sample_contextual_input_data->page_url = sample_url;
-  handler().AddTabContext(sample_tab_id, callback.Get());
+  handler().AddTabContext(sample_tab_id, /*delay_upload=*/false,
+                          callback.Get());
 
   // Flush the mojo pipe to ensure the callback is run.
   mock_searchbox_page_.FlushForTesting();
+}
+
+TEST_F(ContextualSearchboxHandlerTestTabsTest, AddTabContext_DelayUpload) {
+  auto sample_url = GURL("https://www.google.com");
+  tabs::TabInterface* tab = AddTab(sample_url);
+  const int sample_tab_id = tab->GetHandle().raw_value();
+
+  tabs::TabFeatures* tab_features = tab->GetTabFeatures();
+  MockTabContextualizationController* tab_contextualization_controller =
+      static_cast<MockTabContextualizationController*>(
+          tab_features->tab_contextualization_controller());
+  EXPECT_CALL(*tab_contextualization_controller, GetPageContext(testing::_))
+      .Times(1)
+      .WillRepeatedly(
+          [](lens::TabContextualizationController::GetPageContextCallback
+                 callback) {
+            std::move(callback).Run(
+                std::make_unique<lens::ContextualInputData>());
+          });
+
+  // `ComposeboxQueryController::StartFileUploadFlow` should not be called when
+  // tab context is added and upload should be delayed.
+  EXPECT_CALL(query_controller(),
+              StartFileUploadFlow(testing::_, testing::NotNull(), testing::_))
+      .Times(0);
+  base::MockCallback<ComposeboxHandler::AddTabContextCallback> callback;
+  EXPECT_CALL(callback, Run).Times(1);
+
+  auto sample_contextual_input_data =
+      std::make_unique<lens::ContextualInputData>();
+  sample_contextual_input_data->page_url = sample_url;
+  handler().AddTabContext(sample_tab_id, /*delay_upload=*/true, callback.Get());
+
+  // Flush the mojo pipe to ensure the callback is run.
+  mock_searchbox_page_.FlushForTesting();
+}
+
+TEST_F(ContextualSearchboxHandlerTestTabsTest, DeleteContext_DelayUpload) {
+  auto sample_url = GURL("https://www.google.com");
+  tabs::TabInterface* tab = AddTab(sample_url);
+  const int sample_tab_id = tab->GetHandle().raw_value();
+
+  tabs::TabFeatures* tab_features = tab->GetTabFeatures();
+  MockTabContextualizationController* tab_contextualization_controller =
+      static_cast<MockTabContextualizationController*>(
+          tab_features->tab_contextualization_controller());
+  EXPECT_CALL(*tab_contextualization_controller, GetPageContext(testing::_))
+      .Times(1)
+      .WillRepeatedly(
+          [](lens::TabContextualizationController::GetPageContextCallback
+                 callback) {
+            std::move(callback).Run(
+                std::make_unique<lens::ContextualInputData>());
+          });
+
+  // `ComposeboxQueryController::StartFileUploadFlow` should not be called when
+  // tab context is added and upload should be delayed.
+  EXPECT_CALL(query_controller(),
+              StartFileUploadFlow(testing::_, testing::NotNull(), testing::_))
+      .Times(0);
+  base::test::TestFuture<const std::optional<base::UnguessableToken>&> future;
+  auto sample_contextual_input_data =
+      std::make_unique<lens::ContextualInputData>();
+  sample_contextual_input_data->page_url = sample_url;
+  handler().AddTabContext(sample_tab_id, /*delay_upload=*/true,
+                          future.GetCallback());
+  // Flush the mojo pipe to ensure the callback is run.
+  mock_searchbox_page_.FlushForTesting();
+
+  auto file_token = future.Get().value();
+  std::set<base::UnguessableToken> deleted_tokens =
+      handler().deleted_context_tokens();
+  EXPECT_EQ(deleted_tokens.size(), 0u);
+
+  // Delete context.
+  handler().DeleteContext(file_token);
+  mock_searchbox_page_.FlushForTesting();
+
+  deleted_tokens = handler().deleted_context_tokens();
+  ASSERT_TRUE(deleted_tokens.contains(file_token));
 }
 
 TEST_F(ContextualSearchboxHandlerTestTabsTest, AddTabContextNotFound) {
   base::MockCallback<ComposeboxHandler::AddTabContextCallback> callback;
   EXPECT_CALL(callback, Run).Times(1);
 
-  handler().AddTabContext(0, callback.Get());
+  handler().AddTabContext(0, false, callback.Get());
 
   // Flush the mojo pipe to ensure the callback is run.
   mock_searchbox_page_.FlushForTesting();
@@ -477,7 +562,7 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest, TabContextAddedMetric) {
 
   base::MockCallback<ComposeboxHandler::AddTabContextCallback> callback;
   EXPECT_CALL(callback, Run).Times(1);
-  handler().AddTabContext(tab_id, callback.Get());
+  handler().AddTabContext(tab_id, false, callback.Get());
 
   // Check that the histogram was recorded.
   histogram_tester().ExpectUniqueSample("NewTabPage.Composebox.TabContextAdded",
@@ -547,14 +632,16 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest,
   // Click on a tab with a duplicate title.
   base::MockCallback<ComposeboxHandler::AddTabContextCallback> callback1;
   EXPECT_CALL(callback1, Run).Times(1);
-  handler().AddTabContext(tab_a1->GetHandle().raw_value(), callback1.Get());
+  handler().AddTabContext(tab_a1->GetHandle().raw_value(), false,
+                          callback1.Get());
   histogram_tester().ExpectUniqueSample(
       "NewTabPage.Composebox.TabWithDuplicateTitleClicked", true, 1);
 
   // Click on a tab with a unique title.
   base::MockCallback<ComposeboxHandler::AddTabContextCallback> callback2;
   EXPECT_CALL(callback2, Run).Times(1);
-  handler().AddTabContext(tab_b1->GetHandle().raw_value(), callback2.Get());
+  handler().AddTabContext(tab_b1->GetHandle().raw_value(), false,
+                          callback2.Get());
   histogram_tester().ExpectBucketCount(
       "NewTabPage.Composebox.TabWithDuplicateTitleClicked", false, 1);
   histogram_tester().ExpectTotalCount(
@@ -588,7 +675,8 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest,
   // Click on a tab with a unique title.
   base::MockCallback<ComposeboxHandler::AddTabContextCallback> callback1;
   EXPECT_CALL(callback1, Run).Times(1);
-  handler().AddTabContext(tab_a1->GetHandle().raw_value(), callback1.Get());
+  handler().AddTabContext(tab_a1->GetHandle().raw_value(), false,
+                          callback1.Get());
   histogram_tester().ExpectUniqueSample(
       "NewTabPage.Composebox.TabWithDuplicateTitleClicked", false, 1);
 }

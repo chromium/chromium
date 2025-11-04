@@ -346,8 +346,9 @@ void ContextualSearchboxHandler::AddFileContext(
                                         std::move(image_options));
 }
 
-void ContextualSearchboxHandler::AddTabContext(
-    int32_t tab_id, AddTabContextCallback callback) {
+void ContextualSearchboxHandler::AddTabContext(int32_t tab_id,
+                                               bool delay_upload,
+                                               AddTabContextCallback callback) {
   const tabs::TabHandle handle = tabs::TabHandle(tab_id);
   tabs::TabInterface* const tab = handle.Get();
   if (!tab) {
@@ -360,10 +361,14 @@ void ContextualSearchboxHandler::AddTabContext(
   lens::TabContextualizationController* tab_contextualization_controller =
       tab->GetTabFeatures()->tab_contextualization_controller();
   auto token = base::UnguessableToken::Create();
-  tab_contextualization_controller->GetPageContext(
-      base::BindOnce(&ContextualSearchboxHandler::OnGetTabPageContext,
-                     weak_ptr_factory_.GetWeakPtr(), token));
-
+  // If necessary, delay the tab context from being uploaded to the lens server.
+  // TODO(crbug.com/455972558) upload on query submission when delayed.
+  auto context_callback =
+      delay_upload
+          ? base::DoNothing()
+          : base::BindOnce(&ContextualSearchboxHandler::OnGetTabPageContext,
+                           weak_ptr_factory_.GetWeakPtr(), token);
+  tab_contextualization_controller->GetPageContext(std::move(context_callback));
   std::move(callback).Run(token);
 }
 
