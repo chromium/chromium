@@ -46,7 +46,7 @@ GlicInactiveSidePanelUi::CreateForBackgroundTab(
   auto inactive_side_panel =
       base::WrapUnique(new GlicInactiveSidePanelUi(tab, delegate));
   // Mark the side panel for showing next time the tab becomes active.
-  inactive_side_panel->Show();
+  inactive_side_panel->Show(ShowOptions::ForSidePanel(*tab));
   inactive_side_panel->inactive_view_controller_.CaptureScreenshot(
       glic_webui_contents);
   return inactive_side_panel;
@@ -96,12 +96,17 @@ bool GlicInactiveSidePanelUi::IsShowing() const {
   return glic_side_panel_coordinator->IsShowing();
 }
 
-void GlicInactiveSidePanelUi::Show() {
+void GlicInactiveSidePanelUi::Show(const ShowOptions& options) {
   auto* glic_side_panel_coordinator = GetGlicSidePanelCoordinator();
   if (!glic_side_panel_coordinator) {
     return;
   }
-  glic_side_panel_coordinator->Show();
+  bool suppress_animations = false;
+  if (const auto* side_panel_options =
+          std::get_if<SidePanelShowOptions>(&options.embedder_options)) {
+    suppress_animations = side_panel_options->suppress_opening_animation;
+  }
+  glic_side_panel_coordinator->Show(suppress_animations);
 }
 
 void GlicInactiveSidePanelUi::Close() {

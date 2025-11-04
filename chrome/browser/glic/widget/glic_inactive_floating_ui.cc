@@ -31,7 +31,7 @@ Host::EmbedderDelegate* GlicInactiveFloatingUi::GetHostEmbedderDelegate() {
   return nullptr;
 }
 
-void GlicInactiveFloatingUi::Show() {
+void GlicInactiveFloatingUi::Show(const ShowOptions& options) {
   // TODO: implement show.
   NOTIMPLEMENTED();
 }

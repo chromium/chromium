@@ -48,7 +48,7 @@ class GlicUiEmbedder {
   // Show the glic UI for this embedder. Do nothing if the embedder is
   // currently showing. Show will be called when switching from an inactive to
   // active embedder.
-  virtual void Show() = 0;
+  virtual void Show(const ShowOptions& options) = 0;
 
   // Returns true if the embedder is currently showing.
   virtual bool IsShowing() const = 0;

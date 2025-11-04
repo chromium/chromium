@@ -228,7 +228,7 @@ bool GlicFloatingUi::IsShowing() const {
   return glic_widget_ != nullptr;
 }
 
-void GlicFloatingUi::Show() {
+void GlicFloatingUi::Show(const ShowOptions& options) {
   instance_metrics_->OnShowInFloaty();
   GlicProfileManager::GetInstance()->SetCurrentDetachedGlic(profile_);
   GetGlicWidget()->Show();

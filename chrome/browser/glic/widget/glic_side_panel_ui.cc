@@ -189,7 +189,7 @@ void GlicSidePanelUi::CaptureScreenshot(
       browser_window->GetWindow()->GetNativeWindow(), std::move(callback));
 }
 
-void GlicSidePanelUi::Show() {
+void GlicSidePanelUi::Show(const ShowOptions& options) {
   instance_metrics_->OnShowInSidePanel(tab_.get());
   auto* glic_side_panel_coordinator = GetGlicSidePanelCoordinator();
   if (!glic_side_panel_coordinator) {
@@ -199,7 +199,13 @@ void GlicSidePanelUi::Show() {
   delegate_->NotifyPanelStateChanged();
   application_hotkey_manager_->InitializeAccelerators();
   glic_panel_hotkey_manager_->InitializeAccelerators();
-  glic_side_panel_coordinator->Show();
+
+  bool suppress_animations = false;
+  if (const auto* side_panel_options =
+          std::get_if<SidePanelShowOptions>(&options.embedder_options)) {
+    suppress_animations = side_panel_options->suppress_opening_animation;
+  }
+  glic_side_panel_coordinator->Show(suppress_animations);
 }
 
 void GlicSidePanelUi::Close() {

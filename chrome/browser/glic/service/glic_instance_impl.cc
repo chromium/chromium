@@ -91,7 +91,9 @@ class GlicTabContentsObserver : public content::WebContentsObserver {
 
     // Only bind if the previous instance was active.
     if (glic_embedder && glic_embedder->IsShowing()) {
-      auto show_options = ShowOptions{SidePanelShowOptions{*tab_to_bind}};
+      SidePanelShowOptions side_panel_options{*tab_to_bind};
+      side_panel_options.suppress_opening_animation = true;
+      auto show_options = ShowOptions{side_panel_options};
       show_options.focus_on_show = tab_to_bind->IsActivated();
       instance_->Show(show_options);
       instance_->metrics()->OnDaisyChain(DaisyChainSource::kTabContents,
@@ -249,7 +251,7 @@ void GlicInstanceImpl::Show(const ShowOptions& options) {
   }
 
   MaybeShowHostUi(embedder_to_show);
-  embedder_to_show->Show();
+  embedder_to_show->Show(options);
   if (options.focus_on_show) {
     embedder_to_show->Focus();
   }
@@ -356,7 +358,9 @@ tabs::TabInterface* GlicInstanceImpl::CreateTab(
 
   auto* active_embedder = GetActiveEmbedder();
   bool hasFocus = active_embedder && active_embedder->HasFocus();
-  auto show_options = ShowOptions::ForSidePanel(*created_tab);
+  SidePanelShowOptions side_panel_options{*created_tab};
+  side_panel_options.suppress_opening_animation = true;
+  auto show_options = ShowOptions{side_panel_options};
   show_options.focus_on_show = created_tab->IsActivated() || hasFocus;
   Show(show_options);
   instance_metrics_.OnDaisyChain(DaisyChainSource::kGlicContents,
@@ -830,7 +834,9 @@ void GlicInstanceImpl::OnTabAddedToTask(
   if (base::FeatureList::IsEnabled(features::kGlicGetTabByIdApi)) {
     service_->OnTabAddedToTask(task_id, tab_handle);
   }
-  Show(ShowOptions::ForSidePanel(*tab));
+  SidePanelShowOptions side_panel_options{*tab};
+  side_panel_options.suppress_opening_animation = true;
+  Show(ShowOptions{side_panel_options});
   instance_metrics_.OnDaisyChain(DaisyChainSource::kActorAddTab,
                                  /*success=*/true);
 }
