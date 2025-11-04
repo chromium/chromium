@@ -318,7 +318,8 @@ class MainThreadSchedulerImplForTest : public MainThreadSchedulerImpl {
       std::unique_ptr<base::sequence_manager::SequenceManager> manager)
       : MainThreadSchedulerImpl(std::move(manager)), update_policy_count_(0) {}
 
-  void UpdatePolicyLocked(UpdateType update_type) override {
+  void UpdatePolicyLocked(UpdateType update_type) override
+      EXCLUSIVE_LOCKS_REQUIRED(any_thread_lock_) {
     update_policy_count_++;
     MainThreadSchedulerImpl::UpdatePolicyLocked(update_type);
 

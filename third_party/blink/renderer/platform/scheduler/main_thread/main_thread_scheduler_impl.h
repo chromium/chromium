@@ -512,8 +512,10 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
 
   // Returns the serialized scheduler state for tracing.
   void WriteIntoTraceLocked(perfetto::TracedValue context,
-                            base::TimeTicks optional_now) const;
-  void CreateTraceEventObjectSnapshotLocked() const;
+                            base::TimeTicks optional_now) const
+      EXCLUSIVE_LOCKS_REQUIRED(any_thread_lock_);
+  void CreateTraceEventObjectSnapshotLocked() const
+      EXCLUSIVE_LOCKS_REQUIRED(any_thread_lock_);
 
   // Shuts down empty detached task queues, which are being kept alive to run
   // pending tasks.
@@ -529,7 +531,8 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   // sets |policy_may_need_update_|. Note |any_thread_lock_| must be
   // locked.
   void EnsureUrgentPolicyUpdatePostedOnMainThread(
-      const base::Location& from_here);
+      const base::Location& from_here)
+      EXCLUSIVE_LOCKS_REQUIRED(any_thread_lock_);
 
   // Update the policy if a new signal has arrived. Must be called from the main
   // thread.
@@ -549,16 +552,17 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
 
   // The implementation of UpdatePolicy & ForceUpdatePolicy.  It is allowed to
   // early out if |update_type| is kMayEarlyOutIfPolicyUnchanged.
-  virtual void UpdatePolicyLocked(UpdateType update_type);
+  virtual void UpdatePolicyLocked(UpdateType update_type)
+      EXCLUSIVE_LOCKS_REQUIRED(any_thread_lock_);
 
   // Helper for computing the use case. |expected_usecase_duration| will be
   // filled with the amount of time after which the use case should be updated
   // again. If the duration is zero, a new use case update should not be
   // scheduled. Must be called with |any_thread_lock_| held. Can be called from
   // any thread.
-  UseCase ComputeCurrentUseCase(
-      base::TimeTicks now,
-      base::TimeDelta* expected_use_case_duration) const;
+  UseCase ComputeCurrentUseCase(base::TimeTicks now,
+                                base::TimeDelta* expected_use_case_duration)
+      const EXCLUSIVE_LOCKS_REQUIRED(any_thread_lock_);
 
   // Helper for computing the RAILMode based on the given UseCase and current
   // scheduler state.
@@ -571,7 +575,7 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
 
   // The task cost estimators and the UserModel need to be reset upon page
   // nagigation. This function does that. Must be called from the main thread.
-  void ResetForNavigationLocked();
+  void ResetForNavigationLocked() EXCLUSIVE_LOCKS_REQUIRED(any_thread_lock_);
 
   // Trigger an update to all task queues' priorities, throttling, and
   // enabled/disabled state based on current policy. When triggered from a
@@ -845,13 +849,12 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
 
   mutable base::Lock any_thread_lock_;
   // Don't access any_thread_, instead use any_thread().
-  AnyThread any_thread_;
-  AnyThread& any_thread() {
-    any_thread_lock_.AssertAcquired();
+  AnyThread any_thread_ GUARDED_BY(any_thread_lock_);
+  AnyThread& any_thread() EXCLUSIVE_LOCKS_REQUIRED(any_thread_lock_) {
     return any_thread_;
   }
-  const struct AnyThread& any_thread() const {
-    any_thread_lock_.AssertAcquired();
+  const struct AnyThread& any_thread() const
+      EXCLUSIVE_LOCKS_REQUIRED(any_thread_lock_) {
     return any_thread_;
   }
 
