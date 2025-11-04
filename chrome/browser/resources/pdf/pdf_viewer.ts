@@ -23,6 +23,7 @@ import './elements/viewer_save_to_drive_bubble.js';
 // </if> enable_pdf_save_to_drive
 import './elements/viewer_toolbar.js';
 
+import {PdfHelpBubbleProxyImpl} from 'chrome://resources/cr_components/help_bubble/pdf_help_bubble_proxy.js';
 import type {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -407,6 +408,8 @@ export class PdfViewerElement extends PdfViewerBaseElement {
   private hasSearchifyText_: boolean = false;
 
   constructor() {
+    PdfHelpBubbleProxyImpl.createConnectedInstance();
+
     super();
 
     // TODO(dpapad): Add tests after crbug.com/1111459 is fixed.
@@ -921,6 +924,16 @@ export class PdfViewerElement extends PdfViewerBaseElement {
     this.zoomBounds_.min = Math.round(presetZoomFactors[0]! * 100);
     this.zoomBounds_.max =
         Math.round(presetZoomFactors[presetZoomFactors.length - 1]! * 100);
+
+    // <if expr="enable_pdf_ink2">
+    if (this.pdfInk2Enabled_) {
+      this.updateComplete.then(() => {
+        this.registerHelpBubble(
+            'PdfHelpBubbleHandlerFactory::kPdfInkSignaturesDrawElementId',
+            this.$.toolbar.shadowRoot.querySelector<HTMLElement>('#annotate')!);
+      });
+    }
+    // </if>
   }
 
   override handleScriptingMessage(message: MessageEvent<any>) {

@@ -31,19 +31,19 @@ content::WebContents* GetWebContentsToUse(
              : content::WebContents::FromRenderFrameHost(render_frame_host);
 }
 
-bool MaybeShowFeaturePromo(content::WebContents* contents) {
+bool MaybeShowFeaturePromo(const base::Feature& feature,
+                           content::WebContents* contents) {
   auto* user_education_interface =
       BrowserUserEducationInterface::MaybeGetForWebContentsInTab(contents);
   if (!user_education_interface) {
     return false;
   }
   user_education_interface->MaybeShowFeaturePromo(
-      user_education::FeaturePromoParams(
-          feature_engagement::kIPHPdfSearchifyFeature));
+      user_education::FeaturePromoParams(feature));
   return true;
 }
 
-void MaybeHideFeaturePromo(tabs::TabInterface* tab_interface) {
+void MaybeHideSearchifyFeaturePromo(tabs::TabInterface* tab_interface) {
   auto* user_education_interface = BrowserUserEducationInterface::From(
       tab_interface->GetBrowserWindowInterface());
   if (user_education_interface) {
@@ -57,6 +57,12 @@ void MaybeHideFeaturePromo(tabs::TabInterface* tab_interface) {
 ChromePDFDocumentHelperClient::ChromePDFDocumentHelperClient() = default;
 
 ChromePDFDocumentHelperClient::~ChromePDFDocumentHelperClient() = default;
+
+void ChromePDFDocumentHelperClient::OnDocumentLoadComplete(
+    content::RenderFrameHost* render_frame_host) {
+  MaybeShowFeaturePromo(feature_engagement::kIPHPdfInkSignaturesFeature,
+                        GetWebContentsToUse(render_frame_host));
+}
 
 void ChromePDFDocumentHelperClient::UpdateContentRestrictions(
     content::RenderFrameHost* render_frame_host,
@@ -115,13 +121,14 @@ void ChromePDFDocumentHelperClient::OnSearchifyStarted(
     return;
   }
   content::WebContents* web_contents = GetWebContentsToUse(render_frame_host);
-  if (!MaybeShowFeaturePromo(web_contents)) {
+  if (!MaybeShowFeaturePromo(feature_engagement::kIPHPdfSearchifyFeature,
+                             web_contents)) {
     return;
   }
   auto* const tab = tabs::TabInterface::MaybeGetFromContents(web_contents);
   if (!tab) {
     return;
   }
-  tab_subscriptions_.push_back(
-      tab->RegisterWillDeactivate(base::BindRepeating(&MaybeHideFeaturePromo)));
+  tab_subscriptions_.push_back(tab->RegisterWillDeactivate(
+      base::BindRepeating(&MaybeHideSearchifyFeaturePromo)));
 }

@@ -20,6 +20,8 @@ class ChromePDFDocumentHelperClient : public pdf::PDFDocumentHelperClient {
 
  private:
   // pdf::PDFDocumentHelperClient:
+  void OnDocumentLoadComplete(
+      content::RenderFrameHost* render_frame_host) override;
   void UpdateContentRestrictions(content::RenderFrameHost* render_frame_host,
                                  int content_restrictions) override;
   void OnSaveURL() override;
