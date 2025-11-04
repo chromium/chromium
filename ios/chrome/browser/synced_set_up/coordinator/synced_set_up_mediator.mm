@@ -15,6 +15,8 @@
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/signin/public/identity_manager/primary_account_change_event.h"
 #import "components/sync_device_info/device_info_sync_service.h"
+#import "components/sync_device_info/device_info_tracker.h"
+#import "components/sync_device_info/local_device_info_provider.h"
 #import "components/sync_preferences/cross_device_pref_tracker/cross_device_pref_tracker.h"
 #import "ios/chrome/app/app_startup_parameters.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -24,8 +26,47 @@
 #import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/browser/synced_set_up/coordinator/synced_set_up_mediator_delegate.h"
 #import "ios/chrome/browser/synced_set_up/ui/synced_set_up_consumer.h"
+#import "ios/chrome/browser/synced_set_up/utils/utils.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
+
+namespace {
+
+// Struct for caching the pref values that differ between a remote and local
+// device.
+struct PrefValueToApply {
+  base::Value local_value;
+  base::Value remote_value;
+};
+
+// Helper for `-cachePrefs`. Caches the pref values that differ between the
+// remote device and local device for a given `pref_service` and corresponding
+// `pref_map`.
+template <size_t N>
+void CachePrefs(
+    const base::fixed_flat_map<std::string_view, std::string_view, N>& pref_map,
+    PrefService* pref_service,
+    std::map<std::string_view, PrefValueToApply>& prefs_to_apply,
+    const std::map<std::string_view, base::Value>& remote_device_prefs) {
+  CHECK(pref_service);
+
+  for (const auto& [cross_device_pref_name, remote_pref_value] :
+       remote_device_prefs) {
+    if (auto pref_iterator = pref_map.find(cross_device_pref_name);
+        pref_iterator != pref_map.end() &&
+        remote_pref_value != pref_service->GetValue(pref_iterator->second)) {
+      // Pref has a different value than the local device.
+      std::string_view pref_name = pref_iterator->second;
+      PrefValueToApply value = {
+          .local_value = pref_service->GetValue(pref_name).Clone(),
+          .remote_value = remote_pref_value.Clone(),
+      };
+      prefs_to_apply.insert({pref_name, std::move(value)});
+    }
+  }
+}
+
+}  // namespace
 
 @implementation SyncedSetUpMediator {
   // Tracker for retrieving cross device preferences.
@@ -43,6 +84,12 @@
   raw_ptr<syncer::DeviceInfoSyncService> _deviceInfoSyncService;
   // The profile Pref service.
   raw_ptr<PrefService> _profilePrefService;
+  // Caches profile prefs that differ between this device and a remote device.
+  // The map stores the pref name and a pair of values
+  std::map<std::string_view, PrefValueToApply> _profilePrefsToApply;
+  // Caches local-state prefs that differ between this device and a remote
+  // device. The map stores the pref name and a pair of values
+  std::map<std::string_view, PrefValueToApply> _localStatePrefsToApply;
   // Parameters relevant to understanding the app startup, used to determine
   // how the Synced Set Up flow should be presented.
   AppStartupParameters* _startupParameters;
@@ -82,6 +129,7 @@
             _identityManager, self);
 
     [self updatePrimaryIdentity];
+    [self cachePrefs];
   }
 
   return self;
@@ -89,11 +137,16 @@
 
 - (void)disconnect {
   _identityManagerObserverBridge.reset();
+  _profilePrefsToApply.clear();
+  _localStatePrefsToApply.clear();
+  _prefTracker = nullptr;
   _authenticationService = nullptr;
   _accountManagerService = nullptr;
   _identityManager = nullptr;
+  _deviceInfoSyncService = nullptr;
+  _profilePrefService = nullptr;
+  _startupParameters = nil;
   _primaryIdentity = nil;
-  self.consumer = nil;
 }
 
 - (void)setConsumer:(id<SyncedSetUpConsumer>)consumer {
@@ -101,7 +154,6 @@
     return;
   }
   _consumer = consumer;
-
   [self updateConsumer];
 }
 
@@ -127,6 +179,31 @@
 }
 
 #pragma mark - Private methods
+
+// Caches remote profile and local-state pref values that differ from the local
+// device.
+- (void)cachePrefs {
+  syncer::LocalDeviceInfoProvider* localDeviceInfoProvider =
+      _deviceInfoSyncService->GetLocalDeviceInfoProvider();
+  CHECK(localDeviceInfoProvider);
+
+  std::map<std::string_view, base::Value> remoteDevicePrefs =
+      GetCrossDevicePrefsFromRemoteDevice(
+          _prefTracker, _deviceInfoSyncService->GetDeviceInfoTracker(),
+          localDeviceInfoProvider->GetLocalDeviceInfo());
+
+  // No remote prefs to apply.
+  if (remoteDevicePrefs.empty()) {
+    return;
+  }
+
+  // Cache profile and local-state prefs.
+  CachePrefs(kCrossDeviceToProfilePrefMap, _profilePrefService,
+             _profilePrefsToApply, remoteDevicePrefs);
+  CachePrefs(kCrossDeviceToLocalStatePrefMap,
+             GetApplicationContext()->GetLocalState(), _localStatePrefsToApply,
+             remoteDevicePrefs);
+}
 
 // Updates the cached primary identity based on the current state.
 // If the identity has changed, this method also triggers an update to the

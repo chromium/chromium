@@ -30,6 +30,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/sync/model:device_info_sync_service_factory",
     "//ios/chrome/browser/sync/model/prefs/cross_device_pref_tracker:cross_device_pref_tracker_factory",
     "//ios/chrome/browser/synced_set_up/ui",
+    "//ios/chrome/browser/synced_set_up/utils",
     "//ui/base",
   ]
 
