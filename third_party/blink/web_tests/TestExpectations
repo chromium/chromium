@@ -1141,7 +1141,6 @@ crbug.com/1375884 external/wpt/css/css-fonts/rlh-in-monospace.html [ Failure ]
 # Flaky layout tests
 crbug.com/1356336 fast/block/float/shrink-to-avoid-float-complexity.html [ Failure Pass ]
 
-crbug.com/448472314 external/wpt/css/css-anchor-position/align-dialog-002.html [ Failure ]
 crbug.com/448472314 external/wpt/css/css-anchor-position/anchor-scroll-chained-003.html [ Failure ]
 crbug.com/431611648 external/wpt/css/css-anchor-position/position-area-percents-001.html [ Failure ]
 crbug.com/332933527 external/wpt/css/css-anchor-position/position-visibility-anchors-valid.tentative.html [ Failure ]
