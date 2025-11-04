@@ -1175,6 +1175,14 @@ Chromium is unable to recover your settings.
         Click the Customize Chromium button on the New Tab Page to give Chromium a new look
       </message>
 
+      <!-- Realbox Strings -->
+      <message name="IDS_IPH_REALBOX_CONTEXTUAL_ENTRYPOINT" desc="The description of the IPH shown for the realbox contextual entrypoint." translateable="false">
+        Deepen your search by adding multiple tabs, files, and tools
+      </message>
+      <message name="IDS_IPH_REALBOX_CONTEXTUAL_ENTRYPOINT_SCREENREADER" desc="The screenreader text of the IPH shown for the realbox contextual entrypoint." translateable="false">
+        Deepen your search by adding multiple tabs, files, and tools using the "Add a tab and more" button.
+      </message>
+
       <!-- Signin Email Confirmation tab modal dialog -->
       <if expr="not is_chromeos">
         <message name="IDS_SIGNIN_EMAIL_CONFIRMATION_TITLE" desc="Title of the signin email confirmation tab modal dialog.">
