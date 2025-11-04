@@ -22,7 +22,7 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
-<histogram name="VRSessionTime.WebVR" units="ms" expires_after="2026-02-10">
+<histogram name="VRSessionTime.WebVR" units="ms" expires_after="2026-05-03">
   <owner>alcooper@chromium.org</owner>
   <owner>xr-dev@chromium.org</owner>
   <summary>

@@ -202,7 +202,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="FingerprintingProtection.DocumentLoad.SubframeFilteringDelay.{Result}"
-    units="microseconds" expires_after="2026-03-01">
+    units="microseconds" expires_after="2026-05-03">
   <owner>thesalsa@google.com</owner>
   <owner>trishalfonso@google.com</owner>
   <owner>rizvis@google.com</owner>
@@ -224,7 +224,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="FingerprintingProtection.DocumentLoad.SubframeFilteringDelay.{Result}.Incognito"
-    units="microseconds" expires_after="2026-03-01">
+    units="microseconds" expires_after="2026-05-03">
   <owner>thesalsa@google.com</owner>
   <owner>trishalfonso@google.com</owner>
   <owner>rizvis@google.com</owner>
@@ -331,7 +331,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FingerprintingProtection.PageLoad.ActivationLevel"
-    enum="FingerprintingProtectionActivationLevel" expires_after="2026-03-01">
+    enum="FingerprintingProtectionActivationLevel" expires_after="2026-05-03">
   <owner>thesalsa@google.com</owner>
   <owner>trishalfonso@google.com</owner>
   <owner>rizvis@google.com</owner>
@@ -346,7 +346,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="FingerprintingProtection.PageLoad.NumSubresourceLoads.Disallowed"
-    units="resource loads" expires_after="2026-03-01">
+    units="resource loads" expires_after="2026-05-03">
   <owner>rizvis@google.com</owner>
   <owner>thesalsa@google.com</owner>
   <owner>tanub@google.com</owner>
@@ -376,7 +376,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="FingerprintingProtection.PageLoad.NumSubresourceLoads.Evaluated"
-    units="resource loads" expires_after="2026-03-01">
+    units="resource loads" expires_after="2026-05-03">
   <owner>rizvis@google.com</owner>
   <owner>thesalsa@google.com</owner>
   <owner>tanub@google.com</owner>
@@ -407,7 +407,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="FingerprintingProtection.PageLoad.NumSubresourceLoads.MatchedRules"
-    units="resource loads" expires_after="2026-03-01">
+    units="resource loads" expires_after="2026-05-03">
   <owner>rizvis@google.com</owner>
   <owner>thesalsa@google.com</owner>
   <owner>tanub@google.com</owner>
@@ -422,7 +422,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="FingerprintingProtection.PageLoad.NumSubresourceLoads.MatchedRules.Incognito"
-    units="resource loads" expires_after="2026-03-01">
+    units="resource loads" expires_after="2026-05-03">
   <owner>rizvis@google.com</owner>
   <owner>thesalsa@google.com</owner>
   <owner>tanub@google.com</owner>
@@ -527,7 +527,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="FingerprintingProtection.PageLoad.SubresourceEvaluation.TotalCPUDuration"
-    units="microseconds" expires_after="2026-03-01">
+    units="microseconds" expires_after="2026-05-03">
   <owner>rizvis@google.com</owner>
   <owner>thesalsa@google.com</owner>
   <owner>tanub@google.com</owner>
@@ -544,7 +544,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="FingerprintingProtection.PageLoad.SubresourceEvaluation.TotalWallDuration"
-    units="microseconds" expires_after="2026-03-01">
+    units="microseconds" expires_after="2026-05-03">
   <owner>rizvis@google.com</owner>
   <owner>thesalsa@google.com</owner>
   <owner>tanub@google.com</owner>
@@ -561,7 +561,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="FingerprintingProtection.RendererThrottleCreationResult"
     enum="FingerprintingProtectionRendererThrottleCreationResult"
-    expires_after="2026-03-01">
+    expires_after="2026-05-03">
   <owner>ortuno@google.com</owner>
   <owner>src/components/fingerprinting_protection_filter/OWNERS</owner>
   <summary>
@@ -573,7 +573,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="FingerprintingProtection.RendererThrottleRedirects"
     enum="FingerprintingProtectionRendererThrottleRedirects"
-    expires_after="2026-03-01">
+    expires_after="2026-05-03">
   <owner>ortuno@google.com</owner>
   <owner>src/components/fingerprinting_protection_filter/OWNERS</owner>
   <summary>
@@ -586,7 +586,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="FingerprintingProtection.SubresourceLoad.Evaluation.CPUDuration"
-    units="microseconds" expires_after="2026-03-01">
+    units="microseconds" expires_after="2026-05-03">
   <owner>rizvis@google.com</owner>
   <owner>thesalsa@google.com</owner>
   <owner>tanub@google.com</owner>
@@ -606,7 +606,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="FingerprintingProtection.SubresourceLoad.Evaluation.WallDuration"
-    units="microseconds" expires_after="2026-03-01">
+    units="microseconds" expires_after="2026-05-03">
   <owner>rizvis@google.com</owner>
   <owner>thesalsa@google.com</owner>
   <owner>tanub@google.com</owner>
@@ -626,7 +626,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="FingerprintingProtection.SubresourceLoad.Evaluation.WallDuration.FirstRun"
-    units="microseconds" expires_after="2026-03-01">
+    units="microseconds" expires_after="2026-05-03">
   <owner>rizvis@google.com</owner>
   <owner>thesalsa@google.com</owner>
   <owner>tanub@google.com</owner>
@@ -647,7 +647,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="FingerprintingProtection.SubresourceLoad.TotalDeferTime.{Result}"
-    units="microseconds" expires_after="2026-03-01">
+    units="microseconds" expires_after="2026-05-03">
   <owner>rizvis@google.com</owner>
   <owner>thesalsa@google.com</owner>
   <summary>
@@ -671,7 +671,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FingerprintingProtection.WebContentsObserver.RefreshCount"
-    units="refresh counts" expires_after="2026-03-01">
+    units="refresh counts" expires_after="2026-05-03">
   <owner>rizvis@google.com</owner>
   <owner>thesalsa@google.com</owner>
   <owner>tanub@google.com</owner>
