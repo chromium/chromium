@@ -3,16 +3,3 @@ AXWebArea AXRoleDescription='HTML content'
 ++++AXStaticText AXRoleDescription='text' AXValue='This is main element.'
 ++AXGroup AXSubrole=AXLandmarkMain AXRoleDescription='main'
 ++++AXStaticText AXRoleDescription='text' AXValue='This is an ARIA role main.'
-++AXGroup AXSubrole=AXLandmarkMain AXRoleDescription='main'
-++++AXHeading AXRoleDescription='heading' AXTitle='Example page' AXValue=1
-++++++AXStaticText AXRoleDescription='text' AXValue='Example page'
-++++AXGroup AXRoleDescription='group'
-++++++AXStaticText AXRoleDescription='text' AXValue='Why does Talkback skip'
-++++AXHeading AXRoleDescription='heading' AXTitle='Headings' AXValue=2
-++++++AXStaticText AXRoleDescription='text' AXValue='Headings'
-++++AXGroup AXRoleDescription='group'
-++++++AXStaticText AXRoleDescription='text' AXValue='with tabindex'
-++++AXHeading AXRoleDescription='heading' AXTitle='A bug' AXValue=2
-++++++AXStaticText AXRoleDescription='text' AXValue='A bug'
-++++AXGroup AXRoleDescription='group'
-++++++AXStaticText AXRoleDescription='text' AXValue='when reading all content?'

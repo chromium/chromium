@@ -3,16 +3,3 @@
 ++++[static] name='This is main element.'
 ++[landmark] xml-roles:main
 ++++[static] name='This is an ARIA role main.'
-++[landmark] xml-roles:main
-++++[heading] name='Example page'
-++++++[static] name='Example page'
-++++[paragraph]
-++++++[static] name='Why does Talkback skip'
-++++[heading] name='Headings'
-++++++[static] name='Headings'
-++++[paragraph]
-++++++[static] name='with tabindex'
-++++[heading] name='A bug'
-++++++[static] name='A bug'
-++++[paragraph]
-++++++[static] name='when reading all content?'

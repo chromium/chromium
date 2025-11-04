@@ -7,22 +7,3 @@ rootWebArea
 ++++++main
 ++++++++staticText name='This is an ARIA role main.'
 ++++++++++inlineTextBox name='This is an ARIA role main.'
-++++++main
-++++++++heading name='Example page'
-++++++++++staticText name='Example page'
-++++++++++++inlineTextBox name='Example page'
-++++++++paragraph
-++++++++++staticText name='Why does Talkback skip'
-++++++++++++inlineTextBox name='Why does Talkback skip'
-++++++++heading name='Headings'
-++++++++++staticText name='Headings'
-++++++++++++inlineTextBox name='Headings'
-++++++++paragraph
-++++++++++staticText name='with tabindex'
-++++++++++++inlineTextBox name='with tabindex'
-++++++++heading name='A bug'
-++++++++++staticText name='A bug'
-++++++++++++inlineTextBox name='A bug'
-++++++++paragraph
-++++++++++staticText name='when reading all content?'
-++++++++++++inlineTextBox name='when reading all content?'
