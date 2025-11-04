@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+<head><title>Beforeunload Actor Test</title></head>
+<body>
+  <h1>Page with beforeunload</h1>
+  <script>
+    window.addEventListener('beforeunload', function (event) {
+      event.preventDefault();
+      event.returnValue = 'Test';
+    });
+  </script>
+</body>
+</html>

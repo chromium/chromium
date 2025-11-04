@@ -7126,6 +7126,12 @@ void RenderFrameHostImpl::RunBeforeUnloadConfirm(
     return;
   }
 
+  // Don't show the dialog and indicate navigation should continue.
+  if (GetContentClient()->browser()->ShouldSkipBeforeUnloadDialog(this)) {
+    std::move(ipc_response_callback).Run(/*success=*/true);
+    return;
+  }
+
   // Allow at most one attempt to show a beforeunload dialog per navigation.
   RenderFrameHostImpl* beforeunload_initiator = GetBeforeUnloadInitiator();
   if (beforeunload_initiator) {
@@ -12021,6 +12027,7 @@ RenderFrameHostImpl::CheckOrDispatchBeforeUnloadForFrame(
       !IsAvoidUnnecessaryBeforeUnloadCheckSyncEnabledFor(
           features::AvoidUnnecessaryBeforeUnloadCheckSyncMode::
               kWithoutSendBeforeUnload);
+
   const bool should_run_beforeunload =
       rfh->has_before_unload_handler_ || run_beforeunload_for_legacy_frame;
 

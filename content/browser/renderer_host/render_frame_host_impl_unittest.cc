@@ -1597,6 +1597,40 @@ TEST_F(AvoidUnnecessaryBeforeUnloadCheckSyncTest,
   SetBrowserClientForTesting(old_browser_client);
 }
 
+class SkipBeforeUnloadDialogAndNavigateContentBrowserClient
+    : public ContentBrowserClient {
+ public:
+  bool ShouldSkipBeforeUnloadDialog(content::RenderFrameHost* rfh) override {
+    called_ = true;
+    return true;
+  }
+
+  bool called() const { return called_; }
+
+ private:
+  bool called_ = false;
+};
+
+TEST_F(RenderFrameHostImplTest, RunBeforeUnloadConfirm_SkipDialogAndNavigate) {
+  SkipBeforeUnloadDialogAndNavigateContentBrowserClient skip_client;
+  ContentBrowserClient* old_browser_client =
+      SetBrowserClientForTesting(&skip_client);
+
+  TestRenderFrameHost* rfh = contents()->GetPrimaryMainFrame();
+
+  bool callback_ran = false;
+  rfh->RunBeforeUnloadConfirm(
+      /*is_reload=*/false, base::BindLambdaForTesting([&](bool success) {
+        EXPECT_TRUE(success);
+        callback_ran = true;
+      }));
+
+  EXPECT_TRUE(callback_ran);
+  EXPECT_TRUE(skip_client.called());
+
+  SetBrowserClientForTesting(old_browser_client);
+}
+
 class RenderFrameHostImplThirdPartyStorageTest
     : public RenderViewHostImplTestHarness,
       public testing::WithParamInterface<bool> {

@@ -505,6 +505,7 @@
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/actor/actor_features.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/actor_keyed_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
 #include "chrome/browser/devtools/chrome_devtools_manager_delegate.h"
@@ -8806,4 +8807,24 @@ bool ChromeContentBrowserClient::IsFileSystemAccessApiFilePickerAllowed(
   }
 #endif
   return true;
+}
+
+bool ChromeContentBrowserClient::ShouldSkipBeforeUnloadDialog(
+    content::RenderFrameHost* rfh) {
+#if !BUILDFLAG(IS_ANDROID)
+  if (!base::FeatureList::IsEnabled(
+          actor::kGlicSkipBeforeUnloadDialogAndNavigate)) {
+    return false;
+  }
+
+  auto* web_contents = content::WebContents::FromRenderFrameHost(rfh);
+  if (!web_contents) {
+    return false;
+  }
+
+  return IsActorActingOnWebContents(web_contents);
+
+#else
+  return false;
+#endif
 }
