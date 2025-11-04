@@ -43,6 +43,9 @@ class SelectFileDialogExtension : public ui::SelectFileDialog {
   // every WebContents or every Android task ID.
   typedef std::string RoutingID;
 
+  // Enum for tracking the type of file selection made by the user.
+  enum class SelectionType { kCancel = 0, kSingleFile, kMultipleFiles };
+
   SelectFileDialogExtension(const SelectFileDialogExtension&) = delete;
   SelectFileDialogExtension& operator=(SelectFileDialogExtension&) = delete;
 
@@ -185,8 +188,7 @@ class SelectFileDialogExtension : public ui::SelectFileDialog {
   // We defer the callback into SelectFileDialog::Listener until the window
   // closes, to match the semantics of file selection on Windows and Mac.
   // These are the data passed to the listener.
-  enum SelectionType { CANCEL = 0, SINGLE_FILE, MULTIPLE_FILES };
-  SelectionType selection_type_ = CANCEL;
+  SelectionType selection_type_ = SelectionType::kCancel;
   std::vector<ui::SelectedFileInfo> selection_files_;
   int selection_index_ = 0;
   bool can_resize_ = true;

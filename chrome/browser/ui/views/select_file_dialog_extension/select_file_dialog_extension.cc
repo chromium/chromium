@@ -315,7 +315,7 @@ void SelectFileDialogExtension::OnFileSelected(RoutingID routing_id,
   if (!dialog.get()) {
     return;
   }
-  dialog->selection_type_ = SINGLE_FILE;
+  dialog->selection_type_ = SelectionType::kSingleFile;
   dialog->selection_files_.clear();
   dialog->selection_files_.push_back(file);
   dialog->selection_index_ = index;
@@ -330,7 +330,7 @@ void SelectFileDialogExtension::OnMultiFilesSelected(
   if (!dialog.get()) {
     return;
   }
-  dialog->selection_type_ = MULTIPLE_FILES;
+  dialog->selection_type_ = SelectionType::kMultipleFiles;
   dialog->selection_files_ = files;
   dialog->selection_index_ = 0;
 }
@@ -342,7 +342,7 @@ void SelectFileDialogExtension::OnFileSelectionCanceled(RoutingID routing_id) {
   if (!dialog.get()) {
     return;
   }
-  dialog->selection_type_ = CANCEL;
+  dialog->selection_type_ = SelectionType::kCancel;
   dialog->selection_files_.clear();
   dialog->selection_index_ = 0;
 }
@@ -580,7 +580,7 @@ void SelectFileDialogExtension::ApplyPolicyAndNotifyListener(
                std::vector<ui::SelectedFileInfo> selection_files,
                bool is_allowed) {
               if (!is_allowed) {
-                weak_ptr->selection_type_ = SelectionType::CANCEL;
+                weak_ptr->selection_type_ = SelectionType::kCancel;
               }
               weak_ptr->NotifyListener(std::move(selection_files));
             },
@@ -593,7 +593,7 @@ void SelectFileDialogExtension::ApplyPolicyAndNotifyListener(
             [](base::WeakPtr<SelectFileDialogExtension> weak_ptr,
                std::vector<ui::SelectedFileInfo> allowed_files) {
               if (allowed_files.empty()) {
-                weak_ptr->selection_type_ = SelectionType::CANCEL;
+                weak_ptr->selection_type_ = SelectionType::kCancel;
               }
               weak_ptr->NotifyListener(std::move(allowed_files));
             },
@@ -609,13 +609,13 @@ void SelectFileDialogExtension::NotifyListener(
     return;
   }
   switch (selection_type_) {
-    case CANCEL:
+    case SelectionType::kCancel:
       listener_->FileSelectionCanceled();
       break;
-    case SINGLE_FILE:
+    case SelectionType::kSingleFile:
       listener_->FileSelected(selection_files[0], selection_index_);
       break;
-    case MULTIPLE_FILES:
+    case SelectionType::kMultipleFiles:
       listener_->MultiFilesSelected(selection_files);
       break;
     default:
