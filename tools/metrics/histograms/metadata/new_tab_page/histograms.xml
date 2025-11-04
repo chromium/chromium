@@ -761,6 +761,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="NewTabPage.Customization.Theme.UploadImage.PreviewInteractions"
+    enum="NtpCustomizationThemeUploadImagePreviewInteractions"
+    expires_after="2026-11-03">
+  <owner>hanxi@chromium.org</owner>
+  <owner>yyanting@google.com</owner>
+  <owner>clank-start@google.com</owner>
+  <summary>
+    Records the type of user interactions with the theme upload image preview
+    dialog. The histogram is logged every time when the user interacts with the
+    theme upload image preview dialog. This metric is logged on Android only.
+  </summary>
+</histogram>
+
 <histogram name="NewTabPage.Customization.Theme.UploadImage.PreviewShow"
     enum="BooleanVisible" expires_after="2026-11-03">
   <owner>hanxi@chromium.org</owner>

@@ -363,6 +363,12 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Customization button on NTP for tablet"/>
 </enum>
 
+<enum name="NtpCustomizationThemeUploadImagePreviewInteractions">
+  <summary/>
+  <int value="0" label="Cancel"/>
+  <int value="1" label="Save"/>
+</enum>
+
 <enum name="NTPCustomizeChromeBackgroundAction">
   <int value="0"
       label="Collection selected in the 'Chrome backgrounds' dialog."/>

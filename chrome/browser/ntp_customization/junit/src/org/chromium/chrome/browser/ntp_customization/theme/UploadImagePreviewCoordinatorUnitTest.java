@@ -94,6 +94,26 @@ public class UploadImagePreviewCoordinatorUnitTest {
     }
 
     @Test
+    public void testMetricThemeUploadImagePreviewInteractions_cancel() {
+        String histogramName = "NewTabPage.Customization.Theme.UploadImage.PreviewInteractions";
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        histogramName, UploadImagePreviewCoordinator.PreviewInteractionType.CANCEL);
+        mCancelButton.performClick();
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    public void testMetricThemeUploadImagePreviewInteractions_save() {
+        String histogramName = "NewTabPage.Customization.Theme.UploadImage.PreviewInteractions";
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        histogramName, UploadImagePreviewCoordinator.PreviewInteractionType.SAVE);
+        mSaveButton.performClick();
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
     public void testClickSaveButton() {
         mSaveButton.performClick();
 

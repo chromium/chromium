@@ -18,6 +18,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -32,12 +33,29 @@ import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
 /** Coordinator for managing the Upload Image Preview dialog. */
 @NullMarked
 public class UploadImagePreviewCoordinator {
 
     private final PropertyModel mPreviewPropertyModel;
     private final CropImageView mCropImageView;
+
+    /**
+     * The type of user interactions with the Upload Image Preview dialog.
+     *
+     * <p>These values are persisted to logs. Entries should not be renumbered and numeric values
+     * should never be reused. See tools/metrics/histograms/enums.xml.
+     */
+    @IntDef({PreviewInteractionType.CANCEL, PreviewInteractionType.SAVE})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface PreviewInteractionType {
+        int CANCEL = 0;
+        int SAVE = 1;
+        int NUM_ENTRIES = 2;
+    }
 
     /**
      * @param activity The activity context.
@@ -67,6 +85,8 @@ public class UploadImagePreviewCoordinator {
                 NtpThemeProperty.PREVIEW_SAVE_CLICK_LISTENER,
                 v -> {
                     onSaveButtonClicked(bitmap, onBottomSheetClickedCallback, dialog);
+                    NtpCustomizationMetricsUtils.recordThemeUploadImagePreviewInteractions(
+                            PreviewInteractionType.SAVE);
                 });
 
         mPreviewPropertyModel.set(
@@ -74,6 +94,8 @@ public class UploadImagePreviewCoordinator {
                 v -> {
                     onBottomSheetClickedCallback.onResult(false);
                     dialog.dismiss();
+                    NtpCustomizationMetricsUtils.recordThemeUploadImagePreviewInteractions(
+                            PreviewInteractionType.CANCEL);
                 });
 
         int saveButtonMarginBottom =

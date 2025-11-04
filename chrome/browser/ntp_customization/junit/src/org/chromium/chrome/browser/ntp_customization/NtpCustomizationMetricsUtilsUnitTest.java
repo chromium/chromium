@@ -9,6 +9,8 @@ import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoor
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.NTP_CARDS;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.EntryPointType.MAIN_MENU;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.EntryPointType.TOOL_BAR;
+import static org.chromium.chrome.browser.ntp_customization.theme.UploadImagePreviewCoordinator.PreviewInteractionType.CANCEL;
+import static org.chromium.chrome.browser.ntp_customization.theme.UploadImagePreviewCoordinator.PreviewInteractionType.SAVE;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -20,6 +22,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType;
+import org.chromium.chrome.browser.ntp_customization.theme.UploadImagePreviewCoordinator.PreviewInteractionType;
 
 /** Unit tests for {@link NtpCustomizationMetricsUtils} */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -96,5 +99,18 @@ public class NtpCustomizationMetricsUtilsUnitTest {
                 HistogramWatcher.newSingleRecordWatcher(histogramName, true);
         NtpCustomizationMetricsUtils.recordThemeUploadImagePreviewShow();
         histogramWatcher.assertExpected();
+    }
+
+    @Test
+    public void testRecordThemeUploadImagePreviewInteractions() {
+        String histogramName = "NewTabPage.Customization.Theme.UploadImage.PreviewInteractions";
+        @PreviewInteractionType int[] interactionTypes = new int[] {CANCEL, SAVE};
+
+        for (@PreviewInteractionType int type : interactionTypes) {
+            HistogramWatcher histogramWatcher =
+                    HistogramWatcher.newSingleRecordWatcher(histogramName, type);
+            NtpCustomizationMetricsUtils.recordThemeUploadImagePreviewInteractions(type);
+            histogramWatcher.assertExpected();
+        }
     }
 }
