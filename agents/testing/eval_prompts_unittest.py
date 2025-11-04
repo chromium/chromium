@@ -676,10 +676,10 @@ class RunPromptEvalTestsUnittest(unittest.TestCase):
         self.mock_fetch_sandbox_image = fetch_sandbox_image_patcher.start()
         self.addCleanup(fetch_sandbox_image_patcher.stop)
 
-        upload_metrics_patcher = mock.patch(
-            'eval_prompts.metrics.merge_and_upload_metrics')
-        self.mock_upload_metrics = upload_metrics_patcher.start()
-        self.addCleanup(upload_metrics_patcher.stop)
+        skia_perf_reporter_patcher = mock.patch(
+            'eval_prompts.skia_perf.SkiaPerfMetricReporter')
+        self.mock_skia_perf_reporter_cls = skia_perf_reporter_patcher.start()
+        self.addCleanup(skia_perf_reporter_patcher.stop)
 
     def test_run_prompt_eval_tests_no_tests(self):
         """Tests that the function returns 1 if there are no tests to run."""
@@ -968,15 +968,15 @@ class RunPromptEvalTestsUnittest(unittest.TestCase):
             return_value = []
 
         eval_prompts._run_prompt_eval_tests(self.args)
-        self.mock_upload_metrics.assert_called_once_with(
-            iteration_metrics=self.mock_worker_pool.return_value.
-            get_forwarded_metrics(),
+        self.mock_skia_perf_reporter_cls.assert_called_once_with(
             git_revision='test_revision',
             bucket='test_bucket',
             build_id='123',
             builder='test_builder',
             builder_group='test_builder_group',
             build_number=1)
+        self.mock_skia_perf_reporter_cls.return_value.upload_queued_metrics \
+            .assert_called_once()
 
     def test_run_prompt_eval_tests_perf_disabled(self):
         """Tests that metrics are not uploaded when perf uploading is
@@ -986,7 +986,8 @@ class RunPromptEvalTestsUnittest(unittest.TestCase):
             return_value = []
 
         eval_prompts._run_prompt_eval_tests(self.args)
-        self.mock_upload_metrics.assert_not_called()
+        self.mock_skia_perf_reporter_cls.return_value.upload_queued_metrics \
+            .assert_not_called()
 
 
 class ParseArgsUnittest(unittest.TestCase):

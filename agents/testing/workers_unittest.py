@@ -1112,23 +1112,7 @@ class WorkerPoolUnittest(unittest.TestCase):
         self.assertEqual(failed_tests[0], failed_test)
         pool.shutdown_blocking(1)
 
-    def test_get_forwarded_metrics(self):
-        """Tests that metrics are forwarded from the result thread."""
-        mock_metrics_queue = (
-            self.mock_result_thread.return_value.metrics_output_queue)
-        mock_metrics_queue.empty.side_effect = [False, True]
-        mock_metrics_queue.get.return_value = 'metric'
 
-        pool = workers.WorkerPool(
-            num_workers=1,
-            promptfoo=self.mock_promptfoo,
-            worker_options=self.worker_options,
-            result_options=self.result_options,
-        )
-        metrics = pool.get_forwarded_metrics()
-        self.assertEqual(len(metrics), 1)
-        self.assertEqual(metrics[0], 'metric')
-        pool.shutdown_blocking(1)
 
     def test_shutdown_blocking(self):
         """Tests that shutdown_blocking shuts down all threads."""

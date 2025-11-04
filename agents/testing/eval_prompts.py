@@ -15,10 +15,10 @@ import checkout_helpers
 import constants
 import eval_config
 import gemini_cli_installation
-import metrics
 import promptfoo_installation
 import resultdb
 import results
+import skia_perf
 import workers
 
 sys.path.append(str(constants.CHROMIUM_SRC))
@@ -338,9 +338,19 @@ def _run_prompt_eval_tests(args: argparse.Namespace) -> int:
                                            node_bin=node_bin)
 
     rdb_reporter = resultdb.ResultDBReporter()
+    perf_reporter = skia_perf.SkiaPerfMetricReporter(
+        git_revision=args.git_revision,
+        bucket=args.gcs_bucket,
+        build_id=args.build_id,
+        builder=args.builder,
+        builder_group=args.builder_group,
+        build_number=args.build_number)
     result_options = results.ResultOptions(
         print_output_on_success=args.print_output_on_success,
-        result_handlers=[rdb_reporter.report_result])
+        result_handlers=[
+            rdb_reporter.report_result,
+            perf_reporter.queue_result_for_upload,
+        ])
 
     worker_pool = workers.WorkerPool(
         args.parallel_workers
@@ -355,14 +365,7 @@ def _run_prompt_eval_tests(args: argparse.Namespace) -> int:
 
     worker_pool.shutdown_blocking()
     if args.enable_perf_uploading:
-        metrics.merge_and_upload_metrics(
-            iteration_metrics=worker_pool.get_forwarded_metrics(),
-            git_revision=args.git_revision,
-            bucket=args.gcs_bucket,
-            build_id=args.build_id,
-            builder=args.builder,
-            builder_group=args.builder_group,
-            build_number=args.build_number)
+        perf_reporter.upload_queued_metrics()
 
     returncode = 0
     if failed_test_results:

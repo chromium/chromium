@@ -5,7 +5,6 @@
 
 import dataclasses
 import logging
-import pprint
 import queue
 import sys
 import threading
@@ -111,7 +110,6 @@ class ResultThread(threading.Thread):
         super().__init__(daemon=True, **kwargs)
         self.result_input_queue = queue.Queue()
         self.failed_result_output_queue = queue.Queue()
-        self.metrics_output_queue = queue.Queue()
         self.total_results_reported = AtomicCounter()
         self._result_options = result_options
         self._shutdown_event = threading.Event()
@@ -124,7 +122,6 @@ class ResultThread(threading.Thread):
             self._fatal_exception = e
 
     def _process_incoming_results_until_shutdown(self) -> None:
-        # TODO(crbug.com/456827244): Move perf processing to a handler
         while not self._shutdown_event.is_set():
             try:
                 test_result = self.result_input_queue.get(
@@ -132,7 +129,6 @@ class ResultThread(threading.Thread):
             except queue.Empty:
                 continue
 
-            self._forward_metrics_to_output_queue(test_result)
             if (not test_result.success
                     or self._result_options.print_output_on_success):
                 sys.stdout.write(test_result.combined_logs)
@@ -150,19 +146,6 @@ class ResultThread(threading.Thread):
                 result_handler(test_result)
 
             self.total_results_reported.increment()
-
-    def _forward_metrics_to_output_queue(self, test_result: TestResult):
-        """Forwards on any collected metrics to the output queue.
-
-        Args:
-            test_result: The TestResult currently being processed.
-        """
-        pp = pprint.PrettyPrinter(indent=2)
-        for ir in test_result.iteration_results:
-            logging.debug('Forwarding metrics: %s', pp.pformat(ir.metrics))
-            self.metrics_output_queue.put(
-                metrics.IterationMetrics(config=test_result.config,
-                                         metrics=ir.metrics))
 
     def shutdown(self) -> None:
         """Tells the thread to shut down gracefully."""

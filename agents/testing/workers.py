@@ -21,7 +21,6 @@ import time
 import checkout_helpers
 import constants
 import eval_config
-import metrics
 import promptfoo_installation
 import results
 
@@ -141,8 +140,11 @@ class WorkerPool:
         """
         assert num_workers > 0
         # Create a copy so that options cannot be externally modified.
+        # This is not done for result_options because its result_handlers are
+        # liable to contain callables that use locks under the hood for thread
+        # safety, which causes errors with deepcopy due to them being
+        # un-picklable.
         worker_options = copy.deepcopy(worker_options)
-        result_options = copy.deepcopy(result_options)
 
         self._result_thread = results.ResultThread(
             result_options=result_options)
@@ -213,19 +215,6 @@ class WorkerPool:
                 logging.error(
                     'Failed to gracefully shut down thread %s in a WorkerPool',
                     t.native_id)
-
-    def get_forwarded_metrics(self) -> list[metrics.IterationMetrics]:
-        """Gets all metrics that have been forwarded from the result thread.
-
-        Returns:
-            A list of IterationMetrics that were produced since the last time
-            this method was called.
-        """
-        forwarded_metrics = []
-        metrics_queue = self._result_thread.metrics_output_queue
-        while not metrics_queue.empty():
-            forwarded_metrics.append(metrics_queue.get())
-        return forwarded_metrics
 
 
 def _parse_test_log_results(results_json) -> str:
