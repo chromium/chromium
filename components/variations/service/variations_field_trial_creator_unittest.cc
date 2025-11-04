@@ -148,6 +148,7 @@ VariationsSeed CreateTestSeedWithLimitedEntropyLayer() {
   auto* study = seed.add_study();
   study->set_name(kTestLimitedLayerStudyName);
   study->set_consistency(Study::PERMANENT);
+  study->set_activation_type(Study::ACTIVATE_ON_STARTUP);
 
   auto* experiment = study->add_experiment();
   experiment->set_name(kTestSeedExperimentName);

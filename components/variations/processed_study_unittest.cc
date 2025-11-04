@@ -61,6 +61,7 @@ Study CreateValidStudy() {
   disabled_experiment->set_google_web_experiment_id(2);
 
   study.set_default_experiment_name(default_experiment->name());
+  study.set_activation_type(Study::ACTIVATE_ON_STARTUP);
 
   return study;
 }
@@ -232,7 +233,7 @@ TEST_F(ProcessedStudyTest, InitBlankStudyName) {
 TEST_F(ProcessedStudyTest, InitMissingExperimentName) {
   Study study = CreateValidStudy();
 
-  AddExperiment("", 0, &study);
+  AddExperiment("", 100, &study);
 
   ProcessedStudy processed_study;
   EXPECT_FALSE(processed_study.Init(&study));
@@ -244,8 +245,8 @@ TEST_F(ProcessedStudyTest, InitMissingExperimentName) {
 TEST_F(ProcessedStudyTest, InitRepeatedExperimentName) {
   Study study = CreateValidStudy();
 
-  AddExperiment("Group", 0, &study);
-  AddExperiment("Group", 0, &study);
+  AddExperiment("Group", 50, &study);
+  AddExperiment("Group", 50, &study);
 
   ProcessedStudy processed_study;
   EXPECT_FALSE(processed_study.Init(&study));
@@ -257,7 +258,7 @@ TEST_F(ProcessedStudyTest, InitRepeatedExperimentName) {
 TEST_F(ProcessedStudyTest, InitTriggerAndNonTriggerExperimentId) {
   Study study = CreateValidStudy();
 
-  Study::Experiment* experiment = AddExperiment("Group", 0, &study);
+  Study::Experiment* experiment = AddExperiment("Group", 100, &study);
   experiment->set_google_web_experiment_id(123);
   experiment->set_google_web_trigger_experiment_id(123);
 
@@ -271,7 +272,7 @@ TEST_F(ProcessedStudyTest, StickyStudyWithExperimentId) {
   Study study = CreateValidStudy();
   study.set_consistency(Study::PERMANENT);
   study.set_activation_type(Study::STICKY_AFTER_QUERY);
-  Study::Experiment* experiment = AddExperiment("Group", 0, &study);
+  Study::Experiment* experiment = AddExperiment("Group", 100, &study);
   experiment->set_google_web_experiment_id(123);
 
   ProcessedStudy processed_study;
@@ -279,11 +280,24 @@ TEST_F(ProcessedStudyTest, StickyStudyWithExperimentId) {
   ExpectInvalidStudyReason(InvalidStudyReason::kExperimentIdInStickyStudy);
 }
 
+TEST_F(ProcessedStudyTest, ActiveOnQueryStudyWithExperimentId) {
+  Study study = CreateValidStudy();
+  study.set_consistency(Study::PERMANENT);
+  study.set_activation_type(Study::ACTIVATE_ON_QUERY);
+  Study::Experiment* experiment = AddExperiment("Group", 100, &study);
+  experiment->set_google_web_experiment_id(123);
+
+  ProcessedStudy processed_study;
+  EXPECT_FALSE(processed_study.Init(&study));
+  ExpectInvalidStudyReason(
+      InvalidStudyReason::kExperimentIdInActivateOnQueryStudy);
+}
+
 TEST_F(ProcessedStudyTest, StickyStudyWithTriggerExperimentId) {
   Study study = CreateValidStudy();
   study.set_consistency(Study::PERMANENT);
   study.set_activation_type(Study::STICKY_AFTER_QUERY);
-  Study::Experiment* experiment = AddExperiment("Group", 0, &study);
+  Study::Experiment* experiment = AddExperiment("Group", 100, &study);
   experiment->set_google_web_trigger_experiment_id(123);
 
   ProcessedStudy processed_study;
@@ -295,7 +309,7 @@ TEST_F(ProcessedStudyTest, StickyStudyWithAppExperimentId) {
   Study study = CreateValidStudy();
   study.set_consistency(Study::PERMANENT);
   study.set_activation_type(Study::STICKY_AFTER_QUERY);
-  Study::Experiment* experiment = AddExperiment("Group", 0, &study);
+  Study::Experiment* experiment = AddExperiment("Group", 100, &study);
   experiment->set_google_app_experiment_id(123);
 
   ProcessedStudy processed_study;

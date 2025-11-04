@@ -125,6 +125,7 @@ Study CreateTwoArmStudy(Study_Consistency consistency) {
   Study study;
   study.set_name("TestStudy");
   study.set_consistency(consistency);
+  study.set_activation_type(Study::ACTIVATE_ON_STARTUP);
 
   AddExperiment("Group1", 50, &study);
   AddExperiment("Group2", 50, &study);

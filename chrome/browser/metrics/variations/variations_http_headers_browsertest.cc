@@ -137,6 +137,7 @@ VariationsSeed CreateTestSeedWithLimitedEntropyLayer(
   slot_range->set_end(99);
 
   Study base_study;
+  base_study.set_activation_type(Study::ACTIVATE_ON_STARTUP);
   base_study.set_consistency(Study::PERMANENT);
   auto* filter = base_study.mutable_filter();
   filter->add_channel(Study::UNKNOWN);

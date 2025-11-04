@@ -316,6 +316,7 @@ TYPED_TEST(VariationsSeedProcessorTest, AllowForceGroupAndVariationId) {
 
   VariationsSeed seed;
   Study* study = CreateStudyWithFlagGroups(100, 0, 0, &seed);
+  study->set_activation_type(Study::ACTIVATE_ON_STARTUP);
   study->mutable_experiment(1)->set_google_web_experiment_id(kExperimentId);
 
   this->CreateTrialsFromSeed(seed);
@@ -333,6 +334,7 @@ TYPED_TEST(VariationsSeedProcessorTest,
 
   VariationsSeed seed;
   Study* study = CreateStudyWithFlagGroups(100, 0, 0, &seed);
+  study->set_activation_type(Study::ACTIVATE_ON_STARTUP);
   Study::Experiment* experiment1 = study->mutable_experiment(1);
   experiment1->set_google_web_experiment_id(kExperimentId);
   experiment1->set_google_web_visibility(Study::FIRST_PARTY);
@@ -442,6 +444,7 @@ TYPED_TEST(VariationsSeedProcessorTest, FieldTrialOverride) {
     VariationsSeed seed;
     Study* study = seed.add_study();
     study->set_name(kRepeated.name);
+    study->set_activation_type(Study::ACTIVATE_ON_STARTUP);
     Study::Experiment* experiment = AddExperiment("Enabled", 1, study);
     experiment->mutable_feature_association()->add_enable_feature(
         kRepeated.name);
@@ -661,6 +664,7 @@ TYPED_TEST(VariationsSeedProcessorTest, StartsActiveWithFlag) {
 TYPED_TEST(VariationsSeedProcessorTest, ForcingFlagAlreadyForced) {
   VariationsSeed seed;
   Study* study = CreateStudyWithFlagGroups(100, 0, 0, &seed);
+  study->set_activation_type(Study::ACTIVATE_ON_STARTUP);
   ASSERT_EQ(kNonFlagGroupName, study->experiment(0).name());
   Study::Experiment::Param* param = study->mutable_experiment(0)->add_param();
   param->set_name("x");
@@ -994,12 +998,14 @@ TYPED_TEST(VariationsSeedProcessorTest, LowEntropyStudyTest) {
   Study* study1 = seed.add_study();
   study1->set_name(kTrial1Name);
   study1->set_consistency(Study::PERMANENT);
+  study1->set_activation_type(Study::ACTIVATE_ON_STARTUP);
   study1->set_default_experiment_name(kDefaultName);
   AddExperiment(kGroup1Name, 50, study1);
   AddExperiment(kDefaultName, 50, study1);
   Study* study2 = seed.add_study();
   study2->set_name(kTrial2Name);
   study2->set_consistency(Study::PERMANENT);
+  study2->set_activation_type(Study::ACTIVATE_ON_STARTUP);
   study2->set_default_experiment_name(kDefaultName);
   AddExperiment(kGroup1Name, 50, study2);
   AddExperiment(kDefaultName, 50, study2);
@@ -1043,6 +1049,7 @@ TYPED_TEST(VariationsSeedProcessorTest, LimitedEntropyStudyTest) {
   Study* study = seed.add_study();
   study->set_name("MyStudy");
   study->set_consistency(Study::PERMANENT);
+  study->set_activation_type(Study::ACTIVATE_ON_STARTUP);
   study->set_default_experiment_name("Default");
   study->set_google_web_visibility_start_date(
       static_cast<int64_t>(tomorrow.InSecondsFSinceUnixEpoch()));

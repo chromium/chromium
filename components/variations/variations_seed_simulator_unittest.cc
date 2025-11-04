@@ -198,6 +198,7 @@ TEST_F(VariationsSeedSimulatorTest,
   VariationsSeed seed;
   *seed.add_study() = CreateStudy("A", Study_Consistency_PERMANENT);
   Study* study = seed.mutable_study(0);
+  study->set_activation_type(Study::ACTIVATE_ON_STARTUP);
 
   // Adding an experiment with |google_web_experiment_id| so that the limited
   // entropy provider can be used.
@@ -239,6 +240,7 @@ TEST_F(VariationsSeedSimulatorTest, PermanentGroupChangeDueToExperimentID) {
   VariationsSeed seed;
   *seed.add_study() = CreateStudy("A", Study_Consistency_PERMANENT);
   Study* study = seed.mutable_study(0);
+  study->set_activation_type(Study::ACTIVATE_ON_STARTUP);
   Study_Experiment* experiment_b = AddExperiment("B", 50, study);
   AddExperiment("Default", 50, study);
   EXPECT_EQ("0 0 0", SimulateStudyDifferences(seed));
@@ -259,6 +261,7 @@ TEST_F(VariationsSeedSimulatorTest,
   VariationsSeed seed;
   *seed.add_study() = CreateStudy("A", Study_Consistency_PERMANENT);
   Study* study = seed.mutable_study(0);
+  study->set_activation_type(Study::ACTIVATE_ON_STARTUP);
 
   Study_Experiment* experiment_b = AddExperiment("B", 50, study);
   AddExperiment("Default", 50, study);

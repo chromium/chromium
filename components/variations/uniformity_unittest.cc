@@ -69,6 +69,7 @@ VariationsSeed LayerStudySeed(const LayerStudySeedOptions& options) {
   Study* study = seed.add_study();
   study->set_name(kStudyName);
   study->set_consistency(Study_Consistency_PERMANENT);
+  study->set_activation_type(Study::ACTIVATE_ON_STARTUP);
 
   if (options.layer_constrain_study) {
     LayerMemberReference* layer_membership = study->mutable_layer();

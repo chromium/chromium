@@ -63,6 +63,7 @@ void SetupStudy(VariationsSeed* seed, const TestStudyConfig& config) {
   Study* study = seed->add_study();
   study->set_name(std::string(config.name));
   study->set_consistency(Study_Consistency_PERMANENT);
+  study->set_activation_type(Study::ACTIVATE_ON_STARTUP);
   if (config.add_salt) {
     study->set_randomization_seed(0x1234);
   }
