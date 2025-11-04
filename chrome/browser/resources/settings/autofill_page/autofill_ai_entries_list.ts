@@ -92,6 +92,10 @@ export class SettingsAutofillAiEntriesListElement extends
         value: null,
       },
 
+      title: {
+        type: String,
+      },
+
       allowEditing_: {
         type: Object,
         value: false,
@@ -152,6 +156,7 @@ export class SettingsAutofillAiEntriesListElement extends
 
   declare ineligibleUser: boolean;
   declare allowedEntityTypes: Set<EntityTypeName>|null;
+  declare title: string;
   declare private allowEditing_: boolean;
   declare private activeEntityInstance_: EntityInstance|null;
   declare private completeEntityTypesList_: EntityType[];
