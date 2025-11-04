@@ -111,14 +111,4 @@ void JNI_DomDistillerTabUtils_RunReadabilityHeuristicsOnWebContents(
   ::RunReadabilityHeuristicsOnWebContents(web_contents, std::move(callback));
 }
 
-void JNI_DomDistillerTabUtils_OverrideDefaultZoomForReaderModePage(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& j_source_web_contents,
-    const JavaParamRef<jstring>& j_distiller_url) {
-  content::WebContents* source_web_contents =
-      content::WebContents::FromJavaWebContents(j_source_web_contents);
-  GURL url(base::android::ConvertJavaStringToUTF8(env, j_distiller_url));
-  ::OverrideDefaultZoomForReaderModePage(source_web_contents, url);
-}
-
 }  // namespace android

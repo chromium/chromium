@@ -165,10 +165,6 @@ void StartNavigationToDistillerViewer(content::WebContents* web_contents,
   content::NavigationController::LoadURLParams params(viewer_url);
   params.transition_type = ui::PAGE_TRANSITION_AUTO_BOOKMARK;
   web_contents->GetController().LoadURLWithParams(params);
-#if BUILDFLAG(IS_ANDROID)
-  // Override default accessibility zoom for in-app distillation.
-  OverrideDefaultZoomForReaderModePage(web_contents, viewer_url);
-#endif
 }
 
 void MaybeStartDistillation(
@@ -269,15 +265,3 @@ void RunReadabilityHeuristicsOnWebContents(
       ISOLATED_WORLD_ID_CHROME_INTERNAL);
 }
 
-void OverrideDefaultZoomForReaderModePage(content::WebContents* web_contents,
-                                          const GURL& url) {
-#if BUILDFLAG(IS_ANDROID)
-  // Ensure that the distilled page does not apply the default accessibility
-  // zoom by setting explicit zoom for the distiller URL.
-  content::HostZoomMap* host_zoom_map =
-      content::HostZoomMap::GetForWebContents(web_contents);
-  if (host_zoom_map) {
-    host_zoom_map->SetZoomLevelForHost(url.GetHost(), 0.0);
-  }
-#endif
-}
