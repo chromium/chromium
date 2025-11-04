@@ -7902,6 +7902,22 @@
             ]
         }
     ],
+    "CrostiniContainerless": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "CrostiniContainerless"
+                    ],
+                    "min_os_version": "16467.0.0"
+                }
+            ]
+        }
+    ],
     "CursiveManagedStylusPreinstall": [
         {
             "platforms": [
