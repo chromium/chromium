@@ -145,7 +145,6 @@ void GapDecorationsPainter::Paint(GridTrackSizingDirection track_direction,
       is_column_gap ? style.ColumnRuleStyle() : style.RowRuleStyle();
   GapDataList<int> rule_widths =
       is_column_gap ? style.ColumnRuleWidth() : style.RowRuleWidth();
-  Length rule_outset = style.RowRuleOutset();
   RuleBreak rule_break =
       is_column_gap ? style.ColumnRuleBreak() : style.RowRuleBreak();
 
@@ -224,20 +223,12 @@ void GapDecorationsPainter::Paint(GridTrackSizingDirection track_direction,
       // Percentage values are resolved against the crossing gap width of the
       // intersection point.
       // https://drafts.csswg.org/css-gaps-1/#propdef-column-rule-outset
-      LayoutUnit start_outset = ValueForLength(rule_outset, start_width);
-      LayoutUnit end_outset = ValueForLength(rule_outset, end_width);
-
-      // TODO(javiercon): Condition will be removed once the new outset
-      // properties for row are implemented in the next CL.
-      if (is_column_gap) {
-        start_outset = gap_geometry.ComputeStartOutset(
+      LayoutUnit start_outset = gap_geometry.ComputeStartOutset(
             style, gap_index, start, intersections, is_column_gap, is_main,
             start_width);
-        end_outset =
+      LayoutUnit end_outset =
             gap_geometry.ComputeEndOutset(style, gap_index, end, intersections,
                                           is_column_gap, is_main, end_width);
-      }
-
       // Compute the gap decorations offset as half of the `crossing_gap_width`
       // minus the outset.
       // https://drafts.csswg.org/css-gaps-1/#compute-the-offset

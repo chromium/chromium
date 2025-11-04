@@ -343,7 +343,6 @@ row-rule-edge-end-outset: 0px
 row-rule-edge-start-outset: 0px
 row-rule-interior-end-outset: 50%
 row-rule-interior-start-outset: 50%
-row-rule-outset: 50%
 row-rule-style: none
 row-rule-visibility-items: all
 row-rule-width: 3px

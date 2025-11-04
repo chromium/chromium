@@ -12,7 +12,7 @@
 <body>
   <div id="target"></div>
   <script>
-    const properties = ['column-rule-outset',/* 'row-rule-outset', 'rule-outset'*/];
+    const properties = ['column-rule-outset', 'row-rule-outset'/*, 'rule-outset'*/];
     for (const property of properties) {
       test_valid_value(property, '0', '0px 0px / 0px 0px');
       test_valid_value(property, '-20px', '-20px -20px / -20px -20px');

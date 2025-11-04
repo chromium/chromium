@@ -586,13 +586,16 @@ String StylePropertySerializer::SerializeShorthand(
     case CSSPropertyID::kColumnRule:
       return GetShorthandValueForGapDecorationsRule(
           columnRuleShorthand(), CSSGapDecorationPropertyDirection::kColumn);
+    case CSSPropertyID::kRowRule:
+      return GetShorthandValueForGapDecorationsRule(
+          rowRuleShorthand(), CSSGapDecorationPropertyDirection::kRow);
     case CSSPropertyID::kColumnRuleOutset:
       return GetShorthandValueForGapDecorationsRuleOutset(
           columnRuleOutsetShorthand(),
           CSSGapDecorationPropertyDirection::kColumn);
-    case CSSPropertyID::kRowRule:
-      return GetShorthandValueForGapDecorationsRule(
-          rowRuleShorthand(), CSSGapDecorationPropertyDirection::kRow);
+    case CSSPropertyID::kRowRuleOutset:
+      return GetShorthandValueForGapDecorationsRuleOutset(
+          rowRuleOutsetShorthand(), CSSGapDecorationPropertyDirection::kRow);
     case CSSPropertyID::kColumns:
       return GetShorthandValueForColumns(columnsShorthand());
     case CSSPropertyID::kContainIntrinsicSize:

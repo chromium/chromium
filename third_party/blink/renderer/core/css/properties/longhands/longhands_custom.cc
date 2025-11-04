@@ -5886,23 +5886,6 @@ const CSSValue* RowRuleBreak::CSSValueFromComputedStyleInternal(
   return CSSIdentifierValue::Create(style.RowRuleBreak());
 }
 
-const CSSValue* RowRuleOutset::ParseSingleValue(
-    CSSParserTokenStream& stream,
-    const CSSParserContext& context,
-    const CSSParserLocalContext&) const {
-  return css_parsing_utils::ConsumeLengthOrPercent(
-      stream, context, CSSPrimitiveValue::ValueRange::kAll);
-}
-
-const CSSValue* RowRuleOutset::CSSValueFromComputedStyleInternal(
-    const ComputedStyle& style,
-    const LayoutObject*,
-    bool allow_visited_style,
-    CSSValuePhase value_phase) const {
-  return ComputedStyleUtils::ZoomAdjustedPixelValueForLength(
-      style.RowRuleOutset(), style);
-}
-
 const CSSValue* ColumnRuleEdgeEndOutset::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,

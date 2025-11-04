@@ -843,8 +843,6 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
              b.ColumnRuleInteriorStartOutset();
     case CSSPropertyID::kRowRuleInteriorStartOutset:
       return a.RowRuleInteriorStartOutset() == b.RowRuleInteriorStartOutset();
-    case CSSPropertyID::kRowRuleOutset:
-      return a.RowRuleOutset() == b.RowRuleOutset();
     case CSSPropertyID::kColumnRuleColor:
       return a.ColumnRuleColor() == b.ColumnRuleColor() &&
              a.InternalVisitedColumnRuleColor() ==
@@ -1341,6 +1339,7 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kPlaceSelf:
     case CSSPropertyID::kPositionTry:
     case CSSPropertyID::kRowRule:
+    case CSSPropertyID::kRowRuleOutset:
     case CSSPropertyID::kRule:
     case CSSPropertyID::kRuleBreak:
     case CSSPropertyID::kRuleColor:
