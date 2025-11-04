@@ -6,10 +6,6 @@
 
 #import "base/task/task_traits.h"
 #import "base/task/thread_pool.h"
-#import "base/types/cxx23_to_underlying.h"
-#import "components/pref_registry/pref_registry_syncable.h"
-#import "components/prefs/pref_service.h"
-#import "ios/chrome/browser/sessions/model/session_constants.h"
 #import "ios/chrome/browser/sessions/model/session_restoration_service_impl.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -50,16 +46,4 @@ SessionRestorationServiceFactory::BuildServiceInstanceFor(
       base::ThreadPool::CreateSingleThreadTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
            base::TaskShutdownBehavior::BLOCK_SHUTDOWN}));
-}
-
-void SessionRestorationServiceFactory::RegisterProfilePrefs(
-    user_prefs::PrefRegistrySyncable* registry) {
-  registry->RegisterIntegerPref(
-      kSessionStorageFormatPref,
-      base::to_underlying(SessionStorageFormat::kUnknown));
-  registry->RegisterIntegerPref(
-      kSessionStorageMigrationStatusPref,
-      base::to_underlying(SessionStorageMigrationStatus::kUnkown));
-  registry->RegisterTimePref(kSessionStorageMigrationStartedTimePref,
-                             base::Time());
 }

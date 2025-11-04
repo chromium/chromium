@@ -35,32 +35,6 @@ extern NSString* const kLegacyWebStateListPinnedStateKey;
 extern NSString* const kLegacyWebStateListOpenerIndexKey;
 extern NSString* const kLegacyWebStateListOpenerNavigationIndexKey;
 
-// Name of the preference storing the format of the session storage.
-extern const char kSessionStorageFormatPref[];
-
-// Name of the preference storing the status of the session storage migration.
-extern const char kSessionStorageMigrationStatusPref[];
-
-// Name of the preference storing the date of the last migration attempt.
-extern const char kSessionStorageMigrationStartedTimePref[];
-
-// Possible values for the preference storing the format of the session
-// storage.
-enum class SessionStorageFormat {
-  kUnknown,
-  kLegacy,
-  kOptimized,
-};
-
-// Possible values for the preference storing the status of the session
-// storage migration.
-enum class SessionStorageMigrationStatus {
-  kUnkown,
-  kSuccess,
-  kFailure,
-  kInProgress,
-};
-
 // Name of the histogram used to record the time spent blocking the main
 // thread to save/load the session from storage.
 extern const char kSessionHistogramSavingTime[];
