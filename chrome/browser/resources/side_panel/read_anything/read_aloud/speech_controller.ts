@@ -4,10 +4,10 @@
 
 import {loadTimeData} from '//resources/js/load_time_data.js';
 
-import {getWordCount, playFromSelectionTimeout} from '../common.js';
-import {NodeStore} from '../node_store.js';
-import {ReadAnythingLogger} from '../read_anything_logger.js';
-import {SelectionController} from '../selection_controller.js';
+import {NodeStore} from '../content/node_store.js';
+import {SelectionController} from '../content/selection_controller.js';
+import {getWordCount, playFromSelectionTimeout} from '../shared/common.js';
+import {ReadAnythingLogger} from '../shared/read_anything_logger.js';
 
 import {ReadAloudHighlighter} from './highlighter.js';
 import {getReadAloudModel} from './read_aloud_model_browser_proxy.js';

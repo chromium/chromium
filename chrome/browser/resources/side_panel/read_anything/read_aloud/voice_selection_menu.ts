@@ -17,9 +17,9 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {openMenu, spinnerDebounceTimeout, ToolbarEvent} from '../common.js';
-import {ReadAloudSettingsChange} from '../metrics_browser_proxy.js';
-import {ReadAnythingLogger} from '../read_anything_logger.js';
+import {openMenu, spinnerDebounceTimeout, ToolbarEvent} from '../shared/common.js';
+import {ReadAloudSettingsChange} from '../shared/metrics_browser_proxy.js';
+import {ReadAnythingLogger} from '../shared/read_anything_logger.js';
 
 import type {LanguageMenuElement} from './language_menu.js';
 // clang-format off

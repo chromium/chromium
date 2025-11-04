@@ -10,17 +10,19 @@ build_webui("build") {
   grd_prefix = "side_panel_read_anything"
 
   static_files = [
+    "app/read_anything.html",
     "images/empty_state.svg",
-    "read_anything.html",
   ]
 
   ts_files = [
-    "app_style_updater.ts",
-    "app.html.ts",
-    "app.ts",
-    "common.ts",
-    "content_controller.ts",
-    "keyboard_util.ts",
+    "app/app_style_updater.ts",
+    "app/app.html.ts",
+    "app/app.ts",
+    "app/read_anything_toolbar.html.ts",
+    "app/read_anything_toolbar.ts",
+    "content/content_controller.ts",
+    "content/node_store.ts",
+    "content/selection_controller.ts",
     "menus/color_menu.html.ts",
     "menus/color_menu.ts",
     "menus/highlight_menu.html.ts",
@@ -34,8 +36,6 @@ build_webui("build") {
     "menus/rate_menu.ts",
     "menus/simple_action_menu.html.ts",
     "menus/simple_action_menu.ts",
-    "metrics_browser_proxy.ts",
-    "node_store.ts",
     "read_aloud/highlighter.ts",
     "read_aloud/language_menu.html.ts",
     "read_aloud/language_menu.ts",
@@ -59,22 +59,22 @@ build_webui("build") {
     "read_aloud/voice_selection_menu.html.ts",
     "read_aloud/voice_selection_menu.ts",
     "read_aloud/word_boundaries.ts",
-    "read_anything_logger.ts",
-    "read_anything_toolbar.html.ts",
-    "read_anything_toolbar.ts",
     "read_anything.ts",
-    "selection_controller.ts",
+    "shared/common.ts",
+    "shared/keyboard_util.ts",
+    "shared/metrics_browser_proxy.ts",
+    "shared/read_anything_logger.ts",
   ]
   css_files = [
-    "app.css",
+    "app/app.css",
+    "app/read_anything_toolbar.css",
+    "app/toolbar_styles_shared.css",
     "menus/simple_action_menu.css",
     "read_aloud/language_menu.css",
     "read_aloud/language_toast.css",
     "read_aloud/voice_selection_menu.css",
-    "read_anything_toolbar.css",
-    "toolbar_styles_shared.css",
   ]
-  icons_html_files = [ "icons.html" ]
+  icons_html_files = [ "app/icons.html" ]
 
   ts_composite = true
   ts_deps = [
@@ -88,7 +88,7 @@ build_webui("build") {
   ts_definitions = [
     "//tools/typescript/definitions/metrics_private.d.ts",
     "//tools/typescript/definitions/pending.d.ts",
-    "read_anything.d.ts",
+    "app/read_anything.d.ts",
   ]
   ts_path_mappings =
       [ "//read-anything-side-panel.top-chrome/shared/*|" +

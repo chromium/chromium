@@ -5,13 +5,14 @@
 import {assert} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 
-import {LOG_EMPTY_DELAY_MS} from './common.js';
+import {previousReadHighlightClass} from '../read_aloud/movement.js';
+import {getReadAloudModel} from '../read_aloud/read_aloud_model_browser_proxy.js';
+import {ReadAloudNode} from '../read_aloud/read_aloud_types.js';
+import {SpeechController} from '../read_aloud/speech_controller.js';
+import {LOG_EMPTY_DELAY_MS} from '../shared/common.js';
+import {ReadAnythingLogger} from '../shared/read_anything_logger.js';
+
 import {NodeStore} from './node_store.js';
-import {previousReadHighlightClass} from './read_aloud/movement.js';
-import {getReadAloudModel} from './read_aloud/read_aloud_model_browser_proxy.js';
-import {ReadAloudNode} from './read_aloud/read_aloud_types.js';
-import {SpeechController} from './read_aloud/speech_controller.js';
-import {ReadAnythingLogger} from './read_anything_logger.js';
 
 const DATA_PREFIX = 'data-';
 const LINK_DATA_ATTR = 'link';

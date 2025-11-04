@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {isRectVisible} from '../common.js';
-import {NodeStore} from '../node_store.js';
+import {NodeStore} from '../content/node_store.js';
+import {isRectVisible} from '../shared/common.js';
 
 import {ReadAloudNodeStore} from './read_aloud_node_store.js';
 import type {ReadAloudNode, Segment} from './read_aloud_types.js';

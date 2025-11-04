@@ -3,13 +3,13 @@
 // found in the LICENSE file.
 
 import './icons.html.js';
-import './read_aloud/voice_selection_menu.js';
-import './menus/simple_action_menu.js';
-import './menus/color_menu.js';
-import './menus/line_spacing_menu.js';
-import './menus/letter_spacing_menu.js';
-import './menus/highlight_menu.js';
-import './menus/rate_menu.js';
+import '../read_aloud/voice_selection_menu.js';
+import '../menus/simple_action_menu.js';
+import '../menus/color_menu.js';
+import '../menus/line_spacing_menu.js';
+import '../menus/letter_spacing_menu.js';
+import '../menus/highlight_menu.js';
+import '../menus/rate_menu.js';
 import '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
@@ -26,18 +26,19 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement, html, type TemplateResult} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {minOverflowLengthToScroll, openMenu, spinnerDebounceTimeout, ToolbarEvent} from './common.js';
-import type {SettingsPrefs} from './common.js';
-import {getNewIndex, isArrow, isForwardArrow, isHorizontalArrow} from './keyboard_util.js';
-import type {ColorMenuElement} from './menus/color_menu.js';
-import type {HighlightMenuElement} from './menus/highlight_menu.js';
-import type {LetterSpacingMenuElement} from './menus/letter_spacing_menu.js';
-import type {LineSpacingMenuElement} from './menus/line_spacing_menu.js';
-import type {RateMenuElement} from './menus/rate_menu.js';
-import {ReadAnythingSettingsChange} from './metrics_browser_proxy.js';
-import {getCurrentSpeechRate} from './read_aloud/speech_presentation_rules.js';
-import type {VoiceSelectionMenuElement} from './read_aloud/voice_selection_menu.js';
-import {ReadAnythingLogger, SpeechControls, TimeFrom} from './read_anything_logger.js';
+import type {ColorMenuElement} from '../menus/color_menu.js';
+import type {HighlightMenuElement} from '../menus/highlight_menu.js';
+import type {LetterSpacingMenuElement} from '../menus/letter_spacing_menu.js';
+import type {LineSpacingMenuElement} from '../menus/line_spacing_menu.js';
+import type {RateMenuElement} from '../menus/rate_menu.js';
+import {getCurrentSpeechRate} from '../read_aloud/speech_presentation_rules.js';
+import type {VoiceSelectionMenuElement} from '../read_aloud/voice_selection_menu.js';
+import {minOverflowLengthToScroll, openMenu, spinnerDebounceTimeout, ToolbarEvent} from '../shared/common.js';
+import type {SettingsPrefs} from '../shared/common.js';
+import {getNewIndex, isArrow, isForwardArrow, isHorizontalArrow} from '../shared/keyboard_util.js';
+import {ReadAnythingSettingsChange} from '../shared/metrics_browser_proxy.js';
+import {ReadAnythingLogger, SpeechControls, TimeFrom} from '../shared/read_anything_logger.js';
+
 import {getCss} from './read_anything_toolbar.css.js';
 import {getHtml} from './read_anything_toolbar.html.js';
 
@@ -379,7 +380,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   }
 
   protected getHighlightButtonLabel_(): string {
-      return loadTimeData.getString('voiceHighlightLabel');
+    return loadTimeData.getString('voiceHighlightLabel');
   }
 
   protected getFormattedSpeechRate_(): string {
@@ -562,7 +563,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   protected onHighlightClick_(event: MouseEvent) {
     // Click handler for the highlight button. Used both for the
     // highlight menu mode and the toggle button mode.
-      this.$.highlightMenu.open(event.target as HTMLElement);
+    this.$.highlightMenu.open(event.target as HTMLElement);
   }
 
   private setHighlightButtonIcon_(turnOn: boolean) {

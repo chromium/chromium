@@ -5,7 +5,7 @@
 import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {AnchorAlignment} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 
-import {TextSegmenter} from './read_aloud/text_segmenter.js';
+import {TextSegmenter} from '../read_aloud/text_segmenter.js';
 
 // Determined by experimentation - can be adjusted to fine tune for different
 // platforms.
@@ -56,16 +56,6 @@ const ACTIVE_CSS_CLASS = 'active';
 // for the purpose of determining what's likely being actually read in the
 // reading mode panel.
 export const MOSTLY_VISIBLE_PERCENT = 0.8;
-
-// Propagates a custom event with the given name and any details.
-export function emitEvent(
-    target: EventTarget, name: string, eventDetail?: any) {
-  target.dispatchEvent(new CustomEvent(name, {
-    bubbles: true,
-    composed: true,
-    detail: eventDetail,
-  }));
-}
 
 export function openMenu(
     menuToOpen: CrActionMenuElement, target: HTMLElement,

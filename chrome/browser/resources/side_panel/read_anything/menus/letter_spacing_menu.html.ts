@@ -4,7 +4,7 @@
 
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {ToolbarEvent} from '../common.js';
+import {ToolbarEvent} from '../shared/common.js';
 
 import type {LetterSpacingMenuElement} from './letter_spacing_menu.js';
 

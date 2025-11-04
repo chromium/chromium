@@ -18,7 +18,7 @@ import {assert} from '//resources/js/assert.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {ToolbarEvent} from '../common.js';
+import {ToolbarEvent} from '../shared/common.js';
 
 import {getCss} from './language_menu.css.js';
 import {getHtml} from './language_menu.html.js';

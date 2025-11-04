@@ -58,9 +58,7 @@ build_webui_tests("build") {
     "word_boundaries_test.ts",
   ]
 
-  ts_definitions = [
-    "//chrome/browser/resources/side_panel/read_anything/read_anything.d.ts",
-  ]
+  ts_definitions = [ "//chrome/browser/resources/side_panel/read_anything/app/read_anything.d.ts" ]
 
   ts_path_mappings = [ "chrome-untrusted://read-anything-side-panel.top-chrome/*|" + rebase_path(
                            "$root_gen_dir/chrome/browser/resources/side_panel/read_anything/tsc/*",
