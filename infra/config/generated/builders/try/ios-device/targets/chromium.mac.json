@@ -10,7 +10,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "17a324",
+          "17a400",
           "--xctest"
         ],
         "ci_only": true,
@@ -40,7 +40,7 @@
           "expiration": 21600,
           "named_caches": [
             {
-              "name": "xcode_ios_17a324",
+              "name": "xcode_ios_17a400",
               "path": "Xcode.app"
             }
           ],

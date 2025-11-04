@@ -7,7 +7,7 @@
           "reftest",
           "crashtest",
           "--xcode-build-version",
-          "17a324"
+          "17a400"
         ],
         "merge": {
           "args": [
@@ -40,7 +40,7 @@
           "hard_timeout": 14400,
           "named_caches": [
             {
-              "name": "xcode_ios_17a324",
+              "name": "xcode_ios_17a400",
               "path": "Xcode.app"
             }
           ],

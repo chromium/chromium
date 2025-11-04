@@ -20,7 +20,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "17a324",
+          "17a400",
           "--xctest"
         ],
         "merge": {
@@ -51,7 +51,7 @@
               "path": "Runtime-tvos-26.0"
             },
             {
-              "name": "xcode_ios_17a324",
+              "name": "xcode_ios_17a400",
               "path": "Xcode.app"
             }
           ],
@@ -72,7 +72,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "17a324",
+          "17a400",
           "--xctest"
         ],
         "merge": {
@@ -103,7 +103,7 @@
               "path": "Runtime-tvos-26.0"
             },
             {
-              "name": "xcode_ios_17a324",
+              "name": "xcode_ios_17a400",
               "path": "Xcode.app"
             }
           ],
@@ -124,7 +124,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "17a324",
+          "17a400",
           "--xctest"
         ],
         "merge": {
@@ -155,7 +155,7 @@
               "path": "Runtime-tvos-26.0"
             },
             {
-              "name": "xcode_ios_17a324",
+              "name": "xcode_ios_17a400",
               "path": "Xcode.app"
             }
           ],
@@ -176,7 +176,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "17a324",
+          "17a400",
           "--xctest"
         ],
         "merge": {
@@ -207,7 +207,7 @@
               "path": "Runtime-tvos-26.0"
             },
             {
-              "name": "xcode_ios_17a324",
+              "name": "xcode_ios_17a400",
               "path": "Xcode.app"
             }
           ],
@@ -228,7 +228,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "17a324",
+          "17a400",
           "--xctest"
         ],
         "merge": {
@@ -259,7 +259,7 @@
               "path": "Runtime-tvos-26.0"
             },
             {
-              "name": "xcode_ios_17a324",
+              "name": "xcode_ios_17a400",
               "path": "Xcode.app"
             }
           ],
