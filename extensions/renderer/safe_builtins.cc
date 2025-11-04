@@ -5,7 +5,7 @@
 #include "extensions/renderer/safe_builtins.h"
 
 #include "base/check.h"
-#include "base/notreached.h"
+#include "base/compiler_specific.h"
 #include "base/strings/stringprintf.h"
 #include "extensions/renderer/script_context.h"
 #include "extensions/renderer/v8_helpers.h"
@@ -217,8 +217,9 @@ class ExtensionImpl : public v8::Extension {
       CHECK(v8_helpers::IsTrue(args->Has(context, i + first_arg_index)));
       // Getting a property value could throw an exception.
       if (!v8_helpers::GetProperty(context, args, i + first_arg_index,
-                                   &argv[i]))
+                                   UNSAFE_TODO(&argv[i]))) {
         return;
+      }
     }
 
     v8::Local<v8::Value> return_value;

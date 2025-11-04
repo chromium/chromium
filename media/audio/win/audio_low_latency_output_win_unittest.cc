@@ -13,6 +13,7 @@
 
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/environment.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
@@ -93,7 +94,7 @@ class ReadFromFileAudioSource : public AudioOutputStream::AudioSourceCallback {
     // Write the array which contains delta times to a text file.
     size_t elements_written = 0;
     while (elements_written < elements_to_write_) {
-      fprintf(text_file_.get(), "%d\n", delta_times_[elements_written]);
+      fprintf(text_file_.get(), "%d\n", UNSAFE_TODO(delta_times_[elements_written]));
       ++elements_written;
     }
 
@@ -111,7 +112,7 @@ class ReadFromFileAudioSource : public AudioOutputStream::AudioSourceCallback {
     const int diff = (now_time - previous_call_time_).InMilliseconds();
     previous_call_time_ = now_time;
     if (elements_to_write_ < kMaxDeltaSamples) {
-      delta_times_[elements_to_write_] = diff;
+      UNSAFE_TODO(delta_times_[elements_to_write_]) = diff;
       ++elements_to_write_;
     }
 

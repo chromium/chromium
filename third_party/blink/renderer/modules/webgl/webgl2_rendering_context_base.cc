@@ -159,9 +159,9 @@ class PointableStringArray {
     DCHECK(strings.size() < std::numeric_limits<GLsizei>::max());
     for (wtf_size_t i = 0; i < strings.size(); ++i) {
       // Strings must never move once they are stored in data_...
-      data_[i] = strings[i].Ascii();
+      UNSAFE_TODO(data_[i]) = strings[i].Ascii();
       // ... so that the c_str() remains valid.
-      pointers_[i] = data_[i].c_str();
+      pointers_[i] = UNSAFE_TODO(data_[i]).c_str();
     }
   }
 

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/glic/browser_ui/glic_vector_icon_manager.h"
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/glic/resources/glic_resources.h"
@@ -22,7 +23,7 @@ class VectorIconData {
     reps_size_ = path_elements_.size();
     reps_ = std::make_unique<gfx::VectorIconRep[]>(reps_size_);
     for (size_t i = 0; i < reps_size_; ++i) {
-      reps_[i] = gfx::VectorIconRep{path_elements_[i]};
+      UNSAFE_TODO(reps_[i]) = gfx::VectorIconRep{path_elements_[i]};
     }
     icon_ = std::make_unique<gfx::VectorIcon>(reps_.get(), reps_size_, "");
   }

@@ -130,11 +130,11 @@ void DynamicsCompressor::Process(const AudioBus* source_bus,
       source_channels_[0] = source_bus->Channel(0)->Data();
 
       if (number_of_source_channels > 1) {
-        source_channels_[1] = source_bus->Channel(1)->Data();
+        UNSAFE_TODO(source_channels_[1]) = source_bus->Channel(1)->Data();
       } else {
         // Simply duplicate mono channel input data to right channel for stereo
         // processing.
-        source_channels_[1] = source_channels_[0];
+        UNSAFE_TODO(source_channels_[1]) = source_channels_[0];
       }
 
       break;
@@ -144,7 +144,8 @@ void DynamicsCompressor::Process(const AudioBus* source_bus,
   }
 
   for (unsigned i = 0; i < number_of_channels; ++i) {
-    destination_channels_[i] = destination_bus->Channel(i)->MutableData();
+    UNSAFE_TODO(destination_channels_[i]) =
+        destination_bus->Channel(i)->MutableData();
   }
 
   const float db_threshold = ParameterValue(kParamThreshold);

@@ -100,7 +100,7 @@ class CommandBufferHelperTest : public testing::Test {
         std::make_unique<CommandBufferEntry[]>(arg_count ? arg_count : 1);
 
     for (int32_t ii = 0; ii < arg_count; ++ii) {
-      args_ptr[ii].value_uint32 = 0xF00DF00D + ii;
+      UNSAFE_TODO(args_ptr[ii]).value_uint32 = 0xF00DF00D + ii;
     }
 
     // Add command and save args in test_command_args_ until the test completes.

@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/functional/callback.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
@@ -548,7 +549,7 @@ LONG RegKey::RegDelRecurse(HKEY root_key, const wchar_t* name, REGSAM access) {
       break;
     }
     CHECK_LT(key_size, kMaxKeyNameLength);
-    CHECK_EQ(subkey_buffer[key_size], L'\0');
+    CHECK_EQ(UNSAFE_TODO(subkey_buffer[key_size]), L'\0');
     if (RegDelRecurse(target_key.key_, &subkey_buffer[0], access) !=
         ERROR_SUCCESS) {
       break;

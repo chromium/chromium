@@ -30,6 +30,8 @@
 
 #include <memory>
 
+#include "base/compiler_specific.h"
+
 namespace blink {
 
 void StrokeData::SetLineDash(const DashArray& dashes, float dash_offset) {
@@ -43,7 +45,7 @@ void StrokeData::SetLineDash(const DashArray& dashes, float dash_offset) {
   auto intervals = std::make_unique<SkScalar[]>(count);
 
   for (wtf_size_t i = 0; i < count; i++) {
-    intervals[i] = dashes[i % dash_length];
+    UNSAFE_TODO(intervals[i]) = dashes[i % dash_length];
   }
 
   dash_ = cc::PathEffect::MakeDash(intervals.get(), count, dash_offset);

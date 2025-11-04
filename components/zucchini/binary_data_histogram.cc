@@ -9,6 +9,7 @@
 #include <limits>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/format_macros.h"
 #include "base/strings/stringprintf.h"
 
@@ -73,8 +74,9 @@ bool BinaryDataHistogram::Compute(ConstBufferView region) {
   size_ = region.size();
   // Number of 2-byte intervals fully contained in |region|.
   size_t bound = size_ - sizeof(uint16_t) + 1;
-  for (size_t i = 0; i < bound; ++i)
-    ++histogram_[region.read<uint16_t>(i)];
+  for (size_t i = 0; i < bound; ++i) {
+    UNSAFE_TODO(++histogram_[region.read<uint16_t>(i)]);
+  }
   return true;
 }
 
@@ -82,8 +84,9 @@ double BinaryDataHistogram::Distance(const BinaryDataHistogram& other) const {
   DCHECK(IsValid() && other.IsValid());
   // Compute Manhattan (L1) distance between respective histograms.
   double total_diff = 0;
-  for (int i = 0; i < kNumBins; ++i)
-    total_diff += std::abs(histogram_[i] - other.histogram_[i]);
+  for (int i = 0; i < kNumBins; ++i) {
+    total_diff += std::abs(UNSAFE_TODO(histogram_[i] - other.histogram_[i]));
+  }
   // Normalize by total size, so result lies in [0, 1].
   return total_diff / (size_ + other.size_);
 }

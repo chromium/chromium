@@ -14,6 +14,7 @@
 
 #include "base/check.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
@@ -141,9 +142,9 @@ int CrashReporterMain() {
   storage.reserve(argv.size());
   for (size_t i = 0; i < argv.size(); ++i) {
     storage.push_back(update_client::StringTypeToUTF8(argv[i]));
-    argv_as_utf8[i] = &storage[i][0];
+    UNSAFE_TODO(argv_as_utf8[i]) = &storage[i][0];
   }
-  argv_as_utf8[argv.size()] = nullptr;
+  UNSAFE_TODO(argv_as_utf8[argv.size()]) = nullptr;
 
   return crashpad::HandlerMain(argv.size(), argv_as_utf8.get(),
                                /*user_stream_sources=*/nullptr);

@@ -6,6 +6,7 @@
 
 #include <stdio.h>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
@@ -35,8 +36,8 @@ void TouchEventLogEvdev::Initialize(const EventDeviceInfo& devinfo) {
 void TouchEventLogEvdev::ProcessEvent(size_t cur_slot, const input_event* ev) {
   if (ev->type == EV_ABS || ev->type == EV_SYN ||
       (ev->type == EV_KEY && ev->code == BTN_TOUCH)) {
-    logged_events_[debug_buffer_tail_].ev = *ev;
-    logged_events_[debug_buffer_tail_].slot = cur_slot;
+    UNSAFE_TODO(logged_events_[debug_buffer_tail_]).ev = *ev;
+    UNSAFE_TODO(logged_events_[debug_buffer_tail_]).slot = cur_slot;
     debug_buffer_tail_++;
     debug_buffer_tail_ %= kDebugBufferSize;
   }
@@ -57,8 +58,8 @@ void TouchEventLogEvdev::DumpLog(const char* filename) {
     report_content += absinfo;
   }
   for (int i = 0; i < kDebugBufferSize; ++i) {
-    struct TouchEvent* te =
-        &logged_events_[(debug_buffer_tail_ + i) % kDebugBufferSize];
+    struct TouchEvent* te = UNSAFE_TODO(
+        &logged_events_[(debug_buffer_tail_ + i) % kDebugBufferSize]);
     if (te->ev.input_event_sec == 0 && te->ev.input_event_usec == 0)
       continue;
     std::string event_string = base::StringPrintf(

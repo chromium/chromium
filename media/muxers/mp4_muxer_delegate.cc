@@ -240,7 +240,7 @@ void Mp4MuxerDelegate::BuildMovieVideoTrack(
     CHECK_GT(config_size, 0u);
 
     av1_config.av1_decoder_configuration_data.assign(
-        &codec_descriptions[0], &codec_descriptions[config_size]);
+        &codec_descriptions[0], UNSAFE_TODO(&codec_descriptions[config_size]));
     visual_sample_entry.av1_decoder_configuration = std::move(av1_config);
   } else {
     NOTREACHED();

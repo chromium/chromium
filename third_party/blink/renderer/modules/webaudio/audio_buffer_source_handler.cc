@@ -109,7 +109,8 @@ void AudioBufferSourceHandler::Process(uint32_t frames_to_process) {
     }
 
     for (unsigned i = 0; i < output_bus->NumberOfChannels(); ++i) {
-      destination_channels_[i] = output_bus->Channel(i)->MutableData();
+      UNSAFE_TODO(destination_channels_[i]) =
+          output_bus->Channel(i)->MutableData();
     }
 
     // Render by reading directly from the buffer.
@@ -443,7 +444,7 @@ void AudioBufferSourceHandler::SetBuffer(AudioBuffer* buffer,
     destination_channels_ = std::make_unique<float*[]>(number_of_channels);
 
     for (unsigned i = 0; i < number_of_channels; ++i) {
-      source_channels_[i] =
+      UNSAFE_TODO(source_channels_[i]) =
           static_cast<float*>(shared_buffer_->channels()[i].Data());
     }
 

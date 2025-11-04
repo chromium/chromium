@@ -2,7 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/jni_zero/jni_zero.h"
+
 #ifdef JNI_ZERO_ENABLE_TYPE_CONVERSIONS
 #include <memory>
 

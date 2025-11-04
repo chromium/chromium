@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/fonts/opentype/variable_axes_names.h"
 
+#include "base/compiler_specific.h"
 #include "third_party/skia/include/core/SkStream.h"
 #include "third_party/skia/include/core/SkTypeface.h"
 
@@ -39,26 +40,27 @@ Vector<VariationAxis> VariableAxesNames::GetVariationAxes(
     // HB_LANGUAGE_INVALID fetches the default English string according
     // to HarfBuzz documentation. If the buffer is nullptr, it returns
     // the length of the name without writing to the buffer.
-    unsigned name_length = hb_ot_name_get_utf16(
-        face.get(), axes[i].name_id, HB_LANGUAGE_INVALID, nullptr, nullptr);
+    unsigned name_length =
+        hb_ot_name_get_utf16(face.get(), UNSAFE_TODO(axes[i]).name_id,
+                             HB_LANGUAGE_INVALID, nullptr, nullptr);
 
     axis.name = "";
     if (name_length) {
       unsigned buffer_length = name_length + 1;
       std::unique_ptr<char16_t[]> buffer =
           std::make_unique<char16_t[]>(buffer_length);
-      hb_ot_name_get_utf16(face.get(), axes[i].name_id, HB_LANGUAGE_INVALID,
-                           &buffer_length,
+      hb_ot_name_get_utf16(face.get(), UNSAFE_TODO(axes[i]).name_id,
+                           HB_LANGUAGE_INVALID, &buffer_length,
                            reinterpret_cast<uint16_t*>(buffer.get()));
       axis.name = String(buffer.get());
     }
 
-    std::array<uint8_t, 4> tag = {HB_UNTAG(axes[i].tag)};
+    std::array<uint8_t, 4> tag = {HB_UNTAG(UNSAFE_TODO(axes[i]).tag)};
 
     axis.tag = String(base::span(tag));
-    axis.minValue = axes[i].min_value;
-    axis.maxValue = axes[i].max_value;
-    axis.defaultValue = axes[i].default_value;
+    axis.minValue = UNSAFE_TODO(axes[i].min_value);
+    axis.maxValue = UNSAFE_TODO(axes[i].max_value);
+    axis.defaultValue = UNSAFE_TODO(axes[i].default_value);
 
     output.push_back(axis);
   }

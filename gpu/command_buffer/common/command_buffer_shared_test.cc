@@ -81,7 +81,7 @@ TEST_F(CommandBufferSharedTest, TestConsistency) {
       continue;
 
     if (state.get_offset >= 1) {
-      buffer[state.get_offset - 1] = 1;
+      UNSAFE_TODO(buffer[state.get_offset - 1]) = 1;
       // Check that the state is consistent
       EXPECT_LE(last_state.token, state.token);
       EXPECT_LE(last_state.generation, state.generation);

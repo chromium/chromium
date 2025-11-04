@@ -390,8 +390,8 @@ Framebuffer::Framebuffer(FramebufferManager* manager, GLuint service_id)
   draw_buffers_[0] = GL_COLOR_ATTACHMENT0;
   adjusted_draw_buffers_[0] = GL_COLOR_ATTACHMENT0;
   for (uint32_t ii = 1; ii < manager->max_draw_buffers_; ++ii) {
-    draw_buffers_[ii] = GL_NONE;
-    adjusted_draw_buffers_[ii] = GL_NONE;
+    UNSAFE_TODO(draw_buffers_[ii]) = GL_NONE;
+    UNSAFE_TODO(adjusted_draw_buffers_[ii]) = GL_NONE;
   }
 }
 
@@ -519,7 +519,7 @@ bool Framebuffer::PrepareDrawBuffersForClearingUninitializedAttachments(
   }
   bool different = false;
   for (uint32_t i = 0; i < manager_->max_draw_buffers_; ++i) {
-    if (buffers[i] != adjusted_draw_buffers_[i]) {
+    if (buffers[i] != UNSAFE_TODO(adjusted_draw_buffers_[i])) {
       different = true;
       break;
     }
@@ -555,14 +555,14 @@ void Framebuffer::AdjustDrawBuffersImpl(uint32_t desired_mask) {
   // This won't be reached in every clear call - only when framebuffer has
   // changed.
   for (uint32_t ii = 0; ii < manager_->max_draw_buffers_; ++ii) {
-    adjusted_draw_buffers_[ii] = draw_buffers_[ii];
-    if (adjusted_draw_buffers_[ii] == GL_NONE) {
+    UNSAFE_TODO(adjusted_draw_buffers_[ii] = draw_buffers_[ii]);
+    if (UNSAFE_TODO(adjusted_draw_buffers_[ii]) == GL_NONE) {
       continue;
     }
     uint32_t shift_bits = ii * 2;
     uint32_t buffer_mask = 0x3 << shift_bits;
     if ((buffer_mask & desired_mask) == 0u) {
-      adjusted_draw_buffers_[ii] = GL_NONE;
+      UNSAFE_TODO(adjusted_draw_buffers_[ii]) = GL_NONE;
     }
   }
   adjusted_draw_buffer_bound_mask_ = desired_mask;
@@ -867,7 +867,7 @@ GLenum Framebuffer::GetDrawBuffer(GLenum draw_buffer) const {
   GLsizei index = static_cast<GLsizei>(draw_buffer - GL_DRAW_BUFFER0);
   CHECK(index >= 0 &&
         index < static_cast<GLsizei>(manager_->max_draw_buffers_));
-  return draw_buffers_[index];
+  return UNSAFE_TODO(draw_buffers_[index]);
 }
 
 void Framebuffer::SetDrawBuffers(GLsizei spanification_suspected_redundant_n,
@@ -879,13 +879,13 @@ void Framebuffer::SetDrawBuffers(GLsizei spanification_suspected_redundant_n,
   DCHECK(spanification_suspected_redundant_n <=
          static_cast<GLsizei>(manager_->max_draw_buffers_));
   for (GLsizei ii = 0; ii < spanification_suspected_redundant_n; ++ii) {
-    draw_buffers_[ii] = bufs[ii];
-    adjusted_draw_buffers_[ii] = bufs[ii];
+    UNSAFE_TODO(draw_buffers_[ii]) = bufs[ii];
+    UNSAFE_TODO(adjusted_draw_buffers_[ii]) = bufs[ii];
   }
   for (uint32_t ii = spanification_suspected_redundant_n;
        ii < manager_->max_draw_buffers_; ++ii) {
-    draw_buffers_[ii] = GL_NONE;
-    adjusted_draw_buffers_[ii] = GL_NONE;
+    UNSAFE_TODO(draw_buffers_[ii]) = GL_NONE;
+    UNSAFE_TODO(adjusted_draw_buffers_[ii]) = GL_NONE;
   }
   UpdateDrawBufferMasks();
   adjusted_draw_buffer_bound_mask_ = draw_buffer_bound_mask_;
@@ -893,8 +893,9 @@ void Framebuffer::SetDrawBuffers(GLsizei spanification_suspected_redundant_n,
 
 bool Framebuffer::HasAlphaMRT() const {
   for (uint32_t i = 0; i < manager_->max_draw_buffers_; ++i) {
-    if (draw_buffers_[i] != GL_NONE) {
-      const Attachment* attachment = GetAttachment(draw_buffers_[i]);
+    if (UNSAFE_TODO(draw_buffers_[i]) != GL_NONE) {
+      const Attachment* attachment =
+          GetAttachment(UNSAFE_TODO(draw_buffers_[i]));
       if (!attachment)
         continue;
       if ((GLES2Util::GetChannelsForFormat(attachment->internal_format()) &
@@ -908,8 +909,9 @@ bool Framebuffer::HasAlphaMRT() const {
 bool Framebuffer::HasSameInternalFormatsMRT() const {
   GLenum internal_format = 0;
   for (uint32_t i = 0; i < manager_->max_draw_buffers_; ++i) {
-    if (draw_buffers_[i] != GL_NONE) {
-      const Attachment* attachment = GetAttachment(draw_buffers_[i]);
+    if (UNSAFE_TODO(draw_buffers_[i]) != GL_NONE) {
+      const Attachment* attachment =
+          GetAttachment(UNSAFE_TODO(draw_buffers_[i]));
       if (!attachment)
         continue;
       if (!internal_format) {
@@ -965,7 +967,7 @@ void Framebuffer::UpdateDrawBufferMasks() {
   draw_buffer_float32_mask_ = 0u;
   draw_buffer_bound_mask_ = 0u;
   for (uint32_t index = 0; index < manager_->max_color_attachments_; ++index) {
-    GLenum draw_buffer = draw_buffers_[index];
+    GLenum draw_buffer = UNSAFE_TODO(draw_buffers_[index]);
     if (draw_buffer == GL_NONE)
       continue;
     auto iter = attachments_.find(draw_buffer);

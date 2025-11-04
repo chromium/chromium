@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/feedback/redaction_tool/redaction_tool.h"
+
+#include <fuzzer/FuzzedDataProvider.h>
 #include <stddef.h>
 #include <stdint.h>
 
@@ -9,9 +12,7 @@
 #include <string>
 #include <vector>
 
-#include <fuzzer/FuzzedDataProvider.h>
-
-#include "components/feedback/redaction_tool/redaction_tool.h"
+#include "base/compiler_specific.h"
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   FuzzedDataProvider provider(data, size);
@@ -35,9 +36,11 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
       constexpr int kArbitraryMaxNameLength = 4096;
       first_party_extension_id_store.emplace_back(
           provider.ConsumeRandomLengthString(kArbitraryMaxNameLength));
-      first_party_extension_ids[i] = first_party_extension_id_store[i].c_str();
+      UNSAFE_TODO(first_party_extension_ids[i]) =
+          first_party_extension_id_store[i].c_str();
     }
-    first_party_extension_ids[first_party_extension_id_count] = nullptr;
+    UNSAFE_TODO(first_party_extension_ids[first_party_extension_id_count]) =
+        nullptr;
   }
 
   redaction::RedactionTool redactor(first_party_extension_ids.get());

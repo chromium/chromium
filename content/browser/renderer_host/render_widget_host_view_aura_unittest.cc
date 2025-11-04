@@ -13,6 +13,7 @@
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
@@ -3287,64 +3288,64 @@ TEST_F(RenderWidgetHostViewAuraTest, DiscardDelegatedFrames) {
   for (size_t i = 0; i < renderer_count; ++i) {
     int32_t routing_id = process_host_->GetNextRoutingID();
     delegates_.push_back(base::WrapUnique(new MockRenderWidgetHostDelegate));
-    hosts[i] = MockRenderWidgetHostImpl::Create(
+    UNSAFE_TODO(hosts[i]) = MockRenderWidgetHostImpl::Create(
         GetFrameTree(), delegates_.back().get(),
         site_instance_group_->GetSafeRef(), routing_id, /*hidden = */ false);
-    delegates_.back()->set_widget_host(hosts[i]);
+    delegates_.back()->set_widget_host(UNSAFE_TODO(hosts[i]));
 
-    views[i] = new FakeRenderWidgetHostViewAura(hosts[i]);
+    UNSAFE_TODO(views[i] = new FakeRenderWidgetHostViewAura(hosts[i]));
     // Prevent frames from being skipped due to resize, this test does not
     // run a UI compositor so the DelegatedFrameHost doesn't get the chance
     // to release its resize lock once it receives a frame of the expected
     // size.
-    views[i]->InitAsChild(nullptr);
-    ParentHostView(views[i], parent_view_);
+    UNSAFE_TODO(views[i])->InitAsChild(nullptr);
+    ParentHostView(UNSAFE_TODO(views[i]), parent_view_);
 
     // The blink::mojom::Widget interfaces are bound during
     // MockRenderWidgetHostImpl construction.
-    hosts[i]->BindFrameWidgetInterfaces(
+    UNSAFE_TODO(hosts[i])->BindFrameWidgetInterfaces(
         mojo::PendingAssociatedRemote<blink::mojom::FrameWidgetHost>()
             .InitWithNewEndpointAndPassReceiver(),
         TestRenderWidgetHost::CreateStubFrameWidgetRemote());
-    hosts[i]->RendererWidgetCreated(/*for_frame_widget=*/true);
+    UNSAFE_TODO(hosts[i])->RendererWidgetCreated(/*for_frame_widget=*/true);
 
-    views[i]->SetSize(view_rect.size());
-    EXPECT_HAS_FRAME(views[i]);
+    UNSAFE_TODO(views[i])->SetSize(view_rect.size());
+    EXPECT_HAS_FRAME(UNSAFE_TODO(views[i]));
   }
 
   // Make each renderer visible, and swap a frame on it, then make it invisible.
   for (size_t i = 0; i < renderer_count; ++i) {
-    views[i]->Show();
-    EXPECT_HAS_FRAME(views[i]);
-    views[i]->Hide();
+    UNSAFE_TODO(views[i])->Show();
+    EXPECT_HAS_FRAME(UNSAFE_TODO(views[i]));
+    UNSAFE_TODO(views[i])->Hide();
   }
 
   // There should be max_renderer_frames with a frame in it, and one without it.
   // Since the logic is LRU eviction, the first one should be without.
   EXPECT_EVICTED(views[0]);
   for (size_t i = 1; i < renderer_count; ++i)
-    EXPECT_HAS_FRAME(views[i]);
+    EXPECT_HAS_FRAME(UNSAFE_TODO(views[i]));
 
   // LRU renderer is [0], make it visible, it should evict the next LRU [1].
   views[0]->Show();
   EXPECT_HAS_FRAME(views[0]);
-  EXPECT_EVICTED(views[1]);
+  EXPECT_EVICTED(UNSAFE_TODO(views[1]));
   views[0]->Hide();
 
   // LRU renderer is [1], which is still hidden. Showing it and submitting a
   // CompositorFrame to it should evict the next LRU [2].
-  views[1]->Show();
+  UNSAFE_TODO(views[1])->Show();
   EXPECT_HAS_FRAME(views[0]);
-  EXPECT_HAS_FRAME(views[1]);
-  EXPECT_EVICTED(views[2]);
+  EXPECT_HAS_FRAME(UNSAFE_TODO(views[1]));
+  EXPECT_EVICTED(UNSAFE_TODO(views[2]));
   for (size_t i = 3; i < renderer_count; ++i)
-    EXPECT_HAS_FRAME(views[i]);
+    EXPECT_HAS_FRAME(UNSAFE_TODO(views[i]));
 
   // Make all renderers but [0] visible and swap a frame on them, keep [0]
   // hidden, it becomes the LRU.
   for (size_t i = 1; i < renderer_count; ++i) {
-    views[i]->Show();
-    EXPECT_HAS_FRAME(views[i]);
+    UNSAFE_TODO(views[i])->Show();
+    EXPECT_HAS_FRAME(UNSAFE_TODO(views[i]));
   }
   EXPECT_EVICTED(views[0]);
 
@@ -3352,7 +3353,7 @@ TEST_F(RenderWidgetHostViewAuraTest, DiscardDelegatedFrames) {
   // although we're above the limit.
   views[0]->Show();
   for (size_t i = 0; i < renderer_count; ++i)
-    EXPECT_HAS_FRAME(views[i]);
+    EXPECT_HAS_FRAME(UNSAFE_TODO(views[i]));
 
   // Make [0] hidden, it should evict its frame.
   views[0]->Hide();
@@ -3364,17 +3365,19 @@ TEST_F(RenderWidgetHostViewAuraTest, DiscardDelegatedFrames) {
   views[0]->Hide();
 
   // Make [1] hidden, resize it. It should advance its fallback.
-  views[1]->Hide();
+  UNSAFE_TODO(views[1])->Hide();
   gfx::Size size2(200, 200);
-  views[1]->SetSize(size2);
+  UNSAFE_TODO(views[1])->SetSize(size2);
   // Show it, it should block until we give it a frame.
-  views[1]->Show();
-  ASSERT_TRUE(views[1]->window_->layer()->GetOldestAcceptableFallback());
-  EXPECT_EQ(*views[1]->window_->layer()->GetOldestAcceptableFallback(),
-            *views[1]->window_->layer()->GetSurfaceId());
+  UNSAFE_TODO(views[1])->Show();
+  ASSERT_TRUE(
+      UNSAFE_TODO(views[1])->window_->layer()->GetOldestAcceptableFallback());
+  EXPECT_EQ(
+      *UNSAFE_TODO(views[1])->window_->layer()->GetOldestAcceptableFallback(),
+      *UNSAFE_TODO(views[1])->window_->layer()->GetSurfaceId());
 
   for (size_t i = 0; i < renderer_count; ++i)
-    views[i]->Destroy();
+    UNSAFE_TODO(views[i])->Destroy();
 }
 
 // Test that changing the memory pressure should delete saved frames. This test
@@ -3407,27 +3410,28 @@ TEST_F(RenderWidgetHostViewAuraTest, DiscardDelegatedFramesWithMemoryPressure) {
     int32_t routing_id = process_host_->GetNextRoutingID();
 
     delegates_.push_back(base::WrapUnique(new MockRenderWidgetHostDelegate));
-    hosts[i] = MockRenderWidgetHostImpl::Create(
+    UNSAFE_TODO(hosts[i]) = MockRenderWidgetHostImpl::Create(
         GetFrameTree(), delegates_.back().get(),
         site_instance_group_->GetSafeRef(), routing_id, /*hidden = */ false);
-    delegates_.back()->set_widget_host(hosts[i]);
+    delegates_.back()->set_widget_host(UNSAFE_TODO(hosts[i]));
 
-    hosts[i]->BindWidgetInterfaces(
+    UNSAFE_TODO(hosts[i])->BindWidgetInterfaces(
         mojo::PendingAssociatedRemote<blink::mojom::WidgetHost>()
             .InitWithNewEndpointAndPassReceiver(),
         TestRenderWidgetHost::CreateStubWidgetRemote());
-    hosts[i]->BindFrameWidgetInterfaces(
+    UNSAFE_TODO(hosts[i])->BindFrameWidgetInterfaces(
         mojo::PendingAssociatedRemote<blink::mojom::FrameWidgetHost>()
             .InitWithNewEndpointAndPassReceiver(),
         TestRenderWidgetHost::CreateStubFrameWidgetRemote());
-    hosts[i]->RendererWidgetCreated(/*for_frame_widget=*/true);
+    UNSAFE_TODO(hosts[i])->RendererWidgetCreated(/*for_frame_widget=*/true);
 
-    views[i] = new FakeRenderWidgetHostViewAura(hosts[i]);
-    views[i]->InitAsChild(nullptr);
-    ParentHostView(views[i], parent_view_);
-    views[i]->SetSize(view_rect.size());
-    views[i]->Show();
-    EXPECT_HAS_FRAME(views[i]);
+    UNSAFE_TODO(views[i]) =
+        new FakeRenderWidgetHostViewAura(UNSAFE_TODO(hosts[i]));
+    UNSAFE_TODO(views[i])->InitAsChild(nullptr);
+    ParentHostView(UNSAFE_TODO(views[i]), parent_view_);
+    UNSAFE_TODO(views[i])->SetSize(view_rect.size());
+    UNSAFE_TODO(views[i])->Show();
+    EXPECT_HAS_FRAME(UNSAFE_TODO(views[i]));
   }
 
   // If we hide one, it should not get evicted.
@@ -3440,15 +3444,16 @@ TEST_F(RenderWidgetHostViewAuraTest, DiscardDelegatedFramesWithMemoryPressure) {
   EXPECT_EVICTED(views[0]);
 
   // Check the same for a higher pressure event.
-  views[1]->Hide();
+  UNSAFE_TODO(views[1])->Hide();
   base::RunLoop().RunUntilIdle();
-  EXPECT_HAS_FRAME(views[1]);
+  EXPECT_HAS_FRAME(UNSAFE_TODO(views[1]));
   SimulateMemoryPressure(base::MEMORY_PRESSURE_LEVEL_CRITICAL);
   base::RunLoop().RunUntilIdle();
-  EXPECT_EVICTED(views[1]);
+  EXPECT_EVICTED(UNSAFE_TODO(views[1]));
 
-  for (size_t i = 0; i < renderer_count; ++i)
-    views[i]->Destroy();
+  for (size_t i = 0; i < renderer_count; ++i) {
+    UNSAFE_TODO(views[i])->Destroy();
+  }
 }
 
 TEST_F(RenderWidgetHostViewAuraTest, VisibleViewportTest) {

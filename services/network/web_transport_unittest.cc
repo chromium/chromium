@@ -7,6 +7,7 @@
 #include <set>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/files/file_util.h"
@@ -797,9 +798,10 @@ TEST_F(WebTransportTest, DeleteClientWithStreamsOpen) {
     const MojoCreateDataPipeOptions options = {
         sizeof(options), MOJO_CREATE_DATA_PIPE_FLAG_NONE, 1, 4 * 1024};
     mojo::ScopedDataPipeConsumerHandle readable_for_outgoing;
-    ASSERT_EQ(MOJO_RESULT_OK,
-              mojo::CreateDataPipe(&options, writable_for_outgoing[i],
-                                   readable_for_outgoing));
+    ASSERT_EQ(
+        MOJO_RESULT_OK,
+        mojo::CreateDataPipe(&options, UNSAFE_TODO(writable_for_outgoing[i]),
+                             readable_for_outgoing));
     base::RunLoop run_loop_for_stream_creation;
     bool stream_created;
     transport_remote->CreateStream(
