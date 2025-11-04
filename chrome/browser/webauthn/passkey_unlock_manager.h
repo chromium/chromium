@@ -11,11 +11,16 @@
 #include "base/sequence_checker.h"
 #include "chrome/browser/webauthn/enclave_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/sync/service/sync_service_observer.h"
 #include "components/webauthn/core/browser/passkey_model.h"
 #include "components/webauthn/core/browser/passkey_model_change.h"
 
 class Browser;
 class Profile;
+
+namespace syncer {
+class SyncService;
+}  // namespace syncer
 
 namespace webauthn {
 
@@ -24,7 +29,8 @@ namespace webauthn {
 // unlocked. Once the final state is known, it notifies observers.
 class PasskeyUnlockManager : public KeyedService,
                              public PasskeyModel::Observer,
-                             public EnclaveManager::Observer {
+                             public EnclaveManager::Observer,
+                             public syncer::SyncServiceObserver {
  public:
   enum class ExperimentArm {
     kUnlock,
@@ -74,8 +80,16 @@ class PasskeyUnlockManager : public KeyedService,
   // constructor.
   EnclaveManager* enclave_manager();
 
+  // Returns the SyncService associated with the profile passed to the
+  // constructor.
+  syncer::SyncService* sync_service();
+
   // Updates the cached value of `has_passkeys_`.
   void UpdateHasPasskeys();
+
+  // Updates the cached value of `sync_active_`. Checks the sync state and
+  // user actionable errors
+  void UpdateSyncState();
 
   // Used for notifying observers.
   void NotifyObservers();
@@ -86,6 +100,8 @@ class PasskeyUnlockManager : public KeyedService,
   void AsynchronouslyCheckSystemUVAvailability();
   // Caches `enclave_ready_`.
   void AsynchronouslyLoadEnclaveManager();
+
+  void Shutdown() override;
 
   void OnEnclaveManagerLoaded();
 
@@ -100,12 +116,15 @@ class PasskeyUnlockManager : public KeyedService,
   void OnPasskeyModelShuttingDown() override;
   void OnPasskeyModelIsReady(bool is_ready) override;
 
-  // TODO(crbug.com/449950177): Implement syncer::SyncServiceObserver.
+  // syncer::SyncServiceObserver overrides:
+  void OnStateChanged(syncer::SyncService* sync) override;
+  void OnSyncShutdown(syncer::SyncService* sync) override;
 
   std::optional<bool> has_passkeys_;
   std::optional<bool> enclave_ready_;
   std::optional<bool> has_gpm_pin_;
   std::optional<bool> has_system_uv_;
+  bool sync_active_ = false;
 
   base::ObserverList<Observer> observer_list_;
 
@@ -115,6 +134,8 @@ class PasskeyUnlockManager : public KeyedService,
       enclave_manager_observation_{this};
   base::ScopedObservation<PasskeyModel, PasskeyModel::Observer>
       passkey_model_observation_{this};
+  base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>
+      sync_service_observation_{this};
   base::WeakPtrFactory<PasskeyUnlockManager> weak_ptr_factory_{this};
 };
 
