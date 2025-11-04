@@ -586,6 +586,10 @@ String StylePropertySerializer::SerializeShorthand(
     case CSSPropertyID::kColumnRule:
       return GetShorthandValueForGapDecorationsRule(
           columnRuleShorthand(), CSSGapDecorationPropertyDirection::kColumn);
+    case CSSPropertyID::kColumnRuleOutset:
+      return GetShorthandValueForGapDecorationsRuleOutset(
+          columnRuleOutsetShorthand(),
+          CSSGapDecorationPropertyDirection::kColumn);
     case CSSPropertyID::kRowRule:
       return GetShorthandValueForGapDecorationsRule(
           rowRuleShorthand(), CSSGapDecorationPropertyDirection::kRow);
@@ -672,8 +676,6 @@ String StylePropertySerializer::SerializeShorthand(
       return GetShorthandValueForBidirectionalGapRules(ruleBreakShorthand());
     case CSSPropertyID::kRuleColor:
       return GetShorthandValueForBidirectionalGapRules(ruleColorShorthand());
-    case CSSPropertyID::kRuleOutset:
-      return GetShorthandValueForBidirectionalGapRules(ruleOutsetShorthand());
     case CSSPropertyID::kRuleStyle:
       return GetShorthandValueForBidirectionalGapRules(ruleStyleShorthand());
     case CSSPropertyID::kRuleWidth:
@@ -2143,6 +2145,51 @@ String StylePropertySerializer::GetShorthandValueForGapDecorationsRule(
       result.Append(segment_string);
     }
   }
+
+  return result.ReleaseString();
+}
+
+String StylePropertySerializer::GetShorthandValueForGapDecorationsRuleOutset(
+    const StylePropertyShorthand& shorthand,
+    CSSGapDecorationPropertyDirection direction) const {
+  CHECK(RuntimeEnabledFeatures::CSSGapDecorationEnabled());
+  CHECK_EQ(shorthand.length(), 4u);
+  CHECK(shorthand.properties()[0]->IDEquals(
+      CSSGapDecorationUtils::GetLonghandProperty(
+          direction, CSSGapDecorationPropertyType::kEdgeStartOutset)));
+  CHECK(shorthand.properties()[1]->IDEquals(
+      CSSGapDecorationUtils::GetLonghandProperty(
+          direction, CSSGapDecorationPropertyType::kEdgeEndOutset)));
+  CHECK(shorthand.properties()[2]->IDEquals(
+      CSSGapDecorationUtils::GetLonghandProperty(
+          direction, CSSGapDecorationPropertyType::kInteriorStartOutset)));
+  CHECK(shorthand.properties()[3]->IDEquals(
+      CSSGapDecorationUtils::GetLonghandProperty(
+          direction, CSSGapDecorationPropertyType::kInteriorEndOutset)));
+
+  const CSSValue* rule_edge_start_outset_value =
+      property_set_.GetPropertyCSSValue(*shorthand.properties()[0]);
+  const CSSValue* rule_edge_end_outset_value =
+      property_set_.GetPropertyCSSValue(*shorthand.properties()[1]);
+  const CSSValue* rule_interior_start_outset_value =
+      property_set_.GetPropertyCSSValue(*shorthand.properties()[2]);
+  const CSSValue* rule_interior_end_outset_value =
+      property_set_.GetPropertyCSSValue(*shorthand.properties()[3]);
+
+  // All values must be specified.
+  CHECK(rule_edge_start_outset_value && rule_edge_end_outset_value &&
+        rule_interior_start_outset_value && rule_interior_end_outset_value);
+
+  StringBuilder result;
+  result.Append(rule_edge_start_outset_value->CssText());
+  result.Append(' ');
+  result.Append(rule_edge_end_outset_value->CssText());
+  result.Append(' ');
+  result.Append('/');
+  result.Append(' ');
+  result.Append(rule_interior_start_outset_value->CssText());
+  result.Append(' ');
+  result.Append(rule_interior_end_outset_value->CssText());
 
   return result.ReleaseString();
 }

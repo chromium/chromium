@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/layout/gap/gap_geometry.h"
 
+#include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder_stream.h"
 
@@ -60,6 +61,54 @@ bool GapGeometry::IsMultiColSpanner(wtf_size_t gap_index,
   }
 
   return false;
+}
+
+LayoutUnit GapGeometry::ComputeEndOutset(
+    const ComputedStyle& style,
+    wtf_size_t gap_index,
+    wtf_size_t intersection_index,
+    const Vector<LayoutUnit>& intersections,
+    bool is_column_gap,
+    bool is_main,
+    LayoutUnit cross_width) const {
+  // Outset values are used to offset the end points of gap decorations.
+  // Percentage values are resolved against the crossing gap width of the
+  // intersection point.
+  // https://drafts.csswg.org/css-gaps-1/#propdef-column-rule-outset
+  if (IsEdgeIntersection(gap_index, intersection_index, intersections.size(),
+                         is_main, intersections)) {
+    return ValueForLength((is_column_gap ? style.ColumnRuleEdgeEndOutset()
+                                         : style.RowRuleEdgeEndOutset()),
+                          cross_width);
+  } else {
+    return ValueForLength((is_column_gap ? style.ColumnRuleInteriorEndOutset()
+                                         : style.RowRuleInteriorEndOutset()),
+                          cross_width);
+  }
+}
+
+LayoutUnit GapGeometry::ComputeStartOutset(
+    const ComputedStyle& style,
+    wtf_size_t gap_index,
+    wtf_size_t intersection_index,
+    const Vector<LayoutUnit>& intersections,
+    bool is_column_gap,
+    bool is_main,
+    LayoutUnit cross_width) const {
+  // Outset values are used to offset the end points of gap decorations.
+  // Percentage values are resolved against the crossing gap width of the
+  // intersection point.
+  // https://drafts.csswg.org/css-gaps-1/#propdef-column-rule-outset
+  if (IsEdgeIntersection(gap_index, intersection_index, intersections.size(),
+                         is_main, intersections)) {
+    return ValueForLength((is_column_gap ? style.ColumnRuleEdgeStartOutset()
+                                         : style.RowRuleEdgeStartOutset()),
+                          cross_width);
+  } else {
+    return ValueForLength((is_column_gap ? style.ColumnRuleInteriorStartOutset()
+                                         : style.RowRuleInteriorStartOutset()),
+                          cross_width);
+  }
 }
 
 void GapGeometry::SetContentInlineOffsets(LayoutUnit start_offset,

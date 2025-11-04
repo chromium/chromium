@@ -70,6 +70,9 @@ class CORE_EXPORT StylePropertySerializer {
   String GetShorthandValueForGapDecorationsRule(
       const StylePropertyShorthand&,
       CSSGapDecorationPropertyDirection direction) const;
+  String GetShorthandValueForGapDecorationsRuleOutset(
+      const StylePropertyShorthand&,
+      CSSGapDecorationPropertyDirection direction) const;
   String GetShorthandValueForColumnRule(const StylePropertyShorthand&) const;
   String GetShorthandValueForColumns(const StylePropertyShorthand&) const;
   // foo || bar || ... || baz

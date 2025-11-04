@@ -5477,12 +5477,16 @@ CSSValue* ConsumeGapDecorationPropertyValue(
     case CSSGapDecorationPropertyType::kWidth:
       return ConsumeLineWidth(stream, context,
                               css_parsing_utils::UnitlessQuirk::kForbid);
-    case CSSGapDecorationPropertyType::kStyle: {
+    case CSSGapDecorationPropertyType::kStyle:
       if (CSSParserFastPaths::IsBorderStyleValue(stream.Peek().Id())) {
         return ConsumeIdent(stream);
       }
       return nullptr;
-    }
+    case CSSGapDecorationPropertyType::kEdgeEndOutset:
+    case CSSGapDecorationPropertyType::kEdgeStartOutset:
+    case CSSGapDecorationPropertyType::kInteriorEndOutset:
+    case CSSGapDecorationPropertyType::kInteriorStartOutset:
+      return nullptr;
   }
 }
 
@@ -7332,6 +7336,96 @@ bool ConsumeGapDecorationsShorthandRepeatFunction(
       repetition_value, *style_repeated_values);
   repeater_color = MakeGarbageCollected<cssvalue::CSSRepeatValue>(
       repetition_value, *color_repeated_values);
+
+  return true;
+}
+
+// Consuming the `rule-outset`, `column-rule-outset`, `row-rule-outset`
+// shorthands with syntax <length-percentage> <length-percentage>?
+// [ / <length-percentage> <length-percentage>?]?
+bool ConsumeGapDecorationsRuleOutsetShorthand(
+    bool important,
+    const CSSParserContext& context,
+    CSSParserTokenStream& stream,
+    CSSValue*& rule_edge_start_outset,
+    CSSValue*& rule_edge_end_outset,
+    CSSValue*& rule_interior_start_outset,
+    CSSValue*& rule_interior_end_outset) {
+  CHECK(RuntimeEnabledFeatures::CSSGapDecorationEnabled());
+
+  rule_edge_start_outset = nullptr;
+  rule_edge_end_outset = nullptr;
+  rule_interior_start_outset = nullptr;
+  rule_interior_end_outset = nullptr;
+
+  wtf_size_t edge_count = 0;
+  wtf_size_t interior_count = 0;
+  bool consumed_slash = false;
+
+  while (!stream.AtEnd() && !(stream.Peek().GetType() == kDelimiterToken &&
+                              stream.Peek().Delimiter() == '!')) {
+    if (ConsumeSlashIncludingWhitespace(stream)) {
+      // Slash rules: only one allowed; must follow at least one edge value.
+      if (consumed_slash || edge_count == 0) {
+        return false;
+      }
+      consumed_slash = true;
+      continue;
+    }
+
+    CSSValue* value = ConsumeLengthOrPercent(
+        stream, context, CSSPrimitiveValue::ValueRange::kAll);
+    if (!value) {
+      return false;
+    }
+
+    if (!consumed_slash) {
+      if (edge_count >= 2) {
+        return false;
+      }
+      if (edge_count == 0) {
+        rule_edge_start_outset = value;
+      } else {
+        rule_edge_end_outset = value;
+      }
+      ++edge_count;
+    } else {
+      if (interior_count >= 2) {
+        return false;
+      }
+      if (interior_count == 0) {
+        rule_interior_start_outset = value;
+      } else {
+        rule_interior_end_outset = value;
+      }
+      ++interior_count;
+    }
+  }
+
+  // At least one column/row rule edge value is needed.
+  if (edge_count == 0) {
+    return false;
+  }
+
+  // If slash present, there must be at least one interior value.
+  if (consumed_slash && interior_count == 0) {
+    return false;
+  }
+
+  // Expand shorthands per grammar:
+  // <len-perc> <len-perc>? [ / <len-perc> <len-perc>? ]?
+  if (!rule_edge_end_outset) {
+    rule_edge_end_outset = rule_edge_start_outset;
+  }
+
+  if (!consumed_slash) {
+    rule_interior_start_outset = rule_edge_start_outset;
+    rule_interior_end_outset = rule_edge_end_outset;
+  } else {
+    if (!rule_interior_end_outset) {
+      rule_interior_end_outset = rule_interior_start_outset;
+    }
+  }
 
   return true;
 }

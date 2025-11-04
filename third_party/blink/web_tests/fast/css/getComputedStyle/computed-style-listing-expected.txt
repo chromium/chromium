@@ -143,7 +143,6 @@ column-rule-edge-end-outset: 0px
 column-rule-edge-start-outset: 0px
 column-rule-interior-end-outset: 50%
 column-rule-interior-start-outset: 50%
-column-rule-outset: 50%
 column-rule-style: none
 column-rule-visibility-items: all
 column-rule-width: 3px

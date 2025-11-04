@@ -23,6 +23,10 @@ enum class CSSGapDecorationPropertyType : int {
   kColor,
   kWidth,
   kStyle,
+  kEdgeEndOutset,
+  kEdgeStartOutset,
+  kInteriorStartOutset,
+  kInteriorEndOutset,
 };
 
 enum class CSSGapDecorationPropertyDirection : int {

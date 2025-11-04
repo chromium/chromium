@@ -33,6 +33,22 @@ CSSPropertyID CSSGapDecorationUtils::GetLonghandProperty(
       return direction == CSSGapDecorationPropertyDirection::kRow
                  ? CSSPropertyID::kRowRuleColor
                  : CSSPropertyID::kColumnRuleColor;
+    case CSSGapDecorationPropertyType::kEdgeEndOutset:
+      return direction == CSSGapDecorationPropertyDirection::kRow
+                 ? CSSPropertyID::kRowRuleEdgeEndOutset
+                 : CSSPropertyID::kColumnRuleEdgeEndOutset;
+    case CSSGapDecorationPropertyType::kEdgeStartOutset:
+      return direction == CSSGapDecorationPropertyDirection::kRow
+                 ? CSSPropertyID::kRowRuleEdgeStartOutset
+                 : CSSPropertyID::kColumnRuleEdgeStartOutset;
+    case CSSGapDecorationPropertyType::kInteriorStartOutset:
+      return direction == CSSGapDecorationPropertyDirection::kRow
+                 ? CSSPropertyID::kRowRuleInteriorStartOutset
+                 : CSSPropertyID::kColumnRuleInteriorStartOutset;
+    case CSSGapDecorationPropertyType::kInteriorEndOutset:
+      return direction == CSSGapDecorationPropertyDirection::kRow
+                 ? CSSPropertyID::kRowRuleInteriorEndOutset
+                 : CSSPropertyID::kColumnRuleInteriorEndOutset;
   }
 }
 

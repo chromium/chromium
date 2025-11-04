@@ -363,8 +363,20 @@ bool LengthPropertyFunctions::GetLength(const CSSProperty& property,
         success = true;
       }
       break;
-    case CSSPropertyID::kColumnRuleOutset:
-      result = style.ColumnRuleOutset();
+    case CSSPropertyID::kColumnRuleEdgeEndOutset:
+      result = style.ColumnRuleEdgeEndOutset();
+      success = true;
+      break;
+    case CSSPropertyID::kColumnRuleEdgeStartOutset:
+      result = style.ColumnRuleEdgeStartOutset();
+      success = true;
+      break;
+    case CSSPropertyID::kColumnRuleInteriorEndOutset:
+      result = style.ColumnRuleInteriorEndOutset();
+      success = true;
+      break;
+    case CSSPropertyID::kColumnRuleInteriorStartOutset:
+      result = style.ColumnRuleInteriorStartOutset();
       success = true;
       break;
     case CSSPropertyID::kRowRuleOutset:

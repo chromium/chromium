@@ -151,7 +151,6 @@ All changes to this list should go through Blink's feature review process: http:
     column-rule-edge-start-outset
     column-rule-interior-end-outset
     column-rule-interior-start-outset
-    column-rule-outset
     column-rule-style
     column-rule-visibility-items
     column-rule-width
@@ -657,6 +656,11 @@ All changes to this list should go through Blink's feature review process: http:
         column-rule-color
         column-rule-style
         column-rule-width
+    column-rule-outset
+        column-rule-edge-end-outset
+        column-rule-edge-start-outset
+        column-rule-interior-end-outset
+        column-rule-interior-start-outset
     columns
         column-count
         column-height
@@ -890,9 +894,6 @@ All changes to this list should go through Blink's feature review process: http:
     rule-color
         column-rule-color
         row-rule-color
-    rule-outset
-        column-rule-outset
-        row-rule-outset
     rule-style
         column-rule-style
         row-rule-style

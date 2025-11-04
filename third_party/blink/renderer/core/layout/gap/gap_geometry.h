@@ -16,6 +16,8 @@
 
 namespace blink {
 
+class ComputedStyle;
+
 // This bitmask indicates whether an intersection is blocked due to the presence
 // of a spanning item in one or both directions. When considering column gaps,
 // `kBlockedBefore` means the intersection is blocked by a spanning item
@@ -200,6 +202,22 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
 
   bool IsMultiColSpanner(wtf_size_t gap_index,
                          GridTrackSizingDirection direction = kForRows) const;
+
+  LayoutUnit ComputeEndOutset(const ComputedStyle& style,
+                              wtf_size_t gap_index,
+                              wtf_size_t intersection_index,
+                              const Vector<LayoutUnit>& intersections,
+                              bool is_column_gap,
+                              bool is_main,
+                              LayoutUnit cross_width) const;
+
+  LayoutUnit ComputeStartOutset(const ComputedStyle& style,
+                                wtf_size_t gap_index,
+                                wtf_size_t intersection_index,
+                                const Vector<LayoutUnit>& intersections,
+                                bool is_column_gap,
+                                bool is_main,
+                                LayoutUnit cross_width) const;
 
  private:
   // Returns a list of intersection offsets for a main gap at `gap_index`. This
