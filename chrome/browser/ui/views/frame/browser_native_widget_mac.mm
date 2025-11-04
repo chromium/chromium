@@ -424,6 +424,7 @@ void BrowserNativeWidgetMac::PopulateCreateWindowParams(
     params->window_class = remote_cocoa::mojom::WindowClass::kFrameless;
     params->style_mask = NSWindowStyleMaskFullSizeContentView |
                          NSWindowStyleMaskTitled | NSWindowStyleMaskResizable;
+    params->window_title_hidden = true;
   } else if (browser_view_->GetIsNormalType() ||
              browser_view_->GetIsWebAppType()) {
     params->window_class = remote_cocoa::mojom::WindowClass::kBrowser;
