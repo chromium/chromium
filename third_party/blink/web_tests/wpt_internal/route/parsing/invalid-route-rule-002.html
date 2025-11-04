@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<title>Invalid @route rule declarations, some parsed successfully, thanks to General Enclosed, but they should never match.</title>
+<link rel="author" title="Morten Stenshorne" href="mailto:mstensho@chromium.org">
+<link rel="help" href="https://wicg.github.io/declarative-partial-updates/css-route-matching/">
+<script type="routemap">
+  {
+    "routes": [
+      {
+        "name": "r",
+        "pattern": "*"
+      }
+    ]
+  }
+</script>
+<style>
+  @route incorrect { #canary { height: 1px; } }
+  @route (r) incorrect { #canary { height: 2px; } }
+  @route (r) (r) { #canary { height: 3px; } }
+  @route (r r) { #canary { height: 4px; } }
+  @route (r r) incorrect { #canary { height: 5px; } }
+  @route (at: r) incorrect { #canary { height: 6px; } }
+  @route (at: r r) { #canary { height: 7px; } }
+  @route (at: r r) incorrect { #canary { height: 8px; } }
+  @route (at: from:) { #canary { height: 9px; } }
+  @route (at: from:) incorrect { #canary { height: 10px; } }
+  @route (at: from: whatever) { #canary { height: 11px; } }
+  @route (at: from: whatever) incorrect { #canary { height: 12px; } }
+  @route incorrect (r) { #canary { height: 13px; } }
+  @route incorrect (at: r) incorrect { #canary { height: 14px; } }
+  @route (over:) incorrect { #canary { height: 15px; } }
+  @route (over: rainbow) incorrect { #canary { height: 16px; } }
+  @route (over:) { #canary { height: 17px; } }
+  @route (over: rainbow) { #canary { height: 18px; } }
+  @route incorrect (over: rainbow) incorrect { #canary { height: 19px; } }
+
+  /* Sanity check. This one should match. */
+  @route (r) {
+    #sanityCheck { color: lime; }
+  }
+</style>
+<div id="canary"></div>
+<div id="sanityCheck"></div>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+  test(()=> {
+    assert_equals(canary.offsetHeight, 0);
+  }, "None of the @route rules should match");
+  test(()=> {
+    assert_equals(getComputedStyle(sanityCheck).color, "rgb(0, 255, 0)");
+  }, "Sanity check");
+</script>

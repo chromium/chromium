@@ -43,6 +43,7 @@
 #include "third_party/blink/renderer/core/css/css_selector_list.h"
 #include "third_party/blink/renderer/core/css/media_values.h"
 #include "third_party/blink/renderer/core/css/robin_hood_map-inl.h"
+#include "third_party/blink/renderer/core/css/route_query.h"
 #include "third_party/blink/renderer/core/css/seeker.h"
 #include "third_party/blink/renderer/core/css/selector_checker-inl.h"
 #include "third_party/blink/renderer/core/css/selector_checker.h"
@@ -964,28 +965,11 @@ void RuleSet::AddChildRules(StyleRule* parent_rule,
       page_rule->SetCascadeLayer(cascade_layer);
       AddPageRule(page_rule);
     } else if (auto* route_rule = DynamicTo<StyleRuleRoute>(rule)) {
-      Document* document = medium.GetMediaValues().GetDocument();
-      if (route_rule->GetURLPattern() && document) {
-        // A URLPattern becomes an anonymous route. One route for each unique
-        // URLPattern.
-        RouteMap::Ensure(*document).AddAnonymousRoute(
-            route_rule->GetURLPattern());
-      }
-      if (const auto* route_map = RouteMap::Get(document)) {
-        bool matches;
-        if (!route_rule->GetName().empty()) {
-          matches = route_map->MatchesRoute(route_rule->GetName(),
-                                            route_rule->GetPreposition());
-        } else {
-          DCHECK(route_rule->GetURLPattern());
-          matches = route_map->MatchesURLPattern(route_rule->GetURLPattern(),
-                                                 route_rule->GetPreposition());
-        }
-        if (matches) {
-          AddChildRules(parent_rule, route_rule->ChildRules(), medium, mixins,
-                        add_rule_flags, container_query, cascade_layer,
-                        style_scope, apply_mixins_stack);
-        }
+      const RouteQuery& query = route_rule->GetRouteQuery();
+      if (query.Evaluate(medium.GetMediaValues().GetDocument())) {
+        AddChildRules(parent_rule, route_rule->ChildRules(), medium, mixins,
+                      add_rule_flags, container_query, cascade_layer,
+                      style_scope, apply_mixins_stack);
       }
     } else if (auto* media_rule = DynamicTo<StyleRuleMedia>(rule)) {
       if (MatchMediaForAddRules(medium, media_rule->MediaQueries())) {

@@ -4,11 +4,13 @@
 
 #include "third_party/blink/renderer/core/css/style_rule.h"
 
+#include "base/functional/function_ref.h"
 #include "third_party/blink/renderer/core/css/css_rule_list.h"
 #include "third_party/blink/renderer/core/css/css_scope_rule.h"
 #include "third_party/blink/renderer/core/css/css_style_rule.h"
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
+#include "third_party/blink/renderer/core/css/route_query.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
@@ -468,35 +470,68 @@ TEST_F(StyleRuleTest, RouteRuleDisabled) {
 
 TEST_F(StyleRuleTest, RouteRule) {
   ScopedRouteMatchingForTest enabled(true);
-  StyleRuleBase* rule =
-      css_test_helpers::ParseRule(GetDocument(), "@route (sixtysix) {}");
-  auto* route_rule = DynamicTo<StyleRuleRoute>(rule);
 
-  ASSERT_TRUE(route_rule);
-  EXPECT_EQ(route_rule->GetName(), "sixtysix");
-  EXPECT_EQ(route_rule->GetPreposition(), RoutePreposition::kAt);
+  // Parse the specified CSS into a rule, and extract its RouteTest.
+  auto GetRouteTest = [this](const char* css) -> const RouteTest* {
+    using Callback = base::FunctionRef<void(const RouteTest&)>;
+    class TestExtractor : public ConditionalExpNodeVisitor {
+     public:
+      explicit TestExtractor(Callback callback) : callback_(callback) {}
 
-  route_rule = DynamicTo<StyleRuleRoute>(
-      css_test_helpers::ParseRule(GetDocument(), "@route (from: sixtysix) {}"));
-  EXPECT_EQ(route_rule->GetName(), "sixtysix");
-  EXPECT_EQ(route_rule->GetPreposition(), RoutePreposition::kFrom);
+     private:
+      KleeneValue EvaluateRouteQueryExpNode(
+          const RouteQueryExpNode& node) override {
+        callback_(node.GetRouteTest());
+        return KleeneValue::kFalse;
+      }
 
-  route_rule = DynamicTo<StyleRuleRoute>(
-      css_test_helpers::ParseRule(GetDocument(), "@route (to: sixtysix) {}"));
-  EXPECT_EQ(route_rule->GetName(), "sixtysix");
-  EXPECT_EQ(route_rule->GetPreposition(), RoutePreposition::kTo);
+      Callback callback_;
+    };
 
-  route_rule = DynamicTo<StyleRuleRoute>(
-      css_test_helpers::ParseRule(GetDocument(), "@route (at: sixtysix) {}"));
-  EXPECT_EQ(route_rule->GetName(), "sixtysix");
-  EXPECT_EQ(route_rule->GetPreposition(), RoutePreposition::kAt);
+    StyleRuleBase* rule = css_test_helpers::ParseRule(GetDocument(), css);
+    auto* route_rule = DynamicTo<StyleRuleRoute>(rule);
+    if (!route_rule) {
+      return nullptr;
+    }
+    const ConditionalExpNode* root_exp =
+        route_rule->GetRouteQuery().GetRootExp();
+    if (!root_exp) {
+      return nullptr;
+    }
+    const RouteTest* route_test = nullptr;
+    auto set_test = [&route_test](const RouteTest& test) {
+      route_test = &test;
+    };
+    TestExtractor extractor(set_test);
+    root_exp->Evaluate(extractor);
+    return route_test;
+  };
 
-  rule =
-      css_test_helpers::ParseRule(GetDocument(), "@route (below: sixtysix) {}");
-  EXPECT_FALSE(rule);
+  const RouteTest* route_test = GetRouteTest("@route (sixtysix) {}");
+  ASSERT_TRUE(route_test);
+  EXPECT_EQ(route_test->GetRouteName(), "sixtysix");
+  EXPECT_EQ(route_test->GetPreposition(), RoutePreposition::kAt);
 
-  rule = css_test_helpers::ParseRule(GetDocument(), "@route (at: ) {}");
-  EXPECT_FALSE(rule);
+  route_test = GetRouteTest("@route (from: sixtysix) {}");
+  ASSERT_TRUE(route_test);
+  EXPECT_EQ(route_test->GetRouteName(), "sixtysix");
+  EXPECT_EQ(route_test->GetPreposition(), RoutePreposition::kFrom);
+
+  route_test = GetRouteTest("@route (to: sixtysix) {}");
+  ASSERT_TRUE(route_test);
+  EXPECT_EQ(route_test->GetRouteName(), "sixtysix");
+  EXPECT_EQ(route_test->GetPreposition(), RoutePreposition::kTo);
+
+  route_test = GetRouteTest("@route (at: sixtysix) {}");
+  ASSERT_TRUE(route_test);
+  EXPECT_EQ(route_test->GetRouteName(), "sixtysix");
+  EXPECT_EQ(route_test->GetPreposition(), RoutePreposition::kAt);
+
+  route_test = GetRouteTest("@route (below: sixtysix) {}");
+  EXPECT_FALSE(route_test);
+
+  route_test = GetRouteTest("@route (at: ) {}");
+  EXPECT_FALSE(route_test);
 }
 
 }  // namespace blink

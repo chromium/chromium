@@ -49,7 +49,7 @@ class CSSRule;
 class CSSStyleSheet;
 class MixinParameterBindings;
 class ExecutionContext;
-class URLPattern;
+class RouteQuery;
 
 class CORE_EXPORT StyleRuleBase : public GarbageCollected<StyleRuleBase> {
  public:
@@ -630,23 +630,16 @@ class CORE_EXPORT StyleRuleContainer : public StyleRuleCondition {
 
 class StyleRuleRoute : public StyleRuleCondition {
  public:
-  StyleRuleRoute(const String& name,
-                 URLPattern* url_pattern,
-                 RoutePreposition,
-                 HeapVector<Member<StyleRuleBase>> child_rules);
+  StyleRuleRoute(RouteQuery*, HeapVector<Member<StyleRuleBase>> child_rules);
   StyleRuleRoute(const StyleRuleRoute&) = delete;
   StyleRuleRoute(const StyleRuleRoute&, HeapVector<Member<StyleRuleBase>>);
 
-  const String& GetName() const { return name_; }
-  URLPattern* GetURLPattern() const { return url_pattern_; }
-  RoutePreposition GetPreposition() const { return preposition_; }
-
   void TraceAfterDispatch(Visitor*) const;
 
+  const RouteQuery& GetRouteQuery() const { return *route_query_; }
+
  private:
-  String name_;
-  Member<URLPattern> url_pattern_;
-  RoutePreposition preposition_;
+  Member<RouteQuery> route_query_;
 };
 
 class StyleRuleStartingStyle : public StyleRuleGroup {

@@ -64,6 +64,7 @@
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_stream.h"
 #include "third_party/blink/renderer/core/css/parser/css_supports_parser.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
+#include "third_party/blink/renderer/core/css/route_query.h"
 #include "third_party/blink/renderer/core/css/style_rule_counter_style.h"
 #include "third_party/blink/renderer/core/css/style_rule_font_feature_values.h"
 #include "third_party/blink/renderer/core/css/style_rule_font_palette_values.h"
@@ -1037,30 +1038,17 @@ void StyleRuleContainer::TraceAfterDispatch(blink::Visitor* visitor) const {
   StyleRuleCondition::TraceAfterDispatch(visitor);
 }
 
-StyleRuleRoute::StyleRuleRoute(const String& name,
-                               URLPattern* url_pattern,
-                               RoutePreposition preposition,
+StyleRuleRoute::StyleRuleRoute(RouteQuery* query,
                                HeapVector<Member<StyleRuleBase>> child_rules)
-    : StyleRuleCondition(kRoute, std::move(child_rules)),
-      name_(name),
-      url_pattern_(url_pattern),
-      preposition_(preposition) {
-  // TODO(crbug.com/436805487): If we end up allowing both route names AND
-  // URLPattern in the end, we need to refactor. Maybe use std::variant and
-  // different constructors, as both cannot be set for one and the same route.
-  // It should also be possible to combine multiple routes in a single selector
-  // (with "and"/"or"), that needs to be handled somehow.
-  DCHECK(!name != !url_pattern);
-}
+    : StyleRuleCondition(kRoute, std::move(child_rules)), route_query_(query) {}
 
 StyleRuleRoute::StyleRuleRoute(const StyleRuleRoute& other,
                                HeapVector<Member<StyleRuleBase>> child_rules)
     : StyleRuleCondition(kRoute, std::move(child_rules)),
-      name_(other.name_),
-      preposition_(other.preposition_) {}
+      route_query_(other.route_query_) {}
 
 void StyleRuleRoute::TraceAfterDispatch(Visitor* v) const {
-  v->Trace(url_pattern_);
+  v->Trace(route_query_);
   StyleRuleCondition::TraceAfterDispatch(v);
 }
 

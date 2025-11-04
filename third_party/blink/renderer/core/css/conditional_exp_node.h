@@ -18,6 +18,7 @@ class ConditionalExpNodeFunction;
 class ConditionalExpNodeUnknown;
 class MediaQueryFeatureExpNode;
 class MediaQuerySet;
+class RouteQueryExpNode;
 
 // Visitor and evaluation handler for leaf expression nodes, and contents of
 // such leaves, and functions. Will visit in tree order. Ancestor compound
@@ -27,6 +28,9 @@ class MediaQuerySet;
 // overrides.
 class ConditionalExpNodeVisitor {
  public:
+  virtual KleeneValue EvaluateRouteQueryExpNode(const RouteQueryExpNode&) {
+    return KleeneValue::kUnknown;
+  }
   virtual KleeneValue EvaluateMediaQueryFeatureExpNode(
       const MediaQueryFeatureExpNode&) {
     return KleeneValue::kUnknown;
