@@ -270,6 +270,10 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
                 setFragmentAnimation(transaction, fragment);
                 transaction.commit();
             }
+        } else {
+            mMultiColumnSettings =
+                    (MultiColumnSettings)
+                            fragmentManager.findFragmentByTag(MULTI_COLUMN_FRAGMENT_TAG);
         }
 
         if (ChromeFeatureList.sSearchInSettings.isEnabled()) {

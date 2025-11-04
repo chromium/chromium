@@ -30,7 +30,9 @@ import org.chromium.components.browser_ui.settings.EmbeddableSettingsPage;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /** Preference container implementation for SettingsActivity in multi-column mode. */
 @NullMarked
@@ -378,16 +380,60 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat {
         }
     }
 
+    // Workaround for fragment identifying issue.
+    private static @Nullable String getUUID(Fragment fragment) {
+        // This function depends on internal structure of Fragment.toString().
+        // In fragment, an UUID is assigned, which survives at activity recreation.
+        // The expected format begins with "<classname>{<hash>} (<UUID>...".
+        // Also, the UUID format is [0-9a-f]+(-[0-9a-f])*.
+
+        // Find the open paren.
+        String s = fragment.toString();
+        int begin = s.indexOf("(");
+        if (begin < 0) {
+            return null;
+        }
+        ++begin; // Exclude the beginning '('.
+
+        // Find first character not in '0-9a-f' nor '-'.
+        int end = begin;
+        for (; end < s.length(); ++end) {
+            char c = s.charAt(end);
+            if ("0123456789abcdef-".indexOf(c) < 0) {
+                break;
+            }
+        }
+        return s.substring(begin, end);
+    }
+
     static class Title {
-        Title(ObservableSupplier<String> titleSupplier, int backStackCount) {
+        Title(String uuid, ObservableSupplier<String> titleSupplier, int backStackCount) {
+            this.uuid = uuid;
             this.titleSupplier = titleSupplier;
             this.backStackCount = backStackCount;
         }
+
+        public final String uuid;
 
         public final ObservableSupplier<String> titleSupplier;
 
         /** the number of back stack entries when the fragment started */
         public final int backStackCount;
+    }
+
+    static class FragmentUuidMapCreator extends FragmentManager.FragmentLifecycleCallbacks {
+        final Map<String, EmbeddableSettingsPage> mMap = new HashMap<>();
+
+        @Override
+        public void onFragmentCreated(
+                FragmentManager fm, Fragment f, @Nullable Bundle savedInstanceState) {
+            if (f instanceof EmbeddableSettingsPage page) {
+                String uuid = getUUID(f);
+                if (uuid != null) {
+                    mMap.put(uuid, page);
+                }
+            }
+        }
     }
 
     static class FragmentTracker extends FragmentManager.FragmentLifecycleCallbacks {
@@ -397,6 +443,28 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat {
         FragmentTracker(List<Observer> observers) {
             mObservers = observers;
         }
+
+        private static final String TAG = "FragmentTracker";
+
+        // Note: in order to support recreation of the activity, this fragment stores the "titles"
+        // as the state to be restored.
+        // This is because, unfortunately, there's no way to identify the fragment from the
+        // FragmentManager.BackStackEntry information.
+        // So, instead we track the fragments in FragmentTracker and record the order in the Bundle
+        // then restore it on activity recreation.
+        // We couldn't record the position information in each fragment's Bundle state in
+        // FragmentTracer, because, in some edge cases, the saved value is not sent back on
+        // restoring the fragment. (it looks framework/library issue, but anyways we have to deal
+        // with the situation).
+        // Thus, we store UUID of the fragment, used in androidx.fragment.app.Fragment, because
+        // there's no other reliable identifiers we can use. See getUUID method for implementation
+        // details.
+
+        // Key used for saving title fragment UUIDs.
+        private static final String KEY_TITLE_UUIDS = "TitleUUIDs";
+
+        // Key used for saving back stack positions.
+        private static final String KEY_BACK_STACK_COUNTS = "BackStackCounts";
 
         @Override
         public void onFragmentResumed(@NonNull FragmentManager fm, @NonNull Fragment f) {
@@ -418,6 +486,8 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat {
 
             if (f instanceof EmbeddableSettingsPage page) {
                 ObservableSupplier<String> titleSupplier = page.getPageTitle();
+                String uuid = getUUID(f);
+                assert uuid != null;
                 int index = -1;
                 for (int i = 0; i < mTitles.size(); ++i) {
                     Title candidate = mTitles.get(i);
@@ -429,7 +499,7 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat {
 
                 if (index < 0) {
                     // Enter into more detailed page.
-                    mTitles.add(new Title(titleSupplier, backStackCount));
+                    mTitles.add(new Title(uuid, titleSupplier, backStackCount));
                 } else {
                     // Move back from the detailed page.
                     for (int i = mTitles.size() - 1; i > index; --i) {
@@ -440,6 +510,40 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat {
 
             for (Observer o : mObservers) {
                 o.onTitleUpdated();
+            }
+        }
+
+        void saveTitles(Bundle outState) {
+            String[] uuids = new String[mTitles.size()];
+            int[] backStackCounts = new int[mTitles.size()];
+            for (int i = 0; i < mTitles.size(); ++i) {
+                uuids[i] = mTitles.get(i).uuid;
+                backStackCounts[i] = mTitles.get(i).backStackCount;
+            }
+            outState.putStringArray(KEY_TITLE_UUIDS, uuids);
+            outState.putIntArray(KEY_BACK_STACK_COUNTS, backStackCounts);
+        }
+
+        void restoreTitles(
+                @Nullable Bundle savedInstanceState, Map<String, EmbeddableSettingsPage> uuidMap) {
+            if (savedInstanceState == null) {
+                return;
+            }
+
+            assert mTitles.isEmpty();
+            String[] uuids = savedInstanceState.getStringArray(KEY_TITLE_UUIDS);
+            int[] backStackCounts = savedInstanceState.getIntArray(KEY_BACK_STACK_COUNTS);
+            if (uuids == null || backStackCounts == null) {
+                return;
+            }
+            assert uuids.length == backStackCounts.length;
+
+            for (int i = 0; i < uuids.length; ++i) {
+                String uuid = uuids[i];
+                int backStackCount = backStackCounts[i];
+                var page = uuidMap.get(uuid);
+                assert page != null;
+                mTitles.add(new Title(uuid, page.getPageTitle(), backStackCount));
             }
         }
     }
@@ -458,9 +562,32 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat {
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        getChildFragmentManager()
-                .registerFragmentLifecycleCallbacks(mFragmentTracker, /* recursive= */ false);
+        var fragmentManager = getChildFragmentManager();
+
+        // Capture created fragments in super.onCreate() specifically for activity recreating cases.
+        // The fragments are used in order to restore titles.
+        if (savedInstanceState != null) {
+            var uuidMapCreator = new FragmentUuidMapCreator();
+            fragmentManager.registerFragmentLifecycleCallbacks(
+                    uuidMapCreator, /* recursive= */ false);
+            try {
+                super.onCreate(savedInstanceState);
+            } finally {
+                fragmentManager.unregisterFragmentLifecycleCallbacks(uuidMapCreator);
+            }
+            mFragmentTracker.restoreTitles(savedInstanceState, uuidMapCreator.mMap);
+        } else {
+            super.onCreate(savedInstanceState);
+        }
+
+        fragmentManager.registerFragmentLifecycleCallbacks(
+                mFragmentTracker, /* recursive= */ false);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        mFragmentTracker.saveTitles(outState);
     }
 
     @Override
