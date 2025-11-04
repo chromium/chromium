@@ -20,11 +20,8 @@
 #include "device/vr/openxr/openxr_stage_bounds_provider.h"
 #include "device/vr/openxr/openxr_unbounded_space_provider.h"
 #include "device/vr/public/mojom/xr_session.mojom-forward.h"
-#include "third_party/openxr/src/include/openxr/openxr.h"
-
-#if BUILDFLAG(IS_ANDROID)
 #include "third_party/openxr/dev/xr_android.h"
-#endif
+#include "third_party/openxr/src/include/openxr/openxr.h"
 
 namespace device {
 // Helper macro to facilitate declaring the method names of functions that will
@@ -76,6 +73,7 @@ struct OpenXrExtensionMethods {
 
   // Spatial Anchors
   OPENXR_DECLARE_FN(xrCreateSpatialAnchorEXT);
+  OPENXR_DECLARE_FN(xrEnumerateSpatialAnchorAttachableComponentsANDROID);
 
   // Visibility Mask
   OPENXR_DECLARE_FN(xrGetVisibilityMaskKHR);

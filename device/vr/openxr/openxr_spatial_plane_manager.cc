@@ -26,6 +26,36 @@ mojom::XRPlaneOrientation ToMojomPlaneOrientation(
       return mojom::XRPlaneOrientation::UNKNOWN;
   }
 }
+
+std::vector<XrSpatialComponentTypeEXT> GetAttachableComponentTypes(
+    const OpenXrExtensionMethods& extension_methods,
+    XrInstance instance,
+    XrSystemId system) {
+  // This is an optional extension.
+  if (extension_methods.xrEnumerateSpatialAnchorAttachableComponentsANDROID ==
+      nullptr) {
+    return {};
+  }
+
+  uint32_t attachable_component_count;
+  if (XR_FAILED(
+          extension_methods.xrEnumerateSpatialAnchorAttachableComponentsANDROID(
+              instance, system, 0, &attachable_component_count, nullptr))) {
+    return {};
+  }
+
+  std::vector<XrSpatialComponentTypeEXT> attachable_components(
+      attachable_component_count);
+  if (XR_FAILED(
+          extension_methods.xrEnumerateSpatialAnchorAttachableComponentsANDROID(
+              instance, system,
+              static_cast<uint32_t>(attachable_components.size()),
+              &attachable_component_count, attachable_components.data()))) {
+    attachable_components.clear();
+  }
+
+  return attachable_components;
+}
 }  // namespace
 
 // static
@@ -34,16 +64,61 @@ bool OpenXrSpatialPlaneManager::IsSupported(
   // The only components that we need to support planes are
   // XR_SPATIAL_COMPONENT_TYPE_BOUNDED_2D_EXT and
   // XR_SPATIAL_COMPONENT_TYPE_PLANE_ALIGNMENT_EXT which are guaranteed to be
-  // supported if the XR_SPATIAL_CAPABILITY_ANCHOR_EXT is supported, so that's
-  // all we need to check.
+  // supported if the XR_SPATIAL_CAPABILITY_PLANE_TRACKING_EXT is supported, so
+  //  that's all we need to check.
   return base::Contains(capabilities, XR_SPATIAL_CAPABILITY_PLANE_TRACKING_EXT);
 }
 
 OpenXrSpatialPlaneManager::OpenXrSpatialPlaneManager(
     const OpenXrExtensionHelper& extension_helper,
-    const OpenXrSpatialFrameworkManager& framework_manager)
+    const OpenXrSpatialFrameworkManager& framework_manager,
+    XrInstance instance,
+    XrSystemId system)
     : extension_helper_(extension_helper),
-      framework_manager_(framework_manager) {}
+      framework_manager_(framework_manager),
+      enabled_components_({// Begin by enabling the two components required to
+                           // be present for the
+                           // XR_SPATIAL_CAPABILITY_PLANE_TRACKING_EXT
+                           XR_SPATIAL_COMPONENT_TYPE_BOUNDED_2D_EXT,
+                           XR_SPATIAL_COMPONENT_TYPE_PLANE_ALIGNMENT_EXT}) {
+  std::vector<XrSpatialComponentTypeEXT> plane_tracking_components =
+      GetSupportedComponentTypes(
+          extension_helper_->ExtensionMethods()
+              .xrEnumerateSpatialCapabilityComponentTypesEXT,
+          instance, system, XR_SPATIAL_CAPABILITY_PLANE_TRACKING_EXT);
+
+  std::vector<XrSpatialComponentTypeEXT> attachable_components =
+      GetAttachableComponentTypes(extension_helper_->ExtensionMethods(),
+                                  instance, system);
+
+  // If any of our attachable components are in the supportable plane components
+  // list, we can attach anchors to planes.
+  auto first_attachable_component = std::find_if(
+      attachable_components.begin(), attachable_components.end(),
+      [&plane_tracking_components](XrSpatialComponentTypeEXT component) {
+        return base::Contains(plane_tracking_components, component);
+      });
+
+  if (first_attachable_component != attachable_components.end()) {
+    // In order to properly support parenting, we have to ensure the component
+    // of ours that is attachable is enabled. First check if any of our planned
+    // to be enabled components are attachable.
+    bool attachable_component_enabled = std::any_of(
+        enabled_components_.begin(), enabled_components_.end(),
+        [&attachable_components](XrSpatialComponentTypeEXT component) {
+          return base::Contains(attachable_components, component);
+        });
+
+    // If not, let's enable the first attachable component that we found, since
+    // any of them will do. It's only use will be to enable parenting, we don't
+    // actually need to query for it.
+    if (!attachable_component_enabled) {
+      enabled_components_.insert(*first_attachable_component);
+    }
+
+    can_parent_anchors_ = true;
+  }
+}
 
 OpenXrSpatialPlaneManager::~OpenXrSpatialPlaneManager() = default;
 
@@ -52,8 +127,7 @@ void OpenXrSpatialPlaneManager::PopulateCapabilityConfiguration(
                         absl::flat_hash_set<XrSpatialComponentTypeEXT>>&
         capability_configuration) const {
   capability_configuration[XR_SPATIAL_CAPABILITY_PLANE_TRACKING_EXT].insert(
-      {XR_SPATIAL_COMPONENT_TYPE_BOUNDED_2D_EXT,
-       XR_SPATIAL_COMPONENT_TYPE_PLANE_ALIGNMENT_EXT});
+      enabled_components_.begin(), enabled_components_.end());
 }
 
 void OpenXrSpatialPlaneManager::OnSnapshotChanged() {
@@ -64,7 +138,8 @@ void OpenXrSpatialPlaneManager::OnSnapshotChanged() {
   }
 
   // Query the snapshot for all entities that have the necessary plane
-  // components.
+  // components. Note that we don't use enabled_components_ here, because these
+  // are the only values we actually care about.
   XrSpatialComponentDataQueryConditionEXT query_condition{
       XR_TYPE_SPATIAL_COMPONENT_DATA_QUERY_CONDITION_EXT};
   std::vector<XrSpatialComponentTypeEXT> component_types = {

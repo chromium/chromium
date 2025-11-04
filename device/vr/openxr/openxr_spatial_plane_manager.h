@@ -33,7 +33,9 @@ class OpenXrSpatialPlaneManager : public OpenXrPlaneManager {
 
   OpenXrSpatialPlaneManager(
       const OpenXrExtensionHelper& extension_helper,
-      const OpenXrSpatialFrameworkManager& framework_manager);
+      const OpenXrSpatialFrameworkManager& framework_manager,
+      XrInstance instance,
+      XrSystemId system);
   ~OpenXrSpatialPlaneManager() override;
 
   // Mutates the provided map to fill in the necessary capabilities and
@@ -53,18 +55,25 @@ class OpenXrSpatialPlaneManager : public OpenXrPlaneManager {
   // |kInvalidPlaneId| if the entity is not currently tracked.
   PlaneId GetPlaneId(XrSpatialEntityIdEXT entity_id) const;
 
- private:
   // Return the `XrSpatialEntityIdEXT` of the corresponding |plane_id|. Will
   // return XR_NULL_SPATIAL_ENTITY_ID_EXT if the |plane_id| is not currently
   // tracked or otherwise invalid.
   XrSpatialEntityIdEXT GetEntityId(PlaneId plane_id) const;
 
+  bool can_parent_anchors() const { return can_parent_anchors_; }
+
+ private:
   const raw_ref<const OpenXrExtensionHelper> extension_helper_;
   const raw_ref<const OpenXrSpatialFrameworkManager> framework_manager_;
 
   absl::flat_hash_map<XrSpatialEntityIdEXT, mojom::XRPlaneDataPtr>
       entity_id_to_data_;
   absl::flat_hash_set<XrSpatialEntityIdEXT> updated_entity_ids_;
+
+  bool can_parent_anchors_ = false;
+
+  // Both of these components are guaranteed to be supported for the
+  absl::flat_hash_set<XrSpatialComponentTypeEXT> enabled_components_;
 
   base::WeakPtrFactory<OpenXrSpatialPlaneManager> weak_ptr_factory_{this};
 };

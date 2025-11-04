@@ -45,7 +45,7 @@ OpenXrSpatialFrameworkManager::OpenXrSpatialFrameworkManager(
   if (supported_features.contains(
           device::mojom::XRSessionFeature::PLANE_DETECTION)) {
     plane_manager_ = std::make_unique<OpenXrSpatialPlaneManager>(
-        extension_helper_.get(), *this);
+        extension_helper_.get(), *this, openxr_->instance(), openxr_->system());
     plane_manager_->PopulateCapabilityConfiguration(capability_configuration);
   }
 
@@ -255,6 +255,7 @@ OpenXrSpatialFrameworkManagerFactory::GetRequestedExtensions() const {
       XR_EXT_SPATIAL_ANCHOR_EXTENSION_NAME,
       XR_EXT_SPATIAL_PLANE_TRACKING_EXTENSION_NAME,
       XR_ANDROID_SPATIAL_DISCOVERY_RAYCAST_EXTENSION_NAME,
+      XR_ANDROID_SPATIAL_ENTITY_BOUND_ANCHOR_EXTENSION_NAME,
   });
 
   return *kExtensions;

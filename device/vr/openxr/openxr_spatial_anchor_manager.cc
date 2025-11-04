@@ -61,6 +61,14 @@ void OpenXrSpatialAnchorManager::PopulateCapabilityConfiguration(
   // Operator[] creates an empty entry if it does not exist.
   capability_configuration[XR_SPATIAL_CAPABILITY_ANCHOR_EXT].insert(
       XR_SPATIAL_COMPONENT_TYPE_ANCHOR_EXT);
+
+  // In order to set a Plane as our Parent we need to also enable the parent
+  // component type. Note that this component is guaranteed by the same
+  // extension that allows the plane manager to say that they can be our parent.
+  if (plane_manager_ && plane_manager_->can_parent_anchors()) {
+    capability_configuration[XR_SPATIAL_CAPABILITY_ANCHOR_EXT].insert(
+        XR_SPATIAL_COMPONENT_TYPE_PARENT_EXT);
+  }
 }
 
 AnchorId OpenXrSpatialAnchorManager::CreateAnchor(
@@ -73,6 +81,22 @@ AnchorId OpenXrSpatialAnchorManager::CreateAnchor(
   create_info.baseSpace = space;
   create_info.time = predicted_display_time;
   create_info.pose = pose;
+
+  XrSpatialEntityIdEXT parent_entity = XR_NULL_SPATIAL_ENTITY_ID_EXT;
+  if (plane_manager_ && plane_manager_->can_parent_anchors() &&
+      plane_id.has_value()) {
+    parent_entity = plane_manager_->GetEntityId(*plane_id);
+  }
+
+  // This type is small enough to create even if we won't use it, since it needs
+  // to be created outside the scope of the if block to attach it to the `next`
+  // chain.
+  XrSpatialAnchorParentANDROID parent_info{
+      .type = XR_TYPE_SPATIAL_ANCHOR_PARENT_ANDROID, .parentId = parent_entity};
+
+  if (parent_entity != XR_NULL_SPATIAL_ENTITY_ID_EXT) {
+    create_info.next = &parent_info;
+  }
 
   SpatialAnchorData anchor_data;
   if (XR_FAILED(extension_helper_->ExtensionMethods().xrCreateSpatialAnchorEXT(

@@ -264,4 +264,27 @@ typedef struct XrSpatialComponentRaycastResultListANDROID {
 } XrSpatialComponentRaycastResultListANDROID;
 #endif  // XR_ANDROID_spatial_discovery_raycast
 
+#ifndef XR_ANDROID_spatial_entity_bound_anchor
+#define XR_ANDROID_spatial_entity_bound_anchor 1
+#define XR_ANDROID_spatial_entity_bound_anchor_SPEC_VERSION 1
+#define XR_ANDROID_SPATIAL_ENTITY_BOUND_ANCHOR_EXTENSION_NAME "XR_ANDROID_spatial_entity_bound_anchor"
+
+#define XR_ERROR_SPATIAL_ANCHOR_ATTACHABLE_COMPONENT_NOT_FOUND_ANDROID ((XrResult) -1000790001U)
+#define XR_TYPE_SPATIAL_ANCHOR_PARENT_ANDROID ((XrStructureType) 1000790000U)
+
+// XrSpatialAnchorParentANDROID extends XrSpatialAnchorCreateInfoEXT
+typedef struct XrSpatialAnchorParentANDROID {
+    XrStructureType             type;
+    const void* XR_MAY_ALIAS    next;
+    XrSpatialEntityIdEXT        parentId;
+} XrSpatialAnchorParentANDROID;
+
+typedef XrResult (XRAPI_PTR *PFN_xrEnumerateSpatialAnchorAttachableComponentsANDROID)(
+    XrInstance                      instance,
+    XrSystemId                      systemId,
+    uint32_t                        attachableComponentCapacityInput,
+    uint32_t*                       attachableComponentCountOutput,
+    XrSpatialComponentTypeEXT*      attachableComponents);
+#endif /* XR_ANDROID_spatial_entity_bound_anchor */
+
 #endif  // THIRD_PARTY_OPENXR_DEV_XR_ANDROID_H_
