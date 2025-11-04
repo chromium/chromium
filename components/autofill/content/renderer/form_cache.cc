@@ -111,7 +111,7 @@ FormCache::UpdateFormCacheResult FormCache::UpdateFormCache(
       FormRendererId form_id = form.renderer_id();
       auto it = old_extracted_forms.find(form_id);
       if (it == old_extracted_forms.end() || !it->second ||
-          !FormData::DeepEqual(std::move(*it->second), form)) {
+          !FormData::DeepEqual(*it->second, form)) {
         r.updated_forms.push_back(form);
       }
       r.removed_forms.erase(form_id);
