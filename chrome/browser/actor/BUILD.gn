@@ -209,6 +209,8 @@ source_set("types") {
   ]
   deps = [
     "//chrome/common",
+    "//chrome/common:actor_webui_mojom",
+    "//components/password_manager/core/browser/actor_login:common",
     "//components/tabs:public",
     "//third_party/abseil-cpp:absl",
   ]
@@ -328,6 +330,7 @@ source_set("browser_tests") {
     "//components/safe_browsing:buildflags",
     "//components/safe_browsing/core/common:features",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
+    "//content/test:browsertest_support",
     "//testing/gtest",
   ]
 
@@ -336,6 +339,7 @@ source_set("browser_tests") {
       "actor_keyed_service_browsertest.cc",
       "actor_policy_checker_browsertest.cc",
       "execution_engine_browsertest.cc",
+      "execution_engine_origin_gating_browsertest.cc",
       "tools/attempt_login_tool_browsertest.cc",
       "tools/click_tool_browsertest.cc",
       "tools/drag_and_release_tool_browsertest.cc",
@@ -358,6 +362,7 @@ source_set("browser_tests") {
     ]
     deps += [
       "//chrome/browser/glic",
+      "//chrome/browser/glic/test_support",
       "//components/page_load_metrics/browser:test_support",
       "//ui/base:ozone_buildflags",
     ]
@@ -383,7 +388,6 @@ source_set("interactive_ui_tests") {
   ]
   if (enable_glic) {
     sources = [
-      "execution_engine_interactive_ui_test.cc",
       "tools/attempt_login_tool_interactive_ui_test.cc",
       "tools/select_tool_interactive_ui_test.cc",
     ]

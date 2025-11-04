@@ -923,4 +923,29 @@ views::View* GlicInstanceImpl::GetActiveEmbedderGlicViewForTesting() {
   return embedder->GetView().get();
 }
 
+void GlicInstanceImpl::RequestToShowCredentialSelectionDialog(
+    actor::TaskId task_id,
+    const base::flat_map<std::string, gfx::Image>& icons,
+    const std::vector<actor_login::Credential>& credentials,
+    actor::ActorTaskDelegate::CredentialSelectedCallback callback) {
+  host_.RequestToShowCredentialSelectionDialog(task_id, icons, credentials,
+                                               std::move(callback));
+}
+
+void GlicInstanceImpl::RequestToShowUserConfirmationDialog(
+    actor::TaskId task_id,
+    const url::Origin& navigation_origin,
+    actor::ActorTaskDelegate::UserConfirmationDialogCallback callback) {
+  host_.RequestToShowUserConfirmationDialog(task_id, navigation_origin,
+                                            std::move(callback));
+}
+
+void GlicInstanceImpl::RequestToConfirmNavigation(
+    actor::TaskId task_id,
+    const url::Origin& navigation_origin,
+    actor::ActorTaskDelegate::NavigationConfirmationCallback callback) {
+  host_.RequestToConfirmNavigation(task_id, navigation_origin,
+                                   std::move(callback));
+}
+
 }  // namespace glic

@@ -337,6 +337,22 @@ class Host : public GlicSharingManagerProvider {
 
   base::WeakPtr<Host> GetWeakPtr() { return weak_ptr_factory_.GetWeakPtr(); }
 
+  void RequestToShowCredentialSelectionDialog(
+      actor::TaskId task_id,
+      const base::flat_map<std::string, gfx::Image>& icons,
+      const std::vector<actor_login::Credential>& credentials,
+      actor::ActorTaskDelegate::CredentialSelectedCallback callback);
+
+  void RequestToShowUserConfirmationDialog(
+      actor::TaskId task_id,
+      const url::Origin& navigation_origin,
+      actor::ActorTaskDelegate::UserConfirmationDialogCallback callback);
+
+  void RequestToConfirmNavigation(
+      actor::TaskId task_id,
+      const url::Origin& navigation_origin,
+      actor::ActorTaskDelegate::NavigationConfirmationCallback callback);
+
  private:
   friend class HostManager;
 
@@ -364,6 +380,7 @@ class Host : public GlicSharingManagerProvider {
     bool context_access_indicator_enabled = false;
     raw_ptr<GlicWebClientAccess> web_client = nullptr;
   };
+
   void PanelWillOpenComplete(GlicWebClientAccess* client,
                              mojom::OpenPanelInfoPtr open_info);
   PageHandlerInfo* FindInfo(GlicPageHandler* handler);

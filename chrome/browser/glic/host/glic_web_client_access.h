@@ -7,7 +7,9 @@
 
 // Interface to the glic web client, provided by the glic WebUI.
 #include "base/functional/callback_forward.h"
+#include "chrome/browser/actor/actor_task_delegate.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
+#include "url/origin.h"
 
 namespace glic {
 
@@ -42,6 +44,20 @@ class GlicWebClientAccess {
 
   // Informs the web client that additional context is available.
   virtual void NotifyAdditionalContext(mojom::AdditionalContextPtr context) = 0;
+
+  virtual void RequestToShowCredentialSelectionDialog(
+      actor::TaskId task_id,
+      const base::flat_map<std::string, gfx::Image>& icons,
+      const std::vector<actor_login::Credential>& credentials,
+      actor::ActorTaskDelegate::CredentialSelectedCallback callback) = 0;
+  virtual void RequestToShowUserConfirmationDialog(
+      actor::TaskId task_id,
+      const url::Origin& navigation_origin,
+      actor::ActorTaskDelegate::UserConfirmationDialogCallback callback) = 0;
+  virtual void RequestToConfirmNavigation(
+      actor::TaskId task_id,
+      const url::Origin& navigation_origin,
+      actor::ActorTaskDelegate::NavigationConfirmationCallback callback) = 0;
 };
 
 }  // namespace glic
