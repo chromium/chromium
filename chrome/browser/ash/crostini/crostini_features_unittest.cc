@@ -150,16 +150,6 @@ class CrostiniFeaturesAdbSideloadingTest : public testing::Test {
  protected:
   CrostiniFeaturesAdbSideloadingTest() = default;
 
-  void SetFeatureFlag(bool is_enabled) {
-    if (is_enabled) {
-      scoped_feature_list_.InitWithFeatures(
-          {ash::features::kArcManagedAdbSideloadingSupport}, {});
-    } else {
-      scoped_feature_list_.InitWithFeatures(
-          {}, {ash::features::kArcManagedAdbSideloadingSupport});
-    }
-  }
-
   void AddChildUser() {
     AccountId account_id =
         AccountId::FromUserEmail(profile_.GetProfileUserName());
@@ -200,35 +190,6 @@ class CrostiniFeaturesAdbSideloadingTest : public testing::Test {
         ->SetCloudManaged("domain.com", "device_id");
   }
 
-  void AllowAdbSideloadingByDevicePolicy() {
-    scoped_settings_helper_.ReplaceDeviceSettingsProviderWithStub();
-    scoped_settings_helper_.SetInteger(
-        ash::kDeviceCrostiniArcAdbSideloadingAllowed,
-        enterprise_management::DeviceCrostiniArcAdbSideloadingAllowedProto::
-            ALLOW_FOR_AFFILIATED_USERS);
-  }
-
-  void DisallowAdbSideloadingByDevicePolicy() {
-    scoped_settings_helper_.ReplaceDeviceSettingsProviderWithStub();
-    scoped_settings_helper_.SetInteger(
-        ash::kDeviceCrostiniArcAdbSideloadingAllowed,
-        enterprise_management::DeviceCrostiniArcAdbSideloadingAllowedProto::
-            DISALLOW);
-  }
-
-  void AllowAdbSideloadingByUserPolicy() {
-    profile_.GetPrefs()->SetInteger(
-        crostini::prefs::kCrostiniArcAdbSideloadingUserPref,
-        static_cast<int>(CrostiniArcAdbSideloadingUserAllowanceMode::kAllow));
-  }
-
-  void DisallowAdbSideloadingByUserPolicy() {
-    profile_.GetPrefs()->SetInteger(
-        crostini::prefs::kCrostiniArcAdbSideloadingUserPref,
-        static_cast<int>(
-            CrostiniArcAdbSideloadingUserAllowanceMode::kDisallow));
-  }
-
   void AssertCanChangeAdbSideloading(bool expected_can_change) {
     base::test::TestFuture<bool> result_future;
     crostini_features_.CanChangeAdbSideloading(&profile_,
@@ -254,60 +215,11 @@ TEST_F(CrostiniFeaturesAdbSideloadingTest,
   AssertCanChangeAdbSideloading(false);
 }
 
-TEST_F(CrostiniFeaturesAdbSideloadingTest,
-       TestCanChangeAdbSideloadingManagedDisabledFeatureFlag) {
-  SetFeatureFlag(false);
-
-  AssertCanChangeAdbSideloading(false);
-}
-
-TEST_F(CrostiniFeaturesAdbSideloadingTest,
-       TestCanChangeAdbSideloadingManagedDisallowedDevicePolicy) {
-  SetFeatureFlag(true);
+TEST_F(CrostiniFeaturesAdbSideloadingTest, TestCanChangeAdbSideloadingManaged) {
   SetDeviceToEnterpriseManaged();
   SetManagedUser(true);
 
-  DisallowAdbSideloadingByDevicePolicy();
-
   AssertCanChangeAdbSideloading(false);
-}
-
-TEST_F(CrostiniFeaturesAdbSideloadingTest,
-       TestCanChangeAdbSideloadingManagedUnaffiliatedUser) {
-  SetFeatureFlag(true);
-  SetDeviceToEnterpriseManaged();
-  SetManagedUser(true);
-
-  AllowAdbSideloadingByDevicePolicy();
-  AddUserWithAffiliation(false);
-
-  AssertCanChangeAdbSideloading(false);
-}
-
-TEST_F(CrostiniFeaturesAdbSideloadingTest,
-       TestCanChangeAdbSideloadingManagedDisallowedUserPolicy) {
-  SetFeatureFlag(true);
-  SetDeviceToEnterpriseManaged();
-  SetManagedUser(true);
-
-  AllowAdbSideloadingByDevicePolicy();
-  AddUserWithAffiliation(true);
-  DisallowAdbSideloadingByUserPolicy();
-
-  AssertCanChangeAdbSideloading(false);
-}
-
-TEST_F(CrostiniFeaturesAdbSideloadingTest,
-       TestCanChangeAdbSideloadingManagedAllowedUserPolicy) {
-  SetFeatureFlag(true);
-  SetDeviceToEnterpriseManaged();
-  SetManagedUser(true);
-
-  AllowAdbSideloadingByDevicePolicy();
-  AddUserWithAffiliation(true);
-  AllowAdbSideloadingByUserPolicy();
-
-  AssertCanChangeAdbSideloading(true);
 }
 
 TEST_F(CrostiniFeaturesAdbSideloadingTest,
@@ -320,27 +232,12 @@ TEST_F(CrostiniFeaturesAdbSideloadingTest,
 }
 
 TEST_F(CrostiniFeaturesAdbSideloadingTest,
-       TestCanChangeAdbSideloadingOwnerProfileManagedUserDisallowed) {
-  SetFeatureFlag(true);
+       TestCanChangeAdbSideloadingOwnerProfileManagedUser) {
   SetDeviceToConsumerOwned();
   SetManagedUser(true);
   AddOwnerUser();
-
-  DisallowAdbSideloadingByUserPolicy();
 
   AssertCanChangeAdbSideloading(false);
-}
-
-TEST_F(CrostiniFeaturesAdbSideloadingTest,
-       TestCanChangeAdbSideloadingOwnerProfileManagedUserAllowed) {
-  SetFeatureFlag(true);
-  SetDeviceToConsumerOwned();
-  SetManagedUser(true);
-  AddOwnerUser();
-
-  AllowAdbSideloadingByUserPolicy();
-
-  AssertCanChangeAdbSideloading(true);
 }
 
 TEST(CrostiniFeaturesTest, TestPortForwardingAllowed) {

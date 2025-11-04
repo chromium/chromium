@@ -64,11 +64,6 @@ BASE_FEATURE(kArcAdbSideloadingFeature,
              "ArcAdbSideloading",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Controls whether to enable support for ARC ADB sideloading for managed
-// accounts and/or devices.
-BASE_FEATURE(kArcManagedAdbSideloadingSupport,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Controls whether to defer loading of active tabs of background (occluded)
 // browser windows during session restore.
 BASE_FEATURE(kAshSessionRestoreDeferOccludedActiveTabLoad,
