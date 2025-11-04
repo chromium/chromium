@@ -46,7 +46,7 @@ class MessageDecoder {
   // |next_payload_| stores the size of the next payload if known.
   // |next_payload_known_| is true if the size of the next payload is known.
   // After one payload is read this is reset to false.
-  int next_payload_ = 0;
+  size_t next_payload_ = 0;
   bool next_payload_known_ = false;
 };
 

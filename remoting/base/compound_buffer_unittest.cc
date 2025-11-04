@@ -25,7 +25,7 @@ using net::IOBufferWithSize;
 namespace remoting {
 
 namespace {
-const int kDataSize = 1024;
+const size_t kDataSize = 1024;
 
 // Chunk sizes used to append and prepend data to the buffer.
 const int kChunkSizes0[] = {kDataSize, -1};
@@ -41,34 +41,30 @@ const int kCropSizes[] = {1, -1};
 
 class CompoundBufferTest : public testing::Test {
  public:
-  // Following 5 methods are used with IterateOverPieces().
-  void Append(int pos, int size) {
-    target_.Append(data_, UNSAFE_TODO(data_->data() + pos), size);
+  // Following 7 methods are used with IterateOverPieces().
+  void Append(size_t pos, size_t size) {
+    target_.Append(data_, data_->span().subspan(pos, size));
   }
 
-  void AppendCopyOf(int pos, int size) {
-    target_.AppendCopyOf(data_->span().subspan(
-        base::checked_cast<size_t>(pos), base::checked_cast<size_t>(size)));
+  void AppendCopyOf(size_t pos, size_t size) {
+    target_.AppendCopyOf(data_->span().subspan(pos, size));
   }
 
-  void Prepend(int pos, int size) {
-    target_.Prepend(data_, UNSAFE_TODO(data_->data() + kDataSize - pos - size),
-                    size);
+  void Prepend(size_t pos, size_t size) {
+    target_.Prepend(data_, data_->span().subspan(kDataSize - pos - size, size));
   }
 
-  void PrependCopyOf(int pos, int size) {
-    target_.PrependCopyOf(data_->span().subspan(
-        base::checked_cast<size_t>(kDataSize - pos - size),
-        base::checked_cast<size_t>(size)));
+  void PrependCopyOf(size_t pos, size_t size) {
+    target_.PrependCopyOf(data_->span().subspan(kDataSize - pos - size, size));
   }
 
-  void TestCopyFrom(int pos, int size) {
+  void TestCopyFrom(size_t pos, size_t size) {
     CompoundBuffer copy;
     copy.CopyFrom(target_, pos, pos + size);
     UNSAFE_TODO(EXPECT_TRUE(CompareData(copy, data_->data() + pos, size)));
   }
 
-  void TestCropFront(int pos, int size) {
+  void TestCropFront(size_t pos, size_t size) {
     CompoundBuffer cropped;
     cropped.CopyFrom(target_, 0, target_.total_bytes());
     cropped.CropFront(pos);
@@ -76,7 +72,7 @@ class CompoundBufferTest : public testing::Test {
                                         target_.total_bytes() - pos)));
   }
 
-  void TestCropBack(int pos, int size) {
+  void TestCropBack(size_t pos, size_t size) {
     CompoundBuffer cropped;
     cropped.CopyFrom(target_, 0, target_.total_bytes());
     cropped.CropBack(pos);
@@ -87,8 +83,8 @@ class CompoundBufferTest : public testing::Test {
  protected:
   void SetUp() override {
     data_ = base::MakeRefCounted<IOBufferWithSize>(kDataSize);
-    for (int i = 0; i < kDataSize; ++i) {
-      UNSAFE_TODO(data_->data()[i]) = i;
+    for (size_t i = 0; i < kDataSize; ++i) {
+      data_->span()[i] = i;
     }
   }
 
@@ -96,13 +92,14 @@ class CompoundBufferTest : public testing::Test {
   // interval [0..kDataSize]. |function| is called for each chunk.
   void IterateOverPieces(
       base::span<const int> sizes,
-      const base::RepeatingCallback<void(int, int)>& function) {
+      const base::RepeatingCallback<void(size_t, size_t)>& function) {
     DCHECK_GT(sizes[0], 0);
 
-    int pos = 0;
+    size_t pos = 0;
     int index = 0;
     while (pos < kDataSize) {
-      int size = std::min(sizes[index], kDataSize - pos);
+      int size =
+          std::min(sizes[index], base::checked_cast<int>(kDataSize - pos));
       ++index;
       if (sizes[index] <= 0) {
         index = 0;
@@ -114,7 +111,7 @@ class CompoundBufferTest : public testing::Test {
     }
   }
 
-  bool CompareData(const CompoundBuffer& buffer, char* data, int size) {
+  bool CompareData(const CompoundBuffer& buffer, char* data, size_t size) {
     scoped_refptr<IOBuffer> buffer_data = buffer.ToIOBufferWithSize();
     return buffer.total_bytes() == size &&
            UNSAFE_TODO(memcmp(buffer_data->data(), data, size)) == 0;

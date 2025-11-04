@@ -66,7 +66,7 @@ void FakeNamedMessagePipeHandler::OnIncomingMessage(
   ASSERT_TRUE(message != nullptr);
   std::string content;
   content.resize(expected_data_.size());
-  message->CopyTo(&(content[0]), content.size());
+  message->CopyTo(base::as_writable_byte_span(content));
   ASSERT_EQ(content, expected_data_);
   received_message_count_++;
 }

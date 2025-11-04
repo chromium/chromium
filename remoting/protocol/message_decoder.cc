@@ -57,9 +57,9 @@ bool MessageDecoder::GetPayloadSize(int* size) {
   }
 
   CompoundBuffer header_buffer;
-  char header[kHeaderSize];
+  uint8_t header[kHeaderSize];
   header_buffer.CopyFrom(buffer_, 0, kHeaderSize);
-  header_buffer.CopyTo(header, kHeaderSize);
+  header_buffer.CopyTo(header);
   *size = webrtc::GetBE32(header);
   buffer_.CropFront(kHeaderSize);
   return true;

@@ -24,6 +24,7 @@
 #include "base/containers/circular_deque.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_span.h"
 #include "base/memory/scoped_refptr.h"
 #include "google/protobuf/io/zero_copy_stream.h"
 
@@ -48,13 +49,13 @@ class CompoundBuffer {
   // Adds new chunk to the buffer. |start| defines position of the chunk
   // within the |buffer|. |size| is the size of the chunk that is being
   // added, not size of the |buffer|.
-  void Append(scoped_refptr<net::IOBuffer> buffer, int size);
-  void Append(scoped_refptr<net::IOBuffer> buffer, const char* start, int size);
+  void Append(scoped_refptr<net::IOBuffer> buffer, size_t size);
+  void Append(scoped_refptr<net::IOBuffer> buffer,
+              base::span<const uint8_t> data);
   void Append(const CompoundBuffer& buffer);
-  void Prepend(scoped_refptr<net::IOBuffer> buffer, int size);
+  void Prepend(scoped_refptr<net::IOBuffer> buffer, size_t size);
   void Prepend(scoped_refptr<net::IOBuffer> buffer,
-               const char* start,
-               int size);
+               base::span<const uint8_t> data);
   void Prepend(const CompoundBuffer& buffer);
 
   // Same as above, but creates an IOBuffer and copies the data.
@@ -62,11 +63,11 @@ class CompoundBuffer {
   void PrependCopyOf(base::span<const uint8_t> data);
 
   // Drop |bytes| bytes from the beginning or the end of the buffer.
-  void CropFront(int bytes);
-  void CropBack(int bytes);
+  void CropFront(size_t bytes);
+  void CropBack(size_t bytes);
 
   // Current size of the buffer.
-  int total_bytes() const { return total_bytes_; }
+  size_t total_bytes() const { return total_bytes_; }
 
   // Locks the buffer. After the buffer is locked, no data can be
   // added or removed (content can still be changed if some other
@@ -81,29 +82,29 @@ class CompoundBuffer {
   scoped_refptr<net::IOBufferWithSize> ToIOBufferWithSize() const;
 
   // Copies all data into given location.
-  void CopyTo(char* data, int data_size) const;
+  void CopyTo(base::span<uint8_t> data) const;
 
   // Clears the buffer, and initializes it with the interval from |buffer|
   // starting at |start| and ending at |end|. The data itself isn't copied.
-  void CopyFrom(const CompoundBuffer& source, int start, int end);
+  void CopyFrom(const CompoundBuffer& source, size_t start, size_t end);
 
  private:
   friend class CompoundBufferInputStream;
 
   struct DataChunk {
-    DataChunk(scoped_refptr<net::IOBuffer> buffer, const char* start, int size);
+    DataChunk(scoped_refptr<net::IOBuffer> buffer,
+              base::span<const uint8_t> data);
     DataChunk(const DataChunk& other);
     ~DataChunk();
 
     scoped_refptr<net::IOBuffer> buffer;
-    const char* start;
-    int size;
+    base::raw_span<const uint8_t> data;
   };
   using DataChunkList = base::circular_deque<DataChunk>;
 
   DataChunkList chunks_;
-  int total_bytes_;
-  bool locked_;
+  size_t total_bytes_ = 0;
+  bool locked_ = false;
 };
 
 class CompoundBufferInputStream
@@ -113,7 +114,7 @@ class CompoundBufferInputStream
   explicit CompoundBufferInputStream(const CompoundBuffer* buffer);
   ~CompoundBufferInputStream() override;
 
-  int position() const { return position_; }
+  size_t position() const { return position_; }
 
   // google::protobuf::io::ZeroCopyInputStream interface.
   bool Next(const void** data, int* size) override;
@@ -124,10 +125,10 @@ class CompoundBufferInputStream
  private:
   raw_ptr<const CompoundBuffer> buffer_;
 
-  size_t current_chunk_;
-  int current_chunk_position_;
-  int position_;
-  int last_returned_size_;
+  size_t current_chunk_ = 0;
+  size_t current_chunk_position_ = 0;
+  size_t position_ = 0;
+  size_t last_returned_size_ = 0;
 };
 
 }  // namespace remoting
