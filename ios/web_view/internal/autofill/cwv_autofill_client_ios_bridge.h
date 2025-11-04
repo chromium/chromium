@@ -39,7 +39,8 @@ class CreditCard;
                                    UploadSaveCardPromptCallback)callback;
 
 // Bridge for AutofillClient's method |CreditCardUploadCompleted|.
-- (void)handleCreditCardUploadCompleted:(BOOL)cardSaved;
+- (void)handleCreditCardUploadCompleted:(BOOL)cardSaved
+                               callback:(base::OnceClosure)callback;
 
 // Bridge for AutofillClient's method |ShowUnmaskPrompt|.
 - (void)showUnmaskPromptForCard:(const autofill::CreditCard&)creditCard

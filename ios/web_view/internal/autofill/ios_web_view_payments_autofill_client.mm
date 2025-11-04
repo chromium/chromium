@@ -101,7 +101,10 @@ void IOSWebViewPaymentsAutofillClient::CreditCardUploadCompleted(
         on_confirmation_closed_callback) {
   const bool card_saved =
       result == payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess;
-  [bridge_ handleCreditCardUploadCompleted:card_saved];
+  [bridge_
+      handleCreditCardUploadCompleted:card_saved
+                             callback:std::move(on_confirmation_closed_callback)
+                                          .value_or(base::DoNothing())];
 }
 
 void IOSWebViewPaymentsAutofillClient::HideSaveCardPrompt() {}
@@ -109,10 +112,26 @@ void IOSWebViewPaymentsAutofillClient::HideSaveCardPrompt() {}
 void IOSWebViewPaymentsAutofillClient::ShowVirtualCardEnrollDialog(
     const VirtualCardEnrollmentFields& virtual_card_enrollment_fields,
     base::OnceClosure accept_virtual_card_callback,
-    base::OnceClosure decline_virtual_card_callback) {}
+    base::OnceClosure decline_virtual_card_callback) {
+  if (GetPrefService()->GetBoolean(ios_web_view::kCWVAutofillVCNUsageEnabled)) {
+    [bridge_
+        showVirtualCardEnrollmentWithEnrollmentFields:
+            virtual_card_enrollment_fields
+                                       acceptCallback:
+                                           std::move(
+                                               accept_virtual_card_callback)
+                                      declineCallback:
+                                          std::move(
+                                              decline_virtual_card_callback)];
+  }
+}
 
 void IOSWebViewPaymentsAutofillClient::VirtualCardEnrollCompleted(
-    PaymentsRpcResult result) {}
+    PaymentsRpcResult result) {
+  BOOL success = result == PaymentsRpcResult::kSuccess;
+
+  [bridge_ handleVirtualCardEnrollmentResult:success];
+}
 
 void IOSWebViewPaymentsAutofillClient::OnCardDataAvailable(
     const FilledCardInformationBubbleOptions& options) {}
@@ -236,6 +255,15 @@ IOSWebViewPaymentsAutofillClient::GetCardUnmaskPromptModel() {
 
 VirtualCardEnrollmentManager*
 IOSWebViewPaymentsAutofillClient::GetVirtualCardEnrollmentManager() {
+  if (GetPrefService()->GetBoolean(ios_web_view::kCWVAutofillVCNUsageEnabled)) {
+    if (!virtual_card_enrollment_manager_) {
+      virtual_card_enrollment_manager_ =
+          std::make_unique<VirtualCardEnrollmentManager>(
+              &client_->GetPersonalDataManager().payments_data_manager(),
+              GetPaymentsNetworkInterface(), &client_.get());
+    }
+    return virtual_card_enrollment_manager_.get();
+  }
   return nullptr;
 }
 

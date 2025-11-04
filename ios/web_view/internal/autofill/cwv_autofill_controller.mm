@@ -483,8 +483,17 @@ CWVAutofillProgressDialogType ToCWVAutofillProgressDialogType(
   _saver = saver;
 }
 
-- (void)handleCreditCardUploadCompleted:(BOOL)cardSaved {
+- (void)handleCreditCardUploadCompleted:(BOOL)cardSaved
+                               callback:(base::OnceClosure)callback {
   [_saver handleCreditCardUploadCompleted:cardSaved];
+  PrefService* prefService =
+      ios_web_view::WebViewBrowserState::FromBrowserState(
+          _webState->GetBrowserState())
+          ->GetPrefs();
+
+  if (prefService->GetBoolean(ios_web_view::kCWVAutofillVCNUsageEnabled)) {
+    std::move(callback).Run();
+  }
 }
 
 - (void)showUnmaskPromptForCard:(const autofill::CreditCard&)creditCard
