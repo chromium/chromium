@@ -522,12 +522,6 @@ void AppListControllerImpl::OnUserSessionAdded(const AccountId& account_id) {
 
   ash::ReportPrefSortOrderOnSessionStart(client_->GetPermanentSortingOrder(),
                                          IsInTabletMode());
-
-  auto* prefs =
-      Shell::Get()->session_controller()->GetUserPrefServiceForUser(account_id);
-  if (features::IsLauncherNudgeSessionResetEnabled()) {
-    AppListNudgeController::ResetPrefsForNewUserSession(prefs);
-  }
 }
 
 void AppListControllerImpl::OnSunfishScannerFeatureStatesChanged(

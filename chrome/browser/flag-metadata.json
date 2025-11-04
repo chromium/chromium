@@ -6399,11 +6399,6 @@
     "expiry_milestone": 140
   },
   {
-    "name": "launcher-nudge-session-reset",
-    "owners":["wcwang@chromium.org", "tbarzic@chromium.org"],
-    "expiry_milestone": 124
-  },
-  {
     "name": "launcher-search-control",
     "owners": ["chenjih@google.com", "chromeos-launcher-search@google.com"],
     "expiry_milestone": 140

@@ -1245,10 +1245,6 @@ BASE_FEATURE(kLauncherContinueSectionWithRecentsRollout,
 // Uses short intervals for launcher nudge for testing if enabled.
 BASE_FEATURE(kLauncherNudgeShortInterval, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, the launcher nudge prefs will be reset at the start of each new
-// user session.
-BASE_FEATURE(kLauncherNudgeSessionReset, base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Segmentation flag for local image search.
 BASE_FEATURE(kFeatureManagementLocalImageSearch,
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -3029,10 +3025,6 @@ bool IsLauncherContinueSectionWithRecentsEnabled() {
 
 bool IsLauncherNudgeShortIntervalEnabled() {
   return base::FeatureList::IsEnabled(kLauncherNudgeShortInterval);
-}
-
-bool IsLauncherNudgeSessionResetEnabled() {
-  return base::FeatureList::IsEnabled(kLauncherNudgeSessionReset);
 }
 
 bool IsLinkCrossDeviceDogfoodFeedbackEnabled() {

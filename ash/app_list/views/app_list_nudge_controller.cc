@@ -74,12 +74,6 @@ void AppListNudgeController::RegisterProfilePrefs(
 }
 
 // static
-void AppListNudgeController::ResetPrefsForNewUserSession(PrefService* prefs) {
-  prefs->ClearPref(prefs::kAppListReorderNudge);
-  prefs->ClearPref(prefs::kLauncherFilesPrivacyNotice);
-}
-
-// static
 int AppListNudgeController::GetShownCount(PrefService* prefs, NudgeType type) {
   const base::Value::Dict& dictionary = prefs->GetDict(GetPrefPath(type));
 

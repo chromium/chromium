@@ -7950,12 +7950,6 @@ inline constexpr char kLauncherLocalImageSearchIcaDescription[] =
     "Enables on-device Image Content-based Annotation for local image search "
     "in the launcher.";
 
-inline constexpr char kLauncherNudgeSessionResetName[] =
-    "Enable resetting launcher nudge data";
-inline constexpr char kLauncherNudgeSessionResetDescription[] =
-    "When enabled, this will reset the launcher nudge shown data on every new "
-    "user session, allowing the nudge to be shown again.";
-
 inline constexpr char kMacAddressRandomizationName[] =
     "MAC address randomization";
 inline constexpr char kMacAddressRandomizationDescription[] =
