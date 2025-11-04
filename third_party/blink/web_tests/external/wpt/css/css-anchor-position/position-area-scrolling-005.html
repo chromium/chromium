@@ -66,7 +66,7 @@
     await waitUntilNextAnimationFrame();
     await waitUntilNextAnimationFrame();
     assert_rects_equal(anchored, 50, 50, 50, 225);
-  }, "Scroll to 100,150");
+  }, "Scroll to 100,200");
 
   promise_test(async() => {
     scrollable.scrollTo(0, 0);
@@ -89,7 +89,7 @@
     await waitUntilNextAnimationFrame();
     await waitUntilNextAnimationFrame();
     assert_rects_equal(anchored, 50, 50, 225, 50);
-  }, "Scroll to 750,100");
+  }, "Scroll to 200,100");
 
   promise_test(async() => {
     // Switch to bottom right.
@@ -97,5 +97,5 @@
     await waitUntilNextAnimationFrame();
     await waitUntilNextAnimationFrame();
     assert_rects_equal(anchored, 50, 50, 225, 225);
-  }, "Scroll to 750,196");
+  }, "Scroll to 200,200");
 </script>

@@ -1,0 +1,19 @@
+This is a testharness.js-based test.
+[FAIL] e.style['position-try'] = "flip-y" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['position-try'] = "most-width flip-y flip-x, --foo, --bar" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['position-try'] = "flip-y" should set position-try-fallbacks
+  assert_equals: position-try-fallbacks should be canonical expected "flip-y" but got ""
+[FAIL] e.style['position-try'] = "flip-y" should set position-try-order
+  assert_equals: position-try-order should be canonical expected "normal" but got ""
+[FAIL] e.style['position-try'] = "flip-y" should not set unrelated longhands
+  assert_true: expected true got false
+[FAIL] e.style['position-try'] = "most-width flip-y flip-x, --foo, --bar" should set position-try-fallbacks
+  assert_equals: position-try-fallbacks should be canonical expected "flip-y flip-x, --foo, --bar" but got ""
+[FAIL] e.style['position-try'] = "most-width flip-y flip-x, --foo, --bar" should set position-try-order
+  assert_equals: position-try-order should be canonical expected "most-width" but got ""
+[FAIL] e.style['position-try'] = "most-width flip-y flip-x, --foo, --bar" should not set unrelated longhands
+  assert_true: expected true got false
+Harness: the test ran to completion.
+

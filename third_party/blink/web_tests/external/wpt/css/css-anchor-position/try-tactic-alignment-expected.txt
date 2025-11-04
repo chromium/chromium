@@ -1,0 +1,46 @@
+This is a testharness.js-based test.
+Found 21 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] flip-x, justify-self:start;align-self:start, justify-self:end;align-self:start, ltr, horizontal-tb
+  assert_equals: offsetLeft expected 360 but got 450
+[FAIL] flip-y, justify-self:start;align-self:start, justify-self:start;align-self:end, ltr, horizontal-tb
+  assert_equals: offsetLeft expected 0 but got 450
+[FAIL] flip-y flip-x, justify-self:start;align-self:start, justify-self:end;align-self:end, ltr, horizontal-tb
+  assert_equals: offsetLeft expected 360 but got 450
+[FAIL] flip-y flip-start, justify-self:start;align-self:start, justify-self:end;align-self:start, ltr, horizontal-tb
+  assert_equals: offsetLeft expected 360 but got 450
+[FAIL] flip-x flip-start, justify-self:start;align-self:start, justify-self:start;align-self:end, ltr, horizontal-tb
+  assert_equals: offsetLeft expected 0 but got 450
+[FAIL] flip-y flip-x flip-start, justify-self:start;align-self:start, justify-self:end;align-self:end, ltr, horizontal-tb
+  assert_equals: offsetLeft expected 360 but got 450
+[FAIL] flip-x, justify-self:left;align-self:start, justify-self:right;align-self:start, ltr, horizontal-tb
+  assert_equals: offsetLeft expected 360 but got 450
+[FAIL] flip-x, justify-self:start
+  assert_equals: offsetLeft expected 360 but got 450
+[FAIL] flip-x, justify-self:end
+  assert_equals: offsetLeft expected 0 but got 450
+[FAIL] flip-x, justify-self:self-start
+  assert_equals: offsetLeft expected 360 but got 450
+[FAIL] flip-x, justify-self:self-end
+  assert_equals: offsetLeft expected 0 but got 450
+[FAIL] flip-x, justify-self:flex-start
+  assert_equals: offsetLeft expected 360 but got 450
+[FAIL] flip-x, justify-self:flex-end
+  assert_equals: offsetLeft expected 0 but got 450
+[FAIL] flip-x, justify-self:left
+  assert_equals: offsetLeft expected 360 but got 450
+[FAIL] flip-x, justify-self:right
+  assert_equals: offsetLeft expected 0 but got 450
+[FAIL] flip-y, align-self:start
+  assert_equals: offsetLeft expected 0 but got 450
+[FAIL] flip-y, align-self:end
+  assert_equals: offsetLeft expected 0 but got 450
+[FAIL] flip-y, align-self:self-start
+  assert_equals: offsetLeft expected 0 but got 450
+[FAIL] flip-y, align-self:self-end
+  assert_equals: offsetLeft expected 0 but got 450
+[FAIL] flip-y, align-self:flex-start
+  assert_equals: offsetLeft expected 0 but got 450
+[FAIL] flip-y, align-self:flex-end
+  assert_equals: offsetLeft expected 0 but got 450
+Harness: the test ran to completion.
+

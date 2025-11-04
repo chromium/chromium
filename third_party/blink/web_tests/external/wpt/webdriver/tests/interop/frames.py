@@ -13,10 +13,10 @@ async def test_classic_switch_to_parent_no_browsing_context(bidi_session, curren
     current_session.url = url("/webdriver/tests/support/html/frames.html")
 
     subframe = current_session.find.css("#sub-frame", all=False)
-    current_session.switch_frame(subframe)
+    current_session.switch_to_frame(subframe)
 
     deleteframe = current_session.find.css("#delete-frame", all=False)
-    current_session.switch_frame(deleteframe)
+    current_session.switch_to_frame(deleteframe)
 
     button = current_session.find.css("#remove-top", all=False)
     button.click()
@@ -30,4 +30,4 @@ async def test_classic_switch_to_parent_no_browsing_context(bidi_session, curren
     await wait.until(is_frame_removed)
 
     with pytest.raises(NoSuchWindowException):
-        current_session.switch_frame("parent")
+        current_session.switch_to_parent_frame()

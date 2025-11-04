@@ -1,0 +1,46 @@
+This is a testharness.js-based test.
+Found 21 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] Attr.value works for elementNS=http://www.w3.org/1999/xhtml, element=DIV, attrName=onclick (move attribute node to another element)
+  assert_equals: expected "safe_output" but got ""
+[FAIL] Attr.value works for elementNS=http://www.w3.org/2000/svg, element=g, attrName=ondblclick (move attribute node to another element)
+  assert_equals: expected "safe_output" but got ""
+[FAIL] Attr.value works for elementNS=http://www.w3.org/1998/Math/MathML, element=mrow, attrName=onmousedown (move attribute node to another element)
+  assert_equals: expected "safe_output" but got ""
+[FAIL] Attr.value works for elementNS=http://www.w3.org/1999/xhtml, element=IFRAME, attrName=srcdoc (move attribute node to another element)
+  assert_equals: expected "safe_output" but got ""
+[FAIL] Attr.value works for elementNS=http://www.w3.org/1999/xhtml, element=SCRIPT, attrName=src (move attribute node to another element)
+  assert_equals: expected "safe_output" but got ""
+[FAIL] Attr.value works for elementNS=http://www.w3.org/2000/svg, element=script, attrName=href (move attribute node to another element)
+  assert_equals: expected "safe_output" but got ""
+[FAIL] Attr.value works for elementNS=http://www.w3.org/2000/svg, element=script, attrNS=http://www.w3.org/1999/xlink, attrName=href (move attribute node to another element)
+  assert_equals: expected "safe_output" but got ""
+[FAIL] Node.nodeValue works for elementNS=http://www.w3.org/1999/xhtml, element=DIV, attrName=onclick (move attribute node to another element)
+  assert_equals: expected "safe_output" but got ""
+[FAIL] Node.nodeValue works for elementNS=http://www.w3.org/2000/svg, element=g, attrName=ondblclick (move attribute node to another element)
+  assert_equals: expected "safe_output" but got ""
+[FAIL] Node.nodeValue works for elementNS=http://www.w3.org/1998/Math/MathML, element=mrow, attrName=onmousedown (move attribute node to another element)
+  assert_equals: expected "safe_output" but got ""
+[FAIL] Node.nodeValue works for elementNS=http://www.w3.org/1999/xhtml, element=IFRAME, attrName=srcdoc (move attribute node to another element)
+  assert_equals: expected "safe_output" but got ""
+[FAIL] Node.nodeValue works for elementNS=http://www.w3.org/1999/xhtml, element=SCRIPT, attrName=src (move attribute node to another element)
+  assert_equals: expected "safe_output" but got ""
+[FAIL] Node.nodeValue works for elementNS=http://www.w3.org/2000/svg, element=script, attrName=href (move attribute node to another element)
+  assert_equals: expected "safe_output" but got ""
+[FAIL] Node.nodeValue works for elementNS=http://www.w3.org/2000/svg, element=script, attrNS=http://www.w3.org/1999/xlink, attrName=href (move attribute node to another element)
+  assert_equals: expected "safe_output" but got ""
+[FAIL] Node.textContent works for elementNS=http://www.w3.org/1999/xhtml, element=DIV, attrName=onclick (move attribute node to another element)
+  assert_equals: expected "safe_output" but got ""
+[FAIL] Node.textContent works for elementNS=http://www.w3.org/2000/svg, element=g, attrName=ondblclick (move attribute node to another element)
+  assert_equals: expected "safe_output" but got ""
+[FAIL] Node.textContent works for elementNS=http://www.w3.org/1998/Math/MathML, element=mrow, attrName=onmousedown (move attribute node to another element)
+  assert_equals: expected "safe_output" but got ""
+[FAIL] Node.textContent works for elementNS=http://www.w3.org/1999/xhtml, element=IFRAME, attrName=srcdoc (move attribute node to another element)
+  assert_equals: expected "safe_output" but got ""
+[FAIL] Node.textContent works for elementNS=http://www.w3.org/1999/xhtml, element=SCRIPT, attrName=src (move attribute node to another element)
+  assert_equals: expected "safe_output" but got ""
+[FAIL] Node.textContent works for elementNS=http://www.w3.org/2000/svg, element=script, attrName=href (move attribute node to another element)
+  assert_equals: expected "safe_output" but got ""
+[FAIL] Node.textContent works for elementNS=http://www.w3.org/2000/svg, element=script, attrNS=http://www.w3.org/1999/xlink, attrName=href (move attribute node to another element)
+  assert_equals: expected "safe_output" but got ""
+Harness: the test ran to completion.
+

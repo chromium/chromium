@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+Found 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] MLContext interface: attribute accelerated
+  assert_true: The prototype object must have a property "accelerated" expected true got false
+[FAIL] MLContext interface: context must inherit property "accelerated" with the proper type
+  assert_inherits: property "accelerated" not found in prototype chain
+Harness: the test ran to completion.
+

@@ -1,0 +1,23 @@
+This is a testharness.js-based test.
+[FAIL] e.style['text-decoration-inset'] = "0px" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['text-decoration-inset'] = "0" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['text-decoration-inset'] = "0px 0px" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['text-decoration-inset'] = "0.5em" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['text-decoration-inset'] = "-1em" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['text-decoration-inset'] = "-1ch -1ch" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['text-decoration-inset'] = "1px 2px" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['text-decoration-inset'] = "1ch -1ch" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['text-decoration-inset'] = "calc(1em / 4) calc(-1ch)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['text-decoration-inset'] = "auto" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+Harness: the test ran to completion.
+

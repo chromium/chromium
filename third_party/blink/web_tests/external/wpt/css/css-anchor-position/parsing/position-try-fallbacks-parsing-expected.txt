@@ -1,0 +1,28 @@
+This is a testharness.js-based test.
+Found 12 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] e.style['position-try-fallbacks'] = "flip-x" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['position-try-fallbacks'] = "flip-x " should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['position-try-fallbacks'] = "flip-start, flip-x" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['position-try-fallbacks'] = "flip-start flip-y, flip-x" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['position-try-fallbacks'] = "flip-start flip-y flip-x" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['position-try-fallbacks'] = "flip-x, --foo" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['position-try-fallbacks'] = "--bar, flip-x flip-start" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['position-try-fallbacks'] = "--bar flip-x" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['position-try-fallbacks'] = "--bar flip-y flip-x" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['position-try-fallbacks'] = "flip-y --foo" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['position-try-fallbacks'] = "flip-y flip-start --foo" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['position-try-fallbacks'] = "flip-start flip-inline flip-y flip-block flip-x" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+Harness: the test ran to completion.
+

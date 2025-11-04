@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] WebSocket omits unpartitioned cookies without storage access
-  assert_false: request should not contain cookies expected false got true
-Harness: the test ran to completion.
-
