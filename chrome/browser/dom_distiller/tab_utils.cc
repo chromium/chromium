@@ -117,13 +117,10 @@ void SelfDeletingRequestDelegate::DeleteSelf() {
 void SelfDeletingRequestDelegate::OnArticleReady(
     const DistilledArticleProto* article_proto) {
   if (callback_ && !callback_->is_null()) {
-    bool has_title =
-        article_proto != nullptr && article_proto->has_title() && !article_proto->title().empty();
     bool has_content = article_proto != nullptr && article_proto->pages_size() > 0 &&
                        article_proto->pages(0).has_html() &&
                        !article_proto->pages(0).html().empty();
-    bool success = article_proto != nullptr && has_title && has_content;
-    std::move(callback_.value()).Run(success);
+    std::move(callback_.value()).Run(has_content);
   }
   // Now that the work is done, always schedule for deletion.
   DeleteSelf();
