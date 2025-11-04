@@ -2985,6 +2985,9 @@ crbug.com/413411328 external/wpt/css/css-values/urls/referrer-policy/strict-orig
 crbug.com/413411328 external/wpt/css/css-values/urls/referrer-policy/unsafe-url/url-image-referrerpolicy-cross-origin.sub.html [ Failure ]
 crbug.com/413411328 external/wpt/css/css-values/urls/referrer-policy/unsafe-url/url-image-referrerpolicy-same-origin.sub.html [ Failure ]
 
+# Inheritance of zoom on non-inherited properties
+crbug.com/420443621 external/wpt/css/css-viewport/zoom/text-decoration-thickness.html [ Failure ]
+
 crbug.com/424798906 external/wpt/pointerevents/pointerevent_element_haspointercapture.html?touch [ Failure ]
 
 # [0722/141043.336307:FATAL:third_party/blink/renderer/core/css/style_traversal_root.cc:31] DCHECK failed: !document_element || (!root_node_ && root_type_ == RootType::kSingleRoot).
@@ -3081,7 +3084,6 @@ crbug.com/454945814 external/wpt/html/webappapis/timers/timer-nesting-not-inheri
 
 crbug.com/457527725 external/wpt/css/css-anchor-position/anchor-scroll-position-try-012.html [ Failure ]
 crbug.com/457527725 external/wpt/css/css-anchor-position/position-area-inset-one-side-auto.tentative.html [ Failure ]
-crbug.com/457480129 external/wpt/css/css-viewport/zoom/text-decoration-thickness.html [ Failure ]
 
 crbug.com/457475594 external/wpt/document-picture-in-picture/closes-on-navigation-or-destroy.https.html [ Timeout ]
 crbug.com/457475594 external/wpt/document-picture-in-picture/pip-resize.https.html [ Timeout ]
