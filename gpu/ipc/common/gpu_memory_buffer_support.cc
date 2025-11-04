@@ -21,24 +21,6 @@
 
 namespace gpu {
 
-namespace {
-
-gfx::GpuMemoryBufferType GetNativeGpuMemoryBufferType() {
-#if BUILDFLAG(IS_APPLE)
-  return gfx::IO_SURFACE_BUFFER;
-#elif BUILDFLAG(IS_ANDROID)
-  return gfx::ANDROID_HARDWARE_BUFFER;
-#elif BUILDFLAG(IS_OZONE)
-  return gfx::NATIVE_PIXMAP;
-#elif BUILDFLAG(IS_WIN)
-  return gfx::DXGI_SHARED_HANDLE;
-#else
-  return gfx::EMPTY_BUFFER;
-#endif
-}
-
-}  // namespace
-
 GpuMemoryBufferSupport::GpuMemoryBufferSupport() = default;
 
 GpuMemoryBufferSupport::~GpuMemoryBufferSupport() = default;
@@ -47,8 +29,6 @@ GpuMemoryBufferSupport::~GpuMemoryBufferSupport() = default;
 bool GpuMemoryBufferSupport::IsNativeGpuMemoryBufferConfigurationSupported(
     viz::SharedImageFormat format,
     gfx::BufferUsage usage) {
-  DCHECK_NE(gfx::SHARED_MEMORY_BUFFER, GetNativeGpuMemoryBufferType());
-
 #if BUILDFLAG(IS_APPLE)
   switch (usage) {
     case gfx::BufferUsage::GPU_READ:
@@ -125,7 +105,6 @@ bool GpuMemoryBufferSupport::IsNativeGpuMemoryBufferConfigurationSupported(
   }
   NOTREACHED();
 #else
-  DCHECK_EQ(GetNativeGpuMemoryBufferType(), gfx::EMPTY_BUFFER);
   return false;
 #endif
 }
