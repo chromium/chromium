@@ -34,10 +34,6 @@ source_set("request_header_integrity") {
     "request_header_integrity_url_loader_throttle.h",
   ]
 
-  if (is_chrome_branded) {
-    sources += [ "internal/google_header_names.h" ]
-  }
-
   configs += [ ":header_name_defines" ]
 
   deps = [
@@ -51,8 +47,13 @@ source_set("request_header_integrity") {
     "//services/network/public/mojom",
     "//third_party/blink/public/common:headers",
   ]
+
   if (is_chrome_branded) {
-    deps += [ "internal:build_derived_values" ]
+    sources += [ "internal/google_header_names.h" ]
+    deps += [
+      "internal:build_derived_values",
+      "internal:internal_header_integrity_seed",
+    ]
   }
 }
 
