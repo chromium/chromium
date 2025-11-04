@@ -331,7 +331,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
       TableViewInfoButtonItem* infoButtonItem =
           base::apple::ObjCCast<TableViewInfoButtonItem>(item);
       infoButtonItem.iconTintColor = [self iconTintColorForItemType:type];
-    } else if ([item isKindOfClass:TableViewInfoButtonItem.class]) {
+    } else if ([item isKindOfClass:TableViewDetailIconItem.class]) {
       TableViewDetailIconItem* infoDetailItem =
           base::apple::ObjCCast<TableViewDetailIconItem>(item);
       infoDetailItem.iconTintColor = [self iconTintColorForItemType:type];
