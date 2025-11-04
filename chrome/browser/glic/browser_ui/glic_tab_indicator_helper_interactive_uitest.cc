@@ -5,6 +5,7 @@
 #include <optional>
 
 #include "base/callback_list.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "build/build_config.h"
 #include "chrome/browser/glic/browser_ui/glic_tab_indicator_helper.h"
@@ -79,7 +80,10 @@ DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kThirdTabId);
 
 class GlicTabIndicatorHelperUiTest : public test::InteractiveGlicTest {
  public:
-  GlicTabIndicatorHelperUiTest() = default;
+  GlicTabIndicatorHelperUiTest() {
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        ::switches::kGlicHostLogging);
+  }
   ~GlicTabIndicatorHelperUiTest() override = default;
 
   GURL GetTestUrl() const {
@@ -102,27 +106,29 @@ class GlicTabIndicatorHelperUiTest : public test::InteractiveGlicTest {
     return AddInstrumentedTab(id, GetTestUrl());
   }
 
+  std::optional<tabs::TabAlert> DefaultExpectedTabAlertWithGlic() {
+    // In multi-instance, the tab will be shared initially.
+    return base::FeatureList::IsEnabled(features::kGlicMultiInstance)
+               ? std::make_optional(tabs::TabAlert::kGlicSharing)
+               : std::nullopt;
+  }
+
  protected:
   const InteractiveBrowserTest::DeepQuery kMockGlicContextAccessButton = {
       "#contextAccessIndicator"};
 };
 
 IN_PROC_BROWSER_TEST_F(GlicTabIndicatorHelperUiTest, TabNotAlerted) {
-  if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
-    // TODO(b/453696965): Broken in multi-instance.
-    GTEST_SKIP() << "Skipping for kGlicMultiInstance";
-  }
-  RunTestSequence(LoadStartingPage(),
-                  ObserveState(kTab1AlertState, browser(), 0),
-                  OpenGlicWindow(GlicWindowMode::kAttached),
-                  WaitForState(kTab1AlertState, std::nullopt));
+  RunTestSequence(
+      LoadStartingPage(), ObserveState(kTab1AlertState, browser(), 0),
+      OpenGlicWindow(GlicWindowMode::kAttached),
+
+      WaitForState(kTab1AlertState,
+                   // In multi-instance, the tab will be shared initially.
+                   DefaultExpectedTabAlertWithGlic()));
 }
 
 IN_PROC_BROWSER_TEST_F(GlicTabIndicatorHelperUiTest, TabAlerted) {
-  if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
-    // TODO(b/453696965): Broken in multi-instance.
-    GTEST_SKIP() << "Skipping for kGlicMultiInstance";
-  }
   RunTestSequence(
       LoadStartingPage(), ObserveState(kTab1AlertState, browser(), 0),
       OpenGlicWindow(GlicWindowMode::kAttached),
@@ -132,10 +138,6 @@ IN_PROC_BROWSER_TEST_F(GlicTabIndicatorHelperUiTest, TabAlerted) {
 }
 
 IN_PROC_BROWSER_TEST_F(GlicTabIndicatorHelperUiTest, TabAlertTurnsOff) {
-  if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
-    // TODO(b/453696965): Broken in multi-instance.
-    GTEST_SKIP() << "Skipping for kGlicMultiInstance";
-  }
   RunTestSequence(
       LoadStartingPage(), ObserveState(kTab1AlertState, browser(), 0),
       OpenGlicWindow(GlicWindowMode::kAttached),
@@ -143,14 +145,10 @@ IN_PROC_BROWSER_TEST_F(GlicTabIndicatorHelperUiTest, TabAlertTurnsOff) {
       WaitForState(kTab1AlertState,
                    std::make_optional(tabs::TabAlert::kGlicAccessing)),
       ClickMockGlicElement(kMockGlicContextAccessButton),
-      WaitForState(kTab1AlertState, std::nullopt));
+      WaitForState(kTab1AlertState, DefaultExpectedTabAlertWithGlic()));
 }
 
 IN_PROC_BROWSER_TEST_F(GlicTabIndicatorHelperUiTest, SecondTabAlerted) {
-  if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
-    // TODO(b/453696965): Broken in multi-instance.
-    GTEST_SKIP() << "Skipping for kGlicMultiInstance";
-  }
   // TODO(crbug.com/445214951): Flaky on mac-vm builder for macOS 15.
 #if BUILDFLAG(IS_MAC)
   if (kTestDisabledForVirtualMachineMac) {
@@ -158,6 +156,7 @@ IN_PROC_BROWSER_TEST_F(GlicTabIndicatorHelperUiTest, SecondTabAlerted) {
   }
 #endif  // BUILDFLAG(IS_MAC)
 
+  TrackOnlyGlicInstance();
   RunTestSequence(
       LoadStartingPage(), ObserveState(kTab1AlertState, browser(), 0),
       AddNewCandidateTab(kSecondTabId),
@@ -175,6 +174,7 @@ IN_PROC_BROWSER_TEST_F(GlicTabIndicatorHelperUiTest, SwitchAlertedTabs) {
     // TODO(b/453696965): Broken in multi-instance.
     GTEST_SKIP() << "Skipping for kGlicMultiInstance";
   }
+  TrackOnlyGlicInstance();
   RunTestSequence(
       LoadStartingPage(), ObserveState(kTab1AlertState, browser(), 0),
       AddNewCandidateTab(kSecondTabId),
@@ -216,10 +216,6 @@ IN_PROC_BROWSER_TEST_F(GlicTabIndicatorHelperUiTest, AlertChangesOnTabRemoval) {
 
 IN_PROC_BROWSER_TEST_F(GlicTabIndicatorHelperUiTest,
                        AlertDoesNotChangeOnTabRemoval) {
-  if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
-    // TODO(b/453696965): Broken in multi-instance.
-    GTEST_SKIP() << "Skipping for kGlicMultiInstance";
-  }
   static constexpr char kTabCloseButton[] = "tab_close_button";
   RunTestSequence(
       LoadStartingPage(), ObserveState(kTab1AlertState, browser(), 0),
@@ -241,10 +237,6 @@ IN_PROC_BROWSER_TEST_F(GlicTabIndicatorHelperUiTest,
 
 IN_PROC_BROWSER_TEST_F(GlicTabIndicatorHelperUiTest,
                        NavigatingToInvalidSchemeShouldNotAlert) {
-  if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
-    // TODO(b/453696965): Broken in multi-instance.
-    GTEST_SKIP() << "Skipping for kGlicMultiInstance";
-  }
   RunTestSequence(
       LoadStartingPage(), ObserveState(kTab1AlertState, browser(), 0),
       OpenGlicWindow(GlicWindowMode::kAttached),
@@ -252,15 +244,11 @@ IN_PROC_BROWSER_TEST_F(GlicTabIndicatorHelperUiTest,
       WaitForState(kTab1AlertState,
                    std::make_optional(tabs::TabAlert::kGlicAccessing)),
       NavigateWebContents(kFirstTabId, GURL("chrome://settings")),
-      WaitForState(kTab1AlertState, std::nullopt));
+      WaitForState(kTab1AlertState, DefaultExpectedTabAlertWithGlic()));
 }
 
 IN_PROC_BROWSER_TEST_F(GlicTabIndicatorHelperUiTest,
                        NavigatingToAllowlistedUrlShouldAlert) {
-  if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
-    // TODO(b/453696965): Broken in multi-instance.
-    GTEST_SKIP() << "Skipping for kGlicMultiInstance";
-  }
   RunTestSequence(
       LoadStartingPage(), ObserveState(kTab1AlertState, browser(), 0),
       OpenGlicWindow(GlicWindowMode::kAttached),
@@ -285,7 +273,7 @@ IN_PROC_BROWSER_TEST_F(GlicTabIndicatorHelperUiTest,
       WaitForState(kTab1AlertState,
                    std::make_optional(tabs::TabAlert::kGlicAccessing)),
       NavigateWebContents(kFirstTabId, GURL("chrome://settings")),
-      WaitForState(kTab1AlertState, std::nullopt),
+      WaitForState(kTab1AlertState, DefaultExpectedTabAlertWithGlic()),
       NavigateWebContents(kFirstTabId, GetTestUrl()),
       WaitForState(kTab1AlertState,
                    std::make_optional(tabs::TabAlert::kGlicAccessing)));
@@ -322,10 +310,6 @@ IN_PROC_BROWSER_TEST_F(GlicTabIndicatorHelperUiTest,
 
 IN_PROC_BROWSER_TEST_F(GlicTabIndicatorHelperUiTest,
                        IncognitoBrowserShouldNotAlert) {
-  if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
-    // TODO(b/453696965): Broken in multi-instance.
-    GTEST_SKIP() << "Skipping for kGlicMultiInstance";
-  }
   // TODO(crbug.com/445214951): Flaky on mac-vm builder for macOS 15.
 #if BUILDFLAG(IS_MAC)
   if (kTestDisabledForVirtualMachineMac) {
@@ -369,8 +353,7 @@ IN_PROC_BROWSER_TEST_F(
     GlicTabIndicatorHelperUiTest,
     MAYBE_MinimizingWindowWithGlicDetachedShouldNotAlertUntilNewBrowserActive) {
   if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
-    // TODO(b/453696965): Broken in multi-instance.
-    GTEST_SKIP() << "Skipping for kGlicMultiInstance";
+    GTEST_SKIP() << "Test does not work for multi-instance.";
   }
   Browser* const browser2 = CreateBrowser(browser()->profile());
   RunTestSequence(
@@ -385,9 +368,9 @@ IN_PROC_BROWSER_TEST_F(
         browser2->window()->Minimize();
         ASSERT_TRUE(ui_test_utils::WaitForMinimized(browser2));
       }),
-      WaitForState(kTab2AlertState, std::nullopt),
+      WaitForState(kTab2AlertState, DefaultExpectedTabAlertWithGlic()),
       ActivateSurface(kBrowserViewElementId),
-      WaitForState(kTab2AlertState, std::nullopt),
+      WaitForState(kTab2AlertState, DefaultExpectedTabAlertWithGlic()),
       WaitForState(kTab1AlertState,
                    std::make_optional(tabs::TabAlert::kGlicAccessing)));
 }
@@ -434,10 +417,6 @@ IN_PROC_BROWSER_TEST_F(GlicTabIndicatorHelperUiTest,
 
 IN_PROC_BROWSER_TEST_F(GlicTabIndicatorHelperUiTest,
                        AcessingTabAfterOpeningTabSearchDialog) {
-  if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
-    // TODO(b/453696965): Broken in multi-instance.
-    GTEST_SKIP() << "Skipping for kGlicMultiInstance";
-  }
   RunTestSequence(
       LoadStartingPage(), ObserveState(kTab1AlertState, browser(), 0),
       OpenGlicWindow(GlicWindowMode::kAttached),

@@ -82,6 +82,8 @@ class GlicInstanceCoordinatorImpl
   void UnbindTabFromAnyInstance(tabs::TabInterface* tab) override;
   std::vector<glic::mojom::ConversationInfoPtr> GetRecentlyActiveConversations()
       override;
+  void ContextAccessIndicatorChanged(GlicInstanceImpl& instance,
+                                     bool enabled) override;
 
   // GlicWindowController implementation
   HostManager& host_manager() override;
@@ -137,6 +139,9 @@ class GlicInstanceCoordinatorImpl
   bool HasWarmedInstanceForTesting() const {
     return warmed_instance_ != nullptr;
   }
+  GlicInstanceImpl* GetWarmedInstanceForTesting() {
+    return warmed_instance_.get();
+  }
 
  private:
   void OnTabCreated(tabs::TabInterface& old_tab, tabs::TabInterface& new_tab);
@@ -159,11 +164,13 @@ class GlicInstanceCoordinatorImpl
   void RemoveInstance(GlicInstanceImpl* instance) override;
 
   void NotifyActiveInstanceChanged();
+  void ComputeContentAccessIndicator();
 
   // List of callbacks to be notified when window activation has changed.
   base::RepeatingCallbackList<void(bool)> window_activation_callback_list_;
 
   const raw_ptr<Profile> profile_;
+  raw_ptr<GlicKeyedService> service_;
   raw_ptr<contextual_cueing::ContextualCueingService>
       contextual_cueing_service_;
 

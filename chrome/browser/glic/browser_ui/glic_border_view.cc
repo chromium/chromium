@@ -187,6 +187,7 @@ class GlicBorderView::BorderViewUpdater : public views::ViewObserver {
       return;
     }
     context_access_indicator_enabled_ = enabled;
+
     MaybeRunBorderViewUpdate(
         context_access_indicator_enabled_
             ? UpdateBorderReason::kContextAccessIndicatorOn
@@ -298,15 +299,15 @@ class GlicBorderView::BorderViewUpdater : public views::ViewObserver {
       return false;
     }
 
+    // Remaining single instance checks.
+    if (!context_access_indicator_enabled_) {
+      return false;
+    }
+
     // For multi-instance we rely on the sharing manager signal for everything
     // else.
     if (GlicEnabling::IsMultiInstanceEnabledByFlags()) {
       return true;
-    }
-
-    // Remaining single instance checks.
-    if (!context_access_indicator_enabled_) {
-      return false;
     }
 
     return IsGlicWindowShowing();

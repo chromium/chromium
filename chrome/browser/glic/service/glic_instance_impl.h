@@ -79,6 +79,11 @@ class GlicInstanceImpl : public GlicInstance,
 
     virtual std::vector<glic::mojom::ConversationInfoPtr>
     GetRecentlyActiveConversations() = 0;
+
+    // Called when the context access indicator changes on the instance.
+    virtual void ContextAccessIndicatorChanged(
+        GlicInstanceImpl& source_instance,
+        bool enabled) = 0;
   };
 
   GlicInstanceImpl(
@@ -133,6 +138,7 @@ class GlicInstanceImpl : public GlicInstance,
 
   void UnbindEmbedder(EmbedderKey key);
   GlicUiEmbedder* GetEmbedderForTab(tabs::TabInterface* tab);
+  bool ContextAccessIndicatorEnabled();
 
   // GlicInstance:
   Host& host() override;
@@ -208,6 +214,7 @@ class GlicInstanceImpl : public GlicInstance,
 
   // Host::Observer
   void WebUiStateChanged(mojom::WebUiState state) override;
+  void ContextAccessIndicatorChanged(bool enabled) override;
 
   // ActorTaskDelegate:
   void OnTabAddedToTask(actor::TaskId task_id,
