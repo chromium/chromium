@@ -8680,7 +8680,8 @@
                     "name": "Enabled",
                     "enable_features": [
                         "SilentPolicyAndDefaultAppUpdating",
-                        "WebAppPredictableAppUpdating"
+                        "WebAppPredictableAppUpdating",
+                        "WebAppUsePrimaryIcon"
                     ]
                 }
             ]
