@@ -468,6 +468,140 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="ContentSettings.RegularProfile.Exceptions.{ContentSettingsType}"
+    units="units" expires_after="never">
+<!-- expires-never: tracked as an important privacy metric. -->
+
+  <owner>lshang@chromium.org</owner>
+  <owner>dullweber@chromium.org</owner>
+  <owner>engedy@chromium.org</owner>
+  <summary>
+    The number of user defined content setting exceptions at browser start.
+    Suffixed with the name of content setting types.
+
+    Histogram content setting type: {ContentSettingsType}
+
+    This histogram is only recorded for regular profiles as of M109.
+  </summary>
+  <token key="ContentSettingsType">
+    <variant name="app-banner" summary="App banner exceptions"/>
+    <variant name="auto-dark-web-content"
+        summary="Auto-dark web contents exceptions"/>
+    <variant name="auto-picture-in-picture"
+        summary="Automatic picture-in-picture exceptions"/>
+    <variant name="auto-select-certificate"
+        summary="Auto-select cert exceptions"/>
+    <variant name="automatic-downloads"
+        summary="Automatic downloads exceptions"/>
+    <variant name="autoplay" summary="Autoplay exception"/>
+    <variant name="background-sync" summary="Background sync exceptions"/>
+    <variant name="bluetooth-chooser-data" summary="Bluetooth chooser data"/>
+    <variant name="bluetooth-guard" summary="Bluetooth guard exceptions"/>
+    <variant name="client-hints" summary="Client hints"/>
+    <variant name="cookies" summary="Cookies exceptions"/>
+    <variant name="display-capture" summary="Display Capture Exceptions"/>
+    <variant name="durable-storage" summary="Durable Storage Exceptions"/>
+    <variant name="fullscreen" summary="Fullscreen exceptions"/>
+    <variant name="geolocation" summary="Geolocation exceptions"/>
+    <variant name="hid-chooser-data" summary="HID chooser data"/>
+    <variant name="images" summary="Images exceptions"/>
+    <variant name="important-site-info" summary="Important site info"/>
+    <variant name="installed-web-app-metadata"
+        summary="Installed web app metadata"/>
+    <variant name="javascript" summary="JavaScript exceptions"/>
+    <variant name="javascript-jit" summary="JavaScript JIT"/>
+    <variant name="javascript-optimizer" summary="JavaScript Optimizer"/>
+    <variant name="keygen" summary="Keygen exceptions"/>
+    <variant name="local-network-access"
+        summary="Local network access exceptions"/>
+    <variant name="media-engagement" summary="Media engagement exceptions"/>
+    <variant name="media-stream-camera" summary="Camera exceptions"/>
+    <variant name="media-stream-mic" summary="Microphone exceptions"/>
+    <variant name="midi-sysex" summary="Midi exceptions"/>
+    <variant name="mixed-script" summary="Mixed script exceptions"/>
+    <variant name="mouselock" summary="Mouse lock exceptions"/>
+    <variant name="notifications" summary="Notification exceptions"/>
+    <variant name="password-protection" summary="Password protection"/>
+    <variant name="permission-autoblocking-data"
+        summary="Permission autoblocking data"/>
+    <variant name="permission-autorevocation-data"
+        summary="Permission autorevocation data"/>
+    <variant name="plugins" summary="Plugins exceptions"/>
+    <variant name="popups" summary="Popups exceptions"/>
+    <variant name="ppapi-broker" summary="Ppapi broker exceptions"/>
+    <variant name="protected-media-identifier"
+        summary="Protected media exceptions"/>
+    <variant name="protocol-handler" summary="Protocol handler exceptions"/>
+    <variant name="push-messaging" summary="Push messaging exceptions"/>
+    <variant name="request-desktop-site"
+        summary="Request desktop site exceptions"/>
+    <variant name="safe-browsing-url-check-data"
+        summary="Safe browsing url check data"/>
+    <variant name="serial-chooser-data" summary="Serial chooser data"/>
+    <variant name="site-engagement" summary="Site engagement exceptions"/>
+    <variant name="sound" summary="Sound exceptions"/>
+    <variant name="ssl-cert-decisions" summary="SSL cert decisions exceptions"/>
+    <variant name="storage-access" summary="Storage Access exceptions"/>
+    <variant name="subresource-filter" summary="Subresource filter exceptions"/>
+    <variant name="subresource-filter-data" summary="Subresource filter data"/>
+    <variant name="tracking-protection"
+        summary="Tracking Protection exceptions"/>
+    <variant name="usb-chooser-data" summary="USB chooser data exceptions"/>
+    <variant name="web-app-installation"
+        summary="Web app installation exceptions"/>
+    <variant name="webid-active-session" summary="FedCM Active Session"/>
+    <variant name="webid-request" summary="FedCM Request"/>
+    <variant name="webid-share" summary="FedCM Share"/>
+  </token>
+</histogram>
+
+<histogram
+    name="ContentSettings.RegularProfile.Exceptions.{ContentSettingsType}.{ContentSetting}"
+    units="units" expires_after="never">
+<!-- expires-never: tracked as an important privacy metric. -->
+
+  <owner>lshang@chromium.org</owner>
+  <owner>dullweber@chromium.org</owner>
+  <owner>engedy@chromium.org</owner>
+  <summary>
+    The number of user defined content setting exceptions at browser start.
+    Suffixed with the name of content setting types and the content setting.
+
+    Histogram content setting type: {ContentSettingsType} Histogram content
+    setting: {ContentSetting}
+
+    This histogram is only recorded for regular profiles as of M109.
+  </summary>
+  <token key="ContentSettingsType">
+    <variant name="cookies" summary="Cookies exceptions"/>
+    <variant name="javascript-jit" summary="JavaScript JIT"/>
+    <variant name="javascript-optimizer" summary="JavaScript Optimizer"/>
+    <variant name="popups" summary="Popups exceptions"/>
+    <variant name="storage-access" summary="Storage Access exceptions"/>
+    <variant name="subresource-filter" summary="Subresource filter exceptions"/>
+    <variant name="tracking-protection"
+        summary="Tracking Protection exceptions"/>
+  </token>
+  <token key="ContentSetting">
+    <variant name="Allow" summary="Allow"/>
+    <variant name="AllowThirdParty"
+        summary="All third parties allowed on a domain"/>
+    <variant name="Ask" summary="Ask"/>
+    <variant name="Block" summary="Block"/>
+    <variant name="DomainWildcardAllowThirdParty"
+        summary="Third-party cookies allowed for a site group using a domain
+                 wildcard"/>
+    <variant name="MaxRequester"
+        summary="Maximum number of exceptions per requester"/>
+    <variant name="MaxTopLevel"
+        summary="Maximum number of exceptions per top-level"/>
+    <variant name="SessionOnly" summary="Session only"/>
+    <variant name="TemporaryAllowThirdParty"
+        summary="Third-party cookies temporarily allowed on a domain"/>
+  </token>
+</histogram>
+
+<histogram
     name="ContentSettings.{RegularProfileFiltered}DefaultAutoDarkWebContentSetting"
     enum="ContentSetting" expires_after="2023-02-19">
   <owner>wenyufu@chromium.org</owner>
@@ -777,98 +911,6 @@ chromium-metrics-reviews@google.com.
   <token key="RegularProfileFiltered">
     <variant name="RegularProfile."
         summary="from version M-109. It is recorded only for regular profiles"/>
-  </token>
-</histogram>
-
-<histogram
-    name="ContentSettings.{RegularProfileFiltered}Exceptions.{ContentSettingsType}"
-    units="units" expires_after="never">
-<!-- expires-never: tracked as an important privacy metric. -->
-
-  <owner>lshang@chromium.org</owner>
-  <owner>dullweber@chromium.org</owner>
-  <owner>engedy@chromium.org</owner>
-  <summary>
-    The number of user defined content setting exceptions at browser start.
-    Suffixed with the name of content setting types.
-
-    Histogram content setting type: {ContentSettingsType}
-
-    This histogram is only recorded {RegularProfileFiltered}.
-  </summary>
-  <token key="RegularProfileFiltered">
-    <variant name="RegularProfile."
-        summary="from version M-109. It is recorded only for regular profiles"/>
-  </token>
-  <token key="ContentSettingsType">
-    <variant name="app-banner" summary="App banner exceptions"/>
-    <variant name="auto-dark-web-content"
-        summary="Auto-dark web contents exceptions"/>
-    <variant name="auto-picture-in-picture"
-        summary="Automatic picture-in-picture exceptions"/>
-    <variant name="auto-select-certificate"
-        summary="Auto-select cert exceptions"/>
-    <variant name="automatic-downloads"
-        summary="Automatic downloads exceptions"/>
-    <variant name="autoplay" summary="Autoplay exception"/>
-    <variant name="background-sync" summary="Background sync exceptions"/>
-    <variant name="bluetooth-chooser-data" summary="Bluetooth chooser data"/>
-    <variant name="bluetooth-guard" summary="Bluetooth guard exceptions"/>
-    <variant name="client-hints" summary="Client hints"/>
-    <variant name="cookies" summary="Cookies exceptions"/>
-    <variant name="display-capture" summary="Display Capture Exceptions"/>
-    <variant name="durable-storage" summary="Durable Storage Exceptions"/>
-    <variant name="fullscreen" summary="Fullscreen exceptions"/>
-    <variant name="geolocation" summary="Geolocation exceptions"/>
-    <variant name="hid-chooser-data" summary="HID chooser data"/>
-    <variant name="images" summary="Images exceptions"/>
-    <variant name="important-site-info" summary="Important site info"/>
-    <variant name="installed-web-app-metadata"
-        summary="Installed web app metadata"/>
-    <variant name="javascript" summary="JavaScript exceptions"/>
-    <variant name="javascript-jit" summary="JavaScript JIT"/>
-    <variant name="javascript-optimizer" summary="JavaScript Optimizer"/>
-    <variant name="keygen" summary="Keygen exceptions"/>
-    <variant name="local-network-access"
-        summary="Local network access exceptions"/>
-    <variant name="media-engagement" summary="Media engagement exceptions"/>
-    <variant name="media-stream-camera" summary="Camera exceptions"/>
-    <variant name="media-stream-mic" summary="Microphone exceptions"/>
-    <variant name="midi-sysex" summary="Midi exceptions"/>
-    <variant name="mixed-script" summary="Mixed script exceptions"/>
-    <variant name="mouselock" summary="Mouse lock exceptions"/>
-    <variant name="notifications" summary="Notification exceptions"/>
-    <variant name="password-protection" summary="Password protection"/>
-    <variant name="permission-autoblocking-data"
-        summary="Permission autoblocking data"/>
-    <variant name="permission-autorevocation-data"
-        summary="Permission autorevocation data"/>
-    <variant name="plugins" summary="Plugins exceptions"/>
-    <variant name="popups" summary="Popups exceptions"/>
-    <variant name="ppapi-broker" summary="Ppapi broker exceptions"/>
-    <variant name="protected-media-identifier"
-        summary="Protected media exceptions"/>
-    <variant name="protocol-handler" summary="Protocol handler exceptions"/>
-    <variant name="push-messaging" summary="Push messaging exceptions"/>
-    <variant name="request-desktop-site"
-        summary="Request desktop site exceptions"/>
-    <variant name="safe-browsing-url-check-data"
-        summary="Safe browsing url check data"/>
-    <variant name="serial-chooser-data" summary="Serial chooser data"/>
-    <variant name="site-engagement" summary="Site engagement exceptions"/>
-    <variant name="sound" summary="Sound exceptions"/>
-    <variant name="ssl-cert-decisions" summary="SSL cert decisions exceptions"/>
-    <variant name="storage-access" summary="Storage Access exceptions"/>
-    <variant name="subresource-filter" summary="Subresource filter exceptions"/>
-    <variant name="subresource-filter-data" summary="Subresource filter data"/>
-    <variant name="tracking-protection"
-        summary="Tracking Protection exceptions"/>
-    <variant name="usb-chooser-data" summary="USB chooser data exceptions"/>
-    <variant name="web-app-installation"
-        summary="Web app installation exceptions"/>
-    <variant name="webid-active-session" summary="FedCM Active Session"/>
-    <variant name="webid-request" summary="FedCM Request"/>
-    <variant name="webid-share" summary="FedCM Share"/>
   </token>
 </histogram>
 

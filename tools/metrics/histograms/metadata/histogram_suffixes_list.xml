@@ -262,35 +262,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="CertificateType2.NonBR"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="ContentSetting" separator=".">
-  <suffix name="Allow" label="Allow"/>
-  <suffix name="AllowThirdParty" label="All third parties allowed on a domain"/>
-  <suffix name="Ask" label="Ask"/>
-  <suffix name="Block" label="Block"/>
-  <suffix name="DomainWildcardAllowThirdParty"
-      label="Third-party cookies allowed for a site group using a domain
-             wildcard"/>
-  <suffix name="MaxRequester"
-      label="Maximum number of exceptions per requester"/>
-  <suffix name="MaxTopLevel"
-      label="Maximum number of exceptions per top-level"/>
-  <suffix name="SessionOnly" label="Session only"/>
-  <suffix name="TemporaryAllowThirdParty"
-      label="Third-party cookies temporarily allowed on a domain"/>
-  <affected-histogram name="ContentSettings.RegularProfile.Exceptions.cookies"/>
-  <affected-histogram
-      name="ContentSettings.RegularProfile.Exceptions.javascript-jit"/>
-  <affected-histogram
-      name="ContentSettings.RegularProfile.Exceptions.javascript-optimizer"/>
-  <affected-histogram name="ContentSettings.RegularProfile.Exceptions.popups"/>
-  <affected-histogram
-      name="ContentSettings.RegularProfile.Exceptions.storage-access"/>
-  <affected-histogram
-      name="ContentSettings.RegularProfile.Exceptions.subresource-filter"/>
-  <affected-histogram
-      name="ContentSettings.RegularProfile.Exceptions.tracking-protection"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="Cras_ClientType" separator=".">
   <suffix name="ARC" label="A client created by ARC++."/>
   <suffix name="ARCVM" label="A client created by ARCVM."/>
