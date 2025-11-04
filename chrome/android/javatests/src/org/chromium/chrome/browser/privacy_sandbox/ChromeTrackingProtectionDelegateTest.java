@@ -64,32 +64,6 @@ public class ChromeTrackingProtectionDelegateTest {
     @Test
     @UiThreadTest
     @MediumTest
-    public void ipProtection() {
-        UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
-                .setBoolean(Pref.IP_PROTECTION_ENABLED, false);
-        assertFalse(mDelegate.isIpProtectionEnabled());
-        mDelegate.setIpProtection(true);
-        assertTrue(mDelegate.isIpProtectionEnabled());
-        mDelegate.setIpProtection(false);
-        assertFalse(mDelegate.isIpProtectionEnabled());
-    }
-
-    @Test
-    @UiThreadTest
-    @MediumTest
-    public void fingerprintingProtection() {
-        UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
-                .setBoolean(Pref.FINGERPRINTING_PROTECTION_ENABLED, false);
-        assertFalse(mDelegate.isFingerprintingProtectionEnabled());
-        mDelegate.setFingerprintingProtection(true);
-        assertTrue(mDelegate.isFingerprintingProtectionEnabled());
-        mDelegate.setFingerprintingProtection(false);
-        assertFalse(mDelegate.isFingerprintingProtectionEnabled());
-    }
-
-    @Test
-    @UiThreadTest
-    @MediumTest
     public void contextGetter() {
         var context = mDelegate.getBrowserContext();
         assertEquals(ProfileManager.getLastUsedRegularProfile(), context);

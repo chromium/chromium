@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.privacy_sandbox;
 import android.content.Context;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.site_settings.ChromeSiteSettingsDelegate;
@@ -19,11 +18,9 @@ import org.chromium.content_public.browser.BrowserContextHandle;
 @NullMarked
 public class ChromeTrackingProtectionDelegate implements TrackingProtectionDelegate {
     private final Profile mProfile;
-    private final TrackingProtectionSettingsBridge mTrackingProtectionSettingsBridge;
 
     public ChromeTrackingProtectionDelegate(Profile profile) {
         mProfile = profile;
-        mTrackingProtectionSettingsBridge = new TrackingProtectionSettingsBridge(profile);
     }
 
     @Override
@@ -34,51 +31,6 @@ public class ChromeTrackingProtectionDelegate implements TrackingProtectionDeleg
     @Override
     public void setBlockAll3pc(boolean enabled) {
         UserPrefs.get(mProfile).setBoolean(Pref.BLOCK_ALL3PC_TOGGLE_ENABLED, enabled);
-    }
-
-    @Override
-    public boolean isIpProtectionUxEnabled() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.IP_PROTECTION_UX);
-    }
-
-    @Override
-    public boolean isIpProtectionEnabled() {
-        return UserPrefs.get(mProfile).getBoolean(Pref.IP_PROTECTION_ENABLED);
-    }
-
-    @Override
-    public boolean isIpProtectionManaged() {
-        return UserPrefs.get(mProfile).isManagedPreference(Pref.IP_PROTECTION_ENABLED);
-    }
-
-    @Override
-    public boolean isFingerprintingProtectionManaged() {
-        return UserPrefs.get(mProfile).isManagedPreference(Pref.FINGERPRINTING_PROTECTION_ENABLED);
-    }
-
-    @Override
-    public void setIpProtection(boolean enabled) {
-        UserPrefs.get(mProfile).setBoolean(Pref.IP_PROTECTION_ENABLED, enabled);
-    }
-
-    @Override
-    public boolean isIpProtectionDisabledForEnterprise() {
-        return mTrackingProtectionSettingsBridge.isIpProtectionDisabledForEnterprise();
-    }
-
-    @Override
-    public boolean isFingerprintingProtectionUxEnabled() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.FINGERPRINTING_PROTECTION_UX);
-    }
-
-    @Override
-    public boolean isFingerprintingProtectionEnabled() {
-        return UserPrefs.get(mProfile).getBoolean(Pref.FINGERPRINTING_PROTECTION_ENABLED);
-    }
-
-    @Override
-    public void setFingerprintingProtection(boolean enabled) {
-        UserPrefs.get(mProfile).setBoolean(Pref.FINGERPRINTING_PROTECTION_ENABLED, enabled);
     }
 
     @Override
