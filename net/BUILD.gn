@@ -827,8 +827,6 @@ component("net") {
     "proxy_resolution/pac_file_fetcher_impl.h",
     "proxy_resolution/polling_proxy_config_service.cc",
     "proxy_resolution/polling_proxy_config_service.h",
-    "proxy_resolution/proxy_bypass_rules.cc",
-    "proxy_resolution/proxy_bypass_rules.h",
     "proxy_resolution/proxy_config.cc",
     "proxy_resolution/proxy_config.h",
     "proxy_resolution/proxy_config_service.cc",
@@ -837,6 +835,8 @@ component("net") {
     "proxy_resolution/proxy_config_service_fixed.h",
     "proxy_resolution/proxy_config_with_annotation.cc",
     "proxy_resolution/proxy_config_with_annotation.h",
+    "proxy_resolution/proxy_host_matching_rules.cc",
+    "proxy_resolution/proxy_host_matching_rules.h",
     "proxy_resolution/proxy_info.cc",
     "proxy_resolution/proxy_info.h",
     "proxy_resolution/proxy_list.cc",
@@ -2934,8 +2934,8 @@ target(_test_target_type, "net_unittests") {
     "proxy_resolution/network_delegate_error_observer_unittest.cc",
     "proxy_resolution/pac_file_decider_unittest.cc",
     "proxy_resolution/pac_file_fetcher_impl_unittest.cc",
-    "proxy_resolution/proxy_bypass_rules_unittest.cc",
     "proxy_resolution/proxy_config_unittest.cc",
+    "proxy_resolution/proxy_host_matching_rules_unittest.cc",
     "proxy_resolution/proxy_info_unittest.cc",
     "proxy_resolution/proxy_list_unittest.cc",
     "quic/bidirectional_stream_quic_impl_unittest.cc",
@@ -3753,8 +3753,8 @@ fuzzer_test("net_parse_proxy_list_fuzzer") {
   ]
 }
 
-fuzzer_test("net_parse_proxy_bypass_rules_fuzzer") {
-  sources = [ "proxy_resolution/parse_proxy_bypass_rules_fuzzer.cc" ]
+fuzzer_test("net_parse_proxy_host_matching_rules_fuzzer") {
+  sources = [ "proxy_resolution/parse_proxy_host_matching_rules_fuzzer.cc" ]
 
   libfuzzer_options = [
     # The proxy bypass rules aren't very complicated, so this is more than
@@ -3775,7 +3775,8 @@ fuzzer_test("net_parse_proxy_rules_fuzzer") {
     ":net_fuzzer_test_support",
     "//net",
   ]
-  dict = "data/fuzzer_dictionaries/net_parse_proxy_bypass_rules_fuzzer.dict"
+  dict =
+      "data/fuzzer_dictionaries/net_parse_proxy_host_matching_rules_fuzzer.dict"
 }
 
 fuzzer_test("net_get_domain_and_registry_fuzzer") {

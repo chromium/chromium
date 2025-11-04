@@ -506,7 +506,7 @@ Windows we will also recognize `loopback`.
 This concept of implicit proxy bypass rules is consistent with the
 platform-level proxy support on Windows and macOS (albeit with some differences
 due to their implementation quirks - see compatibility notes in
-`net::ProxyBypassRules::MatchesImplicitRules`)
+`net::ProxyHostMatchingRules::MatchesImplicitRules`)
 
 Why apply implicit proxy bypass rules in the first place? Certainly there are
 considerations around ergonomics and user expectation, but the bigger problem

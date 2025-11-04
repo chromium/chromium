@@ -330,7 +330,7 @@ base::Value ProxyConfig::ToValue() const {
     }
 
     // Output the bypass rules.
-    const ProxyBypassRules& bypass = proxy_rules_.bypass_rules;
+    const ProxyHostMatchingRules& bypass = proxy_rules_.bypass_rules;
     if (!bypass.rules().empty()) {
       if (proxy_rules_.reverse_bypass) {
         dict.Set("reverse_bypass", true);

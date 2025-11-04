@@ -1525,7 +1525,7 @@ bool ConfiguredProxyResolutionService::ApplyPacBypassRules(const GURL& url,
                                                            ProxyInfo* results) {
   DCHECK(config_);
 
-  if (ProxyBypassRules::MatchesImplicitRules(url)) {
+  if (ProxyHostMatchingRules::MatchesImplicitRules(url)) {
     results->UseDirectWithBypassedProxy();
     return true;
   }

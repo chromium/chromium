@@ -8,15 +8,15 @@
 #include "mojo/public/cpp/bindings/scoped_message_error_crash_key.h"
 #include "net/base/proxy_chain.h"
 #include "net/base/proxy_string_util.h"
-#include "net/proxy_resolution/proxy_bypass_rules.h"
+#include "net/proxy_resolution/proxy_host_matching_rules.h"
 #include "services/network/public/cpp/network_param_mojom_traits.h"
 #include "url/gurl.h"
 
 namespace mojo {
 
-std::vector<std::string>
-StructTraits<network::mojom::ProxyBypassRulesDataView,
-             net::ProxyBypassRules>::rules(const net::ProxyBypassRules& r) {
+std::vector<std::string> StructTraits<
+    network::mojom::ProxyHostMatchingRulesDataView,
+    net::ProxyHostMatchingRules>::rules(const net::ProxyHostMatchingRules& r) {
   std::vector<std::string> out;
   for (const auto& rule : r.rules()) {
     out.push_back(rule->ToString());
@@ -24,10 +24,10 @@ StructTraits<network::mojom::ProxyBypassRulesDataView,
   return out;
 }
 
-bool StructTraits<network::mojom::ProxyBypassRulesDataView,
-                  net::ProxyBypassRules>::
-    Read(network::mojom::ProxyBypassRulesDataView data,
-         net::ProxyBypassRules* out_proxy_bypass_rules) {
+bool StructTraits<network::mojom::ProxyHostMatchingRulesDataView,
+                  net::ProxyHostMatchingRules>::
+    Read(network::mojom::ProxyHostMatchingRulesDataView data,
+         net::ProxyHostMatchingRules* out_proxy_bypass_rules) {
   std::vector<std::string> rules;
   if (!data.ReadRules(&rules))
     return false;

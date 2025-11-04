@@ -357,10 +357,10 @@ class NET_EXPORT ConfiguredProxyResolutionService
       const ProxyConfigWithAnnotation& config,
       ProxyConfigService::ConfigAvailability availability) override;
 
-  // When using a PAC script there isn't a user-configurable ProxyBypassRules to
-  // check, as the one from manual settings doesn't apply. However we
-  // still check for matches against the implicit bypass rules, to prevent PAC
-  // scripts from being able to proxy localhost.
+  // When using a PAC script there isn't a user-configurable
+  // ProxyHostMatchingRules to check, as the one from manual settings doesn't
+  // apply. However we still check for matches against the implicit bypass
+  // rules, to prevent PAC scripts from being able to proxy localhost.
   bool ApplyPacBypassRules(const GURL& url, ProxyInfo* results);
 
   std::unique_ptr<ProxyConfigService> config_service_;

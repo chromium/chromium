@@ -7,8 +7,8 @@
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "net/base/proxy_chain.h"
 #include "net/base/proxy_string_util.h"
-#include "net/proxy_resolution/proxy_bypass_rules.h"
 #include "net/proxy_resolution/proxy_config_with_annotation.h"
+#include "net/proxy_resolution/proxy_host_matching_rules.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/public/cpp/proxy_config_with_annotation_mojom_traits.h"
 #include "services/network/public/mojom/proxy_config_with_annotation.mojom.h"
@@ -106,7 +106,7 @@ TEST(ProxyConfigTraitsTest, ProxyRules) {
 
 TEST(ProxyConfigTraitsTest, BypassRules) {
   // These should cover every one of the rule types documented in
-  // proxy_bypass_rules.h.
+  // proxy_host_matching_rules.h.
   const char* kTestCases[] = {
       ".foo.com",
       "*foo1.com:80, foo2.com",

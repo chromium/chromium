@@ -120,7 +120,7 @@ std::optional<base::Value::Dict> OncValueForManualProxyList(
     const net::ProxyList& for_http,
     const net::ProxyList& for_https,
     const net::ProxyList& fallback,
-    const net::ProxyBypassRules& bypass_rules) {
+    const net::ProxyHostMatchingRules& bypass_rules) {
   if (for_http.IsEmpty() && for_https.IsEmpty() && fallback.IsEmpty()) {
     return std::nullopt;
   }

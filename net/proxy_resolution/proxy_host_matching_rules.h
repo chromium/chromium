@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef NET_PROXY_RESOLUTION_PROXY_BYPASS_RULES_H_
-#define NET_PROXY_RESOLUTION_PROXY_BYPASS_RULES_H_
+#ifndef NET_PROXY_RESOLUTION_PROXY_HOST_MATCHING_RULES_H_
+#define NET_PROXY_RESOLUTION_PROXY_HOST_MATCHING_RULES_H_
 
 #include <memory>
 #include <string>
@@ -17,34 +17,30 @@
 
 namespace net {
 
-// TODO(crbug.com/419548922): Rename this class to something more generic like
-// ProxyHostMatchingRules. Its original purpose was solely for proxy bypass
-// logic, but it is now also used for ProxyOverrideRules, making the current
-// name misleading.
-//
-// ProxyBypassRules describes the set of URLs that should bypass the use of a
-// proxy.
+// ProxyHostMatchingRules describes a set of rules to match against URLs for
+// general purposes, for example to determine if such URLs should bypass the use
+// of a proxy.
 //
 // The rules are expressed as an ordered list of rules, which can be thought of
 // as being evaluated left-to-right. Order only matters when mixing "negative
 // rules" with "positive rules". For more details see the comments in
-// ProxyBypassRules::Matches().
+// ProxyHostMatchingRules::Matches().
 //
 // This rule list is serializable to a string (either comma or semi-colon
 // separated), which has similar semantics across platforms.
 //
-// When evalutating ProxyBypassRules there are some implicitly applied rules
-// when the URL does not match any of the explicit rules. See
+// When evaluating ProxyHostMatchingRules there are some implicitly applied
+// rules when the URL does not match any of the explicit rules. See
 // MatchesImplicitRules() for details.
-class NET_EXPORT ProxyBypassRules {
+class NET_EXPORT ProxyHostMatchingRules {
  public:
   // Note: This class supports copy constructor and assignment.
-  ProxyBypassRules();
-  ProxyBypassRules(const ProxyBypassRules& rhs);
-  ProxyBypassRules(ProxyBypassRules&& rhs);
-  ~ProxyBypassRules();
-  ProxyBypassRules& operator=(const ProxyBypassRules& rhs);
-  ProxyBypassRules& operator=(ProxyBypassRules&& rhs);
+  ProxyHostMatchingRules();
+  ProxyHostMatchingRules(const ProxyHostMatchingRules& rhs);
+  ProxyHostMatchingRules(ProxyHostMatchingRules&& rhs);
+  ~ProxyHostMatchingRules();
+  ProxyHostMatchingRules& operator=(const ProxyHostMatchingRules& rhs);
+  ProxyHostMatchingRules& operator=(ProxyHostMatchingRules&& rhs);
 
   // Returns the current list of rules. The rules list contains pointers
   // which are owned by this class, callers should NOT keep references
@@ -67,7 +63,7 @@ class NET_EXPORT ProxyBypassRules {
   bool Matches(const GURL& url, bool reverse = false) const;
 
   // Returns true if |*this| has the same serialized list of rules as |other|.
-  bool operator==(const ProxyBypassRules& other) const;
+  bool operator==(const ProxyHostMatchingRules& other) const;
 
   // Initializes the list of rules by parsing the string |raw|. |raw| is a
   // comma separated or semi-colon separated list of rules. See
@@ -125,4 +121,4 @@ class NET_EXPORT ProxyBypassRules {
 
 }  // namespace net
 
-#endif  // NET_PROXY_RESOLUTION_PROXY_BYPASS_RULES_H_
+#endif  // NET_PROXY_RESOLUTION_PROXY_HOST_MATCHING_RULES_H_

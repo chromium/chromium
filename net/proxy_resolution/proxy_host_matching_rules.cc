@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "net/proxy_resolution/proxy_bypass_rules.h"
+#include "net/proxy_resolution/proxy_host_matching_rules.h"
 
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
@@ -39,8 +39,9 @@ bool IsLinkLocalIP(const GURL& url) {
   }
 
   IPAddress ip_address;
-  if (!ip_address.AssignFromIPLiteral(url.HostNoBracketsPiece()))
+  if (!ip_address.AssignFromIPLiteral(url.HostNoBracketsPiece())) {
     return false;
+  }
 
   return ip_address.IsLinkLocal();
 }
@@ -57,11 +58,13 @@ bool IsIPv4MappedLoopback(const GURL& url) {
   }
 
   IPAddress ip_address;
-  if (!ip_address.AssignFromIPLiteral(url.HostNoBracketsPiece()))
+  if (!ip_address.AssignFromIPLiteral(url.HostNoBracketsPiece())) {
     return false;
+  }
 
-  if (!ip_address.IsIPv4MappedIPv6())
+  if (!ip_address.IsIPv4MappedIPv6()) {
     return false;
+  }
 
   return ip_address.bytes()[12] == 127;
 }
@@ -93,7 +96,7 @@ class SubtractImplicitBypassesRule : public SchemeHostPortMatcherRule {
       delete;
 
   SchemeHostPortMatcherResult Evaluate(const GURL& url) const override {
-    return ProxyBypassRules::MatchesImplicitRules(url)
+    return ProxyHostMatchingRules::MatchesImplicitRules(url)
                ? SchemeHostPortMatcherResult::kExclude
                : SchemeHostPortMatcherResult::kNoMatch;
   }
@@ -108,47 +111,52 @@ std::unique_ptr<SchemeHostPortMatcherRule> ParseRule(
 
   // <local> and <-loopback> are special syntax used by WinInet's bypass list
   // -- we allow it on all platforms and interpret it the same way.
-  if (base::EqualsCaseInsensitiveASCII(raw, kBypassSimpleHostnames))
+  if (base::EqualsCaseInsensitiveASCII(raw, kBypassSimpleHostnames)) {
     return std::make_unique<BypassSimpleHostnamesRule>();
-  if (base::EqualsCaseInsensitiveASCII(raw, kSubtractImplicitBypasses))
+  }
+  if (base::EqualsCaseInsensitiveASCII(raw, kSubtractImplicitBypasses)) {
     return std::make_unique<SubtractImplicitBypassesRule>();
+  }
 
   return SchemeHostPortMatcherRule::FromUntrimmedRawString(raw_untrimmed);
 }
 
 }  // namespace
 
-constexpr char net::ProxyBypassRules::kBypassListDelimeter[];
+constexpr char net::ProxyHostMatchingRules::kBypassListDelimeter[];
 
-ProxyBypassRules::ProxyBypassRules() = default;
+ProxyHostMatchingRules::ProxyHostMatchingRules() = default;
 
-ProxyBypassRules::ProxyBypassRules(const ProxyBypassRules& rhs) {
+ProxyHostMatchingRules::ProxyHostMatchingRules(
+    const ProxyHostMatchingRules& rhs) {
   *this = rhs;
 }
 
-ProxyBypassRules::ProxyBypassRules(ProxyBypassRules&& rhs) {
+ProxyHostMatchingRules::ProxyHostMatchingRules(ProxyHostMatchingRules&& rhs) {
   *this = std::move(rhs);
 }
 
-ProxyBypassRules::~ProxyBypassRules() = default;
+ProxyHostMatchingRules::~ProxyHostMatchingRules() = default;
 
-ProxyBypassRules& ProxyBypassRules::operator=(const ProxyBypassRules& rhs) {
+ProxyHostMatchingRules& ProxyHostMatchingRules::operator=(
+    const ProxyHostMatchingRules& rhs) {
   ParseFromString(rhs.ToString());
   return *this;
 }
 
-ProxyBypassRules& ProxyBypassRules::operator=(ProxyBypassRules&& rhs) {
+ProxyHostMatchingRules& ProxyHostMatchingRules::operator=(
+    ProxyHostMatchingRules&& rhs) {
   matcher_ = std::move(rhs.matcher_);
   return *this;
 }
 
-void ProxyBypassRules::ReplaceRule(
+void ProxyHostMatchingRules::ReplaceRule(
     size_t index,
     std::unique_ptr<SchemeHostPortMatcherRule> rule) {
   matcher_.ReplaceRule(index, std::move(rule));
 }
 
-bool ProxyBypassRules::Matches(const GURL& url, bool reverse) const {
+bool ProxyHostMatchingRules::Matches(const GURL& url, bool reverse) const {
   switch (matcher_.Evaluate(url)) {
     case SchemeHostPortMatcherResult::kInclude:
       return !reverse;
@@ -160,24 +168,28 @@ bool ProxyBypassRules::Matches(const GURL& url, bool reverse) const {
 
   // If none of the explicit rules matched, fall back to the implicit rules.
   bool matches_implicit = MatchesImplicitRules(url);
-  if (matches_implicit)
+  if (matches_implicit) {
     return matches_implicit;
+  }
 
   return reverse;
 }
 
-bool ProxyBypassRules::operator==(const ProxyBypassRules& other) const {
-  if (rules().size() != other.rules().size())
+bool ProxyHostMatchingRules::operator==(
+    const ProxyHostMatchingRules& other) const {
+  if (rules().size() != other.rules().size()) {
     return false;
+  }
 
   for (size_t i = 0; i < rules().size(); ++i) {
-    if (rules()[i]->ToString() != other.rules()[i]->ToString())
+    if (rules()[i]->ToString() != other.rules()[i]->ToString()) {
       return false;
+    }
   }
   return true;
 }
 
-void ProxyBypassRules::ParseFromString(const std::string& raw) {
+void ProxyHostMatchingRules::ParseFromString(const std::string& raw) {
   Clear();
 
   base::StringTokenizer entries(
@@ -187,11 +199,11 @@ void ProxyBypassRules::ParseFromString(const std::string& raw) {
   }
 }
 
-void ProxyBypassRules::PrependRuleToBypassSimpleHostnames() {
+void ProxyHostMatchingRules::PrependRuleToBypassSimpleHostnames() {
   matcher_.AddAsFirstRule(std::make_unique<BypassSimpleHostnamesRule>());
 }
 
-bool ProxyBypassRules::AddRuleFromString(std::string_view raw_untrimmed) {
+bool ProxyHostMatchingRules::AddRuleFromString(std::string_view raw_untrimmed) {
   auto rule = ParseRule(raw_untrimmed);
 
   if (rule) {
@@ -202,25 +214,25 @@ bool ProxyBypassRules::AddRuleFromString(std::string_view raw_untrimmed) {
   return false;
 }
 
-void ProxyBypassRules::AddRulesToSubtractImplicit() {
+void ProxyHostMatchingRules::AddRulesToSubtractImplicit() {
   matcher_.AddAsLastRule(std::make_unique<SubtractImplicitBypassesRule>());
 }
 
-std::string ProxyBypassRules::GetRulesToSubtractImplicit() {
-  ProxyBypassRules rules;
+std::string ProxyHostMatchingRules::GetRulesToSubtractImplicit() {
+  ProxyHostMatchingRules rules;
   rules.AddRulesToSubtractImplicit();
   return rules.ToString();
 }
 
-std::string ProxyBypassRules::ToString() const {
+std::string ProxyHostMatchingRules::ToString() const {
   return matcher_.ToString();
 }
 
-void ProxyBypassRules::Clear() {
+void ProxyHostMatchingRules::Clear() {
   matcher_.Clear();
 }
 
-bool ProxyBypassRules::MatchesImplicitRules(const GURL& url) {
+bool ProxyHostMatchingRules::MatchesImplicitRules(const GURL& url) {
   // On Windows the implict rules are:
   //
   //     localhost

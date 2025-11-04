@@ -98,7 +98,7 @@ ProxyServer LookupSocksProxy(const GetPropertyCallback& get_property) {
 
 void AddBypassRules(const std::string& scheme,
                     const GetPropertyCallback& get_property,
-                    ProxyBypassRules* bypass_rules) {
+                    ProxyHostMatchingRules* bypass_rules) {
   // The format of a hostname pattern is a list of hostnames that are separated
   // by | and that use * as a wildcard. For example, setting the
   // http.nonProxyHosts property to *.android.com|*.kernel.org will cause

@@ -9,8 +9,8 @@ import "services/network/public/mojom/network_param.mojom";
 import "url/mojom/scheme_host_port.mojom";
 
 // This corresponds to the string representation of
-// `net::ProxyConfigBypassRules`.
-struct ProxyBypassRules {
+// `net::ProxyHostMatchingRules`.
+struct ProxyHostMatchingRules {
   array<string> rules;
 };
 
@@ -28,7 +28,7 @@ enum ProxyRulesType {
 
 // These fields mirror those of `net::ProxyConfig::ProxyRules`.
 struct ProxyRules {
-  ProxyBypassRules bypass_rules;
+  ProxyHostMatchingRules bypass_rules;
   bool reverse_bypass;
   ProxyRulesType type;
   ProxyList single_proxies;
@@ -52,7 +52,7 @@ struct DnsProbeCondition {
 
 // These fields mirror those of `net::ProxyConfig::ProxyOverrideRule`.
 struct ProxyOverrideRule {
-  ProxyBypassRules destination_matchers;
+  ProxyHostMatchingRules destination_matchers;
   array<DnsProbeCondition> dns_conditions;
 
   ProxyList proxy_list;

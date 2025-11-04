@@ -58,7 +58,7 @@ namespace {
 // This turns all rules with a hostname into wildcard matches, which will
 // match not just the indicated hostname but also any hostname that ends with
 // it.
-void RewriteRulesForSuffixMatching(ProxyBypassRules* out) {
+void RewriteRulesForSuffixMatching(ProxyHostMatchingRules* out) {
   // Prepend a wildcard (*) to any hostname based rules, provided it isn't an IP
   // address.
   for (size_t i = 0; i < out->rules().size(); ++i) {

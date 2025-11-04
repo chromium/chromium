@@ -6,7 +6,7 @@
 #include <stdint.h>
 
 #include "base/compiler_specific.h"
-#include "net/proxy_resolution/proxy_bypass_rules.h"
+#include "net/proxy_resolution/proxy_host_matching_rules.h"
 
 // Entry point for LibFuzzer.
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
@@ -14,10 +14,11 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   // (https://crbug.com/813619). According to
   // //testing/libfuzzer/efficient_fuzzer.md setting max_len in the build
   // target is insufficient since AFL doesn't respect it.
-  if (size > 512)
+  if (size > 512) {
     return 0;
+  }
 
-  net::ProxyBypassRules rules;
+  net::ProxyHostMatchingRules rules;
   std::string input(data, UNSAFE_TODO(data + size));
   rules.ParseFromString(input);
 

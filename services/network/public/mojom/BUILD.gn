@@ -446,8 +446,8 @@ mojom("mojom_proxy_config") {
     {
       types = [
         {
-          mojom = "network.mojom.ProxyBypassRules"
-          cpp = "::net::ProxyBypassRules"
+          mojom = "network.mojom.ProxyHostMatchingRules"
+          cpp = "::net::ProxyHostMatchingRules"
         },
         {
           mojom = "network.mojom.ProxyList"

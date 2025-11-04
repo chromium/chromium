@@ -9,7 +9,7 @@
 
 #include "net/base/net_export.h"
 #include "net/base/proxy_server.h"
-#include "net/proxy_resolution/proxy_bypass_rules.h"
+#include "net/proxy_resolution/proxy_host_matching_rules.h"
 #include "net/proxy_resolution/proxy_list.h"
 #include "url/gurl.h"
 #include "url/scheme_host_port.h"
@@ -127,7 +127,7 @@ class NET_EXPORT ProxyConfig {
     }
 
     // Exceptions for when not to use a proxy.
-    ProxyBypassRules bypass_rules;
+    ProxyHostMatchingRules bypass_rules;
 
     // Reverse the meaning of |bypass_rules|.
     bool reverse_bypass = false;
@@ -194,7 +194,7 @@ class NET_EXPORT ProxyConfig {
     // Returns true if `this` has the same serialized list of rules as `other`.
     bool operator==(const ProxyOverrideRule& other) const;
 
-    ProxyBypassRules destination_matchers;
+    ProxyHostMatchingRules destination_matchers;
     std::vector<DnsProbeCondition> dns_conditions;
 
     ProxyList proxy_list;

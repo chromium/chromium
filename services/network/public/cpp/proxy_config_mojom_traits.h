@@ -13,9 +13,9 @@
 #include "mojo/public/cpp/bindings/enum_traits.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "net/base/proxy_chain.h"
-#include "net/proxy_resolution/proxy_bypass_rules.h"
 #include "net/proxy_resolution/proxy_config.h"
 #include "net/proxy_resolution/proxy_config_with_annotation.h"
+#include "net/proxy_resolution/proxy_host_matching_rules.h"
 #include "net/proxy_resolution/proxy_list.h"
 #include "services/network/public/cpp/network_param_mojom_traits.h"
 #include "services/network/public/mojom/proxy_config.mojom-shared.h"
@@ -27,12 +27,12 @@ namespace mojo {
 
 template <>
 struct COMPONENT_EXPORT(NETWORK_CPP_PROXY_CONFIG)
-    StructTraits<network::mojom::ProxyBypassRulesDataView,
-                 net::ProxyBypassRules> {
+    StructTraits<network::mojom::ProxyHostMatchingRulesDataView,
+                 net::ProxyHostMatchingRules> {
  public:
-  static std::vector<std::string> rules(const net::ProxyBypassRules& r);
-  static bool Read(network::mojom::ProxyBypassRulesDataView data,
-                   net::ProxyBypassRules* out_proxy_bypass_rules);
+  static std::vector<std::string> rules(const net::ProxyHostMatchingRules& r);
+  static bool Read(network::mojom::ProxyHostMatchingRulesDataView data,
+                   net::ProxyHostMatchingRules* out_proxy_bypass_rules);
 };
 
 template <>
@@ -74,7 +74,7 @@ struct COMPONENT_EXPORT(NETWORK_CPP_PROXY_CONFIG)
     StructTraits<network::mojom::ProxyRulesDataView,
                  net::ProxyConfig::ProxyRules> {
  public:
-  static const net::ProxyBypassRules& bypass_rules(
+  static const net::ProxyHostMatchingRules& bypass_rules(
       const net::ProxyConfig::ProxyRules& r) {
     return r.bypass_rules;
   }
@@ -131,7 +131,7 @@ template <>
 struct COMPONENT_EXPORT(NETWORK_CPP_PROXY_CONFIG)
     StructTraits<network::mojom::ProxyOverrideRuleDataView,
                  net::ProxyConfig::ProxyOverrideRule> {
-  static net::ProxyBypassRules destination_matchers(
+  static net::ProxyHostMatchingRules destination_matchers(
       const net::ProxyConfig::ProxyOverrideRule& r) {
     return r.destination_matchers;
   }
