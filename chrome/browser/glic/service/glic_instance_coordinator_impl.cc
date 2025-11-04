@@ -424,6 +424,7 @@ void GlicInstanceCoordinatorImpl::RemoveInstance(GlicInstanceImpl* instance) {
   // Remove the instance first, and then delete. This way, GetInstances() will
   // not return the instance being deleted while it's being deleted.
   InstanceId id = instance->id();
+  instance->CloseInstanceAndShutdown();
   auto instance_value = std::exchange(instances_[id], {});
   instances_.erase(id);
   if (instance == last_active_instance_) {
