@@ -187,7 +187,7 @@ TEST_F(AutofillProfileImportMetricsTest,
       ADDRESS_HOME_STATE,  ADDRESS_HOME_ZIP,
       ADDRESS_HOME_COUNTRY};
 
-  autofill_manager().AddSeenForm(form, field_types);
+  autofill_manager().AddSeenForm(test::WithoutValues(form), field_types);
   FillTestProfile(form);
 
   base::HistogramTester histogram_tester;
@@ -253,7 +253,7 @@ TEST_F(AutofillProfileImportMetricsTest,
       ADDRESS_HOME_STATE,  ADDRESS_HOME_ZIP,
       ADDRESS_HOME_COUNTRY};
 
-  autofill_manager().AddSeenForm(form, field_types);
+  autofill_manager().AddSeenForm(test::WithoutValues(form), field_types);
   FillTestProfile(form);
 
   base::HistogramTester histogram_tester;
@@ -382,7 +382,7 @@ TEST_F(AutofillProfileImportMetricsTest,
                                         EMAIL_ADDRESS,
                                         EMAIL_ADDRESS};
 
-  autofill_manager().AddSeenForm(form, field_types);
+  autofill_manager().AddSeenForm(test::WithoutValues(form), field_types);
   FillTestProfile(form);
 
   base::HistogramTester histogram_tester;
@@ -446,7 +446,7 @@ TEST_F(AutofillProfileImportMetricsTest,
       ADDRESS_HOME_STATE,  ADDRESS_HOME_ZIP,
       ADDRESS_HOME_COUNTRY};
 
-  autofill_manager().AddSeenForm(form, field_types);
+  autofill_manager().AddSeenForm(test::WithoutValues(form), field_types);
   FillTestProfile(form);
 
   base::HistogramTester histogram_tester;
@@ -512,7 +512,7 @@ TEST_F(AutofillProfileImportMetricsTest,
       NAME_FULL,          ADDRESS_HOME_LINE1, ADDRESS_HOME_CITY,
       ADDRESS_HOME_STATE, ADDRESS_HOME_ZIP,   ADDRESS_HOME_COUNTRY};
 
-  autofill_manager().AddSeenForm(form, field_types);
+  autofill_manager().AddSeenForm(test::WithoutValues(form), field_types);
   FillTestProfile(form);
 
   base::HistogramTester histogram_tester;
@@ -554,7 +554,7 @@ TEST_F(AutofillProfileImportMetricsTest,
       NAME_FULL,          ADDRESS_HOME_LINE1, ADDRESS_HOME_CITY,
       ADDRESS_HOME_STATE, ADDRESS_HOME_ZIP,   ADDRESS_HOME_COUNTRY};
 
-  autofill_manager().AddSeenForm(form, field_types);
+  autofill_manager().AddSeenForm(test::WithoutValues(form), field_types);
   FillTestProfile(form);
 
   base::HistogramTester histogram_tester;

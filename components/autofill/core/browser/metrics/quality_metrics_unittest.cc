@@ -291,7 +291,8 @@ TEST_F(QualityMetricsTest, LoggedCorrectlyForRationalizationOk) {
                                          PHONE_HOME_WHOLE_NUMBER};
 
   base::UserActionTester user_action_tester;
-  autofill_manager().AddSeenForm(form, heuristic_types, server_types);
+  autofill_manager().AddSeenForm(test::WithoutValues(form), heuristic_types,
+                                 server_types);
   FormStructure* form_structure =
       autofill_manager().FindCachedFormById(form.global_id());
   ASSERT_TRUE(form_structure);
@@ -330,7 +331,7 @@ TEST_F(QualityMetricsTest, LoggedCorrectlyForRationalizationGood) {
                                         PHONE_HOME_CITY_AND_NUMBER};
 
   base::UserActionTester user_action_tester;
-  autofill_manager().AddSeenForm(form, field_types);
+  autofill_manager().AddSeenForm(test::WithoutValues(form), field_types);
   FormStructure* form_structure =
       autofill_manager().FindCachedFormById(form.global_id());
   ASSERT_TRUE(form_structure);
@@ -374,7 +375,8 @@ TEST_F(QualityMetricsTest, LoggedCorrectlyForRationalizationBad) {
                                          PHONE_HOME_WHOLE_NUMBER};
 
   base::UserActionTester user_action_tester;
-  autofill_manager().AddSeenForm(form, heuristic_types, server_types);
+  autofill_manager().AddSeenForm(test::WithoutValues(form), heuristic_types,
+                                 server_types);
   FormStructure* form_structure =
       autofill_manager().FindCachedFormById(form.global_id());
   ASSERT_TRUE(form_structure);
@@ -426,7 +428,8 @@ TEST_F(QualityMetricsTest, LoggedCorrectlyForOnlyFillWhenFocusedField) {
                                          PHONE_HOME_WHOLE_NUMBER};
 
   base::UserActionTester user_action_tester;
-  autofill_manager().AddSeenForm(form, heuristic_types, server_types);
+  autofill_manager().AddSeenForm(test::WithoutValues(form), heuristic_types,
+                                 server_types);
   FormStructure* form_structure =
       autofill_manager().FindCachedFormById(form.global_id());
   ASSERT_TRUE(form_structure);
@@ -651,7 +654,8 @@ TEST_P(PredictionQualityMetricsTest, Classification) {
   std::vector<FieldType> actual_types = {NAME_FIRST, NAME_LAST,
                                          actual_field_type};
 
-  autofill_manager().AddSeenForm(form, heuristic_types, server_types);
+  autofill_manager().AddSeenForm(test::WithoutValues(form), heuristic_types,
+                                 server_types);
 
   // Run the form submission code while tracking the histograms.
   base::HistogramTester histogram_tester;
@@ -807,7 +811,8 @@ TEST_F(QualityMetricsTest, NoSubmission) {
       NAME_FIRST,    EMAIL_ADDRESS,  NAME_FIRST,
       EMAIL_ADDRESS, NO_SERVER_DATA, PHONE_HOME_CITY_AND_NUMBER};
 
-  autofill_manager().AddSeenForm(form, heuristic_types, server_types);
+  autofill_manager().AddSeenForm(test::WithoutValues(form), heuristic_types,
+                                 server_types);
   // Changes the name field to match the full name.
   SimulateUserChangedFieldTo(form, form.fields()[0], u"Elvis Aaron Presley");
 
@@ -990,7 +995,8 @@ TEST_F(QualityMetricsTest, InferredLabelSourceAtSubmissionMetric) {
   country_field.set_label_source(FormFieldData::LabelSource::kLabelTag);
   const FormData form = CreateForm({name_field, street_field, country_field});
   autofill_manager().AddSeenForm(
-      form, {NAME_FIRST, ADDRESS_HOME_LINE1, ADDRESS_HOME_COUNTRY});
+      test::WithoutValues(form),
+      {NAME_FIRST, ADDRESS_HOME_LINE1, ADDRESS_HOME_COUNTRY});
 
   // Expect that the label source of all fields with a possible type is logged
   // on form submission.
@@ -1014,7 +1020,7 @@ TEST_F(QualityMetricsTest, EmailPredictionCorrectnessPrecisionMetric) {
 
   std::vector<FieldType> field_types = {NAME_FULL, ADDRESS_HOME_LINE1,
                                         EMAIL_ADDRESS};
-  autofill_manager().AddSeenForm(form, field_types);
+  autofill_manager().AddSeenForm(test::WithoutValues(form), field_types);
 
   std::string precision_histogram =
       "Autofill.EmailPredictionCorrectness.Precision";
@@ -1064,7 +1070,7 @@ TEST_F(QualityMetricsTest, EmailPredictionCorrectnessRecallMetric) {
 
   std::vector<FieldType> field_types = {NAME_FULL, ADDRESS_HOME_LINE1,
                                         EMAIL_ADDRESS};
-  autofill_manager().AddSeenForm(form, field_types);
+  autofill_manager().AddSeenForm(test::WithoutValues(form), field_types);
 
   std::string precision_histogram =
       "Autofill.EmailPredictionCorrectness.Recall";
@@ -1087,7 +1093,7 @@ TEST_F(QualityMetricsTest, EmailPredictionCorrectnessRecallMetric) {
     test_api(autofill_manager()).ClearFormStructures();
     // Wrong field type predicted (i.e. not email).
     field_types[2] = COMPANY_NAME;
-    autofill_manager().AddSeenForm(form, field_types);
+    autofill_manager().AddSeenForm(test::WithoutValues(form), field_types);
     FillTestProfile(form);
     SubmitForm(form);
 

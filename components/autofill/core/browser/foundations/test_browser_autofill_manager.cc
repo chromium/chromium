@@ -142,25 +142,21 @@ const gfx::Image& TestBrowserAutofillManager::GetCardImage(
 void TestBrowserAutofillManager::AddSeenForm(
     const FormData& form,
     const std::vector<FieldType>& heuristic_types,
-    const std::vector<FieldType>& server_types,
-    bool preserve_values_in_form_structure) {
+    const std::vector<FieldType>& server_types) {
   std::vector<std::vector<std::pair<HeuristicSource, FieldType>>>
       all_heuristic_types;
   for (FieldType type : heuristic_types) {
     all_heuristic_types.push_back({{GetActiveHeuristicSource(), type}});
   }
-  AddSeenForm(form, all_heuristic_types, server_types,
-              preserve_values_in_form_structure);
+  AddSeenForm(form, all_heuristic_types, server_types);
 }
 
 void TestBrowserAutofillManager::AddSeenForm(
     const FormData& form,
     const std::vector<std::vector<std::pair<HeuristicSource, FieldType>>>&
         heuristic_types,
-    const std::vector<FieldType>& server_types,
-    bool preserve_values_in_form_structure) {
-  auto form_structure = std::make_unique<FormStructure>(
-      preserve_values_in_form_structure ? form : test::WithoutValues(form));
+    const std::vector<FieldType>& server_types) {
+  auto form_structure = std::make_unique<FormStructure>(form);
   test_api(*form_structure).SetFieldTypes(heuristic_types, server_types);
   test_api(*form_structure).AssignSections();
   test_api(*this).AddSeenFormStructure(std::move(form_structure));

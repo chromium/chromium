@@ -1161,7 +1161,7 @@ TEST_F(CreditCardFormEventLoggerTest,
 
   auto [form, field_types] =
       CreateMonthYearNumberForm(/*number_value=*/"411111111");
-  autofill_manager().AddSeenForm(form, field_types);
+  autofill_manager().AddSeenForm(test::WithoutValues(form), field_types);
 
   // Simulate submission with suggestion shown, but not selected.
   base::HistogramTester histogram_tester;
@@ -1184,7 +1184,7 @@ TEST_F(CreditCardFormEventLoggerTest,
 
   auto [form, field_types] =
       CreateMonthYearNumberForm(/*number_value=*/"4444444444444444");
-  autofill_manager().AddSeenForm(form, field_types);
+  autofill_manager().AddSeenForm(test::WithoutValues(form), field_types);
 
   // Simulate submission with suggestion shown, but not selected.
   base::HistogramTester histogram_tester;
@@ -1207,7 +1207,7 @@ TEST_F(CreditCardFormEventLoggerTest,
 
   auto [form, field_types] =
       CreateMonthYearNumberForm(/*number_value=*/"5105105105105100");
-  autofill_manager().AddSeenForm(form, field_types);
+  autofill_manager().AddSeenForm(test::WithoutValues(form), field_types);
 
   // Simulate submission with suggestion shown, but not selected.
   base::HistogramTester histogram_tester;
@@ -1230,7 +1230,7 @@ TEST_F(CreditCardFormEventLoggerTest,
 
   auto [form, field_types] =
       CreateMonthYearNumberForm(/*number_value=*/"4111111111111111");
-  autofill_manager().AddSeenForm(form, field_types);
+  autofill_manager().AddSeenForm(test::WithoutValues(form), field_types);
 
   // Simulate submission with suggestion shown, but not selected.
   base::HistogramTester histogram_tester;
