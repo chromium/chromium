@@ -3292,7 +3292,6 @@ crbug.com/438873383 [ Win11-arm64 ] virtual/speculation-rules-prerender-target-h
 crbug.com/438873383 [ Win11-arm64 ] virtual/split-http-cache/external/wpt/signed-exchange/reporting/sxg-reporting-navigation-ok.tentative.html [ Crash ]
 crbug.com/438873383 [ Win11-arm64 ] virtual/split-http-cache/external/wpt/signed-exchange/reporting/sxg-reporting-prefetch-cert_verification_error.tentative.html [ Crash ]
 crbug.com/438789176 [ Win11-arm64 ] external/wpt/FileAPI/BlobURL/cross-partition-navigation.https.html [ Skip Timeout ]
-crbug.com/438780106 [ Linux ] external/wpt/digital-credentials/allow-attribute-with-get.https.html [ Timeout ]
 crbug.com/438309772 [ Mac14 ] external/wpt/bluetooth/bidi/requestDevice/canonicalizeFilter/exclusion-filters-require-filters.https.window.html [ Pass Timeout ]
 crbug.com/438309772 [ Win11-arm64 ] external/wpt/bluetooth/bidi/requestDevice/canonicalizeFilter/exclusion-filters-require-filters.https.window.html [ Pass Timeout ]
 crbug.com/438247058 [ Mac14 ] external/wpt/resource-timing/buffer-full-eventually.html [ Skip Timeout ]
