@@ -197,7 +197,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.AccountMenu.UserActionableError"
-    enum="UserActionableError" expires_after="2025-11-14">
+    enum="UserActionableError" expires_after="2026-05-14">
   <owner>rgod@google.com</owner>
   <owner>ylahodiuk@google.com</owner>
   <summary>
