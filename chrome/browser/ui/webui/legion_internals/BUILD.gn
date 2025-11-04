@@ -1,0 +1,20 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(!is_android)
+
+source_set("legion_internals") {
+  sources = [
+    "legion_internals_ui.cc",
+    "legion_internals_ui.h",
+  ]
+
+  deps = [
+    "//chrome:extra_resources",
+    "//chrome/browser/profiles",
+    "//chrome/common",
+    "//content/public/browser",
+    "//ui/webui",
+  ]
+}

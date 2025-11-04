@@ -71,6 +71,7 @@ source_set("configs") {
       "//chrome/browser/ui/webui/autofill_ml_internals",
       "//chrome/browser/ui/webui/color_pipeline_internals",
       "//chrome/browser/ui/webui/infobar_internals",
+      "//chrome/browser/ui/webui/legion_internals",
       "//chrome/browser/ui/webui/new_tab_footer",
       "//chrome/browser/ui/webui/privacy_sandbox",
       "//chrome/browser/ui/webui/reload_button",

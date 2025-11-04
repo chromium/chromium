@@ -209,6 +209,7 @@ template("chrome_extra_paks") {
         "$root_gen_dir/chrome/inline_login_resources.pak",
         "$root_gen_dir/chrome/inspect_resources.pak",
         "$root_gen_dir/chrome/key_value_pair_viewer_shared_resources.pak",
+        "$root_gen_dir/chrome/legion_internals_resources.pak",
         "$root_gen_dir/chrome/lens_shared_resources.pak",
         "$root_gen_dir/chrome/lens_untrusted_resources.pak",
         "$root_gen_dir/chrome/management_resources.pak",
