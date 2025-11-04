@@ -15,15 +15,6 @@ OmniboxPopupView::OmniboxPopupView(OmniboxController* controller)
 
 OmniboxPopupView::~OmniboxPopupView() = default;
 
-OmniboxEditModel* OmniboxPopupView::model() {
-  return const_cast<OmniboxEditModel*>(
-      const_cast<const OmniboxPopupView*>(this)->model());
-}
-
-const OmniboxEditModel* OmniboxPopupView::model() const {
-  return controller_->edit_model();
-}
-
 OmniboxController* OmniboxPopupView::controller() {
   return const_cast<OmniboxController*>(
       const_cast<const OmniboxPopupView*>(this)->controller());

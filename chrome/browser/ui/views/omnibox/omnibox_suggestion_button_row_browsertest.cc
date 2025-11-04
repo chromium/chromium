@@ -50,7 +50,7 @@ class OmniboxSuggestionButtonRowBrowserTest : public DialogBrowserTest {
 
     // Populate suggestions for the omnibox popup.
     AutocompleteController* autocomplete_controller =
-        omnibox_view->controller()->autocomplete_controller();
+        GetLocationBar()->GetOmniboxController()->autocomplete_controller();
     autocomplete_controller->Start({});
     AutocompleteResult& results = autocomplete_controller->internal_result_;
     ACMatches matches;
@@ -119,8 +119,12 @@ class OmniboxSuggestionButtonRowBrowserTest : public DialogBrowserTest {
     autocomplete_controller->NotifyChanged();
 
     // The omnibox popup should open with suggestions displayed.
-    omnibox_view->model()->OnPopupResultChanged();
-    EXPECT_TRUE(omnibox_view->model()->PopupIsOpen());
+    GetLocationBar()
+        ->GetOmniboxController()
+        ->edit_model()
+        ->OnPopupResultChanged();
+    EXPECT_TRUE(
+        GetLocationBar()->GetOmniboxController()->edit_model()->PopupIsOpen());
   }
 
   bool VerifyUi() override {
@@ -128,7 +132,8 @@ class OmniboxSuggestionButtonRowBrowserTest : public DialogBrowserTest {
         BrowserView::GetBrowserViewForBrowser(browser())
             ->GetLocationBarView()
             ->GetOmniboxPopupView();
-    OmniboxEditModel* model = GetOmniboxViewViews()->model();
+    OmniboxEditModel* model =
+        GetLocationBar()->GetOmniboxController()->edit_model();
 
     model->SetPopupSelection(
         OmniboxPopupSelection(0, OmniboxPopupSelection::KEYWORD_MODE));
@@ -167,9 +172,12 @@ class OmniboxSuggestionButtonRowBrowserTest : public DialogBrowserTest {
     return "RoundedOmniboxResultsFrameWindow";
   }
 
+  LocationBar* GetLocationBar() {
+    return browser()->window()->GetLocationBar();
+  }
+
   OmniboxViewViews* GetOmniboxViewViews() {
-    LocationBar* location_bar = browser()->window()->GetLocationBar();
-    return static_cast<OmniboxViewViews*>(location_bar->GetOmniboxView());
+    return static_cast<OmniboxViewViews*>(GetLocationBar()->GetOmniboxView());
   }
 
   bool VerifyActiveButtonText(OmniboxPopupView* popup_view,

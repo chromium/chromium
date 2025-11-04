@@ -873,8 +873,7 @@ IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoController25UiTest,
                 u"chrome", metrics::OmniboxEventProto::NTP,
                 ChromeAutocompleteSchemeClassifier(browser_view->GetProfile()));
             browser_view->GetLocationBarView()
-                ->GetOmniboxView()
-                ->controller()
+                ->GetOmniboxController()
                 ->autocomplete_controller()
                 ->Start(input);
           }),

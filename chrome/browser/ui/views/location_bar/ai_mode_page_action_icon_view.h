@@ -13,7 +13,6 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 
 class BrowserWindowInterface;
-class OmniboxView;
 class PrefChangeRegistrar;
 
 namespace gfx {
@@ -54,8 +53,6 @@ class AiModePageActionIconView : public PageActionIconView {
   void UpdateImpl() override;
 
  private:
-  OmniboxView* GetOmniboxView();
-
   const raw_ptr<BrowserWindowInterface> browser_;
 
   std::unique_ptr<PrefChangeRegistrar> pref_registrar_;

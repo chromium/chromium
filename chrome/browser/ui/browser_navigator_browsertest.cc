@@ -27,6 +27,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
+#include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/omnibox/omnibox_view.h"
 #include "chrome/browser/ui/page_info/chrome_page_info_delegate.h"
@@ -887,8 +888,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, SaveAfterFocusTabSwitchTest) {
       1, TabStripUserGestureDetails(
              TabStripUserGestureDetails::GestureType::kOther));
 
-  OmniboxView* omnibox_view = location_bar->GetOmniboxView();
-  EXPECT_EQ(omnibox_view->model()->focus_state(),
+  EXPECT_EQ(location_bar->GetOmniboxController()->edit_model()->focus_state(),
             OmniboxFocusState::OMNIBOX_FOCUS_NONE);
 }
 

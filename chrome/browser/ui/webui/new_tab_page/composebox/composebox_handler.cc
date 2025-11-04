@@ -101,7 +101,6 @@ ComposeboxHandler::ComposeboxHandler(
           profile,
           web_contents,
           std::make_unique<OmniboxController>(
-              /*view=*/nullptr,
               std::make_unique<ComposeboxOmniboxClient>(profile,
                                                         web_contents,
                                                         this))),

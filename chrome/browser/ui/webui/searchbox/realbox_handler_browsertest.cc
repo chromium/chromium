@@ -267,8 +267,7 @@ IN_PROC_BROWSER_TEST_F(RealboxHandlerTest, RealboxUpdatesEditModelInput) {
   // Set a mock OmniboxEditModel.
   auto omnibox_edit_model =
       std::make_unique<testing::NiceMock<MockOmniboxEditModel>>(
-          handler_->omnibox_controller(),
-          /*view=*/nullptr);
+          handler_->omnibox_controller());
   raw_ptr<testing::NiceMock<MockOmniboxEditModel>> omnibox_edit_model_ =
       omnibox_edit_model.get();
   handler_->omnibox_controller()->SetEditModelForTesting(

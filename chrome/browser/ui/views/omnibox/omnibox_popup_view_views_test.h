@@ -57,8 +57,10 @@ class OmniboxPopupViewViewsTest : public InProcessBrowserTest {
     return browser_view->toolbar()->location_bar();
   }
   OmniboxViewViews* omnibox_view() { return location_bar()->omnibox_view(); }
-  OmniboxController* controller() { return omnibox_view()->controller(); }
-  OmniboxEditModel* edit_model() { return omnibox_view()->model(); }
+  OmniboxController* controller() {
+    return location_bar()->GetOmniboxController();
+  }
+  OmniboxEditModel* edit_model() { return controller()->edit_model(); }
   OmniboxPopupViewViews* popup_view() {
     return static_cast<OmniboxPopupViewViews*>(
         location_bar()->GetOmniboxPopupView());

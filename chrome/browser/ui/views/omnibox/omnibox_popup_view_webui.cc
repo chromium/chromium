@@ -56,11 +56,11 @@ OmniboxPopupViewWebUI::OmniboxPopupViewWebUI(OmniboxViewViews* omnibox_view,
     presenter_ =
         std::make_unique<OmniboxPopupPresenter>(location_bar_view, controller);
   }
-  model()->set_popup_view(this);
+  controller->edit_model()->set_popup_view(this);
 }
 
 OmniboxPopupViewWebUI::~OmniboxPopupViewWebUI() {
-  model()->set_popup_view(nullptr);
+  controller()->edit_model()->set_popup_view(nullptr);
 }
 
 bool OmniboxPopupViewWebUI::IsOpen() const {

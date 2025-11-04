@@ -220,9 +220,8 @@ OmniboxEditModel::State::~State() = default;
 
 // OmniboxEditModel -----------------------------------------------------------
 
-OmniboxEditModel::OmniboxEditModel(OmniboxController* controller,
-                                   OmniboxView* view)
-    : controller_(controller), view_(view) {}
+OmniboxEditModel::OmniboxEditModel(OmniboxController* controller)
+    : controller_(controller) {}
 
 OmniboxEditModel::~OmniboxEditModel() = default;
 

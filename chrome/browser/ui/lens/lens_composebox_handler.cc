@@ -128,7 +128,6 @@ LensComposeboxHandler::LensComposeboxHandler(
           profile,
           web_contents,
           std::make_unique<OmniboxController>(
-              /*view=*/nullptr,
               std::make_unique<LensComposeboxOmniboxClient>(
                   profile,
                   web_contents,

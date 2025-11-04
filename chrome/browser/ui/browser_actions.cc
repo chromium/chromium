@@ -1075,12 +1075,12 @@ void BrowserActions::InitializeBrowserActions() {
                       active_tab->GetContents();
                   CHECK(web_contents);
 
-                  OmniboxView* omnibox_view =
-                      search::GetOmniboxView(web_contents);
-                  CHECK(omnibox_view);
+                  OmniboxController* omnibox_controller =
+                      search::GetOmniboxController(web_contents);
+                  CHECK(omnibox_controller);
 
-                  omnibox::AiModePageActionController::OpenAiMode(*omnibox_view,
-                                                                  via_keyboard);
+                  omnibox::AiModePageActionController::OpenAiMode(
+                      *omnibox_controller, via_keyboard);
                 },
                 bwi))
             .SetActionId(kActionAiMode)

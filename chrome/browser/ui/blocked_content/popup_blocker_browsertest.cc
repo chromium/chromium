@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
+#include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/omnibox/omnibox_view.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -433,8 +434,9 @@ IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest,
       "data:text/html,<title>Popup Success!</title>you should not see this "
       "message if popup blocker is enabled";
   ui_test_utils::SendToOmniboxAndSubmit(browser(), kSearchString);
-  auto* view = browser()->window()->GetLocationBar()->GetOmniboxView();
-  AutocompleteMatch match = view->model()->CurrentMatch();
+  auto* location_bar = browser()->window()->GetLocationBar();
+  AutocompleteMatch match =
+      location_bar->GetOmniboxController()->edit_model()->CurrentMatch();
   EXPECT_EQ(GURL(kSearchString), match.destination_url);
   EXPECT_EQ(base::ASCIIToUTF16(kSearchString), match.contents);
 }

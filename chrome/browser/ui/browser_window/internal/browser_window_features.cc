@@ -920,12 +920,20 @@ ToastController* BrowserWindowFeatures::toast_controller() {
 }
 
 LocationBar* BrowserWindowFeatures::location_bar() {
-  CHECK(browser_);
+  // Return nullptr if not initialized. This can happen in tests where
+  // BrowserWindowFeatures is stubbed without being initialized with a browser.
+  if (!browser_) {
+    return nullptr;
+  }
   return browser_->GetBrowserForMigrationOnly()->window()->GetLocationBar();
 }
 
 const LocationBar* BrowserWindowFeatures::location_bar() const {
-  CHECK(browser_);
+  // Return nullptr if not initialized. This can happen in tests where
+  // BrowserWindowFeatures is stubbed without being initialized with a browser.
+  if (!browser_) {
+    return nullptr;
+  }
   return browser_->GetBrowserForMigrationOnly()->window()->GetLocationBar();
 }
 

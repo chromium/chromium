@@ -288,6 +288,7 @@ class TestBrowserWindow : public BrowserWindow, public BrowserListObserver {
     void SaveStateToContents(content::WebContents* contents) override {}
     void Revert() override {}
     OmniboxView* GetOmniboxView() override;
+    OmniboxController* GetOmniboxController() override;
     LocationBarTesting* GetLocationBarForTesting() override;
     LocationBarModel* GetLocationBarModel() override;
     content::WebContents* GetWebContents() override;

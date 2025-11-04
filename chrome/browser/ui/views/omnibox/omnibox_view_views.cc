@@ -247,11 +247,11 @@ enum class OpenMatchWithKeyboardModifiers {
 
 // OmniboxViewViews -----------------------------------------------------------
 
-OmniboxViewViews::OmniboxViewViews(std::unique_ptr<OmniboxClient> client,
-                                   bool popup_window_mode,
+OmniboxViewViews::OmniboxViewViews(bool popup_window_mode,
+                                   OmniboxController* controller,
                                    LocationBarView* location_bar_view,
                                    const gfx::FontList& font_list)
-    : OmniboxView(std::move(client)),
+    : OmniboxView(controller),
       popup_window_mode_(popup_window_mode),
       saved_selection_for_focus_change_(gfx::Range::InvalidRange()),
       location_bar_view_(location_bar_view),
@@ -351,7 +351,8 @@ void OmniboxViewViews::SaveStateToTab(content::WebContents* tab) {
 
   // NOTE: GetStateForTabSwitch() may affect GetSelectedRange(), so order is
   // important.
-  const OmniboxEditModel::State state = model()->GetStateForTabSwitch();
+  const OmniboxEditModel::State state =
+      controller()->edit_model()->GetStateForTabSwitch();
   tab->SetUserData(OmniboxState::kKey, std::make_unique<OmniboxState>(
                                            state, GetSelectedRange(),
                                            saved_selection_for_focus_change_));
@@ -361,7 +362,8 @@ void OmniboxViewViews::SaveStateToTab(content::WebContents* tab) {
 void OmniboxViewViews::OnTabChanged(const content::WebContents* web_contents) {
   const OmniboxState* state = static_cast<OmniboxState*>(
       web_contents->GetUserData(&OmniboxState::kKey));
-  model()->RestoreState(state ? &state->model_state : nullptr);
+  controller()->edit_model()->RestoreState(state ? &state->model_state
+                                                 : nullptr);
   if (state) {
     // This assumes that the omnibox has already been focused or blurred as
     // appropriate; otherwise, a subsequent OnFocus() or OnBlur() call could
@@ -390,10 +392,10 @@ void OmniboxViewViews::ResetTabState(content::WebContents* web_contents) {
 }
 
 void OmniboxViewViews::InstallPlaceholderText() {
-  if (!model()->keyword_placeholder().empty()) {
+  if (!controller()->edit_model()->keyword_placeholder().empty()) {
     // If `keyword_placeholder()` is set, then the user is in a keyword mode
     // that has placeholder text, so display that.
-    SetPlaceholderText(model()->keyword_placeholder());
+    SetPlaceholderText(controller()->edit_model()->keyword_placeholder());
   } else if (ShouldInstallAimPlaceholderText()) {
     // If the Omnibox is visibly focused w/ AI Mode enabled, display the AI Mode
     // placeholder text to suggest tabbing into AI Mode. Note, even if the AI
@@ -434,7 +436,7 @@ bool OmniboxViewViews::GetSelectionAtEnd() const {
 void OmniboxViewViews::EmphasizeURLComponents() {
   // If the current contents is a URL, turn on special URL rendering mode in
   // RenderText.
-  const bool text_is_url = model()->CurrentTextIsURL();
+  const bool text_is_url = controller()->edit_model()->CurrentTextIsURL();
   GetRenderText()->SetDirectionalityMode(
       text_is_url ? gfx::DIRECTIONALITY_AS_URL : gfx::DIRECTIONALITY_FROM_TEXT);
   SetStyle(gfx::TEXT_STYLE_STRIKE, false);
@@ -445,12 +447,12 @@ void OmniboxViewViews::EmphasizeURLComponents() {
 }
 
 void OmniboxViewViews::Update() {
-  if (model()->ResetDisplayTexts()) {
+  if (controller()->edit_model()->ResetDisplayTexts()) {
     RevertAll();
 
     // Only select all when we have focus.  If we don't have focus, selecting
     // all is unnecessary since the selection will change on regaining focus.
-    if (model()->has_focus()) {
+    if (controller()->edit_model()->has_focus()) {
       SelectAll(true);
     }
   } else {
@@ -486,7 +488,7 @@ void OmniboxViewViews::SetAdditionalText(
 
 void OmniboxViewViews::EnterKeywordModeForDefaultSearchProvider() {
   // Transition the user into keyword mode using their default search provider.
-  model()->EnterKeywordModeForDefaultSearchProvider(
+  controller()->edit_model()->EnterKeywordModeForDefaultSearchProvider(
       OmniboxEventProto::KEYBOARD_SHORTCUT);
 }
 
@@ -528,13 +530,13 @@ void OmniboxViewViews::SetFocus(bool is_user_initiated) {
   const bool omnibox_already_focused = HasFocus();
 
   if (is_user_initiated) {
-    model()->Unelide();
+    controller()->edit_model()->Unelide();
   }
 
   RequestFocus();
 
   if (omnibox_already_focused) {
-    model()->ClearKeyword();
+    controller()->edit_model()->ClearKeyword();
   }
 
   // If the user initiated the focus, then we always select-all, even if the
@@ -556,7 +558,7 @@ void OmniboxViewViews::SetFocus(bool is_user_initiated) {
 
   // |is_user_initiated| is true for focus events from keyboard accelerators.
   if (is_user_initiated) {
-    model()->StartZeroSuggestRequest();
+    controller()->edit_model()->StartZeroSuggestRequest();
   }
 
   // Restore caret visibility if focus is explicitly requested. This is
@@ -564,12 +566,12 @@ void OmniboxViewViews::SetFocus(bool is_user_initiated) {
   // call above will short-circuit, preventing us from reaching
   // OmniboxEditModel::OnSetFocus(), which handles restoring visibility when the
   // omnibox regains focus after losing focus.
-  model()->SetCaretVisibility(true);
+  controller()->edit_model()->SetCaretVisibility(true);
   // If the user attempts to focus the omnibox, and the ctrl key is pressed, we
   // want to prevent ctrl-enter behavior until the ctrl key is released and
   // re-pressed. This occurs even if the omnibox is already focused and we
   // re-request focus (e.g. pressing ctrl-l twice).
-  model()->ConsumeCtrlKey();
+  controller()->edit_model()->ConsumeCtrlKey();
 }
 
 IconLabelBubbleView* OmniboxViewViews::GetAiModePageActionIconView() const {
@@ -687,7 +689,8 @@ void OmniboxViewViews::ExecuteCommand(int command_id, int event_flags) {
   switch (command_id) {
     // These commands don't invoke the popup via OnBefore/AfterPossibleChange().
     case IDC_PASTE_AND_GO:
-      model()->PasteAndGo(GetClipboardText(/*notify_if_restricted=*/true));
+      controller()->edit_model()->PasteAndGo(
+          GetClipboardText(/*notify_if_restricted=*/true));
       return;
     case IDC_EDIT_SEARCH_ENGINES:
     case IDC_SHOW_FULL_URLS:
@@ -759,7 +762,7 @@ void OmniboxViewViews::RemovedFromWidget() {
 
 void OmniboxViewViews::UpdateSchemeStyle(const gfx::Range& range) {
   DCHECK(range.IsValid());
-  DCHECK(!model()->user_input_in_progress());
+  DCHECK(!controller()->edit_model()->user_input_in_progress());
 
   // Do not style the scheme for non-http/https URLs. For such schemes, styling
   // could be confusing or misleading. For example, the scheme isn't meaningful
@@ -862,14 +865,14 @@ void OmniboxViewViews::OnOmniboxPaste() {
       // When the fakebox is focused, ignore pasted whitespace because if the
       // fakebox is hidden and there's only whitespace in the omnibox, it's
       // difficult for the user to see that the focus moved to the omnibox.
-      (model()->focus_state() == OMNIBOX_FOCUS_INVISIBLE &&
+      (controller()->edit_model()->focus_state() == OMNIBOX_FOCUS_INVISIBLE &&
        std::ranges::all_of(text, base::IsUnicodeWhitespace<char16_t>))) {
     return;
   }
 
   OnBeforePossibleChange();
   // Record this paste, so we can do different behavior.
-  model()->OnPaste();
+  controller()->edit_model()->OnPaste();
   // Force a Paste operation to trigger the text_changed code in
   // OnAfterPossibleChange(), even if identical contents are pasted.
   state_before_change_.text.clear();
@@ -885,8 +888,8 @@ bool OmniboxViewViews::HandleEarlyTabActions(const ui::KeyEvent& event) {
     return false;
   }
 
-  if (model()->PopupIsOpen()) {
-    model()->OnTabPressed(event.IsShiftDown());
+  if (controller()->edit_model()->PopupIsOpen()) {
+    controller()->edit_model()->OnTabPressed(event.IsShiftDown());
     return true;
   } else {
     // When the popup is open, focus on the AI Mode page action icon is handled
@@ -917,7 +920,7 @@ bool OmniboxViewViews::HandleEarlyTabActions(const ui::KeyEvent& event) {
           // remove focus indicators from the omnibox (the omnibox's focus ring
           // is shown when the caret is visible) and add the focus ring to the
           // icon to establish the "fake" focus.
-          model()->SetCaretVisibility(false);
+          controller()->edit_model()->SetCaretVisibility(false);
           ApplyFocusRingToAimButton(true);
         }
       } else {
@@ -925,7 +928,7 @@ bool OmniboxViewViews::HandleEarlyTabActions(const ui::KeyEvent& event) {
           // In the <shift>-<tab> case, remove the focus ring from the page
           // action icon and restore focus indicators to the omnibox.
           ApplyFocusRingToAimButton(false);
-          model()->SetCaretVisibility(true);
+          controller()->edit_model()->SetCaretVisibility(true);
         } else {
           // Normal case of using <shift>-<tab> to do reverse focus traversal
           // out of the omnibox.
@@ -972,12 +975,13 @@ bool OmniboxViewViews::IsSelectAll() const {
 void OmniboxViewViews::UpdatePopup() {
   // Prevent inline autocomplete when the caret isn't at the end of the text.
   const gfx::Range sel = GetSelectedRange();
-  model()->UpdateInput(!sel.is_empty(), !GetSelectionAtEnd());
+  controller()->edit_model()->UpdateInput(!sel.is_empty(),
+                                          !GetSelectionAtEnd());
 }
 
 void OmniboxViewViews::ApplyCaretVisibility() {
-  if (model()->focus_state() != OMNIBOX_FOCUS_NONE) {
-    SetCursorEnabled(model()->is_caret_visible());
+  if (controller()->edit_model()->focus_state() != OMNIBOX_FOCUS_NONE) {
+    SetCursorEnabled(controller()->edit_model()->is_caret_visible());
 
     // TODO(tommycli): Because the LocationBarView has a somewhat different look
     // depending on whether or not the caret is visible, we have to resend a
@@ -1059,11 +1063,11 @@ void OmniboxViewViews::ClearAccessibilityLabel() {
 void OmniboxViewViews::SetAccessibilityLabel(const std::u16string& display_text,
                                              const AutocompleteMatch& match,
                                              bool notify_text_changed) {
-  if (model()->GetPopupSelection().state ==
+  if (controller()->edit_model()->GetPopupSelection().state ==
       OmniboxPopupSelection::LineState::FOCUSED_BUTTON_AIM) {
     friendly_suggestion_text_ =
-        model()->GetPopupAccessibilityLabelForAimButton();
-  } else if (model()->GetPopupSelection().line ==
+        controller()->edit_model()->GetPopupAccessibilityLabelForAimButton();
+  } else if (controller()->edit_model()->GetPopupSelection().line ==
              OmniboxPopupSelection::kNoMatch) {
     // If nothing is selected in the popup, we are in the no-default-match edge
     // case, and |match| is a synthetically generated match. In that case,
@@ -1075,14 +1079,18 @@ void OmniboxViewViews::SetAccessibilityLabel(const std::u16string& display_text,
         std::u16string(), &friendly_suggestion_text_prefix_length_);
   } else {
     friendly_suggestion_text_ =
-        model()->GetPopupAccessibilityLabelForCurrentSelection(
-            display_text, true, &friendly_suggestion_text_prefix_length_);
+        controller()
+            ->edit_model()
+            ->GetPopupAccessibilityLabelForCurrentSelection(
+                display_text, true, &friendly_suggestion_text_prefix_length_);
 
     // If the line immediately after the current selection is the
     // informational IPH row, append its accessibility label at the end of
     // this selection's accessibility label.
     friendly_suggestion_text_ +=
-        model()->MaybeGetPopupAccessibilityLabelForIPHSuggestion();
+        controller()
+            ->edit_model()
+            ->MaybeGetPopupAccessibilityLabelForIPHSuggestion();
   }
 
   UpdateAccessibleValue();
@@ -1114,7 +1122,7 @@ bool OmniboxViewViews::UnapplySteadyStateElisions(UnelisionGesture gesture) {
   // Try to unelide. Early exit if there's no unelisions to perform.
   const std::u16string original_text = GetText();
   const std::u16string original_selected_text(GetSelectedText());
-  if (!model()->Unelide()) {
+  if (!controller()->edit_model()->Unelide()) {
     return false;
   }
 
@@ -1136,7 +1144,8 @@ bool OmniboxViewViews::UnapplySteadyStateElisions(UnelisionGesture gesture) {
 
   if (offset != std::u16string::npos) {
     AutocompleteMatch match;
-    model()->ClassifyString(original_selected_text, &match, nullptr);
+    controller()->edit_model()->ClassifyString(original_selected_text, &match,
+                                               nullptr);
     const bool selection_classifes_as_search =
         AutocompleteMatch::IsSearchType(match.type);
     if (!selection.is_empty() && gesture == UnelisionGesture::kMouseRelease &&
@@ -1188,7 +1197,7 @@ bool OmniboxViewViews::OnAfterPossibleChange(bool allow_keyword_ui_change) {
       state_changes.text_differs ||
       (ime_composing_before_change_ != IsIMEComposing());
 
-  bool something_changed = model()->OnAfterPossibleChange(
+  bool something_changed = controller()->edit_model()->OnAfterPossibleChange(
       state_changes, allow_keyword_ui_change && !IsIMEComposing());
 
   // Unapply steady state elisions in response to selection changes due to
@@ -1200,8 +1209,8 @@ bool OmniboxViewViews::OnAfterPossibleChange(bool allow_keyword_ui_change) {
     state_changes.text_differs = true;
   }
 
-  // If only selection was changed, we don't need to call model()'s
-  // OnChanged() method, which is called in TextChanged().
+  // If only selection was changed, we don't need to call
+  // OmniboxEditModel::OnChanged(), which is called in TextChanged().
   // But we still need to call EmphasizeURLComponents() to make sure the text
   // attributes are updated correctly.
   if (something_changed &&
@@ -1338,7 +1347,7 @@ std::u16string OmniboxViewViews::GetLabelForCommandId(int command_id) const {
       clipboard_text, kMaxSelectionTextLength, gfx::WORD_BREAK);
 
   AutocompleteMatch match;
-  model()->ClassifyString(clipboard_text, &match, nullptr);
+  controller()->edit_model()->ClassifyString(clipboard_text, &match, nullptr);
   if (AutocompleteMatch::IsSearchType(match.type)) {
     return l10n_util::GetStringFUTF16(IDS_PASTE_AND_SEARCH, selection_text);
   }
@@ -1359,24 +1368,26 @@ bool OmniboxViewViews::OnMousePressed(const ui::MouseEvent& event) {
   PermitExternalProtocolHandler();
 
   // Clear focus of buttons, but do not clear keyword mode.
-  if (model()->PopupIsOpen()) {
-    OmniboxPopupSelection selection = model()->GetPopupSelection();
+  if (controller()->edit_model()->PopupIsOpen()) {
+    OmniboxPopupSelection selection =
+        controller()->edit_model()->GetPopupSelection();
     if (selection.state != OmniboxPopupSelection::KEYWORD_MODE) {
       selection.state = OmniboxPopupSelection::NORMAL;
-      model()->SetPopupSelection(selection);
+      controller()->edit_model()->SetPopupSelection(selection);
     }
   }
 
   is_mouse_pressed_ = true;
   select_all_on_mouse_release_ =
       (event.IsOnlyLeftMouseButton() || event.IsOnlyRightMouseButton()) &&
-      (!HasFocus() || (model()->focus_state() == OMNIBOX_FOCUS_INVISIBLE));
+      (!HasFocus() ||
+       (controller()->edit_model()->focus_state() == OMNIBOX_FOCUS_INVISIBLE));
   if (select_all_on_mouse_release_) {
     // Restore caret visibility whenever the user clicks in the omnibox in a way
     // that would give it focus.  We must handle this case separately here
     // because if the omnibox currently has invisible focus, the mouse event
     // won't trigger either SetFocus() or OmniboxEditModel::OnSetFocus().
-    model()->SetCaretVisibility(true);
+    controller()->edit_model()->SetCaretVisibility(true);
 
     // When we're going to select all on mouse release, invalidate any saved
     // selection lest restoring it fights with the "select all" action.  It's
@@ -1392,7 +1403,7 @@ bool OmniboxViewViews::OnMousePressed(const ui::MouseEvent& event) {
   //  - Or if the textfield is empty, to cover the NTP ZeroSuggest case.
   if (!base::FeatureList::IsEnabled(omnibox::kShowPopupOnMouseReleased)) {
     if (event.IsOnlyLeftMouseButton() && (!HasFocus() || GetText().empty())) {
-      model()->StartZeroSuggestRequest();
+      controller()->edit_model()->StartZeroSuggestRequest();
     }
   }
 
@@ -1492,7 +1503,7 @@ void OmniboxViewViews::OnMouseReleased(const ui::MouseEvent& event) {
   if (base::FeatureList::IsEnabled(omnibox::kShowPopupOnMouseReleased) &&
       event.IsOnlyLeftMouseButton() &&
       (select_all_on_mouse_release_ || GetText().empty())) {
-    model()->StartZeroSuggestRequest();
+    controller()->edit_model()->StartZeroSuggestRequest();
   }
   select_all_on_mouse_release_ = false;
 
@@ -1524,7 +1535,7 @@ void OmniboxViewViews::OnGestureEvent(ui::GestureEvent* event) {
   //  - The textfield is taking focus.
   //  - The textfield is focused but empty, to cover the NTP ZeroSuggest case.
   if (gesture_should_take_focus || (HasFocus() && GetText().empty())) {
-    model()->StartZeroSuggestRequest();
+    controller()->edit_model()->StartZeroSuggestRequest();
   }
 
   views::Textfield::OnGestureEvent(event);
@@ -1560,8 +1571,9 @@ bool OmniboxViewViews::SkipDefaultKeyEventProcessing(
     // 3. The AIM page action icon is present and the keyboard accessibility
     //    setting is disabled. See comments in `HandleEarlyTabActions` for more
     //    details on this case.
-    if ((model()->is_keyword_hint() && !event.IsShiftDown()) ||
-        model()->PopupIsOpen() ||
+    if ((controller()->edit_model()->is_keyword_hint() &&
+         !event.IsShiftDown()) ||
+        controller()->edit_model()->PopupIsOpen() ||
         (GetAiModePageActionIconView() &&
          !GetFocusManager()->keyboard_accessible())) {
       return true;
@@ -1583,7 +1595,7 @@ bool OmniboxViewViews::HandleAccessibleAction(
     SetUserText(base::UTF8ToUTF16(action_data.value), true);
     return true;
   } else if (action_data.action == ax::mojom::Action::kReplaceSelectedText) {
-    model()->SetInputInProgress(true);
+    controller()->edit_model()->SetInputInProgress(true);
     if (saved_selection_for_focus_change_.IsValid()) {
       SetSelectedRange(saved_selection_for_focus_change_);
       saved_selection_for_focus_change_ = gfx::Range::InvalidRange();
@@ -1612,7 +1624,7 @@ void OmniboxViewViews::OnFocus() {
   views::Textfield::OnFocus();
 
   // TODO(oshima): Get control key state.
-  model()->OnSetFocus(false);
+  controller()->edit_model()->OnSetFocus(false);
   // Don't call WebLocationBar::OnSetFocus(), this view has already acquired
   // focus.
 
@@ -1657,11 +1669,11 @@ void OmniboxViewViews::OnBlur() {
   //
   // This should never exit keyword mode.
   if (GetWidget() && GetWidget()->IsActive() &&
-      !model()->is_keyword_selected() &&
-      ((!model()->user_input_in_progress() &&
-        GetText() != model()->GetPermanentDisplayText()) ||
-       (model()->user_input_in_progress() &&
-        GetText() == model()->GetPermanentDisplayText()))) {
+      !controller()->edit_model()->is_keyword_selected() &&
+      ((!controller()->edit_model()->user_input_in_progress() &&
+        GetText() != controller()->edit_model()->GetPermanentDisplayText()) ||
+       (controller()->edit_model()->user_input_in_progress() &&
+        GetText() == controller()->edit_model()->GetPermanentDisplayText()))) {
     RevertAll();
   }
 
@@ -1669,7 +1681,7 @@ void OmniboxViewViews::OnBlur() {
   // In this case, we should NOT close the popup when the omnibox view
   // is blurred, because the focus is simply moving to the popup itself.
   if (!base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxFullPopup)) {
-    model()->OnWillKillFocus();
+    controller()->edit_model()->OnWillKillFocus();
 
     // If ZeroSuggest is active, and there is evidence that there is a text
     // update to show, revert to ensure that update is shown now.  Otherwise,
@@ -1677,15 +1689,16 @@ void OmniboxViewViews::OnBlur() {
     // midst of running but hasn't yet opened the popup, it will be halted.
     // If we fully reverted in this case, we'd lose the cursor/highlight
     // information saved above.
-    if (!model()->user_input_in_progress() && model()->PopupIsOpen() &&
-        GetText() != model()->GetPermanentDisplayText()) {
+    if (!controller()->edit_model()->user_input_in_progress() &&
+        controller()->edit_model()->PopupIsOpen() &&
+        GetText() != controller()->edit_model()->GetPermanentDisplayText()) {
       RevertAll();
     } else if (!IsAiModeInPopup()) {
       CloseOmniboxPopup();
     }
 
     // Tell the model to reset itself.
-    model()->OnKillFocus();
+    controller()->edit_model()->OnKillFocus();
   }
   // Deselect the text. Ensures the cursor is an I-beam.
   SetSelectedRange(gfx::Range(GetCursorPosition()));
@@ -1759,14 +1772,14 @@ bool OmniboxViewViews::IsCommandIdEnabled(int command_id) const {
     if (ui::PasteMightBlockWithPrivacyAlert()) {
       if (CanGetClipboardText()) {
         constexpr char16_t kSomeValidText[] = u"validtext";
-        return model()->CanPasteAndGo(kSomeValidText);
+        return controller()->edit_model()->CanPasteAndGo(kSomeValidText);
       } else {
         return false;
       }
     }
 #endif
 
-    return model()->CanPasteAndGo(
+    return controller()->edit_model()->CanPasteAndGo(
         GetClipboardText(/*notify_if_restricted=*/false));
   }
 
@@ -1791,7 +1804,7 @@ void OmniboxViewViews::DoInsertChar(char16_t ch) {
   // When the fakebox is focused, ignore whitespace input because if the
   // fakebox is hidden and there's only whitespace in the omnibox, it's
   // difficult for the user to see that the focus moved to the omnibox.
-  if ((model()->focus_state() == OMNIBOX_FOCUS_INVISIBLE) &&
+  if ((controller()->edit_model()->focus_state() == OMNIBOX_FOCUS_INVISIBLE) &&
       base::IsUnicodeWhitespace(ch)) {
     return;
   }
@@ -1833,10 +1846,10 @@ void OmniboxViewViews::ExecuteTextEditCommand(ui::TextEditCommand command) {
 
   switch (command) {
     case ui::TextEditCommand::MOVE_UP:
-      model()->OnUpOrDownPressed(false, false);
+      controller()->edit_model()->OnUpOrDownPressed(false, false);
       break;
     case ui::TextEditCommand::MOVE_DOWN:
-      model()->OnUpOrDownPressed(true, false);
+      controller()->edit_model()->OnUpOrDownPressed(true, false);
       break;
     case ui::TextEditCommand::PASTE:
       OnOmniboxPaste();
@@ -1853,8 +1866,8 @@ bool OmniboxViewViews::ShouldShowPlaceholderText() const {
   // if the omnibox is focused, because users won't enter keyword mode, blur the
   // omnibox, read the placeholder text, refocus the omnibox, and begin typing.
   return Textfield::ShouldShowPlaceholderText() &&
-         (!model()->is_caret_visible() ||
-          !model()->keyword_placeholder().empty() ||
+         (!controller()->edit_model()->is_caret_visible() ||
+          !controller()->edit_model()->keyword_placeholder().empty() ||
           ShouldShowAimPlaceholderText());
 }
 
@@ -1902,7 +1915,7 @@ bool OmniboxViewViews::HandleKeyEvent(views::Textfield* textfield,
   if (event.type() == ui::EventType::kKeyReleased) {
     // The omnibox contents may change while the control key is pressed.
     if (event.key_code() == ui::VKEY_CONTROL) {
-      model()->OnControlKeyChanged(false);
+      controller()->edit_model()->OnControlKeyChanged(false);
     }
 
     return false;
@@ -1954,11 +1967,12 @@ bool OmniboxViewViews::HandleKeyEvent(views::Textfield* textfield,
       }
       base::UmaHistogramEnumeration(kOpenMatchWithKeyboardModifiersMetricName,
                                     metric_value);
-      if (model()->PopupIsOpen() && !control) {
+      if (controller()->edit_model()->PopupIsOpen() && !control) {
         // Normal case of pressing <return> when the popup is open.
-        model()->OpenSelection(model()->GetPopupSelection(), event.time_stamp(),
-                               disposition,
-                               /*via_keyboard=*/true);
+        controller()->edit_model()->OpenSelection(
+            controller()->edit_model()->GetPopupSelection(), event.time_stamp(),
+            disposition,
+            /*via_keyboard=*/true);
       } else {
         // There are two cases handled here.
         // 1. The popup is closed and the AIM page action icon has "fake" focus
@@ -1975,22 +1989,23 @@ bool OmniboxViewViews::HandleKeyEvent(views::Textfield* textfield,
             aim_page_action_icon_has_fake_focus_
                 ? OmniboxPopupSelection::LineState::FOCUSED_BUTTON_AIM
                 : OmniboxPopupSelection::LineState::NORMAL;
-        model()->OpenSelection(
+        controller()->edit_model()->OpenSelection(
             OmniboxPopupSelection(OmniboxPopupSelection::kNoMatch, line_state),
             event.time_stamp(), disposition, /*via_keyboard=*/true);
       }
       return true;
     }
     case ui::VKEY_ESCAPE:
-      return model()->OnEscapeKeyPressed();
+      return controller()->edit_model()->OnEscapeKeyPressed();
 
     case ui::VKEY_CONTROL:
-      model()->OnControlKeyChanged(true);
+      controller()->edit_model()->OnControlKeyChanged(true);
       break;
 
     case ui::VKEY_DELETE:
-      if (shift && model()->PopupIsOpen()) {
-        model()->TryDeletingPopupLine(model()->GetPopupSelection().line);
+      if (shift && controller()->edit_model()->PopupIsOpen()) {
+        controller()->edit_model()->TryDeletingPopupLine(
+            controller()->edit_model()->GetPopupSelection().line);
       }
       break;
 
@@ -2022,14 +2037,14 @@ bool OmniboxViewViews::HandleKeyEvent(views::Textfield* textfield,
       if (control || alt || shift || GetReadOnly()) {
         return false;
       }
-      model()->OnUpOrDownPressed(false, true);
+      controller()->edit_model()->OnUpOrDownPressed(false, true);
       return true;
 
     case ui::VKEY_NEXT:
       if (control || alt || shift || GetReadOnly()) {
         return false;
       }
-      model()->OnUpOrDownPressed(true, true);
+      controller()->edit_model()->OnUpOrDownPressed(true, true);
       return true;
 
     case ui::VKEY_V:
@@ -2051,11 +2066,12 @@ bool OmniboxViewViews::HandleKeyEvent(views::Textfield* textfield,
     case ui::VKEY_BACK:
       // No extra handling is needed in keyword search mode, if there is a
       // non-empty selection, or if the cursor is not leading the text.
-      if (model()->is_keyword_hint() || model()->keyword().empty() ||
-          HasSelection() || GetCursorPosition() != 0) {
+      if (controller()->edit_model()->is_keyword_hint() ||
+          controller()->edit_model()->keyword().empty() || HasSelection() ||
+          GetCursorPosition() != 0) {
         return false;
       }
-      model()->ClearKeyword();
+      controller()->edit_model()->ClearKeyword();
       return true;
 
     case ui::VKEY_HOME:
@@ -2078,12 +2094,12 @@ bool OmniboxViewViews::HandleKeyEvent(views::Textfield* textfield,
       break;
 
     case ui::VKEY_SPACE: {
-      if (!model()->PopupIsOpen()) {
+      if (!controller()->edit_model()->PopupIsOpen()) {
         // If the popup is not open and the page action icon has "fake" focus
         // (see comments in `HandleEarlyTabActions`), have `OmniboxEditModel`
         // open a `kNoMatch`/`FOCUSED_BUTTON_AIM` selection.
         if (aim_page_action_icon_has_fake_focus_) {
-          model()->OpenSelection(
+          controller()->edit_model()->OpenSelection(
               OmniboxPopupSelection(
                   OmniboxPopupSelection::kNoMatch,
                   OmniboxPopupSelection::LineState::FOCUSED_BUTTON_AIM),
@@ -2092,14 +2108,15 @@ bool OmniboxViewViews::HandleKeyEvent(views::Textfield* textfield,
           return true;
         }
       } else if (!control && !alt && !shift) {
-        if (model()->OnSpacePressed()) {
+        if (controller()->edit_model()->OnSpacePressed()) {
           return true;
         }
-        OmniboxPopupSelection selection = model()->GetPopupSelection();
+        OmniboxPopupSelection selection =
+            controller()->edit_model()->GetPopupSelection();
         if (selection.IsButtonFocused()) {
-          model()->OpenSelection(selection, event.time_stamp(),
-                                 WindowOpenDisposition::CURRENT_TAB,
-                                 /*via_keyboard=*/true);
+          controller()->edit_model()->OpenSelection(
+              selection, event.time_stamp(), WindowOpenDisposition::CURRENT_TAB,
+              /*via_keyboard=*/true);
           return true;
         }
       }
@@ -2138,17 +2155,18 @@ void OmniboxViewViews::OnAfterCutOrCopy(ui::ClipboardBuffer clipboard_buffer) {
   cb->ReadText(clipboard_buffer, &data_dst, &selected_text);
   GURL url;
   bool write_url = false;
-  model()->AdjustTextForCopy(GetSelectedRange().GetMin(), &selected_text, &url,
-                             &write_url);
+  controller()->edit_model()->AdjustTextForCopy(
+      GetSelectedRange().GetMin(), &selected_text, &url, &write_url);
   if (IsSelectAll()) {
     UMA_HISTOGRAM_COUNTS_1M(OmniboxEditModel::kCutOrCopyAllTextHistogram, 1);
 
-    const auto last_omnibox_focus = model()->last_omnibox_focus();
+    const auto last_omnibox_focus =
+        controller()->edit_model()->last_omnibox_focus();
     if (!last_omnibox_focus.is_null()) {
       LogOmniboxFocusToCutOrCopyAllTextTime(
           now - last_omnibox_focus,
           controller()->autocomplete_controller()->input().IsZeroSuggest(),
-          model()->GetPageClassification());
+          controller()->edit_model()->GetPageClassification());
     }
 
     if (clipboard_buffer != ui::ClipboardBuffer::kSelection &&
@@ -2178,14 +2196,14 @@ void OmniboxViewViews::OnWriteDragData(ui::OSExchangeData* data) {
   GURL url;
   bool write_url;
   std::u16string selected_text(GetSelectedText());
-  model()->AdjustTextForCopy(GetSelectedRange().GetMin(), &selected_text, &url,
-                             &write_url);
+  controller()->edit_model()->AdjustTextForCopy(
+      GetSelectedRange().GetMin(), &selected_text, &url, &write_url);
   data->SetString(selected_text);
   if (write_url && url.is_valid()) {
     gfx::Image favicon;
     std::u16string title = selected_text;
     if (IsSelectAll()) {
-      model()->GetDataForURLExport(&url, &title, &favicon);
+      controller()->edit_model()->GetDataForURLExport(&url, &title, &favicon);
     }
     button_drag_utils::SetURLAndDragImage(url, title, favicon.AsImageSkia(),
                                           nullptr, data);
@@ -2197,8 +2215,8 @@ void OmniboxViewViews::OnGetDragOperationsForTextfield(int* drag_operations) {
   std::u16string selected_text(GetSelectedText());
   GURL url;
   bool write_url;
-  model()->AdjustTextForCopy(GetSelectedRange().GetMin(), &selected_text, &url,
-                             &write_url);
+  controller()->edit_model()->AdjustTextForCopy(
+      GetSelectedRange().GetMin(), &selected_text, &url, &write_url);
   if (write_url) {
     *drag_operations |= ui::DragDropTypes::DRAG_LINK;
   }
@@ -2413,8 +2431,9 @@ void OmniboxViewViews::UpdatePlaceholderTextColor() {
   if (!GetColorProvider()) {
     return;
   }
-  bool dse_placeholder_installed = model()->keyword_placeholder().empty() &&
-                                   !ShouldInstallAimPlaceholderText();
+  bool dse_placeholder_installed =
+      controller()->edit_model()->keyword_placeholder().empty() &&
+      !ShouldInstallAimPlaceholderText();
   set_placeholder_text_color(GetColorProvider()->GetColor(
       dse_placeholder_installed ? kColorOmniboxText : kColorOmniboxTextDimmed));
 }
@@ -2461,7 +2480,8 @@ bool OmniboxViewViews::ShouldInstallAimPlaceholderText() const {
   const bool is_aim_entrypoint_enabled =
       OmniboxFieldTrial::IsAimOmniboxEntrypointEnabled(aim_eligibility_service);
 
-  return is_aim_entrypoint_enabled && model()->is_caret_visible();
+  return is_aim_entrypoint_enabled &&
+         controller()->edit_model()->is_caret_visible();
 }
 
 void OmniboxViewViews::RecordAimHintImpression() {
@@ -2508,13 +2528,15 @@ bool OmniboxViewViews::ShouldShowAimPlaceholderText() const {
   // focused and the popup selection state is normal (i.e. no popup buttons are
   // focused and we are not in keyword mode). The hint text will be shown on NTP
   // open by default, unless this option is explicitly disabled.
-  bool ntp_open = !model()->PopupIsOpen() && !model()->user_input_in_progress();
+  bool ntp_open = !controller()->edit_model()->PopupIsOpen() &&
+                  !controller()->edit_model()->user_input_in_progress();
   bool hide_text_on_ntp_open =
       omnibox_feature_configs::AiModeOmniboxEntryPoint::Get()
           .hide_aim_hint_text_on_ntp_open &&
       ntp_open;
-  return model()->is_caret_visible() && !model()->is_keyword_selected() &&
-         !model()->GetPopupSelection().IsButtonFocused() &&
+  return controller()->edit_model()->is_caret_visible() &&
+         !controller()->edit_model()->is_keyword_selected() &&
+         !controller()->edit_model()->GetPopupSelection().IsButtonFocused() &&
          !hide_text_on_ntp_open;
 }
 

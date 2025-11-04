@@ -144,7 +144,7 @@ class ContextualSearchboxHandlerTest
         mojo::PendingReceiver<searchbox::mojom::PageHandler>(), profile(),
         web_contents(),
         std::make_unique<OmniboxController>(
-            /*view=*/nullptr, std::make_unique<TestOmniboxClient>()));
+            std::make_unique<TestOmniboxClient>()));
 
     handler_->SetPage(mock_searchbox_page_.BindAndGetRemote());
   }

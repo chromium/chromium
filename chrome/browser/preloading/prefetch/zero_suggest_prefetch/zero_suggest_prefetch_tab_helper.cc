@@ -6,9 +6,7 @@
 
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
-#include "chrome/browser/ui/omnibox/omnibox_view.h"
 #include "chrome/browser/ui/search/omnibox_utils.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
@@ -64,12 +62,7 @@ void ZeroSuggestPrefetchTabHelper::OnTabStripModelChanged(
 }
 
 void ZeroSuggestPrefetchTabHelper::StartPrefetch() {
-  auto* omnibox_view = search::GetOmniboxView(web_contents());
-  if (!omnibox_view) {
-    return;
-  }
-
-  auto* omnibox_controller = omnibox_view->controller();
+  auto* omnibox_controller = search::GetOmniboxController(web_contents());
   if (!omnibox_controller) {
     return;
   }

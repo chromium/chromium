@@ -685,12 +685,8 @@ IN_PROC_BROWSER_TEST_F(BrowserFocusTest, NavigateFromOmniboxIntoNewTab) {
   // Focus the omnibox.
   chrome::FocusLocationBar(browser());
 
-  OmniboxClient* omnibox_client = browser()
-                                      ->window()
-                                      ->GetLocationBar()
-                                      ->GetOmniboxView()
-                                      ->controller()
-                                      ->client();
+  OmniboxClient* omnibox_client =
+      browser()->window()->GetLocationBar()->GetOmniboxController()->client();
 
   // Simulate an alt-enter.
   omnibox_client->OnAutocompleteAccept(

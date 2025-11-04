@@ -447,8 +447,7 @@ void WaitForAutocompleteDone(BrowserWindowInterface* browser) {
   auto* controller = browser->GetBrowserForMigrationOnly()
                          ->window()
                          ->GetLocationBar()
-                         ->GetOmniboxView()
-                         ->controller()
+                         ->GetOmniboxController()
                          ->autocomplete_controller();
   while (!controller->done())
     AutocompleteChangeObserver(browser->GetProfile()).Wait();
@@ -636,13 +635,14 @@ void WaitForBrowserSetLastActive(BrowserWindowInterface* browser,
 void SendToOmniboxAndSubmit(BrowserWindowInterface* browser,
                             std::string_view input,
                             base::TimeTicks match_selection_timestamp) {
-  OmniboxView* omnibox = browser->GetBrowserForMigrationOnly()
-                             ->window()
-                             ->GetLocationBar()
-                             ->GetOmniboxView();
-  omnibox->model()->OnSetFocus(/*control_down=*/false);
+  LocationBar* location_bar =
+      browser->GetBrowserForMigrationOnly()->window()->GetLocationBar();
+  OmniboxView* omnibox = location_bar->GetOmniboxView();
+  location_bar->GetOmniboxController()->edit_model()->OnSetFocus(
+      /*control_down=*/false);
   omnibox->SetUserText(base::ASCIIToUTF16(input));
-  omnibox->model()->OpenSelectionForTesting(match_selection_timestamp);
+  location_bar->GetOmniboxController()->edit_model()->OpenSelectionForTesting(
+      match_selection_timestamp);
 
   WaitForAutocompleteDone(browser);
 }

@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
+#include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/omnibox/omnibox_tab_helper.h"
 #include "chrome/browser/ui/omnibox/omnibox_view.h"
@@ -384,7 +385,8 @@ IN_PROC_BROWSER_TEST_F(ToastControllerInteractiveTest,
   OmniboxView* const omnibox_view = location_bar->GetOmniboxView();
   ASSERT_TRUE(omnibox_view);
   browser()->window()->SetFocusToLocationBar(true);
-  ASSERT_FALSE(omnibox_view->model()->PopupIsOpen());
+  ASSERT_FALSE(
+      location_bar->GetOmniboxController()->edit_model()->PopupIsOpen());
 
   // Even though the omnibox is focused, the toast should still show because
   // the omnibox doesn't have a popup and the user isn't interacting with the
@@ -429,12 +431,14 @@ IN_PROC_BROWSER_TEST_F(ToastControllerInteractiveTest,
   ASSERT_TRUE(location_bar);
   OmniboxView* const omnibox_view = location_bar->GetOmniboxView();
   ASSERT_TRUE(omnibox_view);
-  ASSERT_FALSE(omnibox_view->model()->PopupIsOpen());
+  ASSERT_FALSE(
+      location_bar->GetOmniboxController()->edit_model()->PopupIsOpen());
   omnibox_view->OnBeforePossibleChange();
   omnibox_view->SetUserText(u"hello world");
   omnibox_view->OnAfterPossibleChange(true);
 
-  ASSERT_TRUE(omnibox_view->model()->PopupIsOpen());
+  ASSERT_TRUE(
+      location_bar->GetOmniboxController()->edit_model()->PopupIsOpen());
 
   // The toast widget should no longer be visible because there is a popup.
   EXPECT_TRUE(toast_controller->IsShowingToast());
@@ -442,7 +446,8 @@ IN_PROC_BROWSER_TEST_F(ToastControllerInteractiveTest,
 
   // Toast widget is visible again after the omnibox is no longer focused.
   RemoveOmniboxFocus();
-  ASSERT_FALSE(omnibox_view->model()->PopupIsOpen());
+  ASSERT_FALSE(
+      location_bar->GetOmniboxController()->edit_model()->PopupIsOpen());
   EXPECT_TRUE(toast_controller->IsShowingToast());
   EXPECT_TRUE(toast_controller->GetToastWidgetForTesting()->IsVisible());
 }

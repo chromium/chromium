@@ -216,8 +216,7 @@ class OmniboxSearchAggregatorTest : public InProcessBrowserTest {
     return browser()
         ->window()
         ->GetLocationBar()
-        ->GetOmniboxView()
-        ->controller()
+        ->GetOmniboxController()
         ->autocomplete_controller();
   }
 

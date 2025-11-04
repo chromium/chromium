@@ -253,13 +253,15 @@ class TypedNavigationUpgradeThrottleBrowserTest
  protected:
   bool IsFeatureEnabled() const { return GetParam(); }
 
-  OmniboxView* omnibox() {
-    return browser()->window()->GetLocationBar()->GetOmniboxView();
+  LocationBar* GetLocationBar() {
+    return browser()->window()->GetLocationBar();
   }
+
+  OmniboxView* omnibox() { return GetLocationBar()->GetOmniboxView(); }
 
   void FocusOmnibox() {
     // If the omnibox already has focus, just notify OmniboxTabHelper.
-    if (omnibox()->model()->has_focus()) {
+    if (GetLocationBar()->GetOmniboxController()->edit_model()->has_focus()) {
       content::WebContents* active_tab =
           browser()->tab_strip_model()->GetActiveWebContents();
       OmniboxTabHelper::FromWebContents(active_tab)
@@ -273,7 +275,8 @@ class TypedNavigationUpgradeThrottleBrowserTest
   void SetOmniboxText(const std::string& text) {
     FocusOmnibox();
     // Enter user input mode to prevent spurious unelision.
-    omnibox()->model()->SetInputInProgress(true);
+    GetLocationBar()->GetOmniboxController()->edit_model()->SetInputInProgress(
+        true);
     omnibox()->OnBeforePossibleChange();
     omnibox()->SetUserText(base::UTF8ToUTF16(text), true);
     omnibox()->OnAfterPossibleChange(true);
@@ -379,7 +382,7 @@ class TypedNavigationUpgradeThrottleBrowserTest
 
   void WaitForAutocompleteControllerDone() {
     AutocompleteController* controller =
-        omnibox()->controller()->autocomplete_controller();
+        GetLocationBar()->GetOmniboxController()->autocomplete_controller();
     ASSERT_TRUE(controller);
 
     if (controller->done())
@@ -392,11 +395,13 @@ class TypedNavigationUpgradeThrottleBrowserTest
   // Regression check for crbug.com/1184872: The first autocomplete result
   // should be the same as the typed text, without a scheme.
   void CheckPopupText(const std::string& text) {
-    ASSERT_TRUE(omnibox()->model()->PopupIsOpen());
+    ASSERT_TRUE(
+        GetLocationBar()->GetOmniboxController()->edit_model()->PopupIsOpen());
     WaitForAutocompleteControllerDone();
-    ASSERT_TRUE(omnibox()->model()->PopupIsOpen());
-    EXPECT_EQ(base::UTF8ToUTF16(text), omnibox()
-                                           ->controller()
+    ASSERT_TRUE(
+        GetLocationBar()->GetOmniboxController()->edit_model()->PopupIsOpen());
+    EXPECT_EQ(base::UTF8ToUTF16(text), GetLocationBar()
+                                           ->GetOmniboxController()
                                            ->autocomplete_controller()
                                            ->result()
                                            .match_at(0)
@@ -780,7 +785,8 @@ IN_PROC_BROWSER_TEST_P(TypedNavigationUpgradeThrottleBrowserTest,
       contents,
       /*number_of_navigations=*/1);
 
-  OmniboxEditModel* model = omnibox()->model();
+  OmniboxEditModel* model =
+      GetLocationBar()->GetOmniboxController()->edit_model();
   model->PasteAndGo(base::UTF8ToUTF16(kSiteWithGoodHttps));
   navigation_observer.Wait();
 

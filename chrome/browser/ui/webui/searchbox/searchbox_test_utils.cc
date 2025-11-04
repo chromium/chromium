@@ -33,9 +33,8 @@ MockAutocompleteController::MockAutocompleteController(
 MockAutocompleteController::~MockAutocompleteController() = default;
 
 MockOmniboxEditModel::MockOmniboxEditModel(
-    OmniboxController* omnibox_controller,
-    OmniboxView* view)
-    : OmniboxEditModel(omnibox_controller, view) {}
+    OmniboxController* omnibox_controller)
+    : OmniboxEditModel(omnibox_controller) {}
 MockOmniboxEditModel::~MockOmniboxEditModel() = default;
 
 MockLensSearchboxClient::MockLensSearchboxClient() = default;

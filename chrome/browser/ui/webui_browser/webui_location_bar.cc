@@ -48,6 +48,11 @@ OmniboxView* WebUILocationBar::GetOmniboxView() {
   return nullptr;
 }
 
+OmniboxController* WebUILocationBar::GetOmniboxController() {
+  NOTIMPLEMENTED();
+  return nullptr;
+}
+
 content::WebContents* WebUILocationBar::GetWebContents() {
   NOTIMPLEMENTED();
   return nullptr;

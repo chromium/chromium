@@ -88,11 +88,12 @@ class OmniboxEditModel {
     ~Observer() override = default;
   };
 
-  OmniboxEditModel(OmniboxController* controller, OmniboxView* view);
+  explicit OmniboxEditModel(OmniboxController* controller);
   OmniboxEditModel(const OmniboxEditModel&) = delete;
   OmniboxEditModel& operator=(const OmniboxEditModel&) = delete;
   virtual ~OmniboxEditModel();
 
+  void set_view(OmniboxView* view) { view_ = view; }
   void set_popup_view(OmniboxPopupView* popup_view);
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
@@ -702,8 +703,9 @@ class OmniboxEditModel {
   // Owns this.
   const raw_ptr<OmniboxController> controller_;
 
-  // Owns `OmniboxController` which owns this.
-  const raw_ptr<OmniboxView> view_;
+  // Owned by LocationBarView that owns the OmniboxController. It is cleared and
+  // destroyed before OmniboxController is.
+  raw_ptr<OmniboxView> view_;
 
   OmniboxFocusState focus_state_ = OMNIBOX_FOCUS_NONE;
 

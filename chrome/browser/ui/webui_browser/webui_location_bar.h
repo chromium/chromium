@@ -23,6 +23,7 @@ class WebUILocationBar : public LocationBar {
   void SaveStateToContents(content::WebContents* contents) override;
   void Revert() override;
   OmniboxView* GetOmniboxView() override;
+  OmniboxController* GetOmniboxController() override;
   content::WebContents* GetWebContents() override;
   LocationBarModel* GetLocationBarModel() override;
   std::optional<bubble_anchor_util::AnchorConfiguration> GetChipAnchor()

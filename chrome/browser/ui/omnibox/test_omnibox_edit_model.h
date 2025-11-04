@@ -14,7 +14,6 @@
 class TestOmniboxEditModel : public OmniboxEditModel {
  public:
   TestOmniboxEditModel(OmniboxController* omnibox_controller,
-                       OmniboxView* view,
                        PrefService* pref_service);
   ~TestOmniboxEditModel() override;
   TestOmniboxEditModel(const TestOmniboxEditModel&) = delete;

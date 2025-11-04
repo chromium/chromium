@@ -51,7 +51,6 @@ ContextualTasksComposeboxHandler::ContextualTasksComposeboxHandler(
           profile,
           web_contents,
           std::make_unique<OmniboxController>(
-              /*view=*/nullptr,
               std::make_unique<ContextualTasksOmniboxClient>(profile,
                                                              web_contents))),
       page_{std::move(pending_page)},

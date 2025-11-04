@@ -50,13 +50,12 @@ bool HasVectorIconBackground(const AutocompleteMatch& match) {
 
 }  // namespace
 
-OmniboxView::~OmniboxView() = default;
-
 bool OmniboxView::IsEditingOrEmpty() const {
-  return model()->user_input_in_progress() || GetOmniboxTextLength() == 0 ||
+  return controller()->edit_model()->user_input_in_progress() ||
+         GetOmniboxTextLength() == 0 ||
          (OmniboxFieldTrial::IsOnFocusZeroSuggestEnabledInContext(
-              model()->GetPageClassification()) &&
-          model()->PopupIsOpen());
+              controller()->edit_model()->GetPageClassification()) &&
+          controller()->edit_model()->PopupIsOpen());
 }
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -73,30 +72,32 @@ ui::ImageModel OmniboxView::GetIcon(int dip_size,
                                     SkColor color_vectors_with_background,
                                     IconFetchedCallback on_icon_fetched,
                                     bool dark_mode) const {
-  if (model()->ShouldShowAddContextButton()) {
-    return model()->GetAddContextIcon(dip_size);
+  if (controller()->edit_model()->ShouldShowAddContextButton()) {
+    return controller()->edit_model()->GetAddContextIcon(dip_size);
   }
 
-  if (model()->ShouldShowCurrentPageIcon()) {
+  if (controller()->edit_model()->ShouldShowCurrentPageIcon()) {
     return ui::ImageModel::FromVectorIcon(
-        controller_->client()->GetVectorIcon(), color_current_page_icon,
+        controller()->client()->GetVectorIcon(), color_current_page_icon,
         dip_size);
   }
 
   gfx::Image favicon;
-  AutocompleteMatch match = model()->CurrentMatch();
+  AutocompleteMatch match = controller()->edit_model()->CurrentMatch();
   if (!match.icon_url.is_empty()) {
-    const SkBitmap* bitmap = model()->GetIconBitmap(match.icon_url);
+    const SkBitmap* bitmap =
+        controller()->edit_model()->GetIconBitmap(match.icon_url);
     if (bitmap) {
       return ui::ImageModel::FromImage(
-          controller_->client()->GetSizedIcon(bitmap));
+          controller()->client()->GetSizedIcon(bitmap));
     }
   }
   if (AutocompleteMatch::IsSearchType(match.type) ||
       match.enterprise_search_aggregator_type ==
           AutocompleteMatch::EnterpriseSearchAggregatorType::PEOPLE) {
     const TemplateURL* turl =
-        !match.keyword.empty() ? controller_->client()
+        !match.keyword.empty() ? controller()
+                                     ->client()
                                      ->GetTemplateURLService()
                                      ->GetTemplateURLForKeyword(match.keyword)
                                : nullptr;
@@ -104,35 +105,39 @@ ui::ImageModel OmniboxView::GetIcon(int dip_size,
     // search engine is google, return the icon instead of favicon for
     // search queries with the chrome refresh feature.
     if ((turl &&
-         search::TemplateURLIsGoogle(turl, controller_->client()
+         search::TemplateURLIsGoogle(turl, controller()
+                                               ->client()
                                                ->GetTemplateURLService()
                                                ->search_terms_data())) ||
         (!turl && search::DefaultSearchProviderIsGoogle(
-                      controller_->client()->GetTemplateURLService()))) {
+                      controller()->client()->GetTemplateURLService()))) {
       // For non-chrome builds this would return an empty image model. In
       // those cases revert to using the favicon.
-      ui::ImageModel icon = model()->GetSuperGIcon(dip_size, dark_mode);
+      ui::ImageModel icon =
+          controller()->edit_model()->GetSuperGIcon(dip_size, dark_mode);
       if (!icon.IsEmpty()) {
         return icon;
       }
     } else if (turl && turl->CreatedByEnterpriseSearchAggregatorPolicy()) {
       // If the search engine is enterprise search aggregator, return the icon
       // from the bitmap instead of favicon.
-      const SkBitmap* bitmap = model()->GetIconBitmap(turl->favicon_url());
+      const SkBitmap* bitmap =
+          controller()->edit_model()->GetIconBitmap(turl->favicon_url());
       if (bitmap) {
         return ui::ImageModel::FromImage(
-            controller_->client()->GetSizedIcon(bitmap));
+            controller()->client()->GetSizedIcon(bitmap));
       }
       // For non-chrome builds this would return an empty image model. In
       // those cases revert to using the favicon.
-      gfx::Image icon = model()->GetAgentspaceIcon(dark_mode);
+      gfx::Image icon =
+          controller()->edit_model()->GetAgentspaceIcon(dark_mode);
       if (!icon.IsEmpty()) {
         return ui::ImageModel::FromImage(icon);
       }
     }
-    favicon = turl ? controller_->client()->GetFaviconForKeywordSearchProvider(
+    favicon = turl ? controller()->client()->GetFaviconForKeywordSearchProvider(
                          turl, std::move(on_icon_fetched))
-                   : controller_->client()->GetFaviconForDefaultSearchProvider(
+                   : controller()->client()->GetFaviconForDefaultSearchProvider(
                          std::move(on_icon_fetched));
 
   } else if (match.type != AutocompleteMatchType::HISTORY_CLUSTER) {
@@ -143,22 +148,22 @@ ui::ImageModel OmniboxView::GetIcon(int dip_size,
     // styling support.
     if (!AutocompleteMatch::IsStarterPackType(match.type)) {
       // For site suggestions, display site's favicon.
-      favicon = controller_->client()->GetFaviconForPageUrl(
+      favicon = controller()->client()->GetFaviconForPageUrl(
           match.destination_url, std::move(on_icon_fetched));
     }
   }
 
   if (!favicon.IsEmpty()) {
     return ui::ImageModel::FromImage(
-        controller_->client()->GetSizedIcon(favicon));
+        controller()->client()->GetSizedIcon(favicon));
   }
   // If the client returns an empty favicon, fall through to provide the
   // generic vector icon. |on_icon_fetched| may or may not be called later.
   // If it's never called, the vector icon we provide below should remain.
 
   // For bookmarked suggestions, display bookmark icon.
-  bookmarks::BookmarkModel* bookmark_model =
-      controller_->client()->GetBookmarkModel();
+  const bookmarks::BookmarkModel* bookmark_model =
+      controller()->client()->GetBookmarkModel();
   const bool is_bookmarked =
       bookmark_model && bookmark_model->IsBookmarked(match.destination_url);
 
@@ -167,13 +172,15 @@ ui::ImageModel OmniboxView::GetIcon(int dip_size,
   const TemplateURL* turl =
       match.associated_keyword.empty()
           ? nullptr
-          : controller_->client()
+          : controller()
+                ->client()
                 ->GetTemplateURLService()
                 ->GetTemplateURLForKeyword(match.associated_keyword);
   OmniboxAction* action = nullptr;
   if (match.IsToolbelt() && omnibox_feature_configs::Toolbelt::Get()
                                 .use_action_icons_in_location_bar) {
-    OmniboxPopupSelection selection = model()->GetPopupSelection();
+    OmniboxPopupSelection selection =
+        controller()->edit_model()->GetPopupSelection();
     if (selection.state == OmniboxPopupSelection::FOCUSED_BUTTON_ACTION &&
         selection.action_index < match.actions.size()) {
       action = match.actions[selection.action_index].get();
@@ -198,13 +205,13 @@ void OmniboxView::SetUserText(const std::u16string& text) {
 }
 
 void OmniboxView::SetUserText(const std::u16string& text, bool update_popup) {
-  model()->SetUserText(text);
+  controller()->edit_model()->SetUserText(text);
   SetWindowTextAndCaretPos(text, text.size(), update_popup, true);
 }
 
 void OmniboxView::RevertAll() {
   // This will clear the model's `user_input_in_progress_`.
-  model()->Revert();
+  controller()->edit_model()->Revert();
 
   // This will stop the `AutocompleteController`. This should happen after
   // `user_input_in_progress_` is cleared above; otherwise, closing the popup
@@ -242,8 +249,8 @@ bool OmniboxView::IsAiModeInPopup() const {
 OmniboxView::State OmniboxView::GetState() const {
   State state;
   state.text = GetText();
-  state.keyword = model()->keyword();
-  state.is_keyword_selected = model()->is_keyword_selected();
+  state.keyword = controller()->edit_model()->keyword();
+  state.is_keyword_selected = controller()->edit_model()->is_keyword_selected();
   state.selection = GetSelectionBounds();
   return state;
 }
@@ -276,18 +283,14 @@ OmniboxView::StateChanges OmniboxView::GetStateChanges(const State& before,
   return state_changes;
 }
 
-OmniboxView::OmniboxView(std::unique_ptr<OmniboxClient> client)
-    : controller_(std::make_unique<OmniboxController>(
-          /*view=*/this,
-          std::move(client))) {}
-
-OmniboxEditModel* OmniboxView::model() {
-  return const_cast<OmniboxEditModel*>(
-      const_cast<const OmniboxView*>(this)->model());
+OmniboxView::OmniboxView(OmniboxController* controller)
+    : controller_(controller) {
+  controller_->SetView(this);
 }
 
-const OmniboxEditModel* OmniboxView::model() const {
-  return controller_->edit_model();
+OmniboxView::~OmniboxView() {
+  // Clear the references to this to avoid dangling pointers.
+  controller_->SetView(nullptr);
 }
 
 OmniboxController* OmniboxView::controller() {
@@ -296,12 +299,12 @@ OmniboxController* OmniboxView::controller() {
 }
 
 const OmniboxController* OmniboxView::controller() const {
-  return controller_.get();
+  return controller_;
 }
 
 void OmniboxView::TextChanged() {
   EmphasizeURLComponents();
-  model()->OnChanged();
+  controller()->edit_model()->OnChanged();
 }
 
 void OmniboxView::UpdateTextStyle(
@@ -370,7 +373,8 @@ void OmniboxView::UpdateTextStyle(
   }
 
   // Emphasize the scheme for security UI display purposes (if necessary).
-  if (!model()->user_input_in_progress() && scheme_range.IsValid()) {
+  if (!controller()->edit_model()->user_input_in_progress() &&
+      scheme_range.IsValid()) {
     UpdateSchemeStyle(scheme_range);
   }
 }
