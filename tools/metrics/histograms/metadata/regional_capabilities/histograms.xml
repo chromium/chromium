@@ -133,7 +133,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="RegionalCapabilities.LoadedCountrySource"
-    enum="LoadedCapabilitiesCountrySource" expires_after="2026-03-01">
+    enum="LoadedCapabilitiesCountrySource" expires_after="2026-05-03">
   <owner>dgn@chromium.org</owner>
   <owner>chrome-regionalcapabilities@google.com</owner>
   <summary>
@@ -145,7 +145,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="RegionalCapabilities.PersistedCountryMatching"
-    enum="CountryMatchingStatus" expires_after="2026-03-01">
+    enum="CountryMatchingStatus" expires_after="2026-05-03">
   <owner>dgn@chromium.org</owner>
   <owner>chrome-regionalcapabilities@google.com</owner>
   <summary>

@@ -101,7 +101,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="WebCore.Editing.SpellCheckUserActionLimitation.{Source}.{Action}"
-    enum="Boolean" expires_after="2026-01-23">
+    enum="Boolean" expires_after="2026-05-03">
   <owner>arichiv@chromium.org</owner>
   <owner>katabolism-finch@google.com</owner>
   <summary>
