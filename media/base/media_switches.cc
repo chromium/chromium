@@ -976,11 +976,9 @@ BASE_FEATURE(kAutoPictureInPicturePageInfoDetails,
 // Enables sending provisioning requests in the body of the POST request rather
 // than encoding it inside the URL.
 // Owner: vpasupathy@chromium.org
-// Expiry: When experimentation via Finch is finished and this behavior rolls
-// out.
 // Bug: 448700051
 BASE_FEATURE(kUsePostBodyForUrlProvisionFetcher,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Treats H.264 SEI recovery points with a `recovery_frame_cnt=0` as keyframes.
 BASE_FEATURE(kTreatSEIRecoveryPointAsKeyframe,

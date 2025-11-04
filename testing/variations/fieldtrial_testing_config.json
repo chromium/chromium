@@ -26192,22 +26192,6 @@
             ]
         }
     ],
-    "UsePostBodyForUrlProvisionFetcher": [
-        {
-            "platforms": [
-                "android",
-                "fuchsia"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "UsePostBodyForUrlProvisionFetcher"
-                    ]
-                }
-            ]
-        }
-    ],
     "UseSCContentSharingPicker": [
         {
             "platforms": [
