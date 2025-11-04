@@ -11968,6 +11968,28 @@
             ]
         }
     ],
+    "HandleNonDamagingInputsInScrollJankV4Metric": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Experiment_NewBehaviorCountAllFrames",
+                    "params": {
+                        "count_non_damaging_frames_towards_histogram_frame_count": "true"
+                    },
+                    "enable_features": [
+                        "HandleNonDamagingInputsInScrollJankV4Metric"
+                    ]
+                }
+            ]
+        }
+    ],
     "HangoutsExtensionV3": [
         {
             "platforms": [
