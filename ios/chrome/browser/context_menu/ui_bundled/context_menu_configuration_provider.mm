@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/context_menu/ui_bundled/context_menu_configuration_provider_delegate.h"
 #import "ios/chrome/browser/context_menu/ui_bundled/context_menu_utils.h"
 #import "ios/chrome/browser/context_menu/ui_bundled/image_preview_view_controller.h"
+#import "ios/chrome/browser/enterprise/data_controls/model/data_controls_tab_helper.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_commands.h"
@@ -463,10 +464,7 @@ NSString* const kAlertAccessibilityIdentifier = @"AlertAccessibilityIdentifier";
   [linkMenuElements addObject:copyLink];
 
   // Share Link.
-  // TODO(crbug.com/351817704): Disable the share menu with lens overlay as the
-  // share sheet is not presented in `baseViewController`.
-  if (!_isLensOverlay &&
-      base::FeatureList::IsEnabled(kShareInWebContextMenuIOS)) {
+  if ([self isSharingAllowed]) {
     UIAction* shareLink = [actionFactory actionToShareWithBlock:^{
       [weakSelf shareURLFromContextMenu:linkURL
                                URLTitle:params.text ? params.text : @""
@@ -533,10 +531,7 @@ NSString* const kAlertAccessibilityIdentifier = @"AlertAccessibilityIdentifier";
   // Shares the URL of the image and not the image itself.
   // This avoids doing in process image processing by working as the share sheet
   // fetches the image to share it.
-  // TODO(crbug.com/351817704): Disable the share menu with lens overlay as the
-  // share sheet is not presented in `baseViewController`.
-  if (!_isLensOverlay &&
-      base::FeatureList::IsEnabled(kShareInWebContextMenuIOS) && !isLink) {
+  if (!isLink && [self isSharingAllowed]) {
     UIAction* shareImage = [actionFactory actionToShareWithBlock:^{
       [weakSelf shareURLFromContextMenu:imageURL
                                URLTitle:GetContextMenuTitle(params)
@@ -1001,6 +996,21 @@ NSString* const kAlertAccessibilityIdentifier = @"AlertAccessibilityIdentifier";
                                         StoreURLInPasteboard(linkURL);
                                       }
                                     }));
+}
+
+// Returns true if sharing from the context menu is allowed.
+- (BOOL)isSharingAllowed {
+  // TODO(crbug.com/351817704): Disable the share menu with lens overlay as the
+  // share sheet is not presented in `baseViewController`.
+  if (_isLensOverlay ||
+      !base::FeatureList::IsEnabled(kShareInWebContextMenuIOS)) {
+    return NO;
+  }
+
+  auto* data_controls_tab_helper =
+      data_controls::DataControlsTabHelper::GetOrCreateForWebState(
+          self.webState);
+  return data_controls_tab_helper->ShouldAllowShare();
 }
 
 @end

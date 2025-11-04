@@ -17,6 +17,7 @@ source_set("coordinator") {
     "//components/strings",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/context_menu/ui_bundled/link_preview",
+    "//ios/chrome/browser/enterprise/data_controls/model",
     "//ios/chrome/browser/favicon/model",
     "//ios/chrome/browser/incognito_reauth/ui_bundled:incognito_reauth_commands",
     "//ios/chrome/browser/incognito_reauth/ui_bundled:incognito_reauth_scene_agent",

@@ -257,6 +257,13 @@ id<GREYMatcher> OpenLinkInOneTabGroupButton() {
       l10n_util::GetPluralNSStringF(IDS_IOS_TAB_GROUP_TABS_NUMBER, 1));
 }
 
+// Matcher for the share button in the context menu.
+id<GREYMatcher> ShareButton() {
+  return grey_allOf(
+      grey_ancestor(grey_kindOfClassName(@"_UIContextMenuCell")),
+      ContextMenuItemWithAccessibilityLabelId(IDS_IOS_SHARE_BUTTON_LABEL), nil);
+}
+
 // Provides responses for initial page and destination URLs.
 std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
     const net::test_server::HttpRequest& request) {
@@ -348,7 +355,9 @@ void RelaunchApp() {
       [self isRunningTest:@selector(testCopyImageWarnByPolicyCancel)] ||
       [self isRunningTest:@selector(testCopyLinkBlockedByPolicy)] ||
       [self isRunningTest:@selector(testCopyLinkWarnByPolicyProceed)] ||
-      [self isRunningTest:@selector(testCopyLinkWarnByPolicyCancel)]) {
+      [self isRunningTest:@selector(testCopyLinkWarnByPolicyCancel)] ||
+      [self isRunningTest:@selector(testShareLinkHiddenByPolicy)] ||
+      [self isRunningTest:@selector(testShareImageHiddenByPolicy)]) {
     config.features_enabled.push_back(
         data_controls::kEnableClipboardDataControlsIOS);
   }
@@ -863,13 +872,7 @@ void RelaunchApp() {
                                           IDS_IOS_COPY_LINK_ACTION_TITLE)]
       assertWithMatcher:grey_sufficientlyVisible()];
 
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(
-                                   grey_ancestor(grey_kindOfClassName(
-                                       @"_UIContextMenuCell")),
-                                   ContextMenuItemWithAccessibilityLabelId(
-                                       IDS_IOS_SHARE_BUTTON_LABEL),
-                                   nil)]
+  [[EarlGrey selectElementWithMatcher:ShareButton()]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
@@ -1102,6 +1105,42 @@ void RelaunchApp() {
   if (error) {
     GREYFail([error description]);
   }
+}
+
+// Tests that the "Share" button is not shown when the DataControlsRule policy
+// is set to do so.
+- (void)testShareLinkHiddenByPolicy {
+  [DataControlsAppInterface setBlockCopyRule];
+
+  const GURL initialURL = self.testServer->GetURL(kInitialPageUrl);
+  [ChromeEarlGrey loadURL:initialURL];
+  [ChromeEarlGrey
+      waitForWebStateContainingText:kInitialPageDestinationLinkText];
+
+  [ChromeEarlGreyUI
+      longPressElementOnWebView:InitialPageDestinationLinkIdSelector()];
+
+  // Check that the "Share" button is not visible.
+  [[EarlGrey selectElementWithMatcher:ShareButton()]
+      assertWithMatcher:grey_nil()];
+  [DataControlsAppInterface clearDataControlRules];
+}
+
+// Tests that the "Share" button is not shown for an image when the
+// DataControlsRule policy is set to do so.
+- (void)testShareImageHiddenByPolicy {
+  [DataControlsAppInterface setBlockCopyRule];
+
+  [ChromeEarlGrey loadURL:self.testServer->GetURL(kLogoPagePath)];
+  [ChromeEarlGrey waitForWebStateContainingText:kLogoPageText];
+
+  [ChromeEarlGreyUI
+      longPressElementOnWebView:LogoPageChromiumImageIdSelector()];
+
+  // Check that the "Share" button is not visible.
+  [[EarlGrey selectElementWithMatcher:ShareButton()]
+      assertWithMatcher:grey_nil()];
+  [DataControlsAppInterface clearDataControlRules];
 }
 
 // Tests that one (and only one, meaning the menu title is not present) button
