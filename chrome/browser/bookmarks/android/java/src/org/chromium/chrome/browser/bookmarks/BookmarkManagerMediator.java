@@ -305,23 +305,11 @@ class BookmarkManagerMediator
                 public void onBookmarkRowDisplayPrefChanged(
                         @BookmarkRowDisplayPref int displayPref) {
                     refresh();
-
-                    if (AccessibilityState.isTouchExplorationEnabled()) {
-                        mRecyclerView.announceForAccessibility(
-                                mBookmarkUiPrefs.getViewOptionsAccessibilityAnnouncementText(
-                                        mContext, displayPref));
-                    }
                 }
 
                 @Override
                 public void onBookmarkRowSortOrderChanged(@BookmarkRowSortOrder int sortOrder) {
                     refresh();
-
-                    if (AccessibilityState.isTouchExplorationEnabled()) {
-                        mRecyclerView.announceForAccessibility(
-                                mBookmarkUiPrefs.getSortOrderAccessibilityAnnouncementText(
-                                        mContext, sortOrder));
-                    }
                 }
             };
 

@@ -122,7 +122,6 @@ import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.SyncService.SyncStateChangedListener;
 import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
-import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.listmenu.BasicListMenu;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
@@ -2351,26 +2350,6 @@ public class BookmarkManagerMediatorTest {
         // Measure number of #setBookmarks by counting #getChildIds.
         verify(mBookmarkModel, times(2)).getChildIds(mFolderId1);
         verifyCurrentBookmarkIds(null, mFolderId2);
-    }
-
-    @Test
-    public void onPreferenceChanged_sortOrderChanged_readsAccessibility() {
-        AccessibilityState.setIsTouchExplorationEnabledForTesting(true);
-
-        mMediator.onBookmarkModelLoaded();
-        mMediator.openFolder(mFolderId1);
-        mBookmarkUiPrefs.setBookmarkRowSortOrder(BookmarkRowSortOrder.ALPHABETICAL);
-        verify(mRecyclerView).announceForAccessibility("Sorting from A to Z");
-    }
-
-    @Test
-    public void onPreferenceChanged_viewPreferenceUpdated_readsAccessibility() {
-        AccessibilityState.setIsTouchExplorationEnabledForTesting(true);
-
-        mMediator.onBookmarkModelLoaded();
-        mMediator.openFolder(mFolderId1);
-        mBookmarkUiPrefs.setBookmarkRowDisplayPref(BookmarkRowDisplayPref.VISUAL);
-        verify(mRecyclerView).announceForAccessibility("Showing visual view");
     }
 
     @Test
