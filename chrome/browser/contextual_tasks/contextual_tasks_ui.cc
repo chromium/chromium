@@ -7,7 +7,10 @@
 #include "base/check_deref.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ref.h"
+#include "base/uuid.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_composebox_handler.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_context_controller.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_context_controller_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_page_handler.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
@@ -18,6 +21,7 @@
 #include "chrome/grit/contextual_tasks_resources.h"
 #include "chrome/grit/contextual_tasks_resources_map.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/contextual_tasks/public/contextual_task.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/lens/lens_features.h"
 #include "components/omnibox/browser/searchbox.mojom-forward.h"
@@ -33,8 +37,15 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
       ui_service_(contextual_tasks::ContextualTasksUiServiceFactory::
                       GetForBrowserContext(
                           web_ui->GetWebContents()->GetBrowserContext())),
-      nav_observer_(
-          std::make_unique<FrameNavObserver>(web_ui->GetWebContents(), this)) {
+      context_controller_(
+          contextual_tasks::ContextualTasksContextControllerFactory::
+              GetForProfile(Profile::FromBrowserContext(
+                  web_ui->GetWebContents()->GetBrowserContext()))) {
+  inner_web_contents_creation_observer_ =
+      std::make_unique<InnerFrameCreationObvserver>(
+          web_ui->GetWebContents(),
+          base::BindOnce(&ContextualTasksUI::OnInnerWebContentsCreated,
+                         weak_ptr_factory_.GetWeakPtr()));
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       web_ui->GetWebContents()->GetBrowserContext(),
       chrome::kChromeUIContextualTasksHost);
@@ -100,11 +111,27 @@ void ContextualTasksUI::CreatePageHandler(
       std::move(page), std::move(page_handler), web_ui(), this, ui_service_);
 }
 
-void ContextualTasksUI::SetTaskId(const base::Uuid& task_id) {
-  task_id_ = task_id;
+const std::optional<base::Uuid>& ContextualTasksUI::GetTaskId() {
+  return task_id_;
 }
 
-void ContextualTasksUI::SetThreadTitle(std::string_view title) {
+void ContextualTasksUI::SetTaskId(std::optional<base::Uuid> id) {
+  task_id_ = id;
+}
+
+const std::optional<std::string>& ContextualTasksUI::GetThreadId() {
+  return thread_id_;
+}
+
+void ContextualTasksUI::SetThreadId(std::optional<std::string> id) {
+  thread_id_ = id;
+}
+
+const std::optional<std::string>& ContextualTasksUI::GetThreadTitle() {
+  return thread_title_;
+}
+
+void ContextualTasksUI::SetThreadTitle(std::optional<std::string> title) {
   thread_title_ = title;
 }
 
@@ -154,24 +181,103 @@ void ContextualTasksUI::CreatePageHandler(
   composebox_handler_->SetPage(std::move(pending_searchbox_page));
 }
 
+void ContextualTasksUI::OnInnerWebContentsCreated(
+    content::WebContents* inner_contents) {
+  // This should only ever happen once per WebUI.
+  CHECK(!nav_observer_);
+  nav_observer_ = std::make_unique<FrameNavObserver>(
+      inner_contents, ui_service_, context_controller_, this);
+  inner_web_contents_creation_observer_.reset();
+}
+
 ContextualTasksUI::FrameNavObserver::FrameNavObserver(
     content::WebContents* web_contents,
-    ContextualTasksUI* ui_handle)
+    contextual_tasks::ContextualTasksUiService* ui_service,
+    contextual_tasks::ContextualTasksContextController* context_controller,
+    TaskInfoDelegate* task_info_delegate)
     : content::WebContentsObserver(web_contents),
-      ui_handle_(CHECK_DEREF(ui_handle)) {}
+      ui_service_(ui_service),
+      context_controller_(context_controller),
+      task_info_delegate_(CHECK_DEREF(task_info_delegate)) {}
 
 void ContextualTasksUI::FrameNavObserver::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  // We only care about the inner frame. Ignore any primary main frame
-  // navigations.
-  if (navigation_handle->IsInPrimaryMainFrame() || !ui_handle_->task_id_ ||
-      !ui_handle_->ui_service_) {
+  if (!ui_service_ || !context_controller_) {
     return;
   }
 
-  ui_handle_->ui_service_->OnWebUiInnerFrameNavigation(
-      ui_handle_->task_id_.value(), navigation_handle->GetURL(),
-      ui_handle_->thread_title_);
+  // TODO(456245130): Consider making this next part a CHECK since it should be
+  //                  impossible for this to not be an AI URL.
+  const GURL& url = navigation_handle->GetURL();
+  if (!ui_service_->IsAiUrl(url)) {
+    return;
+  }
+
+  // Almost everything is keyed off of the thread ID - if one isn't in the URL,
+  // wait until it is. This state also implies the task and thread we're
+  // tracking changed.
+  std::string url_thread_id;
+  if (!net::GetValueForKeyInQuery(url, "mtid", &url_thread_id)) {
+    this->task_info_delegate_->SetTaskId(std::nullopt);
+    this->task_info_delegate_->SetThreadId(std::nullopt);
+    this->task_info_delegate_->SetThreadTitle(std::nullopt);
+    return;
+  }
+
+  auto webui_thread_id = task_info_delegate_->GetThreadId();
+
+  // In cases where the webui doesn't know about an existing threaad ID or
+  // there's a mismatch, either create a new task or update to use an existing
+  // one (if it exists).
+  if (!webui_thread_id || (webui_thread_id.value() != url_thread_id)) {
+    // Check if there's an existing task for the thread.
+    std::optional<contextual_tasks::ContextualTask> existing_task =
+        context_controller_->GetTaskFromServerId(
+            contextual_tasks::ThreadType::kAiMode, url_thread_id);
+
+    if (existing_task) {
+      task_info_delegate_->SetTaskId(existing_task.value().GetTaskId());
+      task_info_delegate_->SetThreadTitle(existing_task.value().GetTitle());
+    } else {
+      auto task = context_controller_->CreateTaskFromUrl(url);
+      task_info_delegate_->SetTaskId(task.GetTaskId());
+    }
+  }
+  task_info_delegate_->SetThreadId(url_thread_id);
+
+  // If we don't yet have a title, try to pull one from the query.
+  if (!task_info_delegate_->GetThreadTitle()) {
+    std::string query_value;
+    if (net::GetValueForKeyInQuery(url, "q", &query_value)) {
+      task_info_delegate_->SetThreadTitle(query_value);
+    }
+  }
+
+  std::optional<std::string> mstk;
+  mstk.emplace();
+  if (!net::GetValueForKeyInQuery(url, "mstk", &mstk.value())) {
+    mstk = std::nullopt;
+  }
+
+  context_controller_->UpdateThreadForTask(
+      task_info_delegate_->GetTaskId().value(),
+      contextual_tasks::ThreadType::kAiMode, url_thread_id, mstk,
+      task_info_delegate_->GetThreadTitle());
+}
+
+ContextualTasksUI::InnerFrameCreationObvserver::InnerFrameCreationObvserver(
+    content::WebContents* web_contents,
+    base::OnceCallback<void(content::WebContents*)> callback)
+    : content::WebContentsObserver(web_contents),
+      callback_(std::move(callback)) {}
+
+ContextualTasksUI::InnerFrameCreationObvserver::~InnerFrameCreationObvserver() =
+    default;
+
+void ContextualTasksUI::InnerFrameCreationObvserver::InnerWebContentsCreated(
+    content::WebContents* inner_web_contents) {
+  CHECK(callback_);
+  std::move(callback_).Run(inner_web_contents);
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(ContextualTasksUI)

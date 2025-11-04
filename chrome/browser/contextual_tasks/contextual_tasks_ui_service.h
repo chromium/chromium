@@ -78,13 +78,6 @@ class ContextualTasksUiService : public KeyedService {
   // loaded in the absence of any other context.
   virtual GURL GetDefaultAiPageUrl();
 
-  // A notification that the hosted frame in the feature's WebUI triggered a
-  // navigation of the URL changed.
-  virtual void OnWebUiInnerFrameNavigation(
-      const base::Uuid& task_id,
-      const GURL& url,
-      std::optional<std::string> current_title);
-
   // Returns whether the provided URL is to an AI page.
   bool IsAiUrl(const GURL& url);
 

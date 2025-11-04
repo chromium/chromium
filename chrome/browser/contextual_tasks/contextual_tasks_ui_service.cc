@@ -267,30 +267,6 @@ GURL ContextualTasksUiService::GetDefaultAiPageUrl() {
   return AppendCommonUrlParams(GURL(GetContextualTasksAiPageUrl()));
 }
 
-void ContextualTasksUiService::OnWebUiInnerFrameNavigation(
-    const base::Uuid& task_id,
-    const GURL& url,
-    std::optional<std::string> current_title) {
-  if (!IsAiUrl(url)) {
-    return;
-  }
-
-  std::string thread_id_value;
-  if (!net::GetValueForKeyInQuery(url, "mtid", &thread_id_value)) {
-    return;
-  }
-
-  std::optional<std::string> mstk;
-  std::string mstk_value;
-  if (!net::GetValueForKeyInQuery(url, "mstk", &mstk_value)) {
-    mstk = std::nullopt;
-  }
-  mstk = mstk_value;
-
-  context_controller_->UpdateThreadForTask(
-      task_id, ThreadType::kAiMode, thread_id_value, mstk_value, current_title);
-}
-
 bool ContextualTasksUiService::IsAiUrl(const GURL& url) {
   if (!url.is_valid() || !url.SchemeIsHTTPOrHTTPS() ||
       !base::EndsWith(url.host(), ai_page_host_.host())) {

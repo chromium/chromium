@@ -162,65 +162,6 @@ TEST_F(ContextualTasksUiServiceTest, AiPageNotIntercepted) {
   task_environment()->RunUntilIdle();
 }
 
-TEST_F(ContextualTasksUiServiceTest, ContextControllerUpdatedOnUrlChange) {
-  GURL updated_url(kAiPageUrl);
-
-  std::string turn_id = "1234";
-  updated_url = net::AppendQueryParameter(updated_url, "mstk", turn_id);
-
-  std::string thread_id = "5678";
-  updated_url = net::AppendQueryParameter(updated_url, "mtid", thread_id);
-
-  base::Uuid task_id =
-      base::Uuid::ParseCaseInsensitive("10000000-0000-0000-0000-000000000000");
-  std::string title = "title";
-
-  EXPECT_CALL(
-      *context_controller_,
-      UpdateThreadForTask(task_id, _, thread_id, testing::Optional(turn_id),
-                          testing::Optional(title)))
-      .Times(1);
-
-  service_for_nav_->OnWebUiInnerFrameNavigation(task_id, updated_url, title);
-}
-
-TEST_F(ContextualTasksUiServiceTest,
-       ContextControllerUpdatedOnUrlChange_NoThreadId) {
-  GURL updated_url(kAiPageUrl);
-
-  std::string turn_id = "1234";
-  updated_url = net::AppendQueryParameter(updated_url, "mstk", turn_id);
-
-  base::Uuid task_id =
-      base::Uuid::ParseCaseInsensitive("10000000-0000-0000-0000-000000000000");
-  std::string title = "title";
-
-  EXPECT_CALL(*context_controller_, UpdateThreadForTask(_, _, _, _, _))
-      .Times(0);
-
-  service_for_nav_->OnWebUiInnerFrameNavigation(task_id, updated_url, title);
-}
-
-// The task should still updated without a turn ID.
-TEST_F(ContextualTasksUiServiceTest,
-       ContextControllerUpdatedOnUrlChange_NoTurnId) {
-  GURL updated_url(kAiPageUrl);
-
-  std::string thread_id = "5678";
-  updated_url = net::AppendQueryParameter(updated_url, "mtid", thread_id);
-
-  base::Uuid task_id =
-      base::Uuid::ParseCaseInsensitive("10000000-0000-0000-0000-000000000000");
-  std::string title = "title";
-
-  EXPECT_CALL(
-      *context_controller_,
-      UpdateThreadForTask(task_id, _, thread_id, _, testing::Optional(title)))
-      .Times(1);
-
-  service_for_nav_->OnWebUiInnerFrameNavigation(task_id, updated_url, title);
-}
-
 TEST_F(ContextualTasksUiServiceTest, OnNavigationToAiPageIntercepted_SameTab) {
   ContextualTasksUiService service(nullptr, context_controller_.get());
   GURL intercepted_url("https://google.com/search?udm=50&q=test+query");
