@@ -7446,13 +7446,12 @@ void Element::RemoveAttributeInternal(wtf_size_t index,
 void Element::AppendAttributeInternal(const QualifiedName& name,
                                       const AtomicString& value,
                                       AttributeModificationReason reason) {
-  attribute_or_class_bloom_ |= FilterForAttribute(name);
-  UpdateSubtreeBloomFilterAfterInsert();
-
   if (reason !=
       AttributeModificationReason::kBySynchronizationOfLazyAttribute) {
     WillModifyAttribute(name, g_null_atom, value);
   }
+  attribute_or_class_bloom_ |= FilterForAttribute(name);
+  UpdateSubtreeBloomFilterAfterInsert();
   EnsureUniqueElementData().Attributes().Append(name, value);
   if (reason !=
       AttributeModificationReason::kBySynchronizationOfLazyAttribute) {
@@ -11065,10 +11064,10 @@ void Element::CloneAttributesFrom(const Element& other) {
     // to try to reset the filter fully.
   }
   for (const Attribute& attr : element_data_->Attributes()) {
+    attribute_or_class_bloom_ |= FilterForAttribute(attr.GetName());
     AttributeChanged(
         AttributeModificationParams(attr.GetName(), g_null_atom, attr.Value(),
                                     AttributeModificationReason::kByCloning));
-    attribute_or_class_bloom_ |= FilterForAttribute(attr.GetName());
   }
   UpdateSubtreeBloomFilterAfterInsert();
 

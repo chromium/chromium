@@ -2514,7 +2514,8 @@ inline bool Element::FastHasAttribute(const QualifiedName& name) const {
   DCHECK(FastAttributeLookupAllowed(name))
       << TagQName().ToString().Utf8() << "/@" << name.ToString().Utf8();
 #endif
-  return HasElementData() && GetElementData()->Attributes().Find(name);
+  return CouldHaveAttribute(name) && HasElementData() &&
+         GetElementData()->Attributes().Find(name);
 }
 
 inline const AtomicString& Element::FastGetAttribute(
@@ -2523,7 +2524,7 @@ inline const AtomicString& Element::FastGetAttribute(
   DCHECK(FastAttributeLookupAllowed(name))
       << TagQName().ToString().Utf8() << "/@" << name.ToString().Utf8();
 #endif
-  if (HasElementData()) {
+  if (CouldHaveAttribute(name) && HasElementData()) {
     if (const Attribute* attribute = GetElementData()->Attributes().Find(name))
       return attribute->Value();
   }
