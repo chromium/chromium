@@ -216,7 +216,7 @@ export class MockCdpNetworkEvents {
       clientSecurityState: {
         initiatorIsSecureContext: true,
         initiatorIPAddressSpace: 'Public',
-        privateNetworkRequestPolicy: 'PreflightWarn',
+        privateNetworkRequestPolicy: 'PermissionWarn',
       },
       siteHasCookieInOtherPartition: false,
     });
