@@ -24,9 +24,10 @@ class GlicKeyedService;
 // and attachment indicator for the button.
 class GlicButtonController : public GlicWindowController::StateObserver {
  public:
-  explicit GlicButtonController(Profile* profile,
-                                GlicButtonControllerDelegate* delegate,
-                                GlicKeyedService* service);
+  GlicButtonController(Profile* profile,
+                       BrowserWindowInterface& browser,
+                       GlicButtonControllerDelegate* delegate,
+                       GlicKeyedService* service);
   ~GlicButtonController() override;
 
   // GlicWindowController::StateObserver:
@@ -39,6 +40,7 @@ class GlicButtonController : public GlicWindowController::StateObserver {
   void UpdateShowState(bool detached);
 
   raw_ptr<Profile> profile_;
+  raw_ref<BrowserWindowInterface> browser_;
   raw_ptr<GlicButtonControllerDelegate> glic_controller_delegate_;
   raw_ptr<GlicKeyedService> glic_keyed_service_;
   PrefChangeRegistrar pref_registrar_;

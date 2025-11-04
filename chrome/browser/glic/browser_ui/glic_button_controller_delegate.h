@@ -18,6 +18,9 @@ class GlicButtonControllerDelegate {
 
   // Update the glic button when attachment changes.
   virtual void SetGlicDetached(bool detached) = 0;
+
+  // Update the button when glic panel shows or hides.
+  virtual void SetGlicPanelIsOpen(bool open) = 0;
 };
 
 }  // namespace glic
