@@ -57,6 +57,8 @@ enum class BWGPageContextComputationState {
   // The page contains blocked content that could be used for Gemini, but will
   // likely be rejected due to its content.
   kBlocked,
+  // The page context is still being created.
+  kPending,
 };
 
 // Enum representing the page context attachment state of the BWG experience.
