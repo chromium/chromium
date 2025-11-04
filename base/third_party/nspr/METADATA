@@ -1,0 +1,7 @@
+third_party {
+  security {
+    # This third-party package is a small subset of the NSPR repository.
+    # Exclude it from bug filing.
+    tag: "OSV:disable"
+  }
+}
