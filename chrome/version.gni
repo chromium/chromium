@@ -86,8 +86,6 @@ if (target_os == "android") {
         "trichrome_auto_64_version_code = \"@TRICHROME_AUTO_64_VERSION_CODE@\" "
     _version_dictionary_template += "trichrome_desktop_64_version_code = \"@TRICHROME_DESKTOP_64_VERSION_CODE@\" "
     if (target_cpu == "arm64") {
-      _version_dictionary_template += "chrome_high_version_code = \"@CHROME_HIGH_VERSION_CODE@\" "
-      _version_dictionary_template += "chrome_high_beta_version_code = \"@CHROME_HIGH_BETA_VERSION_CODE@\" "
       _version_dictionary_template += "trichrome_64_32_high_version_code = \"@TRICHROME_64_32_HIGH_VERSION_CODE@\" "
       _version_dictionary_template += "trichrome_auto_64_32_high_version_code = \"@TRICHROME_AUTO_64_32_HIGH_VERSION_CODE@\" "
     }
@@ -174,8 +172,6 @@ if (is_mac) {
   forward_variables_from(_result,
                          [
                            "chrome_version_code",
-                           "chrome_high_version_code",
-                           "chrome_high_beta_version_code",
                            "chrome_beta_version_code",
                            "chrome_auto_version_code",
                            "chrome_desktop_version_code",
@@ -234,8 +230,6 @@ if (is_mac) {
     webview_64_32_high_beta_version_code = webview_64_32_beta_version_code
     webview_64_32_high_stable_version_code = webview_64_32_stable_version_code
     webview_auto_64_32_high_version_code = webview_auto_64_32_version_code
-    chrome_high_version_code = chrome_version_code
-    chrome_high_beta_version_code = chrome_beta_version_code
   }
 }
 
@@ -329,15 +323,9 @@ if (is_android) {
   # Changing chrome_version_code here to prevent different output
   # in the android_chrome_versions.txt above
   if (_use_stable_package_name_for_trichrome) {
-    if (is_high_end_android) {
-      chrome_version_code = chrome_beta_high_version_code
-    } else {
-      chrome_version_code = chrome_beta_version_code
-    }
+    chrome_version_code = chrome_beta_version_code
   } else if (defined(chrome_desktop_version_code)) {
     chrome_version_code = chrome_desktop_version_code
-  } else if (is_high_end_android) {
-    chrome_version_code = chrome_high_version_code
   }
 
   # Lookup tables for version codes.
