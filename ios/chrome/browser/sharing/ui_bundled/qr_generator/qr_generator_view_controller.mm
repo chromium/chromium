@@ -238,23 +238,17 @@ constexpr CGFloat kSymbolSize = 22;
 
 // Handles taps on the dismiss button.
 - (void)didTapDismissBarButton {
-  if ([self.actionHandler
-          respondsToSelector:@selector(confirmationAlertDismissAction)]) {
-    [self.actionHandler confirmationAlertDismissAction];
-  }
+  [self.delegate QRGeneratorViewControllerDidTapDismiss:self];
 }
 
 // Handles taps on the help button.
 - (void)didTapHelpButton {
-  if ([self.actionHandler
-          respondsToSelector:@selector(confirmationAlertLearnMoreAction)]) {
-    [self.actionHandler confirmationAlertLearnMoreAction];
-  }
+  [self.delegate QRGeneratorViewControllerDidTapLearnMore:self];
 }
 
 // Handles taps on the primary action button.
 - (void)didTapPrimaryActionButton {
-  [self.actionHandler confirmationAlertPrimaryAction];
+  [self.delegate QRGeneratorViewControllerDidTapConfirm:self];
 }
 
 // Helper to create the image view.

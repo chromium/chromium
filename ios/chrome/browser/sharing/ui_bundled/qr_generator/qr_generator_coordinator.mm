@@ -14,13 +14,12 @@
 #import "ios/chrome/browser/sharing/ui_bundled/sharing_params.h"
 #import "ios/chrome/browser/sharing/ui_bundled/sharing_positioner.h"
 #import "ios/chrome/browser/sharing/ui_bundled/sharing_scenario.h"
-#import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 #import "ios/chrome/common/ui/elements/popover_label_view_controller.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "net/base/apple/url_conversions.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
-@interface QRGeneratorCoordinator () <ConfirmationAlertActionHandler> {
+@interface QRGeneratorCoordinator () <QRGeneratorViewControllerDelegate> {
   // URL of a page to generate a QR code for.
   GURL _URL;
 }
@@ -69,7 +68,7 @@
       initWithTitle:self.title
             pageURL:net::NSURLWithGURL(_URL)];
 
-  [self.viewController setActionHandler:self];
+  self.viewController.delegate = self;
 
   _navigationController = [[UINavigationController alloc]
       initWithRootViewController:self.viewController];
@@ -96,13 +95,15 @@
   [super stop];
 }
 
-#pragma mark - ConfirmationAlertActionHandler
+#pragma mark - QRGeneratorViewControllerDelegate
 
-- (void)confirmationAlertDismissAction {
+- (void)QRGeneratorViewControllerDidTapDismiss:
+    (QRGeneratorViewController*)generator {
   [self.handler hideQRCode];
 }
 
-- (void)confirmationAlertPrimaryAction {
+- (void)QRGeneratorViewControllerDidTapConfirm:
+    (QRGeneratorViewController*)generator {
   base::RecordAction(base::UserMetricsAction("MobileShareQRCode"));
 
   NSString* imageTitle = l10n_util::GetNSStringF(
@@ -121,7 +122,8 @@
   [self.sharingCoordinator start];
 }
 
-- (void)confirmationAlertLearnMoreAction {
+- (void)QRGeneratorViewControllerDidTapLearnMore:
+    (QRGeneratorViewController*)generator {
   NSString* message =
       l10n_util::GetNSString(IDS_IOS_QR_CODE_LEARN_MORE_MESSAGE);
   self.learnMoreViewController =

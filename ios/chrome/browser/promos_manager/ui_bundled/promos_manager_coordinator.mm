@@ -121,8 +121,8 @@
 // The current BanneredPromoViewProvider, if any.
 @property(nonatomic, weak) id<BanneredPromoViewProvider> banneredProvider;
 
-// The current ConfirmationAlertViewController, if any.
-@property(nonatomic, strong) ConfirmationAlertViewController* viewController;
+// The current promo view controller, if any.
+@property(nonatomic, strong) UIViewController* viewController;
 
 // The current PromoStyleViewController, if any.
 @property(nonatomic, strong) PromoStyleViewController* banneredViewController;
@@ -283,9 +283,8 @@
       provider.handler = promosManagerCommandsHandler;
     }
 
-    self.viewController = [provider viewController];
+    self.viewController = [provider viewControllerWithActionHandler:self];
     self.viewController.presentationController.delegate = self;
-    self.viewController.actionHandler = self;
 
     self.provider = provider;
 
@@ -476,14 +475,7 @@
 
 // Invoked when the top left question mark button is tapped.
 - (void)didTapLearnMoreButton {
-  DCHECK(self.banneredProvider);
-
-  if (![self.banneredProvider
-          respondsToSelector:@selector(standardPromoLearnMoreAction)]) {
-    return;
-  }
-
-  [self.banneredProvider standardPromoLearnMoreAction];
+  NOTREACHED();
 }
 
 #pragma mark - ConfirmationAlertActionHandler
@@ -519,17 +511,6 @@
   }
 
   [self.provider standardPromoTertiaryAction];
-}
-
-- (void)confirmationAlertLearnMoreAction {
-  DCHECK(self.provider);
-
-  if (![self.provider
-          respondsToSelector:@selector(standardPromoLearnMoreAction)]) {
-    return;
-  }
-
-  [self.provider standardPromoLearnMoreAction];
 }
 
 - (void)confirmationAlertDismissAction {

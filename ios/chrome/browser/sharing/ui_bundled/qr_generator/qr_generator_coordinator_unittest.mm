@@ -89,7 +89,8 @@ TEST_F(QRGeneratorCoordinatorTest, Done_DispatchesCommand) {
   QRGeneratorViewController* viewController = GetQRGeneratorViewController();
 
   // Mimick click on done button.
-  [viewController.actionHandler confirmationAlertDismissAction];
+  [viewController.delegate
+      QRGeneratorViewControllerDidTapDismiss:viewController];
 
   // Callback should've gotten invoked.
   [mock_qr_generation_commands_handler_ verify];
@@ -122,7 +123,8 @@ TEST_F(QRGeneratorCoordinatorTest, ShareAction) {
                  completion:nil];
 
   // Mimic tap on share button.
-  [viewController.actionHandler confirmationAlertPrimaryAction];
+  [viewController.delegate
+      QRGeneratorViewControllerDidTapConfirm:viewController];
 
   [vcPartialMock verify];
 }
@@ -150,7 +152,8 @@ TEST_F(QRGeneratorCoordinatorTest, LearnMore) {
                  completion:nil];
 
   // Mimic tap on help button.
-  [viewController.actionHandler confirmationAlertLearnMoreAction];
+  [viewController.delegate
+      QRGeneratorViewControllerDidTapLearnMore:viewController];
 
   [vcPartialMock verify];
   EXPECT_TRUE(popoverViewController);

@@ -4,8 +4,6 @@
 
 #import "ios/chrome/common/ui/confirmation_alert/constants.h"
 
-NSString* const kConfirmationAlertMoreInfoAccessibilityIdentifier =
-    @"kConfirmationAlertMoreInfoAccessibilityIdentifier";
 NSString* const kConfirmationAlertTitleAccessibilityIdentifier =
     @"kConfirmationAlertTitleAccessibilityIdentifier";
 NSString* const kConfirmationAlertSecondaryTitleAccessibilityIdentifier =

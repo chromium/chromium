@@ -8,7 +8,6 @@
 #import <Foundation/Foundation.h>
 
 // A11y Identifiers for testing.
-extern NSString* const kConfirmationAlertMoreInfoAccessibilityIdentifier;
 extern NSString* const kConfirmationAlertTitleAccessibilityIdentifier;
 extern NSString* const kConfirmationAlertSecondaryTitleAccessibilityIdentifier;
 extern NSString* const kConfirmationAlertSubtitleAccessibilityIdentifier;

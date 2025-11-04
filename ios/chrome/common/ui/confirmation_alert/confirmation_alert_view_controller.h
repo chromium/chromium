@@ -126,10 +126,6 @@
 // Always show the image view, regardless of size or orientation. Default is NO.
 @property(nonatomic) BOOL alwaysShowImage;
 
-// Controls if there is a help button in the view. Must be set before the
-// view is loaded.
-@property(nonatomic) BOOL helpButtonAvailable;
-
 // Set to YES to enclose the image in a frame with a shadow and a corner badge
 // with a green checkmark. Must be set before the view is loaded. Default is NO.
 @property(nonatomic) BOOL imageEnclosedWithShadowAndBadge;
@@ -137,13 +133,6 @@
 // Set to YES to enclose the image in a frame with a shadow without a corner
 // green checkmark badge. Must be set before the view is loaded. Default is NO.
 @property(nonatomic, assign) BOOL imageEnclosedWithShadowWithoutBadge;
-
-// When set, this value will be set as the accessibility label for the help
-// button.
-@property(nonatomic, copy) NSString* helpButtonAccessibilityLabel;
-
-// The help button item in the top left of the view. Nil if not available.
-@property(nonatomic, readonly) UIBarButtonItem* helpButton;
 
 // Controls if the navigation bar dismiss button is available in the view.
 // Default is YES. Must be set before the view is loaded.

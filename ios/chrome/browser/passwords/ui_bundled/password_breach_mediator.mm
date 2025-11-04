@@ -114,8 +114,4 @@ using password_manager::metrics_util::LeakDialogType;
   [self confirmationAlertDismissAction];
 }
 
-- (void)confirmationAlertLearnMoreAction {
-  [self.presenter presentLearnMore];
-}
-
 @end

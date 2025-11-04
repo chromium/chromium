@@ -10,6 +10,7 @@
 #import "base/notreached.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/promos_manager/model/promo_config.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 #import "ios/chrome/common/ui/elements/popover_label_view_controller.h"
@@ -21,15 +22,16 @@ using base::RecordAction;
 using base::UserMetricsAction;
 using l10n_util::GetNSString;
 
-@interface BaseDefaultBrowserPromoViewProvider ()
+namespace {
+constexpr CGFloat kHelpSymbolSize = 20;
+}
 
-// Promo view controller.
-@property(nonatomic, strong)
-    ConfirmationAlertViewController* promoViewController;
-
-@end
-
-@implementation BaseDefaultBrowserPromoViewProvider
+@implementation BaseDefaultBrowserPromoViewProvider {
+  // Promo view controller.
+  ConfirmationAlertViewController* _promoViewController;
+  // The help button.
+  UIBarButtonItem* _helpButton;
+}
 
 - (UIImage*)promoImage {
   NOTREACHED();
@@ -94,15 +96,6 @@ using l10n_util::GetNSString;
   [self dissmissPromo];
 }
 
-// The "Learn More" button was touched.
-- (void)standardPromoLearnMoreAction {
-  base::RecordAction(base::UserMetricsAction(
-      "IOS.DefaultBrowserPromo.TailoredFullscreen.MoreInfoTapped"));
-  LogUserInteractionWithTailoredFullscreenPromo();
-
-  [self showLearnMoreView];
-}
-
 // Gesture-based actions.
 - (void)standardPromoDismissSwipe {
   RecordDefaultBrowserPromoLastAction(IOSDefaultBrowserPromoAction::kDismiss);
@@ -115,60 +108,77 @@ using l10n_util::GetNSString;
 
 #pragma mark - StandardPromoViewProvider
 
-- (ConfirmationAlertViewController*)viewController {
-  self.promoViewController = [[ConfirmationAlertViewController alloc] init];
+- (UIViewController*)viewControllerWithActionHandler:
+    (id<ConfirmationAlertActionHandler>)actionHandler {
+  _promoViewController = [[ConfirmationAlertViewController alloc] init];
+  _promoViewController.actionHandler = actionHandler;
   [self setupPromoView];
 
-  return self.promoViewController;
+  UINavigationController* navigationController = [[UINavigationController alloc]
+      initWithRootViewController:_promoViewController];
+
+  _helpButton = [[UIBarButtonItem alloc]
+      initWithImage:DefaultSymbolWithPointSize(kHelpSymbol, kHelpSymbolSize)
+              style:UIBarButtonItemStylePlain
+             target:self
+             action:@selector(showLearnMoreView)];
+
+  _helpButton.isAccessibilityElement = YES;
+  _helpButton.accessibilityLabel =
+      l10n_util::GetNSString(IDS_IOS_HELP_ACCESSIBILITY_LABEL);
+
+  _promoViewController.navigationItem.leftBarButtonItem = _helpButton;
+
+  return navigationController;
 }
 
 #pragma mark - Private
 
 // Show learn more view.
 - (void)showLearnMoreView {
+  base::RecordAction(base::UserMetricsAction(
+      "IOS.DefaultBrowserPromo.TailoredFullscreen.MoreInfoTapped"));
+  LogUserInteractionWithTailoredFullscreenPromo();
+
   NSString* message =
       GetNSString(IDS_IOS_DEFAULT_BROWSER_LEARN_MORE_INSTRUCTIONS_MESSAGE);
   PopoverLabelViewController* learnMoreViewController =
       [[PopoverLabelViewController alloc] initWithMessage:message];
 
   learnMoreViewController.popoverPresentationController.barButtonItem =
-      self.promoViewController.helpButton;
+      _helpButton;
   learnMoreViewController.popoverPresentationController
       .permittedArrowDirections = UIPopoverArrowDirectionUp;
 
-  [self.promoViewController presentViewController:learnMoreViewController
-                                         animated:YES
-                                       completion:nil];
+  [_promoViewController presentViewController:learnMoreViewController
+                                     animated:YES
+                                   completion:nil];
 }
 
 // Dismiss promo.
 - (void)dissmissPromo {
-  if ([self.promoViewController.actionHandler
+  if ([_promoViewController.actionHandler
           respondsToSelector:@selector(confirmationAlertDismissAction)]) {
-    [self.promoViewController.actionHandler confirmationAlertDismissAction];
+    [_promoViewController.actionHandler confirmationAlertDismissAction];
   }
 }
 
 // Sets resources for promo view.
 - (void)setupPromoView {
-  self.promoViewController.customSpacingAfterImage = 30;
-  self.promoViewController.helpButtonAvailable = YES;
-  self.promoViewController.helpButtonAccessibilityLabel =
-      l10n_util::GetNSString(IDS_IOS_HELP_ACCESSIBILITY_LABEL);
-  self.promoViewController.imageHasFixedSize = YES;
-  self.promoViewController.showDismissBarButton = NO;
-  self.promoViewController.dismissBarButtonSystemItem =
-      UIBarButtonSystemItemCancel;
+  _promoViewController.customSpacingAfterImage = 30;
+  _promoViewController.imageHasFixedSize = YES;
+  _promoViewController.showDismissBarButton = NO;
+  _promoViewController.dismissBarButtonSystemItem = UIBarButtonSystemItemCancel;
 
-  self.promoViewController.image = [self promoImage];
-  self.promoViewController.titleString = [self promoTitle];
-  self.promoViewController.subtitleString = [self promoSubtitle];
+  _promoViewController.image = [self promoImage];
+  _promoViewController.titleString = [self promoTitle];
+  _promoViewController.subtitleString = [self promoSubtitle];
 
-  self.promoViewController.configuration.primaryActionString =
+  _promoViewController.configuration.primaryActionString =
       GetNSString(IDS_IOS_DEFAULT_BROWSER_PROMO_PRIMARY_BUTTON_TEXT);
-  self.promoViewController.configuration.secondaryActionString =
+  _promoViewController.configuration.secondaryActionString =
       GetNSString(IDS_IOS_DEFAULT_BROWSER_PROMO_SECONDARY_BUTTON_TEXT);
-  [self.promoViewController reloadConfiguration];
+  [_promoViewController reloadConfiguration];
 }
 
 // Records that a default browser promo has been shown.

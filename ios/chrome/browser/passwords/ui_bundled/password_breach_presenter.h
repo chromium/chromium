@@ -10,9 +10,6 @@
 // Object presenting the feature.
 @protocol PasswordBreachPresenter <NSObject>
 
-// Presents more information related to the feature.
-- (void)presentLearnMore;
-
 // Informs the presenter that the feature should dismiss.
 - (void)stop;
 

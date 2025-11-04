@@ -24,9 +24,6 @@
 // The "Secondary Action" was touched.
 - (void)standardPromoSecondaryAction;
 
-// The "Learn More" button was touched.
-- (void)standardPromoLearnMoreAction;
-
 // The "Tertiary Action" was touched.
 - (void)standardPromoTertiaryAction;
 

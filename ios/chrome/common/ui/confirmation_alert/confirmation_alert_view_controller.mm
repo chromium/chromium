@@ -358,14 +358,6 @@ const CGFloat kFaviconBadgeSideLength = 24;
   }
 }
 
-// Handle taps on the help button.
-- (void)didTapHelpButton {
-  if ([self.actionHandler
-          respondsToSelector:@selector(confirmationAlertLearnMoreAction)]) {
-    [self.actionHandler confirmationAlertLearnMoreAction];
-  }
-}
-
 // Helper to create the navigation bar.
 - (UINavigationBar*)createNavigationBar {
   UINavigationBar* navigationBar = [[UINavigationBar alloc] init];
@@ -375,25 +367,6 @@ const CGFloat kFaviconBadgeSideLength = 24;
   [navigationBar setBarTintColor:self.mainBackgroundColor];
 
   UINavigationItem* navigationItem = [[UINavigationItem alloc] init];
-  if (self.helpButtonAvailable) {
-    UIBarButtonItem* helpButton =
-        [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"help_icon"]
-                                         style:UIBarButtonItemStylePlain
-                                        target:self
-                                        action:@selector(didTapHelpButton)];
-    navigationItem.leftBarButtonItem = helpButton;
-
-    if (self.helpButtonAccessibilityLabel) {
-      helpButton.isAccessibilityElement = YES;
-      helpButton.accessibilityLabel = self.helpButtonAccessibilityLabel;
-    }
-
-    helpButton.accessibilityIdentifier =
-        kConfirmationAlertMoreInfoAccessibilityIdentifier;
-    // Set the help button as the left button item so it can be used as a
-    // popover anchor.
-    _helpButton = helpButton;
-  }
 
   if (self.titleView) {
     navigationItem.titleView = self.titleView;
@@ -585,8 +558,7 @@ const CGFloat kFaviconBadgeSideLength = 24;
 }
 
 - (BOOL)hasNavigationBar {
-  return self.helpButtonAvailable || self.showDismissBarButton ||
-         self.titleView;
+  return self.showDismissBarButton || self.titleView;
 }
 
 // Helper to create the stack view.
