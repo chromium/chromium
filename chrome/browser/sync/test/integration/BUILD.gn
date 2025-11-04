@@ -146,6 +146,7 @@ source_set("sync_integration_tests_impl") {
       "single_client_themes_sync_test.cc",
       "single_client_user_consents_sync_test.cc",
       "single_client_user_events_sync_test.cc",
+      "single_client_valuable_metadata_sync_test.cc",
       "single_client_valuables_sync_test.cc",
       "single_client_wallet_credential_sync_test.cc",
       "single_client_wallet_sync_test.cc",
