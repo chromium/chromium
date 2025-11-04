@@ -1,0 +1,67 @@
+From 7485cc83a30171315b7e8c64564899ac241acd54 Mon Sep 17 00:00:00 2001
+From: Manish Goregaokar <manishearth@google.com>
+Date: Tue, 4 Nov 2025 20:14:28 +0000
+Subject: [PATCH] Fix returned duration sign for non-ISO date arithmetic
+
+Uplifted from https://github.com/boa-dev/temporal/pull/618
+
+Change-Id: Ie94eb956b4a0327d9e91c7ca43774cc4ecf3bf18
+---
+ .../src/builtins/core/calendar.rs              |  6 +++++-
+ .../src/builtins/core/plain_date_time.rs       | 18 ++++++++++++++++++
+ 2 files changed, 23 insertions(+), 1 deletion(-)
+
+diff --git a/third_party/rust/chromium_crates_io/vendor/temporal_rs-v0_1/src/builtins/core/calendar.rs b/third_party/rust/chromium_crates_io/vendor/temporal_rs-v0_1/src/builtins/core/calendar.rs
+index d4b55eb74529e..97ac5a08e0f07 100644
+--- a/third_party/rust/chromium_crates_io/vendor/temporal_rs-v0_1/src/builtins/core/calendar.rs
++++ b/third_party/rust/chromium_crates_io/vendor/temporal_rs-v0_1/src/builtins/core/calendar.rs
+@@ -514,12 +514,16 @@ impl Calendar {
+             .days
+             .try_into()
+             .map_err(|_| TemporalError::range().with_enum(ErrorMessage::DurationNotValid))?;
+-        let duration = DateDuration::new(
++        let mut duration = DateDuration::new(
+             added.years.into(),
+             added.months.into(),
+             added.weeks.into(),
+             days,
+         )?;
++
++        if added.is_negative {
++            duration = duration.negated();
++        }
+         Ok(Duration::from(duration))
+     }
+ 
+diff --git a/third_party/rust/chromium_crates_io/vendor/temporal_rs-v0_1/src/builtins/core/plain_date_time.rs b/third_party/rust/chromium_crates_io/vendor/temporal_rs-v0_1/src/builtins/core/plain_date_time.rs
+index 81715fe2b6456..92f0a8d03304c 100644
+--- a/third_party/rust/chromium_crates_io/vendor/temporal_rs-v0_1/src/builtins/core/plain_date_time.rs
++++ b/third_party/rust/chromium_crates_io/vendor/temporal_rs-v0_1/src/builtins/core/plain_date_time.rs
+@@ -1309,6 +1309,24 @@ mod tests {
+         assert_eq!(result.minutes(), 30);
+     }
+ 
++    #[test]
++    fn dt_since_conflicting_signs() {
++        // From intl402/Temporal/PlainDateTime/prototype/since/wrapping-at-end-of-month-gregorian
++        // Tests that date arithmetic with conflicting signs works
++        let a = PlainDateTime::try_new(2023, 3, 1, 2, 0, 0, 0, 0, 0, Calendar::GREGORIAN).unwrap();
++        let b = PlainDateTime::try_new(2023, 1, 1, 3, 0, 0, 0, 0, 0, Calendar::GREGORIAN).unwrap();
++
++        let settings = DifferenceSettings {
++            largest_unit: Some(Unit::Year),
++            ..Default::default()
++        };
++        let result = a.since(&b, settings).unwrap();
++
++        assert_eq!(result.months(), 1);
++        assert_eq!(result.days(), 30);
++        assert_eq!(result.hours(), 23);
++    }
++
+     #[test]
+     fn dt_round_basic() {
+         let assert_datetime =
+-- 
+2.51.2.1006.ga50a493c49-goog
+

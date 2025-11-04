@@ -394,6 +394,7 @@ impl ZonedDateTime {
         let iso = self.get_iso_datetime();
         // 5. Return ? RoundRelativeDuration(difference, ns2, dateTime, timeZone, calendar, largestUnit, roundingIncrement, smallestUnit, roundingMode).
         diff.round_relative_duration(
+            *self.epoch_nanoseconds(),
             other.epoch_nanoseconds().as_i128(),
             &PlainDateTime::new_unchecked(iso, self.calendar().clone()),
             Some((self.time_zone(), provider)),
@@ -425,6 +426,7 @@ impl ZonedDateTime {
         let iso = self.get_iso_datetime();
         // 4. Return ? TotalRelativeDuration(difference, ns2, dateTime, timeZone, calendar, unit).
         diff.total_relative_duration(
+            *self.epoch_nanoseconds(),
             other.epoch_nanoseconds().as_i128(),
             &PlainDateTime::new_unchecked(iso, self.calendar().clone()),
             Some((self.time_zone(), provider)),
@@ -446,29 +448,39 @@ impl ZonedDateTime {
         let start = self.get_iso_datetime();
         // 3. Let endDateTime be GetISODateTimeFor(timeZone, ns2).
         let end = self.time_zone.get_iso_datetime_for(other, provider)?;
-        // 4. If ns2 - ns1 < 0, let sign be -1; else let sign be 1.
+        // 4. If CompareISODate(startDateTime.[[ISODate]], endDateTime.[[ISODate]]) = 0, then
+        if start.date == end.date {
+            // a. Let timeDuration be TimeDurationFromEpochNanosecondsDifference(ns2, ns1).
+            let time_duration = TimeDuration::from_nanosecond_difference(
+                other.epoch_nanoseconds().as_i128(),
+                self.epoch_nanoseconds().as_i128(),
+            )?;
+            // b. Return CombineDateAndTimeDuration(ZeroDateDuration(), timeDuration).
+            return InternalDurationRecord::new(Default::default(), time_duration);
+        }
+        // 5. If ns2 - ns1 < 0, let sign be -1; else let sign be 1.
         let sign = if other.epoch_nanoseconds().as_i128() - self.epoch_nanoseconds().as_i128() < 0 {
             Sign::Negative
         } else {
             Sign::Positive
         };
-        // 5. If sign = 1, let maxDayCorrection be 2; else let maxDayCorrection be 1.
+        // 6. If sign = 1, let maxDayCorrection be 2; else let maxDayCorrection be 1.
         let max_correction = if sign == Sign::Positive { 2 } else { 1 };
-        // 6. Let dayCorrection be 0.
-        // 7. Let timeDuration be DifferenceTime(startDateTime.[[Time]], endDateTime.[[Time]]).
+        // 7. Let dayCorrection be 0.
+        // 8. Let timeDuration be DifferenceTime(startDateTime.[[Time]], endDateTime.[[Time]]).
         let time = start.time.diff(&end.time);
-        // 8. If TimeDurationSign(timeDuration) = -sign, set dayCorrection to dayCorrection + 1.
+        // 9. If TimeDurationSign(timeDuration) = -sign, set dayCorrection to dayCorrection + 1.
         let mut day_correction = if time.sign() as i8 == -(sign as i8) {
             1
         } else {
             0
         };
 
-        // 9. Let success be false.
+        // 10. Let success be false.
         let mut intermediate_dt = IsoDateTime::default();
         let mut time_duration = TimeDuration::default();
         let mut is_success = false;
-        // 10. Repeat, while dayCorrection ≤ maxDayCorrection and success is false,
+        // 11. Repeat, while dayCorrection ≤ maxDayCorrection and success is false,
         while day_correction <= max_correction && !is_success {
             // a. Let intermediateDate be BalanceISODate(endDateTime.[[ISODate]].[[Year]],
             // endDateTime.[[ISODate]].[[Month]], endDateTime.[[ISODate]].[[Day]] - dayCorrection × sign).
@@ -500,14 +512,15 @@ impl ZonedDateTime {
             // g. Set dayCorrection to dayCorrection + 1.
             day_correction += 1;
         }
-        // 11. Assert: success is true.
-        // 12. Let dateLargestUnit be LargerOfTwoUnits(largestUnit, day).
+        // 12. Assert: success is true.
+        // 13. Let dateLargestUnit be LargerOfTwoUnits(largestUnit, day).
         let date_largest = largest_unit.max(Unit::Day);
-        // 13. Let dateDifference be CalendarDateUntil(calendar, startDateTime.[[ISODate]], intermediateDateTime.[[ISODate]], dateLargestUnit).
-        // 14. Return CombineDateAndTimeDuration(dateDifference, timeDuration).
+        // 14. Let dateDifference be CalendarDateUntil(calendar, startDateTime.[[ISODate]], intermediateDateTime.[[ISODate]], dateLargestUnit).
+        // 15. Return CombineDateAndTimeDuration(dateDifference, timeDuration).
         let date_diff =
             self.calendar()
                 .date_until(&start.date, &intermediate_dt.date, date_largest)?;
+
         InternalDurationRecord::new(date_diff.date(), time_duration)
     }
 

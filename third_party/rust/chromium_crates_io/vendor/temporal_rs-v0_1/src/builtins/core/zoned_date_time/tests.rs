@@ -1146,3 +1146,43 @@ fn test_round_to_start_of_day() {
         assert_eq!(rounded.get_iso_datetime(), known_rounded.get_iso_datetime());
     })
 }
+
+#[test]
+fn test_same_date_reverse_wallclock() {
+    // intl402/Temporal/ZonedDateTime/prototype/since/same-date-reverse-wallclock
+    test_all_providers!(provider: {
+        let later =
+            parse_zdt_with_reject("2025-11-02T01:00:00-08:00[America/Vancouver]", provider).unwrap();
+        let earlier =
+            parse_zdt_with_reject("2025-11-02T01:01:00-07:00[America/Vancouver]", provider).unwrap();
+
+        let diff = DifferenceSettings {
+            largest_unit: Some(Unit::Year),
+            smallest_unit: Some(Unit::Millisecond),
+            ..Default::default()
+        };
+        let duration = later.since_with_provider(&earlier, diff, provider).unwrap();
+        assert_eq!(duration.minutes(), 59);
+
+    })
+}
+
+#[test]
+fn test_relativeto_back_transition() {
+    // intl402/Temporal/Duration/prototype/round/relativeto-dst-back-transition
+    test_all_providers!(provider: {
+        let origin =
+            parse_zdt_with_reject("2025-11-02T01:00:00-08:00[America/Vancouver]", provider).unwrap();
+        let duration = Duration::new(0, 0, 0, 0, 11, 39, 0, 0, 0, 0).unwrap();
+
+        let opts = RoundingOptions {
+            largest_unit: Some(Unit::Day),
+            smallest_unit: Some(Unit::Day),
+            rounding_mode: Some(RoundingMode::HalfExpand),
+            ..Default::default()
+        };
+        let rounded = duration.round_with_provider(opts, Some(origin.into()), provider).unwrap();
+        assert_eq!(rounded.days(), 0);
+
+    })
+}

@@ -514,12 +514,16 @@ impl Calendar {
             .days
             .try_into()
             .map_err(|_| TemporalError::range().with_enum(ErrorMessage::DurationNotValid))?;
-        let duration = DateDuration::new(
+        let mut duration = DateDuration::new(
             added.years.into(),
             added.months.into(),
             added.weeks.into(),
             days,
         )?;
+
+        if added.is_negative {
+            duration = duration.negated();
+        }
         Ok(Duration::from(duration))
     }
 

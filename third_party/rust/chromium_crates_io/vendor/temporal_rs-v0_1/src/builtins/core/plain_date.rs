@@ -279,15 +279,15 @@ impl PlainDate {
             resolved.smallest_unit == Unit::Day && resolved.increment.get() == 1;
         // 12. If roundingGranularityIsNoop is false, then
         if !rounding_granularity_is_noop {
+            let iso_date_time = IsoDateTime::new_unchecked(self.iso, IsoTime::default());
+            let origin_epoch_ns = iso_date_time.as_nanoseconds();
             // a. Let destEpochNs be GetUTCEpochNanoseconds(other.[[ISOYear]], other.[[ISOMonth]], other.[[ISODay]], 0, 0, 0, 0, 0, 0).
             let dest_epoch_ns = other.iso.as_nanoseconds();
             // b. Let dateTime be ISO Date-Time Record { [[Year]]: temporalDate.[[ISOYear]], [[Month]]: temporalDate.[[ISOMonth]], [[Day]]: temporalDate.[[ISODay]], [[Hour]]: 0, [[Minute]]: 0, [[Second]]: 0, [[Millisecond]]: 0, [[Microsecond]]: 0, [[Nanosecond]]: 0 }.
-            let dt = PlainDateTime::new_unchecked(
-                IsoDateTime::new_unchecked(self.iso, IsoTime::default()),
-                self.calendar.clone(),
-            );
+            let dt = PlainDateTime::new_unchecked(iso_date_time, self.calendar.clone());
             // c. Set duration to ? RoundRelativeDuration(duration, destEpochNs, dateTime, calendarRec, unset, settings.[[LargestUnit]], settings.[[RoundingIncrement]], settings.[[SmallestUnit]], settings.[[RoundingMode]]).
             duration = duration.round_relative_duration(
+                origin_epoch_ns,
                 dest_epoch_ns.0,
                 &dt,
                 Option::<(&TimeZone, &NeverProvider)>::None,
