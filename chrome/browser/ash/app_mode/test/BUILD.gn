@@ -54,7 +54,6 @@ source_set("browser_tests") {
     "//chrome/browser/device_identity",
     "//chrome/browser/signin",
     "//chrome/browser/ui:browser_navigator_params_headers",
-    "//chrome/browser/ui/webui/ash/os_feedback_dialog",
     "//chrome/browser/web_applications",
     "//chrome/browser/web_applications:web_applications_test_support",
     "//chrome/test:test_support",

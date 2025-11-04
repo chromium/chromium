@@ -5,7 +5,7 @@
 #include "chrome/browser/ui/webui/ash/system_web_dialog/system_web_dialog_delegate.h"
 
 #include <algorithm>
-#include <vector>
+#include <list>
 
 #include "ash/public/cpp/shell_window_ids.h"
 #include "base/containers/contains.h"
@@ -34,9 +34,9 @@ namespace {
 
 constexpr int kSystemDialogCornerRadiusDp = 12;
 
-// Track all open system web dialog instances. This should be a small vector.
-std::vector<SystemWebDialogDelegate*>* GetInstances() {
-  static base::NoDestructor<std::vector<SystemWebDialogDelegate*>> instances;
+// Track all open system web dialog instances. This should be a small list.
+std::list<SystemWebDialogDelegate*>* GetInstances() {
+  static base::NoDestructor<std::list<SystemWebDialogDelegate*>> instances;
   return instances.get();
 }
 
@@ -226,10 +226,5 @@ void SystemWebDialogDelegate::ShowSystemDialogForBrowserContext(
 void SystemWebDialogDelegate::ShowSystemDialog(gfx::NativeWindow parent) {
   ShowSystemDialogForBrowserContext(ProfileManager::GetActiveUserProfile(),
                                     parent);
-}
-
-const std::vector<SystemWebDialogDelegate*>&
-SystemWebDialogDelegate::GetAllInstances() {
-  return *GetInstances();
 }
 }  // namespace ash

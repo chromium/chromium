@@ -56,7 +56,6 @@
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/webui/ash/login/app_launch_splash_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/network_state_informer.h"
-#include "chrome/browser/ui/webui/ash/system_web_dialog/system_web_dialog_delegate.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_state.h"
@@ -516,13 +515,6 @@ void KioskLaunchController::CleanUp() {
   cleaned_up_ = true;
 
   splash_wait_timer_.Stop();
-
-  // Close all windows opened on the splash screen before entering the kiosk
-  // session.
-  auto web_dialog_instances = SystemWebDialogDelegate::GetAllInstances();
-  for (auto instance : web_dialog_instances) {
-    instance->Close();
-  }
 
   splash_screen_ = nullptr;
 

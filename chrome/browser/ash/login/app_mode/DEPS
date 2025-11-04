@@ -39,7 +39,6 @@ include_rules = [
   "+chrome/browser/ui/browser_list.h",
   "+chrome/browser/ui/test",
   "+chrome/browser/ui/webui/ash/login",
-  "+chrome/browser/ui/webui/ash/system_web_dialog",
   "+chrome/common/pref_names.h",
   "+chrome/test/base",
 ]

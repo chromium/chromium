@@ -7,9 +7,7 @@
 #include <vector>
 
 #include "ash/public/cpp/shelf_config.h"
-#include "ash/webui/os_feedback_ui/url_constants.h"
 #include "base/check_deref.h"
-#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/app_mode/kiosk_controller.h"
 #include "chrome/browser/ash/app_mode/test/fake_cws_chrome_apps.h"
@@ -17,12 +15,9 @@
 #include "chrome/browser/ash/app_mode/test/kiosk_test_utils.h"
 #include "chrome/browser/ash/app_mode/test/network_state_mixin.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
-#include "chrome/browser/ui/ash/login/login_feedback.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/webui/ash/os_feedback_dialog/os_feedback_dialog.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -72,26 +67,6 @@ std::vector<KioskMixin::Config> OfflineLaunchSplashScreenTestConfigs() {
           KioskMixin::Config{/*name=*/"ChromeApp",
                              /*auto_launch_account_id=*/{},
                              {OfflineEnabledChromeAppV2()}}};
-}
-
-void OpenNetworkScreen() {
-  ASSERT_TRUE(PressNetworkAccelerator());
-  WaitNetworkScreen();
-  ExpectNetworkScreenContinueButtonShown(/*is_shown=*/true);
-}
-
-SystemWebDialogDelegate* CreateFeedbackDialog() {
-  auto login_feedback_ =
-      std::make_unique<LoginFeedback>(ProfileHelper::Get()->GetSigninProfile());
-
-  base::test::TestFuture<void> show_dialog_waiter;
-  login_feedback_->Request(std::string(), show_dialog_waiter.GetCallback());
-  EXPECT_TRUE(show_dialog_waiter.Wait());
-
-  auto* dialog = SystemWebDialogDelegate::FindInstance(
-      GURL{ash::kChromeUIOSFeedbackUrl}.spec());
-
-  return dialog;
 }
 
 }  // namespace
@@ -172,36 +147,6 @@ IN_PROC_BROWSER_TEST_P(SplashScreenTest, CheckSuppressLoginAcceleratorActions) {
         << "Action " << action << " is not marked as handled,"
         << " and thus will be processed by the next event target";
   }
-}
-
-IN_PROC_BROWSER_TEST_P(SplashScreenTest,
-                       NoSystemWebDialogsExistAfterSplashScreen) {
-  network_state_.SimulateOnline();
-  ASSERT_TRUE(LaunchAppManually(TheKioskApp()));
-
-  // Block Kiosk app launch process so we have time to create
-  // additional web dialog.
-  auto scoped_launch_blocker = BlockKioskLaunch();
-  WaitSplashScreen();
-
-  OpenNetworkScreen();
-
-  SystemWebDialogDelegate* dialog = CreateFeedbackDialog();
-  ASSERT_TRUE(dialog);
-
-  base::test::TestFuture<const std::string&> close_dialog_waiter;
-  dialog->RegisterOnDialogClosedCallback(close_dialog_waiter.GetCallback());
-
-  // Resume the app launch after the `scoped_launch_blocker` is reset.
-  scoped_launch_blocker.reset();
-  ClickNetworkScreenContinueButton();
-
-  ASSERT_TRUE(WaitKioskLaunched());
-
-  ASSERT_TRUE(close_dialog_waiter.Wait());
-
-  // After the kiosk launch completed, the feedback dialog should be closed.
-  ASSERT_FALSE(OsFeedbackDialog::FindDialogWindow());
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
