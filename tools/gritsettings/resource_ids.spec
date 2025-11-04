@@ -110,8 +110,11 @@
     "messages": [2235],
     "includes": [2240],
   },
-  "chrome/browser/dev_ui_browser_resources.grd": {
+  "chrome/browser/actor/resources/common_resources.grd": {
     "META": {"join": 2},
+    "messages": [2245],
+  },
+  "chrome/browser/dev_ui_browser_resources.grd": {
     "includes": [2250],
   },
   "chrome/browser/nearby_sharing/internal/nearby_share_internal_icons.grd": {

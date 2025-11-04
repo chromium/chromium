@@ -199,6 +199,7 @@ template("chrome_extra_paks") {
         "$root_gen_dir/chrome/autofill_ml_internals_resources.pak",
         "$root_gen_dir/chrome/bookmarks_resources.pak",
         "$root_gen_dir/chrome/browser/actor/resources/actor_browser_resources.pak",
+        "$root_gen_dir/chrome/browser/actor/resources/actor_common_resources.pak",
         "$root_gen_dir/chrome/certificate_manager_resources.pak",
         "$root_gen_dir/chrome/commerce_product_specifications_resources.pak",
         "$root_gen_dir/chrome/contextual_tasks_resources.pak",

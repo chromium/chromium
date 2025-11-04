@@ -17,8 +17,19 @@ grit("grit") {
   ]
 }
 
+grit("common_resources") {
+  source = "common_resources.grd"
+  outputs = [
+    "actor_common_resources.pak",
+    "grit/actor_common_resources.h",
+  ]
+}
+
 source_set("browser_resources") {
-  public_deps = [ ":grit" ]
+  public_deps = [
+    ":common_resources",
+    ":grit",
+  ]
   deps = [
     "//base",
     "//chrome/common:chrome_features",
