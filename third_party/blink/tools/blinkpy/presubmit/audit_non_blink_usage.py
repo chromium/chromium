@@ -2762,6 +2762,19 @@ _CONFIG = [
         'allowed': [
             'gin::kThreadDebuggerCommonImplTag',
         ]
+    },
+    {
+        'paths': [
+            'third_party/blink/renderer/core/xml/parser/xml_document_parser_rs.cc',
+            'third_party/blink/renderer/core/xml/parser/xml_document_parser_rs.h',
+            'third_party/blink/renderer/core/xml/parser/xml_ffi_callbacks.h',
+        ],
+        'allowed': [
+            'rust::(Str(ing)?|Box|Vec)',
+            'xml_ffi::.*',
+            'base::(StringViewToRustSlice|RustStrToStringView)',
+            're2::StringPiece',
+        ]
     }
 ]
 

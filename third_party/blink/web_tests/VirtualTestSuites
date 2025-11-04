@@ -6008,5 +6008,20 @@
       "masonf@chromium.org"
     ],
     "expires": "Aug 1, 2026"
+  },
+  {
+    "prefix": "rust-xml",
+    "platforms": ["Linux"],
+    "bases": [
+      "fast/xmlhttprequest/",
+      "external/wpt/custom-elements/parser/parser-uses-create-an-element-for-a-token-svg.svg",
+      "external/wpt/svg/painting",
+      "http/tests/security/contentTypeOptions/xml-external-entity.xml"
+    ],
+    "args": [ "--enable-features=XMLParsingRust" ],
+    "owners": [
+      "drott@chromium.org"
+    ],
+    "expires": "Nov 1, 2026"
   }
 ]

@@ -355,6 +355,7 @@
 #include "third_party/blink/renderer/core/view_transition/view_transition_supplement.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_utils.h"
 #include "third_party/blink/renderer/core/xml/parser/xml_document_parser.h"
+#include "third_party/blink/renderer/core/xml/parser/xml_document_parser_rs.h"
 #include "third_party/blink/renderer/core/xml_names.h"
 #include "third_party/blink/renderer/core/xmlns_names.h"
 #include "third_party/blink/renderer/platform/bindings/dom_data_store.h"
@@ -3655,7 +3656,11 @@ DocumentParser* Document::CreateParser() {
                                                     parser_sync_policy_);
   }
   // FIXME: this should probably pass the frame instead
-  return MakeGarbageCollected<XMLDocumentParser>(*this, View());
+  if (RuntimeEnabledFeatures::XMLParsingRustEnabled()) {
+    return MakeGarbageCollected<XMLDocumentParserRs>(*this, View());
+  } else {
+    return MakeGarbageCollected<XMLDocumentParser>(*this, View());
+  }
 }
 
 bool Document::IsFrameSet() const {

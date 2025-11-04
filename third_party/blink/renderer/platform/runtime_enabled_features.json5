@@ -6000,6 +6000,9 @@
       name: "XMLNoExternalEntities",
     },
     {
+      name: "XMLParsingRust",
+    },
+    {
       name: "XMLSerializerConsistentDefaultNsDeclMatching",
       status: "test",
     },

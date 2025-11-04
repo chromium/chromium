@@ -240,6 +240,20 @@ blink_python_runner("make_deprecation_info") {
   ]
 }
 
+rust_static_library("xml_ffi") {
+  allow_unsafe = true  # Needed for FFI that underpins the `cxx` crate.
+  crate_root = "xml/parser/xml_ffi.rs"
+  sources = [
+    "xml/parser/entities.rs",
+    crate_root,
+  ]
+  cxx_bindings = [ crate_root ]
+  deps = [
+    "//third_party/rust/cxx/v1:lib",
+    "//third_party/rust/xml/v1:lib",
+  ]
+}
+
 component("core") {
   output_name = "blink_core"
 
@@ -389,6 +403,7 @@ component("core") {
   deps = [
     ":generate_eventhandler_names",
     ":make_deprecation_info",
+    ":xml_ffi",
     "//base",
     "//components/attribution_reporting",
     "//components/attribution_reporting:mojom_blink",

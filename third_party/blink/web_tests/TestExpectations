@@ -1985,6 +1985,11 @@ crbug.com/435623334 virtual/xslt-special-trial-disabled/fast/parser/base-with-su
 crbug.com/435623334 virtual/xslt-disabled/fast/parser/stray-end-tags-with-attributes-002.html [ Failure Pass ]
 crbug.com/435623334 virtual/xslt-special-trial-disabled/fast/parser/stray-end-tags-with-attributes-002.html [ Failure Pass ]
 
+# Rust XML related failures that still need work:
+crbug.com/441911594 virtual/rust-xml/http/tests/security/contentTypeOptions/xml-external-entity.xml [ Failure ]
+crbug.com/441911594 virtual/rust-xml/external/wpt/svg/painting/svg-with-outline.html [ Failure ]
+crbug.com/441911594 virtual/rust-xml/external/wpt/svg/painting/reftests/text-shadow-01.html [ Failure ]
+
 # Working on getting the CSP tests going:
 
 # These tests will be added back soon:
