@@ -3076,30 +3076,30 @@ crbug.com/454945074 external/wpt/webdriver/tests/classic/execute_script/node.py 
 # Unstable duration in assertion ouptput
 crbug.com/454945814 external/wpt/html/webappapis/timers/timer-nesting-not-inherited-in-microtask.html [ Failure ]
 
-external/wpt/css/css-anchor-position/anchor-scroll-position-try-012.html [ Failure ]
-external/wpt/css/css-anchor-position/position-area-inset-one-side-auto.tentative.html [ Failure ]
-external/wpt/css/css-color/contrast-color-001.html [ Failure ]
-external/wpt/css/css-viewport/zoom/text-decoration-thickness.html [ Failure ]
+crbug.com/457527725 external/wpt/css/css-anchor-position/anchor-scroll-position-try-012.html [ Failure ]
+crbug.com/457527725 external/wpt/css/css-anchor-position/position-area-inset-one-side-auto.tentative.html [ Failure ]
+crbug.com/457480129 external/wpt/css/css-color/contrast-color-001.html [ Failure ]
+crbug.com/457480129 external/wpt/css/css-viewport/zoom/text-decoration-thickness.html [ Failure ]
 
-external/wpt/document-picture-in-picture/closes-on-navigation-or-destroy.https.html [ Timeout ]
-external/wpt/document-picture-in-picture/pip-resize.https.html [ Timeout ]
-external/wpt/document-picture-in-picture/pip-size.optional.https.html [ Timeout ]
-external/wpt/document-picture-in-picture/pip-receives-focus.https.html [ Timeout Failure ]
+crbug.com/457475594 external/wpt/document-picture-in-picture/closes-on-navigation-or-destroy.https.html [ Timeout ]
+crbug.com/457475594 external/wpt/document-picture-in-picture/pip-resize.https.html [ Timeout ]
+crbug.com/457475594 external/wpt/document-picture-in-picture/pip-size.optional.https.html [ Timeout ]
+crbug.com/457475594 external/wpt/document-picture-in-picture/pip-receives-focus.https.html [ Failure Timeout ]
 
-external/wpt/svg/coordinate-systems/viewBox-synthesized-in-img-001.tentative.html [ Failure ]
-external/wpt/svg/styling/css-linked-parameters/css-linked-parameters-precedence-1.html [ Failure ]
-external/wpt/svg/styling/css-linked-parameters/css-linked-parameters-precedence-2.html [ Failure ]
-external/wpt/svg/styling/css-linked-parameters/img-with-linked-parameters-1.html [ Failure ]
-external/wpt/svg/styling/css-linked-parameters/img-with-linked-parameters-2.html [ Failure ]
-external/wpt/svg/styling/css-linked-parameters/img-with-url-fragment-identifiers-1.html [ Failure ]
-external/wpt/svg/styling/css-linked-parameters/img-with-url-fragment-identifiers-2.html [ Failure ]
-external/wpt/svg/styling/css-linked-parameters/img-with-url-function-1.html [ Failure ]
-external/wpt/svg/styling/css-linked-parameters/img-with-url-function-2.html [ Failure ]
+crbug.com/457490094 external/wpt/svg/coordinate-systems/viewBox-synthesized-in-img-001.tentative.html [ Failure ]
+crbug.com/457490094 external/wpt/svg/styling/css-linked-parameters/css-linked-parameters-precedence-1.html [ Failure ]
+crbug.com/457490094 external/wpt/svg/styling/css-linked-parameters/css-linked-parameters-precedence-2.html [ Failure ]
+crbug.com/457490094 external/wpt/svg/styling/css-linked-parameters/img-with-linked-parameters-1.html [ Failure ]
+crbug.com/457490094 external/wpt/svg/styling/css-linked-parameters/img-with-linked-parameters-2.html [ Failure ]
+crbug.com/457490094 external/wpt/svg/styling/css-linked-parameters/img-with-url-fragment-identifiers-1.html [ Failure ]
+crbug.com/457490094 external/wpt/svg/styling/css-linked-parameters/img-with-url-fragment-identifiers-2.html [ Failure ]
+crbug.com/457490094 external/wpt/svg/styling/css-linked-parameters/img-with-url-function-1.html [ Failure ]
+crbug.com/457490094 external/wpt/svg/styling/css-linked-parameters/img-with-url-function-2.html [ Failure ]
 
 crbug.com/418804914 virtual/close-watcher/external/wpt/close-watcher/iframes/dialog-same-origin-nn.html [ Skip Timeout ]
 
 # Duplicate subtest names
-external/wpt/css/css-anchor-position/try-tactic-basic.html [ Skip Failure ]
+crbug.com/457527725 external/wpt/css/css-anchor-position/try-tactic-basic.html [ Failure Skip ]
 
 # ====== New tests from wpt-importer added here ======
 crbug.com/453781784 external/wpt/css/css-text/text-transform/text-transform-fullwidth-001.xht [ Failure ]
@@ -6531,7 +6531,7 @@ crbug.com/1048761 [ Linux ] external/wpt/websockets/interfaces/WebSocket/send/00
 crbug.com/1048761 [ Win ] external/wpt/websockets/interfaces/WebSocket/send/006.html?wpt_flags=h2 [ Failure ]
 
 # Menu* elements failures
-crbug.com/406566432 external/wpt/html/semantics/menu/tentative/menuitem-activate.html [ Pass Failure ]
+crbug.com/406566432 external/wpt/html/semantics/menu/tentative/menuitem-activate.html [ Failure Pass ]
 
 # These tests are very flaky and driving up shard retry rates: crbug.com/426959932
 external/wpt/editing/other/join-different-white-space-style-paragraphs.html?* [ Failure Pass ]
@@ -9722,7 +9722,7 @@ crbug.com/424918655 [ Mac ] external/wpt/soft-navigation-heuristics/lcp/tentativ
 # Flaky soft-navigation-heuristics WPT test which was ported from LCP (under investigation)
 crbug.com/426391960 virtual/soft-navs-pre-paint-attribution-disabled/external/wpt/soft-navigation-heuristics/lcp/tentative/broken-image-icon.html [ Failure Pass ]
 crbug.com/426391960 external/wpt/soft-navigation-heuristics/lcp/tentative/broken-image-icon.html [ Failure Pass ]
-virtual/soft-navs-pre-paint-attribution-disabled/external/wpt/soft-navigation-heuristics/load-classic-script-history-push.tentative.html [ Failure Pass ]
+crbug.com/457475594 virtual/soft-navs-pre-paint-attribution-disabled/external/wpt/soft-navigation-heuristics/load-classic-script-history-push.tentative.html [ Failure Pass ]
 
 # Gardener 2025-07-11
 crbug.com/431038525 [ Mac12 ] external/wpt/css/css-masking/clip-path/clip-path-inline-004.html [ Failure Pass ]
@@ -9869,7 +9869,7 @@ crbug.com/449751911 crbug.com/331556923 crbug.com/347055177 external/wpt/geoloca
 crbug.com/449751911 crbug.com/331556923 crbug.com/347055177 external/wpt/geolocation/enabled-by-permissions-policy.https.sub.html [ Failure Pass Timeout ]
 crbug.com/449751911 [ Debug Linux ] virtual/scalefactor200/external/wpt/largest-contentful-paint/animated/observe-animated-image.tentative.html [ Failure Pass ]
 # crbug.com/449751911 failure pass for linux debug, crbug.com/41366962 for timeouts (sometimes unresponsive browser reported as a crash) on all platforms.
-crbug.com/449751911 crbug.com/41366962 external/wpt/html/semantics/tabular-data/processing-model-1/span-limits.html [ Failure Pass Timeout Crash ]
+crbug.com/449751911 crbug.com/41366962 external/wpt/html/semantics/tabular-data/processing-model-1/span-limits.html [ Crash Failure Pass Timeout ]
 
 # WebAudio AudioWorklet test failure in MSAN
 crbug.com/446563923 [ Linux ] external/wpt/webaudio/the-audio-api/the-audioworklet-interface/simple-input-output.https.html [ Crash Pass Timeout ]
@@ -9927,11 +9927,11 @@ crbug.com/447949347 [ Mac ] accessibility/scroll-window-horiz-sends-notification
 
 # Gardener 2025-10-28
 crbug.com/364315665 media/controls/closed-captions-single-track.html [ Failure Pass ]
-crbug.com/455803699 [ Mac ] accessibility/scroll-window-sends-notification.html [ Pass Failure ]
-crbug.com/455803699 [ Mac ] http/tests/accessibility/slow-document-load.html [ Pass Failure ]
-crbug.com/455696391 [ Mac ] virtual/view-transition-wide-gamut/inspector-protocol/css/css-get-styles-for-view-transition.js [ Pass Failure ]
-crbug.com/455808926 [ Linux ] images/color-profile-image-object-fit.html [ Pass Failure ]
-crbug.com/455817545 [ Mac ] virtual/threaded/wpt_internal/view-transition/browser-controls-root-offset-new.html [ Pass Failure ]
+crbug.com/455803699 [ Mac ] accessibility/scroll-window-sends-notification.html [ Failure Pass ]
+crbug.com/455803699 [ Mac ] http/tests/accessibility/slow-document-load.html [ Failure Pass ]
+crbug.com/455696391 [ Mac ] virtual/view-transition-wide-gamut/inspector-protocol/css/css-get-styles-for-view-transition.js [ Failure Pass ]
+crbug.com/455808926 [ Linux ] images/color-profile-image-object-fit.html [ Failure Pass ]
+crbug.com/455817545 [ Mac ] virtual/threaded/wpt_internal/view-transition/browser-controls-root-offset-new.html [ Failure Pass ]
 
 # Touch drag and drop is not enabled on Linux. The tests will remain disabled until then. The linked crbug was open to decide on the future
 # of the feature on Linux. If enabling the feature, please check `TouchDragEndContextMenu` works as expected.
