@@ -21,7 +21,8 @@ pub trait MojomParse:
     /// However, since we call this for every parse/deparse call, it caches the
     /// results of every previous call.
     ///
-    /// FOR_RELEASE: We could reduce our complexity by using generic_static crate
+    /// FOR_RELEASE: We could reduce our complexity by using the generic_static
+    /// crate
     fn wire_type() -> &'static MojomWireType {
         use std::any::TypeId;
         use std::collections::HashMap;

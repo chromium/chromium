@@ -8,8 +8,8 @@
 //! (in versions 2+) by a footer of associated interface IDs.
 
 use crate::ast::*;
+use crate::errors::*;
 use crate::parse_primitives::ParserData;
-use anyhow::{bail, Result};
 
 /// Parse the header of a Mojom message.
 /// The format is described in mojo/public/cpp/bindings/lib/bindings_internal.h
@@ -18,9 +18,9 @@ use anyhow::{bail, Result};
 // In the future, we should parse it by defining the appropriate mojom type and
 // parsing it. However, that requires us to support versions in general. For
 // now, just handle the different possible header versions manually.
-fn parse_header(data: &mut ParserData) -> Result<()> {
+fn parse_header(data: &mut ParserData) -> ParsingResult<()> {
     use crate::parse_primitives::*;
-    let size_in_bytes: usize = parse_u32(data)?.try_into()?;
+    let size_in_bytes = crate::parse_values::parse_size(data)?;
     let version_number = parse_u32(data)?;
     let _interface_id = parse_u32(data)?;
     let _msg_name = parse_u32(data)?;
@@ -52,7 +52,9 @@ fn parse_header(data: &mut ParserData) -> Result<()> {
         return Ok(());
     }
 
-    bail!("Bad version number")
+    // FOR_RELEASE: We probably want to have a special header validation pass
+    // when we get to that.
+    panic!("Bad version number")
 }
 
 /// Parse an entire mojom message, given the format of the encoded data
@@ -60,7 +62,7 @@ fn parse_header(data: &mut ParserData) -> Result<()> {
 // even if we just ignore them. We'll also need to take in more information
 // about the message, so we know e.g. the possible message IDs that can appear
 // in the header.
-pub fn parse_message(data_slice: &[u8], ty: &MojomWireType) -> Result<MojomValue> {
+pub fn parse_message(data_slice: &[u8], ty: &MojomWireType) -> ParsingResult<MojomValue> {
     let mut data = ParserData::new(data_slice);
     let _ = parse_header(&mut data)?;
     match ty {
@@ -71,11 +73,11 @@ pub fn parse_message(data_slice: &[u8], ty: &MojomWireType) -> Result<MojomValue
             let ret = crate::parse_values::parse_struct(&mut data, packed_field_types)?;
             if data.remaining_bytes() != 0 {
                 // We don't support the interface ID struct yet
-                bail!("There were {} trailing bytes in the message", data.remaining_bytes())
+                Err(ParsingError::too_much_data(data.bytes_parsed(), data.remaining_bytes()))
             } else {
                 Ok(MojomValue::Struct(ret))
             }
         }
-        _ => bail!("All message bodies are structs"),
+        _ => panic!("All message bodies are structs"),
     }
 }

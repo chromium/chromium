@@ -22,9 +22,11 @@
 // FOR_RELEASE: This strategy basically re-invents nom, so we should consider
 // switching to that if we intend to keep going down this route.
 
-// FOR_RELEASE: Also, we should standardize our returned error messages.
+// FOR_RELEASE: The original doc says everything is little-endian, but someone
+// told me it might all be host-endian. Figure that out before it causes
+// problems.
 
-use anyhow::{anyhow, Context, Result};
+use crate::errors::*;
 use std::any::type_name;
 
 /// The input to a parser
@@ -53,16 +55,17 @@ impl<'a> ParserData<'a> {
 }
 
 /// Skips the next `bytes_to_parse` bytes, assuming they exist.
-pub fn parse_padding(data: &mut ParserData, bytes_to_parse: usize) -> Result<()> {
-    let err_msg = || {
-        anyhow!(
-            "Tried to parse {} padding bytes, but only {} remained",
-            bytes_to_parse,
-            data.remaining_bytes.len()
-        )
+pub fn parse_padding(data: &mut ParserData, bytes_to_parse: usize) -> ParsingResult<()> {
+    let mk_err = || ParsingError {
+        offset: data.bytes_parsed(),
+        ty: ParsingErrorType::NotEnoughData {
+            tried_to_parse: format!("padding"),
+            expected_size: bytes_to_parse,
+            remaining_bytes: data.remaining_bytes.len(),
+        },
     };
     data.remaining_bytes =
-        data.remaining_bytes.get((bytes_to_parse as usize)..).with_context(err_msg)?;
+        data.remaining_bytes.get((bytes_to_parse as usize)..).ok_or_else(mk_err)?;
     data.bytes_parsed += bytes_to_parse;
     Ok(())
 }
@@ -75,16 +78,17 @@ pub fn parse_padding(data: &mut ParserData, bytes_to_parse: usize) -> Result<()>
 // Returns an error if there aren't enough bytes in the slice.
 macro_rules! declare_primitive_parser {
     ($target_type:ty, $size_in_bytes:literal, $name:ident) => {
-        pub fn $name(data: &mut ParserData) -> Result<$target_type> {
-            let err_msg = || {
-                anyhow!(
-                    "Not enough elements to parse {} from {:x?}",
-                    type_name::<$target_type>(),
-                    data.remaining_bytes
-                )
+        pub fn $name(data: &mut ParserData) -> ParsingResult<$target_type> {
+            let mk_err = || ParsingError {
+                offset: data.bytes_parsed(),
+                ty: ParsingErrorType::NotEnoughData {
+                    tried_to_parse: type_name::<$target_type>().to_string(),
+                    expected_size: $size_in_bytes,
+                    remaining_bytes: data.remaining_bytes.len(),
+                },
             };
             let (head, tail) =
-                data.remaining_bytes.split_first_chunk::<$size_in_bytes>().ok_or_else(err_msg)?;
+                data.remaining_bytes.split_first_chunk::<$size_in_bytes>().ok_or_else(mk_err)?;
             let ret = <$target_type>::from_le_bytes(*head);
             data.remaining_bytes = tail;
             data.bytes_parsed += $size_in_bytes;
@@ -101,11 +105,5 @@ declare_primitive_parser!(i8, 1, parse_i8);
 declare_primitive_parser!(i16, 2, parse_i16);
 declare_primitive_parser!(i32, 4, parse_i32);
 declare_primitive_parser!(i64, 8, parse_i64);
-
-// FOR_RELEASE: Make sure the float format matches, the mojom doc specifies
-// little-endian IEEE-754 format.
-// Need to ensure
-// (a) that's what actually appears on the wire and
-// (b) that's what rust from_le_bytes looks for.
-// declare_primitive_parser!(f32, 4, parse_f32);
-// declare_primitive_parser!(f64, 8, parse_f64);
+declare_primitive_parser!(f32, 4, parse_f32);
+declare_primitive_parser!(f64, 8, parse_f64);

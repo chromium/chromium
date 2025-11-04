@@ -22,6 +22,7 @@ rust_static_library("mojom_parser_core") {
     "api.rs",
     "ast.rs",
     "deparse_values.rs",
+    "errors.rs",
     "lib_core.rs",
     "pack.rs",
     "parse_messages.rs",

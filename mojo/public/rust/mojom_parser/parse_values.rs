@@ -17,12 +17,12 @@
 // (at the very least) MojomType can't handle bitfields.
 
 use crate::ast::*;
+use crate::errors::*;
 use crate::parse_primitives::*;
 
-use anyhow::{bail, Context, Result};
-
 /// Parse a type without nested data, i.e. anything but a struct or array
-fn parse_leaf_element(data: &mut ParserData, ty: &PackedLeafType) -> Result<MojomValue> {
+fn parse_leaf_element(data: &mut ParserData, ty: &PackedLeafType) -> ParsingResult<MojomValue> {
+    let _ = (parse_f32, parse_f64); // Silence dead code warning until this is used
     match ty {
         PackedLeafType::UInt8 => Ok(MojomValue::UInt8(parse_u8(data)?)),
         PackedLeafType::UInt16 => Ok(MojomValue::UInt16(parse_u16(data)?)),
@@ -41,7 +41,7 @@ fn parse_leaf_element(data: &mut ParserData, ty: &PackedLeafType) -> Result<Mojo
 /// Does not validate that the skipped bytes were 0, since it's possible that
 /// we're parsing a message with a version greater than our mojom file knows
 /// about.
-fn skip_to_alignment(data: &mut ParserData, alignment: usize) -> Result<()> {
+fn skip_to_alignment(data: &mut ParserData, alignment: usize) -> ParsingResult<()> {
     let mismatch = data.bytes_parsed() % alignment;
     if mismatch == 0 {
         Ok(())
@@ -88,20 +88,45 @@ fn get_max_ordinal(fields: &Vec<(String, MojomWireType)>) -> Ordinal {
     return max_so_far;
 }
 
+/// Parse a 32-bit size as part of a struct or array header
+pub fn parse_size(data: &mut ParserData) -> ParsingResult<usize> {
+    let parsed_value = parse_u32(data)?;
+    let mk_err = || Err(ParsingError::invalid_size(data.bytes_parsed() - 4, parsed_value));
+    let size = parsed_value.try_into().or_else(|_| mk_err())?;
+    if size < 8 || size % 8 != 0 {
+        return mk_err();
+    }
+    Ok(size)
+}
+
+pub fn parse_pointer(data: &mut ParserData, may_be_null: bool) -> ParsingResult<usize> {
+    let parsed_value = parse_u64(data)?;
+    let mk_err = || Err(ParsingError::invalid_pointer(data.bytes_parsed() - 8, parsed_value));
+    let ptr_value = parsed_value.try_into().or_else(|_| mk_err())?;
+    if ptr_value == 0 && may_be_null {
+        return Ok(ptr_value);
+    }
+    if ptr_value < 8 || ptr_value % 8 != 0 {
+        return mk_err();
+    }
+    Ok(ptr_value)
+}
+
 pub fn parse_struct(
     data: &mut ParserData,
     fields: &Vec<(String, MojomWireType)>,
-) -> Result<Vec<(String, MojomValue)>> {
+) -> ParsingResult<Vec<(String, MojomValue)>> {
     let initial_bytes_parsed = data.bytes_parsed();
 
     // Parse the struct header
-    let size_in_bytes: usize = parse_u32(data)?.try_into()?;
+    let size_in_bytes = parse_size(data)?;
     let _version_number = parse_u32(data)?; // We're ignoring versioning for now
 
     let mut nested_data_list: Vec<NestedDataInfo> = vec![];
 
-    // Pre-allocate space for the parsed values, so we can write directly into them by
-    // index. We have to provide dummy values since rust won't allow uninitialized memory.
+    // Pre-allocate space for the parsed values, so we can write directly into them
+    // by index. We have to provide dummy values since rust won't allow
+    // uninitialized memory.
 
     let mut ret: Vec<(String, MojomValue)> =
         vec![(String::new(), MojomValue::Int8(0)); get_max_ordinal(fields) + 1];
@@ -112,15 +137,15 @@ pub fn parse_struct(
         match mojom_wire_type {
             // Nested structured data, record for later
             MojomWireType::Pointer { ordinal, nested_data_type } => {
-                let pointer_value = parse_u64(data)?;
+                // We don't currently support null pointers
+                let pointer_value = parse_pointer(data, false)?;
                 let nested_info = NestedDataInfo {
                     ty: nested_data_type,
                     ordinal: *ordinal,
                     field_name: name.clone(),
                     expected_offset: data.bytes_parsed() - initial_bytes_parsed
                         - 8 // Don't count the bytes we just parsed
-                        + usize::try_from(pointer_value)
-                            .context("Pointer value {pointer_value} doesn't fit into usize?!")?,
+                        + pointer_value,
                 };
                 nested_data_list.push(nested_info);
             }
@@ -144,11 +169,11 @@ pub fn parse_struct(
     // Make sure we parsed the expected number of bytes.
     let bytes_parsed_so_far = data.bytes_parsed() - initial_bytes_parsed;
     if bytes_parsed_so_far > size_in_bytes {
-        bail!(
-            "Struct claimed to have {} bytes, but we somehow parsed {} bytes",
+        return Err(ParsingError::wrong_size(
+            data.bytes_parsed(),
             size_in_bytes,
-            bytes_parsed_so_far
-        )
+            bytes_parsed_so_far,
+        ));
     } else if bytes_parsed_so_far < size_in_bytes {
         parse_padding(data, size_in_bytes - bytes_parsed_so_far)?
     }
@@ -158,13 +183,11 @@ pub fn parse_struct(
         // of the struct. So the expected offset is only useful for validation.
         let bytes_parsed_so_far = data.bytes_parsed() - initial_bytes_parsed;
         if nested_data.expected_offset != bytes_parsed_so_far {
-            bail!(
-                "Nested field {} was at {} bytes from the beginning of the struct, \
-                 but expected to be at {} bytes",
-                nested_data.field_name,
+            return Err(ParsingError::wrong_pointer(
+                data.bytes_parsed(),
+                nested_data.expected_offset,
                 bytes_parsed_so_far,
-                nested_data.expected_offset
-            );
+            ));
         }
         let parsed_data = match nested_data.ty {
             PackedStructuredType::Struct { packed_field_types } => {
@@ -172,7 +195,7 @@ pub fn parse_struct(
                 MojomValue::Struct(parsed_fields)
             }
             PackedStructuredType::Array { .. } => {
-                bail!("Arrays are not yet implemented");
+                panic!("Arrays are not yet implemented");
             }
         };
         ret[nested_data.ordinal] = (nested_data.field_name, parsed_data);
