@@ -294,8 +294,8 @@
   }
 
   tabHelper->ExecuteZeroStateSuggestions(
-      base::BindOnce(^(NSArray<NSString*>* suggestions) {
-        ios::provider::SetZeroStateSuggestions(suggestions);
+      base::BindOnce(^(NSArray<NSString*>* suggestions){
+          // No-op.
       }));
 }
 

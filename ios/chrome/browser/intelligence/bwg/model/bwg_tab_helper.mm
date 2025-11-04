@@ -21,7 +21,6 @@
 #import "ios/chrome/browser/intelligence/zero_state_suggestions/model/zero_state_suggestions_service_impl.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
-#import "ios/chrome/browser/optimization_guide/mojom/zero_state_suggestions_service.mojom.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/utils/first_run_util.h"
@@ -72,32 +71,14 @@ std::optional<const base::Value::Dict*> GetSessionDictFromPrefs(
   return std::nullopt;
 }
 
-// Parses the mojo response for zero-state suggestions and executes `callback`
-// with an NSArray of strings.
-void ParseSuggestionsResponse(
-    base::OnceCallback<void(NSArray<NSString*>*)> callback,
-    ai::mojom::ZeroStateSuggestionsResponseResultPtr result) {
-  if (result->is_error()) {
-    std::move(callback).Run(nil);
-    return;
+NSMutableArray<NSString*>* ZeroStateSuggestionsAsNSArray(
+    std::vector<std::string> suggestions) {
+  NSMutableArray<NSString*>* ns_suggestions =
+      [NSMutableArray arrayWithCapacity:suggestions.size()];
+  for (const std::string& suggestion : suggestions) {
+    [ns_suggestions addObject:base::SysUTF8ToNSString(suggestion)];
   }
-
-  std::optional<optimization_guide::proto::ZeroStateSuggestionsResponse>
-      response_proto_optional =
-          result->get_response()
-              .As<optimization_guide::proto::ZeroStateSuggestionsResponse>();
-  if (!response_proto_optional.has_value()) {
-    std::move(callback).Run(nil);
-    return;
-  }
-  optimization_guide::proto::ZeroStateSuggestionsResponse response_proto =
-      response_proto_optional.value();
-
-  NSMutableArray<NSString*>* suggestionList = [NSMutableArray array];
-  for (const auto& suggestion : response_proto.suggestions()) {
-    [suggestionList addObject:base::SysUTF8ToNSString(suggestion.label())];
-  }
-  std::move(callback).Run(suggestionList);
+  return ns_suggestions;
 }
 
 }  // namespace
@@ -142,17 +123,24 @@ BwgTabHelper::~BwgTabHelper() {
 
 void BwgTabHelper::ExecuteZeroStateSuggestions(
     base::OnceCallback<void(NSArray<NSString*>* suggestions)> callback) {
+  if (zero_state_suggestions_.has_value()) {
+    std::move(callback).Run(
+        ZeroStateSuggestionsAsNSArray(zero_state_suggestions_.value()));
+    return;
+  }
+
   if (!zero_state_suggestions_service_->zero_state_suggestions_service) {
     std::move(callback).Run(nil);
     return;
   }
 
   base::OnceCallback<void(ai::mojom::ZeroStateSuggestionsResponseResultPtr)>
-      serviceCallback =
-          base::BindOnce(&ParseSuggestionsResponse, std::move(callback));
+      service_callback =
+          base::BindOnce(&BwgTabHelper::ParseSuggestionsResponse,
+                         weak_ptr_factory_.GetWeakPtr(), std::move(callback));
 
   zero_state_suggestions_service_->zero_state_suggestions_service
-      ->FetchZeroStateSuggestions(std::move(serviceCallback));
+      ->FetchZeroStateSuggestions(std::move(service_callback));
 }
 
 void BwgTabHelper::SetBwgUiShowing(bool showing) {
@@ -341,6 +329,10 @@ void BwgTabHelper::DidFinishNavigation(
                      weak_ptr_factory_.GetWeakPtr(), current_url));
 }
 
+void BwgTabHelper::DidStartLoading(web::WebState* web_state) {
+  zero_state_suggestions_ = std::nullopt;
+}
+
 void BwgTabHelper::PageLoaded(
     web::WebState* web_state,
     web::PageLoadCompletionStatus load_completion_status) {
@@ -484,4 +476,32 @@ void BwgTabHelper::OnOptimizationGuideDecision(
 
     [snackbar_commands_handler_ showSnackbarMessage:message];
   }
+}
+
+void BwgTabHelper::ParseSuggestionsResponse(
+    base::OnceCallback<void(NSArray<NSString*>*)> callback,
+    ai::mojom::ZeroStateSuggestionsResponseResultPtr result) {
+  if (!result || result->is_error()) {
+    std::move(callback).Run(nil);
+    return;
+  }
+
+  std::optional<optimization_guide::proto::ZeroStateSuggestionsResponse>
+      response_proto_optional =
+          result->get_response()
+              .As<optimization_guide::proto::ZeroStateSuggestionsResponse>();
+  if (!response_proto_optional.has_value()) {
+    std::move(callback).Run(nil);
+    return;
+  }
+  optimization_guide::proto::ZeroStateSuggestionsResponse response_proto =
+      response_proto_optional.value();
+
+  zero_state_suggestions_.emplace();
+  for (const auto& suggestion : response_proto.suggestions()) {
+    zero_state_suggestions_->push_back(suggestion.label());
+  }
+
+  std::move(callback).Run(
+      ZeroStateSuggestionsAsNSArray(zero_state_suggestions_.value()));
 }

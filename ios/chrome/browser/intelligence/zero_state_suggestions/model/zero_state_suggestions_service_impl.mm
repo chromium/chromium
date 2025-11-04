@@ -37,6 +37,8 @@ ZeroStateSuggestionsServiceImpl::~ZeroStateSuggestionsServiceImpl() {
 void ZeroStateSuggestionsServiceImpl::FetchZeroStateSuggestions(
     FetchZeroStateSuggestionsCallback callback) {
   // Cancel any in-flight requests.
+  // TODO(crbug.com/455623277): If there's an ongoing request for the same page,
+  // we should return its result instead of cancelling it.
   CancelOngoingRequests();
   pending_request_callback_ = std::move(callback);
 
@@ -122,7 +124,12 @@ void ZeroStateSuggestionsServiceImpl::OnZeroStateSuggestionsResponse(
 void ZeroStateSuggestionsServiceImpl::CancelOngoingRequests() {
   weak_ptr_factory_.InvalidateWeakPtrs();
   page_context_wrapper_ = nil;
-  pending_request_callback_.Reset();
+  if (pending_request_callback_) {
+    mojom::ZeroStateSuggestionsResponseResultPtr result_union =
+        mojom::ZeroStateSuggestionsResponseResult::NewError(
+            "Zero state suggestions request cancelled.");
+    std::move(pending_request_callback_).Run(std::move(result_union));
+  }
 }
 
 }  // namespace ai

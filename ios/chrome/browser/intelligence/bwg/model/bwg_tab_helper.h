@@ -12,6 +12,7 @@
 #import "components/optimization_guide/core/hints/optimization_guide_decision.h"
 #import "components/optimization_guide/core/hints/optimization_metadata.h"
 #import "components/optimization_guide/proto/contextual_cueing_metadata.pb.h"
+#import "ios/chrome/browser/optimization_guide/mojom/zero_state_suggestions_service.mojom.h"
 #import "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
 
@@ -96,6 +97,7 @@ class BwgTabHelper : public web::WebStateObserver,
                           web::NavigationContext* navigation_context) override;
   void DidFinishNavigation(web::WebState* web_state,
                            web::NavigationContext* navigation_context) override;
+  void DidStartLoading(web::WebState* web_state) override;
   void PageLoaded(
       web::WebState* web_state,
       web::PageLoadCompletionStatus load_completion_status) override;
@@ -134,6 +136,11 @@ class BwgTabHelper : public web::WebStateObserver,
   // Gets the associated WebState's visible URL during the last interaction, if
   // present and not expired, from storage.
   std::optional<std::string> GetURLOnLastInteraction();
+
+  // Parses the response of a zero state suggestions execution.
+  void ParseSuggestionsResponse(
+      base::OnceCallback<void(NSArray<NSString*>*)> callback,
+      ai::mojom::ZeroStateSuggestionsResponseResultPtr result);
 
   // WebState this tab helper is attached to.
   raw_ptr<web::WebState> web_state_ = nullptr;

@@ -20,9 +20,6 @@
 @property(nonatomic, weak) id<BWGPageStateChangeDelegate>
     pageStateChangeHandler;
 @property(nonatomic, weak) id<BWGSessionDelegate> sessionHandler;
-
-// TODO(crbug.com/454000012): Remove optional.
-@optional
 @property(nonatomic, weak) id<GeminiSuggestionDelegate> suggestionHandler;
 
 @end
