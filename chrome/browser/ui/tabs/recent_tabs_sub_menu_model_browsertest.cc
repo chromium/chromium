@@ -35,6 +35,7 @@
 #include "chrome/browser/ui/toolbar/app_menu_icon_controller.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -339,7 +340,7 @@ IN_PROC_BROWSER_TEST_F(RecentTabsSubMenuModelTest,
   RecentTabsSubMenuModel model(nullptr, browser());
 
   std::vector<ModelData> kData;
-  EXPECT_TRUE(browser()->GetFeatures().side_panel_coordinator() != nullptr);
+  EXPECT_TRUE(browser()->GetFeatures().side_panel_ui());
   kData = {
       {ui::MenuModel::TYPE_COMMAND, true},    // History
       {ui::MenuModel::TYPE_COMMAND, true},    // History Cluster

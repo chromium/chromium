@@ -568,10 +568,11 @@ IN_PROC_BROWSER_TEST_F(ToolbarControllerUiTest,
                   ActivateMenuItemWithElementId(
                       ChromeActionIds::kActionSidePanelShowBookmarks),
                   WaitForShow(kSidePanelElementId), Check([this]() {
-                    auto* coordinator =
-                        browser()->GetFeatures().side_panel_coordinator();
-                    return coordinator->IsSidePanelEntryShowing(
-                        SidePanelEntry::Key(SidePanelEntry::Id::kBookmarks));
+                    return browser()
+                        ->GetFeatures()
+                        .side_panel_ui()
+                        ->IsSidePanelEntryShowing(SidePanelEntry::Key(
+                            SidePanelEntry::Id::kBookmarks));
                   }));
 }
 

@@ -466,10 +466,9 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, DevToolsWindowResetsSize) {
 // Verifies that the side panel's rounded corner is being correctly layed out.
 IN_PROC_BROWSER_TEST_F(BrowserViewWithoutSideBySideTest,
                        SidePanelRoundedCornerLayout) {
-  SidePanelCoordinator* coordinator =
-      (browser())->GetFeatures().side_panel_coordinator();
-  coordinator->SetNoDelaysForTesting(true);
-  coordinator->Show(SidePanelEntry::Id::kBookmarks);
+  SidePanelUI* const side_panel_ui = browser()->GetFeatures().side_panel_ui();
+  side_panel_ui->SetNoDelaysForTesting(true);
+  side_panel_ui->Show(SidePanelEntry::Id::kBookmarks);
   EXPECT_EQ(side_panel()->bounds().x(),
             side_panel_rounded_corner()->bounds().right());
   EXPECT_EQ(side_panel()->bounds().y(),

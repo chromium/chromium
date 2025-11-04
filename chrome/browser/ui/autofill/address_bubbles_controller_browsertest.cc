@@ -4,15 +4,15 @@
 
 #include "chrome/browser/ui/autofill/address_bubbles_controller.h"
 
-#include "base/test/with_feature_override.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/with_feature_override.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/hats/mock_hats_service.h"
 #include "chrome/browser/ui/hats/survey_config.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
@@ -45,8 +45,9 @@ class AddressBubblesControllerBrowserTest
   // InProcessBrowserTest:
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
-    side_panel_coordinator()->SetNoDelaysForTesting(true);
-    side_panel_coordinator()->DisableAnimationsForTesting();
+    SidePanelUI* const side_panel_ui = browser()->GetFeatures().side_panel_ui();
+    side_panel_ui->SetNoDelaysForTesting(true);
+    side_panel_ui->DisableAnimationsForTesting();
   }
 
   bool IsBubbleManagerEnabled() const { return GetParam(); }
@@ -60,10 +61,6 @@ class AddressBubblesControllerBrowserTest
 
   AddressBubblesController* tab_controller() {
     return AddressBubblesController::FromWebContents(tab_web_contents());
-  }
-
-  SidePanelCoordinator* side_panel_coordinator() {
-    return browser()->GetFeatures().side_panel_coordinator();
   }
 };
 
@@ -91,10 +88,10 @@ IN_PROC_BROWSER_TEST_P(AddressBubblesControllerBrowserTest,
   if (IsBubbleManagerEnabled()) {
     GTEST_SKIP() << "Bubble Manager is incompatible with side panel";
   }
+  SidePanelUI* const side_panel_ui = browser()->GetFeatures().side_panel_ui();
   content::WebContents* side_panel_web_contents =
-      side_panel_coordinator()->GetWebContentsForTest(
-          SidePanelEntry::Id::kReadingList);
-  side_panel_coordinator()->Show(SidePanelEntry::Id::kReadingList);
+      side_panel_ui->GetWebContentsForTest(SidePanelEntry::Id::kReadingList);
+  side_panel_ui->Show(SidePanelEntry::Id::kReadingList);
   AutofillProfile profile = test::GetFullProfile();
   base::MockCallback<AutofillClient::AddressProfileSavePromptCallback> callback;
 

@@ -28,12 +28,13 @@
 #include "chrome/browser/ui/lens/lens_search_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_enums.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/lens/lens_features.h"
 #include "components/lens/lens_overlay_invocation_source.h"
 #include "components/lens/lens_overlay_permission_utils.h"
+#include "components/prefs/pref_service.h"
 #include "components/signin/core/browser/account_reconcilor.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
@@ -178,16 +179,12 @@ class LensOverlayLiveTest : public signin::test::LiveTest {
     command_line->AppendSwitch(::switches::kEnablePixelOutputInTests);
   }
 
-  SidePanelCoordinator* side_panel_coordinator() {
-    return browser()->GetFeatures().side_panel_coordinator();
-  }
-
   syncer::SyncService* sync_service() {
     return signin::test::sync_service(browser());
   }
 
   bool IsLensOverlaySidePanelShowing() {
-    return side_panel_coordinator()->IsSidePanelEntryShowing(
+    return browser()->GetFeatures().side_panel_ui()->IsSidePanelEntryShowing(
         SidePanelEntryKey(SidePanelEntryId::kLensOverlayResults));
   }
 
@@ -267,9 +264,7 @@ class LensOverlayLiveTest : public signin::test::LiveTest {
     // Expect the Lens Overlay results panel to open.
     ASSERT_TRUE(base::test::RunUntil(
         [&]() { return controller->state() == State::kOverlayAndResults; }));
-    auto* coordinator = browser()->GetFeatures().side_panel_coordinator();
-    ASSERT_TRUE(coordinator->IsSidePanelEntryShowing(
-        SidePanelEntryKey(SidePanelEntryId::kLensOverlayResults)));
+    ASSERT_TRUE(IsLensOverlaySidePanelShowing());
 
     // Wait for the panel to finish loading.
     EXPECT_TRUE(content::WaitForLoadStop(

@@ -46,10 +46,7 @@ class HelpBubbleHandlerInteractiveUiTest : public InteractiveBrowserTest {
         // Remove delays in switching side panels to prevent possible race
         // conditions when selecting items from the side panel dropdown.
         Do([this]() {
-          browser()
-              ->GetFeatures()
-              .side_panel_coordinator()
-              ->SetNoDelaysForTesting(true);
+          browser()->GetFeatures().side_panel_ui()->SetNoDelaysForTesting(true);
         }),
         PressButton(kToolbarAppMenuButtonElementId),
         SelectMenuItem(AppMenuModel::kBookmarksMenuItem),

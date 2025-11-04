@@ -19,8 +19,8 @@
 #include "chrome/browser/ui/signin/signin_view_controller.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_action_callback.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_enums.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/common/pref_names.h"
@@ -196,10 +196,9 @@ bool NewTabPageFeaturePromoHelper::IsSigninModalDialogOpen(
 void NewTabPageFeaturePromoHelper::MaybeTriggerAutomaticCustomizeChromePromo(
     content::WebContents* web_contents) {
   auto* browser_interface = webui::GetBrowserWindowInterface(web_contents);
-  if (!browser_interface || browser_interface->GetFeatures()
-                                .side_panel_coordinator()
-                                ->IsSidePanelEntryShowing(SidePanelEntry::Key(
-                                    SidePanelEntry::Id::kCustomizeChrome))) {
+  if (!browser_interface ||
+      browser_interface->GetFeatures().side_panel_ui()->IsSidePanelEntryShowing(
+          SidePanelEntry::Key(SidePanelEntry::Id::kCustomizeChrome))) {
     return;
   }
 

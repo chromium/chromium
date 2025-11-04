@@ -18,7 +18,7 @@
 #include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "chrome/common/actor.mojom-forward.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
@@ -273,9 +273,7 @@ IN_PROC_BROWSER_TEST_F(ActorUiHandoffButtonControllerInteractiveUiTest,
 #if BUILDFLAG(ENABLE_GLIC)
 IN_PROC_BROWSER_TEST_F(ActorUiHandoffButtonControllerInteractiveUiTest,
                        GlicSidePanelTogglesOnWhenButtonClicked) {
-  SidePanelCoordinator* const coordinator =
-      browser()->GetFeatures().side_panel_coordinator();
-  coordinator->SetNoDelaysForTesting(true);
+  browser()->GetFeatures().side_panel_ui()->SetNoDelaysForTesting(true);
   StartActingOnTab();
   RunTestSequence(
       ClearOmniboxFocus(), EnsureNotPresent(kSidePanelElementId),

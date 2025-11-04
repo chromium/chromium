@@ -2338,6 +2338,7 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
 
   // Check that pin button does not show in guest window.
   auto* coordinator = guest_browser->GetFeatures().side_panel_coordinator();
+
   coordinator->SetNoDelaysForTesting(true);
   coordinator->DisableAnimationsForTesting();
   coordinator->Show(SidePanelEntry::Id::kBookmarks);

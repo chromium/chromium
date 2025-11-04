@@ -49,8 +49,8 @@
 #include "chrome/browser/ui/views/frame/tab_strip_view_interface.h"
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/views/tabs/glic_button.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_action_container.h"
 #include "chrome/browser/ui/views/tabs/window_finder.h"
@@ -824,9 +824,7 @@ void GlicWindowControllerImpl::AttachToBrowserAndShow(
     AttachChangeReason reason) {
   AttachToBrowser(browser, reason);
   SetWindowState(GlicWindowController::State::kWaitingForSidePanelToShow);
-
-  auto* side_panel_coordinator = browser.GetFeatures().side_panel_coordinator();
-  side_panel_coordinator->Show(SidePanelEntry::Id::kGlic);
+  browser.GetFeatures().side_panel_ui()->Show(SidePanelEntry::Id::kGlic);
 }
 
 void GlicWindowControllerImpl::SidePanelShown(BrowserWindowInterface* browser) {
@@ -1028,7 +1026,8 @@ void GlicWindowControllerImpl::ResetAndHidePanel() {
     if (glic_view_) {
       glic_view_->SetWebContents(nullptr);
     }
-    attached_browser_->GetFeatures().side_panel_coordinator()->Close(
+
+    attached_browser_->GetFeatures().side_panel_ui()->Close(
         SidePanelEntry::PanelType::kContent);
   }
 

@@ -100,10 +100,6 @@ class MerchantTrustSidePanelCoordinatorBrowserTest
     return browser()->tab_strip_model()->GetActiveWebContents();
   }
 
-  SidePanelCoordinator* side_panel_coordinator() {
-    return browser()->GetFeatures().side_panel_coordinator();
-  }
-
   SidePanelEntry* GetMerchantTrustEntryForActiveTab() {
     return browser()
         ->GetActiveTabInterface()
@@ -114,7 +110,7 @@ class MerchantTrustSidePanelCoordinatorBrowserTest
   }
 
   bool IsMerchantTrustSidePanelOpen() {
-    return side_panel_coordinator()->IsSidePanelEntryShowing(
+    return browser()->GetFeatures().side_panel_ui()->IsSidePanelEntryShowing(
         SidePanelEntryKey(SidePanelEntryId::kMerchantTrust));
   }
 
@@ -304,7 +300,8 @@ IN_PROC_BROWSER_TEST_F(MerchantTrustSidePanelCoordinatorBrowserTest,
   EXPECT_TRUE(IsMerchantTrustSidePanelOpen());
 
   // Close side panel.
-  side_panel_coordinator()->Close(SidePanelEntry::PanelType::kContent);
+  browser()->GetFeatures().side_panel_ui()->Close(
+      SidePanelEntry::PanelType::kContent);
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return browser()->GetBrowserView().contents_height_side_panel()->state() ==
            SidePanel::State::kClosed;

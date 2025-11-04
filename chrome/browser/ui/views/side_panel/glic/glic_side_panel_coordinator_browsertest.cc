@@ -13,7 +13,6 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -47,9 +46,6 @@ class GlicSidePanelCoordinatorTest : public InProcessBrowserTest {
     return &GlicKeyedServiceFactory::GetGlicKeyedService(profile())->enabling();
   }
 
-  SidePanelCoordinator* side_panel_coordinator() {
-    return browser()->browser_window_features()->side_panel_coordinator();
-  }
   SidePanelRegistry* registry() {
     return browser()
         ->GetActiveTabInterface()

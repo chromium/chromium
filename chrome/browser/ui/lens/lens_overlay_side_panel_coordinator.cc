@@ -25,7 +25,6 @@
 #include "chrome/browser/ui/lens/page_content_type_conversions.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_content_proxy.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
@@ -177,13 +176,6 @@ void LensOverlaySidePanelCoordinator::RegisterEntryAndShow() {
 
   // Create the initialization data for this journey.
   initialization_data_ = std::make_unique<SidePanelInitializationData>();
-
-  // Store reference to the side panel coordinator for this journey.
-  side_panel_coordinator_ = lens_search_controller_->GetTabInterface()
-                                ->GetBrowserWindowInterface()
-                                ->GetFeatures()
-                                .side_panel_coordinator();
-  CHECK(side_panel_coordinator_);
 }
 
 SidePanelEntry::PanelType LensOverlaySidePanelCoordinator::GetPanelType()
@@ -804,10 +796,6 @@ void LensOverlaySidePanelCoordinator::DeregisterEntryAndCleanup() {
   // This is a no-op if the entry does not exist.
   registry->Deregister(
       SidePanelEntry::Key(SidePanelEntry::Id::kLensOverlayResults));
-
-  // Remove the reference to the side panel coordinator to prevent dangling
-  // pointers.
-  side_panel_coordinator_ = nullptr;
 
   // Cleanup internal state.
   side_panel_receiver_.reset();

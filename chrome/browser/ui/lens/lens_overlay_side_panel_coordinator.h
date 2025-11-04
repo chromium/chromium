@@ -32,7 +32,6 @@ class GURL;
 class LensOverlayController;
 class LensOverlaySidePanelWebView;
 class SidePanelEntryScope;
-class SidePanelCoordinator;
 
 enum class SidePanelEntryHideReason;
 
@@ -423,13 +422,6 @@ class LensOverlaySidePanelCoordinator
   // page.
   mojom::SidePanelResultStatus side_panel_result_status_ =
       mojom::SidePanelResultStatus::kUnknown;
-
-  // General side panel coordinator responsible for all side panel interactions.
-  // Separate from this class because this controls interactions to other side
-  // panels as well, not just the Lens results. The side_panel_coordinator
-  // lives with the browser view, so it should outlive this class. Therefore
-  // this can be assumed to be non-null.
-  raw_ptr<SidePanelCoordinator> side_panel_coordinator_ = nullptr;
 
   raw_ptr<LensOverlaySidePanelWebView> side_panel_web_view_;
   base::WeakPtrFactory<LensOverlaySidePanelCoordinator> weak_ptr_factory_{this};

@@ -81,12 +81,8 @@ class AboutThisSiteSidePanelCoordinatorBrowserTest
         ->GetEntryForKey(SidePanelEntryKey(SidePanelEntryId::kAboutThisSite));
   }
 
-  SidePanelCoordinator* side_panel_coordinator() {
-    return browser()->GetFeatures().side_panel_coordinator();
-  }
-
   bool IsAboutThisSiteSidePanelShowing() {
-    return side_panel_coordinator()->IsSidePanelEntryShowing(
+    return browser()->GetFeatures().side_panel_ui()->IsSidePanelEntryShowing(
         SidePanelEntryKey(SidePanelEntryId::kAboutThisSite));
   }
 
@@ -271,7 +267,8 @@ IN_PROC_BROWSER_TEST_F(AboutThisSiteSidePanelCoordinatorBrowserTest,
   EXPECT_TRUE(IsAboutThisSiteSidePanelShowing());
 
   // Close side panel.
-  side_panel_coordinator()->Close(SidePanelEntry::PanelType::kContent);
+  browser()->GetFeatures().side_panel_ui()->Close(
+      SidePanelEntry::PanelType::kContent);
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return browser()->GetBrowserView().contents_height_side_panel()->state() ==
            SidePanel::State::kClosed;

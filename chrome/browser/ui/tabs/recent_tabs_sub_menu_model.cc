@@ -43,6 +43,7 @@
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/side_panel/history_clusters/history_clusters_side_panel_coordinator.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/favicon/core/history_ui_favicon_request_handler.h"
 #include "components/favicon_base/favicon_types.h"
@@ -362,7 +363,7 @@ void RecentTabsSubMenuModel::Build() {
   InsertItemWithStringIdAt(0, IDC_SHOW_HISTORY, IDS_HISTORY_SHOW_HISTORY);
   SetCommandIcon(this, IDC_SHOW_HISTORY,
                  vector_icons::kHistoryChromeRefreshIcon);
-  if (browser_->GetFeatures().side_panel_coordinator() &&
+  if (browser_->GetFeatures().side_panel_ui() &&
       HistoryClustersSidePanelCoordinator::IsSupported(browser_->profile())) {
     InsertItemWithStringIdAt(1, IDC_SHOW_HISTORY_CLUSTERS_SIDE_PANEL,
                              IDS_HISTORY_CLUSTERS_SHOW_SIDE_PANEL);

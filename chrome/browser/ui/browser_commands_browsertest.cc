@@ -27,8 +27,8 @@
 #include "chrome/browser/ui/toasts/toast_features.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_id.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/views/tab_search_bubble_host.h"
 #include "chrome/browser/ui/webui/commerce/product_specifications_disclosure_dialog.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -854,11 +854,10 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsTest,
                        AddingToReadingListWithSidePanelShowsNoToast) {
   GURL main_url(https_server_.GetURL("a.test", "/iframe.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
-  auto* side_panel_coordinator =
-      browser()->GetFeatures().side_panel_coordinator();
-  side_panel_coordinator->Show(SidePanelEntryId::kReadingList);
+  auto* const side_panel_ui = browser()->GetFeatures().side_panel_ui();
+  side_panel_ui->Show(SidePanelEntryId::kReadingList);
   ASSERT_TRUE(base::test::RunUntil([&]() {
-    return side_panel_coordinator->IsSidePanelEntryShowing(
+    return side_panel_ui->IsSidePanelEntryShowing(
         SidePanelEntryKey(SidePanelEntryId::kReadingList));
   }));
   chrome::ExecuteCommand(browser(), IDC_READING_LIST_MENU_ADD_TAB);
