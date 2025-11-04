@@ -137,7 +137,9 @@ Animation::PlaybackConfig Animation::PlaybackConfig::CreateDefault(
   return PlaybackConfig(
       /*scheduled_cycles=*/{CycleBoundaries::FullCycle(animation)},
       /*initial_offset=*/base::TimeDelta(),
-      /*initial_completed_cycles=*/0, Animation::Style::kLoop);
+      /*initial_completed_cycles=*/0,
+      /*style=*/Animation::Style::kLoop,
+      /*ignore_reduced_motion=*/false);
 }
 
 // static
@@ -155,11 +157,13 @@ Animation::PlaybackConfig::PlaybackConfig(
     std::vector<CycleBoundaries> scheduled_cycles,
     base::TimeDelta initial_offset,
     int initial_completed_cycles,
-    Style style)
+    Style style,
+    bool ignore_reduced_motion)
     : scheduled_cycles(std::move(scheduled_cycles)),
       initial_offset(initial_offset),
       initial_completed_cycles(initial_completed_cycles),
-      style(style) {}
+      style(style),
+      ignore_reduced_motion(ignore_reduced_motion) {}
 
 Animation::PlaybackConfig::PlaybackConfig(const PlaybackConfig& other) =
     default;
@@ -238,7 +242,8 @@ void Animation::Start(std::optional<PlaybackConfig> playback_config) {
   // Reset the |timer_control_| object for a new animation play.
   timer_control_.reset(nullptr);
 
-  if (gfx::Animation::PrefersReducedMotion()) {
+  if (gfx::Animation::PrefersReducedMotion() &&
+      !playback_config->ignore_reduced_motion) {
     // Start in a paused state if "prefers reduced motion" is enabled on the
     // system.
     state_ = PlayState::kPaused;

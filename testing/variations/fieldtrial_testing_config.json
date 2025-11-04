@@ -11314,6 +11314,23 @@
             ]
         }
     ],
+    "GlicActorUiTabIndicatorSpinnerIgnoreReducedMotion": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "GlicActorUiTabIndicatorSpinnerIgnoreReducedMotion"
+                    ]
+                }
+            ]
+        }
+    ],
     "GlicAppendModelQualityClientId": [
         {
             "platforms": [
