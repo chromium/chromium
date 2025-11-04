@@ -11,7 +11,13 @@
 #include "base/functional/callback.h"
 #include "base/types/expected.h"
 #include "components/legion/legion_common.h"
+#include "components/legion/proto/legion.pb.h"
 #include "components/legion/secure_channel.h"
+#include "url/gurl.h"
+
+namespace network::mojom {
+class NetworkContext;
+}  // namespace network::mojom
 
 namespace legion {
 
@@ -24,29 +30,50 @@ class Client {
   using OnRequestCompletedCallback =
       base::OnceCallback<void(base::expected<Response, ErrorCode> result)>;
 
-  Client(
-      std::unique_ptr<SecureChannel> secure_channel,
-      const std::string& api_key);
+  // Callback for when a `SendTextRequest` operation completes.
+  using OnTextRequestCompletedCallback =
+      base::OnceCallback<void(base::expected<std::string, ErrorCode> result)>;
+
+  // Callback for when a `SendGenerateContentRequest` operation completes.
+  using OnGenerateContentRequestCompletedCallback = base::OnceCallback<void(
+      base::expected<proto::GenerateContentResponse, ErrorCode> result)>;
+
+  static Client Create(network::mojom::NetworkContext* network_context,
+                       proto::FeatureName feature_name);
+
+  static Client CreateWithUrl(const GURL& url,
+                              network::mojom::NetworkContext* network_context,
+                              proto::FeatureName feature_name);
   ~Client();
 
   Client(const Client&) = delete;
   Client& operator=(const Client&) = delete;
+  Client(Client&&);
+  Client& operator=(Client&&);
 
-  // Sends a request over the secure channel.
-  // This method orchestrates the necessary steps:
-  // 1. Authentication (e.g., using API Key)
-  // 2. Calling the SecureChannel to send the request and receive the
-  // response.
-  // 3. Logging
-  void SendRequest(Request request, OnRequestCompletedCallback callback);
+  // Sends a request with a single text content.
+  void SendTextRequest(const std::string& text,
+                       OnTextRequestCompletedCallback callback);
+
+  // Sends a `GenerateContentRequest`. The caller is responsible for populating
+  // the `request` proto, including setting the content's role to "user".
+  void SendGenerateContentRequest(
+      const proto::GenerateContentRequest& request,
+      OnGenerateContentRequestCompletedCallback callback);
 
  private:
-  // Placeholder for Authentication using API Key.
-  // Returns true on success, false on failure.
-  bool Authenticate();
+  friend class ClientTest;
 
-  const std::unique_ptr<SecureChannel> secure_channel_;
-  const std::string api_key_;
+  Client(std::unique_ptr<SecureChannel> secure_channel,
+         proto::FeatureName feature_name);
+
+  // Sends a request over the secure channel.
+  void SendRequest(
+      Request request,
+      base::OnceCallback<void(base::expected<Response, ErrorCode>)> callback);
+
+  std::unique_ptr<SecureChannel> secure_channel_;
+  proto::FeatureName feature_name_;
 };
 
 }  // namespace legion

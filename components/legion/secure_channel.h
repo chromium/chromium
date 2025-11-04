@@ -27,6 +27,12 @@ enum class ErrorCode {
   kEncryptionFailed,
   // Decryption failed. The client should not retry the request.
   kDecryptionFailed,
+  // Failed to parse the server response.
+  kResponseParseError,
+  // The server response did not contain any content.
+  kNoContent,
+  // The server response did not contain a generate_content_response.
+  kNoResponse,
 };
 
 // Interface for the Secure Channel Layer.

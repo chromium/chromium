@@ -66,6 +66,7 @@ source_set("unit_tests") {
   ]
   deps = [
     ":legion",
+    ":proto",
     "//base",
     "//base/test:test_support",
     "//testing/gmock",
