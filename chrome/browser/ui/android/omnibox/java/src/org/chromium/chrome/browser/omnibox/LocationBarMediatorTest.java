@@ -16,6 +16,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeast;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -331,14 +332,18 @@ public class LocationBarMediatorTest {
                         mPageZoomIndicatorCoordinator);
         tabletMediator.setCoordinators(
                 mUrlCoordinator, mAutocompleteCoordinator, mStatusCoordinator);
+        updateTabletWidthConsumers(tabletMediator);
+        return tabletMediator;
+    }
+
+    private void updateTabletWidthConsumers(LocationBarMediator locationBarMediator) {
         int buttonWidth =
                 mContext.getResources()
                         .getDimensionPixelSize(R.dimen.location_bar_action_icon_width);
-        tabletMediator.getMicButtonToolbarWidthConsumer().updateVisibility(buttonWidth);
-        tabletMediator.getLensButtonToolbarWidthConsumer().updateVisibility(buttonWidth);
-        tabletMediator.getInstallButtonToolbarWidthConsumer().updateVisibility(buttonWidth);
-        tabletMediator.getBookmarkButtonToolbarWidthConsumer().updateVisibility(buttonWidth);
-        return tabletMediator;
+        locationBarMediator.getMicButtonToolbarWidthConsumer().updateVisibility(buttonWidth);
+        locationBarMediator.getLensButtonToolbarWidthConsumer().updateVisibility(buttonWidth);
+        locationBarMediator.getInstallButtonToolbarWidthConsumer().updateVisibility(buttonWidth);
+        locationBarMediator.getBookmarkButtonToolbarWidthConsumer().updateVisibility(buttonWidth);
     }
 
     @Test
@@ -1300,7 +1305,10 @@ public class LocationBarMediatorTest {
         Mockito.reset(mLocationBarTablet);
 
         mTabletMediator.updateButtonVisibility();
-        verify(mLocationBarTablet).setMicButtonVisibility(shouldBeVisible);
+        updateTabletWidthConsumers(mTabletMediator);
+        ArgumentCaptor<Boolean> captor = ArgumentCaptor.forClass(Boolean.class);
+        verify(mLocationBarTablet, atLeastOnce()).setMicButtonVisibility(captor.capture());
+        assertEquals(shouldBeVisible, captor.getValue());
     }
 
     @Test
@@ -1347,7 +1355,10 @@ public class LocationBarMediatorTest {
         Mockito.reset(mLocationBarTablet);
 
         mTabletMediator.updateButtonVisibility();
-        verify(mLocationBarTablet).setLensButtonVisibility(shouldBeVisible);
+        updateTabletWidthConsumers(mTabletMediator);
+        ArgumentCaptor<Boolean> captor = ArgumentCaptor.forClass(Boolean.class);
+        verify(mLocationBarTablet, atLeastOnce()).setLensButtonVisibility(captor.capture());
+        assertEquals(shouldBeVisible, captor.getValue());
     }
 
     @Test
@@ -1360,7 +1371,10 @@ public class LocationBarMediatorTest {
         doReturn(true).when(voiceRecognitionHandler).isVoiceSearchEnabled();
 
         mMediator.updateButtonVisibility();
-        verify(mLocationBarLayout).setMicButtonVisibility(true);
+        updateTabletWidthConsumers(mTabletMediator);
+        ArgumentCaptor<Boolean> captor = ArgumentCaptor.forClass(Boolean.class);
+        verify(mLocationBarLayout, atLeastOnce()).setMicButtonVisibility(captor.capture());
+        assertTrue(captor.getValue());
     }
 
     @Test
@@ -1390,7 +1404,10 @@ public class LocationBarMediatorTest {
         Mockito.reset(mLocationBarTablet);
 
         mTabletMediator.updateButtonVisibility();
-        verify(mLocationBarTablet).setMicButtonVisibility(shouldBeVisible);
+        updateTabletWidthConsumers(mTabletMediator);
+        ArgumentCaptor<Boolean> captor = ArgumentCaptor.forClass(Boolean.class);
+        verify(mLocationBarTablet, atLeastOnce()).setMicButtonVisibility(captor.capture());
+        assertEquals(shouldBeVisible, captor.getValue());
     }
 
     @Test

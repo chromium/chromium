@@ -2127,7 +2127,7 @@ class LocationBarMediator
         public int updateVisibility(int availableWidth) {
             assert ChromeFeatureList.sToolbarTabletResizeRefactor.isEnabled();
 
-            if (availableWidth >= mButtonWidth) {
+            if (mShouldShowButton.get() && availableWidth >= mButtonWidth) {
                 mHasSpaceToShow = true;
                 mUpdateButtonVisibility.run();
                 return mButtonWidth;
