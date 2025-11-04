@@ -297,6 +297,10 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
   // session parameter changes, we enforce refresh quota for a site.
   std::map<net::SchemefulSite, std::vector<base::TimeTicks>> refresh_times_;
 
+  // Per-site record of the most recent refresh result. This is used
+  // for histograms.
+  std::map<net::SchemefulSite, SessionError> refresh_last_result_;
+
   // Holds all currently live registration fetchers.
   std::set<std::unique_ptr<RegistrationFetcher>, base::UniquePtrComparator>
       registration_fetchers_;
