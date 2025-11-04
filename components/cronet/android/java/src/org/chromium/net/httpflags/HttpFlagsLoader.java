@@ -87,7 +87,11 @@ public final class HttpFlagsLoader {
 
             Flags flags = loadFlagsFile(flagsFile);
             if (flags == null) return null;
-            Log.d(TAG, String.format("Successfully loaded HTTP flags: %s", flags));
+            if (Log.isLoggable(TAG, Log.DEBUG)) {
+                // Gated behind isLoggable() because this can be surprisingly expensive to log,
+                // especially if we have many flags.
+                Log.d(TAG, String.format("Successfully loaded HTTP flags: %s", flags));
+            }
 
             return flags;
         } catch (RuntimeException exception) {
