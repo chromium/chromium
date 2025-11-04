@@ -34,7 +34,6 @@
 #include "chrome/browser/ui/tabs/tab_list_interface.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_delegate.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
-#include "chrome/browser/ui/views/extensions/extensions_container_views.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/web_contents.h"
@@ -138,10 +137,8 @@ std::unique_ptr<ExtensionActionViewController>
 ExtensionActionViewController::Create(
     const extensions::ExtensionId& extension_id,
     BrowserWindowInterface* browser,
-    ExtensionsContainerViews* extensions_container,
     std::unique_ptr<ExtensionActionPlatformDelegate> platform_delegate) {
   DCHECK(browser);
-  DCHECK(extensions_container);
 
   Profile* profile = browser->GetProfile();
   auto* registry = extensions::ExtensionRegistry::Get(profile);
@@ -156,7 +153,7 @@ ExtensionActionViewController::Create(
   // WrapUnique() because the constructor is private.
   return base::WrapUnique(new ExtensionActionViewController(
       std::move(extension), browser, extension_action, registry,
-      extensions_container, std::move(platform_delegate)));
+      std::move(platform_delegate)));
 }
 
 // static
@@ -177,14 +174,12 @@ ExtensionActionViewController::ExtensionActionViewController(
     BrowserWindowInterface* browser,
     extensions::ExtensionAction* extension_action,
     extensions::ExtensionRegistry* extension_registry,
-    ExtensionsContainerViews* extensions_container,
     std::unique_ptr<ExtensionActionPlatformDelegate> platform_delegate)
     : extension_id_(extension->id()),
       extension_(std::move(extension)),
       browser_(browser),
       profile_(browser->GetProfile()),
       extension_action_(extension_action),
-      extensions_container_(extensions_container),
       view_delegate_(nullptr),
       platform_delegate_(std::move(platform_delegate)),
       icon_factory_(extension_.get(), extension_action, this),

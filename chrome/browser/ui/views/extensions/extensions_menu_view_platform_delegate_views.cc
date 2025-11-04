@@ -737,7 +737,7 @@ void ExtensionsMenuViewPlatformDelegateViews::InsertMenuItemMainPage(
     int index) {
   std::unique_ptr<ExtensionActionViewController> action_controller =
       ExtensionActionViewController::Create(
-          extension_id, browser_, extensions_container_,
+          extension_id, browser_,
           std::make_unique<ExtensionActionPlatformDelegateViews>(
               browser_, extensions_container_));
 

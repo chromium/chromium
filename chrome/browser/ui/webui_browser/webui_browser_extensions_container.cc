@@ -420,7 +420,7 @@ void WebUIBrowserExtensionsContainer::CreateActionForId(
   auto action_info = std::make_unique<ActionInfo>(
       *this, browser_.get(),
       ExtensionActionViewController::Create(
-          action_id, &browser_.get(), this,
+          action_id, &browser_.get(),
           std::make_unique<ExtensionActionPlatformDelegateViews>(
               &browser_.get(), this)));
   action_info->controller()->RegisterCommand();

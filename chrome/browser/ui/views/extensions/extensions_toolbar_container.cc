@@ -682,7 +682,7 @@ void ExtensionsToolbarContainer::ReorderAllChildViews() {
 void ExtensionsToolbarContainer::CreateActionForId(
     const ToolbarActionsModel::ActionId& action_id) {
   actions_.push_back(ExtensionActionViewController::Create(
-      action_id, browser_, this,
+      action_id, browser_,
       std::make_unique<ExtensionActionPlatformDelegateViews>(browser_.get(),
                                                              this)));
   auto icon = std::make_unique<ToolbarActionView>(actions_.back().get(), this);

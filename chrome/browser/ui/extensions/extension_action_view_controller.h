@@ -24,7 +24,6 @@
 
 class ExtensionActionPlatformDelegate;
 class IconWithBadgeImageSource;
-class ExtensionsContainerViews;
 enum class PopupShowAction;
 
 namespace extensions {
@@ -58,7 +57,6 @@ class ExtensionActionViewController
   static std::unique_ptr<ExtensionActionViewController> Create(
       const extensions::ExtensionId& extension_id,
       BrowserWindowInterface* browser,
-      ExtensionsContainerViews* extensions_container,
       std::unique_ptr<ExtensionActionPlatformDelegate> platform_delegate);
 
   // Returns whether any of `actions` given have access to the `web_contents`.
@@ -160,7 +158,6 @@ class ExtensionActionViewController
       BrowserWindowInterface* browser,
       extensions::ExtensionAction* extension_action,
       extensions::ExtensionRegistry* extension_registry,
-      ExtensionsContainerViews* extensions_container,
       std::unique_ptr<ExtensionActionPlatformDelegate> platform_delegate);
 
   // Returns the current web contents.
@@ -209,9 +206,6 @@ class ExtensionActionViewController
   // by this class.
   const raw_ptr<extensions::ExtensionAction, DanglingUntriaged>
       extension_action_;
-
-  // The corresponding ExtensionsContainerViews on the toolbar.
-  const raw_ptr<ExtensionsContainerViews> extensions_container_;
 
   // The context menu model for the extension.
   std::unique_ptr<extensions::ExtensionContextMenuModel> context_menu_model_;

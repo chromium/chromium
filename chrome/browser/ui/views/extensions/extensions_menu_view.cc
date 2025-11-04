@@ -309,7 +309,7 @@ void ExtensionsMenuView::CreateAndInsertNewItem(
     const ToolbarActionsModel::ActionId& id) {
   std::unique_ptr<ExtensionActionViewController> controller =
       ExtensionActionViewController::Create(
-          id, browser_, extensions_container_,
+          id, browser_,
           std::make_unique<ExtensionActionPlatformDelegateViews>(
               browser_, extensions_container_));
 
