@@ -80,12 +80,10 @@ public class RegionalCapabilitiesServiceClientAndroid {
                 SearchEngineChoiceService.getInstance().getDeviceCountry();
         Runnable provideDeviceCountry =
                 () -> {
-                    final @Nullable String deviceCountry;
+                    @Nullable String deviceCountry = null;
                     if (deviceCountryPromise.isFulfilled()) {
-                        deviceCountry = deviceCountryPromise.getResult();
-                        assert !TextUtils.isEmpty(deviceCountry);
-                    } else {
-                        deviceCountry = null;
+                        String result = deviceCountryPromise.getResult();
+                        deviceCountry = TextUtils.isEmpty(result) ? null : result;
                     }
 
                     deviceCountryCallback.onResult(deviceCountry);
