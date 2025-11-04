@@ -54,51 +54,12 @@ AutofillDriver* AutofillDriverRouter::DriverOfFrame(LocalFrameToken frame) {
 
 void AutofillDriverRouter::UnregisterDriver(AutofillDriver& driver,
                                             bool driver_is_dying) {
-  // TODO: crbug.com/365097975 - Remove the crash keys.
-  bool found_token = false;
-  bool found_token_has_driver = false;
-  bool found_token_has_right_driver = false;
-  bool found_driver = false;
-  bool found_driver_right_token = false;
-  bool found_driver_deleted = false;
-  if (auto it = form_forest_.frame_datas().find(driver.GetFrameToken());
-      it != form_forest_.frame_datas().end()) {
-    found_token = true;
-    found_token_has_driver = (*it)->driver != nullptr;
-    found_token_has_right_driver = (*it)->driver == &driver;
-  }
-  SCOPED_CRASH_KEY_NUMBER("Autofill", "num_frame_datas_before",
-                          form_forest_.frame_datas().size());
   for (const std::unique_ptr<internal::FormForest::FrameData>& frame :
        form_forest_.frame_datas()) {
     if (frame->driver == &driver) {
-      found_driver = true;
-      found_driver_right_token = frame->frame_token == driver.GetFrameToken();
       form_forest_.EraseFormsOfFrame(frame->frame_token,
                                      /*keep_frame=*/!driver_is_dying);
-      found_driver_deleted =
-          !form_forest_.frame_datas().contains(driver.GetFrameToken());
       break;
-    }
-  }
-  SCOPED_CRASH_KEY_NUMBER("Autofill", "num_frame_datas_after",
-                          form_forest_.frame_datas().size());
-  SCOPED_CRASH_KEY_BOOL("Autofill", "found_token", found_token);
-  SCOPED_CRASH_KEY_BOOL("Autofill", "found_token_has_driver",
-                        found_token_has_driver);
-  SCOPED_CRASH_KEY_BOOL("Autofill", "found_token_has_right_driver",
-                        found_token_has_right_driver);
-  SCOPED_CRASH_KEY_BOOL("Autofill", "found_driver", found_driver);
-  SCOPED_CRASH_KEY_BOOL("Autofill", "found_driver_right_token",
-                        found_driver_right_token);
-  SCOPED_CRASH_KEY_BOOL("Autofill", "found_driver_deleted",
-                        found_driver_deleted);
-  if (driver_is_dying) {
-    if (found_token_has_driver) {
-      CHECK(found_driver);
-      CHECK(found_driver_deleted);
-    } else {
-      CHECK(!found_driver);
     }
   }
 }
