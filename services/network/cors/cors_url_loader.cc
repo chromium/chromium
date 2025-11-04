@@ -489,21 +489,6 @@ void CorsURLLoader::FollowRedirect(
   if (request_.method == net::HttpRequestHeaders::kGetMethod)
     request_.request_body = nullptr;
 
-  // When we follow a redirect, we should not expect the IP address space of
-  // the target server to stay the same. The new target server's IP address
-  // space will be recomputed and Private Network Access checks will apply anew.
-  //
-  // This only affects redirects where a new request is initiated at this layer
-  // instead of being handled in `network::URLLoader`.
-  //
-  // See also: https://crbug.com/1293891
-  //
-  // Note that this is also needed to prevent a compromised renderer from using
-  // `new_url` to access arbitrary same-origin urls on a more private network,
-  // if it ever gets Private Network Access permissions to access a URL that is
-  // redirected.
-  request_.target_ip_address_space = mojom::IPAddressSpace::kUnknown;
-
   const bool original_fetch_cors_flag = fetch_cors_flag_;
   SetCorsFlagIfNeeded();
 

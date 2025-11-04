@@ -904,13 +904,6 @@ bool CorsURLLoaderFactory::IsValidRequest(const ResourceRequest& request,
           "expected.");
       return false;
     }
-
-    if (request.target_ip_address_space != mojom::IPAddressSpace::kUnknown) {
-      mojo::ReportBadMessage(
-          "CorsURLLoaderFactory: target_ip_address_space is "
-          "set.");
-      return false;
-    }
   }
 
   // The `client_side_content_decoding_enabled` flag is set only when the

@@ -125,8 +125,6 @@ std::unique_ptr<ResourceRequest> CreatePreflightRequest(
         header_names::kAccessControlRequestHeaders, request_headers);
   }
 
-  preflight_request->target_ip_address_space = request.target_ip_address_space;
-
   if (request.trusted_params.has_value()) {
     preflight_request->trusted_params = ResourceRequest::TrustedParams();
 
@@ -477,7 +475,6 @@ class PreflightController::PreflightLoader final {
         net_error == net::OK) {
       controller_->AppendToCache(*original_request_.request_initiator,
                                  original_request_.url, network_isolation_key_,
-                                 original_request_.target_ip_address_space,
                                  std::move(result));
     }
 
@@ -613,9 +610,8 @@ void PreflightController::PerformPreflightCheck(
   if (!RetrieveCacheFlags(request.load_flags) &&
       cache_.CheckIfRequestCanSkipPreflight(
           request.request_initiator.value(), request.url, network_isolation_key,
-          request.target_ip_address_space, request.credentials_mode,
-          request.method, request.headers, request.is_revalidating, net_log,
-          acam_preflight_spec_conformant)) {
+          request.credentials_mode, request.method, request.headers,
+          request.is_revalidating, net_log, acam_preflight_spec_conformant)) {
     std::move(callback).Run(net::OK, std::nullopt, false);
     return;
   }
@@ -644,10 +640,8 @@ void PreflightController::AppendToCache(
     const url::Origin& origin,
     const GURL& url,
     const net::NetworkIsolationKey& network_isolation_key,
-    mojom::IPAddressSpace target_ip_address_space,
     std::unique_ptr<PreflightResult> result) {
-  cache_.AppendEntry(origin, url, network_isolation_key,
-                     target_ip_address_space, std::move(result));
+  cache_.AppendEntry(origin, url, network_isolation_key, std::move(result));
 }
 
 }  // namespace network::cors

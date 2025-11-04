@@ -2545,7 +2545,7 @@ TEST_F(NetworkContextTest, ClearCorsPreflightCache) {
     for (auto entry : kCacheEntries) {
       preflight_cache.AppendEntry(
           url::Origin::Create(GURL(entry.origin)), GURL(entry.url),
-          net::NetworkIsolationKey(), mojom::IPAddressSpace::kUnknown,
+          net::NetworkIsolationKey(),
           cors::PreflightResult::Create(mojom::CredentialsMode::kInclude,
                                         std::string("POST"), std::nullopt,
                                         std::string("5"), nullptr));
@@ -2582,8 +2582,7 @@ TEST_F(NetworkContextTest, ClearCorsPreflightCache) {
       EXPECT_EQ(expect_entry_cached,
                 preflight_cache.DoesEntryExistForTesting(
                     url::Origin::Create(GURL(kCacheEntries[i].origin)),
-                    kCacheEntries[i].url, net::NetworkIsolationKey(),
-                    mojom::IPAddressSpace::kUnknown));
+                    kCacheEntries[i].url, net::NetworkIsolationKey()));
       if (expect_entry_cached) {
         ++cached_entries;
       }
