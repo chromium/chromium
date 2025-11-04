@@ -220,7 +220,7 @@ void WakeLock::DidReceivePermissionResponse(
   }
   // Steps 8.3.2 to 8.3.5 are described in AcquireWakeLock() and related
   // functions.
-  WakeLockManager* manager = UNSAFE_TODO(managers_[static_cast<size_t>(type)]);
+  WakeLockManager* manager = managers_[static_cast<size_t>(type)];
   DCHECK(manager);
   manager->AcquireWakeLock(resolver);
 }
