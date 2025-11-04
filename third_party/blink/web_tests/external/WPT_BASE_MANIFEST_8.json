@@ -76385,19 +76385,6 @@
      }
     },
     "css-anchor-position": {
-     "align-dialog-002.html": [
-      "d0164ca104670264e33e97061a5f197eaa7495b7",
-      [
-       null,
-       [
-        [
-         "/css/css-anchor-position/align-dialog-002-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
      "anchor-center-002.html": [
       "b7f61003a67be5baf897fa5a9c7da982586820b1",
       [
@@ -138607,9 +138594,35 @@
         {}
        ]
       ],
+      "flex-gap-decorations-029.html": [
+       "547eab98c63e6dd2f3d0e9ceb672a76cf2cdf366",
+       [
+        null,
+        [
+         [
+          "/css/css-gaps/flex/flex-gap-decorations-029-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "flex-gap-decorations-030.html": [
+       "6a1676a7d3276818d4eb01e1a1ae54fa48e6eebd",
+       [
+        null,
+        [
+         [
+          "/css/css-gaps/flex/flex-gap-decorations-030-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "fragmentation": {
        "flex-gap-decorations-fragmentation-001.html": [
-        "7898f8dc852feba3037f704eaff711a1a3f103f3",
+        "2fd34b1f587f6a2b0c4fec220fca9e94a3fdec57",
         [
          null,
          [
@@ -138886,7 +138899,7 @@
         ]
        ],
        "grid-gap-decorations-fragmentation-008.html": [
-        "763ebc14463344c999810034375fa2ac1cf544a6",
+        "a75e941f3b36e61195726983bd51f51f6a734487",
         [
          null,
          [
@@ -139614,6 +139627,32 @@
         {}
        ]
       ],
+      "grid-gap-decorations-052.html": [
+       "2b11d72699040d8525a8a583a1331e207bc00352",
+       [
+        null,
+        [
+         [
+          "/css/css-gaps/grid/grid-gap-decorations-052-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "grid-gap-decorations-053.html": [
+       "04c6e1a54676757b8b0a05d8dd9e435e8df9ae30",
+       [
+        null,
+        [
+         [
+          "/css/css-gaps/grid/grid-gap-decorations-053-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "grid-gap-decorations-38.html": [
        "8b87bcd4860ac50a1c2f3de98cec9599bebb77a3",
        [
@@ -140290,6 +140329,32 @@
         [
          [
           "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "multicol-gap-decorations-022.html": [
+       "ea61a1d7ff7f13d60c024766ddf7e2324efa3bfe",
+       [
+        null,
+        [
+         [
+          "/css/css-gaps/multicol/multicol-gap-decorations-022-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "multicol-gap-decorations-023.html": [
+       "9de693528742f37021e3f1cc337124491f6cefd1",
+       [
+        null,
+        [
+         [
+          "/css/css-gaps/multicol/multicol-gap-decorations-023-ref.html",
           "=="
          ]
         ],
@@ -149260,7 +149325,7 @@
          ]
         ],
         "masonry-intrinsic-sizing-rows-004-fr.html": [
-         "ef31288b1c163e707a3d6c54e4d85b62d99e6023",
+         "fa0b7ba24af96ebd82a2250f92c652a8c466aa49",
          [
           null,
           [
@@ -349064,14 +349129,6 @@
       "2e4c34982a2647d594213b283bb7d3d4b9af1e56",
       []
      ],
-     "align-dialog-001-expected.txt": [
-      "6f2b0ff82055717e5283a8d4996405b3274e0ba4",
-      []
-     ],
-     "align-dialog-002-ref.html": [
-      "88ba8a7e8468658929aad088aeaadbdd07b9fe1c",
-      []
-     ],
      "anchor-center-002-ref.html": [
       "40ccc2b044b3da3be44582522d99e5a138b6f354",
       []
@@ -366881,9 +366938,17 @@
        "9711085337b655b4cdb7f87be438569511ab494a",
        []
       ],
+      "flex-gap-decorations-029-ref.html": [
+       "7840e84ae2bf4ad10d899dddd046865c53fcc27c",
+       []
+      ],
+      "flex-gap-decorations-030-ref.html": [
+       "e6221a48130793ef59c9918dcbf1585ef0270f04",
+       []
+      ],
       "fragmentation": {
        "flex-gap-decorations-fragmentation-001-ref.html": [
-        "039a2e61cf5c0d332ca837c9da0e3aace0dc65b5",
+        "420a28cf15a23813f973cd6f90d1e892d10c4923",
         []
        ],
        "flex-gap-decorations-fragmentation-002-ref.html": [
@@ -366943,7 +367008,7 @@
      "grid": {
       "fragmentation": {
        "grid-gap-decorations-fragmentation-008-ref.html": [
-        "19d9c3774394b8a481f83e493439852d3676eed6",
+        "ac8c239c4f116e53f8f879d6bdfc1695ce4a0ff8",
         []
        ],
        "grid-gap-decorations-fragmentation-009-ref.html": [
@@ -367143,6 +367208,14 @@
        "cafaa519cce2ff943218d3f7e61a11ee535c66c7",
        []
       ],
+      "grid-gap-decorations-052-ref.html": [
+       "4e1c9d79a8fe1a2a6e6fbbc244dc5b51a06a8b15",
+       []
+      ],
+      "grid-gap-decorations-053-ref.html": [
+       "717fe10c002c16d62661da448145bdfeed44aca8",
+       []
+      ],
       "subgrid": {
        "fragmentation": {
         "subgrid-gap-decorations-fragmentation-006-ref.html": [
@@ -367275,6 +367348,14 @@
       ],
       "multicol-gap-decorations-020-ref.html": [
        "e11c6a14dea1f501dade26ec24d2004f1debcdce",
+       []
+      ],
+      "multicol-gap-decorations-022-ref.html": [
+       "4e363e4ce46557fafa94b0efcbce9aa260bba9f5",
+       []
+      ],
+      "multicol-gap-decorations-023-ref.html": [
+       "c4fc15855ca892a9534aed90002b6d00365b5d5a",
        []
       ]
      }
@@ -448449,6 +448530,14 @@
      "9015f1ed55d99b43fc10881f86122ec94abd3889",
      []
     ],
+    "navigate-to-javascript-url-008-expected.txt": [
+     "87f15944a87d06fc0e9a3ace3aee9ca5fc447a7b",
+     []
+    ],
+    "navigate-to-javascript-url-008.html.headers": [
+     "cbbd0ec44f7de736702add31f5eb876728d3449a",
+     []
+    ],
     "no-require-trusted-types-for-report-only.html.headers": [
      "aa00fcc15a30ef1f8968be44abc1a9e934a31979",
      []
@@ -448613,7 +448702,7 @@
       []
      ],
      "navigation-support.js": [
-      "3f3cb10e8af5ed832e469b7b2805b836b6ad778d",
+      "58bf3c63782be6a8f15a804b0f8076539094bb3d",
       []
      ],
      "passthroughpolicy.js": [
@@ -515989,13 +516078,6 @@
      }
     },
     "css-anchor-position": {
-     "align-dialog-001.html": [
-      "ba3a2b5c759d03bab599c42870ca5b918ed39324",
-      [
-       null,
-       {}
-      ]
-     ],
      "anchor-animation-dynamic-default.html": [
       "d1837a6c336725ddd675c43c8da6a19376e68d74",
       [
@@ -517536,7 +517618,7 @@
       ]
      ],
      "try-tactic-basic.html": [
-      "d96470b9edfc554e1dd881d8befc4390c924ccad",
+      "745bf0efb1f7fa7e0736eaeb8942f1d73074fc3c",
       [
        null,
        {}
@@ -527970,7 +528052,7 @@
     "css-gaps": {
      "animation": {
       "column-rule-outset-interpolation.html": [
-       "9a026986ec5c998fa93d07f86c39a563e30ebbf3",
+       "6b4ffd19590c2e005ab3eee7e613e41b9fce26f9",
        [
         null,
         {}
@@ -528019,7 +528101,7 @@
        ]
       ],
       "gap-decorations-outset-neutral-keyframe-002.html": [
-       "993606fc560913c2404cabad07f85bee0e309d0b",
+       "85cede21fb23767783e79b5726b2b69e96df908a",
        [
         null,
         {}
@@ -528338,28 +528420,28 @@
        ]
       ],
       "rule-outset-computed.html": [
-       "76dc27cb7934d6d99c99a557e5e9e75240de9e4f",
+       "cc60dbbce9d8ce321aabf03e47e11bfcb206b6ff",
        [
         null,
         {}
        ]
       ],
       "rule-outset-invalid.html": [
-       "9d89283eac1d3372d7f3cdc342de28feaac46478",
+       "afd81bead53971228365c9b3fda20b9a49173296",
        [
         null,
         {}
        ]
       ],
       "rule-outset-shorthand.html": [
-       "a556bde02d169c21f05919eb1075f324fe44d4c2",
+       "4cfb6e704dcc7342f1e2b444f9b70f745e297a27",
        [
         null,
         {}
        ]
       ],
       "rule-outset-valid.html": [
-       "b3f8dc6b0af2c8d93649d4fd4bc474bfcf19e74d",
+       "4a087bdd6313a783d3535e44919c428810736686",
        [
         null,
         {}
@@ -678445,7 +678527,7 @@
         ]
        ],
        "menubar-invoke-menulist.html": [
-        "4d228d48da217daa8dfbbfa3fd2dc87422429521",
+        "ca9995498b1c15b905a6903cf70782f8e16cae4d",
         [
          null,
          {}
@@ -683823,6 +683905,51 @@
         [
          null,
          {}
+        ]
+       ],
+       "invalid-element-types.html": [
+        "a4097e45381e922f78df42f381b6a21de31ef8d7",
+        [
+         "html/semantics/the-button-element/command-and-commandfor/invalid-element-types.html?command=--custom-event&half=first",
+         {
+          "testdriver": true,
+          "timeout": "long"
+         }
+        ],
+        [
+         "html/semantics/the-button-element/command-and-commandfor/invalid-element-types.html?command=--custom-event&half=second",
+         {
+          "testdriver": true,
+          "timeout": "long"
+         }
+        ],
+        [
+         "html/semantics/the-button-element/command-and-commandfor/invalid-element-types.html?command=show-modal&half=first",
+         {
+          "testdriver": true,
+          "timeout": "long"
+         }
+        ],
+        [
+         "html/semantics/the-button-element/command-and-commandfor/invalid-element-types.html?command=show-modal&half=second",
+         {
+          "testdriver": true,
+          "timeout": "long"
+         }
+        ],
+        [
+         "html/semantics/the-button-element/command-and-commandfor/invalid-element-types.html?command=show-popover&half=first",
+         {
+          "testdriver": true,
+          "timeout": "long"
+         }
+        ],
+        [
+         "html/semantics/the-button-element/command-and-commandfor/invalid-element-types.html?command=show-popover&half=second",
+         {
+          "testdriver": true,
+          "timeout": "long"
+         }
         ]
        ],
        "on-audio-behavior.tentative.html": [
@@ -712325,6 +712452,15 @@
     ],
     "pointer-events-none-skip-scroll.html": [
      "e69eaaf61b5ecfe2381ada2df4363dbe255d42e8",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
+    "pointer_boundary_events_after_removing_last_over_element_through_innerhtml.html": [
+     "3debaec19c970efbb03be849d271c4b948fb7190",
      [
       null,
       {
@@ -749933,6 +750069,55 @@
        }
       ]
      ],
+     "crashtests": {
+      "tee-locked-stream.any.js": [
+       "285b427e2778623979a28de8b6c91dfc774cc4e6",
+       [
+        "streams/readable-byte-streams/crashtests/tee-locked-stream.any.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ]
+         ]
+        }
+       ],
+       [
+        "streams/readable-byte-streams/crashtests/tee-locked-stream.any.serviceworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ]
+         ]
+        }
+       ],
+       [
+        "streams/readable-byte-streams/crashtests/tee-locked-stream.any.sharedworker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ]
+         ]
+        }
+       ],
+       [
+        "streams/readable-byte-streams/crashtests/tee-locked-stream.any.worker.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,worker"
+          ]
+         ]
+        }
+       ]
+      ]
+     },
      "enqueue-with-detached-buffer.any.js": [
       "92bd0a26a0ec05c2c3b8dcd25ce347964d1705d5",
       [
@@ -764450,6 +764635,13 @@
     ],
     "navigate-to-javascript-url-006.sub.html": [
      "bea4cb5dcf381e7bb6b2a3aa6b405981ced13bf6",
+     [
+      null,
+      {}
+     ]
+    ],
+    "navigate-to-javascript-url-008.html": [
+     "9a16addb48aabb0f0f9c5f49ccb00eed2aea0393",
      [
       null,
       {}
@@ -870452,7 +870644,7 @@
          ]
         ],
         "user_contexts.py": [
-         "ae4b4af04d443b8e92f7c26c7ab4fed104b869a5",
+         "6645cdf92be7e3a2721651a54fff9670583fd733",
          [
           null,
           {}
