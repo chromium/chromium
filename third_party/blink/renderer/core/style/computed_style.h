@@ -3124,6 +3124,12 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
     SetColumnHeightInternal(0);
   }
 
+  void SetFontVariantEmoji(FontVariantEmoji emoji_variant) {
+    FontDescription description(GetFontDescription());
+    description.SetVariantEmoji(emoji_variant);
+    SetFontDescription(description);
+  }
+
   // contain
   bool ShouldApplyAnyContainment(const Element& element) const {
     unsigned effective_containment = ComputedStyle::EffectiveContainment(

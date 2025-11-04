@@ -1002,6 +1002,16 @@ void StyleAdjuster::AdjustForForcedColorsMode(ComputedStyleBuilder& builder,
         builder.InternalForcedBackgroundColor().ResolveSystemColor(
             color_scheme, color_provider, is_in_web_app_scope));
   }
+  // Per the CSS Color Adjustment specification [1]:
+  // In forced-colors mode, if 'font-variant-emoji' computes to 'normal' or
+  // 'unicode', emoji should be forced to render in their monochrome
+  // (text-style) variant, if available.
+  //
+  // [1] https://www.w3.org/TR/css-color-adjust-1/#forced-colors-properties
+  FontVariantEmoji variant = builder.GetFontDescription().VariantEmoji();
+  if (variant == kNormalVariantEmoji || variant == kUnicodeVariantEmoji) {
+    builder.SetFontVariantEmoji(kTextVariantEmoji);
+  }
   if (builder.InternalForcedColor().IsSystemColor()) {
     builder.SetInternalForcedColor(
         builder.InternalForcedColor().ResolveSystemColor(
