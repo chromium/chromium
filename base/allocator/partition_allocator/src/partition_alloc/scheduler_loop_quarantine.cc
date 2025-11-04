@@ -86,6 +86,14 @@ void SchedulerLoopQuarantineBranch<thread_bound>::Configure(
   enable_zapping_ = config.enable_zapping;
   leak_on_destruction_ = config.leak_on_destruction;
   branch_capacity_in_bytes_ = config.branch_capacity_in_bytes;
+
+  // This bucket index can be invalid if "Neutral" distribution is in use,
+  // but value here is only for comparison and should be safe.
+  largest_bucket_index_ =
+      BucketIndexLookup::GetIndexForDenserBuckets(config.max_quarantine_size);
+  PA_CHECK(largest_bucket_index_ < BucketIndexLookup::kNumBuckets);
+  PA_CHECK(&allocator_root_->buckets[largest_bucket_index_] <=
+           &allocator_root_->sentinel_bucket);
 }
 
 template <bool thread_bound>
@@ -133,15 +141,21 @@ void SchedulerLoopQuarantineBranch<thread_bound>::Quarantine(
 #if PA_BUILDFLAG(DCHECKS_ARE_ON)
   PA_DCHECK(!being_destructed_);
 #endif  // PA_BUILDFLAG(DCHECKS_ARE_ON)
-  if (!enable_quarantine_ || pause_quarantine_ ||
-      allocator_root_->IsDirectMappedBucket(slot_span->bucket)) [[unlikely]] {
+  if (!enable_quarantine_ || pause_quarantine_) [[unlikely]] {
     return allocator_root_->RawFreeWithThreadCache(slot_start, object,
                                                    slot_span);
   }
 
+  if (slot_span->bucket < &allocator_root_->buckets[0] ||
+      &allocator_root_->buckets[largest_bucket_index_] < slot_span->bucket)
+      [[unlikely]] {
+    // The allocation is direct-mapped or larger than `largest_bucket_index_`.
+    return allocator_root_->RawFreeWithThreadCache(slot_start, object,
+                                                   slot_span);
+  }
+  PA_DCHECK(!allocator_root_->IsDirectMapped(slot_span));
+
   const size_t slot_size = slot_span->bucket->slot_size;
-  const size_t bucket_index =
-      static_cast<size_t>(slot_span->bucket - allocator_root_->buckets);
   const size_t capacity_in_bytes =
       branch_capacity_in_bytes_.load(std::memory_order_relaxed);
   if (capacity_in_bytes < slot_size) [[unlikely]] {
@@ -161,7 +175,8 @@ void SchedulerLoopQuarantineBranch<thread_bound>::Quarantine(
   branch_size_in_bytes_ += slot_size;
   slots_.push_back({
       .slot_start = slot_start,
-      .bucket_index = bucket_index,
+      .bucket_index =
+          static_cast<size_t>(slot_span->bucket - allocator_root_->buckets),
   });
 
   // Swap randomly so that the quarantine list remain shuffled.

@@ -117,6 +117,7 @@ struct SchedulerLoopQuarantineTestParamSmall {
       .branch_capacity_in_bytes = 256,
       .enable_quarantine = true,
       .enable_zapping = true,
+      .max_quarantine_size = 1024,
   };
 };
 struct SchedulerLoopQuarantineTestParamLarge {
@@ -125,6 +126,7 @@ struct SchedulerLoopQuarantineTestParamLarge {
       .branch_capacity_in_bytes = 2048,
       .enable_quarantine = true,
       .enable_zapping = true,
+      .max_quarantine_size = 1024,
   };
 };
 struct SchedulerLoopQuarantineTestParamSmallThreadBound {
@@ -133,6 +135,7 @@ struct SchedulerLoopQuarantineTestParamSmallThreadBound {
       .branch_capacity_in_bytes = 256,
       .enable_quarantine = true,
       .enable_zapping = true,
+      .max_quarantine_size = 1024,
   };
 };
 struct SchedulerLoopQuarantineTestParamLargeThreadBound {
@@ -141,6 +144,7 @@ struct SchedulerLoopQuarantineTestParamLargeThreadBound {
       .branch_capacity_in_bytes = 2048,
       .enable_quarantine = true,
       .enable_zapping = true,
+      .max_quarantine_size = 1024,
   };
 };
 
@@ -177,13 +181,13 @@ TYPED_TEST(SchedulerLoopQuarantineTest, Basic) {
 }
 
 TYPED_TEST(SchedulerLoopQuarantineTest, TooLargeAllocation) {
-  constexpr size_t kObjectSize = 1 << 26;  // 64 MiB.
-  const size_t capacity_in_bytes =
-      this->GetQuarantineBranch()->GetCapacityInBytes();
+  const size_t kThreshold =
+      std::min(this->GetConfig().max_quarantine_size,
+               this->GetConfig().branch_capacity_in_bytes);
 
-  void* object = this->GetPartitionRoot()->Alloc(kObjectSize);
-  const size_t size = this->GetObjectSize(object);
-  ASSERT_GT(size, capacity_in_bytes);
+  void* object = this->GetPartitionRoot()->Alloc(kThreshold + 1);
+  size_t size = this->GetObjectSize(object);
+  ASSERT_GT(size, kThreshold);
 
   this->Quarantine(object);
 
@@ -194,6 +198,15 @@ TYPED_TEST(SchedulerLoopQuarantineTest, TooLargeAllocation) {
   ASSERT_EQ(0u, stats.count);
   ASSERT_EQ(0u, stats.cumulative_size_in_bytes);
   ASSERT_EQ(0u, stats.cumulative_count);
+
+  // -32 to ensure it falls into a bucket with size under the threshold.
+  object = this->GetPartitionRoot()->Alloc(kThreshold - 32);
+  size = this->GetObjectSize(object);
+  ASSERT_LE(size, kThreshold);
+
+  this->Quarantine(object);
+
+  ASSERT_TRUE(this->GetQuarantineBranch()->IsQuarantinedForTesting(object));
 }
 
 TYPED_TEST(SchedulerLoopQuarantineTest, ScopedOptOut) {
