@@ -374,13 +374,13 @@ void History::StateObjectAdded(scoped_refptr<SerializedScriptValue> data,
   }
 
   if (!window->GetFrame()->navigation_rate_limiter().CanProceed()) {
-    // TODO(769592): Get an API spec change so that we can throw an exception:
-    //
-    //  exception_state.ThrowDOMException(DOMExceptionCode::kQuotaExceededError,
-    //                                    "Throttling history state changes to "
-    //                                    "prevent the browser from hanging.");
-    //
-    // instead of merely warning.
+    if (RuntimeEnabledFeatures::
+            ThrottledHistoryAPIThrowsSecurityErrorEnabled()) {
+      exception_state.ThrowSecurityError(
+          "Throttling history state changes to "
+          "prevent the browser from hanging.");
+    }
+
     return;
   }
 

@@ -1880,8 +1880,11 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
 
   EXPECT_TRUE(ExecJs(shell(), R"(
     for(let i = 0; i<1000; ++i) {
-      history.pushState({},"page 2", "bar.html");
-      history.back();
+      try {
+        history.pushState({},"page 2", "bar.html");
+        history.back();
+      } catch (e) {
+      }
     }
   )"));
 

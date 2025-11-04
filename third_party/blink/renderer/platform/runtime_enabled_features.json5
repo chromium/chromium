@@ -5136,6 +5136,10 @@
       base_feature: "none",
     },
     {
+      name: "ThrottledHistoryAPIThrowsSecurityError",
+      status: "stable",
+    },
+    {
       // https://drafts.csswg.org/web-animations-2/#triggers
       name: "TimelineTrigger",
       status: "experimental",
