@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/read_anything/read_anything_entry_point_controller.h"
 
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/read_anything/read_anything_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/page_action/page_action_controller.h"
@@ -36,9 +37,17 @@ void ReadAnythingEntryPointController::InvokePageAction(
   // TODO(crbug.com/455640523): Finalize the behavior here once UX & PM are
   // aligned. This may only open and not close RM, or it may trigger a LHS chip
   // after opening RM.
-  bwi->GetFeatures().side_panel_ui()->Toggle(
-      SidePanelEntryKey(SidePanelEntryId::kReadAnything),
-      side_panel_open_trigger);
+  if (features::IsImmersiveReadAnythingEnabled()) {
+    if (tabs::TabInterface* tab = bwi->GetActiveTabInterface()) {
+      auto* controller = ReadAnythingController::From(tab);
+      CHECK(controller);
+      controller->ToggleReadAnythingSidePanel(side_panel_open_trigger);
+    }
+  } else {
+    bwi->GetFeatures().side_panel_ui()->Toggle(
+        SidePanelEntryKey(SidePanelEntryId::kReadAnything),
+        side_panel_open_trigger);
+  }
 }
 
 // static

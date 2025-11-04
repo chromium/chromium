@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_action_callback.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -94,6 +95,61 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingControllerBrowserTest,
 
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return side_panel_ui->IsSidePanelEntryShowing(
+        SidePanelEntryKey(SidePanelEntryId::kReadAnything));
+  }));
+}
+
+IN_PROC_BROWSER_TEST_P(ReadAnythingControllerBrowserTest,
+                       ToggleSidePanelViaActionItem) {
+  tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
+  ASSERT_TRUE(tab);
+
+  auto* controller = ReadAnythingController::From(tab);
+
+  if (is_immersive_read_anything_enabled_) {
+    ASSERT_TRUE(controller);
+  } else {
+    ASSERT_FALSE(controller);
+  }
+
+  auto& action_manager = actions::ActionManager::Get();
+  auto* const read_anything_action =
+      action_manager.FindAction(kActionSidePanelShowReadAnything);
+  ASSERT_TRUE(read_anything_action);
+
+  auto* side_panel_ui = browser()->GetFeatures().side_panel_ui();
+  ASSERT_FALSE(side_panel_ui->IsSidePanelEntryShowing(
+      SidePanelEntryKey(SidePanelEntryId::kReadAnything)));
+
+  // Create a context with a valid trigger for the action.
+  actions::ActionInvocationContext context =
+      actions::ActionInvocationContext::Builder()
+          .SetProperty(
+              kSidePanelOpenTriggerKey,
+              static_cast<std::underlying_type_t<SidePanelOpenTrigger>>(
+                  SidePanelOpenTrigger::kToolbarButton))
+          .Build();
+
+  read_anything_action->InvokeAction(std::move(context));
+
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return side_panel_ui->IsSidePanelEntryShowing(
+        SidePanelEntryKey(SidePanelEntryId::kReadAnything));
+  }));
+
+  // Invoke the action again to close the side panel.
+  // Create a new context for the second invocation.
+  actions::ActionInvocationContext context2 =
+      actions::ActionInvocationContext::Builder()
+          .SetProperty(
+              kSidePanelOpenTriggerKey,
+              static_cast<std::underlying_type_t<SidePanelOpenTrigger>>(
+                  SidePanelOpenTrigger::kToolbarButton))
+          .Build();
+  read_anything_action->InvokeAction(std::move(context2));
+
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return !side_panel_ui->IsSidePanelEntryShowing(
         SidePanelEntryKey(SidePanelEntryId::kReadAnything));
   }));
 }

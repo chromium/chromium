@@ -24,22 +24,34 @@ ReadAnythingController::ReadAnythingController(tabs::TabInterface* tab)
 
 ReadAnythingController::~ReadAnythingController() = default;
 
+// Returns the SidePanelUI for the active tab if the tab is active and has a
+// browser window interface. Returns nullptr otherwise.
+SidePanelUI* ReadAnythingController::GetSidePanelUI() {
+  CHECK(tab_);
+  CHECK(tab_->IsActivated());
+  CHECK(tab_->GetBrowserWindowInterface());
+
+  return tab_->GetBrowserWindowInterface()->GetFeatures().side_panel_ui();
+}
+
 // TODO(crbug.com/447418049): Open immersive reading mode via this
 // entrypoint. Currently just open side panel reading mode via
 // ReadAnythingController when is_immersive_read_anything_enabled_ flag is
 // enabled.
 void ReadAnythingController::ShowUI(SidePanelOpenTrigger trigger) {
-  CHECK(tab_);
-  // The UI should only be shown for the active tab.
-  CHECK(tab_->IsActivated());
-  if (!tab_->GetBrowserWindowInterface()) {
-    return;
+  if (SidePanelUI* side_panel_ui = GetSidePanelUI()) {
+    side_panel_ui->Show(SidePanelEntryId::kReadAnything, trigger);
   }
-  auto* side_panel_ui =
-      tab_->GetBrowserWindowInterface()->GetFeatures().side_panel_ui();
-  if (!side_panel_ui) {
-    return;
-  }
+}
 
-  side_panel_ui->Show(SidePanelEntryId::kReadAnything, trigger);
+// TODO(crbug.com/447418049): Toggle immersive reading mode via this
+// entrypoint. Currently just toggle side panel reading mode via
+// ReadAnythingController when is_immersive_read_anything_enabled_ flag is
+// enabled.
+void ReadAnythingController::ToggleReadAnythingSidePanel(
+    SidePanelOpenTrigger trigger) {
+  if (SidePanelUI* side_panel_ui = GetSidePanelUI()) {
+    side_panel_ui->Toggle(SidePanelEntryKey(SidePanelEntryId::kReadAnything),
+                          trigger);
+  }
 }

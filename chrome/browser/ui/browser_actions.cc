@@ -274,7 +274,8 @@ void BrowserActions::InitializeBrowserActions() {
             .Build());
   }
 
-  if (features::IsReadAnythingOmniboxChipEnabled()) {
+  if (features::IsReadAnythingOmniboxChipEnabled() ||
+      features::IsImmersiveReadAnythingEnabled()) {
     actions::ActionItem::InvokeActionCallback read_anything_callback =
         base::BindRepeating(
             [](BrowserWindowInterface* bwi, actions::ActionItem* item,
