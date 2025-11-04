@@ -367,6 +367,21 @@ TEST_P(ConnectorsServiceExemptURLsTest, ThirdPartyExtensions) {
   }
 }
 
+TEST_P(ConnectorsServiceExemptURLsTest, DevTools) {
+  auto* service = ConnectorsServiceFactory::GetForBrowserContext(profile_);
+
+  for (const char* url :
+       {"devtools://fake_id", "devtools://fake_id/background",
+        "devtools://devtools/main.html",
+        "devtools://devtools/bundled/main.html?param=value"}) {
+    ASSERT_TRUE(GURL(url).is_valid());
+    auto settings = service->GetAnalysisSettings(GURL(url), connector());
+    ASSERT_NE(settings.has_value(),
+              connector() == AnalysisConnector::BULK_DATA_ENTRY ||
+                  connector() == AnalysisConnector::FILE_ATTACHED);
+  }
+}
+
 TEST_P(ConnectorsServiceExemptURLsTest, BlobAndFilesystem) {
   auto* service = ConnectorsServiceFactory::GetForBrowserContext(profile_);
 

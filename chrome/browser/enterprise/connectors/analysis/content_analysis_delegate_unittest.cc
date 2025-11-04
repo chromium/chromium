@@ -524,7 +524,7 @@ TEST_F(ContentAnalysisDelegateIsEnabledTest, MalwareEnabledWithPatterns) {
   ValidateIsEnabled("custom://google.com", /*dlp*/ false, /*malware*/ false);
   ValidateIsEnabled("custom://version", /*dlp*/ false, /*malware*/ false);
   ValidateIsEnabled("devtools://devtools/bundled/inspector.html", /*dlp*/ false,
-                    /*malware*/ true);
+                    /*malware*/ false);
   ValidateIsEnabled("custom://devtools/bundled/inspector.html", /*dlp*/ false,
                     /*malware*/ false);
   ValidateIsEnabled("http://google.com/a/specific/path/", /*dlp*/ false,

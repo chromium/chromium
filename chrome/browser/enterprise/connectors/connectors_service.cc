@@ -88,9 +88,18 @@ std::string GetClientId(Profile* profile) {
   return client_id;
 }
 
-bool IsURLExemptFromAnalysis(const GURL& url) {
-  if (url.SchemeIs(content::kChromeUIScheme))
+bool IsURLExemptFromAnalysis(const GURL& url, AnalysisConnector connector) {
+  if (url.SchemeIs(content::kChromeUIScheme)) {
     return true;
+  }
+
+  // Devtools are only exempt for file attaching and pasting since that doesn't
+  // have a chance of leaking sensitive data.
+  if (url.SchemeIs(content::kChromeDevToolsScheme) &&
+      (connector == AnalysisConnector::BULK_DATA_ENTRY ||
+       connector == AnalysisConnector::FILE_ATTACHED)) {
+    return true;
+  }
 
 #if BUILDFLAG(IS_CHROMEOS)
   if (url.SchemeIs(extensions::kExtensionScheme) &&
@@ -191,11 +200,9 @@ std::optional<AnalysisSettings> ConnectorsService::GetAnalysisSettings(
     const GURL& url,
     AnalysisConnector connector) {
   DCHECK_NE(connector, AnalysisConnector::FILE_TRANSFER);
-  if (!ConnectorsEnabled())
+  if (!ConnectorsEnabled() || IsURLExemptFromAnalysis(url, connector)) {
     return std::nullopt;
-
-  if (IsURLExemptFromAnalysis(url))
-    return std::nullopt;
+  }
 
   if (url.SchemeIsBlob() || url.SchemeIsFileSystem()) {
     GURL inner = url.inner_url() ? *url.inner_url() : GURL(url.GetPath());
