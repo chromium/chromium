@@ -45,8 +45,6 @@ class WebContents;
 //   acts as its delegate to interact with `host`.
 //   2) At the end of the flow the host is closed and a browser is opened,
 //   via `FinishAndOpenBrowser().
-// TODO(crbug.com/404806750): Update the documentation as we add more cases for
-// the History Sync Optin screen.
 class ProfilePickerPostSignInAdapter : public content::WebContentsDelegate,
                                        public HistorySyncOptinHelper::Delegate {
  public:

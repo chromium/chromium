@@ -847,7 +847,7 @@ class HistorySyncOptinCoordinator
 
   void PromoUsed() {
     CHECK(before_promo_used_elapsed_timer_.has_value());
-    // TODO(crbug.com/447048341): Extend/Duplicate the below histogram to
+    // TODO(crbug.com/440006977): Extend/Duplicate the below histogram to
     // support the different promos.
     if (promo_type_.value() ==
             signin::ProfileMenuAvatarButtonPromoInfo::Type::kHistorySyncPromo ||

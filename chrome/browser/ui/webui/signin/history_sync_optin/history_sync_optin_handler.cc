@@ -174,10 +174,6 @@ void HistorySyncOptinHandler::FinishAndCloseDialog(
 
 void HistorySyncOptinHandler::AddHistorySyncConsent() {
   CHECK(identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin));
-  // TODO(crbug.com/404806988): As we add the invocation points check if
-  // additional actions are needed to enable sync for history. The invocation
-  // below works for an already syncing user. It enables the syncing for history
-  // if it's not already turned on.
   signin_util::EnableHistorySync(SyncServiceFactory::GetForProfile(profile_));
 }
 

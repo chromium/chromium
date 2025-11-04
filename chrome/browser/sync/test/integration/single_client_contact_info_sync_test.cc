@@ -435,8 +435,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientContactInfoSyncTest,
 }
 
 // Regression test for https://crbug.com/340194452.
-// TODO(crbug.com/40943238): Remove when toggle becomes available on the Sync
-// page for non-syncing users.
+// TODO(crbug.com/40943238): Remove when `kReplaceSyncPromosWithSignInPromos` is
+// enabled.
 IN_PROC_BROWSER_TEST_F(SingleClientContactInfoSyncTest,
                        IsAutofillSyncToggleAvailable) {
   // Setup transport mode.

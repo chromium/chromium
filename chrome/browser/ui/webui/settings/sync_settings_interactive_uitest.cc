@@ -163,7 +163,7 @@ IN_PROC_BROWSER_TEST_F(SyncSettingsInteractiveTest,
       InstrumentTab(kDiceSignInTabId, 1, browser()), Do([&]() {
         CoreAccountInfo account_info =
             identity_test_env()->MakeAccountAvailable(kTestEmail);
-        // TODO(crbug.com/419203245): Investigate why using the more suitable
+        // TODO(crbug.com/457428660): Investigate why using the more suitable
         // `GetSignInTabWithAccessPoint` returns null.
         content::WebContents* contents =
             browser()->tab_strip_model()->GetWebContentsAt(1);
@@ -180,7 +180,7 @@ IN_PROC_BROWSER_TEST_F(SyncSettingsInteractiveTest,
                          UiElementHasAppeared(kHistoryOptinAcceptButton)),
       WaitForStateChange(kHistorySyncOptinDialogContentsId,
                          UiElementHasAppeared(kHistoryOptinRejectButton)));
-  // TODO(crbug.com/419203245): Add metrics checks once they are implemented.
+  // TODO(crbug.com/457428660): Add metrics checks once they are implemented.
 }
 
 // Tests that a signed in user on the web can trigger and see the History

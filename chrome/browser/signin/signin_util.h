@@ -221,7 +221,7 @@ bool HasExplicitlyDisabledHistorySync(
 // are met. Otherwise it returns a skip reason.
 // This method does not take into account the feature flag
 // `ReplaceSyncPromosWithSignInPromos`.
-// TODO(crbug.com/419741847): Consider using also on mobile and moving the
+// TODO(crbug.com/457397173): Consider using also on mobile and moving the
 // method as necessary.
 ShouldShowHistorySyncOptinResult ShouldShowHistorySyncOptinScreen(
     Profile& profile);

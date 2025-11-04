@@ -105,8 +105,6 @@ class HistorySyncOptinHelperTestObserver
   base::raw_ref<base::test::TestFuture<void>> future_;
 };
 
-// TODO(crbug.com/434964019): When management screen support is implemented
-// for the browser case, make this test parametrizable.
 class HistorySyncOptinHelperBrowserTest
     : public SigninBrowserTestBase,
       public testing::WithParamInterface<

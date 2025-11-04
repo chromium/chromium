@@ -38,8 +38,6 @@ std::string ParamToTestSuffix(
 const PixelTestParam kDialogTestParams[] = {
     {.test_suffix = "Regular"},
     {.test_suffix = "DarkTheme", .use_dark_theme = true},
-    /* TODO(crbug.com/406751006): Until the strings are translatable the RTL
-       language does not fully apply. */
     {.test_suffix = "Rtl", .use_right_to_left_language = true},
 };
 }  // namespace

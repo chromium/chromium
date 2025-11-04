@@ -113,7 +113,6 @@ suite('ClearBrowsingDataDesktop', function() {
     testSyncBrowserProxy = new TestSyncBrowserProxy();
     SyncBrowserProxyImpl.setInstance(testSyncBrowserProxy);
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    // TODO(b/314968275): Add tests for when UNO Desktop is enabled.
     resetRouterForTesting();
 
     element = document.createElement('settings-clear-browsing-data-dialog');

@@ -154,8 +154,6 @@ void ComputeProfileMenuAvatarButtonPromoInfoWithBatchUploadResult(
       });
 
   // Batch Upload promo: Windows 10 depreciation promo.
-  // TODO(crbug.com/447048341): Confirm whether additional requirements are
-  // needed for this promo (e.g. minimum cookie age, cross account error).
   if (local_data_count > 0 && switches::IsSigninWindows10DepreciationState()) {
     std::move(result_callback)
         .Run(ProfileMenuAvatarButtonPromoInfo{

@@ -169,7 +169,7 @@ class ProcessDiceHeaderDelegateImplTest
           base::BindRepeating(
               &ProcessDiceHeaderDelegateImplTest::StartSyncCallback,
               base::Unretained(this)),
-          // TODO(crbug.com/419203245): Update the history sync optin callback.
+          // TODO(crbug.com/457399246): Update the history sync optin callback.
           /*history_sync_optin_callback=*/base::NullCallback(),
           base::BindRepeating(
               &ProcessDiceHeaderDelegateImplTest::OnSigninHeaderReceived,

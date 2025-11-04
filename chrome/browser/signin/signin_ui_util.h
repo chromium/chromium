@@ -91,7 +91,7 @@ void SignInFromSingleAccountPromo(Profile* profile,
 //   shows to the user the sync consent screen is
 //   `kReplaceSyncPromosWithSignInPromos` is disabled or the history sync optin
 //   screen if `kReplaceSyncPromosWithSignInPromos` is enabled.
-// TODO(crbug.com/418145883): Consider renaming this method.
+// TODO(crbug.com/457398017): Consider renaming this method.
 void EnableSyncFromSingleAccountPromo(Profile* profile,
                                       const CoreAccountInfo& account,
                                       signin_metrics::AccessPoint access_point);
@@ -103,7 +103,7 @@ void EnableSyncFromSingleAccountPromo(Profile* profile,
 //
 // |is_default_promo_account| is true if |account| corresponds to the default
 // account in the promo. It is ignored if |account| is empty.
-// TODO(crbug.com/418145883): Consider renaming this method.
+// TODO(crbug.com/457398017): Consider renaming this method.
 void EnableSyncFromMultiAccountPromo(Profile* profile,
                                      const CoreAccountInfo& account,
                                      signin_metrics::AccessPoint access_point,

@@ -664,7 +664,7 @@ base::Value::List PeopleHandler::GetStoredAccountsList() {
   return accounts;
 }
 
-// TODO(crbug.com/419203245): Rename this method once syncing is removed.
+// TODO(crbug.com/457426419): Rename this method once syncing is removed.
 void PeopleHandler::HandleStartSyncingWithEmail(const base::Value::List& args) {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   DCHECK(AccountConsistencyModeManager::IsDiceEnabledForProfile(profile_) ||
