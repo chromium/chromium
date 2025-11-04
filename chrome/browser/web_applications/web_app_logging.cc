@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/feature_list.h"
+#include "base/strings/to_string.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
@@ -66,8 +67,7 @@ void InstallErrorLogEntry::LogUrlLoaderError(
 
   base::Value::Dict url_loader_error;
 
-  url_loader_error.Set("WebAppUrlLoader::Result",
-                       ConvertUrlLoaderResultToString(result));
+  url_loader_error.Set("WebAppUrlLoader::Result", base::ToString(result));
 
   LogErrorObject(stage, url, std::move(url_loader_error));
 }

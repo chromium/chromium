@@ -9,6 +9,7 @@
 
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/to_string.h"
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/commands/command_metrics.h"
@@ -121,8 +122,7 @@ void WebInstallFromUrlCommand::Abort(webapps::InstallResultCode code) {
 
 void WebInstallFromUrlCommand::OnUrlLoadedFetchManifest(
     webapps::WebAppUrlLoaderResult result) {
-  GetMutableDebugValue().Set("url_loading_result",
-                             ConvertUrlLoaderResultToString(result));
+  GetMutableDebugValue().Set("url_loading_result", base::ToString(result));
 
   if (result != webapps::WebAppUrlLoaderResult::kUrlLoaded) {
     install_error_log_entry_.LogUrlLoaderError("OnUrlLoadedFetchManifest",

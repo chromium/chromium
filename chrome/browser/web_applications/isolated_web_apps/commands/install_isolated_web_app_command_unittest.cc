@@ -247,11 +247,9 @@ TEST_F(InstallIsolatedWebAppCommandTest,
   page_state.url_load_result =
       webapps::WebAppUrlLoaderResult::kFailedWebContentsDestroyed;
 
-  EXPECT_THAT(
-      ExecuteCommand(Parameters{.url_info = url_info}),
-      ErrorIs(Field(
-          &InstallIsolatedWebAppCommandError::message,
-          HasSubstr("Error during URL loading: FailedWebContentsDestroyed"))));
+  EXPECT_THAT(ExecuteCommand(Parameters{.url_info = url_info}),
+              ErrorIs(Field(&InstallIsolatedWebAppCommandError::message,
+                            HasSubstr("FailedWebContentsDestroyed"))));
 
   EXPECT_THAT(histogram_tester_.GetAllSamples("WebApp.Isolated.InstallSuccess"),
               BucketsAre(base::Bucket(false, 1)));
