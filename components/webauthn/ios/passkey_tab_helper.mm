@@ -37,6 +37,20 @@ void LogEvent(WebAuthenticationIOSContentAreaEvent event) {
                                 event);
 }
 
+class [[maybe_unused, nodiscard]] ScopedAllowPasskeyCreationInfobar {
+ public:
+  ScopedAllowPasskeyCreationInfobar(IOSPasskeyClient* client)
+      : client_(client) {
+    client_->AllowPasskeyCreationInfobar(true);
+  }
+  ~ScopedAllowPasskeyCreationInfobar() {
+    client_->AllowPasskeyCreationInfobar(false);
+  }
+
+ private:
+  raw_ptr<IOSPasskeyClient> client_;
+};
+
 }  // namespace
 
 PasskeyTabHelper::~PasskeyTabHelper() = default;
@@ -83,6 +97,13 @@ PasskeyTabHelper::PasskeyTabHelper(web::WebState* web_state,
 
   PasskeyJavaScriptFeature::GetInstance()->SetAllowModalLogin(
       web_state, client_->IsModalLoginWithShimAllowed());
+}
+
+void PasskeyTabHelper::AddNewPasskey(
+    sync_pb::WebauthnCredentialSpecifics& passkey) {
+  ScopedAllowPasskeyCreationInfobar scopedAllowPasskeyCreationInfobar(
+      client_.get());
+  passkey_model_->CreatePasskey(passkey);
 }
 
 // WebStateObserver

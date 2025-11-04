@@ -2,5 +2,8 @@ include_rules = [
   "+components/affiliations/core/browser",
   "+components/webauthn/core/browser",
   "+ios/chrome/browser/affiliations/model",
+  "+ios/chrome/browser/credential_provider/model",
   "+ios/chrome/browser/sync/model",
+  "+ios/chrome/browser/shared/model/browser",
+  "+ios/chrome/browser/shared/model/profile",
 ]
