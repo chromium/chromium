@@ -37,10 +37,6 @@
 
 namespace {
 
-// The insets for main region and its containing views when the
-// toolbar_height_side_panel is visible.
-constexpr int kContainerInsetPadding = 8 + views::Separator::kThickness;
-
 // Shorthand for validating both `child` and `parent` and checking that one is
 // parented to the other. Ignores child visibility.
 bool IsParentedTo(const views::View* child, const views::View* parent) {
@@ -357,21 +353,32 @@ BrowserViewLayoutImpl::CalculateProposedLayout(
 
   int x = params.visual_client_area.x();
 
+  // The insets for main region and its containing views when the
+  // toolbar_height_side_panel is visible.
+  const int container_inset_padding =
+      GetLayoutConstant(LayoutConstant::TOOLBAR_HEIGHT_SIDE_PANEL_INSET) +
+      views::Separator::kThickness;
+
   // Lay out toolbar-height side panel.
   if (IsParentedToAndVisible(views().toolbar_height_side_panel,
                              views().browser_view)) {
-    const gfx::Rect main_region_bounds(
+    const gfx::Rect main_background_region_bounds(
         x, std::max(y, params.visual_client_area.y()),
         params.visual_client_area.width(),
         params.visual_client_area.bottom() - params.visual_client_area.y());
-    layout.AddChild(views().main_region, main_region_bounds, true);
+    layout.AddChild(views().main_background_region,
+                    main_background_region_bounds, true);
 
     const int width =
         views().toolbar_height_side_panel->GetPreferredSize().width();
     const int visible_width = base::ClampFloor(
         width * views().toolbar_height_side_panel->GetAnimationValue());
+    // Add container_inset_padding to the top of the toolbar height side panel
+    // to separate it from the tab strip. SidePanel draws the top on top of the
+    // top content separator and some units of the toolbar by default, which is
+    // not needed for the toolbar height side panel.
     const int top = std::max(
-        y + kContainerInsetPadding,
+        y + container_inset_padding,
         params.visual_client_area.y() +
             base::ClampCeil(
                 params.leading_exclusion.ContentWithPadding().height()));
@@ -380,9 +387,9 @@ BrowserViewLayoutImpl::CalculateProposedLayout(
     x = toolbar_height_bounds.right();
     layout.AddChild(views().toolbar_height_side_panel, toolbar_height_bounds);
   } else {
-    // Set the main_region bounds to 0 since it should only be visible when
-    // toolbar height side panel is visible.
-    layout.AddChild(views().main_region, gfx::Rect(), false);
+    // Set the main_background_region bounds to 0 since it should only be
+    // visible when toolbar height side panel is visible.
+    layout.AddChild(views().main_background_region, gfx::Rect(), false);
   }
 
   // Layout the main container.
@@ -391,7 +398,10 @@ BrowserViewLayoutImpl::CalculateProposedLayout(
 
   if (IsParentedToAndVisible(views().toolbar_height_side_panel,
                              views().browser_view)) {
-    main_bounds.Inset(kContainerInsetPadding);
+    // When the toolbar height side panel is visible, main container is shifted
+    // and separated by container_inset_padding on all side. This includes
+    // padding the top of main_container from the tab_strip.
+    main_bounds.Inset(container_inset_padding);
   }
 
   const BrowserLayoutParams main_params =

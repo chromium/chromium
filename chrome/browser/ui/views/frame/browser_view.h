@@ -1142,7 +1142,7 @@ class BrowserView : public BrowserWindow,
 
   // The view that draws the background the main_container and
   // toolbar_height_side_panel are displayed on.
-  raw_ptr<views::View> main_region_ = nullptr;
+  raw_ptr<views::View> main_background_region_ = nullptr;
 
   // The view that contains the primary UI (Toolbar, BookmarksBar, InfoBar,
   // WebContents, and Side panel).

@@ -136,8 +136,8 @@
 #include "chrome/browser/ui/views/frame/contents_separator.h"
 #include "chrome/browser/ui/views/frame/layout/browser_view_layout.h"
 #include "chrome/browser/ui/views/frame/layout/browser_view_layout_delegate_impl.h"
+#include "chrome/browser/ui/views/frame/main_background_region_view.h"
 #include "chrome/browser/ui/views/frame/main_container_view.h"
-#include "chrome/browser/ui/views/frame/main_region_view.h"
 #include "chrome/browser/ui/views/frame/multi_contents_view.h"
 #include "chrome/browser/ui/views/frame/multi_contents_view_delegate.h"
 #include "chrome/browser/ui/views/frame/multi_contents_view_drop_target_controller.h"
@@ -874,7 +874,8 @@ BrowserView::BrowserView(Browser* browser)
 
   browser_->tab_strip_model()->AddObserver(this);
 
-  main_region_ = AddChildView(std::make_unique<MainRegionView>(*this));
+  main_background_region_ =
+      AddChildView(std::make_unique<MainBackgroundRegionView>(*this));
 
   main_container_ = AddChildView(std::make_unique<MainContainerView>(*this));
 
@@ -1058,7 +1059,7 @@ BrowserView::~BrowserView() {
   // These are raw pointers to child views, so they need to be set to null
   // before `RemoveAllChildViews()` is called to avoid dangling.
   browser_widget_ = nullptr;
-  main_region_ = nullptr;
+  main_background_region_ = nullptr;
   top_container_ = nullptr;
   web_app_frame_toolbar_ = nullptr;
   web_app_window_title_ = nullptr;
@@ -5156,7 +5157,7 @@ void BrowserView::AddedToWidget() {
   layout_views.browser_view = this;
   layout_views.window_scrim = window_scrim_view_;
   layout_views.main_container = main_container_;
-  layout_views.main_region = main_region_;
+  layout_views.main_background_region = main_background_region_;
   layout_views.top_container = top_container_;
   layout_views.web_app_frame_toolbar = web_app_frame_toolbar_;
   layout_views.web_app_window_title = web_app_window_title_;

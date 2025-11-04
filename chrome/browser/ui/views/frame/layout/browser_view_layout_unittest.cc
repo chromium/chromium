@@ -182,10 +182,10 @@ class BrowserViewLayoutTest : public ChromeViewsTestBase {
         .WillRepeatedly(testing::ReturnRef(data_host_));
     immersive_mode_controller_ = std::make_unique<MockImmersiveModeController>(
         &browser_window_interface_);
-    main_region_ =
+    main_background_region_ =
         browser_view_->AddChildView(CreateFixedSizeView(kDefaultViewSize));
-    main_container_ =
-        main_region_->AddChildView(CreateFixedSizeView(kDefaultViewSize));
+    main_container_ = main_background_region_->AddChildView(
+        CreateFixedSizeView(kDefaultViewSize));
 
     top_container_ = main_container_->AddChildView(
         CreateFixedSizeView(gfx::Size(kBaseWidth, 60)));
@@ -262,7 +262,7 @@ class BrowserViewLayoutTest : public ChromeViewsTestBase {
     // The other views are children of |browser_view_| and will be destroyed
     // along with it after TearDown(). Null out the pointers to avoid them
     // dangling.
-    main_region_ = nullptr;
+    main_background_region_ = nullptr;
     main_container_ = nullptr;
     top_container_ = nullptr;
     webui_tab_strip_ = nullptr;
@@ -296,7 +296,7 @@ class BrowserViewLayoutTest : public ChromeViewsTestBase {
   std::unique_ptr<views::View> browser_view_;
 
   // Views owned by |browser_view_|.
-  raw_ptr<views::View> main_region_;
+  raw_ptr<views::View> main_background_region_;
   raw_ptr<views::View> top_container_;
   raw_ptr<TabStripRegionView> tab_strip_region_view_;
   raw_ptr<views::View> webui_tab_strip_;

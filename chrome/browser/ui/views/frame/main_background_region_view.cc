@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/frame/main_region_view.h"
+#include "chrome/browser/ui/views/frame/main_background_region_view.h"
 
 #include "chrome/browser/ui/views/frame/top_container_background.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/canvas.h"
 
-MainRegionView::MainRegionView(BrowserView& browser_view)
+MainBackgroundRegionView::MainBackgroundRegionView(BrowserView& browser_view)
     : browser_view_(browser_view) {}
-MainRegionView::~MainRegionView() = default;
+MainBackgroundRegionView::~MainBackgroundRegionView() = default;
 
-void MainRegionView::OnPaint(gfx::Canvas* canvas) {
+void MainBackgroundRegionView::OnPaint(gfx::Canvas* canvas) {
   TopContainerBackground::PaintBackground(canvas, this, &browser_view_.get());
 }
 
-BEGIN_METADATA(MainRegionView) END_METADATA
+BEGIN_METADATA(MainBackgroundRegionView) END_METADATA

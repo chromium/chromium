@@ -174,6 +174,10 @@ enum LayoutConstant {
   // corner radius on the top of the toolbar introduced in chrome refresh 2023
   TOOLBAR_CORNER_RADIUS,
 
+  // The padding between the bottom of the tab strip and top of the toolbar
+  // height side panel.
+  TOOLBAR_HEIGHT_SIDE_PANEL_INSET,
+
   // The horizontal padding between the sides of the vertical tab strip and its
   // content.
   VERTICAL_TAB_STRIP_HORIZONTAL_PADDING,
