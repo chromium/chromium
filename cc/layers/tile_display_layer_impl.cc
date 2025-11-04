@@ -391,6 +391,7 @@ void TileDisplayLayerImpl::AppendQuadsForResourcelessSoftwareDraw(
   // `DRAW_MODE_RESOURCELESS_SOFTWARE` is a renderer-only software draw mode,
   // and its handling is thus specific to the renderer-side PictureLayerImpl. It
   // should never be propagated to the Viz side.
+  NOTREACHED();
 }
 
 }  // namespace cc
