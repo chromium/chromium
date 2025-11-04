@@ -56,6 +56,7 @@
 #include "third_party/blink/renderer/core/css/resolver/style_builder.h"
 #include "third_party/blink/renderer/core/css/resolver/style_builder_converter.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
+#include "third_party/blink/renderer/core/css/route_query.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/css/style_rule_function_declarations.h"
 #include "third_party/blink/renderer/core/css/try_value_flips.h"
@@ -2671,6 +2672,13 @@ bool StyleCascade::EvalIfCondition(CSSParserTokenStream& stream,
             StyleResolverState& resolver_state)
         : evaluate_style_func_(evaluate_style_func),
           resolver_state_(resolver_state) {}
+
+    KleeneValue EvaluateRouteQueryExpNode(
+        const RouteQueryExpNode& node) override {
+      // Evaluate route() function
+      bool result = node.GetRouteTest().Matches(resolver_state_.GetDocument());
+      return result ? KleeneValue::kTrue : KleeneValue::kFalse;
+    }
 
     KleeneValue EvaluateMediaQueryFeatureExpNode(
         const MediaQueryFeatureExpNode& node) override {

@@ -1810,6 +1810,9 @@
     // Layered @import rule
     "layer",
 
+    // if(route())
+    "route",
+
     // supports in import rule: @import supports()
     "supports",
     // @import scope()

@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_stream.h"
 #include "third_party/blink/renderer/core/css/parser/css_supports_parser.h"
 #include "third_party/blink/renderer/core/css/parser/media_query_parser.h"
+#include "third_party/blink/renderer/core/css/parser/route_parser.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
@@ -26,7 +27,8 @@ const ConditionalExpNode* CSSIfParser::ConsumeLeaf(CSSParserTokenStream&) {
 // <if-test> =
 //   supports( [ <supports-condition> | <ident> : <declaration-value> ] ) |
 //   media( <media-feature> | <media-condition> ) |
-//   style( <style-query> )
+//   style( <style-query> ) |
+//   route( <route-condition> )
 const ConditionalExpNode* CSSIfParser::ConsumeFunction(
     CSSParserTokenStream& stream) {
   DCHECK_EQ(stream.Peek().GetType(), kFunctionToken);
@@ -79,6 +81,26 @@ const ConditionalExpNode* CSSIfParser::ConsumeFunction(
                 stream, ContainerQueryParser::StyleFeatureSet())) {
       guard.Release();
       return ConditionalExpNode::Function(query, AtomicString("style"));
+    }
+  }
+  if (stream.Peek().FunctionId() == CSSValueID::kRoute &&
+      RuntimeEnabledFeatures::RouteMatchingEnabled()) {
+    CSSParserTokenStream::RestoringBlockGuard guard(stream);
+    stream.ConsumeWhitespace();
+    RouteParser route_parser(*parser_context_.GetDocument());
+    CSSParserTokenStream::State savepoint = stream.Save();
+    // We're inside the function's parentheses. Don't require any additional
+    // ones. Look for <route-test>.
+    const ConditionalExpNode* node = route_parser.ConsumeLeaf(stream);
+    if (!node) {
+      // If that fails, though, look for <route-condition>, to handle additional
+      // parentheses and expressions.
+      stream.Restore(savepoint);
+      node = route_parser.ConsumeCondition(stream);
+    }
+    if (node) {
+      guard.Release();
+      return ConditionalExpNode::Nested(node);
     }
   }
   return nullptr;
