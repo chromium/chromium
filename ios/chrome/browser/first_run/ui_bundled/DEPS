@@ -15,7 +15,7 @@ include_rules = [
   "+ios/chrome/browser/signin/model",
   "+ios/chrome/browser/start_surface/ui_bundled/start_surface_features.h",
   "+ios/chrome/browser/sync/model",
-  "+ios/chrome/browser/authentication/ui_bundled/history_sync/history_sync_coordinator.h",
+  "+ios/chrome/browser/authentication/history_sync/coordinator/history_sync_coordinator.h",
   "+ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h",
   "+ios/chrome/browser/authentication/ui_bundled/signin_sync/signin_sync_coordinator.h",
   "+ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_feature.h",

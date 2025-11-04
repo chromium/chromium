@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_HISTORY_SYNC_HISTORY_SYNC_POPUP_COORDINATOR_H_
-#define IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_HISTORY_SYNC_HISTORY_SYNC_POPUP_COORDINATOR_H_
+#ifndef IOS_CHROME_BROWSER_AUTHENTICATION_HISTORY_SYNC_COORDINATOR_HISTORY_SYNC_POPUP_COORDINATOR_H_
+#define IOS_CHROME_BROWSER_AUTHENTICATION_HISTORY_SYNC_COORDINATOR_HISTORY_SYNC_POPUP_COORDINATOR_H_
 
-#import "ios/chrome/browser/authentication/ui_bundled/history_sync/history_sync_constants.h"
+#import "ios/chrome/browser/authentication/history_sync/public/history_sync_constants.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/animated_coordinator.h"
 
 enum class SigninContextStyle;
@@ -52,4 +52,4 @@ typedef NS_ENUM(NSUInteger, SigninCoordinatorResult);
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_HISTORY_SYNC_HISTORY_SYNC_POPUP_COORDINATOR_H_
+#endif  // IOS_CHROME_BROWSER_AUTHENTICATION_HISTORY_SYNC_COORDINATOR_HISTORY_SYNC_POPUP_COORDINATOR_H_

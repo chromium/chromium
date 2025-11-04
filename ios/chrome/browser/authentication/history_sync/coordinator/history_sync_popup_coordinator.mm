@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/authentication/ui_bundled/history_sync/history_sync_popup_coordinator.h"
+#import "ios/chrome/browser/authentication/history_sync/coordinator/history_sync_popup_coordinator.h"
 
 #import <UIKit/UIKit.h>
 
@@ -10,9 +10,9 @@
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/user_metrics.h"
 #import "components/signin/public/base/signin_metrics.h"
+#import "ios/chrome/browser/authentication/history_sync/coordinator/history_sync_coordinator.h"
+#import "ios/chrome/browser/authentication/history_sync/model/history_sync_utils.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_ui_util.h"
-#import "ios/chrome/browser/authentication/ui_bundled/history_sync/history_sync_coordinator.h"
-#import "ios/chrome/browser/authentication/ui_bundled/history_sync/history_sync_utils.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_context_style.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"

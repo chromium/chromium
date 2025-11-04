@@ -98,7 +98,7 @@
 #import "components/webui/flags/pref_service_flags_storage.h"
 #import "ios/chrome/app/spotlight/spotlight_util.h"
 #import "ios/chrome/app/variations_app_state_agent.h"
-#import "ios/chrome/browser/authentication/ui_bundled/history_sync/history_sync_utils.h"
+#import "ios/chrome/browser/authentication/history_sync/model/history_sync_utils.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_promo_view_mediator.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_mediator.h"

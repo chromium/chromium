@@ -47,5 +47,6 @@ specific_include_rules = {
     "+ios/chrome/browser/metrics/model/constants.h",
     "+ios/chrome/browser/reader_mode/model/reader_mode_prefs.h",
     "+ios/chrome/browser/upgrade/model/upgrade_constants.h",
+    "+ios/chrome/browser/authentication/history_sync/model/history_sync_utils.h",
   ],
 }

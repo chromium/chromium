@@ -12,9 +12,10 @@ source_set("signin_history_sync") {
   deps = [
     "//components/sync/service",
     "//ios/chrome/browser/authentication/add_account_signin/coordinator",
+    "//ios/chrome/browser/authentication/history_sync/coordinator",
+    "//ios/chrome/browser/authentication/history_sync/model:history_sync_utils",
     "//ios/chrome/browser/authentication/ui_bundled:continuation",
     "//ios/chrome/browser/authentication/ui_bundled/fullscreen_signin/coordinator",
-    "//ios/chrome/browser/authentication/ui_bundled/history_sync",
     "//ios/chrome/browser/authentication/ui_bundled/signin:signin_headers",
     "//ios/chrome/browser/authentication/ui_bundled/signin:signin_protected",
     "//ios/chrome/browser/authentication/ui_bundled/signin:signin_screen_provider",

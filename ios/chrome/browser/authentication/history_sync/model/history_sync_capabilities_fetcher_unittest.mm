@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/authentication/ui_bundled/history_sync/history_sync_capabilities_fetcher.h"
+#import "ios/chrome/browser/authentication/history_sync/model/history_sync_capabilities_fetcher.h"
 
 #import "base/run_loop.h"
 #import "base/test/bind.h"

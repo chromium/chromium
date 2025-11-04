@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/authentication/ui_bundled/history_sync/history_sync_mediator.h"
+#import "ios/chrome/browser/authentication/history_sync/coordinator/history_sync_mediator.h"
 
 #import "base/check.h"
 #import "base/check_op.h"
@@ -13,8 +13,8 @@
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
-#import "ios/chrome/browser/authentication/ui_bundled/history_sync/history_sync_capabilities_fetcher.h"
-#import "ios/chrome/browser/authentication/ui_bundled/history_sync/history_sync_consumer.h"
+#import "ios/chrome/browser/authentication/history_sync/model/history_sync_capabilities_fetcher.h"
+#import "ios/chrome/browser/authentication/history_sync/ui/history_sync_consumer.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"

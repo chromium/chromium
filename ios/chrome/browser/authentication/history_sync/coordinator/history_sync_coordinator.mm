@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/authentication/ui_bundled/history_sync/history_sync_coordinator.h"
+#import "ios/chrome/browser/authentication/history_sync/coordinator/history_sync_coordinator.h"
 
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_functions.h"
@@ -11,10 +11,10 @@
 #import "components/sync/base/user_selectable_type.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
+#import "ios/chrome/browser/authentication/history_sync/coordinator/history_sync_mediator.h"
+#import "ios/chrome/browser/authentication/history_sync/model/history_sync_utils.h"
+#import "ios/chrome/browser/authentication/history_sync/ui/history_sync_view_controller.h"
 #import "ios/chrome/browser/authentication/ui_bundled/enterprise/enterprise_utils.h"
-#import "ios/chrome/browser/authentication/ui_bundled/history_sync/history_sync_mediator.h"
-#import "ios/chrome/browser/authentication/ui_bundled/history_sync/history_sync_utils.h"
-#import "ios/chrome/browser/authentication/ui_bundled/history_sync/history_sync_view_controller.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/first_run/model/first_run_metrics.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"

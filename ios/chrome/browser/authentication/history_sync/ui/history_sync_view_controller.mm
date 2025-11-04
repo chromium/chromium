@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/authentication/ui_bundled/history_sync/history_sync_view_controller.h"
+#import "ios/chrome/browser/authentication/history_sync/ui/history_sync_view_controller.h"
 
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"

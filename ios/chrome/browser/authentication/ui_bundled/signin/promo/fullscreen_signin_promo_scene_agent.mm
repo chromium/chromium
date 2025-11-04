@@ -14,7 +14,7 @@
 #import "ios/chrome/app/profile/profile_init_stage.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/app/profile/profile_state_observer.h"
-#import "ios/chrome/browser/authentication/ui_bundled/history_sync/history_sync_utils.h"
+#import "ios/chrome/browser/authentication/history_sync/model/history_sync_utils.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
 #import "ios/chrome/browser/promos_manager/model/constants.h"
 #import "ios/chrome/browser/promos_manager/model/features.h"

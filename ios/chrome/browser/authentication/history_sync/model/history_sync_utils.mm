@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/authentication/ui_bundled/history_sync/history_sync_utils.h"
+#import "ios/chrome/browser/authentication/history_sync/model/history_sync_utils.h"
 
 #import "base/time/time.h"
 #import "components/pref_registry/pref_registry_syncable.h"
@@ -10,7 +10,7 @@
 #import "components/sync/base/user_selectable_type.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
-#import "ios/chrome/browser/authentication/ui_bundled/history_sync/pref_names.h"
+#import "ios/chrome/browser/authentication/history_sync/public/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 

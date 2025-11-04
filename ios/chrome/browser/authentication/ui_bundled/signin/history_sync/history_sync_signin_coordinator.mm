@@ -8,7 +8,7 @@
 #import "components/sync/base/user_selectable_type.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
-#import "ios/chrome/browser/authentication/ui_bundled/history_sync/history_sync_popup_coordinator.h"
+#import "ios/chrome/browser/authentication/history_sync/coordinator/history_sync_popup_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator+protected.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
