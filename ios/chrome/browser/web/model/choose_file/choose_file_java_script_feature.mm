@@ -159,14 +159,21 @@ void ChooseFileJavaScriptFeature::ScriptMessageReceived(
   std::optional<bool> has_webkitdirectory =
       body_dict.FindBool("hasWebkitdirectory");
   std::optional<bool> has_selected_file = body_dict.FindBool("hasSelectedFile");
+  std::optional<double> capture = body_dict.FindDouble("capture");
   if (!accept_type || !has_multiple || !has_webkitdirectory ||
-      !has_selected_file) {
+      !has_selected_file || !capture) {
     return;
   }
   int accept_type_int = static_cast<int>(*accept_type);
   // See AcceptType enumeration in
   // ios/chrome/browser/web/model/choose_file/resources/choose_file.ts
   if (accept_type_int < 0 || accept_type_int > 9) {
+    return;
+  }
+  int capture_int = static_cast<int>(*capture);
+  // See CaptureType enumeration in
+  // ios/chrome/browser/web/model/choose_file/resources/choose_file_utils.ts
+  if (capture_int < 0 || capture_int > 2) {
     return;
   }
 
@@ -215,6 +222,7 @@ void ChooseFileJavaScriptFeature::ScriptMessageReceived(
             .SetAcceptMimeTypes(std::move(accept_mime_types))
             .SetWebState(web_state)
             .SetScreenLocation(screen_location)
+            .SetCapture(static_cast<ChooseFileCaptureType>(capture_int))
             .Build();
     if (base::FeatureList::IsEnabled(kIOSCustomFileUploadMenu)) {
       ChooseFileTabHelper* tab_helper =

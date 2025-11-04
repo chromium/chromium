@@ -21,6 +21,18 @@ enum class ChooseFileContentState {
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml)
 
+// The capture type of the input.
+// This enum is persisted in log, do not reorder or reuse buckets.
+// LINT.IfChange
+enum class ChooseFileCaptureType {
+  kNone = 0,
+  kUser = 1,
+  kEnvironment = 2,
+  kMaxValue = kEnvironment
+};
+// LINT.ThenChange(
+//     /ios/chrome/browser/web/model/choose_file/resources/choose_file_utils.ts)
+
 // Convenience converter between attributes values and ChooseFileContentState.
 ChooseFileContentState ContentStateFromAttributes(bool has_multiple,
                                                   bool has_selected_file);

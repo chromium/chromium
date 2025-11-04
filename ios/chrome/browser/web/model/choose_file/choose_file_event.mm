@@ -56,12 +56,18 @@ ChooseFileEvent::Builder& ChooseFileEvent::Builder::SetTime(base::Time value) {
   return *this;
 }
 
+ChooseFileEvent::Builder& ChooseFileEvent::Builder::SetCapture(
+    ChooseFileCaptureType value) {
+  capture_ = value;
+  return *this;
+}
+
 ChooseFileEvent ChooseFileEvent::Builder::Build() {
   CHECK(web_state_);
   return ChooseFileEvent(allow_multiple_files_, only_allow_directory_,
                          has_selected_file_, std::move(accept_file_extensions_),
                          std::move(accept_mime_types_), web_state_,
-                         screen_location_, time_);
+                         screen_location_, time_, capture_);
 }
 
 ChooseFileEvent::ChooseFileEvent(
@@ -72,7 +78,8 @@ ChooseFileEvent::ChooseFileEvent(
     std::vector<std::string> accept_mime_types,
     web::WebState* web_state,
     CGPoint screen_location,
-    base::Time time)
+    base::Time time,
+    ChooseFileCaptureType capture)
     : allow_multiple_files{allow_multiple_files},
       only_allow_directory{only_allow_directory},
       has_selected_file{has_selected_file},
@@ -80,7 +87,8 @@ ChooseFileEvent::ChooseFileEvent(
       accept_mime_types{std::move(accept_mime_types)},
       web_state{web_state->GetWeakPtr()},
       screen_location{screen_location},
-      time{std::move(time)} {}
+      time{std::move(time)},
+      capture{capture} {}
 
 ChooseFileEvent::ChooseFileEvent(const ChooseFileEvent& event) = default;
 
