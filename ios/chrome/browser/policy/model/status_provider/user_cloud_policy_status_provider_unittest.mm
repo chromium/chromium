@@ -82,6 +82,7 @@ class UserCloudPolicyStatusProviderTest
 
   // UserCloudPolicyStatusProvider::Delegate implementation:
   MOCK_METHOD0(GetDeviceAffiliationIds, base::flat_set<std::string>());
+  MOCK_METHOD0(GetProfileId, std::optional<std::string>());
 
   void SetPrimaryAccountAsFlex() {
     AccountInfo account = identity_test_env_.MakePrimaryAccountAvailable(
@@ -157,6 +158,11 @@ TEST_F(UserCloudPolicyStatusProviderTest, GetStatus_Full) {
         return affiliation_ids;
       });
 
+  constexpr char kProfileId[] = "test-profile-id";
+  ON_CALL(*this, GetProfileId).WillByDefault([kProfileId]() {
+    return kProfileId;
+  });
+
   // Set clients as managed.
   user_client()->SetStatus(policy::DM_STATUS_SUCCESS);
   user_client()->SetDMToken("test-dm-token");
@@ -195,6 +201,7 @@ TEST_F(UserCloudPolicyStatusProviderTest, GetStatus_Full) {
                time_since_last_success_fetch_formatted)
           .Set(policy::kDomainKey, kTestDomain)
           .Set("isAffiliated", true)
+          .Set("profileId", kProfileId)
           .Set(policy::kFlexOrgWarningKey, false)
           .Set(policy::kPolicyDescriptionKey, "statusUser");
 

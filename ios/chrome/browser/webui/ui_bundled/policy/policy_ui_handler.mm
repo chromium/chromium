@@ -19,6 +19,7 @@
 #import "base/values.h"
 #import "components/enterprise/browser/controller/browser_dm_token_storage.h"
 #import "components/enterprise/browser/controller/chrome_browser_cloud_management_controller.h"
+#import "components/enterprise/browser/identifiers/profile_id_service.h"
 #import "components/enterprise/browser/reporting/common_pref_names.h"
 #import "components/enterprise/browser/reporting/report_scheduler.h"
 #import "components/policy/core/browser/policy_conversions.h"
@@ -41,6 +42,7 @@
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/version_info/version_info.h"
+#import "ios/chrome/browser/enterprise/identifiers/profile_id_service_factory_ios.h"
 #import "ios/chrome/browser/policy/model/browser_policy_connector_ios.h"
 #import "ios/chrome/browser/policy/model/policy_conversions_client_ios.h"
 #import "ios/chrome/browser/policy/model/profile_policy_connector.h"
@@ -361,6 +363,13 @@ base::flat_set<std::string> PolicyUIHandler::GetDeviceAffiliationIds() {
   return GetApplicationContext()
       ->GetBrowserPolicyConnector()
       ->GetDeviceAffiliationIds();
+}
+
+std::optional<std::string> PolicyUIHandler::GetProfileId() {
+  ProfileIOS* profile = ProfileIOS::FromWebUIIOS(web_ui());
+  auto* profile_id_service =
+      enterprise::ProfileIdServiceFactoryIOS::GetForProfile(profile);
+  return profile_id_service ? profile_id_service->GetProfileId() : std::nullopt;
 }
 
 void PolicyUIHandler::OnReportUploaded(const std::string& callback_id) {

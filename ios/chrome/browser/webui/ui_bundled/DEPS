@@ -9,6 +9,7 @@ include_rules = [
   "+ios/chrome/browser/crash_report/model/crash_upload_list.h",
   "+ios/chrome/browser/download/model/background_service/background_download_service_factory.h",
   "+ios/chrome/browser/enterprise/connectors/ios_enterprise_interstitial.h",
+  "+ios/chrome/browser/enterprise/identifiers/profile_id_service_factory_ios.h",
   "+ios/chrome/browser/favicon/model/favicon_service_factory.h",
   "+ios/chrome/browser/flags/about_flags.h",
   "+ios/chrome/browser/gcm/model/ios_chrome_gcm_profile_service_factory.h",

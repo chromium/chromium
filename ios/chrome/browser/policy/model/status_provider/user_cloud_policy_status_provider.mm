@@ -14,6 +14,7 @@
 #import "components/policy/proto/device_management_backend.pb.h"
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
+#import "ios/chrome/browser/enterprise/identifiers/profile_id_service_factory_ios.h"
 
 namespace {
 
@@ -49,6 +50,7 @@ UserCloudPolicyStatusProvider::UserCloudPolicyStatusProvider(
     : delegate_(delegate),
       user_level_policy_core_(user_level_policy_core),
       identity_manager_(identity_manager) {
+  CHECK(delegate_);
   CHECK(user_level_policy_core_);
 
   core_observation_.Observe(user_level_policy_core_);
@@ -78,11 +80,14 @@ base::Value::Dict UserCloudPolicyStatusProvider::GetStatus() {
   // information).
 
   // Set the status payload.
-  // TODO(b/310636701): Set the Profile ID once it is used on iOS.
   base::Value::Dict dict =
       policy::PolicyStatusProvider::GetStatusFromCore(user_level_policy_core_);
   SetDomainExtractedFromUsername(&dict);
   dict.Set("isAffiliated", IsAffiliated());
+  std::optional<std::string> profile_id = delegate_->GetProfileId();
+  if (profile_id) {
+    dict.Set("profileId", *profile_id);
+  }
   dict.Set(policy::kFlexOrgWarningKey, show_flex_org_warning);
   dict.Set(policy::kPolicyDescriptionKey, "statusUser");
   return dict;
