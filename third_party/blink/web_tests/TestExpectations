@@ -1108,12 +1108,12 @@ crbug.com/1360067 external/wpt/css/css-text-decor/text-decoration-skip-spaces-00
 crbug.com/1076027 external/wpt/css/css-grid/masonry/tentative/baseline/* [ Failure ]
 crbug.com/1076027 external/wpt/css/css-grid/masonry/tentative/fragmentation/* [ Failure Skip ]
 crbug.com/1076027 external/wpt/css/css-grid/masonry/tentative/subgrid/* [ Failure ]
-# Masonry sizing test failures
+# Masonry sizing test failures dependent on https://github.com/w3c/csswg-drafts/issues/12843#issuecomment-3482172845
 crbug.com/1076027 external/wpt/css/css-grid/masonry/tentative/intrinsic-sizing/masonry-intrinsic-sizing-rows-003-mix1.html [ Failure ]
 crbug.com/1076027 external/wpt/css/css-grid/masonry/tentative/intrinsic-sizing/masonry-intrinsic-sizing-rows-003-mix2.html [ Failure ]
-crbug.com/1076027 external/wpt/css/css-grid/masonry/tentative/intrinsic-sizing/masonry-intrinsic-sizing-rows-004-fr.html [ Failure ]
 crbug.com/1076027 external/wpt/css/css-grid/masonry/tentative/intrinsic-sizing/masonry-intrinsic-sizing-rows-004-mix1.html [ Failure ]
 crbug.com/1076027 external/wpt/css/css-grid/masonry/tentative/intrinsic-sizing/masonry-intrinsic-sizing-rows-004-mix2.html [ Failure ]
+# Masonry sizing test failures dependent on https://github.com/w3c/csswg-drafts/issues/12964
 crbug.com/1076027 external/wpt/css/css-grid/masonry/tentative/track-sizing/auto-repeat/row-auto-repeat-003.html [ Failure ]
 crbug.com/1076027 external/wpt/css/css-grid/masonry/tentative/track-sizing/auto-repeat/row-auto-repeat-006.html [ Failure ]
 crbug.com/1076027 external/wpt/css/css-grid/masonry/tentative/track-sizing/auto-repeat/intrinsic-auto-repeat/row-auto-repeat-auto-006.html [ Failure ]
