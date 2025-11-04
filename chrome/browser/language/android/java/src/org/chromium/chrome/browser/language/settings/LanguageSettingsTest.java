@@ -103,6 +103,8 @@ public class LanguageSettingsTest {
         // Enter "Add language" screen.
         addLanguage();
 
+        // The view is recreated so take it once again.
+        acceptLanguageList = mActivity.findViewById(R.id.language_list);
         View newLangView =
                 acceptLanguageList.findViewHolderForAdapterPosition(originalAcceptLanguageCount)
                         .itemView;
