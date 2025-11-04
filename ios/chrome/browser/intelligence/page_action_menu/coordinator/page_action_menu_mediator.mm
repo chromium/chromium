@@ -423,6 +423,8 @@ const CGFloat kFeatureRowIconSize = 20;
 
   translateClient->GetTranslateManager()->RevertTranslation();
 
+  [self updateTranslateInfobarAcceptedState:NO];
+
   [self.consumer updateFeatureRowsAvailability];
 }
 
@@ -518,21 +520,7 @@ std::string GetTargetLanguageCode(ChromeIOSTranslateClient* translate_client) {
                                    sourceLanguage, targetLanguage,
                                    translate::TranslateErrors::NONE, false);
 
-  infobars::InfoBarManager* infoBarManager =
-      InfoBarManagerImpl::FromWebState(webState);
-  if (!infoBarManager) {
-    return;
-  }
-
-  InfoBarIOS* translateInfobar = nullptr;
-  for (infobars::InfoBar* infobar : infoBarManager->infobars()) {
-    InfoBarIOS* infobarIOS = static_cast<InfoBarIOS*>(infobar);
-    if (infobarIOS->infobar_type() == InfobarType::kInfobarTypeTranslate) {
-      translateInfobar = infobarIOS;
-      break;
-    }
-  }
-
+  InfoBarIOS* translateInfobar = [self findTranslateInfobar];
   if (!translateInfobar) {
     return;
   }
@@ -568,6 +556,30 @@ std::string GetTargetLanguageCode(ChromeIOSTranslateClient* translate_client) {
       base::BindOnce(^(NSArray<NSString*>* suggestions){
           // No-op.
       }));
+}
+
+// Finds the translate infobar.
+- (InfoBarIOS*)findTranslateInfobar {
+  InfoBarManagerImpl* manager = InfoBarManagerImpl::FromWebState(_webState);
+  if (!manager) {
+    return nullptr;
+  }
+
+  for (infobars::InfoBar* infobar : manager->infobars()) {
+    InfoBarIOS* infobarIOS = static_cast<InfoBarIOS*>(infobar);
+    if (infobarIOS->infobar_type() == InfobarType::kInfobarTypeTranslate) {
+      return infobarIOS;
+    }
+  }
+  return nullptr;
+}
+
+// Updates the translate infobar's accepted state.
+- (void)updateTranslateInfobarAcceptedState:(BOOL)accepted {
+  InfoBarIOS* translateInfobar = [self findTranslateInfobar];
+  if (translateInfobar) {
+    translateInfobar->set_accepted(accepted);
+  }
 }
 
 @end
