@@ -29,7 +29,7 @@ found in the LICENSE file.
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:visibility="gone"
-        app:constraint_referenced_ids="location_bar_attachments_add,navigation_attachments_request_type"/>
+        app:constraint_referenced_ids="location_bar_attachments_add,fusebox_request_type"/>
 
     <org.chromium.ui.widget.ChromeImageView
         android:id="@+id/location_bar_attachments_add"
@@ -67,7 +67,7 @@ found in the LICENSE file.
 
     <org.chromium.ui.widget.ButtonCompat
         style="@style/OutlinedButton"
-        android:id="@+id/navigation_attachments_request_type"
+        android:id="@+id/fusebox_request_type"
         android:layout_width="wrap_content"
         android:layout_height="@dimen/min_touch_target_size"
         android:visibility="gone"

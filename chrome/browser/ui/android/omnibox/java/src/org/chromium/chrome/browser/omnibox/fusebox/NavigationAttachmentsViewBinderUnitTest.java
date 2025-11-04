@@ -74,10 +74,8 @@ public class NavigationAttachmentsViewBinderUnitTest {
                 .when(mParent)
                 .findViewById(R.id.location_bar_attachments_settings);
         doReturn(mRecyclerView).when(mParent).findViewById(R.id.location_bar_attachments);
-        doReturn(mRequestType).when(mParent).findViewById(R.id.navigation_attachments_request_type);
-        doReturn(mRecentTabsHeader)
-                .when(mParent)
-                .findViewById(R.id.navigation_attachments_recent_tabs_header);
+        doReturn(mRequestType).when(mParent).findViewById(R.id.fusebox_request_type);
+        doReturn(mRecentTabsHeader).when(mParent).findViewById(R.id.fusebox_recent_tabs_header);
         mModel = new PropertyModel(NavigationAttachmentsProperties.ALL_KEYS);
         mViewHolder = new NavigationAttachmentsViewHolder(mParent, mPopup);
         mViewHolder.popup.mCameraButton = mCameraButton;

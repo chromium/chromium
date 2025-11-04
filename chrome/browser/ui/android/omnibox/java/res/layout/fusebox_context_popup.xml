@@ -17,7 +17,7 @@ found in the LICENSE file.
     <!-- Horizontal placement constraints supplied by styles for uniformity. -->
     <TextView
         style="@style/NavigationAttachments.PopupMenu.Header"
-        android:id="@+id/navigation_attachments_recent_tabs_header"
+        android:id="@+id/fusebox_recent_tabs_header"
         android:visibility="gone"
         android:paddingEnd="@dimen/omnibox_suggestion_content_padding"
         android:text="@string/recent_tabs"
@@ -33,7 +33,7 @@ found in the LICENSE file.
         android:paddingStart="@dimen/omnibox_suggestion_content_padding"
         android:paddingEnd="@dimen/omnibox_suggestion_content_padding"
         android:focusable="false"
-        app:layout_constraintTop_toBottomOf="@id/navigation_attachments_recent_tabs_header"
+        app:layout_constraintTop_toBottomOf="@id/fusebox_recent_tabs_header"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
@@ -42,7 +42,7 @@ found in the LICENSE file.
     -->
     <org.chromium.ui.widget.ButtonCompat
         style="@style/NavigationAttachments.PopupMenu.Item"
-        android:id="@+id/navigation_attachments_paste_from_clipboard_button"
+        android:id="@+id/fusebox_paste_from_clipboard_button"
         android:visibility="gone"
         android:drawableStart="@drawable/ic_content_copy"
         android:text="@string/clipboard_permission_title"
@@ -50,55 +50,55 @@ found in the LICENSE file.
 
     <org.chromium.ui.widget.ButtonCompat
         style="@style/NavigationAttachments.PopupMenu.Item"
-        android:id="@+id/navigation_attachments_pick_tabs_button"
+        android:id="@+id/fusebox_pick_tabs_button"
         android:visibility="gone"
         android:drawableStart="@drawable/tab"
         android:text="@string/omnibox_navattach_tabs"
         android:contentDescription="@string/accessibility_omnibox_add_tabs"
-        app:layout_constraintTop_toBottomOf="@id/navigation_attachments_paste_from_clipboard_button"/>
+        app:layout_constraintTop_toBottomOf="@id/fusebox_paste_from_clipboard_button"/>
 
     <org.chromium.ui.widget.ButtonCompat
         style="@style/NavigationAttachments.PopupMenu.Item"
-        android:id="@+id/navigation_attachments_camera_button"
+        android:id="@+id/fusebox_camera_button"
         android:drawableStart="@drawable/ic_photo_camera"
         android:text="@string/photo_picker_camera"
         android:contentDescription="@string/accessibility_omnibox_add_camera_picture"
-        app:layout_constraintTop_toBottomOf="@id/navigation_attachments_pick_tabs_button"/>
+        app:layout_constraintTop_toBottomOf="@id/fusebox_pick_tabs_button"/>
 
     <org.chromium.ui.widget.ButtonCompat
         style="@style/NavigationAttachments.PopupMenu.Item"
-        android:id="@+id/navigation_attachments_pick_picture_button"
+        android:id="@+id/fusebox_pick_picture_button"
         android:drawableStart="@drawable/ic_collections_grey"
         android:text="@string/omnibox_navattach_gallery"
         android:contentDescription="@string/accessibility_omnibox_add_images"
-        app:layout_constraintTop_toBottomOf="@id/navigation_attachments_camera_button"/>
+        app:layout_constraintTop_toBottomOf="@id/fusebox_camera_button"/>
 
     <org.chromium.ui.widget.ButtonCompat
         style="@style/NavigationAttachments.PopupMenu.Item"
-        android:id="@+id/navigation_attachments_pick_file_button"
+        android:id="@+id/fusebox_pick_file_button"
         android:drawableStart="@drawable/ic_attach_file_24dp"
         android:text="@string/omnibox_navattach_files"
         android:contentDescription="@string/accessibility_omnibox_add_files"
-        app:layout_constraintTop_toBottomOf="@id/navigation_attachments_pick_picture_button"/>
+        app:layout_constraintTop_toBottomOf="@id/fusebox_pick_picture_button"/>
 
     <androidx.constraintlayout.widget.Group
         android:id="@+id/autocomplete_request_type_group"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:visibility="gone"
-        app:constraint_referenced_ids="navigation_attachments_ai_mode_divider,navigation_attachments_ai_mode_button"/>
+        app:constraint_referenced_ids="fusebox_ai_mode_divider,fusebox_ai_mode_button"/>
 
     <View
         style="@style/NavigationAttachments.PopupMenu.Divider"
-        android:id="@+id/navigation_attachments_ai_mode_divider"
-        app:layout_constraintTop_toBottomOf="@id/navigation_attachments_pick_file_button"/>
+        android:id="@+id/fusebox_ai_mode_divider"
+        app:layout_constraintTop_toBottomOf="@id/fusebox_pick_file_button"/>
 
     <org.chromium.ui.widget.ButtonCompat
         style="@style/NavigationAttachments.PopupMenu.Item"
-        android:id="@+id/navigation_attachments_ai_mode_button"
+        android:id="@+id/fusebox_ai_mode_button"
         android:drawableStart="@drawable/search_spark_black_24dp"
         android:text="@string/ai_mode_entrypoint_label"
         android:contentDescription="@string/accessibility_omnibox_enable_ai_mode"
-        app:layout_constraintTop_toBottomOf="@id/navigation_attachments_ai_mode_divider"/>
+        app:layout_constraintTop_toBottomOf="@id/fusebox_ai_mode_divider"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

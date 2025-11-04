@@ -33,7 +33,7 @@ class NavigationAttachmentsViewHolder {
         attachmentsToolbar = parent.findViewById(R.id.location_bar_attachments_toolbar);
         addButton = parent.findViewById(R.id.location_bar_attachments_add);
         settingsButton = parent.findViewById(R.id.location_bar_attachments_settings);
-        requestType = parent.findViewById(R.id.navigation_attachments_request_type);
+        requestType = parent.findViewById(R.id.fusebox_request_type);
         navigateButton = parent.findViewById(R.id.navigate_button);
         this.popup = popup;
 

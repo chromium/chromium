@@ -53,16 +53,14 @@ class NavigationAttachmentsPopup {
                 context.getResources().getDimensionPixelSize(R.dimen.fusebox_popup_width), 0);
         mPopupWindow.setHorizontalOverlapAnchor(true);
         mTabAttachmentView = mContentView.findViewById(R.id.tab_attachment_recycler_view);
-        mCameraButton = mContentView.findViewById(R.id.navigation_attachments_camera_button);
-        mGalleryButton = mContentView.findViewById(R.id.navigation_attachments_pick_picture_button);
-        mFileButton = mContentView.findViewById(R.id.navigation_attachments_pick_file_button);
-        mClipboardButton =
-                mContentView.findViewById(R.id.navigation_attachments_paste_from_clipboard_button);
-        mAiModeButton = mContentView.findViewById(R.id.navigation_attachments_ai_mode_button);
+        mCameraButton = mContentView.findViewById(R.id.fusebox_camera_button);
+        mGalleryButton = mContentView.findViewById(R.id.fusebox_pick_picture_button);
+        mFileButton = mContentView.findViewById(R.id.fusebox_pick_file_button);
+        mClipboardButton = mContentView.findViewById(R.id.fusebox_paste_from_clipboard_button);
+        mAiModeButton = mContentView.findViewById(R.id.fusebox_ai_mode_button);
         mAutocompleteRequestTypeGroup =
                 mContentView.findViewById(R.id.autocomplete_request_type_group);
-        mRecentTabsHeader =
-                mContentView.findViewById(R.id.navigation_attachments_recent_tabs_header);
+        mRecentTabsHeader = mContentView.findViewById(R.id.fusebox_recent_tabs_header);
 
         mTabAttachmentsAdapter =
                 new TabAttachmentPopupChoicesRecyclerViewAdapter(tabAttachmentsModelList);
