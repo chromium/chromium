@@ -10,6 +10,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "components/omnibox/browser/actions/omnibox_action.h"
 #include "components/omnibox/browser/actions/omnibox_action_in_suggest.h"
 #include "components/omnibox/browser/actions/omnibox_pedal.h"
@@ -20,8 +21,10 @@
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/test_scheme_classifier.h"
 #include "components/omnibox/common/omnibox_features.h"
+#include "components/search_engines/search_engines_test_environment.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_data.h"
+#include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_starter_pack_data.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -138,6 +141,9 @@ class AutocompleteMatchTest : public testing::Test {
   void TearDown() override {
     RichAutocompletionParams::ClearParamsForTesting();
   }
+
+  base::test::TaskEnvironment task_environment_;
+  search_engines::SearchEnginesTestEnvironment search_engines_test_environment_;
 };
 
 }  // namespace
@@ -1161,4 +1167,48 @@ TEST_F(AutocompleteMatchTest, HasLensSearchAction) {
   action->set_action_type(
       omnibox::SuggestTemplateInfo_TemplateAction_ActionType_CHROME_LENS);
   EXPECT_TRUE(match.HasLensSearchAction());
+}
+
+TEST_F(AutocompleteMatchTest, ShouldHideBasedOnStarterPack) {
+  auto* template_url_service =
+      search_engines_test_environment_.template_url_service();
+  // Set up `TemplateURL` for Gemini starter pack.
+  TemplateURLData gemini_turl_data;
+  gemini_turl_data.SetKeyword(u"@gemini");
+  gemini_turl_data.starter_pack_id = template_url_starter_pack_data::kGemini;
+  template_url_service->Add(std::make_unique<TemplateURL>(gemini_turl_data));
+
+  // Set up `TemplateURL` for a different starter pack.
+  TemplateURLData history_turl_data;
+  history_turl_data.SetKeyword(u"@history");
+  history_turl_data.starter_pack_id = template_url_starter_pack_data::kHistory;
+  template_url_service->Add(std::make_unique<TemplateURL>(history_turl_data));
+
+  // Set up `TemplateURL` with no starter pack ID.
+  TemplateURLData search_turl_data;
+  search_turl_data.SetKeyword(u"@keyword");
+  template_url_service->Add(std::make_unique<TemplateURL>(search_turl_data));
+
+  AutocompleteMatch match;
+  // Only @gemini starter pack matches with `from_keyword` set to `true` should
+  // be hidden.
+  match.from_keyword = true;
+  match.keyword = u"@gemini";
+  EXPECT_TRUE(match.ShouldHideBasedOnStarterPack(template_url_service));
+
+  match.from_keyword = false;
+  match.keyword = u"@gemini";
+  EXPECT_FALSE(match.ShouldHideBasedOnStarterPack(template_url_service));
+
+  match.from_keyword = true;
+  match.keyword = u"@history";
+  EXPECT_FALSE(match.ShouldHideBasedOnStarterPack(template_url_service));
+
+  match.from_keyword = true;
+  match.keyword = u"@search";
+  EXPECT_FALSE(match.ShouldHideBasedOnStarterPack(template_url_service));
+
+  match.from_keyword = true;
+  match.keyword = u"@unknown";
+  EXPECT_FALSE(match.ShouldHideBasedOnStarterPack(template_url_service));
 }

@@ -1268,6 +1268,14 @@ bool AutocompleteMatch::HasInstantKeyword(
   return turl && (turl->starter_pack_id() != 0 || turl->featured_by_policy());
 }
 
+bool AutocompleteMatch::ShouldHideBasedOnStarterPack(
+    const TemplateURLService* template_url_service) const {
+  const TemplateURL* turl =
+      template_url_service->GetTemplateURLForKeyword(keyword);
+  return from_keyword && turl &&
+         turl->starter_pack_id() == template_url_starter_pack_data::kGemini;
+}
+
 void AutocompleteMatch::GetKeywordUIState(
     TemplateURLService* template_url_service,
     bool is_history_embeddings_enabled,

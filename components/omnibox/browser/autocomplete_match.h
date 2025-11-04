@@ -578,6 +578,12 @@ struct AutocompleteMatch {
   // the usual waiting for activation of a visible keyword button.
   bool HasInstantKeyword(const TemplateURLService* template_url_service) const;
 
+  // Returns whether or not the row for this match should be hidden in the UI,
+  // based on its starter pack. This is currently used to hide suggestions in
+  // the 'Gemini' scope when the starter pack expansion feature is enabled.
+  bool ShouldHideBasedOnStarterPack(
+      const TemplateURLService* template_url_service) const;
+
   // Gets data relevant to whether there should be any special keyword-related
   // UI shown for this match. If this match represents a selected keyword, i.e.
   // the UI should be "in keyword mode", `keyword_out` will be set to the
