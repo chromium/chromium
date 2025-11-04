@@ -99,9 +99,14 @@ base::File FontDataServiceImpl::GetFileHandle(SkTypeface& typeface) {
     return {};
   }
 
-  auto font_file = base::File(base::FilePath::FromUTF8Unsafe(font_path.c_str()),
-                              base::File::FLAG_OPEN | base::File::FLAG_READ |
-                                  base::File::FLAG_WIN_EXCLUSIVE_WRITE);
+  auto font_file_path = base::FilePath::FromUTF8Unsafe(font_path.c_str());
+  base::UmaHistogramBoolean(
+      "Chrome.FontDataService.FileHandlePathReferencesParent",
+      font_file_path.ReferencesParent());
+
+  auto font_file =
+      base::File(font_file_path, base::File::FLAG_OPEN | base::File::FLAG_READ |
+                                     base::File::FLAG_WIN_EXCLUSIVE_WRITE);
 #if BUILDFLAG(IS_WIN)
   if (!font_file.IsValid()) {
     base::UmaHistogramSparse("Chrome.FontDataService.WinLastError",

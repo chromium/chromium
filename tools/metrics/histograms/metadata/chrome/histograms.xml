@@ -88,6 +88,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Chrome.FontDataService.FileHandlePathReferencesParent"
+    enum="Boolean" expires_after="2026-08-31">
+  <owner>andresrperez@chromium.org</owner>
+  <owner>drott@chromium.org</owner>
+  <owner>etienneb@chromium.org</owner>
+  <owner>anthonyvd@chromium.org</owner>
+  <owner>chrome-catan@google.com</owner>
+  <summary>
+    Records whether the font path references a parent (contains &quot;..&quot;)
+    when trying to get a file handle to a font in FontDataService. This would
+    prevent the creation of the base::File from succeeding.
+  </summary>
+</histogram>
+
 <histogram name="Chrome.FontDataService.MemoryMapCacheSize" units="count"
     expires_after="2026-08-31">
   <owner>andresrperez@chromium.org</owner>
