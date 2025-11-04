@@ -115,7 +115,7 @@ TEST_F(DawnCachingInterfaceTest, IncognitoCachesDoNotShare) {
 TEST_F(DawnCachingInterfaceTest, UnableToCreateBackend) {
   // This factory mimics what happens when we are unable to create a backend.
   DawnCachingInterfaceFactory factory(base::BindRepeating(
-      []() -> scoped_refptr<detail::DawnMemoryCache> { return nullptr; }));
+      []() -> scoped_refptr<MemoryCache> { return nullptr; }));
 
   // Without an actual backend, all loads and stores should do nothing.
   {
@@ -159,9 +159,8 @@ TEST_F(DawnCachingInterfaceTest, TestMaxSizeEviction) {
   static constexpr size_t kDataSize = kData1.size();
   static constexpr size_t kCacheSize = 2u * kKeySize + 2u * kDataSize - 1u;
 
-  DawnCachingInterfaceFactory factory(base::BindRepeating([]() {
-    return base::MakeRefCounted<detail::DawnMemoryCache>(kCacheSize);
-  }));
+  DawnCachingInterfaceFactory factory(base::BindRepeating(
+      []() { return base::MakeRefCounted<MemoryCache>(kCacheSize); }));
 
   auto interface = factory.CreateInstance();
   interface->StoreData(kKey1.data(), kKeySize, kData1.data(), kDataSize);
@@ -188,9 +187,8 @@ TEST_F(DawnCachingInterfaceTest, TestLruEviction) {
   static constexpr size_t kDataSize = kData1.size();
   static constexpr size_t kCacheSize = 3u * kKeySize + 3u * kDataSize - 1u;
 
-  DawnCachingInterfaceFactory factory(base::BindRepeating([]() {
-    return base::MakeRefCounted<detail::DawnMemoryCache>(kCacheSize);
-  }));
+  DawnCachingInterfaceFactory factory(base::BindRepeating(
+      []() { return base::MakeRefCounted<MemoryCache>(kCacheSize); }));
 
   // Even though Key1 was stored first, because we loaded it once, Key2 should
   // be the one to be evicted when Key3 is added.
@@ -214,9 +212,8 @@ TEST_F(DawnCachingInterfaceTest, TestVeryLargeEntrySize) {
   static constexpr size_t kLargeSize = kLarge.size();
   static constexpr size_t kCacheSize = kLargeSize - 1u;
 
-  DawnCachingInterfaceFactory factory(base::BindRepeating([]() {
-    return base::MakeRefCounted<detail::DawnMemoryCache>(kCacheSize);
-  }));
+  DawnCachingInterfaceFactory factory(base::BindRepeating(
+      []() { return base::MakeRefCounted<MemoryCache>(kCacheSize); }));
   auto interface = factory.CreateInstance();
 
   {
@@ -248,9 +245,8 @@ TEST_F(DawnCachingInterfaceTest, TestMemoryPressureCritical) {
   static constexpr size_t kDataSize = kData1.size();
   static constexpr size_t kCacheSize = 2u * kKeySize + 2u * kDataSize - 1u;
 
-  DawnCachingInterfaceFactory factory(base::BindRepeating([]() {
-    return base::MakeRefCounted<detail::DawnMemoryCache>(kCacheSize);
-  }));
+  DawnCachingInterfaceFactory factory(base::BindRepeating(
+      []() { return base::MakeRefCounted<MemoryCache>(kCacheSize); }));
 
   // Pass handles here so that the backends_ are populated.
   auto interfaces = {factory.CreateInstance(kDawnGraphiteHandle),
@@ -274,9 +270,8 @@ TEST_F(DawnCachingInterfaceTest, TestAggressiveCacheAndMemoryPressure) {
   static constexpr size_t kDataSize = kData1.size();
   static constexpr size_t kCacheSize = 2u * kKeySize + 2u * kDataSize - 1u;
 
-  DawnCachingInterfaceFactory factory(base::BindRepeating([]() {
-    return base::MakeRefCounted<detail::DawnMemoryCache>(kCacheSize);
-  }));
+  DawnCachingInterfaceFactory factory(base::BindRepeating(
+      []() { return base::MakeRefCounted<MemoryCache>(kCacheSize); }));
 
   // Pass handles here so that the backends_ are populated.
   auto interfaces = {factory.CreateInstance(kDawnGraphiteHandle),
@@ -318,11 +313,10 @@ TEST_F(DawnCachingInterfaceTest, StoreAndLoadWithPersistentCache) {
 
   // Store data to the persistent cache via store interface.
   {
-    scoped_refptr<detail::DawnMemoryCache> memory_cache =
-        base::MakeRefCounted<detail::DawnMemoryCache>(1024);
+    scoped_refptr<MemoryCache> memory_cache =
+        base::MakeRefCounted<MemoryCache>(1024);
     DawnCachingInterfaceFactory store_factory(base::BindRepeating(
-        [](scoped_refptr<detail::DawnMemoryCache> cache) { return cache; },
-        memory_cache));
+        [](scoped_refptr<MemoryCache> cache) { return cache; }, memory_cache));
     auto store_interface =
         store_factory.CreateInstance(handle_, OpenPersistentCache());
     store_interface->StoreData(kKey.data(), kKeySize, kData.data(), kDataSize);
@@ -337,11 +331,10 @@ TEST_F(DawnCachingInterfaceTest, StoreAndLoadWithPersistentCache) {
 
   // Use the same persistent cache but with different memory cache.
   {
-    scoped_refptr<detail::DawnMemoryCache> memory_cache2 =
-        base::MakeRefCounted<detail::DawnMemoryCache>(1024);
+    scoped_refptr<MemoryCache> memory_cache2 =
+        base::MakeRefCounted<MemoryCache>(1024);
     DawnCachingInterfaceFactory load_factory(base::BindRepeating(
-        [](scoped_refptr<detail::DawnMemoryCache> cache) { return cache; },
-        memory_cache2));
+        [](scoped_refptr<MemoryCache> cache) { return cache; }, memory_cache2));
     auto load_interface =
         load_factory.CreateInstance(handle_, OpenPersistentCache());
 

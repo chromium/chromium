@@ -199,6 +199,8 @@ target(link_target_type, "gles2_sources") {
     "isolation_key_provider.h",
     "logger.cc",
     "logger.h",
+    "memory_cache.cc",
+    "memory_cache.h",
     "memory_program_cache.cc",
     "memory_program_cache.h",
     "multi_draw_manager.cc",
