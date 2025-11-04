@@ -2486,6 +2486,11 @@ void PermissionUmaUtil::RecordPostPromptSessionDuration(
         base::StrCat({"Permissions.PredictionService.", permission_string,
                       ".PostPromptSessionDuration5m"}),
         duration, base::Minutes(1), base::Minutes(5), 15);
+  } else if (duration <= base::Minutes(10)) {
+    base::UmaHistogramCustomTimes(
+        base::StrCat({"Permissions.PredictionService.", permission_string,
+                      ".PostPromptSessionDuration10m"}),
+        duration, base::Minutes(5), base::Minutes(10), 10);
   }
 }
 
