@@ -5,12 +5,14 @@
 #ifndef COMPONENTS_ORIGIN_MATCHER_FEATURES_H_
 #define COMPONENTS_ORIGIN_MATCHER_FEATURES_H_
 
+#include "base/component_export.h"
 #include "base/features.h"
 
 namespace origin_matcher {
 
 // When enabled, OriginMatcher::operator= will use the new, hopefully faster
 // implementation that does not serialize and deserialize all the rules.
+COMPONENT_EXPORT(ORIGIN_MATCHER)
 BASE_DECLARE_FEATURE(kOriginMatcherNewCopyAssignment);
 
 }  // namespace origin_matcher
