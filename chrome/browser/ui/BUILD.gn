@@ -4493,6 +4493,8 @@ static_library("ui") {
       "views/user_education/impl/browser_user_education_context.h",
       "views/user_education/impl/browser_user_education_interface_impl.cc",
       "views/user_education/impl/browser_user_education_interface_impl.h",
+      "views/user_education/ios_promo_bubble_view.cc",
+      "views/user_education/ios_promo_bubble_view.h",
       "views/web_apps/create_shortcut_confirmation_view.cc",
       "views/web_apps/create_shortcut_confirmation_view.h",
       "views/web_apps/file_handler_launch_dialog_view.cc",

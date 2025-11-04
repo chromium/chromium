@@ -28,9 +28,8 @@
 #include "chrome/browser/ui/lens/lens_search_feature_flag_utils.h"
 #include "chrome/browser/ui/lens/lens_searchbox_controller.h"
 #include "chrome/browser/ui/lens/lens_session_metrics_logger.h"
-#include "chrome/browser/ui/promos/ios_promo_trigger_service.h"
-#include "chrome/browser/ui/promos/ios_promo_trigger_service_factory.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_key.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/webui/util/image_util.h"
@@ -956,12 +955,11 @@ void LensSearchController::OnPageContextUpdatedForZeroStateRequest(
 void LensSearchController::MaybeShowMobilePromo() {
   if (MobilePromoOnDesktopTypeEnabled() ==
       MobilePromoOnDesktopPromoType::kLensPromo) {
-    IOSPromoTriggerService* service =
-        IOSPromoTriggerServiceFactory::GetForProfile(
-            Profile::FromBrowserContext(
-                tab_->GetContents()->GetBrowserContext()));
-    if (service) {
-      service->NotifyPromoShouldBeShown(IOSPromoType::kLens);
+    auto* user_education_interface =
+        BrowserUserEducationInterface::From(tab_->GetBrowserWindowInterface());
+    if (user_education_interface) {
+      user_education_interface->MaybeShowFeaturePromo(
+          feature_engagement::kIPHiOSLensPromoDesktopFeature);
     }
   }
 }

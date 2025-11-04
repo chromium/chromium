@@ -20,6 +20,7 @@
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/promos/promos_types.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser.h"
@@ -61,6 +62,7 @@
 #include "chrome/browser/ui/views/user_education/impl/browser_feature_promo_controller_25.h"
 #include "chrome/browser/ui/views/user_education/impl/browser_feature_promo_preconditions.h"
 #include "chrome/browser/ui/views/user_education/impl/browser_user_education_context.h"
+#include "chrome/browser/ui/views/user_education/ios_promo_bubble_view.h"
 #include "chrome/browser/ui/views/web_apps/web_app_install_dialog_delegate.h"
 #include "chrome/browser/ui/webui/customize_buttons/customize_buttons_handler.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
@@ -91,6 +93,7 @@
 #include "components/plus_addresses/core/common/features.h"
 #include "components/safe_browsing/core/common/safebrowsing_referral_methods.h"
 #include "components/saved_tab_groups/public/features.h"
+#include "components/sharing_message/features.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/strings/grit/privacy_sandbox_strings.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
@@ -107,6 +110,7 @@
 #include "components/user_education/common/user_education_context.h"
 #include "components/user_education/common/user_education_features.h"
 #include "components/user_education/common/user_education_metadata.h"
+#include "components/user_education/views/custom_help_bubble_view.h"
 #include "components/user_education/views/help_bubble_delegate.h"
 #include "components/user_education/views/help_bubble_factory_views.h"
 #include "components/user_education/webui/help_bubble_handler.h"
@@ -1560,6 +1564,22 @@ void MaybeRegisterChromeFeaturePromos(
           .SetInAnyContext(true)
           .SetMetadata(130, "johntlee@chromium.org",
                        "Triggered after user lands on chrome://history.")));
+
+  // kIPHiOSLensPromoDesktopFeature
+  if (MobilePromoOnDesktopTypeEnabled() ==
+      MobilePromoOnDesktopPromoType::kLensPromo) {
+    registry.RegisterFeature(
+        std::move(user_education::FeaturePromoSpecification::CreateForCustomUi(
+                      feature_engagement::kIPHiOSLensPromoDesktopFeature,
+                      kSidePanelElementId,
+                      user_education::CreateCustomHelpBubbleViewFactoryCallback(
+                          base::BindRepeating(&IOSPromoBubbleView::Create,
+                                              IOSPromoType::kLens)))
+                      .SetBubbleArrow(HelpBubbleArrow::kLeftCenter)
+                      .SetMetadata(144, "scottyoder@google.com",
+                                   "Triggered when Lens Overlay is used.")));
+  }
+
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(ENABLE_COMPOSE)
