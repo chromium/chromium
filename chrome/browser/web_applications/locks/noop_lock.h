@@ -39,7 +39,7 @@ class NoopLock : public Lock {
   using LockDescription = NoopLockDescription;
 
   NoopLock();
-  ~NoopLock();
+  ~NoopLock() override;
 
   base::WeakPtr<NoopLock> AsWeakPtr() { return weak_factory_.GetWeakPtr(); }
 

@@ -8,10 +8,9 @@
 #include <ostream>
 
 #include "base/time/clock.h"
+#include "chrome/browser/web_applications/locks/partitioned_lock_holder.h"
 #include "chrome/browser/web_applications/locks/partitioned_lock_manager.h"
 #include "chrome/browser/web_applications/locks/web_app_lock_manager.h"
-#include "chrome/browser/web_applications/visited_manifest_manager.h"
-#include "chrome/browser/web_applications/web_app_origin_association_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "components/webapps/common/web_app_id.h"
 
@@ -91,11 +90,24 @@ base::Clock& Lock::clock() {
   return lock_manager_->provider().clock();
 }
 
-Lock::Lock() : holder_(std::make_unique<PartitionedLockHolder>()) {}
+Lock::Lock() = default;
 Lock::~Lock() = default;
 
 bool Lock::IsGranted() const {
   return !!lock_manager_;
+}
+
+PartitionedLockHolder& Lock::InitializeLockHolderForAcquire(
+    base::PassKey<WebAppLockManager>) {
+  holder_ = std::make_unique<PartitionedLockHolder>();
+  return *holder_;
+}
+
+PartitionedLockHolder& Lock::InitializeLockHolderForUpgrade(
+    std::unique_ptr<Lock> from_lock,
+    base::PassKey<WebAppLockManager>) {
+  holder_ = std::move(from_lock->holder_);
+  return *holder_;
 }
 
 void Lock::GrantLockResources(WebAppLockManager& lock_manager) {

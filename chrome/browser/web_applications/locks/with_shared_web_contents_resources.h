@@ -25,7 +25,7 @@ class WebAppLockManager;
 // CHECK-fail.
 class WithSharedWebContentsResources {
  public:
-  ~WithSharedWebContentsResources();
+  virtual ~WithSharedWebContentsResources();
 
   // Will CHECK-fail if accessed before the lock is granted.
   content::WebContents& shared_web_contents() const;

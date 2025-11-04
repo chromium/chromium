@@ -30,7 +30,7 @@ class WebAppUiManager;
 // CHECK-fail.
 class WithAppResources {
  public:
-  ~WithAppResources();
+  virtual ~WithAppResources();
 
   // Will CHECK-fail if accessed before the lock is granted.
   ExtensionsManager& extensions_manager();

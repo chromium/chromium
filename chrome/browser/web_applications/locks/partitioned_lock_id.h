@@ -18,6 +18,11 @@ struct PartitionedLockId {
                           const PartitionedLockId&) = default;
   friend bool operator==(const PartitionedLockId&,
                          const PartitionedLockId&) = default;
+
+  template <typename H>
+  friend H AbslHashValue(H h, const PartitionedLockId& m) {
+    return H::combine(std::move(h), m.partition, m.key);
+  }
 };
 
 // Logging support.

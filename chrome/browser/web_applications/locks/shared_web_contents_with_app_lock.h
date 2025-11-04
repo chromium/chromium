@@ -56,7 +56,7 @@ class SharedWebContentsWithAppLock : public Lock,
   using LockDescription = SharedWebContentsWithAppLockDescription;
 
   SharedWebContentsWithAppLock();
-  ~SharedWebContentsWithAppLock();
+  ~SharedWebContentsWithAppLock() override;
 
   base::WeakPtr<SharedWebContentsWithAppLock> AsWeakPtr() {
     return weak_factory_.GetWeakPtr();

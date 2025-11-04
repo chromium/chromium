@@ -40,7 +40,7 @@ class AllAppsLock : public Lock, public WithAppResources {
   using LockDescription = AllAppsLockDescription;
 
   AllAppsLock();
-  ~AllAppsLock();
+  ~AllAppsLock() override;
 
   base::WeakPtr<AllAppsLock> AsWeakPtr() { return weak_factory_.GetWeakPtr(); }
 

@@ -8,9 +8,12 @@
 #include <iosfwd>
 
 #include "base/functional/callback.h"
+#include "base/location.h"
+#include "base/types/pass_key.h"
 #include "chrome/browser/web_applications/locks/partitioned_lock_id.h"
 
 namespace web_app {
+class PartitionedLockManager;
 
 // Represents a granted lock by the PartitionedLockManager. When this object is
 // destroyed, the lock is released. Since default construction is supported,
@@ -22,19 +25,21 @@ class PartitionedLock {
   using LockReleasedCallback =
       base::OnceCallback<void(PartitionedLockId lock_id)>;
 
-  PartitionedLock();
-
   PartitionedLock(const PartitionedLock&) = delete;
   PartitionedLock& operator=(const PartitionedLock&) = delete;
 
-  ~PartitionedLock();
-  PartitionedLock(PartitionedLock&&) noexcept;
   // |lock_released_callback| is called when the lock is released, either by
   // destruction of this object or by the |Released()| call. It will be called
   // synchronously on the sequence runner this lock is released on.
   PartitionedLock(PartitionedLockId lock_id,
-                  LockReleasedCallback lock_released_callback);
-  // The lock in |other| is not released, and |this| must not be holding a lock.
+                  base::Location request_location,
+                  LockReleasedCallback lock_released_callback,
+                  base::PassKey<PartitionedLockManager>);
+  ~PartitionedLock();
+
+  PartitionedLock(PartitionedLock&& other) noexcept;
+  // The lock in `other` is not released (instead it is moved to `this`),
+  // and `this` must not be holding a lock.
   PartitionedLock& operator=(PartitionedLock&& other) noexcept;
 
   // Returns true if this object is holding a lock.
@@ -49,8 +54,11 @@ class PartitionedLock {
 
   const PartitionedLockId& lock_id() const { return lock_id_; }
 
+  const base::Location& request_location() const { return request_location_; }
+
  private:
   PartitionedLockId lock_id_;
+  base::Location request_location_;
 
   // Closure to run when the lock is released. The lock is held when this is
   // non-null.
@@ -59,12 +67,6 @@ class PartitionedLock {
 
 // Logging support.
 std::ostream& operator<<(std::ostream& out, const PartitionedLock& lock_id);
-
-// Equality doesn't take into account whether the lock 'is_locked()' or not,
-// only the partition and the lock_id.
-bool operator==(const PartitionedLock& x, const PartitionedLock& y);
-// Comparison operator to allow sorting for locking / unlocking order.
-bool operator<(const PartitionedLock& x, const PartitionedLock& y);
 
 }  // namespace web_app
 

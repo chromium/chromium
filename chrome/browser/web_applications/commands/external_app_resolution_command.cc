@@ -574,18 +574,15 @@ void ExternalAppResolutionCommand::
   GetMutableDebugValue().Set("relaunch_app_after_placeholder_uninstall",
                              relaunch_app_after_placeholder_uninstall_);
 
-  // Note: This practice of releasing the app lock and requesting a whole new
-  // lock is highly discouraged & very selectively OK for this one case.
   all_apps_lock_description_ = std::make_unique<AllAppsLockDescription>();
   all_apps_lock_ = std::make_unique<AllAppsLock>();
-  command_manager()->lock_manager().AcquireLock(
-      *all_apps_lock_description_, *all_apps_lock_,
+  command_manager()->lock_manager().UpgradeAndAcquireLock(
+      std::move(apps_lock_), *all_apps_lock_,
       base::BindOnce(
           &ExternalAppResolutionCommand::OnAllAppsLockGrantedRemovePlaceholder,
           weak_ptr_factory_.GetWeakPtr()),
       FROM_HERE);
   web_contents_ = nullptr;
-  apps_lock_.reset();
 }
 
 void ExternalAppResolutionCommand::OnAllAppsLockGrantedRemovePlaceholder() {
