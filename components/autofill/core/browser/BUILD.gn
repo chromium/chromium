@@ -37,6 +37,21 @@ grit("autofill_address_rewriter_resources") {
   output_dir = "$root_gen_dir/components/autofill/core/browser/geo"
 }
 
+grit("autofill_alternative_state_name_map_resources") {
+  if (is_chrome_branded) {
+    source = "geo/chrome_alternative_state_name_maps/alternative_state_name_map_resources.grd"
+  } else {
+    source = "geo/autofill_alternative_state_name_map_resources.grd"
+  }
+  outputs = [
+    "grit/autofill_alternative_state_name_map_resources.h",
+    "grit/test_autofill_address_rewriter_resources_map.h",
+    "grit/test_autofill_address_rewriter_resources_map.cc",
+    "autofill_alternative_state_name_map_resources.pak",
+  ]
+  output_dir = "$root_gen_dir/components/autofill/core/browser/geo"
+}
+
 declare_args() {
   # Normally, only branded builds use Google-internal sets of parsing patterns.
   #
@@ -369,6 +384,7 @@ static_library("browser") {
     "geo/address_rewriter.h",
     "geo/alternative_state_name_map.cc",
     "geo/alternative_state_name_map.h",
+    "geo/alternative_state_name_map_constants.h",
     "geo/alternative_state_name_map_updater.cc",
     "geo/alternative_state_name_map_updater.h",
     "geo/autofill_country.cc",
@@ -998,6 +1014,7 @@ static_library("browser") {
 
   deps = [
     ":autofill_address_rewriter_resources",
+    ":autofill_alternative_state_name_map_resources",
     ":buildflags",
     ":entity_schema_enums_and_functions",
     ":generate_country_native_names",
@@ -1342,6 +1359,7 @@ static_library("test_support") {
 
   deps = [
     ":autofill_address_rewriter_resources",
+    ":autofill_alternative_state_name_map_resources",
     ":payments_sync_utils",
     "//base",
     "//base/test:test_support",
@@ -1778,6 +1796,7 @@ source_set("unit_tests") {
 
   deps = [
     ":autofill_address_rewriter_resources",
+    ":autofill_alternative_state_name_map_resources",
     ":browser",
     ":buildflags",
     ":entity_schema_enums_and_functions",
