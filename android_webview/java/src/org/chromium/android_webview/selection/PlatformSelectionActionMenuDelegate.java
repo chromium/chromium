@@ -10,6 +10,8 @@ import android.text.TextUtils;
 import android.view.MenuItem;
 import android.view.View;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.ContextUtils;
 import org.chromium.base.SelectionActionMenuClientWrapper;
 import org.chromium.base.SelectionActionMenuClientWrapper.DefaultItem;
@@ -30,7 +32,8 @@ public class PlatformSelectionActionMenuDelegate extends AutofillSelectionAction
     private final SelectionActionMenuClientWrapper mClient;
     private final HashMap<Integer, MenuItem> mCachedItems;
 
-    /* package */ PlatformSelectionActionMenuDelegate(SelectionActionMenuClientWrapper client) {
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+    public PlatformSelectionActionMenuDelegate(SelectionActionMenuClientWrapper client) {
         mClient = client;
         mCachedItems = new HashMap<>();
     }
