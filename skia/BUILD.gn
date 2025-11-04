@@ -469,6 +469,12 @@ component("skia") {
     sources += skia_ports_fontmgr_android_parser_sources
   }
 
+  if (is_android) {
+    # Note that this requires expat.
+    # Note that this requires skia_ports_fontmgr_android_parser_sources.
+    sources += skia_ports_fontmgr_android_ndk_sources
+  }
+
   if (is_fuchsia) {
     public += skia_ports_fontmgr_fuchsia_public
     sources += skia_ports_fontmgr_fuchsia_sources
