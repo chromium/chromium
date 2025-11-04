@@ -8,11 +8,13 @@ import android.graphics.Rect;
 import android.os.Handler;
 import android.view.View;
 
+import org.chromium.base.lifetime.Destroyable;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.R;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -25,12 +27,16 @@ import java.util.List;
  *     any other UI component used to display the submenu.
  */
 @NullMarked
-public class FlyoutController<T> {
+public class FlyoutController<T> implements Destroyable {
+
+    private final HierarchicalMenuController mMenuController;
+    private final HierarchicalMenuKeyProvider mKeyProvider;
     private final FlyoutHandler<T> mFlyoutHandler;
+
+    private final List<FlyoutPopupEntry<T>> mPopups;
+
     private @Nullable Runnable mFlyoutAfterDelayRunnable;
     private @Nullable View mPendingFlyoutParentView;
-    private final HierarchicalMenuKeyProvider mKeyProvider;
-    private final HierarchicalMenuController mMenuController;
 
     /**
      * A data class holding a flyout popup window and the (optional) parent ListItem that triggered
@@ -58,14 +64,6 @@ public class FlyoutController<T> {
      */
     public interface FlyoutHandler<T> {
         /**
-         * Returns the list of the dialogs, along with the parent ListItem.
-         *
-         * @return A List of {@link FlyoutWindowEntry} objects, each mapping a popup to its parent
-         *     item.
-         */
-        List<FlyoutPopupEntry<T>> getFlyoutWindows();
-
-        /**
          * Gets the coordinates of a given popup window, relative to the main application window.
          *
          * @param popupWindow The popup window instance.
@@ -74,30 +72,58 @@ public class FlyoutController<T> {
         Rect getPopupRect(T popupWindow);
 
         /**
-         * Adds a flyout popup.
+         * Dismiss the given popup window.
+         *
+         * @param popupWindow The popup window instance.
+         */
+        void dismissPopup(T popupWindow);
+
+        /**
+         * Set focus state to a given window.
+         *
+         * @param popupWindow The popup window instance.
+         * @param hasFocus Whether the window should have focus.
+         */
+        void setWindowFocus(T popupWindow, boolean hasFocus);
+
+        /**
+         * Creates and shows a flyout popup.
          *
          * @param item The ListItem that got the hover.
          * @param view The View that got the hover.
-         * @param levelOfHoveredItem The depth of the item within the menu hierarchy (e.g., 0 for
-         *     root items, 1 for sub-menu items).
+         * @param dismissRunnable Runnable to run when the window is dismissed.
+         * @return The created popup of type {@link T}.
          */
-        void addFlyoutWindow(ListItem item, View view, int levelOfHoveredItem);
+        T createAndShowFlyoutPopup(ListItem item, View view, Runnable dismissRunnable);
 
         /**
-         * Remove popups with indices above removeFromIndex.
+         * Callback triggered after one or more flyout popups are removed.
          *
-         * @param removeFromIndex The minimum index of the popup to be removed.
+         * @param removeFromIndex The minimum index of the removed popups.
          */
-        void removeFlyoutWindows(int removeFromIndex);
+        default void afterFlyoutPopupsRemoved(int removeFromIndex) {}
     }
 
     public FlyoutController(
             FlyoutHandler<T> flyoutHandler,
             HierarchicalMenuKeyProvider keyProvider,
+            T mainPopup,
             HierarchicalMenuController menuController) {
         mFlyoutHandler = flyoutHandler;
         mKeyProvider = keyProvider;
         mMenuController = menuController;
+
+        mPopups = new ArrayList();
+        mPopups.add(new FlyoutPopupEntry(null, mainPopup));
+    }
+
+    /**
+     * Gets the list of {@link FlyoutPopupEntry}.
+     *
+     * @return The list of {@link FlyoutPopupEntry}.
+     */
+    public List<FlyoutPopupEntry<T>> getPopups() {
+        return mPopups;
     }
 
     /**
@@ -139,7 +165,25 @@ public class FlyoutController<T> {
         // We need to remove hover from the popup currently in focus.
         mMenuController.updateHighlights(highlightPath.subList(0, clearFromIndex - 1));
 
-        mFlyoutHandler.removeFlyoutWindows(clearFromIndex);
+        removeFlyoutWindows(clearFromIndex);
+    }
+
+    private void removeFlyoutWindows(int clearFromIndex) {
+        assert clearFromIndex > 0;
+
+        if (clearFromIndex >= mPopups.size()) {
+            return;
+        }
+
+        for (int i = clearFromIndex; i < mPopups.size(); i++) {
+            mFlyoutHandler.dismissPopup(mPopups.get(i).popupWindow);
+        }
+
+        mPopups.subList(clearFromIndex, mPopups.size()).clear();
+
+        if (mPopups.size() > 0) {
+            mFlyoutHandler.setWindowFocus(mPopups.get(mPopups.size() - 1).popupWindow, true);
+        }
     }
 
     /**
@@ -172,29 +216,38 @@ public class FlyoutController<T> {
     }
 
     private void onFlyoutAfterDelay(ListItem item, View view, int levelOfHoveredItem) {
-        List<FlyoutPopupEntry<T>> dialogs = mFlyoutHandler.getFlyoutWindows();
-
-        if (levelOfHoveredItem >= dialogs.size()) {
+        if (levelOfHoveredItem >= mPopups.size()) {
             return;
         }
 
         boolean keepChildWindow = false;
 
         // If child popups exist.
-        if (levelOfHoveredItem < dialogs.size() - 1) {
+        if (levelOfHoveredItem < mPopups.size() - 1) {
             // We want to keep the direct child open if the hover is still on the same child.
-            FlyoutPopupEntry<T> currentFlyoutPopupEntry = dialogs.get(levelOfHoveredItem + 1);
+            FlyoutPopupEntry<T> currentFlyoutPopupEntry = mPopups.get(levelOfHoveredItem + 1);
             keepChildWindow = item == currentFlyoutPopupEntry.parentItem;
 
             int clearFromIndex = keepChildWindow ? levelOfHoveredItem + 2 : levelOfHoveredItem + 1;
-            if (clearFromIndex < dialogs.size()) {
-                mFlyoutHandler.removeFlyoutWindows(clearFromIndex);
+            if (clearFromIndex < mPopups.size()) {
+                removeFlyoutWindows(clearFromIndex);
             }
         }
 
         // Create a new child popup if the item has submenu and we removed the child window.
         if (item.model.containsKey(mKeyProvider.getSubmenuItemsKey()) && !keepChildWindow) {
-            mFlyoutHandler.addFlyoutWindow(item, view, levelOfHoveredItem);
+            T popup =
+                    mFlyoutHandler.createAndShowFlyoutPopup(
+                            item,
+                            view,
+                            () -> {
+                                removeFlyoutWindows(levelOfHoveredItem + 1);
+                            });
+            mPopups.add(new FlyoutPopupEntry<T>(null, popup));
+
+            assert mPopups.size() > 1;
+            mFlyoutHandler.setWindowFocus(mPopups.get(mPopups.size() - 2).popupWindow, false);
+            mFlyoutHandler.setWindowFocus(popup, true);
         }
     }
 
@@ -204,8 +257,8 @@ public class FlyoutController<T> {
      * @return The rect of the main popup.
      */
     public Rect getMainPopupRect() {
-        T mainPopup = mFlyoutHandler.getFlyoutWindows().get(0).popupWindow;
-        return mFlyoutHandler.getPopupRect(mainPopup);
+        assert mPopups.size() > 0;
+        return mFlyoutHandler.getPopupRect(mPopups.get(0).popupWindow);
     }
 
     /**
@@ -251,6 +304,13 @@ public class FlyoutController<T> {
             }
             mFlyoutAfterDelayRunnable = null;
             mPendingFlyoutParentView = null;
+        }
+    }
+
+    @Override
+    public void destroy() {
+        for (int i = 0; i < mPopups.size(); i++) {
+            mFlyoutHandler.dismissPopup(mPopups.get(i).popupWindow);
         }
     }
 }

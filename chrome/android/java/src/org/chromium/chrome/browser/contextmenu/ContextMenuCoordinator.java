@@ -87,16 +87,12 @@ public class ContextMenuCoordinator implements ContextMenuUi, FlyoutHandler<Cont
     private final List<ContextMenuListView> mListViews;
     private final float mTopContentOffsetPx;
 
-    // A list of dialogs, paired with the parent `ListItem` if the dialog is a flyout.
-    private final List<FlyoutPopupEntry<ContextMenuDialog>> mDialogs;
-
     private final HierarchicalMenuController mHierarchicalMenuController;
 
     private Runnable mOnMenuClosed;
     private final ContextMenuNativeDelegate mNativeDelegate;
     private final boolean mIsCustomItemPresent;
     private boolean mUsePopupWindow;
-    private boolean mRemovingPopups;
 
     /**
      * Constructor that also sets the content offset.
@@ -127,7 +123,6 @@ public class ContextMenuCoordinator implements ContextMenuUi, FlyoutHandler<Cont
         mTopContentOffsetPx = topContentOffsetPx;
         mNativeDelegate = nativeDelegate;
         mIsCustomItemPresent = isCustomItemPresent;
-        mDialogs = new ArrayList<>();
         mListViews = new ArrayList<>();
         mHierarchicalMenuController = ListMenuUtils.createHierarchicalMenuController(mActivity);
     }
@@ -257,9 +252,13 @@ public class ContextMenuCoordinator implements ContextMenuUi, FlyoutHandler<Cont
                     new ContextMenuChipController(mActivity, chipAnchorView, () -> dismiss());
             chipDelegate.getChipRenderParams(
                     (chipRenderParams) -> {
-                        assert mDialogs.size() > 0;
+                        FlyoutController controller =
+                                mHierarchicalMenuController.getFlyoutController();
+                        assert controller != null;
+                        List<FlyoutPopupEntry<ContextMenuDialog>> popups = controller.getPopups();
+                        assert popups.size() > 0;
                         if (chipDelegate.isValidChipRenderParams(chipRenderParams)
-                                && mDialogs.get(0).popupWindow.isShowing()) {
+                                && popups.get(0).popupWindow.isShowing()) {
                             assert chipRenderParams != null;
                             assumeNonNull(mChipController).showChip(chipRenderParams);
                         }
@@ -334,10 +333,6 @@ public class ContextMenuCoordinator implements ContextMenuUi, FlyoutHandler<Cont
                 new ContextMenuMediator(
                         mActivity, mHeaderCoordinator, onItemClicked, this::dismiss);
 
-        mHierarchicalMenuController.setupFlyoutController(
-                /* flyoutHandler= */ this,
-                /* drillDownOverrideValue= */ mUsePopupWindow ? null : true);
-
         // The Integer here specifies the {@link ListItemType}.
         ModelList listItems =
                 mediator.updateAndGetModelList(
@@ -389,13 +384,10 @@ public class ContextMenuCoordinator implements ContextMenuUi, FlyoutHandler<Cont
 
         dialog.show();
 
-        assert mDialogs.size() == 0;
-        mDialogs.add(new FlyoutPopupEntry(null, dialog));
-    }
-
-    @Override
-    public List<FlyoutPopupEntry<ContextMenuDialog>> getFlyoutWindows() {
-        return mDialogs;
+        mHierarchicalMenuController.setupFlyoutController(
+                /* flyoutHandler= */ this,
+                dialog,
+                /* drillDownOverrideValue= */ mUsePopupWindow ? null : true);
     }
 
     @Override
@@ -404,31 +396,13 @@ public class ContextMenuCoordinator implements ContextMenuUi, FlyoutHandler<Cont
     }
 
     @Override
-    public void removeFlyoutWindows(int clearFromIndex) {
-        if (clearFromIndex >= mDialogs.size()) {
-            return;
-        }
-
-        // We want to avoid the dismiss listener calling this method when the dismissal
-        // originates from this method, to avoid loops.
-        mRemovingPopups = true;
-
-        for (int i = clearFromIndex; i < mDialogs.size(); i++) {
-            mDialogs.get(i).popupWindow.dismiss();
-        }
-
-        mRemovingPopups = false;
-
-        mDialogs.subList(clearFromIndex, mDialogs.size()).clear();
-        mListViews.subList(clearFromIndex, mListViews.size()).clear();
-
-        if (mDialogs.size() > 0) {
-            mDialogs.get(mDialogs.size() - 1).popupWindow.setWindowFocusForFlyoutMenus(true);
-        }
+    public void dismissPopup(ContextMenuDialog popupWindow) {
+        popupWindow.dismiss();
     }
 
     @Override
-    public void addFlyoutWindow(ListItem item, View view, int levelOfHoveredItem) {
+    public ContextMenuDialog createAndShowFlyoutPopup(
+            ListItem item, View view, Runnable dismissRunnable) {
         assert view != null;
         assert mUsePopupWindow;
 
@@ -457,18 +431,21 @@ public class ContextMenuCoordinator implements ContextMenuUi, FlyoutHandler<Cont
                         /* dragDispatchingTargetView= */ null,
                         calculateFlyoutAnchorRect(mActivity, mWindowAndroid, view),
                         () -> {
-                            if (!mRemovingPopups) {
-                                removeFlyoutWindows(levelOfHoveredItem + 1);
-                            }
+                            dismissRunnable.run();
                         });
 
-        assert mDialogs.size() > 0;
-        mDialogs.get(mDialogs.size() - 1).popupWindow.setWindowFocusForFlyoutMenus(false);
-
-        dialog.setWindowFocusForFlyoutMenus(true);
         dialog.show();
+        return dialog;
+    }
 
-        mDialogs.add(new FlyoutPopupEntry(item, dialog));
+    @Override
+    public void setWindowFocus(ContextMenuDialog popup, boolean hasFocus) {
+        popup.setWindowFocusForFlyoutMenus(hasFocus);
+    }
+
+    @Override
+    public void afterFlyoutPopupsRemoved(int removeFromIndex) {
+        mListViews.subList(removeFromIndex, mListViews.size()).clear();
     }
 
     private static Rect calculateFlyoutAnchorRect(
@@ -548,14 +525,21 @@ public class ContextMenuCoordinator implements ContextMenuUi, FlyoutHandler<Cont
         if (mChipController != null) {
             mChipController.dismissChipIfShowing();
         }
-        removeFlyoutWindows(0);
+
+        if (mHierarchicalMenuController.getFlyoutController() != null) {
+            mHierarchicalMenuController.destroyFlyoutController();
+        }
     }
 
     Callback<ChipRenderParams> getChipRenderParamsCallbackForTesting(ChipDelegate chipDelegate) {
         return (chipRenderParams) -> {
-            assert mDialogs.size() > 0;
+            FlyoutController controller = mHierarchicalMenuController.getFlyoutController();
+            assert controller != null;
+            List<FlyoutPopupEntry<ContextMenuDialog>> dialogs = controller.getPopups();
+            assert dialogs.size() > 0;
+
             if (chipDelegate.isValidChipRenderParams(chipRenderParams)
-                    && mDialogs.get(0).popupWindow.isShowing()) {
+                    && dialogs.get(0).popupWindow.isShowing()) {
                 assumeNonNull(mChipController).showChip(chipRenderParams);
             }
         };
@@ -670,7 +654,13 @@ public class ContextMenuCoordinator implements ContextMenuUi, FlyoutHandler<Cont
     }
 
     public List<FlyoutPopupEntry<ContextMenuDialog>> getDialogsForTest() {
-        return mDialogs;
+        FlyoutController controller = mHierarchicalMenuController.getFlyoutController();
+        assert controller != null;
+        return controller.getPopups();
+    }
+
+    public HierarchicalMenuController getHierarchicalMenuControllerForTest() {
+        return mHierarchicalMenuController;
     }
 
     public ContextMenuHeaderCoordinator getHeaderCoordinatorForTest() {

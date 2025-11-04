@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.contextmenu;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
 
 import static org.chromium.content_public.browser.test.util.TestSelectionDropdownMenuDelegate.ListMenuItemType.MENU_ITEM;
 import static org.chromium.ui.listmenu.ListItemType.MENU_ITEM_WITH_SUBMENU;
@@ -74,7 +73,6 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
 import java.lang.ref.WeakReference;
-import java.util.ArrayList;
 import java.util.List;
 
 /** Unit tests for the context menu. Use density=mdpi so the screen density is 1. */
@@ -359,84 +357,6 @@ public class ContextMenuCoordinatorTest {
                 "rect.bottom for ContextMenuDialog does not match.",
                 /*200 + 17 + 40 / 2 =*/ 237,
                 rect.bottom);
-    }
-
-    @Test
-    @EnableFeatures({ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU})
-    @Config(
-            shadows = {ShadowContextMenuDialog.class, ShadowProfile.class},
-            qualifiers = "mdpi")
-    @CommandLineFlags.Add(ContextMenuSwitches.FORCE_CONTEXT_MENU_POPUP)
-    public void testAddFlyoutWindow() {
-        final int triggeringTouchXDp = 100;
-        final int triggeringTouchYDp = 200;
-        ContextMenuDialog dialog =
-                displayContextMenuDialogAtLocation(triggeringTouchXDp, triggeringTouchYDp);
-        ShadowContextMenuDialog shadowDialog = (ShadowContextMenuDialog) Shadow.extract(dialog);
-        shadowDialog.show();
-
-        ListItem parentItem =
-                new ListItem(
-                        MENU_ITEM_WITH_SUBMENU,
-                        new PropertyModel.Builder(ListMenuSubmenuItemProperties.ALL_KEYS)
-                                .with(TITLE, "Parent item")
-                                .with(ENABLED, true)
-                                .with(SUBMENU_ITEMS, new ArrayList<>())
-                                .build());
-        View mockAnchorView = mock(View.class);
-        doReturn(mActivity).when(mockAnchorView).getContext();
-
-        mCoordinator.addFlyoutWindow(parentItem, mockAnchorView, 0);
-
-        Assert.assertEquals(
-                "There should be 2 dialogs after adding a flyout.",
-                2,
-                mCoordinator.getDialogsForTest().size());
-        Assert.assertEquals(
-                "There should be 2 ListViews after adding a flyout.",
-                2,
-                mCoordinator.getListViewsForTest().size());
-    }
-
-    @Test
-    @EnableFeatures({ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU})
-    @Config(
-            shadows = {ShadowContextMenuDialog.class, ShadowProfile.class},
-            qualifiers = "mdpi")
-    @CommandLineFlags.Add(ContextMenuSwitches.FORCE_CONTEXT_MENU_POPUP)
-    public void testRemoveFlyoutWindow() {
-        final int triggeringTouchXDp = 100;
-        final int triggeringTouchYDp = 200;
-        ContextMenuDialog dialog =
-                displayContextMenuDialogAtLocation(triggeringTouchXDp, triggeringTouchYDp);
-        ShadowContextMenuDialog shadowDialog = (ShadowContextMenuDialog) Shadow.extract(dialog);
-        shadowDialog.show();
-
-        // Add the flyout popup to be removed.
-        ListItem parentItem =
-                new ListItem(
-                        MENU_ITEM_WITH_SUBMENU,
-                        new PropertyModel.Builder(ListMenuSubmenuItemProperties.ALL_KEYS)
-                                .with(TITLE, PARENT_LABEL)
-                                .with(ENABLED, true)
-                                .with(SUBMENU_ITEMS, new ArrayList<>())
-                                .build());
-        View mockAnchorView = mock(View.class);
-        doReturn(mActivity).when(mockAnchorView).getContext();
-
-        mCoordinator.addFlyoutWindow(parentItem, mockAnchorView, 0);
-
-        // Remove the flyout popup.
-        mCoordinator.removeFlyoutWindows(1);
-
-        Assert.assertEquals(
-                "There should be 1 dialog after removing the last flyout.",
-                1,
-                mCoordinator.getDialogsForTest().size());
-        Assert.assertEquals(
-                "There should be 1 ListView after removing the last flyout.",
-                1,
-                mCoordinator.getListViewsForTest().size());
     }
 
     @Test

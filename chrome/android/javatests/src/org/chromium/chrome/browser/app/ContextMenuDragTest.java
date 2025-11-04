@@ -186,7 +186,9 @@ public class ContextMenuDragTest {
                     mContextMenu.getDialogsForTest().get(0).popupWindow.isShowing());
         } else {
             Assert.assertEquals(
-                    "There should be no dialog.", 0, mContextMenu.getDialogsForTest().size());
+                    "There should be no dialog.",
+                    null,
+                    mContextMenu.getHierarchicalMenuControllerForTest().getFlyoutController());
         }
     }
 

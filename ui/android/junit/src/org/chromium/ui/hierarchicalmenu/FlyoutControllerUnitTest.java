@@ -29,6 +29,7 @@ import android.os.Looper;
 import android.view.View.OnClickListener;
 import android.widget.ListView;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -41,12 +42,10 @@ import org.robolectric.shadows.ShadowLooper;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.ui.hierarchicalmenu.FlyoutController.FlyoutHandler;
-import org.chromium.ui.hierarchicalmenu.FlyoutController.FlyoutPopupEntry;
 import org.chromium.ui.hierarchicalmenu.HierarchicalMenuController.SubmenuHeaderFactory;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyModel;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /** Unit tests for {@link FlyoutController}. */
@@ -98,6 +97,7 @@ public class FlyoutControllerUnitTest {
                 new FlyoutController(
                         mFlyoutHandler,
                         HierarchicalMenuTestUtils.createKeyProvider(),
+                        new Object(),
                         mHierarchicalMenuController);
 
         mListItemWithModelClickCallback =
@@ -155,41 +155,36 @@ public class FlyoutControllerUnitTest {
 
     @Test
     public void hoverShowsFlyoutAfterDelay() {
-        // Create the main menu popup window (level 0).
-        List<FlyoutPopupEntry<Object>> dialogs = new ArrayList<>();
-        dialogs.add(new FlyoutPopupEntry(null, new Object()));
-        when(mFlyoutHandler.getFlyoutWindows()).thenReturn(dialogs);
-
         // Start hover on one of the items on the main menu (level 0).
         triggerHoverEnter(mSubmenuLevel0, 0, List.of(mSubmenuLevel0));
 
         // Verify that before the delay, no new window is added.
-        verify(mFlyoutHandler, never()).addFlyoutWindow(any(), any(), eq(0));
+        Assert.assertEquals("There should be 1 popup.", 1, mFlyoutController.getPopups().size());
+        verify(mFlyoutHandler, never()).createAndShowFlyoutPopup(any(), any(), any());
 
         // Wait for the UI delay.
         waitForUiDelay();
 
         // Verify that the call to create a new popup (level 1) is called.
-        verify(mFlyoutHandler).addFlyoutWindow(mSubmenuLevel0, mListView, 0);
-        dialogs.add(new FlyoutPopupEntry(mSubmenuLevel0, new Object()));
+        verify(mFlyoutHandler).createAndShowFlyoutPopup(eq(mSubmenuLevel0), eq(mListView), any());
+        Assert.assertEquals("There should be 2 popups.", 2, mFlyoutController.getPopups().size());
 
         // Hover on an item inside the level 1 popup for long enough.
         triggerHoverEnter(mSubmenuLevel1, 1, List.of(mSubmenuLevel0, mSubmenuLevel1));
         waitForUiDelay();
 
         // Verify that the call to create another popup (level 2) is called.
-        verify(mFlyoutHandler).addFlyoutWindow(mSubmenuLevel1, mListView, 1);
+        verify(mFlyoutHandler).createAndShowFlyoutPopup(eq(mSubmenuLevel1), eq(mListView), any());
+        Assert.assertEquals("There should be 3 popups.", 3, mFlyoutController.getPopups().size());
     }
 
     @Test
     public void hoverOnNewItemClosesAllDescendentPopups() {
-        List<FlyoutPopupEntry<Object>> dialogs = new ArrayList<>();
-        when(mFlyoutHandler.getFlyoutWindows()).thenReturn(dialogs);
-
-        // Create level 0, 1, and 2 popup windows.
-        dialogs.add(new FlyoutPopupEntry(null, new Object())); // Level 0 popup.
-        dialogs.add(new FlyoutPopupEntry(mSubmenuLevel0, new Object())); // Level 1 popup.
-        dialogs.add(new FlyoutPopupEntry(mSubmenuLevel1, new Object())); // Level 2 popup.
+        // Create level 1 and 2 popup windows.
+        triggerHoverEnter(mSubmenuLevel0, 0, List.of(mSubmenuLevel0));
+        waitForUiDelay();
+        triggerHoverEnter(mSubmenuLevel1, 1, List.of(mSubmenuLevel0, mSubmenuLevel1));
+        waitForUiDelay();
 
         // Hover on a different item on the level 0 popup.
         triggerHoverEnter(
@@ -197,39 +192,36 @@ public class FlyoutControllerUnitTest {
         waitForUiDelay();
 
         // Popups of level 1 and 2 should be removed.
-        verify(mFlyoutHandler).removeFlyoutWindows(1);
+        Assert.assertEquals("There should be 1 popup.", 1, mFlyoutController.getPopups().size());
 
-        // Create level 0, 1, and 2 popup windows again.
-        dialogs = new ArrayList<>();
-        dialogs.add(new FlyoutPopupEntry(null, new Object())); // Level 0 popup.
-        dialogs.add(new FlyoutPopupEntry(mSubmenuLevel0, new Object())); // Level 1 popup.
-        dialogs.add(new FlyoutPopupEntry(mSubmenuLevel1, new Object())); // Level 2 popup.
+        // Create level 1 and 2 popup windows.
+        triggerHoverEnter(mSubmenuLevel0, 0, List.of(mSubmenuLevel0));
+        waitForUiDelay();
+        triggerHoverEnter(mSubmenuLevel1, 1, List.of(mSubmenuLevel0, mSubmenuLevel1));
+        waitForUiDelay();
 
         // Hover on a different item on the level 1 popup.
         triggerHoverEnter(mSubmenu0Child1, 1, List.of(mSubmenuLevel0, mSubmenu0Child1));
         waitForUiDelay();
 
         // Level 2 popup should be removed, but level 1 popup should remain.
-        verify(mFlyoutHandler).removeFlyoutWindows(2);
+        Assert.assertEquals("There should be 2 popups.", 2, mFlyoutController.getPopups().size());
     }
 
     @Test
     public void hoverOnOriginalItemKeepsDirectChild() {
-        List<FlyoutPopupEntry<Object>> dialogs = new ArrayList<>();
-        when(mFlyoutHandler.getFlyoutWindows()).thenReturn(dialogs);
-
-        // Create level 0, 1, and 2 popup windows.
-        dialogs.add(new FlyoutPopupEntry(null, new Object())); // Level 0 popup.
-        dialogs.add(new FlyoutPopupEntry(mSubmenuLevel0, new Object())); // Level 1 popup.
-        dialogs.add(new FlyoutPopupEntry(mSubmenuLevel1, new Object())); // Level 2 popup.
+        // Create level 1 and 2 popup windows.
+        triggerHoverEnter(mSubmenuLevel0, 0, List.of(mSubmenuLevel0));
+        waitForUiDelay();
+        triggerHoverEnter(mSubmenuLevel1, 1, List.of(mSubmenuLevel0, mSubmenuLevel1));
+        waitForUiDelay();
 
         // Hover on the original item on the level 0 popup.
         triggerHoverEnter(mSubmenuLevel0, 0, List.of(mSubmenuLevel0));
         waitForUiDelay();
 
         // Level 2 popup should be removed, but level 1 popup should remain.
-        verify(mFlyoutHandler).removeFlyoutWindows(2);
-        dialogs.subList(2, dialogs.size()).clear();
+        Assert.assertEquals("There should be 2 popups.", 2, mFlyoutController.getPopups().size());
     }
 
     private void triggerHoverEnter(ListItem item, int level, List<ListItem> path) {

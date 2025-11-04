@@ -102,13 +102,21 @@ public class HierarchicalMenuController<T> {
      *
      * @param flyoutHandler The {@link FlyoutHandler} for the controller to use for displaying
      *     flyout popups.
+     * @param mainPopup The main popup window for flyout popups to fly out of.
      * @param drillDownOverrideValue If not null, forces the menu behavior to be drill-down ({@code
      *     true}) or flyout ({@code false}), overriding the default.
      */
     public void setupFlyoutController(
-            FlyoutHandler<T> flyoutHandler, @Nullable Boolean drillDownOverrideValue) {
-        mFlyoutController = new FlyoutController<T>(flyoutHandler, mKeyProvider, this);
+            FlyoutHandler<T> flyoutHandler, T mainPopup, @Nullable Boolean drillDownOverrideValue) {
+        mFlyoutController = new FlyoutController<T>(flyoutHandler, mKeyProvider, mainPopup, this);
         mDrillDownOverrideValue = drillDownOverrideValue;
+    }
+
+    /** Dismiss all popups including the main window and destroy the {@link FlyoutController}. */
+    public void destroyFlyoutController() {
+        assert mFlyoutController != null;
+        mFlyoutController.destroy();
+        mFlyoutController = null;
     }
 
     /**
