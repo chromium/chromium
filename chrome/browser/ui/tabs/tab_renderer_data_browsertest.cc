@@ -325,8 +325,8 @@ IN_PROC_BROWSER_TEST_F(TabRendererDataTest, Thumbnail) {
       browser(), GURL(url::kAboutBlankURL), WindowOpenDisposition::CURRENT_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
-  auto* thumbnail_tab_helper =
-      ThumbnailTabHelper::From(tab_strip_model->GetTabAtIndex(0));
+  content::WebContents* wc = tab_strip_model->GetWebContentsAt(0);
+  auto* thumbnail_tab_helper = ThumbnailTabHelper::FromWebContents(wc);
   ASSERT_NE(nullptr, thumbnail_tab_helper);
 
   // Initial data should reference the helper's thumbnail and have no data.

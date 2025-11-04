@@ -31,7 +31,6 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/performance_manager/public/features.h"
-#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/interaction/state_observer.h"
@@ -44,9 +43,9 @@
 namespace {
 class ThumbnailObserver : public ui::test::StateObserver<bool> {
  public:
-  explicit ThumbnailObserver(tabs::TabInterface* tab_interface) {
-    auto* const thumbnail_tab_helper = ThumbnailTabHelper::From(tab_interface);
-
+  explicit ThumbnailObserver(content::WebContents* web_contents) {
+    auto* const thumbnail_tab_helper =
+        ThumbnailTabHelper::FromWebContents(web_contents);
     auto* thumbnail = thumbnail_tab_helper->thumbnail().get();
 
     subscription_ = thumbnail->Subscribe();
@@ -139,8 +138,8 @@ class ThumbnailTabHelperUpdatedInteractiveTest
   auto CheckTabHasThumbnailData(int tab_index, bool has_data) {
     return CheckResult(
         [=, this]() {
-          return ThumbnailTabHelper::From(
-                     target_browser_->GetTabStripModel()->GetTabAtIndex(
+          return ThumbnailTabHelper::FromWebContents(
+                     target_browser_->GetTabStripModel()->GetWebContentsAt(
                          tab_index))
               ->thumbnail()
               ->has_data();
@@ -154,7 +153,7 @@ class ThumbnailTabHelperUpdatedInteractiveTest
     return Steps(ObserveState(kThumbnailCreatedState,
                               [tab_index, this]() {
                                 return target_browser_->GetTabStripModel()
-                                    ->GetTabAtIndex(tab_index);
+                                    ->GetWebContentsAt(tab_index);
                               }),
                  WaitForState(kThumbnailCreatedState, true));
   }
