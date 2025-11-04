@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/contextual_panel/entrypoint/ui/contextual_panel_entrypoint_mutator.h"
 #import "ios/chrome/browser/contextual_panel/entrypoint/ui/contextual_panel_entrypoint_visibility_delegate.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_item_configuration.h"
+#import "ios/chrome/browser/contextual_panel/model/contextual_panel_item_type.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_animator.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_constants.h"
 #import "ios/chrome/browser/reader_mode/model/features.h"
@@ -132,7 +133,7 @@ NSString* const kContextualPanelEntrypointLabelIdentifier =
   [_entrypointItemsWrapper addSubview:_imageView];
   [_entrypointItemsWrapper addSubview:_label];
 
-  _entrypointContainer.isAccessibilityElement = !self.view.hidden;
+  [self updateAccessibilityStatus];
 
   [self activateInitialConstraints];
 
@@ -165,7 +166,7 @@ NSString* const kContextualPanelEntrypointLabelIdentifier =
   BOOL hidden = !display || !_entrypointDisplayed;
   [self.visibilityDelegate setContextualPanelEntrypointHidden:hidden];
 
-  _entrypointContainer.isAccessibilityElement = !self.view.hidden;
+  [self updateAccessibilityStatus];
 }
 
 - (CGPoint)helpAnchorUsingBottomOmnibox:(BOOL)isBottomOmnibox {
@@ -526,7 +527,7 @@ NSString* const kContextualPanelEntrypointLabelIdentifier =
 
   [self.visibilityDelegate setContextualPanelEntrypointHidden:NO];
 
-  _entrypointContainer.isAccessibilityElement = !self.view.hidden;
+  [self updateAccessibilityStatus];
 
   __weak ContextualPanelEntrypointViewController* weakSelf = self;
 
@@ -549,7 +550,7 @@ NSString* const kContextualPanelEntrypointLabelIdentifier =
 
   _entrypointDisplayed = NO;
   [self.visibilityDelegate setContextualPanelEntrypointHidden:YES];
-  _entrypointContainer.isAccessibilityElement = !self.view.hidden;
+  [self updateAccessibilityStatus];
 
   [self.mutator setLocationBarLabelCenteredBetweenContent:NO];
 
@@ -656,6 +657,10 @@ NSString* const kContextualPanelEntrypointLabelIdentifier =
                    completion:nil];
 }
 
+- (void)updateAccessibilityStatus {
+  _entrypointContainer.isAccessibilityElement = !self.view.hidden;
+}
+
 #pragma mark - ContextualPanelEntrypointMutator
 
 - (void)userTappedEntrypoint {
@@ -679,7 +684,7 @@ NSString* const kContextualPanelEntrypointLabelIdentifier =
     self.view.alpha = alphaValue;
   }
 
-  _entrypointContainer.isAccessibilityElement = !self.view.hidden;
+  [self updateAccessibilityStatus];
 }
 
 @end

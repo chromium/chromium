@@ -74,10 +74,15 @@
 }
 
 - (void)setInfobarBadgesCurrentlyShown:(BOOL)infobarBadgesCurrentlyShown {
+  // No-op.
 }
 
 - (void)setEntrypointColored:(BOOL)colored {
   self.entrypointIsColored = colored;
+}
+
+- (void)updateAccessibilityStatus {
+  // No-op.
 }
 
 @end

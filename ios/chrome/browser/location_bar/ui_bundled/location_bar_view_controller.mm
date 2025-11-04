@@ -32,6 +32,7 @@
 #import "ios/chrome/browser/location_bar/ui_bundled/fakebox_buttons_snapshot_provider.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_constants.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_metrics.h"
+#import "ios/chrome/browser/location_bar/ui_bundled/location_bar_placeholder_type.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_steady_view.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_constants.h"
 #import "ios/chrome/browser/omnibox/ui/text_field_view_containing.h"
@@ -1104,22 +1105,26 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
 - (void)updatePlaceholderView {
   switch (_placeholderType) {
     case LocationBarPlaceholderType::kNone:
-      self.locationBarSteadyView.placeholderView = nil;
+      [self.locationBarSteadyView setPlaceholderView:nil type:_placeholderType];
       break;
     case LocationBarPlaceholderType::kLensOverlay:
-      self.locationBarSteadyView.placeholderView = _lensOverlayPlaceholderView;
+      [self.locationBarSteadyView setPlaceholderView:_lensOverlayPlaceholderView
+                                                type:_placeholderType];
       break;
     case LocationBarPlaceholderType::kPageActionMenu:
       CHECK(IsPageActionMenuEnabled());
-      self.locationBarSteadyView.placeholderView =
-          _pageActionMenuEntrypointView;
+      [self.locationBarSteadyView
+          setPlaceholderView:_pageActionMenuEntrypointView
+                        type:_placeholderType];
       if (!_pageActionMenuEntrypointView.newBadgeVisible) {
         _pageActionMenuEntrypointView.newBadgeVisible =
             [self.delegate shouldShowAIHubNewFeatureBadge];
       }
       break;
     case LocationBarPlaceholderType::kDefaultSearchEngineIcon:
-      self.locationBarSteadyView.placeholderView = _defaultSearchEngineIconView;
+      [self.locationBarSteadyView
+          setPlaceholderView:_defaultSearchEngineIconView
+                        type:_placeholderType];
       break;
   }
 }

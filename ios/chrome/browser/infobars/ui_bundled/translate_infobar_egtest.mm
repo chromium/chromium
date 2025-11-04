@@ -1424,12 +1424,16 @@ void TestResponseProvider::GetLanguageResponse(
       waitForUIElementToDisappearWithMatcher:
           grey_accessibilityID(kReaderModeViewAccessibilityIdentifier)];
 
-  // Verify badge is shown and page is translated.
+  // Verify translate badge and Reading Mode contextual chip are shown and page
+  // is translated.
   [[EarlGrey selectElementWithMatcher:
                  grey_accessibilityID(
                      kBadgeButtonTranslateAcceptedAccessibilityIdentifier)]
       assertWithMatcher:grey_notNil()];
   [ChromeEarlGrey waitForWebStateContainingText:"Translated"];
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:
+          grey_accessibilityID(@"ContextualPanelEntrypointImageViewAXID")];
 }
 
 // Tests that translation settings in Reader Mode is displayed and that

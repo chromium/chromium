@@ -101,7 +101,7 @@
   [_badgeContentView addSubview:_badgeIcon];
   [_badgeContentView addSubview:_label];
 
-  _buttonContainer.isAccessibilityElement = !self.view.hidden;
+  [self updateAccessibilityStatus];
 
   [self activateInitialConstraints];
 
@@ -178,6 +178,15 @@
 - (void)setContextualPanelEntrypointHidden:(BOOL)hidden {
   _contextualPanelEntrypointShouldBeVisible = !hidden;
   [self setLocationBarBadgeHidden:hidden];
+}
+
+- (void)setContextualPanelItemType:
+    (std::optional<ContextualPanelItemType>)itemType {
+  // No-op.
+}
+
+- (void)setContextualPanelCurrentlyAnimating:(BOOL)animating {
+  // No-op.
 }
 
 #pragma mark - Private
@@ -670,6 +679,10 @@
   [self highlightBadge:colored];
 }
 
+- (void)updateAccessibilityStatus {
+  _buttonContainer.isAccessibilityElement = !self.view.hidden;
+}
+
 #pragma mark - LocationBarBadgeConsumer
 
 - (void)highlightBadge:(BOOL)highlight {
@@ -708,7 +721,7 @@
 
   [self setLocationBarBadgeHidden:NO];
 
-  _buttonContainer.isAccessibilityElement = !self.view.hidden;
+  [self updateAccessibilityStatus];
 
   __weak LocationBarBadgeViewController* weakSelf = self;
 
@@ -732,7 +745,7 @@
   _locationBarBadgeShouldBeVisible = NO;
   [self setLocationBarBadgeHidden:YES];
 
-  _buttonContainer.isAccessibilityElement = !self.view.hidden;
+  [self updateAccessibilityStatus];
   [self setLocationBarLabelCenteredBetweenContent:NO];
 
   [self.view layoutIfNeeded];
@@ -835,7 +848,7 @@
     self.view.alpha = alphaValue;
   }
 
-  _buttonContainer.isAccessibilityElement = !self.view.hidden;
+  [self updateAccessibilityStatus];
 }
 
 @end

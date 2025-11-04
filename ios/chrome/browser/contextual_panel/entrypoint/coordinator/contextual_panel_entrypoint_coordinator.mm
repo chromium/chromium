@@ -70,6 +70,7 @@
       contextualSheetHandler:contextualSheetHandler
        entrypointHelpHandler:entrypointHelpHandler];
   _mediator.delegate = self;
+  _mediator.visibilityDelegate = self.visibilityDelegate;
 
   _mediator.consumer = _viewController;
   _viewController.mutator = _mediator;

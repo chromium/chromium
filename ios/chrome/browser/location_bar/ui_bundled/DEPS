@@ -18,6 +18,7 @@ include_rules = [
   "+ios/chrome/browser/ntp/model",
   "+ios/chrome/browser/ntp/ui_bundled/new_tab_page_util.h",
   "+ios/chrome/browser/orchestrator/ui_bundled",
+  "+ios/chrome/browser/contextual_panel/model/contextual_panel_item_type.h",
   "+ios/chrome/browser/overlays/model/public",
   "+ios/chrome/browser/reader_mode/model/reader_mode_web_state_utils.h",
   "+ios/chrome/browser/reader_mode/ui/reader_mode_chip_visibility_delegate.h",

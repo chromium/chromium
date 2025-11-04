@@ -14,6 +14,7 @@
 #import "components/feature_engagement/public/tracker.h"
 #import "ios/chrome/browser/contextual_panel/entrypoint/coordinator/contextual_panel_entrypoint_mediator_delegate.h"
 #import "ios/chrome/browser/contextual_panel/entrypoint/ui/contextual_panel_entrypoint_consumer.h"
+#import "ios/chrome/browser/contextual_panel/entrypoint/ui/contextual_panel_entrypoint_visibility_delegate.h"
 #import "ios/chrome/browser/contextual_panel/model/active_contextual_panel_tab_helper_observation_forwarder.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_item_configuration.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_item_type.h"
@@ -198,6 +199,8 @@
   if (config) {
     config->DidTransitionToSmallEntrypoint();
   }
+  [self.visibilityDelegate setContextualPanelCurrentlyAnimating:NO];
+  [self.consumer updateAccessibilityStatus];
 }
 
 #pragma mark - ContextualPanelTabHelperObserving
@@ -310,6 +313,8 @@
 - (void)resetTimersAndUIStateAnimated:(BOOL)animated {
   _transitionToEntrypointLoudMomentTimer = nullptr;
   _transitionToDefaultEntrypointTimer = nullptr;
+  [self.visibilityDelegate setContextualPanelCurrentlyAnimating:NO];
+  [self.consumer updateAccessibilityStatus];
   [self dismissEntrypointIPHAnimated:animated];
   [self cleanupAndTransitionToSmallEntrypoint];
 }
@@ -349,6 +354,8 @@
   }
 
   [self.consumer setEntrypointConfig:config];
+  [self.visibilityDelegate setContextualPanelItemType:config->item_type];
+  [self.consumer updateAccessibilityStatus];
   [self.consumer transitionToSmallEntrypoint];
   [self.consumer showEntrypoint];
 
@@ -426,6 +433,8 @@
       base::BindOnce(^{
         [weakSelf setupAndTransitionToLargeEntrypoint];
       }));
+  [self.visibilityDelegate setContextualPanelCurrentlyAnimating:YES];
+  [self.consumer updateAccessibilityStatus];
 }
 
 - (void)setupAndShowEntrypointIPH {

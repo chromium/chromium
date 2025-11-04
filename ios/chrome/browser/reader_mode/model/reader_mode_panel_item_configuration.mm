@@ -63,9 +63,6 @@ ReaderModePanelItemConfiguration::~ReaderModePanelItemConfiguration() = default;
 #pragma mark - ContextualPanelItemConfiguration
 
 void ReaderModePanelItemConfiguration::DidTransitionToSmallEntrypoint() {
-  if (IsProfileEligibleForBwg()) {
-    Invalidate();
-  }
 }
 
 #pragma mark - ReaderModeTabHelper::Observer
@@ -78,9 +75,6 @@ void ReaderModePanelItemConfiguration::ReaderModeTabHelperDestroyed(
 void ReaderModePanelItemConfiguration::ReaderModeWebStateDidLoadContent(
     ReaderModeTabHelper* tab_helper,
     web::WebState* web_state) {
-  if (IsProfileEligibleForBwg()) {
-    Invalidate();
-  }
 }
 
 void ReaderModePanelItemConfiguration::ReaderModeWebStateWillBecomeUnavailable(
@@ -101,9 +95,6 @@ void ReaderModePanelItemConfiguration::WebStateDestroyed(
 }
 
 void ReaderModePanelItemConfiguration::WasHidden(web::WebState* web_state) {
-  if (IsProfileEligibleForBwg()) {
-    Invalidate();
-  }
 }
 
 #pragma mark - Private

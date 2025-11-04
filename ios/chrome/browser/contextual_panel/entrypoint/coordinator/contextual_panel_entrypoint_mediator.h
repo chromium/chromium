@@ -17,11 +17,16 @@ class Tracker;
 @protocol ContextualPanelEntrypointMediatorDelegate;
 @protocol ContextualSheetCommands;
 @protocol ContextualPanelEntrypointIPHCommands;
+@protocol ContextualPanelEntrypointVisibilityDelegate;
 class WebStateList;
 
 // Mediator for Contextual Panel Entrypoint.
 @interface ContextualPanelEntrypointMediator
     : NSObject <ContextualPanelEntrypointMutator>
+
+// The entrypoint visibility delegate.
+@property(nonatomic, weak) id<ContextualPanelEntrypointVisibilityDelegate>
+    visibilityDelegate;
 
 - (instancetype)init NS_UNAVAILABLE;
 

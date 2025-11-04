@@ -10,7 +10,6 @@ source_set("ui_bundled") {
     "location_bar_generic_coordinator.h",
     "location_bar_mediator.h",
     "location_bar_mediator.mm",
-    "location_bar_placeholder_type.h",
     "location_bar_steady_view.h",
     "location_bar_steady_view.mm",
     "location_bar_steady_view_consumer.h",
@@ -142,9 +141,11 @@ source_set("badges") {
     "badges_container_view.mm",
   ]
   deps = [
+    ":constants",
     ":metrics",
     "//ios/chrome/browser/badges/ui_bundled",
     "//ios/chrome/browser/contextual_panel/entrypoint/ui",
+    "//ios/chrome/browser/contextual_panel/model:public",
     "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/browser/lens_overlay/coordinator:lens_overlay_availability",
     "//ios/chrome/browser/reader_mode/ui:chip",
@@ -202,6 +203,7 @@ source_set("constants") {
   sources = [
     "location_bar_constants.h",
     "location_bar_constants.mm",
+    "location_bar_placeholder_type.h",
   ]
   frameworks = [
     "Foundation.framework",
