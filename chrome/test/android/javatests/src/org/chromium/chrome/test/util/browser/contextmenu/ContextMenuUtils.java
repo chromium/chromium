@@ -66,13 +66,13 @@ public class ContextMenuUtils {
      * @param jsCode The javascript to get the DOM node to right click to open the context menu for.
      * @return The {@link ContextMenuCoordinator} of the context menu.
      */
-    private static ContextMenuCoordinator openContextMenuByJsFromRightClick(
-            Instrumentation instrumentation, Tab tab, String jsCode) throws TimeoutException {
+    private static ContextMenuCoordinator openContextMenuByJsFromRightClick(Tab tab, String jsCode)
+            throws TimeoutException {
         final OnContextMenuShownHelper helper = new OnContextMenuShownHelper();
         ContextMenuHelper.setMenuShownCallbackForTests(helper::notifyCalled);
 
         int callCount = helper.getCallCount();
-        DOMUtils.rightClickNodeByJs(instrumentation, tab.getWebContents(), jsCode);
+        DOMUtils.rightClickNodeByJs(tab.getWebContents(), jsCode);
 
         helper.waitForCallback(callCount);
         return helper.getContextMenuCoordinator();
@@ -229,8 +229,7 @@ public class ContextMenuUtils {
             String jsCode,
             final int itemId)
             throws TimeoutException {
-        ContextMenuCoordinator menuCoordinator =
-                openContextMenuByJsFromRightClick(instrumentation, tab, jsCode);
+        ContextMenuCoordinator menuCoordinator = openContextMenuByJsFromRightClick(tab, jsCode);
         Assert.assertNotNull("Failed to open context menu", menuCoordinator);
 
         selectOpenContextMenuItem(instrumentation, activity, menuCoordinator, itemId);
