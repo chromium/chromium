@@ -854,7 +854,8 @@ public final class ChildProcessLauncherHelperImpl {
 
     @VisibleForTesting
     @CalledByNative
-    void setPriority(
+    @SpareRendererPriority
+    int setPriority(
             int pid,
             boolean visible,
             boolean hasMediaStream,
@@ -873,9 +874,12 @@ public final class ChildProcessLauncherHelperImpl {
                         + ") did not match the launcher's pid ("
                         + mLauncher.getPid()
                         + ").";
+        boolean isSpareRendererPriorityGraduate = (mIsSpareRenderer && !isSpareRenderer);
         if (getByPid(pid) == null) {
             // Child already disconnected. Ignore any trailing calls.
-            return;
+            return isSpareRendererPriorityGraduate
+                    ? SpareRendererPriority.SPARE_DEAD
+                    : SpareRendererPriority.SPARE_NO_CHANGE;
         }
 
         ChildProcessConnection connection = assumeNonNull(mLauncher.getConnection());
@@ -990,6 +994,13 @@ public final class ChildProcessLauncherHelperImpl {
         }
 
         mEffectiveImportance = newEffectiveImportance;
+
+        if (isSpareRendererPriorityGraduate) {
+            return connection.isConnectedProcessAlive()
+                    ? SpareRendererPriority.SPARE_GRADUATED
+                    : SpareRendererPriority.SPARE_DEAD;
+        }
+        return SpareRendererPriority.SPARE_NO_CHANGE;
     }
 
     @CalledByNative

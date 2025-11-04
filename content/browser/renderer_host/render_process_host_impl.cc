@@ -1626,7 +1626,9 @@ RenderProcessHostImpl::RenderProcessHostImpl(
       storage_partition_impl_(storage_partition_impl),
       flags_(flags),
 #if BUILDFLAG(IS_ANDROID)
-      has_spare_renderer_priority_(is_spare_renderer),
+      spare_renderer_priority_status_(
+          is_spare_renderer ? SpareRendererPriorityStatus::kSpare
+                            : SpareRendererPriorityStatus::kNormal),
 #endif
       tracing_track_(
           perfetto::NamedTrack::FromPointer("RenderProcessHostImpl",
@@ -1789,6 +1791,15 @@ bool RenderProcessHostImpl::Init() {
       *base::CommandLine::ForCurrentProcess();
   renderer_prefix =
       browser_command_line.GetSwitchValueNative(switches::kRendererCmdPrefix);
+
+#if BUILDFLAG(IS_ANDROID)
+  // If the spare renderer gets killed when graduating the priority to normal,
+  // we will set the priority to normal during re-initialization.
+  if (spare_renderer_priority_status_ ==
+      SpareRendererPriorityStatus::kGraduating) {
+    spare_renderer_priority_status_ = SpareRendererPriorityStatus::kNormal;
+  }
+#endif
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   int flags = renderer_prefix.empty() ? ChildProcessHost::CHILD_ALLOW_SELF
@@ -3128,10 +3139,16 @@ bool RenderProcessHostImpl::GetIntersectsViewport() {
 
 #if BUILDFLAG(IS_ANDROID)
 void RenderProcessHostImpl::GraduateSpareToNormalRendererPriority() {
-  if (has_spare_renderer_priority_) {
-    has_spare_renderer_priority_ = false;
+  if (spare_renderer_priority_status_ == SpareRendererPriorityStatus::kSpare) {
+    spare_renderer_priority_status_ = SpareRendererPriorityStatus::kGraduating;
     UpdateProcessPriority();
   }
+}
+
+bool RenderProcessHostImpl::
+    ShouldThrottleNavigationForSpareRendererGraduation() {
+  return !is_dead_ && spare_renderer_priority_status_ !=
+                          SpareRendererPriorityStatus::kNormal;
 }
 
 ChildProcessImportance RenderProcessHostImpl::GetEffectiveImportance() {
@@ -5656,7 +5673,8 @@ void RenderProcessHostImpl::UpdateProcessPriority() {
       pending_views_ > 0, /* boost_for_pending_views */
       boost_for_loading_count_ > 0, is_discarding_,
 #if BUILDFLAG(IS_ANDROID)
-      has_spare_renderer_priority_, GetEffectiveImportance()
+      spare_renderer_priority_status_ == SpareRendererPriorityStatus::kSpare,
+      GetEffectiveImportance()
 #else
       priority_override_
 #endif
@@ -5907,7 +5925,15 @@ bool RenderProcessHostImpl::CanUseWarmUpConnection() {
 }
 
 bool RenderProcessHostImpl::HasSpareRendererPriority() {
-  return has_spare_renderer_priority_;
+  return spare_renderer_priority_status_ !=
+         SpareRendererPriorityStatus::kNormal;
+}
+
+void RenderProcessHostImpl::OnSpareRendererPriorityGraduated(bool is_alive) {
+  spare_renderer_priority_status_ = SpareRendererPriorityStatus::kNormal;
+  for (auto& observer : observers_) {
+    observer.SpareRendererPriorityGraduated(this, is_alive);
+  }
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 

@@ -57,6 +57,12 @@ const base::FeatureParam<std::string> kAndroidSpareRendererCreationTiming{
     &kAndroidWarmUpSpareRendererWithTimeout, "spare_renderer_creation_timing",
     kAndroidSpareRendererCreationAfterLoading};
 
+// Whether to add a navigation throttle on Android to wait for the
+// priority of the spare renderer to be graduated before starting
+// the network request.
+const base::FeatureParam<bool> kAndroidSpareRendererAddNavigationThrottle{
+    &kAndroidWarmUpSpareRendererWithTimeout, "add_navigation_throttle", false};
+
 // The delay for creating the Android spare renderer in
 // SpareRenderProcessHostManager::PrepareForFutureRequests.
 // The parameter will not be effective if

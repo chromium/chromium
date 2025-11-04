@@ -476,6 +476,14 @@ public class ChildProcessConnection {
     }
 
     /**
+     * @return whether the connection to the child process is established and the connected process
+     *     is still alive.
+     */
+    public boolean isConnectedProcessAlive() {
+        return mService != null && mService.asBinder().pingBinder();
+    }
+
+    /**
      * @return the connection pid, or 0 if not yet connected
      */
     public int getPid() {

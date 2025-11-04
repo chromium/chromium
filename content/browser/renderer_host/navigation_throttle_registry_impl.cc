@@ -32,9 +32,11 @@
 #include "content/common/features.h"
 #include "content/public/browser/navigation_handle.h"
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
+#include "content/browser/renderer_host/android_spare_renderer_navigation_throttle.h"
+#else
 #include "content/browser/picture_in_picture/document_picture_in_picture_navigation_throttle.h"
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace content {
 
@@ -87,11 +89,17 @@ void NavigationThrottleRegistryImpl::RegisterNavigationThrottles() {
   // navigation altogether.
   BlockedSchemeNavigationThrottle::MaybeCreateAndAdd(*this);
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(
+          features::kAndroidWarmUpSpareRendererWithTimeout) &&
+      features::kAndroidSpareRendererAddNavigationThrottle.Get()) {
+    AndroidSpareRendererNavigationThrottle::CreateAndAdd(*this);
+  }
+#else
   // Prevent cross-document navigations from document picture-in-picture
   // windows.
   DocumentPictureInPictureNavigationThrottle::MaybeCreateAndAdd(*this);
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
   AncestorThrottle::CreateAndAdd(*this);
 

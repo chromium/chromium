@@ -254,6 +254,8 @@ class ChildProcessLauncherHelper
 #if BUILDFLAG(IS_ANDROID)
   void OnChildProcessStarted(JNIEnv* env, jint handle);
 
+  void OnSpareRendererPriorityGraduatedOnClientThread(bool is_alive);
+
   base::android::ChildBindingState GetEffectiveChildBindingState();
 
   // Dumps the stack of the child process without crashing it.

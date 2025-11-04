@@ -1881,6 +1881,7 @@ test("content_browsertests") {
       "../browser/gpu/gpu_background_kill_android_browsertest.cc",
       "../browser/navigation_transitions/back_forward_transition_animation_manager_android_browsertest.cc",
       "../browser/network/quic_connection_migration_android_browsertest.cc",
+      "../browser/renderer_host/android_spare_renderer_navigation_throttle_browsertest.cc",
       "../browser/renderer_host/render_widget_host_view_android_browsertest.cc",
 
       # TODO(crbug.com/40267166): move out of Android once we can capture

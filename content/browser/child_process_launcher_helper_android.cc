@@ -24,6 +24,7 @@
 #include "base/process/launch.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
+#include "content/browser/android/spare_renderer_priority.h"
 #include "content/browser/child_process_launcher.h"
 #include "content/browser/child_process_launcher_helper_posix.h"
 #include "content/browser/memory_pressure/user_level_memory_pressure_signal_generator.h"
@@ -315,13 +316,22 @@ void ChildProcessLauncherHelper::SetRenderProcessPriorityOnLauncherThread(
       "pid", process.Handle());
   JNIEnv* env = AttachCurrentThread();
   DCHECK(env);
-  Java_ChildProcessLauncherHelperImpl_setPriority(
+  jint result = Java_ChildProcessLauncherHelperImpl_setPriority(
       env, java_peer_, process.Handle(), priority.visible,
       priority.has_media_stream, priority.has_immersive_xr_session,
       priority.has_foreground_service_worker, priority.frame_depth,
       priority.intersects_viewport, priority.boost_for_pending_views,
       priority.boost_for_loading, priority.is_spare_renderer,
       static_cast<jint>(priority.importance));
+  if (result != static_cast<jint>(SpareRendererPriority::SPARE_NO_CHANGE)) {
+    client_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&ChildProcessLauncherHelper::
+                           OnSpareRendererPriorityGraduatedOnClientThread,
+                       this,
+                       result == static_cast<jint>(
+                                     SpareRendererPriority::SPARE_GRADUATED)));
+  }
   base::UmaHistogramMicrosecondsTimes(
       "Android.ChildProcessBinding.SetPriorityLatency",
       base::TimeTicks::Now() - post_from_ui_thread_time);
@@ -342,6 +352,13 @@ void ChildProcessLauncherHelper::OnChildProcessStarted(JNIEnv*, jint handle) {
   ChildProcessLauncherHelper::Process process;
   process.process = base::Process(handle);
   PostLaunchOnLauncherThread(std::move(process), launch_result);
+}
+
+void ChildProcessLauncherHelper::OnSpareRendererPriorityGraduatedOnClientThread(
+    bool is_alive) {
+  if (child_process_launcher_) {
+    child_process_launcher_->OnSpareRendererPriorityGraduated(is_alive);
+  }
 }
 
 }  // namespace internal

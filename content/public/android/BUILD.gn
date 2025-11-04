@@ -471,6 +471,7 @@ java_strings_grd("content_strings_grd") {
 java_cpp_enum("content_public_android_java_enums_srcjar") {
   sources = [
     "//content/browser/android/select_popup.cc",
+    "//content/browser/android/spare_renderer_priority.h",
     "//content/public/browser/android/child_process_importance.h",
     "//content/public/browser/android/message_payload_type.h",
     "//content/public/browser/android/motion_event_action.h",

@@ -44,6 +44,8 @@ inline constexpr const char kAndroidSpareRendererCreationAfterFirstPaint[] =
 inline constexpr const char
     kAndroidSpareRendererCreationDelayedDuringLoading[] =
         "delayed-during-loading";
+CONTENT_EXPORT extern const base::FeatureParam<bool>
+    kAndroidSpareRendererAddNavigationThrottle;
 CONTENT_EXPORT extern const base::FeatureParam<int>
     kAndroidSpareRendererCreationDelayMs;
 CONTENT_EXPORT extern const base::FeatureParam<int>

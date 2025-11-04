@@ -332,6 +332,10 @@ void ChildProcessLauncher::DumpProcessStack() {
       FROM_HERE, base::BindOnce(&ChildProcessLauncherHelper::DumpProcessStack,
                                 helper_, std::move(to_pass)));
 }
+
+void ChildProcessLauncher::OnSpareRendererPriorityGraduated(bool is_alive) {
+  client_->OnSpareRendererPriorityGraduated(is_alive);
+}
 #endif
 
 ChildProcessLauncher::Client* ChildProcessLauncher::ReplaceClientForTest(

@@ -139,6 +139,7 @@ class MockRenderProcessHost : public RenderProcessHost {
 #endif
 #if BUILDFLAG(IS_ANDROID)
   void GraduateSpareToNormalRendererPriority() override;
+  bool ShouldThrottleNavigationForSpareRendererGraduation() override;
   ChildProcessImportance GetEffectiveImportance() override;
   base::android::ChildBindingState GetEffectiveChildBindingState() override;
   void DumpProcessStack() override;

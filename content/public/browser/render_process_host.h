@@ -399,6 +399,12 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Listener,
   // and should not be called outside of content/.
   virtual void GraduateSpareToNormalRendererPriority() = 0;
 
+  // Returns if the renderer is still of the lowest priority on Android.
+  // Since the spare renderer priority update is asynchronous on Android,
+  // the function will return true until it gets the update complete
+  // callback for GraduateSpareToNormalRendererPriority.
+  virtual bool ShouldThrottleNavigationForSpareRendererGraduation() = 0;
+
   // Return the highest importance of all widgets in this process.
   virtual ChildProcessImportance GetEffectiveImportance() = 0;
 

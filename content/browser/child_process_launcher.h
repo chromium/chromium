@@ -236,6 +236,13 @@ class CONTENT_EXPORT ChildProcessLauncher
     virtual bool CanUseWarmUpConnection();
     // Whether the process should be set to the priority of a spare renderer.
     virtual bool HasSpareRendererPriority();
+    // The callback function triggered when the spare renderer priority has been
+    // successfully updated to normal renderer priority.
+    // If the child process is dead when trying to update
+    // the priority, is_alive will be false. The callback will be triggered
+    // after calling
+    // RenderProcessHostImpl::GraduateSpareToNormalRendererPriority.
+    virtual void OnSpareRendererPriorityGraduated(bool is_alive) {}
 #endif
 
    protected:
@@ -332,6 +339,10 @@ class CONTENT_EXPORT ChildProcessLauncher
               DWORD last_error,
 #endif
               int error_code);
+
+#if BUILDFLAG(IS_ANDROID)
+  void OnSpareRendererPriorityGraduated(bool is_alive);
+#endif
 
 #if BUILDFLAG(IS_MAC)
   // base::PortProvider::Observer:

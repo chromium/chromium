@@ -375,6 +375,11 @@ void MockRenderProcessHost::ClearPriorityOverride() {}
 #if BUILDFLAG(IS_ANDROID)
 void MockRenderProcessHost::GraduateSpareToNormalRendererPriority() {}
 
+bool MockRenderProcessHost::
+    ShouldThrottleNavigationForSpareRendererGraduation() {
+  return false;
+}
+
 ChildProcessImportance MockRenderProcessHost::GetEffectiveImportance() {
   NOTIMPLEMENTED();
   return ChildProcessImportance::NORMAL;

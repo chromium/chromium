@@ -92,6 +92,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/memory/memory_pressure_listener.h"
+#include "content/browser/renderer_host/android_spare_renderer_navigation_throttle.h"
 #include "content/public/browser/android/child_process_importance.h"
 #endif
 
@@ -288,6 +289,7 @@ class CONTENT_EXPORT RenderProcessHostImpl
 #endif
 #if BUILDFLAG(IS_ANDROID)
   void GraduateSpareToNormalRendererPriority() override;
+  bool ShouldThrottleNavigationForSpareRendererGraduation() override;
   ChildProcessImportance GetEffectiveImportance() override;
   base::android::ChildBindingState GetEffectiveChildBindingState() override;
   void DumpProcessStack() override;
@@ -389,6 +391,7 @@ class CONTENT_EXPORT RenderProcessHostImpl
 #if BUILDFLAG(IS_ANDROID)
   bool CanUseWarmUpConnection() override;
   bool HasSpareRendererPriority() override;
+  void OnSpareRendererPriorityGraduated(bool is_alive) override;
 #endif
 
   const std::string& GetUnresponsiveDocumentJavascriptCallStack() const;
@@ -979,6 +982,14 @@ class CONTENT_EXPORT RenderProcessHostImpl
     kForInitialWebUI = 1 << 5,
 #endif  // !BUILDFLAG(IS_ANDROID)
   };
+
+#if BUILDFLAG(IS_ANDROID)
+  enum class SpareRendererPriorityStatus {
+    kNormal = 0,
+    kSpare = 1,
+    kGraduating = 2,
+  };
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // A RenderProcessHostImpl's IO thread implementation of the
   // |mojom::ChildProcessHost| interface. This exists to allow the process host
@@ -1641,15 +1652,14 @@ class CONTENT_EXPORT RenderProcessHostImpl
   size_t max_outermost_main_frames_ = 0;
 
 #if BUILDFLAG(IS_ANDROID)
-  // Whether to consider the process as a spare renderer when
-  // calculating the priority.
-  // The attribute starts out as false and is set to true if this renderer
-  // process is launched as a spare process.  When the process is taken for
-  // navigation, the value will stay true until the priority is set in
-  // RenderWidgetHostImpl. For other renderer process allocations, the value
-  // will be set to false when the process is taken from the
-  // SpareRenderProcessHostManager.
-  bool has_spare_renderer_priority_;
+  // The spare renderer priority status of the process.
+  // The attribute starts out as kNormal and is set to kSpare if this renderer
+  // process is launched as a spare process. When the process is taken for
+  // navigation, the value be set to kGraduating when
+  // GraduateSpareToNormalRendererPriority is called. The value will be further
+  // updated to kNormal when we receive the OnSpareRendererPriorityGraduated
+  // callback.
+  SpareRendererPriorityStatus spare_renderer_priority_status_;
 #endif  // BUILDFLAG(IS_ANDROID)
 
   // Tracing track used to emit async event related to lifecycle.
