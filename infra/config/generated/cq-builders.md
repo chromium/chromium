@@ -595,6 +595,20 @@ builder.
   Location filters:
   * [`//.*\.(js|ts)`](https://cs.chromium.org/search?q=+file:.*\.(js|ts))
 
+* [linux-oi-rel](https://ci.chromium.org/p/chromium/builders/try/linux-oi-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-oi-rel""))
+
+  Location filters:
+  * [`//chrome/browser/renderer_host/javascript_optimizer_feature_browsertest\.cc$`](https://cs.chromium.org/search?q=+file:chrome/browser/renderer_host/javascript_optimizer_feature_browsertest\.cc$)
+  * [`//chrome/browser/policy/test/v8_optimizer_policy_browsertest\.cc$`](https://cs.chromium.org/search?q=+file:chrome/browser/policy/test/v8_optimizer_policy_browsertest\.cc$)
+  * [`//chrome/browser/site_protection/.*\.(cc|h)$`](https://cs.chromium.org/search?q=+file:chrome/browser/site_protection/.*\.(cc|h)$)
+  * [`//content/browser/agent_cluster_key.+`](https://cs.chromium.org/chromium/src/content/browser/agent_cluster_key)
+  * [`//content/browser/child_process_security_policy.+`](https://cs.chromium.org/chromium/src/content/browser/child_process_security_policy)
+  * [`//content/browser/process_lock.+`](https://cs.chromium.org/chromium/src/content/browser/process_lock)
+  * [`//content/browser/renderer_host/render_frame_host_manager.+`](https://cs.chromium.org/chromium/src/content/browser/renderer_host/render_frame_host_manager)
+  * [`//content/browser/site_info\.(cc|h)$`](https://cs.chromium.org/search?q=+file:content/browser/site_info\.(cc|h)$)
+  * [`//content/browser/site_instance.*\.(cc|h)$`](https://cs.chromium.org/search?q=+file:content/browser/site_instance.*\.(cc|h)$)
+  * [`//content/public/browser/site_instance.*\.(cc|h)$`](https://cs.chromium.org/search?q=+file:content/public/browser/site_instance.*\.(cc|h)$)
+
 * [linux-perfetto-rel](https://ci.chromium.org/p/chromium/builders/try/linux-perfetto-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-perfetto-rel""))
 
   Location filters:
