@@ -84,6 +84,7 @@ source_set("publishers") {
       "//chrome/browser/ash/arc/app_shortcuts",
       "//chrome/browser/ash/arc/privacy_items",
       "//chrome/browser/ash/arc/session",
+      "//chrome/browser/ash/arc/session:service_launcher",
       "//chrome/browser/ash/borealis",
       "//chrome/browser/ash/bruschetta",
       "//chrome/browser/ash/child_accounts",
@@ -114,7 +115,7 @@ source_set("publishers") {
     # Caused by KeyedService dependency. We should revisit to resolve this.
     # E.g. crbug.com/442761233.
     allow_circular_includes_from += [
-      "//chrome/browser/ash/arc/session",
+      "//chrome/browser/ash/arc/session:service_launcher",
       "//chrome/browser/ash/remote_apps",
     ]
   }

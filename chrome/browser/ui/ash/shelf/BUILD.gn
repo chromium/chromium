@@ -313,6 +313,7 @@ source_set("browser_tests") {
     "//chrome/browser/ash/arc",
     "//chrome/browser/ash/arc:arc_util",
     "//chrome/browser/ash/arc/session",
+    "//chrome/browser/ash/arc/session:service_launcher",
     "//chrome/browser/ash/crostini",
     "//chrome/browser/ash/file_manager",
     "//chrome/browser/ash/file_manager:test_support",

@@ -28,7 +28,7 @@ static_library("keyed_service") {
     "//chrome/browser/ash/app_mode/arcvm_app",
     "//chrome/browser/ash/app_restore",
     "//chrome/browser/ash/apps",
-    "//chrome/browser/ash/arc/session",
+    "//chrome/browser/ash/arc/session:service_launcher",
     "//chrome/browser/ash/bluetooth",
     "//chrome/browser/ash/boca",
     "//chrome/browser/ash/boca/on_task",

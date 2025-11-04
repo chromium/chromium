@@ -32,6 +32,7 @@ static_library("vmm") {
     "//base",
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/app_list/arc",
+    "//chrome/browser/ash/arc/session",
     "//chromeos/ash/components/dbus/concierge",
     "//chromeos/ash/components/dbus/concierge:concierge_proto",
     "//chromeos/ash/components/throttle",

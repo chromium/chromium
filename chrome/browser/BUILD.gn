@@ -5353,6 +5353,7 @@ static_library("browser") {
       "//chrome/browser/ash/arc/print_spooler",
       "//chrome/browser/ash/arc/screen_capture",
       "//chrome/browser/ash/arc/session",
+      "//chrome/browser/ash/arc/session:service_launcher",
       "//chrome/browser/ash/arc/tracing",
       "//chrome/browser/ash/arc/tts",
       "//chrome/browser/ash/arc/vmm",

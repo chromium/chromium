@@ -35,7 +35,7 @@ static_library("main_parts") {
     "//chrome/browser/ash/ambient",
     "//chrome/browser/ash/app_mode",
     "//chrome/browser/ash/arc/memory_pressure",
-    "//chrome/browser/ash/arc/session",
+    "//chrome/browser/ash/arc/session:service_launcher",
     "//chrome/browser/ash/audio",
     "//chrome/browser/ash/bluetooth",
     "//chrome/browser/ash/boot_times_recorder",

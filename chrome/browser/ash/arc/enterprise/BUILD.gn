@@ -15,6 +15,7 @@ static_library("enterprise") {
   deps = [
     "//base",
     "//chrome/browser/ash/arc:arc_util",
+    "//chrome/browser/ash/arc/session",
     "//chromeos/ash/experiences/arc",
   ]
 }

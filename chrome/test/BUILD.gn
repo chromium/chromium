@@ -1032,7 +1032,7 @@ static_library("test_support") {
       "//chrome/browser/ash/arc",
       "//chrome/browser/ash/arc:arc_util",
       "//chrome/browser/ash/arc/boot_phase_monitor",
-      "//chrome/browser/ash/arc/session",
+      "//chrome/browser/ash/arc/session:service_launcher",
       "//chrome/browser/ash/crosapi",
       "//chrome/browser/ash/dbus",
       "//chrome/browser/ash/extensions",

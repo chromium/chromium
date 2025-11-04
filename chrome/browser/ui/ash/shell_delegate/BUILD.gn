@@ -26,7 +26,7 @@ static_library("shell_delegate") {
     "//chrome/browser/ash/arc",
     "//chrome/browser/ash/arc:arc_util",
     "//chrome/browser/ash/arc/locked_fullscreen",
-    "//chrome/browser/ash/arc/session",
+    "//chrome/browser/ash/arc/session:service_launcher",
     "//chrome/browser/ash/browser_delegate",
     "//chrome/browser/ash/file_manager",
     "//chrome/browser/ash/multidevice_setup",

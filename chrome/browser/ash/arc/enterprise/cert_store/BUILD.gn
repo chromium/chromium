@@ -79,7 +79,7 @@ source_set("browser_tests") {
     ":cert_store",
     "//base",
     "//base/test:test_support",
-    "//chrome/browser/ash/arc/session",
+    "//chrome/browser/ash/arc/session:service_launcher",
     "//chrome/browser/ash/login/test:test_support",
     "//chrome/browser/ash/platform_keys",
     "//chrome/browser/ash/platform_keys/key_permissions",
