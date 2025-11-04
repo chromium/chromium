@@ -35,9 +35,9 @@
   return self;
 }
 
-- (void)startImport:(NSUUID*)UUID {
+- (void)prepareImport:(NSUUID*)UUID {
   if (@available(iOS 26, *)) {
-    [_credentialImportManager startImport:UUID];
+    [_credentialImportManager prepareImport:UUID];
   }
 }
 
@@ -50,10 +50,11 @@
 
 #pragma mark - CredentialImportManagerDelegate
 
-- (void)onCredentialsParsedWithPasswords:
+- (void)onCredentialsTranslatedWithPasswords:
             (NSArray<CredentialExchangePassword*>*)passwords
-                                passkeys:(NSArray<CredentialExchangePasskey*>*)
-                                             passkeys {
+                                    passkeys:
+                                        (NSArray<CredentialExchangePasskey*>*)
+                                            passkeys {
   _passwords = passwords;
   _passkeys = passkeys;
   [_delegate showImportScreenWithPasswordCount:passwords.count

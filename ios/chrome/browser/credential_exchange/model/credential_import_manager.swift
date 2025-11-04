@@ -7,8 +7,8 @@ import Foundation
 
 /// Delegate for CredentialImportManager.
 @objc public protocol CredentialImportManagerDelegate {
-  /// Called when parsing the credentials from ASExportedCredentialData is finished.
-  @objc func onCredentialsParsed(
+  /// Called when translating the credentials from ASExportedCredentialData to NSObjects is finished.
+  @objc func onCredentialsTranslated(
     passwords: [CredentialExchangePassword], passkeys: [CredentialExchangePasskey])
 }
 
@@ -33,13 +33,13 @@ import Foundation
   /// Begins the credential import process by providing a UUID token received by the OS during the
   /// app launch.
   @available(iOS 26, *)
-  @objc public func startImport(_ uuid: NSUUID) {
+  @objc public func prepareImport(_ uuid: NSUUID) {
     let importManager = ASCredentialImportManager()
     Task {
       do {
         let credentialData = try await importManager.importCredentials(token: uuid as UUID)
         let translatedData = translateCredentialData(credentialData)
-        delegate?.onCredentialsParsed(
+        delegate?.onCredentialsTranslated(
           passwords: translatedData.passwords, passkeys: translatedData.passkeys)
       } catch {
         // TODO(crbug.com/445889307): Handle errors.

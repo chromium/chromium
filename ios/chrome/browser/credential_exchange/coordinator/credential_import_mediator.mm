@@ -28,7 +28,7 @@
   self = [super init];
   if (self) {
     _credentialImporter = [[CredentialImporter alloc] initWithDelegate:self];
-    [_credentialImporter startImport:UUID];
+    [_credentialImporter prepareImport:UUID];
     _delegate = delegate;
     _userEmail = std::move(userEmail);
   }

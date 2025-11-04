@@ -27,7 +27,7 @@
 // Called when the app is launched to perform credential import. `UUID` is a
 // token provided by the OS on app launch, required to receive the credential
 // data to be imported.
-- (void)startImport:(NSUUID*)UUID;
+- (void)prepareImport:(NSUUID*)UUID;
 
 // Called when the user confirms the import. `securityDomainSecrets` is needed
 // to encrypt passkeys if there are any to be imported.
