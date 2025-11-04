@@ -4,12 +4,15 @@
 
 #include "ash/webui/boca_receiver_app_ui/boca_receiver_untrusted_page_handler.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
+#include <vector>
 
+#include "ash/public/cpp/network_config_service.h"
 #include "ash/webui/boca_receiver_app_ui/audio_packet_converter.h"
 #include "ash/webui/boca_receiver_app_ui/mojom/boca_receiver.mojom-data-view.h"
 #include "ash/webui/boca_receiver_app_ui/mojom/boca_receiver.mojom.h"
@@ -29,6 +32,9 @@
 #include "chromeos/ash/components/boca/receiver/update_kiosk_receiver_state_request.h"
 #include "chromeos/ash/components/boca/spotlight/spotlight_constants.h"
 #include "chromeos/ash/components/boca/spotlight/spotlight_remoting_client_manager.h"
+#include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-data-view.h"
+#include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
+#include "chromeos/services/network_config/public/mojom/network_types.mojom-data-view.h"
 #include "google_apis/common/base_requests.h"
 #include "google_apis/common/request_sender.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -79,7 +85,15 @@ BocaReceiverUntrustedPageHandler::BocaReceiverUntrustedPageHandler(
   }
   fcm_handler()->AddListener(this);
   fcm_handler()->AddTokenObserver(this);
-  Init();
+  GetNetworkConfigService(cros_network_config_.BindNewPipeAndPassReceiver());
+  cros_network_config_->AddObserver(
+      cros_network_config_observer_.BindNewPipeAndPassRemote());
+  cros_network_config_->GetNetworkStateList(
+      chromeos::network_config::mojom::NetworkFilter::New(
+          chromeos::network_config::mojom::FilterType::kActive,
+          chromeos::network_config::mojom::NetworkType::kAll, /*limit=*/0),
+      base::BindOnce(&BocaReceiverUntrustedPageHandler::OnActiveNetworksChanged,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 BocaReceiverUntrustedPageHandler::~BocaReceiverUntrustedPageHandler() {
@@ -88,10 +102,23 @@ BocaReceiverUntrustedPageHandler::~BocaReceiverUntrustedPageHandler() {
 }
 
 void BocaReceiverUntrustedPageHandler::OnFCMRegistrationTokenChanged() {
+  should_retry_fcm_fetch_failure_ = false;
+  fetching_fcm_token_ = false;
   if (!fcm_handler()->GetFCMRegistrationToken().has_value()) {
     return;
   }
   Register(fcm_handler()->GetFCMRegistrationToken().value());
+}
+
+void BocaReceiverUntrustedPageHandler::OnFCMTokenFetchFailed() {
+  fetching_fcm_token_ = false;
+  if (!should_retry_fcm_fetch_failure_) {
+    page_->OnInitReceiverError();
+    return;
+  }
+  should_retry_fcm_fetch_failure_ = false;
+  fcm_handler()->StopListening();
+  Init();
 }
 
 void BocaReceiverUntrustedPageHandler::OnInvalidationReceived(
@@ -107,6 +134,7 @@ void BocaReceiverUntrustedPageHandler::Init() {
     OnFCMRegistrationTokenChanged();
     return;
   }
+  fetching_fcm_token_ = true;
   fcm_handler()->StartListening();
 }
 
@@ -362,6 +390,34 @@ void BocaReceiverUntrustedPageHandler::OnCrdConnectionStateUpdated(
     case boca::CrdConnectionState::kConnected:
       break;
   }
+}
+
+void BocaReceiverUntrustedPageHandler::OnActiveNetworksChanged(
+    std::vector<chromeos::network_config::mojom::NetworkStatePropertiesPtr>
+        networks) {
+  bool has_online_networks =
+      std::find_if(networks.begin(), networks.end(), [](const auto& network) {
+        return network->connection_state ==
+               chromeos::network_config::mojom::ConnectionStateType::kOnline;
+      }) != networks.end();
+  if (is_online_.has_value() && is_online_.value() == has_online_networks) {
+    return;
+  }
+  is_online_ = has_online_networks;
+  if (!has_online_networks) {
+    page_->OnInitReceiverError();
+    return;
+  }
+  if (fetching_fcm_token_) {
+    should_retry_fcm_fetch_failure_ = true;
+    return;
+  }
+  if (receiver_id_.has_value()) {
+    page_->OnInitReceiverInfo(mojom::ReceiverInfo::New(receiver_id_.value()));
+    GetConnectionInfo();
+    return;
+  }
+  Init();
 }
 
 boca::FCMHandler* BocaReceiverUntrustedPageHandler::fcm_handler() const {

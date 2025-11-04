@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <vector>
 
 #include "ash/webui/boca_receiver_app_ui/mojom/boca_receiver.mojom.h"
 #include "base/functional/callback_forward.h"
@@ -17,6 +18,8 @@
 #include "chromeos/ash/components/boca/invalidations/fcm_handler.h"
 #include "chromeos/ash/components/boca/proto/receiver.pb.h"
 #include "chromeos/ash/components/boca/retriable_request_sender.h"
+#include "chromeos/services/network_config/public/cpp/cros_network_config_observer.h"
+#include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -47,7 +50,8 @@ class ReceiverHandlerDelegate;
 
 class BocaReceiverUntrustedPageHandler
     : public boca::FCMRegistrationTokenObserver,
-      public boca::InvalidationsListener {
+      public boca::InvalidationsListener,
+      public chromeos::network_config::CrosNetworkConfigObserver {
  public:
   BocaReceiverUntrustedPageHandler(
       mojo::PendingRemote<mojom::UntrustedPage> page,
@@ -69,6 +73,7 @@ class BocaReceiverUntrustedPageHandler
 
   // boca::FCMRegistrationTokenObserver:
   void OnFCMRegistrationTokenChanged() override;
+  void OnFCMTokenFetchFailed() override;
 
   // boca:InvalidationsListener:
   void OnInvalidationReceived(const std::string& payload) override;
@@ -101,6 +106,11 @@ class BocaReceiverUntrustedPageHandler
   void OnCrdAudioPacketReceived(std::unique_ptr<remoting::AudioPacket> packet);
   void OnCrdConnectionStateUpdated(boca::CrdConnectionState state);
 
+  // chromeos::network_config::CrosNetworkConfigObserver:
+  void OnActiveNetworksChanged(
+      std::vector<chromeos::network_config::mojom::NetworkStatePropertiesPtr>
+          networks) override;
+
   boca::FCMHandler* fcm_handler() const;
 
   mojo::Remote<mojom::UntrustedPage> page_;
@@ -114,6 +124,14 @@ class BocaReceiverUntrustedPageHandler
   std::optional<::boca::KioskReceiverConnection> connection_info_;
   std::unique_ptr<UpdateReceiverStateRequestSender>
       update_connection_retriable_sender_;
+
+  mojo::Remote<chromeos::network_config::mojom::CrosNetworkConfig>
+      cros_network_config_;
+  mojo::Receiver<chromeos::network_config::mojom::CrosNetworkConfigObserver>
+      cros_network_config_observer_{this};
+  bool fetching_fcm_token_ = false;
+  bool should_retry_fcm_fetch_failure_ = false;
+  std::optional<bool> is_online_;
 
   base::WeakPtrFactory<BocaReceiverUntrustedPageHandler> weak_ptr_factory_{
       this};

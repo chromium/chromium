@@ -33,6 +33,7 @@
 #include "chromeos/ash/components/boca/spotlight/spotlight_audio_stream_consumer.h"
 #include "chromeos/ash/components/boca/spotlight/spotlight_remoting_client_manager.h"
 #include "chromeos/ash/components/boca/util.h"
+#include "chromeos/ash/services/network_config/public/cpp/cros_network_config_test_helper.h"
 #include "google_apis/common/dummy_auth_service.h"
 #include "google_apis/common/request_sender.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -40,10 +41,12 @@
 #include "remoting/proto/audio.pb.h"
 #include "services/network/public/cpp/resource_request_body.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
 #include "url/gurl.h"
@@ -206,6 +209,9 @@ class MockFCMHandler : public boca::FCMHandler {
 class BocaReceiverUntrustedPageHandlerTest : public testing::Test {
  protected:
   void SetUp() override {
+    wifi_service_path_ =
+        cros_network_config_helper_.network_state_helper().ConfigureWiFi(
+            shill::kStateOnline);
     ON_CALL(handler_delegate_, CreateRequestSender)
         .WillByDefault(
             [this](std::string_view requester_id,
@@ -230,7 +236,11 @@ class BocaReceiverUntrustedPageHandlerTest : public testing::Test {
           fcm_token_observer_ = observer;
         });
     ON_CALL(fcm_handler_, StartListening).WillByDefault([this]() {
+      ON_CALL(fcm_handler_, IsListening).WillByDefault(Return(true));
       fcm_token_observer_->OnFCMRegistrationTokenChanged();
+    });
+    ON_CALL(fcm_handler_, StopListening).WillByDefault([this]() {
+      ON_CALL(fcm_handler_, IsListening).WillByDefault(Return(false));
     });
     url_loader_factory_.AddResponse(register_url_.spec(),
                                     R"({"receiverId": "AB12"})");
@@ -268,8 +278,22 @@ class BocaReceiverUntrustedPageHandlerTest : public testing::Test {
         .AsStringPiece();
   }
 
+  void SetDeviceOffline() {
+    cros_network_config_helper_.network_state_helper().SetServiceProperty(
+        wifi_service_path_, shill::kStateProperty,
+        base::Value(shill::kStateNoConnectivity));
+  }
+
+  void SetDeviceOnline() {
+    cros_network_config_helper_.network_state_helper().SetServiceProperty(
+        wifi_service_path_, shill::kStateProperty,
+        base::Value(shill::kStateOnline));
+  }
+
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  network_config::CrosNetworkConfigTestHelper cros_network_config_helper_;
+  std::string wifi_service_path_;
   NiceMock<MockFCMHandler> fcm_handler_;
   std::unique_ptr<BocaReceiverUntrustedPageHandler> handler_;
   raw_ptr<boca::FCMRegistrationTokenObserver> fcm_token_observer_;
@@ -357,7 +381,6 @@ TEST_F(BocaReceiverUntrustedPageHandlerTest, RegisterFailure) {
 
   handler_ = std::make_unique<BocaReceiverUntrustedPageHandler>(
       page_.BindAndGetRemote(), &handler_delegate_);
-  task_environment_.FastForwardUntilNoTasksRemain();
 
   EXPECT_TRUE(signal.Wait());
 }
@@ -782,6 +805,192 @@ TEST_F(BocaReceiverUntrustedPageHandlerTest, StopRequestedDifferentConnection) {
   listener->OnInvalidationReceived("payload");
 
   EXPECT_EQ(GetRequestBody(kUpdateOldConnectionUrl), kDisconnectedPair);
+}
+
+TEST_F(BocaReceiverUntrustedPageHandlerTest, InitNetowrkOffline) {
+  base::test::TestFuture<void> offline_error_signal;
+  base::test::TestFuture<void> on_init_receiver_info_signal;
+  SetDeviceOffline();
+  EXPECT_CALL(page_, OnInitReceiverError).WillOnce([&offline_error_signal]() {
+    offline_error_signal.GetCallback().Run();
+  });
+  EXPECT_CALL(fcm_handler_, StartListening).Times(0);
+
+  handler_ = std::make_unique<BocaReceiverUntrustedPageHandler>(
+      page_.BindAndGetRemote(), &handler_delegate_);
+
+  EXPECT_TRUE(offline_error_signal.Wait());
+
+  EXPECT_CALL(fcm_handler_, StartListening).Times(1);
+  EXPECT_CALL(page_, OnInitReceiverInfo)
+      .WillOnce([&on_init_receiver_info_signal](mojom::ReceiverInfoPtr) {
+        on_init_receiver_info_signal.GetCallback().Run();
+      });
+  SetDeviceOnline();
+
+  EXPECT_TRUE(on_init_receiver_info_signal.Wait());
+}
+
+TEST_F(BocaReceiverUntrustedPageHandlerTest,
+       BackOnlineBeforeFetchCompleteWithSuccess) {
+  base::test::TestFuture<void> offline_error_signal;
+  base::test::TestFuture<void> on_init_receiver_info_signal;
+  EXPECT_CALL(page_, OnInitReceiverError).WillOnce([&offline_error_signal]() {
+    offline_error_signal.GetCallback().Run();
+  });
+  EXPECT_CALL(fcm_handler_, StartListening).WillOnce(Return());
+  EXPECT_CALL(fcm_handler_, StopListening).Times(0);
+
+  handler_ = std::make_unique<BocaReceiverUntrustedPageHandler>(
+      page_.BindAndGetRemote(), &handler_delegate_);
+  SetDeviceOffline();
+  EXPECT_TRUE(offline_error_signal.Wait());
+
+  EXPECT_CALL(page_, OnInitReceiverInfo)
+      .WillOnce([&on_init_receiver_info_signal](mojom::ReceiverInfoPtr) {
+        on_init_receiver_info_signal.GetCallback().Run();
+      });
+  SetDeviceOnline();
+  // Simulate FCM token fetch success.
+  fcm_token_observer_->OnFCMRegistrationTokenChanged();
+
+  EXPECT_TRUE(on_init_receiver_info_signal.Wait());
+}
+
+TEST_F(BocaReceiverUntrustedPageHandlerTest,
+       BackOnlineBeforeFetchCompleteWithError) {
+  base::test::TestFuture<void> offline_error_signal;
+  base::test::TestFuture<void> on_init_receiver_info_signal;
+  EXPECT_CALL(page_, OnInitReceiverError).WillOnce([&offline_error_signal]() {
+    offline_error_signal.GetCallback().Run();
+  });
+  EXPECT_CALL(fcm_handler_, StartListening).WillOnce(Return());
+
+  handler_ = std::make_unique<BocaReceiverUntrustedPageHandler>(
+      page_.BindAndGetRemote(), &handler_delegate_);
+  SetDeviceOffline();
+  EXPECT_TRUE(offline_error_signal.Wait());
+
+  EXPECT_CALL(page_, OnInitReceiverInfo)
+      .WillOnce([&on_init_receiver_info_signal](mojom::ReceiverInfoPtr) {
+        on_init_receiver_info_signal.GetCallback().Run();
+      });
+  SetDeviceOnline();
+  // Simulate FCM token fetch failure. Fetch should be retried since it started
+  // before device goes offline.
+  EXPECT_CALL(fcm_handler_, StopListening).Times(1);
+  EXPECT_CALL(fcm_handler_, StartListening).WillOnce([this]() {
+    // Simulate FCM token fetch retry success.
+    fcm_token_observer_->OnFCMRegistrationTokenChanged();
+  });
+  fcm_token_observer_->OnFCMTokenFetchFailed();
+
+  EXPECT_TRUE(on_init_receiver_info_signal.Wait());
+}
+
+TEST_F(BocaReceiverUntrustedPageHandlerTest,
+       BackOnlineBeforeFetchCompleteWithErrorRetryOnlyOnce) {
+  base::test::TestFuture<void> offline_error_signal;
+  base::test::TestFuture<void> retry_error_signal;
+  EXPECT_CALL(page_, OnInitReceiverError).WillOnce([&offline_error_signal]() {
+    offline_error_signal.GetCallback().Run();
+  });
+  EXPECT_CALL(page_, OnInitReceiverInfo).Times(0);
+  EXPECT_CALL(fcm_handler_, StartListening).WillOnce(Return());
+
+  handler_ = std::make_unique<BocaReceiverUntrustedPageHandler>(
+      page_.BindAndGetRemote(), &handler_delegate_);
+  SetDeviceOffline();
+  EXPECT_TRUE(offline_error_signal.Wait());
+
+  SetDeviceOnline();
+  // Simulate FCM token fetch failure. Fetch should be retried since it started
+  // before device goes offline.
+  EXPECT_CALL(page_, OnInitReceiverError).WillOnce([&retry_error_signal]() {
+    retry_error_signal.GetCallback().Run();
+  });
+  EXPECT_CALL(fcm_handler_, StopListening).Times(1);
+  EXPECT_CALL(fcm_handler_, StartListening).WillOnce([this]() {
+    // Simulate FCM token fetch retry failure.
+    fcm_token_observer_->OnFCMTokenFetchFailed();
+  });
+  fcm_token_observer_->OnFCMTokenFetchFailed();
+
+  EXPECT_TRUE(retry_error_signal.Wait());
+}
+
+TEST_F(BocaReceiverUntrustedPageHandlerTest, GoesOfflineAfterRegisterSuccess) {
+  base::test::TestFuture<void> on_init_receiver_info_first_signal;
+  base::test::TestFuture<void> offline_error_signal;
+  base::test::TestFuture<void> on_init_receiver_info_second_signal;
+  EXPECT_CALL(page_, OnInitReceiverInfo)
+      .WillOnce([&on_init_receiver_info_first_signal](mojom::ReceiverInfoPtr) {
+        on_init_receiver_info_first_signal.GetCallback().Run();
+      });
+  EXPECT_CALL(fcm_handler_, StartListening).Times(1);
+  handler_ = std::make_unique<BocaReceiverUntrustedPageHandler>(
+      page_.BindAndGetRemote(), &handler_delegate_);
+
+  EXPECT_TRUE(on_init_receiver_info_first_signal.Wait());
+
+  url_loader_factory_.WaitForRequest(get_connection_url_);
+  url_loader_factory_.SimulateResponseForPendingRequest(
+      get_connection_url_.spec(),
+      CreateConnectionInfo(kConnectionId, "DISCONNECTED"));
+
+  EXPECT_CALL(page_, OnInitReceiverError).WillOnce([&offline_error_signal]() {
+    offline_error_signal.GetCallback().Run();
+  });
+  SetDeviceOffline();
+  EXPECT_TRUE(offline_error_signal.Wait());
+
+  EXPECT_CALL(page_, OnInitReceiverInfo)
+      .WillOnce([&on_init_receiver_info_second_signal](mojom::ReceiverInfoPtr) {
+        on_init_receiver_info_second_signal.GetCallback().Run();
+      });
+  SetDeviceOnline();
+  EXPECT_TRUE(on_init_receiver_info_second_signal.Wait());
+  // If receiver is already initialized, it should issue a get connection
+  // request when it comes back online.
+  url_loader_factory_.WaitForRequest(get_connection_url_);
+}
+
+TEST_F(BocaReceiverUntrustedPageHandlerTest,
+       GoesOfflineAfterAfterFcmTokenFetchBeforeRegisterSuccess) {
+  base::test::TestFuture<mojom::ReceiverInfoPtr> on_init_receiver_info_future;
+  base::test::TestFuture<void> register_error_signal;
+  base::test::TestFuture<void> offline_error_signal;
+
+  url_loader_factory_.AddResponse(register_url_, /*head=*/nullptr,
+                                  /*content=*/"",
+                                  network::URLLoaderCompletionStatus(
+                                      net::Error::ERR_INTERNET_DISCONNECTED));
+  EXPECT_CALL(fcm_handler_, StartListening).Times(1);
+  EXPECT_CALL(fcm_handler_, StopListening).Times(0);
+  EXPECT_CALL(page_, OnInitReceiverError).WillOnce([&register_error_signal]() {
+    register_error_signal.GetCallback().Run();
+  });
+  handler_ = std::make_unique<BocaReceiverUntrustedPageHandler>(
+      page_.BindAndGetRemote(), &handler_delegate_);
+  EXPECT_TRUE(register_error_signal.Wait());
+
+  EXPECT_CALL(page_, OnInitReceiverError).WillOnce([&offline_error_signal]() {
+    offline_error_signal.GetCallback().Run();
+  });
+  SetDeviceOffline();
+  EXPECT_TRUE(offline_error_signal.Wait());
+
+  url_loader_factory_.AddResponse(register_url_.spec(),
+                                  R"({"receiverId": "CD34"})");
+  EXPECT_CALL(page_, OnInitReceiverInfo)
+      .WillOnce([&on_init_receiver_info_future](
+                    mojom::ReceiverInfoPtr receiver_info) {
+        on_init_receiver_info_future.GetCallback().Run(
+            std::move(receiver_info));
+      });
+  SetDeviceOnline();
+
+  EXPECT_EQ(on_init_receiver_info_future.Take()->id, "CD34");
 }
 
 class BocaReceiverUntrustedPageHandlerNoActiveConnectionTest

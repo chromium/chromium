@@ -21,6 +21,7 @@ static_library("boca_receiver_app_ui") {
 
   deps = [
     "//ash/constants",
+    "//ash/public/cpp",
     "//ash/webui/boca_receiver_app_ui/mojom",
     "//ash/webui/boca_receiver_app_ui/resources/trusted:resources",
     "//ash/webui/boca_receiver_app_ui/resources/untrusted:resources",
@@ -34,6 +35,8 @@ static_library("boca_receiver_app_ui") {
     "//chromeos/ash/components/boca/proto",
     "//chromeos/ash/components/boca/receiver",
     "//chromeos/ash/components/channel",
+    "//chromeos/services/network_config/public/cpp",
+    "//chromeos/services/network_config/public/mojom",
     "//chromeos/strings",
     "//content/public/browser",
     "//content/public/common",
@@ -62,6 +65,7 @@ source_set("unit_tests") {
     "//chromeos/ash/components/boca:invalidations",
     "//chromeos/ash/components/boca:spotlight_lib",
     "//chromeos/ash/components/boca/receiver",
+    "//chromeos/ash/services/network_config/public/cpp:test_support",
     "//google_apis/common",
     "//google_apis/common:test_support",
     "//mojo/public/cpp/bindings",
