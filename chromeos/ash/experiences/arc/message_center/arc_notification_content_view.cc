@@ -214,7 +214,8 @@ class ArcNotificationContentView::EventForwarder : public ui::EventHandler {
     // pass tab key event to focus manager of content view.
     // TODO(yawano): include elements inside Android notification in tab focus
     // traversal rather than skipping them.
-    if (owner_->surface_->GetAXTreeId() != ui::AXTreeIDUnknown() &&
+    if (owner_->surface_ &&
+        owner_->surface_->GetAXTreeId() != ui::AXTreeIDUnknown() &&
         event->IsKeyEvent()) {
       ui::KeyEvent* key_event = event->AsKeyEvent();
       if (key_event->key_code() == ui::VKEY_TAB &&
