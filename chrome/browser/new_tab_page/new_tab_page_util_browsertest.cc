@@ -156,15 +156,6 @@ class NewTabPageUtilDisableFlagBrowserTest : public NewTabPageUtilBrowserTest {
   }
 };
 
-class NewTabPageUtilDriveHistorySyncBrowserTest
-    : public NewTabPageUtilBrowserTest {
- public:
-  NewTabPageUtilDriveHistorySyncBrowserTest() {
-    features().InitWithFeatures(
-        {ntp_features::kNtpDriveModuleHistorySyncRequirement}, {});
-  }
-};
-
 IN_PROC_BROWSER_TEST_P(NewTabPageUtilBrowserTest, EnableCartByToT) {
   auto locale = std::make_unique<ScopedBrowserLocale>("en-US");
   g_browser_process->variations_service()->OverrideStoredPermanentCountry("us");
@@ -193,24 +184,6 @@ IN_PROC_BROWSER_TEST_P(NewTabPageUtilDisableFlagBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_P(NewTabPageUtilBrowserTest, EnableDriveByToT) {
-  SetSync(true);
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-  EXPECT_EQ(
-      IsDriveModuleEnabledForProfile(/*is_managed_profile=*/true, GetProfile()),
-      GetParam());
-  CheckInternalsLog(std::string(ntp_features::kNtpDriveModule.name) +
-                    (GetParam() ? " enabled: default feature flag value"
-                                : " disabled: not signed in"));
-#else
-  EXPECT_FALSE(IsDriveModuleEnabledForProfile(/*is_managed_profile=*/true,
-                                              GetProfile()));
-  CheckInternalsLog(std::string(ntp_features::kNtpDriveModule.name) +
-                    " disabled: default feature flag value");
-#endif
-}
-
-IN_PROC_BROWSER_TEST_P(NewTabPageUtilDriveHistorySyncBrowserTest,
-                       DriveHistory_SyncEnabled) {
   SetHistorySync(true);
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   EXPECT_EQ(
@@ -227,8 +200,7 @@ IN_PROC_BROWSER_TEST_P(NewTabPageUtilDriveHistorySyncBrowserTest,
 #endif
 }
 
-IN_PROC_BROWSER_TEST_P(NewTabPageUtilDriveHistorySyncBrowserTest,
-                       DriveHistory_SyncDisabled) {
+IN_PROC_BROWSER_TEST_P(NewTabPageUtilBrowserTest, Drive_HistorySyncDisabled) {
   SetHistorySync(false);
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   EXPECT_FALSE(IsDriveModuleEnabledForProfile(/*is_managed_profile=*/true,
@@ -267,22 +239,6 @@ IN_PROC_BROWSER_TEST_P(NewTabPageUtilEnableFlagBrowserTest, DriveIsNotManaged) {
   CheckInternalsLog(std::string(ntp_features::kNtpDriveModule.name) +
                     (GetParam() ? " disabled: account not managed"
                                 : " disabled: not signed in"));
-}
-
-IN_PROC_BROWSER_TEST_P(NewTabPageUtilBrowserTest, SyncRequired) {
-  SetSync(false);
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-  EXPECT_FALSE(IsDriveModuleEnabledForProfile(/*is_managed_profile=*/true,
-                                              GetProfile()));
-  CheckInternalsLog(
-      std::string(ntp_features::kNtpDriveModule.name) +
-      (GetParam() ? " disabled: no sync" : " disabled: not signed in"));
-#else
-  EXPECT_FALSE(IsDriveModuleEnabledForProfile(/*is_managed_profile=*/true,
-                                              GetProfile()));
-  CheckInternalsLog(std::string(ntp_features::kNtpDriveModule.name) +
-                    " disabled: default feature flag value");
-#endif
 }
 
 IN_PROC_BROWSER_TEST_P(NewTabPageUtilEnableFlagBrowserTest,
@@ -503,10 +459,6 @@ INSTANTIATE_TEST_SUITE_P(All,
 
 INSTANTIATE_TEST_SUITE_P(All,
                          NewTabPageUtilDisableFlagBrowserTest,
-                         testing::Bool());
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         NewTabPageUtilDriveHistorySyncBrowserTest,
                          testing::Bool());
 
 INSTANTIATE_TEST_SUITE_P(

@@ -8380,24 +8380,6 @@
             ]
         }
     ],
-    "DesktopNtpDriveHistorySyncRequirement": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "NtpDriveModuleHistorySyncRequirement"
-                    ]
-                }
-            ]
-        }
-    ],
     "DesktopNtpImageErrorDetection": [
         {
             "platforms": [

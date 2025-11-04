@@ -6103,12 +6103,6 @@ inline constexpr char kNtpDriveModuleName[] = "NTP Drive Module";
 inline constexpr char kNtpDriveModuleDescription[] =
     "Shows the Google Drive module on the New Tab Page";
 
-inline constexpr char kNtpDriveModuleHistorySyncRequirementName[] =
-    "NTP Drive Module History Sync Requirement";
-inline constexpr char kNtpDriveModuleHistorySyncRequirementDescription[] =
-    "Replaces the requirement for Sync to be enabled for the Drive module on "
-    "the New Tab Page with a check for History Sync.";
-
 inline constexpr char kNtpDriveModuleSegmentationName[] =
     "NTP Drive Module Segmentation";
 inline constexpr char kNtpDriveModuleSegmentationDescription[] =
