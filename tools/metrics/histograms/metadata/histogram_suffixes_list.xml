@@ -1085,25 +1085,6 @@ chromium-metrics-reviews@google.com.
       name="ServiceWorker.LoadTiming.Subresource.ResponseReceivedToCompleted2"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="StartupTemperature" separator=".">
-  <suffix name="ColdStartup"
-      label="Startup was cold (mostly hard faults). Threshold updated Jan
-             2020, metrics expected to bump."/>
-  <suffix name="WarmStartup" label="Startup was warm (almost no hard faults)."/>
-  <affected-histogram
-      name="ProfilePicker.StartupTime.FirstPaint.FromApplicationStart"/>
-  <affected-histogram name="Startup.BrowserMessageLoopFirstIdle"/>
-  <affected-histogram name="Startup.BrowserMessageLoopStart.To.NonEmptyPaint2"/>
-  <affected-histogram name="Startup.BrowserMessageLoopStartTime"/>
-  <affected-histogram name="Startup.BrowserWindow.FirstPaint"/>
-  <affected-histogram name="Startup.BrowserWindowDisplay"/>
-  <affected-histogram name="Startup.FirstWebContents.MainNavigationFinished"/>
-  <affected-histogram name="Startup.FirstWebContents.MainNavigationStart"/>
-  <affected-histogram name="Startup.FirstWebContents.NonEmptyPaint3"/>
-  <affected-histogram name="Startup.LoadTime.ApplicationStartToChromeMain"/>
-  <affected-histogram name="Startup.LoadTime.ProcessCreateToApplicationStart"/>
-</histogram_suffixes>
-
 </histogram_suffixes_list>
 
 </histogram-configuration>

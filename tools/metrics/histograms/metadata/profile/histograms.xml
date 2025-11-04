@@ -995,14 +995,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ProfilePicker.StartupTime.FirstPaint.FromApplicationStart"
+<histogram
+    name="ProfilePicker.StartupTime.FirstPaint.FromApplicationStart{StartupTemperatureSuffix}"
     units="ms" expires_after="2026-03-22">
   <owner>alexilin@chromium.org</owner>
   <owner>dgn@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
     Records the time from the application start to the first non-empty paint of
-    proflie picker's web contents. Only recorded when the profile picker is
+    profile picker's web contents. Only recorded when the profile picker is
     shown at startup.
 
     See Startup.FirstWebContents.NonEmptyPaint3 for a definition of application
@@ -1010,7 +1011,16 @@ chromium-metrics-reviews@google.com.
 
     Warning: this histogram was expired from 2025-07-13 to 2025-09-02; data may
     be missing.
+
+    {StartupTemperatureSuffix}
   </summary>
+  <token key="StartupTemperatureSuffix">
+    <variant name="" summary="All startups."/>
+    <variant name=".ColdStartup"
+        summary="Startup was cold (mostly hard faults)."/>
+    <variant name=".WarmStartup"
+        summary="Startup was warm (almost no hard faults)."/>
+  </token>
 </histogram>
 
 <histogram name="ProfilePicker.UiVisited" enum="ProfilePickerPages"

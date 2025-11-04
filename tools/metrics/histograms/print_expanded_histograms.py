@@ -10,8 +10,8 @@ import sys
 import xml.dom.minidom
 
 import extract_histograms
-import histogram_paths
 import histogram_configuration_model
+import histogram_paths
 import merge_xml
 
 
@@ -61,7 +61,7 @@ def main(argv=sys.argv[1:]):
   try:
     pattern = re.compile(args.pattern)
   except re.error:
-    print("Non valid regex pattern.")
+    print('Non valid regex pattern.')
     return 1
 
   if args.histograms_xml_file:
@@ -71,7 +71,8 @@ def main(argv=sys.argv[1:]):
     expand_owners_and_extract_components = False
   else:
     files = histogram_paths.ALL_XMLS
-    expand_owners_and_extract_components = True
+    # No owner expansion is needed if we're printing names only.
+    expand_owners_and_extract_components = not args.print_names_only
 
   # Extract all histograms into a dict. This is the expensive part that
   # handles expansion of suffixes and variants.
@@ -80,7 +81,7 @@ def main(argv=sys.argv[1:]):
       expand_owners_and_extract_components=expand_owners_and_extract_components)
   histograms, had_errors = extract_histograms.ExtractHistogramsFromDom(doc)
   if had_errors:
-    raise ValueError("Error parsing inputs.")
+    raise ValueError('Error parsing inputs.')
 
   # If only names are requested, print them and exit. This is much faster as
   # it skips the expensive XML construction and pretty-printing.
