@@ -16,7 +16,6 @@
 #include <vector>
 
 #include "base/check_op.h"
-#include "base/debug/stack_trace.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
@@ -1333,25 +1332,6 @@ STDMETHODIMP LegacyAppCommandWebImpl::execute(VARIANT substitution1,
   return hr;
 }
 
-IFACEMETHODIMP_(ULONG) LegacyAppCommandWebImpl::AddRef() {
-  const ULONG count = IDispatchImpl<IAppCommandWeb>::AddRef();
-  VLOG(2) << __func__ << ": " << this << ": count: " << count;
-  return count;
-}
-
-IFACEMETHODIMP_(ULONG) LegacyAppCommandWebImpl::Release() {
-  const ULONG count = IDispatchImpl<IAppCommandWeb>::Release();
-  VLOG(2) << __func__ << ": " << this << ": count: " << count;
-
-  // TODO(crbug.com/438803980): Remove this stack trace printing once the bug is
-  // fixed.
-  if (!count) {
-    VLOG(2) << base::debug::StackTrace();
-  }
-
-  return count;
-}
-
 void LegacyAppCommandWebImpl::SendPing(UpdaterScope scope,
                                        const std::string& app_id,
                                        const std::string& command_id,
@@ -1378,9 +1358,7 @@ void LegacyAppCommandWebImpl::SendPing(UpdaterScope scope,
         app_command_data.requires_network_encryption = false;
         app_command_data.version = persisted_data->GetProductVersion(app_id);
 
-        scoped_refptr<update_client::UpdateClient> update_client =
-            update_client::UpdateClientFactory(config);
-        update_client->SendPing(
+        update_client::UpdateClientFactory(config)->SendPing(
             app_command_data,
             {
                 .event_type =
@@ -1393,14 +1371,7 @@ void LegacyAppCommandWebImpl::SendPing(UpdaterScope scope,
                 .extra_code1 = error_params.extra_code1,
                 .app_command_id = command_id,
             },
-            base::BindOnce(
-                [](scoped_refptr<update_client::UpdateClient> update_client,
-                   update_client::Callback callback,
-                   update_client::Error error) {
-                  std::move(callback).Run(error);
-                  update_client->Stop();
-                },
-                update_client, std::move(callback)));
+            std::move(callback));
       },
       scope, app_id, command_id, error_params, std::move(callback)));
 }

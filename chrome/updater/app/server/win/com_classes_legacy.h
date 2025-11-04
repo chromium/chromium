@@ -308,10 +308,6 @@ class LegacyAppCommandWebImpl : public IDispatchImpl<IAppCommandWeb> {
 
   const base::Process& process() const { return process_; }
 
-  // IUnknown overrides.
-  IFACEMETHODIMP_(ULONG) AddRef() override;
-  IFACEMETHODIMP_(ULONG) Release() override;
-
  private:
   friend class LegacyAppCommandWebImplTest;
 
