@@ -80,7 +80,7 @@ CONTENT_EXPORT void RemoveDocumentUserData(RenderFrameHost* rfh,
 //   // DocumentUserData (e.g. CreateForCurrentDocument).
 //   explicit FooDocumentHelper(content::RenderFrameHost* rfh);
 //
-//   friend DocumentUserData;
+//   friend content::DocumentUserData<FooDocumentHelper>;
 //   DOCUMENT_USER_DATA_KEY_DECL();
 //
 //   // ... more private stuff here ...
@@ -92,7 +92,7 @@ CONTENT_EXPORT void RemoveDocumentUserData(RenderFrameHost* rfh,
 // FooDocumentHelper::FooDocumentHelper(content::RenderFrameHost* rfh)
 //     : DocumentUserData(rfh) {}
 //
-// FooDocumentHelper::~FooDocumentHelper() {}
+// FooDocumentHelper::~FooDocumentHelper() = default;
 //
 template <typename T>
 class DocumentUserData : public base::SupportsUserData::Data {
