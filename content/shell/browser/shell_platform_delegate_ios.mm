@@ -146,7 +146,8 @@ std::unique_ptr<content::ScopedAccessibilityMode> _scopedAccessibilityMode;
            withEvent:(UIPressesEvent*)event {
   for (UIPress* press in presses) {
     if (press.type == UIPressTypeMenu) {
-      if (_shell->web_contents()->GetContentNativeView().Get().focused) {
+      if (!content::Shell::ShouldHideToolbar() &&
+          _shell->web_contents()->GetContentNativeView().Get().focused) {
         _toolbarContentView.userInteractionEnabled = YES;
         [self setNeedsFocusUpdate];
         return;
