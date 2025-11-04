@@ -5,12 +5,13 @@
 #import "ios/chrome/browser/synced_set_up/coordinator/synced_set_up_coordinator.h"
 
 #import "base/functional/bind.h"
-#import "base/not_fatal_until.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/time/time.h"
 #import "components/prefs/pref_service.h"
 #import "components/sync_device_info/device_info_sync_service.h"
 #import "ios/chrome/app/app_startup_parameters.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
@@ -36,26 +37,11 @@ constexpr base::TimeDelta kDismissalDelay = base::Seconds(5);
 @end
 
 @implementation SyncedSetUpCoordinator {
-  // Parameters relevant to understanding the app startup, used to determine
-  // how the Synced Set Up flow should be presented.
-  AppStartupParameters* _startupParameters;
   // Mediator for Synced Set Up. Used to determine and apply a set of synced
   // prefs to the local device.
   SyncedSetUpMediator* _mediator;
   // View controller responsible for displaying the Synced Set Up interstitial.
   SyncedSetUpViewController* _viewController;
-}
-
-- (instancetype)initWithBaseViewController:(UIViewController*)viewController
-                                   browser:(Browser*)browser
-                         startupParameters:
-                             (AppStartupParameters*)startupParameters {
-  if ((self = [super initWithBaseViewController:viewController
-                                        browser:browser])) {
-    CHECK(startupParameters, base::NotFatalUntil::M147);
-    _startupParameters = startupParameters;
-  }
-  return self;
 }
 
 #pragma mark - ChromeCoordinator
@@ -71,6 +57,8 @@ constexpr base::TimeDelta kDismissalDelay = base::Seconds(5);
       ChromeAccountManagerServiceFactory::GetForProfile(profile);
   syncer::DeviceInfoSyncService* deviceInfoSyncService =
       DeviceInfoSyncServiceFactory::GetForProfile(profile);
+  AppStartupParameters* startupParameters =
+      self.browser->GetSceneState().controller.startupParameters;
   signin::IdentityManager* identityManager =
       IdentityManagerFactory::GetForProfile(profile);
 
@@ -80,7 +68,7 @@ constexpr base::TimeDelta kDismissalDelay = base::Seconds(5);
                                  accountManagerService:accountManagerService
                                  deviceInfoSyncService:deviceInfoSyncService
                                     profilePrefService:profile->GetPrefs()
-                                     startupParameters:_startupParameters
+                                     startupParameters:startupParameters
                                        identityManager:identityManager];
   _mediator.delegate = self;
 
@@ -103,7 +91,6 @@ constexpr base::TimeDelta kDismissalDelay = base::Seconds(5);
   [_mediator disconnect];
   _mediator = nil;
   _viewController = nil;
-  _startupParameters = nil;
 }
 
 #pragma mark - SyncedSetUpMediatorDelegate

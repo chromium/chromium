@@ -20,6 +20,7 @@ source_set("coordinator") {
     "//components/sync_preferences/cross_device_pref_tracker",
     "//ios/chrome/app",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/profile",
