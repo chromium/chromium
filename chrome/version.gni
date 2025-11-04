@@ -43,6 +43,9 @@ if (target_os == "android") {
 
   _version_dictionary_template +=
       "chrome_version_code = " + "\"@CHROME_VERSION_CODE@\" " +
+      "chrome_beta_version_code = " + "\"@CHROME_MODERN_VERSION_CODE@\" " +
+      "chrome_auto_version_code = " + "\"@MONOCHROME_VERSION_CODE@\" " +
+      "chrome_desktop_version_code = \"@CHROME_DESKTOP_VERSION_CODE@\" " +
       "monochrome_version_code = \"@MONOCHROME_VERSION_CODE@\" " +
       "trichrome_version_code = \"@TRICHROME_VERSION_CODE@\" " +
       "trichrome_auto_version_code = \"@TRICHROME_AUTO_VERSION_CODE@\" " +
@@ -166,6 +169,9 @@ if (is_mac) {
   forward_variables_from(_result,
                          [
                            "chrome_version_code",
+                           "chrome_beta_version_code",
+                           "chrome_auto_version_code",
+                           "chrome_desktop_version_code",
                            "chrome_32_version_code",
                            "monochrome_version_code",
                            "monochrome_32_version_code",
@@ -228,7 +234,8 @@ if (is_android && current_toolchain == default_toolchain) {
   lines_to_write = [
     "VersionName: $chrome_version_name",
     "Chrome: $chrome_version_code",
-    "Monochrome: $monochrome_version_code",
+    "ChromeOpenBeta: $chrome_beta_version_code",
+    "ChromeAuto: $chrome_auto_version_code",
     "TrichromeChrome: $trichrome_version_code",
     "TrichromeChromeOpenBeta: $trichrome_beta_version_code",
     "TrichromeChromeAuto: $trichrome_auto_version_code",
@@ -238,6 +245,12 @@ if (is_android && current_toolchain == default_toolchain) {
     "AndroidWebviewBeta: $webview_beta_version_code",
     "AndroidWebviewAuto: $webview_auto_version_code",
   ]
+
+  if (android_64bit_target_cpu) {
+    lines_to_write += [
+      "ChromeDesktop: $chrome_desktop_version_code",
+    ]
+  }
 
   if (android_64bit_target_cpu && defined(android_app_secondary_abi)) {
     lines_to_write += [
