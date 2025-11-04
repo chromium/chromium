@@ -4,6 +4,11 @@
 
 #import "components/autofill/ios/browser/autofill_driver_ios.h"
 
+#import <concepts>
+#import <functional>
+#import <optional>
+#import <type_traits>
+#import <utility>
 #import <variant>
 
 #import "base/check_deref.h"
@@ -47,6 +52,49 @@
 namespace autofill {
 
 namespace {
+
+// WithNewVersion() bumps the FormData::version of each form. This should be
+// called for every browser form before it enters AutofillManager so that
+// AutofillManager can distinguish newer and older forms.
+//
+// TODO(crbug.com/40144964): Use this in all renderer -> browser communications.
+// TODO(crbug.com/40144964): Remove once FormData objects aren't stored
+// globally anymore.
+
+// No-op: add types to the `requires` clause below as necessary.
+template <typename T>
+  requires(std::is_scalar_v<std::remove_cvref_t<T>>)
+T&& WithNewVersion(T&& x) {
+  return std::forward<T>(x);
+}
+
+auto& WithNewVersion(const FormData& browser_form) {
+  static FormVersion version_counter;
+  ++*version_counter;
+  // This const_cast is a hack to avoid additional copies. It's OK because the
+  // FormData is owned by AutofillDriverRouter, FormData::version is written
+  // only here and read only in AutofillManager.
+  const_cast<FormData&>(browser_form).set_version(version_counter);
+  return browser_form;
+}
+
+auto& WithNewVersion(const std::optional<FormData>& browser_form) {
+  if (browser_form) {
+    WithNewVersion(*browser_form);
+  }
+  return browser_form;
+}
+
+template <typename... Args>
+base::OnceCallback<void(Args...)> WithNewVersion(
+    base::OnceCallback<void(Args...)> cb) {
+  return base::BindOnce(
+      [](base::OnceCallback<void(Args...)> cb, Args... args) {
+        std::move(cb).Run(WithNewVersion(std::forward<Args>(args))...);
+      },
+      std::move(cb));
+}
+
 // AutofillDriverIOS::router_ only ever routes between instances of
 // AutofillDriverIOS, so this cast is safe.
 AutofillDriverIOS* cast(AutofillDriver* driver) {
@@ -263,11 +311,49 @@ void AutofillDriverIOS::ApplyFieldAction(
 }
 
 void AutofillDriverIOS::ExtractForm(
-    FormGlobalId form,
+    FormGlobalId form_id,
     base::OnceCallback<void(AutofillDriver*, const std::optional<FormData>&)>
-        response_callback) {
-  // TODO(crbug.com/40284824): Implement ExtractForm().
-  NOTIMPLEMENTED();
+        final_handler) {
+  if (!web_frame()) {
+    std::move(final_handler).Run(nullptr, std::nullopt);
+    return;
+  }
+
+  if (IsAcrossIframesEnabled()) {
+    // TODO(crbug.com/455870070): Introduce a `fetchForm` method in the agent
+    // that would extract a single form only given the renderer id and replace
+    // the call to `fetchFormsFiltered()` with it.
+    router_->ExtractForm(
+        [](autofill::AutofillDriver& request_target,
+           FormRendererId form_renderer_id,
+           AutofillDriverRouter::RendererFormHandler renderer_form_handler) {
+          auto completion_handler = base::BindOnce(
+              [&](FormRendererId form_renderer_id,
+                  AutofillDriverRouter::RendererFormHandler
+                      renderer_form_handler,
+                  std::optional<std::vector<FormData>> forms) {
+                if (!forms) {
+                  std::move(renderer_form_handler).Run(std::nullopt);
+                  return;
+                }
+                auto it = std::ranges::find(*forms, form_renderer_id,
+                                            &FormData::renderer_id);
+                std::move(renderer_form_handler)
+                    .Run(it == forms->end() ? std::nullopt
+                                            : std::optional(std::move(*it)));
+              },
+              form_renderer_id, std::move(renderer_form_handler));
+
+          auto& source = static_cast<AutofillDriverIOS&>(request_target);
+          [source.bridge_ fetchFormsFiltered:NO
+                                    withName:std::u16string()
+                                     inFrame:source.web_frame()
+                           completionHandler:std::move(completion_handler)];
+        },
+        form_id, WithNewVersion(std::move(final_handler)));
+  } else {
+    std::move(final_handler).Run(nullptr, std::nullopt);
+  }
 }
 
 void AutofillDriverIOS::ExposeDomNodeIdsInAllFrames() {}
