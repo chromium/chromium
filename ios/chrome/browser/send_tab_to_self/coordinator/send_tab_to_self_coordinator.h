@@ -10,11 +10,15 @@
 @protocol SigninPresenter;
 
 class GURL;
+@protocol SendTabToSelfCoordinatorDelegate;
 
 // Displays the send tab to self UI for all device form factors. Will show a
 // modal dialog popup on both platforms. Once this coordinator is stopped, the
 // underlying dialog is dismissed.
 @interface SendTabToSelfCoordinator : ChromeCoordinator
+
+// The delegate of this coordinator.
+@property(nonatomic, weak) id<SendTabToSelfCoordinatorDelegate> delegate;
 
 - (id)initWithBaseViewController:(UIViewController*)baseViewController
                          browser:(Browser*)browser

@@ -6,6 +6,7 @@ source_set("coordinator") {
   sources = [
     "send_tab_to_self_coordinator.h",
     "send_tab_to_self_coordinator.mm",
+    "send_tab_to_self_coordinator_delegate.h",
   ]
   deps = [
     "//base",

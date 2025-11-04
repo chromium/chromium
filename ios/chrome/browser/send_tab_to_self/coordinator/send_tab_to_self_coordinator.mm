@@ -27,6 +27,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_presenter.h"
 #import "ios/chrome/browser/infobars/ui_bundled/presentation/infobar_modal_positioner.h"
+#import "ios/chrome/browser/send_tab_to_self/coordinator/send_tab_to_self_coordinator_delegate.h"
 #import "ios/chrome/browser/send_tab_to_self/model/send_tab_to_self_browser_agent.h"
 #import "ios/chrome/browser/send_tab_to_self/ui/send_tab_to_self_modal_delegate.h"
 #import "ios/chrome/browser/send_tab_to_self/ui/send_tab_to_self_modal_presentation_controller.h"
@@ -178,13 +179,14 @@ void OpenManageDevicesTab(CommandDispatcher* dispatcher) {
   if (!authService->SigninEnabled()) {
     // Sign-in was disabled after the list of action was opened. Let’s abort.
     // Don’t call anything after this, as `self` is not retained anymore.
-    [_browserCoordinatorHandler hideSendTabToSelfUI];
+    [self.delegate sendTabToSelfCoordinatorWantsToBeStopped:self];
     return;
   }
   [self show];
 }
 
-// Do not call directly, use the hideSendTabToSelfUI() command instead!
+// Do not call directly, use `[self.delegate
+// sendTabToSelfCoordinatorWantsToBeStopped:self]` instead!
 - (void)stop {
   DCHECK(!self.stopped) << "Already stopped";
   self.stopped = YES;
@@ -243,7 +245,7 @@ void OpenManageDevicesTab(CommandDispatcher* dispatcher) {
 #pragma mark - SendTabToSelfModalDelegate
 
 - (void)dismissViewControllerAnimated {
-  [_browserCoordinatorHandler hideSendTabToSelfUI];
+  [self.delegate sendTabToSelfCoordinatorWantsToBeStopped:self];
 }
 
 - (void)sendTabToTargetDeviceCacheGUID:(NSString*)cacheGUID
@@ -258,7 +260,7 @@ void OpenManageDevicesTab(CommandDispatcher* dispatcher) {
   self.dismissedCompletion = ^{
     [weakSelf showSnackbarMessageWithDeviceName:deviceName];
   };
-  [_browserCoordinatorHandler hideSendTabToSelfUI];
+  [self.delegate sendTabToSelfCoordinatorWantsToBeStopped:self];
 }
 
 - (void)openManageDevicesTab {
@@ -268,7 +270,7 @@ void OpenManageDevicesTab(CommandDispatcher* dispatcher) {
   self.dismissedCompletion = ^{
     OpenManageDevicesTab(weakDispatcher);
   };
-  [_browserCoordinatorHandler hideSendTabToSelfUI];
+  [self.delegate sendTabToSelfCoordinatorWantsToBeStopped:self];
 }
 
 #pragma mark - Private
@@ -373,7 +375,7 @@ void OpenManageDevicesTab(CommandDispatcher* dispatcher) {
 // Called when the sign-in flow is complete.
 - (void)onSigninComplete:(BOOL)succeeded {
   if (!succeeded) {
-    [_browserCoordinatorHandler hideSendTabToSelfUI];
+    [self.delegate sendTabToSelfCoordinatorWantsToBeStopped:self];
     return;
   }
   __weak __typeof(self) weakSelf = self;

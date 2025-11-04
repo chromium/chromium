@@ -195,6 +195,7 @@
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_service_factory.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/send_tab_to_self/coordinator/send_tab_to_self_coordinator.h"
+#import "ios/chrome/browser/send_tab_to_self/coordinator/send_tab_to_self_coordinator_delegate.h"
 #import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_add_credit_card_coordinator.h"
 #import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_add_credit_card_coordinator_delegate.h"
 #import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/quick_delete_coordinator.h"
@@ -404,6 +405,7 @@ const char kChromeAppStoreUrl[] =
     PriceTrackedItemsCommands,
     PromosManagerCommands,
     PolicyChangeCommands,
+    SendTabToSelfCoordinatorDelegate,
     SyncedSetUpCoordinatorDelegate,
     SyncedSetUpCommands,
     PrerenderBrowserAgentDelegate,
@@ -975,8 +977,7 @@ const char kChromeAppStoreUrl[] =
 
   [self dismissAutofillProgressDialog];
 
-  [_sendTabToSelfCoordinator stop];
-  _sendTabToSelfCoordinator = nil;
+  [self stopSendTabToSelf];
 
   [self.passwordSettingsCoordinator stop];
   self.passwordSettingsCoordinator.delegate = nil;
@@ -1033,6 +1034,12 @@ const char kChromeAppStoreUrl[] =
 }
 
 #pragma mark - Private
+
+- (void)stopSendTabToSelf {
+  [_sendTabToSelfCoordinator stop];
+  _sendTabToSelfCoordinator.delegate = nil;
+  _sendTabToSelfCoordinator = nil;
+}
 
 // Stops the Synced Set Up coordinator.
 - (void)stopSyncedSetUpCoordinator {
@@ -1765,8 +1772,7 @@ const char kChromeAppStoreUrl[] =
   [self.netExportCoordinator stop];
   self.netExportCoordinator = nil;
 
-  [_sendTabToSelfCoordinator stop];
-  _sendTabToSelfCoordinator = nil;
+  [self stopSendTabToSelf];
 
   [self.whatsNewCoordinator stop];
   self.whatsNewCoordinator = nil;
@@ -2430,13 +2436,8 @@ const char kChromeAppStoreUrl[] =
                  signinPresenter:self
                              url:url
                            title:title];
+  _sendTabToSelfCoordinator.delegate = self;
   [_sendTabToSelfCoordinator start];
-}
-
-- (void)hideSendTabToSelfUI {
-  DCHECK(_sendTabToSelfCoordinator);
-  [_sendTabToSelfCoordinator stop];
-  _sendTabToSelfCoordinator = nil;
 }
 
 #if !defined(NDEBUG)
@@ -3919,6 +3920,14 @@ const char kChromeAppStoreUrl[] =
 - (void)hideEnterprisePrompForLearnMore:(BOOL)learnMore {
   [self.enterprisePromptCoordinator stop];
   self.enterprisePromptCoordinator = nil;
+}
+
+#pragma mark - SendTabToSelfCoordinatorDelegate
+
+- (void)sendTabToSelfCoordinatorWantsToBeStopped:
+    (SendTabToSelfCoordinator*)coordinator {
+  CHECK_EQ(_sendTabToSelfCoordinator, coordinator, base::NotFatalUntil::M150);
+  [self stopSendTabToSelf];
 }
 
 #pragma mark - NetExportTabHelperDelegate

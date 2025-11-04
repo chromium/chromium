@@ -101,6 +101,7 @@ include_rules = [
   "+ios/chrome/browser/saved_tab_groups/model",
   "+ios/chrome/browser/segmentation_platform/model/segmentation_platform_service_factory.h",
   "+ios/chrome/browser/send_tab_to_self/coordinator/send_tab_to_self_coordinator.h",
+  "+ios/chrome/browser/send_tab_to_self/coordinator/send_tab_to_self_coordinator_delegate.h",
   "+ios/chrome/browser/sessions/model/ios_chrome_tab_restore_service_factory.h",
   "+ios/chrome/browser/settings/model/sync/utils/sync_presenter.h",
   "+ios/chrome/browser/settings/ui_bundled",

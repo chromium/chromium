@@ -74,9 +74,6 @@ enum class TrustedVaultUserActionTriggerForUMA;
 // devices.
 - (void)showSendTabToSelfUI:(const GURL&)url title:(NSString*)title;
 
-// Hides the dialog shown by -showSendTabToSelfUI:.
-- (void)hideSendTabToSelfUI;
-
 #if !defined(NDEBUG)
 // Inserts a new tab showing the HTML source of the current page.
 - (void)viewSource;
