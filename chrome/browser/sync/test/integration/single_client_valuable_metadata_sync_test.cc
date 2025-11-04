@@ -350,4 +350,107 @@ IN_PROC_BROWSER_TEST_F(SingleClientValuableMetadataSyncTest,
   EXPECT_THAT(GetMetadataEntries(), IsEmpty());
 }
 
+// Tests that in case of a metadata conflict, the client's changes are preserved
+// (client wins).
+IN_PROC_BROWSER_TEST_F(SingleClientValuableMetadataSyncTest,
+                       ConflictResolutionClientWins) {
+  const EntityInstance vehicle = CreateServerVehicleEntityInstance(
+      {.date_modified = base::Time::FromSecondsSinceUnixEpoch(400),
+       .use_date = base::Time::FromSecondsSinceUnixEpoch(400),
+       .use_count = 5});
+  InjectEntitiesToServer({vehicle});
+  InjectEntityMetadataToServer(vehicle.metadata());
+
+  ASSERT_TRUE(SetupSync());
+  EntityDataManager* edm = GetEntityDataManager();
+  ASSERT_EQ(1u, GetEntityInstances().size());
+  ASSERT_THAT(GetMetadataEntries(), ElementsAre(vehicle.metadata()));
+
+  // Simulate a local usage update.
+  base::Time last_used = base::Time::FromSecondsSinceUnixEpoch(500);
+  edm->RecordEntityUsed(vehicle.guid(), last_used);
+
+  // Simulate a concurrent update from the server with a conflicting use_count.
+  EntityInstance::EntityMetadata conflicting_metadata = {
+      .guid = vehicle.guid(),
+      .date_modified = base::Time::FromSecondsSinceUnixEpoch(400),
+      .use_count = 10,
+      .use_date = base::Time::FromSecondsSinceUnixEpoch(600)};
+  InjectEntityMetadataToServer(conflicting_metadata);
+
+  while (GetMetadataEntries().empty() ||
+         GetMetadataEntries()[0].use_count != conflicting_metadata.use_count) {
+    EntityDataChangedWaiter(edm).Wait();
+  }
+  // Check that server data wins.
+  EXPECT_THAT(GetMetadataEntries(), ElementsAre(conflicting_metadata));
+}
+
+// Verifies that re-enabling the "Payments" sync toggle correctly re-downloads
+// valuable entity data and metadata.
+IN_PROC_BROWSER_TEST_F(SingleClientValuableMetadataSyncTest,
+                       ReenablingPaymentsSyncDownloadsData) {
+  const EntityInstance vehicle = CreateServerVehicleEntityInstance(
+      {.date_modified = base::Time::FromSecondsSinceUnixEpoch(400),
+       .use_date = base::Time::FromSecondsSinceUnixEpoch(500),
+       .use_count = 5});
+  InjectEntitiesToServer({vehicle});
+  InjectEntityMetadataToServer(vehicle.metadata());
+
+  ASSERT_TRUE(SetupSync());
+  EntityDataManager* edm = GetEntityDataManager();
+  ASSERT_EQ(1u, GetEntityInstances().size());
+
+  // Turn off payments sync, the data & metadata should be gone.
+  ASSERT_TRUE(
+      GetClient(0)->DisableSyncForType(syncer::UserSelectableType::kPayments));
+  WaitForNumberOfEntityInstances(0, edm);
+  ASSERT_THAT(GetMetadataEntries(), IsEmpty());
+
+  // Turn payments sync back on.
+  ASSERT_TRUE(
+      GetClient(0)->EnableSyncForType(syncer::UserSelectableType::kPayments));
+  WaitForNumberOfEntityInstances(1, edm);
+
+  // The data and metadata should be restored.
+  EntityInstance expected_vehicle = vehicle;
+  EXPECT_THAT(GetEntityInstances(), ElementsAre(expected_vehicle));
+  EXPECT_THAT(GetMetadataEntries(), ElementsAre(vehicle.metadata()));
+}
+
+// Verifies that the client correctly processes a metadata-only update from the
+// server for an existing valuable entity.
+IN_PROC_BROWSER_TEST_F(SingleClientValuableMetadataSyncTest,
+                       ServerInitiatedMetadataUpdate) {
+  const EntityInstance vehicle = CreateServerVehicleEntityInstance();
+  EntityInstance::EntityMetadata initial_metadata =
+      EntityInstance::EntityMetadata{
+          .guid = vehicle.guid(),
+          .date_modified = base::Time::FromSecondsSinceUnixEpoch(400),
+          .use_count = 5,
+          .use_date = base::Time::FromSecondsSinceUnixEpoch(500)};
+  InjectEntitiesToServer({vehicle});
+  InjectEntityMetadataToServer(initial_metadata);
+
+  ASSERT_TRUE(SetupSync());
+  EntityDataManager* edm = GetEntityDataManager();
+  EXPECT_THAT(GetMetadataEntries(), ElementsAre(initial_metadata));
+
+  // Now, update the metadata on the server.
+  EntityInstance::EntityMetadata updated_metadata =
+      EntityInstance::EntityMetadata{
+          .guid = vehicle.guid(),
+          .date_modified = base::Time::FromSecondsSinceUnixEpoch(600),
+          .use_count = 10,
+          .use_date = base::Time::FromSecondsSinceUnixEpoch(700)};
+  InjectEntityMetadataToServer(updated_metadata);
+  // Wait for the client to receive and apply the metadata update.
+  while (GetMetadataEntries().empty() ||
+         GetMetadataEntries()[0].use_count != updated_metadata.use_count) {
+    EntityDataChangedWaiter(edm).Wait();
+  }
+
+  EXPECT_THAT(GetMetadataEntries(), ElementsAre(updated_metadata));
+}
+
 }  // namespace
