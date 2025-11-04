@@ -4227,7 +4227,7 @@
   {
     "name": "enable-pix-account-linking",
     "owners": [ "siashah@google.com", "chrome-payments-eng@google.com", "payments-autofill-team@google.com" ],
-    "expiry_milestone": 143
+    "expiry_milestone": 160
   },
   {
     "name": "enable-pix-payments",
@@ -4237,7 +4237,7 @@
   {
     "name": "enable-pix-payments-in-landscape-mode",
     "owners": [ "siashah@google.com", "chrome-payments-eng@google.com", "payments-autofill-team@google.com" ],
-    "expiry_milestone": 143
+    "expiry_milestone": 160
   },
   {
     "name": "enable-pixel-canvas-recording",
