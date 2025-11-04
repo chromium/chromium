@@ -45,9 +45,6 @@ public class ExclusiveAccessManager
     private final TabModelObserver mTabModelObserver;
     private final ObservableSupplierImpl<Boolean> mExclusiveAccessState =
             new ObservableSupplierImpl<>(false);
-    // TODO(https://crbug.com/456395886): use Context instead of Activity.
-    private final Activity mActivity;
-    private final ActivityTabProvider mActivityTabProvider;
 
     public ExclusiveAccessManager(
             Activity activity,
@@ -55,8 +52,9 @@ public class ExclusiveAccessManager
             ActivityTabProvider activityTabProvider,
             @Nullable DesktopWindowStateManager desktopWindowStateManager) {
         mFullscreenManager = fullscreenManager;
-        mActivity = activity;
-        mActivityTabProvider = activityTabProvider;
+        mExclusiveAccessManagerAndroidNativePointer =
+                ExclusiveAccessManagerJni.get()
+                        .init(this, activity, fullscreenManager, activityTabProvider);
         if (desktopWindowStateManager != null) {
             mDesktopWindowStateManager = desktopWindowStateManager;
             mDesktopWindowStateManager.addObserver(this);
@@ -65,8 +63,6 @@ public class ExclusiveAccessManager
                 new FullscreenManager.FullscreenManagerDelegate() {
                     @Override
                     public void onExitFullscreen(@Nullable Tab tab) {
-                        if (mExclusiveAccessManagerAndroidNativePointer == 0) return;
-
                         if (tab == null) {
                             ExclusiveAccessManagerJni.get()
                                     .exitExclusiveAccess(
@@ -80,8 +76,6 @@ public class ExclusiveAccessManager
                 new TabModelObserver() {
                     @Override
                     public void willCloseTab(Tab tab, boolean didCloseAlone) {
-                        if (mExclusiveAccessManagerAndroidNativePointer == 0) return;
-
                         ExclusiveAccessManagerJni.get()
                                 .onTabClosing(
                                         mExclusiveAccessManagerAndroidNativePointer,
@@ -109,10 +103,6 @@ public class ExclusiveAccessManager
         for (TabModel model : modelSelector.getModels()) {
             model.addObserver(mTabModelObserver);
         }
-
-        mExclusiveAccessManagerAndroidNativePointer =
-                ExclusiveAccessManagerJni.get()
-                        .init(this, mActivity, mFullscreenManager, mActivityTabProvider);
     }
 
     public ObservableSupplier<Boolean> getExclusiveAccessStateSupplier() {
@@ -120,8 +110,6 @@ public class ExclusiveAccessManager
     }
 
     private void deactivateTab(Tab tab) {
-        if (mExclusiveAccessManagerAndroidNativePointer == 0) return;
-
         ExclusiveAccessManagerJni.get()
                 .onTabDeactivated(
                         mExclusiveAccessManagerAndroidNativePointer, tab.getWebContents());
@@ -138,8 +126,6 @@ public class ExclusiveAccessManager
      */
     public void enterFullscreenModeForTab(
             RenderFrameHost renderFrameHost, FullscreenOptions options) {
-        if (mExclusiveAccessManagerAndroidNativePointer == 0) return;
-
         ExclusiveAccessManagerJni.get()
                 .enterFullscreenModeForTab(
                         mExclusiveAccessManagerAndroidNativePointer,
@@ -155,15 +141,12 @@ public class ExclusiveAccessManager
      * @param webContents exit requester
      */
     public void exitFullscreenModeForTab(@Nullable WebContents webContents) {
-        if (mExclusiveAccessManagerAndroidNativePointer == 0) return;
-
         ExclusiveAccessManagerJni.get()
                 .exitFullscreenModeForTab(mExclusiveAccessManagerAndroidNativePointer, webContents);
     }
 
     /** Force exit of all exclusive access controllers */
     public void exitExclusiveAccess() {
-        if (mExclusiveAccessManagerAndroidNativePointer == 0) return;
         ExclusiveAccessManagerJni.get()
                 .exitExclusiveAccess(mExclusiveAccessManagerAndroidNativePointer);
         // Marking state in case of enabled locks without fullscreen
@@ -172,8 +155,6 @@ public class ExclusiveAccessManager
 
     /** Checks if any of the fullscreen, keyboard lock or pointer lock is on */
     public boolean hasExclusiveAccess() {
-        if (mExclusiveAccessManagerAndroidNativePointer == 0) return false;
-
         return ExclusiveAccessManagerJni.get()
                 .hasExclusiveAccess(mExclusiveAccessManagerAndroidNativePointer);
     }
@@ -184,8 +165,8 @@ public class ExclusiveAccessManager
      * @param webContents the requester of check
      * @return is currently in fullscreen
      */
-    public boolean isFullscreenForTabOrPending(@Nullable WebContents webContents) {
-        if (webContents == null || mExclusiveAccessManagerAndroidNativePointer == 0) {
+    public boolean isFullscreenForTabOrPending(WebContents webContents) {
+        if (webContents == null) {
             return false;
         }
         return ExclusiveAccessManagerJni.get()
@@ -201,8 +182,6 @@ public class ExclusiveAccessManager
      * @return true if the key was handled
      */
     public boolean preHandleKeyboardEvent(long nativeKeyEvent) {
-        if (mExclusiveAccessManagerAndroidNativePointer == 0) return false;
-
         boolean handled =
                 ExclusiveAccessManagerJni.get()
                         .preHandleKeyboardEvent(
@@ -221,8 +200,6 @@ public class ExclusiveAccessManager
      * @param escKeyLocked whether the escape key is to be locked.
      */
     public void requestKeyboardLock(WebContents webContents, boolean escKeyLocked) {
-        if (mExclusiveAccessManagerAndroidNativePointer == 0) return;
-
         ExclusiveAccessManagerJni.get()
                 .requestKeyboardLock(
                         mExclusiveAccessManagerAndroidNativePointer, webContents, escKeyLocked);
@@ -236,8 +213,6 @@ public class ExclusiveAccessManager
      * @param webContents the WebContents cancelling keyboard lock
      */
     public void cancelKeyboardLockRequest(WebContents webContents) {
-        if (mExclusiveAccessManagerAndroidNativePointer == 0) return;
-
         ExclusiveAccessManagerJni.get()
                 .cancelKeyboardLockRequest(
                         mExclusiveAccessManagerAndroidNativePointer, webContents);
@@ -247,8 +222,6 @@ public class ExclusiveAccessManager
 
     public void requestPointerLock(
             WebContents webContents, boolean userGesture, boolean lastUnlockedByTarget) {
-        if (mExclusiveAccessManagerAndroidNativePointer == 0) return;
-
         ExclusiveAccessManagerJni.get()
                 .requestPointerLock(
                         mExclusiveAccessManagerAndroidNativePointer,
@@ -260,8 +233,6 @@ public class ExclusiveAccessManager
     }
 
     public void lostPointerLock() {
-        if (mExclusiveAccessManagerAndroidNativePointer == 0) return;
-
         ExclusiveAccessManagerJni.get()
                 .lostPointerLock(mExclusiveAccessManagerAndroidNativePointer);
         // Checking internal state of the controllers in case other locks are on
@@ -270,8 +241,6 @@ public class ExclusiveAccessManager
 
     @Override
     public void onDesktopWindowingModeChanged(boolean isInDesktopWindow) {
-        if (mExclusiveAccessManagerAndroidNativePointer == 0) return;
-
         if (isInDesktopWindow && mFullscreenManager.getPersistentFullscreenMode()) {
             // Exiting when fullscreen should be lost
             ExclusiveAccessManagerJni.get()
