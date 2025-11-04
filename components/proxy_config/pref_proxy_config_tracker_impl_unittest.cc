@@ -8,16 +8,19 @@
 #include <string>
 
 #include "base/files/file_path.h"
+#include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/buildflag.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/proxy_config/proxy_config_dictionary.h"
 #include "components/proxy_config/proxy_config_pref_names.h"
+#include "net/base/host_port_pair.h"
 #include "net/base/proxy_chain.h"
 #include "net/base/proxy_server.h"
 #include "net/base/proxy_string_util.h"
@@ -486,6 +489,173 @@ TEST_F(PrefProxyConfigTrackerImplTest, DelegateConfigServiceGetsConfigLate) {
   EXPECT_EQ(GURL(kFixedPacUrl), actual_config.value().pac_url());
 
   proxy_config_service_->RemoveObserver(&observer);
+}
+
+class PrefProxyConfigOverrideRulesTest : public PrefProxyConfigTrackerImplTest {
+ private:
+  base::test::ScopedFeatureList scoped_features_{kEnableProxyOverrideRules};
+};
+
+TEST_F(PrefProxyConfigOverrideRulesTest, DynamicPolicy) {
+  InitConfigService(net::ProxyConfigService::CONFIG_VALID);
+  pref_service_->SetManagedPref(
+      proxy_config::prefs::kProxyOverrideRules,
+      std::make_unique<base::Value>(
+          *base::JSONReader::Read(R"([
+                                         {
+                                             "DestinationMatchers": [
+                                                 "https://some.app.com",
+                                                 "https://other.app.com",
+                                             ],
+                                             "ProxyChain": [
+                                                 "HTTPS proxy.app:443",
+                                                 "DIRECT",
+                                             ],
+                                             "Conditions": [
+                                                 {
+                                                     "DnsProbe": {
+                                                         "Host": "corp.ads",
+                                                         "Result": "resolves",
+                                                     },
+                                                 }
+                                             ]
+                                         }
+                                     ])",
+                                  base::JSON_ALLOW_TRAILING_COMMAS)));
+  base::RunLoop().RunUntilIdle();
+
+  net::ProxyConfigWithAnnotation actual_config;
+  EXPECT_EQ(net::ProxyConfigService::CONFIG_VALID,
+            proxy_config_service_->GetLatestProxyConfig(&actual_config));
+
+  EXPECT_EQ(actual_config.value().proxy_override_rules().size(), 1u);
+
+  const auto& rule = actual_config.value().proxy_override_rules().at(0);
+  EXPECT_EQ(rule.destination_matchers.rules().size(), 2u);
+  EXPECT_EQ(rule.destination_matchers.rules().at(0)->ToString(),
+            "https://some.app.com");
+  EXPECT_EQ(rule.destination_matchers.rules().at(1)->ToString(),
+            "https://other.app.com");
+
+  EXPECT_EQ(rule.proxy_list.size(), 2u);
+  EXPECT_EQ(rule.proxy_list.AllChains().at(0),
+            net::PacResultElementToProxyChain("HTTPS proxy.app:443"));
+  EXPECT_EQ(rule.proxy_list.AllChains().at(1),
+            net::PacResultElementToProxyChain("DIRECT"));
+
+  EXPECT_EQ(rule.dns_conditions.size(), 1u);
+  EXPECT_EQ(rule.dns_conditions.at(0).host,
+            url::SchemeHostPort(GURL("corp.ads")));
+  EXPECT_EQ(rule.dns_conditions.at(0).result,
+            net::ProxyConfig::ProxyOverrideRule::DnsProbeCondition::kResolves);
+
+  // Setting the pref again in the same test scope validates the policy is
+  // dynamic and that the retrieved config changes appropriately.
+  pref_service_->SetManagedPref(
+      proxy_config::prefs::kProxyOverrideRules,
+      std::make_unique<base::Value>(
+          *base::JSONReader::Read(R"([
+                                         {
+                                             "DestinationMatchers": [
+                                                 "https://some.other.app.com",
+                                             ],
+                                             "ProxyChain": [
+                                                 "DIRECT",
+                                                 "PROXY some.host:123",
+                                                 "HTTPS proxy.app:443",
+                                                 "DIRECT",
+                                             ],
+                                             "Conditions": [
+                                                 {
+                                                     "DnsProbe": {
+                                                         "Host": "corp.ads",
+                                                         "Result": "resolves",
+                                                     },
+                                                 },
+                                                 {
+                                                     "DnsProbe": {
+                                                         "Host": "ads.corp",
+                                                         "Result": "not_found",
+                                                     },
+                                                 }
+                                             ]
+                                         },
+                                         {
+                                             "DestinationMatchers": [
+                                                 "https://some.special.app.com",
+                                             ],
+                                             "ProxyChain": [
+                                                 "DIRECT",
+                                             ],
+                                         }
+                                    ])",
+                                  base::JSON_ALLOW_TRAILING_COMMAS)));
+  base::RunLoop().RunUntilIdle();
+
+  net::ProxyConfigWithAnnotation updated_config;
+  EXPECT_EQ(net::ProxyConfigService::CONFIG_VALID,
+            proxy_config_service_->GetLatestProxyConfig(&updated_config));
+
+  EXPECT_EQ(updated_config.value().proxy_override_rules().size(), 2u);
+
+  const auto& rule_0 = updated_config.value().proxy_override_rules().at(0);
+  EXPECT_EQ(rule_0.destination_matchers.rules().size(), 1u);
+  EXPECT_EQ(rule_0.destination_matchers.rules().at(0)->ToString(),
+            "https://some.other.app.com");
+
+  EXPECT_EQ(rule_0.proxy_list.size(), 4u);
+  EXPECT_EQ(rule_0.proxy_list.AllChains().at(0),
+            net::PacResultElementToProxyChain("DIRECT"));
+  EXPECT_EQ(rule_0.proxy_list.AllChains().at(1),
+            net::PacResultElementToProxyChain("PROXY some.host:123"));
+  EXPECT_EQ(rule_0.proxy_list.AllChains().at(2),
+            net::PacResultElementToProxyChain("HTTPS proxy.app:443"));
+  EXPECT_EQ(rule_0.proxy_list.AllChains().at(3),
+            net::PacResultElementToProxyChain("DIRECT"));
+
+  EXPECT_EQ(rule_0.dns_conditions.size(), 2u);
+  EXPECT_EQ(rule_0.dns_conditions.at(0).host,
+            url::SchemeHostPort(GURL("corp.ads")));
+  EXPECT_EQ(rule_0.dns_conditions.at(0).result,
+            net::ProxyConfig::ProxyOverrideRule::DnsProbeCondition::kResolves);
+  EXPECT_EQ(rule_0.dns_conditions.at(1).host,
+            url::SchemeHostPort(GURL("ads.corps")));
+  EXPECT_EQ(rule_0.dns_conditions.at(1).result,
+            net::ProxyConfig::ProxyOverrideRule::DnsProbeCondition::kNotFound);
+
+  const auto& rule_1 = updated_config.value().proxy_override_rules().at(1);
+  EXPECT_EQ(rule_1.destination_matchers.rules().size(), 1u);
+  EXPECT_EQ(rule_1.destination_matchers.rules().at(0)->ToString(),
+            "https://some.special.app.com");
+
+  EXPECT_EQ(rule_1.proxy_list.size(), 1u);
+  EXPECT_EQ(rule_1.proxy_list.AllChains().at(0),
+            net::PacResultElementToProxyChain("DIRECT"));
+
+  EXPECT_TRUE(rule_1.dns_conditions.empty());
+
+  // Changing the `kProxy` pref should not change `kProxyOverrideRules`, and
+  // `kProxyOverrideRules` being set shouldn't prevent a `kProxy` value from
+  // being in the resulting config.
+  auto previous_override_rules = updated_config.value().proxy_override_rules();
+  pref_service_->SetManagedPref(
+      proxy_config::prefs::kProxy,
+      std::make_unique<base::Value>(ProxyConfigDictionary::CreateFixedServers(
+          "http://example.com:3128", std::string())));
+  base::RunLoop().RunUntilIdle();
+
+  net::ProxyConfigWithAnnotation fixed_servers_config;
+  EXPECT_EQ(net::ProxyConfigService::CONFIG_VALID,
+            proxy_config_service_->GetLatestProxyConfig(&fixed_servers_config));
+
+  EXPECT_EQ(fixed_servers_config.value().proxy_override_rules(),
+            previous_override_rules);
+  EXPECT_FALSE(fixed_servers_config.value().auto_detect());
+  EXPECT_EQ(net::ProxyConfig::ProxyRules::Type::PROXY_LIST,
+            fixed_servers_config.value().proxy_rules().type);
+  EXPECT_EQ(fixed_servers_config.value().proxy_rules().single_proxies.First(),
+            net::ProxyUriToProxyChain("http://example.com:3128",
+                                      net::ProxyServer::SCHEME_HTTP));
 }
 
 }  // namespace
