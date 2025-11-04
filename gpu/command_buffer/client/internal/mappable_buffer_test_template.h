@@ -27,7 +27,6 @@
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "components/viz/test/test_gpu_service_holder.h"
 #include "gpu/command_buffer/client/internal/mappable_buffer_shared_memory.h"
-#include "gpu/ipc/common/gpu_memory_buffer_support.h"
 #include "mojo/public/cpp/base/shared_memory_mojom_traits.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -126,8 +125,8 @@ class MappableBufferTest : public testing::Test {
     // GmbImplTestNativePixmap is a no-op, we should run it on a gpu runner.
 #if BUILDFLAG(IS_OZONE)
     // TODO(329211602): Currently only wayland has a valid
-    // IsNativeGpuMemoryBufferConfigurationSupportedForTesting. We should
-    // implement that in X11 and other platforms either.
+    // IsNativePixmapConfigSupported(). We should implement that in X11 and
+    // other platforms.
     if (ui::OzonePlatform::GetPlatformNameForTest() == "wayland") {
       run_gpu_test_ = true;
     }
@@ -263,11 +262,10 @@ TYPED_TEST_P(MappableBufferTest, CreateFromHandle) {
 
   for (auto format : TestFixture::formats()) {
     for (auto usage : TestFixture::usages()) {
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_OZONE)
       if (TypeParam::kBufferType != gfx::SHARED_MEMORY_BUFFER &&
-          !GpuMemoryBufferSupport::
-              IsNativeGpuMemoryBufferConfigurationSupportedForTesting(format,
-                                                                      usage)) {
+          !ui::OzonePlatform::GetInstance()->IsNativePixmapConfigSupported(
+              viz::SharedImageFormatToBufferFormat(format), usage)) {
         continue;
       }
 #endif
@@ -293,12 +291,13 @@ TYPED_TEST_P(MappableBufferTest, CreateFromHandleSmallBuffer) {
 
   for (auto format : TestFixture::formats()) {
     for (auto usage : TestFixture::usages()) {
+#if BUILDFLAG(IS_OZONE)
       if (TypeParam::kBufferType != gfx::SHARED_MEMORY_BUFFER &&
-          !GpuMemoryBufferSupport::
-              IsNativeGpuMemoryBufferConfigurationSupportedForTesting(format,
-                                                                      usage)) {
+          !ui::OzonePlatform::GetInstance()->IsNativePixmapConfigSupported(
+              viz::SharedImageFormatToBufferFormat(format), usage)) {
         continue;
       }
+#endif
 
       gfx::GpuMemoryBufferHandle handle;
       TestFixture::CreateGpuMemoryBuffer(kBufferSize, format, usage, &handle);
@@ -328,13 +327,20 @@ TYPED_TEST_P(MappableBufferTest, Map) {
   // Use a multiple of 4 for both dimensions to support compressed formats.
   const gfx::Size kBufferSize(4, 4);
 
+  if (!base::Contains(TestFixture::usages(),
+                      gfx::BufferUsage::GPU_READ_CPU_READ_WRITE)) {
+    GTEST_SKIP();
+  }
+
   for (auto format : TestFixture::formats()) {
+#if BUILDFLAG(IS_OZONE)
     if (TypeParam::kBufferType != gfx::SHARED_MEMORY_BUFFER &&
-        !GpuMemoryBufferSupport::
-            IsNativeGpuMemoryBufferConfigurationSupportedForTesting(
-                format, gfx::BufferUsage::GPU_READ_CPU_READ_WRITE)) {
+        !ui::OzonePlatform::GetInstance()->IsNativePixmapConfigSupported(
+            viz::SharedImageFormatToBufferFormat(format),
+            gfx::BufferUsage::GPU_READ_CPU_READ_WRITE)) {
       continue;
     }
+#endif
 
     gfx::GpuMemoryBufferHandle handle;
     TestFixture::CreateGpuMemoryBuffer(
@@ -389,13 +395,20 @@ TYPED_TEST_P(MappableBufferTest, PersistentMap) {
   // Use a multiple of 4 for both dimensions to support compressed formats.
   const gfx::Size kBufferSize(4, 4);
 
+  if (!base::Contains(TestFixture::usages(),
+                      gfx::BufferUsage::GPU_READ_CPU_READ_WRITE)) {
+    GTEST_SKIP();
+  }
+
   for (auto format : TestFixture::formats()) {
+#if BUILDFLAG(IS_OZONE)
     if (TypeParam::kBufferType != gfx::SHARED_MEMORY_BUFFER &&
-        !GpuMemoryBufferSupport::
-            IsNativeGpuMemoryBufferConfigurationSupportedForTesting(
-                format, gfx::BufferUsage::GPU_READ_CPU_READ_WRITE)) {
+        !ui::OzonePlatform::GetInstance()->IsNativePixmapConfigSupported(
+            viz::SharedImageFormatToBufferFormat(format),
+            gfx::BufferUsage::GPU_READ_CPU_READ_WRITE)) {
       continue;
     }
+#endif
 
     gfx::GpuMemoryBufferHandle handle;
     TestFixture::CreateGpuMemoryBuffer(
@@ -471,11 +484,10 @@ TYPED_TEST_P(MappableBufferTest, SerializeAndDeserialize) {
 
   for (auto format : TestFixture::formats()) {
     for (auto usage : TestFixture::usages()) {
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_OZONE)
       if (TypeParam::kBufferType != gfx::SHARED_MEMORY_BUFFER &&
-          !GpuMemoryBufferSupport::
-              IsNativeGpuMemoryBufferConfigurationSupportedForTesting(format,
-                                                                      usage)) {
+          !ui::OzonePlatform::GetInstance()->IsNativePixmapConfigSupported(
+              viz::SharedImageFormatToBufferFormat(format), usage)) {
         continue;
       }
 #endif
