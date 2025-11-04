@@ -13,6 +13,9 @@
   <script>
     const canvas = document.getElementById('canvas');
     const gl = canvas.getContext('webgl');
+    if (!gl) {
+      return skipTest('WebGL not supported');
+    }
 
     function compileOrReportError(shader) {
       gl.compileShader(shader);
