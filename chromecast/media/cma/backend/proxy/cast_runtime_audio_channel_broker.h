@@ -8,7 +8,6 @@
 #include <memory>
 #include <optional>
 
-#include "base/memory/weak_ptr.h"
 #include "third_party/cast_core/public/src/proto/runtime/cast_audio_channel_service.pb.h"
 #include "third_party/protobuf/src/google/protobuf/duration.pb.h"
 

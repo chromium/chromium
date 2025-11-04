@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_SINGLE_FIELD_FILLERS_AUTOCOMPLETE_MOCK_AUTOCOMPLETE_HISTORY_MANAGER_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_SINGLE_FIELD_FILLERS_AUTOCOMPLETE_MOCK_AUTOCOMPLETE_HISTORY_MANAGER_H_
 
-#include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/single_field_fillers/autocomplete/autocomplete_history_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 

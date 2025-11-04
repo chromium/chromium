@@ -13,7 +13,6 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
 #include "chromeos/ash/components/emoji/tenor_types.mojom.h"
 

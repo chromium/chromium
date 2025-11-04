@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
 #include "chrome/browser/notifications/scheduler/public/notification_scheduler_client.h"
 #include "components/prefs/pref_service.h"
 

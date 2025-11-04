@@ -11,7 +11,6 @@
 #include "base/containers/queue.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
 #include "base/nix/xdg_util.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 

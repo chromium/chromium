@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_VIEWS_DESKTOP_CAPTURE_AUDIO_CAPTURE_PERMISSION_CHECKER_MAC_H_
 
 #include "base/functional/callback.h"
-#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/views/desktop_capture/audio_capture_permission_checker.h"
 #include "media/audio/audio_input_ipc.h"
 #include "media/mojo/mojom/audio_stream_factory.mojom-forward.h"

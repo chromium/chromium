@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_LENS_TEST_LENS_OVERLAY_QUERY_CONTROLLER_H_
 #define CHROME_BROWSER_UI_LENS_TEST_LENS_OVERLAY_QUERY_CONTROLLER_H_
 
-#include "base/memory/weak_ptr.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "lens_overlay_query_controller.h"
 

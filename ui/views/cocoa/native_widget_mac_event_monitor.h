@@ -7,7 +7,6 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
 #include "ui/views/views_export.h"
 
 namespace ui {

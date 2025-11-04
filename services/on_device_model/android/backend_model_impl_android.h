@@ -5,7 +5,6 @@
 #ifndef SERVICES_ON_DEVICE_MODEL_ANDROID_BACKEND_MODEL_IMPL_ANDROID_H_
 #define SERVICES_ON_DEVICE_MODEL_ANDROID_BACKEND_MODEL_IMPL_ANDROID_H_
 
-#include "base/memory/weak_ptr.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
 #include "services/on_device_model/backend_model.h"
 

@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_EXTENSIONS_EXTENSION_ACTION_VIEW_CONTROLLER_H_
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/extensions/commands/command_service.h"
 #include "chrome/browser/extensions/extension_context_menu_model.h"

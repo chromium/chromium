@@ -8,7 +8,6 @@
 #include <optional>
 #include <string>
 
-#include "base/memory/weak_ptr.h"
 #include "base/time/clock.h"
 #include "content/browser/btm/btm_page_visit_observer.h"
 #include "content/common/content_export.h"

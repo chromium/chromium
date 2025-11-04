@@ -14,7 +14,6 @@
 #include "base/debug/debugging_buildflags.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
 #include "base/profiler/sampling_profiler_thread_token.h"
 #include "base/profiler/stack_sampling_profiler.h"
 #include "base/profiler/unwinder.h"

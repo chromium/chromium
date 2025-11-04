@@ -12,7 +12,6 @@
 #include "base/callback_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"

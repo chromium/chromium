@@ -6,7 +6,6 @@
 #define EXTENSIONS_BROWSER_API_BLUETOOTH_BLUETOOTH_EXTENSION_FUNCTION_H_
 
 #include "base/memory/scoped_refptr.h"
-#include "base/memory/weak_ptr.h"
 #include "extensions/browser/extension_function.h"
 
 namespace device {

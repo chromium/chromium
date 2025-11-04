@@ -6,7 +6,6 @@
 #define CHROMEOS_ASH_COMPONENTS_ATTESTATION_ATTESTATION_FEATURES_H_
 
 #include "base/component_export.h"
-#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/dbus/attestation/interface.pb.h"
 #include "chromeos/ash/components/dbus/constants/attestation_constants.h"

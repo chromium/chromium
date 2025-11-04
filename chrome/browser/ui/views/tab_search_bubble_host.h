@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_VIEWS_TAB_SEARCH_BUBBLE_HOST_H_
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_observer.h"

@@ -5,7 +5,6 @@
 #ifndef DEVICE_VR_OPENXR_OPENXR_SPATIAL_HIT_TEST_MANAGER_H_
 #define DEVICE_VR_OPENXR_OPENXR_SPATIAL_HIT_TEST_MANAGER_H_
 
-#include "base/memory/weak_ptr.h"
 #include "device/vr/openxr/openxr_extension_helper.h"
 #include "device/vr/openxr/openxr_hit_test_manager.h"
 #include "device/vr/openxr/openxr_platform.h"

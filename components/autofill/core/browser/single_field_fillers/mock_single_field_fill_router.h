@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_SINGLE_FIELD_FILLERS_MOCK_SINGLE_FIELD_FILL_ROUTER_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_SINGLE_FIELD_FILLERS_MOCK_SINGLE_FIELD_FILL_ROUTER_H_
 
-#include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/single_field_fillers/single_field_fill_router.h"
 #include "testing/gmock/include/gmock/gmock.h"
 

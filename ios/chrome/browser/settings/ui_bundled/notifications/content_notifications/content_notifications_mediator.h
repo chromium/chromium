@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "base/memory/weak_ptr.h"
+#import <vector>
 
 class GaiaId;
 class PrefService;

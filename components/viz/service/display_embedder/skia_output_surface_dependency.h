@@ -11,7 +11,6 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/viz/service/display/display_compositor_memory_and_task_controller.h"
 #include "components/viz/service/viz_service_export.h"

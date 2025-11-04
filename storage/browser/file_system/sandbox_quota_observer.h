@@ -14,7 +14,6 @@
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "storage/browser/file_system/file_observers.h"
 #include "storage/browser/file_system/file_system_url.h"

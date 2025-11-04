@@ -15,7 +15,6 @@
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
 #include "base/types/strong_alias.h"
 #include "build/build_config.h"
 #include "components/autofill/content/common/mojom/autofill_agent.mojom.h"

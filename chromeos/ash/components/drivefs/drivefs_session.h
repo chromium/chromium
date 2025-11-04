@@ -11,7 +11,6 @@
 
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/timer/timer.h"
 #include "base/unguessable_token.h"

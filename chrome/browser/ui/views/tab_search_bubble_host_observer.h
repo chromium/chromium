@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_VIEWS_TAB_SEARCH_BUBBLE_HOST_OBSERVER_H_
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 
 // This class has been temporarily factored out of

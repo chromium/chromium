@@ -10,7 +10,6 @@
 
 #include "ash/app_list/model/app_list_model_export.h"
 #include "ash/public/cpp/app_list/app_list_client.h"
-#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/image/image.h"

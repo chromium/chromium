@@ -7,8 +7,6 @@
 
 #import <UIKit/UIKit.h>
 
-#import "base/memory/weak_ptr.h"
-
 class AuthenticationService;
 class PrefService;
 @class TableViewSwitchItem;

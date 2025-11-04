@@ -7,7 +7,6 @@
 
 #import <optional>
 
-#import "base/memory/weak_ptr.h"
 #import "base/no_destructor.h"
 #import "ios/chrome/browser/web/model/choose_file/choose_file_event.h"
 

@@ -15,7 +15,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/payments/client_behavior_constants.h"

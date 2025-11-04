@@ -12,7 +12,6 @@
 #include "android_webview/common/mojom/render_message_filter.mojom.h"
 #include "android_webview/renderer/aw_render_thread_observer.h"
 #include "base/compiler_specific.h"
-#include "base/memory/weak_ptr.h"
 #include "components/spellcheck/spellcheck_buildflags.h"
 #include "content/public/renderer/content_renderer_client.h"
 #include "mojo/public/cpp/bindings/remote.h"

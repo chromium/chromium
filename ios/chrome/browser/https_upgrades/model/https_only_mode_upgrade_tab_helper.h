@@ -6,7 +6,6 @@
 #define IOS_CHROME_BROWSER_HTTPS_UPGRADES_MODEL_HTTPS_ONLY_MODE_UPGRADE_TAB_HELPER_H_
 
 #import "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #import "ios/web/public/navigation/web_state_policy_decider.h"

@@ -7,7 +7,6 @@
 
 #import <UIKit/UIKit.h>
 
-#import "base/memory/weak_ptr.h"
 #import "ios/chrome/browser/browser_container/model/edit_menu_builder.h"
 
 @protocol BrowserCoordinatorCommands;

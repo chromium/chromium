@@ -11,7 +11,6 @@
 
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ref.h"
-#include "base/memory/weak_ptr.h"
 #include "components/cast/api_bindings/manager.h"
 #include "components/cast_receiver/browser/bindings_message_port_connector.h"
 #include "components/cast_receiver/common/public/status.h"

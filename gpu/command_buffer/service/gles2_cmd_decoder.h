@@ -22,7 +22,6 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/common/capabilities.h"
 #include "gpu/command_buffer/common/command_buffer_id.h"

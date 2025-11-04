@@ -10,7 +10,6 @@
 #include <unordered_set>
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/tether/host_scan_cache.h"
 #include "chromeos/ash/components/tether/tether_host_response_recorder.h"
 

@@ -9,7 +9,6 @@
 #include "ash/app_list/views/search_box_view_delegate.h"
 #include "ash/ash_export.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"

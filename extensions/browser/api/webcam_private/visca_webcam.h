@@ -12,7 +12,6 @@
 
 #include "base/containers/circular_deque.h"
 #include "base/functional/callback.h"
-#include "base/memory/weak_ptr.h"
 #include "extensions/browser/api/serial/serial_connection.h"
 #include "extensions/browser/api/webcam_private/webcam.h"
 #include "extensions/common/api/serial.h"

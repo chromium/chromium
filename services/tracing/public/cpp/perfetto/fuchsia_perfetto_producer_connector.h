@@ -13,7 +13,6 @@
 
 #include "base/component_export.h"
 #include "base/files/scoped_file.h"
-#include "base/memory/weak_ptr.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/sequence_bound.h"
 #include "base/threading/thread.h"

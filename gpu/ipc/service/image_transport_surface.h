@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include "base/compiler_specific.h"
-#include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/ipc/common/surface_handle.h"

@@ -9,7 +9,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/memory/weak_ptr.h"
 #include "ui/gfx/win/msg_util.h"
 #include "ui/gfx/win/window_impl.h"
 #include "ui/platform_window/platform_window.h"

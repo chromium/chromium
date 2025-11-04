@@ -6,8 +6,8 @@
 #define DEVICE_VR_ANDROID_ARCORE_ARCORE_GL_THREAD_H_
 
 #include <memory>
+
 #include "base/android/java_handler_thread.h"
-#include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "device/vr/android/mailbox_to_surface_bridge.h"
 

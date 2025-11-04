@@ -14,7 +14,6 @@
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "device/bluetooth/bluetooth_adapter.h"

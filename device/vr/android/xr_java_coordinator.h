@@ -7,7 +7,6 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/functional/callback.h"
-#include "base/memory/weak_ptr.h"
 #include "gpu/ipc/common/surface_handle.h"
 #include "ui/display/display.h"
 #include "ui/gfx/geometry/point_f.h"

@@ -12,7 +12,6 @@
 #include <wrl/implements.h>
 
 #include "base/functional/callback_forward.h"
-#include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
 #include "content/common/content_export.h"
 

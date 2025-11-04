@@ -9,7 +9,6 @@
 #include <optional>
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_id.h"

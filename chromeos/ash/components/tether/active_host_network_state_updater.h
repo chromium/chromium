@@ -6,7 +6,6 @@
 #define CHROMEOS_ASH_COMPONENTS_TETHER_ACTIVE_HOST_NETWORK_STATE_UPDATER_H_
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/tether/active_host.h"
 
 namespace ash {

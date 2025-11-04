@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/functional/callback_forward.h"
-#include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "components/prefs/prefs_export.h"
 

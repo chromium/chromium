@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_SMART_CARD_MOCK_SMART_CARD_CONTEXT_FACTORY_H_
 #define CONTENT_BROWSER_SMART_CARD_MOCK_SMART_CARD_CONTEXT_FACTORY_H_
 
-#include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/device/public/mojom/smart_card.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"

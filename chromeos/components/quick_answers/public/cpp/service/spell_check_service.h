@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/weak_ptr.h"
 #include "chromeos/components/quick_answers/public/cpp/service/spell_check_dictionary.h"
 #include "chromeos/components/quick_answers/public/mojom/spell_check.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"

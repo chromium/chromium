@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "content/browser/indexed_db/indexed_db_database_error.h"
 #include "content/common/content_export.h"

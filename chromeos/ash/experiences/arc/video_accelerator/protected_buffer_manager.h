@@ -12,7 +12,6 @@
 #include "base/files/scoped_file.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/unsafe_shared_memory_region.h"
-#include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "components/viz/common/resources/shared_image_format.h"

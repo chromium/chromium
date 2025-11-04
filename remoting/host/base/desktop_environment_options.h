@@ -7,7 +7,6 @@
 
 #include <optional>
 
-#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "remoting/base/session_options.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_options.h"

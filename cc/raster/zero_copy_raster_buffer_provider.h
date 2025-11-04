@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
 #include "cc/raster/raster_buffer.h"
 #include "cc/raster/raster_buffer_provider.h"
 

@@ -10,7 +10,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
-#include "base/memory/weak_ptr.h"
 #include "components/pdf/renderer/pdf_accessibility_tree.h"
 #include "pdf/accessibility_structs.h"
 #include "pdf/page_character_index.h"

@@ -11,7 +11,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/memory/weak_ptr.h"
 #include "third_party/icu/source/i18n/unicode/coll.h"
 
 namespace translate {

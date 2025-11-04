@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_PRELOADING_NEW_TAB_PAGE_PRELOAD_NEW_TAB_PAGE_PRELOAD_PIPELINE_MANAGER_H_
 
 #include "base/containers/flat_map.h"
-#include "base/memory/weak_ptr.h"
 #include "chrome/browser/preloading/new_tab_page_preload/new_tab_page_preload_pipeline.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "url/gurl.h"

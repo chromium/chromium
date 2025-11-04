@@ -9,7 +9,6 @@
 
 #include "ash/quick_pair/proto/fastpair.pb.h"
 #include "base/functional/callback.h"
-#include "base/memory/weak_ptr.h"
 
 namespace nearby {
 namespace fastpair {

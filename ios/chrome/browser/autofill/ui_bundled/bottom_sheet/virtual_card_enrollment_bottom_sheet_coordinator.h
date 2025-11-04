@@ -7,7 +7,6 @@
 
 #import <Foundation/Foundation.h>
 
-#import "base/memory/weak_ptr.h"
 #import "components/autofill/core/browser/ui/payments/virtual_card_enroll_ui_model.h"
 #import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/virtual_card_enrollment_bottom_sheet_delegate.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"

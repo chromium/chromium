@@ -19,7 +19,6 @@
 #include "base/containers/lru_cache.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"

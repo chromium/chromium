@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/functional/callback_forward.h"
-#include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/password_manager/web_app_profile_switcher.h"
 #include "chrome/browser/profiles/avatar_menu.h"

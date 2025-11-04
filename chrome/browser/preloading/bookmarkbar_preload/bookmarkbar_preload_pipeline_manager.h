@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_PRELOADING_BOOKMARKBAR_PRELOAD_BOOKMARKBAR_PRELOAD_PIPELINE_MANAGER_H_
 
 #include "base/containers/flat_map.h"
-#include "base/memory/weak_ptr.h"
 #include "chrome/browser/preloading/bookmarkbar_preload/bookmarkbar_preload_pipeline.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "url/gurl.h"

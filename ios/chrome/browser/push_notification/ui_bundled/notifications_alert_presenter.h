@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-#import "base/memory/weak_ptr.h"
+#import <vector>
 
 enum class PushNotificationClientId;
 

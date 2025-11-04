@@ -15,7 +15,6 @@
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/functional/callback_forward.h"
-#include "base/memory/weak_ptr.h"
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
