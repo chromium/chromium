@@ -26611,29 +26611,6 @@
             ]
         }
     ],
-    "V8SetIsLoadingExperiments": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Both",
-                    "enable_features": [
-                        "ComputeCurrentRailModeFromPerformanceScenario",
-                        "RAILInputAsLoading"
-                    ],
-                    "disable_features": [
-                        "SetIsLoadingAblation"
-                    ]
-                }
-            ]
-        }
-    ],
     "V8SideStepTransitions": [
         {
             "platforms": [
