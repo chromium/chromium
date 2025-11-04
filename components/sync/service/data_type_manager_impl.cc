@@ -284,13 +284,6 @@ void DataTypeManagerImpl::ConfigureImpl() {
     return;
   }
 
-  if (state_ != STOPPED) {
-    DCHECK_EQ(last_requested_context_.authenticated_gaia_id,
-              last_requested_context_.authenticated_gaia_id);
-    DCHECK_EQ(last_requested_context_.cache_guid,
-              last_requested_context_.cache_guid);
-  }
-
   // Only proceed if we're in a steady state or retrying.
   switch (state_) {
     case STOPPING:
