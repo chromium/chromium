@@ -1015,10 +1015,10 @@ void SharedContextState::MarkContextLost(error::ContextLostReason reason) {
     // the passed in GrContext will be reused.
     // TODO(crbug.com/40672147): always abandon GrContext to release all
     // resources when chrome goes into background with low end device.
+    gr_context_ = nullptr;
     if (owned_gr_context_) {
       owned_gr_context_->abandonContext();
       owned_gr_context_.reset();
-      gr_context_ = nullptr;
     }
     UpdateSkiaOwnedMemorySize();
   }

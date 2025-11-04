@@ -355,7 +355,7 @@ class GPU_GLES2_EXPORT SharedContextState
       nullptr;
   bool created_on_compositor_gpu_thread_ = false;
   bool is_drdc_enabled_ = false;
-  raw_ptr<GrDirectContext, DanglingUntriaged> gr_context_ = nullptr;
+  raw_ptr<GrDirectContext> gr_context_ = nullptr;
   std::unique_ptr<skgpu::graphite::Recorder> gpu_main_graphite_recorder_;
   std::unique_ptr<skgpu::graphite::Recorder> viz_compositor_graphite_recorder_;
 
