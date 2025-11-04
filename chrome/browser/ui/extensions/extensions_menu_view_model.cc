@@ -226,7 +226,78 @@ void LogSiteSettingsUpdate(PermissionsManager::UserSiteSetting site_setting) {
   }
 }
 
+base::debug::CrashKeyString* GetCurrentSiteAccessCrashKey() {
+  static auto* crash_key = base::debug::AllocateCrashKeyString(
+      "ext_site_access_before_granting", base::debug::CrashKeySize::Size64);
+  return crash_key;
+}
+
+base::debug::CrashKeyString* GetSiteAccessToggleStateCrashKey() {
+  static auto* crash_key = base::debug::AllocateCrashKeyString(
+      "ext_toggle_state_before_granting", base::debug::CrashKeySize::Size64);
+  return crash_key;
+}
+
+std::string GetCurrentSiteAccessCrashValue(
+    PermissionsManager::UserSiteAccess site_access) {
+  switch (site_access) {
+    case PermissionsManager::UserSiteAccess::kOnClick:
+      return "OnClick";
+    case PermissionsManager::UserSiteAccess::kOnSite:
+      return "OnSite";
+    case PermissionsManager::UserSiteAccess::kOnAllSites:
+      return "OnAllSites";
+    default:
+      return "InvalidValue";
+  }
+}
+
+std::string GetSiteAccessToggleStateCrashValue(
+    ExtensionsMenuViewModel::MenuItemInfo::SiteAccessToggleState state) {
+  switch (state) {
+    case ExtensionsMenuViewModel::MenuItemInfo::SiteAccessToggleState::kOn:
+      return "On";
+    case ExtensionsMenuViewModel::MenuItemInfo::SiteAccessToggleState::kOff:
+      return "Off";
+    case ExtensionsMenuViewModel::MenuItemInfo::SiteAccessToggleState::kHidden:
+      return "Hidden";
+    default:
+      return "InvalidValue";
+  }
+}
+
 }  // namespace
+
+namespace debug {
+
+// Helper for adding a crash keys when we encounter crashes when granting site
+// access.
+//
+// All keys are logged every time this class is instantiated.
+// TODO(crbug.com/456129773): Remove when crash is fixed.
+class ScopedGrantSiteAccessCrashKeys {
+ public:
+  explicit ScopedGrantSiteAccessCrashKeys(
+      PermissionsManager::UserSiteAccess current_site_access,
+      ExtensionsMenuViewModel::MenuItemInfo::SiteAccessToggleState
+          site_access_toggle_state)
+      : current_site_access_crash_key_(
+            GetCurrentSiteAccessCrashKey(),
+            GetCurrentSiteAccessCrashValue(current_site_access)),
+        site_access_toggle_state_crash_key_(
+            GetSiteAccessToggleStateCrashKey(),
+            GetSiteAccessToggleStateCrashValue(site_access_toggle_state)) {}
+  ~ScopedGrantSiteAccessCrashKeys() = default;
+
+ private:
+  // The current site access of the extension when GrantSiteAccess() was called.
+  base::debug::ScopedCrashKeyString current_site_access_crash_key_;
+  // The site access toggle state of the extension before toggle was selected
+  // that calls GrantSiteAccess().
+  base::debug::ScopedCrashKeyString site_access_toggle_state_crash_key_;
+};
+
+}  // namespace debug
 
 ExtensionsMenuViewModel::ExtensionsMenuViewModel(
     BrowserWindowInterface* browser,
@@ -271,6 +342,10 @@ void ExtensionsMenuViewModel::GrantSiteAccess(
       permissions_manager->GetUserSiteAccess(*extension, url);
   CHECK(CanUserCustomizeExtensionSiteAccess(*extension, *profile,
                                             *toolbar_model, *web_contents));
+  debug::ScopedGrantSiteAccessCrashKeys grant_site_access_crash_keys(
+      current_site_access,
+      GetSiteAccessToggleState(*extension, *profile, *toolbar_model,
+                               *web_contents));
   CHECK_EQ(current_site_access, PermissionsManager::UserSiteAccess::kOnClick);
 
   // Update site access when extension requested host permissions for the
