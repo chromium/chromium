@@ -185,7 +185,6 @@ ExtensionsMenuViewPlatformDelegateViews::
       bubble_contents_(bubble_contents),
       toolbar_model_(ToolbarActionsModel::Get(browser_->profile())) {
   browser_->tab_strip_model()->AddObserver(this);
-  toolbar_model_observation_.Observe(toolbar_model_.get());
 }
 
 // Note: No need to call TabStripModel::RemoveObserver(), because it's handled
@@ -283,7 +282,7 @@ void ExtensionsMenuViewPlatformDelegateViews::
   }
 }
 
-void ExtensionsMenuViewPlatformDelegateViews::OnActionAdded(
+void ExtensionsMenuViewPlatformDelegateViews::OnToolbarActionAdded(
     const ToolbarActionsModel::ActionId& action_id) {
   CHECK(current_page_);
 
@@ -297,7 +296,7 @@ void ExtensionsMenuViewPlatformDelegateViews::OnActionAdded(
   InsertMenuItemMainPage(main_page, action_id, index);
 }
 
-void ExtensionsMenuViewPlatformDelegateViews::OnActionRemoved(
+void ExtensionsMenuViewPlatformDelegateViews::OnToolbarActionRemoved(
     const ToolbarActionsModel::ActionId& action_id) {
   CHECK(current_page_);
 
@@ -317,11 +316,11 @@ void ExtensionsMenuViewPlatformDelegateViews::OnActionRemoved(
   main_page->RemoveMenuItem(action_id);
 }
 
-void ExtensionsMenuViewPlatformDelegateViews::OnActionUpdated() {
+void ExtensionsMenuViewPlatformDelegateViews::OnToolbarActionUpdated() {
   UpdatePage(GetActiveWebContents());
 }
 
-void ExtensionsMenuViewPlatformDelegateViews::OnToolbarModelInit() {
+void ExtensionsMenuViewPlatformDelegateViews::OnToolbarModelInitialized() {
   CHECK(current_page_);
 
   // Toolbar model should have been initialized if site permissions page is
@@ -334,7 +333,7 @@ void ExtensionsMenuViewPlatformDelegateViews::OnToolbarModelInit() {
   PopulateMainPage(main_page);
 }
 
-void ExtensionsMenuViewPlatformDelegateViews::OnPinnedActionsChanged() {
+void ExtensionsMenuViewPlatformDelegateViews::OnToolbarPinnedActionsChanged() {
   CHECK(current_page_);
 
   // Do nothing when is not the main page, as site permissions page doesn't have
@@ -686,19 +685,6 @@ void ExtensionsMenuViewPlatformDelegateViews::UpdateSitePermissionsPage(
                                 user_site_access, is_show_requests_toggle_on,
                                 is_on_site_enabled, is_on_all_sites_enabled);
 }
-
-void ExtensionsMenuViewPlatformDelegateViews::OnToolbarActionAdded(
-    const ToolbarActionsModel::ActionId& action_id) {}
-
-void ExtensionsMenuViewPlatformDelegateViews::OnToolbarActionRemoved(
-    const ToolbarActionsModel::ActionId& action_id) {}
-
-void ExtensionsMenuViewPlatformDelegateViews::OnToolbarActionUpdated(
-    const ToolbarActionsModel::ActionId& action_id) {}
-
-void ExtensionsMenuViewPlatformDelegateViews::OnToolbarModelInitialized() {}
-
-void ExtensionsMenuViewPlatformDelegateViews::OnToolbarPinnedActionsChanged() {}
 
 ExtensionsMenuMainPageView*
 ExtensionsMenuViewPlatformDelegateViews::GetMainPageViewForTesting() {

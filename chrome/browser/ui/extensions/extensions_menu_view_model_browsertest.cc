@@ -47,12 +47,13 @@ class TestPlatformDelegate : public ExtensionsMenuViewPlatformDelegate {
       const extensions::ExtensionId& extension_id,
       bool can_show_requests) override {}
   void OnPermissionsSettingsChanged() override {}
-  void OnActionAdded(const ToolbarActionsModel::ActionId& action_id) override {}
-  void OnActionRemoved(
+  void OnToolbarActionAdded(
       const ToolbarActionsModel::ActionId& action_id) override {}
-  void OnToolbarModelInit() override {}
-  void OnActionUpdated() override {}
-  void OnPinnedActionsChanged() override {}
+  void OnToolbarActionRemoved(
+      const ToolbarActionsModel::ActionId& action_id) override {}
+  void OnToolbarModelInitialized() override {}
+  void OnToolbarActionUpdated() override {}
+  void OnToolbarPinnedActionsChanged() override {}
 };
 
 }  // namespace

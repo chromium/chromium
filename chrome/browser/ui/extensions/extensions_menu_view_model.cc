@@ -555,25 +555,25 @@ void ExtensionsMenuViewModel::OnUserPermissionsSettingsChanged(
 
 void ExtensionsMenuViewModel::OnToolbarActionAdded(
     const ToolbarActionsModel::ActionId& action_id) {
-  platform_delegate_->OnActionAdded(action_id);
+  platform_delegate_->OnToolbarActionAdded(action_id);
 }
 
 void ExtensionsMenuViewModel::OnToolbarActionRemoved(
     const ToolbarActionsModel::ActionId& action_id) {
-  platform_delegate_->OnActionRemoved(action_id);
+  platform_delegate_->OnToolbarActionRemoved(action_id);
 }
 
 void ExtensionsMenuViewModel::OnToolbarActionUpdated(
     const ToolbarActionsModel::ActionId& action_id) {
-  platform_delegate_->OnActionUpdated();
+  platform_delegate_->OnToolbarActionUpdated();
 }
 
 void ExtensionsMenuViewModel::OnToolbarModelInitialized() {
-  platform_delegate_->OnToolbarModelInit();
+  platform_delegate_->OnToolbarModelInitialized();
 }
 
 void ExtensionsMenuViewModel::OnToolbarPinnedActionsChanged() {
-  platform_delegate_->OnPinnedActionsChanged();
+  platform_delegate_->OnToolbarPinnedActionsChanged();
 }
 
 content::WebContents* ExtensionsMenuViewModel::GetActiveWebContents() {

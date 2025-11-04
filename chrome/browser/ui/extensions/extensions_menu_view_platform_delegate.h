@@ -50,37 +50,21 @@ class ExtensionsMenuViewPlatformDelegate {
       bool can_show_requests) = 0;
 
   // Notifies the delegate that a new toolbar action was added.
-  // TODO(crbug.com/449814184): Rename to `OnToolbarActionAdded` after we
-  // finish migrating all ToolbarActionsModel::Observer method from the platform
-  // delegate to the model, since same name causes parameter type mismatch.
-  virtual void OnActionAdded(
+  virtual void OnToolbarActionAdded(
       const ToolbarActionsModel::ActionId& action_id) = 0;
 
   // Notifies the delegate that toolbar action with `action_id` was removed.
-  // TODO(crbug.com/449814184): Rename to `OnToolbarActionRemoved` after we
-  // finish migrating all ToolbarActionsModel::Observer method from the platform
-  // delegate to the model, since same name causes parameter type mismatch.
-  virtual void OnActionRemoved(
+  virtual void OnToolbarActionRemoved(
       const ToolbarActionsModel::ActionId& action_id) = 0;
 
   // Notifies the delegate that a toolbar action was updated.
-  // TODO(crbug.com/449814184): Rename to `OnToolbarActionUpdated` after we
-  // finish migrating all ToolbarActionsModel::Observer method from the platform
-  // delegate to the model, since same name causes parameter type mismatch.
-  virtual void OnActionUpdated() = 0;
+  virtual void OnToolbarActionUpdated() = 0;
 
   // Notifies the delegate that the toolbar actions model was initialized
-  // TODO(crbug.com/449814184): Rename to `OnToolbarModelInitialized` after we
-  // finish migrating all ToolbarActionsModel::Observer method from the platform
-  // delegate to the model, since same name causes parameter type mismatch.
-  virtual void OnToolbarModelInit() = 0;
+  virtual void OnToolbarModelInitialized() = 0;
 
   // Notifies the delegate that the pinned toolbar actions have changed
-  // TODO(crbug.com/449814184): Rename to `OnToolbarPinnedActionsChanged` after
-  // we finish migrating all ToolbarActionsModel::Observer method from the
-  // platform delegate to the model, since same name causes parameter type
-  // mismatch.
-  virtual void OnPinnedActionsChanged() = 0;
+  virtual void OnToolbarPinnedActionsChanged() = 0;
 
   // Notifies the delegate that the user permissions settings changed on the
   // current site.

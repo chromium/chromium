@@ -9,7 +9,6 @@
 #include "chrome/browser/ui/extensions/extensions_menu_view_model.h"
 #include "chrome/browser/ui/extensions/extensions_menu_view_platform_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
-#include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_handler.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/permissions_manager.h"
@@ -37,8 +36,7 @@ class ToolbarActionsModel;
 class ExtensionsMenuViewPlatformDelegateViews
     : public ExtensionsMenuViewPlatformDelegate,
       public ExtensionsMenuHandler,
-      public TabStripModelObserver,
-      public ToolbarActionsModel::Observer {
+      public TabStripModelObserver {
  public:
   ExtensionsMenuViewPlatformDelegateViews(
       Browser* browser,
@@ -64,11 +62,13 @@ class ExtensionsMenuViewPlatformDelegateViews
   void OnShowHostAccessRequestsInToolbarChanged(
       const extensions::ExtensionId& extension_id,
       bool can_show_requests) override;
-  void OnActionAdded(const ToolbarActionsModel::ActionId& action_id) override;
-  void OnActionRemoved(const ToolbarActionsModel::ActionId& action_id) override;
-  void OnActionUpdated() override;
-  void OnToolbarModelInit() override;
-  void OnPinnedActionsChanged() override;
+  void OnToolbarActionAdded(
+      const ToolbarActionsModel::ActionId& action_id) override;
+  void OnToolbarActionRemoved(
+      const ToolbarActionsModel::ActionId& action_id) override;
+  void OnToolbarActionUpdated() override;
+  void OnToolbarModelInitialized() override;
+  void OnToolbarPinnedActionsChanged() override;
   void OnPermissionsSettingsChanged() override;
 
   // ExtensionsMenuHandler:
@@ -101,16 +101,6 @@ class ExtensionsMenuViewPlatformDelegateViews
       TabStripModel* tab_strip_model,
       const TabStripModelChange& change,
       const TabStripSelectionChange& selection) override;
-
-  // ToolbarActionsModel::Observer:
-  void OnToolbarActionAdded(
-      const ToolbarActionsModel::ActionId& action_id) override;
-  void OnToolbarActionRemoved(
-      const ToolbarActionsModel::ActionId& action_id) override;
-  void OnToolbarActionUpdated(
-      const ToolbarActionsModel::ActionId& action_id) override;
-  void OnToolbarModelInitialized() override;
-  void OnToolbarPinnedActionsChanged() override;
 
   // Accessors used by tests:
   // Returns the main page iff it's the `current_page_` one.
@@ -163,8 +153,6 @@ class ExtensionsMenuViewPlatformDelegateViews
   raw_ptr<ExtensionsMenuViewModel> menu_model_{nullptr};
 
   const raw_ptr<ToolbarActionsModel> toolbar_model_;
-  base::ScopedObservation<ToolbarActionsModel, ToolbarActionsModel::Observer>
-      toolbar_model_observation_{this};
 
   // The current page visible in `bubble_contents_`.
   views::ViewTracker current_page_;
