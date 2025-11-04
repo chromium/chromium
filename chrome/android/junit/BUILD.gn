@@ -1126,7 +1126,6 @@ if (is_android) {
       "src/org/chromium/chrome/browser/tabmodel/TabModelSelectorImplTest.java",
       "src/org/chromium/chrome/browser/tabmodel/TabModelSelectorProfileSupplierTest.java",
       "src/org/chromium/chrome/browser/tabmodel/TabPersistentStoreUnitTest.java",
-      "src/org/chromium/chrome/browser/tabmodel/UndoTabModelUnitTest.java",
     ]
 
     deps = [
