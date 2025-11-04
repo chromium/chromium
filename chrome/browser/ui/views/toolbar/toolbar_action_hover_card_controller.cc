@@ -168,8 +168,6 @@ void ToolbarActionHoverCardController::UpdateOrShowHoverCard(
   }
 
   if (hover_card_) {
-    // Card should never exist without an anchor or web contents
-    DCHECK(hover_card_->GetAnchorView());
     UpdateHoverCardContent(action_view);
 
     // If widget is already visible and anchored to the correct action view we
