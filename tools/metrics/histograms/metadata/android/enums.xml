@@ -1089,6 +1089,16 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="UNKNOWN_TO_NEW_INSTANCE"/>
 </enum>
 
+<!-- LINT.IfChange(DroppedSequenceEventAndDownTimeDelta) -->
+
+<enum name="DroppedSequenceEventAndDownTimeDelta">
+  <int value="0" label="EventTimeLessThanDownTime"/>
+  <int value="1" label="EventTimeEqualsDownTime"/>
+  <int value="2" label="EventTimeGreaterThanDownTime"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/viz/service/input/android_state_transfer_handler.cc:DroppedSequenceEventAndDownTimeDelta) -->
+
 <enum name="EdgeToEdgeConfigurationSwitchOutcome">
   <summary>
     When edge to edge changed into unsupported configuration, what's the outcome

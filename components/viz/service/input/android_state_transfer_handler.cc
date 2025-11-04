@@ -33,6 +33,19 @@ enum class VizSequenceDroppedReason {
 
 // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:VizSequenceDroppedReason)
 
+// LINT.IfChange(DroppedSequenceEventAndDownTimeDelta)
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class DroppedSequenceEventAndDownTimeDelta {
+  kEventTimeLessThanDownTime = 0,
+  kEventTimeEqualsDownTime = 1,
+  kEventTimeGreaterThanDownTime = 2,
+  kMaxValue = kEventTimeGreaterThanDownTime,
+};
+
+// LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:DroppedSequenceEventAndDownTimeDelta)
+
 }  // namespace
 
 AndroidStateTransferHandler::TransferState::TransferState(
@@ -248,6 +261,24 @@ void AndroidStateTransferHandler::MaybeDropEventsFromEarlierSequences(
       base::UmaHistogramEnumeration(
           "Android.InputOnViz.Viz.SequenceDroppedReason",
           VizSequenceDroppedReason::kOlderSequenceInQueue);
+      const int64_t event_time_nanos =
+          AMotionEvent_getEventTime(events_buffer_.front().a_input_event());
+      const int64_t down_time_nanos =
+          AMotionEvent_getDownTime(events_buffer_.front().a_input_event());
+
+      DroppedSequenceEventAndDownTimeDelta delta;
+      if (event_time_nanos < down_time_nanos) {
+        delta =
+            DroppedSequenceEventAndDownTimeDelta::kEventTimeLessThanDownTime;
+      } else if (event_time_nanos == down_time_nanos) {
+        delta = DroppedSequenceEventAndDownTimeDelta::kEventTimeEqualsDownTime;
+      } else {
+        delta =
+            DroppedSequenceEventAndDownTimeDelta::kEventTimeGreaterThanDownTime;
+      }
+      base::UmaHistogramEnumeration(
+          "Android.InputOnViz.Viz.DroppedSequences.EventAndDownTimeDelta",
+          delta);
     }
     events_buffer_.pop();
   }
