@@ -61,7 +61,8 @@ ChangePasswordFormFinder::ChangePasswordFormFinder(
     password_manager::PasswordManagerClient* client,
     ModelQualityLogsUploader* logs_uploader,
     ChangePasswordFormWaiter::PasswordFormFoundCallback callback)
-    : web_contents_(web_contents),
+    : creation_time_(base::Time::Now()),
+      web_contents_(web_contents),
       client_(client),
       logs_uploader_(logs_uploader),
       callback_(std::move(callback)) {
@@ -100,7 +101,10 @@ ChangePasswordFormFinder::ChangePasswordFormFinder(
   capture_annotated_page_content_ = std::move(capture_annotated_page_content);
 }
 
-ChangePasswordFormFinder::~ChangePasswordFormFinder() = default;
+ChangePasswordFormFinder::~ChangePasswordFormFinder() {
+  logs_uploader_->SetStepDuration(kOpenFormFlowStep,
+                                  base::Time::Now() - creation_time_);
+}
 
 void ChangePasswordFormFinder::OnFormNotFoundInitially() {
   if (auto logger = GetLoggerIfAvailable(client_)) {
@@ -159,7 +163,7 @@ void ChangePasswordFormFinder::OnPageContentReceived(
       optimization_guide::ModelBasedCapabilityKey::kPasswordChangeSubmission,
       request, /*execution_timeout=*/std::nullopt,
       base::BindOnce(&ChangePasswordFormFinder::OnExecutionResponseCallback,
-                     weak_ptr_factory_.GetWeakPtr(), base::Time::Now()));
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 OptimizationGuideKeyedService*
@@ -169,7 +173,6 @@ ChangePasswordFormFinder::GetOptimizationService() {
 }
 
 void ChangePasswordFormFinder::OnExecutionResponseCallback(
-    base::Time request_time,
     optimization_guide::OptimizationGuideModelExecutionResult execution_result,
     std::unique_ptr<
         optimization_guide::proto::PasswordChangeSubmissionLoggingData>
@@ -185,8 +188,7 @@ void ChangePasswordFormFinder::OnExecutionResponseCallback(
         execution_result.response.value());
   }
 
-  logs_uploader_->SetOpenFormQuality(response, std::move(logging_data),
-                                     request_time);
+  logs_uploader_->SetOpenFormQuality(response, std::move(logging_data));
 
   if (!response) {
     std::move(callback_).Run(nullptr);

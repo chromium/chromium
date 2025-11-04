@@ -533,3 +533,22 @@ TEST_F(ChangePasswordFormFinderTest,
   // Form finder holds a pointer to `form_manager`
   form_finder.reset();
 }
+
+TEST_F(ChangePasswordFormFinderTest, DurationRecordedOnDestruction) {
+  base::MockCallback<
+      base::OnceCallback<void(optimization_guide::OnAIPageContentDone)>>
+      capture_annotated_page_content;
+  ModelQualityLogsUploader logs_uploader(web_contents(), GURL());
+  auto form_finder = std::make_unique<ChangePasswordFormFinder>(
+      pass_key(), web_contents(), client(), &logs_uploader, base::DoNothing(),
+      capture_annotated_page_content.Get());
+
+  task_environment()->FastForwardBy(base::Milliseconds(1232));
+
+  form_finder.reset();
+  EXPECT_EQ(1232, logs_uploader.GetFinalLog()
+                      .password_change_submission()
+                      .quality()
+                      .open_form()
+                      .request_latency_ms());
+}

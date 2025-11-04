@@ -66,7 +66,6 @@ class PasswordChangeSubmissionVerifier {
   void CheckSubmissionSuccessful(
       std::optional<optimization_guide::AIPageContentResult> page_content);
   void OnExecutionResponseCallback(
-      base::Time request_time,
       optimization_guide::OptimizationGuideModelExecutionResult
           execution_result,
       std::unique_ptr<
@@ -74,6 +73,7 @@ class PasswordChangeSubmissionVerifier {
           logging_data);
   void OnPageLoadCompleted();
 
+  const base::Time creation_time_;
   const raw_ptr<content::WebContents> web_contents_;
   std::unique_ptr<AnnotatedPageContentCapturer> capturer_;
   FormSubmissionResultCallback callback_;

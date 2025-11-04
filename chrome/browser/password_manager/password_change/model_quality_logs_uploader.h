@@ -49,22 +49,19 @@ class ModelQualityLogsUploader {
   void SetOpenFormQuality(
       const std::optional<optimization_guide::proto::PasswordChangeResponse>&
           response,
-      std::unique_ptr<LoggingData> logging_data,
-      base::Time server_request_start_time);
+      std::unique_ptr<LoggingData> logging_data);
 
   // Sets quality data for Step=SUBMIT_FORM_STEP.
   void SetSubmitFormQuality(
       const std::optional<optimization_guide::proto::PasswordChangeResponse>&
           response,
-      std::unique_ptr<LoggingData> logging_data,
-      base::Time server_request_start_time);
+      std::unique_ptr<LoggingData> logging_data);
 
   // Sets quality data for Step=VERIFY_SUBMISSION_STEP.
   void SetVerifySubmissionQuality(
       const std::optional<optimization_guide::proto::PasswordChangeResponse>&
           response,
-      std::unique_ptr<LoggingData> logging_data,
-      base::Time server_request_start_time);
+      std::unique_ptr<LoggingData> logging_data);
 
   // To be called if no form is seen after actuating on
   // Step=OPEN_FORM_STEP.
@@ -101,6 +98,8 @@ class ModelQualityLogsUploader {
   // information, e. g. form signature, fields & buttons texts.
   void SetChangePasswordFormData(
       const password_manager::PasswordForm& password_form);
+
+  void SetStepDuration(FlowStep step, base::TimeDelta duration);
 
   // Records the outcome of the first login attempt
   // using a previously saved APC-password and immediately

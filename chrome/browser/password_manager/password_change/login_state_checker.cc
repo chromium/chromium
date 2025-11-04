@@ -21,15 +21,20 @@
 #include "content/public/browser/web_contents.h"
 
 namespace {
-blink::mojom::AIPageContentOptionsPtr GetAIPageContentOptions() {
-  return optimization_guide::DefaultAIPageContentOptions(
-      /* on_critical_path =*/false);
-}
 
 using autofill::SavePasswordProgressLogger;
 using password_manager::BrowserSavePasswordProgressLogger;
 using QualityStatus = optimization_guide::proto::
     PasswordChangeQuality_StepQuality_SubmissionStatus;
+
+constexpr optimization_guide::proto::PasswordChangeRequest::FlowStep
+    kLoginCheckStep = optimization_guide::proto::PasswordChangeRequest::
+        FlowStep::PasswordChangeRequest_FlowStep_IS_LOGGED_IN_STEP;
+
+blink::mojom::AIPageContentOptionsPtr GetAIPageContentOptions() {
+  return optimization_guide::DefaultAIPageContentOptions(
+      /* on_critical_path =*/false);
+}
 
 void LogMessage(password_manager::PasswordManagerClient* client,
                 autofill::SavePasswordProgressLogger::StringID message_id) {
@@ -68,13 +73,17 @@ LoginStateChecker::LoginStateChecker(
     password_manager::PasswordManagerClient* client,
     LoginStateResultCallback callback)
     : content::WebContentsObserver(web_contents),
+      creation_time_(base::Time::Now()),
       logs_uploader_(CHECK_DEREF(logs_uploader)),
       client_(client),
       result_check_callback_(std::move(callback)) {
   CheckLoginState();
 }
 
-LoginStateChecker::~LoginStateChecker() = default;
+LoginStateChecker::~LoginStateChecker() {
+  logs_uploader_->SetStepDuration(kLoginCheckStep,
+                                  base::Time::Now() - creation_time_);
+}
 
 bool LoginStateChecker::ReachedAttemptsLimit() const {
   return state_checks_count_ >= kMaxLoginChecks;
@@ -134,8 +143,7 @@ void LoginStateChecker::OnPageContentReceived(
 
   is_request_in_flight_ = true;
   optimization_guide::proto::PasswordChangeRequest request;
-  request.set_step(optimization_guide::proto::PasswordChangeRequest::FlowStep::
-                       PasswordChangeRequest_FlowStep_IS_LOGGED_IN_STEP);
+  request.set_step(kLoginCheckStep);
   *request.mutable_page_context()->mutable_annotated_page_content() =
       std::move(content->proto);
 
