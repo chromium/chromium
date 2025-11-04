@@ -50,6 +50,10 @@ struct ActorTaskNudgeState {
     kCompleteTasks,
   };
   Text text = Text::kDefault;
+
+  bool operator==(const ActorTaskNudgeState& other) const {
+    return text == other.text;
+  }
 };
 
 class GlicActorTaskIconManager : public KeyedService {

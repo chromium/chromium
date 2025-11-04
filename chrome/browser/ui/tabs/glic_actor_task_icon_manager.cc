@@ -97,7 +97,7 @@ void GlicActorTaskIconManager::UpdateTaskIcon(bool is_showing,
         return (task.GetState() == ActorTask::State::kPausedByActor ||
                 task.GetState() == ActorTask::State::kWaitingOnUser);
       });
-
+  auto old_state = current_actor_task_icon_state_;
   // If there are no active tasks and no recently completed tasks, we can hide
   // the task icon.
   if (active_tasks.empty() && completed_tasks.empty()) {
@@ -105,8 +105,10 @@ void GlicActorTaskIconManager::UpdateTaskIcon(bool is_showing,
         .is_visible = false,
         .text = ActorTaskIconState::Text::kDefault,
     };
-    task_icon_state_change_callback_list_.Notify(
-        is_showing, current_view, current_actor_task_icon_state_);
+    if (old_state != current_actor_task_icon_state_) {
+      task_icon_state_change_callback_list_.Notify(
+          is_showing, current_view, current_actor_task_icon_state_);
+    }
     return;
   }
 
@@ -124,9 +126,10 @@ void GlicActorTaskIconManager::UpdateTaskIcon(bool is_showing,
     // If no tasks needing attention or completed, reset the icon.
     current_actor_task_icon_state_.text = ActorTaskIconState::Text::kDefault;
   }
-
-  task_icon_state_change_callback_list_.Notify(is_showing, current_view,
-                                               current_actor_task_icon_state_);
+  if (old_state != current_actor_task_icon_state_) {
+    task_icon_state_change_callback_list_.Notify(
+        is_showing, current_view, current_actor_task_icon_state_);
+  }
 }
 
 void GlicActorTaskIconManager::UpdateTaskNudge() {
@@ -140,6 +143,7 @@ void GlicActorTaskIconManager::UpdateTaskNudge() {
                 task.GetState() == ActorTask::State::kWaitingOnUser);
       });
 
+  ActorTaskNudgeState old_state = current_actor_task_nudge_state_;
   if (!paused_or_yielded_actor_tasks.empty()) {
     current_actor_task_nudge_state_.text =
         ActorTaskNudgeState::Text::kNeedsAttention;
@@ -151,8 +155,10 @@ void GlicActorTaskIconManager::UpdateTaskNudge() {
     current_actor_task_nudge_state_.text = ActorTaskNudgeState::Text::kDefault;
   }
 
-  task_nudge_state_change_callback_list_.Notify(
-      current_actor_task_nudge_state_);
+  if (old_state != current_actor_task_nudge_state_) {
+    task_nudge_state_change_callback_list_.Notify(
+        current_actor_task_nudge_state_);
+  }
 }
 
 base::CallbackListSubscription
