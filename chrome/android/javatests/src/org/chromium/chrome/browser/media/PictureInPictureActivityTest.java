@@ -49,6 +49,7 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Restriction;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.media.PictureInPictureActivity.PictureInPictureButtonAction;
 import org.chromium.chrome.browser.tab.Tab;
@@ -349,6 +350,63 @@ public class PictureInPictureActivityTest {
         verify(mNativeMock, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL))
                 .hide(eq(NATIVE_OVERLAY));
         histogramWatcher.assertExpected();
+
+        testExitOn(activity, () -> activity.close());
+    }
+
+    @Test
+    @MediumTest
+    @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
+    public void testIconAccessibilityString() throws Throwable {
+        PictureInPictureActivity activity = startPictureInPictureActivity();
+        PictureInPictureActivity.MediaActionButtonsManager manager =
+                activity.mMediaActionsButtonsManager;
+
+        Assert.assertEquals(
+                manager.mPlay.getContentDescription(),
+                activity.getString(R.string.accessibility_play));
+        Assert.assertEquals(
+                manager.mPause.getContentDescription(),
+                activity.getString(R.string.accessibility_pause));
+        Assert.assertEquals(
+                manager.mReplay.getContentDescription(),
+                activity.getString(R.string.accessibility_replay));
+        Assert.assertEquals(
+                manager.mHangUp.getContentDescription(),
+                activity.getString(R.string.accessibility_hang_up));
+        Assert.assertEquals(
+                manager.mPreviousTrack.getContentDescription(),
+                activity.getString(R.string.accessibility_previous_track));
+        Assert.assertEquals(
+                manager.mNextTrack.getContentDescription(),
+                activity.getString(R.string.accessibility_next_track));
+        Assert.assertEquals(
+                manager.mPreviousSlide.getContentDescription(),
+                activity.getString(R.string.accessibility_previous_slide));
+        Assert.assertEquals(
+                manager.mNextSlide.getContentDescription(),
+                activity.getString(R.string.accessibility_next_slide));
+        Assert.assertEquals(
+                manager.mHide.getContentDescription(),
+                activity.getString(R.string.accessibility_listen_in_the_background));
+
+        activity.setMicrophoneMuted(false);
+        Assert.assertEquals(
+                manager.mMicrophone.getAction().getContentDescription(),
+                activity.getString(R.string.accessibility_mute_microphone));
+        activity.setMicrophoneMuted(true);
+        Assert.assertEquals(
+                manager.mMicrophone.getAction().getContentDescription(),
+                activity.getString(R.string.accessibility_unmute_microphone));
+
+        activity.setCameraState(true);
+        Assert.assertEquals(
+                manager.mCamera.getAction().getContentDescription(),
+                activity.getString(R.string.accessibility_turn_off_camera));
+        activity.setCameraState(false);
+        Assert.assertEquals(
+                manager.mCamera.getAction().getContentDescription(),
+                activity.getString(R.string.accessibility_turn_on_camera));
 
         testExitOn(activity, () -> activity.close());
     }

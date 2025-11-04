@@ -485,7 +485,9 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
                 intent.putExtra(CONTROL_STATE, controlState);
             }
 
-            PendingIntent pendingIntent =
+            final CharSequence titleText =
+                    getApplicationContext().getResources().getText(titleResourceId);
+            final PendingIntent pendingIntent =
                     PendingIntent.getBroadcast(
                             getApplicationContext(),
                             requestCode,
@@ -494,8 +496,8 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
 
             return new RemoteAction(
                     Icon.createWithResource(getApplicationContext(), iconResourceId),
-                    getApplicationContext().getResources().getText(titleResourceId),
-                    "",
+                    /* title= */ titleText,
+                    /* contentDescription= */ titleText, // also used as the accessibility label
                     pendingIntent);
         }
     }
