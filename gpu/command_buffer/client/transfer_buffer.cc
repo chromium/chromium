@@ -331,10 +331,11 @@ void ScopedTransferBufferPtr::Shrink(unsigned int new_size) {
 }
 
 bool ScopedTransferBufferPtr::BelongsToBuffer(uint8_t* memory) const {
-  if (!buffer_)
+  if (!buffer_) {
     return false;
-  uint8_t* start = static_cast<uint8_t*>(buffer_.get());
-  uint8_t* end = UNSAFE_TODO(start + size_);
+  }
+  const uint8_t* start = as_byte_span().data();
+  const uint8_t* end = as_byte_span().subspan(size_).data();
   return memory >= start && memory < end;
 }
 

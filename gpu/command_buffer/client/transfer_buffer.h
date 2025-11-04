@@ -12,6 +12,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/circular_deque.h"
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/unguessable_token.h"
 #include "gpu/command_buffer/client/gpu_command_buffer_client_export.h"
@@ -225,6 +226,16 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT ScopedTransferBufferPtr {
 
   void* address() const {
     return buffer_;
+  }
+
+  base::span<uint8_t> as_byte_span() {
+    // TODO(kelsen): Change `buffer_` to raw_span;
+    return UNSAFE_TODO(base::span(static_cast<uint8_t*>(buffer_), size_));
+  }
+
+  base::span<const uint8_t> as_byte_span() const {
+    // TODO(kelsen): Change `buffer_` to raw_span;
+    return UNSAFE_TODO(base::span(static_cast<const uint8_t*>(buffer_), size_));
   }
 
   // Returns true if |memory| lies inside this buffer.
