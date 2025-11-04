@@ -21,6 +21,7 @@ import org.hamcrest.StringDescription;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.test.util.ViewPrinter;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,6 +53,7 @@ public class ViewConditions {
         private int mPreviousViewWidth = Integer.MIN_VALUE;
         private int mPreviousViewHeight = Integer.MIN_VALUE;
         private long mLastChangeMs = -1;
+        private @Nullable Root mMatchedRoot;
 
         public DisplayedCondition(Matcher<View> matcher, Class<ViewT> viewClass, Options options) {
             super(/* isRunOnUiThread= */ true);
@@ -120,12 +122,14 @@ public class ViewConditions {
 
             List<Root> roots = ViewFinder.findRoots(activity);
 
-            List<View> viewMatches = ViewFinder.findViews(roots, mMatcher);
+            List<ViewAndRoot> viewMatches = ViewFinder.findViews(roots, mMatcher);
 
             if (viewMatches.size() != 1) {
                 return notFulfilled(writeMatchingViewsStatusMessage(viewMatches)).withoutResult();
             }
-            View matchedView = viewMatches.get(0);
+            ViewAndRoot matchedViewAndRoot = viewMatches.get(0);
+
+            View matchedView = matchedViewAndRoot.view;
 
             boolean fulfilled = true;
             messages.add(ViewPrinter.describeView(matchedView, PRINT_SHALLOW_WITH_BOUNDS));
@@ -219,6 +223,7 @@ public class ViewConditions {
             String message = String.join("; ", messages);
             if (fulfilled) {
                 assumeNonNull(typedView);
+                mMatchedRoot = matchedViewAndRoot.root;
                 return fulfilled(message).withResult(typedView);
             } else {
                 return notFulfilled(message).withoutResult();
@@ -239,6 +244,10 @@ public class ViewConditions {
          */
         public static Options.Builder newOptions() {
             return new Options().new Builder();
+        }
+
+        @Nullable Root getRootMatched() {
+            return mMatchedRoot;
         }
 
         /** Extra options for declaring DisplayedCondition. */
@@ -292,14 +301,17 @@ public class ViewConditions {
     /** Fulfilled when no matching Views exist and are displayed. */
     public static class NotDisplayedAnymoreCondition extends UiThreadCondition {
         private final Matcher<View> mMatcher;
+        private final @Nullable ViewElement<?> mViewElement;
 
         private static final String VERBOSE_DESCRIPTION =
                 "(view has effective visibility <VISIBLE> and view.getGlobalVisibleRect() to return"
                         + " non-empty rectangle)";
         private static final String SUCCINCT_DESCRIPTION = "isDisplayed()";
 
-        public NotDisplayedAnymoreCondition(Matcher<View> matcher) {
+        public NotDisplayedAnymoreCondition(
+                @Nullable ViewElement<?> viewElement, Matcher<View> matcher) {
             super();
+            mViewElement = viewElement;
             mMatcher = allOf(matcher, isDisplayed());
         }
 
@@ -316,10 +328,35 @@ public class ViewConditions {
                 return fulfilled("No visible activities");
             }
 
-            // TODO(crbug.com/414438521): Search only in the respective Activity instead of all.
-            List<Root> roots = ViewFinder.findRoots(/* activity= */ null);
-
-            List<View> viewMatches = ViewFinder.findViews(roots, mMatcher);
+            List<Root> rootsToSearch;
+            if (mViewElement != null) {
+                // If created by a ViewElement, search the root which it was matched.
+                Root rootMatched = mViewElement.getDisplayedCondition().getRootMatched();
+                assert rootMatched != null;
+                if (!rootMatched.getDecorView().hasWindowFocus()) {
+                    return fulfilled();
+                }
+                rootsToSearch = List.of(rootMatched);
+            } else {
+                // If not created by a ViewElement (i.e. created by declareNoView()), search
+                // the Activity related to the state, or all if there is no specific Activity
+                // to search.
+                Activity activity;
+                if (mOwnerState == null) {
+                    // If it's a TransitionCondition, mOwnerState will be null and search all roots.
+                    activity = null;
+                } else {
+                    ActivityElement<?> activityElement = mOwnerState.determineActivityElement();
+                    if (activityElement == null) {
+                        // TODO(crbug.com/456768907): Allow this only for dialogs.
+                        activity = null;
+                    } else {
+                        activity = activityElement.get();
+                    }
+                }
+                rootsToSearch = ViewFinder.findRoots(activity);
+            }
+            List<ViewAndRoot> viewMatches = ViewFinder.findViews(rootsToSearch, mMatcher);
 
             if (viewMatches.isEmpty()) {
                 return fulfilled();
@@ -329,16 +366,19 @@ public class ViewConditions {
         }
     }
 
-    private static String writeMatchingViewsStatusMessage(List<View> viewMatches) {
+    private static String writeMatchingViewsStatusMessage(List<ViewAndRoot> viewMatches) {
         // TODO(crbug.com/456770151): Print which root matches are in.
         if (viewMatches.isEmpty()) {
             return "No matching Views";
         } else if (viewMatches.size() == 1) {
-            String viewDescription = ViewPrinter.describeView(viewMatches.get(0), PRINT_SHALLOW);
+            String viewDescription =
+                    ViewPrinter.describeView(viewMatches.get(0).view, PRINT_SHALLOW);
             return String.format("1 matching View: %s", viewDescription);
         } else {
-            String viewDescription1 = ViewPrinter.describeView(viewMatches.get(0), PRINT_SHALLOW);
-            String viewDescription2 = ViewPrinter.describeView(viewMatches.get(1), PRINT_SHALLOW);
+            String viewDescription1 =
+                    ViewPrinter.describeView(viewMatches.get(0).view, PRINT_SHALLOW);
+            String viewDescription2 =
+                    ViewPrinter.describeView(viewMatches.get(1).view, PRINT_SHALLOW);
             String moreString = viewMatches.size() > 2 ? " and more" : "";
 
             return String.format(

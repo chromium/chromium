@@ -77,7 +77,7 @@ public class ViewElement<ViewT extends View> extends Element<ViewT> {
     @Override
     public @Nullable Condition createExitCondition() {
         if (mOptions.mScoped) {
-            return new NotDisplayedAnymoreCondition(mViewSpec.getViewMatcher());
+            return new NotDisplayedAnymoreCondition(this, mViewSpec.getViewMatcher());
         } else {
             return null;
         }
@@ -182,6 +182,11 @@ public class ViewElement<ViewT extends View> extends Element<ViewT> {
     /** Returns an {@link Options.Builder} copying the {@link Options} for this ViewElement. */
     public Options.Builder copyOptions() {
         return ViewElement.newOptions().initFrom(mOptions);
+    }
+
+    DisplayedCondition<ViewT> getDisplayedCondition() {
+        assert mEnterCondition != null;
+        return (DisplayedCondition<ViewT>) mEnterCondition;
     }
 
     /** Extra options for declaring ViewElements. */

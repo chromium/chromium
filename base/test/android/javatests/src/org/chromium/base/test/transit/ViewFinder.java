@@ -69,27 +69,34 @@ class ViewFinder {
         return matches;
     }
 
-    /** Searches multiple Roots for Views matching a |matcher|. */
-    static List<View> findViews(List<Root> roots, Matcher<View> matcher) {
+    /**
+     * Searches multiple Roots for Views matching a |matcher|.
+     *
+     * @param roots List of Roots to search.
+     * @param matcher Matcher to filter Views.
+     * @return List of Views found and their respective Roots.
+     */
+    static List<ViewAndRoot> findViews(List<Root> roots, Matcher<View> matcher) {
         ThreadUtils.assertOnUiThread();
 
-        List<View> matches = new ArrayList<>();
+        List<ViewAndRoot> matches = new ArrayList<>();
         for (Root root : roots) {
-            findViewsRecursive(root.getDecorView(), matcher, matches);
+            findViewsRecursive(root, root.getDecorView(), matcher, matches);
         }
         return matches;
     }
 
-    private static void findViewsRecursive(View root, Matcher<View> matcher, List<View> matches) {
+    private static void findViewsRecursive(
+            Root root, View view, Matcher<View> matcher, List<ViewAndRoot> matches) {
         ThreadUtils.assertOnUiThread();
 
-        if (matcher.matches(root)) {
-            matches.add(root);
+        if (matcher.matches(view)) {
+            matches.add(new ViewAndRoot(view, root));
         }
 
-        if (root instanceof ViewGroup viewGroup) {
+        if (view instanceof ViewGroup viewGroup) {
             for (int i = 0; i < viewGroup.getChildCount(); i++) {
-                findViewsRecursive(viewGroup.getChildAt(i), matcher, matches);
+                findViewsRecursive(root, viewGroup.getChildAt(i), matcher, matches);
             }
         }
     }
