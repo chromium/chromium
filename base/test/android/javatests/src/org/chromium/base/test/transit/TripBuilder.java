@@ -282,6 +282,24 @@ public class TripBuilder {
         return destination;
     }
 
+    /** Exit |lastStation|. */
+    @CheckReturnValue
+    public TripBuilder reachLastStopAnd(Station<?> lastStation) {
+        assert mOriginStation == null : "Origin already set to " + mOriginStation.getName();
+        assert mDestinationStation == null
+                : "Last stop should not have a destination Station "
+                        + mDestinationStation.getName();
+        lastStation.assertInPhase(Phase.ACTIVE);
+        mOriginStation = lastStation;
+        return this;
+    }
+
+    /** Execute the transition synchronously, exiting the context Station and not entering any. */
+    public void reachLastStop() {
+        assert mContextStation != null : "Context Station not set";
+        reachLastStopAnd(mContextStation).complete();
+    }
+
     /** Build and perform the Transition synchronously. */
     public Trip complete() {
         assert !mIsComplete : "Transition already completed";

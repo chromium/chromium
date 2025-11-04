@@ -68,6 +68,34 @@ public class MultiWindowAppMenuTest {
         TransitAsserts.assertFinalDestinations(pageInFirstWindow, pageInSecondWindow);
     }
 
+    @Test
+    @LargeTest
+    public void testOpenAndCloseNewWindow() {
+        WebPageStation pageInFirstWindow = mCtaTestRule.startOnBlankPage();
+        RegularNewTabPageStation pageInSecondWindow =
+                pageInFirstWindow.openRegularTabAppMenu().openNewWindow();
+
+        assertInDifferentWindows(pageInFirstWindow, pageInSecondWindow);
+
+        pageInSecondWindow.finishActivity();
+
+        TransitAsserts.assertFinalDestinations(pageInFirstWindow);
+    }
+
+    @Test
+    @LargeTest
+    public void testOpenNewWindowAndCloseOriginal() {
+        WebPageStation pageInFirstWindow = mCtaTestRule.startOnBlankPage();
+        RegularNewTabPageStation pageInSecondWindow =
+                pageInFirstWindow.openRegularTabAppMenu().openNewWindow();
+
+        assertInDifferentWindows(pageInFirstWindow, pageInSecondWindow);
+
+        pageInFirstWindow.finishActivity();
+
+        TransitAsserts.assertFinalDestinations(pageInSecondWindow);
+    }
+
     static void assertInDifferentWindows(Station<?> station1, Station<?> station2) {
         assertNotEquals(station1.getActivity(), station2.getActivity());
         assertNotEquals(station1.getActivity().getWindow(), station2.getActivity().getWindow());

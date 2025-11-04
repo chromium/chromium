@@ -88,7 +88,7 @@ public class Trip extends Transition {
             }
         } else {
             if (mOriginStation != null) {
-                return "LastStation";
+                return "LastStop";
             }
         }
 

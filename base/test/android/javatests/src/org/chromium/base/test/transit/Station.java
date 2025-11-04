@@ -137,4 +137,11 @@ public abstract class Station<HostActivityT extends Activity> extends Conditiona
                 : "Requesting an ActivityElement for a station with no host activity.";
         return mActivityElement.value();
     }
+
+    /** Finish the activity associated with this station. */
+    public void finishActivity() {
+        assert mActivityElement != null;
+        mActivityElement.expectActivityDestroyed();
+        runTo(() -> getActivity().finish()).reachLastStop();
+    }
 }
