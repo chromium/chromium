@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.metrics;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 
 import androidx.browser.customtabs.CustomTabsSessionToken;
 import androidx.test.core.app.ApplicationProvider;
@@ -85,11 +86,16 @@ public class StartupLoadingMetricsTest {
             "Startup.Android.Cold.NewTabPage.TimeToFirstDraw";
     private static final String NTP_COLD_START_BINDER_HISTOGRAM =
             "Startup.Android.Cold.NewTabPage.TimeSpentInBinder";
-
-    private CustomTabsConnection mConnectionToCleanup;
+    private static final String COLD_START_TIME_TO_FIRST_FRAME =
+            "Startup.Android.Cold.TimeToFirstFrame";
 
     private static final String TABBED_SUFFIX = ".Tabbed";
     private static final String WEB_APK_SUFFIX = ".WebApk";
+
+    private static final boolean APPLICATION_START_INFO_SUPPORTED =
+            (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM);
+
+    private CustomTabsConnection mConnectionToCleanup;
 
     @Rule
     public FreshCtaTransitTestRule mTabbedActivityTestRule =
@@ -239,18 +245,31 @@ public class StartupLoadingMetricsTest {
     @Test
     @LargeTest
     public void testStartWithMainLauncerIconRecorded() throws Exception {
-        HistogramWatcher ntpColdStartWatcher = createNtpColdStartHistogramWatcher(1);
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectAnyRecordTimes(NTP_TIME_TO_FIRST_DRAW_COLD_HISTOGRAM, 1)
+                        .expectAnyRecordTimes(
+                                COLD_START_TIME_TO_FIRST_FRAME,
+                                APPLICATION_START_INFO_SUPPORTED ? 1 : 0)
+                        .build();
+
         runAndWaitForPageLoadMetricsRecorded(
                 () -> mTabbedActivityTestRule.startFromLauncherAtNtp());
         assertMainIntentLaunchColdStartHistogramRecorded(1);
-        waitForHistogram(ntpColdStartWatcher);
+        waitForHistogram(histogramWatcher);
     }
 
     /** Tests cold start metrics for main icon shortcut launches recorded correctly. */
     @Test
     @LargeTest
     public void testStartWithMainLauncerShortcutRecorded() throws Exception {
-        HistogramWatcher ntpColdStartWatcher = createNtpColdStartHistogramWatcher(0);
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectAnyRecordTimes(NTP_TIME_TO_FIRST_DRAW_COLD_HISTOGRAM, 0)
+                        .expectAnyRecordTimes(
+                                COLD_START_TIME_TO_FIRST_FRAME,
+                                APPLICATION_START_INFO_SUPPORTED ? 1 : 0)
+                        .build();
         Intent intent = new Intent(LauncherShortcutActivity.ACTION_OPEN_NEW_INCOGNITO_TAB);
         intent.setClass(ContextUtils.getApplicationContext(), LauncherShortcutActivity.class);
         runAndWaitForPageLoadMetricsRecorded(
@@ -262,7 +281,7 @@ public class StartupLoadingMetricsTest {
                                                 .withEntryPoint()
                                                 .build()));
         assertMainIntentLaunchColdStartHistogramRecorded(1);
-        waitForHistogram(ntpColdStartWatcher);
+        waitForHistogram(histogramWatcher);
     }
 
     /** Tests warm start metric for main icon launches recorded correctly. */
@@ -270,9 +289,12 @@ public class StartupLoadingMetricsTest {
     @LargeTest
     public void testWarmStartMainIntentTimeToFirstDrawRecordedCorrectly() throws Exception {
         // No records made for main intent cold starts.
-        HistogramWatcher mainIntentTimeToFirstDrawWatcher =
+        HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder()
                         .expectNoRecords(MAIN_INTENT_TIME_TO_FIRST_DRAW_WARM_MS_HISTOGRAM)
+                        .expectAnyRecordTimes(
+                                COLD_START_TIME_TO_FIRST_FRAME,
+                                APPLICATION_START_INFO_SUPPORTED ? 1 : 0)
                         .build();
 
         runAndWaitForPageLoadMetricsRecorded(
@@ -281,12 +303,13 @@ public class StartupLoadingMetricsTest {
                     ChromeApplicationTestUtils.fireHomeScreenIntent(
                             mTabbedActivityTestRule.getActivity());
                 });
-        mainIntentTimeToFirstDrawWatcher.assertExpected();
+        histogramWatcher.assertExpected();
 
         // Expect two records for two main intent warm starts.
-        mainIntentTimeToFirstDrawWatcher =
+        histogramWatcher =
                 HistogramWatcher.newBuilder()
                         .expectAnyRecordTimes(MAIN_INTENT_TIME_TO_FIRST_DRAW_WARM_MS_HISTOGRAM, 2)
+                        .expectAnyRecordTimes(COLD_START_TIME_TO_FIRST_FRAME, 0)
                         .build();
         runAndWaitForPageLoadMetricsRecorded(
                 () -> {
@@ -314,7 +337,7 @@ public class StartupLoadingMetricsTest {
                 () ->
                         ChromeApplicationTestUtils.fireHomeScreenIntent(
                                 mTabbedActivityTestRule.getActivity()));
-        mainIntentTimeToFirstDrawWatcher.assertExpected();
+        histogramWatcher.assertExpected();
     }
 
     /**
