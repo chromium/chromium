@@ -7,6 +7,7 @@ import("//build/config/freetype/freetype.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//third_party/harfbuzz-ng/harfbuzz.gni")
 
+assert(enable_freetype)
 assert(!use_system_freetype, "Not used when using system freetype.")
 
 visibility = [ ":*" ]

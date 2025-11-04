@@ -3591,7 +3591,6 @@ test("content_unittests") {
       ":content_unittests_java",
       ":content_unittests_jni_headers",
       "//base:base_unittest_support_java",
-      "//build/config/freetype",
       "//cc/slim",
       "//components/crash/android:anr_collector_java",
       "//components/download/internal/common:internal_java",

@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/cast.gni")
+
 declare_args() {
   # Blink needs a recent and properly build-configured FreeType version to
   # support OpenType variations, color emoji and avoid security bugs. By default
@@ -12,8 +14,13 @@ declare_args() {
   # RENDERING AND SECURITY REGRESSIONS.
   use_system_freetype = false
 
-  # Use FreeType for font rendering. If this is set to false, FreeType is
-  # replaced with the Rust-based Fontations set of libraries plus Skia
-  # path rendering.
-  enable_freetype = true
+  # Use FreeType for PDF font rendering on Desktop. If this is set to false,
+  # FreeType is completely replaced with the Rust-based Fontations set of
+  # libraries plus Skia path rendering.
+  #
+  # Ideally, this should be set with the same value as `enable_pdf` in
+  # //pdf/features.gni, but Fuchsia still needs FreeType: crbug.com/457696386
+  #
+  # Note: //build should not import directly from //pdf for layering reasons.
+  enable_freetype = !is_android && !is_ios && !is_castos
 }
