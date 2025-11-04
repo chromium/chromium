@@ -169,7 +169,8 @@ class GlicTabUnderlineViewUiTest : public test::InteractiveGlicTest {
     const std::string enabled_features =
         base::StrCat({multitab_feature_name, ",", underline_feature_name, ",",
                       "UiGpuRasterization"});
-    features_.InitFromCommandLine(enabled_features, /*disable_features=*/"");
+    features_.InitFromCommandLine(
+        enabled_features, /*disable_features=*/"GlicForceSimplifiedBorder");
   }
   ~GlicTabUnderlineViewUiTest() override = default;
 

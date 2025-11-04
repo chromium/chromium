@@ -11594,6 +11594,23 @@
             ]
         }
     ],
+    "GlicForceSimplifiedBorder": [
+        {
+            "platforms": [
+                "mac",
+                "windows",
+                "linux"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "GlicForceSimplifiedBorder"
+                    ]
+                }
+            ]
+        }
+    ],
     "GlicFreWarming": [
         {
             "platforms": [
