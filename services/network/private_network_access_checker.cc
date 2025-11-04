@@ -227,7 +227,7 @@ Result PrivateNetworkAccessChecker::CheckInternal(
   if (base::FeatureList::IsEnabled(features::kLocalNetworkAccessChecks) &&
       required_address_space_ != mojom::IPAddressSpace::kUnknown &&
       resource_address_space != required_address_space_) {
-    return Result::kBlockedByTargetIpAddressSpace;
+    return Result::kBlockedByRequiredIpAddressSpaceMismatch;
   }
 
   // Currently for LNA we are only blocking public -> local/private/loopback

@@ -331,6 +331,7 @@ chromium-metrics-reviews@google.com.
   <int value="12" label="AllowedPotentiallyTrustworthySameOrigin"/>
   <int value="13" label="LNAPermissionRequired"/>
   <int value="14" label="LNAAllowedByPolicyWarn"/>
+  <int value="15" label="BlockedByRequiredIpAddressSpaceMismatch"/>
 </enum>
 
 <!-- LINT.ThenChange(/services/network/public/cpp/private_network_access_check_result.h:PrivateNetworkAccessCheckResult) -->

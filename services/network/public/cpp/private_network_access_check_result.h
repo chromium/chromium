@@ -68,8 +68,12 @@ enum class PrivateNetworkAccessCheckResult {
   // Local network access request: allowed with warning in devtools.
   kLNAAllowedByPolicyWarn = 14,
 
+  // Request carries a `target_ip_address_space` that did not match the ip
+  // address that served the request.
+  kBlockedByRequiredIpAddressSpaceMismatch = 15,
+
   // Required for UMA histogram logging.
-  kMaxValue = kLNAAllowedByPolicyWarn,
+  kMaxValue = kBlockedByRequiredIpAddressSpaceMismatch,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/security/enums.xml:PrivateNetworkAccessCheckResult)
 

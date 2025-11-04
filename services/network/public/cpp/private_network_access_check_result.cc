@@ -40,6 +40,8 @@ std::string_view PrivateNetworkAccessCheckResultToStringPiece(Result result) {
       return "lna-permission-required";
     case Result::kLNAAllowedByPolicyWarn:
       return "lna-allowed-by-policy-warn";
+    case Result::kBlockedByRequiredIpAddressSpaceMismatch:
+      return "blocked-by-required-ip-address-space-mismatch";
   }
 }
 
@@ -66,6 +68,7 @@ std::optional<CorsError> PrivateNetworkAccessCheckResultToCorsError(
       return CorsError::kInsecurePrivateNetwork;
     case Result::kBlockedByTargetIpAddressSpace:
     case Result::kBlockedByInconsistentIpAddressSpace:
+    case Result::kBlockedByRequiredIpAddressSpaceMismatch:
       return CorsError::kInvalidPrivateNetworkAccess;
     case Result::kLNAPermissionRequired:
       return CorsError::kLocalNetworkAccessPermissionDenied;

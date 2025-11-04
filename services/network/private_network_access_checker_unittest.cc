@@ -539,19 +539,44 @@ TEST(PrivateNetworkAccessCheckerTest,
 
 TEST(PrivateNetworkAccessCheckerTest,
      CheckBlockedByUnmatchedRequiredAddressSpaceAndResourceAddressSpace) {
+  base::HistogramTester histogram_tester;
   mojom::ClientSecurityState client_security_state;
   client_security_state.ip_address_space = mojom::IPAddressSpace::kPublic;
   client_security_state.private_network_request_policy =
       mojom::PrivateNetworkRequestPolicy::kPermissionBlock;
 
   ResourceRequest request;
-  request.target_ip_address_space = mojom::IPAddressSpace::kUnknown;
   request.required_ip_address_space = mojom::IPAddressSpace::kLocal;
   PrivateNetworkAccessChecker checker(request, &client_security_state,
                                       mojom::kURLLoadOptionNone);
 
   EXPECT_EQ(checker.Check(DirectTransport(PublicEndpoint())),
-            Result::kBlockedByTargetIpAddressSpace);
+            Result::kBlockedByRequiredIpAddressSpaceMismatch);
+  histogram_tester.ExpectUniqueSample(
+      kCheckResultHistogramName,
+      Result::kBlockedByRequiredIpAddressSpaceMismatch, 1);
+}
+
+TEST(PrivateNetworkAccessCheckerTest,
+     CheckRequiredAddressSpaceMatchesResourceAddressSpace) {
+  base::HistogramTester histogram_tester;
+
+  mojom::ClientSecurityState client_security_state;
+  client_security_state.ip_address_space = mojom::IPAddressSpace::kPublic;
+  client_security_state.private_network_request_policy =
+      mojom::PrivateNetworkRequestPolicy::kPermissionBlock;
+
+  ResourceRequest request;
+  request.required_ip_address_space = mojom::IPAddressSpace::kLocal;
+
+  PrivateNetworkAccessChecker checker(request, &client_security_state,
+                                      mojom::kURLLoadOptionNone);
+
+  EXPECT_EQ(checker.Check(DirectTransport(PrivateEndpoint())),
+            Result::kLNAPermissionRequired);
+
+  histogram_tester.ExpectUniqueSample(kCheckResultHistogramName,
+                                      Result::kLNAPermissionRequired, 1);
 }
 
 TEST(PrivateNetworkAccessCheckerTest, ResponseAddressSpace) {

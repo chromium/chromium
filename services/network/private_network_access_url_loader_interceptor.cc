@@ -65,7 +65,9 @@ net::Error PrivateNetworkAccessUrlLoaderInterceptor::OnConnected(
   if (result == PrivateNetworkAccessCheckResult::
                     kBlockedByInconsistentIpAddressSpace ||
       result ==
-          PrivateNetworkAccessCheckResult::kBlockedByTargetIpAddressSpace) {
+          PrivateNetworkAccessCheckResult::kBlockedByTargetIpAddressSpace ||
+      result == PrivateNetworkAccessCheckResult::
+                    kBlockedByRequiredIpAddressSpaceMismatch) {
     return net::ERR_INCONSISTENT_IP_ADDRESS_SPACE;
   }
 
