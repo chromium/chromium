@@ -228,28 +228,6 @@ source_set("session_restoration_service_impl") {
   ]
 }
 
-source_set("legacy_session_restoration_service") {
-  visibility = [ ":*" ]
-  sources = [
-    "legacy_session_restoration_service.h",
-    "legacy_session_restoration_service.mm",
-  ]
-  deps = [
-    ":restoration_agent",
-    ":restoration_observer",
-    ":session_restoration_service",
-    ":session_service",
-    ":session_state",
-    "//base",
-    "//ios/chrome/browser/shared/model/profile",
-    "//ios/chrome/browser/shared/model/web_state_list",
-    "//ios/web/common:features",
-    "//ios/web/public",
-    "//ios/web/public/session",
-    "//ios/web/public/session/proto",
-  ]
-}
-
 source_set("session_restoration_service_factory") {
   sources = [
     "session_restoration_service_factory.h",
@@ -379,7 +357,6 @@ source_set("session_state") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "legacy_session_restoration_service_unittest.mm",
     "proto_util_unittest.cc",
     "session_internal_util_unittest.mm",
     "session_io_request_unittest.mm",
@@ -401,7 +378,6 @@ source_set("unit_tests") {
   deps = [
     ":fake",
     ":features",
-    ":legacy_session_restoration_service",
     ":model",
     ":resources_unit_tests",
     ":restoration_agent",
