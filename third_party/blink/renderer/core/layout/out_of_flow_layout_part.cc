@@ -2114,22 +2114,20 @@ struct NonOverflowingCandidate {
   }
 };
 
-EPositionTryOrder ToLogicalPositionTryOrder(
+EPositionTryOrder ToPhysicalPositionTryOrder(
     EPositionTryOrder position_try_order,
     WritingDirectionMode writing_direction) {
   switch (position_try_order) {
     case EPositionTryOrder::kNormal:
-    case EPositionTryOrder::kMostBlockSize:
-    case EPositionTryOrder::kMostInlineSize:
-      return position_try_order;
     case EPositionTryOrder::kMostWidth:
-      return writing_direction.IsHorizontal()
-                 ? EPositionTryOrder::kMostInlineSize
-                 : EPositionTryOrder::kMostBlockSize;
     case EPositionTryOrder::kMostHeight:
-      return writing_direction.IsHorizontal()
-                 ? EPositionTryOrder::kMostBlockSize
-                 : EPositionTryOrder::kMostInlineSize;
+      return position_try_order;
+    case EPositionTryOrder::kMostBlockSize:
+      return writing_direction.IsHorizontal() ? EPositionTryOrder::kMostHeight
+                                              : EPositionTryOrder::kMostWidth;
+    case EPositionTryOrder::kMostInlineSize:
+      return writing_direction.IsHorizontal() ? EPositionTryOrder::kMostWidth
+                                              : EPositionTryOrder::kMostHeight;
   }
 }
 
@@ -2139,10 +2137,10 @@ void SortNonOverflowingCandidates(
     EPositionTryOrder position_try_order,
     WritingDirectionMode writing_direction,
     HeapVector<NonOverflowingCandidate, kMaxTryAttempts>& candidates) {
-  EPositionTryOrder logical_position_try_order =
-      ToLogicalPositionTryOrder(position_try_order, writing_direction);
+  const EPositionTryOrder physical_position_try_order =
+      ToPhysicalPositionTryOrder(position_try_order, writing_direction);
 
-  if (logical_position_try_order == EPositionTryOrder::kNormal) {
+  if (physical_position_try_order == EPositionTryOrder::kNormal) {
     // §5.2, normal: "Try the position fallbacks in the order specified by
     // position-try-fallbacks".
     return;
@@ -2152,20 +2150,20 @@ void SortNonOverflowingCandidates(
   // according to this size, with the largest coming first".
   std::stable_sort(
       candidates.begin(), candidates.end(),
-      [logical_position_try_order](const NonOverflowingCandidate& a,
-                                   const NonOverflowingCandidate& b) {
-        switch (logical_position_try_order) {
-          case EPositionTryOrder::kMostBlockSize:
-            return a.offset_info.imcb_for_position_order->BlockSize() >
-                   b.offset_info.imcb_for_position_order->BlockSize();
-          case EPositionTryOrder::kMostInlineSize:
-            return a.offset_info.imcb_for_position_order->InlineSize() >
-                   b.offset_info.imcb_for_position_order->InlineSize();
+      [physical_position_try_order](const NonOverflowingCandidate& a,
+                                    const NonOverflowingCandidate& b) {
+        switch (physical_position_try_order) {
+          case EPositionTryOrder::kMostWidth:
+            return a.offset_info.imcb_size_for_try_order->width >
+                   b.offset_info.imcb_size_for_try_order->width;
+          case EPositionTryOrder::kMostHeight:
+            return a.offset_info.imcb_size_for_try_order->height >
+                   b.offset_info.imcb_size_for_try_order->height;
           case EPositionTryOrder::kNormal:
             // Should have exited early.
-          case EPositionTryOrder::kMostWidth:
-          case EPositionTryOrder::kMostHeight:
-            // We should have already converted to logical.
+          case EPositionTryOrder::kMostBlockSize:
+          case EPositionTryOrder::kMostInlineSize:
+            // We should have already converted to physical.
             NOTREACHED();
         }
       });
@@ -2604,7 +2602,9 @@ OutOfFlowLayoutPart::TryCalculateOffset(
                                        static_position, candidate_style,
                                        container_writing_direction,
                                        candidate_writing_direction);
-    offset_info.imcb_for_position_order = imcb_for_position_fallback;
+    offset_info.imcb_size_for_try_order =
+        ToPhysicalSize(imcb_for_position_fallback.Size(),
+                       candidate_writing_direction.GetWritingMode());
 
     // Determine if the element overflows the IMCB, and calculate the
     // scroll-range for which it is valid.

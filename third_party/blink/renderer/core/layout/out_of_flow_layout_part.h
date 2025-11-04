@@ -242,7 +242,7 @@ class CORE_EXPORT OutOfFlowLayoutPart {
     // position-try-fallbacks. We have to retain the IMCB to implement
     // position-try-order, which decides which of the various candidates styles
     // we should select based on the biggest IMCB size (in some axis).
-    std::optional<InsetModifiedContainingBlock> imcb_for_position_order;
+    std::optional<PhysicalSize> imcb_size_for_try_order;
 
     bool inline_size_depends_on_min_max_sizes = false;
 
