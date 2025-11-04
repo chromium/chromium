@@ -111,6 +111,14 @@ void DesktopMediaPaneView::MakePermissionPaneView() {
       AddChildView(std::make_unique<DesktopMediaPermissionPaneViewMac>(type_));
   layout_->SetFlexForView(permission_pane_view_, 1);
 }
+
+void DesktopMediaPaneView::SetAudioWarningVisible(bool visible) {
+  content_pane_view_->SetAudioWarningVisible(visible);
+}
+
+bool DesktopMediaPaneView::IsAudioWarningVisible() const {
+  return content_pane_view_->IsAudioWarningVisible();
+}
 #endif  // BUILDFLAG(IS_MAC)
 
 BEGIN_METADATA(DesktopMediaPaneView)

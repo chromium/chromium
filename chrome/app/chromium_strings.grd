@@ -1682,6 +1682,9 @@ Chromium is unable to recover your settings.
       <message name="IDS_DESKTOP_MEDIA_PICKER_PERMISSION_RESTART_TEXT_MAC" desc="Supplementary text about the need to restart Chrome, displayed below the message about enabling screen-recording permissions on Mac when those permissions are missing." >
         You'll then need to restart Chromium.
       </message>
+      <message name="IDS_DESKTOP_MEDIA_PICKER_SYSTEM_AUDIO_PERMISSION_TEXT_MAC" desc="Instructive text for how to enable system audio capture on Mac." >
+        To share system audio, open System Settings and allow 'System Audio Recording Only' for Chromium. You'll then need to restart Chromium.
+      </message>
 
       <!-- Runtime permission strings -->
       <if expr="is_android">
