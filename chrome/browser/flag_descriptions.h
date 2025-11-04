@@ -3774,12 +3774,6 @@ inline constexpr char
         "Enables autorevoking of unused permissions granted from all UI "
         "surfaces.";
 
-inline constexpr char kSafetyHubMagicStackName[] =
-    "Safety Check v2 - Magic Stack";
-inline constexpr char kSafetyHubMagicStackDescription[] =
-    "When enabled, a magic stack card will be visible for Safety Check v2 if "
-    "trigger conditions are met.";
-
 inline constexpr char kSafetyHubLocalPasswordsModuleName[] =
     "Enables the local passwords module in Safety Hub";
 inline constexpr char kSafetyHubLocalPasswordsModuleDescription[] =

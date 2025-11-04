@@ -10083,10 +10083,6 @@ const FeatureEntry kFeatureEntries[] = {
          permissions::features::kPermissionSiteSettingsRadioButton)},
 
 #if BUILDFLAG(IS_ANDROID)
-    {"safety-hub-magic-stack", flag_descriptions::kSafetyHubMagicStackName,
-     flag_descriptions::kSafetyHubMagicStackDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(features::kSafetyHubMagicStack)},
-
     {"safety-hub-android-survey",
      flag_descriptions::kSafetyHubAndroidSurveyName,
      flag_descriptions::kSafetyHubAndroidSurveyDescription, kOsAndroid,

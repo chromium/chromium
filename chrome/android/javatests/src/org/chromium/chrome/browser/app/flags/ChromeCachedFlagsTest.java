@@ -17,7 +17,6 @@ import org.chromium.base.CommandLine;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.build.BuildConfig;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
@@ -48,7 +47,7 @@ public class ChromeCachedFlagsTest {
     // change.
     //
     // DO NOT ADD FLAGS TO THIS LIST.
-    private static final Set<CachedFlag> BASELINE = Set.of(ChromeFeatureList.sSafetyHubMagicStack);
+    private static final Set<CachedFlag> BASELINE = Set.of();
 
     /**
      * Tests that the |defaultValueForTests| in the CachedFlag declaration matches

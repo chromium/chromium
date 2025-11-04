@@ -105,9 +105,7 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
         recordAllModulesState(LifecycleEvent.ON_IMPRESSION);
 
         // Notify the magic stack to dismiss the active module.
-        if (ChromeFeatureList.sSafetyHubMagicStack.isEnabled()) {
-            MagicStackBridge.getForProfile(getProfile()).dismissActiveModule();
-        }
+        MagicStackBridge.getForProfile(getProfile()).dismissActiveModule();
     }
 
     private void setUpModuleMediators() {

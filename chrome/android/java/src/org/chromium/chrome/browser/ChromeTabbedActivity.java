@@ -3102,15 +3102,13 @@ public class ChromeTabbedActivity extends ChromeActivity {
             moduleRegistry.registerModule(ModuleType.PRICE_CHANGE, priceChangeModuleBuilder);
         }
 
-        if (ChromeFeatureList.sSafetyHubMagicStack.isEnabled()) {
-            SafetyHubMagicStackBuilder safetyHubMagicStackBuilder =
-                    new SafetyHubMagicStackBuilder(
-                            this,
-                            mTabModelProfileSupplier,
-                            mTabModelSelector,
-                            getModalDialogManagerSupplier());
-            moduleRegistry.registerModule(ModuleType.SAFETY_HUB, safetyHubMagicStackBuilder);
-        }
+        SafetyHubMagicStackBuilder safetyHubMagicStackBuilder =
+                new SafetyHubMagicStackBuilder(
+                        this,
+                        mTabModelProfileSupplier,
+                        mTabModelSelector,
+                        getModalDialogManagerSupplier());
+        moduleRegistry.registerModule(ModuleType.SAFETY_HUB, safetyHubMagicStackBuilder);
 
         if (ChromeFeatureList.sEducationalTipModule.isEnabled()) {
             Set<Integer> tipModuleTypes = EducationalTipModuleUtils.getModuleTypes();
