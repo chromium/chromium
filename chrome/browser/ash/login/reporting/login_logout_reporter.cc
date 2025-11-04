@@ -6,7 +6,6 @@
 
 #include <optional>
 
-#include "base/hash/md5.h"
 #include "base/logging.h"
 #include "base/strings/strcat.h"
 #include "base/task/bind_post_task.h"

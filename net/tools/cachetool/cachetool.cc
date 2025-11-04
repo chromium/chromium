@@ -13,7 +13,6 @@
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/format_macros.h"
-#include "base/hash/md5.h"
 #include "base/logging.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/pickle.h"

@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/hash/md5.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/metrics/histogram_functions.h"

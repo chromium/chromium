@@ -1544,8 +1544,6 @@ component("base") {
   }
 
   sources += [
-    "hash/md5.cc",
-    "hash/md5.h",
     "hash/sha1.cc",
     "hash/sha1.h",
   ]
@@ -3426,7 +3424,6 @@ test("base_unittests") {
     "gmock_unittest.cc",
     "hash/hash_unittest.cc",
     "hash/legacy_hash_unittest.cc",
-    "hash/md5_unittest.cc",
     "hash/sha1_unittest.cc",
     "i18n/break_iterator_unittest.cc",
     "i18n/case_conversion_unittest.cc",
