@@ -38,6 +38,7 @@ struct SuggestionAnswer {
 };
 
 struct AutocompleteMatch {
+  bool is_hidden;  // Whether match should be hidden from UI.
   mojo_base.mojom.String16 a11y_label;
   bool allowed_to_be_default_match;
   array<Action> actions;

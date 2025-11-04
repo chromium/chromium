@@ -9,6 +9,7 @@ import {PageCallbackRouter, PageHandlerFactory, PageHandlerRemote} from './compo
 
 export function createAutocompleteMatch(): AutocompleteMatch {
   return {
+    isHidden: false,
     a11yLabel: '',
     actions: [],
     allowedToBeDefaultMatch: false,
