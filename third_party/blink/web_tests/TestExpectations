@@ -3089,14 +3089,16 @@ crbug.com/457475594 external/wpt/document-picture-in-picture/pip-size.optional.h
 crbug.com/457475594 external/wpt/document-picture-in-picture/pip-receives-focus.https.html [ Failure Timeout ]
 
 crbug.com/457490094 external/wpt/svg/coordinate-systems/viewBox-synthesized-in-img-001.tentative.html [ Failure ]
-crbug.com/457490094 external/wpt/svg/styling/css-linked-parameters/css-linked-parameters-precedence-1.html [ Failure ]
-crbug.com/457490094 external/wpt/svg/styling/css-linked-parameters/css-linked-parameters-precedence-2.html [ Failure ]
-crbug.com/457490094 external/wpt/svg/styling/css-linked-parameters/img-with-linked-parameters-1.html [ Failure ]
-crbug.com/457490094 external/wpt/svg/styling/css-linked-parameters/img-with-linked-parameters-2.html [ Failure ]
-crbug.com/457490094 external/wpt/svg/styling/css-linked-parameters/img-with-url-fragment-identifiers-1.html [ Failure ]
-crbug.com/457490094 external/wpt/svg/styling/css-linked-parameters/img-with-url-fragment-identifiers-2.html [ Failure ]
-crbug.com/457490094 external/wpt/svg/styling/css-linked-parameters/img-with-url-function-1.html [ Failure ]
-crbug.com/457490094 external/wpt/svg/styling/css-linked-parameters/img-with-url-function-2.html [ Failure ]
+
+# CSS Linked Parameters
+crbug.com/41482962 external/wpt/svg/styling/css-linked-parameters/css-linked-parameters-precedence-1.html [ Failure ]
+crbug.com/41482962 external/wpt/svg/styling/css-linked-parameters/css-linked-parameters-precedence-2.html [ Failure ]
+crbug.com/41482962 external/wpt/svg/styling/css-linked-parameters/img-with-linked-parameters-1.html [ Failure ]
+crbug.com/41482962 external/wpt/svg/styling/css-linked-parameters/img-with-linked-parameters-2.html [ Failure ]
+crbug.com/41482962 external/wpt/svg/styling/css-linked-parameters/img-with-url-fragment-identifiers-1.html [ Failure ]
+crbug.com/41482962 external/wpt/svg/styling/css-linked-parameters/img-with-url-fragment-identifiers-2.html [ Failure ]
+crbug.com/41482962 external/wpt/svg/styling/css-linked-parameters/img-with-url-function-1.html [ Failure ]
+crbug.com/41482962 external/wpt/svg/styling/css-linked-parameters/img-with-url-function-2.html [ Failure ]
 
 crbug.com/418804914 virtual/close-watcher/external/wpt/close-watcher/iframes/dialog-same-origin-nn.html [ Skip Timeout ]
 
