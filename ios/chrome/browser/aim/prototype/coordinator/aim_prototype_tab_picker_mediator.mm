@@ -96,7 +96,8 @@
 - (void)createGridItemsWithCompletion:
     (void (^)(NSArray<GridItemIdentifier*>*))completion {
   if (!IsAimPrototypeTabPickerCachedAPCEnabled()) {
-    completion(CreateItems(self.webStateList));
+    completion(CreateTabItems(self.webStateList,
+                              TabGroupRange(0, self.webStateList->count())));
     return;
   }
 
