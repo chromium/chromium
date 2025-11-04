@@ -170,6 +170,22 @@ const char kInfobarOverflowBadgeShownUserAction[] =
     if (infobarTypeBadgeStatePair.first ==
         InfobarType::kInfobarTypePermissions) {
       badgeType = self.permissionsBadgeType;
+      // TODO(crbug.com/448422022): Remove this permission badge filtering logic
+      // when migrating to LocationBarBadgeViewController.
+      if (IsProactiveSuggestionsFrameworkEnabled()) {
+        if ((badgeType == kBadgeTypePermissionsCamera ||
+             badgeType == kBadgeTypePermissionsMicrophone) &&
+            self.webState) {
+          web::Permission permission =
+              (badgeType == kBadgeTypePermissionsCamera)
+                  ? web::PermissionCamera
+                  : web::PermissionMicrophone;
+          if (self.webState->GetStateForPermission(permission) !=
+              web::PermissionStateAllowed) {
+            continue;
+          }
+        }
+      }
     }
     BadgeTappableItem* item =
         [[BadgeTappableItem alloc] initWithBadgeType:badgeType];
