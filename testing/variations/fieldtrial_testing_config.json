@@ -24927,8 +24927,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "ImeManifestV3",
-                        "SystemJapanesePhysicalTyping"
+                        "ImeManifestV3"
                     ]
                 }
             ]
