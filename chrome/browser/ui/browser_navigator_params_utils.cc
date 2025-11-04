@@ -39,7 +39,6 @@ content::NavigationController::LoadURLParams LoadURLParamsFromNavigateParams(
   load_url_params.href_translate = params->href_translate;
   load_url_params.reload_type = params->reload_type;
   load_url_params.impression = params->impression;
-  load_url_params.suggested_system_entropy = params->suggested_system_entropy;
 
   if (params->post_data) {
     load_url_params.load_type =

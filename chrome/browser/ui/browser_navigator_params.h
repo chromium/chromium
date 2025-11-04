@@ -27,7 +27,6 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/blink/public/common/navigation/impression.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
-#include "third_party/blink/public/mojom/navigation/system_entropy.mojom.h"
 #include "third_party/blink/public/mojom/navigation/was_activated_option.mojom.h"
 #include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
 #include "ui/base/page_transition_types.h"
@@ -365,12 +364,6 @@ struct NavigateParams {
   // True if the navigation was initiated by typing in the omnibox and the typed
   // text had an explicit http scheme.
   bool url_typed_with_http_scheme = false;
-
-  // Indicates if the page load occurs during a non-optimal performance state.
-  // This value is only suggested based upon the load context, and can be
-  // overridden by other factors.
-  blink::mojom::SystemEntropy suggested_system_entropy =
-      blink::mojom::SystemEntropy::kNormal;
 
   // This option forces PWA navigation capturing (which captures some
   // navigations into PWA windows or tabs) off. This is only recommended to be
