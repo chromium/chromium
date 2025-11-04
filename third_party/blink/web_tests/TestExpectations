@@ -2489,6 +2489,9 @@ crbug.com/1371358 external/wpt/navigation-timing/prefetch-transfer-size-iframe.h
 crbug.com/1467328 virtual/forced-high-contrast-colors/fast/css/forced-colors-mode/forced-colors-mode-15.html [ Failure ]
 crbug.com/1467692 virtual/forced-high-contrast-colors/fast/css/forced-colors-mode/forced-colors-mode-16.html [ Failure ]
 
+# contrast-color()
+crbug.com/40142548 external/wpt/css/css-color/contrast-color-001.html [ Failure ]
+
 crbug.com/825270 external/wpt/payment-request/delegate-request.https.sub.html [ Failure ]
 
 # external/wpt/css/css-borders/
@@ -3078,7 +3081,6 @@ crbug.com/454945814 external/wpt/html/webappapis/timers/timer-nesting-not-inheri
 
 crbug.com/457527725 external/wpt/css/css-anchor-position/anchor-scroll-position-try-012.html [ Failure ]
 crbug.com/457527725 external/wpt/css/css-anchor-position/position-area-inset-one-side-auto.tentative.html [ Failure ]
-crbug.com/457480129 external/wpt/css/css-color/contrast-color-001.html [ Failure ]
 crbug.com/457480129 external/wpt/css/css-viewport/zoom/text-decoration-thickness.html [ Failure ]
 
 crbug.com/457475594 external/wpt/document-picture-in-picture/closes-on-navigation-or-destroy.https.html [ Timeout ]
