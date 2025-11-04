@@ -190,6 +190,59 @@ suite('ReadAloudModel', () => {
     assertTextEmpty();
   });
 
+  test('getCurrentText after re-initialization', async () => {
+    const paragraph1 = document.createElement('div');
+    paragraph1.textContent = 'Breaking my heart one piece at a time. ';
+
+    const paragraph2 = document.createElement('div');
+    paragraph2.textContent = 'Well here\'s a piece of mind, yeah. ';
+
+    const paragraph3 = document.createElement('div');
+    paragraph3.textContent = 'You don\'t know what it is you to do me.';
+
+    document.body.appendChild(paragraph1);
+    document.body.appendChild(paragraph2);
+    document.body.appendChild(paragraph3);
+
+    await microtasksFinished();
+    getReadAloudModel().init(ReadAloudNode.create(document.body)!);
+    assertSentenceMatchesEntireSegment(paragraph1.textContent);
+
+    // Simulate updating the page text.
+    const newParagraph1 = document.createElement('div');
+    newParagraph1.textContent = 'Smile on my face to cover my hurt. ';
+
+    const newParagraph2 = document.createElement('div');
+    newParagraph2.textContent = 'Spent so much time. ';
+
+    const newParagraph3 = document.createElement('div');
+    newParagraph3.textContent = 'But what was it worth? ';
+
+    document.body.removeChild(paragraph1);
+    document.body.removeChild(paragraph2);
+    document.body.removeChild(paragraph3);
+
+    document.body.appendChild(newParagraph1);
+    document.body.appendChild(newParagraph2);
+    document.body.appendChild(newParagraph3);
+
+    await microtasksFinished();
+    getReadAloudModel().resetModel?.();
+    getReadAloudModel().init(ReadAloudNode.create(document.body)!);
+
+    // After re-initialization, the new returned text is correct.
+    assertSentenceMatchesEntireSegment(newParagraph1.textContent);
+
+    getReadAloudModel().moveSpeechForward();
+    assertSentenceMatchesEntireSegment(newParagraph2.textContent);
+
+    getReadAloudModel().moveSpeechForward();
+    assertSentenceMatchesEntireSegment(newParagraph3.textContent);
+
+    getReadAloudModel().moveSpeechForward();
+    assertTextEmpty();
+  });
+
   test('moveSpeechBackwards after re-initialization', async () => {
     const paragraph1 = document.createElement('div');
     paragraph1.textContent = 'This is a sentence. ';
@@ -621,4 +674,162 @@ suite('ReadAloudModel', () => {
           assertSentenceMatchesEntireSegment(sentence2.textContent);
         }
       });
+
+  test('getCurrentText returns expected text', async () => {
+    const div = document.createElement('div');
+    const sentence1 = document.createElement('b');
+    sentence1.textContent = 'Love showed up at my door yesterday. ';
+
+    const sentence2 = document.createElement('u');
+    sentence2.textContent = 'It might sound cheesy, but I wanted her to stay. ';
+
+    const sentence3 = document.createElement('i');
+    sentence3.textContent = 'I fell in love with the pizza girl.';
+
+    div.appendChild(sentence1);
+    div.appendChild(sentence2);
+    div.appendChild(sentence3);
+    document.body.appendChild(div);
+
+    await microtasksFinished();
+    getReadAloudModel().init(ReadAloudNode.create(document.body)!);
+    assertEquals(
+        sentence1.textContent.trim(),
+        getReadAloudModel().getCurrentTextContent().trim());
+
+    getReadAloudModel().moveSpeechForward();
+    assertEquals(
+        sentence2.textContent.trim(),
+        getReadAloudModel().getCurrentTextContent().trim());
+
+    getReadAloudModel().moveSpeechForward();
+    assertEquals(
+        sentence3.textContent.trim(),
+        getReadAloudModel().getCurrentTextContent().trim());
+
+    getReadAloudModel().moveSpeechForward();
+    assertTextEmpty();
+  });
+
+  test('getCurrentTextSegments returns expected text', async () => {
+    const div = document.createElement('div');
+    const sentence1 = document.createElement('h1');
+    sentence1.textContent = 'You need space. ';
+
+    const sentence2 = document.createElement('h2');
+    sentence2.textContent = 'You need time.';
+
+    const sentence3 = document.createElement('h3');
+    sentence3.textContent = 'You take yours, and I\'ll take mine. ';
+
+    div.appendChild(sentence1);
+    div.appendChild(sentence2);
+    div.appendChild(sentence3);
+    document.body.appendChild(div);
+
+    await microtasksFinished();
+    getReadAloudModel().init(ReadAloudNode.create(document.body)!);
+    assertSentenceMatchesEntireSegment(sentence1.textContent);
+
+    getReadAloudModel().moveSpeechForward();
+    assertSentenceMatchesEntireSegment(sentence2.textContent);
+
+    getReadAloudModel().moveSpeechForward();
+    assertSentenceMatchesEntireSegment(sentence3.textContent);
+
+    getReadAloudModel().moveSpeechForward();
+    assertTextEmpty();
+  });
+
+  test(
+      'moveSpeechBackwards when first initialized returns first sentence',
+      async () => {
+        const div = document.createElement('div');
+        const sentence1 = document.createElement('h1');
+        sentence1.textContent = 'This is critical.';
+
+        const sentence2 = document.createElement('h2');
+        sentence2.textContent = 'I am feeling helpless.';
+
+        div.appendChild(sentence1);
+        div.appendChild(sentence2);
+        document.body.appendChild(div);
+
+        await microtasksFinished();
+        getReadAloudModel().init(ReadAloudNode.create(document.body)!);
+        // If moveSpeechBackwards is called before moveSpeechForwards, the first
+        // sentence should still be returned.
+        getReadAloudModel().moveSpeechBackwards();
+        assertSentenceMatchesEntireSegment(sentence1.textContent);
+
+        getReadAloudModel().moveSpeechForward();
+        assertSentenceMatchesEntireSegment(sentence2.textContent);
+
+        getReadAloudModel().moveSpeechForward();
+        assertTextEmpty();
+      });
+
+  test('getCurrentText when sentence split across paragraph', async () => {
+    const paragraph1 = document.createElement('p');
+    paragraph1.textContent =
+        'Mic check, can you hear me? Gotta know if I\'m coming in ';
+
+    const paragraph2 = document.createElement('p');
+    paragraph2.textContent = 'clearly. Static through the speakers, ';
+
+    const paragraph3 = document.createElement('p');
+    paragraph3.textContent = 'in a second your heart will be fearless.';
+
+    const paragraph4 = document.createElement('p');
+    paragraph4.textContent =
+        'Taken for granted. Right now, you can\'t stand it.';
+
+    document.body.appendChild(paragraph1);
+    document.body.appendChild(paragraph2);
+    document.body.appendChild(paragraph3);
+    document.body.appendChild(paragraph4);
+
+    await microtasksFinished();
+    getReadAloudModel().init(ReadAloudNode.create(document.body)!);
+    assertEquals(
+        'Mic check, can you hear me?',
+        getReadAloudModel().getCurrentTextContent().trim());
+
+    // Even though "Gotta know if I'm coming in clearly." is a complete
+    // sentence, the text is divided across a paragraph, so the line breaks
+    // should honored in how the text is segmented.
+    getReadAloudModel().moveSpeechForward();
+    assertEquals(
+        'Gotta know if I\'m coming in',
+        getReadAloudModel().getCurrentTextContent().trim());
+
+    getReadAloudModel().moveSpeechForward();
+    assertEquals(
+        'clearly.', getReadAloudModel().getCurrentTextContent().trim());
+
+    // Honor the line break between "Static through the speakers" and "in a
+    // second your heart will be fearless."
+    getReadAloudModel().moveSpeechForward();
+    assertEquals(
+        'Static through the speakers,',
+        getReadAloudModel().getCurrentTextContent().trim());
+
+    getReadAloudModel().moveSpeechForward();
+    assertEquals(
+        'in a second your heart will be fearless.',
+        getReadAloudModel().getCurrentTextContent().trim());
+
+    getReadAloudModel().moveSpeechForward();
+    assertEquals(
+        'Taken for granted.',
+        getReadAloudModel().getCurrentTextContent().trim());
+
+    getReadAloudModel().moveSpeechForward();
+    assertEquals(
+        'Right now, you can\'t stand it.',
+        getReadAloudModel().getCurrentTextContent().trim());
+
+    getReadAloudModel().moveSpeechForward();
+    assertTextEmpty();
+  });
 });
