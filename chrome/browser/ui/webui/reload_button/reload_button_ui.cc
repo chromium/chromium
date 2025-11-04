@@ -88,10 +88,6 @@ void ReloadButtonUI::CreatePageHandler(
   auto* command_updater = webui::GetBrowserWindowInterface(web_contents)
                               ->GetFeatures()
                               .browser_command_controller();
-  auto* metrics_reporter =
-      MetricsReporterService::GetFromWebContents(web_contents)
-          ->metrics_reporter();
   page_handler_ = std::make_unique<ReloadButtonPageHandler>(
-      std::move(receiver), std::move(page), web_contents, command_updater,
-      metrics_reporter);
+      std::move(receiver), std::move(page), web_contents, command_updater);
 }

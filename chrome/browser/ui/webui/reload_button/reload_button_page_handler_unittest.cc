@@ -10,6 +10,7 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/command_updater.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter_service.h"
 #include "chrome/browser/ui/webui/metrics_reporter/mock_metrics_reporter.h"
 #include "chrome/browser/ui/webui/reload_button/reload_button.mojom.h"
 #include "chrome/test/base/testing_profile.h"
@@ -81,10 +82,11 @@ class ReloadButtonPageHandlerTest : public testing::Test {
   void SetUp() override {
     web_contents_ =
         content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
+    MetricsReporterService::GetFromWebContents(web_contents_.get());
     handler_ = std::make_unique<ReloadButtonPageHandler>(
         mojo::PendingReceiver<reload_button::mojom::PageHandler>(),
-        page_.BindAndGetRemote(), web_contents_.get(), &mock_command_updater_,
-        &mock_metrics_reporter_);
+        page_.BindAndGetRemote(), web_contents_.get(), &mock_command_updater_);
+    handler_->SetMetricsReporterForTesting(&mock_metrics_reporter_);
   }
 
   void TearDown() override { handler_.reset(); }
@@ -95,19 +97,19 @@ class ReloadButtonPageHandlerTest : public testing::Test {
   TestingProfile profile_;
   testing::StrictMock<MockPage> page_;
   std::unique_ptr<content::WebContents> web_contents_;
-  testing::NiceMock<MockMetricsReporter> mock_metrics_reporter_;
   testing::NiceMock<MockCommandUpdater> mock_command_updater_;
+  testing::NiceMock<MockMetricsReporter> mock_metrics_reporter_;
   std::unique_ptr<ReloadButtonPageHandler> handler_;
 };
 
 // Tests that calling Reload(false) executes the IDC_RELOAD command.
 TEST_F(ReloadButtonPageHandlerTest, TestReload) {
   EXPECT_CALL(mock_command_updater_, ExecuteCommand(IDC_RELOAD, testing::_));
+  EXPECT_CALL(mock_metrics_reporter_, Mark(testing::_)).Times(1);
   handler_->Reload(false);
 }
 
 // Tests that calling Reload(true) executes the IDC_RELOAD_BYPASSING_CACHE
-// command.
 TEST_F(ReloadButtonPageHandlerTest, TestReloadBypassingCache) {
   EXPECT_CALL(mock_command_updater_,
               ExecuteCommand(IDC_RELOAD_BYPASSING_CACHE, testing::_));
