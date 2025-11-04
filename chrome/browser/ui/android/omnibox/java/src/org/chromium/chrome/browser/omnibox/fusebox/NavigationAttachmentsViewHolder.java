@@ -18,6 +18,7 @@ import org.chromium.ui.widget.ChromeImageView;
 /** A ViewHolder for the NavigationAttachments component. */
 @NullMarked
 class NavigationAttachmentsViewHolder {
+    public final ViewGroup parentView;
     public final RecyclerView attachmentsView;
     public final Group attachmentsToolbar;
     public final ChromeImageView addButton;
@@ -27,6 +28,7 @@ class NavigationAttachmentsViewHolder {
     public final ChromeImageView navigateButton;
 
     NavigationAttachmentsViewHolder(ViewGroup parent, NavigationAttachmentsPopup popup) {
+        parentView = parent;
         attachmentsView = parent.findViewById(R.id.location_bar_attachments);
         attachmentsToolbar = parent.findViewById(R.id.location_bar_attachments_toolbar);
         addButton = parent.findViewById(R.id.location_bar_attachments_add);

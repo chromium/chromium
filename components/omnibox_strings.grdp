@@ -387,6 +387,12 @@
     <ph name="OMNIBOX_ACTION_FOCUSED_FRIENDLY_MATCH_TEXT">$1<ex>Call</ex></ph>, press Tab to browse available actions, then Enter to execute selected action.
   </message>
 
+  <!-- Fusebox -->
+  <message name="IDS_AI_MODE_ENTRYPOINT_HINT" desc="Label for the Omnibox entrypoint that encourages the user to toggle AIMode on" formatter_data="android_java">
+    Try AI Mode
+  </message>
+
+
   <!-- Accessibility labels for autocomplete match types.
        These are parameterized on the text being completed into the omnibox.
   -->

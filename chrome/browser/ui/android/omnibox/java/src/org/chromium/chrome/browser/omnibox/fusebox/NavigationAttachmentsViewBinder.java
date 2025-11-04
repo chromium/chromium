@@ -12,6 +12,7 @@ import androidx.annotation.StringRes;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.components.omnibox.AutocompleteRequestType;
+import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.widget.RippleBackgroundHelper;
@@ -37,11 +38,11 @@ class NavigationAttachmentsViewBinder {
             if (res != 0) {
                 view.requestType.setText(res);
                 view.requestType.setContentDescription(
-                        view.requestType
+                        view.parentView
                                 .getResources()
                                 .getString(
                                         R.string.accessibility_omnibox_reset_mode,
-                                        view.requestType.getResources().getString(res)));
+                                        view.parentView.getResources().getString(res)));
             }
             updateModeSelectorVisibility(model, view);
         } else if (propertyKey
@@ -63,6 +64,7 @@ class NavigationAttachmentsViewBinder {
                     model.get(NavigationAttachmentsProperties.ATTACHMENTS_TOOLBAR_VISIBLE)
                             ? View.VISIBLE
                             : View.GONE);
+            updateModeSelectorVisibility(model, view);
         } else if (propertyKey == NavigationAttachmentsProperties.BUTTON_ADD_CLICKED) {
             view.addButton.setOnClickListener(
                     v -> model.get(NavigationAttachmentsProperties.BUTTON_ADD_CLICKED).run());
@@ -102,31 +104,55 @@ class NavigationAttachmentsViewBinder {
 
     static void updateModeSelectorVisibility(
             PropertyModel model, NavigationAttachmentsViewHolder views) {
+        boolean showFuseboxToolbar =
+                model.get(NavigationAttachmentsProperties.ATTACHMENTS_TOOLBAR_VISIBLE);
         boolean showDedicatedModeButton =
                 model.get(NavigationAttachmentsProperties.SHOW_DEDICATED_MODE_BUTTON);
         boolean isAiModeEnabled =
                 model.get(NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE)
                         == AutocompleteRequestType.AI_MODE;
-        Resources res = views.requestType.getResources();
+        Resources res = views.parentView.getResources();
 
-        views.requestType.setVisibility(
-                isAiModeEnabled || showDedicatedModeButton ? View.VISIBLE : View.GONE);
+        views.addButton.setVisibility(showFuseboxToolbar ? View.VISIBLE : View.GONE);
 
-        views.requestType.setButtonColor(
-                isAiModeEnabled
-                        ? res.getColorStateList(R.color.gm3_baseline_surface_container)
-                        : res.getColorStateList(android.R.color.transparent));
+        if (showFuseboxToolbar && (isAiModeEnabled || showDedicatedModeButton)) {
+            views.requestType.setVisibility(View.VISIBLE);
 
-        views.requestType.setBorderStyle(
-                isAiModeEnabled
-                        ? RippleBackgroundHelper.BorderType.SOLID
-                        : RippleBackgroundHelper.BorderType.DASHED);
+            if (isAiModeEnabled) {
+                String hint = res.getString(R.string.ai_mode_entrypoint_label);
+                views.requestType.setText(hint);
+                views.requestType.setContentDescription(
+                        res.getString(R.string.accessibility_omnibox_reset_mode, hint));
+            } else if (OmniboxFeatures.sShowTryAiModeHintInDedicatedModeButton.getValue()) {
+                String hint = res.getString(R.string.ai_mode_entrypoint_hint);
+                views.requestType.setText(hint);
+                views.requestType.setContentDescription(hint);
+            } else /* dedicated button with aimode off, no hint text changes. */ {
+                String hint = res.getString(R.string.accessibility_omnibox_enable_ai_mode);
+                views.requestType.setText(R.string.ai_mode_entrypoint_label);
+                views.requestType.setContentDescription(hint);
+                views.requestType.setContentDescription(
+                        res.getString(R.string.accessibility_omnibox_enable_ai_mode));
+            }
 
-        views.requestType.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                res.getDrawable(R.drawable.search_spark_black_24dp),
-                null,
-                isAiModeEnabled ? res.getDrawable(R.drawable.btn_close) : null,
-                null);
+            views.requestType.setButtonColor(
+                    isAiModeEnabled
+                            ? res.getColorStateList(R.color.gm3_baseline_surface_container)
+                            : res.getColorStateList(android.R.color.transparent));
+
+            views.requestType.setBorderStyle(
+                    isAiModeEnabled
+                            ? RippleBackgroundHelper.BorderType.SOLID
+                            : RippleBackgroundHelper.BorderType.DASHED);
+
+            views.requestType.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                    res.getDrawable(R.drawable.search_spark_black_24dp),
+                    null,
+                    isAiModeEnabled ? res.getDrawable(R.drawable.btn_close) : null,
+                    null);
+        } else {
+            views.requestType.setVisibility(View.GONE);
+        }
 
         views.popup.mAutocompleteRequestTypeGroup.setVisibility(
                 showDedicatedModeButton ? View.GONE : View.VISIBLE);

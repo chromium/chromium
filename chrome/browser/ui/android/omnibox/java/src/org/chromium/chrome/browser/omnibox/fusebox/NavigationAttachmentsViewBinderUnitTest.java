@@ -28,6 +28,7 @@ import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.omnibox.R;
+import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -51,6 +52,7 @@ public class NavigationAttachmentsViewBinderUnitTest {
     private @Mock NavigationAttachmentsRecyclerView mRecyclerView;
     private @Mock ButtonCompat mRequestType;
     private @Mock View mRecentTabsHeader;
+    private @Mock ViewGroup mPopupRequestTypeGroup;
 
     private Activity mActivity;
     private PropertyModel mModel;
@@ -61,6 +63,7 @@ public class NavigationAttachmentsViewBinderUnitTest {
         mActivity = Robolectric.buildActivity(TestActivity.class).setup().get();
 
         doReturn(mActivity).when(mParent).getContext();
+        // Please use parentView.getResources() in ViewBinder.
         doReturn(mActivity.getResources()).when(mParent).getResources();
 
         doReturn(mAttachmentsToolbar)
@@ -81,12 +84,16 @@ public class NavigationAttachmentsViewBinderUnitTest {
         mViewHolder.popup.mGalleryButton = mGalleryButton;
         mViewHolder.popup.mFileButton = mFileButton;
         mViewHolder.popup.mRecentTabsHeader = mRecentTabsHeader;
+        mViewHolder.popup.mAutocompleteRequestTypeGroup = mPopupRequestTypeGroup;
         PropertyModelChangeProcessor.create(
                 mModel, mViewHolder, NavigationAttachmentsViewBinder::bind);
     }
 
     @Test
     public void toolbarVisible_setsVisibility() {
+        mModel.set(
+                NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE,
+                AutocompleteRequestType.AI_MODE);
         mModel.set(NavigationAttachmentsProperties.ATTACHMENTS_TOOLBAR_VISIBLE, true);
         verify(mAttachmentsToolbar).setVisibility(View.VISIBLE);
 
