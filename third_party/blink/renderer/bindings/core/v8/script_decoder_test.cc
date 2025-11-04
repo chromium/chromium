@@ -7,13 +7,13 @@
 #include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/sequence_checker.h"
-#include "base/test/bind.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/renderer/core/html/parser/text_resource_decoder.h"
 #include "third_party/blink/renderer/platform/loader/fetch/response_body_loader_client.h"
 #include "third_party/blink/renderer/platform/loader/fetch/text_resource_decoder_options.h"
+#include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/scheduler/public/worker_pool.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier.h"
@@ -144,19 +144,20 @@ TEST_F(ScriptDecoderTest, PartiallySendDifferentThread) {
 
   // Call DidReceiveData() with the second chunk and true `send_to_client` on
   // the worker task runner.
-  worker_task_runner->PostTask(
-      FROM_HERE, base::BindOnce(&ScriptDecoderWithClient::DidReceiveData,
-                                base::Unretained(decoder.get()),
-                                Vector<char>(second_chunk),
-                                /*send_to_client=*/true));
+  PostCrossThreadTask(
+      *worker_task_runner, FROM_HERE,
+      CrossThreadBindOnce(&ScriptDecoderWithClient::DidReceiveData,
+                          CrossThreadUnretained(decoder.get()),
+                          Vector<char>(second_chunk),
+                          /*send_to_client=*/true));
 
   // Call FinishDecode() on the worker task runner.
   base::RunLoop run_loop;
-  worker_task_runner->PostTask(
-      FROM_HERE,
-      base::BindOnce(
+  PostCrossThreadTask(
+      *worker_task_runner, FROM_HERE,
+      CrossThreadBindOnce(
           &ScriptDecoderWithClient::FinishDecode,
-          base::Unretained(decoder.get()),
+          CrossThreadUnretained(decoder.get()),
           CrossThreadBindOnce(
               [&](scoped_refptr<base::SequencedTaskRunner> default_task_runner,
                   base::RunLoop* run_loop) {
@@ -186,16 +187,17 @@ TEST_F(ScriptDecoderTest, Simple) {
       worker_pool::CreateSequencedTaskRunner(
           {base::TaskPriority::USER_BLOCKING});
   // Call DidReceiveData() on the worker task runner.
-  worker_task_runner->PostTask(
-      FROM_HERE, base::BindOnce(&ScriptDecoder::DidReceiveData,
-                                base::Unretained(decoder.get()),
-                                Vector<char>(base::span(kFooUTF8WithBOM))));
+  PostCrossThreadTask(
+      *worker_task_runner, FROM_HERE,
+      CrossThreadBindOnce(&ScriptDecoder::DidReceiveData,
+                          CrossThreadUnretained(decoder.get()),
+                          Vector<char>(base::span(kFooUTF8WithBOM))));
   // Call FinishDecode() on the worker task runner.
   base::RunLoop run_loop;
-  worker_task_runner->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          &ScriptDecoder::FinishDecode, base::Unretained(decoder.get()),
+  PostCrossThreadTask(
+      *worker_task_runner, FROM_HERE,
+      CrossThreadBindOnce(
+          &ScriptDecoder::FinishDecode, CrossThreadUnretained(decoder.get()),
           CrossThreadBindOnce(
               [&](scoped_refptr<base::SequencedTaskRunner> default_task_runner,
                   base::RunLoop* run_loop, ScriptDecoder::Result result) {
