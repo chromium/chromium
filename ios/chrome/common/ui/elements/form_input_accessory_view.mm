@@ -367,11 +367,6 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
   [NSLayoutConstraint activateConstraints:@[
     [_closeButton.trailingAnchor constraintEqualToAnchor:self.trailingAnchor
                                                 constant:-kSurroundingPadding],
-    [_closeButton.topAnchor
-        constraintEqualToAnchor:self.topAnchor
-                       constant:(kLargeKeyboardAccessoryHeight -
-                                 kManualFillCloseButtonHeight) /
-                                2],
     [_closeButton.widthAnchor
         constraintEqualToConstant:kManualFillCloseButtonWidth],
     [_closeButton.heightAnchor
@@ -526,6 +521,10 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
   [self setBottomAnchorForView:trailingView];
 
   if ([self isSplitViewActive]) {
+    [_closeButton.centerYAnchor
+        constraintEqualToAnchor:trailingView.centerYAnchor]
+        .active = YES;
+
     _trailingViewCenteringConstraint = [trailingView.centerXAnchor
         constraintEqualToAnchor:layoutGuide.centerXAnchor];
 
