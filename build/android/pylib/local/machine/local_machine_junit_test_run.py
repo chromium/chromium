@@ -215,14 +215,22 @@ class LocalMachineJunitTestRun(test_run.TestRun):
                 json_config=job_json_config,
                 json_results_path=json_results_path)
 
-  def _GetJsonConfig(self):
+  def _GetJsonConfig(self, list_only: bool = False):
     # The test list is expensive to generate, so cache it. The cache is
     # invalidated when the classpath or this file changes.
     cache_dir = pathlib.Path(
         constants.GetOutDirectory()) / 'junit_test_list_cache'
     os.makedirs(cache_dir, exist_ok=True)
-    record_path = cache_dir / f'{self._test_instance.suite}.stamp'
-    cached_test_list_path = cache_dir / f'{self._test_instance.suite}.json'
+
+    # Cache --list-tests separately so that changing test filters does not
+    # invalidate its cache.
+    if list_only:
+      record_path = (cache_dir / f'{self._test_instance.suite}_list.stamp')
+      cached_test_list_path = (cache_dir /
+                               f'{self._test_instance.suite}_list.json')
+    else:
+      record_path = cache_dir / f'{self._test_instance.suite}.stamp'
+      cached_test_list_path = cache_dir / f'{self._test_instance.suite}.json'
 
     # Extract the classpath from the wrapper script.
     wrapper_script_source = ''
@@ -242,14 +250,21 @@ class LocalMachineJunitTestRun(test_run.TestRun):
     # cache.
     input_strings = self._GetFilterArgs()
 
-    # When listing tests, filters do not apply. Caching this separately avoids
-    # re-generating the list whenever filters change. This way --list-tests is
-    # always fast when the cache is warm.
-    if not input_strings:
-      record_path = (cache_dir /
-                     f'{self._test_instance.suite}_unfiltered.stamp')
-      cached_test_list_path = (cache_dir /
-                               f'{self._test_instance.suite}_unfiltered.json')
+    # We don't want to rebuild the cache if only method implementations have
+    # been changed and no new tests have been added. This would be common when
+    # iterating on private methods or tests method content. We should only
+    # invalidate the cache if the public interface changes, which is likely
+    # when a new test is added or tests are removed. But avoid this
+    # optimization when listing tests as for parameterized tests, turbine jars
+    # do not change when parameters are updated (this does not affect modifying
+    # parameters and then running the test as robolectric loads the correct
+    # values at runtime).
+    if not list_only:
+      for i, p in enumerate(classpath):
+        if 'javac' in p:
+          turbine_p = p.replace('javac', 'turbine')
+          if os.path.exists(turbine_p):
+            classpath[i] = turbine_p
 
     def do_query_test_json_config():
       with tempfile_ext.NamedTemporaryDirectory() as temp_dir:
@@ -270,7 +285,7 @@ class LocalMachineJunitTestRun(test_run.TestRun):
 
   #override
   def GetTestsForListing(self):
-    json_config = self._GetJsonConfig()
+    json_config = self._GetJsonConfig(list_only=True)
     ret = []
     for config in json_config['configs'].values():
       for class_name, methods in config.items():
