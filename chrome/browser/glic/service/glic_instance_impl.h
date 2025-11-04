@@ -328,7 +328,7 @@ class GlicInstanceImpl : public GlicInstance,
 
   base::OneShotTimer inactivity_timer_;
   base::TimeTicks last_active_time_;
-  bool is_active_;
+  bool is_active_ = false;
 
   base::WeakPtrFactory<GlicInstanceImpl> weak_ptr_factory_{this};
 };
