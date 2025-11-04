@@ -286,6 +286,13 @@ class CORE_EXPORT EditContext final : public EventTarget,
   // otherwise returns selection_start_.
   uint32_t OrderedSelectionEnd() const;
 
+  // TODO(crbug.com/379170477): These can be removed when `updateText` adjusts
+  // the selection offsets to stay within `text_` bounds.
+  // Returns minimum of `selection_start_` and `text_` length.
+  uint32_t BoundedSelectionStart() const;
+  // Returns minimum of `selection_end_` and `text_` length.
+  uint32_t BoundedSelectionEnd() const;
+
   // EditContext member variables.
   String text_;
 

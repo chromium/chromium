@@ -2063,6 +2063,7 @@
       // See https://crbug.com/379170477
       name: "EditContextHandleTextOrSelectionUpdateDuringComposition",
       status: "test",
+      settable_from_internals: true
     },
     {
       name: "EditEmojiUnicode11",
@@ -5374,6 +5375,11 @@
       status: {
         "ChromeOS": "stable",
       },
+    },
+    {
+      // Fix for https://crbug.com/454639396
+      name: "UseBoundedSelectionOffsetsInEditContextDeleteOperations",
+      status: "stable"
     },
     {
       // Android currently uses low-quality interpolation, while other platforms
