@@ -5018,6 +5018,14 @@
     "expiry_milestone": 145
   },
   {
+    "name": "fedcm-navigation-interception",
+    "owners": [
+      "goto@chromium.org",
+      "web-identity-eng@google.com"
+    ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "fedcm-nonce-in-params",
     "owners": [ "sureshpotti@microsoft.com", "npm@chromium.org", "web-identity-eng@google.com" ],
      "expiry_milestone": 150

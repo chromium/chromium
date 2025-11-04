@@ -9140,6 +9140,7 @@ from previous Chrome versions.
   <int value="-1832575380" label="show-saved-copy"/>
   <int value="-1832512456" label="LibinputHandleTouchpad:disabled"/>
   <int value="-1832221649" label="disable-out-of-process-pac"/>
+  <int value="-1830711139" label="FedCmNavigationInterception:disabled"/>
   <int value="-1830709105" label="OmniboxPedalsBatch3NonEnglish:disabled"/>
   <int value="-1830472348" label="CryptAuthV2DeviceSync:enabled"/>
   <int value="-1830199297" label="force-empty-corb-allowlist"/>
@@ -17086,6 +17087,7 @@ from previous Chrome versions.
       label="ReadingListEnableSyncTransportModeUponSignIn:disabled"/>
   <int value="981818901" label="AppBanners:enabled"/>
   <int value="982032277" label="NTPOfflineBadge:disabled"/>
+  <int value="982256294" label="FedCmNavigationInterception:enabled"/>
   <int value="982511393" label="NTPArticleSuggestions:disabled"/>
   <int value="982805190" label="PageInfoAboutThisSiteMoreLangs:enabled"/>
   <int value="982983280" label="LauncherSearchControl:enabled"/>

@@ -2462,6 +2462,8 @@ source_set("browser") {
     "webid/mappers.h",
     "webid/metrics.cc",
     "webid/metrics.h",
+    "webid/navigation_interceptor.cc",
+    "webid/navigation_interceptor.h",
     "webid/network_request_manager.cc",
     "webid/network_request_manager.h",
     "webid/request_page_data.cc",

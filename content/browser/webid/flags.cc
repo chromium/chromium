@@ -96,4 +96,8 @@ bool IsErrorAttributeEnabled() {
   return base::FeatureList::IsEnabled(features::kFedCmErrorAttribute);
 }
 
+bool IsNavigationInterceptionEnabled() {
+  return base::FeatureList::IsEnabled(features::kFedCmNavigationInterception);
+}
+
 }  // namespace content::webid

@@ -2164,6 +2164,11 @@ inline constexpr char kFedCmSegmentationPlatformDescription[] =
     "Enables the segmentation platform service to provide UI volume "
     "recommendations to FedCM.";
 
+inline constexpr char kFedCmNavigationInterceptionName[] =
+    "FedCmNavigationInterception";
+inline constexpr char kFedCmNavigationInterceptionDescription[] =
+    "Allows IdP to intercept navigations by initiating a FedCM request.";
+
 inline constexpr char kWebIdentityDigitalCredentialsName[] =
     "DigitalCredentials";
 inline constexpr char kWebIdentityDigitalCredentialsDescription[] =

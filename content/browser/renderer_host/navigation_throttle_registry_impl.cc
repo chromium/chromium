@@ -28,6 +28,7 @@
 #include "content/browser/renderer_host/partitioned_popins/partitioned_popins_navigation_throttle.h"
 #include "content/browser/renderer_host/renderer_cancellation_throttle.h"
 #include "content/browser/renderer_host/subframe_history_navigation_throttle.h"
+#include "content/browser/webid/navigation_interceptor.h"
 #include "content/common/features.h"
 #include "content/public/browser/navigation_handle.h"
 
@@ -141,6 +142,11 @@ void NavigationThrottleRegistryImpl::RegisterNavigationThrottles() {
   // Add a throttle to manage top-frame navigations from a partitioned popin.
   // See https://explainers-by-googlers.github.io/partitioned-popins/
   PartitionedPopinsNavigationThrottle::MaybeCreateAndAdd(*this);
+
+  // Maybe add a throttle to manage navigations from relying parties to FedCM
+  // identity providers.
+  content::webid::NavigationInterceptor::MaybeCreateAndAdd(*this);
+
   // DO NOT ADD any throttles after this line.
 
   // Insert all testing NavigationThrottles last.

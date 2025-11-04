@@ -9384,6 +9384,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          segmentation_platform::features::kSegmentationPlatformFedCmUser)},
 
+    {"fedcm-navigation-interception",
+     flag_descriptions::kFedCmNavigationInterceptionName,
+     flag_descriptions::kFedCmNavigationInterceptionDescription, kOsAll,
+     FEATURE_VALUE_TYPE(features::kFedCmNavigationInterception)},
+
     {"web-identity-digital-credentials",
      flag_descriptions::kWebIdentityDigitalCredentialsName,
      flag_descriptions::kWebIdentityDigitalCredentialsDescription, kOsAll,

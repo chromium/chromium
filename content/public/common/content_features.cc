@@ -447,6 +447,9 @@ BASE_FEATURE(kFedCmWellKnownEndpointValidation,
 BASE_FEATURE(kFedCmWithoutWellKnownEnforcement,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables usage of the FedCM IdP-Initiation API.
+BASE_FEATURE(kFedCmNavigationInterception, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables browser-side focus verification when crossing fenced boundaries.
 BASE_FEATURE(kFencedFramesEnforceFocus, base::FEATURE_DISABLED_BY_DEFAULT);
 
