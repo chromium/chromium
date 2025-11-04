@@ -21,8 +21,6 @@ const char kEducationalTipModuleHistogramName[] =
 // Could be referenced after refactor.
 const int kTabGroupSyncPromoId = 8;
 
-constexpr std::array<int32_t, 0> kEducationalTipModuleHistogramEnumValues{};
-
 }  // namespace
 
 namespace segmentation_platform::home_modules {
@@ -43,8 +41,7 @@ std::map<SignalKey, FeatureQuery> TabGroupSyncPromo::GetInputs() {
   // user in limited days.
   DEFINE_UMA_FEATURE_ENUM_COUNT(countOfEducationalTipCardShownTimes,
                                 kEducationalTipModuleHistogramName,
-                                kEducationalTipModuleHistogramEnumValues.data(),
-                                kEducationalTipModuleHistogramEnumValues.size(),
+                                /* enum_id= */ nullptr, /* enum_size= */ 0,
                                 /* days= */ KDaysToShowEphemeralCardOnce);
   map.emplace(kEducationalTipShownCount,
               std::move(countOfEducationalTipCardShownTimes));

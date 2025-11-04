@@ -30,13 +30,16 @@ class DefaultBrowserPromoTest : public testing::Test {
       float hasDefaultBrowserPromoShownInOtherSurface,
       float shouldShowNonRoleManagerDefaultBrowserPromo,
       float isUserSignedIn,
+      float defaultBrowserPromoShownCount,
+      float educationalTipShownCount,
       EphemeralHomeModuleRank position) {
     pref_service_.SetUserPref(
         kDefaultBrowserPromoInteractedPref,
         std::make_unique<base::Value>(hasDefaultBrowserPromoInteracted));
     auto card = std::make_unique<DefaultBrowserPromo>(&pref_service_);
     AllCardSignals all_signals = CreateAllCardSignals(
-        card.get(), {hasDefaultBrowserPromoShownInOtherSurface, isUserSignedIn,
+        card.get(), {defaultBrowserPromoShownCount, educationalTipShownCount,
+                     hasDefaultBrowserPromoShownInOtherSurface, isUserSignedIn,
                      shouldShowNonRoleManagerDefaultBrowserPromo});
     CardSelectionSignals card_signal(&all_signals, kDefaultBrowserPromo);
     CardSelectionInfo::ShowResult result = card->ComputeCardResult(card_signal);
@@ -51,7 +54,7 @@ class DefaultBrowserPromoTest : public testing::Test {
 TEST_F(DefaultBrowserPromoTest, GetInputsReturnsExpectedInputs) {
   auto card = std::make_unique<DefaultBrowserPromo>(&pref_service_);
   std::map<SignalKey, FeatureQuery> inputs = card->GetInputs();
-  EXPECT_EQ(inputs.size(), 3u);
+  EXPECT_EQ(inputs.size(), 5u);
   // Verify that the inputs map contains the expected keys.
   EXPECT_NE(
       inputs.find(
@@ -62,6 +65,10 @@ TEST_F(DefaultBrowserPromoTest, GetInputsReturnsExpectedInputs) {
           segmentation_platform::kHasDefaultBrowserPromoShownInOtherSurface),
       inputs.end());
   EXPECT_NE(inputs.find(segmentation_platform::kIsUserSignedIn), inputs.end());
+  EXPECT_NE(inputs.find(segmentation_platform::kDefaultBrowserPromoShownCount),
+            inputs.end());
+  EXPECT_NE(inputs.find(segmentation_platform::kEducationalTipShownCount),
+            inputs.end());
 }
 
 // Validates that ComputeCardResult() returns kLast when default browser promo
@@ -71,6 +78,8 @@ TEST_F(DefaultBrowserPromoTest, TestComputeCardResultWithCardEnabled) {
                             /* hasDefaultBrowserPromoShownInOtherSurface */ 0,
                             /* shouldShowNonRoleManagerDefaultBrowserPromo */ 1,
                             /* isUserSignedIn */ 1,
+                            /* defaultBrowserPromoShownCount */ 0,
+                            /* educationalTipShownCount */ 0,
                             EphemeralHomeModuleRank::kLast);
 }
 
@@ -83,6 +92,8 @@ TEST_F(DefaultBrowserPromoTest,
                             /* hasDefaultBrowserPromoShownInOtherSurface */ 0,
                             /* shouldShowNonRoleManagerDefaultBrowserPromo */ 0,
                             /* isUserSignedIn */ 1,
+                            /* defaultBrowserPromoShownCount */ 0,
+                            /* educationalTipShownCount */ 0,
                             EphemeralHomeModuleRank::kNotShown);
 }
 
@@ -95,6 +106,8 @@ TEST_F(DefaultBrowserPromoTest,
                             /* hasDefaultBrowserPromoShownInOtherSurface */ 1,
                             /* shouldShowNonRoleManagerDefaultBrowserPromo */ 1,
                             /* isUserSignedIn */ 1,
+                            /* defaultBrowserPromoShownCount */ 0,
+                            /* educationalTipShownCount */ 0,
                             EphemeralHomeModuleRank::kNotShown);
 }
 
@@ -107,6 +120,8 @@ TEST_F(DefaultBrowserPromoTest,
                             /* hasDefaultBrowserPromoShownInOtherSurface */ 0,
                             /* shouldShowNonRoleManagerDefaultBrowserPromo */ 1,
                             /* isUserSignedIn */ 1,
+                            /* defaultBrowserPromoShownCount */ 0,
+                            /* educationalTipShownCount */ 0,
                             EphemeralHomeModuleRank::kNotShown);
 }
 
@@ -118,6 +133,36 @@ TEST_F(DefaultBrowserPromoTest,
                             /* hasDefaultBrowserPromoShownInOtherSurface */ 0,
                             /* shouldShowNonRoleManagerDefaultBrowserPromo */ 1,
                             /* isUserSignedIn */ 0,
+                            /* defaultBrowserPromoShownCount */ 0,
+                            /* educationalTipShownCount */ 0,
+                            EphemeralHomeModuleRank::kNotShown);
+}
+
+// Validates that the ComputeCardResult() function returns kNotShown when the
+// card has been displayed to the user more times than the limit allows.
+TEST_F(DefaultBrowserPromoTest,
+       TestComputeCardResultWithCardDisabledForHasReachedSessionLimit) {
+  TestComputeCardResultImpl(/* hasDefaultBrowserPromoInteracted */ false,
+                            /* hasDefaultBrowserPromoShownInOtherSurface */ 0,
+                            /* shouldShowNonRoleManagerDefaultBrowserPromo */ 1,
+                            /* isUserSignedIn */ 1,
+                            /* defaultBrowserPromoShownCount */ 1,
+                            /* educationalTipShownCount */ 0,
+                            EphemeralHomeModuleRank::kNotShown);
+}
+
+// Validates that the ComputeCardResult() function returns kNotShown when
+// educational tip card has been displayed to the user more times than the limit
+// allows.
+TEST_F(
+    DefaultBrowserPromoTest,
+    TestComputeCardResultWithCardDisabledForEducationalTipCardHasReachedSessionLimit) {
+  TestComputeCardResultImpl(/* hasDefaultBrowserPromoInteracted */ false,
+                            /* hasDefaultBrowserPromoShownInOtherSurface */ 0,
+                            /* shouldShowNonRoleManagerDefaultBrowserPromo */ 1,
+                            /* isUserSignedIn */ 1,
+                            /* defaultBrowserPromoShownCount */ 0,
+                            /* educationalTipShownCount */ 1,
                             EphemeralHomeModuleRank::kNotShown);
 }
 

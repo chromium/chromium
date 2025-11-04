@@ -24,9 +24,6 @@ const int kQuickDeletePromoId = 9;
 const char kClearBrowsingDataHistogramName[] =
     "Privacy.DeleteBrowsingData.Action";
 
-constexpr std::array<int32_t, 0> kClearBrowsingDataHistogramEnumValues{};
-constexpr std::array<int32_t, 0> kEducationalTipModuleHistogramEnumValues{};
-
 const int kClearBrowsingDataHistogramQuickDeleteId = 6;
 
 }  // namespace
@@ -47,8 +44,7 @@ std::map<SignalKey, FeatureQuery> QuickDeletePromo::GetInputs() {
   // Define the number of times user cleared browsing data in the past 30 days.
   DEFINE_UMA_FEATURE_ENUM_COUNT(countOfClearBrowsingData,
                                 kClearBrowsingDataHistogramName,
-                                kClearBrowsingDataHistogramEnumValues.data(),
-                                kClearBrowsingDataHistogramEnumValues.size(),
+                                /* enum_id= */ nullptr, /* enum_size= */ 0,
                                 /* days= */ 30);
   map.emplace(kCountOfClearingBrowsingData,
               std::move(countOfClearBrowsingData));
@@ -67,8 +63,7 @@ std::map<SignalKey, FeatureQuery> QuickDeletePromo::GetInputs() {
   // user in limited days.
   DEFINE_UMA_FEATURE_ENUM_COUNT(countOfEducationalTipCardShownTimes,
                                 kEducationalTipModuleHistogramName,
-                                kEducationalTipModuleHistogramEnumValues.data(),
-                                kEducationalTipModuleHistogramEnumValues.size(),
+                                /* enum_id= */ nullptr, /* enum_size= */ 0,
                                 /* days= */ KDaysToShowEphemeralCardOnce);
   map.emplace(kEducationalTipShownCount,
               std::move(countOfEducationalTipCardShownTimes));

@@ -18,6 +18,13 @@ namespace {
 // the user.
 const int kMaxDefaultBrowserCardImpressions = 3;
 
+const char kEducationalTipModuleHistogramName[] =
+    "MagicStack.Clank.NewTabPage.Module.TopImpressionV2";
+
+// TODO(crbug.com/382803396): The enum id of the default browser promo card.
+// Could be referenced after refactor.
+const int kDefaultBrowserPromoId = 6;
+
 }  // namespace
 
 namespace segmentation_platform::home_modules {
@@ -42,6 +49,25 @@ std::map<SignalKey, FeatureQuery> DefaultBrowserPromo::GetInputs() {
            .tensor_length = 1,
            .fill_policy = proto::CustomInput::FILL_FROM_INPUT_CONTEXT,
            .name = kShouldShowNonRoleManagerDefaultBrowserPromo})}};
+
+  // Define signal for number of times all educational tip card has shown to the
+  // user in limited days.
+  DEFINE_UMA_FEATURE_ENUM_COUNT(countOfEducationalTipCardShownTimes,
+                                kEducationalTipModuleHistogramName,
+                                /* enum_id= */ nullptr, /* enum_size= */ 0,
+                                /* days= */ KDaysToShowEphemeralCardOnce);
+  map.emplace(kEducationalTipShownCount,
+              std::move(countOfEducationalTipCardShownTimes));
+
+  // Define signal for number of times default browser promo card has shown to
+  // the user in limited days.
+  DEFINE_UMA_FEATURE_ENUM_COUNT(countOfDefaultBrowserPromoShownTimes,
+                                kEducationalTipModuleHistogramName,
+                                &kDefaultBrowserPromoId, /* enum_size= */ 1,
+                                /* days= */ KDaysToShowEachEphemeralCardOnce);
+  map.emplace(kDefaultBrowserPromoShownCount,
+              std::move(countOfDefaultBrowserPromoShownTimes));
+
   return map;
 }
 
@@ -75,11 +101,19 @@ CardSelectionInfo::ShowResult DefaultBrowserPromo::ComputeCardResult(
   std::optional<float>
       result_for_has_default_browser_promo_shown_in_other_surface =
           signals.GetSignal(kHasDefaultBrowserPromoShownInOtherSurface);
+  std::optional<float> result_for_default_browser_promo_shown_count =
+      signals.GetSignal(kDefaultBrowserPromoShownCount);
+  std::optional<float>
+      result_for_educational_tip_shown_count_for_default_browser_signal =
+          signals.GetSignal(kEducationalTipShownCount);
 
   if (!result_for_is_user_signed_in.has_value() ||
       !result_for_should_show_non_role_manager_default_browser_promo
            .has_value() ||
       !result_for_has_default_browser_promo_shown_in_other_surface
+           .has_value() ||
+      !result_for_default_browser_promo_shown_count.has_value() ||
+      !result_for_educational_tip_shown_count_for_default_browser_signal
            .has_value()) {
     result.position = EphemeralHomeModuleRank::kNotShown;
     return result;
@@ -87,7 +121,10 @@ CardSelectionInfo::ShowResult DefaultBrowserPromo::ComputeCardResult(
 
   if (*result_for_is_user_signed_in &&
       *result_for_should_show_non_role_manager_default_browser_promo &&
-      !*result_for_has_default_browser_promo_shown_in_other_surface) {
+      !*result_for_has_default_browser_promo_shown_in_other_surface &&
+      result_for_default_browser_promo_shown_count.value() < 1 &&
+      result_for_educational_tip_shown_count_for_default_browser_signal
+              .value() < 1) {
     result.position = EphemeralHomeModuleRank::kLast;
     return result;
   }

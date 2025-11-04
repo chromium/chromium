@@ -49,6 +49,7 @@ const char kShouldShowNonRoleManagerDefaultBrowserPromo[] =
     "should_show_non_role_manager_default_browser_promo";
 const char kHasDefaultBrowserPromoShownInOtherSurface[] =
     "has_default_browser_promo_shown_in_other_surface";
+const char kDefaultBrowserPromoShownCount[] = "default_browser_shown_count";
 const char kTabGroupExists[] = "tab_group_exists";
 const char kNumberOfTabs[] = "number_of_tabs";
 const char kTabGroupPromoShownCount[] = "tab_group_shown_count";
