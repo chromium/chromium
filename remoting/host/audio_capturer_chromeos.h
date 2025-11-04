@@ -29,6 +29,9 @@ class AudioCapturerChromeOs : public AudioCapturer {
   // remoting::protocol::AudioSource:
   bool Start(const PacketCapturedCallback& callback) override;
 
+  // remoting::AudioCapturer:
+  void SetAudioPlaybackMode(AudioPlaybackMode mode) override;
+
  private:
   // These methods are called on the main thread by AudioHelperChromeOs (which
   // lives on the Audio thread).
@@ -40,6 +43,8 @@ class AudioCapturerChromeOs : public AudioCapturer {
   SEQUENCE_CHECKER(sequence_checker_);
 
   PacketCapturedCallback packet_captured_callback_;
+
+  AudioPlaybackMode audio_playback_mode_ = AudioPlaybackMode::kUnknown;
 
   // AudioHelperChromeOs interacts with AudioManager, which requires all its
   // methods to be called on the Audio thread. This ensures when the CRD session

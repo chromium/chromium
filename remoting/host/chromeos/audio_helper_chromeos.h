@@ -10,6 +10,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
+#include "remoting/host/base/desktop_environment_options.h"
 
 namespace remoting {
 
@@ -29,9 +30,9 @@ class AudioHelperChromeOs {
   virtual ~AudioHelperChromeOs() = default;
 
   // Methods to be called on the AudioManager's sequence.
-  virtual void StartAudioStream(
-      OnDataCallback on_data_callback,
-      OnErrorCallback on_error_callback) = 0;
+  virtual void StartAudioStream(AudioPlaybackMode audio_playback_mode,
+                                OnDataCallback on_data_callback,
+                                OnErrorCallback on_error_callback) = 0;
   virtual void StopAudioStream() = 0;
 };
 

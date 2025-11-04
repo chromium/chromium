@@ -87,20 +87,6 @@ ChromeOsEnterpriseAudioPlayback ConvertStringToChromeOsEnterpriseAudioPlayback(
   NOTREACHED();
 }
 
-std::string ConvertChromeOsEnterpriseAudioPlaybackToString(
-    ChromeOsEnterpriseAudioPlayback audio_playback) {
-  switch (audio_playback) {
-    case ChromeOsEnterpriseAudioPlayback::kLocalOnly:
-      return kAudioPlaybackLocalOnly;
-    case ChromeOsEnterpriseAudioPlayback::kRemoteAndLocal:
-      return kAudioPlaybackRemoteAndLocal;
-    case ChromeOsEnterpriseAudioPlayback::kRemoteOnly:
-      return kAudioPlaybackRemoteOnly;
-    case ChromeOsEnterpriseAudioPlayback::kUnknown:
-      return kAudioPlaybackUnknown;
-  }
-}
-
 ChromeOsEnterpriseAudioPlayback GetAudioPlaybackOrDefault(
     const std::string* input_audio_playback,
     ChromeOsEnterpriseAudioPlayback default_audio_playback) {
@@ -121,6 +107,20 @@ ChromeOsEnterpriseParams::~ChromeOsEnterpriseParams() = default;
 
 bool ChromeOsEnterpriseParams::operator==(
     const ChromeOsEnterpriseParams& other) const = default;
+
+std::string ConvertChromeOsEnterpriseAudioPlaybackToString(
+    ChromeOsEnterpriseAudioPlayback audio_playback) {
+  switch (audio_playback) {
+    case ChromeOsEnterpriseAudioPlayback::kLocalOnly:
+      return kAudioPlaybackLocalOnly;
+    case ChromeOsEnterpriseAudioPlayback::kRemoteAndLocal:
+      return kAudioPlaybackRemoteAndLocal;
+    case ChromeOsEnterpriseAudioPlayback::kRemoteOnly:
+      return kAudioPlaybackRemoteOnly;
+    case ChromeOsEnterpriseAudioPlayback::kUnknown:
+      return kAudioPlaybackUnknown;
+  }
+}
 
 // static
 ChromeOsEnterpriseParams ChromeOsEnterpriseParams::FromDict(

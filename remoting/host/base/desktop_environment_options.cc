@@ -121,6 +121,15 @@ void DesktopEnvironmentOptions::set_capture_video_on_dedicated_thread(
   capture_video_on_dedicated_thread_ = use_dedicated_thread;
 }
 
+AudioPlaybackMode DesktopEnvironmentOptions::audio_playback_mode() const {
+  return audio_playback_mode_;
+}
+
+void DesktopEnvironmentOptions::set_audio_playback_mode(
+    AudioPlaybackMode mode) {
+  audio_playback_mode_ = mode;
+}
+
 void DesktopEnvironmentOptions::ApplySessionOptions(
     const SessionOptions& options) {
   // This field is for test purpose. Usually it should not be set to false.

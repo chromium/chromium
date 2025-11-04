@@ -5,6 +5,8 @@
 #ifndef REMOTING_HOST_CHROMEOS_CHROMEOS_ENTERPRISE_PARAMS_H_
 #define REMOTING_HOST_CHROMEOS_CHROMEOS_ENTERPRISE_PARAMS_H_
 
+#include <string>
+
 #include "base/time/time.h"
 #include "base/values.h"
 
@@ -25,6 +27,10 @@ enum class ChromeOsEnterpriseAudioPlayback {
   kRemoteAndLocal,
   kRemoteOnly,
 };
+
+// Converts a `ChromeOsEnterpriseAudioPlayback` to a string, for logging.
+std::string ConvertChromeOsEnterpriseAudioPlaybackToString(
+    ChromeOsEnterpriseAudioPlayback audio_playback);
 
 // ChromeOS enterprise specific parameters.
 // These parameters are not exposed through the public Mojom APIs, for security

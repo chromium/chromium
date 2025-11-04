@@ -115,12 +115,14 @@ std::unique_ptr<HostEventReporter> CreateHostEventReporterStub(
 ChromeOsEnterpriseParams GetDefaultEnterpriseParamsForEnterpriseAdmin() {
   ChromeOsEnterpriseParams params;
   params.request_origin = ChromeOsEnterpriseRequestOrigin::kEnterpriseAdmin;
+  params.audio_playback = ChromeOsEnterpriseAudioPlayback::kLocalOnly;
   return params;
 }
 
 ChromeOsEnterpriseParams GetDefaultEnterpriseParamsForClassManagement() {
   ChromeOsEnterpriseParams params;
   params.request_origin = ChromeOsEnterpriseRequestOrigin::kClassManagement;
+  params.audio_playback = ChromeOsEnterpriseAudioPlayback::kRemoteOnly;
   return params;
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)

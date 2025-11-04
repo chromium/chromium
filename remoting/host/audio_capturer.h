@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "remoting/host/base/desktop_environment_options.h"
 #include "remoting/protocol/audio_source.h"
 
 namespace remoting {
@@ -21,6 +22,11 @@ class AudioCapturer : public protocol::AudioSource {
   static std::unique_ptr<AudioCapturer> Create();
 
   static bool IsValidSampleRate(int sample_rate);
+
+  // For supported platforms (currently ChromeOS), specify how audio playback
+  // should be handled during the CRD session. For example, should audio be
+  // played on the host/local device and/or on the client/remote device.
+  virtual void SetAudioPlaybackMode(AudioPlaybackMode mode);
 };
 
 }  // namespace remoting

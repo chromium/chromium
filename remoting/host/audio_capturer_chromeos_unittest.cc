@@ -40,9 +40,10 @@ class FakeAudioHelperChromeOs : public AudioHelperChromeOs {
   FakeAudioHelperChromeOs(const FakeAudioHelperChromeOs&) = delete;
   FakeAudioHelperChromeOs& operator=(const FakeAudioHelperChromeOs&) = delete;
 
-  void StartAudioStream(
-      OnDataCallback on_data_callback,
-      OnErrorCallback on_error_callback) override {
+  void StartAudioStream(AudioPlaybackMode audio_playback_mode,
+                        OnDataCallback on_data_callback,
+                        OnErrorCallback on_error_callback) override {
+    audio_playback_mode_ = audio_playback_mode;
     on_data_callback_ = std::move(on_data_callback);
     on_error_callback_ = std::move(on_error_callback);
     audio_stream_started_ = true;
@@ -61,6 +62,7 @@ class FakeAudioHelperChromeOs : public AudioHelperChromeOs {
   bool audio_stream_started() { return audio_stream_started_; }
 
  private:
+  AudioPlaybackMode audio_playback_mode_;
   OnDataCallback on_data_callback_;
   OnErrorCallback on_error_callback_;
   int stop_audio_stream_call_count_ = 0;

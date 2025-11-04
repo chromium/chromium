@@ -713,6 +713,7 @@ TEST_F(It2MeNativeMessagingHostTest,
   params.allow_clipboard_sync = false;
   params.connection_auto_accept_timeout = base::Hours(8);
   params.request_origin = ChromeOsEnterpriseRequestOrigin::kEnterpriseAdmin;
+  params.audio_playback = ChromeOsEnterpriseAudioPlayback::kLocalOnly;
   connect_message.Merge(params.ToDict());
   WriteMessageToInputPipe(connect_message);
   VerifyConnectResponses(next_id);
@@ -728,6 +729,8 @@ TEST_F(It2MeNativeMessagingHostTest,
             base::Hours(8));
   ASSERT_EQ(get_chrome_os_enterprise_params()->request_origin,
             ChromeOsEnterpriseRequestOrigin::kEnterpriseAdmin);
+  ASSERT_EQ(get_chrome_os_enterprise_params()->audio_playback,
+            ChromeOsEnterpriseAudioPlayback::kLocalOnly);
 #else
   ASSERT_FALSE(get_chrome_os_enterprise_params().has_value());
 #endif

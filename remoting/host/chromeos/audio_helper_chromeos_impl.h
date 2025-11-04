@@ -34,9 +34,9 @@ class AudioHelperChromeOsImpl
   ~AudioHelperChromeOsImpl() override;
 
   // AudioHelperChromeOs:
-  void StartAudioStream(
-      OnDataCallback on_data_callback,
-      OnErrorCallback on_error_callback) override;
+  void StartAudioStream(AudioPlaybackMode audio_playback_mode,
+                        OnDataCallback on_data_callback,
+                        OnErrorCallback on_error_callback) override;
 
  private:
   // media::AudioInputStream::AudioInputCallback:

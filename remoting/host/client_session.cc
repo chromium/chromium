@@ -646,11 +646,19 @@ void ClientSession::CreateMediaStreams() {
 
   DCHECK(video_streams_.empty());
 
-  // Create an AudioStream to pump audio from the capturer to the client.
-  std::unique_ptr<protocol::AudioSource> audio_capturer =
-      desktop_environment_->CreateAudioCapturer();
-  if (audio_capturer) {
-    audio_stream_ = connection_->StartAudioStream(std::move(audio_capturer));
+  AudioPlaybackMode audio_playback_mode =
+      desktop_environment_options_.audio_playback_mode();
+  if (audio_playback_mode == AudioPlaybackMode::kRemoteAndLocal ||
+      audio_playback_mode == AudioPlaybackMode::kRemoteOnly) {
+    // Create an AudioStream to pump audio from the capturer to the client.
+    std::unique_ptr<AudioCapturer> audio_capturer =
+        desktop_environment_->CreateAudioCapturer();
+    if (audio_capturer) {
+#if BUILDFLAG(IS_CHROMEOS)
+      audio_capturer->SetAudioPlaybackMode(audio_playback_mode);
+#endif
+      audio_stream_ = connection_->StartAudioStream(std::move(audio_capturer));
+    }
   }
 
 #if BUILDFLAG(IS_CHROMEOS)

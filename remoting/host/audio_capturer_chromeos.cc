@@ -48,6 +48,7 @@ bool AudioCapturerChromeOs::Start(const PacketCapturedCallback& callback) {
   // thread.
   audio_helper_chromeos_.AsyncCall(&AudioHelperChromeOs::StartAudioStream)
       .WithArgs(
+          audio_playback_mode_,
           base::BindPostTask(
               base::SequencedTaskRunner::GetCurrentDefault(),
               base::BindRepeating(&AudioCapturerChromeOs::HandleAudioData,
@@ -58,6 +59,10 @@ bool AudioCapturerChromeOs::Start(const PacketCapturedCallback& callback) {
                                   weak_ptr_factory_.GetWeakPtr())));
 
   return true;
+}
+
+void AudioCapturerChromeOs::SetAudioPlaybackMode(AudioPlaybackMode mode) {
+  audio_playback_mode_ = mode;
 }
 
 void AudioCapturerChromeOs::Stop() {

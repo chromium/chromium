@@ -149,6 +149,7 @@ void It2MeHost::set_chrome_os_enterprise_params(
     ChromeOsEnterpriseParams params) {
 #if BUILDFLAG(IS_CHROMEOS) || !defined(NDEBUG)
   CHECK_NE(params.request_origin, ChromeOsEnterpriseRequestOrigin::kUnknown);
+  CHECK_NE(params.audio_playback, ChromeOsEnterpriseAudioPlayback::kUnknown);
   chrome_os_enterprise_params_ = std::move(params);
 #else
   NOTREACHED() << "It2MeHost::set_chrome_os_enterprise_params is only "
@@ -397,6 +398,21 @@ void It2MeHost::ConnectOnNetworkThread(
         chrome_os_enterprise_params_->terminate_upon_input);
     options.set_maximum_session_duration(
         chrome_os_enterprise_params_->maximum_session_duration);
+    switch (chrome_os_enterprise_params_->audio_playback) {
+      case ChromeOsEnterpriseAudioPlayback::kLocalOnly:
+        options.set_audio_playback_mode(AudioPlaybackMode::kLocalOnly);
+        break;
+      case ChromeOsEnterpriseAudioPlayback::kRemoteOnly:
+        options.set_audio_playback_mode(AudioPlaybackMode::kRemoteOnly);
+        break;
+      case ChromeOsEnterpriseAudioPlayback::kRemoteAndLocal:
+        options.set_audio_playback_mode(AudioPlaybackMode::kRemoteAndLocal);
+        break;
+      default:
+        NOTREACHED() << "audio_playback_mode not supported: "
+                     << ConvertChromeOsEnterpriseAudioPlaybackToString(
+                            chrome_os_enterprise_params_->audio_playback);
+    }
   }
 #endif
 

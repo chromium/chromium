@@ -46,6 +46,7 @@ AudioHelperChromeOsImpl::~AudioHelperChromeOsImpl() {
 }
 
 void AudioHelperChromeOsImpl::StartAudioStream(
+    AudioPlaybackMode audio_playback_mode,
     OnDataCallback on_data_callback,
     OnErrorCallback on_error_callback) {
   DCHECK(audio_runner_->RunsTasksInCurrentSequence());
@@ -59,10 +60,20 @@ void AudioHelperChromeOsImpl::StartAudioStream(
   on_data_callback_ = std::move(on_data_callback);
   on_error_callback_ = std::move(on_error_callback);
 
-  // TODO(crbug.com/450048829): Choose the correct device id based on
-  // application. Currently this mutes the host device's audio.
-  std::string device_id =
-      media::AudioDeviceDescription::kLoopbackWithMuteDeviceId;
+  std::string device_id;
+  switch (audio_playback_mode) {
+    case AudioPlaybackMode::kRemoteAndLocal:
+      device_id = media::AudioDeviceDescription::kDefaultDeviceId;
+      break;
+    case AudioPlaybackMode::kRemoteOnly:
+      device_id = media::AudioDeviceDescription::kLoopbackWithMuteDeviceId;
+      break;
+    case AudioPlaybackMode::kLocalOnly:
+    case AudioPlaybackMode::kUnknown:
+      NOTREACHED()
+          << "audio_helper should not be created when audio is not being "
+             "remoted.";
+  }
   stream_ = media::AudioManager::Get()->MakeAudioInputStream(
       audio_params_, device_id, base::BindRepeating([](const std::string& msg) {
         LOG(WARNING) << "Stream: " << msg;
