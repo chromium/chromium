@@ -1122,6 +1122,7 @@ using enum OmniboxKeyboardAction;
   self.font = self.currentFont;
   self.placeholderLabel.font = self.font;
   [self setAttributedText:self.attributedText];
+  [self updateOmniboxTypingAttributes];
 }
 
 - (void)updatePlaceholderVisibility {
