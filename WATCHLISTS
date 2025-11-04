@@ -951,6 +951,9 @@
                   'chrome/browser/ui/webui/commerce/|'\
                   'ios/chrome/browser/commerce/',
     },
+    'common_quality_data_proto': {
+      'filepath': 'components/optimization_guide/proto/features/common_quality_data.proto'
+    },
     'components_deps': {
       'filepath': 'components/([^/]*/)*DEPS',
     },
@@ -2910,6 +2913,7 @@
     'commerce': ['ayman+watch@chromium.org',
                 'mdjones+watch@chromium.org',
                 'yuezhanggg+watch@chromium.org'],
+    'common_quality_data_proto': ['bling-alchemy-eng+page-context-watch@google.com'],
     'components_deps': ['droger+watchlist@chromium.org'],
     'compose': ['petewil@chromium.org'],
     'compositor_animator': ['mdjones+watch@chromium.org'],
