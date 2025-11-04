@@ -40,6 +40,9 @@
 /// Temporary storing the keyboard height here. Used when updating the bottom
 /// omnibox size while editing.
 @property(nonatomic, assign) CGFloat keyboardHeight;
+/// Returns the toolbar type containing the omnibox.
+@property(nonatomic, assign, readonly) ToolbarType omniboxPosition;
+
 /// Initializes this coordinator with its `browser` and a nil base view
 /// controller.
 - (instancetype)initWithBrowser:(Browser*)browser NS_DESIGNATED_INITIALIZER;

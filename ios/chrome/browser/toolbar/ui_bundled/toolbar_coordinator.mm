@@ -394,6 +394,10 @@ constexpr CGFloat kLocationBarCompactBottomPadding = 10.0;
   [self.toolbarMediator setBottomOmniboxOffsetForPopup:bottomOffset];
 }
 
+- (ToolbarType)omniboxPosition {
+  return _omniboxPosition;
+}
+
 #pragma mark ToolbarHeightProviding
 
 - (CGFloat)collapsedPrimaryToolbarHeight {
