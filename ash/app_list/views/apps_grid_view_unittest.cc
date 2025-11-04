@@ -71,6 +71,7 @@
 #include "base/test/icu_test_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
+#include "base/test/run_until.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -6720,9 +6721,7 @@ TEST_P(AppsGridViewClamshellAndTabletTest, QuickDragToRemoveItemFromFolder) {
   MaybeRunDragAndDropSequenceForAppList(&tasks, /*is_touch =*/true);
 }
 
-// TODO(crbug.com/1371184): Fix flaky test.
-TEST_P(AppsGridViewClamshellAndTabletTest,
-       DISABLED_ReorderDragAnimationMetrics) {
+TEST_P(AppsGridViewClamshellAndTabletTest, ReorderDragAnimationMetrics) {
   ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   base::HistogramTester histogram_tester;
@@ -6730,40 +6729,74 @@ TEST_P(AppsGridViewClamshellAndTabletTest,
   GetTestModel()->PopulateApps(kAppsInGrid);
   UpdateLayout();
 
-  // Begin item drag.
+  // Wait for layer animations before the drag to trigger drag reorder
+  // animations.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return !apps_grid_view_->layer()->GetCompositor()->IsAnimating();
+  }));
+
   auto* dragged_item = apps_grid_view_->GetItemViewAt(0);
   GetEventGenerator()->MoveMouseTo(
       dragged_item->GetBoundsInScreen().CenterPoint());
   GetEventGenerator()->PressLeftButton();
   dragged_item->FireMouseDragTimerForTest();
+
+  // Define stages for the drag loop to execute sequentially, simulating
+  // a real drag scenario where events happen over multiple loop iterations.
+  enum class DragStage {
+    kNudge,
+    kMoveToTarget,
+    kRelease,
+    kDone,
+  };
+  DragStage drag_stage = DragStage::kNudge;
+
+  auto drag_loop_body = base::BindLambdaForTesting([&]() {
+    switch (drag_stage) {
+      case DragStage::kNudge:
+        // 1. Nudge the mouse to ensure OnDragEntered fires now that we are in
+        // the loop.
+        GetEventGenerator()->MoveMouseBy(1, 1);
+        ASSERT_TRUE(apps_grid_view_->drag_item());
+        ASSERT_TRUE(apps_grid_view_->IsDragging());
+        ASSERT_EQ(dragged_item->item(), apps_grid_view_->drag_item());
+        drag_stage = DragStage::kMoveToTarget;
+        break;
+      case DragStage::kMoveToTarget: {
+        // 2. Move to target.
+        const gfx::Point drop_point =
+            apps_grid_view_->GetItemViewAt(kAppsInGrid - 1)
+                ->GetIconBoundsInScreen()
+                .right_center() +
+            gfx::Vector2d(100, 10);
+        GetEventGenerator()->MoveMouseTo(drop_point);
+        ASSERT_TRUE(apps_grid_view_->reorder_timer_for_test()->IsRunning());
+        apps_grid_view_->reorder_timer_for_test()->FireNow();
+        test_api_->WaitForItemMoveAnimationDone();
+        drag_stage = DragStage::kRelease;
+        break;
+      }
+      case DragStage::kRelease:
+        // 3. End the drag. This will eventually cause the DragDropController
+        // to exit its loop, allowing StartDragAndDrop to return.
+        GetEventGenerator()->ReleaseLeftButton();
+        drag_stage = DragStage::kDone;
+        break;
+      case DragStage::kDone:
+        // Do nothing; wait for the controller to exit the loop.
+        break;
+    }
+  });
+
+  // Set the closure that replaces the real nested message loop.
+  ShellTestApi().drag_drop_controller()->SetLoopClosureForTesting(
+      drag_loop_body, base::DoNothing());
+
+  // Kicks off the drag. This call BLOCKS until ReleaseLeftButton() is called
+  // inside the drag_loop_body.
   GetEventGenerator()->MoveMouseBy(10, 10);
 
-  // Wait for layer animations before the drag to trigger drag reorder
-  // animations.
-  for (size_t i = 0; i < apps_grid_view_->view_model()->view_size(); ++i) {
-    auto* view = apps_grid_view_->view_model()->view_at(i);
-    if (view->layer())
-      ui::LayerAnimationStoppedWaiter().Wait(view->layer());
-  }
-
-  ASSERT_TRUE(apps_grid_view_->drag_item());
-  ASSERT_TRUE(apps_grid_view_->IsDragging());
-  ASSERT_EQ(dragged_item->item(), apps_grid_view_->drag_item());
-
-  // Drag item to the last slot
-  const gfx::Point drop_point = apps_grid_view_->GetItemViewAt(kAppsInGrid - 1)
-                                    ->GetIconBoundsInScreen()
-                                    .right_center() +
-                                gfx::Vector2d(100, 10);
-  GetEventGenerator()->MoveMouseTo(drop_point);
-  ASSERT_TRUE(apps_grid_view_->reorder_timer_for_test()->IsRunning());
-  apps_grid_view_->reorder_timer_for_test()->FireNow();
-
-  // Let the animations play out.
-  test_api_->WaitForItemMoveAnimationDone();
-
-  // Release drag.
-  GetEventGenerator()->ReleaseLeftButton();
+  ASSERT_EQ(drag_stage, DragStage::kDone);
 
   // Ensure there is one more frame presented after animation finishes to allow
   // animation throughput data to be passed from cc to ui.
