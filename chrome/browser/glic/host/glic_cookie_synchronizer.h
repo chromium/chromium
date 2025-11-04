@@ -35,8 +35,9 @@ class GlicCookieSynchronizer
   // Called when webview authentication is finished.
   using OnWebviewAuth = base::OnceCallback<void(bool)>;
 
-  // The maximum number of retries attempted following a transient error.
-  static constexpr int kMaxRetries = 3;
+  // The default timeout. Note that we have a timeout because sometimes the
+  // underlying multilogin operation hangs.
+  static constexpr base::TimeDelta kCookieSyncDefaultTimeout = base::Seconds(7);
 
   // If `use_for_fre` the storage partition is configured for use by the glic
   // FRE webview. Otherwise, it is configured for use by the main glic webview.
@@ -78,6 +79,7 @@ class GlicCookieSynchronizer
   // Handles the webview authentication result.
   void OnAuthFinished(signin::SetAccountsInCookieResult cookie_result);
   void CompleteAuth(bool is_success);
+  void OnTimeout();
 
   const raw_ptr<content::BrowserContext> context_;
   const raw_ptr<signin::IdentityManager> identity_manager_;
@@ -89,6 +91,7 @@ class GlicCookieSynchronizer
   bool use_for_fre_ = false;
 
   std::vector<base::OnceCallback<void(bool)>> callbacks_;
+  base::OneShotTimer timeout_;
   std::unique_ptr<signin::AccountsCookieMutator::SetAccountsInCookieTask>
       cookie_loader_;
   std::unique_ptr<SyncCookiesForDevelopmentTask>
