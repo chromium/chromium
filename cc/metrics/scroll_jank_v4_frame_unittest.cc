@@ -25,6 +25,9 @@ namespace cc {
 
 namespace {
 
+using ScrollDamage = ScrollJankV4Frame::ScrollDamage;
+using DamagingFrame = ScrollJankV4Frame::DamagingFrame;
+using NonDamagingFrame = ScrollJankV4Frame::NonDamagingFrame;
 using ScrollUpdates = ScrollJankV4FrameStage::ScrollUpdates;
 using ScrollEnd = ScrollJankV4FrameStage::ScrollEnd;
 using ::testing::ElementsAre;
@@ -53,17 +56,17 @@ HasBeginFrameSequenceId(uint64_t begin_frame_sequence_id) {
 //
 //   1. `frame.args->frame_id` equals
 //      `viz::BeginFrameId(kSourceId, begin_frame_sequence_id)`.
-//   2. `is_damaging` matches `frame.is_damaging`.
+//   2. `damage` matches `frame.damage`.
 //   3. `stages` matches `frame.stages`.
 //
 // We use this matcher (instead of simple equality) to work around the fact that
 // `viz::BeginFrameArgs` doesn't have the equality operator defined.
 Matcher<const ScrollJankV4Frame&> ExpectedFrame(
     uint64_t begin_frame_sequence_id,
-    Matcher<bool> is_damaging,
+    Matcher<ScrollDamage> damage,
     Matcher<const ScrollJankV4FrameStage::List&> stages) {
-  return FieldsAre(HasBeginFrameSequenceId(begin_frame_sequence_id),
-                   is_damaging, stages);
+  return FieldsAre(HasBeginFrameSequenceId(begin_frame_sequence_id), damage,
+                   stages);
 }
 
 }  // namespace
@@ -228,8 +231,9 @@ class ScrollJankV4FrameTest : public testing::Test {
 TEST_F(ScrollJankV4FrameTest, NoFrames) {
   EventMetrics::List events_metrics;
   viz::BeginFrameArgs presented_args = CreateBeginFrameArgs(42);
-  auto timeline =
-      ScrollJankV4Frame::CalculateTimeline(events_metrics, presented_args);
+  auto timeline = ScrollJankV4Frame::CalculateTimeline(
+      events_metrics, presented_args,
+      /* presentation_ts= */ MillisecondsTicks(777));
   EXPECT_THAT(timeline, IsEmpty());
 }
 
@@ -242,8 +246,9 @@ TEST_F(ScrollJankV4FrameTest, IgnoreNonScrollEvents) {
                                               ui::EventType::kTouchReleased,
                                               /* caused_frame_update= */ true));
   viz::BeginFrameArgs presented_args = CreateBeginFrameArgs(42);
-  auto timeline =
-      ScrollJankV4Frame::CalculateTimeline(events_metrics, presented_args);
+  auto timeline = ScrollJankV4Frame::CalculateTimeline(
+      events_metrics, presented_args,
+      /* presentation_ts= */ MillisecondsTicks(777));
   EXPECT_THAT(timeline, IsEmpty());
 }
 
@@ -266,13 +271,13 @@ TEST_F(ScrollJankV4FrameTest, OneNonDamagingFrame) {
       /* caused_frame_update= */ false,
       /* did_scroll= */ false, args));
   viz::BeginFrameArgs presented_args = CreateBeginFrameArgs(42);
-  auto timeline =
-      ScrollJankV4Frame::CalculateTimeline(events_metrics, presented_args);
+  auto timeline = ScrollJankV4Frame::CalculateTimeline(
+      events_metrics, presented_args,
+      /* presentation_ts= */ MillisecondsTicks(777));
   EXPECT_THAT(
       timeline,
       ElementsAre(ExpectedFrame(
-          /* begin_frame_sequence_id= */ 31,
-          /* is_damaging= */ false,
+          /* begin_frame_sequence_id= */ 31, ScrollDamage{NonDamagingFrame{}},
           ElementsAre(ScrollJankV4FrameStage{ScrollUpdates{
               .is_scroll_start = false,
               .earliest_event = base::raw_ref(
@@ -318,14 +323,15 @@ TEST_F(ScrollJankV4FrameTest, MultipleNonDamagingFrames) {
       /* did_scroll= */ false, args3));
 
   viz::BeginFrameArgs presented_args = CreateBeginFrameArgs(42);
-  auto timeline =
-      ScrollJankV4Frame::CalculateTimeline(events_metrics, presented_args);
+  auto timeline = ScrollJankV4Frame::CalculateTimeline(
+      events_metrics, presented_args,
+      /* presentation_ts= */ MillisecondsTicks(777));
   EXPECT_THAT(
       timeline,
       ElementsAre(
           ExpectedFrame(
               /* begin_frame_sequence_id= */ 31,
-              /* is_damaging= */ false,
+              ScrollDamage{NonDamagingFrame{}},
               ElementsAre(ScrollJankV4FrameStage{ScrollUpdates{
                   .is_scroll_start = true,
                   .earliest_event =
@@ -338,7 +344,7 @@ TEST_F(ScrollJankV4FrameTest, MultipleNonDamagingFrames) {
               }})),
           ExpectedFrame(
               /* begin_frame_sequence_id= */ 32,
-              /* is_damaging= */ false,
+              ScrollDamage{NonDamagingFrame{}},
               ElementsAre(ScrollJankV4FrameStage{ScrollUpdates{
                   .is_scroll_start = false,
                   .earliest_event =
@@ -351,7 +357,7 @@ TEST_F(ScrollJankV4FrameTest, MultipleNonDamagingFrames) {
               }})),
           ExpectedFrame(
               /* begin_frame_sequence_id= */ 33,
-              /* is_damaging= */ false,
+              ScrollDamage{NonDamagingFrame{}},
               ElementsAre(ScrollJankV4FrameStage{ScrollUpdates{
                   .is_scroll_start = false,
                   .earliest_event =
@@ -400,13 +406,15 @@ TEST_F(ScrollJankV4FrameTest, OneDamagingFrame) {
       /* did_scroll= */ false, args3));
 
   viz::BeginFrameArgs presented_args = CreateBeginFrameArgs(42);
-  auto timeline =
-      ScrollJankV4Frame::CalculateTimeline(events_metrics, presented_args);
+  auto timeline = ScrollJankV4Frame::CalculateTimeline(
+      events_metrics, presented_args,
+      /* presentation_ts= */ MillisecondsTicks(777));
   EXPECT_THAT(
       timeline,
       ElementsAre(ExpectedFrame(
           /* begin_frame_sequence_id= */ 42,
-          /* is_damaging= */ true,
+          ScrollDamage{
+              DamagingFrame{.presentation_ts = MillisecondsTicks(777)}},
           ElementsAre(ScrollJankV4FrameStage{ScrollUpdates{
               .is_scroll_start = true,
               .earliest_event = base::raw_ref(
@@ -480,53 +488,78 @@ TEST_F(ScrollJankV4FrameTest, MultipleNonDamagingFramesAndOneDamagingFrame) {
       /* did_scroll= */ false, args5));
 
   viz::BeginFrameArgs presented_args = CreateBeginFrameArgs(42);
-  auto timeline =
-      ScrollJankV4Frame::CalculateTimeline(events_metrics, presented_args);
+  auto timeline = ScrollJankV4Frame::CalculateTimeline(
+      events_metrics, presented_args,
+      /* presentation_ts= */ MillisecondsTicks(777));
   EXPECT_THAT(
       timeline,
-      ElementsAre(ExpectedFrame(
-                      /* begin_frame_sequence_id= */ 31,
-                      /* is_damaging= */ false,
-                      ElementsAre(ScrollJankV4FrameStage{ScrollUpdates{
-                          .is_scroll_start = true,
-                          .earliest_event = base::raw_ref(
-                              static_cast<ScrollUpdateEventMetrics&>(
-                                  *events_metrics[1])),
-                          .last_input_generation_ts = MillisecondsTicks(12),
-                          .has_inertial_input = false,
-                          .total_raw_delta_pixels = 3.0f,
-                          .max_abs_inertial_raw_delta_pixels = 0.0f,
-                      }})),
-                  ExpectedFrame(
-                      /* begin_frame_sequence_id= */ 32,
-                      /* is_damaging= */ false,
-                      ElementsAre(ScrollJankV4FrameStage{ScrollEnd{}})),
-                  ExpectedFrame(
-                      /* begin_frame_sequence_id= */ 42,
-                      /* is_damaging= */ true,
-                      ElementsAre(ScrollJankV4FrameStage{ScrollUpdates{
-                          .is_scroll_start = false,
-                          .earliest_event = base::raw_ref(
-                              static_cast<ScrollUpdateEventMetrics&>(
-                                  *events_metrics[4])),
-                          .last_input_generation_ts = MillisecondsTicks(19),
-                          .has_inertial_input = true,
-                          .total_raw_delta_pixels = 3330.0f,
-                          .max_abs_inertial_raw_delta_pixels = 2000.0f,
-                      }}))));
+      ElementsAre(
+          ExpectedFrame(
+              /* begin_frame_sequence_id= */ 31,
+              ScrollDamage{NonDamagingFrame{}},
+              ElementsAre(ScrollJankV4FrameStage{ScrollUpdates{
+                  .is_scroll_start = true,
+                  .earliest_event =
+                      base::raw_ref(static_cast<ScrollUpdateEventMetrics&>(
+                          *events_metrics[1])),
+                  .last_input_generation_ts = MillisecondsTicks(12),
+                  .has_inertial_input = false,
+                  .total_raw_delta_pixels = 3.0f,
+                  .max_abs_inertial_raw_delta_pixels = 0.0f,
+              }})),
+          ExpectedFrame(
+              /* begin_frame_sequence_id= */ 32,
+              ScrollDamage{NonDamagingFrame{}},
+              ElementsAre(ScrollJankV4FrameStage{ScrollEnd{}})),
+          ExpectedFrame(
+              /* begin_frame_sequence_id= */ 42,
+              ScrollDamage{
+                  DamagingFrame{.presentation_ts = MillisecondsTicks(777)}},
+              ElementsAre(ScrollJankV4FrameStage{ScrollUpdates{
+                  .is_scroll_start = false,
+                  .earliest_event =
+                      base::raw_ref(static_cast<ScrollUpdateEventMetrics&>(
+                          *events_metrics[4])),
+                  .last_input_generation_ts = MillisecondsTicks(19),
+                  .has_inertial_input = true,
+                  .total_raw_delta_pixels = 3330.0f,
+                  .max_abs_inertial_raw_delta_pixels = 2000.0f,
+              }}))));
 }
 
-TEST_F(ScrollJankV4FrameTest, ToOstream) {
+TEST_F(ScrollJankV4FrameTest, DamagingFrameToOstream) {
+  std::ostringstream out;
+  auto& result =
+      out << DamagingFrame{.presentation_ts = MillisecondsTicks(777)};
+  EXPECT_THAT(out.str(), ::testing::MatchesRegex(R"(DamagingFrame\{.+\})"));
+  EXPECT_EQ(&result, &out);
+}
+
+TEST_F(ScrollJankV4FrameTest, NonDamagingFrameToOstream) {
+  std::ostringstream out;
+  auto& result = out << NonDamagingFrame{};
+  EXPECT_EQ(out.str(), "NonDamagingFrame{}");
+  EXPECT_EQ(&result, &out);
+}
+
+TEST_F(ScrollJankV4FrameTest, ScrollDamageToOstream) {
+  std::ostringstream out;
+  auto& result = out << ScrollDamage{NonDamagingFrame{}};
+  EXPECT_THAT(out.str(), ::testing::MatchesRegex(R"(ScrollDamage\{.+\})"));
+  EXPECT_EQ(&result, &out);
+}
+
+TEST_F(ScrollJankV4FrameTest, ScrollJankV4FrameToOstream) {
   viz::BeginFrameArgs args = CreateBeginFrameArgs(42);
   auto frame = ScrollJankV4Frame(
       base::raw_ref<const viz::BeginFrameArgs>::from_ptr(&args),
-      /* is_damaging= */ true,
+      DamagingFrame{.presentation_ts = MillisecondsTicks(777)},
       {ScrollJankV4FrameStage{ScrollEnd{}}, ScrollJankV4FrameStage{ScrollEnd{}},
        ScrollJankV4FrameStage{ScrollEnd{}}});
 
   std::ostringstream out;
   auto& result = out << frame;
-  EXPECT_THAT(out.str(), ::testing::MatchesRegex(R"(ScrollJankV4Frame\{.*\})"));
+  EXPECT_THAT(out.str(), ::testing::MatchesRegex(R"(ScrollJankV4Frame\{.+\})"));
   EXPECT_EQ(&result, &out);
 }
 

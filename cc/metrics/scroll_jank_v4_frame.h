@@ -7,6 +7,7 @@
 
 #include <ostream>
 
+#include "base/time/time.h"
 #include "cc/cc_export.h"
 #include "cc/metrics/event_metrics.h"
 #include "cc/metrics/scroll_jank_v4_frame_stage.h"
@@ -18,12 +19,37 @@ namespace cc {
 // Information about a single frame which contains at least one scroll update
 // or scroll end.
 struct CC_EXPORT ScrollJankV4Frame {
+  // Representation of a presented damaging frame. See `ScrollDamage` below.
+  struct DamagingFrame {
+    // When the frame was presented to the user.
+    base::TimeTicks presentation_ts;
+
+    bool operator==(const DamagingFrame&) const = default;
+  };
+
+  // Representation of a non-damaging frame. See `ScrollDamage` below.
+  struct NonDamagingFrame {
+    bool operator==(const NonDamagingFrame&) const = default;
+  };
+
+  // Information about a frame's scroll damage. A frame F is non-damaging if the
+  // following conditions are BOTH true:
+  //
+  //   1. All scroll updates in F are non-damaging. A scroll update
+  //      is non-damaging if it didn't cause a frame update (i.e.
+  //      `EventMetrics::caused_frame_update()` is false) and/or didn't change
+  //      the scroll offset (i.e. `ScrollEventMetrics::did_scroll()` is
+  //      false).
+  //
+  //   2. All frames between (both ends exclusive):
+  //        a. the last frame presented by Chrome before F and
+  //        b. F
+  //      are non-damaging.
+  using ScrollDamage = std::variant<DamagingFrame, NonDamagingFrame>;
+
   base::raw_ref<const viz::BeginFrameArgs> args;
 
-  // Whether the frame is damaging. See
-  // `ScrollUpdateEventMetrics::ScrollJankV4Result::is_damaging_frame` for the
-  // definition of non-damaging scroll updates and frames.
-  bool is_damaging;
+  ScrollDamage damage;
 
   ScrollJankV4FrameStage::List stages;
 
@@ -34,14 +60,14 @@ struct CC_EXPORT ScrollJankV4Frame {
   using Timeline = absl::InlinedVector<ScrollJankV4Frame, 1>;
 
   ScrollJankV4Frame(base::raw_ref<const viz::BeginFrameArgs> args,
-                    bool is_damaging,
+                    ScrollDamage damage,
                     ScrollJankV4FrameStage::List stages);
   ScrollJankV4Frame(const ScrollJankV4Frame& frame);
   ~ScrollJankV4Frame();
 
   // Calculates the frame timeline (for the purposes of evaluating scroll jank)
-  // based on `events_metrics` which were first presented in a frame
-  // (`presented_args`).
+  // based on `events_metrics` which were first presented at `presentation_ts`
+  // in a frame with `presented_args`.
   //
   // This method groups scroll updates and ends into frames as follows:
   //
@@ -125,14 +151,34 @@ struct CC_EXPORT ScrollJankV4Frame {
   // be longer than the returned timeline's lifetime.
   static ScrollJankV4Frame::Timeline CalculateTimeline(
       const EventMetrics::List& events_metrics,
-      const viz::BeginFrameArgs& presented_args);
+      const viz::BeginFrameArgs& presented_args,
+      base::TimeTicks presentation_ts);
 };
+
+inline std::ostream& operator<<(
+    std::ostream& os,
+    const ScrollJankV4Frame::DamagingFrame& damaging_frame) {
+  return os << "DamagingFrame{presentation_ts: "
+            << damaging_frame.presentation_ts << "}";
+}
+
+inline std::ostream& operator<<(
+    std::ostream& os,
+    const ScrollJankV4Frame::NonDamagingFrame& non_damaging_frame) {
+  return os << "NonDamagingFrame{}";
+}
+
+inline std::ostream& operator<<(std::ostream& os,
+                                const ScrollJankV4Frame::ScrollDamage damage) {
+  os << "ScrollDamage{";
+  std::visit([&os](const auto& value) { os << value; }, damage);
+  return os << "}";
+}
 
 inline std::ostream& operator<<(std::ostream& os,
                                 const ScrollJankV4Frame& frame) {
   os << "ScrollJankV4Frame{args: " << frame.args->ToString() << "@"
-     << &(*frame.args) << ", is_damaging: " << frame.is_damaging
-     << ", stages: [";
+     << &(*frame.args) << ", damage: " << frame.damage << ", stages: [";
   bool is_first = true;
   for (const auto& stage : frame.stages) {
     if (is_first) {

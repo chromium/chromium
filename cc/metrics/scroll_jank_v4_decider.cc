@@ -19,62 +19,31 @@
 
 namespace cc {
 
-std::optional<ScrollUpdateEventMetrics::ScrollJankV4Result>
-ScrollJankV4Decider::DecideJankForPresentedDamagingFrame(
-    base::TimeTicks first_input_generation_ts,
-    base::TimeTicks last_input_generation_ts,
-    base::TimeTicks presentation_ts,
-    const viz::BeginFrameArgs& args,
-    bool has_inertial_input,
-    float abs_total_raw_delta_pixels,
-    float max_abs_inertial_raw_delta_pixels) {
-  return DecideJankForFrame(first_input_generation_ts, last_input_generation_ts,
-                            DamagingFrame(presentation_ts), args,
-                            has_inertial_input, abs_total_raw_delta_pixels,
-                            max_abs_inertial_raw_delta_pixels);
-}
+namespace {
+
+using ScrollDamage = ScrollJankV4Frame::ScrollDamage;
+using DamagingFrame = ScrollJankV4Frame::DamagingFrame;
+
+}  // namespace
 
 std::optional<ScrollUpdateEventMetrics::ScrollJankV4Result>
-ScrollJankV4Decider::DecideJankForNonDamagingFrame(
+ScrollJankV4Decider::DecideJankForFrameWithScrollUpdates(
     base::TimeTicks first_input_generation_ts,
     base::TimeTicks last_input_generation_ts,
-    const viz::BeginFrameArgs& args,
-    bool has_inertial_input,
-    float abs_total_raw_delta_pixels,
-    float max_abs_inertial_raw_delta_pixels) {
-  return DecideJankForFrame(first_input_generation_ts, last_input_generation_ts,
-                            NonDamagingFrame(), args, has_inertial_input,
-                            abs_total_raw_delta_pixels,
-                            max_abs_inertial_raw_delta_pixels);
-}
-
-void ScrollJankV4Decider::OnScrollStarted() {
-  Reset();
-}
-
-void ScrollJankV4Decider::OnScrollEnded() {
-  Reset();
-}
-
-std::optional<ScrollUpdateEventMetrics::ScrollJankV4Result>
-ScrollJankV4Decider::DecideJankForFrame(
-    base::TimeTicks first_input_generation_ts,
-    base::TimeTicks last_input_generation_ts,
-    const FrameDamage& frame_damage,
+    const ScrollDamage& damage,
     const viz::BeginFrameArgs& args,
     bool has_inertial_input,
     float abs_total_raw_delta_pixels,
     float max_abs_inertial_raw_delta_pixels) {
   CHECK(has_inertial_input || max_abs_inertial_raw_delta_pixels == 0);
 
-  if (!IsValidFrame(first_input_generation_ts, last_input_generation_ts,
-                    frame_damage, args)) {
+  if (!IsValidFrame(first_input_generation_ts, last_input_generation_ts, damage,
+                    args)) {
     return std::nullopt;
   }
 
   base::TimeDelta vsync_interval = args.interval;
-  const DamagingFrame* damaging_frame =
-      std::get_if<DamagingFrame>(&frame_damage);
+  const DamagingFrame* damaging_frame = std::get_if<DamagingFrame>(&damage);
 
   ScrollUpdateEventMetrics::ScrollJankV4Result result = {
       .is_damaging_frame = !!damaging_frame,
@@ -115,8 +84,8 @@ ScrollJankV4Decider::DecideJankForFrame(
       // https://docs.google.com/document/d/1AaBvTIf8i-c-WTKkjaL4vyhQMkSdynxo3XEiwpofdeA.
       JankReasonArray<int> missed_vsyncs_per_reason =
           CalculateMissedVsyncsPerReason(
-              vsyncs_since_previous_frame, first_input_generation_ts,
-              frame_damage, vsync_interval, abs_total_raw_delta_pixels,
+              vsyncs_since_previous_frame, first_input_generation_ts, damage,
+              vsync_interval, abs_total_raw_delta_pixels,
               max_abs_inertial_raw_delta_pixels, result);
 
       // A frame is janky if ANY of the rules decided that Chrome missed one or
@@ -132,8 +101,7 @@ ScrollJankV4Decider::DecideJankForFrame(
   // How quickly Chrome was able to deliver input in the current frame?
   std::optional<PreviousFrameData::PresentationData> presentation_data =
       CalculatePresentationData(vsyncs_since_previous_frame, is_janky,
-                                last_input_generation_ts, frame_damage, args,
-                                result);
+                                last_input_generation_ts, damage, args, result);
 
   // Finally, update internal state for the next iteration.
   prev_frame_data_ = {
@@ -146,17 +114,24 @@ ScrollJankV4Decider::DecideJankForFrame(
   return result;
 }
 
+void ScrollJankV4Decider::OnScrollStarted() {
+  Reset();
+}
+
+void ScrollJankV4Decider::OnScrollEnded() {
+  Reset();
+}
+
 bool ScrollJankV4Decider::IsValidFrame(
     base::TimeTicks first_input_generation_ts,
     base::TimeTicks last_input_generation_ts,
-    const FrameDamage& frame_damage,
+    const ScrollDamage& damage,
     const viz::BeginFrameArgs& args) const {
   if (last_input_generation_ts < first_input_generation_ts) {
     return false;
   }
 
-  const DamagingFrame* damaging_frame =
-      std::get_if<DamagingFrame>(&frame_damage);
+  const DamagingFrame* damaging_frame = std::get_if<DamagingFrame>(&damage);
   if (damaging_frame &&
       damaging_frame->presentation_ts <= last_input_generation_ts) {
     // TODO(crbug.com/40913586): Investigate when these edge cases can be
@@ -187,7 +162,7 @@ bool ScrollJankV4Decider::IsValidFrame(
 JankReasonArray<int> ScrollJankV4Decider::CalculateMissedVsyncsPerReason(
     int vsyncs_since_previous_frame,
     base::TimeTicks first_input_generation_ts,
-    const FrameDamage& frame_damage,
+    const ScrollDamage& damage,
     base::TimeDelta vsync_interval,
     float abs_total_raw_delta_pixels,
     float max_abs_inertial_raw_delta_pixels,
@@ -214,8 +189,7 @@ JankReasonArray<int> ScrollJankV4Decider::CalculateMissedVsyncsPerReason(
   // more lenient) and subtract stability correction (to be a bit more strict).
   // This is what the current VSync would hypothetically have been judged
   // against if it didn't contain any inputs.
-  if (const DamagingFrame* damaging_frame =
-          std::get_if<DamagingFrame>(&frame_damage);
+  if (const DamagingFrame* damaging_frame = std::get_if<DamagingFrame>(&damage);
       damaging_frame && prev_frame_data.presentation_data.has_value()) {
     base::TimeDelta adjusted_delivery_cutoff =
         prev_frame_data.presentation_data->running_delivery_cutoff +
@@ -273,7 +247,7 @@ ScrollJankV4Decider::CalculatePresentationData(
     int vsyncs_since_previous_frame,
     bool is_janky,
     base::TimeTicks last_input_generation_ts,
-    const FrameDamage& frame_damage,
+    const ScrollDamage& damage,
     const viz::BeginFrameArgs& args,
     ScrollUpdateEventMetrics::ScrollJankV4Result& result) const {
   // We should consider Chrome's past performance
@@ -300,7 +274,7 @@ ScrollJankV4Decider::CalculatePresentationData(
   }();
 
   if (const DamagingFrame* damaging_frame =
-          std::get_if<DamagingFrame>(&frame_damage)) {
+          std::get_if<DamagingFrame>(&damage)) {
     base::TimeDelta cur_delivery_cutoff =
         damaging_frame->presentation_ts - last_input_generation_ts;
     result.current_delivery_cutoff = cur_delivery_cutoff;

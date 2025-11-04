@@ -102,9 +102,9 @@ std::optional<FrameBounds> GetFrameBounds(
 
 ScrollJankV4Frame::ScrollJankV4Frame(
     base::raw_ref<const viz::BeginFrameArgs> args,
-    bool is_damaging,
+    ScrollDamage damage,
     ScrollJankV4FrameStage::List stages)
-    : args(args), is_damaging(is_damaging), stages(stages) {}
+    : args(args), damage(damage), stages(stages) {}
 
 ScrollJankV4Frame::ScrollJankV4Frame(const ScrollJankV4Frame& frame) = default;
 
@@ -113,7 +113,8 @@ ScrollJankV4Frame::~ScrollJankV4Frame() = default;
 // static
 ScrollJankV4Frame::Timeline ScrollJankV4Frame::CalculateTimeline(
     const EventMetrics::List& events_metrics,
-    const viz::BeginFrameArgs& presented_args) {
+    const viz::BeginFrameArgs& presented_args,
+    base::TimeTicks presentation_ts) {
   ScrollJankV4Frame::Timeline result;
 
   // We start by figuring out the range of `viz::BeginFrameId`s in
@@ -136,8 +137,7 @@ ScrollJankV4Frame::Timeline ScrollJankV4Frame::CalculateTimeline(
       frame_bounds->min_id == frame_bounds->max_id) {
     DCHECK_EQ(frame_bounds->some_args->frame_id, frame_bounds->min_id);
     result.emplace_back(
-        frame_bounds->some_args,
-        /* is_damaging= */ false,
+        frame_bounds->some_args, NonDamagingFrame{},
         ScrollJankV4FrameStage::CalculateStages(
             events_metrics, /* skip_non_damaging_events= */ false));
     return result;
@@ -149,7 +149,7 @@ ScrollJankV4Frame::Timeline ScrollJankV4Frame::CalculateTimeline(
       *frame_bounds->min_damaging_id == frame_bounds->min_id) {
     result.emplace_back(
         base::raw_ref<const viz::BeginFrameArgs>::from_ptr(&presented_args),
-        /* is_damaging= */ true,
+        DamagingFrame{.presentation_ts = presentation_ts},
         ScrollJankV4FrameStage::CalculateStages(
             events_metrics, /* skip_non_damaging_events= */ false));
     return result;
@@ -199,8 +199,12 @@ ScrollJankV4Frame::Timeline ScrollJankV4Frame::CalculateTimeline(
     }
   }
   for (const auto& [frame_id, args_and_events] : frame_id_to_args_and_events) {
+    ScrollDamage damage =
+        args_and_events.is_damaging
+            ? ScrollDamage{DamagingFrame{.presentation_ts = presentation_ts}}
+            : ScrollDamage{NonDamagingFrame{}};
     result.emplace_back(
-        args_and_events.args, args_and_events.is_damaging,
+        args_and_events.args, damage,
         ScrollJankV4FrameStage::CalculateStages(
             args_and_events.events, /* skip_non_damaging_events= */ false));
   }

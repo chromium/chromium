@@ -11,6 +11,7 @@
 #include "base/time/time.h"
 #include "cc/cc_export.h"
 #include "cc/metrics/event_metrics.h"
+#include "cc/metrics/scroll_jank_v4_frame.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 
 namespace cc {
@@ -30,15 +31,16 @@ namespace cc {
 // for more details about the scroll jank v4 metric.
 class CC_EXPORT ScrollJankV4Decider {
  public:
-  // Decides whether a presented damaging frame, which contains at least one
-  // scroll update that caused a frame update, was janky based on the following
-  // information:
+  // Decides whether a frame which contains scroll updates was janky based on
+  // the following information:
   //
   //   * `first_input_generation_ts` and `last_input_generation_ts`: The
-  //   generation timestamp of the first and last scroll update included
-  //   (coalesced) in the frame.
+  //     generation timestamp of the first and last scroll update included
+  //     (coalesced) in the frame.
   //      updates included (coalesced) in the frame.
-  //   * `presentation_ts`: When the frame was presented to the user.
+  //   * `damage`: Information about a frame's scroll damage. For damaging
+  //     frames, `DamagingFrame::presentation_ts` specifies when the frame was
+  //     presented to the user.
   //   * `args`: The presented frame's arguments (especially `args.interval`).
   //   * `has_inertial_input`: Whether at least one of the scroll updates in the
   //     frame was inertial.
@@ -49,49 +51,29 @@ class CC_EXPORT ScrollJankV4Decider {
   //     delta (`ScrollUpdateEventMetrics::delta()`) over all inertial scroll
   //     updates included in the frame.
   //
+  // This method treats non-damaging frames as if Chrome successfully presented
+  // them on time, even if Chrome ended up not presenting the frames or they
+  // were dropped/throttled/delayed. Rationale: If a frame is non-damaging, the
+  // user can't tell whether Chrome presented the frame on time (or even whether
+  // Chrome presented the frame at all).
+  //
   // Returns an empty optional if the frame is malformed in some way (e.g. it
   // has an earlier presentation time than the previous frame provided to the
   // decider).
   std::optional<ScrollUpdateEventMetrics::ScrollJankV4Result>
-  DecideJankForPresentedDamagingFrame(base::TimeTicks first_input_generation_ts,
-                                      base::TimeTicks last_input_generation_ts,
-                                      base::TimeTicks presentation_ts,
-                                      const viz::BeginFrameArgs& args,
-                                      bool has_inertial_input,
-                                      float abs_total_raw_delta_pixels,
-                                      float max_abs_inertial_raw_delta_pixels);
-
-  // Decides whether a non-damaging frame, which contains at least one scroll
-  // update but it doesn't contain any scroll updates that caused a frame
-  // update, was janky.
-  //
-  // The decision logic and inputs are similar to
-  // `DecideJankForPresentedDamagingFrame()` except this method doesn't accept a
-  // presentation timestamp. Instead, this method treats non-damaging frames as
-  // if Chrome successfully presented them on time, even if Chrome ended up not
-  // presenting the frames or they were dropped/throttled/delayed.
-  //
-  // Rationale: If a frame is non-damaging, the user can't tell whether Chrome
-  // presented the frame on time (or even whether Chrome presented the frame at
-  // all).
-  std::optional<ScrollUpdateEventMetrics::ScrollJankV4Result>
-  DecideJankForNonDamagingFrame(base::TimeTicks first_input_generation_ts,
-                                base::TimeTicks last_input_generation_ts,
-                                const viz::BeginFrameArgs& args,
-                                bool has_inertial_input,
-                                float abs_total_raw_delta_pixels,
-                                float max_abs_inertial_raw_delta_pixels);
+  DecideJankForFrameWithScrollUpdates(
+      base::TimeTicks first_input_generation_ts,
+      base::TimeTicks last_input_generation_ts,
+      const ScrollJankV4Frame::ScrollDamage& damage,
+      const viz::BeginFrameArgs& args,
+      bool has_inertial_input,
+      float abs_total_raw_delta_pixels,
+      float max_abs_inertial_raw_delta_pixels);
 
   void OnScrollStarted();
   void OnScrollEnded();
 
  private:
-  struct DamagingFrame {
-    base::TimeTicks presentation_ts;
-  };
-  struct NonDamagingFrame {};
-  using FrameDamage = std::variant<DamagingFrame, NonDamagingFrame>;
-
   // Information about the previous frame relevant for the scroll jank v4
   // metric.
   struct PreviousFrameData {
@@ -187,24 +169,15 @@ class CC_EXPORT ScrollJankV4Decider {
 
   void Reset();
 
-  std::optional<ScrollUpdateEventMetrics::ScrollJankV4Result>
-  DecideJankForFrame(base::TimeTicks first_input_generation_ts,
-                     base::TimeTicks last_input_generation_ts,
-                     const FrameDamage& frame_damage,
-                     const viz::BeginFrameArgs& args,
-                     bool has_inertial_input,
-                     float abs_total_raw_delta_pixels,
-                     float max_abs_inertial_raw_delta_pixels);
-
   bool IsValidFrame(base::TimeTicks first_input_generation_ts,
                     base::TimeTicks last_input_generation_ts,
-                    const FrameDamage& frame_damage,
+                    const ScrollJankV4Frame::ScrollDamage& damage,
                     const viz::BeginFrameArgs& args) const;
 
   JankReasonArray<int> CalculateMissedVsyncsPerReason(
       int vsyncs_since_previous_frame,
       base::TimeTicks first_input_generation_ts,
-      const FrameDamage& frame_damage,
+      const ScrollJankV4Frame::ScrollDamage& damage,
       base::TimeDelta vsync_interval,
       float abs_total_raw_delta_pixels,
       float max_abs_inertial_raw_delta_pixels,
@@ -214,7 +187,7 @@ class CC_EXPORT ScrollJankV4Decider {
       int vsyncs_since_previous_frame,
       bool is_janky,
       base::TimeTicks last_input_generation_ts,
-      const FrameDamage& frame_damage,
+      const ScrollJankV4Frame::ScrollDamage& damage,
       const viz::BeginFrameArgs& args,
       ScrollUpdateEventMetrics::ScrollJankV4Result& result) const;
 
