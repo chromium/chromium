@@ -53,6 +53,7 @@ TEST(PreloadServingMetricsTest, NavigationWithoutPreload) {
   base::HistogramTester histogram_tester;
 
   auto log = MakeSkeletonPreloadServingMetrics({.n_prefetch_match_metrics = 0});
+  log->is_prerender_aborted_by_prerender_url_loader_throttle = false;
   log->prerender_initial_preload_serving_metrics = nullptr;
 
   log->RecordMetricsForNonPrerenderNavigationCommitted();
@@ -278,6 +279,8 @@ TEST(PreloadServingMetricsTest, NavigationWithPrefetch) {
       std::nullopt;
   log->prefetch_match_metrics_list[0]
       ->prefetch_container_metrics_ahead_of_prerender = nullptr;
+  log->prefetch_match_metrics_list[0]->prerender_debug_metrics = nullptr;
+  log->is_prerender_aborted_by_prerender_url_loader_throttle = false;
   log->prerender_initial_preload_serving_metrics = nullptr;
 
   log->RecordMetricsForNonPrerenderNavigationCommitted();
@@ -510,8 +513,15 @@ TEST(PreloadServingMetricsTest,
       std::nullopt;
   log_prerender->prefetch_match_metrics_list[0]
       ->prefetch_container_metrics_ahead_of_prerender = nullptr;
+  // Actually, this case should have non null
+  // `prerender_debug_metrics`, but we omit it as we
+  // don't check the UMAs in test.
+  log_prerender->prefetch_match_metrics_list[0]->prerender_debug_metrics =
+      nullptr;
+  log_prerender->is_prerender_aborted_by_prerender_url_loader_throttle = false;
   log_prerender->prerender_initial_preload_serving_metrics = nullptr;
   auto log = MakeSkeletonPreloadServingMetrics({.n_prefetch_match_metrics = 0});
+  log->is_prerender_aborted_by_prerender_url_loader_throttle = false;
   log->prerender_initial_preload_serving_metrics = std::move(log_prerender);
 
   log->RecordMetricsForNonPrerenderNavigationCommitted();
@@ -750,6 +760,12 @@ TEST(PreloadServingMetricsTest,
   log_prerender->prefetch_match_metrics_list[0]
       ->prefetch_container_metrics_ahead_of_prerender
       ->time_prefetch_completed_successfully = std::nullopt;
+  // Actually, this case should have non null
+  // `prerender_debug_metrics`, but we omit it as we
+  // don't check the UMAs in test.
+  log_prerender->prefetch_match_metrics_list[0]->prerender_debug_metrics =
+      nullptr;
+  log_prerender->is_prerender_aborted_by_prerender_url_loader_throttle = true;
   log_prerender->prerender_initial_preload_serving_metrics = nullptr;
   auto log = MakeSkeletonPreloadServingMetrics({.n_prefetch_match_metrics = 1});
   log->prefetch_match_metrics_list[0]->time_match_start = Millis(1157);
@@ -766,6 +782,8 @@ TEST(PreloadServingMetricsTest,
       std::nullopt;
   log->prefetch_match_metrics_list[0]
       ->prefetch_container_metrics_ahead_of_prerender = nullptr;
+  log->prefetch_match_metrics_list[0]->prerender_debug_metrics = nullptr;
+  log->is_prerender_aborted_by_prerender_url_loader_throttle = false;
   log->prerender_initial_preload_serving_metrics = nullptr;
 
   log_prerender->RecordMetricsForPrerenderInitialNavigationFailed();
@@ -1056,6 +1074,12 @@ TEST(
   log_prerender->prefetch_match_metrics_list[0]
       ->prefetch_container_metrics_ahead_of_prerender
       ->time_prefetch_completed_successfully = std::nullopt;
+  // Actually, this case should have non null
+  // `prerender_debug_metrics`, but we omit it as we
+  // don't check the UMAs in test.
+  log_prerender->prefetch_match_metrics_list[0]->prerender_debug_metrics =
+      nullptr;
+  log_prerender->is_prerender_aborted_by_prerender_url_loader_throttle = true;
   log_prerender->prerender_initial_preload_serving_metrics = nullptr;
   auto log = MakeSkeletonPreloadServingMetrics({.n_prefetch_match_metrics = 1});
   log->prefetch_match_metrics_list[0]->time_match_start = Millis(10157);
@@ -1071,6 +1095,8 @@ TEST(
       std::nullopt;
   log->prefetch_match_metrics_list[0]
       ->prefetch_container_metrics_ahead_of_prerender = nullptr;
+  log->prefetch_match_metrics_list[0]->prerender_debug_metrics = nullptr;
+  log->is_prerender_aborted_by_prerender_url_loader_throttle = false;
   log->prerender_initial_preload_serving_metrics = nullptr;
 
   log_prerender->RecordMetricsForPrerenderInitialNavigationFailed();
@@ -1302,6 +1328,151 @@ TEST(
   histogram_tester.ExpectTotalCount(
       "PreloadServingMetrics.PageLoad.Clients.PaintTiming."
       "NavigationToFirstContentfulPaint.WithPrerender",
+      0);
+}
+
+// Check for `PrefetchMatchPrerenderDebugMetrics`
+//
+// Scenario:
+//
+// - Prefetch A is triggered.
+// - Prerender B is triggered.
+//   - But B is not blocked by prefech matching as A is not
+//     `OnPrefetchStarted()`. (We don't expect this case occurs if
+//     `UsePrefetchPrerenderIntegration()`.)
+// - B is cancelled by `PrerenderURLLoaderThrottle`.
+// - Navigation C started.
+// - C falls back to network.
+TEST(PreloadServingMetricsTest, PrefetchMatchPrerenderDebugMetrics) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {
+          {
+              features::kPrerender2FallbackPrefetchSpecRules,
+              {
+                  {"kPrerender2FallbackUsePreloadServingMetrics", "true"},
+              },
+          },
+      },
+      {});
+  base::HistogramTester histogram_tester;
+
+  auto log_prerender =
+      MakeSkeletonPreloadServingMetrics({.n_prefetch_match_metrics = 1});
+  log_prerender->prefetch_match_metrics_list[0]->time_match_start = Millis(42);
+  log_prerender->prefetch_match_metrics_list[0]->time_match_end = Millis(43);
+  log_prerender->prefetch_match_metrics_list[0]->n_initial_candidates = 0;
+  log_prerender->prefetch_match_metrics_list[0]
+      ->n_initial_candidates_block_until_head = 0;
+  log_prerender->prefetch_match_metrics_list[0]->prefetch_container_metrics =
+      nullptr;
+  log_prerender->prefetch_match_metrics_list[0]
+      ->prefetch_potential_candidate_serving_result_last = std::nullopt;
+  log_prerender->prefetch_match_metrics_list[0]
+      ->prefetch_potential_candidate_serving_result_ahead_of_prerender =
+      std::nullopt;
+  // `prefetch_container_metrics_ahead_of_prerender` is null as it is not
+  // `PrefetchMatchResolver::RegisterCandidate()`ed.
+  log_prerender->prefetch_match_metrics_list[0]
+      ->prefetch_container_metrics_ahead_of_prerender = nullptr;
+  log_prerender->prerender_initial_preload_serving_metrics = nullptr;
+  log_prerender->prefetch_match_metrics_list[0]->prerender_debug_metrics =
+      std::make_unique<PrefetchMatchPrerenderDebugMetrics>();
+  log_prerender->prefetch_match_metrics_list[0]
+      ->prerender_debug_metrics->prefetch_ahead_of_prerender_debug_metrics =
+      std::make_unique<PrefetchMatchPrefetchAheadOfPrerenderDebugMetrics>();
+  log_prerender->prefetch_match_metrics_list[0]
+      ->prerender_debug_metrics->prefetch_ahead_of_prerender_debug_metrics
+      ->prefetch_status = PrefetchStatus::kPrefetchNotStarted;
+  log_prerender->prefetch_match_metrics_list[0]
+      ->prerender_debug_metrics->prefetch_ahead_of_prerender_debug_metrics
+      ->servable_state = PrefetchServableState::kNotServable;
+  log_prerender->prefetch_match_metrics_list[0]
+      ->prerender_debug_metrics->prefetch_ahead_of_prerender_debug_metrics
+      ->match_resolver_action = PrefetchMatchResolverAction(
+      PrefetchMatchResolverAction::ActionKind::kDrop,
+      PrefetchContainer::LoadState::kEligible,
+      /*is_expired=*/std::nullopt);
+  log_prerender->prefetch_match_metrics_list[0]
+      ->prerender_debug_metrics->prefetch_ahead_of_prerender_debug_metrics
+      ->queue_size = 5;
+  log_prerender->prefetch_match_metrics_list[0]
+      ->prerender_debug_metrics->prefetch_ahead_of_prerender_debug_metrics
+      ->queue_index = 3;
+  log_prerender->is_prerender_aborted_by_prerender_url_loader_throttle = true;
+  auto log = MakeSkeletonPreloadServingMetrics({.n_prefetch_match_metrics = 1});
+  log->prefetch_match_metrics_list[0]->time_match_start = Millis(10157);
+  log->prefetch_match_metrics_list[0]->time_match_end = Millis(10157);
+  log->prefetch_match_metrics_list[0]->n_initial_candidates = 0;
+  log->prefetch_match_metrics_list[0]->n_initial_candidates_block_until_head =
+      0;
+  log->prefetch_match_metrics_list[0]->prefetch_container_metrics = nullptr;
+  log->prefetch_match_metrics_list[0]
+      ->prefetch_potential_candidate_serving_result_last = std::nullopt;
+  log->prefetch_match_metrics_list[0]
+      ->prefetch_potential_candidate_serving_result_ahead_of_prerender =
+      std::nullopt;
+  log->prefetch_match_metrics_list[0]
+      ->prefetch_container_metrics_ahead_of_prerender = nullptr;
+  log->prefetch_match_metrics_list[0]->prerender_debug_metrics = nullptr;
+  log->is_prerender_aborted_by_prerender_url_loader_throttle = false;
+  log->prefetch_match_metrics_list[0]->prerender_debug_metrics = nullptr;
+  log->is_prerender_aborted_by_prerender_url_loader_throttle = false;
+  log->prerender_initial_preload_serving_metrics = nullptr;
+
+  log_prerender->RecordMetricsForPrerenderInitialNavigationFailed();
+  log->RecordMetricsForNonPrerenderNavigationCommitted();
+  log->RecordFirstContentfulPaint(base::Milliseconds(10334));
+
+  histogram_tester.ExpectUniqueSample(
+      "PreloadServingMetrics.ForPrerenderInitialNavigationFailed."
+      "FallbackAborted.Match0.PrefetchMatchMetrics.Count",
+      1, 1);
+  histogram_tester.ExpectUniqueSample(
+      "PreloadServingMetrics.ForPrerenderInitialNavigationFailed."
+      "FallbackAborted.Match0.PrefetchMatchMetrics.IsPotentialMatch",
+      false, 1);
+  histogram_tester.ExpectUniqueSample(
+      "PreloadServingMetrics.ForPrerenderInitialNavigationFailed."
+      "FallbackAborted.Match0.PrefetchMatchMetrics.ExistsPaop",
+      true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "PreloadServingMetrics.ForPrerenderInitialNavigationFailed."
+      "FallbackAborted.Match0.PrefetchMatchMetrics.ExistsPaopThen."
+      "PrefetchStatus",
+      PrefetchStatus::kPrefetchNotStarted, 1);
+  histogram_tester.ExpectUniqueSample(
+      "PreloadServingMetrics.ForPrerenderInitialNavigationFailed."
+      "FallbackAborted.Match0.PrefetchMatchMetrics.ExistsPaopThen."
+      "ServableStateAndMatcherAction",
+      // 4 = PrefetchServableState::kNotServable
+      // 1 = PrefetchMatchResolverAction::ActionKind::kDrop
+      // 2 = PrefetchContainer::LoadState::kEligible
+      // 1 = is_expired == false
+      4121, 1);
+  histogram_tester.ExpectUniqueSample(
+      "PreloadServingMetrics.ForPrerenderInitialNavigationFailed."
+      "FallbackAborted.Match0.PrefetchMatchMetrics.ExistsPaopThen."
+      "PotentialCandidateServingResultAndServableStateAndMatcherAction",
+      // 13 = PrefetchPotentialCandidateServingResult::kNotServedNoCandidates
+      // 4 = PrefetchServableState::kNotServable
+      // 1 = PrefetchMatchResolverAction::ActionKind::kDrop
+      // 2 = PrefetchContainer::LoadState::kEligible
+      // 1 = is_expired == false
+      134121, 1);
+  histogram_tester.ExpectUniqueSample(
+      "PreloadServingMetrics.ForPrerenderInitialNavigationFailed."
+      "FallbackAborted.Match0.PrefetchMatchMetrics.ExistsPaopThen.QueueSize",
+      5, 1);
+  histogram_tester.ExpectUniqueSample(
+      "PreloadServingMetrics.ForPrerenderInitialNavigationFailed."
+      "FallbackAborted.Match0.PrefetchMatchMetrics.ExistsPaopThen."
+      "QueueIndexPlus1",
+      4, 1);
+
+  histogram_tester.ExpectTotalCount(
+      "PreloadServingMetrics.ForPrerenderInitialNavigationFailed."
+      "FallbackAborted.Match1.PrefetchMatchMetrics.Count",
       0);
 }
 

@@ -13,6 +13,7 @@
 #include "content/browser/preloading/prefetch/prefetch_features.h"
 #include "content/browser/preloading/prefetch/prefetch_params.h"
 #include "content/browser/preloading/prefetch/prefetch_request.h"
+#include "content/browser/preloading/prefetch/prefetch_scheduler.h"
 #include "content/browser/preloading/prefetch/prefetch_service.h"
 #include "content/browser/preloading/prefetch/prefetch_serving_handle.h"
 #include "content/browser/preloading/preload_serving_metrics_holder.h"
@@ -660,7 +661,11 @@ void PrefetchMatchResolver::UnblockInternal(
             ? std::make_unique<PrefetchContainerMetrics>(
                   prefetch_container->GetPrefetchContainerMetrics())
             : std::unique_ptr<PrefetchContainerMetrics>(nullptr);
+
+    AttachPrefetchMatchPrerenderDebugMetrics();
+
     prefetch_match_metrics_->time_match_end = base::TimeTicks::Now();
+
     if (navigation_request_for_metrics_) {
       auto& preload_serving_metrics_holder =
           *PreloadServingMetricsHolder::GetOrCreateForNavigationHandle(
@@ -676,6 +681,52 @@ void PrefetchMatchResolver::UnblockInternal(
                                                              std::move(self_));
 
   std::move(callback).Run(std::move(serving_handle));
+}
+
+void PrefetchMatchResolver::AttachPrefetchMatchPrerenderDebugMetrics() {
+  if (!UsePrefetchScheduler()) {
+    return;
+  }
+
+  if (!prerender_host_for_metrics_) {
+    return;
+  }
+
+  if (!prefetch_service_) {
+    return;
+  }
+
+  // We can't use `prefetch_ahead_of_prerender_for_metrics` as it is set in
+  // `RegisterCandidate()` and we'll miss
+  // `PrefetchMatchResolverAction::ActionKind::kDrop` case, which is our main
+  // motivation for this metrics.
+  PrefetchContainer* prefetch_container =
+      prefetch_service_->FindPrefetchAheadOfPrerenderForMetrics(
+          prerender_host_for_metrics_->preload_pipeline_info());
+
+  auto metrics = std::make_unique<PrefetchMatchPrerenderDebugMetrics>();
+  [&]() {
+    if (!prefetch_container) {
+      return;
+    }
+
+    metrics->prefetch_ahead_of_prerender_debug_metrics =
+        std::make_unique<PrefetchMatchPrefetchAheadOfPrerenderDebugMetrics>();
+    metrics->prefetch_ahead_of_prerender_debug_metrics->prefetch_status =
+        prefetch_container->GetPrefetchStatus();
+    metrics->prefetch_ahead_of_prerender_debug_metrics->servable_state =
+        prefetch_container->GetServableState(PrefetchCacheableDuration());
+    metrics->prefetch_ahead_of_prerender_debug_metrics->match_resolver_action =
+        prefetch_container->GetMatchResolverAction(PrefetchCacheableDuration());
+    metrics->prefetch_ahead_of_prerender_debug_metrics->queue_size =
+        prefetch_service_->GetPrefetchSchedulerForMetrics()
+            .GetQueueSizeForMetrics();
+    metrics->prefetch_ahead_of_prerender_debug_metrics->queue_index =
+        prefetch_service_->GetPrefetchSchedulerForMetrics().GetIndexForMetrics(
+            *prefetch_container);
+  }();
+
+  prefetch_match_metrics_->prerender_debug_metrics = std::move(metrics);
 }
 
 }  // namespace content

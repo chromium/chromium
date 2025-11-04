@@ -48,6 +48,16 @@ PrerenderURLLoaderThrottle::MaybeCreate(FrameTreeNodeId frame_tree_node_id) {
     return nullptr;
   }
 
+  if (PreloadServingMetricsCapsule::IsFeatureEnabled()) {
+    if (frame_tree_node->navigation_request()) {
+      auto& preload_serving_metrics_holder =
+          *PreloadServingMetricsHolder::GetOrCreateForNavigationHandle(
+              *frame_tree_node->navigation_request());
+      preload_serving_metrics_holder
+          .SetIsPrerenderAbortedByPrerenderURLLoaderThrottle(true);
+    }
+  }
+
   // If the prefetch ahead of prerender "failed", `PrerenderURLLoaderThrottle`
   // is added to the `ThrottlingURLLoader` for the corresponding prerendering
   // navigation, and the `PrerenderURLLoaderThrottle` always cancels the network

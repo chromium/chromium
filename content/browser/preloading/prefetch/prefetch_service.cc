@@ -2012,6 +2012,18 @@ PrefetchService::CollectMatchCandidates(
       std::move(serving_page_metrics_container));
 }
 
+PrefetchContainer* PrefetchService::FindPrefetchAheadOfPrerenderForMetrics(
+    const PreloadPipelineInfo& pipeline_info) {
+  for (const auto& it : owned_prefetches()) {
+    auto& prefetch_container = it.second;
+    if (prefetch_container->HasPreloadPipelineInfoForMetrics(pipeline_info)) {
+      return prefetch_container.get();
+    }
+  }
+
+  return nullptr;
+}
+
 base::WeakPtr<PrefetchContainer> PrefetchService::MatchUrl(
     const PrefetchKey& key) const {
   return no_vary_search::MatchUrl(key, owned_prefetches());

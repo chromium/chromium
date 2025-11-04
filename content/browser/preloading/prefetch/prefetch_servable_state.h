@@ -58,7 +58,7 @@ CONTENT_EXPORT std::ostream& operator<<(std::ostream& ostream,
 //
 // Mid-term plan:
 // https://docs.google.com/document/d/1yRYq7GekwIjvvF5XRjDa6bGoba3HQKrlcw8vZIjTIo0
-class PrefetchMatchResolverAction {
+class CONTENT_EXPORT PrefetchMatchResolverAction {
  public:
   enum class ActionKind {
     // The `PrefetchContainer` is not available now. Please drop and don't wait.
