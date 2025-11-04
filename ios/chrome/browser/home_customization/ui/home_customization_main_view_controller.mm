@@ -342,6 +342,8 @@
                                                    previewProvider:nil
                                                     actionProvider:nil];
   }
+  UICollectionViewCell* cell =
+      [collectionView cellForItemAtIndexPath:indexPath];
 
   __weak __typeof(self) weakSelf = self;
 
@@ -352,30 +354,45 @@
           ? UIMenuElementAttributesDisabled
           : UIMenuElementAttributesDestructive;
 
+  UIActionHandler deleteHandler = ^(UIAction* action) {
+    [weakSelf handleDeleteBackgroundActionAtIndexPath:indexPath];
+  };
+
+  UIAction* deleteAction = [UIAction
+      actionWithTitle:
+          l10n_util::GetNSString(
+              IDS_IOS_HOME_CUSTOMIZATION_CONTEXT_MENU_DELETE_RECENT_BACKGROUND_TITLE)
+                image:DefaultSymbolWithPointSize(
+                          kTrashSymbol,
+                          [[UIFont
+                              preferredFontForTextStyle:UIFontTextStyleBody]
+                              pointSize])
+           identifier:nil
+              handler:^(UIAction* action) {
+                [weakSelf handleDeleteBackgroundActionAtIndexPath:indexPath];
+              }];
+  deleteAction.attributes = actionAttributes;
+
+  UIAccessibilityCustomAction* accessibilityDeleteAction =
+      [[UIAccessibilityCustomAction alloc]
+           initWithName:deleteAction.title
+          actionHandler:^BOOL(UIAccessibilityCustomAction* _customAction) {
+            deleteHandler(deleteAction);
+            return YES;
+          }];
+
+  NSArray<UIAction*>* actions = @[ deleteAction ];
+  NSArray<UIAccessibilityCustomAction*>* accessibilityCustomActions =
+      @[ accessibilityDeleteAction ];
+
+  cell.accessibilityCustomActions = accessibilityCustomActions;
+
   return [UIContextMenuConfiguration
       configurationWithIdentifier:indexPath
                   previewProvider:nil
                    actionProvider:^UIMenu*(
                        NSArray<UIMenuElement*>* suggestedActions) {
-                     UIAction* deleteAction = [UIAction
-                         actionWithTitle:
-                             l10n_util::GetNSString(
-                                 IDS_IOS_HOME_CUSTOMIZATION_CONTEXT_MENU_DELETE_RECENT_BACKGROUND_TITLE)
-                                   image:DefaultSymbolWithPointSize(
-                                             kTrashSymbol,
-                                             [[UIFont preferredFontForTextStyle:
-                                                          UIFontTextStyleBody]
-                                                 pointSize])
-                              identifier:nil
-                                 handler:^(UIAction* action) {
-                                   [weakSelf
-                                       handleDeleteBackgroundActionAtIndexPath:
-                                           indexPath];
-                                 }];
-                     deleteAction.attributes = actionAttributes;
-
-                     return [UIMenu menuWithTitle:@""
-                                         children:@[ deleteAction ]];
+                     return [UIMenu menuWithTitle:@"" children:actions];
                    }];
 }
 
