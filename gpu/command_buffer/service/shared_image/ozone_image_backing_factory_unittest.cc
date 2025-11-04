@@ -13,7 +13,6 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_test_base.h"
 #include "gpu/config/gpu_finch_features.h"
-#include "gpu/ipc/common/gpu_memory_buffer_support.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/buffer_format_util.h"
@@ -21,6 +20,7 @@
 #include "ui/gl/gl_surface_egl.h"
 #include "ui/gl/gl_utils.h"
 #include "ui/gl/init/gl_factory.h"
+#include "ui/ozone/public/ozone_platform.h"
 
 namespace gpu {
 
@@ -622,9 +622,8 @@ TEST_F(OzoneImageBackingFactoryTest, CreateGpuMemoryBufferHandle) {
         gfx::BufferUsage::SCANOUT_FRONT_RENDERING,
     };
     for (auto usage : usages) {
-      if (!gpu::GpuMemoryBufferSupport::
-              IsNativeGpuMemoryBufferConfigurationSupportedForTesting(format,
-                                                                      usage)) {
+      if (!ui::OzonePlatform::GetInstance()->IsNativePixmapConfigSupported(
+              viz::SharedImageFormatToBufferFormat(format), usage)) {
         continue;
       }
 
