@@ -1658,37 +1658,6 @@ class PasswordChangeBrowserTestWithLoginCheck
 };
 
 IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTestWithLoginCheck,
-                       PasswordChangeDoesNotStartUserIsLoggedOut) {
-  const GURL main_url = WebContents()->GetLastCommittedURL();
-  EXPECT_CALL(*affiliation_service(), GetChangePasswordURL(main_url))
-      .WillOnce(Return(GURL(kChangePasswordURL)));
-  password_change_service()->OfferPasswordChangeUi(
-      CreatePasswordForm(main_url, u"test", u"pa$$word"), WebContents());
-  auto* delegate =
-      password_change_service()->GetPasswordChangeDelegate(WebContents());
-  delegate->StartPasswordChangeFlow();
-  auto* delegate_impl = static_cast<PasswordChangeDelegateImpl*>(delegate);
-
-  // Verify that the background tab was not created yet.
-  EXPECT_FALSE(delegate_impl->executor());
-  EXPECT_TRUE(delegate_impl->login_checker());
-  EXPECT_EQ(delegate->GetCurrentState(),
-            PasswordChangeDelegate::State::kWaitingForChangePasswordForm);
-
-  delegate_impl->login_checker()->RespondWithLoginStatus(IsLoggedIn(false));
-  EXPECT_EQ(delegate->GetCurrentState(),
-            PasswordChangeDelegate::State::kLoginFormDetected);
-  // Verify that password change doesn't fails if the user is not logged in
-  // after reaching attempts limit.
-  for (auto i = 1; i < LoginStateChecker::kMaxLoginChecks; i++) {
-    delegate_impl->login_checker()->RespondWithLoginStatus(IsLoggedIn(false));
-  }
-  EXPECT_FALSE(delegate_impl->login_checker());
-  EXPECT_EQ(delegate->GetCurrentState(),
-            PasswordChangeDelegate::State::kLoginFormDetectedUserCanContinue);
-}
-
-IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTestWithLoginCheck,
                        OpenTabWhenLoggedOut) {
   const GURL main_url = WebContents()->GetLastCommittedURL();
   EXPECT_CALL(*affiliation_service(), GetChangePasswordURL(main_url))
@@ -1716,7 +1685,17 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTestWithLoginCheck,
   EXPECT_FALSE(delegate_impl->login_checker());
   EXPECT_FALSE(delegate_impl->executor());
   EXPECT_EQ(delegate->GetCurrentState(),
-            PasswordChangeDelegate::State::kLoginFormDetectedUserCanContinue);
+            PasswordChangeDelegate::State::kChangePasswordFormNotFound);
+
+  // When a user is not logged in, we still open a new tab with the
+  // change password URL, so there should be two tabs after.
+  ASSERT_EQ(browser()->tab_strip_model()->count(), 1);
+  delegate->OpenPasswordChangeTab();
+  ASSERT_EQ(browser()->tab_strip_model()->count(), 2);
+  auto* change_password_contents =
+      browser()->tab_strip_model()->GetWebContentsAt(1);
+  ASSERT_EQ(change_password_contents->GetVisibleURL(),
+            GURL(kChangePasswordURL));
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTestWithLoginCheck,
@@ -1823,74 +1802,6 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTestWithLoginCheck,
           PasswordChangeQuality_StepQuality_SubmissionStatus_UNKNOWN_STATUS,
       /*final_status=*/
       FinalModelStatus::FINAL_MODEL_STATUS_UNSPECIFIED);
-}
-
-IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTestWithLoginCheck,
-                       UserSkipsLoginCheck) {
-  const GURL main_url = WebContents()->GetLastCommittedURL();
-  EXPECT_CALL(*affiliation_service(), GetChangePasswordURL(main_url))
-      .WillOnce(Return(GURL(kChangePasswordURL)));
-  password_change_service()->OfferPasswordChangeUi(
-      CreatePasswordForm(main_url, u"test", u"pa$$word"), WebContents());
-  SetModelQualityLogsUploader();
-  auto* delegate =
-      password_change_service()->GetPasswordChangeDelegate(WebContents());
-  delegate->StartPasswordChangeFlow();
-  auto* delegate_impl = static_cast<PasswordChangeDelegateImpl*>(delegate);
-  // Verify that the background tab was not created yet.
-  EXPECT_FALSE(delegate_impl->executor());
-  EXPECT_TRUE(delegate_impl->login_checker());
-  EXPECT_EQ(delegate->GetCurrentState(),
-            PasswordChangeDelegate::State::kWaitingForChangePasswordForm);
-
-  delegate_impl->login_checker()->RespondWithLoginStatus(IsLoggedIn(false));
-  EXPECT_TRUE(delegate_impl->login_checker());
-  EXPECT_FALSE(delegate_impl->executor());
-  EXPECT_EQ(delegate->GetCurrentState(),
-            PasswordChangeDelegate::State::kLoginFormDetected);
-
-  // Failing for the second time changes the state to give an option to
-  // continue.
-  delegate_impl->login_checker()->RespondWithLoginStatus(IsLoggedIn(false));
-  EXPECT_TRUE(delegate_impl->login_checker());
-  EXPECT_FALSE(delegate_impl->executor());
-  EXPECT_EQ(delegate->GetCurrentState(),
-            PasswordChangeDelegate::State::kLoginFormDetectedUserCanContinue);
-
-  // User stays in `kLoginFormDetectedUserCanContinue` after subsequent
-  // failures.
-  delegate_impl->login_checker()->RespondWithLoginStatus(IsLoggedIn(false));
-  EXPECT_EQ(delegate->GetCurrentState(),
-            PasswordChangeDelegate::State::kLoginFormDetectedUserCanContinue);
-
-  // Now the user clicks "Continue" which skips login check.
-  delegate->OnUserSkippedLoginCheck();
-  EXPECT_FALSE(delegate_impl->login_checker());
-  EXPECT_TRUE(delegate_impl->executor());
-  EXPECT_EQ(delegate->GetCurrentState(),
-            PasswordChangeDelegate::State::kWaitingForChangePasswordForm);
-  // Stop the flow to check the correct state of the quality log.
-  delegate->Stop();
-  // The quality log is uploaded in the destructor.
-  base::WeakPtr<PasswordChangeDelegate> delegate_weak_ptr =
-      delegate->AsWeakPtr();
-  EXPECT_TRUE(base::test::RunUntil(
-      [&delegate_weak_ptr]() { return !delegate_weak_ptr; }));
-  VerifyUniqueQualityLog(
-      /*login_check_status=*/QualityStatus::
-          PasswordChangeQuality_StepQuality_SubmissionStatus_UNEXPECTED_STATE,
-      /*open_form_status=*/
-      QualityStatus::
-          PasswordChangeQuality_StepQuality_SubmissionStatus_UNKNOWN_STATUS,
-      /* submit_form_status=*/
-      QualityStatus::
-          PasswordChangeQuality_StepQuality_SubmissionStatus_UNKNOWN_STATUS,
-      /*verify_submission_status=*/
-      QualityStatus::
-          PasswordChangeQuality_StepQuality_SubmissionStatus_UNKNOWN_STATUS,
-      /*final_status=*/
-      FinalModelStatus::FINAL_MODEL_STATUS_UNSPECIFIED,
-      /*login_check_was_skipped=*/true);
 }
 
 class PasswordChangeBrowserTestShowHiddenTab
