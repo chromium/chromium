@@ -2,12 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/glic/host/glic_actor_interactive_uitest_common.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -21,6 +23,11 @@ using MultiStep = GlicActorUiTest::MultiStep;
 
 class GlicActorWindowManagementUiTest : public GlicActorUiTest {
  public:
+  GlicActorWindowManagementUiTest() {
+    // TODO (crbug.com/454665367): Re-enable Multi-Instance for this test suite.
+    feature_list_.InitAndDisableFeature(features::kGlicMultiInstance);
+  }
+
   MultiStep CreateWindowAction(actor::TaskId& task_id,
                                ExpectedErrorResult expected_result = {});
 
@@ -31,6 +38,9 @@ class GlicActorWindowManagementUiTest : public GlicActorUiTest {
   MultiStep CloseWindowAction(actor::TaskId& task_id,
                               SessionID& window_id,
                               ExpectedErrorResult expected_result = {});
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 MultiStep GlicActorWindowManagementUiTest::CreateWindowAction(
@@ -98,6 +108,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorWindowManagementUiTest, WindowManagementTools) {
 
   // clang-format off
   RunTestSequence(
+    // TODO(crbug.com/454665367): Test the Glic Instance rather than the Glic UI.
       InitializeWithOpenGlicWindow(),
       StartActorTaskInNewTab(task_url, kNewActorTabId),
       WaitForWebContentsReady(kNewActorTabId, task_url),

@@ -5,6 +5,7 @@
 #include "base/base64.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/protobuf_matchers.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/actor/actor_tab_data.h"
@@ -124,9 +125,12 @@ IN_PROC_BROWSER_TEST_F(GlicActorGeneralUiTest,
 IN_PROC_BROWSER_TEST_F(GlicActorGeneralUiTest, ActionProtoInvalid) {
   std::string encodedProto = base::Base64Encode("invalid serialized bytes");
   RunTestSequence(
+      // clang-format off
       InitializeWithOpenGlicWindow(),
+      CreateTask(task_id_, ""),
       ExecuteAction(ArbitraryStringProvider(encodedProto),
                     mojom::PerformActionsErrorReason::kInvalidProto));
+  // clang-format on
 }
 
 IN_PROC_BROWSER_TEST_F(GlicActorGeneralUiTest, ActionTargetNotFound) {
@@ -217,7 +221,18 @@ IN_PROC_BROWSER_TEST_F(GlicActorWithActorDisabledUiTest, ActorNotAvailable) {
                       "() => { return !(client.browser.actInFocusedTab); }")));
 }
 
-IN_PROC_BROWSER_TEST_F(GlicActorGeneralUiTest,
+class GlicActorGeneralUiTestWithoutMultiInstance
+    : public GlicActorGeneralUiTest {
+ public:
+  GlicActorGeneralUiTestWithoutMultiInstance() {
+    feature_list_.InitAndDisableFeature(features::kGlicMultiInstance);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(GlicActorGeneralUiTestWithoutMultiInstance,
                        ActuationSucceedsOnBackgroundTab) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOtherTabId);
@@ -231,6 +246,8 @@ IN_PROC_BROWSER_TEST_F(GlicActorGeneralUiTest,
       // clang-format off
       InitializeWithOpenGlicWindow(),
       StartActorTaskInNewTab(task_url, kNewActorTabId),
+      // TODO (crbug.com/457501521): Focused tab context doesn't exist when
+      // Multi-Instance is enabled.
       GetPageContextFromFocusedTab(),
       SetOnIncompatibleAction(OnIncompatibleAction::kSkipTest,
                               kActivateSurfaceIncompatibilityNotice),
@@ -261,13 +278,14 @@ IN_PROC_BROWSER_TEST_F(GlicActorGeneralUiTest,
 
   // clang-format off
   RunTestSequence(
+      InitializeWithOpenGlicWindow(),
+      StartActorTaskInNewTab(task_url, kNewActorTabId),
+      GetPageContextFromFocusedTab(),
+
       // Add an extra tab to ensure that the window's tab list is filled in
       // correctly.
       AddInstrumentedTab(kOtherTabId, GURL(chrome::kChromeUISettingsURL)),
-      InitializeWithOpenGlicWindow(),
-      StartActorTaskInNewTab(task_url, kNewActorTabId),
 
-      GetPageContextFromFocusedTab(),
       ClickAction(kClickableButtonLabel,
                   ClickAction::LEFT, ClickAction::SINGLE),
 
@@ -279,7 +297,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorGeneralUiTest,
         apc::WindowObservation window =
            last_execution_result()->windows().at(0);
         EXPECT_EQ(window.id(), browser()->session_id().id());
-        EXPECT_EQ(window.activated_tab_id(), tab_handle_.raw_value());
+        EXPECT_NE(window.activated_tab_id(), tab_handle_.raw_value());
         EXPECT_TRUE(window.active());
         ASSERT_GE(browser()->tab_strip_model()->count(), 2);
         EXPECT_EQ(window.tab_ids().size(),
@@ -324,6 +342,11 @@ IN_PROC_BROWSER_TEST_F(GlicActorGeneralUiTest, WaitObserveTabFirstAction) {
 
   // clang-format off
   RunTestSequence(
+      OpenGlicWindow(GlicWindowMode::kAttached),
+
+      // Create a task without taking any actions so as not to add a tab to the
+      // task's acting set.
+      CreateTask(task_id_, ""),
       // Add two tabs to ensure the correct tab is being added to the
       // observation result.
       AddInstrumentedTab(kTab1Id, url1),
@@ -342,11 +365,6 @@ IN_PROC_BROWSER_TEST_F(GlicActorGeneralUiTest, WaitObserveTabFirstAction) {
                 AsInstrumentedWebContents(el)->web_contents();
             tab2 = tabs::TabInterface::GetFromContents(contents)->GetHandle();
           })),
-
-      // Create a task without taking any actions so as not to add a tab to the
-      // task's acting set.
-      OpenGlicWindow(GlicWindowMode::kAttached),
-      CreateTask(task_id_, ""),
 
       // Wait observing tab1. Ensure tab1 has a TabObservation in the result.
       WaitAction(task_id_, kWaitTime, tab1),

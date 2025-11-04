@@ -54,10 +54,15 @@ class GlicActorDragDSFTest : public GlicActorUiTest,
  public:
   GlicActorDragDSFTest() {
     display::Display::SetForceDeviceScaleFactor(DeviceScaleFactor());
+    // TODO (crbug.com/454665367): Re-enable Multi-Instance for this test suite.
+    scoped_feature_list_.InitAndDisableFeature(features::kGlicMultiInstance);
   }
   ~GlicActorDragDSFTest() override = default;
 
   int DeviceScaleFactor() const { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Ensure the drag tool sends the expected mouse down, move and up events.
