@@ -30,8 +30,6 @@ class ASH_PUBLIC_EXPORT ColorProvider {
   };
 
   enum class ContentLayerType {
-    kSeparatorColor,
-
     kTextColorPrimary,
     kTextColorSecondary,
     kTextColorURL,
@@ -39,14 +37,7 @@ class ASH_PUBLIC_EXPORT ColorProvider {
     kIconColorPrimary,
     kIconColorSecondary,
     kIconColorAlert,
-    kIconColorWarning,
-
-    // Color for prominent icon, e.g, "Add connection" icon button inside
-    // VPN detailed view.
-    kIconColorProminent,
-
-    // Background for kIconColorSecondary.
-    kIconColorSecondaryBackground,
+    kIconColorWarning
 
   };
 

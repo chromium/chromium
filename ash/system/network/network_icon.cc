@@ -28,6 +28,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_provider.h"
+#include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_operations.h"
@@ -504,12 +505,7 @@ SkColor GetDefaultColorForIconType(const ui::ColorProvider* color_provider,
                        cros_tokens::kCrosSysSystemOnPrimaryContainer)
                  : ash_color_provider->GetColor(cros_tokens::kColorPrimary);
     case ICON_TYPE_FEATURE_POD_DISABLED:
-      return use_color_provider
-                 ? color_provider->GetColor(cros_tokens::kCrosSysDisabled)
-                 : color_utils::GetResultingPaintColor(
-                       ColorUtil::GetDisabledColor(GetDefaultColorForIconType(
-                           color_provider, ICON_TYPE_FEATURE_POD)),
-                       ash_color_provider->GetBackgroundColor());
+      return color_provider->GetColor(cros_tokens::kCrosSysDisabled);
     default:
       return use_color_provider
                  ? color_provider->GetColor(cros_tokens::kCrosSysPrimary)

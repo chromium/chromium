@@ -20,6 +20,7 @@
 #include "ui/base/models/image_model.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/font.h"
 #include "ui/gfx/geometry/insets_outsets_base.h"
@@ -131,9 +132,7 @@ void ArcVmDataMigrationConfirmationDialog::InitializeView(
   view->AddChildView(
       views::Builder<views::ImageView>()
           .SetImage(ui::ImageModel::FromVectorIcon(
-              kSaveIcon, ash::AshColorProvider::Get()->GetContentLayerColor(
-                             ash::AshColorProvider::ContentLayerType::
-                                 kIconColorProminent)))
+              kSaveIcon, cros_tokens::kIconColorProminent))
           .SetHorizontalAlignment(views::ImageView::Alignment::kLeading)
           .Build());
 

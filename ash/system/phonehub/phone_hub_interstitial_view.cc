@@ -57,8 +57,7 @@ PhoneHubInterstitialView::PhoneHubInterstitialView(bool show_progress,
     progress_bar_ = progress_bar_container->AddChildView(
         std::make_unique<views::ProgressBar>());
     progress_bar_->SetPreferredHeight(2);
-    progress_bar_->SetForegroundColor(color_provider->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kIconColorProminent));
+    progress_bar_->SetForegroundColor(cros_tokens::kIconColorProminent);
     progress_bar_->SetValue(-1.0);
   }
 

@@ -14,6 +14,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/devicetype_utils.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -150,11 +151,9 @@ void SubFeatureOptInView::UpdateLabels() {
 }
 
 void SubFeatureOptInView::InitLayout() {
-  // TODO(b/322067753): Replace usage of |AshColorProvider| with |cros_tokens|.
-  const SkColor border_color = AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kSeparatorColor);
-  SetBorder(views::CreateRoundedRectBorder(
-      kBorderThicknessDip, kBorderCornerRadiusDip, border_color));
+  SetBorder(views::CreateRoundedRectBorder(kBorderThicknessDip,
+                                           kBorderCornerRadiusDip,
+                                           cros_tokens::kSeparatorColor));
 
   auto* layout = SetLayoutManager(std::make_unique<views::FlexLayout>());
   layout->SetOrientation(views::LayoutOrientation::kVertical);

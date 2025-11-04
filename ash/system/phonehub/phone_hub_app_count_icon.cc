@@ -4,6 +4,7 @@
 
 #include "ash/system/phonehub/phone_hub_app_count_icon.h"
 
+#include "ash/style/ash_color_id.h"
 #include "ash/style/ash_color_provider.h"
 #include "base/i18n/number_formatting.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -39,8 +40,8 @@ class NumberIconImageSource : public gfx::CanvasImageSource {
     flags.setBlendMode(SkBlendMode::kXor);
     flags.setStyle(cc::PaintFlags::kFill_Style);
     flags.setAntiAlias(true);
-    flags.setColor(AshColorProvider::Get()->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kIconColorSecondaryBackground));
+    flags.setColor(AshColorProvider::Get()->GetColor(
+        kColorAshIconColorSecondaryBackground));
     canvas->DrawCircle(gfx::PointF(radius, radius), radius, flags);
   }
 

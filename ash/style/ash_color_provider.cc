@@ -68,12 +68,8 @@ SkColor AshColorProvider::GetControlsLayerColor(ControlsLayerType type) const {
 SkColor AshColorProvider::GetContentLayerColor(ContentLayerType type) const {
   auto* color_provider = GetColorProvider();
   switch (type) {
-    case ContentLayerType::kSeparatorColor:
-      return color_provider->GetColor(kColorAshSeparatorColor);
     case ContentLayerType::kIconColorSecondary:
       return color_provider->GetColor(kColorAshIconColorSecondary);
-    case ContentLayerType::kIconColorSecondaryBackground:
-      return color_provider->GetColor(kColorAshIconColorSecondaryBackground);
     case ContentLayerType::kTextColorURL:
       return color_provider->GetColor(kColorAshTextColorURL);
     case ContentLayerType::kTextColorPrimary:
@@ -86,8 +82,6 @@ SkColor AshColorProvider::GetContentLayerColor(ContentLayerType type) const {
       return color_provider->GetColor(kColorAshIconColorAlert);
     case ContentLayerType::kIconColorWarning:
       return color_provider->GetColor(kColorAshIconColorWarning);
-    case ContentLayerType::kIconColorProminent:
-      return color_provider->GetColor(kColorAshIconColorProminent);
   }
 }
 

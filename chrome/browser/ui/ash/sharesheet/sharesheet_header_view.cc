@@ -108,7 +108,6 @@ class SharesheetHeaderView::SharesheetImagePreview : public views::View {
 
  public:
   explicit SharesheetImagePreview(size_t file_count) {
-    auto* color_provider = AshColorProvider::Get();
     const bool is_dark_mode_enabled =
         DarkLightModeControllerImpl::Get()->IsDarkModeEnabled();
     SetBackground(views::CreateRoundedRectBackground(
@@ -156,8 +155,8 @@ class SharesheetHeaderView::SharesheetImagePreview : public views::View {
             /*use_debug_colors=*/false));
         label->SetHorizontalAlignment(gfx::ALIGN_CENTER);
         auto second_tone_icon_color_prominent =
-            ColorUtil::GetSecondToneColor(color_provider->GetContentLayerColor(
-                AshColorProvider::ContentLayerType::kIconColorProminent));
+            ColorUtil::GetSecondToneColor(AshColorProvider::Get()->GetColor(
+                cros_tokens::kIconColorProminent));
         label->SetBackground(views::CreateRoundedRectBackground(
             second_tone_icon_color_prominent, kImagePreviewIconCornerRadius));
         label->SetPreferredSize(kImagePreviewQuarterSize);
@@ -288,8 +287,8 @@ SharesheetHeaderView::SharesheetHeaderView(apps::IntentPtr intent,
     ResolveImages();
   } else {
     DCHECK_GT(image_preview_->GetImageViewCount(), 0u);
-    const auto icon_color = ColorProvider::Get()->GetContentLayerColor(
-        ColorProvider::ContentLayerType::kIconColorProminent);
+    const auto icon_color =
+        ColorProvider::Get()->GetColor(cros_tokens::kIconColorProminent);
     gfx::ImageSkia file_type_icon = gfx::CreateVectorIcon(
         GetTextVectorIcon(),
         sharesheet::kImagePreviewPlaceholderIconContentSize, icon_color);

@@ -118,8 +118,8 @@ class SeparatorWithLayer : public views::View {
 
   void OnThemeChanged() override {
     views::View::OnThemeChanged();
-    layer()->SetColor(ColorProvider::Get()->GetContentLayerColor(
-        ColorProvider::ContentLayerType::kSeparatorColor));
+    layer()->SetColor(
+        GetColorProvider()->GetColor(cros_tokens::kSeparatorColor));
   }
 };
 

@@ -36,6 +36,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/paint_recorder.h"
@@ -461,8 +462,7 @@ class NotifierViewCheckbox : public views::Checkbox {
   // views::Checkbox:
   SkColor GetIconImageColor(int icon_state) const override {
     if (icon_state & IconState::CHECKED) {
-      return AshColorProvider::Get()->GetContentLayerColor(
-          ContentLayerType::kIconColorProminent);
+      return GetColorProvider()->GetColor(cros_tokens::kIconColorProminent);
     }
     return views::Checkbox::GetIconImageColor(icon_state);
   }
