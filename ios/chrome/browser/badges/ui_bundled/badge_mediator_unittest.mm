@@ -85,6 +85,8 @@ class BadgeMediatorTest : public testing::TestWithParam<TestParam> {
         [[BadgeMediator alloc] initWithWebStateList:web_state_list()
                                    overlayPresenter:overlay_presenter_];
     badge_mediator_.consumer = badge_consumer_;
+
+    feature_list_.InitAndDisableFeature(kAutofillBadgeRemoval);
   }
 
   ~BadgeMediatorTest() override {
@@ -145,6 +147,7 @@ class BadgeMediatorTest : public testing::TestWithParam<TestParam> {
   }
 
   web::WebTaskEnvironment environment_;
+  base::test::ScopedFeatureList feature_list_;
   FakeBadgeConsumer* badge_consumer_;
   std::unique_ptr<ProfileIOS> profile_;
   std::unique_ptr<Browser> browser_;
@@ -323,7 +326,7 @@ TEST_P(BadgeMediatorTest, InfobarBannerOverlayObserving) {
 // Test that no badge is shown when an autofill infobar is added and the feature
 // to remove the badge is enabled.
 TEST_P(BadgeMediatorTest, BadgeMediatorTestNoBadge) {
-  base::test::ScopedFeatureList feature_list_{kAutofillBadgeRemoval};
+  base::test::ScopedFeatureList feature_list{kAutofillBadgeRemoval};
 
   AppendActivatedWebState();
 

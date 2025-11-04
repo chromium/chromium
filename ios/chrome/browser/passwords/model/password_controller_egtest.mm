@@ -256,11 +256,6 @@ void LoginOnUff() {
         password_manager::features::kMarkAllCredentialsAsLeaked);
   }
 
-  if ([self isRunningTest:@selector(FLAKY_testSaveWithoutBadges)] ||
-      [self isRunningTest:@selector(FLAKY_testUpdateWithoutBadges)]) {
-    config.features_enabled.push_back(kAutofillBadgeRemoval);
-  }
-
   if ([self isRunningTest:@selector(testSavePromptAppearsOnFormSubmission)] ||
       [self isRunningTest:@selector(testUpdatePromptAppearsOnFormSubmission)]) {
     // These tests need a badge.

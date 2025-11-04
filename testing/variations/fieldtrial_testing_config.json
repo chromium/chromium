@@ -12806,21 +12806,6 @@
             ]
         }
     ],
-    "IOSAutofillBadgeRemoval": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillBadgeRemoval"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSAutofillBottomSheetNewBlur": [
         {
             "platforms": [

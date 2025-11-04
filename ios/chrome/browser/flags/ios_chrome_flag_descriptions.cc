@@ -1420,11 +1420,6 @@ const char kRefactorToolbarsSizeName[] = "Refactor toolbars size";
 const char kRefactorToolbarsSizeDescription[] =
     "When enabled, the toolbars size does not use broadcaster but observers.";
 
-const char kRemoveAutofillBadgesName[] = "Remove Autofill Badges";
-const char kRemoveAutofillBadgesDescription[] =
-    "Removes the Autofill badges (passwords, addresses, and credit cards) from "
-    "the omnibox.";
-
 const char kRemoveExcessNTPsExperimentName[] = "Remove extra New Tab Pages";
 const char kRemoveExcessNTPsExperimentDescription[] =
     "When enabled, extra tabs with the New Tab Page open and no navigation "

@@ -256,10 +256,6 @@ void FillAndSubmitXframeCreditCardForm() {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
 
-  if ([self isRunningTest:@selector(FLAKY_testInfobarWithoutBadge)]) {
-    config.features_enabled.push_back(kAutofillBadgeRemoval);
-  }
-
   if ([self isRunningTest:@selector(testOfferLocalSave_WithInfobar)]) {
     // This test needs the badge.
     config.features_disabled.push_back(kAutofillBadgeRemoval);
@@ -999,7 +995,6 @@ void FillAndSubmitXframeCreditCardForm() {
 // Ensures that the bottomsheet goes away and the credit card is saved to Chrome
 // if the user accepts local save.
 - (void)testUserData_LocalSave_UserAccepts {
-
   // Ensure there are no saved credit cards.
   GREYAssertEqual(0U, [AutofillAppInterface localCreditCount],
                   @"There should be no saved credit card.");

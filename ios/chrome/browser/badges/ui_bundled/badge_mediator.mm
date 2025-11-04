@@ -388,8 +388,7 @@ const char kInfobarOverflowBadgeShownUserAction[] =
         infobarWithType:InfobarTypeForBadgeType(displayedBadge.badgeType)];
   }
 
-  [self.consumer updateDisplayedBadge:displayedBadge
-                              infoBar:infoBar];
+  [self.consumer updateDisplayedBadge:displayedBadge infoBar:infoBar];
   [self updateConsumerReadStatus];
 }
 

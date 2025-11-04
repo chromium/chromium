@@ -8828,11 +8828,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "remove-autofill-badges",
-    "owners": [ "vincb@google.com", "bling-transactions@google.com" ],
-    "expiry_milestone": 144
-  },
-  {
     "name": "remove-old-web-state-restore",
     "owners": [ "michaeldo@chromium.org", "bling-flags@google.com" ],
     "expiry_milestone": 128

@@ -210,10 +210,6 @@ void TypeTextInXframeField(NSString* fieldID, NSString* text) {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
 
-  if ([self isRunningTest:@selector(FLAKY_testSaveWithoutBadge)]) {
-    config.features_enabled.push_back(kAutofillBadgeRemoval);
-  }
-
   if ([self isRunningTest:@selector(testUserData_AccountSave)] ||
       [self
           isRunningTest:@selector(testUserData_LocalHideBottomSheetOnCancel)]) {
@@ -891,8 +887,6 @@ void TypeTextInXframeField(NSString* fieldID, NSString* text) {
   [SigninEarlGrey signOut];
 }
 
-
-
 // Tests that multiple submissions on the same form are deduped when deduping is
 // enabled where only one submission per form element is allowed when.
 - (void)testSubmissionDetectionWithDeduping {
@@ -1008,10 +1002,6 @@ void TypeTextInXframeField(NSString* fieldID, NSString* text) {
           forHistogram:@"Autofill.iOS.FormSubmission.OutcomeV2"]);
 }
 
-
-
-
-
 // Tests submission count reporting with the scheduled task for the 2 types of
 // form submission, regular and programmatic.
 // TODO(crbug.com/428189566): Re-enable after the test is fixed for
@@ -1099,8 +1089,6 @@ void TypeTextInXframeField(NSString* fieldID, NSString* text) {
           }),
       @"Timed out waiting for the form submission metrics.");
 }
-
-
 
 // Tests submission count reporting when unloading a page.
 // TODO(crbug.com/428189566): Re-enable after the test is fixed for

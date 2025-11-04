@@ -843,9 +843,6 @@ extern const char kReaderModeTranslationWithInfobarDescription[];
 extern const char kRefactorToolbarsSizeName[];
 extern const char kRefactorToolbarsSizeDescription[];
 
-extern const char kRemoveAutofillBadgesName[];
-extern const char kRemoveAutofillBadgesDescription[];
-
 extern const char kRemoveExcessNTPsExperimentName[];
 extern const char kRemoveExcessNTPsExperimentDescription[];
 
