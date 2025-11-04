@@ -89,10 +89,9 @@ found in the LICENSE file.
         app:layout_constraintEnd_toEndOf="@id/chrome_colors_switch_button">
         <view
             class="org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpChromeColorsCoordinator$ColorGridView"
-        android:id="@+id/chrome_colors_recycler_view"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:overScrollMode="never" />
+            android:id="@+id/chrome_colors_recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
     </FrameLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

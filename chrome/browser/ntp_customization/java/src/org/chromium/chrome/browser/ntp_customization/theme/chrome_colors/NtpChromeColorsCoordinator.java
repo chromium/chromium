@@ -110,6 +110,13 @@ public class NtpChromeColorsCoordinator {
         mPrimaryColorInfo = NtpCustomizationUtils.loadColorInfoFromSharedPreference(mContext);
         buildRecyclerView();
         setRecyclerViewMaxWidth(ntpChromeColorsBottomSheetView);
+
+        // Post the task to expand the sheet to ensure that the bottom sheet view is laid out and
+        // has a height, allowing it to correctly open to the half-height state.
+        mChromeColorsRecyclerView.post(
+                () -> {
+                    delegate.getBottomSheetController().expandSheet();
+                });
     }
 
     private void buildRecyclerView() {
