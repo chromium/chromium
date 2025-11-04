@@ -15,8 +15,8 @@ namespace {
 template <typename T, typename U>
 scoped_refptr<T> MakeSettings(std::initializer_list<U> items) {
   scoped_refptr<T> settings = T::Create();
-  for (auto item = items.begin(); item != items.end(); UNSAFE_TODO(++item)) {
-    settings->Append(*item);
+  for (const auto& item : items) {
+    settings->Append(item);
   }
   return settings;
 }
