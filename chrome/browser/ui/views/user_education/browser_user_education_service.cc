@@ -35,6 +35,7 @@
 #include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/most_recent_shared_tab_update_store.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
+#include "chrome/browser/ui/tabs/split_tab_menu_model.h"
 #include "chrome/browser/ui/tabs/split_view_iph_controller.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
@@ -1789,12 +1790,22 @@ void MaybeRegisterChromeTutorials(
 
             HiddenStep::WaitForShown(kToolbarSplitTabsToolbarButtonElementId),
 
+            // Bubble step - highlight the toolbar button.
+            TutorialDescription::BubbleStep(
+                kToolbarSplitTabsToolbarButtonElementId)
+                .SetBubbleBodyText(IDS_SPLIT_VIEW_TOOLBAR_BUTTON_STEP_IPH_BODY)
+                .SetBubbleArrow(HelpBubbleArrow::kTopLeft),
+
+            HiddenStep::WaitForShown(
+                SplitTabMenuModel::kReversePositionMenuItem),
+
             // Completion of the tutorial after split view appears.
-            TutorialDescription::BubbleStep(kTabStripRegionElementId)
+            TutorialDescription::BubbleStep(
+                SplitTabMenuModel::kExitSplitMenuItem)
                 .SetBubbleTitleText(IDS_TUTORIAL_GENERIC_SUCCESS_TITLE)
                 .SetBubbleBodyText(
                     IDS_SPLIT_VIEW_TAB_SWITCH_COMPLETION_IPH_BODY)
-                .SetBubbleArrow(HelpBubbleArrow::kNone)
+                .SetBubbleArrow(HelpBubbleArrow::kLeftTop)
                 .InAnyContext());
 
     split_view_tutorial.metadata.additional_description =
