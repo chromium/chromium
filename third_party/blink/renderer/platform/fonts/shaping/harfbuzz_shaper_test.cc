@@ -786,6 +786,9 @@ TEST_P(ShapeParameterTest, ZeroWidthSpace) {
 }
 
 TEST_F(HarfBuzzShaperTest, IdeographicSpace) {
+  // Noto Sans Mongolian through version 3.002 has U+3001 but not U+3000.
+  // Attempt to avoid this font by falling back to a Japanese font instead.
+  font_description.SetLocale(LayoutLocale::Get(AtomicString("ja")));
   Font* font = MakeGarbageCollected<Font>(font_description);
 
   String string(
