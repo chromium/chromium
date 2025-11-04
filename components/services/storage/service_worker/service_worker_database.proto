@@ -169,6 +169,7 @@ message ServiceWorkerRegistrationData {
             kSpeculationRulesDestination = 25;
             kJsonDestination = 26;
             kSharedStorageWorkletDestination = 27;
+            kEmailVerificationDestination = 28;
           }
           optional Destination destination = 3;
         }

@@ -971,6 +971,7 @@ IdpNetworkRequestManager::IdpNetworkRequestManager(
     : NetworkRequestManager(relying_party_origin,
                             loader_factory,
                             std::move(client_security_state),
+                            network::mojom::RequestDestination::kWebIdentity,
                             frame_tree_node_id),
       rp_embedding_origin_(rp_embedding_origin),
       permission_delegate_(permission_delegate) {
@@ -1355,7 +1356,8 @@ void IdpNetworkRequestManager::DownloadAndDecodeCachedImage(
     const GURL& url,
     ImageCallback callback) {
   std::unique_ptr<network::ResourceRequest> resource_request =
-      CreateCachedAccountPictureRequest(idp_origin, url, /*cache_only=*/true);
+      CreateCachedAccountPictureRequest(idp_origin, url,
+                                        /*cache_only=*/true);
   DownloadUrl(
       std::move(resource_request),
       /*url_encoded_post_data=*/std::nullopt,

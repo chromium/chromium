@@ -23,9 +23,6 @@ enum RequestDestination {
     // https://wicg.github.io/shared-storage/#request-destination-monkey-patch
     "sharedstorageworklet",
 
-    // https://w3c-fedid.github.io/FedCM/
-    "webidentity",
-
     // https://github.com/whatwg/fetch/issues/1120
     "webbundle",
 };

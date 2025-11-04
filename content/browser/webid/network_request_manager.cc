@@ -120,10 +120,12 @@ NetworkRequestManager::NetworkRequestManager(
     const url::Origin& relying_party_origin,
     scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
     network::mojom::ClientSecurityStatePtr client_security_state,
+    network::mojom::RequestDestination destination,
     content::FrameTreeNodeId frame_tree_node_id)
     : relying_party_origin_(relying_party_origin),
       loader_factory_(loader_factory),
       client_security_state_(std::move(client_security_state)),
+      destination_(destination),
       frame_tree_node_id_(frame_tree_node_id) {}
 
 NetworkRequestManager::~NetworkRequestManager() = default;
@@ -251,8 +253,7 @@ NetworkRequestManager::CreateUncredentialedResourceRequest(
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
   resource_request->headers.SetHeader(net::HttpRequestHeaders::kAccept,
                                       kApplicationJson);
-  resource_request->destination =
-      network::mojom::RequestDestination::kWebIdentity;
+  resource_request->destination = destination_;
   // See https://github.com/fedidcg/FedCM/issues/379 for why the Origin header
   // is sent instead of the Referrer header.
   if (send_origin) {
@@ -291,8 +292,7 @@ NetworkRequestManager::CreateCredentialedResourceRequest(
   // SameSite=Strict cookies.
   resource_request->request_initiator = relying_party_origin_;
 
-  resource_request->destination =
-      network::mojom::RequestDestination::kWebIdentity;
+  resource_request->destination = destination_;
   resource_request->url = target_url;
   resource_request->site_for_cookies = site_for_cookies;
   // TODO(crbug.com/40284123): Figure out why when using CORS we still need to

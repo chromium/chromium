@@ -129,10 +129,12 @@ EmailVerifierNetworkRequestManager::EmailVerifierNetworkRequestManager(
     scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
     network::mojom::ClientSecurityStatePtr client_security_state,
     content::FrameTreeNodeId frame_tree_node_id)
-    : NetworkRequestManager(relying_party_origin,
-                            loader_factory,
-                            std::move(client_security_state),
-                            frame_tree_node_id) {}
+    : NetworkRequestManager(
+          relying_party_origin,
+          loader_factory,
+          std::move(client_security_state),
+          network::mojom::RequestDestination::kEmailVerification,
+          frame_tree_node_id) {}
 
 EmailVerifierNetworkRequestManager::~EmailVerifierNetworkRequestManager() =
     default;

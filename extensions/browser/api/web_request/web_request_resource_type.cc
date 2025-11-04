@@ -111,6 +111,7 @@ WebRequestResourceType ToWebRequestResourceType(
     case network::mojom::RequestDestination::kManifest:
     case network::mojom::RequestDestination::kPaintWorklet:
     case network::mojom::RequestDestination::kWebIdentity:
+    case network::mojom::RequestDestination::kEmailVerification:
     // The compression dictionary has not been exposed to extensions yet.
     // We could do so if the need arises.
     case network::mojom::RequestDestination::kDictionary:

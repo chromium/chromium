@@ -764,23 +764,56 @@ bool CorsURLLoaderFactory::IsValidRequest(const ResourceRequest& request,
         break;
     }
 
-    // Only the browser process is allowed to initiate FedCM requests.
-    if (request.destination == mojom::RequestDestination::kWebIdentity) {
-      mojo::ReportBadMessage(
-          "CorsURLLoaderFactory: attempt to use forbidden destination from "
-          "renderer");
-      return false;
+    switch (request.destination) {
+      // Allowed destinations from unprivileged process:
+      case network::mojom::RequestDestination::kEmpty:
+      case network::mojom::RequestDestination::kAudio:
+      case network::mojom::RequestDestination::kAudioWorklet:
+      case network::mojom::RequestDestination::kDocument:
+      case network::mojom::RequestDestination::kEmbed:
+      case network::mojom::RequestDestination::kFont:
+      case network::mojom::RequestDestination::kFrame:
+      case network::mojom::RequestDestination::kIframe:
+      case network::mojom::RequestDestination::kImage:
+      case network::mojom::RequestDestination::kManifest:
+      case network::mojom::RequestDestination::kObject:
+      case network::mojom::RequestDestination::kPaintWorklet:
+      case network::mojom::RequestDestination::kReport:
+      case network::mojom::RequestDestination::kScript:
+      case network::mojom::RequestDestination::kServiceWorker:
+      case network::mojom::RequestDestination::kSharedWorker:
+      case network::mojom::RequestDestination::kStyle:
+      case network::mojom::RequestDestination::kTrack:
+      case network::mojom::RequestDestination::kVideo:
+      case network::mojom::RequestDestination::kWebBundle:
+      case network::mojom::RequestDestination::kWorker:
+      case network::mojom::RequestDestination::kXslt:
+      case network::mojom::RequestDestination::kFencedframe:
+      case network::mojom::RequestDestination::kDictionary:
+      case network::mojom::RequestDestination::kSpeculationRules:
+      case network::mojom::RequestDestination::kJson:
+      case network::mojom::RequestDestination::kSharedStorageWorklet:
+        break;
+      case network::mojom::RequestDestination::kWebIdentity:
+      case network::mojom::RequestDestination::kEmailVerification:
+        mojo::ReportBadMessage(
+            "CorsURLLoaderFactory: attempt to use forbidden destination from "
+            "renderer");
+        return false;
     }
   }
 
   // FedCM requests must either disable cookies or disable redirects
   // (this simplifies reasoning around SameSite=Lax cookies).
   // See also the DCHECK in url_loader_util::ConfigureUrlRequest.
-  if (request.destination == mojom::RequestDestination::kWebIdentity &&
+  if ((request.destination == mojom::RequestDestination::kWebIdentity ||
+       request.destination ==
+           network::mojom::RequestDestination::kEmailVerification) &&
       request.redirect_mode != mojom::RedirectMode::kError &&
       request.credentials_mode != mojom::CredentialsMode::kOmit) {
     mojo::ReportBadMessage(
-        "CorsURLLoaderFactory: FedCM requests must either disable redirects "
+        "CorsURLLoaderFactory: FedCM and email verification requests must "
+        "either disable redirects "
         "or disable cookies");
     return false;
   }

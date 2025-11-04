@@ -62,17 +62,24 @@ CONTENT_EXPORT std::optional<GURL> ComputeWellKnownUrl(const GURL& provider,
                                                        const std::string& path);
 
 // Base class containing some methods for creating fetches in webid APIs.
-class NetworkRequestManager {
+class CONTENT_EXPORT NetworkRequestManager {
  public:
   NetworkRequestManager(
       const url::Origin& relying_party_origin,
       scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
       network::mojom::ClientSecurityStatePtr client_security_state,
+      network::mojom::RequestDestination destination,
       content::FrameTreeNodeId frame_tree_node_id);
   virtual ~NetworkRequestManager();
 
   NetworkRequestManager(const NetworkRequestManager&) = delete;
   NetworkRequestManager& operator=(const NetworkRequestManager&) = delete;
+
+  enum class CredentialedResourceRequestType {
+    kNoOrigin,
+    kOriginWithoutCORS,
+    kOriginWithCORS
+  };
 
  protected:
   virtual net::NetworkTrafficAnnotationTag CreateTrafficAnnotation() = 0;
@@ -103,11 +110,6 @@ class NetworkRequestManager {
       bool send_origin,
       bool follow_redirects = false) const;
 
-  enum class CredentialedResourceRequestType {
-    kNoOrigin,
-    kOriginWithoutCORS,
-    kOriginWithCORS
-  };
   std::unique_ptr<network::ResourceRequest> CreateCredentialedResourceRequest(
       const GURL& target_url,
       CredentialedResourceRequestType type) const;
@@ -117,6 +119,7 @@ class NetworkRequestManager {
   scoped_refptr<network::SharedURLLoaderFactory> loader_factory_;
 
   network::mojom::ClientSecurityStatePtr client_security_state_;
+  const network::mojom::RequestDestination destination_;
   const content::FrameTreeNodeId frame_tree_node_id_;
 
  private:

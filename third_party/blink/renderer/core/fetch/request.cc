@@ -129,10 +129,13 @@ V8RequestDestination::Enum DestinationToV8Enum(
       return V8RequestDestination::Enum::kServiceworker;
     case network::mojom::RequestDestination::kWebBundle:
       return V8RequestDestination::Enum::kWebbundle;
-    case network::mojom::RequestDestination::kWebIdentity:
-      return V8RequestDestination::Enum::kWebidentity;
     case network::mojom::RequestDestination::kSharedStorageWorklet:
       return V8RequestDestination::Enum::kSharedstorageworklet;
+    // Requests with these destinations must be fetched from the browser
+    // process.
+    case network::mojom::RequestDestination::kWebIdentity:
+    case network::mojom::RequestDestination::kEmailVerification:
+      NOTREACHED();
   }
   NOTREACHED();
 }

@@ -666,7 +666,8 @@ void ConfigureUrlRequest(const ResourceRequest& request,
       request.allows_device_bound_session_registration);
 
   if (base::FeatureList::IsEnabled(features::kSendSameSiteLaxForFedCM) &&
-      request.destination == mojom::RequestDestination::kWebIdentity) {
+      (request.destination == mojom::RequestDestination::kWebIdentity ||
+       request.destination == mojom::RequestDestination::kEmailVerification)) {
     // This check is enforced by CorsURLLoaderFactory::IsValidRequest.
     CHECK(request.redirect_mode == mojom::RedirectMode::kError ||
           request.credentials_mode == mojom::CredentialsMode::kOmit);
