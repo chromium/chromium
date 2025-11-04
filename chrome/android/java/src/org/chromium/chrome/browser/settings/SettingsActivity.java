@@ -192,9 +192,9 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
                         getModalDialogManagerSupplier()),
                 /* recursive= */ true);
         fragmentManager.registerFragmentLifecycleCallbacks(
-                new WideDisplayPaddingApplier(), /* recursive= */ true);
+                new WideDisplayPaddingApplier(), /* recursive= */ false);
         fragmentManager.registerFragmentLifecycleCallbacks(
-                new SettingsMetricsReporter(), /* recursive= */ true);
+                new SettingsMetricsReporter(), /* recursive= */ false);
 
         if (isContainmentEnabled()) {
             // In multi-column mode, the main settings fragment is a child of the
@@ -432,11 +432,8 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
      * MainSettings when in multi-column, two-pane mode.
      */
     private boolean shouldSkipContainmentForMainSettings(PreferenceFragmentCompat fragment) {
-        return fragment instanceof MainSettings && isMultiColumnSettingsVisible();
-    }
-
-    public boolean isMultiColumnSettingsVisible() {
-        return getUseMultiColumn()
+        return fragment instanceof MainSettings
+                && getUseMultiColumn()
                 && mMultiColumnSettings != null
                 && mMultiColumnSettings.isTwoPane();
     }
@@ -972,7 +969,10 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
                 Fragment fragment,
                 View view,
                 @Nullable Bundle savedInstanceState) {
-            if (fragment instanceof PreferenceFragmentCompat) {
+            if (MAIN_FRAGMENT_TAG.equals(fragment.getTag())) {
+                // Apply the wide display style after the main fragment is committed since its views
+                // (particularly a recycler view) are not accessible before the transaction
+                // completes.
                 WideDisplayPadding.apply(fragment, SettingsActivity.this);
             }
         }
