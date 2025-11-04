@@ -2257,8 +2257,11 @@ public class ToolbarPhone extends ToolbarLayout
                 "BackgroundDrawableTransition:toolbarColor";
         private static final String PROPNAME_LOCATION_BAR_COLOR =
                 "BackgroundDrawableTransition:locationBarColor";
+        private static final String PROPNAME_LOCATION_BAR_CORNER_RADIUS =
+                "BackgroundDrawableTransition:locationBarCornerRadius";
+
         private static final String[] sTransitionProperties = {
-            PROPNAME_TOOLBAR_COLOR, PROPNAME_LOCATION_BAR_COLOR
+            PROPNAME_TOOLBAR_COLOR, PROPNAME_LOCATION_BAR_COLOR, PROPNAME_LOCATION_BAR_CORNER_RADIUS
         };
 
         public BackgroundDrawableTransition() {
@@ -2278,6 +2281,10 @@ public class ToolbarPhone extends ToolbarLayout
                     transitionValues.values.put(
                             PROPNAME_LOCATION_BAR_COLOR, colorStateList.getDefaultColor());
                 }
+
+                transitionValues.values.put(
+                        PROPNAME_LOCATION_BAR_CORNER_RADIUS,
+                        locationBarBackgroundGradientDrawable.getCornerRadius());
             }
         }
 
@@ -2341,6 +2348,21 @@ public class ToolbarPhone extends ToolbarLayout
                                 "color",
                                 (int) locationBarStartColor,
                                 (int) locationBarEndColor));
+            }
+
+            Object locationBarStartCornerRadius =
+                    startValues.values.get(PROPNAME_LOCATION_BAR_CORNER_RADIUS);
+            Object locationBarEndCornerRadius =
+                    endValues.values.get(PROPNAME_LOCATION_BAR_CORNER_RADIUS);
+            if (locationBarStartCornerRadius != null
+                    && locationBarEndCornerRadius != null
+                    && locationBarBackgroundGradientDrawable != null) {
+                animatorList.add(
+                        ObjectAnimator.ofFloat(
+                                locationBarBackgroundGradientDrawable,
+                                "cornerRadius",
+                                (float) locationBarStartCornerRadius,
+                                (float) locationBarEndCornerRadius));
             }
 
             AnimatorSet animatorSet = new AnimatorSet();
