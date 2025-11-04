@@ -37,6 +37,15 @@ export function getHtml(this: ContextualEntrypointAndCarouselElement) {
             @click="${this.onCreateImageClick_}">
         </cr-composebox-tool-chip>
   `;
+
+  const voiceSearchButton = html`
+          <cr-icon-button id="voiceSearchButton" class="voice-icon"
+              part="voice-icon" iron-icon="cr:mic"
+              @click="${this.onVoiceSearchClick_}"
+              title="${this.i18n('voiceSearchButtonLabel')}">
+          </cr-icon-button>
+        `;
+
   const contextMenu = html`
       <div class="context-menu-container" part="context-menu-and-tools">
         <cr-composebox-context-menu-entrypoint id="contextEntrypoint"
@@ -60,14 +69,7 @@ export function getHtml(this: ContextualEntrypointAndCarouselElement) {
         ${this.realboxLayoutMode !== 'Compact' ? toolChips : ''}
         ${
         this.realboxLayoutMode === 'TallTopContext' && (this.showDropdown || this.files_.size > 0) ?
-          html`
-          <cr-icon-button id="voiceSearchButton" class="voice-icon"
-              part="voice-icon" iron-icon="cr:mic"
-              @click="${this.onVoiceSearchClick_}"
-              title="${this.i18n('voiceSearchButtonLabel')}">
-          </cr-icon-button>
-        ` :
-          ''}
+          voiceSearchButton : ''}
       </div>
   `;
 
@@ -127,13 +129,7 @@ export function getHtml(this: ContextualEntrypointAndCarouselElement) {
       @change="${this.onFileChange_}"
       hidden>
   </input>
-  ${this.realboxLayoutMode === 'TallBottomContext' && (this.showDropdown || this.files_.size > 0) ? html`
-      <cr-icon-button id="voiceSearchButton" class="voice-icon"
-          part="voice-icon" iron-icon="cr:mic"
-          @click="${this.onVoiceSearchClick_}"
-          title="${this.i18n('voiceSearchButtonLabel')}">
-      </cr-icon-button>
-  ` : ''}
+  ${this.realboxLayoutMode === 'TallBottomContext' && (this.showDropdown || this.files_.size > 0) ? voiceSearchButton : ''}
 <!--_html_template_end_-->`;
   // clang-format on
 }
