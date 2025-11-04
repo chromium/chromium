@@ -526,9 +526,11 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                                         ReaderModeManager.CPA_FALLBACK_MENU_PARAM,
                                         false));
         Log.i(TAG, "fallback-ui-variant: " + buttonVariant + " show: " + show);
-        indicator.setVisibility(show ? View.VISIBLE : View.GONE);
-        if (!show) return;
-
+        if (!show) {
+            resetOptionalButtonState();
+            return;
+        }
+        indicator.setVisibility(View.VISIBLE);
         RecordHistogram.recordEnumeratedHistogram(
                 "CustomTabs.AdaptiveToolbarButton.FallbackIndicator.Shown",
                 buttonVariant,
