@@ -58,6 +58,16 @@ export function getHtml(this: ContextualEntrypointAndCarouselElement) {
             ?show-context-menu-description="${showDescription}">
         </cr-composebox-context-menu-entrypoint>
         ${this.realboxLayoutMode !== 'Compact' ? toolChips : ''}
+        ${
+        this.realboxLayoutMode === 'TallTopContext' && (this.showDropdown || this.files_.size > 0) ?
+          html`
+          <cr-icon-button id="voiceSearchButton" class="voice-icon"
+              part="voice-icon" iron-icon="cr:mic"
+              @click="${this.onVoiceSearchClick_}"
+              title="${this.i18n('voiceSearchButtonLabel')}">
+          </cr-icon-button>
+        ` :
+          ''}
       </div>
   `;
 
@@ -117,7 +127,7 @@ export function getHtml(this: ContextualEntrypointAndCarouselElement) {
       @change="${this.onFileChange_}"
       hidden>
   </input>
-  ${this.realboxLayoutMode.startsWith('Tall') && this.showDropdown ? html`
+  ${this.realboxLayoutMode === 'TallBottomContext' && (this.showDropdown || this.files_.size > 0) ? html`
       <cr-icon-button id="voiceSearchButton" class="voice-icon"
           part="voice-icon" iron-icon="cr:mic"
           @click="${this.onVoiceSearchClick_}"
