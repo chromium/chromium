@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <array>
 #include <string>
 #include <utility>
 
@@ -259,12 +260,12 @@ bool ParseServerResponse(const GURL& server_url,
   }
 
   bool found = false;
-  for (size_t i = 0; i < std::size(statusString2Enum); ++i) {
-    if (*status != UNSAFE_TODO(statusString2Enum[i]).string) {
+  for (const auto& entry : statusString2Enum) {
+    if (*status != entry.string) {
       continue;
     }
 
-    timezone->status = UNSAFE_TODO(statusString2Enum[i]).value;
+    timezone->status = entry.value;
     found = true;
     break;
   }
@@ -472,23 +473,21 @@ void TimeZoneRequest::OnSimpleLoaderComplete(
 }
 
 std::string TimeZoneResponseData::ToStringForDebug() const {
-  static const char* const status2string[] = {
+  static constexpr std::array<const char*, 7> status2string = {
       "OK",
       "INVALID_REQUEST",
       "OVER_QUERY_LIMIT",
       "REQUEST_DENIED",
       "UNKNOWN_ERROR",
       "ZERO_RESULTS",
-      "REQUEST_ERROR"
-  };
+      "REQUEST_ERROR"};
 
   return base::StringPrintf(
       "dstOffset=%f, rawOffset=%f, timeZoneId='%s', timeZoneName='%s', "
       "error_message='%s', status=%u (%s)",
       dstOffset, rawOffset, timeZoneId.c_str(), timeZoneName.c_str(),
       error_message.c_str(), (unsigned)status,
-      (status < std::size(status2string) ? UNSAFE_TODO(status2string[status])
-                                         : "unknown"));
+      (status < status2string.size() ? status2string[status] : "unknown"));
 }
 
 }  // namespace ash
