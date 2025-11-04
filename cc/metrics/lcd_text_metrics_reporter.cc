@@ -4,6 +4,8 @@
 
 #include "cc/metrics/lcd_text_metrics_reporter.h"
 
+#include <string_view>
+
 #include "base/compiler_specific.h"
 #include "base/functional/function_ref.h"
 #include "base/lazy_instance.h"
@@ -62,7 +64,7 @@ std::unique_ptr<LCDTextMetricsReporter> LCDTextMetricsReporter::CreateIfNeeded(
     const LayerTreeHostImpl* layer_tree_host_impl) {
   const char* client_name = GetClientNameForMetrics();
   // The metrics are for the renderer only.
-  if (!client_name || UNSAFE_TODO(strcmp(client_name, "Renderer")) != 0) {
+  if (!client_name || std::string_view(client_name) != "Renderer") {
     return nullptr;
   }
   return base::WrapUnique(new LCDTextMetricsReporter(layer_tree_host_impl));
