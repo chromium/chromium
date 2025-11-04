@@ -11,6 +11,7 @@
 
 #include "base/check.h"
 #include "base/component_export.h"
+#include "base/numerics/safe_conversions.h"
 
 namespace url {
 
@@ -31,6 +32,11 @@ struct Component {
 
   // Normal constructor: takes an offset and a length.
   constexpr Component(int b, int l) : begin(b), len(l) {}
+
+  // Construct a Component covering the whole `view`.
+  template <typename CharT>
+  explicit Component(std::basic_string_view<CharT> view)
+      : begin(0), len(base::checked_cast<int>(view.size())) {}
 
   constexpr int end() const { return begin + len; }
 
@@ -370,8 +376,6 @@ bool ExtractScheme(std::u16string_view url, Component* scheme);
 // Deprecated (crbug.com/325408566): Prefer using the overloads above.
 COMPONENT_EXPORT(URL)
 bool ExtractScheme(const char* url, int url_len, Component* scheme);
-COMPONENT_EXPORT(URL)
-bool ExtractScheme(const char16_t* url, int url_len, Component* scheme);
 
 // Returns true if ch is a character that terminates the authority segment
 // of a URL.
@@ -422,8 +426,6 @@ void ParseAuthority(std::u16string_view spec,
 // overload for `std::string_view` or `std::u16string_view` instead.
 enum SpecialPort { PORT_UNSPECIFIED = -1, PORT_INVALID = -2 };
 COMPONENT_EXPORT(URL) int ParsePort(const char* url, const Component& port);
-COMPONENT_EXPORT(URL)
-int ParsePort(const char16_t* url, const Component& port);
 COMPONENT_EXPORT(URL)
 int ParsePort(std::string_view url, const Component& port);
 COMPONENT_EXPORT(URL)

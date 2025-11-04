@@ -138,7 +138,7 @@ Parsed DoParseFileURL(std::basic_string_view<CharT> url) {
     // colon as the scheme. So handle /foo.c:5 as a file but foo.c:5 as
     // the foo.c: scheme.
     if (!num_slashes &&
-        ExtractScheme(&url[begin], url_len - begin, &parsed.scheme)) {
+        ExtractScheme(url.substr(begin, url_len - begin), &parsed.scheme)) {
       // Offset the results since we gave ExtractScheme a substring.
       parsed.scheme.begin += begin;
       after_scheme = parsed.scheme.end() + 1;

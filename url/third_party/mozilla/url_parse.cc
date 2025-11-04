@@ -621,7 +621,7 @@ Parsed DoParsePathURL(std::basic_string_view<CharT> url, bool trim_path_end) {
   Parsed parsed;
   // Extract the scheme, with the path being everything following. We also
   // handle the case where there is no scheme.
-  if (ExtractScheme(&url[scheme_begin], url_len - scheme_begin,
+  if (ExtractScheme(url.substr(scheme_begin, url_len - scheme_begin),
                     &parsed.scheme)) {
     // Offset the results since we gave ExtractScheme a substring.
     parsed.scheme.begin += scheme_begin;
@@ -948,10 +948,6 @@ bool ExtractScheme(const char* url, int url_len, Component* scheme) {
   return DoExtractScheme(std::string_view(url, url_len), scheme);
 }
 
-bool ExtractScheme(const char16_t* url, int url_len, Component* scheme) {
-  return DoExtractScheme(std::u16string_view(url, url_len), scheme);
-}
-
 // This handles everything that may be an authority terminator.
 //
 // URL Standard:
@@ -1031,14 +1027,6 @@ int ParsePort(const char* url, const Component& port) {
              ? PORT_UNSPECIFIED
              : DoParsePort(
                    std::string_view(url, static_cast<size_t>(port.end())),
-                   port);
-}
-
-int ParsePort(const char16_t* url, const Component& port) {
-  return port.is_empty()
-             ? PORT_UNSPECIFIED
-             : DoParsePort(
-                   std::u16string_view(url, static_cast<size_t>(port.end())),
                    port);
 }
 

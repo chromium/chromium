@@ -229,8 +229,7 @@ bool DoPort(std::optional<std::basic_string_view<CHAR>> port_view,
     *out_port = Component();
     return true;  // Leave port empty.
   }
-  int port_num = ParsePort(port_view->data(),
-                           {0, base::checked_cast<int>(port_view->length())});
+  int port_num = ParsePort(*port_view, Component(*port_view));
   if (port_num == PORT_UNSPECIFIED || port_num == default_port_for_scheme) {
     *out_port = Component();
     return true;  // Leave port empty.
