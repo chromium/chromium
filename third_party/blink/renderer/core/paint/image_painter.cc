@@ -80,10 +80,11 @@ void ImagePainter::PaintAreaElementFocusRing(const PaintInfo& paint_info) {
   // We use EnsureComputedStyle() instead of GetComputedStyle() here because
   // <area> is used and its style applied even if it has display:none.
   const ComputedStyle* area_element_style = area_element->EnsureComputedStyle();
-  // If the outline width is 0 we want to avoid drawing anything even if we
+  // If the outline is hidden we want to avoid drawing anything even if we
   // don't use the value directly.
-  if (!area_element_style->OutlineWidth())
+  if (!area_element_style->HasOutline()) {
     return;
+  }
 
   ScopedPaintState paint_state(layout_image_, paint_info);
   const auto paint_offset = paint_state.PaintOffset();

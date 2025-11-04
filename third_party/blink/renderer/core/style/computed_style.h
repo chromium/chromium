@@ -1504,7 +1504,11 @@ class ComputedStyle final : public ComputedStyleBase {
   // HasOutline is insufficient to determine whether Node has an outline.
   // Use HasPaintedOutline() instead.
   bool HasOutline() const {
-    return OutlineWidth() > 0 && OutlineStyle() > EBorderStyle::kHidden;
+    if (OutlineWidth() <= 0) {
+      return OutlineStyleIsAuto() &&
+             RuntimeEnabledFeatures::OutlineDrawAutoStyleZeroWidthEnabled();
+    }
+    return OutlineStyle() > EBorderStyle::kHidden;
   }
   bool HasOutlineWithCurrentColor() const {
     return HasOutline() && OutlineColor().DependsOnCurrentColor();
