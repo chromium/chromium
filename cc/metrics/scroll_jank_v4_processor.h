@@ -9,6 +9,8 @@
 #include "cc/cc_export.h"
 #include "cc/metrics/event_metrics.h"
 #include "cc/metrics/scroll_jank_v4_decider.h"
+#include "cc/metrics/scroll_jank_v4_frame.h"
+#include "cc/metrics/scroll_jank_v4_frame_stage.h"
 #include "cc/metrics/scroll_jank_v4_histogram_emitter.h"
 
 namespace cc {
@@ -28,13 +30,15 @@ class CC_EXPORT ScrollJankV4Processor {
                                              const viz::BeginFrameArgs& args);
 
  private:
-  void HandleFramePresented(ScrollUpdateEventMetrics& earliest_event,
-                            base::TimeTicks last_input_generation_ts,
-                            base::TimeTicks presentation_ts,
-                            const viz::BeginFrameArgs& args,
-                            bool has_inertial_input,
-                            float abs_total_raw_delta_pixels,
-                            float max_abs_inertial_raw_delta_pixels);
+  void HandleFrame(ScrollJankV4FrameStage::List& stages,
+                   const ScrollJankV4Frame::ScrollDamage& damage,
+                   const viz::BeginFrameArgs& args,
+                   bool counts_towards_histogram_frame_count);
+  void HandleFrameWithScrollUpdates(
+      ScrollJankV4FrameStage::ScrollUpdates& updates,
+      const ScrollJankV4Frame::ScrollDamage& damage,
+      const viz::BeginFrameArgs& args,
+      bool counts_towards_histograms);
   void HandleScrollStarted();
   void HandleScrollEnded();
 

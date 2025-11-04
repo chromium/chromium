@@ -242,6 +242,15 @@ BASE_FEATURE(kEmitPerScrollJankV1MetricAtEndOfScroll,
 BASE_FEATURE(kEmitPerScrollJankV4MetricAtEndOfScroll,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kHandleNonDamagingInputsInScrollJankV4Metric,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE_PARAM(bool,
+                   kCountNonDamagingFramesTowardsHistogramFrameCount,
+                   &kHandleNonDamagingInputsInScrollJankV4Metric,
+                   "count_non_damaging_frames_towards_histogram_frame_count",
+                   false);
+
 BASE_FEATURE(kManualBeginFrame, base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace features
