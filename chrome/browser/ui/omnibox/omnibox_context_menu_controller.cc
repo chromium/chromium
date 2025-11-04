@@ -9,9 +9,12 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/favicon/favicon_service_factory.h"
+#include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -20,14 +23,22 @@
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/omnibox_popup_resources.h"
+#include "components/favicon/core/favicon_service.h"
+#include "components/favicon_base/favicon_types.h"
 #include "content/public/common/url_constants.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/models/menu_model.h"
 #include "ui/gfx/image/image.h"
+
+namespace {
+constexpr int kMinOmniboxContextMenuRecentTabsCommandId = 33000;
+}  // namespace
 
 OmniboxContextMenuController::OmniboxContextMenuController(
     BrowserWindowInterface* browser_window_interface)
     : browser_window_interface_(browser_window_interface) {
   menu_model_ = std::make_unique<ui::SimpleMenuModel>(this);
+  next_command_id_ = kMinOmniboxContextMenuRecentTabsCommandId;
   BuildMenu();
 }
 
@@ -49,12 +60,18 @@ void OmniboxContextMenuController::AddItemWithStringIdAndIcon(
   menu_model_->AddItemWithStringIdAndIcon(id, localization_id, icon);
 }
 
+void OmniboxContextMenuController::AddItemWithIcon(int command_id,
+                                                   const std::u16string& label,
+                                                   const ui::ImageModel& icon) {
+  menu_model_->AddItemWithIcon(command_id, label, icon);
+}
+
 void OmniboxContextMenuController::AddSeparator() {
   menu_model_->AddSeparator(ui::NORMAL_SEPARATOR);
 }
 
 void OmniboxContextMenuController::AddRecentTabItems() {
-  // Iterate through the tab strip model, getting the data for each tab.
+  // Iterate through the tab strip model.
   auto* tab_strip_model = browser_window_interface_->GetTabStripModel();
   size_t valid_tab_count = 0;
   AddTitleWithStringId(IDS_NTP_COMPOSE_MOST_RECENT_TABS);
@@ -65,8 +82,12 @@ void OmniboxContextMenuController::AddRecentTabItems() {
     if (!IsValidTab(last_committed_url)) {
       continue;
     }
-    AddItem(i, tab_renderer_data.title);
+    AddItemWithIcon(next_command_id_, tab_renderer_data.title,
+                    favicon::GetDefaultFaviconModel());
+    AddTabFavicon(next_command_id_, last_committed_url,
+                  tab_renderer_data.title);
     valid_tab_count += 1;
+    next_command_id_ += 1;
   }
   if (!valid_tab_count) {
     auto index = menu_model_->GetIndexOfCommandId(ui::MenuModel::kTitleId);
@@ -99,6 +120,47 @@ void OmniboxContextMenuController::AddStaticItems() {
       IDR_OMNIBOX_POPUP_IMAGES_CREATE_IMAGES_PNG);
   AddItemWithStringIdAndIcon(IDC_OMNIBOX_CONTEXT_CREATE_IMAGES,
                              IDS_NTP_COMPOSE_CREATE_IMAGES, create_images_icon);
+}
+
+void OmniboxContextMenuController::AddTabFavicon(int command_id,
+                                                 const GURL& url,
+                                                 const std::u16string& label) {
+  Profile* profile = browser_window_interface_->GetProfile();
+  if (!profile) {
+    return;
+  }
+  favicon::FaviconService* favicon_service =
+      FaviconServiceFactory::GetForProfile(profile,
+                                           ServiceAccessType::EXPLICIT_ACCESS);
+  if (!favicon_service) {
+    return;
+  }
+
+  favicon_service->GetFaviconImageForPageURL(
+      url,
+      base::BindOnce(static_cast<void (OmniboxContextMenuController::*)(
+                         int, const favicon_base::FaviconImageResult&)>(
+                         &OmniboxContextMenuController::OnFaviconDataAvailable),
+                     weak_ptr_factory_.GetWeakPtr(), command_id),
+      &cancelable_task_tracker_);
+}
+
+void OmniboxContextMenuController::OnFaviconDataAvailable(
+    int command_id,
+    const favicon_base::FaviconImageResult& image_result) {
+  if (image_result.image.IsEmpty()) {
+    // Default icon has already been set.
+    return;
+  }
+
+  const std::optional<size_t> index_in_menu =
+      menu_model_->GetIndexOfCommandId(command_id);
+  DCHECK(index_in_menu.has_value());
+  menu_model_->SetIcon(index_in_menu.value(),
+                       ui::ImageModel::FromImage(image_result.image));
+  if (menu_model_->menu_model_delegate()) {
+    menu_model_->menu_model_delegate()->OnIconChanged(command_id);
+  }
 }
 
 void OmniboxContextMenuController::AddTitleWithStringId(int localization_id) {

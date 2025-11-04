@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/omnibox/omnibox_context_menu_controller.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
+#include "ui/base/models/menu_model_delegate.h"
 #include "ui/views/controls/menu/menu_delegate.h"
 
 namespace views {
@@ -17,7 +18,8 @@ class MenuRunner;
 class Widget;
 }  // namespace views
 
-class OmniboxContextMenu : public views::MenuDelegate {
+class OmniboxContextMenu : public views::MenuDelegate,
+                           public ui::MenuModelDelegate {
  public:
   explicit OmniboxContextMenu(views::Widget* parent_widget,
                               BrowserWindowInterface* browser_window_interface);
@@ -35,6 +37,9 @@ class OmniboxContextMenu : public views::MenuDelegate {
   const gfx::FontList* GetLabelFontList(int command_id) const override;
   std::optional<SkColor> GetLabelColor(int command_id) const override;
   bool IsCommandEnabled(int command_id) const override;
+
+  // ui::MenuModelDelegate:
+  void OnIconChanged(int command_id) override;
 
  private:
   const raw_ptr<views::Widget> parent_widget_;
