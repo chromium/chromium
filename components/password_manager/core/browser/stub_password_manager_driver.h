@@ -62,6 +62,7 @@ class StubPasswordManagerDriver : public PasswordManagerDriver {
   PasswordGenerationFrameHelper* GetPasswordGenerationHelper() override;
   PasswordManagerInterface* GetPasswordManager() override;
   PasswordAutofillManager* GetPasswordAutofillManager() override;
+  bool IsDirectChildOfPrimaryMainFrame() const override;
   bool IsInPrimaryMainFrame() const override;
   bool IsNestedWithinFencedFrame() const override;
   bool CanShowAutofillUi() const override;

@@ -190,10 +190,17 @@ class PasswordManagerDriver {
   // chrome://password-manager-internals is available.
   virtual void SendLoggingAvailability() {}
 
+  // Returns true if the driver corresponds to a frame who's
+  // parent is in the main frame. If the frame has no parent
+  // it returns `false`.
+  // TODO(crbug.com/456636505): Refactor this code since it doesn't seem
+  // relevant to other password manager code.
+  virtual bool IsDirectChildOfPrimaryMainFrame() const = 0;
+
   // Return true iff the driver corresponds to the main frame.
   virtual bool IsInPrimaryMainFrame() const = 0;
 
-  // Return true iff the driver corresponds to a fenced frame or to
+  // Return true if the driver corresponds to a fenced frame or to
   // a frame nested in a fenced frame.
   virtual bool IsNestedWithinFencedFrame() const = 0;
 
