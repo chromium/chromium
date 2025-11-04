@@ -512,11 +512,10 @@ component("skia") {
   ]
 
   if (use_blink) {
-    deps += [ "//third_party:jpeg" ]
-
-    if (enable_freetype) {
-      deps += [ "//build/config/freetype" ]
-    }
+    deps += [
+      "//build/config/freetype",
+      "//third_party:jpeg",
+    ]
   }
 
   if (is_linux || is_chromeos) {

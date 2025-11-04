@@ -4,8 +4,6 @@
 
 import("//build/config/freetype/freetype.gni")
 
-assert(enable_freetype)
-
 group("freetype") {
   if (use_system_freetype) {
     public_configs = [ "//build/linux:freetype_from_pkgconfig" ]
