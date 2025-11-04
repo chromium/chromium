@@ -12,6 +12,10 @@
 #include "build/build_config.h"
 #include "chrome/common/buildflags.h"
 
+namespace default_browser {
+class DefaultBrowserManager;
+}
+
 namespace system_permission_settings {
 class PlatformHandle;
 }  // namespace system_permission_settings
@@ -75,6 +79,10 @@ class GlobalFeatures {
   whats_new::WhatsNewRegistry* whats_new_registry() {
     return whats_new_registry_.get();
   }
+
+  default_browser::DefaultBrowserManager* default_browser_manager() {
+    return default_browser_manager_.get();
+  }
 #endif
 
 #if BUILDFLAG(ENABLE_GLIC)
@@ -133,6 +141,9 @@ class GlobalFeatures {
       system_permissions_platform_handle_;
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   std::unique_ptr<whats_new::WhatsNewRegistry> whats_new_registry_;
+
+  std::unique_ptr<default_browser::DefaultBrowserManager>
+      default_browser_manager_;
 #endif
 
 #if BUILDFLAG(ENABLE_GLIC)

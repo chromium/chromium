@@ -1883,6 +1883,7 @@ static_library("browser") {
     "//chrome/browser/crash_upload_list",
     "//chrome/browser/custom_handlers",
     "//chrome/browser/data_saver",
+    "//chrome/browser/default_browser",
     "//chrome/browser/devtools",
     "//chrome/browser/dom_distiller",
     "//chrome/browser/dom_distiller:impl",

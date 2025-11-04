@@ -30,6 +30,7 @@
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 // This causes a gn error on Android builds, because gn does not understand
 // buildflags, so we include it only on platforms where it is used.
+#include "chrome/browser/default_browser/default_browser_manager.h"
 #include "chrome/browser/ui/webui/whats_new/whats_new_registrar.h"
 #include "components/user_education/common/user_education_features.h"  // nogncheck
 #endif
@@ -75,6 +76,9 @@ void GlobalFeatures::Init() {
   system_permissions_platform_handle_ = CreateSystemPermissionsPlatformHandle();
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   whats_new_registry_ = CreateWhatsNewRegistry();
+
+  default_browser_manager_ =
+      std::make_unique<default_browser::DefaultBrowserManager>();
 #endif
 
 #if BUILDFLAG(ENABLE_GLIC)
