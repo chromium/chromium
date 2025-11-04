@@ -25,7 +25,7 @@
 #include "chrome/browser/component_updater/desktop_sharing_hub_component_remover.h"
 #include "chrome/browser/component_updater/first_party_sets_component_installer.h"
 #include "chrome/browser/component_updater/hyphenation_component_installer.h"
-#include "chrome/browser/component_updater/masked_domain_list_component_installer.h"
+#include "chrome/browser/component_updater/masked_domain_list_component_remover.h"
 #include "chrome/browser/component_updater/mei_preload_component_installer.h"
 #include "chrome/browser/component_updater/open_cookie_database_component_installer.h"
 #include "chrome/browser/component_updater/pki_metadata_component_installer.h"
@@ -144,7 +144,6 @@ void RegisterComponentsForUpdate() {
   RegisterOptimizationHintsComponent(cus);
   RegisterTrustTokenKeyCommitmentsComponentIfTrustTokensEnabled(cus);
   RegisterFirstPartySetsComponent(cus);
-  RegisterMaskedDomainListComponent(cus);
   RegisterPrivacySandboxAttestationsComponent(cus);
   RegisterAntiFingerprintingBlockedDomainListComponent(cus);
   if (history_embeddings::IsHistoryEmbeddingsFeatureEnabled()) {
@@ -155,6 +154,8 @@ void RegisterComponentsForUpdate() {
   if (base::PathService::Get(chrome::DIR_USER_DATA, &path)) {
     // Clean up any remaining desktop sharing hub state.
     component_updater::DeleteDesktopSharingHub(path);
+    // TODO: crbug.com/457391753 - Remove this cleanup code in M146+.
+    component_updater::DeleteMaskedDomainList(path);
 
     // TODO: crbug.com/456742487 - Remove this after M148.
     DeleteProbabilisticRevealTokenRegistry(path);
