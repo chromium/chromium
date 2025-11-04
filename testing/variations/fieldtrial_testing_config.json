@@ -23772,25 +23772,6 @@
             ]
         }
     ],
-    "ShowManualNotificationRevocationsSafetyHub": [
-        {
-            "platforms": [
-                "android",
-                "windows",
-                "mac",
-                "linux",
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ShowManualNotificationRevocationsSafetyHub"
-                    ]
-                }
-            ]
-        }
-    ],
     "ShowNewTabAnimationsAndroid": [
         {
             "platforms": [
