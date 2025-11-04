@@ -1800,21 +1800,6 @@ void HttpStreamPool::AttemptManager::OnJobDone(Job* job) {
 }
 
 bool HttpStreamPool::AttemptManager::HasAvailableSpdySession() const {
-  if (!is_using_tls_) {
-    return false;
-  }
-
-  // Check for an available session before checking if it can be used. It's
-  // rare for HTTP/1.1 to be required in general, and checking it is can be
-  // slow. Also, it's fairly rare for there to be a session available here
-  // (outside of the session aliasing case), since the Job already checked for
-  // one.
-  if (!spdy_session_pool()->HasAvailableSession(spdy_session_key(),
-                                                IsIpBasedPoolingEnabledForH2(),
-                                                /*is_websocket=*/false)) {
-    return false;
-  }
-
   // If the destination is marked as requiring HTTP/1.1, act as if there's no
   // available SPDY session. This matches the behavior of
   // HttpStreamPool::FindAvailableSpdySession().
@@ -1822,7 +1807,10 @@ bool HttpStreamPool::AttemptManager::HasAvailableSpdySession() const {
                              stream_key().network_anonymization_key())) {
     return false;
   }
-  return true;
+
+  return spdy_session_pool()->HasAvailableSession(
+      spdy_session_key(), IsIpBasedPoolingEnabledForH2(),
+      /*is_websocket=*/false);
 }
 
 void HttpStreamPool::AttemptManager::MaybeStartDraining() {
