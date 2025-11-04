@@ -1644,10 +1644,6 @@
       base_feature: "CssSelectorFragmentAnchor",
     },
     {
-      name: "CSSSignRelatedFunctions",
-      status: "stable",
-    },
-    {
       name: "CSSSupportsAtRuleFunction",
       status: "experimental",
     },

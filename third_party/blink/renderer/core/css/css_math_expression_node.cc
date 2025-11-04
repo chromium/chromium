@@ -2042,10 +2042,6 @@ CSSMathExpressionNode* CSSMathExpressionOperation::CreateExponentialFunction(
 CSSMathExpressionNode* CSSMathExpressionOperation::CreateSignRelatedFunction(
     Operands&& operands,
     CSSValueID function_id) {
-  if (!RuntimeEnabledFeatures::CSSSignRelatedFunctionsEnabled()) {
-    return nullptr;
-  }
-
   const CSSMathExpressionNode* operand = operands.front();
 
   if (operand->IsCalcSize()) {
@@ -4081,10 +4077,9 @@ class CSSMathExpressionNodeParser {
       case CSSValueID::kExp:
       case CSSValueID::kSiblingCount:
       case CSSValueID::kSiblingIndex:
-        return true;
       case CSSValueID::kAbs:
       case CSSValueID::kSign:
-        return RuntimeEnabledFeatures::CSSSignRelatedFunctionsEnabled();
+        return true;
       case CSSValueID::kProgress:
         return RuntimeEnabledFeatures::CSSProgressNotationEnabled();
       case CSSValueID::kMediaProgress:
@@ -4436,7 +4431,6 @@ class CSSMathExpressionNodeParser {
         break;
       case CSSValueID::kAbs:
       case CSSValueID::kSign:
-        DCHECK(RuntimeEnabledFeatures::CSSSignRelatedFunctionsEnabled());
         max_argument_count = 1;
         min_argument_count = 1;
         break;
@@ -4563,10 +4557,6 @@ class CSSMathExpressionNodeParser {
       }
       case CSSValueID::kAbs:
       case CSSValueID::kSign:
-        // TODO(seokho): Relative and Percent values cannot be evaluated at the
-        // parsing time. So we should implement cannot be simplified value
-        // using CalculationExpressionNode
-        DCHECK(RuntimeEnabledFeatures::CSSSignRelatedFunctionsEnabled());
         return CSSMathExpressionOperation::CreateSignRelatedFunction(
             std::move(nodes), function_id);
 
