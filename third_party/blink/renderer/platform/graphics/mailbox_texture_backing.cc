@@ -56,26 +56,24 @@ gpu::Mailbox MailboxTextureBacking::GetMailbox() const {
 
 sk_sp<SkImage> MailboxTextureBacking::GetSkImageViaReadback() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  if (!GetMailbox().IsZero()) {
-    // TODO(jochin): Consider doing some caching and using discardable memory.
-    sk_sp<SkData> image_pixels =
-        TryAllocateSkData(sk_image_info_.computeMinByteSize());
-    if (!image_pixels)
-      return nullptr;
-    uint8_t* writable_pixels =
-        static_cast<uint8_t*>(image_pixels->writable_data());
-    gpu::raster::RasterInterface* ri = context_provider_->RasterInterface();
-    if (!ri->ReadbackImagePixels(
-            GetMailbox(), sk_image_info_,
-            static_cast<GLuint>(sk_image_info_.minRowBytes()), 0, 0,
-            /*plane_index=*/0, writable_pixels)) {
-      return nullptr;
-    }
-
-    return SkImages::RasterFromData(sk_image_info_, std::move(image_pixels),
-                                    sk_image_info_.minRowBytes());
+  // TODO(jochin): Consider doing some caching and using discardable memory.
+  sk_sp<SkData> image_pixels =
+      TryAllocateSkData(sk_image_info_.computeMinByteSize());
+  if (!image_pixels) {
+    return nullptr;
   }
-  return nullptr;
+  uint8_t* writable_pixels =
+      static_cast<uint8_t*>(image_pixels->writable_data());
+  gpu::raster::RasterInterface* ri = context_provider_->RasterInterface();
+  if (!ri->ReadbackImagePixels(
+          GetMailbox(), sk_image_info_,
+          static_cast<GLuint>(sk_image_info_.minRowBytes()), 0, 0,
+          /*plane_index=*/0, writable_pixels)) {
+    return nullptr;
+  }
+
+  return SkImages::RasterFromData(sk_image_info_, std::move(image_pixels),
+                                  sk_image_info_.minRowBytes());
 }
 
 bool MailboxTextureBacking::readPixels(const SkImageInfo& dst_info,
@@ -84,13 +82,10 @@ bool MailboxTextureBacking::readPixels(const SkImageInfo& dst_info,
                                        int src_x,
                                        int src_y) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  if (!GetMailbox().IsZero()) {
-    gpu::raster::RasterInterface* ri = context_provider_->RasterInterface();
-    return ri->ReadbackImagePixels(GetMailbox(), dst_info,
-                                   static_cast<GLuint>(dst_info.minRowBytes()),
-                                   src_x, src_y, /*plane_index=*/0, dst_pixels);
-  }
-  return false;
+  gpu::raster::RasterInterface* ri = context_provider_->RasterInterface();
+  return ri->ReadbackImagePixels(GetMailbox(), dst_info,
+                                 static_cast<GLuint>(dst_info.minRowBytes()),
+                                 src_x, src_y, /*plane_index=*/0, dst_pixels);
 }
 
 }  // namespace blink
