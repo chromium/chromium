@@ -1206,11 +1206,6 @@ BASE_FEATURE(kJapaneseInputModeSwitchInVK, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kJupiterScreensaver, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Controls whether the "Remember password" button in the Kerberos "Add account"
-// dialog should be checked by default.
-BASE_FEATURE(kKerberosRememberPasswordByDefault,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables automatic downloading and installing fonts via language packs, based
 // on the user's preferences.
 BASE_FEATURE(kLanguagePacksFonts, base::FEATURE_ENABLED_BY_DEFAULT);
@@ -2995,10 +2990,6 @@ bool IsInternalServerSideSpeechRecognitionEnabledByFinch() {
 bool IsJupiterScreensaverEnabled() {
   return base::FeatureList::IsEnabled(kJupiterScreensaver) &&
          IsTimeOfDayScreenSaverEnabled();
-}
-
-bool IsKerberosRememberPasswordByDefaultEnabled() {
-  return base::FeatureList::IsEnabled(kKerberosRememberPasswordByDefault);
 }
 
 bool IsLauncherContinueSectionWithRecentsEnabled() {

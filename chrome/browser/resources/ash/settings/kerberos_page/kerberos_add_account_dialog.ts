@@ -133,16 +133,6 @@ export class KerberosAddAccountDialogElement extends
       },
 
       /**
-       * Whether the password should be remembered by default.
-       */
-      rememberPasswordByDefault_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('kerberosRememberPasswordByDefault');
-        },
-      },
-
-      /**
        * Whether the remember password option is allowed by policy.
        */
       rememberPasswordEnabledByPolicy_: {
@@ -189,7 +179,6 @@ export class KerberosAddAccountDialogElement extends
   private passwordErrorText_: string;
   private password_: string;
   private prefillDomain_: string;
-  private rememberPasswordByDefault_: boolean;
   private rememberPasswordEnabledByPolicy_: boolean;
   private rememberPasswordChecked_: boolean;
   private showAdvancedConfig_: boolean;
@@ -202,7 +191,7 @@ export class KerberosAddAccountDialogElement extends
     super();
 
     this.useStoredPassword_ = false;
-    this.rememberPasswordChecked_ = this.rememberPasswordByDefault_ &&
+    this.rememberPasswordChecked_ =
         this.rememberPasswordEnabledByPolicy_ && !this.isGuestMode_;
     this.config_ = '';
     this.title_ = '';
