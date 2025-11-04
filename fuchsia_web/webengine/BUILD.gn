@@ -81,23 +81,22 @@ if (!is_component_build) {
   _disallowed_extensions_deps += [ "//extensions:*" ]
 }
 
-# Although `enable_pdf` is true for Fuchsia, PDF code should not be linked
-# into WebEngine because it does not have the necessary infrastructure and
-# this would unnecessarily increase the package size.
+# Fuchsia WebEngine does not support pdf.
 _disallowed_pdf_deps = [
   "//components/pdf/*",
   "//components/plugins/*",
   "//pdf/*",
 ]
 
-# Although `enable_printing` is true on Fuchsia, no code should be linked.
-# "//printing:metafile" is used by //third_party/blink/renderer/core and
-# uses "//printing/common/*".
+# Fuchsia WebEngine does not support printing.
 # "//printing/mojom/*" is allowed because Blink public APIs use its types.
 _disallowed_printing_deps = [
   "//printing",
+  "//printing:metafile",
   "//printing:printing_base",
+  "//printing:settings",
   "//printing/backend/*",
+  "//printing/common/*",
 ]
 
 # TODO(crbug.com/40220356): Replace the uses of this in each target with a group
