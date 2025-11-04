@@ -352,7 +352,10 @@ int InstallFromDir(const base::FilePath& dir,
     return static_cast<int>(InstallErrors::kCouldNotConfirmAppPermissions);
   }
 
-  return std::move(install).Run(dir);
+  return std::move(install).Run(dir.BaseName().value() ==
+                                        base::FilePath::kCurrentDirectory
+                                    ? dir.DirName()
+                                    : dir);
 }
 
 // Installs with a path to the app specified by the `app_file_path`. The install

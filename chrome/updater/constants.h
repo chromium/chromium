@@ -561,6 +561,9 @@ inline constexpr int kErrorNoObserverCompletionInfo = kUpdaterErrorBase + 82;
 // No apps to install.
 inline constexpr int kErrorNoApps = kUpdaterErrorBase + 83;
 
+// A path references the parent directory.
+inline constexpr int kErrorPathReferencesParent = kUpdaterErrorBase + 84;
+
 // Policy Management constants.
 // The maximum value allowed for policy AutoUpdateCheckPeriodMinutes.
 inline constexpr int kMaxAutoUpdateCheckPeriodMinutes = 43200;

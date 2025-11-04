@@ -200,14 +200,20 @@ Installer::Result Installer::InstallHelper(
                   kErrorMissingInstallParams);
   }
 
+  const base::FilePath installer_path =
+      unpack_path.AppendUTF8(install_params->run);
+  if (installer_path.ReferencesParent()) {
+    return Result(GOOPDATEINSTALL_E_FILENAME_INVALID,
+                  kErrorPathReferencesParent);
+  }
+
   // Assume the install params are ASCII for now.
   // Upon success, when the control flow returns back to the |update_client|,
   // the prefs are updated asynchronously with the new |pv| and |fingerprint|.
   // The task sequencing guarantees that the prefs will be updated by the
   // time another CrxDataCallback is invoked, which needs updated values.
   return RunApplicationInstaller(
-      app_info_, unpack_path.AppendUTF8(install_params->run),
-      install_params->arguments,
+      app_info_, installer_path, install_params->arguments,
       WriteInstallerDataToTempFile(unpack_path,
                                    client_install_data_.empty()
                                        ? install_params->server_install_data
