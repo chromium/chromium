@@ -453,6 +453,10 @@ struct BLINK_COMMON_EXPORT WebPreferences {
 
   bool ai_prompt_api_enabled = false;
 
+#if BUILDFLAG(IS_MAC)
+  bool should_disable_external_popups = false;
+#endif  // BUILDFLAG(IS_MAC)
+
 #if BUILDFLAG(IS_ANDROID)
   // Whether a screenshot will be take for every traversable mainframe same-doc
   // navigation. This will increment the `viz::LocalSurfaceId` from the impl

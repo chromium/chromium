@@ -265,7 +265,7 @@ class ExternalPopupMenuTest : public PageTestBase {
     frame_host_.Init(
         web_frame_client_.GetRemoteNavigationAssociatedInterfaces());
     helper_.Initialize(&web_frame_client_);
-    WebView()->GetChromeClient().SetUseExternalPopupMenusForTesting(true);
+    WebView()->GetChromeClient().SetUseExternalPopupMenus(true);
   }
   void TearDown() override {
     url_test_helpers::UnregisterAllURLsAndClearMemoryCache();

@@ -306,6 +306,7 @@ class MenuListSelectType final : public SelectType {
   void UnobserveTreeMutation();
 
   Member<PopupMenu> popup_;
+  bool is_popup_external_ = false;
   Member<PopupUpdater> popup_updater_;
   Member<const ComputedStyle> option_style_;
   Member<HTMLSlotElement> button_slot_;
@@ -762,9 +763,19 @@ void MenuListSelectType::ShowPopup(PopupMenu::ShowEventType type) {
   select_->GetDocument().UpdateStyleAndLayoutForNode(
       select_, DocumentUpdateReason::kPagePopup);
 
+  ChromeClient& chrome_client = document.GetPage()->GetChromeClient();
   if (!popup_) {
-    popup_ = document.GetPage()->GetChromeClient().OpenPopupMenu(
-        *document.GetFrame(), *select_);
+    popup_ = chrome_client.OpenPopupMenu(*document.GetFrame(), *select_);
+    is_popup_external_ = chrome_client.UseExternalPopupMenus();
+  } else {
+    // There's an existing popup -- if switching between native and non-native
+    // UI, hide and destroy the existing popup, and create a new one.
+    bool popup_is_external = chrome_client.UseExternalPopupMenus();
+    if (is_popup_external_ != popup_is_external) {
+      popup_->Hide();
+      popup_ = chrome_client.OpenPopupMenu(*document.GetFrame(), *select_);
+      is_popup_external_ = popup_is_external;
+    }
   }
   if (!popup_) {
     SetNativePopupIsVisible(false);

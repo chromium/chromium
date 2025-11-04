@@ -7,10 +7,12 @@
 #include <memory>
 #include <ostream>
 
+#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/state_transitions.h"
 #include "base/task/sequenced_task_runner.h"
+#include "build/build_config.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_metrics.h"
 #include "chrome/browser/actor/execution_engine.h"
@@ -20,12 +22,14 @@
 #include "chrome/common/actor.mojom-forward.h"
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/actor/journal_details_builder.h"
+#include "chrome/common/chrome_features.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/buildflags.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace actor {
@@ -544,6 +548,11 @@ void ActorTask::DidContentsEnterActorControl(
                                        /*stay_hidden=*/false,
                                        /*stay_awake=*/true,
                                        /*is_activity=*/true);
+#if BUILDFLAG(IS_MAC) && BUILDFLAG(USE_EXTERNAL_POPUP_MENU)
+  if (base::FeatureList::IsEnabled(features::kGlicActorInternalPopups)) {
+    state->reenable_external_popups = contents->ForbidExternalPopupMenus();
+  }
+#endif  // BUILDFLAG(IS_MAC) && BUILDFLAG(USE_EXTERNAL_POPUP_MENU)
 }
 
 void ActorTask::DidTabExitActorControl(tabs::TabHandle handle) {
@@ -578,6 +587,9 @@ void ActorTask::DidContentsExitActorControl(
   // destructor), which automatically calls DecrementCapturerCount on the
   // WebContents.
   state->actuation_runner = {};
+#if BUILDFLAG(IS_MAC) && BUILDFLAG(USE_EXTERNAL_POPUP_MENU)
+  state->reenable_external_popups = {};
+#endif  // BUILDFLAG(IS_MAC) && BUILDFLAG(USE_EXTERNAL_POPUP_MENU)
 }
 
 std::string ToString(const ActorTask::State& state) {

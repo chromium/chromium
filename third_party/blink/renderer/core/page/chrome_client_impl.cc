@@ -1035,7 +1035,7 @@ DOMWindow* ChromeClientImpl::PagePopupWindowForTesting() const {
   return web_view_->PagePopupWindow();
 }
 
-void ChromeClientImpl::SetUseExternalPopupMenusForTesting(bool value) {
+void ChromeClientImpl::SetUseExternalPopupMenus(bool value) {
   use_external_popup_menus_ = value;
 }
 

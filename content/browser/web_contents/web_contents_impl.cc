@@ -2037,6 +2037,14 @@ std::vector<RenderFrameHostImpl*> WebContentsImpl::GetOutermostMainFrames() {
   return result;
 }
 
+#if BUILDFLAG(IS_MAC) && BUILDFLAG(USE_EXTERNAL_POPUP_MENU)
+void WebContentsImpl::DecrementForbidExternalPopupMenus() {
+  DCHECK_GE(external_popup_menus_forbid_counter_, 1);
+  external_popup_menus_forbid_counter_--;
+  NotifyPreferencesChanged();
+}
+#endif  // BUILDFLAG(IS_MAC) && BUILDFLAG(USE_EXTERNAL_POPUP_MENU)
+
 void WebContentsImpl::ExecutePageBroadcastMethod(
     PageBroadcastMethodCallback callback) {
   OPTIONAL_TRACE_EVENT0("content",
@@ -2724,6 +2732,17 @@ bool WebContentsImpl::IsBeingCaptured() {
 bool WebContentsImpl::IsBeingVisiblyCaptured() {
   return visible_capturer_count_ > 0;
 }
+
+#if BUILDFLAG(IS_MAC) && BUILDFLAG(USE_EXTERNAL_POPUP_MENU)
+base::ScopedClosureRunner WebContentsImpl::ForbidExternalPopupMenus() {
+  // Disable external popups when forbidden, and re-enable them after.
+  external_popup_menus_forbid_counter_++;
+  NotifyPreferencesChanged();
+  return base::ScopedClosureRunner(
+      base::BindOnce(&WebContentsImpl::DecrementForbidExternalPopupMenus,
+                     weak_factory_.GetWeakPtr()));
+}
+#endif  // BUILDFLAG(IS_MAC) && BUILDFLAG(USE_EXTERNAL_POPUP_MENU)
 
 bool WebContentsImpl::IsAudioMuted() {
   return audio_stream_factory_ && audio_stream_factory_->IsMuted();
@@ -3932,6 +3951,11 @@ const blink::web_pref::WebPreferences WebContentsImpl::ComputeWebPreferences(
   }
 
 #endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_MAC) && BUILDFLAG(USE_EXTERNAL_POPUP_MENU)
+  prefs.should_disable_external_popups =
+      external_popup_menus_forbid_counter_ != 0;
+#endif  // BUILDFLAG(IS_MAC) && BUILDFLAG(USE_EXTERNAL_POPUP_MENU)
 
   GetContentClient()->browser()->OverrideWebPreferences(
       this, *main_frame->GetSiteInstance(), &prefs);

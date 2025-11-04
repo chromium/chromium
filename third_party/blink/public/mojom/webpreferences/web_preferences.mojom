@@ -518,4 +518,13 @@ struct WebPreferences {
 
   [EnableIf=is_android]
   bool should_screenshot_on_mainframe_same_doc_navigation = true;
+
+  // On macOS, the popup UI for <select> elements is rendered with native
+  // (external) popup controls, but these are not visible to
+  // RenderWidgetHostView::CopyFromSurface().
+  //
+  // This property allows disabling the external popups to use the internal
+  // Chrome-rendered popups instead.
+  [EnableIf=is_mac]
+  bool should_disable_external_popups = false;
 };

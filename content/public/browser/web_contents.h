@@ -38,6 +38,7 @@
 #include "content/public/browser/session_storage_namespace.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents_capability_type.h"
+#include "content/public/common/buildflags.h"
 #include "content/public/common/stop_find_action.h"
 #include "ipc/constants.mojom.h"
 #include "net/base/network_handle.h"
@@ -858,6 +859,13 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
   // and renderers are being told they are always user-visible, as indicated by
   // calls to IncrementCapturerCount().
   virtual bool IsBeingVisiblyCaptured() = 0;
+
+#if BUILDFLAG(IS_MAC) && BUILDFLAG(USE_EXTERNAL_POPUP_MENU)
+  // Temporarily forbids this WebContents from using external popup menus for
+  // the lifetime of the returned ScopedClosureRunner. Nested calls are allowed.
+  [[nodiscard]] virtual base::ScopedClosureRunner
+  ForbidExternalPopupMenus() = 0;
+#endif  // BUILDFLAG(IS_MAC) && BUILDFLAG(USE_EXTERNAL_POPUP_MENU)
 
   // Indicates/Sets whether all audio output from this WebContents is muted.
   // This does not affect audio capture, just local/system output.

@@ -828,6 +828,13 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::WebPreferencesDataView,
     return r.ai_prompt_api_enabled;
   }
 
+#if BUILDFLAG(IS_MAC)
+  static bool should_disable_external_popups(
+      const blink::web_pref::WebPreferences& r) {
+    return r.should_disable_external_popups;
+  }
+#endif  // BUILDFLAG(IS_MAC)
+
   static bool Read(blink::mojom::WebPreferencesDataView r,
                    blink::web_pref::WebPreferences* out);
 };

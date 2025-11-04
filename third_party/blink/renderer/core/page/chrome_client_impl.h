@@ -252,7 +252,10 @@ class CORE_EXPORT ChromeClientImpl final : public ChromeClient {
   void ClosePagePopup(PagePopup*) override;
   DOMWindow* PagePopupWindowForTesting() const override;
 
-  void SetUseExternalPopupMenusForTesting(bool) override;
+  void SetUseExternalPopupMenus(bool) override;
+  bool UseExternalPopupMenus() const override {
+    return use_external_popup_menus_;
+  }
 
   void SetBrowserControlsState(float top_height,
                                float bottom_height,

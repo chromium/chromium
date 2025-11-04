@@ -455,6 +455,9 @@ class CONTENT_EXPORT WebContentsImpl
   const blink::mojom::CaptureHandleConfig& GetCaptureHandleConfig() override;
   bool IsBeingCaptured() override;
   bool IsBeingVisiblyCaptured() override;
+#if BUILDFLAG(IS_MAC) && BUILDFLAG(USE_EXTERNAL_POPUP_MENU)
+  [[nodiscard]] base::ScopedClosureRunner ForbidExternalPopupMenus() override;
+#endif  // BUILDFLAG(IS_MAC) && BUILDFLAG(USE_EXTERNAL_POPUP_MENU)
   bool IsAudioMuted() override;
   void SetAudioMuted(bool mute) override;
   bool IsCurrentlyAudible() override;
@@ -2157,6 +2160,14 @@ class CONTENT_EXPORT WebContentsImpl
                               bool stay_awake,
                               bool is_activity = true);
 
+#if BUILDFLAG(IS_MAC) && BUILDFLAG(USE_EXTERNAL_POPUP_MENU)
+  // Helper for ForbidExternalPopupMenus() -- called by the ScopedClosureRunner
+  // it returns to re-enable external popups (by decrementing
+  // external_popup_menus_forbid_counter_ -- popups will be re-enabled once it's
+  // 0).
+  void DecrementForbidExternalPopupMenus();
+#endif  // BUILDFLAG(IS_MAC) && BUILDFLAG(USE_EXTERNAL_POPUP_MENU)
+
   // Calculates the PageVisibilityState for |visibility|, taking the capturing
   // state into account.
   PageVisibilityState CalculatePageVisibilityState(Visibility visibility) const;
@@ -2355,6 +2366,12 @@ class CONTENT_EXPORT WebContentsImpl
   // WakeLock held to ensure screen capture keeps the display on. E.g., for
   // presenting through tab capture APIs.
   mojo::Remote<device::mojom::WakeLock> capture_wake_lock_;
+
+#if BUILDFLAG(IS_MAC) && BUILDFLAG(USE_EXTERNAL_POPUP_MENU)
+  // The number of nested calls to ForbidExternalPopupMenus(). External popups
+  // UI will be disabled when the counter is nonzero.
+  int external_popup_menus_forbid_counter_ = 0;
+#endif  // BUILDFLAG(IS_MAC) && BUILDFLAG(USE_EXTERNAL_POPUP_MENU)
 
   // Remote end of the connection for sending delegated ink points to viz to
   // support the delegated ink trails feature.

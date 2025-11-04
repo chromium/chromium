@@ -148,6 +148,11 @@ BASE_FEATURE(kCommittedOriginEnforcements, base::FEATURE_ENABLED_BY_DEFAULT);
 // enforcements, which is gated behind kCommittedOriginEnforcements.
 BASE_FEATURE(kCommittedOriginTracking, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Turn on a bug fix for crbug.com/456537756, ensuring that the callback passed
+// to RenderWidgetHostView::CopyFromSurface() is always called.
+BASE_FEATURE(kCopyFromSurfaceAlwaysCallCallback,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enables support for the `Critical-CH` response header.
 // https://github.com/WICG/client-hints-infrastructure/blob/master/reliability.md#critical-ch
 BASE_FEATURE(kCriticalClientHint, base::FEATURE_ENABLED_BY_DEFAULT);
