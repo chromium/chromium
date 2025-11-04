@@ -276,8 +276,7 @@ bool IOSWebViewPaymentsAutofillClient::IsRiskBasedAuthEffectivelyAvailable()
 }
 
 bool IOSWebViewPaymentsAutofillClient::IsMandatoryReauthEnabled() {
-  return GetPrefService()->GetBoolean(
-      ios_web_view::kCWVAutofillVCNUsageEnabled);
+  return false;
 }
 
 void IOSWebViewPaymentsAutofillClient::ShowMandatoryReauthOptInPrompt(
