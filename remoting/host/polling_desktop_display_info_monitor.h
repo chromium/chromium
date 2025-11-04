@@ -46,11 +46,14 @@ class PollingDesktopDisplayInfoMonitor : public DesktopDisplayInfoMonitor {
 
   // DesktopDisplayInfoMonitor implementation.
   void Start() override;
-  void QueryDisplayInfo() override;
-  void AddCallback(Callback callback) override;
+  bool IsStarted() const override;
+  const DesktopDisplayInfo* GetLatestDisplayInfo() const override;
+  void AddCallback(base::RepeatingClosure callback) override;
+
+  base::WeakPtr<PollingDesktopDisplayInfoMonitor> GetWeakPtr();
 
  private:
-  void QueryDisplayInfoImpl();
+  void QueryDisplayInfo();
   void OnDisplayInfoLoaded(DesktopDisplayInfo info);
 
   SEQUENCE_CHECKER(sequence_checker_);
@@ -58,11 +61,11 @@ class PollingDesktopDisplayInfoMonitor : public DesktopDisplayInfoMonitor {
   scoped_refptr<base::SequencedTaskRunner> ui_task_runner_;
 
   // Callbacks which receive DesktopDisplayInfo updates.
-  base::RepeatingCallbackList<CallbackSignature> callback_list_
+  base::RepeatingClosureList callback_list_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Contains the most recently gathered info about the desktop displays.
-  DesktopDisplayInfo desktop_display_info_
+  std::optional<DesktopDisplayInfo> desktop_display_info_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Created on the calling thread, but accessed and destroyed on the UI thread.

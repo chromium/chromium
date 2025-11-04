@@ -49,7 +49,7 @@ class PersistentDisplayLayoutManager {
   void OnDisplayLayoutFileLoaded(
       std::unique_ptr<protocol::VideoLayout> default_layout,
       base::FileErrorOr<std::string> load_file_result);
-  void OnDisplayInfoReceived(const DesktopDisplayInfo& display_info);
+  void OnDisplayInfoReceived();
   void ApplyDisplayLayout(
       std::unique_ptr<protocol::VideoLayout> default_layout,
       const base::FileErrorOr<std::string>& load_file_result);

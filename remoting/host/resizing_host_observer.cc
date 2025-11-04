@@ -138,6 +138,7 @@ ResizingHostObserver::~ResizingHostObserver() {
 
 void ResizingHostObserver::RegisterForDisplayChanges(
     DesktopDisplayInfoMonitor& monitor) {
+  display_info_monitor_ = &monitor;
   monitor.AddCallback(base::BindRepeating(
       &ResizingHostObserver::OnDisplayInfoChanged, weak_factory_.GetWeakPtr()));
 }
@@ -252,11 +253,6 @@ void ResizingHostObserver::SetVideoLayout(
   desktop_resizer_->SetVideoLayout(video_layout);
 }
 
-void ResizingHostObserver::SetDisplayInfoForTesting(
-    const DesktopDisplayInfo& display_info) {
-  OnDisplayInfoChanged(display_info);
-}
-
 void ResizingHostObserver::SetClockForTesting(const base::TickClock* clock) {
   clock_ = clock;
 }
@@ -291,11 +287,12 @@ void ResizingHostObserver::RecordOriginalResolution(
   }
 }
 
-void ResizingHostObserver::OnDisplayInfoChanged(
-    const DesktopDisplayInfo& display_info) {
+void ResizingHostObserver::OnDisplayInfoChanged() {
+  const auto* display_info = display_info_monitor_->GetLatestDisplayInfo();
+  DCHECK(display_info);
   current_monitor_ids_.clear();
-  for (int i = 0; i < display_info.NumDisplays(); i++) {
-    current_monitor_ids_.insert(display_info.GetDisplayInfo(i)->id);
+  for (int i = 0; i < display_info->NumDisplays(); i++) {
+    current_monitor_ids_.insert(display_info->GetDisplayInfo(i)->id);
   }
 
   // If there was a pending resolution request for an unspecifed monitor, apply

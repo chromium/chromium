@@ -24,7 +24,6 @@ class TickClock;
 
 namespace remoting {
 
-class DesktopDisplayInfo;
 class DesktopDisplayInfoMonitor;
 class DesktopResizer;
 
@@ -56,9 +55,6 @@ class ResizingHostObserver : public ScreenControls {
                            std::optional<webrtc::ScreenId> screen_id) override;
   void SetVideoLayout(const protocol::VideoLayout& video_layout) override;
 
-  // Allows tests to provide display-info updates.
-  void SetDisplayInfoForTesting(const DesktopDisplayInfo& display_info);
-
   // Provide a replacement for base::TimeTicks::Now so that this class can be
   // unit-tested in a timely manner. This function will be called exactly
   // once for each call to SetScreenResolution.
@@ -78,9 +74,13 @@ class ResizingHostObserver : public ScreenControls {
   void RecordOriginalResolution(ScreenResolution resolution,
                                 webrtc::ScreenId screen_id);
 
-  void OnDisplayInfoChanged(const DesktopDisplayInfo& display_info);
+  void OnDisplayInfoChanged();
 
   std::unique_ptr<DesktopResizer> desktop_resizer_;
+
+  // It is only safe to access this from displays-changed callbacks, otherwise
+  // it could have been destroyed.
+  raw_ptr<DesktopDisplayInfoMonitor> display_info_monitor_;
 
   // List of per-monitor original resolutions to be restored.
   std::map<webrtc::ScreenId, ScreenResolution> original_resolutions_;

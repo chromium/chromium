@@ -67,11 +67,12 @@ void PersistentDisplayLayoutManager::OnDisplayLayoutFileLoaded(
   display_info_monitor_->Start();
 }
 
-void PersistentDisplayLayoutManager::OnDisplayInfoReceived(
-    const DesktopDisplayInfo& display_info) {
+void PersistentDisplayLayoutManager::OnDisplayInfoReceived() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  latest_display_layout_ = display_info.GetVideoLayoutProto();
+  const auto* display_info = display_info_monitor_->GetLatestDisplayInfo();
+  DCHECK(display_info);
+  latest_display_layout_ = display_info->GetVideoLayoutProto();
   // This either starts or delays the timer.
   write_display_layout_timer_.Reset();
 }

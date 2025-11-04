@@ -5,6 +5,8 @@
 #ifndef REMOTING_HOST_LINUX_GNOME_DESKTOP_DISPLAY_INFO_MONITOR_H_
 #define REMOTING_HOST_LINUX_GNOME_DESKTOP_DISPLAY_INFO_MONITOR_H_
 
+#include <optional>
+
 #include "base/callback_list.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -26,8 +28,9 @@ class GnomeDesktopDisplayInfoMonitor : public DesktopDisplayInfoMonitor {
 
   // DesktopDisplayInfoMonitor implementation.
   void Start() override;
-  void QueryDisplayInfo() override;
-  void AddCallback(Callback callback) override;
+  bool IsStarted() const override;
+  const DesktopDisplayInfo* GetLatestDisplayInfo() const override;
+  void AddCallback(base::RepeatingClosure callback) override;
 
  private:
   void OnGnomeDisplayConfigReceived(const GnomeDisplayConfig& config);
@@ -38,10 +41,14 @@ class GnomeDesktopDisplayInfoMonitor : public DesktopDisplayInfoMonitor {
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   std::unique_ptr<GnomeDisplayConfigMonitor::Subscription>
-      monitors_changed_subscription_;
+      monitors_changed_subscription_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  // Callbacks which receive DesktopDisplayInfo updates.
-  base::RepeatingCallbackList<CallbackSignature> callback_list_
+  // Contains the most recently gathered info about the desktop displays.
+  std::optional<DesktopDisplayInfo> desktop_display_info_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // Callbacks to be notified when the display info has changed.
+  base::RepeatingClosureList callback_list_
       GUARDED_BY_CONTEXT(sequence_checker_);
 };
 

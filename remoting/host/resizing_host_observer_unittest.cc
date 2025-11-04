@@ -5,8 +5,10 @@
 #include "remoting/host/resizing_host_observer.h"
 
 #include <list>
+#include <optional>
 #include <utility>
 
+#include "base/callback_list.h"
 #include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
@@ -17,6 +19,7 @@
 #include "base/test/task_environment.h"
 #include "remoting/host/base/screen_resolution.h"
 #include "remoting/host/desktop_display_info.h"
+#include "remoting/host/desktop_display_info_monitor.h"
 #include "remoting/host/desktop_resizer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
@@ -124,6 +127,24 @@ class FakeDesktopResizer : public DesktopResizer {
   bool check_final_resolution_;
 };
 
+class FakeDesktopDisplayInfoMonitor : public DesktopDisplayInfoMonitor {
+ public:
+  void Start() override {}
+
+  bool IsStarted() const override { return false; }
+
+  const DesktopDisplayInfo* GetLatestDisplayInfo() const override {
+    return info ? &info.value() : nullptr;
+  }
+
+  void AddCallback(base::RepeatingClosure callback) override {
+    callbacks.AddUnsafe(std::move(callback));
+  }
+
+  std::optional<DesktopDisplayInfo> info;
+  base::RepeatingClosureList callbacks;
+};
+
 class ResizingHostObserverTest : public testing::Test {
  public:
   ResizingHostObserverTest() { clock_.SetNowTicks(base::TimeTicks::Now()); }
@@ -141,6 +162,7 @@ class ResizingHostObserverTest : public testing::Test {
             &call_counts_, restore_resolution),
         restore_resolution);
     resizing_host_observer_->SetClockForTesting(&clock_);
+    resizing_host_observer_->RegisterForDisplayChanges(display_info_monitor_);
   }
 
   void SetScreenResolution(const ScreenResolution& client_size,
@@ -172,10 +194,12 @@ class ResizingHostObserverTest : public testing::Test {
 
   // Sends the current display-info to the ResizingHostObserver.
   void NotifyDisplayInfo() {
-    resizing_host_observer_->SetDisplayInfoForTesting(ToDisplayInfo(monitors_));
+    display_info_monitor_.info = ToDisplayInfo(monitors_);
+    display_info_monitor_.callbacks.Notify();
   }
 
   Monitors monitors_;
+  FakeDesktopDisplayInfoMonitor display_info_monitor_;
   FakeDesktopResizer::CallCounts call_counts_;
   std::unique_ptr<ResizingHostObserver> resizing_host_observer_;
   base::SimpleTestTickClock clock_;

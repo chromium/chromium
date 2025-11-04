@@ -23,6 +23,7 @@
 #include "remoting/host/audio_capturer.h"
 #include "remoting/host/base/desktop_environment_options.h"
 #include "remoting/host/curtain_mode.h"
+#include "remoting/host/delegating_desktop_display_info_monitor.h"
 #include "remoting/host/desktop_and_cursor_conditional_composer.h"
 #include "remoting/host/desktop_capturer_proxy.h"
 #include "remoting/host/desktop_capturer_wrapper.h"
@@ -34,7 +35,6 @@
 #include "remoting/host/input_monitor/local_input_monitor.h"
 #include "remoting/host/keyboard_layout_monitor.h"
 #include "remoting/host/mouse_cursor_monitor_proxy.h"
-#include "remoting/host/polling_desktop_display_info_monitor.h"
 #include "remoting/protocol/mouse_cursor_monitor.h"
 #include "remoting/protocol/webrtc_mouse_cursor_monitor_adaptor.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_options.h"
@@ -144,8 +144,8 @@ std::unique_ptr<DesktopCapturer> LegacyInteractionStrategy::CreateVideoCapturer(
 
 std::unique_ptr<DesktopDisplayInfoMonitor>
 LegacyInteractionStrategy::CreateDisplayInfoMonitor() {
-  return std::make_unique<PollingDesktopDisplayInfoMonitor>(
-      ui_task_runner_, DesktopDisplayInfoLoader::Create());
+  return std::make_unique<DelegatingDesktopDisplayInfoMonitor>(
+      display_info_monitor_.GetWeakPtr());
 }
 
 std::unique_ptr<protocol::MouseCursorMonitor>
@@ -209,7 +209,9 @@ LegacyInteractionStrategy::LegacyInteractionStrategy(
       caller_task_runner_(std::move(caller_task_runner)),
       ui_task_runner_(std::move(ui_task_runner)),
       video_capture_task_runner_(std::move(video_capture_task_runner)),
-      input_task_runner_(std::move(input_task_runner)) {}
+      input_task_runner_(std::move(input_task_runner)),
+      display_info_monitor_(ui_task_runner_,
+                            DesktopDisplayInfoLoader::Create()) {}
 
 LegacyInteractionStrategyFactory::LegacyInteractionStrategyFactory(
     scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner,

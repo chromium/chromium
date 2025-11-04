@@ -14,29 +14,26 @@ namespace remoting {
 // display configuration, and reports any changes to the registered callbacks.
 class DesktopDisplayInfoMonitor {
  public:
-  using CallbackSignature = void(const DesktopDisplayInfo&);
-  using Callback = base::RepeatingCallback<CallbackSignature>;
-
   virtual ~DesktopDisplayInfoMonitor() = default;
 
   // Begins continuous monitoring for changes. Any changes to the monitor layout
   // will be reported to the registered callbacks.
+  // No-op if the monitor is already started.
   virtual void Start() = 0;
 
-  // Queries the OS immediately for the current monitor layout and reports any
-  // changed display info to the registered callbacks. If this instance is
-  // associated with only one DesktopCapturerProxy, this method could be used to
-  // query the display info after each captured frame. If there are multiple
-  // capturers all linked to this instance, it doesn't make sense to query after
-  // every captured frame. So Start() should be called instead, and subsequent
-  // calls to QueryDisplayInfo() will have no effect.
-  virtual void QueryDisplayInfo() = 0;
+  // Returns whether the monitor has started.
+  virtual bool IsStarted() const = 0;
 
-  // Adds a callback to be notified of display-info changes. Callbacks must not
-  // be added after calling Start() or QueryDisplayInfo(). Implementations do
-  // not return a base::CallbackListSubscription, so |callback| must either
-  // outlive this object, or be bound to a suitable WeakPtr.
-  virtual void AddCallback(Callback callback) = 0;
+  // Returns the latest known display info, or nullptr if it hasn't been fetched
+  // yet.
+  virtual const DesktopDisplayInfo* GetLatestDisplayInfo() const = 0;
+
+  // Adds a callback to be notified of display-info changes or the first
+  // available display info after Start() is called. Callbacks added after
+  // calling Start() will NOT be called until it changes. Implementations do not
+  // return a base::CallbackListSubscription, so |callback| must either outlive
+  // this object, or be bound to a suitable WeakPtr.
+  virtual void AddCallback(base::RepeatingClosure callback) = 0;
 };
 
 }  // namespace remoting

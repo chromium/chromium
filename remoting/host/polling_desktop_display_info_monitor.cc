@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
@@ -52,30 +53,41 @@ PollingDesktopDisplayInfoMonitor::~PollingDesktopDisplayInfoMonitor() {
 void PollingDesktopDisplayInfoMonitor::Start() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!timer_.IsRunning()) {
+  if (!IsStarted()) {
     timer_.Start(FROM_HERE, kPollingInterval, this,
-                 &PollingDesktopDisplayInfoMonitor::QueryDisplayInfoImpl);
+                 &PollingDesktopDisplayInfoMonitor::QueryDisplayInfo);
   }
 }
 
-void PollingDesktopDisplayInfoMonitor::QueryDisplayInfo() {
+bool PollingDesktopDisplayInfoMonitor::IsStarted() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!timer_.IsRunning()) {
-    QueryDisplayInfoImpl();
-  }
+
+  return timer_.IsRunning();
+}
+
+const DesktopDisplayInfo*
+PollingDesktopDisplayInfoMonitor::GetLatestDisplayInfo() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  return desktop_display_info_ ? &desktop_display_info_.value() : nullptr;
 }
 
 void PollingDesktopDisplayInfoMonitor::AddCallback(
-    PollingDesktopDisplayInfoMonitor::Callback callback) {
+    base::RepeatingClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Adding callbacks is not supported after displays have been loaded.
-  DCHECK_EQ(desktop_display_info_.NumDisplays(), 0);
+  DCHECK(!desktop_display_info_.has_value());
 
   callback_list_.AddUnsafe(std::move(callback));
 }
 
-void PollingDesktopDisplayInfoMonitor::QueryDisplayInfoImpl() {
+base::WeakPtr<PollingDesktopDisplayInfoMonitor>
+PollingDesktopDisplayInfoMonitor::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
+void PollingDesktopDisplayInfoMonitor::QueryDisplayInfo() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!callback_list_.empty()) {
     ui_task_runner_->PostTaskAndReplyWithResult(
@@ -96,7 +108,7 @@ void PollingDesktopDisplayInfoMonitor::OnDisplayInfoLoaded(
   }
 
   desktop_display_info_ = std::move(info);
-  callback_list_.Notify(desktop_display_info_);
+  callback_list_.Notify();
 }
 
 }  // namespace remoting
