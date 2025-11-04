@@ -166,6 +166,7 @@ source_set("unit_tests") {
     "logging/log_buffer_unittest.cc",
     "save_password_progress_logger_unittest.cc",
     "signatures_unittest.cc",
+    "unique_ids_unittest.cc",
   ]
 
   deps = [
