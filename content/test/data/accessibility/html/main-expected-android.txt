@@ -1,3 +1,10 @@
 android.webkit.WebView focusable focused
 ++android.view.View role_description='main' interesting name='This is main element.'
 ++android.view.View role_description='main' interesting name='This is an ARIA role main.'
+++android.view.View role_description='main' focusable interesting
+++++android.widget.TextView role_description='heading 1' heading interesting name='Example page'
+++++android.widget.TextView interesting name='Why does Talkback skip'
+++++android.widget.TextView role_description='heading 2' heading interesting name='Headings'
+++++android.widget.TextView interesting name='with tabindex'
+++++android.widget.TextView role_description='heading 2' focusable heading interesting name='A bug'
+++++android.widget.TextView interesting name='when reading all content?'

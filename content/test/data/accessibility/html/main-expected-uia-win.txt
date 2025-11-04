@@ -3,3 +3,16 @@ Document
 ++++Text Name='This is main element.'
 ++Group
 ++++Text Name='This is an ARIA role main.'
+++Group
+++++Text Name='Example page'
+++++++Text Name='Example page' IsControlElement=false
+++++Group IsControlElement=false
+++++++Text Name='Why does Talkback skip'
+++++Text Name='Headings'
+++++++Text Name='Headings' IsControlElement=false
+++++Group IsControlElement=false
+++++++Text Name='with tabindex'
+++++Text Name='A bug'
+++++++Text Name='A bug' IsControlElement=false
+++++Group IsControlElement=false
+++++++Text Name='when reading all content?'
