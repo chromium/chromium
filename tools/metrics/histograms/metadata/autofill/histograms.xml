@@ -1818,8 +1818,8 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram name="Autofill.Autocomplete.PredictionCollisionType.Heuristics"
-    enum="AutofillFieldType" expires_after="2025-12-12">
-  <owner>koerber@google.com</owner>
+    enum="AutofillFieldType" expires_after="2026-12-12">
+  <owner>battre@chromium.org</owner>
   <owner>fleimgruber@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -1829,8 +1829,8 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram name="Autofill.Autocomplete.PredictionCollisionType.Server"
-    enum="AutofillFieldType" expires_after="2025-12-12">
-  <owner>koerber@google.com</owner>
+    enum="AutofillFieldType" expires_after="2026-12-12">
+  <owner>battre@chromium.org</owner>
   <owner>fleimgruber@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -1841,8 +1841,8 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 
 <histogram
     name="Autofill.Autocomplete.PredictionCollisionType.ServerOrHeuristics"
-    enum="AutofillFieldType" expires_after="2025-12-12">
-  <owner>koerber@google.com</owner>
+    enum="AutofillFieldType" expires_after="2026-12-12">
+  <owner>battre@chromium.org</owner>
   <owner>fleimgruber@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
