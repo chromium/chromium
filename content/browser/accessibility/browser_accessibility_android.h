@@ -160,8 +160,6 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid
 
   std::u16string GetPaneTitle() const;
 
-  std::u16string GetDialogModalMessageText() const;
-
   std::u16string GetContentInvalidErrorMessage() const;
 
   std::u16string GetStateDescription() const;
