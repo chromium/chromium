@@ -7,14 +7,16 @@ source_set("utils") {
     "utils.h",
     "utils.mm",
   ]
-  deps = [
+  public_deps = [
     "//components/commerce/core:pref_names",
     "//components/ntp_tiles:pref_names",
     "//components/omnibox/browser:pref_names",
     "//components/safety_check:pref_names",
+    "//components/sync_preferences/cross_device_pref_tracker/prefs",
+  ]
+  deps = [
     "//components/sync_preferences/cross_device_pref_tracker",
     "//components/sync_preferences/cross_device_pref_tracker:timestamped_pref_value",
-    "//components/sync_preferences/cross_device_pref_tracker/prefs",
     "//ios/chrome/app/profile",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/browser",

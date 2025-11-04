@@ -9,16 +9,10 @@
 #import <optional>
 #import <tuple>
 
-#import "base/containers/fixed_flat_map.h"
 #import "base/notreached.h"
 #import "base/values.h"
-#import "components/commerce/core/pref_names.h"
-#import "components/ntp_tiles/pref_names.h"
-#import "components/omnibox/browser/omnibox_pref_names.h"
-#import "components/safety_check/safety_check_pref_names.h"
 #import "components/sync_device_info/device_info_tracker.h"
 #import "components/sync_preferences/cross_device_pref_tracker/cross_device_pref_tracker.h"
-#import "components/sync_preferences/cross_device_pref_tracker/prefs/cross_device_pref_names.h"
 #import "components/sync_preferences/cross_device_pref_tracker/timestamped_pref_value.h"
 #import "ios/chrome/app/profile/profile_init_stage.h"
 #import "ios/chrome/app/profile/profile_state.h"
@@ -27,27 +21,6 @@
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 
 namespace {
-// Map of cross device synced prefs considered by Synced Set Up mapped to their
-// corresponding platform tracked pref.
-inline constexpr auto kCrossDeviceToTrackedPrefMap =
-    base::MakeFixedFlatMap<std::string_view, std::string_view>({
-        // keep-sorted start
-        {prefs::kCrossDeviceMagicStackHomeModuleEnabled,
-         ntp_tiles::prefs::kMagicStackHomeModuleEnabled},
-        {prefs::kCrossDeviceMostVisitedHomeModuleEnabled,
-         ntp_tiles::prefs::kMostVisitedHomeModuleEnabled},
-        {prefs::kCrossDeviceOmniboxIsInBottomPosition,
-         omnibox::kIsOmniboxInBottomPosition},
-        {prefs::kCrossDevicePriceTrackingHomeModuleEnabled,
-         commerce::kPriceTrackingHomeModuleEnabled},
-        {prefs::kCrossDeviceSafetyCheckHomeModuleEnabled,
-         safety_check::prefs::kSafetyCheckHomeModuleEnabled},
-        {prefs::kCrossDeviceTabResumptionHomeModuleEnabled,
-         ntp_tiles::prefs::kTabResumptionHomeModuleEnabled},
-        {prefs::kCrossDeviceTipsHomeModuleEnabled,
-         ntp_tiles::prefs::kTipsHomeModuleEnabled},
-        // keep-sorted end
-    });
 
 // Struct representing a unique device, containing a map of cross device pref
 // names and values, and the total number of changes observed by the
@@ -76,16 +49,19 @@ sync_preferences::TimestampedPrefValue CloneTimestampedPrefValue(
   return cloned_value;
 }
 
-// Returns a map of synced device GUID's to the devices' associated synced pref
-// data.
-DeviceDataMap MapPrefsToDevices(
-    const sync_preferences::CrossDevicePrefTracker* pref_tracker) {
-  DeviceDataMap device_data_map;
+// Helper for adding `DeviceData` entries related to a `DeviceDataMap`, using
+// prefs contained in `pref_map`.
+template <size_t N>
+void BuildDeviceDataMapFromPrefMap(
+    DeviceDataMap& device_data_map,
+    const sync_preferences::CrossDevicePrefTracker* pref_tracker,
+    const base::fixed_flat_map<std::string_view, std::string_view, N>&
+        pref_map) {
   sync_preferences::CrossDevicePrefTracker::DeviceFilter filter;
 
   // Query the tracker for tracked prefs and construct a `DeviceDataMap`
   // associating device GUID's with sets of prefs.
-  for (const auto& tracked_pref : kCrossDeviceToTrackedPrefMap) {
+  for (const auto& tracked_pref : pref_map) {
     std::vector<sync_preferences::TimestampedPrefValue> pref_values =
         pref_tracker->GetValues(tracked_pref.first, filter);
 
@@ -112,6 +88,17 @@ DeviceDataMap MapPrefsToDevices(
       }
     }
   }
+}
+
+// Returns a map of synced device GUID's to the devices' associated synced pref
+// data.
+DeviceDataMap MapPrefsToDevices(
+    const sync_preferences::CrossDevicePrefTracker* pref_tracker) {
+  DeviceDataMap device_data_map;
+  BuildDeviceDataMapFromPrefMap(device_data_map, pref_tracker,
+                                kCrossDeviceToProfilePrefMap);
+  BuildDeviceDataMapFromPrefMap(device_data_map, pref_tracker,
+                                kCrossDeviceToLocalStatePrefMap);
   return device_data_map;
 }
 
@@ -185,12 +172,12 @@ DeviceData GetBestMatchDeviceData(
 
 // Returns a map of tracked pref names and their values extracted from a set of
 // `DeviceData`.
-std::map<std::string_view, base::Value> GetTrackedPrefValuesForDevice(
+std::map<std::string_view, base::Value> GetCrossDevicePrefValuesForDevice(
     DeviceData& device) {
   std::map<std::string_view, base::Value> prefs;
   for (const auto& [cross_device_pref_name, timestamped_pref_value] :
        device.pref_map) {
-    prefs.insert(std::make_pair(GetTrackedPrefName(cross_device_pref_name),
+    prefs.insert(std::make_pair(cross_device_pref_name,
                                 timestamped_pref_value.value.Clone()));
   }
   return prefs;
@@ -198,28 +185,19 @@ std::map<std::string_view, base::Value> GetTrackedPrefValuesForDevice(
 
 }  // namespace
 
-std::string_view GetTrackedPrefName(
-    const std::string_view& cross_device_pref_name) {
-  auto it = kCrossDeviceToTrackedPrefMap.find(cross_device_pref_name);
-  if (it != kCrossDeviceToTrackedPrefMap.end()) {
-    return it->second;
-  }
-  NOTREACHED();
-}
-
-std::map<std::string_view, base::Value> GetRemoteDevicePrefs(
+std::map<std::string_view, base::Value> GetCrossDevicePrefsFromRemoteDevice(
     const sync_preferences::CrossDevicePrefTracker* pref_tracker,
     const syncer::DeviceInfoTracker* device_info_tracker,
     const syncer::DeviceInfo* local_device) {
-  CHECK(pref_tracker);
-  CHECK(device_info_tracker);
-  CHECK(local_device);
+  if (!pref_tracker || !device_info_tracker || !local_device) {
+    return {};
+  }
   DeviceDataMap device_data_map = MapPrefsToDevices(pref_tracker);
   DeviceData best_match_device_data = GetBestMatchDeviceData(
       device_data_map, device_info_tracker, local_device);
-  std::map<std::string_view, base::Value> tracked_pref_values =
-      GetTrackedPrefValuesForDevice(best_match_device_data);
-  return tracked_pref_values;
+  std::map<std::string_view, base::Value> cross_device_pref_values =
+      GetCrossDevicePrefValuesForDevice(best_match_device_data);
+  return cross_device_pref_values;
 }
 
 SceneState* GetEligibleSceneForSyncedSetUp(ProfileState* profile_state) {
