@@ -27,6 +27,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
@@ -217,7 +218,7 @@ public final class ChipViewTest {
         assertEquals(View.GONE, startIcon.getVisibility());
 
         // The start icon should become visible after it's set.
-        mChipView.setIcon(R.drawable.ic_settings_gear_24dp, /* tintWithTextColor= */ false);
+        mChipView.setIconWithTint(R.drawable.ic_settings_gear_24dp, /* tintWithTextColor= */ false);
         assertEquals(View.VISIBLE, startIcon.getVisibility());
 
         LoadingView loadingView = mChipView.findViewById(R.id.chip_view_loading_view);
@@ -282,11 +283,35 @@ public final class ChipViewTest {
 
     @Test
     @SmallTest
-    public void startIcon() {
+    public void setStartIconId() {
         ImageView startIcon = mChipView.findViewById(R.id.chip_view_start_icon);
         assertEquals(View.GONE, startIcon.getVisibility());
 
-        mChipView.setIcon(R.drawable.ic_settings_gear_24dp, /* tintWithTextColor= */ false);
+        mChipView.setIconWithTint(
+                R.drawable.test_ic_arrow_downward_black_24dp, /* tintWithTextColor= */ false);
+        assertEquals(View.VISIBLE, startIcon.getVisibility());
+
+        mChipView.setIconWithTint(
+                R.drawable.test_ic_arrow_downward_black_24dp, /* tintWithTextColor= */ true);
+        assertEquals(View.VISIBLE, startIcon.getVisibility());
+    }
+
+    @Test
+    @SmallTest
+    public void setStartIconDrawable() {
+        ImageView startIcon = mChipView.findViewById(R.id.chip_view_start_icon);
+        assertEquals(View.GONE, startIcon.getVisibility());
+
+        mChipView.setIconWithTint(
+                AppCompatResources.getDrawable(
+                        mActivity, R.drawable.test_ic_arrow_downward_black_24dp),
+                /* tintWithTextColor= */ false);
+        assertEquals(View.VISIBLE, startIcon.getVisibility());
+
+        mChipView.setIconWithTint(
+                AppCompatResources.getDrawable(
+                        mActivity, R.drawable.test_ic_arrow_downward_black_24dp),
+                /* tintWithTextColor= */ true);
         assertEquals(View.VISIBLE, startIcon.getVisibility());
     }
 

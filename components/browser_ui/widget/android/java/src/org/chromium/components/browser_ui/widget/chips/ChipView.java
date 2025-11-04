@@ -24,7 +24,9 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.Px;
 import androidx.annotation.StyleRes;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.AppCompatTextView;
+import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.core.widget.ImageViewCompat;
 
 import org.chromium.build.annotations.EnsuresNonNullIf;
@@ -284,7 +286,7 @@ public class ChipView extends LinearLayout {
                         chipStrokeColorId,
                         chipBorderWidthId,
                         verticalInset);
-        setIcon(INVALID_ICON_ID, false);
+        setIconWithTint(INVALID_ICON_ID, /* tintWithTextColor= */ false);
 
         updateLayoutDirection();
     }
@@ -304,10 +306,53 @@ public class ChipView extends LinearLayout {
     }
 
     /**
-     * Sets the icon at the start of the chip view.
+     * Sets the icon at the start of the chip view. If the {@code tintWithTextColor} is set to
+     * {@code true}, applies the primary text's tint to the icon. TODO: crbug.com/454608496 - Rename
+     * to setIcon once the other method is removed.
+     *
+     * @param icon The resource id pointing to the icon.
+     * @param tintWithTextColor Whether to change the icon's tint to match the primary text's tint.
+     */
+    public void setIconWithTint(@DrawableRes int iconId, boolean tintWithTextColor) {
+        if (iconId == INVALID_ICON_ID) {
+            mStartIcon.setVisibility(ViewGroup.GONE);
+            return;
+        }
+        Drawable icon = AppCompatResources.getDrawable(getContext(), iconId);
+        setIconWithTint(icon, tintWithTextColor);
+    }
+
+    /**
+     * Sets the icon at the start of the chip view. If the {@code tintWithTextColor} is set to
+     * {@code true}, applies the primary text's tint to the icon. TODO: crbug.com/454608496 - Rename
+     * to setIcon once the other method is removed.
+     *
+     * @param drawable Drawable to display.
+     * @param tintWithTextColor Whether to change the icon's tint to match the primary text's tint.
+     */
+    public void setIconWithTint(@Nullable Drawable drawable, boolean tintWithTextColor) {
+        if (drawable == null) {
+            mStartIcon.setVisibility(ViewGroup.GONE);
+            return;
+        }
+
+        mStartIcon.setVisibility(ViewGroup.VISIBLE);
+        if (tintWithTextColor) {
+            // Do not set tint on the `mStartIcon` because the tint in the `ImageView` cannot be
+            // fully reset: `ImageView::setImageTintList(null)` will always reset the original tint
+            // of the `Drawable` the `ImageView` is displaying.
+            DrawableCompat.setTintList(drawable, mPrimaryText.getTextColors());
+        }
+        mStartIcon.setImageDrawable(drawable);
+    }
+
+    /**
+     * Sets the icon at the start of the chip view. TODO: crbug.com/454608496 - Remove once this
+     * method is no longer used.
      *
      * @param icon The resource id pointing to the icon.
      */
+    @Deprecated(since = "Use setIconWithTint(int, boolean) instead", forRemoval = true)
     public void setIcon(@DrawableRes int icon, boolean tintWithTextColor) {
         if (icon == INVALID_ICON_ID) {
             mStartIcon.setVisibility(ViewGroup.GONE);
@@ -320,10 +365,12 @@ public class ChipView extends LinearLayout {
     }
 
     /**
-     * Sets the icon at the start of the chip view.
+     * Sets the icon at the start of the chip view. TODO: crbug.com/454608496 - Remove once this
+     * method is no longer used.
      *
      * @param drawable Drawable to display.
      */
+    @Deprecated(since = "Use setIconWithTint(Drawable, boolean) instead", forRemoval = true)
     public void setIcon(@Nullable Drawable drawable, boolean tintWithTextColor) {
         if (drawable == null) {
             mStartIcon.setVisibility(ViewGroup.GONE);

@@ -105,7 +105,7 @@ public class ChipViewRenderTest {
                 new ChipView(mActivityTestRule.getActivity(), null, 0, R.style.AssistiveChip);
         chip.getPrimaryTextView().setText("Primary text");
         chip.getSecondaryTextView().setText("Secondary text");
-        chip.setIcon(R.drawable.ic_settings_gear_24dp, /* tintWithTextColor= */ true);
+        chip.setIconWithTint(R.drawable.ic_settings_gear_24dp, /* tintWithTextColor= */ true);
         chip.addRemoveIcon();
 
         renderChip(chip, "single_line_chip");
@@ -123,10 +123,29 @@ public class ChipViewRenderTest {
                                 .inflate(R.layout.two_line_chip_view_test_item, null);
         chip.getPrimaryTextView().setText("Primary text");
         chip.getSecondaryTextView().setText("Secondary text");
-        chip.setIcon(R.drawable.ic_settings_gear_24dp, /* tintWithTextColor= */ true);
+        chip.setIconWithTint(R.drawable.ic_settings_gear_24dp, /* tintWithTextColor= */ true);
         chip.addRemoveIcon();
 
         renderChip(chip, "two_line_chip");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void renderTwoLineChipNoTintedIcon() throws Exception {
+        ChipView chip =
+                (ChipView)
+                        mActivityTestRule
+                                .getActivity()
+                                .getLayoutInflater()
+                                .inflate(R.layout.two_line_chip_view_test_item, null);
+        chip.getPrimaryTextView().setText("Primary text");
+        chip.getSecondaryTextView().setText("Secondary text");
+        // Do not reset the icon's tint and make sure the test renders a white image.
+        chip.setIconWithTint(R.drawable.ic_settings_gear_24dp, /* tintWithTextColor= */ false);
+        chip.addRemoveIcon();
+
+        renderChip(chip, "two_line_chip_no_tinted_icon");
     }
 
     @Test
@@ -137,7 +156,7 @@ public class ChipViewRenderTest {
                 new ChipView(mActivityTestRule.getActivity(), null, 0, R.style.AssistiveChip);
         chip.getPrimaryTextView().setText("Primary looooooooong text");
         chip.getSecondaryTextView().setText("S. t.");
-        chip.setIcon(R.drawable.ic_settings_gear_24dp, /* tintWithTextColor= */ true);
+        chip.setIconWithTint(R.drawable.ic_settings_gear_24dp, /* tintWithTextColor= */ true);
         chip.addRemoveIcon();
         reduceChipWidth(chip);
 
@@ -156,7 +175,7 @@ public class ChipViewRenderTest {
                                 .inflate(R.layout.two_line_chip_view_test_item, null);
         chip.getPrimaryTextView().setText("Primary loooooooong text");
         chip.getSecondaryTextView().setText("S. t. ");
-        chip.setIcon(R.drawable.ic_settings_gear_24dp, /* tintWithTextColor= */ true);
+        chip.setIconWithTint(R.drawable.ic_settings_gear_24dp, /* tintWithTextColor= */ true);
         chip.addRemoveIcon();
         reduceChipWidth(chip);
 
