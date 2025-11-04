@@ -1064,16 +1064,18 @@ ScriptPromise<IDLUndefined> RTCPeerConnection::setLocalDescription(
         context,
         WebFeature::kRTCPeerConnectionSetLocalDescriptionLegacyCompliant);
   } else {
-    if (!success_callback)
+    if (!success_callback) {
       UseCounter::Count(
           context,
           WebFeature::
               kRTCPeerConnectionSetLocalDescriptionLegacyNoSuccessCallback);
-    if (!error_callback)
+    }
+    if (!error_callback) {
       UseCounter::Count(
           context,
           WebFeature::
               kRTCPeerConnectionSetLocalDescriptionLegacyNoFailureCallback);
+    }
   }
   if (!session_description_init->hasType() ||
       session_description_init->type() != V8RTCSdpType::Enum::kRollback) {
@@ -1167,16 +1169,18 @@ ScriptPromise<IDLUndefined> RTCPeerConnection::setRemoteDescription(
         context,
         WebFeature::kRTCPeerConnectionSetRemoteDescriptionLegacyCompliant);
   } else {
-    if (!success_callback)
+    if (!success_callback) {
       UseCounter::Count(
           context,
           WebFeature::
               kRTCPeerConnectionSetRemoteDescriptionLegacyNoSuccessCallback);
-    if (!error_callback)
+    }
+    if (!error_callback) {
       UseCounter::Count(
           context,
           WebFeature::
               kRTCPeerConnectionSetRemoteDescriptionLegacyNoFailureCallback);
+    }
   }
 
   if (ContainsLegacyRtpDataChannel(session_description_init->sdp())) {
@@ -1384,11 +1388,12 @@ ScriptPromise<RTCCertificate> RTCPeerConnection::generateCertificate(
                 ->ToNumber(script_state->GetIsolate()->GetCurrentContext())
                 .ToLocalChecked()
                 ->Value();
-        if (expires_double >= 0) {
+
+        if (base::IsValueInRangeForNumericType<DOMTimeStamp>(expires_double)) {
           expires = static_cast<DOMTimeStamp>(expires_double);
         } else {
           exception_state.ThrowTypeError(
-              "Negative value for expires attribute.");
+              "The value for 'expires' is outside the valid range.");
           return EmptyPromise();
         }
       } else {
