@@ -469,7 +469,6 @@ void StyleCascade::AnalyzeIfNeeded() {
 
 void StyleCascade::AnalyzeMatchResult() {
   AddExplicitDefaults();
-  writing_direction_ = state_.StyleBuilder().GetWritingDirection();
 
   int index = 0;
   for (const MatchedProperties& properties :
@@ -1423,7 +1422,12 @@ const CSSValue* StyleCascade::ResolvePendingSubstitution(
     }
   }
 
-  NOTREACHED();
+  // Reaching this point means that the shorthand parser did not produce
+  // a value for `property` (one of the longhands), which should never happen.
+  //
+  // TODO(crbug.com/40527196): We can reach here due to our incorrect adjustment
+  // of writing-mode and direction for table display types.
+  return cssvalue::CSSUnsetValue::Create();
 }
 
 const CSSValue* StyleCascade::ResolveRevert(const CSSProperty& property,
@@ -1505,7 +1509,7 @@ const CSSValue* StyleCascade::ResolveFlipRevert(const CSSProperty& property,
   // Note: the value is transformed *from* the property we're reverting *to*.
   const CSSValue* flipped = TryValueFlips::FlipValue(
       /* from_property */ to_property.PropertyID(), unflipped,
-      value.Transform(), writing_direction_);
+      value.Transform(), state_.StyleBuilder().GetWritingDirection());
   return Resolve(property, *flipped, tree_scope,
                  /*mixin_parameter_bindings=*/nullptr, priority, origin,
                  resolver);
@@ -2928,7 +2932,8 @@ const CSSProperty& StyleCascade::ResolveSurrogate(const CSSProperty& property) {
   // currently a flag to distinguish such surrogates from e.g. css-logical
   // properties.
   depends_on_cascade_affecting_property_ = true;
-  const CSSProperty* original = property.SurrogateFor(writing_direction_);
+  const CSSProperty* original =
+      property.SurrogateFor(state_.StyleBuilder().GetWritingDirection());
   DCHECK(original);
   return *original;
 }

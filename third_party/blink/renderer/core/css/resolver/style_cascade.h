@@ -26,7 +26,6 @@
 #include "third_party/blink/renderer/core/frame/web_feature_forward.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
-#include "third_party/blink/renderer/platform/text/writing_direction_mode.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -847,18 +846,6 @@ class CORE_EXPORT StyleCascade {
   // computed value of the property affects how e.g. margin-inline-start
   // (and other css-logical properties) cascade.
   bool depends_on_cascade_affecting_property_ = false;
-  // The writing-mode and direction that was used during cascade expansion,
-  // i.e. during the previous call to AnalyzeMatchResult.
-  //
-  // We should be able to grab this directly from the StyleBuilder whenever
-  // we need it, but since StyleAdjuster can "quietly" change the writing-mode
-  // and direction between Apply calls, we need to store this separately
-  // to ensure that there is no mismatch between various calls to Apply.
-  //
-  // TODO(crbug.com/40527196): Don't modify writing-mode/direction during
-  // style adjustment.
-  WritingDirectionMode writing_direction_{WritingMode::kHorizontalTb,
-                                          TextDirection::kLtr};
   // See comment in StyleCascade::AddExplicitDefaults (.cc file).
   bool effective_zoom_changed_ = false;
 };
