@@ -230,6 +230,13 @@ TEST_F(ActorSitePolicyTest, AllowedOriginsFromNavigationGating) {
   }
 }
 
+TEST_F(ActorSitePolicyTest, AllowIfDecisionUnknown) {
+  const GURL url("https://c.test/");
+  SetExpectedOptimizationGuideCall(
+      url, optimization_guide::OptimizationGuideDecision::kUnknown);
+  CheckUrl(url, true);
+}
+
 TEST_F(ActorSitePolicyAllowlistOnlyTest, BlockIfNotInAllowlist) {
   CheckUrl(GURL("https://c.test/"), false);
 }
