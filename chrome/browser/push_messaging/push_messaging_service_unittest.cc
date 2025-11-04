@@ -23,6 +23,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/gcm/gcm_profile_service_factory.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/permissions/permission_manager_factory.h"
 #include "chrome/browser/push_messaging/push_messaging_app_identifier.h"
@@ -129,24 +130,29 @@ std::unique_ptr<KeyedService> BuildTestHistoryService(
 
 class PushMessagingServiceTest : public ::testing::Test {
  public:
-  PushMessagingServiceTest() {
-    // Override the GCM Profile service so that we can send fake messages.
-    gcm::GCMProfileServiceFactory::GetInstance()->SetTestingFactory(
-        &profile_, base::BindRepeating(&BuildFakeGCMProfileService));
-
-    HistoryServiceFactory::GetInstance()->SetTestingFactory(
-        &profile_, base::BindRepeating(&BuildTestHistoryService));
-  }
-
+  PushMessagingServiceTest() = default;
   ~PushMessagingServiceTest() override = default;
 
   void SetUp() override {
     TestingBrowserProcess::GetGlobal()->CreateGlobalFeaturesForTesting();
+    profile_ = std::make_unique<PushMessagingTestingProfile>();
+
+    // Override the GCM Profile service so that we can send fake messages.
+    gcm::GCMProfileServiceFactory::GetInstance()->SetTestingFactory(
+        profile_.get(), base::BindRepeating(&BuildFakeGCMProfileService));
+
+    HistoryServiceFactory::GetInstance()->SetTestingFactory(
+        profile_.get(), base::BindRepeating(&BuildTestHistoryService));
+  }
+
+  void TearDown() override {
+    profile_.reset();
+    TestingBrowserProcess::GetGlobal()->GetFeatures()->Shutdown();
   }
 
   void SetPermission(const GURL& origin, ContentSetting value) {
     HostContentSettingsMap* host_content_settings_map =
-        HostContentSettingsMapFactory::GetForProfile(&profile_);
+        HostContentSettingsMapFactory::GetForProfile(profile_.get());
     host_content_settings_map->SetContentSettingDefaultScope(
         origin, origin, ContentSettingsType::NOTIFICATIONS, value);
   }
@@ -255,7 +261,7 @@ class PushMessagingServiceTest : public ::testing::Test {
   }
 
  protected:
-  PushMessagingTestingProfile* profile() { return &profile_; }
+  PushMessagingTestingProfile* profile() { return profile_.get(); }
 
   content::BrowserTaskEnvironment& task_environment() {
     return task_environment_;
@@ -265,7 +271,7 @@ class PushMessagingServiceTest : public ::testing::Test {
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
-  PushMessagingTestingProfile profile_;
+  std::unique_ptr<PushMessagingTestingProfile> profile_;
 
 #if BUILDFLAG(IS_ANDROID)
   instance_id::InstanceIDAndroid::ScopedBlockOnAsyncTasksForTesting
