@@ -1,9 +1,9 @@
-// Copyright 2022 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_UPDATER_APP_SERVER_POSIX_UPDATE_SERVICE_INTERNAL_STUB_H_
-#define CHROME_UPDATER_APP_SERVER_POSIX_UPDATE_SERVICE_INTERNAL_STUB_H_
+#ifndef CHROME_UPDATER_APP_SERVER_UPDATE_SERVICE_INTERNAL_STUB_H_
+#define CHROME_UPDATER_APP_SERVER_UPDATE_SERVICE_INTERNAL_STUB_H_
 
 #include "base/memory/scoped_refptr.h"
 #include "chrome/updater/mojom/updater_service_internal.mojom.h"
@@ -46,4 +46,4 @@ class UpdateServiceInternalStub : public mojom::UpdateServiceInternal {
 
 }  // namespace updater
 
-#endif  // CHROME_UPDATER_APP_SERVER_POSIX_UPDATE_SERVICE_INTERNAL_STUB_H_
+#endif  // CHROME_UPDATER_APP_SERVER_UPDATE_SERVICE_INTERNAL_STUB_H_

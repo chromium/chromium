@@ -7,6 +7,8 @@
 
 #include <windows.h>
 
+#include <memory>
+
 #include "base/check.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
@@ -16,6 +18,9 @@
 #include "chrome/updater/update_service_internal.h"
 
 namespace updater {
+
+class UpdateServiceInternalStub;
+class UpdateServiceStub;
 
 // Returns S_OK if user install, or if the COM caller is admin. Error otherwise.
 HRESULT IsCOMCallerAllowed();
@@ -99,6 +104,8 @@ class AppServerWin : public AppServer {
   // |update_client| component.
   scoped_refptr<UpdateService> update_service_;
   scoped_refptr<UpdateServiceInternal> update_service_internal_;
+  std::unique_ptr<UpdateServiceInternalStub> active_duty_internal_stub_;
+  std::unique_ptr<UpdateServiceStub> active_duty_stub_;
 };
 
 // Returns the singleton AppServerWin instance.

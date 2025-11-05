@@ -17,7 +17,7 @@
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
-#include "chrome/updater/app/server/posix/update_service_stub.h"
+#include "chrome/updater/app/server/update_service_stub.h"
 #include "chrome/updater/ipc/ipc_support.h"
 #include "chrome/updater/registration_data.h"
 #include "chrome/updater/test/test_scope.h"

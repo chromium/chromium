@@ -32,6 +32,8 @@
 #include "base/win/registry.h"
 #include "base/win/windows_types.h"
 #include "chrome/installer/util/work_item_list.h"
+#include "chrome/updater/app/server/update_service_internal_stub.h"
+#include "chrome/updater/app/server/update_service_stub.h"
 #include "chrome/updater/app/server/win/update_service_internal_stub_win.h"
 #include "chrome/updater/app/server/win/update_service_stub_win.h"
 #include "chrome/updater/constants.h"
@@ -263,6 +265,8 @@ void AppServerWin::Stop() {
                                     GetAppServerWinInstance();
                                 this_server->update_service_ = nullptr;
                                 this_server->update_service_internal_ = nullptr;
+                                this_server->active_duty_stub_.reset();
+                                this_server->active_duty_internal_stub_.reset();
                                 this_server->Shutdown(0);
                               }));
 }
@@ -338,9 +342,14 @@ void AppServerWin::OnDelayedTaskComplete() {
 
 void AppServerWin::ActiveDuty(scoped_refptr<UpdateService> update_service) {
   update_service_ = base::MakeRefCounted<UpdateServiceStubWin>(
-      std::move(update_service),
+      update_service, base::BindRepeating(&AppServerWin::TaskStarted, this),
+      base::BindRepeating(&AppServerWin::TaskCompleted, this));
+
+  active_duty_stub_ = std::make_unique<UpdateServiceStub>(
+      update_service, updater_scope(),
       base::BindRepeating(&AppServerWin::TaskStarted, this),
       base::BindRepeating(&AppServerWin::TaskCompleted, this));
+
   Start(base::BindOnce(&AppServerWin::RegisterClassObjects,
                        base::Unretained(this)));
 }
@@ -348,9 +357,15 @@ void AppServerWin::ActiveDuty(scoped_refptr<UpdateService> update_service) {
 void AppServerWin::ActiveDutyInternal(
     scoped_refptr<UpdateServiceInternal> update_service_internal) {
   update_service_internal_ = base::MakeRefCounted<UpdateServiceInternalStubWin>(
-      std::move(update_service_internal),
+      update_service_internal,
       base::BindRepeating(&AppServerWin::TaskStarted, this),
       base::BindRepeating(&AppServerWin::TaskCompleted, this));
+
+  active_duty_internal_stub_ = std::make_unique<UpdateServiceInternalStub>(
+      update_service_internal, updater_scope(),
+      base::BindRepeating(&AppServerWin::TaskStarted, this),
+      base::BindRepeating(&AppServerWin::TaskCompleted, this));
+
   Start(base::BindOnce(&AppServerWin::RegisterInternalClassObjects,
                        base::Unretained(this)));
 }
