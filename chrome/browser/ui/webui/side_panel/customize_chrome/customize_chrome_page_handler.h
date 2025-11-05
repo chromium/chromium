@@ -151,6 +151,9 @@ class CustomizeChromePageHandler
 
  private:
   void LogEvent(NTPLoggingEventType event);
+  void UpdatePrefAndLogEvent(const char* pref_name,
+                             bool new_value,
+                             NTPLoggingEventType event);
 
   std::set<ntp_tiles::TileType> GetTileTypes() const;
   bool IsShortcutsVisible() const;
