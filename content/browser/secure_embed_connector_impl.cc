@@ -43,11 +43,6 @@ class SecureEmbedConnectorImpl::Observer : public WebContentsObserver {
   // WebContentsObserver:
   void RenderViewReady() override { guest_frame_->OnRenderViewReady(); }
 
-  void RenderFrameHostChanged(RenderFrameHost* old_host,
-                              RenderFrameHost* new_host) override {
-    guest_frame_->OnRenderFrameHostChanged(old_host, new_host);
-  }
-
  private:
   raw_ptr<SecureEmbedConnectorImpl> guest_frame_;
 };
@@ -71,8 +66,6 @@ SecureEmbedConnectorImpl::SecureEmbedConnectorImpl(
                       ->GetOutermostMainFrameOrEmbedder()
                       ->GetRenderWidgetHost()
                       ->GetScreenInfos();
-
-  UpdateViewForCurrentRenderFrameHost();
 }
 
 SecureEmbedConnectorImpl::~SecureEmbedConnectorImpl() {
@@ -102,6 +95,10 @@ SecureEmbedConnector::Delegate* SecureEmbedConnectorImpl::GetDelegate() {
 
 void SecureEmbedConnectorImpl::ForwardKeyboardEvent(
     const blink::WebKeyboardEvent& keyboard_event) {
+  if (!guest_web_contents_ || !view_) {
+    return;
+  }
+
   input::NativeWebKeyboardEvent native_event(
       keyboard_event, GetParentRenderWidgetHostView()->GetNativeView());
 
@@ -122,7 +119,7 @@ void SecureEmbedConnectorImpl::ForwardKeyboardEvent(
 
 void SecureEmbedConnectorImpl::SetFocus(bool focused,
                                         blink::mojom::FocusType focus_type) {
-  if (!guest_web_contents_) {
+  if (!guest_web_contents_ || !view_) {
     return;
   }
 
@@ -575,16 +572,11 @@ input::RenderWidgetHostViewInput* SecureEmbedConnectorImpl::GetRootViewInput() {
   return GetRootRenderWidgetHostView();
 }
 
+// Although SetView is called from the WebContentsImpl during navigation,
+// we still need the Observer for RenderViewReady to catch the initial
+// creation or the view won't be set correctly for the initial document.
 void SecureEmbedConnectorImpl::OnRenderViewReady() {
   // When the RenderView is ready, update the view in case it has changed.
-  UpdateViewForCurrentRenderFrameHost();
-}
-
-void SecureEmbedConnectorImpl::OnRenderFrameHostChanged(
-    RenderFrameHost* old_host,
-    RenderFrameHost* new_host) {
-  // When the RenderFrameHost changes, we need to update the view to track
-  // the new RenderWidgetHostView associated with the new RenderFrameHost.
   UpdateViewForCurrentRenderFrameHost();
 }
 

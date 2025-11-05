@@ -242,6 +242,12 @@ class CONTENT_EXPORT RenderFrameHostManager {
     // Called when a FrameTreeNode is destroyed.
     virtual void OnFrameTreeNodeDestroyed(FrameTreeNode* node) = 0;
 
+    // Called when the RenderWidgetHostViewChildFrame associated with
+    // `new_view` is swapped in.
+    virtual void NotifySwappedRWHVChildFrameFromRenderManager(
+        RenderWidgetHostViewChildFrame* new_view,
+        bool allow_paint_holding) = 0;
+
    protected:
     virtual ~Delegate() = default;
   };

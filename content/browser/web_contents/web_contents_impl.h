@@ -1220,6 +1220,9 @@ class CONTENT_EXPORT WebContentsImpl
       RenderFrameHostImpl* new_frame) override;
   bool FocusLocationBarByDefault() override;
   void OnFrameTreeNodeDestroyed(FrameTreeNode* node) override;
+  void NotifySwappedRWHVChildFrameFromRenderManager(
+        RenderWidgetHostViewChildFrame* new_view,
+        bool allow_paint_holding) override;
 
   // PageDelegate -------------------------------------------------------------
 

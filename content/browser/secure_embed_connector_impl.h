@@ -118,8 +118,6 @@ class SecureEmbedConnectorImpl : public SecureEmbedConnector,
   input::RenderWidgetHostViewInput* GetRootViewInput() override;
 
   void OnRenderViewReady();
-  void OnRenderFrameHostChanged(RenderFrameHost* old_host,
-                                RenderFrameHost* new_host);
 
  private:
   // Forward decl for internal observer that tracks WebContents events and
