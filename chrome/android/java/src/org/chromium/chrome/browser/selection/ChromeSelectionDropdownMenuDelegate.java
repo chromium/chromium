@@ -84,9 +84,7 @@ public class ChromeSelectionDropdownMenuDelegate
         popupWindow.setOutsideTouchable(true);
         popupWindow.addOnDismissListener(
                 () -> {
-                    assert mHierarchicalMenuController != null;
-                    assert mHierarchicalMenuController.getFlyoutController() != null;
-                    mHierarchicalMenuController.destroyFlyoutController();
+                    dismiss();
                 });
 
         popupWindow.show();
@@ -101,8 +99,9 @@ public class ChromeSelectionDropdownMenuDelegate
             return;
         }
 
-        assert mHierarchicalMenuController.getFlyoutController() != null;
-        mHierarchicalMenuController.destroyFlyoutController();
+        if (mHierarchicalMenuController.getFlyoutController() != null) {
+            mHierarchicalMenuController.destroyFlyoutController();
+        }
     }
 
     @Override
