@@ -742,7 +742,6 @@
 <translation id="3926703470020109118">بارگیری لغو شد</translation>
 <translation id="3929457972718048006">نشانی‌ها</translation>
 <translation id="3931215329146376310">{count,plural, =1{گذرواژه جدید برای این سایت}one{گذرواژه جدید برای این سایت}other{گذرواژه‌های جدید برای این سایت}}</translation>
-<translation id="3933372629914873850">به سیستم <ph name="URL" /> وارد خواهید شد</translation>
 <translation id="3934905113567851655">برای تغییر اندازه، انگشتانتان را نزدیک یا دور کنید</translation>
 <translation id="3940195383040445971">پیگیری قیمت در برگه‌ها</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{بستن {COUNT} زبانه}one{بستن {COUNT} زبانه}other{بستن {COUNT} زبانه}}</translation>
@@ -882,7 +881,7 @@
 <translation id="446314443268698477">بااستفاده از دوربین یا عکس‌ها، آنچه را می‌بینید بخرید، ترجمه کنید، و شناسایی کنید.</translation>
 <translation id="4469324811108161144">یادداشت باید حداکثر <ph name="CHARACTER_LIMIT" /> نویسه داشته باشد.</translation>
 <translation id="4471472356135655769">گذرواژه‌ها صادر نشد</translation>
-<translation id="4472575034687746823">شروع کنید</translation>
+<translation id="4472575034687746823">شروع به کار</translation>
 <translation id="4473608001744970767">پنهان کردن پیگیری قیمت</translation>
 <translation id="4474142134969976028">نتیجه منطبقی پیدا نشد</translation>
 <translation id="4474494258097106883">‏ساخته‌شده برای iPhone شما</translation>
@@ -992,7 +991,7 @@
 <translation id="4869146460927742717">موقعیت نوار نشانی</translation>
 <translation id="4870911314065352661">همه زبانه‌ها بسته شود؟</translation>
 <translation id="4872664437015695612">باز کردن در بارگیری‌ها</translation>
-<translation id="4876237378696925987">شروع کنید</translation>
+<translation id="4876237378696925987">شروع کردن</translation>
 <translation id="4876305945144899064">بدون نام کاربری</translation>
 <translation id="4876665338492917862">در تاریخ <ph name="LAST_OPENING_DATE" /> باز شد</translation>
 <translation id="4877597489778380935">بعداً به من یادآوری شود</translation>
@@ -1332,7 +1331,6 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="6103540626693881831">رمزگذاری درون‌دستگاهی</translation>
 <translation id="611361228753138223">سایت‌هایی که اخیراً در این دستگاه بازدید کرده‌اید</translation>
 <translation id="611705554202268369">برای افزودن به گروه زبانه‌ها، فشار طولانی دهید</translation>
-<translation id="6117260878488959646">خطایی روی داد. بعداً دوباره امتحان کنید.</translation>
 <translation id="6122191549521593678">آنلاین</translation>
 <translation id="6122831415929794347">«مرور ایمن» خاموش شود؟</translation>
 <translation id="6123514585040403489">برگه‌هایتان بسته خواهد شد</translation>
@@ -1355,7 +1353,6 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="6172428250974276014">بله، داده‌ها جدا نگه داشته شود (توصیه‌شده)</translation>
 <translation id="6173499589275053515">‏گذرواژه در «حساب Google» شما ذخیره شد، <ph name="EMAIL" /></translation>
 <translation id="6181969657494915430">جستجو در صفحه‌نمایش</translation>
-<translation id="6182851675249594487">مضمون رنگ‌های سفارشی</translation>
 <translation id="6187302354554850004">آخرین همگام‌سازی: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319">تاریخ ایجاد: <ph name="DATE" /></translation>
 <translation id="6189413832092199491">خوانده‌نشده</translation>

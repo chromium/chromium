@@ -128,7 +128,6 @@
 <translation id="5556417849629758491">Xem thông tin cửa hàng, tùy chọn này nằm ở gần đầu màn hình</translation>
 <translation id="5627941783489838464">Không có thông tin cập nhật về thẻ</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> đường liên kết từ Chrome}other{<ph name="TABS_COUNT_MANY" /> đường liên kết từ Chrome}}</translation>
-<translation id="5740354908255726955">{TAB_COUNT,plural, =1{Chuyển thẻ sang trái}other{Chuyển các thẻ sang trái}}</translation>
 <translation id="5746204836956568669">Nhóm <ph name="NUMBER_OF_TABS" /> thẻ lại với nhau để làm việc nhanh hơn?</translation>
 <translation id="5773295109010386583">Tự động đóng các mục không hoạt động</translation>
 <translation id="58326064309361797">Kéo các thẻ để nhóm lại với nhau</translation>
@@ -139,7 +138,6 @@
 <translation id="6109251075362363230">Giờ đây, tất cả các thẻ trùng lặp cũng sẽ được lưu trữ, ngoại trừ thẻ trùng lặp được sử dụng gần đây nhất.</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{Đóng <ph name="TABS_COUNT_ONE" /> mục đã chọn}other{Đóng <ph name="TABS_COUNT_MANY" /> mục đã chọn}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Di chuyển nhóm sang cửa sổ mới}other{Di chuyển nhóm sang cửa sổ khác}}</translation>
-<translation id="6212374449852603982">{TAB_COUNT,plural, =1{Chuyển thẻ sang phải}other{Chuyển các thẻ sang phải}}</translation>
 <translation id="6228793724645064692">(điểm xếp hạng cửa hàng)</translation>
 <translation id="625996437999624951">{TAB_COUNT,plural, =1{Xoá thẻ khỏi nhóm}other{Xoá các thẻ khỏi nhóm}}</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Thêm thẻ vào nhóm mới}other{Thêm các thẻ vào nhóm mới}}</translation>

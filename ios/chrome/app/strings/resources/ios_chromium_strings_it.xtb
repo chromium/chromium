@@ -25,7 +25,6 @@
 <translation id="1502360822835740515">Imposta Chromium come browser predefinito</translation>
 <translation id="1503199973012840174">Chromium non è aggiornato. Aggiornalo per rimanere al sicuro.</translation>
 <translation id="1515748263297244785">Usa Chromium per iPad per impostazione predefinita</translation>
-<translation id="1530961174488670696">Chromium non ha potuto verificare la disponibilità di aggiornamenti. Riprova più tardi.</translation>
 <translation id="1531155317299575425">Mostra le richieste di accesso a Chromium.</translation>
 <translation id="1553657876656159572">Un feed personalizzato creato per te. Include notizie, sport e meteo.</translation>
 <translation id="1561849081734670621">Per disattivare la Modalità di blocco in Chromium, disattivala sul tuo iPhone.</translation>
@@ -146,7 +145,6 @@ I dati sono criptati con la tua passphrase. Inseriscila per utilizzare e salvare
 <translation id="420541179527342563">Per disattivare la Modalità di blocco in Chromium, disattivala sul tuo iPad.</translation>
 <translation id="4272892696084633551">Contribuisci a migliorare le funzioni e le prestazioni di Chromium</translation>
 <translation id="4302397443352897529">Impostazioni di Chromium</translation>
-<translation id="4304713468139749426">Gestore delle password</translation>
 <translation id="4408912345039114853">Esegui il controllo di sicurezza di Chromium</translation>
 <translation id="4432744876818348753">Accedi per usare al meglio Chromium.</translation>
 <translation id="4445228361214254027">La tua organizzazione ha disattivato la possibilità di usare e salvare i dati di Chromium nel tuo Account Google. I nuovi preferiti, le nuove password e altri dati verranno salvati solo su questo dispositivo.</translation>
@@ -238,6 +236,7 @@ Aspetti da considerare:
 <translation id="6154098560469640583">Utilizza Chromium ogni volta che tocchi i link in messaggi, documenti e altre app.</translation>
 <translation id="6157162508956739031">Accedi rapidamente ad app e siti inserendo automaticamente le password e le passkey da Chromium</translation>
 <translation id="6170619162539716595">Consenti a Chromium di usare Google Maps per darti indicazioni stradali e informazioni locali relative agli indirizzi rilevati.</translation>
+<translation id="6247557882553405851">Gestore delle password di Google</translation>
 <translation id="6268381023930128611">Uscire da Chromium?</translation>
 <translation id="6301717043141881464">Scegli Chromium per la compilazione automatica per recuperare facilmente le tue password salvate nelle altre app</translation>
 <translation id="6324041800010509197">Visita la griglia delle schede di Chromium</translation>

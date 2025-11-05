@@ -169,11 +169,9 @@ Prøv å vente i noen minutter før du logger av. Hvis du logger av nå, blir di
 <translation id="5162467219239570114">Chrome er utdatert. Hvis ingen oppdatering er tilgjengelig i <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, kan det hende at enheten din ikke støtter nye versjoner av Chrome lenger.</translation>
 <translation id="5184329579814168207">Åpne i Chrome</translation>
 <translation id="5190139289262548459">Organisasjonen din, <ph name="DOMAIN" />, administrerer kontoen du er logget på, og hvordan Chrome brukes.</translation>
-<translation id="5209238444239954363">Chrome kunne ikke se etter oppdateringer. Prøv på nytt senere.</translation>
 <translation id="5305440589062022504">Åpner Passordlagring i Chrome</translation>
 <translation id="5310957470610282541">Noen av Chrome-dataene dine er ikke lagret i Google-kontoen din ennå.
 Prøv å vente i noen minutter før du logger av. Hvis du logger av nå, blir disse dataene slettet.</translation>
-<translation id="5342685492141499976">Dataene lagres i Google Passordlagring for <ph name="USER_EMAIL" />.</translation>
 <translation id="5389212809648216794">Google Chrome kan ikke bruke kameraet fordi det brukes av en annen app</translation>
 <translation id="5395376160638294582">Sørg for at du alltid kan bruke Chrome-dataene i Google-kontoen din</translation>
 <translation id="5404252374083197467">Vil du angi Chrome som standard?</translation>
@@ -201,7 +199,6 @@ Prøv å vente i noen minutter før du logger av. Hvis du logger av nå, blir di
 <translation id="5808435672482059465">Se Chrome-loggen din</translation>
 <translation id="5833027901704861726">Noen av Chrome-dataene dine er ikke lagret i <ph name="EMAIL" /> ennå.
 Prøv å vente i noen minutter før du bytter konto. Hvis du bytter konto nå, blir disse dataene slettet.</translation>
-<translation id="5853754888722423892">Importer til Google Passordlagring</translation>
 <translation id="5998675059699164418">Organisasjonen din krever at du logger på for å bruke Chrome.</translation>
 <translation id="6021312115739110405">En tilpasset feed som Google har laget for deg. Inneholder nyheter, sport og vær.</translation>
 <translation id="6022659036123304283">Gi Chrome et personlig preg</translation>

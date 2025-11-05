@@ -25,7 +25,6 @@
 <translation id="1502360822835740515">กำหนดให้ Chromium เป็นเบราว์เซอร์เริ่มต้น</translation>
 <translation id="1503199973012840174">Chromium ของคุณเป็นเวอร์ชันเก่า โปรดอัปเดตเพื่อความปลอดภัย</translation>
 <translation id="1515748263297244785">ใช้ Chromium สำหรับ iPad โดยค่าเริ่มต้น</translation>
-<translation id="1530961174488670696">Chromium ตรวจหาอัปเดตไม่ได้ โปรดลองอีกครั้งในภายหลัง</translation>
 <translation id="1531155317299575425">แสดงข้อความแจ้งให้ลงชื่อเข้าใช้ Chromium</translation>
 <translation id="1553657876656159572">ฟีดที่กำหนดมาเพื่อคุณโดยเฉพาะ ประกอบด้วยข่าว กีฬา และสภาพอากาศ</translation>
 <translation id="1561849081734670621">หากต้องการปิดใช้โหมดปิดล็อกใน Chromium ให้ปิดโหมดนี้ใน iPhone ของคุณ</translation>
@@ -146,7 +145,6 @@
 <translation id="420541179527342563">หากต้องการปิดใช้โหมดปิดล็อกใน Chromium ให้ปิดโหมดนี้ใน iPad ของคุณ</translation>
 <translation id="4272892696084633551">ช่วยปรับปรุงฟีเจอร์และประสิทธิภาพของ Chromium</translation>
 <translation id="4302397443352897529">การตั้งค่า Chromium</translation>
-<translation id="4304713468139749426">เครื่องมือจัดการรหัสผ่าน</translation>
 <translation id="4408912345039114853">เรียกใช้การตรวจสอบความปลอดภัยใน Chromium</translation>
 <translation id="4432744876818348753">ลงชื่อเข้าใช้เพื่อรับประโยชน์สูงสุดจาก Chromium</translation>
 <translation id="4445228361214254027">องค์กรได้ปิดความสามารถในการใช้และบันทึกข้อมูล Chromium ในบัญชี Google ของคุณ บุ๊กมาร์ก รหัสผ่านใหม่ และข้อมูลอื่นๆ จะบันทึกไว้ในอุปกรณ์นี้เท่านั้น</translation>
@@ -238,6 +236,7 @@
 <translation id="6154098560469640583">ใช้ Chromium ทุกครั้งที่คุณแตะลิงก์ในข้อความ เอกสาร และแอปอื่นๆ</translation>
 <translation id="6157162508956739031">ลงชื่อเข้าใช้แอปและเว็บไซต์ได้อย่างรวดเร็วด้วยการป้อนรหัสผ่านและพาสคีย์อัตโนมัติจาก Chromium</translation>
 <translation id="6170619162539716595">อนุญาตให้ Chromium ใช้ Google Maps เพื่อแสดงเส้นทางและข้อมูลในพื้นที่ของที่อยู่ที่ตรวจพบ</translation>
+<translation id="6247557882553405851">เครื่องมือจัดการรหัสผ่านบน Google</translation>
 <translation id="6268381023930128611">ต้องการออกจาก Chromium ใช่ไหม</translation>
 <translation id="6301717043141881464">หากต้องการเรียกข้อมูลรหัสผ่านที่บันทึกไว้ในแอปอื่นๆ ได้อย่างง่ายดาย ให้เลือก Chromium สำหรับการป้อนข้อความอัตโนมัติ</translation>
 <translation id="6324041800010509197">ไปที่ตารางกริดของแท็บใน Chromium</translation>

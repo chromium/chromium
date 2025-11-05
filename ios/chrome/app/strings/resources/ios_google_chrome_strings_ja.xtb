@@ -169,11 +169,9 @@
 <translation id="5162467219239570114">Chrome は古いバージョンです。<ph name="BEGIN_LINK" />アプリストア<ph name="END_LINK" />に利用可能なアップデートがない場合は、デバイスで新しいバージョンの Chrome がサポートされなくなった可能性があります。</translation>
 <translation id="5184329579814168207">Chromeで開く</translation>
 <translation id="5190139289262548459">組織（<ph name="DOMAIN" />）が、ログインしているアカウントと Chrome の使用方法を管理しています。</translation>
-<translation id="5209238444239954363">Chrome でアップデートを確認できませんでした。しばらくしてからもう一度お試しください。</translation>
 <translation id="5305440589062022504">Chrome でパスワード マネージャーを開きます</translation>
 <translation id="5310957470610282541">Chrome データの一部が Google アカウントにまだ保存されていません。
 数分待ってからログアウトしてください。今すぐログアウトすると、このデータは削除されます。</translation>
-<translation id="5342685492141499976">データは、<ph name="USER_EMAIL" /> の Google パスワード マネージャーに保存されます。</translation>
 <translation id="5389212809648216794">カメラは別のアプリが使用中のため、Google Chrome では使用できません</translation>
 <translation id="5395376160638294582">Google アカウントの Chrome データを常に使用できるようにしてください</translation>
 <translation id="5404252374083197467">Chrome を既定に設定しますか？</translation>
@@ -201,7 +199,6 @@
 <translation id="5808435672482059465">Chrome 履歴を表示</translation>
 <translation id="5833027901704861726">Chrome データの一部が <ph name="EMAIL" /> にまだ保存されていません。
 数分待ってからアカウントを切り替えてください。今すぐアカウントを切り替えると、このデータは削除されます。</translation>
-<translation id="5853754888722423892">Google パスワード マネージャーに読み込む</translation>
 <translation id="5998675059699164418">Chrome を使用するためにログインするよう、組織が求めています。</translation>
 <translation id="6021312115739110405">Google があなた向けに作成したカスタム フィード。ニュース、スポーツ、天気情報など。</translation>
 <translation id="6022659036123304283">Chrome を自分用にカスタマイズ</translation>

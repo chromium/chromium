@@ -177,7 +177,6 @@
 <translation id="1282358575813748144">படகுகள் &amp; நீரில் செல்லும் வாகனங்கள்</translation>
 <translation id="1283977499362032052">ரெஸ்யூம்கள் &amp; போர்ட்ஃபோலியோக்கள்</translation>
 <translation id="1285320974508926690">இந்த தளத்தை எப்போதும் மொழிபெயர்க்க வேண்டாம்</translation>
-<translation id="1289129165308566697">உங்கள் பதிவுகளைப் பிற சாதனங்களில் பாருங்கள்</translation>
 <translation id="1292571435393770077">டிரே 16</translation>
 <translation id="1292701964462482250">"உங்கள் கம்ப்யூட்டரில் உள்ள மென்பொருள் இணையத்துடன் பாதுகாப்பாக இணைவதிலிருந்து Chromeமைத் தடுக்கிறது" (Windows கம்ப்யூட்டர்கள் மட்டும்)</translation>
 <translation id="1293556467332435079">Files</translation>
@@ -1009,7 +1008,6 @@
 <translation id="2627847595568876492">PDF ஃபைலில் இருந்து வார்த்தைகளைப் பிரித்தெடுக்கிறது...</translation>
 <translation id="2628025184666666186">இந்தச் சேவையகம் Chrome நம்பாத பாதுகாப்புச் சான்றிதழையோ இணைய டிராஃபிக் என்க்ரிப்ஷனுக்கான உங்கள் சிஸ்டத்தின் உள்ளமைவையோ பயன்படுத்துகிறது. இதனால், இது <ph name="DOMAIN" /> தான் என்பதை இந்தச் சேவையகத்தால் உறுதிப்படுத்த முடியவில்லை. இது தவறான உள்ளமைவால் ஏற்பட்டிருக்கலாம் அல்லது ஹேக்கர் உங்கள் இணைப்பில் குறுக்கிட்டிருக்கலாம்.</translation>
 <translation id="2628224721443278970">Microsoft OneDriveவில் உள்நுழை</translation>
-<translation id="2631387782019878060">சரிபார்ப்புக் குறியீடு: <ph name="OTP" /></translation>
 <translation id="2634124572758952069"><ph name="HOST_NAME" /> இன் சேவையக IP முகவரியைக் கண்டறிய முடியவில்லை.</translation>
 <translation id="2638567100095052009"><ph name="FEATURED_SEARCH_LIST" /> முழுவதிலும் தேட @ என்று டைப் செய்யவும்</translation>
 <translation id="2639739919103226564">நிலை:</translation>
@@ -2339,7 +2337,6 @@
 <translation id="4822493756793346865">கடந்த 90 நாட்களில் இணையம் முழுவதும் உள்ள ஸ்டோர்களில் நடந்த விற்பனையின் அடிப்படையில் வழக்கமான விலைகள் காட்டப்படுகின்றன.</translation>
 <translation id="4822922322149719535">பிழைப் பதிவுகளைக் காட்டு</translation>
 <translation id="4823699521959851389">உங்கள் சாதனத்தின் <ph name="PERMISSION" />க்கான அணுகல் <ph name="SHORT_PRODUCT_NAME" />மிற்குத் தேவை</translation>
-<translation id="4825311006392962663">செக்-அவுட்டின்போது, பிறகு பணம் செலுத்துவதற்கான விருப்பங்களைக் காட்டும்</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google விரிதாளை விரைவாக உருவாக்க Tab பட்டனை அழுத்திவிட்டு Enter பட்டனை அழுத்துங்கள்</translation>
 <translation id="4826588772550366629">கேமராவையும் மைக்ரோஃபோனையும்</translation>
 <translation id="4827283332383516812">கார்டை நீக்குதல்</translation>
@@ -2799,7 +2796,6 @@
 <translation id="5558083606899411167">ஏர் கண்டிஷனர்கள்</translation>
 <translation id="5558125320634132440">இந்தத் தளத்தில் வயதுவந்தோருக்கான உள்ளடக்கம் இருப்பதால் இது தடுக்கப்பட்டுள்ளது</translation>
 <translation id="5559311991468302423">முகவரியை நீக்குதல்</translation>
-<translation id="5561747310506483298">அடையாள அட்டைகள்</translation>
 <translation id="55635442646131152">ஆவணத்தின் மேலோட்டம்</translation>
 <translation id="5563589142503817291">இருப்பிடத்தைப் பயன்படுத்த, Chromeமிற்கு <ph name="LINK" /> இல் அணுகலை வழங்குங்கள்.</translation>
 <translation id="5565613213060953222">மறைநிலைப் பக்கத்தைத் திற</translation>
@@ -3451,7 +3447,6 @@
 <translation id="6652101503459149953">Windows Helloவைப் பயன்படுத்து</translation>
 <translation id="6654224358955673568">அலுவல் மொழியாக்கு</translation>
 <translation id="6654244995031366386">டெக்ஸ்சர் செய்யப்பட்ட கண்ணாடி</translation>
-<translation id="6655085656059574817"><ph name="BNPL_ISSUER_NAME" /> உடன் உங்கள் கணக்கை இணைத்து வைத்திருப்பதன் மூலம் நீங்கள் விரைவாகப் பணம் செலுத்தலாம். <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" /> தளத்திற்குச் சென்று இந்த இணைப்பை நீக்கிக்கொள்ளலாம்.</translation>
 <translation id="6657585470893396449">கடவுச்சொல்</translation>
 <translation id="6659246032834639189">இது குறைவான விலை</translation>
 <translation id="6660413144148052430">இருப்பிடம்</translation>

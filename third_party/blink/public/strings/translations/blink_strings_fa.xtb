@@ -10,7 +10,7 @@
 <translation id="1591562245178063882">این ماه</translation>
 <translation id="1637811476055996098">انتخاب فایل‌ها</translation>
 <translation id="1729654308190250600">لطفاً یک نشانی ایمیل غیرخالی وارد کنید.</translation>
-<translation id="1758486001363313524">غیره…</translation>
+<translation id="1758486001363313524">موارد دیگر...</translation>
 <translation id="1921819250265091946">dd</translation>
 <translation id="1938124657309484470">مقدار باید <ph name="MAXIMUM_DATE_OR_TIME" /> یا قبل از آن باشد.</translation>
 <translation id="1993104285338243655">به نمایش صفحه‌نمایش روی دستگاه دیگر تغییر یافت</translation>
@@ -69,7 +69,7 @@
 <translation id="6550675742724504774">گزینه‌ها</translation>
 <translation id="6643016212128521049">پاک کردن</translation>
 <translation id="6661136971638885481">قطعه #<ph name="TRACK_NUMBER" /></translation>
-<translation id="668171684555832681">غیره…</translation>
+<translation id="668171684555832681">دیگر...</translation>
 <translation id="6709093583001123835">مقدار باید <ph name="VALUE" /> باشد.</translation>
 <translation id="6709570249143506788">کیفیت پخش ضعیف</translation>
 <translation id="6790428901817661496">پخش</translation>
@@ -79,7 +79,7 @@
 <translation id="709897737746224366">لطفاً با قالب درخواستی مطابقت دهید.</translation>
 <translation id="7263440858009898357">لطفاً یک مورد را در فهرست انتخاب کنید.</translation>
 <translation id="7364796246159120393">انتخاب فایل</translation>
-<translation id="739024184232394898">غیره…</translation>
+<translation id="739024184232394898">موارد دیگر...</translation>
 <translation id="7460907917090416791"><ph name="QUANTITY" /> ترابایت</translation>
 <translation id="7514365320538308">بارگیری</translation>
 <translation id="7750228210027921155">تصویردرتصویر</translation>
@@ -100,6 +100,6 @@
 <translation id="8845239796550121995">درحال پخش محتوا به تلویزیون</translation>
 <translation id="8875657656876809964">خطا در بازپخش ویدیو</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> کیلوبایت</translation>
-<translation id="9132465097189459683">غیره…</translation>
+<translation id="9132465097189459683">موارد دیگر...</translation>
 <translation id="916607977885256133">تصویر در تصویر</translation>
 </translationbundle>

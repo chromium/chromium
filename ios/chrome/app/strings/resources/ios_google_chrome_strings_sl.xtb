@@ -169,11 +169,9 @@ Počakajte nekaj minut, preden se odjavite. Če se odjavite zdaj, bodo ti podatk
 <translation id="5162467219239570114">Chrome je zastarel. Če v trgovini <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> ni na voljo nobene posodobitve, vaša naprava morda ne podpira več novih različic Chroma.</translation>
 <translation id="5184329579814168207">Odpri v Chromu</translation>
 <translation id="5190139289262548459">Vaša organizacija <ph name="DOMAIN" /> upravlja račun, v katerega ste prijavljeni, in način uporabe Chroma.</translation>
-<translation id="5209238444239954363">Chrome ni mogel preveriti, ali so na voljo posodobitve. Poskusite pozneje.</translation>
 <translation id="5305440589062022504">V Chromu odpre upravitelja gesel</translation>
 <translation id="5310957470610282541">Nekateri podatki v Chromu še niso shranjeni v računu Google.
 Počakajte nekaj minut, preden se odjavite. Če se odjavite zdaj, bodo ti podatki izbrisani.</translation>
-<translation id="5342685492141499976">Podatki bodo shranjeni v Googlovem upravitelju gesel za račun <ph name="USER_EMAIL" /></translation>
 <translation id="5389212809648216794">Google Chrome ne more uporabljati fotoaparata, ker ga uporablja druga aplikacija</translation>
 <translation id="5395376160638294582">Poskrbite, da boste v računu Google vedno lahko uporabljali podatke v Chromu</translation>
 <translation id="5404252374083197467">Želite nastaviti Chrome kot privzeto možnost?</translation>
@@ -201,7 +199,6 @@ Počakajte nekaj minut, preden se odjavite. Če se odjavite zdaj, bodo ti podatk
 <translation id="5808435672482059465">Ogled zgodovine v Chromu</translation>
 <translation id="5833027901704861726">Nekateri podatki v Chromu še niso shranjeni v računu <ph name="EMAIL" />.
 Počakajte nekaj minut, preden preklopite račun. Če zdaj preklopite med računoma, bodo ti podatki izbrisani.</translation>
-<translation id="5853754888722423892">Uvozi v Googlovega upravitelja gesel</translation>
 <translation id="5998675059699164418">Vaša organizacija zahteva, da se za uporabo Chroma prijavite.</translation>
 <translation id="6021312115739110405">Vir po meri, ki ga je za vas ustvaril Google. Vključuje novice, šport in vreme.</translation>
 <translation id="6022659036123304283">Prilagodite si Chrome</translation>

@@ -177,7 +177,6 @@
 <translation id="1282358575813748144">ബോട്ടുകളും വാട്ടർക്രാഫ്റ്റും</translation>
 <translation id="1283977499362032052">റെസ്യൂമെകളും പോർട്ട്‌ഫോളിയോകളും</translation>
 <translation id="1285320974508926690">ഈ സൈറ്റ് ഒരിക്കലും വിവര്‍‌ത്തനം ചെയ്യരുത്</translation>
-<translation id="1289129165308566697">മറ്റ് ഉപകരണങ്ങളിൽ നിങ്ങളുടെ ചരിത്രം കാണുക</translation>
 <translation id="1292571435393770077">ട്രേ 16</translation>
 <translation id="1292701964462482250">"വെബിലേക്ക് സുരക്ഷിതമായി കണക്‌റ്റ് ചെയ്യുന്നതിൽ നിന്ന് Chrome-നെ നിങ്ങളുടെ കമ്പ്യൂട്ടറിലെ സോഫ്റ്റ്‌വെയർ തടയുന്നു" (Windows കമ്പ്യൂട്ടറുകളിൽ മാത്രം)</translation>
 <translation id="1293556467332435079">Files</translation>
@@ -1009,7 +1008,6 @@
 <translation id="2627847595568876492">PDF-ൽ നിന്ന് ടെക്സ്റ്റ് എക്‌സ്‌ട്രാക്റ്റ് ചെയ്യുന്നു...</translation>
 <translation id="2628025184666666186">വെബ് ട്രാഫിക് എൻക്രിപ്ഷന് വേണ്ടി Chrom-ന് വിശ്വാസമില്ലാത്ത ഒരു സുരക്ഷാ സർട്ടിഫിക്കറ്റ് അല്ലെങ്കിൽ നിങ്ങളുടെ സിസ്റ്റം കോൺഫിഗറേഷൻ ഉപയോഗിക്കുന്നതിനാലാണ് ഈ സെർവറിന് അത് <ph name="DOMAIN" /> ആണെന്ന് തെളിയിക്കാൻ കഴിയാത്തത്. തെറ്റായ കോൺഫിഗറേഷൻ കാരണമോ ഒരു അറ്റാക്കർ നിങ്ങളുടെ കണക്ഷനെ തടസ്സപ്പെടുത്തുന്നത് കൊണ്ടോ ആയിരിക്കാം ഇത് സംഭവിച്ചത്.</translation>
 <translation id="2628224721443278970">Microsoft OneDrive-ലേക്ക് സൈൻ ഇൻ ചെയ്യുക</translation>
-<translation id="2631387782019878060">പരിശോധിച്ചുറപ്പിക്കൽ കോഡ്: <ph name="OTP" /></translation>
 <translation id="2634124572758952069"><ph name="HOST_NAME" />-ന്‍റെ സെർവർ IP വിലാസം കണ്ടെത്താനായില്ല.</translation>
 <translation id="2638567100095052009"><ph name="FEATURED_SEARCH_LIST" /> എന്നതിലുടനീളം തിരയാൻ @ എന്ന് ടൈപ്പ് ചെയ്യുക</translation>
 <translation id="2639739919103226564">നില:</translation>
@@ -2342,7 +2340,6 @@
 <translation id="4822493756793346865">വെബിൽ ഉടനീളമുള്ള സ്റ്റോറുകളിലെ കഴിഞ്ഞ 90 ദിവസത്തെ നിരക്കുകൾ അടിസ്ഥാനമാക്കിയുള്ളതാണ് 'സാധാരണ നിരക്കുകൾ'.</translation>
 <translation id="4822922322149719535">പിശക് ലോഗ് അവലോകനം ചെയ്യുക</translation>
 <translation id="4823699521959851389"><ph name="SHORT_PRODUCT_NAME" /> എന്നതിന് നിങ്ങളുടെ ഉപകരണത്തിന്റെ <ph name="PERMISSION" /> എന്നതിലേക്ക് ആക്സസ് ആവശ്യമാണ്</translation>
-<translation id="4825311006392962663">ചെക്ക്ഔട്ടിൽ 'പിന്നീട് പേ ചെയ്യുക' ഓപ്ഷനുകൾ കാണിക്കുക</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, പുതിയൊരു Google Sheet വേഗത്തിൽ സൃഷ്ടിക്കാൻ Tab അമർത്തുക, തുടർന്ന് Enter അമർത്തുക</translation>
 <translation id="4826588772550366629">ക്യാമറയും മൈക്രോഫോണും</translation>
 <translation id="4827283332383516812">കാർഡ് ഇല്ലാതാക്കുക</translation>
@@ -2802,7 +2799,6 @@
 <translation id="5558083606899411167">എയർ കണ്ടീഷണറുകൾ</translation>
 <translation id="5558125320634132440">ഈ സൈറ്റിൽ മുതിർന്നവർക്കുള്ള ഉള്ളടക്കം അടങ്ങിയിരിക്കാം എന്നതിനാൽ ഇത് ബ്ലോക്ക് ചെയ്തിരിക്കുന്നു</translation>
 <translation id="5559311991468302423">വിലാസം ഇല്ലാതാക്കുക</translation>
-<translation id="5561747310506483298">ഐഡന്റിറ്റി കാർഡുകൾ</translation>
 <translation id="55635442646131152">ഡോക്യുമെന്റിന്റെ ഔട്ട്‌ലൈൻ</translation>
 <translation id="5563589142503817291">നിങ്ങളുടെ ലൊക്കേഷൻ ഉപയോഗിക്കാൻ, <ph name="LINK" /> എന്നതിൽ Chrome-ന് ആക്‌സസ് നൽകുക.</translation>
 <translation id="5565613213060953222">അദൃശ്യ ടാബ് തുറക്കുക</translation>
@@ -3455,7 +3451,6 @@
 <translation id="6652101503459149953">Windows Hello ഉപയോഗിക്കുക</translation>
 <translation id="6654224358955673568">ഔദ്യോഗിക ഭാഷയിലാക്കുക</translation>
 <translation id="6654244995031366386">ഗ്ലാസ് (ടെക്‌സ്ചർ ചെയ്തത്)</translation>
-<translation id="6655085656059574817">നിങ്ങളുടെ അക്കൗണ്ട് ലിങ്ക് ചെയ്ത നിലയിൽ നിലനിർത്തുന്നത് <ph name="BNPL_ISSUER_NAME" /> ഉപയോഗിച്ച് അതിവേഗം പേ ചെയ്യാൻ നിങ്ങളെ സഹായിക്കും, എന്നാൽ <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" />എന്നതിലേക്ക് പോയി നിങ്ങൾക്കത് അൺലിങ്ക് ചെയ്യാവുന്നതാണ്</translation>
 <translation id="6657585470893396449">പാസ്‌വേഡ്</translation>
 <translation id="6659246032834639189">ഇത് കുറഞ്ഞ നിരക്കാണ്</translation>
 <translation id="6660413144148052430">ലൊക്കേഷൻ</translation>

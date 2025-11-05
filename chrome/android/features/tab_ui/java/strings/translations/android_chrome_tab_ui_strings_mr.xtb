@@ -128,7 +128,6 @@
 <translation id="5556417849629758491">स्टोअरची माहिती पहा, पर्याय स्क्रीनच्या सर्वात वर उपलब्ध आहे</translation>
 <translation id="5627941783489838464">टॅब अपडेट नाहीत</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{Chrome वरील <ph name="TABS_COUNT_ONE" /> लिंक}other{Chrome वरील <ph name="TABS_COUNT_MANY" /> लिंक}}</translation>
-<translation id="5740354908255726955">{TAB_COUNT,plural, =1{टॅब डावीकडे हलवा}other{टॅब डावीकडे हलवा}}</translation>
 <translation id="5746204836956568669">अधिक जलद काम करण्यासाठी <ph name="NUMBER_OF_TABS" /> टॅबचा गट करायचा आहे का?</translation>
 <translation id="5773295109010386583">इनॅक्टिव्ह आयटम आपोआप बंद करा</translation>
 <translation id="58326064309361797">त्यांचा गट बनवण्यासाठी टॅबना ड्रॅग करा</translation>
@@ -139,7 +138,6 @@
 <translation id="6109251075362363230">सर्वात अलीकडे वापरलेल्या कॉपीचा अपवाद वगळता, सर्व डुप्लिकेट टॅबदेखील आता संग्रहित केले जातील.</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{निवडलेला <ph name="TABS_COUNT_ONE" /> आयटम बंद करा}other{निवडलेले <ph name="TABS_COUNT_MANY" /> आयटम बंद करा}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{गट नवीन विंडोवर हलवा}other{गट दुसऱ्या विंडोवर हलवा}}</translation>
-<translation id="6212374449852603982">{TAB_COUNT,plural, =1{टॅब उजवीकडे हलवा}other{टॅब उजवीकडे हलवा}}</translation>
 <translation id="6228793724645064692">(स्टोअरचे रेटिंग)</translation>
 <translation id="625996437999624951">{TAB_COUNT,plural, =1{गटामधून टॅब काढून टाका}other{गटामधून टॅब काढून टाका}}</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{नवीन गटामध्ये टॅब जोडा}other{नवीन गटामध्ये टॅब जोडा}}</translation>

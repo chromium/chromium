@@ -128,7 +128,6 @@
 <translation id="5556417849629758491">ஸ்டோர் தகவலைப் பார்ப்பதற்கான விருப்பம் திரையின் மேற்பகுதிக்கு அருகில் உள்ளது</translation>
 <translation id="5627941783489838464">பக்க மாற்றங்கள் இல்லை</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{Chrome இணைப்பு: <ph name="TABS_COUNT_ONE" />}other{Chrome இணைப்புகள்: <ph name="TABS_COUNT_MANY" />}}</translation>
-<translation id="5740354908255726955">{TAB_COUNT,plural, =1{பக்கத்தை இடதுபுறம் நகர்த்து}other{பக்கங்களை இடதுபுறம் நகர்த்து}}</translation>
 <translation id="5746204836956568669">விரைவாக வேலைசெய்ய <ph name="NUMBER_OF_TABS" /> பக்கங்களைக் குழுவாக்க வேண்டுமா?</translation>
 <translation id="5773295109010386583">செயலில் இல்லாதவற்றைத் தானாக மூடு</translation>
 <translation id="58326064309361797">தாவல்களை இழுப்பதன் மூலம் அவற்றைக் குழுவாக்கலாம்</translation>
@@ -139,7 +138,6 @@
 <translation id="6109251075362363230">மிகச் சமீபத்தில் பயன்படுத்தப்பட்ட நகல் தவிர்த்து, பிற எல்லா நகல் பக்கங்களும் இப்போது காப்பிடப்படும்.</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{தேர்ந்தெடுத்த <ph name="TABS_COUNT_ONE" /> பக்கத்தை மூடும்}other{தேர்ந்தெடுத்த <ph name="TABS_COUNT_MANY" /> பக்கங்களை மூடும்}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{குழுவைப் புதிய சாளரத்திற்கு நகர்த்து}other{குழுவை வேறொரு சாளரத்திற்கு நகர்த்து}}</translation>
-<translation id="6212374449852603982">{TAB_COUNT,plural, =1{பக்கத்தை வலதுபுறம் நகர்த்து}other{பக்கங்களை வலதுபுறம் நகர்த்து}}</translation>
 <translation id="6228793724645064692">(ஸ்டோர் ரேட்டிங்)</translation>
 <translation id="625996437999624951">{TAB_COUNT,plural, =1{குழுவில் இருந்து பக்கத்தை அகற்றும்}other{குழுவிலிருந்து பக்கங்களை அகற்றும்}}</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{பக்கத்தைப் புதிய குழுவில் சேர்}other{பக்கங்களைப் புதிய குழுவில் சேர்}}</translation>

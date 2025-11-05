@@ -136,7 +136,6 @@ Als je het beleid niet instelt, wordt het gedrag vanaf <ph name="PRODUCT_NAME" /
 
       Als je deze instelling niet instelt, wordt de standaard profieldirectory gebruikt.</translation>
 <translation id="1053981429146436598">Een groep beleidsregels voor instellingen voor privénetwerkverzoeken.  Zie https://wicg.github.io/private-network-access/.</translation>
-<translation id="1055159224864957792">Lokaal wachtwoord</translation>
 <translation id="1059069692400941670">Import van standaard zoekmachine bij eerste uitvoering uitzetten</translation>
 <translation id="1060020040574767394">Aangepaste watermerkinstellingen configureren</translation>
 <translation id="1062011392452772310">Externe bevestiging van apparaat aanzetten</translation>
@@ -1227,17 +1226,6 @@ Dit beleid heeft geen effect als de optie om bestaande browsegegevens te behoude
 <translation id="1834796168555733063">Opslag van toegangssleutels met de wachtwoordmanager uitzetten</translation>
 <translation id="1836380138559328229">Actieve wifi-inloggegevens opslaan op apparaatniveau</translation>
 <translation id="1837165432382702436">Hoogte van de pagina in micrometers</translation>
-<translation id="1838075279369174832">Als je het beleid instelt, bepaal je welke factoren voor lokale verificatie kunnen worden gebruikt voor zowel inloggen als opnieuw verifiëren op <ph name="PRODUCT_OS_NAME" />.
-
-      Je kunt kiezen uit de volgende opties:
-
-* Gebruik ["ALL"] (omvat factoren die in de toekomst worden toegevoegd) als je elke factor voor lokale verificatie wilt toestaan.
-
-      * Gebruik ["PIN"] als je alleen een pincode wilt toestaan.
-
-      * Gebruik ["LOCAL_PASSWORD"] als je alleen lokale wachtwoorden wilt toestaan.
-
-      Als je het beleid niet instelt of instelt op een lege lijst, zijn er geen factoren voor lokale verificatie beschikbaar voor beheerde gebruikers.</translation>
 <translation id="1838910874018595451">Vooraf ingestelde configuratie voor Kerberos-tickets</translation>
 <translation id="1839042185432919430">Toestaan dat de web-kiosk-app een netwerkprompt toont als de app wordt gestart terwijl het apparaat offline is</translation>
 <translation id="1839711547980672664">Lijst met URL-patronen waarvoor <ph name="CHROME_DEVTOOLS_NAME" /> mogen worden geopend</translation>
@@ -8704,7 +8692,6 @@ OPMERKING: Wijzigingen in dit beleid worden alleen weergegeven in onlangs gestar
 Als je het beleid toepast, wordt de gebruiker uitgelogd van de vorige sessie als die inlogt op een nieuw <ph name="PRODUCT_OS_NAME" />-apparaat.
 
 Als je het beleid niet toepast of niet instelt, wordt de gebruiker alleen uitgelogd van de vorige sessie als het beleid <ph name="FLOATING_SSO_ENABLED_POLICY_NAME" /> of <ph name="FLOATING_WORKSPACE_V2_ENABLED_POLICY_NAME" /> wordt toegepast.</translation>
-<translation id="6854694645176150141">Toegestane factoren voor lokale verificatie instellen</translation>
 <translation id="6854767649023671426">Als je het beleid toepast of niet instelt, wordt gebruikers in een prompt om toegang tot video-opnamen gevraagd, met uitzondering van de URL's die zijn ingesteld in de lijst VideoCaptureAllowedUrls.
 
       Als je het beleid niet toepast, worden prompts uitgezet en zijn video-opnamen alleen beschikbaar voor URL's die zijn ingesteld in de lijst VideoCaptureAllowedUrls.
@@ -9609,7 +9596,6 @@ Als je het beleid niet instelt, is dit functioneel gelijk aan het beleid instell
 <translation id="7491720878670299691">Snelheid waarmee netwerkgegevens worden opgevraagd en gecheckt op gebeurtenissen. Het toegestane minimum is 1 minuut.
 
       Als je dit beleid niet instelt, is de standaardsnelheid van 1 minuut van toepassing.</translation>
-<translation id="7496284563199466390">Hiermee wordt bepaald welke beheerde gebruikers het beleid <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> kunnen instellen.</translation>
 <translation id="7498595166686106721">
       Het rechtenbeleid voor schermopname geeft toegang tot getDisplayMedia(), volgens deze specificatie: https://www.w3.org/TR/screen-capture/#feature-policy-integration. Maar als dit beleid niet wordt toegepast, wordt deze vereiste niet afgedwongen en wordt getDisplayMedia() toegestaan vanuit contexten die anders verboden zouden zijn. Dit zakelijke beleid is tijdelijk. Het is de bedoeling het te verwijderen na <ph name="PRODUCT_NAME" /> versie 100. Het is bedoeld om de blokkering van zakelijke gebruikers op te heffen wiens app niet aan de specificaties voldoet, maar tijd nodig heeft om te worden hersteld.
 
@@ -10553,9 +10539,6 @@ Dit beleid wordt toegepast op de incognitomodus. Dit betekent dat de incognitomo
 <translation id="8225579382697740712">Het gebruik van de WebHID API beheren</translation>
 <translation id="8229912067600517877">Developer Tools aanzetten</translation>
 <translation id="8238421250255592181">Een Booleaanse markering die aangeeft of het schermtoetsenbord de optie voor automatisch aanvullen heeft.</translation>
-<translation id="8238558579601006178">Als je dit beleid instelt op 0 of niet instelt, wordt het beleid <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> alleen toegepast op gebruikersniveau voor aangesloten gebruikers.
-Als je dit beleid instelt op 1, wordt het beleid <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> toegepast op gebruikersniveau, ook als die gebruiker niet is aangesloten.
-Als je dit beleid instelt op 2, wordt het beleid <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> nooit toegepast als de bron een gebruiker is.</translation>
 <translation id="8239109177194627162">Automatisch invullen uitzetten voor creditcards</translation>
 <translation id="8239143983379015783">Afdwingen dat permanent quotum wordt aangezet</translation>
 <translation id="8240976615241583524">Dit beleid maakt het mogelijk om te beperken welke IP-adressen en interfaces worden gebruikt door WebRTC als naar de beste beschikbare verbinding wordt gezocht.

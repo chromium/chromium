@@ -128,7 +128,6 @@
 <translation id="5556417849629758491">Lihat maklumat kedai, pilihan tersedia berhampiran bahagian atas skrin</translation>
 <translation id="5627941783489838464">Tiada kemaskinian tab</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> pautan daripada Chrome}other{<ph name="TABS_COUNT_MANY" /> pautan daripada Chrome}}</translation>
-<translation id="5740354908255726955">{TAB_COUNT,plural, =1{Alihkan tab ke kiri}other{Alihkan tab ke kiri}}</translation>
 <translation id="5746204836956568669">Himpunkan <ph name="NUMBER_OF_TABS" /> tab untuk melakukan tugas dengan lebih pantas?</translation>
 <translation id="5773295109010386583">Tutup item yang tidak aktif secara automatik</translation>
 <translation id="58326064309361797">Seret tab untuk dihimpunkan</translation>
@@ -139,7 +138,6 @@
 <translation id="6109251075362363230">Kini semua tab pendua akan turut diarkibkan kecuali salinan yang digunakan baru-baru ini.</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{Tutup <ph name="TABS_COUNT_ONE" /> item yang dipilih}other{Tutup <ph name="TABS_COUNT_MANY" /> item yang dipilih}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Alihkan kumpulan kepada tetingkap baharu}other{Alihkan kumpulan kepada tetingkap lain}}</translation>
-<translation id="6212374449852603982">{TAB_COUNT,plural, =1{Alihkan tab ke kanan}other{Alihkan tab ke kanan}}</translation>
 <translation id="6228793724645064692">(rating kedai)</translation>
 <translation id="625996437999624951">{TAB_COUNT,plural, =1{Alih keluar tab daripada kumpulan}other{Alih keluar tab daripada kumpulan}}</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Tambahkan tab pada kumpulan baharu}other{Tambahkan tab pada kumpulan baharu}}</translation>

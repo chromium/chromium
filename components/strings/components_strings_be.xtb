@@ -177,7 +177,6 @@
 <translation id="1282358575813748144">Лодкі і водны транспарт</translation>
 <translation id="1283977499362032052">Рэзюмэ і партфоліа</translation>
 <translation id="1285320974508926690">Ніколі не перакладаць гэты сайт</translation>
-<translation id="1289129165308566697">Паглядзець гісторыю на іншых прыладах</translation>
 <translation id="1292571435393770077">Латок 16</translation>
 <translation id="1292701964462482250">"Праграмнае забеспячэнне на камп’ютары не дае браўзеру Chrome устанавіць бяспечнае падключэнне да інтэрнэту" (толькі камп’ютары пад кіраваннем Windows)</translation>
 <translation id="1293556467332435079">Файлы</translation>
@@ -1845,7 +1844,6 @@
 <translation id="4014895360827978999">Гандлёвыя паслугі і плацежныя сістэмы</translation>
 <translation id="4018819349042761761">Адкрыты ключ</translation>
 <translation id="4023431997072828269">З-за таго што форма адпраўляецца праз падключэнне, якое не з’яўляецца бяспечным, вашы звесткі будуць бачныя іншым карыстальнікам.</translation>
-<translation id="4024673763872230929">Захавайце звесткі і запаўняйце формы хутчэй. Звесткі будуць захаваны на прыладзе.</translation>
 <translation id="4025325634010721551">Палітыкі перазагружаны</translation>
 <translation id="4025338605225449265">Абмен валют</translation>
 <translation id="4025777154208238692">У адваротным парадку</translation>
@@ -2279,7 +2277,6 @@
 <translation id="4732860731866514038">Спампоўваецца моўны пакет для наступнай мовы: <ph name="LANGUAGE" />… <ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992">Сайт <ph name="URL" /> запытвае дазвол на выкарыстанне звестак аб месцазнаходжанні прылады</translation>
 <translation id="473414950835101501">Выкарыстоўваць камеры</translation>
-<translation id="4734343956394152985"><ph name="BEGIN_BOLD" />Бягучая стандартная сістэма<ph name="END_BOLD" /> · <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="4736825316280949806">Перазапусціце Chromium</translation>
 <translation id="4736934858538408121">Віртуальная картка</translation>
 <translation id="473775607612524610">Абнавіць</translation>
@@ -2342,7 +2339,6 @@
 <translation id="4822493756793346865">Звесткі пра звычайныя цэны грунтуюцца на даных з крам у інтэрнэце за мінулыя 90 дзён.</translation>
 <translation id="4822922322149719535">Праглядзець журнал памылак</translation>
 <translation id="4823699521959851389">Браўзеру <ph name="SHORT_PRODUCT_NAME" /> патрабуецца доступ да наступнага інструмента на вашай прыладзе: <ph name="PERMISSION" /></translation>
-<translation id="4825311006392962663">Паказваць варыянты аплаты ў растэрміноўку пры афармленні заказу</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />. Каб хутка стварыць новую табліцу Google, націсніце Tab, затым Enter</translation>
 <translation id="4826588772550366629">камеру і мікрафон</translation>
 <translation id="4827283332383516812">Выдаленне карткі</translation>
@@ -2434,7 +2430,6 @@
 <translation id="4961708452830821006">Каб выкарыстоўваць мікрафон, дайце Chrome доступ у <ph name="LINK" />.</translation>
 <translation id="4963413887558778009">Ландшафтны дызайн</translation>
 <translation id="4967366744630699583">Змяніць адрас</translation>
-<translation id="4968046291688599384">Устаўлены аднаразовы нумар віртуальнай карткі (<ph name="BNPL_ISSUER_NAME" />).</translation>
 <translation id="4968522289500246572">Гэта праграма створана для мабільных прылад, таму змяненне яе памеру можа выклікаць памылкі. Праграма можа працаваць няправільна або перазапусціцца.</translation>
 <translation id="4968665849807487749">Сайт можа запытваць дазвол кіраваць вокнамі на ўсіх дысплэях</translation>
 <translation id="4969341057194253438">Выдаліць запіс</translation>
@@ -3390,7 +3385,6 @@
 <translation id="6521745193039995384">Неактыўная</translation>
 <translation id="6522682797352430154">Класічная музыка</translation>
 <translation id="6524830701589638230">Кнопка "Кіраваць наладамі спецыяльных магчымасцей". Каб персаналізаваць адпаведныя інструменты ў наладах Chrome, націсніце яе.</translation>
-<translation id="6525222262307262764">Пакінуць бягучую стандартную сістэму</translation>
 <translation id="6527049834925947126">Вытворчасць харчовых прадуктаў</translation>
 <translation id="6529173248185917884">Сёмы рулон</translation>
 <translation id="6529602333819889595">&amp;Узнавіць выдаленне</translation>
@@ -3411,7 +3405,6 @@
 <translation id="6567832540451970450">Ваш адміністратар дае гэтаму сайту дазвол "<ph name="PERMISSION" />"</translation>
 <translation id="6568793038316600992">Кнопка "Наладзіць спосабы аплаты". Каб кіраваць плацяжамі і звесткамі крэдытных картак праз налады Chrome, націсніце яе.</translation>
 <translation id="6569060085658103619">Вы праглядаеце старонку пашырэння</translation>
-<translation id="6571992525120410251"><ph name="ENGINE_NAME" />: задайце любое пытанне</translation>
 <translation id="6572867903637058088">Гэта карысна?</translation>
 <translation id="6573200754375280815">Дзве дзіркі справа</translation>
 <translation id="6575408526598156416">Захаваць ва ўліковым запісе</translation>
@@ -3453,7 +3446,6 @@
 <translation id="6652101503459149953">Выкарыстоўваць Windows Hello</translation>
 <translation id="6654224358955673568">Дадаць фармальнасці</translation>
 <translation id="6654244995031366386">Тэкстураванае шкло</translation>
-<translation id="6655085656059574817">Прывязка ўліковага запісу паскарае працэс аплаты праз сэрвіс "<ph name="BNPL_ISSUER_NAME" />", але вы можаце выдаліць сувязь для свайго ўліковага запісу, перайшоўшы на сайт <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" />.</translation>
 <translation id="6657585470893396449">Пароль</translation>
 <translation id="6659246032834639189">Гэта нізкая цана</translation>
 <translation id="6660413144148052430">звесткі пра месцазнаходжанне</translation>
@@ -3461,7 +3453,6 @@
 <translation id="666259744093848177">(x86_64, пераклад)</translation>
 <translation id="6665553082534466207">Тры дзіркі справа</translation>
 <translation id="6668389483194953109">Знойдзены памер паперы "custom", але ўласцівасць custom_size не ўказана або з’яўляецца недапушчальнай.</translation>
-<translation id="6670729408462528018">Галерэя</translation>
 <translation id="6671169470640320959">Аўтакрэдытаванне</translation>
 <translation id="6671697161687535275">Выдаліць прапанову аўтазапаўнення форм з Chromium?</translation>
 <translation id="6675846980676550611">Доступ да AR не дазволены</translation>

@@ -4,9 +4,11 @@
 <translation id="1055273091707420432">Chromium vee advertensie-onderwerpe wat ouer as 4 weke is outomaties uit</translation>
 <translation id="1145223915439299117">Chrome blokkeer derdepartywebkoekies in Incognito, maar ’n uitbreiding het derdepartywebkoekies vir hierdie werf toegelaat.</translation>
 <translation id="1184166532603925201">Chrome blokkeer werwe om derdepartywebkoekies te gebruik wanneer jy in Incognitomodus is</translation>
+<translation id="1205053266843535401">Beperk toegang tot toestel- en blaaierdata</translation>
 <translation id="1281098210028343866">Help ons om Chromium te verbeter deur vir ons te vertel waarom jy nasporingbeskerming onderbreek het</translation>
 <translation id="1297285729613779935">Webwerfvoorgestelde advertensies help om jou blaaigeskiedenis en identiteit te beskerm terwyl werwe vir jou relevante advertensies kan wys. Deur jou aktiwiteit te gebruik, soos hoe jy jou tyd spandeer op werwe wat jy besoek, kan ander werwe verwante advertensies voorstel terwyl jy voortgaan om te blaai. Jy kan ’n lys van hierdie werwe sien en in instellings dié werwe blokkeer wat jy nie wil hê nie.</translation>
 <translation id="132963621759063786">Chromium vee enige aktiwiteitdata wat jy met werwe gedeel het na 30 dae uit. As jy ’n werf weer besoek, kan dit weer op die lys verskyn. Kry meer inligting oor <ph name="BEGIN_LINK1" />hoe om jou advertensieprivaatheid in Chromium te bestuur<ph name="LINK_END1" />.</translation>
+<translation id="1472807065399636739">Webwerwe wat jy besoek, kan inhoud en dienste vanaf ander webwerwe (soos prente, advertensies en teks) inbed wat gebruik kan word om meer oor jou uit te vind. Kry meer inligting oor die bestuur van <ph name="BEGIN_LINK" />naspoorbeskerming in Incognito<ph name="END_LINK" /></translation>
 <translation id="1472928714075596993"><ph name="BEGIN_BOLD" />Watter data word gebruik?<ph name="END_BOLD" /> Jou advertensie-onderwerpe word gegrond op jou onlangse blaaigeskiedenis, ’n lys werwe wat jy besoek het terwyl jy Chrome op hierdie toestel gebruik.</translation>
 <translation id="1559726735555610004">Google vereis van maatskappye om publiek te verklaar dat hulle nie hierdie data sal gebruik om jou oor ander werwe na te spoor nie. Sommige werwe kan jou aktiwiteit gebruik om jou ervaring vir meer as net advertensies te personaliseer. Hulle kan dit ook kombineer met ander inligting oor jou wat hulle reeds het. Maatskappye is daarvoor verantwoordelik om jou in te lig hoe hulle jou data gebruik. Kry meer inligting oor hoe Google jou data beskerm in ons <ph name="BEGIN_LINK" />privaatheidsbeleid<ph name="END_LINK" />.</translation>
 <translation id="1569440020357229235">Werwe kan nie derdepartywebkoekies gebruik wanneer jy in Incognitomodus is nie. As ’n werf wat op hierdie webkoekies staatmaak nie werk nie, kan jy <ph name="BEGIN_LINK" />probeer om vir daardie werf tydelike toegang tot derdepartywebkoekies te gee<ph name="END_LINK" />.</translation>
@@ -22,12 +24,14 @@
 <translation id="2004697686368036666">Kenmerke op sommige werwe sal dalk nie werk nie</translation>
 <translation id="2089807121381188462"><ph name="BEGIN_BOLD" />Hoe kan jy hierdie data bestuur?<ph name="END_BOLD" /> Chrome vee werwe wat ouer as 30 dae is outomaties uit. ’n Werf wat jy weer besoek, kan weer op die lys verskyn. Jy kan ook ’n werf keer om vir jou advertensies voor te stel, en werfvoorgestelde advertensies enige tyd in Chrome-instellings afskakel.</translation>
 <translation id="2090761099683423637">Beskerming word onderbreek tot alle Incognito-vensters toegemaak is.</translation>
+<translation id="2194856509914051091">Dinge om in ag te neem</translation>
 <translation id="2213012319160025454">Bestuur Incognito-nasporingbeskermings</translation>
 <translation id="2235344399760031203">Derdepartywebkoekies word geblokkeer</translation>
 <translation id="235789365079050412">Google se privaatheidsbeleid</translation>
 <translation id="235832722106476745">Chrome vee advertensie-onderwerpe wat ouer as 4 weke is outomaties uit</translation>
 <translation id="2496115946829713659">Werwe kan derdepartywebkoekies gebruik om inhoud en advertensies te personaliseer en uit te vind oor handelinge wat jy op ander werwe uitvoer</translation>
 <translation id="2506926923133667307">Meer inligting oor die bestuur van jou advertensieprivaatheid</translation>
+<translation id="2578376035831129583">Dit is van toepassing op ingebedde werwe, nie die werf wat jy direk besoek nie</translation>
 <translation id="259163387153470272">Webwerwe en hul reklamevennote kan jou aktiwiteit, soos hoe jy jou tyd spandeer op werwe wat jy besoek, gebruik om advertensies vir jou te personaliseer.</translation>
 <translation id="2648072482252767506">Chromium blokkeer derdepartywebkoekies in Incognito, maar jy het ’n uitsondering vir hierdie werf gemaak. Incognito kan ook bykomende nasporingbeskerming verskaf.</translation>
 <translation id="2669351694216016687">Google vereis van maatskappye om publiek te verklaar dat hulle nie hierdie data sal gebruik om jou oor ander werwe na te spoor nie. Sommige werwe kan jou aktiwiteit gebruik om jou ervaring vir meer as net advertensies te personaliseer. Hulle kan dit ook kombineer met ander inligting oor jou wat hulle reeds het. Maatskappye is daarvoor verantwoordelik om jou in te lig hoe hulle jou data gebruik. <ph name="BEGIN_LINK1" />Kry meer inligting in ons privaatheidsbeleid<ph name="LINK_END1" /></translation>
@@ -43,21 +47,27 @@
 <translation id="3442071090395342573">Chromium vee enige aktiwiteitdata wat jy met werwe gedeel het na 30 dae uit. As jy ’n werf weer besoek, kan dit weer op die lys verskyn. Kry meer inligting oor <ph name="BEGIN_LINK" />hoe om jou advertensieprivaatheid in Chromium te bestuur<ph name="END_LINK" />.</translation>
 <translation id="3467081767799433066">Met advertensiemeting word beperkte soorte data tussen werwe gedeel om die werkverrigting van hul advertensies te meet, soos of jy ’n aankoop gedoen het nadat jy ’n werf besoek het.</translation>
 <translation id="3624583033347146597">Kies jou voorkeure vir derdepartywebkoekies</translation>
+<translation id="364348650177270461">Chromium sal probeer om toestel- en blaaierdata, soos geïnstalleerde lettertipes of jou tydsone, te beperk vir ingebedde webwerwe wat dalk probeer om meer oor jou uit te vind</translation>
 <translation id="3645682729607284687">Chrome neem kennis van onderwerpe waarin jy belangstel gegrond op jou onlangse blaaigeskiedenis. Byvoorbeeld, dinge soos sport, klerasie en meer</translation>
+<translation id="3665701035629774409">Chrome blokkeer derdepartywebkoekies in Incognito, maar jou admin het derdepartywebkoekies vir hierdie werf toegelaat. Incognito kan ook bykomende nasporingbeskerming verskaf. Bestuur naspoorbeskerming in Incognito in <ph name="BEGIN_LINK" />Instellings<ph name="END_LINK" />.</translation>
 <translation id="3696118321107706175">Hoe werwe jou data gebruik</translation>
 <translation id="3749724428455457489">Kry meer inligting oor werfvoorgestelde advertensies</translation>
 <translation id="3763433740586298940">Jy kan werwe blokkeer wat jy nie wil hê nie. Chrome vee werwe wat ouer as 30 dae is, ook outomaties van die lys af uit.</translation>
 <translation id="385051799172605136">Terug</translation>
+<translation id="388873797593534859">Beperk toegang tot toestel- en blaaierdata. Hierdie instelling is aan.</translation>
 <translation id="390681677935721732">Chrome vee enige aktiwiteitdata wat jy met werwe gedeel het na 30 dae uit. As jy ’n werf weer besoek, kan dit weer op die lys verskyn. Kry meer inligting oor <ph name="BEGIN_LINK" />hoe om jou advertensieprivaatheid in Chrome te bestuur<ph name="END_LINK" />.</translation>
 <translation id="3918378745482005425">Sommige kenmerke sal dalk nie werk nie. Verwante werwe kan steeds derdepartywebkoekies gebruik.</translation>
 <translation id="3918927280411834522">werfvoorgestelde advertensies.</translation>
 <translation id="4009365983562022788">Google vereis van maatskappye om publiek te verklaar dat hulle nie hierdie data sal gebruik om jou oor ander werwe na te spoor nie. Sommige werwe kan jou aktiwiteit gebruik om jou ervaring vir meer as net advertensies te personaliseer. Hulle kan dit ook kombineer met ander inligting oor jou wat hulle reeds het. Maatskappye is daarvoor verantwoordelik om jou in te lig hoe hulle jou data gebruik. Kry meer inligting in ons <ph name="BEGIN_LINK1" />privaatheidsbeleid<ph name="LINK_END1" />.</translation>
 <translation id="4115793614265434327">Chromium blokkeer derdepartywebkoekies in Incognito, maar jou admin het derdepartywebkoekies vir hierdie werf toegelaat.</translation>
 <translation id="4177501066905053472">Advertensie-onderwerpe</translation>
+<translation id="4200539465901914137">Chrome sal probeer om toestel- en blaaierdata, soos geïnstalleerde lettertipes of jou tydsone, te beperk vir ingebedde webwerwe wat dalk probeer om meer oor jou uit te vind</translation>
 <translation id="4278390842282768270">Toegelaat</translation>
 <translation id="4301151630239508244">Advertensie-onderwerpe is net een van baie dinge wat ’n werf kan gebruik om advertensies te personaliseer. Werwe kan selfs sonder advertensie-onderwerpe vir jou advertensies wys, maar hulle kan dalk minder gepersonaliseer wees. Meer inligting oor die <ph name="BEGIN_LINK_1" />bestuur van jou advertensieprivaatheid<ph name="END_LINK_1" />.</translation>
+<translation id="435360899831421654">Beperk toegang tot toestel- en blaaierdata. Hierdie instelling is af.</translation>
 <translation id="4370439921477851706">Google vereis van maatskappye om publiek te verklaar dat hulle nie hierdie data sal gebruik om jou oor ander werwe na te spoor nie. Sommige werwe kan jou aktiwiteit gebruik om jou ervaring vir meer as net advertensies te personaliseer. Hulle kan ook advertensie-onderwerpe vir langer as 4 weke berg en dit kombineer met ander inligting wat hulle reeds van jou het. Maatskappye is daarvoor verantwoordelik om jou in te lig oor hoe hulle jou data gebruik. Kry meer inligting in ons <ph name="BEGIN_LINK1" />privaatheidsbeleid<ph name="LINK_END1" />.</translation>
 <translation id="4412992751769744546">Laat derdepartywebkoekies toe</translation>
+<translation id="4448728649751001728">Slegs beskikbaar wanneer Incognito vanaf ’n aangemelde Chrome-venster oopgemaak word</translation>
 <translation id="4456330419644848501">Of ’n advertensie wat jy gesien gepersonaliseer is, kan van baie dinge afhang, insluitend hierdie instelling, <ph name="BEGIN_LINK_1" />webwerfvoorgestelde advertensies<ph name="END_LINK_1" />, jou <ph name="BEGIN_LINK_2" />webkoekie-instellings<ph name="END_LINK_2" />, en of die werf waarna jy kyk advertensies personaliseer.</translation>
 <translation id="4501357987281382712">Kry meer inligting oor hoe Google jou data beskerm in ons <ph name="BEGIN_LINK" />privaatheidsbeleid<ph name="END_LINK" />.</translation>
 <translation id="4502954140581098658">Of ’n advertensie wat jy sien gepersonaliseer is, kan van baie dinge afhang, insluitend hierdie instelling, <ph name="BEGIN_LINK_1" />advertensie-onderwerpe<ph name="END_LINK_1" />, jou <ph name="BEGIN_LINK_2" />webkoekie-instellings<ph name="END_LINK_2" />, en of die werf waarna jy kyk advertensies personaliseer.</translation>
@@ -66,13 +76,17 @@
 <translation id="4687718960473379118">Webwerfvoorgestelde advertensies</translation>
 <translation id="4692439979815346597">Jy kan jou advertensie-onderwerpe in Chrome-instellings sien en dié onderwerpe blokkeer wat jy nie met werwe wil deel nie</translation>
 <translation id="4711259472133554310">Jy kan in Instellings uitsonderings skep om spesifieke werwe altyd toe te laat om derdepartywebkoekies te gebruik</translation>
+<translation id="4773759246613295463">Wanneer jy in Incognito blaai, sal Chromium nie jou blaaigeskiedenis, webkoekies en webwerfdata, en die inligting wat jy in vorms invoer, stoor nie. Incognito verskaf ook kenmerke wat die inligting wat aan ingebedde werwe beskikbaar is, kan beperk.</translation>
 <translation id="4835013575597383365">Nasporingbeskerming</translation>
+<translation id="4864452159627050077">Bestuur inligting wat werwe kan gebruik om meer oor jou uit te vind in Incognito</translation>
 <translation id="4894490899128180322">As ’n werf nie na verwagting werk nie, kan jy probeer om derdepartywebkoekies tydelik toe te laat vir ’n spesifieke werf wat jy besoek</translation>
 <translation id="4995684599009077956">Google vereis van maatskappye om publiek te verklaar dat hulle nie hierdie data sal gebruik om jou oor ander werwe na te spoor nie. Sommige werwe kan jou aktiwiteit gebruik om jou ervaring vir meer as net advertensies te personaliseer. Hulle kan ook advertensie-onderwerpe vir langer as 4 weke berg en dit kombineer met ander inligting wat hulle reeds van jou het. Maatskappye is daarvoor verantwoordelik om jou in te lig oor hoe hulle jou data gebruik. <ph name="BEGIN_LINK" />Kry meer inligting in ons privaatheidsbeleid<ph name="END_LINK" />.</translation>
 <translation id="5023078137728844766">Chromium blokkeer derdepartywebkoekies in Incognito, maar jou admin het derdepartywebkoekies vir hierdie werf toegelaat. Incognito kan ook bykomende nasporingbeskerming verskaf.</translation>
 <translation id="5055880590417889642">Jou aktiwiteit is een van menige dinge wat ’n werf kan gebruik om advertensies voor te stel. Wanneer webwerfvoorgestelde advertensies afgeskakel is, kan werwe steeds vir jou advertensies wys, maar hulle is dalk minder gepersonaliseerd. Kry meer inligting oor</translation>
+<translation id="5110547311636263835">Chrome blokkeer derdepartywebkoekies in Incognito, maar jy het ’n uitsondering gemaak vir hierdie werf. Incognito kan ook bykomende nasporingbeskerming verskaf. Bestuur naspoorbeskerming in Incognito in <ph name="BEGIN_LINK" />Instellings<ph name="END_LINK" />.</translation>
 <translation id="5117284457376555514">Werwe kan nie derdepartywebkoekies gebruik om inhoud en advertensies te personaliseer en uit te vind oor handelinge wat jy op ander werwe uitvoer nie, mits jy verwante werwe toelaat om toegang daartoe te verkry. Sommige werfkenmerke sal dalk nie na verwagting werk nie.</translation>
 <translation id="5165490319523240316">Werwe en hul reklamevennote kan jou aktiwiteit, soos hoe jy jou tyd spandeer op werwe wat jy besoek, gebruik om advertensies op ander werwe te personaliseer. Byvoorbeeld, as jy 'n werf besoek om resepte vir aandete te kry, kan die werf besluit dat jy daarin belangstel om te kook. Later kan ’n ander werf vir jou ’n verwante advertensie wys vir ’n kruideniersdiens wat deur die eerste werf voorgestel is.</translation>
+<translation id="5188610687455399162">Chromium blokkeer derdepartywebkoekies in Incognito, maar jy het ’n uitsondering vir hierdie werf gemaak. Incognito kan ook bykomende nasporingbeskerming verskaf. Bestuur naspoorbeskerming in Incognito in <ph name="BEGIN_LINK" />Instellings<ph name="END_LINK" />.</translation>
 <translation id="5362892126200493757">Vertel vir ons waarom jy nasporingbeskerming op hierdie werf onderbreek het</translation>
 <translation id="544199055391706031">Jou aktiwiteit is een van menige dinge wat ’n werf kan gebruik om advertensies voor te stel. Wanneer webwerfvoorgestelde advertensies afgeskakel is, kan werwe steeds vir jou advertensies wys, maar hulle is dalk minder gepersonaliseerd. Kry meer inligting <ph name="BEGIN_LINK" />oor werfvoorgestelde advertensies<ph name="END_LINK" />.</translation>
 <translation id="5574580428711706114">Google vereis van maatskappye om publiek te verklaar dat hulle nie hierdie data sal gebruik om jou oor ander werwe na te spoor nie. Maatskappye is daarvoor verantwoordelik om jou in te lig hoe hulle jou data gebruik. <ph name="BEGIN_LINK1" />Kry meer inligting in ons privaatheidsbeleid<ph name="LINK_END1" />.</translation>
@@ -86,17 +100,24 @@
 <translation id="6053735090575989697">Kry meer inligting oor hoe Google jou data beskerm in ons privaatheidsbeleid.</translation>
 <translation id="6195163219142236913">Derdepartywebkoekies is beperk</translation>
 <translation id="6196640612572343990">Blokkeer derdepartywebkoekies</translation>
+<translation id="6205593033237791753">Beperk toegang tot jou IP-adres. Hierdie instelling is aan.</translation>
 <translation id="6282129116202535093">Webwerfvoorgestelde advertensies help om jou blaaigeskiedenis en identiteit te beskerm terwyl werwe vir jou relevante advertensies kan wys. Deur jou aktiwiteit te gebruik, kan ander werwe verwante advertensies voorstel terwyl jy voortgaan om te blaai. Jy kan ’n lys van hierdie werwe sien en in instellings dié werwe blokkeer wat jy nie wil hê nie.</translation>
 <translation id="6291177244430967858">Nasporingbeskerming is hervat</translation>
 <translation id="6308169245546905162">Werwe kan derdepartywebkoekies gebruik om uit te vind oor handelinge wat jy op ander werwe uitvoer</translation>
+<translation id="6388287739339671750">Blokkeer nasporingskripte</translation>
 <translation id="6398358690696005758">Kry meer inligting oor hoe Google jou data beskerm in ons <ph name="BEGIN_LINK1" />privaatheidsbeleid<ph name="LINK_END1" />.</translation>
 <translation id="6494210367693221285">Jou huidige Chromium-instellings is opgedateer sodat webwerwe toegang tot derdepartywebkoekies kan kry. Jy kan hierdie instelling enige tyd verander.</translation>
 <translation id="6702015235374976491">Advertensie-onderwerpe help webwerwe om vir jou relevante advertensies te wys terwyl dit jou blaaigeskiedenis en identiteit beskerm. Chrome kan kennis neem van onderwerpe waarin jy belangstel gegrond op jou onlangse blaaigeskiedenis. ’n Werf wat jy besoek, kan Chrome later vir relevante onderwerpe vra om die advertensies wat jy sien, te personaliseer.</translation>
 <translation id="6710025070089118043">Werwe kan nie derdepartywebkoekies gebruik om inhoud en advertensies te personaliseer en uit te vind oor handelinge wat jy op ander werwe uitvoer nie, mits jy verwante werwe toegang daartoe gee</translation>
+<translation id="6737378617247709185">Chromium blokkeer derdepartywebkoekies in Incognito, maar jou admin het derdepartywebkoekies vir hierdie werf toegelaat. Incognito kan ook bykomende nasporingbeskerming verskaf. Bestuur naspoorbeskerming in Incognito in <ph name="BEGIN_LINK" />Instellings<ph name="END_LINK" />.</translation>
 <translation id="6774168155917940386">Google vereis van maatskappye om publiek te verklaar dat hulle nie hierdie data sal gebruik om jou oor ander werwe na te spoor nie. Sommige werwe kan jou aktiwiteit gebruik om jou ervaring vir meer as net advertensies te personaliseer. Hulle kan dit ook kombineer met ander inligting oor jou wat hulle reeds het. Maatskappye is daarvoor verantwoordelik om jou in te lig hoe hulle jou data gebruik. Kry meer inligting in ons <ph name="BEGIN_LINK" />privaatheidsbeleid<ph name="END_LINK" />.</translation>
 <translation id="6789193059040353742">Dit hang van baie dinge af of ’n advertensie wat jy sien, gepersonaliseer is, insluitend hierdie instelling, <ph name="BEGIN_LINK1" />advertensie-onderwerpe<ph name="LINK_END1" />, jou <ph name="BEGIN_LINK2" />webkoekie-instellings<ph name="LINK_END2" />, en of die werf waarna jy kyk advertensies personaliseer.</translation>
 <translation id="6904948821498934430">Chromium blokkeer derdepartywebkoekies in Incognito, maar jy het ’n uitsondering vir hierdie werf gemaak.</translation>
+<translation id="6968337645683500044">Slegs beskikbaar wanneer Incognito vanaf ’n aangemelde Chromium-oortjie oopgemaak word</translation>
+<translation id="6984151429741932257">Beperk toegang tot jou IP-adres</translation>
 <translation id="7084100010522077571">Meer oor advertensiemeting</translation>
+<translation id="721207178659484186">Wanneer jou IP-adres beskerm word, kan Google se privaatheidbedieners jou IP-adres sien, maar nie jou blaaibestemming nie</translation>
+<translation id="731039612501012263">Derdepartywebkoekies word geblokkeer. Incognito kan ook bykomende nasporingbeskerming verskaf. Bestuur naspoorbeskerming in Incognito in <ph name="BEGIN_LINK" />Instellings<ph name="END_LINK" />.</translation>
 <translation id="7315780377187123731">Meer oor die opsie “Blokkeer derdepartywebkoekies”</translation>
 <translation id="737025278945207416">Sommige werwe kan jou aktiwiteit gebruik om jou ervaring vir meer as net advertensies te personaliseer. Hulle kan ook advertensie-onderwerpe vir langer as 4 weke stoor en kan dit kombineer met ander inligting wat hulle reeds van jou weet</translation>
 <translation id="7374493521304367420">Werwe kan steeds webkoekies gebruik om blaai-aktiwiteit op hul eie werf te sien</translation>
@@ -108,22 +129,34 @@
 <translation id="7475768947023614021">Hersien jou advertensie-onderwerpinstelling</translation>
 <translation id="7538480403395139206">Meer oor die opsie “Laat derdepartywebkoekies toe”</translation>
 <translation id="7552005635894902732">Chrome blokkeer derdepartywebkoekies in Incognito, maar jy het ’n uitsondering gemaak vir hierdie werf. Incognito kan ook bykomende nasporingbeskerming verskaf.</translation>
+<translation id="7564124309155378881">Slegs beskikbaar wanneer Incognito vanaf ’n aangemelde Chromium-venster oopgemaak word</translation>
 <translation id="7590906321816761911">Nasporingbeskerming is onderbreek</translation>
 <translation id="7686086654630106285">Meer oor webwerfvoorgestelde advertensies</translation>
+<translation id="7747003797915893222">Wanneer jy in Incognito blaai, sal Chrome nie jou blaaigeskiedenis, webkoekies en webwerfdata, en die inligting wat jy in vorms invoer, stoor nie. Incognito verskaf ook kenmerke wat die inligting wat aan ingebedde werwe beskikbaar is, kan beperk.</translation>
 <translation id="7766094116932490292">Nasporingbeskerming is geaktiveer</translation>
+<translation id="7789658094395162849">Beperk toegang tot jou IP-adres. Hierdie instelling is af.</translation>
+<translation id="7947135702324060924">Chromium kan jou IP-adres beskerm teen ingebedde werwe wat dalk meer oor jou probeer uitvind</translation>
+<translation id="795219618398555200">Chromium blokkeer werwe om derdepartywebkoekies in Incognito-modus te gebruik</translation>
+<translation id="8080808348468200193">Chrome blokkeer werwe om derdepartywebkoekies in Incognito-modus te gebruik</translation>
 <translation id="8086115837395871435">Herlaai tans werf</translation>
+<translation id="8096996737013848963">Beskerm jou IP-adres</translation>
+<translation id="816233773179678758">Chrome kan jou IP-adres beskerm teen ingebedde werwe wat dalk meer oor jou probeer uitvind</translation>
 <translation id="8180936577740217261">Chrome blokkeer derdepartywebkoekies in Incognito, maar jy het ’n uitsondering gemaak vir hierdie werf.</translation>
 <translation id="8200078544056087897">Werfkenmerke wat op derdepartywebkoekies staatmaak, behoort na verwagting te werk</translation>
 <translation id="8257935463851606210">Chromium blokkeer derdepartywebkoekies in Incognito, maar ’n uitbreiding het derdepartywebkoekies vir hierdie werf toegelaat.</translation>
 <translation id="8365690958942020052">’n Werf wat jy besoek, kan vir hierdie inligting vra – óf jou advertensie-onderwerpe óf advertensies wat voorgestel word deur werwe wat jy besoek het.</translation>
 <translation id="839994149685752920">Werwe kan derdepartywebkoekies gebruik om inhoud en advertensies te personaliseer</translation>
 <translation id="8428213095426709021">Instellings</translation>
+<translation id="8430082659493731737">Slegs beskikbaar wanneer Incognito vanaf ’n aangemelde Chrome-oortjie oopgemaak word</translation>
+<translation id="8578320000709741352">Webwerwe wat jy besoek, kan inhoud en dienste vanaf ander webwerwe (soos prente, advertensies en teks) inbed wat gebruik kan word om meer oor jou uit te vind. Kry meer inligting oor die bestuur van <ph name="START_LINK" />naspoorbeskerming in Incognito<ph name="END_LINK" /></translation>
 <translation id="859369389161884405">Maak privaatheidsbeleid in nuwe oortjie oop</translation>
 <translation id="8712637175834984815">Het dit</translation>
 <translation id="877699835489047794"><ph name="BEGIN_BOLD" />Hoe kan jy hierdie data bestuur?<ph name="END_BOLD" /> Chrome vee onderwerpe wat ouer as 4 weke is outomaties uit. As jy verder blaai, kan ’n onderwerp weer op die lys verskyn. Jy kan ook onderwerpe blokkeer wat jy nie wil hê Chrome met werwe moet deel nie, en advertensie-onderwerpe enige tyd in Chrome-instellings afskakel.</translation>
+<translation id="8803526663383843427">As dit aan is</translation>
 <translation id="8825639607990802302">Opsies vir privaatheid- en werfdata</translation>
 <translation id="8908886019881851657"><ph name="BEGIN_BOLD" />Hoe gebruik werwe hierdie data?<ph name="END_BOLD" /> Werwe en hul reklamevennote kan jou aktiwiteit gebruik om advertensies op ander werwe te personaliseer. Byvoorbeeld, as jy 'n werf besoek om resepte vir aandete te kry, kan die werf besluit dat jy daarin belangstel om te kook. Later kan ’n ander werf vir jou ’n verwante advertensie wys vir ’n kruideniersdiens wat deur die eerste werf voorgestel is.</translation>
 <translation id="8944485226638699751">Beperk</translation>
+<translation id="8948536553485650118">Incognito-nasporingbeskerming</translation>
 <translation id="8984005569201994395">Google vereis van maatskappye om publiek te verklaar dat hulle nie hierdie data sal gebruik om jou oor ander werwe na te spoor nie. Sommige werwe kan jou aktiwiteit gebruik om jou ervaring vir meer as net advertensies te personaliseer. Hulle kan dit ook kombineer met ander inligting oor jou wat hulle reeds het. Maatskappye is daarvoor verantwoordelik om jou in te lig hoe hulle jou data gebruik. <ph name="BEGIN_LINK" />Kry meer inligting in ons privaatheidsbeleid<ph name="END_LINK" /></translation>
 <translation id="9039924186462989565">Chromium blokkeer werwe om derdepartywebkoekies te gebruik wanneer jy in Incognitomodus is</translation>
 <translation id="9162335340010958530">Werwe kan nie derdepartywebkoekies gebruik om inhoud en advertensies te personaliseer en uit te vind oor handelinge wat jy op ander werwe uitvoer nie, mits jy verwante werwe toelaat om toegang daartoe te verkry</translation>

@@ -169,11 +169,9 @@
 <translation id="5162467219239570114">Chrome कालबाह्य झाले आहे. <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> मध्ये अपडेट उपलब्ध नसल्यास, तुमचे डिव्हाइस यापुढे Chrome च्या नवीन आवृत्तींना सपोर्ट करत नाही याची शक्यता आहे.</translation>
 <translation id="5184329579814168207">Chrome मध्ये उघडा</translation>
 <translation id="5190139289262548459">तुमची संस्था, <ph name="DOMAIN" />, तुम्ही साइन इन केलेले खाते आणि Chrome कसे वापरले जाते हे व्यवस्थापित करते.</translation>
-<translation id="5209238444239954363">Chrome ला अपडेट तपासता आली नाहीत. नंतर पुन्हा प्रयत्न करा.</translation>
 <translation id="5305440589062022504">Chrome मध्ये Password Manager उघडते</translation>
 <translation id="5310957470610282541">तुमचा काही Chrome डेटा अद्याप तुमच्या Google खाते मध्ये सेव्ह करण्यात आलेला नाही.
 साइन आउट करण्यापूर्वी काही मिनिटे प्रतीक्षा करून पहा. तुम्ही आता साइन आउट केल्यास, हा डेटा हटवला जाईल.</translation>
-<translation id="5342685492141499976">तुमचा डेटा <ph name="USER_EMAIL" /> साठी Google Password Manager मध्ये सेव्ह केला जाईल</translation>
 <translation id="5389212809648216794">Google Chrome तुमचा कॅमेरा वापरू शकत नाही कारण दुसरे ॲप्स सध्या तो वापरत आहे.</translation>
 <translation id="5395376160638294582">तुम्ही तुमच्या Google खाते मधील Chrome डेटा कधीही वापरू शकता याची खात्री करा</translation>
 <translation id="5404252374083197467">Chrome ला डीफॉल्ट म्हणून सेट करायचे आहे का?</translation>
@@ -201,7 +199,6 @@
 <translation id="5808435672482059465">तुमचा Chrome इतिहास पहा</translation>
 <translation id="5833027901704861726">तुमचा काही Chrome डेटा अद्याप <ph name="EMAIL" /> मध्ये सेव्ह करण्यात आला नाही.
 खाती स्विच करण्यापूर्वी काही मिनिटे प्रतीक्षा करून पहा. तुम्ही आता खाती स्विच केल्यास, हा डेटा हटवला जाईल.</translation>
-<translation id="5853754888722423892">Google Password Manager मध्ये इंपोर्ट करा</translation>
 <translation id="5998675059699164418">Chrome वापरण्यासाठी तुमच्या संस्थेनुसार तुम्ही साइन इन करणे आवश्यक आहे.</translation>
 <translation id="6021312115739110405">Google ने तुमच्यासाठी तयार केलेले कस्टम फीड. बातम्या, क्रीडा आणि हवामानाच्या समावेशासह.</translation>
 <translation id="6022659036123304283">Chrome ला तुमच्या आवडीनुसार बनवा</translation>

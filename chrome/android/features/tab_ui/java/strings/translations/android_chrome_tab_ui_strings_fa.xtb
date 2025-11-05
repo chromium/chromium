@@ -128,7 +128,6 @@
 <translation id="5556417849629758491">مشاهده اطلاعات فروشگاه، گزینه مربوطه در نزدیکی بالای صفحه قرار دارد</translation>
 <translation id="5627941783489838464">زبانه هیچ به‌روزرسانی‌ای ندارد</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{‏<ph name="TABS_COUNT_ONE" /> پیوند از Chrome}one{‏<ph name="TABS_COUNT_MANY" /> پیوند از Chrome}other{‏<ph name="TABS_COUNT_MANY" /> پیوند از Chrome}}</translation>
-<translation id="5740354908255726955">{TAB_COUNT,plural, =1{انتقال زبانه به چپ}one{انتقال زبانه به چپ}other{انتقال زبانه‌ها به چپ}}</translation>
 <translation id="5746204836956568669">می‌خواهید <ph name="NUMBER_OF_TABS" /> زبانه را گروه‌بندی کنید تا سریع‌تر کار کنید؟</translation>
 <translation id="5773295109010386583">بستن خودکار موارد غیرفعال</translation>
 <translation id="58326064309361797">برای گروه‌بندی برگه‌ها، آن‌ها را بکشید</translation>
@@ -139,7 +138,6 @@
 <translation id="6109251075362363230">همه برگه‌های تکراری اکنون بایگانی نیز خواهند شد، به‌غیراز نسخه‌ای که آخرین بار استفاده شده است.</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{بستن <ph name="TABS_COUNT_ONE" /> مورد انتخاب‌شده}one{بستن <ph name="TABS_COUNT_MANY" /> مورد انتخاب‌شده}other{بستن <ph name="TABS_COUNT_MANY" /> مورد انتخاب‌شده}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{انتقال گروه به پنجره جدید}one{انتقال گروه به پنجره دیگر}other{انتقال گروه به پنجره دیگر}}</translation>
-<translation id="6212374449852603982">{TAB_COUNT,plural, =1{انتقال زبانه به راست}one{انتقال زبانه به راست}other{انتقال زبانه‌ها به راست}}</translation>
 <translation id="6228793724645064692">(رده‌بندی فروشگاه)</translation>
 <translation id="625996437999624951">{TAB_COUNT,plural, =1{برداشتن زبانه از گروه}one{برداشتن زبانه از گروه}other{برداشتن زبانه‌ها از گروه}}</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{افزودن زبانه به گروه جدید}one{افزودن زبانه به گروه جدید}other{افزودن زبانه‌ها به گروه جدید}}</translation>

@@ -169,11 +169,9 @@
 <translation id="5162467219239570114">‏إصدار Chrome قديم. في حال عدم توفُّر تحديث في <ph name="BEGIN_LINK" />متجر التطبيقات<ph name="END_LINK" />، قد يعني هذا أن جهازك لم يعد متوافقًا مع الإصدارات الجديدة من Chrome.</translation>
 <translation id="5184329579814168207">‏الفتح في Chrome</translation>
 <translation id="5190139289262548459">‏يدير نطاق مؤسستك <ph name="DOMAIN" /> الحساب الذي سجَّلت الدخول إليه وطريقة استخدامك لمتصفِّح Chrome.</translation>
-<translation id="5209238444239954363">‏تعذَّر على Chrome البحث عن تحديثات. يُرجى إعادة المحاولة لاحقًا.</translation>
 <translation id="5305440589062022504">‏فتح "مدير كلمات المرور" في Chrome</translation>
 <translation id="5310957470610282541">‏لم يتم حفظ بعض بيانات Chrome في حسابك على Google إلى الآن.
 يُرجى الانتظار بضع دقائق قبل تسجيل الخروج. إذا سجَّلت الخروج الآن، فسيتم حذف هذه البيانات.</translation>
-<translation id="5342685492141499976">‏سيتم حفظ البيانات في "مدير كلمات المرور في Google" ضِمن حساب <ph name="USER_EMAIL" /></translation>
 <translation id="5389212809648216794">‏يتعذر على Google Chrome استخدام الكاميرا نظرًا لأنها قيد الاستخدام من قِبل تطبيق آخر</translation>
 <translation id="5395376160638294582">‏يُرجى التأكُّد من أنّه يمكنك استخدام بيانات Chrome في حسابك على Google في أي وقت.</translation>
 <translation id="5404252374083197467">‏هل تريد ضبط Chrome كمتصفِّح تلقائي؟</translation>
@@ -201,7 +199,6 @@
 <translation id="5808435672482059465">‏عرض سجلّ Chrome</translation>
 <translation id="5833027901704861726">‏لم يتم حفظ بعض بيانات Chrome في <ph name="EMAIL" /> إلى الآن.
 يُرجى الانتظار بضع دقائق قبل تبديل الحسابات. إذا بدّلت الحساب الآن، فسيتم حذف هذه البيانات.</translation>
-<translation id="5853754888722423892">‏الاستيراد إلى "مدير كلمات المرور في Google"</translation>
 <translation id="5998675059699164418">‏تطلُب المؤسسة منك تسجيل الدخول للتمكّن من استخدام Chrome.</translation>
 <translation id="6021312115739110405">‏اطّلِع على خلاصة مخصَّصة لك من Google تشمل محتوى عن الأخبار والرياضة والطقس وغير ذلك.</translation>
 <translation id="6022659036123304283">‏اجعل Chrome متصفِّحك الدائم</translation>

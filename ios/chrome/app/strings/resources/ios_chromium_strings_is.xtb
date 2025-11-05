@@ -25,7 +25,6 @@
 <translation id="1502360822835740515">Gera Chromium að sjálfgefnum vafra</translation>
 <translation id="1503199973012840174">Chromium-útgáfan þín er úrelt. Uppfærðu hana til að gæta að öryggi þínu.</translation>
 <translation id="1515748263297244785">Notaðu Chromium sem sjálfgefinn vafra í iPad</translation>
-<translation id="1530961174488670696">Chromium gat ekki leitað að uppfærslum. Reyndu aftur síðar.</translation>
 <translation id="1531155317299575425">Sýna innskráningartilkynningar í Chromium.</translation>
 <translation id="1553657876656159572">Sérsniðinn straumur fyrir þig. Inniheldur m.a. fréttir, íþróttir og veður.</translation>
 <translation id="1561849081734670621">Til að slökkva á Lockdown Mode í Chromium þarftu að slökkva á því í iPhone-símanum þínum.</translation>
@@ -146,7 +145,6 @@ Gögnin þín eru dulkóðuð með aðgangsorði. Sláðu það inn til að nota
 <translation id="420541179527342563">Til að slökkva á Lockdown Mode í Chromium þarftu að slökkva á því í iPad-tækinu þínu.</translation>
 <translation id="4272892696084633551">Hjálpaðu til við að bæta eiginleika og afköst Chromium</translation>
 <translation id="4302397443352897529">Stillingar Chromium</translation>
-<translation id="4304713468139749426">Aðgangsorðastjórnun</translation>
 <translation id="4408912345039114853">Keyra öryggisathugun Chromium</translation>
 <translation id="4432744876818348753">Skráðu þig inn til að fá sem mest út úr Chromium.</translation>
 <translation id="4445228361214254027">Fyrirtækið þitt slökkti á möguleikanum á að nota og vista Chromium-gögn á Google-reikningnum þínum. Ný bókamerki, aðgangsorð og fleira verður aðeins vistað í þessu tæki.</translation>
@@ -238,6 +236,7 @@ Hafðu í huga:
 <translation id="6154098560469640583">Notaðu Chromium þegar þú ýtir á tengla í skilaboðum, skjölum og öðrum forritum.</translation>
 <translation id="6157162508956739031">Notaðu sjálfvirka útfyllingu aðgangsorða og aðgangslykla í Chromium til að skrá þig inn í forrit og á vefsvæði með fljótlegum hætti</translation>
 <translation id="6170619162539716595">Veittu Chromium heimild til að nota Google-kort til að sýna þér leiðarlýsingu og staðbundnar upplýsingar um heimilisföng sem greinast.</translation>
+<translation id="6247557882553405851">Aðgangsorðastjórnun Google</translation>
 <translation id="6268381023930128611">Skrá út af Chromium?</translation>
 <translation id="6301717043141881464">Veldu Chromium fyrir sjálfvirka útfyllingu til að fá aðgang að vistuðum aðgangsorðum í öðrum forritum á einfaldan hátt</translation>
 <translation id="6324041800010509197">Opna flipayfirlit í Chromium</translation>

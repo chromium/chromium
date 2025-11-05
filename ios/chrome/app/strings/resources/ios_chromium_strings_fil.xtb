@@ -25,7 +25,6 @@
 <translation id="1502360822835740515">Gawing default mong browser ang Chromium</translation>
 <translation id="1503199973012840174">Luma na ang iyong Chromium. I-update ito para manatiling ligtas.</translation>
 <translation id="1515748263297244785">Gamitin ang Chromium para sa iPad bilang default</translation>
-<translation id="1530961174488670696">Hindi matingnan ng Chromium kung may mga update. Subukan ulit sa ibang pagkakataon.</translation>
 <translation id="1531155317299575425">Nagpapakita ng mga prompt na mag-sign in sa Chromium.</translation>
 <translation id="1553657876656159572">Isang custom na feed na ginawa para sa iyo. May balita, sports, at lagay ng panahon.</translation>
 <translation id="1561849081734670621">Para i-disable ang Lockdown Mode sa Chromium, i-off ito sa iyong iPhone.</translation>
@@ -146,7 +145,6 @@ Naka-encrypt ang iyong data gamit ang passphrase mo. Ilagay ito para magamit at 
 <translation id="420541179527342563">Para i-disable ang Lockdown Mode sa Chromium, i-off ito sa iyong iPad.</translation>
 <translation id="4272892696084633551">Tumulong sa pagpapahusay sa mga feature at performance ng Chromium</translation>
 <translation id="4302397443352897529">Mga setting ng Chromium</translation>
-<translation id="4304713468139749426">Password Manager</translation>
 <translation id="4408912345039114853">Magpatakbo ng Pag-check sa Kaligtasan sa Chromium</translation>
 <translation id="4432744876818348753">Mag-sign in para masulit ang Chromium.</translation>
 <translation id="4445228361214254027">In-off ng iyong organisasyon ang kakayahang gumamit at mag-save ng data sa Chromium sa iyong Google Account. Sa device na ito lang mase-save ang mga bagong bookmark, password, at higit pa.</translation>
@@ -238,6 +236,7 @@ Mga bagay na dapat isaalang-alang:
 <translation id="6154098560469640583">Gamitin ang Chromium sa tuwing magta-tap ka ng mga link sa mga mensahe, dokumento, at iba pang app.</translation>
 <translation id="6157162508956739031">Mabilis na mag-sign in sa mga app at site sa pamamagitan ng pag-autofill ng iyong mga password at passkey mula sa Chromium</translation>
 <translation id="6170619162539716595">Payagan ang Chromium na gamitin ang Google Maps para bigyan ka ng mga direksyon at lokal na impormasyon tungkol sa mga na-detect na address.</translation>
+<translation id="6247557882553405851">Google Password Manager</translation>
 <translation id="6268381023930128611">Mag-sign out sa Chromium?</translation>
 <translation id="6301717043141881464">Para madaling makuha ang iyong mga naka-save na password sa iba mo pang app, piliin ang Chromium para sa Autofill</translation>
 <translation id="6324041800010509197">Bisitahin ang Tab Grid sa Chromium</translation>

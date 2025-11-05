@@ -4,9 +4,11 @@
 <translation id="1055273091707420432">Chromium eyðir umfjöllunarefnum auglýsinga sem eru eldri en fjögurra vikna sjálfkrafa.</translation>
 <translation id="1145223915439299117">Chrome lokar á fótspor þriðju aðila í huliðsstillingu, en viðbót heimilaði fótspor þriðju aðila fyrir þetta vefsvæði.</translation>
 <translation id="1184166532603925201">Chrome kemur í veg fyrir að vefsvæði geti notað fótspor þriðja aðila þegar þú ert í huliðsstillingu</translation>
+<translation id="1205053266843535401">Takmarka aðgang að tæki og vafragögnum</translation>
 <translation id="1281098210028343866">Hjálpaðu okkur að bæta Chromium með því að segja okkur hvers vegna þú gerðir hlé á rakningavörnum</translation>
 <translation id="1297285729613779935">Auglýsingatillögur vefsvæða hjálpa til við að vernda vafraferil þinn og auðkenni en gera vefsvæðum á sama tíma kleift að birta þér viðeigandi auglýsingar. Með því að nota virknina þína, t.d. hvernig þú eyðir tímanum þínum á vefsvæðum sem þú skoðar, geta önnur vefsvæði komið með tillögur að tengdum auglýsingum þegar þú heldur áfram að skoða vefinn. Þú getur séð lista yfir þessi vefsvæði og lokað á valin vefsvæði í stillingunum.</translation>
 <translation id="132963621759063786">Chromium eyðir öllum virknigögnum sem þú hefur deilt með vefsvæðum eftir 30 daga. Ef þú heimsækir vefsvæði aftur gæti það birst aftur á listanum. Kynntu þér hvernig þú <ph name="BEGIN_LINK1" />stjórnar persónuvernd auglýsinga í Chromium<ph name="LINK_END1" />.</translation>
+<translation id="1472807065399636739">Vefsvæði sem þú heimsækir gætu fellt inn efni og þjónustur frá öðrum vefsvæðum (t.d. myndir, auglýsingar og texta) sem hægt er að nota til að fræðast um þig. Nánar um umsjón með <ph name="BEGIN_LINK" />rakningarvörnum í huliðsstillingu<ph name="END_LINK" /></translation>
 <translation id="1472928714075596993"><ph name="BEGIN_BOLD" />Hvaða gögn eru notuð?<ph name="END_BOLD" /> Umfjöllunarefni auglýsinga byggjast á nýlegum vafraferli þínum, sem er listi yfir vefsvæði sem þú hefur skoðað í Chrome í þessu tæki.</translation>
 <translation id="1559726735555610004">Google krefst þess að fyrirtæki lýsi því opinberlega yfir að þau muni ekki nota þessi gögn til að rekja virkni þína á vefsvæðum. Sum vefsvæði kunna að nota virkni þína til að sérsníða upplifun þína á fleiru en auglýsingum. Þau kunna einnig að sameina þau öðrum upplýsingum sem þau eru þegar með um þig. Fyrirtæki bera ábyrgð á því að láta þig vita hvernig þau nota gögnin þín. Farðu yfir <ph name="BEGIN_LINK" />persónuverndarstefnuna<ph name="END_LINK" /> okkar til að kynna þér hvernig Google verndar gögnin þín.</translation>
 <translation id="1569440020357229235">Vefsvæði geta ekki notað fótspor þriðja aðila þegar þú ert í huliðsstillingu. Ef vefsvæði sem reiðir sig á þessi fótspor virkar ekki geturðu <ph name="BEGIN_LINK" />prófað að veita því tímabundinn aðgang að fótsporum þriðja aðila<ph name="END_LINK" />.</translation>
@@ -22,12 +24,14 @@
 <translation id="2004697686368036666">Eiginleikar á sumum vefsvæðum virka hugsanlega ekki</translation>
 <translation id="2089807121381188462"><ph name="BEGIN_BOLD" />Hvernig get ég stjórnað þessum gögnum?<ph name="END_BOLD" /> Chrome eyðir vefsvæðum sem eru eldri en 30 daga sjálfkrafa. Vefsvæði sem þú heimsækir aftur gæti birst aftur á listanum. Þú getur einnig lokað á að vefsvæði komi með tillögur að auglýsingum fyrir þig og slökkt á auglýsingatillögum vefsvæða hvenær sem er í stillingum Chrome.</translation>
 <translation id="2090761099683423637">Hlé var gert á vörnum þar til öllum huliðsgluggum hefur verið lokað.</translation>
+<translation id="2194856509914051091">Atriði til að hafa í huga</translation>
 <translation id="2213012319160025454">Stjórna rakningarvörnum huliðsstillingar</translation>
 <translation id="2235344399760031203">Lokað er á fótspor þriðja aðila</translation>
 <translation id="235789365079050412">Persónuverndarstefna Google</translation>
 <translation id="235832722106476745">Chrome eyðir umfjöllunarefnum auglýsinga sem eru eldri en fjögurra vikna sjálfkrafa.</translation>
 <translation id="2496115946829713659">Vefsvæði geta notað fótspor þriðja aðila til að sérsníða efni og auglýsingar og sjá aðgerðir sem þú framkvæmir á öðrum vefsvæðum</translation>
 <translation id="2506926923133667307">Kynntu þér hvernig þú stjórnar persónuvernd auglýsinga</translation>
+<translation id="2578376035831129583">Gildir um innfelld vefsvæði, ekki sjálft vefsvæðið sem þú heimsækir</translation>
 <translation id="259163387153470272">Vefsvæði og auglýsingasamstarfsaðilar þeirra geta notað virknina þína, t.d. hvernig þú eyðir tímanum þínum á vefsvæðum sem þú skoðar, til að sérsníða auglýsingar fyrir þig</translation>
 <translation id="2648072482252767506">Chromium lokar á fótspor þriðju aðila í huliðsstillingu en þú veittir undanþágu á þessu vefsvæði. Huliðsstilling getur einnig veitt auknar rakningarvarnir.</translation>
 <translation id="2669351694216016687">Google krefst þess að fyrirtæki lýsi því opinberlega yfir að þau muni ekki nota þessi gögn til að rekja virkni þína á vefsvæðum. Sum vefsvæði kunna að nota virkni þína til að sérsníða upplifun þína á fleiru en auglýsingum. Þau kunna einnig að sameina þau öðrum upplýsingum sem þau eru þegar með um þig. Fyrirtæki bera ábyrgð á því að láta þig vita hvernig þau nota gögnin þín. <ph name="BEGIN_LINK1" />Þú getur nálgast frekari upplýsingar í persónuverndarstefnunni okkar<ph name="LINK_END1" /></translation>
@@ -43,21 +47,27 @@
 <translation id="3442071090395342573">Chromium eyðir öllum virknigögnum sem þú hefur deilt með vefsvæðum eftir 30 daga. Ef þú heimsækir vefsvæði aftur gæti það birst aftur á listanum. Kynntu þér hvernig þú <ph name="BEGIN_LINK" />stjórnar persónuvernd auglýsinga í Chromium<ph name="END_LINK" />.</translation>
 <translation id="3467081767799433066">Við auglýsingamælingar er tilteknum gerðum gagna deilt á milli vefsvæða til að mæla árangur auglýsinga þeirra, t.d. hvort þú hafir keypt vöru eftir að hafa skoðað vefsvæði.</translation>
 <translation id="3624583033347146597">Veldu stillingar fyrir fótspor þriðja aðila</translation>
+<translation id="364348650177270461">Chromium mun reyna að takmarka aðgang að tæki og vafragögnum, t.d. uppsettum leturgerðum eða tímabelti, frá innfelldum vefsvæðum sem gætu reynt að fræðast um þig</translation>
 <translation id="3645682729607284687">Chromium skráir umfjöllunarefni sem þú virðist hafa áhuga á út frá nýlegum vafraferli þínum, til dæmis „íþróttir“, „klæðnaður“ og fleira.</translation>
+<translation id="3665701035629774409">Chrome lokar á fótspor þriðju aðila í huliðsstillingu en kerfisstjórinn þinn leyfði fótspor þriðju aðila á þessu vefsvæði. Huliðsstilling getur einnig veitt auknar rakningarvarnir. Stjórnaðu rakningarvörnum huliðsstillingar í <ph name="BEGIN_LINK" />stillingunum<ph name="END_LINK" />.</translation>
 <translation id="3696118321107706175">Svona nota vefsvæði gögnin þín</translation>
 <translation id="3749724428455457489">Nánar um auglýsingatillögur vefsvæða</translation>
 <translation id="3763433740586298940">Þú getur sett hvaða vefsvæði sem er á bannlista. Chrome eyðir einnig vefsvæðum sem eru eldri en 30 daga sjálfkrafa af listanum.</translation>
 <translation id="385051799172605136">Til baka</translation>
+<translation id="388873797593534859">Takmarka aðgang að tæki og vafragögnum. Kveikt er á þessari stillingu.</translation>
 <translation id="390681677935721732">Chrome eyðir öllum virknigögnum sem þú hefur deilt með vefsvæðum eftir 30 daga. Ef þú heimsækir vefsvæði aftur gæti það birst aftur á listanum. Kynntu þér hvernig þú <ph name="BEGIN_LINK" />stjórnar persónuvernd auglýsinga í Chrome<ph name="END_LINK" />.</translation>
 <translation id="3918378745482005425">Sumir eiginleikar virka ef til vill ekki. Tengd vefsvæði geta áfram notað fótspor þriðju aðila.</translation>
 <translation id="3918927280411834522">auglýsingatillögur vefsvæða.</translation>
 <translation id="4009365983562022788">Google krefst þess að fyrirtæki lýsi því opinberlega yfir að þau muni ekki nota þessi gögn til að rekja virkni þína á vefsvæðum. Sum vefsvæði kunna að nota virkni þína til að sérsníða upplifun þína á fleiru en auglýsingum. Þau kunna einnig að sameina þau öðrum upplýsingum sem þau eru þegar með um þig. Fyrirtæki bera ábyrgð á því að láta þig vita hvernig þau nota gögnin þín. Þú getur nálgast frekari upplýsingar í <ph name="BEGIN_LINK1" />persónuverndarstefnunni<ph name="LINK_END1" /> okkar.</translation>
 <translation id="4115793614265434327">Chromium lokar á fótspor þriðju aðila í huliðsstillingu, en kerfisstjórinn þinn heimilaði fótspor þriðju aðila fyrir þetta vefsvæði.</translation>
 <translation id="4177501066905053472">Umfjöllunarefni auglýsinga</translation>
+<translation id="4200539465901914137">Chrome mun reyna að takmarka aðgang að tæki og vafragögnum, t.d. uppsettum leturgerðum eða tímabelti, frá innfelldum vefsvæðum sem gætu reynt að fræðast um þig</translation>
 <translation id="4278390842282768270">Leyft</translation>
 <translation id="4301151630239508244">Umfjöllunarefni auglýsinga er aðeins einn þáttur af mörgum sem vefsvæði geta notað til að sérsníða auglýsingar. Vefsvæði geta birt þér auglýsingar jafnvel þótt lokað sé fyrir umfjöllunarefni auglýsinga en þær munu hugsanlega eiga síður við þig. Nánar um <ph name="BEGIN_LINK_1" />umsjón með persónuvernd auglýsinga<ph name="END_LINK_1" />.</translation>
+<translation id="435360899831421654">Takmarka aðgang að tæki og vafragögnum. Slökkt er á þessari stillingu.</translation>
 <translation id="4370439921477851706">Google krefst þess að fyrirtæki lýsi því opinberlega yfir að þau muni ekki nota þessi gögn til að rekja virkni þína á vefsvæðum. Sum vefsvæði kunna að nota virkni þína til að sérsníða upplifun þína á fleiru en auglýsingum. Þau kunna einnig að geyma umfjöllunarefni auglýsinga lengur en í fjórar vikur ásamt því að sameina þau öðrum upplýsingum sem þau hafa nú þegar um þig. Fyrirtæki bera ábyrgð á því að láta þig vita hvernig þau nota gögnin þín. Þú getur nálgast frekari upplýsingar í <ph name="BEGIN_LINK1" />persónuverndarstefnunni<ph name="LINK_END1" /> okkar.</translation>
 <translation id="4412992751769744546">Leyfa fótspor þriðja aðila</translation>
+<translation id="4448728649751001728">Aðeins í boði þegar huliðsstilling er opnuð af Chrome-glugga með innskráningu</translation>
 <translation id="4456330419644848501">Það veltur á ýmsu hvort auglýsing sem þú sérð sé sérsniðin eða ekki, þ.m.t. þessari stillingu, <ph name="BEGIN_LINK_1" />auglýsingatillögum vefsvæðis<ph name="END_LINK_1" />, <ph name="BEGIN_LINK_2" />fótsporastillingunum þínum<ph name="END_LINK_2" /> og hvort vefsvæðið sem þú ert að skoða sérsníði auglýsingar.</translation>
 <translation id="4501357987281382712">Farðu yfir <ph name="BEGIN_LINK" />persónuverndarstefnuna<ph name="END_LINK" /> okkar til að kynna þér hvernig Google verndar gögnin þín.</translation>
 <translation id="4502954140581098658">Það veltur á ýmsu hvort auglýsing sem þú sérð sé sérsniðin eða ekki, þ.m.t. þessari stillingu, <ph name="BEGIN_LINK_1" />umfjöllunarefnum auglýsinga<ph name="END_LINK_1" />, <ph name="BEGIN_LINK_2" />fótsporastillingunum þínum<ph name="END_LINK_2" /> og hvort vefsvæðið sem þú ert að skoða sérsníði auglýsingar.</translation>
@@ -66,13 +76,17 @@
 <translation id="4687718960473379118">Auglýsingatillögur vefsvæða</translation>
 <translation id="4692439979815346597">Þú getur séð umfjöllunarefni auglýsinga í stillingum Chrome og lokað á þau sem þú vilt ekki deila með vefsvæðum</translation>
 <translation id="4711259472133554310">Þú getur tilgreint undantekningar í stillingunum til að leyfa tilteknum vefsvæðum ávallt að nota fótspor þriðja aðila</translation>
+<translation id="4773759246613295463">Þegar þú vafrar í huliðsstillingu mun Chromium hvorki vista vafraferilinn þinn, fótspor og vefsvæðagögn né upplýsingar sem þú slærð inn í eyðublöð. Huliðsstillingin býður einnig upp á eiginleika sem geta takmarkað hvaða upplýsingar eru aðgengilegar innfelldum vefsvæðum.</translation>
 <translation id="4835013575597383365">Rakningarvarnir</translation>
+<translation id="4864452159627050077">Stýring á því hvaða upplýsingar vefsvæði geta notað til að fræðast um þig í huliðsstillingu</translation>
 <translation id="4894490899128180322">Ef vefsvæði virkar ekki sem skyldi geturðu prófað að veita því tiltekna vefsvæði tímabundinn aðgang að fótsporum þriðja aðila</translation>
 <translation id="4995684599009077956">Google krefst þess að fyrirtæki lýsi því opinberlega yfir að þau muni ekki nota þessi gögn til að rekja virkni þína á vefsvæðum. Sum vefsvæði kunna að nota virkni þína til að sérsníða upplifun þína á fleiru en auglýsingum. Þau kunna einnig að geyma umfjöllunarefni auglýsinga lengur en í fjórar vikur ásamt því að sameina þau öðrum upplýsingum sem þau hafa nú þegar um þig. Fyrirtæki bera ábyrgð á því að láta þig vita hvernig þau nota gögnin þín. <ph name="BEGIN_LINK" />Þú getur nálgast frekari upplýsingar í persónuverndarstefnunni okkar<ph name="END_LINK" />.</translation>
 <translation id="5023078137728844766">Chromium lokar á fótspor þriðju aðila í huliðsstillingu, en kerfisstjórinn þinn heimilaði fótspor þriðju aðila fyrir þetta vefsvæði. Huliðsstilling getur einnig veitt auknar rakningarvarnir.</translation>
 <translation id="5055880590417889642">Virknin þín er ein af mörgum þáttum sem vefsvæði getur notað til að leggja til auglýsingar. Ef slökkt er á auglýsingatillögum vefsvæða geta vefsvæði samt sem áður birt þér auglýsingar en þær kunna að eiga síður við þig. Nánar um</translation>
+<translation id="5110547311636263835">Chrome lokar á fótspor þriðju aðila í huliðsstillingu en þú veittir undanþágu á þessu vefsvæði. Huliðsstilling getur einnig veitt auknar rakningarvarnir. Stjórnaðu rakningarvörnum huliðsstillingar í <ph name="BEGIN_LINK" />stillingunum<ph name="END_LINK" />.</translation>
 <translation id="5117284457376555514">Vefsvæði geta ekki notað fótspor þriðja aðila til að sérsníða efni og auglýsingar og sjá hvaða aðgerðir þú framkvæmir á öðrum vefsvæðum, nema þú veitir tengdum vefsvæðum aðgang að þeim. Sumir eiginleikar vefsvæða virka hugsanlega ekki sem skyldi.</translation>
 <translation id="5165490319523240316">Vefsvæði og auglýsingasamstarfsaðilar þeirra geta notað virknina þína, t.d. hvernig þú eyðir tímanum þínum á vefsvæðum sem þú skoðar, til að sérsníða auglýsingar á öðrum vefsvæðum. Ef þú heimsækir til dæmis vefsvæði til að finna uppskriftir að kvöldmat, gæti vefsvæðið áætlað að þú hafir áhuga á eldamennsku. Annað vefsvæði gæti þá birt þér tengda auglýsingu á heimsendingarþjónustu á matvörum byggt á tillögu fyrra vefsvæðisins.</translation>
+<translation id="5188610687455399162">Chromium lokar á fótspor þriðju aðila í huliðsstillingu en þú veittir undanþágu á þessu vefsvæði. Huliðsstilling getur einnig veitt auknar rakningarvarnir. Stjórnaðu rakningarvörnum huliðsstillingar í <ph name="BEGIN_LINK" />stillingunum<ph name="END_LINK" />.</translation>
 <translation id="5362892126200493757">Segðu okkur hvers vegna þú gerðir hlé á rakningavörnum á þessu vefsvæði</translation>
 <translation id="544199055391706031">Virknin þín er ein af mörgum þáttum sem vefsvæði getur notað til að leggja til auglýsingar. Ef slökkt er á auglýsingatillögum vefsvæða geta vefsvæði samt sem áður birt þér auglýsingar en þær kunna að eiga síður við þig. Nánar um <ph name="BEGIN_LINK" />auglýsingatillögur vefsvæða<ph name="END_LINK" />.</translation>
 <translation id="5574580428711706114">Google krefst þess að fyrirtæki lýsi því opinberlega yfir að þau muni ekki nota þessi gögn til að rekja virkni þína á vefsvæðum. Fyrirtæki bera ábyrgð á því að láta þig vita hvernig þau nota gögnin þín. <ph name="BEGIN_LINK1" />Þú getur nálgast frekari upplýsingar í persónuverndarstefnunni okkar<ph name="LINK_END1" />.</translation>
@@ -86,17 +100,24 @@
 <translation id="6053735090575989697">Farðu yfir persónuverndarstefnuna okkar til að kynna þér hvernig Google verndar gögnin þín.</translation>
 <translation id="6195163219142236913">Fótspor þriðja aðila takmörkuð</translation>
 <translation id="6196640612572343990">Loka á fótspor þriðja aðila</translation>
+<translation id="6205593033237791753">Takmarka aðgang að IP-tölunni þinni. Kveikt er á þessari stillingu.</translation>
 <translation id="6282129116202535093">Auglýsingatillögur vefsvæða hjálpa til við að vernda vafraferil þinn og auðkenni en gera vefsvæðum á sama tíma kleift að birta þér viðeigandi auglýsingar. Með því að nota virknina þína geta önnur vefsvæði komið með tillögur að tengdum auglýsingum þegar þú heldur áfram að skoða vefinn. Þú getur séð lista yfir þessi vefsvæði og lokað á valin vefsvæði í stillingunum.</translation>
 <translation id="6291177244430967858">Rakningarvarnir settar aftur á</translation>
 <translation id="6308169245546905162">Vefsvæði geta notað fótspor þriðja aðila til að sjá hvaða aðgerðir þú framkvæmir á öðrum vefsvæðum</translation>
+<translation id="6388287739339671750">Loka á rakningarskriftur</translation>
 <translation id="6398358690696005758">Farðu yfir <ph name="BEGIN_LINK1" />persónuverndarstefnuna<ph name="LINK_END1" /> okkar til að kynna þér hvernig Google verndar gögnin þín.</translation>
 <translation id="6494210367693221285">Núverandi Chromium-stillingar þínar hafa verið uppfærðar til að veita vefsvæðum aðgang að fótsporum þriðju aðila. Þú getur breytt þessari stillingu hvenær sem er.</translation>
 <translation id="6702015235374976491">Umfjöllunarefni auglýsinga gera vefsvæðum kleift að birta þér viðeigandi auglýsingar á sama tíma og þau vernda vafraferil þinn og auðkenni. Chrome getur skráð umfjöllunarefni sem þú virðist hafa áhuga á byggt á nýlegum vafraferli þínum. Vefsvæði sem þú skoðar seinna getur þá beðið Chrome um viðeigandi umfjöllunarefni til að sérsníða auglýsingarnar sem þú sérð.</translation>
 <translation id="6710025070089118043">Vefsvæði geta ekki notað fótspor þriðja aðila til að sérsníða efni og auglýsingar og sjá hvaða aðgerðir þú framkvæmir á öðrum vefsvæðum, nema þú veitir tengdum vefsvæðum aðgang að þeim</translation>
+<translation id="6737378617247709185">Chromium lokar á fótspor þriðju aðila í huliðsstillingu, en kerfisstjórinn þinn heimilaði fótspor þriðju aðila fyrir þetta vefsvæði. Huliðsstilling getur einnig veitt auknar rakningarvarnir. Stjórnaðu rakningarvörnum huliðsstillingar í <ph name="BEGIN_LINK" />stillingunum<ph name="END_LINK" />.</translation>
 <translation id="6774168155917940386">Google krefst þess að fyrirtæki lýsi því opinberlega yfir að þau muni ekki nota þessi gögn til að rekja virkni þína á vefsvæðum. Sum vefsvæði kunna að nota virkni þína til að sérsníða upplifun þína á fleiru en auglýsingum. Þau kunna einnig að sameina þau öðrum upplýsingum sem þau eru þegar með um þig. Fyrirtæki bera ábyrgð á því að láta þig vita hvernig þau nota gögnin þín. Þú getur nálgast frekari upplýsingar í <ph name="BEGIN_LINK" />persónuverndarstefnunni<ph name="END_LINK" /> okkar.</translation>
 <translation id="6789193059040353742">Það veltur á ýmsu hvort auglýsing sem þú sérð sé sérsniðin eða ekki, þ.m.t. þessari stillingu, <ph name="BEGIN_LINK1" />umfjöllunarefnum auglýsinga<ph name="LINK_END1" />, <ph name="BEGIN_LINK2" />fótsporastillingunum þínum<ph name="LINK_END2" /> og hvort vefsvæðið sem þú ert að skoða sérsníði auglýsingar.</translation>
 <translation id="6904948821498934430">Chromium lokar á fótspor þriðju aðila í huliðsstillingu en þú veittir undanþágu á þessu vefsvæði.</translation>
+<translation id="6968337645683500044">Aðeins í boði þegar huliðsstilling er opnuð af Chromium-flipa með innskráningu</translation>
+<translation id="6984151429741932257">Takmarka aðgang að IP-tölunni þinni</translation>
 <translation id="7084100010522077571">Nánar um auglýsingamælingar</translation>
+<translation id="721207178659484186">Þegar þú ert með vörn á IP-tölunni þinni geta persónuverndarþjónar Google séð IP-töluna þína en ekki hvar þú vafrar</translation>
+<translation id="731039612501012263">Lokað er á fótspor þriðju aðila Huliðsstilling getur einnig veitt auknar rakningarvarnir. Stjórnaðu rakningarvörnum huliðsstillingar í <ph name="BEGIN_LINK" />stillingunum<ph name="END_LINK" />.</translation>
 <translation id="7315780377187123731">Nánar um valkostinn „Loka á fótspor þriðja aðila“</translation>
 <translation id="737025278945207416">Sum vefsvæði kunna að nota virkni þína til að sérsníða upplifun þína á fleiru en auglýsingum. Þau kunna einnig að geyma umfjöllunarefni auglýsinga lengur en í fjórar vikur ásamt því að sameina þau öðrum upplýsingum sem þau hafa nú þegar um þig</translation>
 <translation id="7374493521304367420">Vefsvæði geta samt sem áður notað fótpor til að fylgjast með vafranotkun þinni á þeim</translation>
@@ -108,22 +129,34 @@
 <translation id="7475768947023614021">Farðu yfir umfjöllunarefni auglýsinga</translation>
 <translation id="7538480403395139206">Nánar um valkostinn „Leyfa fótspor þriðja aðila“</translation>
 <translation id="7552005635894902732">Chrome lokar á fótspor þriðju aðila í huliðsstillingu en þú veittir undanþágu á þessu vefsvæði. Huliðsstilling getur einnig veitt auknar rakningarvarnir.</translation>
+<translation id="7564124309155378881">Aðeins í boði þegar huliðsstilling er opnuð af Chromium-glugga með innskráningu</translation>
 <translation id="7590906321816761911">Hlé gert á rakningarvörnum</translation>
 <translation id="7686086654630106285">Nánar um auglýsingatillögur vefsvæða</translation>
+<translation id="7747003797915893222">Þegar þú vafrar í huliðsstillingu mun Chrome hvorki vista vafraferilinn þinn, fótspor og vefsvæðagögn né upplýsingar sem þú slærð inn í eyðublöð. Huliðsstillingin býður einnig upp á eiginleika sem geta takmarkað hvaða upplýsingar eru aðgengilegar innfelldum vefsvæðum.</translation>
 <translation id="7766094116932490292">Kveikt á rakningavörnum</translation>
+<translation id="7789658094395162849">Takmarka aðgang að IP-tölunni þinni. Slökkt er á þessari stillingu.</translation>
+<translation id="7947135702324060924">Chromium getur varið IP-töluna þína frá innfelldum vefsvæðum sem gætu reynt að fræðast um þig</translation>
+<translation id="795219618398555200">Chromium kemur í veg fyrir að vefsvæði geti notað fótspor þriðja aðila í huliðsstillingu</translation>
+<translation id="8080808348468200193">Chrome kemur í veg fyrir að vefsvæði geti notað fótspor þriðja aðila í huliðsstillingu</translation>
 <translation id="8086115837395871435">Endurhleður vefsvæði</translation>
+<translation id="8096996737013848963">Verja IP-töluna þína</translation>
+<translation id="816233773179678758">Chrome getur verndað IP-töluna þína frá innfelldum vefsvæðum sem gætu reynt að fræðast um þig</translation>
 <translation id="8180936577740217261">Chrome lokar á fótspor þriðju aðila í huliðsstillingu en þú veittir undanþágu á þessu vefsvæði.</translation>
 <translation id="8200078544056087897">Eiginleikar vefsvæða sem reiða sig á fótspor þriðja aðila ættu að virka sem skyldi</translation>
 <translation id="8257935463851606210">Chromium lokar á fótspor þriðju aðila í huliðsstillingu en viðbót leyfði fótspor þriðju aðila á þessu vefsvæði.</translation>
 <translation id="8365690958942020052">Vefsvæði sem þú skoðar getur beðið um þessar upplýsingar, annaðhvort umfjöllunarefni auglýsinga eða auglýsingatillögur vefsvæða sem þú hefur skoðað.</translation>
 <translation id="839994149685752920">Vefsvæði geta notað fótspor þriðja aðila til að sérsníða efni og auglýsingar</translation>
 <translation id="8428213095426709021">Stillingar</translation>
+<translation id="8430082659493731737">Aðeins í boði þegar huliðsstilling er opnuð af Chrome-flipa með innskráningu</translation>
+<translation id="8578320000709741352">Vefsvæði sem þú heimsækir gætu fellt inn efni og þjónustur frá öðrum vefsvæðum (t.d. myndir, auglýsingar og texta) sem hægt er að nota til að fræðast um þig. Nánar um umsjón með <ph name="START_LINK" />rakningarvörnum í huliðsstillingu<ph name="END_LINK" /></translation>
 <translation id="859369389161884405">Opnar persónuverndarstefnu í nýjum flipa</translation>
 <translation id="8712637175834984815">Ég skil</translation>
 <translation id="877699835489047794"><ph name="BEGIN_BOLD" />Hvernig get ég stjórnað þessum gögnum?<ph name="END_BOLD" /> Chrome eyðir umfjöllunarefnum sem eru eldri en fjögurra vikna sjálfkrafa. Þegar þú heldur áfram að skoða vefinn gæti umfjöllunarefni birst aftur á listanum. Þú getur einnig sett umfjöllunarefni á bannlista sem þú vilt ekki að Chrome deili með vefsvæðum og slökkt á umfjöllunarefnum auglýsinga hvenær sem er í stillingum Chrome.</translation>
+<translation id="8803526663383843427">Þegar kveikt er á eiginleikanum</translation>
 <translation id="8825639607990802302">Valkostir vegna persónuverndar og vefsvæðagagna</translation>
 <translation id="8908886019881851657"><ph name="BEGIN_BOLD" />Hvernig nota vefsvæði þessi gögn?<ph name="END_BOLD" /> Vefsvæði og auglýsingasamstarfsaðilar þeirra geta notað virknina þína til að sérsníða auglýsingar á öðrum vefsvæðum. Ef þú heimsækir til dæmis vefsvæði til að finna uppskriftir að kvöldmat, gæti vefsvæðið áætlað að þú hafir áhuga á eldamennsku. Annað vefsvæði gæti þá birt þér tengda auglýsingu á heimsendingarþjónustu á matvörum byggt á tillögu fyrra vefsvæðisins.</translation>
 <translation id="8944485226638699751">Takmörkuð</translation>
+<translation id="8948536553485650118">Rakningavarnir í huliðsstillingu</translation>
 <translation id="8984005569201994395">Google krefst þess að fyrirtæki lýsi því opinberlega yfir að þau muni ekki nota þessi gögn til að rekja virkni þína á vefsvæðum. Sum vefsvæði kunna að nota virkni þína til að sérsníða upplifun þína á fleiru en auglýsingum. Þau kunna einnig að sameina þau öðrum upplýsingum sem þau eru þegar með um þig. Fyrirtæki bera ábyrgð á því að láta þig vita hvernig þau nota gögnin þín. <ph name="BEGIN_LINK" />Þú getur nálgast frekari upplýsingar í persónuverndarstefnunni okkar<ph name="END_LINK" /></translation>
 <translation id="9039924186462989565">Chromium kemur í veg fyrir að vefsvæði geti notað fótspor þriðja aðila þegar þú ert í huliðsstillingu</translation>
 <translation id="9162335340010958530">Vefsvæði geta ekki notað fótspor þriðja aðila til að sérsníða efni og auglýsingar og sjá hvaða aðgerðir þú framkvæmir á öðrum vefsvæðum, nema þú veitir tengdum vefsvæðum aðgang að þeim</translation>
