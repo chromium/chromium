@@ -1,5 +1,6 @@
 import("//build/rust/rust_macro.gni")
 import("//build/rust/rust_static_library.gni")
+import("//mojo/public/tools/bindings/mojom.gni")
 
 # Public version of the mojom parser. Code outside this directory should
 # depend on this target.
@@ -47,15 +48,25 @@ rust_macro("parsing_attribute") {
   visibility = [ ":*" ]
 }
 
+mojom("parser_unittests") {
+  testonly = true
+  sources = [ "test_util/parser_unittests.test-mojom" ]
+  generate_rust = true
+  visibility = [ ":*" ]
+}
+
 rust_static_library("mojom_parser_unittests") {
   testonly = true
   is_gtest_unittests = true
-  crate_root = "test.rs"
-  sources = [ "test.rs" ]
+  crate_root = "test/lib.rs"
+  sources = [
+    "test/lib.rs",
+    "test/test_mojomparse.rs",
+    "test/test_parser.rs",
+  ]
   deps = [
     ":mojom_parser_core",
-    ":parsing_attribute",
+    ":parser_unittests_rust",
     "//testing/rust_gtest_interop",
-    "//third_party/rust/anyhow/v1:lib",
   ]
 }

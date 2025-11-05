@@ -2,7 +2,7 @@
 
 {%set pub = "pub " if is_pub else ""%}
 
-#[derive(Debug, MojomParse)]
+#[derive(Debug, PartialEq, Clone, MojomParse)]
 {{pub}}struct {{name}} {
 {%- for field in struct.fields %}
   {{pub}}{{field.name}}: {{field.kind|to_rust_type}},

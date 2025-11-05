@@ -1,0 +1,86 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// This file defines several datatypes used for testing our parser/deparser
+// implementation. For each, we will validate that it corresponds to the
+// expected MojomType and packs to the right MojomWireType, and that values of
+// that type can be correctly converted to/from MojomValues.
+// The corresponding tests can be found in //mojo/public/rust/mojom_parser/test
+
+module parser_unittests.mojom;
+
+struct Empty {};
+
+// Packing: a [pad 8] b c d
+struct FourInts {
+    int8 a;
+    int16 b;
+    int32 c;
+    int64 d;
+};
+
+// Packing: d c b a [pad 8]
+struct FourIntsReversed {
+    int64 d;
+    int32 c;
+    int16 b;
+    int8 a;
+};
+
+// Packing: a d c b
+struct FourIntsIntermixed {
+    int8 a;
+    int32 b;
+    int16 c;
+    int8 d;
+};
+
+// Packing: f1 a b [pad 8] c f2 f3
+struct OnceNested {
+    FourInts f1;
+    uint32 a;
+    int8 b;
+    FourIntsReversed f2;
+    FourIntsIntermixed f3;
+    uint16 c;
+};
+
+// Packing: o a [pad 48] f
+struct TwiceNested {
+  OnceNested o;
+  int16 a;
+  FourInts f;
+};
+
+// Test that bools get packed into bytes as expected
+// Packing: [b0..b7] n1 [b8,b9,0..]
+struct TenBoolsAndAByte {
+  bool b0;
+  bool b1;
+  bool b2;
+  bool b3;
+  bool b4;
+  uint8 n1;
+  bool b5;
+  bool b6;
+  bool b7;
+  bool b8;
+  bool b9;
+};
+
+// Packing: [b0..b7] [b8,b9,0..] n1
+struct TenBoolsAndTwoBytes {
+  bool b0;
+  bool b1;
+  bool b2;
+  bool b3;
+  bool b4;
+  uint16 n1;
+  bool b5;
+  bool b6;
+  bool b7;
+  bool b8;
+  bool b9;
+  bool b10;
+};
