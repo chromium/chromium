@@ -34,6 +34,7 @@ class GraphicsContext;
 class ImageResourceObserver;
 class LayoutBox;
 class Node;
+struct BorderShapeReferenceRects;
 struct PaintInfo;
 struct PhysicalRect;
 
@@ -75,6 +76,7 @@ class BoxPainterBase {
       const PaintInfo&,
       const PhysicalRect&,
       const ComputedStyle&,
+      std::optional<BorderShapeReferenceRects> border_shape_rects,
       PhysicalBoxSides sides_to_include = PhysicalBoxSides(),
       bool background_is_skipped = true);
 

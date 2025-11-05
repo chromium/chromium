@@ -85,7 +85,11 @@ void FieldsetPainter::PaintBoxDecorationBackground(
 
   BoxFragmentPainter fragment_painter(fieldset_);
   if (box_decoration_data.ShouldPaintShadow()) {
-    fragment_painter.PaintNormalBoxShadow(paint_info, contracted_rect, style);
+    std::optional<BorderShapeReferenceRects> border_shape_rects =
+        ComputeBorderShapeReferenceRects(contracted_rect, fieldset_.Style(),
+                                         *fieldset_.GetLayoutObject());
+    fragment_painter.PaintNormalBoxShadow(paint_info, contracted_rect, style,
+                                          border_shape_rects);
   }
 
   GraphicsContext& graphics_context = paint_info.context;

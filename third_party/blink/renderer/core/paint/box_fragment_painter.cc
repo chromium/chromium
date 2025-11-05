@@ -1436,7 +1436,9 @@ void BoxFragmentPainter::PaintBoxDecorationBackgroundWithRectImpl(
   GraphicsContextStateSaver state_saver(paint_info.context, false);
 
   if (box_decoration_data.ShouldPaintShadow()) {
-    PaintNormalBoxShadow(paint_info, paint_rect, style,
+    std::optional<BorderShapeReferenceRects> border_shape_rects =
+        ComputeBorderShapeReferenceRects(paint_rect, style, layout_object);
+    PaintNormalBoxShadow(paint_info, paint_rect, style, border_shape_rects,
                          box_fragment_.SidesToInclude(),
                          !box_decoration_data.ShouldPaintBackground());
   }
