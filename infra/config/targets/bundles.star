@@ -483,6 +483,7 @@ targets.bundle(
         "chrome_public_test_apk_desktop",
         "chrome_public_unit_test_apk",
         "extensions_unittests",
+        "media_unittests",
         "unit_tests",
         "video_encode_accelerator_tests",
     ],

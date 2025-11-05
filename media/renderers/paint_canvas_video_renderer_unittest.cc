@@ -49,6 +49,7 @@
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gl/gl_implementation.h"
+#include "ui/gl/gl_switches.h"
 #include "ui/gl/test/gl_surface_test_support.h"
 
 using media::VideoFrame;
@@ -1133,6 +1134,15 @@ class PaintCanvasVideoRendererWithGLTest : public testing::Test {
   using GetColorCallback = base::RepeatingCallback<SkColor(int, int)>;
 
   void SetUp() override {
+    if (base::FeatureList::IsEnabled(features::kVulkanFromANGLE)) {
+      // TODO (crbug.com/440128352):
+      // If kVulkanFromANGLE = true (e.g. Desktop Android)
+      // this test fails like this
+      // "Failed to create and initialize Vulkan implementation."
+      GTEST_SKIP() << "Temporarily skipped for Android Desktop devices. See: "
+                      "crbug.com/440128352";
+    }
+
     display_ = gl::GLSurfaceTestSupport::InitializeOneOff();
     enable_pixels_.emplace();
     media_context_ = base::MakeRefCounted<viz::TestInProcessContextProvider>(

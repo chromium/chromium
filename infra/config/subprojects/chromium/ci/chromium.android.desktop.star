@@ -320,6 +320,11 @@ ci.thin_tester(
                     "--test-launcher-filter-file=../../testing/buildbot/filters/android.desktop.emulator_15.unit_tests.filter",
                 ],
             ),
+            "media_unittests": targets.mixin(
+                # TODO(crbug.com/440128352): Promote out of experiment.
+                ci_only = True,
+                experiment_percentage = 100,
+            ),
         },
     ),
     targets_settings = targets.settings(

@@ -293,6 +293,59 @@
         "args": [
           "--force-desktop-android",
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_tablet_x64_tablet_landscape.textpb",
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices"
+        ],
+        "ci_only": true,
+        "description": "Run with android_35_google_apis_tablet_x64",
+        "experiment_percentage": 100,
+        "isolate_profile_data": true,
+        "merge": {
+          "args": [
+            "--bucket",
+            "chromium-result-details",
+            "--test-name",
+            "media_unittests"
+          ],
+          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
+        },
+        "module_name": "//media:media_unittests",
+        "module_scheme": "gtest",
+        "name": "media_unittests",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "retry_only_failed_tests": true,
+        "swarming": {
+          "dimensions": {
+            "cores": "8",
+            "cpu": "x86-64",
+            "device_os": null,
+            "device_type": null,
+            "os": "Ubuntu-22.04",
+            "pool": "chromium.tests.avd"
+          },
+          "named_caches": [
+            {
+              "name": "android_35_google_apis_tablet_x64_tablet_landscape",
+              "path": ".android_emulator/android_35_google_apis_tablet_x64_tablet_landscape"
+            }
+          ],
+          "optional_dimensions": {
+            "60": {
+              "caches": "android_35_google_apis_tablet_x64_tablet_landscape"
+            }
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "media_unittests",
+        "test_id_prefix": "ninja://media:media_unittests/"
+      },
+      {
+        "args": [
+          "--force-desktop-android",
+          "--avd-config=../../tools/android/avd/proto/android_35_google_apis_tablet_x64_tablet_landscape.textpb",
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.desktop.emulator_15.unit_tests.filter",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
