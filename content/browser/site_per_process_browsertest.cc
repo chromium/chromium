@@ -8917,8 +8917,12 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 
   ASSERT_TRUE(nav_manager.WaitForNavigationFinished());
   // The navigation should be committed if and only if it committed in a new
-  // RFH (i.e. if the navigation used a speculative RFH).
-  EXPECT_EQ(using_speculative_rfh, nav_manager.was_committed());
+  // RFH (i.e. if the navigation used a speculative RFH) and
+  // kSkipRendererCancellationThrottle is off.
+  EXPECT_EQ(
+      using_speculative_rfh && !base::FeatureList::IsEnabled(
+                                   features::kSkipRendererCancellationThrottle),
+      nav_manager.was_committed());
 }
 
 namespace {

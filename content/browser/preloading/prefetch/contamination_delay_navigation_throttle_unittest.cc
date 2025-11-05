@@ -75,7 +75,6 @@ TEST_F(ContaminationDelayNavigationThrottleTest, DefersSinceSendStart) {
   EXPECT_TRUE(navigation->IsDeferred());
   task_environment()->FastForwardBy(base::Milliseconds(1));
   EXPECT_FALSE(navigation->IsDeferred());
-  navigation->Commit();
 }
 
 TEST_F(ContaminationDelayNavigationThrottleTest, IgnoresUncontaminated) {

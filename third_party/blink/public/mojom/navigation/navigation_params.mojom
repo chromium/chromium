@@ -689,6 +689,14 @@ struct CommitNavigationParams {
   // A token used for associated various events/IPCs together to a particular
   // navigation, for the purposes of tracing and metrics collection.
   mojo_base.mojom.UnguessableToken navigation_metrics_token;
+
+  // Only set when reusing a request NavigationClient to commit a navigation
+  // that does a local RenderFrame swap. The reused NavigationClient is owned
+  // by the old RenderFrame, and this token points to the new RenderFrame,
+  // where the NavigationClient ownership will be transferred to, and where
+  // the navigation commit will actually occur. For more details, see
+  // `NavigationRequest::ReuseRequestNavigationClientForCommitIfNeeded()`.
+  blink.mojom.LocalFrameToken? commit_target_frame_token;
 };
 
 // Parameters used to dispatch the `pageswap` event on the old Document for

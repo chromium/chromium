@@ -2017,6 +2017,8 @@ class CONTENT_EXPORT NavigationRequest
   void OnNavigationClientDisconnected(uint32_t reason,
                                       const std::string& description);
 
+  void ReuseRequestNavigationClientForCommitIfNeeded();
+
   // Binds the given error_handler to be called when an interface disconnection
   // happens on the renderer side.
   void HandleInterfaceDisconnection(

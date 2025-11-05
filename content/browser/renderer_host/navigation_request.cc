@@ -1451,7 +1451,8 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateRendererInitiated(
           frame_tree_node->current_frame_host()->GetCachedPermissionStatuses(),
           /*should_skip_screenshot=*/false,
           /*force_new_document_sequence_number=*/false,
-          /*navigation_metrics_token=*/base::UnguessableToken::Create());
+          /*navigation_metrics_token=*/base::UnguessableToken::Create(),
+          /*commit_target_frame_token=*/std::nullopt);
 
   commit_params->navigation_timing->system_entropy_at_navigation_start =
       SystemEntropyUtils::ComputeSystemEntropyForFrameTreeNode(
@@ -1607,7 +1608,8 @@ NavigationRequest::CreateForSynchronousRendererCommit(
           render_frame_host->GetCachedPermissionStatuses(),
           /*should_skip_screenshot=*/false,
           /*force_new_document_sequence_number=*/false,
-          /*navigation_metrics_token=*/base::UnguessableToken::Create());
+          /*navigation_metrics_token=*/base::UnguessableToken::Create(),
+          /*commit_target_frame_token=*/std::nullopt);
   blink::mojom::BeginNavigationParamsPtr begin_params =
       blink::mojom::BeginNavigationParams::New();
   std::unique_ptr<NavigationRequest> navigation_request(new NavigationRequest(
@@ -6310,18 +6312,7 @@ void NavigationRequest::CommitErrorPage(
   // Don't pass the base url in a failed navigation.
   common_params_->initiator_base_url = std::nullopt;
 
-  if (request_navigation_client_.is_bound()) {
-    if (GetRenderFrameHost() ==
-        RenderFrameHostImpl::FromID(
-            current_render_frame_host_id_at_construction_)) {
-      // Reuse the request NavigationClient for commit.
-      commit_navigation_client_ = std::move(request_navigation_client_);
-    } else {
-      // This navigation is cross-RenderFrameHost: the original document should
-      // no longer be able to cancel it.
-      IgnoreInterfaceDisconnection();
-    }
-  }
+  ReuseRequestNavigationClientForCommitIfNeeded();
 
   topics_eligible_ = false;
 
@@ -6556,18 +6547,7 @@ void NavigationRequest::CommitNavigation() {
          GetRenderFrameHost() ==
              frame_tree_node_->render_manager()->speculative_frame_host());
 
-  if (request_navigation_client_.is_bound()) {
-    if (GetRenderFrameHost() ==
-        RenderFrameHostImpl::FromID(
-            current_render_frame_host_id_at_construction_)) {
-      // Reuse the request NavigationClient for commit.
-      commit_navigation_client_ = std::move(request_navigation_client_);
-    } else {
-      // This navigation is cross-RenderFrameHost: the original document should
-      // no longer be able to cancel it.
-      IgnoreInterfaceDisconnection();
-    }
-  }
+  ReuseRequestNavigationClientForCommitIfNeeded();
 
   CreateCoepReporter(GetRenderFrameHost()->GetProcess()->GetStoragePartition());
   coop_status_.UpdateReporterStoragePartition(
@@ -7705,7 +7685,10 @@ void NavigationRequest::OnNavigationClientDisconnected(
                                                    discard_reason.value());
   } else if (GetRenderFrameHost() ==
                  frame_tree_node_->render_manager()->current_frame_host() ||
-             !GetRenderFrameHost()->IsRenderFrameLive()) {
+             !GetRenderFrameHost()->IsRenderFrameLive() ||
+             (base::FeatureList::IsEnabled(
+                  features::kSkipRendererCancellationThrottle) &&
+              commit_params_->commit_target_frame_token.has_value())) {
     // If the NavigationRequest has already reached READY_TO_COMMIT,
     // `render_frame_host_` owns `this`. Cache any needed state in stack
     // variables to avoid a use-after-free.
@@ -7718,6 +7701,40 @@ void NavigationRequest::OnNavigationClientDisconnected(
   }
 
   // Do not add code after this, NavigationRequest might have been destroyed.
+}
+
+void NavigationRequest::ReuseRequestNavigationClientForCommitIfNeeded() {
+  if (!request_navigation_client_.is_bound()) {
+    return;
+  }
+  auto* rfh_at_construction = RenderFrameHostImpl::FromID(
+      current_render_frame_host_id_at_construction_);
+  if (GetRenderFrameHost() == rfh_at_construction) {
+    // Reuse the request NavigationClient for commit.
+    commit_navigation_client_ = std::move(request_navigation_client_);
+  } else if (base::FeatureList::IsEnabled(
+                 features::kSkipRendererCancellationThrottle) &&
+             rfh_at_construction &&
+             (rfh_at_construction == frame_tree_node_->current_frame_host()) &&
+             rfh_at_construction->GetSiteInstance()->group() ==
+                 GetRenderFrameHost()->GetSiteInstance()->group()) {
+    // When doing a local RenderFrame swap, to ensure navigation cancellation
+    // behavior is the same with what it used to be if we didn't do a
+    // RenderFrame swap, reuse `request_navigation_client_` for commit.
+    // This allows last-minute navigation cancellations from the requester
+    // to still take effect, even if the commit is in-flight to the renderer.
+    // If the navigation is not cancelled, when doing the commit in the
+    // renderer, the NavigationClient that is currently owned by the old
+    // RenderFrame will later be moved to be owned by the new RenderFrame.
+    commit_params_->commit_target_frame_token =
+        GetRenderFrameHost()->GetFrameToken();
+    commit_navigation_client_ = std::move(request_navigation_client_);
+    HandleInterfaceDisconnection(commit_navigation_client_);
+  } else {
+    // This navigation is cross-RenderFrameHost: the original document should
+    // no longer be able to cancel it.
+    IgnoreInterfaceDisconnection();
+  }
 }
 
 void NavigationRequest::HandleInterfaceDisconnection(
