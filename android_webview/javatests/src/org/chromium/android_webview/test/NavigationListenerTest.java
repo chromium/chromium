@@ -30,10 +30,12 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.content_public.browser.test.util.HistoryUtils;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer.OnPageStartedHelper;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.util.TestWebServer;
+import org.chromium.ui.test.util.DeviceRestriction;
 
 import java.net.URLEncoder;
 
@@ -775,6 +777,7 @@ public class NavigationListenerTest extends AwParameterizedTest {
         "enable-features=EnableNavigationListener",
         "disable-features=WebViewBackForwardCache"
     })
+    @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO}) // crbug.com/458118167
     public void testNavigationHistoryNavigationBFCacheDisabled() throws Throwable {
         // Navigation #1: Set up the listener and navigate to `url`. This will create a new page and
         // an associated JsReplyProxy.
