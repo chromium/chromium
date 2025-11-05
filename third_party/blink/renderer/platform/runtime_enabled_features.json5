@@ -615,10 +615,6 @@
       public: true,
     },
     {
-      name: "AudioContextOnError",
-      status: "stable",
-    },
-    {
       // AudioContext.playoutStats interface.
       // https://chromestatus.com/feature/5172818344148992
       name: "AudioContextPlayoutStats",

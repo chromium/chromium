@@ -4331,7 +4331,7 @@ enum WebFeature {
   kButtonTypeAttrEmptyString = 5033,
   kProtectedAudienceDirectFromSellerSignals = 5034,
   kOBSOLETE_WebGPUSubgroupsFeatures = 5035,
-  kAudioContextOnError = 5036,
+  kOBSOLETE_AudioContextOnError = 5036,
   kNoVarySearchPrerender = 5037,
   // The items above roughly this point are available in the M128 branch.
   kOBSOLETE_V8AITextSession_Clone_Method = 5038,

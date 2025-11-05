@@ -1558,10 +1558,6 @@ bool AudioContext::IsValidSinkDescriptor(
 void AudioContext::OnRenderError() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_thread_sequence_checker_);
 
-  if (!RuntimeEnabledFeatures::AudioContextOnErrorEnabled()) {
-    return;
-  }
-
   CHECK(GetExecutionContext());
   render_error_occurred_ = true;
   GetExecutionContext()

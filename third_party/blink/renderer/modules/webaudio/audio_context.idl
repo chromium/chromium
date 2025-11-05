@@ -44,7 +44,7 @@ dictionary AudioSinkOptions {
     [HighEntropy=Direct, MeasureAs=AudioContextOutputLatency] readonly attribute double outputLatency;
     [MeasureAs=AudioContextSinkId, SecureContext] readonly attribute (DOMString or AudioSinkInfo) sinkId;
     [SecureContext] attribute EventHandler onsinkchange;
-    [RuntimeEnabled=AudioContextOnError, MeasureAs=AudioContextOnError] attribute EventHandler onerror;
+    attribute EventHandler onerror;
     [MeasureAs=AudioContextGetOutputTimestamp, CallWith=ScriptState] AudioTimestamp getOutputTimestamp();
     [MeasureAs=AudioContextResume, RaisesException, CallWith=ScriptState, ImplementedAs=resumeContext] Promise<undefined> resume();
     [MeasureAs=AudioContextSuspend, RaisesException, CallWith=ScriptState, ImplementedAs=suspendContext] Promise<undefined> suspend();

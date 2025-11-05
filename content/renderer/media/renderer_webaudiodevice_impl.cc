@@ -251,14 +251,12 @@ RendererWebAudioDeviceImpl::RendererWebAudioDeviceImpl(
 
     // Inform the Blink client (e.g. AudioContext) that we have invalid device
     // parameters.
-    if (base::FeatureList::IsEnabled(blink::features::kAudioContextOnError)) {
-      // Post a task on the same thread, and the posted task will be executed
-      // once the construction sequence is finished.
-      main_thread_task_runner_->PostTask(
-          FROM_HERE,
-          base::BindOnce(&RendererWebAudioDeviceImpl::NotifyRenderError,
-                         weak_ptr_factory_.GetWeakPtr()));
-    }
+    // Post a task on the same thread, and the posted task will be executed
+    // once the construction sequence is finished.
+    main_thread_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&RendererWebAudioDeviceImpl::NotifyRenderError,
+                       weak_ptr_factory_.GetWeakPtr()));
   }
   SendLogMessage(base::StringPrintf(
       "%s => (hardware_params=[%s])", __func__,
@@ -399,10 +397,6 @@ int RendererWebAudioDeviceImpl::Render(
 }
 
 void RendererWebAudioDeviceImpl::OnRenderError() {
-  if (!base::FeatureList::IsEnabled(blink::features::kAudioContextOnError)) {
-    return;
-  }
-
   // This function gets called from the audio infra, non-main thread, so this
   // posts a cross-thread task to the main thread task runner.
   main_thread_task_runner_->PostTask(
@@ -412,10 +406,6 @@ void RendererWebAudioDeviceImpl::OnRenderError() {
 }
 
 void RendererWebAudioDeviceImpl::NotifyRenderError() {
-  if (!base::FeatureList::IsEnabled(blink::features::kAudioContextOnError)) {
-    return;
-  }
-
   DCHECK(thread_checker_.CalledOnValidThread());
   SendLogMessage(base::StringPrintf("%s", __func__));
 
