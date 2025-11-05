@@ -4,11 +4,13 @@
 
 #include "chrome/browser/glic/widget/glic_floating_ui.h"
 
+#include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notimplemented.h"
 #include "base/time/time.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
+#include "chrome/browser/glic/service/glic_instance_helper.h"
 #include "chrome/browser/glic/service/glic_instance_metrics.h"
 #include "chrome/browser/glic/widget/application_hotkey_delegate.h"
 #include "chrome/browser/glic/widget/glic_inactive_floating_ui.h"
@@ -30,6 +32,10 @@
 
 namespace glic {
 
+namespace {
+BASE_FEATURE(kGlicFloatingUiReattachment, base::FEATURE_ENABLED_BY_DEFAULT);
+}  // namespace
+
 // static
 gfx::Size GlicFloatingUi::GetDefaultSize() {
   return {features::kGlicMultiInstanceFloatyWidth.Get(),
@@ -39,11 +45,18 @@ gfx::Size GlicFloatingUi::GetDefaultSize() {
 
 GlicFloatingUi::GlicFloatingUi(Profile* profile,
                                gfx::Rect initial_bounds,
+                               tabs::TabHandle source_tab,
                                GlicUiEmbedder::Delegate& delegate,
                                GlicInstanceMetrics& instance_metrics)
     : profile_(profile),
       delegate_(delegate),
-      instance_metrics_(instance_metrics) {
+      instance_metrics_(instance_metrics),
+      source_tab_(source_tab) {
+  if (auto* helper = GlicInstanceHelper::From(source_tab_.Get())) {
+    source_tab_destruction_subscription_ =
+        helper->SubscribeToDestruction(base::BindRepeating(
+            &GlicFloatingUi::OnSourceTabDestroyed, base::Unretained(this)));
+  }
   application_hotkey_manager_ =
       MakeApplicationHotkeyManager(weak_ptr_factory_.GetWeakPtr());
   glic_panel_hotkey_manager_ =
@@ -215,8 +228,27 @@ void GlicFloatingUi::MaybeSetWidgetCanResize() {
 #endif  // BUILDFLAG(IS_WIN)
 }
 
+void GlicFloatingUi::OnSourceTabDestroyed(tabs::TabInterface* tab,
+                                          const InstanceId& instance_id) {
+  FloatingPanelCanAttachChanged(false);
+}
+
+void GlicFloatingUi::FloatingPanelCanAttachChanged(bool can_attach) {
+  if (!base::FeatureList::IsEnabled(kGlicFloatingUiReattachment)) {
+    return;
+  }
+  delegate_->host().FloatingPanelCanAttachChanged(can_attach);
+}
+
 void GlicFloatingUi::Attach() {
-  NOTIMPLEMENTED();
+  if (!base::FeatureList::IsEnabled(kGlicFloatingUiReattachment)) {
+    return;
+  }
+  if (!source_tab_.Get()) {
+    return;
+  }
+  // NOTE: `this` will be destroyed after this call.
+  delegate_->Attach(*source_tab_.Get());
 }
 
 void GlicFloatingUi::Detach() {
@@ -233,6 +265,7 @@ bool GlicFloatingUi::IsShowing() const {
 }
 
 void GlicFloatingUi::Show(const ShowOptions& options) {
+  FloatingPanelCanAttachChanged(source_tab_.Get() != nullptr);
   instance_metrics_->OnShowInFloaty();
   GlicProfileManager::GetInstance()->SetCurrentDetachedGlic(profile_);
   GetGlicWidget()->Show();
@@ -261,6 +294,7 @@ void GlicFloatingUi::Close() {
   if (screenshot_capturer_) {
     screenshot_capturer_->CloseScreenPicker();
   }
+  FloatingPanelCanAttachChanged(false);
   window_event_observer_.reset();
   glic_window_animator_.reset();
   glic_widget_observation_.Reset();

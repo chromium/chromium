@@ -268,13 +268,21 @@ void GlicInstanceImpl::Show(const ShowOptions& options) {
   }
 }
 
-void GlicInstanceImpl::Detach(tabs::TabInterface* tab) {
+void GlicInstanceImpl::Detach(tabs::TabInterface& tab) {
   instance_metrics_.OnDetach();
-  auto show_options =
-      ShowOptions::ForFloating(tab->GetBrowserWindowInterface());
+  auto show_options = ShowOptions::ForFloating(tab.GetHandle());
   show_options.focus_on_show = true;
   Show(show_options);
-  Close(CreateSidePanelEmbedderKey(tab));
+  Close(CreateSidePanelEmbedderKey(&tab));
+}
+
+void GlicInstanceImpl::Attach(tabs::TabInterface& tab) {
+  if (auto* contents = tab.GetContents()) {
+    if (auto* delegate = contents->GetDelegate()) {
+      delegate->ActivateContents(contents);
+    }
+  }
+  Show(ShowOptions::ForSidePanel(tab));
 }
 
 void GlicInstanceImpl::Close(EmbedderKey key) {
@@ -646,8 +654,8 @@ GlicUiEmbedder* GlicInstanceImpl::CreateActiveEmbedder(
                        return CreateActiveEmbedderForSidePanel(&opts.tab.get());
                      },
                      [&](const FloatingShowOptions& opts) {
-                       return CreateActiveEmbedderForFloaty(
-                           opts.initial_bounds);
+                       return CreateActiveEmbedderForFloaty(opts.initial_bounds,
+                                                            opts.source_tab);
                      }},
       options.embedder_options);
 }
@@ -661,14 +669,15 @@ GlicUiEmbedder* GlicInstanceImpl::CreateActiveEmbedderForSidePanel(
 }
 
 GlicUiEmbedder* GlicInstanceImpl::CreateActiveEmbedderForFloaty(
-    const gfx::Rect& initial_bounds) {
+    const gfx::Rect& initial_bounds,
+    tabs::TabInterface::Handle source_tab) {
   if (coordinator_delegate_) {
     coordinator_delegate_->OnWillCreateFloaty();
   }
   EmbedderKey key = FloatingEmbedderKey();
   auto [entry_iter, _] = embedders_.try_emplace(key);
   entry_iter->second.embedder = std::make_unique<GlicFloatingUi>(
-      profile_, initial_bounds, *this, instance_metrics_);
+      profile_, initial_bounds, source_tab, *this, instance_metrics_);
   return entry_iter->second.embedder.get();
 }
 

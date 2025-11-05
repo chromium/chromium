@@ -574,6 +574,13 @@ void Host::RequestToConfirmNavigation(
       task_id, navigation_origin, std::move(callback));
 }
 
+void Host::FloatingPanelCanAttachChanged(bool can_attach) {
+  if (!IsReady()) {
+    return;
+  }
+  handler_info_->web_client->FloatingPanelCanAttachChanged(can_attach);
+}
+
 HostManager::HostManager(Profile* profile,
                          base::WeakPtr<GlicWindowController> window_controller)
     : profile_(profile),

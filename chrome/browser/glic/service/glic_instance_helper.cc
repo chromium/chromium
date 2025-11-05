@@ -9,6 +9,9 @@ namespace glic {
 DEFINE_USER_DATA(GlicInstanceHelper);
 
 GlicInstanceHelper* GlicInstanceHelper::From(tabs::TabInterface* tab) {
+  if (!tab) {
+    return nullptr;
+  }
   return Get(tab->GetUnownedUserDataHost());
 }
 

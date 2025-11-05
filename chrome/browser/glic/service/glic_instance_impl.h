@@ -202,7 +202,8 @@ class GlicInstanceImpl : public GlicInstance,
   void WillCloseFor(EmbedderKey key) override;
   void NotifyPanelStateChanged() override;
   // Opens the floating UI for this instance
-  void Detach(tabs::TabInterface* tab) override;
+  void Detach(tabs::TabInterface& tab) override;
+  void Attach(tabs::TabInterface& tab) override;
 
   // Host::InstanceInterface:
   mojom::PanelState GetPanelState() override;
@@ -282,7 +283,8 @@ class GlicInstanceImpl : public GlicInstance,
   GlicUiEmbedder* CreateActiveEmbedder(const ShowOptions& options);
   GlicUiEmbedder* CreateActiveEmbedderForSidePanel(tabs::TabInterface* tab);
   GlicUiEmbedder* CreateActiveEmbedderForFloaty(
-      const gfx::Rect& initial_bounds);
+      const gfx::Rect& initial_bounds,
+      tabs::TabInterface::Handle source_tab);
   void ShowInactiveSidePanelEmbedderFor(tabs::TabInterface* tab);
   void SetActiveEmbedderAndNotifyStateChange(
       std::optional<EmbedderKey> new_key);

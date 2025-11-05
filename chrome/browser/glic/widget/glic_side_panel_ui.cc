@@ -130,7 +130,7 @@ void GlicSidePanelUi::Detach() {
     return;
   }
   // NOTE: `this` will be destroyed after this call.
-  delegate_->Detach(tab_.get());
+  delegate_->Detach(*tab_);
 }
 
 void GlicSidePanelUi::SetMinimumWidgetSize(const gfx::Size& size) {
@@ -202,6 +202,7 @@ void GlicSidePanelUi::Show(const ShowOptions& options) {
   }
   panel_state_.kind = mojom::PanelStateKind::kAttached;
   delegate_->NotifyPanelStateChanged();
+  delegate_->host().FloatingPanelCanAttachChanged(false);
   application_hotkey_manager_->InitializeAccelerators();
   glic_panel_hotkey_manager_->InitializeAccelerators();
 
