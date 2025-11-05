@@ -3381,6 +3381,149 @@ TEST_P(AnimationCompositorAnimationsTest, StaticPropertiesPlusStartDelay) {
 }
 
 TEST_P(AnimationCompositorAnimationsTest,
+       ProvisionallyStaticWithNeutralKeyframe) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      @keyframes resize-from {
+        from {
+          height: 200px;
+          width: 200px;
+        }
+      }
+      @keyframes resize-to {
+        to {
+          height: 200px;
+          width: 200px;
+        }
+      }
+      #target1, #target2 {
+        height: 200px;
+        width: 200px;
+      }
+      #target1 {
+        animation: resize-from 1s;
+      }
+      #target2 {
+        animation: resize-to 1s;
+      }
+      #target1.tweak, #target2.tweak {
+        height: 100px;
+        width: 100px;
+      }
+    </style>
+    <div id="target1"></div>
+    <div id="target2"></div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+  Element* target1 = GetDocument().getElementById(AtomicString("target1"));
+  Element* target2 = GetDocument().getElementById(AtomicString("target2"));
+  Animation* animation1 =
+      target1->GetElementAnimations()->Animations().begin()->key;
+  Animation* animation2 =
+      target2->GetElementAnimations()->Animations().begin()->key;
+
+  // Presently static as the underlying height and width match the keyframe
+  // values.
+  EXPECT_EQ(CompositorAnimations::kAnimationHasNoVisibleChange,
+            animation1->CheckCanStartAnimationOnCompositor(
+                GetDocument().View()->GetPaintArtifactCompositor()));
+  EXPECT_EQ(CompositorAnimations::kAnimationHasNoVisibleChange,
+            animation2->CheckCanStartAnimationOnCompositor(
+                GetDocument().View()->GetPaintArtifactCompositor()));
+
+  target1->classList().add({"tweak"}, ASSERT_NO_EXCEPTION);
+  target2->classList().add({"tweak"}, ASSERT_NO_EXCEPTION);
+  UpdateAllLifecyclePhasesForTest();
+
+  // Start ticking the animation on the main thread.
+  EXPECT_EQ(animation1->CheckCanStartAnimationOnCompositor(
+                GetDocument().View()->GetPaintArtifactCompositor()) &
+                CompositorAnimations::kUnsupportedCSSProperty,
+            CompositorAnimations::kUnsupportedCSSProperty);
+  EXPECT_EQ(animation2->CheckCanStartAnimationOnCompositor(
+                GetDocument().View()->GetPaintArtifactCompositor()) &
+                CompositorAnimations::kUnsupportedCSSProperty,
+            CompositorAnimations::kUnsupportedCSSProperty);
+}
+
+TEST_P(AnimationCompositorAnimationsTest,
+       ProvisionallyStaticWithNeutralKeyframeInheritedProerty) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      @keyframes resize {
+        to {
+          height: 160px;
+          width: 160px;
+        }
+      }
+      #container {
+        font-size: 16px;
+      }
+      #container.tweak {
+        font-size: 10px;
+      }
+      #target {
+        height: 10em;
+        width: 10em;
+        animation: resize 1s;
+      }
+    </style>
+    <div id="container">
+      <div id="target"></div>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+  Element* container = GetDocument().getElementById(AtomicString("container"));
+  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Animation* animation =
+      target->GetElementAnimations()->Animations().begin()->key;
+
+  // Presently static as the underlying values matches the keyframe values.
+  EXPECT_EQ(CompositorAnimations::kAnimationHasNoVisibleChange,
+            animation->CheckCanStartAnimationOnCompositor(
+                GetDocument().View()->GetPaintArtifactCompositor()));
+
+  container->classList().add({"tweak"}, ASSERT_NO_EXCEPTION);
+  UpdateAllLifecyclePhasesForTest();
+
+  // Start ticking the animation on the main thread.
+  EXPECT_EQ(animation->CheckCanStartAnimationOnCompositor(
+                GetDocument().View()->GetPaintArtifactCompositor()) &
+                CompositorAnimations::kUnsupportedCSSProperty,
+            CompositorAnimations::kUnsupportedCSSProperty);
+}
+
+TEST_P(AnimationCompositorAnimationsTest, NeutralKeyframeCompositeAdd) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      @keyframes resize-from {
+        from {
+          height: 200px;
+          width: 200px;
+        }
+      }
+      #target {
+        height: 200px;
+        width: 200px;
+        animation: resize-from 1s;
+        animation-composition: add;
+      }
+    </style>
+    <div id="target"></div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Animation* animation =
+      target->GetElementAnimations()->Animations().begin()->key;
+
+  // Not static due to composite mode.
+  EXPECT_EQ(animation->CheckCanStartAnimationOnCompositor(
+                GetDocument().View()->GetPaintArtifactCompositor()) &
+                CompositorAnimations::kUnsupportedCSSProperty,
+            CompositorAnimations::kUnsupportedCSSProperty);
+}
+
+TEST_P(AnimationCompositorAnimationsTest,
        WebKitPrefixedPlusUnprefixedProperty) {
   SetBodyInnerHTML(R"HTML(
     <style>

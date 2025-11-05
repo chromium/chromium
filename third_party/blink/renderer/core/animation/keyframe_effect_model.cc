@@ -39,6 +39,7 @@
 #include "third_party/blink/renderer/core/animation/property_handle.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_property_equality.h"
+#include "third_party/blink/renderer/core/css/properties/computed_style_utils.h"
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/css/property_registry.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
@@ -95,7 +96,8 @@ KeyframeEffectModelBase::KeyframeProperties::UniqueProperties() const {
 void KeyframeEffectModelBase::IterableDynamicProperties::Iterator::
     AdvanceToNextGroup() {
   while (current_keyframe_group_ != model_->keyframe_groups_->end() &&
-         current_keyframe_group_->value->IsStatic()) {
+         current_keyframe_group_->value->IsStaticMaybeDowngradeProvisional(
+             current_keyframe_group_->key, element_)) {
     current_keyframe_group_++;
   }
 }
@@ -106,7 +108,7 @@ bool KeyframeEffectModelBase::IterableDynamicProperties::Contains(
   if (iter == model_->keyframe_groups_->end()) {
     return false;
   }
-  if (iter->value->IsStatic()) {
+  if (iter->value->IsStaticMaybeDowngradeProvisional(property, element_)) {
     return false;
   }
   return true;
@@ -118,15 +120,15 @@ KeyframeEffectModelBase::Properties() const {
 }
 
 KeyframeEffectModelBase::IterableDynamicProperties
-KeyframeEffectModelBase::DynamicProperties() const {
+KeyframeEffectModelBase::DynamicProperties(const Element* element) const {
   EnsureKeyframeGroups();
-  return IterableDynamicProperties(this);
+  return IterableDynamicProperties(this, element);
 }
 
 bool KeyframeEffectModelBase::HasStaticProperty() const {
   EnsureKeyframeGroups();
   for (const auto& entry : *keyframe_groups_) {
-    if (entry.value->IsStatic()) {
+    if (entry.value->IsCurrentlyStatic()) {
       return true;
     }
   }
@@ -521,7 +523,7 @@ void KeyframeEffectModelBase::EnsureInterpolationEffectPopulated() const {
     // present, we expect the computed style to reflect an explicit
     // cross-fade.
     PropertyHandle handle = entry.key;
-    if (entry.value->IsStatic() && handle.IsCSSProperty() &&
+    if (entry.value->IsStrictlyStatic() && handle.IsCSSProperty() &&
         handle.GetCSSProperty().PropertyID() !=
             CSSPropertyID::kListStyleImage) {
       // All keyframes have the same property value.
@@ -652,47 +654,127 @@ void KeyframeEffectModelBase::PropertySpecificKeyframeGroup::
   DCHECK_GE(keyframes_.size(), 2U);
 }
 
-void KeyframeEffectModelBase::PropertySpecificKeyframeGroup::CheckIfStatic() {
-  has_static_value_ = false;
+const CSSPropertySpecificKeyframe* KeyframeEffectModelBase::
+    PropertySpecificKeyframeGroup::FirstCssKeyframeWithSetValue() const {
+  for (const auto& keyframe : keyframes_) {
+    const CSSPropertySpecificKeyframe* property_keyframe =
+        To<CSSPropertySpecificKeyframe>(keyframe.Get());
+    if (property_keyframe->Value()) {
+      return property_keyframe;
+    }
+  }
+  return nullptr;
+}
 
-  DCHECK_GE(keyframes_.size(), 2U);
-  const PropertySpecificKeyframe* first = keyframes_[0];
-  const CSSPropertySpecificKeyframe* css_keyframe =
-      DynamicTo<CSSPropertySpecificKeyframe>(first);
+bool KeyframeEffectModelBase::PropertySpecificKeyframeGroup::
+    IsStaticMaybeDowngradeProvisional(const PropertyHandle& property,
+                                      const Element* element) const {
+  switch (static_check_result_) {
+    case StaticCheckResult::kDynamic:
+      return false;
+
+    case StaticCheckResult::kStatic:
+      return true;
+
+    case StaticCheckResult::kProvisionalChecked:
+    case StaticCheckResult::kProvisionalUnchecked: {
+      // When an element is not provided for validating provisional properties,
+      // assume it is static of previously verified and dynamic otherwise.
+      if (!element) {
+        return static_check_result_ == StaticCheckResult::kProvisionalChecked;
+      }
+
+      // When we have an element, revalidate even though previously matching
+      // in case of a change to the underlying property value.
+      // TOOD(kevers): Can likely determine in RecalcOwnStyle if
+      // BaseComputedStyle has changed and only recheck if the underlying style
+      // has changed.
+
+      // Limit support for provisionally static properties to CSS properties.
+      if (!property.IsCSSProperty()) {
+        return false;
+      }
+
+      // Update status check to be either kDynamic or kProvisionalChecked.
+      const ComputedStyle* style = element->GetComputedStyle();
+      if (!style) {
+        static_check_result_ = StaticCheckResult::kProvisionalUnchecked;
+        return false;
+      }
+      const ComputedStyle* base_style = style->GetBaseComputedStyle();
+      if (!base_style) {
+        static_check_result_ = StaticCheckResult::kProvisionalUnchecked;
+        return false;
+      }
+
+      const CSSPropertySpecificKeyframe* keyframe =
+          FirstCssKeyframeWithSetValue();
+      CHECK(keyframe);
+      const CSSValue* target_value = keyframe->Value();
+      CHECK(target_value);
+
+      const CSSValue* underlying_value =
+          ComputedStyleUtils::ComputedPropertyValue(property.GetCSSProperty(),
+                                                    *base_style);
+      if (!underlying_value || *target_value != *underlying_value) {
+        static_check_result_ = StaticCheckResult::kDynamic;
+        return false;
+      }
+
+      static_check_result_ = StaticCheckResult::kProvisionalChecked;
+      return true;
+    }
+
+    case StaticCheckResult::kUnset:
+      NOTREACHED();
+  }
+}
+
+void KeyframeEffectModelBase::PropertySpecificKeyframeGroup::CheckIfStatic() {
+  static_check_result_ = StaticCheckResult::kStatic;
 
   // Transitions are only started if the end-points mismatch with caveat for
   // visited/unvisited properties. For now, limit to detected static properties
   // in a CSS animations since a common source of static properties is expansion
   // of shorthand properties to their longhand counterparts.
-  if (!css_keyframe) {
+  DCHECK_GE(keyframes_.size(), 2U);
+  if (!DynamicTo<CSSPropertySpecificKeyframe>(keyframes_[0].Get())) {
+    static_check_result_ = StaticCheckResult::kDynamic;
     return;
   }
 
-  const CSSValue* target_value = css_keyframe->Value();
-  CompositeOperation target_composite_operation = css_keyframe->Composite();
+  const CSSPropertySpecificKeyframe* reference_keyframe =
+      FirstCssKeyframeWithSetValue();
 
-  for (wtf_size_t i = 1; i < keyframes_.size(); i++) {
-    const CSSPropertySpecificKeyframe* keyframe =
-        To<CSSPropertySpecificKeyframe>(keyframes_[i].Get());
-    if (keyframe->Composite() != target_composite_operation) {
+  const CSSValue* target_value = reference_keyframe->Value();
+  CompositeOperation target_composite_operation =
+      reference_keyframe->Composite();
+  for (const auto& keyframe : keyframes_) {
+    const CSSPropertySpecificKeyframe* css_keyframe =
+        To<CSSPropertySpecificKeyframe>(keyframe.Get());
+    if (css_keyframe == reference_keyframe) {
+      // Skip checks on the reference keyframe.
+      continue;
+    }
+
+    if (!css_keyframe->Value()) {
+      // Found a neutral keyframe. These keyframes are provisionally static if
+      // the underlying property value matches the value for specified
+      // keyframes, which must in turn use composite replace.
+      if (target_composite_operation != CompositeOperation::kCompositeReplace) {
+        static_check_result_ = StaticCheckResult::kDynamic;
+        return;
+      }
+      static_check_result_ = StaticCheckResult::kProvisionalUnchecked;
+      continue;
+    }
+
+    if (css_keyframe->Composite() != target_composite_operation ||
+        *css_keyframe->Value() != *target_value) {
+      static_check_result_ = StaticCheckResult::kDynamic;
       return;
     }
-    // A neutral keyframe has a null value. Either all keyframes must be
-    // neutral or none to be static. If any of the values are non-null their
-    // CSS values must precisely match. It is not enough to resolve to the same
-    // value.
-    if (target_value) {
-      if (!keyframe->Value() || *keyframe->Value() != *target_value) {
-        return;
-      }
-    } else {
-      if (keyframe->Value()) {
-        return;
-      }
-    }
   }
-
-  has_static_value_ = true;
 }
 
 bool KeyframeEffectModelBase::PropertySpecificKeyframeGroup::

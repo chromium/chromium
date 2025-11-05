@@ -1038,6 +1038,11 @@ bool Internals::isCompositedAnimation(Animation* animation) {
   return animation->HasActiveAnimationsOnCompositor();
 }
 
+bool Internals::isMainThreadAnimation(Animation* animation) {
+  return !(animation->HasActiveAnimationsOnCompositor() ||
+           animation->AnimationHasNoEffect());
+}
+
 void Internals::disableCompositedAnimation(Animation* animation) {
   animation->DisableCompositedAnimationForTesting();
 }

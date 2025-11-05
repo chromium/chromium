@@ -254,7 +254,7 @@ CompositorAnimations::CheckCanStartEffectOnCompositor(
     reasons |= kTargetHasInvalidCompositingState;
   }
 
-  auto properties = keyframe_effect.DynamicProperties();
+  auto properties = keyframe_effect.DynamicProperties(&target_element);
   // If all properties are static, we don't need to composite. The animation
   // can only change at a phase boundary.
   if (properties.empty()) {
