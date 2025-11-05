@@ -162,9 +162,16 @@ void AddSpecificsToServer(const sync_pb::ContactInfoSpecifics& specifics,
           /*last_modified_time=*/0));
 }
 
-class SingleClientContactInfoSyncTest : public SyncTest {
+class SingleClientContactInfoSyncTestBase : public SyncTest {
  public:
-  SingleClientContactInfoSyncTest() : SyncTest(SINGLE_CLIENT) {}
+  explicit SingleClientContactInfoSyncTestBase(
+      SyncTest::SetupSyncMode setup_sync_mode)
+      : SyncTest(SINGLE_CLIENT) {
+    if (setup_sync_mode == SetupSyncMode::kSyncTransportOnly) {
+      feature_list_.InitAndEnableFeature(
+          syncer::kReplaceSyncPromosWithSignInPromos);
+    }
+  }
 
   // In SINGLE_CLIENT tests, there's only a single PersonalDataManager.
   autofill::PersonalDataManager* GetPersonalDataManager() const {
@@ -187,9 +194,29 @@ class SingleClientContactInfoSyncTest : public SyncTest {
                                        identity_manager->GetPrimaryAccountInfo(
                                            signin::ConsentLevel::kSignin)));
   }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(SingleClientContactInfoSyncTest, DownloadInitialData) {
+class SingleClientContactInfoSyncTest
+    : public SingleClientContactInfoSyncTestBase,
+      public testing::WithParamInterface<SyncTest::SetupSyncMode> {
+ public:
+  SingleClientContactInfoSyncTest()
+      : SingleClientContactInfoSyncTestBase(GetSetupSyncMode()) {}
+
+  SyncTest::SetupSyncMode GetSetupSyncMode() const override {
+    return GetParam();
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(,
+                         SingleClientContactInfoSyncTest,
+                         GetSyncTestModes(),
+                         testing::PrintToStringParamName());
+
+IN_PROC_BROWSER_TEST_P(SingleClientContactInfoSyncTest, DownloadInitialData) {
   const AutofillProfile kProfile = BuildTestAccountProfile();
   AddSpecificsToServer(AsContactInfoSpecifics(kProfile), GetFakeServer());
   ASSERT_TRUE(SetupSyncAndHideAccountNameEmailProfile());
@@ -199,7 +226,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientContactInfoSyncTest, DownloadInitialData) {
                   .Wait());
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientContactInfoSyncTest, UploadProfile) {
+IN_PROC_BROWSER_TEST_P(SingleClientContactInfoSyncTest, UploadProfile) {
   const AutofillProfile kProfile = BuildTestAccountProfile();
   ASSERT_TRUE(SetupSyncAndHideAccountNameEmailProfile());
   GetPersonalDataManager()->address_data_manager().AddProfile(kProfile);
@@ -213,7 +240,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientContactInfoSyncTest, UploadProfile) {
 // don't cause a reupload and hence can't cause ping-pong loops.
 // This is not expected to happen because only the PersonalDataManager can
 // trigger reuploads - and it only operates on finalized profiles.
-IN_PROC_BROWSER_TEST_F(SingleClientContactInfoSyncTest, FinalizeAfterImport) {
+IN_PROC_BROWSER_TEST_P(SingleClientContactInfoSyncTest, FinalizeAfterImport) {
   AutofillProfile unfinalized_profile(
       AutofillProfile::RecordType::kAccount,
       autofill::i18n_model_definition::kLegacyHierarchyCountryCode);
@@ -250,7 +277,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientContactInfoSyncTest, FinalizeAfterImport) {
 
 // ChromeOS does not support signing out of a primary account.
 #if !BUILDFLAG(IS_CHROMEOS)
-IN_PROC_BROWSER_TEST_F(SingleClientContactInfoSyncTest, ClearOnSignout) {
+IN_PROC_BROWSER_TEST_P(SingleClientContactInfoSyncTest, ClearOnSignout) {
   const AutofillProfile kProfile = BuildTestAccountProfile();
   AddSpecificsToServer(AsContactInfoSpecifics(kProfile), GetFakeServer());
   ASSERT_TRUE(SetupSyncAndHideAccountNameEmailProfile());
@@ -268,24 +295,39 @@ IN_PROC_BROWSER_TEST_F(SingleClientContactInfoSyncTest, ClearOnSignout) {
 // Specialized fixture to test the behavior for custom passphrase users with and
 // without kSyncEnableContactInfoDataTypeForCustomPassphraseUsers enabled.
 class SingleClientContactInfoPassphraseSyncTest
-    : public SingleClientContactInfoSyncTest,
-      public testing::WithParamInterface<bool> {
+    : public SingleClientContactInfoSyncTestBase,
+      public testing::WithParamInterface<
+          std::tuple<SyncTest::SetupSyncMode, bool>> {
  public:
-  SingleClientContactInfoPassphraseSyncTest() {
+  SingleClientContactInfoPassphraseSyncTest()
+      : SingleClientContactInfoSyncTestBase(GetSetupSyncMode()) {
     passphrase_feature_.InitWithFeatureState(
         syncer::kSyncEnableContactInfoDataTypeForCustomPassphraseUsers,
         EnabledForPassphraseUsersTestParam());
   }
 
-  bool EnabledForPassphraseUsersTestParam() const { return GetParam(); }
+  SyncTest::SetupSyncMode GetSetupSyncMode() const override {
+    return std::get<0>(GetParam());
+  }
+
+  bool EnabledForPassphraseUsersTestParam() const {
+    return std::get<1>(GetParam());
+  }
 
  private:
   base::test::ScopedFeatureList passphrase_feature_;
 };
 
-INSTANTIATE_TEST_SUITE_P(,
-                         SingleClientContactInfoPassphraseSyncTest,
-                         testing::Bool());
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    SingleClientContactInfoPassphraseSyncTest,
+    testing::Combine(GetSyncTestModes(), testing::Bool()),
+    [](const testing::TestParamInfo<std::tuple<SyncTest::SetupSyncMode, bool>>&
+           info) {
+      return testing::PrintToString(std::get<0>(info.param)) +
+             (std::get<1>(info.param) ? "_EnabledForCustomPassphrase"
+                                      : "_DisabledForCustomPassphrase");
+    });
 
 // TODO(336993637): Flaky on Android.
 #if BUILDFLAG(IS_ANDROID)
@@ -312,8 +354,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientContactInfoPassphraseSyncTest,
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 // CONTACT_INFO should be able to run in transport mode and the availability of
 // account profiles should depend on the signed-in state.
-IN_PROC_BROWSER_TEST_F(SingleClientContactInfoSyncTest,
-                       TransportMode) {
+IN_PROC_BROWSER_TEST_P(SingleClientContactInfoSyncTest, TransportMode) {
   AutofillProfile profile = BuildTestAccountProfile();
   AddSpecificsToServer(AsContactInfoSpecifics(profile), GetFakeServer());
   ASSERT_TRUE(SetupClients());
@@ -333,7 +374,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientContactInfoSyncTest,
                   .Wait());
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientContactInfoSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientContactInfoSyncTest,
                        DeleteAccountDataInErrorState) {
   // Add a profile to account storage.
   AutofillProfile profile = BuildTestAccountProfile();
@@ -383,8 +424,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientContactInfoSyncTest,
 }
 
 // Account storage is not enabled when the user is in auth error.
-IN_PROC_BROWSER_TEST_F(SingleClientContactInfoSyncTest,
-                       AuthErrorState) {
+IN_PROC_BROWSER_TEST_P(SingleClientContactInfoSyncTest, AuthErrorState) {
   // Setup transport mode.
   ASSERT_TRUE(SetupClients());
   ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
@@ -437,7 +477,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientContactInfoSyncTest,
 // Regression test for https://crbug.com/340194452.
 // TODO(crbug.com/40943238): Remove when `kReplaceSyncPromosWithSignInPromos` is
 // enabled.
-IN_PROC_BROWSER_TEST_F(SingleClientContactInfoSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientContactInfoSyncTest,
                        IsAutofillSyncToggleAvailable) {
   // Setup transport mode.
   ASSERT_TRUE(SetupClients());
@@ -495,7 +535,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientContactInfoSyncTest,
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 #if !BUILDFLAG(IS_ANDROID)
-IN_PROC_BROWSER_TEST_F(SingleClientContactInfoSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientContactInfoSyncTest,
                        PreservesUnsupportedFieldsDataOnCommits) {
   // Create an unsupported field with an unused tag.
   const std::string kUnsupportedField =
@@ -543,7 +583,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientContactInfoSyncTest,
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)
-IN_PROC_BROWSER_TEST_F(SingleClientContactInfoSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientContactInfoSyncTest,
                        ShouldReturnLocalDataDescriptions) {
   ASSERT_TRUE(SetupClients());
 
@@ -589,7 +629,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientContactInfoSyncTest,
           /*domain_count=*/0u));
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientContactInfoSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientContactInfoSyncTest,
                        ShouldBatchUploadAllEntries) {
   ASSERT_TRUE(SetupClients());
 
@@ -642,7 +682,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientContactInfoSyncTest,
                                autofill::FieldType::NAME_FIRST))));
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientContactInfoSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientContactInfoSyncTest,
                        ShouldBatchUploadSomeEntries) {
   ASSERT_TRUE(SetupClients());
 
@@ -693,7 +733,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientContactInfoSyncTest,
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
-IN_PROC_BROWSER_TEST_F(SingleClientContactInfoSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientContactInfoSyncTest,
                        DisabledForManagedAccounts) {
   // Sign in with a managed account.
   ASSERT_TRUE(SetupSync(SyncTestAccount::kEnterpriseAccount1));
