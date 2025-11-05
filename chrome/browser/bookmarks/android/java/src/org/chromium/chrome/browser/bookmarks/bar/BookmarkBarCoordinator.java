@@ -516,6 +516,14 @@ public class BookmarkBarCoordinator
                 mBrowserControlsStateProvider.getTopControlsHeight(),
                 mBrowserControlsStateProvider.getBottomControlsHeight());
         mMediator.setTopMargin(sceneLayerHeightOffset());
+
+        // In some cases, BCIV can't handle the scroll (e.g. controls coming back on screen due to
+        // navigation), so we need to set offset values manually ourselves.
+        if (requestNewFrame || isVisibilityForced) {
+            mBookmarkBarSceneLayerModel.set(
+                    BookmarkBarSceneLayerProperties.SCENE_LAYER_OFFSET_HEIGHT,
+                    sceneLayerHeightOffset() + topOffset);
+        }
     }
 
     @Override
