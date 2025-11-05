@@ -9,6 +9,7 @@
 
 @protocol BadgeViewVisibilityDelegate;
 @protocol IncognitoBadgeViewVisibilityDelegate;
+@protocol PageActionMenuCommands;
 @protocol ReaderModeChipVisibilityDelegate;
 @protocol ContextualPanelEntrypointVisibilityDelegate;
 @class LocationBarBadgesContainerView;
@@ -103,6 +104,8 @@
 // The view containing the infobar badge and contextual panel entrypoint.
 @property(nonatomic, strong)
     LocationBarBadgesContainerView* badgesContainerView;
+// The page action menu handler.
+@property(nonatomic, weak) id<PageActionMenuCommands> pageActionMenuHandler;
 
 @end
 

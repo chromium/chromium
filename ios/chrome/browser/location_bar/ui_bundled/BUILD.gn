@@ -145,8 +145,10 @@ source_set("badges") {
     ":metrics",
     "//ios/chrome/browser/badges/ui_bundled",
     "//ios/chrome/browser/contextual_panel/entrypoint/ui",
+    "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/browser/lens_overlay/coordinator:lens_overlay_availability",
     "//ios/chrome/browser/reader_mode/ui:chip",
+    "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/common/ui/util",
   ]

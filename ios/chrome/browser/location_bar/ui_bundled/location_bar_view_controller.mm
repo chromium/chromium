@@ -366,6 +366,10 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
         _defaultSearchEngineIconView,
         CGSizeMake(kOmniboxLeadingImageSize + 12.0f, kOmniboxLeadingImageSize));
   }
+
+  if (IsProactiveSuggestionsFrameworkEnabled()) {
+    _locationBarSteadyView.pageActionMenuHandler = self.pageActionMenuHandler;
+  }
 }
 
 #pragma mark - FullscreenUIElement

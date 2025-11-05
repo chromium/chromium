@@ -4,8 +4,10 @@
 
 #import "ios/chrome/browser/location_bar/ui_bundled/badges_container_view.h"
 
+#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_metrics.h"
+#import "ios/chrome/browser/shared/public/commands/page_action_menu_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
@@ -25,6 +27,7 @@ void SetViewHiddenIfNecessary(UIView* view, BOOL hidden) {
 
 @implementation LocationBarBadgesContainerView {
   UIStackView* _containerStackView;
+  UIButton* _tapOverlayButton;
 
   /// Whether the contextual panel entrypoint should be visible. The placeholder
   /// view trumps the entrypoint when kLensOverlayPriceInsightsCounterfactual is
@@ -47,8 +50,14 @@ void SetViewHiddenIfNecessary(UIView* view, BOOL hidden) {
     _containerStackView.axis = UILayoutConstraintAxisHorizontal;
     _containerStackView.alignment = UIStackViewAlignmentCenter;
     _containerStackView.translatesAutoresizingMaskIntoConstraints = NO;
+
     [self addSubview:_containerStackView];
     AddSameConstraints(self, _containerStackView);
+
+    if (IsProactiveSuggestionsFrameworkEnabled()) {
+      _containerStackView.userInteractionEnabled = NO;
+      [self setupTapOverlay];
+    }
   }
 
   return self;
@@ -257,6 +266,25 @@ void SetViewHiddenIfNecessary(UIView* view, BOOL hidden) {
       RecordLensEntrypointHidden(IOSLocationBarLeadingIconType::kReaderMode);
     }
   }
+}
+
+// Creates and configures transparent overlay button for unified badge tapping.
+- (void)setupTapOverlay {
+  _tapOverlayButton = [[UIButton alloc] init];
+  _tapOverlayButton.translatesAutoresizingMaskIntoConstraints = NO;
+  _tapOverlayButton.backgroundColor = [UIColor clearColor];
+  [_tapOverlayButton addTarget:self
+                        action:@selector(handleOverlayTap:)
+              forControlEvents:UIControlEventTouchUpInside];
+  // TODO(crbug.com/448422022): Remove overlay when migrating to
+  // LocationBarBadgeViewController.
+  [self addSubview:_tapOverlayButton];
+  AddSameConstraints(self, _tapOverlayButton);
+}
+
+// Handles tap events on the overlay button and shows the page action menu.
+- (void)handleOverlayTap:(id)sender {
+  [self.pageActionMenuHandler showPageActionMenu];
 }
 
 @end

@@ -12,6 +12,8 @@
 #import "ios/chrome/browser/contextual_panel/entrypoint/ui/contextual_panel_entrypoint_visibility_delegate.h"
 #import "ios/chrome/browser/reader_mode/ui/reader_mode_chip_visibility_delegate.h"
 
+@protocol PageActionMenuCommands;
+
 // Location bar badges container view, it contains location bar accessories such
 // as infobar badges and entrypoints.
 // This view does not itself create any badges. The embedder needs to provide
@@ -33,6 +35,8 @@
 @property(nonatomic, strong) UIView* placeholderView;
 // The injected view displaying the Reading mode chip.
 @property(nonatomic, strong) UIView* readerModeChipView;
+// Transparent overlay button for unified badge interaction.
+@property(nonatomic, weak) id<PageActionMenuCommands> pageActionMenuHandler;
 
 @end
 
