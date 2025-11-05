@@ -128,6 +128,7 @@
 <translation id="5556417849629758491">Ogled podatkov o trgovini, možnosti so na voljo pri vrhu zaslona</translation>
 <translation id="5627941783489838464">Ni posodobitev zavihkov</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> povezava iz Chroma}one{<ph name="TABS_COUNT_MANY" /> povezava iz Chroma}two{<ph name="TABS_COUNT_MANY" /> povezavi iz Chroma}few{<ph name="TABS_COUNT_MANY" /> povezave iz Chroma}other{<ph name="TABS_COUNT_MANY" /> povezav iz Chroma}}</translation>
+<translation id="5740354908255726955">{TAB_COUNT,plural, =1{Premakni zavihek v levo}one{Premakni zavihke v levo}two{Premakni zavihke v levo}few{Premakni zavihke v levo}other{Premakni zavihke v levo}}</translation>
 <translation id="5746204836956568669">Želite za hitrejše delo združiti zavihke (<ph name="NUMBER_OF_TABS" />)?</translation>
 <translation id="5773295109010386583">Samodejno zapiranje neaktivnih elementov</translation>
 <translation id="58326064309361797">Povlecite zavihke, če jih želite združiti v skupino</translation>
@@ -138,6 +139,7 @@
 <translation id="6109251075362363230">Vsi podvojeni zavihki, razen nazadnje uporabljene kopije, bodo zdaj tudi arhivirani.</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{Zapiranje <ph name="TABS_COUNT_ONE" /> izbranega elementa}one{Zapiranje <ph name="TABS_COUNT_MANY" /> izbranega elementa}two{Zapiranje <ph name="TABS_COUNT_MANY" /> izbranih elementov}few{Zapiranje <ph name="TABS_COUNT_MANY" /> izbranih elementov}other{Zapiranje <ph name="TABS_COUNT_MANY" /> izbranih elementov}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{Premik skupine v novo okno}one{Premik skupine v drugo okno}two{Premik skupine v drugo okno}few{Premik skupine v drugo okno}other{Premik skupine v drugo okno}}</translation>
+<translation id="6212374449852603982">{TAB_COUNT,plural, =1{Premakni zavihek v desno}one{Premakni zavihke v desno}two{Premakni zavihke v desno}few{Premakni zavihke v desno}other{Premakni zavihke v desno}}</translation>
 <translation id="6228793724645064692">(ocena trgovine)</translation>
 <translation id="625996437999624951">{TAB_COUNT,plural, =1{Odstrani zavihek iz skupine}one{Odstrani zavihke iz skupine}two{Odstrani zavihke iz skupine}few{Odstrani zavihke iz skupine}other{Odstrani zavihke iz skupine}}</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{Dodaj zavihek novi skupini}one{Dodaj zavihke novi skupini}two{Dodaj zavihke novi skupini}few{Dodaj zavihke novi skupini}other{Dodaj zavihke novi skupini}}</translation>

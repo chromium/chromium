@@ -25,6 +25,7 @@
 <translation id="1502360822835740515">Chromium ඔබේ පෙරනිමි බ්‍රව්සරය කරන්න</translation>
 <translation id="1503199973012840174">ඔබේ Chromium යල් පැන ඇත. ආරක්ෂිතව සිටීමට එය යාවත්කාලීන කරන්න.</translation>
 <translation id="1515748263297244785">පෙරනිමියෙන් iPad සඳහා Chromium භාවිත කරන්න</translation>
+<translation id="1530961174488670696">Chromium හට යාවත්කාලීන සඳහා පරීක්ෂා කළ නොහැකි විය. පසුව නැවත උත්සාහ කරන්න.</translation>
 <translation id="1531155317299575425">Chromium වෙත පිරීමට ප්‍රේරණ පෙන්වයි.</translation>
 <translation id="1553657876656159572">ඔබ වෙනුවෙන් සාදන ලද අභිරුචි සංග්‍රහයක්. පුවත්, ක්‍රීඩා සහ කාලගුණය ඇතුළුව.</translation>
 <translation id="1561849081734670621">Chromium තුළ අගුළු දැමීමේ ප්‍රකාරය අබල කිරීම සඳහා එය ඔබේ iPhone මත ක්‍රියාවිරහිත කරන්න.</translation>
@@ -145,6 +146,7 @@
 <translation id="420541179527342563">Chromium තුළ අගුළු දැමීමේ ප්‍රකාරය අබල කිරීම සඳහා එය ඔබේ iPad මත ක්‍රියාවිරහිත කරන්න.</translation>
 <translation id="4272892696084633551">Chromium හි විශේෂාංග සහ කාර්යසාධනය වැඩි දියුණු කිරීමට උපකාරී වේ</translation>
 <translation id="4302397443352897529">Chromium සැකසීම්</translation>
+<translation id="4304713468139749426">මුරපද කළමනාකරු</translation>
 <translation id="4408912345039114853">Chromium ආරක්ෂණ පරීක්ෂාව ධාවනය කරන්න</translation>
 <translation id="4432744876818348753">Chromium වෙතින් උපරිම ප්‍රයෝජන ලබා ගැනීමට පුරන්න.</translation>
 <translation id="4445228361214254027">ඔබේ සංවිධානය ඔබේ Google ගිණුම තුළ Chromium දත්ත භාවිත කිරීමේ සහ සුරැකීමේ හැකියාව අක්‍රිය කළා. නව පිටුසන්, මුරපද, සහ තවත් ඒවා මෙම උපාංගයට පමණක් සුරකිනු ලැබේ.</translation>
@@ -236,7 +238,6 @@
 <translation id="6154098560469640583">ඔබ පණිවිඩ, ලේඛන, සහ වෙනත් යෙදුම්වල සබැඳි තට්ටු කරන ඕනෑම වේලාවක Chromium භාවිතා කරන්න.</translation>
 <translation id="6157162508956739031">Chromium වෙතින් ඔබේ මුරපද සහ මුරයතුරු ස්වයං පිරවීමෙන් යෙදුම් සහ වෙබ් අඩවි වෙත ඉක්මනින් පුරන්න</translation>
 <translation id="6170619162539716595">හඳුනාගත් ලිපින මත ඔබට උපදෙස් සහ දේශීය තතු ලබා දීමට Google සිතියම් භාවිත කිරීමට Chromium හට ඉඩ දෙන්න.</translation>
-<translation id="6247557882553405851">Google මුරපද කළමනාකරු</translation>
 <translation id="6268381023930128611">Chromium වෙතින් වරන්නද?</translation>
 <translation id="6301717043141881464">ඔබේ අනෙකුත් යෙදුම්වල සුරකින ලද මුරපද පහසුවෙන් ලබා ගැනීමට, ස්වයං පිරවීම සඳහා Chromium තෝරන්න</translation>
 <translation id="6324041800010509197">Chromium හි පටිති ජාලකය වෙත පිවිසෙන්න</translation>

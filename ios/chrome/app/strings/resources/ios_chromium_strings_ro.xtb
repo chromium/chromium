@@ -25,6 +25,7 @@
 <translation id="1502360822835740515">Setează Chromium ca browser prestabilit</translation>
 <translation id="1503199973012840174">Browserul Chromium este învechit. Actualizează-l pentru a rămâne în siguranță.</translation>
 <translation id="1515748263297244785">Folosește Chromium pentru iPad în mod prestabilit</translation>
+<translation id="1530961174488670696">Chromium nu a putut căuta actualizări. Încearcă din nou mai târziu.</translation>
 <translation id="1531155317299575425">Afișează solicitări pentru conectarea la Chromium.</translation>
 <translation id="1553657876656159572">Un feed personalizat creat pentru tine. Include știri, sport și meteo.</translation>
 <translation id="1561849081734670621">Pentru a dezactiva modul Blocare în Chromium, dezactivează-l pe iPhone.</translation>
@@ -145,6 +146,7 @@ Datele tale sunt criptate cu expresia de acces. Introdu-o pentru a folosi și a 
 <translation id="420541179527342563">Pentru a dezactiva modul Blocare în Chromium, dezactivează-l pe iPad.</translation>
 <translation id="4272892696084633551">Contribuie la îmbunătățirea funcțiilor și performanței Chromium</translation>
 <translation id="4302397443352897529">Setări Chromium</translation>
+<translation id="4304713468139749426">Manager de parole</translation>
 <translation id="4408912345039114853">Rulează verificarea de siguranță pentru Chromium</translation>
 <translation id="4432744876818348753">Conectează-te pentru a profita din plin de Chromium.</translation>
 <translation id="4445228361214254027">Organizația ta a dezactivat opțiunea de a folosi și salva datele Chromium în Contul Google. Marcajele, parolele și alte date noi vor fi salvate numai pe acest dispozitiv.</translation>
@@ -236,7 +238,6 @@ De reținut:
 <translation id="6154098560469640583">Folosește Chromium când dai clic pe linkuri în mesaje, documente și alte aplicații</translation>
 <translation id="6157162508956739031">Conectează-te rapid la aplicații și site-uri completând automat parolele și cheile de acces din Chromium</translation>
 <translation id="6170619162539716595">Permite browserului Chromium să folosească Google Maps pentru a-ți oferi indicații de orientare și informații locale despre adresele detectate.</translation>
-<translation id="6247557882553405851">Manager de parole Google</translation>
 <translation id="6268381023930128611">Te deconectezi de la Chromium?</translation>
 <translation id="6301717043141881464">Pentru a accesa cu ușurință parolele salvate în alte aplicații, alege Chromium pentru completare automată</translation>
 <translation id="6324041800010509197">Accesează Grila de file din Chromium</translation>

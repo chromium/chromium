@@ -136,6 +136,7 @@ Ab <ph name="PRODUCT_NAME" /> 140 wird das Verhalten der Funktion durch die Ric
 
       Sollte diese Richtlinie nicht konfiguriert sein, kommt das Standardprofilverzeichnis zum Einsatz.</translation>
 <translation id="1053981429146436598">Eine Gruppe von Richtlinien zu den Einstellungen für Anfragen an private Netzwerke.  Siehe https://wicg.github.io/private-network-access/.</translation>
+<translation id="1055159224864957792">Lokales Passwort</translation>
 <translation id="1059069692400941670">Import der Standardsuchmaschine bei der ersten Ausführung deaktivieren</translation>
 <translation id="1060020040574767394">Benutzerdefinierte Einstellungen des Wasserzeichens konfigurieren</translation>
 <translation id="1062011392452772310">Remote-Bescheinigung (Remote Attestation) für das Gerät aktivieren</translation>
@@ -1229,6 +1230,15 @@ Diese Richtlinie hat keine Auswirkungen, wenn die Option zum Beibehalten von bes
 <translation id="1834796168555733063">Speichern von Passkeys im Passwortmanager deaktivieren</translation>
 <translation id="1836380138559328229">Anmeldedaten für das aktive WLAN auf Geräteebene speichern</translation>
 <translation id="1837165432382702436">Seitenhöhe in Mikrometern</translation>
+<translation id="1838075279369174832">Durch die Konfiguration der Richtlinie wird festgelegt, welche lokalen Authentifizierungsfaktoren für die Anmeldung und die erneute Authentifizierung in <ph name="PRODUCT_OS_NAME" /> verwendet werden können.
+
+      * Alle lokalen Authentifizierungsfaktoren zulassen: ["ALL"] (umfasst auch zukünftige Faktoren).
+
+      * Nur PIN zulassen: ["PIN"].
+
+      * Nur lokale Passwörter zulassen: ["LOCAL_PASSWORD"].
+
+      Wenn die Richtlinie nicht konfiguriert oder eine leere Liste festgelegt ist, stehen verwalteten Nutzern keine lokalen Authentifizierungsfaktoren zur Verfügung.</translation>
 <translation id="1838910874018595451">Voreingestellte Konfiguration für Kerberos-Tickets</translation>
 <translation id="1839042185432919430">Zulassen, dass die Kiosk-Web-App beim Start der App eine Netzwerkaufforderung anzeigt, wenn das Gerät offline ist</translation>
 <translation id="1839711547980672664">Liste der URL-Muster, für die das Öffnen von <ph name="CHROME_DEVTOOLS_NAME" /> zulässig ist</translation>
@@ -8724,6 +8734,7 @@ Hinweis: Nutzer können Cookies blockieren und so auf Google-Dienste zugreifen, 
 Wenn die Richtlinie aktiviert ist, wird der Nutzer bei erfolgreicher Anmeldung auf einem neuen <ph name="PRODUCT_OS_NAME" />-Gerät von seiner vorherigen Sitzung abgemeldet.
 
 Wenn die Richtlinie deaktiviert oder nicht konfiguriert ist, wird der Nutzer nur dann von seiner vorherigen Sitzung abgemeldet, wenn die Richtlinie „<ph name="FLOATING_SSO_ENABLED_POLICY_NAME" />“ oder „<ph name="FLOATING_WORKSPACE_V2_ENABLED_POLICY_NAME" />“ aktiviert ist.</translation>
+<translation id="6854694645176150141">Zugelassene lokale Authentifizierungsfaktoren konfigurieren</translation>
 <translation id="6854767649023671426">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, wird beim Zugriff für Videoaufnahmen beim Nutzer nachgefragt. Ausgenommen sind URLs in der Liste "VideoCaptureAllowedUrls".
 
       Ist diese Richtlinie deaktiviert, wird nie beim Nutzer nachgefragt und die Möglichkeit für Videoaufnahmen steht nur URLs in der Liste "VideoCaptureAllowedUrls" zur Verfügung.
@@ -9629,6 +9640,7 @@ Ist die Richtlinie nicht konfiguriert, entspricht dies der Einstellung „<ph na
 <translation id="7491720878670299691">Häufigkeit, mit der Netzwerkdaten gepollt und auf Ereignisse geprüft werden. Die geringste zulässige Häufigkeit beträgt 1 Minute.
 
       Wenn die Richtlinie nicht konfiguriert ist, beträgt die Häufigkeit standardmäßig 1 Minute.</translation>
+<translation id="7496284563199466390">Bestimmt, welche verwalteten Nutzer die Richtlinie „<ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" />“ festlegen können.</translation>
 <translation id="7498595166686106721">
       Die Richtlinie für Berechtigungen zur Display-Erfassung ermöglicht Zugriff auf „getDisplayMedia()“ gemäß dieser Spezifikation: https://www.w3.org/TR/screen-capture/#feature-policy-integration. Ist die Richtlinie jedoch deaktiviert, wird diese Anforderung nicht erzwungenund „getDisplayMedia()“ wird aus Kontexten zugelassen, die andernfalls nicht zulässig wären. Diese Unternehmensrichtlinie ist vorübergehend. Nach Version 100 von <ph name="PRODUCT_NAME" /> wird sie voraussichtlich entfernt. Sie soll Unternehmensnutzer freigeben, deren Anwendung nicht spezifikationskonform ist, jedoch erst nach einiger Zeit angepasst werden kann.
 
@@ -10566,6 +10578,9 @@ Diese Richtlinie wird auf den Inkognitomodus angewendet. Das bedeutet, dass der 
 <translation id="8225579382697740712">Verwendung der WebHID API verwalten</translation>
 <translation id="8229912067600517877">Entwicklertools aktivieren</translation>
 <translation id="8238421250255592181">Boolescher Parameter, der angibt, ob für die Bildschirmtastatur die automatische Vervollständigung aktiviert ist.</translation>
+<translation id="8238558579601006178">Wenn diese Richtlinie auf „0“ festgelegt oder nicht konfiguriert ist, wird die Richtlinie „<ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" />“ nur auf Nutzerebene für Nutzer angewendet, die mit einer Organisation verknüpft sind.
+Wenn diese Richtlinie auf „1“ festgelegt ist, wird die Richtlinie „<ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" />“ auf Nutzerebene angewendet, auch wenn der Nutzer nicht mit einer Organisation verknüpft ist.
+Wenn diese Richtlinie auf „2“ festgelegt ist, wird die Richtlinie „<ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" />“ nie angewendet, wenn die Quelle ein Nutzer ist.</translation>
 <translation id="8239109177194627162">Autofill für Kreditkarten deaktivieren</translation>
 <translation id="8239143983379015783">Aktivierung des persistenten Kontingents erzwingen</translation>
 <translation id="8240976615241583524">Mit dieser Richtlinie kannst du einschränken, welche IP-Adressen und Schnittstellen WebRTC bei der Suche nach der bestmöglichen Verbindung verwenden kann.

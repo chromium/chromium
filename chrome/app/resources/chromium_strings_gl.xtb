@@ -23,6 +23,7 @@
 <translation id="1184145431117212167">Produciuse un erro durante a instalación porque a versión de Windows non é compatible.</translation>
 <translation id="1185134272377778587">Acerca de Chromium</translation>
 <translation id="1203500561924088507">Grazas por levar a cabo a instalación. Para utilizar <ph name="BUNDLE_NAME" />, debes reiniciar o navegador.</translation>
+<translation id="123265588161106468">Mentres teñas a sesión iniciada, poderás usar os teus contrasinais, ademais doutros datos da túa Conta de Google, en Chromium. Para cambiar esta opción, vai a A túa conta en Chromium.</translation>
 <translation id="1262876892872089030">Mentres esta pestana estaba inactiva, liberouse memoria para que Chromium siga funcionando rápido. Podes optar por excluír este sitio para que nunca estea inactivo.</translation>
 <translation id="1265577313130862557">Chromium bloqueou esta descarga porque o ficheiro é perigoso</translation>
 <translation id="126567311906253476">Cando accedas aos servizos de Google, como Gmail ou YouTube, con <ph name="USER_EMAIL" />, poderás iniciar sesión automaticamente en Chromium coa mesma conta</translation>
@@ -147,6 +148,7 @@
 <translation id="2620436844016719705">Sistema</translation>
 <translation id="2629740064077610681">A túa organización pode ver e xestionar os datos de navegación (como, por exemplo, os marcadores, o historial e os contrasinais). Non poderá ver os datos de navegación doutros perfís de Chromium</translation>
 <translation id="2635452620547538388">Verifica a túa identidade para usar e gardar os datos de Chromium na túa conta (<ph name="ACCOUNT_EMAIL" />)</translation>
+<translation id="2637732208198500597">{COUNT,plural, =0{A opción Protección avanzada require que reinicies Chromium para aplicar unha actualización}=1{A opción Protección avanzada require que reinicies Chromium para aplicar unha actualización. A ventá do modo de incógnito non se volverá abrir.}other{A opción Protección avanzada require que reinicies Chromium para aplicar unha actualización. As # ventás do modo de incógnito non se volverán abrir.}}</translation>
 <translation id="2648074677641340862">Produciuse un erro no sistema operativo durante a instalación. Volve descargar Chromium.</translation>
 <translation id="2661879430930417727">Se compartes un dispositivo, as túas amizades e os membros da túa familia poden navegar cun perfil independente e configurar Chromium como prefiran</translation>
 <translation id="2711502716910134313">Pestana de Chromium</translation>
@@ -157,7 +159,6 @@
 <translation id="2738871930057338499">Non se puido establecer conexión con Internet. Erro: HTTP 403 Forbidden (acceso non permitido). Revisa a configuración do proxy.</translation>
 <translation id="2753623023919742414">Fai clic nun obxecto para buscalo</translation>
 <translation id="2768103863314748511">Define Chromium como o teu visor de PDF predeterminado</translation>
-<translation id="2770231113462710648">Cambiar o navegador predeterminado a:</translation>
 <translation id="2785438272836277133">Esta extensión contén software malicioso, polo que non é segura. Quítaa de Chromium para que non poida ver nin cambiar os teus datos (como a túa información persoal) nos sitios que visites.</translation>
 <translation id="2799223571221894425">Iniciar de novo</translation>
 <translation id="2803971713792056305">O teu Chromium</translation>
@@ -383,6 +384,7 @@
 <translation id="5605834417512968703">Selecciona o que queiras atopar coa busca de imaxes ou preme Escape para saír da función</translation>
 <translation id="5618818588972826921">Selecciona calquera texto ou imaxe que queiras procurar mediante a busca de imaxes ou preme Escape para saír da función</translation>
 <translation id="5623402015214259806">{0,plural, =0{Hai unha actualización de Chromium dispoñible}=1{Hai unha actualización de Chromium dispoñible}other{Hai unha actualización de Chromium que leva dispoñible # días}}</translation>
+<translation id="5633450273457573375">Usa a túa propia <ph name="BEGIN_LINK" />frase de acceso<ph name="END_LINK" /> para encriptar todos os datos de Chromium na túa Conta de Google. Os enderezos e os datos gardados en Google Wallet non se encriptarán con esa frase. Tampouco se sincronizará o historial de navegación de Chromium.</translation>
 <translation id="5643865575100044307">Eliminar sempre do dispositivo os datos dos sitios cando peches Chromium</translation>
 <translation id="5653831366781983928">Reinicia Chromium agora</translation>
 <translation id="5690427481109656848">Google LLC</translation>

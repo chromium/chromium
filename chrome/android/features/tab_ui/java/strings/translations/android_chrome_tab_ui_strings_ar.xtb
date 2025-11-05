@@ -128,6 +128,7 @@
 <translation id="5556417849629758491">عرض معلومات المتجر، وهو خيار متاح بالقرب من أعلى الشاشة</translation>
 <translation id="5627941783489838464">ما مِن تعديلات على علامات التبويب</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{‏رابط واحد (<ph name="TABS_COUNT_ONE" />) من Chrome}zero{‏<ph name="TABS_COUNT_MANY" /> رابط من Chrome}two{‏رابطان (<ph name="TABS_COUNT_MANY" />) من Chrome}few{‏<ph name="TABS_COUNT_MANY" /> روابط من Chrome}many{‏<ph name="TABS_COUNT_MANY" /> رابطًا من Chrome}other{‏<ph name="TABS_COUNT_MANY" /> رابط من Chrome}}</translation>
+<translation id="5740354908255726955">{TAB_COUNT,plural, =1{نقل علامة التبويب إلى اليسار}zero{نقل علامات التبويب إلى اليسار}two{نقل علامتَي التبويب إلى اليسار}few{نقل علامات التبويب إلى اليسار}many{نقل علامات التبويب إلى اليسار}other{نقل علامات التبويب إلى اليسار}}</translation>
 <translation id="5746204836956568669">هل المطلوب تجميع <ph name="NUMBER_OF_TABS" /> علامة تبويب للعمل بشكل أسرع؟</translation>
 <translation id="5773295109010386583">إغلاق علامات التبويب غير النشطة تلقائيًا</translation>
 <translation id="58326064309361797">اسحب علامات التبويب لجمعها.</translation>
@@ -138,6 +139,7 @@
 <translation id="6109251075362363230">ستتم أرشفة جميع علامات التبويب المكرّرة أيضًا، باستثناء آخر نسخة تم استخدامها.</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{إغلاق علامة تبويب محدَّدة واحدة (<ph name="TABS_COUNT_ONE" />)}zero{إغلاق <ph name="TABS_COUNT_MANY" /> علامة تبويب محدَّدة}two{إغلاق علامتَي تبويب محدَّدتَين (<ph name="TABS_COUNT_MANY" />)}few{إغلاق <ph name="TABS_COUNT_MANY" /> علامات تبويب محدَّدة}many{إغلاق <ph name="TABS_COUNT_MANY" /> علامة تبويب محدَّدة}other{إغلاق <ph name="TABS_COUNT_MANY" /> علامة تبويب محدَّدة}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{نقل المجموعة إلى نافذة جديدة}zero{نقل المجموعة إلى نافذة أخرى}two{نقل المجموعة إلى نافذة أخرى}few{نقل المجموعة إلى نافذة أخرى}many{نقل المجموعة إلى نافذة أخرى}other{نقل المجموعة إلى نافذة أخرى}}</translation>
+<translation id="6212374449852603982">{TAB_COUNT,plural, =1{نقل علامة التبويب إلى اليمين}zero{نقل علامات التبويب إلى اليمين}two{نقل علامتَي التبويب إلى اليمين}few{نقل علامات التبويب إلى اليمين}many{نقل علامات التبويب إلى اليمين}other{نقل علامات التبويب إلى اليمين}}</translation>
 <translation id="6228793724645064692">(تقييم المتجر)</translation>
 <translation id="625996437999624951">{TAB_COUNT,plural, =1{إزالة علامة تبويب واحدة من المجموعة}zero{إزالة علامات التبويب من المجموعة}two{إزالة علامتَي التبويب من المجموعة}few{إزالة علامات التبويب من المجموعة}many{إزالة علامات التبويب من المجموعة}other{إزالة علامات التبويب من المجموعة}}</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{إضافة علامة التبويب إلى مجموعة جديدة}zero{إضافة علامات التبويب إلى مجموعة جديدة}two{إضافة علامتَي التبويب إلى مجموعة جديدة}few{إضافة علامات التبويب إلى مجموعة جديدة}many{إضافة علامات التبويب إلى مجموعة جديدة}other{إضافة علامات التبويب إلى مجموعة جديدة}}</translation>

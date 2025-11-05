@@ -742,6 +742,7 @@
 <translation id="3926703470020109118">බාගැනීම අවලංගු කරන ලදි</translation>
 <translation id="3929457972718048006">ලිපින</translation>
 <translation id="3931215329146376310">{count,plural, =1{මෙම අඩවිය සඳහා නව මුරපදය}one{මෙම අඩවිය සඳහා නව මුරපද}other{මෙම අඩවිය සඳහා නව මුරපද}}</translation>
+<translation id="3933372629914873850">ඔබ <ph name="URL" /> වෙත පුරනු ඇත</translation>
 <translation id="3934905113567851655">ප්‍රමාණය වෙනස් කිරීමට කොණින් කොණට අදින්න</translation>
 <translation id="3940195383040445971">ටැබවල මිල ගණන් හඹා යන්න</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{ටැබ {COUNT}ක් වසන්න}one{ටැබ {COUNT}ක් වසන්න}other{ටැබ {COUNT}ක් වසන්න}}</translation>
@@ -1331,6 +1332,7 @@
 <translation id="6103540626693881831">උපාංගයේ සංකේතනය</translation>
 <translation id="611361228753138223">මෙම උපාංගයෙහි ඔබ මෑතක දී පිවිසි අඩවි</translation>
 <translation id="611705554202268369">පටිති සමූහයකට එක් කිරීමට දිගු ඔබන්න</translation>
+<translation id="6117260878488959646">දෝෂයක් ඇති විය. පසුව නැවත උත්සාහ කරන්න.</translation>
 <translation id="6122191549521593678">සබැඳි</translation>
 <translation id="6122831415929794347">ආරක්‍ෂිත බ්‍රවුස් කිරීම අක්‍රිය කරන්නේද?</translation>
 <translation id="6123514585040403489">ඔබේ පටිති වසා දමනු ඇත</translation>
@@ -1353,6 +1355,7 @@
 <translation id="6172428250974276014">ඔව්, දත්ත වෙනම තබා ගන්න (නිර්දේශිතයි)</translation>
 <translation id="6173499589275053515">මුරපදය ඔබේ Google ගිණුමේ සුරකින ලදි, <ph name="EMAIL" /></translation>
 <translation id="6181969657494915430">සෙවීම් තිරය</translation>
+<translation id="6182851675249594487">අභිරුචි වර්ණ තේමාව</translation>
 <translation id="6187302354554850004">අවසන් වරට සමමුහුර්ත කළේ: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319"><ph name="DATE" /> හි තනන ලදි</translation>
 <translation id="6189413832092199491">නොකියවූ</translation>

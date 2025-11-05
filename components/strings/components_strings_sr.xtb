@@ -177,6 +177,7 @@
 <translation id="1282358575813748144">Чамци и пловила</translation>
 <translation id="1283977499362032052">Радне биографије и портфолији</translation>
 <translation id="1285320974508926690">Никад не преводи овај сајт</translation>
+<translation id="1289129165308566697">Погледајте историју на другим уређајима</translation>
 <translation id="1292571435393770077">16. фиока</translation>
 <translation id="1292701964462482250">„Софтвер на вашем рачунару онемогућава Chrome-у да се безбедно повеже на веб“ (само на Windows рачунарима)</translation>
 <translation id="1293556467332435079">Фајлови</translation>
@@ -1008,6 +1009,7 @@
 <translation id="2627847595568876492">Текст се издваја из PDF-а…</translation>
 <translation id="2628025184666666186">Овај сервер не може да докаже да је <ph name="DOMAIN" /> јер користи безбедносни сертификат који Chrome или конфигурација система за шифровање веб-саобраћаја не сматрају поузданим. Узрок томе је можда погрешна конфигурација или нападач који је прекинуо везу.</translation>
 <translation id="2628224721443278970">Пријави ме на Microsoft OneDrive</translation>
+<translation id="2631387782019878060">Верификациони кôд: <ph name="OTP" /></translation>
 <translation id="2634124572758952069">Нисмо успели да пронађемо IP адресу сервера хоста <ph name="HOST_NAME" />.</translation>
 <translation id="2638567100095052009">Унесите @ да бисте претражили <ph name="FEATURED_SEARCH_LIST" /></translation>
 <translation id="2639739919103226564">Статус:</translation>
@@ -2341,6 +2343,7 @@
 <translation id="4822493756793346865">Уобичајене цене се заснивају на информацијама из продавница широм веба током последњих 90 дана.</translation>
 <translation id="4822922322149719535">Прикажи евиденцију грешака</translation>
 <translation id="4823699521959851389"><ph name="SHORT_PRODUCT_NAME" /> тражи приступ дозволи <ph name="PERMISSION" /> на уређају</translation>
+<translation id="4825311006392962663">Прикажи опције за касније плаћање приликом плаћања</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, притисните Tab, па Enter да бисте брзо направили нову Google табелу</translation>
 <translation id="4826588772550366629">камера и микрофон</translation>
 <translation id="4827283332383516812">Избришите картицу</translation>
@@ -2800,6 +2803,7 @@
 <translation id="5558083606899411167">Климатизација</translation>
 <translation id="5558125320634132440">Овај сајт је блокиран јер вероватно има садржај за старију публику</translation>
 <translation id="5559311991468302423">Избришите адресу</translation>
+<translation id="5561747310506483298">Личне карте</translation>
 <translation id="55635442646131152">Структура документа</translation>
 <translation id="5563589142503817291">Да бисте користили микрофон, одобрите Chrome-у приступ у: <ph name="LINK" />.</translation>
 <translation id="5565613213060953222">Отвори картицу без архивирања</translation>
@@ -3451,6 +3455,7 @@
 <translation id="6652101503459149953">Користи Windows Hello</translation>
 <translation id="6654224358955673568">Формално</translation>
 <translation id="6654244995031366386">Стакло (са текстуром)</translation>
+<translation id="6655085656059574817">Ако налог остане повезан, брже ћете плаћати користећи <ph name="BNPL_ISSUER_NAME" />, али можете да опозовете везу ако одете на <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" /></translation>
 <translation id="6657585470893396449">Лозинка</translation>
 <translation id="6659246032834639189">Ова цена је ниска</translation>
 <translation id="6660413144148052430">локација</translation>

@@ -158,7 +158,6 @@ Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahi
 <translation id="2753623023919742414">Bofya ili utafute</translation>
 <translation id="2757826245013442432">{COUNT,plural, =0{Mipangilio ya Ulinzi wa Hali ya Juu huhitaji ufungue Chrome tena ili utumie sasisho}=1{Mipangilio ya Ulinzi wa Hali ya Juu huhitaji ufungue Chrome tena ili utumie sasisho. Dirisha lako la faraghani halitafunguka upya.}other{Mipangilio ya Ulinzi wa Hali ya Juu huhitaji ufungue Chrome tena ili utumie sasisho. Madirisha yako # ya faraghani hayatafunguka upya.}}</translation>
 <translation id="2765403129283291972">Chrome inahitaji ruhusa ya kufikia maikrofoni yako katika tovuti hii</translation>
-<translation id="2770231113462710648">Badilisha kivinjari chaguomsingi kiwe:</translation>
 <translation id="2775140325783767197">Chrome imeshindwa kukagua manenosiri yako. Jaribu kuangalia muunganisho wako wa Intaneti.</translation>
 <translation id="2797864378188255696">Unapoingia katika akaunti za huduma za Google kama Gmail au YouTube ukitumia <ph name="USER_EMAIL" />, unaweza kuingia katika akaunti kwenye Chrome ukitumia akaunti ile ile.</translation>
 <translation id="2799162042226656283">Chrome Yako</translation>
@@ -271,6 +270,7 @@ Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahi
 <translation id="3968962723676998462">Weka kauli yako ya siri ili utumie na uhifadhi data ya Chrome katika akaunti yako, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="3973161977468201858">Google Chrome ingependa kufuta data yako ya Kidhibiti cha Manenosiri cha Google. Weka nenosiri lako la Windows ili uruhusu hatua hii.</translation>
 <translation id="400161754580828648">Ili uonyeshe skrini yako, washa kinasa skrini katika Chrome kwenye Mipangilio ya Mfumo.</translation>
+<translation id="4012899077942246412">Wakati umeingia katika akaunti, unaweza kutumia manenosiri yako na mengineyo kwenye Akaunti yako ya Google katika Chrome. Ili ubadilishe mipangilio hii, nenda kwenye “Akaunti yako katika Chrome”.</translation>
 <translation id="4022972681110646219">Tafsiri skrini</translation>
 <translation id="4023601594785368013">Lugha chanzo: <ph name="LANGUAGE" /></translation>
 <translation id="4035053306113201399">Mfumo wa Uendeshaji wa Chrome unahitaji kuzimwa na kuwashwa ili utekeleze sasisho.</translation>
@@ -654,6 +654,7 @@ Google Chrome haiwezi kufufua mipangilio yako.</translation>
 <translation id="8255190535488645436">Google Chrome inatumia kamera na maikrofoni yako.</translation>
 <translation id="8267953129876836456">Chrome imepata baadhi ya mapendekezo ya usalama unayopaswa kukagua</translation>
 <translation id="8286862437124483331">Google Chrome inajaribu kuonyesha manenosiri. Chapa nenosiri lako la Windows ili uruhusu hili.</translation>
+<translation id="8289399803055125418">Tumia <ph name="BEGIN_LINK" />kauli yako ya siri<ph name="END_LINK" /> kusimba data yote ya Chrome kwa njia fiche katika Akaunti yako ya Google. Anwani na data yoyote iliyohifadhiwa kwenye Pochi ya Google haitasimbwa kwa njia fiche kwa kutumia kauli yako ya siri. Historia ya kuvinjari kwenye Chrome haitasawazishwa.</translation>
 <translation id="829923460755755423">Weka njia ya mkato ya Kidhibiti cha Manenosiri cha Google</translation>
 <translation id="8313851650939857356">Hitilafu ya kuwasha: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8321888067342493336">Hifadhi ikiwa picha</translation>

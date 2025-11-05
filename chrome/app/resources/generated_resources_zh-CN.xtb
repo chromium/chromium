@@ -1887,6 +1887,7 @@
 <translation id="2287704681286152065">{NUM_SITES,plural, =1{为保护您的数据，已撤消您近期未访问过的一个网站的权限}other{为保护您的数据，已撤消您近期未访问过的多个网站的权限}}</translation>
 <translation id="2287944065963043964">登录屏幕</translation>
 <translation id="2290615375132886363">平板电脑导航按钮</translation>
+<translation id="2290703778620332549">要替换还是创建新分组？</translation>
 <translation id="2291452790265535215">试试使用侧边栏查看书签、历程等内容吧</translation>
 <translation id="229182044471402145">找不到符合要求的字体。</translation>
 <translation id="2292590498047171967">若要分享标签页并与他人协作，请与 <ph name="EMAIL" /> 同步您的历史记录和标签页</translation>
@@ -2008,6 +2009,7 @@
 <translation id="2359345697448000899">您可以通过点击“工具”菜单中的“扩展程序”，管理您的扩展程序。</translation>
 <translation id="2359556993567737338">连接蓝牙设备</translation>
 <translation id="2359808026110333948">继续</translation>
+<translation id="2360047907847684514">利用扩展程序和主题让浏览器如虎添翼</translation>
 <translation id="2360792123962658445">若要获取此网页的摘要、进行相关搜索以及查询关于此网页的其他实用信息，请在工具栏中选择“Google 搜索”侧边栏按钮</translation>
 <translation id="236117173274098341">优化</translation>
 <translation id="2361340419970998028">正在发送反馈…</translation>
@@ -2446,6 +2448,7 @@
 <translation id="2667463864537187133">管理拼写检查</translation>
 <translation id="2668604389652548400">请移除此扩展程序，或将其替换为 <ph name="BEGIN_LINK" />Chrome 应用商店<ph name="END_LINK" />中的类似扩展程序</translation>
 <translation id="2669241540496514785">无法打开 <ph name="APP_NAME" /></translation>
+<translation id="2669250147452250961">开启后，即可获取其他设备上的浏览记录和标签页</translation>
 <translation id="2669454659051515572">任何使用此设备的用户都能看到已下载的文件</translation>
 <translation id="2670102641511624474"><ph name="APP_NAME" /> 正在共享 Chrome 标签页。</translation>
 <translation id="2670168377011445813">如果 Chrome 发现您的密码在公开数据泄露事件中外泄，Google 密码管理工具可能会在您登录时建议更改密码。<ph name="BEGIN_LINK" />详细了解自动更改密码<ph name="END_LINK" /></translation>
@@ -2727,6 +2730,7 @@
 <translation id="2852045827873867442">需要联网。</translation>
 <translation id="285237063405807022">（加载中）</translation>
 <translation id="2853121255651601031">密码已保存</translation>
+<translation id="2854453262159518435">替换现有标签页分组</translation>
 <translation id="2855243985454069333">从所有已同步的设备中删除历史记录</translation>
 <translation id="2855812646048059450">通过 <ph name="CREDENTIAL_PROVIDER" /> 登录</translation>
 <translation id="2856776373509145513">创建一个新容器</translation>
@@ -3838,6 +3842,7 @@
 <translation id="3643962751030964445">此设备由 <ph name="DEVICE_MANAGER" /> 管理。<ph name="DEVICE_MANAGER" /> 要求您为账号 <ph name="USER_EMAIL_ADDRESS" /> 创建一份新的个人资料</translation>
 <translation id="364418405912311456">在图片上点击并拖动，或突出显示文字，即可进行搜索</translation>
 <translation id="3645372836428131288">请稍微移动一下手指，以便系统记录您指纹的不同部分。</translation>
+<translation id="3645951915068244649">已使用此书签文件夹创建标签页分组。您要创建新的标签页分组，还是替换现有的标签页分组？</translation>
 <translation id="3646789916214779970">重置为默认主题背景</translation>
 <translation id="3647654707956482440">无法使用此链接。请检查是否有拼写错误，或者换个链接重试。</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{已收到“<ph name="DEVICE_NAME" />”发来的 <ph name="ATTACHMENTS" />}other{已收到“<ph name="DEVICE_NAME" />”发来的 <ph name="ATTACHMENTS" />}}</translation>
@@ -4928,7 +4933,7 @@
 <translation id="4378589147979399051">使用主键盘控制鼠标光标</translation>
 <translation id="4379097572583973456">网站还可嵌入其他网站的内容（如图片、广告和文字），这些网站也会保存数据。</translation>
 <translation id="4379281552162875326">卸载“<ph name="APP_NAME" />”？</translation>
-<translation id="4379623957571212011">只需选择一张图片，便可立即应用相应主题</translation>
+<translation id="4379623957571212011">选择图片即可立即应用主题</translation>
 <translation id="4380055775103003110">如果此问题仍然存在，您可以尝试在 <ph name="SITE_ETLD_PLUS_ONE" /> 上通过其他方法继续操作。</translation>
 <translation id="4380648069038809855">已进入全屏模式</translation>
 <translation id="4381902252848068865">不允许网站保存数据</translation>
@@ -5816,6 +5821,7 @@
 <translation id="5010886807652684893">直观视图</translation>
 <translation id="5012523644916800014">管理密码和通行密钥</translation>
 <translation id="501394389332262641">电池电量低提示音</translation>
+<translation id="5014286001996333986">要替换还是创建新分组？</translation>
 <translation id="5015344424288992913">正在解析代理...</translation>
 <translation id="5016305686459575361">连接手机后，您可以畅享以下功能：</translation>
 <translation id="5016491575926936899">您可以在计算机上收发短信、共享互联网连接、回复对话通知，还可以用手机解锁 <ph name="DEVICE_TYPE" />。<ph name="FOOTNOTE_POINTER" /><ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
@@ -6443,7 +6449,7 @@
 <translation id="5457082343331641453">添加到您的搜索内容中</translation>
 <translation id="5457113250005438886">无效</translation>
 <translation id="5457459357461771897">读取和删除您计算机上的照片、音乐和其他媒体</translation>
-<translation id="5457795687441958389">保持退出账号状态</translation>
+<translation id="5457795687441958389">保持未登录状态</translation>
 <translation id="5458214261780477893">Dvorak</translation>
 <translation id="5458716506062529991">您输错 PIN 码的次数过多。如需访问您的通行密钥和密码，请更改 PIN 码。</translation>
 <translation id="5459470938885464873">导入证书时出错</translation>
@@ -6517,6 +6523,7 @@
 <translation id="5499453227627332024">Linux 容器有可用的升级，您也可过段时间再从“设置”应用中升级。</translation>
 <translation id="5499476581866658341">您现在可以查看手机中的近期照片和媒体</translation>
 <translation id="549957179819296104">新图标</translation>
+<translation id="5499634624419508916">替换现有标签页分组</translation>
 <translation id="5500163593833085874">选择鼠标左键后，按下“+”键表示双击</translation>
 <translation id="5500168250243071806">当您登录后，系统可能会将<ph name="BEGIN_LINK_SEARCH" />搜索记录<ph name="END_LINK_SEARCH" />和<ph name="BEGIN_LINK_GOOGLE" />其他形式的活动记录<ph name="END_LINK_GOOGLE" />保存在您的 Google 账号中。您可以随时删除这些记录。</translation>
 <translation id="5501322521654567960">靠左对齐的侧边栏</translation>
@@ -7330,7 +7337,7 @@
 <translation id="6086846494333236931">这是您的管理员安装的</translation>
 <translation id="6087286598828478206">要屏蔽并退出分组吗？</translation>
 <translation id="6087960857463881712">酷炫表情</translation>
-<translation id="608819668983150122">请验证您的身份，以便在此设备上保存和使用您的通行密钥</translation>
+<translation id="608819668983150122">验证您的身份即可在此设备上保存和使用您的通行密钥</translation>
 <translation id="6088475950266477163">设置(&amp;G)</translation>
 <translation id="608912389580139775">若要将此网页添加到您的阅读清单中，请点击“书签”图标</translation>
 <translation id="6089289670051481345">蓝色弱</translation>
@@ -7925,6 +7932,7 @@
 <translation id="6512759338201777379">生成了第 <ph name="INDEX" /> 张<ph name="SUBJECT" />图片，情感基调是<ph name="MOOD" />。</translation>
 <translation id="6513247462497316522">如果您没有连接到其他网络，则 Google Chrome 会使用移动数据网络。</translation>
 <translation id="6514010653036109809">可用的设备：</translation>
+<translation id="6515620015470298987">由于出现设备配置检查问题，登录失败。请对<ph name="DEVICE_TYPE" />执行 Powerwash 操作，然后重试。</translation>
 <translation id="6516990372629061585">查看从 Linux 导入的证书</translation>
 <translation id="6517382055541687102">所选设备已更改为“<ph name="DEVICE_NAME" />”</translation>
 <translation id="6517420300299531857">您在“我的云端硬盘”中保存的文件会自动同步到 Chromebook，以供您在未联网的情况下访问。这将占用大约 <ph name="REQUIRED_SPACE" /> 的存储空间。您目前有 <ph name="FREE_SPACE_AVAILABLE" /> 的可用空间。</translation>
@@ -8150,6 +8158,7 @@
 <translation id="6667187897999649121">目前，您只能向家庭成员分享密码。不妨<ph name="BEGIN_LINK" />创建一个家人群组<ph name="END_LINK" />并添加最多 6 名成员，与他们一起充分利用 Google 产品和订阅。</translation>
 <translation id="666731172850799929">在 <ph name="APP_NAME" />中打开</translation>
 <translation id="6669195257625975787">数据处理方式与您正在查看的网站相同</translation>
+<translation id="6669865825859209286">点击此处可分离或排列拆分视图</translation>
 <translation id="6670142487971298264">现在可以使用“<ph name="APP_NAME" />”了</translation>
 <translation id="6670767097276846646">某些扩展程序可以向 Chrome 添加搜索引擎</translation>
 <translation id="6670983860904543332">自动更新可为您提供最新功能。探索近期更新中的亮点。</translation>
@@ -8323,6 +8332,7 @@
 <translation id="6787839852456839824">键盘快捷键</translation>
 <translation id="6788210894632713004">未打包的扩展程序</translation>
 <translation id="6789592661892473991">水平分割</translation>
+<translation id="6789665473250283877">移除“<ph name="TOOL_NAME" />”</translation>
 <translation id="6789834167207639931">您必须在下一个屏幕中再次输入您的 Google 账号密码，才能完成恢复流程</translation>
 <translation id="6790428901817661496">播放</translation>
 <translation id="6790497603648687708">已远程添加“<ph name="EXTENSION_NAME" />”</translation>
@@ -8372,7 +8382,7 @@
 <translation id="6814754908910736855">Wi-Fi 直连客户端信息：</translation>
 <translation id="6815376457351236663">仍然打开</translation>
 <translation id="6815787852028615386">此文件具有欺骗性，可能会对您的设备做出您意想不到的更改</translation>
-<translation id="6815861164669871832">询问关于某个标签页的问题</translation>
+<translation id="6815861164669871832">询问关于标签页的问题</translation>
 <translation id="6816097980753839617">蓝/黄（蓝色弱视）</translation>
 <translation id="6816443526270499804">正在查找可用的 eSIM 卡配置文件</translation>
 <translation id="6818198425579322765">要翻译的网页语言</translation>
@@ -8599,7 +8609,7 @@
 <translation id="6973611239564315524">可以升级至 Debian 10 (Buster)</translation>
 <translation id="69739764870135975">如果 Google 也是您的默认搜索引擎，您将会看到更实用、与上下文更相关的建议</translation>
 <translation id="697508444536771064">关闭 Linux</translation>
-<translation id="6977008555972361928"><ph name="WEBSITE_ORIGIN" /> 想在您的移动设备上保存信息</translation>
+<translation id="6977008555972361928"><ph name="WEBSITE_ORIGIN" /> 想将信息保存到您的移动设备上</translation>
 <translation id="6978121630131642226">搜索引擎</translation>
 <translation id="6978717888677691380">您已屏蔽的网站</translation>
 <translation id="6979041727349121225">节能模式</translation>
@@ -10526,7 +10536,7 @@
 <translation id="8291415872436043161">下载 Chrome</translation>
 <translation id="8291942417224950075">个人使用</translation>
 <translation id="8293206222192510085">添加书签</translation>
-<translation id="8293957715257389063">在标签页中进行深度搜索</translation>
+<translation id="8293957715257389063">深度搜索标签页中的内容</translation>
 <translation id="8294431847097064396">来源</translation>
 <translation id="8294476140219241086">标签页整理工具</translation>
 <translation id="8295449579927246485">实时翻译</translation>
@@ -10721,6 +10731,7 @@
 <translation id="8427213022735114808">语音输入功能会将您的语音内容发送给 Google，以便能在任何文本字段中进行语音输入。</translation>
 <translation id="8427292751741042100">嵌入到任何主机上</translation>
 <translation id="8428213095426709021">设置</translation>
+<translation id="8428257636009471988">访问 Chrome 应用商店</translation>
 <translation id="8428271547607112339">添加学校账号</translation>
 <translation id="8428634594422941299">知道了</translation>
 <translation id="84297032718407999">您将在 <ph name="LOGOUT_TIME_LEFT" />后退出登录</translation>
@@ -11576,6 +11587,7 @@
 <translation id="90033698482696970">自动扫描查找可用的 eSIM 卡配置文件？</translation>
 <translation id="9003647077635673607">允许在所有网站上运行脚本</translation>
 <translation id="9005774573776346118">如需在您的所有设备上获取密码、书签等信息，请以 <ph name="EMAIL" /> 的身份登录</translation>
+<translation id="9008133509889712539"><ph name="ORIGIN" /> 想在应用中打开此链接。</translation>
 <translation id="9008201768610948239">忽略</translation>
 <translation id="9008201858626224558">“<ph name="SUBPAGE_TITLE" />”详情页面上的返回按钮</translation>
 <translation id="9008828754342192581">您先前已选择允许 <ph name="ORIGIN" /> 上的所有扩展程序</translation>
@@ -11628,6 +11640,7 @@
 <translation id="9032004780329249150">在 iOS 设备上使用您的密码</translation>
 <translation id="9032097289595078011">停用快速配对</translation>
 <translation id="9032513103438497286">屏蔽在此 <ph name="DEVICE_TYPE" /> 上安装的应用。如要限制下载应用或内容，请前往 Google Play 设置。</translation>
+<translation id="9033204084988490464">收起垂直标签页</translation>
 <translation id="9033765790910064284">仍然继续</translation>
 <translation id="9033857511263905942">粘贴(&amp;P)</translation>
 <translation id="903480517321259405">重新输入 PIN 码</translation>

@@ -21,6 +21,7 @@
 <translation id="1184145431117212167">Instalarea nu a reușit, deoarece versiunea ta de Windows nu este acceptată.</translation>
 <translation id="1185134272377778587">Despre Chromium</translation>
 <translation id="1203500561924088507">Mulțumim pentru instalare. Înainte să folosești <ph name="BUNDLE_NAME" /> trebuie să repornești browserul.</translation>
+<translation id="123265588161106468">După ce te conectezi, poți folosi parolele și alte date din Contul Google în Chromium. Pentru a modifica această setare, accesează Contul tău în Chromium.</translation>
 <translation id="1262876892872089030">Cât timp fila a fost inactivă, memoria a fost eliberată pentru a menține viteza ridicată a browserului Chromium. Poți alege ca acest site să nu fie mereu inactiv.</translation>
 <translation id="1265577313130862557">Chromium a blocat descărcarea, deoarece fișierul este periculos</translation>
 <translation id="126567311906253476">Când te conectezi la Servicii Google, cum ar fi Gmail sau YouTube, cu <ph name="USER_EMAIL" />, te poți conecta automat la Chromium cu același cont</translation>
@@ -145,6 +146,7 @@
 <translation id="2620436844016719705">Sistem</translation>
 <translation id="2629740064077610681">Organizația ta poate să vadă și să gestioneze datele de navigare, cum ar fi marcajele, istoricul și parolele. Nu poate să vadă datele de navigare din alte profiluri Chromium</translation>
 <translation id="2635452620547538388">Confirmă-ți identitatea pentru a folosi și a salva datele Chromium în contul <ph name="ACCOUNT_EMAIL" /></translation>
+<translation id="2637732208198500597">{COUNT,plural, =0{Protecția avansată necesită relansarea Chromium pentru a aplica o actualizare}=1{Protecția avansată necesită relansarea Chromium pentru a aplica o actualizare. Fereastra incognito nu se va mai deschide.}few{Protecția avansată necesită relansarea Chromium pentru a aplica o actualizare. Cele # ferestre incognito nu se vor mai deschide.}other{Protecția avansată necesită relansarea Chromium pentru a aplica o actualizare. Cele # de ferestre incognito nu se vor mai deschide.}}</translation>
 <translation id="2648074677641340862">S-a produs o eroare de sistem de operare în timpul instalării. Descărcați din nou Chromium.</translation>
 <translation id="2661879430930417727">Dacă permiți accesul la un dispozitiv, familia și prietenii pot să navigheze separat și să configureze Chromium cum doresc</translation>
 <translation id="2711502716910134313">Fila Chromium</translation>
@@ -155,7 +157,6 @@
 <translation id="2738871930057338499">Nu se poate realiza conexiunea la internet. HTTP Eroare 403 – Acces interzis. Verifică-ți configurația de proxy.</translation>
 <translation id="2753623023919742414">Dă clic pentru a căuta</translation>
 <translation id="2768103863314748511">Setează Chromium ca vizualizator PDF prestabilit</translation>
-<translation id="2770231113462710648">Schimbă browserul prestabilit la:</translation>
 <translation id="2785438272836277133">Această extensie conține programe malware și este nesigură. Elimin-o din Chromium ca să nu mai poată vedea și modifica datele tale de pe site-urile pe care le accesezi, inclusiv informațiile cu caracter personal.</translation>
 <translation id="2799223571221894425">Repornește</translation>
 <translation id="2803971713792056305">Chromium</translation>
@@ -381,6 +382,7 @@
 <translation id="5605834417512968703">Selectează orice vrei să cauți cu Căutarea de imagini sau apasă Escape pentru a ieși din Căutarea de imagini</translation>
 <translation id="5618818588972826921">Selectează orice text sau imagine pentru a căuta folosind Căutarea de imagini sau apasă Escape pentru a ieși din Căutarea de imagini</translation>
 <translation id="5623402015214259806">{0,plural, =0{Este disponibilă o actualizare Chromium}=1{Este disponibilă o actualizare Chromium}few{O actualizare Chromium este disponibilă de # zile}other{O actualizare Chromium este disponibilă de # de zile}}</translation>
+<translation id="5633450273457573375">Folosește <ph name="BEGIN_LINK" />propria expresie de acces<ph name="END_LINK" /> pentru a cripta toate datele Chromium din Contul Google. Adresele și datele salvate în Portofel Google nu vor fi criptate cu expresia de acces. Istoricul de navigare din Chromium nu se va sincroniza.</translation>
 <translation id="5643865575100044307">Șterge întotdeauna datele privind site-urile de pe dispozitiv când închizi Chromium</translation>
 <translation id="5653831366781983928">Repornește Chromium acum</translation>
 <translation id="5690427481109656848">Google LLC</translation>

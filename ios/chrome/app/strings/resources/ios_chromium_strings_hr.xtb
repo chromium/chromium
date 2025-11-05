@@ -25,6 +25,7 @@
 <translation id="1502360822835740515">Postavljanje Chromiuma kao zadanog preglednika</translation>
 <translation id="1503199973012840174">Chromium je zastario. Ažurirajte ga da biste se zaštitili.</translation>
 <translation id="1515748263297244785">Koristite Chromium za iPad prema zadanim postavkama</translation>
+<translation id="1530961174488670696">Chromium nije uspio provjeriti ima li ažuriranja. Pokušajte ponovno kasnije.</translation>
 <translation id="1531155317299575425">Prikazuje obavijesti za prijavu u Chromium.</translation>
 <translation id="1553657876656159572">Prilagođeni feed izrađen za vas. Uključuje vijesti, sport i vremensku prognozu.</translation>
 <translation id="1561849081734670621">Da biste onemogućili način zaključavanja u Chromiumu, isključite ga na iPhoneu.</translation>
@@ -145,6 +146,7 @@ Vaši se podaci šifriraju vašom šifrom. Unesite je da biste upotrebljavali i 
 <translation id="420541179527342563">Da biste onemogućili način zaključavanja u Chromiumu, isključite ga na iPadu.</translation>
 <translation id="4272892696084633551">Pomozite poboljšati Chromiumove značajke i izvedbu</translation>
 <translation id="4302397443352897529">Postavke Chromiuma</translation>
+<translation id="4304713468139749426">Upravitelj zaporki</translation>
 <translation id="4408912345039114853">Pokreni sigurnosnu provjeru u Chromiumu</translation>
 <translation id="4432744876818348753">Prijavite se da biste iskoristili sve prednosti Chromiuma.</translation>
 <translation id="4445228361214254027">Vaša organizacija isključila je mogućnost upotrebe i spremanja Chromiumovih podataka na vaš Google račun. Nove oznake, zaporke i drugi podaci spremat će se samo na ovom uređaju.</translation>
@@ -236,7 +238,6 @@ Važne napomene:
 <translation id="6154098560469640583">Upotrijebite Chromium svaki put kada dodirnete veze u porukama, dokumentima i drugim aplikacijama</translation>
 <translation id="6157162508956739031">Brzo se prijavite u aplikacije i na web-lokacije automatskim popunjavanjem zaporki i pristupnih ključeva iz Chromiuma</translation>
 <translation id="6170619162539716595">Dopustite Chromiumu da upotrebljava Google karte kako bi vam pružao upute i lokalne informacije o otkrivenim adresama.</translation>
-<translation id="6247557882553405851">Google upravitelj zaporki</translation>
 <translation id="6268381023930128611">Želite li se odjaviti iz Chromiuma?</translation>
 <translation id="6301717043141881464">Da biste jednostavno dohvatili spremljene zaporke u drugim aplikacijama, upotrijebite Chromium za automatsko popunjavanje</translation>
 <translation id="6324041800010509197">Otvaranje rešetke kartica u Chromiumu</translation>

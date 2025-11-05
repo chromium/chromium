@@ -152,8 +152,8 @@
 <translation id="2738871930057338499">İnternet'e bağlanılamadı. HTTP 403 Yasak. Lütfen proxy yapılandırmanızı kontrol edin.</translation>
 <translation id="2742320827292110288">Uyarı: Google Chrome, uzantıların tarama geçmişinizi kaydetmesini önleyemez. Gizli modda bu uzantıyı devre dışı bırakmak için bu seçeneğin onay işaretini kaldırın.</translation>
 <translation id="2753623023919742414">Aramak için tıklayın</translation>
+<translation id="2757826245013442432">{COUNT,plural, =0{Gelişmiş Koruma, bir güncellemeyi uygulamak için Chrome'u yeniden başlatmanızı gerektiriyor.}=1{Gelişmiş Koruma, bir güncellemeyi uygulamak için Chrome'u yeniden başlatmanızı gerektiriyor. Gizli pencereniz yeniden açılmayacak.}other{Gelişmiş Koruma, bir güncellemeyi uygulamak için Chrome'u yeniden başlatmanızı gerektiriyor. # gizli pencereniz yeniden açılmayacak.}}</translation>
 <translation id="2765403129283291972">Chrome'un bu sitede mikrofonunuza erişmesi için izin gerekiyor</translation>
-<translation id="2770231113462710648">Varsayılan tarayıcıyı şuna dönüştür:</translation>
 <translation id="2775140325783767197">Chrome, şifrelerinizi kontrol edemiyor. İnternet bağlantınızı kontrol etmeyi deneyin.</translation>
 <translation id="2797864378188255696"><ph name="USER_EMAIL" /> ile Gmail veya YouTube gibi Google hizmetlerinde oturum açarken aynı hesapla Chrome'da otomatik olarak oturum açabilirsiniz</translation>
 <translation id="2799162042226656283">Chrome'unuz</translation>
@@ -265,6 +265,7 @@
 <translation id="3968962723676998462">Chrome verilerini kullanmak ve <ph name="ACCOUNT_EMAIL" /> hesabınıza kaydetmek için parolanızı girin</translation>
 <translation id="3973161977468201858">Google Chrome, Google Şifre Yöneticisi verilerinizi silmek istiyor. Buna izin vermek için Windows şifrenizi yazın.</translation>
 <translation id="400161754580828648">Ekranınızı paylaşmak için Sistem Tercihleri'nde Chrome'un ekranı kaydetmesine izin verin.</translation>
+<translation id="4012899077942246412">Oturumunuz açıkken Chrome'da Google Hesabınızdaki şifrelerinizi ve diğer öğeleri kullanabilirsiniz. Bunu değiştirmek için "Chrome'daki hesabınız" bölümüne gidin.</translation>
 <translation id="4022972681110646219">Ekrandaki yazıları çevir</translation>
 <translation id="4023601594785368013">Orijinal dil: <ph name="LANGUAGE" /></translation>
 <translation id="4035053306113201399">Güncellemenin uygulanması için ChromeOS yeniden başlatılmalıdır.</translation>
@@ -646,6 +647,7 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="8255190535488645436">Google Chrome kameranızı ve mikrofonunuzu kullanıyor.</translation>
 <translation id="8267953129876836456">Chrome, incelemeniz gereken bazı güvenlik önerileri tespit etti</translation>
 <translation id="8286862437124483331">Google Chrome şifreleri göstermeye çalışıyor. Buna izin vermek için Windows şifrenizi yazın.</translation>
+<translation id="8289399803055125418">Google Hesabınızdaki tüm Chrome verilerini şifrelemek için <ph name="BEGIN_LINK" />kendi parolanızı<ph name="END_LINK" /> kullanın. Adresler ve Google Cüzdan'a kaydedilen veriler parolanızla şifrelenmez. Chrome'daki tarama geçmişi senkronize edilmez.</translation>
 <translation id="829923460755755423">Google Şifre Yöneticisi için kısayol ekleyin</translation>
 <translation id="8313851650939857356">Başlatma hatası: <ph name="STARTUP_ERROR" /></translation>
 <translation id="8321888067342493336">Resim olarak kaydet</translation>

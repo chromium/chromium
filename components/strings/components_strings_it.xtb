@@ -177,6 +177,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1282358575813748144">Imbarcazioni e natanti</translation>
 <translation id="1283977499362032052">Curriculum e portfolio</translation>
 <translation id="1285320974508926690">Non tradurre mai questo sito</translation>
+<translation id="1289129165308566697">Visualizza la cronologia su altri dispositivi</translation>
 <translation id="1292571435393770077">Vassoio 16</translation>
 <translation id="1292701964462482250">"Il software installato sul computer sta impedendo a Chrome di connettersi in sicurezza al Web" (solo su computer Windows)</translation>
 <translation id="1293556467332435079">File</translation>
@@ -1841,6 +1842,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4014895360827978999">Servizi commerciali e sistemi di pagamento</translation>
 <translation id="4018819349042761761">Chiave pubblica</translation>
 <translation id="4023431997072828269">Le tue informazioni saranno visibili agli altri utenti perché il modulo verrà inviato tramite una connessione non sicura.</translation>
+<translation id="4024673763872230929">Salva le tue informazioni e compila i moduli più rapidamente. Salva sul dispositivo.</translation>
 <translation id="4025325634010721551">Policy ricaricate</translation>
 <translation id="4025338605225449265">Cambio valute e valuta estera</translation>
 <translation id="4025777154208238692">Inverti ordine</translation>
@@ -2274,6 +2276,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4732860731866514038">Download del language pack <ph name="LANGUAGE" /> in corso… <ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992"><ph name="URL" /> vuole usare la posizione del dispositivo</translation>
 <translation id="473414950835101501">Utilizzare le fotocamere</translation>
+<translation id="4734343956394152985"><ph name="BEGIN_BOLD" />Valore predefinito corrente<ph name="END_BOLD" /> · <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="4736825316280949806">Riavvia Chromium</translation>
 <translation id="4736934858538408121">Carta virtuale</translation>
 <translation id="473775607612524610">Aggiorna</translation>
@@ -2336,6 +2339,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4822493756793346865">I prezzi tipici si basano sui negozi disponibili sul web negli ultimi 90 giorni.</translation>
 <translation id="4822922322149719535">Esamina il log degli errori</translation>
 <translation id="4823699521959851389"><ph name="SHORT_PRODUCT_NAME" /> deve accedere a <ph name="PERMISSION" /> del dispositivo</translation>
+<translation id="4825311006392962663">Mostra le opzioni di pagamento posticipato in fase di pagamento</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, premi Tab e poi Invio per creare rapidamente un nuovo foglio Google</translation>
 <translation id="4826588772550366629">fotocamera e microfono</translation>
 <translation id="4827283332383516812">Elimina carta</translation>
@@ -2427,6 +2431,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4961708452830821006">Per usare il microfono, concedi l'accesso a Chrome in <ph name="LINK" />.</translation>
 <translation id="4963413887558778009">Architettura del paesaggio</translation>
 <translation id="4967366744630699583">Modifica l'indirizzo</translation>
+<translation id="4968046291688599384">Numero di carta virtuale temporaneo <ph name="BNPL_ISSUER_NAME" /> inserito.</translation>
 <translation id="4968522289500246572">Questa app è stata progettata per dispositivi mobili e il relativo ridimensionamento potrebbe non avvenire correttamente. L'app potrebbe riavviarsi o presentare problemi.</translation>
 <translation id="4968665849807487749">Può chiedere di gestire le finestre su tutti i tuoi schermi</translation>
 <translation id="4969341057194253438">Elimina la registrazione</translation>
@@ -3382,6 +3387,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6521745193039995384">Non attivo</translation>
 <translation id="6522682797352430154">Musica classica</translation>
 <translation id="6524830701589638230">Pulsante Gestisci le impostazioni di accessibilità, attiva per personalizzare i tuoi strumenti di accessibilità nelle impostazioni di Chrome</translation>
+<translation id="6525222262307262764">Mantieni il valore predefinito corrente</translation>
 <translation id="6527049834925947126">Industria alimentare</translation>
 <translation id="6529173248185917884">Settimo rullo</translation>
 <translation id="6529602333819889595">&amp;Ripeti eliminazione</translation>
@@ -3402,6 +3408,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6567832540451970450">L'amministratore consente <ph name="PERMISSION" /> per questo sito</translation>
 <translation id="6568793038316600992">Pulsante Gestisci metodi di pagamento, attiva per gestire i tuoi pagamenti e i dati delle carte di credito nelle impostazioni di Chrome</translation>
 <translation id="6569060085658103619">È visualizzata la pagina di un'estensione</translation>
+<translation id="6571992525120410251">Chiedi a <ph name="ENGINE_NAME" /> qualsiasi cosa</translation>
 <translation id="6572867903637058088">Hai trovato questa informazione utile?</translation>
 <translation id="6573200754375280815">Perforatura doppia a destra</translation>
 <translation id="6575408526598156416">Salva nell'account</translation>
@@ -3443,6 +3450,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6652101503459149953">Usa Windows Hello</translation>
 <translation id="6654224358955673568">Rendi più formale</translation>
 <translation id="6654244995031366386">Vetro (zigrinato)</translation>
+<translation id="6655085656059574817">Se mantieni collegato il tuo account, puoi pagare più velocemente con <ph name="BNPL_ISSUER_NAME" />, ma puoi scollegarlo dalla pagina <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" /></translation>
 <translation id="6657585470893396449">Password</translation>
 <translation id="6659246032834639189">Questo prezzo è basso</translation>
 <translation id="6660413144148052430">posizione</translation>
@@ -3450,6 +3458,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="666259744093848177">(x86_64 translated)</translation>
 <translation id="6665553082534466207">Tripla perforatura a destra</translation>
 <translation id="6668389483194953109">Trovato formato carta "custom", ma la proprietà "custom_size" è vuota o non valida.</translation>
+<translation id="6670729408462528018">Galleria</translation>
 <translation id="6671169470640320959">Finanziamenti per l'acquisto di automobili</translation>
 <translation id="6671697161687535275">Rimuovere il suggerimento per i moduli da Chromium?</translation>
 <translation id="6675846980676550611">AR non consentita</translation>

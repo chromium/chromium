@@ -25,6 +25,7 @@
 <translation id="1502360822835740515">Chromiumin asettaminen oletusselaimeksi</translation>
 <translation id="1503199973012840174">Chromium on vanhentunut. Päivitä se, jotta pysyt turvassa.</translation>
 <translation id="1515748263297244785">Käytä oletuksena iPadin Chromiumia</translation>
+<translation id="1530961174488670696">Chromium ei voinut tarkistaa, onko päivityksiä saatavilla. Yritä myöhemmin uudelleen.</translation>
 <translation id="1531155317299575425">Näytä kehotteet kirjautua Chromiumiin.</translation>
 <translation id="1553657876656159572">Sinulle räätälöity fiidi. Sisältää uutiset, urheilun ja sään.</translation>
 <translation id="1561849081734670621">Voit poistaa lukitustilan käytöstä Chromiumissa laittamalla sen pois päältä iPhonellasi.</translation>
@@ -145,6 +146,7 @@ Datasi salataan tunnuslauseella. Lisää se, niin voit käyttää ja tallentaa C
 <translation id="420541179527342563">Voit poistaa lukitustilan käytöstä Chromiumissa laittamalla sen pois päältä iPadillasi.</translation>
 <translation id="4272892696084633551">Chromiumin ominaisuuksien ja suorituskyvyn parantaminen</translation>
 <translation id="4302397443352897529">Chromium-asetukset</translation>
+<translation id="4304713468139749426">Salasanojen ylläpito</translation>
 <translation id="4408912345039114853">Suorita Chromiumin turvatarkistus</translation>
 <translation id="4432744876818348753">Saat eniten irti Chromiumista kirjautumalla sisään.</translation>
 <translation id="4445228361214254027">Organisaatiosi on laittanut Chromium-datan käyttämisen ja tallentamisen Google-tilillä pois päältä. Uudet kirjanmerkit, salasanat ja muut tiedot tallennetaan vain tälle laitteelle.</translation>
@@ -236,7 +238,6 @@ Huomioitavaa:
 <translation id="6154098560469640583">Käytä Chromiumia aina, kun napautat linkkejä viesteissä, dokumenteissa ja muissa sovelluksissa.</translation>
 <translation id="6157162508956739031">Kirjaudu sovelluksiin ja sivustoille nopeasti täyttämällä salasanat ja avainkoodit automaattisesti Chromiumista</translation>
 <translation id="6170619162539716595">Salli Chromiumin käyttää Google Mapsia reittiohjeiden ja paikallisten tietojen tarjoamiseen havaituissa osoitteissa.</translation>
-<translation id="6247557882553405851">Googlen Salasanojen ylläpito</translation>
 <translation id="6268381023930128611">Kirjaudutaanko ulos?</translation>
 <translation id="6301717043141881464">Löydät muiden sovellusten tallennetut salasanat helposti käyttämällä Chromiumia automaattiseen täyttöön</translation>
 <translation id="6324041800010509197">Siirry Chromiumin välilehtiruudukkoon</translation>

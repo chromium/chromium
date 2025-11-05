@@ -152,8 +152,8 @@
 <translation id="2738871930057338499">Kan ikke koble til internett. HTTP 403 – forbudt. Kontroller proxy-tjenerkonfigurasjonen.</translation>
 <translation id="2742320827292110288">Advarsel: Google Chrome kan ikke forhindre utvidelser fra å registrere nettleserloggen din. For å deaktivere denne utvidelsen i Inkognitomodus, fjern merkingen for dette alternativet.</translation>
 <translation id="2753623023919742414">Klikk for å søke</translation>
+<translation id="2757826245013442432">{COUNT,plural, =0{Avansert beskyttelse krever at du starter Chrome på nytt for å ta i bruk en oppdatering}=1{Avansert beskyttelse krever at du starter Chrome på nytt for å ta i bruk en oppdatering. Inkognitovinduet ditt blir ikke gjenåpnet.}other{Avansert beskyttelse krever at du starter Chrome på nytt for å ta i bruk en oppdatering. Dine # inkognitovinduer gjenåpnes ikke.}}</translation>
 <translation id="2765403129283291972">Chrome trenger tilgang til mikrofonen din for dette nettstedet</translation>
-<translation id="2770231113462710648">Endre standardnettleser til:</translation>
 <translation id="2775140325783767197">Chrome kan ikke sjekke passordene dine. Prøv å kontrollere internettilkoblingen.</translation>
 <translation id="2797864378188255696">Når du logger på Google-tjenester som Gmail eller YouTube med <ph name="USER_EMAIL" />, kan du automatisk logge på Chrome med den samme kontoen</translation>
 <translation id="2799162042226656283">Tilpass Chrome</translation>
@@ -266,6 +266,7 @@
 <translation id="3968962723676998462">Skriv inn passordfrasen din for å bruke og lagre Chrome-data i kontoen din, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="3973161977468201858">Google Chrome vil slette Google Passordlagring-dataene dine. Skriv inn Windows-passordet ditt for å tillate dette.</translation>
 <translation id="400161754580828648">For å dele skjermen, tillat skjermopptak for Chrome i Systeminnstillinger.</translation>
+<translation id="4012899077942246412">Når du er logget på, kan du bruke passord med mer fra Google-kontoen din i Chrome. Gå til «Kontoen din i Chrome» for å endre dette.</translation>
 <translation id="4022972681110646219">Oversett skjermen</translation>
 <translation id="4023601594785368013">Originalspråk: <ph name="LANGUAGE" /></translation>
 <translation id="4035053306113201399">ChromeOS må startes på nytt for at oppdateringen skal tas i bruk.</translation>
@@ -645,6 +646,7 @@
 <translation id="8255190535488645436">Google Chrome bruker kameraet og mikrofonen din.</translation>
 <translation id="8267953129876836456">Chrome har noen sikkerhetsanbefalinger til deg</translation>
 <translation id="8286862437124483331">Google Chrome forsøker å vise passord. Skriv inn Windows-passordet ditt for å tillate dette.</translation>
+<translation id="8289399803055125418">Bruk din <ph name="BEGIN_LINK" />egen passordfrase<ph name="END_LINK" /> for å kryptere alle Chrome-dataene i Google-kontoen din. Adresser og data som er lagret i Google Wallet, krypteres ikke med passordfrasen din. Nettleserloggen fra Chrome synkroniseres ikke.</translation>
 <translation id="829923460755755423">Legg til en snarvei i Google Passordlagring</translation>
 <translation id="8313851650939857356">Oppstartsfeil: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8321888067342493336">Lagre som bilde</translation>

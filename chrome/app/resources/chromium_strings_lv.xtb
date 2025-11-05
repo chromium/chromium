@@ -21,6 +21,7 @@
 <translation id="1184145431117212167">Instalēšana neizdevās, jo jūsu izmantotā Windows versija netiek atbalstīta.</translation>
 <translation id="1185134272377778587">Par Chromium</translation>
 <translation id="1203500561924088507">Pateicamies, ka veicāt instalēšanu. Pirms <ph name="BUNDLE_NAME" /> izmantošanas ir jārestartē pārlūkprogramma.</translation>
+<translation id="123265588161106468">Kamēr esat pierakstījies, pārlūkā Chromium varat izmantot savas paroles un citu saturu no Google konta. Lai to mainītu, pārejiet uz sadaļu “Jūsu konts pārlūkā Chromium”.</translation>
 <translation id="1262876892872089030">Kamēr šī cilne bija neaktīva, tika atbrīvota atmiņa pārlūka Chromium ātrākai darbībai. Varat izvēlēties vienmēr saglabāt šo vietni aktīvu.</translation>
 <translation id="1265577313130862557">Pārlūkā Chromium šī lejupielāde tika bloķēta, jo fails ir bīstams.</translation>
 <translation id="126567311906253476">Ja pierakstāties Google pakalpojumos, piemēram, Gmail vai YouTube, ar kontu <ph name="USER_EMAIL" />, varat automātiski pierakstīties pārlūkā Chromium ar to pašu kontu.</translation>
@@ -144,6 +145,7 @@
 <translation id="2620436844016719705">Sistēma</translation>
 <translation id="2629740064077610681">Jūsu organizācija var skatīt un pārvaldīt pārlūkošanas datus, piemēram, grāmatzīmes, vēsturi un paroles. Tā nevar skatīt pārlūkošanas datus citos Chromium profilos.</translation>
 <translation id="2635452620547538388">Lai izmantotu un saglabātu Chromium datus savā kontā (<ph name="ACCOUNT_EMAIL" />), apstipriniet savu identitāti.</translation>
+<translation id="2637732208198500597">{COUNT,plural, =0{Ja tiek izmantota papildu aizsardzība, pārlūkprogramma Chromium ir jāpalaiž atkārtoti, lai atjauninājums tiktu lietots.}=1{Ja tiek izmantota papildu aizsardzība, pārlūkprogramma Chromium ir jāpalaiž atkārtoti, lai atjauninājums tiktu lietots. Inkognito režīma logs netiks atkārtoti atvērts.}zero{Ja tiek izmantota papildu aizsardzība, pārlūkprogramma Chromium ir jāpalaiž atkārtoti, lai atjauninājums tiktu lietots. # inkognito režīma logi netiks atkārtoti atvērti.}one{Ja tiek izmantota papildu aizsardzība, pārlūkprogramma Chromium ir jāpalaiž atkārtoti, lai atjauninājums tiktu lietots. # inkognito režīma logs netiks atkārtoti atvērts.}other{Ja tiek izmantota papildu aizsardzība, pārlūkprogramma Chromium ir jāpalaiž atkārtoti, lai atjauninājums tiktu lietots. # inkognito režīma logi netiks atkārtoti atvērti.}}</translation>
 <translation id="2648074677641340862">Instalācijas laikā radās operētājsistēmas kļūda. Lejupielādējiet Chromium vēlreiz.</translation>
 <translation id="2661879430930417727">Ja ierīci izmanto arī jūsu draugi un ģimenes locekļi, viņi var iestatīt pārlūku Chromium atbilstoši savām vēlmēm un pārlūkot saturu atsevišķos profilos.</translation>
 <translation id="2711502716910134313">Chromium cilne</translation>
@@ -154,7 +156,6 @@
 <translation id="2738871930057338499">Nevar izveidot savienojumu ar internetu. HTTP 403 — aizliegts. Lūdzu, pārbaudiet starpniekservera konfigurāciju.</translation>
 <translation id="2753623023919742414">Noklikšķiniet, lai meklētu</translation>
 <translation id="2768103863314748511">Iestatiet Chromium kā noklusējuma PDF failu skatītāju.</translation>
-<translation id="2770231113462710648">Mainīt noklusējuma pārlūkprogrammu uz:</translation>
 <translation id="2785438272836277133">Šis paplašinājums satur ļaunprātīgu programmatūru un nav drošs. Noņemiet to no pārlūka Chromium, lai tas jūsu apmeklētajās vietnēs vairs nevarētu skatīt un mainīt jūsu datus, tostarp jūsu personas informāciju.</translation>
 <translation id="2799223571221894425">Restartēt</translation>
 <translation id="2803971713792056305">Jūsu Chromium</translation>
@@ -380,6 +381,7 @@
 <translation id="5605834417512968703">Atlasiet jebko, ko vēlaties meklēt, izmantojot funkciju Attēlu meklēšana, vai nospiediet atsoļa taustiņu, lai izietu no funkcijas Attēlu meklēšana</translation>
 <translation id="5618818588972826921">Atlasiet jebkuru tekstu vai attēlu, lai to meklētu, izmantojot funkciju Attēlu meklēšana, vai nospiediet atsoļa taustiņu, lai izietu no funkcijas Attēlu meklēšana</translation>
 <translation id="5623402015214259806">{0,plural, =0{Ir pieejams Chromium atjauninājums}=1{Ir pieejams Chromium atjauninājums}zero{Chromium atjauninājums ir pieejams jau # dienu}one{Chromium atjauninājums ir pieejams jau # dienu}other{Chromium atjauninājums ir pieejams jau # dienas}}</translation>
+<translation id="5633450273457573375">Izmantot jūsu <ph name="BEGIN_LINK" />ieejas frāzi<ph name="END_LINK" /> visu Chromium datu šifrēšanai jūsu Google kontā. Adreses un visi dati, kas saglabāti lietotnē Google maks, netiks šifrēti, izmantojot jūsu ieejas frāzi. Pārlūkā Chromium saglabātā pārlūkošanas vēsture netiks sinhronizēta.</translation>
 <translation id="5643865575100044307">Vienmēr notīrīt vietnes datus no ierīces, kad tiek aizvērts pārlūks Chromium</translation>
 <translation id="5653831366781983928">Lūdzu, nekavējoties restartējiet pārlūku Chromium</translation>
 <translation id="5690427481109656848">Google LLC</translation>

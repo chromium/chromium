@@ -128,6 +128,7 @@
 <translation id="5556417849629758491">查看商店信息，屏幕顶部附近有可用选项</translation>
 <translation id="5627941783489838464">无标签页更新</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{Chrome 中的 <ph name="TABS_COUNT_ONE" /> 个链接}other{Chrome 中的 <ph name="TABS_COUNT_MANY" /> 个链接}}</translation>
+<translation id="5740354908255726955">{TAB_COUNT,plural, =1{左移标签页}other{左移标签页}}</translation>
 <translation id="5746204836956568669">要将 <ph name="NUMBER_OF_TABS" /> 个标签页分组，以提高工作效率吗？</translation>
 <translation id="5773295109010386583">自动关闭闲置标签页</translation>
 <translation id="58326064309361797">拖动标签可进行分组</translation>
@@ -138,6 +139,7 @@
 <translation id="6109251075362363230">现在，所有重复的标签页也将归档，最近使用的副本除外。</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{关闭 <ph name="TABS_COUNT_ONE" /> 项所选内容}other{关闭 <ph name="TABS_COUNT_MANY" /> 项所选内容}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{将分组移至新窗口}other{将分组移至另一个窗口}}</translation>
+<translation id="6212374449852603982">{TAB_COUNT,plural, =1{右移标签页}other{右移标签页}}</translation>
 <translation id="6228793724645064692">（商店评分）</translation>
 <translation id="625996437999624951">{TAB_COUNT,plural, =1{从分组中移除标签页}other{从分组中移除标签页}}</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{向新分组中添加标签页}other{向新分组中添加标签页}}</translation>

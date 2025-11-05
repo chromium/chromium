@@ -177,6 +177,7 @@
 <translation id="1282358575813748144">ნავები და წყლის ტრანსპორტი</translation>
 <translation id="1283977499362032052">რეზიუმეები და პორტფოლიოები</translation>
 <translation id="1285320974508926690">არასდროს გადათარგმნო ეს საიტი</translation>
+<translation id="1289129165308566697">იხილეთ თქვენი ისტორია სხვა მოწყობილობებში</translation>
 <translation id="1292571435393770077">ლანგარი 16</translation>
 <translation id="1292701964462482250">„თქვენს კომპიუტერზე დაინსტალირებული პროგრამული უზრუნველყოფა ხელს უშლის Chrome-ს ვებზე უსაფრთხოდ წვდომაში“ (მხოლოდ Windows)</translation>
 <translation id="1293556467332435079">ფაილები</translation>
@@ -2341,6 +2342,7 @@
 <translation id="4822493756793346865">ტიპური ფასები ეფუძნება სხვადასხვა ონლაინმაღაზიის ბოლო 90 დღის მონაცემებს.</translation>
 <translation id="4822922322149719535">შეცდომების ჟურნალის მიმოხილვა</translation>
 <translation id="4823699521959851389"><ph name="SHORT_PRODUCT_NAME" /> საჭიროებს წვდომას, რომ გამოიყენოს თქვენი მოწყობილობის <ph name="PERMISSION" /></translation>
+<translation id="4825311006392962663">ანგარიშსწორებისას მოგვიანებით გადახდის ვარიანტების ჩვენება</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, ახალი Google Sheet-ის სწრაფად შესაქმნელად დააჭირეთ კლავიშს Tab, შემდეგ კი Enter-ს</translation>
 <translation id="4826588772550366629">კამერა და მიკროფონი</translation>
 <translation id="4827283332383516812">ბარათის წაშლა</translation>
@@ -3452,6 +3454,7 @@
 <translation id="6652101503459149953">Windows Hello-ის გამოყენება</translation>
 <translation id="6654224358955673568">ფორმალიზება</translation>
 <translation id="6654244995031366386">შუშა (ტექსტურიანი)</translation>
+<translation id="6655085656059574817">ანგარიშის მიბმის შენარჩუნება დაგეხმარებათ, უფრო სწრაფად გადაიხადოთ <ph name="BNPL_ISSUER_NAME" />-ის გამოყენებით, მაგრამ მიბმის გაუქმება შეგიძლიათ აქ: <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" /></translation>
 <translation id="6657585470893396449">პაროლი</translation>
 <translation id="6659246032834639189">ეს ფასი დაბალია</translation>
 <translation id="6660413144148052430">მდებარეობა</translation>

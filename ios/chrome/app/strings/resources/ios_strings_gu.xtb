@@ -677,6 +677,7 @@
 <translation id="3642060527569456384">ટૅબના ગ્રૂપ તમારા બધા ડિવાઇસ પર ઑટોમૅટિક રીતે સાચવવામાં અને અપડેટ કરવામાં આવે છે.</translation>
 <translation id="3643338347976071250">{count,plural, =1{{count} પાસવર્ડને માત્ર આ ડિવાઇસ પર સાચવેલો છે. તમારા અન્ય ડિવાઇસમાં તેનો ઉપયોગ કરવા માટે, તે તમારા Google એકાઉન્ટ, {email}માં છે.}one{{count} પાસવર્ડને માત્ર આ ડિવાઇસ પર સાચવેલો છે. તમારા અન્ય ડિવાઇસ પર તેનો ઉપયોગ કરવા માટે, તેમને તમારા Google એકાઉન્ટ, {email}માં સાચવો.}other{{count} પાસવર્ડને માત્ર આ ડિવાઇસ પર સાચવેલા છે. તમારા અન્ય ડિવાઇસ પર તેનો ઉપયોગ કરવા માટે, તેમને તમારા Google એકાઉન્ટ, {email}માં સાચવો.}}</translation>
 <translation id="3659297405161482746">કોઈ ચુકવણી પદ્ધતિ મળી નથી</translation>
+<translation id="3662966164093827811">{count,plural, =1{1 પસંદ કરી}one{# પસંદ કરી}other{# પસંદ કરી}}</translation>
 <translation id="3668816008081204991">વાંચન સૂચિ છુપાવેલી છે</translation>
 <translation id="3670030362669914947">નંબર</translation>
 <translation id="3679163990085797665">વાંચેલું ડિલીટ કરો</translation>
@@ -741,6 +742,7 @@
 <translation id="3926703470020109118">ડાઉનલોડ રદ કર્યું</translation>
 <translation id="3929457972718048006">સરનામાં</translation>
 <translation id="3931215329146376310">{count,plural, =1{આ સાઇટ માટે નવો પાસવર્ડ}one{આ સાઇટ માટે નવો પાસવર્ડ}other{આ સાઇટ માટે નવા પાસવર્ડ}}</translation>
+<translation id="3933372629914873850">તમે <ph name="URL" />માં સાઇન ઇન કરશો</translation>
 <translation id="3934905113567851655">કદ બદલવા માટે પિન્ચ કરો</translation>
 <translation id="3940195383040445971">ટૅબ પર કિંમત ટ્રૅક કરો</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{{COUNT} ટૅબ બંધ કરો}one{{COUNT} ટૅબ બંધ કરો}other{{COUNT} ટૅબ બંધ કરો}}</translation>
@@ -1330,6 +1332,7 @@
 <translation id="6103540626693881831">ડિવાઇસ પર એન્ક્રિપ્શન</translation>
 <translation id="611361228753138223">આ ડિવાઇસ પર તમે તાજેતરમાં મુલાકાત લીધેલી સાઇટ</translation>
 <translation id="611705554202268369">ટૅબના ગ્રૂપમાં ઉમેરવા માટે થોડીવાર દબાવી રાખો</translation>
+<translation id="6117260878488959646">કોઈ ભૂલ આવી છે. થોડા સમય પછી ફરી પ્રયાસ કરો.</translation>
 <translation id="6122191549521593678">ઓનલાઇન</translation>
 <translation id="6122831415929794347">Safe Browsing બંધ કરીએ?</translation>
 <translation id="6123514585040403489">તમારી ટૅબ બંધ કરવામાં આવશે</translation>
@@ -1352,6 +1355,7 @@
 <translation id="6172428250974276014">હા, ડેટાને અલગ રાખો (સુઝાવ આપવામાં આવે છે)</translation>
 <translation id="6173499589275053515">પાસવર્ડને તમારા Google એકાઉન્ટમાં સાચવ્યો, <ph name="EMAIL" /></translation>
 <translation id="6181969657494915430">શોધ સ્ક્રીન</translation>
+<translation id="6182851675249594487">રંગની કસ્ટમ થીમ</translation>
 <translation id="6187302354554850004">છેલ્લે સમન્વયિત કરેલું: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319"><ph name="DATE" />ના રોજ બનાવ્યું</translation>
 <translation id="6189413832092199491">વાંચ્યા વગરની</translation>

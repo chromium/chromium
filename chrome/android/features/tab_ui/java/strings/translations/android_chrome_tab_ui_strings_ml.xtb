@@ -128,6 +128,7 @@
 <translation id="5556417849629758491">സ്റ്റോർ വിവരങ്ങൾ കാണുക, സ്ക്രീനിന്റെ മുകൾ ഭാഗത്തിന് സമീപം ഓപ്ഷൻ ലഭ്യമാണ്</translation>
 <translation id="5627941783489838464">ടാബ് അപ്‌ഡേറ്റുകളൊന്നുമില്ല</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{Chrome-ൽ നിന്നുള്ള <ph name="TABS_COUNT_ONE" /> ലിങ്ക്}other{Chrome-ൽ നിന്നുള്ള <ph name="TABS_COUNT_MANY" /> ലിങ്ക്}}</translation>
+<translation id="5740354908255726955">{TAB_COUNT,plural, =1{ടാബ് ഇടത്തേക്ക് നീക്കുക}other{ടാബുകൾ ഇടത്തേക്ക് നീക്കുക}}</translation>
 <translation id="5746204836956568669">അതിവേഗം വർക്ക് ചെയ്യാൻ <ph name="NUMBER_OF_TABS" /> ടാബുകൾ ഗ്രൂപ്പ് ചെയ്യണോ?</translation>
 <translation id="5773295109010386583">നിഷ്‌ക്രിയമായ ഇനങ്ങൾ സ്വയമേവ അടയ്ക്കുക</translation>
 <translation id="58326064309361797">ടാബുകൾ ഗ്രൂപ്പ് ചെയ്യാൻ അവ വലിച്ചിടുക</translation>
@@ -138,6 +139,7 @@
 <translation id="6109251075362363230">ഏറ്റവും അടുത്തിടെ ഉപയോഗിച്ച പകർപ്പ് ഒഴികെ, എല്ലാ ഡ്യൂപ്ലിക്കേറ്റ് ടാബുകളും ഇപ്പോൾ ആർക്കൈവ് ചെയ്യും.</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{തിരഞ്ഞെടുത്ത <ph name="TABS_COUNT_ONE" /> ഇനം അടയ്ക്കുക}other{തിരഞ്ഞെടുത്ത <ph name="TABS_COUNT_MANY" /> ഇനങ്ങൾ അടയ്ക്കുക}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{ഗ്രൂപ്പിനെ പുതിയ വിൻഡോയിലേക്ക് നീക്കുക}other{ഗ്രൂപ്പിനെ മറ്റൊരു വിൻഡോയിലേക്ക് നീക്കുക}}</translation>
+<translation id="6212374449852603982">{TAB_COUNT,plural, =1{ടാബ് വലത്തേക്ക് നീക്കുക}other{ടാബുകൾ വലത്തേക്ക് നീക്കുക}}</translation>
 <translation id="6228793724645064692">(സ്റ്റോർ റേറ്റിംഗ്)</translation>
 <translation id="625996437999624951">{TAB_COUNT,plural, =1{ഗ്രൂപ്പിൽ നിന്ന് ടാബ് നീക്കം ചെയ്യുക}other{ഗ്രൂപ്പിൽ നിന്ന് ടാബുകൾ നീക്കം ചെയ്യുക}}</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{പുതിയ ഗ്രൂപ്പിലേക്ക് ടാബ് ചേർക്കുക}other{പുതിയ ഗ്രൂപ്പിലേക്ക് ടാബുകൾ ചേർക്കുക}}</translation>

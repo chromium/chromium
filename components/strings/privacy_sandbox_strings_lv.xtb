@@ -4,11 +4,9 @@
 <translation id="1055273091707420432">Pārlūkā Chromium tiek automātiski dzēstas reklāmu tēmas, kas ir vecākas par četrām nedēļām.</translation>
 <translation id="1145223915439299117">Pārlūkā Chrome inkognito režīmā tiek bloķēti trešo pušu sīkfaili, taču kāds paplašinājums atļāva trešo pušu sīkfailus šai vietnei.</translation>
 <translation id="1184166532603925201">Inkognito režīmā pārlūkā Chrome vietnēm ir liegts izmantot trešo pušu sīkfailus.</translation>
-<translation id="1205053266843535401">Ierobežojiet piekļuvi ierīces un pārlūka datiem</translation>
 <translation id="1281098210028343866">Palīdziet mums uzlabot pārlūku Chromium, pastāstot, kāpēc pārtraucāt izsekošanas aizsardzību.</translation>
 <translation id="1297285729613779935">Vietņu ieteiktās reklāmas palīdz aizsargāt jūsu pārlūkošanas vēsturi un identitāti, vienlaikus ļaujot vietnēm rādīt jums atbilstošas reklāmas. Pamatojoties uz jūsu darbībām (piemēram, to, cik ilgi jūs pavadāt apmeklētās vietnēs), citas vietnes var ieteikt saistītas reklāmas, kad jūs turpināt pārlūkošanu. Iestatījumos varat skatīt šo vietņu sarakstu un bloķēt nevajadzīgās vietnes.</translation>
 <translation id="132963621759063786">Pēc 30 dienām Chromium dzēš visas ar vietnēm kopīgotās darbības. Ja kādu vietni apmeklējat atkārtoti, tā var atkal tikt iekļauta sarakstā. Uzzināt vairāk par <ph name="BEGIN_LINK1" />reklāmu konfidencialitātes pārvaldību pārlūkā Chromium<ph name="LINK_END1" />.</translation>
-<translation id="1472807065399636739">Jūsu apmeklētajās vietnēs var būt iegults citu vietņu saturs un pakalpojumi (piemēram, attēli, reklāmas un teksts), ko var izmantot, lai iegūtu informāciju par jums. Uzziniet vairāk par to, kā pārvaldīt <ph name="BEGIN_LINK" />inkognito izsekošanas aizsardzību<ph name="END_LINK" />.</translation>
 <translation id="1472928714075596993"><ph name="BEGIN_BOLD" />Kādi dati tiek izmantoti:<ph name="END_BOLD" /> reklāmu tēmas tiek noteiktas, pamatojoties uz jūsu neseno pārlūkošanas vēsturi — to vietņu sarakstu, kuras esat apmeklējis pārlūkā Chrome šajā ierīcē.</translation>
 <translation id="1559726735555610004">Google pieprasa, lai uzņēmumi publiski paziņotu, ka tie neizmantos šos datus jūsu izsekošanai citās vietnēs. Dažās vietnēs jūsu darbību dati var tikt izmantoti, lai personalizētu jūsu lietošanas pieredzi, ne tikai reklāmas. Vietnes var arī apvienot šos datus ar citu informāciju, ko jau zina par jums. Uzņēmumiem ir jāinformē jūs par to, kā tie izmanto jūsu datus. Lasiet mūsu <ph name="BEGIN_LINK" />konfidencialitātes politiku<ph name="END_LINK" />, lai uzzinātu vairāk par to, kā Google aizsargā jūsu datus.</translation>
 <translation id="1569440020357229235">Inkognito režīmā vietnes nevar izmantot trešo pušu sīkfailus. Ja kāda vietne, kura paļaujas uz šiem sīkfailiem, nedarbojas, varat <ph name="BEGIN_LINK" />mēģināt piešķirt šai vietnei īslaicīgu piekļuvi trešo pušu sīkfailiem<ph name="END_LINK" />.</translation>
@@ -24,14 +22,12 @@
 <translation id="2004697686368036666">Noteiktās vietnēs funkcijas var nedarboties.</translation>
 <translation id="2089807121381188462"><ph name="BEGIN_BOLD" />Kā varat pārvaldīt šos datus?<ph name="END_BOLD" /> Pārlūkā Chrome tiek automātiski dzēstas vietnes, kas ir glabātas ilgāk nekā 30 dienas. Ja kādu vietni apmeklējat atkārtoti, tā var atkal tikt iekļauta sarakstā. Jebkurā brīdī Chrome iestatījumos varat bloķēt vietni, lai tā vairs neieteiktu reklāmas, un izslēgt vietņu ieteiktās reklāmas.</translation>
 <translation id="2090761099683423637">Aizsardzība ir pārtraukta, līdz tiks aizvērti visi inkognito režīma logi.</translation>
-<translation id="2194856509914051091">Svarīgi apsvērumi</translation>
 <translation id="2213012319160025454">Pārvaldīt izsekošanas aizsardzību inkognito režīmā</translation>
 <translation id="2235344399760031203">Trešo pušu sīkfaili ir bloķēti</translation>
 <translation id="235789365079050412">Google konfidencialitātes politika</translation>
 <translation id="235832722106476745">Pārlūkā Chrome tiek automātiski dzēstas reklāmu tēmas, kas ir vecākas par četrām nedēļām.</translation>
 <translation id="2496115946829713659">Vietnes drīkst izmantot trešo pušu sīkfailus, lai personalizētu saturu un reklāmas, kā arī iegūtu informāciju par jūsu darbībām citās vietnēs.</translation>
 <translation id="2506926923133667307">Uzzināt vairāk par reklāmu konfidencialitātes pārvaldību</translation>
-<translation id="2578376035831129583">Funkcija tiks lietota iegultām vietnēm, nevis uz vietnē, kuru apmeklējat tieši.</translation>
 <translation id="259163387153470272">Vietnes un to reklamēšanas partneri var izmantot jūsu darbību datus (piemēram, to, cik ilgu laiku jūs pavadāt apmeklētajās vietnēs), lai rādītu jums personalizētas reklāmas.</translation>
 <translation id="2648072482252767506">Pārlūkā Chromium inkognito režīmā tiek bloķēti trešo pušu sīkfaili, taču jūs iestatījāt izņēmumu šai vietnei. Inkognito režīmā var tikt nodrošināta arī papildu izsekošanas aizsardzība.</translation>
 <translation id="2669351694216016687">Google pieprasa, lai uzņēmumi publiski paziņotu, ka tie neizmantos šos datus jūsu izsekošanai citās vietnēs. Dažās vietnēs jūsu darbību dati var tikt izmantoti, lai personalizētu jūsu lietošanas pieredzi, ne tikai reklāmas. Vietnes var arī apvienot šos datus ar citu informāciju, ko jau zina par jums. Uzņēmumiem ir jāinformē jūs par to, kā tie izmanto jūsu datus. <ph name="BEGIN_LINK1" />Uzziniet vairāk mūsu konfidencialitātes politikā<ph name="LINK_END1" /></translation>
@@ -47,27 +43,21 @@
 <translation id="3442071090395342573">Pēc 30 dienām Chromium dzēš visas ar vietnēm kopīgotās darbības. Ja kādu vietni apmeklējat atkārtoti, tā var atkal tikt iekļauta sarakstā. Uzzināt vairāk par <ph name="BEGIN_LINK" />reklāmu konfidencialitātes pārvaldību pārlūkā Chromium<ph name="END_LINK" />.</translation>
 <translation id="3467081767799433066">Izmantojot reklāmu novērtēšanu, vietnēs tiek kopīgoti noteiktu veidu dati, lai novērtētu tajās rādīto reklāmu veiktspēju, piemēram, vai veicāt pirkumu pēc vietnes apmeklēšanas.</translation>
 <translation id="3624583033347146597">Izvēlieties trešo pušu sīkfailu preferences</translation>
-<translation id="364348650177270461">Chromium mēģinās ierobežot piekļuvi ierīces un pārlūka datiem (piemēram, instalētajiem fontiem vai jūsu laika joslai) iegultām vietnēm, kas, iespējams, mēģina iegūt informāciju par jums.</translation>
 <translation id="3645682729607284687">Pārlūkā Chrome tiek saglabātas interešu tēmas, pamatojoties uz jūsu neseno pārlūkošanas vēsturi. Tās var būt šādas tēmas: “Sports”, “Apģērbs” u. c.</translation>
-<translation id="3665701035629774409">Pārlūkā Chrome inkognito režīmā tiek bloķēti trešo pušu sīkfaili, taču jūsu administrators atļāva trešo pušu sīkfailus šai vietnei. Inkognito režīmā var tikt nodrošināta arī papildu izsekošanas aizsardzība. Inkognito izsekošanas aizsardzību varat pārvaldīt <ph name="BEGIN_LINK" />iestatījumos<ph name="END_LINK" />.</translation>
 <translation id="3696118321107706175">Kā vietnes izmanto jūsu datus</translation>
 <translation id="3749724428455457489">Uzzināt vairāk par vietņu ieteiktām reklāmām</translation>
 <translation id="3763433740586298940">Varat bloķēt nevēlamas vietnes. Turklāt pārlūkā Chrome no saraksta tiek automātiski dzēstas vietnes, kas tajā ir glabātas ilgāk par 30 dienām.</translation>
 <translation id="385051799172605136">Atpakaļ</translation>
-<translation id="388873797593534859">Ierobežojiet piekļuvi ierīces un pārlūka datiem. Šis iestatījums ir ieslēgts.</translation>
 <translation id="390681677935721732">Pēc 30 dienām Chrome dzēš visas ar vietnēm kopīgotās darbības. Ja kādu vietni apmeklējat atkārtoti, tā var atkal tikt iekļauta sarakstā. Uzzināt vairāk par <ph name="BEGIN_LINK" />reklāmu konfidencialitātes pārvaldību pārlūkā Chrome<ph name="END_LINK" />.</translation>
 <translation id="3918378745482005425">Dažas funkcijas var nedarboties. Saistītās vietnes joprojām var izmantot trešo pušu sīkfailus.</translation>
 <translation id="3918927280411834522">vietņu ieteiktām reklāmām.</translation>
 <translation id="4009365983562022788">Google pieprasa, lai uzņēmumi publiski paziņotu, ka tie neizmantos šos datus jūsu izsekošanai citās vietnēs. Dažās vietnēs jūsu darbību dati var tikt izmantoti, lai personalizētu jūsu lietošanas pieredzi, ne tikai reklāmas. Vietnes var arī apvienot šos datus ar citu informāciju, ko jau zina par jums. Uzņēmumiem ir jāinformē jūs par to, kā tie izmanto jūsu datus. Uzziniet vairāk mūsu <ph name="BEGIN_LINK1" />konfidencialitātes politikā<ph name="LINK_END1" />.</translation>
 <translation id="4115793614265434327">Pārlūkā Chromium inkognito režīmā tiek bloķēti trešo pušu sīkfaili, taču jūsu administrators atļāva trešo pušu sīkfailus šai vietnei.</translation>
 <translation id="4177501066905053472">Reklāmu tēmas</translation>
-<translation id="4200539465901914137">Chrome mēģinās ierobežot piekļuvi ierīces un pārlūka datiem (piemēram, instalētajiem fontiem vai jūsu laika joslai) iegultām vietnēm, kas, iespējams, mēģina iegūt informāciju par jums.</translation>
 <translation id="4278390842282768270">Atļauti</translation>
 <translation id="4301151630239508244">Reklāmu tēmas ir tikai viena no daudzām funkcijām, ko vietnē var izmantot reklāmu personalizēšanai. Pat bez reklāmu tēmām vietnēs joprojām var tikt rādītas reklāmas, taču tās var būt mazāk personalizētas. Uzziniet vairāk par <ph name="BEGIN_LINK_1" />reklāmu konfidencialitātes pārvaldību<ph name="END_LINK_1" />.</translation>
-<translation id="435360899831421654">Ierobežojiet piekļuvi ierīces un pārlūka datiem. Šis iestatījums ir izslēgts.</translation>
 <translation id="4370439921477851706">Google pieprasa, lai uzņēmumi publiski paziņotu, ka tie neizmantos šos datus jūsu izsekošanai citās vietnēs. Dažās vietnēs jūsu darbību dati var tikt izmantoti, lai personalizētu jūsu lietošanas pieredzi, ne tikai reklāmas. Reklāmu tēmas var arī tikt glabātas ilgāk par četrām nedēļām un tikt apvienotas ar citu informāciju, ko vietnes jau zina par jums. Uzņēmumiem ir jāinformē jūs par to, kā tie izmanto jūsu datus. Uzziniet vairāk mūsu <ph name="BEGIN_LINK1" />konfidencialitātes politikā<ph name="LINK_END1" />.</translation>
 <translation id="4412992751769744546">Atļaut trešo pušu sīkfailus</translation>
-<translation id="4448728649751001728">Funkcija ir pieejama tikai tad, ja inkognito režīms tiek atvērts no Chrome loga, kurā esat pierakstījies.</translation>
 <translation id="4456330419644848501">To, vai jums rādītā reklāma tiek personalizēta, var ietekmēt daudzi faktori, tostarp šis iestatījums, <ph name="BEGIN_LINK_1" />vietņu ieteiktas reklāmas<ph name="END_LINK_1" />, <ph name="BEGIN_LINK_2" />sīkfailu iestatījumi<ph name="END_LINK_2" />, kā arī tas, vai atvērtajā vietnē tiek personalizētas reklāmas.</translation>
 <translation id="4501357987281382712">Lasiet mūsu <ph name="BEGIN_LINK" />konfidencialitātes politiku<ph name="END_LINK" />, lai uzzinātu vairāk par to, kā Google aizsargā jūsu datus.</translation>
 <translation id="4502954140581098658">To, vai jums rādītā reklāma tiek personalizēta, var ietekmēt daudzi faktori, tostarp šis iestatījums, <ph name="BEGIN_LINK_1" />reklāmu tēmas<ph name="END_LINK_1" />, <ph name="BEGIN_LINK_2" />sīkfailu iestatījumi<ph name="END_LINK_2" />, kā arī tas, vai atvērtajā vietnē tiek personalizētas reklāmas.</translation>
@@ -76,17 +66,13 @@
 <translation id="4687718960473379118">Vietņu ieteiktas reklāmas</translation>
 <translation id="4692439979815346597">Varat skatīt savas reklāmu tēmas Chrome iestatījumos un bloķēt tās tēmas, kuras nevēlaties atklāt vietnēm.</translation>
 <translation id="4711259472133554310">Iestatījumos varat izveidot izņēmumus, lai vienmēr atļautu konkrētām vietnēm izmantot trešo pušu sīkfailus.</translation>
-<translation id="4773759246613295463">Kad pārlūkojat saturu inkognito režīmā, pārlūkā Chromium netiek saglabāta jūsu pārlūkošanas vēsture, sīkfaili, vietņu dati un veidlapās ievadītā informācija. Inkognito režīmā ir pieejamas arī funkcijas, kas var ierobežot iegultajām vietnēm pieejamo informāciju.</translation>
 <translation id="4835013575597383365">Izsekošanas aizsardzība</translation>
-<translation id="4864452159627050077">Pārvaldiet informāciju, ko inkognito režīmā vietnes var iegūt par jums</translation>
 <translation id="4894490899128180322">Ja kāda vietne nedarbojas paredzētajā veidā, varat mēģināt īslaicīgi atļaut trešo pušu sīkfailus apmeklētajā vietnē.</translation>
 <translation id="4995684599009077956">Google pieprasa, lai uzņēmumi publiski paziņotu, ka tie neizmantos šos datus jūsu izsekošanai citās vietnēs. Dažās vietnēs jūsu darbību dati var tikt izmantoti, lai personalizētu jūsu lietošanas pieredzi, ne tikai reklāmas. Reklāmu tēmas var arī tikt glabātas ilgāk par četrām nedēļām un tikt apvienotas ar citu informāciju, ko vietnes jau zina par jums. Uzņēmumiem ir jāinformē jūs par to, kā tie izmanto jūsu datus. <ph name="BEGIN_LINK" />Uzziniet vairāk mūsu konfidencialitātes politikā<ph name="END_LINK" />.</translation>
 <translation id="5023078137728844766">Pārlūkā Chromium inkognito režīmā tiek bloķēti trešo pušu sīkfaili, taču jūsu administrators atļāva trešo pušu sīkfailus šai vietnei. Inkognito režīmā var tikt nodrošināta arī papildu izsekošanas aizsardzība.</translation>
 <translation id="5055880590417889642">Jūsu darbības ir viens no vairākiem datu veidiem, ko vietne var izmantot reklāmu ieteikšanai. Kad vietņu ieteiktās reklāmas ir izslēgtas, vietnēs joprojām var tikt rādītas reklāmas, taču tās var būt mazāk personalizētas. Uzziniet vairāk par</translation>
-<translation id="5110547311636263835">Pārlūkā Chrome inkognito režīmā tiek bloķēti trešo pušu sīkfaili, taču jūs iestatījāt izņēmumu šai vietnei. Inkognito režīmā var tikt nodrošināta arī papildu izsekošanas aizsardzība. Inkognito izsekošanas aizsardzību varat pārvaldīt <ph name="BEGIN_LINK" />iestatījumos<ph name="END_LINK" />.</translation>
 <translation id="5117284457376555514">Vietnes nedrīkst izmantot trešo pušu sīkfailus, lai personalizētu saturu un reklāmas, kā arī iegūtu informāciju par jūsu darbībām citās vietnēs, ja vien neatļaujat saistītajām vietnēm piekļūt šiem sīkfailiem. Dažas vietņu funkcijas var nedarboties paredzētajā veidā.</translation>
 <translation id="5165490319523240316">Vietnes un to reklamēšanas partneri var izmantot jūsu darbību datus (piemēram, to, cik ilgu laiku jūs pavadāt apmeklētajās vietnēs), lai personalizētu reklāmas citās vietnēs. Piemēram, ja apmeklējat vietni, lai meklētu receptes vakariņām, vietne var secināt, ka jūs interesē gatavošana. Vēlāk citā vietnē jums var tikt rādīta pirmās vietnes ieteikta saistīta reklāma par pārtikas preču piegādes pakalpojumu.</translation>
-<translation id="5188610687455399162">Pārlūkā Chromium inkognito režīmā tiek bloķēti trešo pušu sīkfaili, taču jūs iestatījāt izņēmumu šai vietnei. Inkognito režīmā var tikt nodrošināta arī papildu izsekošanas aizsardzība. Inkognito izsekošanas aizsardzību varat pārvaldīt <ph name="BEGIN_LINK" />iestatījumos<ph name="END_LINK" />.</translation>
 <translation id="5362892126200493757">Pastāstiet, kāpēc pārtraucāt izsekošanas aizsardzību šajā vietnē.</translation>
 <translation id="544199055391706031">Jūsu darbības ir viens no vairākiem datu veidiem, ko vietne var izmantot reklāmu ieteikšanai. Kad vietņu ieteiktās reklāmas ir izslēgtas, vietnēs joprojām var tikt rādītas reklāmas, taču tās var būt mazāk personalizētas. Uzziniet vairāk par <ph name="BEGIN_LINK" />vietņu ieteiktajām reklāmām<ph name="END_LINK" /></translation>
 <translation id="5574580428711706114">Google pieprasa, lai uzņēmumi publiski paziņotu, ka tie neizmantos šos datus jūsu izsekošanai citās vietnēs. Uzņēmumiem ir jāinformē jūs par to, kā tie izmanto jūsu datus. <ph name="BEGIN_LINK1" />Uzziniet vairāk mūsu konfidencialitātes politikā<ph name="LINK_END1" />.</translation>
@@ -100,24 +86,17 @@
 <translation id="6053735090575989697">Lasiet mūsu konfidencialitātes politiku, lai uzzinātu vairāk par to, kā Google aizsargā jūsu datus.</translation>
 <translation id="6195163219142236913">Trešo pušu sīkfailu izmantošana ierobežota</translation>
 <translation id="6196640612572343990">Bloķēt trešo pušu sīkfailus</translation>
-<translation id="6205593033237791753">Ierobežojiet piekļuvi savai IP adresei. Šis iestatījums ir ieslēgts.</translation>
 <translation id="6282129116202535093">Vietņu ieteiktās reklāmas palīdz aizsargāt jūsu pārlūkošanas vēsturi un identitāti, vienlaikus ļaujot vietnēm rādīt jums atbilstošas reklāmas. Pamatojoties uz jūsu darbībām, citas vietnes var ieteikt saistītas reklāmas, kad jūs turpināt pārlūkošanu. Iestatījumos varat skatīt šo vietņu sarakstu un bloķēt nevajadzīgās vietnes.</translation>
 <translation id="6291177244430967858">Izsekošanas aizsardzība ir atsākta</translation>
 <translation id="6308169245546905162">Vietnes drīkst izmantot trešo pušu sīkfailus, lai iegūtu informāciju par jūsu darbībām citās vietnēs.</translation>
-<translation id="6388287739339671750">Bloķēt izsekošanas skriptus</translation>
 <translation id="6398358690696005758">Lasiet mūsu <ph name="BEGIN_LINK1" />konfidencialitātes politiku<ph name="LINK_END1" />, lai uzzinātu vairāk par to, kā Google aizsargā jūsu datus.</translation>
 <translation id="6494210367693221285">Jūsu pašreizējie Chromium iestatījumi ir atjaunināti, lai vietnēm būtu atļauts piekļūt trešo pušu sīkfailiem. Jebkurā laikā varat mainīt šo iestatījumu.</translation>
 <translation id="6702015235374976491">Reklāmu tēmas palīdz vietnēm rādīt atbilstošas reklāmas, vienlaikus aizsargājot jūsu pārlūkošanas vēsturi un identitāti. Chrome var saglabāt interešu tēmas, pamatojoties uz jūsu neseno pārlūkošanas vēsturi. Vēlāk kāda jūsu apmeklēta vietne var pieprasīt pārlūkam Chrome kopīgot atbilstošas tēmas, lai personalizētu jums rādītās reklāmas.</translation>
 <translation id="6710025070089118043">Vietnes nedrīkst izmantot trešo pušu sīkfailus, lai personalizētu saturu un reklāmas, kā arī iegūtu informāciju par jūsu darbībām citās vietnēs, ja vien nepiešķirat saistītajām vietnēm piekļuvi šiem sīkfailiem.</translation>
-<translation id="6737378617247709185">Pārlūkā Chromium inkognito režīmā tiek bloķēti trešo pušu sīkfaili, taču jūsu administrators atļāva trešo pušu sīkfailus šai vietnei. Inkognito režīmā var tikt nodrošināta arī papildu izsekošanas aizsardzība. Inkognito izsekošanas aizsardzību varat pārvaldīt <ph name="BEGIN_LINK" />iestatījumos<ph name="END_LINK" />.</translation>
 <translation id="6774168155917940386">Google pieprasa, lai uzņēmumi publiski paziņotu, ka tie neizmantos šos datus jūsu izsekošanai citās vietnēs. Dažās vietnēs jūsu darbību dati var tikt izmantoti, lai personalizētu jūsu lietošanas pieredzi, ne tikai reklāmas. Vietnes var arī apvienot šos datus ar citu informāciju, ko jau zina par jums. Uzņēmumiem ir jāinformē jūs par to, kā tie izmanto jūsu datus. Uzziniet vairāk mūsu <ph name="BEGIN_LINK" />konfidencialitātes politikā<ph name="END_LINK" />.</translation>
 <translation id="6789193059040353742">To, vai jums rādītā reklāma tiek personalizēta, var ietekmēt daudzi faktori, tostarp šis iestatījums, <ph name="BEGIN_LINK1" />reklāmu tēmas<ph name="LINK_END1" />, <ph name="BEGIN_LINK2" />sīkfailu iestatījumi<ph name="LINK_END2" />, kā arī tas, vai atvērtajā vietnē tiek personalizētas reklāmas.</translation>
 <translation id="6904948821498934430">Pārlūkā Chromium inkognito režīmā tiek bloķēti trešo pušu sīkfaili, taču jūs iestatījāt izņēmumu šai vietnei.</translation>
-<translation id="6968337645683500044">Funkcija ir pieejama tikai tad, ja inkognito režīms tiek atvērts no Chromium cilnes, kurā esat pierakstījies.</translation>
-<translation id="6984151429741932257">Ierobežojiet piekļuvi savai IP adresei</translation>
 <translation id="7084100010522077571">Vairāk par reklāmu novērtēšanu</translation>
-<translation id="721207178659484186">Aizsargājot jūsu IP adresi, Google konfidencialitātes serveriem ir pieejama jūsu IP adrese, bet ne jūsu pārlūkošanas galamērķi.</translation>
-<translation id="731039612501012263">Trešo pušu sīkfaili tiek bloķēti. Inkognito režīmā var tikt nodrošināta arī papildu izsekošanas aizsardzība. Inkognito izsekošanas aizsardzību varat pārvaldīt <ph name="BEGIN_LINK" />iestatījumos<ph name="END_LINK" />.</translation>
 <translation id="7315780377187123731">Plašāka informācija par opciju “Bloķēt trešo pušu sīkfailus”</translation>
 <translation id="737025278945207416">Dažās vietnēs var tikt izmantoti jūsu darbību dati, lai personalizētu jūsu lietošanas pieredzi, ne tikai reklāmas. Tēmas var arī tikt glabātas ilgāk par četrām nedēļām, un tās var tikt apvienotas ar citu informāciju, ko vietnes jau zina par jums.</translation>
 <translation id="7374493521304367420">Vietnes joprojām var izmantot sīkfailus, lai skatītu pārlūkošanas darbības tajās.</translation>
@@ -129,34 +108,22 @@
 <translation id="7475768947023614021">Reklāmu tēmu iestatījuma pārskatīšana</translation>
 <translation id="7538480403395139206">Plašāka informācija par opciju “Atļaut trešo pušu sīkfailus”</translation>
 <translation id="7552005635894902732">Pārlūkā Chrome inkognito režīmā tiek bloķēti trešo pušu sīkfaili, taču jūs iestatījāt izņēmumu šai vietnei. Inkognito režīmā var tikt nodrošināta arī papildu izsekošanas aizsardzība.</translation>
-<translation id="7564124309155378881">Funkcija ir pieejama tikai tad, ja inkognito režīms tiek atvērts no Chromium loga, kurā esat pierakstījies.</translation>
 <translation id="7590906321816761911">Izsekošanas aizsardzība ir pārtraukta</translation>
 <translation id="7686086654630106285">Vairāk par vietņu ieteiktām reklāmām</translation>
-<translation id="7747003797915893222">Kad pārlūkojat saturu inkognito režīmā, pārlūkā Chrome netiek saglabāta jūsu pārlūkošanas vēsture, sīkfaili, vietņu dati un veidlapās ievadītā informācija. Inkognito režīmā ir pieejamas arī funkcijas, kas var ierobežot iegultajām vietnēm pieejamo informāciju.</translation>
 <translation id="7766094116932490292">Izsekošanas aizsardzība ir iespējota</translation>
-<translation id="7789658094395162849">Ierobežojiet piekļuvi savai IP adresei. Šis iestatījums ir izslēgts.</translation>
-<translation id="7947135702324060924">Chromium var aizsargāt jūsu IP adresi no iegultām vietnēm, kas varētu mēģināt iegūt informāciju par jums.</translation>
-<translation id="795219618398555200">Pārlūkā Chromium vietnēm inkognito režīmā tiek liegta trešo pušu sīkfailu izmantošana</translation>
-<translation id="8080808348468200193">Pārlūkā Chrome vietnēm inkognito režīmā tiek liegta trešo pušu sīkfailu izmantošana</translation>
 <translation id="8086115837395871435">Notiek vietnes atkārtota ielāde…</translation>
-<translation id="8096996737013848963">Aizsargājiet savu IP adresi</translation>
-<translation id="816233773179678758">Chrome var aizsargāt jūsu IP adresi no iegultām vietnēm, kas varētu mēģināt iegūt informāciju par jums.</translation>
 <translation id="8180936577740217261">Pārlūkā Chrome inkognito režīmā tiek bloķēti trešo pušu sīkfaili, taču jūs iestatījāt izņēmumu šai vietnei.</translation>
 <translation id="8200078544056087897">Vietņu funkcijas, kuras paļaujas uz trešo pušu sīkfailiem, darbosies paredzētajā veidā.</translation>
 <translation id="8257935463851606210">Pārlūkā Chromium inkognito režīmā tiek bloķēti trešo pušu sīkfaili, taču kāds paplašinājums atļāva trešo pušu sīkfailus šai vietnei.</translation>
 <translation id="8365690958942020052">Kāda jūsu apmeklēta vietne var pieprasīt jūsu reklāmu tēmas vai arī reklāmas, ko ieteikušas jūsu apmeklētās vietnes.</translation>
 <translation id="839994149685752920">Vietnes drīkst izmantot trešo pušu sīkfailus, lai personalizētu saturu un reklāmas.</translation>
 <translation id="8428213095426709021">Iestatījumi</translation>
-<translation id="8430082659493731737">Funkcija ir pieejama tikai tad, ja inkognito režīms tiek atvērts no Chrome cilnes, kurā esat pierakstījies.</translation>
-<translation id="8578320000709741352">Jūsu apmeklētajās vietnēs var būt iegults citu vietņu saturs un pakalpojumi (piemēram, attēli, reklāmas un teksts), ko var izmantot, lai iegūtu informāciju par jums. Uzziniet vairāk par to, kā pārvaldīt <ph name="START_LINK" />inkognito izsekošanas aizsardzību<ph name="END_LINK" />.</translation>
 <translation id="859369389161884405">Konfidencialitātes politika tiks atvērta jaunā cilnē</translation>
 <translation id="8712637175834984815">Labi</translation>
 <translation id="877699835489047794"><ph name="BEGIN_BOLD" />Kā varat pārvaldīt šos datus?<ph name="END_BOLD" /> Pārlūkā Chrome tiek automātiski dzēstas tēmas, kas ir vecākas par četrām nedēļām. Turpinot pārlūkošanu, tēma var tikt atkārtoti iekļauta sarakstā. Chrome iestatījumos jebkurā brīdī varat bloķēt tēmas, ko nevēlaties kopīgot ar vietnēm, un izslēgt reklāmu tēmas.</translation>
-<translation id="8803526663383843427">Ja ieslēgta</translation>
 <translation id="8825639607990802302">Konfidencialitātes un vietņu datu opcijas</translation>
 <translation id="8908886019881851657"><ph name="BEGIN_BOLD" />Kā vietnes izmanto šos datus?<ph name="END_BOLD" /> Vietnes un to reklamēšanas partneri var izmantot jūsu darbības, lai personalizētu reklāmas citās vietnēs. Piemēram, ja apmeklējat vietni, lai meklētu receptes vakariņām, vietne var secināt, ka jūs interesē gatavošana. Vēlāk citā vietnē jums var tikt rādīta pirmās vietnes ieteikta saistīta reklāma par pārtikas preču piegādes pakalpojumu.</translation>
 <translation id="8944485226638699751">Ierobežoti</translation>
-<translation id="8948536553485650118">Izsekošanas aizsardzība inkognito režīmā</translation>
 <translation id="8984005569201994395">Google pieprasa, lai uzņēmumi publiski paziņotu, ka tie neizmantos šos datus jūsu izsekošanai citās vietnēs. Dažās vietnēs jūsu darbību dati var tikt izmantoti, lai personalizētu jūsu lietošanas pieredzi, ne tikai reklāmas. Vietnes var arī apvienot šos datus ar citu informāciju, ko jau zina par jums. Uzņēmumiem ir jāinformē jūs par to, kā tie izmanto jūsu datus. <ph name="BEGIN_LINK" />Uzziniet vairāk mūsu konfidencialitātes politikā<ph name="END_LINK" />.</translation>
 <translation id="9039924186462989565">Inkognito režīmā pārlūkā Chromium vietnēm ir liegts izmantot trešo pušu sīkfailus.</translation>
 <translation id="9162335340010958530">Vietnes nedrīkst izmantot trešo pušu sīkfailus, lai personalizētu saturu un reklāmas, kā arī iegūtu informāciju par jūsu darbībām citās vietnēs, ja vien neatļaujat saistītajām vietnēm piekļūt šiem sīkfailiem.</translation>

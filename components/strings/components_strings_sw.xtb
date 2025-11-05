@@ -177,6 +177,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="1282358575813748144">Mashua na Vyombo vya Majini</translation>
 <translation id="1283977499362032052">Wasifu na Violezo vya Wasifu</translation>
 <translation id="1285320974508926690">Kamwe usitafsiri tovuti hii</translation>
+<translation id="1289129165308566697">Angalia historia yako kwenye vifaa vingine</translation>
 <translation id="1292571435393770077">Trei ya 16</translation>
 <translation id="1292701964462482250">"Kuna programu kwenye kompyuta yako inayoizuia Chrome isiunganishe kwenye wavuti kwa usalama" (kompyuta za Windows pekee)</translation>
 <translation id="1293556467332435079">Faili</translation>
@@ -1844,7 +1845,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="4014895360827978999">Huduma za Wauzaji na Mifumo ya Malipo</translation>
 <translation id="4018819349042761761">Ufunguo wa Umma</translation>
 <translation id="4023431997072828269">Kwa sababu fomu hii inatumwa kwa kutumia muunganisho ambao si salama, watu wengine wataona maelezo yako.</translation>
-<translation id="4024673763872230929">Hifadhi taarifa yako na ujaze fomu kwa haraka zaidi. Hifadhi kwenye kifaa chako.</translation>
+<translation id="4024673763872230929">Hifadhi taarifa yako ili ujaze fomu kwa haraka zaidi. Hifadhi kwenye kifaa chako.</translation>
 <translation id="4025325634010721551">Sera zimepakiwa upya</translation>
 <translation id="4025338605225449265">Sarafu na Fedha za Kigeni</translation>
 <translation id="4025777154208238692">Mpangilio uliogeuzwa</translation>
@@ -2341,6 +2342,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="4822493756793346865">Bei za kawaida hutokana na bei katika maduka yaliyo kwenye wavuti katika kipindi cha siku 90 zilizopita.</translation>
 <translation id="4822922322149719535">Kagua kumbukumbu ya hitilafu</translation>
 <translation id="4823699521959851389"><ph name="SHORT_PRODUCT_NAME" /> inahitaji idhini ya kufikia <ph name="PERMISSION" /> za kifaa chako</translation>
+<translation id="4825311006392962663">Onyesha chaguo za kulipa baadaye wakati wa kulipa</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, bonyeza 'Tab' kisha 'Enter' ili uunde Jedwali jipya la Google kwa haraka</translation>
 <translation id="4826588772550366629">kamera na maikrofoni</translation>
 <translation id="4827283332383516812">Futa kadi</translation>
@@ -2432,6 +2434,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="4961708452830821006">Ili utumie maikrofoni yako, ipatie Chrome ufikiaji kwenye <ph name="LINK" />.</translation>
 <translation id="4963413887558778009">Muundo wa Mlalo</translation>
 <translation id="4967366744630699583">Badilisha anwani</translation>
+<translation id="4968046291688599384">Umejaza namba ya kutumia mara moja ya kadi pepe ya <ph name="BNPL_ISSUER_NAME" />.</translation>
 <translation id="4968522289500246572">Programu hii imeundwa kwa ajili ya vifaa vya mkononi na huenda ukubwa wake usibadilike vizuri. Huenda programu ikakumbwa na matatizo au izimwe kisha iwashwe tena.</translation>
 <translation id="4968665849807487749">Inaweza kuomba ruhusa ya kudhibiti madirisha kwenye skrini zako zote</translation>
 <translation id="4969341057194253438">Futa rekodi</translation>
@@ -3451,6 +3454,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="6652101503459149953">Tumia Windows Hello</translation>
 <translation id="6654224358955673568">Rasimisha</translation>
 <translation id="6654244995031366386">Kioo (Kigumu)</translation>
+<translation id="6655085656059574817">Kuunganisha akaunti yako hukusaidia kulipa kwa haraka ukitumia <ph name="BNPL_ISSUER_NAME" />, lakini unaweza kuitenganisha kwa kwenda kwenye <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" /></translation>
 <translation id="6657585470893396449">Nenosiri</translation>
 <translation id="6659246032834639189">Bei hii ni nafuu</translation>
 <translation id="6660413144148052430">mahali</translation>

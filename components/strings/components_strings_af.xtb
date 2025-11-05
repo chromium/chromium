@@ -177,6 +177,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="1282358575813748144">Bote en vaartuie</translation>
 <translation id="1283977499362032052">CV’s en portefeuljes</translation>
 <translation id="1285320974508926690">Moet nooit hierdie werf vertaal nie</translation>
+<translation id="1289129165308566697">Sien jou geskiedenis op ander toestelle</translation>
 <translation id="1292571435393770077">Laai 16</translation>
 <translation id="1292701964462482250">"Sagteware op jou rekenaar verhoed dat Chrome veilig aan die web koppel" (Net Windows-rekenaars)</translation>
 <translation id="1293556467332435079">Lêers</translation>
@@ -2341,6 +2342,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="4822493756793346865">Tipiese pryse is gegrond op winkels oral op die web in die afgelope 90 dae.</translation>
 <translation id="4822922322149719535">Gaan foutloglêer na</translation>
 <translation id="4823699521959851389"><ph name="SHORT_PRODUCT_NAME" /> benodig toegang tot jou toestel se <ph name="PERMISSION" /></translation>
+<translation id="4825311006392962663">Wys betaal-later-opsies by betaalpunt</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk Tab en dan Enter om vinnig 'n nuwe Google Blad te skep</translation>
 <translation id="4826588772550366629">kamera en mikrofoon</translation>
 <translation id="4827283332383516812">Vee kaart uit</translation>
@@ -2432,6 +2434,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="4961708452830821006">Gee in <ph name="LINK" /> vir Chrome toegang om jou mikrofoon te gebruik.</translation>
 <translation id="4963413887558778009">Landskapontwerp</translation>
 <translation id="4967366744630699583">Wysig adres</translation>
+<translation id="4968046291688599384"><ph name="BNPL_ISSUER_NAME" /> eenmalige virtuelekaartnommer is ingevul.</translation>
 <translation id="4968522289500246572">Hierdie app is vir mobiele toestelle ontwerp en sy grootte is dalk nie maklik om te verander nie. Die app sal dalk kwessies ervaar of herbegin.</translation>
 <translation id="4968665849807487749">Kan vra om vensters op al jou skerms te bestuur</translation>
 <translation id="4969341057194253438">Vee opname uit</translation>
@@ -3451,6 +3454,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="6652101503459149953">Gebruik Windows Hello</translation>
 <translation id="6654224358955673568">Formaliseer</translation>
 <translation id="6654244995031366386">Glas (getekstureerd)</translation>
+<translation id="6655085656059574817">As jy jou rekening gekoppel hou, help dit jou om vinniger met <ph name="BNPL_ISSUER_NAME" /> te betaal, maar jy kan dit ontkoppel deur na <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" /> toe te gaan</translation>
 <translation id="6657585470893396449">Wagwoord</translation>
 <translation id="6659246032834639189">Hierdie prys is laag</translation>
 <translation id="6660413144148052430">ligging</translation>

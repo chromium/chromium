@@ -25,6 +25,7 @@
 <translation id="1502360822835740515">Chromium-কে আপনার ডিফল্ট ব্রাউজার করুন</translation>
 <translation id="1503199973012840174">আপনার Chromium পুরনো হয়ে গেছে। নিরাপদ থাকতে এটি আপডেট করুন।</translation>
 <translation id="1515748263297244785">iPad-এর জন্য ডিফল্ট হিসেবে Chromium ব্যবহার করুন</translation>
+<translation id="1530961174488670696">Chromium-এ আপডেট চেক করা যায়নি। পরে আবার চেষ্টা করুন।</translation>
 <translation id="1531155317299575425">Chromium-এ সাইন-ইন করার প্রম্পট দেখাবে।</translation>
 <translation id="1553657876656159572">আপনার জন্য তৈরি কাস্টম ফিড। এতে খবর, খেলাধূলা ও আবহাওয়ার তথ্য আছে।</translation>
 <translation id="1561849081734670621">Chromium-এ 'লকডাউন' মোড বন্ধ করতে, আপনার iPhone-এ এটি বন্ধ করুন।</translation>
@@ -145,6 +146,7 @@
 <translation id="420541179527342563">Chromium-এ 'লকডাউন' মোড বন্ধ করতে এটি আপনার iPad-এ বন্ধ করুন।</translation>
 <translation id="4272892696084633551">Chromium-এর ফিচার এবং পারফরম্যান্স উন্নত করতে সাহায্য করুন</translation>
 <translation id="4302397443352897529">Chromium সেটিংস</translation>
+<translation id="4304713468139749426">পাসওয়ার্ড ম্যানেজার</translation>
 <translation id="4408912345039114853">Chromium-এর 'নিরাপত্তা সংক্রান্ত পরীক্ষা' ফিচার রান করুন</translation>
 <translation id="4432744876818348753">Chromium থেকে সবচেয়ে বেশি সুবিধা পেতে সাইন-ইন করুন।</translation>
 <translation id="4445228361214254027">আপনার প্রতিষ্ঠান আপনার Google অ্যাকাউন্টে Chromium ডেটা ব্যবহার ও সেভ করার সুবিধা বন্ধ করে দিয়েছে। নতুন বুকমার্ক, পাসওয়ার্ড ও আরও অনেক কিছু শুধুমাত্র এই ডিভাইসে সেভ হবে।</translation>
@@ -236,7 +238,6 @@
 <translation id="6154098560469640583">মেসেজ, ডকুমেন্ট এবং অন্যান্য অ্যাপে থাকা লিঙ্কে যেকোনও সময় ক্লিক করতে Chromium ব্যবহার করুন।</translation>
 <translation id="6157162508956739031">Chromium থেকে আপনার পাসওয়ার্ড ও পাসকী অটোফিল করার মাধ্যমে অ্যাপ ও সাইটে চটপট সাইন-ইন করুন</translation>
 <translation id="6170619162539716595">Chromium-কে Google Maps ব্যবহার করার অনুমতি দিন যাতে আপনাকে শনাক্ত করা ঠিকানার দিকনির্দেশ এবং স্থানীয় তথ্য দিতে পারে।</translation>
-<translation id="6247557882553405851">Google পাসওয়ার্ড ম্যানেজার</translation>
 <translation id="6268381023930128611">Chromium থেকে সাইন-আউট করবেন?</translation>
 <translation id="6301717043141881464">অন্য অ্যাপে সেভ করা পাসওয়ার্ড পেতে অটোফিলের জন্য Chromium বেছে নিন</translation>
 <translation id="6324041800010509197">Chromium-এর ট্যাব গ্রিডে যান</translation>

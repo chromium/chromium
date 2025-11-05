@@ -25,6 +25,7 @@
 <translation id="1502360822835740515">Iestatiet Chromium par noklusējuma pārlūku</translation>
 <translation id="1503199973012840174">Jūsu pārlūka Chromium versija ir novecojusi. Atjauniniet to, lai gādātu par savu drošību.</translation>
 <translation id="1515748263297244785">Pārlūka Chromium izmantošana iPad planšetdatorā pēc noklusējuma</translation>
+<translation id="1530961174488670696">Pārlūkā Chromium nevarēja pārbaudīt atjauninājumu pieejamību. Vēlāk mēģiniet vēlreiz.</translation>
 <translation id="1531155317299575425">Tiek rādīti aicinājumi pierakstīties pārlūkā Chromium.</translation>
 <translation id="1553657876656159572">Pielāgota plūsma, kas radīta jums. Ziņas, sports, laikapstākļi un citas tēmas.</translation>
 <translation id="1561849081734670621">Lai pārlūkā Chromium atspējotu funkciju Lockdown Mode, izslēdziet to savā iPhone tālrunī.</translation>
@@ -145,6 +146,7 @@ Jūsu dati ir šifrēti, izmantojot ieejas frāzi. Ievadiet ieejas frāzi, lai i
 <translation id="420541179527342563">Lai pārlūkā Chromium atspējotu funkciju Lockdown Mode, izslēdziet to savā iPad planšetdatorā.</translation>
 <translation id="4272892696084633551">Palīdzēt uzlabot Chromium funkcijas un veiktspēju</translation>
 <translation id="4302397443352897529">Chromium iestatījumi</translation>
+<translation id="4304713468139749426">Paroļu pārvaldnieks</translation>
 <translation id="4408912345039114853">Chromium drošības pārbaudes veikšana</translation>
 <translation id="4432744876818348753">Pierakstieties, lai pilnvērtīgi izmantotu pārlūku Chromium.</translation>
 <translation id="4445228361214254027">Jūsu organizācija ir izslēgusi iespēju izmantot un saglabāt Chromium datus jūsu Google kontā. Jaunas grāmatzīmes, paroles un citi dati tiks saglabāti tikai šajā ierīcē.</translation>
@@ -236,7 +238,6 @@ Svarīga informācija
 <translation id="6154098560469640583">Izmantojiet pārlūku Chromium ikreiz, kad noklikšķināt uz saitēm ziņojumos, dokumentos un citās lietotnēs.</translation>
 <translation id="6157162508956739031">Ātri pierakstieties lietotnēs un vietnēs, automātiski aizpildot paroles un piekļuves atslēgas no pārlūka Chromium.</translation>
 <translation id="6170619162539716595">Atļaujiet pārlūkam Chromium izmantot pakalpojumu Google Maps, lai sniegtu jums norādes un vietējo informāciju par noteiktajām adresēm.</translation>
-<translation id="6247557882553405851">Google paroļu pārvaldnieks</translation>
 <translation id="6268381023930128611">Vai izrakstīties no Chromium?</translation>
 <translation id="6301717043141881464">Lai ērti iegūtu savas saglabātās paroles citās lietotnēs, izvēlieties pārlūku Chromium automātiskajai aizpildei.</translation>
 <translation id="6324041800010509197">Atvērt ciļņu režģi pārlūkā Chromium</translation>

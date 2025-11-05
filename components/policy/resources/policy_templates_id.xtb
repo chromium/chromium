@@ -136,6 +136,7 @@ Mulai <ph name="PRODUCT_NAME" /> 140, jika kebijakan ini tidak disetel, perilaku
 
       Jika setelan ini tidak disetel, direktori profil default akan digunakan.</translation>
 <translation id="1053981429146436598">Kumpulan kebijakan yang terkait dengan setelan permintaan jaringan pribadi.  Lihat https://wicg.github.io/private-network-access/.</translation>
+<translation id="1055159224864957792">Sandi Lokal</translation>
 <translation id="1059069692400941670">Nonaktifkan impor mesin telusur default saat browser pertama kali dijalankan</translation>
 <translation id="1060020040574767394">Konfigurasi Setelan Watermark Kustom</translation>
 <translation id="1062011392452772310">Mengaktifkan pengesahan jarak jauh untuk perangkat tersebut</translation>
@@ -1299,6 +1300,17 @@ Kebijakan ini tidak akan berpengaruh jika opsi untuk menyimpan data penjelajahan
 <translation id="1834796168555733063">Nonaktifkan penyimpanan kunci sandi menggunakan pengelola sandi</translation>
 <translation id="1836380138559328229">Simpan kredensial Wi-Fi aktif di tingkat perangkat</translation>
 <translation id="1837165432382702436">Tinggi halaman dalam mikrometer.</translation>
+<translation id="1838075279369174832">Menyetel kebijakan akan mengontrol faktor autentikasi lokal yang dapat digunakan untuk login dan autentikasi ulang di <ph name="PRODUCT_OS_NAME" />.
+
+      Untuk mengizinkan:
+
+      * Semua faktor autentikasi lokal, gunakan ["ALL"] (termasuk faktor yang ditambahkan di masa mendatang).
+
+      * Hanya PIN, gunakan ["PIN"].
+
+      * Hanya Sandi Lokal, gunakan ["LOCAL_PASSWORD"].
+
+      Jika kebijakan ini tidak disetel atau disetel ke daftar kosong, tidak akan ada faktor autentikasi lokal yang tersedia untuk pengguna terkelola.</translation>
 <translation id="1838910874018595451">Konfigurasi yang diisi otomatis untuk tiket Kerberos</translation>
 <translation id="1839042185432919430">Mengizinkan aplikasi web kios menampilkan perintah jaringan saat peluncuran aplikasi jika perangkat sedang offline</translation>
 <translation id="1839711547980672664">Daftar pola URL yang diizinkan untuk dibuka dengan <ph name="CHROME_DEVTOOLS_NAME" /></translation>
@@ -9140,6 +9152,7 @@ kebijakan ini saat browser berjalan.</translation>
 Jika kebijakan ini disetel ke Aktif, pengguna akan logout dari sesi sebelumnya setelah berhasil login ke perangkat <ph name="PRODUCT_OS_NAME" /> baru.
 
 Jika kebijakan ini disetel ke Nonaktif atau tidak disetel, pengguna hanya akan logout dari sesi sebelumnya jika kebijakan <ph name="FLOATING_SSO_ENABLED_POLICY_NAME" /> atau <ph name="FLOATING_WORKSPACE_V2_ENABLED_POLICY_NAME" /> disetel ke Aktif.</translation>
+<translation id="6854694645176150141">Mengonfigurasi faktor autentikasi lokal yang diizinkan</translation>
 <translation id="6854767649023671426">Jika kebijakan disetel ke Aktif atau tidak disetel, pengguna akan dimintai akses perekaman video kecuali untuk URL yang ditentukan dalam daftar VideoCaptureAllowedUrls.
 
       Jika kebijakan disetel ke Nonaktif, permintaan izin akan dinonaktifkan dan perekaman video hanya tersedia untuk URL yang ditentukan dalam daftar VideoCaptureAllowedUrls.
@@ -10095,6 +10108,7 @@ baca lisan akan diaktifkan.</translation>
 <translation id="7491720878670299691">Interval pada saat data jaringan disurvei dan diperiksa untuk mencari aktivitas. Batas minimum yang diizinkan adalah 1 menit.
 
       Jika tidak disetel, interval default 1 menit akan berlaku.</translation>
+<translation id="7496284563199466390">Mengontrol pengguna terkelola mana yang dapat menetapkan kebijakan <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" />.</translation>
 <translation id="7498595166686106721">
       Kebijakan izin perekaman layar mendapat akses ke getDisplayMedia(), sesuai spesifikasi berikut: https://www.w3.org/TR/screen-capture/#feature-policy-integration. Namun, jika kebijakan ini disetel ke Nonaktif, persyaratan ini tidak akan diterapkan dan getDisplayMedia() akan diizinkan dari konteks yang seharusnya dilarang. Kebijakan Perusahaan ini bersifat sementara dan akan dihapus setelah <ph name="PRODUCT_NAME" /> versi 100. Kebijakan ini dimaksudkan untuk berhenti memblokir Pengguna versi bisnis yang aplikasinya tidak sesuai spesifikasi, tetapi perlu waktu untuk diperbaiki.
 
@@ -11073,6 +11087,9 @@ Kebijakan ini diterapkan dalam mode Samaran. Artinya, mode Samaran harus diaktif
 <translation id="8225579382697740712">Mengontrol penggunaan WebHID API</translation>
 <translation id="8229912067600517877">Aktifkan Developer Tools</translation>
 <translation id="8238421250255592181">Tanda boolean menunjukkan apakah keyboard virtual dapat memberikan pelengkapan otomatis.</translation>
+<translation id="8238558579601006178">Jika kebijakan ini disetel ke 0 atau tidak disetel, kebijakan <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> hanya akan diterapkan pada cakupan pengguna untuk pengguna terafiliasi.
+Jika kebijakan ini disetel ke 1, kebijakan <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> akan diterapkan pada cakupan pengguna, meskipun pengguna tersebut tidak terafiliasi.
+Jika kebijakan ini disetel ke 2, kebijakan <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> tidak akan pernah diterapkan jika sumbernya adalah pengguna.</translation>
 <translation id="8239109177194627162">Nonaktifkan Isi Otomatis untuk kartu kredit</translation>
 <translation id="8239143983379015783">Memaksa pengaktifan kuota persisten</translation>
 <translation id="8240976615241583524">Kebijakan ini memungkinkan pembatasan alamat IP dan antarmuka yang dapat digunakan oleh WebRTC saat mencoba menemukan koneksi terbaik yang tersedia.

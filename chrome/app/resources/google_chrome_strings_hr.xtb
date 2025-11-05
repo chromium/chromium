@@ -154,7 +154,6 @@
 <translation id="2753623023919742414">Kliknite za pretraživanje</translation>
 <translation id="2757826245013442432">{COUNT,plural, =0{Napredna zaštita zahtijeva da ponovno pokrenete Chrome radi primjene ažuriranja}=1{Napredna zaštita zahtijeva da ponovno pokrenete Chrome radi primjene ažuriranja. Vaš anonimni prozor neće se ponovno otvoriti.}one{Napredna zaštita zahtijeva da ponovno pokrenete Chrome radi primjene ažuriranja. Vaš # anonimni prozor neće se ponovno otvoriti.}few{Napredna zaštita zahtijeva da ponovno pokrenete Chrome radi primjene ažuriranja. Vaša # anonimna prozora neće se ponovno otvoriti.}other{Napredna zaštita zahtijeva da ponovno pokrenete Chrome radi primjene ažuriranja. Vaših # anonimnih prozora neće se ponovno otvoriti.}}</translation>
 <translation id="2765403129283291972">Chrome treba dopuštenje za pristup mikrofonu za ovu web-lokaciju</translation>
-<translation id="2770231113462710648">Promijeni zadani preglednik na:</translation>
 <translation id="2775140325783767197">Chrome ne može provjeriti vaše zaporke. Provjerite internetsku vezu.</translation>
 <translation id="2797864378188255696">Kad se na Googleove usluge kao što su Gmail ili YouTube prijavljujete pomoću računa <ph name="USER_EMAIL" />, možete se automatski prijaviti u Chrome istim računom</translation>
 <translation id="2799162042226656283">Vaš Chrome</translation>
@@ -267,6 +266,7 @@
 <translation id="3968962723676998462">Unesite šifru kako biste upotrebljavali i spremali podatke iz Chromea na svojem računu, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="3973161977468201858">Google Chrome želi izbrisati vaše podatke Google upravitelja zaporki. Upišite svoju zaporku za Windows da biste to dopustili.</translation>
 <translation id="400161754580828648">Da biste dijelili zaslon, u postavkama sustava dopustite snimanje zaslona za Chrome.</translation>
+<translation id="4012899077942246412">Dok ste prijavljeni, možete koristiti svoje zaporke i još mnogo toga sa svojeg Google računa u Chromeu. Da biste to promijenili, idite na Vaš račun u Chromeu.</translation>
 <translation id="4022972681110646219">Prevedi zaslon</translation>
 <translation id="4023601594785368013">Izvorni jezik: <ph name="LANGUAGE" /></translation>
 <translation id="4035053306113201399">Potrebno je ponovo pokrenuti Chrome OS kako bi se ažuriranje primijenilo.</translation>
@@ -646,6 +646,7 @@
 <translation id="8255190535488645436">Google Chrome upotrebljava vašu kameru i mikrofon.</translation>
 <translation id="8267953129876836456">Chrome je pronašao neke sigurnosne preporuke za vaš pregled</translation>
 <translation id="8286862437124483331">Google Chrome pokušava prikazati zaporke. Upišite svoju zaporku za Windows da biste to dopustili.</translation>
+<translation id="8289399803055125418">Koristi <ph name="BEGIN_LINK" />moju šifru<ph name="END_LINK" /> za šifriranje svih Chromeovih podataka spremljenih na mojem Google računu. Adrese i svi podaci spremljeni u Google Wallet neće se šifrirati vašom šifrom. Povijest pregledavanja iz Chromea neće se sinkronizirati.</translation>
 <translation id="829923460755755423">Dodavanje prečaca Google upravitelju zaporki</translation>
 <translation id="8313851650939857356">Pogreška pri pokretanju: <ph name="STARTUP_ERROR" /></translation>
 <translation id="8321888067342493336">Spremi kao sliku</translation>

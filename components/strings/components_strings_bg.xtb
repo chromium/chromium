@@ -177,6 +177,7 @@
 <translation id="1282358575813748144">Лодки и плавателни съдове</translation>
 <translation id="1283977499362032052">Автобиографии и портфолия</translation>
 <translation id="1285320974508926690">Този сайт да не се превежда никога</translation>
+<translation id="1289129165308566697">Преглеждайте историята си на други устройства</translation>
 <translation id="1292571435393770077">Тава 16</translation>
 <translation id="1292701964462482250">„Софтуер на компютъра ви пречи на Chrome да се свърже безопасно с мрежата“ (само на компютри под Windows)</translation>
 <translation id="1293556467332435079">Файлове</translation>
@@ -1844,6 +1845,7 @@
 <translation id="4014895360827978999">Обслужване на търговци и системи за плащане</translation>
 <translation id="4018819349042761761">Публичен ключ</translation>
 <translation id="4023431997072828269">Тъй като този формуляр се изпраща посредством незащитена връзка, информацията ви ще е видима за други хора.</translation>
+<translation id="4024673763872230929">Запазете информацията си и попълвайте формуляри по-бързо. Запазва се на устройството ви.</translation>
 <translation id="4025325634010721551">Правилата са презаредени</translation>
 <translation id="4025338605225449265">Валути и обмен на валута</translation>
 <translation id="4025777154208238692">Обратен ред</translation>
@@ -2277,6 +2279,7 @@
 <translation id="4732860731866514038">Езиковият пакет за <ph name="LANGUAGE" /> се изтегля... <ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992"><ph name="URL" /> иска да използва местоположението на устройството ви</translation>
 <translation id="473414950835101501">Използване на камерите ви</translation>
+<translation id="4734343956394152985"><ph name="BEGIN_BOLD" />Текуща стандартна настройка<ph name="END_BOLD" /> · <ph name="MARKETING_SNIPPET" /></translation>
 <translation id="4736825316280949806">Рестартирайте Chromium.</translation>
 <translation id="4736934858538408121">Виртуална карта</translation>
 <translation id="473775607612524610">Актуализиране</translation>
@@ -2339,6 +2342,7 @@
 <translation id="4822493756793346865">Обичайните цени са въз основа на магазините в мрежата през последните 90 дни.</translation>
 <translation id="4822922322149719535">Преглед на регистрационния файл за грешките</translation>
 <translation id="4823699521959851389"><ph name="SHORT_PRODUCT_NAME" /> се нуждае от достъп до <ph name="PERMISSION" /> на устройството ви</translation>
+<translation id="4825311006392962663">Показване на опции за плащане по-късно по време на плащането</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това Enter, за да създадете бързо таблица в Google Таблици</translation>
 <translation id="4826588772550366629">камерата и микрофона ви</translation>
 <translation id="4827283332383516812">Изтриване на картата</translation>
@@ -2430,6 +2434,7 @@
 <translation id="4961708452830821006">За да използвате микрофона си, дайте достъп на Chrome от <ph name="LINK" />.</translation>
 <translation id="4963413887558778009">Ландшафтен дизайн</translation>
 <translation id="4967366744630699583">Редактиране на адреса</translation>
+<translation id="4968046291688599384">Попълнен е еднократен номер на виртуална карта от <ph name="BNPL_ISSUER_NAME" />.</translation>
 <translation id="4968522289500246572">Това приложение е предназначено за мобилни устройства и може да не функционира правилно след преоразмеряване. То може да има проблеми или да се рестартира.</translation>
 <translation id="4968665849807487749">Може да поиска разрешение да управлява прозорците на всичките ви дисплеи</translation>
 <translation id="4969341057194253438">Изтриване на записа</translation>
@@ -3386,6 +3391,7 @@
 <translation id="6521745193039995384">Не е активно</translation>
 <translation id="6522682797352430154">Класическа музика</translation>
 <translation id="6524830701589638230">Бутон „Управление на настройките за достъпност“. Активирайте, за да персонализирате инструментите за достъпност в настройките на Chrome</translation>
+<translation id="6525222262307262764">Запазване на текущата стандартна настройка</translation>
 <translation id="6527049834925947126">Хранително-вкусова промишленост</translation>
 <translation id="6529173248185917884">Седма ролка</translation>
 <translation id="6529602333819889595">&amp;Възстановяване на изтриването</translation>
@@ -3406,6 +3412,7 @@
 <translation id="6567832540451970450">Администраторът ви разрешава на този сайт достъп до <ph name="PERMISSION" /></translation>
 <translation id="6568793038316600992">Бутон „Управление на начините на плащане“. Активирайте, за да управлявате информацията си за плащане и данните за кредитните си карти в настройките на Chrome</translation>
 <translation id="6569060085658103619">Преглеждате страница на разширение</translation>
+<translation id="6571992525120410251">Попитайте <ph name="ENGINE_NAME" /> каквото и да е</translation>
 <translation id="6572867903637058088">Това полезно ли е?</translation>
 <translation id="6573200754375280815">Двойно перфориране отдясно</translation>
 <translation id="6575408526598156416">Запазване в профила</translation>
@@ -3447,6 +3454,7 @@
 <translation id="6652101503459149953">Използване на Windows Hello</translation>
 <translation id="6654224358955673568">Официално</translation>
 <translation id="6654244995031366386">Стъкло (текстурирано)</translation>
+<translation id="6655085656059574817">Когато профилът ви е свързан, можете да плащате по-бързо чрез <ph name="BNPL_ISSUER_NAME" />. Имате възможност да прекратите връзката с услугата, като посетите <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" /></translation>
 <translation id="6657585470893396449">Парола</translation>
 <translation id="6659246032834639189">Тази цена е ниска</translation>
 <translation id="6660413144148052430">местоположение</translation>
@@ -3454,6 +3462,7 @@
 <translation id="666259744093848177">(преведено от x86_64)</translation>
 <translation id="6665553082534466207">Тройно перфориране отдясно</translation>
 <translation id="6668389483194953109">Намерено бе име на размер на хартията custom, но свойството custom_size е празно или невалидно.</translation>
+<translation id="6670729408462528018">Галерия</translation>
 <translation id="6671169470640320959">Финансиране на покупки на автомобили</translation>
 <translation id="6671697161687535275">Предложението за формуляри да се премахне ли от Chromium?</translation>
 <translation id="6675846980676550611">Не е разрешено използването на AR</translation>

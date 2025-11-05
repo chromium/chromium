@@ -177,6 +177,7 @@
 <translation id="1282358575813748144">बोट आणि वॉटरक्राफ्ट</translation>
 <translation id="1283977499362032052">रेझ्युमे आणि पोर्टफोलिओ</translation>
 <translation id="1285320974508926690">या साइटचा कधीही भाषांतर करु नका</translation>
+<translation id="1289129165308566697">इतर डिव्हाइसवर तुमचा इतिहास पहा</translation>
 <translation id="1292571435393770077">ट्रे १६</translation>
 <translation id="1292701964462482250">"तुमच्या कॉंप्युटरवरील सॉफ्टवेअर Chrome ला सुरक्षितपणे वेबशी कनेक्ट होण्यापासून थांबवत आहे" (फक्‍त Windows कॉंप्युटरचा)</translation>
 <translation id="1293556467332435079">Files</translation>
@@ -1008,6 +1009,7 @@
 <translation id="2627847595568876492">PDF मधून मजकूर काढत आहे...</translation>
 <translation id="2628025184666666186">या सर्व्हरला तो <ph name="DOMAIN" /> असल्याचे सिद्ध करता आले नाही, कारण तो Chrome द्वारे किंवा वेब ट्रॅफिक एन्क्रिप्शनसाठी तुमच्या सिस्टीम कॉन्फिगरेशनद्वारे विश्वसनीय नसलेले सुरक्षा प्रमाणपत्र वापरत आहे. हे चुकीच्या कॉन्फिगरेशनमुळे किंवा हल्लेखोरांनी तुमच्या कनेक्शनमध्ये आणलेल्या अडथळ्यांमुळे झालेले असू शकते.</translation>
 <translation id="2628224721443278970">Microsoft OneDrive मध्ये साइन इन करा</translation>
+<translation id="2631387782019878060">पडताळणी कोड: <ph name="OTP" /></translation>
 <translation id="2634124572758952069"><ph name="HOST_NAME" /> चा सर्व्हर आयपी ॲड्रेस सापडला नाही.</translation>
 <translation id="2638567100095052009">संपूर्ण <ph name="FEATURED_SEARCH_LIST" /> मध्ये शोधण्यासाठी @ टाइप करा</translation>
 <translation id="2639739919103226564">स्थिती:</translation>
@@ -2340,6 +2342,7 @@
 <translation id="4822493756793346865">सामान्य किमती या गेल्या ९० दिवसांतील संपूर्ण वेबवरील स्टोअरवर आधारित असतात.</translation>
 <translation id="4822922322149719535">एरर लॉगचे पुनरावलोकन करा</translation>
 <translation id="4823699521959851389"><ph name="SHORT_PRODUCT_NAME" /> ला तुमच्या डिव्हाइसच्या <ph name="PERMISSION" /> चा ॲक्सेस हवा आहे</translation>
+<translation id="4825311006392962663">चेकआउट करताना नंतर पेमेंट करण्याचे पर्याय दाखवा</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, नवीन Google शीट झटपट तयार करण्यासाठी टॅब आणि त्यानंतर एंटर प्रेस करा</translation>
 <translation id="4826588772550366629">कॅमेरा आणि मायक्रोफोन</translation>
 <translation id="4827283332383516812">कार्ड हटवा</translation>
@@ -2431,6 +2434,7 @@
 <translation id="4961708452830821006">तुमचा मायक्रोफोन वापरण्यासाठी, Chrome ला <ph name="LINK" /> मध्ये अ‍ॅक्सेस द्या.</translation>
 <translation id="4963413887558778009">लॅंडस्केप डिझाइन</translation>
 <translation id="4967366744630699583">पत्ता संपादित करा</translation>
+<translation id="4968046291688599384"><ph name="BNPL_ISSUER_NAME" /> चा एक वेळचा व्हर्चुअल कार्ड नंबर भरला आहे.</translation>
 <translation id="4968522289500246572">हे ॲप मोबाइलसाठी डिझाइन केले असून योग्यप्रकारे आकार बदलू शकणार नाही. अ‍ॅपमध्ये समस्या येऊ शकतात किंवा ते रीस्टार्ट होऊ शकते.</translation>
 <translation id="4968665849807487749">तुमच्या सर्व डिस्प्लेवर विंडो व्यवस्थापित करण्याची विनंती करू शकते</translation>
 <translation id="4969341057194253438">रेकॉर्डिंग हटवा</translation>
@@ -2798,6 +2802,7 @@
 <translation id="5558083606899411167">एअर कंडिशनर</translation>
 <translation id="5558125320634132440">ही साइट ब्लॉक केली गेली आहे कारण तिच्यावर प्रौढांसाठी आशय असू शकतो</translation>
 <translation id="5559311991468302423">पत्ता हटवा</translation>
+<translation id="5561747310506483298">ओळखपत्रे</translation>
 <translation id="55635442646131152">दस्तऐवज आउटलाइन</translation>
 <translation id="5563589142503817291">तुमचे स्थान वापरण्यासाठी, Chrome ला <ph name="LINK" /> मध्ये अ‍ॅक्सेस द्या.</translation>
 <translation id="5565613213060953222">गुप्त टॅब उघडा</translation>
@@ -3451,6 +3456,7 @@
 <translation id="6652101503459149953">Windows Hello वापरा</translation>
 <translation id="6654224358955673568">फॉर्मलाइझ कर</translation>
 <translation id="6654244995031366386">ग्लास (टेक्सचर्ड)</translation>
+<translation id="6655085656059574817">तुमचे खाते लिंक केलेले ठेवल्याने, तुम्हाला <ph name="BNPL_ISSUER_NAME" /> वापरून अधिक जलद पेमेंट करण्यात मदत होते, पण तुम्ही <ph name="BEGIN_LINK" /><ph name="IDS_AUTOFILL_BNPL_TOS_LINK_TEXT_WALLET_LINK_TEXT" /><ph name="END_LINK" /> वर जाऊन ते अनलिंक करू शकता</translation>
 <translation id="6657585470893396449">पासवर्ड</translation>
 <translation id="6659246032834639189">ही किंमत कमी आहे</translation>
 <translation id="6660413144148052430">स्थान</translation>

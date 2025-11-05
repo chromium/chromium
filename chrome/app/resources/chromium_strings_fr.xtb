@@ -22,6 +22,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="1184145431117212167">Échec de l'installation en raison d'une incompatibilité avec votre version de Windows.</translation>
 <translation id="1185134272377778587">À propos de Chromium</translation>
 <translation id="1203500561924088507">Merci d'avoir installé notre produit. Vous devez redémarrer votre navigateur avant d'utiliser <ph name="BUNDLE_NAME" />.</translation>
+<translation id="123265588161106468">Lorsque vous êtes connecté, vous pouvez utiliser vos mots de passe et d'autres éléments de votre compte Google dans Chromium. Pour modifier cela, accédez à "Votre compte dans Chromium".</translation>
 <translation id="1262876892872089030">Lorsque cet onglet était inactif, de la mémoire a été libérée pour préserver la rapidité de Chromium. Si vous le souhaitez, vous pouvez exclure définitivement ce site de la liste des sites inactifs.</translation>
 <translation id="1265577313130862557">Chromium a bloqué ce téléchargement, car le fichier est dangereux</translation>
 <translation id="126567311906253476">Lorsque vous vous connectez à des services Google comme Gmail ou YouTube avec <ph name="USER_EMAIL" />, vous pouvez vous connecter automatiquement à Chromium avec ce même compte</translation>
@@ -145,6 +146,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="2620436844016719705">Système</translation>
 <translation id="2629740064077610681">Votre organisation peut voir et gérer les données de navigation, telles que vos favoris, votre historique et vos mots de passe. Elle ne peut pas voir les données de navigation d'autres profils Chromium.</translation>
 <translation id="2635452620547538388">Confirmez votre identité pour utiliser et enregistrer des données Chromium dans votre compte <ph name="ACCOUNT_EMAIL" /></translation>
+<translation id="2637732208198500597">{COUNT,plural, =0{La Protection Avancée nécessite que vous relanciez Chromium pour appliquer une mise à jour}=1{La Protection Avancée nécessite que vous relanciez Chromium pour appliquer une mise à jour. La fenêtre de navigation privée ne se rouvrira pas.}one{La Protection Avancée nécessite que vous relanciez Chromium pour appliquer une mise à jour. # fenêtre de navigation privée ne se rouvrira pas.}other{La Protection Avancée nécessite que vous relanciez Chromium pour appliquer une mise à jour. Les # fenêtres de navigation privée ne se rouvriront pas.}}</translation>
 <translation id="2648074677641340862">Une erreur du système d'exploitation s'est produite pendant l'installation. Veuillez télécharger Chromium à nouveau.</translation>
 <translation id="2661879430930417727">Si vous partagez un appareil avec vos proches, ceux-ci peuvent configurer Chromium selon leurs préférences et naviguer sur le Web de façon indépendante.</translation>
 <translation id="2711502716910134313">Onglet Chromium</translation>
@@ -155,7 +157,6 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="2738871930057338499">Impossible de se connecter à Internet : erreur HTTP 403 (accès interdit). Veuillez vérifier la configuration de votre proxy.</translation>
 <translation id="2753623023919742414">Cliquer pour rechercher</translation>
 <translation id="2768103863314748511">Définir Chromium comme visionneuse de PDF par défaut</translation>
-<translation id="2770231113462710648">Remplacer le navigateur par défaut par :</translation>
 <translation id="2785438272836277133">Cette extension contient un logiciel malveillant et n'est pas sécurisée. Supprimez-la de Chromium pour qu'elle ne puisse plus voir ni modifier vos données (y compris vos informations personnelles) sur les sites que vous consultez.</translation>
 <translation id="2799223571221894425">Relancer</translation>
 <translation id="2803971713792056305">Votre Chromium</translation>
@@ -381,6 +382,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="5605834417512968703">Sélectionnez un objet dans lequel effectuer une recherche à l'aide de la recherche dans des images ou appuyez sur Échap pour quitter cette fonctionnalité</translation>
 <translation id="5618818588972826921">Sélectionnez le texte ou l'image où effectuer votre recherche, ou appuyez sur Échap pour quitter la recherche dans une image</translation>
 <translation id="5623402015214259806">{0,plural, =0{Une mise à jour de Chromium est disponible}=1{Une mise à jour de Chromium est disponible}one{Une mise à jour de Chromium est disponible depuis # jour}other{Une mise à jour de Chromium est disponible depuis # jours}}</translation>
+<translation id="5633450273457573375">Utiliser votre <ph name="BEGIN_LINK" />propre phrase secrète<ph name="END_LINK" /> pour chiffrer toutes les données Chromium de votre compte Google. Les adresses et données enregistrées dans Google Wallet ne seront pas chiffrées par votre phrase secrète. L'historique de navigation de Chromium ne sera pas synchronisé.</translation>
 <translation id="5643865575100044307">Toujours supprimer les données des sites de votre appareil lorsque vous fermez Chromium</translation>
 <translation id="5653831366781983928">Veuillez redémarrer Chromium maintenant</translation>
 <translation id="5690427481109656848">Google LLC</translation>

@@ -128,6 +128,7 @@
 <translation id="5556417849629758491">ಸ್ಟೋರ್ ಮಾಹಿತಿ ವೀಕ್ಷಿಸಿ, ಆಯ್ಕೆಯು ಸ್ಕ್ರೀನ್ ಮೇಲ್ಭಾಗದಲ್ಲಿ ಲಭ್ಯವಿದೆ</translation>
 <translation id="5627941783489838464">ಯಾವುದೇ ಟ್ಯಾಬ್ ಅಪ್‌ಡೇಟ್‌ಗಳಿಲ್ಲ</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{Chrome ನಿಂದ <ph name="TABS_COUNT_ONE" /> ಲಿಂಕ್}one{Chrome ನಿಂದ <ph name="TABS_COUNT_MANY" /> ಲಿಂಕ್‌ಗಳು}other{Chrome ನಿಂದ <ph name="TABS_COUNT_MANY" /> ಲಿಂಕ್‌ಗಳು}}</translation>
+<translation id="5740354908255726955">{TAB_COUNT,plural, =1{ಟ್ಯಾಬ್ ಅನ್ನು ಎಡಕ್ಕೆ ಸರಿಸಿ}one{ಟ್ಯಾಬ್‌ಗಳನ್ನು ಎಡಕ್ಕೆ ಸರಿಸಿ}other{ಟ್ಯಾಬ್‌ಗಳನ್ನು ಎಡಕ್ಕೆ ಸರಿಸಿ}}</translation>
 <translation id="5746204836956568669">ವೇಗವಾಗಿ ಕೆಲಸ ಮಾಡಲು <ph name="NUMBER_OF_TABS" /> ಟ್ಯಾಬ್‌ಗಳನ್ನು ಗುಂಪು ಮಾಡಬೇಕೆ?</translation>
 <translation id="5773295109010386583">ನಿಷ್ಕ್ರಿಯ ಐಟಂಗಳನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಮುಚ್ಚಿ</translation>
 <translation id="58326064309361797">ಟ್ಯಾಬ್‍‍ಗಳನ್ನು ಗುಂಪುಗೂಡಿಸಲು ಅವುಗಳನ್ನು ಡ್ರ್ಯಾಗ್ ಮಾಡಿ</translation>
@@ -138,6 +139,7 @@
 <translation id="6109251075362363230">ತೀರಾ ಇತ್ತೀಚೆಗೆ ಬಳಸಿದ ಕಾಪಿಯನ್ನು ಹೊರತುಪಡಿಸಿ, ಎಲ್ಲಾ ನಕಲಿ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಈಗ ಆರ್ಕೈವ್ ಮಾಡಲಾಗುತ್ತದೆ.</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ಆಯ್ಕೆಮಾಡಿದ ಐಟಂ ಅನ್ನು ಮುಚ್ಚಿ}one{<ph name="TABS_COUNT_MANY" /> ಆಯ್ಕೆಮಾಡಿದ ಐಟಂಗಳನ್ನು ಮುಚ್ಚಿ}other{<ph name="TABS_COUNT_MANY" /> ಆಯ್ಕೆಮಾಡಿದ ಐಟಂಗಳನ್ನು ಮುಚ್ಚಿ}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{ಹೊಸ ವಿಂಡೋಗೆ ಗುಂಪನ್ನು ಸರಿಸಿ}one{ಗುಂಪನ್ನು ಮತ್ತೊಂದು ವಿಂಡೋಗೆ ಸರಿಸಿ}other{ಗುಂಪನ್ನು ಮತ್ತೊಂದು ವಿಂಡೋಗೆ ಸರಿಸಿ}}</translation>
+<translation id="6212374449852603982">{TAB_COUNT,plural, =1{ಟ್ಯಾಬ್ ಅನ್ನು ಬಲಕ್ಕೆ ಸರಿಸಿ}one{ಟ್ಯಾಬ್‌ಗಳನ್ನು ಬಲಕ್ಕೆ ಸರಿಸಿ}other{ಟ್ಯಾಬ್‌ಗಳನ್ನು ಬಲಕ್ಕೆ ಸರಿಸಿ}}</translation>
 <translation id="6228793724645064692">(ಸ್ಟೋರ್ ರೇಟಿಂಗ್)</translation>
 <translation id="625996437999624951">{TAB_COUNT,plural, =1{ಗುಂಪಿನಿಂದ ಟ್ಯಾಬ್ ಅನ್ನು ತೆಗೆದುಹಾಕಿ}one{ಗುಂಪಿನಿಂದ ಟ್ಯಾಬ್‌ಗಳನ್ನು ತೆಗೆದುಹಾಕಿ}other{ಗುಂಪಿನಿಂದ ಟ್ಯಾಬ್‌ಗಳನ್ನು ತೆಗೆದುಹಾಕಿ}}</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{ಹೊಸ ಗುಂಪಿಗೆ ಟ್ಯಾಬ್ ಸೇರಿಸಿ}one{ಹೊಸ ಗುಂಪಿಗೆ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಸೇರಿಸಿ}other{ಹೊಸ ಗುಂಪಿಗೆ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಸೇರಿಸಿ}}</translation>

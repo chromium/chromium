@@ -677,6 +677,7 @@
 <translation id="3642060527569456384">Өтмөк топтору автоматтык түрдө сакталып, бардык түзмөктөрдө жаңыртылат.</translation>
 <translation id="3643338347976071250">{count,plural, =1{{count} сырсөз ушул түзмөктө гана сакталат. Аны башка түзмөктөрдө колдонуу үчүн Google аккаунтуңузда ({email}) сактаңыз.}other{{count} сырсөз ушул түзмөктө гана сакталат. Аларды башка түзмөктөрдө колдонуу үчүн Google аккаунтуңузда ({email}) сактаңыз.}}</translation>
 <translation id="3659297405161482746">Төлөм ыкмалары табылган жок</translation>
+<translation id="3662966164093827811">{count,plural, =1{1 тандалды}other{# тандалды}}</translation>
 <translation id="3668816008081204991">Окуу тизмеси жашырылды</translation>
 <translation id="3670030362669914947">Сан</translation>
 <translation id="3679163990085797665">Окулгандарды жок кылуу</translation>
@@ -741,6 +742,7 @@
 <translation id="3926703470020109118">Жүктөп алуу жокко чыгарылды</translation>
 <translation id="3929457972718048006">Даректер</translation>
 <translation id="3931215329146376310">{count,plural, =1{Бул сайт үчүн жаңы сырсөз}other{Бул сайт үчүн жаңы сырсөздөр}}</translation>
+<translation id="3933372629914873850"><ph name="URL" /> сайтына киресиз</translation>
 <translation id="3934905113567851655">Өлчөмүн өзгөртүү үчүн эки манжаңызды бириктириңиз</translation>
 <translation id="3940195383040445971">Бааларга өтмөктөрдө көз салуу</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{{COUNT} өтмөктү жабуу}other{{COUNT} өтмөктү жабуу}}</translation>
@@ -1330,6 +1332,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="6103540626693881831">Түзмөктө шифрлөө</translation>
 <translation id="611361228753138223">Бул түзмөктө кирген акыркы сайттар</translation>
 <translation id="611705554202268369">Өтмөктөр тобун кошуу үчүн коё бербей басып туруңуз</translation>
+<translation id="6117260878488959646">Ката кетти. Кийинчерээк кайталап көрүңүз.</translation>
 <translation id="6122191549521593678">Онлайн</translation>
 <translation id="6122831415929794347">Коопсуз серептөө өчүрүлсүнбү?</translation>
 <translation id="6123514585040403489">Өтмөктөрүңүз жабылат</translation>
@@ -1352,6 +1355,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="6172428250974276014">Ооба, маалымат өзүнчө сакталсын (сунушталат)</translation>
 <translation id="6173499589275053515">Сырсөз Google аккаунтуңузга сакталды, <ph name="EMAIL" /></translation>
 <translation id="6181969657494915430">Экрандан издөө</translation>
+<translation id="6182851675249594487">Жеке түс темасы</translation>
 <translation id="6187302354554850004">Акркы жолу шайкешт: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6188737759358894319"><ph name="DATE" /> түзүлдү</translation>
 <translation id="6189413832092199491">Окулбагандар</translation>
