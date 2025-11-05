@@ -232,7 +232,7 @@ crbug.com/1416920 [ win debug ] GpuCrash_InfoForHardwareGpu [ Failure ]
 crbug.com/1416920 [ win debug ] GpuCrash_SoftwareFallbackDisabled [ Failure ]
 
 # Flaky crash affects this test in particular for some reason
-crbug.com/365565140 [ win qualcomm ] ContextLost_WebGPUUnblockedAfterUserInitiatedReload [ Failure ]
+crbug.com/365565140 [ memory_lt_16gb qualcomm-0x41333430 win ] ContextLost_WebGPUUnblockedAfterUserInitiatedReload [ Failure ]
 
 # Flaky Timed out while waiting 10s for IsJavaScriptExpressionTrue
 crbug.com/384605105 [ amd-0x7340 angle-opengl debug graphite-disabled no-asan no-clang-coverage sonoma ] ContextLost_WebGLContextRestoredInHiddenTab [ RetryOnFailure ]
@@ -255,7 +255,7 @@ crbug.com/457303654 [ linux nvidia-0x2184 debug ] ContextLost_WebGPUStressReques
 
 # WebGPU is currently not enabled on win11 qualcomm but it will be soon
 [ win11 qualcomm ] ContextLost_WebGPU* [ Failure ]
-[ win11 qualcomm ] GpuNormalTermination_WebGPUNotBlocked [ Failure ]
+[ memory_lt_16gb qualcomm-0x41333430 win11 ] GpuNormalTermination_WebGPUNotBlocked [ Failure ]
 
 ###############################
 # Permanent Slow Expectations #
