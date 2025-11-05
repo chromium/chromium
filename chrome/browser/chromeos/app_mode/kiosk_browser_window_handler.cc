@@ -78,6 +78,16 @@ void CloseBrowser(BrowserWindowInterface* browser_window_interface) {
   }
 }
 
+size_t GetBrowserCount() {
+  size_t browser_count = 0;
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [&](BrowserWindowInterface* browser) {
+        browser_count++;
+        return true;
+      });
+  return browser_count;
+}
+
 }  // namespace
 
 const char kKioskNewBrowserWindowHistogram[] = "Kiosk.NewBrowserWindow";
@@ -331,8 +341,7 @@ void KioskBrowserWindowHandler::OnBrowserRemoved(Browser* browser) {
   closing_browsers_.erase(browser);
 
   // Exit the kiosk session if the last browser was closed.
-  if (ShouldExitKioskWhenLastBrowserRemoved() &&
-      BrowserList::GetInstance()->empty()) {
+  if (ShouldExitKioskWhenLastBrowserRemoved() && GetBrowserCount() == 0) {
     LOG(WARNING) << "Last browser window closed, ending kiosk session.";
     Shutdown();
   }
@@ -373,7 +382,7 @@ bool KioskBrowserWindowHandler::ShouldExitKioskWhenLastBrowserRemoved() const {
 }
 
 bool KioskBrowserWindowHandler::IsOnlySettingsBrowserRemainOpen() const {
-  return settings_browser_ && BrowserList::GetInstance()->size() == 1 &&
+  return settings_browser_ && GetBrowserCount() == 1 &&
          GetLastActiveBrowserWindowInterfaceWithAnyProfile() ==
              settings_browser_;
 }
