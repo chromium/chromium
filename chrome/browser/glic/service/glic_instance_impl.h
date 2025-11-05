@@ -238,7 +238,8 @@ class GlicInstanceImpl : public GlicInstance,
       base::WeakPtr<InstanceCoordinatorDelegate> coordinator_delegate,
       GlicMetrics* metrics,
       contextual_cueing::ContextualCueingService* contextual_cueing_service,
-      GlicFocusedBrowserManager* focused_browser_manager);
+      GlicFocusedBrowserManager* detached_mode_focused_browser_manager,
+      GlicFocusedBrowserManager* live_mode_focused_browser_manager);
 
   struct EmbedderEntry {
     EmbedderEntry();
@@ -288,6 +289,8 @@ class GlicInstanceImpl : public GlicInstance,
   void OnTabPinningStatusChanged(tabs::TabInterface* tab, bool pinned);
   void NotifyPanelWillOpen(mojom::InvocationSource invocation_source);
 
+  void UpdateSharingManagerDelegate();
+
   using StateChangeCallbackList =
       base::RepeatingCallbackList<void(bool, mojom::CurrentView view)>;
   StateChangeCallbackList state_change_callback_list_;
@@ -325,6 +328,9 @@ class GlicInstanceImpl : public GlicInstance,
   // The sharing manager used internally for detached mode.
   GlicSharingManagerImpl detached_mode_sharing_manager_;
 
+  // The sharing manager used internally for live mode.
+  GlicSharingManagerImpl live_mode_sharing_manager_;
+
   // The sharing manager used internally for attached mode.
   GlicSharingManagerImpl attached_mode_sharing_manager_;
 
@@ -334,7 +340,7 @@ class GlicInstanceImpl : public GlicInstance,
   // Tracks the last non-hidden panel state kind for the instance. This is
   // useful for responding to changes in attached/detached state.
   mojom::PanelStateKind last_non_hidden_panel_state_kind_;
-  mojom::WebClientMode interaction_mode_;
+  mojom::WebClientMode interaction_mode_ = mojom::WebClientMode::kText;
 
   base::ScopedObservation<BrowserList, BrowserListObserver>
       browser_list_observation_{this};
