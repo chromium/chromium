@@ -778,6 +778,12 @@
     <message name="IDS_AUTOFILL_TRAVEL_TITLE" desc="Title for the Your saved info settings sub page that allows user to manage their list of saved travel info. Sentence-Cased." formatter_data="android_java">
       Travel
     </message>
+    <message name="IDS_AUTOFILL_TRAVEL_OPT_IN_TOGGLE_LABEL" desc="Label for a toggle allowing users to opt into Enhanced Autofill for travel-related data types. Sentence-Cased." formatter_data="android_java">
+      Save and fill travel info
+    </message>
+    <message name="IDS_AUTOFILL_TRAVEL_OPT_IN_TOGGLE_SUB_LABEL" desc="Sub-label for a toggle allowing users to opt into Enhanced Autofill for travel-related data types. Sentence-Cased." formatter_data="android_java">
+      Includes information such as flight bookings and vehicle info
+    </message>
   </if>
 
   <!-- Autofill Address Edit Dialog -->

@@ -18,9 +18,19 @@ import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {EntityTypeName} from '../autofill_ai_enums.mojom-webui.js';
+import type {EntityDataManagerProxy} from '../autofill_page/entity_data_manager_proxy.js';
+import {EntityDataManagerProxyImpl} from '../autofill_page/entity_data_manager_proxy.js';
+import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
+import {loadTimeData} from '../i18n_setup.js';
 import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
 
 import {getTemplate} from './travel_page.html.js';
+
+export interface SettingsTravelPageElement {
+  $: {
+    optInToggle: SettingsToggleButtonElement,
+  };
+}
 
 const SettingsTravelPageElementBase =
     SettingsViewMixin(PrefsMixin(PolymerElement));
@@ -32,6 +42,95 @@ export class SettingsTravelPageElement extends SettingsTravelPageElementBase {
 
   static get template() {
     return getTemplate();
+  }
+
+  static get properties() {
+    return {
+      /**
+         Indicates if a user is eligible to change Enhanced Autofill data.
+         If a user is not eligible for Enhanced Autofill (Autofill with Ai),
+         but they have data saved, the code allows them only to edit and delete
+         their data. They are not allowed to add new data, or to opt-in or
+         opt-out of Enhanced Autofill using the corresponding toggle in this
+         component. If a user is not eligible for Enhanced Autofill and they
+         also have no data saved, then they cannot access this page at all.
+       */
+      enhancedAutofillEligibleUser_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('userEligibleForAutofillAi');
+        },
+      },
+
+      enhancedAutofillOptedIn_: {
+        type: Boolean,
+        value: false,
+      },
+
+      /**
+         Fake preference used by `this.$.optInToggle`. Shows value of
+         `autofill.autofill_ai.travel_entities_enabled` preference if toggle
+         is enabled (clickable). If toggle is disabled then the value is
+         overridden to be shown as false even if the preference is true.
+       */
+      travelOptedIn_: {
+        type: Object,
+        computed: 'computeTravelOptedIn_(enhancedAutofillEligibleUser_, ' +
+            'enhancedAutofillOptedIn_, ' +
+            'prefs.autofill.autofill_ai.travel_entities_enabled)',
+      },
+    };
+  }
+
+  static get observers() {
+    return [
+      'onAutofillOptInStatusChange_(prefs.autofill.autofill_ai.opt_in_status)',
+    ];
+  }
+
+  declare private enhancedAutofillEligibleUser_: boolean;
+  declare private enhancedAutofillOptedIn_: boolean;
+  declare private travelOptedIn_: chrome.settingsPrivate.PrefObject;
+
+  private entityDataManager_: EntityDataManagerProxy =
+      EntityDataManagerProxyImpl.getInstance();
+
+
+  override connectedCallback() {
+    super.connectedCallback();
+  }
+
+  private optInToggleDisabled_(): boolean {
+    return !this.enhancedAutofillEligibleUser_ ||
+        !this.enhancedAutofillOptedIn_;
+  }
+
+  private onAutofillOptInStatusChange_() {
+    this.entityDataManager_.getOptInStatus().then(status => {
+      this.set('enhancedAutofillOptedIn_', status);
+    });
+  }
+
+  private computeTravelOptedIn_(): chrome.settingsPrivate.PrefObject<boolean> {
+    const fakePref: chrome.settingsPrivate.PrefObject<boolean> = {
+      key: 'fake',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value:
+          this.getPref<boolean>('autofill.autofill_ai.travel_entities_enabled')
+              .value,
+    };
+
+    if (this.optInToggleDisabled_()) {
+      fakePref.value = false;
+    }
+
+    return fakePref;
+  }
+
+  private onOptInToggleChange_() {
+    this.setPrefValue(
+        'autofill.autofill_ai.travel_entities_enabled',
+        this.$.optInToggle.checked);
   }
 
   private getAllowedEntityTypes_(): Set<EntityTypeName> {
