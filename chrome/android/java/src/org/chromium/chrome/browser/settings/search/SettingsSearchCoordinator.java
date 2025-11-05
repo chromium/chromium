@@ -328,13 +328,8 @@ public class SettingsSearchCoordinator {
                     @Override
                     public void afterTextChanged(Editable s) {
                         String query = s.toString().trim();
-                        if (query.length() > 0) {
-                            mQueryEntered = true;
-                            performSearch(
-                                    query, SettingsSearchCoordinator.this::displayResultsFragment);
-                        } else {
-                            if (mQueryEntered) clearFragment(/* addToBackStack= */ false);
-                        }
+                        performSearch(
+                                query, SettingsSearchCoordinator.this::displayResultsFragment);
                     }
                 });
     }
@@ -345,7 +340,6 @@ public class SettingsSearchCoordinator {
      * @param query The search query the user entered.
      * @param callback The callback function to be executed when results are available.
      */
-    @EnsuresNonNull("mSearchRunnable")
     private void performSearch(String query, SearchCallback callback) {
         if (mSearchRunnable != null) {
             // Debouncing to avoid initiating search for each keystroke entered fast.
@@ -353,9 +347,14 @@ public class SettingsSearchCoordinator {
             // we can perform search only when user is likely to have typed the entire query.
             mHandler.removeCallbacks(mSearchRunnable);
         }
-
-        mSearchRunnable = () -> callback.onSearchResults(mIndexData.search(query));
-        mHandler.postDelayed(mSearchRunnable, 200);
+        if (!query.isEmpty()) {
+            mQueryEntered = true;
+            mSearchRunnable = () -> callback.onSearchResults(mIndexData.search(query));
+            mHandler.postDelayed(mSearchRunnable, 200);
+        } else if (mQueryEntered) {
+            // Do this only after a query has been entered at least once.
+            clearFragment(/* addToBackStack= */ false);
+        }
     }
 
     /**
