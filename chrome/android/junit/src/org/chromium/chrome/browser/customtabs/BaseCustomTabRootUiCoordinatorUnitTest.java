@@ -184,6 +184,8 @@ public final class BaseCustomTabRootUiCoordinatorUnitTest {
         when(mProfile.getOriginalProfile()).thenReturn(mProfile);
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
         when(mIdentityServicesProvider.getIdentityManager(any())).thenReturn(mIdentityManager);
+        when(mFullscreenManager.getPersistentFullscreenModeSupplier())
+                .thenReturn(new ObservableSupplierImpl<Boolean>(false));
 
         mProfileSupplier = new ObservableSupplierImpl();
 

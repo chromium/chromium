@@ -224,4 +224,12 @@ public class TabTestUtils {
     public static @ChildProcessImportance int getImportance(Tab tab) {
         return ((TabImpl) tab).getImportance();
     }
+
+    /**
+     * @param tab {@link Tab} object.
+     * @return {@link WebContents} object for a given tab.
+     */
+    public static @Nullable WebContents getWebContents(Tab tab) {
+        return ((TabImpl) tab).getWebContents();
+    }
 }
