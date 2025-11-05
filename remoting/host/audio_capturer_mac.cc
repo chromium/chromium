@@ -249,10 +249,14 @@ void AudioCapturerMac::HandleInputBuffer(AudioQueueRef aq,
 
   DCHECK_EQ(input_queue_, aq);
   DCHECK(callback_);
-
-  if (!silence_detector_.IsSilence(
-          reinterpret_cast<const int16_t*>(buffer->mAudioData),
-          buffer->mAudioDataByteSize / sizeof(int16_t) / kChannelsPerFrame)) {
+  // SAFETY: `mAudioData` is a raw buffer that's filled by the audio queue.
+  // The size is given by `mAudioDataByteSize`, so it's safe to interpret as
+  // a span of bytes.
+  // See https://developer.apple.com/documentation/audiotoolbox/audioqueuebuffer
+  const auto audio_data = UNSAFE_BUFFERS(
+      base::span(reinterpret_cast<const unsigned char*>(buffer->mAudioData),
+                 buffer->mAudioDataByteSize));
+  if (!silence_detector_.IsSilence(audio_data)) {
     auto packet = std::make_unique<AudioPacket>();
     packet->add_data(buffer->mAudioData, buffer->mAudioDataByteSize);
     packet->set_encoding(AudioPacket::ENCODING_RAW);

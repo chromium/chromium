@@ -5,6 +5,7 @@
 #include "remoting/host/audio_volume_filter.h"
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 
 namespace remoting {
 
@@ -12,12 +13,13 @@ AudioVolumeFilter::AudioVolumeFilter(int silence_threshold)
     : silence_detector_(silence_threshold) {}
 AudioVolumeFilter::~AudioVolumeFilter() = default;
 
-bool AudioVolumeFilter::Apply(int16_t* data, size_t frames) {
-  if (frames == 0) {
+bool AudioVolumeFilter::Apply(base::span<int16_t> data) {
+  if (data.empty()) {
     return false;
   }
 
-  if (silence_detector_.IsSilence(data, frames)) {
+  const auto data_bytes = base::as_bytes(data);
+  if (silence_detector_.IsSilence(data_bytes)) {
     return false;
   }
 
@@ -30,11 +32,9 @@ bool AudioVolumeFilter::Apply(int16_t* data, size_t frames) {
     return true;
   }
 
-  const int sample_count = frames * silence_detector_.channels();
   const int32_t level_int = static_cast<int32_t>(level * 65536);
-  for (int i = 0; i < sample_count; i++) {
-    UNSAFE_TODO(data[i]) =
-        (static_cast<int32_t>(UNSAFE_TODO(data[i])) * level_int) >> 16;
+  for (int16_t& sample : data) {
+    sample = (static_cast<int32_t>(sample) * level_int) >> 16;
   }
 
   return true;
