@@ -256,6 +256,24 @@ void CrostiniExportImport::ImportContainer(
   Start(path, /* create_new_container= */ false, std::move(callback));
 }
 
+void CrostiniExportImport::ExportDiskImageWithCallback(
+    guest_os::GuestId container_id,
+    base::FilePath path,
+    CrostiniManager::CrostiniResultCallback callback) {
+  FillOperationData(ExportImportType::EXPORT_DISK_IMAGE,
+                    std::move(container_id));
+  Start(path, /* create_new_container= */ false, std::move(callback));
+}
+
+void CrostiniExportImport::ImportDiskImageWithCallback(
+    guest_os::GuestId container_id,
+    base::FilePath path,
+    CrostiniManager::CrostiniResultCallback callback) {
+  FillOperationData(ExportImportType::IMPORT_DISK_IMAGE,
+                    std::move(container_id));
+  Start(path, /* create_new_container= */ false, std::move(callback));
+}
+
 void CrostiniExportImport::CreateContainerFromImport(
     guest_os::GuestId container_id,
     base::FilePath path,

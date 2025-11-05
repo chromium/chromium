@@ -138,6 +138,18 @@ class CrostiniExportImport : public KeyedService,
   void ImportDiskImageFlow(guest_os::GuestId container_id,
                            content::WebContents* web_contents);
 
+  // Export |container_id| to |path| and invoke |callback| when complete.
+  void ExportDiskImageWithCallback(
+      guest_os::GuestId container_id,
+      base::FilePath path,
+      CrostiniManager::CrostiniResultCallback callback);
+
+  // Import |container_id| from |path| and invoke |callback| when complete.
+  void ImportDiskImageWithCallback(
+      guest_os::GuestId container_id,
+      base::FilePath path,
+      CrostiniManager::CrostiniResultCallback callback);
+
   // Create a new container with |container_id| from |path| and invoke
   // |callback| when complete.
   void CreateContainerFromImport(
