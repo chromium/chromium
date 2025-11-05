@@ -52,15 +52,26 @@ GLImplementationParts GetRequestedGLImplementation() {
   // If the passthrough command decoder is enabled, put ANGLE first if allowed
   if (UsePassthroughCommandDecoder(cmd)) {
     std::vector<GLImplementationParts> angle_impls = {};
-    bool software_gl_in_allow_list = false;
+    std::vector<GLImplementationParts> software_impls = {};
     auto iter = allowed_impls.begin();
     while (iter != allowed_impls.end()) {
-      if ((*iter) == GetSoftwareGLImplementation()) {
-        software_gl_in_allow_list = true;
-        allowed_impls.erase(iter);
+      // Filter out disabled software implementations
+      if (IsSwiftShaderGLImplementation(*iter) &&
+          !features::IsSwiftShaderAllowed(cmd)) {
+        iter++;
+        continue;
+      }
+      if (IsWARPGLImplementation(*iter) && !features::IsWARPAllowed(cmd)) {
+        iter++;
+        continue;
+      }
+
+      if (IsSoftwareGLImplementation(*iter)) {
+        software_impls.emplace_back(*iter);
+        iter = allowed_impls.erase(iter);
       } else if (iter->gl == kGLImplementationEGLANGLE) {
         angle_impls.emplace_back(*iter);
-        allowed_impls.erase(iter);
+        iter = allowed_impls.erase(iter);
       } else {
         iter++;
       }
@@ -68,11 +79,9 @@ GLImplementationParts GetRequestedGLImplementation() {
     allowed_impls.insert(allowed_impls.begin(), angle_impls.begin(),
                          angle_impls.end());
     // Insert software implementations at the end, after all other hardware
-    // implementations. If SwiftShader is not allowed as a fallback, don't
-    // re-insert it.
-    if (software_gl_in_allow_list && features::IsSwiftShaderAllowed(cmd)) {
-      allowed_impls.emplace_back(GetSoftwareGLImplementation());
-    }
+    // implementations.
+    allowed_impls.insert(allowed_impls.begin(), software_impls.begin(),
+                         software_impls.end());
   }
 
   if (allowed_impls.empty()) {
