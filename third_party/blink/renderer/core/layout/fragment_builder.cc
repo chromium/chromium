@@ -563,12 +563,26 @@ void FragmentBuilder::SwapOutOfFlowPositionedCandidates(
     HeapVector<LogicalOofPositionedNode>* candidates) {
   DCHECK(candidates->empty());
   if (oof_candidates_may_have_anchors_) {
+    auto compare = [](const LogicalOofPositionedNode& a,
+                      const LogicalOofPositionedNode& b) -> bool {
+      // Positioned elements with the deepest inline containing-block
+      // should have layout performed first.
+      const auto* a_inline = a.inline_container.container.Get();
+      const auto* b_inline = b.inline_container.container.Get();
+      if (a_inline != b_inline) {
+        const wtf_size_t a_inline_depth = a_inline ? a_inline->Depth() : 0u;
+        const wtf_size_t b_inline_depth = b_inline ? b_inline->Depth() : 0u;
+        if (a_inline_depth > b_inline_depth) {
+          return true;
+        }
+        if (b_inline_depth > a_inline_depth) {
+          return false;
+        }
+      }
+      return a.box->IsBeforeInPreOrder(*b.box);
+    };
     std::sort(oof_positioned_candidates_.begin(),
-              oof_positioned_candidates_.end(),
-              [](const LogicalOofPositionedNode& a,
-                 const LogicalOofPositionedNode& b) {
-                return a.box->IsBeforeInPreOrder(*b.box);
-              });
+              oof_positioned_candidates_.end(), compare);
     oof_candidates_may_have_anchors_ = false;
   }
   std::swap(oof_positioned_candidates_, *candidates);
