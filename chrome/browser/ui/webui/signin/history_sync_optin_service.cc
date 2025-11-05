@@ -49,7 +49,8 @@ void HistorySyncOptinServiceDefaultDelegate::ShowHistorySyncOptinScreen(
   }
   browser->GetFeatures()
       .signin_view_controller()
-      ->ShowModalHistorySyncOptInDialog(std::move(callback));
+      ->ShowModalHistorySyncOptInDialog(/*should_close_modal_dialog=*/true,
+                                        std::move(callback));
 }
 
 void HistorySyncOptinServiceDefaultDelegate::ShowAccountManagementScreen(

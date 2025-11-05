@@ -85,17 +85,22 @@ HistorySyncOptinHandler::HistorySyncOptinHandler(
     mojo::PendingRemote<history_sync_optin::mojom::Page> page,
     Browser* browser,
     Profile* profile,
+    std::optional<bool> should_close_modal_dialog,
     HistorySyncOptinHelper::FlowCompletedCallback
         history_optin_completed_callback)
     : receiver_(this, std::move(receiver)),
       page_(std::move(page)),
       browser_(browser ? browser->AsWeakPtr() : nullptr),
       profile_(profile),
+      should_close_modal_dialog_(should_close_modal_dialog),
       history_optin_completed_callback_(
           std::move(history_optin_completed_callback)),
       identity_manager_(IdentityManagerFactory::GetForProfile(profile_)) {
   CHECK(profile_);
   CHECK(identity_manager_);
+  if (browser) {
+    CHECK(should_close_modal_dialog.has_value());
+  }
 }
 
 HistorySyncOptinHandler::~HistorySyncOptinHandler() {
@@ -158,7 +163,7 @@ void HistorySyncOptinHandler::UpdateDialogHeight(uint32_t height) {
 
 void HistorySyncOptinHandler::FinishAndCloseDialog(
     HistorySyncOptinHelper::ScreenChoiceResult result) {
-  if (browser_) {
+  if (browser_ && should_close_modal_dialog_.value_or(false)) {
     browser_->GetFeatures().signin_view_controller()->CloseModalSignin();
   }
   if (!history_optin_completed_callback_->is_null()) {
@@ -167,7 +172,7 @@ void HistorySyncOptinHandler::FinishAndCloseDialog(
     // The user may have double-clicked on an action, which could have
     // caused the callback to execute already.
     // TODO(crbug.com/456458942): Disabled the buttons so that this is not
-    // possible.
+    // possible. Convert back to a check after we verify we no longer hit this.
     base::debug::DumpWithoutCrashing();
   }
 }

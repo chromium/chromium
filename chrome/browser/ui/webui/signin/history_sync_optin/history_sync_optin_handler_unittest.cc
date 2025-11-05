@@ -56,7 +56,7 @@ class HistorySyncOptinHandlerTest : public testing::TestWithParam<bool> {
   void SetUp() override {
     handler_ = std::make_unique<HistorySyncOptinHandler>(
         handler_remote_.BindNewPipeAndPassReceiver(), page_.BindAndGetRemote(),
-        /*browser=*/nullptr, profile(),
+        /*browser=*/nullptr, profile(), /*should_close_modal_dialog=*/true,
         HistorySyncOptinHelper::FlowCompletedCallback(base::DoNothing()));
   }
 

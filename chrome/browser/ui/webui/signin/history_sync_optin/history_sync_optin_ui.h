@@ -57,6 +57,7 @@ class HistorySyncOptinUI
 
   // Prepares the information to be given to the handler once ready.
   void Initialize(Browser* browser,
+                  std::optional<bool> should_close_modal_dialog,
                   HistorySyncOptinHelper::FlowCompletedCallback
                       history_optin_completed_callback);
 
@@ -71,6 +72,7 @@ class HistorySyncOptinUI
   // with all the needed information to display.
   void OnMojoHandlersReady(
       Browser* browser,
+      std::optional<bool> should_close_modal_dialog,
       HistorySyncOptinHelper::FlowCompletedCallback
           history_optin_completed_callback,
       mojo::PendingRemote<history_sync_optin::mojom::Page> page,

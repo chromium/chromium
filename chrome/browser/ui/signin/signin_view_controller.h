@@ -175,6 +175,7 @@ class SigninViewController {
   // of the `browser_`'s window. Executes the provided callback when the dialog
   // closes.
   void ShowModalHistorySyncOptInDialog(
+      bool should_close_modal_dialog,
       HistorySyncOptinHelper::FlowCompletedCallback
           history_optin_completed_callback);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)

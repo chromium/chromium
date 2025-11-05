@@ -56,6 +56,7 @@ class SigninViewControllerDelegate {
   // delete itself when the window it's managing is closed.
   static SigninViewControllerDelegate* CreateSyncHistoryOptInDelegate(
       Browser* browser,
+      bool should_close_modal_dialog,
       HistorySyncOptinLaunchContext launch_context,
       HistorySyncOptinHelper::FlowCompletedCallback callback);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)

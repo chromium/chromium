@@ -34,6 +34,7 @@ class HistorySyncOptinHandler : public history_sync_optin::mojom::PageHandler,
       mojo::PendingRemote<history_sync_optin::mojom::Page> page,
       Browser* browser,
       Profile* profile,
+      std::optional<bool> should_close_modal_dialog,
       HistorySyncOptinHelper::FlowCompletedCallback
           history_optin_completed_callback);
   ~HistorySyncOptinHandler() override;
@@ -73,6 +74,7 @@ class HistorySyncOptinHandler : public history_sync_optin::mojom::PageHandler,
 
   const base::WeakPtr<Browser> browser_;
   const raw_ptr<Profile> profile_;
+  std::optional<bool> should_close_modal_dialog_;
   HistorySyncOptinHelper::FlowCompletedCallback
       history_optin_completed_callback_;
 

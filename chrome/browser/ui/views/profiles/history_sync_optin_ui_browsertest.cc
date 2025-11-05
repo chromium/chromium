@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/webui/signin/history_sync_optin/history_sync_optin_ui.h"
 
+#include <optional>
+
 #include "base/functional/callback_helpers.h"
 #include "base/strings/strcat.h"
 #include "base/test/scoped_feature_list.h"
@@ -75,12 +77,14 @@ class HistorySyncOptinUIDialogPixelTest
 
     auto* controller = browser()->GetFeatures().signin_view_controller();
     controller->ShowModalHistorySyncOptInDialog(
+        should_close_modal_dialog_,
         HistorySyncOptinHelper::FlowCompletedCallback(base::DoNothing()));
     widget_waiter.WaitIfNeededAndGet();
     observer.Wait();
   }
 
  private:
+  bool should_close_modal_dialog_ = true;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
@@ -127,6 +131,8 @@ class HistorySyncOptinStepControllerForTest
 
     history_sync_optin_ui->Initialize(
         /*browser=*/nullptr,
+        // Value does not matter when browser is null (window mode).
+        /*should_close_modal_dialog=*/std::nullopt,
         HistorySyncOptinHelper::FlowCompletedCallback(base::DoNothing()));
 
     if (!step_shown_callback->is_null()) {

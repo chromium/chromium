@@ -35,6 +35,7 @@ export class HistorySyncOptinAppElement extends HistorySyncOptinAppElementBase {
   static override get properties() {
     return {
       accountImageSrc_: {type: String},
+      buttonsDisabled_: {type: Boolean},
       isModal_: {
         type: Boolean,
         reflect: true,
@@ -48,6 +49,8 @@ export class HistorySyncOptinAppElement extends HistorySyncOptinAppElementBase {
   protected launchContext_: LaunchContext =
       loadTimeData.getInteger('launchContext') as LaunchContext;
   protected accessor isModal_: boolean = this.isLaunchContext_(LaunchContext.kModal);
+  protected accessor buttonsDisabled_: boolean = false;
+
   private historySyncOptInBrowserProxy_: HistorySyncOptInBrowserProxy =
       HistorySyncOptInBrowserProxyImpl.getInstance();
   private onAccountInfoDataReceivedListenerId_: number|null = null;
@@ -83,10 +86,12 @@ export class HistorySyncOptinAppElement extends HistorySyncOptinAppElementBase {
   }
 
   protected onReject_() {
+    this.buttonsDisabled_ = true;
     this.historySyncOptInBrowserProxy_.handler.reject();
   }
 
   protected onAccept_() {
+    this.buttonsDisabled_ = true;
     this.historySyncOptInBrowserProxy_.handler.accept();
   }
 

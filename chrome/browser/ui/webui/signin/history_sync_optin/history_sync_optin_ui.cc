@@ -127,13 +127,15 @@ void HistorySyncOptinUI::BindInterface(
 
 void HistorySyncOptinUI::Initialize(
     Browser* browser,
+    std::optional<bool> should_close_modal_dialog,
     HistorySyncOptinHelper::FlowCompletedCallback
         history_optin_completed_callback) {
   // `browser` maybe null in the case of a window screen.
   // It must be set when the modal dialog is used.
   initialize_handler_callback_ = base::BindOnce(
       &HistorySyncOptinUI::OnMojoHandlersReady, weak_ptr_factory_.GetWeakPtr(),
-      browser, std::move(history_optin_completed_callback));
+      browser, should_close_modal_dialog,
+      std::move(history_optin_completed_callback));
 }
 
 void HistorySyncOptinUI::CreateHistorySyncOptinHandler(
@@ -148,6 +150,7 @@ void HistorySyncOptinUI::CreateHistorySyncOptinHandler(
 
 void HistorySyncOptinUI::OnMojoHandlersReady(
     Browser* browser,
+    std::optional<bool> should_close_modal_dialog,
     HistorySyncOptinHelper::FlowCompletedCallback
         history_optin_completed_callback,
     mojo::PendingRemote<history_sync_optin::mojom::Page> page,
@@ -155,5 +158,5 @@ void HistorySyncOptinUI::OnMojoHandlersReady(
   CHECK(!page_handler_);
   page_handler_ = std::make_unique<HistorySyncOptinHandler>(
       std::move(receiver), std::move(page), browser, profile_,
-      std::move(history_optin_completed_callback));
+      should_close_modal_dialog, std::move(history_optin_completed_callback));
 }
