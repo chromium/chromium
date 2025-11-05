@@ -14,6 +14,8 @@
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
@@ -24,6 +26,7 @@
 #import "ios/chrome/browser/synced_set_up/coordinator/synced_set_up_mediator_delegate.h"
 #import "ios/chrome/browser/synced_set_up/ui/synced_set_up_animator.h"
 #import "ios/chrome/browser/synced_set_up/ui/synced_set_up_view_controller.h"
+#import "ios/web/public/web_state.h"
 
 namespace {
 
@@ -61,22 +64,26 @@ constexpr base::TimeDelta kDismissalDelay = base::Seconds(5);
       self.browser->GetSceneState().controller.startupParameters;
   signin::IdentityManager* identityManager =
       IdentityManagerFactory::GetForProfile(profile);
+  id<SnackbarCommands> snackbarCommandsHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), SnackbarCommands);
 
-  _mediator =
-      [[SyncedSetUpMediator alloc] initWithPrefTracker:tracker
-                                 authenticationService:authService
-                                 accountManagerService:accountManagerService
-                                 deviceInfoSyncService:deviceInfoSyncService
-                                    profilePrefService:profile->GetPrefs()
-                                     startupParameters:startupParameters
-                                       identityManager:identityManager];
-  _mediator.delegate = self;
+  _mediator = [[SyncedSetUpMediator alloc]
+          initWithPrefTracker:tracker
+        authenticationService:authService
+        accountManagerService:accountManagerService
+        deviceInfoSyncService:deviceInfoSyncService
+           profilePrefService:profile->GetPrefs()
+              identityManager:identityManager
+                 webStateList:self.browser->GetWebStateList()
+            startupParameters:startupParameters
+      snackbarCommandsHandler:snackbarCommandsHandler];
 
   _viewController = [[SyncedSetUpViewController alloc] init];
   _viewController.modalPresentationStyle = UIModalPresentationCustom;
   _viewController.transitioningDelegate = self;
-
   _mediator.consumer = _viewController;
+
+  _mediator.delegate = self;
 }
 
 - (void)stop {
@@ -95,9 +102,19 @@ constexpr base::TimeDelta kDismissalDelay = base::Seconds(5);
 
 #pragma mark - SyncedSetUpMediatorDelegate
 
+- (void)mediatorWillStartPostFirstRunFlow:(SyncedSetUpMediator*)mediator {
+  CHECK_EQ(_mediator, mediator);
+  [self showSyncedSetUpInterstitial];
+}
+
+- (void)mediatorWillStartFromUrlPage:(SyncedSetUpMediator*)mediator {
+  CHECK_EQ(_mediator, mediator);
+  [_mediator applyPrefs];
+}
+
 - (void)syncedSetUpMediatorDidComplete:(SyncedSetUpMediator*)mediator {
   CHECK_EQ(_mediator, mediator);
-  [self dismissSyncedSetUp];
+  [self.delegate syncedSetUpCoordinatorWantsToBeDismissed:self];
 }
 
 #pragma mark - UIViewControllerTransitioningDelegate
@@ -124,26 +141,35 @@ constexpr base::TimeDelta kDismissalDelay = base::Seconds(5);
     return;
   }
 
+  __weak __typeof(self) weakSelf = self;
+  __weak __typeof(_mediator) weakMediator = _mediator;
+
   [self.baseViewController presentViewController:_viewController
                                         animated:YES
-                                      completion:nil];
+                                      completion:^{
+                                        [weakMediator applyPrefs];
+                                      }];
 
-  __weak __typeof(self) weakSelf = self;
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, base::BindOnce(^{
-        [weakSelf dismissSyncedSetUp];
+        [weakSelf dismissSyncedSetUpInterstitial];
       }),
       kDismissalDelay);
 }
 
 // Dismisses the full-screen interstitial.
-- (void)dismissSyncedSetUp {
+- (void)dismissSyncedSetUpInterstitial {
   if (_viewController.isBeingDismissed) {
     return;
   }
 
-  [_viewController.presentingViewController dismissViewControllerAnimated:YES
-                                                               completion:nil];
+  __weak __typeof(_mediator) weakMediator = _mediator;
+
+  [_viewController.presentingViewController
+      dismissViewControllerAnimated:YES
+                         completion:^{
+                           [weakMediator maybeShowSnackbar];
+                         }];
 }
 
 @end

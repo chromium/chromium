@@ -12,6 +12,12 @@
 // Delegate for the `SyncedSetUpMediator`.
 @protocol SyncedSetUpMediatorDelegate
 
+// Called when the `SyncedSetUpMediator` is used during the post-FRE flow.
+- (void)mediatorWillStartPostFirstRunFlow:(SyncedSetUpMediator*)mediator;
+
+// Called when the `SyncedSetUpMediator` is used from a URL page.
+- (void)mediatorWillStartFromUrlPage:(SyncedSetUpMediator*)mediator;
+
 // Called when the `SyncedSetUpMediator` is finished.
 - (void)syncedSetUpMediatorDidComplete:(SyncedSetUpMediator*)mediator;
 
