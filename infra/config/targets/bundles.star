@@ -1395,8 +1395,6 @@ targets.bundle(
                     # https://crbug.com/549140
                     idempotent = False,
                 ),
-                # TODO(b/451296512): Remove experimental.
-                experiment_percentage = 100,
             ),
             "has_native_resultdb_integration",
         ],
@@ -1416,8 +1414,6 @@ targets.bundle(
                     # https://crbug.com/549140
                     idempotent = False,
                 ),
-                # TODO(b/451296512): Remove experimental.
-                experiment_percentage = 100,
             ),
             "has_native_resultdb_integration",
         ],
@@ -3411,12 +3407,6 @@ targets.bundle(
     targets = [
         "gpu_webgl_conformance_telemetry_tests",
     ],
-    per_test_modifications = {
-        "webgl_conformance_tests": targets.mixin(
-            # TODO(b/451296512): Remove experimental.
-            experiment_percentage = 100,
-        ),
-    },
 )
 
 # The command buffer perf tests are only run on Windows.
