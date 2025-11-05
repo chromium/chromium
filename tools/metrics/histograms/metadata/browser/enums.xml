@@ -253,7 +253,7 @@ chromium-metrics-reviews@google.com.
   <int value="31" label="OUTDATED_PLUGIN_INFOBAR_DELEGATE (Obsolete)"/>
   <int value="32" label="PLUGIN_METRO_MODE_INFOBAR_DELEGATE (Obsolete)"/>
   <int value="33" label="RELOAD_PLUGIN_INFOBAR_DELEGATE"/>
-  <int value="34" label="PLUGIN_OBSERVER_INFOBAR_DELEGATE"/>
+  <int value="34" label="PLUGIN_OBSERVER_INFOBAR_DELEGATE (Obsolete)"/>
   <int value="35" label="SSL_ADD_CERTIFICATE (Obsolete)"/>
   <int value="36" label="SSL_ADD_CERTIFICATE_INFOBAR_DELEGATE (Obsolete)"/>
   <int value="37" label="POPUP_BLOCKED_INFOBAR_DELEGATE_MOBILE"/>

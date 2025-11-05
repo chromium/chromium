@@ -14772,16 +14772,8 @@ This can include information about installed software, files, your browser, the 
       <message name="IDS_PLUGIN_CRASHED_PROMPT" desc="Infobar message to notify about a crashed plugin">
        <ph name="PLUGIN_NAME">$1<ex>Flash</ex></ph> has crashed
       </message>
-      <if expr="is_win">
-        <message name="IDS_PLUGIN_DISCONNECTED_PROMPT" desc="Infobar message to notify that the channel connecting to a plugin has encountered an error.">
-          <ph name="PLUGIN_NAME">$1<ex>Flash</ex></ph> has encountered an error
-        </message>
-      </if>
       <message name="IDS_RELOAD_PAGE_WITH_PLUGIN" desc="Infobar button to reload the page where a plugin crashed or disconnected.">
         Reload
-      </message>
-      <message name="IDS_PLUGIN_INITIALIZATION_ERROR_PROMPT" desc="Infobar message to notify that we couldn't load a plugin">
-        Could not load <ph name="PLUGIN_NAME">$1<ex>Flash</ex></ph>
       </message>
 
       <!-- External Protocol Dialog -->

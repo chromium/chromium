@@ -13,10 +13,6 @@ import "url/mojom/url.mojom";
 
 // Plugin messages sent from renderer to the host.
 interface PluginHost {
-  [EnableIf=enable_plugins]
-  // Tells the browser that there was an error loading a plugin.
-  CouldNotLoadPlugin(mojo_base.mojom.FilePath file_path);
-
   // Tells the browser to open a PDF file. Used when no PDF Viewer is
   // available, and the user clicks to view a PDF from the placeholder UI.
   OpenPDF(url.mojom.Url url);

@@ -60,7 +60,6 @@
 #include "ui/base/l10n/l10n_util.h"
 
 #if BUILDFLAG(ENABLE_PLUGINS)
-#include "chrome/browser/plugins/plugin_observer.h"
 #include "chrome/browser/plugins/reload_plugin_infobar_delegate.h"
 #endif
 
@@ -201,7 +200,6 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
 
 #if BUILDFLAG(ENABLE_PLUGINS)
           {"reload_plugin", IBD::RELOAD_PLUGIN_INFOBAR_DELEGATE},
-          {"plugin_observer", IBD::PLUGIN_OBSERVER_INFOBAR_DELEGATE},
 #endif  // BUILDFLAG(ENABLE_PLUGINS)
       });
   const auto id_entry = kIdentifiers.find(name);
@@ -249,11 +247,6 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
           GetInfoBarManager(), nullptr,
           l10n_util::GetStringFUTF16(IDS_PLUGIN_CRASHED_PROMPT,
                                      u"Test Plugin"));
-      break;
-
-    case IBD::PLUGIN_OBSERVER_INFOBAR_DELEGATE:
-      PluginObserver::CreatePluginObserverInfoBar(GetInfoBarManager(),
-                                                  u"Test Plugin");
       break;
 #endif  // BUILDFLAG(ENABLE_PLUGINS)
 
@@ -392,10 +385,6 @@ IN_PROC_BROWSER_TEST_F(InfoBarUiTest, InvokeUi_theme_installed) {
 
 #if BUILDFLAG(ENABLE_PLUGINS)
 IN_PROC_BROWSER_TEST_F(InfoBarUiTest, InvokeUi_reload_plugin) {
-  ShowAndVerifyUi();
-}
-
-IN_PROC_BROWSER_TEST_F(InfoBarUiTest, InvokeUi_plugin_observer) {
   ShowAndVerifyUi();
 }
 #endif  // BUILDFLAG(ENABLE_PLUGINS)

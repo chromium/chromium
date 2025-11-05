@@ -77,12 +77,6 @@ class CONTENT_EXPORT PluginService {
   virtual bool GetPluginInfoByPath(const base::FilePath& plugin_path,
                                    WebPluginInfo* info) = 0;
 
-  // Returns the display name for the plugin identified by the given path. If
-  // the path doesn't identify a plugin, or the plugin has no display name,
-  // this will attempt to generate a display name from the path.
-  virtual std::u16string GetPluginDisplayNameByPath(
-      const base::FilePath& plugin_path) = 0;
-
   // Asynchronously loads plugins if necessary and then calls back to the
   // provided function on the calling sequence on completion.
   virtual void GetPlugins(GetPluginsCallback callback) = 0;

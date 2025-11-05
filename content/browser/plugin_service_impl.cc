@@ -134,26 +134,6 @@ bool PluginServiceImpl::GetPluginInfoByPath(const base::FilePath& plugin_path,
   return false;
 }
 
-std::u16string PluginServiceImpl::GetPluginDisplayNameByPath(
-    const base::FilePath& path) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  std::u16string plugin_name = path.LossyDisplayName();
-  WebPluginInfo info;
-  if (PluginService::GetInstance()->GetPluginInfoByPath(path, &info) &&
-      !info.name.empty()) {
-    plugin_name = info.name;
-#if BUILDFLAG(IS_MAC)
-    // Many plugins on the Mac have .plugin in the actual name, which looks
-    // terrible, so look for that and strip it off if present.
-    static constexpr std::u16string_view kPluginExtension = u".plugin";
-    if (base::EndsWith(plugin_name, kPluginExtension))
-      plugin_name.erase(plugin_name.size() - kPluginExtension.size());
-#endif  // BUILDFLAG(IS_MAC)
-  }
-  return plugin_name;
-}
-
 void PluginServiceImpl::GetPlugins(GetPluginsCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 

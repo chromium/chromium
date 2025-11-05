@@ -9,19 +9,12 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
-#include "chrome/app/vector_icons/vector_icons.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/infobars/simple_alert_infobar_creator.h"
 #include "chrome/browser/plugins/plugin_observer_common.h"
-#include "chrome/browser/plugins/reload_plugin_infobar_delegate.h"
 #include "chrome/common/buildflags.h"
-#include "chrome/grit/generated_resources.h"
 #include "components/download/public/common/download_url_parameters.h"
-#include "components/infobars/content/content_infobar_manager.h"
 #include "components/metrics_services_manager/metrics_services_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/download_manager.h"
-#include "content/public/browser/plugin_service.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
@@ -31,13 +24,6 @@
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
-#include "ui/base/l10n/l10n_util.h"
-
-#if BUILDFLAG(IS_WIN)
-#include "base/win/windows_types.h"
-#endif
-
-using content::PluginService;
 
 // PluginObserver -------------------------------------------------------------
 
@@ -59,26 +45,6 @@ PluginObserver::PluginObserver(content::WebContents* web_contents)
       plugin_host_receivers_(web_contents, this) {}
 
 PluginObserver::~PluginObserver() = default;
-
-// static
-void PluginObserver::CreatePluginObserverInfoBar(
-    infobars::ContentInfoBarManager* infobar_manager,
-    const std::u16string& plugin_name) {
-  CreateSimpleAlertInfoBar(
-      infobar_manager,
-      infobars::InfoBarDelegate::PLUGIN_OBSERVER_INFOBAR_DELEGATE,
-      &kExtensionCrashedIcon,
-      l10n_util::GetStringFUTF16(IDS_PLUGIN_INITIALIZATION_ERROR_PROMPT,
-                                 plugin_name));
-}
-
-void PluginObserver::CouldNotLoadPlugin(const base::FilePath& plugin_path) {
-  std::u16string plugin_name =
-      PluginService::GetInstance()->GetPluginDisplayNameByPath(plugin_path);
-  CreatePluginObserverInfoBar(
-      infobars::ContentInfoBarManager::FromWebContents(web_contents()),
-      plugin_name);
-}
 
 void PluginObserver::OpenPDF(const GURL& url) {
   content::RenderFrameHost* render_frame_host =

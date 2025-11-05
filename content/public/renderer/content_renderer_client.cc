@@ -77,12 +77,6 @@ bool ContentRendererClient::OverrideCreatePlugin(
   return false;
 }
 
-blink::WebPlugin* ContentRendererClient::CreatePluginReplacement(
-    RenderFrame* render_frame,
-    const base::FilePath& plugin_path) {
-  return nullptr;
-}
-
 void ContentRendererClient::PrepareErrorPageForHttpStatusError(
     content::RenderFrame* render_frame,
     const blink::WebURLError& error,

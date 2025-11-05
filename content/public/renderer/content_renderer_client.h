@@ -46,7 +46,6 @@ class GURL;
 class SkBitmap;
 
 namespace base {
-class FilePath;
 class SingleThreadTaskRunner;
 }
 
@@ -156,14 +155,6 @@ class CONTENT_EXPORT ContentRendererClient {
   virtual bool OverrideCreatePlugin(RenderFrame* render_frame,
                                     const blink::WebPluginParams& params,
                                     blink::WebPlugin** plugin);
-
-  // Creates a replacement plugin that is shown when the plugin at |file_path|
-  // couldn't be loaded. This allows the embedder to show a custom placeholder.
-  // This may return nullptr. However, if it does return a WebPlugin, it must
-  // never fail to initialize.
-  virtual blink::WebPlugin* CreatePluginReplacement(
-      RenderFrame* render_frame,
-      const base::FilePath& plugin_path);
 
   // Returns the information to display when a navigation error occurs.
   // |error_html| should be set to null if this is a custom error page that will
