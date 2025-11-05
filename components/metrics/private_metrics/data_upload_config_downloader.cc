@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/metrics/histogram_functions.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -17,7 +18,7 @@
 namespace metrics::private_metrics {
 
 namespace {
-constexpr size_t kMaxDownloadBytes = 50 * 1024;  // 50 KB
+constexpr size_t kMaxDownloadBytes = 4 * 1024 * 1024;  // 4 MiBs
 
 // Max number of retries for fetching the configuration.
 constexpr int kMaxRetries = 3;
@@ -135,6 +136,9 @@ void DataUploadConfigDownloader::HandleSerializedDataUploadConfig(
     std::move(callback).Run(std::nullopt);
     return;
   }
+
+  base::UmaHistogramCounts10000("PrivateMetrics.DataUploadConfig.DownloadSize",
+                                response_body->size() / 1024);
 
   fcp::confidentialcompute::DataUploadConfig data_upload_config;
   if (!data_upload_config.ParseFromString(response_body.value())) {

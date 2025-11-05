@@ -22,6 +22,16 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<histogram name="PrivateMetrics.DataUploadConfig.DownloadSize" units="KiB"
+    expires_after="2026-03-01">
+  <owner>zhouzj@google.com</owner>
+  <owner>private-metrics@google.com</owner>
+  <summary>
+    The size of the downloaded DataUploadConfig in kibibytes. Recorded on a
+    successful download of the config.
+  </summary>
+</histogram>
+
 <histogram name="PrivateMetrics.LogSize.OnSuccess" units="KB"
     expires_after="2026-03-01">
   <owner>zhouzj@google.com</owner>
