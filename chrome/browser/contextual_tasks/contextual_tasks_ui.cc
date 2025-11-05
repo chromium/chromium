@@ -79,6 +79,9 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
   source->AddBoolean("composeboxShowContextMenuDescription", true);
   // Send event when escape is pressed.
   source->AddBoolean("composeboxCloseByEscape", true);
+  source->AddBoolean("dragAndDropEnabled", false);
+  source->AddBoolean("steadyComposeboxShowVoiceSearch", false);
+  source->AddBoolean("expandedComposeboxShowVoiceSearch", false);
 
   source->AddBoolean("isLensSearchbox", true);
   source->AddBoolean(
@@ -94,6 +97,9 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
       "enableThumbnailSizingTweaks",
       lens::features::GetVisualSelectionUpdatesEnableThumbnailSizingTweaks());
   source->AddString("searchboxComposePlaceholder", "[i18n] Ask Google...");
+  source->AddString("composeDeepSearchPlaceholder",
+                    "[i18n] Search within results...");
+  source->AddString("composeCreateImagePlaceholder", "[i18n] Create image...");
   source->AddBoolean("composeboxShowPdfUpload", false);
   source->AddBoolean("composeboxSmartComposeEnabled", false);
   source->AddBoolean("composeboxShowDeepSearchButton", false);
