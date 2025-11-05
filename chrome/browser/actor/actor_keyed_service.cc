@@ -168,29 +168,6 @@ void ActorKeyedService::NotifyTaskStateChanged(const ActorTask& task) {
   tab_state_change_callback_list_.Notify(task);
 }
 
-base::CallbackListSubscription
-ActorKeyedService::AddRequestToShowAutofillSuggestionsDialogSubscriberCallback(
-    RequestToShowAutofillSuggestionsDialogSubscriberCallback callback) {
-  return request_to_show_autofill_suggestions_dialog_callback_list_.Add(
-      std::move(callback));
-}
-
-void ActorKeyedService::NotifyRequestToShowAutofillSuggestionsDialog(
-    TaskId task_id,
-    const std::vector<autofill::ActorFormFillingRequest>& requests) {
-  request_to_show_autofill_suggestions_dialog_callback_list_.Notify(
-      task_id, requests,
-      base::BindRepeating(&ActorKeyedService::OnAutofillSuggestionsSelected,
-                          weak_ptr_factory_.GetWeakPtr(), task_id));
-}
-
-void ActorKeyedService::OnAutofillSuggestionsSelected(
-    TaskId request_task_id,
-    webui::mojom::SelectAutofillSuggestionsDialogResponsePtr response) {
-  // TODO(crbug.com/452065032): Implement the AttemptFormFillingTool.
-  NOTIMPLEMENTED();
-}
-
 void ActorKeyedService::OnActOnWebCapabilityChanged(bool can_act_on_web) {
   if (!can_act_on_web) {
     FailAllTasks();

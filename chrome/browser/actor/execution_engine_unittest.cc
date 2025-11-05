@@ -8,12 +8,16 @@
 
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "chrome/browser/actor/actor_features.h"
+#include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/actor_keyed_service_factory.h"
 #include "chrome/browser/actor/actor_tab_data.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/actor_test_util.h"
@@ -28,16 +32,19 @@
 #include "chrome/browser/actor/ui/mocks/mock_event_dispatcher.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/action_result.h"
+#include "chrome/common/actor_webui.mojom.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/autofill/core/browser/integrators/glic/actor_form_filling_types.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/navigation_simulator.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
@@ -143,6 +150,53 @@ class FakeChromeRenderFrame : public chrome::mojom::ChromeRenderFrame {
   mojo::AssociatedReceiverSet<chrome::mojom::ChromeRenderFrame> receivers_;
 };
 
+class MockActorTaskDelegate : public ActorTaskDelegate {
+ public:
+  MockActorTaskDelegate() = default;
+  ~MockActorTaskDelegate() override = default;
+
+  MOCK_METHOD(void,
+              OnTabAddedToTask,
+              (TaskId task_id, const tabs::TabInterface::Handle& tab_handle),
+              (override));
+
+  MOCK_METHOD(void,
+              RequestToShowCredentialSelectionDialog,
+              (TaskId task_id,
+               (const base::flat_map<std::string, gfx::Image>&)icons,
+               const std::vector<actor_login::Credential>& credentials,
+               CredentialSelectedCallback callback),
+              (override));
+
+  MOCK_METHOD(void,
+              RequestToShowUserConfirmationDialog,
+              (TaskId task_id,
+               const url::Origin& navigation_origin,
+               UserConfirmationDialogCallback callback),
+              (override));
+
+  MOCK_METHOD(void,
+              RequestToConfirmNavigation,
+              (TaskId task_id,
+               const url::Origin& navigation_origin,
+               NavigationConfirmationCallback callback),
+              (override));
+
+  MOCK_METHOD(void,
+              RequestToShowAutofillSuggestionsDialog,
+              (actor::TaskId task_id,
+               std::vector<autofill::ActorFormFillingRequest> requests,
+               AutofillSuggestionSelectedCallback callback),
+              (override));
+
+  base::WeakPtr<MockActorTaskDelegate> GetWeakPtr() {
+    return weak_factory_.GetWeakPtr();
+  }
+
+ private:
+  base::WeakPtrFactory<MockActorTaskDelegate> weak_factory_{this};
+};
+
 class ExecutionEngineTest : public ChromeRenderViewHostTestHarness {
  public:
   ExecutionEngineTest()
@@ -172,7 +226,9 @@ class ExecutionEngineTest : public ChromeRenderViewHostTestHarness {
         profile(), std::move(ui_event_dispatcher));
     auto raw_execution_engine = execution_engine.get();
     task_ = std::make_unique<ActorTask>(profile(), std::move(execution_engine),
-                                        std::move(task_ui_event_dispatcher));
+                                        std::move(task_ui_event_dispatcher),
+                                        /*options=*/nullptr,
+                                        mock_actor_task_delegate_.GetWeakPtr());
     task_->SetIdForTesting(0);
     raw_execution_engine->SetOwner(task_.get());
 
@@ -245,6 +301,7 @@ class ExecutionEngineTest : public ChromeRenderViewHostTestHarness {
   std::unique_ptr<ActorTask> task_;
   raw_ptr<ui::MockUiEventDispatcher> mock_ui_event_dispatcher_;
   raw_ptr<ui::MockUiEventDispatcher> task_mock_ui_event_dispatcher_;
+  MockActorTaskDelegate mock_actor_task_delegate_;
 
  private:
   struct TabState {
@@ -769,6 +826,37 @@ TEST_F(ExecutionEngineTest, VisibleNotVisibleActuationWithWaitingHistogram) {
       visible_duration1 + waiting_duration + visible_duration2, 1);
   histograms_.ExpectTimeBucketCount(
       kActorTaskDurationNotVisibleCompletedHistogram, base::Milliseconds(0), 1);
+}
+
+TEST_F(ExecutionEngineTest,
+       RequestToShowAutofillSuggestions_DelegatesToActorTaskDelegate) {
+  // Get the real ActorKeyedService.
+  auto* actor_service = ActorKeyedService::Get(profile());
+  ASSERT_TRUE(actor_service);
+
+  // Prepare the data to be sent.
+  ExecutionEngine* execution_engine = task_->GetExecutionEngine();
+  std::vector<autofill::ActorFormFillingRequest> test_requests;
+  test_requests.emplace_back().requested_data =
+      optimization_guide::proto::FormFillingRequest_RequestedData_ADDRESS;
+
+  // Hold the forwarded value in `received_requests`.
+  std::vector<autofill::ActorFormFillingRequest> received_requests;
+
+  // Expect the call to be forwarded to the task's ActorTaskDelegate.
+  EXPECT_CALL(mock_actor_task_delegate_,
+              RequestToShowAutofillSuggestionsDialog(task_->id(), _, _))
+      .WillOnce(testing::SaveArg<1>(&received_requests));
+
+  // Call the method under test on the ExecutionEngine.
+  execution_engine->RequestToShowAutofillSuggestions(test_requests,
+                                                     base::DoNothing());
+
+  // The vector of requests broadcast by the service should match what we sent.
+  ASSERT_EQ(received_requests.size(), 1u);
+  EXPECT_EQ(
+      received_requests[0].requested_data,
+      optimization_guide::proto::FormFillingRequest_RequestedData_ADDRESS);
 }
 
 }  // namespace

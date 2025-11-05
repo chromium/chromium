@@ -184,6 +184,10 @@ static_library("test_support") {
       "//chrome/browser/keyboard_accessory/test_utils/android",
     ]
   }
+
+  if (!is_android) {
+    deps += [ "//chrome/browser/autofill/glic:test_support" ]
+  }
 }
 
 source_set("browser_tests") {

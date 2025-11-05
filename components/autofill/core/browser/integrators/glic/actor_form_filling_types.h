@@ -78,6 +78,7 @@ struct ActorFormFillingSelection {
   ActorFormFillingSelection(ActorFormFillingSelection&&);
   ActorFormFillingSelection& operator=(ActorFormFillingSelection&&);
   ~ActorFormFillingSelection();
+  bool operator==(const ActorFormFillingSelection&) const;
 
   ActorSuggestionId selected_suggestion_id;
 

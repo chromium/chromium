@@ -9,6 +9,7 @@
 #include "base/functional/callback_forward.h"
 #include "chrome/browser/actor/actor_task_delegate.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
+#include "components/autofill/core/browser/integrators/glic/actor_form_filling_types.h"
 #include "url/origin.h"
 
 namespace glic {
@@ -58,6 +59,11 @@ class GlicWebClientAccess {
       actor::TaskId task_id,
       const url::Origin& navigation_origin,
       actor::ActorTaskDelegate::NavigationConfirmationCallback callback) = 0;
+  virtual void RequestToShowAutofillSuggestionsDialog(
+      actor::TaskId task_id,
+      std::vector<autofill::ActorFormFillingRequest> requests,
+      actor::ActorTaskDelegate::AutofillSuggestionSelectedCallback
+          callback) = 0;
 
   virtual void FloatingPanelCanAttachChanged(bool can_attach) = 0;
 };

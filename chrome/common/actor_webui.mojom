@@ -86,7 +86,7 @@ struct SelectCredentialDialogResponse {
 
 // An autofill suggestion for actor form filling. Mapped from
 // autofill::ActorSuggestion in
-// components/autofill/core/browser/actor_form_filling_types.h
+// components/autofill/core/browser/integrators/glic/actor_form_filling_types.h
 struct AutofillSuggestion {
   string id;
   string title;
@@ -115,8 +115,13 @@ enum SelectAutofillSuggestionsDialogErrorReason {
   // The hosting WebUI received the request, but the web client has not
   // subscribed to the request yet. We couldn't show the dialog in this case.
   kDialogPromiseNoSubscriber = 0,
-  // The requested task id did not match the response task id.
+  // The requested task id did not match the response task id. This error is
+  // internal to the browser and not sent by the client over mojo.
   kMismatchedTaskId = 1,
+  // The task is not connected to a delegate. I.e. attempting to run the task
+  // from the experimental actor API. This error is internal to the browser and
+  // not sent by the client over mojo.
+  kNoActorTaskDelegate = 2,
 };
 // LINT.ThenChange(//chrome/browser/resources/glic/glic_api_impl/request_types.ts:SelectAutofillSuggestionsDialogErrorReason)
 

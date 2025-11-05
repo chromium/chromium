@@ -33,6 +33,7 @@
 #include "chrome/browser/actor/tools/tool_controller.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/browser/actor/ui/event_dispatcher.h"
+#include "chrome/browser/autofill/glic/actor_form_filling_service_impl.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/password_manager/actor_login/actor_login_service.h"
 #include "chrome/browser/password_manager/actor_login/actor_login_service_impl.h"
@@ -140,6 +141,8 @@ void ExecutionEngine::SetOwner(ActorTask* task) {
   task_ = task;
   TRACE_EVENT0("actor", "ExecutionEngine::SetOwner");
   actor_login_service_ = std::make_unique<actor_login::ActorLoginServiceImpl>();
+  actor_form_filling_service_ =
+      std::make_unique<autofill::ActorFormFillingServiceImpl>();
   tool_controller_ = std::make_unique<ToolController>(*task_, *this);
 }
 
@@ -716,6 +719,11 @@ actor_login::ActorLoginService& ExecutionEngine::GetActorLoginService() {
   return *actor_login_service_;
 }
 
+autofill::ActorFormFillingService&
+ExecutionEngine::GetActorFormFillingService() {
+  return *actor_form_filling_service_;
+}
+
 void ExecutionEngine::PromptToSelectCredential(
     const std::vector<actor_login::Credential>& credentials,
     const base::flat_map<std::string, gfx::Image>& icons,
@@ -747,6 +755,25 @@ ExecutionEngine::GetUserSelectedCredential(
     return std::nullopt;
   }
   return it->second;
+}
+
+void ExecutionEngine::RequestToShowAutofillSuggestions(
+    std::vector<autofill::ActorFormFillingRequest> requests,
+    ExecutionEngine::AutofillSuggestionSelectedCallback callback) {
+  TRACE_EVENT0("actor", "ExecutionEngine::RequestToShowAutofillSuggestions");
+  CHECK(!requests.empty());
+
+  if (!task_->delegate()) {
+    std::move(callback).Run(
+        webui::mojom::SelectAutofillSuggestionsDialogResponse::New(
+            task_->id().value(),
+            webui::mojom::SelectAutofillSuggestionsDialogResult::NewErrorReason(
+                webui::mojom::SelectAutofillSuggestionsDialogErrorReason::
+                    kNoActorTaskDelegate)));
+    return;
+  }
+  task_->delegate()->RequestToShowAutofillSuggestionsDialog(
+      task_->id(), std::move(requests), std::move(callback));
 }
 
 void ExecutionEngine::AddWritableMainframeOrigins(

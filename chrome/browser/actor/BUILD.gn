@@ -28,6 +28,7 @@ source_set("actor") {
     "aggregated_journal_serializer.h",
     "browser_action_util.h",
     "execution_engine.h",
+    "tools/attempt_form_filling_tool_request.h",
     "tools/attempt_login_tool_request.h",
     "tools/click_tool_request.h",
     "tools/drag_and_release_tool_request.h",
@@ -96,6 +97,7 @@ source_set("impl") {
     "safety_list_manager.h",
     "site_policy.cc",
     "site_policy.h",
+    "tools/attempt_form_filling_tool_request.cc",
     "tools/attempt_login_tool.cc",
     "tools/attempt_login_tool.h",
     "tools/attempt_login_tool_request.cc",
@@ -147,6 +149,7 @@ source_set("impl") {
     "//chrome/browser:browser_process",
     "//chrome/browser/actor/ui",
     "//chrome/browser/actor/ui:event_dispatcher",
+    "//chrome/browser/autofill/glic",
     "//chrome/browser/favicon",
     "//chrome/browser/optimization_guide",
     "//chrome/browser/page_content_annotations:fetcher",
@@ -211,6 +214,7 @@ source_set("types") {
   deps = [
     "//chrome/common",
     "//chrome/common:actor_webui_mojom",
+    "//components/autofill/core/browser/integrators/glic:actor_form_filling_types",
     "//components/password_manager/core/browser/actor_login:common",
     "//components/tabs:public",
     "//third_party/abseil-cpp:absl",
@@ -262,6 +266,7 @@ source_set("unit_tests") {
     "safety_list_unittest.cc",
     "shared_types_unittest.cc",
     "site_policy_unittest.cc",
+    "tools/attempt_form_filling_tool_request_unittest.cc",
   ]
   deps = [
     ":actor",

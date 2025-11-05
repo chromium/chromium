@@ -879,25 +879,6 @@ void GlicInstanceImpl::MaybeActivateForegroundEmbedder() {
   NotifyInstanceActivationChanged(false);
 }
 
-void GlicInstanceImpl::OnTabAddedToTask(
-    actor::TaskId task_id,
-    const tabs::TabInterface::Handle& tab_handle) {
-  tabs::TabInterface* tab = tab_handle.Get();
-  if (!tab || !task_id) {
-    instance_metrics_.OnDaisyChain(DaisyChainSource::kActorAddTab,
-                                   /*success=*/false);
-    return;
-  }
-  if (base::FeatureList::IsEnabled(features::kGlicGetTabByIdApi)) {
-    service_->OnTabAddedToTask(task_id, tab_handle);
-  }
-  SidePanelShowOptions side_panel_options{*tab};
-  side_panel_options.suppress_opening_animation = true;
-  Show(ShowOptions{side_panel_options});
-  instance_metrics_.OnDaisyChain(DaisyChainSource::kActorAddTab,
-                                 /*success=*/true);
-}
-
 void GlicInstanceImpl::NotifyInstanceActivationChanged(bool is_active) {
   is_active_ = is_active;
   instance_metrics_.OnActivationChanged(is_active);
@@ -984,6 +965,25 @@ views::View* GlicInstanceImpl::GetActiveEmbedderGlicViewForTesting() {
   return embedder->GetView().get();
 }
 
+void GlicInstanceImpl::OnTabAddedToTask(
+    actor::TaskId task_id,
+    const tabs::TabInterface::Handle& tab_handle) {
+  tabs::TabInterface* tab = tab_handle.Get();
+  if (!tab || !task_id) {
+    instance_metrics_.OnDaisyChain(DaisyChainSource::kActorAddTab,
+                                   /*success=*/false);
+    return;
+  }
+  if (base::FeatureList::IsEnabled(features::kGlicGetTabByIdApi)) {
+    service_->OnTabAddedToTask(task_id, tab_handle);
+  }
+  SidePanelShowOptions side_panel_options{*tab};
+  side_panel_options.suppress_opening_animation = true;
+  Show(ShowOptions{side_panel_options});
+  instance_metrics_.OnDaisyChain(DaisyChainSource::kActorAddTab,
+                                 /*success=*/true);
+}
+
 void GlicInstanceImpl::RequestToShowCredentialSelectionDialog(
     actor::TaskId task_id,
     const base::flat_map<std::string, gfx::Image>& icons,
@@ -1007,6 +1007,13 @@ void GlicInstanceImpl::RequestToConfirmNavigation(
     actor::ActorTaskDelegate::NavigationConfirmationCallback callback) {
   host_.RequestToConfirmNavigation(task_id, navigation_origin,
                                    std::move(callback));
+}
+void GlicInstanceImpl::RequestToShowAutofillSuggestionsDialog(
+    actor::TaskId task_id,
+    std::vector<autofill::ActorFormFillingRequest> requests,
+    AutofillSuggestionSelectedCallback callback) {
+  host_.RequestToShowAutofillSuggestionsDialog(task_id, std::move(requests),
+                                               std::move(callback));
 }
 
 bool GlicInstanceImpl::HasFocus() {

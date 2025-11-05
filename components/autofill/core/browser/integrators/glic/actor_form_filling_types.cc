@@ -56,5 +56,7 @@ ActorFormFillingSelection::ActorFormFillingSelection(
 ActorFormFillingSelection& ActorFormFillingSelection::operator=(
     ActorFormFillingSelection&&) = default;
 ActorFormFillingSelection::~ActorFormFillingSelection() = default;
+bool ActorFormFillingSelection::operator==(
+    const ActorFormFillingSelection&) const = default;
 
 }  // namespace autofill

@@ -26,6 +26,7 @@
 #include "chrome/browser/glic/service/glic_ui_types.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_list_observer.h"
+#include "components/autofill/core/browser/integrators/glic/actor_form_filling_types.h"
 #include "components/tabs/public/tab_interface.h"
 
 class Profile;
@@ -218,10 +219,6 @@ class GlicInstanceImpl : public GlicInstance,
   void WebUiStateChanged(mojom::WebUiState state) override;
   void ContextAccessIndicatorChanged(bool enabled) override;
 
-  // ActorTaskDelegate:
-  void OnTabAddedToTask(actor::TaskId task_id,
-                        const tabs::TabInterface::Handle& tab_handle) override;
-
   glic::GlicInstanceMetrics* metrics() { return &instance_metrics_; }
 
   // Test support.
@@ -229,6 +226,8 @@ class GlicInstanceImpl : public GlicInstance,
   views::View* GetActiveEmbedderGlicViewForTesting();
 
   // ActorTaskDelegate:
+  void OnTabAddedToTask(actor::TaskId task_id,
+                        const tabs::TabInterface::Handle& tab_handle) override;
   void RequestToShowCredentialSelectionDialog(
       actor::TaskId task_id,
       const base::flat_map<std::string, gfx::Image>& icons,
@@ -244,6 +243,10 @@ class GlicInstanceImpl : public GlicInstance,
       const url::Origin& navigation_origin,
       actor::ActorTaskDelegate::NavigationConfirmationCallback callback)
       override;
+  void RequestToShowAutofillSuggestionsDialog(
+      actor::TaskId task_id,
+      std::vector<autofill::ActorFormFillingRequest> requests,
+      AutofillSuggestionSelectedCallback callback) override;
 
  private:
   // We use a delegating constructor pattern so we can hand off ownership of the

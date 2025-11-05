@@ -17,6 +17,7 @@
 #include "chrome/browser/glic/host/glic_web_client_access.h"
 #include "chrome/browser/glic/public/glic_instance.h"
 #include "chrome/common/actor/task_id.h"
+#include "components/autofill/core/browser/integrators/glic/actor_form_filling_types.h"
 #include "components/tabs/public/tab_interface.h"
 #include "ui/views/widget/widget.h"
 
@@ -356,6 +357,11 @@ class Host : public GlicSharingManagerProvider {
       actor::TaskId task_id,
       const url::Origin& navigation_origin,
       actor::ActorTaskDelegate::NavigationConfirmationCallback callback);
+
+  void RequestToShowAutofillSuggestionsDialog(
+      actor::TaskId task_id,
+      std::vector<autofill::ActorFormFillingRequest> requests,
+      actor::ActorTaskDelegate::AutofillSuggestionSelectedCallback callback);
 
   void FloatingPanelCanAttachChanged(bool can_attach);
 

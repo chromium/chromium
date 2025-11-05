@@ -41,3 +41,17 @@ source_set("unit_tests") {
     "//testing/gtest",
   ]
 }
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "mock_actor_form_filling_service.cc",
+    "mock_actor_form_filling_service.h",
+  ]
+  deps = [ "//testing/gmock" ]
+  public_deps = [
+    ":glic",
+    "//base",
+  ]
+}

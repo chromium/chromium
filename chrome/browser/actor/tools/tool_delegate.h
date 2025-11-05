@@ -11,6 +11,7 @@
 #include "base/containers/flat_map.h"
 #include "base/functional/callback_forward.h"
 #include "chrome/common/actor_webui.mojom.h"
+#include "components/autofill/core/browser/integrators/glic/actor_form_filling_types.h"
 #include "components/password_manager/core/browser/actor_login/actor_login_types.h"
 #include "url/gurl.h"
 
@@ -19,6 +20,10 @@ class Profile;
 namespace actor_login {
 class ActorLoginService;
 }  // namespace actor_login
+
+namespace autofill {
+class ActorFormFillingService;
+}  // namespace autofill
 
 namespace favicon {
 class FaviconService;
@@ -46,6 +51,9 @@ class ToolDelegate {
 
   // Returns the login service associated with the task.
   virtual actor_login::ActorLoginService& GetActorLoginService() = 0;
+
+  // Returns the form filling service associated with the task.
+  virtual autofill::ActorFormFillingService& GetActorFormFillingService() = 0;
 
   // Returns the favicon service for the profile associated with the task.
   virtual favicon::FaviconService* GetFaviconService() = 0;
@@ -90,6 +98,14 @@ class ToolDelegate {
       const CredentialWithPermission& credential) = 0;
   virtual const std::optional<CredentialWithPermission>
   GetUserSelectedCredential(const url::Origin& request_origin) const = 0;
+
+  // Prompts the user to select one of the autofill suggestion. Invokes the
+  // callback with the chosen suggestion or empty if the prompt is closed.
+  using AutofillSuggestionSelectedCallback = base::OnceCallback<void(
+      webui::mojom::SelectAutofillSuggestionsDialogResponsePtr)>;
+  virtual void RequestToShowAutofillSuggestions(
+      std::vector<autofill::ActorFormFillingRequest> requests,
+      AutofillSuggestionSelectedCallback callback) = 0;
 };
 
 }  // namespace actor
