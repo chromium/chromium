@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_GLIC_BROWSER_UI_GLIC_IPH_CONTROLLER_H_
 
 #include "base/timer/timer.h"
+#include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
 
@@ -32,15 +33,23 @@ namespace glic {
 // suffices.
 class GlicIphController {
  public:
-  explicit GlicIphController(BrowserWindowInterface* browser_window);
+  GlicIphController(BrowserWindowInterface* browser_window,
+                    GlicKeyedService& glic_service);
   ~GlicIphController();
+
+  void MaybeShowPromoForTest() { MaybeShowPromo(); }
 
  private:
   void MaybeShowPromo();
 
   void OnShowPromoResult(user_education::FeaturePromoResult result);
+  void OnShowPromoWithCtaResult(user_education::FeaturePromoResult result);
+
+  // Whether to show the old or the new IPH with a Call to Action.
+  bool show_cta_;
 
   const raw_ref<BrowserWindowInterface> window_;
+  const raw_ref<GlicKeyedService> glic_service_;
 
   // Limit how often we check to see if a promo can be shown; this prevents
   // hammering the feature promo system constantly.

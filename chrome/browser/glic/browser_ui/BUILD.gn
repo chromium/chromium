@@ -57,6 +57,7 @@ source_set("interactive_ui_tests") {
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
   sources = [
     "glic_border_view_interactive_uitest.cc",
+    "glic_iph_controller_interactive_uitest.cc",
     "glic_tab_indicator_helper_interactive_uitest.cc",
     "glic_tab_underline_view_interactive_uitest.cc",
   ]
@@ -66,6 +67,7 @@ source_set("interactive_ui_tests") {
     "//chrome/browser/actor",
     "//chrome/browser/actor:test_support",
     "//chrome/browser/actor/ui",
+    "//chrome/browser/glic/fre",
     "//chrome/browser/glic/test_support",
     "//chrome/browser/ui",
     "//chrome/browser/ui:browser_element_identifiers",

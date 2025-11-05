@@ -270,6 +270,10 @@ class BrowserWindowFeatures {
   glic::GlicLegacySidePanelCoordinator* glic_side_panel_coordinator() {
     return glic_side_panel_coordinator_.get();
   }
+
+  glic::GlicIphController* glic_iph_controller() {
+    return glic_iph_controller_.get();
+  }
 #endif
 
   PinnedToolbarActionsController* pinned_toolbar_actions_controller() {

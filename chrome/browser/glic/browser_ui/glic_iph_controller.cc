@@ -6,11 +6,10 @@
 
 #include "base/time/time.h"
 #include "chrome/browser/glic/host/guest_util.h"
-#include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
+#include "chrome/common/chrome_features.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "components/user_education/common/user_education_features.h"
@@ -35,8 +34,12 @@ base::TimeDelta GetPromoCheckInterval() {
 
 }  // namespace
 
-GlicIphController::GlicIphController(BrowserWindowInterface* browser_window)
-    : window_(*browser_window) {
+GlicIphController::GlicIphController(BrowserWindowInterface* browser_window,
+                                     GlicKeyedService& glic_service)
+    : show_cta_(base::FeatureList::IsEnabled(
+          feature_engagement::kIPHGlicTryItFeature)),
+      window_(*browser_window),
+      glic_service_(glic_service) {
   show_timer_.Start(FROM_HERE, GetPromoCheckInterval(),
                     base::BindRepeating(&GlicIphController::MaybeShowPromo,
                                         weak_ptr_factory_.GetWeakPtr()));
@@ -64,7 +67,8 @@ void GlicIphController::MaybeShowPromo() {
   // chance of an interruption because promos are paused when the user is
   // interacting with the browser.
   user_education::FeaturePromoParams params(
-      feature_engagement::kIPHGlicPromoFeature);
+      show_cta_ ? feature_engagement::kIPHGlicTryItFeature
+                : feature_engagement::kIPHGlicPromoFeature);
   params.show_promo_result_callback = base::BindOnce(
       &GlicIphController::OnShowPromoResult, weak_ptr_factory_.GetWeakPtr());
   BrowserUserEducationInterface::From(&*window_)->MaybeShowFeaturePromo(
@@ -79,10 +83,8 @@ void GlicIphController::OnShowPromoResult(
     show_timer_.Stop();
   }
 
-  if (result == user_education::FeaturePromoResult::Success()) {
-    auto* profile = window_->GetProfile();
-    auto* glic_service = GlicKeyedServiceFactory::GetGlicKeyedService(profile);
-    glic_service->TryPreloadFre(glic::GlicPrewarmingFreSource::kIph);
+  if (result == user_education::FeaturePromoResult::Success() && !show_cta_) {
+    glic_service_->TryPreloadFre(glic::GlicPrewarmingFreSource::kIph);
   }
 }
 

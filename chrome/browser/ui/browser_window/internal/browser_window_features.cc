@@ -274,7 +274,8 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
 #if BUILDFLAG(ENABLE_GLIC)
     if (glic::GlicEnabling::IsProfileEligible(profile)) {
       DCHECK(features::HasTabSearchToolbarButton());
-      glic_iph_controller_ = std::make_unique<glic::GlicIphController>(browser);
+      glic_iph_controller_ = std::make_unique<glic::GlicIphController>(
+          browser, *glic::GlicKeyedService::Get(profile));
       glic_nudge_controller_ =
           std::make_unique<tabs::GlicNudgeController>(browser);
     }
