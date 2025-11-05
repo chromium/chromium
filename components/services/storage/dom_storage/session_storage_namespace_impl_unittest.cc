@@ -72,10 +72,11 @@ class SessionStorageNamespaceImplTest
   }
 
   void SetUp() override {
-    // Create a database that already has a namespace saved.
+    // Create an in-memory database that already has a namespace saved.
     base::RunLoop loop;
-    database_ = AsyncDomStorageDatabase::OpenInMemory(
-        std::nullopt, "SessionStorageNamespaceImplTest",
+    database_ = AsyncDomStorageDatabase::Open(
+        /*directory=*/base::FilePath(), "SessionStorageNamespaceImplTest",
+        /*memory_dump_id=*/std::nullopt,
         base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}),
         base::BindLambdaForTesting([&](DbStatus) { loop.Quit(); }));
     loop.Run();
@@ -90,8 +91,9 @@ class SessionStorageNamespaceImplTest
 
     // Put some data in one of the maps.
     base::RunLoop put_loop;
-    database_->database().PostTaskWithThisObject(
-        base::BindLambdaForTesting([&](DomStorageDatabaseLevelDB* db) {
+    database_->database().PostTaskWithThisObject(base::BindLambdaForTesting(
+        [&](DomStorageDatabase* dom_storage_database) {
+          DomStorageDatabaseLevelDB* db = &dom_storage_database->GetLevelDB();
           ASSERT_TRUE(db->Put(StdStringToUint8Vector("map-0-key1"),
                               StdStringToUint8Vector("data1"))
                           .ok());

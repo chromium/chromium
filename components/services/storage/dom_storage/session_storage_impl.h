@@ -130,7 +130,7 @@ class SessionStorageImpl : public base::trace_event::MemoryDumpProvider,
 
   // Access the underlying DomStorageDatabaseLevelDB. May be null if the
   // database is not yet open.
-  base::SequenceBound<DomStorageDatabaseLevelDB>& GetDatabaseForTesting() {
+  base::SequenceBound<DomStorageDatabase>& GetDatabaseForTesting() {
     return database_->database();
   }
 

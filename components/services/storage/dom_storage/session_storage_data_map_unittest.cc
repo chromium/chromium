@@ -74,9 +74,11 @@ blink::mojom::StorageArea::GetAllCallback MakeGetAllCallback(
 class SessionStorageDataMapTest : public testing::Test {
  public:
   SessionStorageDataMapTest() {
+    // Create an in-memory LevelDB.
     base::RunLoop loop;
-    database_ = AsyncDomStorageDatabase::OpenInMemory(
-        std::nullopt, "SessionStorageDataMapTest",
+    database_ = AsyncDomStorageDatabase::Open(
+        /*directory=*/base::FilePath(), "SessionStorageDataMapTest",
+        /*memory_dump_id=*/std::nullopt,
         base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}),
         base::BindLambdaForTesting([&](DbStatus status) {
           ASSERT_TRUE(status.ok());
@@ -85,7 +87,8 @@ class SessionStorageDataMapTest : public testing::Test {
     loop.Run();
 
     database_->database().PostTaskWithThisObject(
-        base::BindOnce([](DomStorageDatabaseLevelDB* db) {
+        base::BindOnce([](DomStorageDatabase* dom_storage_database) {
+          DomStorageDatabaseLevelDB* db = &dom_storage_database->GetLevelDB();
           // Should show up in first map.
           DbStatus status =
               db->Put(MakeBytes("map-1-key1"), MakeBytes("data1"));
@@ -102,8 +105,9 @@ class SessionStorageDataMapTest : public testing::Test {
   std::map<std::string, std::string> GetDatabaseContents() {
     std::vector<DomStorageDatabase::KeyValuePair> entries;
     base::RunLoop loop;
-    database_->database().PostTaskWithThisObject(
-        base::BindLambdaForTesting([&](const DomStorageDatabaseLevelDB& db) {
+    database_->database().PostTaskWithThisObject(base::BindLambdaForTesting(
+        [&](DomStorageDatabase* dom_storage_database) {
+          DomStorageDatabaseLevelDB& db = dom_storage_database->GetLevelDB();
           DbStatus status = db.GetPrefixed({}, &entries);
           ASSERT_TRUE(status.ok());
           loop.Quit();

@@ -359,9 +359,9 @@ class RemoveLocalStorageTester {
     // how exactly the Local Storage subsystem stores persistent data.
 
     base::RunLoop open_loop;
-    auto database = storage::AsyncDomStorageDatabase::OpenDirectory(
+    auto database = storage::AsyncDomStorageDatabase::Open(
         storage_partition_->GetPath().Append(storage::kLocalStoragePath),
-        storage::kLocalStorageLeveldbName, std::nullopt,
+        storage::kLocalStorageLeveldbName, /*memory_dump_id=*/std::nullopt,
         base::SingleThreadTaskRunner::GetCurrentDefault(),
         base::BindLambdaForTesting([&](storage::DbStatus status) {
           ASSERT_TRUE(status.ok());
@@ -371,8 +371,8 @@ class RemoveLocalStorageTester {
 
     base::RunLoop populate_loop;
     database->database().PostTaskWithThisObject(
-        base::BindLambdaForTesting([&](storage::DomStorageDatabaseLevelDB* db) {
-          PopulateDatabase(db, origin1, origin2, origin3);
+        base::BindLambdaForTesting([&](storage::DomStorageDatabase* db) {
+          PopulateDatabase(&db->GetLevelDB(), origin1, origin2, origin3);
           populate_loop.Quit();
         }));
     populate_loop.Run();

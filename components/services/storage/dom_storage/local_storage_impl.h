@@ -100,8 +100,7 @@ class LocalStorageImpl : public base::trace_event::MemoryDumpProvider,
 
   // Access the underlying DomStorageDatabase. May be null if the database is
   // not yet open.
-  const base::SequenceBound<DomStorageDatabaseLevelDB>& GetDatabaseForTesting()
-      const {
+  const base::SequenceBound<DomStorageDatabase>& GetDatabaseForTesting() const {
     return database_->database();
   }
 

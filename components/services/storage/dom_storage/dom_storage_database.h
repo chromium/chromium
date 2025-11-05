@@ -11,12 +11,16 @@
 #include <string>
 #include <vector>
 
+#include "base/byte_size.h"
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequence_bound.h"
+#include "base/time/time.h"
+#include "base/types/pass_key.h"
 #include "storage/common/database/db_status.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace base {
 class FilePath;
@@ -26,6 +30,7 @@ class MemoryAllocatorDumpGuid;
 }  // namespace base
 
 namespace storage {
+class DomStorageDatabaseLevelDB;
 
 // Abstract interface for DOM storage database implementations. Provides
 // key-value storage operations for DOMStorage StorageAreas.
@@ -34,7 +39,7 @@ namespace storage {
 // and one for local storage. Records the key-value pairs for all StorageAreas
 // along with usage metadata.
 //
-// Use the `DomStorageDatabaseFactory` to  asynchronously create an instance of
+// Use the `DomStorageDatabaseFactory` to asynchronously create an instance of
 // this type from any sequence. When owning a SequenceBound<DomStorageDatabase>
 // as produced by those helpers, all work on the DomStorageDatabase can be
 // safely done via `SequenceBound::PostTaskWithThisObject`.
@@ -60,10 +65,76 @@ class DomStorageDatabase {
     Value value;
   };
 
+  // Locates a map of persisted key value pairs in the database. Use `map_id`
+  // to find the map data. Use `session_id` and `storage_key` to find the
+  // `map_id`. Some maps are loaded on demand where `map_id` remains unknown
+  // until the first read or write.
+  class MapLocator {
+   public:
+    MapLocator(std::string source_session_id,
+               blink::StorageKey source_storage_key);
+    MapLocator(std::string source_session_id,
+               blink::StorageKey source_storage_key,
+               int64_t source_map_id);
+    ~MapLocator();
+
+    MapLocator(MapLocator&&);
+    MapLocator& operator=(MapLocator&&);
+
+    // Support move-only.
+    MapLocator(const MapLocator&) = delete;
+    MapLocator& operator=(const MapLocator&) = delete;
+
+    const std::string& session_id() const;
+    const blink::StorageKey& storage_key() const;
+    std::optional<int64_t> map_id() const;
+
+   private:
+    std::string session_id_;
+    blink::StorageKey storage_key_;
+    std::optional<int64_t> map_id_;
+  };
+
+  // Describes a consumer of a persisted map's data and its size and usage. Some
+  // `DomStorageDatabase` implementors don't record usage. For brand new empty
+  // maps, metadata for `last_accessed` might exist while `last_modified` and
+  // `total_size` might NOT exist until after the first write.
+  struct MapMetadata {
+    MapLocator map_locator;
+    std::optional<base::Time> last_accessed;
+    std::optional<base::Time> last_modified;
+    std::optional<base::ByteSize> total_size;
+  };
+
+  // Describes all metadata in the database.
+  struct Metadata {
+    Metadata();
+    explicit Metadata(std::vector<MapMetadata> source_map_metadata);
+    ~Metadata();
+
+    Metadata(Metadata&&);
+    Metadata& operator=(Metadata&&);
+
+    // Support move-only.
+    Metadata(const Metadata&) = delete;
+    Metadata& operator=(const Metadata&) = delete;
+
+    std::vector<MapMetadata> map_metadata;
+    std::optional<int64_t> next_map_id;
+  };
+
   virtual ~DomStorageDatabase() = default;
+
+  // TODO(crbug.com/377242771): Remove LevelDB accessor after fully migrating to
+  // this interface.
+  virtual DomStorageDatabaseLevelDB& GetLevelDB() = 0;
 
   // TODO(crbug.com/377242771): Support both SQLite and LevelDB by adding more
   // shared functions to this interface.
+  //
+  // Get all map locators along with their size and usage. Also gets the next
+  // available map id that the database will assign to a newly created map.
+  virtual StatusOr<Metadata> ReadAllMetadata() = 0;
 
   // For LevelDB only. Rewrites the database on disk to
   // clean up traces of deleted entries.
@@ -74,41 +145,25 @@ class DomStorageDatabase {
   virtual DbStatus RewriteDB() = 0;
 
   // Test-only functions.
-  virtual bool ShouldFailAllCommits() const = 0;
+  virtual bool ShouldFailAllCommits() = 0;
   virtual void MakeAllCommitsFailForTesting() = 0;
   virtual void SetDestructionCallbackForTesting(base::OnceClosure callback) = 0;
 };
 
 class DomStorageDatabaseFactory {
  public:
-  // Callback invoked asynchronously with the result of both `OpenDirectory()`
-  // and `OpenInMemory()` defined below. Includes both the status and the
-  // (possibly null, on failure) sequence-bound DomStorageDatabase instance.
-  using OpenCallback =
-      base::OnceCallback<void(base::SequenceBound<DomStorageDatabase> database,
-                              DbStatus status)>;
-  // Creates a DomStorageDatabase instance for a persistent database
-  // within a filesystem directory given by `directory`, which must be an
-  // absolute path. The database may or may not already exist at this path, and
-  // will be created if not.
-  //
-  // The instance will be bound to and perform all operations on `task_runner`,
-  // which must support blocking operations. `callback` is called on the calling
-  // sequence once the operation completes.
-  static void OpenDirectory(
-      const base::FilePath& directory,
-      const std::string& name,
-      const std::optional<base::trace_event::MemoryAllocatorDumpGuid>&
-          memory_dump_id,
-      scoped_refptr<base::SequencedTaskRunner> blocking_task_runner,
-      OpenCallback callback);
+  using PassKey = base::PassKey<DomStorageDatabaseFactory>;
 
-  // Creates a DomStorageDatabase instance for a new in-memory database.
+  using OpenCallback = base::OnceCallback<void(
+      StatusOr<base::SequenceBound<DomStorageDatabase>> database)>;
+
+  // Creates and opens a `SequenceBound<DomStorageDatabase>` using
+  // `blocking_task_runner`. Runs `callback` with result after opening the
+  // database.
   //
-  // The instance will be bound to and perform all operations on `task_runner`,
-  // which must support blocking operations. `callback` is called on the calling
-  // sequence once the operation completes.
-  static void OpenInMemory(
+  // To create an in-memory database, provide an empty `directory`.
+  static void Open(
+      const base::FilePath& directory,
       const std::string& name,
       const std::optional<base::trace_event::MemoryAllocatorDumpGuid>&
           memory_dump_id,
@@ -125,6 +180,27 @@ class DomStorageDatabaseFactory {
       const std::string& name,
       scoped_refptr<base::SequencedTaskRunner> blocking_task_runner,
       base::OnceCallback<void(DbStatus)> callback);
+
+ private:
+  friend class LocalStorageLevelDBTest;
+
+  // `Open()` uses this function to asynchronously create a
+  // `base::SequenceBound<DomStorageDatabase>`. The `TDatabase` template
+  // specifies the derived type to construct like `LocalStorageLevelDB`. The
+  // derived type must inherit the `DomStorageDatabase` interface. After
+  // failure, `callback` runs with an error `status`.
+  template <typename TDatabase>
+  static void CreateSequenceBoundDomStorageDatabase(
+      scoped_refptr<base::SequencedTaskRunner> blocking_task_runner,
+      const base::FilePath& directory,
+      const std::string& name,
+      const std::optional<base::trace_event::MemoryAllocatorDumpGuid>&
+          memory_dump_id,
+      base::OnceCallback<
+          void(StatusOr<base::SequenceBound<TDatabase>> database)> callback);
+
+  // Allow unit tests to create a database instance without `SequenceBound`.
+  static PassKey CreatePassKeyForTesting();
 };
 
 }  // namespace storage

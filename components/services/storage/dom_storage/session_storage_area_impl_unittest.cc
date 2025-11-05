@@ -61,8 +61,10 @@ class SessionStorageAreaImplTest : public testing::Test {
       : test_namespace_id1_(base::Uuid::GenerateRandomV4().AsLowercaseString()),
         test_namespace_id2_(
             base::Uuid::GenerateRandomV4().AsLowercaseString()) {
-    leveldb_database_ = AsyncDomStorageDatabase::OpenInMemory(
-        std::nullopt, "SessionStorageAreaImplTestDatabase",
+    // Create an in-memory LevelDB.
+    leveldb_database_ = AsyncDomStorageDatabase::Open(
+        /*directory=*/base::FilePath(), "SessionStorageAreaImplTestDatabase",
+        /*memory_dump_id=*/std::nullopt,
         base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}),
         base::DoNothing());
     leveldb_database_->RunDatabaseTask(

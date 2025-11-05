@@ -53,18 +53,18 @@ class AsyncDomStorageDatabase {
 
   ~AsyncDomStorageDatabase();
 
-  static std::unique_ptr<AsyncDomStorageDatabase> OpenDirectory(
+  // Creates an `AsyncDomStorageDatabase` then posts a task to open the database
+  // on `blocking_task_runner`. Callers may immediately start using the
+  // returned `AsyncDomStorageDatabase`. Runs `callback` with the open database
+  // result. After failing to open, `AsyncDomStorageDatabase` must be
+  // discarded because no database tasks will run.
+  //
+  // To create an in-memory database, provide an empty `directory`.
+  static std::unique_ptr<AsyncDomStorageDatabase> Open(
       const base::FilePath& directory,
       const std::string& dbname,
       const std::optional<base::trace_event::MemoryAllocatorDumpGuid>&
           memory_dump_id,
-      scoped_refptr<base::SequencedTaskRunner> blocking_task_runner,
-      StatusCallback callback);
-
-  static std::unique_ptr<AsyncDomStorageDatabase> OpenInMemory(
-      const std::optional<base::trace_event::MemoryAllocatorDumpGuid>&
-          memory_dump_id,
-      const std::string& tracking_name,
       scoped_refptr<base::SequencedTaskRunner> blocking_task_runner,
       StatusCallback callback);
 
@@ -94,11 +94,9 @@ class AsyncDomStorageDatabase {
     virtual base::OnceCallback<void(DbStatus)> GetCommitCompleteCallback() = 0;
   };
 
-  base::SequenceBound<DomStorageDatabaseLevelDB>& database() {
-    return database_;
-  }
+  base::SequenceBound<DomStorageDatabase>& database() { return database_; }
 
-  const base::SequenceBound<DomStorageDatabaseLevelDB>& database() const {
+  const base::SequenceBound<DomStorageDatabase>& database() const {
     return database_;
   }
 
@@ -118,10 +116,11 @@ class AsyncDomStorageDatabase {
         [](DatabaseTask<ResultType> task,
            typename TaskTraits<ResultType>::CallbackType callback,
            scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
-           DomStorageDatabaseLevelDB* db) {
+           DomStorageDatabase* db) {
           callback_task_runner->PostTask(
-              FROM_HERE, TaskTraits<ResultType>::RunTaskAndBindCallbackToResult(
-                             *db, std::move(task), std::move(callback)));
+              FROM_HERE,
+              TaskTraits<ResultType>::RunTaskAndBindCallbackToResult(
+                  db->GetLevelDB(), std::move(task), std::move(callback)));
         },
         std::move(task), std::move(callback),
         base::SequencedTaskRunner::GetCurrentDefault());
@@ -151,16 +150,15 @@ class AsyncDomStorageDatabase {
   void InitiateCommit();
 
  private:
-  void OnDatabaseOpened(StatusCallback callback,
-                        base::SequenceBound<DomStorageDatabaseLevelDB> database,
-                        DbStatus status);
+  void OnDatabaseOpened(
+      StatusCallback callback,
+      StatusOr<base::SequenceBound<DomStorageDatabase>> database);
 
   explicit AsyncDomStorageDatabase();
 
-  base::SequenceBound<DomStorageDatabaseLevelDB> database_;
+  base::SequenceBound<DomStorageDatabase> database_;
 
-  using BoundDatabaseTask =
-      base::OnceCallback<void(DomStorageDatabaseLevelDB*)>;
+  using BoundDatabaseTask = base::OnceCallback<void(DomStorageDatabase*)>;
   std::vector<BoundDatabaseTask> tasks_to_run_on_open_;
   std::set<raw_ptr<Committer>> committers_;
 

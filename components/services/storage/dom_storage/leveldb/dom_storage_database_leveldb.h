@@ -38,35 +38,21 @@ namespace storage {
 
 class DomStorageBatchOperationLevelDB;
 
-// A DomStorageDatabase implementation that uses LevelDB to store data. This
-// object is not thread-safe. Additionally, it must be instantiated on a
-// sequence that allows blocking file operations.
+// Wraps `leveldb::DB`, adding convenience functions that support both session
+// storage and local storage. Utilities include:
+// - Supporting prefix queries using an iterator to return a vector of results.
+// - Converting all `leveldb::Status` to `DbStatus`.
+// - Adding test hooks to simulate error conditions.
+// - Providing memory dump support.
 class DomStorageDatabaseLevelDB
-    : public DomStorageDatabase,
-      private base::trace_event::MemoryDumpProvider {
- private:
-  using PassKey = base::PassKey<DomStorageDatabaseLevelDB>;
-
+    : private base::trace_event::MemoryDumpProvider {
  public:
-  // Callback used for basic async operations on this class.
-  using StatusCallback = base::OnceCallback<void(DbStatus)>;
+  using Key = DomStorageDatabase::Key;
+  using KeyView = DomStorageDatabase::KeyView;
+  using Value = DomStorageDatabase::Value;
+  using ValueView = DomStorageDatabase::ValueView;
+  using KeyValuePair = DomStorageDatabase::KeyValuePair;
 
-  // Use the static factory functions in DomStorageDatabase to construct this
-  // class. These constructors are only public for the sake of
-  // `base::SequenceBound`.
-  DomStorageDatabaseLevelDB(
-      PassKey,
-      const base::FilePath& directory,
-      const std::string& name,
-      const std::optional<base::trace_event::MemoryAllocatorDumpGuid>&
-          memory_dump_id,
-      StatusCallback callback);
-  DomStorageDatabaseLevelDB(
-      PassKey,
-      const std::string& tracking_name,
-      const std::optional<base::trace_event::MemoryAllocatorDumpGuid>&
-          memory_dump_id,
-      StatusCallback callback);
   DomStorageDatabaseLevelDB(const DomStorageDatabaseLevelDB&) = delete;
   DomStorageDatabaseLevelDB& operator=(const DomStorageDatabaseLevelDB&) =
       delete;
@@ -78,34 +64,23 @@ class DomStorageDatabaseLevelDB
                        std::vector<KeyValuePair>* entries) const;
   std::unique_ptr<DomStorageBatchOperationLevelDB> CreateBatchOperation();
 
-  // DomStorageDatabase implementation:
-  DbStatus RewriteDB() override;
-  bool ShouldFailAllCommits() const override;
-  void SetDestructionCallbackForTesting(base::OnceClosure callback) override;
-  void MakeAllCommitsFailForTesting() override;
+  DbStatus RewriteDB();
+  bool ShouldFailAllCommits();
+  void SetDestructionCallbackForTesting(base::OnceClosure callback);
+  void MakeAllCommitsFailForTesting();
 
   // This can only be called from `DomStorageBatchOperationLevelDB`.
   leveldb::DB* GetLevelDBDatabase(
       base::PassKey<DomStorageBatchOperationLevelDB> key) const;
 
-  using OpenCallback = base::OnceCallback<void(
-      base::SequenceBound<DomStorageDatabaseLevelDB> database,
-      DbStatus status)>;
-
-  static void OpenDirectory(
+  // To create an in-memory database, provide an empty `directory`.
+  static StatusOr<std::unique_ptr<DomStorageDatabaseLevelDB>> Open(
       const base::FilePath& directory,
       const std::string& name,
       const std::optional<base::trace_event::MemoryAllocatorDumpGuid>&
-          memory_dump_id,
-      scoped_refptr<base::SequencedTaskRunner> blocking_task_runner,
-      OpenCallback callback);
+          memory_dump_id);
 
-  static void OpenInMemory(
-      const std::string& name,
-      const std::optional<base::trace_event::MemoryAllocatorDumpGuid>&
-          memory_dump_id,
-      scoped_refptr<base::SequencedTaskRunner> blocking_task_runner,
-      OpenCallback callback);
+  using StatusCallback = base::OnceCallback<void(DbStatus)>;
 
   static void Destroy(
       const base::FilePath& directory,
@@ -114,22 +89,21 @@ class DomStorageDatabaseLevelDB
       StatusCallback callback);
 
  private:
-  // Opens `db_` using `options_` and `name_` then runs `callback` with the
-  // result.
-  void Init(StatusCallback callback);
+  DomStorageDatabaseLevelDB(
+      const base::FilePath& directory,
+      const std::string& name,
+      const std::optional<base::trace_event::MemoryAllocatorDumpGuid>&
+          memory_dump_id);
 
-  template <typename... Args>
-  static void CreateSequenceBoundDomStorageDatabase(
-      scoped_refptr<base::SequencedTaskRunner> blocking_task_runner,
-      OpenCallback callback,
-      Args&&... args);
+  // Opens `db_` using `options_` and `name_` then returns the result.
+  DbStatus InitializeLevelDB();
 
   // base::trace_event::MemoryDumpProvider implementation:
   bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
                     base::trace_event::ProcessMemoryDump* pmd) override;
 
-  const std::string name_;
-  const std::unique_ptr<leveldb::Env> env_;
+  std::string name_;
+  std::unique_ptr<leveldb::Env> env_;
   leveldb_env::Options options_;
   const std::optional<base::trace_event::MemoryAllocatorDumpGuid>
       memory_dump_id_;

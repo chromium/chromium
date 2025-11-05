@@ -16,7 +16,7 @@
 namespace storage {
 
 // static
-std::unique_ptr<AsyncDomStorageDatabase> AsyncDomStorageDatabase::OpenDirectory(
+std::unique_ptr<AsyncDomStorageDatabase> AsyncDomStorageDatabase::Open(
     const base::FilePath& directory,
     const std::string& dbname,
     const std::optional<base::trace_event::MemoryAllocatorDumpGuid>&
@@ -24,23 +24,8 @@ std::unique_ptr<AsyncDomStorageDatabase> AsyncDomStorageDatabase::OpenDirectory(
     scoped_refptr<base::SequencedTaskRunner> blocking_task_runner,
     StatusCallback callback) {
   std::unique_ptr<AsyncDomStorageDatabase> db(new AsyncDomStorageDatabase);
-  DomStorageDatabaseLevelDB::OpenDirectory(
+  DomStorageDatabaseFactory::Open(
       directory, dbname, memory_dump_id, std::move(blocking_task_runner),
-      base::BindOnce(&AsyncDomStorageDatabase::OnDatabaseOpened,
-                     db->weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-  return db;
-}
-
-// static
-std::unique_ptr<AsyncDomStorageDatabase> AsyncDomStorageDatabase::OpenInMemory(
-    const std::optional<base::trace_event::MemoryAllocatorDumpGuid>&
-        memory_dump_id,
-    const std::string& tracking_name,
-    scoped_refptr<base::SequencedTaskRunner> blocking_task_runner,
-    StatusCallback callback) {
-  std::unique_ptr<AsyncDomStorageDatabase> db(new AsyncDomStorageDatabase);
-  DomStorageDatabaseLevelDB::OpenInMemory(
-      tracking_name, memory_dump_id, std::move(blocking_task_runner),
       base::BindOnce(&AsyncDomStorageDatabase::OnDatabaseOpened,
                      db->weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   return db;
@@ -57,7 +42,7 @@ void AsyncDomStorageDatabase::RewriteDB(StatusCallback callback) {
   database_.PostTaskWithThisObject(base::BindOnce(
       [](StatusCallback callback,
          scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
-         DomStorageDatabaseLevelDB* db) {
+         DomStorageDatabase* db) {
         callback_task_runner->PostTask(
             FROM_HERE, base::BindOnce(std::move(callback), db->RewriteDB()));
       },
@@ -182,16 +167,21 @@ void AsyncDomStorageDatabase::InitiateCommit() {
 
 void AsyncDomStorageDatabase::OnDatabaseOpened(
     StatusCallback callback,
-    base::SequenceBound<DomStorageDatabaseLevelDB> database,
-    DbStatus status) {
-  database_ = std::move(database);
+    StatusOr<base::SequenceBound<DomStorageDatabase>> database) {
+  if (!database.has_value()) {
+    std::move(callback).Run(std::move(database.error()));
+    return;
+  }
+
+  database_ = *std::move(database);
+
   std::vector<BoundDatabaseTask> tasks;
   std::swap(tasks, tasks_to_run_on_open_);
-  if (status.ok()) {
-    for (auto& task : tasks)
-      database_.PostTaskWithThisObject(std::move(task));
+
+  for (auto& task : tasks) {
+    database_.PostTaskWithThisObject(std::move(task));
   }
-  std::move(callback).Run(status);
+  std::move(callback).Run(DbStatus::OK());
 }
 
 AsyncDomStorageDatabase::Commit::Commit() = default;

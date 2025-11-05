@@ -48,9 +48,11 @@ class SessionStorageMetadataTest : public testing::Test {
         test_namespace2_id_(base::Uuid::GenerateRandomV4().AsLowercaseString()),
         test_namespace3_id_(
             base::Uuid::GenerateRandomV4().AsLowercaseString()) {
+    // Create an in-memory LevelDB.
     base::RunLoop loop;
-    database_ = AsyncDomStorageDatabase::OpenInMemory(
-        std::nullopt, "SessionStorageMetadataTest",
+    database_ = AsyncDomStorageDatabase::Open(
+        /*directory=*/base::FilePath(), "SessionStorageMetadataTest",
+        /*memory_dump_id=*/std::nullopt,
         base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}),
         base::BindLambdaForTesting([&](DbStatus) { loop.Quit(); }));
     loop.Run();
@@ -73,8 +75,9 @@ class SessionStorageMetadataTest : public testing::Test {
     std::vector<DomStorageDatabase::KeyValuePair> namespace_entries;
 
     base::RunLoop loop;
-    database_->database().PostTaskWithThisObject(
-        base::BindLambdaForTesting([&](const DomStorageDatabaseLevelDB& db) {
+    database_->database().PostTaskWithThisObject(base::BindLambdaForTesting(
+        [&](DomStorageDatabase* dom_storage_database) {
+          DomStorageDatabaseLevelDB& db = dom_storage_database->GetLevelDB();
           EXPECT_TRUE(db.Get(database_version_key_, &version_value).ok());
           EXPECT_TRUE(db.Get(next_map_id_key_, &next_map_id_value).ok());
           EXPECT_TRUE(
@@ -104,8 +107,9 @@ class SessionStorageMetadataTest : public testing::Test {
     // | next-map-id                            | 5                  |
     // | version                                | 1                  |
     base::RunLoop loop;
-    database_->database().PostTaskWithThisObject(
-        base::BindLambdaForTesting([&](DomStorageDatabaseLevelDB* db) {
+    database_->database().PostTaskWithThisObject(base::BindLambdaForTesting(
+        [&](DomStorageDatabase* dom_storage_database) {
+          DomStorageDatabaseLevelDB* db = &dom_storage_database->GetLevelDB();
           db->Put(StdStringToUint8Vector(std::string("namespace-") +
                                          test_namespace1_id_ + "-" +
                                          test_storage_key1_.Serialize()),
@@ -141,8 +145,9 @@ class SessionStorageMetadataTest : public testing::Test {
   std::map<std::vector<uint8_t>, std::vector<uint8_t>> GetDatabaseContents() {
     std::vector<DomStorageDatabase::KeyValuePair> entries;
     base::RunLoop loop;
-    database_->database().PostTaskWithThisObject(
-        base::BindLambdaForTesting([&](const DomStorageDatabaseLevelDB& db) {
+    database_->database().PostTaskWithThisObject(base::BindLambdaForTesting(
+        [&](DomStorageDatabase* dom_storage_database) {
+          DomStorageDatabaseLevelDB& db = dom_storage_database->GetLevelDB();
           DbStatus status = db.GetPrefixed({}, &entries);
           ASSERT_TRUE(status.ok());
           loop.Quit();

@@ -14,6 +14,7 @@
 #include <utility>
 
 #include "base/barrier_closure.h"
+#include "base/byte_size.h"
 #include "base/containers/contains.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
@@ -39,6 +40,7 @@
 #include "components/services/storage/dom_storage/dom_storage_database.h"
 #include "components/services/storage/dom_storage/leveldb/dom_storage_batch_operation_leveldb.h"
 #include "components/services/storage/dom_storage/leveldb/local_storage_database.pb.h"
+#include "components/services/storage/dom_storage/leveldb/local_storage_leveldb.h"
 #include "components/services/storage/dom_storage/storage_area_impl.h"
 #include "components/services/storage/public/cpp/constants.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -77,10 +79,6 @@ using StorageAreaImpl = StorageAreaImpl;
 static const int kStaleBucketCutoffInDays = 400;
 
 constexpr std::string_view kVersionKey = "VERSION";
-const uint8_t kMetaPrefix[] = {'M', 'E', 'T', 'A'};
-const uint8_t kAccessMetaPrefix[] = {'M', 'E', 'T', 'A', 'A', 'C',
-                                     'C', 'E', 'S', 'S', ':'};
-const uint8_t kWriteMetaPrefix[] = {'M', 'E', 'T', 'A', ':'};
 const int64_t kMinSchemaVersion = 1;
 const int64_t kCurrentLocalStorageSchemaVersion = 1;
 
@@ -97,34 +95,6 @@ const size_t kMaxLocalStorageCacheSize = 2 * 1024 * 1024;
 const unsigned kMaxLocalStorageAreaCount = 50;
 const size_t kMaxLocalStorageCacheSize = 20 * 1024 * 1024;
 #endif
-
-DomStorageDatabase::Key CreateAccessMetaDataKey(
-    const blink::StorageKey& storage_key) {
-  std::string storage_key_str = storage_key.SerializeForLocalStorage();
-  std::vector<uint8_t> serialized_storage_key(storage_key_str.begin(),
-                                              storage_key_str.end());
-  DomStorageDatabase::Key key;
-  key.reserve(std::size(kAccessMetaPrefix) + serialized_storage_key.size());
-  key.insert(key.end(), std::begin(kAccessMetaPrefix),
-             std::end(kAccessMetaPrefix));
-  key.insert(key.end(), serialized_storage_key.begin(),
-             serialized_storage_key.end());
-  return key;
-}
-
-DomStorageDatabase::Key CreateWriteMetaDataKey(
-    const blink::StorageKey& storage_key) {
-  std::string storage_key_str = storage_key.SerializeForLocalStorage();
-  std::vector<uint8_t> serialized_storage_key(storage_key_str.begin(),
-                                              storage_key_str.end());
-  DomStorageDatabase::Key key;
-  key.reserve(std::size(kWriteMetaPrefix) + serialized_storage_key.size());
-  key.insert(key.end(), std::begin(kWriteMetaPrefix),
-             std::end(kWriteMetaPrefix));
-  key.insert(key.end(), serialized_storage_key.begin(),
-             serialized_storage_key.end());
-  return key;
-}
 
 std::optional<blink::StorageKey> ExtractStorageKeyFromWriteMetaDataKey(
     const DomStorageDatabase::Key& key) {
@@ -179,8 +149,10 @@ void DeleteStorageKeys(AsyncDomStorageDatabase* database,
                 db.CreateBatchOperation();
             for (const auto& storage_key : storage_keys) {
               batch->DeletePrefixed(MakeStorageKeyPrefix(storage_key));
-              batch->Delete(CreateAccessMetaDataKey(storage_key));
-              batch->Delete(CreateWriteMetaDataKey(storage_key));
+              batch->Delete(
+                  LocalStorageLevelDB::CreateAccessMetaDataKey(storage_key));
+              batch->Delete(
+                  LocalStorageLevelDB::CreateWriteMetaDataKey(storage_key));
             }
             return batch->Commit();
           },
@@ -249,12 +221,10 @@ class LocalStorageImpl::StorageAreaHolder final
                DomStorageDatabaseLevelDB& db) {
               std::unique_ptr<DomStorageBatchOperationLevelDB> batch =
                   db.CreateBatchOperation();
-              storage::LocalStorageAreaAccessMetaData data;
-              data.set_last_accessed(base::Time::Now().ToInternalValue());
-              const std::string serialized_data = data.SerializeAsString();
-              batch->Put(CreateAccessMetaDataKey(storage_key),
-                         DomStorageDatabase::Value(serialized_data.begin(),
-                                                   serialized_data.end()));
+              batch->Put(
+                  LocalStorageLevelDB::CreateAccessMetaDataKey(storage_key),
+                  LocalStorageLevelDB::CreateAccessMetaDataValue(
+                      /*last_accessed=*/base::Time::Now()));
               return batch->Commit();
             },
             storage_key_),
@@ -288,22 +258,19 @@ class LocalStorageImpl::StorageAreaHolder final
     }
 
     DomStorageDatabase::Key access_metadata_key =
-        CreateAccessMetaDataKey(storage_key_);
+        LocalStorageLevelDB::CreateAccessMetaDataKey(storage_key_);
     DomStorageDatabase::Key write_metadata_key =
-        CreateWriteMetaDataKey(storage_key_);
+        LocalStorageLevelDB::CreateWriteMetaDataKey(storage_key_);
     if (storage_area()->empty()) {
       extra_keys_to_delete->push_back(std::move(access_metadata_key));
       extra_keys_to_delete->push_back(std::move(write_metadata_key));
     } else {
       base::Time now = base::Time::Now();
-      storage::LocalStorageAreaWriteMetaData write_data;
-      write_data.set_last_modified(now.ToInternalValue());
-      write_data.set_size_bytes(storage_area()->storage_used());
-      std::string serialized_write_data = write_data.SerializeAsString();
+      base::ByteSize total_size{storage_area()->storage_used()};
       extra_entries_to_add->emplace_back(
           std::move(write_metadata_key),
-          DomStorageDatabase::Value(serialized_write_data.begin(),
-                                    serialized_write_data.end()));
+          LocalStorageLevelDB::CreateWriteMetaDataValue(/*last_modified=*/now,
+                                                        total_size));
       // We only need to write this once per construction.
       if (!has_written_access_meta_data_) {
         storage::LocalStorageAreaAccessMetaData access_data;
@@ -651,7 +618,7 @@ void LocalStorageImpl::InitiateConnection(bool in_memory_only) {
   if (!directory_.empty() && directory_.IsAbsolute() && !in_memory_only) {
     // We were given a subdirectory to write to, so use a disk-backed database.
     in_memory_ = false;
-    database_ = AsyncDomStorageDatabase::OpenDirectory(
+    database_ = AsyncDomStorageDatabase::Open(
         directory_, kLocalStorageLeveldbName, memory_dump_id_,
         database_task_runner_,
         base::BindOnce(&LocalStorageImpl::OnDatabaseOpened,
@@ -661,8 +628,9 @@ void LocalStorageImpl::InitiateConnection(bool in_memory_only) {
 
   // We were not given a subdirectory. Use a memory backed database.
   in_memory_ = true;
-  database_ = AsyncDomStorageDatabase::OpenInMemory(
-      memory_dump_id_, "local-storage", database_task_runner_,
+  database_ = AsyncDomStorageDatabase::Open(
+      /*directory=*/base::FilePath(), "local-storage", memory_dump_id_,
+      database_task_runner_,
       base::BindOnce(&LocalStorageImpl::OnDatabaseOpened,
                      weak_ptr_factory_.GetWeakPtr()));
 }

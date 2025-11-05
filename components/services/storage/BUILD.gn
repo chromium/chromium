@@ -17,6 +17,8 @@ source_set("storage") {
     "dom_storage/leveldb/dom_storage_database_leveldb.cc",
     "dom_storage/leveldb/dom_storage_database_leveldb.h",
     "dom_storage/leveldb/dom_storage_database_leveldb_utils.h",
+    "dom_storage/leveldb/local_storage_leveldb.cc",
+    "dom_storage/leveldb/local_storage_leveldb.h",
     "dom_storage/local_storage_impl.cc",
     "dom_storage/local_storage_impl.h",
     "dom_storage/session_storage_area_impl.cc",
@@ -180,6 +182,7 @@ source_set("tests") {
 
   sources = [
     "dom_storage/leveldb/dom_storage_database_leveldb_unittest.cc",
+    "dom_storage/leveldb/local_storage_leveldb_unittest.cc",
     "dom_storage/local_storage_impl_unittest.cc",
     "dom_storage/session_storage_area_impl_unittest.cc",
     "dom_storage/session_storage_data_map_unittest.cc",
@@ -247,6 +250,8 @@ source_set("test_support") {
   sources = [
     "dom_storage/storage_area_test_util.cc",
     "dom_storage/storage_area_test_util.h",
+    "dom_storage/test_support/dom_storage_database_testing.cc",
+    "dom_storage/test_support/dom_storage_database_testing.h",
     "indexed_db/leveldb/fake_leveldb_factory.cc",
     "indexed_db/leveldb/fake_leveldb_factory.h",
     "indexed_db/leveldb/mock_level_db.cc",
