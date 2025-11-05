@@ -1149,17 +1149,33 @@ Resource* ResourceFetcher::ResourceForBlockedRequest(
   return resource;
 }
 
-void ResourceFetcher::MakePreloadedResourceBlockOnloadIfNeeded(
+void ResourceFetcher::MakePreloadedResourceBlockIfNeeded(
     Resource* resource,
     const FetchParameters& params) {
   // TODO(yoav): Test that non-blocking resources (video/audio/track) continue
   // to not-block even after being preloaded and discovered.
   if (resource && resource->Loader() &&
-      resource->IsLoadEventBlockingResourceType() &&
       resource->IsLinkPreload() && !params.IsLinkPreload() &&
       non_blocking_loaders_.Contains(resource->Loader())) {
-    non_blocking_loaders_.erase(resource->Loader());
-    loaders_.insert(resource->Loader());
+    if (resource->IsLoadEventBlockingResourceType()) {
+      non_blocking_loaders_.erase(resource->Loader());
+      loaders_.insert(resource->Loader());
+    }
+    // If new resource is render-blocking then mark it as such in the pending
+    // Resource Timing. Note this sits outside of the
+    // IsLoadEventBlockingResourceType check as that doesn't include scripts
+    // But scripts can be render-blocking.
+    // We only pass kBlocking as that is the only one used in Resource Timing
+    // and avoids checking this for other status and more complicated logic to
+    // choose the largest blocking value if we have multiple resource requests.
+    if (params.GetResourceRequest().GetRenderBlockingBehavior() ==
+        RenderBlockingBehavior::kBlocking) {
+      PendingResourceTimingInfoMap::iterator it =
+          resource_timing_info_map_.find(resource);
+      if (it != resource_timing_info_map_.end()) {
+        it->value.render_blocking_behavior = RenderBlockingBehavior::kBlocking;
+      }
+    }
     if (resource_load_observer_) {
       resource_load_observer_->DidChangeRenderBlockingBehavior(resource,
                                                                params);
@@ -1461,8 +1477,9 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
       policy = RevalidationPolicy::kUse;
       prepare_helper.UpgradeForLoaderIfNecessary(pauser);
       // If |params| is for a blocking resource and a preloaded resource is
-      // found, we may need to make it block the onload event.
-      MakePreloadedResourceBlockOnloadIfNeeded(resource, params);
+      // found, we may need to make it block the onload event or mark as
+      // render-blocking.
+      MakePreloadedResourceBlockIfNeeded(resource, params);
     } else if (IsMainThread()) {
       const String cache_identifier = GetCacheIdentifier(
           resource_type, params.GetResourceRequest().Url(),
@@ -2700,7 +2717,7 @@ bool ResourceFetcher::StartLoad(
     // actually continues to return true for Resources matched from the preload
     // cache that must block the load event, but that is OK because this method
     // is not responsible for promoting matched preloads to load-blocking. This
-    // is handled by MakePreloadedResourceBlockOnloadIfNeeded().
+    // is handled by MakePreloadedResourceBlockIfNeeded().
     if (!resource->IsLinkPreload() &&
         resource->IsLoadEventBlockingResourceType() &&
         policy != ImageLoadBlockingPolicy::kForceNonBlockingLoad) {
@@ -3163,6 +3180,9 @@ void ResourceFetcher::PopulateAndAddResourceTimingInfo(
   if (info->allow_timing_details) {
     info->last_redirect_end_time = pending_info.redirect_end_time;
   }
+  // If we expand this beyond just kBlocking then also need to change
+  // MakePreloadedResourceBlockIfNeeded which currently only passes
+  // kBlocking for simplicity.
   info->render_blocking_status = pending_info.render_blocking_behavior ==
                                  RenderBlockingBehavior::kBlocking;
   info->response_end = response_end;

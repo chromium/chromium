@@ -547,8 +547,7 @@ class PLATFORM_EXPORT ResourceFetcher
                                       const Resource& existing_resource,
                                       bool is_static_data) const;
 
-  void MakePreloadedResourceBlockOnloadIfNeeded(Resource*,
-                                                const FetchParameters&);
+  void MakePreloadedResourceBlockIfNeeded(Resource*, const FetchParameters&);
   void MoveResourceLoaderToNonBlocking(ResourceLoader*);
   void RemoveResourceLoader(ResourceLoader*);
 
