@@ -128,7 +128,8 @@ bool SVGGeometryElement::isPointInStroke(const DOMPointInit* point) const {
                           ClampTo<float>(point->y()));
   if (layout_shape.HasNonScalingStroke()) {
     const AffineTransform transform =
-        layout_shape.ComputeNonScalingStrokeTransform();
+        layout_shape.ComputeNonScalingStrokeTransform(
+            LayoutSVGShape::NonScalingStrokeTransformMode::kClearTranslation);
     path.Transform(transform);
     local_point = transform.MapPoint(local_point);
 

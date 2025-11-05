@@ -4910,6 +4910,10 @@
       status: "test",
     },
     {
+      name: "SvgNonScalingStrokePrecisionFix",
+      status: "stable",
+    },
+    {
       name: "SvgPartitionSVGDocumentResourcesInMemoryCache",
       status: "stable",
     },

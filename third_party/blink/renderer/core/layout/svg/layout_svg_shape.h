@@ -115,8 +115,14 @@ class LayoutSVGShape : public LayoutSVGModelObject {
     return rare_data_->non_scaling_stroke_transform_;
   }
 
+  enum class NonScalingStrokeTransformMode {
+    kClearTranslation,
+    kPreserveTranslation
+  };
+
   AffineTransform ComputeRootTransform() const;
-  AffineTransform ComputeNonScalingStrokeTransform() const;
+  AffineTransform ComputeNonScalingStrokeTransform(
+      NonScalingStrokeTransformMode mode) const;
   AffineTransform LocalSVGTransform() const final {
     NOT_DESTROYED();
     return local_transform_;
