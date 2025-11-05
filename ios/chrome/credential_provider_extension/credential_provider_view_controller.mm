@@ -449,8 +449,9 @@ enum class PasskeyUserVerificationStatus {
   id<Credential> credential = credentials[credentialIndex];
 
   // Respect the user's choice and skip the update if the data was explicitly
-  // changed by the user previously.
-  if (credential.editedByUser) {
+  // changed by the user previously or if the username did not change.
+  if (credential.editedByUser ||
+      [credential.username isEqualToString:newName]) {
     return;
   }
 
