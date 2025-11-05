@@ -6387,6 +6387,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.SyncedSetUp.Interstitial.Shown" enum="Boolean"
+    expires_after="2026-11-05">
+  <owner>ericekey@google.com</owner>
+  <owner>bwwilliams@google.com</owner>
+  <owner>scottyoder@google.com</owner>
+  <summary>
+    Records whether the Synced Set Up interstitial is shown. Logged as true each
+    time the coordinator attempts to present the interstitial view.
+  </summary>
+</histogram>
+
 <histogram name="IOS.System.PreferredSystemFontSize"
     enum="IOSContentSizeCategory" expires_after="2026-06-01">
   <owner>jlebel@chromium.org</owner>

@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/synced_set_up/coordinator/synced_set_up_coordinator.h"
 
 #import "base/functional/bind.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/time/time.h"
 #import "components/prefs/pref_service.h"
@@ -140,6 +141,8 @@ constexpr base::TimeDelta kDismissalDelay = base::Seconds(5);
   if (!_viewController || _viewController.presentingViewController) {
     return;
   }
+
+  base::UmaHistogramBoolean("IOS.SyncedSetUp.Interstitial.Shown", true);
 
   __weak __typeof(self) weakSelf = self;
   __weak __typeof(_mediator) weakMediator = _mediator;
