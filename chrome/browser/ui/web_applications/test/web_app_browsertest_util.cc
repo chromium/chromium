@@ -66,6 +66,7 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "ui/base/models/menu_model.h"
@@ -611,15 +612,27 @@ void SimulateClickOnElement(content::WebContents* contents,
 
 void RunForAllTabs(
     base::RepeatingCallback<void(content::WebContents&)> action) {
-  std::unordered_set<content::WebContents*> processed_tabs;
-  for (content::WebContents* web_contents : AllTabContentses()) {
-    if (web_contents->IsBeingDestroyed()) {
-      continue;
+  // Iterating this can cause use-after-frees if the action causes changes to
+  // the web contents (or use a RunLoop to wait for something like
+  // `CompletePageLoadForAllWebContents`). So instead, loop through to the next
+  // one we 'haven't seen yet' each time.
+  absl::flat_hash_set<content::WebContents*> processed_tabs;
+  auto get_next_unvisited_web_contents = [&]() -> content::WebContents* {
+    for (content::WebContents* web_contents : AllTabContentses()) {
+      if (web_contents->IsBeingDestroyed()) {
+        continue;
+      }
+      if (processed_tabs.contains(web_contents)) {
+        continue;
+      }
+      processed_tabs.insert(web_contents);
+      return web_contents;
     }
-    if (processed_tabs.contains(web_contents)) {
-      continue;
-    }
-    processed_tabs.insert(web_contents);
+    return nullptr;
+  };
+  content::WebContents* web_contents = get_next_unvisited_web_contents();
+  for (; web_contents != nullptr;
+       web_contents = get_next_unvisited_web_contents()) {
     action.Run(*web_contents);
   }
 }
