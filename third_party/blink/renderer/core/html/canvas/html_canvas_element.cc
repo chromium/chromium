@@ -1254,8 +1254,7 @@ String HTMLCanvasElement::ToDataURLInternal(
       ImageEncoderUtils::ToEncodingMimeType(
           mime_type, ImageEncoderUtils::kEncodeReasonToDataURL);
 
-  scoped_refptr<StaticBitmapImage> image_bitmap =
-      Snapshot(FlushReason::kOther, source_buffer);
+  scoped_refptr<StaticBitmapImage> image_bitmap = Snapshot(source_buffer);
   if (image_bitmap) {
     std::unique_ptr<ImageDataBuffer> data_buffer =
         ImageDataBuffer::Create(image_bitmap);

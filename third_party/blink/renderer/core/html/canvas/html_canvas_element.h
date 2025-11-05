@@ -312,6 +312,9 @@ class CORE_EXPORT HTMLCanvasElement final
 
   scoped_refptr<StaticBitmapImage> Snapshot(FlushReason,
                                             SourceDrawingBuffer) const;
+  scoped_refptr<StaticBitmapImage> Snapshot(SourceDrawingBuffer buffer) const {
+    return Snapshot(FlushReason::kOther, buffer);
+  }
 
   // Returns the cc layer containing the contents. It's the cc layer of
   // SurfaceLayerBridge() or RenderingContext(), or nullptr if the canvas is not
