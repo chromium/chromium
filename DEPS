@@ -3652,12 +3652,6 @@ deps = {
       'condition': 'checkout_src_internal',
   },
 
-  'src/components/autofill/core/browser/geo/chrome_alternative_state_name_maps': {
-      'url': Var('chrome_git') + '/chrome/components/autofill_alternative_state_name_maps.git' + '@' +
-        '474fa23d405f49279673ef101c41d61613bd05cb',
-      'condition': 'checkout_src_internal',
-  },
-
   'src/components/autofill/core/browser/form_parsing/internal_resources': {
       'url': Var('chrome_git') + '/chrome/components/autofill_regex_patterns.git' + '@' +
         '6f86f36a3644f55f31d29931210f822523ddf2c5',

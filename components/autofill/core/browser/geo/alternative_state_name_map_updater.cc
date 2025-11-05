@@ -15,48 +15,39 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
-#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
-#include "components/autofill/core/browser/geo/alternative_state_name_map_constants.h"
 #include "components/autofill/core/browser/geo/country_data.h"
 #include "components/autofill/core/browser/proto/states.pb.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_l10n_util.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/prefs/pref_service.h"
-#include "third_party/zlib/google/compression_utils.h"
-#include "ui/base/resource/resource_bundle.h"
-namespace autofill {
 
-int32_t FindResourceIdForCountry(std::string_view country_code) {
-  size_t cursor = 0;
-  while (true) {
-    auto ret = kCountriesWithAlternativeStateNames.find(country_code, cursor);
-    if (ret == std::string_view::npos) {
-      return -1;  // Not found
-    }
-    if ((ret & 1) == 0) {
-      // Found at an even index. This is an intended match.
-      return IDR_STATE_NAME_MAP_BEGIN + 1 + static_cast<int32_t>(ret / 2);
-    }
-    cursor = ret + 1;
-  }
-}
+namespace autofill {
 
 namespace {
 
-std::string ExtractAlternativeStateNames(const std::string& country_code) {
-  int32_t resource_key = FindResourceIdForCountry(country_code);
-  if (resource_key != -1) {
-    return ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
-        resource_key);
+// Returns data read from the file specified in |file|.
+std::string LoadDataFromFile(const base::FilePath& file) {
+  DCHECK(!file.empty());
+
+  std::string data;
+  if (!base::PathExists(file)) {
+    DVLOG(1) << "File does not exist: " << file;
+    return std::string();
   }
-  return std::string();
+
+  if (!base::ReadFileToString(file, &data)) {
+    DVLOG(1) << "Failed reading from file: " << file;
+    return std::string();
+  }
+
+  return data;
 }
 
 }  // namespace
@@ -109,9 +100,8 @@ void AlternativeStateNameMapUpdater::PopulateAlternativeStateNameMap(
     const AlternativeStateNameMap::StateName normalized_state =
         AlternativeStateNameMap::NormalizeStateName(state_name);
 
-    if (country.value().empty() || normalized_state.value().empty()) {
+    if (country.value().empty() || normalized_state.value().empty())
       continue;
-    }
 
     if (parsed_state_values_.find({country, normalized_state}) !=
         parsed_state_values_.end()) {
@@ -126,9 +116,6 @@ void AlternativeStateNameMapUpdater::PopulateAlternativeStateNameMap(
                  std::move(callback));
 }
 
-// TODO(crbug.com/419316544): Remove unused `pref_service` and deprecate
-// `prefs::kAutofillStatesDataDir` following:
-// https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/prefs/README.md;l=66;drc=1d8dcb0b6e365c292fefaf7670df48fa83c7dff5
 void AlternativeStateNameMapUpdater::LoadStatesData(
     CountryToStateNamesListMapping country_to_state_names_map,
     PrefService* pref_service,
@@ -140,6 +127,12 @@ void AlternativeStateNameMapUpdater::LoadStatesData(
     return;
   }
 
+  // Get the states data installation path from |pref_service| which is set by
+  // the component updater once it downloads the states data and should be safe
+  // to use.
+  const base::FilePath data_download_path =
+      pref_service->GetFilePath(prefs::kAutofillStatesDataDir);
+
   const std::vector<std::string>& country_codes =
       CountryDataMap::GetInstance()->country_codes();
 
@@ -150,8 +143,9 @@ void AlternativeStateNameMapUpdater::LoadStatesData(
                   return !base::Contains(country_codes, entry.first.value());
                 });
 
-  // If there is no valid country to be processed, return early.
-  if (country_to_state_names_map.empty()) {
+  // If the installed directory path is empty, it means that the component is
+  // not ready for use yet.
+  if (data_download_path.empty() || country_to_state_names_map.empty()) {
     is_alternative_state_name_map_populated_ = true;
     std::move(done_callback).Run();
     return;
@@ -164,9 +158,8 @@ void AlternativeStateNameMapUpdater::LoadStatesData(
   for (const auto& [country_code, states] : country_to_state_names_map) {
     // This is a security check to ensure that we only attempt to read files
     // that match to known countries.
-    if (!base::Contains(country_codes, country_code.value())) {
+    if (!base::Contains(country_codes, country_code.value()))
       continue;
-    }
 
     ++number_pending_init_tasks_;
 
@@ -174,7 +167,8 @@ void AlternativeStateNameMapUpdater::LoadStatesData(
     // Example -> File "DE" contains the geographical states data of Germany.
     GetTaskRunner()->PostTaskAndReplyWithResult(
         FROM_HERE,
-        base::BindOnce(&ExtractAlternativeStateNames, country_code.value()),
+        base::BindOnce(&LoadDataFromFile,
+                       data_download_path.AppendASCII(country_code.value())),
         base::BindOnce(
             &AlternativeStateNameMapUpdater::ProcessLoadedStateFileContent,
             weak_ptr_factory_.GetWeakPtr(), states));
@@ -216,15 +210,15 @@ void AlternativeStateNameMapUpdater::ProcessLoadedStateFileContent(
       // abbreviations) in |state_names|.
       const std::vector<AlternativeStateNameMap::StateName> state_names =
           ExtractAllStateNames(state_entry);
+
       // Canonical name is always the first entry in the |state_names|.
       DCHECK(!state_names.empty());
       AlternativeStateNameMap::CanonicalStateName
           normalized_canonical_state_name(state_names[0].value());
 
       for (size_t i = 0; i < stripped_state_values_from_profiles.size(); i++) {
-        if (match_found[i]) {
+        if (match_found[i])
           continue;
-        }
 
         // If |stripped_state_values_from_profile[i]| is in the set of names of
         // the state under consideration, add it to the AlternativeStateNameMap.
@@ -243,9 +237,8 @@ void AlternativeStateNameMapUpdater::ProcessLoadedStateFileContent(
   // callbacks.
   if (number_pending_init_tasks_ == 0) {
     is_alternative_state_name_map_populated_ = true;
-    for (auto& callback : std::exchange(pending_init_done_callbacks_, {})) {
+    for (auto& callback : std::exchange(pending_init_done_callbacks_, {}))
       std::move(callback).Run();
-    }
   }
 }
 
