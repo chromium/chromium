@@ -248,6 +248,12 @@ void OpaqueBrowserFrameView::InitViews() {
 
 BrowserLayoutParams OpaqueBrowserFrameView::GetBrowserLayoutParams() const {
   BrowserLayoutParams params = BrowserFrameView::GetBrowserLayoutParams();
+  MaybeAddAppIconToLayoutParams(params);
+  return params;
+}
+
+void OpaqueBrowserFrameView::MaybeAddAppIconToLayoutParams(
+    BrowserLayoutParams& params) const {
   if (ShouldShowWindowIcon()) {
     // Icon is always on the leading edge of the window, after any caption
     // buttons. Adjust the leading exclusion to account for it.
@@ -275,7 +281,6 @@ BrowserLayoutParams OpaqueBrowserFrameView::GetBrowserLayoutParams() const {
     params.leading_exclusion.vertical_padding =
         std::max(0.f, new_bottom - params.leading_exclusion.content.height());
   }
-  return params;
 }
 
 gfx::Rect OpaqueBrowserFrameView::GetBoundsForTabStripRegion(

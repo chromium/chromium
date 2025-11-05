@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/frame/browser_frame_view.h"
 #include "chrome/browser/ui/views/frame/browser_widget.h"
+#include "chrome/browser/ui/views/frame/layout/browser_view_layout_params.h"
 #include "chrome/browser/ui/views/frame/opaque_browser_frame_view_layout_delegate.h"
 #include "chrome/browser/ui/views/tab_icon_view_model.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -137,6 +138,9 @@ class OpaqueBrowserFrameView : public BrowserFrameView,
   virtual void PaintRestoredFrameBorder(gfx::Canvas* canvas) const;
   void PaintMaximizedFrameBorder(gfx::Canvas* canvas) const;
   void PaintClientEdge(gfx::Canvas* canvas) const;
+
+  // Adds the app icon bounds to `params` if the icon is present.
+  void MaybeAddAppIconToLayoutParams(BrowserLayoutParams& params) const;
 
  private:
   friend class WebAppOpaqueBrowserFrameViewTest;

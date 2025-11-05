@@ -70,6 +70,15 @@ int BrowserFrameViewLinuxNative::GetTranslucentTopAreaHeight() const {
              : 0;
 }
 
+BrowserLayoutParams BrowserFrameViewLinuxNative::GetBrowserLayoutParams()
+    const {
+  // Because this can be called before the frame is laid out, we might need to
+  // preemptively cache the frame buttons.
+  const_cast<BrowserFrameViewLinuxNative*>(this)
+      ->MaybeUpdateCachedFrameButtonImages();
+  return BrowserFrameViewLinux::GetBrowserLayoutParams();
+}
+
 float BrowserFrameViewLinuxNative::GetRestoredCornerRadiusDip() const {
   return layout_->GetFrameProvider()->GetTopCornerRadiusDip();
 }
