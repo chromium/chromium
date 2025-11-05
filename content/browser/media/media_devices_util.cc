@@ -254,7 +254,7 @@ std::string GetHMACForRawMediaDeviceID(
                                      : salt_and_origin.device_id_salt()));
   std::array<uint8_t, crypto::hash::kSha256Size> result;
   hmac.Finish(result);
-  return base::ToLowerASCII(base::HexEncode(result));
+  return base::HexEncodeLower(result);
 }
 
 bool DoesRawMediaDeviceIDMatchHMAC(
