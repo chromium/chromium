@@ -56,15 +56,14 @@ ui::ElementTracker::ElementList GetTargetableEvents() {
   return elements;
 }
 
-void WaitForClosingBrowsersToClose() {
-  const BrowserList::BrowserSet& closing_browsers =
-      BrowserList::GetInstance()->currently_closing_browsers();
-  if (closing_browsers.empty()) {
-    return;
-  }
-
-  ui_test_utils::WaitForBrowserToClose(*closing_browsers.begin());
-  return WaitForClosingBrowsersToClose();
+void WaitForClosedBrowsersToBeDestroyed() {
+  // When a Browser is closed it enters a pending-delete state and a message is
+  // posted to the Browser's UI thread to destroy the Browser async. Perform a
+  // round trip to the Browser UI thread to ensure any pending-delete Browsers
+  // are destroyed.
+  base::RunLoop run_loop;
+  content::GetUIThreadTaskRunner()->PostTask(FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
 }
 
 }  // namespace
@@ -157,7 +156,7 @@ KombuchaInProcessFuzzer::HandleHTTPRequest(
 // reproducers without doing it, which is why this code exists in the first
 // place.
 void KombuchaInProcessFuzzer::CleanInProcessBrowserState() {
-  WaitForClosingBrowsersToClose();
+  WaitForClosedBrowsersToBeDestroyed();
 
   const BrowserList* const browser_list = BrowserList::GetInstance();
   if (browser_list->empty()) {
