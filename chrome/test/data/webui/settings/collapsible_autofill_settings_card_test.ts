@@ -23,6 +23,7 @@ function setupDefaultPrefs(settingsPrefs: SettingsPrefsElement) {
   settingsPrefs.set(
       'prefs.optimization_guide.model_execution.autofill_prediction_improvements_enterprise_policy_allowed.value',
       ModelExecutionEnterprisePolicyValue.ALLOW);
+  settingsPrefs.set('prefs.autofill.profile_enabled.value', true);
 }
 
 suite('CollapsibleAutofillSettingsCard', function() {
@@ -278,5 +279,56 @@ suite('CollapsibleAutofillSettingsCard', function() {
 
     assertTrue(toggle.disabled);
     assertFalse(toggle.checked);
+  });
+
+  test('EnterprisePolicyObserver', async function() {
+    loadTimeData.overrideValues({userEligibleForAutofillAi: true});
+    entityDataManager.setGetOptInStatusResponse(true);
+    card = document.createElement('collapsible-autofill-settings-card');
+    card.prefs = settingsPrefs.prefs;
+    document.body.appendChild(card);
+    await flushTasks();
+
+    // Expand the card to make the logging bullet visible.
+    const expandButton = card.shadowRoot!.querySelector('cr-expand-button');
+    assertTrue(!!expandButton);
+    expandButton.click();
+    await flushTasks();
+
+    const getLoggingBullet = () =>
+        card.shadowRoot!.querySelector<SettingsAiLoggingInfoBullet>(
+            '#enterpriseInfoBullet');
+
+    // Initial state: Policy `ALLOW`.
+    assertTrue(card.get('enhancedAutofillOptedIn_.value'));
+    assertEquals(undefined, card.get('enhancedAutofillOptedIn_.enforcement'));
+    assertEquals(undefined, card.get('enhancedAutofillOptedIn_.controlledBy'));
+    assertFalse(!!getLoggingBullet());
+
+    // State: Policy `DISABLE`.
+    card.setPrefValue(
+        AiEnterpriseFeaturePrefName.AUTOFILL_AI,
+        ModelExecutionEnterprisePolicyValue.DISABLE);
+    await flushTasks();
+
+    assertFalse(card.get('enhancedAutofillOptedIn_.value'));
+    assertEquals(
+        chrome.settingsPrivate.Enforcement.ENFORCED,
+        card.get('enhancedAutofillOptedIn_.enforcement'));
+    assertEquals(
+        chrome.settingsPrivate.ControlledBy.USER_POLICY,
+        card.get('enhancedAutofillOptedIn_.controlledBy'));
+    assertTrue(!!getLoggingBullet());
+
+    // State: Policy `ALLOW` again.
+    card.setPrefValue(
+        AiEnterpriseFeaturePrefName.AUTOFILL_AI,
+        ModelExecutionEnterprisePolicyValue.ALLOW);
+    await flushTasks();
+
+    assertTrue(card.get('enhancedAutofillOptedIn_.value'));
+    assertEquals(undefined, card.get('enhancedAutofillOptedIn_.enforcement'));
+    assertEquals(undefined, card.get('enhancedAutofillOptedIn_.controlledBy'));
+    assertFalse(!!getLoggingBullet());
   });
 });

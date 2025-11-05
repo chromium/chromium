@@ -95,6 +95,8 @@ export class CollapsibleCardElement extends
   static get observers() {
     return [
       'onAutofillAiPrefChanged_(prefs.autofill.profile_enabled.value)',
+      `onEnterprisePolicyChanged_(prefs.${
+          AiEnterpriseFeaturePrefName.AUTOFILL_AI}.value)`,
     ];
   }
 
@@ -115,17 +117,6 @@ export class CollapsibleCardElement extends
           'enhancedAutofillOptedIn_.value',
           this.enhancedAutofillEligibleUser_ && enhancedAutofillOptedIn);
     });
-    const policyDisabled =
-        this.getPref(AiEnterpriseFeaturePrefName.AUTOFILL_AI).value ===
-        ModelExecutionEnterprisePolicyValue.DISABLE;
-    if (policyDisabled) {
-      this.set(
-          'enhancedAutofillOptedIn_.enforcement',
-          chrome.settingsPrivate.Enforcement.ENFORCED);
-      this.set(
-          'enhancedAutofillOptedIn_.controlledBy',
-          chrome.settingsPrivate.ControlledBy.USER_POLICY);
-    }
   }
 
   override disconnectedCallback() {
@@ -171,6 +162,41 @@ export class CollapsibleCardElement extends
         'enhancedAutofillOptedIn_.value',
         this.enhancedAutofillEligibleUser_ && enhancedAutofillOptedIn &&
             prefValue);
+  }
+
+  /**
+   * Observes changes to the enterprise policy for Autofill AI keeping the
+   * component's state up to date. When the policy disables the feature, updates
+   * the UI to reflect the enforced state, disabling the toggle. When the policy
+   * is lifted, it asynchronously fetches the user's latest opt-in status to
+   * accurately restore the toggle's state without blocking the UI.
+   */
+  private async onEnterprisePolicyChanged_(
+      policyValue: ModelExecutionEnterprisePolicyValue|undefined) {
+    if (policyValue === undefined) {
+      return;
+    }
+
+    if (policyValue === ModelExecutionEnterprisePolicyValue.DISABLE) {
+      this.set(
+          'enhancedAutofillOptedIn_.enforcement',
+          chrome.settingsPrivate.Enforcement.ENFORCED);
+      this.set(
+          'enhancedAutofillOptedIn_.controlledBy',
+          chrome.settingsPrivate.ControlledBy.USER_POLICY);
+      this.set('enhancedAutofillOptedIn_.value', false);
+    } else {
+      this.set('enhancedAutofillOptedIn_.enforcement', undefined);
+      this.set('enhancedAutofillOptedIn_.controlledBy', undefined);
+
+      const enhancedAutofillOptedIn =
+          await this.entityDataManager_.getOptInStatus();
+      const autofillEnabled = this.get('prefs.autofill.profile_enabled.value');
+      this.set(
+          'enhancedAutofillOptedIn_.value',
+          this.enhancedAutofillEligibleUser_ && enhancedAutofillOptedIn &&
+              autofillEnabled);
+    }
   }
 }
 
