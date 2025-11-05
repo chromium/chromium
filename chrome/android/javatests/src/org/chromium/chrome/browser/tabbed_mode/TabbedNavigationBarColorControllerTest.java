@@ -28,7 +28,6 @@ import androidx.annotation.ColorInt;
 import androidx.core.graphics.ColorUtils;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
-import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.junit.Assume;
 import org.junit.Before;
@@ -63,8 +62,9 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageStation;
+import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
-import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;
@@ -162,28 +162,20 @@ public class TabbedNavigationBarColorControllerTest {
                 mActivityTestRule.getActivityTab().getBackgroundColor(),
                 mWindow.getNavigationBarColor());
 
-        ChromeTabUtils.newTabFromMenu(
-                InstrumentationRegistry.getInstrumentation(),
-                mActivityTestRule.getActivity(),
-                true,
-                true);
+        IncognitoNewTabPageStation incognitoNtp = mPage.openNewIncognitoTabOrWindowFast();
 
         assertEquals(
                 "Navigation bar should be dark_elev_3 on incognito tabs.",
                 mDarkNavigationColor,
-                mWindow.getNavigationBarColor());
+                incognitoNtp.getActivity().getWindow().getNavigationBarColor());
 
-        ChromeTabUtils.newTabFromMenu(
-                InstrumentationRegistry.getInstrumentation(),
-                mActivityTestRule.getActivity(),
-                false,
-                true);
+        RegularNewTabPageStation regularNtp = incognitoNtp.openNewTabOrWindowFast();
 
         assertEquals(
                 "Navigation bar should match the tab background after switching back to normal"
                         + " tab.",
                 mActivityTestRule.getActivityTab().getBackgroundColor(),
-                mWindow.getNavigationBarColor());
+                regularNtp.getActivity().getWindow().getNavigationBarColor());
     }
 
     @Test

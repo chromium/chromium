@@ -53,7 +53,7 @@ public class IncognitoNewTabPageTest {
     @Test
     @SmallTest
     public void incognitoNtpShowsThirdPartyCookieBlockingHeader() throws Exception {
-        mActivityTestRule.newIncognitoTabFromMenu();
+        mActivityTestRule.startOnBlankPage().openNewIncognitoTabOrWindowFast();
         onView(withId(R.id.tracking_protection_card))
                 .perform(scrollTo())
                 .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));

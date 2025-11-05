@@ -44,6 +44,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.content_public.browser.NavigationEntry;
 import org.chromium.content_public.browser.NavigationHistory;
 import org.chromium.net.test.EmbeddedTestServer;
@@ -129,10 +130,12 @@ public class IncognitoHistoryLeakageTest {
     @Test
     @LargeTest
     public void testBrowsingHistoryDoNotLeakFromIncognitoTabbedActivity() throws TimeoutException {
-        mChromeActivityTestRule.startOnBlankPage();
-        mChromeActivityTestRule.loadUrlInNewTab(mTestPage1, /* incognito= */ true);
-        List<HistoryItem> historyEntriesOfIncognitoMode =
-                getBrowsingHistory(mChromeActivityTestRule.getActivityTab());
+        WebPageStation testPage =
+                mChromeActivityTestRule
+                        .startOnBlankPage()
+                        .openNewIncognitoTabOrWindowFast()
+                        .loadWebPageProgrammatically(mTestPage1);
+        List<HistoryItem> historyEntriesOfIncognitoMode = getBrowsingHistory(testPage.getTab());
         assertTrue(historyEntriesOfIncognitoMode.isEmpty());
     }
 

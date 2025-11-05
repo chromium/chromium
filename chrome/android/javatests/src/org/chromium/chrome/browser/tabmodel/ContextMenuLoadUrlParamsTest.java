@@ -4,14 +4,20 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
+import static androidx.test.espresso.intent.Intents.intended;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.util.Pair;
 
+import androidx.test.espresso.intent.Intents;
+import androidx.test.espresso.intent.matcher.IntentMatchers;
 import androidx.test.filters.MediumTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
@@ -34,6 +40,7 @@ import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
@@ -71,7 +78,7 @@ public class ContextMenuLoadUrlParamsTest {
     // This ensures the long press/ right click is simulated at the correct
     // coordinates of the specified element. See crbug.com/432281754.
     private static final float PAGE_SCALE_FACTOR = 1.0f;
-    // LINT.ThenChange(//chrome/test/data/android/contextmenu/context_menu_test.html:PageScaleFactor
+    // LINT.ThenChange(//chrome/test/data/android/contextmenu/context_menu_test.html:PageScaleFactor)
     private static final Pattern SCHEME_SEPARATOR_RE = Pattern.compile("://");
 
     // Load parameters of the last call to openNewTab().
@@ -194,14 +201,23 @@ public class ContextMenuLoadUrlParamsTest {
     @MediumTest
     @Feature({"Browser"})
     public void testOpenInIncognitoTabNoReferrer() throws TimeoutException {
-        triggerContextMenuLoad(
-                mActivityTestRule.getTestServer().getURL(HTML_PATH),
-                "testLink",
-                R.id.contextmenu_open_in_incognito_tab);
+        Intents.init();
 
-        assertNotNull(sOpenNewTabLoadUrlParams);
-        assertNull(sOpenNewTabLoadUrlParams.getReferrer());
-        assertNull(sOpenNewTabLoadUrlParams.getAdditionalNavigationParams());
+        int menuItemId =
+                IncognitoUtils.shouldOpenIncognitoAsWindow()
+                        ? R.id.contextmenu_open_in_incognito_window
+                        : R.id.contextmenu_open_in_incognito_tab;
+        triggerContextMenuLoad(
+                mActivityTestRule.getTestServer().getURL(HTML_PATH), "testLink", menuItemId);
+
+        if (IncognitoUtils.shouldOpenIncognitoAsWindow()) {
+            intended(IntentMatchers.hasAction(Intent.ACTION_VIEW));
+        } else {
+            assertNotNull(sOpenNewTabLoadUrlParams);
+            assertNull(sOpenNewTabLoadUrlParams.getReferrer());
+            assertNull(sOpenNewTabLoadUrlParams.getAdditionalNavigationParams());
+        }
+        Intents.release();
     }
 
     /** Verifies that the referrer is stripped from username and password fields. */
@@ -223,9 +239,15 @@ public class ContextMenuLoadUrlParamsTest {
         mActivityTestRule.loadUrl(url);
         mActivityTestRule.assertWaitForPageScaleFactorMatch(PAGE_SCALE_FACTOR);
         Tab tab = mActivityTestRule.getActivityTab();
+
+        Activity activityToWaitFor = mActivityTestRule.getActivity();
+        if (menuItemId == R.id.contextmenu_open_in_incognito_window) {
+            activityToWaitFor = null;
+        }
+
         ContextMenuUtils.selectContextMenuItem(
                 InstrumentationRegistry.getInstrumentation(),
-                mActivityTestRule.getActivity(),
+                activityToWaitFor,
                 tab,
                 openerDomId,
                 menuItemId);
