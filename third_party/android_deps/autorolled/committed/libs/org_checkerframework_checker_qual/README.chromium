@@ -1,7 +1,7 @@
 Name: Checker Qual
 Short Name: checker-qual
-URL: https://repo.maven.apache.org/maven2/org/checkerframework/checker-qual/3.51.1/checker-qual-3.51.1.jar
-Version: 3.51.1
+URL: https://repo.maven.apache.org/maven2/org/checkerframework/checker-qual/3.52.0/checker-qual-3.52.0.jar
+Version: 3.52.0
 Update Mechanism: Autoroll
 License: Apache-2.0, MIT, GPL-2.0-with-classpath-exception
 License File: LICENSE
