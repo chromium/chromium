@@ -162,7 +162,7 @@ def main():
     # Output extra diagnostics when loading the script fails.
     sys.stderr.write('Error running print_python_deps.py.\n')
     sys.stderr.write('is_vpython={}\n'.format(is_vpython))
-    sys.stderr.write('did_relanuch={}\n'.format(options.did_relaunch))
+    sys.stderr.write('did_relaunch={}\n'.format(options.did_relaunch))
     sys.stderr.write('python={}\n'.format(sys.executable))
     raise
 
