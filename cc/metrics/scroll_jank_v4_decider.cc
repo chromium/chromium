@@ -85,7 +85,7 @@ ScrollJankV4Decider::DecideJankForFrameWithScrollUpdates(
       JankReasonArray<int> missed_vsyncs_per_reason =
           CalculateMissedVsyncsPerReason(
               vsyncs_since_previous_frame, first_input_generation_ts, damage,
-              vsync_interval, abs_total_raw_delta_pixels,
+              args, abs_total_raw_delta_pixels,
               max_abs_inertial_raw_delta_pixels, result);
 
       // A frame is janky if ANY of the rules decided that Chrome missed one or
@@ -163,7 +163,7 @@ JankReasonArray<int> ScrollJankV4Decider::CalculateMissedVsyncsPerReason(
     int vsyncs_since_previous_frame,
     base::TimeTicks first_input_generation_ts,
     const ScrollDamage& damage,
-    base::TimeDelta vsync_interval,
+    const viz::BeginFrameArgs& args,
     float abs_total_raw_delta_pixels,
     float max_abs_inertial_raw_delta_pixels,
     ScrollUpdateEventMetrics::ScrollJankV4Result& result) const {
@@ -182,6 +182,7 @@ JankReasonArray<int> ScrollJankV4Decider::CalculateMissedVsyncsPerReason(
 
   DCHECK(prev_frame_data_.has_value());
   const PreviousFrameData& prev_frame_data = *prev_frame_data_;
+  const base::TimeDelta vsync_interval = args.interval;
 
   // Rule 1: Running consistency.
   // Discount `prev_frame_data.presentation_data->running_delivery_cutoff` based
@@ -189,15 +190,29 @@ JankReasonArray<int> ScrollJankV4Decider::CalculateMissedVsyncsPerReason(
   // more lenient) and subtract stability correction (to be a bit more strict).
   // This is what the current VSync would hypothetically have been judged
   // against if it didn't contain any inputs.
-  if (const DamagingFrame* damaging_frame = std::get_if<DamagingFrame>(&damage);
-      damaging_frame && prev_frame_data.presentation_data.has_value()) {
+  if (prev_frame_data.presentation_data.has_value()) {
+    base::TimeTicks presentation_ts = [&]() {
+      if (const DamagingFrame* damaging_frame =
+              std::get_if<DamagingFrame>(&damage)) {
+        return damaging_frame->presentation_ts;
+      }
+      // If this is a non-damaging frame, assume that it was presented
+      // consistently, i.e. it has the same duration between its begin frame and
+      // presentation timestamps as the most recent damaging frame, and
+      // extrapolate its presentation timestamp. Effectively, this means that
+      // this method will evaluate the running consistency rule against this
+      // frame's and the previous frame's begin frame timestamps (rather than
+      // presentation timestamps).
+      return prev_frame_data_->presentation_data->presentation_ts +
+             (args.frame_time - prev_frame_data_->begin_frame_ts);
+    }();
     base::TimeDelta adjusted_delivery_cutoff =
         prev_frame_data.presentation_data->running_delivery_cutoff +
         (vsyncs_since_previous_frame - 1) * kDiscountFactor * vsync_interval -
         kStabilityCorrection * vsync_interval;
     result.adjusted_delivery_cutoff = adjusted_delivery_cutoff;
     base::TimeDelta first_input_to_presentation =
-        damaging_frame->presentation_ts - first_input_generation_ts;
+        presentation_ts - first_input_generation_ts;
     // Based on Chrome's past performance (`adjusted_delivery_cutoff`), how many
     // VSyncs ago could Chrome have presented the current frame's first input?
     // Note that we divide by `(1 - kDiscountFactor)` because we need to reverse

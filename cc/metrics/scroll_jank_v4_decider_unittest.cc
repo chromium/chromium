@@ -1498,7 +1498,7 @@ least 3px absolute total scroll delta), the decider should mark F3 as janky with
 at least 0.2 px absolute scroll delta), the decider should mark F5 as janky with
 2 missed VSyncs.
  */
-TEST_F(ScrollJankV4DeciderTest, JankyNonDamaginFrames) {
+TEST_F(ScrollJankV4DeciderTest, JankyNonDamagingFrames) {
   std::optional<ScrollJankV4Result> result1 =
       decider_.DecideJankForFrameWithScrollUpdates(
           /* first_input_generation_ts= */ MillisSinceEpoch(103),
@@ -1565,6 +1565,88 @@ TEST_F(ScrollJankV4DeciderTest, JankyNonDamaginFrames) {
           /* abs_total_raw_delta_pixels= */ 2.0f,
           /* max_abs_inertial_raw_delta_pixels= */ 2.0f);
   EXPECT_THAT(result6, kHasNoMissedVsyncs);
+}
+
+/*
+Tests that the decider can mark a non-damaging frame as janky due to the running
+consistency rule.
+
+VSync V0    V1    V2    V3    V4    V5    V6    V7    V8    V9    V10
+Input  :I0 I1:I2 I3:     :I4 I5:I6 I7:I8 I9:     :           :     :
+       : | | : | | :     : | | : | | : | | :     :           :     :
+F1:      |---------BF----|     : |   : |   :     :           :     :
+F2:            |---------------BF-xxx: |   :     :           :     :
+F3                       : |---------BF----|     :           :     :
+F4:                      :     : |---------BF-xxx:           :     :
+F5:                      :     :       |---------------------BF-zzz:
+                         <jank->                 <---jank---->
+
+The decider should mark F2 and F5 janky with 1 and 2 missed VSyncs respectively.
+Rationale: I2 should have been included in the begin frame that started at V3.
+I8 should have been included in the begin frame that started at V7.
+ */
+TEST_F(ScrollJankV4DeciderTest,
+       JankyNonDamagingFramesViolatingRunningConsistency) {
+  std::optional<ScrollJankV4Result> result1 =
+      decider_.DecideJankForFrameWithScrollUpdates(
+          /* first_input_generation_ts= */ MillisSinceEpoch(103),
+          /* last_input_generation_ts= */ MillisSinceEpoch(111),
+          ScrollDamage{DamagingFrame{.presentation_ts = MillisSinceEpoch(148)}},
+          CreateNextBeginFrameArgs(MillisSinceEpoch(132)),
+          /* has_inertial_input= */ false,
+          /* abs_total_raw_delta_pixels= */ 0.1f,
+          /* max_abs_inertial_raw_delta_pixels= */ 0.0f);
+  EXPECT_THAT(result1, kHasNoMissedVsyncs);
+
+  std::optional<ScrollJankV4Result> result2 =
+      decider_.DecideJankForFrameWithScrollUpdates(
+          /* first_input_generation_ts= */ MillisSinceEpoch(119),
+          /* last_input_generation_ts= */ MillisSinceEpoch(127),
+          ScrollDamage{NonDamagingFrame{}},
+          CreateNextBeginFrameArgs(MillisSinceEpoch(164)),
+          /* has_inertial_input= */ false,
+          /* abs_total_raw_delta_pixels= */ 0.1f,
+          /* max_abs_inertial_raw_delta_pixels= */ 0.0f);
+  EXPECT_THAT(
+      result2,
+      HasMissedVsyncs(
+          JankReason::kMissedVsyncDueToDeceleratingInputFrameDelivery, 1));
+
+  std::optional<ScrollJankV4Result> result3 =
+      decider_.DecideJankForFrameWithScrollUpdates(
+          /* first_input_generation_ts= */ MillisSinceEpoch(151),
+          /* last_input_generation_ts= */ MillisSinceEpoch(159),
+          ScrollDamage{DamagingFrame{.presentation_ts = MillisSinceEpoch(196)}},
+          CreateNextBeginFrameArgs(MillisSinceEpoch(180)),
+          /* has_inertial_input= */ true,
+          /* abs_total_raw_delta_pixels= */ 0.1f,
+          /* max_abs_inertial_raw_delta_pixels= */ 0.0f);
+  EXPECT_THAT(result3, kHasNoMissedVsyncs);
+
+  std::optional<ScrollJankV4Result> result4 =
+      decider_.DecideJankForFrameWithScrollUpdates(
+          /* first_input_generation_ts= */ MillisSinceEpoch(167),
+          /* last_input_generation_ts= */ MillisSinceEpoch(175),
+          ScrollDamage{NonDamagingFrame{}},
+          CreateNextBeginFrameArgs(MillisSinceEpoch(196)),
+          /* has_inertial_input= */ false,
+          /* abs_total_raw_delta_pixels= */ 0.1f,
+          /* max_abs_inertial_raw_delta_pixels= */ 0.0f);
+  EXPECT_THAT(result4, kHasNoMissedVsyncs);
+
+  std::optional<ScrollJankV4Result> result5 =
+      decider_.DecideJankForFrameWithScrollUpdates(
+          /* first_input_generation_ts= */ MillisSinceEpoch(183),
+          /* last_input_generation_ts= */ MillisSinceEpoch(191),
+          ScrollDamage{NonDamagingFrame{}},
+          CreateNextBeginFrameArgs(MillisSinceEpoch(244)),
+          /* has_inertial_input= */ false,
+          /* abs_total_raw_delta_pixels= */ 0.1f,
+          /* max_abs_inertial_raw_delta_pixels= */ 0.0f);
+  EXPECT_THAT(
+      result5,
+      HasMissedVsyncs(
+          JankReason::kMissedVsyncDueToDeceleratingInputFrameDelivery, 2));
 }
 
 }  // namespace cc

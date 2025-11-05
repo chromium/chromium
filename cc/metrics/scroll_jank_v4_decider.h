@@ -178,7 +178,7 @@ class CC_EXPORT ScrollJankV4Decider {
       int vsyncs_since_previous_frame,
       base::TimeTicks first_input_generation_ts,
       const ScrollJankV4Frame::ScrollDamage& damage,
-      base::TimeDelta vsync_interval,
+      const viz::BeginFrameArgs& args,
       float abs_total_raw_delta_pixels,
       float max_abs_inertial_raw_delta_pixels,
       ScrollUpdateEventMetrics::ScrollJankV4Result& result) const;

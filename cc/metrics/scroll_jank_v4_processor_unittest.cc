@@ -1022,9 +1022,13 @@ TEST_P(ScrollJankV4ProcessorTest, InconsistentMixedFrameProduction) {
     }
     // Frames presented: 10 damaging, 19 total.
 
-    // Frame 11 is janky because it violates the fast scroll continuity rule
-    // because there's more than 1 VSync between two consecutive presented
-    // frames containing inputs.
+    // Frame 11 is janky because:
+    // 1. It violates the running consistency rule because the first input
+    //    should have been presented 1 VSync earlier (based on Chrome's past
+    //    performance).
+    // 2. It violates the fast scroll continuity rule because there's more
+    //    than 1 VSync between two consecutive presented frames containing
+    //    inputs.
     {
       AdvanceByVsyncs(3);
       viz::BeginFrameArgs non_damaging_args = CreateNextBeginFrameArgs();
@@ -1063,7 +1067,10 @@ TEST_P(ScrollJankV4ProcessorTest, InconsistentMixedFrameProduction) {
           // The legacy behavior ignores `metrics[0]` (because it's
           // non-damaging) and marks `metrics[3]` as janky due to the fast
           // scroll rule (because the metric sees 3 missed VSync between two
-          // consecutive damaging frames).
+          // consecutive damaging frames). Note that the legacy behavior
+          // completely misses that there was also a violation of the running
+          // consistency rule (see the `TestVariant::kNewBehavior.*` case
+          // below).
           EXPECT_THAT(
               metrics,
               ElementsAre(kNullJankV4Data, kNullJankV4Data, kNullJankV4Data,
@@ -1074,14 +1081,21 @@ TEST_P(ScrollJankV4ProcessorTest, InconsistentMixedFrameProduction) {
         case TestVariant::kNewBehaviorCountDamagingFramesOnly:
         case TestVariant::kNewBehaviorCountAllFrames:
           // The new behavior marks the non-damaging frame (starting with
-          // `metrics[0]`) as janky because there were 2 VSyncs before it with
-          // no inputs.
+          // `metrics[0]`) as janky because:
+          // 1. `metrics[0]` should have been included in a begin frame one
+          //    VSync earlier.
+          // 2. There were 2 VSyncs missed (with no inputs) before the
+          //    non-damaging frame during a fast scroll.
           EXPECT_THAT(
               metrics,
-              ElementsAre(IsJankyV4WithMissedVsyncCounts(
-                              {{JankReason::kMissedVsyncDuringFastScroll, 2}}),
-                          kNullJankV4Data, kNullJankV4Data, kIsNotJankyV4,
-                          kNullJankV4Data));
+              ElementsAre(
+                  IsJankyV4WithMissedVsyncCounts(
+                      {{JankReason::
+                            kMissedVsyncDueToDeceleratingInputFrameDelivery,
+                        1},
+                       {JankReason::kMissedVsyncDuringFastScroll, 2}}),
+                  kNullJankV4Data, kNullJankV4Data, kIsNotJankyV4,
+                  kNullJankV4Data));
       }
     }
     // Frames presented: 11 damaging, 21 total.
