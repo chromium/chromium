@@ -37,7 +37,7 @@ BASE_FEATURE(kWebXROrientationSensorDevice,
 );
 
 // Allows blink to process the `visible-blurred` state.
-BASE_FEATURE(kWebXrVisibleBlurred, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kWebXrVisibleBlurred, base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID)
 // Controls whether or not SharedBuffer support is enabled. This is enabled by
