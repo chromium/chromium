@@ -8213,6 +8213,10 @@ void WebContentsImpl::EnumerateDirectory(
     // Do not allow background tab to open file chooser.
     return;
   }
+  if (!delegate_->IsContentsActive(this)) {
+    // Do not allow inactive tabs to open file chooser.
+    return;
+  }
   if (active_file_chooser_) {
     // Only allow one active file chooser at one time.
     return;
