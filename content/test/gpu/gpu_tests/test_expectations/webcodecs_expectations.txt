@@ -336,7 +336,6 @@ crbug.com/447317875 [ android mobile android-pixel-10 ] WebCodecs_EncodingRateCo
 crbug.com/447317875 [ android mobile android-pixel-10 ] WebCodecs_EncodingRateControl_vp8_prefer-software_variable_1500000 [ Failure ]
 crbug.com/447317875 [ android mobile android-pixel-10 ] WebCodecs_EncodingRateControl_vp8_prefer-software_variable_2000000 [ Failure ]
 crbug.com/447317875 [ android mobile android-pixel-10 ] WebCodecs_EncodingRateControl_vp8_prefer-software_variable_3000000 [ Failure ]
-crbug.com/447317875 [ android mobile android-pixel-10 ] WebCodecs_ManualSVC_av01.0.04M.08_prefer-software_layers_0 [ Failure ]
 
 # Snapdragon X Elite
 crbug.com/452841787 [ win11 qualcomm-0x36334330 ] WebCodecs_FrameSizeChange_av01.0.04M.08_* [ Failure ]
