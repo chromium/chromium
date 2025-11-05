@@ -3486,7 +3486,8 @@ This is emitted for two scenarios when a worker may be unregistered:
 
 <histogram
     name="Extensions.MessagePipeline.OpenChannelDispatchOnConnectStatus{DispatchTarget}{ChannelType}"
-    enum="OpenChannelMessagePipelineResult" expires_after="2025-11-09">
+    enum="OpenChannelMessagePipelineResult" expires_after="2026-02-09">
+  <owner>andreaorru@chromium.org</owner>
   <owner>jlulejian@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -3509,7 +3510,8 @@ This is emitted for two scenarios when a worker may be unregistered:
 
 <histogram
     name="Extensions.MessagePipeline.OpenChannelStatus{WorkerStatus}{ChannelType}"
-    enum="OpenChannelMessagePipelineResult" expires_after="2025-11-09">
+    enum="OpenChannelMessagePipelineResult" expires_after="2026-02-09">
+  <owner>andreaorru@chromium.org</owner>
   <owner>jlulejian@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -3540,7 +3542,8 @@ This is emitted for two scenarios when a worker may be unregistered:
 
 <histogram
     name="Extensions.MessagePipeline.OpenChannelWorkerDispatchStatus{ChannelType}"
-    enum="OpenChannelMessagePipelineResult" expires_after="2025-11-09">
+    enum="OpenChannelMessagePipelineResult" expires_after="2026-02-09">
+  <owner>andreaorru@chromium.org</owner>
   <owner>jlulejian@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -3558,7 +3561,8 @@ This is emitted for two scenarios when a worker may be unregistered:
 
 <histogram
     name="Extensions.MessagePipeline.OpenChannelWorkerWakeUpStatus{ChannelType}"
-    enum="OpenChannelMessagePipelineResult" expires_after="2025-11-09">
+    enum="OpenChannelMessagePipelineResult" expires_after="2026-02-09">
+  <owner>andreaorru@chromium.org</owner>
   <owner>jlulejian@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
