@@ -165,6 +165,9 @@ std::string GetCategorizedSpareProcessMaybeTakeTimeUMAName(
     case SpareProcessMaybeTakeAction::kRefusedNonNavigation:
       action_name = "RefusedNonNavigation";
       break;
+    case SpareProcessMaybeTakeAction::kCannotAddThrottle:
+      action_name = "CannotAddThrottle";
+      break;
   }
   return base::StrCat(
       {"BrowserRenderProcessHost.SpareProcessMaybeTakeTime.", action_name});
@@ -656,12 +659,25 @@ RenderProcessHost* SpareRenderProcessHostManagerImpl::MaybeTakeSpare(
     action = SpareProcessMaybeTakeAction::kRefusedForV8OptimizationMismatch;
   }
 #if BUILDFLAG(IS_ANDROID)
-  else if (features::kAndroidSpareRendererOnlyForNavigation.Get() &&
-           !allocation_context.IsForNavigation() &&
-           // Always allow test to allocate a spare renderer so as
-           // not to break existing tests.
-           allocation_context.source != ProcessAllocationSource::kTest) {
+  // Always allow test to allocate a spare renderer so as
+  // not to break existing tests.
+  else if (allocation_context.source == ProcessAllocationSource::kTest) {
+    action = SpareProcessMaybeTakeAction::kSpareTaken;
+  } else if (features::kAndroidSpareRendererOnlyForNavigation.Get() &&
+             !allocation_context.IsForNavigation()) {
     action = SpareProcessMaybeTakeAction::kRefusedNonNavigation;
+  } else if (base::FeatureList::IsEnabled(
+                 features::kAndroidWarmUpSpareRendererWithTimeout) &&
+             features::kAndroidSpareRendererAddNavigationThrottle.Get() &&
+             (!allocation_context.navigation_context.has_value() ||
+              allocation_context.navigation_context->stage !=
+                  ProcessAllocationNavigationStage::kBeforeNetworkRequest)) {
+    // All the renderers returned by MaybeTakeSpare is of lowest priority on
+    // Android. To ensure the liveness of the renderer process, we need to
+    // add a throttle to ensure the priority update before deciding the final
+    // renderer process for the navigation. Thus we can only use the spare
+    // renderer for navigation before sending the network request.
+    action = SpareProcessMaybeTakeAction::kCannotAddThrottle;
   }
 #endif
   else {

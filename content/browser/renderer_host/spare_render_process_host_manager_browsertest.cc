@@ -974,6 +974,7 @@ class AndroidSpareRendererProcessHostManagerTest
             {"spare_renderer_available_memory_threshold_enabled", "false"},
             {features::kAndroidSpareRendererKillWhenBackgrounded.name, "true"},
             {features::kAndroidSpareRendererOnlyForNavigation.name, "true"},
+            {features::kAndroidSpareRendererAddNavigationThrottle.name, "true"},
         });
   }
 
@@ -1005,7 +1006,7 @@ IN_PROC_BROWSER_TEST_F(AndroidSpareRendererProcessHostManagerTest,
 }
 
 IN_PROC_BROWSER_TEST_F(AndroidSpareRendererProcessHostManagerTest,
-                       OnlyForNavigation) {
+                       OnlyForNavigationWithThrottle) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   auto& spare_manager = SpareRenderProcessHostManagerImpl::Get();
@@ -1029,12 +1030,29 @@ IN_PROC_BROWSER_TEST_F(AndroidSpareRendererProcessHostManagerTest,
           ProcessAllocationSource::kServiceWorkerProcessManager}));
   // Also verify that the SpareProcessMaybeTakeAction UMA correctly records the
   // reason.
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester.ExpectBucketCount(
       "BrowserRenderProcessHost.SpareProcessMaybeTakeAction",
       content::RenderProcessHostImpl::SpareProcessMaybeTakeAction::
           kRefusedNonNavigation,
       1);
-  // Navigation request can still allocate a spare renderer.
+
+  // Navigation request after network response cannot allocate a spare renderer.
+  EXPECT_FALSE(spare_manager.MaybeTakeSpare(
+      browser_context, static_cast<SiteInstanceImpl*>(test_site_instance.get()),
+      ProcessAllocationContext{
+          ProcessAllocationSource::kNavigationRequest,
+          NavigationProcessAllocationContext{
+              ProcessAllocationNavigationStage::kAfterResponse,
+              /*navigation_id=*/0, RequiresNewProcessForCoop(false),
+              IsOutermostMainFrame(true)}}));
+  histogram_tester.ExpectBucketCount(
+      "BrowserRenderProcessHost.SpareProcessMaybeTakeAction",
+      content::RenderProcessHostImpl::SpareProcessMaybeTakeAction::
+          kCannotAddThrottle,
+      1);
+
+  // Navigation request before network response can still allocate a spare
+  // renderer.
   EXPECT_TRUE(spare_manager.MaybeTakeSpare(
       browser_context, static_cast<SiteInstanceImpl*>(test_site_instance.get()),
       ProcessAllocationContext{

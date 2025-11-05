@@ -589,7 +589,8 @@ class CONTENT_EXPORT RenderProcessHostImpl
     kRefusedForJitMismatch = 7,
     kRefusedForV8OptimizationMismatch = 8,
     kRefusedNonNavigation = 9,
-    kMaxValue = kRefusedNonNavigation
+    kCannotAddThrottle = 10,
+    kMaxValue = kCannotAddThrottle
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/browser/histograms.xml:SpareProcessMaybeTakeAction)
 

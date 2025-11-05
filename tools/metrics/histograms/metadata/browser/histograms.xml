@@ -79,6 +79,7 @@ chromium-metrics-reviews@google.com.
 <!-- LINT.IfChange(SpareProcessMaybeTakeAction) -->
 
 <variants name="SpareProcessMaybeTakeAction">
+  <variant name="CannotAddThrottle"/>
   <variant name="MismatchedBrowserContext"/>
   <variant name="MismatchedStoragePartition"/>
   <variant name="NoSparePresent"/>
