@@ -393,6 +393,11 @@ const CGFloat kFadeAnimationVerticalOffset = 12;
 }
 
 - (BOOL)useBottomOmniboxInPopup {
+  if (_presentationContext == OmniboxPresentationContext::kLensOverlay ||
+      _presentationContext == OmniboxPresentationContext::kAIMPrototype) {
+    return NO;
+  }
+
   BOOL inPortrait = IsPortrait(self.viewController.view.window);
   if (omnibox::ForceBottomOmniboxInEditState()) {
     return inPortrait;
