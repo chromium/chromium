@@ -1079,7 +1079,9 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
     }
 
     private boolean handlePrimaryAssistMenuItemClick() {
-        if (mClassificationResult == null || mClassificationResult.textClassification == null) {
+        if (mClassificationResult == null
+                || mClassificationResult.textClassification == null
+                || mClassificationResult.textClassification.getActions().isEmpty()) {
             return false;
         }
         // Primary assist action is always the first action in the list.
@@ -1111,15 +1113,14 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
     }
 
     private boolean handleAssistMenuItemClick(int order) {
-        if (mClassificationResult == null || mClassificationResult.textClassification == null) {
+        // Primary assist action is always the first action in the list so offset by 1.
+        int index = 1 + order - SelectionMenuItem.ItemGroupOffset.SECONDARY_ASSIST_ITEMS;
+        if (mClassificationResult == null
+                || mClassificationResult.textClassification == null
+                || mClassificationResult.textClassification.getActions().size() <= index) {
             return false;
         }
-        // Primary assist action is always the first action in the list so offset by 1.
-        RemoteAction action =
-                mClassificationResult
-                        .textClassification
-                        .getActions()
-                        .get(1 + order - SelectionMenuItem.ItemGroupOffset.SECONDARY_ASSIST_ITEMS);
+        RemoteAction action = mClassificationResult.textClassification.getActions().get(index);
         return handleRemoteAction(action);
     }
 
