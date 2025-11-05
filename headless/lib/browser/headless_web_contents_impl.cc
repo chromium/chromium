@@ -251,18 +251,19 @@ class HeadlessWebContentsImpl::Delegate : public content::WebContentsDelegate {
   void EnterFullscreenModeForTab(
       content::RenderFrameHost* requesting_frame,
       const blink::mojom::FullscreenOptions& options) override {
-    SetFullscreenModeForTab(
-        content::WebContents::FromRenderFrameHost(requesting_frame),
-        /*fullscreen=*/true);
+    headless_web_contents_->SetWindowState(HeadlessWindowState::kFullscreen);
   }
 
   void ExitFullscreenModeForTab(content::WebContents* web_contents) override {
-    SetFullscreenModeForTab(web_contents, /*fullscreen=*/false);
+    if (IsFullscreenForTabOrPending(web_contents)) {
+      headless_web_contents_->SetWindowState(HeadlessWindowState::kNormal);
+    }
   }
 
   bool IsFullscreenForTabOrPending(
       const content::WebContents* web_contents) override {
-    return is_fullscreen_;
+    return headless_web_contents_->GetWindowState() ==
+           HeadlessWindowState::kFullscreen;
   }
 
   blink::mojom::DisplayMode GetDisplayMode(
@@ -290,37 +291,7 @@ class HeadlessWebContentsImpl::Delegate : public content::WebContentsDelegate {
  private:
   HeadlessBrowserImpl* browser() { return headless_web_contents_->browser(); }
 
-  void SetFullscreenModeForTab(content::WebContents* web_contents,
-                               bool fullscreen) {
-    if (is_fullscreen_ == fullscreen) {
-      return;
-    }
-
-    is_fullscreen_ = fullscreen;
-
-    content::RenderWidgetHost* rwh =
-        web_contents->GetPrimaryMainFrame()->GetRenderViewHost()->GetWidget();
-    CHECK(rwh);
-
-    if (content::RenderWidgetHostView* view = rwh->GetView()) {
-      if (fullscreen) {
-        before_fullscreen_bounds_ = view->GetViewBounds();
-        gfx::Rect bounds = rwh->GetScreenInfo().rect;
-        view->SetBounds(bounds);
-      } else {
-        CHECK(before_fullscreen_bounds_);
-        view->SetBounds(before_fullscreen_bounds_.value());
-        before_fullscreen_bounds_.reset();
-      }
-    }
-
-    rwh->SynchronizeVisualProperties();
-  }
-
   raw_ptr<HeadlessWebContentsImpl> headless_web_contents_;  // Not owned.
-
-  bool is_fullscreen_ = false;
-  std::optional<gfx::Rect> before_fullscreen_bounds_;
 };
 
 namespace {

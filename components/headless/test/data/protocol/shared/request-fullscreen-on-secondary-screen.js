@@ -19,30 +19,28 @@
 
   httpInterceptor.addResponse('https://example.com/index.html', `
     <html>
-      <body>
-        <div id="fullscreen-div">The element.</div>
-      </body>
       <script>
           const win = window.open('/page2.html', '_blank',
               'left=820, top=20, width=400, height=200');
+          if (!win) {
+            console.log('Failed to open Page2');
+          } else {
+            win.addEventListener('load', async () => {
+                const cs = (await win.getScreenDetails()).currentScreen;
+                win.addEventListener('resize', () => {
+                  console.log('Page2 size: '
+                      + win.outerWidth + 'x' + win.outerHeight
+                      + ', screen: ' + cs.label
+                      + ' ' + cs.width + 'x' + cs.height);
+                });
 
-          win.addEventListener('load', async () => {
-              const cs = (await win.getScreenDetails()).currentScreen;
-
-              win.addEventListener('resize', () => {
-                console.log('Page2 size: '
-                    + win.innerWidth + 'x' + win.innerHeight
-                    + ', screen: ' + cs.label
-                    + ' ' + cs.width + 'x' + cs.height);
+                const element = win.document.getElementById("fullscreen-div");
+                element.requestFullscreen();
               });
-
-              const element = win.document.getElementById("fullscreen-div");
-              element.requestFullscreen();
-            });
+          }
       </script>
     </html>
     `);
-
 
   httpInterceptor.addResponse('https://example.com/page2.html', `
         <body><div id="fullscreen-div">Page2 element</div></body>
