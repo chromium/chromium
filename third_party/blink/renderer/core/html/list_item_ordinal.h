@@ -75,10 +75,18 @@ class CORE_EXPORT ListItemOrdinal {
     ListItemOrdinal* ordinal = nullptr;
     operator bool() const { return node; }
   };
+  struct NodeAndOrdinalWithIntermediateSum : NodeAndOrdinal {
+    STACK_ALLOCATED();
+
+   public:
+    int64_t intermediate_sum = 0;
+    bool counter_set_seen = false;
+  };
   static NodeAndOrdinal NextListItem(const Node* list_node,
                                      const Node* item_node = nullptr);
-  static NodeAndOrdinal PreviousListItem(const Node* list_node,
-                                         const Node* item_node);
+  static NodeAndOrdinalWithIntermediateSum PreviousListItem(
+      const Node* list_node,
+      const Node* item_node);
   static NodeAndOrdinal NextOrdinalItem(bool is_reversed,
                                         const Node* list_node,
                                         const Node* item_node = nullptr);

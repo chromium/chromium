@@ -1454,6 +1454,14 @@
       depends_on: ["CSSLineClamp"],
     },
     {
+      // Implements `counter-increment` and `counter-set` for the non-<li>
+      // elements and the reversed ordered lists.
+      //
+      // https://crbug.com/40682542
+      name: "CSSListCounterAccounting",
+      status: "experimental",
+    },
+    {
       // Allows pseudo-element selectors within logical combination pseudo-
       // classes, e.g. :is(div::before).
       //

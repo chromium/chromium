@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/html/html_ulist_element.h"
 #include "third_party/blink/renderer/core/layout/list/layout_inline_list_item.h"
 #include "third_party/blink/renderer/core/layout/list/layout_list_item.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -118,29 +119,49 @@ ListItemOrdinal::NodeAndOrdinal ListItemOrdinal::NextListItem(
 }
 
 // Returns the previous list item with respect to the DOM order.
-ListItemOrdinal::NodeAndOrdinal ListItemOrdinal::PreviousListItem(
-    const Node* list_node,
-    const Node* item) {
+ListItemOrdinal::NodeAndOrdinalWithIntermediateSum
+ListItemOrdinal::PreviousListItem(const Node* list_node, const Node* item) {
   const Node* current = item;
   DCHECK(current);
+  const AtomicString list_item_identifier("list-item");
+  bool counter_set_seen = false;
+  int64_t intermediate_sum = 0;
   for (current = LayoutTreeBuilderTraversal::Previous(*current, list_node);
        current && current != list_node;
        current = LayoutTreeBuilderTraversal::Previous(*current, list_node)) {
     ListItemOrdinal* ordinal = Get(*current);
-    if (!ordinal)
-      continue;
-    const Node* other_list = EnclosingList(current);
-    // This item is part of our current list, so it's what we're looking for.
-    if (list_node == other_list)
-      return {current, ordinal};
-    // We found ourself inside another list; lets skip the rest of it.
-    // Use nextIncludingPseudo() here because the other list itself may actually
-    // be a list item itself. We need to examine it, so we do this to counteract
-    // the previousIncludingPseudo() that will be done by the loop.
-    if (other_list)
-      current = LayoutTreeBuilderTraversal::Next(*other_list, list_node);
+    if (ordinal) {
+      const Node* other_list = EnclosingList(current);
+      // This item is part of our current list, so it's what we're looking for.
+      if (list_node == other_list) {
+        return {{current, ordinal}, intermediate_sum, counter_set_seen};
+      }
+      // We found ourself inside another list; lets skip the rest of it.
+      // Use nextIncludingPseudo() here because the other list itself may
+      // actually be a list item itself. We need to examine it, so we do this to
+      // counteract the previousIncludingPseudo() that will be done by the loop.
+      if (other_list) {
+        current = LayoutTreeBuilderTraversal::Next(*other_list, list_node);
+        continue;
+      }
+    }
+
+    if (RuntimeEnabledFeatures::CSSListCounterAccountingEnabled() &&
+        !counter_set_seen && current->IsElementNode()) {
+      if (const ComputedStyle* style =
+              To<Element>(current)->GetComputedStyle()) {
+        const CounterDirectives directives =
+            style->GetCounterDirectives(list_item_identifier);
+        if (directives.IsSet()) {
+          intermediate_sum += directives.SetValue();
+          counter_set_seen = true;
+        } else if (directives.IsIncrement()) {
+          intermediate_sum += directives.IncrementValue();
+        }
+      }
+    }
   }
-  return {};
+  return {/*NodeAndOrdinal=*/{}, intermediate_sum, counter_set_seen};
 }
 
 // Returns the item for the next ordinal value. It is usually the next list
@@ -179,13 +200,25 @@ int ListItemOrdinal::CalcValue(const Node& item_node) const {
   }
 
   int64_t base_value = 0;
-  // FIXME: This recurses to a possible depth of the length of the list.
-  // That's not good -- we need to change this to an iterative algorithm.
-  if (NodeAndOrdinal previous = PreviousListItem(list, &item_node)) {
-    base_value = previous.ordinal->Value(*previous.node);
-  } else if (o_list_element) {
-    base_value = o_list_element->StartConsideringItemCount();
-    base_value += (is_reversed ? 1 : -1);
+  if (RuntimeEnabledFeatures::CSSListCounterAccountingEnabled()) {
+    NodeAndOrdinalWithIntermediateSum previous =
+        PreviousListItem(list, &item_node);
+    base_value = previous.intermediate_sum;
+    if (previous.node) {
+      if (!previous.counter_set_seen) {
+        base_value += previous.ordinal->Value(*previous.node);
+      }
+    } else if (o_list_element) {
+      base_value += o_list_element->StartConsideringItemCount();
+      base_value += (is_reversed ? 1 : -1);
+    }
+  } else {
+    if (NodeAndOrdinal previous = PreviousListItem(list, &item_node)) {
+      base_value = previous.ordinal->Value(*previous.node);
+    } else if (o_list_element) {
+      base_value = o_list_element->StartConsideringItemCount();
+      base_value += (is_reversed ? 1 : -1);
+    }
   }
   return base::saturated_cast<int>(base_value + value_step);
 }
@@ -280,8 +313,9 @@ unsigned ListItemOrdinal::ItemCountForOrderedList(
 
   unsigned item_count = 0;
   for (NodeAndOrdinal list_item = NextListItem(list_node); list_item;
-       list_item = NextListItem(list_node, list_item.node))
+       list_item = NextListItem(list_node, list_item.node)) {
     item_count++;
+  }
 
   return item_count;
 }
