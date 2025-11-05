@@ -40,7 +40,9 @@ public class TabUiMetricsHelper {
         TabListEditorActionMetricGroups.PROVIDER_GROUP,
         TabListEditorActionMetricGroups.PROVIDER_UNGROUP,
         TabListEditorActionMetricGroups.UNSELECTED,
-        TabListEditorActionMetricGroups.SELECTED
+        TabListEditorActionMetricGroups.SELECTED,
+        TabListEditorActionMetricGroups.PIN_TABS,
+        TabListEditorActionMetricGroups.UNPIN_TABS
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface TabListEditorActionMetricGroups {
@@ -56,6 +58,8 @@ public class TabUiMetricsHelper {
         int PROVIDER_UNGROUP = 9;
         int UNSELECTED = 10;
         int SELECTED = 11;
+        int PIN_TABS = 12;
+        int UNPIN_TABS = 13;
     }
 
     // These values are persisted to logs. Entries should not be renumbered and
@@ -198,6 +202,12 @@ public class TabUiMetricsHelper {
                 break;
             case TabListEditorActionMetricGroups.SELECTED:
                 RecordUserAction.record("TabMultiSelect.TabSelected");
+                break;
+            case TabListEditorActionMetricGroups.PIN_TABS:
+                RecordUserAction.record("TabMultiSelectV2.TabsPinned");
+                break;
+            case TabListEditorActionMetricGroups.UNPIN_TABS:
+                RecordUserAction.record("TabMultiSelectV2.TabsUnpinned");
                 break;
             default:
                 assert false
