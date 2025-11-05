@@ -17,7 +17,10 @@ if (host_os == "win") {
 }
 
 _rustfmt_path = "${rust_bindgen_root}/bin/rustfmt"
-if (host_os == "win") {
+if (!use_chromium_rust_toolchain &&
+    (host_cpu == "ppc64" || host_cpu == "s390x")) {
+  _rustfmt_path = rust_sysroot_absolute + "/bin/rustfmt"
+} else if (host_os == "win") {
   _rustfmt_path = "${_rustfmt_path}.exe"
 }
 
@@ -25,7 +28,7 @@ if (host_os == "win") {
 # ../lib.
 _libclang_path = rust_bindgen_root
 if (!use_chromium_rust_toolchain &&
-    (current_cpu == "ppc64" || current_cpu == "s390x")) {
+    (host_cpu == "ppc64" || host_cpu == "s390x")) {
   _libclang_path = rust_sysroot_absolute + "/lib64"
 } else if (host_os == "win") {
   _libclang_path += "/bin"
