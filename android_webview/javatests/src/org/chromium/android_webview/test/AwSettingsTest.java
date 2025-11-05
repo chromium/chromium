@@ -53,8 +53,6 @@ import org.chromium.base.test.util.TestFileUtil;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.blink_public.common.BlinkFeatures;
 import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
-import org.chromium.content_public.browser.ContentFeatureList;
-import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.content_public.browser.test.util.HistoryUtils;
@@ -70,7 +68,6 @@ import org.chromium.ui.display.DisplayUtil;
 import java.io.File;
 import java.io.FileInputStream;
 import java.net.URLEncoder;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -3671,21 +3668,6 @@ public class AwSettingsTest {
                 httpsServer.shutdown();
             }
         }
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"AndroidWebView", "Preferences"})
-    @CommandLineFlags.Add({"enable-features=DIPS"})
-    public void testDipsSettingsForWebView() {
-        Map<String, String> mapDipsTtl =
-                ContentFeatureMap.getInstance()
-                        .getFieldTrialParamsForFeature(ContentFeatureList.DIPS_TTL);
-        Assert.assertTrue(mapDipsTtl.size() > 0);
-
-        String expectedTtl = "30d";
-        String gotDipsTtl = mapDipsTtl.get("interaction_ttl");
-        Assert.assertEquals(expectedTtl, gotDipsTtl);
     }
 
     @Test

@@ -10,7 +10,6 @@
 #include "base/allocator/partition_alloc_features.h"
 #include "base/base_paths_android.h"
 #include "base/check.h"
-#include "base/metrics/field_trial_params.h"
 #include "base/metrics/persistent_histogram_allocator.h"
 #include "base/path_service.h"
 #include "components/history/core/browser/features.h"
@@ -239,24 +238,6 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
   aw_feature_overrides.DisableFeature(blink::features::kPermissionElement);
   aw_feature_overrides.DisableFeature(blink::features::kGeolocationElement);
   aw_feature_overrides.DisableFeature(blink::features::kInstallElement);
-
-  // |kBtmTtl| in the testing config json.
-  {
-    const char kDipsWebViewExperiment[] = "DipsWebViewExperiment";
-    const char kDipsWebViewGroup[] = "DipsWebViewGroup";
-    base::FieldTrial* dips_field_trial = base::FieldTrialList::CreateFieldTrial(
-        kDipsWebViewExperiment, kDipsWebViewGroup);
-    CHECK(dips_field_trial) << "Unexpected name conflict.";
-    base::FieldTrialParams params;
-    const std::string ttl_time_delta_30_days = "30d";
-    params.emplace(features::kBtmInteractionTtl.name, ttl_time_delta_30_days);
-    base::AssociateFieldTrialParams(kDipsWebViewExperiment, kDipsWebViewGroup,
-                                    params);
-    aw_feature_overrides.OverrideFeatureWithFieldTrial(
-        features::kBtmTtl,
-        base::FeatureList::OverrideState::OVERRIDE_ENABLE_FEATURE,
-        dips_field_trial);
-  }
 
   // Delete Incidental Party State (DIPS) feature is not yet supported on
   // WebView.

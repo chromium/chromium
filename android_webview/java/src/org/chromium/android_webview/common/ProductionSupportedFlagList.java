@@ -794,7 +794,6 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(NetFeatures.NET_TASK_SCHEDULER),
         Flag.baseFeature(NetFeatures.NET_TASK_SCHEDULER2),
         Flag.baseFeature("BrowserThreadPoolAdjustment"),
-        Flag.baseFeature(ContentFeatures.BTM, "Enables the Bounce Tracking Mitigations feature."),
         Flag.baseFeature(
                 "LevelDBProtoAsyncWrite",
                 "Makes writes to leveldb_proto databases asynchronous. This should reduce disk"
