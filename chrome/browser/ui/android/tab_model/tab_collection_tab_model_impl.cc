@@ -63,8 +63,9 @@ TabAndroid* ToTabAndroidOrNull(TabInterface* tab_interface) {
     LOG(WARNING) << "Attempting to convert a nullptr to a TabAndroid*.";
     return nullptr;
   }
-  auto weak_tab_android =
-      static_cast<TabInterfaceAndroid*>(tab_interface)->GetWeakPtr();
+  // The weak ptr for TabAndroid and TabInterfaceAndroid both point to
+  // TabAndroid so we can use that to cast back to a TabAndroid* safely.
+  auto weak_tab_android = tab_interface->GetWeakPtr();
   if (!weak_tab_android) {
     LOG(WARNING) << "An already destroyed tab was in the tab strip collection.";
     return nullptr;
@@ -76,8 +77,7 @@ TabAndroid* ToTabAndroidOrNull(TabInterface* tab_interface) {
 // crash if the `tab_interface` has outlived the TabAndroid*.
 TabAndroid* ToTabAndroidChecked(TabInterface* tab_interface) {
   CHECK(tab_interface);
-  auto weak_tab_android =
-      static_cast<TabInterfaceAndroid*>(tab_interface)->GetWeakPtr();
+  auto weak_tab_android = tab_interface->GetWeakPtr();
   CHECK(weak_tab_android);
   return static_cast<TabAndroid*>(weak_tab_android.get());
 }
