@@ -1404,8 +1404,9 @@ void BrowserProcessImpl::PreMainMessageLoopRun() {
           password_store, l10n_util::GetStringUTF8(IDS_PRODUCT_NAME), nullptr));
 #endif  // BUILDFLAG(IS_LINUX)
 
-#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_LINUX)
-  // On other POSIX systems, this is the only key provider.
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
+  // On other POSIX systems, this is the only key provider. On Linux, it is used
+  // as a fallback.
   providers.emplace_back(
       /*precedence=*/5u, std::make_unique<os_crypt_async::PosixKeyProvider>());
 #endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_LINUX)

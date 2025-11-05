@@ -421,7 +421,9 @@ void HeadlessBrowserImpl::CreateOSCryptAsync() {
       /*precedence=*/10u,
       std::make_unique<os_crypt_async::FreedesktopSecretKeyProvider>(
           password_store, kHeadlessProductName, nullptr));
-#elif BUILDFLAG(IS_POSIX)
+#endif
+
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
   providers.emplace_back(
       /*precedence=*/5u, std::make_unique<os_crypt_async::PosixKeyProvider>());
 #endif

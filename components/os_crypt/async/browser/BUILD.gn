@@ -120,7 +120,6 @@ if (is_linux && use_dbus) {
 
     deps = [
       ":key_provider_interface",
-      ":posix_key_provider",
       "//base",
       "//components/dbus",
       "//components/os_crypt/async/common",

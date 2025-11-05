@@ -26,7 +26,6 @@
 #include "components/dbus/utils/call_method.h"
 #include "components/dbus/utils/connect_to_signal.h"
 #include "components/dbus/utils/variant.h"
-#include "components/os_crypt/async/browser/posix_key_provider.h"
 #include "components/os_crypt/async/common/algorithm.mojom.h"
 #include "crypto/kdf.h"
 #include "dbus/message.h"
@@ -854,11 +853,9 @@ void FreedesktopSecretKeyProvider::FinalizeFailure(InitStatus status,
     return;
   }
   RecordInitStatus(status, detail);
-  // Fallback to PosixKeyProvider.
-  PosixKeyProvider fallback_key_provider;
-  // PosixKeyProvider::GetKey runs synchronously, so `fallback_key_provider`
-  // doesn't need to outlive the callback.
-  fallback_key_provider.GetKey(std::move(key_callback_));
+  std::move(key_callback_)
+      .Run(kEncryptionTag,
+           base::unexpected(KeyProvider::KeyError::kPermanentlyUnavailable));
   CloseSession();
 }
 
