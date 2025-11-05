@@ -440,21 +440,7 @@ void ExtensionsMenuViewPlatformDelegateViews::OnReloadPageButtonClicked() {
 
 void ExtensionsMenuViewPlatformDelegateViews::OnAllowExtensionClicked(
     const extensions::ExtensionId& extension_id) {
-  content::WebContents* web_contents = GetActiveWebContents();
-  extensions::ExtensionActionRunner* action_runner =
-      extensions::ExtensionActionRunner::GetForWebContents(web_contents);
-  if (!action_runner) {
-    return;
-  }
-
-  // Accepting a site access request grants always access to the site.
-  extensions::SitePermissionsHelper(browser_->profile())
-      .UpdateSiteAccess(
-          *GetExtension(browser_, extension_id), web_contents,
-          extensions::PermissionsManager::UserSiteAccess::kOnSite);
-
-  base::RecordAction(base::UserMetricsAction(
-      "Extensions.Toolbar.ExtensionActivatedFromAllowingRequestAccessInMenu"));
+  menu_model_->AllowHostAccessRequest(extension_id);
 }
 
 void ExtensionsMenuViewPlatformDelegateViews::OnDismissExtensionClicked(

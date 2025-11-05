@@ -327,6 +327,25 @@ void ExtensionsMenuViewModel::UpdateSiteAccess(
                                GetActiveWebContents(), site_access);
 }
 
+void ExtensionsMenuViewModel::AllowHostAccessRequest(
+    const extensions::ExtensionId& extension_id) {
+  content::WebContents* web_contents = GetActiveWebContents();
+  extensions::ExtensionActionRunner* action_runner =
+      extensions::ExtensionActionRunner::GetForWebContents(web_contents);
+  if (!action_runner) {
+    return;
+  }
+
+  // Accepting a host access request grants always access to the site.
+  Profile* profile = browser_->GetProfile();
+  extensions::SitePermissionsHelper(profile).UpdateSiteAccess(
+      *GetExtension(*profile, extension_id), web_contents,
+      extensions::PermissionsManager::UserSiteAccess::kOnSite);
+
+  base::RecordAction(base::UserMetricsAction(
+      "Extensions.Toolbar.ExtensionActivatedFromAllowingRequestAccessInMenu"));
+}
+
 void ExtensionsMenuViewModel::DismissHostAccessRequest(
     const extensions::ExtensionId& extension_id) {
   auto* permissions_manager = PermissionsManager::Get(browser_->GetProfile());

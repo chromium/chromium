@@ -18,6 +18,7 @@
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/permissions_manager.h"
 #include "extensions/common/extension_builder.h"
+#include "extensions/test/permissions_manager_waiter.h"
 #include "extensions/test/test_extension_dir.h"
 #include "net/dns/mock_host_resolver.h"
 
@@ -365,4 +366,44 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewModelBrowserTest,
   // Verify the host access request was dismissed.
   EXPECT_FALSE(permissions_manager()->HasActiveHostAccessRequest(
       tab_id, extension->id()));
+}
+
+// Tests that the extensions menu view model correctly allows a host access
+// request for an extension.
+IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewModelBrowserTest,
+                       AllowHostAccessRequest) {
+  // Add extension that requests host permissions, and withheld them.
+  scoped_refptr<const extensions::Extension> extension =
+      AddExtensionWithHostPermission("Extension", "*://example.com/*");
+  extensions::ScriptingPermissionsModifier modifier(profile(), extension);
+  modifier.SetWithholdHostPermissions(true);
+
+  // Navigate to a site.
+  const GURL url =
+      embedded_test_server()->GetURL("example.com", "/simple.html");
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), url));
+  content::WebContents* web_contents = GetActiveWebContents();
+  int tab_id = extensions::ExtensionTabUtil::GetTabId(web_contents);
+
+  // Add a host access request.
+  permissions_manager()->AddHostAccessRequest(web_contents, tab_id, *extension);
+  EXPECT_TRUE(permissions_manager()->HasActiveHostAccessRequest(
+      tab_id, extension->id()));
+  EXPECT_EQ(permissions_manager()->GetUserSiteAccess(
+                *extension, web_contents->GetLastCommittedURL()),
+            PermissionsManager::UserSiteAccess::kOnClick);
+
+  // Allow the host access request.
+  extensions::PermissionsManagerWaiter waiter(
+      PermissionsManager::Get(profile()));
+  menu_model()->AllowHostAccessRequest(extension->id());
+  waiter.WaitForExtensionPermissionsUpdate();
+
+  // Verify the host access request was allowed and site access is now 'on
+  // site'.
+  EXPECT_FALSE(permissions_manager()->HasActiveHostAccessRequest(
+      tab_id, extension->id()));
+  EXPECT_EQ(permissions_manager()->GetUserSiteAccess(
+                *extension, web_contents->GetLastCommittedURL()),
+            PermissionsManager::UserSiteAccess::kOnSite);
 }

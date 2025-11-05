@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "extensions/browser/permissions_manager.h"
+#include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"
 
 namespace content {
@@ -75,6 +76,9 @@ class ExtensionsMenuViewModel : public extensions::PermissionsManager::Observer,
   void UpdateSiteAccess(
       const extensions::ExtensionId& extension_id,
       extensions::PermissionsManager::UserSiteAccess site_access);
+
+  // Allows the extension's host access request to the current site.
+  void AllowHostAccessRequest(const extensions::ExtensionId& extension_id);
 
   // Dismisses the extension's host access request to the current site.
   void DismissHostAccessRequest(const extensions::ExtensionId& extension_id);
