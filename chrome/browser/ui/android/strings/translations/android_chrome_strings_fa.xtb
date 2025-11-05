@@ -543,7 +543,7 @@
 <translation id="3414952576877147120">اندازه:</translation>
 <translation id="3430670036890315772">خاموش کردن قفل نمایه باعث برداشته شدن اطلاعات ذخیره‌شده‌تان می‌شود</translation>
 <translation id="3435465986463792564">پنجره‌های زیادی دارید؟ می‌توانید از اینجا مدیریتشان کنید</translation>
-<translation id="3435575784518354875">‏برای اینکه دسترسی‌تان به گذرواژه‌ها حفظ شود، اکنون آن‌ها را صادر کنید، «خدمات Google Play» را به‌روز کنید، و سپس آن‌ها را دوباره به «مدیر گذرواژه Google» وارد کنید. <ph name="BEGIN_LINK" />دستورالعمل‌های کامل را ببینید<ph name="END_LINK" />.</translation>
+<translation id="3435575784518354875">‏برای اینکه دسترسی‌تان به گذرواژه‌ها حفظ شود، اکنون آن‌ها را صادر کنید، «خدمات Google Play» را به‌روز کنید، و سپس آن‌ها را دوباره به «مدیر گذرواژه Google» وارد کنید. <ph name="BEGIN_LINK" />کل دستورالعمل‌ها را ببینید<ph name="END_LINK" />.</translation>
 <translation id="3435738964857648380">امنیت</translation>
 <translation id="3435914367318771664">افزودن زبانه به گروه جدید</translation>
 <translation id="3438681572027105609">‏برای دریافت گذرواژه‌ها و موارد دیگر در همه دستگاه‌هایتان، به سیستم Chrome وارد شوید</translation>
@@ -1431,7 +1431,7 @@
 <translation id="7117485132243600300">محتوایی که دنبال می‌کنید و جستجوها و موضوع‌های پیشنهادی را مدیریت کنید</translation>
 <translation id="7119984597597798764">بستن <ph name="INSTANCE_TITLE" /></translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{اجازه‌های ۱ سایت بررسی شد}one{اجازه‌های # سایت بررسی شد}other{اجازه‌های # سایت بررسی شد}}</translation>
-<translation id="7138678301420049075">دیگر</translation>
+<translation id="7138678301420049075">غیره</translation>
 <translation id="7140829094791862589">براساس ترتیب دستی</translation>
 <translation id="7146622961999026732">به‌نظر می‌رسد این سایت‌ها و برنامه‌ها برای شما مهم هستند:</translation>
 <translation id="7148400116894863598">از <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> <ph name="BEGIN_LINK" />اطلاعات بیشتری دریافت کنید<ph name="END_LINK" />.</translation>
