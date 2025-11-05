@@ -253,12 +253,17 @@ BuildObjectForAnimationEffect(KeyframeEffect* effect) {
           .setDelay(delay)
           .setEndDelay(end_delay)
           .setIterationStart(computed_timing->iterationStart())
-          .setIterations(computed_timing->iterations())
           .setDuration(NormalizedDuration(computed_timing->duration()))
           .setDirection(computed_timing->direction().AsString())
           .setFill(computed_timing->fill().AsString())
           .setEasing(easing)
           .build();
+
+  double iterations = computed_timing->iterations();
+  if (std::isfinite(iterations)) {
+    animation_object->setIterations(iterations);
+  }
+
   if (effect->EffectTarget()) {
     animation_object->setBackendNodeId(
         IdentifiersFactory::IntIdForNode(effect->EffectTarget()));

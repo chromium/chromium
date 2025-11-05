@@ -1,0 +1,6 @@
+Tests that animation iterations are reported correctly.
+Animation with infinite iterations started
+iterations: omitted
+Animation with finite iterations started
+iterations: 5
+
