@@ -91,8 +91,10 @@ const base::FeatureParam<IPHExtensionsZeroStatePromoVariant>::Option
     kIPHExtensionsZeroStatePromoVariantOptions[] = {
         {IPHExtensionsZeroStatePromoVariant::kCustomActionIph,
          "custom-action-iph"},
-        {IPHExtensionsZeroStatePromoVariant::kCustomUiChipIph,
+        {IPHExtensionsZeroStatePromoVariant::kCustomUiChipIphV1,
          "custom-ui-chip-iph"},
+        {IPHExtensionsZeroStatePromoVariant::kCustomUiChipIphV2,
+         "custom-ui-chip-iph-v2"},
         {IPHExtensionsZeroStatePromoVariant::kCustomUIPlainLinkIph,
          "custom-ui-plain-link-iph"}};
 BASE_FEATURE_ENUM_PARAM(
@@ -100,7 +102,7 @@ BASE_FEATURE_ENUM_PARAM(
     kIPHExtensionsZeroStatePromoVariantParam,
     &feature_engagement::kIPHExtensionsZeroStatePromoFeature,
     "x_iph-variant",
-    IPHExtensionsZeroStatePromoVariant::kCustomActionIph,
+    IPHExtensionsZeroStatePromoVariant::kCustomUiChipIphV2,
     &kIPHExtensionsZeroStatePromoVariantOptions);
 #endif
 BASE_FEATURE(kIPHFocusHelpBubbleScreenReaderPromoFeature,

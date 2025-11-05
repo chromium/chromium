@@ -120,13 +120,13 @@ IN_PROC_BROWSER_TEST_F(ExtensionsZeroStateCustomActionIphTest,
           feature_engagement::kIPHExtensionsZeroStatePromoFeature, false)));
 }
 
-class ExtensionsZeroStateCustomUiChipIphTest
+class ExtensionsZeroStateCustomUiChipIphTestV1
     : public ExtensionsZeroStatePromoTestBase {
  public:
-  ExtensionsZeroStateCustomUiChipIphTest()
+  ExtensionsZeroStateCustomUiChipIphTestV1()
       : ExtensionsZeroStatePromoTestBase(
             feature_engagement::IPHExtensionsZeroStatePromoVariant::
-                kCustomUiChipIph) {}
+                kCustomUiChipIphV1) {}
 
   const DeepQuery kDismissButton{"extensions-zero-state-promo-app",
                                  "#dismissButton"};
@@ -142,8 +142,7 @@ class ExtensionsZeroStateCustomUiChipIphTest
 // Test showing the zero state promo custom ui IPH (chips variant) with no
 // extensions installed. Clicking on the coupon chip button should open a
 // page to the Chrome Web Store.
-// TODO(crbug.com/419854475): Re-enable this test once the bug is fixed.
-IN_PROC_BROWSER_TEST_F(ExtensionsZeroStateCustomUiChipIphTest,
+IN_PROC_BROWSER_TEST_F(ExtensionsZeroStateCustomUiChipIphTestV1,
                        ClickCouponChipOnZeroStatePromoIph) {
   RunTestSequence(
       InstrumentTab(kFirstTabContents, 0),
@@ -170,8 +169,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsZeroStateCustomUiChipIphTest,
 // Test showing the zero state promo custom ui IPH (chips variant) with no
 // extensions installed. Clicking on the writing chip button should open a
 // page to the Chrome Web Store.
-// TODO(crbug.com/419854475): Re-enable this test once the bug is fixed.
-IN_PROC_BROWSER_TEST_F(ExtensionsZeroStateCustomUiChipIphTest,
+IN_PROC_BROWSER_TEST_F(ExtensionsZeroStateCustomUiChipIphTestV1,
                        ClickWritingChipOnZeroStatePromoIph) {
   RunTestSequence(
       InstrumentTab(kFirstTabContents, 0),
@@ -198,8 +196,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsZeroStateCustomUiChipIphTest,
 // Test showing the zero state promo custom ui IPH (chips variant) with no
 // extensions installed. Clicking on the productivity chip button should open a
 // page to the Chrome Web Store.
-// TODO(crbug.com/419854475): Re-enable this test once the bug is fixed.
-IN_PROC_BROWSER_TEST_F(ExtensionsZeroStateCustomUiChipIphTest,
+IN_PROC_BROWSER_TEST_F(ExtensionsZeroStateCustomUiChipIphTestV1,
                        ClickProductivityChipOnZeroStatePromoIph) {
   RunTestSequence(
       InstrumentTab(kFirstTabContents, 0),
@@ -225,8 +222,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsZeroStateCustomUiChipIphTest,
 // Test showing the zero state promo custom ui IPH (chips variant) with no
 // extensions installed. Clicking on the ai chip button should open a
 // page to the Chrome Web Store.
-// TODO(crbug.com/419854475): Re-enable this test once the bug is fixed.
-IN_PROC_BROWSER_TEST_F(ExtensionsZeroStateCustomUiChipIphTest,
+IN_PROC_BROWSER_TEST_F(ExtensionsZeroStateCustomUiChipIphTestV1,
                        ClickAiChipOnZeroStatePromoIph) {
   RunTestSequence(
       InstrumentTab(kFirstTabContents, 0),
@@ -249,8 +245,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsZeroStateCustomUiChipIphTest,
           zero_state_promo::mojom::WebStoreLinkClicked::kAi, 1));
 }
 
-// TODO(crbug.com/419854475): Re-enable this test once the bug is fixed.
-IN_PROC_BROWSER_TEST_F(ExtensionsZeroStateCustomUiChipIphTest,
+IN_PROC_BROWSER_TEST_F(ExtensionsZeroStateCustomUiChipIphTestV1,
                        DismissPromoIph) {
   RunTestSequence(
       InstrumentTab(kFirstTabContents, 0),
@@ -273,7 +268,166 @@ IN_PROC_BROWSER_TEST_F(ExtensionsZeroStateCustomUiChipIphTest,
 
 // Test that IPH does not show when the user does not have the PromotionEnabled
 // policy.
-IN_PROC_BROWSER_TEST_F(ExtensionsZeroStateCustomUiChipIphTest,
+IN_PROC_BROWSER_TEST_F(ExtensionsZeroStateCustomUiChipIphTestV1,
+                       RespectPromotionEnabledPolicy) {
+  g_browser_process->local_state()->SetBoolean(prefs::kPromotionsEnabled,
+                                               false);
+  RunTestSequence(
+      InstrumentTab(kFirstTabContents),
+      NavigateWebContents(kFirstTabContents, GURL(chrome::kChromeUIAboutURL)),
+      InAnyContext(CheckPromoRequested(
+          feature_engagement::kIPHExtensionsZeroStatePromoFeature, false)));
+}
+
+class ExtensionsZeroStateCustomUiChipIphTestV2
+    : public ExtensionsZeroStatePromoTestBase {
+ public:
+  ExtensionsZeroStateCustomUiChipIphTestV2()
+      : ExtensionsZeroStatePromoTestBase(
+            feature_engagement::IPHExtensionsZeroStatePromoVariant::
+                kCustomUiChipIphV2) {}
+
+  const DeepQuery kDismissButton{"extensions-zero-state-promo-app",
+                                 "#dismissButton"};
+  const DeepQuery kCouponButton{"extensions-zero-state-promo-app",
+                                "#couponsButton"};
+  const DeepQuery kWebstoreButton{"extensions-zero-state-promo-app",
+                                  "#webStoreButton"};
+  const DeepQuery kProductivityButton{"extensions-zero-state-promo-app",
+                                      "#productivityButton"};
+  const DeepQuery kAiButton{"extensions-zero-state-promo-app", "#aiButton"};
+};
+
+// Test showing the zero state promo custom ui IPH (chips variant) with no
+// extensions installed. Clicking on the coupon chip button should open a
+// page to the Chrome Web Store.
+IN_PROC_BROWSER_TEST_F(ExtensionsZeroStateCustomUiChipIphTestV2,
+                       ClickCouponChipOnZeroStatePromoIph) {
+  RunTestSequence(
+      InstrumentTab(kFirstTabContents, 0),
+      NavigateWebContents(kFirstTabContents, GURL(chrome::kChromeUIAboutURL)),
+      WaitForShow(CustomWebUIHelpBubble::kHelpBubbleIdForTesting),
+      InstrumentNonTabWebView(kZeroStatePromoWebUiIphId,
+                              CustomWebUIHelpBubble::kWebViewIdForTesting),
+      WaitForWebContentsReady(
+          kZeroStatePromoWebUiIphId,
+          GURL(chrome::kChromeUIExtensionsZeroStatePromoURL)),
+      CheckZeroStatePromoLinkClickCount(
+          zero_state_promo::mojom::WebStoreLinkClicked::kCoupon, 0),
+      ClickElement(kZeroStatePromoWebUiIphId, kCouponButton,
+                   ExecuteJsMode::kFireAndForget),
+      WaitForHide(CustomWebUIHelpBubble::kWebViewIdForTesting),
+      WaitForTabOpenedTo(
+          1, GURL("https://chromewebstore.google.com/category/extensions/"
+                  "lifestyle/"
+                  "shopping?utm_source=ext_zero_state_promo_chips_iph_v2")),
+      CheckZeroStatePromoLinkClickCount(
+          zero_state_promo::mojom::WebStoreLinkClicked::kCoupon, 1));
+}
+
+// Test showing the zero state promo custom ui IPH (chips variant) with no
+// extensions installed. Clicking on the web store chip button should open a
+// page to the Chrome Web Store.
+IN_PROC_BROWSER_TEST_F(ExtensionsZeroStateCustomUiChipIphTestV2,
+                       ClickWebstoreChipOnZeroStatePromoIph) {
+  RunTestSequence(
+      InstrumentTab(kFirstTabContents, 0),
+      NavigateWebContents(kFirstTabContents, GURL(chrome::kChromeUIAboutURL)),
+      WaitForShow(CustomWebUIHelpBubble::kHelpBubbleIdForTesting),
+      InstrumentNonTabWebView(kZeroStatePromoWebUiIphId,
+                              CustomWebUIHelpBubble::kWebViewIdForTesting),
+      WaitForWebContentsReady(
+          kZeroStatePromoWebUiIphId,
+          GURL(chrome::kChromeUIExtensionsZeroStatePromoURL)),
+      CheckZeroStatePromoLinkClickCount(
+          zero_state_promo::mojom::WebStoreLinkClicked::kWriting, 0),
+      ClickElement(kZeroStatePromoWebUiIphId, kWebstoreButton,
+                   ExecuteJsMode::kFireAndForget),
+      WaitForHide(CustomWebUIHelpBubble::kWebViewIdForTesting),
+      WaitForTabOpenedTo(1, GURL("https://"
+                                 "chromewebstore.google.com/?utm_source="
+                                 "ext_zero_state_promo_chips_iph_v2")),
+      CheckZeroStatePromoLinkClickCount(
+          zero_state_promo::mojom::WebStoreLinkClicked::kDiscoverExtension, 1));
+}
+
+// Test showing the zero state promo custom ui IPH (chips variant) with no
+// extensions installed. Clicking on the productivity chip button should open a
+// page to the Chrome Web Store.
+IN_PROC_BROWSER_TEST_F(ExtensionsZeroStateCustomUiChipIphTestV2,
+                       ClickProductivityChipOnZeroStatePromoIph) {
+  RunTestSequence(
+      InstrumentTab(kFirstTabContents, 0),
+      NavigateWebContents(kFirstTabContents, GURL(chrome::kChromeUIAboutURL)),
+      WaitForShow(CustomWebUIHelpBubble::kHelpBubbleIdForTesting),
+      InstrumentNonTabWebView(kZeroStatePromoWebUiIphId,
+                              CustomWebUIHelpBubble::kWebViewIdForTesting),
+      WaitForWebContentsReady(
+          kZeroStatePromoWebUiIphId,
+          GURL(chrome::kChromeUIExtensionsZeroStatePromoURL)),
+      CheckZeroStatePromoLinkClickCount(
+          zero_state_promo::mojom::WebStoreLinkClicked::kProductivity, 0),
+      ClickElement(kZeroStatePromoWebUiIphId, kProductivityButton,
+                   ExecuteJsMode::kFireAndForget),
+      WaitForHide(CustomWebUIHelpBubble::kWebViewIdForTesting),
+      WaitForTabOpenedTo(
+          1, GURL("https://chromewebstore.google.com/collection/"
+                  "productivity?utm_source=ext_zero_state_promo_chips_iph_v2")),
+      CheckZeroStatePromoLinkClickCount(
+          zero_state_promo::mojom::WebStoreLinkClicked::kProductivity, 1));
+}
+
+// Test showing the zero state promo custom ui IPH (chips variant) with no
+// extensions installed. Clicking on the ai chip button should open a
+// page to the Chrome Web Store.
+IN_PROC_BROWSER_TEST_F(ExtensionsZeroStateCustomUiChipIphTestV2,
+                       ClickAiChipOnZeroStatePromoIph) {
+  RunTestSequence(
+      InstrumentTab(kFirstTabContents, 0),
+      NavigateWebContents(kFirstTabContents, GURL(chrome::kChromeUIAboutURL)),
+      WaitForShow(CustomWebUIHelpBubble::kHelpBubbleIdForTesting),
+      InstrumentNonTabWebView(kZeroStatePromoWebUiIphId,
+                              CustomWebUIHelpBubble::kWebViewIdForTesting),
+      WaitForWebContentsReady(
+          kZeroStatePromoWebUiIphId,
+          GURL(chrome::kChromeUIExtensionsZeroStatePromoURL)),
+      CheckZeroStatePromoLinkClickCount(
+          zero_state_promo::mojom::WebStoreLinkClicked::kAi, 0),
+      ClickElement(kZeroStatePromoWebUiIphId, kAiButton,
+                   ExecuteJsMode::kFireAndForget),
+      WaitForHide(CustomWebUIHelpBubble::kWebViewIdForTesting),
+      WaitForTabOpenedTo(
+          1,
+          GURL("https://chromewebstore.google.com/collection/"
+               "ai_productivity?utm_source=ext_zero_state_promo_chips_iph_v2")),
+      CheckZeroStatePromoLinkClickCount(
+          zero_state_promo::mojom::WebStoreLinkClicked::kAi, 1));
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensionsZeroStateCustomUiChipIphTestV2,
+                       DismissPromoIph) {
+  RunTestSequence(
+      InstrumentTab(kFirstTabContents, 0),
+      NavigateWebContents(kFirstTabContents, GURL(chrome::kChromeUIAboutURL)),
+      WaitForShow(CustomWebUIHelpBubble::kHelpBubbleIdForTesting),
+      InstrumentNonTabWebView(kZeroStatePromoWebUiIphId,
+                              CustomWebUIHelpBubble::kWebViewIdForTesting),
+      WaitForWebContentsReady(
+          kZeroStatePromoWebUiIphId,
+          GURL(chrome::kChromeUIExtensionsZeroStatePromoURL)),
+      ClickElement(kZeroStatePromoWebUiIphId, kDismissButton,
+                   ExecuteJsMode::kFireAndForget),
+      WaitForHide(CustomWebUIHelpBubble::kWebViewIdForTesting),
+      CheckResult(
+          [this] { return browser()->tab_strip_model()->GetTabCount(); }, 1,
+          "CheckTabCount"),
+      CheckZeroStatePromoClosedReason(
+          user_education::FeaturePromoClosedReason::kDismiss));
+}
+
+// Test that IPH does not show when the user does not have the PromotionEnabled
+// policy.
+IN_PROC_BROWSER_TEST_F(ExtensionsZeroStateCustomUiChipIphTestV2,
                        RespectPromotionEnabledPolicy) {
   g_browser_process->local_state()->SetBoolean(prefs::kPromotionsEnabled,
                                                false);

@@ -662,7 +662,8 @@ void MaybeRegisterChromeFeaturePromos(
               .SetHighlightedMenuItem(
                   ExtensionsMenuModel::kVisitChromeWebStoreMenuItem)));
       break;
-    case feature_engagement::kCustomUiChipIph:
+    case feature_engagement::kCustomUiChipIphV1:
+    case feature_engagement::kCustomUiChipIphV2:
     case feature_engagement::kCustomUIPlainLinkIph:
       registry.RegisterFeature(std::move(
           user_education::FeaturePromoSpecification::CreateForCustomUi(
