@@ -67,7 +67,7 @@ std::optional<Gamepad> GamepadBuilder::GetGamepad() {
 
 void GamepadBuilder::AddButton(const GamepadButton& button) {
   DCHECK_LT(gamepad_.buttons_length, Gamepad::kButtonsLengthCap);
-  UNSAFE_TODO(gamepad_.buttons[gamepad_.buttons_length++]) = button;
+  gamepad_.buttons[gamepad_.buttons_length++] = button;
 }
 
 void GamepadBuilder::AddButton(const ButtonData& data) {
@@ -78,7 +78,7 @@ void GamepadBuilder::AddButton(const ButtonData& data) {
 
 void GamepadBuilder::AddAxis(double value, double deadzone) {
   DCHECK_LT(gamepad_.axes_length, Gamepad::kAxesLengthCap);
-  UNSAFE_TODO(gamepad_.axes[gamepad_.axes_length++]) =
+  gamepad_.axes[gamepad_.axes_length++] =
       std::fabs(value) < deadzone ? 0.0 : value;
 }
 
@@ -108,8 +108,7 @@ void GamepadBuilder::RemovePlaceholderButton() {
   // a length and that there's not any data that's been set in the alleged
   // placeholder button.
   DCHECK_GT(gamepad_.buttons_length, 0u);
-  GamepadButton button =
-      UNSAFE_TODO(gamepad_.buttons[gamepad_.buttons_length - 1]);
+  GamepadButton button = gamepad_.buttons[gamepad_.buttons_length - 1];
   DCHECK(!button.pressed && !button.touched && button.value == 0);
   gamepad_.buttons_length--;
 }
