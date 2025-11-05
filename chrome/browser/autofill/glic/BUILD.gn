@@ -12,6 +12,8 @@ static_library("glic") {
   ]
 
   deps = [
+    "//chrome/browser/profiles",
+    "//chrome/browser/ui/autofill",
     "//components/autofill/content/browser",
     "//components/tabs:public",
   ]
