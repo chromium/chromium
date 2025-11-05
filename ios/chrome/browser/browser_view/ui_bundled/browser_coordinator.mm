@@ -752,6 +752,9 @@ const char kChromeAppStoreUrl[] =
 
   // The coordinator for managing the Synced Set Up flow.
   SyncedSetUpCoordinator* _syncedSetUpCoordinator;
+
+  // Block to run after the Synced Set Up UI has finished dismissing.
+  ProceduralBlock _runAfterSyncedSetUpDismissal;
 }
 
 #pragma mark - ReaderModeBrowserAgentDelegate
@@ -1036,6 +1039,12 @@ const char kChromeAppStoreUrl[] =
   [_syncedSetUpCoordinator stop];
   _syncedSetUpCoordinator.delegate = nil;
   _syncedSetUpCoordinator = nil;
+
+  if (_runAfterSyncedSetUpDismissal) {
+    ProceduralBlock completion = [_runAfterSyncedSetUpDismissal copy];
+    _runAfterSyncedSetUpDismissal = nil;
+    completion();
+  }
 }
 
 - (void)stopSigninCoordinator {
@@ -3665,10 +3674,13 @@ const char kChromeAppStoreUrl[] =
 
 #pragma mark - SyncedSetUpCommands
 
-- (void)showSyncedSetUp {
+- (void)showSyncedSetUpWithDismissalCompletion:(ProceduralBlock)completion {
   CHECK(IsSyncedSetUpEnabled());
 
+  _runAfterSyncedSetUpDismissal = [completion copy];
+
   if (_syncedSetUpCoordinator) {
+    // The UI is already active; the stored `completion` will run when it stops.
     return;
   }
 

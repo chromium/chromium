@@ -7,11 +7,14 @@
 
 #import <Foundation/Foundation.h>
 
+#import "base/ios/block_types.h"
+
 // Commands related to Synced Set Up.
 @protocol SyncedSetUpCommands
 
-// Shows the Synced Set Up UI.
-- (void)showSyncedSetUp;
+// Shows the Synced Set Up UI and invokes the `completion` block once the UI has
+// been fully dismissed.
+- (void)showSyncedSetUpWithDismissalCompletion:(ProceduralBlock)completion;
 
 @end
 

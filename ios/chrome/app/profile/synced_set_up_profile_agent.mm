@@ -91,7 +91,7 @@
       HandlerForProtocol(dispatcher, SyncedSetUpCommands);
 
   if (handler) {
-    [handler showSyncedSetUp];
+    [handler showSyncedSetUpWithDismissalCompletion:nil];
     _activationAlreadyHandled = YES;
   }
 }
