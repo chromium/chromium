@@ -211,7 +211,7 @@ String GetErrorStringForIssueSummary(const network::CorsErrorStatus& status,
       break;
     case CorsError::kLocalNetworkAccessPermissionDenied:
       Append(builder, {"Permission was denied for this request to access the `",
-                       ShortAddressSpace(status.target_address_space),
+                       ShortAddressSpace(status.resource_address_space),
                        "` address space."});
   }
   return builder.ToString();
@@ -368,7 +368,7 @@ String GetErrorStringForConsoleMessage(const network::CorsErrorStatus& status,
       break;
     case CorsError::kLocalNetworkAccessPermissionDenied:
       Append(builder, {"Permission was denied for this request to access the `",
-                       ShortAddressSpace(status.target_address_space),
+                       ShortAddressSpace(status.resource_address_space),
                        "` address space."});
   }
   return builder.ToString();
