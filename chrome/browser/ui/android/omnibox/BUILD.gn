@@ -336,6 +336,7 @@ android_resources("java_resources") {
     "java/res/drawable/ic_logo_googleg_20dp.xml",
     "java/res/drawable/ic_loop_round.xml",
     "java/res/drawable/ic_swap_vert_round.xml",
+    "java/res/drawable/ic_tabs_24dp.xml",
     "java/res/drawable/ic_wb_sunny_round.xml",
     "java/res/drawable/logo_partly_cloudy.xml",
     "java/res/drawable/logo_translate_round.xml",

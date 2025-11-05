@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.widget.AnchoredPopupWindow;
@@ -25,6 +26,7 @@ class NavigationAttachmentsPopup {
     private final AnchoredPopupWindow mPopupWindow;
     private final View mContentView;
     /* package */ RecyclerView mTabAttachmentView;
+    /* package */ Button mTabButton;
     /* package */ Button mCameraButton;
     /* package */ Button mGalleryButton;
     /* package */ Button mFileButton;
@@ -53,6 +55,10 @@ class NavigationAttachmentsPopup {
                 context.getResources().getDimensionPixelSize(R.dimen.fusebox_popup_width), 0);
         mPopupWindow.setHorizontalOverlapAnchor(true);
         mTabAttachmentView = mContentView.findViewById(R.id.tab_attachment_recycler_view);
+        mTabButton = mContentView.findViewById(R.id.fusebox_pick_tabs_button);
+        if (ChromeFeatureList.sChromeItemPickerUi.isEnabled()) {
+            mTabButton.setVisibility(View.VISIBLE);
+        }
         mCameraButton = mContentView.findViewById(R.id.fusebox_camera_button);
         mGalleryButton = mContentView.findViewById(R.id.fusebox_pick_picture_button);
         mFileButton = mContentView.findViewById(R.id.fusebox_pick_file_button);
