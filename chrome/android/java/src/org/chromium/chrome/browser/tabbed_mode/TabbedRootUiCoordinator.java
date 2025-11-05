@@ -119,6 +119,7 @@ import org.chromium.chrome.browser.notifications.permissions.NotificationPermiss
 import org.chromium.chrome.browser.notifications.tips.TipsOptInCoordinator;
 import org.chromium.chrome.browser.ntp.NewTabPageLaunchOrigin;
 import org.chromium.chrome.browser.ntp.NewTabPageUtils;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.ntp_customization.edge_to_edge.TopInsetCoordinator;
 import org.chromium.chrome.browser.offlinepages.indicator.OfflineIndicatorControllerV2;
 import org.chromium.chrome.browser.offlinepages.indicator.OfflineIndicatorInProductHelpController;
@@ -505,6 +506,11 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         mBackButtonShouldCloseTabFn = backButtonShouldCloseTabFn;
         mSendToBackground = sendToBackground;
         mEphemeralTabCoordinatorSupplier = ephemeralTabCoordinatorSupplier;
+
+        mStatusBarColorController.maybeInitializeForCustomizedNtp(
+                mActivity,
+                NtpCustomizationUtils.canEnableEdgeToEdgeForCustomizedTheme(
+                        DeviceFormFactor.isNonMultiDisplayContextOnTablet(activity)));
         mCanAnimateBrowserControls =
                 () -> {
                     // These null checks prevent any exceptions that may be caused by callbacks

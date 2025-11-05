@@ -597,8 +597,7 @@ public class RootUiCoordinator
                         mTopUiThemeColorProvider,
                         edgeToEdgeManager.getEdgeToEdgeSystemBarColorHelper(),
                         mDesktopWindowStateManager,
-                        mOverviewColorSupplier,
-                        NtpCustomizationUtils.canEnableEdgeToEdgeForCustomizedTheme(mIsTablet));
+                        mOverviewColorSupplier);
         mEphemeralTabCoordinatorSupplier = ephemeralTabCoordinatorSupplier;
         mPageZoomManager =
                 new PageZoomManager(

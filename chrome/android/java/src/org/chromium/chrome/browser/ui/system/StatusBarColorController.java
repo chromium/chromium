@@ -151,7 +151,6 @@ public class StatusBarColorController
      * @param edgeToEdgeSystemBarColorHelper Draws status bar color for Edge to Edge.
      * @param desktopWindowStateManager Instance to retrieve desktop window information.
      * @param overviewColorSupplier Notifies when the overview color changes.
-     * @param supportEdgeToEdge Whether to support making NTPs edge-to-edge.
      */
     public StatusBarColorController(
             Window window,
@@ -164,8 +163,7 @@ public class StatusBarColorController
             TopUiThemeColorProvider topUiThemeColorProvider,
             EdgeToEdgeSystemBarColorHelper edgeToEdgeSystemBarColorHelper,
             @Nullable DesktopWindowStateManager desktopWindowStateManager,
-            ObservableSupplier<Integer> overviewColorSupplier,
-            boolean supportEdgeToEdge) {
+            ObservableSupplier<Integer> overviewColorSupplier) {
         mWindow = window;
         mIsTablet = isTablet;
         mStatusBarColorProvider = statusBarColorProvider;
@@ -176,11 +174,9 @@ public class StatusBarColorController
                 ChromeColors.getDefaultThemeColor(context, /* isIncognito= */ false);
         mIncognitoDefaultThemeColor =
                 ChromeColors.getDefaultThemeColor(context, /* isIncognito= */ true);
-        var ntpCustomizationConfigManager = NtpCustomizationConfigManager.getInstance();
+
         mBackgroundColorForNtp =
-                supportEdgeToEdge
-                        ? ntpCustomizationConfigManager.getBackgroundColor(context)
-                        : ContextCompat.getColor(context, R.color.home_surface_background_color);
+                ContextCompat.getColor(context, R.color.home_surface_background_color);
         mStatusIndicatorColor = UNDEFINED_STATUS_BAR_COLOR;
 
         // TODO(b/41494931): Share code with LocationBarCoordinator's constructor.
@@ -280,24 +276,35 @@ public class StatusBarColorController
             mIsTopResumedActivity = !mDesktopWindowStateManager.isInUnfocusedDesktopWindow();
         }
         mOverviewColorSupplier.addObserver(mOverviewColorObserver);
+    }
 
-        if (supportEdgeToEdge) {
-            mHomepageStateListener =
-                    new NtpCustomizationConfigManager.HomepageStateListener() {
-                        @Override
-                        public void onBackgroundColorChanged(
-                                int backgroundColor,
-                                boolean fromInitialization,
-                                @NtpBackgroundImageType int oldType,
-                                @NtpBackgroundImageType int newType) {
-                            if (mBackgroundColorForNtp == backgroundColor) return;
+    /**
+     * Initializes to support customized NTP's background color if supportEdgeToEdge is true.
+     *
+     * @param context The application context.
+     * @param supportEdgeToEdge Whether to support making NTPs edge-to-edge.
+     */
+    public void maybeInitializeForCustomizedNtp(Context context, boolean supportEdgeToEdge) {
+        if (!supportEdgeToEdge) return;
 
-                            mBackgroundColorForNtp = backgroundColor;
-                            updateStatusBarColor();
-                        }
-                    };
-            ntpCustomizationConfigManager.addListener(mHomepageStateListener, context);
-        }
+        var ntpCustomizationConfigManager = NtpCustomizationConfigManager.getInstance();
+        mBackgroundColorForNtp = ntpCustomizationConfigManager.getBackgroundColor(context);
+
+        mHomepageStateListener =
+                new NtpCustomizationConfigManager.HomepageStateListener() {
+                    @Override
+                    public void onBackgroundColorChanged(
+                            int backgroundColor,
+                            boolean fromInitialization,
+                            @NtpBackgroundImageType int oldType,
+                            @NtpBackgroundImageType int newType) {
+                        if (mBackgroundColorForNtp == backgroundColor) return;
+
+                        mBackgroundColorForNtp = backgroundColor;
+                        updateStatusBarColor();
+                    }
+                };
+        ntpCustomizationConfigManager.addListener(mHomepageStateListener, context);
     }
 
     // DestroyObserver implementation.
