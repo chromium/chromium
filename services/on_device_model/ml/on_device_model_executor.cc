@@ -24,6 +24,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/task/thread_pool.h"
 #include "base/timer/elapsed_timer.h"
+#include "base/trace_event/trace_event.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "services/on_device_model/ml/chrome_ml.h"
 #include "services/on_device_model/ml/gpu_blocklist.h"
@@ -346,6 +347,7 @@ class ContextHolder final {
 
  private:
   void OnComplete(int tokens_processed) {
+    TRACE_EVENT("optimization_guide", "ContextHolder::OnComplete");
     if (tokens_processed > 0) {
       base::UmaHistogramCounts10000("OnDeviceModel.TokenCount.Context",
                                     tokens_processed);
@@ -363,6 +365,7 @@ class ContextHolder final {
   }
 
   void OnDisconnect() {
+    TRACE_EVENT("optimization_guide", "ContextHolder::OnDisconnect");
     if (on_disconnect_) {
       std::move(on_disconnect_).Run(this);
     }
@@ -399,6 +402,7 @@ BackendImpl::CanCreate() {
 DISABLE_CFI_DLSYM
 on_device_model::Capabilities BackendImpl::GetCapabilities(
     on_device_model::ModelFile model_file) {
+  TRACE_EVENT("optimization_guide", "BackendImpl::GetCapabilities");
   on_device_model::Capabilities result;
   if (!chrome_ml_->api().GetCapabilities) {
     return result;
@@ -435,6 +439,7 @@ BackendImpl::CreateWithResult(on_device_model::mojom::LoadModelParamsPtr params,
 void BackendImpl::LoadTextSafetyModel(
     on_device_model::mojom::TextSafetyModelParamsPtr params,
     mojo::PendingReceiver<on_device_model::mojom::TextSafetyModel> model) {
+  TRACE_EVENT("optimization_guide", "BackendImpl::LoadTextSafetyModel");
   ts_holder_.AsyncCall(&ml::TsHolder::Reset)
       .WithArgs(std::move(params), std::move(model));
 }
@@ -464,6 +469,7 @@ void SessionImpl::Append(
     on_device_model::mojom::AppendOptionsPtr options,
     mojo::PendingRemote<on_device_model::mojom::ContextClient> client,
     base::OnceClosure on_complete) {
+  TRACE_EVENT("optimization_guide", "SessionImpl::Append");
   model_response_prefix_ = GetModelResponsePrefix(options->input->pieces);
   auto context_holder = std::make_unique<ContextHolder>(
       std::move(client),
@@ -484,6 +490,7 @@ void SessionImpl::Generate(
     on_device_model::mojom::GenerateOptionsPtr options,
     mojo::PendingRemote<on_device_model::mojom::StreamingResponder> response,
     base::OnceClosure on_complete) {
+  TRACE_EVENT("optimization_guide", "SessionImpl::Generate");
   auto cloned = session_->Clone();
   auto cloned_raw = cloned.get();  // For Generate after std::move
   responder_ = std::make_unique<Responder>(
@@ -506,6 +513,7 @@ void SessionImpl::Generate(
 DISABLE_CFI_DLSYM
 void SessionImpl::SizeInTokens(on_device_model::mojom::InputPtr input,
                                base::OnceCallback<void(uint32_t)> callback) {
+  TRACE_EVENT("optimization_guide", "SessionImpl::SizeInTokens");
   session_->SizeInTokens(std::move(input),
                          ConvertCallbackToFn(std::move(callback)));
 }
@@ -513,6 +521,7 @@ void SessionImpl::SizeInTokens(on_device_model::mojom::InputPtr input,
 DISABLE_CFI_DLSYM
 void SessionImpl::Score(const std::string& text,
                         base::OnceCallback<void(float)> callback) {
+  TRACE_EVENT("optimization_guide", "SessionImpl::Score");
   session_->Score(text, ConvertCallbackToFn(std::move(callback)));
 }
 
@@ -520,6 +529,7 @@ DISABLE_CFI_DLSYM
 void SessionImpl::GetProbabilitiesBlocking(
     const std::string& input,
     base::OnceCallback<void(const std::vector<float>&)> callback) {
+  TRACE_EVENT("optimization_guide", "SessionImpl::GetProbabilitiesBlocking");
   session_->GetProbabilitiesBlocking(input,
                                      ConvertCallbackToFn(std::move(callback)));
 }
@@ -528,6 +538,7 @@ DISABLE_CFI_DLSYM
 void SessionImpl::AsrStream(
     odmm::AsrStreamOptionsPtr options,
     mojo::PendingRemote<odmm::AsrStreamResponder> responder) {
+  TRACE_EVENT("optimization_guide", "SessionImpl::AsrStream");
   DCHECK_EQ(asr_responder_, nullptr);
   auto cloned = session_->Clone();
   auto cloned_raw = cloned.get();  // For CreateAsrStream after std::move
@@ -539,6 +550,7 @@ void SessionImpl::AsrStream(
 
 DISABLE_CFI_DLSYM
 void SessionImpl::AsrAddAudioChunk(odmm::AudioDataPtr data) {
+  TRACE_EVENT("optimization_guide.debug", "SessionImpl::AsrAddAudioChunk");
   if (!asr_responder_) {
     return;
   }
@@ -546,17 +558,20 @@ void SessionImpl::AsrAddAudioChunk(odmm::AudioDataPtr data) {
 }
 
 std::unique_ptr<on_device_model::BackendSession> SessionImpl::Clone() {
+  TRACE_EVENT("optimization_guide", "SessionImpl::Clone");
   return std::make_unique<SessionImpl>(chrome_ml_.get(), *executor_,
                                        session_->Clone(), max_tokens_,
                                        adaptation_id_);
 }
 
 void SessionImpl::RemoveContext(ContextHolder* context) {
+  TRACE_EVENT("optimization_guide", "SessionImpl::RemoveContext");
   std::erase_if(context_holders_, base::MatchesUniquePtr(context));
 }
 
 DISABLE_CFI_DLSYM
 void DestroyModel(const ChromeML* chrome_ml, ChromeMLModel model) {
+  TRACE_EVENT("optimization_guide", "DestroyModel");
   chrome_ml->api().DestroyModel(model);
 }
 
@@ -568,6 +583,8 @@ OnDeviceModelExecutor::OnDeviceModelExecutor(
           base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})) {}
 
 OnDeviceModelExecutor::~OnDeviceModelExecutor() {
+  TRACE_EVENT("optimization_guide",
+              "OnDeviceModelExecutor::~OnDeviceModelExecutor");
 #if defined(ENABLE_ON_DEVICE_CONSTRAINTS)
   if (tokenizer_ != nullptr) {
     llg_free_tokenizer(tokenizer_);
@@ -585,6 +602,7 @@ OnDeviceModelExecutor::CreateWithResult(
     const ChromeML& chrome_ml,
     on_device_model::mojom::LoadModelParamsPtr params,
     base::OnceClosure on_complete) {
+  TRACE_EVENT("optimization_guide", "OnDeviceModelExecutor::CreateWithResult");
   auto executor = std::make_unique<OnDeviceModelExecutor>(
       base::PassKey<OnDeviceModelExecutor>(), chrome_ml);
   auto load_model_result =
@@ -600,6 +618,7 @@ std::unique_ptr<on_device_model::BackendSession>
 OnDeviceModelExecutor::CreateSession(
     const ScopedAdaptation* adaptation,
     on_device_model::mojom::SessionParamsPtr params) {
+  TRACE_EVENT("optimization_guide", "OnDeviceModelExecutor::CreateSession");
   std::optional<uint32_t> adaptation_id;
   on_device_model::mojom::LoadAdaptationParamsPtr adaptation_params;
   if (adaptation) {
@@ -619,12 +638,14 @@ OnDeviceModelExecutor::CreateSession(
 std::unique_ptr<OnDeviceModelExecutor::ScopedAdaptation>
 OnDeviceModelExecutor::LoadAdaptation(
     on_device_model::mojom::LoadAdaptationParamsPtr params) {
+  TRACE_EVENT("optimization_guide", "OnDeviceModelExecutor::LoadAdaptation");
   adaptation_params_.insert({next_adaptation_id_, std::move(params)});
   return std::make_unique<ScopedAdaptation>(weak_ptr_factory_.GetWeakPtr(),
                                             next_adaptation_id_++);
 }
 
 void OnDeviceModelExecutor::UnloadAdaptation(uint32_t adaptation_id) {
+  TRACE_EVENT("optimization_guide", "OnDeviceModelExecutor::UnloadAdaptation");
   adaptation_params_.erase(adaptation_id);
 }
 
@@ -632,6 +653,7 @@ DISABLE_CFI_DLSYM
 ChromeMLConstraint OnDeviceModelExecutor::CreateConstraint(
     const on_device_model::mojom::ResponseConstraint& response_constraint,
     const std::optional<std::string>& prefix) {
+  TRACE_EVENT("optimization_guide", "OnDeviceModelExecutor::CreateConstraint");
 #if defined(ENABLE_ON_DEVICE_CONSTRAINTS)
   if (!tokenizer_) {
     CHECK(chrome_ml_->api().GetTokenizerParams(
@@ -721,6 +743,7 @@ DISABLE_CFI_DLSYM
 LoadModelResult OnDeviceModelExecutor::Init(
     on_device_model::mojom::LoadModelParamsPtr params,
     base::OnceClosure on_complete) {
+  TRACE_EVENT("optimization_guide", "OnDeviceModelExecutor::Init");
   ml::DeviceInfo device_info =
       ml::QueryDeviceInfo(chrome_ml_->api(), /*log_histogram=*/false);
   if (params->backend_type == ml::ModelBackendType::kGpuBackend &&
@@ -793,6 +816,7 @@ LoadModelResult OnDeviceModelExecutor::Init(
 // static
 void OnDeviceModelExecutor::Schedule(uintptr_t context,
                                      std::function<void()>* fn) {
+  TRACE_EVENT("optimization_guide", "OnDeviceModelExecutor::Schedule");
   base::ThreadPool::PostTask(
       FROM_HERE, {base::TaskPriority::USER_BLOCKING, base::MayBlock()},
       base::BindOnce([](std::function<void()> fn) { fn(); }, std::move(*fn)));

@@ -11,6 +11,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/timer/elapsed_timer.h"
+#include "base/trace_event/trace_event.h"
 #include "base/types/expected_macros.h"
 #include "base/uuid.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
@@ -58,6 +59,7 @@ OnDeviceModelService::~OnDeviceModelService() = default;
 std::unique_ptr<mojom::OnDeviceModelService> OnDeviceModelService::Create(
     mojo::PendingReceiver<mojom::OnDeviceModelService> receiver,
     scoped_refptr<Backend> backend) {
+  TRACE_EVENT("optimization_guide", "OnDeviceModelService::Create");
   if (!backend) {
     backend = DefaultImpl();
   }
@@ -77,6 +79,7 @@ void OnDeviceModelService::LoadModel(
     mojom::LoadModelParamsPtr params,
     mojo::PendingReceiver<mojom::OnDeviceModel> model,
     LoadModelCallback callback) {
+  TRACE_EVENT("optimization_guide", "OnDeviceModelService::LoadModel");
   if (kForceFastestInference.Get()) {
     params->performance_hint = ml::ModelPerformanceHint::kFastestInference;
   }
@@ -102,11 +105,14 @@ void OnDeviceModelService::LoadModel(
 
 void OnDeviceModelService::GetCapabilities(ModelFile model_file,
                                            GetCapabilitiesCallback callback) {
+  TRACE_EVENT("optimization_guide", "OnDeviceModelService::GetCapabilities");
   std::move(callback).Run(backend_->GetCapabilities(std::move(model_file)));
 }
 
 void OnDeviceModelService::GetDeviceAndPerformanceInfo(
     GetDeviceAndPerformanceInfoCallback callback) {
+  TRACE_EVENT("optimization_guide",
+              "OnDeviceModelService::GetDeviceAndPerformanceInfo");
 #if BUILDFLAG(IS_CHROMEOS)
   // On ChromeOS, we explicitly allowlist only Chromebook Plus devices,
   // so skip the benchmark and return a fixed performance profile.
@@ -149,6 +155,8 @@ void OnDeviceModelService::GetDeviceAndPerformanceInfo(
 void OnDeviceModelService::LoadTextSafetyModel(
     on_device_model::mojom::TextSafetyModelParamsPtr params,
     mojo::PendingReceiver<mojom::TextSafetyModel> model) {
+  TRACE_EVENT("optimization_guide",
+              "OnDeviceModelService::LoadTextSafetyModel");
   backend_->LoadTextSafetyModel(std::move(params), std::move(model));
 }
 
@@ -161,6 +169,7 @@ void OnDeviceModelService::SetForceQueueingForTesting(bool force_queueing) {
 
 void OnDeviceModelService::DeleteModel(
     base::WeakPtr<mojom::OnDeviceModel> model) {
+  TRACE_EVENT("optimization_guide", "OnDeviceModelService::DeleteModel");
   if (!model) {
     return;
   }
