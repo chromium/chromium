@@ -169,30 +169,6 @@ class COMPONENT_EXPORT(IPC) ChannelProxy {
     GetRemoteAssociatedInterface(proxy->BindNewEndpointAndPassReceiver());
   }
 
-  // Creates a SharedAssociatedRemote for |Interface|. This object may be used
-  // to send messages on the interface from any thread and those messages will
-  // remain ordered with respect to other messages sent on the same thread over
-  // other SharedAssociatedRemotes associated with the same Channel.
-  template <typename Interface>
-  void GetThreadSafeRemoteAssociatedInterface(
-      scoped_refptr<mojo::SharedAssociatedRemote<Interface>>* out_remote) {
-    mojo::PendingAssociatedRemote<Interface> pending_remote;
-    auto receiver = pending_remote.InitWithNewEndpointAndPassReceiver();
-    GetGenericRemoteAssociatedInterface(Interface::Name_,
-                                        receiver.PassHandle());
-    *out_remote = mojo::SharedAssociatedRemote<Interface>::Create(
-        std::move(pending_remote), ipc_task_runner());
-  }
-
-  base::SingleThreadTaskRunner* ipc_task_runner() const {
-    return context_->ipc_task_runner();
-  }
-
-  const scoped_refptr<base::SingleThreadTaskRunner>& ipc_task_runner_refptr()
-      const {
-    return context_->ipc_task_runner_refptr();
-  }
-
   // Called to clear the pointer to the IPC task runner when it's going away.
   void ClearIPCTaskRunner();
 
@@ -214,19 +190,10 @@ class COMPONENT_EXPORT(IPC) ChannelProxy {
     base::SingleThreadTaskRunner* ipc_task_runner() const {
       return ipc_task_runner_.get();
     }
-    const scoped_refptr<base::SingleThreadTaskRunner>& ipc_task_runner_refptr()
-        const {
-      return ipc_task_runner_;
-    }
 
     scoped_refptr<base::SingleThreadTaskRunner> listener_task_runner() {
       return default_listener_task_runner_;
     }
-
-    // Called on the IPC::Channel thread.
-    // Returns the task runner associated with |routing_id|.
-    scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner(
-        int32_t routing_id);
 
    protected:
     friend class base::RefCountedThreadSafe<Context>;

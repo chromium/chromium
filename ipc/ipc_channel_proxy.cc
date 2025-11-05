@@ -148,13 +148,6 @@ void ChannelProxy::Context::Clear() {
   listener_ = nullptr;
 }
 
-// Called on the IPC::Channel thread.
-scoped_refptr<base::SingleThreadTaskRunner>
-ChannelProxy::Context::GetTaskRunner(int32_t routing_id) {
-  DCHECK(ipc_task_runner_->BelongsToCurrentThread());
-  return default_listener_task_runner_;
-}
-
 // Called on the listener's thread
 void ChannelProxy::Context::OnDispatchConnected() {
   if (channel_connected_called_)

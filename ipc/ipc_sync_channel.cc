@@ -37,23 +37,8 @@ constinit thread_local SyncChannel::ReceivedSyncMsgQueue* received_queue =
 
 }  // namespace
 
-// When we're blocked in a Send(), we need to process incoming synchronous
-// messages right away because it could be blocking our reply (either
-// directly from the same object we're calling, or indirectly through one or
-// more other channels).  That means that in SyncContext's OnMessageReceived,
-// we need to process sync message right away if we're blocked.  However a
-// simple check isn't sufficient, because the listener thread can be in the
-// process of calling Send.
-// To work around this, when SyncChannel filters a sync message, it sets
-// an event that the listener thread waits on during its Send() call.  This
-// allows us to dispatch incoming sync messages when blocked.  The race
-// condition is handled because if Send is in the process of being called, it
-// will check the event.  In case the listener thread isn't sending a message,
-// we queue a task on the listener thread to dispatch the received messages.
-// The messages are stored in this queue object that's shared among all
-// SyncChannel objects on the same thread (since one object can receive a
-// sync message while another one is blocked).
-
+// Currently, this class remains to manage a shared waitable event on
+// a thread across a number of sync channels on that thread.
 class SyncChannel::ReceivedSyncMsgQueue :
     public base::RefCountedThreadSafe<ReceivedSyncMsgQueue> {
  public:
@@ -81,9 +66,6 @@ class SyncChannel::ReceivedSyncMsgQueue :
   }
 
   base::WaitableEvent* dispatch_event() { return &dispatch_event_; }
-  base::SingleThreadTaskRunner* listener_task_runner() {
-    return listener_task_runner_.get();
-  }
 
  private:
   friend class base::RefCountedThreadSafe<ReceivedSyncMsgQueue>;
@@ -93,8 +75,6 @@ class SyncChannel::ReceivedSyncMsgQueue :
   ReceivedSyncMsgQueue()
       : dispatch_event_(base::WaitableEvent::ResetPolicy::MANUAL,
                         base::WaitableEvent::InitialState::NOT_SIGNALED),
-        listener_task_runner_(
-            base::SingleThreadTaskRunner::GetCurrentDefault()),
         sync_dispatch_watcher_(std::make_unique<mojo::SyncEventWatcher>(
             &dispatch_event_,
             base::BindRepeating(&ReceivedSyncMsgQueue::OnDispatchEventReady,
@@ -110,9 +90,7 @@ class SyncChannel::ReceivedSyncMsgQueue :
   // sender needs its reply before it can reply to our original synchronous
   // message.
   base::WaitableEvent dispatch_event_;
-  scoped_refptr<base::SingleThreadTaskRunner> listener_task_runner_;
   base::Lock message_lock_;
-  bool task_pending_ = false;
   int listener_count_ = 0;
 
   // Watches |dispatch_event_| during all sync handle watches on this thread.
