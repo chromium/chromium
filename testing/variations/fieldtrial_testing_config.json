@@ -992,6 +992,7 @@
                     "name": "Enabled",
                     "enable_features": [
                         "AndroidSmsOtpFilling",
+                        "FieldClassificationModelCaching",
                         "PasswordFormClientsideClassifier"
                     ]
                 }
