@@ -13771,21 +13771,6 @@
             ]
         }
     ],
-    "IOSShareExtensionMIM": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ShareExtensionForMultiprofile"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSShowTabGroupInGridOnStart": [
         {
             "platforms": [
