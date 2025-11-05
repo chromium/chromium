@@ -4,13 +4,17 @@
 
 #include "components/autofill/core/browser/payments/save_and_fill_manager_impl.h"
 
+#include "base/check_deref.h"
 #include "base/json/json_reader.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/gmock_callback_support.h"
+#include "base/test/gmock_move_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "components/autofill/core/browser/data_manager/addresses/test_address_data_manager.h"
 #include "components/autofill/core/browser/form_import/form_data_importer_test_api.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/metrics/payments/save_and_fill_metrics.h"
@@ -30,6 +34,17 @@ namespace autofill::payments {
 
 namespace {
 
+using ::base::test::RunOnceCallback;
+using ::testing::_;
+using ::testing::A;
+using ::testing::Contains;
+using ::testing::DoAll;
+using ::testing::NiceMock;
+using ::testing::Return;
+using ::testing::SaveArg;
+
+using MockFillCardCallback =
+    base::MockCallback<SaveAndFillManagerImpl::FillCardCallback>;
 using CardSaveAndFillDialogUserDecision =
     PaymentsAutofillClient::CardSaveAndFillDialogUserDecision;
 using UserProvidedCardSaveAndFillDetails =
@@ -103,44 +118,29 @@ class MockPaymentsDataManager : public TestPaymentsDataManager {
 
 class SaveAndFillManagerImplTest : public testing::Test {
  public:
-  void SetUp() override {
-    autofill_client_ = std::make_unique<autofill::TestAutofillClient>();
-    autofill_client_->GetPersonalDataManager().set_payments_data_manager(
-        std::make_unique<MockPaymentsDataManager>());
-    autofill_client_->GetPersonalDataManager()
-        .test_payments_data_manager()
-        .SetPrefService(autofill_client_->GetPrefs());
-
-    auto payments_autofill_client =
-        std::make_unique<TestPaymentsAutofillClientMock>(
-            autofill_client_.get());
-    payments_autofill_client_ = payments_autofill_client.get();
-    autofill_client_->set_payments_autofill_client(
-        std::move(payments_autofill_client));
-
-    auto mock_network_interface =
-        std::make_unique<MockMultipleRequestPaymentsNetworkInterface>(
-            autofill_client_->GetURLLoaderFactory(),
-            *autofill_client_->GetIdentityManager());
-    mock_network_interface_ = mock_network_interface.get();
-    payments_autofill_client_->set_multiple_request_payments_network_interface(
-        std::move(mock_network_interface));
-
-    std::unique_ptr<TestStrikeDatabase> test_strike_database =
-        std::make_unique<TestStrikeDatabase>();
-    strike_database_ = test_strike_database.get();
-    autofill_client_->set_test_strike_database(std::move(test_strike_database));
+  SaveAndFillManagerImplTest() {
+    autofill_client().GetPersonalDataManager().set_payments_data_manager(
+        std::make_unique<NiceMock<MockPaymentsDataManager>>());
+    payments_data_manager().SetPrefService(autofill_client().GetPrefs());
+    autofill_client().set_payments_autofill_client(
+        std::make_unique<NiceMock<TestPaymentsAutofillClientMock>>(
+            &autofill_client()));
+    payments_autofill_client().set_multiple_request_payments_network_interface(
+        std::make_unique<NiceMock<MockMultipleRequestPaymentsNetworkInterface>>(
+            autofill_client().GetURLLoaderFactory(),
+            *autofill_client().GetIdentityManager()));
+    autofill_client().set_test_strike_database(
+        std::make_unique<TestStrikeDatabase>());
 
     save_and_fill_manager_impl_ =
-        std::make_unique<SaveAndFillManagerImpl>(autofill_client_.get());
+        std::make_unique<SaveAndFillManagerImpl>(&autofill_client());
   }
 
   void SetUpGetDetailsForCreateCardResponse(
       PaymentsAutofillClient::PaymentsRpcResult result,
       bool create_valid_legal_message,
       const std::vector<std::pair<int, int>>& supported_card_bin_ranges = {}) {
-    ON_CALL(*mock_network_interface_,
-            GetDetailsForCreateCard(testing::_, testing::_))
+    ON_CALL(network_interface(), GetDetailsForCreateCard)
         .WillByDefault([&, result, create_valid_legal_message,
                         supported_card_bin_ranges](
                            const auto& /*request_details*/,
@@ -149,7 +149,7 @@ class SaveAndFillManagerImplTest : public testing::Test {
                                const std::u16string&,
                                std::unique_ptr<base::Value::Dict>,
                                std::vector<std::pair<int, int>>)> callback) {
-          task_environment_.FastForwardBy(base::Milliseconds(600));
+          FastForwardBy(base::Milliseconds(600));
           std::move(callback).Run(
               result, u"context_token",
               create_valid_legal_message
@@ -170,13 +170,13 @@ class SaveAndFillManagerImplTest : public testing::Test {
 
   void SetUpCreateCardResponse(PaymentsAutofillClient::PaymentsRpcResult result,
                                const std::string& instrument_id) {
-    ON_CALL(*mock_network_interface_, CreateCard)
+    ON_CALL(network_interface(), CreateCard)
         .WillByDefault([&, result, instrument_id](
                            const UploadCardRequestDetails&,
                            base::OnceCallback<void(
                                PaymentsAutofillClient::PaymentsRpcResult,
                                const std::string&)> callback) {
-          task_environment_.FastForwardBy(base::Milliseconds(1000));
+          FastForwardBy(base::Milliseconds(1000));
           std::move(callback).Run(result, instrument_id);
           return RequestId("11223344");
         });
@@ -185,7 +185,7 @@ class SaveAndFillManagerImplTest : public testing::Test {
   void SetUpUploadSaveAndFillDialogDecision(
       CardSaveAndFillDialogUserDecision decision,
       const UserProvidedCardSaveAndFillDetails& details) {
-    ON_CALL(*payments_autofill_client_, ShowCreditCardUploadSaveAndFillDialog)
+    ON_CALL(payments_autofill_client(), ShowCreditCardUploadSaveAndFillDialog)
         .WillByDefault(
             [decision, details](
                 const LegalMessageLines&,
@@ -193,16 +193,43 @@ class SaveAndFillManagerImplTest : public testing::Test {
                     callback) { std::move(callback).Run(decision, details); });
   }
 
- protected:
+  TestAddressDataManager& address_data_manager() {
+    return autofill_client()
+        .GetPersonalDataManager()
+        .test_address_data_manager();
+  }
+  TestAutofillClient& autofill_client() { return autofill_client_; }
+  MockMultipleRequestPaymentsNetworkInterface& network_interface() {
+    return static_cast<MockMultipleRequestPaymentsNetworkInterface&>(
+        *payments_autofill_client()
+             .GetMultipleRequestPaymentsNetworkInterface());
+  }
+  TestPaymentsAutofillClientMock& payments_autofill_client() {
+    return static_cast<TestPaymentsAutofillClientMock&>(
+        CHECK_DEREF(autofill_client().GetPaymentsAutofillClient()));
+  }
+  MockPaymentsDataManager& payments_data_manager() {
+    return static_cast<MockPaymentsDataManager&>(
+        autofill_client().GetPersonalDataManager().payments_data_manager());
+  }
+  SaveAndFillManagerImpl& save_and_fill_manager() {
+    return *save_and_fill_manager_impl_;
+  }
+  TestStrikeDatabase* strike_database() {
+    return autofill_client().GetStrikeDatabase();
+  }
+
+  void FastForwardBy(base::TimeDelta delta) {
+    task_environment_.FastForwardBy(delta);
+  }
+
+  void ResetSaveAndFillManager() { save_and_fill_manager_impl_.reset(); }
+
+ private:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  std::unique_ptr<TestAutofillClient> autofill_client_;
-  raw_ptr<TestPaymentsAutofillClientMock> payments_autofill_client_;
+  TestAutofillClient autofill_client_;
   std::unique_ptr<SaveAndFillManagerImpl> save_and_fill_manager_impl_;
-  raw_ptr<MockMultipleRequestPaymentsNetworkInterface> mock_network_interface_;
-  base::MockCallback<SaveAndFillManagerImpl::FillCardCallback>
-      fill_card_callback_;
-  raw_ptr<TestStrikeDatabase> strike_database_;
 };
 
 UserProvidedCardSaveAndFillDetails CreateUserProvidedCardDetails(
@@ -223,21 +250,21 @@ UserProvidedCardSaveAndFillDetails CreateUserProvidedCardDetails(
 }
 
 TEST_F(SaveAndFillManagerImplTest, OfferLocalSaveAndFill_ShowsLocalDialog) {
-  EXPECT_CALL(
-      *payments_autofill_client_,
-      ShowCreditCardLocalSaveAndFillDialog(
-          testing::A<PaymentsAutofillClient::CardSaveAndFillDialogCallback>()));
+  EXPECT_CALL(payments_autofill_client(),
+              ShowCreditCardLocalSaveAndFillDialog(
+                  A<PaymentsAutofillClient::CardSaveAndFillDialogCallback>()));
 
-  save_and_fill_manager_impl_->OnDidAcceptCreditCardSaveAndFillSuggestion(
-      fill_card_callback_.Get());
+  save_and_fill_manager().OnDidAcceptCreditCardSaveAndFillSuggestion(
+      base::DoNothing());
 }
 
 TEST_F(SaveAndFillManagerImplTest,
        OnDidAcceptCreditCardSaveAndFillSuggestion_NotifyFormDataImporter) {
-  save_and_fill_manager_impl_->OnDidAcceptCreditCardSaveAndFillSuggestion(
-      fill_card_callback_.Get());
+  save_and_fill_manager().OnDidAcceptCreditCardSaveAndFillSuggestion(
+      base::DoNothing());
 
-  EXPECT_TRUE(autofill_client_->GetFormDataImporter()
+  EXPECT_TRUE(autofill_client()
+                  .GetFormDataImporter()
                   ->fetched_payments_data_context()
                   .card_submitted_through_save_and_fill);
 }
@@ -246,23 +273,23 @@ TEST_F(SaveAndFillManagerImplTest, OnUserDidDecideOnLocalSave_Accepted) {
   // Disable StrikeDB check so it will not block feature prompt.
   base::test::ScopedFeatureList feature_list(
       strike_database::features::kDisableStrikeSystem);
-  SaveAndFillStrikeDatabase save_and_fill_strike_database(strike_database_);
+  SaveAndFillStrikeDatabase save_and_fill_strike_database(strike_database());
   // Add an existing strike.
   save_and_fill_strike_database.AddStrike();
   EXPECT_EQ(1, save_and_fill_strike_database.GetStrikes());
 
-  EXPECT_CALL(
-      *payments_autofill_client_,
-      ShowCreditCardLocalSaveAndFillDialog(
-          testing::A<PaymentsAutofillClient::CardSaveAndFillDialogCallback>()));
+  EXPECT_CALL(payments_autofill_client(),
+              ShowCreditCardLocalSaveAndFillDialog(
+                  A<PaymentsAutofillClient::CardSaveAndFillDialogCallback>()));
 
   CreditCard card_to_fill;
-  EXPECT_CALL(fill_card_callback_, Run(testing::A<const CreditCard&>()))
-      .WillOnce(testing::SaveArg<0>(&card_to_fill));
+  MockFillCardCallback fill_card_callback;
+  EXPECT_CALL(fill_card_callback, Run(A<const CreditCard&>()))
+      .WillOnce(SaveArg<0>(&card_to_fill));
 
-  save_and_fill_manager_impl_->OnDidAcceptCreditCardSaveAndFillSuggestion(
-      fill_card_callback_.Get());
-  save_and_fill_manager_impl_->OnUserDidDecideOnLocalSave(
+  save_and_fill_manager().OnDidAcceptCreditCardSaveAndFillSuggestion(
+      fill_card_callback.Get());
+  save_and_fill_manager().OnUserDidDecideOnLocalSave(
       CardSaveAndFillDialogUserDecision::kAccepted,
       CreateUserProvidedCardDetails(
           /*card_number=*/u"4444333322221111", /*cardholder_name=*/u"John Doe",
@@ -270,14 +297,10 @@ TEST_F(SaveAndFillManagerImplTest, OnUserDidDecideOnLocalSave_Accepted) {
           /*expiration_date_year=*/u"2035",
           /*security_code=*/u"123"));
 
-  EXPECT_THAT(payments_autofill_client_->GetPaymentsDataManager()
-                  .GetCreditCards()
-                  .size(),
-              1u);
+  EXPECT_THAT(payments_data_manager().GetCreditCards().size(), 1u);
 
   const CreditCard* saved_card =
-      payments_autofill_client_->GetPaymentsDataManager()
-          .GetLocalCreditCards()[0];
+      payments_data_manager().GetLocalCreditCards()[0];
 
   EXPECT_EQ(u"4444333322221111", saved_card->GetRawInfo(CREDIT_CARD_NUMBER));
   EXPECT_EQ(u"John Doe", saved_card->GetRawInfo(CREDIT_CARD_NAME_FULL));
@@ -294,38 +317,35 @@ TEST_F(SaveAndFillManagerImplTest, OnUserDidDecideOnLocalSave_Accepted) {
 }
 
 TEST_F(SaveAndFillManagerImplTest, OnUserDidDecideOnLocalSave_Declined) {
-  EXPECT_CALL(
-      *payments_autofill_client_,
-      ShowCreditCardLocalSaveAndFillDialog(
-          testing::A<PaymentsAutofillClient::CardSaveAndFillDialogCallback>()));
+  EXPECT_CALL(payments_autofill_client(),
+              ShowCreditCardLocalSaveAndFillDialog(
+                  A<PaymentsAutofillClient::CardSaveAndFillDialogCallback>()));
 
-  save_and_fill_manager_impl_->OnDidAcceptCreditCardSaveAndFillSuggestion(
-      fill_card_callback_.Get());
-  save_and_fill_manager_impl_->OnUserDidDecideOnLocalSave(
+  save_and_fill_manager().OnDidAcceptCreditCardSaveAndFillSuggestion(
+      base::DoNothing());
+  save_and_fill_manager().OnUserDidDecideOnLocalSave(
       CardSaveAndFillDialogUserDecision::kDeclined,
       UserProvidedCardSaveAndFillDetails());
 
-  EXPECT_TRUE(payments_autofill_client_->GetPaymentsDataManager()
-                  .GetCreditCards()
-                  .empty());
+  EXPECT_TRUE(payments_data_manager().GetCreditCards().empty());
 }
 
 #if !BUILDFLAG(IS_IOS)
 TEST_F(SaveAndFillManagerImplTest, LocallySaveCreditCard_WithCvc_PrefOn) {
-  prefs::SetPaymentCvcStorage(autofill_client_->GetPrefs(), true);
+  prefs::SetPaymentCvcStorage(autofill_client().GetPrefs(), true);
 
-  EXPECT_CALL(
-      *payments_autofill_client_,
-      ShowCreditCardLocalSaveAndFillDialog(
-          testing::A<PaymentsAutofillClient::CardSaveAndFillDialogCallback>()));
+  EXPECT_CALL(payments_autofill_client(),
+              ShowCreditCardLocalSaveAndFillDialog(
+                  A<PaymentsAutofillClient::CardSaveAndFillDialogCallback>()));
 
   CreditCard card_to_fill;
-  EXPECT_CALL(fill_card_callback_, Run(testing::A<const CreditCard&>()))
-      .WillOnce(testing::SaveArg<0>(&card_to_fill));
+  MockFillCardCallback fill_card_callback;
+  EXPECT_CALL(fill_card_callback, Run(A<const CreditCard&>()))
+      .WillOnce(SaveArg<0>(&card_to_fill));
 
-  save_and_fill_manager_impl_->OnDidAcceptCreditCardSaveAndFillSuggestion(
-      fill_card_callback_.Get());
-  save_and_fill_manager_impl_->OnUserDidDecideOnLocalSave(
+  save_and_fill_manager().OnDidAcceptCreditCardSaveAndFillSuggestion(
+      fill_card_callback.Get());
+  save_and_fill_manager().OnUserDidDecideOnLocalSave(
       CardSaveAndFillDialogUserDecision::kAccepted,
       CreateUserProvidedCardDetails(
           /*card_number=*/u"4444333322221111", /*cardholder_name=*/u"John Doe",
@@ -333,33 +353,27 @@ TEST_F(SaveAndFillManagerImplTest, LocallySaveCreditCard_WithCvc_PrefOn) {
           /*expiration_date_year=*/u"2035",
           /*security_code=*/u"123"));
 
-  EXPECT_THAT(payments_autofill_client_->GetPaymentsDataManager()
-                  .GetCreditCards()
-                  .size(),
-              1u);
-  EXPECT_THAT(payments_autofill_client_->GetPaymentsDataManager()
-                  .GetLocalCreditCards()
-                  .front()
-                  ->cvc(),
+  EXPECT_THAT(payments_data_manager().GetCreditCards().size(), 1u);
+  EXPECT_THAT(payments_data_manager().GetLocalCreditCards().front()->cvc(),
               u"123");
   EXPECT_THAT(card_to_fill.cvc(), u"123");
 }
 
 TEST_F(SaveAndFillManagerImplTest, LocallySaveCreditCard_WithCvc_PrefOff) {
-  prefs::SetPaymentCvcStorage(autofill_client_->GetPrefs(), false);
+  prefs::SetPaymentCvcStorage(autofill_client().GetPrefs(), false);
 
-  EXPECT_CALL(
-      *payments_autofill_client_,
-      ShowCreditCardLocalSaveAndFillDialog(
-          testing::A<PaymentsAutofillClient::CardSaveAndFillDialogCallback>()));
+  EXPECT_CALL(payments_autofill_client(),
+              ShowCreditCardLocalSaveAndFillDialog(
+                  A<PaymentsAutofillClient::CardSaveAndFillDialogCallback>()));
 
   CreditCard card_to_fill;
-  EXPECT_CALL(fill_card_callback_, Run(testing::A<const CreditCard&>()))
-      .WillOnce(testing::SaveArg<0>(&card_to_fill));
+  MockFillCardCallback fill_card_callback;
+  EXPECT_CALL(fill_card_callback, Run(A<const CreditCard&>()))
+      .WillOnce(SaveArg<0>(&card_to_fill));
 
-  save_and_fill_manager_impl_->OnDidAcceptCreditCardSaveAndFillSuggestion(
-      fill_card_callback_.Get());
-  save_and_fill_manager_impl_->OnUserDidDecideOnLocalSave(
+  save_and_fill_manager().OnDidAcceptCreditCardSaveAndFillSuggestion(
+      fill_card_callback.Get());
+  save_and_fill_manager().OnUserDidDecideOnLocalSave(
       CardSaveAndFillDialogUserDecision::kAccepted,
       CreateUserProvidedCardDetails(
           /*card_number=*/u"4444333322221111", /*cardholder_name=*/u"John Doe",
@@ -367,14 +381,8 @@ TEST_F(SaveAndFillManagerImplTest, LocallySaveCreditCard_WithCvc_PrefOff) {
           /*expiration_date_year=*/u"2035",
           /*security_code=*/u"123"));
 
-  EXPECT_THAT(payments_autofill_client_->GetPaymentsDataManager()
-                  .GetCreditCards()
-                  .size(),
-              1u);
-  EXPECT_THAT(payments_autofill_client_->GetPaymentsDataManager()
-                  .GetLocalCreditCards()
-                  .front()
-                  ->cvc(),
+  EXPECT_THAT(payments_data_manager().GetCreditCards().size(), 1u);
+  EXPECT_THAT(payments_data_manager().GetLocalCreditCards().front()->cvc(),
               u"");
   // The CVC value should still be filled as long as the user provided it.
   EXPECT_THAT(card_to_fill.cvc(), u"123");
@@ -383,50 +391,40 @@ TEST_F(SaveAndFillManagerImplTest, LocallySaveCreditCard_WithCvc_PrefOff) {
 
 TEST_F(SaveAndFillManagerImplTest,
        OnDidAcceptCreditCardSaveAndFillSuggestion_ServerSaveAndFill) {
-  save_and_fill_manager_impl_->SetCreditCardUploadEnabledOverrideForTesting(
-      true);
+  save_and_fill_manager().SetCreditCardUploadEnabledOverrideForTesting(true);
   UploadCardRequestDetails details;
 
-  EXPECT_CALL(*mock_network_interface_,
-              GetDetailsForCreateCard(testing::_, testing::_))
-      .WillOnce(testing::DoAll(testing::SaveArg<0>(&details),
-                               testing::Return(RequestId("11223344"))));
+  EXPECT_CALL(network_interface(), GetDetailsForCreateCard)
+      .WillOnce(DoAll(SaveArg<0>(&details), Return(RequestId("11223344"))));
 
-  save_and_fill_manager_impl_->OnDidAcceptCreditCardSaveAndFillSuggestion(
-      fill_card_callback_.Get());
+  save_and_fill_manager().OnDidAcceptCreditCardSaveAndFillSuggestion(
+      base::DoNothing());
 
   EXPECT_EQ(details.upload_card_source, UploadCardSource::kUpstreamSaveAndFill);
-  EXPECT_EQ(
-      details.billing_customer_number,
-      payments::GetBillingCustomerId(
-          autofill_client_->GetPersonalDataManager().payments_data_manager()));
-  EXPECT_EQ(details.app_locale, autofill_client_->GetAppLocale());
-  EXPECT_THAT(details.client_behavior_signals,
-              testing::Contains(
-                  ClientBehaviorConstants::kShowAccountEmailInLegalMessage));
+  EXPECT_EQ(details.billing_customer_number,
+            payments::GetBillingCustomerId(payments_data_manager()));
+  EXPECT_EQ(details.app_locale, autofill_client().GetAppLocale());
+  EXPECT_THAT(
+      details.client_behavior_signals,
+      Contains(ClientBehaviorConstants::kShowAccountEmailInLegalMessage));
   if (base::FeatureList::IsEnabled(
           features::kAutofillEnableCvcStorageAndFilling)) {
     EXPECT_THAT(details.client_behavior_signals,
-                testing::Contains(ClientBehaviorConstants::kOfferingToSaveCvc));
+                Contains(ClientBehaviorConstants::kOfferingToSaveCvc));
   }
 }
 
 TEST_F(SaveAndFillManagerImplTest, UniqueAddress_SingleAddressCandidate) {
   auto profile = test::GetFullProfile(AddressCountryCode("US"));
-  autofill_client_->GetPersonalDataManager()
-      .test_address_data_manager()
-      .AddProfile(profile);
-  save_and_fill_manager_impl_->SetCreditCardUploadEnabledOverrideForTesting(
-      true);
+  address_data_manager().AddProfile(profile);
+  save_and_fill_manager().SetCreditCardUploadEnabledOverrideForTesting(true);
   UploadCardRequestDetails details;
 
-  EXPECT_CALL(*mock_network_interface_,
-              GetDetailsForCreateCard(testing::_, testing::_))
-      .WillOnce(testing::DoAll(testing::SaveArg<0>(&details),
-                               testing::Return(RequestId("11223344"))));
+  EXPECT_CALL(network_interface(), GetDetailsForCreateCard)
+      .WillOnce(DoAll(SaveArg<0>(&details), Return(RequestId("11223344"))));
 
-  save_and_fill_manager_impl_->OnDidAcceptCreditCardSaveAndFillSuggestion(
-      fill_card_callback_.Get());
+  save_and_fill_manager().OnDidAcceptCreditCardSaveAndFillSuggestion(
+      base::DoNothing());
 
   ASSERT_EQ(details.profiles.size(), 1U);
   EXPECT_EQ(details.profiles[0], profile);
@@ -434,45 +432,35 @@ TEST_F(SaveAndFillManagerImplTest, UniqueAddress_SingleAddressCandidate) {
 
 TEST_F(SaveAndFillManagerImplTest,
        UniqueAddress_MultipleConflictingAddressCandidates) {
-  auto& test_address_data_manager =
-      autofill_client_->GetPersonalDataManager().test_address_data_manager();
-  test_address_data_manager.AddProfile(
+  address_data_manager().AddProfile(
       test::GetFullProfile(AddressCountryCode("US")));
-  test_address_data_manager.AddProfile(
+  address_data_manager().AddProfile(
       test::GetFullProfile2(AddressCountryCode("UK")));
-  save_and_fill_manager_impl_->SetCreditCardUploadEnabledOverrideForTesting(
-      true);
+  save_and_fill_manager().SetCreditCardUploadEnabledOverrideForTesting(true);
   UploadCardRequestDetails details;
 
-  EXPECT_CALL(*mock_network_interface_,
-              GetDetailsForCreateCard(testing::_, testing::_))
-      .WillOnce(testing::DoAll(testing::SaveArg<0>(&details),
-                               testing::Return(RequestId("11223344"))));
+  EXPECT_CALL(network_interface(), GetDetailsForCreateCard)
+      .WillOnce(DoAll(SaveArg<0>(&details), Return(RequestId("11223344"))));
 
-  save_and_fill_manager_impl_->OnDidAcceptCreditCardSaveAndFillSuggestion(
-      fill_card_callback_.Get());
+  save_and_fill_manager().OnDidAcceptCreditCardSaveAndFillSuggestion(
+      base::DoNothing());
 
   EXPECT_TRUE(details.profiles.empty());
 }
 
 TEST_F(SaveAndFillManagerImplTest,
        UniqueAddress_MultipleDuplicateAddressCandidates) {
-  auto& test_address_data_manager =
-      autofill_client_->GetPersonalDataManager().test_address_data_manager();
   auto profile = test::GetFullProfile(AddressCountryCode("US"));
-  test_address_data_manager.AddProfile(profile);
-  test_address_data_manager.AddProfile(profile);
-  save_and_fill_manager_impl_->SetCreditCardUploadEnabledOverrideForTesting(
-      true);
+  address_data_manager().AddProfile(profile);
+  address_data_manager().AddProfile(profile);
+  save_and_fill_manager().SetCreditCardUploadEnabledOverrideForTesting(true);
   UploadCardRequestDetails details;
 
-  EXPECT_CALL(*mock_network_interface_,
-              GetDetailsForCreateCard(testing::_, testing::_))
-      .WillOnce(testing::DoAll(testing::SaveArg<0>(&details),
-                               testing::Return(RequestId("11223344"))));
+  EXPECT_CALL(network_interface(), GetDetailsForCreateCard)
+      .WillOnce(DoAll(SaveArg<0>(&details), Return(RequestId("11223344"))));
 
-  save_and_fill_manager_impl_->OnDidAcceptCreditCardSaveAndFillSuggestion(
-      fill_card_callback_.Get());
+  save_and_fill_manager().OnDidAcceptCreditCardSaveAndFillSuggestion(
+      base::DoNothing());
 
   ASSERT_EQ(details.profiles.size(), 1U);
   EXPECT_EQ(details.profiles[0], profile);
@@ -483,21 +471,16 @@ TEST_F(SaveAndFillManagerImplTest,
   auto profile = test::GetFullProfile(AddressCountryCode("US"));
   profile.usage_history().set_modification_date(base::Time::Now());
   profile.usage_history().set_use_date(base::Time::Now());
-  autofill_client_->GetPersonalDataManager()
-      .test_address_data_manager()
-      .AddProfile(profile);
-  task_environment_.FastForwardBy(base::Days(360));
-  save_and_fill_manager_impl_->SetCreditCardUploadEnabledOverrideForTesting(
-      true);
+  address_data_manager().AddProfile(profile);
+  FastForwardBy(base::Days(360));
+  save_and_fill_manager().SetCreditCardUploadEnabledOverrideForTesting(true);
   UploadCardRequestDetails details;
 
-  EXPECT_CALL(*mock_network_interface_,
-              GetDetailsForCreateCard(testing::_, testing::_))
-      .WillOnce(testing::DoAll(testing::SaveArg<0>(&details),
-                               testing::Return(RequestId("11223344"))));
+  EXPECT_CALL(network_interface(), GetDetailsForCreateCard)
+      .WillOnce(DoAll(SaveArg<0>(&details), Return(RequestId("11223344"))));
 
-  save_and_fill_manager_impl_->OnDidAcceptCreditCardSaveAndFillSuggestion(
-      fill_card_callback_.Get());
+  save_and_fill_manager().OnDidAcceptCreditCardSaveAndFillSuggestion(
+      base::DoNothing());
 
   EXPECT_TRUE(details.profiles.empty());
 }
@@ -506,19 +489,17 @@ TEST_F(SaveAndFillManagerImplTest,
 // legal messages are parsed correctly.
 TEST_F(SaveAndFillManagerImplTest,
        OnDidGetDetailsForCreateCard_Success_OfferUploadSaveAndFill) {
-  save_and_fill_manager_impl_->SetCreditCardUploadEnabledOverrideForTesting(
-      true);
+  save_and_fill_manager().SetCreditCardUploadEnabledOverrideForTesting(true);
   SetUpGetDetailsForCreateCardResponse(
       PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
       /*create_valid_legal_message=*/true);
 
-  EXPECT_CALL(*mock_network_interface_,
-              GetDetailsForCreateCard(testing::_, testing::_));
-  EXPECT_CALL(*payments_autofill_client_,
+  EXPECT_CALL(network_interface(), GetDetailsForCreateCard);
+  EXPECT_CALL(payments_autofill_client(),
               ShowCreditCardUploadSaveAndFillDialog);
 
-  save_and_fill_manager_impl_->OnDidAcceptCreditCardSaveAndFillSuggestion(
-      fill_card_callback_.Get());
+  save_and_fill_manager().OnDidAcceptCreditCardSaveAndFillSuggestion(
+      base::DoNothing());
 }
 
 // Test that local Save and Fill is offered as a fallback when legal message
@@ -526,41 +507,36 @@ TEST_F(SaveAndFillManagerImplTest,
 TEST_F(
     SaveAndFillManagerImplTest,
     OnDidGetDetailsForCreateCard_LegalMessageFails_FallbackToLocalSaveAndFill) {
-  save_and_fill_manager_impl_->SetCreditCardUploadEnabledOverrideForTesting(
-      true);
+  save_and_fill_manager().SetCreditCardUploadEnabledOverrideForTesting(true);
   SetUpGetDetailsForCreateCardResponse(
       PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
       /*create_valid_legal_message=*/false);
 
-  EXPECT_CALL(*mock_network_interface_,
-              GetDetailsForCreateCard(testing::_, testing::_));
-  EXPECT_CALL(*payments_autofill_client_, ShowCreditCardLocalSaveAndFillDialog);
+  EXPECT_CALL(network_interface(), GetDetailsForCreateCard);
+  EXPECT_CALL(payments_autofill_client(), ShowCreditCardLocalSaveAndFillDialog);
 
-  save_and_fill_manager_impl_->OnDidAcceptCreditCardSaveAndFillSuggestion(
-      fill_card_callback_.Get());
+  save_and_fill_manager().OnDidAcceptCreditCardSaveAndFillSuggestion(
+      base::DoNothing());
 }
 
 // Test that local Save and Fill is offered as a fallback when the preflight RPC
 // fails.
 TEST_F(SaveAndFillManagerImplTest,
        OnDidGetDetailsForCreateCard_RpcFailure_FallbackToLocalSaveAndFill) {
-  save_and_fill_manager_impl_->SetCreditCardUploadEnabledOverrideForTesting(
-      true);
+  save_and_fill_manager().SetCreditCardUploadEnabledOverrideForTesting(true);
   SetUpGetDetailsForCreateCardResponse(
       PaymentsAutofillClient::PaymentsRpcResult::kPermanentFailure,
       /*create_valid_legal_message=*/true);
 
-  EXPECT_CALL(*mock_network_interface_,
-              GetDetailsForCreateCard(testing::_, testing::_));
-  EXPECT_CALL(*payments_autofill_client_, ShowCreditCardLocalSaveAndFillDialog);
+  EXPECT_CALL(network_interface(), GetDetailsForCreateCard);
+  EXPECT_CALL(payments_autofill_client(), ShowCreditCardLocalSaveAndFillDialog);
 
-  save_and_fill_manager_impl_->OnDidAcceptCreditCardSaveAndFillSuggestion(
-      fill_card_callback_.Get());
+  save_and_fill_manager().OnDidAcceptCreditCardSaveAndFillSuggestion(
+      base::DoNothing());
 }
 
 TEST_F(SaveAndFillManagerImplTest, LoadRiskData) {
-  save_and_fill_manager_impl_->SetCreditCardUploadEnabledOverrideForTesting(
-      true);
+  save_and_fill_manager().SetCreditCardUploadEnabledOverrideForTesting(true);
   SetUpGetDetailsForCreateCardResponse(
       PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
       /*create_valid_legal_message=*/true);
@@ -575,19 +551,15 @@ TEST_F(SaveAndFillManagerImplTest, LoadRiskData) {
       CardSaveAndFillDialogUserDecision::kAccepted, user_provided_details);
 
   base::OnceCallback<void(const std::string&)> risk_data_loaded_callback;
-  EXPECT_CALL(*payments_autofill_client_, LoadRiskData)
-      .WillOnce([&](base::OnceCallback<void(const std::string&)> callback) {
-        risk_data_loaded_callback = std::move(callback);
-      });
+  EXPECT_CALL(payments_autofill_client(), LoadRiskData)
+      .WillOnce(MoveArg(&risk_data_loaded_callback));
 
   UploadCardRequestDetails details;
-  EXPECT_CALL(*mock_network_interface_, CreateCard)
-      .WillOnce(testing::DoAll(testing::SaveArg<0>(&details),
-                               testing::Return(RequestId("11223344"))));
+  EXPECT_CALL(network_interface(), CreateCard)
+      .WillOnce(DoAll(SaveArg<0>(&details), Return(RequestId("11223344"))));
 
-  save_and_fill_manager_impl_->OnDidAcceptCreditCardSaveAndFillSuggestion(
-      fill_card_callback_.Get());
-
+  save_and_fill_manager().OnDidAcceptCreditCardSaveAndFillSuggestion(
+      base::DoNothing());
   std::move(risk_data_loaded_callback).Run("some risk data");
 
   EXPECT_EQ(details.risk_data, "some risk data");
@@ -595,9 +567,9 @@ TEST_F(SaveAndFillManagerImplTest, LoadRiskData) {
 
 TEST_F(SaveAndFillManagerImplTest,
        OnUserDidDecideOnLocalSave_Declined_AddsStrike) {
-  SaveAndFillStrikeDatabase save_and_fill_strike_database(strike_database_);
+  SaveAndFillStrikeDatabase save_and_fill_strike_database(strike_database());
 
-  save_and_fill_manager_impl_->OnUserDidDecideOnLocalSave(
+  save_and_fill_manager().OnUserDidDecideOnLocalSave(
       CardSaveAndFillDialogUserDecision::kDeclined,
       UserProvidedCardSaveAndFillDetails());
 
@@ -606,24 +578,17 @@ TEST_F(SaveAndFillManagerImplTest,
 
 TEST_F(SaveAndFillManagerImplTest,
        OnUserDidDecideOnUploadSave_Declined_AddsStrike) {
-  save_and_fill_manager_impl_->SetCreditCardUploadEnabledOverrideForTesting(
-      true);
+  save_and_fill_manager().SetCreditCardUploadEnabledOverrideForTesting(true);
   SetUpGetDetailsForCreateCardResponse(
       PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
       /*create_valid_legal_message=*/true);
-  SaveAndFillStrikeDatabase save_and_fill_strike_database(strike_database_);
+  SaveAndFillStrikeDatabase save_and_fill_strike_database(strike_database());
+  EXPECT_CALL(payments_autofill_client(), ShowCreditCardUploadSaveAndFillDialog)
+      .WillOnce(RunOnceCallback<1>(CardSaveAndFillDialogUserDecision::kDeclined,
+                                   UserProvidedCardSaveAndFillDetails()));
 
-  EXPECT_CALL(*payments_autofill_client_, ShowCreditCardUploadSaveAndFillDialog)
-      .WillOnce([](const LegalMessageLines&,
-                   TestPaymentsAutofillClient::CardSaveAndFillDialogCallback
-                       callback) {
-        std::move(callback).Run(CardSaveAndFillDialogUserDecision::kDeclined,
-                                UserProvidedCardSaveAndFillDetails());
-      });
-
-  save_and_fill_manager_impl_->OnDidAcceptCreditCardSaveAndFillSuggestion(
-      fill_card_callback_.Get());
-
+  save_and_fill_manager().OnDidAcceptCreditCardSaveAndFillSuggestion(
+      base::DoNothing());
   EXPECT_EQ(1, save_and_fill_strike_database.GetStrikes());
 }
 
@@ -631,43 +596,37 @@ TEST_F(SaveAndFillManagerImplTest, OnUserDidDecideOnUploadSave_Accepted) {
   // Disable StrikeDB check so it will not block feature prompt.
   base::test::ScopedFeatureList feature_list(
       strike_database::features::kDisableStrikeSystem);
-  SaveAndFillStrikeDatabase save_and_fill_strike_database(strike_database_);
+  SaveAndFillStrikeDatabase save_and_fill_strike_database(strike_database());
   // Add an existing strike.
   save_and_fill_strike_database.AddStrike();
   EXPECT_EQ(1, save_and_fill_strike_database.GetStrikes());
 
-  save_and_fill_manager_impl_->SetCreditCardUploadEnabledOverrideForTesting(
-      true);
+  save_and_fill_manager().SetCreditCardUploadEnabledOverrideForTesting(true);
   SetUpGetDetailsForCreateCardResponse(
       PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
       /*create_valid_legal_message=*/true);
 
   CreditCard card_to_fill;
-  EXPECT_CALL(fill_card_callback_, Run(testing::A<const CreditCard&>()))
-      .WillOnce(testing::SaveArg<0>(&card_to_fill));
-  EXPECT_CALL(*payments_autofill_client_, ShowCreditCardUploadSaveAndFillDialog)
-      .WillOnce([&](const LegalMessageLines&,
-                    TestPaymentsAutofillClient::CardSaveAndFillDialogCallback
-                        callback) {
-        std::move(callback).Run(CardSaveAndFillDialogUserDecision::kAccepted,
-                                CreateUserProvidedCardDetails(
-                                    /*card_number=*/u"1111222233334444",
-                                    /*cardholder_name=*/u"Jane Smith",
-                                    /*expiration_date_month=*/u"06",
-                                    /*expiration_date_year=*/u"2035",
-                                    /*security_code=*/u"456"));
-      });
+  MockFillCardCallback fill_card_callback;
+  EXPECT_CALL(fill_card_callback, Run(A<const CreditCard&>()))
+      .WillOnce(SaveArg<0>(&card_to_fill));
+  EXPECT_CALL(payments_autofill_client(), ShowCreditCardUploadSaveAndFillDialog)
+      .WillOnce(RunOnceCallback<1>(CardSaveAndFillDialogUserDecision::kAccepted,
+                                   CreateUserProvidedCardDetails(
+                                       /*card_number=*/u"1111222233334444",
+                                       /*cardholder_name=*/u"Jane Smith",
+                                       /*expiration_date_month=*/u"06",
+                                       /*expiration_date_year=*/u"2035",
+                                       /*security_code=*/u"456")));
 
-  EXPECT_CALL(*payments_autofill_client_, LoadRiskData)
-      .WillOnce([](base::OnceCallback<void(const std::string&)> callback) {
-        std::move(callback).Run("some risk data");
-      });
-  EXPECT_CALL(*mock_network_interface_, CreateCard)
-      .WillOnce(testing::Return(RequestId("11223344")));
+  EXPECT_CALL(payments_autofill_client(), LoadRiskData)
+      .WillOnce(RunOnceCallback<0>("some risk data"));
+  EXPECT_CALL(network_interface(), CreateCard)
+      .WillOnce(Return(RequestId("11223344")));
 
-  save_and_fill_manager_impl_->OnDidAcceptCreditCardSaveAndFillSuggestion(
-      fill_card_callback_.Get());
-  save_and_fill_manager_impl_->OnDidCreateCard(
+  save_and_fill_manager().OnDidAcceptCreditCardSaveAndFillSuggestion(
+      fill_card_callback.Get());
+  save_and_fill_manager().OnDidCreateCard(
       base::TimeTicks::Now(),
       PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
       /*instrument_id=*/"1122334455");
@@ -683,8 +642,7 @@ TEST_F(SaveAndFillManagerImplTest, OnUserDidDecideOnUploadSave_Accepted) {
 }
 
 TEST_F(SaveAndFillManagerImplTest, CardUploadFeedback_UploadSucceeded) {
-  save_and_fill_manager_impl_->SetCreditCardUploadEnabledOverrideForTesting(
-      true);
+  save_and_fill_manager().SetCreditCardUploadEnabledOverrideForTesting(true);
 
   SetUpGetDetailsForCreateCardResponse(
       PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
@@ -699,26 +657,22 @@ TEST_F(SaveAndFillManagerImplTest, CardUploadFeedback_UploadSucceeded) {
   SetUpUploadSaveAndFillDialogDecision(
       CardSaveAndFillDialogUserDecision::kAccepted, user_provided_details);
 
-  EXPECT_CALL(*payments_autofill_client_, LoadRiskData)
-      .WillOnce([](base::OnceCallback<void(const std::string&)> callback) {
-        std::move(callback).Run("some risk data");
-      });
+  EXPECT_CALL(payments_autofill_client(), LoadRiskData)
+      .WillOnce(RunOnceCallback<0>("some risk data"));
 
   SetUpCreateCardResponse(PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
                           "112233445566L");
 
-  EXPECT_CALL(
-      *payments_autofill_client_,
-      CreditCardUploadCompleted(
-          PaymentsAutofillClient::PaymentsRpcResult::kSuccess, testing::_));
+  EXPECT_CALL(payments_autofill_client(),
+              CreditCardUploadCompleted(
+                  PaymentsAutofillClient::PaymentsRpcResult::kSuccess, _));
 
-  save_and_fill_manager_impl_->OnDidAcceptCreditCardSaveAndFillSuggestion(
-      fill_card_callback_.Get());
+  save_and_fill_manager().OnDidAcceptCreditCardSaveAndFillSuggestion(
+      base::DoNothing());
 }
 
 TEST_F(SaveAndFillManagerImplTest, CardUploadFeedback_UploadFailed) {
-  save_and_fill_manager_impl_->SetCreditCardUploadEnabledOverrideForTesting(
-      true);
+  save_and_fill_manager().SetCreditCardUploadEnabledOverrideForTesting(true);
 
   SetUpGetDetailsForCreateCardResponse(
       PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
@@ -733,24 +687,22 @@ TEST_F(SaveAndFillManagerImplTest, CardUploadFeedback_UploadFailed) {
   SetUpUploadSaveAndFillDialogDecision(
       CardSaveAndFillDialogUserDecision::kAccepted, user_provided_details);
 
-  EXPECT_CALL(*payments_autofill_client_, LoadRiskData)
-      .WillOnce([](base::OnceCallback<void(const std::string&)> callback) {
-        std::move(callback).Run("some risk data");
-      });
+  EXPECT_CALL(payments_autofill_client(), LoadRiskData)
+      .WillOnce(RunOnceCallback<0>("some risk data"));
 
   SetUpCreateCardResponse(
       PaymentsAutofillClient::PaymentsRpcResult::kPermanentFailure, "");
 
-  EXPECT_CALL(*payments_autofill_client_,
-              CreditCardUploadCompleted(
-                  PaymentsAutofillClient::PaymentsRpcResult::kPermanentFailure,
-                  testing::_));
+  EXPECT_CALL(
+      payments_autofill_client(),
+      CreditCardUploadCompleted(
+          PaymentsAutofillClient::PaymentsRpcResult::kPermanentFailure, _));
 
-  save_and_fill_manager_impl_->OnDidAcceptCreditCardSaveAndFillSuggestion(
-      fill_card_callback_.Get());
+  save_and_fill_manager().OnDidAcceptCreditCardSaveAndFillSuggestion(
+      base::DoNothing());
 
   std::vector<const CreditCard*> cards =
-      payments_autofill_client_->GetPaymentsDataManager().GetLocalCreditCards();
+      payments_data_manager().GetLocalCreditCards();
   ASSERT_EQ(cards.size(), 1U);
   EXPECT_EQ(cards[0]->number(), u"1111222233334444");
 }
@@ -759,15 +711,15 @@ TEST_F(SaveAndFillManagerImplTest, CardUploadFeedback_UploadFailed) {
 // selected, and the form is submitted.
 TEST_F(SaveAndFillManagerImplTest,
        OnFormSubmitted_AddsStrikeWhenSuggestionOfferedButNotSelected) {
-  SaveAndFillStrikeDatabase save_and_fill_strike_database(strike_database_);
+  SaveAndFillStrikeDatabase save_and_fill_strike_database(strike_database());
 
-  save_and_fill_manager_impl_->OnSuggestionOffered();
-  save_and_fill_manager_impl_->MaybeAddStrikeForSaveAndFill();
+  save_and_fill_manager().OnSuggestionOffered();
+  save_and_fill_manager().MaybeAddStrikeForSaveAndFill();
 
   EXPECT_EQ(1, save_and_fill_strike_database.GetStrikes());
 
   // Verifies that calling it again won't log another strike.
-  save_and_fill_manager_impl_->MaybeAddStrikeForSaveAndFill();
+  save_and_fill_manager().MaybeAddStrikeForSaveAndFill();
   EXPECT_EQ(1, save_and_fill_strike_database.GetStrikes());
 }
 
@@ -775,12 +727,12 @@ TEST_F(SaveAndFillManagerImplTest,
 // the user.
 TEST_F(SaveAndFillManagerImplTest,
        OnFormSubmitted_NoStrikeWhenSuggestionOfferedAndSelected) {
-  SaveAndFillStrikeDatabase save_and_fill_strike_database(strike_database_);
+  SaveAndFillStrikeDatabase save_and_fill_strike_database(strike_database());
 
-  save_and_fill_manager_impl_->OnSuggestionOffered();
-  save_and_fill_manager_impl_->OnDidAcceptCreditCardSaveAndFillSuggestion(
-      fill_card_callback_.Get());
-  save_and_fill_manager_impl_->MaybeAddStrikeForSaveAndFill();
+  save_and_fill_manager().OnSuggestionOffered();
+  save_and_fill_manager().OnDidAcceptCreditCardSaveAndFillSuggestion(
+      base::DoNothing());
+  save_and_fill_manager().MaybeAddStrikeForSaveAndFill();
 
   EXPECT_EQ(0, save_and_fill_strike_database.GetStrikes());
 }
@@ -789,12 +741,11 @@ TEST_F(SaveAndFillManagerImplTest,
 // never submitted.
 TEST_F(SaveAndFillManagerImplTest,
        OnFormSubmitted_NoStrikeWhenFormNotSubmitted) {
-  SaveAndFillStrikeDatabase save_and_fill_strike_database(strike_database_);
+  SaveAndFillStrikeDatabase save_and_fill_strike_database(strike_database());
 
-  save_and_fill_manager_impl_->OnSuggestionOffered();
-  // To simulate the tab being closed, we reset the unique_ptr and destroy the
-  // SaveAndFillManagerImpl.
-  save_and_fill_manager_impl_.reset();
+  save_and_fill_manager().OnSuggestionOffered();
+  // To simulate the tab being closed, we destroy the save and fill manager.
+  ResetSaveAndFillManager();
 
   EXPECT_EQ(0, save_and_fill_strike_database.GetStrikes());
 }
@@ -802,8 +753,7 @@ TEST_F(SaveAndFillManagerImplTest,
 TEST_F(SaveAndFillManagerImplTest, RequestLatencyMetrics) {
   base::HistogramTester histogram_tester;
 
-  save_and_fill_manager_impl_->SetCreditCardUploadEnabledOverrideForTesting(
-      true);
+  save_and_fill_manager().SetCreditCardUploadEnabledOverrideForTesting(true);
 
   SetUpGetDetailsForCreateCardResponse(
       PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
@@ -818,16 +768,14 @@ TEST_F(SaveAndFillManagerImplTest, RequestLatencyMetrics) {
   SetUpUploadSaveAndFillDialogDecision(
       CardSaveAndFillDialogUserDecision::kAccepted, user_provided_details);
 
-  EXPECT_CALL(*payments_autofill_client_, LoadRiskData)
-      .WillOnce([](base::OnceCallback<void(const std::string&)> callback) {
-        std::move(callback).Run("some risk data");
-      });
+  EXPECT_CALL(payments_autofill_client(), LoadRiskData)
+      .WillOnce(RunOnceCallback<0>("some risk data"));
 
   SetUpCreateCardResponse(PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
                           "112233445566L");
 
-  save_and_fill_manager_impl_->OnDidAcceptCreditCardSaveAndFillSuggestion(
-      fill_card_callback_.Get());
+  save_and_fill_manager().OnDidAcceptCreditCardSaveAndFillSuggestion(
+      base::DoNothing());
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.SaveAndFill.GetDetailsForCreateCard.Latency", 600, 1);
@@ -840,8 +788,7 @@ TEST_F(SaveAndFillManagerImplTest, RequestLatencyMetrics) {
 }
 
 TEST_F(SaveAndFillManagerImplTest, ResetOnFlowEnds_ServerSave) {
-  save_and_fill_manager_impl_->SetCreditCardUploadEnabledOverrideForTesting(
-      true);
+  save_and_fill_manager().SetCreditCardUploadEnabledOverrideForTesting(true);
   SetUpGetDetailsForCreateCardResponse(
       PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
       /*create_valid_legal_message=*/true);
@@ -852,57 +799,54 @@ TEST_F(SaveAndFillManagerImplTest, ResetOnFlowEnds_ServerSave) {
       /*expiration_date_month=*/u"06",
       /*expiration_date_year=*/u"2035",
       /*security_code=*/u"456");
-  ON_CALL(*payments_autofill_client_, ShowCreditCardUploadSaveAndFillDialog)
-      .WillByDefault([&, this](const LegalMessageLines&,
-                               TestPaymentsAutofillClient::
-                                   CardSaveAndFillDialogCallback callback) {
-        std::move(callback).Run(CardSaveAndFillDialogUserDecision::kAccepted,
-                                user_provided_details);
-        EXPECT_TRUE(
-            save_and_fill_manager_impl_->save_and_fill_suggestion_selected_);
-        EXPECT_EQ(save_and_fill_manager_impl_->upload_details_.card.number(),
-                  u"1111222233334444");
-      });
-  ON_CALL(*payments_autofill_client_, LoadRiskData)
-      .WillByDefault([](base::OnceCallback<void(const std::string&)> callback) {
-        std::move(callback).Run("some risk data");
-      });
+  ON_CALL(payments_autofill_client(), ShowCreditCardUploadSaveAndFillDialog)
+      .WillByDefault(
+          [&](const LegalMessageLines&,
+              TestPaymentsAutofillClient::CardSaveAndFillDialogCallback
+                  callback) {
+            std::move(callback).Run(
+                CardSaveAndFillDialogUserDecision::kAccepted,
+                user_provided_details);
+            EXPECT_TRUE(
+                save_and_fill_manager().save_and_fill_suggestion_selected_);
+            EXPECT_EQ(save_and_fill_manager().upload_details_.card.number(),
+                      u"1111222233334444");
+          });
+  ON_CALL(payments_autofill_client(), LoadRiskData)
+      .WillByDefault(RunOnceCallback<0>("some risk data"));
 
-  save_and_fill_manager_impl_->OnSuggestionOffered();
-  EXPECT_TRUE(save_and_fill_manager_impl_->save_and_fill_suggestion_offered_);
+  save_and_fill_manager().OnSuggestionOffered();
+  EXPECT_TRUE(save_and_fill_manager().save_and_fill_suggestion_offered_);
 
-  save_and_fill_manager_impl_->OnDidAcceptCreditCardSaveAndFillSuggestion(
-      fill_card_callback_.Get());
-  save_and_fill_manager_impl_->OnDidCreateCard(
+  save_and_fill_manager().OnDidAcceptCreditCardSaveAndFillSuggestion(
+      base::DoNothing());
+  save_and_fill_manager().OnDidCreateCard(
       base::TimeTicks::Now(),
       PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
       /*instrument_id=*/"1122334455");
 
   // Verifies that the states variable in the SaveAndFillManagerImpl get reset
   // when flow ends.
-  EXPECT_FALSE(save_and_fill_manager_impl_->weak_ptr_factory_.HasWeakPtrs());
-  EXPECT_FALSE(
-      save_and_fill_manager_impl_->upload_save_and_fill_dialog_accepted_);
-  EXPECT_FALSE(save_and_fill_manager_impl_->save_and_fill_suggestion_offered_);
-  EXPECT_FALSE(save_and_fill_manager_impl_->save_and_fill_suggestion_selected_);
-  EXPECT_TRUE(save_and_fill_manager_impl_->fill_card_callback_.is_null());
-  EXPECT_TRUE(
-      save_and_fill_manager_impl_->upload_details_.card.number().empty());
+  EXPECT_FALSE(save_and_fill_manager().weak_ptr_factory_.HasWeakPtrs());
+  EXPECT_FALSE(save_and_fill_manager().upload_save_and_fill_dialog_accepted_);
+  EXPECT_FALSE(save_and_fill_manager().save_and_fill_suggestion_offered_);
+  EXPECT_FALSE(save_and_fill_manager().save_and_fill_suggestion_selected_);
+  EXPECT_TRUE(save_and_fill_manager().fill_card_callback_.is_null());
+  EXPECT_TRUE(save_and_fill_manager().upload_details_.card.number().empty());
 }
 
 TEST_F(SaveAndFillManagerImplTest, ResetOnFlowEnds_LocalSave) {
-  save_and_fill_manager_impl_->SetCreditCardUploadEnabledOverrideForTesting(
-      false);
+  save_and_fill_manager().SetCreditCardUploadEnabledOverrideForTesting(false);
 
-  save_and_fill_manager_impl_->OnSuggestionOffered();
-  EXPECT_TRUE(save_and_fill_manager_impl_->save_and_fill_suggestion_offered_);
+  save_and_fill_manager().OnSuggestionOffered();
+  EXPECT_TRUE(save_and_fill_manager().save_and_fill_suggestion_offered_);
 
-  save_and_fill_manager_impl_->OnDidAcceptCreditCardSaveAndFillSuggestion(
-      fill_card_callback_.Get());
-  EXPECT_TRUE(save_and_fill_manager_impl_->save_and_fill_suggestion_selected_);
-  EXPECT_FALSE(save_and_fill_manager_impl_->fill_card_callback_.is_null());
+  save_and_fill_manager().OnDidAcceptCreditCardSaveAndFillSuggestion(
+      base::DoNothing());
+  EXPECT_TRUE(save_and_fill_manager().save_and_fill_suggestion_selected_);
+  EXPECT_FALSE(save_and_fill_manager().fill_card_callback_.is_null());
 
-  save_and_fill_manager_impl_->OnUserDidDecideOnLocalSave(
+  save_and_fill_manager().OnUserDidDecideOnLocalSave(
       CardSaveAndFillDialogUserDecision::kAccepted,
       CreateUserProvidedCardDetails(
           /*card_number=*/u"4444333322221111", /*cardholder_name=*/u"John Doe",
@@ -912,15 +856,15 @@ TEST_F(SaveAndFillManagerImplTest, ResetOnFlowEnds_LocalSave) {
 
   // Verifies that the states variable in the SaveAndFillManagerImpl get reset
   // when flow ends.
-  EXPECT_FALSE(save_and_fill_manager_impl_->weak_ptr_factory_.HasWeakPtrs());
-  EXPECT_FALSE(save_and_fill_manager_impl_->save_and_fill_suggestion_offered_);
-  EXPECT_FALSE(save_and_fill_manager_impl_->save_and_fill_suggestion_selected_);
-  EXPECT_TRUE(save_and_fill_manager_impl_->fill_card_callback_.is_null());
+  EXPECT_FALSE(save_and_fill_manager().weak_ptr_factory_.HasWeakPtrs());
+  EXPECT_FALSE(save_and_fill_manager().save_and_fill_suggestion_offered_);
+  EXPECT_FALSE(save_and_fill_manager().save_and_fill_suggestion_selected_);
+  EXPECT_TRUE(save_and_fill_manager().fill_card_callback_.is_null());
 }
 
 TEST_F(SaveAndFillManagerImplTest, StrikeDatabaseMetrics) {
   base::HistogramTester histogram_tester;
-  SaveAndFillStrikeDatabase save_and_fill_strike_database(strike_database_);
+  SaveAndFillStrikeDatabase save_and_fill_strike_database(strike_database());
 
   save_and_fill_strike_database.AddStrike();
 
@@ -928,7 +872,7 @@ TEST_F(SaveAndFillManagerImplTest, StrikeDatabaseMetrics) {
       "Autofill.StrikeDatabase.NthStrikeAdded.SaveAndFill",
       /*sample=*/1, /*expected_bucket_count=*/1);
 
-  EXPECT_EQ(save_and_fill_manager_impl_->ShouldBlockFeature(), true);
+  EXPECT_EQ(save_and_fill_manager().ShouldBlockFeature(), true);
   histogram_tester.ExpectUniqueSample(
       "Autofill.StrikeDatabase.SaveAndFillStrikeDatabaseBlockReason",
       /*sample=*/1, 1);
@@ -936,13 +880,13 @@ TEST_F(SaveAndFillManagerImplTest, StrikeDatabaseMetrics) {
   save_and_fill_strike_database.AddStrikes(
       save_and_fill_strike_database.GetMaxStrikesLimit() - 1);
 
-  EXPECT_EQ(save_and_fill_manager_impl_->ShouldBlockFeature(), true);
+  EXPECT_EQ(save_and_fill_manager().ShouldBlockFeature(), true);
   histogram_tester.ExpectBucketCount(
       "Autofill.StrikeDatabase.SaveAndFillStrikeDatabaseBlockReason",
       /*sample=*/0, 1);
 
   save_and_fill_strike_database.RemoveStrikes(1);
-  save_and_fill_manager_impl_->OnUserDidDecideOnLocalSave(
+  save_and_fill_manager().OnUserDidDecideOnLocalSave(
       CardSaveAndFillDialogUserDecision::kAccepted,
       CreateUserProvidedCardDetails(
           /*card_number=*/u"4444333322221111", /*cardholder_name=*/u"John Doe",
@@ -957,19 +901,17 @@ TEST_F(SaveAndFillManagerImplTest, StrikeDatabaseMetrics) {
 }
 
 TEST_F(SaveAndFillManagerImplTest, HideDialog_CalledAfterLocalSaveCompleted) {
-  save_and_fill_manager_impl_->SetCreditCardUploadEnabledOverrideForTesting(
-      false);
+  save_and_fill_manager().SetCreditCardUploadEnabledOverrideForTesting(false);
 
-  EXPECT_CALL(
-      *payments_autofill_client_,
-      ShowCreditCardLocalSaveAndFillDialog(
-          testing::A<PaymentsAutofillClient::CardSaveAndFillDialogCallback>()));
-  EXPECT_CALL(*payments_autofill_client_, HideCreditCardSaveAndFillDialog())
+  EXPECT_CALL(payments_autofill_client(),
+              ShowCreditCardLocalSaveAndFillDialog(
+                  A<PaymentsAutofillClient::CardSaveAndFillDialogCallback>()));
+  EXPECT_CALL(payments_autofill_client(), HideCreditCardSaveAndFillDialog())
       .Times(1);
 
-  save_and_fill_manager_impl_->OnDidAcceptCreditCardSaveAndFillSuggestion(
-      fill_card_callback_.Get());
-  save_and_fill_manager_impl_->OnUserDidDecideOnLocalSave(
+  save_and_fill_manager().OnDidAcceptCreditCardSaveAndFillSuggestion(
+      base::DoNothing());
+  save_and_fill_manager().OnUserDidDecideOnLocalSave(
       CardSaveAndFillDialogUserDecision::kAccepted,
       CreateUserProvidedCardDetails(
           /*card_number=*/u"4444333322221111", /*cardholder_name=*/u"John Doe",
@@ -979,8 +921,7 @@ TEST_F(SaveAndFillManagerImplTest, HideDialog_CalledAfterLocalSaveCompleted) {
 }
 
 TEST_F(SaveAndFillManagerImplTest, HideDialog_CalledAfterServerSaveCompleted) {
-  save_and_fill_manager_impl_->SetCreditCardUploadEnabledOverrideForTesting(
-      true);
+  save_and_fill_manager().SetCreditCardUploadEnabledOverrideForTesting(true);
   SetUpGetDetailsForCreateCardResponse(
       PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
       /*create_valid_legal_message=*/true);
@@ -994,25 +935,20 @@ TEST_F(SaveAndFillManagerImplTest, HideDialog_CalledAfterServerSaveCompleted) {
   SetUpUploadSaveAndFillDialogDecision(
       CardSaveAndFillDialogUserDecision::kAccepted, user_provided_details);
 
-  EXPECT_CALL(*payments_autofill_client_, LoadRiskData)
-      .WillOnce([](base::OnceCallback<void(const std::string&)> callback) {
-        std::move(callback).Run("some risk data");
-      });
+  EXPECT_CALL(payments_autofill_client(), LoadRiskData)
+      .WillOnce(RunOnceCallback<0>("some risk data"));
 
   SetUpCreateCardResponse(PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
                           "112233445566L");
+  EXPECT_CALL(payments_autofill_client(), HideCreditCardSaveAndFillDialog());
 
-  EXPECT_CALL(*payments_autofill_client_, HideCreditCardSaveAndFillDialog())
-      .Times(1);
-
-  save_and_fill_manager_impl_->OnDidAcceptCreditCardSaveAndFillSuggestion(
-      fill_card_callback_.Get());
+  save_and_fill_manager().OnDidAcceptCreditCardSaveAndFillSuggestion(
+      base::DoNothing());
 }
 
 TEST_F(SaveAndFillManagerImplTest, OnDidCreateCard_Success_SaveServerCvc) {
-  save_and_fill_manager_impl_->SetCreditCardUploadEnabledOverrideForTesting(
-      true);
-  prefs::SetPaymentCvcStorage(autofill_client_->GetPrefs(), true);
+  save_and_fill_manager().SetCreditCardUploadEnabledOverrideForTesting(true);
+  prefs::SetPaymentCvcStorage(autofill_client().GetPrefs(), true);
   base::test::ScopedFeatureList feature_list(
       features::kAutofillEnableCvcStorageAndFilling);
   SetUpGetDetailsForCreateCardResponse(
@@ -1027,29 +963,22 @@ TEST_F(SaveAndFillManagerImplTest, OnDidCreateCard_Success_SaveServerCvc) {
           /*expiration_date_year=*/u"2035",
           /*security_code=*/u"456"));
 
-  EXPECT_CALL(*payments_autofill_client_, LoadRiskData)
-      .WillOnce([](base::OnceCallback<void(const std::string&)> callback) {
-        std::move(callback).Run("some risk data");
-      });
+  EXPECT_CALL(payments_autofill_client(), LoadRiskData)
+      .WillOnce(RunOnceCallback<0>("some risk data"));
 
   SetUpCreateCardResponse(PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
                           "112233445566");
+  EXPECT_CALL(payments_data_manager(),
+              AddServerCvc(112233445566L, std::u16string(u"456")));
 
-  EXPECT_CALL(
-      static_cast<MockPaymentsDataManager&>(
-          autofill_client_->GetPersonalDataManager().payments_data_manager()),
-      AddServerCvc(112233445566L, std::u16string(u"456")))
-      .Times(1);
-
-  save_and_fill_manager_impl_->OnDidAcceptCreditCardSaveAndFillSuggestion(
-      fill_card_callback_.Get());
+  save_and_fill_manager().OnDidAcceptCreditCardSaveAndFillSuggestion(
+      base::DoNothing());
 }
 
 TEST_F(SaveAndFillManagerImplTest,
        OnDidCreateCard_Success_DoNotAddServerCvcIfCvcIsEmpty) {
-  save_and_fill_manager_impl_->SetCreditCardUploadEnabledOverrideForTesting(
-      true);
-  prefs::SetPaymentCvcStorage(autofill_client_->GetPrefs(), true);
+  save_and_fill_manager().SetCreditCardUploadEnabledOverrideForTesting(true);
+  prefs::SetPaymentCvcStorage(autofill_client().GetPrefs(), true);
   base::test::ScopedFeatureList feature_list(
       features::kAutofillEnableCvcStorageAndFilling);
   SetUpGetDetailsForCreateCardResponse(
@@ -1064,29 +993,21 @@ TEST_F(SaveAndFillManagerImplTest,
           /*expiration_date_year=*/u"2035",
           /*security_code=*/u""));
 
-  EXPECT_CALL(*payments_autofill_client_, LoadRiskData)
-      .WillOnce([](base::OnceCallback<void(const std::string&)> callback) {
-        std::move(callback).Run("some risk data");
-      });
+  EXPECT_CALL(payments_autofill_client(), LoadRiskData)
+      .WillOnce(RunOnceCallback<0>("some risk data"));
 
   SetUpCreateCardResponse(PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
                           "112233445566");
+  EXPECT_CALL(payments_data_manager(), AddServerCvc).Times(0);
 
-  EXPECT_CALL(
-      static_cast<MockPaymentsDataManager&>(
-          autofill_client_->GetPersonalDataManager().payments_data_manager()),
-      AddServerCvc)
-      .Times(0);
-
-  save_and_fill_manager_impl_->OnDidAcceptCreditCardSaveAndFillSuggestion(
-      fill_card_callback_.Get());
+  save_and_fill_manager().OnDidAcceptCreditCardSaveAndFillSuggestion(
+      base::DoNothing());
 }
 
 TEST_F(SaveAndFillManagerImplTest,
        OnDidCreateCard_Success_DoNotSaveServerCvcIfCvcStorageIsDisabled) {
-  save_and_fill_manager_impl_->SetCreditCardUploadEnabledOverrideForTesting(
-      true);
-  prefs::SetPaymentCvcStorage(autofill_client_->GetPrefs(), false);
+  save_and_fill_manager().SetCreditCardUploadEnabledOverrideForTesting(true);
+  prefs::SetPaymentCvcStorage(autofill_client().GetPrefs(), false);
   base::test::ScopedFeatureList feature_list(
       features::kAutofillEnableCvcStorageAndFilling);
   SetUpGetDetailsForCreateCardResponse(
@@ -1101,62 +1022,47 @@ TEST_F(SaveAndFillManagerImplTest,
           /*expiration_date_year=*/u"2035",
           /*security_code=*/u"456"));
 
-  EXPECT_CALL(*payments_autofill_client_, LoadRiskData)
-      .WillOnce([](base::OnceCallback<void(const std::string&)> callback) {
-        std::move(callback).Run("some risk data");
-      });
+  EXPECT_CALL(payments_autofill_client(), LoadRiskData)
+      .WillOnce(RunOnceCallback<0>("some risk data"));
 
   SetUpCreateCardResponse(PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
                           "112233445566");
+  EXPECT_CALL(payments_data_manager(), AddServerCvc).Times(0);
 
-  EXPECT_CALL(
-      static_cast<MockPaymentsDataManager&>(
-          autofill_client_->GetPersonalDataManager().payments_data_manager()),
-      AddServerCvc)
-      .Times(0);
-
-  save_and_fill_manager_impl_->OnDidAcceptCreditCardSaveAndFillSuggestion(
-      fill_card_callback_.Get());
+  save_and_fill_manager().OnDidAcceptCreditCardSaveAndFillSuggestion(
+      base::DoNothing());
 }
 
 TEST_F(SaveAndFillManagerImplTest, LogFunnelMetrics_ServerSave) {
   base::HistogramTester histogram_tester;
 
-  save_and_fill_manager_impl_->SetCreditCardUploadEnabledOverrideForTesting(
-      true);
+  save_and_fill_manager().SetCreditCardUploadEnabledOverrideForTesting(true);
   SetUpGetDetailsForCreateCardResponse(
       PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
       /*create_valid_legal_message=*/true);
 
-  EXPECT_CALL(*payments_autofill_client_, ShowCreditCardUploadSaveAndFillDialog)
-      .WillOnce([&](const LegalMessageLines&,
-                    TestPaymentsAutofillClient::CardSaveAndFillDialogCallback
-                        callback) {
-        std::move(callback).Run(CardSaveAndFillDialogUserDecision::kAccepted,
-                                CreateUserProvidedCardDetails(
-                                    /*card_number=*/u"1111222233334444",
-                                    /*cardholder_name=*/u"Jane Smith",
-                                    /*expiration_date_month=*/u"06",
-                                    /*expiration_date_year=*/u"2035",
-                                    /*security_code=*/u"456"));
-      });
+  EXPECT_CALL(payments_autofill_client(), ShowCreditCardUploadSaveAndFillDialog)
+      .WillOnce(RunOnceCallback<1>(CardSaveAndFillDialogUserDecision::kAccepted,
+                                   CreateUserProvidedCardDetails(
+                                       /*card_number=*/u"1111222233334444",
+                                       /*cardholder_name=*/u"Jane Smith",
+                                       /*expiration_date_month=*/u"06",
+                                       /*expiration_date_year=*/u"2035",
+                                       /*security_code=*/u"456")));
+  EXPECT_CALL(payments_autofill_client(), LoadRiskData)
+      .WillOnce(RunOnceCallback<0>("some risk data"));
+  EXPECT_CALL(network_interface(), CreateCard)
+      .WillOnce(Return(RequestId("11223344")));
 
-  EXPECT_CALL(*payments_autofill_client_, LoadRiskData)
-      .WillOnce([](base::OnceCallback<void(const std::string&)> callback) {
-        std::move(callback).Run("some risk data");
-      });
-  EXPECT_CALL(*mock_network_interface_, CreateCard)
-      .WillOnce(testing::Return(RequestId("11223344")));
-
-  save_and_fill_manager_impl_->OnDidAcceptCreditCardSaveAndFillSuggestion(
-      fill_card_callback_.Get());
-  save_and_fill_manager_impl_->OnDidCreateCard(
+  save_and_fill_manager().OnDidAcceptCreditCardSaveAndFillSuggestion(
+      base::DoNothing());
+  save_and_fill_manager().OnDidCreateCard(
       base::TimeTicks::Now(),
       PaymentsAutofillClient::PaymentsRpcResult::kPermanentFailure,
       /*instrument_id=*/"");
 
-  save_and_fill_manager_impl_->LogCreditCardFormFilled();
-  save_and_fill_manager_impl_->LogCreditCardFormSubmitted();
+  save_and_fill_manager().LogCreditCardFormFilled();
+  save_and_fill_manager().LogCreditCardFormSubmitted();
 
   histogram_tester.ExpectBucketCount(
       "Autofill.SaveAndFill.Funnel.Upload.Failure",
@@ -1168,8 +1074,8 @@ TEST_F(SaveAndFillManagerImplTest, LogFunnelMetrics_ServerSave) {
       /*expected_count=*/1);
 
   // Make sure calling it multiple times has no effect.
-  save_and_fill_manager_impl_->LogCreditCardFormFilled();
-  save_and_fill_manager_impl_->LogCreditCardFormSubmitted();
+  save_and_fill_manager().LogCreditCardFormFilled();
+  save_and_fill_manager().LogCreditCardFormSubmitted();
 
   histogram_tester.ExpectBucketCount(
       "Autofill.SaveAndFill.Funnel.Upload.Failure",
@@ -1183,9 +1089,9 @@ TEST_F(SaveAndFillManagerImplTest, LogFunnelMetrics_ServerSave) {
 
 TEST_F(SaveAndFillManagerImplTest, LogFunnelMetrics_LocalSave) {
   base::HistogramTester histogram_tester;
-  save_and_fill_manager_impl_->OnDidAcceptCreditCardSaveAndFillSuggestion(
-      fill_card_callback_.Get());
-  save_and_fill_manager_impl_->OnUserDidDecideOnLocalSave(
+  save_and_fill_manager().OnDidAcceptCreditCardSaveAndFillSuggestion(
+      base::DoNothing());
+  save_and_fill_manager().OnUserDidDecideOnLocalSave(
       CardSaveAndFillDialogUserDecision::kAccepted,
       CreateUserProvidedCardDetails(
           /*card_number=*/u"1111222233334444",
@@ -1194,8 +1100,8 @@ TEST_F(SaveAndFillManagerImplTest, LogFunnelMetrics_LocalSave) {
           /*expiration_date_year=*/u"2035",
           /*security_code=*/u"456"));
 
-  save_and_fill_manager_impl_->LogCreditCardFormFilled();
-  save_and_fill_manager_impl_->LogCreditCardFormSubmitted();
+  save_and_fill_manager().LogCreditCardFormFilled();
+  save_and_fill_manager().LogCreditCardFormSubmitted();
 
   histogram_tester.ExpectBucketCount(
       "Autofill.SaveAndFill.Funnel.Local.Success",
@@ -1207,8 +1113,8 @@ TEST_F(SaveAndFillManagerImplTest, LogFunnelMetrics_LocalSave) {
       /*expected_count=*/1);
 
   // Make sure calling it multiple times has no effect.
-  save_and_fill_manager_impl_->LogCreditCardFormFilled();
-  save_and_fill_manager_impl_->LogCreditCardFormSubmitted();
+  save_and_fill_manager().LogCreditCardFormFilled();
+  save_and_fill_manager().LogCreditCardFormSubmitted();
 
   histogram_tester.ExpectBucketCount(
       "Autofill.SaveAndFill.Funnel.Local.Success",
@@ -1225,8 +1131,7 @@ TEST_F(SaveAndFillManagerImplTest, LogFunnelMetrics_LocalSave) {
 // and local save is offered instead as a fallback.
 TEST_F(SaveAndFillManagerImplTest,
        UnsupportedBinRange_TriggersLocalSaveFallback) {
-  save_and_fill_manager_impl_->SetCreditCardUploadEnabledOverrideForTesting(
-      true);
+  save_and_fill_manager().SetCreditCardUploadEnabledOverrideForTesting(true);
   SetUpGetDetailsForCreateCardResponse(
       PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
       /*create_valid_legal_message=*/true,
@@ -1241,16 +1146,15 @@ TEST_F(SaveAndFillManagerImplTest,
   SetUpUploadSaveAndFillDialogDecision(
       CardSaveAndFillDialogUserDecision::kAccepted, user_provided_details);
 
-  EXPECT_CALL(*mock_network_interface_, CreateCard(testing::_, testing::_))
-      .Times(0);
-  EXPECT_CALL(fill_card_callback_, Run(testing::A<const CreditCard&>()))
-      .Times(1);
+  EXPECT_CALL(network_interface(), CreateCard).Times(0);
+  MockFillCardCallback fill_card_callback;
+  EXPECT_CALL(fill_card_callback, Run(A<const CreditCard&>()));
 
-  save_and_fill_manager_impl_->OnDidAcceptCreditCardSaveAndFillSuggestion(
-      fill_card_callback_.Get());
+  save_and_fill_manager().OnDidAcceptCreditCardSaveAndFillSuggestion(
+      fill_card_callback.Get());
 
   std::vector<const CreditCard*> cards =
-      payments_autofill_client_->GetPaymentsDataManager().GetLocalCreditCards();
+      payments_data_manager().GetLocalCreditCards();
   ASSERT_EQ(cards.size(), 1U);
   EXPECT_EQ(cards[0]->number(), u"5454545454545454");
 }
@@ -1258,8 +1162,7 @@ TEST_F(SaveAndFillManagerImplTest,
 // Test that if the user enters a card with a supported BIN, the upload flow
 // proceeds as normal.
 TEST_F(SaveAndFillManagerImplTest, UploadSaveOfferedForSupportedBinCard) {
-  save_and_fill_manager_impl_->SetCreditCardUploadEnabledOverrideForTesting(
-      true);
+  save_and_fill_manager().SetCreditCardUploadEnabledOverrideForTesting(true);
   SetUpGetDetailsForCreateCardResponse(
       PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
       /*create_valid_legal_message=*/true,
@@ -1277,24 +1180,19 @@ TEST_F(SaveAndFillManagerImplTest, UploadSaveOfferedForSupportedBinCard) {
   SetUpCreateCardResponse(PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
                           "112233445566L");
 
-  ON_CALL(*payments_autofill_client_, LoadRiskData)
-      .WillByDefault([](base::OnceCallback<void(const std::string&)> callback) {
-        std::move(callback).Run("some risk data");
-      });
+  ON_CALL(payments_autofill_client(), LoadRiskData)
+      .WillByDefault(RunOnceCallback<0>("some risk data"));
 
-  EXPECT_CALL(fill_card_callback_, Run(testing::A<const CreditCard&>()))
-      .Times(1);
-  EXPECT_CALL(
-      *payments_autofill_client_,
-      CreditCardUploadCompleted(
-          PaymentsAutofillClient::PaymentsRpcResult::kSuccess, testing::_));
+  MockFillCardCallback fill_card_callback;
+  EXPECT_CALL(fill_card_callback, Run(A<const CreditCard&>()));
+  EXPECT_CALL(payments_autofill_client(),
+              CreditCardUploadCompleted(
+                  PaymentsAutofillClient::PaymentsRpcResult::kSuccess, _));
 
-  save_and_fill_manager_impl_->OnDidAcceptCreditCardSaveAndFillSuggestion(
-      fill_card_callback_.Get());
+  save_and_fill_manager().OnDidAcceptCreditCardSaveAndFillSuggestion(
+      fill_card_callback.Get());
 
-  EXPECT_TRUE(payments_autofill_client_->GetPaymentsDataManager()
-                  .GetLocalCreditCards()
-                  .empty());
+  EXPECT_TRUE(payments_data_manager().GetLocalCreditCards().empty());
 }
 
 }  // namespace autofill::payments
