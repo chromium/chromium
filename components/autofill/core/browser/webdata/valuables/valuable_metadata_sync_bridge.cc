@@ -138,7 +138,8 @@ void ValuableMetadataSyncBridge::DeleteOrphanMetadata() {
 
   std::unique_ptr<syncer::MetadataChangeList> metadata_change_list =
       CreateMetadataChangeList();
-  std::unique_ptr<sql::Transaction> transaction;
+  std::unique_ptr<sql::Transaction> transaction =
+      web_data_backend_->GetDatabase()->AcquireTransaction();
   int removed_count = 0;
   for (const auto& [storage_key, metadata] :
        GetEntityTable()->GetSyncedMetadata()) {
@@ -146,9 +147,6 @@ void ValuableMetadataSyncBridge::DeleteOrphanMetadata() {
     // and the server.
     if (!non_orphan_ids.contains(storage_key) &&
         IsOrphanValuableMetadataEntryDeletable(metadata)) {
-      if (!transaction) {
-        transaction = web_data_backend_->GetDatabase()->AcquireTransaction();
-      }
       if (GetEntityTable()->RemoveEntityMetadata(storage_key)) {
         change_processor()->Delete(
             *storage_key, syncer::DeletionOrigin::FromLocation(FROM_HERE),
