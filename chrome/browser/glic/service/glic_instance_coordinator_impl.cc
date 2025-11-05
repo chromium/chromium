@@ -562,9 +562,8 @@ void GlicInstanceCoordinatorImpl::OnTabCreated(tabs::TabInterface& old_tab,
     return;
   }
 
-  if (auto* instance = GetInstanceImplForTab(&old_tab)) {
-    instance->Show(ShowOptions::ForSidePanel(new_tab));
-  }
+  auto* instance = CreateGlicInstance();
+  instance->Show(ShowOptions::ForSidePanel(new_tab));
 }
 
 void GlicInstanceCoordinatorImpl::OnMemoryPressure(
