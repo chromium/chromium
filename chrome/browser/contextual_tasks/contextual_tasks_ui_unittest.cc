@@ -72,6 +72,20 @@ std::unique_ptr<content::MockNavigationHandle> CreateMockNavigationHandle(
   return nav_handle;
 }
 
+class MockContextualTasksUiService : public ContextualTasksUiService {
+ public:
+  MockContextualTasksUiService(
+      Profile* profile,
+      ContextualTasksContextController* context_controller)
+      : ContextualTasksUiService(profile, context_controller) {}
+  ~MockContextualTasksUiService() override = default;
+
+  MOCK_METHOD(void,
+              OnTaskChangedInPanel,
+              (const base::Uuid& task_id),
+              (override));
+};
+
 }  // namespace
 
 class ContextualTasksUiTest : public ChromeRenderViewHostTestHarness {
@@ -81,8 +95,8 @@ class ContextualTasksUiTest : public ChromeRenderViewHostTestHarness {
     context_controller_ = std::make_unique<
         testing::NiceMock<MockContextualTasksContextController>>();
     service_for_nav_ =
-        std::make_unique<testing::NiceMock<ContextualTasksUiService>>(
-            nullptr, context_controller_.get());
+        std::make_unique<testing::NiceMock<MockContextualTasksUiService>>(
+            profile_.get(), context_controller_.get());
 
     profile_ = std::make_unique<TestingProfile>();
     embedded_web_contents_ = content::WebContentsTester::CreateTestWebContents(
@@ -116,7 +130,7 @@ class ContextualTasksUiTest : public ChromeRenderViewHostTestHarness {
   std::unique_ptr<content::WebContents> embedded_web_contents_;
   std::unique_ptr<TestingProfile> profile_;
 
-  std::unique_ptr<ContextualTasksUiService> service_for_nav_;
+  std::unique_ptr<MockContextualTasksUiService> service_for_nav_;
   std::unique_ptr<MockContextualTasksContextController> context_controller_;
 };
 
@@ -140,6 +154,8 @@ TEST_F(ContextualTasksUiTest, ContextControllerUpdatedOnUrlChange) {
   EXPECT_CALL(*context_controller_,
               UpdateThreadForTask(task_id.value(), _, thread_id.value(),
                                   Optional(turn_id), Optional(title)))
+      .Times(1);
+  EXPECT_CALL(*service_for_nav_, OnTaskChangedInPanel(task_id.value()))
       .Times(1);
 
   std::unique_ptr<content::MockNavigationHandle> nav_handle =
@@ -167,6 +183,7 @@ TEST_F(ContextualTasksUiTest, ContextControllerUpdatedOnUrlChange_NoThreadId) {
 
   EXPECT_CALL(*context_controller_, UpdateThreadForTask(_, _, _, _, _))
       .Times(0);
+  EXPECT_CALL(*service_for_nav_, OnTaskChangedInPanel(_)).Times(0);
 
   std::unique_ptr<content::MockNavigationHandle> nav_handle =
       CreateMockNavigationHandle(updated_url);
@@ -196,6 +213,8 @@ TEST_F(ContextualTasksUiTest, ContextControllerUpdatedOnUrlChange_NoTurnId) {
   EXPECT_CALL(*context_controller_,
               UpdateThreadForTask(task_id.value(), _, thread_id.value(), _,
                                   Optional(title)))
+      .Times(1);
+  EXPECT_CALL(*service_for_nav_, OnTaskChangedInPanel(task_id.value()))
       .Times(1);
 
   std::unique_ptr<content::MockNavigationHandle> nav_handle =
@@ -240,6 +259,7 @@ TEST_F(ContextualTasksUiTest, TaskCreated_ThreadIdChanged) {
       *context_controller_,
       UpdateThreadForTask(task_id, _, thread_id.value(), _, Optional(query)))
       .Times(1);
+  EXPECT_CALL(*service_for_nav_, OnTaskChangedInPanel(task_id)).Times(1);
 
   std::unique_ptr<content::MockNavigationHandle> nav_handle =
       CreateMockNavigationHandle(url);
@@ -279,6 +299,7 @@ TEST_F(ContextualTasksUiTest, TaskChanged_ThreadIdChanged_HasExistingTask) {
   EXPECT_CALL(*context_controller_,
               UpdateThreadForTask(task_id, _, thread_id, _, Optional(title)))
       .Times(1);
+  EXPECT_CALL(*service_for_nav_, OnTaskChangedInPanel(task_id)).Times(1);
 
   std::unique_ptr<content::MockNavigationHandle> nav_handle =
       CreateMockNavigationHandle(url);
@@ -304,6 +325,7 @@ TEST_F(ContextualTasksUiTest, TaskNotCreated_NoThreadId) {
   // Since there is no query value and no other information, a new task
   // shouldn't be created.
   EXPECT_CALL(*context_controller_, CreateTaskFromUrl(_)).Times(0);
+  EXPECT_CALL(*service_for_nav_, OnTaskChangedInPanel(_)).Times(0);
   EXPECT_FALSE(delegate.GetTaskId().has_value());
 
   std::unique_ptr<content::MockNavigationHandle> nav_handle =
@@ -330,6 +352,7 @@ TEST_F(ContextualTasksUiTest, TaskInfoCleared_NoThreadIdInUrl) {
   // Since there is no query value and no other information, a new task
   // shouldn't be created.
   EXPECT_CALL(*context_controller_, CreateTaskFromUrl(_)).Times(0);
+  EXPECT_CALL(*service_for_nav_, OnTaskChangedInPanel(_)).Times(0);
 
   std::unique_ptr<content::MockNavigationHandle> nav_handle =
       CreateMockNavigationHandle(url);

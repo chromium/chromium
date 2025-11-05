@@ -267,6 +267,14 @@ GURL ContextualTasksUiService::GetDefaultAiPageUrl() {
   return AppendCommonUrlParams(GURL(GetContextualTasksAiPageUrl()));
 }
 
+void ContextualTasksUiService::OnTaskChangedInPanel(const base::Uuid& task_id) {
+  DCHECK(task_id.is_valid());
+
+  // TODO(https://crbug.com/451705724): Find the tabs associated with the task
+  // and open the most recently associated tab. If not found, close the panel
+  // and open the contextual task in the current tab.
+}
+
 bool ContextualTasksUiService::IsAiUrl(const GURL& url) {
   if (!url.is_valid() || !url.SchemeIsHTTPOrHTTPS() ||
       !base::EndsWith(url.host(), ai_page_host_.host())) {

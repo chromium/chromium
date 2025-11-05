@@ -78,6 +78,9 @@ class ContextualTasksUiService : public KeyedService {
   // loaded in the absence of any other context.
   virtual GURL GetDefaultAiPageUrl();
 
+  // Called when the side panel started showing a new task.
+  virtual void OnTaskChangedInPanel(const base::Uuid& task_id);
+
   // Returns whether the provided URL is to an AI page.
   bool IsAiUrl(const GURL& url);
 
