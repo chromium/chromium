@@ -24,11 +24,13 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
+#include "components/history/core/browser/history_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/content/browser/client_side_detection_feature_cache.h"
 #include "components/safe_browsing/content/browser/client_side_detection_service.h"
 #include "components/safe_browsing/content/browser/client_side_phishing_model.h"
+#include "components/safe_browsing/content/browser/credit_card_form_event.h"
 #include "components/safe_browsing/content/browser/ui_manager.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/client_model.pb.h"
@@ -1365,6 +1367,21 @@ class ClientSideDetectionHostCreditCardFormTest : public InProcessBrowserTest {
     return &driver->GetAutofillManager();
   }
 
+  GURL NavigateToCreditCardForm() {
+    const GURL url(embedded_test_server()->GetURL(
+        "/autofill/autofill_creditcard_form.html"));
+    EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+    return url;
+  }
+
+  void FocusOnCreditCardNumberField() {
+    std::string script =
+        "document.getElementById('CREDIT_CARD_NUMBER').focus();";
+    content::RenderFrameHost* frame = GetWebContents()->GetPrimaryMainFrame();
+    frame->GetView()->Focus();
+    ASSERT_TRUE(ExecJs(frame, script));
+  }
+
  private:
   std::string flatbuffer_model_str_;
 };
@@ -1393,8 +1410,13 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostCreditCardFormTest,
   fake_csd_service.SendModelToRenderers();
 
   histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.CreditCardFormEvent.OnFieldTypesDetermined", 0);
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.CreditCardFormEvent.OnBeforeFocusOnFormField", 0);
+  histogram_tester.ExpectTotalCount(
       "SBClientPhishing.PreClassificationCheckResult.CreditCardForm", 0);
 
+  // Navigation will trigger preclassification on credit card form detection.
   base::RunLoop run_loop;
   csd_host->set_preclassification_done_callback_for_testing(
       base::BindLambdaForTesting([&](ClientSideDetectionType detection_type) {
@@ -1402,12 +1424,26 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostCreditCardFormTest,
           run_loop.Quit();
         }
       }));
-
-  const GURL url(embedded_test_server()->GetURL(
-      "/autofill/autofill_creditcard_form.html"));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  NavigateToCreditCardForm();
   run_loop.Run();
 
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.CreditCardFormEvent.OnFieldTypesDetermined", 1);
+  histogram_tester.ExpectBucketCount(
+      "SBClientPhishing.CreditCardFormEvent.OnFieldTypesDetermined",
+      credit_card_form::kNewSiteVisitNoReferringAppNoDetectionHeuristic, 1);
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.PreClassificationCheckResult.CreditCardForm", 1);
+
+  // Interaction with the form will trigger preclassification that exits early
+  // because of URL deduplication.
+  FocusOnCreditCardNumberField();
+
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.CreditCardFormEvent.OnBeforeFocusOnFormField", 1);
+  histogram_tester.ExpectBucketCount(
+      "SBClientPhishing.CreditCardFormEvent.OnBeforeFocusOnFormField",
+      credit_card_form::kNewSiteVisitNoReferringAppNoDetectionHeuristic, 1);
   histogram_tester.ExpectTotalCount(
       "SBClientPhishing.PreClassificationCheckResult.CreditCardForm", 1);
 }
@@ -1435,6 +1471,13 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostCreditCardFormTest,
   csd_host->set_ui_manager(mock_ui_manager.get());
   fake_csd_service.SendModelToRenderers();
 
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.PhishingDetectorResult.CreditCardForm", 0);
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.ClientSideDetectionTypeRequest", 0);
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.ServerModelDetectsPhishing.CreditCardForm", 0);
+
   // Navigate page, expecting to trigger 2 preclassification checks.
   // (1 TriggerModel, 1 CreditCardForm)
   // Wait to ensure each has happened since each one will invalidate the host
@@ -1443,18 +1486,10 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostCreditCardFormTest,
   base::test::TestFuture<std::vector<ClientSideDetectionType>> future;
   csd_host->set_preclassification_started_callback_for_testing(
       base::BarrierCallback<ClientSideDetectionType>(2, future.GetCallback()));
-  const GURL url(embedded_test_server()->GetURL(
-      "/autofill/autofill_creditcard_form.html"));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  GURL url = NavigateToCreditCardForm();
+  FocusOnCreditCardNumberField();
   EXPECT_THAT(future.Take(),
               testing::Contains(ClientSideDetectionType::CREDIT_CARD_FORM));
-
-  histogram_tester.ExpectTotalCount(
-      "SBClientPhishing.PhishingDetectorResult.CreditCardForm", 0);
-  histogram_tester.ExpectTotalCount(
-      "SBClientPhishing.ClientSideDetectionTypeRequest", 0);
-  histogram_tester.ExpectTotalCount(
-      "SBClientPhishing.ServerModelDetectsPhishing.CreditCardForm", 0);
 
   base::RunLoop run_loop;
   fake_csd_service.SetRequestCallback(run_loop.QuitClosure());

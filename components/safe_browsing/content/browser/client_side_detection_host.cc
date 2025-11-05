@@ -961,17 +961,35 @@ void ClientSideDetectionHost::OnFieldTypesDetermined(
     autofill::AutofillManager& manager,
     autofill::FormGlobalId form_id,
     autofill::AutofillManager::Observer::FieldTypeSource source) {
-  // Early exit if ESB is not enabled.
-  if (!IsEnhancedProtectionEnabled(*delegate_->GetPrefs())) {
-    return;
-  }
-
-  // If the form is not a credit card form, then do not trigger
-  // pre-classification.
+  // Do nothing if the form is not a credit card form.
   if (auto it = manager.form_structures().find(form_id);
       it != manager.form_structures().end() &&
       !it->second.get()->GetFormTypes().contains(
           autofill::FormType::kCreditCardForm)) {
+    return;
+  }
+  OnCreditCardFormEvent("OnFieldTypesDetermined");
+}
+
+// OnBeforeFocusOnFormField is an Autofill observer callback that triggers a CSD
+// ping when the user interacts with a credit card form field.
+void ClientSideDetectionHost::OnBeforeFocusOnFormField(
+    autofill::AutofillManager& manager,
+    autofill::FormGlobalId form_id,
+    autofill::FieldGlobalId field_id) {
+  // Do nothing if the form is not a credit card form.
+  if (auto it = manager.form_structures().find(form_id);
+      it != manager.form_structures().end() &&
+      !it->second.get()->GetFormTypes().contains(
+          autofill::FormType::kCreditCardForm)) {
+    return;
+  }
+  OnCreditCardFormEvent("OnBeforeFocusOnFormField");
+}
+
+void ClientSideDetectionHost::OnCreditCardFormEvent(std::string event_name) {
+  // Early exit if ESB is not enabled.
+  if (!IsEnhancedProtectionEnabled(*delegate_->GetPrefs())) {
     return;
   }
 
@@ -987,26 +1005,25 @@ void ClientSideDetectionHost::OnFieldTypesDetermined(
     last_history_url_ = url;
     history_service_->GetVisibleVisitCountToHost(
         url,
-        base::BindOnce(&ClientSideDetectionHost::OnCreditCardFormEvent,
-                       weak_factory_.GetWeakPtr(), "OnFieldTypesDetermined",
+        base::BindOnce(&ClientSideDetectionHost::OnCreditCardFormVisitCount,
+                       weak_factory_.GetWeakPtr(), event_name,
                        base::TimeTicks::Now()),
         &task_tracker_);
   } else {
     history::VisibleVisitCountToHostResult history_result =
         cached_history_result.value_or(
             history::VisibleVisitCountToHostResult{/*success=*/false});
-    OnCreditCardFormEvent("OnFieldTypesDetermined", std::nullopt,
-                          history_result);
+    OnCreditCardFormVisitCount(event_name, std::nullopt, history_result);
   }
 }
 
-void ClientSideDetectionHost::OnCreditCardFormEvent(
+void ClientSideDetectionHost::OnCreditCardFormVisitCount(
     std::string event_name,
     std::optional<base::TimeTicks> start_time,
     history::VisibleVisitCountToHostResult history_result) {
   last_history_result_ = history_result;
   if (start_time.has_value()) {
-    UmaHistogramMediumTimes(
+    UmaHistogramTimes(
         "SBClientPhishing.HistoryServiceDuration.GetVisibleVisitCountToHost",
         base::TimeTicks::Now() - start_time.value());
   }

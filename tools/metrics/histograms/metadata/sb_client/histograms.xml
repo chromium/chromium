@@ -612,10 +612,12 @@ useful for Chirp alerts (go/crca-alerts). -->
   <summary>
     Records a credit card form event that may trigger a CSD ping, with an enum
     that represents the permutation of details for that event. This is recorded
-    on every event that may trigger a CREDIT_CARD_FORM classification attempt,
-    after checking for ESB.
+    on every {EventName} event that may trigger a CREDIT_CARD_FORM
+    classification attempt, after checking for ESB.
   </summary>
   <token key="EventName">
+    <variant name="OnBeforeFocusOnFormField"
+        summary="Autofill OnBeforeFocusOnFormField"/>
     <variant name="OnFieldTypesDetermined"
         summary="Autofill OnFieldTypesDetermined"/>
   </token>
