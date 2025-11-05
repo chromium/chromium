@@ -3108,6 +3108,31 @@ public class TabCollectionTabModelImplTest {
 
     @Test
     @MediumTest
+    public void testCloseTab_UponExitNotUndoable() throws Exception {
+        Tab tab0 = getTabAt(0);
+        Tab tab1 = createTab();
+        assertTabsInOrderAre(List.of(tab0, tab1));
+        assertEquals(tab1, getCurrentTab());
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mCollectionModel.closeTabs(
+                            TabClosureParams.closeTab(tab1).allowUndo(true).uponExit(true).build());
+                });
+
+        assertEquals(1, getCount());
+        assertTabsInOrderAre(List.of(tab0));
+        assertEquals(tab0, getCurrentTab());
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertFalse(mCollectionModel.isClosurePending(tab1.getId()));
+                });
+        assertTrue(tab1.isDestroyed());
+    }
+
+    @Test
+    @MediumTest
     @EnableFeatures(ChromeFeatureList.TAB_CLOSURE_METHOD_REFACTOR)
     public void testCloseTabs_UndoMultiple_ClosureRefactor() throws Exception {
         Tab tab0 = getTabAt(0);
