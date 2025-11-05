@@ -10,9 +10,6 @@ export function getHtml(this: CrCheckboxElement) {
   return html`
 <div id="checkbox" tabindex="${this.tabIndex}" role="checkbox"
     @keydown="${this.onKeyDown_}" @keyup="${this.onKeyUp_}"
-<if expr="is_win">
-    @click="${this.onCheckboxClick_}"
-</if>
     aria-disabled="${this.getAriaDisabled_()}"
     aria-checked="${this.getAriaChecked_()}"
     aria-label="${this.ariaLabelOverride || nothing}"

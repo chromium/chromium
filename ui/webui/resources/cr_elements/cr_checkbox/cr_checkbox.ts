@@ -87,6 +87,10 @@ export class CrCheckboxElement extends CrCheckboxElementBase {
         'pointerdown', this.showRipple_.bind(this));
     this.$.labelContainer.addEventListener(
         'pointerleave', this.hideRipple_.bind(this));
+
+    // <if expr="is_win">
+    this.$.checkbox.addEventListener('click', this.onCheckboxClick_.bind(this));
+    // </if>
   }
 
   override willUpdate(changedProperties: PropertyValues<this>) {
@@ -144,7 +148,7 @@ export class CrCheckboxElement extends CrCheckboxElementBase {
   // where the lack of a click handler on a focusable element does not
   // propagate clicks to a host element.
   // See https://github.com/nvaccess/nvda/issues/17855.
-  protected onCheckboxClick_(e: Event) {
+  private onCheckboxClick_(e: Event) {
     e.stopPropagation();
     e.preventDefault();
     this.click();
