@@ -1,7 +1,7 @@
 Name: Lifecycle Kotlin Extensions
 Short Name: lifecycle-runtime-ktx-android
-URL: https://androidx.dev/snapshots/builds/14351402/artifacts/repository/androidx/lifecycle/lifecycle-runtime-ktx-android/2.10.0-SNAPSHOT/lifecycle-runtime-ktx-android-2.10.0-20251029.124948-1.aar
-Version: 2.10.0-SNAPSHOT
+URL: https://androidx.dev/snapshots/builds/14387781/artifacts/repository/androidx/lifecycle/lifecycle-runtime-ktx-android/2.11.0-SNAPSHOT/lifecycle-runtime-ktx-android-2.11.0-20251105.121927-1.aar
+Version: 2.11.0-SNAPSHOT
 Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE
@@ -13,7 +13,7 @@ License Android Compatible: yes
 Description:
 Kotlin extensions for 'lifecycle' artifact
 
-See also: https://developer.android.com/jetpack/androidx/releases/lifecycle#2.10.0-SNAPSHOT
+See also: https://developer.android.com/jetpack/androidx/releases/lifecycle#2.11.0-SNAPSHOT
 
 
 Local Modifications:

@@ -1,7 +1,7 @@
 Name: Tracing Perfetto Binary
 Short Name: tracing-perfetto-binary
-URL: https://dl.google.com/dl/android/maven2/androidx/tracing/tracing-perfetto-binary/1.0.0/tracing-perfetto-binary-1.0.0.aar
-Version: 1.0.0
+URL: https://androidx.dev/snapshots/builds/14387781/artifacts/repository/androidx/tracing/tracing-perfetto-binary/1.0.1-SNAPSHOT/tracing-perfetto-binary-1.0.1-20251105.121927-1.aar
+Version: 1.0.1-SNAPSHOT
 Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE
@@ -13,7 +13,7 @@ License Android Compatible: yes
 Description:
 Provides native binaries required by AndroidX Tracing: Perfetto SDK and is not intended to be used outside of that context.
 
-See also: https://developer.android.com/jetpack/androidx/releases/tracing#1.0.0
+See also: https://developer.android.com/jetpack/androidx/releases/tracing#1.0.1-SNAPSHOT
 
 
 Local Modifications:

@@ -1,7 +1,7 @@
 Name: Preferences External Protobuf
 Short Name: datastore-preferences-external-protobuf
-URL: https://androidx.dev/snapshots/builds/14351402/artifacts/repository/androidx/datastore/datastore-preferences-external-protobuf/1.2.0-SNAPSHOT/datastore-preferences-external-protobuf-1.2.0-20251029.124948-1.jar
-Version: 1.2.0-SNAPSHOT
+URL: https://androidx.dev/snapshots/builds/14387781/artifacts/repository/androidx/datastore/datastore-preferences-external-protobuf/1.3.0-SNAPSHOT/datastore-preferences-external-protobuf-1.3.0-20251105.121927-1.jar
+Version: 1.3.0-SNAPSHOT
 Update Mechanism: Autoroll
 License: BSD-3-Clause
 License File: LICENSE
@@ -13,7 +13,7 @@ License Android Compatible: yes
 Description:
 Repackaged proto-lite dependency for use by datastore preferences
 
-See also: https://developer.android.com/jetpack/androidx/releases/datastore#1.2.0-SNAPSHOT
+See also: https://developer.android.com/jetpack/androidx/releases/datastore#1.3.0-SNAPSHOT
 
 
 Local Modifications:

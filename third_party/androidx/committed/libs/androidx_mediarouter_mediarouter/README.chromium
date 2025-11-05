@@ -1,7 +1,7 @@
 Name: MediaRouter
 Short Name: mediarouter
-URL: https://dl.google.com/dl/android/maven2/androidx/mediarouter/mediarouter/1.8.1/mediarouter-1.8.1.aar
-Version: 1.8.1
+URL: https://androidx.dev/snapshots/builds/14387781/artifacts/repository/androidx/mediarouter/mediarouter/1.9.0-SNAPSHOT/mediarouter-1.9.0-20251105.121927-1.aar
+Version: 1.9.0-SNAPSHOT
 Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE
@@ -13,7 +13,7 @@ License Android Compatible: yes
 Description:
 Android MediaRouter Support Library
 
-See also: https://developer.android.com/jetpack/androidx/releases/mediarouter#1.8.1
+See also: https://developer.android.com/jetpack/androidx/releases/mediarouter#1.9.0-SNAPSHOT
 
 
 Local Modifications:
