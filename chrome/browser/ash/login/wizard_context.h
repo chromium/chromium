@@ -185,12 +185,6 @@ class WizardContext {
   // set this flag to true before logging in as a new user.
   bool skip_choobe_for_tests = false;
 
-  // When true, skips the Auto Enrollment Check screen during OOBE for tests.
-  // `ShowAutoEnrollmentCheckScreen()` will directly trigger
-  // `OnAutoEnrollmentCheckScreenExit()` instead of attempting to show the auto
-  // enrollment check screen.
-  bool skip_auto_enrollment_check_for_tests = false;
-
   // Whether user creation screen is enabled (could be disabled due to disabled
   // feature or on managed device). It determines the behavior of back button
   // for GaiaScreen and OfflineLoginScreen. Value is set to true in

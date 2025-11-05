@@ -1529,7 +1529,7 @@ BASE_FEATURE(kFeatureManagementOobeSimon, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kOobeQuickStartOnLoginScreen, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables the enforcement of AutoEnrollment check in OOBE.
-BASE_FEATURE(kOobeAutoEnrollmentCheckForced, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kOobeAutoEnrollmentCheckForced, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables or disables Orca for ARC apps.
 BASE_FEATURE(kOrcaArc, base::FEATURE_ENABLED_BY_DEFAULT);
