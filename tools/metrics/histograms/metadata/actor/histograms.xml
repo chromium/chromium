@@ -28,6 +28,7 @@ chromium-metrics-reviews@google.com.
   <variant name="Acting" summary="ActorTask in Acting state."/>
   <variant name="Cancelled" summary="ActorTask in Cancelled state."/>
   <variant name="Created" summary="ActorTask in Created state."/>
+  <variant name="Failed" summary="ActorTask in Failed state."/>
   <variant name="Finished" summary="ActorTask in Finished state."/>
   <variant name="PausedByActor" summary="ActorTask in PausedByActor state."/>
   <variant name="PausedByUser" summary="ActorTask in PausedByUser state."/>

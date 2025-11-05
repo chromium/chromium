@@ -168,11 +168,6 @@ void GlicActorTaskManager::PerformActions(
 void GlicActorTaskManager::StopActorTask(
     actor::TaskId task_id,
     mojom::ActorTaskStopReason stop_reason) {
-  const bool success = stop_reason == mojom::ActorTaskStopReason::kTaskComplete;
-  StopActorTask(task_id, success);
-}
-
-void GlicActorTaskManager::StopActorTask(actor::TaskId task_id, bool success) {
   if (current_task_id_ == task_id) {
     current_task_id_ = actor::TaskId();
   }
@@ -188,7 +183,20 @@ void GlicActorTaskManager::StopActorTask(actor::TaskId task_id, bool success) {
     return;
   }
 
-  actor_keyed_service_->StopTask(task->id(), success);
+  actor::ActorTask::StoppedReason reason;
+  switch (stop_reason) {
+    case glic::mojom::ActorTaskStopReason::kStoppedByUser:
+      reason = actor::ActorTask::StoppedReason::kStoppedByUser;
+      break;
+    case glic::mojom::ActorTaskStopReason::kTaskComplete:
+      reason = actor::ActorTask::StoppedReason::kTaskComplete;
+      break;
+    case glic::mojom::ActorTaskStopReason::kModelError:
+      reason = actor::ActorTask::StoppedReason::kModelError;
+      break;
+  }
+
+  actor_keyed_service_->StopTask(task->id(), reason);
 }
 
 void GlicActorTaskManager::PauseActorTask(
@@ -361,7 +369,8 @@ void GlicActorTaskManager::UninterruptActorTask(actor::TaskId task_id) {
 
 void GlicActorTaskManager::CancelTask() {
   if (current_task_id_) {
-    StopActorTask(current_task_id_, /*success=*/false);
+    StopActorTask(current_task_id_,
+                  glic::mojom::ActorTaskStopReason::kStoppedByUser);
   }
 }
 

@@ -92,7 +92,8 @@ TEST_F(GlicActorTaskIconManagerTest, NoActiveTasks_ReturnDefaultState) {
 
 TEST_F(GlicActorTaskIconManagerTest, CancelledTask_ReturnDefaultText) {
   TaskId task_id = actor_service()->CreateTaskForTesting();
-  actor_service()->StopTask(task_id, /*success=*/false);
+  actor_service()->StopTask(task_id,
+                            actor::ActorTask::StoppedReason::kStoppedByUser);
   manager()->OnActorTaskCompleted(task_id, /*success=*/false);
   manager()->UpdateTaskIcon(/*is_showing=*/true, CurrentView::kConversation);
 
@@ -104,7 +105,8 @@ TEST_F(GlicActorTaskIconManagerTest, CancelledTask_ReturnDefaultText) {
 TEST_F(GlicActorTaskIconManagerTest,
        CompletedTaskAfterExpiry_ReturnDefaultState) {
   TaskId task_id = actor_service()->CreateTaskForTesting();
-  actor_service()->StopTask(task_id, /*success=*/true);
+  actor_service()->StopTask(task_id,
+                            actor::ActorTask::StoppedReason::kTaskComplete);
   manager()->OnActorTaskCompleted(task_id, /*success=*/true);
   task_environment().FastForwardBy(base::Seconds(
       features::kGlicActorUiCompletedTaskExpiryDelaySeconds.Get()));
@@ -131,7 +133,8 @@ TEST_F(GlicActorTaskIconManagerTest, NoDuplicatedTaskIconStateUpdates) {
                                  ActorTaskIconState::Text::kCompleteTasks))));
 
   TaskId task_id_1 = actor_service()->CreateTaskForTesting();
-  actor_service()->StopTask(task_id_1, /*success=*/true);
+  actor_service()->StopTask(task_id_1,
+                            actor::ActorTask::StoppedReason::kTaskComplete);
   manager()->OnActorTaskCompleted(task_id_1, /*success=*/true);
   manager()->UpdateTaskIcon(/*is_showing=*/true, CurrentView::kConversation);
   EXPECT_TRUE(manager()->GetCurrentActorTaskIconState().is_visible);
@@ -139,7 +142,8 @@ TEST_F(GlicActorTaskIconManagerTest, NoDuplicatedTaskIconStateUpdates) {
             ActorTaskIconState::Text::kCompleteTasks);
 
   TaskId task_id_2 = actor_service()->CreateTaskForTesting();
-  actor_service()->StopTask(task_id_2, /*success=*/true);
+  actor_service()->StopTask(task_id_2,
+                            actor::ActorTask::StoppedReason::kTaskComplete);
   manager()->OnActorTaskCompleted(task_id_2, /*success=*/true);
   manager()->UpdateTaskIcon(/*is_showing=*/true, CurrentView::kConversation);
   EXPECT_TRUE(manager()->GetCurrentActorTaskIconState().is_visible);
@@ -160,14 +164,16 @@ TEST_F(GlicActorTaskIconManagerTest, NoDuplicatedTaskNudgeStateUpdates) {
                                  ActorTaskNudgeState::Text::kCompleteTasks))));
 
   TaskId task_id_1 = actor_service()->CreateTaskForTesting();
-  actor_service()->StopTask(task_id_1, /*success=*/true);
+  actor_service()->StopTask(task_id_1,
+                            actor::ActorTask::StoppedReason::kTaskComplete);
   manager()->OnActorTaskCompleted(task_id_1, /*success=*/true);
   manager()->UpdateTaskNudge();
   EXPECT_EQ(manager()->GetCurrentActorTaskNudgeState().text,
             ActorTaskNudgeState::Text::kCompleteTasks);
 
   TaskId task_id_2 = actor_service()->CreateTaskForTesting();
-  actor_service()->StopTask(task_id_2, /*success=*/true);
+  actor_service()->StopTask(task_id_2,
+                            actor::ActorTask::StoppedReason::kTaskComplete);
   manager()->OnActorTaskCompleted(task_id_2, /*success=*/true);
   manager()->UpdateTaskNudge();
   EXPECT_EQ(manager()->GetCurrentActorTaskNudgeState().text,
@@ -226,7 +232,8 @@ class GlicActorTaskIconManagerCompletedTasksTest
   void SetUp() override {
     GlicActorTaskIconManagerTest::SetUp();
     TaskId task_id = actor_service()->CreateTaskForTesting();
-    actor_service()->StopTask(task_id, /*success=*/true);
+    actor_service()->StopTask(task_id,
+                              actor::ActorTask::StoppedReason::kTaskComplete);
     manager()->OnActorTaskCompleted(task_id, true);
   }
 };

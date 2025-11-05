@@ -116,7 +116,7 @@ TEST_P(ActorKeyedServiceStoredInactiveTasksTest, StopActiveTask) {
 
   EXPECT_TRUE(task->IsActingOnTab(tabs::TabHandle(123)));
   EXPECT_TRUE(task->HasTab(tabs::TabHandle(123)));
-  actor_service->StopTask(id, /*success=*/true);
+  actor_service->StopTask(id, ActorTask::StoppedReason::kTaskComplete);
   ASSERT_EQ(actor_service->GetActiveTasks().size(), 0u);
 
   if (base::FeatureList::IsEnabled(kActorDoNotStoreCompletedTasks)) {
@@ -156,8 +156,8 @@ TEST_P(ActorKeyedServiceStoredInactiveTasksTest,
   auto* actor_service = ActorKeyedService::Get(profile());
   const TaskId id1 = actor_service->CreateTask();
   const TaskId id2 = actor_service->CreateTask();
-  actor_service->StopTask(id1, /*success=*/true);
-  actor_service->StopTask(id2, /*success=*/false);
+  actor_service->StopTask(id1, ActorTask::StoppedReason::kTaskComplete);
+  actor_service->StopTask(id2, ActorTask::StoppedReason::kStoppedByUser);
 
   // Find a single inactive task.
   std::vector<TaskId> single_found =
@@ -195,7 +195,7 @@ TEST_P(ActorKeyedServiceStoredInactiveTasksTest, AddTabToPausedOrStoppedTask) {
   EXPECT_FALSE(task->HasTab(tab_handle));
 
   // Stop the task and try to add a tab.
-  actor_service->StopTask(id, true);
+  actor_service->StopTask(id, ActorTask::StoppedReason::kTaskComplete);
   if (base::FeatureList::IsEnabled(kActorDoNotStoreCompletedTasks)) {
     EXPECT_FALSE(task);
   } else {
@@ -270,7 +270,7 @@ TEST_P(ActorKeyedServiceStoredInactiveTasksTest, PausedTaskTabs) {
   EXPECT_TRUE(task->HasTab(tab_handle));
 
   // Stop the task. This should remove the tab from the task.
-  actor_service->StopTask(id, true);
+  actor_service->StopTask(id, ActorTask::StoppedReason::kTaskComplete);
 
   if (base::FeatureList::IsEnabled(kActorDoNotStoreCompletedTasks)) {
     EXPECT_FALSE(task);

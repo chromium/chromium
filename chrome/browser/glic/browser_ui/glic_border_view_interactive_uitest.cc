@@ -972,7 +972,8 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewWithActorGlowUiTest,
   EXPECT_TRUE(border->GetVisible());
 
   // Stop the task.
-  actor_keyed_service->StopTask(task_id, /*success*/ true);
+  actor_keyed_service->StopTask(task_id,
+                                actor::ActorTask::StoppedReason::kTaskComplete);
 
   // Poll until the border is no longer showing.
   ASSERT_TRUE(base::test::RunUntil([&]() { return !border->IsShowing(); }));

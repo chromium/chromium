@@ -15,8 +15,6 @@
 
 namespace actor {
 
-class ActorTask;
-
 // Delegate interface for ActorTask to communicate with other classes.
 class ActorTaskDelegate {
  public:
