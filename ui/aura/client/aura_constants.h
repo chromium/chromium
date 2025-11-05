@@ -173,6 +173,11 @@ AURA_EXPORT extern const WindowProperty<ui::mojom::WindowShowState>* const
 // does not have any effort on any other operation systems except Chrome OS.
 AURA_EXPORT extern const WindowProperty<bool>* const kIsRestoringKey;
 
+// A property that specifies that the system default caption and icon should not
+// be rendered, and that the client area should be equivalent to the window
+// area.
+AURA_EXPORT extern const WindowProperty<bool>* const kRemoveStandardFrame;
+
 // A property key to store key event dispatch policy. The default value is
 // false, which means IME receives a key event in PREDISPATCH phace before a
 // window receives it. If it's true, a window receives a key event before IME.

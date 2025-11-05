@@ -267,11 +267,7 @@ ui::ImageModel ChromeNativeAppWindowViewsAuraAsh::GetWindowIcon() {
 }
 
 bool ChromeNativeAppWindowViewsAuraAsh::ShouldRemoveStandardFrame() {
-  if (IsFrameless()) {
-    return true;
-  }
-
-  return HasFrameColor();
+  return false;
 }
 
 void ChromeNativeAppWindowViewsAuraAsh::EnsureAppIconCreated() {

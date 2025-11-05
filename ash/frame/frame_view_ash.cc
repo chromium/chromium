@@ -183,6 +183,10 @@ FrameViewAsh::FrameViewAsh(views::Widget* widget)
 
   window_observation_.Observe(frame_window);
 
+  const bool remove_standard_frame =
+      frame_window->GetProperty(aura::client::kRemoveStandardFrame);
+  SetFrameEnabled(!remove_standard_frame);
+
   header_view_->set_context_menu_controller(
       frame_context_menu_controller_.get());
 }
@@ -269,6 +273,7 @@ void FrameViewAsh::SetFrameEnabled(bool enabled) {
 
   frame_enabled_ = enabled;
   overlay_view_->SetVisible(frame_enabled_);
+  header_view_->SetShouldPaintHeader(frame_enabled_);
   UpdateWindowRoundedCorners();
   InvalidateLayout();
 }

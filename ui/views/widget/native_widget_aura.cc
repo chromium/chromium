@@ -246,7 +246,10 @@ void NativeWidgetAura::InitNativeWidget(Widget::InitParams params) {
     window_->SetProperty(aura::client::kWindowRoundedCornersKey,
                          params.rounded_corners.value());
   }
+
   window_->SetProperty(aura::client::kShowStateKey, params.show_state);
+  window_->SetProperty(aura::client::kRemoveStandardFrame,
+                       params.remove_standard_frame);
 
   int desk_index;
   // Set workspace property of this window created with a specified workspace

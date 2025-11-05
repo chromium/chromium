@@ -401,7 +401,7 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
 
     // Specifies that the system default caption and icon should not be
     // rendered, and that the client area should be equivalent to the window
-    // area. Only used on some platforms (Windows and Linux).
+    // area. Only used on some platforms (Windows, Linux and ChromeOS).
     bool remove_standard_frame = false;
 
     // Whether the widget should be maximized or minimized.
