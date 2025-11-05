@@ -211,8 +211,7 @@ class MockMediaStreamVideoCapturerSource
 };
 
 String MakeValidDeviceId(std::string_view id) {
-  std::string padding =
-      base::ToLowerASCII(base::HexEncode(base::RandBytesAsVector(32)));
+  std::string padding = base::HexEncodeLower(base::RandBytesAsVector(32));
   std::string padded_id = base::StrCat({id, padding}).substr(0, 64);
   CHECK(blink::IsValidMediaDeviceId(padded_id));
   return String(padded_id);

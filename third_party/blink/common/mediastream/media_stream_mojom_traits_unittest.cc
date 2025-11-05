@@ -21,7 +21,7 @@
 
 namespace {
 std::string GetRandomDeviceId() {
-  return base::ToLowerASCII(base::HexEncode(base::RandBytesAsVector(32)));
+  return base::HexEncodeLower(base::RandBytesAsVector(32));
 }
 
 std::string GetRandomOtherId() {
@@ -69,7 +69,7 @@ TEST(MediaStreamMojomTraitsTest,
     {
       auto failing_input = input;
       failing_input.device_ids.push_back(
-          base::ToLowerASCII(base::HexEncode(base::RandBytesAsVector(31))));
+          base::HexEncodeLower(base::RandBytesAsVector(31)));
       EXPECT_FALSE(
           mojo::test::SerializeAndDeserialize<blink::mojom::TrackControls>(
               failing_input, output));
@@ -79,7 +79,7 @@ TEST(MediaStreamMojomTraitsTest,
     {
       auto failing_input = input;
       failing_input.device_ids.push_back(
-          base::ToLowerASCII(base::HexEncode(base::RandBytesAsVector(33))));
+          base::HexEncodeLower(base::RandBytesAsVector(33)));
       EXPECT_FALSE(
           mojo::test::SerializeAndDeserialize<blink::mojom::TrackControls>(
               failing_input, output));
@@ -88,8 +88,7 @@ TEST(MediaStreamMojomTraitsTest,
     // Invalid characters
     {
       auto failing_input = input;
-      auto id =
-          base::ToLowerASCII(base::HexEncode(base::RandBytesAsVector(31)));
+      auto id = base::HexEncodeLower(base::RandBytesAsVector(31));
       id += "&*";
       failing_input.device_ids.push_back(id);
       EXPECT_FALSE(
