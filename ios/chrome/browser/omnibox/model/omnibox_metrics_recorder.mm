@@ -27,6 +27,7 @@
 #import "components/search_engines/template_url_service.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_autocomplete_controller.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_text_model.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "net/cookies/cookie_util.h"
 #import "third_party/metrics_proto/omnibox_event.pb.h"
 #import "third_party/metrics_proto/omnibox_focus_type.pb.h"
@@ -50,6 +51,8 @@ constexpr base::TimeDelta kDefaultTimeDelta = base::Milliseconds(-1);
   /// The autocomplete controller.
   raw_ptr<const AutocompleteController, DanglingUntriaged>
       _autocompleteController;
+  /// The number of lines in the omnibox text view.
+  NSInteger _numberOfLines;
 }
 
 - (instancetype)initWithClient:(OmniboxClient*)omniboxClient
@@ -74,6 +77,10 @@ constexpr base::TimeDelta kDefaultTimeDelta = base::Milliseconds(-1);
   _autocompleteController = autocompleteController;
 }
 
+- (void)setNumberOfLines:(NSInteger)numberOfLines {
+  _numberOfLines = numberOfLines;
+}
+
 - (void)recordOpenMatch:(AutocompleteMatch)match
            destinationURL:(GURL)destinationURL
                 inputText:(const std::u16string&)inputText
@@ -81,6 +88,10 @@ constexpr base::TimeDelta kDefaultTimeDelta = base::Milliseconds(-1);
     windowOpenDisposition:(WindowOpenDisposition)disposition
                  isAction:(BOOL)isAction
              isPastedText:(BOOL)isPastedText {
+  if (_numberOfLines) {
+    base::UmaHistogramExactLinear("IOS.Omnibox.NumberOfLines", _numberOfLines,
+                                  20);
+  }
   const base::TimeTicks& now(base::TimeTicks::Now());
   base::TimeDelta elapsedTimeSinceUserFirstModifiedOmnibox(
       now - _omniboxTextModel->time_user_first_modified_omnibox);

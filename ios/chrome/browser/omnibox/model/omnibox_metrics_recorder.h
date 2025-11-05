@@ -47,6 +47,9 @@ struct OmniboxTextModel;
                  isAction:(BOOL)isAction
              isPastedText:(BOOL)isPastedText;
 
+// Records the number of lines in the omnibox text view.
+- (void)setNumberOfLines:(NSInteger)numberOfLines;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_OMNIBOX_MODEL_OMNIBOX_METRICS_RECORDER_H_

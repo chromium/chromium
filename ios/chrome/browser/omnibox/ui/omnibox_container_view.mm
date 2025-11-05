@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/omnibox/ui/omnibox_container_view.h"
 
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/omnibox/model/omnibox_metrics_recorder.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_constants.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_ui_features.h"
 #import "ios/chrome/browser/omnibox/ui/omnibox_text_field_ios.h"
@@ -356,6 +357,9 @@ UIButton* CreateClearButton() {
     userTextHeight = singleLineHeight;
   }
   CGFloat newHeight = ceilf(userTextHeight + verticalPadding);
+
+  NSInteger numberOfLines = round(userTextHeight / singleLineHeight);
+  [self.metricsRecorder setNumberOfLines:numberOfLines];
 
   newHeight = MIN(newHeight, maxHeight);
   if (!_textInputHeightConstraint) {

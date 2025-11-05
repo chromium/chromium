@@ -18,6 +18,7 @@
 @protocol OmniboxKeyboardDelegate;
 @protocol OmniboxTextInput;
 @protocol TextFieldViewContaining;
+@class OmniboxMetricsRecorder;
 
 @interface OmniboxViewController : UIViewController <EditViewAnimatee,
                                                      LocationBarOffsetProvider,
@@ -25,6 +26,9 @@
 
 /// Mutator of the omnibox.
 @property(nonatomic, weak) id<OmniboxMutator> mutator;
+
+/// The metrics recorder.
+@property(nonatomic, weak) OmniboxMetricsRecorder* metricsRecorder;
 
 /// Whether the UI is configured for search-only mode.
 @property(nonatomic, assign) BOOL searchOnlyUI;
