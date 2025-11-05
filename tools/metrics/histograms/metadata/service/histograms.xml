@@ -1353,6 +1353,16 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="ServiceWorker.OpenWindow.UrlScheme" enum="OpenWindowUrlScheme"
+    expires_after="2026-10-31">
+  <owner>yyanagisawa@chromium.org</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>
+    The URL scheme of Clients.openWindow()'s URL argument. This is recorded when
+    the openWindow() is called.
+  </summary>
+</histogram>
+
 <histogram name="ServiceWorker.PaymentRequestEvent.Time" units="ms"
     expires_after="2026-08-25">
   <owner>rouslan@chromium.org</owner>

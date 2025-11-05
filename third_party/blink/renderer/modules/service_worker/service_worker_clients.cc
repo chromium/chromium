@@ -8,6 +8,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_client.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
@@ -100,6 +101,69 @@ void DidGetClients(
   resolver->Resolve(std::move(clients));
 }
 
+// Used for UMA. Append-only.
+// A list of URL schemes of main resources loaded by a service worker.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(OpenWindowUrlScheme)
+enum class OpenWindowUrlScheme {
+  kUnknown = 0,
+  kAboutBlank = 1,
+  kAboutSrcDoc = 2,
+  kBlob = 3,
+  kContent = 4,
+  kData = 5,
+  kFile = 6,
+  kFileSystem = 7,
+  kFtp = 8,
+  kHttp = 9,
+  kHttps = 10,
+  kJavascript = 11,
+  kMailTo = 12,
+  kTel = 13,
+  kWs = 14,
+  kWss = 15,
+  kMaxValue = kWss,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/service/enums.xml:OpenWindowUrlScheme)
+
+void RecordOpenWindowUrlScheme(const KURL& url) {
+  OpenWindowUrlScheme scheme = OpenWindowUrlScheme::kUnknown;
+  if (url.IsAboutBlankURL()) {
+    scheme = OpenWindowUrlScheme::kAboutBlank;
+  } else if (url.IsAboutSrcdocURL()) {
+    scheme = OpenWindowUrlScheme::kAboutSrcDoc;
+  } else if (url.ProtocolIs(url::kBlobScheme)) {
+    scheme = OpenWindowUrlScheme::kBlob;
+  } else if (url.ProtocolIs(url::kContentScheme)) {
+    scheme = OpenWindowUrlScheme::kContent;
+  } else if (url.ProtocolIs(url::kDataScheme)) {
+    scheme = OpenWindowUrlScheme::kData;
+  } else if (url.ProtocolIs(url::kFileScheme)) {
+    scheme = OpenWindowUrlScheme::kFile;
+  } else if (url.ProtocolIs(url::kFileSystemScheme)) {
+    scheme = OpenWindowUrlScheme::kFileSystem;
+  } else if (url.ProtocolIs(url::kFtpScheme)) {
+    scheme = OpenWindowUrlScheme::kFtp;
+  } else if (url.ProtocolIs(url::kHttpScheme)) {
+    scheme = OpenWindowUrlScheme::kHttp;
+  } else if (url.ProtocolIs(url::kHttpsScheme)) {
+    scheme = OpenWindowUrlScheme::kHttps;
+  } else if (url.ProtocolIs(url::kJavaScriptScheme)) {
+    scheme = OpenWindowUrlScheme::kJavascript;
+  } else if (url.ProtocolIs(url::kMailToScheme)) {
+    scheme = OpenWindowUrlScheme::kMailTo;
+  } else if (url.ProtocolIs(url::kTelScheme)) {
+    scheme = OpenWindowUrlScheme::kTel;
+  } else if (url.ProtocolIs(url::kWsScheme)) {
+    scheme = OpenWindowUrlScheme::kWs;
+  } else if (url.ProtocolIs(url::kWssScheme)) {
+    scheme = OpenWindowUrlScheme::kWss;
+  }
+  base::UmaHistogramEnumeration("ServiceWorker.OpenWindow.UrlScheme", scheme);
+}
+
 }  // namespace
 
 ServiceWorkerClients* ServiceWorkerClients::Create() {
@@ -178,6 +242,7 @@ ServiceWorkerClients::openWindow(ScriptState* script_state, const String& url) {
     return promise;
   }
 
+  RecordOpenWindowUrlScheme(parsed_url);
   if (!global_scope->GetSecurityOrigin()->CanDisplay(parsed_url)) {
     resolver->Reject(V8ThrowException::CreateTypeError(
         script_state->GetIsolate(),

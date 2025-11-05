@@ -128,6 +128,29 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="kWarmedUp"/>
 </enum>
 
+<!-- LINT.IfChange(OpenWindowUrlScheme) -->
+
+<enum name="OpenWindowUrlScheme">
+  <int value="0" label="kUnknown"/>
+  <int value="1" label="kAboutBlank"/>
+  <int value="2" label="kAboutSrcDoc"/>
+  <int value="3" label="kBlob"/>
+  <int value="4" label="kContent"/>
+  <int value="5" label="kData"/>
+  <int value="6" label="kFile"/>
+  <int value="7" label="kFileSystem"/>
+  <int value="8" label="kFtp"/>
+  <int value="9" label="kHttp"/>
+  <int value="10" label="kHttps"/>
+  <int value="11" label="kJavascript"/>
+  <int value="12" label="kMailTo"/>
+  <int value="13" label="kTel"/>
+  <int value="14" label="kWs"/>
+  <int value="15" label="kWss"/>
+</enum>
+
+<!-- LINT.ThenChange(//third_party/blink/renderer/modules/service_worker/service_worker_clients.cc:OpenWindowUrlScheme) -->
+
 <!-- LINT.IfChange(RaceNetworkRequestDataTransferResult) -->
 
 <enum name="RaceNetworkRequestDataTransferResult">
