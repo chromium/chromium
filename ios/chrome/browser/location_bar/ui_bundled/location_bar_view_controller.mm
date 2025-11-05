@@ -381,6 +381,9 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
   self.locationBarSteadyView.trailingButton.alpha = alphaValue;
   self.locationBarSteadyView.badgesContainerView.placeholderView.alpha =
       alphaValue;
+  if (IsProactiveSuggestionsFrameworkEnabled() && !self.incognito) {
+    self.locationBarSteadyView.badgesContainerView.alpha = alphaValue;
+  }
   BOOL badgeViewShouldCollapse = progress <= kFullscreenProgressThreshold;
   [self.locationBarSteadyView
       setFullScreenCollapsedMode:badgeViewShouldCollapse];
