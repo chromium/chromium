@@ -42,8 +42,7 @@ typedef NS_ENUM(NSInteger, PageActionMenuFeatureActionType) {
 @property(nonatomic, strong, readonly) UIImage* icon;
 
 // Type of action this feature supports.
-@property(nonatomic, assign, readonly)
-    PageActionMenuFeatureActionType actionType;
+@property(nonatomic, assign) PageActionMenuFeatureActionType actionType;
 
 // Text for action button.
 @property(nonatomic, copy) NSString* actionText;
