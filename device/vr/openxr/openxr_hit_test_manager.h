@@ -48,7 +48,8 @@ class OpenXrHitTestManager {
   mojom::XRHitTestSubscriptionResultsDataPtr GetHitTestResults(
       XrTime predicted_display_time,
       const gfx::Transform& mojo_from_viewer,
-      const std::vector<mojom::XRInputSourceStatePtr>& input_state);
+      const std::optional<std::vector<mojom::XRInputSourceStatePtr>>&
+          input_state);
 
  protected:
   // Can return false to indicate that there was an error with processing the
@@ -69,7 +70,8 @@ class OpenXrHitTestManager {
   std::optional<gfx::Transform> GetMojoFromNativeOrigin(
       const mojom::XRNativeOriginInformation& native_origin_information,
       const gfx::Transform& mojo_from_viewer,
-      const std::vector<mojom::XRInputSourceStatePtr>& input_state);
+      const std::optional<std::vector<mojom::XRInputSourceStatePtr>>&
+          input_state);
   std::optional<gfx::Transform> GetMojoFromReferenceSpace(
       device::mojom::XRReferenceSpaceType type,
       const gfx::Transform& mojo_from_viewer);
@@ -77,7 +79,8 @@ class OpenXrHitTestManager {
       const device::mojom::XRInputSourceStatePtr& input_source_state);
   std::vector<std::pair<uint32_t, gfx::Transform>> GetMojoFromInputSources(
       const std::string& profile_name,
-      const std::vector<mojom::XRInputSourceStatePtr>& input_state);
+      const std::optional<std::vector<mojom::XRInputSourceStatePtr>>&
+          input_state);
 
   // Hit Test Helpers
   device::mojom::XRHitTestSubscriptionResultDataPtr

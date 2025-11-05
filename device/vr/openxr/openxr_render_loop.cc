@@ -729,8 +729,8 @@ mojom::XRFrameDataPtr OpenXrRenderLoop::GetNextFrameData() {
     OpenXrAnchorManager* anchor_manager = openxr_->GetAnchorManager();
 
     if (anchor_manager) {
-      frame_data->anchors_data = anchor_manager->ProcessAnchorsForFrame(
-          openxr_.get(), frame_data->input_state.value(), frame_time);
+      frame_data->anchors_data =
+          anchor_manager->ProcessAnchorsForFrame(openxr_.get(), frame_time);
     }
 
     OpenXrLightEstimator* light_estimator = openxr_->GetLightEstimator();
@@ -757,7 +757,7 @@ mojom::XRFrameDataPtr OpenXrRenderLoop::GetNextFrameData() {
     frame_data->hit_test_subscription_results =
         hit_test_manager->GetHitTestResults(frame_time,
                                             mojo_from_viewer.ToTransform(),
-                                            frame_data->input_state.value());
+                                            frame_data->input_state);
   }
 
   // If we don't have a depth_sensor, depth wasn't enabled.

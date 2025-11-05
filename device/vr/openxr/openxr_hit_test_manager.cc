@@ -110,7 +110,8 @@ mojom::XRHitTestSubscriptionResultsDataPtr
 OpenXrHitTestManager::GetHitTestResults(
     XrTime predicted_display_time,
     const gfx::Transform& mojo_from_viewer,
-    const std::vector<mojom::XRInputSourceStatePtr>& input_state) {
+    const std::optional<std::vector<mojom::XRInputSourceStatePtr>>&
+        input_state) {
   TRACE_EVENT2("xr", "GetHitTestResults", "subscription_count",
                hit_test_subscription_id_to_data_.size(),
                "transient_subscription_count",
@@ -179,10 +180,14 @@ void OpenXrHitTestManager::UnsubscribeFromHitTest(
 std::optional<gfx::Transform> OpenXrHitTestManager::GetMojoFromNativeOrigin(
     const mojom::XRNativeOriginInformation& native_origin_information,
     const gfx::Transform& mojo_from_viewer,
-    const std::vector<mojom::XRInputSourceStatePtr>& input_state) {
+    const std::optional<std::vector<mojom::XRInputSourceStatePtr>>&
+        input_state) {
   switch (native_origin_information.which()) {
     case mojom::XRNativeOriginInformation::Tag::kInputSourceSpaceInfo:
-      for (auto& input_source_state : input_state) {
+      if (!input_state) {
+        return std::nullopt;
+      }
+      for (auto& input_source_state : input_state.value()) {
         mojom::XRInputSourceSpaceInfo* input_source_space_info =
             native_origin_information.get_input_source_space_info().get();
         if (input_source_state->source_id ==
@@ -228,10 +233,13 @@ std::optional<gfx::Transform> OpenXrHitTestManager::GetMojoFromReferenceSpace(
 std::vector<std::pair<uint32_t, gfx::Transform>>
 OpenXrHitTestManager::GetMojoFromInputSources(
     const std::string& profile_name,
-    const std::vector<mojom::XRInputSourceStatePtr>& input_state) {
+    const std::optional<std::vector<mojom::XRInputSourceStatePtr>>&
+        input_state) {
   std::vector<std::pair<uint32_t, gfx::Transform>> result;
-
-  for (const auto& input_source_state : input_state) {
+  if (!input_state) {
+    return result;
+  }
+  for (const auto& input_source_state : input_state.value()) {
     if (input_source_state && input_source_state->description) {
       if (base::Contains(input_source_state->description->profiles,
                          profile_name)) {
@@ -244,8 +252,8 @@ OpenXrHitTestManager::GetMojoFromInputSources(
           continue;
         }
 
-        result.push_back(
-            {input_source_state->source_id, *maybe_mojo_from_input_source});
+        result.emplace_back(input_source_state->source_id,
+                            *maybe_mojo_from_input_source);
       }
     }
   }

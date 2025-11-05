@@ -33,16 +33,14 @@ void OpenXrAnchorManager::AddCreateAnchorRequest(
 
 device::mojom::XRAnchorsDataPtr OpenXrAnchorManager::ProcessAnchorsForFrame(
     OpenXrApiWrapper* openxr,
-    const std::vector<mojom::XRInputSourceStatePtr>& input_state,
     XrTime predicted_display_time) {
   TRACE_EVENT0("xr", "ProcessAnchorsForFrame");
-  ProcessCreateAnchorRequests(openxr, input_state);
+  ProcessCreateAnchorRequests(openxr);
   return GetCurrentAnchorsData(predicted_display_time);
 }
 
 void OpenXrAnchorManager::ProcessCreateAnchorRequests(
-    OpenXrApiWrapper* openxr,
-    const std::vector<mojom::XRInputSourceStatePtr>& input_state) {
+    OpenXrApiWrapper* openxr) {
   XrTime display_time = openxr->GetPredictedDisplayTime();
   for (auto& request : create_anchor_requests_) {
     if (!IsSupportedOrigin(request.GetNativeOriginInformation())) {

@@ -40,7 +40,6 @@ class OpenXrAnchorManager {
 
   device::mojom::XRAnchorsDataPtr ProcessAnchorsForFrame(
       OpenXrApiWrapper* openxr,
-      const std::vector<mojom::XRInputSourceStatePtr>& input_state,
       XrTime predicted_display_time);
 
   virtual void DetachAnchor(AnchorId anchor_id) = 0;
@@ -75,9 +74,7 @@ class OpenXrAnchorManager {
 
  private:
   void DisposeActiveAnchorCallbacks();
-  void ProcessCreateAnchorRequests(
-      OpenXrApiWrapper* openxr,
-      const std::vector<mojom::XRInputSourceStatePtr>& input_state);
+  void ProcessCreateAnchorRequests(OpenXrApiWrapper* openxr);
   bool IsSupportedOrigin(
       const mojom::XRNativeOriginInformation& native_origin_info) const;
 

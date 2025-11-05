@@ -828,10 +828,16 @@ OpenXrApiWrapper::GetXrLocationFromNativeOriginInformation(
       }
       return std::nullopt;
     case mojom::XRNativeOriginInformation::Tag::kHandJointSpaceInfo:
+      if (session_state_ != XR_SESSION_STATE_FOCUSED) {
+        return std::nullopt;
+      }
       return input_helper_->GetXrLocationFromHandJoint(
           local_space_, *native_origin.get_hand_joint_space_info(),
           native_origin_from_object);
     case mojom::XRNativeOriginInformation::Tag::kInputSourceSpaceInfo:
+      if (session_state_ != XR_SESSION_STATE_FOCUSED) {
+        return std::nullopt;
+      }
       return input_helper_->GetXrLocationFromInputSource(
           *native_origin.get_input_source_space_info(),
           native_origin_from_object);
