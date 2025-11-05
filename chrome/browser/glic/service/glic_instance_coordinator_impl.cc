@@ -381,10 +381,7 @@ void GlicInstanceCoordinatorImpl::CreateWarmedInstance() {
 GlicInstanceImpl*
 GlicInstanceCoordinatorImpl::GetOrCreateInstanceImplForFloaty() {
   auto* floaty_instance = GetInstanceWithFloaty();
-  if (!floaty_instance &&
-      base::FeatureList::IsEnabled(
-          features::kGlicDefaultToLastActiveConversation) &&
-      last_active_instance_ &&
+  if (!floaty_instance && last_active_instance_ &&
       GetTimeSinceLastActive(last_active_instance_) < kFloatyMaxRecency) {
     floaty_instance = last_active_instance_;
   }
