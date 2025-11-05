@@ -27,6 +27,7 @@ extern const char kTabResumptionOpenTab[];
 extern const char kTabResumptionWithPriceDropImpression[];
 extern const char kTabResumptionWithPriceTrackingImpression[];
 extern const char kTabResumptionImpression[];
+extern const char kAppBundlePromoImpression[];
 extern const char kContentNotificationSnackbarAction[];
 
 #pragma mark - Enums

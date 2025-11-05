@@ -55,6 +55,7 @@
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_delegate.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_image_data_source.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_mediator.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_metrics_constants.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_metrics_recorder.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_view_controller.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_view_controller_audience.h"
@@ -854,6 +855,7 @@ using segmentation_platform::TipIdentifier;
     case ContentSuggestionsModuleType::kAppBundlePromo: {
       registry->NotifyCardShown(
           segmentation_platform::kAppBundlePromoEphemeralModule);
+      UMA_HISTOGRAM_BOOLEAN(kAppBundlePromoImpression, true);
       break;
     }
     case ContentSuggestionsModuleType::kDefaultBrowser: {
