@@ -363,7 +363,7 @@ void DoParseAfterSpecialScheme(std::basic_string_view<CHAR> spec,
 // The main parsing function for standard URLs. Standard URLs have a scheme,
 // host, path, etc.
 template <typename CharT>
-Parsed DoParseStandardURL(std::basic_string_view<CharT> url) {
+Parsed DoParseStandardUrl(std::basic_string_view<CharT> url) {
   // Strip leading & trailing spaces and control characters.
   int begin = 0;
   int url_len = base::checked_cast<int>(url.size());
@@ -476,7 +476,7 @@ void DoParseAfterNonSpecialScheme(std::basic_string_view<CHAR> spec,
 
 // The main parsing function for non-special scheme URLs.
 template <typename CharT>
-Parsed DoParseNonSpecialURL(std::basic_string_view<CharT> url,
+Parsed DoParseNonSpecialUrl(std::basic_string_view<CharT> url,
                             bool trim_path_end) {
   // Strip leading & trailing spaces and control characters.
   int begin = 0;
@@ -500,7 +500,7 @@ Parsed DoParseNonSpecialURL(std::basic_string_view<CharT> url,
 }
 
 template <typename CharT>
-Parsed DoParseFileSystemURL(std::basic_string_view<CharT> url) {
+Parsed DoParseFileSystemUrl(std::basic_string_view<CharT> url) {
   // Strip leading & trailing spaces and control characters.
   int begin = 0;
   int url_len = base::checked_cast<int>(url.size());
@@ -548,13 +548,13 @@ Parsed DoParseFileSystemURL(std::basic_string_view<CharT> url) {
   if (CompareSchemeComponent(url, inner_scheme, kFileScheme)) {
     // File URLs are special. The static cast is safe because we calculated the
     // size above as the difference of two ints.
-    inner_parsed = ParseFileURL(inner_url);
+    inner_parsed = ParseFileUrl(inner_url);
   } else if (CompareSchemeComponent(url, inner_scheme, kFileSystemScheme)) {
     // Filesystem URLs don't nest.
     return parsed;
   } else if (IsStandard(inner_scheme.as_string_view_on(url.data()))) {
     // All "normal" URLs.
-    inner_parsed = DoParseStandardURL(inner_url);
+    inner_parsed = DoParseStandardUrl(inner_url);
   } else {
     return parsed;
   }
@@ -606,7 +606,7 @@ Parsed DoParseFileSystemURL(std::basic_string_view<CharT> url) {
 // Initializes a path URL which is merely a scheme followed by a path. Examples
 // include "about:foo" and "javascript:alert('bar');"
 template <typename CharT>
-Parsed DoParsePathURL(std::basic_string_view<CharT> url, bool trim_path_end) {
+Parsed DoParsePathUrl(std::basic_string_view<CharT> url, bool trim_path_end) {
   // Strip leading & trailing spaces and control characters.
   int scheme_begin = 0;
   int url_len = base::checked_cast<int>(url.size());
@@ -643,7 +643,7 @@ Parsed DoParsePathURL(std::basic_string_view<CharT> url, bool trim_path_end) {
 }
 
 template <typename CharT>
-Parsed DoParseMailtoURL(std::basic_string_view<CharT> url) {
+Parsed DoParseMailtoUrl(std::basic_string_view<CharT> url) {
   // Strip leading & trailing spaces and control characters.
   int begin = 0;
   // TODO(crbug.com/325408566): Transition to size_t and avoid the checked_cast
@@ -1038,41 +1038,41 @@ int ParsePort(std::u16string_view url, const Component& port) {
   return DoParsePort(url, port);
 }
 
-Parsed ParseStandardURL(std::string_view url) {
-  return DoParseStandardURL(url);
+Parsed ParseStandardUrl(std::string_view url) {
+  return DoParseStandardUrl(url);
 }
 
-Parsed ParseStandardURL(std::u16string_view url) {
-  return DoParseStandardURL(url);
+Parsed ParseStandardUrl(std::u16string_view url) {
+  return DoParseStandardUrl(url);
 }
 
 void ParseStandardURL(const char* url, int url_len, Parsed* parsed) {
   CHECK_GE(url_len, 0);
-  *parsed = DoParseStandardURL(std::basic_string_view(url, url_len));
+  *parsed = DoParseStandardUrl(std::basic_string_view(url, url_len));
 }
 
-Parsed ParseNonSpecialURL(std::string_view url) {
-  return DoParseNonSpecialURL(url, /*trim_path_end=*/true);
+Parsed ParseNonSpecialUrl(std::string_view url) {
+  return DoParseNonSpecialUrl(url, /*trim_path_end=*/true);
 }
 
-Parsed ParseNonSpecialURL(std::u16string_view url) {
-  return DoParseNonSpecialURL(url, /*trim_path_end=*/true);
+Parsed ParseNonSpecialUrl(std::u16string_view url) {
+  return DoParseNonSpecialUrl(url, /*trim_path_end=*/true);
 }
 
-Parsed ParseNonSpecialURLInternal(std::string_view url, bool trim_path_end) {
-  return DoParseNonSpecialURL(url, trim_path_end);
+Parsed ParseNonSpecialUrlInternal(std::string_view url, bool trim_path_end) {
+  return DoParseNonSpecialUrl(url, trim_path_end);
 }
 
-Parsed ParseNonSpecialURLInternal(std::u16string_view url, bool trim_path_end) {
-  return DoParseNonSpecialURL(url, trim_path_end);
+Parsed ParseNonSpecialUrlInternal(std::u16string_view url, bool trim_path_end) {
+  return DoParseNonSpecialUrl(url, trim_path_end);
 }
 
-Parsed ParsePathURL(std::string_view url, bool trim_path_end) {
-  return DoParsePathURL(url, trim_path_end);
+Parsed ParsePathUrl(std::string_view url, bool trim_path_end) {
+  return DoParsePathUrl(url, trim_path_end);
 }
 
-Parsed ParsePathURL(std::u16string_view url, bool trim_path_end) {
-  return DoParsePathURL(url, trim_path_end);
+Parsed ParsePathUrl(std::u16string_view url, bool trim_path_end) {
+  return DoParsePathUrl(url, trim_path_end);
 }
 
 void ParsePathURL(const char* url,
@@ -1080,23 +1080,23 @@ void ParsePathURL(const char* url,
                   bool trim_path_end,
                   Parsed* parsed) {
   CHECK_GE(url_len, 0);
-  *parsed = ParsePathURL(std::string_view(url, url_len), trim_path_end);
+  *parsed = ParsePathUrl(std::string_view(url, url_len), trim_path_end);
 }
 
-Parsed ParseFileSystemURL(std::string_view url) {
-  return DoParseFileSystemURL(url);
+Parsed ParseFileSystemUrl(std::string_view url) {
+  return DoParseFileSystemUrl(url);
 }
 
-Parsed ParseFileSystemURL(std::u16string_view url) {
-  return DoParseFileSystemURL(url);
+Parsed ParseFileSystemUrl(std::u16string_view url) {
+  return DoParseFileSystemUrl(url);
 }
 
-Parsed ParseMailtoURL(std::string_view url) {
-  return DoParseMailtoURL(url);
+Parsed ParseMailtoUrl(std::string_view url) {
+  return DoParseMailtoUrl(url);
 }
 
-Parsed ParseMailtoURL(std::u16string_view url) {
-  return DoParseMailtoURL(url);
+Parsed ParseMailtoUrl(std::u16string_view url) {
+  return DoParseMailtoUrl(url);
 }
 
 void ParsePathInternal(const char* spec,

@@ -33,7 +33,7 @@ size_t CountNumberOfIPv4Parts(const std::u16string& text,
     return 0;
   }
 
-  url::Parsed parsed = url::ParseStandardURL(text);
+  url::Parsed parsed = url::ParseStandardUrl(text);
   if (!parsed.host.is_valid()) {
     return 0;
   }

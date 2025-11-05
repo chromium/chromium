@@ -53,7 +53,7 @@ bool ParseAndValidateUrl(const std::string& url, url::Parsed* parsed) {
   DCHECK(parsed);
   DCHECK(ShouldProcessUrl(url));
 
-  *parsed = url::ParseStandardURL(url);
+  *parsed = url::ParseStandardUrl(url);
   return !ContainsUnnecessaryComponents(*parsed);
 }
 

@@ -498,19 +498,19 @@ std::string SegmentURLInternal(std::string* text, url::Parsed* parts) {
   }
 
   if (scheme == url::kFileScheme) {
-    *parts = url::ParseFileURL(*text);
+    *parts = url::ParseFileUrl(*text);
     return scheme;
   }
 
   if (scheme == url::kFileSystemScheme) {
     // Have the GURL parser do the heavy lifting for us.
-    *parts = url::ParseFileSystemURL(*text);
+    *parts = url::ParseFileSystemUrl(*text);
     return scheme;
   }
 
   if (parts->scheme.is_valid()) {
     // Have the GURL parser do the heavy lifting for us.
-    *parts = url::ParseStandardURL(*text);
+    *parts = url::ParseStandardUrl(*text);
     return scheme;
   }
 
@@ -536,7 +536,7 @@ std::string SegmentURLInternal(std::string* text, url::Parsed* parts) {
   text_to_parse.append(first_nonwhite, text->end());
 
   // Have the GURL parser do the heavy lifting for us.
-  *parts = url::ParseStandardURL(text_to_parse);
+  *parts = url::ParseStandardUrl(text_to_parse);
 
   // Offset the results of the parse to match the original text.
   const int offset = -static_cast<int>(inserted_text.length());

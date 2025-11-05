@@ -305,7 +305,7 @@ base::expected<String, String> CanonicalizePathnameInternal(
   } else {
     url::RawCanonOutputT<char> canon_output;
     url::Component component;
-    url::CanonicalizePathURLPath(StringUtf8Adaptor(input).AsStringView(),
+    url::CanonicalizePathUrlPath(StringUtf8Adaptor(input).AsStringView(),
                                  &canon_output, &component);
     return base::ok(StringFromCanonOutput(canon_output, component));
   }

@@ -437,7 +437,7 @@ void V4ProtocolManagerUtil::CanonicalizeUrl(const GURL& url,
   // 2. Do URL unescaping until no more hex encoded characters exist.
   std::string url_unescaped_str(Unescape(url_without_fragment.spec()));
   std::string_view url_unescaped_str_view(url_unescaped_str);
-  url::Parsed parsed = url::ParseStandardURL(url_unescaped_str);
+  url::Parsed parsed = url::ParseStandardUrl(url_unescaped_str);
 
   // 3. In hostname, remove all leading and trailing dots.
   std::string_view host;
@@ -478,7 +478,7 @@ void V4ProtocolManagerUtil::CanonicalizeUrl(const GURL& url,
   // 7. After performing all above steps, percent-escape all chars in url which
   // are <= ASCII 32, >= 127, #, %. Escapes must be uppercase hex characters.
   std::string escaped_canon_url_str(Escape(url_unescaped_with_can_hostpath));
-  url::Parsed final_parsed = url::ParseStandardURL(escaped_canon_url_str);
+  url::Parsed final_parsed = url::ParseStandardUrl(escaped_canon_url_str);
 
   if (canonicalized_hostname && final_parsed.host.is_nonempty()) {
     *canonicalized_hostname = escaped_canon_url_str.substr(

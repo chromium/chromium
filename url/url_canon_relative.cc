@@ -544,7 +544,7 @@ bool DoResolveAbsoluteFile(std::basic_string_view<CharT> relative_url,
   // Parse the file URL. The file URL parsing function uses the same logic
   // as we do for determining if the file is absolute, in which case it will
   // not bother to look for a scheme.
-  return CanonicalizeFileUrl(relative_url, ParseFileURL(relative_url),
+  return CanonicalizeFileUrl(relative_url, ParseFileUrl(relative_url),
                              query_converter, output, out_parsed);
 }
 

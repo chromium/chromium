@@ -104,14 +104,14 @@ bool CanonicalizePathUrl(std::u16string_view spec,
       URLComponentSource<char16_t>(spec.data()), parsed, output, new_parsed);
 }
 
-void CanonicalizePathURLPath(std::optional<std::string_view> source,
+void CanonicalizePathUrlPath(std::optional<std::string_view> source,
                              CanonOutput* output,
                              Component* new_component) {
   DoCanonicalizePathComponent<char, unsigned char>(source, '\0', output,
                                                    new_component);
 }
 
-void CanonicalizePathURLPath(std::optional<std::u16string_view> source,
+void CanonicalizePathUrlPath(std::optional<std::u16string_view> source,
                              CanonOutput* output,
                              Component* new_component) {
   DoCanonicalizePathComponent<char16_t, char16_t>(source, '\0', output,

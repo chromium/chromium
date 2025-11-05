@@ -106,7 +106,7 @@ void DoParseLocalFile(std::basic_string_view<CharT> url,
 // character following the "file:" at the beginning of the spec. If so,
 // this is usually a slash, but needn't be; we allow paths like "file:c:\foo".
 template <typename CharT>
-Parsed DoParseFileURL(std::basic_string_view<CharT> url) {
+Parsed DoParseFileUrl(std::basic_string_view<CharT> url) {
   // Strip leading & trailing spaces and control characters.
   int begin = 0;
   int url_len = base::checked_cast<int>(url.size());
@@ -190,12 +190,12 @@ Parsed DoParseFileURL(std::basic_string_view<CharT> url) {
 
 }  // namespace
 
-Parsed ParseFileURL(std::string_view url) {
-  return DoParseFileURL(url);
+Parsed ParseFileUrl(std::string_view url) {
+  return DoParseFileUrl(url);
 }
 
-Parsed ParseFileURL(std::u16string_view url) {
-  return DoParseFileURL(url);
+Parsed ParseFileUrl(std::u16string_view url) {
+  return DoParseFileUrl(url);
 }
 
 }  // namespace url

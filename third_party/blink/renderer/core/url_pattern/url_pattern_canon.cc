@@ -253,7 +253,7 @@ String CanonicalizePathname(const String& protocol,
         if (standard) {
           return url::CanonicalizePartialPath(data, &canon_output, &component);
         }
-        url::CanonicalizePathURLPath(data, &canon_output, &component);
+        url::CanonicalizePathUrlPath(data, &canon_output, &component);
         return true;
       };
 

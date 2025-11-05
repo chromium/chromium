@@ -63,7 +63,7 @@ class URLUtilTest : public testing::Test {
     SCOPED_TRACE(testing::Message()
                  << "base: " << test.base << ", rel: " << test.rel);
 
-    Parsed base_parsed = ParseNonSpecialURL(test.base);
+    Parsed base_parsed = ParseNonSpecialUrl(test.base);
 
     std::string resolved;
     StdStringCanonOutput output(&resolved);
@@ -418,7 +418,7 @@ TEST_F(URLUtilTest, PotentiallyDanglingMarkup) {
 
   for (const auto& test : cases) {
     SCOPED_TRACE(::testing::Message() << test.base << ", " << test.rel);
-    Parsed base_parsed = ParseStandardURL(test.base);
+    Parsed base_parsed = ParseStandardUrl(test.base);
 
     std::string resolved;
     StdStringCanonOutput output(&resolved);
@@ -707,7 +707,7 @@ TEST_F(URLUtilTest, TestResolveRelativeWithNonStandardBase) {
     SCOPED_TRACE(testing::Message()
                  << "base: " << test.base << ", rel: " << test.rel);
 
-    Parsed base_parsed = ParseNonSpecialURL(test.base);
+    Parsed base_parsed = ParseNonSpecialUrl(test.base);
     std::string resolved;
     StdStringCanonOutput output(&resolved);
     Parsed resolved_parsed;

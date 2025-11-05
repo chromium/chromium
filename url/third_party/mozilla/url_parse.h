@@ -292,11 +292,11 @@ std::ostream& operator<<(std::ostream& os, const Parsed& parsed);
 //
 // The 8-bit versions require UTF-8 encoding.
 
-// StandardURL is for when the scheme is known, such as "https:", "ftp:".
+// ParseStandardUrl is for when the scheme is known, such as "https:", "ftp:".
 // This is defined as "special" in URL Standard.
 // See https://url.spec.whatwg.org/#is-special
-COMPONENT_EXPORT(URL) Parsed ParseStandardURL(std::string_view url);
-COMPONENT_EXPORT(URL) Parsed ParseStandardURL(std::u16string_view url);
+COMPONENT_EXPORT(URL) Parsed ParseStandardUrl(std::string_view url);
+COMPONENT_EXPORT(URL) Parsed ParseStandardUrl(std::u16string_view url);
 // TODO(crbug.com/325408566): Remove once all third-party libraries use the
 // overloads above.
 COMPONENT_EXPORT(URL)
@@ -304,28 +304,28 @@ void ParseStandardURL(const char* url, int url_len, Parsed* parsed);
 
 // Non-special URL is for when the scheme is not special, such as "about:",
 // "javascript:". See https://url.spec.whatwg.org/#is-not-special
-COMPONENT_EXPORT(URL) Parsed ParseNonSpecialURL(std::string_view url);
-COMPONENT_EXPORT(URL) Parsed ParseNonSpecialURL(std::u16string_view url);
+COMPONENT_EXPORT(URL) Parsed ParseNonSpecialUrl(std::string_view url);
+COMPONENT_EXPORT(URL) Parsed ParseNonSpecialUrl(std::u16string_view url);
 
 // PathURL is for when the scheme is known not to have an authority (host)
 // section but that aren't file URLs either. The scheme is parsed, and
 // everything after the scheme is considered as the path. This is used for
 // things like "about:" and "javascript:"
 //
-// TODO: Replace ParsePathURL() with ParseNonSpecialURL(), ensuring it works
+// TODO: Replace ParsePathUrl() with ParseNonSpecialUrl(), ensuring it works
 // with the android:// escape hatch introduced in crrev.com/c/5515685.
 COMPONENT_EXPORT(URL)
-Parsed ParsePathURL(std::string_view url, bool trim_path_end);
+Parsed ParsePathUrl(std::string_view url, bool trim_path_end);
 COMPONENT_EXPORT(URL)
-Parsed ParsePathURL(std::u16string_view url, bool trim_path_end);
+Parsed ParsePathUrl(std::u16string_view url, bool trim_path_end);
 // TODO(crbug.com/325408566): Remove once openscreen starts using
-// ParseNonSpecialURL(), now that kStandardCompliantNonSpecialSchemeURLParsing
+// ParseNonSpecialUrl(), now that kStandardCompliantNonSpecialSchemeURLParsing
 // has been launched. This is non-trivial because it involves:
 //
-// 1. Adding ParseNonSpecialURL() into
+// 1. Adding ParseNonSpecialUrl() into
 // https://quiche.googlesource.com/googleurl/+/refs/heads/master/url/third_party/mozilla/url_parse.h.
 // 2. Rolling quiche into openscreen, and making the change in openscreen to use
-// ParseNonSpecialURL() instead of ParsePathURL().
+// ParseNonSpecialUrl() instead of ParsePathURL().
 // 3. Removing all traces of ParsePathURL() from
 // url/third_party/mozilla/url_parse here in chromium.
 COMPONENT_EXPORT(URL)
@@ -334,18 +334,18 @@ void ParsePathURL(const char* url,
                   bool trim_path_end,
                   Parsed* parsed);
 
-// FileURL is for file URLs. There are some special rules for interpreting
+// ParseFileUrl is for file URLs. There are some special rules for interpreting
 // these.
-COMPONENT_EXPORT(URL) Parsed ParseFileURL(std::string_view url);
-COMPONENT_EXPORT(URL) Parsed ParseFileURL(std::u16string_view url);
+COMPONENT_EXPORT(URL) Parsed ParseFileUrl(std::string_view url);
+COMPONENT_EXPORT(URL) Parsed ParseFileUrl(std::u16string_view url);
 
 // Filesystem URLs are structured differently than other URLs.
-COMPONENT_EXPORT(URL) Parsed ParseFileSystemURL(std::string_view url);
-COMPONENT_EXPORT(URL) Parsed ParseFileSystemURL(std::u16string_view url);
+COMPONENT_EXPORT(URL) Parsed ParseFileSystemUrl(std::string_view url);
+COMPONENT_EXPORT(URL) Parsed ParseFileSystemUrl(std::u16string_view url);
 
-// MailtoURL is for mailto: urls. They are made up scheme,path,query
-COMPONENT_EXPORT(URL) Parsed ParseMailtoURL(std::string_view url);
-COMPONENT_EXPORT(URL) Parsed ParseMailtoURL(std::u16string_view url);
+// ParseMailtoUrl is for mailto: urls. They are made up scheme,path,query
+COMPONENT_EXPORT(URL) Parsed ParseMailtoUrl(std::string_view url);
+COMPONENT_EXPORT(URL) Parsed ParseMailtoUrl(std::u16string_view url);
 
 // Helper functions -----------------------------------------------------------
 

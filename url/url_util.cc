@@ -278,7 +278,7 @@ bool DoCanonicalize(std::basic_string_view<CHAR> spec,
   // doing so.
   if (DoesBeginUNCPath(spec.data(), 0, spec.length(), false) ||
       DoesBeginWindowsDriveSpec(spec.data(), 0, spec.length())) {
-    return CanonicalizeFileUrl(spec, ParseFileURL(spec), charset_converter,
+    return CanonicalizeFileUrl(spec, ParseFileUrl(spec), charset_converter,
                                output, output_parsed);
   }
 #endif
@@ -294,28 +294,28 @@ bool DoCanonicalize(std::basic_string_view<CHAR> spec,
   SchemeType scheme_type = SCHEME_WITH_HOST_PORT_AND_USER_INFORMATION;
   if (DoCompareSchemeComponent(spec, scheme, url::kFileScheme)) {
     // File URLs are special.
-    success = CanonicalizeFileUrl(spec, ParseFileURL(spec), charset_converter,
+    success = CanonicalizeFileUrl(spec, ParseFileUrl(spec), charset_converter,
                                   output, output_parsed);
   } else if (DoCompareSchemeComponent(spec, scheme, url::kFileSystemScheme)) {
     // Filesystem URLs are special.
     success =
-        CanonicalizeFileSystemUrl(spec, ParseFileSystemURL(spec),
+        CanonicalizeFileSystemUrl(spec, ParseFileSystemUrl(spec),
                                   charset_converter, output, output_parsed);
 
   } else if (DoIsStandard(std::optional(scheme.as_string_view_on(spec.data())),
                           &scheme_type)) {
     // All "normal" URLs.
-    success = CanonicalizeStandardUrl(spec, ParseStandardURL(spec), scheme_type,
+    success = CanonicalizeStandardUrl(spec, ParseStandardUrl(spec), scheme_type,
                                       charset_converter, output, output_parsed);
 
   } else {
     // Non-special scheme URLs like data:, mailto: and javascript:.
     if (!DoIsOpaqueNonSpecial(spec.data(), scheme)) {
       success = CanonicalizeNonSpecialUrl(
-          spec, ParseNonSpecialURLInternal(spec, trim_path_end),
+          spec, ParseNonSpecialUrlInternal(spec, trim_path_end),
           charset_converter, *output, *output_parsed);
     } else {
-      success = CanonicalizePathUrl(spec, ParsePathURL(spec, trim_path_end),
+      success = CanonicalizePathUrl(spec, ParsePathUrl(spec, trim_path_end),
                                     output, output_parsed);
     }
   }
@@ -365,7 +365,7 @@ bool DoResolveRelative(std::string_view base_spec,
   // non-standard URLs are treated as PathURLs, but if the base has an
   // authority we would like to preserve it.
   if (is_relative && base_is_authority_based && !is_hierarchical_base) {
-    Parsed base_parsed_authority = ParseStandardURL(base_spec);
+    Parsed base_parsed_authority = ParseStandardUrl(base_spec);
     if (base_parsed_authority.host.is_nonempty()) {
       STACK_UNINITIALIZED RawCanonOutputT<char> temporary_output;
       bool did_resolve_succeed = ResolveRelativeUrl(

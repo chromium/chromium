@@ -811,11 +811,11 @@ bool CanonicalizePathUrl(std::u16string_view spec,
 // Use to canonicalize just the path component of a "path" URL; e.g. the
 // path of a javascript URL.
 COMPONENT_EXPORT(URL)
-void CanonicalizePathURLPath(std::optional<std::string_view> source,
+void CanonicalizePathUrlPath(std::optional<std::string_view> source,
                              CanonOutput* output,
                              Component* new_component);
 COMPONENT_EXPORT(URL)
-void CanonicalizePathURLPath(std::optional<std::u16string_view> source,
+void CanonicalizePathUrlPath(std::optional<std::u16string_view> source,
                              CanonOutput* output,
                              Component* new_component);
 
