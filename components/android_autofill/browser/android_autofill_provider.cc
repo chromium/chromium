@@ -574,8 +574,7 @@ void AndroidAutofillProvider::MaybeFireFormFieldDidChange(
 }
 
 void AndroidAutofillProvider::OnDidAutofillForm(AndroidAutofillManager* manager,
-                                                const FormData& form,
-                                                base::TimeTicks timestamp) {
+                                                const FormData& form) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (!session_state_ || manager != session_state_->manager.get() ||
       !IsIdOfLinkedForm(form.global_id())) {

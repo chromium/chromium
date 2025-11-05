@@ -161,7 +161,7 @@ void AutofillJavaScriptFeature::ScriptMessageReceived(
           *form_dict, /*filtered=*/false, /*form_name=*/u"",
           web_state->GetLastCommittedURL(), frame->GetSecurityOrigin(),
           *field_data_manager, frame->GetFrameId())) {
-    driver->DidAutofillForm(*std::move(form_data), base::TimeTicks::Now());
+    driver->DidAutofillForm(*std::move(form_data));
   }
 }
 

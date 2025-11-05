@@ -155,7 +155,7 @@ class AutofillDriverIOS final : public AutofillDriver,
   // components/autofill/content/common/mojom/autofill_driver.mojom
   // for further documentation of each method.
   void AskForValuesToFill(const FormData& form, const FieldGlobalId& field_id);
-  void DidAutofillForm(const FormData& form, base::TimeTicks timestamp);
+  void DidAutofillForm(const FormData& form);
   void FormsSeen(const std::vector<FormData>& updated_forms,
                  const std::vector<FormGlobalId>& removed_forms);
   void FormSubmitted(const FormData& form,

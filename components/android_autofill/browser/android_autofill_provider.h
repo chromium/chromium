@@ -103,8 +103,7 @@ class AndroidAutofillProvider : public AutofillProvider,
                           const FormData& form,
                           const FormFieldData& field) override;
   void OnDidAutofillForm(AndroidAutofillManager* manager,
-                         const FormData& form,
-                         base::TimeTicks timestamp) override;
+                         const FormData& form) override;
   void OnHidePopup(AndroidAutofillManager* manager) override;
   void OnServerPredictionsAvailable(AndroidAutofillManager& manager,
                                     FormGlobalId form_id) override;

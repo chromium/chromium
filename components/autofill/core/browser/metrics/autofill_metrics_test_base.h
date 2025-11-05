@@ -203,8 +203,8 @@ class AutofillMetricsBaseTest : public WithTestAutofillClientDriverManager<
     }
   }
 
-  void AutofillForm(const FormData& form, base::TimeTicks timestamp = {}) {
-    autofill_manager().OnDidAutofillForm(form, timestamp);
+  void AutofillForm(const FormData& form) {
+    autofill_manager().OnDidAutofillForm(form);
   }
 
   void SeeForm(const FormData& form) {

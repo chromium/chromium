@@ -197,7 +197,7 @@ TEST_F(AutofillXHRSubmissionDetectionTest,
   form_data.set_fields({form_field_data});
 
   // Simulate autofilling the form.
-  autofill_driver->DidAutofillForm(form_data, base::TimeTicks::Now());
+  autofill_driver->DidAutofillForm(form_data);
 
   // Simulate form removal.
   autofill_driver->FormsRemoved(/*removed_forms=*/{form_data.renderer_id()},

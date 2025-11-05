@@ -271,8 +271,7 @@ class ContentAutofillDriver : public AutofillDriver,
                           AutofillSuggestionTriggerSource trigger_source,
                           const std::optional<PasswordSuggestionRequest>&
                               password_request) override;
-  void DidAutofillForm(const FormData& form,
-                       base::TimeTicks timestamp) override;
+  void DidAutofillForm(const FormData& form) override;
   void FocusOnFormField(const FormData& form,
                         FieldRendererId field_id) override;
   void FormsSeen(const std::vector<FormData>& updated_forms,

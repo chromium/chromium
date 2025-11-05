@@ -175,11 +175,9 @@ class AutofillDriverRouter {
   // This event is broadcast to all drivers.
   void DidEndTextFieldEditing(RoutedCallback<> callback,
                               AutofillDriver& source);
-  void DidAutofillForm(
-      RoutedCallback<const FormData&, base::TimeTicks> callback,
-      AutofillDriver& source,
-      FormData form,
-      base::TimeTicks timestamp);
+  void DidAutofillForm(RoutedCallback<const FormData&> callback,
+                       AutofillDriver& source,
+                       FormData form);
   void FocusOnFormField(
       RoutedCallback<const FormData&, const FieldGlobalId&> callback,
       AutofillDriver& source,

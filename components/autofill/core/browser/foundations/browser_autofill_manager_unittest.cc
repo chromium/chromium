@@ -5836,7 +5836,7 @@ TEST_F(BrowserAutofillManagerTest, OnDidAutofillFormAndUnfocus_Upload) {
   test_api(form).field(0).set_value(u"Elvis");
   test_api(form).field(1).set_value(u"Presley");
   test_api(form).field(2).set_value(u"theking@gmail.com");
-  autofill_manager().OnDidAutofillForm(form, base::TimeTicks::Now());
+  autofill_manager().OnDidAutofillForm(form);
 
   // Simulate lost of focus on the form.
   autofill_manager().OnFocusOnNonFormField();

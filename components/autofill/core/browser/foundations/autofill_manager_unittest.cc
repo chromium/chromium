@@ -490,7 +490,7 @@ TEST_F(AutofillManagerTest, ObserverReceiveCalls) {
     EXPECT_CALL(observer, OnBeforeDidAutofillForm(m, f));
     EXPECT_CALL(observer, OnAfterDidAutofillForm(m, f))
         .WillOnce(RunClosure(run_loop.QuitClosure()));
-    autofill_manager().OnDidAutofillForm(form, {});
+    autofill_manager().OnDidAutofillForm(form);
     std::move(run_loop).Run();
   }
 

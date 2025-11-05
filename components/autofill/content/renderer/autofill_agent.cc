@@ -521,9 +521,8 @@ class AutofillAgent::DeferringAutofillDriver : public mojom::AutofillDriver {
                         FieldRendererId field_id) override {
     DeferMsg(&mojom::AutofillDriver::FocusOnFormField, form, field_id);
   }
-  void DidAutofillForm(const FormData& form,
-                       base::TimeTicks timestamp) override {
-    DeferMsg(&mojom::AutofillDriver::DidAutofillForm, form, timestamp);
+  void DidAutofillForm(const FormData& form) override {
+    DeferMsg(&mojom::AutofillDriver::DidAutofillForm, form);
   }
   void DidEndTextFieldEditing() override {
     DeferMsg(&mojom::AutofillDriver::DidEndTextFieldEditing);
@@ -1188,7 +1187,7 @@ void AutofillAgent::ApplyFieldsAction(
         filled_forms.push_back(*form);
         if (auto* autofill_driver = unsafe_autofill_driver()) {
           CHECK_EQ(action_persistence, mojom::ActionPersistence::kFill);
-          autofill_driver->DidAutofillForm(*form, base::TimeTicks::Now());
+          autofill_driver->DidAutofillForm(*form);
         }
       }
     }

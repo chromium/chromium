@@ -1928,16 +1928,13 @@ TEST_F(AutofillMetricsTest, MAYBE_FormFillDuration) {
     SCOPED_TRACE("Test 2 - all fields are filled by the user");
     base::HistogramTester histogram_tester;
     SeeForm(empty_form);
-    base::TimeTicks parse_time = autofill_manager()
-                                     .form_structures()
-                                     .begin()
-                                     ->second->form_parsed_timestamp();
 
     FormData user_filled_form = filled_form;
+    task_environment_.FastForwardBy(base::Microseconds(3));
     SimulateUserChangedField(user_filled_form,
                              user_filled_form.fields().front(),
-                             parse_time + base::Microseconds(3));
-    task_environment_.FastForwardBy(base::Microseconds(17));
+                             base::TimeTicks::Now());
+    task_environment_.FastForwardBy(base::Microseconds(14));
     SubmitForm(filled_form);
 
     histogram_tester.ExpectTotalCount(
@@ -1958,14 +1955,11 @@ TEST_F(AutofillMetricsTest, MAYBE_FormFillDuration) {
     SCOPED_TRACE("Test 3 - all fields are autofilled");
     base::HistogramTester histogram_tester;
     SeeForm(empty_form);
-    base::TimeTicks parse_time = autofill_manager()
-                                     .form_structures()
-                                     .begin()
-                                     ->second->form_parsed_timestamp();
 
     FormData autofilled_form = test::AsAutofilled(filled_form);
-    AutofillForm(autofilled_form, parse_time + base::Microseconds(5));
-    task_environment_.FastForwardBy(base::Microseconds(17));
+    task_environment_.FastForwardBy(base::Microseconds(5));
+    AutofillForm(autofilled_form);
+    task_environment_.FastForwardBy(base::Microseconds(12));
     SubmitForm(autofilled_form);
 
     histogram_tester.ExpectUniqueSample(
@@ -1991,18 +1985,16 @@ TEST_F(AutofillMetricsTest, MAYBE_FormFillDuration) {
     base::HistogramTester histogram_tester;
 
     SeeForm(empty_form);
-    base::TimeTicks parse_time = autofill_manager()
-                                     .form_structures()
-                                     .begin()
-                                     ->second->form_parsed_timestamp();
 
     FormData mixed_filled_form = test::AsAutofilled(filled_form);
-    AutofillForm(mixed_filled_form, parse_time + base::Microseconds(5));
+    task_environment_.FastForwardBy(base::Microseconds(5));
+    AutofillForm(mixed_filled_form);
+    task_environment_.FastForwardBy(base::Microseconds(3));
     SimulateUserChangedField(mixed_filled_form,
                              mixed_filled_form.fields().front(),
-                             parse_time + base::Microseconds(3));
+                             base::TimeTicks::Now());
 
-    task_environment_.FastForwardBy(base::Microseconds(17));
+    task_environment_.FastForwardBy(base::Microseconds(9));
     SubmitForm(mixed_filled_form);
 
     histogram_tester.ExpectUniqueSample(
@@ -2024,20 +2016,18 @@ TEST_F(AutofillMetricsTest, MAYBE_FormFillDuration) {
     SCOPED_TRACE("Test 5 - load a second form before submitting the first");
     base::HistogramTester histogram_tester;
     SeeForm(empty_form);
-    base::TimeTicks parse_time = autofill_manager()
-                                     .form_structures()
-                                     .begin()
-                                     ->second->form_parsed_timestamp();
 
     SeeForm(test::WithoutValues(second_form));
 
     FormData mixed_filled_form = test::AsAutofilled(filled_form);
-    AutofillForm(mixed_filled_form, parse_time + base::Microseconds(5));
+    task_environment_.FastForwardBy(base::Microseconds(5));
+    AutofillForm(mixed_filled_form);
+    task_environment_.FastForwardBy(base::Microseconds(3));
     SimulateUserChangedField(mixed_filled_form,
                              mixed_filled_form.fields().front(),
-                             parse_time + base::Microseconds(3));
+                             base::TimeTicks::Now());
 
-    task_environment_.FastForwardBy(base::Microseconds(17));
+    task_environment_.FastForwardBy(base::Microseconds(9));
     SubmitForm(mixed_filled_form);
 
     histogram_tester.ExpectUniqueSample(
@@ -2060,11 +2050,6 @@ TEST_F(AutofillMetricsTest, MAYBE_FormFillDuration) {
     base::HistogramTester histogram_tester;
     SeeForm(test::WithoutValues(empty_form));
     SeeForm(test::WithoutValues(second_form));
-    base::TimeTicks parse_time{};
-    for (const auto& kv : autofill_manager().form_structures()) {
-      if (kv.second->form_parsed_timestamp() > parse_time)
-        parse_time = kv.second->form_parsed_timestamp();
-    }
 
     task_environment_.FastForwardBy(base::Microseconds(17));
     SubmitForm(second_form);
@@ -2758,14 +2743,12 @@ TEST_F(AutofillMetricsTest, AutocompleteOneTimeCodeFormFilledDuration) {
   {
     base::HistogramTester histogram_tester;
     SeeForm(form);
-    base::TimeTicks parse_time = autofill_manager()
-                                     .form_structures()
-                                     .begin()
-                                     ->second->form_parsed_timestamp();
-    AutofillForm(form, parse_time + base::Microseconds(5));
+    task_environment_.FastForwardBy(base::Microseconds(5));
+    AutofillForm(form);
+    task_environment_.FastForwardBy(base::Microseconds(3));
     SimulateUserChangedField(form, form.fields().front(),
-                             parse_time + base::Microseconds(3));
-    task_environment_.FastForwardBy(base::Microseconds(17));
+                             base::TimeTicks::Now());
+    task_environment_.FastForwardBy(base::Microseconds(9));
     SubmitForm(form);
 
     histogram_tester.ExpectUniqueSample(

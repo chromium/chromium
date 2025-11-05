@@ -2161,11 +2161,9 @@ void BrowserAutofillManager::OnSelectControlSelectionChangedImpl(
   // revisited, for now we only care about whether the form was edited or not.
 }
 
-void BrowserAutofillManager::OnDidAutofillFormImpl(
-    const FormData& form,
-    const base::TimeTicks timestamp) {
+void BrowserAutofillManager::OnDidAutofillFormImpl(const FormData& form) {
   UpdatePendingForm(form);
-  UpdateInitialInteractionTimestamp(timestamp);
+  UpdateInitialInteractionTimestamp(base::TimeTicks::Now());
 }
 
 void BrowserAutofillManager::DidShowSuggestions(

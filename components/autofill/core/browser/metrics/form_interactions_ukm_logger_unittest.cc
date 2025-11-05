@@ -1570,7 +1570,7 @@ TEST_P(LogFocusedComplexFormAtFormRemoveTest, TestEmittedUKM) {
     }
     // This simulates the callback from the renderer
     // (AutofillManager::OnDidAutofillForm).
-    AutofillForm(form, base::TimeTicks::Now());
+    AutofillForm(form);
   }
   if (GetParam().step_4_edit_after_autofill) {
     task_environment_.FastForwardBy(base::Milliseconds(1000));

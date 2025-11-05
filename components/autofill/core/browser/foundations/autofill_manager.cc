@@ -208,14 +208,13 @@ LanguageCode AutofillManager::GetCurrentPageLanguage() {
   return LanguageCode(language_state->current_language());
 }
 
-void AutofillManager::OnDidAutofillForm(const FormData& form,
-                                        const base::TimeTicks timestamp) {
+void AutofillManager::OnDidAutofillForm(const FormData& form) {
   if (!IsValidFormData(form)) {
     return;
   }
   NotifyObservers(&Observer::OnBeforeDidAutofillForm, form.global_id());
   ParseFormAsync(
-      form, ParsingCallback(&AutofillManager::OnDidAutofillFormImpl, timestamp)
+      form, ParsingCallback(&AutofillManager::OnDidAutofillFormImpl)
                 .Then(NotifyObserversCallback(&Observer::OnAfterDidAutofillForm,
                                               form.global_id())));
 }

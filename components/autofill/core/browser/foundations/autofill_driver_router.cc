@@ -375,16 +375,15 @@ void AutofillDriverRouter::FocusOnFormField(
 }
 
 void AutofillDriverRouter::DidAutofillForm(
-    RoutedCallback<const FormData&, base::TimeTicks> callback,
+    RoutedCallback<const FormData&> callback,
     AutofillDriver& source,
-    FormData form,
-    base::TimeTicks timestamp) {
+    FormData form) {
   FormGlobalId form_id = form.global_id();
   form_forest_.UpdateTreeOfRendererForm(std::move(form), source);
 
   const FormData& browser_form = form_forest_.GetBrowserForm(form_id);
   auto* target = DriverOfFrame(browser_form.host_frame());
-  callback(CHECK_DEREF(target), browser_form, timestamp);
+  callback(CHECK_DEREF(target), browser_form);
 }
 
 void AutofillDriverRouter::DidEndTextFieldEditing(RoutedCallback<> callback,

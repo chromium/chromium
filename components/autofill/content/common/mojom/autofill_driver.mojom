@@ -118,7 +118,7 @@ interface AutofillDriver {
   HidePopup();
 
   // Sent when a form is filled with Autofill suggestions.
-  DidAutofillForm(FormData form, mojo_base.mojom.TimeTicks timestamp);
+  DidAutofillForm(FormData form);
 
   // Sent when a field was in autofilled state but JavaScript modified the
   // value.
