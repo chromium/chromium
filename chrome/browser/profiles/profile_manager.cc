@@ -147,6 +147,8 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_switches.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/hash/hash.h"
+#include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "chrome/browser/ash/account_manager/account_manager_policy_controller_factory.h"
 #include "chrome/browser/ash/account_manager/child_account_type_changed_user_data.h"
@@ -611,9 +613,29 @@ std::vector<Profile*> ProfileManager::GetLastOpenedProfiles() {
   return to_return;
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
+namespace {
+// Returns the hash to identify the caller for investigation.
+// To stabilize against unrelated line edits in the file, we drop line number
+// from the source of the hash.
+uint32_t LocationHash(const base::Location& location) {
+  if (!location.has_source_info()) {
+    // Use 0 to indicate "missing source info" error.
+    return 0;
+  }
+  return base::PersistentHash(
+      base::StrCat({location.function_name(), location.file_name()}));
+}
+}  // namespace
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 // static
-Profile* ProfileManager::GetPrimaryUserProfile() {
+Profile* ProfileManager::GetPrimaryUserProfile(
+#if BUILDFLAG(IS_CHROMEOS)
+    const base::Location& location
+#endif
+) {
 #if BUILDFLAG(IS_CHROMEOS)
   if (IsLoggedIn()) {
     user_manager::UserManager* manager = user_manager::UserManager::Get();
@@ -643,11 +665,24 @@ Profile* ProfileManager::GetPrimaryUserProfile() {
       base::debug::DumpWithoutCrashing();
     }
 
+    LOG(ERROR) << "ProfileManager::GetPrimaryUserProfile is called "
+               << "in a user session but before initialization completion from "
+               << location.ToString();
+    base::UmaHistogramSparse(
+        "Ash.BrowserContext.UnexpectedGetPrimaryUserProfile.InSession.Location",
+        LocationHash(location));
+
     Profile* profile = ProfileManager::GetActiveUserProfile();
     if (profile && manager->IsLoggedInAsGuest())
       profile = profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
     return profile;
   }
+
+  LOG(ERROR) << "ProfileManager::GetPrimaryUserProfile is called "
+             << "at sign in screen from " << location.ToString();
+  base::UmaHistogramSparse(
+      "Ash.BrowserContext.UnexpectedGetPrimaryUserProfile.LoginScreen.Location",
+      LocationHash(location));
 #endif
 
   ProfileManager* profile_manager = g_browser_process->profile_manager();
@@ -658,7 +693,11 @@ Profile* ProfileManager::GetPrimaryUserProfile() {
 }
 
 // static
-Profile* ProfileManager::GetActiveUserProfile() {
+Profile* ProfileManager::GetActiveUserProfile(
+#if BUILDFLAG(IS_CHROMEOS)
+    const base::Location& location
+#endif
+) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
 #if BUILDFLAG(IS_CHROMEOS)
   if (!profile_manager)
@@ -673,6 +712,20 @@ Profile* ProfileManager::GetActiveUserProfile() {
     // TODO: This should be cleaned up with the new profile manager.
     if (user && user->is_profile_created())
       return ash::ProfileHelper::Get()->GetProfileByUser(user);
+
+    LOG(ERROR) << "ProfileManager::GetActiveUserProfile is called "
+               << "in a user session but before initialization completion from "
+               << location.ToString();
+    base::UmaHistogramSparse(
+        "Ash.BrowserContext.UnexpectedGetActiveUserProfile.InSession.Location",
+        LocationHash(location));
+  } else {
+    LOG(ERROR) << "ProfileManager::GetActiveUserProfile is called "
+               << "at sign in screen from " << location.ToString();
+    base::UmaHistogramSparse(
+        "Ash.BrowserContext.UnexpectedGetActiveUserProfile.LoginScreen."
+        "Location",
+        LocationHash(location));
   }
 #endif
   Profile* profile = profile_manager->GetActiveUserOrOffTheRecordProfile();

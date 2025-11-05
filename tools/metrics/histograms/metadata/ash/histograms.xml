@@ -1416,14 +1416,39 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.BrowserContext.UnexpectedGetPrimaryUserProfile"
-    enum="Boolean" expires_after="2024-11-03">
+    enum="Boolean" expires_after="2026-12-31">
   <owner>hidehiko@chromium.org</owner>
+  <owner>junis@chromium.org</owner>
   <owner>oshima@chromium.org</owner>
   <summary>
     Making sure nobody in the production calls the
     ProfileManager::GetPrimaryUserProfile() in unexpected timing. This entry
     will not have &quot;false&quot; status.
   </summary>
+</histogram>
+
+<histogram
+    name="Ash.BrowserContext.UnexpectedGet{UserType}UserProfile.{Timing}.Location"
+    units="int" expires_after="2026-12-31">
+  <owner>hidehiko@chromium.org</owner>
+  <owner>junis@chromium.org</owner>
+  <owner>oshima@chromium.org</owner>
+  <summary>
+    Identify any of the callers that use
+    ProfileManager::Get{UserType}UserProfile() APIs at unexpected timing. The
+    recorded data is the hash of the caller location. Because there're too many
+    possible callers but we expect the number of actual callers is small, we do
+    not list all possible callers as enum, but will process it separately later
+    offline. Thus, the dashboard will show just the hash number.
+  </summary>
+  <token key="UserType">
+    <variant name="Active"/>
+    <variant name="Primary"/>
+  </token>
+  <token key="Timing">
+    <variant name="InSession"/>
+    <variant name="LoginScreen"/>
+  </token>
 </histogram>
 
 <histogram name="Ash.Calendar.CalendarKeyboardNavigationSource"

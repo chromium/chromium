@@ -35,6 +35,10 @@
 #include "chrome/browser/ui/browser_list_observer.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "base/location.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 #if BUILDFLAG(IS_ANDROID)
 class ProfileManagerAndroid;
 #endif
@@ -113,8 +117,14 @@ class ProfileManager : public Profile::Delegate {
   // E.g., if you need only PrefService of the Profile, you can take it from
   // user_manager::User::GetProfilePrefs(), e.g.:
   //   user_manager::UserManager::Get()->GetPrimaryUser()->GetProfilePrefs().
+  // For the safer migration, we record the callers of unexpected use via
+  // location. It should be always called FROM_HERE as default value.
   // TODO(crbug.com/40227502): Remove this.
-  static Profile* GetPrimaryUserProfile();
+  static Profile* GetPrimaryUserProfile(
+#if BUILDFLAG(IS_CHROMEOS)
+      const base::Location& location = FROM_HERE
+#endif
+  );
 
   // Get the profile for the currently active user.
   // Note that in case of a guest account this will return a 'suitable' profile.
@@ -127,8 +137,14 @@ class ProfileManager : public Profile::Delegate {
   // E.g., if you need only PrefService of the Profile, you can take it from
   // user_manager::User::GetProfilePrefs(), e.g.:
   //   user_manager::UserManager::Get()->GetActiveUser()->GetProfilePrefs().
+  // For the safer migration, we record the callers of unexpected use via
+  // location. It should be always called FROM_HERE as default value.
   // TODO(crbug.com/40227502): Remove this.
-  static Profile* GetActiveUserProfile();
+  static Profile* GetActiveUserProfile(
+#if BUILDFLAG(IS_CHROMEOS)
+      const base::Location& location = FROM_HERE
+#endif
+  );
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
