@@ -283,7 +283,6 @@ class TestSharedStorageDevToolsClient : public TestDevToolsProtocolClient {
 
 }  // namespace
 
-
 class SharedStorageTrustedOriginsResponse
     : public net::test_server::BasicHttpResponse {
  public:
