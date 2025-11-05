@@ -960,7 +960,7 @@ public class ToolbarPhone extends ToolbarLayout
         if (urlHasFocus() && ChromeFeatureList.sAndroidBottomToolbarV2.isEnabled()) {
             int strokePx =
                     getContext().getResources().getDimensionPixelSize(R.dimen.chip_border_width);
-            verticalInset += strokePx;
+            verticalInset -= strokePx;
             horizontalInset = strokePx;
         }
 
