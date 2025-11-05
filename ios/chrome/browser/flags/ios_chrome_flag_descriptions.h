@@ -350,9 +350,6 @@ extern const char kEnhancedCalendarDescription[];
 extern const char kEnhancedSafeBrowsingPromoName[];
 extern const char kEnhancedSafeBrowsingPromoDescription[];
 
-extern const char kFRESignInHeaderTextUpdateName[];
-extern const char kFRESignInHeaderTextUpdateDescription[];
-
 extern const char kFeedBackgroundRefreshName[];
 extern const char kFeedBackgroundRefreshDescription[];
 
