@@ -61,7 +61,8 @@ webrtc::DesktopCaptureOptions CreateDesktopCaptureOptions() {
   // to force fallback to GDI.
   static BASE_FEATURE(kDirectXCapturer, "DirectXCapturer",
                       base::FEATURE_ENABLED_BY_DEFAULT);
-  if (base::FeatureList::IsEnabled(kDirectXCapturer)) {
+  if (base::win::GetVersion() >= base::win::Version::WIN8 &&
+      base::FeatureList::IsEnabled(kDirectXCapturer)) {
     // Results in DirectX as main capture API and GDI as fallback solution.
     options.set_allow_directx_capturer(true);
   }
