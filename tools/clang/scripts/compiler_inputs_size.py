@@ -191,7 +191,7 @@ def parse_deps(build_dir, deps_output):
         raise Exception("Unexpected deps file line '%s'" % line)
       dep_file = norm_path(build_dir, line[4:].rstrip('\n'))
       if not dep_file.endswith(".pcm") and not dep_file.endswith(
-          ".modulemap") and main_file is None:
+          ".modulemap") and not dep_file.endswith(".txt") and main_file is None:
         main_file = dep_file
         continue
       dep.add(dep_file)
