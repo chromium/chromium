@@ -228,8 +228,7 @@ public abstract class FullscreenHtmlApiHandlerBase
         @Override
         public void onMultiWindowModeChanged(boolean isInMultiWindowMode) {
             if (isDisplayEdgeToEdgeFullscreenFeatureEnabledOn2DDevice()
-                    && !ChromeFeatureList.isEnabled(
-                            ChromeFeatureList.ENABLE_EXCLUSIVE_ACCESS_MANAGER)) {
+                    && !ChromeFeatureList.sEnableExclusiveAccessManager.isEnabled()) {
                 // Fix for https://crbug.com/416443642 exiting from full screen mode when
                 // transition to PIP is done.
                 // When playing video in full screen mode and the home button is pushed the page
@@ -361,7 +360,7 @@ public abstract class FullscreenHtmlApiHandlerBase
     @VisibleForTesting
     private FullscreenToast getToast() {
         if (mToast == null) {
-            if (ChromeFeatureList.isEnabled(ChromeFeatureList.ENABLE_EXCLUSIVE_ACCESS_MANAGER)) {
+            if (ChromeFeatureList.sEnableExclusiveAccessManager.isEnabled()) {
                 mToast = new FullscreenToast.NoEffectToastStub();
             } else {
                 mToast =

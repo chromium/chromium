@@ -173,7 +173,7 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
 
     @Override
     public boolean isFullscreenForTabOrPending() {
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.ENABLE_EXCLUSIVE_ACCESS_MANAGER)) {
+        if (ChromeFeatureList.sEnableExclusiveAccessManager.isEnabled()) {
             // It may happen that the tab does not have valid WebContents object. In Android
             // the New Tab Page is not the actual web but the native views.
             if (mTab.getWebContents() == null) {
@@ -201,7 +201,7 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
 
     @Override
     public void requestKeyboardLock(boolean escKeyLocked) {
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.ENABLE_EXCLUSIVE_ACCESS_MANAGER)) {
+        if (!ChromeFeatureList.sEnableExclusiveAccessManager.isEnabled()) {
             return;
         }
         // It may happen that the tab does not have valid WebContents object. In Android
@@ -217,7 +217,7 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
 
     @Override
     public void cancelKeyboardLockRequest() {
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.ENABLE_EXCLUSIVE_ACCESS_MANAGER)) {
+        if (!ChromeFeatureList.sEnableExclusiveAccessManager.isEnabled()) {
             return;
         }
         // It may happen that the tab does not have valid WebContents object. In Android
@@ -482,7 +482,7 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
 
     @Override
     public boolean preHandleKeyboardEvent(long nativeKeyEvent) {
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.ENABLE_EXCLUSIVE_ACCESS_MANAGER)) {
+        if (ChromeFeatureList.sEnableExclusiveAccessManager.isEnabled()) {
             return mExclusiveAccessManager != null
                     && mExclusiveAccessManager.preHandleKeyboardEvent(nativeKeyEvent);
         } else {
@@ -605,7 +605,7 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
                 ChromeFeatureList.ENABLE_FULLSCREEN_TO_ANY_SCREEN_ANDROID)) {
             displayId = INVALID_DISPLAY;
         }
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.ENABLE_EXCLUSIVE_ACCESS_MANAGER)) {
+        if (ChromeFeatureList.sEnableExclusiveAccessManager.isEnabled()) {
             if (mExclusiveAccessManager != null) {
                 mExclusiveAccessManager.enterFullscreenModeForTab(
                         renderFrameHost,
@@ -626,7 +626,7 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
             boolean prefersNavigationBar,
             boolean prefersStatusBar,
             long displayId) {
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.ENABLE_EXCLUSIVE_ACCESS_MANAGER)) {
+        if (ChromeFeatureList.sEnableExclusiveAccessManager.isEnabled()) {
             if (mExclusiveAccessManager != null) {
                 mExclusiveAccessManager.enterFullscreenModeForTab(
                         renderFrameHost,
@@ -645,7 +645,7 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
 
     @Override
     public void exitFullscreenModeForTab() {
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.ENABLE_EXCLUSIVE_ACCESS_MANAGER)) {
+        if (ChromeFeatureList.sEnableExclusiveAccessManager.isEnabled()) {
             if (mExclusiveAccessManager != null) {
                 mExclusiveAccessManager.exitFullscreenModeForTab(mTab.getWebContents());
             }

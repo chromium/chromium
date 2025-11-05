@@ -6,6 +6,8 @@ package org.chromium.chrome.test.util;
 
 import static android.view.Display.INVALID_DISPLAY;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 import android.view.View;
 
@@ -21,6 +23,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabTestUtils;
 import org.chromium.chrome.browser.tab.TabWebContentsDelegateAndroid;
+import org.chromium.content_public.browser.WebContents;
 
 /** Static methods for use in tests that require toggling persistent fullscreen. */
 public class FullscreenTestUtils {
@@ -98,6 +101,7 @@ public class FullscreenTestUtils {
      * @param prefersNavigationBar Whether navigation bar should be shown when in fullscreen.
      * @param prefersStatusBar Whether status bar should be shown when in fullscreen.
      * @param isFullscreenInsetsApiMigrationEnabled Whether the new fullscreen APIs are being used.
+     * @param displayId The display id to use for fullscreen.
      */
     public static void togglePersistentFullscreenAndAssert(
             final Tab tab,
@@ -109,7 +113,7 @@ public class FullscreenTestUtils {
             int displayId) {
         final TabWebContentsDelegateAndroid delegate = TabTestUtils.getTabWebContentsDelegate(tab);
         FullscreenTestUtils.togglePersistentFullscreen(
-                delegate, state, prefersNavigationBar, prefersStatusBar, displayId);
+                tab, state, prefersNavigationBar, prefersStatusBar, displayId);
         // In order for the status bar to be displayed, the fullscreen flag must not be set.
         // If we are entering fullscreen, then we expect the fullscreen flag state to match
         // negated |prefersStatusBar|:
@@ -124,24 +128,24 @@ public class FullscreenTestUtils {
     /**
      * Toggles persistent fullscreen for the tab.
      *
-     * @param delegate The {@link TabWebContentsDelegateAndroid} for the tab.
+     * @param tab The {@link Tab} to toggle fullscreen on.
      * @param state Whether the tab should be set to fullscreen.
      */
-    public static void togglePersistentFullscreen(
-            final TabWebContentsDelegateAndroid delegate, final boolean state) {
-        togglePersistentFullscreen(delegate, state, false, false, INVALID_DISPLAY);
+    public static void togglePersistentFullscreen(final Tab tab, final boolean state) {
+        togglePersistentFullscreen(tab, state, false, false, INVALID_DISPLAY);
     }
 
     /**
      * Toggles persistent fullscreen for the tab.
      *
-     * @param delegate The {@link TabWebContentsDelegateAndroid} for the tab.
+     * @param tab The {@link Tab} to toggle fullscreen on.
      * @param state Whether the tab should be set to fullscreen.
      * @param prefersNavigationBar Whether navigation bar should be shown when in fullscreen.
      * @param prefersStatusBar Whether status bar should be shown when in fullscreen.
+     * @param displayId The display id to use for fullscreen.
      */
     public static void togglePersistentFullscreen(
-            final TabWebContentsDelegateAndroid delegate,
+            final Tab tab,
             final boolean state,
             boolean prefersNavigationBar,
             boolean prefersStatusBar,
@@ -149,9 +153,12 @@ public class FullscreenTestUtils {
         PostTask.runOrPostTask(
                 TaskTraits.UI_DEFAULT,
                 () -> {
+                    TabWebContentsDelegateAndroid delegate =
+                            TabTestUtils.getTabWebContentsDelegate(tab);
                     if (state) {
+                        WebContents webContents = assumeNonNull(TabTestUtils.getWebContents(tab));
                         delegate.enterFullscreenModeForTab(
-                                null,
+                                webContents.getMainFrame(),
                                 prefersNavigationBar,
                                 prefersStatusBar,
                                 displayId);

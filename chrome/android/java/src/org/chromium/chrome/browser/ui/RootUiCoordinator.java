@@ -680,9 +680,7 @@ public class RootUiCoordinator
         if (ChromeFeatureList.sEnableExclusiveAccessManager.isEnabled()) {
             mExclusiveAccessManager =
                     new ExclusiveAccessManager(
-                            mActivity,
                             mFullscreenManager,
-                            mActivityTabProvider,
                             mDesktopWindowStateManager);
             mBackPressManager.addHandler(
                     new ExclusiveAccessManagerBackPressHandler(mExclusiveAccessManager),
@@ -1062,7 +1060,8 @@ public class RootUiCoordinator
         }
 
         if (ChromeFeatureList.sEnableExclusiveAccessManager.isEnabled()) {
-            mExclusiveAccessManager.initialize(mTabModelSelectorSupplier.get());
+            mExclusiveAccessManager.initialize(
+                    mTabModelSelectorSupplier.get(), mActivity, mActivityTabProvider);
         }
 
         initMessagesInfra();

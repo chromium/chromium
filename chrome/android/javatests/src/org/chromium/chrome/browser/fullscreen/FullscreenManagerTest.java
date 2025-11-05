@@ -240,7 +240,10 @@ public class FullscreenManagerTest {
     @Feature({"Fullscreen"})
     @DisableFeatures({
         ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
-        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE
+        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE,
+        // TODO(https://crbug.com/456056229): investigate supporting delayed fullscreen entry when
+        // using exclusive access manager
+        ChromeFeatureList.ENABLE_EXCLUSIVE_ACCESS_MANAGER
     })
     public void testDelayedPersistentFullscreenLegacy() {
         WebPageStation page = mActivityTestRule.startOnUrl(LONG_HTML_TEST_PAGE);
@@ -255,7 +258,7 @@ public class FullscreenManagerTest {
         ChromeTabUtils.newTabFromMenu(InstrumentationRegistry.getInstrumentation(), activity);
 
         // Having the background tab enter fullscreen should be delayed until it comes foreground.
-        FullscreenTestUtils.togglePersistentFullscreen(delegate, true);
+        FullscreenTestUtils.togglePersistentFullscreen(tab, true);
         Assert.assertFalse(getPersistentFullscreenMode());
 
         // Put the tab foreground and assert the fullscreen was entered.
@@ -271,6 +274,9 @@ public class FullscreenManagerTest {
         ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
         ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE
     })
+    // TODO(https://crbug.com/456056229): investigate supporting delayed fullscreen entry when
+    // using exclusive access manager
+    @DisableFeatures({ChromeFeatureList.ENABLE_EXCLUSIVE_ACCESS_MANAGER})
     public void testDelayedPersistentFullscreen() {
         WebPageStation page = mActivityTestRule.startOnUrl(LONG_HTML_TEST_PAGE);
 
@@ -284,7 +290,7 @@ public class FullscreenManagerTest {
         ChromeTabUtils.newTabFromMenu(InstrumentationRegistry.getInstrumentation(), activity);
 
         // Having the background tab enter fullscreen should be delayed until it comes foreground.
-        FullscreenTestUtils.togglePersistentFullscreen(delegate, true);
+        FullscreenTestUtils.togglePersistentFullscreen(tab, true);
         Assert.assertFalse(getPersistentFullscreenMode());
 
         // Put the tab foreground and assert the fullscreen was entered.
