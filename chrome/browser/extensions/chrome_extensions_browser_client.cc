@@ -880,7 +880,7 @@ bool ChromeExtensionsBrowserClient::HasControlledFrameCapability(
   // controlled frame admin policies (check
   // components/policy/resources/templates/policy_definitions/ContentSettings).
   return HostContentSettingsMapFactory::GetForProfile(context)
-             ->GetContentSetting(url, url,
+             ->GetContentSetting(url, /*secondary_url=*/GURL(),
                                  content_settings::mojom::ContentSettingsType::
                                      CONTROLLED_FRAME) == CONTENT_SETTING_ALLOW;
 }
