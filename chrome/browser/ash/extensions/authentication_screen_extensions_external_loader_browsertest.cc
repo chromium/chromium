@@ -31,13 +31,17 @@ namespace chromeos {
 
 namespace {
 
-constexpr char kExtensionId[] = "aimmmpohpbmiljechlemfgeioaoknfnm";
-constexpr char kExtensionDirPath[] =
+// A test extension used to simulate the presence of the production
+// "Identity Card Connector" extension.
+constexpr char kBadgeAuthExtensionId[] = "aimmmpohpbmiljechlemfgeioaoknfnm";
+constexpr char kBadgeAuthExtensionDirPath[] =
     "extensions/auth_screen_external_loader/extension/";
-constexpr char kExtensionPemPath[] =
+constexpr char kBadgeAuthExtensionPemPath[] =
     "extensions/auth_screen_external_loader/extension.pem";
 
-// An extension that's already allowlisted for the sign-in profile.
+// A generic test extension which represents any other force-installed extension
+// that doesn't enable the Badge Based Authentication flow. Already allowlisted
+// for the sign-in profile.
 constexpr char kOtherExtensionId[] = "oclffehlkdgibkainkilopaalpdobkan";
 constexpr char kOtherExtensionCrx[] =
     "extensions/api_test/login_screen_apis/extension.crx";
@@ -78,7 +82,7 @@ class AuthenticationScreenExtensionsExternalLoaderBrowserTest
     command_line->AppendSwitch(ash::switches::kOobeSkipPostLogin);
 
     command_line->AppendSwitchASCII(
-        extensions::switches::kAllowlistedExtensionID, kExtensionId);
+        extensions::switches::kAllowlistedExtensionID, kBadgeAuthExtensionId);
     MixinBasedInProcessBrowserTest::SetUpCommandLine(command_line);
   }
 
@@ -146,6 +150,37 @@ class AuthenticationScreenExtensionsExternalLoaderBrowserTest
     return registry->enabled_extensions().GetByID(extension_id) != nullptr;
   }
 
+  // Helper to install the test extensions.
+  // If `enable_badge_auth` is true, kBadgeAuthExtensionId is installed,
+  // making the Badge Based Auth feature active. kOtherExtensionId is always
+  // installed.
+  void InstallTestExtensions(bool enable_badge_auth) {
+    AuthenticationScreenExtensionsExternalLoader::
+        SetTestBadgeAuthExtensionIdForTesting(kBadgeAuthExtensionId);
+
+    // Install the Badge Based Auth extension if enabled.
+    if (enable_badge_auth) {
+      ASSERT_TRUE(extension_force_install_mixin()->ForceInstallFromSourceDir(
+          base::PathService::CheckedGet(chrome::DIR_TEST_DATA)
+              .AppendASCII(kBadgeAuthExtensionDirPath),
+          base::PathService::CheckedGet(chrome::DIR_TEST_DATA)
+              .AppendASCII(kBadgeAuthExtensionPemPath),
+          ExtensionForceInstallMixin::WaitMode::kLoad));
+      ASSERT_TRUE(IsExtensionInstalledOnSigninScreen(kBadgeAuthExtensionId));
+      ASSERT_TRUE(IsExtensionEnabledOnSigninScreen(kBadgeAuthExtensionId));
+    }
+
+    // Always install the generic extension.
+    extensions::ExtensionId other_ext_id;
+    ASSERT_TRUE(extension_force_install_mixin()->ForceInstallFromCrx(
+        base::PathService::CheckedGet(chrome::DIR_TEST_DATA)
+            .AppendASCII(kOtherExtensionCrx),
+        ExtensionForceInstallMixin::WaitMode::kLoad, &other_ext_id));
+    ASSERT_EQ(other_ext_id, kOtherExtensionId);
+    ASSERT_TRUE(IsExtensionInstalledOnSigninScreen(kOtherExtensionId));
+    ASSERT_TRUE(IsExtensionEnabledOnSigninScreen(kOtherExtensionId));
+  }
+
   base::test::ScopedFeatureList scoped_feature_list_{
       chromeos::features::kLockScreenBadgeAuth};
   ash::DeviceStateMixin device_state_mixin_{
@@ -155,43 +190,29 @@ class AuthenticationScreenExtensionsExternalLoaderBrowserTest
   ExtensionForceInstallMixin extension_force_install_mixin_{&mixin_host_};
 };
 
-// Tests that sign-in screen extensions remain loaded when the session is locked
-// if the lock screen profile has not yet been created.
+// Tests that all sign-in screen extensions remain loaded on the sign-in profile
+// when the session is locked but the lock screen profile has not been
+// created.
 IN_PROC_BROWSER_TEST_F(AuthenticationScreenExtensionsExternalLoaderBrowserTest,
-                       NotUnloadedWhenNoLockProfile) {
-  AuthenticationScreenExtensionsExternalLoader::
-      SetTestBadgeAuthExtensionIdForTesting(kExtensionId);
-
-  EXPECT_TRUE(extension_force_install_mixin()->ForceInstallFromSourceDir(
-      base::PathService::CheckedGet(chrome::DIR_TEST_DATA)
-          .AppendASCII(kExtensionDirPath),
-      base::PathService::CheckedGet(chrome::DIR_TEST_DATA)
-          .AppendASCII(kExtensionPemPath),
-      ExtensionForceInstallMixin::WaitMode::kLoad));
-  EXPECT_TRUE(IsExtensionInstalledOnSigninScreen(kExtensionId));
-  EXPECT_TRUE(IsExtensionEnabledOnSigninScreen(kExtensionId));
+                       ExtensionsStayOnSignin_NoLockProfile) {
+  InstallTestExtensions(/*enable_badge_auth=*/true);
 
   LogIn();
   LockSession();
   // Even if the session is locked, the lock screen profile doesn't get created
   // unless needed.
   ASSERT_FALSE(ash::BrowserContextHelper::Get()->GetLockScreenBrowserContext());
-  EXPECT_TRUE(IsExtensionInstalledOnSigninScreen(kExtensionId));
-  EXPECT_TRUE(IsExtensionEnabledOnSigninScreen(kExtensionId));
+  EXPECT_TRUE(IsExtensionInstalledOnSigninScreen(kBadgeAuthExtensionId));
+  EXPECT_TRUE(IsExtensionEnabledOnSigninScreen(kBadgeAuthExtensionId));
+  EXPECT_TRUE(IsExtensionInstalledOnSigninScreen(kOtherExtensionId));
+  EXPECT_TRUE(IsExtensionEnabledOnSigninScreen(kOtherExtensionId));
 }
 
-// Tests that sign-in screen extensions remain loaded when the session is locked
-// but Badge Based Authentication isn't enabled.
+// Tests that all sign-in screen extensions remain loaded on the sign-in profile
+// when the session is locked but Badge Based Authentication isn't enabled.
 IN_PROC_BROWSER_TEST_F(AuthenticationScreenExtensionsExternalLoaderBrowserTest,
-                       NotUnloadedWhenBadgeBasedAuthNotEnabled) {
-  EXPECT_TRUE(extension_force_install_mixin()->ForceInstallFromSourceDir(
-      base::PathService::CheckedGet(chrome::DIR_TEST_DATA)
-          .AppendASCII(kExtensionDirPath),
-      base::PathService::CheckedGet(chrome::DIR_TEST_DATA)
-          .AppendASCII(kExtensionPemPath),
-      ExtensionForceInstallMixin::WaitMode::kLoad));
-  EXPECT_TRUE(IsExtensionInstalledOnSigninScreen(kExtensionId));
-  EXPECT_TRUE(IsExtensionEnabledOnSigninScreen(kExtensionId));
+                       ExtensionsStayOnSignin_BadgeAuthNotActive) {
+  InstallTestExtensions(/*enable_badge_auth=*/false);
 
   LogIn();
   EnsureLockProfileExists();
@@ -199,101 +220,57 @@ IN_PROC_BROWSER_TEST_F(AuthenticationScreenExtensionsExternalLoaderBrowserTest,
 
   // Even though the lock profile exists, "ICC" isn't enabled so the extension
   // remains on the sign-in profile.
-  EXPECT_TRUE(IsExtensionInstalledOnSigninScreen(kExtensionId));
-  EXPECT_TRUE(IsExtensionEnabledOnSigninScreen(kExtensionId));
-}
-
-// Tests that sign-in screen extensions are unloaded when the session is locked
-// if the lock screen profile already exists and Badge Based Auth is enabled.
-IN_PROC_BROWSER_TEST_F(AuthenticationScreenExtensionsExternalLoaderBrowserTest,
-                       UnloadedWhenLockProfileExists) {
-  AuthenticationScreenExtensionsExternalLoader::
-      SetTestBadgeAuthExtensionIdForTesting(kExtensionId);
-
-  EXPECT_TRUE(extension_force_install_mixin()->ForceInstallFromSourceDir(
-      base::PathService::CheckedGet(chrome::DIR_TEST_DATA)
-          .AppendASCII(kExtensionDirPath),
-      base::PathService::CheckedGet(chrome::DIR_TEST_DATA)
-          .AppendASCII(kExtensionPemPath),
-      ExtensionForceInstallMixin::WaitMode::kLoad));
-  EXPECT_TRUE(IsExtensionInstalledOnSigninScreen(kExtensionId));
-  EXPECT_TRUE(IsExtensionEnabledOnSigninScreen(kExtensionId));
-
-  LogIn();
-  EnsureLockProfileExists();
-  extensions::TestExtensionRegistryObserver observer(
-      extensions::ExtensionRegistry::Get(GetOriginalLockScreenProfile()),
-      kExtensionId);
-  LockSession();
-  if (!IsExtensionInstalledOnLockScreen(kExtensionId)) {
-    observer.WaitForExtensionLoaded();
-  }
-  EXPECT_FALSE(IsExtensionInstalledOnSigninScreen(kExtensionId));
-  EXPECT_TRUE(IsExtensionInstalledOnLockScreen(kExtensionId));
-  EXPECT_TRUE(IsExtensionEnabledOnLockScreen(kExtensionId));
-
-  UnlockSession();
-  if (IsExtensionInstalledOnLockScreen(kExtensionId)) {
-    observer.WaitForExtensionUnloaded();
-  }
-  EXPECT_FALSE(IsExtensionInstalledOnLockScreen(kExtensionId));
-}
-
-// Tests that all sign-in screen extensions are moved between the sign-in and
-// lock profiles when Badge Based Auth is enabled/disabled.
-IN_PROC_BROWSER_TEST_F(AuthenticationScreenExtensionsExternalLoaderBrowserTest,
-                       ExtensionsMoveToLockScreenOnBadgeAuthEnabled) {
-  AuthenticationScreenExtensionsExternalLoader::
-      SetTestBadgeAuthExtensionIdForTesting(kExtensionId);
-
-  extensions::ExtensionId extension_id;
-  EXPECT_TRUE(extension_force_install_mixin()->ForceInstallFromCrx(
-      base::PathService::CheckedGet(chrome::DIR_TEST_DATA)
-          .AppendASCII(kOtherExtensionCrx),
-      ExtensionForceInstallMixin::WaitMode::kLoad, &extension_id));
   EXPECT_TRUE(IsExtensionInstalledOnSigninScreen(kOtherExtensionId));
   EXPECT_TRUE(IsExtensionEnabledOnSigninScreen(kOtherExtensionId));
 
+  EXPECT_FALSE(IsExtensionInstalledOnLockScreen(kOtherExtensionId));
+  EXPECT_FALSE(IsExtensionInstalledOnLockScreen(kOtherExtensionId));
+}
+
+// Tests that all sign-in screen extensions are unloaded from the sign-in
+// profile when the session is locked if the lock screen profile already exists
+// and Badge Based Auth is enabled.
+IN_PROC_BROWSER_TEST_F(AuthenticationScreenExtensionsExternalLoaderBrowserTest,
+                       ExtensionsMoveToLockScreen_BadgeAuthActive) {
+  InstallTestExtensions(/*enable_badge_auth=*/true);
+
   LogIn();
   EnsureLockProfileExists();
-  LockSession();
-  // The extension stays on the sign-in profile before Badge Auth is enabled.
-  EXPECT_TRUE(IsExtensionInstalledOnSigninScreen(kOtherExtensionId));
-  EXPECT_FALSE(IsExtensionInstalledOnLockScreen(kOtherExtensionId));
 
-  UnlockSession();
-
-  // Install the Badge Auth extension to enable the feature.
-  EXPECT_TRUE(extension_force_install_mixin()->ForceInstallFromSourceDir(
-      base::PathService::CheckedGet(chrome::DIR_TEST_DATA)
-          .AppendASCII(kExtensionDirPath),
-      base::PathService::CheckedGet(chrome::DIR_TEST_DATA)
-          .AppendASCII(kExtensionPemPath),
-      ExtensionForceInstallMixin::WaitMode::kLoad));
-  EXPECT_TRUE(IsExtensionInstalledOnSigninScreen(kExtensionId));
-
-  extensions::TestExtensionRegistryObserver observer(
-      extensions::ExtensionRegistry::Get(GetOriginalLockScreenProfile()),
-      kExtensionId);
-  extensions::TestExtensionRegistryObserver other_observer(
-      extensions::ExtensionRegistry::Get(GetOriginalLockScreenProfile()),
+  extensions::TestExtensionRegistryObserver signin_observer_badge_unload(
+      extensions::ExtensionRegistry::Get(GetOriginalSigninProfile()),
+      kBadgeAuthExtensionId);
+  extensions::TestExtensionRegistryObserver signin_observer_other_unload(
+      extensions::ExtensionRegistry::Get(GetOriginalSigninProfile()),
       kOtherExtensionId);
 
-  ash::ScreenLockerTester().Lock();
-
-  // Both extensions are loaded on the lock screen profile.
-  if (!IsExtensionInstalledOnLockScreen(kExtensionId)) {
-    observer.WaitForExtensionLoaded();
+  extensions::TestExtensionRegistryObserver lock_observer_badge_load(
+      extensions::ExtensionRegistry::Get(GetOriginalLockScreenProfile()),
+      kBadgeAuthExtensionId);
+  extensions::TestExtensionRegistryObserver lock_observer_other_load(
+      extensions::ExtensionRegistry::Get(GetOriginalLockScreenProfile()),
+      kOtherExtensionId);
+  LockSession();
+  if (!IsExtensionInstalledOnLockScreen(kBadgeAuthExtensionId)) {
+    lock_observer_badge_load.WaitForExtensionLoaded();
   }
   if (!IsExtensionInstalledOnLockScreen(kOtherExtensionId)) {
-    other_observer.WaitForExtensionLoaded();
+    lock_observer_other_load.WaitForExtensionLoaded();
+  }
+  if (IsExtensionInstalledOnSigninScreen(kBadgeAuthExtensionId)) {
+    signin_observer_badge_unload.WaitForExtensionUnloaded();
+  }
+  if (IsExtensionInstalledOnSigninScreen(kOtherExtensionId)) {
+    signin_observer_other_unload.WaitForExtensionUnloaded();
   }
 
-  EXPECT_FALSE(IsExtensionInstalledOnSigninScreen(kExtensionId));
-  EXPECT_TRUE(IsExtensionInstalledOnLockScreen(kExtensionId));
-
+  EXPECT_FALSE(IsExtensionInstalledOnSigninScreen(kBadgeAuthExtensionId));
   EXPECT_FALSE(IsExtensionInstalledOnSigninScreen(kOtherExtensionId));
+
+  EXPECT_TRUE(IsExtensionInstalledOnLockScreen(kBadgeAuthExtensionId));
+  EXPECT_TRUE(IsExtensionEnabledOnLockScreen(kBadgeAuthExtensionId));
   EXPECT_TRUE(IsExtensionInstalledOnLockScreen(kOtherExtensionId));
+  EXPECT_TRUE(IsExtensionEnabledOnLockScreen(kOtherExtensionId));
 }
 
 }  // namespace chromeos

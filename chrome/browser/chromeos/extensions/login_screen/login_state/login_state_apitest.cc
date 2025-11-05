@@ -167,9 +167,11 @@ IN_PROC_BROWSER_TEST_F(AuthenticationScreenLoginStateApiTest,
       profile_future.GetCallback());
   ASSERT_TRUE(profile_future.Take());
 
-  // Force install on the sign-in profile as the same policy is applied to the
-  // lock screen profile, and do it in-session so the sign-in extension doesn't
-  // run.
+  ash::ScreenLockerTester().Lock();
+
+  // "Force install" on the sign-in profile as the same policy is applied to the
+  // lock screen profile, but don't wait as it won't actually be installed on
+  // the sign-in profile.
   extensions::TestExtensionRegistryObserver observer(
       extensions::ExtensionRegistry::Get(GetOriginalLockScreenProfile()),
       kExtensionId);
@@ -178,9 +180,7 @@ IN_PROC_BROWSER_TEST_F(AuthenticationScreenLoginStateApiTest,
           .AppendASCII(kExtensionPath),
       base::PathService::CheckedGet(chrome::DIR_TEST_DATA)
           .AppendASCII(kExtensionPemPath),
-      ExtensionForceInstallMixin::WaitMode::kLoad));
-
-  ash::ScreenLockerTester().Lock();
+      ExtensionForceInstallMixin::WaitMode::kNone));
   if (!IsExtensionInstalledOnLockScreen(kExtensionId)) {
     observer.WaitForExtensionLoaded();
   }

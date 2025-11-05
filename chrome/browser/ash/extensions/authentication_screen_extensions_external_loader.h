@@ -13,6 +13,9 @@
 #include "chrome/browser/ash/extensions/external_cache_delegate.h"
 #include "chrome/browser/ash/extensions/external_cache_impl.h"
 #include "chrome/browser/extensions/external_loader.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile_manager_observer.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
@@ -34,7 +37,8 @@ namespace chromeos {
 class AuthenticationScreenExtensionsExternalLoader
     : public extensions::ExternalLoader,
       public ExternalCacheDelegate,
-      public session_manager::SessionManagerObserver {
+      public session_manager::SessionManagerObserver,
+      public ProfileManagerObserver {
  public:
   explicit AuthenticationScreenExtensionsExternalLoader(Profile* profile);
   AuthenticationScreenExtensionsExternalLoader(
@@ -51,6 +55,10 @@ class AuthenticationScreenExtensionsExternalLoader
 
   // session_manager::SessionManagerObserver:
   void OnSessionStateChanged() override;
+
+  // ProfileManagerObserver:
+  void OnProfileAdded(Profile* profile) override;
+  void OnProfileManagerDestroying() override;
 
   // Allows tests to override the default production extension ID being checked.
   static void SetTestBadgeAuthExtensionIdForTesting(const char* id);
@@ -78,6 +86,8 @@ class AuthenticationScreenExtensionsExternalLoader
   base::ScopedObservation<session_manager::SessionManager,
                           session_manager::SessionManagerObserver>
       session_manager_observation_{this};
+  base::ScopedObservation<ProfileManager, ProfileManagerObserver>
+      profile_manager_observation_{this};
 
   // Must be the last member.
   base::WeakPtrFactory<AuthenticationScreenExtensionsExternalLoader>
