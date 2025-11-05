@@ -1305,6 +1305,7 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
             'constant_range',
             # Views
             'subrange',
+            'subrange_kind',
             # Banned: Range factories
             # Banned: Range adaptors
             # Incidentally listed on

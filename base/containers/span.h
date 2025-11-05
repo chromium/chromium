@@ -199,6 +199,10 @@
 // - The constructor which takes an iterator and a count uses
 //   `StrictNumeric<size_type>` instead of `size_type` to prevent unsafe type
 //   conversions.
+// - The constructor from a built-in array does not need to block CTAD, since
+//   the corresponding explicit deduction guide is constrained enough to be
+//   picked over the implicit one.
+//   See https://cplusplus.github.io/LWG/issue3369 for background.
 // - Omits constructors from `std::array`, since separating these from the range
 //   constructor is only useful to mark them `noexcept`, and Chromium doesn't
 //   care about that.
@@ -221,7 +225,9 @@
 //
 // Differences from [span.deduct]:
 // - The deduction guide from a range creates fixed-extent spans if the source
-//   extent is available at compile time.
+//   extent is available at compile time. This also removes the need for an
+//   explicit deduction guide for built-in arrays.
+// - Deduce a const element type for non-borrowed ranges.
 //
 // Differences from [span.sub]:
 // - As in [span.cons], `size_t` parameters are changed to
@@ -375,6 +381,16 @@ template <typename T, size_t N>
 inline constexpr size_t kComputedExtentImpl<std::span<T, N>> = N;
 template <typename T, size_t N, typename InternalPtrType>
 inline constexpr size_t kComputedExtentImpl<span<T, N, InternalPtrType>> = N;
+
+// `std::ranges::subrange` implements the tuple protocol to allow decaying into
+// an (iterator, sentinel) pair.
+//
+// However, this is undesired here and inconsistent with subrange.size(). Thus
+// we force the extent to be dynamic.
+template <typename I, typename S, std::ranges::subrange_kind K>
+inline constexpr size_t kComputedExtentImpl<std::ranges::subrange<I, S, K>> =
+    dynamic_extent;
+
 template <typename T>
 inline constexpr size_t kComputedExtent =
     kComputedExtentImpl<std::remove_cvref_t<T>>;
@@ -488,8 +504,7 @@ class GSL_POINTER span {
 
   // Array of size `extent`.
   // NOLINTNEXTLINE(google-explicit-constructor)
-  constexpr span(
-      std::type_identity_t<element_type> (&arr LIFETIME_BOUND)[extent]) noexcept
+  constexpr span(element_type (&arr LIFETIME_BOUND)[extent]) noexcept
       // SAFETY: The type signature guarantees `arr` contains `extent` elements.
       : UNSAFE_BUFFERS(span(arr, extent)) {}
 
@@ -1014,8 +1029,7 @@ class GSL_POINTER span<ElementType, dynamic_extent, InternalPtrType> {
   // Array of size N.
   template <size_t N>
   // NOLINTNEXTLINE(google-explicit-constructor)
-  constexpr span(
-      std::type_identity_t<element_type> (&arr LIFETIME_BOUND)[N]) noexcept
+  constexpr span(element_type (&arr LIFETIME_BOUND)[N]) noexcept
       // SAFETY: The type signature guarantees `arr` contains `N` elements.
       : UNSAFE_BUFFERS(span(arr, N)) {}
 
@@ -1455,13 +1469,22 @@ template <typename It, typename EndOrSize>
 span(It, EndOrSize) -> span<std::remove_reference_t<std::iter_reference_t<It>>,
                             internal::MaybeStaticExt<EndOrSize>>;
 
-template <typename T, size_t N>
-span(T (&)[N]) -> span<T, N>;
-
 template <typename R>
   requires(std::ranges::contiguous_range<R>)
 span(R&&) -> span<std::remove_reference_t<std::ranges::range_reference_t<R>>,
                   internal::kComputedExtent<R>>;
+
+// Deduction guide for contiguous and non-borrowed ranges. This adds const to
+// the element type, since mutable spans only support construction from borrowed
+// ranges.
+//
+// (Not in `std::`; Restores behavior of gsl::span:
+// https://godbolt.org/z/11dz4dceY)
+template <typename R>
+  requires(std::ranges::contiguous_range<R> && !std::ranges::borrowed_range<R>)
+span(R&&)
+    -> span<const std::remove_reference_t<std::ranges::range_reference_t<R>>,
+            internal::kComputedExtent<R>>;
 
 // [span.objectrep]: Views of object representation
 template <typename ElementType, size_t Extent, typename InternalPtrType>
