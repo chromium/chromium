@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_VIZ_COMMON_QUADS_SURFACE_DRAW_QUAD_H_
 #define COMPONENTS_VIZ_COMMON_QUADS_SURFACE_DRAW_QUAD_H_
 
-#include <unordered_map>
-
 #include "cc/paint/paint_flags.h"
 #include "components/viz/common/quads/draw_quad.h"
 #include "components/viz/common/surfaces/surface_range.h"
@@ -64,9 +62,7 @@ class VIZ_COMMON_EXPORT SurfaceDrawQuad : public DrawQuad {
   static const SurfaceDrawQuad* MaterialCast(const DrawQuad* quad);
 
  private:
-  void ExtendValue(
-      base::trace_event::TracedValue* value,
-      const std::unordered_map<ResourceId, size_t>&) const override;
+  void ExtendValue(base::trace_event::TracedValue* value) const override;
 };
 
 }  // namespace viz

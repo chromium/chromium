@@ -83,7 +83,8 @@ void SharedQuadState::SetAll(const gfx::Transform& transform,
 }
 
 void SharedQuadState::AsValueInto(base::trace_event::TracedValue* value) const {
-  cc::MathUtil::AddToTracedValue("transform", quad_to_target_transform, value);
+  cc::MathUtil::AddToTracedValue("quad_to_target_transform",
+                                 quad_to_target_transform, value);
   cc::MathUtil::AddToTracedValue("quad_layer_rect", quad_layer_rect, value);
   cc::MathUtil::AddToTracedValue("visible_quad_layer_rect",
                                  visible_quad_layer_rect, value);
@@ -99,6 +100,7 @@ void SharedQuadState::AsValueInto(base::trace_event::TracedValue* value) const {
   // Skip |layer_id| and |layer_namespace_id| because their values are
   // different in renderer and viz under TreesInViz mode.
   value->SetBoolean("is_fast_rounded_corner", is_fast_rounded_corner);
+  // Skip overlay_damage_index because it's only used by viz.
   if (offset_tag) {
     value->SetString("offset_tag", offset_tag.ToString());
   }

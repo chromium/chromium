@@ -5,6 +5,7 @@
 #ifndef CC_PAINT_PAINT_FLAGS_H_
 #define CC_PAINT_PAINT_FLAGS_H_
 
+#include <string>
 #include <utility>
 
 #include "base/compiler_specific.h"
@@ -123,6 +124,8 @@ class CC_PAINT_EXPORT CorePaintFlags {
     // Compute the effective HDR headroom when this limit is applied to
     // `target_hdr_headroom`.
     float ComputeEffectiveHdrHeadroom(float target_hdr_headroom) const;
+
+    std::string ToString() const;
 
     float standard_mix = 0.f;
     float constrained_high_mix = 0.f;

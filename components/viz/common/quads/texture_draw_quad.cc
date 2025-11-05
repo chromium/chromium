@@ -83,17 +83,23 @@ const TextureDrawQuad* TextureDrawQuad::MaterialCast(const DrawQuad* quad) {
   return static_cast<const TextureDrawQuad*>(quad);
 }
 
-void TextureDrawQuad::ExtendValue(base::trace_event::TracedValue* value,
-                                  const std::unordered_map<ResourceId, size_t>&
-                                      resource_id_to_index_map) const {
-  value->SetInteger("resource_id",
-                    ResourceIdIndex(resource_id_to_index_map, resource_id));
-
+void TextureDrawQuad::ExtendValue(base::trace_event::TracedValue* value) const {
   cc::MathUtil::AddToTracedValue("uv_top_left", uv_top_left, value);
   cc::MathUtil::AddToTracedValue("uv_bottom_right", uv_bottom_right, value);
-
   value->SetString("background_color",
                    color_utils::SkColor4fToRgbaString(background_color));
+  value->SetString("dynamic_range_limit", dynamic_range_limit.ToString());
+  value->SetBoolean("nearest_neighbor", nearest_neighbor);
+  value->SetBoolean("secure_output_only", secure_output_only);
+  value->SetBoolean("is_video_frame", is_video_frame);
+  value->SetBoolean("force_rgbx", force_rgbx);
+  value->SetInteger("protected_video_type",
+                    static_cast<int>(protected_video_type));
+  value->SetInteger("overlay_priority_hint",
+                    static_cast<int>(overlay_priority_hint));
+  if (damage_rect) {
+    cc::MathUtil::AddToTracedValue("damage_rect", *damage_rect, value);
+  }
 
   value->SetString(
       "rounded_display_masks_info",
@@ -105,11 +111,6 @@ void TextureDrawQuad::ExtendValue(base::trace_event::TracedValue* value,
               .radii[RoundedDisplayMasksInfo::kOtherRoundedDisplayMaskIndex],
           static_cast<int>(
               rounded_display_masks_info.is_horizontally_positioned)));
-
-  value->SetBoolean("nearest_neighbor", nearest_neighbor);
-  value->SetBoolean("is_video_frame", is_video_frame);
-  value->SetInteger("protected_video_type",
-                    static_cast<int>(protected_video_type));
 }
 
 TextureDrawQuad::RoundedDisplayMasksInfo::RoundedDisplayMasksInfo() = default;

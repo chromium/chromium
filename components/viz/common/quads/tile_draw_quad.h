@@ -7,8 +7,6 @@
 
 #include <stddef.h>
 
-#include <unordered_map>
-
 #include "components/viz/common/quads/content_draw_quad_base.h"
 #include "components/viz/common/resources/resource_id.h"
 #include "components/viz/common/viz_common_export.h"
@@ -49,9 +47,7 @@ class VIZ_COMMON_EXPORT TileDrawQuad : public ContentDrawQuadBase {
   static const TileDrawQuad* MaterialCast(const DrawQuad*);
 
  private:
-  void ExtendValue(base::trace_event::TracedValue* value,
-                   const std::unordered_map<ResourceId, size_t>&
-                       resource_id_to_index_map) const override;
+  void ExtendValue(base::trace_event::TracedValue* value) const override;
 };
 
 }  // namespace viz

@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_VIZ_COMMON_QUADS_CONTENT_DRAW_QUAD_BASE_H_
 #define COMPONENTS_VIZ_COMMON_QUADS_CONTENT_DRAW_QUAD_BASE_H_
 
-#include <unordered_map>
-
 #include "components/viz/common/quads/draw_quad.h"
 #include "components/viz/common/viz_common_export.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -45,9 +43,7 @@ class VIZ_COMMON_EXPORT ContentDrawQuadBase : public DrawQuad {
  protected:
   ContentDrawQuadBase();
   ~ContentDrawQuadBase() override;
-  void ExtendValue(
-      base::trace_event::TracedValue* value,
-      const std::unordered_map<ResourceId, size_t>&) const override;
+  void ExtendValue(base::trace_event::TracedValue* value) const override;
 };
 
 }  // namespace viz

@@ -46,13 +46,14 @@ const PictureDrawQuad* PictureDrawQuad::MaterialCast(const DrawQuad* quad) {
   return static_cast<const PictureDrawQuad*>(quad);
 }
 
-void PictureDrawQuad::ExtendValue(base::trace_event::TracedValue* value,
-                                  const std::unordered_map<ResourceId, size_t>&
-                                      resource_id_to_index_map) const {
-  ContentDrawQuadBase::ExtendValue(value, resource_id_to_index_map);
+void PictureDrawQuad::ExtendValue(base::trace_event::TracedValue* value) const {
+  ContentDrawQuadBase::ExtendValue(value);
   cc::MathUtil::AddToTracedValue("content_rect", content_rect, value);
   value->SetDouble("contents_scale", contents_scale);
-  // TODO(piman): display_item_list?
+  // TODO(zmo):
+  //   * image_animation_map
+  //   * display_item_list
+  //   * raster_inducing_scroll_offsets
 }
 
 }  // namespace viz

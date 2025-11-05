@@ -50,6 +50,9 @@ void DrawQuad::AsValueInto(
     const std::unordered_map<ResourceId, size_t>& resource_id_to_index_map)
     const {
   value->SetInteger("material", static_cast<int>(material));
+  cc::MathUtil::AddToTracedValue("rect", rect, value);
+  cc::MathUtil::AddToTracedValue("visible_rect", visible_rect, value);
+  value->SetBoolean("needs_blending", needs_blending);
 
   value->BeginDictionary("shared_quad_state");
   auto it = sqs_pointer_to_index_map.find(shared_quad_state);
@@ -57,33 +60,12 @@ void DrawQuad::AsValueInto(
   value->SetInteger("index", it->second);
   value->EndDictionary();
 
-  cc::MathUtil::AddToTracedValue("content_space_rect", rect, value);
+  if (resource_id != kInvalidResourceId) {
+    value->SetInteger("resource_id",
+                      ResourceIdIndex(resource_id_to_index_map, resource_id));
+  }
 
-  bool rect_is_clipped;
-  gfx::QuadF rect_as_target_space_quad =
-      cc::MathUtil::MapQuad(shared_quad_state->quad_to_target_transform,
-                            gfx::QuadF(gfx::RectF(rect)), &rect_is_clipped);
-  cc::MathUtil::AddToTracedValue("rect_as_target_space_quad",
-                                 rect_as_target_space_quad, value);
-
-  value->SetBoolean("rect_is_clipped", rect_is_clipped);
-
-  cc::MathUtil::AddToTracedValue("content_space_visible_rect", visible_rect,
-                                 value);
-
-  bool visible_rect_is_clipped;
-  gfx::QuadF visible_rect_as_target_space_quad = cc::MathUtil::MapQuad(
-      shared_quad_state->quad_to_target_transform,
-      gfx::QuadF(gfx::RectF(visible_rect)), &visible_rect_is_clipped);
-
-  cc::MathUtil::AddToTracedValue("visible_rect_as_target_space_quad",
-                                 visible_rect_as_target_space_quad, value);
-
-  value->SetBoolean("visible_rect_is_clipped", visible_rect_is_clipped);
-
-  value->SetBoolean("needs_blending", needs_blending);
-  value->SetBoolean("should_draw_with_blending", ShouldDrawWithBlending());
-  ExtendValue(value, resource_id_to_index_map);
+  ExtendValue(value);
 }
 
 int DrawQuad::ResourceIdIndex(

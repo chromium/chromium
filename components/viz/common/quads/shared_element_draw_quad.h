@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_VIZ_COMMON_QUADS_SHARED_ELEMENT_DRAW_QUAD_H_
 #define COMPONENTS_VIZ_COMMON_QUADS_SHARED_ELEMENT_DRAW_QUAD_H_
 
-#include <unordered_map>
-
 #include "components/viz/common/quads/draw_quad.h"
 #include "components/viz/common/view_transition_element_resource_id.h"
 #include "components/viz/common/viz_common_export.h"
@@ -39,9 +37,7 @@ class VIZ_COMMON_EXPORT SharedElementDrawQuad : public DrawQuad {
   static const SharedElementDrawQuad* MaterialCast(const DrawQuad* quad);
 
  private:
-  void ExtendValue(
-      base::trace_event::TracedValue* value,
-      const std::unordered_map<ResourceId, size_t>&) const override;
+  void ExtendValue(base::trace_event::TracedValue* value) const override;
 };
 
 }  // namespace viz

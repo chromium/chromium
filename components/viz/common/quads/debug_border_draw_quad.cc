@@ -43,8 +43,7 @@ const DebugBorderDrawQuad* DebugBorderDrawQuad::MaterialCast(
 }
 
 void DebugBorderDrawQuad::ExtendValue(
-    base::trace_event::TracedValue* value,
-    const std::unordered_map<ResourceId, size_t>&) const {
+    base::trace_event::TracedValue* value) const {
   value->SetString("color",
                    color_utils::SkColorToRgbaString(color.toSkColor()));
   value->SetInteger("width", width);

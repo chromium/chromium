@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_VIZ_COMMON_QUADS_PICTURE_DRAW_QUAD_H_
 #define COMPONENTS_VIZ_COMMON_QUADS_PICTURE_DRAW_QUAD_H_
 
-#include <unordered_map>
-
 #include "base/containers/flat_map.h"
 #include "base/memory/scoped_refptr.h"
 #include "cc/paint/display_item_list.h"
@@ -51,9 +49,7 @@ class VIZ_COMMON_EXPORT PictureDrawQuad : public ContentDrawQuadBase {
   static const PictureDrawQuad* MaterialCast(const DrawQuad* quad);
 
  private:
-  void ExtendValue(base::trace_event::TracedValue* value,
-                   const std::unordered_map<ResourceId, size_t>&
-                       resource_id_to_index_map) const override;
+  void ExtendValue(base::trace_event::TracedValue* value) const override;
 };
 
 }  // namespace viz

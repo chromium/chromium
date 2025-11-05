@@ -7,7 +7,6 @@
 
 #include <array>
 #include <optional>
-#include <unordered_map>
 
 #include "cc/paint/paint_flags.h"
 #include "components/viz/common/quads/draw_quad.h"
@@ -130,9 +129,7 @@ class VIZ_COMMON_EXPORT TextureDrawQuad : public DrawQuad {
   static const TextureDrawQuad* MaterialCast(const DrawQuad*);
 
  private:
-  void ExtendValue(base::trace_event::TracedValue* value,
-                   const std::unordered_map<ResourceId, size_t>&
-                       resource_id_to_index_map) const override;
+  void ExtendValue(base::trace_event::TracedValue* value) const override;
 };
 
 }  // namespace viz

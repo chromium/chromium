@@ -51,12 +51,8 @@ const TileDrawQuad* TileDrawQuad::MaterialCast(const DrawQuad* quad) {
   return static_cast<const TileDrawQuad*>(quad);
 }
 
-void TileDrawQuad::ExtendValue(base::trace_event::TracedValue* value,
-                               const std::unordered_map<ResourceId, size_t>&
-                                   resource_id_to_index_map) const {
-  ContentDrawQuadBase::ExtendValue(value, resource_id_to_index_map);
-  value->SetInteger("resource_id",
-                    ResourceIdIndex(resource_id_to_index_map, resource_id));
+void TileDrawQuad::ExtendValue(base::trace_event::TracedValue* value) const {
+  ContentDrawQuadBase::ExtendValue(value);
 }
 
 }  // namespace viz

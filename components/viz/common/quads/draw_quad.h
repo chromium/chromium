@@ -145,9 +145,9 @@ class VIZ_COMMON_EXPORT DrawQuad {
               const gfx::Rect& r,
               const gfx::Rect& visible_r,
               bool blending);
-  virtual void ExtendValue(base::trace_event::TracedValue* value,
-                           const std::unordered_map<ResourceId, size_t>&
-                               resource_id_to_index_map) const = 0;
+  virtual void ExtendValue(base::trace_event::TracedValue* value) const = 0;
+
+ private:
   int ResourceIdIndex(
       const std::unordered_map<ResourceId, size_t>& resource_id_to_index_map,
       ResourceId id) const;
