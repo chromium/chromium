@@ -218,12 +218,6 @@ crbug.com/329691945 [ win amd-0x7340 ] VideoPathTraceTest_DirectComposition_Vide
 crbug.com/329691945 [ win amd-0x7340 ] VideoPathTraceTest_DirectComposition_Video_VP9_NV12 [ Failure ]
 
 # Failures with SkiaGraphite
-crbug.com/329138770 [ amd-0x7340 graphite-enabled no-clang-coverage release-x64 target-cpu-64 win10 ] SwapChainTraceTest_CanvasLowLatency2D [ Failure ]
-crbug.com/329138770 [ graphite-enabled intel no-clang-coverage release-x64 target-cpu-64 win10 ] SwapChainTraceTest_CanvasLowLatency2D [ Failure ]
-crbug.com/329138770 [ graphite-enabled no-clang-coverage nvidia-0x2783 nvidia_ge_31.0.15.4601 release-x64 target-cpu-64 win11 ] SwapChainTraceTest_CanvasLowLatency2D [ Failure ]
-crbug.com/329138770 [ amd-0x7340 graphite-enabled no-clang-coverage release-x64 target-cpu-64 win10 ] SwapChainTraceTest_CanvasLowLatency2DDrawImage [ Failure ]
-crbug.com/329138770 [ graphite-enabled intel no-clang-coverage release-x64 target-cpu-64 win10 ] SwapChainTraceTest_CanvasLowLatency2DDrawImage [ Failure ]
-crbug.com/329138770 [ graphite-enabled intel-0x9bc5 no-clang-coverage release-x64 target-cpu-64 win10 ] SwapChainTraceTest_CanvasLowLatencyWebGL [ Failure ]
 crbug.com/329138770 [ graphite-enabled win10 ] WebGPUCachingTraceTest_ComputePipelineCrossOriginsCacheMisses [ Failure ]
 crbug.com/329138770 [ graphite-enabled win10 ] WebGPUCachingTraceTest_ComputePipelineDifferentOrigins [ Failure ]
 crbug.com/329138770 [ graphite-enabled win10 ] WebGPUCachingTraceTest_ComputePipelineIncognito [ Failure ]
