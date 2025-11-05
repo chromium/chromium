@@ -347,6 +347,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kKeyboardEscBackNavigation,
     &kLegacyTabStateDeprecation,
     &kLensOnQuickActionSearchWidget,
+    &kLinkHoverStatusBar,
     &kLoadAllTabsAtStartup,
     &kLoadNativeEarly,
     &kLockBackPressHandlerAtStart,
@@ -692,6 +693,7 @@ BASE_FEATURE(kInstanceSwitcherV2, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kKeyboardEscBackNavigation, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kLegacyTabStateDeprecation, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kLensOnQuickActionSearchWidget, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kLinkHoverStatusBar, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kLoadAllTabsAtStartup, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kLoadNativeEarly, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kLockBackPressHandlerAtStart, base::FEATURE_ENABLED_BY_DEFAULT);

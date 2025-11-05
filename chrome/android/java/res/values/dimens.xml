@@ -428,6 +428,9 @@ found in the LICENSE file.
     <dimen name="tab_strip_context_menu_min_width">200dp</dimen>
     <dimen name="tab_strip_context_menu_max_width">300dp</dimen>
 
+    <!-- Link Hover Status Bar dimensions. -->
+    <dimen name="link_hover_status_bar_max_width">300dp</dimen>
+
     <!--  Reader mode prefs dimensions. -->
     <dimen name="reader_mode_prefs_font_style_container_width">280dp</dimen>
     <dimen name="reader_mode_prefs_font_style_button_size">72dp</dimen>

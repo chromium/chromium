@@ -465,6 +465,7 @@ public abstract class ChromeFeatureList {
     public static final String KEYBOARD_ESC_BACK_NAVIGATION = "KeyboardEscBackNavigation";
     public static final String LEGACY_TAB_STATE_DEPRECATION = "LegacyTabStateDeprecation";
     public static final String LENS_ON_QUICK_ACTION_SEARCH_WIDGET = "LensOnQuickActionSearchWidget";
+    public static final String LINK_HOVER_STATUS_BAR = "LinkHoverStatusBar";
     public static final String LOADING_PREDICTOR_LIMIT_PRECONNECT_SOCKET_COUNT =
             "LoadingPredictorLimitPreconnectSocketCount";
     public static final String LOAD_ALL_TABS_AT_STARTUP = "LoadAllTabsAtStartup";

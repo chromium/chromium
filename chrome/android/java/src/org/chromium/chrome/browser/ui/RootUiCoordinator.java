@@ -371,6 +371,7 @@ public class RootUiCoordinator
     @Nullable private PageZoomBarCoordinator mPageZoomBarCoordinator;
     @Nullable private ReaderModeBottomSheetManager mReaderModeBottomSheetManager;
     private AppMenuObserver mAppMenuObserver;
+    private @Nullable LinkHoverStatusBarCoordinator mLinkHoverStatusBarCoordinator;
 
     private final OneshotSupplierImpl<ToolbarManager> mToolbarManagerOneshotSupplier =
             new OneshotSupplierImpl<>();
@@ -921,6 +922,11 @@ public class RootUiCoordinator
             mReaderModeBottomSheetManager = null;
         }
 
+        if (mLinkHoverStatusBarCoordinator != null) {
+            mLinkHoverStatusBarCoordinator.destroy();
+            mLinkHoverStatusBarCoordinator = null;
+        }
+
         if (mAutomotiveBackButtonToolbarCoordinator != null) {
             mAutomotiveBackButtonToolbarCoordinator.destroy();
             mAutomotiveBackButtonToolbarCoordinator = null;
@@ -1162,6 +1168,12 @@ public class RootUiCoordinator
                             mWindowAndroid.getInsetObserver(),
                             mLayoutStateProviderOneShotSupplier);
             mTopInsetCoordinatorSupplier.set(topInsetCoordinator);
+        }
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.LINK_HOVER_STATUS_BAR)) {
+            ViewStub statusBarStub = mActivity.findViewById(R.id.link_hover_status_bar_stub);
+            mLinkHoverStatusBarCoordinator =
+                    new LinkHoverStatusBarCoordinator(
+                            mActivity, mActivityTabProvider, statusBarStub);
         }
     }
 

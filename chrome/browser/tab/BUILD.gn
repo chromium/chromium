@@ -137,6 +137,8 @@ android_resources("java_resources") {
     "java/res/drawable-xhdpi/sad_tab.png",
     "java/res/drawable-xxhdpi/sad_tab.png",
     "java/res/drawable-xxxhdpi/sad_tab.png",
+    "java/res/drawable/link_status_bar_background.xml",
+    "java/res/layout/link_hover_status_bar.xml",
     "java/res/layout/sad_tab.xml",
   ]
   deps = [ "//ui/android:ui_java_resources" ]

@@ -198,6 +198,13 @@ found in the LICENSE file.
             android:inflatedId="@+id/page_zoom_layout"
             android:layout="@layout/page_zoom_view" />
 
+        <ViewStub
+            android:id="@+id/link_hover_status_bar_stub"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|start"
+            android:layout="@layout/link_hover_status_bar" />
+
         <FrameLayout
             android:id="@+id/sheet_container"
             android:layout_width="match_parent"

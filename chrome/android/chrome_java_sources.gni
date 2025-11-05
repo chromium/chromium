@@ -1186,6 +1186,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/ui/ExpandedSheetHelperImpl.java",
   "java/src/org/chromium/chrome/browser/ui/IncognitoRestoreAppLaunchDrawBlocker.java",
   "java/src/org/chromium/chrome/browser/ui/IncognitoRestoreAppLaunchDrawBlockerFactory.java",
+  "java/src/org/chromium/chrome/browser/ui/LinkHoverStatusBarCoordinator.java",
   "java/src/org/chromium/chrome/browser/ui/MediaCaptureOverlayController.java",
   "java/src/org/chromium/chrome/browser/ui/PriceInsightsDelegateImpl.java",
   "java/src/org/chromium/chrome/browser/ui/RootUiCoordinator.java",
