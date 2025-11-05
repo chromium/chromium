@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/trace_event/trace_event.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -30,7 +31,11 @@ CacheAliasSearchPrefetchURLLoader::CacheAliasSearchPrefetchURLLoader(
     : CacheAliasSearchPrefetchURLLoader(profile,
                                         network_traffic_annotation,
                                         /*prefetch_url=*/GURL(),
-                                        Mode::kDryRun) {}
+                                        Mode::kDryRun) {
+  TRACE_EVENT(
+      "loading",
+      "CacheAliasSearchPrefetchURLLoader::CacheAliasSearchPrefetchURLLoader");
+}
 
 CacheAliasSearchPrefetchURLLoader::CacheAliasSearchPrefetchURLLoader(
     Profile* profile,
@@ -114,7 +119,7 @@ void CacheAliasSearchPrefetchURLLoader::RestartDirect(
     FallbackReason fallback_reason) {
   CHECK(can_fallback_);
   can_fallback_ = false;
-
+  TRACE_EVENT("loading", "CacheAliasSearchPrefetchURLLoader::RestartDirect");
   network_url_loader_.reset();
   url_loader_receiver_.reset();
 
