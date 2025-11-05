@@ -261,6 +261,11 @@ void ChromeBrowserFieldTrials::RegisterFeatureOverrides(
   feature_overrides.EnableFeature(features::kWebContentsDiscard);
   feature_overrides.EnableFeature(chrome::android::kTabFreezingUsesDiscard);
   feature_overrides.EnableFeature(chrome::android::kLoadAllTabsAtStartup);
+
+  // Enable the ability for extensions to override chrome pages.
+  // TODO(crbug.com/404069963): Remove flag when the feature is verified to be
+  // stable on desktop Android.
+  feature_overrides.EnableFeature(chrome::android::kChromeNativeUrlOverriding);
 #endif  // BUILDFLAG(IS_DESKTOP_ANDROID)
   // Desktop-first features which are past incubation should either end up here,
   // or to a finch trial that enables it for all form factors.
