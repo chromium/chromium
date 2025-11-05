@@ -522,8 +522,6 @@ void LoginScreenController::OnSystemTrayBubbleShown() {
 }
 
 void LoginScreenController::OnLockScreenDestroyed() {
-  // TODO(b/280250064): Make sure allowing this condition won't break
-  // LoginScreenController logic.
   if (authentication_stage_ != AuthenticationStage::kIdle) {
     LOG(WARNING) << "Lock screen is destroyed while the authentication stage: "
                  << authentication_stage_;
