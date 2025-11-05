@@ -830,6 +830,7 @@ void LensOverlayController::FinishReshowOverlay() {
                                                          ->GetRenderViewHost()
                                                          ->GetWidget();
   lens_overlay_blur_layer_delegate_->Show(live_page_widget_host);
+  SetOverlayWebViewOpacity(1.0f);
 }
 
 void LensOverlayController::TryShowTranslateFeaturePromo(
@@ -2980,7 +2981,30 @@ void LensOverlayController::ReshowOverlayPart3(const SkBitmap& rgb_screenshot) {
                GetLensOverlaySidePanelCoordinator()->GetPanelType())
                ? State::kOverlayAndResults
                : State::kOverlay;
+
+  // Set the overlay web view opacity to near-zero instead of using
+  // `SetVisible(false)`. Setting visibility to false prevents animation frames
+  // in the WebUI, which causes ghosting of the old screenshot when the view is
+  // reshown. Setting opacity instead allows for animation frames in the WebUI
+  // to properly hide the background image canvas until the new screenshot can
+  // be rendered. The web view opacity is set to 1.0f in
+  // `FinishReshowOverlay()`. Note that opacity is set just above `0.f` to pass
+  // a DCHECK that exists in `aura::Window` that might otherwise be tripped when
+  // setting opacity to 0.f.
+  SetOverlayWebViewOpacity(std::nextafter(0.f, 1.f));
   ShowOverlay();
+}
+
+void LensOverlayController::SetOverlayWebViewOpacity(float opacity) {
+  if (!overlay_web_view_) {
+    return;
+  }
+
+  // The web views' holder layer is needed to hide the actual web contents.
+  ui::Layer* layer = overlay_web_view_->holder()->GetUILayer();
+  if (layer) {
+    layer->SetOpacity(opacity);
+  }
 }
 
 lens::LensSearchboxController*
