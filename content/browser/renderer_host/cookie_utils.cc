@@ -277,21 +277,6 @@ bool ShouldReportDevToolsIssueForStatus(
              net::CookieInclusionStatus::ExemptionReason::k3PCDHeuristics;
 }
 
-bool IsCrossOriginSameSiteNetworkAccessWithStorageAccessEligible(
-    const network::mojom::CookieAccessDetailsPtr& cookie_details) {
-  if (!cookie_details->frame_origin ||
-      !cookie_details->cookie_setting_overrides.Has(
-          net::CookieSettingOverride::kStorageAccessGrantEligible)) {
-    // `frame_origin` is unset for script accesses, and network accesses whose
-    // IsolationInfo's `frame_origin` was nullptr.
-    return false;
-  }
-  const url::Origin origin = url::Origin::Create(cookie_details->url);
-  return !origin.IsSameOriginWith(cookie_details->frame_origin.value()) &&
-         net::SchemefulSite::IsSameSite(origin,
-                                        cookie_details->frame_origin.value());
-}
-
 }  // namespace
 
 void SplitCookiesIntoAllowedAndBlocked(
@@ -392,11 +377,6 @@ void EmitCookieWarningsAndMetrics(
   bool cookie_has_domain_non_ascii = false;
 
   int cookies_exempted_by_top_level_storage_access = 0;
-
-  const bool cross_origin_same_site_with_storage_access_eligible =
-      IsCrossOriginSameSiteNetworkAccessWithStorageAccessEligible(
-          cookie_details);
-  bool cross_origin_same_site_cookie_via_storage_access_api = false;
 
   for (const network::mojom::CookieOrLineWithAccessResultPtr& cookie :
        cookie_details->cookie_list) {
@@ -522,12 +502,6 @@ void EmitCookieWarningsAndMetrics(
       cookie_has_not_been_refreshed_in_351_to_400_days |=
           days_since_refresh > 350 && days_since_refresh <= 400;
     }
-
-    cross_origin_same_site_cookie_via_storage_access_api |=
-        cross_origin_same_site_with_storage_access_eligible &&
-        cookie->access_result.status.IsInclude() &&
-        cookie->access_result.status.exemption_reason() ==
-            net::CookieInclusionStatus::ExemptionReason::kStorageAccess;
   }
 
   if (samesite_treated_as_lax_cookies) {
@@ -588,12 +562,6 @@ void EmitCookieWarningsAndMetrics(
     RecordCookiesExemptedByTopLevelStorage(
         rfh->GetPageUkmSourceId(),
         cookies_exempted_by_top_level_storage_access);
-  }
-
-  if (cross_origin_same_site_cookie_via_storage_access_api) {
-    GetContentClient()->browser()->LogWebFeatureForCurrentPage(
-        rfh, blink::mojom::WebFeature::
-                 kCrossOriginSameSiteCookieAccessViaStorageAccessAPI);
   }
 }
 

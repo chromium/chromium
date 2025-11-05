@@ -119,8 +119,6 @@ constexpr std::string_view kRequestOutcomeHistogram =
     "API.StorageAccess.RequestOutcome";
 constexpr std::string_view kGrantIsImplicitHistogram =
     "API.StorageAccess.GrantIsImplicit";
-constexpr std::string_view kNetRequestHistogram =
-    "Net.HttpJob.StorageAccessNetRequest2";
 
 // Path for URL of custom response
 const char* kEchoCookiesWithCorsPath = "/echocookieswithcors";
@@ -961,7 +959,6 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
 IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
                        ThirdPartyCookiesIFrameRequestsAccess_CrossSiteIframe) {
   SetBlockThirdPartyCookies(true);
-  base::HistogramTester histogram_tester;
 
   NavigateToPageWithFrame(kHostA);
   NavigateFrameTo(EchoCookiesURL(kHostB));
@@ -974,18 +971,6 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
 
   EXPECT_TRUE(storage::test::RequestAndCheckStorageAccessForFrame(GetFrame()));
   EXPECT_EQ(ReadCookies(GetFrame(), kHostB), CookieBundle("cross-site=b.test"));
-
-  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
-
-  histogram_tester.ExpectBucketCount(
-      kUseCounterHistogram,
-      blink::mojom::WebFeature::
-          kCrossOriginSameSiteCookieAccessViaStorageAccessAPI,
-      0);
-
-  histogram_tester.ExpectUniqueSample(kNetRequestHistogram,
-                                      /*kSameOrigin*/ 0,
-                                      /*expected_bucket_count=*/1);
 }
 
 IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
@@ -1094,7 +1079,6 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
                        ThirdPartyCookiesIFrameRequestsAccess_CrossOriginFetch) {
   SetBlockThirdPartyCookies(true);
-  base::HistogramTester histogram_tester;
 
   NavigateToPageWithFrame(kHostA);
   NavigateFrameTo(EchoCookiesURL(kHostBSubdomain));
@@ -1108,18 +1092,6 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
   ASSERT_TRUE(storage::test::RequestAndCheckStorageAccessForFrame(GetFrame()));
 
   EXPECT_EQ(CookiesFromFetch(GetFrame(), kHostBSubdomain2), "None");
-
-  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
-
-  histogram_tester.ExpectBucketCount(
-      kUseCounterHistogram,
-      blink::mojom::WebFeature::
-          kCrossOriginSameSiteCookieAccessViaStorageAccessAPI,
-      0);
-  histogram_tester.ExpectUniqueSample(
-      kNetRequestHistogram,
-      /*kCrossOriginSameSiteCredentialsIncluded*/ 3,
-      /*expected_bucket_count=*/1);
 }
 
 // Validate that in a A(B) frame tree, the iframe can make uncredentialed
@@ -1129,7 +1101,6 @@ IN_PROC_BROWSER_TEST_F(
     StorageAccessAPIBrowserTest,
     ThirdPartyCookiesIFrameRequestsAccess_CrossOriginFetch_Uncredentialed) {
   SetBlockThirdPartyCookies(true);
-  base::HistogramTester histogram_tester;
 
   NavigateToPageWithFrame(kHostA);
   NavigateFrameTo(EchoCookiesURL(kHostBSubdomain));
@@ -1151,18 +1122,6 @@ IN_PROC_BROWSER_TEST_F(
                                                    kHostBSubdomain2,
                                                    kEchoCookiesWithCorsPath))),
             "None");
-
-  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
-
-  histogram_tester.ExpectBucketCount(
-      kUseCounterHistogram,
-      blink::mojom::WebFeature::
-          kCrossOriginSameSiteCookieAccessViaStorageAccessAPI,
-      0);
-  histogram_tester.ExpectUniqueSample(
-      kNetRequestHistogram,
-      /*kCrossOriginSameSiteCredentialsNotIncluded*/ 4,
-      /*expected_bucket_count=*/1);
 }
 
 // Validate that in a A(B) frame tree, the iframe cannot make credentialed
@@ -1170,7 +1129,6 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
                        ThirdPartyCookiesIFrameRequestsAccess_CrossSiteFetch) {
   SetBlockThirdPartyCookies(true);
-  base::HistogramTester histogram_tester;
 
   NavigateToPageWithFrame(kHostA);
   NavigateFrameTo(EchoCookiesURL(kHostB));
@@ -1185,16 +1143,6 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
 
   EXPECT_EQ(CookiesFromFetch(GetFrame(), kHostC), "None");
 
-  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
-
-  histogram_tester.ExpectBucketCount(
-      kUseCounterHistogram,
-      blink::mojom::WebFeature::
-          kCrossOriginSameSiteCookieAccessViaStorageAccessAPI,
-      0);
-  histogram_tester.ExpectUniqueSample(kNetRequestHistogram,
-                                      /*kCrossSite*/ 2,
-                                      /*expected_bucket_count=*/1);
   EXPECT_EQ(CookiesFromFetch(GetFrame(), kHostBSubdomain2), "None");
 }
 

@@ -3247,28 +3247,6 @@ Called by update_net_trust_anchors.py.-->
              with fresh Trust Anchor IDs"/>
 </enum>
 
-<enum name="StorageAccessNetRequestKind">
-  <int value="0" label="Same-origin request with storage access override"/>
-  <int value="1"
-      label="Deprecated: Cross-origin, same-site request with storage access
-             override"/>
-  <int value="2" label="Cross-site request with storage access override"/>
-  <int value="3"
-      label="Cross-origin, same-site request with storage access override
-             with credentials mode == 'include'"/>
-  <int value="4"
-      label="Cross-origin, same-site request with storage access override
-             with credentials mode != 'include'"/>
-</enum>
-
-<enum name="StorageAccessRedirectKind">
-  <int value="0" label="No Storage Access override"/>
-  <int value="1" label="Same-origin redirect with storage access override"/>
-  <int value="2"
-      label="Cross-origin, same-site redirect with storage access override"/>
-  <int value="3" label="Cross-site redirect with storage access override"/>
-</enum>
-
 <!-- LINT.IfChange(StreamSocketCloseReason) -->
 
 <enum name="StreamSocketCloseReason">

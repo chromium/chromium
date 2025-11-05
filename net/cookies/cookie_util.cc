@@ -313,33 +313,6 @@ bool CookieWithAccessResultSorter(const CookieWithAccessResult& a,
   return CookieMonster::CookieSorter(&a.cookie, &b.cookie);
 }
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class StorageAccessNetRequestKind {
-  // The request had the `kStorageAccessGrantEligible` override, and was
-  // same-origin.
-  kSameOrigin = 0,
-  // Deprecated: The request had the `kStorageAccessGrantEligible` override, and
-  // was
-  // cross-origin, same-site.
-  // kCrossOriginSameSite = 1,
-
-  // The request had the `kStorageAccessGrantEligible` override, and was
-  // cross-site.
-  kCrossSite = 2,
-  // The request had the `kStorageAccessGrantEligible` override, and was
-  // cross-origin, same-site, and included credentials.
-  kCrossOriginSameSiteCredentialsIncluded = 3,
-  // The request had the `kStorageAccessGrantEligible` override, and was
-  // cross-origin, same-site, but did not include credentials.
-  kCrossOriginSameSiteCredentialsNotIncluded = 4,
-  kMaxValue = kCrossOriginSameSiteCredentialsNotIncluded
-};
-
-void RecordStorageAccessNetRequestMetric(StorageAccessNetRequestKind kind) {
-  base::UmaHistogramEnumeration("Net.HttpJob.StorageAccessNetRequest2", kind);
-}
-
 }  // namespace
 
 void FireStorageAccessHistogram(StorageAccessResult result) {
@@ -1193,34 +1166,9 @@ NET_EXPORT bool IsForceThirdPartyCookieBlockingEnabled() {
 bool ShouldAddInitialStorageAccessApiOverride(
     const GURL& url,
     StorageAccessApiStatus api_status,
-    base::optional_ref<const url::Origin> request_initiator,
-    bool emit_metrics,
-    bool credentials_mode_include) {
-  if (api_status != StorageAccessApiStatus::kAccessViaAPI ||
-      !request_initiator) {
-    return false;
-  }
-
-  const url::Origin origin = url::Origin::Create(url);
-
-  if (!emit_metrics) {
-    return request_initiator->IsSameOriginWith(origin);
-  }
-
-  using enum StorageAccessNetRequestKind;
-  StorageAccessNetRequestKind kind = kCrossSite;
-  if (request_initiator->IsSameOriginWith(origin)) {
-    kind = kSameOrigin;
-  } else if (SchemefulSite::IsSameSite(request_initiator.value(), origin)) {
-    kind = credentials_mode_include
-               ? kCrossOriginSameSiteCredentialsIncluded
-               : kCrossOriginSameSiteCredentialsNotIncluded;
-  }
-  if (emit_metrics) {
-    RecordStorageAccessNetRequestMetric(kind);
-  }
-
-  return kind == kSameOrigin;
+    base::optional_ref<const url::Origin> request_initiator) {
+  return api_status == StorageAccessApiStatus::kAccessViaAPI &&
+         request_initiator && request_initiator->IsSameOriginWith(url);
 }
 
 }  // namespace net::cookie_util

@@ -471,9 +471,7 @@ NET_EXPORT bool IsForceThirdPartyCookieBlockingEnabled();
 [[nodiscard]] NET_EXPORT bool ShouldAddInitialStorageAccessApiOverride(
     const GURL& url,
     StorageAccessApiStatus api_status,
-    base::optional_ref<const url::Origin> request_initiator,
-    bool emit_metrics,
-    bool credentials_mode_include);
+    base::optional_ref<const url::Origin> request_initiator);
 
 }  // namespace cookie_util
 

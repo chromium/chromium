@@ -4766,7 +4766,7 @@ enum WebFeature {
   kSummarizer_OutputLanguage = 5456,
   kSummarizer_SharedContext = 5457,
   kSummarizer_Type = 5458,
-  kCrossOriginSameSiteCookieAccessViaStorageAccessAPI = 5459,
+  kOBSOLETE_CrossOriginSameSiteCookieAccessViaStorageAccessAPI = 5459,
   kOBSOLETE_V8GPUAdapter_IsFallbackAdapter_AttributeGetter = 5460,
   kLanguageDetector_ExpectedInputLanguages = 5461,
   kServiceWorkerPushEventListener = 5462,

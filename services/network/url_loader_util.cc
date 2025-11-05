@@ -401,8 +401,7 @@ net::CookieSettingOverrides CalculateCookieSettingOverrides(
   // each other's storage access API grants. This must be updated on redirects.
   if (net::cookie_util::ShouldAddInitialStorageAccessApiOverride(
           request.url, request.storage_access_api_status,
-          request.request_initiator, emit_metrics,
-          request.credentials_mode == mojom::CredentialsMode::kInclude)) {
+          request.request_initiator)) {
     overrides.Put(net::CookieSettingOverride::kStorageAccessGrantEligible);
   }
 

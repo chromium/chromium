@@ -457,7 +457,6 @@ UseCounterMetricsRecorder::GetAllowedUkmFeatures() {
           WebFeature::kLanguageModel_PromptStreaming,
           WebFeature::kLanguageModel_Prompt_Input_Image,
           WebFeature::kLanguageModel_Prompt_Input_Audio,
-          WebFeature::kCrossOriginSameSiteCookieAccessViaStorageAccessAPI,
           WebFeature::kCredentialManagerCreateFederatedCredential,
           WebFeature::kCredentialManagerStoreFederatedCredential,
           WebFeature::kCredentialManagerGetLegacyFederatedCredential,
