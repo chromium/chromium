@@ -17,6 +17,7 @@ found in the LICENSE file.
   <attr name="locationBarActionButtonWidth" format="dimension" />
   <attr name="locationBarActionButtonHeight" format="dimension" />
   <attr name="locationBarActionButtonMarginHorizontal" format="dimension" />
+  <attr name="locationBarActionButtonMarginVertical" format="dimension" />
 
   <attr name="closeButtonWidth" format="dimension" />
   <attr name="closeButtonHeight" format="dimension" />
