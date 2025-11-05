@@ -209,6 +209,10 @@ class PLATFORM_EXPORT CanvasResourceProvider
   virtual scoped_refptr<StaticBitmapImage> Snapshot(
       FlushReason,
       ImageOrientation = ImageOrientationEnum::kDefault) = 0;
+  scoped_refptr<StaticBitmapImage> Snapshot(
+      ImageOrientation orientation = ImageOrientationEnum::kDefault) {
+    return Snapshot(FlushReason::kOther, orientation);
+  }
 
   void SetDelegate(Delegate* delegate) { delegate_ = delegate; }
 

@@ -425,8 +425,7 @@ void CanvasHibernationHandler::Hibernate() {
   // non-complementary stats. Each HibernationScheduled event is paired with
   // exactly one failure or exit event.
   provider->FlushCanvas();
-  scoped_refptr<StaticBitmapImage> snapshot =
-      provider->Snapshot(FlushReason::kOther);
+  scoped_refptr<StaticBitmapImage> snapshot = provider->Snapshot();
   if (!snapshot) {
     ReportHibernationEvent(
         HibernationEvent::kHibernationAbortedDueSnapshotFailure);
