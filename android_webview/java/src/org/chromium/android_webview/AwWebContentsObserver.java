@@ -266,6 +266,15 @@ public class AwWebContentsObserver extends WebContentsObserver
             processFailedLoad(true, navigation.errorCode(), navigation.getUrl());
         }
 
+        AwContents awContents = mAwContents.get();
+        if (awContents != null) {
+            if (navigation.isInPrimaryMainFrame()) {
+                for (AwNavigationListener navClient : awContents.getNavigationClients()) {
+                    navClient.onNavigationCompleted(getOrUpdateAwNavigationFor(navigation));
+                }
+            }
+        }
+
         if (!navigation.hasCommitted()) return;
 
         mCommittedNavigation = true;
@@ -286,15 +295,6 @@ public class AwWebContentsObserver extends WebContentsObserver
                     (navigation.pageTransition() & PageTransition.CORE_MASK)
                             == PageTransition.RELOAD;
             client.getCallbackHelper().postDoUpdateVisitedHistory(url, isReload);
-        }
-
-        AwContents awContents = mAwContents.get();
-        if (awContents != null) {
-            if (navigation.isInPrimaryMainFrame()) {
-                for (AwNavigationListener navClient : awContents.getNavigationClients()) {
-                    navClient.onNavigationCompleted(getOrUpdateAwNavigationFor(navigation));
-                }
-            }
         }
 
         // Only invoke the onPageCommitVisible callback when navigating to a different document,
