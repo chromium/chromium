@@ -4,7 +4,6 @@
 
 import {TestRunner} from 'test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
-import {SDKTestRunner} from 'sdk_test_runner';
 
 import * as Host from 'devtools/core/host/host.js';
 import * as SDK from 'devtools/core/sdk/sdk.js';
@@ -18,9 +17,9 @@ import * as Breakpoints from 'devtools/models/breakpoints/breakpoints.js';
   target.markAsNodeJSForTest();
   SourcesTestRunner.startDebuggerTest();
 
-  var debuggerModel = target.model(SDK.DebuggerModel.DebuggerModel);
   var functionText = 'function foobar() { \nconsole.log(\'foobar execute!\');\n}';
-  var sourceURL = Host.Platform.isWin() ? '\n//# sourceURL=c:\\prog\\foobar.js' : '\n//# sourceURL=/usr/local/home/prog/foobar.js';
+  var fileUrl = Host.Platform.isWin() ? 'file:///c:/prog/foobar.js' : 'file:///usr/local/home/prog/foobar.js';
+  var sourceURL = `\n//# sourceURL=${fileUrl}`;
   await TestRunner.evaluateInPageAnonymously(functionText + sourceURL);
   SourcesTestRunner.showScriptSource('foobar.js', didShowScriptSource);
 
