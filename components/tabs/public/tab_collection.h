@@ -252,20 +252,26 @@ class TabCollection : public SupportsHandles<TabCollectionHandleFactory> {
       const std::set<tabs::TabInterface*>& tabs_moved,
       const std::set<tabs::TabCollection*>& collections_moved);
 
+  // These methods recursively notifies observers that nodes were either
+  // added, removed or moved in the hierarchy. `stop_notification_root` is used
+  // to terminate recursion in the case of move operation. This is because add
+  // and remove notifications are only valid in the destination and source
+  // subtree. From the common ancestor onwards, move notifications should be
+  // sent.
   void NotifyOnChildrenAdded(base::PassKey<TabCollection> pass_key,
                              const NodeHandles& handles,
                              const Position& insertion_position,
-                             TabCollection* notification_root);
+                             TabCollection* stop_notification_root);
 
   void NotifyOnChildrenRemoved(base::PassKey<TabCollection> pass_key,
                                const NodeHandles& handles,
-                               TabCollection* notification_root);
+                               TabCollection* stop_notification_root);
 
   void NotifyOnChildMoved(base::PassKey<TabCollection> pass_key,
                           const NodeHandle& handle,
                           const Position& src_position,
                           const Position& dst_position,
-                          TabCollection* notification_root);
+                          TabCollection* stop_notification_root);
 
   void DispatchPendingNotifications();
 

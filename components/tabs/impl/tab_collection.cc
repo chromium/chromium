@@ -314,10 +314,15 @@ void TabCollection::OnTabRemovedFromTree() {
   }
 }
 
-void TabCollection::NotifyOnChildrenAdded(base::PassKey<TabCollection> pass_key,
-                                          const TabCollectionNodes& handles,
-                                          const Position& insertion_position,
-                                          TabCollection* notification_root) {
+void TabCollection::NotifyOnChildrenAdded(
+    base::PassKey<TabCollection> pass_key,
+    const TabCollectionNodes& handles,
+    const Position& insertion_position,
+    TabCollection* stop_notification_root) {
+  if (stop_notification_root != nullptr && stop_notification_root == this) {
+    return;
+  }
+
   if (notify_immediately_) {
     observers_.Notify(&TabCollectionObserver::OnChildrenAdded,
                       insertion_position, handles);
@@ -331,16 +336,20 @@ void TabCollection::NotifyOnChildrenAdded(base::PassKey<TabCollection> pass_key,
         std::ref(observers_), insertion_position, handles));
   }
 
-  if (this != notification_root) {
+  if (parent_) {
     parent_->NotifyOnChildrenAdded(pass_key, handles, insertion_position,
-                                   notification_root);
+                                   stop_notification_root);
   }
 }
 
 void TabCollection::NotifyOnChildrenRemoved(
     base::PassKey<TabCollection> pass_key,
     const TabCollectionNodes& handles,
-    TabCollection* notification_root) {
+    TabCollection* stop_notification_root) {
+  if (stop_notification_root != nullptr && stop_notification_root == this) {
+    return;
+  }
+
   if (notify_immediately_) {
     observers_.Notify(&TabCollectionObserver::OnChildrenRemoved, handles);
   } else if (!observers_.empty()) {
@@ -352,8 +361,8 @@ void TabCollection::NotifyOnChildrenRemoved(
         std::ref(observers_), handles));
   }
 
-  if (this != notification_root) {
-    parent_->NotifyOnChildrenRemoved(pass_key, handles, notification_root);
+  if (parent_) {
+    parent_->NotifyOnChildrenRemoved(pass_key, handles, stop_notification_root);
   }
 }
 
@@ -361,7 +370,11 @@ void TabCollection::NotifyOnChildMoved(base::PassKey<TabCollection> pass_key,
                                        const TabCollectionNodeHandle& handle,
                                        const Position& src_position,
                                        const Position& dst_position,
-                                       TabCollection* notification_root) {
+                                       TabCollection* stop_notification_root) {
+  if (stop_notification_root != nullptr && stop_notification_root == this) {
+    return;
+  }
+
   TabCollectionObserver::NodeData src_data =
       TabCollectionObserver::NodeData(src_position, handle);
 
@@ -379,9 +392,9 @@ void TabCollection::NotifyOnChildMoved(base::PassKey<TabCollection> pass_key,
         std::ref(observers_), dst_position, src_data));
   }
 
-  if (this != notification_root) {
+  if (parent_) {
     parent_->NotifyOnChildMoved(pass_key, handle, src_position, dst_position,
-                                notification_root);
+                                stop_notification_root);
   }
 }
 

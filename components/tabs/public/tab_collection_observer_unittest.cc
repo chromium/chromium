@@ -887,4 +887,40 @@ TEST_F(TabCollectionObserverTest, MoveTabAndGroup) {
   }
 }
 
+TEST_F(TabCollectionObserverTest, MoveTabToPinnedOnlyNotifiesMoveInTabstrip) {
+  tabs::TabStripCollection* collection = GetTabstripCollection();
+  MockTabCollectionObserver& observer = GetObserver();
+
+  // 1. Setup: Add one unpinned tab.
+  std::unique_ptr<MockTabInterface> unpinned_tab = CreateMockTab();
+  MockTabInterface* unpinned_tab_ptr = unpinned_tab.get();
+
+  EXPECT_CALL(*unpinned_tab_ptr, GetParentCollection(testing::_))
+      .WillRepeatedly(
+          [&collection, unpinned_tab_ptr]() -> tabs::TabCollection* {
+            if (collection->unpinned_collection()
+                    ->GetIndexOfTab(unpinned_tab_ptr)
+                    .has_value()) {
+              return collection->unpinned_collection();
+            }
+            if (collection->pinned_collection()
+                    ->GetIndexOfTab(unpinned_tab_ptr)
+                    .has_value()) {
+              return collection->pinned_collection();
+            }
+
+            return nullptr;
+          });
+
+  collection->AddTabRecursive(std::move(unpinned_tab), 0, std::nullopt, false);
+
+  // 2. Expectations: Check only OnChildMoved is called.
+  EXPECT_CALL(observer, OnChildrenAdded(testing::_, testing::_)).Times(0);
+  EXPECT_CALL(observer, OnChildrenRemoved(testing::_)).Times(0);
+  EXPECT_CALL(observer, OnChildMoved(testing::_, testing::_)).Times(1);
+
+  // 3. Action: Move the tab at index 0 to index 0, but set `is_pinned` to true.
+  collection->MoveTabRecursive(0, 0, std::nullopt, true);
+}
+
 }  // namespace tabs

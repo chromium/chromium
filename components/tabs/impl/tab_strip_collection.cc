@@ -576,7 +576,7 @@ void TabStripCollection::AddTabImpl(std::unique_ptr<TabInterface> tab,
   handles_added.push_back(tab_ptr->GetHandle());
 
   tab_collection_ptr->NotifyOnChildrenAdded(GetPassKey(), handles_added,
-                                            position, this);
+                                            position, nullptr);
 }
 
 void TabStripCollection::AddTabCollectionImpl(
@@ -594,7 +594,7 @@ void TabStripCollection::AddTabCollectionImpl(
   handles_added.push_back(collection_ptr->GetHandle());
 
   tab_collection_ptr->NotifyOnChildrenAdded(GetPassKey(), handles_added,
-                                            position, this);
+                                            position, nullptr);
 }
 
 std::unique_ptr<TabInterface> TabStripCollection::RemoveTabImpl(
@@ -612,7 +612,7 @@ std::unique_ptr<TabInterface> TabStripCollection::RemoveTabImpl(
       GetPassKey(),
       std::vector{std::variant<tabs::TabCollectionHandle, tabs::TabHandle>{
           removed_tab->GetHandle()}},
-      this);
+      nullptr);
 
   return removed_tab;
 }
@@ -634,7 +634,7 @@ std::unique_ptr<TabCollection> TabStripCollection::RemoveTabCollectionImpl(
   }
 
   parent_collection->NotifyOnChildrenRemoved(
-      GetPassKey(), NodeHandles{collection_handle}, this);
+      GetPassKey(), NodeHandles{collection_handle}, nullptr);
   return removed_collection;
 }
 
@@ -667,18 +667,14 @@ void TabStripCollection::MoveTabImpl(TabInterface* tab_ptr,
   TabCollection* common_ancestor =
       GetCommonAncestor(src_parent_collection, dst_parent_collection);
 
-  if (src_parent_collection != common_ancestor) {
-    src_parent_collection->NotifyOnChildrenRemoved(GetPassKey(), handles,
-                                                   common_ancestor);
-  }
+  src_parent_collection->NotifyOnChildrenRemoved(GetPassKey(), handles,
+                                                 common_ancestor);
 
-  if (dst_parent_collection != common_ancestor) {
-    dst_parent_collection->NotifyOnChildrenAdded(GetPassKey(), handles,
-                                                 position, common_ancestor);
-  }
+  dst_parent_collection->NotifyOnChildrenAdded(GetPassKey(), handles, position,
+                                               common_ancestor);
 
   common_ancestor->NotifyOnChildMoved(GetPassKey(), handles[0], src_details,
-                                      position, this);
+                                      position, nullptr);
 }
 
 void TabStripCollection::MoveCollectionImpl(TabCollection* collection_ptr,
@@ -710,18 +706,14 @@ void TabStripCollection::MoveCollectionImpl(TabCollection* collection_ptr,
   TabCollection* common_ancestor =
       GetCommonAncestor(src_parent_collection, dst_parent_collection);
 
-  if (src_parent_collection != common_ancestor) {
-    src_parent_collection->NotifyOnChildrenRemoved(GetPassKey(), handles,
-                                                   common_ancestor);
-  }
+  src_parent_collection->NotifyOnChildrenRemoved(GetPassKey(), handles,
+                                                 common_ancestor);
 
-  if (dst_parent_collection != common_ancestor) {
-    dst_parent_collection->NotifyOnChildrenAdded(GetPassKey(), handles,
-                                                 position, common_ancestor);
-  }
+  dst_parent_collection->NotifyOnChildrenAdded(GetPassKey(), handles, position,
+                                               common_ancestor);
 
   common_ancestor->NotifyOnChildMoved(GetPassKey(), handles[0], src_details,
-                                      position, this);
+                                      position, nullptr);
 }
 
 TabCollection::Position TabStripCollection::GetInsertionDetails(
