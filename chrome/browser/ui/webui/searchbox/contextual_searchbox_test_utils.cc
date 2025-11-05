@@ -40,7 +40,8 @@ content::WebContents* TestWebContentsDelegate::OpenURLFromTab(
 }
 
 MockContextualSearchMetricsRecorder::MockContextualSearchMetricsRecorder()
-    : ContextualSearchMetricsRecorder("NewTabPage.") {}
+    : ContextualSearchMetricsRecorder(
+          contextual_search::ContextualSearchSource::kNewTabPage) {}
 MockContextualSearchMetricsRecorder::~MockContextualSearchMetricsRecorder() =
     default;
 

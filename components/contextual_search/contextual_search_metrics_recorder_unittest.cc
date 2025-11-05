@@ -13,39 +13,44 @@
 namespace contextual_search {
 
 namespace {
-const char kTestMetricName[] = "Test.";
-const char kComposeboxFileDeleted[] =
-    "Test.Composebox.Session.File.DeletedCount";
-const char kComposeboxSessionDurationTotal[] =
-    "Test.Composebox.Session.Duration.Total";
-const char kComposeboxSessionAbandonedDuration[] =
-    "Test.Composebox.Session.Duration.Abandoned";
-const char kComposeboxSessionDurationQuerySubmitted[] =
-    "Test.Composebox.Session.Duration.QuerySubmitted";
-const char kComposeboxQuerySubmissionTime[] =
-    "Test.Composebox.Query.Time.ToSubmission";
-const char kComposeboxFileUploadAttemptPdf[] =
-    "Test.Composebox.Session.File.Browser.UploadAttemptCount.Pdf";
-const char kComposeboxFileUploadSuccessPdf[] =
-    "Test.Composebox.Session.File.Browser.UploadSuccessCount.Pdf";
-const char kComposeboxFileUploadServerErrorPdf[] =
-    "Test.Composebox.Session.File.Browser.UploadFailureCount.Pdf";
-const char kComposeboxFileValidationBrowserErrorForPdf[] =
-    "Test.Composebox.Session.File.Browser.ValidationFailureCount.Pdf."
-    "BrowserProcessingError";
-const char kComposeboxFileUploadAttempt[] =
-    "Test.Composebox.Session.File.Browser.UploadAttemptCount.";
-const char kComposeboxFileUploadSuccess[] =
-    "Test.Composebox.Session.File.Browser.UploadSuccessCount.";
-const char kComposeboxFileUploadFailure[] =
-    "Test.Composebox.Session.File.Browser.UploadFailureCount.";
-const char kComposeboxFileValidationErrorTypes[] =
-    "Test.Composebox.Session.File.Browser.ValidationFailureCount.";
-const char kComposeboxQueryTextLength[] = "Test.Composebox.Query.TextLength";
-const char kComposeboxQueryFileCount[] = "Test.Composebox.Query.FileCount";
-const char kComposeboxQueryModality[] = "Test.Composebox.Query.Modality.V2";
-const char kComposeboxQueryCount[] = "Test.Composebox.Session.QueryCount";
-const char kComposeboxFileSizePdf[] = "Test.Composebox.File.Size.Pdf";
+const char kContextualSearchSourceUnknownSuffix[] = ".Unknown";
+const char kContextualSearchFileDeleted[] =
+    "ContextualSearch.Session.File.DeletedCount";
+const char kContextualSearchSessionDurationTotal[] =
+    "ContextualSearch.Session.Duration.Total.Unknown";
+const char kContextualSearchSessionAbandonedDuration[] =
+    "ContextualSearch.Session.Duration.Abandoned.Unknown";
+const char kContextualSearchSessionDurationQuerySubmitted[] =
+    "ContextualSearch.Session.Duration.QuerySubmitted.Unknown";
+const char kContextualSearchQuerySubmissionTime[] =
+    "ContextualSearch.Query.Time.ToSubmission.Unknown";
+const char kContextualSearchFileUploadAttemptPdf[] =
+    "ContextualSearch.Session.File.Browser.UploadAttemptCount.Pdf.Unknown";
+const char kContextualSearchFileUploadSuccessPdf[] =
+    "ContextualSearch.Session.File.Browser.UploadSuccessCount.Pdf.Unknown";
+const char kContextualSearchFileUploadServerErrorPdf[] =
+    "ContextualSearch.Session.File.Browser.UploadFailureCount.Pdf.Unknown";
+const char kContextualSearchFileValidationBrowserErrorForPdf[] =
+    "ContextualSearch.Session.File.Browser.ValidationFailureCount.Pdf."
+    "BrowserProcessingError.Unknown";
+const char kContextualSearchFileUploadAttempt[] =
+    "ContextualSearch.Session.File.Browser.UploadAttemptCount.";
+const char kContextualSearchFileUploadSuccess[] =
+    "ContextualSearch.Session.File.Browser.UploadSuccessCount.";
+const char kContextualSearchFileUploadFailure[] =
+    "ContextualSearch.Session.File.Browser.UploadFailureCount.";
+const char kContextualSearchFileValidationErrorTypes[] =
+    "ContextualSearch.Session.File.Browser.ValidationFailureCount.";
+const char kContextualSearchQueryTextLength[] =
+    "ContextualSearch.Query.TextLength.Unknown";
+const char kContextualSearchQueryFileCount[] =
+    "ContextualSearch.Query.FileCount.Unknown";
+const char kContextualSearchQueryModality[] =
+    "ContextualSearch.Query.Modality.V2.Unknown";
+const char kContextualSearchQueryCount[] =
+    "ContextualSearch.Session.QueryCount.Unknown";
+const char kContextualSearchFileSizePdf[] =
+    "ContextualSearch.File.Size.Pdf.Unknown";
 
 std::string UploadStatusToString(FileUploadStatus status) {
   switch (status) {
@@ -73,8 +78,8 @@ class ContextualSearchMetricsRecorderTest : public testing::Test {
   ~ContextualSearchMetricsRecorderTest() override = default;
 
   void SetUp() override {
-    metrics_recorder_ =
-        std::make_unique<ContextualSearchMetricsRecorder>(kTestMetricName);
+    metrics_recorder_ = std::make_unique<ContextualSearchMetricsRecorder>(
+        ContextualSearchSource::kUnknown);
   }
 
   ContextualSearchMetricsRecorder& metrics() { return *metrics_recorder_; }
@@ -96,13 +101,14 @@ TEST_F(ContextualSearchMetricsRecorderTest, SessionAbandoned) {
   task_environment().FastForwardBy(base::Seconds(60));
   metrics().NotifySessionStateChanged(SessionState::kSessionAbandoned);
 
-  histogram_tester().ExpectTotalCount(kComposeboxSessionAbandonedDuration, 1);
-  histogram_tester().ExpectTotalCount(kComposeboxSessionDurationTotal, 1);
+  histogram_tester().ExpectTotalCount(kContextualSearchSessionAbandonedDuration,
+                                      1);
+  histogram_tester().ExpectTotalCount(kContextualSearchSessionDurationTotal, 1);
   // Check session duration times.
-  histogram_tester().ExpectUniqueTimeSample(kComposeboxSessionAbandonedDuration,
-                                            base::Seconds(60), 1);
-  histogram_tester().ExpectUniqueTimeSample(kComposeboxSessionDurationTotal,
-                                            base::Seconds(60), 1);
+  histogram_tester().ExpectUniqueTimeSample(
+      kContextualSearchSessionAbandonedDuration, base::Seconds(60), 1);
+  histogram_tester().ExpectUniqueTimeSample(
+      kContextualSearchSessionDurationTotal, base::Seconds(60), 1);
 }
 
 TEST_F(ContextualSearchMetricsRecorderTest, SessionCompleted) {
@@ -113,18 +119,18 @@ TEST_F(ContextualSearchMetricsRecorderTest, SessionCompleted) {
   metrics().NotifySessionStateChanged(SessionState::kNavigationOccurred);
 
   DestructMetricsRecorder();
-  histogram_tester().ExpectTotalCount(kComposeboxSessionDurationQuerySubmitted,
-                                      1);
-  histogram_tester().ExpectTotalCount(kComposeboxSessionDurationTotal, 1);
-  histogram_tester().ExpectTotalCount(kComposeboxQuerySubmissionTime, 1);
+  histogram_tester().ExpectTotalCount(
+      kContextualSearchSessionDurationQuerySubmitted, 1);
+  histogram_tester().ExpectTotalCount(kContextualSearchSessionDurationTotal, 1);
+  histogram_tester().ExpectTotalCount(kContextualSearchQuerySubmissionTime, 1);
   // Check session duration times.
   histogram_tester().ExpectUniqueTimeSample(
-      kComposeboxSessionDurationQuerySubmitted, base::Seconds(10), 1);
-  histogram_tester().ExpectUniqueTimeSample(kComposeboxSessionDurationTotal,
-                                            base::Seconds(10), 1);
+      kContextualSearchSessionDurationQuerySubmitted, base::Seconds(10), 1);
+  histogram_tester().ExpectUniqueTimeSample(
+      kContextualSearchSessionDurationTotal, base::Seconds(10), 1);
   // Check query submission time.
-  histogram_tester().ExpectUniqueTimeSample(kComposeboxQuerySubmissionTime,
-                                            base::Seconds(10), 1);
+  histogram_tester().ExpectUniqueTimeSample(
+      kContextualSearchQuerySubmissionTime, base::Seconds(10), 1);
 }
 
 TEST_F(ContextualSearchMetricsRecorderTest, MultiQuerySubmissionSession) {
@@ -142,22 +148,22 @@ TEST_F(ContextualSearchMetricsRecorderTest, MultiQuerySubmissionSession) {
   metrics().NotifySessionStateChanged(SessionState::kNavigationOccurred);
 
   metrics().NotifySessionStateChanged(SessionState::kSessionAbandoned);
-  histogram_tester().ExpectTotalCount(kComposeboxSessionDurationQuerySubmitted,
-                                      1);
-  histogram_tester().ExpectTotalCount(kComposeboxSessionDurationTotal, 1);
-  histogram_tester().ExpectTotalCount(kComposeboxQuerySubmissionTime, 2);
+  histogram_tester().ExpectTotalCount(
+      kContextualSearchSessionDurationQuerySubmitted, 1);
+  histogram_tester().ExpectTotalCount(kContextualSearchSessionDurationTotal, 1);
+  histogram_tester().ExpectTotalCount(kContextualSearchQuerySubmissionTime, 2);
   // Check session duration times.
   histogram_tester().ExpectUniqueTimeSample(
-      kComposeboxSessionDurationQuerySubmitted, base::Seconds(90), 1);
-  histogram_tester().ExpectUniqueTimeSample(kComposeboxSessionDurationTotal,
-                                            base::Seconds(90), 1);
+      kContextualSearchSessionDurationQuerySubmitted, base::Seconds(90), 1);
+  histogram_tester().ExpectUniqueTimeSample(
+      kContextualSearchSessionDurationTotal, base::Seconds(90), 1);
   // Check query submission times.
-  histogram_tester().ExpectTimeBucketCount(kComposeboxQuerySubmissionTime,
+  histogram_tester().ExpectTimeBucketCount(kContextualSearchQuerySubmissionTime,
                                            base::Seconds(30), 1);
-  histogram_tester().ExpectTimeBucketCount(kComposeboxQuerySubmissionTime,
+  histogram_tester().ExpectTimeBucketCount(kContextualSearchQuerySubmissionTime,
                                            base::Seconds(90), 1);
-  histogram_tester().ExpectBucketCount(kComposeboxQueryFileCount, 1, 1);
-  histogram_tester().ExpectBucketCount(kComposeboxQueryCount, 2, 1);
+  histogram_tester().ExpectBucketCount(kContextualSearchQueryFileCount, 1, 1);
+  histogram_tester().ExpectBucketCount(kContextualSearchQueryCount, 2, 1);
 }
 
 TEST_F(ContextualSearchMetricsRecorderTest, TextOnlyQuerySubmissionSession) {
@@ -167,12 +173,12 @@ TEST_F(ContextualSearchMetricsRecorderTest, TextOnlyQuerySubmissionSession) {
   int file_count = 0;
   metrics().RecordQueryMetrics(text_length, file_count);
 
-  histogram_tester().ExpectBucketCount(kComposeboxQueryTextLength, text_length,
-                                       1);
-  histogram_tester().ExpectBucketCount(
-      kComposeboxQueryModality, NtpComposeboxMultimodalState::kTextOnly, 1);
-  histogram_tester().ExpectBucketCount(kComposeboxQueryFileCount, file_count,
-                                       1);
+  histogram_tester().ExpectBucketCount(kContextualSearchQueryTextLength,
+                                       text_length, 1);
+  histogram_tester().ExpectBucketCount(kContextualSearchQueryModality,
+                                       MultimodalState::kTextOnly, 1);
+  histogram_tester().ExpectBucketCount(kContextualSearchQueryFileCount,
+                                       file_count, 1);
 }
 
 TEST_F(ContextualSearchMetricsRecorderTest, FileOnlyQuerySubmissionSession) {
@@ -182,12 +188,12 @@ TEST_F(ContextualSearchMetricsRecorderTest, FileOnlyQuerySubmissionSession) {
   int file_count = 2;
   metrics().RecordQueryMetrics(text_length, file_count);
 
-  histogram_tester().ExpectBucketCount(kComposeboxQueryTextLength, text_length,
-                                       1);
-  histogram_tester().ExpectBucketCount(
-      kComposeboxQueryModality, NtpComposeboxMultimodalState::kFileOnly, 1);
-  histogram_tester().ExpectBucketCount(kComposeboxQueryFileCount, file_count,
-                                       1);
+  histogram_tester().ExpectBucketCount(kContextualSearchQueryTextLength,
+                                       text_length, 1);
+  histogram_tester().ExpectBucketCount(kContextualSearchQueryModality,
+                                       MultimodalState::kFileOnly, 1);
+  histogram_tester().ExpectBucketCount(kContextualSearchQueryFileCount,
+                                       file_count, 1);
 }
 
 TEST_F(ContextualSearchMetricsRecorderTest, MultimodalQuerySubmissionSession) {
@@ -197,12 +203,12 @@ TEST_F(ContextualSearchMetricsRecorderTest, MultimodalQuerySubmissionSession) {
   int file_count = 1;
   metrics().RecordQueryMetrics(text_length, file_count);
 
-  histogram_tester().ExpectBucketCount(kComposeboxQueryTextLength, text_length,
-                                       1);
-  histogram_tester().ExpectBucketCount(
-      kComposeboxQueryModality, NtpComposeboxMultimodalState::kTextAndFile, 1);
-  histogram_tester().ExpectBucketCount(kComposeboxQueryFileCount, file_count,
-                                       1);
+  histogram_tester().ExpectBucketCount(kContextualSearchQueryTextLength,
+                                       text_length, 1);
+  histogram_tester().ExpectBucketCount(kContextualSearchQueryModality,
+                                       MultimodalState::kTextAndFile, 1);
+  histogram_tester().ExpectBucketCount(kContextualSearchQueryFileCount,
+                                       file_count, 1);
 }
 
 TEST_F(ContextualSearchMetricsRecorderTest, FileUploadSuccess) {
@@ -220,8 +226,8 @@ TEST_F(ContextualSearchMetricsRecorderTest, FileUploadSuccess) {
                                       std::nullopt);
 
   DestructMetricsRecorder();
-  histogram_tester().ExpectTotalCount(kComposeboxFileUploadAttemptPdf, 1);
-  histogram_tester().ExpectTotalCount(kComposeboxFileUploadSuccessPdf, 1);
+  histogram_tester().ExpectTotalCount(kContextualSearchFileUploadAttemptPdf, 1);
+  histogram_tester().ExpectTotalCount(kContextualSearchFileUploadSuccessPdf, 1);
 }
 
 TEST_F(ContextualSearchMetricsRecorderTest, FileUploadError) {
@@ -239,8 +245,9 @@ TEST_F(ContextualSearchMetricsRecorderTest, FileUploadError) {
                                       FileUploadErrorType::kServerError);
 
   DestructMetricsRecorder();
-  histogram_tester().ExpectTotalCount(kComposeboxFileUploadAttemptPdf, 1);
-  histogram_tester().ExpectTotalCount(kComposeboxFileUploadServerErrorPdf, 1);
+  histogram_tester().ExpectTotalCount(kContextualSearchFileUploadAttemptPdf, 1);
+  histogram_tester().ExpectTotalCount(kContextualSearchFileUploadServerErrorPdf,
+                                      1);
 }
 
 TEST_F(ContextualSearchMetricsRecorderTest, FileValidationError) {
@@ -267,10 +274,12 @@ TEST_F(ContextualSearchMetricsRecorderTest, FileValidationError) {
   metrics().OnFileUploadStatusChanged(file_mime_type, upload_status, error);
 
   DestructMetricsRecorder();
-  histogram_tester().ExpectBucketCount(kComposeboxFileUploadAttemptPdf, 2, 1);
+  histogram_tester().ExpectBucketCount(kContextualSearchFileUploadAttemptPdf, 2,
+                                       1);
   histogram_tester().ExpectBucketCount(
-      kComposeboxFileValidationBrowserErrorForPdf, 2, 1);
-  histogram_tester().ExpectBucketCount(kComposeboxFileSizePdf, file_size, 1);
+      kContextualSearchFileValidationBrowserErrorForPdf, 2, 1);
+  histogram_tester().ExpectBucketCount(kContextualSearchFileSizePdf, file_size,
+                                       1);
 }
 
 TEST_F(ContextualSearchMetricsRecorderTest, MultiFileUpload) {
@@ -295,9 +304,11 @@ TEST_F(ContextualSearchMetricsRecorderTest, MultiFileUpload) {
                                       std::nullopt);
 
   DestructMetricsRecorder();
-  histogram_tester().ExpectBucketCount(kComposeboxFileUploadAttemptPdf, 2, 1);
-  histogram_tester().ExpectTotalCount(kComposeboxFileUploadSuccessPdf, 1);
-  histogram_tester().ExpectTotalCount(kComposeboxFileUploadServerErrorPdf, 1);
+  histogram_tester().ExpectBucketCount(kContextualSearchFileUploadAttemptPdf, 2,
+                                       1);
+  histogram_tester().ExpectTotalCount(kContextualSearchFileUploadSuccessPdf, 1);
+  histogram_tester().ExpectTotalCount(kContextualSearchFileUploadServerErrorPdf,
+                                      1);
 }
 
 class MetricsRecorderFileTest
@@ -314,15 +325,23 @@ class MetricsRecorderFileTest
   }
   void TestUploadSuccessMetrics() {
     histogram_tester().ExpectTotalCount(
-        kComposeboxFileUploadAttempt + mime_type_string_, 1);
+        kContextualSearchFileUploadAttempt + mime_type_string_ +
+            kContextualSearchSourceUnknownSuffix,
+        1);
     histogram_tester().ExpectTotalCount(
-        kComposeboxFileUploadSuccess + mime_type_string_, 1);
+        kContextualSearchFileUploadSuccess + mime_type_string_ +
+            kContextualSearchSourceUnknownSuffix,
+        1);
   }
   void TestUploadFailureMetrics() {
     histogram_tester().ExpectTotalCount(
-        kComposeboxFileUploadAttempt + mime_type_string_, 1);
+        kContextualSearchFileUploadAttempt + mime_type_string_ +
+            kContextualSearchSourceUnknownSuffix,
+        1);
     histogram_tester().ExpectTotalCount(
-        kComposeboxFileUploadFailure + mime_type_string_, 1);
+        kContextualSearchFileUploadFailure + mime_type_string_ +
+            kContextualSearchSourceUnknownSuffix,
+        1);
   }
 
  protected:
@@ -373,11 +392,13 @@ class MetricsRecorderFileValidationTest
   }
   void TestValidationFailedMetrics() {
     histogram_tester().ExpectTotalCount(
-        kComposeboxFileUploadAttempt + mime_type_string_, 1);
-    histogram_tester().ExpectTotalCount(kComposeboxFileValidationErrorTypes +
-                                            mime_type_string_ + "." +
-                                            error_type_string_,
-                                        1);
+        kContextualSearchFileUploadAttempt + mime_type_string_ +
+            kContextualSearchSourceUnknownSuffix,
+        1);
+    histogram_tester().ExpectTotalCount(
+        kContextualSearchFileValidationErrorTypes + mime_type_string_ + "." +
+            error_type_string_ + kContextualSearchSourceUnknownSuffix,
+        1);
   }
 
  protected:
@@ -440,8 +461,10 @@ TEST_P(MetricsRecorderFileDeletionTest, FileDeleted) {
   metrics().RecordFileDeletedMetrics(true, mime_type_param(), status_param());
 
   DestructMetricsRecorder();
-  histogram_tester().ExpectTotalCount(
-      kComposeboxFileDeleted + file_type + file_status, 1);
+  histogram_tester().ExpectTotalCount(kContextualSearchFileDeleted + file_type +
+                                          file_status +
+                                          kContextualSearchSourceUnknownSuffix,
+                                      1);
 }
 
 INSTANTIATE_TEST_SUITE_P(

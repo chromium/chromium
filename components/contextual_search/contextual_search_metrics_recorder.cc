@@ -5,33 +5,40 @@
 #include "components/contextual_search/contextual_search_metrics_recorder.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "base/timer/elapsed_timer.h"
 #include "components/lens/lens_overlay_mime_type.h"
 
 namespace contextual_search {
 
 namespace {
-const char kComposeboxFileDeleted[] = "Composebox.Session.File.DeletedCount";
-const char kComposeboxSessionDuration[] = "Composebox.Session.Duration.Total";
-const char kComposeboxSessionDurationQuerySubmitted[] =
-    "Composebox.Session.Duration.QuerySubmitted";
-const char kComposeboxSessionAbandonedDuration[] =
-    "Composebox.Session.Duration.Abandoned";
-const char kComposeboxQuerySubmissionTime[] =
-    "Composebox.Query.Time.ToSubmission";
-const char kComposeboxFileUploadAttemptPerFileType[] =
-    "Composebox.Session.File.Browser.UploadAttemptCount.";
-const char kComposeboxFileUploadSuccessPerFileType[] =
-    "Composebox.Session.File.Browser.UploadSuccessCount.";
-const char kComposeboxFileUploadFailure[] =
-    "Composebox.Session.File.Browser.UploadFailureCount.";
-const char kComposeboxFileValidationErrorTypes[] =
-    "Composebox.Session.File.Browser.ValidationFailureCount.";
-const char kComposeboxQueryTextLength[] = "Composebox.Query.TextLength";
-const char kComposeboxQueryFileCount[] = "Composebox.Query.FileCount";
-const char kComposeboxQueryModality[] = "Composebox.Query.Modality.V2";
-const char kComposeboxQueryCount[] = "Composebox.Session.QueryCount";
-const char kComposeboxFileSizePerType[] = "Composebox.File.Size.";
+const char kContextualSearchFileDeleted[] =
+    "ContextualSearch.Session.File.DeletedCount";
+const char kContextualSearchSessionDuration[] =
+    "ContextualSearch.Session.Duration.Total";
+const char kContextualSearchSessionDurationQuerySubmitted[] =
+    "ContextualSearch.Session.Duration.QuerySubmitted";
+const char kContextualSearchSessionAbandonedDuration[] =
+    "ContextualSearch.Session.Duration.Abandoned";
+const char kContextualSearchQuerySubmissionTime[] =
+    "ContextualSearch.Query.Time.ToSubmission";
+const char kContextualSearchFileUploadAttemptPerFileType[] =
+    "ContextualSearch.Session.File.Browser.UploadAttemptCount.";
+const char kContextualSearchFileUploadSuccessPerFileType[] =
+    "ContextualSearch.Session.File.Browser.UploadSuccessCount.";
+const char kContextualSearchFileUploadFailure[] =
+    "ContextualSearch.Session.File.Browser.UploadFailureCount.";
+const char kContextualSearchFileValidationErrorTypes[] =
+    "ContextualSearch.Session.File.Browser.ValidationFailureCount.";
+const char kContextualSearchQueryTextLength[] =
+    "ContextualSearch.Query.TextLength";
+const char kContextualSearchQueryFileCount[] =
+    "ContextualSearch.Query.FileCount";
+const char kContextualSearchQueryModality[] =
+    "ContextualSearch.Query.Modality.V2";
+const char kContextualSearchQueryCount[] =
+    "ContextualSearch.Session.QueryCount";
+const char kContextualSearchFileSizePerType[] = "ContextualSearch.File.Size.";
 
 std::string UploadStatusToString(FileUploadStatus status) {
   switch (status) {
@@ -59,8 +66,8 @@ SessionMetrics::SessionMetrics() = default;
 SessionMetrics::~SessionMetrics() = default;
 
 ContextualSearchMetricsRecorder::ContextualSearchMetricsRecorder(
-    std::string metric_category_name)
-    : metric_category_name_(metric_category_name),
+    ContextualSearchSource source)
+    : metrics_suffix_(ContextualSearchSourceToString(source)),
       session_metrics_{std::make_unique<SessionMetrics>()} {}
 
 ContextualSearchMetricsRecorder::~ContextualSearchMetricsRecorder() {
@@ -88,7 +95,7 @@ void ContextualSearchMetricsRecorder::NotifySessionStateChanged(
     // On navigation occurrences, keep track of the session state, but do not
     // record any metrics until the end of the session, as multiple queries can
     // be submitted, such as in the case were the AIM page is opened in a new
-    // tab and the composebox remains open.
+    // tab and the ContextualSearch remains open.
     case SessionState::kNavigationOccurred:
       break;
     default:
@@ -129,28 +136,31 @@ void ContextualSearchMetricsRecorder::OnFileUploadStatusChanged(
 }
 void ContextualSearchMetricsRecorder::RecordQueryMetrics(int text_length,
                                                          int file_count) {
-  base::UmaHistogramCounts1M(metric_category_name_ + kComposeboxQueryTextLength,
-                             text_length);
+  base::UmaHistogramCounts1M(
+      base::StrCat({kContextualSearchQueryTextLength, ".", metrics_suffix_}),
+      text_length);
   bool has_text = text_length != 0;
   bool has_files = file_count != 0;
   // Submission requests will always have either 1) both text and files 2) text
   // only or 3) files only.
-  NtpComposeboxMultimodalState multimodal_state =
-      has_text ? (has_files ? NtpComposeboxMultimodalState::kTextAndFile
-                            : NtpComposeboxMultimodalState::kTextOnly)
-               : NtpComposeboxMultimodalState::kFileOnly;
+  MultimodalState multimodal_state =
+      has_text ? (has_files ? MultimodalState::kTextAndFile
+                            : MultimodalState::kTextOnly)
+               : MultimodalState::kFileOnly;
   base::UmaHistogramEnumeration(
-      metric_category_name_ + kComposeboxQueryModality, multimodal_state);
-  base::UmaHistogramCounts100(metric_category_name_ + kComposeboxQueryFileCount,
-                              file_count);
+      base::StrCat({kContextualSearchQueryModality, ".", metrics_suffix_}),
+      multimodal_state);
+  base::UmaHistogramCounts100(
+      base::StrCat({kContextualSearchQueryFileCount, ".", metrics_suffix_}),
+      file_count);
 }
 
 void ContextualSearchMetricsRecorder::RecordFileSizeMetric(
     lens::MimeType mime_type,
     uint64_t file_size_bytes) {
-  base::UmaHistogramCounts10M(metric_category_name_ +
-                                  kComposeboxFileSizePerType +
-                                  MimeTypeToString(mime_type),
+  base::UmaHistogramCounts10M(kContextualSearchFileSizePerType +
+                                  MimeTypeToString(mime_type) + "." +
+                                  metrics_suffix_,
                               file_size_bytes);
 }
 
@@ -158,10 +168,11 @@ void ContextualSearchMetricsRecorder::RecordFileDeletedMetrics(
     bool success,
     lens::MimeType file_type,
     FileUploadStatus file_status) {
-  base::UmaHistogramBoolean(metric_category_name_ + kComposeboxFileDeleted +
-                                "." + MimeTypeToString(file_type) + "." +
-                                UploadStatusToString(file_status),
-                            success);
+  base::UmaHistogramBoolean(
+      base::StrCat({kContextualSearchFileDeleted, ".",
+                    MimeTypeToString(file_type), ".",
+                    UploadStatusToString(file_status), ".", metrics_suffix_}),
+      success);
 }
 
 void ContextualSearchMetricsRecorder::NotifySessionStarted() {
@@ -173,14 +184,15 @@ void ContextualSearchMetricsRecorder::NotifyQuerySubmitted() {
   base::TimeDelta time_to_query_submission =
       session_metrics_->session_elapsed_timer->Elapsed();
   base::UmaHistogramMediumTimes(
-      metric_category_name_ + kComposeboxQuerySubmissionTime,
+      base::StrCat(
+          {kContextualSearchQuerySubmissionTime, ".", metrics_suffix_}),
       time_to_query_submission);
   session_metrics_->num_query_submissions++;
 }
 
 void ContextualSearchMetricsRecorder::RecordSessionAbandonedMetrics() {
   // In the case that the user has submitted a query in a new tab and abandons
-  // the composebox session record the session as completed.
+  // the ContextualSearch session record the session as completed.
   if (session_metrics_->num_query_submissions > 0) {
     RecordSessionCompletedMetrics();
     return;
@@ -188,7 +200,8 @@ void ContextualSearchMetricsRecorder::RecordSessionAbandonedMetrics() {
   base::TimeDelta session_duration =
       session_metrics_->session_elapsed_timer->Elapsed();
   base::UmaHistogramMediumTimes(
-      metric_category_name_ + kComposeboxSessionAbandonedDuration,
+      base::StrCat(
+          {kContextualSearchSessionAbandonedDuration, ".", metrics_suffix_}),
       session_duration);
   RecordTotalSessionDuration(session_duration);
   FinalizeSessionMetrics();
@@ -198,10 +211,12 @@ void ContextualSearchMetricsRecorder::RecordSessionCompletedMetrics() {
   base::TimeDelta session_duration =
       session_metrics_->session_elapsed_timer->Elapsed();
   base::UmaHistogramMediumTimes(
-      metric_category_name_ + kComposeboxSessionDurationQuerySubmitted,
+      base::StrCat({kContextualSearchSessionDurationQuerySubmitted, ".",
+                    metrics_suffix_}),
       session_duration);
-  base::UmaHistogramCounts100(metric_category_name_ + kComposeboxQueryCount,
-                              session_metrics_->num_query_submissions);
+  base::UmaHistogramCounts100(
+      base::StrCat({kContextualSearchQueryCount, ".", metrics_suffix_}),
+      session_metrics_->num_query_submissions);
   RecordTotalSessionDuration(session_duration);
   FinalizeSessionMetrics();
 }
@@ -209,7 +224,8 @@ void ContextualSearchMetricsRecorder::RecordSessionCompletedMetrics() {
 void ContextualSearchMetricsRecorder::RecordTotalSessionDuration(
     base::TimeDelta session_duration) {
   base::UmaHistogramMediumTimes(
-      metric_category_name_ + kComposeboxSessionDuration, session_duration);
+      base::StrCat({kContextualSearchSessionDuration, ".", metrics_suffix_}),
+      session_duration);
 }
 
 void ContextualSearchMetricsRecorder::FinalizeSessionMetrics() {
@@ -217,9 +233,8 @@ void ContextualSearchMetricsRecorder::FinalizeSessionMetrics() {
   for (const auto& file_info :
        session_metrics_->file_upload_attempt_count_per_type) {
     std::string file_type = MimeTypeToString(file_info.first);
-    std::string histogram_name = metric_category_name_ +
-                                 kComposeboxFileUploadAttemptPerFileType +
-                                 file_type;
+    std::string histogram_name = kContextualSearchFileUploadAttemptPerFileType +
+                                 file_type + "." + metrics_suffix_;
     base::UmaHistogramCounts100(histogram_name, file_info.second);
   }
 
@@ -227,9 +242,8 @@ void ContextualSearchMetricsRecorder::FinalizeSessionMetrics() {
   for (const auto& file_info :
        session_metrics_->file_upload_success_count_per_type) {
     std::string file_type = MimeTypeToString(file_info.first);
-    std::string histogram_name = metric_category_name_ +
-                                 kComposeboxFileUploadSuccessPerFileType +
-                                 file_type;
+    std::string histogram_name = kContextualSearchFileUploadSuccessPerFileType +
+                                 file_type + "." + metrics_suffix_;
     base::UmaHistogramCounts100(histogram_name, file_info.second);
   }
 
@@ -238,7 +252,7 @@ void ContextualSearchMetricsRecorder::FinalizeSessionMetrics() {
        session_metrics_->file_upload_failure_count_per_type) {
     std::string file_type = MimeTypeToString(file_info.first);
     std::string histogram_name =
-        metric_category_name_ + kComposeboxFileUploadFailure + file_type;
+        kContextualSearchFileUploadFailure + file_type + "." + metrics_suffix_;
     base::UmaHistogramCounts100(histogram_name, file_info.second);
   }
 
@@ -248,9 +262,9 @@ void ContextualSearchMetricsRecorder::FinalizeSessionMetrics() {
     for (const auto& error_info : file_info.second) {
       std::string file_type = MimeTypeToString(file_info.first);
       std::string error_type = FileErrorToString(error_info.first);
-      std::string histogram_name = metric_category_name_ +
-                                   kComposeboxFileValidationErrorTypes +
-                                   file_type + "." + error_type;
+      std::string histogram_name = kContextualSearchFileValidationErrorTypes +
+                                   file_type + "." + error_type + "." +
+                                   metrics_suffix_;
       base::UmaHistogramCounts100(histogram_name, error_info.second);
     }
   }
@@ -295,6 +309,16 @@ std::string ContextualSearchMetricsRecorder::MimeTypeToString(
       return "Image";
     default:
       return "Other";
+  }
+}
+
+std::string ContextualSearchMetricsRecorder::ContextualSearchSourceToString(
+    ContextualSearchSource source) {
+  switch (source) {
+    case ContextualSearchSource::kNewTabPage:
+      return "NewTabPage";
+    case ContextualSearchSource::kUnknown:
+      return "Unknown";
   }
 }
 

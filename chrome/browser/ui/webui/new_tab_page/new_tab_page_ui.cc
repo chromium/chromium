@@ -161,7 +161,6 @@ NewTabPageUIConfig::CreateWebUIController(content::WebUI* web_ui,
 namespace {
 
 constexpr char kPrevNavigationTimePrefName[] = "NewTabPage.PrevNavigationTime";
-constexpr char kComposeboxMetricsReporterMetricSource[] = "NewTabPage.";
 
 bool HasCredentials(Profile* profile) {
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
@@ -936,7 +935,7 @@ void NewTabPageUI::BindInterface(
           ContextualSearchServiceFactory::GetForProfile(profile_);
       auto contextual_session_handle = contextual_search_service->CreateSession(
           ntp_composebox::CreateQueryControllerConfigParams(),
-          kComposeboxMetricsReporterMetricSource);
+          contextual_search::ContextualSearchSource::kNewTabPage);
       contextual_search_web_contents_helper->set_session_handle(
           std::move(contextual_session_handle));
     }
@@ -1149,7 +1148,7 @@ void NewTabPageUI::CreatePageHandler(
         ContextualSearchServiceFactory::GetForProfile(profile_);
     auto contextual_session_handle = contextual_search_service->CreateSession(
         ntp_composebox::CreateQueryControllerConfigParams(),
-        kComposeboxMetricsReporterMetricSource);
+        contextual_search::ContextualSearchSource::kNewTabPage);
     contextual_search_web_contents_helper->set_session_handle(
         std::move(contextual_session_handle));
   }

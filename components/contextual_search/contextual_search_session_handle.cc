@@ -33,8 +33,4 @@ ContextualSearchSessionHandle::GetMetricsRecorder() const {
   return service_ ? service_->GetSessionMetricsRecorder(session_id_) : nullptr;
 }
 
-std::string ContextualSearchSessionHandle::GetMetricsRecorderName() const {
-  return service_ ? service_->GetSessionMetricsRecorderName(session_id_) : "";
-}
-
 }  // namespace contextual_search

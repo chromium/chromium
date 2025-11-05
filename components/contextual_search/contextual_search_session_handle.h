@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_CONTEXTUAL_SEARCH_CONTEXTUAL_SEARCH_SESSION_HANDLE_H_
 #define COMPONENTS_CONTEXTUAL_SEARCH_CONTEXTUAL_SEARCH_SESSION_HANDLE_H_
 
-#include <memory>
-
 #include "base/memory/weak_ptr.h"
 #include "base/unguessable_token.h"
 #include "components/contextual_search/contextual_search_context_controller.h"
@@ -35,8 +33,6 @@ class ContextualSearchSessionHandle {
   // Returns the ContextualSearchMetricsRecorder reference held by this handle
   // or nullptr if the session is not valid.
   ContextualSearchMetricsRecorder* GetMetricsRecorder() const;
-
-  std::string GetMetricsRecorderName() const;
 
  private:
   friend class ContextualSearchService;

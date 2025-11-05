@@ -38,14 +38,13 @@ std::unique_ptr<ContextualSearchSessionHandle>
 ContextualSearchService::CreateSession(
     std::unique_ptr<ContextualSearchContextController::ConfigParams>
         query_controller_config_params,
-    const std::string& contextual_search_metric_name) {
+    ContextualSearchSource source) {
   base::UnguessableToken session_id = base::UnguessableToken::Create();
   auto controller = std::make_unique<ComposeboxQueryController>(
       identity_manager_, url_loader_factory_, channel_, locale_,
       template_url_service_, variations_client_,
       std::move(query_controller_config_params));
-  auto recorder = std::make_unique<ContextualSearchMetricsRecorder>(
-      contextual_search_metric_name);
+  auto recorder = std::make_unique<ContextualSearchMetricsRecorder>(source);
   sessions_.emplace(
       session_id,
       ContextualSearchSessionEntry(std::move(controller), std::move(recorder)));
@@ -93,16 +92,6 @@ ContextualSearchService::GetSessionMetricsRecorder(
     return it->second.metrics_recorder_.get();
   }
   return nullptr;
-}
-
-std::string ContextualSearchService::GetSessionMetricsRecorderName(
-    const SessionId& session_id) const {
-  if (auto it = sessions_.find(session_id); it != sessions_.end()) {
-    if (auto metrics_recorder = it->second.metrics_recorder_.get()) {
-      return metrics_recorder->GetMetricsRecorderName();
-    }
-  }
-  return "";
 }
 
 void ContextualSearchService::ReleaseSession(
