@@ -168,8 +168,5 @@ component("freetype") {
 
   public_configs = [ ":freetype_config" ]
 
-  deps = [
-    "//third_party/libpng",
-    "//third_party/zlib",
-  ]
+  deps = [ "//third_party/zlib" ]
 }
