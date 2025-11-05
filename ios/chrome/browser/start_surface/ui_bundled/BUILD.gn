@@ -51,6 +51,7 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/signin/model:signin_util",
     "//ios/chrome/browser/tab_insertion/model",
+    "//ios/chrome/browser/tabs/model:dependency_installer",
     "//ios/web/public",
     "//ios/web/public:web_state_observer",
     "//ui/base",
