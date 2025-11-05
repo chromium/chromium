@@ -911,4 +911,113 @@ suite('ReadAloudModel', () => {
     getReadAloudModel().moveSpeechForward();
     assertTextEmpty();
   });
+
+  test('getCurrentText includes ordered list items', async () => {
+    const ol = document.createElement('ol');
+    const li1 = document.createElement('li');
+    li1.textContent = 'Realize numbers are ignored in read aloud.';
+    const li2 = document.createElement('li');
+    li2.textContent = 'Fix it.';
+    const li3 = document.createElement('li');
+    li3.textContent = 'Profit';
+    ol.appendChild(li1);
+    ol.appendChild(li2);
+    ol.appendChild(li3);
+    document.body.appendChild(ol);
+
+    await microtasksFinished();
+    getReadAloudModel().init(ReadAloudNode.create(document.body)!);
+    // The beginning of the list item should start with a newline to ensure
+    // the list item isn't incorrectly grouped with the previous text. This
+    // will be ignored by the TTS engine and not spoken.
+    assertEquals('\n', getReadAloudModel().getCurrentTextContent());
+
+    getReadAloudModel().moveSpeechForward();
+    assertEquals('1.', getReadAloudModel().getCurrentTextContent().trim());
+
+    getReadAloudModel().moveSpeechForward();
+    assertEquals(
+        li1.textContent, getReadAloudModel().getCurrentTextContent().trim());
+
+    // Verify the second bullet.
+    getReadAloudModel().moveSpeechForward();
+    assertEquals('2.', getReadAloudModel().getCurrentTextContent().trim());
+
+    getReadAloudModel().moveSpeechForward();
+    assertEquals(
+        li2.textContent, getReadAloudModel().getCurrentTextContent().trim());
+
+    // Verify the third bullet.
+    getReadAloudModel().moveSpeechForward();
+    assertEquals('3.', getReadAloudModel().getCurrentTextContent().trim());
+
+    getReadAloudModel().moveSpeechForward();
+    assertEquals(
+        li3.textContent, getReadAloudModel().getCurrentTextContent().trim());
+  });
+
+  test('getCurrentText for ordered list with custom start', async () => {
+    const ol = document.createElement('ol');
+    ol.start = 100;
+    const li1 = document.createElement('li');
+    li1.textContent = 'bugs to fix';
+    const li2 = document.createElement('li');
+    li2.textContent = 'cls to submit';
+    ol.appendChild(li1);
+    ol.appendChild(li2);
+    document.body.appendChild(ol);
+
+    await microtasksFinished();
+    getReadAloudModel().init(ReadAloudNode.create(document.body)!);
+    assertEquals('\n', getReadAloudModel().getCurrentTextContent());
+    getReadAloudModel().moveSpeechForward();
+    assertEquals(
+        '100. bugs to fix', getReadAloudModel().getCurrentTextContent().trim());
+
+    getReadAloudModel().moveSpeechForward();
+    assertEquals(
+        '101. cls to submit',
+        getReadAloudModel().getCurrentTextContent().trim());
+  });
+
+  test('getCurrentText for ordered list with custom values', async () => {
+    const ol = document.createElement('ol');
+    const li1 = document.createElement('li');
+    li1.textContent = 'golden rings';
+    li1.value = 5;
+    const li2 = document.createElement('li');
+    li2.textContent = 'calling birds';
+    li2.value = 4;
+    const li3 = document.createElement('li');
+    li3.textContent = 'french hens';
+    li3.value = 3;
+    const li4 = document.createElement('li');
+    li4.textContent = 'turtle doves';
+    li4.value = 2;
+    ol.appendChild(li1);
+    ol.appendChild(li2);
+    ol.appendChild(li3);
+    ol.appendChild(li4);
+    document.body.appendChild(ol);
+
+    await microtasksFinished();
+    getReadAloudModel().init(ReadAloudNode.create(document.body)!);
+    assertEquals('\n', getReadAloudModel().getCurrentTextContent());
+
+    getReadAloudModel().moveSpeechForward();
+    assertEquals(
+        '5. golden rings', getReadAloudModel().getCurrentTextContent().trim());
+
+    getReadAloudModel().moveSpeechForward();
+    assertEquals(
+        '4. calling birds', getReadAloudModel().getCurrentTextContent().trim());
+
+    getReadAloudModel().moveSpeechForward();
+    assertEquals(
+        '3. french hens', getReadAloudModel().getCurrentTextContent().trim());
+
+    getReadAloudModel().moveSpeechForward();
+    assertEquals(
+        '2. turtle doves', getReadAloudModel().getCurrentTextContent().trim());
+  });
 });

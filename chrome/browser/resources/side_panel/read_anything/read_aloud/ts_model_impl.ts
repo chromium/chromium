@@ -260,17 +260,82 @@ export class TsReadModelImpl implements ReadAloudModelBrowserProxy {
     if (!node) {
       return textNodes;
     }
-    const treeWalker = document.createTreeWalker(node, NodeFilter.SHOW_TEXT);
+    const treeWalker = document.createTreeWalker(node, NodeFilter.SHOW_ALL);
     let currentNode;
+
     while (currentNode = treeWalker.nextNode()) {
-      if (currentNode.textContent && currentNode.textContent.trim().length) {
-        const node = ReadAloudNode.create(currentNode);
-        if (node instanceof DomReadAloudNode) {
-          textNodes.push(node);
+      if (currentNode.nodeType === Node.ELEMENT_NODE) {
+        this.addNodeForListElement(currentNode, textNodes);
+      } else if (currentNode.nodeType === Node.TEXT_NODE) {
+        if (currentNode.textContent && currentNode.textContent.trim().length) {
+          const readAloudNode = ReadAloudNode.create(currentNode);
+          if (readAloudNode instanceof DomReadAloudNode) {
+            textNodes.push(readAloudNode);
+          }
         }
       }
     }
     return textNodes;
+  }
+
+  private addNodeForListElement(
+      currentNode: Node, textNodes: DomReadAloudNode[]) {
+    const element = currentNode as HTMLElement;
+
+    // If there is an ordered list, add the numbers as read aloud nodes, since
+    // these aren't considered "text" nodes and won't be spoken by read aloud
+    // otherwise.
+    if (element.tagName === 'LI' && element.parentElement &&
+        element.parentElement.tagName === 'OL') {
+      const number = this.getLiNumber(element as HTMLLIElement);
+
+      if (number > -1) {
+        // Create the text node (e.g., "1. "). A newline is added to the
+        // beginning of the node to ensure that it is not accidentally
+        // grouped with the previous text node for sentence segmentation.
+        const markerNode = document.createTextNode('\n' + number + '. ');
+        const readAloudNode = ReadAloudNode.create(markerNode);
+        if (readAloudNode instanceof DomReadAloudNode) {
+          textNodes.push(readAloudNode);
+        }
+      }
+    }
+  }
+
+  private getLiNumber(liElement: HTMLLIElement) {
+    const ol = liElement.closest('ol');
+    if (!ol) {
+      // Not in an ordered list.
+      return -1;
+    }
+
+    // Get the list's starting number. Default is 1 unless the start attribute
+    // is set by the developer.
+    let counter = ol.start || 1;
+
+    // Iterate through all <li> elements in the <ol>
+    for (const item of ol.children) {
+      if (item.tagName !== 'LI') {
+        // Skip non-<li> elements
+        continue;
+      }
+
+      // If the developer set an explicit 'value' on *this* <li>, honor that.
+      // If it's 0, it means the attribute isn't set.
+      if ((item as HTMLLIElement).value > 0) {
+        counter = (item as HTMLLIElement).value;
+      }
+
+      if (item === liElement) {
+        return counter;
+      }
+
+      // It's not the selected <li>, so increment the counter for the next loop
+      counter++;
+    }
+
+    // Should not happen
+    return -1;
   }
 
   private getWordHighlightSegment(

@@ -208,14 +208,20 @@ export class NodeStore {
 
   replaceDomNode(current: ChildNode, replacer: Node) {
     const nodeId = this.getAxId(current);
-    // When Screen2x is used, a node id should never be undefined. However,
-    // when Readability.js is used, nodes will not be added to the node_store
-    // in updateContent, as there aren't any associated AxNodeIds. Longer term,
-    // this should be consolidated, but in the short term, continue asserting
-    // for Screen2x to avoid introducing new bugs, while ignoring the
-    // requirement for Readability.js in order for highlighting to work
-    // with Readability.
-    if (!chrome.readingMode.isReadabilityEnabled) {
+    // When Screen2x is used with the V8 segmentation model, a node id should
+    // never be undefined. However, when Readability.js is used, nodes will not
+    // be added to the node_store in updateContent, as there aren't any
+    // associated AxNodeIds.
+    // With the TS text segmentation implementation without Readability, the
+    // majority of nodes will have associated AXNodeIDs, but it's possible for
+    // some nodes (such as ordered lists) to not have an associated AXNodeId.
+    // Longer term, this should be consolidated, but in the short term,
+    // continue asserting when these flags are disabled avoid introducing new
+    // bugs, while ignoring the requirement for Readability.js in order for
+    // highlighting to work with Readability and with the TS text segmentation
+    // model.
+    if (!chrome.readingMode.isReadabilityEnabled &&
+        !chrome.readingMode.isTsTextSegmentationEnabled) {
       assert(
           nodeId !== undefined,
           'trying to replace an element that doesn\'t exist');

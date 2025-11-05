@@ -2850,75 +2850,6 @@ TEST_F(ReadAnythingAppControllerTest,
   MoveToNextAndAssertEmpty();
 }
 
-TEST_F(ReadAnythingAppControllerTest, GetCurrentText_IncludesListMarkers) {
-  // Simulate breaking up the brackets across a link.
-  std::string marker_html_tag = "::marker";
-  std::u16string bullet1 = u"1.";
-  std::u16string sentence1 = u"Realize numbers are ignored in Read Aloud. ";
-  std::u16string bullet2 = u"2.";
-  std::u16string sentence2 = u"Fix it.";
-  ui::AXTreeUpdate update;
-  ui::AXTreeID id_1 = ui::AXTreeID::CreateNewAXTreeID();
-  test::SetUpdateTreeID(&update, id_1);
-
-  ui::AXNodeData list_marker1;
-  static constexpr ui::AXNodeID kListMarkerId1 = 102;
-  list_marker1.id = kListMarkerId1;
-  list_marker1.role = ax::mojom::Role::kListMarker;
-  list_marker1.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag,
-                                  marker_html_tag);
-  list_marker1.SetName(bullet1);
-  list_marker1.SetNameFrom(ax::mojom::NameFrom::kContents);
-
-  ui::AXNodeData static_text1 = test::TextNode(kId1, sentence1);
-
-  ui::AXNodeData list_marker2;
-  static constexpr ui::AXNodeID kListMarkerId2 = 104;
-  list_marker2.id = kListMarkerId2;
-  list_marker2.role = ax::mojom::Role::kListMarker;
-  list_marker2.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag,
-                                  marker_html_tag);
-  list_marker2.SetName(bullet2);
-  list_marker2.SetNameFrom(ax::mojom::NameFrom::kContents);
-
-  ui::AXNodeData static_text2 = test::TextNode(kId2, sentence2);
-
-  ui::AXNodeData root;
-  static constexpr ui::AXNodeID kRootId = 10;
-  root.id = kRootId;
-  root.child_ids = {kListMarkerId1, kId1, kListMarkerId2, kId2};
-  update.root_id = kRootId;
-
-  update.nodes = {std::move(root), std::move(list_marker1),
-                  std::move(static_text1), std::move(list_marker2),
-                  std::move(static_text2)};
-  controller().OnActiveAXTreeIDChanged(id_1, ukm::kInvalidSourceId, false);
-  AccessibilityEventReceived({std::move(update)});
-  controller().OnAXTreeDistilled(
-      id_1, {kRootId, kListMarkerId1, kId1, kListMarkerId2, kId2});
-  controller().InitAXPositionWithNode(kListMarkerId1);
-
-  std::vector<ReadAloudTextSegment> next_segments = GetCurrentTextSegments();
-
-  // The first segment was returned correctly.
-  ExpectNodesMapToEntireText(next_segments, {kListMarkerId1}, {bullet1});
-
-  // Move to the next segment.
-  next_segments = MoveToNextGranularityAndGetSegments();
-  ExpectNodesMapToEntireText(next_segments, {kId1}, {sentence1});
-
-  // Move to the next segment.
-  next_segments = MoveToNextGranularityAndGetSegments();
-  ExpectNodesMapToEntireText(next_segments, {kListMarkerId2}, {bullet2});
-
-  // Move to the next segment.
-  next_segments = MoveToNextGranularityAndGetSegments();
-  ExpectNodesMapToEntireText(next_segments, {kId2}, {sentence2});
-
-  // Nodes are empty at the end of the new tree.
-  MoveToNextAndAssertEmpty();
-}
-
 TEST_F(ReadAnythingAppControllerTest,
        GetCurrentText_SentenceSplitAcrossParagraphsWithoutParagraphRoles) {
   std::u16string header_text = u"Header Text\n";
@@ -3167,6 +3098,76 @@ class ReadAnythingAppControllerV8SegmentationTest
         {features::kReadAnythingReadAloudTSTextSegmentation});
   }
 };
+
+TEST_F(ReadAnythingAppControllerV8SegmentationTest,
+       GetCurrentText_IncludesListMarkers) {
+  // Simulate breaking up the brackets across a link.
+  std::string marker_html_tag = "::marker";
+  std::u16string bullet1 = u"1.";
+  std::u16string sentence1 = u"Realize numbers are ignored in Read Aloud. ";
+  std::u16string bullet2 = u"2.";
+  std::u16string sentence2 = u"Fix it.";
+  ui::AXTreeUpdate update;
+  ui::AXTreeID id_1 = ui::AXTreeID::CreateNewAXTreeID();
+  test::SetUpdateTreeID(&update, id_1);
+
+  ui::AXNodeData list_marker1;
+  static constexpr ui::AXNodeID kListMarkerId1 = 102;
+  list_marker1.id = kListMarkerId1;
+  list_marker1.role = ax::mojom::Role::kListMarker;
+  list_marker1.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag,
+                                  marker_html_tag);
+  list_marker1.SetName(bullet1);
+  list_marker1.SetNameFrom(ax::mojom::NameFrom::kContents);
+
+  ui::AXNodeData static_text1 = test::TextNode(kId1, sentence1);
+
+  ui::AXNodeData list_marker2;
+  static constexpr ui::AXNodeID kListMarkerId2 = 104;
+  list_marker2.id = kListMarkerId2;
+  list_marker2.role = ax::mojom::Role::kListMarker;
+  list_marker2.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag,
+                                  marker_html_tag);
+  list_marker2.SetName(bullet2);
+  list_marker2.SetNameFrom(ax::mojom::NameFrom::kContents);
+
+  ui::AXNodeData static_text2 = test::TextNode(kId2, sentence2);
+
+  ui::AXNodeData root;
+  static constexpr ui::AXNodeID kRootId = 10;
+  root.id = kRootId;
+  root.child_ids = {kListMarkerId1, kId1, kListMarkerId2, kId2};
+  update.root_id = kRootId;
+
+  update.nodes = {std::move(root), std::move(list_marker1),
+                  std::move(static_text1), std::move(list_marker2),
+                  std::move(static_text2)};
+  controller().OnActiveAXTreeIDChanged(id_1, ukm::kInvalidSourceId, false);
+  AccessibilityEventReceived({std::move(update)});
+  controller().OnAXTreeDistilled(
+      id_1, {kRootId, kListMarkerId1, kId1, kListMarkerId2, kId2});
+  controller().InitAXPositionWithNode(kListMarkerId1);
+
+  std::vector<ReadAloudTextSegment> next_segments = GetCurrentTextSegments();
+
+  // The first segment was returned correctly.
+  ExpectNodesMapToEntireText(next_segments, {kListMarkerId1}, {bullet1});
+
+  // Move to the next segment.
+  next_segments = MoveToNextGranularityAndGetSegments();
+  ExpectNodesMapToEntireText(next_segments, {kId1}, {sentence1});
+
+  // Move to the next segment.
+  next_segments = MoveToNextGranularityAndGetSegments();
+  ExpectNodesMapToEntireText(next_segments, {kListMarkerId2}, {bullet2});
+
+  // Move to the next segment.
+  next_segments = MoveToNextGranularityAndGetSegments();
+  ExpectNodesMapToEntireText(next_segments, {kId2}, {sentence2});
+
+  // Nodes are empty at the end of the new tree.
+  MoveToNextAndAssertEmpty();
+}
 
 TEST_F(ReadAnythingAppControllerV8SegmentationTest,
        GetCurrentTextSegments_ReturnsExpectedText) {
