@@ -18,10 +18,12 @@ found in the LICENSE file.
     <dimen name="ttf_for_sheet_item_layout_margin_start">4dp</dimen>
     <dimen name="bnpl_progress_bar_track_thickness">2.5dp</dimen>
     <dimen name="bnpl_progress_bar_size">24dp</dimen>
-    <!-- TODO(crbug.com/430575808): Set progress bar vertical margin
-    dynamically to match issuer selection screen. -->
-    <dimen name="bnpl_progress_bar_margin_top">66dp</dimen>
-    <dimen name="bnpl_progress_bar_margin_bottom">76dp</dimen>
+    <!-- The BNPL progress screen margins are hardcoded to try to match the
+    height of the BNPL selection screen with 3 issuers, since trying to compute
+    the desired height dynamically might introduce bugs, especially if the
+    screen resolution changes. -->
+    <dimen name="bnpl_progress_bar_margin_top">94dp</dimen>
+    <dimen name="bnpl_progress_bar_margin_bottom">104dp</dimen>
     <dimen name="bnpl_back_button_margin_end">16dp</dimen>
     <dimen name="bnpl_issuer_linked_status_pill_padding_horizontal">8dp</dimen>
     <dimen name="bnpl_issuer_linked_status_pill_padding_vertical">2dp</dimen>
