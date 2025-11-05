@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/media/media_notification_provider.h"
 #include "ash/system/media/unified_media_controls_detailed_view.h"
@@ -57,8 +58,8 @@ UnifiedMediaControlsDetailedViewController::CreateView() {
       AshColorProvider::Get()->GetColor(cros_tokens::kIconColorSecondary);
   theme.separator_color =
       AshColorProvider::Get()->GetColor(cros_tokens::kSeparatorColor);
-  theme.background_color = AshColorProvider::Get()->GetControlsLayerColor(
-      AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive);
+  theme.background_color = AshColorProvider::Get()->GetColor(
+      kColorAshControlBackgroundColorInactive);
   MediaNotificationProvider::Get()->SetColorTheme(theme);
 
   base::UmaHistogramBoolean(

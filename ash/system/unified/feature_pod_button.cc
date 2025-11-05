@@ -8,7 +8,6 @@
 
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/ash_color_provider.h"
 #include "ash/style/color_util.h"
 #include "ash/style/style_util.h"
 #include "ash/system/tray/tray_constants.h"
@@ -28,9 +27,6 @@
 #include "ui/views/view_class_properties.h"
 
 namespace ash {
-
-using ControlsLayerType = AshColorProvider::ControlsLayerType;
-
 namespace {
 
 void ConfigureFeaturePodLabel(views::Label* label,

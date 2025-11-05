@@ -78,8 +78,8 @@ gfx::ImageSkia CreateNotificationItemIcon(
 
 SkColor CalculateIconBackgroundColor(
     const message_center::Notification* notification) {
-  SkColor default_color = AshColorProvider::Get()->GetControlsLayerColor(
-      AshColorProvider::ControlsLayerType::kControlBackgroundColorActive);
+  SkColor default_color = GetColorProviderForNativeTheme()->GetColor(
+      kColorAshControlBackgroundColorActive);
 
   if (!notification) {
     return default_color;

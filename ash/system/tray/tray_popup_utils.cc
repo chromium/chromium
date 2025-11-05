@@ -236,8 +236,7 @@ views::ImageView* TrayPopupUtils::CreateMainImageView(bool use_wide_layout) {
 
 std::unique_ptr<views::Painter> TrayPopupUtils::CreateFocusPainter() {
   return views::Painter::CreateSolidFocusPainter(
-      AshColorProvider::Get()->GetControlsLayerColor(
-          AshColorProvider::ControlsLayerType::kFocusRingColor),
+      AshColorProvider::Get()->GetColor(ui::kColorAshFocusRing),
       kFocusBorderThickness, gfx::InsetsF());
 }
 

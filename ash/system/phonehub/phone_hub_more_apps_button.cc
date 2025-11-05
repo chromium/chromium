@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/phonehub/phone_hub_app_count_icon.h"
 #include "ash/system/phonehub/phone_hub_app_icon.h"
@@ -43,8 +44,8 @@ class MoreAppsButtonBackground : public views::Background {
     cc::PaintFlags flags;
     flags.setStyle(cc::PaintFlags::kFill_Style);
     flags.setAntiAlias(true);
-    flags.setColor(AshColorProvider::Get()->GetControlsLayerColor(
-        AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive));
+    flags.setColor(view->GetColorProvider()->GetColor(
+        kColorAshControlBackgroundColorInactive));
     canvas->DrawCircle(view->GetContentsBounds().CenterPoint(),
                        kMoreAppsButtonBackgroundRadius, flags);
   }

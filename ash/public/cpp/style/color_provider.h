@@ -22,21 +22,10 @@ class ASH_PUBLIC_EXPORT ColorProvider {
   // improves performance.
   static constexpr float kBackgroundBlurQuality = 0.33f;
 
-  // Types of Controls layer.
-  enum class ControlsLayerType {
-    kControlBackgroundColorActive,
-    kControlBackgroundColorInactive,
-    kFocusRingColor,
-  };
-
   static ColorProvider* Get();
 
   // Gets the color by resolving the `color_id`.
   virtual SkColor GetColor(ui::ColorId color_id) const = 0;
-
-  // Gets the color of |type| of the corresponding layer based on the current
-  // color mode.
-  virtual SkColor GetControlsLayerColor(ControlsLayerType type) const = 0;
 
   // Gets the ink drop base color and opacity. Since the inkdrop ripple and
   // highlight have the same opacity, we are keeping only one opacity here. The

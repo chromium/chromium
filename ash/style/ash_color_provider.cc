@@ -50,21 +50,6 @@ SkColor AshColorProvider::GetColor(ui::ColorId color_id) const {
   return color_provider->GetColor(color_id);
 }
 
-SkColor AshColorProvider::GetControlsLayerColor(ControlsLayerType type) const {
-  // TODO(crbug.com/1292244): Delete this function after all callers migrate.
-  auto* color_provider = GetColorProvider();
-  DCHECK(color_provider);
-
-  switch (type) {
-    case ControlsLayerType::kControlBackgroundColorActive:
-      return color_provider->GetColor(kColorAshControlBackgroundColorActive);
-    case ControlsLayerType::kControlBackgroundColorInactive:
-      return color_provider->GetColor(kColorAshControlBackgroundColorInactive);
-    case ControlsLayerType::kFocusRingColor:
-      return color_provider->GetColor(ui::kColorAshFocusRing);
-  }
-}
-
 std::pair<SkColor, float> AshColorProvider::GetInkDropBaseColorAndOpacity(
     SkColor background_color) const {
   if (background_color == gfx::kPlaceholderColor)
