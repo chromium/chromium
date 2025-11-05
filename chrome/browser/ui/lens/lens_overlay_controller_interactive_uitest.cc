@@ -11,6 +11,8 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/run_until.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
@@ -1156,7 +1158,7 @@ class LensOverlayControllerStraightToSrpTest
              lens::features::kLensOverlayEduActionChip,
              {{"url-allow-filters", "[\"*\"]"},
               {"url-path-match-allow-filters", "[\"select\"]"}})},
-        {});
+        {lens::features::kLensOverlayOptimizationFilter});
   }
 };
 
@@ -1228,7 +1230,7 @@ class LensOverlayControllerStraightToSrpCustomQueryTest
              lens::features::kLensOverlayEduActionChip,
              {{"url-allow-filters", "[\"*\"]"},
               {"url-path-match-allow-filters", "[\"select\"]"}})},
-        {});
+        {lens::features::kLensOverlayOptimizationFilter});
   }
 };
 
@@ -1290,12 +1292,23 @@ class LensOverlayControllerEduActionChipTest
   void SetUpFeatureList() override {
     feature_list_.InitWithFeaturesAndParameters(
         {base::test::FeatureRefAndParams(
-            lens::features::kLensOverlayEduActionChip,
-            {{"url-allow-filters", "[\"*\"]"},
-             {"url-path-match-allow-filters", "[\"select\"]"},
-             {"max-shown-count", "5"}})},
+             lens::features::kLensOverlayEduActionChip,
+             {{"max-shown-count", "5"}}),
+         base::test::FeatureRefAndParams(
+             lens::features::kLensOverlayOptimizationFilter, {})},
         {lens::features::kLensOverlayStraightToSrp,
          lens::features::kLensSearchZeroStateCsb});
+  }
+
+  void SetupOptimizationFilter() {
+    auto* optimization_guide_decider =
+        OptimizationGuideKeyedServiceFactory::GetForProfile(
+            browser()->profile());
+    // Simulate the URL being allowed by both the allowlist and the blocklist.
+    optimization_guide_decider->AddHintWithMultipleOptimizationsForTesting(
+        GURL(embedded_test_server()->GetURL(kDocumentWithNamedElement)),
+        {optimization_guide::proto::LENS_OVERLAY_EDU_ACTION_CHIP_ALLOWLIST,
+         optimization_guide::proto::LENS_OVERLAY_EDU_ACTION_CHIP_BLOCKLIST});
   }
 };
 
@@ -1307,6 +1320,7 @@ class LensOverlayControllerEduActionChipTest
 //  (5) The chip should reshow.
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerEduActionChipTest,
                        HomeworkActionChipHidesWhenOverlayOpen) {
+  SetupOptimizationFilter();
   WaitForTemplateURLServiceToLoad();
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayId);
 
