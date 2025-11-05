@@ -7,10 +7,11 @@ import 'chrome://settings/settings.js';
 import {AiEnterpriseFeaturePrefName, AutofillManagerImpl, PaymentsManagerImpl} from 'chrome://settings/lazy_load.js';
 import {CrSettingsPrefs, ModelExecutionEnterprisePolicyValue} from 'chrome://settings/settings.js';
 import type {SettingsPrefsElement, SettingsYourSavedInfoPageElement} from 'chrome://settings/settings.js';
-import {loadTimeData, OpenWindowProxyImpl, PasswordManagerImpl, PasswordManagerPage, resetRouterForTesting, Router, routes} from 'chrome://settings/settings.js';
+import {loadTimeData, OpenWindowProxyImpl, PasswordManagerImpl, PasswordManagerPage, resetRouterForTesting, Router} from 'chrome://settings/settings.js';
 import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
+import {isChildVisible} from 'chrome://webui-test/test_util.js';
 
 import {createAddressEntry, createCreditCardEntry, createIbanEntry, createPayOverTimeIssuerEntry, TestAutofillManager, TestPaymentsManager} from './autofill_fake_data.js';
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
@@ -47,9 +48,11 @@ suite('YourSavedInfoPage', function() {
     PaymentsManagerImpl.setInstance(paymentsManager);
 
     await setupPage({
+      enableYourSavedInfoSettingsPage: true,
       showIbansSettings: true,
       shouldShowPayOverTimeSettings: true,
-      enableYourSavedInfoSettingsPage: true,
+      enableLoyaltyCardsFilling: true,
+      showAutofillAiControl: true,
     });
   });
 
@@ -63,15 +66,6 @@ suite('YourSavedInfoPage', function() {
     yourSavedInfoPage.prefs = settingsPrefs.prefs!;
     document.body.appendChild(yourSavedInfoPage);
     await flushTasks();
-  }
-
-  function getChipLabels(cardSelector: string): string[] {
-    const card =
-        yourSavedInfoPage.shadowRoot!.querySelector<HTMLElement>(cardSelector);
-    assertTrue(!!card);
-    const chips: HTMLElement[] =
-        Array.from(card.shadowRoot!.querySelectorAll('cr-chip'));
-    return chips.map(chip => chip.querySelector('span')!.textContent);
   }
 
   function getChipCount(chipLabel: string): number|undefined {
@@ -189,9 +183,55 @@ suite('YourSavedInfoPage', function() {
         getChipCount(
             loadTimeData.getString('autofillPayOverTimeSettingsLabel')));
   });
+});
 
-  test('PaymentsChipsVisibility', async function() {
-    // Default: All chips enabled
+suite('DataChipsVisibility', function() {
+  let settingsPrefs: SettingsPrefsElement;
+
+  suiteSetup(function() {
+    settingsPrefs = document.createElement('settings-prefs');
+    return CrSettingsPrefs.initialized;
+  });
+
+  async function setupPage(overrides: {[key: string]: boolean}):
+      Promise<SettingsYourSavedInfoPageElement> {
+    loadTimeData.overrideValues(overrides);
+    resetRouterForTesting();
+
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    const yourSavedInfoPage: SettingsYourSavedInfoPageElement =
+        document.createElement('settings-your-saved-info-page');
+    setDefaultPrefs(settingsPrefs);
+    yourSavedInfoPage.prefs = settingsPrefs.prefs!;
+    document.body.appendChild(yourSavedInfoPage);
+    await flushTasks();
+    return yourSavedInfoPage;
+  }
+
+  teardown(function() {
+    CrSettingsPrefs.resetForTesting();
+  });
+
+  function getChipLabels(
+      yourSavedInfoPage: SettingsYourSavedInfoPageElement,
+      cardSelector: string): string[] {
+    const card =
+        yourSavedInfoPage.shadowRoot!.querySelector<HTMLElement>(cardSelector);
+    assertTrue(!!card);
+    const chips: HTMLElement[] =
+        Array.from(card.shadowRoot!.querySelectorAll('cr-chip'));
+    return chips.map(chip => chip.querySelector('span')!.textContent);
+  }
+
+  test('AllChipsVisible', async function() {
+    const yourSavedInfoPage = await setupPage({
+      enableYourSavedInfoSettingsPage: true,
+      showIbansSettings: true,
+      shouldShowPayOverTimeSettings: true,
+      enableLoyaltyCardsFilling: true,
+      showAutofillAiControl: true,
+    });
+
     assertDeepEquals(
         [
           loadTimeData.getString('creditAndDebitCardTitle'),
@@ -199,12 +239,17 @@ suite('YourSavedInfoPage', function() {
           loadTimeData.getString('autofillPayOverTimeSettingsLabel'),
           loadTimeData.getString('loyaltyCardsTitle'),
         ],
-        getChipLabels('#paymentManagerButton'));
+        getChipLabels(yourSavedInfoPage, '#paymentManagerButton'));
 
-    // Disable IBANs
-    await setupPage({
+    assertTrue(isChildVisible(yourSavedInfoPage, '#identityManagerButton'));
+    assertTrue(isChildVisible(yourSavedInfoPage, '#travelManagerButton'));
+  });
+
+  test('DisabledIbans', async function() {
+    const yourSavedInfoPage = await setupPage({
       showIbansSettings: false,
       shouldShowPayOverTimeSettings: true,
+      enableLoyaltyCardsFilling: true,
     });
     assertDeepEquals(
         [
@@ -212,12 +257,37 @@ suite('YourSavedInfoPage', function() {
           loadTimeData.getString('autofillPayOverTimeSettingsLabel'),
           loadTimeData.getString('loyaltyCardsTitle'),
         ],
-        getChipLabels('#paymentManagerButton'));
+        getChipLabels(yourSavedInfoPage, '#paymentManagerButton'));
+  });
 
+  test('DisabledIbansButAlreadyExisting', async function() {
+    const autofillManager = new TestAutofillManager();
+    AutofillManagerImpl.setInstance(autofillManager);
+    const yourSavedInfoPage = await setupPage({
+      showIbansSettings: false,
+      shouldShowPayOverTimeSettings: true,
+      enableLoyaltyCardsFilling: true,
+    });
+    autofillManager.lastCallback.setPersonalDataManagerListener!
+        ([], [], [createIbanEntry()], []);
+    await flushTasks();
+
+    assertDeepEquals(
+        [
+          loadTimeData.getString('creditAndDebitCardTitle'),
+          loadTimeData.getString('ibanTitle'),
+          loadTimeData.getString('autofillPayOverTimeSettingsLabel'),
+          loadTimeData.getString('loyaltyCardsTitle'),
+        ],
+        getChipLabels(yourSavedInfoPage, '#paymentManagerButton'));
+  });
+
+  test('DisabledPayOverTime', async function() {
     // Disable Pay over time
-    await setupPage({
+    const yourSavedInfoPage = await setupPage({
       showIbansSettings: true,
       shouldShowPayOverTimeSettings: false,
+      enableLoyaltyCardsFilling: true,
     });
     assertDeepEquals(
         [
@@ -225,19 +295,22 @@ suite('YourSavedInfoPage', function() {
           loadTimeData.getString('ibanTitle'),
           loadTimeData.getString('loyaltyCardsTitle'),
         ],
-        getChipLabels('#paymentManagerButton'));
+        getChipLabels(yourSavedInfoPage, '#paymentManagerButton'));
+  });
 
-    // Disable IBANs, Pay over time
-    await setupPage({
-      showIbansSettings: false,
-      shouldShowPayOverTimeSettings: false,
+  test('DisabledAutofillAi', async function() {
+    const yourSavedInfoPage = await setupPage({
+      showAutofillAiControl: false,
     });
-    assertDeepEquals(
-        [
-          loadTimeData.getString('creditAndDebitCardTitle'),
-          loadTimeData.getString('loyaltyCardsTitle'),
-        ],
-        getChipLabels('#paymentManagerButton'));
+    const identityCard =
+        yourSavedInfoPage.shadowRoot!.querySelector<HTMLElement>(
+            '#identityManagerButton');
+    assertTrue(!!identityCard);
+    assertTrue(identityCard.hidden);
+    const travelCard = yourSavedInfoPage.shadowRoot!.querySelector<HTMLElement>(
+        '#travelManagerButton');
+    assertTrue(!!travelCard);
+    assertTrue(travelCard.hidden);
   });
 });
 
@@ -253,7 +326,7 @@ suite('RelatedServices', function() {
   });
 
   setup(function() {
-    Router.resetInstanceForTesting(new Router(routes));
+    resetRouterForTesting();
 
     openWindowProxy = new TestOpenWindowProxy();
     OpenWindowProxyImpl.setInstance(openWindowProxy);
@@ -268,6 +341,10 @@ suite('RelatedServices', function() {
     setDefaultPrefs(settingsPrefs);
     yourSavedInfoPage.prefs = settingsPrefs.prefs!;
     document.body.appendChild(yourSavedInfoPage);
+  });
+
+  teardown(function() {
+    CrSettingsPrefs.resetForTesting();
   });
 
   async function testRowOpensUrl(selector: string, urlStringId: string) {

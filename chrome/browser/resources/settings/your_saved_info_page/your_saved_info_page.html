@@ -64,12 +64,14 @@
   <category-reference-card id="identityManagerButton"
       card-title="$i18n{identityDocsCardTitle}"
       chips="[[getVisibleChips_(hierarchy_.identityDocs)]]"
-      on-click="onIdentityManagerClick_">
+      on-click="onIdentityManagerClick_"
+      hidden$="[[!hasVisibleChips_(hierarchy_.identityDocs)]]">
   </category-reference-card>
   <category-reference-card id="travelManagerButton"
       card-title="$i18n{travelCardTitle}"
       chips="[[getVisibleChips_(hierarchy_.travel)]]"
-      on-click="onTravelManagerClick_">
+      on-click="onTravelManagerClick_"
+      hidden$="[[!hasVisibleChips_(hierarchy_.travel)]]">
   </category-reference-card>
 </div>
 

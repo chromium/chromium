@@ -35,6 +35,14 @@ import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
 import {SavedInfoHandlerImpl} from './saved_info_handler_proxy.js';
 import {getTemplate} from './your_saved_info_page.html.js';
 
+type AddressEntry = chrome.autofillPrivate.AddressEntry;
+type CreditCardEntry = chrome.autofillPrivate.CreditCardEntry;
+type IbanEntry = chrome.autofillPrivate.IbanEntry;
+type PayOverTimeIssuerEntry = chrome.autofillPrivate.PayOverTimeIssuerEntry;
+type AccountInfo = chrome.autofillPrivate.AccountInfo;
+type EntityType = chrome.autofillPrivate.EntityType;
+type EntityInstanceWithLabels = chrome.autofillPrivate.EntityInstanceWithLabels;
+
 /**
  * A complete set of data chips, organized into categories, with presentation
  * order in the UI.
@@ -58,8 +66,8 @@ export interface DataChip {
   // A value of 0 indicates a loaded count of no items,
   // while `undefined` indicates a "not yet loaded" state.
   count?: number;
-  // An `undefined` availability indicates it has not yet been determined
-  isAvailable?: boolean;
+  // A function determining whether the chip is available or not
+  computeAvailability: () => boolean;
 }
 
 /**
@@ -109,6 +117,7 @@ export class SettingsYourSavedInfoPageElement extends
 
   private dataTypeToChip_: Map<DataType, DataChip> = new Map();
   private dataTypeToCategory_: Map<DataType, string> = new Map();
+  private availableAutofillAiTypes_: Set<EntityTypeName> = new Set();
 
   private paymentsManager_: PaymentsManagerProxy =
       PaymentsManagerImpl.getInstance();
@@ -133,13 +142,13 @@ export class SettingsYourSavedInfoPageElement extends
           type: DataType.PASSWORD,
           label: this.i18n('passwordsLabel'),
           icon: 'cr20:password',
-          isAvailable: true,
+          computeAvailability: () => true,
         },
         {
           type: DataType.PASSKEY,
           label: this.i18n('passkeysLabel'),
           icon: 'settings20:passkey',
-          isAvailable: true,
+          computeAvailability: () => true,
         },
       ],
       payments: [
@@ -147,25 +156,27 @@ export class SettingsYourSavedInfoPageElement extends
           type: DataType.CREDIT_CARD,
           label: this.i18n('creditAndDebitCardTitle'),
           icon: 'settings20:credit-card',
-          isAvailable: true,
+          computeAvailability: () => true,
         },
         {
           type: DataType.IBAN,
           label: this.i18n('ibanTitle'),
           icon: 'settings20:iban',
-          isAvailable: loadTimeData.getBoolean('showIbansSettings'),
+          computeAvailability: () =>
+              loadTimeData.getBoolean('showIbansSettings'),
         },
         {
           type: DataType.PAY_OVER_TIME_ISSUER,
           label: this.i18n('autofillPayOverTimeSettingsLabel'),
           icon: 'settings20:hourglass',
-          isAvailable: loadTimeData.getBoolean('shouldShowPayOverTimeSettings'),
+          computeAvailability: () =>
+              loadTimeData.getBoolean('shouldShowPayOverTimeSettings'),
         },
         {
           type: DataType.LOYALTY_CARD,
           label: this.i18n('loyaltyCardsTitle'),
           icon: 'settings20:loyalty-programs',
-          isAvailable: true,
+          computeAvailability: () => true,
         },
       ],
       contactInfo: [
@@ -173,7 +184,7 @@ export class SettingsYourSavedInfoPageElement extends
           type: DataType.ADDRESS,
           label: this.i18n('addresses'),
           icon: 'settings:email',
-          isAvailable: true,
+          computeAvailability: () => true,
         },
       ],
       identityDocs: [
@@ -181,19 +192,22 @@ export class SettingsYourSavedInfoPageElement extends
           type: DataType.DRIVERS_LICENSE,
           label: this.i18n('yourSavedInfoDriverLicenseChip'),
           icon: 'settings20:id-card',
-          isAvailable: true,
+          computeAvailability: () => this.availableAutofillAiTypes_.has(
+              EntityTypeName.kDriversLicense),
         },
         {
           type: DataType.NATIONAL_ID_CARD,
           label: this.i18n('yourSavedInfoNationalIdsChip'),
           icon: 'settings20:id-card',
-          isAvailable: true,
+          computeAvailability: () => this.availableAutofillAiTypes_.has(
+              EntityTypeName.kNationalIdCard),
         },
         {
           type: DataType.PASSPORT,
           label: this.i18n('yourSavedInfoPassportChip'),
           icon: 'settings20:passport',
-          isAvailable: true,
+          computeAvailability: () =>
+              this.availableAutofillAiTypes_.has(EntityTypeName.kPassport),
         },
       ],
       travel: [
@@ -201,19 +215,23 @@ export class SettingsYourSavedInfoPageElement extends
           type: DataType.FLIGHT_RESERVATION,
           label: this.i18n('yourSavedInfoFlightReservationsChip'),
           icon: 'settings20:travel',
-          isAvailable: true,
+          computeAvailability: () => this.availableAutofillAiTypes_.has(
+              EntityTypeName.kFlightReservation),
         },
         {
           type: DataType.TRAVEL_INFO,
           label: this.i18n('yourSavedInfoTravelInfoChip'),
           icon: 'privacy20:person-check',
-          isAvailable: true,
+          computeAvailability: () => this.availableAutofillAiTypes_.has(
+                                         EntityTypeName.kKnownTravelerNumber) ||
+              this.availableAutofillAiTypes_.has(EntityTypeName.kRedressNumber),
         },
         {
           type: DataType.VEHICLE,
           label: this.i18n('yourSavedInfoVehiclesChip'),
           icon: 'settings20:directions-car',
-          isAvailable: true,
+          computeAvailability: () =>
+              this.availableAutofillAiTypes_.has(EntityTypeName.kVehicle),
         },
       ],
     };
@@ -238,23 +256,20 @@ export class SettingsYourSavedInfoPageElement extends
       setPasswordCount);
 
     // Addresses: Request initial data.
-    const setAddressesListener =
-        (addresses: chrome.autofillPrivate.AddressEntry[]) => {
-          this.setChipCount_(DataType.ADDRESS, addresses.length);
-        };
+    const setAddressesListener = (addresses: AddressEntry[]) => {
+      this.setChipCount_(DataType.ADDRESS, addresses.length);
+    };
     this.autofillManager_.getAddressList().then(setAddressesListener);
 
     // Payments: Request initial data.
-    const setCreditCardsListener =
-        (creditCards: chrome.autofillPrivate.CreditCardEntry[]) => {
-          this.setChipCount_(DataType.CREDIT_CARD, creditCards.length);
-        };
-    const setIbansListener = (ibans: chrome.autofillPrivate.IbanEntry[]) => {
+    const setCreditCardsListener = (creditCards: CreditCardEntry[]) => {
+      this.setChipCount_(DataType.CREDIT_CARD, creditCards.length);
+    };
+    const setIbansListener = (ibans: IbanEntry[]) => {
       this.setChipCount_(DataType.IBAN, ibans.length);
     };
     const setPayOverTimeListener =
-        (payOverTimeIssuers:
-             chrome.autofillPrivate.PayOverTimeIssuerEntry[]) => {
+        (payOverTimeIssuers: PayOverTimeIssuerEntry[]) => {
           this.setChipCount_(
               DataType.PAY_OVER_TIME_ISSUER, payOverTimeIssuers.length);
         };
@@ -265,11 +280,9 @@ export class SettingsYourSavedInfoPageElement extends
 
     // Addresses and Payments: Listen for changes.
     const setPersonalDataListener: PersonalDataChangedListener =
-        (addresses: chrome.autofillPrivate.AddressEntry[],
-         creditCards: chrome.autofillPrivate.CreditCardEntry[],
-         ibans: chrome.autofillPrivate.IbanEntry[],
-         payOverTimeIssuers: chrome.autofillPrivate.PayOverTimeIssuerEntry[],
-         _accountInfo?: chrome.autofillPrivate.AccountInfo) => {
+        (addresses: AddressEntry[], creditCards: CreditCardEntry[],
+         ibans: IbanEntry[], payOverTimeIssuers: PayOverTimeIssuerEntry[],
+         _accountInfo?: AccountInfo) => {
           this.setChipCount_(DataType.ADDRESS, addresses.length);
           this.setChipCount_(DataType.CREDIT_CARD, creditCards.length);
           this.setChipCount_(DataType.IBAN, ibans.length);
@@ -288,6 +301,17 @@ export class SettingsYourSavedInfoPageElement extends
     this.autofillAiEntityManager_.loadEntityInstances().then(
         this.onAutofillAiEntitiesChangedListener_);
 
+    if (loadTimeData.getBoolean('showAutofillAiControl')) {
+      this.autofillAiEntityManager_.getWritableEntityTypes().then(
+          (entityTypes: EntityType[]) => {
+            for (const entityType of entityTypes) {
+              this.availableAutofillAiTypes_.add(entityType.typeName);
+            }
+            this.notifyPath('hierarchy_.identityDocs');
+            this.notifyPath('hierarchy_.travel');
+          });
+    }
+
     // Wallet: Loyalty cards count.
     const setLoyaltyCardsCount = (loyaltyCardsCount?: number) => {
       this.setChipCount_(DataType.LOYALTY_CARD, loyaltyCardsCount);
@@ -297,8 +321,7 @@ export class SettingsYourSavedInfoPageElement extends
         setLoyaltyCardsCount);
   }
 
-  private onAutofillAiEntitiesChanged(
-      entities: chrome.autofillPrivate.EntityInstanceWithLabels[]) {
+  private onAutofillAiEntitiesChanged(entities: EntityInstanceWithLabels[]) {
     const entityCounts = new Map<EntityTypeName, number>();
     for (const entity of entities) {
       const newCount = (entityCounts.get(entity.type.typeName) || 0) + 1;
@@ -396,7 +419,12 @@ export class SettingsYourSavedInfoPageElement extends
   }
 
   private getVisibleChips_(chips: DataChip[]): DataChip[] {
-    return chips.filter(chip => chip.isAvailable).map(chip => ({...chip}));
+    return chips.filter(chip => chip.computeAvailability() || !!chip.count)
+        .map(chip => ({...chip}));
+  }
+
+  private hasVisibleChips_(chips: DataChip[]): boolean {
+    return chips.some(chip => chip.computeAvailability() || !!chip.count);
   }
 
   /**
