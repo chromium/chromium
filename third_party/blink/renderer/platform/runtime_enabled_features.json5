@@ -779,7 +779,7 @@
     // https://chromestatus.com/feature/5176753681203200
     {
       name: "BorderRadiusCorrectionCoverageFactor",
-      status: "stable",
+      status: "test",
     },
     // crbug.com/1147998: Mouse and Pointer boundary event dispatch (i.e. dispatch
     // of enter, leave, over, out events) tracks DOM node removal to fix event
