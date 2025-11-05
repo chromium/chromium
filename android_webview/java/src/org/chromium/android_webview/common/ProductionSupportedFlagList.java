@@ -798,10 +798,6 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(NetFeatures.NET_TASK_SCHEDULER),
         Flag.baseFeature(NetFeatures.NET_TASK_SCHEDULER2),
         Flag.baseFeature("BrowserThreadPoolAdjustment"),
-        Flag.baseFeature(
-                AwFeatures.WEBVIEW_DISABLE_CHIPS,
-                "Disables partitioned cookies in WebView by default. Will require an additional"
-                        + " restart of WebView to take effect."),
         Flag.baseFeature(ContentFeatures.BTM, "Enables the Bounce Tracking Mitigations feature."),
         Flag.baseFeature(
                 "LevelDBProtoAsyncWrite",

@@ -86,9 +86,6 @@ public class WebViewCachedFlags {
                             // Add new CachedFlags here along with their default state.
                             Map.ofEntries(
                                     Map.entry(
-                                            AwFeatures.WEBVIEW_DISABLE_CHIPS,
-                                            DefaultState.DISABLED),
-                                    Map.entry(
                                             AwFeatures.WEBVIEW_MOVE_WORK_TO_PROVIDER_INIT,
                                             DefaultState.DISABLED),
                                     Map.entry(
@@ -245,11 +242,9 @@ public class WebViewCachedFlags {
             didMigration = true;
         }
         if (prefs.contains("defaultWebViewPartitionedCookiesState")) {
-            // If this pref is present, we want to default to not using CHIPS so enable the
-            // WEBVIEW_DISABLE_CHIPS flag.
+            // This flag has been cleaned up now so we don't need to add it to enabled set. Just
+            // remove the pref.
             editor.remove("defaultWebViewPartitionedCookiesState");
-            mOverrideDisabled.remove(AwFeatures.WEBVIEW_DISABLE_CHIPS);
-            mOverrideEnabled.add(AwFeatures.WEBVIEW_DISABLE_CHIPS);
             didMigration = true;
         }
         if (prefs.contains("webViewUseStartupTasksLogic")) {

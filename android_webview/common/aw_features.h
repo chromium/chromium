@@ -22,7 +22,6 @@ BASE_DECLARE_FEATURE(kWebViewBackForwardCache);
 BASE_DECLARE_FEATURE(kWebViewBypassHttpCacheForPrefetchFromHeader);
 BASE_DECLARE_FEATURE(kWebViewConfigurableLibraryPrefetch);
 BASE_DECLARE_FEATURE(kWebViewDigitalAssetLinksLoadIncludes);
-BASE_DECLARE_FEATURE(kWebViewDisableCHIPS);
 BASE_DECLARE_FEATURE(kWebViewDrainPrefetchQueueDuringInit);
 BASE_DECLARE_FEATURE(kWebViewFileSystemAccess);
 BASE_DECLARE_FEATURE(kWebViewIgnoreDuplicateNavs);

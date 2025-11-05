@@ -38,10 +38,6 @@ BASE_FEATURE(kWebViewConfigurableLibraryPrefetch,
 BASE_FEATURE(kWebViewDigitalAssetLinksLoadIncludes,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Disables partitioned cookies by default on WebView. This can still be
-// overridden by our `setPartitionedCookiesEnabled` Android X API.
-BASE_FEATURE(kWebViewDisableCHIPS, base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables draining the WebView prefetch queue (for prefetches triggered from
 // background thread) during WebView instance initialization and before
 // WebView#loadUrl().

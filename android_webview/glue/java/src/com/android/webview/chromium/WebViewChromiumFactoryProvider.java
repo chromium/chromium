@@ -640,18 +640,12 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
 
             boolean partitionedCookies =
                     androidXConfig.getPartitionedCookiesEnabled() == null
-                            ? !WebViewCachedFlags.get()
-                                    .isCachedFeatureEnabled(AwFeatures.WEBVIEW_DISABLE_CHIPS)
+                            ? true
                             : androidXConfig.getPartitionedCookiesEnabled();
-            // We use this to report the state of our partitioned override experiment if set.
-            // Applying this after the override of the Android X API has potentially been set
-            // otherwise our metrics could be misleading.
+
             AwBrowserMainParts.setPartitionedCookiesDefaultState(partitionedCookies);
             if (!partitionedCookies) {
                 AwCookieManager.disablePartitionedCookiesGlobal();
-                Log.d(TAG, "CHIPS Disabled");
-            } else {
-                Log.d(TAG, "CHIPS Enabled");
             }
 
             // Now safe to use WebView data directory.
