@@ -15,41 +15,41 @@
 
   /* Light mode not on AIM results */
   :host(:not([is-on-aim-results]):not([dark-mode])) {
-    --ntp-composebox-background-color: #f3f5f6;
-    --color-new-tab-page-composebox-cancel-button: #0a0a0a;
-    --color-new-tab-page-composebox-font: #0a0a0a;
-    --color-new-tab-page-composebox-hover: #e9ebf0;
-    --color-new-tab-page-composebox-lens-button: #0a0a0a;
+    --cr-composebox-background-color: #f3f5f6;
+    --color-composebox-cancel-button: #0a0a0a;
+    --color-composebox-font: #0a0a0a;
+    --color-composebox-hover: #e9ebf0;
+    --color-composebox-lens-button: #0a0a0a;
     --search-background-color: white;
   }
 
   /* Light mode on AIM results */
   :host([is-on-aim-results]:not([dark-mode])) {
-    --ntp-composebox-background-color: #f3f5f6;
-    --color-new-tab-page-composebox-cancel-button: #0a0a0a;
-    --color-new-tab-page-composebox-font: #0a0a0a;
-    --color-new-tab-page-composebox-hover: #e9ebf0;
-    --color-new-tab-page-composebox-lens-button: #0a0a0a;
+    --cr-composebox-background-color: #f3f5f6;
+    --color-composebox-cancel-button: #0a0a0a;
+    --color-composebox-font: #0a0a0a;
+    --color-composebox-hover: #e9ebf0;
+    --color-composebox-lens-button: #0a0a0a;
     --search-background-color: white;
   }
 
   /* Dark mode not on AIM results */
   :host(:not([is-on-aim-results])[dark-mode]) {
-    --ntp-composebox-background-color: #28292a;
-    --color-new-tab-page-composebox-cancel-button: #bfbfbf;
-    --color-new-tab-page-composebox-hover: #3e3f43;
-    --color-new-tab-page-composebox-font: #e6e8f0;
-    --color-new-tab-page-composebox-lens-button: #bfbfbf;
+    --cr-composebox-background-color: #28292a;
+    --color-composebox-cancel-button: #bfbfbf;
+    --color-composebox-hover: #3e3f43;
+    --color-composebox-font: #e6e8f0;
+    --color-composebox-lens-button: #bfbfbf;
     --search-background-color: #1f1f1f;
   }
 
   /* Dark mode on AIM results */
   :host([is-on-aim-results][dark-mode]) {
-    --ntp-composebox-background-color: #1d1e26;
-    --color-new-tab-page-composebox-font: #e6e8f0;
-    --color-new-tab-page-composebox-hover: #3e3f43;
-    --color-new-tab-page-composebox-cancel-button: #bfbfbf;
-    --color-new-tab-page-composebox-lens-button: #bfbfbf;
+    --cr-composebox-background-color: #1d1e26;
+    --color-composebox-font: #e6e8f0;
+    --color-composebox-hover: #3e3f43;
+    --color-composebox-cancel-button: #bfbfbf;
+    --color-composebox-lens-button: #bfbfbf;
     --search-background-color: #101218;
   }
 
@@ -58,7 +58,7 @@
       * from All tab to AIM results and not the reverse. */
     transition-duration: 0.5s;
     transition-timing-function: ease-in-out;
-    transition-property: --search-background-color, --ntp-composebox-background-color;
+    transition-property: --search-background-color, --cr-composebox-background-color;
   }
 
   .results-pane {
@@ -251,7 +251,7 @@
 
   /* Composebox default colors are for light mode on AIM results. */
   #composeboxContainer {
-    --color-new-tab-page-composebox-scrim-background: var(--search-background-color);
+    --color-composebox-scrim-background: var(--search-background-color);
     display: none;
     inset-block-end: 0;
     min-height: var(--composebox-collapsed-height);
@@ -265,7 +265,7 @@
     background: linear-gradient(
       180deg,
       transparent 1%,
-      var(--color-new-tab-page-composebox-scrim-background) 52px
+      var(--color-composebox-scrim-background) 52px
     );
     inset: calc(var(--aim-header-height) * -1) 0 0;
     pointer-events: none;
@@ -361,7 +361,7 @@
   }
 
   #composebox::part(input) {
-    color: var(--color-new-tab-page-composebox-font);
+    color: var(--color-composebox-font);
     padding-inline-start: var(--text-input-left-spacing);
   }
 
@@ -375,17 +375,18 @@
 
   #composebox::part(action-icon) {
     --cr-icon-button-size: 48px;
-    --cr-icon-button-hover-background-color: var(--color-new-tab-page-composebox-hover);
+    --cr-icon-button-hover-background-color: var(--color-composebox-hover);
   }
+
 
   #composebox::part(cancel-icon) {
     --cr-icon-button-icon-size: 24px;
-    --cr-icon-button-fill-color: var(--color-new-tab-page-composebox-cancel-button);
+    --cr-icon-button-fill-color: var(--color-composebox-cancel-button);
   }
 
   :host([show-lens-button]) #composebox::part(lens-icon) {
     --cr-icon-button-icon-size: 24px;
-    --cr-icon-button-fill-color: var(--color-new-tab-page-composebox-lens-button);
+    --cr-icon-button-fill-color: var(--color-composebox-lens-button);
     display: block;
   }
 

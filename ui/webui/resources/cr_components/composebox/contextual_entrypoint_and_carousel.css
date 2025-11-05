@@ -53,11 +53,11 @@
   --cr-icon-button-hover-background-color:
       var(--color-searchbox-results-background-hovered);
   --cr-icon-button-size: 48px;
-  color: var(--color-new-tab-page-composebox-upload-button);
+  color: var(--color-composebox-upload-button);
 }
 
 :host([inputs-disabled_]) .upload-icon {
-  color: var(--color-new-tab-page-composebox-upload-button-disabled);
+  color: var(--color-composebox-upload-button-disabled);
 }
 
 #imageUploadButton {
@@ -67,7 +67,7 @@
 .carousel-divider {
   border-radius: 100px;
   border-top: 1px solid
-    var(--color-new-tab-page-composebox-file-carousel-divider);
+    var(--color-composebox-file-carousel-divider);
   margin-inline-end: 16px;
   margin-inline-start: var(--text-input-inline-start-spacing);
   margin-top: 20px;
@@ -77,9 +77,9 @@
 #deepSearchButton {
   align-items: center;
   background-color:
-    var(--color-new-tab-page-composebox-context-entrypoint-hover-background);
+    var(--color-composebox-context-entrypoint-hover-background);
   border: none;
-  color: var(--color-new-tab-page-composebox-upload-button);
+  color: var(--color-composebox-upload-button);
   display: flex;
   font-size: 13px;
   gap: 2px;

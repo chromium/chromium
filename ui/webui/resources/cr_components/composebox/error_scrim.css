@@ -9,9 +9,9 @@
 
 #errorScrim {
   align-items: center;
-  background-color: var(--color-new-tab-page-composebox-error-scrim-background);
+  background-color: var(--color-composebox-error-scrim-background);
   border-radius: inherit;
-  color: var(--color-new-tab-page-composebox-error-scrim-foreground);
+  color: var(--color-composebox-error-scrim-foreground);
   display: flex;
   flex-direction: column;
   font-size: 13px;
@@ -39,13 +39,13 @@
 
 #dismissErrorButton {
   --cr-button-background-color:
-      var(--color-new-tab-page-composebox-error-scrim-button-background);
+      var(--color-composebox-error-scrim-button-background);
   --cr-button-border-color:
-      var(--color-new-tab-page-composebox-error-scrim-foreground);
+      var(--color-composebox-error-scrim-foreground);
   --cr-button-text-color:
-      var(--color-new-tab-page-composebox-error-scrim-button-text);
+      var(--color-composebox-error-scrim-button-text);
   --cr-icon-button-hover-background-color:
-      var(--color-new-tab-page-composebox-error-scrim-button-background-hover);
+      var(--color-composebox-error-scrim-button-background-hover);
   border: none;
   font-size: 13px;
   gap: 4px;

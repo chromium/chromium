@@ -21,10 +21,10 @@
 
 #entrypoint {
   --cr-button-disabled-text-color:
-      var(--color-new-tab-page-composebox-context-entrypoint-text-disabled);
-  --cr-button-text-color: var(--color-new-tab-page-composebox-file-chip-text);
+      var(--color-composebox-context-entrypoint-text-disabled);
+  --cr-button-text-color: var(--color-composebox-file-chip-text);
   --cr-hover-background-color:
-      var(--color-new-tab-page-composebox-context-entrypoint-hover-background);
+      var(--color-composebox-context-entrypoint-hover-background);
   --cr-icon-button-margin-start: 6px;
   border: initial;
 }
@@ -40,13 +40,13 @@
 
 #menu {
   --color-sys-divider:
-  var(--color-new-tab-page-composebox-file-carousel-divider);
+  var(--color-composebox-file-carousel-divider);
   --cr-action-menu-overflow: visible;
-  --cr-menu-background-color: var(--color-new-tab-page-composebox-background);
+  --cr-menu-background-color: var(--color-composebox-background);
   --cr-menu-border-radius: 16px;
-  --cr-primary-text-color: var(--color-new-tab-page-composebox-file-chip-text);
+  --cr-primary-text-color: var(--color-composebox-file-chip-text);
   --cr-hover-background-color:
-      var(--color-new-tab-page-composebox-context-entrypoint-hover-background);
+      var(--color-composebox-context-entrypoint-hover-background);
 }
 
 .suggestion-container {
@@ -108,7 +108,7 @@
 }
 
 .dropdown-item[disabled] {
-  color: var(--color-new-tab-page-composebox-context-entrypoint-text-disabled);
+  color: var(--color-composebox-context-entrypoint-text-disabled);
   cursor: default;
 }
 

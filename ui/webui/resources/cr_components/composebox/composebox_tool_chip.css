@@ -10,9 +10,9 @@
 #toolEnabledButton {
   align-items: center;
   background-color:
-    var(--color-new-tab-page-composebox-context-entrypoint-hover-background);
+    var(--color-composebox-context-entrypoint-hover-background);
   border: none;
-  color: var(--color-new-tab-page-composebox-upload-button);
+  color: var(--color-composebox-upload-button);
   display: flex;
   font-size: 13px;
   gap: 2px;
