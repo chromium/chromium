@@ -420,7 +420,6 @@ void NavigateEvent::ReactDone(ScriptState* script_state,
 
   if (intercept_state_ == InterceptState::kIntercepted) {
     CHECK(!did_fulfill);
-    controller_->abort(script_state, value);
     window->GetFrame()->Client()->DidFailAsyncSameDocumentCommit();
   }
 
@@ -435,7 +434,7 @@ void NavigateEvent::ReactDone(ScriptState* script_state,
   if (did_fulfill) {
     window->navigation()->DidFinishOngoingNavigation();
   } else {
-    window->navigation()->DidFailOngoingNavigation(value);
+    Abort(script_state, value);
   }
 
   if (HasNavigationActions()) {
@@ -450,18 +449,20 @@ void NavigateEvent::ReactDone(ScriptState* script_state,
   }
 }
 
-void NavigateEvent::Abort(ScriptState* script_state,
-                          ScriptValue error,
-                          CancelNavigationReason reason) {
+void NavigateEvent::Abort(ScriptState* script_state, ScriptValue error) {
   if (IsBeingDispatched()) {
     preventDefault();
   }
+
+  NavigationApi* navigation = DomWindow()->navigation();
   CHECK(controller_);
   controller_->abort(script_state, error);
+  navigation->ongoing_navigate_event_ = nullptr;
   delayed_load_start_task_handle_.Cancel();
   if (!defaultPrevented() && intercept_state_ == InterceptState::kIntercepted) {
     DomWindow()->GetFrame()->Client()->DidFailAsyncSameDocumentCommit();
   }
+  navigation->DidAbort(error);
 }
 
 void NavigateEvent::DelayedLoadStartTimerFired() {
