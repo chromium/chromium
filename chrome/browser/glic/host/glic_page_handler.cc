@@ -672,7 +672,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
             base::BindRepeating(&GlicWebClientHandler::OnFocusedTabDataChanged,
                                 base::Unretained(this)));
 
-    if (!base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+    if (!GlicEnabling::IsMultiInstanceEnabledByFlags()) {
       focused_browser_changed_subscription_ =
           sharing_manager().AddFocusedBrowserChangedCallback(
               base::BindRepeating(
