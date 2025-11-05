@@ -269,7 +269,7 @@ export class SearchboxElement extends SearchboxElementBase {
         reflect: true,
       },
 
-      realboxLayoutMode: {
+      searchboxLayoutMode: {
         type: String,
         reflect: true,
       },
@@ -400,7 +400,7 @@ export class SearchboxElement extends SearchboxElementBase {
       loadTimeData.getBoolean('searchboxCr23Theming');
   accessor searchboxSteadyStateShadow: boolean =
       loadTimeData.getBoolean('searchboxCr23SteadyStateShadow');
-  accessor realboxLayoutMode: string = '';
+  accessor searchboxLayoutMode: string = '';
   accessor ntpRealboxNextEnabled: boolean = false;
   accessor cyclingPlaceholders: boolean = false;
   accessor composeboxEnabled: boolean = false;

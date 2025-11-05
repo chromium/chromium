@@ -15,7 +15,7 @@ export function getHtml(this: ComposeboxElement) {
   <div class="gradient"></div>
   <div class="background"></div>
   <ntp-error-scrim id="errorScrim"
-    ?compact-mode="${this.realboxLayoutMode === 'Compact' &&
+    ?compact-mode="${this.searchboxLayoutMode === 'Compact' &&
                      this.contextFilesSize_ === 0}"
     @error-scrim-visibility-changed="${this.onErrorScrimVisibilityChanged_}">
   </ntp-error-scrim>
@@ -69,7 +69,7 @@ export function getHtml(this: ComposeboxElement) {
           @get-tab-preview="${this.getTabPreview_}"
           ?show-dropdown="${this.showDropdown_}"
           ?show-context-menu-description="${this.showContextMenuDescription_}"
-          realbox-layout-mode="${this.realboxLayoutMode}"
+          searchbox-layout-mode="${this.searchboxLayoutMode}"
           ?carousel-on-top_="${this.carouselOnTop_}"
           ?show-voice-search="${this.shouldShowVoiceSearch_()}"
           .parentFocused="${true}">

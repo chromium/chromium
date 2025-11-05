@@ -51,7 +51,7 @@ import {nothing} from '//resources/lit/v3_0/lit.rollup.js';
         ?can-show-secondary-side="${this.realboxCanShowSecondarySide}"
         ?compose-button-enabled="${this.composeButtonEnabled}"
         ?composebox-enabled="${this.composeboxEnabled}"
-        realbox-layout-mode="${this.realboxLayoutMode_}"
+        searchbox-layout-mode="${this.realboxLayoutMode_}"
         ?ntp-realbox-next-enabled="${this.ntpRealboxNextEnabled_}"
         ?cycling-placeholders="${this.searchboxCyclingPlaceholders_}"
         @searchbox-input-focus-changed="${this.onInputFocusChanged_}">
@@ -63,7 +63,7 @@ import {nothing} from '//resources/lit/v3_0/lit.rollup.js';
           @close-composebox="${this.closeComposebox_}"
           @composebox-input-focus-changed="${this.onInputFocusChanged_}"
           @open-voice-search="${this.onOpenVoiceSearch_}"
-          realbox-layout-mode="${this.realboxLayoutMode_}">
+          searchbox-layout-mode="${this.realboxLayoutMode_}">
       </cr-composebox>
     ` : ''}
     ${this.showLensUploadDialog_ ? html`

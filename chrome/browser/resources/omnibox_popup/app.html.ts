@@ -28,7 +28,7 @@ ${this.searchboxLayoutMode_ ? html`
       exportparts="composebox-entrypoint, context-menu-entrypoint-icon"
       entrypoint-name="Omnibox"
       ?show-dropdown="${this.result_?.matches.length ?? 0}"
-      realbox-layout-mode="${this.searchboxLayoutMode_}"
+      searchbox-layout-mode="${this.searchboxLayoutMode_}"
       @click="${this.onContextualEntryPointClicked_}">
     ${searchboxDropdown}
   </contextual-entrypoint-and-carousel>

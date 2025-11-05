@@ -58,7 +58,7 @@
   --color-searchbox-search-icon-background: var(--color-omnibox-results-icon);
 }
 
-contextual-entrypoint-and-carousel[realbox-layout-mode="TallBottomContext"] {
+contextual-entrypoint-and-carousel[searchbox-layout-mode="TallBottomContext"] {
   --contextual-entrypoint-and-carousel-context-menu-container-margin-bottom: 9px;
 }
 

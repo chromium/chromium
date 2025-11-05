@@ -472,7 +472,7 @@ suite('NewTabPageRealboxTest', () => {
     realbox = await createAndAppendRealbox({
       composeButtonEnabled: true,
       composeboxEnabled: true,
-      realboxLayoutMode: 'TallBottomContext',
+      searchboxLayoutMode: 'TallBottomContext',
       ntpRealboxNextEnabled: true,
     });
     const contextElement =
@@ -498,7 +498,7 @@ suite('NewTabPageRealboxTest', () => {
       composeboxShowDeepSearchButton: true,
     });
     realbox = await createAndAppendRealbox(
-        {ntpRealboxNextEnabled: true, realboxLayoutMode: 'Compact'});
+        {ntpRealboxNextEnabled: true, searchboxLayoutMode: 'Compact'});
     const contextElement =
         realbox.shadowRoot.querySelector('contextual-entrypoint-and-carousel');
     assertTrue(!!contextElement);
@@ -536,7 +536,7 @@ suite('NewTabPageRealboxTest', () => {
       composeboxShowCreateImageButton: true,
     });
     realbox = await createAndAppendRealbox(
-        {ntpRealboxNextEnabled: true, realboxLayoutMode: 'Compact'});
+        {ntpRealboxNextEnabled: true, searchboxLayoutMode: 'Compact'});
     const contextElement =
         realbox.shadowRoot.querySelector('contextual-entrypoint-and-carousel');
     assertTrue(!!contextElement);

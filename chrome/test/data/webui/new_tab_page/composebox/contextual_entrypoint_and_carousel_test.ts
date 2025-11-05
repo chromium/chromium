@@ -16,7 +16,7 @@ suite('NewTabPageContextualEntrypointAndCarouselTest', () => {
   });
 
   test('voice search click emits event', async () => {
-    element.realboxLayoutMode = 'TallTopContext';
+    element.searchboxLayoutMode = 'TallTopContext';
     element.showDropdown = true;
     element.showVoiceSearch = true;
     await microtasksFinished();
