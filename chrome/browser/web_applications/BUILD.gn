@@ -510,6 +510,7 @@ source_set("web_applications") {
     "//chrome/browser/apps/app_service:constants",
     "//chrome/browser/browsing_data:constants",
     "//chrome/browser/content_settings:content_settings_factory",
+    "//chrome/browser/custom_handlers",
     "//chrome/browser/favicon",
     "//chrome/browser/metrics",
     "//chrome/browser/profiles:profile",

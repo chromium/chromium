@@ -19,6 +19,7 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/shimless_rma/diagnostics_app_profile_helper.h"
 #include "chrome/browser/ash/shimless_rma/diagnostics_app_profile_helper_constants.h"
+#include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
 #include "chrome/browser/extensions/extension_garbage_collector_factory.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
@@ -33,6 +34,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
+#include "components/custom_handlers/simple_protocol_handler_registry_factory.h"
 #include "components/variations/scoped_variations_ids_provider.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/isolated_web_apps/types/iwa_version.h"
@@ -227,6 +229,10 @@ class ChromeShimlessRmaDelegatePrepareDiagnosticsAppProfileTest
         profile->GetPath().AppendASCII(extensions::kInstallDirectoryName);
     auto unpacked_install_dir = profile->GetPath().AppendASCII(
         extensions::kUnpackedInstallDirectoryName);
+
+    ProtocolHandlerRegistryFactory::GetInstance()->SetTestingFactory(
+        profile, custom_handlers::SimpleProtocolHandlerRegistryFactory::
+                     GetDefaultFactory());
 
     extensions::TestExtensionSystem* system =
         static_cast<extensions::TestExtensionSystem*>(

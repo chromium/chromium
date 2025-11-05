@@ -19,6 +19,7 @@
 #include "base/test/test_simple_task_runner.h"
 #include "build/build_config.h"
 #include "chrome/browser/background/startup_launch_manager.h"
+#include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
@@ -31,6 +32,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/custom_handlers/simple_protocol_handler_registry_factory.h"
 #include "components/keep_alive_registry/keep_alive_registry.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
@@ -223,6 +225,11 @@ class BackgroundModeManagerTest : public testing::Test {
         "p1", nullptr, u"p1", 0, TestingProfile::TestingFactories(),
         /*is_supervised_profile=*/false, std::nullopt,
         std::move(policy_service));
+    // Use SimpleProtocolHandlerRegistryFactory to prevent OS integration during
+    // the protocol registration process.
+    ProtocolHandlerRegistryFactory::GetInstance()->SetTestingFactory(
+        profile_, custom_handlers::SimpleProtocolHandlerRegistryFactory::
+                      GetDefaultFactory());
     startup_launch_manager_ = std::make_unique<TestStartupLaunchManager>();
     StartupLaunchManager::SetInstanceForTesting(startup_launch_manager_.get());
   }
@@ -256,6 +263,11 @@ class BackgroundModeManagerWithExtensionsTest : public testing::Test {
         std::make_unique<base::CommandLine>(base::CommandLine::NO_PROGRAM);
     profile_manager_ = CreateTestingProfileManager();
     profile_ = profile_manager_->CreateTestingProfile("p1");
+    // Use SimpleProtocolHandlerRegistryFactory to prevent OS integration during
+    // the protocol registration process.
+    ProtocolHandlerRegistryFactory::GetInstance()->SetTestingFactory(
+        profile_, custom_handlers::SimpleProtocolHandlerRegistryFactory::
+                      GetDefaultFactory());
 
     test_keep_alive_ = std::make_unique<ScopedKeepAlive>(
         KeepAliveOrigin::BACKGROUND_MODE_MANAGER,
@@ -787,6 +799,9 @@ TEST_F(BackgroundModeManagerWithExtensionsTest,
   Mock::VerifyAndClearExpectations(launch_manager);
 
   TestingProfile* profile2 = profile_manager_->CreateTestingProfile("p2");
+  ProtocolHandlerRegistryFactory::GetInstance()->SetTestingFactory(
+      profile2, custom_handlers::SimpleProtocolHandlerRegistryFactory::
+                    GetDefaultFactory());
   manager_->RegisterProfile(profile2);
 
   static_cast<extensions::TestExtensionSystem*>(

@@ -13,12 +13,14 @@
 #include "base/run_loop.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/scoped_test_mv2_enabler.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/custom_handlers/simple_protocol_handler_registry_factory.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/test_renderer_host.h"
@@ -124,6 +126,11 @@ class UpdateInstallGateTest : public testing::Test {
     fake_user_manager_->LoginUser(account_id);
 #endif
     profile_ = profile_manager_->CreateTestingProfile(kUserProfile);
+    // Use SimpleProtocolHandlerRegistryFactory to prevent OS integration during
+    // the protocol registration process.
+    ProtocolHandlerRegistryFactory::GetInstance()->SetTestingFactory(
+        profile_, custom_handlers::SimpleProtocolHandlerRegistryFactory::
+                      GetDefaultFactory());
     render_process_host_ =
         std::make_unique<content::MockRenderProcessHost>(profile_);
     base::RunLoop().RunUntilIdle();

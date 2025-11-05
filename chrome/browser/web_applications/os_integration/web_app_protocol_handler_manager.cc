@@ -5,6 +5,7 @@
 #include "chrome/browser/web_applications/os_integration/web_app_protocol_handler_manager.h"
 
 #include "base/containers/contains.h"
+#include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/os_integration/web_app_protocol_handler_registration.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"

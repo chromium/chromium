@@ -31,6 +31,7 @@ specific_include_rules = {
     "+chrome/browser/ash/arc",
     "+chrome/browser/ash/login/test",
     "+chrome/browser/ash/login/users",
+    "+chrome/browser/custom_handlers/protocol_handler_registry_factory.h",
     "+chrome/browser/extensions/extension_service.h",
     "+chrome/browser/extensions/extension_service_test_with_install.h",
     "+chrome/browser/extensions/scoped_test_mv2_enabler.h",

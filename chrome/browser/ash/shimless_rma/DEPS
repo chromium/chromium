@@ -40,3 +40,9 @@ include_rules = [
   # Dependencies outside of //chrome:
   "+components/web_package",
 ]
+
+specific_include_rules = {
+  "chrome_shimless_rma_delegate_unittest.*": [
+    "+chrome/browser/custom_handlers/protocol_handler_registry_factory.h",
+  ]
+}
