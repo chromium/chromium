@@ -123,6 +123,7 @@ class VersionUpdaterMac : public VersionUpdater {
   void CheckForUpdate(StatusCallback status_callback,
                       PromoteCallback promote_callback) override {
     EnsureUpdater(
+        base::TaskPriority::USER_VISIBLE,
         base::BindOnce(
             [](PromoteCallback prompt) {
               prompt.Run(PromotionState::PROMOTE_ENABLED);

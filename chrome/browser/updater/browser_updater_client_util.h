@@ -10,6 +10,10 @@
 #include "base/functional/callback_forward.h"
 #include "chrome/updater/updater_scope.h"
 
+namespace base {
+enum class TaskPriority : uint8_t;
+}
+
 extern const char kUpdaterName[];
 extern const char kPrivilegedHelperName[];
 
@@ -27,7 +31,9 @@ updater::UpdaterScope GetBrowserUpdaterScope();
 // called on a sequenced task runner. In cases where user intervention is
 // necessary, calls `prompt` (on the same sequence).  After the updater is made
 // present (or cannot be made present), calls `complete` on the same sequence.
-void EnsureUpdater(base::OnceClosure prompt, base::OnceClosure complete);
+void EnsureUpdater(base::TaskPriority priority,
+                   base::OnceClosure prompt,
+                   base::OnceClosure complete);
 
 // Prompts the user for credentials and sets up a system-level updater.
 void SetupSystemUpdater();
