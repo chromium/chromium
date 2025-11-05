@@ -105,7 +105,8 @@ void ReleaseArCoreCubemap(ArImageCubemap* cube_map) {
     ArImage_release(image);
   }
 
-  UNSAFE_TODO(memset(cube_map, 0, sizeof(*cube_map)));
+  // |cube_map| is an array of pointers, meaning this is safe.
+  std::ranges::fill(base::as_writable_byte_span(*cube_map), 0);
 }
 
 // Helper, copies ARCore image to the passed in buffer, assuming that the caller
