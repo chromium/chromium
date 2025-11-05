@@ -14,7 +14,7 @@
 #include "chrome/common/chrome_features.h"
 #include "components/dbus/thread_linux/dbus_thread_linux.h"
 #include "components/dbus/utils/check_for_service_and_start.h"
-#include "dbus/message.h"
+#include "components/dbus/utils/connect_to_signal.h"
 #include "dbus/object_path.h"
 #include "dbus/object_proxy.h"
 
@@ -97,8 +97,8 @@ void DbusMemoryPressureEvaluatorLinux::CheckIfLmmIsAvailableResponse(
 
     object_proxy_ =
         system_bus_->GetObjectProxy(kLmmService, dbus::ObjectPath(kLmmObject));
-    object_proxy_->ConnectToSignal(
-        kLmmInterface, kLowMemoryWarningSignal,
+    dbus_utils::ConnectToSignal(
+        object_proxy_, kLmmInterface, kLowMemoryWarningSignal,
         base::BindRepeating(
             &DbusMemoryPressureEvaluatorLinux::OnLowMemoryWarning,
             weak_ptr_factory_.GetWeakPtr()),
@@ -136,8 +136,9 @@ void DbusMemoryPressureEvaluatorLinux::CheckIfPortalIsAvailableResponse(
 
     object_proxy_ = session_bus_->GetObjectProxy(
         kXdgPortalService, dbus::ObjectPath(kXdgPortalObject));
-    object_proxy_->ConnectToSignal(
-        kXdgPortalMemoryMonitorInterface, kLowMemoryWarningSignal,
+    dbus_utils::ConnectToSignal(
+        object_proxy_, kXdgPortalMemoryMonitorInterface,
+        kLowMemoryWarningSignal,
         base::BindRepeating(
             &DbusMemoryPressureEvaluatorLinux::OnLowMemoryWarning,
             weak_ptr_factory_.GetWeakPtr()),
@@ -165,15 +166,14 @@ void DbusMemoryPressureEvaluatorLinux::OnSignalConnected(
 }
 
 void DbusMemoryPressureEvaluatorLinux::OnLowMemoryWarning(
-    dbus::Signal* signal) {
+    dbus_utils::ConnectToSignalResultSig<"y"> result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  dbus::MessageReader reader(signal);
-  uint8_t lmm_level;
-  if (!reader.PopByte(&lmm_level)) {
+  if (!result.has_value()) {
     LOG(WARNING) << "Failed to parse low memory level";
     return;
   }
+  auto [lmm_level] = *result;
 
   // static_cast is needed as lmm_level is a uint8_t, which is often an alias to
   // char, meaning that sending it to the output stream would just print the

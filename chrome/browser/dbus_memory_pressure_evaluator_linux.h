@@ -17,12 +17,9 @@
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "components/dbus/utils/connect_to_signal.h"
 #include "components/memory_pressure/system_memory_pressure_evaluator.h"
 #include "dbus/bus.h"
-
-namespace dbus {
-class Signal;
-}  // namespace dbus
 
 namespace memory_pressure {
 class MemoryPressureVoter;
@@ -90,7 +87,7 @@ class DbusMemoryPressureEvaluatorLinux
                          const std::string& signal,
                          bool connected);
 
-  void OnLowMemoryWarning(dbus::Signal* signal);
+  void OnLowMemoryWarning(dbus_utils::ConnectToSignalResultSig<"y"> result);
 
   // Converts a pressure level from LMM to base's memory pressure constants.
   base::MemoryPressureLevel LmmToBasePressureLevel(uint8_t lmm_level);

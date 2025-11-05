@@ -26,6 +26,7 @@
 #include "components/dbus/properties/dbus_properties.h"
 #include "components/dbus/properties/success_barrier_callback.h"
 #include "components/dbus/thread_linux/dbus_thread_linux.h"
+#include "components/dbus/utils/call_method.h"
 #include "components/dbus/utils/signature.h"
 #include "components/dbus/utils/variant.h"
 #include "content/public/browser/browser_thread.h"
@@ -33,7 +34,6 @@
 #include "dbus/exported_object.h"
 #include "dbus/message.h"
 #include "dbus/object_path.h"
-#include "dbus/object_proxy.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkStream.h"
@@ -307,20 +307,17 @@ void StatusIconLinuxDbus::CheckStatusNotifierWatcherHasOwner() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   dbus::ObjectProxy* bus_proxy =
       bus_->GetObjectProxy(DBUS_SERVICE_DBUS, dbus::ObjectPath(DBUS_PATH_DBUS));
-  dbus::MethodCall method_call(DBUS_INTERFACE_DBUS, kMethodNameHasOwner);
-  dbus::MessageWriter writer(&method_call);
-  writer.AppendString(kServiceStatusNotifierWatcher);
-  bus_proxy->CallMethod(
-      &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+  dbus_utils::CallMethod<"s", "b">(
+      bus_proxy, DBUS_INTERFACE_DBUS, kMethodNameHasOwner,
       base::BindOnce(&StatusIconLinuxDbus::OnNameHasOwnerResponse,
-                     weak_factory_.GetWeakPtr()));
+                     weak_factory_.GetWeakPtr()),
+      kServiceStatusNotifierWatcher);
 }
 
-void StatusIconLinuxDbus::OnNameHasOwnerResponse(dbus::Response* response) {
+void StatusIconLinuxDbus::OnNameHasOwnerResponse(
+    dbus_utils::CallMethodResultSig<"b"> response) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  dbus::MessageReader reader(response);
-  bool owned = false;
-  if (!response || !reader.PopBool(&owned) || !owned) {
+  if (!response.has_value() || !std::get<0>(*response)) {
     delegate_->OnImplInitializationFailed();
     return;
   }
@@ -328,26 +325,23 @@ void StatusIconLinuxDbus::OnNameHasOwnerResponse(dbus::Response* response) {
   watcher_ = bus_->GetObjectProxy(kServiceStatusNotifierWatcher,
                                   dbus::ObjectPath(kPathStatusNotifierWatcher));
 
-  dbus::MethodCall method_call(DBUS_INTERFACE_PROPERTIES, kMethodGet);
-  dbus::MessageWriter writer(&method_call);
-  writer.AppendString(kInterfaceStatusNotifierWatcher);
-  writer.AppendString(kPropertyIsStatusNotifierHostRegistered);
-  watcher_->CallMethod(
-      &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+  dbus_utils::CallMethod<"ss", "v">(
+      watcher_, DBUS_INTERFACE_PROPERTIES, kMethodGet,
       base::BindOnce(&StatusIconLinuxDbus::OnHostRegisteredResponse,
-                     weak_factory_.GetWeakPtr()));
+                     weak_factory_.GetWeakPtr()),
+      kInterfaceStatusNotifierWatcher, kPropertyIsStatusNotifierHostRegistered);
 }
 
-void StatusIconLinuxDbus::OnHostRegisteredResponse(dbus::Response* response) {
+void StatusIconLinuxDbus::OnHostRegisteredResponse(
+    dbus_utils::CallMethodResultSig<"v"> response) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (!response) {
+  if (!response.has_value()) {
     delegate_->OnImplInitializationFailed();
     return;
   }
 
-  dbus::MessageReader reader(response);
-  bool registered = false;
-  if (!reader.PopVariantOfBool(&registered) || !registered) {
+  auto registered = std::move(std::get<0>(*response)).Take<bool>();
+  if (!registered.value_or(false)) {
     delegate_->OnImplInitializationFailed();
     return;
   }
@@ -444,18 +438,18 @@ void StatusIconLinuxDbus::OnInitialized(bool success) {
 }
 
 void StatusIconLinuxDbus::RegisterStatusNotifierItem() {
-  dbus::MethodCall method_call(kInterfaceStatusNotifierWatcher,
-                               kMethodRegisterStatusNotifierItem);
-  dbus::MessageWriter writer(&method_call);
-  writer.AppendString(bus_->GetConnectionName());
-  watcher_->CallMethod(&method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-                       base::BindOnce(&StatusIconLinuxDbus::OnRegistered,
-                                      weak_factory_.GetWeakPtr()));
+  dbus_utils::CallMethod<"s", "">(
+      watcher_, kInterfaceStatusNotifierWatcher,
+      kMethodRegisterStatusNotifierItem,
+      base::BindOnce(&StatusIconLinuxDbus::OnRegistered,
+                     weak_factory_.GetWeakPtr()),
+      bus_->GetConnectionName());
 }
 
-void StatusIconLinuxDbus::OnRegistered(dbus::Response* response) {
+void StatusIconLinuxDbus::OnRegistered(
+    dbus_utils::CallMethodResultSig<""> response) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (!response) {
+  if (!response.has_value()) {
     delegate_->OnImplInitializationFailed();
   }
 }

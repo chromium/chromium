@@ -12,8 +12,8 @@
 #include "base/notreached.h"
 #include "chrome/browser/ui/views/frame/dbus_appmenu.h"
 #include "components/dbus/thread_linux/dbus_thread_linux.h"
+#include "components/dbus/utils/call_method.h"
 #include "dbus/bus.h"
-#include "dbus/message.h"
 #include "dbus/object_path.h"
 #include "dbus/object_proxy.h"
 #include "ui/platform_window/extensions/wayland_extension.h"
@@ -48,13 +48,9 @@ void DbusAppmenuRegistrar::OnMenuBarDestroyed(DbusAppmenu* menu) {
             ui::GetWaylandToplevelExtension(*menu->platform_window())) {
       toplevel_extension->UnsetAppmenu();
     } else if (ui::GetX11Extension(*menu->platform_window())) {
-      dbus::MethodCall method_call(kAppMenuRegistrarInterface,
-                                   "UnregisterWindow");
-      dbus::MessageWriter writer(&method_call);
-      writer.AppendUint32(menu->browser_frame_id());
-      registrar_proxy_->CallMethod(&method_call,
-                                   dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-                                   base::DoNothing());
+      dbus_utils::CallMethod<"u", "">(
+          registrar_proxy_, kAppMenuRegistrarInterface, "UnregisterWindow",
+          base::DoNothing(), menu->browser_frame_id());
     }
   }
   menus_.erase(menu);
@@ -89,13 +85,10 @@ void DbusAppmenuRegistrar::RegisterMenu(DbusAppmenu* menu) {
           ui::GetWaylandToplevelExtension(*menu->platform_window())) {
     toplevel_extension->SetAppmenu(bus_->GetConnectionName(), menu->GetPath());
   } else if (ui::GetX11Extension(*menu->platform_window())) {
-    dbus::MethodCall method_call(kAppMenuRegistrarInterface, "RegisterWindow");
-    dbus::MessageWriter writer(&method_call);
-    writer.AppendUint32(menu->browser_frame_id());
-    writer.AppendObjectPath(dbus::ObjectPath(menu->GetPath()));
-    registrar_proxy_->CallMethod(&method_call,
-                                 dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-                                 base::DoNothing());
+    dbus_utils::CallMethod<"uo", "">(
+        registrar_proxy_, kAppMenuRegistrarInterface, "RegisterWindow",
+        base::DoNothing(), menu->browser_frame_id(),
+        dbus::ObjectPath(menu->GetPath()));
   }
 }
 

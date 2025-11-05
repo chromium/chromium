@@ -32,11 +32,11 @@
 #include "base/types/expected.h"
 #include "chrome/browser/platform_util_internal.h"
 #include "components/dbus/thread_linux/dbus_thread_linux.h"
+#include "components/dbus/utils/call_method.h"
 #include "components/dbus/utils/check_for_service_and_start.h"
 #include "components/dbus/xdg/request.h"
 #include "content/public/browser/browser_thread.h"
 #include "dbus/bus.h"
-#include "dbus/message.h"
 #include "dbus/object_proxy.h"
 #include "url/gurl.h"
 
@@ -249,26 +249,22 @@ class ShowItemHelper {
                                dbus::ObjectPath(kFreedesktopFileManagerPath));
     }
 
-    dbus::MethodCall show_items_call(kFreedesktopFileManagerName,
-                                     kMethodShowItems);
-    dbus::MessageWriter writer(&show_items_call);
-
-    writer.AppendArrayOfStrings(
-        {"file://" + full_path.value()});  // List of file(s) to highlight.
-    writer.AppendString({});               // startup-id
-
-    file_manager_object_proxy_->CallMethod(
-        &show_items_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+    std::vector<std::string> file_to_highlight{"file://" + full_path.value()};
+    dbus_utils::CallMethod<"ass", "">(
+        file_manager_object_proxy_, kFreedesktopFileManagerName,
+        kMethodShowItems,
         base::BindOnce(&ShowItemHelper::ShowItemUsingFileManagerResponse,
                        // Unretained is safe, the ShowItemHelper instance is
                        // never destroyed.
-                       base::Unretained(this), full_path));
+                       base::Unretained(this), full_path),
+        std::move(file_to_highlight), /*startup-id=*/"");
   }
 
-  void ShowItemUsingFileManagerResponse(const base::FilePath& full_path,
-                                        dbus::Response* response) {
+  void ShowItemUsingFileManagerResponse(
+      const base::FilePath& full_path,
+      dbus_utils::CallMethodResultSig<""> response) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-    if (!response) {
+    if (!response.has_value()) {
       // If the bus call fails, at least open the parent folder.
       OpenParentFolderFallback(full_path);
     }

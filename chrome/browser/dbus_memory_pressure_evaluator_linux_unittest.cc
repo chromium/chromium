@@ -66,13 +66,7 @@ class DbusMemoryPressureEvaluatorLinuxTest : public testing::Test {
   }
 
   void EmitLowMemoryWarning(uint8_t level) {
-    dbus::Signal signal(
-        kLmmInterface,
-        DbusMemoryPressureEvaluatorLinux::kLowMemoryWarningSignal);
-    dbus::MessageWriter writer(&signal);
-    writer.AppendByte(level);
-
-    evaluator_->OnLowMemoryWarning(&signal);
+    evaluator_->OnLowMemoryWarning(base::ok(std::make_tuple(level)));
   }
 
   // Any service name added via this call will be reported as running by any
