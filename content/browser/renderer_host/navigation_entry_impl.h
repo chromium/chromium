@@ -34,7 +34,6 @@
 #include "net/base/isolation_info.h"
 #include "third_party/blink/public/common/page_state/page_state.h"
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom-forward.h"
-#include "third_party/blink/public/mojom/navigation/system_entropy.mojom-forward.h"
 #include "url/origin.h"
 
 namespace blink {
@@ -229,7 +228,6 @@ class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
       int current_length_to_send,
       const blink::FramePolicy& frame_policy,
       bool ancestor_or_self_has_cspee,
-      blink::mojom::SystemEntropy system_entropy_at_navigation_start,
       std::optional<blink::scheduler::TaskAttributionId>
           soft_navigation_heuristics_task_id);
 

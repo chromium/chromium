@@ -78,7 +78,6 @@
 #include "content/browser/renderer_host/page_delegate.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
-#include "content/browser/renderer_host/system_entropy_utils.h"
 #include "content/browser/site_info.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/common/content_constants_internal.h"
@@ -4438,9 +4437,6 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
 #endif
 
   commit_params->was_activated = params.was_activated;
-  commit_params->navigation_timing->system_entropy_at_navigation_start =
-      SystemEntropyUtils::ComputeSystemEntropyForFrameTreeNode(
-          node, params.suggested_system_entropy);
 
   // extra_headers in params are \n separated; NavigationRequests want \r\n.
   std::string extra_headers_crlf;
@@ -4514,9 +4510,6 @@ NavigationControllerImpl::CreateNavigationRequestFromEntry(
   // RenderFrameHost to execute its BeforeUnload event, the navigation start
   // will be updated when the BeforeUnload ack is received.
   base::TimeTicks navigation_start = base::TimeTicks::Now();
-  const auto navigation_start_system_entropy =
-      SystemEntropyUtils::ComputeSystemEntropyForFrameTreeNode(
-          frame_tree_node, blink::mojom::SystemEntropy::kNormal);
 
   // Look for a pending commit that is to another document in this
   // FrameTreeNode. If one exists, then the last committed URL will not be the
@@ -4572,11 +4565,8 @@ NavigationControllerImpl::CreateNavigationRequestFromEntry(
           GetIndexOfEntry(entry), GetLastCommittedEntryIndex(), GetEntryCount(),
           frame_tree_node->pending_frame_policy(),
           frame_tree_node->AncestorOrSelfHasCSPEE(),
-          navigation_start_system_entropy, soft_navigation_heuristics_task_id);
+          soft_navigation_heuristics_task_id);
   commit_params->post_content_type = post_content_type;
-  commit_params->navigation_timing->system_entropy_at_navigation_start =
-      SystemEntropyUtils::ComputeSystemEntropyForFrameTreeNode(
-          frame_tree_node, blink::mojom::SystemEntropy::kNormal);
   commit_params->initial_permission_statuses =
       frame_tree_node->current_frame_host()->GetCachedPermissionStatuses();
 
@@ -5401,10 +5391,6 @@ NavigationControllerImpl::CreateNavigationRequestForErrorPage(
   blink::mojom::CommitNavigationParamsPtr commit_params =
       blink::CreateCommitNavigationParams();
   commit_params->original_url = common_params->url;
-
-  commit_params->navigation_timing->system_entropy_at_navigation_start =
-      SystemEntropyUtils::ComputeSystemEntropyForFrameTreeNode(
-          node, blink::mojom::SystemEntropy::kNormal);
 
   // TODO(arthursonzogni): Consider providing the minimal capabilities to the
   // error pages.

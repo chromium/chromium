@@ -532,7 +532,6 @@ class RenderFrameHostManagerTest
             controller.GetLastCommittedEntryIndex(), controller.GetEntryCount(),
             frame_tree_node->current_replication_state().frame_policy,
             frame_tree_node->AncestorOrSelfHasCSPEE(),
-            blink::mojom::SystemEntropy::kNormal,
             /*soft_navigation_heuristics_task_id=*/std::nullopt);
     commit_params->post_content_type = post_content_type;
 
@@ -3449,7 +3448,6 @@ TEST_P(RenderFrameHostManagerTest, NavigateFromDeadRendererToWebUI) {
           controller().GetEntryCount(),
           frame_tree_node->current_replication_state().frame_policy,
           frame_tree_node->AncestorOrSelfHasCSPEE(),
-          blink::mojom::SystemEntropy::kNormal,
           /*soft_navigation_heuristics_task_id=*/std::nullopt);
 
   std::unique_ptr<NavigationRequest> navigation_request =

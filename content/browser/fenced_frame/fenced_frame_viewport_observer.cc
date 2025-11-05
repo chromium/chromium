@@ -11,7 +11,6 @@
 #include "base/numerics/checked_math.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
-#include "content/browser/renderer_host/system_entropy_utils.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/frame_tree_node_id.h"
 #include "content/public/browser/global_routing_id.h"
