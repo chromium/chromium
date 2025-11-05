@@ -55,12 +55,7 @@ class WorkDir(contextlib.AbstractContextManager):
 
     def __enter__(self) -> 'WorkDir':
         if self.path.exists():
-            if self.force:
-                self._clean()
-            else:
-                raise FileExistsError(
-                    f'Workdir already exists at: {self.path}. Remove it '
-                    'manually or use --force to remove it.')
+            self._clean()
 
         logging.info('Creating new workdir: %s', self.path)
         start_time = time.time()

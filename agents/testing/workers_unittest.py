@@ -116,21 +116,8 @@ class WorkDirUnittest(fake_filesystem_unittest.TestCase):
             stderr=subprocess.STDOUT,
         )
 
-    def test_enter_exists_no_force(self):
-        """Tests that an error is raised if the workdir exists."""
-        self.fs.create_dir('/tmp/workdir')
-        self.mock_check_btrfs.return_value = False
-        workdir = workers.WorkDir('workdir',
-                                  pathlib.Path('/tmp/src'),
-                                  clean=False,
-                                  verbose=False,
-                                  force=False)
-        with self.assertRaises(FileExistsError):
-            with workdir:
-                pass
-
-    def test_enter_exists_force(self):
-        """Tests that the workdir is removed if it exists and force is on."""
+    def test_enter_exists(self):
+        """Tests that the workdir is removed if it exists."""
         self.fs.create_dir('/tmp/workdir')
         self.mock_check_btrfs.return_value = True
         workdir = workers.WorkDir('workdir',
