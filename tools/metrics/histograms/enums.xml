@@ -17747,6 +17747,7 @@ from previous Chrome versions.
   <int value="1214580867" label="ArcS2Idle:disabled"/>
   <int value="1214804717"
       label="ExperimentalWebMachineLearningNeuralNetwork:enabled"/>
+  <int value="1215149945" label="ImmersiveReadAnything:enabled"/>
   <int value="1215512170" label="DrawEdgeToEdge:disabled"/>
   <int value="1215531732" label="OmniboxUIExperiments:disabled"/>
   <int value="1215768255" label="AutofillCreditCardLocalCardMigration:enabled"/>
@@ -17758,6 +17759,7 @@ from previous Chrome versions.
   <int value="1216488634" label="NavigationNetworkResponseQueue:enabled"/>
   <int value="1217488313" label="PermissionsAIP92:enabled"/>
   <int value="1217907443" label="spurious-power-button-keyboard-accel"/>
+  <int value="1218064484" label="ImmersiveReadAnything:disabled"/>
   <int value="1219199527" label="InsertKeyToggleMode:enabled"/>
   <int value="1219317631" label="ContextualSuggestionsAboveArticles:disabled"/>
   <int value="1219628795" label="PrintScaling:disabled"/>

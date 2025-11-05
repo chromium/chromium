@@ -6008,6 +6008,12 @@ inline constexpr char kReadAnythingImagesViaAlgorithmDescription[] =
     "Have Reading Mode use a local rules based algorithm to include images "
     "from webpages.";
 
+inline constexpr char kReadAnythingImmersiveReadingModeName[] =
+    "Reading Mode Experimental Immersive Mode";
+inline constexpr char kReadAnythingImmersiveReadingModeDescription[] =
+    "Enables the infrastructure for Immersive Reading Mode. No visual "
+    "changes currently included.";
+
 inline constexpr char kReadAnythingReadAloudName[] = "Reading Mode Read Aloud";
 inline constexpr char kReadAnythingReadAloudDescription[] =
     "Enables the experimental Read Aloud feature in Reading Mode.";
