@@ -100,7 +100,6 @@
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/ash/system_web_apps/test_support/test_system_web_app_manager.h"
 #include "chrome/browser/ash/wallpaper_handlers/wallpaper_fetcher_delegate.h"
-#include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/media/router/media_router_feature.h"
@@ -167,7 +166,6 @@
 #include "components/account_id/account_id.h"
 #include "components/app_constants/constants.h"
 #include "components/app_icon_loader/app_icon_loader.h"
-#include "components/custom_handlers/simple_protocol_handler_registry_factory.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/prefs/pref_service.h"
@@ -559,9 +557,6 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
 
     SyncServiceFactory::GetInstance()->SetTestingFactory(
         profile(), base::BindRepeating(&BuildTestSyncService));
-    ProtocolHandlerRegistryFactory::GetInstance()->SetTestingFactory(
-        profile(), custom_handlers::SimpleProtocolHandlerRegistryFactory::
-                       GetDefaultFactory());
 
     extensions::TestExtensionSystem* extension_system(
         static_cast<extensions::TestExtensionSystem*>(
@@ -3991,10 +3986,6 @@ TEST_F(MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest,
   const AccountId account_id3(
       multi_user_util::GetAccountIdFromProfile(profile3));
   SwitchActiveUserByAccountId(account_id1);
-
-  ProtocolHandlerRegistryFactory::GetInstance()->SetTestingFactory(
-      profile1, custom_handlers::SimpleProtocolHandlerRegistryFactory::
-                    GetDefaultFactory());
 
   extensions::TestExtensionSystem* extension_system1(
       static_cast<extensions::TestExtensionSystem*>(
