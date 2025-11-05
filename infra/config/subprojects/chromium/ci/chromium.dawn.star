@@ -2126,40 +2126,13 @@ ci.thin_tester(
     ),
     targets = targets.bundle(
         targets = [
+            "dawn_chromium_isolated_scripts",
+            "gpu_common_gtests_passthrough",
             "gpu_dawn_webgpu_cts_asan",
-            "gpu_dawn_integration_asan_gtests_passthrough",
-            "gpu_dawn_asan_isolated_scripts",
         ],
         mixins = [
             "win10_nvidia_gtx_1660_stable",
         ],
-        per_test_modifications = {
-            "dawn_end2end_implicit_device_sync_tests": targets.mixin(
-                swarming = targets.swarming(
-                    shards = 2,
-                ),
-            ),
-            "dawn_end2end_no_dxc_tests": targets.mixin(
-                swarming = targets.swarming(
-                    shards = 2,
-                ),
-            ),
-            "dawn_end2end_skip_validation_tests": targets.mixin(
-                swarming = targets.swarming(
-                    shards = 2,
-                ),
-            ),
-            "dawn_end2end_tests": targets.mixin(
-                swarming = targets.swarming(
-                    shards = 2,
-                ),
-            ),
-            "dawn_end2end_wire_tests": targets.mixin(
-                swarming = targets.swarming(
-                    shards = 2,
-                ),
-            ),
-        },
     ),
     targets_settings = targets.settings(
         browser_config = targets.browser_config.RELEASE_X64,
