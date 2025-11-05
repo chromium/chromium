@@ -750,7 +750,13 @@ public class MediaDrmBridge {
         }
 
         if (mMediaDrm != null) {
-            mMediaDrm.close();
+            try {
+                mMediaDrm.close();
+            } catch (NullPointerException e) {
+                // See crbug.com/456210913 and crbug.com/438215824 for details.
+                Log.e(TAG, "Issue in closing MediaDrm", e);
+            }
+
             mMediaDrm = null;
         }
 
