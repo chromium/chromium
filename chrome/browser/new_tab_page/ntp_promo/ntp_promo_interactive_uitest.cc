@@ -42,6 +42,7 @@
 #include "components/user_education/common/user_education_metadata.h"
 #include "components/user_education/common/user_education_storage_service.h"
 #include "content/public/test/browser_test.h"
+#include "extensions/common/extension_urls.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -347,6 +348,24 @@ class NtpPromoUiTest
     });
   }
 
+  // Returns the expected UTM extension that should be supplied with the web
+  // store URL when invoking the extensions promo.
+  std::string_view ExpectedExtensionUtmSource() {
+    switch (GetParam().promo_type) {
+      case user_education::features::NtpBrowserPromoType::kSimple:
+        if (user_education::features::GetNtpBrowserPromoIndividualPromoLimit() >
+            1) {
+          return extension_urls::kNtpPromo2pUtmSource;
+        } else {
+          return extension_urls::kNtpPromo1pUtmSource;
+        }
+      case user_education::features::NtpBrowserPromoType::kSetupList:
+        return extension_urls::kNtpPromoSlUtmSource;
+      default:
+        NOTREACHED();
+    }
+  }
+
  private:
   void OnTestPromoShown() {
     BrowserElements::From(browser())->NotifyEvent(kBrowserViewElementId,
@@ -512,7 +531,10 @@ IN_PROC_BROWSER_TEST_P(NtpPromoUiTest, ExtensionsPromoAppearsAndIsClickable) {
       // Click the promo button; this should navigate the current page.
       ClickPromo(),
       // Note that the URL here may not match what users see, due to redirects.
-      WaitForState(kLocationBarTextValue, OptionalStringContains(u"webstore")),
+      WaitForState(kLocationBarTextValue,
+                   ::testing::AllOf(OptionalStringContains(u"webstore"),
+                                    OptionalStringContains(base::UTF8ToUTF16(
+                                        ExpectedExtensionUtmSource())))),
       // The NTP tab should navigate, rather than opening a new tab.
       CheckOneTabOpen());
 
