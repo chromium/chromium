@@ -179,25 +179,17 @@ EmailVerifierNetworkRequestManager::CreateTrafficAnnotation() {
 void EmailVerifierNetworkRequestManager::FetchWellKnown(
     const GURL& provider,
     FetchWellKnownCallback callback) {
-  std::optional<GURL> well_known_url =
-      ComputeWellKnownUrl(provider, kWellKnownPath);
-
-  if (!well_known_url) {
-    FetchStatus fetch_status = {ParseStatus::kHttpNotFoundError, net::HTTP_OK};
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(&OnWellKnownParsed, std::move(callback),
-                                  /*well_known_url=*/GURL(), fetch_status,
-                                  data_decoder::DataDecoder::ValueOrError()));
-    return;
-  }
+  GURL::Replacements replacements;
+  replacements.SetPathStr(kWellKnownPath);
+  GURL well_known_url = provider.ReplaceComponents(replacements);
 
   std::unique_ptr<network::ResourceRequest> resource_request =
-      CreateUncredentialedResourceRequest(*well_known_url,
+      CreateUncredentialedResourceRequest(well_known_url,
                                           /*send_origin=*/false,
                                           /*follow_redirects=*/true);
   DownloadJsonAndParse(
       std::move(resource_request), /*url_encoded_post_data=*/std::nullopt,
-      base::BindOnce(&OnWellKnownParsed, std::move(callback), *well_known_url));
+      base::BindOnce(&OnWellKnownParsed, std::move(callback), well_known_url));
 }
 
 void EmailVerifierNetworkRequestManager::SendTokenRequest(
