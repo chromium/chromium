@@ -133,7 +133,6 @@ const NSInteger kDefaultDetailTextNumberOfLines = 1;
   cell.accessibilityLabel = accessibilityLabel;
   cell.accessibilityValue = contentConfiguration.accessibilityValue;
   cell.accessibilityHint = contentConfiguration.accessibilityHint;
-  cell.selectionStyle = UITableViewCellSelectionStyleNone;
 }
 
 - (LegacyTableViewCell*)cellForTableView:(UITableView*)tableView {
