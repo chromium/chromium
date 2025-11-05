@@ -77,6 +77,10 @@ interface MostVisitedPageHandler {
   PreconnectMostVisitedTile(MostVisitedTile tile);
   // Cancel the on-going prerender if exists.
   CancelPrerender();
+  // Called to get the expanded state of most visited tiles.
+  GetMostVisitedExpandedState() => (bool is_expanded);
+  // Called to set the expanded state of most visited tiles.
+  SetMostVisitedExpandedState(bool is_expanded);
   // ======= METRICS =======
   // Logs that |tiles| were displayed / updated at |time|. The first instance of
   // this event is used as a proxy for when the NTP has finished loading.

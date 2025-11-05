@@ -20,6 +20,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/browser/ui/webui/new_tab_page/ntp_pref_names.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/browser/web_applications/preinstalled_web_app_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -28,6 +29,7 @@
 #include "components/ntp_tiles/most_visited_sites.h"
 #include "components/ntp_tiles/tile_type.h"
 #include "components/page_load_metrics/browser/navigation_handle_user_data.h"
+#include "components/prefs/pref_service.h"
 #include "components/search/ntp_features.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/tabs/public/tab_interface.h"
@@ -252,6 +254,17 @@ void MostVisitedHandler::OnMostVisitedTileNavigation(
                                  : ui::PAGE_TRANSITION_AUTO_BOOKMARK,
                              /*is_renderer_initiated=*/false),
       std::move(navigation_handle_callback));
+}
+
+void MostVisitedHandler::GetMostVisitedExpandedState(
+    GetMostVisitedExpandedStateCallback callback) {
+  std::move(callback).Run(
+      profile_->GetPrefs()->GetBoolean(ntp_prefs::kNtpShowAllMostVisitedTiles));
+}
+
+void MostVisitedHandler::SetMostVisitedExpandedState(bool is_expanded) {
+  profile_->GetPrefs()->SetBoolean(ntp_prefs::kNtpShowAllMostVisitedTiles,
+                                   is_expanded);
 }
 
 void MostVisitedHandler::PrerenderMostVisitedTile(
