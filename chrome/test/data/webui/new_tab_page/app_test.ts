@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {ActionChipsHandlerRemote} from 'chrome://new-tab-page/action_chips.mojom-webui.js';
 import type {CustomizeButtonsDocumentRemote} from 'chrome://new-tab-page/customize_buttons.mojom-webui.js';
 import {CustomizeButtonsDocumentCallbackRouter, CustomizeButtonsHandlerRemote, SidePanelOpenTrigger} from 'chrome://new-tab-page/customize_buttons.mojom-webui.js';
 import {CustomizeChromeSection} from 'chrome://new-tab-page/customize_chrome.mojom-webui.js';
+import {ActionChipsApiProxyImpl} from 'chrome://new-tab-page/lazy_load.js';
 import type {Module} from 'chrome://new-tab-page/lazy_load.js';
 import {ComposeboxProxyImpl, counterfactualLoad, ModuleDescriptor, ModuleRegistry} from 'chrome://new-tab-page/lazy_load.js';
 import {$$, BackgroundManager, BrowserCommandProxy, CUSTOMIZE_CHROME_BUTTON_ELEMENT_ID, CustomizeButtonsProxy, CustomizeDialogPage, NewTabPageProxy, NtpCustomizeChromeEntryPoint, NtpElement, SearchboxBrowserProxy, VoiceAction, WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
@@ -1936,6 +1938,12 @@ suite('NewTabPageAppTest', () => {
         ntpRealboxNextEnabled: true,
         actionChipsEnabled: true,
       });
+      const actionChipshandler = installMock(
+          ActionChipsHandlerRemote,
+          mock => ActionChipsApiProxyImpl.setInstance({getHandler: () => mock}),
+      );
+      actionChipshandler.setResultFor(
+          'getMostRecentTab', Promise.resolve({tab: null}));
     });
 
     // Testing Action Chips visibility on initial flag load values.

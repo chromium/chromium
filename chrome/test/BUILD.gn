@@ -8430,6 +8430,7 @@ test("unit_tests") {
       "//chrome/browser/ui/webui/access_code_cast:unit_tests",
       "//chrome/browser/ui/webui/app_management:unit_tests",
       "//chrome/browser/ui/webui/new_tab_footer:unit_tests",
+      "//chrome/browser/ui/webui/new_tab_page/action_chips:unit_tests",
       "//chrome/browser/ui/webui/new_tab_page/composebox",
       "//chrome/browser/ui/webui/new_tab_page/composebox/variations",
       "//chrome/browser/ui/webui/new_tab_page/composebox/variations:unit_tests",

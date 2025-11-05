@@ -1,0 +1,28 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module action_chips.mojom;
+
+import "url/mojom/url.mojom";
+import "mojo/public/mojom/base/time.mojom";
+
+// Information about a tab to be sent to the WebUI.
+struct TabInfo {
+  string title;
+  url.mojom.Url url;
+  mojo_base.mojom.Time last_active_time;
+};
+
+// Interface for the browser-side handler.
+interface ActionChipsHandler {
+  // Gets the most recently accessed tab across all browser windows
+  // for the current profile.
+  GetMostRecentTab() => (TabInfo? tab);
+};
+
+// Factory to create the ActionChipsHandler.
+interface ActionChipsHandlerFactory {
+  // The WebUI component calls this method when the page is first initialized.
+  CreateActionChipsHandler(pending_receiver<ActionChipsHandler> handler);
+};

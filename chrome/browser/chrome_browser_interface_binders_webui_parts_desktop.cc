@@ -42,6 +42,7 @@
 #include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter_service.h"
 #include "chrome/browser/ui/webui/new_tab_footer/new_tab_footer.mojom.h"
 #include "chrome/browser/ui/webui/new_tab_footer/new_tab_footer_ui.h"
+#include "chrome/browser/ui/webui/new_tab_page/action_chips/action_chips.mojom.h"
 #include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page.mojom.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
@@ -263,6 +264,11 @@ void PopulateChromeWebUIFrameBindersPartsDesktop(
       user_education::features::NtpBrowserPromoType::kNone) {
     RegisterWebUIControllerInterfaceBinder<
         ntp_promo::mojom::NtpPromoHandlerFactory, NewTabPageUI>(map);
+  }
+
+  if (base::FeatureList::IsEnabled(ntp_features::kNtpNextFeatures)) {
+    RegisterWebUIControllerInterfaceBinder<
+        action_chips::mojom::ActionChipsHandlerFactory, NewTabPageUI>(map);
   }
 
   RegisterWebUIControllerInterfaceBinder<
