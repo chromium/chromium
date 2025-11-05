@@ -40,5 +40,8 @@ specific_include_rules = {
   "plugin_vm_manager_factory\\.cc": [
     "+chrome/browser/browser_process.h",
     "+chrome/browser/global_features.h",
-  ]
+  ],
+  ".*_unittest\\.cc": [
+    "+chrome/browser/ash/browser_delegate/browser_controller_impl.h",
+  ],
 }

@@ -10,7 +10,7 @@
 #include "base/containers/contains.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ash/browser_delegate/browser_controller.h"
+#include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/browser/ui/ash/shelf/app_service/app_service_app_window_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
@@ -18,8 +18,6 @@
 #include "chrome/browser/ui/ash/shelf/shelf_spinner_controller.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -100,13 +98,14 @@ BrowserStatusMonitor::BrowserStatusMonitor(
 BrowserStatusMonitor::~BrowserStatusMonitor() {
   DCHECK(initialized_);
 
-  BrowserList::RemoveObserver(this);
+  ash::BrowserController::GetInstance()->RemoveObserver(this);
 
-  // Simulate OnBrowserRemoved() for all Browsers.
-  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
-      [&](BrowserWindowInterface* browser) {
-        OnBrowserRemoved(browser->GetBrowserForMigrationOnly());
-        return true;
+  // Simulate OnBrowserClosed() for all Browsers.
+  ash::BrowserController::GetInstance()->ForEachBrowser(
+      ash::BrowserController::BrowserOrder::kAscendingActivationTime,
+      [&](ash::BrowserDelegate& browser_delegate) {
+        OnBrowserClosed(&browser_delegate);
+        return ash::BrowserController::kContinueIteration;
       });
 }
 
@@ -114,18 +113,19 @@ void BrowserStatusMonitor::Initialize() {
   DCHECK(!initialized_);
   initialized_ = true;
 
-  // Simulate OnBrowserAdded() for all existing Browsers.
-  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
-      [&](BrowserWindowInterface* browser) {
-        OnBrowserAdded(browser->GetBrowserForMigrationOnly());
-        return true;
+  // Simulate OnBrowserCreated() for all existing Browsers.
+  ash::BrowserController::GetInstance()->ForEachBrowser(
+      ash::BrowserController::BrowserOrder::kAscendingActivationTime,
+      [&](ash::BrowserDelegate& browser_delegate) {
+        OnBrowserCreated(&browser_delegate);
+        return ash::BrowserController::kContinueIteration;
       });
 
-  // BrowserList::AddObserver() comes before BrowserTabStripTracker::Init() to
-  // ensure that OnBrowserAdded() is always invoked before
-  // OnTabStripModelChanged() is invoked to describe the initial state of the
-  // Browser.
-  BrowserList::AddObserver(this);
+  // ash::BrowserController::AddObserver() comes before
+  // BrowserTabStripTracker::Init() to ensure that OnBrowserCreated() is always
+  // invoked before OnTabStripModelChanged() is invoked to describe the initial
+  // state of the Browser.
+  ash::BrowserController::GetInstance()->AddObserver(this);
   browser_tab_strip_tracker_.Init();
 }
 
@@ -202,8 +202,12 @@ void BrowserStatusMonitor::UpdateBrowserItemState() {
   shelf_controller_->UpdateBrowserItemState();
 }
 
-void BrowserStatusMonitor::OnBrowserAdded(Browser* browser) {
+void BrowserStatusMonitor::OnBrowserCreated(
+    ash::BrowserDelegate* browser_delegate) {
   DCHECK(initialized_);
+
+  Browser* browser = &browser_delegate->GetBrowser();
+
 #if DCHECK_IS_ON()
   auto insert_result = known_browsers_.insert(browser);
   DCHECK(insert_result.second);
@@ -215,8 +219,12 @@ void BrowserStatusMonitor::OnBrowserAdded(Browser* browser) {
   }
 }
 
-void BrowserStatusMonitor::OnBrowserRemoved(Browser* browser) {
+void BrowserStatusMonitor::OnBrowserClosed(
+    ash::BrowserDelegate* browser_delegate) {
   DCHECK(initialized_);
+
+  Browser* browser = &browser_delegate->GetBrowser();
+
 #if DCHECK_IS_ON()
   size_t num_removed = known_browsers_.erase(browser);
   DCHECK_EQ(num_removed, 1U);

@@ -126,7 +126,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
@@ -728,9 +727,9 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
   }
 
   void TearDown() override {
-    browser_controller_.reset();
     app_registry_cache_observer_.Reset();
     shelf_controller_.reset();
+    browser_controller_.reset();
     wallpaper_controller_client_.reset();
     if (auto_start_arc_app_test_) {
       arc_app_test_.TearDown();

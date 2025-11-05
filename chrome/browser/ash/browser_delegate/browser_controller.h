@@ -42,6 +42,9 @@ class BrowserController {
     // arbitrary operations).
     virtual void OnLastBrowserClosed() {}
 
+    // Called when a browser is closed.
+    virtual void OnBrowserClosed(BrowserDelegate* browser) {}
+
     // Called when a browser is created.
     // Note: When invoking BrowserController::ForEachBrowser in
     // OnBrowserCreated, the new browser will show up for

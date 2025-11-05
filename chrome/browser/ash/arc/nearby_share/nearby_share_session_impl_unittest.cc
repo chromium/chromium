@@ -16,6 +16,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_test.h"
 #include "chrome/browser/ash/arc/fileapi/arc_file_system_mounter.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller_impl.h"
 #include "chrome/browser/nearby_sharing/nearby_sharing_service_factory.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/test/base/testing_profile.h"
@@ -42,6 +43,7 @@ class NearbyShareSessionImplTest : public testing::Test {
   // Create a NearbyShareSessionImpl for sharing |share_info|. The share will
   // not commence until an ARC window is visible.
   NearbyShareSessionImpl* MakeSession(mojom::ShareIntentInfoPtr share_info) {
+    browser_controller_.emplace();
     wm_helper_ = std::make_unique<exo::WMHelper>();
     shelf_model_ = std::make_unique<ash::ShelfModel>();
     shelf_controller_ =
@@ -71,6 +73,7 @@ class NearbyShareSessionImplTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
 
+  std::optional<ash::BrowserControllerImpl> browser_controller_;
   std::unique_ptr<exo::WMHelper> wm_helper_;
   std::unique_ptr<ash::ShelfModel> shelf_model_;
   std::unique_ptr<ChromeShelfController> shelf_controller_;

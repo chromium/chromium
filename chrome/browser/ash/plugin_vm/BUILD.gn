@@ -165,6 +165,7 @@ source_set("unit_tests") {
     "//ash/public/cpp",
     "//base",
     "//base/test:test_support",
+    "//chrome/browser/ash/browser_delegate:impl",
     "//chrome/browser/ash/crostini:test_support",
     "//chrome/browser/ash/guest_os",
     "//chrome/browser/ash/settings:test_support",

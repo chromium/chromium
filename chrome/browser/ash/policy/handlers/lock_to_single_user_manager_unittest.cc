@@ -15,6 +15,7 @@
 #include "chrome/browser/ash/app_list/arc/arc_app_test.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller_impl.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_manager.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_manager_factory.h"
@@ -77,6 +78,8 @@ class LockToSingleUserManagerTest : public BrowserWithTestWindowTest {
     lock_to_single_user_manager_ = std::make_unique<LockToSingleUserManager>();
     scoped_feature_list_.InitAndEnableFeature(features::kPluginVm);
 
+    browser_controller_.emplace();
+
     BrowserWithTestWindowTest::SetUp();
 
     settings_helper_.ReplaceDeviceSettingsProviderWithStub();
@@ -115,6 +118,8 @@ class LockToSingleUserManagerTest : public BrowserWithTestWindowTest {
     // ArcBridgeService, which is owned by ArcServiceManager. Thus
     // ArcServiceManager must still be alive at this line.
     BrowserWithTestWindowTest::TearDown();
+
+    browser_controller_.reset();
 
     arc_service_manager_.reset();
     ash::VmPluginDispatcherClient::Shutdown();
@@ -214,6 +219,7 @@ class LockToSingleUserManagerTest : public BrowserWithTestWindowTest {
       new ash::FakeChromeUserManager()};
   user_manager::ScopedUserManager scoped_user_manager_{
       base::WrapUnique(fake_user_manager_.get())};
+  std::optional<ash::BrowserControllerImpl> browser_controller_;
   std::unique_ptr<arc::ArcServiceManager> arc_service_manager_;
   std::unique_ptr<arc::ArcSessionManager> arc_session_manager_;
   std::unique_ptr<ash::ShelfModel> shelf_model_;

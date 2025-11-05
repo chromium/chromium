@@ -268,8 +268,11 @@ void BrowserControllerImpl::OnBrowserAdded(Browser* browser) {
 }
 
 void BrowserControllerImpl::OnBrowserRemoved(Browser* browser) {
-  if (BrowserList::GetInstance()->empty()) {
-    for (auto& observer : observers_) {
+  ash::BrowserDelegate* browser_delegate = GetDelegate(browser);
+  for (auto& observer : observers_) {
+    observer.OnBrowserClosed(browser_delegate);
+
+    if (BrowserList::GetInstance()->empty()) {
       observer.OnLastBrowserClosed();
     }
   }

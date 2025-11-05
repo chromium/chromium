@@ -11,6 +11,7 @@
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_running_on_chromeos.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller_impl.h"
 #include "chrome/browser/ash/crostini/crostini_test_helper.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
@@ -155,6 +156,8 @@ TEST_F(PluginVmFilesTest, LaunchPluginVmApp) {
       testing::StrictMock<base::MockCallback<LaunchPluginVmAppCallback>>;
   using LaunchContainerApplicationCallback = chromeos::DBusMethodCallback<
       vm_tools::cicerone::LaunchContainerApplicationResponse>;
+
+  ash::BrowserControllerImpl browser_controller;
 
   auto& plugin_vm_manager = *static_cast<MockPluginVmManager*>(
       PluginVmManagerFactory::GetInstance()->SetTestingFactoryAndUse(

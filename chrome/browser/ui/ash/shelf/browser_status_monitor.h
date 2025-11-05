@@ -14,18 +14,22 @@
 
 #include "base/check_op.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller.h"
 #include "chrome/browser/ui/ash/shelf/app_service/app_service_instance_registry_helper.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
-#include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/browser_tab_strip_tracker.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 
 class Browser;
 
+namespace ash {
+class BrowserDelegate;
+}
+
 // BrowserStatusMonitor monitors creation/deletion of Browser and its
 // TabStripModel to keep the shelf representation up to date as the
 // active tab changes.
-class BrowserStatusMonitor : public BrowserListObserver,
+class BrowserStatusMonitor : public ash::BrowserController::Observer,
                              public TabStripModelObserver {
  public:
   explicit BrowserStatusMonitor(ChromeShelfController* shelf_controller);
@@ -54,9 +58,9 @@ class BrowserStatusMonitor : public BrowserListObserver,
   // UpdateBrowserItemState().
   void UpdateBrowserItemState();
 
-  // BrowserListObserver overrides:
-  void OnBrowserAdded(Browser* browser) override;
-  void OnBrowserRemoved(Browser* browser) override;
+  // ash::BrowserController::Observer overrides:
+  void OnBrowserCreated(ash::BrowserDelegate* browser) override;
+  void OnBrowserClosed(ash::BrowserDelegate* browser) override;
 
   // TabStripModelObserver overrides:
   void OnTabStripModelChanged(
