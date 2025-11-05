@@ -1167,6 +1167,10 @@ class BrowserView : public BrowserWindow,
 
   // The view that contains the tabstrip, new tab button, and grab handle space.
   raw_ptr<TabStripRegionView> tab_strip_region_view_ = nullptr;
+  // The insertion index of the TabStripRegionView in the BrowserView view tree.
+  // This is used to correctly reparent the tabstrip when exiting fullscreen
+  // mode. See BrowserView::ReparentTopContainerForEndOfImmersive.
+  std::optional<size_t> tab_strip_region_insertion_index_ = std::nullopt;
 
   // The webui based tabstrip, when applicable. see https://crbug.com/989131.
   raw_ptr<WebUITabStripContainerView> webui_tab_strip_ = nullptr;

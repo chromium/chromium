@@ -889,6 +889,7 @@ BrowserView::BrowserView(Browser* browser)
 
   tab_strip_region_view_ =
       AddChildView(std::make_unique<TabStripRegionView>(this));
+  tab_strip_region_insertion_index_ = GetIndexOf(tab_strip_region_view_.get());
 
   if (tabs::IsVerticalTabsFeatureEnabled()) {
     auto vertical_tab_strip_container =
@@ -4077,15 +4078,22 @@ void BrowserView::ReparentTopContainerForEndOfImmersive() {
   overlay_view_tracker_.view()->SetVisible(false);
   top_container()->DestroyLayer();
 
-  if (web_app_window_title_) {
-    AddChildViewAt(web_app_window_title_.get(), 0);
-  }
+  // The TabStrip must be placed in the same position before the reparenting to
+  // maintain the correct Z-order to ensure it can receive mouse events. See
+  // crbug.com/454852658.
+  DCHECK(tab_strip_region_insertion_index_);
+  AddChildViewAt(tab_strip_region_view_.get(),
+                 tab_strip_region_insertion_index_.value());
+
+  // Reparent PWA views that were moved for immersive mode.
   if (web_app_frame_toolbar_) {
-    AddChildViewAt(web_app_frame_toolbar_.get(), 0);
+    AddChildView(web_app_frame_toolbar_.get());
+  }
+  if (web_app_window_title_) {
+    AddChildView(web_app_window_title_.get());
   }
 
-  AddChildViewAt(tab_strip_region_view_.get(), 0);
-
+  // Reparent TopContainer to its original parent.
   main_container_->AddChildViewAt(top_container(), 0);
   EnsureFocusOrder();
 }
