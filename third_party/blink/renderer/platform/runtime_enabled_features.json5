@@ -4697,10 +4697,6 @@
       status: "experimental",
     },
     {
-      name: "SignatureBasedIntegrity",
-      status: "stable",
-    },
-    {
       name: "SkipAd",
       depends_on: ["MediaSession"],
       status: "stable",

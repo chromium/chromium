@@ -1625,8 +1625,7 @@ TEST_F(SRIMessageSignatureValidationTest, MissingHeader) {
 }
 
 class SRIMessageSignatureEnforcementTest
-    : public SRIMessageSignatureValidationTest,
-      public testing::WithParamInterface<bool> {
+    : public SRIMessageSignatureValidationTest {
  protected:
   SRIMessageSignatureEnforcementTest() {}
 
@@ -1639,42 +1638,20 @@ class SRIMessageSignatureEnforcementTest
   }
 };
 
-INSTANTIATE_TEST_SUITE_P(FeatureFlag,
-                         SRIMessageSignatureEnforcementTest,
-                         testing::Values(true, false));
-
-TEST_P(SRIMessageSignatureEnforcementTest, NoHeaders) {
-  bool feature_flag_enabled = GetParam();
-
-  base::test::ScopedFeatureList scoped_feature_list_;
-  scoped_feature_list_.InitWithFeatureState(
-      features::kSRIMessageSignatureEnforcement, feature_flag_enabled);
-
+TEST_F(SRIMessageSignatureEnforcementTest, NoHeaders) {
   auto head = ResponseHead("", "", "");
   auto result = MaybeBlockResponseForSRIMessageSignature(request(), *head, {});
   EXPECT_FALSE(result.has_value());
 }
 
-TEST_P(SRIMessageSignatureEnforcementTest, ValidHeaders) {
-  bool feature_flag_enabled = GetParam();
-
-  base::test::ScopedFeatureList scoped_feature_list_;
-  scoped_feature_list_.InitWithFeatureState(
-      features::kSRIMessageSignatureEnforcement, feature_flag_enabled);
-
+TEST_F(SRIMessageSignatureEnforcementTest, ValidHeaders) {
   auto head = ResponseHead(kValidDigestHeader, kValidSignatureHeader,
                            kValidSignatureInputHeader);
   auto result = MaybeBlockResponseForSRIMessageSignature(request(), *head, {});
   EXPECT_FALSE(result.has_value());
 }
 
-TEST_P(SRIMessageSignatureEnforcementTest, ValidHeadersWithMatchingIntegrity) {
-  bool feature_flag_enabled = GetParam();
-
-  base::test::ScopedFeatureList scoped_feature_list_;
-  scoped_feature_list_.InitWithFeatureState(
-      features::kSRIMessageSignatureEnforcement, feature_flag_enabled);
-
+TEST_F(SRIMessageSignatureEnforcementTest, ValidHeadersWithMatchingIntegrity) {
   auto head = ResponseHead(kValidDigestHeader, kValidSignatureHeader,
                            kValidSignatureInputHeader);
 
@@ -1704,15 +1681,10 @@ TEST_P(SRIMessageSignatureEnforcementTest, ValidHeadersWithMatchingIntegrity) {
   }
 }
 
-TEST_P(SRIMessageSignatureEnforcementTest,
+TEST_F(SRIMessageSignatureEnforcementTest,
        ValidHeadersWithMismatchedIntegrity) {
-  bool feature_flag_enabled = GetParam();
   std::string wrong_key_str = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
   auto wrong_key = *base::Base64Decode(wrong_key_str);
-
-  base::test::ScopedFeatureList scoped_feature_list_;
-  scoped_feature_list_.InitWithFeatureState(
-      features::kSRIMessageSignatureEnforcement, feature_flag_enabled);
 
   auto head = ResponseHead(kValidDigestHeader, kValidSignatureHeader,
                            kValidSignatureInputHeader);
@@ -1726,13 +1698,7 @@ TEST_P(SRIMessageSignatureEnforcementTest,
             result.value());
 }
 
-TEST_P(SRIMessageSignatureEnforcementTest, MismatchedHeaders) {
-  bool feature_flag_enabled = GetParam();
-
-  base::test::ScopedFeatureList scoped_feature_list_;
-  scoped_feature_list_.InitWithFeatureState(
-      features::kSRIMessageSignatureEnforcement, feature_flag_enabled);
-
+TEST_F(SRIMessageSignatureEnforcementTest, MismatchedHeaders) {
   const char* wrong_key = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
   const char* wrong_signature =
       "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
@@ -1742,25 +1708,14 @@ TEST_P(SRIMessageSignatureEnforcementTest, MismatchedHeaders) {
                            SignatureHeader("bad-signature", wrong_signature),
                            SignatureInputHeader("bad-signature", wrong_key));
   auto result = MaybeBlockResponseForSRIMessageSignature(request(), *head, {});
-  if (feature_flag_enabled) {
-    ASSERT_TRUE(result.has_value());
-    EXPECT_EQ(mojom::BlockedByResponseReason::kSRIMessageSignatureMismatch,
-              result.value());
-  } else {
-    EXPECT_FALSE(result.has_value());
-  }
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(mojom::BlockedByResponseReason::kSRIMessageSignatureMismatch,
+            result.value());
 }
 
-TEST_P(SRIMessageSignatureEnforcementTest, MismatchedHeadersAndForcedChecks) {
-  // Same test as `MismatchedHeaders`, but forces integrity checks, which means
-  // that the result will not depend upon whether or not the feature flag is
-  // enabled: this test should consistently fail validation.
-  bool feature_flag_enabled = GetParam();
-
-  base::test::ScopedFeatureList scoped_feature_list_;
-  scoped_feature_list_.InitWithFeatureState(
-      features::kSRIMessageSignatureEnforcement, feature_flag_enabled);
-
+TEST_F(SRIMessageSignatureEnforcementTest, MismatchedHeadersAndForcedChecks) {
+  // Same test as `MismatchedHeaders`, but with a key expectation. It should
+  // still consistently fail.
   const char* wrong_key_str = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
   auto wrong_key = *base::Base64Decode(wrong_key_str);
 
@@ -1778,9 +1733,7 @@ TEST_P(SRIMessageSignatureEnforcementTest, MismatchedHeadersAndForcedChecks) {
             result.value());
 }
 
-class SRIMessageSignatureRequestHeaderTest
-    : public testing::Test,
-      public testing::WithParamInterface<bool> {
+class SRIMessageSignatureRequestHeaderTest : public testing::Test {
  public:
   SRIMessageSignatureRequestHeaderTest()
       : task_environment_(base::test::TaskEnvironment::MainThreadType::IO),
@@ -1789,11 +1742,6 @@ class SRIMessageSignatureRequestHeaderTest
                                              net::DEFAULT_PRIORITY,
                                              /*delegate=*/nullptr,
                                              TRAFFIC_ANNOTATION_FOR_TESTS)) {}
-
-  void SetUp() override {
-    scoped_feature_list_.InitWithFeatureState(
-        features::kSRIMessageSignatureEnforcement, GetParam());
-  }
 
   net::URLRequest* url_request() const { return url_request_.get(); }
 
@@ -1806,11 +1754,7 @@ class SRIMessageSignatureRequestHeaderTest
   std::unique_ptr<net::URLRequest> url_request_;
 };
 
-INSTANTIATE_TEST_SUITE_P(FeatureFlag,
-                         SRIMessageSignatureRequestHeaderTest,
-                         testing::Values(true, false));
-
-TEST_P(SRIMessageSignatureRequestHeaderTest, NoSignaturesNoHeader) {
+TEST_F(SRIMessageSignatureRequestHeaderTest, NoSignaturesNoHeader) {
   MaybeSetAcceptSignatureHeader(url_request(), {});
   EXPECT_FALSE(url_request()
                    ->extra_request_headers()
@@ -1820,7 +1764,7 @@ TEST_P(SRIMessageSignatureRequestHeaderTest, NoSignaturesNoHeader) {
 
 // Most invalid data is filtered out by the binary encoding: really all that's
 // left is to ensure that the public key is the proper length for ed25519.
-TEST_P(SRIMessageSignatureRequestHeaderTest, InvalidSignatures) {
+TEST_F(SRIMessageSignatureRequestHeaderTest, InvalidSignatures) {
   MaybeSetAcceptSignatureHeader(url_request(), {*base::Base64Decode("YQ==")});
   EXPECT_FALSE(url_request()
                    ->extra_request_headers()
@@ -1828,7 +1772,7 @@ TEST_P(SRIMessageSignatureRequestHeaderTest, InvalidSignatures) {
                    .has_value());
 }
 
-TEST_P(SRIMessageSignatureRequestHeaderTest, ValidSignatures) {
+TEST_F(SRIMessageSignatureRequestHeaderTest, ValidSignatures) {
   const std::vector<uint8_t> public_key = *base::Base64Decode(kPublicKey);
   const std::vector<uint8_t> public_key2 = *base::Base64Decode(kPublicKey2);
 

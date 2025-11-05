@@ -11709,10 +11709,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kHappyEyeballsV3Description, kOsAll,
      FEATURE_VALUE_TYPE(net::features::kHappyEyeballsV3)},
 
-    {"signature-based-sri", flag_descriptions::kSignatureBasedSriName,
-     flag_descriptions::kSignatureBasedSriDescription, kOsAll,
-     FEATURE_VALUE_TYPE(network::features::kSRIMessageSignatureEnforcement)},
-
 #if !BUILDFLAG(IS_ANDROID)
     {"policy-promotion-banner-flag",
      flag_descriptions::kEnablePolicyPromotionBannerName,

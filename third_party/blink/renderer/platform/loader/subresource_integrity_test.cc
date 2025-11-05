@@ -629,21 +629,18 @@ class SubresourceIntegritySignatureTest
 
   SubresourceIntegritySignatureTest()
       : feature_context_(GetParam()),
-        scoped_integrity_(GetParam()),
         scoped_inline_integrity_(GetParam()) {}
 
-  bool SignaturesEnabled() { return GetParam(); }
+  bool InlineSignaturesEnabled() { return GetParam(); }
 
   // Evaluates whether the given string is parsed into a single signature-based
-  // IntegrityMetadata entry with the given digest, or, if the feature is
-  // disabled, doesn't.
+  // IntegrityMetadata entry with the given digest.
   void ValidateSingleSignatureBasedItem(const String& integrity_attribute,
                                         const String& digest) {
     IntegrityMetadataSet metadata_set;
     SubresourceIntegrity::ParseIntegrityAttribute(
         integrity_attribute, metadata_set, /*feature_context=*/nullptr);
     EXPECT_EQ(0u, metadata_set.hashes.size());
-    if (SignaturesEnabled()) {
       ASSERT_EQ(1u, metadata_set.public_keys.size());
 
       Vector<uint8_t> binary_digest;
@@ -652,9 +649,6 @@ class SubresourceIntegritySignatureTest
       network::IntegrityMetadata expected(IntegrityAlgorithm::kEd25519,
                                           std::move(binary_digest));
       EXPECT_EQ(expected, *metadata_set.public_keys.begin());
-    } else {
-      ASSERT_EQ(0u, metadata_set.public_keys.size());
-    }
   }
 
   // Evalutes whether the given string is parsed into a set of IntegrityMetadata
@@ -673,21 +667,16 @@ class SubresourceIntegritySignatureTest
     }
 
     // And then signatures:
-    if (SignaturesEnabled()) {
       ASSERT_EQ(public_keys.size(), metadata_set.public_keys.size());
       for (const auto& item : public_keys) {
         EXPECT_TRUE(metadata_set.public_keys.Contains(item));
       }
-    } else {
-      ASSERT_EQ(0u, metadata_set.public_keys.size());
-    }
   }
 
  protected:
   SignatureFeatureContext feature_context_;
 
  private:
-  ScopedSignatureBasedIntegrityForTest scoped_integrity_;
   ScopedSignatureBasedInlineIntegrityForTest scoped_inline_integrity_;
 };
 
@@ -696,14 +685,7 @@ INSTANTIATE_TEST_SUITE_P(FeatureFlag,
                          ::testing::Bool());
 
 TEST_P(SubresourceIntegritySignatureTest, ParseSignatureAlgorithm) {
-  SCOPED_TRACE(::testing::Message()
-               << "The feature is "
-               << (SignaturesEnabled() ? "enabled" : "disabled") << '.');
-  if (SignaturesEnabled()) {
-    ExpectAlgorithm("ed25519-", IntegrityAlgorithm::kEd25519);
-  } else {
-    ExpectAlgorithmFailure("ed25519-", SubresourceIntegrity::kAlgorithmUnknown);
-  }
+  ExpectAlgorithm("ed25519-", IntegrityAlgorithm::kEd25519);
 }
 
 TEST_P(SubresourceIntegritySignatureTest, ParseSingleSignature) {
@@ -848,18 +830,15 @@ TEST_P(SubresourceIntegritySignatureTest, CheckNotSigned) {
 
   // If the flag is set, the lack of a signature will fail any signature
   // integrity requirement.
-  EXPECT_EQ(
-      !SignaturesEnabled(),
-      SubresourceIntegrity::CheckSubresourceIntegrity(
-          metadata_set, /*buffer=*/nullptr, sec_url, FetchResponseType::kCors,
-          raw_headers, /*feature_context=*/nullptr, integrity_report));
+  EXPECT_FALSE(SubresourceIntegrity::CheckSubresourceIntegrity(
+      metadata_set, /*buffer=*/nullptr, sec_url, FetchResponseType::kCors,
+      raw_headers, /*feature_context=*/nullptr, integrity_report));
 
   Resource* resource =
       CreateTestResource(sec_url, RequestMode::kCors, FetchResponseType::kCors);
-  EXPECT_EQ(!SignaturesEnabled(),
-            SubresourceIntegrity::CheckSubresourceIntegrity(
-                metadata_set, /*buffer=*/nullptr, sec_url, *resource,
-                /*feature_context=*/nullptr, integrity_report, nullptr))
+  EXPECT_FALSE(SubresourceIntegrity::CheckSubresourceIntegrity(
+      metadata_set, /*buffer=*/nullptr, sec_url, *resource,
+      /*feature_context=*/nullptr, integrity_report, nullptr))
       << "Resource variant";
 }
 
@@ -960,7 +939,7 @@ TEST_P(SubresourceIntegritySignatureTest, Inline_NonMatchingSignature) {
       "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
       "AAAAAAAAAAAAAA==";
 
-  bool should_fail_verification = !SignaturesEnabled();
+  bool should_fail_verification = !InlineSignaturesEnabled();
 
   // Non-matching => Fail verification
   EXPECT_EQ(should_fail_verification,
@@ -996,8 +975,8 @@ TEST_P(SubresourceIntegritySignatureTest, UseCounter) {
                                                   &feature_context_, &report);
     EXPECT_FALSE(
         report.UseCountersForTesting().Contains(WebFeature::kSRIHashAssertion));
-    EXPECT_EQ(SignaturesEnabled(), report.UseCountersForTesting().Contains(
-                                       WebFeature::kSRIPublicKeyAssertion));
+    EXPECT_TRUE(report.UseCountersForTesting().Contains(
+        WebFeature::kSRIPublicKeyAssertion));
   }
   // Just hash:
   {
@@ -1022,8 +1001,8 @@ TEST_P(SubresourceIntegritySignatureTest, UseCounter) {
                                                   &feature_context_, &report);
     EXPECT_TRUE(
         report.UseCountersForTesting().Contains(WebFeature::kSRIHashAssertion));
-    EXPECT_EQ(SignaturesEnabled(), report.UseCountersForTesting().Contains(
-                                       WebFeature::kSRIPublicKeyAssertion));
+    EXPECT_TRUE(report.UseCountersForTesting().Contains(
+        WebFeature::kSRIPublicKeyAssertion));
   }
 }
 

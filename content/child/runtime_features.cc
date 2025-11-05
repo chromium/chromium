@@ -384,8 +384,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
           {"RelatedWebsitePartitionAPI",
            raw_ref(net::features::kRelatedWebsitePartitionAPI)},
           {"SerialPortConnected", raw_ref(features::kSerialPortConnected)},
-          {"SignatureBasedIntegrity",
-           raw_ref(network::features::kSRIMessageSignatureEnforcement)},
 #if BUILDFLAG(IS_MAC)
           {"SystemDefaultAccentColors",
            raw_ref(features::kUseSystemDefaultAccentColors)},

@@ -120,16 +120,12 @@ String IntegrityAlgorithmToString(IntegrityAlgorithm algorithm,
     case IntegrityAlgorithm::kSha512:
       return "SHA-512";
     case IntegrityAlgorithm::kEd25519:
-      DCHECK(RuntimeEnabledFeatures::SignatureBasedIntegrityEnabled(
-          feature_context));
       return "Ed25519";
   }
 }
 
 String IntegrityAlgorithmsForConsole(const FeatureContext* feature_context) {
-  return RuntimeEnabledFeatures::SignatureBasedIntegrityEnabled(feature_context)
-             ? "'sha256', 'sha384', 'sha512', or 'ed21159'"
-             : "'sha256', 'sha384', or 'sha512'";
+  return "'sha256', 'sha384', 'sha512', or 'ed21159'";
 }
 
 String HashAlgorithmToString(HashAlgorithm algorithm) {
@@ -247,8 +243,7 @@ bool SubresourceIntegrity::CheckSubresourceIntegrityImpl(
   //       that didn't come from the network (e.g. resources which were cached
   //       on the basis of one request, but are now being used in a context with
   //       different integrity requirements).
-  if (RuntimeEnabledFeatures::SignatureBasedIntegrityEnabled(feature_context) &&
-      !CheckSignaturesImpl(parsed_metadata.public_keys, resource_url,
+  if (!CheckSignaturesImpl(parsed_metadata.public_keys, resource_url,
                            raw_headers, integrity_report)) {
     return false;
   }
@@ -432,14 +427,6 @@ SubresourceIntegrity::ParseAttributeAlgorithm(
 
   for (const auto& [prefix_cstr, algorithm_enum] : kPrefixes) {
     const std::string_view prefix(prefix_cstr);
-    // Parse signature-based algorithm prefixes iff the runtime feature is
-    // enabled.
-    if (!(RuntimeEnabledFeatures::SignatureBasedIntegrityEnabled(
-              feature_context) ||
-          RuntimeEnabledFeatures::SignatureBasedInlineIntegrityEnabled()) &&
-        prefix == "ed25519") {
-      continue;
-    }
     if (token.starts_with(prefix) && token.size() > prefix.size() &&
         token[prefix.size()] == '-') {
       algorithm = algorithm_enum;

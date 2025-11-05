@@ -3997,13 +3997,6 @@ inline constexpr char kIsolateOriginsDescription[] =
     "Requires dedicated processes for an additional set of origins, "
     "specified as a comma-separated list.";
 
-inline constexpr char kSignatureBasedSriName[] =
-    "Signature-based Integrity Checks";
-inline constexpr char kSignatureBasedSriDescription[] =
-    "Enables signature-based "
-    "integrity checks, as proposed in "
-    "https://wicg.github.io/signature-based-sri/.";
-
 inline constexpr char kSiteIsolationOptOutName[] = "Disable site isolation";
 inline constexpr char kSiteIsolationOptOutDescription[] =
     "Disables site isolation "

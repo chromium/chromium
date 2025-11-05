@@ -386,8 +386,6 @@ BASE_FEATURE(kNetworkContextPrefetchUseMatches,
 BASE_FEATURE(kCloneDevToolsConnectionOnlyIfRequested,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSRIMessageSignatureEnforcement, base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kAdAuctionEventRegistration, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // See https://github.com/WICG/turtledove/blob/main/FLEDGE.md

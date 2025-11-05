@@ -842,13 +842,6 @@ MaybeBlockResponseForSRIMessageSignature(
     const std::vector<std::vector<uint8_t>>& expected_public_keys,
     const raw_ptr<mojom::DevToolsObserver> devtools_observer,
     const std::string& devtools_request_id) {
-  // If the feature is disabled, never block resources.
-  if (!base::FeatureList::IsEnabled(
-          features::kSRIMessageSignatureEnforcement) &&
-      expected_public_keys.empty()) {
-    return std::nullopt;
-  }
-
   // No headers, no URL: no blocking.
   const GURL request_url = url_request.url();
   if (!response.headers || !request_url.is_valid()) {
@@ -875,14 +868,6 @@ MaybeBlockResponseForSRIMessageSignature(
 void MaybeSetAcceptSignatureHeader(
     net::URLRequest* request,
     const std::vector<std::vector<uint8_t>>& expected_public_keys) {
-  // In order to support request-specific experimentation, we send the
-  // `Accept-Signature` header whenever signatures are expected by a request's
-  // initiator, regardless of the `features::kSRIMessageSignatureEnforcement`
-  // flag state.
-  //
-  // TODO(393924693): Remove this comment once we no longer need the origin
-  // trial infrastructure.
-
   std::stringstream header;
   int counter = 0;
   for (const auto& public_key : expected_public_keys) {
