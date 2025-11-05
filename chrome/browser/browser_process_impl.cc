@@ -193,7 +193,6 @@ void OnLocalStatePrefsLoaded();
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
 #include "chrome/browser/resource_coordinator/tab_manager.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/usb/usb_system_tray_icon.h"
 #include "chrome/browser/web_applications/isolated_web_apps/chrome_iwa_client.h"
 #include "chrome/browser/webapps/webapps_client_desktop.h"
@@ -1729,9 +1728,6 @@ void BrowserProcessImpl::Unpin() {
   std::move(quit_closure_).Run();
 
   chrome::ShutdownIfNeeded();
-
-  // TODO(crbug.com/40629374): remove when root cause is found.
-  CHECK_EQ(BrowserList::GetInstance()->size(), 0u);
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
 
