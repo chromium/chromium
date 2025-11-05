@@ -732,6 +732,8 @@ bool WASAPIAudioInputStream::UpdateFormats() {
     }
     // Note that Windows Audio Engine could potentially be S32 or F32.
     auto mix_sample_format = GetSampleFormatFromWaveFormat(mix_format);
+    base::UmaHistogramEnumeration("Media.Audio.Capture.Win.AudioEngineFormat",
+                                  mix_sample_format);
     if (mix_sample_format != kUnknownSampleFormat) {
       sample_format_ = mix_sample_format;
       // We are not sure if the Windows Audio Engine will ever choose 24bit over
@@ -755,6 +757,11 @@ bool WASAPIAudioInputStream::UpdateFormats() {
         return false;
       }
     } else {
+      const uint32_t format_tag =
+          EXTRACT_WAVEFORMATEX_ID(&mix_format.SubFormat);
+      base::UmaHistogramSparse(
+          "Media.Audio.Capture.Win.AudioEngineFormat.Unknown", format_tag);
+
       use_device_sample_format_ = false;
     }
   }

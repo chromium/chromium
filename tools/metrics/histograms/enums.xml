@@ -24088,6 +24088,31 @@ Called by update_net_error_codes.py.-->
   <int value="2" label="Strict Mode"/>
 </enum>
 
+<!-- LINT.IfChange(SampleFormat) -->
+
+<enum name="SampleFormat">
+  <summary>The possible values of SampleFormats..</summary>
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Unsigned 8-bit"/>
+  <int value="2" label="Signed 16-bit"/>
+  <int value="3" label="Signed 32-bit"/>
+  <int value="4" label="Float 32-bit"/>
+  <int value="5" label="Signed 16-bit planar"/>
+  <int value="6" label="Float 32-bit planar"/>
+  <int value="7" label="Signed 32-bit planar"/>
+  <int value="8" label="Signed 24-bit"/>
+  <int value="9" label="AC3"/>
+  <int value="10" label="E-AC3"/>
+  <int value="11" label="MPEG-H"/>
+  <int value="12" label="Unsigned 8-bit planar"/>
+  <int value="13" label="DTS"/>
+  <int value="14" label="DTSX P2"/>
+  <int value="15" label="IEC DTS"/>
+  <int value="16" label="DTS Express"/>
+</enum>
+
+<!-- LINT.ThenChange(//media/base/sample_format.h:SampleFormat) -->
+
 <enum name="SanitizeEvent">
   <summary>Track the events in the Sanitize UI SWA.</summary>
   <int value="0" label="Sanitize UI is being shown to the user."/>

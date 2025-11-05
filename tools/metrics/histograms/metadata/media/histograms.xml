@@ -972,6 +972,35 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.Audio.Capture.Win.AudioEngineFormat" enum="SampleFormat"
+    expires_after="2026-10-28">
+  <owner>lowkey@google.com</owner>
+  <owner>tguilbert@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    This is the SampleFormat the Windows Audio Engine returns as its preferred
+    format when we open an Audio Input Stream. This is recorded everytime a user
+    decides to record audio (e.g. record via microphone). This is recorded once
+    per Input Stream, notably recorded at Stream Open rather than Stream
+    Initialization.
+  </summary>
+</histogram>
+
+<histogram name="Media.Audio.Capture.Win.AudioEngineFormat.Unknown"
+    units="combined_format" expires_after="2026-10-28">
+  <owner>lowkey@google.com</owner>
+  <owner>tguilbert@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    This is the SubFormat.Data1 (i.e. wFormatTag) the Windows Audio Engine
+    returns as its preferred format when we open an Audio Input Stream, recorded
+    only when the format does not map to a known media::SampleFormat. This is
+    potentially recorded everytime a user decides to record audio (e.g. record
+    via microphone). This is recorded once per Input Stream, notably recorded at
+    Stream Open rather than Stream Initialization.
+  </summary>
+</histogram>
+
 <histogram name="Media.Audio.Capture.Win.FakeTimestamps" enum="Boolean"
     expires_after="2026-02-01">
   <owner>henrika@chromium.org</owner>
