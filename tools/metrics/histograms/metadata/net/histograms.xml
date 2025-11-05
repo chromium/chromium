@@ -3342,6 +3342,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2026-06-16">
   <owner>bashi@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Time it takes to complete an HttpJob to a Google host, from starting the
     transaction until we are done reading, if the response was received over TLS
@@ -3353,6 +3354,7 @@ chromium-metrics-reviews@google.com.
 <!-- expires-never: Core network stack health metric -->
 
   <owner>mmenke@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Time it takes to complete an HttpJob, from starting the transaction until we
     are done reading, for jobs served from the cache.
@@ -3363,6 +3365,7 @@ chromium-metrics-reviews@google.com.
 <!-- expires-never: Core network stack health metric -->
 
   <owner>mmenke@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Time it takes to complete an HttpJob, from starting the transaction until
     the job is killed. Note that we didn't detect the end of the data for this
@@ -3375,6 +3378,7 @@ chromium-metrics-reviews@google.com.
 <!-- expires-never: Core network stack health metric -->
 
   <owner>mmenke@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Time it takes to complete an HttpJob, from starting the transaction until we
     are done reading, for jobs not served from the cache.
@@ -3389,6 +3393,7 @@ chromium-metrics-reviews@google.com.
 <!-- expires-never: Core network stack health metric -->
 
   <owner>mmenke@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Time it takes to complete an HttpJob, from starting the transaction until we
     are done reading, for jobs when we read until no more data is available.
@@ -3400,6 +3405,7 @@ chromium-metrics-reviews@google.com.
 <!-- expires-never: Core network stack health metric -->
 
   <owner>mmenke@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Time it takes to complete an HttpJob, from starting the transaction until we
     are done reading. {TotalTimeToHttpsGoogle}
@@ -3859,6 +3865,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2026-05-03">
   <owner>davidben@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Time from when an HTTP request to a Google host is issued to when the first
     byte is processed, if the response was not cached and received over TLS 1.3
@@ -3871,6 +3878,7 @@ chromium-metrics-reviews@google.com.
 <!-- expires-never: Core network stack health metric -->
 
   <owner>mmenke@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Time from when an HTTP request is issued to when the first byte is
     processed. {Prefetch}
