@@ -4861,6 +4861,7 @@
     },
     {
       name: "Svg2Cascade",
+      status: "experimental",
     },
     {
       name: "SvgAnchorElementAttributes",

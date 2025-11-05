@@ -588,8 +588,6 @@ crbug.com/1177540 external/wpt/svg/text/reftests/text-text-anchor-003.svg [ Fail
 crbug.com/670177 external/wpt/svg/rendering/order/z-index.svg [ Failure ]
 crbug.com/863355 [ Mac ] external/wpt/svg/shapes/reftests/pathlength-002.svg [ Failure ]
 crbug.com/1222395 external/wpt/svg/path/property/mpath.svg [ Failure ]
-crbug.com/785246 external/wpt/svg/struct/reftests/use-inheritance-001.svg [ Failure ]
-crbug.com/785246 external/wpt/svg/linking/reftests/use-descendant-combinator-003.html [ Failure ]
 crbug.com/674797 external/wpt/svg/painting/reftests/marker-path-022.svg [ Failure ]
 crbug.com/674797 external/wpt/svg/painting/reftests/marker-path-023.svg [ Failure ]
 crbug.com/1368167 external/wpt/svg/struct/reftests/currentScale-change-repaint.html [ Failure ]
@@ -733,22 +731,8 @@ crbug.com/388922812 external/wpt/svg/animations/reftests/discard-rect-as-href.sv
 crbug.com/388922812 external/wpt/svg/animations/reftests/discard-rect-with-anim-child-a.svg [ Failure ]
 crbug.com/388922812 external/wpt/svg/animations/reftests/discard-rect-with-anim-child-b.svg [ Failure ]
 
-# Svg2Cascade implementation
-# Tests passing only with Svg2Cascade enabled
-crbug.com/40550039 virtual/svg2-cascade/external/wpt/svg/linking/reftests/use-descendant-combinator-003.html [ Pass ]
-crbug.com/40550039 virtual/svg2-cascade/external/wpt/svg/struct/reftests/use-inheritance-001.svg [ Pass ]
-crbug.com/40550039 virtual/svg2-cascade/external/wpt/svg/struct/reftests/use-inheritance-nth-child-of.svg [ Pass ]
-crbug.com/40550039 virtual/svg2-cascade/external/wpt/svg/struct/reftests/use-inheritance-nth-last-child-of.svg [ Pass ]
-crbug.com/40550039 virtual/svg2-cascade/external/wpt/svg/styling/use-element-attr-selector-transition.tentative.html [ Pass ]
-crbug.com/40550039 virtual/svg2-cascade/external/wpt/svg/styling/use-element-id-selector-transition.tentative.html [ Pass ]
-# Tests below expects SVG1.1 <use> cascade behavior
-crbug.com/40550039 virtual/svg2-cascade/svg/css/use-replicates-changes-class.html [ Failure ]
-crbug.com/40550039 virtual/svg2-cascade/svg/css/use-replicates-changes-pseudo.html [ Failure ]
-crbug.com/40550039 virtual/svg2-cascade/svg/W3C-SVG-1.1-SE/struct-use-11-f.svg [ Failure ]
-
 # SVGElement::InvalidateInstances() for id attribute and tree mutation changes
 # is too destructive and stops running transitions.
-crbug.com/40550039 external/wpt/svg/styling/use-element-id-selector-transition.tentative.html [ Failure ]
 crbug.com/40550039 external/wpt/svg/styling/use-element-transitions-dom-mutation.tentative.html [ Failure ]
 
 # CSS Anchor Positioning Update failures.
@@ -4615,8 +4599,6 @@ crbug.com/626703 [ Mac ] external/wpt/css/css-counter-styles/simp-chinese-inform
 crbug.com/626703 [ Release Win ] external/wpt/css/css-counter-styles/simp-chinese-informal/counter-simp-chinese-informal.html [ Failure ]
 crbug.com/626703 [ Mac ] external/wpt/css/css-counter-styles/trad-chinese-informal/counter-trad-chinese-informal.html [ Failure ]
 crbug.com/626703 [ Release Win ] external/wpt/css/css-counter-styles/trad-chinese-informal/counter-trad-chinese-informal.html [ Failure ]
-crbug.com/626703 external/wpt/svg/struct/reftests/use-inheritance-nth-child-of.svg [ Failure ]
-crbug.com/626703 external/wpt/svg/struct/reftests/use-inheritance-nth-last-child-of.svg [ Failure ]
 crbug.com/626703 [ Linux ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/background-sync.https.html [ Timeout ]
 crbug.com/626703 [ Win ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/background-sync.https.html [ Timeout ]
 crbug.com/626703 [ Linux ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/opaque-ad-sizes-exact-size.https.html [ Skip Timeout ]

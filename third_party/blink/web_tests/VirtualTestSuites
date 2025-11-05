@@ -4315,25 +4315,6 @@
     "expires": "never"
   },
   {
-    "prefix": "svg2-cascade",
-    "owners": [
-      "futhark@chromium.org",
-      "pdr@chromium.org"
-    ],
-    "platforms": [
-      "Linux"
-    ],
-    "bases": [
-      "external/wpt/svg",
-      "paint/invalidation/svg",
-      "svg"
-    ],
-    "args": [
-      "--enable-blink-features=Svg2Cascade"
-    ],
-    "expires": "Dec 1, 2025"
-  },
-  {
     "prefix": "enable-shared-worker-bfcache",
     "owners": ["annasato@chromium.org"],
     "platforms": ["Mac", "Win", "Linux"],
