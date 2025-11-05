@@ -18,7 +18,15 @@ namespace {
 void MaskIconOnThreadPool(SkBitmap input_bitmap,
                           MaskedIconCallback final_threaded_callback) {
   gfx::Image pre_mask = gfx::Image::CreateFrom1xBitmap(input_bitmap);
-  SkBitmap masked_bitmap = *CreateAppleMaskedAppIcon(pre_mask).ToSkBitmap();
+  SkBitmap masked_bitmap = CreateAppleMaskedAppIcon(pre_mask).AsBitmap();
+  // If masking fails for whatever reason, just return the non-masked bitmap as
+  // stop-gap instead of crashing. There is a problem here that the input
+  // bitmap can also be empty, but there's nothing we can do here if that is the
+  // case. This also maintains consistency with how it works on Windows and
+  // Linux, where the icon is "passed" through to the callback.
+  if (masked_bitmap.drawsNothing()) {
+    masked_bitmap = input_bitmap;
+  }
   std::move(final_threaded_callback).Run(std::move(masked_bitmap));
 }
 
