@@ -79,6 +79,7 @@ import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntent
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabsUiType;
 import org.chromium.chrome.browser.browserservices.intents.ColorProvider;
 import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams;
+import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams.ButtonType;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider.BackgroundInteractBehavior;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -96,6 +97,7 @@ import java.util.List;
 @RunWith(BaseRobolectricTestRunner.class)
 @Batch(Batch.UNIT_TESTS)
 @Config(manifest = Config.NONE)
+@DisableFeatures({ChromeFeatureList.CCT_ADAPTIVE_BUTTON})
 public class CustomTabIntentDataProviderTest {
 
     private static final String BUTTON_DESCRIPTION = "buttonDescription";
@@ -2004,6 +2006,27 @@ public class CustomTabIntentDataProviderTest {
     }
 
     @Test
+    public void testOpenInBrowser_customButtonsOverOIBOn() {
+        // 2 Custom buttons + OIB on -> 2 custom buttons, OIB ignored.
+        ArrayList<Bundle> buttons =
+                new ArrayList<>(
+                        Arrays.asList(
+                                createCustomActionButtonBundleWithId(100),
+                                createCustomActionButtonBundleWithId(1)));
+        Intent intent =
+                new Intent()
+                        .putExtra(
+                                CustomTabIntentDataProvider.EXTRA_OPEN_IN_BROWSER_STATE,
+                                CustomTabIntentDataProvider.CustomTabsButtonState.BUTTON_STATE_ON)
+                        .putExtra(CustomTabsIntent.EXTRA_TOOLBAR_ITEMS, buttons);
+        var dataProvider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+        var actionButtons = dataProvider.getCustomButtonsOnToolbar();
+        assertEquals("There should be 2 actions.", 2, actionButtons.size());
+        assertEquals("Custom action ID (100).", 100, actionButtons.get(0).getId());
+        assertEquals("Custom action ID (1).", 1, actionButtons.get(1).getId());
+    }
+
+    @Test
     @EnableFeatures(ChromeFeatureList.CCT_CONTEXTUAL_MENU_ITEMS)
     public void testGetCustomConentActions_noneDefined() {
         Intent intent = new CustomTabsIntent.Builder().build().intent;
@@ -2123,6 +2146,238 @@ public class CustomTabIntentDataProviderTest {
         assertTrue(
                 "Custom/Chrome action button count should not exceed 2",
                 dataProvider.getCustomButtonsOnToolbar().size() <= 2);
+    }
+
+    @Test
+    @EnableFeatures(
+            ChromeFeatureList.CCT_ADAPTIVE_BUTTON
+                    + ":open_in_browser/true/default_variant/15/contextual_only/true")
+    public void testMtbCct_CpaOib_noCustomAction() {
+        // No custom action + all default -> Share
+        // The other slot available for MTB/CPA, showing OIB as default
+        Intent intent = new Intent();
+        var dataProvider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+        var buttons = dataProvider.getCustomButtonsOnToolbar();
+        assertEquals("There should be a single action.", 1, buttons.size());
+        assertEquals("Chrome share action", ButtonType.CCT_SHARE_BUTTON, buttons.get(0).getType());
+    }
+
+    @Test
+    @EnableFeatures(
+            ChromeFeatureList.CCT_ADAPTIVE_BUTTON
+                    + ":open_in_browser/true/default_variant/15/contextual_only/true")
+    public void testMtbCct_CpaOib_customAction() {
+        // Custom action -> custom action
+        // The other slot available for MTB/CPA, showing OIB as default
+        int customId = 100;
+        var buttons = new ArrayList<Bundle>();
+        buttons.add(createCustomActionButtonBundleWithId(customId)); // One custom action
+        Intent intent = new Intent().putExtra(CustomTabsIntent.EXTRA_TOOLBAR_ITEMS, buttons);
+        var dataProvider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+        var actionButtons = dataProvider.getCustomButtonsOnToolbar();
+        assertEquals("There should be a single action.", 1, actionButtons.size());
+        assertEquals("Custom action ID (100).", customId, actionButtons.get(0).getId());
+    }
+
+    @Test
+    @EnableFeatures(
+            ChromeFeatureList.CCT_ADAPTIVE_BUTTON
+                    + ":open_in_browser/true/default_variant/15/contextual_only/true")
+    public void testMtbCct_CpaOib_customAction_oib() {
+        // Custom action + OIB on -> custom action + OIB
+        // No MTB/CPA
+        int customId = 100;
+        var buttons = new ArrayList<Bundle>();
+        buttons.add(createCustomActionButtonBundleWithId(customId)); // One custom action
+        Intent intent =
+                new Intent()
+                        .putExtra(CustomTabsIntent.EXTRA_TOOLBAR_ITEMS, buttons)
+                        .putExtra(
+                                CustomTabIntentDataProvider.EXTRA_OPEN_IN_BROWSER_STATE,
+                                CustomTabIntentDataProvider.CustomTabsButtonState.BUTTON_STATE_ON);
+        var dataProvider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+        var actionButtons = dataProvider.getCustomButtonsOnToolbar();
+        assertEquals("There should be 2 actions.", 2, actionButtons.size());
+        assertEquals("Custom action ID (100).", customId, actionButtons.get(0).getId());
+        assertEquals(
+                "Chrome OIB.",
+                ButtonType.CCT_OPEN_IN_BROWSER_BUTTON,
+                actionButtons.get(1).getType());
+    }
+
+    @Test
+    @EnableFeatures(
+            ChromeFeatureList.CCT_ADAPTIVE_BUTTON
+                    + ":open_in_browser/true/default_variant/15/contextual_only/true")
+    public void testMtbCct_CpaOib_customAction_share() {
+        // Custom action + share on -> custom action + share
+        // No MTB/CPA
+        int customId = 100;
+        var buttons = new ArrayList<Bundle>();
+        buttons.add(createCustomActionButtonBundleWithId(customId)); // One custom action
+        Intent intent =
+                new Intent()
+                        .putExtra(CustomTabsIntent.EXTRA_TOOLBAR_ITEMS, buttons)
+                        .putExtra(
+                                CustomTabsIntent.EXTRA_SHARE_STATE,
+                                CustomTabsIntent.SHARE_STATE_ON);
+        var dataProvider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+        var actionButtons = dataProvider.getCustomButtonsOnToolbar();
+        assertEquals("There should be 2 actions.", 2, actionButtons.size());
+        assertEquals("Custom action ID (100).", customId, actionButtons.get(0).getId());
+        assertEquals("Chrome Share.", ButtonType.CCT_SHARE_BUTTON, actionButtons.get(1).getType());
+    }
+
+    @Test
+    @EnableFeatures(
+            ChromeFeatureList.CCT_ADAPTIVE_BUTTON
+                    + ":open_in_browser/true/default_variant/15/contextual_only/true")
+    public void testMtbCct_CpaOib_customAction_share_oib() {
+        // Custom + Share on + OIB on -> Custom + Share
+        // No MTB/CPA
+        int customId = 100;
+        var buttons = new ArrayList<Bundle>();
+        buttons.add(createCustomActionButtonBundleWithId(customId));
+        Intent intent =
+                new Intent()
+                        .putExtra(CustomTabsIntent.EXTRA_TOOLBAR_ITEMS, buttons)
+                        .putExtra(
+                                CustomTabsIntent.EXTRA_SHARE_STATE, CustomTabsIntent.SHARE_STATE_ON)
+                        .putExtra(
+                                CustomTabIntentDataProvider.EXTRA_OPEN_IN_BROWSER_STATE,
+                                CustomTabIntentDataProvider.CustomTabsButtonState.BUTTON_STATE_ON);
+        var dataProvider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+        var actionButtons = dataProvider.getCustomButtonsOnToolbar();
+        assertEquals("There should be 2 actions.", 2, actionButtons.size());
+        assertEquals("Custom action ID (100).", customId, actionButtons.get(0).getId());
+        assertEquals("Chrome Share.", ButtonType.CCT_SHARE_BUTTON, actionButtons.get(1).getType());
+    }
+
+    @Test
+    @EnableFeatures(
+            ChromeFeatureList.CCT_ADAPTIVE_BUTTON
+                    + ":open_in_browser/true/default_variant/15/contextual_only/true")
+    public void testMtbCct_CpaOib_Share_Oib() {
+        // Share on + OIB on -> Share + OIB
+        Intent intent =
+                new Intent()
+                        .putExtra(
+                                CustomTabsIntent.EXTRA_SHARE_STATE, CustomTabsIntent.SHARE_STATE_ON)
+                        .putExtra(
+                                CustomTabIntentDataProvider.EXTRA_OPEN_IN_BROWSER_STATE,
+                                CustomTabIntentDataProvider.CustomTabsButtonState.BUTTON_STATE_ON);
+        var dataProvider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+        var actionButtons = dataProvider.getCustomButtonsOnToolbar();
+        assertEquals("There should be 2 actions.", 2, actionButtons.size());
+        assertEquals(
+                "Chrome OIB.",
+                ButtonType.CCT_OPEN_IN_BROWSER_BUTTON,
+                actionButtons.get(0).getType());
+        assertEquals("Chrome Share.", ButtonType.CCT_SHARE_BUTTON, actionButtons.get(1).getType());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CCT_ADAPTIVE_BUTTON)
+    public void testMtbCct_otherConfig_customAction() {
+        // Custom -> Custom
+        // The other slot available for MTB/CPA
+        int customId = 100;
+        var buttons = new ArrayList<Bundle>();
+        buttons.add(createCustomActionButtonBundleWithId(customId)); // One custom action.
+        Intent intent = new Intent().putExtra(CustomTabsIntent.EXTRA_TOOLBAR_ITEMS, buttons);
+        var dataProvider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+        var actionButtons = dataProvider.getCustomButtonsOnToolbar();
+        assertEquals("There should be a single action.", 1, actionButtons.size());
+        assertEquals("Custom action ID (100).", customId, actionButtons.get(0).getId());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CCT_ADAPTIVE_BUTTON)
+    public void testMtbCct_otherConfig_customAction_Oib() {
+        // Custom action + OIB on -> custom action + OIB
+        // No MTB/CPA
+        int customId = 100;
+        var buttons = new ArrayList<Bundle>();
+        buttons.add(createCustomActionButtonBundleWithId(customId));
+        Intent intent =
+                new Intent()
+                        .putExtra(CustomTabsIntent.EXTRA_TOOLBAR_ITEMS, buttons)
+                        .putExtra(
+                                CustomTabIntentDataProvider.EXTRA_OPEN_IN_BROWSER_STATE,
+                                CustomTabIntentDataProvider.CustomTabsButtonState.BUTTON_STATE_ON);
+        var dataProvider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+        var actionButtons = dataProvider.getCustomButtonsOnToolbar();
+        assertEquals("There should be 2 actions.", 2, actionButtons.size());
+        assertEquals("Custom action ID (100).", customId, actionButtons.get(0).getId());
+        assertEquals(
+                "Chrome OIB.",
+                ButtonType.CCT_OPEN_IN_BROWSER_BUTTON,
+                actionButtons.get(1).getType());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CCT_ADAPTIVE_BUTTON)
+    public void testMtbCct_otherConfig_customAction_Share() {
+        // Custom action + share on -> custom action + share
+        // No MTB/CPA
+        int customId = 100;
+        var buttons = new ArrayList<Bundle>();
+        buttons.add(createCustomActionButtonBundleWithId(customId));
+        Intent intent =
+                new Intent()
+                        .putExtra(CustomTabsIntent.EXTRA_TOOLBAR_ITEMS, buttons)
+                        .putExtra(
+                                CustomTabsIntent.EXTRA_SHARE_STATE,
+                                CustomTabsIntent.SHARE_STATE_ON);
+        var dataProvider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+        var actionButtons = dataProvider.getCustomButtonsOnToolbar();
+        assertEquals("There should be 2 actions.", 2, actionButtons.size());
+        assertEquals("Chrome Share.", ButtonType.CCT_SHARE_BUTTON, actionButtons.get(1).getType());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CCT_ADAPTIVE_BUTTON)
+    public void testMtbCct_otherConfig_customAction_Share_Oib() {
+        // Custom action + share on + OIB on -> custom action + share
+        // No MTB/CPA
+        int customId = 100;
+        var buttons = new ArrayList<Bundle>();
+        buttons.add(createCustomActionButtonBundleWithId(customId));
+        Intent intent =
+                new Intent()
+                        .putExtra(CustomTabsIntent.EXTRA_TOOLBAR_ITEMS, buttons)
+                        .putExtra(
+                                CustomTabsIntent.EXTRA_SHARE_STATE, CustomTabsIntent.SHARE_STATE_ON)
+                        .putExtra(
+                                CustomTabIntentDataProvider.EXTRA_OPEN_IN_BROWSER_STATE,
+                                CustomTabIntentDataProvider.CustomTabsButtonState.BUTTON_STATE_ON);
+        var dataProvider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+        var actionButtons = dataProvider.getCustomButtonsOnToolbar();
+        assertEquals("There should be 2 actions.", 2, actionButtons.size());
+        assertEquals("Custom action ID (100).", customId, actionButtons.get(0).getId());
+        assertEquals("Chrome Share.", ButtonType.CCT_SHARE_BUTTON, actionButtons.get(1).getType());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CCT_ADAPTIVE_BUTTON)
+    public void testMtbCct_otherConfig_Share_Oib() {
+        // Share on + OIB on -> share + OIB
+        // No MTB/CPA
+        Intent intent =
+                new Intent()
+                        .putExtra(
+                                CustomTabsIntent.EXTRA_SHARE_STATE, CustomTabsIntent.SHARE_STATE_ON)
+                        .putExtra(
+                                CustomTabIntentDataProvider.EXTRA_OPEN_IN_BROWSER_STATE,
+                                CustomTabIntentDataProvider.CustomTabsButtonState.BUTTON_STATE_ON);
+        var dataProvider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+        var actionButtons = dataProvider.getCustomButtonsOnToolbar();
+        assertEquals("There should be 2 actions.", 2, actionButtons.size());
+        assertEquals(
+                "Chrome OIB.",
+                ButtonType.CCT_OPEN_IN_BROWSER_BUTTON,
+                actionButtons.get(0).getType());
+        assertEquals("Chrome Share.", ButtonType.CCT_SHARE_BUTTON, actionButtons.get(1).getType());
     }
 
     @Test
