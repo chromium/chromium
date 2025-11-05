@@ -81,11 +81,6 @@ config("skia_config") {
 
   if (is_component_build) {
     defines += [ "SKIA_DLL" ]
-    if (is_win) {
-      defines += [ "SKCMS_API=__declspec(dllexport)" ]
-    } else {
-      defines += [ "SKCMS_API=__attribute__((visibility(\"default\")))" ]
-    }
   }
 
   # `SK_GAMMA_EXPONENT` and `SK_GAMMA_CONTRAST` are settings for text
@@ -723,6 +718,11 @@ template("skia_source_set") {
     }
   }
 }
+set_defaults("skia_source_set") {
+  # Match the defaults for `source_set`
+  # (as defined in `build/config/BUILDCONFIG.gn`).
+  configs = default_compiler_configs
+}
 
 # Split out for targeted removal of the afdo_optimize_size config on Android.
 skia_source_set("skia_core_and_effects") {
@@ -838,15 +838,51 @@ skia_source_set("skia_opts") {
   visibility = [ ":skia" ]
 }
 
+# Like `skia_library_config` but for things that are `skcms`-specific.
+config("skcms_library_config") {
+  if (!is_win) {
+    cflags = [
+      "-w",
+      "-std=c11",
+    ]
+  }
+
+  # LLVM automatically sets the equivalent of GCC's -mfp16-format=ieee on ARM
+  # builds by default, while GCC itself does not. We need it to enable support
+  # for half-precision floating point data types used by SKCMS on ARM.
+  if ((is_linux || is_chromeos) && !is_clang && current_cpu == "arm") {
+    cflags += [ "-mfp16-format=ieee" ]
+  }
+  if (current_cpu == "loong64") {
+    cflags += [ "-mlsx" ]
+  }
+
+  if (is_component_build) {
+    # TODO(lukasza, kjlubick): Is this the right definition?  `SK_API` is defined in
+    # a more complicated way (e.g. it covers `dllimport` and changes behavior
+    # depending on `SKIA_DLL` and `SKIA_IMPLEMENTATION`).
+    if (is_win) {
+      defines = [ "SKCMS_API=__declspec(dllexport)" ]
+    } else {
+      defines = [ "SKCMS_API=__attribute__((visibility(\"default\")))" ]
+    }
+  }
+
+  visibility = [
+    ":skcms_TransformBaseline_and_public",
+    ":skcms_TransformHsw",
+    ":skcms_TransformSkx",
+  ]
+}
+
 if (current_cpu == "x64") {
   skia_source_set("skcms_TransformHsw") {
     sources = skcms_TransformHsw
+    configs += [ ":skcms_library_config" ]
     if (!is_win) {
       cflags = [
-        "-w",
         "-mavx2",
         "-mf16c",
-        "-std=c11",
       ]
     } else {
       cflags = [ "/arch:AVX2" ]
@@ -855,15 +891,14 @@ if (current_cpu == "x64") {
   }
   skia_source_set("skcms_TransformSkx") {
     sources = skcms_TransformSkx
+    configs += [ ":skcms_library_config" ]
     if (!is_win) {
       cflags = [
-        "-w",
         "-mavx512f",
         "-mavx512dq",
         "-mavx512cd",
         "-mavx512bw",
         "-mavx512vl",
-        "-std=c11",
       ]
     } else {
       cflags = [ "/arch:AVX512" ]
@@ -882,25 +917,7 @@ if (current_cpu == "x64") {
 }
 
 source_set("skcms_TransformBaseline_and_public") {
-  if (!is_win || is_clang) {
-    cflags = [
-      "-w",
-      "-std=c11",
-    ]
-  } else {
-    cflags = []
-  }
-
-  # LLVM automatically sets the equivalent of GCC's -mfp16-format=ieee on ARM
-  # builds by default, while GCC itself does not. We need it to enable support
-  # for half-precision floating point data types used by SKCMS on ARM.
-  if ((is_linux || is_chromeos) && !is_clang && current_cpu == "arm") {
-    cflags += [ "-mfp16-format=ieee" ]
-  }
-  if (current_cpu == "loong64") {
-    cflags += [ "-mlsx" ]
-  }
-
+  configs += [ ":skcms_library_config" ]
   sources = rebase_path(skcms_TransformBaseline + skcms_public,
                         ".",
                         "//third_party/skia/modules/skcms")
