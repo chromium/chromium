@@ -45,6 +45,7 @@
 using base::HistogramBase;
 using base::HistogramSamples;
 using base::StatisticsRecorder;
+using testing::UnorderedElementsAre;
 
 namespace {
 
@@ -1240,4 +1241,85 @@ TEST_F(SpellcheckCustomDictionaryTestWithSeparateLocalAndAccountDictionaries,
 
   custom_dictionary->RemoveObserver(&observer);
   custom_dictionary2->RemoveObserver(&observer2);
+}
+
+TEST_F(SpellcheckCustomDictionaryTestWithSeparateLocalAndAccountDictionaries,
+       ProcessSyncChangesOnlyAffectsAccountDictionary) {
+  SpellcheckService* spellcheck_service =
+      SpellcheckServiceFactory::GetForContext(&profile_);
+  SpellcheckCustomDictionary* dictionary =
+      spellcheck_service->GetCustomDictionary();
+  SpellcheckCustomDictionary* server_dictionary = MakeExtraProfileDictionary();
+
+  dictionary->AddWord("foo");
+  dictionary->AddWord("bar");
+  server_dictionary->AddWord("foo");
+  server_dictionary->AddWord("baz");
+
+  ASSERT_FALSE(
+      dictionary
+          ->MergeDataAndStartSyncing(
+              syncer::DICTIONARY,
+              server_dictionary->GetAllSyncDataForTesting(syncer::DICTIONARY),
+              std::unique_ptr<syncer::SyncChangeProcessor>(
+                  new syncer::SyncChangeProcessorWrapperForTest(
+                      server_dictionary)))
+          .has_value());
+  ASSERT_TRUE(dictionary->IsSyncing());
+  ASSERT_THAT(dictionary->GetWords(),
+              UnorderedElementsAre("foo", "bar", "baz"));
+
+  syncer::SyncChangeList changes;
+  {
+    // Add new word.
+    // This should add the word to the account dictionary.
+    std::string word = "baz2";
+    sync_pb::EntitySpecifics specifics;
+    specifics.mutable_dictionary()->set_word(word);
+    changes.emplace_back(
+        FROM_HERE, syncer::SyncChange::ACTION_ADD,
+        syncer::SyncData::CreateLocalData(word, word, specifics));
+  }
+  {
+    // Remove common word.
+    // This should only remove the word from the account dictionary but not
+    // affect the local dictionary.
+    std::string word = "foo";
+    sync_pb::EntitySpecifics specifics;
+    specifics.mutable_dictionary()->set_word(word);
+    changes.emplace_back(
+        FROM_HERE, syncer::SyncChange::ACTION_DELETE,
+        syncer::SyncData::CreateLocalData(word, word, specifics));
+  }
+  {
+    // Remove local-only word.
+    // This should be a no-op.
+    std::string word = "bar";
+    sync_pb::EntitySpecifics specifics;
+    specifics.mutable_dictionary()->set_word(word);
+    changes.emplace_back(
+        FROM_HERE, syncer::SyncChange::ACTION_DELETE,
+        syncer::SyncData::CreateLocalData(word, word, specifics));
+  }
+  {
+    // Remove account-only word.
+    std::string word = "baz";
+    sync_pb::EntitySpecifics specifics;
+    specifics.mutable_dictionary()->set_word(word);
+    changes.emplace_back(
+        FROM_HERE, syncer::SyncChange::ACTION_DELETE,
+        syncer::SyncData::CreateLocalData(word, word, specifics));
+  }
+
+  EXPECT_FALSE(dictionary->ProcessSyncChanges(FROM_HERE, changes).has_value());
+
+  // The local dictionary should be unaffected by the sync changes. The account
+  // dictionary should only contain the new word now.
+  EXPECT_THAT(dictionary->GetWords(),
+              UnorderedElementsAre("foo", "bar", "baz2"));
+
+  dictionary->StopSyncing(syncer::DICTIONARY);
+  ASSERT_FALSE(dictionary->IsSyncing());
+  // The local dictionary should be unaffected by the sync changes.
+  EXPECT_THAT(dictionary->GetWords(), UnorderedElementsAre("foo", "bar"));
 }

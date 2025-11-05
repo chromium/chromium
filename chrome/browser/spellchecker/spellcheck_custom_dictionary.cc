@@ -404,7 +404,7 @@ SpellcheckCustomDictionary::ProcessSyncChanges(
     const base::Location& from_here,
     const syncer::SyncChangeList& change_list) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  std::unique_ptr<Change> dictionary_change(new Change);
+  auto dictionary_change = std::make_unique<Change>();
   for (const syncer::SyncChange& change : change_list) {
     const std::string& word =
         change.sync_data().GetSpecifics().dictionary().word();
@@ -420,6 +420,14 @@ SpellcheckCustomDictionary::ProcessSyncChanges(
             FROM_HERE,
             syncer::ModelError::Type::kSpellcheckCustomDictionaryUpdateFailed);
     }
+  }
+
+  if (base::FeatureList::IsEnabled(
+          syncer::kSpellcheckSeparateLocalAndAccountDictionaries)) {
+    dictionary_change->Sanitize(account_words_);
+    ApplyToSet(*dictionary_change, &account_words_);
+    Notify(*dictionary_change);
+    return std::nullopt;
   }
 
   dictionary_change->Sanitize(GetWords());
