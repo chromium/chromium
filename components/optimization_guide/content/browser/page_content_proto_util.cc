@@ -250,6 +250,9 @@ void ConvertGeometry(const blink::mojom::AIPageContentGeometry& mojom_geometry,
               proto_geometry->mutable_outer_bounding_box());
   ConvertRect(mojom_geometry.visible_bounding_box,
               proto_geometry->mutable_visible_bounding_box());
+  for (const gfx::Rect& rect : mojom_geometry.fragment_visible_bounding_boxes) {
+    ConvertRect(rect, proto_geometry->add_fragment_visible_bounding_boxes());
+  }
   proto_geometry->set_is_fixed_or_sticky_position(
       mojom_geometry.is_fixed_or_sticky_position);
 }

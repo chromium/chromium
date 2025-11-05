@@ -1730,6 +1730,183 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
       optimization_guide::proto::REDACTION_DECISION_REDACTED_HAS_BEEN_PASSWORD);
 }
 
+IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
+                       FragmentVisibleBoundingBoxes) {
+  LoadPage(https_server()->GetURL("/fragment_boxes.html"),
+           GetActionableAIPageContentOptions());
+
+  // Contents of fragment_boxes.html:
+  // <!DOCTYPE html>
+  // <body style = "font: 10px/10px monospace">
+  //   <!--
+  //   The really super [quick
+  //   brown fox] jumps over the
+  //   lazy dog.
+  //   -->
+  //.  <section style = "width: 25ch;">
+  //     The really super <a href = "#">quick brown fox</a>
+  //     jumps over the lazy dog.
+  //   </section>
+  // <body>
+
+  EXPECT_EQ(page_content().version(),
+            optimization_guide::proto::
+                ANNOTATED_PAGE_CONTENT_VERSION_ONLY_ACTIONABLE_ELEMENTS_1_0);
+
+  EXPECT_EQ(ActionableContentRootNode().children_nodes().size(), 1);
+  const auto& section = ActionableContentRootNode().children_nodes()[0];
+  EXPECT_EQ(section.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_CONTAINER);
+  EXPECT_EQ(section.children_nodes().size(), 3);
+
+  const auto& before_text = section.children_nodes()[0];
+  const auto& link = section.children_nodes()[1];
+  EXPECT_EQ(link.children_nodes().size(), 1);
+  const auto& link_text = link.children_nodes()[0];
+  const auto& after_text = section.children_nodes()[2];
+
+  EXPECT_EQ(before_text.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_TEXT);
+  EXPECT_EQ(link.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_ANCHOR);
+  EXPECT_EQ(after_text.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_TEXT);
+
+  // Nodes with 0 fragment_visible_bounding_boxes: before_text.
+  // Nodes with 2 fragment_visible_bounding_boxes: link, link_text and
+  // after_text.
+  // For the nodes that have them, the following is true:
+  // 1. The fragment boxes fit inside the visible_bounding_box
+  // 2. The second fragment box is below the first box.
+
+  ASSERT_EQ(before_text.content_attributes()
+                .geometry()
+                .fragment_visible_bounding_boxes()
+                .size(),
+            0);
+
+  ASSERT_EQ(link.content_attributes()
+                .geometry()
+                .fragment_visible_bounding_boxes()
+                .size(),
+            2);
+  // The top of the link's first fragment == top of its visible box.
+  ASSERT_EQ(link.content_attributes().geometry().visible_bounding_box().y(),
+            link.content_attributes()
+                .geometry()
+                .fragment_visible_bounding_boxes(0)
+                .y());
+  // The left of the link's first fragment > left of its visible box.
+  ASSERT_LT(link.content_attributes().geometry().visible_bounding_box().x(),
+            link.content_attributes()
+                .geometry()
+                .fragment_visible_bounding_boxes(0)
+                .x());
+  // The left of the second fragment == the the left of its visible box.
+  ASSERT_EQ(link.content_attributes().geometry().visible_bounding_box().x(),
+            link.content_attributes()
+                .geometry()
+                .fragment_visible_bounding_boxes(1)
+                .x());
+  // The second fragment box starts below the first.
+  ASSERT_LT(link.content_attributes()
+                .geometry()
+                .fragment_visible_bounding_boxes(0)
+                .y(),
+            link.content_attributes()
+                .geometry()
+                .fragment_visible_bounding_boxes(1)
+                .y());
+
+  ASSERT_EQ(link_text.content_attributes()
+                .geometry()
+                .fragment_visible_bounding_boxes()
+                .size(),
+            2);
+
+  // The link and link text have the same fragment bounding boxes.
+  ASSERT_EQ(link.content_attributes()
+                .geometry()
+                .fragment_visible_bounding_boxes(0)
+                .x(),
+            link_text.content_attributes()
+                .geometry()
+                .fragment_visible_bounding_boxes(0)
+                .x());
+  ASSERT_EQ(link.content_attributes()
+                .geometry()
+                .fragment_visible_bounding_boxes(0)
+                .y(),
+            link_text.content_attributes()
+                .geometry()
+                .fragment_visible_bounding_boxes(0)
+                .y());
+  ASSERT_EQ(link.content_attributes()
+                .geometry()
+                .fragment_visible_bounding_boxes(0)
+                .width(),
+            link_text.content_attributes()
+                .geometry()
+                .fragment_visible_bounding_boxes(0)
+                .width());
+  ASSERT_EQ(link.content_attributes()
+                .geometry()
+                .fragment_visible_bounding_boxes(0)
+                .height(),
+            link_text.content_attributes()
+                .geometry()
+                .fragment_visible_bounding_boxes(0)
+                .height());
+  ASSERT_EQ(link.content_attributes()
+                .geometry()
+                .fragment_visible_bounding_boxes(1)
+                .x(),
+            link_text.content_attributes()
+                .geometry()
+                .fragment_visible_bounding_boxes(1)
+                .x());
+  ASSERT_EQ(link.content_attributes()
+                .geometry()
+                .fragment_visible_bounding_boxes(1)
+                .y(),
+            link_text.content_attributes()
+                .geometry()
+                .fragment_visible_bounding_boxes(1)
+                .y());
+  ASSERT_EQ(link.content_attributes()
+                .geometry()
+                .fragment_visible_bounding_boxes(1)
+                .width(),
+            link_text.content_attributes()
+                .geometry()
+                .fragment_visible_bounding_boxes(1)
+                .width());
+  ASSERT_EQ(link.content_attributes()
+                .geometry()
+                .fragment_visible_bounding_boxes(1)
+                .height(),
+            link_text.content_attributes()
+                .geometry()
+                .fragment_visible_bounding_boxes(1)
+                .height());
+
+  ASSERT_EQ(after_text.content_attributes()
+                .geometry()
+                .fragment_visible_bounding_boxes()
+                .size(),
+            2);
+
+  // The second fragment bounding box starts below the first.
+  ASSERT_LT(after_text.content_attributes()
+                .geometry()
+                .fragment_visible_bounding_boxes(0)
+                .y(),
+            after_text.content_attributes()
+                .geometry()
+                .fragment_visible_bounding_boxes(1)
+                .y());
+}
+
 IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest, DisabledButton) {
   LoadPage(https_server()->GetURL("/disabled_button.html"),
            GetActionableAIPageContentOptions());
