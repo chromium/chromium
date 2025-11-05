@@ -269,9 +269,11 @@ export class FlagsAppElement extends CrLitElement {
         window, 'hashchange', () => this.highlightReferencedFlag());
 
     this.eventTracker_.add(window, 'keyup', (e: KeyboardEvent) => {
-      // Check for an active textarea inside a <flags-experiment>.
+      // Check for an active input field inside a <flags-experiment>.
       const activeElement = getDeepActiveElement();
-      if (activeElement && activeElement.nodeName === 'TEXTAREA') {
+      const isTextInput = activeElement?.nodeName &&
+          ['TEXTAREA', 'INPUT'].includes(activeElement.nodeName);
+      if (e.key === '/' && isTextInput) {
         return;
       }
       switch (e.key) {
