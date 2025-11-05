@@ -361,7 +361,9 @@ UIButton* CreateClearButton() {
   NSInteger numberOfLines = round(userTextHeight / singleLineHeight);
   [self.metricsRecorder setNumberOfLines:numberOfLines];
   _textView.textContainer.maximumNumberOfLines = numberOfLines;
-  [self updateLastLineClipping];
+  NSLineBreakMode defaultLineBreakMode =
+      [self lineBreakModeForUserText:userText];
+  [self updateLastLineClipping:defaultLineBreakMode];
 
   newHeight = MIN(newHeight, maxHeight);
   if (!_textInputHeightConstraint) {
@@ -376,30 +378,13 @@ UIButton* CreateClearButton() {
 }
 
 /// Updates the paragraph style to clip the last line.
-- (void)updateLastLineClipping {
+- (void)updateLastLineClipping:(NSLineBreakMode)defaultLineBreakMode {
   NSTextStorage* textStorage = _textView.textStorage;
   NSRange fullRange = NSMakeRange(0, textStorage.length);
 
-  // Remove existing paragraph styles to ensure a clean slate
-  [textStorage removeAttribute:NSParagraphStyleAttributeName range:fullRange];
-
-  // Determine the appropriate line break mode based on content
-  BOOL containsWhitespace =
-      [textStorage.string
-          rangeOfCharacterFromSet:[NSCharacterSet
-                                      whitespaceAndNewlineCharacterSet]]
-          .location != NSNotFound;
-  NSLineBreakMode defaultLineBreakMode = containsWhitespace
-                                             ? NSLineBreakByWordWrapping
-                                             : NSLineBreakByCharWrapping;
-
-  // Apply default word wrapping to the entire text
-  NSMutableParagraphStyle* wordWrapParagraphStyle =
-      [[NSMutableParagraphStyle alloc] init];
-  wordWrapParagraphStyle.lineBreakMode = defaultLineBreakMode;
-  [textStorage addAttribute:NSParagraphStyleAttributeName
-                      value:wordWrapParagraphStyle
-                      range:fullRange];
+  [self applyLineBreakMode:defaultLineBreakMode
+      toMutableAttributedString:textStorage
+                        inRange:fullRange];
 
   NSLayoutManager* layoutManager = _textView.layoutManager;
   NSUInteger numberOfGlyphs = [layoutManager numberOfGlyphs];
@@ -436,14 +421,11 @@ UIButton* CreateClearButton() {
 
     // Apply clipping to the last line and beyond.
     if (clipStartCharIndex < textStorage.length) {
-      NSMutableParagraphStyle* clipParagraphStyle =
-          [[NSMutableParagraphStyle alloc] init];
-      clipParagraphStyle.lineBreakMode = NSLineBreakByClipping;
       NSRange clipRange = NSMakeRange(clipStartCharIndex,
                                       textStorage.length - clipStartCharIndex);
-      [textStorage addAttribute:NSParagraphStyleAttributeName
-                          value:clipParagraphStyle
-                          range:clipRange];
+      [self applyLineBreakMode:NSLineBreakByClipping
+          toMutableAttributedString:textStorage
+                            inRange:clipRange];
     }
   }
 }
@@ -523,18 +505,75 @@ UIButton* CreateClearButton() {
 }
 
 /// Computes the height needed to layout `attributedText` with `drawingWidth`.
+/// The height is computed with `lineBreakModeForUserText`.
 - (CGFloat)heightForAttributedText:(NSAttributedString*)attributedText
                   withDrawingWidth:(CGFloat)drawingWidth {
   if (attributedText.length == 0) {
     return 0;
   }
+  NSMutableAttributedString* mutableString = [[NSMutableAttributedString alloc]
+      initWithAttributedString:attributedText];
+  NSLineBreakMode lineBreakMode =
+      [self lineBreakModeForUserText:attributedText];
+  NSRange fullRange = NSMakeRange(0, mutableString.length);
+  [self applyLineBreakMode:lineBreakMode
+      toMutableAttributedString:mutableString
+                        inRange:fullRange];
   CGSize constraintSize = CGSizeMake(drawingWidth, CGFLOAT_MAX);
   NSStringDrawingOptions options =
       NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading;
-  CGRect boundingRect = [attributedText boundingRectWithSize:constraintSize
-                                                     options:options
-                                                     context:nil];
+  CGRect boundingRect = [mutableString boundingRectWithSize:constraintSize
+                                                    options:options
+                                                    context:nil];
   return ceilf(boundingRect.size.height);
+}
+
+/// Returns the line break mode to apply for the text.
+- (NSLineBreakMode)lineBreakModeForUserText:(NSAttributedString*)text {
+  BOOL containsWhitespace =
+      [text.string
+          rangeOfCharacterFromSet:[NSCharacterSet
+                                      whitespaceAndNewlineCharacterSet]]
+          .location != NSNotFound;
+  NSLineBreakMode defaultLineBreakMode = containsWhitespace
+                                             ? NSLineBreakByWordWrapping
+                                             : NSLineBreakByCharWrapping;
+  return defaultLineBreakMode;
+}
+
+/// Applies a line break mode to an attributed string within a specific range,
+/// preserving all other paragraph style properties.
+///
+/// @param mutableAttributedString The mutable attributed string to modify.
+/// @param lineBreakMode The new NSLineBreakMode to apply.
+/// @param range The range within the attributed string to apply the line break
+/// mode.
+- (void)applyLineBreakMode:(NSLineBreakMode)lineBreakMode
+    toMutableAttributedString:
+        (NSMutableAttributedString*)mutableAttributedString
+                      inRange:(NSRange)range {
+  [mutableAttributedString
+      enumerateAttribute:NSParagraphStyleAttributeName
+                 inRange:range
+                 options:0
+              usingBlock:^(id value, NSRange currentRange, BOOL* stop) {
+                NSParagraphStyle* existingStyle = (NSParagraphStyle*)value;
+
+                // If a paragraph style exists, copy it. Otherwise, create a new
+                // default one.
+                NSMutableParagraphStyle* newParagraphStyle =
+                    existingStyle ? [existingStyle mutableCopy]
+                                  : [[NSMutableParagraphStyle alloc] init];
+
+                // Set the desired line break mode.
+                newParagraphStyle.lineBreakMode = lineBreakMode;
+
+                // Re-apply the modified style to the original range.
+                [mutableAttributedString
+                    addAttribute:NSParagraphStyleAttributeName
+                           value:newParagraphStyle
+                           range:currentRange];
+              }];
 }
 
 @end
