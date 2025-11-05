@@ -457,6 +457,17 @@ CONSOLE MESSAGE:     method constructor
 CONSOLE MESSAGE:     method releaseLock
 CONSOLE MESSAGE:     method write
 CONSOLE MESSAGE: [NAMESPACES]
+CONSOLE MESSAGE: namespace Temporal
+CONSOLE MESSAGE:     attribute @@toStringTag
+CONSOLE MESSAGE:     attribute Now
+CONSOLE MESSAGE:     method Duration
+CONSOLE MESSAGE:     method Instant
+CONSOLE MESSAGE:     method PlainDate
+CONSOLE MESSAGE:     method PlainDateTime
+CONSOLE MESSAGE:     method PlainMonthDay
+CONSOLE MESSAGE:     method PlainTime
+CONSOLE MESSAGE:     method PlainYearMonth
+CONSOLE MESSAGE:     method ZonedDateTime
 CONSOLE MESSAGE: namespace console
 CONSOLE MESSAGE:     attribute @@toStringTag
 CONSOLE MESSAGE:     method assert
@@ -946,6 +957,17 @@ CONSOLE MESSAGE:     method constructor
 CONSOLE MESSAGE:     method releaseLock
 CONSOLE MESSAGE:     method write
 CONSOLE MESSAGE: [NAMESPACES]
+CONSOLE MESSAGE: namespace Temporal
+CONSOLE MESSAGE:     attribute @@toStringTag
+CONSOLE MESSAGE:     attribute Now
+CONSOLE MESSAGE:     method Duration
+CONSOLE MESSAGE:     method Instant
+CONSOLE MESSAGE:     method PlainDate
+CONSOLE MESSAGE:     method PlainDateTime
+CONSOLE MESSAGE:     method PlainMonthDay
+CONSOLE MESSAGE:     method PlainTime
+CONSOLE MESSAGE:     method PlainYearMonth
+CONSOLE MESSAGE:     method ZonedDateTime
 CONSOLE MESSAGE: namespace console
 CONSOLE MESSAGE:     attribute @@toStringTag
 CONSOLE MESSAGE:     method assert

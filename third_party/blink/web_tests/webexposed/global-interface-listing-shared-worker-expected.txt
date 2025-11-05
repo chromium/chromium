@@ -3622,6 +3622,17 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     attribute RENDER_ATTACHMENT
 [Worker]     attribute STORAGE_BINDING
 [Worker]     attribute TEXTURE_BINDING
+[Worker] namespace Temporal
+[Worker]     attribute @@toStringTag
+[Worker]     attribute Now
+[Worker]     method Duration
+[Worker]     method Instant
+[Worker]     method PlainDate
+[Worker]     method PlainDateTime
+[Worker]     method PlainMonthDay
+[Worker]     method PlainTime
+[Worker]     method PlainYearMonth
+[Worker]     method ZonedDateTime
 [Worker] namespace console
 [Worker]     attribute @@toStringTag
 [Worker]     method assert
