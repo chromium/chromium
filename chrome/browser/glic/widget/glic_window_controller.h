@@ -150,6 +150,7 @@ class GlicWindowController {
   virtual base::CallbackListSubscription
   AddActiveInstanceChangedCallbackAndNotifyImmediately(
       ActiveInstanceChangedCallback callback) = 0;
+  virtual GlicInstance* GetActiveInstance() = 0;
 
   // Helper function to get the always detached flag.
   static bool AlwaysDetached() {

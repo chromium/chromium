@@ -332,6 +332,10 @@ base::CallbackListSubscription GlicInstanceCoordinatorImpl::
   return subscription;
 }
 
+GlicInstance* GlicInstanceCoordinatorImpl::GetActiveInstance() {
+  return active_instance_;
+}
+
 GlicInstanceImpl*
 GlicInstanceCoordinatorImpl::GetOrCreateGlicInstanceImplForTab(
     tabs::TabInterface* tab) {

@@ -130,6 +130,7 @@ class GlicInstanceCoordinatorImpl
   base::CallbackListSubscription
   AddActiveInstanceChangedCallbackAndNotifyImmediately(
       ActiveInstanceChangedCallback callback) override;
+  GlicInstance* GetActiveInstance() override;
 
   // Returns a pointer to an instance with a Floaty embedder or nullptr.
   GlicInstanceImpl* GetInstanceWithFloaty() const;
