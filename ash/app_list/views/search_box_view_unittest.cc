@@ -945,8 +945,7 @@ TEST_F(SearchBoxViewAutocompleteTest, SearchBoxAcceptsAutocompleteForClick) {
   // Forward |mouse_event| to HandleMouseEvent() directly because we cannot
   // test MouseEvents properly due to not having ash dependencies. Static cast
   // to TextfieldController because HandleGestureEvent() is a private method
-  // in SearchBoxView. TODO(crbug.com/41410759): Derive SearchBoxViewTest from
-  // AshTestBase in order to test events using EventGenerator instead.
+  // in SearchBoxView.
   static_cast<views::TextfieldController*>(view())->HandleMouseEvent(
       view()->search_box(), mouse_event);
   // Search box autocomplete suggestion is accepted, and triggers another query.
@@ -965,9 +964,7 @@ TEST_F(SearchBoxViewAutocompleteTest, SearchBoxAcceptsAutocompleteForTap) {
   // Forward |gesture_event| to HandleGestureEvent() directly because we
   // cannot test GestureEvents properly due to not having ash dependencies.
   // Static cast to TextfieldController because HandleGestureEvent() is
-  // private in SearchBoxView. TODO(crbug.com/41410759): Derive
-  // SearchBoxViewTest from AshTestBase in order to test events using
-  // EventGenerator instead.
+  // private in SearchBoxView.
   static_cast<views::TextfieldController*>(view())->HandleGestureEvent(
       view()->search_box(), gesture_event);
   // Search box autocomplete suggestion is accepted, and trigger updated query.
