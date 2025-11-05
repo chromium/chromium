@@ -202,6 +202,8 @@ public class PhysicalDisplayAndroidTest {
     public void teardown() {
         CommandLine.getInstance().removeSwitch(DisplaySwitches.AUTOMOTIVE_WEB_UI_SCALE_UP_ENABLED);
         CommandLine.getInstance().removeSwitch(DisplaySwitches.XR_WEB_UI_SCALE_UP_ENABLED);
+        DisplayUtil.resetUiScalingFactorForAutomotiveForTesting();
+        DisplayUtil.resetUiScalingFactorForXrForTesting();
     }
 
     private void setupAutomotive() {
