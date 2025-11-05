@@ -1712,11 +1712,26 @@ const FeatureEntry::FeatureVariation kNtpComposeboxVariations[] = {
 const FeatureEntry::FeatureParam kShowNextRealboxTallBottomContext[] = {
     {"RealboxLayoutMode", ntp_realbox::kRealboxLayoutModeTallBottomContext},
 };
+const FeatureEntry::FeatureParam
+    kShowNextRealboxTallBottomContextCyclingPlaceholders[] = {
+        {"RealboxLayoutMode", ntp_realbox::kRealboxLayoutModeTallBottomContext},
+        {"CyclingPlaceholders", "true"},
+};
 const FeatureEntry::FeatureParam kShowNextRealboxTallTopContext[] = {
     {"RealboxLayoutMode", ntp_realbox::kRealboxLayoutModeTallTopContext},
 };
+const FeatureEntry::FeatureParam
+    kShowNextRealboxTallTopContextCyclingPlaceholders[] = {
+        {"RealboxLayoutMode", ntp_realbox::kRealboxLayoutModeTallTopContext},
+        {"CyclingPlaceholders", "true"},
+};
 const FeatureEntry::FeatureParam kShowNextRealboxCompact[] = {
     {"RealboxLayoutMode", ntp_realbox::kRealboxLayoutModeCompact},
+};
+const FeatureEntry::FeatureParam kShowNextRealboxCompactCyclingPlaceholders[] =
+    {
+        {"RealboxLayoutMode", ntp_realbox::kRealboxLayoutModeCompact},
+        {"CyclingPlaceholders", "true"},
 };
 
 const FeatureEntry::FeatureVariation kNtpRealboxNextVariations[] = {
@@ -1728,6 +1743,15 @@ const FeatureEntry::FeatureVariation kNtpRealboxNextVariations[] = {
      nullptr},
     {"- Show Next Realbox (Compact)", kShowNextRealboxCompact,
      std::size(kShowNextRealboxCompact), nullptr},
+    {"- Show Next Realbox: Bottom Context, Cycling placeholders",
+     kShowNextRealboxTallBottomContextCyclingPlaceholders,
+     std::size(kShowNextRealboxTallBottomContextCyclingPlaceholders), nullptr},
+    {"- Show Next Realbox: Top Context, Cycling placeholders",
+     kShowNextRealboxTallTopContextCyclingPlaceholders,
+     std::size(kShowNextRealboxTallTopContextCyclingPlaceholders), nullptr},
+    {"- Show Next Realbox: Compact, Cycling placeholders",
+     kShowNextRealboxCompactCyclingPlaceholders,
+     std::size(kShowNextRealboxCompactCyclingPlaceholders), nullptr},
 };
 
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) ||

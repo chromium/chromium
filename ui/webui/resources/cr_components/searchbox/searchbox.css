@@ -384,6 +384,10 @@ cr-searchbox-icon {
   font-weight: 400;
 }
 
+:host([ntp-realbox-next-enabled]) input:focus::placeholder{
+  visibility: visible;
+}
+
 :host([ntp-realbox-next-enabled]) {
   --cr-searchbox-border-radius: 26px;
   --cr-searchbox-dropdown-padding-bottom: 12px;
