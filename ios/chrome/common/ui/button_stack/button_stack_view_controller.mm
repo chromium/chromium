@@ -385,17 +385,17 @@ typedef NS_ENUM(NSInteger, ButtonStackButtonPosition) {
 // Sets up the layout constraints for the contentView and actionStackView.
 - (void)setupConstraints {
   UILayoutGuide* safeAreaLayoutGuide = self.view.safeAreaLayoutGuide;
+  UIView* view = self.view;
 
   // Scroll container view constraints.
   [NSLayoutConstraint activateConstraints:@[
-    [_scrollContainerView.topAnchor
-        constraintEqualToAnchor:safeAreaLayoutGuide.topAnchor],
+    [_scrollContainerView.topAnchor constraintEqualToAnchor:view.topAnchor],
     [_scrollContainerView.bottomAnchor
         constraintEqualToAnchor:_actionStackView.topAnchor],
     [_scrollContainerView.leadingAnchor
-        constraintEqualToAnchor:safeAreaLayoutGuide.leadingAnchor],
+        constraintEqualToAnchor:view.leadingAnchor],
     [_scrollContainerView.trailingAnchor
-        constraintEqualToAnchor:safeAreaLayoutGuide.trailingAnchor],
+        constraintEqualToAnchor:view.trailingAnchor],
   ]];
   AddSameConstraints(_scrollView, _scrollContainerView);
 
@@ -418,7 +418,7 @@ typedef NS_ENUM(NSInteger, ButtonStackButtonPosition) {
   _actionStackSafeAreaBottomConstraint.priority = UILayoutPriorityDefaultHigh;
 
   _actionStackBottomConstraint = [_actionStackView.bottomAnchor
-      constraintLessThanOrEqualToAnchor:self.view.bottomAnchor
+      constraintLessThanOrEqualToAnchor:view.bottomAnchor
                                constant:-self.actionStackBottomMargin];
 
   // Action stack view constraints.
