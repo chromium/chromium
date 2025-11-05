@@ -861,6 +861,21 @@
             ]
         }
     ],
+    "AndroidPinnedTabs": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AndroidPinnedTabs"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidPinnedTabsTabletTabStrip": [
         {
             "platforms": [
