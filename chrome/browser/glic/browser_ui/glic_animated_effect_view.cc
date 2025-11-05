@@ -116,6 +116,12 @@ void GlicAnimatedEffectView::OnPaint(gfx::Canvas* canvas) {
     return;
   }
 
+  if (base::FeatureList::IsEnabled(features::kGlicForceNonSkSLBorder)) {
+    views::View::OnPaint(canvas);
+    DrawEffect(canvas, cc::PaintFlags());
+    return;
+  }
+
   std::vector<cc::PaintShader::FloatUniform> float_uniforms;
   std::vector<cc::PaintShader::Float2Uniform> float2_uniforms;
   std::vector<cc::PaintShader::Float4Uniform> float4_uniforms;
@@ -268,7 +274,8 @@ void GlicAnimatedEffectView::Show() {
   SetVisible(true);
 
   skip_animation_cycle_ =
-      gfx::Animation::PrefersReducedMotion() || ForceSimplifiedShader();
+      gfx::Animation::PrefersReducedMotion() || ForceSimplifiedShader() ||
+      base::FeatureList::IsEnabled(features::kGlicForceNonSkSLBorder);
 
   ui::Compositor* compositor = layer()->GetCompositor();
   if (!compositor) {
@@ -457,6 +464,30 @@ void GlicAnimatedEffectView::UpdateShader() {
             : ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
                   IDR_GLIC_BORDER_SHADER);
   }
+}
+
+void GlicAnimatedEffectView::SetDefaultColors(cc::PaintFlags& paint_flags,
+                                              const gfx::RectF& bounds) const {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  const int kNumDefaultColors = 3;
+  if (colors_.size() >= kNumDefaultColors) {
+    std::vector<SkColor4f> colors;
+    for (size_t i = 0; i < kNumDefaultColors; ++i) {
+      colors.push_back(SkColor4f::FromColor(colors_[i]));
+    }
+    SkPoint points[2] = {
+        SkPoint::Make(bounds.x(), bounds.y()),
+        SkPoint::Make(bounds.right(), bounds.bottom()),
+    };
+    paint_flags.setShader(cc::PaintShader::MakeLinearGradient(
+        points, &colors[0], nullptr, kNumDefaultColors, SkTileMode::kClamp));
+  } else {
+    auto variant = ui::ColorVariant(ui::kColorSysPrimary);
+    paint_flags.setColor(variant.ResolveToSkColor(GetColorProvider()));
+  }
+#else
+  paint_flags.setColor(SK_ColorGRAY);
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
 
 BEGIN_METADATA(GlicAnimatedEffectView)

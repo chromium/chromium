@@ -115,6 +115,9 @@ class GlicAnimatedEffectView : public views::View,
 
   void UpdateShader();
 
+  void SetDefaultColors(cc::PaintFlags& paint_flags,
+                        const gfx::RectF& bounds) const;
+
   raw_ptr<Browser> browser_ = nullptr;
 
   std::string shader_;

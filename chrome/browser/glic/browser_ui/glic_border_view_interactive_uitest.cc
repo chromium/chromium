@@ -210,8 +210,10 @@ class GlicBorderViewUiTest : public test::InteractiveGlicTest {
  public:
   GlicBorderViewUiTest() {
     // Toggling UiGpuRasterization is only possible via command line.
-    features_.InitFromCommandLine("UiGpuRasterization",
-                                  "GlicForceSimplifiedBorder");
+    features_.InitFromCommandLine(
+        "UiGpuRasterization",
+        // These features disable animation, so disable them here.
+        "GlicForceSimplifiedBorder,GlicForceNonSkSLBorder");
   }
   ~GlicBorderViewUiTest() override = default;
 

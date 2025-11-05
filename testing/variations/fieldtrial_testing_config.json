@@ -11511,6 +11511,23 @@
             ]
         }
     ],
+    "GlicForceNonSkSLBorder": [
+        {
+            "platforms": [
+                "mac",
+                "windows",
+                "linux"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "GlicForceNonSkSLBorder"
+                    ]
+                }
+            ]
+        }
+    ],
     "GlicForceSimplifiedBorder": [
         {
             "platforms": [

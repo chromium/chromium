@@ -367,6 +367,8 @@ extern const base::FeatureParam<bool> kGlicStatusIconOpenMenuWithSecondaryClick;
 COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kGlicForceSimplifiedBorder);
 COMPONENT_EXPORT(CHROME_FEATURES)
+BASE_DECLARE_FEATURE(kGlicForceNonSkSLBorder);
+COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<int> kGlicPreLoadingTimeMs;
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<int> kGlicMinLoadingTimeMs;
