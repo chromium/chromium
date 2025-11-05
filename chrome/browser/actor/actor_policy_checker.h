@@ -39,7 +39,7 @@ class ActorPolicyChecker {
                    AggregatedJournal& journal,
                    TaskId task_id,
                    const absl::flat_hash_set<url::Origin>& allowed_origins,
-                   DecisionCallback callback);
+                   DecisionCallbackWithReason callback);
   void MayActOnUrl(const GURL& url,
                    bool allow_insecure_http,
                    Profile* profile,

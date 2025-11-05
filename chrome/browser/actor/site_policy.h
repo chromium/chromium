@@ -55,7 +55,7 @@ void MayActOnTab(const tabs::TabInterface& tab,
                  AggregatedJournal& journal,
                  TaskId task_id,
                  const absl::flat_hash_set<url::Origin>& allowed_origins,
-                 DecisionCallback callback);
+                 DecisionCallbackWithReason callback);
 
 // Like MayActOnTab, but considers a URL on its own.
 // This can optionally allow insecure HTTP URLs as in practice sites may have

@@ -303,16 +303,13 @@ void MayActOnTab(const tabs::TabInterface& tab,
                  AggregatedJournal& journal,
                  TaskId task_id,
                  const absl::flat_hash_set<url::Origin>& allowed_origins,
-                 DecisionCallback callback) {
+                 DecisionCallbackWithReason callback) {
   content::WebContents& web_contents = *tab.GetContents();
 
   const GURL& url = web_contents.GetPrimaryMainFrame()->GetLastCommittedURL();
   std::unique_ptr<DecisionWrapper> decision_wrapper =
-      std::make_unique<DecisionWrapper>(
-          journal, url, task_id, "MayActOnTab",
-          base::BindOnce([](MayActOnUrlBlockReason block_reason) {
-            return block_reason == MayActOnUrlBlockReason::kAllowed;
-          }).Then(std::move(callback)));
+      std::make_unique<DecisionWrapper>(journal, url, task_id, "MayActOnTab",
+                                        std::move(callback));
 
   if (web_contents.GetPrimaryMainFrame()->IsErrorDocument()) {
     decision_wrapper->Reject("Tab is an error document",

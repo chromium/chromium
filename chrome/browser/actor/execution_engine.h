@@ -18,6 +18,7 @@
 #include "base/types/id_type.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/aggregated_journal.h"
+#include "chrome/browser/actor/site_policy.h"
 #include "chrome/browser/actor/tools/tool_controller.h"
 #include "chrome/browser/actor/tools/tool_delegate.h"
 #include "chrome/browser/password_manager/actor_login/actor_login_service.h"
@@ -135,6 +136,9 @@ class ExecutionEngine : public ToolDelegate {
                             NavigationDecisionCallback callback);
 
   static std::string StateToString(State state);
+
+  void OnMayActOnTabDecision(const url::Origin& evaluated_origin,
+                             MayActOnUrlBlockReason block_reason);
 
   void UserTakeover(mojom::ActionResultCode takeover_response_code,
                     base::OnceCallback<void(bool)> callback);

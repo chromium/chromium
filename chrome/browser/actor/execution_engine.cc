@@ -510,8 +510,36 @@ void ExecutionEngine::SafetyChecksForNextAction() {
   ActorKeyedService::Get(profile_)->GetPolicyChecker().MayActOnTab(
       *tab, *journal_, task_->id(), allowed_navigation_origins_,
       base::BindOnce(
-          &ExecutionEngine::DidFinishAsyncSafetyChecks, GetWeakPtr(),
+          &ExecutionEngine::OnMayActOnTabDecision, GetWeakPtr(),
           tab->GetContents()->GetPrimaryMainFrame()->GetLastCommittedOrigin()));
+}
+
+void ExecutionEngine::OnMayActOnTabDecision(
+    const url::Origin& evaluated_origin,
+    MayActOnUrlBlockReason block_reason) {
+  switch (block_reason) {
+    case MayActOnUrlBlockReason::kAllowed:
+      DidFinishAsyncSafetyChecks(evaluated_origin, /*may_act=*/true);
+      return;
+    case MayActOnUrlBlockReason::kOptimizationGuideBlock:
+      if (base::FeatureList::IsEnabled(kGlicCrossOriginNavigationGating)) {
+        SendUserConfirmationDialogRequest(
+            evaluated_origin,
+            base::BindOnce(&ExecutionEngine::DidFinishAsyncSafetyChecks,
+                           GetWeakPtr(), evaluated_origin));
+        return;
+      }
+      [[fallthrough]];
+    case MayActOnUrlBlockReason::kActuactionDisabled:
+    case MayActOnUrlBlockReason::kExternalProtocol:
+    case MayActOnUrlBlockReason::kIpAddress:
+    case MayActOnUrlBlockReason::kLookalikeDomain:
+    case MayActOnUrlBlockReason::kSafeBrowsing:
+    case MayActOnUrlBlockReason::kTabIsErrorDocument:
+    case MayActOnUrlBlockReason::kUrlNotInAllowlist:
+    case MayActOnUrlBlockReason::kWrongScheme:
+      DidFinishAsyncSafetyChecks(evaluated_origin, /*may_act=*/false);
+  }
 }
 
 void ExecutionEngine::DidFinishAsyncSafetyChecks(

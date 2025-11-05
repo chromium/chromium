@@ -519,6 +519,37 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineInteractiveUiTest,
       "Actor.NavigationGating.AllowListSize", 2, 1);
 }
 
+IN_PROC_BROWSER_TEST_P(ExecutionEngineInteractiveUiTest,
+                       ConfirmWithUserForMayActOnTab) {
+  const GURL start_url = embedded_https_test_server().GetURL(
+      "blocked.example.com", "/actor/blank.html");
+
+  OpenGlicAndCreateTask();
+
+  // Mock IPC response will always confirm the request.
+  RunTestSequence(CreateMockWebClientRequest(
+      content::JsReplace(kHandleUserConfirmationDialogTempl, true)));
+
+  // Start on blocked.example.com.
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), start_url));
+  // Clicks on full-page link to bar.com.
+  std::unique_ptr<ToolRequest> click_link =
+      MakeClickRequest(*active_tab(), gfx::Point(1, 1));
+
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(click_link), result.GetCallback());
+  ExpectOkResult(result);
+
+  actor_keyed_service().ResetForTesting();
+
+  // Should log that permission was denied the one time it was prompted.
+  histogram_tester_for_init_.ExpectBucketCount(
+      "Actor.NavigationGating.PermissionGranted", true, 1);
+  // The allow-list should have 1 entry at the end of the task.
+  histogram_tester_for_init_.ExpectBucketCount(
+      "Actor.NavigationGating.AllowListSize", 1, 1);
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          ExecutionEngineInteractiveUiTest,
                          testing::Bool(),
