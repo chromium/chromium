@@ -26,14 +26,16 @@ class CORE_EXPORT HTMLMenuItemElement final : public HTMLElement {
 
   bool IsCheckable() const;
   bool checked() const;
-  // This only sets `this` to checked if `IsCheckable()` is true.
-  void setChecked(bool);
+  // This only sets `this` to checked if `IsCheckable()` is true. The return
+  // value is true if this is a checkable menu item *and* a containing menu list
+  // should be closed after changing the checked state.
+  bool setChecked(bool);
   bool ShouldAppearChecked() const;
 
   HTMLMenuBarElement* OwnerMenuBarElement() const;
   HTMLMenuListElement* OwnerMenuListElement() const;
 
-  bool CanBeCommandInvoker() const override { return true; }
+  bool CanBeCommandInvoker() const override;
 
   Node::InsertionNotificationRequest InsertedInto(ContainerNode&) override;
   void RemovedFrom(ContainerNode&) override;
@@ -54,6 +56,7 @@ class CORE_EXPORT HTMLMenuItemElement final : public HTMLElement {
   FocusableState SupportsFocus(UpdateBehavior update_behavior) const override;
   bool ShouldHaveFocusAppearance() const override;
 
+  HTMLElement* InvokesSubmenuOrPopover() const;
   HTMLMenuListElement* InvokesSubmenu() const;
   // This is generally used when a menuitem has been selected, and the "tree" of
   // menus should now close. It finds the innermost (nearest ancestor) menulist
@@ -62,6 +65,8 @@ class CORE_EXPORT HTMLMenuItemElement final : public HTMLElement {
   // such menulist, which (via popover close behavior) closes the tree.
   HTMLMenuListElement* CloseOutermostContainingMenuList(
       Element** invoker = nullptr);
+  void ActivateMenuItem();
+  bool HandleMenuPointerEvents(Event&);
   void HandleMenuKeyboardEvents(Event&);
 
   // Traverse ancestors to find the nearest menubar or menulist ancestor.
@@ -77,6 +82,8 @@ class CORE_EXPORT HTMLMenuItemElement final : public HTMLElement {
 
   // Represents 'checkedness'.
   bool is_checked_;
+  // This is used to avoid double-invoking target menus and popovers.
+  bool ignore_next_dom_activate_ = false;
 
   friend class HTMLMenuItemElementTest;
 };
