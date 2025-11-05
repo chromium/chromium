@@ -413,12 +413,11 @@ void AwBrowserMainParts::RegisterSyntheticTrials() {
       partitioned_cookies_enablement_state ? "Control" : "Disabled",
       variations::SyntheticTrialAnnotationMode::kCurrentLog);
 
-  bool in_seed_experiment = base::FeatureList::GetStateIfOverridden(
-                                features::kWebViewReducedSeedExpiration)
-                                .has_value() ||
-                            base::FeatureList::GetStateIfOverridden(
-                                features::kWebViewReducedSeedRequestPeriod)
-                                .has_value();
+  bool in_seed_experiment =
+      android_webview::CachedFlags::IsCachedFeatureOverridden(
+          features::kWebViewReducedSeedExpiration) ||
+      android_webview::CachedFlags::IsCachedFeatureOverridden(
+          features::kWebViewReducedSeedRequestPeriod);
   bool reduced_seed_expiration = android_webview::CachedFlags::IsEnabled(
       features::kWebViewReducedSeedExpiration);
   bool reduced_seed_request_period = android_webview::CachedFlags::IsEnabled(
