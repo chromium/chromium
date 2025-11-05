@@ -1020,7 +1020,7 @@ export declare interface OnResponseStoppedDetails {
 
 /**
  * A rectangle with a position and size. All coordinate and size values are in
- * DIPs.
+ * pixels.
  */
 export declare interface Rect {
   x: number;
@@ -1041,8 +1041,7 @@ export declare interface CapturedRegion {
    * A rectangular region captured from a document in a tab.
    *
    * The coordinate system is relative to the top-left corner of the document.
-   * The units are in device-independent pixels (DIPs), which are equivalent to
-   * CSS pixels.
+   * The units are in pixels and match screenshot pixel dimensions.
    *
    * - **Position (`x`, `y`):** Coordinates of the top-left corner of the
    *   rectangle, relative to the document's origin (0,0). Can be negative if
