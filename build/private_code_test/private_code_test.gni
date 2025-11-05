@@ -10,6 +10,7 @@ _default_allowed_violations = [
 
   # Defines public counterpart with same entries.
   "../../components/metrics/internal/server_urls.grd",
+  "../../components/autofill/core/browser/geo/chrome_alternative_state_name_maps/alternative_state_name_map_resources.grd",
 
   # TODO(b/452971335): Audit entries below.
   "../../chrome/browser/internal/resources/additional_modules_list.input",
