@@ -70,7 +70,7 @@ BASE_FEATURE(kFormsClassificationsMqlsLogging,
                  : base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPasswordChangeSubmissionMqlsLogging,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kNotificationContentDetectionMqlsLogging,
              base::FEATURE_ENABLED_BY_DEFAULT);

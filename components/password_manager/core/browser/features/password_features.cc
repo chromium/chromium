@@ -58,7 +58,7 @@ BASE_FEATURE(kCheckVisibilityInChangePasswordFormWaiter,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCheckLoginStateBeforePasswordChange,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kClearUndecryptablePasswords,
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_IOS)
@@ -186,7 +186,7 @@ BASE_FEATURE(kMarkAllCredentialsAsLeaked, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kEnablePasswordManagerMojoApi, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
-BASE_FEATURE(kImprovedPasswordChangeService, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kImprovedPasswordChangeService, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kRunPasswordChangeInBackgroundTab,
              base::FEATURE_DISABLED_BY_DEFAULT);

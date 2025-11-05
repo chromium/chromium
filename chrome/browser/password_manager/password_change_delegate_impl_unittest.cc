@@ -206,6 +206,7 @@ TEST_F(PasswordChangeDelegateImplTest, PasswordChangeFormNotFound) {
   ukm::TestAutoSetUkmRecorder test_ukm_recorder;
 
   delegate()->StartPasswordChangeFlow();
+  delegate()->OnUserSkippedLoginCheck();
 
   EXPECT_EQ(delegate()->GetCurrentState(),
             PasswordChangeDelegate::State::kWaitingForChangePasswordForm);
