@@ -506,7 +506,7 @@ const base::FeatureParam<std::string>
         "[]"};
 
 const base::FeatureParam<bool> kLensOverlayEduActionChipDisabledByGlic{
-    &kLensOverlayEduActionChip, "disabled-by-glic", false};
+    &kLensOverlayEduActionChip, "disabled-by-glic", true};
 
 const base::FeatureParam<int> kLensOverlayEduActionChipMaxShownCount{
     &kLensOverlayEduActionChip, "max-shown-count", 3};
