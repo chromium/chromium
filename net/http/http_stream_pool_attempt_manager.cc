@@ -1638,7 +1638,7 @@ void HttpStreamPool::AttemptManager::HandleFinalError(int error) {
   CancelTcpBasedAttempts(StreamSocketCloseReason::kAbort);
   CancelQuicAttempt(final_error_to_notify_jobs());
   NotifyPreconnectsComplete(final_error_to_notify_jobs());
-  NotifyJobOfFailure();
+  NotifyRequestJobsOfFailure();
 
   CHECK(tcp_based_attempt_slots_.empty());
   CHECK(request_jobs_.empty());
@@ -1649,53 +1649,37 @@ void HttpStreamPool::AttemptManager::HandleFinalError(int error) {
   // `this` may be deleted.
 }
 
-HttpStreamPool::AttemptManager::FailureKind
-HttpStreamPool::AttemptManager::DetermineFailureKind() {
-  if (IsCertificateError(final_error_to_notify_jobs())) {
-    return FailureKind::kCertifcateError;
-  }
-
-  if (final_error_to_notify_jobs() == ERR_SSL_CLIENT_AUTH_CERT_NEEDED) {
-    return FailureKind::kNeedsClientAuth;
-  }
-
-  return FailureKind::kStreamFailed;
-}
-
-void HttpStreamPool::AttemptManager::NotifyJobOfFailure() {
+void HttpStreamPool::AttemptManager::NotifyRequestJobsOfFailure() {
   CHECK_EQ(availability_state_, AvailabilityState::kFailing);
 
-  const FailureKind kind = DetermineFailureKind();
+  const int error = final_error_to_notify_jobs();
   while (Job* job = ExtractFirstJobToNotify()) {
-    job->AddConnectionAttempts(connection_attempts_);
+    NotifySingleRequestJobOfFailure(*job, error, connection_attempts_);
+  }
+}
 
-    switch (kind) {
-      case FailureKind::kStreamFailed: {
-        TRACE_EVENT_INSTANT("net.stream", "AttemptManager::StreamFailed",
-                            track_,
-                            NetLogWithSourceToFlow(job->request_net_log()));
-        job->OnStreamFailed(final_error_to_notify_jobs(), net_error_details_,
-                            resolve_error_info_);
-        break;
-      }
-      case FailureKind::kCertifcateError: {
-        CHECK(cert_error_ssl_info_.has_value());
-        TRACE_EVENT_INSTANT("net.stream", "AttemptManager::CertificateError",
-                            track_,
-                            NetLogWithSourceToFlow(job->request_net_log()));
-        job->OnCertificateError(final_error_to_notify_jobs(),
-                                *cert_error_ssl_info_);
-        break;
-      }
-      case FailureKind::kNeedsClientAuth: {
-        CHECK(client_auth_cert_info_.get());
-        TRACE_EVENT_INSTANT("net.stream", "AttemptManager::NeedsClientAuth",
-                            track_,
-                            NetLogWithSourceToFlow(job->request_net_log()));
-        job->OnNeedsClientAuth(client_auth_cert_info_.get());
-        break;
-      }
-    }
+void HttpStreamPool::AttemptManager::NotifySingleRequestJobOfFailure(
+    Job& job,
+    int error,
+    const ConnectionAttempts& connection_attempts) {
+  CHECK_EQ(availability_state_, AvailabilityState::kFailing);
+
+  job.AddConnectionAttempts(connection_attempts);
+
+  if (IsCertificateError(error)) {
+    CHECK(cert_error_ssl_info_.has_value());
+    TRACE_EVENT_INSTANT("net.stream", "AttemptManager::CertificateError",
+                        track_, NetLogWithSourceToFlow(job.request_net_log()));
+    job.OnCertificateError(final_error_to_notify_jobs(), *cert_error_ssl_info_);
+  } else if (final_error_to_notify_jobs() == ERR_SSL_CLIENT_AUTH_CERT_NEEDED) {
+    TRACE_EVENT_INSTANT("net.stream", "AttemptManager::NeedsClientAuth", track_,
+                        NetLogWithSourceToFlow(job.request_net_log()));
+    job.OnNeedsClientAuth(client_auth_cert_info_.get());
+  } else {
+    TRACE_EVENT_INSTANT("net.stream", "AttemptManager::StreamFailed", track_,
+                        NetLogWithSourceToFlow(job.request_net_log()));
+    job.OnStreamFailed(final_error_to_notify_jobs(), net_error_details_,
+                       resolve_error_info_);
   }
 }
 

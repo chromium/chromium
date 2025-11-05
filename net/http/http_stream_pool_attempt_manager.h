@@ -271,14 +271,6 @@ class HttpStreamPool::AttemptManager
     kFailing = 2,
   };
 
-  // Represents failure of connection attempts. Used to notify job of completion
-  // for failure cases.
-  enum class FailureKind {
-    kStreamFailed,
-    kCertifcateError,
-    kNeedsClientAuth,
-  };
-
   // Represents reasons if future connection attempts could be blocked or not.
   enum class CanAttemptResult {
     kAttempt,
@@ -427,12 +419,16 @@ class HttpStreamPool::AttemptManager
   // cancels in-flight TCP based attempts and QuicAttempt's, if they exist.
   void HandleFinalError(int error);
 
-  // Calculate the failure kind to notify jobs of failure. Used to call one of
-  // the job's methods.
-  FailureKind DetermineFailureKind();
+  // Notifies the final failure to all request jobs.
+  void NotifyRequestJobsOfFailure();
 
-  // Notifies a failure to a single request job. Used by NotifyFailure().
-  void NotifyJobOfFailure();
+  // Notifies a failure to a single request job.
+  // Note that `connection_attempts` is a list of failed IPEndPoints, not
+  // TcpBasedAttempt or QuicAttempt.
+  void NotifySingleRequestJobOfFailure(
+      Job& job,
+      int error,
+      const ConnectionAttempts& connection_attempts);
 
   // Notifies all preconnects of completion.
   void NotifyPreconnectsComplete(int rv);
