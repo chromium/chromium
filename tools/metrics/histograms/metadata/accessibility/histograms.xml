@@ -137,7 +137,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Accessibility.Android.Cache.MaxNodesInCache" units="count"
     expires_after="2026-06-01">
-  <owner>aaronmoss@google.com</owner>
+  <owner>mschillaci@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
     Tracks the maximum number of AccessibilityNodeInfo objects that were stored
@@ -145,21 +145,9 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Accessibility.Android.Cache.PercentageFreshInCache" units="%"
-    expires_after="2026-06-01">
-  <owner>aaronmoss@google.com</owner>
-  <owner>chrome-a11y-core@google.com</owner>
-  <summary>
-    Tracks the percentage of calls from the Android framework serviced from
-    cache during a single session where the cached AccessibilityNodeInfo object
-    was still fresh. Only produced in the
-    AccessibilityCheckJavaNodeCacheFreshness experiment.
-  </summary>
-</histogram>
-
 <histogram name="Accessibility.Android.Cache.PercentageRetrievedFromCache"
     units="%" expires_after="2026-06-01">
-  <owner>aaronmoss@google.com</owner>
+  <owner>mschillaci@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
     Tracks the percentage of calls from the Android framework to create a new

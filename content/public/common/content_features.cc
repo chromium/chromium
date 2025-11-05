@@ -1247,11 +1247,6 @@ BASE_FEATURE(kWebXr, "WebXR", base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kWebPermissionsApi, base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID)
-// When enabled, will unconditionally poll the C++ cache to check Java node
-// cache freshness to test correctness of Java node cache.
-BASE_FEATURE(kAccessibilityCheckJavaNodeCacheFreshness,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kAccessibilityDeprecateJavaNodeCache,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
