@@ -20,9 +20,10 @@ fn get_field_at_ordinal(
     Ok(field_value)
 }
 
-// FOR_RELEASE: If we can figure out how to make it typecheck, it would be nicer to have a
-// single function/macro that validates the type and extracts the value at once. Currently we
-// have to match twice, since the rust type system forgets that we validated the type.
+// FOR_RELEASE: If we can figure out how to make it typecheck, it would be nicer
+// to have a single function/macro that validates the type and extracts the
+// value at once. Currently we have to match twice, since the rust type system
+// forgets that we validated the type.
 fn check_value_has_expected_type(value: &MojomValue, expected_type: &MojomWireType) -> Result<()> {
     let matches = match (expected_type, value) {
         (MojomWireType::Leaf { leaf_type, .. }, _) => match (leaf_type, value) {

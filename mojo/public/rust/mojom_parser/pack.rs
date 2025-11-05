@@ -25,22 +25,25 @@ fn bytes_to_align(current_offset: usize, required_alignment: usize) -> usize {
     return (required_alignment - (current_offset % required_alignment)) % required_alignment;
 }
 
-/// Represents a single field which has been packed into wire format, with enough
-/// information to both construct the binary representation and map back to the
-/// original type.
+/// Represents a single field which has been packed into wire format, with
+/// enough information to both construct the binary representation and map back
+/// to the original type.
 struct PackedField<'a> {
     /// The name of the field in the original struct definition.
     name: &'a str,
     /// The type of the field, which has been recursively packed.
     ty: MojomWireType,
-    /// Number of bytes from the beginning of the struct to the start of the field.
+    /// Number of bytes from the beginning of the struct to the start of the
+    /// field.
     start_offset: usize,
-    /// Number of bytes from the beginning of the struct to the end of the field.
+    /// Number of bytes from the beginning of the struct to the end of the
+    /// field.
     end_offset: usize,
 }
 
 impl<'a> PackedField<'a> {
-    /// Create a new PackedField given the original field's information and its location
+    /// Create a new PackedField given the original field's information and its
+    /// location
     fn new(name: &'a str, ty: MojomWireType, start_offset: usize) -> PackedField<'a> {
         PackedField { start_offset: start_offset, end_offset: start_offset + ty.size(), name, ty }
     }
@@ -67,7 +70,8 @@ fn try_pack_bool(ordinal: Ordinal, packed_field: &mut MojomWireType) -> bool {
 }
 
 /// Transform the fields of a Mojom struct into their packed representation.
-/// This uses the basic algorithm from mojo/public/tools/mojom/mojom/generate/pack.py
+/// This uses the basic algorithm from
+/// mojo/public/tools/mojom/mojom/generate/pack.py
 fn pack_struct(fields: &Vec<(String, MojomType)>) -> Vec<(String, MojomWireType)> {
     let mut packed_fields: Vec<PackedField> = vec![];
     let mut total_length = 0;

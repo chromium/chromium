@@ -66,34 +66,35 @@ pub enum MojomValue {
     Array(Vec<MojomValue>),
 }
 
-/******************************************************************************
- * All the following types relate to how Mojom values are laid out when
- * serialized to be sent in a message.
- ******************************************************************************/
+/**************************************************************** */
+// All the following types relate to how Mojom values are laid
+// out when serialized to be sent in a message.
+/*************************************************************** */
 
-/// Represents a field of a Mojom struct by its index in the struct's definition,
-/// i.e. "the nth field"
+/// Represents a field of a Mojom struct by its index in the struct's
+/// definition, i.e. "the nth field"
 pub type Ordinal = usize;
 
 #[derive(Debug, Clone, PartialEq)]
-/// Representation of a Mojom type that has been packed into the wire format. It contains
-/// enough information to both parse and deparse the associated type.
+/// Representation of a Mojom type that has been packed into the wire format. It
+/// contains enough information to both parse and deparse the associated type.
 ///
-/// Every value in a message corresponds to a member of some struct. To map values to their
-/// associated struct field, the wire type for that value tracks that field's ordinal. The
-/// ordinal is used as an index into the vector of fields during parsing and deparsing.
+/// Every value in a message corresponds to a member of some struct. To map
+/// values to their associated struct field, the wire type for that value tracks
+/// that field's ordinal. The ordinal is used as an index into the vector of
+/// fields during parsing and deparsing.
 ///
-/// Bitfields are a special case; since they can contain values from multiple fields of the
-/// struct, each bit of the field is associated with an ordinal.
+/// Bitfields are a special case; since they can contain values from multiple
+/// fields of the struct, each bit of the field is associated with an ordinal.
 pub enum MojomWireType {
     /// A single value with no additional structure, which is encoded directly
     /// at this location.
     Leaf { ordinal: Ordinal, leaf_type: PackedLeafType },
     /// Up to 8 booleans packed into a single byte.
     Bitfield {
-        /// A list of the ordinal associated with each bit, starting with the LSB.
-        /// Bits are never skipped, so the array is a contiguous block of `Some`s,
-        /// followed by zero or more `None`s.
+        /// A list of the ordinal associated with each bit, starting with the
+        /// LSB. Bits are never skipped, so the array is a contiguous
+        /// block of `Some`s, followed by zero or more `None`s.
         ordinals: [Option<Ordinal>; 8],
         // The associated data is always a single byte, so no need to store a
         // type here.
@@ -133,7 +134,8 @@ pub enum PackedArrayType {
 }
 
 impl MojomWireType {
-    /// Returns the size (in bytes) of a wire type, when stored as a struct field.
+    /// Returns the size (in bytes) of a wire type, when stored as a struct
+    /// field.
     pub fn size(&self) -> usize {
         match self {
             MojomWireType::Leaf { leaf_type, .. } => match leaf_type {
