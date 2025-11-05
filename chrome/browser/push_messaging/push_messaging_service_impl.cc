@@ -345,16 +345,22 @@ void PushMessagingServiceImpl::OnMessage(const std::string& app_id,
   // We won't have time to process and act on the message.
   // TODO(peter) This should be checked at the level of the GCMDriver, so that
   // the message is not consumed. See https://crbug.com/612815
-  if (g_browser_process->IsShuttingDown() || shutdown_started_)
+  if (g_browser_process->IsShuttingDown() || shutdown_started_) {
     return;
+  }
 
 #if BUILDFLAG(ENABLE_BACKGROUND_MODE)
   if (!in_flight_keep_alive_) {
+    auto profile_keep_alive = ScopedProfileKeepAlive::TryAcquire(
+        profile_, ProfileKeepAliveOrigin::kInFlightPushMessage);
+    if (!profile_keep_alive) {
+      // Profile is scheduled for destruction, abort.
+      return;
+    }
     in_flight_keep_alive_ = std::make_unique<ScopedKeepAlive>(
         KeepAliveOrigin::IN_FLIGHT_PUSH_MESSAGE,
         KeepAliveRestartOption::DISABLED);
-    in_flight_profile_keep_alive_ = std::make_unique<ScopedProfileKeepAlive>(
-        profile_, ProfileKeepAliveOrigin::kInFlightPushMessage);
+    in_flight_profile_keep_alive_ = std::move(profile_keep_alive);
   }
 #endif
 

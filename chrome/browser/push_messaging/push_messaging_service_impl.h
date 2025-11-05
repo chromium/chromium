@@ -235,6 +235,7 @@ class PushMessagingServiceImpl : public content::PushMessagingService,
   FRIEND_TEST_ALL_PREFIXES(PushMessagingBrowserTest, PushEventOnShutdown);
   FRIEND_TEST_ALL_PREFIXES(PushMessagingServiceTest, NormalizeSenderInfo);
   FRIEND_TEST_ALL_PREFIXES(PushMessagingServiceTest, PayloadEncryptionTest);
+  FRIEND_TEST_ALL_PREFIXES(PushMessagingServiceTest, ProfileDestructionTest);
   FRIEND_TEST_ALL_PREFIXES(PushMessagingServiceTest,
                            TestMultipleIncomingPushMessages);
 #if BUILDFLAG(IS_ANDROID)

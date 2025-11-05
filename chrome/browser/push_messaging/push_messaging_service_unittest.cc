@@ -31,6 +31,7 @@
 #include "chrome/browser/push_messaging/push_messaging_service_impl.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chrome/test/base/testing_profile_manager.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/gcm_driver/crypto/gcm_crypto_test_helpers.h"
 #include "components/gcm_driver/fake_gcm_client_factory.h"
@@ -409,6 +410,69 @@ TEST_F(PushMessagingServiceTest, MAYBE_PayloadEncryptionTest) {
 
   EXPECT_TRUE(payload);
   EXPECT_EQ(kTestPayload, *payload);
+}
+
+TEST_F(PushMessagingServiceTest, ProfileDestructionTest) {
+  PushMessagingServiceImpl* push_service = profile()->GetPushMessagingService();
+  ASSERT_TRUE(push_service);
+
+  const GURL origin(kTestOrigin);
+  SetPermission(origin, CONTENT_SETTING_ALLOW);
+
+  // (1) Make sure that |kExampleOrigin| has access to use Push Messaging.
+  ASSERT_EQ(blink::mojom::PermissionStatus::GRANTED,
+            push_service->GetPermissionStatus(origin, true /* user_visible */));
+
+  // (2) Subscribe for Push Messaging, and verify that we've got the required
+  // information in order to be able to create encrypted messages.
+  TestPushSubscription subscription;
+  Subscribe(push_service, origin, &subscription);
+
+  // (3) Create a message.
+  gcm::IncomingMessage message;
+  message.sender_id = kTestSenderId;
+
+  // (4) Find the app_id that has been associated with the subscription.
+  push_messaging::AppIdentifier app_identifier =
+      PushMessagingAppIdentifier::FindByServiceWorker(profile(), origin,
+                                                      kTestServiceWorkerId);
+
+  ASSERT_FALSE(app_identifier.is_null());
+
+  // (5) Observe message dispatchings from the Push Messaging service, and
+  // fail the test if any message is dispatched.
+  bool did_dispatch = false;
+  push_service->SetMessageDispatchedCallbackForTesting(
+      base::BindLambdaForTesting(
+          [&did_dispatch](
+              const std::string& app_id, const GURL& origin,
+              int64_t service_worker_registration_id,
+              std::optional<std::string> payload,
+              PushMessagingServiceImpl::PushEventCallback callback) {
+            did_dispatch = true;
+          }));
+
+  // Create an active ProfileManager, and do NOT make it the owner of profile().
+  // This causes ScopedProfileKeepAlive::TryAcquire() to fail.
+  auto testing_profile_manager = std::make_unique<TestingProfileManager>(
+      TestingBrowserProcess::GetGlobal());
+  ASSERT_TRUE(testing_profile_manager->SetUp());
+
+  gcm::FakeGCMProfileService* fake_profile_service =
+      static_cast<gcm::FakeGCMProfileService*>(
+          gcm::GCMProfileServiceFactory::GetForProfile(profile()));
+
+  fake_profile_service->DispatchMessage(app_identifier.app_id(), message);
+
+  base::RunLoop().RunUntilIdle();
+
+#if BUILDFLAG(ENABLE_BACKGROUND_MODE)
+  EXPECT_FALSE(did_dispatch);
+#else
+  // Keepalives do nothing on ChromeOS and Android, so the message will always
+  // be dispatched.
+  EXPECT_TRUE(did_dispatch);
+#endif  // BUILDFLAG(ENABLE_BACKGROUND_MODE)
 }
 
 TEST_F(PushMessagingServiceTest, NormalizeSenderInfo) {
