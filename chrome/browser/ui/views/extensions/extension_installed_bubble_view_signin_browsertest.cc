@@ -88,10 +88,7 @@ class ExtensionInstalledBubbleViewsSignInBrowserTest
       const AccountInfo& account_info = AccountInfo()) {
     views::Widget* bubble_view_widget = ShowBubble(extension);
     ASSERT_TRUE(bubble_view_widget);
-
-    auto* view_delegate = static_cast<ExtensionInstalledBubbleView*>(
-        bubble_view_widget->widget_delegate());
-    ASSERT_TRUE(view_delegate);
+    ASSERT_TRUE(bubble_view_widget->widget_delegate());
 
     // The sign in promo should be shown for a syncable extension.
     EXPECT_TRUE(signin::ShouldShowExtensionSignInPromo(*browser()->profile(),
@@ -126,10 +123,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstalledBubbleViewsSignInBrowserTest,
 
   views::Widget* bubble_view_widget = ShowBubble(extension);
   ASSERT_TRUE(bubble_view_widget);
-
-  auto* view_delegate = static_cast<ExtensionInstalledBubbleView*>(
-      bubble_view_widget->widget_delegate());
-  ASSERT_TRUE(view_delegate);
+  ASSERT_TRUE(bubble_view_widget->widget_delegate());
 
   // The sync promo should be shown for a syncable extension.
   EXPECT_TRUE(

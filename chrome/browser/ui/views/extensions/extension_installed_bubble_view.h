@@ -14,7 +14,7 @@
 #include "chrome/browser/ui/extensions/extension_installed_bubble_model.h"
 #include "chrome/browser/ui/extensions/extension_installed_waiter.h"
 #include "extensions/common/extension.h"
-#include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/base/models/dialog_model.h"
 
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kExtensionBubbleFrameViewId);
 
@@ -27,9 +27,7 @@ DECLARE_ELEMENT_IDENTIFIER_VALUE(kExtensionBubbleFrameViewId);
 //                      bar which is shown while the Bubble is shown.
 //    GENERIC        -> The app menu. This case includes pageActions that don't
 //                      specify a default icon.
-class ExtensionInstalledBubbleView : public views::BubbleDialogDelegateView {
-  METADATA_HEADER(ExtensionInstalledBubbleView, views::BubbleDialogDelegateView)
-
+class ExtensionInstalledBubbleView : public ui::DialogModelDelegate {
  public:
   ExtensionInstalledBubbleView(
       Browser* browser,
@@ -42,15 +40,9 @@ class ExtensionInstalledBubbleView : public views::BubbleDialogDelegateView {
   static void Show(Browser* browser,
                    std::unique_ptr<ExtensionInstalledBubbleModel> model);
 
-  // Recalculate the anchor position for this bubble.
-  void UpdateAnchorView();
-
   const ExtensionInstalledBubbleModel* model() const { return model_.get(); }
 
  private:
-  // views::BubbleDialogDelegateView:
-  void Init() override;
-
   void LinkClicked();
 
   const raw_ptr<Browser> browser_;
