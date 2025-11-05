@@ -199,6 +199,8 @@ class CONTENT_EXPORT RenderWidgetHostViewBase
       gfx::Vector2d cursor_offset_in_dip,
       gfx::Rect drag_obj_rect_in_dip,
       blink::mojom::DragEventSourceInfoPtr event_info) = 0;
+
+  virtual void SetTouchpadOverscrollHistoryNavigation(bool enabled) {}
 #endif
 
   // For HiDPI capture mode, allow applying a render scale multiplier

@@ -49,4 +49,9 @@ found in the LICENSE file.
         android:key="image_descriptions"
         android:title="@string/image_descriptions_settings_title" />
 
+    <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
+        android:key="touchpad_overscroll_history_navigation"
+        android:summary="@string/touchpad_overscroll_history_navigation_summary"
+        android:title="@string/touchpad_overscroll_history_navigation_title" />
+
 </PreferenceScreen>

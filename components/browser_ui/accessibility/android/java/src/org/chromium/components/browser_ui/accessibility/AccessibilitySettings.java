@@ -42,6 +42,8 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
     public static final String PREF_ZOOM_INFO = "zoom_info";
     public static final String PREF_IMAGE_DESCRIPTIONS = "image_descriptions";
     public static final String PREF_CARET_BROWSING = "caret_browsing";
+    public static final String PREF_TOUCHPAD_OVERSCROLL_HISTORY_NAVIGATION =
+            "touchpad_overscroll_history_navigation";
 
     private PageZoomPreference mPageZoomDefaultZoomPref;
     private ChromeSwitchPreference mPageZoomIncludeOSAdjustment;
@@ -51,6 +53,7 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
     private ChromeSwitchPreference mJumpStartOmnibox;
     private AccessibilitySettingsDelegate mDelegate;
     private double mPageZoomLatestDefaultZoomPrefValue;
+    private ChromeSwitchPreference mTouchpadOverscrollHistoryNavigationPref;
 
     private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
 
@@ -171,6 +174,13 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
         } else {
             mCaretBrowsingPref.setVisible(false);
         }
+
+        // Touchpad swipe-to-navigate settings.
+        mTouchpadOverscrollHistoryNavigationPref =
+                findPreference(PREF_TOUCHPAD_OVERSCROLL_HISTORY_NAVIGATION);
+        mTouchpadOverscrollHistoryNavigationPref.setOnPreferenceChangeListener(this);
+        mTouchpadOverscrollHistoryNavigationPref.setChecked(
+                mDelegate.getTouchpadOverscrollHistoryNavigationAccessibilityDelegate().getValue());
     }
 
     @Override
@@ -208,6 +218,10 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
             OmniboxFeatures.setJumpStartOmniboxEnabled((Boolean) newValue);
         } else if (PREF_CARET_BROWSING.equals(preference.getKey())) {
             mDelegate.setCaretBrowsingEnabled((Boolean) newValue);
+        } else if (PREF_TOUCHPAD_OVERSCROLL_HISTORY_NAVIGATION.equals(preference.getKey())) {
+            mDelegate
+                    .getTouchpadOverscrollHistoryNavigationAccessibilityDelegate()
+                    .setValue((Boolean) newValue);
         }
         return true;
     }

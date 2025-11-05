@@ -4544,6 +4544,8 @@ void ChromeContentBrowserClient::OverrideWebPreferences(
       prefs->GetBoolean(prefs::kAccessibilityForceEnableZoom);
   web_prefs->font_weight_adjustment =
       prefs->GetInteger(prefs::kAccessibilityFontWeightAdjustment);
+  web_prefs->enable_touchpad_overscroll_history_navigation = prefs->GetBoolean(
+      prefs::kAccessibilityTouchpadOverscrollHistoryNavigation);
 #endif
   web_prefs->force_dark_mode_enabled =
       prefs->GetBoolean(prefs::kWebKitForceDarkModeEnabled);

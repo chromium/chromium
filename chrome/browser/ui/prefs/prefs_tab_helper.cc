@@ -50,6 +50,7 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "components/browser_ui/accessibility/android/font_size_prefs_android.h"
+#include "ui/base/device_form_factor.h"
 #else  // !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/zoom/chrome_zoom_level_prefs.h"
 #endif
@@ -387,6 +388,9 @@ void PrefsTabHelper::RegisterProfilePrefs(
   registry->RegisterBooleanPref(prefs::kWebKitPasswordEchoEnabled,
                                 pref_defaults.password_echo_enabled);
   registry->RegisterIntegerPref(prefs::kAccessibilityFontWeightAdjustment, 0);
+  registry->RegisterBooleanPref(
+      prefs::kAccessibilityTouchpadOverscrollHistoryNavigation,
+      ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_PHONE);
 
 #endif
 

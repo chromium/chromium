@@ -98,6 +98,13 @@ public class ChromeAccessibilitySettingsDelegate implements AccessibilitySetting
     }
 
     @Override
+    public BooleanPreferenceDelegate getTouchpadOverscrollHistoryNavigationAccessibilityDelegate() {
+        return new ChromeBooleanPreferenceDelegate(
+                getBrowserContextHandle(),
+                Pref.ACCESSIBILITY_TOUCHPAD_OVERSCROLL_HISTORY_NAVIGATION);
+    }
+
+    @Override
     public BooleanPreferenceDelegate getReaderAccessibilityDelegate() {
         return new ChromeBooleanPreferenceDelegate(
                 getBrowserContextHandle(), Pref.READER_FOR_ACCESSIBILITY);

@@ -3988,6 +3988,19 @@ void WebContentsImpl::OnWebPreferencesChanged() {
       }
     }
   }
+
+  const bool enable_touchpad_overscroll_history_navigation_changed =
+      (enable_touchpad_overscroll_history_navigation_ !=
+       web_preferences_->enable_touchpad_overscroll_history_navigation);
+  enable_touchpad_overscroll_history_navigation_ =
+      web_preferences_->enable_touchpad_overscroll_history_navigation;
+  if (enable_touchpad_overscroll_history_navigation_changed) {
+    if (auto* rwhv = GetRenderWidgetHostView()) {
+      static_cast<RenderWidgetHostViewBase*>(rwhv)
+          ->SetTouchpadOverscrollHistoryNavigation(
+              enable_touchpad_overscroll_history_navigation_);
+    }
+  }
 #endif
 
   // Update inner WebContents.

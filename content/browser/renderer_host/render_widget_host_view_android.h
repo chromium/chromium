@@ -527,6 +527,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
       device::mojom::ScreenOrientationLockType orientation) override;
   void UnlockOrientation() override;
   void SetHasPersistentVideo(bool has_persistent_video) override;
+  void SetTouchpadOverscrollHistoryNavigation(bool enabled) override;
 
   // This method is used as a callback for `ViewAndroid::HitTest` to determine
   // if the View is actually ready to send event.

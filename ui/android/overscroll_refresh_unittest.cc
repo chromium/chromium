@@ -21,6 +21,7 @@ const gfx::PointF kZeroOffset(0, 0);
 const gfx::SizeF kContentSize(100, 10000);
 const bool kOverflowYNotHidden = false;
 const gfx::PointF kStartPos(2.f, 2.f);
+const gfx::PointF kStartPosNotEdge = gfx::PointF(2.f + kDefaultEdgeWidth, 2.f);
 
 class OverscrollRefreshTest : public OverscrollRefreshHandler,
                               public testing::Test {
@@ -490,16 +491,79 @@ TEST_F(OverscrollRefreshTest, TriggerSwipeToNavigate) {
   EXPECT_TRUE(GetAndResetRefreshAllowed());
 }
 
-TEST_F(OverscrollRefreshTest, NavigateNotTriggeredIfStartAwayFromEdge) {
+TEST_F(OverscrollRefreshTest,
+       NavigateNotTriggeredIfStartAwayFromEdgeOnTouchscreen) {
   // Start from position with x-coordinate towards center by edge width.
-  auto startPos = kStartPos + gfx::Vector2dF(kDefaultEdgeWidth, 0);
-  effect_.OnScrollBegin(startPos);
+  effect_.OnScrollBegin(kStartPosNotEdge);
   EXPECT_FALSE(effect_.IsActive());
   EXPECT_TRUE(effect_.IsAwaitingScrollUpdateAck());
 
   gfx::Vector2dF scroll_right = gfx::Vector2dF(10, 0);
   effect_.OnOverscrolled(cc::OverscrollBehavior(), scroll_right,
                          blink::WebGestureDevice::kTouchscreen);
+  EXPECT_FALSE(effect_.IsActive());
+  EXPECT_FALSE(effect_.IsAwaitingScrollUpdateAck());
+  EXPECT_FALSE(effect_.WillHandleScrollUpdate(gfx::Vector2dF(500, 0)));
+  effect_.OnScrollEnd(gfx::Vector2dF());
+  EXPECT_FALSE(GetAndResetPullStarted());
+  EXPECT_FALSE(GetAndResetPullReleased());
+}
+
+TEST_F(OverscrollRefreshTest,
+       TriggerSwipeToNavigateEverywhereOnTouchpadWithFeatureEnabled) {
+  effect_.SetTouchpadOverscrollHistoryNavigation(true);
+  EXPECT_FALSE(effect_.IsActive());
+  EXPECT_FALSE(effect_.IsAwaitingScrollUpdateAck());
+
+  // Start from position with x-coordinate towards center by edge width.
+  effect_.OnScrollBegin(kStartPosNotEdge);
+  EXPECT_FALSE(effect_.IsActive());
+  EXPECT_TRUE(effect_.IsAwaitingScrollUpdateAck());
+
+  // The initial scroll should not be consumed, as it should first be offered
+  // to content.
+  gfx::Vector2dF scroll_right(10, 00);
+  EXPECT_FALSE(effect_.WillHandleScrollUpdate(scroll_right));
+  EXPECT_FALSE(effect_.IsActive());
+  EXPECT_TRUE(effect_.IsAwaitingScrollUpdateAck());
+
+  // The unconsumed, overscrolling scroll will trigger the effect.
+  effect_.OnOverscrolled(cc::OverscrollBehavior(), -scroll_right,
+                         blink::WebGestureDevice::kTouchpad);
+  EXPECT_TRUE(effect_.IsActive());
+  EXPECT_FALSE(effect_.IsAwaitingScrollUpdateAck());
+  EXPECT_TRUE(GetAndResetPullStarted());
+
+  // Further right scrolls will be consumed.
+  EXPECT_TRUE(effect_.WillHandleScrollUpdate(gfx::Vector2dF(50, 0)));
+  EXPECT_EQ(50.f, GetAndResetPullDeltaX());
+  EXPECT_TRUE(effect_.IsActive());
+
+  // Even scrolls in the left direction should be consumed.
+  EXPECT_TRUE(effect_.WillHandleScrollUpdate(gfx::Vector2dF(-50, 0)));
+  EXPECT_EQ(-50.f, GetAndResetPullDeltaX());
+  EXPECT_TRUE(effect_.IsActive());
+
+  // Ending the scroll while beyond the threshold should trigger a refresh.
+  gfx::Vector2dF zero_velocity;
+  EXPECT_FALSE(GetAndResetPullReleased());
+  effect_.OnScrollEnd(zero_velocity);
+  EXPECT_FALSE(effect_.IsActive());
+  EXPECT_TRUE(GetAndResetPullReleased());
+  EXPECT_TRUE(GetAndResetRefreshAllowed());
+}
+
+TEST_F(OverscrollRefreshTest,
+       NavigateNotTriggeredIfStartAwayFromEdgeOnTouchpadWithFeatureDisabled) {
+  // Feature is disabled by default on construction.
+  // Start from position with x-coordinate towards center by edge width.
+  effect_.OnScrollBegin(kStartPosNotEdge);
+  EXPECT_FALSE(effect_.IsActive());
+  EXPECT_TRUE(effect_.IsAwaitingScrollUpdateAck());
+
+  gfx::Vector2dF scroll_right = gfx::Vector2dF(10, 0);
+  effect_.OnOverscrolled(cc::OverscrollBehavior(), scroll_right,
+                         blink::WebGestureDevice::kTouchpad);
   EXPECT_FALSE(effect_.IsActive());
   EXPECT_FALSE(effect_.IsAwaitingScrollUpdateAck());
   EXPECT_FALSE(effect_.WillHandleScrollUpdate(gfx::Vector2dF(500, 0)));

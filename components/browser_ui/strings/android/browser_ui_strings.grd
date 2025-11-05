@@ -1065,6 +1065,12 @@
       <message name="IDS_JUMP_START_OMNIBOX_SUMMARY" desc="When this preference is enabled, Chrome start-up time is reduced, and the user is taken directly to an active Omnibox">
         Launch Chrome with the Omnibox focused, reducing start-up time on low-end devices.
       </message>
+      <message name="IDS_TOUCHPAD_OVERSCROLL_HISTORY_NAVIGATION_TITLE" desc="Title of the preference to enable swipe-to-navigate by touchpad horizontal overscroll">
+        Swipe between pages using a touchpad
+      </message>
+      <message name="IDS_TOUCHPAD_OVERSCROLL_HISTORY_NAVIGATION_SUMMARY" desc="Summary of the preference to enable swipe-to-navigate by touchpad horizontal overscroll">
+        Navigate back and forth by swiping with two fingers on the touchpad
+      </message>
 
       <message name="IDS_CARET_BROWSING_TITLE" desc="Title of preference that allows the user to navigate pages with a text caret.">
         Navigate pages with a text cursor when a keyboard is attached

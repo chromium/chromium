@@ -252,6 +252,7 @@ struct BLINK_COMMON_EXPORT WebPreferences {
   int text_size_contrast_factor = 0;
   float device_scale_adjustment = 1.0f;
   bool force_enable_zoom = false;
+  bool enable_touchpad_overscroll_history_navigation = true;
   GURL default_video_poster_url;
   bool support_deprecated_target_density_dpi = false;
   bool wide_viewport_quirk = false;

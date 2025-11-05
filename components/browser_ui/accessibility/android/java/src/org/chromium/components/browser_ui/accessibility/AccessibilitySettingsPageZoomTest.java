@@ -92,6 +92,8 @@ public class AccessibilitySettingsPageZoomTest {
         when(mDelegate.getBrowserContextHandle()).thenReturn(mContextHandleMock);
         when(mDelegate.getForceEnableZoomAccessibilityDelegate()).thenReturn(mBoolPrefMock);
         when(mDelegate.getReaderAccessibilityDelegate()).thenReturn(mBoolPrefMock);
+        when(mDelegate.getTouchpadOverscrollHistoryNavigationAccessibilityDelegate())
+                .thenReturn(mBoolPrefMock);
         when(mDelegate.getTextSizeContrastAccessibilityDelegate()).thenReturn(mIntegerPrefMock);
         when(mDelegate.getSiteSettingsNavigation()).thenReturn(mSettingsNavigationMock);
         when(mDelegate.shouldUseSlider()).thenReturn(mUseSlider);

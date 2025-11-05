@@ -297,6 +297,13 @@ void OverscrollControllerAndroid::Disable() {
   }
 }
 
+void OverscrollControllerAndroid::SetTouchpadOverscrollHistoryNavigation(
+    bool enabled) {
+  if (refresh_effect_) {
+    refresh_effect_->SetTouchpadOverscrollHistoryNavigation(enabled);
+  }
+}
+
 bool OverscrollControllerAndroid::ShouldHandleInputEvents() {
   if (!enabled_) {
     return false;

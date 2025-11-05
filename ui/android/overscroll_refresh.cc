@@ -90,31 +90,38 @@ void OverscrollRefresh::OnOverscrolled(const cc::OverscrollBehavior& behavior,
   OverscrollAction type = OverscrollAction::kNone;
   std::optional<BackGestureEventSwipeEdge> overscroll_edge;
   if (in_y_direction) {
+    // Check overscroll-behavior-y and source device: pull-to-refresh should
+    // only work on touchscreen overscrolls, in particular, not by touchpad or
+    // mousewheel scrolls.
     if (behavior.y != cc::OverscrollBehavior::Type::kAuto ||
-        // Pull-to-refresh should only work on touchscreen overscrolls. In
-        // particular, not by touchpad or mousewheel scrolls.
         source_device != blink::WebGestureDevice::kTouchscreen) {
       Reset();
       return;
     }
-    // Pull-to-refresh. Check overscroll-behavior-y
+    // Pull-to-refresh
     if (ydelta > 0) {
       type = OverscrollAction::kPullToRefresh;
     } else if (scrolled_to_bottom_) {  // ydelta < 0
       type = OverscrollAction::kPullFromBottomEdge;
     }
   } else if (in_x_direction) {
-    DCHECK(source_device == blink::WebGestureDevice::kTouchpad ||
-           source_device == blink::WebGestureDevice::kTouchscreen);
     DCHECK_GE(viewport_width_, 0);
     bool scroll_from_edge = scroll_begin_x_ < edge_width_ ||
                             viewport_width_ - scroll_begin_x_ < edge_width_;
-    // Swipe-to-navigate. Check overscroll-behavior-x and scroll start position.
-    if (behavior.x != cc::OverscrollBehavior::Type::kAuto ||
-        !scroll_from_edge) {
+    bool touchpad_swipe_to_navigate =
+        (source_device == blink::WebGestureDevice::kTouchpad &&
+         touchpad_overscroll_history_navigation_enabled_);
+    // Check overscroll-behavior-x and whether initial x coordinate falls within
+    // the activation region:
+    //   - it is always activated near the horizontal edges
+    //   - if the swipe-to-navigate feature is enabled, it is activated
+    //     everywhere on touchpad (possibly converted from mousewheel)
+    if (!(behavior.x == cc::OverscrollBehavior::Type::kAuto &&
+          (scroll_from_edge || touchpad_swipe_to_navigate))) {
       Reset();
       return;
     }
+    // Swipe-to-navigate.
     type = OverscrollAction::kHistoryNavigation;
     overscroll_edge = xdelta < 0 ? BackGestureEventSwipeEdge::RIGHT
                                  : BackGestureEventSwipeEdge::LEFT;
@@ -191,6 +198,10 @@ void OverscrollRefresh::OnFrameUpdated(const gfx::SizeF& viewport_size,
                           content_scroll_offset.y() + viewport_size.height();
   }
   overflow_y_hidden_ = root_overflow_y_hidden;
+}
+
+void OverscrollRefresh::SetTouchpadOverscrollHistoryNavigation(bool enabled) {
+  touchpad_overscroll_history_navigation_enabled_ = enabled;
 }
 
 void OverscrollRefresh::Release(bool allow_refresh) {

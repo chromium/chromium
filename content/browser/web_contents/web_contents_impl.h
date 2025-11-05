@@ -2683,6 +2683,9 @@ class CONTENT_EXPORT WebContentsImpl
   // Stores the force enable zoom state for Accessibility.
   bool force_enable_zoom_ = false;
 
+  // Stores the touchpad overscroll history navigation state for Accessibility.
+  bool enable_touchpad_overscroll_history_navigation_ = false;
+
   std::unique_ptr<PrerenderHostRegistry> prerender_host_registry_;
 
   // Used to ignore multiple back navigation hints in rapid succession. For

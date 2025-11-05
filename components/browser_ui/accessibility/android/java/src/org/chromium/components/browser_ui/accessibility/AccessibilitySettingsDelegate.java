@@ -66,6 +66,13 @@ public interface AccessibilitySettingsDelegate {
 
     /**
      * @return the BooleanPreferenceDelegate instance that should be used for reading and setting
+     *     the touchpad overscroll history navigation value for accessibility settings. Return null
+     *     to omit the preference.
+     */
+    BooleanPreferenceDelegate getTouchpadOverscrollHistoryNavigationAccessibilityDelegate();
+
+    /**
+     * @return the BooleanPreferenceDelegate instance that should be used for reading and setting
      *     the reader (simplified view) value for accessibility settings. Return null to omit the
      *     preference.
      */
