@@ -28,8 +28,6 @@
 #import "ios/chrome/browser/itunes_urls/model/itunes_urls_handler_tab_helper.h"
 #import "ios/chrome/browser/prerender/model/prerender_browser_agent_delegate.h"
 #import "ios/chrome/browser/prerender/model/prerender_tab_helper.h"
-#import "ios/chrome/browser/sessions/model/session_restoration_service.h"
-#import "ios/chrome/browser/sessions/model/session_restoration_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -498,9 +496,6 @@ bool PrerenderBrowserAgent::ValidatePrerender(const GURL& url,
     LoadTimingTabHelper::FromWebState(active_web_state)
         ->DidPromotePrerenderTab();
   }
-
-  SessionRestorationServiceFactory::GetForProfile(browser_->GetProfile())
-      ->ScheduleSaveSessions();
 
   // There is no need to call CancelPrerender(), clear the ScopedClosureRunner.
   std::ignore = cancel_prerender_on_cleanup.Release();

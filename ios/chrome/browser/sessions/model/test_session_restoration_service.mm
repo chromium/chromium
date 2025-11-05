@@ -38,10 +38,6 @@ void TestSessionRestorationService::SaveSessions() {
   // Nothing to do.
 }
 
-void TestSessionRestorationService::ScheduleSaveSessions() {
-  // Nothing to do.
-}
-
 void TestSessionRestorationService::SetSessionID(
     Browser* browser,
     const std::string& identifier) {

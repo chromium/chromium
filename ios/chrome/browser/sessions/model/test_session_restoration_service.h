@@ -34,7 +34,6 @@ class TestSessionRestorationService : public SessionRestorationService {
   void AddObserver(SessionRestorationObserver* observer) override;
   void RemoveObserver(SessionRestorationObserver* observer) override;
   void SaveSessions() override;
-  void ScheduleSaveSessions() override;
   void SetSessionID(Browser* browser, const std::string& identifier) override;
   void LoadSession(Browser* browser) override;
   void LoadWebStateStorage(Browser* browser,

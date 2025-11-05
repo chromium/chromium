@@ -382,12 +382,6 @@ void SessionRestorationServiceImpl::SaveSessions() {
   SaveDirtySessions();
 }
 
-void SessionRestorationServiceImpl::ScheduleSaveSessions() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Nothing to do, the service automatically schedule a save as soon
-  // as changes are detected.
-}
-
 void SessionRestorationServiceImpl::SetSessionID(
     Browser* browser,
     const std::string& identifier) {
