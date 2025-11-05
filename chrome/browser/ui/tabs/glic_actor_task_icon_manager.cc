@@ -76,7 +76,7 @@ void GlicActorTaskIconManager::OnActorTaskStateUpdate(actor::TaskId task_id) {
     return;
   }
   glic::GlicInstance* instance = instances.front();
-  if (features::kGlicActorUiNudgeRedesign.Get()) {
+  if (base::FeatureList::IsEnabled(features::kGlicActorUiNudgeRedesign)) {
     UpdateTaskNudge();
   } else {
     UpdateTaskIcon(instance->IsShowing(),

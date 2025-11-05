@@ -478,7 +478,7 @@ void TabStripActionContainer::UpdateGlicActorButtonContainerBorders() {
         kInsideBorderAroundGlicButtons, kOutsideBorderAroundGlicButtons);
     const gfx::Insets left_icon_border = gfx::Insets().set_left_right(
         kOutsideBorderAroundGlicButtons, kInsideBorderAroundGlicButtons);
-    if (features::kGlicActorUiNudgeRedesign.Get()) {
+    if (base::FeatureList::IsEnabled(features::kGlicActorUiNudgeRedesign)) {
       task_icon_border = right_icon_border + border_insets_;
       // If the GlicActorTaskIcon is also present, adjust the border on the
       // GlicButton to allow the two buttons to sit closer together.
@@ -711,7 +711,7 @@ void TabStripActionContainer::ShowGlicActorTaskIcon() {
       glic_actor_button_container_->AddChildView(std::move(glic_button_));
   // When kGlicActorUiNudgeRedesign is enabled, the GlicButton should be to the
   // left of the GlicActorTaskIcon.
-  if (features::kGlicActorUiNudgeRedesign.Get()) {
+  if (base::FeatureList::IsEnabled(features::kGlicActorUiNudgeRedesign)) {
     glic_actor_task_icon_->SetVisible(true);
     glic_actor_button_container_->ReorderChildView(glic_button_, 0u);
   }
