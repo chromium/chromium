@@ -69,7 +69,73 @@ sync_pb::AutofillValuableSpecifics TestFlightReservationSpecifics(
   return specifics;
 }
 
-// TODO(crbug.com/40100455): Add tests for Vehicle entity.
+// Returns a `sync_pb::AutofillValuableSpecifics` message with
+// the vehicle entity type.
+sync_pb::AutofillValuableSpecifics TestVehicleSpecifics() {
+  sync_pb::AutofillValuableSpecifics specifics =
+      sync_pb::AutofillValuableSpecifics();
+  specifics.set_id("00000000-0000-4000-8000-200000000000");
+  specifics.mutable_vehicle_registration()->set_vehicle_make("Make");
+  specifics.mutable_vehicle_registration()->set_vehicle_model("Model");
+  specifics.mutable_vehicle_registration()->set_vehicle_year("2025");
+  specifics.mutable_vehicle_registration()->set_vehicle_identification_number(
+      "12345");
+  specifics.mutable_vehicle_registration()->set_vehicle_license_plate("Plate");
+  specifics.mutable_vehicle_registration()->set_license_plate_region("Region");
+  specifics.mutable_vehicle_registration()->set_license_plate_country("US");
+  specifics.mutable_vehicle_registration()->set_owner_name("Owner Name");
+
+  return specifics;
+}
+
+// Tests that the `CreateEntityInstanceFromSpecifics` function correctly
+// deserializes the vehicle entity from its proto representation.
+TEST(EntitySyncUtilTest, CreateEntityInstanceFromSpecifics_Vehicle) {
+  sync_pb::AutofillValuableSpecifics specifics = TestVehicleSpecifics();
+  std::optional<EntityInstance> vehicle =
+      CreateEntityInstanceFromSpecifics(specifics);
+  ASSERT_TRUE(vehicle.has_value());
+  EXPECT_EQ(vehicle->guid().value(), specifics.id());
+  EXPECT_EQ(GetStringValue(*vehicle, AttributeTypeName::kVehicleMake),
+            specifics.vehicle_registration().vehicle_make());
+  EXPECT_EQ(GetStringValue(*vehicle, AttributeTypeName::kVehicleModel),
+            specifics.vehicle_registration().vehicle_model());
+  EXPECT_EQ(GetStringValue(*vehicle, AttributeTypeName::kVehicleYear),
+            specifics.vehicle_registration().vehicle_year());
+  EXPECT_EQ(GetStringValue(*vehicle, AttributeTypeName::kVehicleOwner),
+            specifics.vehicle_registration().owner_name());
+  EXPECT_EQ(GetStringValue(*vehicle, AttributeTypeName::kVehiclePlateNumber),
+            specifics.vehicle_registration().vehicle_license_plate());
+  EXPECT_EQ(GetStringValue(*vehicle, AttributeTypeName::kVehiclePlateState),
+            specifics.vehicle_registration().license_plate_region());
+  EXPECT_EQ(GetStringValue(*vehicle, AttributeTypeName::kVehicleVin),
+            specifics.vehicle_registration().vehicle_identification_number());
+}
+
+// Tests that the `CreateSpecificsFromEntityInstance` function correctly
+// serializes the vehicle entity into its proto representation.
+TEST(EntitySyncUtilTest, CreateSpecificsFromEntityInstance_Vehicle) {
+  EntityInstance vehicle = test::GetVehicleEntityInstance();
+
+  sync_pb::AutofillValuableSpecifics specifics =
+      CreateSpecificsFromEntityInstance(vehicle);
+
+  EXPECT_EQ(vehicle.guid().value(), specifics.id());
+  EXPECT_EQ(GetStringValue(vehicle, AttributeTypeName::kVehicleMake),
+            specifics.vehicle_registration().vehicle_make());
+  EXPECT_EQ(GetStringValue(vehicle, AttributeTypeName::kVehicleModel),
+            specifics.vehicle_registration().vehicle_model());
+  EXPECT_EQ(GetStringValue(vehicle, AttributeTypeName::kVehicleYear),
+            specifics.vehicle_registration().vehicle_year());
+  EXPECT_EQ(GetStringValue(vehicle, AttributeTypeName::kVehicleOwner),
+            specifics.vehicle_registration().owner_name());
+  EXPECT_EQ(GetStringValue(vehicle, AttributeTypeName::kVehiclePlateNumber),
+            specifics.vehicle_registration().vehicle_license_plate());
+  EXPECT_EQ(GetStringValue(vehicle, AttributeTypeName::kVehiclePlateState),
+            specifics.vehicle_registration().license_plate_region());
+  EXPECT_EQ(GetStringValue(vehicle, AttributeTypeName::kVehicleVin),
+            specifics.vehicle_registration().vehicle_identification_number());
+}
 
 // Tests that the `CreateEntityInstanceFromSpecifics` function correctly
 // deserializes the flight reservation entity from its proto representation.
