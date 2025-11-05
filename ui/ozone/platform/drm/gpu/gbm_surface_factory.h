@@ -49,7 +49,6 @@ class GbmSurfaceFactory : public SurfaceFactoryOzone {
   scoped_refptr<gfx::NativePixmap> CreateNativePixmapForVulkan(
       gfx::AcceleratedWidget widget,
       gfx::Size size,
-      gfx::BufferFormat format,
       gfx::BufferUsage usage,
       VkDevice vk_device,
       VkDeviceMemory* vk_device_memory,

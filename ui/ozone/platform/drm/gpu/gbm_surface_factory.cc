@@ -308,7 +308,6 @@ GbmSurfaceFactory::CreateVulkanImplementation(bool use_swiftshader,
 scoped_refptr<gfx::NativePixmap> GbmSurfaceFactory::CreateNativePixmapForVulkan(
     gfx::AcceleratedWidget widget,
     gfx::Size size,
-    gfx::BufferFormat format,
     gfx::BufferUsage usage,
     VkDevice vk_device,
     VkDeviceMemory* vk_device_memory,
@@ -319,8 +318,8 @@ scoped_refptr<gfx::NativePixmap> GbmSurfaceFactory::CreateNativePixmapForVulkan(
   NativePixmapUsageSet native_pixmap_usage =
       BufferUsageToNativePixmapUsage(usage);
   drm_thread_proxy_->CreateBuffer(
-      widget, size, /*framebuffer_size=*/size, format, native_pixmap_usage,
-      GbmPixmap::kFlagNoModifiers, &buffer, &framebuffer);
+      widget, size, /*framebuffer_size=*/size, gfx::BufferFormat::BGRA_8888,
+      native_pixmap_usage, GbmPixmap::kFlagNoModifiers, &buffer, &framebuffer);
   if (!buffer)
     return nullptr;
 
@@ -340,7 +339,7 @@ scoped_refptr<gfx::NativePixmap> GbmSurfaceFactory::CreateNativePixmapForVulkan(
   DCHECK(vk_image_fd.is_valid());
 
   // TODO(spang): Fix this for formats other than gfx::BufferFormat::BGRA_8888
-  DCHECK_EQ(viz::GetSharedImageFormat(format),
+  DCHECK_EQ(viz::SinglePlaneFormat::kBGRA_8888,
             display::DisplaySnapshot::PrimaryFormat());
   VkFormat vk_format = VK_FORMAT_B8G8R8A8_SRGB;
 

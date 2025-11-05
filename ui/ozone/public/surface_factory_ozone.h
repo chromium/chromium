@@ -99,13 +99,12 @@ class COMPONENT_EXPORT(OZONE_BASE) SurfaceFactoryOzone {
       bool use_swiftshader,
       bool allow_protected_memory);
 
-  // Creates a scanout NativePixmap that can be rendered using Vulkan.
+  // Creates a BGRA_8888 scanout NativePixmap that can be rendered using Vulkan.
   // TODO(spang): Remove this once VK_EXT_image_drm_format_modifier is
   // available.
   virtual scoped_refptr<gfx::NativePixmap> CreateNativePixmapForVulkan(
       gfx::AcceleratedWidget widget,
       gfx::Size size,
-      gfx::BufferFormat format,
       gfx::BufferUsage usage,
       VkDevice vk_device,
       VkDeviceMemory* vk_device_memory,

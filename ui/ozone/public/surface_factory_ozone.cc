@@ -53,7 +53,6 @@ scoped_refptr<gfx::NativePixmap>
 SurfaceFactoryOzone::CreateNativePixmapForVulkan(
     gfx::AcceleratedWidget widget,
     gfx::Size size,
-    gfx::BufferFormat format,
     gfx::BufferUsage usage,
     VkDevice vk_device,
     VkDeviceMemory* vk_device_memory,
