@@ -21,11 +21,13 @@
 #include "components/autofill/core/browser/filling/form_filler.h"
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
+#include "components/autofill/core/browser/foundations/scoped_autofill_managers_observation.h"
 #include "components/autofill/core/browser/integrators/glic/actor_form_filling_types.h"
 #include "components/autofill/core/browser/suggestions/addresses/address_suggestion_generator.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/ui/autofill_external_delegate.h"
 #include "components/tabs/public/tab_interface.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace autofill {
@@ -167,6 +169,86 @@ std::optional<FillingPayload> GetAutofillFillingPayload(
       payload);
 }
 
+// Helper class for keeping track of completed form fills.
+//
+// The class observes all `AutofillManager`s associated with `autofill_client`
+// and keeps track of the `field_ids` that have been filled. Once all
+// `field_ids` have been filled or the `FillingObserver` is destroyed,
+// `callback` is called.
+// `callback` is always called asynchronously.
+class FillingObserver final : public AutofillManager::Observer {
+ public:
+  using Callback =
+      base::OnceCallback<void(base::expected<void, ActorFormFillingError>)>;
+
+  FillingObserver(AutofillClient& autofill_client,
+                  base::span<const FieldGlobalId> field_ids,
+                  Callback callback)
+      : remaining_field_ids_(field_ids.begin(), field_ids.end()),
+        callback_(std::move(callback)) {
+    autofill_managers_observation_.Observe(
+        &autofill_client,
+        ScopedAutofillManagersObservation::InitializationPolicy::
+            kObservePreexistingManagers);
+    // If `remaining_field_ids_` is empty, this will stop the observation and
+    // execute `callback_`.
+    FinalizeIfComplete();
+  }
+
+  ~FillingObserver() override {
+    if (callback_) {
+      // TODO(crbug.com/455788947): Consider introducing a different type of
+      // error.
+      // TODO(crbug.com/455788947): Consider not sending an error if some fields
+      // were filled.
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE,
+          base::BindOnce(std::move(callback_),
+                         base::unexpected(ActorFormFillingError::kNoForm)));
+    }
+  }
+
+ private:
+  // AutofillManager::Observer:
+  void OnFillOrPreviewForm(
+      AutofillManager&,
+      FormGlobalId,
+      mojom::ActionPersistence action_persistence,
+      const base::flat_set<FieldGlobalId>& filled_field_ids,
+      const FillingPayload&) override {
+    switch (action_persistence) {
+      case mojom::ActionPersistence::kFill:
+        break;
+      case mojom::ActionPersistence::kPreview:
+        return;
+    }
+    for (FieldGlobalId field_id : filled_field_ids) {
+      remaining_field_ids_.erase(field_id);
+    }
+    FinalizeIfComplete();
+  }
+
+  // Calls callback and stops observing `AutofillManager`s if there are no
+  // remaining field ids. Otherwise does nothing.
+  void FinalizeIfComplete() {
+    if (!remaining_field_ids_.empty()) {
+      return;
+    }
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback_), base::ok()));
+    autofill_managers_observation_.Reset();
+  }
+
+  // The fields that have not yet been filled.
+  absl::flat_hash_set<FieldGlobalId> remaining_field_ids_;
+
+  // The callback to execute at completion.
+  Callback callback_;
+
+  // The observation for the Autofill managers of the relevant tab.
+  ScopedAutofillManagersObservation autofill_managers_observation_{this};
+};
+
 }  // namespace
 
 ActorFormFillingServiceImpl::FillData::FillData() = default;
@@ -284,11 +366,13 @@ void ActorFormFillingServiceImpl::FillSuggestions(
   // were generated.
   std::vector<std::vector<FormData>> form_datas;
   form_datas.reserve(chosen_suggestions.size());
+  std::vector<FieldGlobalId> all_field_ids;
   for (const ActorFormFillingSelection& selection : chosen_suggestions) {
     const FillData& fill_data_for_form =
         fill_data_[selection.selected_suggestion_id];
     form_datas.emplace_back().reserve(fill_data_for_form.field_ids.size());
     for (FieldGlobalId field_id : fill_data_for_form.field_ids) {
+      all_field_ids.push_back(field_id);
       if (const FormStructure* form_structure =
               autofill_manager.FindCachedFormById(field_id)) {
         form_datas.back().emplace_back(form_structure->ToFormData());
@@ -301,7 +385,16 @@ void ActorFormFillingServiceImpl::FillSuggestions(
     }
   }
 
-  // TODO(crbug.com/455788947): Set up fill observations.
+  // TODO(crbug.com/455788947): Adjust time-out for filling that requires
+  // re-auth.
+  constexpr base::TimeDelta kFillingTimeout = base::Seconds(3);
+  // Create a filling observer and keep it around for `kFillingTimeout`.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce([](auto) {}, std::make_unique<FillingObserver>(
+                                      autofill_manager.client(), all_field_ids,
+                                      std::move(callback))),
+      kFillingTimeout);
 
   // Fill.
   for (const auto [selection, form_datas_for_suggestion] :
@@ -320,9 +413,6 @@ void ActorFormFillingServiceImpl::FillSuggestions(
                                          AutofillTriggerSource::kGlic);
     }
   }
-
-  // TODO(crbug.com/455788947): Only call after filling is complete.
-  std::move(callback).Run(base::ok());
 }
 
 }  // namespace autofill
