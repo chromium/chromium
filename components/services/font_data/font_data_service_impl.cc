@@ -31,6 +31,19 @@ namespace font_data_service {
 
 namespace {
 
+// Recorded in Chrome.FontDataService.CreateResult, don't modify/reorder without
+// also changing FontDataServiceCreateResult in
+// tools/metrics/histograms/metadata/chrome/enums.xml
+enum class CreateResult {
+  kNoTypeface = 0,
+  kSuccessExistingSharedMemory = 1,
+  kFailureExistingSharedMemory = 2,
+  kSuccessSharingFileHandle = 3,
+  kSuccessSharingNewMemoryRegion = 4,
+  kFailureSharingNewMemoryRegion = 5,
+  kMaxValue = kFailureSharingNewMemoryRegion,
+};
+
 // Value is arbitrary. The number should be small to conserve memory but large
 // enough to fit a meaningful amount of fonts.
 constexpr int kMemoryMapCacheSize = 128;
@@ -241,6 +254,8 @@ mojom::MatchFamilyNameResultPtr
 FontDataServiceImpl::CreateMatchFamilyNameResult(sk_sp<SkTypeface> typeface) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  CreateResult result_status = CreateResult::kNoTypeface;
+
   auto result = mojom::MatchFamilyNameResult::New();
 
   if (typeface) {
@@ -253,6 +268,9 @@ FontDataServiceImpl::CreateMatchFamilyNameResult(sk_sp<SkTypeface> typeface) {
       if (region.IsValid()) {
         result->typeface_data =
             mojom::TypefaceData::NewRegion(std::move(region));
+        result_status = CreateResult::kSuccessExistingSharedMemory;
+      } else {
+        result_status = CreateResult::kFailureExistingSharedMemory;
       }
     } else {
       // While the stream is not necessary for file handles, fetch the ttc_index
@@ -267,6 +285,7 @@ FontDataServiceImpl::CreateMatchFamilyNameResult(sk_sp<SkTypeface> typeface) {
         TRACE_EVENT("fonts", "FontDataServiceImpl - sharing file handle");
         result->typeface_data =
             mojom::TypefaceData::NewFontFile(std::move(font_file));
+        result_status = CreateResult::kSuccessSharingFileHandle;
       } else {
         TRACE_EVENT("fonts", "FontDataServiceImpl - sharing memory region");
         // If it failed to share as an base::File, try sharing with shared
@@ -291,11 +310,17 @@ FontDataServiceImpl::CreateMatchFamilyNameResult(sk_sp<SkTypeface> typeface) {
           if (region.IsValid()) {
             result->typeface_data =
                 mojom::TypefaceData::NewRegion(std::move(region));
+            result_status = CreateResult::kSuccessSharingNewMemoryRegion;
+          } else {
+            result_status = CreateResult::kFailureSharingNewMemoryRegion;
           }
         }
       }
     }
   }
+
+  UMA_HISTOGRAM_ENUMERATION("Chrome.FontDataService.CreateResult",
+                            result_status);
 
   if (!result->typeface_data) {
     return nullptr;

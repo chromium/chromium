@@ -77,6 +77,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Chrome.FontDataService.CreateResult"
+    enum="FontDataServiceCreateResult" expires_after="2026-08-31">
+  <owner>andresrperez@chromium.org</owner>
+  <owner>drott@chromium.org</owner>
+  <owner>etienneb@chromium.org</owner>
+  <owner>anthonyvd@chromium.org</owner>
+  <owner>chrome-catan@google.com</owner>
+  <summary>
+    Records the result of creating the typeface result object in the browser
+    process following a request for matching font name from a renderer process.
+  </summary>
+</histogram>
+
 <histogram name="Chrome.FontDataService.EmptyPathOnGetFileHandle"
     enum="Boolean" expires_after="2026-08-31">
   <owner>andresrperez@chromium.org</owner>
