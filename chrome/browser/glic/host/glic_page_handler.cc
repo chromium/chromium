@@ -1343,6 +1343,8 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     glic_service_->metrics()->OnResponseStarted();
     if (auto* instance_metrics = host().instance_metrics()) {
       instance_metrics->OnResponseStarted();
+      instance_metrics->RecordAttachedContextTabCount(
+          sharing_manager().GetNumPinnedTabs());
     }
   }
 

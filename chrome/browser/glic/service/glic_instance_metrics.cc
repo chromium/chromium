@@ -653,4 +653,9 @@ void GlicInstanceMetrics::OnSessionFinished() {
   last_session_end_time_ = base::TimeTicks::Now();
 }
 
+void GlicInstanceMetrics::RecordAttachedContextTabCount(int tab_count) {
+  base::UmaHistogramExactLinear("Glic.Response.AttachedContextCount", tab_count,
+                                51);
+}
+
 }  // namespace glic

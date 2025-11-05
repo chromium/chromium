@@ -1304,6 +1304,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Glic.Response.AttachedContextCount" units="tabs"
+    expires_after="2026-06-01">
+  <owner>sanaakbani@google.com</owner>
+  <owner>birnie@google.com</owner>
+  <summary>
+    Records the number of tabs attached as context when a response is received
+    from Glic. This is recorded for each response. The value is capped at 50.
+  </summary>
+</histogram>
+
 <histogram name="Glic.Response.ClosedCaptionsShown" enum="Boolean"
     expires_after="2026-01-15">
   <owner>sanaakbani@google.com</owner>

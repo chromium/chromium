@@ -210,6 +210,9 @@ class GlicInstanceMetrics {
   void OnTurnCompleted(mojom::WebClientModel model, base::TimeDelta duration);
   void OnReaction(mojom::MetricUserInputReactionType reaction_type);
 
+  // Records the number of tabs attached as context for a Glic response.
+  void RecordAttachedContextTabCount(int tab_count);
+
   bool is_active() const { return is_active_; }
 
  private:
