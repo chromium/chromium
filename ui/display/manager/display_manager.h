@@ -314,6 +314,9 @@ class DISPLAY_MANAGER_EXPORT DisplayManager
   // Returns true if the display specified by |display_id| is currently
   // connected and active. (mirroring display isn't active, for example).
   bool IsActiveDisplayId(int64_t display_id) const;
+  // Returns true if the display specified by |display_id| is currently
+  // connected. Mirroring display is connected but not active.
+  bool IsConnectedDisplayId(int64_t display_id) const;
 
   // Returns the number of connected displays. For example, this returns 2 in
   // mirror mode with one external display.
