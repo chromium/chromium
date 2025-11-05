@@ -13,7 +13,6 @@ import org.chromium.base.MathUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.ui.accessibility.AccessibilityState;
 
 /** Helper class for recording UMA histograms of accessibility events */
@@ -140,9 +139,6 @@ public class AccessibilityHistogramRecorder {
     public static final String CACHE_PERCENTAGE_RETRIEVED_FROM_CACHE_HISTOGRAM =
             "Accessibility.Android.Cache.PercentageRetrievedFromCache";
 
-    private static final String CACHE_PERCENTAGE_FRESH_HISTOGRAM =
-            "Accessibility.Android.Cache.PercentageFreshInCache";
-
     private static final int CACHE_MAX_NODES_MIN_BUCKET = 1;
     private static final int CACHE_MAX_NODES_MAX_BUCKET = 3000;
     private static final int CACHE_MAX_NODES_BUCKET_COUNT = 100;
@@ -157,7 +153,6 @@ public class AccessibilityHistogramRecorder {
     private int mMaxNodesInCache;
     private int mNodeWasReturnedFromCache;
     private int mNodeWasCreatedFromScratch;
-    private int mNodeWasFreshInCache;
 
     // These track the usage in time when a web contents is in the foreground.
     private long mTimeOfFirstShown = -1;
@@ -276,11 +271,6 @@ public class AccessibilityHistogramRecorder {
         mNodeWasCreatedFromScratch++;
     }
 
-    /** Increment the count of instances when a node was fresh in cache. */
-    public void incrementNodeWasFreshInCache() {
-        mNodeWasFreshInCache++;
-    }
-
     /** Set the time this instance was shown to the current time in ms. */
     public void updateTimeOfFirstShown() {
         mTimeOfFirstShown = SystemClock.elapsedRealtime();
@@ -325,15 +315,6 @@ public class AccessibilityHistogramRecorder {
         recordTotalTimeCreateAccessibilityNodeInfoHistogram();
     }
 
-    /**
-     * Calculates what percentage of {@code total} {@code count} is, expressed as an integer
-     * percentage truncated down. {@code total} must not be zero.
-     */
-    private static int computeIntegerPercent(int count, int total) {
-        // Cast to long to account for overflow
-        return (int) ((count * 100L) / total);
-    }
-
     /** Record UMA histograms for the event counts for the OnDemand feature. */
     public void recordEventsHistograms() {
         // There are only 2 AXModes, kAXModeComplete is used when a complex service is active.
@@ -343,7 +324,7 @@ public class AccessibilityHistogramRecorder {
         // If we did not enqueue any events, we can ignore the data as a trivial case.
         if (mTotalEnqueuedEvents > 0) {
             // Log the percentage dropped (dispatching 0 events should be 100% dropped).
-            int percentSent = computeIntegerPercent(mTotalDispatchedEvents, mTotalEnqueuedEvents);
+            int percentSent = (int) (mTotalDispatchedEvents * 1.0 / mTotalEnqueuedEvents * 100.0);
             RecordHistogram.recordPercentageHistogram(
                     PERCENTAGE_DROPPED_HISTOGRAM, 100 - percentSent);
             RecordHistogram.recordPercentageHistogram(
@@ -400,24 +381,15 @@ public class AccessibilityHistogramRecorder {
                 CACHE_MAX_NODES_BUCKET_COUNT);
 
         int totalNodeRequests = mNodeWasReturnedFromCache + mNodeWasCreatedFromScratch;
-        if (totalNodeRequests > 0) {
-            RecordHistogram.recordPercentageHistogram(
-                    CACHE_PERCENTAGE_RETRIEVED_FROM_CACHE_HISTOGRAM,
-                    computeIntegerPercent(mNodeWasReturnedFromCache, totalNodeRequests));
+        int percentFromCache = (int) (mNodeWasReturnedFromCache * 1.0 / totalNodeRequests * 100.0);
 
-            if (mNodeWasReturnedFromCache > 0
-                    && ContentFeatureList.sAccessibilityCheckJavaNodeCacheFreshness.isEnabled()) {
-                RecordHistogram.recordPercentageHistogram(
-                        CACHE_PERCENTAGE_FRESH_HISTOGRAM,
-                        computeIntegerPercent(mNodeWasFreshInCache, mNodeWasReturnedFromCache));
-            }
-        }
+        RecordHistogram.recordPercentageHistogram(
+                CACHE_PERCENTAGE_RETRIEVED_FROM_CACHE_HISTOGRAM, percentFromCache);
 
         // Reset counters.
         mMaxNodesInCache = 0;
         mNodeWasReturnedFromCache = 0;
         mNodeWasCreatedFromScratch = 0;
-        mNodeWasFreshInCache = 0;
     }
 
     /** Record UMA histograms for the usage timers of the native accessibility engine. */
