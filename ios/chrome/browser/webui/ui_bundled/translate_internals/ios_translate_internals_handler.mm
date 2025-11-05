@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/translate/model/chrome_ios_translate_client.h"
 #import "ios/chrome/browser/translate/model/translate_service_ios.h"
+#import "ios/web/public/web_state_observer.h"
 #import "ios/web/public/webui/web_ui_ios.h"
 
 namespace {
@@ -40,7 +41,8 @@ bool IsRegularOrInactiveBrowser(Browser* browser) {
 #pragma mark - IOSTranslateInternalsHandler::Observer
 
 class IOSTranslateInternalsHandler::Observer : public BrowserListObserver,
-                                               public WebStateListObserver {
+                                               public WebStateListObserver,
+                                               public web::WebStateObserver {
  public:
   explicit Observer(IOSTranslateInternalsHandler* handler);
   ~Observer() override = default;
@@ -61,6 +63,18 @@ class IOSTranslateInternalsHandler::Observer : public BrowserListObserver,
                              const WebStateListChange& change,
                              const WebStateListStatus& status) override;
 
+  // WebStateObserver:
+  void WebStateRealized(web::WebState* web_state) override;
+  void WebStateDestroyed(web::WebState* web_state) override;
+
+  // Helper functions to to observe the web state.
+  // If `web_state` is realized, directly observe the language detection through
+  // the handler. Otherwise observe the `web_state` until it is realized.
+  // RemoveLanguageDetectionObserverForWebState removes the observers that were
+  // added.
+  void AddLanguageDetectionObserverForWebState(web::WebState* web_state);
+  void RemoveLanguageDetectionObserverForWebState(web::WebState* web_state);
+
   raw_ptr<IOSTranslateInternalsHandler> handler_;
 
   base::ScopedObservation<BrowserList, BrowserListObserver>
@@ -68,6 +82,9 @@ class IOSTranslateInternalsHandler::Observer : public BrowserListObserver,
 
   base::ScopedMultiSourceObservation<WebStateList, WebStateListObserver>
       web_state_list_observations_{this};
+
+  base::ScopedMultiSourceObservation<web::WebState, web::WebStateObserver>
+      scoped_web_state_observations_{this};
 };
 
 IOSTranslateInternalsHandler::Observer::Observer(
@@ -91,6 +108,7 @@ void IOSTranslateInternalsHandler::Observer::Start(BrowserList* browser_list) {
 void IOSTranslateInternalsHandler::Observer::Stop() {
   browser_list_observation_.Reset();
   web_state_list_observations_.RemoveAllObservations();
+  scoped_web_state_observations_.RemoveAllObservations();
   handler_->RemoveAllLanguageDetectionObservers();
 }
 
@@ -109,7 +127,7 @@ void IOSTranslateInternalsHandler::Observer::OnBrowserAdded(
   const int web_state_list_count = web_state_list->count();
   for (int i = 0; i < web_state_list_count; i++) {
     web::WebState* web_state = web_state_list->GetWebStateAt(i);
-    handler_->AddLanguageDetectionObserverForWebState(web_state);
+    AddLanguageDetectionObserverForWebState(web_state);
   }
 }
 
@@ -126,7 +144,7 @@ void IOSTranslateInternalsHandler::Observer::OnBrowserRemoved(
   const int web_state_list_count = web_state_list->count();
   for (int i = 0; i < web_state_list_count; i++) {
     web::WebState* web_state = web_state_list->GetWebStateAt(i);
-    handler_->RemoveLanguageDetectionObserverForWebState(web_state);
+    RemoveLanguageDetectionObserverForWebState(web_state);
   }
 }
 
@@ -148,7 +166,7 @@ void IOSTranslateInternalsHandler::Observer::WebStateListDidChange(
     case WebStateListChange::Type::kDetach: {
       const WebStateListChangeDetach& detach_change =
           change.As<WebStateListChangeDetach>();
-      handler_->RemoveLanguageDetectionObserverForWebState(
+      RemoveLanguageDetectionObserverForWebState(
           detach_change.detached_web_state());
       break;
     }
@@ -158,16 +176,16 @@ void IOSTranslateInternalsHandler::Observer::WebStateListDidChange(
     case WebStateListChange::Type::kReplace: {
       const WebStateListChangeReplace& replace_change =
           change.As<WebStateListChangeReplace>();
-      handler_->RemoveLanguageDetectionObserverForWebState(
+      RemoveLanguageDetectionObserverForWebState(
           replace_change.replaced_web_state());
-      handler_->AddLanguageDetectionObserverForWebState(
+      AddLanguageDetectionObserverForWebState(
           replace_change.inserted_web_state());
       break;
     }
     case WebStateListChange::Type::kInsert: {
       const WebStateListChangeInsert& insert_change =
           change.As<WebStateListChangeInsert>();
-      handler_->AddLanguageDetectionObserverForWebState(
+      AddLanguageDetectionObserverForWebState(
           insert_change.inserted_web_state());
       break;
     }
@@ -183,6 +201,39 @@ void IOSTranslateInternalsHandler::Observer::WebStateListDidChange(
     case WebStateListChange::Type::kGroupDelete:
       // Do nothing when a group is deleted.
       break;
+  }
+}
+
+#pragma mark - IOSTranslateInternalsHandler::Observer (WebStateObserver)
+
+void IOSTranslateInternalsHandler::Observer::WebStateRealized(
+    web::WebState* web_state) {
+  AddLanguageDetectionObserverForWebState(web_state);
+  scoped_web_state_observations_.RemoveObservation(web_state);
+}
+
+void IOSTranslateInternalsHandler::Observer::WebStateDestroyed(
+    web::WebState* web_state) {
+  scoped_web_state_observations_.RemoveObservation(web_state);
+}
+
+#pragma mark - IOSTranslateInternalsHandler::Observer (Private)
+
+void IOSTranslateInternalsHandler::Observer::
+    AddLanguageDetectionObserverForWebState(web::WebState* web_state) {
+  if (web_state->IsRealized()) {
+    handler_->AddLanguageDetectionObserverForWebState(web_state);
+  } else {
+    scoped_web_state_observations_.AddObservation(web_state);
+  }
+}
+
+void IOSTranslateInternalsHandler::Observer::
+    RemoveLanguageDetectionObserverForWebState(web::WebState* web_state) {
+  if (web_state->IsRealized()) {
+    handler_->RemoveLanguageDetectionObserverForWebState(web_state);
+  } else {
+    scoped_web_state_observations_.RemoveObservation(web_state);
   }
 }
 
