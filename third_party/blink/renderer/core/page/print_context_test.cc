@@ -1100,8 +1100,6 @@ class PrintContextOOPRCanvasTest : public PrintContextTest {
   }
 
   void TearDown() override {
-    // Call base class TeardDown first to ensure Canvas2DLayerBridge is
-    // destroyed before the TestContextProvider.
     accelerated_compositing_scope_ = nullptr;
     test_context_provider_ = nullptr;
     SharedGpuContext::Reset();
