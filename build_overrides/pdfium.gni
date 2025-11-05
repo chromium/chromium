@@ -29,6 +29,5 @@ pdf_skia_font_manager_target_override = ""
 # TODO(crbug.com/pdfium/2107): Enable this.
 pdf_enable_fontations_override = false
 
-# Disallow PDFium Rust-based PNG decoder and encoder.
-# TODO(https://crbug.com/444045690): Enable this.
-pdf_enable_rust_png_override = false
+# Enable Rust-based PNG decoder and encoder in PDFium.
+pdf_enable_rust_png_override = true
