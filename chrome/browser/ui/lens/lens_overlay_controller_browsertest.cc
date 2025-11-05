@@ -9635,6 +9635,92 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerReinvocationBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerReinvocationBrowserTest,
+                       RecordsShownAndInvoked) {
+  base::HistogramTester histogram_tester;
+  WaitForPaint();
+  auto* controller = GetLensOverlayController();
+  ASSERT_EQ(controller->state(), State::kOff);
+
+  // Showing UI should change the state to screenshot and eventually to overlay.
+  OpenLensOverlay(LensOverlayInvocationSource::kAppMenu);
+  ASSERT_EQ(controller->state(), State::kScreenshot);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlay; }));
+
+  // Verify histograms were recorded correctly.
+  histogram_tester.ExpectTotalCount("Lens.Overlay.Invoked", 1);
+  histogram_tester.ExpectTotalCount("Lens.Overlay.Shown", 1);
+
+  // Issue a region search to open the side panel.
+  controller->IssueLensRegionRequestForTesting(kTestRegion->Clone(),
+                                               /*is_click=*/false);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlayAndResults; }));
+
+  // Expect the Lens Overlay results panel to open.
+  auto* test_side_panel_coordinator =
+      static_cast<lens::TestLensOverlaySidePanelCoordinator*>(
+          controller->results_side_panel_coordinator());
+  ASSERT_TRUE(test_side_panel_coordinator);
+  EXPECT_TRUE(IsLensOverlaySidePanelShowing());
+
+  // Request a close via the close button on the overlay UI.
+  GetLensSearchController()->HideOverlay(
+      lens::LensOverlayDismissalSource::kOverlayCloseButton);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kHidden; }));
+
+  // Opening the overlay in the current session should reshow the overlay.
+  GetLensSearchController()->OpenLensOverlayInCurrentSession();
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlayAndResults; }));
+
+  // Verify histograms were recorded correctly.
+  histogram_tester.ExpectTotalCount("Lens.Overlay.Invoked", 1);
+  histogram_tester.ExpectTotalCount("Lens.Overlay.Shown", 2);
+}
+
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerReinvocationBrowserTest,
+                       RecordsShownAndInvoked_OverlayIniitiallyHidden) {
+  base::HistogramTester histogram_tester;
+  WaitForPaint();
+  auto* controller = GetLensOverlayController();
+  ASSERT_EQ(controller->state(), State::kOff);
+
+  // Issue a text search request to open the side panel without the overlay.
+  GetLensSearchController()->IssueTextSearchRequest(
+      LensOverlayInvocationSource::kContentAreaContextMenuText, "query", {},
+      AutocompleteMatchType::Type::SEARCH_WHAT_YOU_TYPED,
+      /*is_zero_prefix_suggestion=*/false,
+      /*suppress_contextualization=*/true);
+
+  // Wait for side panel to be visible.
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return IsLensOverlaySidePanelShowing(); }));
+  ASSERT_TRUE(GetLensOverlaySidePanelCoordinator()->IsEntryShowing());
+
+  // Expect the Lens Overlay results panel to open.
+  auto* test_side_panel_coordinator =
+      static_cast<lens::TestLensOverlaySidePanelCoordinator*>(
+          controller->results_side_panel_coordinator());
+  ASSERT_TRUE(test_side_panel_coordinator);
+  EXPECT_TRUE(IsLensOverlaySidePanelShowing());
+
+  // Verify histograms were not recorded as the overlay has not been shown yet.
+  histogram_tester.ExpectTotalCount("Lens.Overlay.Invoked", 0);
+  histogram_tester.ExpectTotalCount("Lens.Overlay.Shown", 0);
+
+  // Opening the overlay in the current session should reshow the overlay.
+  GetLensSearchController()->OpenLensOverlayInCurrentSession();
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlayAndResults; }));
+
+  // Verify histograms were recorded correctly.
+  histogram_tester.ExpectTotalCount("Lens.Overlay.Invoked", 1);
+  histogram_tester.ExpectTotalCount("Lens.Overlay.Shown", 1);
+}
+
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerReinvocationBrowserTest,
                        RegionSearchLoadsInSidePanel) {
   WaitForPaint();
   // State should start in off.
