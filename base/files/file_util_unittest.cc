@@ -5138,6 +5138,36 @@ TEST_F(FileUtilTest, CopyFileContentsWithSendfileSeqFile) {
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
         // BUILDFLAG(IS_ANDROID)
 
+// Validates that a new file can be created with the same name as a recently
+// deleted one. This behavior became the default on Windows at some point during
+// Windows 10's lifetime. See FILE_DISPOSITION_POSIX_SEMANTICS:
+// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntddk/ns-ntddk-_file_disposition_information_ex#remarks
+// Note that as of Windows 11 25H this behavior still only seems to apply to
+// deleting a file using the path and not setting the file dispositions
+// directly.
+TEST_F(FileUtilTest, CreatingFileWithSameNameAfterDelete) {
+  static constexpr FilePath::CharType kFileBaseName[] =
+      FILE_PATH_LITERAL("file");
+  const FilePath file_path = temp_dir_.GetPath().Append(kFileBaseName);
+  const auto byte_span = byte_span_from_cstring("CONTENT");
+  const auto file_flags =
+      File::FLAG_OPEN_ALWAYS | File::FLAG_WRITE | File::FLAG_WIN_SHARE_DELETE;
+
+  File first_file(file_path, file_flags);
+  ASSERT_TRUE(first_file.IsValid());
+  ASSERT_THAT(first_file.Write(0, byte_span),
+              testing::Optional(byte_span.size()));
+
+  ASSERT_TRUE(DeleteFile(file_path));
+
+  File second_file(file_path, file_flags);
+  ASSERT_TRUE(second_file.IsValid());
+
+  // `second_file` is a completely new file. It doesn't have the same content as
+  // `first_file`.
+  ASSERT_EQ(second_file.GetLength(), 0);
+}
+
 }  // namespace
 
 }  // namespace base
