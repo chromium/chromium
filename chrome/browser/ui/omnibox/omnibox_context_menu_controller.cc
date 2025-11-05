@@ -25,13 +25,23 @@
 #include "chrome/grit/omnibox_popup_resources.h"
 #include "components/favicon/core/favicon_service.h"
 #include "components/favicon_base/favicon_types.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/models/menu_model.h"
 #include "ui/gfx/image/image.h"
 
 namespace {
+// TODO(crbug.com/457815342): Add this to config when available.
+constexpr int kMaxRecentTabs = 5;
 constexpr int kMinOmniboxContextMenuRecentTabsCommandId = 33000;
+
+struct TabInfo {
+  int tab_id;
+  std::u16string title;
+  GURL url;
+  base::TimeTicks last_active;
+};
 }  // namespace
 
 OmniboxContextMenuController::OmniboxContextMenuController(
@@ -71,25 +81,49 @@ void OmniboxContextMenuController::AddSeparator() {
 }
 
 void OmniboxContextMenuController::AddRecentTabItems() {
+  std::vector<TabInfo> tabs;
+
   // Iterate through the tab strip model.
   auto* tab_strip_model = browser_window_interface_->GetTabStripModel();
-  size_t valid_tab_count = 0;
   AddTitleWithStringId(IDS_NTP_COMPOSE_MOST_RECENT_TABS);
   for (int i = 0; i < tab_strip_model->count(); i++) {
+    tabs::TabInterface* const tab = tab_strip_model->GetTabAtIndex(i);
     TabRendererData tab_renderer_data =
         TabRendererData::FromTabInModel(tab_strip_model, i);
     const auto& last_committed_url = tab_renderer_data.last_committed_url;
     if (!IsValidTab(last_committed_url)) {
       continue;
     }
-    AddItemWithIcon(next_command_id_, tab_renderer_data.title,
+
+    TabInfo tab_data;
+    tab_data.tab_id = tab->GetHandle().raw_value();
+    tab_data.title = tab_renderer_data.title;
+    tab_data.url = last_committed_url;
+
+    content::WebContents* web_contents = tab_strip_model->GetWebContentsAt(i);
+    tab_data.last_active =
+        std::max(web_contents->GetLastActiveTimeTicks(),
+                 web_contents->GetLastInteractionTimeTicks());
+    tabs.push_back(tab_data);
+  }
+
+  // Sort tabs by most recently active.
+  int max_tab_suggestions =
+      std::min(static_cast<int>(tabs.size()), kMaxRecentTabs);
+  std::partial_sort(tabs.begin(), tabs.begin() + max_tab_suggestions,
+                    tabs.end(), [](const TabInfo& a, const TabInfo& b) {
+                      return a.last_active > b.last_active;
+                    });
+  tabs.resize(max_tab_suggestions);
+
+  for (const auto& tab : tabs) {
+    AddItemWithIcon(next_command_id_, tab.title,
                     favicon::GetDefaultFaviconModel());
-    AddTabFavicon(next_command_id_, last_committed_url,
-                  tab_renderer_data.title);
-    valid_tab_count += 1;
+    AddTabFavicon(next_command_id_, tab.url, tab.title);
     next_command_id_ += 1;
   }
-  if (!valid_tab_count) {
+  // Remove header if no tabs to show.
+  if (tabs.empty()) {
     auto index = menu_model_->GetIndexOfCommandId(ui::MenuModel::kTitleId);
     if (index) {
       menu_model_->RemoveItemAt(index.value());
