@@ -746,7 +746,7 @@ TEST_F(WebGPUSwapBufferProviderTest,
   auto front_buffer_si = provider_->GetFrontBufferSharedImage();
   EXPECT_NE(front_buffer_si, nullptr);
   EXPECT_EQ(front_buffer_si->size(), kSize);
-  EXPECT_EQ(front_buffer_si->format(), resource.format);
+  EXPECT_EQ(front_buffer_si->format(), resource.GetFormat());
 }
 
 // Verifies that GetNewTexture() passes client-specified internal usages to

@@ -428,9 +428,9 @@ TEST_P(CanvasResourceDispatcherTest, DispatchFrame) {
 
             // CanvasResourceSharedImage::CreateSoftware() creates a resource
             // whose origin is top-left.
-            EXPECT_EQ(frame->resource_list.front().origin,
+            EXPECT_EQ(frame->resource_list.front().GetOrigin(),
                       kTopLeft_GrSurfaceOrigin);
-            EXPECT_EQ(frame->resource_list.front().alpha_type,
+            EXPECT_EQ(frame->resource_list.front().GetAlphaType(),
                       kPremul_SkAlphaType);
           }));
 
