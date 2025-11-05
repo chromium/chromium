@@ -6,7 +6,6 @@
 
 #include <optional>
 
-#include "base/strings/stringprintf.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
 #include "base/values.h"
@@ -97,10 +96,8 @@ void SharedQuadState::AsValueInto(base::trace_event::TracedValue* value) const {
   value->SetDouble("opacity", opacity);
   value->SetString("blend_mode", SkBlendMode_Name(blend_mode));
   value->SetInteger("sorting_context_id", sorting_context_id);
-  value->SetInteger("layer_id", layer_id);
-  value->SetString("layer_namespace_id",
-                   base::StringPrintf("%u,%u", layer_namespace_id.first,
-                                      layer_namespace_id.second));
+  // Skip |layer_id| and |layer_namespace_id| because their values are
+  // different in renderer and viz under TreesInViz mode.
   value->SetBoolean("is_fast_rounded_corner", is_fast_rounded_corner);
   if (offset_tag) {
     value->SetString("offset_tag", offset_tag.ToString());

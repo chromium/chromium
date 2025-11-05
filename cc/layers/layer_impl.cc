@@ -10,6 +10,7 @@
 #include <algorithm>
 #include <utility>
 
+#include "base/atomic_sequence_num.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/notreached.h"
@@ -89,20 +90,29 @@ const char* LayerTypeAsString(mojom::LayerType type) {
   }
 }
 
+base::AtomicSequenceNumber g_next_stable_id_for_shared_quad_state;
+
 }  // namespace
 
 LayerImpl::RareProperties::RareProperties() = default;
 LayerImpl::RareProperties::RareProperties(const RareProperties&) = default;
 LayerImpl::RareProperties::~RareProperties() = default;
 
+int LayerImpl::GetNextStableIdForSharedQuadState() {
+  // Stable IDs start from 1.
+  return g_next_stable_id_for_shared_quad_state.GetNext() + 1;
+}
+
 LayerImpl::LayerImpl(LayerTreeImpl* tree_impl, int id)
     : layer_id_(id),
       layer_tree_impl_(tree_impl),
+      stable_id_for_shared_quad_state_(GetNextStableIdForSharedQuadState()),
       transform_tree_index_(kInvalidPropertyNodeId),
       effect_tree_index_(kInvalidPropertyNodeId),
       clip_tree_index_(kInvalidPropertyNodeId),
       scroll_tree_index_(kInvalidPropertyNodeId) {
   DCHECK_GT(layer_id_, 0);
+  DCHECK_GT(stable_id_for_shared_quad_state_, 0);
 
   DCHECK(layer_tree_impl_);
   layer_tree_impl_->RegisterLayer(this);
@@ -221,7 +231,8 @@ void LayerImpl::PopulateSharedQuadState(viz::SharedQuadState* state,
                 draw_properties_.opacity,
                 effect_node->HasRenderSurface() ? SkBlendMode::kSrcOver
                                                 : effect_node->blend_mode,
-                GetSortingContextId(), static_cast<uint32_t>(id()),
+                GetSortingContextId(),
+                static_cast<uint32_t>(stable_id_for_shared_quad_state()),
                 draw_properties_.is_fast_rounded_corner);
 }
 
@@ -258,7 +269,8 @@ void LayerImpl::PopulateScaledSharedQuadStateWithContentRects(
                 draw_properties().opacity,
                 effect_node->HasRenderSurface() ? SkBlendMode::kSrcOver
                                                 : effect_node->blend_mode,
-                GetSortingContextId(), static_cast<uint32_t>(id()),
+                GetSortingContextId(),
+                static_cast<uint32_t>(stable_id_for_shared_quad_state()),
                 draw_properties().is_fast_rounded_corner);
 }
 

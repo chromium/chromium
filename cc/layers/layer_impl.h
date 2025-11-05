@@ -86,6 +86,12 @@ class CC_EXPORT LayerImpl {
 
   int id() const { return layer_id_; }
 
+  int stable_id_for_shared_quad_state() const {
+    return stable_id_for_shared_quad_state_;
+  }
+
+  static int GetNextStableIdForSharedQuadState();
+
   // Whether this layer is on the active tree, return false if it's on the
   // pending tree.
   bool IsActive() const;
@@ -550,6 +556,10 @@ class CC_EXPORT LayerImpl {
 
   const int layer_id_;
   const raw_ptr<LayerTreeImpl> layer_tree_impl_;
+
+  // This id shares namespace with RenderSurfaceImpl, and is only used to
+  // set the SharedQuadState::layer_id_.
+  const int stable_id_for_shared_quad_state_;
 
   // Properties synchronized from the associated Layer.
   gfx::Size bounds_;
