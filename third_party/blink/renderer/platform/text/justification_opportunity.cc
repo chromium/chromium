@@ -14,6 +14,7 @@ namespace blink {
 template <typename CharType>
   requires IsStringCharType<CharType>
 std::pair<bool, bool> CheckJustificationOpportunity(
+    TextJustify method,
     UChar32 ch,
     bool& is_after_opportunity) {
   bool treat_as_space = Character::TreatAsSpace(ch);
@@ -50,15 +51,17 @@ std::pair<bool, bool> CheckJustificationOpportunity(
 }
 
 std::pair<bool, bool> CheckJustificationOpportunity8(
+    TextJustify method,
     LChar ch,
     bool& is_after_opportunity) {
-  return CheckJustificationOpportunity<LChar>(ch, is_after_opportunity);
+  return CheckJustificationOpportunity<LChar>(method, ch, is_after_opportunity);
 }
 
 std::pair<bool, bool> CheckJustificationOpportunity16(
+    TextJustify method,
     UChar32 ch,
     bool& is_after_opportunity) {
-  return CheckJustificationOpportunity<UChar>(ch, is_after_opportunity);
+  return CheckJustificationOpportunity<UChar>(method, ch, is_after_opportunity);
 }
 
 }  // namespace blink

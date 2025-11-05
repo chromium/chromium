@@ -7,6 +7,7 @@
 
 #include <utility>
 
+#include "third_party/blink/renderer/platform/text/text_justify.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_uchar.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
@@ -23,9 +24,11 @@ namespace blink {
 // CheckJustificationOpportunity8() is for a 8-bit string.
 // CheckJustificationOpportunity16() is for a 16-bit string.
 std::pair<bool, bool> CheckJustificationOpportunity8(
+    TextJustify method,
     LChar ch,
     bool& is_after_opportunity);
 std::pair<bool, bool> CheckJustificationOpportunity16(
+    TextJustify method,
     UChar32 ch,
     bool& is_after_opportunity);
 
@@ -33,16 +36,18 @@ std::pair<bool, bool> CheckJustificationOpportunity16(
 //
 // CountJustificationOpportunity8() is for a 8-bit string.
 // CountJustificationOpportunity16() is for a 16-bit string.
-inline wtf_size_t CountJustificationOpportunity8(LChar ch,
+inline wtf_size_t CountJustificationOpportunity8(TextJustify method,
+                                                 LChar ch,
                                                  bool& is_after_opportunity) {
   auto [before, after] =
-      CheckJustificationOpportunity8(ch, is_after_opportunity);
+      CheckJustificationOpportunity8(method, ch, is_after_opportunity);
   return (before ? 1 : 0) + (after ? 1 : 0);
 }
-inline wtf_size_t CountJustificationOpportunity16(UChar32 ch,
+inline wtf_size_t CountJustificationOpportunity16(TextJustify method,
+                                                  UChar32 ch,
                                                   bool& is_after_opportunity) {
   auto [before, after] =
-      CheckJustificationOpportunity16(ch, is_after_opportunity);
+      CheckJustificationOpportunity16(method, ch, is_after_opportunity);
   return (before ? 1 : 0) + (after ? 1 : 0);
 }
 
