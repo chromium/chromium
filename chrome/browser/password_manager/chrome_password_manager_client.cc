@@ -58,6 +58,7 @@
 #include "components/autofill/content/browser/renderer_forms_from_browser_form.h"
 #include "components/autofill/core/browser/autofill_server_prediction.h"
 #include "components/autofill/core/browser/foundations/scoped_autofill_managers_observation.h"
+#include "components/autofill/core/browser/integrators/password_manager/password_manager_autofill_helper_delegate.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/logging/log_router.h"
 #include "components/autofill/core/common/autofill_util.h"
@@ -300,6 +301,21 @@ bool ChromePasswordManagerClient::IsFillingEnabled(const GURL& url) const {
     logger.LogBoolean(Logger::STRING_SSL_ERRORS_PRESENT, ssl_errors);
   }
   return !ssl_errors && IsPasswordManagementEnabledForCurrentPage(url);
+}
+
+bool ChromePasswordManagerClient::IsFieldFilledWithOtp(
+    autofill::FormGlobalId form_id,
+    autofill::FieldGlobalId field_id) {
+  auto* autofill_client =
+      autofill::ContentAutofillClient::FromWebContents(web_contents());
+  if (!autofill_client) {
+    return false;
+  }
+  auto* helper = autofill_client->GetPasswordManagerAutofillHelper();
+  if (!helper) {
+    return false;
+  }
+  return helper->IsFieldFilledWithOtp(form_id, field_id);
 }
 
 bool ChromePasswordManagerClient::IsAutoSignInEnabled() const {

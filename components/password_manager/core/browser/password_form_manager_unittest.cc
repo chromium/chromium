@@ -205,6 +205,10 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
               IsSavingAndFillingEnabled,
               (const GURL&),
               (const, override));
+  MOCK_METHOD(bool,
+              IsFieldFilledWithOtp,
+              (autofill::FormGlobalId, autofill::FieldGlobalId),
+              (override));
   MOCK_METHOD(bool, IsOffTheRecord, (), (const, override));
   MOCK_METHOD(autofill::AutofillCrowdsourcingManager*,
               GetAutofillCrowdsourcingManager,
@@ -919,6 +923,30 @@ TEST_P(PasswordFormManagerTest, SetSubmittedMultipleTimes) {
   EXPECT_FALSE(form_manager_->is_submitted());
   EXPECT_FALSE(form_manager_->GetSubmittedForm());
   EXPECT_EQ(PasswordForm(), form_manager_->GetPendingCredentials());
+}
+
+// Test that PasswordFormManager does not provisionally save a form if the
+// password field was filled by the OneTimePassword product.
+TEST_P(PasswordFormManagerTest, DoNotSaveOtpValuesAsPasswords) {
+  fetcher_->NotifyFetchCompleted();
+
+  // Simulate the password field being filled by the OTP product.
+  EXPECT_CALL(client_,
+              IsFieldFilledWithOtp(
+                  submitted_form_.global_id(),
+                  submitted_form_.fields()[kPasswordFieldIndex].global_id()))
+      .WillOnce(Return(true));
+  EXPECT_FALSE(form_manager_->ProvisionallySave(submitted_form_, &driver_,
+                                                possible_usernames_));
+
+  // Simulate the password field not being filled by the OTP product.
+  EXPECT_CALL(client_,
+              IsFieldFilledWithOtp(
+                  submitted_form_.global_id(),
+                  submitted_form_.fields()[kPasswordFieldIndex].global_id()))
+      .WillOnce(Return(false));
+  EXPECT_TRUE(form_manager_->ProvisionallySave(submitted_form_, &driver_,
+                                               possible_usernames_));
 }
 
 // Tests that when PasswordFormManager receives saved matches it waits for

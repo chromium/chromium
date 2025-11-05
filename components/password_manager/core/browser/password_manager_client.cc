@@ -28,6 +28,12 @@ bool PasswordManagerClient::IsFillingEnabled(const GURL& url) const {
   return true;
 }
 
+bool PasswordManagerClient::IsFieldFilledWithOtp(
+    autofill::FormGlobalId form_id,
+    autofill::FieldGlobalId field_id) {
+  return false;
+}
+
 bool PasswordManagerClient::IsAutoSignInEnabled() const {
   return false;
 }
