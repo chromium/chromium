@@ -671,7 +671,8 @@ void RealTimeUrlLookupServiceBase::StartFillingRequestProto(
 
   std::string content_area_account_email = GetContentAreaAccountEmail(url);
   if (!content_area_account_email.empty()) {
-    request->set_content_area_account_email(std::move(content_area_account_email));
+    request->set_content_area_account_email(
+        std::move(content_area_account_email));
   }
 
   *request->mutable_population() = get_user_population_callback_.Run();
@@ -722,15 +723,13 @@ void RealTimeUrlLookupServiceBase::StartFillingRequestProto(
     }
 
     // The IP addresses are only needed for enterprise requests.
-    if (base::FeatureList::IsEnabled(safe_browsing::kLocalIpAddressInEvents)) {
-      base::ThreadPool::PostTaskAndReplyWithResult(
-          FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
-          base::BindOnce(&enterprise_connectors::GetLocalIpAddresses),
-          base::BindOnce(&RealTimeUrlLookupServiceBase::OnIpAddressesFetched,
-                         GetWeakPtr(), std::move(request),
-                         std::move(request_callback)));
-      return;
-    }
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+        base::BindOnce(&enterprise_connectors::GetLocalIpAddresses),
+        base::BindOnce(&RealTimeUrlLookupServiceBase::OnIpAddressesFetched,
+                       GetWeakPtr(), std::move(request),
+                       std::move(request_callback)));
+    return;
   }
   std::move(request_callback).Run(std::move(request));
 }

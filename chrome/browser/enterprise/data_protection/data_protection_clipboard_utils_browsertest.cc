@@ -71,7 +71,6 @@ class DataControlsClipboardUtilsBrowserTest
  public:
   DataControlsClipboardUtilsBrowserTest() {
     std::vector<base::test::FeatureRef> enabled_features = {
-        safe_browsing::kLocalIpAddressInEvents,
         enterprise_connectors::kEnterpriseActiveUserDetection,
     };
     std::vector<base::test::FeatureRef> disabled_features = {};
@@ -1953,7 +1952,8 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
   IsClipboardCopyAllowedByPolicy(
       /*source=*/CreateURLClipboardEndpoint("https://source.com"),
       /*metadata=*/
-     metadata, MakeClipboardPasteData("foo", "", {}), copy_future.GetCallback());
+      metadata, MakeClipboardPasteData("foo", "", {}),
+      copy_future.GetCallback());
 
   ui::ClipboardMonitor::GetInstance()->NotifyClipboardDataChanged();
 

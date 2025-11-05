@@ -255,11 +255,6 @@ BASE_DECLARE_FEATURE(kHashPrefixRealTimeLookupsSamplePing);
 // HPRT lookup. The value should be between 0 and 100.
 extern const base::FeatureParam<int> kHashPrefixRealTimeLookupsSampleRate;
 
-// Adds local IP address field to security-sensitive events reported to
-// chrome://safe-browsing. These events are triggered when the reporting policy
-// is enabled for managed devices or profiles.
-BASE_DECLARE_FEATURE(kLocalIpAddressInEvents);
-
 // If enabled, fetching lists from Safe Browsing and performing checks on those
 // lists uses the v5 APIs instead of the v4 Update API. There is no change to
 // how often the checks are triggered (they are still not in real time).

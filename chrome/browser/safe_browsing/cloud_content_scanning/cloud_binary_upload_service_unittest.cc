@@ -188,9 +188,7 @@ class CloudBinaryUploadServiceTest : public ::testing::Test {
     // URLLoaderFactory, so pass nullptr here.
     service_ = std::make_unique<CloudBinaryUploadService>(nullptr, &profile_);
     scoped_feature_list_.InitWithFeatures(
-        {safe_browsing::kLocalIpAddressInEvents,
-         enterprise_connectors::kDlpScanPastedImages},
-        {});
+        {enterprise_connectors::kDlpScanPastedImages}, {});
   }
 
   void TearDown() override {

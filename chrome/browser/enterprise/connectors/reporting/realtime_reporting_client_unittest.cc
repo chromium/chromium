@@ -200,21 +200,9 @@ class RealtimeReportingClientOidcTest : public RealtimeReportingClientTestBase {
 
 class RealtimeReportingClientUmaTest
     : public RealtimeReportingClientTestBase,
-      public testing::WithParamInterface<std::tuple<bool, bool>> {
+      public testing::WithParamInterface<bool> {
  public:
-  RealtimeReportingClientUmaTest() {
-    if (local_ip_addresses_enabled()) {
-      scoped_feature_list_.InitAndEnableFeature(
-          safe_browsing::kLocalIpAddressInEvents);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          safe_browsing::kLocalIpAddressInEvents);
-    }
-  }
-
-  bool is_profile_reporting() { return std::get<0>(GetParam()); }
-
-  bool local_ip_addresses_enabled() { return std::get<1>(GetParam()); }
+  bool is_profile_reporting() { return GetParam(); }
 
   void SetUp() override {
     RealtimeReportingClientTestBase::SetUp();
@@ -408,11 +396,9 @@ TEST_P(RealtimeReportingClientUmaTest, TestUmaEventUploadFails) {
   histogram_.ExpectTotalCount("Enterprise.ReportingEventUploadSuccess", 0);
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    RealtimeReportingClientUmaTest,
-    testing::Combine(/* is_profile_reporting */ testing::Bool(),
-                     /* local_ip_addresses_enabled */ testing::Bool()));
+INSTANTIATE_TEST_SUITE_P(All,
+                         RealtimeReportingClientUmaTest,
+                         /* is_profile_reporting */ testing::Bool());
 
 TEST_F(RealtimeReportingClientTestBase,
        TestEventNameToUmaEnumMapIncludesAllEvents) {

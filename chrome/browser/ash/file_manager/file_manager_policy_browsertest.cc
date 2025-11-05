@@ -1160,11 +1160,10 @@ class DlpAndEnterpriseConnectorsFilesAppBrowserTest
     use_proto_format()
         ? scoped_feature_list_.InitWithFeatures(
               /*enabled_features=*/
-              {safe_browsing::kLocalIpAddressInEvents,
-               policy::kUploadRealtimeReportingEventsUsingProto},
+              {policy::kUploadRealtimeReportingEventsUsingProto},
               /*disabled_features=*/{})
         : scoped_feature_list_.InitWithFeatures(
-              /*enabled_features=*/{safe_browsing::kLocalIpAddressInEvents},
+              /*enabled_features=*/{},
               /*disabled_features=*/{
                   policy::kUploadRealtimeReportingEventsUsingProto});
   }

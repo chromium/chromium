@@ -15150,24 +15150,6 @@
             ]
         }
     ],
-    "LocalIpAddressInEvents": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "LocalIpAddressInEvents"
-                    ]
-                }
-            ]
-        }
-    ],
     "LocalNetworkAccessChecks": [
         {
             "platforms": [

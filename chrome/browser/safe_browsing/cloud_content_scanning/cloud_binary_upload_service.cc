@@ -346,9 +346,7 @@ void CloudBinaryUploadService::PrepareRequestForUpload(Request::Id request_id) {
     request->GetRequestData(
         base::BindOnce(&CloudBinaryUploadService::OnGetRequestData,
                        weakptr_factory_.GetWeakPtr(), request_id));
-  } else if (!IsConsumerScanRequest(*request) &&
-             base::FeatureList::IsEnabled(
-                 safe_browsing::kLocalIpAddressInEvents)) {
+  } else if (!IsConsumerScanRequest(*request)) {
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
         base::BindOnce(&::enterprise_connectors::GetLocalIpAddresses),

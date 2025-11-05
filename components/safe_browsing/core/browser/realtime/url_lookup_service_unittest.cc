@@ -861,7 +861,7 @@ TEST_F(
 TEST_F(RealTimeUrlLookupServiceTest,
        TestStartLookup_AttachTokenWhenWithTokenIsEnabled) {
   base::HistogramTester histograms;
-  EnableRealTimeUrlLookup({kLocalIpAddressInEvents}, {});
+  EnableRealTimeUrlLookup({}, {});
   EnableTokenFetchesInClient();
   GURL url(kTestUrl);
   SetUpRTLookupResponse(RTLookupResponse::ThreatInfo::DANGEROUS,
@@ -925,7 +925,7 @@ TEST_F(RealTimeUrlLookupServiceTest,
 TEST_F(RealTimeUrlLookupServiceTest,
        TestStartLookup_NoTokenWhenTokenIsUnavailable) {
   base::HistogramTester histograms;
-  EnableRealTimeUrlLookup({kLocalIpAddressInEvents}, {});
+  EnableRealTimeUrlLookup({}, {});
   EnableTokenFetchesInClient();
   GURL url(kTestUrl);
   SetUpRTLookupResponse(RTLookupResponse::ThreatInfo::DANGEROUS,

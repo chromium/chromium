@@ -255,15 +255,12 @@ void RealtimeReportingClientBase::UploadSecurityEvent(
     ::chrome::cros::reporting::proto::Event event,
     policy::CloudPolicyClient* client,
     const ReportingSettings& settings) {
-  if (base::FeatureList::IsEnabled(safe_browsing::kLocalIpAddressInEvents)) {
-    base::ThreadPool::PostTaskAndReplyWithResult(
-        FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
-        base::BindOnce(&GetLocalIpAddresses),
-        base::BindOnce(&RealtimeReportingClientBase::OnIpAddressesFetched,
-                       AsWeakPtr(), std::move(event), client, settings));
-    return;
-  }
-  FinishUploadSecurityEvent(std::move(event), client, settings);
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+      base::BindOnce(&GetLocalIpAddresses),
+      base::BindOnce(&RealtimeReportingClientBase::OnIpAddressesFetched,
+                     AsWeakPtr(), std::move(event), client, settings));
+  return;
 }
 
 void RealtimeReportingClientBase::OnIpAddressesFetched(
@@ -304,18 +301,13 @@ void RealtimeReportingClientBase::UploadSecurityEventReportDeprecated(
       base::Value::Dict()
           .Set("time", base::TimeFormatAsIso8601(time))
           .Set(name, std::move(event));
-  if (base::FeatureList::IsEnabled(safe_browsing::kLocalIpAddressInEvents)) {
-    base::ThreadPool::PostTaskAndReplyWithResult(
-        FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
-        base::BindOnce(&GetLocalIpAddresses),
-        base::BindOnce(
-            &RealtimeReportingClientBase::OnIpAddressesFetchedDeprecated,
-            AsWeakPtr(), std::move(event_wrapper), client, name, settings,
-            time));
-    return;
-  }
-  FinishUploadSecurityEventReportDeprecated(std::move(event_wrapper), client,
-                                            name, settings);
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+      base::BindOnce(&GetLocalIpAddresses),
+      base::BindOnce(
+          &RealtimeReportingClientBase::OnIpAddressesFetchedDeprecated,
+          AsWeakPtr(), std::move(event_wrapper), client, name, settings, time));
+  return;
 }
 
 void RealtimeReportingClientBase::OnIpAddressesFetchedDeprecated(
