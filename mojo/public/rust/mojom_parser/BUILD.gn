@@ -64,9 +64,24 @@ rust_static_library("mojom_parser_unittests") {
     "test/test_mojomparse.rs",
     "test/test_parser.rs",
   ]
+
   deps = [
     ":mojom_parser_core",
     ":parser_unittests_rust",
+    ":validation_parser",
     "//testing/rust_gtest_interop",
   ]
+}
+
+rust_static_library("validation_parser") {
+  testonly = true
+  allow_unsafe = true
+
+  crate_root = "test_util/cxx.rs"
+  sources = [ "test_util/cxx.rs" ]
+  cxx_bindings = [ "test_util/cxx.rs" ]
+
+  deps = [ "//mojo/public/cpp/bindings/tests:mojo_public_bindings_test_utils" ]
+
+  visibility = [ ":*" ]
 }
