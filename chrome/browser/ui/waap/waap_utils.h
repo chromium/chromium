@@ -5,7 +5,10 @@
 #ifndef CHROME_BROWSER_UI_WAAP_WAAP_UTILS_H_
 #define CHROME_BROWSER_UI_WAAP_WAAP_UTILS_H_
 
+#include "base/time/time.h"
 #include "url/gurl.h"
+
+class Profile;
 
 namespace waap {
 
@@ -27,6 +30,10 @@ bool IsForInitialWebUI(const GURL& url);
 // and the WebUI version.
 bool IsInitialWebUIMetricsLoggingEnabled();
 
+// Records the presentation time of the first paint for the browser window.
+// This function ensures the metric is recorded only once per browser process.
+void RecordBrowserWindowFirstPresentation(Profile* profile,
+                                          base::TimeTicks presentation_time);
 }  // namespace waap
 
 #endif  // CHROME_BROWSER_UI_WAAP_WAAP_UTILS_H_

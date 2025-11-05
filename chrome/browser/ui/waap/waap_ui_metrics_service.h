@@ -32,6 +32,10 @@ class WaapUIMetricsService : public KeyedService {
   // May return nullptr.
   static WaapUIMetricsService* Get(Profile* profile);
 
+  // Called when the browser window is presented onto the screen for the first
+  // time.
+  void OnBrowserWindowFirstPresentation(base::TimeTicks time);
+
   // Called whenever the WaaP UI has its first paint finished.
   void OnFirstPaint(base::TimeTicks time);
 

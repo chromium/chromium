@@ -433,6 +433,26 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="InitialWebUI.Startup.BrowserWindow.FirstPaint{StartupTemperature}"
+    units="ms" expires_after="2026-04-30">
+  <owner>mych@chromium.org</owner>
+  <owner>chrome-waap-eng@google.com</owner>
+  <summary>
+    Records the time from browser application startup to the first presentation
+    of the browser window onto the screen{StartupTemperature}. This is only
+    recorded for desktop platforms when the InitialWebUIMetrics feature is
+    enabled.
+  </summary>
+  <token key="StartupTemperature">
+    <variant name="" summary=""/>
+    <variant name=".ColdStartup"
+        summary=", where startup was cold (mostly hard faults)"/>
+    <variant name=".WarmStartup"
+        summary=", where startup was warm (almost no hard faults)"/>
+  </token>
+</histogram>
+
+<histogram
     name="InitialWebUI.Startup.ReloadButton.FirstContentfulPaint{StartupTemperature}"
     units="ms" expires_after="2026-04-30">
   <owner>mych@chromium.org</owner>

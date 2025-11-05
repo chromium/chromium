@@ -65,11 +65,17 @@ class WaapUIMetricsRecorder {
   void OnChangeVisibleMode(ReloadButtonMode current_mode,
                            ReloadButtonMode intended_mode,
                            base::TimeTicks time);
-  // Called within ReloadButton::PaintButtonContents to record paint-related
-  // metrics.
-  void OnPaint(ReloadButtonMode visible_mode,
-               int button_state,
-               base::TimeTicks now);
+  // Called when a viz frame that contains the ReloadButton is successfully
+  // painted on the screen.
+  //
+  // `visible_mode` is the mode of the ReloadButton at the time of it requesting
+  // to paint.
+  // `button_state` is the state of the ReloadButton at the time of it
+  // requesting to paint.
+  // `now` is the time at which the frame was presented.
+  void OnPaintFramePresented(ReloadButtonMode visible_mode,
+                             int button_state,
+                             base::TimeTicks now);
 
  private:
   // Information about the last input event that triggered ButtonPressed.

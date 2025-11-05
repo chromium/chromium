@@ -40,6 +40,7 @@
 #include "components/enterprise/buildflags/buildflags.h"
 #include "components/infobars/core/infobar_container.h"
 #include "components/user_education/common/feature_promo/feature_promo_handle.h"
+#include "components/viz/common/frame_timing_details.h"
 #include "components/webapps/browser/banners/app_banner_manager.h"
 #include "content/public/browser/page_user_data.h"
 #include "content/public/browser/permission_controller.h"
@@ -1096,6 +1097,11 @@ class BrowserView : public BrowserWindow,
   // prevent policy from incorrectly allowing the browser to enter fullscreen
   // when it should not be able to.
   void UpdateFullscreenAllowedFromPolicy(bool allowed_without_policy);
+
+  // Called when the a viz frame that contains the first paint of this browser
+  // view is successfully painted onto the screen for the first time.
+  // `frame_timing_details` contains the paint timing information of the frame.
+  void OnFirstPresentation(const viz::FrameTimingDetails& frame_timing_details);
 
   class ExclusiveAccessContextImpl;
   std::unique_ptr<ExclusiveAccessContextImpl> exclusive_access_context_;

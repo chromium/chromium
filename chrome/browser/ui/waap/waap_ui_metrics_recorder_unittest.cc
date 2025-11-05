@@ -58,15 +58,17 @@ TEST_F(WaapUIMetricsRecorderTest, MouseHoverToNextPaint) {
   task_environment_.FastForwardBy(base::Seconds(1));
   auto end_time = base::TimeTicks::Now();
 
-  recorder_->OnPaint(WaapUIMetricsRecorder::ReloadButtonMode::kReload,
-                     views::Button::STATE_HOVERED, end_time);
+  recorder_->OnPaintFramePresented(
+      WaapUIMetricsRecorder::ReloadButtonMode::kReload,
+      views::Button::STATE_HOVERED, end_time);
   histogram_tester_.ExpectTimeBucketCount(
       "InitialWebUI.ReloadButton.MouseHoverToNextPaint", end_time - start_time,
       1);
 
   // The hover time should be reset. Another OnPaint should not trigger metric.
-  recorder_->OnPaint(WaapUIMetricsRecorder::ReloadButtonMode::kReload,
-                     views::Button::STATE_HOVERED, base::TimeTicks::Now());
+  recorder_->OnPaintFramePresented(
+      WaapUIMetricsRecorder::ReloadButtonMode::kReload,
+      views::Button::STATE_HOVERED, base::TimeTicks::Now());
   histogram_tester_.ExpectTotalCount(
       "InitialWebUI.ReloadButton.MouseHoverToNextPaint", 1);
 }
@@ -85,8 +87,9 @@ TEST_F(WaapUIMetricsRecorderTest, MouseHoverExitedToNextPaint) {
   task_environment_.FastForwardBy(base::Seconds(1));
   auto end_time = base::TimeTicks::Now();
 
-  recorder_->OnPaint(WaapUIMetricsRecorder::ReloadButtonMode::kReload,
-                     views::Button::STATE_HOVERED, end_time);
+  recorder_->OnPaintFramePresented(
+      WaapUIMetricsRecorder::ReloadButtonMode::kReload,
+      views::Button::STATE_HOVERED, end_time);
   histogram_tester_.ExpectTotalCount(
       "InitialWebUI.ReloadButton.MouseHoverToNextPaint", 0);
 }
@@ -102,15 +105,17 @@ TEST_F(WaapUIMetricsRecorderTest, MousePressToNextPaint) {
   task_environment_.FastForwardBy(base::Seconds(1));
   auto end_time = base::TimeTicks::Now();
 
-  recorder_->OnPaint(WaapUIMetricsRecorder::ReloadButtonMode::kReload,
-                     views::Button::STATE_PRESSED, end_time);
+  recorder_->OnPaintFramePresented(
+      WaapUIMetricsRecorder::ReloadButtonMode::kReload,
+      views::Button::STATE_PRESSED, end_time);
   histogram_tester_.ExpectTimeBucketCount(
       "InitialWebUI.ReloadButton.MousePressToNextPaint", end_time - start_time,
       1);
 
   // The press time should be reset. Another OnPaint should not trigger metric.
-  recorder_->OnPaint(WaapUIMetricsRecorder::ReloadButtonMode::kReload,
-                     views::Button::STATE_PRESSED, base::TimeTicks::Now());
+  recorder_->OnPaintFramePresented(
+      WaapUIMetricsRecorder::ReloadButtonMode::kReload,
+      views::Button::STATE_PRESSED, base::TimeTicks::Now());
   histogram_tester_.ExpectTotalCount(
       "InitialWebUI.ReloadButton.MousePressToNextPaint", 1);
 }
@@ -130,8 +135,9 @@ TEST_F(WaapUIMetricsRecorderTest, MousePressReleasedToNextPaint) {
   task_environment_.FastForwardBy(base::Seconds(1));
   auto end_time = base::TimeTicks::Now();
 
-  recorder_->OnPaint(WaapUIMetricsRecorder::ReloadButtonMode::kReload,
-                     views::Button::STATE_PRESSED, end_time);
+  recorder_->OnPaintFramePresented(
+      WaapUIMetricsRecorder::ReloadButtonMode::kReload,
+      views::Button::STATE_PRESSED, end_time);
   histogram_tester_.ExpectTotalCount(
       "InitialWebUI.ReloadButton.MousePressToNextPaint", 0);
 }
@@ -158,15 +164,17 @@ TEST_F(WaapUIMetricsRecorderTest, InputToNextPaint_KeyPress) {
   task_environment_.FastForwardBy(base::Seconds(1));
   auto end_time = base::TimeTicks::Now();
 
-  recorder_->OnPaint(WaapUIMetricsRecorder::ReloadButtonMode::kReload,
-                     views::Button::STATE_NORMAL, end_time);
+  recorder_->OnPaintFramePresented(
+      WaapUIMetricsRecorder::ReloadButtonMode::kReload,
+      views::Button::STATE_NORMAL, end_time);
   histogram_tester_.ExpectTimeBucketCount(
       "InitialWebUI.ReloadButton.InputToNextPaint.KeyPress",
       end_time - start_time, 1);
 
   // last_input_info_ should be reset.
-  recorder_->OnPaint(WaapUIMetricsRecorder::ReloadButtonMode::kReload,
-                     views::Button::STATE_NORMAL, base::TimeTicks::Now());
+  recorder_->OnPaintFramePresented(
+      WaapUIMetricsRecorder::ReloadButtonMode::kReload,
+      views::Button::STATE_NORMAL, base::TimeTicks::Now());
   histogram_tester_.ExpectTotalCount(
       "InitialWebUI.ReloadButton.InputToNextPaint.KeyPress", 1);
 }
@@ -193,15 +201,17 @@ TEST_F(WaapUIMetricsRecorderTest, InputToNextPaint_MouseRelease) {
   task_environment_.FastForwardBy(base::Seconds(1));
   auto end_time = base::TimeTicks::Now();
 
-  recorder_->OnPaint(WaapUIMetricsRecorder::ReloadButtonMode::kReload,
-                     views::Button::STATE_NORMAL, end_time);
+  recorder_->OnPaintFramePresented(
+      WaapUIMetricsRecorder::ReloadButtonMode::kReload,
+      views::Button::STATE_NORMAL, end_time);
   histogram_tester_.ExpectTimeBucketCount(
       "InitialWebUI.ReloadButton.InputToNextPaint.MouseRelease",
       end_time - start_time, 1);
 
   // last_input_info_ should be reset.
-  recorder_->OnPaint(WaapUIMetricsRecorder::ReloadButtonMode::kReload,
-                     views::Button::STATE_NORMAL, base::TimeTicks::Now());
+  recorder_->OnPaintFramePresented(
+      WaapUIMetricsRecorder::ReloadButtonMode::kReload,
+      views::Button::STATE_NORMAL, base::TimeTicks::Now());
   histogram_tester_.ExpectTotalCount(
       "InitialWebUI.ReloadButton.InputToNextPaint.MouseRelease", 1);
 }
@@ -253,8 +263,9 @@ TEST_F(WaapUIMetricsRecorderTest, InputToNextPaint_MultipleInputs) {
   auto paint_time = base::TimeTicks::Now();
 
   // 3. Paint.
-  recorder_->OnPaint(WaapUIMetricsRecorder::ReloadButtonMode::kReload,
-                     views::Button::STATE_NORMAL, paint_time);
+  recorder_->OnPaintFramePresented(
+      WaapUIMetricsRecorder::ReloadButtonMode::kReload,
+      views::Button::STATE_NORMAL, paint_time);
 
   // Only the last input (MouseRelease) should be recorded for InputToNextPaint.
   histogram_tester_.ExpectTotalCount(
@@ -264,8 +275,9 @@ TEST_F(WaapUIMetricsRecorderTest, InputToNextPaint_MultipleInputs) {
       paint_time - mouse_release_time, 1);
 
   // last_input_info_ should be reset.
-  recorder_->OnPaint(WaapUIMetricsRecorder::ReloadButtonMode::kReload,
-                     views::Button::STATE_NORMAL, base::TimeTicks::Now());
+  recorder_->OnPaintFramePresented(
+      WaapUIMetricsRecorder::ReloadButtonMode::kReload,
+      views::Button::STATE_NORMAL, base::TimeTicks::Now());
   histogram_tester_.ExpectTotalCount(
       "InitialWebUI.ReloadButton.InputToNextPaint.KeyPress", 0);
   histogram_tester_.ExpectTotalCount(
@@ -304,8 +316,9 @@ TEST_F(WaapUIMetricsRecorderTest, InputToStopAndPaintWithMouseRelease) {
   task_environment_.FastForwardBy(base::Seconds(1));
   auto paint_time = base::TimeTicks::Now();
 
-  recorder_->OnPaint(WaapUIMetricsRecorder::ReloadButtonMode::kStop,
-                     views::Button::STATE_NORMAL, paint_time);
+  recorder_->OnPaintFramePresented(
+      WaapUIMetricsRecorder::ReloadButtonMode::kStop,
+      views::Button::STATE_NORMAL, paint_time);
   histogram_tester_.ExpectTimeBucketCount(
       "InitialWebUI.ReloadButton.InputToNextPaint.MouseRelease",
       paint_time - start_time, 1);
@@ -349,8 +362,9 @@ TEST_F(WaapUIMetricsRecorderTest, InputToReloadAndPaintWithMouseRelease) {
   task_environment_.FastForwardBy(base::Seconds(1));
   auto paint_time = base::TimeTicks::Now();
 
-  recorder_->OnPaint(WaapUIMetricsRecorder::ReloadButtonMode::kReload,
-                     views::Button::STATE_NORMAL, paint_time);
+  recorder_->OnPaintFramePresented(
+      WaapUIMetricsRecorder::ReloadButtonMode::kReload,
+      views::Button::STATE_NORMAL, paint_time);
   histogram_tester_.ExpectTimeBucketCount(
       "InitialWebUI.ReloadButton.InputToNextPaint.MouseRelease",
       paint_time - start_time, 1);
@@ -394,8 +408,9 @@ TEST_F(WaapUIMetricsRecorderTest, InputToStopAndPaintWithKeyPress) {
   task_environment_.FastForwardBy(base::Seconds(1));
   auto paint_time = base::TimeTicks::Now();
 
-  recorder_->OnPaint(WaapUIMetricsRecorder::ReloadButtonMode::kStop,
-                     views::Button::STATE_NORMAL, paint_time);
+  recorder_->OnPaintFramePresented(
+      WaapUIMetricsRecorder::ReloadButtonMode::kStop,
+      views::Button::STATE_NORMAL, paint_time);
   histogram_tester_.ExpectTimeBucketCount(
       "InitialWebUI.ReloadButton.InputToNextPaint.KeyPress",
       paint_time - start_time, 1);
@@ -439,8 +454,9 @@ TEST_F(WaapUIMetricsRecorderTest, InputToReloadAndPaintWithKeyPress) {
   task_environment_.FastForwardBy(base::Seconds(1));
   auto paint_time = base::TimeTicks::Now();
 
-  recorder_->OnPaint(WaapUIMetricsRecorder::ReloadButtonMode::kReload,
-                     views::Button::STATE_NORMAL, paint_time);
+  recorder_->OnPaintFramePresented(
+      WaapUIMetricsRecorder::ReloadButtonMode::kReload,
+      views::Button::STATE_NORMAL, paint_time);
   histogram_tester_.ExpectTimeBucketCount(
       "InitialWebUI.ReloadButton.InputToNextPaint.KeyPress",
       paint_time - start_time, 1);
@@ -468,8 +484,9 @@ TEST_F(WaapUIMetricsRecorderTest, ChangeVisibleModeToNextPaintInStop) {
   auto end_time = base::TimeTicks::Now();
 
   // OnPaint with different mode should not trigger metric.
-  recorder_->OnPaint(WaapUIMetricsRecorder::ReloadButtonMode::kReload,
-                     views::Button::STATE_NORMAL, end_time);
+  recorder_->OnPaintFramePresented(
+      WaapUIMetricsRecorder::ReloadButtonMode::kReload,
+      views::Button::STATE_NORMAL, end_time);
   histogram_tester_.ExpectTotalCount(
       "InitialWebUI.ReloadButton.ChangeVisibleModeToNextPaintInStop", 0);
 
@@ -477,15 +494,17 @@ TEST_F(WaapUIMetricsRecorderTest, ChangeVisibleModeToNextPaintInStop) {
   end_time = base::TimeTicks::Now();
 
   // OnPaint with target mode should trigger metric.
-  recorder_->OnPaint(WaapUIMetricsRecorder::ReloadButtonMode::kStop,
-                     views::Button::STATE_NORMAL, end_time);
+  recorder_->OnPaintFramePresented(
+      WaapUIMetricsRecorder::ReloadButtonMode::kStop,
+      views::Button::STATE_NORMAL, end_time);
   histogram_tester_.ExpectTimeBucketCount(
       "InitialWebUI.ReloadButton.ChangeVisibleModeToNextPaintInStop",
       end_time - start_time, 1);
 
   // pending_mode_change_ should be reset.
-  recorder_->OnPaint(WaapUIMetricsRecorder::ReloadButtonMode::kStop,
-                     views::Button::STATE_NORMAL, base::TimeTicks::Now());
+  recorder_->OnPaintFramePresented(
+      WaapUIMetricsRecorder::ReloadButtonMode::kStop,
+      views::Button::STATE_NORMAL, base::TimeTicks::Now());
   histogram_tester_.ExpectTotalCount(
       "InitialWebUI.ReloadButton.ChangeVisibleModeToNextPaintInStop", 1);
 }
@@ -506,8 +525,9 @@ TEST_F(WaapUIMetricsRecorderTest, ChangeVisibleModeToNextPaintInReload) {
   auto end_time = base::TimeTicks::Now();
 
   // OnPaint with different mode should not trigger metric.
-  recorder_->OnPaint(WaapUIMetricsRecorder::ReloadButtonMode::kStop,
-                     views::Button::STATE_NORMAL, end_time);
+  recorder_->OnPaintFramePresented(
+      WaapUIMetricsRecorder::ReloadButtonMode::kStop,
+      views::Button::STATE_NORMAL, end_time);
   histogram_tester_.ExpectTotalCount(
       "InitialWebUI.ReloadButton.ChangeVisibleModeToNextPaintInReload", 0);
 
@@ -515,15 +535,17 @@ TEST_F(WaapUIMetricsRecorderTest, ChangeVisibleModeToNextPaintInReload) {
   end_time = base::TimeTicks::Now();
 
   // OnPaint with target mode should trigger metric.
-  recorder_->OnPaint(WaapUIMetricsRecorder::ReloadButtonMode::kReload,
-                     views::Button::STATE_NORMAL, end_time);
+  recorder_->OnPaintFramePresented(
+      WaapUIMetricsRecorder::ReloadButtonMode::kReload,
+      views::Button::STATE_NORMAL, end_time);
   histogram_tester_.ExpectTimeBucketCount(
       "InitialWebUI.ReloadButton.ChangeVisibleModeToNextPaintInReload",
       end_time - start_time, 1);
 
   // pending_mode_change_ should be reset.
-  recorder_->OnPaint(WaapUIMetricsRecorder::ReloadButtonMode::kReload,
-                     views::Button::STATE_NORMAL, base::TimeTicks::Now());
+  recorder_->OnPaintFramePresented(
+      WaapUIMetricsRecorder::ReloadButtonMode::kReload,
+      views::Button::STATE_NORMAL, base::TimeTicks::Now());
   histogram_tester_.ExpectTotalCount(
       "InitialWebUI.ReloadButton.ChangeVisibleModeToNextPaintInReload", 1);
 }

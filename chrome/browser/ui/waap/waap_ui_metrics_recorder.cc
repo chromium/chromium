@@ -117,9 +117,9 @@ void WaapUIMetricsRecorder::OnChangeVisibleMode(ReloadButtonMode current_mode,
   });
 }
 
-void WaapUIMetricsRecorder::OnPaint(ReloadButtonMode visible_mode,
-                                    int button_state,
-                                    base::TimeTicks now) {
+void WaapUIMetricsRecorder::OnPaintFramePresented(ReloadButtonMode visible_mode,
+                                                  int button_state,
+                                                  base::TimeTicks now) {
   static bool is_first_paint_recorded = false;
   if (!waap_service_) {
     return;

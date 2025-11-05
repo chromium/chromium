@@ -79,7 +79,7 @@ void EmitReloadButtonHistogramWithTraceEvent(const char* event_name,
                                 base::Minutes(3), 100);
 }
 
-void RecordStartupPaintMetric(const char* paint_metric_name,
+void RecordStartupPaintMetric(std::string_view paint_metric_name,
                               base::TimeTicks paint_time) {
   if (!startup_metric_utils::GetBrowser().ShouldLogStartupHistogram()) {
     return;
@@ -91,16 +91,13 @@ void RecordStartupPaintMetric(const char* paint_metric_name,
     return;
   }
 
-  // For early experiment, this is ReloadButton only.
-  // TODO(crbug.com/448794588): Switch to general name after initial phase.
-  std::string histogram_name =
-      base::StrCat({"InitialWebUI.Startup.ReloadButton.", paint_metric_name});
+  std::string histogram_name(paint_metric_name);
   switch (startup_metric_utils::GetBrowser().GetStartupTemperature()) {
     case startup_metric_utils::COLD_STARTUP_TEMPERATURE:
-      histogram_name = base::StrCat({histogram_name, ".ColdStartup"});
+      histogram_name = base::StrCat({paint_metric_name, ".ColdStartup"});
       break;
     case startup_metric_utils::WARM_STARTUP_TEMPERATURE:
-      histogram_name = base::StrCat({histogram_name, ".WarmStartup"});
+      histogram_name = base::StrCat({paint_metric_name, ".WarmStartup"});
       break;
     case startup_metric_utils::LUKEWARM_STARTUP_TEMPERATURE:
       break;
@@ -125,6 +122,17 @@ WaapUIMetricsService* WaapUIMetricsService::Get(Profile* profile) {
   return WaapUIMetricsServiceFactory::GetForProfile(profile);
 }
 
+void WaapUIMetricsService::OnBrowserWindowFirstPresentation(
+    base::TimeTicks time) {
+  static bool is_first_call = true;
+  CHECK(!time.is_null());
+  CHECK(is_first_call);
+  is_first_call = false;
+
+  RecordStartupPaintMetric("InitialWebUI.Startup.BrowserWindow.FirstPaint",
+                           time);
+}
+
 void WaapUIMetricsService::OnFirstPaint(base::TimeTicks time) {
   static bool is_first_call = true;
   CHECK(!time.is_null());
@@ -133,7 +141,10 @@ void WaapUIMetricsService::OnFirstPaint(base::TimeTicks time) {
   }
   is_first_call = false;
 
-  RecordStartupPaintMetric("FirstPaint", time);
+  // For early experiment, this is ReloadButton only.
+  // TODO(crbug.com/448794588): Switch to general name after initial phase.
+  RecordStartupPaintMetric("InitialWebUI.Startup.ReloadButton.FirstPaint",
+                           time);
 }
 
 void WaapUIMetricsService::OnFirstContentfulPaint(base::TimeTicks time) {
@@ -144,7 +155,10 @@ void WaapUIMetricsService::OnFirstContentfulPaint(base::TimeTicks time) {
   }
   is_first_call = false;
 
-  RecordStartupPaintMetric("FirstContentfulPaint", time);
+  // For early experiment, this is ReloadButton only.
+  // TODO(crbug.com/448794588): Switch to general name after initial phase.
+  RecordStartupPaintMetric(
+      "InitialWebUI.Startup.ReloadButton.FirstContentfulPaint", time);
 }
 
 void WaapUIMetricsService::OnReloadButtonMousePressToNextPaint(

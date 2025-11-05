@@ -30,7 +30,9 @@ source_set("waap_utils") {
     "waap_utils.h",
   ]
   deps = [
+    ":waap",
     "//base",
+    "//chrome/browser/profiles:profile",
     "//chrome/common",
     "//chrome/common:chrome_features",
     "//content/public/common",

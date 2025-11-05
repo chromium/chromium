@@ -6,11 +6,13 @@
 #define CHROME_BROWSER_UI_VIEWS_TOOLBAR_RELOAD_BUTTON_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/views/chrome_views_export.h"
 #include "chrome/browser/ui/views/toolbar/reload_control.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
+#include "components/viz/common/frame_timing_details.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/menus/simple_menu_model.h"
@@ -90,6 +92,9 @@ class ReloadButton : public ToolbarButton, public ReloadControl {
   void OnDoubleClickTimer();
   void OnStopToReloadTimer();
   void UpdateAccessibleHasPopup();
+  void OnNextPresentation(Mode mode,
+                          Button::ButtonState state,
+                          const viz::FrameTimingDetails&);
 
   base::OneShotTimer double_click_timer_;
 
@@ -129,6 +134,9 @@ class ReloadButton : public ToolbarButton, public ReloadControl {
   // Increments when we would tell the browser to "reload", so
   // test code can tell whether we did so (as there may be no |browser_|).
   int testing_reload_count_ = 0;
+
+  // Must be the last member.
+  base::WeakPtrFactory<ReloadButton> weak_ptr_factory_{this};
 };
 
 BEGIN_VIEW_BUILDER(CHROME_VIEWS_EXPORT, ReloadButton, ToolbarButton)

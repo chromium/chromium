@@ -27,6 +27,7 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/base/window_open_disposition_utils.h"
+#include "ui/compositor/compositor.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/menus/simple_menu_model.h"
@@ -161,11 +162,12 @@ void ReloadButton::OnMouseReleased(const ui::MouseEvent& event) {
 }
 
 void ReloadButton::PaintButtonContents(gfx::Canvas* canvas) {
+  // This has to be called every time the button is painted for various metrics.
+  GetWidget()->GetCompositor()->RequestSuccessfulPresentationTimeForNextFrame(
+      base::BindOnce(&ReloadButton::OnNextPresentation,
+                     weak_ptr_factory_.GetWeakPtr(), visible_mode_,
+                     GetState()));
   Button::PaintButtonContents(canvas);
-
-  auto now = base::TimeTicks::Now();
-  metrics_recorder_->OnPaint(ToRecorderButtonMode(visible_mode_), GetState(),
-                             now);
 }
 
 void ReloadButton::UpdateCachedTooltipText() {
@@ -313,6 +315,15 @@ void ReloadButton::UpdateAccessibleHasPopup() {
   } else {
     GetViewAccessibility().SetHasPopup(ax::mojom::HasPopup::kNone);
   }
+}
+
+void ReloadButton::OnNextPresentation(
+    Mode mode,
+    Button::ButtonState state,
+    const viz::FrameTimingDetails& frame_timing_details) {
+  metrics_recorder_->OnPaintFramePresented(
+      ToRecorderButtonMode(mode), state,
+      frame_timing_details.presentation_feedback.timestamp);
 }
 
 views::View* ReloadButton::GetAsViewClassForTesting() {
