@@ -108,30 +108,6 @@ std::unique_ptr<views::BoxLayoutView> CreateMahiPanelContentsView() {
       .Build();
 }
 
-// TODO(zoraiznaem): Investigate if MahiFrameView needs FrameViewAsh.
-class MahiFrameView : public FrameViewAsh {
- public:
-  explicit MahiFrameView(views::Widget* widget) : FrameViewAsh(widget) {
-    SetFrameEnabled(false);
-    SetShouldPaintHeader(false);
-  }
-
-  MahiFrameView(const MahiFrameView&) = delete;
-  MahiFrameView& operator=(const MahiFrameView&) = delete;
-
-  ~MahiFrameView() override = default;
-
-  // views::FrameView:
-  gfx::Size GetMinimumSize() const override {
-    return gfx::Size(mahi_constants::kPanelDefaultWidth,
-                     mahi_constants::kPanelDefaultHeight);
-  }
-  gfx::Size GetMaximumSize() const override {
-    return gfx::Size(mahi_constants::kPanelMaximumWidth,
-                     mahi_constants::kPanelMaximumHeight);
-  }
-};
-
 }  // namespace
 
 MahiPanelWidget::MahiPanelWidget(InitParams params,
@@ -182,10 +158,11 @@ views::UniqueWidgetPtr MahiPanelWidget::CreateAndShowPanelWidget(
     delegate->SetContentsView(std::move(contents_view));
     delegate->SetFrameViewFactory(base::BindRepeating(
         [](views::Widget* widget) -> std::unique_ptr<views::FrameView> {
-          return std::make_unique<MahiFrameView>(widget);
+          return std::make_unique<FrameViewAsh>(widget);
         }));
 
     params.delegate = delegate.release();
+    params.remove_standard_frame = true;
 
     // If resizable, disable the resize shadow on the window border.
     params.init_properties_container.SetProperty(kDisableResizeShadow, true);
@@ -230,6 +207,16 @@ views::UniqueWidgetPtr MahiPanelWidget::CreateAndShowPanelWidget(
 // static
 const char* MahiPanelWidget::GetName() {
   return kWidgetName;
+}
+
+gfx::Size MahiPanelWidget::GetMinimumSize() const {
+  return gfx::Size(mahi_constants::kPanelDefaultWidth,
+                   mahi_constants::kPanelDefaultHeight);
+}
+
+gfx::Size MahiPanelWidget::GetMaximumSize() const {
+  return gfx::Size(mahi_constants::kPanelMaximumWidth,
+                   mahi_constants::kPanelMaximumHeight);
 }
 
 void MahiPanelWidget::OnShelfWorkAreaInsetsChanged() {

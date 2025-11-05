@@ -43,6 +43,10 @@ class ASH_EXPORT MahiPanelWidget : public views::Widget,
   static const char* GetName();
 
  private:
+  // views::Widget:
+  gfx::Size GetMinimumSize() const override;
+  gfx::Size GetMaximumSize() const override;
+
   // ShelfObserver:
   void OnShelfWorkAreaInsetsChanged() override;
 

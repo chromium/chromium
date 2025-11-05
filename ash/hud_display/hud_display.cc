@@ -105,14 +105,6 @@ std::unique_ptr<views::ClientView> MakeClientView(views::Widget* widget) {
   return std::make_unique<HTClientView>(weak_view, widget, view.release());
 }
 
-void InitializeFrameView(views::WidgetDelegate* delegate) {
-  auto* frame_view = static_cast<FrameViewAsh*>(
-      delegate->GetWidget()->non_client_view()->frame_view());
-  // TODO(oshima): support component type with TYPE_WINDOW_FLAMELESS widget.
-  if (frame_view)
-    frame_view->SetFrameEnabled(false);
-}
-
 }  // namespace
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -136,8 +128,6 @@ void HUDDisplayView::Toggle() {
 
   auto delegate = std::make_unique<views::WidgetDelegate>();
   delegate->SetClientViewFactory(base::BindOnce(&MakeClientView));
-  delegate->RegisterWidgetInitializedCallback(
-      base::BindOnce(&InitializeFrameView, base::Unretained(delegate.get())));
   delegate->SetOwnedByWidget(views::WidgetDelegate::OwnedByWidgetPassKey());
 
   views::Widget::InitParams params(
@@ -148,6 +138,7 @@ void HUDDisplayView::Toggle() {
   params.parent = Shell::GetContainer(Shell::GetPrimaryRootWindow(),
                                       kShellWindowId_OverlayContainer);
   params.bounds = gfx::Rect(kHUDWidth, kHUDHeightWithGraph);
+  params.remove_standard_frame = true;
   auto* widget = CreateViewTreeHostWidget(std::move(params));
   widget->GetLayer()->SetName("HUDDisplayView");
 
