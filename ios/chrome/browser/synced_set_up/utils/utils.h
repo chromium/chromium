@@ -31,7 +31,7 @@ class CrossDevicePrefTracker;
 @class ProfileState;
 @class SceneState;
 
-// Map of cross device synced prefs considered by Synced Set Up mapped to their
+// Map of cross-device synced prefs considered by Synced Set Up mapped to their
 // corresponding tracked local-state pref.
 inline constexpr auto kCrossDeviceToLocalStatePrefMap =
     base::MakeFixedFlatMap<std::string_view, std::string_view>({
