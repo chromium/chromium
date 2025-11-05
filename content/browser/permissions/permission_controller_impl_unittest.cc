@@ -654,11 +654,15 @@ TEST_F(PermissionControllerImplTest, SetOverrideEmbeddingOriginMatters) {
                 embedding_origin_1)
                 .status,
             PermissionStatus::GRANTED);
+
+  // For the STORAGE_ACCESS_GRANT permission, the DENIED status must be masked
+  // as ASK (PROMPT) when queried to prevent any attempt at retaliating against
+  // users who would reject a prompt.
   EXPECT_EQ(GetPermissionResultForOriginWithoutContext(
                 storage_access_permission_descriptor, requesting_origin,
                 embedding_origin_2)
                 .status,
-            PermissionStatus::DENIED);
+            PermissionStatus::ASK);
 
   // Pairs without overrides should return ASK.
   url::Origin no_overrides_origin =

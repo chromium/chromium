@@ -801,6 +801,43 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
   devtools_client.DetachProtocolClient();
 }
 
+IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
+                       PermissionDeniedViaDevtools) {
+  SetBlockThirdPartyCookies(true);
+
+  content::TestDevToolsProtocolClient devtools_client;
+  devtools_client.AttachToWebContents(
+      browser()->tab_strip_model()->GetActiveWebContents());
+  devtools_client.SendCommandSync("Browser.enable");
+
+  NavigateToPageWithFrame(kHostA);
+  NavigateFrameTo(kHostB, "/empty.html");
+
+  devtools_client.SendCommandSync(
+      "Browser.setPermission",
+      base::Value::Dict()
+          .Set("setting", "granted")
+          .Set("origin", kOriginA)
+          .Set("embeddedOrigin", kOriginB)
+          .Set("permission",
+               base::Value::Dict().Set("name", "storage-access")));
+  ASSERT_EQ(QueryPermission(GetFrame()), "granted");
+
+  devtools_client.SendCommandSync(
+      "Browser.setPermission",
+      base::Value::Dict()
+          .Set("setting", "denied")
+          .Set("origin", kOriginA)
+          .Set("embeddedOrigin", kOriginB)
+          .Set("permission",
+               base::Value::Dict().Set("name", "storage-access")));
+
+  // Ensure that the 'denied' status is masked as 'prompt'.
+  EXPECT_EQ(QueryPermission(GetFrame()), "prompt");
+
+  devtools_client.DetachProtocolClient();
+}
+
 // Test that permissions.query changes to "granted" when a storage access
 // request was successful.
 IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest, PermissionQueryGranted) {

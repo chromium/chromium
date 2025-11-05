@@ -549,6 +549,32 @@ TEST(PermissionOverridesTest, StorageAccess_SameRequestingAndEmbeddingSites) {
             PermissionStatus::GRANTED);
 }
 
+TEST(PermissionOverridesTest, StorageAccess_DeniedStatusHidden) {
+  PermissionOverrides overrides;
+  Origin requesting_origin = Origin::Create(GURL("https://requesting.com/"));
+  Origin embedding_origin = Origin::Create(GURL("https://embedding.com/"));
+
+  // For the STORAGE_ACCESS_GRANT permission, the DENIED status must be masked
+  // as ASK (PROMPT) when queried to prevent any attempt at retaliating against
+  // users who would reject a prompt.
+  overrides.Set(requesting_origin, embedding_origin,
+                PermissionType::STORAGE_ACCESS_GRANT, PermissionStatus::DENIED);
+  EXPECT_EQ(overrides
+                .Get(requesting_origin, embedding_origin,
+                     PermissionType::STORAGE_ACCESS_GRANT)
+                ->status,
+            PermissionStatus::ASK);
+
+  // Verify this behavior is not present for other permissions.
+  overrides.Set(requesting_origin, embedding_origin,
+                PermissionType::GEOLOCATION, PermissionStatus::DENIED);
+  EXPECT_EQ(
+      overrides
+          .Get(requesting_origin, embedding_origin, PermissionType::GEOLOCATION)
+          ->status,
+      PermissionStatus::DENIED);
+}
+
 TEST(PermissionOverridesTest,
      TopLevelStorageAccess_DifferentRequestingOriginSameEmbeddingSite) {
   PermissionOverrides overrides;

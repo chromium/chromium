@@ -112,9 +112,20 @@ std::optional<PermissionResult> PermissionOverrides::Get(
     status = base::FindOrNull(overrides_, PermissionKey(permission));
   }
 
-  return status ? std::make_optional(PermissionResult(
-                      *status, PermissionStatusSource::UNSPECIFIED))
-                : std::nullopt;
+  if (!status) {
+    return std::nullopt;
+  }
+
+  // The Storage Access API spec calls for avoiding exposure of rejections to
+  // prevent any attempt at retaliating against users who would reject a prompt:
+  // https://privacycg.github.io/storage-access/#permissions-integration
+  PermissionStatus adjusted_status = *status;
+  if (permission == blink::PermissionType::STORAGE_ACCESS_GRANT &&
+      *status == PermissionStatus::DENIED) {
+    adjusted_status = PermissionStatus::ASK;
+  }
+
+  return PermissionResult(adjusted_status, PermissionStatusSource::UNSPECIFIED);
 }
 
 std::vector<ContentSettingPatternSource>

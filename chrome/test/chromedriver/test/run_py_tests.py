@@ -3826,7 +3826,10 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
       'descriptor': { 'name': 'storage-access' },
       'state': 'denied'
     })
-    self.CheckPermission(self.GetPermission('storage-access'), 'denied')
+    # For the `storage-access` permission, the 'denied' status must be masked as
+    # 'prompt' when queried to prevent any attempt at retaliating against users
+    # who would reject a prompt.
+    self.CheckPermission(self.GetPermission('storage-access'), 'prompt')
     self._driver.SwitchToMainFrame()
     # Chrome always returns "granted" for the top-level frame.
     self.CheckPermission(self.GetPermission('storage-access'),
