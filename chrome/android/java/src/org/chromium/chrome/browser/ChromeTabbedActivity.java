@@ -165,6 +165,7 @@ import org.chromium.chrome.browser.metrics.LaunchMetrics;
 import org.chromium.chrome.browser.metrics.MainIntentBehaviorMetrics;
 import org.chromium.chrome.browser.modaldialog.ChromeTabModalPresenter;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.SupportedProfileType;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManagerFactory;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils.InstanceAllocationType;
@@ -449,21 +450,6 @@ public class ChromeTabbedActivity extends ChromeActivity {
     private @interface DispatchedBy {
         int ON_CREATE = 1;
         int ON_NEW_INTENT = 2;
-    }
-
-    /** The type of tab/profile the activity supports. */
-    @IntDef({
-        SupportedProfileType.UNSET,
-        SupportedProfileType.REGULAR,
-        SupportedProfileType.OFF_THE_RECORD,
-        SupportedProfileType.MIXED
-    })
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface SupportedProfileType {
-        int UNSET = 0;
-        int REGULAR = 1;
-        int OFF_THE_RECORD = 2;
-        int MIXED = 3;
     }
 
     private final TabModelNotificationDotManager mTabModelNotificationDotManager =
@@ -3373,6 +3359,8 @@ public class ChromeTabbedActivity extends ChromeActivity {
         if (startIncognito) mTabModelSelector.selectModel(true);
         // TODO(crbug.com/439670064): Only preserve regular and incognito type until we finalize the
         // upgrade path.
+        // TODO(crbug.com/457231293): Move the "writeProfileType()" logic out of CTA to
+        // MultiInstanceManagerApi31#initialize().
         if (IncognitoUtils.shouldOpenIncognitoAsWindow()
                 && (mSupportedProfileType == SupportedProfileType.REGULAR
                         || mSupportedProfileType == SupportedProfileType.OFF_THE_RECORD)) {
@@ -3589,7 +3577,12 @@ public class ChromeTabbedActivity extends ChromeActivity {
             boolean preferNew = MultiWindowUtils.getExtraPreferNewFromIntent(intent);
             Pair<Integer, Integer> instanceIdInfo =
                     mMultiInstanceManager.allocInstanceId(
-                            windowId, ApplicationStatus.getTaskId(this), preferNew);
+                            windowId,
+                            ApplicationStatus.getTaskId(this),
+                            preferNew,
+                            mHasIncognitoExtra
+                                    ? SupportedProfileType.OFF_THE_RECORD
+                                    : SupportedProfileType.REGULAR);
             mWindowId = instanceIdInfo.first;
             mInstanceAllocationType = instanceIdInfo.second;
             logIntentInfo(intent);
@@ -3620,6 +3613,8 @@ public class ChromeTabbedActivity extends ChromeActivity {
                     "Window ID allocated: " + mWindowId + ", instance-task map: " + taskMap);
         }
 
+        // TODO(crbug.com/457229225): Move the initialization of mSupportedProfileType to
+        // #allocInstanceId.
         if (IncognitoUtils.shouldOpenIncognitoAsWindow()) {
             mSupportedProfileType =
                     mHasIncognitoExtra

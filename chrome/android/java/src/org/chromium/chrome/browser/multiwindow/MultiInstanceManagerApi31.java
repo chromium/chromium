@@ -43,7 +43,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
-import org.chromium.chrome.browser.ChromeTabbedActivity.SupportedProfileType;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingTabGroupTask;
 import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingTabsTask;
@@ -619,7 +618,8 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
     }
 
     @Override
-    public Pair<Integer, Integer> allocInstanceId(int windowId, int taskId, boolean preferNew) {
+    public Pair<Integer, Integer> allocInstanceId(
+            int windowId, int taskId, boolean preferNew, @SupportedProfileType int profileType) {
         removeInvalidInstanceData(/* cleanupApplicationStatus= */ true);
         // Finish excess running activities / tasks after an instance limit downgrade.
         finishExcessRunningActivities();
@@ -675,6 +675,19 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
                 continue;
             }
             if (id == INVALID_WINDOW_ID || readLastAccessedTime(i) > readLastAccessedTime(id)) {
+                // Last accessed time equals to 0 means the corresponding persistent state does not
+                // exist. The profile type check should only be enforced when restoring from
+                // persistent state.
+                // TODO(crbug.com/456289090): Handle the scenario where we are at instance limit
+                // (with all non-REGULAR windows) with no live activities and a new REGULAR window
+                // is attempted to be created from the launcher.
+                // TODO(crbug.com/458129266): Rely on profile exists check instead of feature flag 6
+                // months post launch.
+                if (IncognitoUtils.shouldOpenIncognitoAsWindow()
+                        && readLastAccessedTime(i) != 0
+                        && readProfileType(i) != profileType) {
+                    continue;
+                }
                 id = i;
                 newInstanceIdAllocated = !instanceEntryExists(i);
                 allocationType =
@@ -1194,7 +1207,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
     }
 
     @VisibleForTesting
-    static int readProfileType(int index) {
+    static @SupportedProfileType int readProfileType(int index) {
         return ChromeSharedPreferences.getInstance().readInt(profileTypeKey(index));
     }
 

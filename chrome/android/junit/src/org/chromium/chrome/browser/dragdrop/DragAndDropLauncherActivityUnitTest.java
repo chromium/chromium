@@ -32,6 +32,7 @@ import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.SupportedProfileType;
 import org.chromium.chrome.browser.multiwindow.MultiWindowTestUtils;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -68,8 +69,7 @@ public class DragAndDropLauncherActivityUnitTest {
         PriceTrackingFeatures.setPriceAnnotationsEnabledForTesting(false);
 
         when(mActivity.getApplicationContext()).thenReturn(mContext);
-        when(mActivity.getSupportedProfileType())
-                .thenReturn(ChromeTabbedActivity.SupportedProfileType.UNSET);
+        when(mActivity.getSupportedProfileType()).thenReturn(SupportedProfileType.UNSET);
     }
 
     @Test
@@ -192,8 +192,7 @@ public class DragAndDropLauncherActivityUnitTest {
 
         int sourceWindowId = 1;
 
-        when(mActivity.getSupportedProfileType())
-                .thenReturn(ChromeTabbedActivity.SupportedProfileType.OFF_THE_RECORD);
+        when(mActivity.getSupportedProfileType()).thenReturn(SupportedProfileType.OFF_THE_RECORD);
         Intent intent =
                 DragAndDropLauncherActivity.buildTabOrGroupIntent(
                         dropData, mActivity, sourceWindowId, /* destWindowId= */ 2);
@@ -212,8 +211,7 @@ public class DragAndDropLauncherActivityUnitTest {
 
         int sourceWindowId = 1;
 
-        when(mActivity.getSupportedProfileType())
-                .thenReturn(ChromeTabbedActivity.SupportedProfileType.REGULAR);
+        when(mActivity.getSupportedProfileType()).thenReturn(SupportedProfileType.REGULAR);
         Intent intent =
                 DragAndDropLauncherActivity.buildTabOrGroupIntent(
                         dropData, mActivity, sourceWindowId, /* destWindowId= */ 2);

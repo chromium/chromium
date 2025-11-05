@@ -104,6 +104,7 @@ public class ChromeAsyncTabLauncher implements AsyncTabLauncher {
         if (!activity.isInMultiWindowMode() && !MultiWindowUtils.shouldOpenInAdjacentWindow()) {
             intent.setFlags(intent.getFlags() & ~Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT);
         }
+        intent.putExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_WINDOW, mIsIncognito);
         activity.startActivity(intent);
         RecordHistogram.recordEnumeratedHistogram(
                 MultiInstanceManager.NEW_WINDOW_APP_SOURCE_HISTOGRAM,

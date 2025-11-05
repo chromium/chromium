@@ -95,6 +95,21 @@ public abstract class MultiInstanceManager {
 
     protected static List<Integer> sTestDisplayIds = new ArrayList<>();
 
+    /** The type of tab/profile the activity supports. */
+    @IntDef({
+        SupportedProfileType.UNSET,
+        SupportedProfileType.REGULAR,
+        SupportedProfileType.OFF_THE_RECORD,
+        SupportedProfileType.MIXED
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface SupportedProfileType {
+        int UNSET = 0;
+        int REGULAR = 1;
+        int OFF_THE_RECORD = 2;
+        int MIXED = 3;
+    }
+
     /**
      * Called during activity startup to check whether the activity is recreated because the
      * secondary display is removed.
@@ -298,9 +313,10 @@ public abstract class MultiInstanceManager {
      * @param taskId Task ID of the activity.
      * @param preferNew Boolean indicating a fresh new instance is preferred over the one that will
      *     load previous tab files from disk.
+     * @param profileType The type of tab/profile the activity supports.
      */
     public abstract Pair<Integer, Integer> allocInstanceId(
-            int windowId, int taskId, boolean preferNew);
+            int windowId, int taskId, boolean preferNew, @SupportedProfileType int profileType);
 
     /**
      * Initialize the manager with the allocated instance ID.

@@ -25,6 +25,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.SupportedProfileType;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.MultiTabMetadata;
@@ -123,7 +124,7 @@ public class DragAndDropLauncherActivity extends Activity {
             intent.putExtra(
                     IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB,
                     /* value= */ ((ChromeTabbedActivity) sourceActivity).getSupportedProfileType()
-                            == ChromeTabbedActivity.SupportedProfileType.OFF_THE_RECORD);
+                            == SupportedProfileType.OFF_THE_RECORD);
         }
         DragAndDropLauncherActivity.setIntentCreationTimestampMs(SystemClock.elapsedRealtime());
         return intent;

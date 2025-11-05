@@ -508,7 +508,8 @@ public class MultiInstanceManagerImpl extends MultiInstanceManager
     }
 
     @Override
-    public Pair<Integer, Integer> allocInstanceId(int windowId, int taskId, boolean preferNew) {
+    public Pair<Integer, Integer> allocInstanceId(
+            int windowId, int taskId, boolean preferNew, @SupportedProfileType int profileType) {
         return Pair.create(0, InstanceAllocationType.DEFAULT); // Use a default index 0.
     }
 

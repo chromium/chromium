@@ -90,6 +90,7 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.CloseWindowAppSource;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.SupportedProfileType;
 import org.chromium.chrome.browser.multiwindow.UiUtils.NameWindowDialogSource;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -281,6 +282,11 @@ public class MultiInstanceManagerApi31UnitTest {
 
         private void addInstanceInfo(int instanceId, int taskId) {
             MultiInstanceManagerApi31.writeLastAccessedTime(instanceId);
+            ChromeSharedPreferences.getInstance()
+                    .writeInt(
+                            ChromePreferenceKeys.MULTI_INSTANCE_PROFILE_TYPE.createKey(
+                                    String.valueOf(instanceId)),
+                            SupportedProfileType.REGULAR);
             if (mTestBuildInstancesList) {
                 int numberOfInstances = mTestInstanceInfos.size();
                 int type =
@@ -583,7 +589,8 @@ public class MultiInstanceManagerApi31UnitTest {
         // New instantiation picks up the smallest available ID.
         // assertEquals(0, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask57));
         Pair<Integer, Integer> instanceIdInfo =
-                mMultiInstanceManager.allocInstanceId(PASSED_ID_INVALID, TASK_ID_57, false);
+                mMultiInstanceManager.allocInstanceId(
+                        PASSED_ID_INVALID, TASK_ID_57, false, SupportedProfileType.REGULAR);
         int index = instanceIdInfo.first;
 
         // Does what TabModelOrchestrator.createTabModels() would do to simulate production code.
@@ -613,7 +620,8 @@ public class MultiInstanceManagerApi31UnitTest {
         // New instantiation picks up the smallest available ID.
         // assertEquals(0, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask57));
         Pair<Integer, Integer> instanceIdInfo =
-                mMultiInstanceManager.allocInstanceId(PASSED_ID_INVALID, TASK_ID_57, false);
+                mMultiInstanceManager.allocInstanceId(
+                        PASSED_ID_INVALID, TASK_ID_57, false, SupportedProfileType.REGULAR);
         int index = instanceIdInfo.first;
 
         // Does what TabModelOrchestrator.createTabModels() would do to simulate production code.
@@ -689,7 +697,11 @@ public class MultiInstanceManagerApi31UnitTest {
                 .thenReturn(mActivityManager);
         Pair<Integer, Integer> instanceIdInfo =
                 createMultiInstanceManager(mActivityTask59)
-                        .allocInstanceId(PASSED_ID_INVALID, TASK_ID_59, /* preferNew= */ true);
+                        .allocInstanceId(
+                                PASSED_ID_INVALID,
+                                TASK_ID_59,
+                                /* preferNew= */ true,
+                                SupportedProfileType.REGULAR);
         assertEquals(
                 "Should not allocate valid instance id when at limit.",
                 INVALID_WINDOW_ID,
@@ -792,22 +804,20 @@ public class MultiInstanceManagerApi31UnitTest {
         assertEquals(0, allocInstanceIndex(0, mTabbedActivityPool[0]));
         ChromeSharedPreferences.getInstance()
                 .writeInt(
-                        MultiInstanceManagerApi31.profileTypeKey(0),
-                        ChromeTabbedActivity.SupportedProfileType.REGULAR);
+                        MultiInstanceManagerApi31.profileTypeKey(0), SupportedProfileType.REGULAR);
 
         // Instance 1: Active, Incognito
         assertEquals(1, allocInstanceIndex(1, mTabbedActivityPool[1]));
         ChromeSharedPreferences.getInstance()
                 .writeInt(
                         MultiInstanceManagerApi31.profileTypeKey(1),
-                        ChromeTabbedActivity.SupportedProfileType.OFF_THE_RECORD);
+                        SupportedProfileType.OFF_THE_RECORD);
 
         // Instance 2: Inactive, Regular
         assertEquals(2, allocInstanceIndex(2, mTabbedActivityPool[2]));
         ChromeSharedPreferences.getInstance()
                 .writeInt(
-                        MultiInstanceManagerApi31.profileTypeKey(2),
-                        ChromeTabbedActivity.SupportedProfileType.REGULAR);
+                        MultiInstanceManagerApi31.profileTypeKey(2), SupportedProfileType.REGULAR);
         removeTaskOnRecentsScreen(mTabbedActivityPool[2]);
 
         // Instance 3: Inactive, Incognito
@@ -815,7 +825,7 @@ public class MultiInstanceManagerApi31UnitTest {
         ChromeSharedPreferences.getInstance()
                 .writeInt(
                         MultiInstanceManagerApi31.profileTypeKey(3),
-                        ChromeTabbedActivity.SupportedProfileType.OFF_THE_RECORD);
+                        SupportedProfileType.OFF_THE_RECORD);
         removeTaskOnRecentsScreen(mTabbedActivityPool[3]);
 
         // Test PersistedInstanceType.ANY
@@ -1272,7 +1282,8 @@ public class MultiInstanceManagerApi31UnitTest {
 
     private int allocInstanceIndex(int passedId, Activity activity, boolean preferNew) {
         Pair<Integer, Integer> instanceIdInfo =
-                mMultiInstanceManager.allocInstanceId(passedId, activity.getTaskId(), preferNew);
+                mMultiInstanceManager.allocInstanceId(
+                        passedId, activity.getTaskId(), preferNew, SupportedProfileType.REGULAR);
         int index = instanceIdInfo.first;
 
         // Does what TabModelOrchestrator.createTabModels() would do to simulate production code.
