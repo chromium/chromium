@@ -4,18 +4,21 @@
 
 package org.chromium.chrome.browser.omnibox.fusebox;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 
 import androidx.constraintlayout.widget.Group;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -30,9 +33,11 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.ui.base.TestActivity;
+import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
+import org.chromium.ui.widget.AnchoredPopupWindow;
 import org.chromium.ui.widget.ButtonCompat;
 import org.chromium.ui.widget.ChromeImageView;
 
@@ -42,51 +47,63 @@ public class NavigationAttachmentsViewBinderUnitTest {
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     private @Mock ViewGroup mParent;
+    private @Mock AnchoredPopupWindow mPopupWindow;
     private @Mock Group mAttachmentsToolbar;
-    private @Mock NavigationAttachmentsPopup mPopup;
     private @Mock ChromeImageView mAddButton;
     private @Mock ChromeImageView mSettingsButton;
-    private @Mock Button mTabButton;
-    private @Mock Button mCameraButton;
-    private @Mock Button mGalleryButton;
-    private @Mock Button mFileButton;
     private @Mock NavigationAttachmentsRecyclerView mRecyclerView;
     private @Mock ButtonCompat mRequestType;
-    private @Mock View mRecentTabsHeader;
-    private @Mock ViewGroup mPopupRequestTypeGroup;
+
+    private final ModelList mPopupTabsModel = new ModelList();
+    private final PropertyModel mModel =
+            new PropertyModel(NavigationAttachmentsProperties.ALL_KEYS);
 
     private Activity mActivity;
-    private PropertyModel mModel;
     private NavigationAttachmentsViewHolder mViewHolder;
+    private NavigationAttachmentsPopup mPopup;
+    private ViewGroup mPopupView;
 
     @Before
     public void setUp() {
-        mActivity = Robolectric.buildActivity(TestActivity.class).setup().get();
+        // Replace .create().resume() with .setup() once we have a content view.
+        mActivity = Robolectric.buildActivity(TestActivity.class).create().resume().get();
 
-        doReturn(mActivity).when(mParent).getContext();
+        lenient().doReturn(mActivity).when(mParent).getContext();
         // Please use parentView.getResources() in ViewBinder.
-        doReturn(mActivity.getResources()).when(mParent).getResources();
+        lenient().doReturn(mActivity.getResources()).when(mParent).getResources();
 
-        doReturn(mAttachmentsToolbar)
+        lenient()
+                .doReturn(mAttachmentsToolbar)
                 .when(mParent)
                 .findViewById(R.id.location_bar_attachments_toolbar);
-        doReturn(mAddButton).when(mParent).findViewById(R.id.location_bar_attachments_add);
-        doReturn(mSettingsButton)
+        lenient()
+                .doReturn(mAddButton)
+                .when(mParent)
+                .findViewById(R.id.location_bar_attachments_add);
+        lenient()
+                .doReturn(mSettingsButton)
                 .when(mParent)
                 .findViewById(R.id.location_bar_attachments_settings);
-        doReturn(mRecyclerView).when(mParent).findViewById(R.id.location_bar_attachments);
-        doReturn(mRequestType).when(mParent).findViewById(R.id.fusebox_request_type);
-        doReturn(mRecentTabsHeader).when(mParent).findViewById(R.id.fusebox_recent_tabs_header);
-        mModel = new PropertyModel(NavigationAttachmentsProperties.ALL_KEYS);
+        lenient().doReturn(mRecyclerView).when(mParent).findViewById(R.id.location_bar_attachments);
+        lenient().doReturn(mRequestType).when(mParent).findViewById(R.id.fusebox_request_type);
+
+        mPopupView =
+                (ViewGroup)
+                        LayoutInflater.from(mActivity)
+                                .inflate(R.layout.fusebox_context_popup, null);
+        doReturn(mPopupView).when(mPopupWindow).getContentView();
+
+        mPopup =
+                new NavigationAttachmentsPopup(
+                        mActivity, mPopupWindow, mPopupView, mPopupTabsModel);
         mViewHolder = new NavigationAttachmentsViewHolder(mParent, mPopup);
-        mViewHolder.popup.mTabButton = mTabButton;
-        mViewHolder.popup.mCameraButton = mCameraButton;
-        mViewHolder.popup.mGalleryButton = mGalleryButton;
-        mViewHolder.popup.mFileButton = mFileButton;
-        mViewHolder.popup.mRecentTabsHeader = mRecentTabsHeader;
-        mViewHolder.popup.mAutocompleteRequestTypeGroup = mPopupRequestTypeGroup;
         PropertyModelChangeProcessor.create(
                 mModel, mViewHolder, NavigationAttachmentsViewBinder::bind);
+    }
+
+    @After
+    public void tearDown() {
+        mActivity.finish();
     }
 
     @Test
@@ -137,9 +154,7 @@ public class NavigationAttachmentsViewBinderUnitTest {
 
         ArgumentCaptor<View.OnClickListener> listenerCaptor =
                 ArgumentCaptor.forClass(View.OnClickListener.class);
-        verify(mCameraButton).setOnClickListener(listenerCaptor.capture());
-        listenerCaptor.getValue().onClick(mCameraButton);
-
+        mPopup.mCameraButton.performClick();
         verify(runnable).run();
     }
 
@@ -150,9 +165,7 @@ public class NavigationAttachmentsViewBinderUnitTest {
 
         ArgumentCaptor<View.OnClickListener> listenerCaptor =
                 ArgumentCaptor.forClass(View.OnClickListener.class);
-        verify(mGalleryButton).setOnClickListener(listenerCaptor.capture());
-        listenerCaptor.getValue().onClick(mGalleryButton);
-
+        mPopup.mGalleryButton.performClick();
         verify(runnable).run();
     }
 
@@ -163,9 +176,7 @@ public class NavigationAttachmentsViewBinderUnitTest {
 
         ArgumentCaptor<View.OnClickListener> listenerCaptor =
                 ArgumentCaptor.forClass(View.OnClickListener.class);
-        verify(mFileButton).setOnClickListener(listenerCaptor.capture());
-        listenerCaptor.getValue().onClick(mFileButton);
-
+        mPopup.mFileButton.performClick();
         verify(runnable).run();
     }
 
@@ -176,18 +187,16 @@ public class NavigationAttachmentsViewBinderUnitTest {
 
         ArgumentCaptor<View.OnClickListener> listenerCaptor =
                 ArgumentCaptor.forClass(View.OnClickListener.class);
-        verify(mTabButton).setOnClickListener(listenerCaptor.capture());
-        listenerCaptor.getValue().onClick(mTabButton);
-
+        mPopup.mTabButton.performClick();
         verify(runnable).run();
     }
 
     @Test
     public void recentTabsHeader() {
         mModel.set(NavigationAttachmentsProperties.RECENT_TABS_HEADER_VISIBLE, true);
-        verify(mPopup.mRecentTabsHeader).setVisibility(View.VISIBLE);
+        assertEquals(View.VISIBLE, mPopup.mRecentTabsHeader.getVisibility());
         mModel.set(NavigationAttachmentsProperties.RECENT_TABS_HEADER_VISIBLE, false);
-        verify(mPopup.mRecentTabsHeader).setVisibility(View.GONE);
+        assertEquals(View.GONE, mPopup.mRecentTabsHeader.getVisibility());
     }
 
     @Test

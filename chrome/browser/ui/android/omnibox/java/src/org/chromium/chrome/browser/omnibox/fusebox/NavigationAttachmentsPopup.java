@@ -5,11 +5,9 @@
 package org.chromium.chrome.browser.omnibox.fusebox;
 
 import android.content.Context;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 
-import androidx.appcompat.content.res.AppCompatResources;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -18,35 +16,31 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.widget.AnchoredPopupWindow;
-import org.chromium.ui.widget.ViewRectProvider;
 
 /** A popup for the Navigation Attachments component. */
 @NullMarked
 class NavigationAttachmentsPopup {
     private final AnchoredPopupWindow mPopupWindow;
     private final View mContentView;
-    /* package */ RecyclerView mTabAttachmentView;
-    /* package */ Button mTabButton;
-    /* package */ Button mCameraButton;
-    /* package */ Button mGalleryButton;
-    /* package */ Button mFileButton;
-    /* package */ Button mClipboardButton;
-    /* package */ Button mAiModeButton;
-    /* package */ View mAutocompleteRequestTypeGroup;
-    /* package */ TabAttachmentPopupChoicesRecyclerViewAdapter mTabAttachmentsAdapter;
-    /* package */ View mRecentTabsHeader;
+    /* package */ final RecyclerView mTabAttachmentView;
+    /* package */ final Button mTabButton;
+    /* package */ final Button mCameraButton;
+    /* package */ final Button mGalleryButton;
+    /* package */ final Button mFileButton;
+    /* package */ final Button mClipboardButton;
+    /* package */ final Button mAiModeButton;
+    /* package */ final View mAutocompleteRequestTypeGroup;
+    /* package */ final TabAttachmentPopupChoicesRecyclerViewAdapter mTabAttachmentsAdapter;
+    /* package */ final View mRecentTabsHeader;
 
     NavigationAttachmentsPopup(
-            Context context, View anchorView, ModelList tabAttachmentsModelList) {
-        mContentView = LayoutInflater.from(context).inflate(R.layout.fusebox_context_popup, null);
-        ViewRectProvider rectProvider = new ViewRectProvider(anchorView);
-        mPopupWindow =
-                new AnchoredPopupWindow(
-                        context,
-                        anchorView.getRootView(),
-                        AppCompatResources.getDrawable(context, R.drawable.menu_bg_baseline),
-                        mContentView,
-                        rectProvider);
+            Context context,
+            AnchoredPopupWindow popupWindow,
+            View contentView,
+            ModelList tabAttachmentsModelList) {
+        mPopupWindow = popupWindow;
+        mContentView = contentView;
+
         // `match_parent` and `wrap_content` don't exactly work well in our case.
         // Marking buttons `wrap_content` always narrows down button area, producing inconsistent
         // sizing, and asking for `match_parent` results in text wrapping, as the parent is unable

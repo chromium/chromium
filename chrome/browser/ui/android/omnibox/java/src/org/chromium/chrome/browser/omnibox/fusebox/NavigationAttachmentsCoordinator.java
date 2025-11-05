@@ -7,9 +7,11 @@ package org.chromium.chrome.browser.omnibox.fusebox;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.content.Context;
+import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import androidx.annotation.VisibleForTesting;
+import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
@@ -32,6 +34,8 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
+import org.chromium.ui.widget.AnchoredPopupWindow;
+import org.chromium.ui.widget.ViewRectProvider;
 import org.chromium.url.GURL;
 
 /** Coordinator for the Navigation Attachments component. */
@@ -77,11 +81,20 @@ public class NavigationAttachmentsCoordinator
         mLocationBarDataProvider = locationBarDataProvider;
         templateUrlServiceSupplier.onAvailable(this::onTemplateUrlServiceAvailable);
 
+        var contextButton = parent.findViewById(R.id.location_bar_attachments_add);
+        var rectProvider = new ViewRectProvider(contextButton);
+        var popupView = LayoutInflater.from(context).inflate(R.layout.fusebox_context_popup, null);
+        var popupWindow =
+                new AnchoredPopupWindow(
+                        mContext,
+                        contextButton.getRootView(),
+                        AppCompatResources.getDrawable(context, R.drawable.menu_bg_baseline),
+                        popupView,
+                        rectProvider);
+
         var popup =
                 new NavigationAttachmentsPopup(
-                        mContext,
-                        parent.findViewById(R.id.location_bar_attachments_add),
-                        mTabAttachmentsModelList);
+                        mContext, popupWindow, popupView, mTabAttachmentsModelList);
         mViewHolder = new NavigationAttachmentsViewHolder(parent, popup);
 
         var adapter = new NavigationAttachmentsRecyclerViewAdapter(mModelList);
