@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/check_deref.h"
+#include "cc/debug/layer_tree_debug_state.h"
 #include "cc/layers/append_quads_context.h"
 #include "cc/layers/append_quads_data.h"
 #include "cc/test/layer_test_common.h"
@@ -232,6 +233,31 @@ TEST_F(TileBasedLayerImplTest, SettingSolidColorResultsInSolidColorQuad) {
       viz::SolidColorDrawQuad::MaterialCast(render_pass->quad_list.front())
           ->color,
       kLayerColor);
+}
+
+// Validates that TileBasedLayerImpl::AppendQuads() calls
+// LayerImpl::AppendDebugBorderQuad() when debug borders are enabled.
+TEST_F(TileBasedLayerImplTest, AppendQuadsAppendsDebugBorders) {
+  LayerTreeDebugState debug_state;
+  debug_state.show_debug_borders.set(DebugBorderType::LAYER);
+  host_impl()->SetDebugState(debug_state);
+
+  auto layer = std::make_unique<TestTileBasedLayerImpl>(
+      host_impl()->active_tree(), /*id=*/42);
+  auto* raw_layer = layer.get();
+  host_impl()->active_tree()->AddLayer(std::move(layer));
+
+  SetupRootProperties(host_impl()->active_tree()->root_layer());
+
+  auto render_pass = viz::CompositorRenderPass::Create();
+  AppendQuadsData data;
+  raw_layer->AppendQuads(AppendQuadsContext{DRAW_MODE_SOFTWARE, {}, false},
+                         render_pass.get(), &data);
+
+  // AppendQuads() should have inserted a quad for the debug border.
+  EXPECT_EQ(render_pass->quad_list.size(), 1u);
+  EXPECT_EQ(render_pass->quad_list.front()->material,
+            viz::DrawQuad::Material::kDebugBorder);
 }
 
 TEST_F(TileBasedLayerImplTest,

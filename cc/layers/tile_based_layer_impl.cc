@@ -86,6 +86,11 @@ void TileBasedLayerImpl::AppendQuads(const AppendQuadsContext& context,
     quad_offset = gfx::Vector2d(-visible_rect.x(), -visible_rect.y());
   }
 
+  gfx::Rect debug_border_rect(shared_quad_state->quad_layer_rect);
+  debug_border_rect.Offset(quad_offset);
+  AppendDebugBorderQuad(render_pass, debug_border_rect, shared_quad_state,
+                        append_quads_data);
+
   AppendQuadsSpecialization(context, render_pass, append_quads_data,
                             shared_quad_state, scaled_occlusion, quad_offset);
 

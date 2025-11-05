@@ -287,8 +287,6 @@ void PictureLayerImpl::AppendQuadsSpecialization(
 
   gfx::Rect debug_border_rect(shared_quad_state->quad_layer_rect);
   debug_border_rect.Offset(quad_offset);
-  AppendDebugBorderQuad(render_pass, debug_border_rect, shared_quad_state,
-                        append_quads_data);
 
   if (ShowDebugBorders(DebugBorderType::LAYER)) {
     for (auto iter =
