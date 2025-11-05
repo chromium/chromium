@@ -26332,7 +26332,7 @@
             "experiments": [
                 {
                     "name": "Enabled",
-                    "enable_features": [
+                    "disable_features": [
                         "V8Flag_scavenger_updates_allocation_limit"
                     ]
                 }
