@@ -26,29 +26,6 @@ enum class ForceDarkInversionMethod {
   kRgbBased
 };
 
-// Specifies algorithm for determining which images to invert in Force Dark.
-enum class ForceDarkImageBehavior {
-  // Same as ForceDarkInversionMethod::kUseBlinkSettings above.
-  kUseBlinkSettings,
-
-  // Invert only some images. Images that act as icons or text should be
-  // inverted, but photos, avatars, etc. should not be.
-  kInvertSelectively
-};
-
-// Specifies the classifier used to determine which images to invert, when
-// ForceDarkImageBehavior is |kInvertSelectively|
-enum class ForceDarkImageClassifier {
-  // Same as ForceDarkInversionMethod::kUseBlinkSettings above.
-  kUseBlinkSettings,
-
-  // See DarkModeImageClassifierPolicy::kNumColorsWithMlFallback.
-  kNumColorsWithMlFallback,
-
-  // See DarkModeImageClassifierPolicy::kTransparencyAndNumColors.
-  kTransparencyAndNumColors
-};
-
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_PUBLIC_COMMON_FORCEDARK_FORCEDARK_SWITCHES_H_

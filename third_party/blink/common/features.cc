@@ -920,26 +920,6 @@ BASE_FEATURE_ENUM_PARAM(ForceDarkInversionMethod,
                         ForceDarkInversionMethod::kUseBlinkSettings,
                         &forcedark_inversion_method_options);
 
-// Should images be inverted?
-const base::FeatureParam<ForceDarkImageBehavior>::Option
-    forcedark_image_behavior_options[] = {
-        {ForceDarkImageBehavior::kUseBlinkSettings,
-         "use_blink_settings_for_images"},
-        // 'none' is no longer supported, but is still being passed via
-        // command line by some early-adopters of the overall feature. To
-        // avoid this being detected as invalid (resulting in a DwC, some
-        // telemetry, and falling back to the default value), we map it to the
-        // default value (from below).
-        {ForceDarkImageBehavior::kUseBlinkSettings, "none"},
-        {ForceDarkImageBehavior::kInvertSelectively, "selective"}};
-
-BASE_FEATURE_ENUM_PARAM(ForceDarkImageBehavior,
-                        kForceDarkImageBehaviorParam,
-                        &kForceWebContentsDarkMode,
-                        "image_behavior",
-                        ForceDarkImageBehavior::kUseBlinkSettings,
-                        &forcedark_image_behavior_options);
-
 // Do not invert text lighter than this.
 // Range: 0 (do not invert any text) to 255 (invert all text)
 // Can also set to -1 to let Blink's internal settings control the value
@@ -957,23 +937,6 @@ BASE_FEATURE_PARAM(int,
                    &kForceWebContentsDarkMode,
                    "background_lightness_threshold",
                    -1);
-
-const base::FeatureParam<ForceDarkImageClassifier>::Option
-    forcedark_image_classifier_policy_options[] = {
-        {ForceDarkImageClassifier::kUseBlinkSettings,
-         "use_blink_settings_for_image_policy"},
-        {ForceDarkImageClassifier::kNumColorsWithMlFallback,
-         "num_colors_with_ml_fallback"},
-        {ForceDarkImageClassifier::kTransparencyAndNumColors,
-         "transparency_and_num_colors"},
-};
-
-BASE_FEATURE_ENUM_PARAM(ForceDarkImageClassifier,
-                        kForceDarkImageClassifierParam,
-                        &kForceWebContentsDarkMode,
-                        "classifier_policy",
-                        ForceDarkImageClassifier::kUseBlinkSettings,
-                        &forcedark_image_classifier_policy_options);
 
 BASE_FEATURE(kFrameMetadataObserver, base::FEATURE_ENABLED_BY_DEFAULT);
 

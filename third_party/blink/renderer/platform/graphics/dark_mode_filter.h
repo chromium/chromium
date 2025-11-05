@@ -95,8 +95,6 @@ class PLATFORM_EXPORT DarkModeFilter {
   // classified as ImageType::kIcon or kSeparator. This API is thread-safe.
   sk_sp<cc::ColorFilter> GetImageFilter() const;
 
-  DarkModeImagePolicy GetDarkModeImagePolicy() const;
-
   // This is read-only data and is thread-safe.
   const ImmutableData immutable_;
 

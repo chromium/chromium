@@ -28,19 +28,16 @@ BASE_FEATURE(kTestFeature2,
 
 const flags_ui::FeatureEntry::FeatureParam kForceDark_SimpleHsl[] = {
     {"inversion_method", "hsl_based"},
-    {"image_behavior", "none"},
     {"foreground_lightness_threshold", "255"},
     {"background_lightness_threshold", "0"}};
 
 const flags_ui::FeatureEntry::FeatureParam kForceDark_SimpleCielab[] = {
     {"inversion_method", "cielab_based"},
-    {"image_behavior", "none"},
     {"foreground_lightness_threshold", "255"},
     {"background_lightness_threshold", "0"}};
 
 const flags_ui::FeatureEntry::FeatureParam kForceDark_SimpleRgb[] = {
     {"inversion_method", "rgb_based"},
-    {"image_behavior", "none"},
     {"foreground_lightness_threshold", "255"},
     {"background_lightness_threshold", "0"}};
 

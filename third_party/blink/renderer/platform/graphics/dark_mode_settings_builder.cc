@@ -22,11 +22,6 @@ namespace {
 // Default values for dark mode settings.
 const constexpr DarkModeInversionAlgorithm kDefaultDarkModeInversionAlgorithm =
     DarkModeInversionAlgorithm::kInvertLightnessLAB;
-const constexpr DarkModeImagePolicy kDefaultDarkModeImagePolicy =
-    DarkModeImagePolicy::kFilterSmart;
-const constexpr DarkModeImageClassifierPolicy
-    kDefaultDarkModeImageClassifierPolicy =
-        DarkModeImageClassifierPolicy::kNumColorsWithMlFallback;
 const constexpr int kDefaultForegroundBrightnessThreshold = 150;
 const constexpr int kDefaultBackgroundBrightnessThreshold = 205;
 const constexpr float kDefaultDarkModeContrastPercent = 0.0f;
@@ -96,30 +91,6 @@ DarkModeInversionAlgorithm GetMode(const SwitchParams& switch_params) {
   NOTREACHED();
 }
 
-DarkModeImageClassifierPolicy GetImageClassifierPolicy(
-    const SwitchParams& switch_params) {
-  switch (features::kForceDarkImageClassifierParam.Get()) {
-    case ForceDarkImageClassifier::kUseBlinkSettings:
-      return GetIntegerSwitchParamValue<DarkModeImageClassifierPolicy>(
-          switch_params, "ImageClassifierPolicy",
-          kDefaultDarkModeImageClassifierPolicy);
-    case ForceDarkImageClassifier::kNumColorsWithMlFallback:
-      return DarkModeImageClassifierPolicy::kNumColorsWithMlFallback;
-    case ForceDarkImageClassifier::kTransparencyAndNumColors:
-      return DarkModeImageClassifierPolicy::kTransparencyAndNumColors;
-  }
-}
-
-DarkModeImagePolicy GetImagePolicy(const SwitchParams& switch_params) {
-  switch (features::kForceDarkImageBehaviorParam.Get()) {
-    case ForceDarkImageBehavior::kUseBlinkSettings:
-      return GetIntegerSwitchParamValue<DarkModeImagePolicy>(
-          switch_params, "ImagePolicy", kDefaultDarkModeImagePolicy);
-    case ForceDarkImageBehavior::kInvertSelectively:
-      return DarkModeImagePolicy::kFilterSmart;
-  }
-}
-
 int GetForegroundBrightnessThreshold(const SwitchParams& switch_params) {
   const int flag_value =
       features::kForceDarkForegroundLightnessThresholdParam.Get();
@@ -150,13 +121,6 @@ DarkModeSettings BuildDarkModeSettings() {
   settings.mode = Clamp<DarkModeInversionAlgorithm>(
       GetMode(switch_params), DarkModeInversionAlgorithm::kFirst,
       DarkModeInversionAlgorithm::kLast);
-  settings.image_policy = Clamp<DarkModeImagePolicy>(
-      GetImagePolicy(switch_params), DarkModeImagePolicy::kFirst,
-      DarkModeImagePolicy::kLast);
-  settings.image_classifier_policy = Clamp<DarkModeImageClassifierPolicy>(
-      GetImageClassifierPolicy(switch_params),
-      DarkModeImageClassifierPolicy::kFirst,
-      DarkModeImageClassifierPolicy::kLast);
   settings.foreground_brightness_threshold =
       Clamp<int>(GetForegroundBrightnessThreshold(switch_params), 0, 255);
   settings.background_brightness_threshold =

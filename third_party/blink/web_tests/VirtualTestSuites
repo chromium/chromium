@@ -549,26 +549,6 @@
     "expires": "never"
   },
   {
-    "prefix": "dark-mode-classifier-transparency-and-num-colors",
-    "owners": [
-      "peconn@chromium.org",
-      "pdr@chromium.org"
-    ],
-    "platforms": [
-      "Linux",
-      "Mac",
-      "Win"
-    ],
-    "bases": [
-      "dark-mode/images"
-    ],
-    "args": [
-      "--blink-settings=preferredColorScheme=0,forceDarkModeEnabled=true",
-      "--dark-mode-settings=ImageClassifierPolicy=1"
-    ],
-    "expires": "Jul 1, 2026"
-  },
-  {
     "prefix": "dark-mode-default",
     "owners": [
       "peconn@chromium.org",
