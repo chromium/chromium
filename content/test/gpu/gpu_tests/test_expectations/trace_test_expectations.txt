@@ -261,9 +261,33 @@ crbug.com/398149367 [ win11 amd-0x7480 ] WebGPUCachingTraceTest_RenderPipelineIn
 # crbug.com/329138770 [ win11 amd-0x150e ] WebGPUCachingTraceTest_RenderPipelineIncognito [ Failure ]
 
 
-# Win11/RTX 4070 Super failures after upgrading to driver 580.88
-crbug.com/438512194 [ win11 nvidia-0x2783 ] OverlayModeTraceTest_DirectComposition_Underlay [ RetryOnFailure ]
+# Win11/RTX 4070 Super/GTX 1660/AMD RX 7600 failures after upgrading to driver 580.88
 crbug.com/450323461 [ win11 nvidia-0x2783 ] VideoPathTraceTest_DirectComposition_Video_MP4 [ RetryOnFailure ]
+
+crbug.com/438512194 [ win11 nvidia-0x2783 ] OverlayModeTraceTest_DirectComposition_Underlay [ Failure ]
+crbug.com/438512194 [ win11 nvidia-0x2783 ] OverlayModeTraceTest_DirectComposition_Video_MP4_Rounded_Corner [ Failure ]
+crbug.com/438512194 [ win11 nvidia-0x2783 ] OverlayModeTraceTest_DirectComposition_Video_SW_Decode [ Failure ]
+crbug.com/438512194 [ win11 nvidia-0x2783 ] OverlayModeTraceTest_DirectComposition_Video_VP9 [ Failure ]
+crbug.com/438512194 [ win11 nvidia-0x2783 ] OverlayModeTraceTest_DirectComposition_Video_VP9_NV12 [ Failure ]
+crbug.com/438512194 [ win11 nvidia-0x2783 ] OverlayModeTraceTest_DirectComposition_Video_VP9_VP_SCALING [ Failure ]
+crbug.com/438512194 [ win11 nvidia-0x2783 ] OverlayModeTraceTest_DirectComposition_Video_VP9_YUY2 [ Failure ]
+
+crbug.com/438512194 [ win11 nvidia-0x2184 ] OverlayModeTraceTest_DirectComposition_Underlay [ Failure ]
+crbug.com/438512194 [ win11 nvidia-0x2184 ] OverlayModeTraceTest_DirectComposition_Video_MP4_Rounded_Corner [ Failure ]
+crbug.com/438512194 [ win11 nvidia-0x2184 ] OverlayModeTraceTest_DirectComposition_Video_SW_Decode [ Failure ]
+crbug.com/438512194 [ win11 nvidia-0x2184 ] OverlayModeTraceTest_DirectComposition_Video_VP9 [ Failure ]
+crbug.com/438512194 [ win11 nvidia-0x2184 ] OverlayModeTraceTest_DirectComposition_Video_VP9_NV12 [ Failure ]
+crbug.com/438512194 [ win11 nvidia-0x2184 ] OverlayModeTraceTest_DirectComposition_Video_VP9_VP_SCALING [ Failure ]
+crbug.com/438512194 [ win11 nvidia-0x2184 ] OverlayModeTraceTest_DirectComposition_Video_VP9_YUY2 [ Failure ]
+
+crbug.com/438512194 [ win11 amd-0x7480 ] OverlayModeTraceTest_DirectComposition_Underlay [ Failure ]
+crbug.com/438512194 [ win11 amd-0x7480 ] OverlayModeTraceTest_DirectComposition_Video_MP4_Rounded_Corner [ Failure ]
+crbug.com/438512194 [ win11 amd-0x7480 ] OverlayModeTraceTest_DirectComposition_Video_SW_Decode [ Failure ]
+crbug.com/438512194 [ win11 amd-0x7480 ] OverlayModeTraceTest_DirectComposition_Video_VP9 [ Failure ]
+crbug.com/438512194 [ win11 amd-0x7480 ] OverlayModeTraceTest_DirectComposition_Video_VP9_NV12 [ Failure ]
+crbug.com/438512194 [ win11 amd-0x7480 ] OverlayModeTraceTest_DirectComposition_Video_VP9_VP_SCALING [ Failure ]
+crbug.com/438512194 [ win11 amd-0x7480 ] OverlayModeTraceTest_DirectComposition_Video_VP9_YUY2 [ Failure ]
+
 
 # WebGPU is currently not enabled on win11 qualcomm but it will be soon
 [ memory_lt_16gb qualcomm-0x41333430 win11 ] WebGPUTraceTest* [ Failure ]
