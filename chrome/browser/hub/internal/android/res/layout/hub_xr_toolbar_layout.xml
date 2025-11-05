@@ -119,5 +119,15 @@ found in the LICENSE file.
         android:inputType="text"
         android:singleLine="true" />
     </LinearLayout>
+
+    <ImageView
+        android:id="@+id/toolbar_bottom_hairline"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:src="@drawable/toolbar_hairline"
+        android:scaleType="fitXY"
+        android:gravity="top"
+        android:importantForAccessibility="no"
+        android:visibility="gone"/>
   </org.chromium.chrome.browser.hub.HubToolbarView>
 </FrameLayout>

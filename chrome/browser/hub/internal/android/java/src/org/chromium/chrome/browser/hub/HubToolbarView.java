@@ -66,6 +66,7 @@ public class HubToolbarView extends LinearLayout {
     private View mSearchBoxLayout;
     private EditText mSearchBoxTextView;
     private ImageView mSearchLoupeView;
+    private ImageView mHairline;
     private ImageButton mBackButton;
     private @Nullable View mSpacer;
     private FrameLayout mPaneSwitcherCard;
@@ -106,6 +107,7 @@ public class HubToolbarView extends LinearLayout {
         mSearchLoupeView = findViewById(R.id.search_loupe);
         mBackButton = findViewById(R.id.toolbar_back_button);
         mSpacer = findViewById(R.id.margin_spacer);
+        mHairline = findViewById(R.id.toolbar_bottom_hairline);
         updateSpacerVisibility();
     }
 
@@ -307,6 +309,12 @@ public class HubToolbarView extends LinearLayout {
                         },
                         mPaneSwitcher::setSelectedTabIndicatorColor));
 
+        mixer.registerBlend(
+                new SingleHubViewColorBlend(
+                        PANE_COLOR_BLEND_ANIMATION_DURATION_MS,
+                        colorScheme -> HubColors.getHairlineColor(context, colorScheme),
+                        this::setHairlineColor));
+
         HubViewColorBlend multiColorBlend =
                 (prevColorScheme, newColorScheme) -> {
                     @ColorInt int newIconColor = HubColors.getIconColor(context, newColorScheme);
@@ -464,6 +472,14 @@ public class HubToolbarView extends LinearLayout {
         mSearchBoxLayout.setEnabled(enabled);
         mSearchBoxTextView.setEnabled(enabled);
         mSearchLoupeView.setEnabled(enabled);
+    }
+
+    void setHairlineVisibility(boolean visible) {
+        mHairline.setVisibility(visible ? View.VISIBLE : View.GONE);
+    }
+
+    void setHairlineColor(@ColorInt int hairlineColor) {
+        mHairline.setImageTintList(ColorStateList.valueOf(hairlineColor));
     }
 
     void setApplyDelayForSearchBoxAnimation(boolean applyDelay) {

@@ -11,16 +11,12 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
-import android.content.ComponentCallbacks;
 import android.content.Context;
-import android.content.res.ColorStateList;
-import android.content.res.Configuration;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
 
 import androidx.annotation.ColorInt;
 
@@ -36,19 +32,7 @@ import java.util.Objects;
 /** Holds the current pane's {@link View}. */
 @NullMarked
 public class HubPaneHostView extends FrameLayout {
-    private final ComponentCallbacks mComponentsCallbacks =
-            new ComponentCallbacks() {
-                @Override
-                public void onConfigurationChanged(Configuration configuration) {
-                    translateHairline();
-                }
-
-                @Override
-                public void onLowMemory() {}
-            };
-    private final Context mContext;
     private FrameLayout mPaneFrame;
-    private ImageView mHairline;
     private ViewGroup mSnackbarContainer;
     private @Nullable View mCurrentViewRoot;
     private final AnimationHandler mFadeAnimatorHandler;
@@ -58,7 +42,6 @@ public class HubPaneHostView extends FrameLayout {
     /** Default {@link FrameLayout} constructor called by inflation. */
     public HubPaneHostView(Context context, AttributeSet attributeSet) {
         super(context, attributeSet);
-        mContext = context;
         mFadeAnimatorHandler = new AnimationHandler();
         mSlideAnimatorHandler = new AnimationHandler();
     }
@@ -68,10 +51,7 @@ public class HubPaneHostView extends FrameLayout {
         super.onFinishInflate();
 
         mPaneFrame = findViewById(R.id.pane_frame);
-        mHairline = findViewById(R.id.pane_top_hairline);
         mSnackbarContainer = findViewById(R.id.pane_host_view_snackbar_container);
-
-        mContext.registerComponentCallbacks(mComponentsCallbacks);
     }
 
     /**
@@ -181,16 +161,6 @@ public class HubPaneHostView extends FrameLayout {
                         PANE_COLOR_BLEND_ANIMATION_DURATION_MS,
                         colorScheme -> getBackgroundColor(context, colorScheme),
                         mPaneFrame::setBackgroundColor));
-        mixer.registerBlend(
-                new SingleHubViewColorBlend(
-                        PANE_COLOR_BLEND_ANIMATION_DURATION_MS,
-                        colorScheme -> HubColors.getHairlineColor(context, colorScheme),
-                        this::setHairlineColor));
-    }
-
-    void setHairlineVisibility(boolean visible) {
-        translateHairline();
-        mHairline.setVisibility(visible ? View.VISIBLE : View.GONE);
     }
 
     void setSnackbarContainerConsumer(Callback<ViewGroup> consumer) {
@@ -213,10 +183,6 @@ public class HubPaneHostView extends FrameLayout {
         return HubColors.getBackgroundColor(context, colorScheme, isXrFullSpaceMode);
     }
 
-    void setHairlineColor(@ColorInt int hairlineColor) {
-        mHairline.setImageTintList(ColorStateList.valueOf(hairlineColor));
-    }
-
     public void setXrSpaceModeObservableSupplier(
             @Nullable ObservableSupplier<Boolean> xrSpaceModeObservableSupplier) {
         mXrSpaceModeObservableSupplier = xrSpaceModeObservableSupplier;
@@ -224,15 +190,5 @@ public class HubPaneHostView extends FrameLayout {
 
     private boolean isSlideAnimationEnabled() {
         return ChromeFeatureList.sHubSlideAnimation.isEnabled();
-    }
-
-    private void translateHairline() {
-        Configuration config = mContext.getResources().getConfiguration();
-        boolean isTabletOrLandscape = HubUtils.isScreenWidthTablet(config.screenWidthDp);
-        int translationHeight =
-                isTabletOrLandscape
-                        ? 0
-                        : mContext.getResources().getDimensionPixelSize(R.dimen.hub_search_box_gap);
-        mHairline.setTranslationY(translationHeight);
     }
 }
