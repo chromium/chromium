@@ -574,6 +574,8 @@ if (is_win || is_mac || is_linux) {
       "branded_constants.h",
       "constants.h",
       "enum_traits.h",
+      "event_history.cc",
+      "event_history.h",
       "ipc/ipc_names.h",
       "ipc/ipc_support.cc",
       "ipc/ipc_support.h",
