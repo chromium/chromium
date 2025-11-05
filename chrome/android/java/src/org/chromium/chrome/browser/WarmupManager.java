@@ -649,8 +649,7 @@ public class WarmupManager {
      * @param url The url to be prefetched for future navigations.
      * @param usePrefetchProxy The flag whether the private prefetch proxy is used in requested
      *     prefetch.
-     * @param verifiedSourceOrigin The origin that prefetch is requested from. Currently, this is
-     *     always null.
+     * @param verifiedSourceOrigin The origin that prefetch is requested from.
      */
     public void startPrefetchFromCct(
             String url, boolean usePrefetchProxy, @Nullable String verifiedSourceOrigin) {
