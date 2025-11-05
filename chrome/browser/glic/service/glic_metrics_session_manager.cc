@@ -60,8 +60,6 @@ class ActiveSession {
     inputs_modes_used_.Put(mode);
   }
 
-  void OnTurnCompleted() { turn_count_++; }
-
   void Start() {
     if (is_started()) {
       return;
@@ -87,11 +85,25 @@ class ActiveSession {
     }
   }
 
+  void OnEvent(GlicInstanceEvent event) {
+    if (!is_started()) {
+      // Do not log events until session has started.
+      return;
+    }
+    if (event_counts_[event] == 0) {
+      base::UmaHistogramEnumeration("Glic.Instance.Session.HadEvent", event);
+    }
+    event_counts_[event]++;
+  }
+
   bool is_started() const { return state_ == State::kStarted; }
 
   // Getters for metric recording
+  int GetEventCount(GlicInstanceEvent event) {
+    const auto it = event_counts_.find(event);
+    return it == event_counts_.end() ? 0 : it->second;
+  }
   base::TimeTicks start_time() const { return start_time_; }
-  int turn_count() const { return turn_count_; }
   const base::EnumSet<mojom::WebClientMode,
                       mojom::WebClientMode::kMinValue,
                       mojom::WebClientMode::kMaxValue>&
@@ -181,11 +193,11 @@ class ActiveSession {
   base::OneShotTimer activation_debounce_timer_;
 
   base::TimeTicks start_time_;
-  int turn_count_ = 0;
   base::EnumSet<mojom::WebClientMode,
                 mojom::WebClientMode::kMinValue,
                 mojom::WebClientMode::kMaxValue>
       inputs_modes_used_;
+  base::flat_map<GlicInstanceEvent, int> event_counts_;
 };
 
 // GlicMetricsSessionManager implementation
@@ -226,18 +238,25 @@ void GlicMetricsSessionManager::OnUserInputSubmitted(
   }
 }
 
-void GlicMetricsSessionManager::OnTurnCompleted() {
-  if (active_session_) {
-    active_session_->OnTurnCompleted();
-  }
-}
-
 void GlicMetricsSessionManager::OnOwnerDestroyed() {
   FinishSession(GlicMultiInstanceSessionEndReason::kOwnerDestroyed);
 }
 
 void GlicMetricsSessionManager::NotifySessionStarted() {
   owner_->OnSessionStarted();
+}
+
+void GlicMetricsSessionManager::OnEvent(GlicInstanceEvent event) {
+  if (active_session_) {
+    active_session_->OnEvent(event);
+  }
+}
+
+int GlicMetricsSessionManager::GetEventCount(GlicInstanceEvent event) {
+  if (active_session_) {
+    return active_session_->GetEventCount(event);
+  }
+  return 0;
 }
 
 void GlicMetricsSessionManager::FinishSession(
@@ -254,8 +273,14 @@ void GlicMetricsSessionManager::FinishSession(
     base::UmaHistogramCustomTimes("Glic.Instance.Session.Duration",
                                   session_duration, base::Milliseconds(1),
                                   base::Hours(1), 50);
-    base::UmaHistogramCounts100("Glic.Instance.Session.TurnCount",
-                                active_session_->turn_count());
+    base::UmaHistogramCounts100(
+        "Glic.Instance.Session.TurnCount",
+        GetEventCount(GlicInstanceEvent::kTurnCompleted));
+
+    base::UmaHistogramCounts100("Glic.Instance.Session.CreateTabCount",
+                                GetEventCount(GlicInstanceEvent::kCreateTab));
+    base::UmaHistogramCounts100("Glic.Instance.Session.ToggleCount",
+                                GetEventCount(GlicInstanceEvent::kToggle));
 
     InputModesUsed modes_used = InputModesUsed::kNone;
     bool has_audio =

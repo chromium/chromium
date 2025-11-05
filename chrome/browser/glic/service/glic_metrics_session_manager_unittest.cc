@@ -361,4 +361,62 @@ TEST_F(GlicMetricsSessionManagerTest,
             1);
 }
 
+TEST_F(GlicMetricsSessionManagerTest, Session_HadEvent_RecordedOncePerSession) {
+  StartSession();
+  metrics_->OnCreateTab();
+  metrics_->OnCreateTab();
+
+  metrics_.reset();  // End session
+
+  histogram_tester_.ExpectBucketCount("Glic.Instance.Session.HadEvent",
+                                      GlicInstanceEvent::kCreateTab, 1);
+}
+
+TEST_F(GlicMetricsSessionManagerTest,
+       Session_CreateTabCount_RecordedCorrectly) {
+  StartSession();
+  metrics_->OnCreateTab();
+  metrics_->OnCreateTab();
+  metrics_->OnCreateTab();
+
+  metrics_.reset();  // End session
+
+  histogram_tester_.ExpectUniqueSample("Glic.Instance.Session.CreateTabCount",
+                                       3, 1);
+}
+
+TEST_F(GlicMetricsSessionManagerTest, Session_ToggleCount_RecordedCorrectly) {
+  StartSession();
+  metrics_->OnToggle(mojom::InvocationSource::kOsHotkey,
+                     ShowOptions::ForFloating(gfx::Rect()), true);
+  metrics_->OnToggle(mojom::InvocationSource::kOsButton,
+                     ShowOptions::ForFloating(gfx::Rect()), true);
+
+  metrics_.reset();  // End session
+
+  histogram_tester_.ExpectUniqueSample("Glic.Instance.Session.ToggleCount", 2,
+                                       1);
+}
+
+TEST_F(GlicMetricsSessionManagerTest, Events_NotRecordedBeforeSessionStarts) {
+  metrics_->OnVisibilityChanged(true);
+  // Session pending, not started.
+  metrics_->OnToggle(mojom::InvocationSource::kOsHotkey,
+                     ShowOptions::ForFloating(gfx::Rect()), true);
+  metrics_->OnCreateTab();
+
+  // End session before it starts (e.g. by hiding)
+  metrics_->OnVisibilityChanged(false);
+  task_environment_.FastForwardBy(
+      kHiddenTimeout);  // Ensure it ends if it was pending
+
+  // Verify it didn't start.
+  EXPECT_EQ(user_action_tester_.GetActionCount("Glic.Instance.Session.Start"),
+            0);
+
+  histogram_tester_.ExpectTotalCount("Glic.Instance.Session.ToggleCount", 0);
+  histogram_tester_.ExpectTotalCount("Glic.Instance.Session.CreateTabCount", 0);
+  histogram_tester_.ExpectTotalCount("Glic.Instance.Session.HadEvent", 0);
+}
+
 }  // namespace glic

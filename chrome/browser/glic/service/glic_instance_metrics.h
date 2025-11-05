@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_GLIC_SERVICE_GLIC_INSTANCE_METRICS_H_
 #define CHROME_BROWSER_GLIC_SERVICE_GLIC_INSTANCE_METRICS_H_
 
+#include "base/containers/flat_map.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/service/glic_metrics_session_manager.h"
 #include "chrome/browser/glic/service/glic_ui_types.h"
@@ -231,72 +232,16 @@ class GlicInstanceMetrics {
     bool reported_reaction_time_modelled_ = false;
   };
 
-  // Stores counts for events to ensure they are only logged once per instance.
-  struct GlicInstanceEventCounts {
-    GlicInstanceEventCounts();
-
-    // go/keep-sorted start
-    int bound_tab_destroyed{};
-    int close{};
-    int context_requested{};
-    int conversation_switched_from_floaty{};
-    int conversation_switched_from_side_panel{};
-    int conversation_switched_to_floaty{};
-    int conversation_switched_to_side_panel{};
-    int create_tab{};
-    int create_task{};
-    int daisy_chain_failed{};
-    int detached_to_floaty{};
-    int floaty_shown{};
-    int instance_created_without_warming{};
-    int instance_created{};
-    int instance_destroyed{};
-    int instance_hidden{};
-    int instance_promoted{};
-    int interrupt_actor_task{};
-    int pause_actor_task{};
-    int perform_actions{};
-    int reaction{};
-    int register_conversation{};
-    int response_started{};
-    int response_stopped{};
-    int resume_actor_task{};
-    int side_panel_shown{};
-    int stop_actor_task{};
-    int tab_bound_via_daisy_chain{};
-    int tab_bound{};
-    int toggle{};
-    int turn_completed{};
-    int turn_count{};
-    int unbind_embedder{};
-    int uninterrupt_actor_task{};
-    int user_input_submitted{};
-    int warmed_instance_created{};
-    int web_ui_state_begin_load{};
-    int web_ui_state_disabled_by_admin{};
-    int web_ui_state_error{};
-    int web_ui_state_finish_loading{};
-    int web_ui_state_guest_error{};
-    int web_ui_state_hold_loading{};
-    int web_ui_state_offline{};
-    int web_ui_state_ready{};
-    int web_ui_state_show_loading{};
-    int web_ui_state_sign_in{};
-    int web_ui_state_unavailable{};
-    int web_ui_state_uninitialized{};
-    int web_ui_state_unresponsive{};
-    // go/keep-sorted end
-  };
-
   // Logs the given event to the EventTotals histogram, and if the count is 0,
   // also logs to the EventCounts histogram. Increments the counter.
-  void LogEvent(GlicInstanceEvent event, int& event_counter);
+  void LogEvent(GlicInstanceEvent event);
+  int GetEventCount(GlicInstanceEvent event);
 
   // Called by the session manager when it starts and ends.
   void OnSessionStarted();
   void OnSessionFinished();
 
-  GlicInstanceEventCounts event_counts_;
+  base::flat_map<GlicInstanceEvent, int> event_counts_;
   // An Instance is active when it is showing in an embedder of an active
   // browser.
   bool is_active_ = false;

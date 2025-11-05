@@ -10,6 +10,7 @@
 #include <set>
 
 #include "base/check_op.h"
+#include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
@@ -20,6 +21,7 @@ namespace glic {
 
 class ActiveSession;
 class GlicInstanceMetrics;
+enum class GlicInstanceEvent;
 
 // LINT.IfChange(GlicMultiInstanceSessionEndReason)
 enum class GlicMultiInstanceSessionEndReason {
@@ -70,8 +72,9 @@ class GlicMetricsSessionManager {
   void OnVisibilityChanged(bool is_visible);
   void OnActivationChanged(bool is_active);
   void OnUserInputSubmitted(mojom::WebClientMode mode);
-  void OnTurnCompleted();
   void OnOwnerDestroyed();
+  void OnEvent(GlicInstanceEvent event);
+  int GetEventCount(GlicInstanceEvent event);
 
  private:
   friend class ActiveSession;
