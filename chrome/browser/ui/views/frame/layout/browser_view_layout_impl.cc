@@ -351,7 +351,23 @@ BrowserViewLayoutImpl::CalculateProposedLayout(
                     tabstrip_visible);
   }
 
-  int x = params.visual_client_area.x();
+  // Figure out whether the toolbar-height side panel should show and by how
+  // much.
+  const bool has_toolbar_height_side_panel = IsParentedToAndVisible(
+      views().toolbar_height_side_panel, views().browser_view);
+  const double toolbar_height_reveal_amount =
+      has_toolbar_height_side_panel
+          ? views().toolbar_height_side_panel->GetAnimationValue()
+          : 0.0;
+
+  // Lay out the main area background.
+  if (IsParentedTo(views().main_background_region, views().browser_view)) {
+    layout.AddChild(views().main_background_region,
+                    gfx::Rect(params.visual_client_area.x(), y,
+                              params.visual_client_area.width(),
+                              params.visual_client_area.bottom() - y),
+                    has_toolbar_height_side_panel);
+  }
 
   // The insets for main region and its containing views when the
   // toolbar_height_side_panel is visible.
@@ -359,21 +375,16 @@ BrowserViewLayoutImpl::CalculateProposedLayout(
       GetLayoutConstant(LayoutConstant::TOOLBAR_HEIGHT_SIDE_PANEL_INSET) +
       views::Separator::kThickness;
 
+  int x = params.visual_client_area.x();
+
   // Lay out toolbar-height side panel.
   if (IsParentedToAndVisible(views().toolbar_height_side_panel,
                              views().browser_view)) {
-    const gfx::Rect main_background_region_bounds(
-        x, std::max(y, params.visual_client_area.y()),
-        params.visual_client_area.width(),
-        params.visual_client_area.bottom() - params.visual_client_area.y());
-    layout.AddChild(views().main_background_region,
-                    main_background_region_bounds, true);
-
     const int width =
         views().toolbar_height_side_panel->GetPreferredSize().width();
     const int visible_width = base::ClampFloor(
         width * views().toolbar_height_side_panel->GetAnimationValue());
-    // Add container_inset_padding to the top of the toolbar height side panel
+    // Add `container_inset_padding` to the top of the toolbar height side panel
     // to separate it from the tab strip. SidePanel draws the top on top of the
     // top content separator and some units of the toolbar by default, which is
     // not needed for the toolbar height side panel.
@@ -386,24 +397,19 @@ BrowserViewLayoutImpl::CalculateProposedLayout(
                                     params.visual_client_area.bottom() - top);
     x = toolbar_height_bounds.right();
     layout.AddChild(views().toolbar_height_side_panel, toolbar_height_bounds);
-  } else {
-    // Set the main_background_region bounds to 0 since it should only be
-    // visible when toolbar height side panel is visible.
-    layout.AddChild(views().main_background_region, gfx::Rect(), false);
   }
 
   // Layout the main container.
   gfx::Rect main_bounds(x, y, params.visual_client_area.width() - x,
                         params.visual_client_area.height() - y);
 
-  if (IsParentedToAndVisible(views().toolbar_height_side_panel,
-                             views().browser_view)) {
-    // When the toolbar height side panel is visible, main container is shifted
-    // and separated by container_inset_padding on all side. This includes
-    // padding the top of main_container from the tab_strip.
-    main_bounds.Inset(container_inset_padding);
-  }
+  // As the toolbar height side panel animates in, the main panel shrinks and
+  // moves over to accommodate the panel.
+  const int scaled_main_area_padding =
+      base::ClampRound(toolbar_height_reveal_amount * container_inset_padding);
+  main_bounds.Inset(scaled_main_area_padding);
 
+  // Lay out the remainder of the main container.
   const BrowserLayoutParams main_params =
       params.InLocalCoordinates(main_bounds);
   ProposedLayout& main_layout =
