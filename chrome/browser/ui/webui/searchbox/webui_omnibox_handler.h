@@ -62,6 +62,7 @@ class WebuiOmniboxHandler : public SearchboxHandler,
   void OnSelectionChanged(OmniboxPopupSelection old_selection,
                           OmniboxPopupSelection selection) override;
   void OnMatchIconUpdated(size_t index) override {}
+  void OnContentsChanged() override {}
 
  private:
   // Observe `OmniboxEditModel` for updates that require updating the views.

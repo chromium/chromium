@@ -85,6 +85,10 @@ class OmniboxEditModel {
     // Invoked when the icon used for the given match has been updated.
     virtual void OnMatchIconUpdated(size_t index) = 0;
 
+    // Called when the results changed and the entire popup needs to be redrawn,
+    // opened, or closed.
+    virtual void OnContentsChanged() = 0;
+
     ~Observer() override = default;
   };
 

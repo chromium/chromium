@@ -546,13 +546,6 @@ void OmniboxPopupViewViews::OnGestureEvent(ui::GestureEvent* event) {
   event->SetHandled();
 }
 
-void OmniboxPopupViewViews::FireAXEventsForNewActiveDescendant(
-    View* descendant_view) {
-  // Selected children changed is fired on the popup.
-  NotifyAccessibilityEventDeprecated(ax::mojom::Event::kSelectedChildrenChanged,
-                                     true);
-}
-
 void OmniboxPopupViewViews::OnWidgetBoundsChanged(views::Widget* widget,
                                                   const gfx::Rect& new_bounds) {
   // Because we don't directly control the lifetime of the widget, gracefully
@@ -626,6 +619,17 @@ void OmniboxPopupViewViews::OnMatchIconUpdated(size_t match_index) {
   if (OmniboxResultView* result_view = result_view_at(match_index)) {
     result_view->OnMatchIconUpdated();
   }
+}
+
+void OmniboxPopupViewViews::OnContentsChanged() {
+  UpdatePopupAppearance();
+}
+
+void OmniboxPopupViewViews::FireAXEventsForNewActiveDescendant(
+    View* descendant_view) {
+  // Selected children changed is fired on the popup.
+  NotifyAccessibilityEventDeprecated(ax::mojom::Event::kSelectedChildrenChanged,
+                                     true);
 }
 
 gfx::Rect OmniboxPopupViewViews::GetTargetBounds() const {
