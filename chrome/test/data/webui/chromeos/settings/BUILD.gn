@@ -67,7 +67,6 @@ build_webui_tests("build") {
     "controls/v2/settings_slider_v2_test.ts",
     "controls/v2/settings_toggle_v2_test.ts",
     "crostini_page/bruschetta_subpage_test.ts",
-    "crostini_page/crostini_arc_adb_test.ts",
     "crostini_page/crostini_export_import_test.ts",
     "crostini_page/crostini_extra_containers_subpage_test.ts",
     "crostini_page/crostini_port_forwarding_test.ts",

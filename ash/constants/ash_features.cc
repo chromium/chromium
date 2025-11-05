@@ -59,11 +59,6 @@ BASE_FEATURE(kAnnotatorMode, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kApnRevamp, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Controls whether to enable ARC ADB sideloading support.
-BASE_FEATURE(kArcAdbSideloadingFeature,
-             "ArcAdbSideloading",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Controls whether to defer loading of active tabs of background (occluded)
 // browser windows during session restore.
 BASE_FEATURE(kAshSessionRestoreDeferOccludedActiveTabLoad,

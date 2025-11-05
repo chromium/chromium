@@ -361,10 +361,6 @@ IN_PROC_BROWSER_TEST_F(OSSettingsCrostiniTest, CrostiniPageBruschettaSubpage) {
   RunSettingsTest("crostini_page/bruschetta_subpage_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsCrostiniTest, CrostiniPageCrostiniArcAdb) {
-  RunSettingsTest("crostini_page/crostini_arc_adb_test.js");
-}
-
 IN_PROC_BROWSER_TEST_F(OSSettingsCrostiniTest,
                        CrostiniPageCrostiniExportImport) {
   RunSettingsTest("crostini_page/crostini_export_import_test.js");

@@ -12,8 +12,6 @@
 #include <string_view>
 #include <vector>
 
-#include "ash/constants/ash_features.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/string_util.h"
@@ -121,15 +119,6 @@ void VersionInfoUpdater::StartUpdate(bool is_chrome_branded) {
   // Update device bluetooth info.
   device::BluetoothAdapterFactory::Get()->GetAdapter(base::BindOnce(
       &VersionInfoUpdater::OnGetAdapter, weak_pointer_factory_.GetWeakPtr()));
-
-  // Get ADB sideloading status if supported on device. Otherwise, default is to
-  // not show.
-  if (base::FeatureList::IsEnabled(features::kArcAdbSideloadingFeature)) {
-    SessionManagerClient* client = SessionManagerClient::Get();
-    client->QueryAdbSideload(
-        base::BindOnce(&VersionInfoUpdater::OnQueryAdbSideload,
-                       weak_pointer_factory_.GetWeakPtr()));
-  }
 }
 
 std::optional<bool> VersionInfoUpdater::IsSystemInfoEnforced() const {
@@ -224,29 +213,6 @@ void VersionInfoUpdater::OnStoreLoaded(policy::CloudPolicyStore* store) {
 
 void VersionInfoUpdater::OnStoreError(policy::CloudPolicyStore* store) {
   UpdateEnterpriseInfo();
-}
-
-void VersionInfoUpdater::OnQueryAdbSideload(
-    SessionManagerClient::AdbSideloadResponseCode response_code,
-    bool enabled) {
-  switch (response_code) {
-    case SessionManagerClient::AdbSideloadResponseCode::SUCCESS:
-      break;
-    case SessionManagerClient::AdbSideloadResponseCode::FAILED:
-      // Pretend to be enabled to show warning at login screen conservatively.
-      LOG(WARNING) << "Failed to query adb sideload status";
-      enabled = true;
-      break;
-    case SessionManagerClient::AdbSideloadResponseCode::NEED_POWERWASH:
-      // This can only happen on device initialized before M74, i.e. not
-      // powerwashed since then. Treat it as powerwash disabled to not show the
-      // message.
-      enabled = false;
-      break;
-  }
-
-  if (delegate_)
-    delegate_->OnAdbSideloadStatusUpdated(enabled);
 }
 
 }  // namespace ash
