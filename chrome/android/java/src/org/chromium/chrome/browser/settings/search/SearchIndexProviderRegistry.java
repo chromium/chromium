@@ -21,5 +21,8 @@ public final class SearchIndexProviderRegistry {
      * SEARCH_INDEX_DATA_PROVIDER to this list.
      */
     public static final List<SearchIndexProvider> ALL_PROVIDERS =
-            List.of(org.chromium.chrome.browser.settings.MainSettings.SEARCH_INDEX_DATA_PROVIDER);
+            List.of(
+                    org.chromium.chrome.browser.about_settings.AboutChromeSettings
+                            .SEARCH_INDEX_DATA_PROVIDER,
+                    org.chromium.chrome.browser.settings.MainSettings.SEARCH_INDEX_DATA_PROVIDER);
 }

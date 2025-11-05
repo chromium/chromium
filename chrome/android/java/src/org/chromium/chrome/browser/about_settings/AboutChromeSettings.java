@@ -21,6 +21,8 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
+import org.chromium.chrome.browser.settings.search.BaseSearchIndexProvider;
+import org.chromium.chrome.browser.settings.search.SettingsIndexData;
 import org.chromium.chrome.browser.tracing.settings.DeveloperSettings;
 import org.chromium.components.browser_ui.settings.EmbeddableSettingsPage;
 import org.chromium.components.browser_ui.settings.SettingsFragment;
@@ -146,4 +148,28 @@ public class AboutChromeSettings extends ChromeBaseSettingsFragment
     public @SettingsFragment.AnimationType int getAnimationType() {
         return SettingsFragment.AnimationType.PROPERTY;
     }
+
+    public static final BaseSearchIndexProvider SEARCH_INDEX_DATA_PROVIDER =
+            new BaseSearchIndexProvider(
+                    AboutChromeSettings.class.getName(), R.xml.about_chrome_preferences) {
+
+                @Override
+                public void updateDynamicPreferences(Context context, SettingsIndexData indexData) {
+                    String[] dynamicKeys = {
+                        PREF_APPLICATION_VERSION, PREF_OS_VERSION, PREF_LEGAL_INFORMATION
+                    };
+
+                    for (String key : dynamicKeys) {
+                        SettingsIndexData.Entry originalEntry = indexData.getEntry(key);
+                        if (originalEntry != null) {
+                            SettingsIndexData.Entry updatedEntry =
+                                    new SettingsIndexData.Entry.Builder(originalEntry)
+                                            .setHeader(
+                                                    context.getString(R.string.prefs_about_chrome))
+                                            .build();
+                            indexData.updateEntry(key, updatedEntry);
+                        }
+                    }
+                }
+            };
 }
