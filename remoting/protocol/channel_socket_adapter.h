@@ -66,7 +66,6 @@ class TransportChannelSocketAdapter : public P2PDatagramSocket,
   void OnNewPacket(webrtc::PacketTransportInternal* transport,
                    const webrtc::ReceivedIpPacket& packet);
   void OnWritableState(webrtc::PacketTransportInternal* transport);
-  void OnChannelDestroyed(webrtc::IceTransportInternal* ice_transport);
 
   raw_ptr<webrtc::IceTransportInternal> channel_;
 
