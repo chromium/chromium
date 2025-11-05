@@ -522,6 +522,7 @@ suite('NewTabPageComposeboxTest', () => {
   });
 
   test('delete file', async () => {
+    loadTimeData.overrideValues({composeboxFileMaxCount: 5});
     createComposeboxElement();
     let i = 0;
     searchboxHandler.setResultMapperFor(ADD_FILE_CONTEXT_FN, () => {
@@ -1884,6 +1885,138 @@ suite('NewTabPageComposeboxTest', () => {
         loadTimeData.getString('searchboxComposePlaceholder'),
         composeboxElement.$.input.placeholder);
   });
+
+  test('pasting valid files calls addFileContext', async () => {
+    // Arrange.
+    loadTimeData.overrideValues({'composeboxFileMaxCount': 5});
+    createComposeboxElement();
+    searchboxHandler.setResultFor(
+        ADD_FILE_CONTEXT_FN,
+        Promise.resolve({token: {low: BigInt(1), high: BigInt(2)}}));
+
+    const pngFile = new File(['foo'], 'foo.png', {type: 'image/png'});
+    const pdfFile = new File(['foo'], 'foo.pdf', {type: 'application/pdf'});
+    const dataTransfer = new DataTransfer();
+    dataTransfer.items.add(pngFile);
+    dataTransfer.items.add(pdfFile);
+    const pasteEvent = new ClipboardEvent('paste', {
+      clipboardData: dataTransfer,
+      bubbles: true,
+      cancelable: true,
+      composed: true,
+    });
+
+    // Act.
+    composeboxElement.$.input.dispatchEvent(pasteEvent);
+
+    // Assert.
+    // Check that addFileContext (ADD_FILE_CONTEXT_FN) was called twice.
+    await waitForAddFileCallCount(2);
+    const [[fileInfo1], [fileInfo2]] =
+        searchboxHandler.getArgs(ADD_FILE_CONTEXT_FN);
+    assertEquals('foo.png', fileInfo1.fileName);
+    assertEquals('foo.pdf', fileInfo2.fileName);
+
+    // Check that the default paste event was prevented.
+    assertTrue(pasteEvent.defaultPrevented);
+  });
+
+  test('pasting too many files records metric and prevents paste', async () => {
+    // Arrange.
+    loadTimeData.overrideValues({'composeboxFileMaxCount': 1});
+    createComposeboxElement();
+
+    const pngFile1 = new File(['foo'], 'foo1.png', {type: 'image/png'});
+    const pngFile2 = new File(['foo'], 'foo2.png', {type: 'image/png'});
+    const dataTransfer = new DataTransfer();
+    dataTransfer.items.add(pngFile1);
+    dataTransfer.items.add(pngFile2);
+    const pasteEvent = new ClipboardEvent('paste', {
+      clipboardData: dataTransfer,
+      bubbles: true,
+      cancelable: true,
+      composed: true,
+    });
+
+    // Act.
+    composeboxElement.$.input.dispatchEvent(pasteEvent);
+    await microtasksFinished();
+
+    // Assert.
+    // Check that no files were added.
+    assertEquals(0, searchboxHandler.getCallCount(ADD_FILE_CONTEXT_FN));
+
+    // Check that the "too many files" metric was recorded (Enum value 1).
+    assertEquals(
+        1,
+        metrics.count(
+            'NewTabPage.Composebox.File.WebUI.UploadAttemptFailure',
+            1));
+
+    // Check that the paste event was prevented.
+    assertTrue(pasteEvent.defaultPrevented);
+  });
+
+  test('pasting unsupported files fires validation error', async () => {
+    // Arrange.
+    createComposeboxElement();
+    const txtFile = new File(['foo'], 'foo.txt', {type: 'text/plain'});
+    const dataTransfer = new DataTransfer();
+    dataTransfer.items.add(txtFile);
+    const pasteEvent = new ClipboardEvent('paste', {
+      clipboardData: dataTransfer,
+      bubbles: true,
+      cancelable: true,
+      composed: true,
+    });
+
+    // Listen for the error event.
+    const errorEventPromise =
+        eventToPromise('on-file-validation-error', composeboxElement.$.context);
+
+    // Act.
+    composeboxElement.$.input.dispatchEvent(pasteEvent);
+
+    // Assert.
+    // Check that the correct error event was fired.
+    const errorEvent = await errorEventPromise;
+    assertEquals(
+        loadTimeData.getString('composeboxFileUploadImageProcessingError'),
+        errorEvent.detail.errorMessage);
+
+    // Check that no files were added.
+    assertEquals(0, searchboxHandler.getCallCount(ADD_FILE_CONTEXT_FN));
+
+    // Check that the paste event was prevented.
+    assertTrue(pasteEvent.defaultPrevented);
+  });
+
+  test(
+      'pasting only text does not call addFiles or prevent default',
+      async () => {
+        // Arrange.
+        createComposeboxElement();
+        const dataTransfer = new DataTransfer();
+        dataTransfer.setData('text/plain', 'hello');
+        const pasteEvent = new ClipboardEvent('paste', {
+          clipboardData: dataTransfer,
+          bubbles: true,
+          cancelable: true,
+          composed: true,
+        });
+
+        // Act.
+        composeboxElement.$.input.dispatchEvent(pasteEvent);
+        await microtasksFinished();
+
+        // Assert.
+        // Check that no files were added.
+        assertEquals(0, searchboxHandler.getCallCount(ADD_FILE_CONTEXT_FN));
+
+        // Check the paste event was not prevented (onPaste_ returns early).
+        assertFalse(pasteEvent.defaultPrevented);
+      });
+
 
   suite('Context menu', () => {
     suiteSetup(() => {

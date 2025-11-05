@@ -537,6 +537,30 @@ export class ComposeboxElement extends I18nMixinLit
     this.focusInput();
   }
 
+  protected onPaste_(event: ClipboardEvent) {
+    if (!event.clipboardData?.items) {
+      return;
+    }
+
+    const dataTransfer = new DataTransfer();
+
+    for (const item of event.clipboardData.items) {
+      if (item.kind === 'file') {
+        const file = item.getAsFile();
+        if (file) {
+          dataTransfer.items.add(file);
+        }
+      }
+    }
+
+    const fileList: FileList = dataTransfer.files;
+
+    if (fileList.length > 0) {
+      event.preventDefault();
+      this.$.context.addFiles(fileList);
+    }
+  }
+
   protected async refreshTabSuggestions_() {
     const {tabs} = await this.searchboxHandler_.getRecentTabs();
     this.tabSuggestions_ = [...tabs];
@@ -591,7 +615,7 @@ export class ComposeboxElement extends I18nMixinLit
     e.preventDefault();
     const files = e.dataTransfer?.files;
     if (files && files.length > 0) {
-      this.$.context.addDroppedFiles(files);
+      this.$.context.addFiles(files);
     }
     this.isDraggingFile_ = false;
   }
