@@ -1,12 +1,12 @@
 description: |
-  Owner: ericchen@
+  Owner: erikchen@
   Description: Recommendation for class names from a user prompt.
 prompts:
   - |
     I want to add a dialog that shows over the contents of the tab on macOS.
     The dialog should only show when the tab is in the foreground. Could you
-    list all classes names through the workflow that I should use to manage tab
-    dialogs and get tab instances for this feature?
+    list all classes that manage tab scoped dialogs? Please format the output
+    as '"class_name": <class_name>' for each class.
 providers:
   - id: python:../../../testing/gemini_provider.py
     config:
@@ -14,9 +14,9 @@ providers:
 tests:
   - assert:
     - type: contains
-      value: TabFeatures
+      value: '"class_name": TabDialogs'
     - type: contains
-      value: TabDialogManager
+      value: '"class_name": TabDialogsViews'
     metadata:
       pass_k_threshold: 1
       runs_per_test: 3
