@@ -301,6 +301,15 @@ TEST_F(AnnotatorControllerTest, LongPressShowsBubble) {
   event_generator->ReleaseTouch();
 
   EXPECT_TRUE(annotation_tray->GetBubbleWidget());
+
+  {
+    ui::AXNodeData node_data;
+    annotation_tray->GetBubbleView()
+        ->GetViewAccessibility()
+        .GetAccessibleNodeData(&node_data);
+    EXPECT_EQ(node_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+              annotation_tray->GetAccessibleNameForBubble());
+  }
 }
 
 // Tests that tapping the AnnotationTray enables annotation.

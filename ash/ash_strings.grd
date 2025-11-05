@@ -2662,6 +2662,10 @@ You can also use the keyboard shortcut. First, highlight text, then press <ph na
         Toggle marker. <ph name="STATE_TEXT">$1<ex>Marker is on.</ex></ph> Use the trackpad, touchscreen, or stylus to draw onscreen.
       </message>
 
+      <message name="IDS_ASH_STATUS_AREA_PROJECTOR_ANNOTATION_TRAY_BUBBLE_ACCESSIBLE_TITLE" desc="The accessible title for the dialog bubble that opens when the marker button in the system shelf is clicked. The dialog bubble contains the color options for the marker, and selecting an option changes the color of the marker.">
+        Select color
+      </message>
+
       <message name="IDS_ASH_STATUS_AREA_PROJECTOR_ANNOTATION_TRAY_ON_STATE" desc="Text indicating that the marker is on.">
         Marker is on.
       </message>

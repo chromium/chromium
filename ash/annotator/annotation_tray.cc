@@ -225,6 +225,11 @@ void AnnotationTray::HideBubble(const TrayBubbleView* bubble_view) {
   CloseBubble();
 }
 
+std::u16string AnnotationTray::GetAccessibleNameForBubble() {
+  return l10n_util::GetStringUTF16(
+      IDS_ASH_STATUS_AREA_PROJECTOR_ANNOTATION_TRAY_BUBBLE_ACCESSIBLE_TITLE);
+}
+
 void AnnotationTray::OnActiveUserPrefServiceChanged(
     PrefService* pref_service) {
   const uint64_t color =
