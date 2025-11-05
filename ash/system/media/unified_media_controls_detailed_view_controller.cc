@@ -47,14 +47,14 @@ UnifiedMediaControlsDetailedViewController::CreateView() {
   DCHECK(MediaNotificationProvider::Get());
 
   media_message_center::NotificationTheme theme;
-  theme.primary_text_color = AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorPrimary);
-  theme.secondary_text_color = AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorSecondary);
-  theme.enabled_icon_color = AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kIconColorPrimary);
-  theme.disabled_icon_color = AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kIconColorSecondary);
+  theme.primary_text_color =
+      AshColorProvider::Get()->GetColor(cros_tokens::kTextColorPrimary);
+  theme.secondary_text_color =
+      AshColorProvider::Get()->GetColor(cros_tokens::kTextColorSecondary);
+  theme.enabled_icon_color =
+      AshColorProvider::Get()->GetColor(cros_tokens::kIconColorPrimary);
+  theme.disabled_icon_color =
+      AshColorProvider::Get()->GetColor(cros_tokens::kIconColorSecondary);
   theme.separator_color =
       AshColorProvider::Get()->GetColor(cros_tokens::kSeparatorColor);
   theme.background_color = AshColorProvider::Get()->GetControlsLayerColor(

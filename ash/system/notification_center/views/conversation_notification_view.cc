@@ -20,6 +20,7 @@
 #include "base/functional/bind.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/text_elider.h"
 #include "ui/message_center/public/cpp/message_center_constants.h"
 #include "ui/message_center/views/message_view.h"
@@ -100,15 +101,6 @@ void ConversationNotificationView::ToggleExpand() {
 
 bool ConversationNotificationView::IsExpanded() const {
   return expanded_;
-}
-
-void ConversationNotificationView::OnThemeChanged() {
-  views::View::OnThemeChanged();
-  if (control_buttons_view_) {
-    control_buttons_view_->SetButtonIconColors(
-        AshColorProvider::Get()->GetContentLayerColor(
-            AshColorProvider::ContentLayerType::kIconColorPrimary));
-  }
 }
 
 void ConversationNotificationView::UpdateWithNotification(
@@ -230,8 +222,7 @@ ConversationNotificationView::CreateRightControlsContainer() {
   view->SetBetweenButtonSpacing(kNotificationControlButtonsHorizontalSpacing);
   view->SetCloseButtonIcon(vector_icons::kCloseChromeRefreshIcon);
   view->SetSettingsButtonIcon(vector_icons::kSettingsOutlineIcon);
-  view->SetButtonIconColors(AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kIconColorPrimary));
+  view->SetButtonIconColors(cros_tokens::kIconColorPrimary);
   view->SetNotificationControlButtonFactory(
       std::make_unique<AshNotificationControlButtonFactory>());
 

@@ -273,8 +273,8 @@ std::unique_ptr<views::Button> AppStreamLauncherView::CreateButton(
     views::Button::PressedCallback callback,
     const gfx::VectorIcon& icon,
     int message_id) {
-  SkColor color = AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kIconColorPrimary);
+  SkColor color =
+      AshColorProvider::Get()->GetColor(cros_tokens::kIconColorPrimary);
   SkColor disabled_color = SkColorSetA(color, gfx::kDisabledControlAlpha);
   auto button = views::CreateVectorImageButton(std::move(callback));
   views::SetImageFromVectorIconWithColor(button.get(), icon, color,

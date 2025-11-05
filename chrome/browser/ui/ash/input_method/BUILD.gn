@@ -46,7 +46,6 @@ static_library("input_method") {
   public_deps = [
     "//ash/public/cpp",
     "//base",
-    "//base",
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ash/input_method",
     "//chromeos/ash/services/ime/public/cpp:structs",
@@ -54,6 +53,7 @@ static_library("input_method") {
     "//ui/base/ime:ime_types",
     "//ui/base/ime/ash",
     "//ui/chromeos/styles:cros_styles_views",
+    "//ui/chromeos/styles:cros_tokens_color_mappings",
     "//ui/gfx",
     "//ui/views",
   ]

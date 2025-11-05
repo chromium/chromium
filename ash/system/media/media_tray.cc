@@ -36,6 +36,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/manager/managed_display_info.h"
@@ -410,14 +411,14 @@ void MediaTray::SetNotificationColorTheme() {
   }
 
   media_message_center::NotificationTheme theme;
-  theme.primary_text_color = AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorPrimary);
-  theme.secondary_text_color = AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorSecondary);
-  theme.enabled_icon_color = AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kIconColorPrimary);
-  theme.disabled_icon_color = AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kIconColorSecondary);
+  theme.primary_text_color =
+      AshColorProvider::Get()->GetColor(cros_tokens::kTextColorPrimary);
+  theme.secondary_text_color =
+      AshColorProvider::Get()->GetColor(cros_tokens::kTextColorSecondary);
+  theme.enabled_icon_color =
+      AshColorProvider::Get()->GetColor(cros_tokens::kIconColorPrimary);
+  theme.disabled_icon_color =
+      AshColorProvider::Get()->GetColor(cros_tokens::kIconColorSecondary);
   theme.separator_color =
       AshColorProvider::Get()->GetColor(cros_tokens::kSeparatorColor);
   theme.background_color =

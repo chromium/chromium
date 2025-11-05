@@ -104,9 +104,7 @@ PhoneHubRecentAppsView::HeaderView::HeaderView(
     error_button_ =
         AddChildView(std::make_unique<views::ImageButton>(std::move(callback)));
     ui::ImageModel image = ui::ImageModel::FromVectorIcon(
-        kPhoneHubEcheErrorStatusIcon,
-        AshColorProvider::Get()->GetContentLayerColor(
-            AshColorProvider::ContentLayerType::kIconColorWarning));
+        kPhoneHubEcheErrorStatusIcon, cros_tokens::kIconColorWarning);
     error_button_->SetImageModel(views::Button::STATE_NORMAL, image);
     views::FocusRing::Get(error_button_)
         ->SetColorId(static_cast<ui::ColorId>(cros_tokens::kCrosSysFocusRing));

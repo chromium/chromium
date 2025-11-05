@@ -134,7 +134,6 @@ class CameraRollThumbnailTest : public views::ViewsTestBase {
         kExpectedCameraRollThumbnailBorderSize.height(), false);
 
     if (is_video) {
-      auto* provider = AshColorProvider::Get();
       cc::PaintFlags flags;
       flags.setAntiAlias(true);
       flags.setStyle(cc::PaintFlags::kFill_Style);
@@ -146,8 +145,8 @@ class CameraRollThumbnailTest : public views::ViewsTestBase {
           CreateVectorIcon(
               kPhoneHubCameraRollItemVideoIcon,
               kExpectedCameraRollThumbnailVideoIconSize,
-              provider->GetContentLayerColor(
-                  AshColorProvider::ContentLayerType::kIconColorPrimary)),
+              camera_roll_thumbnail()->GetColorProvider()->GetColor(
+                  cros_tokens::kIconColorPrimary)),
           kExpectedCameraRollThumbnailVideoIconOrigin.x(),
           kExpectedCameraRollThumbnailVideoIconOrigin.y());
     }

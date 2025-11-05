@@ -138,16 +138,6 @@ INSTANTIATE_TEST_SUITE_P(
          {ColorMode::kLight, ColorProvider::ContentLayerType::kTextColorURL,
           SkColorSetRGB(0x0, 0x68, 0x74)},
 
-         {ColorMode::kLight, ColorProvider::ContentLayerType::kIconColorPrimary,
-          SkColorSetRGB(0x17, 0x1D, 0x1E)},
-         {ColorMode::kLight,
-          ColorProvider::ContentLayerType::kIconColorSecondary,
-          SkColorSetRGB(0x4A, 0x62, 0x67)},
-         {ColorMode::kLight, ColorProvider::ContentLayerType::kIconColorAlert,
-          SkColorSetRGB(0xD6, 0x43, 0x2F)},
-         {ColorMode::kLight, ColorProvider::ContentLayerType::kIconColorWarning,
-          SkColorSetRGB(0xA8, 0x69, 0x0)},
-
          // Dark colors
          {ColorMode::kDark, ColorProvider::ContentLayerType::kTextColorPrimary,
           SkColorSetRGB(0xDE, 0xE3, 0xE5)},
@@ -155,17 +145,7 @@ INSTANTIATE_TEST_SUITE_P(
           ColorProvider::ContentLayerType::kTextColorSecondary,
           SkColorSetRGB(0xBF, 0xC8, 0xCA)},
          {ColorMode::kDark, ColorProvider::ContentLayerType::kTextColorURL,
-          SkColorSetRGB(0x74, 0xD5, 0xE4)},
-
-         {ColorMode::kDark, ColorProvider::ContentLayerType::kIconColorPrimary,
-          SkColorSetRGB(0xDE, 0xE3, 0xE5)},
-         {ColorMode::kDark,
-          ColorProvider::ContentLayerType::kIconColorSecondary,
-          SkColorSetRGB(0xB1, 0xCB, 0xD0)},
-         {ColorMode::kDark, ColorProvider::ContentLayerType::kIconColorAlert,
-          SkColorSetRGB(0xFF, 0xB4, 0xA7)},
-         {ColorMode::kDark, ColorProvider::ContentLayerType::kIconColorWarning,
-          SkColorSetRGB(0xFF, 0xB9, 0x61)}}));
+          SkColorSetRGB(0x74, 0xD5, 0xE4)}}));
 
 }  // namespace
 

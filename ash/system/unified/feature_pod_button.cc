@@ -14,6 +14,7 @@
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/unified/feature_pod_controller_base.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -205,11 +206,11 @@ void FeaturePodLabelButton::OnEnabledChanged() {
       GetEnabled() ? secondary_text_color
                    : ColorUtil::GetDisabledColor(secondary_text_color));
 
-  const SkColor icon_color =
-      color_provider->GetContentLayerColor(ContentLayerType::kIconColorPrimary);
   detailed_view_arrow_->SetImage(ui::ImageModel::FromVectorIcon(
       kUnifiedMenuMoreIcon,
-      GetEnabled() ? icon_color : ColorUtil::GetDisabledColor(icon_color)));
+      GetEnabled()
+          ? cros_tokens::kIconColorPrimary
+          : ColorUtil::GetDisabledColor(cros_tokens::kIconColorPrimary)));
 }
 
 void FeaturePodLabelButton::LayoutInCenter(views::View* child, int y) {

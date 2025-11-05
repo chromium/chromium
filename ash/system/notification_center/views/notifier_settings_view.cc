@@ -532,20 +532,14 @@ class AdaptiveBadgingIcon : public ::views::ImageView {
   METADATA_HEADER(AdaptiveBadgingIcon, views::ImageView)
 
  public:
-  AdaptiveBadgingIcon() = default;
+  AdaptiveBadgingIcon() {
+    SetImage(ui::ImageModel::FromVectorIcon(kSystemTrayAppBadgingIcon,
+                                            cros_tokens::kIconColorPrimary,
+                                            kMenuIconSize));
+  }
   AdaptiveBadgingIcon(const AdaptiveBadgingIcon&) = delete;
   AdaptiveBadgingIcon& operator=(const AdaptiveBadgingIcon&) = delete;
   ~AdaptiveBadgingIcon() override = default;
-
- private:
-  void OnThemeChanged() override {
-    views::ImageView::OnThemeChanged();
-    SetImage(ui::ImageModel::FromVectorIcon(
-        kSystemTrayAppBadgingIcon,
-        AshColorProvider::Get()->GetContentLayerColor(
-            ContentLayerType::kIconColorPrimary),
-        kMenuIconSize));
-  }
 };
 
 BEGIN_METADATA(AdaptiveBadgingIcon)
@@ -632,9 +626,7 @@ void NotifierSettingsView::NotifierButton::UpdateIconImage(
     const gfx::ImageSkia& icon) {
   if (icon.isNull()) {
     icon_view_->SetImage(ui::ImageModel::FromVectorIcon(
-        message_center::kProductIcon,
-        AshColorProvider::Get()->GetContentLayerColor(
-            ContentLayerType::kIconColorPrimary),
+        message_center::kProductIcon, cros_tokens::kIconColorPrimary,
         kEntryIconSize));
   } else {
     icon_view_->SetImage(ui::ImageModel::FromImageSkia(icon));
@@ -799,9 +791,7 @@ void NotifierSettingsView::NotifierButton::GridChanged() {
   if (!GetEnabled()) {
     auto policy_enforced_icon = std::make_unique<views::ImageView>();
     policy_enforced_icon->SetImage(ui::ImageModel::FromVectorIcon(
-        kSystemMenuBusinessIcon,
-        AshColorProvider::Get()->GetContentLayerColor(
-            ContentLayerType::kIconColorPrimary),
+        kSystemMenuBusinessIcon, cros_tokens::kIconColorPrimary,
         kEntryIconSize));
     layout->AddColumn(
         views::LayoutAlignment::kCenter, views::LayoutAlignment::kCenter,
@@ -835,13 +825,12 @@ NotifierSettingsView::NotifierSettingsView() {
 
   const SkColor text_color = AshColorProvider::Get()->GetContentLayerColor(
       ContentLayerType::kTextColorPrimary);
-  const SkColor icon_color = AshColorProvider::Get()->GetContentLayerColor(
-      ContentLayerType::kIconColorPrimary);
 
   // Row for the app badging toggle button.
   auto app_badging_icon = std::make_unique<AdaptiveBadgingIcon>();
   app_badging_icon->SetImage(ui::ImageModel::FromVectorIcon(
-      kSystemTrayAppBadgingIcon, icon_color, kMenuIconSize));
+      kSystemTrayAppBadgingIcon, cros_tokens::kIconColorPrimary,
+      kMenuIconSize));
   auto app_badging_label =
       std::make_unique<views::Label>(l10n_util::GetStringUTF16(
           IDS_ASH_MESSAGE_CENTER_APP_BADGING_BUTTON_TOOLTIP));
@@ -958,14 +947,14 @@ bool NotifierSettingsView::IsScrollable() {
 
 void NotifierSettingsView::SetQuietModeState(bool is_quiet_mode) {
   quiet_mode_toggle_->SetIsOn(is_quiet_mode);
-  const SkColor icon_color = AshColorProvider::Get()->GetContentLayerColor(
-      ContentLayerType::kIconColorPrimary);
   if (is_quiet_mode) {
     quiet_mode_icon_->SetImage(ui::ImageModel::FromVectorIcon(
-        kSystemTrayDoNotDisturbIcon, icon_color, kMenuIconSize));
+        kSystemTrayDoNotDisturbIcon, cros_tokens::kIconColorPrimary,
+        kMenuIconSize));
   } else {
     quiet_mode_icon_->SetImage(ui::ImageModel::FromVectorIcon(
-        kDoNotDisturbDisabledIcon, icon_color, kMenuIconSize));
+        kDoNotDisturbDisabledIcon, cros_tokens::kIconColorPrimary,
+        kMenuIconSize));
   }
 }
 

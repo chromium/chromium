@@ -522,11 +522,7 @@ AshNotificationView::AshNotificationView(
                                           .SetButtonIconSize(
                                               kControlButtonsIconSize)
                                           .SetButtonIconColors(
-                                              AshColorProvider::Get()
-                                                  ->GetContentLayerColor(
-                                                      AshColorProvider::
-                                                          ContentLayerType::
-                                                              kIconColorPrimary))
+                                              cros_tokens::kIconColorPrimary)
                                           .SetNotificationControlButtonFactory(
                                               std::make_unique<
                                                   AshNotificationControlButtonFactory>())))
@@ -1377,12 +1373,6 @@ void AshNotificationView::OnThemeChanged() {
 
   if (message_label()) {
     message_label()->SetEnabledColor(cros_tokens::kCrosSysOnSurfaceVariant);
-  }
-
-  if (control_buttons_view_) {
-    control_buttons_view_->SetButtonIconColors(
-        AshColorProvider::Get()->GetContentLayerColor(
-            AshColorProvider::ContentLayerType::kIconColorPrimary));
   }
 
   if (message_label_in_expanded_state_) {

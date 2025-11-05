@@ -111,9 +111,7 @@ class ConnectionErrorDialogDelegateView : public views::WidgetDelegateView {
         ->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kStart);
     icon_ = icon_row->AddChildView(
         std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-            kPhoneHubEcheErrorStatusIcon,
-            AshColorProvider::Get()->GetContentLayerColor(
-                AshColorProvider::ContentLayerType::kIconColorWarning),
+            kPhoneHubEcheErrorStatusIcon, cros_tokens::kIconColorWarning,
             kIconSize)));
 
     // Add dialog title.

@@ -58,7 +58,6 @@ class ASH_EXPORT ConversationNotificationView
 
   // message_center::MessageView:
   bool IsExpanded() const override;
-  void OnThemeChanged() override;
   void UpdateWithNotification(
       const message_center::Notification& notification) override;
   message_center::NotificationControlButtonsView* GetControlButtonsView()

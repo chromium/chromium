@@ -131,8 +131,6 @@ ClipboardBubbleView::ClipboardBubbleView(const std::u16string& text) {
 
   // Add the managed icon.
   ash::ColorProvider* color_provider = ash::ColorProvider::Get();
-  const SkColor icon_color = color_provider->GetContentLayerColor(
-      ash::ColorProvider::ContentLayerType::kIconColorPrimary);
 
   managed_icon_ = AddChildView(std::make_unique<views::ImageView>());
   managed_icon_->SetPaintToLayer();
@@ -140,7 +138,8 @@ ClipboardBubbleView::ClipboardBubbleView(const std::u16string& text) {
   managed_icon_->SetBounds(kBubblePadding, kBubblePadding, kManagedIconSize,
                            kManagedIconSize);
   managed_icon_->SetImage(ui::ImageModel::FromVectorIcon(
-      vector_icons::kBusinessIcon, icon_color, kManagedIconSize));
+      vector_icons::kBusinessIcon, cros_tokens::kIconColorPrimary,
+      kManagedIconSize));
 
   // Add the bubble text.
   label_ = AddChildView(std::make_unique<views::StyledLabel>());

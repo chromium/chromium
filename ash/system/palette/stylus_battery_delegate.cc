@@ -36,15 +36,13 @@ StylusBatteryDelegate::~StylusBatteryDelegate() = default;
 
 SkColor StylusBatteryDelegate::GetColorForBatteryLevel() const {
   if (!battery_level_.has_value()) {
-    return AshColorProvider::Get()->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kIconColorWarning);
+    return AshColorProvider::Get()->GetColor(cros_tokens::kIconColorWarning);
   }
   if (battery_level_ <= kStylusLowBatteryThreshold && !IsBatteryCharging()) {
-    return AshColorProvider::Get()->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kIconColorAlert);
+    return AshColorProvider::Get()->GetColor(cros_tokens::kIconColorAlert);
   }
-  return AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kIconColorPrimary);
+
+  return AshColorProvider::Get()->GetColor(cros_tokens::kIconColorPrimary);
 }
 
 gfx::ImageSkia StylusBatteryDelegate::GetBatteryImage(
@@ -62,8 +60,8 @@ gfx::ImageSkia StylusBatteryDelegate::GetBatteryImage(
 }
 
 gfx::ImageSkia StylusBatteryDelegate::GetBatteryStatusUnknownImage() const {
-  const SkColor icon_color = AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kIconColorPrimary);
+  const SkColor icon_color =
+      AshColorProvider::Get()->GetColor(cros_tokens::kIconColorPrimary);
 
   return gfx::CreateVectorIcon(kStylusBatteryStatusUnknownIcon, icon_color);
 }

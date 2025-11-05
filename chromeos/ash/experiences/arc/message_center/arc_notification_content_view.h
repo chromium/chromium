@@ -116,7 +116,6 @@ class ArcNotificationContentView
   void OnMouseExited(const ui::MouseEvent& event) override;
   void OnFocus() override;
   void OnBlur() override;
-  void OnThemeChanged() override;
   views::FocusTraversable* GetFocusTraversable() override;
   void OnAccessibilityEvent(ax::mojom::Event event) override;
   void AddedToWidget() override;

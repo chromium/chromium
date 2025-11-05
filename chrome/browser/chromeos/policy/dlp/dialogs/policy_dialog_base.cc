@@ -16,6 +16,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/controls/image_view.h"
@@ -77,10 +78,9 @@ void PolicyDialogBase::SetupUpperPanel() {
 
   views::ImageView* managed_icon =
       upper_panel_->AddChildView(std::make_unique<views::ImageView>());
-  auto color = ash::ColorProvider::Get()->GetContentLayerColor(
-      ash::ColorProvider::ContentLayerType::kIconColorPrimary);
   managed_icon->SetImage(ui::ImageModel::FromVectorIcon(
-      vector_icons::kBusinessIcon, color, kManagedIconSize));
+      vector_icons::kBusinessIcon, cros_tokens::kIconColorPrimary,
+      kManagedIconSize));
 }
 
 views::Label* PolicyDialogBase::AddTitle(const std::u16string& title) {

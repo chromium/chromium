@@ -27,6 +27,7 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
@@ -292,6 +293,8 @@ ArcNotificationContentView::ArcNotificationContentView(
       message_view_(message_view),
       control_buttons_view_(message_view) {
   DCHECK(message_view);
+
+  control_buttons_view_.SetButtonIconColors(cros_tokens::kIconColorPrimary);
   control_buttons_view_.SetNotificationControlButtonFactory(
       std::make_unique<AshNotificationControlButtonFactory>());
 
@@ -807,15 +810,6 @@ void ArcNotificationContentView::OnBlur() {
 
   NativeViewHost::OnBlur();
   notification_view->OnContentBlurred();
-}
-
-void ArcNotificationContentView::OnThemeChanged() {
-  View::OnThemeChanged();
-
-  // Adjust control button color.
-  control_buttons_view_.SetButtonIconColors(
-      AshColorProvider::Get()->GetContentLayerColor(
-          AshColorProvider::ContentLayerType::kIconColorPrimary));
 }
 
 void ArcNotificationContentView::OnRemoteInputActivationChanged(

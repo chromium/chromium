@@ -585,8 +585,7 @@ void NetworkListViewControllerImpl::SetConnectionWarningIcon(
       TrayPopupUtils::CreateMainImageView(/*use_wide_layout=*/false));
   image_view->SetImage(ui::ImageModel::FromVectorIcon(
       use_managed_icon ? kSystemTrayManagedIcon : kSystemMenuInfoIcon,
-      AshColorProvider::Get()->GetContentLayerColor(
-          AshColorProvider::ContentLayerType::kIconColorPrimary)));
+      cros_tokens::kIconColorPrimary));
   image_view->SetBackground(views::CreateSolidBackground(SK_ColorTRANSPARENT));
   image_view->SetID(newIconId);
   connection_warning_icon_ = image_view.get();

@@ -26,6 +26,7 @@
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/vector_icon_types.h"
@@ -369,8 +370,7 @@ TEST_F(NetworkListNetworkItemViewTest, HasEnterpriseIconWhenBlockedByPolicy) {
 
   const gfx::Image expected_image(CreateVectorIcon(
       kSystemMenuBusinessIcon,
-      AshColorProvider::Get()->GetContentLayerColor(
-          AshColorProvider::ContentLayerType::kIconColorPrimary)));
+      AshColorProvider::Get()->GetColor(cros_tokens::kIconColorPrimary)));
   const gfx::Image actual_image(
       static_cast<views::ImageView*>(
           network_list_network_item_view()->right_view())

@@ -33,12 +33,6 @@ class ASH_PUBLIC_EXPORT ColorProvider {
     kTextColorPrimary,
     kTextColorSecondary,
     kTextColorURL,
-
-    kIconColorPrimary,
-    kIconColorSecondary,
-    kIconColorAlert,
-    kIconColorWarning
-
   };
 
   static ColorProvider* Get();

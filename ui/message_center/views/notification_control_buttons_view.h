@@ -9,6 +9,8 @@
 
 #include "base/memory/raw_ptr.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_variant.h"
 #include "ui/message_center/message_center_export.h"
 #include "ui/message_center/vector_icons.h"
 #include "ui/message_center/views/message_view.h"
@@ -79,7 +81,7 @@ class MESSAGE_CENTER_EXPORT NotificationControlButtonsView
   void SetButtonIconSize(int size);
 
   // Sets the icon color for the close, settings, and snooze buttons.
-  void SetButtonIconColors(SkColor color);
+  void SetButtonIconColors(ui::ColorVariant color);
 
   // Sets the background color to ensure proper readability.
   void SetBackgroundColor(SkColor color);
@@ -124,7 +126,7 @@ class MESSAGE_CENTER_EXPORT NotificationControlButtonsView
   raw_ptr<views::ImageButton, DanglingUntriaged> snooze_button_ = nullptr;
 
   // The color used for the close, settings, and snooze icons.
-  std::optional<SkColor> icon_color_;
+  std::optional<ui::ColorVariant> icon_color_;
 
   // The background color for readability of the icons.
   SkColor background_color_ = SK_ColorTRANSPARENT;
@@ -156,7 +158,7 @@ VIEW_BUILDER_PROPERTY(const gfx::VectorIcon&,
                       SnoozeButtonIcon,
                       const gfx::VectorIcon&)
 VIEW_BUILDER_PROPERTY(int, ButtonIconSize)
-VIEW_BUILDER_PROPERTY(SkColor, ButtonIconColors)
+VIEW_BUILDER_PROPERTY(ui::ColorId, ButtonIconColors)
 VIEW_BUILDER_PROPERTY(int, BetweenButtonSpacing)
 VIEW_BUILDER_PROPERTY(std::unique_ptr<NotificationControlButtonFactory>,
                       NotificationControlButtonFactory)

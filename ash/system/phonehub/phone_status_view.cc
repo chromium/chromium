@@ -191,8 +191,8 @@ void PhoneStatusView::UpdateMobileStatus() {
   const PhoneStatusModel& phone_status =
       phone_model_->phone_status_model().value();
 
-  const SkColor primary_color = AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kIconColorPrimary);
+  const SkColor primary_color =
+      GetColorProvider()->GetColor(cros_tokens::kIconColorPrimary);
 
   gfx::ImageSkia signal_image;
   std::u16string tooltip_text;
@@ -235,10 +235,9 @@ void PhoneStatusView::UpdateBatteryStatus() {
   const PhoneStatusModel& phone_status =
       phone_model_->phone_status_model().value();
 
-  const SkColor icon_fg_color = AshColorProvider::Get()->GetContentLayerColor(
-      IsBatterySaverModeOn(phone_status)
-          ? AshColorProvider::ContentLayerType::kIconColorWarning
-          : AshColorProvider::ContentLayerType::kIconColorPrimary);
+  const SkColor icon_fg_color = GetColorProvider()->GetColor(
+      IsBatterySaverModeOn(phone_status) ? cros_tokens::kIconColorWarning
+                                         : cros_tokens::kIconColorPrimary);
 
   battery_icon_->SetImage(
       ui::ImageModel::FromImageSkia(PowerStatus::GetBatteryImage(

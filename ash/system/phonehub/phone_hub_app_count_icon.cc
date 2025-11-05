@@ -32,8 +32,7 @@ class NumberIconImageSource : public gfx::CanvasImageSource {
 
     canvas->DrawStringRectWithFlags(
         base::FormatNumber(count_), GetNumberIconFontList(),
-        AshColorProvider::Get()->GetContentLayerColor(
-            AshColorProvider::ContentLayerType::kIconColorSecondary),
+        AshColorProvider::Get()->GetColor(cros_tokens::kIconColorSecondary),
         gfx::Rect(size()),
         gfx::Canvas::TEXT_ALIGN_CENTER | gfx::Canvas::NO_SUBPIXEL_RENDERING);
     cc::PaintFlags flags;

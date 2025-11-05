@@ -89,10 +89,10 @@ ContinueBrowsingChip::ContinueBrowsingChip(
   favicon->SetImageSize(kContinueBrowsingChipFaviconSize);
 
   if (metadata.favicon.IsEmpty()) {
-    favicon->SetImage(ui::ImageModel::FromVectorIcon(
-        kPhoneHubDefaultFaviconIcon,
-        AshColorProvider::Get()->GetContentLayerColor(
-            AshColorProvider::ContentLayerType::kIconColorPrimary)));
+    favicon->SetImage(
+        ui::ImageModel::FromVectorIcon(kPhoneHubDefaultFaviconIcon,
+
+                                       cros_tokens::kIconColorPrimary));
   } else {
     favicon->SetImage(ui::ImageModel::FromImage(metadata.favicon));
   }
