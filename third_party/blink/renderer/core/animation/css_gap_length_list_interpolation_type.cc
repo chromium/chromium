@@ -131,7 +131,7 @@ CSSGapLengthListInterpolationType::MaybeConvertStandardPropertyUnderlyingValue(
     const ComputedStyle& style) const {
   GapDataList<int> list = GetProperty(style);
   GapDataList<int>::GapDataVector values =
-      CSSGapDecorationUtils::GetExpandedGapDataWidthList(list);
+      CSSGapDecorationUtils::GetExpandedGapDataList(list);
 
   return ListInterpolationFunctions::CreateList(
       values.size(), [this, &values, &style](wtf_size_t i) {
@@ -303,7 +303,7 @@ InterpolationValue CSSGapLengthListInterpolationType::MaybeConvertInherit(
                                                           inherited_list));
 
   GapDataList<int>::GapDataVector inherited_gap_data_vector =
-      CSSGapDecorationUtils::GetExpandedGapDataWidthList(inherited_list);
+      CSSGapDecorationUtils::GetExpandedGapDataList(inherited_list);
 
   if (inherited_gap_data_vector.empty()) {
     return nullptr;
@@ -327,7 +327,7 @@ InterpolationValue CSSGapLengthListInterpolationType::MaybeConvertValue(
 
   const auto& list = To<CSSValueList>(value);
   const CSSValueList* expanded_list =
-      CSSGapDecorationUtils::GetExpandedGapDataWidthList(list, state);
+      CSSGapDecorationUtils::GetExpandedCSSValueListForGapData(list, state);
 
   return ListInterpolationFunctions::CreateList(
       expanded_list->length(), [this, expanded_list, &state](wtf_size_t index) {

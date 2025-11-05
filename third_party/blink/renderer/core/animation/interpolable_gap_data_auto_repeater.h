@@ -169,6 +169,15 @@ class InterpolableGapColorAutoRepeater final
   void Composite(const InterpolableGapColorAutoRepeater& other,
                  double fraction);
 
+  static InterpolableGapColorAutoRepeater* CreateFromMergedInner(
+      InterpolableList& merged_inner,
+      const InterpolableGapColorAutoRepeater& model) {
+    // Note that `model.repeater_` may not match the values in `merged_inner`,
+    // since the latter could have been expanded for kLowestCommonMultiple.
+    return MakeGarbageCollected<InterpolableGapColorAutoRepeater>(
+        &merged_inner, model.repeater_);
+  }
+
  private:
   InterpolableGapColorAutoRepeater* RawClone() const final {
     InterpolableList* values(values_->Clone());

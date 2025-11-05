@@ -116,38 +116,7 @@ BoxSide CSSGapDecorationUtils::BoxSideFromDirection(
                                     : logical_sides.BlockStart();
 }
 
-GapDataList<int>::GapDataVector
-CSSGapDecorationUtils::GetExpandedGapDataWidthList(
-    const GapDataList<int>& gap_data_list) {
-  // Create a new GapDataList::GapDataVector with only the expanded values. Auto
-  // repeaters are not expanded.
-  GapDataList<int>::GapDataVector expanded_values;
-  for (const auto& gap_data : gap_data_list.GetGapDataList()) {
-    if (!gap_data.IsRepeaterData()) {
-      // Simple single value, add to `expanded_values`.
-      expanded_values.push_back(gap_data);
-    } else {
-      const ValueRepeater<int>* repeater = gap_data.GetValueRepeater();
-
-      if (repeater->IsAutoRepeater()) {
-        expanded_values.push_back(gap_data);
-      } else {
-        // Integer repeater, add values `count` times.
-        wtf_size_t count = repeater->RepeatCount();
-
-        for (size_t i = 0; i < count; ++i) {
-          for (const auto& value : repeater->RepeatedValues()) {
-            expanded_values.push_back(GapData<int>(value));
-          }
-        }
-      }
-    }
-  }
-
-  return expanded_values;
-}
-
-CSSValueList* CSSGapDecorationUtils::GetExpandedGapDataWidthList(
+CSSValueList* CSSGapDecorationUtils::GetExpandedCSSValueListForGapData(
     const CSSValueList& list,
     const StyleResolverState& state) {
   CSSValueList* expanded_list =
@@ -175,5 +144,46 @@ CSSValueList* CSSGapDecorationUtils::GetExpandedGapDataWidthList(
   }
   return expanded_list;
 }
+
+template <typename T>
+typename GapDataList<T>::GapDataVector
+CSSGapDecorationUtils::GetExpandedGapDataList(
+    const GapDataList<T>& gap_data_list) {
+  // Create a new GapDataList::GapDataVector with only the expanded values.
+  // Auto repeaters are not expanded.
+  typename GapDataList<T>::GapDataVector expanded_values;
+  for (const auto& gap_data : gap_data_list.GetGapDataList()) {
+    if (!gap_data.IsRepeaterData()) {
+      // Simple single value, add to `expanded_values`.
+      expanded_values.push_back(gap_data);
+    } else {
+      const ValueRepeater<T>* repeater = gap_data.GetValueRepeater();
+
+      if (repeater->IsAutoRepeater()) {
+        expanded_values.push_back(gap_data);
+      } else {
+        // Integer repeater, add values `count` times.
+        wtf_size_t count = repeater->RepeatCount();
+
+        for (size_t i = 0; i < count; ++i) {
+          for (const auto& value : repeater->RepeatedValues()) {
+            expanded_values.push_back(GapData<T>(value));
+          }
+        }
+      }
+    }
+  }
+
+  return expanded_values;
+}
+
+// Explicit template instantiations
+template GapDataList<StyleColor>::GapDataVector
+CSSGapDecorationUtils::GetExpandedGapDataList(
+    const GapDataList<StyleColor>& gap_data_list);
+
+template GapDataList<int>::GapDataVector
+CSSGapDecorationUtils::GetExpandedGapDataList(
+    const GapDataList<int>& gap_data_list);
 
 }  // namespace blink

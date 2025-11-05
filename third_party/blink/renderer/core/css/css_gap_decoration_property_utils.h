@@ -56,9 +56,11 @@ class CORE_EXPORT CSSGapDecorationUtils {
 
   // Creates and returns a vector with the expanded gap data values of repeaters
   // present. Auto repeaters are not expanded.
-  static GapDataList<int>::GapDataVector GetExpandedGapDataWidthList(
-      const GapDataList<int>& gap_data_list);
-  static CSSValueList* GetExpandedGapDataWidthList(
+  template <typename T>
+  static typename GapDataList<T>::GapDataVector GetExpandedGapDataList(
+      const GapDataList<T>& gap_data_list);
+
+  static CSSValueList* GetExpandedCSSValueListForGapData(
       const CSSValueList& list,
       const StyleResolverState& state);
 };
