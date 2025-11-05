@@ -253,7 +253,7 @@ BASE_FEATURE(kEnableFullscreenToAnyScreenAndroid,
 #endif
 
 // Enables the new reset banner on the settings page.
-BASE_FEATURE(kShowResetProfileBannerV2, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kShowResetProfileBannerV2, base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 // Controls whether Chrome Apps are supported. See https://crbug.com/1221251.
