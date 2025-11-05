@@ -6,6 +6,7 @@
 
 #include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
+#include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/permissions/permissions_updater.h"
 #include "chrome/browser/extensions/permissions/scripting_permissions_modifier.h"
 #include "chrome/browser/extensions/permissions/site_permissions_helper.h"
@@ -334,4 +335,34 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewModelBrowserTest, UpdateSiteSetting) {
       PermissionsManager::UserSiteSetting::kBlockAllExtensions);
   EXPECT_EQ(permissions_manager()->GetUserSiteSetting(origin),
             PermissionsManager::UserSiteSetting::kBlockAllExtensions);
+}
+
+// Tests that the extensions menu view model correctly dismisses a host access
+// request for an extension.
+IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewModelBrowserTest,
+                       DismissHostAccessRequest) {
+  // Add extension that requests host permissions, and withheld them.
+  scoped_refptr<const extensions::Extension> extension =
+      AddExtensionWithHostPermission("Extension", "*://example.com/*");
+  extensions::ScriptingPermissionsModifier modifier(profile(), extension);
+  modifier.SetWithholdHostPermissions(true);
+
+  // Navigate to a site.
+  const GURL url =
+      embedded_test_server()->GetURL("example.com", "/simple.html");
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), url));
+  content::WebContents* web_contents = GetActiveWebContents();
+  int tab_id = extensions::ExtensionTabUtil::GetTabId(web_contents);
+
+  // Add a host access request.
+  permissions_manager()->AddHostAccessRequest(web_contents, tab_id, *extension);
+  EXPECT_TRUE(permissions_manager()->HasActiveHostAccessRequest(
+      tab_id, extension->id()));
+
+  // Dismiss the host access request.
+  menu_model()->DismissHostAccessRequest(extension->id());
+
+  // Verify the host access request was dismissed.
+  EXPECT_FALSE(permissions_manager()->HasActiveHostAccessRequest(
+      tab_id, extension->id()));
 }

@@ -327,6 +327,19 @@ void ExtensionsMenuViewModel::UpdateSiteAccess(
                                GetActiveWebContents(), site_access);
 }
 
+void ExtensionsMenuViewModel::DismissHostAccessRequest(
+    const extensions::ExtensionId& extension_id) {
+  auto* permissions_manager = PermissionsManager::Get(browser_->GetProfile());
+  CHECK(permissions_manager);
+  content::WebContents* web_contents = GetActiveWebContents();
+  int tab_id = extensions::ExtensionTabUtil::GetTabId(web_contents);
+  permissions_manager->UserDismissedHostAccessRequest(web_contents, tab_id,
+                                                      extension_id);
+
+  base::RecordAction(base::UserMetricsAction(
+      "Extensions.Toolbar.ExtensionRequestDismissedFromMenu"));
+}
+
 void ExtensionsMenuViewModel::GrantSiteAccess(
     const extensions::ExtensionId& extension_id) {
   auto* profile = browser_->GetProfile();

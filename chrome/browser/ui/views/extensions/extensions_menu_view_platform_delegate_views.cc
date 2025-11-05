@@ -459,15 +459,7 @@ void ExtensionsMenuViewPlatformDelegateViews::OnAllowExtensionClicked(
 
 void ExtensionsMenuViewPlatformDelegateViews::OnDismissExtensionClicked(
     const extensions::ExtensionId& extension_id) {
-  auto* permissions_manager = PermissionsManager::Get(browser_->profile());
-  CHECK(permissions_manager);
-  content::WebContents* web_contents = GetActiveWebContents();
-  int tab_id = extensions::ExtensionTabUtil::GetTabId(web_contents);
-  permissions_manager->UserDismissedHostAccessRequest(web_contents, tab_id,
-                                                      extension_id);
-
-  base::RecordAction(base::UserMetricsAction(
-      "Extensions.Toolbar.ExtensionRequestDismissedFromMenu"));
+  menu_model_->DismissHostAccessRequest(extension_id);
 }
 
 void ExtensionsMenuViewPlatformDelegateViews::OnShowRequestsTogglePressed(
