@@ -110,7 +110,9 @@ void OverscrollRefresh::OnOverscrolled(const cc::OverscrollBehavior& behavior,
                             viewport_width_ - scroll_begin_x_ < edge_width_;
     bool touchpad_swipe_to_navigate =
         (source_device == blink::WebGestureDevice::kTouchpad &&
-         touchpad_overscroll_history_navigation_enabled_);
+         touchpad_overscroll_history_navigation_enabled_ &&
+         base::FeatureList::IsEnabled(
+             ui::kAndroidTouchpadOverscrollHistoryNavigation));
     // Check overscroll-behavior-x and whether initial x coordinate falls within
     // the activation region:
     //   - it is always activated near the horizontal edges

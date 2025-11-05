@@ -72,6 +72,10 @@ UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kUseNewEtc1Encoder);
 // `ViewAndroid`. Refer to crbug.com/442832509 for more details.
 UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kCheckHitEligibility);
 
+// Enables touchpad overscroll for history navigation.
+UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(
+    kAndroidTouchpadOverscrollHistoryNavigation);
+
 }  // namespace ui
 
 #endif  // UI_ANDROID_UI_ANDROID_FEATURES_H_

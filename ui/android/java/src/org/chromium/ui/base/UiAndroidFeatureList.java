@@ -59,6 +59,13 @@ public class UiAndroidFeatureList {
                     /* defaultValue= */ true,
                     /* defaultValueInTests= */ true);
 
+    public static final MutableFlagWithSafeDefault sAndroidTouchpadOverscrollHistoryNavigation =
+            // public static final CachedFlag sAndroidTouchpadOverscrollHistoryNavigation =
+            // newCachedFlag(UiAndroidFeatures.ANDROID_TOUCHPAD_OVERSCROLL_HISTORY_NAVIGATION,
+            newMutableFlagWithSafeDefault(
+                    UiAndroidFeatures.ANDROID_TOUCHPAD_OVERSCROLL_HISTORY_NAVIGATION,
+                    /* defaultValue= */ true);
+
     public static final List<CachedFlag> sFlagsCachedUiAndroid =
             List.of(
                     sAndroidUseCorrectWindowBounds,

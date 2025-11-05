@@ -27,6 +27,7 @@ import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.ContentFeatureMap;
+import org.chromium.ui.base.UiAndroidFeatureList;
 
 /** Fragment to keep track of all the accessibility related preferences. */
 @NullMarked
@@ -178,9 +179,16 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
         // Touchpad swipe-to-navigate settings.
         mTouchpadOverscrollHistoryNavigationPref =
                 findPreference(PREF_TOUCHPAD_OVERSCROLL_HISTORY_NAVIGATION);
-        mTouchpadOverscrollHistoryNavigationPref.setOnPreferenceChangeListener(this);
-        mTouchpadOverscrollHistoryNavigationPref.setChecked(
-                mDelegate.getTouchpadOverscrollHistoryNavigationAccessibilityDelegate().getValue());
+        if (UiAndroidFeatureList.sAndroidTouchpadOverscrollHistoryNavigation.isEnabled()) {
+            mTouchpadOverscrollHistoryNavigationPref.setVisible(true);
+            mTouchpadOverscrollHistoryNavigationPref.setOnPreferenceChangeListener(this);
+            mTouchpadOverscrollHistoryNavigationPref.setChecked(
+                    mDelegate
+                            .getTouchpadOverscrollHistoryNavigationAccessibilityDelegate()
+                            .getValue());
+        } else {
+            mTouchpadOverscrollHistoryNavigationPref.setVisible(false);
+        }
     }
 
     @Override
