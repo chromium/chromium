@@ -85,6 +85,11 @@ GlicSidePanelUi::~GlicSidePanelUi() {
   }
 }
 
+void GlicSidePanelUi::OnClientReady() {
+  instance_metrics_->OnClientReady(
+      GlicInstanceMetrics::EmbedderType::kSidePanel);
+}
+
 Host::EmbedderDelegate* GlicSidePanelUi::GetHostEmbedderDelegate() {
   return this;
 }

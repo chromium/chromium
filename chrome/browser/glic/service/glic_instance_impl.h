@@ -213,6 +213,7 @@ class GlicInstanceImpl : public GlicInstance,
   void OnBrowserSetLastActive(Browser* browser) override;
 
   // Host::Observer
+  void ClientReadyToShow(const mojom::OpenPanelInfo& open_info) override;
   void WebUiStateChanged(mojom::WebUiState state) override;
   void ContextAccessIndicatorChanged(bool enabled) override;
 
