@@ -468,9 +468,6 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
         mLegacyTabStartupMetricsTracker =
                 new LegacyTabStartupMetricsTracker(mActivityId, mTabModelSelectorSupplier);
         mStartupMetricsTracker = new StartupMetricsTracker(mTabModelSelectorSupplier);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
-            mStartupMetricsTracker.registerApplicationStartInfoListener();
-        }
         CachedFlagsSafeMode.getInstance().onStartOrResumeCheckpoint();
         super.onPreCreate();
         initializeBackPressHandling();

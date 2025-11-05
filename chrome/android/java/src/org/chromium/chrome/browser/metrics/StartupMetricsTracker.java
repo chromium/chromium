@@ -4,17 +4,10 @@
 
 package org.chromium.chrome.browser.metrics;
 
-import android.app.ActivityManager;
-import android.app.ApplicationStartInfo;
-import android.content.Context;
 import android.os.SystemClock;
 import android.view.View;
 
-import androidx.annotation.RequiresApi;
-
 import org.chromium.base.BinderCallsListener;
-import org.chromium.base.ContextUtils;
-import org.chromium.base.TimeUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.task.PostTask;
@@ -51,8 +44,6 @@ public class StartupMetricsTracker {
             "Startup.Android.Cold.NewTabPage.TimeToFirstDraw";
     private static final String TIME_TO_STARTUP_FCP_OR_PAINT_PREVIEW_HISTOGRAM =
             "Startup.Android.Cold.TimeToStartupFcpOrPaintPreview";
-    private static final String COLD_START_TIME_TO_FIRST_FRAME =
-            "Startup.Android.Cold.TimeToFirstFrame";
     private boolean mFirstNavigationCommitted;
 
     private class TabObserver extends TabModelSelectorTabObserver {
@@ -147,7 +138,6 @@ public class StartupMetricsTracker {
     private @Nullable PageObserver mPageObserver;
     private boolean mShouldTrack = true;
     private boolean mShouldTrackTimeToFirstDraw = true;
-    private boolean mActivityStartInfoMetricsRecorded;
     private @ActivityType int mHistogramSuffix;
 
     // The time it took for SafeBrowsing API to return a Safe Browsing response for the first time.
@@ -164,20 +154,6 @@ public class StartupMetricsTracker {
         tabModelSelectorSupplier.addObserver(this::registerObservers);
         SafeBrowsingApiBridge.setOneTimeSafeBrowsingApiUrlCheckObserver(
                 this::updateSafeBrowsingCheckTime);
-    }
-
-    /**
-     * Sets up a listener for ApplicationStartInfo that will eventually report TimeToFirstFrame once
-     * per application lifecycle.
-     */
-    @RequiresApi(35)
-    public void registerApplicationStartInfoListener() {
-        ActivityManager activityManager =
-                (ActivityManager)
-                        ContextUtils.getApplicationContext()
-                                .getSystemService(Context.ACTIVITY_SERVICE);
-        activityManager.addApplicationStartInfoCompletionListener(
-                PostTask.getUiBestEffortExecutor(), this::recordApplicationStartInfoMetrics);
     }
 
     private void updateSafeBrowsingCheckTime(long urlCheckTimeDeltaMicros) {
@@ -377,30 +353,5 @@ public class StartupMetricsTracker {
         mTimeToStartupFcpOrPaintPreviewRecorded = true;
         RecordHistogram.recordMediumTimesHistogram(
                 TIME_TO_STARTUP_FCP_OR_PAINT_PREVIEW_HISTOGRAM, durationMs);
-    }
-
-    /**
-     * Records a histogram capturing TimeToFirstFrame.
-     *
-     * <p>This metric reports the the time it takes from activity start until Android determines the
-     * first frame of the app has been drawn.
-     *
-     * @param applicationStartInfo contains various bits of information regarding app startup.
-     */
-    @RequiresApi(35)
-    private void recordApplicationStartInfoMetrics(ApplicationStartInfo applicationStartInfo) {
-        if (!SimpleStartupForegroundSessionDetector.runningCleanForegroundSession()
-                || applicationStartInfo.getStartType() != ApplicationStartInfo.START_TYPE_COLD
-                || mActivityStartInfoMetricsRecorded) return;
-        mActivityStartInfoMetricsRecorded = true;
-        final long firstFrameTimeMs =
-                applicationStartInfo
-                                .getStartupTimestamps()
-                                .getOrDefault(ApplicationStartInfo.START_TIMESTAMP_FIRST_FRAME, 0L)
-                        / TimeUtils.NANOSECONDS_PER_MILLISECOND;
-        if (firstFrameTimeMs != 0L && mActivityStartTimeMs < firstFrameTimeMs) {
-            RecordHistogram.recordMediumTimesHistogram(
-                    COLD_START_TIME_TO_FIRST_FRAME, firstFrameTimeMs - mActivityStartTimeMs);
-        }
     }
 }

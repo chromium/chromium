@@ -176,24 +176,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Startup.Android.Cold.TimeToFirstFrame" units="ms"
-    expires_after="2026-05-05">
-  <owner>nafisabedin@google.com</owner>
-  <owner>yfriedman@chromium.org</owner>
-  <improvement direction="LOWER_IS_BETTER"/>
-  <summary>
-    The time from activity creation to the moment the first frame is drawn for
-    the app, as determined by Android. Recorded regardless of the what is loaded
-    (i.e. NTP, web, etc.). The intent is to provide a general overview of
-    user-perceived cold start time.
-
-    Recorded once per application launch, only when the start is determined to
-    be cold. Utilizes ApplicationStartInfo which is only available starting with
-    Android 15. The metric isn't recorded if Chrome is backgrounded in between
-    activity creation and recording of the metric.
-  </summary>
-</histogram>
-
 <histogram
     name="Startup.Android.Cold.TimeToFirstNavigationCommit.{StartActivityType}"
     units="ms" expires_after="2026-04-05">
