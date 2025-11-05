@@ -216,6 +216,11 @@ class WPTAdapter:
                     self.fs.join(self.port.results_directory(),
                                  'wpt_reports.json'))
             ]
+            runner_options.log_wptscreenshot = [
+                mozlog.commandline.log_file(
+                    self.fs.join(self.port.results_directory(),
+                                 'wpt_screenshots.txt'))
+            ]
 
         # Dump `*-{actual,expected}.png` screenshots for all failures like
         # `run_web_tests.py` does. See crbug.com/40947531.
@@ -589,6 +594,9 @@ class WPTAdapter:
         if runner_options.log_wptreport:
             self.processor.process_wpt_report(
                 runner_options.log_wptreport[0].name)
+        if runner_options.log_wptscreenshot:
+            self.processor.upload_wpt_screenshots(
+                runner_options.log_wptscreenshot[0].name)
         if self.options.reset_results:
             self._optimize(runner_options)
 

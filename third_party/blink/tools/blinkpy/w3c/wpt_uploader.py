@@ -50,11 +50,12 @@ class WptReportUploader(object):
             ("chromium", "ci", "ios-wpt-fyi-rel"),
         ]
         for builder in builders:
-            reports = []
+            reports, screenshot_files = [], []
             _log.info("Uploading report for %s" % builder[2])
             build = self.fetch_latest_complete_build(*builder)
             if build:
                 _log.info("Find latest completed build %d" % build.get("number"))
+
                 # pylint: disable=unsubscriptable-object
                 urls = self._host.results_fetcher.fetch_wpt_report_urls(
                     build["id"])
@@ -68,8 +69,15 @@ class WptReportUploader(object):
                     # Ignore retry results on subsequent lines.
                     initial_report, _, _ = body.partition(b'\n')
                     reports.append(initial_report)
+
+                urls = self._host.results_fetcher.fetch_wpt_screenshot_urls(
+                    build['id'])
+                for url in urls:
+                    _log.info('Fetching wpt screenshots from %s', url)
+                    screenshot_files.append(self._host.web.get_binary(url))
+
             if reports:
-                files = self.encode_result_files(reports)
+                files = self.encode_result_files(reports, screenshot_files)
                 rv = rv | self.upload_results(files)
             else:
                 _log.error("No result to upload, skip...")
@@ -136,12 +144,17 @@ class WptReportUploader(object):
             raise Exception('The response received from the server was corrupted in-transit.')
         return decrypt_response.plaintext.decode('utf-8')
 
-    def encode_result_files(self, reports: list[bytes]) -> FileFormData:
+    def encode_result_files(self, reports: list[bytes],
+                            screenshot_files: list[bytes]) -> FileFormData:
         files = []
         for shard, report in enumerate(reports):
             file_info = (f'result_{shard}.json.gz', gzip.compress(report),
                          'application/gzip')
             files.append(('result_file', file_info))
+        for shard, screenshot_file in enumerate(screenshot_files):
+            file_info = (f'screenshots_{shard}.txt.gz',
+                         gzip.compress(screenshot_file), 'application/gzip')
+            files.append(('screenshot_file', file_info))
         return files
 
     def upload_results(self, files: FileFormData) -> int:

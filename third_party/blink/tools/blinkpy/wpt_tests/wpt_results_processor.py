@@ -1226,3 +1226,14 @@ class WPTResultsProcessor:
                 'filePath': artifact_path,
             },
         })
+
+    def upload_wpt_screenshots(self, screenshots_path: str):
+        """Upload a `wptscreenshots.txt` file [0] for this shard.
+
+        [0]: https://github.com/web-platform-tests/wpt/blob/master/tools/wptrunner/wptrunner/formatters/wptscreenshot.py
+        """
+        self.sink.report_invocation_level_artifacts({
+            self.fs.basename(screenshots_path): {
+                'filePath': screenshots_path,
+            },
+        })
