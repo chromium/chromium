@@ -92,6 +92,9 @@ class NavigationAttachmentsViewBinder {
         } else if (propertyKey == NavigationAttachmentsProperties.POPUP_GALLERY_CLICKED) {
             view.popup.mGalleryButton.setOnClickListener(
                     v -> model.get(NavigationAttachmentsProperties.POPUP_GALLERY_CLICKED).run());
+        } else if (propertyKey == NavigationAttachmentsProperties.POPUP_TAB_PICKER_CLICKED) {
+            view.popup.mTabButton.setOnClickListener(
+                    v -> model.get(NavigationAttachmentsProperties.POPUP_TAB_PICKER_CLICKED).run());
         } else if (propertyKey == NavigationAttachmentsProperties.RECENT_TABS_HEADER_VISIBLE) {
             view.popup.mRecentTabsHeader.setVisibility(
                     model.get(NavigationAttachmentsProperties.RECENT_TABS_HEADER_VISIBLE)

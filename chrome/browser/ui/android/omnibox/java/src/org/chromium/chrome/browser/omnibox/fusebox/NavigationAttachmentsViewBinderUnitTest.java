@@ -46,6 +46,7 @@ public class NavigationAttachmentsViewBinderUnitTest {
     private @Mock NavigationAttachmentsPopup mPopup;
     private @Mock ChromeImageView mAddButton;
     private @Mock ChromeImageView mSettingsButton;
+    private @Mock Button mTabButton;
     private @Mock Button mCameraButton;
     private @Mock Button mGalleryButton;
     private @Mock Button mFileButton;
@@ -78,6 +79,7 @@ public class NavigationAttachmentsViewBinderUnitTest {
         doReturn(mRecentTabsHeader).when(mParent).findViewById(R.id.fusebox_recent_tabs_header);
         mModel = new PropertyModel(NavigationAttachmentsProperties.ALL_KEYS);
         mViewHolder = new NavigationAttachmentsViewHolder(mParent, mPopup);
+        mViewHolder.popup.mTabButton = mTabButton;
         mViewHolder.popup.mCameraButton = mCameraButton;
         mViewHolder.popup.mGalleryButton = mGalleryButton;
         mViewHolder.popup.mFileButton = mFileButton;
@@ -163,6 +165,19 @@ public class NavigationAttachmentsViewBinderUnitTest {
                 ArgumentCaptor.forClass(View.OnClickListener.class);
         verify(mFileButton).setOnClickListener(listenerCaptor.capture());
         listenerCaptor.getValue().onClick(mFileButton);
+
+        verify(runnable).run();
+    }
+
+    @Test
+    public void tabPickerButtonClickListener_isCalled() {
+        Runnable runnable = mock(Runnable.class);
+        mModel.set(NavigationAttachmentsProperties.POPUP_TAB_PICKER_CLICKED, runnable);
+
+        ArgumentCaptor<View.OnClickListener> listenerCaptor =
+                ArgumentCaptor.forClass(View.OnClickListener.class);
+        verify(mTabButton).setOnClickListener(listenerCaptor.capture());
+        listenerCaptor.getValue().onClick(mTabButton);
 
         verify(runnable).run();
     }

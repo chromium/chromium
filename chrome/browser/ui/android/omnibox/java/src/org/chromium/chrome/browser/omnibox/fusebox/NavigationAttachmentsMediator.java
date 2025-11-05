@@ -115,6 +115,8 @@ class NavigationAttachmentsMediator {
                 NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE_CLICKED,
                 this::onRequestTypeButtonClicked);
         mModel.set(NavigationAttachmentsProperties.POPUP_AI_MODE_CLICKED, this::activateAiMode);
+        mModel.set(
+                NavigationAttachmentsProperties.POPUP_TAB_PICKER_CLICKED, this::onTabPickerClicked);
     }
 
     private void onRequestTypeButtonClicked() {
@@ -264,6 +266,12 @@ class NavigationAttachmentsMediator {
                         /* mimeType= */ "",
                         /* data= */ new byte[] {});
         addAttachment(attachmentDetails, token);
+    }
+
+    @VisibleForTesting
+    void onTabPickerClicked() {
+        mPopup.dismiss();
+        // TODO(haileywang): Implement this.
     }
 
     @VisibleForTesting

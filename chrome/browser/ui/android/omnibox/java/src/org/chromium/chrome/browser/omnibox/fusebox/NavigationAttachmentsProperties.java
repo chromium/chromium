@@ -69,6 +69,10 @@ class NavigationAttachmentsProperties {
     public static final WritableObjectPropertyKey<Runnable> POPUP_GALLERY_CLICKED =
             new WritableObjectPropertyKey<>();
 
+    /** Action to perform when the user clicks the tab picker button in the popup. */
+    public static final WritableObjectPropertyKey<Runnable> POPUP_TAB_PICKER_CLICKED =
+            new WritableObjectPropertyKey<>();
+
     /** Whether the recent tabs header is visible. */
     public static final WritableBooleanPropertyKey RECENT_TABS_HEADER_VISIBLE =
             new WritableBooleanPropertyKey();
@@ -92,6 +96,7 @@ class NavigationAttachmentsProperties {
         POPUP_CLIPBOARD_CLICKED,
         POPUP_FILE_CLICKED,
         POPUP_GALLERY_CLICKED,
+        POPUP_TAB_PICKER_CLICKED,
         RECENT_TABS_HEADER_VISIBLE,
         SHOW_DEDICATED_MODE_BUTTON
     };
