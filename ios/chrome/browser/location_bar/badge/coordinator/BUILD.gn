@@ -60,6 +60,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/browser/location_bar/badge/model",
     "//ios/chrome/browser/location_bar/badge/ui",
+    "//ios/chrome/browser/optimization_guide/model",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/prefs:browser_prefs",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
