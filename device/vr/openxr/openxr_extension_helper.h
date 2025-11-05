@@ -6,6 +6,7 @@
 #define DEVICE_VR_OPENXR_OPENXR_EXTENSION_HELPER_H_
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/logging.h"
@@ -114,7 +115,7 @@ class OpenXrExtensionEnumeration {
   OpenXrExtensionEnumeration();
   ~OpenXrExtensionEnumeration();
 
-  bool ExtensionSupported(const char* extension_name) const;
+  bool ExtensionSupported(std::string_view extension_name) const;
 
  private:
   std::vector<XrExtensionProperties> extension_properties_;

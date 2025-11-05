@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <string>
 
 #include "base/compiler_specific.h"
 #include "base/containers/contains.h"
@@ -92,12 +93,11 @@ OpenXrExtensionEnumeration::OpenXrExtensionEnumeration() {
 OpenXrExtensionEnumeration::~OpenXrExtensionEnumeration() = default;
 
 bool OpenXrExtensionEnumeration::ExtensionSupported(
-    const char* extension_name) const {
+    std::string_view extension_name) const {
   return std::ranges::any_of(
       extension_properties_,
       [&extension_name](const XrExtensionProperties& properties) {
-        return UNSAFE_TODO(strcmp(properties.extensionName, extension_name)) ==
-               0;
+        return std::string_view(properties.extensionName) == extension_name;
       });
 }
 
