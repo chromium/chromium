@@ -64,6 +64,10 @@ NSString* const kCustomDetentIdentifier = @"customDetent";
   [self updateHeight];
 }
 
+- (void)reconfigureCellAtIndexPath:(NSIndexPath*)indexPath {
+  [_tableView reconfigureRowsAtIndexPaths:@[ indexPath ]];
+}
+
 - (NSInteger)selectedRow {
   return _tableView.indexPathForSelectedRow.row;
 }

@@ -6,8 +6,6 @@ source_set("table_view") {
   sources = [
     "favicon_table_view_cell.h",
     "favicon_table_view_cell.mm",
-    "table_view_url_cell_favicon_badge_view.h",
-    "table_view_url_cell_favicon_badge_view.mm",
   ]
   deps = [
     ":cells_constants",

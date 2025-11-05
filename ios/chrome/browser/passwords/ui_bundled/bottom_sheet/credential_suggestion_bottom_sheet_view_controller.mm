@@ -20,6 +20,9 @@
 #import "ios/chrome/browser/shared/ui/bottom_sheet/table_view_bottom_sheet_view_controller+subclassing.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_url_item.h"
+#import "ios/chrome/browser/shared/ui/table_view/content_configuration/favicon_content_configuration.h"
+#import "ios/chrome/browser/shared/ui/table_view/content_configuration/image_content_configuration.h"
+#import "ios/chrome/browser/shared/ui/table_view/content_configuration/table_view_cell_content_configuration.h"
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -38,11 +41,11 @@ namespace {
 // Spacing use for the spacing before the logo title in the bottom sheet.
 CGFloat const kSpacingBeforeTitle = 16;
 
+// Width of the image for suggestion.
+CGFloat const kSuggestionImageWidth = 30;
+
 // Spacing use for the spacing after the logo title in the bottom sheet.
 CGFloat const kSpacingAfterTitle = 4;
-
-// Vertical spacing between the labels of a password suggestion cell.
-CGFloat const kSpacingBetweenCellLabels = 2;
 
 // Returns the username to display for the given `suggestion`.
 NSString* GetSuggestionDisplayUsername(FormSuggestion* suggestion) {
@@ -268,8 +271,8 @@ void LogSuggestionAcceptedMetrics(BOOL is_backup_suggestion,
 
 - (UITableViewCell*)tableView:(UITableView*)tableView
         cellForRowAtIndexPath:(NSIndexPath*)indexPath {
-  TableViewURLCell* cell =
-      [tableView dequeueReusableCellWithIdentifier:@"cell"];
+  UITableViewCell* cell =
+      [TableViewCellContentConfiguration dequeueTableViewCell:tableView];
   return [self layoutCell:cell
         forTableViewWidth:tableView.frame.size.width
               atIndexPath:indexPath];
@@ -311,8 +314,7 @@ void LogSuggestionAcceptedMetrics(BOOL is_backup_suggestion,
   UITableView* tableView = [super createTableView];
 
   tableView.dataSource = self;
-  [tableView registerClass:TableViewURLCell.class
-      forCellReuseIdentifier:@"cell"];
+  [TableViewCellContentConfiguration registerCellForTableView:tableView];
 
   return tableView;
 }
@@ -322,7 +324,7 @@ void LogSuggestionAcceptedMetrics(BOOL is_backup_suggestion,
 }
 
 - (CGFloat)computeTableViewCellHeightAtIndex:(NSUInteger)index {
-  TableViewURLCell* cell = [[TableViewURLCell alloc] init];
+  UITableViewCell* cell = [[UITableViewCell alloc] init];
   // Setup UI same as real cell.
   CGFloat tableWidth = [self tableViewWidth];
   cell = [self layoutCell:cell
@@ -359,23 +361,34 @@ void LogSuggestionAcceptedMetrics(BOOL is_backup_suggestion,
 // Defaults to the globe symbol if no URL is associated with the cell.
 // In case of a recovery password suggestion, the favicon is replaced by a
 // symbol.
-- (void)loadFaviconForCell:(UITableViewCell*)cell
-    associatedWithSuggestion:(FormSuggestion*)suggestion {
-  DCHECK(cell);
-  TableViewURLCell* URLCell =
-      base::apple::ObjCCastStrict<TableViewURLCell>(cell);
-
+- (void)loadFaviconForConfiguration:
+            (TableViewCellContentConfiguration*)configuration
+           associatedWithSuggestion:(FormSuggestion*)suggestion
+                        atIndexPath:(NSIndexPath*)indexPath {
   if (suggestion.icon) {
-    [URLCell replaceFaviconWithSymbol:suggestion.icon];
-  } else {
-    auto faviconLoadedBlock = ^(FaviconAttributes* attributes, bool cached) {
-      DCHECK(attributes);
-      // It doesn't matter which cell the user sees here, all the credentials
-      // listed are for the same page and thus share the same favicon.
-      [URLCell.faviconView configureWithAttributes:attributes];
-    };
-    [self.delegate loadFaviconWithBlockHandler:faviconLoadedBlock];
+    ImageContentConfiguration* imageConfiguration =
+        [[ImageContentConfiguration alloc] init];
+    imageConfiguration.imageSize =
+        CGSizeMake(kSuggestionImageWidth, kSuggestionImageWidth);
+    imageConfiguration.image = suggestion.icon;
+
+    configuration.leadingConfiguration = imageConfiguration;
+    return;
   }
+  __weak __typeof(self) weakSelf = self;
+  auto faviconLoadedBlock = ^(FaviconAttributes* attributes, bool cached) {
+    DCHECK(attributes);
+    if (cached) {
+      FaviconContentConfiguration* faviconConfiguration =
+          [[FaviconContentConfiguration alloc] init];
+      faviconConfiguration.faviconAttributes = attributes;
+
+      configuration.leadingConfiguration = faviconConfiguration;
+    } else if (attributes.faviconImage) {
+      [weakSelf reconfigureCellAtIndexPath:indexPath];
+    }
+  };
+  [self.delegate loadFaviconWithBlockHandler:faviconLoadedBlock];
 }
 
 // Creates the UI action used to open the password manager.
@@ -425,44 +438,45 @@ void LogSuggestionAcceptedMetrics(BOOL is_backup_suggestion,
 
 // Lays out the cell for the table view with the credential form suggestion at
 // the specific index path.
-- (TableViewURLCell*)layoutCell:(TableViewURLCell*)cell
-              forTableViewWidth:(CGFloat)tableViewWidth
-                    atIndexPath:(NSIndexPath*)indexPath {
+- (UITableViewCell*)layoutCell:(UITableViewCell*)cell
+             forTableViewWidth:(CGFloat)tableViewWidth
+                   atIndexPath:(NSIndexPath*)indexPath {
   CHECK(_suggestions.count);
   FormSuggestion* formSuggestion = [_suggestions objectAtIndex:indexPath.row];
 
+  TableViewCellContentConfiguration* configuration =
+      [[TableViewCellContentConfiguration alloc] init];
+  configuration.title = GetSuggestionDisplayUsername(formSuggestion);
+  configuration.titleNumberOfLines = 1;
+  configuration.titleLineBreakMode = NSLineBreakByTruncatingMiddle;
+  configuration.subtitle = _domain;
+  configuration.subtitleNumberOfLines = 1;
+  configuration.subtitleLineBreakMode = NSLineBreakByTruncatingMiddle;
   // Note that both the credentials and URLs will use middle truncation, as it
   // generally makes it easier to differentiate between different ones, without
   // having to resort to displaying multiple lines to show the full username
   // and URL.
-  cell.titleLabel.text = GetSuggestionDisplayUsername(formSuggestion);
-  cell.titleLabel.lineBreakMode = NSLineBreakByTruncatingMiddle;
-  cell.titleLabel.numberOfLines = 1;
-  cell.URLLabel.text = _domain;
-  cell.URLLabel.lineBreakMode = NSLineBreakByTruncatingMiddle;
-  cell.URLLabel.numberOfLines = 1;
-  cell.URLLabel.hidden = NO;
   if (formSuggestion.type == SuggestionType::kBackupPasswordEntry) {
-    cell.thirdRowLabel.text = l10n_util::GetNSString(
+    configuration.secondSubtitle = l10n_util::GetNSString(
         IDS_IOS_CREDENTIAL_BOTTOM_SHEET_RECOVERY_PASSWORD_LABEL);
-    cell.thirdRowLabel.hidden = NO;
   }
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kIOSFillRecoveryPassword)) {
-    cell.labelSpacing = kSpacingBetweenCellLabels;
-  }
+
+  [self loadFaviconForConfiguration:configuration
+           associatedWithSuggestion:formSuggestion
+                        atIndexPath:indexPath];
+
+  cell.contentConfiguration = configuration;
+
+  cell.accessibilityIdentifier = configuration.title;
+
   cell.accessibilityValue = [self cellAccessibilityValueAtIndexPath:indexPath];
   cell.separatorInset = [self separatorInsetForTableViewWidth:tableViewWidth
                                                   atIndexPath:indexPath];
   cell.accessoryType = [self accessoryType:indexPath];
   cell.selectionStyle = UITableViewCellSelectionStyleNone;
 
-  [cell setFaviconContainerBackgroundColor:
-            [UIColor colorNamed:kPrimaryBackgroundColor]];
-  cell.titleLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
   cell.backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
 
-  [self loadFaviconForCell:cell associatedWithSuggestion:formSuggestion];
   return cell;
 }
 

@@ -27,9 +27,6 @@ NSString* const kMaskedPassword = @"••••••••";
 NSString* const kTableViewCellInfoButtonViewId =
     @"kTableViewCellInfoButtonViewId";
 
-NSString* const kTableViewURLCellFaviconBadgeViewID =
-    @"TableViewURLCellFaviconBadgeView";
-
 NSString* const kImproveChromeItemAccessibilityIdentifier =
     @"ImproveChromeItemAccessibilityIdentifier";
 

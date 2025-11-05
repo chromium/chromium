@@ -13,7 +13,8 @@
 @class FaviconView;
 class TemplateURL;
 
-// SettingsSearchEngineItem contains the model data for a TableViewURLCell.
+// SettingsSearchEngineItem contains the model data for a
+// SettingsSearchEngineCell.
 @interface SettingsSearchEngineItem : TableViewItem
 
 // The enabled/disabled state. If disabled, user interaction will be forbidden
