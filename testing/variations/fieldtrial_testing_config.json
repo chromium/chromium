@@ -5860,7 +5860,7 @@
             ]
         }
     ],
-    "ChromnientEduActionChip": [
+    "ChromnientEduActionChipV2": [
         {
             "platforms": [
                 "chromeos",
