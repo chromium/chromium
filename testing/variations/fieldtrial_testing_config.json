@@ -24828,13 +24828,19 @@
     "SwiftShaderDeprecation": [
         {
             "platforms": [
+                "android",
+                "chromeos",
+                "ios",
+                "linux",
+                "mac",
                 "windows"
             ],
             "experiments": [
                 {
-                    "name": "WarpDisabledForWindowsTests",
+                    "name": "SwiftShaderDisabled",
                     "disable_features": [
-                        "AllowD3D11WarpFallback"
+                        "AllowSoftwareGLFallbackDueToCrashes",
+                        "AllowSwiftShaderFallback"
                     ]
                 }
             ]

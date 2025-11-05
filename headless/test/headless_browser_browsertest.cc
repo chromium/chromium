@@ -66,7 +66,6 @@
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gl/gl_switches.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 
 #if !BUILDFLAG(IS_FUCHSIA)
@@ -279,28 +278,28 @@ IN_PROC_BROWSER_TEST_F(HeadlessBrowserTestWithProxy, MAYBE_SetProxyConfig) {
   EXPECT_TRUE(browser_context->GetAllWebContents().empty());
 }
 
-// WebGL is not guaranteed to be supported everywhere except when using
-// --enable-unsafe-swiftshader.
-class HeadlessWebGLAvailabilityTest : public HeadlessBrowserTest {
- public:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitch(::switches::kEnableUnsafeSwiftShader);
-    HeadlessBrowserTest::SetUpCommandLine(command_line);
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(HeadlessWebGLAvailabilityTest, WebGLSupported) {
+IN_PROC_BROWSER_TEST_F(HeadlessBrowserTest, WebGLSupported) {
   HeadlessBrowserContext* browser_context =
       browser()->CreateBrowserContextBuilder().Build();
 
   HeadlessWebContents* web_contents =
       browser_context->CreateWebContentsBuilder().Build();
 
+  bool expected_support = true;
+#if BUILDFLAG(IS_APPLE)
+  LOG(INFO) << "CPU type: " << static_cast<int>(base::mac::GetCPUType());
+  if (base::mac::GetCPUType() == base::mac::CPUType::kArm) {
+    expected_support = false;
+  }
+#elif BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
+  expected_support = false;
+#endif  // BUILDFLAG(IS_APPLE)
+
   EXPECT_THAT(
       EvaluateScript(web_contents,
                      "(document.createElement('canvas').getContext('webgl')"
                      "    instanceof WebGLRenderingContext)"),
-      DictHasValue("result.result.value", true));
+      DictHasValue("result.result.value", expected_support));
 }
 
 IN_PROC_BROWSER_TEST_F(HeadlessBrowserTest, ClipboardCopyPasteText) {

@@ -41,11 +41,11 @@ GLDisplay* InitializeOneOffHelper(bool init_extensions) {
 #endif
 
   bool use_software_gl = true;
-  base::CommandLine* cmd = base::CommandLine::ForCurrentProcess();
 
   // We usually use software GL as this works on all bots. The
   // command line can override this behaviour to use hardware GL.
-  if (cmd->HasSwitch(switches::kUseGpuInTests)) {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kUseGpuInTests)) {
     use_software_gl = false;
   }
 
@@ -60,12 +60,11 @@ GLDisplay* InitializeOneOffHelper(bool init_extensions) {
 
   GLImplementationParts impl = allowed_impls[0];
   if (use_software_gl) {
-    // Disable D3D11 WARP for consistent cross-platform software rendering.
-    cmd->AppendSwitch(::switches::kDisableD3D11Warp);
-    impl = gl::GetSoftwareGLImplementation(cmd);
+    impl = gl::GetSoftwareGLImplementation();
   }
 
-  DCHECK(!cmd->HasSwitch(switches::kUseGL)) << "kUseGL has not effect in tests";
+  DCHECK(!base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kUseGL))
+      << "kUseGL has not effect in tests";
 
   bool disable_gl_drawing = true;
 

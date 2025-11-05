@@ -376,9 +376,6 @@ void BrowserTestBase::SetUp() {
     command_line->RemoveSwitch(switches::kDisableSoftwareCompositingFallback);
   }
 
-  // Disable D3D11 WARP for consistent cross-platform software rendering.
-  command_line->AppendSwitch(switches::kDisableD3D11Warp);
-
   // The layout of windows on screen is unpredictable during tests, so disable
   // occlusion when running browser tests.
   command_line->AppendSwitch(
