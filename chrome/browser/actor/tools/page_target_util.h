@@ -30,9 +30,14 @@ content::RenderFrameHost* FindTargetLocalRootFrame(tabs::TabHandle tab_handle,
 // Return `TargetNodeInfo` from hit test against the last observed APC. Returns
 // std::nullopt if Target does not hit any node.
 std::optional<optimization_guide::TargetNodeInfo>
-FindLastObservedNodeForActionTarget(
+FindLastObservedNodeForActionTargetId(
     const optimization_guide::proto::AnnotatedPageContent* apc,
-    const PageTarget& target);
+    const DomNode& target);
+
+std::optional<optimization_guide::TargetNodeInfo>
+FindLastObservedNodeForActionTargetPoint(
+    const optimization_guide::proto::AnnotatedPageContent* apc,
+    const gfx::Point& target_pixels);
 
 }  // namespace actor
 

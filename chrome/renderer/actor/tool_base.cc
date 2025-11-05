@@ -18,6 +18,7 @@
 #include "chrome/renderer/actor/tool_utils.h"
 #include "content/public/renderer/render_frame.h"
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom.h"
 #include "third_party/blink/public/web/web_element.h"
 #include "third_party/blink/public/web/web_frame_widget.h"
@@ -58,6 +59,20 @@ enum class TimeOfUseResult {
   kMaxValue = kNoValidApcNode,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/actor/enums.xml:TimeOfUseResult)
+
+WebNode GetNodeFromIdIncludingPopup(const content::RenderFrame& frame,
+                                    int32_t node_id) {
+  if (base::FeatureList::IsEnabled(
+          blink::features::kAIPageContentIncludePopupWindows)) {
+    if (WebPagePopup* popup = frame.GetWebView()->GetPagePopup()) {
+      const WebNode& found_node = blink::WebNode::FromDomNodeId(node_id);
+      if (found_node.GetDocument() == popup->GetDocument()) {
+        return found_node;
+      }
+    }
+  }
+  return GetNodeFromId(frame, node_id);
+}
 
 }  // namespace
 
@@ -125,9 +140,8 @@ ToolBase::ResolveResult ToolBase::ResolveTarget(
       gfx::Point coordinate_dips = target.get_coordinate_dip();
       if (popup_rect_in_frame_dips.Contains(coordinate_dips)) {
         // Convert the point into popup-relative coordinates
-        gfx::PointF widget_point = frame_widget->DIPsToBlinkSpace(
-            gfx::PointF(target.get_coordinate_dip() -
-                        popup_rect_in_frame_dips.OffsetFromOrigin()));
+        gfx::PointF widget_point = frame_widget->DIPsToBlinkSpace(gfx::PointF(
+            coordinate_dips - popup_rect_in_frame_dips.OffsetFromOrigin()));
         return ResolvedTarget{
             .node = popup->HitTestResultAt(widget_point).GetNodeOrPseudoNode(),
             // TODO(bokan) Move DIPsToBlinkSpace onto WebWidget but this
@@ -158,27 +172,29 @@ ToolBase::ResolveResult ToolBase::ResolveTarget(
 
   CHECK(target.is_dom_node_id());
 
-  WebNode node = GetNodeFromId(frame_.get(), target.get_dom_node_id());
+  WebNode node =
+      GetNodeFromIdIncludingPopup(frame_.get(), target.get_dom_node_id());
   if (node.IsNull()) {
     return base::unexpected(
         MakeResult(mojom::ActionResultCode::kInvalidDomNodeId));
   }
 
-  std::optional<gfx::PointF> node_interaction_point =
-      InteractionPointFromWebNode(node);
+  std::optional<gfx::PointF> node_interaction_point;
+  std::optional<WebPagePopup::Handle> popup_handle;
+  // This comparison is enough because popups can't contain subframes.
+  if (popup && !popup->GetHandle().is_null() &&
+      node.GetDocument() == popup->GetDocument()) {
+    popup_handle = popup->GetHandle();
+    node_interaction_point = InteractionPointFromWebNode(popup, node);
+  } else {
+    node_interaction_point = InteractionPointFromWebNode(frame_widget, node);
+  }
+
   if (!node_interaction_point.has_value()) {
     return base::unexpected(
         MakeResult(mojom::ActionResultCode::kElementOffscreen,
                    /*requires_page_stabilization=*/false,
                    absl::StrFormat("[Element %s]", base::ToString(node))));
-  }
-
-  std::optional<WebPagePopup::Handle> popup_handle;
-
-  // This comparison is enough because popups can't contain subframes.
-  if (popup && !popup->GetHandle().is_null() &&
-      node.GetDocument() == popup->GetDocument()) {
-    popup_handle = popup->GetHandle();
   }
 
   return ResolvedTarget{.node = node,
@@ -219,8 +235,8 @@ void ToolBase::EnsureTargetInView() {
   }
 
   int32_t dom_node_id = target_->get_dom_node_id();
-  WebElement node =
-      GetNodeFromId(frame_.get(), dom_node_id).DynamicTo<WebElement>();
+  WebElement node = GetNodeFromIdIncludingPopup(frame_.get(), dom_node_id)
+                        .DynamicTo<WebElement>();
   if (node && node.VisibleBoundsInWidget().IsEmpty()) {
     node.ScrollIntoViewIfNeeded();
   }
@@ -243,8 +259,8 @@ mojom::ActionResultPtr ToolBase::ValidateTimeOfUse(
       return MakeOkResult();
     }
 
-    const WebNode& observed_target_node =
-        GetNodeFromId(*frame_, *observed_target_->node_attribute->dom_node_id);
+    const WebNode observed_target_node = GetNodeFromIdIncludingPopup(
+        *frame_, *observed_target_->node_attribute->dom_node_id);
 
     if (observed_target_node.IsNull()) {
       journal_->Log(

@@ -1300,6 +1300,19 @@ std::optional<optimization_guide::TargetNodeInfo> FindNodeAtPoint(
     const optimization_guide::proto::AnnotatedPageContent&
         annotated_page_content,
     const gfx::Point& coordinate) {
+  // If we have a popup, search it first. Popups are always on top.
+  if (base::FeatureList::IsEnabled(
+          blink::features::kAIPageContentIncludePopupWindows) &&
+      annotated_page_content.has_popup_window()) {
+    std::optional<optimization_guide::TargetNodeInfo> target_node =
+        FindNodeAtPointRecursive(
+            annotated_page_content.popup_window().opener_document_id(),
+            &annotated_page_content.popup_window().root_node(), coordinate,
+            std::nullopt);
+    if (target_node.has_value()) {
+      return target_node;
+    }
+  }
   return FindNodeAtPointRecursive(
       annotated_page_content.main_frame_data().document_identifier(),
       &annotated_page_content.root_node(), coordinate, std::nullopt);
@@ -1353,6 +1366,23 @@ std::optional<TargetNodeInfo> FindNodeWithID(
     const proto::AnnotatedPageContent& annotated_page_content,
     const std::string_view document_identifier,
     const int content_node_id) {
+  // If we have a popup, check it first.
+  if (base::FeatureList::IsEnabled(
+          blink::features::kAIPageContentIncludePopupWindows) &&
+      annotated_page_content.has_popup_window() &&
+      annotated_page_content.popup_window().has_opener_document_id()) {
+    std::optional<TargetNodeInfo> target = FindNodeWithIDRecursive(
+        annotated_page_content.popup_window().root_node(),
+        annotated_page_content.popup_window().opener_document_id(),
+        annotated_page_content.popup_window()
+            .opener_document_id()
+            .serialized_token(),
+        content_node_id);
+    if (target) {
+      return target;
+    }
+  }
+
   // Validate the apc first.
   if (!annotated_page_content.has_root_node() ||
       !annotated_page_content.has_main_frame_data() ||

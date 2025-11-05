@@ -33,6 +33,7 @@
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "ui/display/screen.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_conversions.h"
 
@@ -206,12 +207,34 @@ mojom::ActionResultPtr PageTool::TimeOfUseValidation(
     }
   }
 
-  // TODO(crbug.com/426021822): FindNodeAtPoint does not handle corner cases
-  // like clip paths. Need more checks to ensure we don't drop actions
-  // unnecessarily.
-  std::optional<TargetNodeInfo> observed_target_node_info =
-      FindLastObservedNodeForActionTarget(last_observation,
-                                          request_->GetTarget());
+  std::optional<TargetNodeInfo> observed_target_node_info;
+  if (std::holds_alternative<gfx::Point>(request_->GetTarget())) {
+    gfx::Point hit_test_target;
+    if (base::FeatureList::IsEnabled(
+            features::kGlicActorTransformCoordinates)) {
+      // Convert target coordinate from DIPs to screen pixels.
+      display::Screen* screen = display::Screen::Get();
+      float scale_factor =
+          screen
+              ->GetPreferredScaleFactorForWindow(
+                  tab->GetContents()->GetTopLevelNativeWindow())
+              .value();
+      hit_test_target = gfx::ScaleToRoundedPoint(
+          std::get<gfx::Point>(request_->GetTarget()), scale_factor);
+    } else {
+      hit_test_target = std::get<gfx::Point>(request_->GetTarget());
+    }
+
+    // TODO(crbug.com/426021822): FindNodeAtPoint does not handle corner cases
+    // like clip paths. Need more checks to ensure we don't drop actions
+    // unnecessarily.
+    observed_target_node_info = FindLastObservedNodeForActionTargetPoint(
+        last_observation, hit_test_target);
+  } else {
+    CHECK(std::holds_alternative<DomNode>(request_->GetTarget()));
+    observed_target_node_info = FindLastObservedNodeForActionTargetId(
+        last_observation, std::get<DomNode>(request_->GetTarget()));
+  }
 
   if (!observed_target_node_info) {
     journal().Log(JournalURL(), task_id(), "TimeOfUseValidation",

@@ -18,6 +18,7 @@
 
 namespace blink {
 class WebNode;
+class WebWidget;
 }  // namespace blink
 
 namespace content {
@@ -75,6 +76,7 @@ blink::WebNode GetNodeFromId(const content::RenderFrame& local_root_frame,
 // Returns the center coordinates of the node's bounding box in widget space.
 // Returns nullopt if the node is not a visible element or has no bounds.
 std::optional<gfx::PointF> InteractionPointFromWebNode(
+    blink::WebWidget* widget,
     const blink::WebNode& node);
 
 // Returns whether the Node is focusable and in focus.
