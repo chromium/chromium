@@ -9,6 +9,10 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_controller.h"
 
+namespace content {
+class BrowserContext;
+}  // namespace content
+
 class LegionInternalsUI;
 
 class LegionInternalsUIConfig
@@ -17,6 +21,9 @@ class LegionInternalsUIConfig
   LegionInternalsUIConfig();
 
   ~LegionInternalsUIConfig() override;
+
+  // content::WebUIConfig:
+  bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
 };
 
 // The WebUI for chrome://legion-internals.

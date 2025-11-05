@@ -4,10 +4,13 @@
 
 #include "chrome/browser/ui/webui/legion_internals/legion_internals_ui.h"
 
+#include "base/feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/legion_internals_resources.h"
 #include "chrome/grit/legion_internals_resources_map.h"
+#include "components/legion/features.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/internal_webui_config.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -17,6 +20,11 @@ LegionInternalsUIConfig::LegionInternalsUIConfig()
     : DefaultInternalWebUIConfig(chrome::kChromeUILegionInternalsHost) {}
 
 LegionInternalsUIConfig::~LegionInternalsUIConfig() = default;
+
+bool LegionInternalsUIConfig::IsWebUIEnabled(
+    content::BrowserContext* browser_context) {
+  return base::FeatureList::IsEnabled(legion::kLegion);
+}
 
 LegionInternalsUI::LegionInternalsUI(content::WebUI* web_ui)
     : content::WebUIController(web_ui) {

@@ -14,6 +14,7 @@ source_set("legion_internals") {
     "//chrome:extra_resources",
     "//chrome/browser/profiles",
     "//chrome/common",
+    "//components/legion",
     "//content/public/browser",
     "//ui/webui",
   ]
