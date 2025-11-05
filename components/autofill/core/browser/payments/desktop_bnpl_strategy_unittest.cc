@@ -48,4 +48,15 @@ TEST_F(DesktopBnplStrategyTest, GetBeforeViewSwitchAction) {
             BnplStrategy::BeforeSwitchingViewAction::kCloseCurrentUi);
 }
 
+// Verify that ShouldRemoveExistingUiOnServerReturn() returns the correct
+// value for the desktop platform.
+TEST_F(DesktopBnplStrategyTest, ShouldRemoveExistingUiOnServerReturn) {
+  EXPECT_EQ(desktop_bnpl_strategy_.ShouldRemoveExistingUiOnServerReturn(
+                PaymentsAutofillClient::PaymentsRpcResult::kSuccess),
+            true);
+  EXPECT_EQ(desktop_bnpl_strategy_.ShouldRemoveExistingUiOnServerReturn(
+                PaymentsAutofillClient::PaymentsRpcResult::kPermanentFailure),
+            true);
+}
+
 }  // namespace autofill::payments

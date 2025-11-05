@@ -36,4 +36,9 @@ AndroidBnplStrategy::GetBeforeViewSwitchAction() {
   return BeforeSwitchingViewAction::kDoNothing;
 }
 
+bool AndroidBnplStrategy::ShouldRemoveExistingUiOnServerReturn(
+    PaymentsAutofillClient::PaymentsRpcResult result) {
+  return result == PaymentsAutofillClient::PaymentsRpcResult::kSuccess;
+}
+
 }  // namespace autofill::payments

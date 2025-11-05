@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_BNPL_STRATEGY_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_BNPL_STRATEGY_H_
 
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
+
 namespace autofill::payments {
 
 // Interface for objects that define a strategy for handling a BNPL autofill
@@ -85,6 +87,11 @@ class BnplStrategy {
 
   // Returns the action to take before switching to the next view.
   virtual BeforeSwitchingViewAction GetBeforeViewSwitchAction();
+
+  // Returns whether the existing UI should be removed after a server response.
+  // `result` is used by platforms to check if the UI should remain open.
+  virtual bool ShouldRemoveExistingUiOnServerReturn(
+      PaymentsAutofillClient::PaymentsRpcResult result) = 0;
 };
 
 }  // namespace autofill::payments

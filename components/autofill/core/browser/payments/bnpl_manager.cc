@@ -302,12 +302,14 @@ void BnplManager::OnVcnDetailsFetched(
   bool successful =
       result == PaymentsAutofillClient::PaymentsRpcResult::kSuccess;
 
-  // TODO(crbug.com/430575808): Branch using BnplStrategy to keep existing
-  // bottomsheet open on failure for Android, since the error screen will be
-  // displayed on the same bottom sheet.
   CHECK(payments_autofill_client().GetBnplUiDelegate());
-  payments_autofill_client().GetBnplUiDelegate()->CloseProgressUi(
-      /*credit_card_fetched_successfully=*/successful);
+  CHECK(payments_autofill_client().GetBnplStrategy());
+  if (payments_autofill_client()
+          .GetBnplStrategy()
+          ->ShouldRemoveExistingUiOnServerReturn(result)) {
+    payments_autofill_client().GetBnplUiDelegate()->CloseProgressUi(
+        /*credit_card_fetched_successfully=*/successful);
+  }
 
   if (successful) {
     CHECK(ongoing_flow_state_);
@@ -518,17 +520,25 @@ void BnplManager::OnRedirectUrlFetched(
     PaymentsAutofillClient::PaymentsRpcResult result,
     const BnplFetchUrlResponseDetails& response) {
   CHECK(payments_autofill_client().GetBnplUiDelegate());
-  if (ongoing_flow_state_->issuer.payment_instrument().has_value() &&
-      !AcceptTosActionRequired()) {
-    // If the BNPL issuer selected is linked and doesn't require ToS acceptance,
-    // then the issuer selection UI or progress UI must be showing, so close it.
-    payments_autofill_client()
-        .GetBnplUiDelegate()
-        ->RemoveSelectBnplIssuerOrProgressUi();
-  } else {
-    // If the BNPL issuer selected is unlinked, or is linked but requires ToS
-    // acceptance, then the ToS/progress UI must be showing, so remove it.
-    payments_autofill_client().GetBnplUiDelegate()->RemoveBnplTosOrProgressUi();
+  CHECK(payments_autofill_client().GetBnplStrategy());
+  if (payments_autofill_client()
+          .GetBnplStrategy()
+          ->ShouldRemoveExistingUiOnServerReturn(result)) {
+    if (ongoing_flow_state_->issuer.payment_instrument().has_value() &&
+        !AcceptTosActionRequired()) {
+      // If the BNPL issuer selected is linked and doesn't require ToS
+      // acceptance, then the issuer selection UI or progress UI must be
+      // showing, so close it.
+      payments_autofill_client()
+          .GetBnplUiDelegate()
+          ->RemoveSelectBnplIssuerOrProgressUi();
+    } else {
+      // If the BNPL issuer selected is unlinked, or is linked but requires ToS
+      // acceptance, then the ToS/progress UI must be showing, so remove it.
+      payments_autofill_client()
+          .GetBnplUiDelegate()
+          ->RemoveBnplTosOrProgressUi();
+    }
   }
 
   if (result == payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess) {

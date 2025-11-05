@@ -25,6 +25,8 @@ class DesktopBnplStrategy : public BnplStrategy {
   BnplAmountExtractionReturnedNextAction
   GetNextActionOnAmountExtractionReturned() override;
   BeforeSwitchingViewAction GetBeforeViewSwitchAction() override;
+  bool ShouldRemoveExistingUiOnServerReturn(
+      PaymentsAutofillClient::PaymentsRpcResult result) override;
 };
 
 }  // namespace autofill::payments

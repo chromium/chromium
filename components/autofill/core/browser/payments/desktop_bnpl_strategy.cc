@@ -32,4 +32,9 @@ DesktopBnplStrategy::GetBeforeViewSwitchAction() {
   return BeforeSwitchingViewAction::kCloseCurrentUi;
 }
 
+bool DesktopBnplStrategy::ShouldRemoveExistingUiOnServerReturn(
+    PaymentsAutofillClient::PaymentsRpcResult result) {
+  return true;
+}
+
 }  // namespace autofill::payments

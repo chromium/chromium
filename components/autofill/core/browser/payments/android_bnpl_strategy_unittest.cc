@@ -48,4 +48,15 @@ TEST_F(AndroidBnplStrategyTest, GetBeforeViewSwitchAction) {
             BnplStrategy::BeforeSwitchingViewAction::kDoNothing);
 }
 
+// Verify that ShouldRemoveExistingUiOnServerReturn() returns the correct
+// value for the Android platform.
+TEST_F(AndroidBnplStrategyTest, ShouldRemoveExistingUiOnServerReturn) {
+  EXPECT_EQ(android_bnpl_strategy_.ShouldRemoveExistingUiOnServerReturn(
+                PaymentsAutofillClient::PaymentsRpcResult::kSuccess),
+            true);
+  EXPECT_EQ(android_bnpl_strategy_.ShouldRemoveExistingUiOnServerReturn(
+                PaymentsAutofillClient::PaymentsRpcResult::kPermanentFailure),
+            false);
+}
+
 }  // namespace autofill::payments
