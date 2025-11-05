@@ -22,7 +22,7 @@
 #include "components/persistent_cache/backend_params.h"
 #include "components/persistent_cache/mock/mock_backend.h"
 #include "components/persistent_cache/sqlite/sqlite_backend_impl.h"
-#include "components/persistent_cache/sqlite/test_utils.h"
+#include "components/persistent_cache/sqlite/test_helper.h"
 #include "components/persistent_cache/test_utils.h"
 #include "components/persistent_cache/transaction_error.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -136,7 +136,7 @@ class PersistentCacheTest : public testing::Test,
     return cache;
   }
 
-  persistent_cache::test_utils::TestHelper params_provider_;
+  test_support::TestHelper params_provider_;
 };
 
 TEST_P(PersistentCacheTest, FindReturnsNullWhenEmpty) {

@@ -10,7 +10,7 @@
 #include "build/buildflag.h"
 #include "components/persistent_cache/backend.h"
 #include "components/persistent_cache/entry.h"
-#include "components/persistent_cache/sqlite/test_utils.h"
+#include "components/persistent_cache/sqlite/test_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/perf/perf_result_reporter.h"
 
@@ -21,7 +21,7 @@ using PersistentCachePerftest = testing::Test;
 #if !BUILDFLAG(IS_FUCHSIA)
 
 TEST_F(PersistentCachePerftest, OpenClose) {
-  test_utils::TestHelper provider;
+  test_support::TestHelper provider;
   std::unique_ptr<Backend> backend =
       provider.CreateBackendWithFiles(BackendType::kSqlite);
   ASSERT_TRUE(backend);

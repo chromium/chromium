@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/persistent_cache/sqlite/test_utils.h"
+#include "components/persistent_cache/sqlite/test_helper.h"
 
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "components/persistent_cache/sqlite/sqlite_backend_impl.h"
 #include "components/persistent_cache/sqlite/vfs/sqlite_database_vfs_file_set.h"
 
-namespace persistent_cache::test_utils {
+namespace persistent_cache::test_support {
 
 TestHelper::TestHelper() = default;
 TestHelper::~TestHelper() = default;
@@ -42,4 +42,4 @@ base::FilePath TestHelper::CreateTemporaryDir() {
   return scoped_temp_dirs_.back().GetPath();
 }
 
-}  // namespace persistent_cache::test_utils
+}  // namespace persistent_cache::test_support

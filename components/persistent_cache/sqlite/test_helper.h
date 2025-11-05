@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_PERSISTENT_CACHE_SQLITE_TEST_UTILS_H_
-#define COMPONENTS_PERSISTENT_CACHE_SQLITE_TEST_UTILS_H_
+#ifndef COMPONENTS_PERSISTENT_CACHE_SQLITE_TEST_HELPER_H_
+#define COMPONENTS_PERSISTENT_CACHE_SQLITE_TEST_HELPER_H_
 
 #include <memory>
 #include <optional>
@@ -18,7 +18,7 @@ namespace persistent_cache {
 
 class Backend;
 
-namespace test_utils {
+namespace test_support {
 
 // Use TestHelper from tests to generate valid initialization
 // structures for backends and PersistentCache. This class takes care of owning
@@ -54,8 +54,8 @@ class TestHelper {
   std::vector<base::ScopedTempDir> scoped_temp_dirs_;
 };
 
-}  // namespace test_utils
+}  // namespace test_support
 
 }  // namespace persistent_cache
 
-#endif  // COMPONENTS_PERSISTENT_CACHE_SQLITE_TEST_UTILS_H_
+#endif  // COMPONENTS_PERSISTENT_CACHE_SQLITE_TEST_HELPER_H_

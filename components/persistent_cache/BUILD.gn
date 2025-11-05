@@ -74,8 +74,8 @@ static_library("test_support") {
     "mock/mock_backend_storage_delegate.h",
     "mock/mock_entry_impl.cc",
     "mock/mock_entry_impl.h",
-    "sqlite/test_utils.cc",
-    "sqlite/test_utils.h",
+    "sqlite/test_helper.cc",
+    "sqlite/test_helper.h",
     "test_utils.h",
   ]
 
