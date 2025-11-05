@@ -93,8 +93,8 @@ struct NET_EXPORT SessionError {
     kInvalidScopeRuleHostPattern = 74,
     kScopeRuleOriginScopedHostPatternMismatch = 75,
     kScopeRuleSiteScopedHostPatternMismatch = 76,
-    kRefreshSigningQuotaExceeded = 77,
-    kMaxValue = kRefreshSigningQuotaExceeded,
+    kSigningQuotaExceeded = 77,
+    kMaxValue = kSigningQuotaExceeded,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:DeviceBoundSessionError)
 

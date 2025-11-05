@@ -318,7 +318,7 @@ chromium-metrics-reviews@google.com.
              origin"/>
   <int value="76"
       label="Site-scoped session has mismatch between host pattern and site"/>
-  <int value="77" label="Refresh signing quota exceeded"/>
+  <int value="77" label="Signing quota exceeded"/>
 </enum>
 
 <!-- LINT.ThenChange(//net/device_bound_sessions/session_error.h:DeviceBoundSessionError) -->
@@ -331,7 +331,7 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Session key not restored"/>
   <int value="3" label="Attempted"/>
   <int value="4" label="Previous failed proactive refresh"/>
-  <int value="5" label="Refresh quota exceeded"/>
+  <int value="5" label="Signing quota exceeded"/>
   <int value="6" label="Session in backoff"/>
 </enum>
 
@@ -346,7 +346,7 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Endpoint transient error"/>
   <int value="4" label="Refresh quota exceeded"/>
   <int value="5" label="Fatal error"/>
-  <int value="6" label="Refresh signing exceeded"/>
+  <int value="6" label="Signing exceeded"/>
 </enum>
 
 <!-- LINT.ThenChange(//net/device_bound_sessions/session_service.h:DeviceBoundSessionRefreshResult) -->

@@ -349,7 +349,8 @@ IN_PROC_BROWSER_TEST_P(DeviceBoundSessionBrowserTest,
                        RefreshWithoutResigningMultipleTimes) {
   content::WebContents* web_contents =
       chrome_test_utils::GetActiveWebContents(this);
-  // Register a session.
+  // Register a session. When "OriginTrialFeedback" is enabled, this triggers
+  // one signing occurrence.
   {
     base::test::TestFuture<SessionAccess> future;
     DeviceBoundSessionAccessObserver observer(
@@ -361,21 +362,19 @@ IN_PROC_BROWSER_TEST_P(DeviceBoundSessionBrowserTest,
   ASSERT_TRUE(
       NavigateToUrl(GetURL("/set_early_challenge?consistent_challenge")));
 
-  // Force first refresh.
-  ASSERT_TRUE(
-      content::ExecJs(web_contents, "cookieStore.delete('auth_cookie')"));
-  ASSERT_TRUE(NavigateToUrl(GetURL("/ensure_authenticated")));
-  // Force second refresh.
-  ASSERT_TRUE(
-      content::ExecJs(web_contents, "cookieStore.delete('auth_cookie')"));
-  ASSERT_TRUE(NavigateToUrl(GetURL("/ensure_authenticated")));
-  // Force third refresh.
+  // Force a refresh 6 times with the same challenge.
+  for (size_t i = 0; i < 6; i++) {
+    ASSERT_TRUE(
+        content::ExecJs(web_contents, "cookieStore.delete('auth_cookie')"));
+    ASSERT_TRUE(NavigateToUrl(GetURL("/ensure_authenticated")));
+  }
+
+  // Force one more refresh.
   ASSERT_TRUE(
       content::ExecJs(web_contents, "cookieStore.delete('auth_cookie')"));
   // When "OriginTrialFeedback" is disabled, the refresh quota is exceeded. When
-  // "OriginTrialFeedback" is enabled, the refresh signing quota is not enabled
-  // because the consistent challenge has allowed reusing the stored signed
-  // challenge.
+  // "OriginTrialFeedback" is enabled, the signing quota is not exceeded because
+  // the consistent challenge has allowed reusing the stored signed challenge.
   if (GetParam()) {
     ASSERT_TRUE(NavigateToUrl(GetURL("/ensure_authenticated")));
   } else {
@@ -390,7 +389,8 @@ IN_PROC_BROWSER_TEST_P(DeviceBoundSessionBrowserTest,
                        RefreshWithResigningMultipleTimes) {
   content::WebContents* web_contents =
       chrome_test_utils::GetActiveWebContents(this);
-  // Register a session.
+  // Register a session. This causes the first signing, only when
+  // "OriginTrialFeedback" is enabled.
   {
     base::test::TestFuture<SessionAccess> future;
     DeviceBoundSessionAccessObserver observer(
@@ -399,25 +399,43 @@ IN_PROC_BROWSER_TEST_P(DeviceBoundSessionBrowserTest,
     ASSERT_TRUE(future.Wait());
   }
 
-  // Set early challenge #1 and then force a refresh.
-  ASSERT_TRUE(NavigateToUrl(GetURL("/set_early_challenge?challenge1")));
-  ASSERT_TRUE(
-      content::ExecJs(web_contents, "cookieStore.delete('auth_cookie')"));
-  ASSERT_TRUE(NavigateToUrl(GetURL("/ensure_authenticated")));
-  // Set early challenge #2 and then force a refresh.
-  ASSERT_TRUE(NavigateToUrl(GetURL("/set_early_challenge?challenge2")));
-  ASSERT_TRUE(
-      content::ExecJs(web_contents, "cookieStore.delete('auth_cookie')"));
-  ASSERT_TRUE(NavigateToUrl(GetURL("/ensure_authenticated")));
-  // Set early challenge #3 and then force a refresh.
-  ASSERT_TRUE(NavigateToUrl(GetURL("/set_early_challenge?challenge3")));
-  ASSERT_TRUE(
-      content::ExecJs(web_contents, "cookieStore.delete('auth_cookie')"));
-  // This hits the refresh quota.
-  std::string refresh_quota_query_param = base::EscapeQueryParamValue(
-      "quota_exceeded;session_identifier=\"session_id\"", /*use_plus=*/false);
-  ASSERT_FALSE(NavigateToUrl(GetURL("/ensure_authenticated?debug_header=" +
-                                    refresh_quota_query_param)));
+  // Force a refresh 5 times with different early challenges for each.
+  for (size_t i = 0; i < 5; i++) {
+    ASSERT_TRUE(NavigateToUrl(
+        GetURL("/set_early_challenge?challenge" + base::NumberToString(i))));
+    ASSERT_TRUE(
+        content::ExecJs(web_contents, "cookieStore.delete('auth_cookie')"));
+    ASSERT_TRUE(NavigateToUrl(GetURL("/ensure_authenticated")));
+  }
+
+  // The quota differs depending on the "OriginTrialFeedback" feature.
+  if (GetParam()) {
+    // The initial registration signing counts towards the quota, so the next
+    // refresh hits the quota.
+    ASSERT_TRUE(NavigateToUrl(GetURL("/set_early_challenge?challenge5")));
+    ASSERT_TRUE(
+        content::ExecJs(web_contents, "cookieStore.delete('auth_cookie')"));
+    // This hits the signing quota.
+    std::string signing_quota_query_param = base::EscapeQueryParamValue(
+        "quota_exceeded;session_identifier=\"session_id\"", /*use_plus=*/false);
+    ASSERT_FALSE(NavigateToUrl(GetURL("/ensure_authenticated?debug_header=" +
+                                      signing_quota_query_param)));
+  } else {
+    // The initial registration does not count towards the quota, so we need two
+    // more refreshes.
+    ASSERT_TRUE(NavigateToUrl(GetURL("/set_early_challenge?challenge5")));
+    ASSERT_TRUE(
+        content::ExecJs(web_contents, "cookieStore.delete('auth_cookie')"));
+    ASSERT_TRUE(NavigateToUrl(GetURL("/ensure_authenticated")));
+    // One last refresh triggers the refresh quota.
+    ASSERT_TRUE(NavigateToUrl(GetURL("/set_early_challenge?challenge5")));
+    ASSERT_TRUE(
+        content::ExecJs(web_contents, "cookieStore.delete('auth_cookie')"));
+    std::string refresh_quota_query_param = base::EscapeQueryParamValue(
+        "quota_exceeded;session_identifier=\"session_id\"", /*use_plus=*/false);
+    ASSERT_FALSE(NavigateToUrl(GetURL("/ensure_authenticated?debug_header=" +
+                                      refresh_quota_query_param)));
+  }
 }
 
 }  // namespace
