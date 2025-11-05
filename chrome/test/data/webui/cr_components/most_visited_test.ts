@@ -415,6 +415,89 @@ suite('ExpandableTiles', () => {
     assertAddShortcutHidden();
     assertHiddenTileLength(1);
   });
+
+  test(
+      'show more and show less buttons do not move during drag and drop',
+      async () => {
+        await setUpTest({reflowOnOverflow: true, expandableTilesEnabled: true});
+        await addTiles(MAX_TILES_BEFORE_SHOW_MORE + 2);  // 7 tiles.
+
+        const showMoreButton = getShowMoreButton()!;
+        assertTrue(isVisible(showMoreButton));
+        const showMoreButtonRect = showMoreButton.getBoundingClientRect();
+
+        // Simulate drag and drop.
+        const tiles = queryTiles();
+        const first = tiles[0]!;
+        const second = tiles[1]!;
+        const firstRect = first.getBoundingClientRect();
+        const secondRect = second.getBoundingClientRect();
+        first.dispatchEvent(new DragEvent('dragstart', {
+          clientX: firstRect.x + firstRect.width / 2,
+          clientY: firstRect.y + firstRect.height / 2,
+        }));
+        await microtasksFinished();
+
+        // Check position of "Show more" button immediately after drag starts.
+        let newShowMoreButtonRect = showMoreButton.getBoundingClientRect();
+        assertDeepEquals(showMoreButtonRect, newShowMoreButtonRect);
+
+        const reorderCalled = handler.whenCalled('reorderMostVisitedTile');
+        document.dispatchEvent(new DragEvent('drop', {
+          clientX: secondRect.x + 1,
+          clientY: secondRect.y + 1,
+        }));
+        document.dispatchEvent(new DragEvent('dragend', {
+          clientX: secondRect.x + 1,
+          clientY: secondRect.y + 1,
+        }));
+        await mostVisited.updateComplete;
+        await reorderCalled;
+
+        // Check position of "Show more" button.
+        newShowMoreButtonRect = showMoreButton.getBoundingClientRect();
+        assertDeepEquals(showMoreButtonRect, newShowMoreButtonRect);
+
+        // Expand to show "Show less" button.
+        showMoreButton.click();
+        await microtasksFinished();
+
+        const showLessButton = getShowLessButton()!;
+        assertTrue(isVisible(showLessButton));
+        const showLessButtonRect = showLessButton.getBoundingClientRect();
+
+        // Simulate another drag and drop.
+        const newTiles = queryTiles();
+        const newFirst = newTiles[0]!;
+        const newSecond = newTiles[1]!;
+        const newFirstRect = newFirst.getBoundingClientRect();
+        const newSecondRect = newSecond.getBoundingClientRect();
+        newFirst.dispatchEvent(new DragEvent('dragstart', {
+          clientX: newFirstRect.x + newFirstRect.width / 2,
+          clientY: newFirstRect.y + newFirstRect.height / 2,
+        }));
+        await microtasksFinished();
+
+        // Check position of "Show less" button immediately after drag starts.
+        let newShowLessButtonRect = showLessButton.getBoundingClientRect();
+        assertDeepEquals(showLessButtonRect, newShowLessButtonRect);
+
+        const reorderCalledAgain = handler.whenCalled('reorderMostVisitedTile');
+        document.dispatchEvent(new DragEvent('drop', {
+          clientX: newSecondRect.x + 1,
+          clientY: newSecondRect.y + 1,
+        }));
+        document.dispatchEvent(new DragEvent('dragend', {
+          clientX: newSecondRect.x + 1,
+          clientY: newSecondRect.y + 1,
+        }));
+        await mostVisited.updateComplete;
+        await reorderCalledAgain;
+
+        // Check position of "Show less" button.
+        newShowLessButtonRect = showLessButton.getBoundingClientRect();
+        assertDeepEquals(showLessButtonRect, newShowLessButtonRect);
+      });
 });
 
 function createLayoutsSuite(singleRow: boolean, reflowOnOverflow: boolean) {
