@@ -165,7 +165,8 @@ void BubbleManagerImpl::RequestShowController(
 
   base::AutoReset<bool> show_request_guard(&handling_show_request_, true);
 
-  if (!active_bubble_controller_) {
+  if (!active_bubble_controller_ ||
+      !active_bubble_controller_->IsShowingBubble()) {
     // No active bubble, so this one can be shown immediately.
     base::UmaHistogramEnumeration("Autofill.Bubble.Show.NoActiveBubble",
                                   controller_to_show.GetBubbleType());
