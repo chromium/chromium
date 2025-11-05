@@ -96,6 +96,17 @@ export class SettingsAutofillAiEntriesListElement extends
         type: String,
       },
 
+      /**
+         Optional boolean preference used to determine the list's editability.
+         If true - user will be able to add new entries to the list. Note that
+         even if preference is true allows the user may still be prevented from
+         adding entries due to other eligibility checks.
+      */
+      allowEditingPref: {
+        type: Object,
+        value: null,
+      },
+
       allowEditing_: {
         type: Object,
         value: false,
@@ -148,15 +159,16 @@ export class SettingsAutofillAiEntriesListElement extends
   static get observers() {
     return [
       'onAutofillAiPrefChanged_(' +
-          'prefs.autofill.profile_enabled.value)',
+          'prefs.autofill.profile_enabled.value, allowEditingPref.*)',
       'onOptInStatusChanged_(' +
-          'prefs.autofill.autofill_ai.opt_in_status.value)',
+          'prefs.autofill.autofill_ai.opt_in_status.value, allowEditingPref.*)',
     ];
   }
 
   declare ineligibleUser: boolean;
   declare allowedEntityTypes: Set<EntityTypeName>|null;
   declare title: string;
+  declare allowEditingPref: chrome.settingsPrivate.PrefObject<boolean>|null;
   declare private allowEditing_: boolean;
   declare private activeEntityInstance_: EntityInstance|null;
   declare private completeEntityTypesList_: EntityType[];
@@ -174,7 +186,8 @@ export class SettingsAutofillAiEntriesListElement extends
     super.connectedCallback();
 
     this.entityDataManager_.getOptInStatus().then(
-        optedIn => this.allowEditing_ = !this.ineligibleUser && optedIn);
+        optedInAtofillAi => this.allowEditing_ = !this.ineligibleUser &&
+            optedInAtofillAi && this.isEditingAllowedByPref_);
 
     this.entityInstancesChangedListener_ =
         (entityInstances: EntityInstanceWithLabels[]) => {
@@ -340,8 +353,10 @@ export class SettingsAutofillAiEntriesListElement extends
   // entry, but just set the opt-in to false. Note that other
   // preconditions (e.g., sync) are not covered.
   private async onAutofillAiPrefChanged_(prefValue: boolean) {
-    const optedIn = await this.entityDataManager_.getOptInStatus();
-    this.allowEditing_ = !this.ineligibleUser && optedIn && prefValue;
+    const autofillAiOptInStatus =
+        await this.entityDataManager_.getOptInStatus();
+    this.allowEditing_ = !this.ineligibleUser && autofillAiOptInStatus &&
+        prefValue && this.isEditingAllowedByPref_;
   }
 
   private onRemoteWalletPassesLinkClick_() {
@@ -351,7 +366,8 @@ export class SettingsAutofillAiEntriesListElement extends
 
   private async onOptInStatusChanged_(): Promise<void> {
     const optedIn = await this.entityDataManager_.getOptInStatus();
-    this.allowEditing_ = !this.ineligibleUser && optedIn;
+    this.allowEditing_ =
+        !this.ineligibleUser && optedIn && this.isEditingAllowedByPref_;
   }
 
   // Refreshes the entity types list when the sync status changes.
@@ -365,6 +381,12 @@ export class SettingsAutofillAiEntriesListElement extends
           this.completeEntityTypesList_ =
               entityTypes.sort(this.entityTypesComparator_);
         });
+  }
+
+  private get isEditingAllowedByPref_(): boolean {
+    // Defaults to true if the pref is not provided, allowing addition of new
+    // entries.
+    return this.allowEditingPref?.value ?? true;
   }
 }
 

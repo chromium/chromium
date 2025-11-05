@@ -144,6 +144,39 @@ suite('AutofillAiEntriesListUiReflectsEligibilityStatus', function() {
     await flushTasks();
     assertTrue(addButton.disabled);
   });
+
+  test('AddButtonEnabledByDefaultWhenAllowEditingPrefUnset', async function() {
+    entriesList.ineligibleUser = false;
+    entriesList.allowEditingPref = null; // Explicitly unset
+    updateOptInStatus(true);
+    await flushTasks();
+
+    const addButton = entriesList.shadowRoot!.querySelector<CrButtonElement>(
+        '#addEntityInstance');
+    assertTrue(!!addButton);
+    assertFalse(addButton.disabled);
+  });
+
+  test('DisableAddButtotBasedOnAllowEditingPrefValue', async function() {
+    entriesList.ineligibleUser = false;
+    entriesList.allowEditingPref = {
+      key: '',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: true,
+    };
+    updateOptInStatus(true);
+    await flushTasks();
+
+    const addButton = entriesList.shadowRoot!.querySelector<CrButtonElement>(
+        '#addEntityInstance');
+    assertTrue(!!addButton);
+    assertFalse(addButton.disabled);
+
+    entriesList.set('allowEditingPref.value', false);
+    await flushTasks();
+
+    assertTrue(addButton.disabled);
+  });
 });
 
 suite('AutofillAiEntriesListUiTest', function() {
