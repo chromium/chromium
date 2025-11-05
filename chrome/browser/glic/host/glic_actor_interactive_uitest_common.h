@@ -82,6 +82,12 @@ class GlicActorUiTest : public test::InteractiveGlicTest {
                             bool foreground,
                             ExpectedErrorResult expected_result = {});
 
+  // Waits for the Glic contents to be re-initialized after an action that
+  // causes it to be torn down, like creating a new tab.
+  // TODO (crbug.com/454665367): Remove this once all tests no longer depend on
+  // GlicContentsElementId.
+  MultiStep WaitForGlicContentsShownInTab();
+
   MultiStep GetClientRect(ui::ElementIdentifier tab_id,
                           std::string_view element_id,
                           gfx::Rect& out_rect);
@@ -221,6 +227,11 @@ class GlicActorUiTest : public test::InteractiveGlicTest {
   int32_t SearchAnnotatedPageContent(std::string_view label);
 
  private:
+  // Like ExecuteAction, but instead calls performActions on the Glic Instance.
+  MultiStep ExecuteActionWithGlicInstance(
+      ActionProtoProvider proto_provider,
+      ExpectedErrorResult expected_result = {});
+
   std::optional<optimization_guide::proto::ActionsResult>
       last_execution_result_;
   base::test::ScopedFeatureList scoped_feature_list_;
