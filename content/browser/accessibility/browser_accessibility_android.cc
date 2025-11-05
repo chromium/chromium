@@ -491,8 +491,9 @@ bool BrowserAccessibilityAndroid::IsVisibleToUser() const {
 }
 
 bool BrowserAccessibilityAndroid::ShouldUsePaneTitle() const {
-  // Comboboxes should use paneTitles only when the combobox is expanded.
-  return ui::IsComboBox(GetRole()) && IsExpanded();
+  // Dialogs should use paneTitles, as well as comboboxes but only when the
+  // combobox is expanded.
+  return ui::IsDialog(GetRole()) || (ui::IsComboBox(GetRole()) && IsExpanded());
 }
 
 bool BrowserAccessibilityAndroid::IsInterestingOnAndroid() const {
@@ -1095,11 +1096,27 @@ std::u16string BrowserAccessibilityAndroid::GetTooltipText() const {
 }
 
 std::u16string BrowserAccessibilityAndroid::GetPaneTitle() const {
-  if (ui::IsComboBox(GetRole()) && IsExpanded()) {
+  if (ui::IsDialog(GetRole())) {
+    return GetDialogModalMessageText();
+  } else if (ui::IsComboBox(GetRole()) && IsExpanded()) {
     return GetComboboxExpandedText();
   } else {
     NOTREACHED();
   }
+}
+
+std::u16string BrowserAccessibilityAndroid::GetDialogModalMessageText() const {
+  // For a dialog/modal, first check for a name, and then a description. If
+  // both are empty, fallback to a default "dialog opened." text.
+  if (HasStringAttribute(ax::mojom::StringAttribute::kName)) {
+    return GetString16Attribute(ax::mojom::StringAttribute::kName);
+  }
+
+  if (HasStringAttribute(ax::mojom::StringAttribute::kDescription)) {
+    return GetString16Attribute(ax::mojom::StringAttribute::kDescription);
+  }
+
+  return GetLocalizedString(IDS_AX_DIALOG_MODAL_OPENED);
 }
 
 std::u16string BrowserAccessibilityAndroid::GetStateDescription() const {
@@ -1496,13 +1513,11 @@ std::u16string BrowserAccessibilityAndroid::GetRoleDescription() const {
   }
 
   switch (GetRole()) {
-    case ax::mojom::Role::kAlertDialog:
     case ax::mojom::Role::kAudio:
     case ax::mojom::Role::kButton:
     case ax::mojom::Role::kCheckBox:
     case ax::mojom::Role::kCode:
     case ax::mojom::Role::kDescriptionList:
-    case ax::mojom::Role::kDialog:
     case ax::mojom::Role::kDetails:
     case ax::mojom::Role::kEmphasis:
     case ax::mojom::Role::kForm:

@@ -1,2 +1,2 @@
 android.webkit.WebView focusable focused
-++android.app.AlertDialog interesting name='This is ARIA dialog.'
+++android.app.AlertDialog role_description='dialog' interesting name='This is ARIA dialog.'

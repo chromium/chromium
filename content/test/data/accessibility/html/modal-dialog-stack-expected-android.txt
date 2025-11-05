@@ -1,4 +1,4 @@
 android.webkit.WebView focusable focused
-++android.app.AlertDialog focusable interesting
+++android.app.AlertDialog role_description='dialog' focusable interesting
 ++++android.widget.TextView interesting name='This is the now active dialog. Of course it should be in the tree. '
 ++++android.widget.Button clickable focusable interesting name='This is in the active dialog and should be in the tree.'
