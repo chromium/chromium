@@ -523,6 +523,9 @@
     <message name="IDS_AUTOFILL_ONE_TIME_PASSWORD_VOICE_OVER_A11Y_LABEL" desc="Voice over label for the one time password field.">
       Verification Code: <ph name="OTP">$1<ex>123456</ex></ph>
     </message>
+    <message name="IDS_AUTOFILL_A11Y_ANNOUNCE_FILLED_ONE_TIME_PASSWORD" desc="Accessibility announcement for when a one time password is autofilled.">
+      Autofilled code
+    </message>
   </if>
 
   <!-- Explicit save/update address prompt strings -->
