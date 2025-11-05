@@ -298,6 +298,21 @@ suite('DataChipsVisibility', function() {
         getChipLabels(yourSavedInfoPage, '#paymentManagerButton'));
   });
 
+  test('DisabledLoyaltyCards', async function() {
+    const yourSavedInfoPage = await setupPage({
+      showIbansSettings: true,
+      shouldShowPayOverTimeSettings: true,
+      enableLoyaltyCardsFilling: false,
+    });
+    assertDeepEquals(
+        [
+          loadTimeData.getString('creditAndDebitCardTitle'),
+          loadTimeData.getString('ibanTitle'),
+          loadTimeData.getString('autofillPayOverTimeSettingsLabel'),
+        ],
+        getChipLabels(yourSavedInfoPage, '#paymentManagerButton'));
+  });
+
   test('DisabledAutofillAi', async function() {
     const yourSavedInfoPage = await setupPage({
       showAutofillAiControl: false,

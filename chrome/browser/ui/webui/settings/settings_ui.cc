@@ -407,6 +407,11 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
                               content_settings::features::
                                   kBlockV8OptimizerOnUnfamiliarSitesSetting));
 
+  html_source->AddBoolean(
+      "enableLoyaltyCardsFilling",
+      base::FeatureList::IsEnabled(
+          autofill::features::kAutofillEnableLoyaltyCardsFilling));
+
   html_source->AddBoolean("enableYourSavedInfoSettingsPage",
                           base::FeatureList::IsEnabled(
                               autofill::features::kYourSavedInfoSettingsPage));
