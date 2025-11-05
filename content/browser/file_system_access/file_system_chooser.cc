@@ -404,7 +404,16 @@ FileSystemChooser::~FileSystemChooser() {
 void FileSystemChooser::OnVisibilityChanged(Visibility visibility) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (visibility == Visibility::HIDDEN) {
+#if BUILDFLAG(IS_ANDROID)
+    // TODO(crbug.com/457495639): We need a different way to detect when a
+    // WebContents is no longer displayed to the user for android since the
+    // intent to select a file always causes a HIDDEN event as the whole app
+    // receives onStop().
+    VLOG(1) << "Ignoring for android";
+#else
+    VLOG(1) << "Cancelling chooser";
     FileSelectionCanceled();
+#endif
   }
 }
 
