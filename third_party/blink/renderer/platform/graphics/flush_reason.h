@@ -110,15 +110,12 @@ enum class FlushReason {
   // This inhibits vector printing.
   kWebGPUTexture = 22,
 
-  // The HTMLCanvasElement.toDataURL method was called on the canvas.
-  kToDataURL = 23,
-
   // The canvas was used as a source image in a call to
   // `CanvasRenderingContext2D.drawMesh`.
   // This inhibits vector printing.
-  kDrawMesh = 24,
+  kDrawMesh = 23,
 
-  kOther = 25,
+  kOther = 24,
 
   kMaxValue = kOther,
 };
