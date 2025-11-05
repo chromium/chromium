@@ -868,13 +868,7 @@ TEST_F(FileSystemAccessObserverObservationTest, OnChangesForFile) {
   EXPECT_TRUE(observation.EventsReceivedMatches(
       {{MojoChangeType::kModified, MojoFilePathType::kFile, {}}}));
 }
-// TODO(crbug.com/384531054): Reenable this test.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_OnChangesForDirectory DISABLED_OnChangesForDirectory
-#else
-#define MAYBE_OnChangesForDirectory OnChangesForDirectory
-#endif
-TEST_F(FileSystemAccessObserverObservationTest, MAYBE_OnChangesForDirectory) {
+TEST_F(FileSystemAccessObserverObservationTest, OnChangesForDirectory) {
   base::FilePath dir_path = CreateDirectory();
   storage::FileSystemURL dir_url = CreateFileSystemURL(dir_path);
   std::unique_ptr<FileSystemAccessDirectoryHandleImpl> dir_handle =
