@@ -326,12 +326,12 @@ bool WaylandSurfaceFactory::SupportsNativePixmaps() const {
   return supports_native_pixmaps;
 }
 
-std::optional<gfx::BufferFormat>
+std::optional<viz::SharedImageFormat>
 WaylandSurfaceFactory::GetPreferredFormatForSolidColor() const {
   if (!buffer_manager_->SupportsFormat(gfx::BufferFormat::RGBA_8888)) {
-    return gfx::BufferFormat::BGRA_8888;
+    return viz::SinglePlaneFormat::kBGRA_8888;
   }
-  return gfx::BufferFormat::RGBA_8888;
+  return viz::SinglePlaneFormat::kRGBA_8888;
 }
 
 bool WaylandSurfaceFactory::SupportsDrmModifiersFilter() const {

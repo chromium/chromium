@@ -52,7 +52,7 @@ class WaylandSurfaceFactory : public SurfaceFactoryOzone {
       gfx::Size size,
       viz::SharedImageFormat format,
       gfx::NativePixmapHandle handle) override;
-  std::optional<gfx::BufferFormat> GetPreferredFormatForSolidColor()
+  std::optional<viz::SharedImageFormat> GetPreferredFormatForSolidColor()
       const override;
   bool SupportsDrmModifiersFilter() const override;
   void SetDrmModifiersFilter(

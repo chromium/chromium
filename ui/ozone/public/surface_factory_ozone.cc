@@ -149,7 +149,7 @@ SurfaceFactoryOzone::GetSupportedFormatsForGLNativePixmapImport() {
   return supported_formats;
 }
 
-std::optional<gfx::BufferFormat>
+std::optional<viz::SharedImageFormat>
 SurfaceFactoryOzone::GetPreferredFormatForSolidColor() const {
   return std::nullopt;
 }

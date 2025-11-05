@@ -215,8 +215,8 @@ class COMPONENT_EXPORT(OZONE_BASE) SurfaceFactoryOzone {
   GetSupportedFormatsForGLNativePixmapImport();
 
   // This returns a preferred format for solid color image on Wayland.
-  virtual std::optional<gfx::BufferFormat> GetPreferredFormatForSolidColor()
-      const;
+  virtual std::optional<viz::SharedImageFormat>
+  GetPreferredFormatForSolidColor() const;
 
  protected:
   SurfaceFactoryOzone();
