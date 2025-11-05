@@ -186,6 +186,7 @@ source_set("sync_error_browser_agent") {
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/signin/model:authentication_service_factory",
+    "//ios/chrome/browser/tabs/model:dependency_installer",
     "//ui/base",
   ]
   public_deps = [ "//ios/web/public" ]
@@ -243,6 +244,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/model/url:constants",
+    "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/webdata_services/model",
     "//ios/chrome/test:test_support",
