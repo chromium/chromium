@@ -15,6 +15,7 @@ namespace views::features {
 VIEWS_EXPORT BASE_DECLARE_FEATURE(kAnnounceTextAdditionalAttributes);
 VIEWS_EXPORT BASE_DECLARE_FEATURE(kEnableTouchDragCursorSync);
 VIEWS_EXPORT BASE_DECLARE_FEATURE(kKeyboardAccessibleTooltipInViews);
+VIEWS_EXPORT BASE_DECLARE_FEATURE(kApplyInitialUrlToWebContents);
 
 }  // namespace views::features
 

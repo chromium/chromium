@@ -27,6 +27,7 @@
 #include "ui/views/controls/webview/web_contents_set_background_color.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/views_delegate.h"
+#include "ui/views/views_features.h"
 
 namespace views {
 
@@ -153,8 +154,12 @@ void WebView::LoadInitialURL(const GURL& url,
   params.force_no_https_upgrade =
       https_upgrade_policy == HttpsUpgradePolicy::kNoUpgrade;
 
-  // TODO(elkurin): Pass `url` value to `GetWebContents()` if it is valid.
-  content::WebContents* web_contents = GetWebContents(GURL(), invoke_location);
+  const GURL initial_url =
+      base::FeatureList::IsEnabled(features::kApplyInitialUrlToWebContents)
+          ? url
+          : GURL();
+  content::WebContents* web_contents =
+      GetWebContents(initial_url, invoke_location);
   DCHECK(web_contents);
   web_contents->GetController().LoadURLWithParams(params);
 }

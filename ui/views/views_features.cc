@@ -27,4 +27,10 @@ BASE_FEATURE(kEnableTouchDragCursorSync, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kKeyboardAccessibleTooltipInViews,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Used to apply the initial URL to the WebContents in WebView. This is a kill
+// switch for this new logic, see crbug.com/456058558.
+// TODO(https://crbug.com/456058558): Remove this flag once the feature becomes
+// stable.
+BASE_FEATURE(kApplyInitialUrlToWebContents, base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace views::features
