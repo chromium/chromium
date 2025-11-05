@@ -8,10 +8,13 @@ import android.content.Context;
 import android.content.Intent;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
+import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.IntentHandler;
+import org.chromium.chrome.browser.profiles.Profile;
 
 /** Used by tips notifications to schedule and display tips through the Android UI. */
 @NullMarked
@@ -23,5 +26,34 @@ public class TipsAgent {
         newIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         newIntent.putExtra(IntentHandler.EXTRA_TIPS_NOTIFICATION_FEATURE_TYPE, featureType);
         context.startActivity(newIntent);
+    }
+
+    /**
+     * Maybe schedule a tips notification depending on backend criteria.
+     *
+     * @param profile The current profile.
+     * @param isBottomOmnibox Whether the omnibox is in the bottom position or not.
+     */
+    public static void maybeScheduleNotification(Profile profile, boolean isBottomOmnibox) {
+        TipsAgentJni.get().maybeScheduleNotification(profile, isBottomOmnibox);
+    }
+
+    /**
+     * Remove all pending tips notifications.
+     *
+     * @param profile The current profile.
+     */
+    public static void removePendingNotifications(Profile profile) {
+        TipsAgentJni.get().removePendingNotifications(profile);
+    }
+
+    private TipsAgent() {}
+
+    @NativeMethods
+    interface Natives {
+        void maybeScheduleNotification(
+                @JniType("Profile*") Profile profile, boolean isBottomOmnibox);
+
+        void removePendingNotifications(@JniType("Profile*") Profile profile);
     }
 }

@@ -174,6 +174,7 @@ import org.chromium.chrome.browser.new_tab_url.DseNewTabUrlManager;
 import org.chromium.chrome.browser.night_mode.NightModeStateProvider;
 import org.chromium.chrome.browser.notifications.scheduler.TipsNotificationsFeatureType;
 import org.chromium.chrome.browser.notifications.tips.TipsPromoCoordinator;
+import org.chromium.chrome.browser.notifications.tips.TipsUtils;
 import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.ntp.NewTabPageLaunchOrigin;
 import org.chromium.chrome.browser.ntp.NewTabPageUma;
@@ -1657,6 +1658,11 @@ public class ChromeTabbedActivity extends ChromeActivity {
                 mRootUiCoordinator.getDesktopWindowStateManager(),
                 mInstanceAllocationType,
                 !mFromResumption);
+
+        TipsUtils.performNotificationSchedulerSteps(
+                getProfileProviderSupplier(),
+                /* chromeActivityNativeDelegate= */ this,
+                getWindowAndroid());
     }
 
     @Override

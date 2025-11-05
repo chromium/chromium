@@ -68,9 +68,15 @@ TEST_F(TipsNotificationsRankerTest, ExecuteModelWithInputForTrustAndSafety) {
 
   // Test BottomOmnibox with ESB, QuickDelete and Google Lens being used.
   std::vector<float> input4(TipsFeature::kFeatureCount, 1);
+  input4[TipsFeature::kAllFeatureTipsShownCountIdx] = 0;
   input4[TipsFeature::kBottomOmniboxIsEnabledIdx] = 0;
   input4[TipsFeature::kBottomOmniboxWasEverUsedIdx] = 0;
   ExpectClassifierResults(input4, {kBottomOmnibox});
+
+  // Test AllFeatureTipsShownCount blocks scheduling notifications.
+  std::vector<float> input5(TipsFeature::kFeatureCount, 0);
+  input5[TipsFeature::kAllFeatureTipsShownCountIdx] = 1;
+  ExpectClassifierResults(input5, {});
 }
 
 TEST_F(TipsNotificationsRankerTest, ExecuteModelWithInputForEssentials) {
@@ -103,10 +109,16 @@ TEST_F(TipsNotificationsRankerTest, ExecuteModelWithInputForEssentials) {
 
   // Test GoogleLens with QuickDelete, BottomOmnibox and ESB being used.
   std::vector<float> input4(TipsFeature::kFeatureCount, 1);
+  input4[TipsFeature::kAllFeatureTipsShownCountIdx] = 0;
   input4[TipsFeature::kGoogleLensNewTabPageUseCountIdx] = 0;
   input4[TipsFeature::kGoogleLensMobileOmniboxUseCountIdx] = 0;
   input4[TipsFeature::kGoogleLensTasksSurfaceUseCountIdx] = 0;
   ExpectClassifierResults(input4, {kGoogleLens});
+
+  // Test AllFeatureTipsShownCount blocks scheduling notifications.
+  std::vector<float> input5(TipsFeature::kFeatureCount, 0);
+  input5[TipsFeature::kAllFeatureTipsShownCountIdx] = 1;
+  ExpectClassifierResults(input5, {});
 }
 
 TEST_F(TipsNotificationsRankerTest, ExecuteModelWithInputForNewFeatures) {
@@ -141,9 +153,15 @@ TEST_F(TipsNotificationsRankerTest, ExecuteModelWithInputForNewFeatures) {
 
   // Test ESB with GoogleLens, BottomOmnibox and QuickDelete being used.
   std::vector<float> input4(TipsFeature::kFeatureCount, 1);
+  input4[TipsFeature::kAllFeatureTipsShownCountIdx] = 0;
   input4[TipsFeature::kEnhancedSafeBrowsingUseCountIdx] = 0;
   input4[TipsFeature::kEnhancedSafeBrowsingIsEnabledIdx] = 0;
   ExpectClassifierResults(input4, {kEnhancedSafeBrowsing});
+
+  // Test AllFeatureTipsShownCount blocks scheduling notifications.
+  std::vector<float> input5(TipsFeature::kFeatureCount, 0);
+  input5[TipsFeature::kAllFeatureTipsShownCountIdx] = 1;
+  ExpectClassifierResults(input5, {});
 }
 
 }  // namespace segmentation_platform
