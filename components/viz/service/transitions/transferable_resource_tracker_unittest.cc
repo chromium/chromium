@@ -42,7 +42,7 @@ class TransferableResourceTrackerTest : public testing::Test {
 
   // Returns if the software SharedImage for the |resource| is valid.
   bool HasSharedImageForSoftwareResource(const TransferableResource& resource) {
-    DCHECK(resource.is_software);
+    DCHECK(resource.GetIsSoftware());
 
     return shared_image_interface()->CheckSharedImageExists(resource.mailbox());
   }

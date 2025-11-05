@@ -254,7 +254,7 @@ class VIZ_SERVICE_EXPORT DisplayResourceProvider
     ChildResource(ChildResource&& other);
     ~ChildResource();
 
-    bool is_gpu_resource_type() const { return !transferable.is_software; }
+    bool is_gpu_resource_type() const { return !transferable.GetIsSoftware(); }
     const gpu::SyncToken& sync_token() const { return sync_token_; }
 
     bool InUse() const {

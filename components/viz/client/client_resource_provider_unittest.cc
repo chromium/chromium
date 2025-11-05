@@ -152,7 +152,7 @@ TEST_P(ClientResourceProviderTest, TransferableResourceSendToParent) {
   gpu::SyncToken verified_sync_token = tran.sync_token();
   verified_sync_token.SetVerifyFlush();
   EXPECT_EQ(exported[0].id, id);
-  EXPECT_EQ(exported[0].is_software, tran.is_software);
+  EXPECT_EQ(exported[0].GetIsSoftware(), tran.GetIsSoftware());
   EXPECT_EQ(exported[0].GetSize(), tran.GetSize());
   EXPECT_EQ(exported[0].mailbox(), tran.mailbox());
   EXPECT_EQ(exported[0].sync_token(), verified_sync_token);
@@ -197,7 +197,7 @@ TEST_P(ClientResourceProviderTest, TransferableResourceSendTwoToParent) {
     gpu::SyncToken verified_sync_token = tran[i].sync_token();
     verified_sync_token.SetVerifyFlush();
     EXPECT_EQ(exported[i].id, to_send[i]);
-    EXPECT_EQ(exported[i].is_software, tran[i].is_software);
+    EXPECT_EQ(exported[i].GetIsSoftware(), tran[i].GetIsSoftware());
     EXPECT_EQ(exported[i].size, tran[i].size);
     EXPECT_EQ(exported[i].mailbox(), tran[i].mailbox());
     EXPECT_EQ(exported[i].sync_token(), verified_sync_token);
@@ -303,8 +303,9 @@ TEST_P(ClientResourceProviderTest, TransferableResourceSendToParentManyUnsent) {
   // to the local ResourceProvider, and the sync token should be
   // verified if it's a gpu resource.
   gpu::SyncToken verified_sync_token = data[2].tran.sync_token();
-  if (!data[2].tran.is_software)
+  if (!data[2].tran.GetIsSoftware()) {
     verified_sync_token.SetVerifyFlush();
+  }
 
   // Exported resources are not released when removed, until the export returns.
   EXPECT_CALL(release, Released(_, _)).Times(0);

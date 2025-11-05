@@ -30,12 +30,13 @@ ExternalUseClient::ImageContext::ImageContext(
       sync_token_(resource.sync_token()),
       texture_target_(resource.texture_target()),
       size_(resource.GetSize()),
-      format_(resource.format),
+      format_(resource.GetFormat()),
       // SkColorSpace covers only RGB portion of the gfx::ColorSpace, YUV
       // portion is handled via SkYuvColorSpace at places where we create YUV
       // images.
-      color_space_(resource.color_space.GetAsFullRangeRGB().ToSkColorSpace()),
-      origin_(resource.origin),
+      color_space_(
+          resource.GetColorSpace().GetAsFullRangeRGB().ToSkColorSpace()),
+      origin_(resource.GetOrigin()),
       resource_source_(resource.resource_source) {
 #if BUILDFLAG(IS_ANDROID)
   ycbcr_info_ = resource.ycbcr_info;

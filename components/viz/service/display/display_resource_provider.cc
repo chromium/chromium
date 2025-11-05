@@ -87,8 +87,9 @@ bool DisplayResourceProvider::OnMemoryDump(
     // Texture resources may not come with a size, in which case don't report
     // one.
     if (!resource.transferable.GetSize().IsEmpty()) {
-      uint64_t total_bytes = resource.transferable.format.EstimatedSizeInBytes(
-          resource.transferable.GetSize());
+      uint64_t total_bytes =
+          resource.transferable.GetFormat().EstimatedSizeInBytes(
+              resource.transferable.GetSize());
       dump->AddScalar(base::trace_event::MemoryAllocatorDump::kNameSize,
                       base::trace_event::MemoryAllocatorDump::kUnitsBytes,
                       static_cast<uint64_t>(total_bytes));
@@ -149,7 +150,7 @@ bool DisplayResourceProvider::IsOverlayCandidate(ResourceId id) const {
       return false;
     }
   }
-  return resource->transferable.is_overlay_candidate;
+  return resource->transferable.GetIsOverlayCandidate();
 }
 
 bool DisplayResourceProvider::IsLowLatencyRendering(ResourceId id) const {
@@ -181,13 +182,13 @@ const gfx::Size DisplayResourceProvider::GetResourceBackedSize(
 SharedImageFormat DisplayResourceProvider::GetSharedImageFormat(
     ResourceId id) const {
   const ChildResource* resource = GetResource(id);
-  return resource->transferable.format;
+  return resource->transferable.GetFormat();
 }
 
 const gfx::ColorSpace& DisplayResourceProvider::GetColorSpace(
     ResourceId id) const {
   const ChildResource* resource = GetResource(id);
-  return resource->transferable.color_space;
+  return resource->transferable.GetColorSpace();
 }
 
 bool DisplayResourceProvider::GetNeedsDetiling(ResourceId id) const {
@@ -203,12 +204,12 @@ const gfx::HDRMetadata& DisplayResourceProvider::GetHDRMetadata(
 
 GrSurfaceOrigin DisplayResourceProvider::GetOrigin(ResourceId id) const {
   const ChildResource* resource = GetResource(id);
-  return resource->transferable.origin;
+  return resource->transferable.GetOrigin();
 }
 
 SkAlphaType DisplayResourceProvider::GetAlphaType(ResourceId id) const {
   const ChildResource* resource = GetResource(id);
-  return resource->transferable.alpha_type;
+  return resource->transferable.GetAlphaType();
 }
 
 int DisplayResourceProvider::CreateChild(ReturnCallback return_callback,
