@@ -73,15 +73,15 @@ std::vector<ReturnedResource> TransferableResource::ReturnResources(
 void TransferableResource::AsValueInto(
     base::trace_event::TracedValue* value) const {
   // Skip |id| because it's different between client and viz.
-  value->SetBoolean("is_software", is_software);
+  value->SetBoolean("is_software", GetIsSoftware());
   value->SetString("memory_buffer_id", memory_buffer_id_.ToDebugString());
   value->SetString("sync_token", sync_token_.ToDebugString());
-  value->SetInteger("texture_target", texture_target_);
-  value->SetString("size", size.ToString());
-  value->SetString("format", format.ToString());
-  value->SetString("color_space", color_space.ToString());
+  value->SetInteger("texture_target", texture_target());
+  value->SetString("size", GetSize().ToString());
+  value->SetString("format", GetFormat().ToString());
+  value->SetString("color_space", GetColorSpace().ToString());
   value->SetString("hdr_metadata", hdr_metadata.ToString());
-  value->SetBoolean("is_overlay_candidate", is_overlay_candidate);
+  value->SetBoolean("is_overlay_candidate", GetIsOverlayCandidate());
   value->SetBoolean("is_low_latency_rendering", is_low_latency_rendering);
   value->SetInteger("synchronization_type",
                     static_cast<int>(synchronization_type));
@@ -97,8 +97,8 @@ void TransferableResource::AsValueInto(
   value->SetBoolean("wants_promotion_hint", wants_promotion_hint);
 #endif
   value->SetBoolean("needs_detiling", needs_detiling);
-  value->SetInteger("origin", static_cast<int>(origin));
-  value->SetInteger("alpha_type", static_cast<int>(alpha_type));
+  value->SetInteger("origin", static_cast<int>(GetOrigin()));
+  value->SetInteger("alpha_type", static_cast<int>(GetAlphaType()));
   value->SetInteger("resource_source", static_cast<int>(resource_source));
 }
 

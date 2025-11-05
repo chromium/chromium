@@ -130,16 +130,24 @@ struct VIZ_COMMON_EXPORT TransferableResource {
   // For usage only in Mojo serialization/deserialization.
   const gpu::Mailbox& memory_buffer_id() const { return memory_buffer_id_; }
 
+  bool GetIsSoftware() const { return is_software; }
+  SharedImageFormat GetFormat() const { return format; }
   const gfx::Size GetSize() const { return size; }
+  bool GetIsOverlayCandidate() const { return is_overlay_candidate; }
+  const gfx::ColorSpace& GetColorSpace() const { return color_space; }
+  GrSurfaceOrigin GetOrigin() const { return origin; }
+
+  SkAlphaType GetAlphaType() const { return alpha_type; }
 
   bool operator==(const TransferableResource& o) const {
-    return id == o.id && is_software == o.is_software &&
-           GetSize() == o.GetSize() && format == o.format &&
+    return id == o.id && GetIsSoftware() == o.GetIsSoftware() &&
+           GetSize() == o.GetSize() && GetFormat() == o.GetFormat() &&
            memory_buffer_id_ == o.memory_buffer_id_ &&
            sync_token_ == o.sync_token_ &&
-           texture_target_ == o.texture_target_ &&
-           color_space == o.color_space && hdr_metadata == o.hdr_metadata &&
-           is_overlay_candidate == o.is_overlay_candidate &&
+           texture_target() == o.texture_target() &&
+           GetColorSpace() == o.GetColorSpace() &&
+           hdr_metadata == o.hdr_metadata &&
+           GetIsOverlayCandidate() == o.GetIsOverlayCandidate() &&
 #if BUILDFLAG(IS_ANDROID)
            is_backed_by_surface_view == o.is_backed_by_surface_view &&
            wants_promotion_hint == o.wants_promotion_hint &&
