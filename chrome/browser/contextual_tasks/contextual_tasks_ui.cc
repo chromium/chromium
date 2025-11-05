@@ -206,6 +206,12 @@ void ContextualTasksUI::FrameNavObserver::DidFinishNavigation(
     return;
   }
 
+  // Ignore sub-frame and uncommitted navigations.
+  if (!navigation_handle->IsInMainFrame() ||
+      !navigation_handle->HasCommitted()) {
+    return;
+  }
+
   // TODO(456245130): Consider making this next part a CHECK since it should be
   //                  impossible for this to not be an AI URL.
   const GURL& url = navigation_handle->GetURL();
@@ -218,9 +224,9 @@ void ContextualTasksUI::FrameNavObserver::DidFinishNavigation(
   // tracking changed.
   std::string url_thread_id;
   if (!net::GetValueForKeyInQuery(url, "mtid", &url_thread_id)) {
-    this->task_info_delegate_->SetTaskId(std::nullopt);
-    this->task_info_delegate_->SetThreadId(std::nullopt);
-    this->task_info_delegate_->SetThreadTitle(std::nullopt);
+    task_info_delegate_->SetTaskId(std::nullopt);
+    task_info_delegate_->SetThreadId(std::nullopt);
+    task_info_delegate_->SetThreadTitle(std::nullopt);
     return;
   }
 

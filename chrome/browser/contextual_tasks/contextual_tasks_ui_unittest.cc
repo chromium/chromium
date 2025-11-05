@@ -63,6 +63,15 @@ class MockTaskInfoDelegate : public TaskInfoDelegate {
   std::optional<std::string> title_;
 };
 
+std::unique_ptr<content::MockNavigationHandle> CreateMockNavigationHandle(
+    const GURL& url) {
+  auto nav_handle = std::make_unique<content::MockNavigationHandle>();
+  nav_handle->set_is_in_primary_main_frame(true);
+  nav_handle->set_has_committed(true);
+  nav_handle->set_url(url);
+  return nav_handle;
+}
+
 }  // namespace
 
 class ContextualTasksUiTest : public ChromeRenderViewHostTestHarness {
@@ -133,11 +142,10 @@ TEST_F(ContextualTasksUiTest, ContextControllerUpdatedOnUrlChange) {
                                   Optional(turn_id), Optional(title)))
       .Times(1);
 
-  content::MockNavigationHandle nav_handle;
-  nav_handle.set_is_in_primary_main_frame(false);
-  nav_handle.set_url(updated_url);
+  std::unique_ptr<content::MockNavigationHandle> nav_handle =
+      CreateMockNavigationHandle(updated_url);
 
-  observer->DidFinishNavigation(&nav_handle);
+  observer->DidFinishNavigation(nav_handle.get());
 
   observer.reset();
 }
@@ -160,11 +168,10 @@ TEST_F(ContextualTasksUiTest, ContextControllerUpdatedOnUrlChange_NoThreadId) {
   EXPECT_CALL(*context_controller_, UpdateThreadForTask(_, _, _, _, _))
       .Times(0);
 
-  content::MockNavigationHandle nav_handle;
-  nav_handle.set_is_in_primary_main_frame(false);
-  nav_handle.set_url(updated_url);
+  std::unique_ptr<content::MockNavigationHandle> nav_handle =
+      CreateMockNavigationHandle(updated_url);
 
-  observer->DidFinishNavigation(&nav_handle);
+  observer->DidFinishNavigation(nav_handle.get());
 
   observer.reset();
 }
@@ -191,11 +198,10 @@ TEST_F(ContextualTasksUiTest, ContextControllerUpdatedOnUrlChange_NoTurnId) {
                                   Optional(title)))
       .Times(1);
 
-  content::MockNavigationHandle nav_handle;
-  nav_handle.set_is_in_primary_main_frame(false);
-  nav_handle.set_url(updated_url);
+  std::unique_ptr<content::MockNavigationHandle> nav_handle =
+      CreateMockNavigationHandle(updated_url);
 
-  observer->DidFinishNavigation(&nav_handle);
+  observer->DidFinishNavigation(nav_handle.get());
 
   observer.reset();
 }
@@ -235,11 +241,10 @@ TEST_F(ContextualTasksUiTest, TaskCreated_ThreadIdChanged) {
       UpdateThreadForTask(task_id, _, thread_id.value(), _, Optional(query)))
       .Times(1);
 
-  content::MockNavigationHandle nav_handle;
-  nav_handle.set_is_in_primary_main_frame(false);
-  nav_handle.set_url(url);
+  std::unique_ptr<content::MockNavigationHandle> nav_handle =
+      CreateMockNavigationHandle(url);
 
-  observer->DidFinishNavigation(&nav_handle);
+  observer->DidFinishNavigation(nav_handle.get());
 
   observer.reset();
 }
@@ -275,11 +280,10 @@ TEST_F(ContextualTasksUiTest, TaskChanged_ThreadIdChanged_HasExistingTask) {
               UpdateThreadForTask(task_id, _, thread_id, _, Optional(title)))
       .Times(1);
 
-  content::MockNavigationHandle nav_handle;
-  nav_handle.set_is_in_primary_main_frame(false);
-  nav_handle.set_url(url);
+  std::unique_ptr<content::MockNavigationHandle> nav_handle =
+      CreateMockNavigationHandle(url);
 
-  observer->DidFinishNavigation(&nav_handle);
+  observer->DidFinishNavigation(nav_handle.get());
 
   observer.reset();
 }
@@ -302,11 +306,10 @@ TEST_F(ContextualTasksUiTest, TaskNotCreated_NoThreadId) {
   EXPECT_CALL(*context_controller_, CreateTaskFromUrl(_)).Times(0);
   EXPECT_FALSE(delegate.GetTaskId().has_value());
 
-  content::MockNavigationHandle nav_handle;
-  nav_handle.set_is_in_primary_main_frame(false);
-  nav_handle.set_url(url);
+  std::unique_ptr<content::MockNavigationHandle> nav_handle =
+      CreateMockNavigationHandle(url);
 
-  observer->DidFinishNavigation(&nav_handle);
+  observer->DidFinishNavigation(nav_handle.get());
 
   observer.reset();
 }
@@ -328,11 +331,10 @@ TEST_F(ContextualTasksUiTest, TaskInfoCleared_NoThreadIdInUrl) {
   // shouldn't be created.
   EXPECT_CALL(*context_controller_, CreateTaskFromUrl(_)).Times(0);
 
-  content::MockNavigationHandle nav_handle;
-  nav_handle.set_is_in_primary_main_frame(false);
-  nav_handle.set_url(url);
+  std::unique_ptr<content::MockNavigationHandle> nav_handle =
+      CreateMockNavigationHandle(url);
 
-  observer->DidFinishNavigation(&nav_handle);
+  observer->DidFinishNavigation(nav_handle.get());
 
   EXPECT_FALSE(delegate.GetTaskId().has_value());
   EXPECT_FALSE(delegate.GetThreadId().has_value());
