@@ -23,6 +23,7 @@
 #include <cstring>
 #include <limits>
 #include <memory>
+#include <optional>
 
 #include "base/bits.h"
 #include "base/files/scoped_file.h"
@@ -567,33 +568,34 @@ ChannelLinux::ChannelLinux(
 ChannelLinux::~ChannelLinux() = default;
 
 void ChannelLinux::Write(MessagePtr message) {
-  if (!shared_mem_writer_ || message->has_handles() || reject_writes_) {
-    // Let the ChannelPosix deal with this.
-    return ChannelPosix::Write(std::move(message));
+  if (!reject_writes_ && !message->has_handles()) {
+    base::AutoLock lock(memfd_write_lock_);
+    if (shared_mem_writer_) {
+      SharedBuffer::Error write_result =
+          write_buffer_->TryWrite(message->data(), message->data_num_bytes());
+      if (write_result != SharedBuffer::Error::kGeneralError) {
+        if (write_result != SharedBuffer::Error::kControlCorruption) {
+          // Notify about successful write.
+          write_notifier_->Notify();
+        } else {
+          // On control corruption stop using shared memory for writes in the
+          // future.
+          reject_writes_ = true;
+
+          // Theoretically we could fall back to only using PosixChannel::Write
+          // but if this situation happens it's likely something else is going
+          // horribly wrong.
+          io_task_runner_->PostTask(
+              FROM_HERE,
+              base::BindOnce(&ChannelLinux::OnWriteError, this,
+                             Channel::Error::kReceivedMalformedData));
+          return;
+        }
+      }
+    }
   }
-
-  // Can we use the fast shared memory buffer?
-  SharedBuffer::Error write_result =
-      write_buffer_->TryWrite(message->data(), message->data_num_bytes());
-  if (write_result == SharedBuffer::Error::kGeneralError) {
-    // We can handle this with the posix channel.
-    return ChannelPosix::Write(std::move(message));
-  } else if (write_result == SharedBuffer::Error::kControlCorruption) {
-    // We will no longer be issuing writes via shared memory, and we will
-    // dispatch a write error.
-    reject_writes_ = true;
-
-    // Theoretically we could fall back to only using PosixChannel::Write
-    // but if this situation happens it's likely something else is going
-    // horribly wrong.
-    io_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&ChannelLinux::OnWriteError, this,
-                                  Channel::Error::kReceivedMalformedData));
-    return;
-  }
-
-  //  The write with shared memory was successful.
-  write_notifier_->Notify();
+  // Fall back to ChannelPosix outside of the memfd_write_lock_.
+  ChannelPosix::Write(std::move(message));
 }
 
 void ChannelLinux::OfferSharedMemUpgrade() {
@@ -695,6 +697,7 @@ bool ChannelLinux::OnControlMessage(Message::MessageType message_type,
     }
 
     case Message::MessageType::UPGRADE_ACCEPT: {
+      base::AutoLock lock(memfd_write_lock_);
       if (!write_buffer_ || !write_notifier_ || !write_notifier_->is_valid()) {
         LOG(ERROR) << "Received unexpected UPGRADE_ACCEPT";
 
@@ -710,7 +713,7 @@ bool ChannelLinux::OnControlMessage(Message::MessageType message_type,
     }
 
     case Message::MessageType::UPGRADE_REJECT: {
-      // We can free our resources.
+      base::AutoLock lock(memfd_write_lock_);
       shared_mem_writer_ = false;
       write_buffer_.reset();
       write_notifier_.reset();
@@ -804,9 +807,12 @@ void ChannelLinux::AcceptUpgradeOffer() {
 }
 
 void ChannelLinux::ShutDownOnIOThread() {
-  reject_writes_ = true;
-  read_notifier_.reset();
-  write_notifier_.reset();
+  {
+    base::AutoLock lock(memfd_write_lock_);
+    reject_writes_ = true;
+    read_notifier_.reset();
+    write_notifier_.reset();
+  }
 
   ChannelPosix::ShutDownOnIOThread();
 }
@@ -815,45 +821,45 @@ void ChannelLinux::StartOnIOThread() {
   ChannelPosix::StartOnIOThread();
 }
 
-void ChannelLinux::OfferSharedMemUpgradeInternal() {
+std::optional<std::vector<PlatformHandle>> ChannelLinux::SetupMemFdForWrite() {
   if (reject_writes_) {
-    return;
+    return std::nullopt;
   }
 
+  base::AutoLock lock(memfd_write_lock_);
   if (write_buffer_ || write_notifier_) {
     LOG(ERROR) << "Upgrade attempted on an already upgraded channel";
-    return;
+    return std::nullopt;
   }
 
   const size_t kSize = num_pages_ * base::GetPageSize();
   base::ScopedFD memfd = CreateSealedMemFD(kSize);
   if (!memfd.is_valid()) {
     PLOG(ERROR) << "Unable to create memfd";
-    return;
+    return std::nullopt;
   }
 
   bool properly_sealed = ValidateFDIsProperlySealedMemFD(memfd);
   if (!properly_sealed) {
     // We will not attempt an offer, something has gone wrong.
     LOG(ERROR) << "FD was not properly sealed we cannot offer upgrade.";
-    return;
+    return std::nullopt;
   }
 
   std::unique_ptr<SharedBuffer> write_buffer =
       SharedBuffer::Create(memfd, kSize);
   if (!write_buffer || !write_buffer->is_valid()) {
     PLOG(ERROR) << "Unable to map shared memory";
-    return;
+    return std::nullopt;
   }
 
   write_buffer->Initialize();
 
-  auto notifier_version = UpgradeOfferMessage::kEventFdNotifier;
   std::unique_ptr<EventFDNotifier> write_notifier =
       EventFDNotifier::CreateWriteNotifier();
   if (!write_notifier) {
     PLOG(ERROR) << "Failed to create eventfd write notifier";
-    return;
+    return std::nullopt;
   }
 
   std::vector<PlatformHandle> fds;
@@ -863,14 +869,23 @@ void ChannelLinux::OfferSharedMemUpgradeInternal() {
   write_notifier_ = std::move(write_notifier);
   write_buffer_ = std::move(write_buffer);
 
+  return fds;
+}
+
+void ChannelLinux::OfferSharedMemUpgradeInternal() {
+  std::optional<std::vector<PlatformHandle>> handles = SetupMemFdForWrite();
+  if (!handles) {
+    return;
+  }
+
   UpgradeOfferMessage offer_msg;
   offer_msg.num_pages = num_pages_;
-  offer_msg.version = notifier_version;
+  offer_msg.version = UpgradeOfferMessage::kEventFdNotifier;
   MessagePtr msg;
   DCHECK(is_for_ipcz());
   auto data = base::span(reinterpret_cast<const uint8_t*>(&offer_msg),
                          sizeof(UpgradeOfferMessage));
-  msg = Message::CreateIpczMessage(data, std::move(fds),
+  msg = Message::CreateIpczMessage(data, std::move(*handles),
                                    Message::MessageType::UPGRADE_OFFER,
                                    IncrementLastSentChannelSequenceNumber());
   ChannelPosix::Write(std::move(msg));
