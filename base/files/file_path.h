@@ -403,7 +403,7 @@ class BASE_EXPORT FilePath {
   // separators. See class documentation for 'Alternate root'.
   bool IsNetwork() const;
 
-  // Returns true if the patch ends with a path separator character.
+  // Returns true if the path ends with a path separator character.
   [[nodiscard]] bool EndsWithSeparator() const;
 
   // Returns a copy of this FilePath that ends with a trailing separator. If
