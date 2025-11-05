@@ -20,7 +20,6 @@ import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.Acces
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_COPY;
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_CUT;
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_FOCUS;
-import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_LONG_CLICK;
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_NEXT_AT_MOVEMENT_GRANULARITY;
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_NEXT_HTML_ELEMENT;
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_PAGE_UP;
@@ -138,7 +137,6 @@ import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.TestAnimations;
 import org.chromium.base.test.util.UrlUtils;
-import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.test.ContentJUnit4ClassRunner;
 import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.ui.accessibility.AccessibilityFeatures;
@@ -2351,34 +2349,6 @@ public class WebContentsAccessibilityTest {
         Assert.assertTrue(
                 OFFSCREEN_BUNDLE_EXTRA_ERROR,
                 mNodeInfo3.getExtras().getBoolean(EXTRAS_KEY_OFFSCREEN));
-    }
-
-    /** Test that ACTION_LONG_CLICK is included when experiment is running. */
-    @Test
-    @SmallTest
-    @EnableFeatures(ContentFeatureList.ACCESSIBILITY_INCLUDE_LONG_CLICK_ACTION)
-    public void testNodeInfo_Actions_longClickIncluded() throws Throwable {
-        setupTestWithHTML("<p id='id1'>Example</p>");
-
-        int vvId = waitForNodeMatching(sViewIdResourceNameMatcher, "id1");
-        mNodeInfo = createAccessibilityNodeInfo(vvId);
-        Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo);
-
-        Assert.assertTrue(mNodeInfo.getActionList().contains(ACTION_LONG_CLICK));
-    }
-
-    /** Test that ACTION_LONG_CLICK is excluded when experiment is paused. */
-    @Test
-    @SmallTest
-    @DisableFeatures(ContentFeatureList.ACCESSIBILITY_INCLUDE_LONG_CLICK_ACTION)
-    public void testNodeInfo_Actions_longClickExcluded() throws Throwable {
-        setupTestWithHTML("<p id='id1'>Example</p>");
-
-        int vvId = waitForNodeMatching(sViewIdResourceNameMatcher, "id1");
-        mNodeInfo = createAccessibilityNodeInfo(vvId);
-        Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo);
-
-        Assert.assertFalse(mNodeInfo.getActionList().contains(ACTION_LONG_CLICK));
     }
 
     // ------------------ Tests of performAction method ------------------ //

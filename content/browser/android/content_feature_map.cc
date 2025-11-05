@@ -34,7 +34,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kAccessibilityCheckJavaNodeCacheFreshness,
     &features::kAccessibilityDeprecateJavaNodeCache,
     &features::kAccessibilityDeprecateTypeAnnounce,
-    &features::kAccessibilityIncludeLongClickAction,
     &features::kAccessibilityPageZoomV2,
     &features::kAccessibilityPopulateSupplementalDescriptionApi,
     &features::kAccessibilityUnifiedSnapshots,

@@ -1269,11 +1269,6 @@ const base::FeatureParam<bool> kAccessibilityDeprecateJavaNodeCacheDisableCache{
 BASE_FEATURE(kAccessibilityDeprecateTypeAnnounce,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, includes the ACTION_LONG_CLICK action to all relevant nodes in
-// the web contents accessibility tree.
-BASE_FEATURE(kAccessibilityIncludeLongClickAction,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables the second iteration of AccessibilityPageZoom, which continues
 // the work completed in the first experiment and the subsequent fast-follow.
 // This version of the experiment explores enabling OS-level adjustments.

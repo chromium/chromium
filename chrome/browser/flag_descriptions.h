@@ -4807,12 +4807,6 @@ inline constexpr char kAccessibilityDeprecateTypeAnnounceDescription[] =
     "When enabled, TYPE_ANNOUNCE events will no longer be sent for live "
     "regions in the web contents.";
 
-inline constexpr char kAccessibilityIncludeLongClickActionName[] =
-    "Accessibility Include Long Click Action";
-inline constexpr char kAccessibilityIncludeLongClickActionDescription[] =
-    "When enabled, the accessibility tree for the web contents will include "
-    "the ACTION_LONG_CLICK action on all relevant nodes.";
-
 inline constexpr char kAccessibilityManageBroadcastReceiverOnBackgroundName[] =
     "Manage accessibility Broadcast Receiver on a background thread";
 inline constexpr char

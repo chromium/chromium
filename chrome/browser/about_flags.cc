@@ -6378,11 +6378,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableAccessibilityLabeledByName,
      flag_descriptions::kEnableAccessibilityLabeledByDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(features::kAccessibilityLabeledBy)},
-    {"enable-accessibility-include-long-click-action",
-     flag_descriptions::kAccessibilityIncludeLongClickActionName,
-     flag_descriptions::kAccessibilityIncludeLongClickActionDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(features::kAccessibilityIncludeLongClickAction)},
     {"enable-accessibility-populate-supplemental-description-api",
      flag_descriptions::kAccessibilityPopulateSupplementalDescriptionApiName,
      flag_descriptions::

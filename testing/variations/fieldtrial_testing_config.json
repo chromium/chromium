@@ -246,21 +246,6 @@
             ]
         }
     ],
-    "AccessibilityIncludeLongClickAction": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AccessibilityIncludeLongClickAction"
-                    ]
-                }
-            ]
-        }
-    ],
     "AccessibilityManifestV3ChromeVox": [
         {
             "platforms": [

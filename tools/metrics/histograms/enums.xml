@@ -14409,7 +14409,6 @@ from previous Chrome versions.
   <int value="32557641" label="HTTPAuthCommittedInterstitials:disabled"/>
   <int value="32701080" label="DropInputEventsBeforeFirstPaint:enabled"/>
   <int value="33778663" label="OriginTrials:enabled"/>
-  <int value="34166742" label="AccessibilityIncludeLongClickAction:enabled"/>
   <int value="34399969" label="SplitPartiallyOccludedQuads:enabled"/>
   <int value="34511257" label="ExtensionsCollapseMainMenu:disabled"/>
   <int value="35364948" label="SafetyHubFollowup:enabled"/>
@@ -17910,7 +17909,6 @@ from previous Chrome versions.
   <int value="1269627590" label="AutofillLocalSaveCardBottomSheet:enabled"/>
   <int value="1269940659" label="EnumerateAudioDevices:enabled"/>
   <int value="1269952439" label="AndroidAIAFetching:disabled"/>
-  <int value="1270596217" label="AccessibilityIncludeLongClickAction:disabled"/>
   <int value="1270975112"
       label="GlanceablesTimeManagementClassroomStudentView:enabled"/>
   <int value="1271871811" label="LegacyTLSEnforced:enabled"/>
