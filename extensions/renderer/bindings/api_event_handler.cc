@@ -380,7 +380,7 @@ bool APIEventHandler::HasListenerForEvent(const std::string& event_name,
   gin::Converter<EventEmitter*>::FromV8(isolate, iter->second.Get(isolate),
                                         &emitter);
   CHECK(emitter);
-  return emitter->GetNumListeners() > 0;
+  return emitter->HasListeners();
 }
 
 void APIEventHandler::InvalidateContext(v8::Local<v8::Context> context) {
@@ -421,23 +421,6 @@ void APIEventHandler::InvalidateContext(v8::Local<v8::Context> context) {
   // before the PerContextData is deleted. We have a check that guarantees that
   // no new EventEmitters are created after the PerContextData is deleted, so
   // no new emitters should be created after this point.
-}
-
-size_t APIEventHandler::GetNumEventListenersForTesting(
-    const std::string& event_name,
-    v8::Local<v8::Context> context) {
-  APIEventPerContextData* data =
-      APIEventPerContextData::GetFrom(context, kDontCreateIfMissing);
-  DCHECK(data);
-
-  auto iter = data->emitters.find(event_name);
-  CHECK(iter != data->emitters.end());
-  v8::Isolate* isolate = v8::Isolate::GetCurrent();
-  EventEmitter* emitter = nullptr;
-  gin::Converter<EventEmitter*>::FromV8(isolate, iter->second.Get(isolate),
-                                        &emitter);
-  CHECK(emitter);
-  return emitter->GetNumListeners();
 }
 
 }  // namespace extensions

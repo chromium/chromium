@@ -106,11 +106,6 @@ class APIEventHandler {
   // (because the associated extension ScriptContext needs to be valid).
   void InvalidateContext(v8::Local<v8::Context> context);
 
-  // Returns the number of event listeners for a given `event_name` and
-  // `context`.
-  size_t GetNumEventListenersForTesting(const std::string& event_name,
-                                        v8::Local<v8::Context> context);
-
  private:
   APIEventListeners::ListenersUpdated listeners_changed_;
 

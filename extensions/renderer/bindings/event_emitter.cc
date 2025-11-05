@@ -84,7 +84,11 @@ void EventEmitter::Invalidate(v8::Local<v8::Context> context) {
   listeners_->Invalidate(context);
 }
 
-size_t EventEmitter::GetNumListeners() const {
+bool EventEmitter::HasListeners() const {
+  return listeners_->GetNumListeners() != 0;
+}
+
+size_t EventEmitter::GetNumListenersForTesting() const {
   return listeners_->GetNumListeners();
 }
 
@@ -186,16 +190,12 @@ bool EventEmitter::HasListener(v8::Local<v8::Function> listener) {
   return listeners_->HasListener(listener);
 }
 
-bool EventEmitter::HasListeners() {
-  return listeners_->GetNumListeners() != 0;
-}
-
 void EventEmitter::Dispatch(gin::Arguments* arguments) {
   if (!valid_) {
     return;
   }
 
-  if (listeners_->GetNumListeners() == 0) {
+  if (!HasListeners()) {
     return;
   }
 

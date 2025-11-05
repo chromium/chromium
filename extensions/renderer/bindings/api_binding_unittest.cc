@@ -155,6 +155,13 @@ void OnEventListenersChanged(const std::string& event_name,
                              bool was_manual,
                              v8::Local<v8::Context> context) {}
 
+size_t GetNumListeners(v8::Isolate* isolate, v8::Local<v8::Object> event) {
+  EventEmitter* emitter = nullptr;
+  gin::Converter<EventEmitter*>::FromV8(isolate, event, &emitter);
+  CHECK(emitter);
+  return emitter->GetNumListenersForTesting();
+}
+
 }  // namespace
 
 class APIBindingUnittest : public APIBindingTest {
@@ -707,15 +714,14 @@ TEST_F(APIBindingUnittest, TestEventCreation) {
   // Test that the maxListeners property is correctly used.
   v8::Local<v8::Function> add_listener = FunctionFromString(
       context, "(function(e) { e.addListener(function() {}); })");
-  v8::Local<v8::Value> args[] = {
-      GetPropertyFromObject(binding_object, context, "onBaz")};
+  v8::Local<v8::Object> on_baz_event =
+      GetPropertyFromObject(binding_object, context, "onBaz").As<v8::Object>();
+  v8::Local<v8::Value> args[] = {on_baz_event};
   RunFunction(add_listener, context, std::size(args), args);
-  EXPECT_EQ(1u, event_handler()->GetNumEventListenersForTesting("test.onBaz",
-                                                                context));
+  EXPECT_EQ(1u, GetNumListeners(isolate(), on_baz_event));
   RunFunctionAndExpectError(add_listener, context, std::size(args), args,
                             "Uncaught TypeError: Too many listeners.");
-  EXPECT_EQ(1u, event_handler()->GetNumEventListenersForTesting("test.onBaz",
-                                                                context));
+  EXPECT_EQ(1u, GetNumListeners(isolate(), on_baz_event));
 
   v8::Maybe<bool> has_nonexistent_event = binding_object->Has(
       context, gin::StringToV8(isolate(), "onNonexistentEvent"));

@@ -193,7 +193,7 @@ TEST_F(EventEmitterUnittest, ListenersDestroyingContext) {
     RunFunction(add_listener_function, context, std::size(args), args);
   }
 
-  EXPECT_EQ(kNumListeners, event_emitter->GetNumListeners());
+  EXPECT_EQ(kNumListeners, event_emitter->GetNumListenersForTesting());
 
   v8::LocalVector<v8::Value> args(isolate());
   event_emitter->Fire(context, &args, /*filter=*/nullptr,

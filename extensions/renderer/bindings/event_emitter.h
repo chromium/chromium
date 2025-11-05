@@ -78,9 +78,10 @@ class EventEmitter final : public gin::Wrappable<EventEmitter> {
   // are added.
   void Invalidate(v8::Local<v8::Context> context);
 
-  // TODO(devlin): Consider making this a test-only method and exposing
-  // HasListeners() instead.
-  size_t GetNumListeners() const;
+  // Returns true if there are any listeners for this event.
+  bool HasListeners() const;
+
+  size_t GetNumListenersForTesting() const;
 
   // Saves a given filter in an internal filter_id based mapping. This is
   // needed in order to allow asynchronous usage of filters.
@@ -98,7 +99,6 @@ class EventEmitter final : public gin::Wrappable<EventEmitter> {
   void AddListener(gin::Arguments* arguments);
   void RemoveListener(gin::Arguments* arguments);
   bool HasListener(v8::Local<v8::Function> function);
-  bool HasListeners();
   void Dispatch(gin::Arguments* arguments);
 
   const gin::WrapperInfo* wrapper_info() const override;
