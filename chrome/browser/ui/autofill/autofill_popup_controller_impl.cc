@@ -361,6 +361,11 @@ void AutofillPopupControllerImpl::Hide(SuggestionHidingReason reason) {
   HideViewAndDie();
 }
 
+bool AutofillPopupControllerImpl::HasCreditCardSuggestions() const {
+  return delegate_ &&
+         delegate_->GetMainFillingProduct() == FillingProduct::kCreditCard;
+}
+
 void AutofillPopupControllerImpl::ViewDestroyed() {
   // The view has already been destroyed so clear the reference to it.
   view_ = nullptr;

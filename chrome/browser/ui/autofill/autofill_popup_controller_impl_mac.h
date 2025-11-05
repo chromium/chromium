@@ -46,9 +46,6 @@ class AutofillPopupControllerImplMac : public AutofillPopupControllerImpl {
  private:
   // The controller providing the autofill touch bar.
   WebTextfieldTouchBarController* __weak touch_bar_controller_;
-
-  // True if the popup contains credit card items.
-  BOOL is_credit_card_popup_;
 };
 
 }  // namespace autofill

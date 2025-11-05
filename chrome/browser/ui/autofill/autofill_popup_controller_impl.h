@@ -151,6 +151,9 @@ class AutofillPopupControllerImpl : public AutofillPopupController,
   // Hides `view_` unless it is null and then deletes `this`.
   virtual void HideViewAndDie();
 
+  // Returns true if the suggestions are credit card suggestions.
+  bool HasCreditCardSuggestions() const;
+
  private:
   friend class AutofillPopupControllerImplTestApi;
   friend class AutofillSuggestionController;
