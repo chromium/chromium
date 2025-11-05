@@ -432,8 +432,10 @@ TEST_F(AIModelDownloadProgressManagerTest, OnlyReceivesUpdatesForNewProgress) {
   // Wait more than 50ms so we can receive the next event.
   FastForwardBy(base::Milliseconds(51));
 
-  // Shouldn't be able to receive this progress event since we've just seen it.
+  // Shouldn't be able to receive these progress updates since they're not
+  // greater than the last progress update.
   component.SetDownloadedBytes(10);
+  component.SetDownloadedBytes(9);
 
   // Wait more than 50ms so we can receive the next event.
   FastForwardBy(base::Milliseconds(51));

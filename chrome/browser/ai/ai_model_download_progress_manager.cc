@@ -36,13 +36,9 @@ AIModelDownloadProgressManager::Component::Component(Component&&) = default;
 
 void AIModelDownloadProgressManager::Component::SetDownloadedBytes(
     int64_t downloaded_bytes) {
-  if (downloaded_bytes == downloaded_bytes_) {
+  if (downloaded_bytes < downloaded_bytes_.value_or(0)) {
     return;
   }
-
-  // `downloaded_bytes` should be monotonically increasing.
-  CHECK_GT(downloaded_bytes, downloaded_bytes_.value_or(-1));
-  CHECK_GE(downloaded_bytes, 0);
 
   downloaded_bytes_ = downloaded_bytes;
   MaybeRunEventCallback();
