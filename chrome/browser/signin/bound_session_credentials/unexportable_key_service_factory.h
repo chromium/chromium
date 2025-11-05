@@ -10,6 +10,7 @@
 #include "base/functional/callback.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
+#include "crypto/unexportable_key.h"
 
 class Profile;
 
@@ -24,7 +25,8 @@ class UnexportableKeyService;
 class UnexportableKeyServiceFactory : public ProfileKeyedServiceFactory {
  public:
   using ServiceFactory = base::RepeatingCallback<
-      std::unique_ptr<unexportable_keys::UnexportableKeyService>()>;
+      std::unique_ptr<unexportable_keys::UnexportableKeyService>(
+          crypto::UnexportableKeyProvider::Config)>;
 
   // An enum to define the intended use of the key.
   enum class KeyPurpose {
@@ -41,6 +43,10 @@ class UnexportableKeyServiceFactory : public ProfileKeyedServiceFactory {
       KeyPurpose purpose);
 
   static UnexportableKeyServiceFactory* GetInstance();
+
+#if BUILDFLAG(IS_MAC)
+  static std::string GetKeychainAccessGroup();
+#endif  // BUILDFLAG(IS_MAC)
 
   UnexportableKeyServiceFactory(const UnexportableKeyServiceFactory&) = delete;
   UnexportableKeyServiceFactory& operator=(

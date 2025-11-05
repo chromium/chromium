@@ -134,7 +134,8 @@ class BoundSessionCookieRefreshServiceFactoryTest
     // ensure it is not null.
     UnexportableKeyServiceFactory::GetInstance()->SetServiceFactoryForTesting(
         base::BindRepeating(
-            []() -> std::unique_ptr<unexportable_keys::UnexportableKeyService> {
+            [](crypto::UnexportableKeyProvider::Config config)
+                -> std::unique_ptr<unexportable_keys::UnexportableKeyService> {
               return std::make_unique<
                   unexportable_keys::FakeUnexportableKeyService>();
             }));
