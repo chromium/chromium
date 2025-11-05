@@ -224,6 +224,9 @@ class ActorTask {
   State state_ = State::kCreated;
   raw_ptr<Profile> profile_;
 
+  // The time at which the task was created.
+  base::TimeTicks create_time_;
+
   // The time at which the task was completed or cancelled.
   base::Time end_time_;
 

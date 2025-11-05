@@ -102,6 +102,7 @@ ActorTask::ActorTask(Profile* profile,
                      webui::mojom::TaskOptionsPtr options,
                      base::WeakPtr<ActorTaskDelegate> delegate)
     : profile_(profile),
+      create_time_(base::TimeTicks::Now()),
       execution_engine_(std::move(execution_engine)),
       ui_event_dispatcher_(std::move(ui_event_dispatcher)),
       journal_(ActorKeyedService::Get(profile)->GetJournal().GetSafeRef()),
@@ -202,20 +203,11 @@ void ActorTask::SetState(State new_state) {
   actor::ActorKeyedService::Get(profile_)->NotifyTaskStateChanged(*this);
 
   // If the state is to be finished/cancelled record a histogram.
-  if (state_ == kFinished) {
-    base::UmaHistogramCounts1000("Actor.Task.Count.Completed",
-                                 total_number_of_actions_);
-    base::UmaHistogramLongTimes100("Actor.Task.Duration.Completed",
-                                   total_actor_controlled_active_time_);
-    base::UmaHistogramCounts1000("Actor.Task.Interruptions.Completed",
-                                 total_number_of_interruptions_);
-  } else if (state_ == kCancelled) {
-    base::UmaHistogramCounts1000("Actor.Task.Count.Cancelled",
-                                 total_number_of_actions_);
-    base::UmaHistogramLongTimes100("Actor.Task.Duration.Cancelled",
-                                   total_actor_controlled_active_time_);
-    base::UmaHistogramCounts1000("Actor.Task.Interruptions.Cancelled",
-                                 total_number_of_interruptions_);
+  if (state_ == kFinished || state_ == kCancelled) {
+    RecordActorTaskCompletion(
+        state_ == kFinished, base::TimeTicks::Now() - create_time_,
+        total_actor_controlled_active_time_, total_number_of_interruptions_,
+        total_number_of_actions_);
   }
 }
 

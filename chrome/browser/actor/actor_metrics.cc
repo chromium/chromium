@@ -9,6 +9,12 @@
 
 namespace actor {
 
+namespace {
+std::string_view ToCancelledOrCompleted(bool success) {
+  return success ? "Completed" : "Cancelled";
+}
+}  // namespace
+
 void RecordActorTaskStateTransitionActionCount(size_t action_count,
                                                ActorTask::State from_state,
                                                ActorTask::State to_state) {
@@ -34,6 +40,26 @@ void RecordToolTimings(std::string_view tool_name,
   base::UmaHistogramMediumTimes(
       base::StrCat({"Actor.Tools.PageStabilization.", tool_name}),
       page_stabilization_duration);
+}
+
+void RecordActorTaskCompletion(bool success,
+                               base::TimeDelta total_time,
+                               base::TimeDelta controlled_time,
+                               size_t interruptions_count,
+                               size_t actions_count) {
+  base::UmaHistogramLongTimes100(
+      base::StrCat(
+          {"Actor.Task.Duration.WallClock.", ToCancelledOrCompleted(success)}),
+      total_time);
+  base::UmaHistogramLongTimes100(
+      base::StrCat({"Actor.Task.Duration.", ToCancelledOrCompleted(success)}),
+      controlled_time);
+  base::UmaHistogramCounts1000(base::StrCat({"Actor.Task.Interruptions.",
+                                             ToCancelledOrCompleted(success)}),
+                               interruptions_count);
+  base::UmaHistogramCounts1000(
+      base::StrCat({"Actor.Task.Count.", ToCancelledOrCompleted(success)}),
+      actions_count);
 }
 
 }  // namespace actor
