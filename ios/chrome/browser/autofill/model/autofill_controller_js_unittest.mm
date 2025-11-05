@@ -821,13 +821,14 @@ class AutofillControllerJsTest : public web::JavascriptTest {
     JavascriptTest::SetUp();
 
     AddGCrWebScript();
+    AddCommonScript();
     AddUserScript(@"fill");
     AddUserScript(@"form");
     AddUserScript(@"autofill_form_features");
     AddUserScript(@"fill_util_test");
 
     ASSERT_TRUE(
-        web::test::LoadHtml(web_view(), @"<html></html>",
+        web::test::LoadHtml(web_view(), kHTMLForTestingElements,
                             [NSURL URLWithString:@"https://chromium.test/"]));
   }
 
@@ -974,7 +975,8 @@ void AutofillControllerJsTest::ExecuteJavaScriptOnElementsAndCheck(
   for (NSUInteger i = 0; i < get_element_java_scripts.count; ++i) {
     NSString* js_to_execute =
         [NSString stringWithFormat:java_script, get_element_java_scripts[i]];
-    EXPECT_NSEQ(expected_results[i], ExecuteJavaScript(js_to_execute));
+    EXPECT_NSEQ(expected_results[i],
+                web::test::ExecuteJavaScript(web_view(), js_to_execute));
   }
 }
 
@@ -1230,10 +1232,9 @@ TEST_F(AutofillControllerJsTest, GetOptionStringsFromElement) {
   constexpr auto kTestingElements = std::to_array<ElementByName>(
       {{"state", 0, -1}, {"course", 0, -1}, {"cars", 0, -1}});
 
-  web::test::LoadHtml(kHTMLForTestingElements, web_state());
   ExecuteJavaScriptOnElementsAndCheck(
       @"var field = {};"
-       "__gCrWeb.fill.getOptionStringsFromElement(%@, field);"
+       "__gCrWeb.getRegisteredApi('fill_test_api').getFunction('getOptionStringsFromElement')(%@, field);"
        "__gCrWeb.stringify(field);",
       GetElementsByNameJavaScripts(kTestingElements), @[
         @("{\"option_values\":[\"CA\",\"MA\"],"

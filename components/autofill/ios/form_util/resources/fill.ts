@@ -546,7 +546,7 @@ gCrWebLegacy.fill.webFormControlElementToFormField = function(
   } else if (inferenceUtil.isTextAreaElement(element)) {
     // Nothing more to do in this case.
   } else {
-    gCrWebLegacy.fill.getOptionStringsFromElement(element, field);
+    fillUtil.getOptionStringsFromElement(element as HTMLSelectElement, field);
   }
 
   let value = fillUtil.valueForElement(element);

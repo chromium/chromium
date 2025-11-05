@@ -20,6 +20,8 @@ fillApi.addFunction('getAriaDescription', fillUtil.getAriaDescription);
 fillApi.addFunction('getAriaLabel', fillUtil.getAriaLabel);
 fillApi.addFunction(
     'getCanonicalActionForForm', fillUtil.getCanonicalActionForForm);
+fillApi.addFunction(
+    'getOptionStringsFromElement', fillUtil.getOptionStringsFromElement);
 fillApi.addFunction('getUniqueID', fillUtil.getUniqueID);
 fillApi.addFunction('hasTagName', inferenceUtil.hasTagName);
 fillApi.addFunction(

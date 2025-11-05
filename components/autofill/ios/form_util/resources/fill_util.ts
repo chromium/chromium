@@ -518,7 +518,7 @@ declare interface OptionFieldStrings {
  * @param field A field that will contain the extracted option
  *     information.
  */
-gCrWebLegacy.fill.getOptionStringsFromElement = function(
+export function getOptionStringsFromElement(
     selectElement: HTMLSelectElement, field: OptionFieldStrings): void {
   field.option_values = [];
   // Protect against custom implementation of Array.toJSON in host pages.
@@ -533,7 +533,7 @@ gCrWebLegacy.fill.getOptionStringsFromElement = function(
     field.option_texts.push(
         option.text.substring(0, fillConstants.MAX_STRING_LENGTH));
   }
-};
+}
 
 /**
  * Returns the value in a way similar to the C++ version of node.value,
