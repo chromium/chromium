@@ -274,9 +274,7 @@ void DbusAppmenu::Initialize(DbusMenu::InitializedCallback callback) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   DCHECK(profile_manager);
   avatar_menu_ = std::make_unique<AvatarMenu>(
-      &profile_manager->GetProfileAttributesStorage(), this,
-      GetLastActiveBrowserWindowInterfaceWithAnyProfile()
-          ->GetBrowserForMigrationOnly());
+      &profile_manager->GetProfileAttributesStorage(), this, browser_.get());
   avatar_menu_->RebuildMenu();
   BrowserList::AddObserver(this);
 
