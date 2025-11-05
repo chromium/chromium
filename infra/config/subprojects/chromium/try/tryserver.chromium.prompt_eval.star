@@ -15,6 +15,9 @@ try_.defaults.set(
     pool = try_constants.DEFAULT_POOL,
     builderless = False,
     execution_timeout = try_constants.DEFAULT_EXECUTION_TIMEOUT,
+    experiments = {
+        "chromium_tests.resultdb_module": 100,
+    },
     service_account = try_constants.DEFAULT_SERVICE_ACCOUNT,
     siso_project = siso.project.DEFAULT_UNTRUSTED,
 )

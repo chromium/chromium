@@ -21,6 +21,9 @@ ci.defaults.set(
     gardener_rotations = gardener_rotations.CHROMIUM_GPU,
     contact_team_email = "chrome-gpu-infra@google.com",
     execution_timeout = ci_constants.DEFAULT_EXECUTION_TIMEOUT,
+    experiments = {
+        "chromium_tests.resultdb_module": 100,
+    },
     health_spec = health_spec.default(),
     service_account = gpu.ci.SERVICE_ACCOUNT,
     shadow_service_account = gpu.ci.SHADOW_SERVICE_ACCOUNT,
