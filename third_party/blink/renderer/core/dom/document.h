@@ -187,6 +187,7 @@ class Event;
 class EventFactoryBase;
 class EventListener;
 class ExceptionState;
+class FocusOptions;
 class FocusedElementChangeObserver;
 class FontFaceSet;
 class FontMatchingMetrics;
@@ -1118,6 +1119,7 @@ class CORE_EXPORT Document : public ContainerNode,
   bool SetFocusedElement(Element*, const FocusParams&);
   void ClearFocusedElement(bool omit_blur_events = false);
   Element* FocusedElement() const { return focused_element_.Get(); }
+  const FocusOptions* GetFocusOptions() const { return focus_options_.Get(); }
   void ClearFocusedElementIfNeeded();
   void UpdateFocusgroupLastFocused(Element& focused_element);
   UserActionElementSet& UserActionElements() { return user_action_elements_; }
@@ -2715,6 +2717,7 @@ class CORE_EXPORT Document : public ContainerNode,
   // We implement this as a Vector because its maximum size is typically 1.
   HeapVector<Member<Element>> autofocus_candidates_;
   Member<Element> focused_element_;
+  Member<const FocusOptions> focus_options_;
   Member<Range> sequential_focus_navigation_starting_point_;
   Member<Element> hover_element_;
   Member<Element> active_element_;

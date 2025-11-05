@@ -118,6 +118,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value_factory.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/v8_script_value_serializer.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_focus_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_node.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_pointer_event_init.h"
 #include "third_party/blink/renderer/core/clipboard/data_transfer.h"
@@ -12753,6 +12754,79 @@ TEST_F(WebFrameSimTest, ScrollToEndBubblingCrash) {
   key_event.SetType(WebInputEvent::Type::kKeyUp);
   WebView().MainFrameWidget()->HandleInputEvent(
       WebCoalescedInputEvent(key_event, ui::LatencyInfo()));
+}
+
+// https://crbug.com/41492445
+TEST_F(WebFrameSimTest, TestFocusPreventScrollNotScrollElementIntoView) {
+  UseAndroidSettings();
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(400, 400));
+  WebView().EnableFakePageScaleAnimationForTesting(true);
+  WebView().GetPage()->GetSettings().SetTextAutosizingEnabled(false);
+
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <style>
+      ::-webkit-scrollbar {
+        width: 0px;
+        height: 0px;
+      }
+      body,html {
+        width: 100%;
+        height: 100%;
+        margin: 0px;
+      }
+      input {
+        border: 0;
+        padding: 0;
+        margin-top: 1000px;
+        width: 100px;
+        height: 20px;
+      }
+    </style>
+    <input id="target" type="text" value="test" />
+  )HTML");
+
+  Compositor().BeginFrame();
+
+  ScrollableArea* area = GetDocument().View()->LayoutViewport();
+  Element* input = GetDocument().getElementById(AtomicString("target"));
+  gfx::Rect input_rect(0, 1000, 100, 20);
+
+  // Focus the element with `preventScroll: true` to ensure it does not scroll
+  // into view.
+  FocusOptions* focus_options = FocusOptions::Create();
+  focus_options->setPreventScroll(true);
+  input->Focus(focus_options);
+  ASSERT_TRUE(input->GetLayoutObject());
+  ASSERT_EQ(input, WebView().FocusedElement());
+  ASSERT_EQ(ScrollOffset(), area->GetScrollOffset());
+  ASSERT_FALSE(area->VisibleContentRect().Contains(input_rect));
+  ASSERT_EQ(WebView().FakePageScaleAnimationPageScaleForTesting(), 0.f);
+  // Simulate the keyboard being shown and resizing the widget. Cause a scroll
+  // into view after.
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(400, 300));
+  WebView()
+      .MainFrameImpl()
+      ->FrameWidget()
+      ->ScrollFocusedEditableElementIntoView();
+  // Verify that `preventScroll: true` prevents the page from scrolling.
+  ASSERT_EQ(0.f, WebView().FakePageScaleAnimationPageScaleForTesting());
+  EXPECT_EQ(gfx::Point(),
+            WebView().FakePageScaleAnimationTargetPositionForTesting());
+
+  // Reset focus to ensure the next focus call triggers scroll behavior.
+  GetDocument().ClearFocusedElement();
+  ASSERT_EQ(nullptr, GetDocument().FocusedElement());
+
+  // Focus the element again without `preventScroll` to ensure it is scrolled
+  // into view.
+  input->Focus();
+  ASSERT_TRUE(input->GetLayoutObject());
+  ASSERT_EQ(input, WebView().FocusedElement());
+  ASSERT_NE(ScrollOffset(), area->GetScrollOffset());
+  ASSERT_TRUE(area->VisibleContentRect().Contains(input_rect));
 }
 
 TEST_F(WebFrameSimTest, TestScrollFocusedEditableElementIntoView) {

@@ -91,6 +91,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_document_ready_state.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_element_creation_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_element_registration_options.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_focus_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_import_node_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_observable_array_css_style_sheet.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
@@ -3423,6 +3424,7 @@ void Document::Shutdown() {
   if (focused_element_.Get()) {
     Element* old_focused_element = focused_element_;
     focused_element_ = nullptr;
+    focus_options_ = nullptr;
     NotifyFocusedElementChanged(old_focused_element, nullptr,
                                 mojom::blink::FocusType::kNone);
   }
@@ -5868,12 +5870,17 @@ bool Document::SetFocusedElement(Element* new_focused_element,
       return true;
   }
 
-  if (focused_element_ == new_focused_element)
+  if (focused_element_ == new_focused_element) {
+    // Even though `focused_element_` hasn't changed, `focus_options_` may have,
+    // so update it.
+    focus_options_ = params.options;
     return true;
+  }
 
   bool focus_change_blocked = false;
   Element* old_focused_element = focused_element_;
   focused_element_ = nullptr;
+  focus_options_ = nullptr;
 
   Element* ancestor =
       (old_focused_element && old_focused_element->isConnected() &&
@@ -5950,6 +5957,7 @@ bool Document::SetFocusedElement(Element* new_focused_element,
     }
     // Set focus on the new node
     focused_element_ = new_focused_element;
+    focus_options_ = params.options;
     SetSequentialFocusNavigationStartingPoint(focused_element_.Get());
 
     // Keep track of last focus from user interaction, ignoring focus from code
@@ -9486,6 +9494,7 @@ void Document::Trace(Visitor* visitor) const {
   visitor->Trace(implementation_);
   visitor->Trace(autofocus_candidates_);
   visitor->Trace(focused_element_);
+  visitor->Trace(focus_options_);
   visitor->Trace(sequential_focus_navigation_starting_point_);
   visitor->Trace(hover_element_);
   visitor->Trace(active_element_);

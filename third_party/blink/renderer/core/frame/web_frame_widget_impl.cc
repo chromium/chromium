@@ -68,6 +68,7 @@
 #include "third_party/blink/public/web/web_plugin.h"
 #include "third_party/blink/public/web/web_settings.h"
 #include "third_party/blink/public/web/web_view_client.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_focus_options.h"
 #include "third_party/blink/renderer/core/accessibility/histogram_macros.h"
 #include "third_party/blink/renderer/core/content_capture/content_capture_manager.h"
 #include "third_party/blink/renderer/core/core_initializer.h"
@@ -2448,6 +2449,11 @@ bool WebFrameWidgetImpl::ScrollFocusedEditableElementIntoView() {
   Element* element = FocusedElement();
   if (!element)
     return false;
+
+  const FocusOptions* focus_options = element->GetDocument().GetFocusOptions();
+  if (focus_options && focus_options->preventScroll()) {
+    return false;
+  }
 
   EditContext* edit_context = element->GetDocument()
                                   .GetFrame()
