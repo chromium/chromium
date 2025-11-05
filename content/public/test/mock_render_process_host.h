@@ -92,6 +92,9 @@ class MockRenderProcessHost : public RenderProcessHost {
   int VisibleClientCount() override;
   unsigned int GetFrameDepth() override;
   bool GetIntersectsViewport() override;
+#if !BUILDFLAG(IS_ANDROID)
+  bool IsForInitialWebUI() const override;
+#endif  // !BUILDFLAG(IS_ANDROID)
   bool IsForGuestsOnly() override;
   bool IsJitDisabled() override;
   bool AreV8OptimizationsDisabled() override;

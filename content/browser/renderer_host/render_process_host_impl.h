@@ -245,8 +245,7 @@ class CONTENT_EXPORT RenderProcessHostImpl
   unsigned int GetFrameDepth() override;
   bool GetIntersectsViewport() override;
 #if !BUILDFLAG(IS_ANDROID)
-  // Returns true if this process is hosting the initial WebUI.
-  bool IsForInitialWebUI() const;
+  bool IsForInitialWebUI() const override;
 #endif  // !BUILDFLAG(IS_ANDROID)
   bool IsForGuestsOnly() override;
   bool IsJitDisabled() override;

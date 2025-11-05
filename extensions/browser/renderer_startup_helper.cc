@@ -13,6 +13,7 @@
 #include "base/containers/contains.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -51,6 +52,7 @@
 #include "extensions/common/mojom/renderer.mojom.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "ipc/ipc_channel_proxy.h"
+#include "third_party/blink/public/common/features.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "url/origin.h"
 
@@ -214,6 +216,17 @@ base::flat_map<std::string, std::string> ToFlatMap(
   return {map.begin(), map.end()};
 }
 
+bool ShouldDisableExtensionsForInitialWebUI(
+    content::RenderProcessHost* process) {
+#if BUILDFLAG(IS_ANDROID)
+  return false;
+#else
+  return base::FeatureList::IsEnabled(
+             blink::features::kInitialWebUIWithoutExtensions) &&
+         process->IsForInitialWebUI();
+#endif  // BUILDFLAG(IS_ANDROID)
+}
+
 }  // namespace
 
 RendererStartupHelper::RendererStartupHelper(BrowserContext* browser_context)
@@ -239,10 +252,11 @@ void RendererStartupHelper::OnRenderProcessHostCreated(
 
 void RendererStartupHelper::OnRenderProcessLaunched(
     content::RenderProcessHost* host) {
-  if (!host->IsForGuestsOnly()) {
-    // Any process that *isn't* for guests should have already been
-    // initialized in OnRenderProcessHostCreated(), if it corresponds
-    // to the same context.
+  if (!host->IsForGuestsOnly() &&
+      !ShouldDisableExtensionsForInitialWebUI(host)) {
+    // Any process that *isn't* for guests or an initial WebUI with disabled
+    // extensions should have already been initialized in
+    // OnRenderProcessHostCreated(), if it corresponds to the same context.
     ExtensionsBrowserClient* client = ExtensionsBrowserClient::Get();
     CHECK(GetRenderer(host) != nullptr ||
           !client->IsSameContext(browser_context_, host->GetBrowserContext()));
@@ -266,6 +280,12 @@ void RendererStartupHelper::RenderProcessHostDestroyed(
 
 void RendererStartupHelper::InitializeProcess(
     content::RenderProcessHost* process) {
+  // If the process is for an initial WebUI, we don't need to initialize
+  // support for Extensions.
+  if (ShouldDisableExtensionsForInitialWebUI(process)) {
+    return;
+  }
+
   ExtensionsBrowserClient* client = ExtensionsBrowserClient::Get();
   if (!client->IsSameContext(browser_context_, process->GetBrowserContext())) {
     return;
@@ -561,6 +581,10 @@ mojom::Renderer* RendererStartupHelper::GetRenderer(
   if (it == process_mojo_map_.end()) {
     return nullptr;
   }
+
+  // The renderer for the initial WebUI process is not created.
+  CHECK(!ShouldDisableExtensionsForInitialWebUI(process));
+
   return it->second.get();
 }
 

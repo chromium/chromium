@@ -229,6 +229,11 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Listener,
   virtual void OnImmersiveXrSessionStarted() = 0;
   virtual void OnImmersiveXrSessionStopped() = 0;
 
+#if !BUILDFLAG(IS_ANDROID)
+  // Returns true if the process is for an initial WebUI.
+  virtual bool IsForInitialWebUI() const = 0;
+#endif  // !BUILDFLAG(IS_ANDROID)
+
   // Indicates whether the current RenderProcessHost is exclusively hosting
   // guest RenderFrames. Not all guest RenderFrames are created equal.  A guest,
   // as indicated by BrowserPluginGuest::IsGuest, may coexist with other

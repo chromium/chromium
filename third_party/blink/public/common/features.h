@@ -684,6 +684,13 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kIgnoreInputWhileHidden);
 // applied. See https://crbug.com/1369823.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kImageLoadingPrioritizationFix);
 
+#if !BUILDFLAG(IS_ANDROID)
+// If enabled, the initial WebUI will not interact with extensions. This feature
+// intends to optimize performance by reducting extension related tasks.
+// See crbug.com/450192387.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kInitialWebUIWithoutExtensions);
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 // Use Snappy to compress values for IndexedDB before wiring them to the
 // browser.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kIndexedDBCompressValuesWithSnappy);

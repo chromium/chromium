@@ -193,6 +193,12 @@ bool MockRenderProcessHost::GetIntersectsViewport() {
   return true;
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+bool MockRenderProcessHost::IsForInitialWebUI() const {
+  return false;
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 bool MockRenderProcessHost::IsForGuestsOnly() {
   return is_for_guests_only_;
 }
