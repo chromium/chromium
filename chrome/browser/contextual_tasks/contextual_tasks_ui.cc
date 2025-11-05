@@ -58,8 +58,9 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
       "child-src 'self' https://*.google.com;");
 
   // Add required resources for the searchbox.
-  SearchboxHandler::SetupWebUIDataSource(source, Profile::FromWebUI(web_ui));
-
+  SearchboxHandler::SetupWebUIDataSource(source, Profile::FromWebUI(web_ui),
+                                         /*enable_voice_search=*/false,
+                                         /*enable_lens_search=*/false);
   // Add strings.js
   source->UseStringsJs();
 
@@ -106,6 +107,10 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
   source->AddBoolean("composeboxShowCreateImageButton", false);
   source->AddBoolean("composeboxShowRecentTabChip", false);
   source->AddBoolean("composeboxShowSubmit", true);
+  source->AddBoolean("dragAndDropEnabled", true);
+  source->AddBoolean("steadyComposeboxShowVoiceSearch", false);
+  source->AddBoolean("expandedComposeboxShowVoiceSearch", false);
+  source->AddBoolean("composeboxShowContextMenuTabPreviews", false);
 }
 
 ContextualTasksUI::~ContextualTasksUI() = default;

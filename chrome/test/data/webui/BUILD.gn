@@ -307,6 +307,7 @@ source_set("interactive_ui_tests") {
   if (!is_android) {
     sources += [
       "bookmarks/bookmarks_focus_test.cc",
+      "contextual_tasks/contextual_tasks_pixel_interactive_ui_test.cc",
       "cr_components/cr_components_interactive_test.cc",
       "downloads/downloads_focus_test.cc",
       "history/history_focus_test.cc",
@@ -354,6 +355,7 @@ source_set("interactive_ui_tests") {
   if (!is_android) {
     deps += [
       "//chrome/browser/ui:ui_features",
+      "//components/contextual_tasks/public",
       "//components/history_clusters/core",
       "//components/password_manager/content/common",
       "//components/power_bookmarks/core:features",

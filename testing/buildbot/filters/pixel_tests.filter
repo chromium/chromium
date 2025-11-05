@@ -77,6 +77,7 @@ InteractionTestUtilBrowserTest.CompareScreenshot_*
 InteractionTestUtilBrowserUiTest.CompareScreenshot_*
 *IOSPromoBubbleBrowserTest.*
 IsolatedWebAppInstallerViewUiPixelTest.*
+*ContextualTasks*PixelTest*
 *LensSidePanel*PixelTest*
 LHSIndicatorsUiBrowserTest.*
 LocalCardMigrationBrowserUiTest.*
