@@ -347,7 +347,6 @@ component("skia") {
   public += skia_codec_public
   public += skia_codec_rust_png_public
   public += skia_encode_public
-  public += skia_encode_png_public
   public += skia_encode_rust_png_public
   public += skia_encode_webp_public
 
@@ -358,13 +357,11 @@ component("skia") {
   sources += skia_sksl_core_module_sources
   sources += skia_codec_shared
   sources += skia_codec_png_base
-  sources += skia_codec_libpng_srcs
   sources += skia_codec_rust_png
   sources += skia_utils_private
   sources += skia_xps_sources
   sources += skia_encode_srcs
   sources += skia_encode_png_base
-  sources += skia_encode_libpng_srcs
   sources += skia_encode_rust_png_srcs
   sources += skia_encode_webp_srcs
 
@@ -501,7 +498,6 @@ component("skia") {
     ":skia_opts",
     ":skia_switches",
     "//base",
-    "//third_party/libpng",
     "//third_party/libwebp",
     "//third_party/libwebp:libwebp_webp",
     "//ui/base:features",
