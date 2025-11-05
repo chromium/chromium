@@ -304,6 +304,8 @@ source_set("interactive_ui_tests") {
 
   sources = [ "cr_elements/cr_elements_focus_test.cc" ]
 
+  deps = []
+
   if (!is_android) {
     sources += [
       "bookmarks/bookmarks_focus_test.cc",
@@ -320,6 +322,8 @@ source_set("interactive_ui_tests") {
       "tab_search/split_new_tab_page_interactive_uitest.cc",
       "tab_search/tab_search_focus_test.cc",
     ]
+
+    deps += [ "//chrome/test/data/webui:composebox_pixel_test_support" ]
   }
 
   if (enable_webui_tab_strip) {
@@ -350,7 +354,7 @@ source_set("interactive_ui_tests") {
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
-  deps = [ "//chrome/test:test_support" ]
+  deps += [ "//chrome/test:test_support" ]
 
   if (!is_android) {
     deps += [
@@ -802,4 +806,19 @@ generate_grd("build_grd") {
 
   manifest_files =
       filter_include(get_target_outputs(":build_ts"), [ "*_manifest.json" ])
+}
+
+if (!is_android) {
+  source_set("composebox_pixel_test_support") {
+    testonly = true
+    sources = [
+      "webui_composebox_pixel_test.cc",
+      "webui_composebox_pixel_test.h",
+    ]
+    deps = [
+      "//chrome/test:test_support",
+      "//ui/native_theme:test_support",
+    ]
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  }
 }
