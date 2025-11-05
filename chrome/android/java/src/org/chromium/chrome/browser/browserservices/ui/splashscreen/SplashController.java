@@ -286,10 +286,11 @@ public class SplashController extends CustomTabTabObserver
         }
 
         // When in desktop windowing mode (where Activities have a border and caption bar), we've
-        // got to update the task description for convertFromTranslucent to take effect. This can be
-        // fixed in Android 16 (https://crbug.com/390368429) however this workaround is necessary
-        // for Android 15 and serves as a backup for Android 16 (https://crbug.com/435578166).
-        mActivity.setTaskDescription(new ActivityManager.TaskDescription());
+        // got to update the task description for convertFromTranslucent to take effect. This was
+        // fixed in Android 16, see https://crbug.com/390368429.
+        if (android.os.Build.VERSION.SDK_INT <= android.os.Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+            mActivity.setTaskDescription(new ActivityManager.TaskDescription());
+        }
 
         notifyTranslucencyRemoved();
     }
