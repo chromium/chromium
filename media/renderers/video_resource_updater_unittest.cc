@@ -346,20 +346,25 @@ TEST_F(VideoResourceUpdaterTest, SoftwareFrameRGB) {
         updater->CreateExternalResourceFromVideoFrame(video_frame);
     EXPECT_EQ(VideoFrameResourceType::RGB, resource.type);
 #if BUILDFLAG(IS_MAC)
-    EXPECT_EQ(resource.resource.format, viz::SinglePlaneFormat::kBGRA_8888);
+    EXPECT_EQ(resource.resource.GetFormat(),
+              viz::SinglePlaneFormat::kBGRA_8888);
 #else
     EXPECT_EQ(resource.resource.GetSize(), video_frame->coded_size());
 
     if (fmt == PIXEL_FORMAT_XBGR) {
-      EXPECT_EQ(resource.resource.format, viz::SinglePlaneFormat::kRGBA_8888);
+      EXPECT_EQ(resource.resource.GetFormat(),
+                viz::SinglePlaneFormat::kRGBA_8888);
     } else if (fmt == PIXEL_FORMAT_XRGB) {
-      EXPECT_EQ(resource.resource.format, viz::SinglePlaneFormat::kBGRA_8888);
+      EXPECT_EQ(resource.resource.GetFormat(),
+                viz::SinglePlaneFormat::kBGRA_8888);
 
     } else if (fmt == PIXEL_FORMAT_ABGR) {
-      EXPECT_EQ(resource.resource.format, viz::SinglePlaneFormat::kRGBA_8888);
+      EXPECT_EQ(resource.resource.GetFormat(),
+                viz::SinglePlaneFormat::kRGBA_8888);
 
     } else if (fmt == PIXEL_FORMAT_ARGB) {
-      EXPECT_EQ(resource.resource.format, viz::SinglePlaneFormat::kBGRA_8888);
+      EXPECT_EQ(resource.resource.GetFormat(),
+                viz::SinglePlaneFormat::kBGRA_8888);
     }
 #endif
   }
@@ -655,7 +660,8 @@ TEST_F(VideoResourceUpdaterTest, SoftwareFrameRGBSoftwareCompositor) {
     VideoFrameExternalResource resource =
         updater->CreateExternalResourceFromVideoFrame(video_frame);
     EXPECT_EQ(VideoFrameResourceType::RGBA_PREMULTIPLIED, resource.type);
-    EXPECT_EQ(resource.resource.format, viz::SinglePlaneFormat::kBGRA_8888);
+    EXPECT_EQ(resource.resource.GetFormat(),
+              viz::SinglePlaneFormat::kBGRA_8888);
   }
 }
 
@@ -727,7 +733,7 @@ TEST_F(VideoResourceUpdaterTest, CreateForHardwarePlanes_SharedImageFormat) {
       updater->CreateExternalResourceFromVideoFrame(video_frame);
   EXPECT_EQ(VideoFrameResourceType::RGB, resource.type);
   EXPECT_TRUE(resource.release_callback);
-  EXPECT_EQ(viz::MultiPlaneFormat::kI420, resource.resource.format);
+  EXPECT_EQ(viz::MultiPlaneFormat::kI420, resource.resource.GetFormat());
   EXPECT_EQ(resource.resource.synchronization_type,
             viz::TransferableResource::SynchronizationType::kSyncToken);
 
@@ -925,7 +931,7 @@ TEST_F(VideoResourceUpdaterTest, CreateForHardwarePlanes_SingleNV12) {
   EXPECT_EQ(VideoFrameResourceType::RGB, resource.type);
   EXPECT_EQ((GLenum)GL_TEXTURE_EXTERNAL_OES,
             resource.resource.texture_target());
-  EXPECT_EQ(viz::MultiPlaneFormat::kNV12, resource.resource.format);
+  EXPECT_EQ(viz::MultiPlaneFormat::kNV12, resource.resource.GetFormat());
   EXPECT_EQ(0u, GetSharedImageCount());
 }
 
@@ -943,7 +949,7 @@ TEST_F(VideoResourceUpdaterTest,
   EXPECT_EQ(VideoFrameResourceType::RGB, resource.type);
   EXPECT_EQ((GLenum)GL_TEXTURE_RECTANGLE_ARB,
             resource.resource.texture_target());
-  EXPECT_EQ(viz::MultiPlaneFormat::kNV12, resource.resource.format);
+  EXPECT_EQ(viz::MultiPlaneFormat::kNV12, resource.resource.GetFormat());
   EXPECT_EQ(0u, GetSharedImageCount());
 
   video_frame = CreateTestHardwareVideoFrame(viz::MultiPlaneFormat::kNV12,
@@ -957,7 +963,7 @@ TEST_F(VideoResourceUpdaterTest,
   EXPECT_EQ((GLenum)GL_TEXTURE_EXTERNAL_OES,
             resource.resource.texture_target());
   // |updater| doesn't set |buffer_format| in this case.
-  EXPECT_EQ(viz::MultiPlaneFormat::kNV12, resource.resource.format);
+  EXPECT_EQ(viz::MultiPlaneFormat::kNV12, resource.resource.GetFormat());
   EXPECT_EQ(0u, GetSharedImageCount());
 }
 
@@ -981,8 +987,8 @@ TEST_F(VideoResourceUpdaterTest, CreateForHardwarePlanes_SingleP010HDR) {
   EXPECT_EQ(VideoFrameResourceType::RGB, resource.type);
   EXPECT_EQ(static_cast<GLenum>(GL_TEXTURE_EXTERNAL_OES),
             resource.resource.texture_target());
-  EXPECT_EQ(viz::MultiPlaneFormat::kP010, resource.resource.format);
-  EXPECT_EQ(kHDR10ColorSpace, resource.resource.color_space);
+  EXPECT_EQ(viz::MultiPlaneFormat::kP010, resource.resource.GetFormat());
+  EXPECT_EQ(kHDR10ColorSpace, resource.resource.GetColorSpace());
   EXPECT_EQ(hdr_metadata, resource.resource.hdr_metadata);
   EXPECT_EQ(0u, GetSharedImageCount());
 }
