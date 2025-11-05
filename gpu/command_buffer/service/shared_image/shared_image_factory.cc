@@ -390,21 +390,6 @@ bool SharedImageFactory::IsNativeBufferSupported(
     viz::SharedImageFormat format,
     gfx::BufferUsage usage,
     const gfx::GpuExtraInfo& gpu_extra_info) {
-#if BUILDFLAG(IS_OZONE_X11)
-  // Ozone/X11 requires gpu initialization to be done before it can determine
-  // what formats gmb can use. This limitation comes from the requirement to
-  // have GLX bindings initialized. The buffer formats will be passed through
-  // gpu extra info.
-  if (ui::OzonePlatform::GetInstance()
-          ->GetPlatformProperties()
-          .fetch_buffer_formats_for_gmb_on_gpu) {
-    return base::Contains(
-        gpu_extra_info.gpu_memory_buffer_support_x11,
-        gfx::BufferUsageAndFormat(
-            usage, viz::SharedImageFormatToBufferFormat(format)));
-  }
-#endif  // BUILDFLAG(IS_OZONE_X11)
-
 #if BUILDFLAG(IS_APPLE)
   switch (usage) {
     case gfx::BufferUsage::GPU_READ:
@@ -456,6 +441,21 @@ bool SharedImageFactory::IsNativeBufferSupported(
   }
   NOTREACHED();
 #elif BUILDFLAG(IS_OZONE)
+#if BUILDFLAG(IS_OZONE_X11)
+  // Ozone/X11 requires gpu initialization to be done before it can determine
+  // what formats gmb can use. This limitation comes from the requirement to
+  // have GLX bindings initialized. The buffer formats will be passed through
+  // gpu extra info.
+  if (ui::OzonePlatform::GetInstance()
+          ->GetPlatformProperties()
+          .fetch_buffer_formats_for_gmb_on_gpu) {
+    return base::Contains(
+        gpu_extra_info.gpu_memory_buffer_support_x11,
+        gfx::BufferUsageAndFormat(
+            usage, viz::SharedImageFormatToBufferFormat(format)));
+  }
+#endif  // BUILDFLAG(IS_OZONE_X11)
+
   auto buffer_format = viz::SharedImageFormatToBufferFormat(format);
   return ui::OzonePlatform::GetInstance()->IsNativePixmapConfigSupported(
       buffer_format, usage);
