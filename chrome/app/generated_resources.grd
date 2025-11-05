@@ -18157,7 +18157,7 @@ Please help our engineers fix this problem. Tell us what happened right before y
       </message>
 
       <message name="IDS_WEB_DIGITAL_CREDENTIALS_ISSUANCE_QR_BODY">
-        <ph name="WEBSITE_ORIGIN">$1<ex>www.cheapalcohol.com</ex></ph> wants to save info on your mobile device
+        <ph name="WEBSITE_ORIGIN">$1<ex>www.cheapalcohol.com</ex></ph> wants to save info on your Android device
       </message>
 
       <message name="IDS_WEB_DIGITAL_CREDENTIALS_QR_CODE_ALT_TEXT">
