@@ -30,6 +30,8 @@ type Reg = Simd<i16, SIMD_WIDTH>;
 type Reg32 = Simd<i32, SIMD_WIDTH>;
 type UReg = Simd<u16, SIMD_WIDTH>;
 
+const ETC1_BLOCK_BYTES: usize = 8;
+
 /// Define a helper to interleave elements from two vectors, reinterpret
 /// it as a type twice as large, and return the resulting vector.
 /// Each argument / return value is an array of vectors; conceptually, this
@@ -129,33 +131,40 @@ pub fn load_input_block(
 
 /// Compress RGB pixels to ETC1.
 ///
-/// `src` should be in RGBA.
-/// `dst` will be filled with compressed ETC1 blocks.
-/// `width` and `height` does not need to be multiple of 4. The boundary pixels
-/// will be padded with unspecified values.
-/// `src_row_width` and `dst_row_width` specifies the stride, in units of pixels
-/// and blocks, respectively.
+/// - `src` should be in RGBA format (the least significant byte is red).
+/// - `dst` will be filled with compressed ETC1 blocks.
+/// - `src_width` and `src_height` specifies the logical size of the image in
+///   pixels. These does not need to be multiple of 4. The boundary pixels will
+///   be padded with unspecified values.
+/// - `src_row_width` and `dst_row_width` specifies the in-memory length of each
+///   row, in pixels and blocks, respectively.
 ///
-/// Note that `src` assumes aligned 32-bit buffer while `dst` does not. This is
-/// due to two reasons: 32-bit alignment is practical to get even on 32-bit
-/// platforms, whereas 64-bit alignment does not hold on 32-bit ARM.
-/// Additionally, we require extensive shuffling when loading inputs, but
-/// stores to the output straight in the order of pixels. Dealing with
-/// unaligned buffers in the latter case is significantly easier.
+/// Note that `src` takes an aligned 32-bit buffer while `dst` takes a byte
+/// buffer, even though each ETC1 codeword is 64-bit. This is due to two
+/// reasons:
+/// - 32-bit alignment is practical to get even on 32-bit platforms, whereas
+///   64-bit values are not aligned to 8 bytes on 32-bit ARM.
+/// - We require extensive shuffling when loading inputs, but store to the
+///   output straight in the order of blocks. Dealing with unaligned buffers
+///   in the latter case is significantly easier.
 pub fn compress_etc1(
     src: &[u32],
     dst: &mut [u8],
-    width: u32,
-    height: u32,
+    src_width: u32,
+    src_height: u32,
     src_row_width: u32,
     dst_row_width: u32,
 ) {
-    let dst_height = height.div_ceil(4);
-    let dst_width = width.div_ceil(4);
+    // Note: We deliberately do not declare the block size (4x4) of ETC1 as a
+    //       constant. While magic constants in general are discouraged, the
+    //       block size appears way too frequent that naming it would make the
+    //       code verbose and less readable.
+    let dst_height = src_height.div_ceil(4);
+    let dst_width = src_width.div_ceil(4);
     // Aligned staging buffer. Data is copied into the potentially unaligned
     // destination buffer at the end of the each row.
     let mut staging_row = vec![[Simd::splat(0); 4]; (dst_width as usize).div_ceil(SIMD_WIDTH)];
-    let copy_len = dst_width as usize * 8;
+    let copy_len = dst_width as usize * ETC1_BLOCK_BYTES;
     // Note on vectorization scheme:
     //
     // We process one 4x4 block per SIMD lane, instead of the more common practice
@@ -165,8 +174,7 @@ pub fn compress_etc1(
     // portable SIMD than schemes that heavily shuffles.
     for dst_y in 0..dst_height {
         for dst_x0 in (0..dst_width).step_by(SIMD_WIDTH) {
-            let data = load_input_block(src, width, height, src_row_width, dst_x0 * 4, dst_y * 4);
-
+            let data = load_input_block(src, src_width, src_height, src_row_width, dst_x0 * 4, dst_y * 4);
             let data = dither(&data);
             let QuantResult { lo: hdr0, hi: hdr1, scaled0: ep0, scaled1: ep1 } =
                 quantize_averages(&data);
@@ -174,7 +182,7 @@ pub fn compress_etc1(
             let codewords = interleave_etc1(best_fit);
             staging_row[dst_x0 as usize / SIMD_WIDTH] = codewords;
         }
-        let dst_row = &mut dst[(dst_y * dst_row_width * 8) as usize..];
+        let dst_row = &mut dst[(dst_y * dst_row_width) as usize * ETC1_BLOCK_BYTES..];
         let staging_row_bytes = cast_slice(&*staging_row);
         dst_row[..copy_len].copy_from_slice(&staging_row_bytes[..copy_len]);
     }
