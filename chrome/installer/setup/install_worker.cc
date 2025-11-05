@@ -292,7 +292,6 @@ void AddElevationServiceWorkItems(const base::FilePath& elevation_service_path,
       base::CommandLine(base::CommandLine::NO_PROGRAM),
       install_static::GetClientStateKeyPath(),
       {install_static::GetElevatorClsid()}, {install_static::GetElevatorIid()});
-  install_service_work_item->set_best_effort(true);
   list->AddWorkItem(install_service_work_item);
 }
 
