@@ -81,7 +81,7 @@ class OmniboxPopupPresenterBase {
   // The location bar view that owns `this`.
   const raw_ptr<LocationBarView> location_bar_view_;
 
-  // The container for both the WebUI suggestsions list and other WebUI
+  // The container for both the WebUI suggestions list and other WebUI
   // containers
   std::unique_ptr<views::View> owned_omnibox_popup_webui_container_;
 
