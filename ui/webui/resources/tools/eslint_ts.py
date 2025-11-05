@@ -21,7 +21,7 @@ _ESLINT_CONFIG_TEMPLATE = """import path from 'path';
 import defaultConfig from '%(config_base)s';
 
 export default [
-  defaultConfig,
+  ...defaultConfig,
   {
     languageOptions: {
       parserOptions: {
