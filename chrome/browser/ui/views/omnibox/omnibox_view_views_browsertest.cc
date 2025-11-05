@@ -1536,11 +1536,12 @@ class OmniboxViewViewsAIMBrowserTest : public OmniboxViewViewsTest {
         Profile::FromBrowserContext(context),
         base::BindLambdaForTesting([=](content::BrowserContext* context) {
           Profile* profile = Profile::FromBrowserContext(context);
-          auto mock_service = std::make_unique<MockAimEligibilityService>(
-              *profile->GetPrefs(),
-              TemplateURLServiceFactory::GetForProfile(profile),
-              /*url_loader_factory=*/nullptr,
-              /*identity_manager=*/nullptr);
+          auto mock_service =
+              std::make_unique<testing::NiceMock<MockAimEligibilityService>>(
+                  *profile->GetPrefs(),
+                  TemplateURLServiceFactory::GetForProfile(profile),
+                  /*url_loader_factory=*/nullptr,
+                  /*identity_manager=*/nullptr);
           ON_CALL(*mock_service, IsAimLocallyEligible())
               .WillByDefault(Return(is_locally_eligible));
           ON_CALL(*mock_service, IsServerEligibilityEnabled())
