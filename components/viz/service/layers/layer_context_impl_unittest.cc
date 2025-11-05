@@ -3944,5 +3944,39 @@ TEST_F(LayerContextImplTest, UpdateDisplayTreeWithTargetLocalSurfaceId) {
             target_local_surface_id);
 }
 
+TEST_F(LayerContextImplTest, UpdateDisplayTreeWithTargetSurfaceRanges) {
+  const SurfaceRange ranges[] = {
+      {SurfaceId(kDefaultFrameSinkId,
+                 {1, base::UnguessableToken::CreateForTesting(2, 3)}),
+       SurfaceId(kDefaultFrameSinkId,
+                 {10, base::UnguessableToken::CreateForTesting(11, 12)})},
+      {SurfaceId(kDefaultFrameSinkId,
+                 {4, base::UnguessableToken::CreateForTesting(5, 6)}),
+       SurfaceId(kDefaultFrameSinkId,
+                 {13, base::UnguessableToken::CreateForTesting(14, 15)})},
+      {SurfaceId(kDefaultFrameSinkId,
+                 {7, base::UnguessableToken::CreateForTesting(8, 9)}),
+       SurfaceId(kDefaultFrameSinkId,
+                 {16, base::UnguessableToken::CreateForTesting(17, 18)})}};
+
+  auto update = CreateDefaultUpdate();
+  update->surface_ranges.emplace({ranges[0], ranges[1]});
+
+  auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update));
+  EXPECT_TRUE(result.has_value());
+  EXPECT_EQ(
+      layer_context_impl_->host_impl()->active_tree()->SurfaceRanges().size(),
+      2U);
+  EXPECT_TRUE(
+      layer_context_impl_->host_impl()->active_tree()->SurfaceRanges().contains(
+          ranges[0]));
+  EXPECT_TRUE(
+      layer_context_impl_->host_impl()->active_tree()->SurfaceRanges().contains(
+          ranges[1]));
+  EXPECT_FALSE(
+      layer_context_impl_->host_impl()->active_tree()->SurfaceRanges().contains(
+          ranges[2]));
+}
+
 }  // namespace
 }  // namespace viz
