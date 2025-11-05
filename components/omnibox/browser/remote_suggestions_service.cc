@@ -397,7 +397,8 @@ RemoteSuggestionsService::StartZeroPrefixSuggestionsRequest(
     const TemplateURL* template_url,
     TemplateURLRef::SearchTermsArgs search_terms_args,
     const SearchTermsData& search_terms_data,
-    CompletionCallback completion_callback) {
+    CompletionCallback completion_callback,
+    base::optional_ref<const base::TimeDelta> timeout) {
   DCHECK(template_url);
 
   const GURL suggest_url =
@@ -456,6 +457,9 @@ RemoteSuggestionsService::StartZeroPrefixSuggestionsRequest(
   base::ElapsedTimer request_timer;
   std::unique_ptr<network::SimpleURLLoader> loader =
       network::SimpleURLLoader::Create(std::move(request), traffic_annotation);
+  if (timeout.has_value()) {
+    loader->SetTimeoutDuration(*timeout);
+  }
   loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       url_loader_factory_.get(),
       base::BindOnce(&RemoteSuggestionsService::OnRequestCompleted,
