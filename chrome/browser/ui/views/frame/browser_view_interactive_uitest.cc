@@ -107,6 +107,38 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, FullscreenClearsFocus) {
   EXPECT_FALSE(location_bar_view->Contains(focus_manager->GetFocusedView()));
 }
 
+// Test that the view tree order is preserved after entering and exiting
+// immersive fullscreen. Immersive fullscreen is only supported on ChromeOS and
+// MacOS at this point in time.
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
+IN_PROC_BROWSER_TEST_F(BrowserViewTest, ImmersiveFullscreenViewTreeOrder) {
+  auto* const immersive_mode_controller =
+      ImmersiveModeController::From(browser());
+  ASSERT_TRUE(immersive_mode_controller);
+
+  BrowserView* view = browser_view();
+  std::vector<views::View*> children_before;
+  for (const auto& child : view->children()) {
+    children_before.push_back(child);
+  }
+
+  // Enter immersive fullscreen.
+  ui_test_utils::ToggleFullscreenModeAndWait(browser());
+  EXPECT_TRUE(immersive_mode_controller->IsEnabled());
+
+  // Exit immersive fullscreen.
+  ui_test_utils::ToggleFullscreenModeAndWait(browser());
+  EXPECT_FALSE(immersive_mode_controller->IsEnabled());
+
+  std::vector<views::View*> children_after;
+  for (const auto& child : view->children()) {
+    children_after.push_back(child);
+  }
+
+  EXPECT_EQ(children_before, children_after);
+}
+#endif
+
 // Test whether the top view including toolbar and tab strip shows up or hides
 // correctly in browser fullscreen mode.
 IN_PROC_BROWSER_TEST_F(BrowserViewTest, BrowserFullscreenShowTopView) {
