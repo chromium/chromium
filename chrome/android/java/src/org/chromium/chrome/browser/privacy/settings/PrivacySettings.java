@@ -38,6 +38,7 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.prefetch.settings.PreloadPagesSettingsFragment;
 import org.chromium.chrome.browser.privacy.secure_dns.SecureDnsSettings;
+import org.chromium.chrome.browser.privacy_guide.PrivacyGuideFragment;
 import org.chromium.chrome.browser.privacy_guide.PrivacyGuideInteractions;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxBridge;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxReferrer;
@@ -167,7 +168,14 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
                             PrivacyGuideInteractions.SETTINGS_LINK_ROW_ENTRY,
                             PrivacyGuideInteractions.MAX_VALUE);
                     UserPrefs.get(getProfile()).setBoolean(Pref.PRIVACY_GUIDE_VIEWED, true);
-                    return false;
+
+                    // Explicitly launch PrivacyGuideFragment from here. Because the fragment
+                    // does not implement EmbeddableSettingsPage, it will work as standalone mode.
+                    // In details it is still a part of SettingsActivity, it will let user find
+                    // it is an independent flow.
+                    SettingsNavigationFactory.createSettingsNavigation()
+                            .startSettings(getActivity(), PrivacyGuideFragment.class);
+                    return true;
                 });
         if (getProfile().isChild()
                 || ManagedBrowserUtils.isBrowserManaged(getProfile())
