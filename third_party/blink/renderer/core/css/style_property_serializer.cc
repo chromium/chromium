@@ -679,6 +679,9 @@ String StylePropertySerializer::SerializeShorthand(
       return GetShorthandValueForBidirectionalGapRules(ruleBreakShorthand());
     case CSSPropertyID::kRuleColor:
       return GetShorthandValueForBidirectionalGapRules(ruleColorShorthand());
+    case CSSPropertyID::kRuleOutset:
+      return GetShorthandValueForBidirectionalGapRuleOutset(
+          ruleOutsetShorthand());
     case CSSPropertyID::kRuleStyle:
       return GetShorthandValueForBidirectionalGapRules(ruleStyleShorthand());
     case CSSPropertyID::kRuleWidth:
@@ -1917,9 +1920,60 @@ String StylePropertySerializer::GetShorthandValueForRule(
       column_rule_shorthand, CSSGapDecorationPropertyDirection::kColumn);
 }
 
+String StylePropertySerializer::GetShorthandValueForBidirectionalGapRuleOutset(
+    const StylePropertyShorthand& shorthand) const {
+  CHECK_EQ(shorthand.length(), 8u);
+
+  StringBuilder result;
+  const CSSValue* column_rule_edge_start_outset_value =
+      property_set_.GetPropertyCSSValue(*shorthand.properties()[0]);
+  const CSSValue* column_rule_edge_end_outset_value =
+      property_set_.GetPropertyCSSValue(*shorthand.properties()[1]);
+  const CSSValue* column_rule_interior_start_outset_value =
+      property_set_.GetPropertyCSSValue(*shorthand.properties()[2]);
+  const CSSValue* column_rule_interior_end_outset_value =
+      property_set_.GetPropertyCSSValue(*shorthand.properties()[3]);
+  const CSSValue* row_rule_edge_start_outset_value =
+      property_set_.GetPropertyCSSValue(*shorthand.properties()[4]);
+  const CSSValue* row_rule_edge_end_outset_value =
+      property_set_.GetPropertyCSSValue(*shorthand.properties()[5]);
+  const CSSValue* row_rule_interior_start_outset_value =
+      property_set_.GetPropertyCSSValue(*shorthand.properties()[6]);
+  const CSSValue* row_rule_interior_end_outset_value =
+      property_set_.GetPropertyCSSValue(*shorthand.properties()[7]);
+
+  // The `rule-outset` shorthand is bi-directional, so the values should be
+  // equivalent.
+  //
+  // https://drafts.csswg.org/css-gaps-1/#outset
+  if (!base::ValuesEquivalent(column_rule_edge_start_outset_value,
+                              row_rule_edge_start_outset_value) ||
+      !base::ValuesEquivalent(column_rule_edge_end_outset_value,
+                              row_rule_edge_end_outset_value) ||
+      !base::ValuesEquivalent(column_rule_interior_start_outset_value,
+                              row_rule_interior_start_outset_value) ||
+      !base::ValuesEquivalent(column_rule_interior_end_outset_value,
+                              row_rule_interior_end_outset_value)) {
+    return String();
+  }
+  if (!column_rule_edge_start_outset_value->IsInitialValue()) {
+    result.Append(column_rule_edge_start_outset_value->CssText());
+    result.Append(' ');
+    result.Append(column_rule_edge_end_outset_value->CssText());
+    result.Append(' ');
+    result.Append('/');
+    result.Append(' ');
+    result.Append(column_rule_interior_start_outset_value->CssText());
+    result.Append(' ');
+    result.Append(column_rule_interior_end_outset_value->CssText());
+  }
+
+  return result.ReleaseString();
+}
+
 String StylePropertySerializer::GetShorthandValueForBidirectionalGapRules(
     const StylePropertyShorthand& shorthand) const {
-  DCHECK(shorthand.length() == 2u);
+  DCHECK_EQ(shorthand.length(), 2u);
 
   StringBuilder result;
   const CSSValue* column_rule_data =

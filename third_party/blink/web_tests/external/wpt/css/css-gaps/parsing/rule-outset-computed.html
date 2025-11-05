@@ -18,7 +18,7 @@
     }
   </style>
   <script>
-    const properties = ["column-rule-outset", "row-rule-outset"/*, "rule-outset"*/];
+    const properties = ["column-rule-outset", "row-rule-outset", "rule-outset"];
     for (const property of properties) {
       test_computed_value(property, "10px", "10px 10px / 10px 10px");
       test_computed_value(property, "-20px", "-20px -20px / -20px -20px");

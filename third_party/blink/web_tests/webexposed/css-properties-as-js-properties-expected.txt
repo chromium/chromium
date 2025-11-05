@@ -440,6 +440,7 @@ rubyPosition
 rule
 ruleBreak
 ruleColor
+ruleOutset
 ruleStyle
 ruleWidth
 rx

@@ -6936,8 +6936,6 @@ crbug.com/429365670 external/wpt/css/css-multicol/multicol-nested-column-rule-00
 # This test is failing due to us considering all intersections as edge intersections
 crbug.com/446616449 external/wpt/css/css-gaps/multicol/multicol-gap-decorations-022.html [ Failure ]
 crbug.com/446616449 external/wpt/css/css-gaps/multicol/multicol-gap-decorations-023.html [ Failure ]
-# This test is temporarily failing while we reintroduce rule-outset shorthand:
-crbug.com/429365670 external/wpt/css/css-gaps/parsing/gap-decorations-bidirectional-shorthands.html [ Failure ]
 ### End of tests failing with CSSGapDecorations Enabled
 ### Tests for CSSGapDecorations disabled
 crbug.com/419066541 virtual/css-gap-decorations-disabled/animations/interpolation/webkit-column-rule-color-interpolation.html [ Pass ]

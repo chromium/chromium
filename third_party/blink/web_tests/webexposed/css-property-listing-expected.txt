@@ -898,6 +898,15 @@ All changes to this list should go through Blink's feature review process: http:
     rule-color
         column-rule-color
         row-rule-color
+    rule-outset
+        column-rule-edge-end-outset
+        column-rule-edge-start-outset
+        column-rule-interior-end-outset
+        column-rule-interior-start-outset
+        row-rule-edge-end-outset
+        row-rule-edge-start-outset
+        row-rule-interior-end-outset
+        row-rule-interior-start-outset
     rule-style
         column-rule-style
         row-rule-style

@@ -8960,6 +8960,14 @@
       runtime_flag: "CSSGapDecoration",
     },
     {
+      name: "rule-outset",
+      longhands: ["row-rule-edge-start-outset", "row-rule-edge-end-outset", "row-rule-interior-start-outset",
+                  "row-rule-interior-end-outset", "column-rule-edge-start-outset", "column-rule-edge-end-outset",
+                  "column-rule-interior-start-outset", "column-rule-interior-end-outset"],
+      property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      runtime_flag: "CSSGapDecoration",
+    },
+    {
       name: "rule-width",
       longhands: ["column-rule-width", "row-rule-width"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],

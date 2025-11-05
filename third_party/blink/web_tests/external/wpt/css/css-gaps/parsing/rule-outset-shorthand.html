@@ -83,18 +83,21 @@
                 }
             },
         ];
+
+
         for (rule_property in rule_properties) {
-                let test_cases = testCases;
-                for (const { input, expected } of test_cases) {
-                    const [ruleEdgeStartOutset, ruleEdgeEndOutset, ruleInteriorStartOutset, ruleInteriorEndOutset] = rule_properties[rule_property];
-                    test_shorthand_value(rule_property, input, {
-                        [ruleEdgeStartOutset]: expected.ruleEdgeStartOutset,
-                        [ruleEdgeEndOutset]: expected.ruleEdgeEndOutset,
-                        [ruleInteriorStartOutset]: expected.ruleInteriorStartOutset,
-                        [ruleInteriorEndOutset]: expected.ruleInteriorEndOutset,
-                    });
-                }
+            const test_cases = testCases;
+
+            for (const { input, expected } of test_cases) {
+                const [ruleEdgeStartOutset, ruleEdgeEndOutset, ruleInteriorStartOutset, ruleInteriorEndOutset] = rule_properties[rule_property];
+                test_shorthand_value(rule_property, input, {
+                    [ruleEdgeStartOutset]: expected.ruleEdgeStartOutset,
+                    [ruleEdgeEndOutset]: expected.ruleEdgeEndOutset,
+                    [ruleInteriorStartOutset]: expected.ruleInteriorStartOutset,
+                    [ruleInteriorEndOutset]: expected.ruleInteriorEndOutset,
+                });
             }
+        }
     </script>
 </body>
 </html>

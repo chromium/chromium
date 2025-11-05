@@ -1222,6 +1222,73 @@ const CSSValue* RowRuleOutset::CSSValueFromComputedStyleInternal(
       value_phase, CSSGapDecorationPropertyDirection::kRow);
 }
 
+bool RuleOutset::ParseShorthand(
+    bool important,
+    CSSParserTokenStream& stream,
+    const CSSParserContext& context,
+    const CSSParserLocalContext&,
+    HeapVector<CSSPropertyValue, 64>& properties) const {
+  DCHECK_EQ(ruleOutsetShorthand().length(), 8u);
+
+  CSSValue* rule_edge_start_outset = nullptr;
+  CSSValue* rule_edge_end_outset = nullptr;
+  CSSValue* rule_interior_start_outset = nullptr;
+  CSSValue* rule_interior_end_outset = nullptr;
+
+  if (!css_parsing_utils::ConsumeGapDecorationsRuleOutsetShorthand(
+          important, context, stream, rule_edge_start_outset,
+          rule_edge_end_outset, rule_interior_start_outset,
+          rule_interior_end_outset)) {
+    return false;
+  }
+
+  css_parsing_utils::AddProperty(
+      CSSPropertyID::kColumnRuleEdgeStartOutset, CSSPropertyID::kRuleOutset,
+      *rule_edge_start_outset, important,
+      css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
+  css_parsing_utils::AddProperty(
+      CSSPropertyID::kColumnRuleEdgeEndOutset, CSSPropertyID::kRuleOutset,
+      *rule_edge_end_outset, important,
+      css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
+  css_parsing_utils::AddProperty(
+      CSSPropertyID::kColumnRuleInteriorStartOutset, CSSPropertyID::kRuleOutset,
+      *rule_interior_start_outset, important,
+      css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
+  css_parsing_utils::AddProperty(
+      CSSPropertyID::kColumnRuleInteriorEndOutset, CSSPropertyID::kRuleOutset,
+      *rule_interior_end_outset, important,
+      css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
+
+  css_parsing_utils::AddProperty(
+      CSSPropertyID::kRowRuleEdgeStartOutset, CSSPropertyID::kRuleOutset,
+      *rule_edge_start_outset, important,
+      css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
+  css_parsing_utils::AddProperty(
+      CSSPropertyID::kRowRuleEdgeEndOutset, CSSPropertyID::kRuleOutset,
+      *rule_edge_end_outset, important,
+      css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
+  css_parsing_utils::AddProperty(
+      CSSPropertyID::kRowRuleInteriorStartOutset, CSSPropertyID::kRuleOutset,
+      *rule_interior_start_outset, important,
+      css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
+  css_parsing_utils::AddProperty(
+      CSSPropertyID::kRowRuleInteriorEndOutset, CSSPropertyID::kRuleOutset,
+      *rule_interior_end_outset, important,
+      css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
+
+  return true;
+}
+
+const CSSValue* RuleOutset::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject* layout_object,
+    bool allow_visited_style,
+    CSSValuePhase value_phase) const {
+  return ComputedStyleUtils::ValuesForBidirectionalGapRuleOutsetShorthand(
+      ruleOutsetShorthand(), style, layout_object, allow_visited_style,
+      value_phase);
+}
+
 bool Columns::ParseShorthand(
     bool important,
     CSSParserTokenStream& stream,
