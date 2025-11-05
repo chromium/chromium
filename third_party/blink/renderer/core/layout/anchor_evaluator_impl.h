@@ -118,15 +118,18 @@ class CORE_EXPORT AnchorEvaluatorImpl : public AnchorEvaluator {
       CSSAnchorValue anchor_value,
       float percentage,
       const ScopedCSSName* position_anchor,
-      const std::optional<PositionAreaOffsets>&) const;
+      const std::optional<PositionAreaOffsets>&);
   std::optional<LayoutUnit> EvaluateAnchorSize(
       const AnchorSpecifierValue& anchor_specifier,
       CSSAnchorSizeValue anchor_size_value,
-      const ScopedCSSName* position_anchor) const;
-  PhysicalRect GetAnchorRect(const PhysicalAnchorReference&,
-                             const ScopedCSSName* position_anchor) const;
+      const ScopedCSSName* position_anchor);
+  const PhysicalAnchorReference* ResolveAnchorForEvaluation(
+      const AnchorSpecifierValue&,
+      const ScopedCSSName* position_anchor);
+  PhysicalRect CalculateAnchorRectWithScrollOffset(
+      const PhysicalAnchorReference&);
 
-  void UpdateAccessibilityAnchor(const LayoutObject* anchor) const;
+  void UpdateAccessibilityAnchor(const LayoutObject* anchor);
 
   const PaintLayer* DefaultAnchorScrollContainerLayer(
       const ScopedCSSName* position_anchor) const;
@@ -203,27 +206,26 @@ class CORE_EXPORT AnchorEvaluatorImpl : public AnchorEvaluator {
   mutable CachedValue<const ScopedCSSName*, const PaintLayer*>
       cached_default_anchor_scroll_container_layer_;
 
-  mutable bool needs_scroll_adjustment_in_x_ = false;
-  mutable bool needs_scroll_adjustment_in_y_ = false;
+  bool needs_scroll_adjustment_in_x_ = false;
+  bool needs_scroll_adjustment_in_y_ = false;
 
   // Most recent anchor evaluated, used for accessibility. This value is cleared
   // before a @position-try rule is applied.
-  mutable Element* accessibility_anchor_ = nullptr;
+  Element* accessibility_anchor_ = nullptr;
 
   // True if more than one anchor has been evaluated so far. This value is
   // cleared before a @position-try rule is applied.
-  mutable bool has_multiple_accessibility_anchors_ = false;
+  bool has_multiple_accessibility_anchors_ = false;
 
   // A set of elements whose display locks' skipping status are potentially
   // impacted by anchors found by this evaluator.
-  mutable GCedHeapHashSet<Member<Element>>* display_locks_affected_by_anchors_ =
+  GCedHeapHashSet<Member<Element>>* display_locks_affected_by_anchors_ =
       nullptr;
 
   const OutOfFlowData::RememberedScrollOffsets* remembered_scroll_offsets_ =
       nullptr;
 
-  mutable OutOfFlowData::RememberedScrollOffsets* used_scroll_offsets_ =
-      nullptr;
+  OutOfFlowData::RememberedScrollOffsets* used_scroll_offsets_ = nullptr;
 };
 
 }  // namespace blink

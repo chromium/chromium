@@ -332,23 +332,15 @@ std::optional<LayoutUnit> AnchorEvaluatorImpl::EvaluateAnchor(
     CSSAnchorValue anchor_value,
     float percentage,
     const ScopedCSSName* position_anchor,
-    const std::optional<PositionAreaOffsets>& position_area_offsets) const {
+    const std::optional<PositionAreaOffsets>& position_area_offsets) {
   if (!AllowAnchor()) {
     return std::nullopt;
   }
 
   const PhysicalAnchorReference* anchor_reference =
-      ResolveAnchorReference(anchor_specifier, position_anchor);
+      ResolveAnchorForEvaluation(anchor_specifier, position_anchor);
   if (!anchor_reference) {
     return std::nullopt;
-  }
-
-  UpdateAccessibilityAnchor(anchor_reference->GetLayoutObject());
-
-  if (anchor_reference->GetDisplayLocks()) {
-    for (auto& display_lock : *anchor_reference->GetDisplayLocks()) {
-      display_locks_affected_by_anchors_->insert(display_lock);
-    }
   }
 
   const bool has_default_anchor = DefaultAnchor(position_anchor);
@@ -358,7 +350,8 @@ std::optional<LayoutUnit> AnchorEvaluatorImpl::EvaluateAnchor(
 
   const bool is_y_axis = IsYAxis();
 
-  PhysicalRect anchor_rect = GetAnchorRect(*anchor_reference, position_anchor);
+  PhysicalRect anchor_rect =
+      CalculateAnchorRectWithScrollOffset(*anchor_reference);
   if (std::optional<LayoutUnit> result = ResolveAnchorValue(
           anchor_rect, anchor_value, percentage,
           AvailableSizeAlongAxis(position_area_modified_containing_block_rect),
@@ -381,7 +374,7 @@ std::optional<LayoutUnit> AnchorEvaluatorImpl::EvaluateAnchor(
 std::optional<LayoutUnit> AnchorEvaluatorImpl::EvaluateAnchorSize(
     const AnchorSpecifierValue& anchor_specifier,
     CSSAnchorSizeValue anchor_size_value,
-    const ScopedCSSName* position_anchor) const {
+    const ScopedCSSName* position_anchor) {
   if (!AllowAnchorSize()) {
     return std::nullopt;
   }
@@ -393,10 +386,27 @@ std::optional<LayoutUnit> AnchorEvaluatorImpl::EvaluateAnchorSize(
       anchor_size_value = CSSAnchorSizeValue::kWidth;
     }
   }
+
+  const PhysicalAnchorReference* anchor_reference =
+      ResolveAnchorForEvaluation(anchor_specifier, position_anchor);
+  if (!anchor_reference) {
+    return std::nullopt;
+  }
+
+  PhysicalRect anchor_rect =
+      CalculateAnchorRectWithScrollOffset(*anchor_reference);
+  return ResolveAnchorSizeValue(anchor_rect.size, anchor_size_value,
+                                container_writing_direction_.GetWritingMode(),
+                                query_box_->StyleRef().GetWritingMode());
+}
+
+const PhysicalAnchorReference* AnchorEvaluatorImpl::ResolveAnchorForEvaluation(
+    const AnchorSpecifierValue& anchor_specifier,
+    const ScopedCSSName* position_anchor) {
   const PhysicalAnchorReference* anchor_reference =
       ResolveAnchorReference(anchor_specifier, position_anchor);
   if (!anchor_reference) {
-    return std::nullopt;
+    return nullptr;
   }
 
   UpdateAccessibilityAnchor(anchor_reference->GetLayoutObject());
@@ -407,16 +417,11 @@ std::optional<LayoutUnit> AnchorEvaluatorImpl::EvaluateAnchorSize(
     }
   }
 
-  PhysicalSize anchor_size =
-      GetAnchorRect(*anchor_reference, position_anchor).size;
-  return ResolveAnchorSizeValue(anchor_size, anchor_size_value,
-                                container_writing_direction_.GetWritingMode(),
-                                query_box_->StyleRef().GetWritingMode());
+  return anchor_reference;
 }
 
-PhysicalRect AnchorEvaluatorImpl::GetAnchorRect(
-    const PhysicalAnchorReference& anchor_reference,
-    const ScopedCSSName* position_anchor) const {
+PhysicalRect AnchorEvaluatorImpl::CalculateAnchorRectWithScrollOffset(
+    const PhysicalAnchorReference& anchor_reference) {
   PhysicalRect result;
   if (RuntimeEnabledFeatures::CSSAnchorWithTransformsEnabled()) {
     result = anchor_reference.TransformedBoundingRect();
@@ -465,7 +470,7 @@ PhysicalRect AnchorEvaluatorImpl::GetAnchorRect(
 }
 
 void AnchorEvaluatorImpl::UpdateAccessibilityAnchor(
-    const LayoutObject* anchor) const {
+    const LayoutObject* anchor) {
   if (!anchor->GetDocument().ExistingAXObjectCache()) {
     return;
   }
