@@ -59,6 +59,9 @@ import java.util.List;
 /** Mediator for the Navigation Attachments component. */
 @NullMarked
 class NavigationAttachmentsMediator {
+    // TODO(crbug.com/457825183): Supply this class name externally.
+    private static final String CHROME_ITEM_PICKER_ACTIVITY_CLASS =
+            "org.chromium.chrome.browser.chrome_item_picker.ChromeItemPickerActivity";
     private static final String MIMETYPE_IMAGE_ANY = "image/*";
     private static final int MAX_RECENT_TABS_TO_PRESENT = 5;
     private final Context mContext;
@@ -271,7 +274,22 @@ class NavigationAttachmentsMediator {
     @VisibleForTesting
     void onTabPickerClicked() {
         mPopup.dismiss();
-        // TODO(haileywang): Implement this.
+        Intent intent;
+        try {
+            intent = new Intent(mContext, Class.forName(CHROME_ITEM_PICKER_ACTIVITY_CLASS));
+        } catch (ClassNotFoundException e) {
+            return;
+        }
+
+        mWindowAndroid.showCancelableIntent(
+                intent,
+                (resultCode, data) -> onTabPickerResult(resultCode, data),
+                R.string.low_memory_error);
+    }
+
+    void onTabPickerResult(int resultCode, @Nullable Intent data) {
+        if (resultCode != Activity.RESULT_OK || data == null) return;
+        // TODO(haileywang): Handle data returned
     }
 
     @VisibleForTesting
