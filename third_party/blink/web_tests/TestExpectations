@@ -737,6 +737,10 @@ crbug.com/388922812 external/wpt/svg/animations/reftests/discard-rect-with-anim-
 # is too destructive and stops running transitions.
 crbug.com/40550039 external/wpt/svg/styling/use-element-transitions-dom-mutation.tentative.html [ Failure ]
 
+# Fail because we don't clone all element types into <use> shadow trees
+crbug.com/386610909 external/wpt/svg/styling/use-element-non-rendered-has-selector.html [ Failure ]
+crbug.com/386610909 external/wpt/svg/styling/use-element-non-rendered-sibling-selector.html [ Failure ]
+
 # CSS Anchor Positioning Update failures.
 # New tests which fail without the flag enabled.
 crbug.com/438515315 virtual/css-anchor-update-disabled/external/wpt/css/css-anchor-position/anchor-scroll-chained-002.html [ Failure ]
