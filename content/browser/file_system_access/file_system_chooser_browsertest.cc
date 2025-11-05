@@ -2177,7 +2177,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, DontShowWhileHidden) {
   // Record the state of the dialog.
   SelectFileDialogRecorder recorder;
   ui::SelectFileDialog::SetFactory(
-      std::make_unique<ObservableSelectFileDialogFactory>(&recorder));
+      std::make_unique<ObservableSelectFileDialogFactory>(
+          recorder.GetWeakPtr()));
 
   // Hide the WebContents.
   WebContents* wc = shell()->web_contents();
@@ -2210,7 +2211,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, MAYBE_ShowThenHide) {
   // Record the state of the dialog.
   SelectFileDialogRecorder recorder;
   ui::SelectFileDialog::SetFactory(
-      std::make_unique<ObservableSelectFileDialogFactory>(&recorder));
+      std::make_unique<ObservableSelectFileDialogFactory>(
+          recorder.GetWeakPtr()));
 
   // Open the dialog and wait until it's created.
   ASSERT_EQ(

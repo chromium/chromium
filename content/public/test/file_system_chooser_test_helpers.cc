@@ -5,6 +5,7 @@
 #include "content/public/test/file_system_chooser_test_helpers.h"
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 #include "ui/shell_dialogs/selected_file_info.h"
 #include "url/gurl.h"
@@ -148,7 +149,7 @@ class ObservableSelectFileDialog : public ui::SelectFileDialog {
   ObservableSelectFileDialog(
       Listener* listener,
       std::unique_ptr<ui::SelectFilePolicy> policy,
-      ObservableSelectFileDialogFactory::Observer* observer)
+      base::WeakPtr<ObservableSelectFileDialogFactory::Observer> observer)
       : ui::SelectFileDialog(listener, std::move(policy)), observer_(observer) {
     observer_->WasCreated();
   }
@@ -170,8 +171,12 @@ class ObservableSelectFileDialog : public ui::SelectFileDialog {
   bool HasMultipleFileTypeChoicesImpl() override { return false; }
 
  private:
-  ~ObservableSelectFileDialog() override { observer_->WasDestroyed(); }
-  raw_ptr<ObservableSelectFileDialogFactory::Observer> observer_;
+  ~ObservableSelectFileDialog() override {
+    if (observer_) {
+      observer_->WasDestroyed();
+    }
+  }
+  base::WeakPtr<ObservableSelectFileDialogFactory::Observer> observer_;
 };
 
 }  // namespace
@@ -218,7 +223,7 @@ ui::SelectFileDialog* FakeSelectFileDialogFactory::Create(
 }
 
 ObservableSelectFileDialogFactory::ObservableSelectFileDialogFactory(
-    Observer* observer)
+    base::WeakPtr<Observer> observer)
     : observer_(observer) {}
 
 ObservableSelectFileDialogFactory::~ObservableSelectFileDialogFactory() =
@@ -227,10 +232,10 @@ ObservableSelectFileDialogFactory::~ObservableSelectFileDialogFactory() =
 ui::SelectFileDialog* ObservableSelectFileDialogFactory::Create(
     ui::SelectFileDialog::Listener* listener,
     std::unique_ptr<ui::SelectFilePolicy> policy) {
-  return new ObservableSelectFileDialog(listener, std::move(policy),
-                                        observer_.get());
+  return new ObservableSelectFileDialog(listener, std::move(policy), observer_);
 }
 
+SelectFileDialogRecorder::SelectFileDialogRecorder() : weak_factory_(this) {}
 void SelectFileDialogRecorder::WasCreated() {
   CHECK_EQ(state, kNotCreated);
   state = kCreated;
@@ -240,4 +245,9 @@ void SelectFileDialogRecorder::WasDestroyed() {
   state = kDestroyed;
 }
 
+SelectFileDialogRecorder::~SelectFileDialogRecorder() = default;
+
+base::WeakPtr<SelectFileDialogRecorder> SelectFileDialogRecorder::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
 }  // namespace content

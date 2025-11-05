@@ -11,6 +11,7 @@
 
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "ui/gfx/native_ui_types.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
@@ -83,7 +84,7 @@ class ObservableSelectFileDialogFactory : public ui::SelectFileDialogFactory {
     virtual void WasCreated() {}
     virtual void WasDestroyed() {}
   };
-  explicit ObservableSelectFileDialogFactory(Observer* observer);
+  explicit ObservableSelectFileDialogFactory(base::WeakPtr<Observer>);
   ~ObservableSelectFileDialogFactory() override;
 
   ui::SelectFileDialog* Create(
@@ -91,13 +92,16 @@ class ObservableSelectFileDialogFactory : public ui::SelectFileDialogFactory {
       std::unique_ptr<ui::SelectFilePolicy> policy) override;
 
  private:
-  const raw_ptr<Observer> observer_;
+  const base::WeakPtr<Observer> observer_;
 };
 
 // Tracks the state of the dialog.
 class SelectFileDialogRecorder
     : public ObservableSelectFileDialogFactory::Observer {
  public:
+  SelectFileDialogRecorder();
+  ~SelectFileDialogRecorder();
+
   enum State {
     kNotCreated,
     kCreated,
@@ -105,8 +109,12 @@ class SelectFileDialogRecorder
   };
   void WasCreated() override;
   void WasDestroyed() override;
+  base::WeakPtr<SelectFileDialogRecorder> GetWeakPtr();
 
   State state = kNotCreated;
+
+ private:
+  base::WeakPtrFactory<SelectFileDialogRecorder> weak_factory_;
 };
 
 }  // namespace content

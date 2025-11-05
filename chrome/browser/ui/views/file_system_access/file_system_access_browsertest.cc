@@ -1340,7 +1340,8 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessBrowserTest, ShowOpenFileThenHide) {
   // Open the dialog and wait until it's created.
   content::SelectFileDialogRecorder recorder;
   ui::SelectFileDialog::SetFactory(
-      std::make_unique<content::ObservableSelectFileDialogFactory>(&recorder));
+      std::make_unique<content::ObservableSelectFileDialogFactory>(
+          recorder.GetWeakPtr()));
   ASSERT_EQ(42,
             content::EvalJs(
                 first_tab,
