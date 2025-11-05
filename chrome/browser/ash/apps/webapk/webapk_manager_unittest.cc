@@ -12,7 +12,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/apps/app_service/app_service_test.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_test.h"
 #include "chrome/browser/ash/apps/webapk/webapk_install_queue.h"
@@ -76,6 +75,7 @@ class WebApkManagerTest : public apps::AppRegistryCache::Observer,
   void SetUp() override {
     arc_app_test_.PreProfileSetUp();
     profile_ = std::make_unique<TestingProfile>();
+    arc_app_test_.SetUp(profile());
     web_app::test::AwaitStartWebAppProviderAndSubsystems(profile());
   }
 
@@ -86,9 +86,6 @@ class WebApkManagerTest : public apps::AppRegistryCache::Observer,
   }
 
   void StartWebApkManager() {
-    app_service_test_.SetUp(profile());
-    arc_app_test_.SetUp(profile());
-
     webapk_manager_ = std::make_unique<apps::WebApkManager>(profile());
   }
 
@@ -134,7 +131,6 @@ class WebApkManagerTest : public apps::AppRegistryCache::Observer,
   }
 
   TestingProfile* profile() { return profile_.get(); }
-  apps::AppServiceTest* app_service_test() { return &app_service_test_; }
   apps::WebApkManager* webapk_manager() { return webapk_manager_.get(); }
   ArcAppTest* arc_app_test() { return &arc_app_test_; }
   apps::AppServiceProxyBase* app_service_proxy() {
@@ -146,7 +142,6 @@ class WebApkManagerTest : public apps::AppRegistryCache::Observer,
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<apps::WebApkManager> webapk_manager_;
   ArcAppTest arc_app_test_;
-  apps::AppServiceTest app_service_test_;
   std::string app_id_;
   base::OnceClosure quit_callback_;
 
