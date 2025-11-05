@@ -152,15 +152,9 @@ class IOSIOThread : public web::WebThreadDelegate {
   // threads during shutdown, but is used most frequently on the IO thread.
   raw_ptr<net::NetLog> net_log_;
 
-  // These member variables are basically global, but their lifetimes are tied
-  // to the IOSIOThread.  IOSIOThread owns them all, despite not using
-  // scoped_ptr. This is because the destructor of IOSIOThread runs on the
-  // wrong thread.  All member variables should be deleted in CleanUp().
-
-  // These member variables are initialized in Init() and do not change for the
-  // lifetime of the IO thread.
-
-  raw_ptr<Globals, DanglingUntriaged> globals_;
+  // These member variables are initialized in Init() and destroyed in
+  // Cleanup(). They do not change for the lifetime of the IO thread.
+  std::unique_ptr<Globals> globals_;
 
   net::HttpNetworkSessionParams params_;
 
