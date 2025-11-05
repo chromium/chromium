@@ -20,6 +20,7 @@ BASE_DECLARE_FEATURE_PARAM(std::string, kAllowlistExact);
 BASE_DECLARE_FEATURE_PARAM(bool, kAllowlistOnly);
 
 BASE_DECLARE_FEATURE(kGlicActionUseOptimizationGuide);
+BASE_DECLARE_FEATURE(kActorDoNotStoreCompletedTasks);
 
 BASE_DECLARE_FEATURE(kGlicBlockNavigationToDangerousContentTypes);
 

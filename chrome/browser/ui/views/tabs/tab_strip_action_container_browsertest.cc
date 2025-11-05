@@ -743,8 +743,8 @@ IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
   EXPECT_TRUE(tab_two->IsActivated());
 
   actor_service->GetActorUiStateManager()->OnUiEvent(
-      actor::ui::TaskStateChanged(task_id,
-                                  actor::ActorTask::State::kPausedByActor));
+      actor::ui::TaskStateChanged(
+          task_id, actor::ActorTask::State::kPausedByActor, /*title=*/""));
   // Need to wait for the AUSM to notify the GlicActorTaskIconManager.
   base::PlatformThread::Sleep(actor::ui::kProfileScopedUiUpdateDebounceDelay);
 
@@ -958,8 +958,8 @@ IN_PROC_BROWSER_TEST_F(TabStripActionContainerPreRedesignBrowserTest,
   EXPECT_TRUE(tab_two->IsActivated());
 
   actor_service->GetActorUiStateManager()->OnUiEvent(
-      actor::ui::TaskStateChanged(task_id,
-                                  actor::ActorTask::State::kPausedByActor));
+      actor::ui::TaskStateChanged(
+          task_id, actor::ActorTask::State::kPausedByActor, /*title=*/""));
   // Need to wait for the AUSM to notify the GlicActorTaskIconManager.
   base::PlatformThread::Sleep(actor::ui::kProfileScopedUiUpdateDebounceDelay);
 
