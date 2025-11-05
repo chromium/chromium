@@ -20,88 +20,28 @@
 
 #include "third_party/blink/renderer/core/svg/svg_symbol_element.h"
 
+#include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_hidden_container.h"
+#include "third_party/blink/renderer/core/layout/svg/layout_svg_viewport_container.h"
 #include "third_party/blink/renderer/core/svg/svg_animated_length.h"
+#include "third_party/blink/renderer/core/svg/svg_animated_preserve_aspect_ratio.h"
+#include "third_party/blink/renderer/core/svg/svg_animated_rect.h"
 #include "third_party/blink/renderer/core/svg_names.h"
 
 namespace blink {
 
 SVGSymbolElement::SVGSymbolElement(Document& document)
-    : SVGGraphicsElement(svg_names::kSymbolTag, document),
-      SVGFitToViewBox(this),
-      x_(MakeGarbageCollected<SVGAnimatedLength>(
-          this,
-          svg_names::kXAttr,
-          SVGLengthMode::kWidth,
-          SVGLength::Initial::kUnitlessZero,
-          CSSPropertyID::kX)),
-      y_(MakeGarbageCollected<SVGAnimatedLength>(
-          this,
-          svg_names::kYAttr,
-          SVGLengthMode::kHeight,
-          SVGLength::Initial::kUnitlessZero,
-          CSSPropertyID::kY)),
-      width_(MakeGarbageCollected<SVGAnimatedLength>(
-          this,
-          svg_names::kWidthAttr,
-          SVGLengthMode::kWidth,
-          SVGLength::Initial::kPercent100,
-          CSSPropertyID::kWidth)),
-      height_(MakeGarbageCollected<SVGAnimatedLength>(
-          this,
-          svg_names::kHeightAttr,
-          SVGLengthMode::kHeight,
-          SVGLength::Initial::kPercent100,
-          CSSPropertyID::kHeight)) {}
+    : SVGViewportContainerElement(svg_names::kSymbolTag, document) {}
 
 void SVGSymbolElement::Trace(Visitor* visitor) const {
-  visitor->Trace(x_);
-  visitor->Trace(y_);
-  visitor->Trace(width_);
-  visitor->Trace(height_);
-  SVGGraphicsElement::Trace(visitor);
-  SVGFitToViewBox::Trace(visitor);
+  SVGViewportContainerElement::Trace(visitor);
 }
 
 LayoutObject* SVGSymbolElement::CreateLayoutObject(const ComputedStyle&) {
-  return MakeGarbageCollected<LayoutSVGHiddenContainer>(this);
-}
-
-SVGAnimatedPropertyBase* SVGSymbolElement::PropertyFromAttribute(
-    const QualifiedName& attribute_name) const {
-  if (attribute_name == svg_names::kXAttr) {
-    return x_.Get();
-  } else if (attribute_name == svg_names::kYAttr) {
-    return y_.Get();
-  } else if (attribute_name == svg_names::kWidthAttr) {
-    return width_.Get();
-  } else if (attribute_name == svg_names::kHeightAttr) {
-    return height_.Get();
-  } else {
-    SVGAnimatedPropertyBase* ret =
-        SVGFitToViewBox::PropertyFromAttribute(attribute_name);
-    if (ret) {
-      return ret;
-    } else {
-      return SVGGraphicsElement::PropertyFromAttribute(attribute_name);
-    }
+  if (InUseShadowTree() && IsAtShadowBoundary(this)) {
+    return MakeGarbageCollected<LayoutSVGViewportContainer>(this);
   }
-}
-
-void SVGSymbolElement::SynchronizeAllSVGAttributes() const {
-  SVGAnimatedPropertyBase* attrs[]{x_.Get(), y_.Get(), width_.Get(),
-                                   height_.Get()};
-  SynchronizeListOfSVGAttributes(attrs);
-  SVGFitToViewBox::SynchronizeAllSVGAttributes();
-  SVGGraphicsElement::SynchronizeAllSVGAttributes();
-}
-
-void SVGSymbolElement::CollectExtraStyleForPresentationAttribute(
-    HeapVector<CSSPropertyValue, 8>& style) {
-  auto pres_attrs = std::to_array<const SVGAnimatedPropertyBase*>(
-      {x_.Get(), y_.Get(), width_.Get(), height_.Get()});
-  AddAnimatedPropertiesToPresentationAttributeStyle(pres_attrs, style);
-  SVGGraphicsElement::CollectExtraStyleForPresentationAttribute(style);
+  return MakeGarbageCollected<LayoutSVGHiddenContainer>(this);
 }
 
 }  // namespace blink

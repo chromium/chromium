@@ -154,9 +154,13 @@ static void TransferUseWidthAndHeightIfNeeded(
     const SVGElement& original_element) {
   // Use |original_element| for checking the element type, because we will
   // have replaced a <symbol> with an <svg> in the instance tree.
+  // TODO(crbug.com/40550039): Should be possible to check shadow_element
+  // instead of 'original_element' when the Svg2Cascade runtime flag is removed
+  // (always enabled).
   if (!IsA<SVGSymbolElement>(original_element) &&
-      !IsA<SVGSVGElement>(original_element))
+      !IsA<SVGSVGElement>(original_element)) {
     return;
+  }
 
   // "The width and height properties on the 'use' element override the values
   // for the corresponding properties on a referenced 'svg' or 'symbol' element
@@ -287,8 +291,9 @@ static bool IsDisallowedElement(const Element& element) {
   // 'circle', 'ellipse', 'image', 'line', 'path', 'polygon', 'polyline',
   // 'rect', 'text' Excluded are anything that is used by reference or that only
   // make sense to appear once in a document.
-  if (!element.IsSVGElement())
+  if (!element.IsSVGElement()) {
     return true;
+  }
 
   DEFINE_STATIC_LOCAL(HashSet<QualifiedName>, allowed_element_tags,
                       ({
@@ -469,7 +474,8 @@ SVGElement* SVGUseElement::CreateInstanceTree(SVGElement& target_root) const {
   SVGElement* instance_root = &To<SVGElement>(target_root.CloneWithChildren(
       data, /*document*/ nullptr, /*append_to*/ nullptr,
       /*fallback_registry*/ nullptr));
-  if (IsA<SVGSymbolElement>(target_root)) {
+  if (!RuntimeEnabledFeatures::Svg2CascadeEnabled() &&
+      IsA<SVGSymbolElement>(target_root)) {
     // Spec: The referenced 'symbol' and its contents are deep-cloned into
     // the generated tree, with the exception that the 'symbol' is replaced
     // by an 'svg'. This generated 'svg' will always have explicit values

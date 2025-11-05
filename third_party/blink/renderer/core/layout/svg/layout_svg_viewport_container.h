@@ -27,13 +27,14 @@
 
 namespace blink {
 
-class SVGSVGElement;
+class SVGViewportContainerElement;
 
 // This is used for non-root <svg> elements which are SVGTransformable thus we
 // inherit from LayoutSVGContainer instead of LayoutSVGTransformableContainer.
+// Also used for root <symbol> instances in <use> shadow trees.
 class LayoutSVGViewportContainer final : public LayoutSVGContainer {
  public:
-  explicit LayoutSVGViewportContainer(SVGSVGElement*);
+  explicit LayoutSVGViewportContainer(SVGViewportContainerElement*);
   gfx::RectF Viewport() const {
     NOT_DESTROYED();
     return viewport_;

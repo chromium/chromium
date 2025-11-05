@@ -31,7 +31,7 @@
 #include "third_party/blink/renderer/core/layout/svg/transformed_hit_test_location.h"
 #include "third_party/blink/renderer/core/svg/svg_animated_length.h"
 #include "third_party/blink/renderer/core/svg/svg_length_context.h"
-#include "third_party/blink/renderer/core/svg/svg_svg_element.h"
+#include "third_party/blink/renderer/core/svg/svg_viewport_container_element.h"
 
 namespace blink {
 
@@ -48,7 +48,8 @@ float ResolveViewportDimension(const Length& dimension,
 
 }  // namespace
 
-LayoutSVGViewportContainer::LayoutSVGViewportContainer(SVGSVGElement* node)
+LayoutSVGViewportContainer::LayoutSVGViewportContainer(
+    SVGViewportContainerElement* node)
     : LayoutSVGContainer(node) {}
 
 SVGLayoutResult LayoutSVGViewportContainer::UpdateSVGLayout(
@@ -60,12 +61,12 @@ SVGLayoutResult LayoutSVGViewportContainer::UpdateSVGLayout(
   child_layout_info.viewport_changed = SelfNeedsFullLayout();
 
   if (SelfNeedsFullLayout()) {
-    const auto* svg = To<SVGSVGElement>(GetElement());
+    const auto* svg = To<SVGViewportContainerElement>(GetElement());
     SVGLengthContext length_context(svg);
     gfx::RectF old_viewport = viewport_;
 
-    float resolved_x = svg->x()->CurrentValue()->Value(length_context);
-    float resolved_y = svg->y()->CurrentValue()->Value(length_context);
+    float resolved_x = svg->GetX()->CurrentValue()->Value(length_context);
+    float resolved_y = svg->GetY()->CurrentValue()->Value(length_context);
     float resolved_width;
     float resolved_height;
 
@@ -100,8 +101,8 @@ SVGLayoutResult LayoutSVGViewportContainer::UpdateSVGLayout(
       }
 
     } else {
-      resolved_width = svg->width()->CurrentValue()->Value(length_context);
-      resolved_height = svg->height()->CurrentValue()->Value(length_context);
+      resolved_width = svg->GetWidth()->CurrentValue()->Value(length_context);
+      resolved_height = svg->GetHeight()->CurrentValue()->Value(length_context);
     }
 
     if (resolved_height_from_style != resolved_height ||
@@ -146,7 +147,7 @@ SVGTransformChange LayoutSVGViewportContainer::UpdateLocalTransform(
 }
 
 gfx::RectF LayoutSVGViewportContainer::ViewBoxRect() const {
-  return To<SVGSVGElement>(*GetElement()).CurrentViewBoxRect();
+  return To<SVGViewportContainerElement>(*GetElement()).CurrentViewBoxRect();
 }
 
 bool LayoutSVGViewportContainer::NodeAtPoint(
@@ -177,7 +178,7 @@ void LayoutSVGViewportContainer::IntersectChildren(
 
 AffineTransform LayoutSVGViewportContainer::ComputeViewboxTransform() const {
   NOT_DESTROYED();
-  const auto* svg = To<SVGSVGElement>(GetElement());
+  const auto* svg = To<SVGViewportContainerElement>(GetElement());
 
   return AffineTransform::Translation(viewport_.x(), viewport_.y()) *
          svg->ViewBoxToViewTransform(viewport_.size());

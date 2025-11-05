@@ -113,6 +113,7 @@ class CORE_EXPORT SVGElement : public Element {
   virtual bool IsTextContent() const { return false; }
   virtual bool IsTextPositioning() const { return false; }
   virtual bool IsStructurallyExternal() const { return false; }
+  virtual bool IsViewportContainerElement() const { return false; }
 
   // For SVGTests
   virtual bool IsValid() const { return true; }

@@ -348,6 +348,8 @@ blink_core_sources_svg = [
   "svg_view_element.h",
   "svg_view_spec.cc",
   "svg_view_spec.h",
+  "svg_viewport_container_element.cc",
+  "svg_viewport_container_element.h",
   "svg_zoom_and_pan.cc",
   "svg_zoom_and_pan.h",
 ]

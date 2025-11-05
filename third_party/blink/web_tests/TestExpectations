@@ -741,8 +741,6 @@ crbug.com/40550039 virtual/svg2-cascade/external/wpt/svg/struct/reftests/use-inh
 crbug.com/40550039 virtual/svg2-cascade/external/wpt/svg/struct/reftests/use-inheritance-nth-last-child-of.svg [ Pass ]
 crbug.com/40550039 virtual/svg2-cascade/external/wpt/svg/styling/use-element-attr-selector-transition.tentative.html [ Pass ]
 crbug.com/40550039 virtual/svg2-cascade/external/wpt/svg/styling/use-element-id-selector-transition.tentative.html [ Pass ]
-# Tests below fails for missing <symbol> instantiation
-crbug.com/40550039 virtual/svg2-cascade/external/wpt/svg/linking/reftests/use-symbol-rendered-001.html [ Failure ]
 # Tests below expects SVG1.1 <use> cascade behavior
 crbug.com/40550039 virtual/svg2-cascade/svg/css/use-replicates-changes-class.html [ Failure ]
 crbug.com/40550039 virtual/svg2-cascade/svg/css/use-replicates-changes-pseudo.html [ Failure ]

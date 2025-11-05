@@ -49,10 +49,12 @@ bool SVGContainerPainter::CanUseCullRect() const {
 void SVGContainerPainter::Paint(const PaintInfo& paint_info) {
   // Spec: An empty viewBox on the <svg> element disables rendering.
   DCHECK(layout_svg_container_.GetElement());
-  auto* svg_svg_element =
-      DynamicTo<SVGSVGElement>(*layout_svg_container_.GetElement());
-  if (svg_svg_element && svg_svg_element->HasEmptyViewBox())
+  auto* viewport_container_element = DynamicTo<SVGViewportContainerElement>(
+      *layout_svg_container_.GetElement());
+  if (viewport_container_element &&
+      viewport_container_element->HasEmptyViewBox()) {
     return;
+  }
 
   auto paint_behavior = ScopedSVGPaintState::ComputePaintBehavior(
       layout_svg_container_, paint_info,
