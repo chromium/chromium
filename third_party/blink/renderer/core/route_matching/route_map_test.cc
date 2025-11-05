@@ -6,6 +6,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/route_matching/route.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 
@@ -40,16 +41,21 @@ TEST_F(RouteMapTest, ParseAndMatch) {
     ]
   })");
 
-  EXPECT_TRUE(route_map.MatchesRoute("route1", RoutePreposition::kAt));
-  EXPECT_FALSE(route_map.MatchesRoute("route2", RoutePreposition::kAt));
+  const Route* route1 = route_map.FindRoute("route1");
+  ASSERT_TRUE(route1);
+  const Route* route2 = route_map.FindRoute("route2");
+  ASSERT_TRUE(route2);
+
+  EXPECT_TRUE(route1->Matches(RoutePreposition::kAt));
+  EXPECT_FALSE(route2->Matches(RoutePreposition::kAt));
 
   SetURL("https://example.com/bar");
-  EXPECT_FALSE(route_map.MatchesRoute("route1", RoutePreposition::kAt));
-  EXPECT_TRUE(route_map.MatchesRoute("route2", RoutePreposition::kAt));
+  EXPECT_FALSE(route1->Matches(RoutePreposition::kAt));
+  EXPECT_TRUE(route2->Matches(RoutePreposition::kAt));
 
   SetURL("https://example.com/baz");
-  EXPECT_FALSE(route_map.MatchesRoute("route1", RoutePreposition::kAt));
-  EXPECT_TRUE(route_map.MatchesRoute("route2", RoutePreposition::kAt));
+  EXPECT_FALSE(route1->Matches(RoutePreposition::kAt));
+  EXPECT_TRUE(route2->Matches(RoutePreposition::kAt));
 }
 
 TEST_F(RouteMapTest, GetActiveRoutes) {

@@ -282,6 +282,8 @@ external/wpt/trusted-types/navigate-to-javascript-url-007-crash.html [ Crash ]
 
 crbug.com/1462226 wpt_internal/prerender/restriction-web-auth.https.html [ Crash Failure Pass Timeout ]
 
+crbug.com/436805487 wpt_internal/route/route-match-pseudo-003.html [ Failure ]
+
 crbug.com/1461952 [ Win10.20h2 ] external/wpt/html/browsers/browsing-the-web/back-forward-cache/eligibility/broadcast-channel.html [ Pass Timeout ]
 
 # Tests flaky on many platforms and bots

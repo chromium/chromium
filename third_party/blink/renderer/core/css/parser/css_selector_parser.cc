@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/core/css/parser/css_parser_save_point.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_stream.h"
+#include "third_party/blink/renderer/core/css/parser/route_parser.h"
 #include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -1898,6 +1899,17 @@ bool CSSSelectorParser::ConsumePseudo(CSSParserTokenStream& stream,
       output_.push_back(std::move(selector));
       return true;
     }
+    case CSSSelector::kPseudoRouteMatch:
+      if (!RuntimeEnabledFeatures::RouteMatchingEnabled()) {
+        return false;
+      }
+      if (RouteLocation* route_location =
+              RouteParser::ParseLocation(stream, *context_->GetDocument())) {
+        selector.SetRouteLocation(route_location);
+        output_.push_back(std::move(selector));
+        return true;
+      }
+      return false;
     default:
       break;
   }

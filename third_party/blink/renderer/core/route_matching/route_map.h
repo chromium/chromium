@@ -86,9 +86,8 @@ class CORE_EXPORT RouteMap final : public ScriptWrappable,
 
   void AddAnonymousRoute(URLPattern*);
 
-  bool MatchesRoute(const String& route_name, RoutePreposition) const;
-
-  bool MatchesURLPattern(const URLPattern*, RoutePreposition) const;
+  const Route* FindRoute(const String& route_name) const;
+  const Route* FindRoute(const URLPattern*) const;
 
   // Re-match all routes. Schedule for re-evaluation of CSS rules if something
   // changed.

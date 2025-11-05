@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_selector_parser.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
+#include "third_party/blink/renderer/core/css/route_query.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -497,6 +498,7 @@ PseudoId CSSSelector::GetPseudoId(PseudoType type) {
     case kPseudoRequired:
     case kPseudoRightPage:
     case kPseudoRoot:
+    case kPseudoRouteMatch:
     case kPseudoScope:
     case kPseudoSelectorFragmentAnchor:
     case kPseudoSingleButton:
@@ -718,6 +720,7 @@ constexpr static NameToPseudoStruct kPseudoTypeWithArgumentsMap[] = {
     {"nth-of-type", CSSSelector::kPseudoNthOfType},
     {"part", CSSSelector::kPseudoPart},
     {"picker", CSSSelector::kPseudoPicker},
+    {"route-match", CSSSelector::kPseudoRouteMatch},
     {"scroll-button", CSSSelector::kPseudoScrollButton},
     {"slotted", CSSSelector::kPseudoSlotted},
     {"state", CSSSelector::kPseudoState},
@@ -1057,6 +1060,7 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
     case kPseudoRelativeAnchor:
     case kPseudoRequired:
     case kPseudoRoot:
+    case kPseudoRouteMatch:
     case kPseudoScope:
     case kPseudoSelectorFragmentAnchor:
     case kPseudoSingleButton:
@@ -1285,6 +1289,13 @@ void CSSSelector::SerializeSimpleSelector(StringBuilder& builder,
         builder.Append(')');
         break;
       }
+      case kPseudoRouteMatch: {
+        DCHECK(GetRouteLocation());
+        builder.Append("(");
+        GetRouteLocation()->SerializeTo(builder);
+        builder.Append(")");
+        break;
+      }
       default:
         break;
     }
@@ -1488,6 +1499,11 @@ void CSSSelector::SetArgument(const AtomicString& value) {
 void CSSSelector::SetSelectorList(CSSSelectorList* selector_list) {
   CreateRareData();
   data_.rare_data_->selector_list_ = selector_list;
+}
+
+void CSSSelector::SetRouteLocation(RouteLocation* location) {
+  CreateRareData();
+  data_.rare_data_->route_location_ = location;
 }
 
 void CSSSelector::SetContainsPseudoInsideHasPseudoClass() {
@@ -1799,6 +1815,7 @@ bool CSSSelector::IsAllowedAfterPart() const {
     case kPseudoReadOnly:
     case kPseudoReadWrite:
     case kPseudoRequired:
+    case kPseudoRouteMatch:
     case kPseudoSelectorFragmentAnchor:
     case kPseudoState:
     case kPseudoTarget:
@@ -2058,6 +2075,7 @@ void CSSSelector::Trace(Visitor* visitor) const {
 
 void CSSSelector::RareData::Trace(Visitor* visitor) const {
   visitor->Trace(selector_list_);
+  visitor->Trace(route_location_);
 }
 
 const CSSSelector* CSSSelector::SelectorListOrParent() const {

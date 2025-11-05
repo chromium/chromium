@@ -37,6 +37,8 @@ class Route : public EventTarget {
     }
   }
 
+  bool MatchesUrl(const KURL&) const;
+
   void AddPattern(URLPattern*);
 
   // Check and update whether or not this route matches anything. Store the

@@ -14,21 +14,21 @@
 namespace blink {
 
 class Document;
+class Route;
 class URLPattern;
 
-// <route-test>
+// <route-location>
 //
 // https://wicg.github.io/declarative-partial-updates/css-route-matching/#at-route
-class RouteTest : public GarbageCollected<RouteTest> {
+class RouteLocation : public GarbageCollected<RouteLocation> {
  public:
-  RouteTest(const AtomicString& route_name, RoutePreposition);
-  RouteTest(URLPattern*,
-            const AtomicString& original_url_pattern_string,
-            RoutePreposition);
+  explicit RouteLocation(const AtomicString& route_name)
+      : string_(route_name) {}
+  RouteLocation(URLPattern* url_pattern,
+                const AtomicString& original_url_pattern_string)
+      : url_pattern_(url_pattern), string_(original_url_pattern_string) {}
 
   void Trace(Visitor*) const;
-
-  RoutePreposition GetPreposition() const { return preposition_; }
 
   URLPattern* GetURLPattern() const { return url_pattern_; }
 
@@ -46,7 +46,12 @@ class RouteTest : public GarbageCollected<RouteTest> {
     return string_;
   }
 
-  bool Matches(Document&) const;
+  // Look for a `Route` entry in the route map. Additionally, if this
+  // <route-location> is a URLPattern, an entry will be inserted if it's
+  // missing.
+  const Route* FindOrCreateRoute(Document&) const;
+
+  void SerializeTo(StringBuilder&) const;
 
  private:
   Member<URLPattern> url_pattern_;
@@ -56,7 +61,27 @@ class RouteTest : public GarbageCollected<RouteTest> {
   // serialization. The URLPattern API deliberately doesn't support
   // serialization.
   AtomicString string_;
+};
 
+// <route-test>
+//
+// https://wicg.github.io/declarative-partial-updates/css-route-matching/#at-route
+class RouteTest : public GarbageCollected<RouteTest> {
+ public:
+  RouteTest(RouteLocation& location, RoutePreposition preposition)
+      : route_location_(&location), preposition_(preposition) {}
+
+  void Trace(Visitor* v) const { v->Trace(route_location_); }
+
+  RouteLocation& GetLocation() const { return *route_location_; }
+  RoutePreposition GetPreposition() const { return preposition_; }
+
+  bool Matches(Document&) const;
+
+  void SerializeTo(StringBuilder&) const;
+
+ private:
+  Member<RouteLocation> route_location_;
   RoutePreposition preposition_;
 };
 

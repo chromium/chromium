@@ -12,10 +12,12 @@ namespace blink {
 class CSSParserTokenStream;
 class Document;
 class RouteQuery;
+class RouteLocation;
 
 class RouteParser : public ConditionalParser {
  public:
   static RouteQuery* ParseQuery(CSSParserTokenStream&, const Document&);
+  static RouteLocation* ParseLocation(CSSParserTokenStream&, const Document&);
 
   explicit RouteParser(const Document& document) : document_(document) {}
 

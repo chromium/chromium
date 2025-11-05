@@ -18,12 +18,13 @@ namespace {
 
 // Even if the URLPattern is parsed now, we need to keep the original string for
 // serialization. The URLPattern API deliberately doesn't provide this.
-struct URLPatternResult {
+struct URLPatternParseResult {
   STACK_ALLOCATED();
 
  public:
-  URLPatternResult() = default;
-  URLPatternResult(URLPattern* url_pattern, const AtomicString& original_string)
+  URLPatternParseResult() = default;
+  URLPatternParseResult(URLPattern* url_pattern,
+                        const AtomicString& original_string)
       : url_pattern(url_pattern), original_string(original_string) {
     DCHECK(url_pattern);
   }
@@ -34,27 +35,27 @@ struct URLPatternResult {
   AtomicString original_string;
 };
 
-URLPatternResult ParseURLPattern(CSSParserTokenStream& stream,
-                                 const Document& document) {
+URLPatternParseResult ParseURLPattern(CSSParserTokenStream& stream,
+                                      const Document& document) {
   if (stream.Peek().GetType() != kFunctionToken ||
       stream.Peek().Value() != "urlpattern") {
-    return URLPatternResult();
+    return URLPatternParseResult();
   }
 
   CSSParserTokenStream::BlockGuard guard(stream);
   stream.ConsumeWhitespace();
   if (stream.Peek().GetType() != kStringToken) {
-    return URLPatternResult();
+    return URLPatternParseResult();
   }
   const CSSParserToken& pattern = stream.ConsumeIncludingWhitespace();
   if (pattern.GetType() == kBadStringToken || !stream.UncheckedAtEnd()) {
-    return URLPatternResult();
+    return URLPatternParseResult();
   }
 
   AtomicString pattern_str = pattern.Value().ToAtomicString();
   V8URLPatternInput* url_pattern_input =
       MakeGarbageCollected<V8URLPatternInput>(pattern_str);
-  return URLPatternResult(
+  return URLPatternParseResult(
       URLPattern::Create(document.GetExecutionContext()->GetIsolate(),
                          url_pattern_input, document.Url(), IGNORE_EXCEPTION),
       pattern_str);
@@ -70,7 +71,7 @@ RouteTest* ParseRouteTest(CSSParserTokenStream& stream,
                           const Document& document) {
   AtomicString route_name;
   RoutePreposition preposition = RoutePreposition::kAt;
-  URLPatternResult url_pattern_result;
+  URLPatternParseResult url_pattern_result;
 
   bool header_valid = [&]() {
     if (stream.Peek().GetType() == kIdentToken) {
@@ -113,13 +114,16 @@ RouteTest* ParseRouteTest(CSSParserTokenStream& stream,
     return nullptr;
   }
 
+  RouteLocation* route_location;
   if (url_pattern_result.IsSuccess()) {
-    return MakeGarbageCollected<RouteTest>(url_pattern_result.url_pattern,
-                                           url_pattern_result.original_string,
-                                           preposition);
+    route_location = MakeGarbageCollected<RouteLocation>(
+        url_pattern_result.url_pattern, url_pattern_result.original_string);
+  } else {
+    DCHECK(!route_name.empty());
+    route_location = MakeGarbageCollected<RouteLocation>(route_name);
   }
-  DCHECK(!route_name.empty());
-  return MakeGarbageCollected<RouteTest>(route_name, preposition);
+
+  return MakeGarbageCollected<RouteTest>(*route_location, preposition);
 }
 
 }  // anonymous namespace
@@ -132,6 +136,27 @@ RouteQuery* RouteParser::ParseQuery(CSSParserTokenStream& stream,
     return nullptr;
   }
   return MakeGarbageCollected<RouteQuery>(*root);
+}
+
+RouteLocation* RouteParser::ParseLocation(CSSParserTokenStream& stream,
+                                          const Document& document) {
+  if (stream.Peek().GetType() == kIdentToken) {
+    AtomicString route_name(
+        stream.ConsumeIncludingWhitespace().Value().ToString());
+    if (stream.AtEnd()) {
+      return MakeGarbageCollected<RouteLocation>(route_name);
+    }
+  } else {
+    URLPatternParseResult result = ParseURLPattern(stream, document);
+    if (result.IsSuccess()) {
+      stream.ConsumeWhitespace();
+      if (stream.AtEnd()) {
+        return MakeGarbageCollected<RouteLocation>(result.url_pattern,
+                                                   result.original_string);
+      }
+    }
+  }
+  return nullptr;
 }
 
 const ConditionalExpNode* RouteParser::ConsumeLeaf(

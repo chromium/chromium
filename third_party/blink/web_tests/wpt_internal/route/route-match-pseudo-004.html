@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<title>:route-match(urlpattern()) serialization</title>
+<link rel="author" title="Morten Stenshorne" href="mailto:mstensho@chromium.org">
+<link rel="help" href="https://issues.chromium.org/issues/436805487">
+<style id="style">
+  :route-match(  urlpattern(  "*route/other.html"  )  )  {   }
+</style>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+  test(()=> {
+    assert_equals(style.sheet.rules.length, 1);
+    assert_equals(style.sheet.rules[0].cssText,
+                  ':route-match(urlpattern("*route/other.html")) { }');
+  }, "Serialize");
+</script>

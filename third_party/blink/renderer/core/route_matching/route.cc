@@ -48,6 +48,10 @@ URLPattern* Route::pattern() const {
   return nullptr;
 }
 
+bool Route::MatchesUrl(const KURL& url) const {
+  return MatchesPatterns(*document_, url, patterns_);
+}
+
 void Route::AddPattern(URLPattern* pattern) {
   DCHECK(pattern);
   patterns_.push_back(pattern);

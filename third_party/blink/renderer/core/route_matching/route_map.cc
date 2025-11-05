@@ -182,27 +182,15 @@ void RouteMap::AddAnonymousRoute(URLPattern* pattern) {
   route->UpdateMatchStatus(previous_url_, next_url_);
 }
 
-bool RouteMap::MatchesRoute(const String& route_name,
-                            RoutePreposition preposition) const {
+const Route* RouteMap::FindRoute(const String& route_name) const {
   const auto it = routes_.find(route_name);
-  if (it == routes_.end()) {
-    return false;
-  }
-
-  Route& route = *it->value;
-  return route.Matches(preposition);
+  return it == routes_.end() ? nullptr : it->value;
 }
 
-bool RouteMap::MatchesURLPattern(const URLPattern* pattern,
-                                 RoutePreposition preposition) const {
+const Route* RouteMap::FindRoute(const URLPattern* pattern) const {
   String pattern_string = pattern->ToString();
   auto it = anonymous_routes_.find(pattern_string);
-  if (it == anonymous_routes_.end()) {
-    return false;
-  }
-
-  Route& route = *it->value;
-  return route.Matches(preposition);
+  return it == anonymous_routes_.end() ? nullptr : it->value;
 }
 
 void RouteMap::UpdateActiveRoutes() {

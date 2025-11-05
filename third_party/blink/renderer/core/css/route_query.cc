@@ -5,43 +5,62 @@
 #include "third_party/blink/renderer/core/css/route_query.h"
 
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/route_matching/route.h"
 #include "third_party/blink/renderer/core/route_matching/route_map.h"
 #include "third_party/blink/renderer/core/url_pattern/url_pattern.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
 
-RouteTest::RouteTest(const AtomicString& route_name,
-                     RoutePreposition preposition)
-    : string_(route_name), preposition_(preposition) {}
-
-RouteTest::RouteTest(URLPattern* url_pattern,
-                     const AtomicString& original_url_pattern_string,
-                     RoutePreposition preposition)
-    : url_pattern_(url_pattern),
-      string_(original_url_pattern_string),
-      preposition_(preposition) {}
-
-void RouteTest::Trace(Visitor* v) const {
+void RouteLocation::Trace(Visitor* v) const {
   v->Trace(url_pattern_);
 }
 
-bool RouteTest::Matches(Document& document) const {
-  URLPattern* url_pattern = GetURLPattern();
-  if (url_pattern) {
+const Route* RouteLocation::FindOrCreateRoute(Document& document) const {
+  if (url_pattern_) {
     // A URLPattern becomes an anonymous route. One route for each unique
     // URLPattern.
-    RouteMap::Ensure(document).AddAnonymousRoute(url_pattern);
+    RouteMap::Ensure(document).AddAnonymousRoute(url_pattern_);
   }
   const auto* route_map = RouteMap::Get(&document);
   if (!route_map) {
-    return false;
+    return nullptr;
   }
-  if (url_pattern) {
-    return route_map->MatchesURLPattern(url_pattern, preposition_);
+  if (url_pattern_) {
+    return route_map->FindRoute(url_pattern_);
   }
-  DCHECK(GetRouteName());
-  return route_map->MatchesRoute(GetRouteName(), preposition_);
+  return route_map->FindRoute(GetRouteName());
+}
+
+void RouteLocation::SerializeTo(StringBuilder& builder) const {
+  DCHECK(!string_.IsNull());
+  if (url_pattern_) {
+    builder.Append("urlpattern(\"");
+    builder.Append(string_);
+    builder.Append("\")");
+  } else {
+    builder.Append(string_);
+  }
+}
+
+bool RouteTest::Matches(Document& document) const {
+  const Route* route = route_location_->FindOrCreateRoute(document);
+  return route && route->Matches(preposition_);
+}
+
+void RouteTest::SerializeTo(StringBuilder& builder) const {
+  switch (preposition_) {
+    case RoutePreposition::kAt:
+      builder.Append("at: ");
+      break;
+    case RoutePreposition::kFrom:
+      builder.Append("from: ");
+      break;
+    case RoutePreposition::kTo:
+      builder.Append("to: ");
+      break;
+  }
+  route_location_->SerializeTo(builder);
 }
 
 void RouteQueryExpNode::Trace(Visitor* v) const {
@@ -55,25 +74,7 @@ KleeneValue RouteQueryExpNode::Evaluate(
 }
 
 void RouteQueryExpNode::SerializeTo(StringBuilder& builder) const {
-  switch (route_test_->GetPreposition()) {
-    case RoutePreposition::kAt:
-      builder.Append("at: ");
-      break;
-    case RoutePreposition::kFrom:
-      builder.Append("from: ");
-      break;
-    case RoutePreposition::kTo:
-      builder.Append("to: ");
-      break;
-  }
-  if (route_test_->GetURLPattern()) {
-    builder.Append("urlpattern(\"");
-    builder.Append(route_test_->OriginalURLPatternString());
-    builder.Append("\")");
-  } else {
-    DCHECK(!route_test_->GetRouteName().IsNull());
-    builder.Append(route_test_->GetRouteName());
-  }
+  route_test_->SerializeTo(builder);
 }
 
 void RouteQuery::Trace(Visitor* v) const {

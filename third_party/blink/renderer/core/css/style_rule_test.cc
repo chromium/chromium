@@ -509,22 +509,22 @@ TEST_F(StyleRuleTest, RouteRule) {
 
   const RouteTest* route_test = GetRouteTest("@route (sixtysix) {}");
   ASSERT_TRUE(route_test);
-  EXPECT_EQ(route_test->GetRouteName(), "sixtysix");
+  EXPECT_EQ(route_test->GetLocation().GetRouteName(), "sixtysix");
   EXPECT_EQ(route_test->GetPreposition(), RoutePreposition::kAt);
 
   route_test = GetRouteTest("@route (from: sixtysix) {}");
   ASSERT_TRUE(route_test);
-  EXPECT_EQ(route_test->GetRouteName(), "sixtysix");
+  EXPECT_EQ(route_test->GetLocation().GetRouteName(), "sixtysix");
   EXPECT_EQ(route_test->GetPreposition(), RoutePreposition::kFrom);
 
   route_test = GetRouteTest("@route (to: sixtysix) {}");
   ASSERT_TRUE(route_test);
-  EXPECT_EQ(route_test->GetRouteName(), "sixtysix");
+  EXPECT_EQ(route_test->GetLocation().GetRouteName(), "sixtysix");
   EXPECT_EQ(route_test->GetPreposition(), RoutePreposition::kTo);
 
   route_test = GetRouteTest("@route (at: sixtysix) {}");
   ASSERT_TRUE(route_test);
-  EXPECT_EQ(route_test->GetRouteName(), "sixtysix");
+  EXPECT_EQ(route_test->GetLocation().GetRouteName(), "sixtysix");
   EXPECT_EQ(route_test->GetPreposition(), RoutePreposition::kAt);
 
   route_test = GetRouteTest("@route (below: sixtysix) {}");

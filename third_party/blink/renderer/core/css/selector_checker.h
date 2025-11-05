@@ -450,6 +450,8 @@ class CORE_EXPORT SelectorChecker {
   bool CheckPseudoScope(const SelectorCheckingContext&, MatchResult&) const;
   bool CheckPseudoNot(const SelectorCheckingContext&, MatchResult&) const;
   bool CheckPseudoHas(const SelectorCheckingContext&, MatchResult&) const;
+  bool CheckPseudoRouteMatch(const SelectorCheckingContext&,
+                             MatchResult&) const;
   bool MatchesAnyInList(const SelectorCheckingContext& context,
                         const CSSSelector* selector_list,
                         MatchResult& result) const;
