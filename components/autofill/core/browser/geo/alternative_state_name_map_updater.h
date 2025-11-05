@@ -166,6 +166,10 @@ class AlternativeStateNameMapUpdater : public AddressDataManager::Observer {
   base::WeakPtrFactory<AlternativeStateNameMapUpdater> weak_ptr_factory_{this};
 };
 
+// Finds a resource ID based on a 2 character uppercase country code.
+// Returns -1 in case the country code was not found.
+int32_t FindResourceIdForCountry(std::string_view country_code);
+
 }  // namespace autofill
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_GEO_ALTERNATIVE_STATE_NAME_MAP_UPDATER_H_

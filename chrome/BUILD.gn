@@ -1505,6 +1505,7 @@ group("extra_resources") {
   public_deps = [
     "//chrome/browser/resources",
     "//components/autofill/core/browser:autofill_address_rewriter_resources",
+    "//components/autofill/core/browser:autofill_alternative_state_name_map_resources",
   ]
 }
 

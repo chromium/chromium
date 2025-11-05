@@ -744,6 +744,10 @@
 	path = components/accessibility/internal
 	url = https://chrome-internal.googlesource.com/chrome-accessibility
 	gclient-condition = checkout_src_internal
+[submodule "components/autofill/core/browser/geo/chrome_alternative_state_name_maps"]
+	path = components/autofill/core/browser/geo/chrome_alternative_state_name_maps
+	url = https://chrome-internal.googlesource.com/chrome/components/autofill_alternative_state_name_maps
+	gclient-condition = checkout_src_internal
 [submodule "components/autofill/core/browser/form_parsing/internal_resources"]
 	path = components/autofill/core/browser/form_parsing/internal_resources
 	url = https://chrome-internal.googlesource.com/chrome/components/autofill_regex_patterns

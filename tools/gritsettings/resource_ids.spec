@@ -1071,11 +1071,22 @@
     "META": {"align": 1000},
     "includes": [7000]
   },
+  # Both Chrome and Chromium alternative states data must start with the same id.
+  # Depending on the build only one of them is used.
+  "components/autofill/core/browser/geo/autofill_alternative_state_name_map_resources.grd":{
+    "META": {"sizes": {"includes": [250]}}, # Reserve space for ~225 resources
+    "includes": [7010]
+  },
+  "components/autofill/core/browser/geo/chrome_alternative_state_name_maps/alternative_state_name_map_resources.grd":{
+    "META": {"sizes": {"includes": [250]}}, # Reserve space for ~225 resources
+    "includes": [7010]
+  },
   # Chromium strings and Google Chrome strings must start at the same id.
   # We only use one file depending on whether we're building Chromium or
   # Google Chrome.
   "components/components_chromium_strings.grd": {
     # Big alignment at start of section.
+    "META": {"join": 2},
     "messages": [7020],
   },
   "components/components_google_chrome_strings.grd": {
