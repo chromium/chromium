@@ -1329,6 +1329,42 @@ TEST_F(ContextualTasksServiceImplTest, OnTaskRemovedRemotely) {
   service_->RemoveObserver(&observer_);
 }
 
+TEST_F(ContextualTasksServiceImplTest, GetTabsAssociatedWithTask) {
+  ContextualTask task1 = service_->CreateTask();
+  ContextualTask task2 = service_->CreateTask();
+
+  SessionID tab_id1 = SessionID::FromSerializedValue(1);
+  SessionID tab_id2 = SessionID::FromSerializedValue(2);
+  SessionID tab_id3 = SessionID::FromSerializedValue(3);
+
+  service_->AssociateTabWithTask(task1.GetTaskId(), tab_id1);
+  service_->AssociateTabWithTask(task1.GetTaskId(), tab_id2);
+  service_->AssociateTabWithTask(task2.GetTaskId(), tab_id3);
+
+  std::vector<SessionID> tabs_for_task1 =
+      service_->GetTabsAssociatedWithTask(task1.GetTaskId());
+  ASSERT_EQ(2u, tabs_for_task1.size());
+  EXPECT_TRUE(base::Contains(tabs_for_task1, tab_id1));
+  EXPECT_TRUE(base::Contains(tabs_for_task1, tab_id2));
+
+  std::vector<SessionID> tabs_for_task2 =
+      service_->GetTabsAssociatedWithTask(task2.GetTaskId());
+  ASSERT_EQ(1u, tabs_for_task2.size());
+  EXPECT_TRUE(base::Contains(tabs_for_task2, tab_id3));
+
+  // Test with a task that has no associated tabs.
+  ContextualTask task3 = service_->CreateTask();
+  std::vector<SessionID> tabs_for_task3 =
+      service_->GetTabsAssociatedWithTask(task3.GetTaskId());
+  EXPECT_TRUE(tabs_for_task3.empty());
+
+  // Test with an invalid task ID.
+  base::Uuid invalid_task_id = base::Uuid::GenerateRandomV4();
+  std::vector<SessionID> tabs_for_invalid_task =
+      service_->GetTabsAssociatedWithTask(invalid_task_id);
+  EXPECT_TRUE(tabs_for_invalid_task.empty());
+}
+
 class ContextualTasksServiceImplEphemeralOnlyTest
     : public ContextualTasksServiceImplTest {
  public:

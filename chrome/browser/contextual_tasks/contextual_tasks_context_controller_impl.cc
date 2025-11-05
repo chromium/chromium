@@ -119,6 +119,12 @@ ContextualTasksContextControllerImpl::GetContextualTaskForTab(
   return service_->GetContextualTaskForTab(tab_id);
 }
 
+std::vector<SessionID>
+ContextualTasksContextControllerImpl::GetTabsAssociatedWithTask(
+    const base::Uuid& task_id) const {
+  return service_->GetTabsAssociatedWithTask(task_id);
+}
+
 void ContextualTasksContextControllerImpl::ClearAllTabAssociationsForTask(
     const base::Uuid& task_id) {
   service_->ClearAllTabAssociationsForTask(task_id);

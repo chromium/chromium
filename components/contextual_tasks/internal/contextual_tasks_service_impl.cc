@@ -255,6 +255,17 @@ ContextualTasksServiceImpl::GetContextualTaskForTab(SessionID tab_id) const {
   return std::nullopt;
 }
 
+std::vector<SessionID> ContextualTasksServiceImpl::GetTabsAssociatedWithTask(
+    const base::Uuid& task_id) const {
+  std::vector<SessionID> associated_tabs;
+  for (const auto& pair : tab_to_task_) {
+    if (pair.second == task_id) {
+      associated_tabs.push_back(pair.first);
+    }
+  }
+  return associated_tabs;
+}
+
 void ContextualTasksServiceImpl::ClearAllTabAssociationsForTask(
     const base::Uuid& task_id) {
   auto task_it = tasks_.find(task_id);
