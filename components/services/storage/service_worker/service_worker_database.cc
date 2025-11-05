@@ -11,6 +11,7 @@
 #include "base/files/file_util.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
@@ -139,6 +140,19 @@ const char kPurgeableResIdKeyPrefix[] = "PRES:";
 const int64_t kCurrentSchemaVersion = 2;
 
 const int kRouterRuleVersion = 1;
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(ServiceWorkerIPAddressSpace)
+enum class ServiceWorkerIPAddressSpaceHistogram {
+  kLoopback = 0,
+  kLocal = 1,
+  kPublic = 2,
+  kUnknown = 3,
+  kMaxValue = kUnknown,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/service/enums.xml:ServiceWorkerIPAddressSpace)
 
 }  // namespace service_worker_internals
 
@@ -2737,38 +2751,83 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::ParseRegistrationData(
     }
   }
 
-  if (data.has_policy_container_policies()) {
+  // There was a bug fixed in M141 where extension service workers had the wrong
+  // IP address space assigned (crbug.com/435246545). However, extensions that
+  // had service workers previously installed before the fix were persisted to
+  // the service worker database with the wrong IP address space. To fix this,
+  // when reading the service worker registration data, if the service worker is
+  // part of a chrome extension, we change the IP address space to kLoopback.
+  //
+  // This was discovered in M142(crbug.com/456078996), hopefully we can remove
+  // this patch after some time has passed to allow all service worker
+  // registrations to get persisted with the correct IP address space.
+  bool is_chrome_extension_scope = scope_url.SchemeIs("chrome-extension");
+
+  if (data.has_policy_container_policies() || is_chrome_extension_scope) {
     if (!(*out)->policy_container_policies) {
       (*out)->policy_container_policies =
           blink::mojom::PolicyContainerPolicies::New();
     }
-    auto& policies = data.policy_container_policies();
-    if (policies.has_referrer_policy()) {
-      if (!ServiceWorkerRegistrationData::ReferrerPolicyValue_IsValid(
-              policies.referrer_policy())) {
-        DLOG(ERROR) << "Referrer policy in policy container policies '"
-                    << policies.referrer_policy() << "' is not valid.";
-        return Status::kErrorCorrupted;
+    if (data.has_policy_container_policies()) {
+      auto& policies = data.policy_container_policies();
+      if (policies.has_referrer_policy()) {
+        if (!ServiceWorkerRegistrationData::ReferrerPolicyValue_IsValid(
+                policies.referrer_policy())) {
+          DLOG(ERROR) << "Referrer policy in policy container policies '"
+                      << policies.referrer_policy() << "' is not valid.";
+          return Status::kErrorCorrupted;
+        }
+        (*out)->policy_container_policies->referrer_policy =
+            ConvertReferrerPolicyFromProtocolBufferToMojom(
+                policies.referrer_policy());
       }
-      (*out)->policy_container_policies->referrer_policy =
-          ConvertReferrerPolicyFromProtocolBufferToMojom(
-              policies.referrer_policy());
-    }
-    if (policies.has_sandbox_flags()) {
-      (*out)->policy_container_policies->sandbox_flags =
-          static_cast<network::mojom::WebSandboxFlags>(
-              policies.sandbox_flags());
-    }
-    if (policies.has_ip_address_space()) {
-      if (!ServiceWorkerRegistrationData_IPAddressSpace_IsValid(
-              policies.ip_address_space())) {
-        DLOG(ERROR) << "IP address space in policy container policies '"
-                    << policies.ip_address_space() << "' is not valid.";
-        return Status::kErrorCorrupted;
+      if (policies.has_sandbox_flags()) {
+        (*out)->policy_container_policies->sandbox_flags =
+            static_cast<network::mojom::WebSandboxFlags>(
+                policies.sandbox_flags());
       }
-      (*out)->policy_container_policies->ip_address_space =
-          ConvertIPAddressSpaceFromProtocolBufferToMojom(
-              policies.ip_address_space());
+      if (policies.has_ip_address_space()) {
+        if (!ServiceWorkerRegistrationData_IPAddressSpace_IsValid(
+                policies.ip_address_space())) {
+          DLOG(ERROR) << "IP address space in policy container policies '"
+                      << policies.ip_address_space() << "' is not valid.";
+          return Status::kErrorCorrupted;
+        }
+        (*out)->policy_container_policies->ip_address_space =
+            ConvertIPAddressSpaceFromProtocolBufferToMojom(
+                policies.ip_address_space());
+      }
+    }
+    if (is_chrome_extension_scope) {
+      if ((*out)->policy_container_policies->ip_address_space !=
+          network::mojom::IPAddressSpace::kLoopback) {
+        service_worker_internals::ServiceWorkerIPAddressSpaceHistogram
+            histogram_value;
+        switch ((*out)->policy_container_policies->ip_address_space) {
+          case network::mojom::IPAddressSpace::kLoopback:
+            histogram_value = service_worker_internals::
+                ServiceWorkerIPAddressSpaceHistogram::kLoopback;
+            break;
+          case network::mojom::IPAddressSpace::kLocal:
+            histogram_value = service_worker_internals::
+                ServiceWorkerIPAddressSpaceHistogram::kLocal;
+            break;
+          case network::mojom::IPAddressSpace::kPublic:
+            histogram_value = service_worker_internals::
+                ServiceWorkerIPAddressSpaceHistogram::kPublic;
+            break;
+          case network::mojom::IPAddressSpace::kUnknown:
+            histogram_value = service_worker_internals::
+                ServiceWorkerIPAddressSpaceHistogram::kUnknown;
+            break;
+        }
+
+        base::UmaHistogramEnumeration(
+            "ServiceWorker.ChromeExtensionUpdateIPAddressSpace",
+            histogram_value);
+        (*out)->policy_container_policies->ip_address_space =
+            network::mojom::IPAddressSpace::kLoopback;
+      }
     }
   }
 
