@@ -54,6 +54,7 @@
 #include "third_party/blink/renderer/core/html/anchor_element_viewport_position_tracker.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
+#include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_shift_tracker.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
@@ -157,9 +158,10 @@ void ScrollableArea::SetMacScrollbarAnimatorForTesting(
   mac_scrollbar_animator_ = animator_for_testing;
 }
 
-bool ScrollableArea::FadeInScrollbarIfExists() {
+bool ScrollableArea::FadeInScrollbarIfExists(bool horizontal, bool vertical) {
   if (GetMacScrollbarAnimator()) {
-    return GetMacScrollbarAnimator()->FadeInScrollbarIfExists();
+    return GetMacScrollbarAnimator()->FadeInScrollbarIfExists(horizontal,
+                                                              vertical);
   }
   return false;
 }
@@ -1479,6 +1481,69 @@ ScrollOffset ScrollableArea::GetScrollOffsetForScrollMarkerUpdate() {
         GetProgrammaticScrollAnimator().TargetOffset();
   }
   return offset_for_scroll_marker_update;
+}
+
+namespace {
+
+LayoutBox* GetEnclosingLayoutBoxCrossingDocumentBoundary(
+    LayoutBox* layout_box) {
+  CHECK(layout_box);
+
+  return IsA<LayoutView>(layout_box)
+             ? static_cast<LayoutBox*>(
+                   layout_box->GetFrame()->OwnerLayoutObject())
+             : static_cast<LayoutBox*>(layout_box->ContainingBlock());
+}
+
+ScrollableArea* GetNearestScrollableArea(LayoutBox* current_box) {
+  CHECK(current_box);
+  LayoutBox* next_box = current_box;
+
+  // Scrolling propagates along the containing block chain and ends at the
+  // RootScroller node. The RootScroller node will have a custom applyScroll
+  // callback that performs scrolling as well as associated "root" actions like
+  // browser control movement and overscroll glow.
+  do {
+    if (next_box->IsGlobalRootScroller() ||
+        (next_box->IsScrollContainer() &&
+         (next_box->GetScrollableArea()->ScrollsOverflow() ||
+          !next_box->GetScrollableArea()->CanPropagateScroll()))) {
+      return next_box->GetScrollableArea();
+    }
+
+    next_box = GetEnclosingLayoutBoxCrossingDocumentBoundary(next_box);
+  } while (next_box);
+
+  return &current_box->GetDocument().GetPage()->GetVisualViewport();
+}
+
+}  // namespace
+
+ScrollableAreaTraversal::ScrollableAreaTraversal(Node* target_node) {
+  if (!target_node || !target_node->GetLayoutObject()) {
+    return;
+  }
+
+  auto* layout_box = target_node->GetLayoutObject()->EnclosingBox();
+  start_scrollable_area_ =
+      layout_box ? GetNearestScrollableArea(layout_box)
+                 : &target_node->GetDocument().GetPage()->GetVisualViewport();
+}
+
+ScrollableAreaTraversal::Iterator&
+ScrollableAreaTraversal::Iterator::operator++() {
+  CHECK(current_scrollable_area_);
+
+  if (auto* current_box = current_scrollable_area_->GetLayoutBox()) {
+    auto* next_box = GetEnclosingLayoutBoxCrossingDocumentBoundary(current_box);
+    current_scrollable_area_ =
+        next_box ? GetNearestScrollableArea(next_box)
+                 : &current_box->GetDocument().GetPage()->GetVisualViewport();
+    return *this;
+  }
+
+  current_scrollable_area_ = nullptr;
+  return *this;
 }
 
 }  // namespace blink

@@ -18,9 +18,65 @@
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/page/pointer_lock_controller.h"
+#include "third_party/blink/renderer/core/scroll/scrollable_area.h"
 #include "ui/gfx/geometry/point_conversions.h"
 
 namespace blink {
+
+namespace {
+
+bool FadeInAllPossiblyChainedScrollbars(Node* target_node) {
+  constexpr int kLeft = 0x1 << 0;
+  constexpr int kRight = 0x1 << 1;
+  constexpr int kUp = 0x1 << 2;
+  constexpr int kDown = 0x1 << 3;
+  constexpr int kAllDirections = kLeft | kRight | kUp | kDown;
+
+  bool handled = false;
+  int consumed = 0;
+
+  for (ScrollableArea& scrollable : ScrollableAreaTraversal(target_node)) {
+    if (consumed == kAllDirections) {
+      break;
+    }
+
+    ScrollOffset scroll_offset = scrollable.GetScrollOffset();
+    ScrollOffset min_scroll_offset = scrollable.MinimumScrollOffset();
+    ScrollOffset max_scroll_offset = scrollable.MaximumScrollOffset();
+
+    bool horizontal = false;
+    bool vertical = false;
+
+    if (!(consumed & kLeft) && scroll_offset.x() > min_scroll_offset.x()) {
+      horizontal = true;
+      consumed |= kLeft;
+    }
+
+    if (!(consumed & kRight) && scroll_offset.x() < max_scroll_offset.x()) {
+      horizontal = true;
+      consumed |= kRight;
+    }
+
+    if (!(consumed & kUp) && scroll_offset.y() > min_scroll_offset.y()) {
+      vertical = true;
+      consumed |= kUp;
+    }
+
+    if (!(consumed & kDown) && scroll_offset.y() < max_scroll_offset.y()) {
+      vertical = true;
+      consumed |= kDown;
+    }
+
+    if (!horizontal && !vertical) {
+      continue;
+    }
+
+    handled |= scrollable.FadeInScrollbarIfExists(horizontal, vertical);
+  }
+  return handled;
+}
+
+}  // namespace
 
 MouseWheelEventManager::MouseWheelEventManager(LocalFrame& frame,
                                                ScrollManager& scroll_manager)
@@ -76,24 +132,22 @@ WebInputEventResult MouseWheelEventManager::HandleWheelEvent(
     }
   }
 
-  if (event.phase == WebMouseWheelEvent::kPhaseMayBegin) {
-    if (base::FeatureList::IsEnabled(
-            blink::features::kFadeInScrollbarWhenMouseWheelMayBegin)) {
-      if (auto* scrollable = HitTestResult::GetScrollableArea(wheel_target_)) {
-        return scrollable->FadeInScrollbarIfExists()
-                   ? WebInputEventResult::kHandledSystem
-                   : WebInputEventResult::kNotHandled;
-      }
-    }
-    return WebInputEventResult::kNotHandled;
-  }
-
   LocalFrame* subframe =
       event_handling_util::SubframeForTargetNode(wheel_target_.Get());
   if (subframe) {
     WebInputEventResult result =
         subframe->GetEventHandler().HandleWheelEvent(event);
     return result;
+  }
+
+  if (event.phase == WebMouseWheelEvent::kPhaseMayBegin) {
+    if (base::FeatureList::IsEnabled(
+            blink::features::kFadeInScrollbarWhenMouseWheelMayBegin)) {
+      return FadeInAllPossiblyChainedScrollbars(wheel_target_)
+                 ? WebInputEventResult::kHandledSystem
+                 : WebInputEventResult::kNotHandled;
+    }
+    return WebInputEventResult::kNotHandled;
   }
 
   if (wheel_target_) {

@@ -68,7 +68,7 @@ class CORE_EXPORT MacScrollbarAnimatorV2 : public MacScrollbarAnimator {
   void WillRemoveHorizontalScrollbar(Scrollbar&) final;
   void DidChangeUserVisibleScrollOffset(const ScrollOffset&) final;
   void Dispose() final;
-  bool FadeInScrollbarIfExists() final;
+  bool FadeInScrollbarIfExists(bool horizontal, bool vertical) final;
 
  private:
   std::unique_ptr<MacScrollbarImplV2> horizontal_scrollbar_;

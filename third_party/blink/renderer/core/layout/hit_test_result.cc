@@ -286,42 +286,15 @@ void HitTestResult::SetToShadowHostIfInUAShadowRoot() {
 }
 
 CompositorElementId HitTestResult::GetScrollableContainer() const {
-  if (ScrollableArea* scrollable_area = GetScrollableArea(InnerNode())) {
-    return scrollable_area->GetScrollElementId();
+  ScrollableAreaTraversal scrollers(InnerNode());
+  auto iter = scrollers.begin();
+  if (iter != scrollers.end()) {
+    return iter->GetScrollElementId();
   }
 
   // If no node was found, return an invalid element ID, which we check for in
   // InputHandlerProxy::ContinueScrollBeginAfterMainThreadHitTest.
   return CompositorElementId();
-}
-
-// static
-ScrollableArea* HitTestResult::GetScrollableArea(const Node* node) {
-  if (!node || !node->GetLayoutObject()) {
-    return nullptr;
-  }
-
-  LayoutBox* cur_box = node->GetLayoutObject()->EnclosingBox();
-
-  // Scrolling propagates along the containing block chain and ends at the
-  // RootScroller node. The RootScroller node will have a custom applyScroll
-  // callback that performs scrolling as well as associated "root" actions like
-  // browser control movement and overscroll glow.
-  while (cur_box) {
-    if (cur_box->IsGlobalRootScroller() ||
-        (cur_box->IsScrollContainer() &&
-         (cur_box->GetScrollableArea()->ScrollsOverflow() ||
-          !cur_box->GetScrollableArea()->CanPropagateScroll()))) {
-      return cur_box->GetScrollableArea();
-    }
-
-    if (IsA<LayoutView>(cur_box))
-      cur_box = cur_box->GetFrame()->OwnerLayoutObject();
-    else
-      cur_box = cur_box->ContainingBlock();
-  }
-
-  return &node->GetDocument().GetPage()->GetVisualViewport();
 }
 
 HTMLAreaElement* HitTestResult::ImageAreaForImage() const {

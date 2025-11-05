@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/core/testing/color_scheme_helper.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
+#include "third_party/blink/renderer/platform/fonts/plain_text_node.h"
 #include "third_party/blink/renderer/platform/testing/paint_test_configurations.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
@@ -3592,22 +3593,65 @@ TEST_P(ScrollbarsTestWithVirtualTimer,
 #if BUILDFLAG(IS_MAC)
 class MockMacScrollbarAnimator : public MacScrollbarAnimator {
  public:
-  MockMacScrollbarAnimator() = default;
+  MockMacScrollbarAnimator() : animator_impl_(nullptr) {}
+  explicit MockMacScrollbarAnimator(MacScrollbarAnimator* animator_impl)
+      : animator_impl_(animator_impl) {}
   virtual ~MockMacScrollbarAnimator() = default;
 
-  void MouseEnteredScrollbar(Scrollbar&) const override {}
-  void MouseExitedScrollbar(Scrollbar&) const override {}
+  void MouseEnteredScrollbar(Scrollbar& scrollbar) const override {
+    if (animator_impl_) {
+      animator_impl_->MouseEnteredScrollbar(scrollbar);
+    }
+  }
+  void MouseExitedScrollbar(Scrollbar& scrollbar) const override {
+    if (animator_impl_) {
+      animator_impl_->MouseExitedScrollbar(scrollbar);
+    }
+  }
 
-  void DidAddVerticalScrollbar(Scrollbar&) override {}
-  void WillRemoveVerticalScrollbar(Scrollbar&) override {}
-  void DidAddHorizontalScrollbar(Scrollbar&) override {}
-  void WillRemoveHorizontalScrollbar(Scrollbar&) override {}
+  void DidAddVerticalScrollbar(Scrollbar& scrollbar) override {
+    if (animator_impl_) {
+      animator_impl_->DidAddVerticalScrollbar(scrollbar);
+    }
+  }
+  void WillRemoveVerticalScrollbar(Scrollbar& scrollbar) override {
+    if (animator_impl_) {
+      animator_impl_->WillRemoveVerticalScrollbar(scrollbar);
+    }
+  }
+  void DidAddHorizontalScrollbar(Scrollbar& scrollbar) override {
+    if (animator_impl_) {
+      animator_impl_->DidAddHorizontalScrollbar(scrollbar);
+    }
+  }
+  void WillRemoveHorizontalScrollbar(Scrollbar& scrollbar) override {
+    if (animator_impl_) {
+      animator_impl_->WillRemoveHorizontalScrollbar(scrollbar);
+    }
+  }
 
-  void DidChangeUserVisibleScrollOffset(const ScrollOffset&) override {}
+  void DidChangeUserVisibleScrollOffset(
+      const ScrollOffset& scroll_offset) override {
+    if (animator_impl_) {
+      animator_impl_->DidChangeUserVisibleScrollOffset(scroll_offset);
+    }
+  }
 
-  void Dispose() override {}
+  void Dispose() override {
+    if (animator_impl_) {
+      animator_impl_->Dispose();
+    }
+  }
 
-  MOCK_METHOD0(FadeInScrollbarIfExists, bool());
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(animator_impl_);
+    MacScrollbarAnimator::Trace(visitor);
+  }
+
+  MOCK_METHOD2(FadeInScrollbarIfExists, bool(bool horizontal, bool vertical));
+
+ private:
+  Member<MacScrollbarAnimator> animator_impl_;
 };
 
 TEST_P(ScrollbarsTestWithVirtualTimer,
@@ -3630,7 +3674,7 @@ TEST_P(ScrollbarsTestWithVirtualTimer,
   HitTestResult hit_test_result = HitTest(100, 100);
   EXPECT_EQ(hit_test_result.InnerElement(), GetDocument().body());
   EXPECT_EQ(scrollable_area,
-            HitTestResult::GetScrollableArea(GetDocument().body()));
+            &*ScrollableAreaTraversal(GetDocument().body()).begin());
 
   EXPECT_EQ(
       WebInputEventResult::kNotHandled,
@@ -3648,7 +3692,10 @@ TEST_P(ScrollbarsTestWithVirtualTimer,
   feature_list.Reset();
 
   bool did_fade_in = false;
-  auto fade_in_scrollbar = [&did_fade_in]() -> bool { return did_fade_in; };
+  auto fade_in_scrollbar = [&did_fade_in](bool horizontal,
+                                          bool vertical) -> bool {
+    return did_fade_in;
+  };
 
   EXPECT_CALL(*scrollbar_animator, FadeInScrollbarIfExists)
       .WillOnce(fade_in_scrollbar);
@@ -3672,12 +3719,12 @@ TEST_P(ScrollbarsTestWithVirtualTimer,
   feature_list.InitAndEnableFeature(
       blink::features::kFadeInScrollbarWhenMouseWheelMayBegin);
 
-  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(200, 200));
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
     <!DOCTYPE html>
-    <style> body { font-size: 100px; } </style>
+    <style> body { font-size: 400px; } </style>
     <test-element id="test-element">test</test-element>
     <template id="template"><slot id="test-slot"></slot></template>
     <script>
@@ -3699,7 +3746,8 @@ TEST_P(ScrollbarsTestWithVirtualTimer,
           .getElementById(AtomicString("test-element"))
           ->GetShadowRoot()
           ->getElementById(AtomicString("test-slot")));
-  EXPECT_EQ(nullptr, HitTestResult::GetScrollableArea(test_slot));
+  ScrollableAreaTraversal scrollers(test_slot);
+  EXPECT_EQ(scrollers.begin(), scrollers.end());
 
   HitTestResult hit_test_result = HitTest(50, 50);
   EXPECT_EQ(test_slot->FirstAssignedNode(), hit_test_result.InnerNode());
@@ -3708,17 +3756,725 @@ TEST_P(ScrollbarsTestWithVirtualTimer,
   DCHECK(scrollable_area);
 
   EXPECT_EQ(scrollable_area,
-            HitTestResult::GetScrollableArea(hit_test_result.InnerNode()));
+            &*ScrollableAreaTraversal(hit_test_result.InnerNode()).begin());
 
   auto* scrollbar_animator = MakeGarbageCollected<MockMacScrollbarAnimator>();
   scrollable_area->SetMacScrollbarAnimatorForTesting(scrollbar_animator);
 
   EXPECT_CALL(*scrollbar_animator, FadeInScrollbarIfExists)
-      .WillOnce([]() -> bool { return true; });
+      .WillOnce([](bool horizontal, bool vertical) -> bool { return true; });
   EXPECT_EQ(WebInputEventResult::kHandledSystem,
             HandleWheelEvent(50, 50, 0, 0, WebMouseWheelEvent::kPhaseMayBegin));
   testing::Mock::VerifyAndClearExpectations(scrollbar_animator);
 }
+
+TEST_P(ScrollbarsTestWithVirtualTimer,
+       FadeInAllPossiblyChainedOverlayScrollbars) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      blink::features::kFadeInScrollbarWhenMouseWheelMayBegin);
+
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <style>
+    body { width: 500px; height: 500px; }
+    .scroller {
+      position: sticky; overflow: auto;
+      top: 5px; left: 5px; width: 90%; height: 90%;
+      padding: 2px; border: 2px solid black;
+    }
+    .vertical > .spacer { height: 1200px; width: 1px; }
+    .horizontal > .spacer { width: 1200px; height: 1px; }
+    </style>
+    <div id='scroller1' class='scroller vertical'>
+      <div id='scroller2' class='scroller vertical'>
+        <div id='scroller3' class='scroller horizontal'>
+          <div id='scroller4' class='scroller horizontal'>
+            <div class='spacer'></div>
+          </div><div class='spacer'></div>
+        </div><div class='spacer'></div>
+      </div><div class='spacer'></div>
+    </div>
+    )HTML");
+  Compositor().BeginFrame();
+
+  Element* scroller1 = GetDocument().getElementById(AtomicString("scroller1"));
+  ASSERT_TRUE(scroller1);
+  Element* scroller2 = GetDocument().getElementById(AtomicString("scroller2"));
+  ASSERT_TRUE(scroller2);
+  Element* scroller3 = GetDocument().getElementById(AtomicString("scroller3"));
+  ASSERT_TRUE(scroller3);
+  Element* scroller4 = GetDocument().getElementById(AtomicString("scroller4"));
+  ASSERT_TRUE(scroller4);
+
+  HitTestResult hit_test_result = HitTest(50, 50);
+  EXPECT_EQ(hit_test_result.InnerElement(), scroller4);
+
+  EXPECT_EQ(WebInputEventResult::kNotHandled,
+            HandleWheelEvent(50, 50, 0, 0, WebMouseWheelEvent::kPhaseMayBegin));
+
+  auto* scrollbar_animator = MakeGarbageCollected<MockMacScrollbarAnimator>();
+
+  int scrollable_area_count = 0;
+  for (ScrollableArea& scrollable_area :
+       ScrollableAreaTraversal(hit_test_result.InnerElement())) {
+    scrollable_area.SetMacScrollbarAnimatorForTesting(scrollbar_animator);
+    scrollable_area_count++;
+  }
+  EXPECT_EQ(scrollable_area_count, 6);
+
+  EXPECT_CALL(*scrollbar_animator, FadeInScrollbarIfExists).Times(0);
+  EXPECT_EQ(WebInputEventResult::kNotHandled,
+            HandleWheelEvent(50, 50, 0, 0, WebMouseWheelEvent::kPhaseMayBegin));
+  testing::Mock::VerifyAndClearExpectations(scrollbar_animator);
+
+  feature_list.Reset();
+
+  scroller1->setScrollTop(scroller1->scrollHeight());
+  scroller3->setScrollLeft(scroller3->scrollWidth());
+
+  bool did_fade_in = false;
+  int fade_in_scrollbar_count = 0;
+  auto fade_in_scrollbar = [&did_fade_in, &fade_in_scrollbar_count](
+                               bool horizontal, bool vertical) -> bool {
+    fade_in_scrollbar_count++;
+    return did_fade_in;
+  };
+
+  EXPECT_CALL(*scrollbar_animator, FadeInScrollbarIfExists)
+      .WillRepeatedly(fade_in_scrollbar);
+  EXPECT_EQ(WebInputEventResult::kNotHandled,
+            HandleWheelEvent(50, 50, 0, 0, WebMouseWheelEvent::kPhaseMayBegin));
+  testing::Mock::VerifyAndClearExpectations(scrollbar_animator);
+  EXPECT_EQ(fade_in_scrollbar_count, 4);
+
+  did_fade_in = true;
+  fade_in_scrollbar_count = 0;
+  EXPECT_CALL(*scrollbar_animator, FadeInScrollbarIfExists)
+      .WillRepeatedly(fade_in_scrollbar);
+  EXPECT_EQ(WebInputEventResult::kHandledSystem,
+            HandleWheelEvent(50, 50, 0, 0, WebMouseWheelEvent::kPhaseMayBegin));
+  testing::Mock::VerifyAndClearExpectations(scrollbar_animator);
+  EXPECT_EQ(fade_in_scrollbar_count, 4);
+
+  scroller4->setScrollLeft(scroller4->scrollWidth() / 2);
+
+  did_fade_in = true;
+  fade_in_scrollbar_count = 0;
+  EXPECT_CALL(*scrollbar_animator, FadeInScrollbarIfExists)
+      .WillRepeatedly(fade_in_scrollbar);
+  EXPECT_EQ(WebInputEventResult::kHandledSystem,
+            HandleWheelEvent(50, 50, 0, 0, WebMouseWheelEvent::kPhaseMayBegin));
+  testing::Mock::VerifyAndClearExpectations(scrollbar_animator);
+  EXPECT_EQ(fade_in_scrollbar_count, 3);
+
+  scroller2->setScrollTop(scroller2->scrollHeight() / 2);
+
+  did_fade_in = true;
+  fade_in_scrollbar_count = 0;
+  EXPECT_CALL(*scrollbar_animator, FadeInScrollbarIfExists)
+      .WillRepeatedly(fade_in_scrollbar);
+  EXPECT_EQ(WebInputEventResult::kHandledSystem,
+            HandleWheelEvent(50, 50, 0, 0, WebMouseWheelEvent::kPhaseMayBegin));
+  testing::Mock::VerifyAndClearExpectations(scrollbar_animator);
+  EXPECT_EQ(fade_in_scrollbar_count, 2);
+
+  scroller3->setScrollLeft(0);
+
+  did_fade_in = true;
+  fade_in_scrollbar_count = 0;
+  EXPECT_CALL(*scrollbar_animator, FadeInScrollbarIfExists)
+      .WillRepeatedly(fade_in_scrollbar);
+  EXPECT_EQ(WebInputEventResult::kHandledSystem,
+            HandleWheelEvent(50, 50, 0, 0, WebMouseWheelEvent::kPhaseMayBegin));
+  testing::Mock::VerifyAndClearExpectations(scrollbar_animator);
+  EXPECT_EQ(fade_in_scrollbar_count, 2);
+
+  scroller1->setScrollTop(0);
+
+  did_fade_in = true;
+  fade_in_scrollbar_count = 0;
+  EXPECT_CALL(*scrollbar_animator, FadeInScrollbarIfExists)
+      .WillRepeatedly(fade_in_scrollbar);
+  EXPECT_EQ(WebInputEventResult::kHandledSystem,
+            HandleWheelEvent(50, 50, 0, 0, WebMouseWheelEvent::kPhaseMayBegin));
+  testing::Mock::VerifyAndClearExpectations(scrollbar_animator);
+  EXPECT_EQ(fade_in_scrollbar_count, 2);
+
+  scroller4->setScrollLeft(scroller4->scrollWidth());
+
+  did_fade_in = true;
+  fade_in_scrollbar_count = 0;
+  EXPECT_CALL(*scrollbar_animator, FadeInScrollbarIfExists)
+      .WillRepeatedly(fade_in_scrollbar);
+  EXPECT_EQ(WebInputEventResult::kHandledSystem,
+            HandleWheelEvent(50, 50, 0, 0, WebMouseWheelEvent::kPhaseMayBegin));
+  testing::Mock::VerifyAndClearExpectations(scrollbar_animator);
+  EXPECT_EQ(fade_in_scrollbar_count, 3);
+
+  scroller2->setScrollTop(scroller2->scrollHeight());
+
+  did_fade_in = true;
+  fade_in_scrollbar_count = 0;
+  EXPECT_CALL(*scrollbar_animator, FadeInScrollbarIfExists)
+      .WillRepeatedly(fade_in_scrollbar);
+  EXPECT_EQ(WebInputEventResult::kHandledSystem,
+            HandleWheelEvent(50, 50, 0, 0, WebMouseWheelEvent::kPhaseMayBegin));
+  testing::Mock::VerifyAndClearExpectations(scrollbar_animator);
+  EXPECT_EQ(fade_in_scrollbar_count, 4);
+}
+
+TEST_P(ScrollbarsTestWithVirtualTimer,
+       FadeInAllPossiblyChainedOverlayScrollbarsWithWritingMode) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      blink::features::kFadeInScrollbarWhenMouseWheelMayBegin);
+
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <style>
+    body { width: 500px; height: 500px; }
+    .scroller {
+      position: sticky; overflow: auto;
+      width: 90%; height: 90%;
+      padding: 2px; border: 2px solid black;
+    }
+    .up > .spacer, .down > .spacer { width: 1px; height: 1200px; }
+    .left > .spacer, .right > .spacer { width: 1200px; height: 1px; }
+    .down { writing-mode: sideways-rl; top: 5%; left: 5%; }
+    .up { writing-mode: sideways-lr; top: 5%; right: 5%; }
+    .left { writing-mode: vertical-rl; bottom: 5%; left: 5%; }
+    .right { writing-mode: vertical-lr; top: 5%; right: 5%; }
+    </style>
+    <div id='scroller1' class='scroller down'>
+      <div id='scroller2' class='scroller up'>
+        <div id='scroller3' class='scroller left'>
+          <div id='scroller4' class='scroller right'>
+            <div class='spacer'></div>
+          </div><div class='spacer'></div>
+        </div><div class='spacer'></div>
+      </div><div class='spacer'></div>
+    </div>
+    )HTML");
+  Compositor().BeginFrame();
+
+  Element* scroller1 = GetDocument().getElementById(AtomicString("scroller1"));
+  ASSERT_TRUE(scroller1);
+  Element* scroller2 = GetDocument().getElementById(AtomicString("scroller2"));
+  ASSERT_TRUE(scroller2);
+  Element* scroller3 = GetDocument().getElementById(AtomicString("scroller3"));
+  ASSERT_TRUE(scroller3);
+  Element* scroller4 = GetDocument().getElementById(AtomicString("scroller4"));
+  ASSERT_TRUE(scroller4);
+
+  HitTestResult hit_test_result = HitTest(200, 200);
+  EXPECT_EQ(hit_test_result.InnerElement(), scroller4);
+
+  EXPECT_EQ(
+      WebInputEventResult::kNotHandled,
+      HandleWheelEvent(200, 200, 0, 0, WebMouseWheelEvent::kPhaseMayBegin));
+
+  auto* scrollbar_animator = MakeGarbageCollected<MockMacScrollbarAnimator>();
+
+  int scrollable_area_count = 0;
+  for (ScrollableArea& scrollable_area :
+       ScrollableAreaTraversal(hit_test_result.InnerElement())) {
+    scrollable_area.SetMacScrollbarAnimatorForTesting(scrollbar_animator);
+    scrollable_area_count++;
+  }
+  EXPECT_EQ(scrollable_area_count, 6);
+
+  EXPECT_CALL(*scrollbar_animator, FadeInScrollbarIfExists).Times(0);
+  EXPECT_EQ(
+      WebInputEventResult::kNotHandled,
+      HandleWheelEvent(200, 200, 0, 0, WebMouseWheelEvent::kPhaseMayBegin));
+  testing::Mock::VerifyAndClearExpectations(scrollbar_animator);
+
+  feature_list.Reset();
+
+  bool did_fade_in = false;
+  int fade_in_scrollbar_count = 0;
+  auto fade_in_scrollbar = [&did_fade_in, &fade_in_scrollbar_count](
+                               bool horizontal, bool vertical) -> bool {
+    fade_in_scrollbar_count++;
+    return did_fade_in;
+  };
+
+  EXPECT_CALL(*scrollbar_animator, FadeInScrollbarIfExists)
+      .WillRepeatedly(fade_in_scrollbar);
+  EXPECT_EQ(
+      WebInputEventResult::kNotHandled,
+      HandleWheelEvent(200, 200, 0, 0, WebMouseWheelEvent::kPhaseMayBegin));
+  testing::Mock::VerifyAndClearExpectations(scrollbar_animator);
+  EXPECT_EQ(fade_in_scrollbar_count, 4);
+
+  did_fade_in = true;
+  fade_in_scrollbar_count = 0;
+  EXPECT_CALL(*scrollbar_animator, FadeInScrollbarIfExists)
+      .WillRepeatedly(fade_in_scrollbar);
+  EXPECT_EQ(
+      WebInputEventResult::kHandledSystem,
+      HandleWheelEvent(200, 200, 0, 0, WebMouseWheelEvent::kPhaseMayBegin));
+  testing::Mock::VerifyAndClearExpectations(scrollbar_animator);
+  EXPECT_EQ(fade_in_scrollbar_count, 4);
+
+  scroller4->setScrollLeft(scroller4->scrollWidth() / 2);
+
+  did_fade_in = true;
+  fade_in_scrollbar_count = 0;
+  EXPECT_CALL(*scrollbar_animator, FadeInScrollbarIfExists)
+      .WillRepeatedly(fade_in_scrollbar);
+  EXPECT_EQ(
+      WebInputEventResult::kHandledSystem,
+      HandleWheelEvent(200, 200, 0, 0, WebMouseWheelEvent::kPhaseMayBegin));
+  testing::Mock::VerifyAndClearExpectations(scrollbar_animator);
+  EXPECT_EQ(fade_in_scrollbar_count, 3);
+
+  scroller2->setScrollTop(-scroller2->scrollHeight() / 2);
+
+  did_fade_in = true;
+  fade_in_scrollbar_count = 0;
+  EXPECT_CALL(*scrollbar_animator, FadeInScrollbarIfExists)
+      .WillRepeatedly(fade_in_scrollbar);
+  EXPECT_EQ(
+      WebInputEventResult::kHandledSystem,
+      HandleWheelEvent(200, 200, 0, 0, WebMouseWheelEvent::kPhaseMayBegin));
+  testing::Mock::VerifyAndClearExpectations(scrollbar_animator);
+  EXPECT_EQ(fade_in_scrollbar_count, 2);
+
+  scroller3->setScrollLeft(-scroller3->scrollWidth());
+
+  did_fade_in = true;
+  fade_in_scrollbar_count = 0;
+  EXPECT_CALL(*scrollbar_animator, FadeInScrollbarIfExists)
+      .WillRepeatedly(fade_in_scrollbar);
+  EXPECT_EQ(
+      WebInputEventResult::kHandledSystem,
+      HandleWheelEvent(200, 200, 0, 0, WebMouseWheelEvent::kPhaseMayBegin));
+  testing::Mock::VerifyAndClearExpectations(scrollbar_animator);
+  EXPECT_EQ(fade_in_scrollbar_count, 2);
+
+  scroller1->setScrollTop(scroller1->scrollHeight());
+
+  did_fade_in = true;
+  fade_in_scrollbar_count = 0;
+  EXPECT_CALL(*scrollbar_animator, FadeInScrollbarIfExists)
+      .WillRepeatedly(fade_in_scrollbar);
+  EXPECT_EQ(
+      WebInputEventResult::kHandledSystem,
+      HandleWheelEvent(200, 200, 0, 0, WebMouseWheelEvent::kPhaseMayBegin));
+  testing::Mock::VerifyAndClearExpectations(scrollbar_animator);
+  EXPECT_EQ(fade_in_scrollbar_count, 2);
+
+  scroller4->setScrollLeft(scroller4->scrollWidth());
+
+  did_fade_in = true;
+  fade_in_scrollbar_count = 0;
+  EXPECT_CALL(*scrollbar_animator, FadeInScrollbarIfExists)
+      .WillRepeatedly(fade_in_scrollbar);
+  EXPECT_EQ(
+      WebInputEventResult::kHandledSystem,
+      HandleWheelEvent(200, 200, 0, 0, WebMouseWheelEvent::kPhaseMayBegin));
+  testing::Mock::VerifyAndClearExpectations(scrollbar_animator);
+  EXPECT_EQ(fade_in_scrollbar_count, 3);
+
+  scroller2->setScrollTop(-scroller2->scrollHeight());
+
+  did_fade_in = true;
+  fade_in_scrollbar_count = 0;
+  EXPECT_CALL(*scrollbar_animator, FadeInScrollbarIfExists)
+      .WillRepeatedly(fade_in_scrollbar);
+  EXPECT_EQ(
+      WebInputEventResult::kHandledSystem,
+      HandleWheelEvent(200, 200, 0, 0, WebMouseWheelEvent::kPhaseMayBegin));
+  testing::Mock::VerifyAndClearExpectations(scrollbar_animator);
+  EXPECT_EQ(fade_in_scrollbar_count, 4);
+}
+
+TEST_P(ScrollbarsTestWithVirtualTimer,
+       FadeInAllPossiblyChainedOverlayScrollbarsWithMacScrollbarAnimatorImpl) {
+  ENABLE_OVERLAY_SCROLLBARS(true);
+
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <style>
+    body { width: 500px; height: 500px; }
+    .scroller { overflow: auto; border: 2px solid black; }
+    .outer { width: 300px; height: 300px; }
+    .inner { position: sticky; top: 100px; width: 100px; height: 96px; }
+    #scroller2 { left: 20px }
+    #scroller3 { left: 160px }
+    .spacer { width: 1px; height: 1px }
+    .vertical > .spacer { height: 1200px; }
+    .horizontal > .spacer { width: 1200px; }
+    </style>
+    <div id='scroller1' class='scroller outer vertical horizontal'>
+      <div id='scroller2' class='scroller inner vertical'>
+        <div class='spacer'></div>
+      </div>
+      <div id='scroller3' class='scroller inner horizontal'>
+          <div class='spacer'></div>
+      </div>
+      <div class='spacer'></div>
+    </div>
+    )HTML");
+  Compositor().BeginFrame();
+
+  Element* scroller1 = GetDocument().getElementById(AtomicString("scroller1"));
+  ASSERT_TRUE(scroller1);
+  Element* scroller2 = GetDocument().getElementById(AtomicString("scroller2"));
+  ASSERT_TRUE(scroller2);
+  Element* scroller3 = GetDocument().getElementById(AtomicString("scroller3"));
+  ASSERT_TRUE(scroller3);
+
+  HitTestResult hit_test_result1 = HitTest(50, 50);
+  EXPECT_EQ(hit_test_result1.InnerElement(), scroller1);
+  auto* scrollable_area1 = GetScrollableArea(*scroller1);
+  ASSERT_TRUE(scrollable_area1);
+  auto* scrollbar_animator1 = scrollable_area1->GetMacScrollbarAnimator();
+  ASSERT_TRUE(scrollbar_animator1);
+  auto* scrollbar_animator1_proxy =
+      MakeGarbageCollected<MockMacScrollbarAnimator>(scrollbar_animator1);
+  scrollable_area1->SetMacScrollbarAnimatorForTesting(
+      scrollbar_animator1_proxy);
+  bool horizontal1 = false;
+  bool vertical1 = false;
+  auto fade_in_scrollbar1 = [&scrollbar_animator1, &horizontal1, &vertical1](
+                                bool horizontal, bool vertical) -> bool {
+    horizontal1 = horizontal;
+    vertical1 = vertical;
+    return scrollbar_animator1->FadeInScrollbarIfExists(horizontal, vertical);
+  };
+
+  HitTestResult hit_test_result2 = HitTest(50, 150);
+  EXPECT_EQ(hit_test_result1.InnerElement(), scroller1);
+  auto* scrollable_area2 = GetScrollableArea(*scroller2);
+  ASSERT_TRUE(scrollable_area2);
+  auto* scrollbar_animator2 = scrollable_area2->GetMacScrollbarAnimator();
+  ASSERT_TRUE(scrollbar_animator2);
+  auto* scrollbar_animator2_proxy =
+      MakeGarbageCollected<MockMacScrollbarAnimator>(scrollbar_animator2);
+  scrollable_area2->SetMacScrollbarAnimatorForTesting(
+      scrollbar_animator2_proxy);
+  bool horizontal2 = false;
+  bool vertical2 = false;
+  auto fade_in_scrollbar2 = [&scrollbar_animator2, &horizontal2, &vertical2](
+                                bool horizontal, bool vertical) -> bool {
+    horizontal2 = horizontal;
+    vertical2 = vertical;
+    return scrollbar_animator2->FadeInScrollbarIfExists(horizontal, vertical);
+  };
+
+  HitTestResult hit_test_result3 = HitTest(200, 150);
+  EXPECT_EQ(hit_test_result3.InnerElement(), scroller3);
+  auto* scrollable_area3 = GetScrollableArea(*scroller3);
+  ASSERT_TRUE(scrollable_area3);
+  auto* scrollbar_animator3 = scrollable_area3->GetMacScrollbarAnimator();
+  ASSERT_TRUE(scrollbar_animator3);
+  auto* scrollbar_animator3_proxy =
+      MakeGarbageCollected<MockMacScrollbarAnimator>(scrollbar_animator3);
+  scrollable_area3->SetMacScrollbarAnimatorForTesting(
+      scrollbar_animator3_proxy);
+  bool horizontal3 = false;
+  bool vertical3 = false;
+  auto fade_in_scrollbar3 = [&scrollbar_animator3, &horizontal3, &vertical3](
+                                bool horizontal, bool vertical) -> bool {
+    horizontal3 = horizontal;
+    vertical3 = vertical;
+    return scrollbar_animator3->FadeInScrollbarIfExists(horizontal, vertical);
+  };
+
+  horizontal1 = horizontal2 = horizontal3 = false;
+  vertical1 = vertical2 = vertical3 = false;
+  EXPECT_CALL(*scrollbar_animator1_proxy, FadeInScrollbarIfExists)
+      .WillOnce(fade_in_scrollbar1);
+  EXPECT_CALL(*scrollbar_animator2_proxy, FadeInScrollbarIfExists).Times(0);
+  EXPECT_CALL(*scrollbar_animator3_proxy, FadeInScrollbarIfExists).Times(0);
+  EXPECT_EQ(WebInputEventResult::kHandledSystem,
+            HandleWheelEvent(50, 50, 0, 0, WebMouseWheelEvent::kPhaseMayBegin));
+  testing::Mock::VerifyAndClearExpectations(scrollbar_animator1_proxy);
+  testing::Mock::VerifyAndClearExpectations(scrollbar_animator2_proxy);
+  testing::Mock::VerifyAndClearExpectations(scrollbar_animator3_proxy);
+  EXPECT_TRUE(horizontal1);
+  EXPECT_TRUE(vertical1);
+  EXPECT_FALSE(horizontal2);
+  EXPECT_FALSE(vertical2);
+  EXPECT_FALSE(horizontal3);
+  EXPECT_FALSE(vertical3);
+
+  horizontal1 = horizontal2 = horizontal3 = false;
+  vertical1 = vertical2 = vertical3 = false;
+  EXPECT_CALL(*scrollbar_animator1_proxy, FadeInScrollbarIfExists)
+      .WillOnce(fade_in_scrollbar1);
+  EXPECT_CALL(*scrollbar_animator2_proxy, FadeInScrollbarIfExists)
+      .WillOnce(fade_in_scrollbar2);
+  EXPECT_CALL(*scrollbar_animator3_proxy, FadeInScrollbarIfExists).Times(0);
+  EXPECT_EQ(
+      WebInputEventResult::kHandledSystem,
+      HandleWheelEvent(50, 150, 0, 0, WebMouseWheelEvent::kPhaseMayBegin));
+  testing::Mock::VerifyAndClearExpectations(scrollbar_animator1_proxy);
+  testing::Mock::VerifyAndClearExpectations(scrollbar_animator2_proxy);
+  testing::Mock::VerifyAndClearExpectations(scrollbar_animator3_proxy);
+  EXPECT_TRUE(horizontal1);
+  EXPECT_FALSE(vertical1);
+  EXPECT_FALSE(horizontal2);
+  EXPECT_TRUE(vertical2);
+  EXPECT_FALSE(horizontal3);
+  EXPECT_FALSE(vertical3);
+
+  horizontal1 = horizontal2 = horizontal3 = false;
+  vertical1 = vertical2 = vertical3 = false;
+  EXPECT_CALL(*scrollbar_animator1_proxy, FadeInScrollbarIfExists)
+      .WillOnce(fade_in_scrollbar1);
+  EXPECT_CALL(*scrollbar_animator2_proxy, FadeInScrollbarIfExists).Times(0);
+  EXPECT_CALL(*scrollbar_animator3_proxy, FadeInScrollbarIfExists)
+      .WillOnce(fade_in_scrollbar3);
+  EXPECT_EQ(
+      WebInputEventResult::kHandledSystem,
+      HandleWheelEvent(200, 150, 0, 0, WebMouseWheelEvent::kPhaseMayBegin));
+  testing::Mock::VerifyAndClearExpectations(scrollbar_animator1_proxy);
+  testing::Mock::VerifyAndClearExpectations(scrollbar_animator2_proxy);
+  testing::Mock::VerifyAndClearExpectations(scrollbar_animator3_proxy);
+  EXPECT_FALSE(horizontal1);
+  EXPECT_TRUE(vertical1);
+  EXPECT_FALSE(horizontal2);
+  EXPECT_FALSE(vertical2);
+  EXPECT_TRUE(horizontal3);
+  EXPECT_FALSE(vertical3);
+}
+
+TEST_P(ScrollbarsTest,
+       FadeInAllPossiblyChainedOverlayScrollbarsCrossingDocumentBoundaries) {
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
+  SimRequest request("https://example.com/test.html", "text/html");
+  SimRequest child_request("https://example.com/subframe.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <style>
+      body { height: 3000px; }
+      iframe { width: 300px; height: 300px; }
+    </style>
+    <iframe src="https://example.com/subframe.html"></iframe>
+  )HTML");
+  Compositor().BeginFrame();
+  child_request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <style>
+      body { height: 3000px; }
+      div { width: 100%; height: 100% }
+    </style>
+    <div id="scroll_target"></div>
+  )HTML");
+  Compositor().BeginFrame();
+
+  ASSERT_TRUE(GetDocument().GetFrame());
+  ASSERT_TRUE(GetDocument().GetFrame()->FirstChild());
+  LocalFrame* child_frame =
+      DynamicTo<LocalFrame>(GetDocument().GetFrame()->FirstChild());
+  ASSERT_TRUE(child_frame);
+
+  Document* child_document = child_frame->GetDocument();
+  ASSERT_TRUE(child_document);
+
+  child_document->documentElement()->setScrollTop(
+      child_document->documentElement()->scrollHeight());
+
+  Element* scroll_target =
+      child_document->getElementById(AtomicString("scroll_target"));
+  ASSERT_TRUE(scroll_target);
+
+  HitTestResult hit_test_result = HitTest(30, 30);
+  ASSERT_EQ(hit_test_result.InnerElement(), scroll_target);
+
+  auto* scrollbar_animator = MakeGarbageCollected<MockMacScrollbarAnimator>();
+  int scrollable_area_count = 0;
+
+  for (ScrollableArea& scrollable_area :
+       ScrollableAreaTraversal(scroll_target)) {
+    scrollable_area.SetMacScrollbarAnimatorForTesting(scrollbar_animator);
+    scrollable_area_count++;
+  }
+  EXPECT_EQ(scrollable_area_count, 3);
+
+  bool did_fade_in = false;
+  int fade_in_scrollbar_count = 0;
+  auto fade_in_scrollbar = [&did_fade_in, &fade_in_scrollbar_count](
+                               bool horizontal, bool vertical) -> bool {
+    fade_in_scrollbar_count++;
+    return did_fade_in;
+  };
+
+  EXPECT_CALL(*scrollbar_animator, FadeInScrollbarIfExists)
+      .WillRepeatedly(fade_in_scrollbar);
+  EXPECT_EQ(WebInputEventResult::kNotHandled,
+            HandleWheelEvent(30, 30, 0, 0, WebMouseWheelEvent::kPhaseMayBegin));
+  testing::Mock::VerifyAndClearExpectations(scrollbar_animator);
+  EXPECT_EQ(fade_in_scrollbar_count, 2);
+
+  did_fade_in = true;
+  fade_in_scrollbar_count = 0;
+
+  EXPECT_CALL(*scrollbar_animator, FadeInScrollbarIfExists)
+      .WillRepeatedly(fade_in_scrollbar);
+  EXPECT_EQ(WebInputEventResult::kHandledSystem,
+            HandleWheelEvent(30, 30, 0, 0, WebMouseWheelEvent::kPhaseMayBegin));
+  testing::Mock::VerifyAndClearExpectations(scrollbar_animator);
+  EXPECT_EQ(fade_in_scrollbar_count, 2);
+}
+
+TEST_P(ScrollbarsTest, ScrollableAreaTraversal) {
+  ENABLE_OVERLAY_SCROLLBARS(true);
+
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <style>
+    body { width: 500px; height: 500px; }
+    .scroller {
+      position: sticky; overflow: auto;
+      width: 90%; height: 90%;
+      padding: 2px; border: 2px solid black;
+    }
+    .up > .spacer, .down > .spacer { width: 1px; height: 1200px; }
+    .left > .spacer, .right > .spacer { width: 1200px; height: 1px; }
+    .down { writing-mode: sideways-rl; top: 5%; left: 5%; }
+    .up { writing-mode: sideways-lr; top: 5%; right: 5%; }
+    .left { writing-mode: vertical-rl; bottom: 5%; left: 5%; }
+    .right { writing-mode: vertical-lr; top: 5%; right: 5%; }
+    </style>
+    <div id='scroller1' class='scroller down'>
+      <div id='scroller2' class='scroller up'>
+        <div id='scroller3' class='scroller left'>
+          <div id='scroller4' class='scroller right'>
+            <div class='spacer'></div>
+          </div><div class='spacer'></div>
+        </div><div class='spacer'></div>
+      </div><div class='spacer'></div>
+    </div>
+    )HTML");
+  Compositor().BeginFrame();
+
+  Element* scroller = GetDocument().getElementById(AtomicString("scroller4"));
+  ASSERT_TRUE(scroller);
+  ScrollableAreaTraversal traversal(scroller);
+  auto iterator = traversal.begin();
+  ASSERT_TRUE(iterator->GetLayoutBox());
+  EXPECT_EQ(scroller, iterator->GetLayoutBox()->GetNode());
+
+  scroller = GetDocument().getElementById(AtomicString("scroller3"));
+  ASSERT_TRUE(scroller);
+  ++iterator;
+  ASSERT_TRUE(iterator->GetLayoutBox());
+  EXPECT_EQ(scroller, iterator->GetLayoutBox()->GetNode());
+
+  scroller = GetDocument().getElementById(AtomicString("scroller2"));
+  ASSERT_TRUE(scroller);
+  ++iterator;
+  ASSERT_TRUE(iterator->GetLayoutBox());
+  EXPECT_EQ(scroller, iterator->GetLayoutBox()->GetNode());
+
+  scroller = GetDocument().getElementById(AtomicString("scroller1"));
+  ASSERT_TRUE(scroller);
+  ++iterator;
+  ASSERT_TRUE(iterator->GetLayoutBox());
+  EXPECT_EQ(scroller, iterator->GetLayoutBox()->GetNode());
+
+  ++iterator;
+  ASSERT_TRUE(iterator->GetLayoutBox());
+  EXPECT_EQ(&GetDocument(), iterator->GetLayoutBox()->GetNode());
+
+  ++iterator;
+  ASSERT_FALSE(iterator->GetLayoutBox());
+  EXPECT_EQ(&GetDocument().GetPage()->GetVisualViewport(), &*iterator);
+
+  ++iterator;
+  EXPECT_EQ(traversal.end(), iterator);
+}
+
+TEST_P(ScrollbarsTest, ScrollableAreaTraversalCrossingDocumentBoundary) {
+  ENABLE_OVERLAY_SCROLLBARS(true);
+
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
+  SimRequest request("https://example.com/test.html", "text/html");
+  SimRequest child_request("https://example.com/subframe.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <style>
+      iframe { width: 300px; height: 300px; }
+    </style>
+    <iframe src="https://example.com/subframe.html"></iframe>
+  )HTML");
+  Compositor().BeginFrame();
+  child_request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <style>
+      body { width: 500px; height: 500px; }
+      .scroller {
+        position: sticky; overflow: auto;
+        width: 90%; height: 90%;
+        padding: 2px; border: 2px solid black;
+      }
+      .spacer { width: 1px; height: 1200px; }
+    </style>
+    <div id="scroll_target" class="scroller">
+      Test
+      <div class='spacer'></div>
+    </div>
+  )HTML");
+  Compositor().BeginFrame();
+
+  ASSERT_TRUE(GetDocument().GetFrame());
+  ASSERT_TRUE(GetDocument().GetFrame()->FirstChild());
+  LocalFrame* child_frame =
+      DynamicTo<LocalFrame>(GetDocument().GetFrame()->FirstChild());
+  ASSERT_TRUE(child_frame);
+
+  Document* child_document = child_frame->GetDocument();
+  ASSERT_TRUE(child_document);
+
+  Element* scroll_target =
+      child_document->getElementById(AtomicString("scroll_target"));
+  ASSERT_TRUE(scroll_target);
+
+  Node* text_node = scroll_target->firstChild();
+  ASSERT_TRUE(text_node);
+  EXPECT_EQ("Test", To<Text>(text_node)->wholeText().StripWhiteSpace());
+
+  ScrollableAreaTraversal traversal(text_node);
+
+  auto iterator = traversal.begin();
+  ASSERT_TRUE(iterator->GetLayoutBox());
+  EXPECT_EQ(scroll_target, iterator->GetLayoutBox()->GetNode());
+
+  ++iterator;
+  ASSERT_TRUE(iterator->GetLayoutBox());
+  EXPECT_EQ(child_document, iterator->GetLayoutBox()->GetNode());
+
+  ++iterator;
+  ASSERT_TRUE(iterator->GetLayoutBox());
+  EXPECT_EQ(&GetDocument(), iterator->GetLayoutBox()->GetNode());
+
+  ++iterator;
+  ASSERT_FALSE(iterator->GetLayoutBox());
+  EXPECT_EQ(&GetDocument().GetPage()->GetVisualViewport(), &*iterator);
+
+  ++iterator;
+  EXPECT_EQ(traversal.end(), iterator);
+}
+
 #endif  // BUILDFLAG(IS_MAC)
 
 class ScrollbarTrackMarginsTest : public ScrollbarsTest {

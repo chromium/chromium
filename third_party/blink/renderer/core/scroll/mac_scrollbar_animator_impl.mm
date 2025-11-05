@@ -192,12 +192,13 @@ void MacScrollbarAnimatorV2::DidChangeUserVisibleScrollOffset(
     vertical_scrollbar_->DidScroll();
 }
 
-bool MacScrollbarAnimatorV2::FadeInScrollbarIfExists() {
+bool MacScrollbarAnimatorV2::FadeInScrollbarIfExists(bool horizontal,
+                                                     bool vertical) {
   bool did_scroll = false;
-  if (horizontal_scrollbar_) {
+  if (horizontal && horizontal_scrollbar_) {
     did_scroll |= horizontal_scrollbar_->DidScroll();
   }
-  if (vertical_scrollbar_) {
+  if (vertical && vertical_scrollbar_) {
     did_scroll |= vertical_scrollbar_->DidScroll();
   }
   return did_scroll;

@@ -261,7 +261,7 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
 
   void SetMacScrollbarAnimatorForTesting(MacScrollbarAnimator*);
 
-  bool FadeInScrollbarIfExists();
+  bool FadeInScrollbarIfExists(bool horizontal, bool vertical);
 
   // This getter will create a ScrollAnimatorBase if it doesn't already exist.
   ScrollAnimatorBase& GetScrollAnimator() const;
@@ -795,6 +795,47 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
   std::optional<mojom::blink::ScrollType> active_smooth_scroll_type_;
 
   scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner_;
+};
+
+// Traverse all enclosing scrollable layout boxes of the scroll target
+// node in nearest order.
+class CORE_EXPORT ScrollableAreaTraversal {
+  STACK_ALLOCATED();
+
+ public:
+  explicit ScrollableAreaTraversal(Node* target_node);
+
+  class Iterator {
+    STACK_ALLOCATED();
+
+   public:
+    explicit Iterator(ScrollableArea* current_scrollable_area)
+        : current_scrollable_area_(current_scrollable_area) {}
+
+    ScrollableArea& operator*() { return *GetScrollableArea(); }
+
+    ScrollableArea* operator->() { return GetScrollableArea(); }
+
+    bool operator==(const Iterator& other) const {
+      return current_scrollable_area_ == other.current_scrollable_area_;
+    }
+
+    Iterator& operator++();
+
+   private:
+    ScrollableArea* GetScrollableArea() {
+      CHECK(current_scrollable_area_);
+      return current_scrollable_area_;
+    }
+
+    ScrollableArea* current_scrollable_area_;
+  };
+
+  Iterator begin() const { return Iterator(start_scrollable_area_); }
+  Iterator end() const { return Iterator(/*current_scrollable_area=*/nullptr); }
+
+ private:
+  ScrollableArea* start_scrollable_area_ = nullptr;
 };
 
 }  // namespace blink
