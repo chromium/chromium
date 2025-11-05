@@ -470,9 +470,14 @@ TEST_F(CWVAutofillControllerTest, NotifyUserOfLeak) {
                                 leakType:expected_leak_type
                                 username:@"fake-username"]);
 
+  password_manager::PasswordForm password_form;
+  password_form.password_value = u"password";
+  password_form.username_value = u"fake-username";
+  password_form.url = leak_url;
+  password_form.signon_realm = leak_url.GetWithEmptyPath().spec();
   password_manager_client_->NotifyUserCredentialsWereLeaked(
-      password_manager::LeakedPasswordDetails(leak_type, leak_url,
-                                              u"fake-username", u"password",
+      password_manager::LeakedPasswordDetails(leak_type,
+                                              std::move(password_form),
                                               /* in_account_store = */ false));
 
   [delegate verify];

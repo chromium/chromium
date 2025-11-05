@@ -244,8 +244,8 @@ void WebViewPasswordManagerClient::NotifyStorePasswordCalled() {
 void WebViewPasswordManagerClient::NotifyUserCredentialsWereLeaked(
     password_manager::LeakedPasswordDetails details) {
   [bridge_ showPasswordBreachForLeakType:details.leak_type
-                                     URL:details.origin
-                                username:details.username];
+                                     URL:details.credentials.url
+                                username:details.credentials.username_value];
 }
 
 void WebViewPasswordManagerClient::NotifyKeychainError() {}

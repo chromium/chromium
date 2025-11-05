@@ -46,9 +46,7 @@ using CredentialLeakType = std::underlying_type_t<CredentialLeakFlags>;
 // a leaked password.
 struct LeakedPasswordDetails {
   LeakedPasswordDetails(CredentialLeakType leak_type,
-                        GURL origin,
-                        std::u16string username,
-                        std::u16string password,
+                        PasswordForm credentials,
                         bool in_account_store);
 
   LeakedPasswordDetails(const LeakedPasswordDetails&);
@@ -58,12 +56,13 @@ struct LeakedPasswordDetails {
   LeakedPasswordDetails& operator=(const LeakedPasswordDetails&);
   LeakedPasswordDetails& operator=(LeakedPasswordDetails&& other);
 
-  bool operator==(const LeakedPasswordDetails& other) const;
+#if defined(UNIT_TEST)
+  friend bool operator==(const LeakedPasswordDetails&,
+                         const LeakedPasswordDetails&) = default;
+#endif
 
   CredentialLeakType leak_type;
-  GURL origin;
-  std::u16string username;
-  std::u16string password;
+  PasswordForm credentials;
   bool in_account_store;
 };
 

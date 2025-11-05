@@ -375,10 +375,7 @@ class MockPasswordChangeService : public ChromePasswordChangeService {
 
   MOCK_METHOD(void,
               OfferPasswordChangeUi,
-              (const GURL&,
-               const std::u16string&,
-               const std::u16string&,
-               content::WebContents*),
+              (password_manager::PasswordForm, content::WebContents*),
               (override));
   MOCK_METHOD(PasswordChangeDelegate*,
               GetPasswordChangeDelegate,

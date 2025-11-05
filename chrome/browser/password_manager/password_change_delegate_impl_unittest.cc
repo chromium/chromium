@@ -144,8 +144,13 @@ class PasswordChangeDelegateImplTest : public ChromeRenderViewHostTestHarness {
   PasswordChangeDelegate* delegate() { return delegate_.get(); }
 
   void CreateDelegate() {
+    password_manager::PasswordForm form;
+    form.url = GURL(kChangePasswordURL);
+    form.signon_realm = GURL(kChangePasswordURL).GetWithEmptyPath().spec();
+    form.username_value = kTestEmail;
+    form.password_value = kPassword;
     delegate_ = std::make_unique<PasswordChangeDelegateImpl>(
-        GURL(kChangePasswordURL), kTestEmail, kPassword, tab_interface_.get());
+        GURL(kChangePasswordURL), std::move(form), tab_interface_.get());
     delegate_->SetCustomUIController(
         std::make_unique<MockPasswordChangeUIController>(delegate_.get()));
   }

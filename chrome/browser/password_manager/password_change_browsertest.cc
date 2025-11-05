@@ -59,6 +59,7 @@
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/proto/model_quality_service.pb.h"
 #include "components/password_manager/core/browser/features/password_features.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_manager.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
@@ -157,6 +158,18 @@ const ukm::mojom::UkmEntry* GetMetricEntry(
       ukm_entries = test_ukm_recorder.GetEntriesByName(entry);
   EXPECT_THAT(ukm_entries, SizeIs(1));
   return ukm_entries[0];
+}
+
+password_manager::PasswordForm CreatePasswordForm(
+    const GURL& url,
+    const std::u16string& username,
+    const std::u16string& password) {
+  password_manager::PasswordForm form;
+  form.url = GURL(url);
+  form.signon_realm = url.GetWithEmptyPath().spec();
+  form.username_value = username;
+  form.password_value = password;
+  return form;
 }
 
 }  // namespace
@@ -418,8 +431,8 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
   EXPECT_CALL(*affiliation_service(), GetChangePasswordURL(main_url))
       .WillOnce(Return(GURL(kChangePasswordURL)));
 
-  password_change_service()->OfferPasswordChangeUi(main_url, u"test",
-                                                   u"password", WebContents());
+  password_change_service()->OfferPasswordChangeUi(
+      CreatePasswordForm(main_url, u"test", u"password"), WebContents());
   auto* delegate =
       password_change_service()->GetPasswordChangeDelegate(WebContents());
 
@@ -454,8 +467,8 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
       .WillOnce(Return(embedded_test_server()->GetURL(
           "/password/update_form_empty_fields_no_submit.html")));
 
-  password_change_service()->OfferPasswordChangeUi(main_url, u"test",
-                                                   u"pa$$word", WebContents());
+  password_change_service()->OfferPasswordChangeUi(
+      CreatePasswordForm(main_url, u"test", u"pa$$word"), WebContents());
   PasswordChangeDelegate* delegate =
       password_change_service()->GetPasswordChangeDelegate(WebContents());
   delegate->StartPasswordChangeFlow();
@@ -487,8 +500,8 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, PasswordChangeStateUpdated) {
       .WillOnce(Return(embedded_test_server()->GetURL(
           "/password/update_form_empty_fields.html")));
 
-  password_change_service()->OfferPasswordChangeUi(main_url, u"test",
-                                                   u"pa$$word", WebContents());
+  password_change_service()->OfferPasswordChangeUi(
+      CreatePasswordForm(main_url, u"test", u"pa$$word"), WebContents());
 
   // Verify the delegate is created.
   base::WeakPtr<PasswordChangeDelegate> delegate =
@@ -543,8 +556,8 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, GeneratedPasswordIsPreSaved) {
       .WillOnce(Return(embedded_test_server()->GetURL(
           "/password/update_form_empty_fields_no_submit.html")));
 
-  password_change_service()->OfferPasswordChangeUi(main_url, u"test",
-                                                   u"pa$$word", WebContents());
+  password_change_service()->OfferPasswordChangeUi(
+      CreatePasswordForm(main_url, u"test", u"pa$$word"), WebContents());
   PasswordChangeDelegate* delegate =
       password_change_service()->GetPasswordChangeDelegate(WebContents());
   delegate->StartPasswordChangeFlow();
@@ -575,8 +588,8 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, StopPasswordChange) {
   EXPECT_CALL(*affiliation_service(), GetChangePasswordURL(main_url))
       .WillOnce(Return(embedded_test_server()->GetURL("/password/done.html")));
 
-  password_change_service()->OfferPasswordChangeUi(main_url, u"test",
-                                                   u"pa$$word", WebContents());
+  password_change_service()->OfferPasswordChangeUi(
+      CreatePasswordForm(main_url, u"test", u"pa$$word"), WebContents());
   ASSERT_TRUE(
       password_change_service()->GetPasswordChangeDelegate(WebContents()));
 
@@ -594,8 +607,8 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, NewPasswordIsSaved) {
       .WillOnce(Return(embedded_test_server()->GetURL(
           "/password/update_form_empty_fields.html")));
 
-  password_change_service()->OfferPasswordChangeUi(main_url, u"test",
-                                                   u"pa$$word", WebContents());
+  password_change_service()->OfferPasswordChangeUi(
+      CreatePasswordForm(main_url, u"test", u"pa$$word"), WebContents());
   PasswordChangeDelegate* delegate =
       password_change_service()->GetPasswordChangeDelegate(WebContents());
   delegate->StartPasswordChangeFlow();
@@ -685,8 +698,8 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, OldPasswordIsUpdated) {
       .WillOnce(Return(embedded_test_server()->GetURL(
           kMainHost, "/password/update_form_empty_fields.html")));
 
-  password_change_service()->OfferPasswordChangeUi(url, u"test", u"pa$$word",
-                                                   WebContents());
+  password_change_service()->OfferPasswordChangeUi(
+      CreatePasswordForm(url, u"test", u"pa$$word"), WebContents());
   PasswordChangeDelegate* delegate =
       password_change_service()->GetPasswordChangeDelegate(WebContents());
   delegate->StartPasswordChangeFlow();
@@ -733,8 +746,8 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
       .WillOnce(Return(embedded_test_server()->GetURL(
           kMainHost, "/password/update_form_empty_fields.html")));
 
-  password_change_service()->OfferPasswordChangeUi(origin, u"test", u"pa$$word",
-                                                   WebContents());
+  password_change_service()->OfferPasswordChangeUi(
+      CreatePasswordForm(origin, u"test", u"pa$$word"), WebContents());
   PasswordChangeDelegate* delegate =
       password_change_service()->GetPasswordChangeDelegate(WebContents());
   delegate->StartPasswordChangeFlow();
@@ -796,8 +809,8 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
       .WillOnce(Return(embedded_test_server()->GetURL(
           kMainHost, "/password/update_form_empty_fields.html")));
 
-  password_change_service()->OfferPasswordChangeUi(origin, u"test", u"pa$$word",
-                                                   WebContents());
+  password_change_service()->OfferPasswordChangeUi(
+      CreatePasswordForm(origin, u"test", u"pa$$word"), WebContents());
   password_change_service()
       ->GetPasswordChangeDelegate(WebContents())
       ->StartPasswordChangeFlow();
@@ -874,8 +887,8 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, OpenTabWithPasswordChange) {
 
   EXPECT_CALL(*affiliation_service(), GetChangePasswordURL(main_url))
       .WillOnce(Return(change_password_url));
-  password_change_service()->OfferPasswordChangeUi(main_url, u"test",
-                                                   u"pa$$word", WebContents());
+  password_change_service()->OfferPasswordChangeUi(
+      CreatePasswordForm(main_url, u"test", u"pa$$word"), WebContents());
   PasswordChangeDelegate* delegate =
       password_change_service()->GetPasswordChangeDelegate(WebContents());
   delegate->StartPasswordChangeFlow();
@@ -906,8 +919,8 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
       .WillOnce(Return(embedded_test_server()->GetURL(
           "/password/update_form_empty_fields.html")));
 
-  password_change_service()->OfferPasswordChangeUi(main_url, u"test",
-                                                   u"password", WebContents());
+  password_change_service()->OfferPasswordChangeUi(
+      CreatePasswordForm(main_url, u"test", u"pa$$word"), WebContents());
   PasswordChangeDelegate* delegate =
       password_change_service()->GetPasswordChangeDelegate(WebContents());
   EXPECT_EQ(delegate->GetCurrentState(),
@@ -925,8 +938,8 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, FailureDialogDisplayed) {
       .WillOnce(Return(embedded_test_server()->GetURL(
           "/password/update_form_empty_fields.html")));
 
-  password_change_service()->OfferPasswordChangeUi(main_url, u"test",
-                                                   u"pa$$word", WebContents());
+  password_change_service()->OfferPasswordChangeUi(
+      CreatePasswordForm(main_url, u"test", u"pa$$word"), WebContents());
   PasswordChangeDelegate* delegate =
       password_change_service()->GetPasswordChangeDelegate(WebContents());
   delegate->StartPasswordChangeFlow();
@@ -953,8 +966,8 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
       .WillOnce(Return(embedded_test_server()->GetURL(
           "/password/update_form_empty_fields.html")));
 
-  password_change_service()->OfferPasswordChangeUi(main_url, u"test",
-                                                   u"pa$$word", WebContents());
+  password_change_service()->OfferPasswordChangeUi(
+      CreatePasswordForm(main_url, u"test", u"pa$$word"), WebContents());
 
   PasswordChangeDelegate* delegate =
       password_change_service()->GetPasswordChangeDelegate(WebContents());
@@ -972,8 +985,8 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, OTPDetectionHaltsTheFlow) {
   EXPECT_CALL(*affiliation_service(), GetChangePasswordURL(main_url))
       .WillOnce(Return(embedded_test_server()->GetURL("/password/done.html")));
 
-  password_change_service()->OfferPasswordChangeUi(main_url, u"test",
-                                                   u"pa$$word", WebContents());
+  password_change_service()->OfferPasswordChangeUi(
+      CreatePasswordForm(main_url, u"test", u"pa$$word"), WebContents());
   SetModelQualityLogsUploader();
   PasswordChangeDelegate* delegate =
       password_change_service()->GetPasswordChangeDelegate(WebContents());
@@ -1022,8 +1035,8 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, CancelFromToast) {
       .WillOnce(testing::Return(
           embedded_test_server()->GetURL("/password/done.html")));
 
-  password_change_service()->OfferPasswordChangeUi(main_url, u"test",
-                                                   u"pa$$word", WebContents());
+  password_change_service()->OfferPasswordChangeUi(
+      CreatePasswordForm(main_url, u"test", u"pa$$word"), WebContents());
   PasswordChangeDelegate* delegate =
       password_change_service()->GetPasswordChangeDelegate(WebContents());
   EXPECT_TRUE(delegate);
@@ -1084,8 +1097,8 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
   EXPECT_CALL(*affiliation_service(), GetAffiliationsAndBranding)
       .WillRepeatedly(
           RunOnceCallbackRepeatedly<1>(affiliations::AffiliatedFacets(), true));
-  password_change_service()->OfferPasswordChangeUi(main_url, u"test",
-                                                   u"pa$$word", WebContents());
+  password_change_service()->OfferPasswordChangeUi(
+      CreatePasswordForm(main_url, u"test", u"pa$$word"), WebContents());
   PasswordChangeDelegate* delegate =
       password_change_service()->GetPasswordChangeDelegate(WebContents());
   delegate->StartPasswordChangeFlow();
@@ -1145,8 +1158,8 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, ViewPasswordBubbleFromToast) {
   EXPECT_CALL(*affiliation_service(), GetAffiliationsAndBranding)
       .WillRepeatedly(
           RunOnceCallbackRepeatedly<1>(affiliations::AffiliatedFacets(), true));
-  password_change_service()->OfferPasswordChangeUi(main_url, u"test",
-                                                   u"pa$$word", WebContents());
+  password_change_service()->OfferPasswordChangeUi(
+      CreatePasswordForm(main_url, u"test", u"pa$$word"), WebContents());
   PasswordChangeDelegate* delegate =
       password_change_service()->GetPasswordChangeDelegate(WebContents());
   delegate->StartPasswordChangeFlow();
@@ -1189,8 +1202,8 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
       .WillOnce(testing::Return(embedded_test_server()->GetURL(
           "/password/update_form_empty_fields.html")));
 
-  password_change_service()->OfferPasswordChangeUi(main_url, u"test",
-                                                   u"pa$$word", WebContents());
+  password_change_service()->OfferPasswordChangeUi(
+      CreatePasswordForm(main_url, u"test", u"pa$$word"), WebContents());
   PasswordChangeDelegate* delegate =
       password_change_service()->GetPasswordChangeDelegate(WebContents());
   delegate->StartPasswordChangeFlow();
@@ -1236,8 +1249,8 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
   ASSERT_TRUE(observer.Wait());
 
   base::HistogramTester histogram_tester;
-  password_change_service()->OfferPasswordChangeUi(url, u"test", u"pa$$word",
-                                                   WebContents());
+  password_change_service()->OfferPasswordChangeUi(
+      CreatePasswordForm(url, u"test", u"pa$$word"), WebContents());
   password_change_service()
       ->GetPasswordChangeDelegate(WebContents())
       ->StartPasswordChangeFlow();
@@ -1261,8 +1274,8 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
       .WillRepeatedly(
           RunOnceCallbackRepeatedly<1>(affiliations::AffiliatedFacets(), true));
 
-  password_change_service()->OfferPasswordChangeUi(main_url, u"test",
-                                                   u"pa$$word", WebContents());
+  password_change_service()->OfferPasswordChangeUi(
+      CreatePasswordForm(main_url, u"test", u"pa$$word"), WebContents());
 
   // Verify the delegate is created.
   base::WeakPtr<PasswordChangeDelegate> delegate =
@@ -1308,8 +1321,8 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
 
   AddOtpToThePage();
 
-  password_change_service()->OfferPasswordChangeUi(main_url, u"test",
-                                                   u"pa$$word", WebContents());
+  password_change_service()->OfferPasswordChangeUi(
+      CreatePasswordForm(main_url, u"test", u"pa$$word"), WebContents());
 
   // Verify the delegate is created.
   PasswordChangeDelegateImpl* delegate =
@@ -1343,7 +1356,8 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
       .WillOnce(Return(embedded_test_server()->GetURL("/password/done.html")));
 
   password_change_service()->OfferPasswordChangeUi(
-      main_url, u"test", u"pa$$word", original_apc_flow_web_contents);
+      CreatePasswordForm(main_url, u"test", u"pa$$word"),
+      original_apc_flow_web_contents);
   PasswordChangeDelegate* delegate =
       password_change_service()->GetPasswordChangeDelegate(
           original_apc_flow_web_contents);
@@ -1399,8 +1413,8 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
   EXPECT_CALL(*affiliation_service(), GetChangePasswordURL(main_url))
       .WillOnce(Return(embedded_test_server()->GetURL("/password/done.html")));
 
-  password_change_service()->OfferPasswordChangeUi(main_url, u"test",
-                                                   u"pa$$word", WebContents());
+  password_change_service()->OfferPasswordChangeUi(
+      CreatePasswordForm(main_url, u"test", u"pa$$word"), WebContents());
   PasswordChangeDelegate* delegate =
       password_change_service()->GetPasswordChangeDelegate(WebContents());
   delegate->StartPasswordChangeFlow();
@@ -1447,8 +1461,8 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
       .WillOnce(Return(embedded_test_server()->GetURL(
           "/password/update_form_empty_fields.html")));
 
-  password_change_service()->OfferPasswordChangeUi(main_url, u"test",
-                                                   u"pa$$word", WebContents());
+  password_change_service()->OfferPasswordChangeUi(
+      CreatePasswordForm(main_url, u"test", u"pa$$word"), WebContents());
   PasswordChangeDelegate* delegate =
       password_change_service()->GetPasswordChangeDelegate(WebContents());
   delegate->StartPasswordChangeFlow();
@@ -1500,8 +1514,8 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
       .WillOnce(Return(embedded_test_server()->GetURL(
           "/password/update_form_empty_fields.html")));
 
-  password_change_service()->OfferPasswordChangeUi(main_url, u"test",
-                                                   u"pa$$word", WebContents());
+  password_change_service()->OfferPasswordChangeUi(
+      CreatePasswordForm(main_url, u"test", u"pa$$word"), WebContents());
   PasswordChangeDelegate* delegate =
       password_change_service()->GetPasswordChangeDelegate(WebContents());
   delegate->StartPasswordChangeFlow();
@@ -1549,8 +1563,8 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
       .WillOnce(Return(embedded_test_server()->GetURL(
           "/password/update_form_empty_fields.html")));
 
-  password_change_service()->OfferPasswordChangeUi(main_url, u"test",
-                                                   u"pa$$word", WebContents());
+  password_change_service()->OfferPasswordChangeUi(
+      CreatePasswordForm(main_url, u"test", u"pa$$word"), WebContents());
   PasswordChangeDelegate* delegate =
       password_change_service()->GetPasswordChangeDelegate(WebContents());
   delegate->StartPasswordChangeFlow();
@@ -1597,8 +1611,8 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
       .WillOnce(Return(embedded_test_server()->GetURL(
           "/password/update_form_empty_fields.html")));
 
-  password_change_service()->OfferPasswordChangeUi(main_url, u"test",
-                                                   u"pa$$word", WebContents());
+  password_change_service()->OfferPasswordChangeUi(
+      CreatePasswordForm(main_url, u"test", u"pa$$word"), WebContents());
   PasswordChangeDelegate* delegate =
       password_change_service()->GetPasswordChangeDelegate(WebContents());
   delegate->StartPasswordChangeFlow();
@@ -1648,8 +1662,8 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTestWithLoginCheck,
   const GURL main_url = WebContents()->GetLastCommittedURL();
   EXPECT_CALL(*affiliation_service(), GetChangePasswordURL(main_url))
       .WillOnce(Return(GURL(kChangePasswordURL)));
-  password_change_service()->OfferPasswordChangeUi(main_url, u"test",
-                                                   u"password", WebContents());
+  password_change_service()->OfferPasswordChangeUi(
+      CreatePasswordForm(main_url, u"test", u"pa$$word"), WebContents());
   auto* delegate =
       password_change_service()->GetPasswordChangeDelegate(WebContents());
   delegate->StartPasswordChangeFlow();
@@ -1679,8 +1693,8 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTestWithLoginCheck,
   const GURL main_url = WebContents()->GetLastCommittedURL();
   EXPECT_CALL(*affiliation_service(), GetChangePasswordURL(main_url))
       .WillOnce(Return(GURL(kChangePasswordURL)));
-  password_change_service()->OfferPasswordChangeUi(main_url, u"test",
-                                                   u"password", WebContents());
+  password_change_service()->OfferPasswordChangeUi(
+      CreatePasswordForm(main_url, u"test", u"pa$$word"), WebContents());
   auto* delegate =
       password_change_service()->GetPasswordChangeDelegate(WebContents());
   delegate->StartPasswordChangeFlow();
@@ -1710,8 +1724,8 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTestWithLoginCheck,
   const GURL main_url = WebContents()->GetLastCommittedURL();
   EXPECT_CALL(*affiliation_service(), GetChangePasswordURL(main_url))
       .WillOnce(Return(GURL(kChangePasswordURL)));
-  password_change_service()->OfferPasswordChangeUi(main_url, u"test",
-                                                   u"password", WebContents());
+  password_change_service()->OfferPasswordChangeUi(
+      CreatePasswordForm(main_url, u"test", u"pa$$word"), WebContents());
   SetModelQualityLogsUploader();
   auto* delegate =
       password_change_service()->GetPasswordChangeDelegate(WebContents());
@@ -1766,8 +1780,8 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTestWithLoginCheck,
       .WillOnce(testing::Return(
           embedded_test_server()->GetURL("/password/done.html")));
 
-  password_change_service()->OfferPasswordChangeUi(main_url, u"test",
-                                                   u"pa$$word", WebContents());
+  password_change_service()->OfferPasswordChangeUi(
+      CreatePasswordForm(main_url, u"test", u"pa$$word"), WebContents());
   PasswordChangeDelegate* delegate =
       password_change_service()->GetPasswordChangeDelegate(WebContents());
   EXPECT_TRUE(delegate);
@@ -1816,8 +1830,8 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTestWithLoginCheck,
   const GURL main_url = WebContents()->GetLastCommittedURL();
   EXPECT_CALL(*affiliation_service(), GetChangePasswordURL(main_url))
       .WillOnce(Return(GURL(kChangePasswordURL)));
-  password_change_service()->OfferPasswordChangeUi(main_url, u"test",
-                                                   u"password", WebContents());
+  password_change_service()->OfferPasswordChangeUi(
+      CreatePasswordForm(main_url, u"test", u"pa$$word"), WebContents());
   SetModelQualityLogsUploader();
   auto* delegate =
       password_change_service()->GetPasswordChangeDelegate(WebContents());
@@ -1900,8 +1914,8 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTestShowHiddenTab,
       .WillOnce(Return(embedded_test_server()->GetURL(
           "/password/update_form_empty_fields_no_submit.html")));
 
-  password_change_service()->OfferPasswordChangeUi(main_url, u"test",
-                                                   u"pa$$word", WebContents());
+  password_change_service()->OfferPasswordChangeUi(
+      CreatePasswordForm(main_url, u"test", u"pa$$word"), WebContents());
   PasswordChangeDelegate* delegate =
       password_change_service()->GetPasswordChangeDelegate(WebContents());
   delegate->StartPasswordChangeFlow();

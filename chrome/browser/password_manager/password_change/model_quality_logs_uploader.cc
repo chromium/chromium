@@ -12,7 +12,10 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
+#include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/common/form_field_data.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager.h"
 #include "components/translate/core/browser/translate_manager.h"
 #include "components/variations/service/variations_service.h"
@@ -385,6 +388,12 @@ void ModelQualityLogsUploader::LoginCheckSkipped() {
       ->mutable_quality()
       ->mutable_logged_in_check()
       ->set_classification_overridden_by_user(true);
+}
+
+void ModelQualityLogsUploader::SetPasswordFormInfo(
+    const password_manager::PasswordForm& password_form) {
+  // TODO(crbug.com/454561194): Implement logging information about the password
+  // form.
 }
 
 // static

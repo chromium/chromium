@@ -244,12 +244,12 @@ void OnLeakDialogHidden(base::WeakPtr<PasswordsModelDelegate> model_delegate) {
 
 PasswordChangeDelegateImpl::PasswordChangeDelegateImpl(
     GURL change_password_url,
-    std::u16string username,
-    std::u16string password,
+    password_manager::PasswordForm credentials,
     tabs::TabInterface* tab_interface)
     : change_password_url_(std::move(change_password_url)),
-      username_(std::move(username)),
-      original_password_(std::move(password)),
+      username_(std::move(credentials.username_value)),
+      original_password_(std::move(credentials.password_value)),
+      password_form_info_(std::move(credentials)),
       originator_(tab_interface->GetContents()),
       profile_(Profile::FromBrowserContext(originator_->GetBrowserContext())),
       ukm_source_id_(originator_->GetPrimaryMainFrame()->GetPageUkmSourceId()) {
@@ -360,6 +360,7 @@ void PasswordChangeDelegateImpl::StartPasswordChangeFlow() {
   UpdateState(State::kWaitingForChangePasswordForm);
   logs_uploader_ = std::make_unique<ModelQualityLogsUploader>(
       originator_.get(), change_password_url_);
+  logs_uploader_->SetPasswordFormInfo(password_form_info_);
   if (base::FeatureList::IsEnabled(
           password_manager::features::kCheckLoginStateBeforePasswordChange)) {
     login_state_checker_ = std::make_unique<LoginStateChecker>(

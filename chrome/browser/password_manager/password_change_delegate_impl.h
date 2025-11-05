@@ -16,6 +16,7 @@
 #include "chrome/browser/password_manager/password_change/model_quality_logs_uploader.h"
 #include "chrome/browser/password_manager/password_change_delegate.h"
 #include "chrome/browser/ui/passwords/password_change_ui_controller.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -48,8 +49,7 @@ class PasswordChangeDelegateImpl : public PasswordChangeDelegate {
       "PasswordManager.CoarseFinalPasswordChangeStatus";
 
   PasswordChangeDelegateImpl(GURL change_password_url,
-                             std::u16string username,
-                             std::u16string password,
+                             password_manager::PasswordForm credentials,
                              tabs::TabInterface* tab_interface);
   ~PasswordChangeDelegateImpl() override;
 
@@ -127,6 +127,7 @@ class PasswordChangeDelegateImpl : public PasswordChangeDelegate {
   const GURL change_password_url_;
   const std::u16string username_;
   const std::u16string original_password_;
+  password_manager::PasswordForm password_form_info_;
 
   std::u16string generated_password_;
 
