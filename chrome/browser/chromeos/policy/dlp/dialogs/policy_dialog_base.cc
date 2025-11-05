@@ -8,7 +8,6 @@
 #include <string>
 #include <utility>
 
-#include "ash/public/cpp/style/color_provider.h"
 #include "base/functional/callback_forward.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
@@ -90,8 +89,7 @@ views::Label* PolicyDialogBase::AddTitle(const std::u16string& title) {
       upper_panel_->AddChildView(std::make_unique<views::Label>(title));
   title_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   title_label->SetAllowCharacterBreak(true);
-  title_label->SetEnabledColor(ash::ColorProvider::Get()->GetContentLayerColor(
-      ash::ColorProvider::ContentLayerType::kTextColorPrimary));
+  title_label->SetEnabledColor(cros_tokens::kTextColorPrimary);
   return title_label;
 }
 
@@ -103,9 +101,7 @@ views::Label* PolicyDialogBase::AddMessage(const std::u16string& message) {
   message_label->SetMultiLine(true);
   message_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   message_label->SetAllowCharacterBreak(true);
-  message_label->SetEnabledColor(
-      ash::ColorProvider::Get()->GetContentLayerColor(
-          ash::ColorProvider::ContentLayerType::kTextColorSecondary));
+  message_label->SetEnabledColor(cros_tokens::kTextColorSecondary);
   return message_label;
 }
 
@@ -145,8 +141,7 @@ views::Label* PolicyDialogBase::AddRowTitle(const std::u16string& title,
   label->SetMultiLine(true);
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   label->SetAllowCharacterBreak(true);
-  label->SetEnabledColor(ash::ColorProvider::Get()->GetContentLayerColor(
-      ash::ColorProvider::ContentLayerType::kTextColorSecondary));
+  label->SetEnabledColor(cros_tokens::kTextColorSecondary);
   return label;
 }
 

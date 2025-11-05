@@ -264,7 +264,6 @@ std::unique_ptr<views::Widget> PhantomWindowController::CreateMaximizeCue(
       maximize_cue_widget_window);
 
   // The cue has one view and a child label.
-  auto* color_provider = AshColorProvider::Get();
   views::View* maximize_cue_view = maximize_cue_widget->SetContentsView(
       views::Builder<views::BoxLayoutView>()
           .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
@@ -279,8 +278,7 @@ std::unique_ptr<views::Widget> PhantomWindowController::CreateMaximizeCue(
               views::Builder<views::Label>()
                   .SetText(l10n_util::GetStringUTF16(
                       IDS_ASH_SPLIT_VIEW_HOLD_TO_MAXIMIZE))
-                  .SetEnabledColor(color_provider->GetContentLayerColor(
-                      AshColorProvider::ContentLayerType::kTextColorPrimary))
+                  .SetEnabledColor(cros_tokens::kTextColorPrimary)
                   .SetAutoColorReadabilityEnabled(false)
                   .SetFontList(views::Label::GetDefaultFontList().Derive(
                       2, gfx::Font::FontStyle::NORMAL,

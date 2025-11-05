@@ -478,13 +478,10 @@ AshNotificationView::AshNotificationView(
                                views::FlexSpecification(
                                    views::MinimumFlexSizeRule::kScaleToZero,
                                    views::MaximumFlexSizeRule::kUnbounded))
-                  .AddChild(
-                      CreateHeaderRowBuilder()
-                          .SetIsInAshNotificationView(true)
-                          .SetColor(
-                              AshColorProvider::Get()->GetContentLayerColor(
-                                  AshColorProvider::ContentLayerType::
-                                      kTextColorSecondary)))
+                  .AddChild(CreateHeaderRowBuilder()
+                                .SetIsInAshNotificationView(true)
+                                .SetColor(AshColorProvider::Get()->GetColor(
+                                    cros_tokens::kTextColorSecondary)))
                   .AddChild(
                       CreateLeftContentBuilder()
                           .CopyAddressTo(&left_content_)

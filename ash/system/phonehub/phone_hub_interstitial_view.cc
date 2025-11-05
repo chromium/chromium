@@ -10,7 +10,6 @@
 #include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/ash_color_provider.h"
 #include "ash/style/typography.h"
 #include "ash/system/phonehub/ui_constants.h"
 #include "ash/system/tray/tray_constants.h"
@@ -46,7 +45,6 @@ PhoneHubInterstitialView::PhoneHubInterstitialView(bool show_progress,
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>());
   layout->SetOrientation(views::BoxLayout::Orientation::kVertical);
 
-  auto* color_provider = AshColorProvider::Get();
   if (show_progress) {
     auto* progress_bar_container =
         AddChildView(std::make_unique<views::BoxLayoutView>());
@@ -84,9 +82,7 @@ PhoneHubInterstitialView::PhoneHubInterstitialView(bool show_progress,
   title_->SetProperty(views::kCrossAxisAlignmentKey,
                       views::LayoutAlignment::kStart);
   title_->SetProperty(views::kMarginsKey, kLabelInsets);
-  auto label_color = color_provider->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorPrimary);
-  title_->SetEnabledColor(label_color);
+  title_->SetEnabledColor(cros_tokens::kTextColorPrimary);
   TypographyProvider::Get()->StyleLabel(ash::TypographyToken::kCrosButton1,
                                         *title_);
 
@@ -99,7 +95,7 @@ PhoneHubInterstitialView::PhoneHubInterstitialView(bool show_progress,
       content_container->AddChildView(std::make_unique<views::Label>());
   description_->SetProperty(views::kMarginsKey,
                             kLabelInsets + gfx::Insets::TLBR(0, 0, 12, 0));
-  description_->SetEnabledColor(label_color);
+  description_->SetEnabledColor(cros_tokens::kTextColorPrimary);
   description_->SetMultiLine(true);
   description_->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
   // TODO(b/281844561): Migrate the `description_` to use a slightly lighter

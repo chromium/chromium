@@ -166,9 +166,7 @@ void SubFeatureOptInView::InitLayout() {
   text_label_->SetProperty(views::kCrossAxisAlignmentKey,
                            views::LayoutAlignment::kStart);
   text_label_->SetProperty(views::kMarginsKey, kTextLabelBorderInsets);
-  auto text_color = AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorPrimary);
-  text_label_->SetEnabledColor(text_color);
+  text_label_->SetEnabledColor(cros_tokens::kTextColorPrimary);
   text_label_->SetAutoColorReadabilityEnabled(false);
   auto default_font = text_label_->font_list();
   text_label_->SetFontList(default_font

@@ -47,6 +47,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/test/layer_animation_stopped_waiter.h"
@@ -575,8 +576,7 @@ TEST_F(AppListBubbleViewTest, SearchBoxTextUsesPrimaryTextColor) {
 
   views::Textfield* search_box = GetSearchBoxView()->search_box();
   EXPECT_EQ(search_box->GetTextColor(),
-            AshColorProvider::Get()->GetContentLayerColor(
-                AshColorProvider::ContentLayerType::kTextColorPrimary));
+            AshColorProvider::Get()->GetColor(cros_tokens::kTextColorPrimary));
 }
 
 TEST_F(AppListBubbleViewTest, SearchBoxCloseButton) {

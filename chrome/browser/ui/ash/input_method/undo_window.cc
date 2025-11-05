@@ -93,9 +93,7 @@ void UndoWindow::OnThemeChanged() {
       views::Button::ButtonState::STATE_NORMAL,
       ui::ImageModel::FromVectorIcon(
           kAutocorrectUndoIcon, cros_tokens::kIconColorPrimary, kIconSize));
-  undo_button_->SetEnabledTextColors(
-      ash::ColorProvider::Get()->GetContentLayerColor(
-          ash::ColorProvider::ContentLayerType::kTextColorSecondary));
+  undo_button_->SetEnabledTextColors(cros_tokens::kTextColorSecondary);
 
   const auto* const color_provider = GetColorProvider();
   learn_more_button_->SetBorder(views::CreatePaddedBorder(

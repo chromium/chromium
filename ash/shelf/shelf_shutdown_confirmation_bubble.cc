@@ -7,7 +7,6 @@
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/shelf/login_shelf_button.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/ash_color_provider.h"
 #include "ash/style/pill_button.h"
 #include "ash/style/typography.h"
 #include "ash/system/tray/tray_popup_utils.h"
@@ -179,14 +178,10 @@ ShelfShutdownConfirmationBubble::~ShelfShutdownConfirmationBubble() {
 
 void ShelfShutdownConfirmationBubble::OnThemeChanged() {
   views::View::OnThemeChanged();
-  auto* color_provider = AshColorProvider::Get();
 
   icon_->SetImage(ui::ImageModel::FromVectorIcon(
       vector_icons::kWarningOutlineIcon, cros_tokens::kColorPrimary));
-
-  SkColor label_color = color_provider->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorPrimary);
-  title_->SetEnabledColor(label_color);
+  title_->SetEnabledColor(cros_tokens::kTextColorPrimary);
 
   cancel_->SetEnabledTextColors(cros_tokens::kColorPrimary);
   confirm_->SetEnabledTextColors(cros_tokens::kColorPrimary);

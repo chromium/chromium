@@ -65,18 +65,6 @@ SkColor AshColorProvider::GetControlsLayerColor(ControlsLayerType type) const {
   }
 }
 
-SkColor AshColorProvider::GetContentLayerColor(ContentLayerType type) const {
-  auto* color_provider = GetColorProvider();
-  switch (type) {
-    case ContentLayerType::kTextColorURL:
-      return color_provider->GetColor(kColorAshTextColorURL);
-    case ContentLayerType::kTextColorPrimary:
-      return color_provider->GetColor(kColorAshTextColorPrimary);
-    case ContentLayerType::kTextColorSecondary:
-      return color_provider->GetColor(kColorAshTextColorSecondary);
-  }
-}
-
 std::pair<SkColor, float> AshColorProvider::GetInkDropBaseColorAndOpacity(
     SkColor background_color) const {
   if (background_color == gfx::kPlaceholderColor)

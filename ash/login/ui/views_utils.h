@@ -59,8 +59,7 @@ ASH_EXPORT bool HasFocusInAnyChildView(views::View* view);
 ASH_EXPORT std::unique_ptr<views::Label> CreateBubbleLabel(
     const std::u16string& message,
     views::View* view_defining_max_width = nullptr,
-    SkColor color = AshColorProvider::Get()->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kTextColorPrimary),
+    ui::ColorId color = cros_tokens::kTextColorPrimary,
     const gfx::FontList& font_list = GetLoginDefaultFontList(),
     int line_height = kDefaultLineHeight);
 

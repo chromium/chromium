@@ -16,6 +16,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/label.h"
@@ -69,6 +70,7 @@ KioskAppInstructionBubble::KioskAppInstructionBubble(views::View* anchor,
   title_->SetText(l10n_util::GetStringUTF16(IDS_SHELF_KIOSK_APP_INSTRUCTION));
   title_->SetMultiLine(true);
   title_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  title_->SetEnabledColor(cros_tokens::kTextColorPrimary);
 
   views::DialogDelegate::CreateDialogWidget(
       this, nullptr /* context */,
@@ -94,14 +96,6 @@ KioskAppInstructionBubble::KioskAppInstructionBubble(views::View* anchor,
 }
 
 KioskAppInstructionBubble::~KioskAppInstructionBubble() = default;
-
-void KioskAppInstructionBubble::OnThemeChanged() {
-  BubbleDialogDelegateView::OnThemeChanged();
-
-  SkColor label_color = AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorPrimary);
-  title_->SetEnabledColor(label_color);
-}
 
 gfx::Size KioskAppInstructionBubble::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {

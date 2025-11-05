@@ -155,8 +155,7 @@ class ConnectionErrorDialogDelegateView : public views::WidgetDelegateView {
     body_->SetText(body_text);
 
     views::StyledLabel::RangeStyleInfo style;
-    style.override_color = AshColorProvider::Get()->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kTextColorPrimary);
+    style.override_color_id = cros_tokens::kTextColorPrimary;
     body_->AddStyleRange(gfx::Range(0, offset), style);
 
     views::StyledLabel::RangeStyleInfo link_style =

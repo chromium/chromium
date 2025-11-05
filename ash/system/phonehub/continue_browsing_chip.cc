@@ -10,7 +10,6 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
-#include "ash/style/ash_color_provider.h"
 #include "ash/style/typography.h"
 #include "ash/system/phonehub/phone_hub_metrics.h"
 #include "ash/system/phonehub/phone_hub_tray.h"
@@ -57,7 +56,6 @@ ContinueBrowsingChip::ContinueBrowsingChip(
       index_(index),
       total_count_(total_count),
       user_action_recorder_(user_action_recorder) {
-  auto* color_provider = AshColorProvider::Get();
   SetFocusBehavior(FocusBehavior::ALWAYS);
   views::FocusRing::Get(this)->SetColorId(ui::kColorAshFocusRing);
 
@@ -101,8 +99,7 @@ ContinueBrowsingChip::ContinueBrowsingChip(
       base::UTF8ToUTF16(metadata.url.GetHost())));
   url_label->SetAutoColorReadabilityEnabled(false);
   url_label->SetSubpixelRenderingEnabled(false);
-  url_label->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorPrimary));
+  url_label->SetEnabledColor(cros_tokens::kTextColorPrimary);
   url_label->SetElideBehavior(gfx::ElideBehavior::ELIDE_TAIL);
 
   TypographyProvider::Get()->StyleLabel(ash::TypographyToken::kCrosAnnotation1,
@@ -112,8 +109,7 @@ ContinueBrowsingChip::ContinueBrowsingChip(
       AddChildView(std::make_unique<views::Label>(metadata.title));
   title_label->SetAutoColorReadabilityEnabled(false);
   title_label->SetSubpixelRenderingEnabled(false);
-  title_label->SetEnabledColor(color_provider->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorPrimary));
+  title_label->SetEnabledColor(cros_tokens::kTextColorPrimary);
   title_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   title_label->SetMultiLine(true);
   title_label->SetMaxLines(kTitleMaxLines);

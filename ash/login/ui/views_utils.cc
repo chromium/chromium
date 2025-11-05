@@ -144,7 +144,7 @@ std::unique_ptr<views::Label> CreateUnthemedBubbleLabel(
 std::unique_ptr<views::Label> CreateBubbleLabel(
     const std::u16string& message,
     views::View* view_defining_max_width,
-    SkColor color,
+    ui::ColorId color,
     const gfx::FontList& font_list,
     int line_height) {
   auto label = CreateUnthemedBubbleLabel(message, view_defining_max_width,

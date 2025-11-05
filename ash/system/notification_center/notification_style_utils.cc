@@ -126,12 +126,8 @@ void ConfigureLabelStyle(views::Label* label,
   label->SetAutoColorReadabilityEnabled(false);
   label->SetFontList(
       gfx::FontList({kGoogleSansFont}, gfx::Font::NORMAL, size, font_weight));
-  auto layer_type =
-      is_color_primary
-          ? ash::AshColorProvider::ContentLayerType::kTextColorPrimary
-          : ash::AshColorProvider::ContentLayerType::kTextColorSecondary;
-  label->SetEnabledColor(
-      ash::AshColorProvider::Get()->GetContentLayerColor(layer_type));
+  label->SetEnabledColor(is_color_primary ? cros_tokens::kTextColorPrimary
+                                          : cros_tokens::kTextColorSecondary);
 }
 
 ui::ColorProvider* GetColorProviderForNativeTheme() {

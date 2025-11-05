@@ -110,6 +110,7 @@ class GlobalMediaControlsTitleView : public views::View {
     pin_button_ = AddChildView(std::make_unique<MediaTray::PinButton>());
 
     title_label_->SetHorizontalAlignment(gfx::ALIGN_CENTER);
+    title_label_->SetEnabledColor(cros_tokens::kTextColorPrimary);
     TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosTitle1,
                                           *title_label_);
     SetPreferredSize(gfx::Size(kWideTrayMenuWidth, kTitleViewHeight));
@@ -119,12 +120,6 @@ class GlobalMediaControlsTitleView : public views::View {
         gfx::Insets::TLBR(0, pin_button_->GetPreferredSize().width(), 0, 0)));
 
     box_layout->SetFlexForView(title_label_, 1);
-  }
-
-  void OnThemeChanged() override {
-    views::View::OnThemeChanged();
-    title_label_->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kTextColorPrimary));
   }
 
   views::Button* pin_button() { return pin_button_; }
@@ -451,8 +446,7 @@ void MediaTray::ShowEmptyState() {
   auto no_media_label = std::make_unique<views::Label>();
   no_media_label->SetAutoColorReadabilityEnabled(false);
   no_media_label->SetSubpixelRenderingEnabled(false);
-  no_media_label->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorSecondary));
+  no_media_label->SetEnabledColor(cros_tokens::kTextColorSecondary);
   no_media_label->SetText(
       l10n_util::GetStringUTF16(IDS_ASH_GLOBAL_MEDIA_CONTROLS_NO_MEDIA_TEXT));
   no_media_label->SetFontList(

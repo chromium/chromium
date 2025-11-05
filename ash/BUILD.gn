@@ -4076,7 +4076,6 @@ test("ash_unittests") {
     "shelf/test/hotseat_state_watcher.h",
     "shell_unittest.cc",
     "style/ash_color_mixer_unittest.cc",
-    "style/ash_color_provider_unittest.cc",
     "style/color_palette_controller_unittest.cc",
     "style/color_util_unittest.cc",
     "style/combobox_unittest.cc",

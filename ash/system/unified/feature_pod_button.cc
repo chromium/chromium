@@ -29,7 +29,6 @@
 
 namespace ash {
 
-using ContentLayerType = AshColorProvider::ContentLayerType;
 using ControlsLayerType = AshColorProvider::ControlsLayerType;
 
 namespace {
@@ -194,17 +193,13 @@ void FeaturePodLabelButton::ShowDetailedViewArrow() {
 
 void FeaturePodLabelButton::OnEnabledChanged() {
   views::Button::OnEnabledChanged();
-  const AshColorProvider* color_provider = AshColorProvider::Get();
-  const SkColor primary_text_color =
-      color_provider->GetContentLayerColor(ContentLayerType::kTextColorPrimary);
-  const SkColor secondary_text_color = color_provider->GetContentLayerColor(
-      ContentLayerType::kTextColorSecondary);
-  label_->SetEnabledColor(
-      GetEnabled() ? primary_text_color
-                   : ColorUtil::GetDisabledColor(primary_text_color));
+  label_->SetEnabledColor(GetEnabled() ? cros_tokens::kTextColorPrimary
+                                       : ColorUtil::GetDisabledColor(
+                                             cros_tokens::kTextColorPrimary));
   sub_label_->SetEnabledColor(
-      GetEnabled() ? secondary_text_color
-                   : ColorUtil::GetDisabledColor(secondary_text_color));
+      GetEnabled()
+          ? cros_tokens::kTextColorSecondary
+          : ColorUtil::GetDisabledColor(cros_tokens::kTextColorSecondary));
 
   detailed_view_arrow_->SetImage(ui::ImageModel::FromVectorIcon(
       kUnifiedMenuMoreIcon,

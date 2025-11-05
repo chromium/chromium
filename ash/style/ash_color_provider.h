@@ -40,7 +40,6 @@ class ASH_EXPORT AshColorProvider : public ColorProvider {
   // ColorProvider:
   SkColor GetColor(ui::ColorId color_id) const override;
   SkColor GetControlsLayerColor(ControlsLayerType type) const override;
-  SkColor GetContentLayerColor(ContentLayerType type) const override;
   std::pair<SkColor, float> GetInkDropBaseColorAndOpacity(
       SkColor background_color = gfx::kPlaceholderColor) const override;
 

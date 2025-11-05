@@ -106,10 +106,7 @@ PhoneStatusView::PhoneStatusView(phonehub::PhoneModel* phone_model,
   phone_model_->AddObserver(this);
 
   phone_name_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  // TODO(b/322067753): Replace usage of |AshColorProvider| with |cros_tokens|.
-  phone_name_label_->SetEnabledColor(
-      AshColorProvider::Get()->GetContentLayerColor(
-          AshColorProvider::ContentLayerType::kTextColorPrimary));
+  phone_name_label_->SetEnabledColor(cros_tokens::kTextColorPrimary);
   TypographyProvider::Get()->StyleLabel(ash::TypographyToken::kCrosHeadline1,
                                         *phone_name_label_);
 
@@ -127,9 +124,7 @@ PhoneStatusView::PhoneStatusView(phonehub::PhoneModel* phone_model,
   battery_label_->SetAutoColorReadabilityEnabled(false);
   battery_label_->SetSubpixelRenderingEnabled(false);
 
-  // TODO(b/322067753): Replace usage of |AshColorProvider| with |cros_tokens|.
-  battery_label_->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorPrimary));
+  battery_label_->SetEnabledColor(cros_tokens::kTextColorPrimary);
 
   TypographyProvider::Get()->StyleLabel(ash::TypographyToken::kCrosButton2,
                                         *battery_label_);

@@ -10,7 +10,6 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
-#include "ash/style/ash_color_provider.h"
 #include "ash/wm/gestures/back_gesture/back_gesture_util.h"
 #include "base/i18n/rtl.h"
 #include "base/timer/timer.h"
@@ -181,8 +180,7 @@ class BackGestureContextualNudge::ContextualNudgeView
 
       label_ = AddChildView(std::make_unique<views::Label>());
       label_->SetBackgroundColor(SK_ColorTRANSPARENT);
-      label_->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
-          AshColorProvider::ContentLayerType::kTextColorPrimary));
+      label_->SetEnabledColor(cros_tokens::kTextColorPrimary);
       label_->SetText(l10n_util::GetStringUTF16(
           base::i18n::IsRTL() ? IDS_ASH_BACK_GESTURE_CONTEXTUAL_NUDGE_RTL
                               : IDS_ASH_BACK_GESTURE_CONTEXTUAL_NUDGE));

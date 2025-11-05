@@ -1038,8 +1038,7 @@ void NetworkListViewControllerImpl::ShowConnectionWarning(
       base::WrapUnique(TrayPopupUtils::CreateDefaultLabel());
   label->SetText(GenerateLabelText());
   label->SetBackground(views::CreateSolidBackground(SK_ColorTRANSPARENT));
-  label->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorPrimary));
+  label->SetEnabledColor(cros_tokens::kTextColorPrimary);
   label->SetAutoColorReadabilityEnabled(false);
   TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosBody2, *label);
   label->SetID(static_cast<int>(
