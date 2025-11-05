@@ -5,15 +5,16 @@
 #include <string>
 
 #include "base/i18n/rtl.h"
-#include "base/strings/strcat.h"
-#include "base/strings/stringprintf.h"
-#include "base/time/time.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/contextual_tasks/public/features.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/interaction/interactive_test.h"
 #include "ui/native_theme/mock_os_settings_provider.h"
+#include "url/url_constants.h"
 
 using DeepQuery = WebContentsInteractionTestUtil::DeepQuery;
 
@@ -47,6 +48,20 @@ const char kDisableAnimationsJs[] = R"((el) => {
   }
   disableAnimationsInShadowRoots(el.parentElement);
 })";
+
+class FakeContextualTasksUiService
+    : public contextual_tasks::ContextualTasksUiService {
+ public:
+  explicit FakeContextualTasksUiService(Profile* profile)
+      : contextual_tasks::ContextualTasksUiService(profile, nullptr) {}
+  GURL GetDefaultAiPageUrl() override { return GURL(url::kAboutBlankURL); }
+
+  static std::unique_ptr<KeyedService> BuildFakeService(
+      content::BrowserContext* context) {
+    return std::make_unique<FakeContextualTasksUiService>(
+        Profile::FromBrowserContext(context));
+  }
+};
 
 // Base class for Contextual Tasks pixel tests.
 // These tests are intended to be used to verify subtle visual appearance
@@ -82,6 +97,12 @@ class ContextualTasksPixelTest : public InteractiveBrowserTest {
 
   void SetUpOnMainThread() override {
     InteractiveBrowserTest::SetUpOnMainThread();
+    contextual_tasks::ContextualTasksUiServiceFactory::GetInstance()
+        ->SetTestingFactory(
+            browser()->profile(),
+            base::BindRepeating(
+                &FakeContextualTasksUiService::BuildFakeService));
+
     if (rtl_) {
       base::i18n::SetRTLForTesting(true);
     }
@@ -195,12 +216,17 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksComposeBoxPixelTest, Screenshots) {
   const DeepQuery kComposebox = {"contextual-tasks-app", "#composebox"};
   const DeepQuery kComposeBoxInput = {"contextual-tasks-app", "#composebox",
                                       "textarea"};
+  const DeepQuery kAiPageWebView = {"contextual-tasks-app", "webview"};
 
   RunTestSequence(
       SetupEnvironment(kActiveTab),
 
       // Ensure the composebox exists.
       EnsurePresent(kActiveTab, kComposebox),
+
+      // Ensure the AI page webview is loaded with about:blank.
+      CheckJsResultAt(kActiveTab, kAiPageWebView, "(el) => el.src",
+                      url::kAboutBlankURL),
 
       // Disable the blinking caret to reduce flakiness.
       ExecuteJsAt(kActiveTab, kComposeBoxInput,

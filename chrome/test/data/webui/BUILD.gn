@@ -354,6 +354,7 @@ source_set("interactive_ui_tests") {
 
   if (!is_android) {
     deps += [
+      "//chrome/browser/contextual_tasks:ui",
       "//chrome/browser/ui:ui_features",
       "//components/contextual_tasks/public",
       "//components/history_clusters/core",
