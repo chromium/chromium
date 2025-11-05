@@ -16,6 +16,7 @@
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/menu/menu_types.h"
 #include "ui/views/focus/external_focus_tracker.h"
 #include "ui/views/view.h"
@@ -50,6 +51,9 @@ class InfoBarView : public infobars::InfoBar,
 
   // views::ExternalFocusTracker:
   void OnWillChangeFocus(View* focused_before, View* focused_now) override;
+
+  views::ImageView* icon() { return icon_; }
+  views::View* close_button() { return close_button_.get(); }
 
  protected:
   using Labels = std::vector<views::Label*>;
@@ -101,6 +105,12 @@ class InfoBarView : public infobars::InfoBar,
     CHECK(content_container_);
     return content_container_->AddChildView(std::move(child));
   }
+  // Allow subclasses to configure the content container.
+  views::View* content_container() { return content_container_.get(); }
+
+  // Adds a view to the infobar's root, placing it just before the
+  // close button.
+  void AddViewBeforeCloseButton(std::unique_ptr<views::View> view);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(InfoBarViewTest, GetDrawSeparator);
