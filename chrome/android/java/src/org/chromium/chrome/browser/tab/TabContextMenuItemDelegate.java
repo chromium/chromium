@@ -284,7 +284,9 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
      */
     public void openInOtherWindow(GURL url, @Nullable Referrer referrer, boolean isIncognito) {
         LoadUrlParams loadUrlParams = new LoadUrlParams(url.getSpec());
-        loadUrlParams.setReferrer(referrer);
+        if (!isIncognito) {
+            loadUrlParams.setReferrer(referrer);
+        }
         if (IncognitoUtils.shouldOpenIncognitoAsWindow() && mMultiInstanceManager != null) {
             mMultiInstanceManager.openUrlInSelectedWindow(loadUrlParams, mTab.getParentId());
         } else {
@@ -303,7 +305,9 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
     public void openInAnotherWindow(GURL url, @Nullable Referrer referrer, boolean isIncognito) {
         ChromeAsyncTabLauncher chromeAsyncTabLauncher = new ChromeAsyncTabLauncher(isIncognito);
         LoadUrlParams loadUrlParams = new LoadUrlParams(url.getSpec());
-        loadUrlParams.setReferrer(referrer);
+        if (!isIncognito) {
+            loadUrlParams.setReferrer(referrer);
+        }
         Activity activity = TabUtils.getActivity(mTab);
         assumeNonNull(activity);
         // null if there are no foreground window activities.
