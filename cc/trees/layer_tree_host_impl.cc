@@ -1655,9 +1655,8 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame,
   if (have_missing_animated_tiles && !CommitsToActiveTree()) {
     if (expects_to_draw) {
       // Force drawing, but assert in DCHECK builds.
-      DUMP_WILL_BE_CHECK(false)
-          << "crbug.com/454680865: Has checkerboarded animations "
-             "while expects_to_draw is set";
+      DCHECK(false) << "crbug.com/454680865: Has checkerboarded animations "
+                       "while expects_to_draw is set";
     } else {
       draw_result = DrawResult::kAbortedCheckerboardAnimations;
     }
@@ -1671,9 +1670,8 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame,
     if (RequiresHighResToDraw()) {
       if (expects_to_draw) {
         // Force drawing, but assert in DCHECK builds.
-        DUMP_WILL_BE_CHECK(false)
-            << "crbug.com/454680865: Is missing high res content "
-               "while expects_to_draw is set";
+        DCHECK(false) << "crbug.com/454680865: Is missing high res content "
+                         "while expects_to_draw is set";
       } else {
         draw_result = DrawResult::kAbortedMissingHighResContent;
       }
