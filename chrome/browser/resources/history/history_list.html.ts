@@ -47,10 +47,17 @@ export function getHtml(this: HistoryListElement) {
             <cr-button class="cancel-button" @click="${this.onDialogCancelClick_}">
               $i18n{cancel}
             </cr-button>
+<if expr="is_macosx">
             <cr-button class="action-button" @click="${this.onDialogConfirmClick_}"
-                <if expr="is_macosx">aria-describedby="title body"</if>>
+                aria-describedby="title body">
               $i18n{deleteConfirm}
             </cr-button>
+</if>
+<if expr="not is_macosx">
+            <cr-button class="action-button" @click="${this.onDialogConfirmClick_}">
+              $i18n{deleteConfirm}
+            </cr-button>
+</if>
           </div>
         </cr-dialog>`}'>
     </cr-lazy-render-lit>
