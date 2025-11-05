@@ -144,7 +144,7 @@ void ActorPolicyChecker::MayActOnUrl(const GURL& url,
                                      Profile* profile,
                                      AggregatedJournal& journal,
                                      TaskId task_id,
-                                     DecisionCallback callback) {
+                                     DecisionCallbackWithReason callback) {
   // TODO(http://crbug.com/455645486): This may be turned into a CHECK.
   if (!can_act_on_web()) {
     journal.Log(url, task_id, "MayActOnUrl",
@@ -152,7 +152,8 @@ void ActorPolicyChecker::MayActOnUrl(const GURL& url,
                     .AddError("Actuation capability disabled")
                     .Build());
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), /*decision=*/false));
+        FROM_HERE, base::BindOnce(std::move(callback),
+                                  MayActOnUrlBlockReason::kActuactionDisabled));
     return;
   }
   ::actor::MayActOnUrl(url, allow_insecure_http, profile, journal, task_id,

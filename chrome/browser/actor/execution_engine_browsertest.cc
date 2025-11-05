@@ -132,7 +132,8 @@ class ExecutionEngineBrowserTest : public InProcessBrowserTest {
                                 base::Unretained(this))) {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{features::kGlic, features::kTabstripComboButton,
-                              features::kGlicActor},
+                              features::kGlicActor,
+                              kGlicExternalProtocolActionResultCode},
         /*disabled_features=*/{features::kGlicWarming});
   }
   ExecutionEngineBrowserTest(const ExecutionEngineBrowserTest&) = delete;
@@ -447,7 +448,8 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineBrowserTest,
       "example.com", "/actor/external_protocol_links.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), start_url));
 
-  ClickTarget("#mailto", mojom::ActionResultCode::kTriggeredNavigationBlocked);
+  ClickTarget("#mailto",
+              mojom::ActionResultCode::kExternalProtocolNavigationBlocked);
 }
 
 // We need to follow a link which then spawns the external protocol request in

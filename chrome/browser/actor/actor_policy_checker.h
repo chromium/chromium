@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/actor/site_policy.h"
 #include "chrome/common/actor/task_id.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
@@ -33,9 +34,6 @@ class ActorPolicyChecker {
   ActorPolicyChecker& operator=(const ActorPolicyChecker&) = delete;
   ~ActorPolicyChecker();
 
-  // TODO(crbug.com/448384918): The callback should return the explicit error
-  // code to distinguish between different blocked-by-policy reasons.
-  using DecisionCallback = base::OnceCallback<void(/*may_act=*/bool)>;
   // See site_policy.h.
   void MayActOnTab(const tabs::TabInterface& tab,
                    AggregatedJournal& journal,
@@ -47,7 +45,7 @@ class ActorPolicyChecker {
                    Profile* profile,
                    AggregatedJournal& journal,
                    TaskId task_id,
-                   DecisionCallback callback);
+                   DecisionCallbackWithReason callback);
 
   void SetActOnWebForTesting(bool enabled) {
     can_act_on_web_for_testing_ = enabled;
