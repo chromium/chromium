@@ -1364,8 +1364,7 @@ struct EnhancedSafeBrowsingActivePromoData
       break;
     case SettingsItemTypeTableCellCatalog:
       [self.navigationController
-          pushViewController:[[TableCellCatalogViewController alloc]
-                                 initWithBrowser:_browser]
+          pushViewController:[[TableCellCatalogViewController alloc] init]
                     animated:YES];
       break;
     case SettingsItemTypeButtonCatalog:

@@ -8,7 +8,10 @@
 #import "ios/chrome/common/ui/favicon/favicon_container_view.h"
 #import "ios/chrome/common/ui/favicon/favicon_view.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
+#import "ios/chrome/common/ui/table_view/table_view_url_cell_favicon_badge_view.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
+
+#pragma mark - TableViewURLCell
 
 @interface FaviconTableViewCell ()
 // Container View for the faviconView.
@@ -26,6 +29,7 @@
 
   if (self) {
     _faviconContainerView = [[FaviconContainerView alloc] init];
+    _faviconBadgeView = [[TableViewURLCellFaviconBadgeView alloc] init];
     _textLabel = [[UILabel alloc] init];
     _detailTextLabel = [[UILabel alloc] init];
 
@@ -49,7 +53,9 @@
     verticalStack.translatesAutoresizingMaskIntoConstraints = NO;
 
     _faviconContainerView.translatesAutoresizingMaskIntoConstraints = NO;
+    _faviconBadgeView.translatesAutoresizingMaskIntoConstraints = NO;
     [contentView addSubview:_faviconContainerView];
+    [contentView addSubview:_faviconBadgeView];
     [contentView addSubview:verticalStack];
 
     NSLayoutConstraint* heightConstraint = [contentView.heightAnchor
@@ -65,6 +71,10 @@
                          constant:kTableViewHorizontalSpacing],
       [_faviconContainerView.centerYAnchor
           constraintEqualToAnchor:contentView.centerYAnchor],
+      [_faviconBadgeView.centerXAnchor
+          constraintEqualToAnchor:_faviconContainerView.trailingAnchor],
+      [_faviconBadgeView.centerYAnchor
+          constraintEqualToAnchor:_faviconContainerView.topAnchor],
       [verticalStack.leadingAnchor
           constraintEqualToAnchor:_faviconContainerView.trailingAnchor
                          constant:kTableViewSubViewHorizontalSpacing],
@@ -87,6 +97,7 @@
   self.textLabel.text = nil;
   self.detailTextLabel.text = nil;
   [self.faviconView configureWithAttributes:nil];
+  self.faviconBadgeView.image = nil;
 }
 
 @end

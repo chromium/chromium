@@ -130,22 +130,6 @@ bool CompareCredentialsByType(const password_manager::CredentialUIEntry& lhs,
 - (UITableViewCell*)tableView:(UITableView*)tableView
         cellForRowAtIndexPath:(NSIndexPath*)indexPath {
   BOOL isPassword = _credentials[indexPath.row].passkey_credential_id.empty();
-
-  TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
-  TableViewURLItem* URLItem =
-      base::apple::ObjCCastStrict<TableViewURLItem>(item);
-  if (!URLItem.faviconAttributes) {
-    __weak UITableView* weakTableView = tableView;
-    [self.imageDataSource
-        faviconForPageURL:URLItem.URL
-               completion:^(FaviconAttributes* attributes, BOOL cached) {
-                 URLItem.faviconAttributes = attributes;
-                 if (!cached && attributes.faviconImage) {
-                   [weakTableView reconfigureRowsAtIndexPaths:@[ indexPath ]];
-                 }
-               }];
-  }
-
   UITableViewCell* cell = [super tableView:tableView
                      cellForRowAtIndexPath:indexPath];
 
@@ -161,6 +145,17 @@ bool CompareCredentialsByType(const password_manager::CredentialUIEntry& lhs,
   if (!isPassword) {
     cell.contentView.alpha = kBackgroundDisabledAlpha;
   }
+
+  TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
+  TableViewURLItem* URLItem =
+      base::apple::ObjCCastStrict<TableViewURLItem>(item);
+  TableViewURLCell* URLCell =
+      base::apple::ObjCCastStrict<TableViewURLCell>(cell);
+  [self.imageDataSource
+      faviconForPageURL:URLItem.URL
+             completion:^(FaviconAttributes* attributes, bool cached) {
+               [URLCell.faviconView configureWithAttributes:attributes];
+             }];
 
   return cell;
 }

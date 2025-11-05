@@ -286,7 +286,7 @@ const int kMaxNumberOfAttemptsAtTypingTextInOmnibox = 3;
 
   // Make sure there are no history entry cells.
   id<GREYMatcher> historyEntryMatcher =
-      grey_allOf(grey_kindOfClassName(@"UITableViewCell"),
+      grey_allOf(grey_kindOfClassName(@"TableViewURLCell"),
                  grey_sufficientlyVisible(), nil);
   [[EarlGrey selectElementWithMatcher:historyEntryMatcher]
       assertWithMatcher:grey_nil()];

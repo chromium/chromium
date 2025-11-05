@@ -8,8 +8,6 @@
 #import "ios/chrome/browser/authentication/ui_bundled/cells/signin_promo_view_configurator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/table_view_account_item.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/table_view_signin_promo_item.h"
-#import "ios/chrome/browser/favicon/model/favicon_loader.h"
-#import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/reading_list/ui_bundled/reading_list_table_view_item.h"
 #import "ios/chrome/browser/settings/ui_bundled/address_bar_preference/cells/address_bar_options_item.h"
@@ -21,7 +19,6 @@
 #import "ios/chrome/browser/settings/ui_bundled/cells/sync_switch_item.h"
 #import "ios/chrome/browser/settings/ui_bundled/elements/enterprise_info_popover_view_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/passwords_table_view_constants.h"
-#import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
@@ -44,7 +41,6 @@
 #import "ios/chrome/browser/signin/model/constants.h"
 #import "ios/chrome/browser/signin/model/signin_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
-#import "ios/chrome/common/ui/favicon/favicon_attributes.h"
 #import "ios/chrome/common/ui/util/image_util.h"
 #import "ios/public/provider/chrome/browser/signin/signin_resources_api.h"
 #import "url/gurl.h"
@@ -64,14 +60,19 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeTextHeader,
   ItemTypeTextFooter,
   ItemTypeTextButton,
-  ItemTypeURL,
+  ItemTypeURLNoMetadata,
   ItemTypeTextAccessoryImage,
   ItemTypeSearchHistorySuggestedItem,
   ItemTypeTextAccessoryNoImage,
   ItemTypeTextEditItem,
   ItemTypeTextMultiLineEditItem,
+  ItemTypeURLWithTimestamp,
   ItemTypeURLWithSize,
+  ItemTypeURLWithSupplementalText,
   ItemTypeURLWithThirdRowText,
+  ItemTypeURLWithMetadata,
+  ItemTypeURLWithMetadataImage,
+  ItemTypeURLWithBadgeImage,
   ItemTypeReadingList,
   ItemTypeTextSettingsDetail,
   ItemTypeTableViewWithBlueDot,
@@ -99,19 +100,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
 };
 }  // namespace
 
-@implementation TableCellCatalogViewController {
-  raw_ptr<Browser> _browser;
-  raw_ptr<FaviconLoader> _faviconLoader;
-}
+@implementation TableCellCatalogViewController
 
-- (instancetype)initWithBrowser:(Browser*)browser {
-  self = [super initWithStyle:ChromeTableViewStyle()];
-  if (self) {
-    _browser = browser;
-    _faviconLoader =
-        IOSChromeFaviconLoaderFactory::GetForProfile(browser->GetProfile());
-  }
-  return self;
+- (instancetype)init {
+  return [super initWithStyle:ChromeTableViewStyle()];
 }
 
 - (void)viewDidLoad {
@@ -682,19 +674,36 @@ typedef NS_ENUM(NSInteger, ItemType) {
       toSectionWithIdentifier:SectionIdentifierAccount];
 
   // SectionIdentifierURL.
-  TableViewURLItem* item = [[TableViewURLItem alloc] initWithType:ItemTypeURL];
+  TableViewURLItem* item =
+      [[TableViewURLItem alloc] initWithType:ItemTypeURLNoMetadata];
   item.title = @"Google Design";
   item.URL = [[CrURL alloc] initWithGURL:GURL("https://design.google.com")];
   [model addItem:item toSectionWithIdentifier:SectionIdentifierURL];
 
-  item = [[TableViewURLItem alloc] initWithType:ItemTypeURL];
+  item = [[TableViewURLItem alloc] initWithType:ItemTypeURLNoMetadata];
   item.URL = [[CrURL alloc] initWithGURL:GURL("https://notitle.google.com")];
   [model addItem:item toSectionWithIdentifier:SectionIdentifierURL];
 
+  item = [[TableViewURLItem alloc] initWithType:ItemTypeURLWithTimestamp];
+  item.title = @"Google";
+  item.URL = [[CrURL alloc] initWithGURL:GURL("https://www.google.com")];
+  [model addItem:item toSectionWithIdentifier:SectionIdentifierURL];
+
   item = [[TableViewURLItem alloc] initWithType:ItemTypeURLWithSize];
-  item.title = @"World Series 2017: Houston Astros Defeat Someone Else and "
-               @"Also Win Because They Won.";
+  item.title = @"World Series 2017: Houston Astros Defeat Someone Else";
   item.URL = [[CrURL alloc] initWithGURL:GURL("https://m.bbc.com")];
+  [model addItem:item toSectionWithIdentifier:SectionIdentifierURL];
+
+  item =
+      [[TableViewURLItem alloc] initWithType:ItemTypeURLWithSupplementalText];
+  item.title = @"Chrome | Google Blog";
+  item.URL =
+      [[CrURL alloc] initWithGURL:GURL("https://blog.google/products/chrome/")];
+  [model addItem:item toSectionWithIdentifier:SectionIdentifierURL];
+
+  item = [[TableViewURLItem alloc] initWithType:ItemTypeURLWithBadgeImage];
+  item.title = @"Photos - Google Photos";
+  item.URL = [[CrURL alloc] initWithGURL:GURL("https://photos.google.com/")];
   [model addItem:item toSectionWithIdentifier:SectionIdentifierURL];
 
   item = [[TableViewURLItem alloc] initWithType:ItemTypeURLWithThirdRowText];
@@ -702,6 +711,25 @@ typedef NS_ENUM(NSInteger, ItemType) {
   item.URL =
       [[CrURL alloc] initWithGURL:GURL("https://blog.google/products/chrome/")];
   item.thirdRowText = @"Unavailable";
+  [model addItem:item toSectionWithIdentifier:SectionIdentifierURL];
+
+  item = [[TableViewURLItem alloc] initWithType:ItemTypeURLWithThirdRowText];
+  item.title = @"Web Channel with 3rd Row Red Text";
+  item.URL =
+      [[CrURL alloc] initWithGURL:GURL("https://blog.google/products/chrome/")];
+  item.thirdRowText = @"Unavailable";
+  [model addItem:item toSectionWithIdentifier:SectionIdentifierURL];
+
+  item = [[TableViewURLItem alloc] initWithType:ItemTypeURLWithMetadata];
+  item.title = @"Web Channel with metadata image and label";
+  item.URL =
+      [[CrURL alloc] initWithGURL:GURL("https://blog.google/products/chrome/")];
+  [model addItem:item toSectionWithIdentifier:SectionIdentifierURL];
+
+  item = [[TableViewURLItem alloc] initWithType:ItemTypeURLWithMetadataImage];
+  item.title = @"Web Channel with metadata image";
+  item.URL =
+      [[CrURL alloc] initWithGURL:GURL("https://blog.google/products/chrome/")];
   [model addItem:item toSectionWithIdentifier:SectionIdentifierURL];
 
   ReadingListTableViewItem* readingListItem =
@@ -765,25 +793,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (UITableViewCell*)tableView:(UITableView*)tableView
         cellForRowAtIndexPath:(NSIndexPath*)indexPath {
-  ItemType itemType = static_cast<ItemType>(
-      [self.tableViewModel itemTypeForIndexPath:indexPath]);
-  if (itemType == ItemTypeURL) {
-    TableViewURLItem* URLItem = base::apple::ObjCCastStrict<TableViewURLItem>(
-        [self.tableViewModel itemAtIndexPath:indexPath]);
-    if (!URLItem.faviconAttributes) {
-      _faviconLoader->FaviconForPageUrl(
-          URLItem.URL.gurl, 20, 20,
-          /*fallback_to_google_server=*/true,
-          ^(FaviconAttributes* attributes, bool cached) {
-            URLItem.faviconAttributes = attributes;
-            if (!cached && attributes.faviconImage) {
-              [tableView reconfigureRowsAtIndexPaths:@[ indexPath ]];
-            }
-          });
-    }
-  }
   UITableViewCell* cell = [super tableView:tableView
                      cellForRowAtIndexPath:indexPath];
+  ItemType itemType = static_cast<ItemType>(
+      [self.tableViewModel itemTypeForIndexPath:indexPath]);
   if (itemType == ItemTypeCheck6) {
     SettingsCheckCell* checkCell =
         base::apple::ObjCCastStrict<SettingsCheckCell>(cell);

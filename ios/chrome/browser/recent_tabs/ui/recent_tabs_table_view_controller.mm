@@ -1010,19 +1010,11 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 
 - (UITableViewCell*)tableView:(UITableView*)tableView
         cellForRowAtIndexPath:(NSIndexPath*)indexPath {
-  NSInteger itemTypeSelected =
-      [self.tableViewModel itemTypeForIndexPath:indexPath];
-
-  // Retrieve favicons for closed tabs and remote sessions.
-  if (itemTypeSelected == ItemTypeRecentlyClosed ||
-      itemTypeSelected == ItemTypeSessionTabData) {
-    [self loadFaviconForIndexPath:indexPath];
-  }
-
   DCHECK_EQ(tableView, self.tableView);
   UITableViewCell* cell = [super tableView:tableView
                      cellForRowAtIndexPath:indexPath];
-
+  NSInteger itemTypeSelected =
+      [self.tableViewModel itemTypeForIndexPath:indexPath];
   // If SigninPromo will be shown, `self.signinPromoViewMediator` must know.
   if (itemTypeSelected == ItemTypeOtherDevicesSigninPromo) {
     [self.signinPromoViewMediator signinPromoViewIsVisible];
@@ -1040,6 +1032,11 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
     [UIView setAnimationsEnabled:NO];
     signinPromoCell.backgroundColor = nil;
     [UIView setAnimationsEnabled:animationsWereEnabled];
+  }
+  // Retrieve favicons for closed tabs and remote sessions.
+  if (itemTypeSelected == ItemTypeRecentlyClosed ||
+      itemTypeSelected == ItemTypeSessionTabData) {
+    [self loadFaviconForCell:cell indexPath:indexPath];
   }
   // ItemTypeOtherDevicesNoSessions should not be selectable.
   if (itemTypeSelected == ItemTypeOtherDevicesNoSessions) {
@@ -1175,26 +1172,27 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
   return _recentlyClosedItems[index].first;
 }
 
-// Retrieves favicon from FaviconLoader and sets image.
-- (void)loadFaviconForIndexPath:(NSIndexPath*)indexPath {
+// Retrieves favicon from FaviconLoader and sets image in URLCell.
+- (void)loadFaviconForCell:(UITableViewCell*)cell
+                 indexPath:(NSIndexPath*)indexPath {
   TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
-  CHECK(item);
+  DCHECK(item);
+  DCHECK(cell);
 
   TableViewURLItem* URLItem =
       base::apple::ObjCCastStrict<TableViewURLItem>(item);
+  TableViewURLCell* URLCell =
+      base::apple::ObjCCastStrict<TableViewURLCell>(cell);
 
-  if (URLItem.faviconAttributes) {
-    return;
-  }
-
-  __weak UITableView* tableView = self.tableView;
-
+  NSString* itemIdentifier = URLItem.uniqueIdentifier;
   [self.imageDataSource
       faviconForPageURL:URLItem.URL
              completion:^(FaviconAttributes* attributes, bool cached) {
-               URLItem.faviconAttributes = attributes;
-               if (!cached && attributes.faviconImage) {
-                 [tableView reconfigureRowsAtIndexPaths:@[ indexPath ]];
+               // Only set favicon if the cell hasn't been reused.
+               if ([URLCell.cellUniqueIdentifier
+                       isEqualToString:itemIdentifier]) {
+                 DCHECK(attributes);
+                 [URLCell.faviconView configureWithAttributes:attributes];
                }
              }];
 }

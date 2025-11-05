@@ -15,11 +15,8 @@
 // Height of the parent view controller.
 @property(nonatomic, assign) CGFloat parentViewControllerHeight;
 
-// Requests to reload data from the table view's data source.
+// Request to relaod data from the table view's data source.
 - (void)reloadTableViewData;
-
-// Requests to reconfigure a given cell from the table view's data source.
-- (void)reconfigureCellAtIndexPath:(NSIndexPath*)indexPath;
 
 // Returns the currently selected row.
 - (NSInteger)selectedRow;

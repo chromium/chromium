@@ -88,8 +88,6 @@
   copy.subtitleColor = self.subtitleColor;
   copy.subtitleNumberOfLines = self.subtitleNumberOfLines;
   copy.subtitleLineBreakMode = self.subtitleLineBreakMode;
-  copy.secondSubtitle = self.secondSubtitle;
-  copy.secondSubtitleNumberOfLines = self.secondSubtitleNumberOfLines;
   copy.trailingText = self.trailingText;
   copy.attributedTrailingText = self.attributedTrailingText;
   copy.trailingTextColor = self.trailingTextColor;
@@ -116,9 +114,6 @@
     [parts addObject:self.attributedSubtitle.string];
   } else if (self.subtitle.length > 0) {
     [parts addObject:self.subtitle];
-  }
-  if (self.secondSubtitle.length > 0) {
-    [parts addObject:self.secondSubtitle];
   }
   return [parts componentsJoinedByString:@", "];
 }
