@@ -197,7 +197,7 @@ BASE_FEATURE(kEnableErrorBadgeOnIdentityDisc,
 #endif
 
 #if BUILDFLAG(IS_IOS)
-BASE_FEATURE(kEnableIdentityInAuthError, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kEnableIdentityInAuthError, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
