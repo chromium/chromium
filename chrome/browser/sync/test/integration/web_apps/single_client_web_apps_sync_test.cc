@@ -14,7 +14,7 @@
 #include "chrome/browser/sync/test/integration/apps_helper.h"
 #include "chrome/browser/sync/test/integration/fake_server_match_status_checker.h"
 #include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
-#include "chrome/browser/sync/test/integration/web_apps_sync_test_base.h"
+#include "chrome/browser/sync/test/integration/web_apps/web_apps_sync_test_base.h"
 #include "chrome/browser/web_applications/commands/set_user_display_mode_command.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom-shared.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
@@ -635,11 +635,11 @@ IN_PROC_BROWSER_TEST_P(SingleClientWebAppsSyncTest,
   AwaitWebAppQuiescence();
 
 #if BUILDFLAG(IS_CHROMEOS)
-    // On Chrome OS it is not possible to install apps before signing in to
-    // sync. So in that case we do expect the app to exist in sync.
-    EXPECT_EQ(1, GetNumWebAppsInSync());
+  // On Chrome OS it is not possible to install apps before signing in to
+  // sync. So in that case we do expect the app to exist in sync.
+  EXPECT_EQ(1, GetNumWebAppsInSync());
 #else
-    EXPECT_EQ(0, GetNumWebAppsInSync());
+  EXPECT_EQ(0, GetNumWebAppsInSync());
 #endif
 }
 

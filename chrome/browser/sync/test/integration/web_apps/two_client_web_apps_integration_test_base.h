@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_SYNC_TEST_INTEGRATION_TWO_CLIENT_WEB_APPS_INTEGRATION_TEST_BASE_H_
 
 #include "base/auto_reset.h"
-#include "chrome/browser/sync/test/integration/web_apps_sync_test_base.h"
+#include "chrome/browser/sync/test/integration/web_apps/web_apps_sync_test_base.h"
 #include "chrome/browser/ui/views/web_apps/web_app_integration_test_driver.h"
 
 namespace base {

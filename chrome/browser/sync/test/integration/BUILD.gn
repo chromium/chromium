@@ -150,12 +150,12 @@ source_set("sync_integration_tests_impl") {
       "single_client_valuables_sync_test.cc",
       "single_client_wallet_credential_sync_test.cc",
       "single_client_wallet_sync_test.cc",
-      "single_client_web_apps_sync_generated_icon_fix_sync_test.cc",
-      "single_client_web_apps_sync_test.cc",
       "single_client_webauthn_credentials_sync_test.cc",
       "sync_auth_test.cc",
       "sync_errors_test.cc",
       "sync_os_crypt_async_migration_test.cc",
+      "web_apps/single_client_web_apps_sync_generated_icon_fix_sync_test.cc",
+      "web_apps/single_client_web_apps_sync_test.cc",
 
       # Tests with two clients can't run on Android because Android doesn't
       # support multiple profiles.
@@ -179,15 +179,15 @@ source_set("sync_integration_tests_impl") {
       "two_client_user_events_sync_test.cc",
       "two_client_wallet_credential_sync_test.cc",
       "two_client_wallet_sync_test.cc",
-      "two_client_web_apps_bmo_sync_test.cc",
-      "two_client_web_apps_generated_icon_fix_test.cc",
-      "two_client_web_apps_integration_test.cc",
-      "two_client_web_apps_integration_test_base.cc",
-      "two_client_web_apps_integration_test_base.h",
-      "two_client_web_apps_sync_test.cc",
       "two_client_webauthn_credentials_sync_test.cc",
-      "web_apps_sync_test_base.cc",
-      "web_apps_sync_test_base.h",
+      "web_apps/two_client_web_apps_bmo_sync_test.cc",
+      "web_apps/two_client_web_apps_generated_icon_fix_test.cc",
+      "web_apps/two_client_web_apps_integration_test.cc",
+      "web_apps/two_client_web_apps_integration_test_base.cc",
+      "web_apps/two_client_web_apps_integration_test_base.h",
+      "web_apps/two_client_web_apps_sync_test.cc",
+      "web_apps/web_apps_sync_test_base.cc",
+      "web_apps/web_apps_sync_test_base.h",
     ]
     if (!is_mac) {
       # Dictionary sync is disabled on Mac.
@@ -197,19 +197,21 @@ source_set("sync_integration_tests_impl") {
       ]
     }
     if (is_win || is_mac || is_linux) {
-      sources += [ "two_client_web_apps_integration_test_mac_win_linux.cc" ]
+      sources +=
+          [ "web_apps/two_client_web_apps_integration_test_mac_win_linux.cc" ]
     }
     if (is_win || is_linux) {
-      sources += [ "two_client_web_apps_integration_test_win_linux.cc" ]
+      sources +=
+          [ "web_apps/two_client_web_apps_integration_test_win_linux.cc" ]
     }
     if (is_mac) {
-      sources += [ "two_client_web_apps_integration_test_mac.cc" ]
+      sources += [ "web_apps/two_client_web_apps_integration_test_mac.cc" ]
     }
     if (is_win) {
-      sources += [ "two_client_web_apps_integration_test_win.cc" ]
+      sources += [ "web_apps/two_client_web_apps_integration_test_win.cc" ]
     }
     if (is_chromeos) {
-      sources += [ "two_client_web_apps_integration_test_cros.cc" ]
+      sources += [ "web_apps/two_client_web_apps_integration_test_cros.cc" ]
     }
     if (!is_chromeos) {
       sources += [

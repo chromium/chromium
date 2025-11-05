@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/sync/test/integration/two_client_web_apps_integration_test_base.h"
+#include "chrome/browser/sync/test/integration/web_apps/two_client_web_apps_integration_test_base.h"
 
 #include "base/test/bind.h"
 #include "build/build_config.h"
@@ -175,8 +175,9 @@ void TwoClientWebAppsIntegrationTestBase::SetUpOnMainThread() {
 }
 
 bool TwoClientWebAppsIntegrationTestBase::SetupClients() {
-  if (!WebAppsSyncTestBase::SetupClients())
+  if (!WebAppsSyncTestBase::SetupClients()) {
     return false;
+  }
   for (Profile* profile : GetAllProfiles()) {
     if (!web_app::AreWebAppsEnabled(profile) ||
         !web_app::WebAppProvider::GetForWebApps(profile)) {

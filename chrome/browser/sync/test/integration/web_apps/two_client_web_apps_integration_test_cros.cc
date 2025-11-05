@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/sync/test/integration/two_client_web_apps_integration_test_base.h"
+#include "chrome/browser/sync/test/integration/web_apps/two_client_web_apps_integration_test_base.h"
 #include "content/public/test/browser_test.h"
 
 namespace web_app::integration_tests {
