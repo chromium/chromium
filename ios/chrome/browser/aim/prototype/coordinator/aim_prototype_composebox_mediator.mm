@@ -242,8 +242,6 @@ CreateInputDataFromAnnotatedPageContent(
   BOOL _AIModeEnabled;
   // The web state list.
   raw_ptr<WebStateList> _webStateList;
-  // A page context wrapper used to extract annotated page content (APC).
-  PageContextWrapper* _pageContextWrapper;
   // The favicon loader.
   raw_ptr<FaviconLoader> _faviconLoader;
   // A browser agent for retrieving APC from the cache.
@@ -290,8 +288,12 @@ CreateInputDataFromAnnotatedPageContent(
 - (void)disconnect {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   _faviconLoader = nullptr;
+  _webStateDefferedExecutor = nil;
+  _persistTabContextAgent = nullptr;
   _composeboxObserverBridge.reset();
   _composeboxQueryController.reset();
+  _URLLoader = nil;
+  _consumer = nil;
 }
 
 - (void)processImageItemProvider:(NSItemProvider*)itemProvider {
@@ -332,7 +334,7 @@ CreateInputDataFromAnnotatedPageContent(
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   _consumer = consumer;
 
-  if (!_webStateList) {
+  if (!_webStateList || !consumer) {
     return;
   }
 
@@ -488,21 +490,23 @@ CreateInputDataFromAnnotatedPageContent(
   item.title = base::SysUTF16ToNSString(webState->GetTitle());
   [_items addObject:item];
   [self updateConsumerItems];
-
-  __weak __typeof(self) weakSelf = self;
   const base::UnguessableToken token = item.token;
 
-  /// Based on the favicon loader API, this callback could be called twice.
-  auto faviconLoadedBlock = ^(FaviconAttributes* attributes, bool cached) {
-    if (attributes.faviconImage) {
-      [weakSelf didLoadFaviconIcon:attributes.faviconImage
-                  forItemWithToken:token];
-    }
-  };
+  if (_faviconLoader) {
+    __weak __typeof(self) weakSelf = self;
 
-  _faviconLoader->FaviconForPageUrl(
-      webState->GetVisibleURL(), gfx::kFaviconSize, gfx::kFaviconSize,
-      /*fallback_to_google_server=*/true, faviconLoadedBlock);
+    /// Based on the favicon loader API, this callback could be called twice.
+    auto faviconLoadedBlock = ^(FaviconAttributes* attributes, bool cached) {
+      if (attributes.faviconImage) {
+        [weakSelf didLoadFaviconIcon:attributes.faviconImage
+                    forItemWithToken:token];
+      }
+    };
+
+    _faviconLoader->FaviconForPageUrl(
+        webState->GetVisibleURL(), gfx::kFaviconSize, gfx::kFaviconSize,
+        /*fallback_to_google_server=*/true, faviconLoadedBlock);
+  }
 
   return token;
 }
@@ -561,11 +565,11 @@ CreateInputDataFromAnnotatedPageContent(
                             token:(const base::UnguessableToken)token {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
 
-  _pageContextWrappers.erase(webState->GetUniqueIdentifier());
-
   if (!webState || !page_context) {
     return;
   }
+
+  _pageContextWrappers.erase(webState->GetUniqueIdentifier());
 
   __block std::unique_ptr<lens::ContextualInputData> input_data =
       CreateInputDataFromAnnotatedPageContent(
@@ -596,8 +600,10 @@ CreateInputDataFromAnnotatedPageContent(
   image_options.max_width = 1024;
   image_options.max_height = 1024;
   image_options.compression_quality = 80;
-  _composeboxQueryController->StartFileUploadFlow(token, std::move(input_data),
-                                                  image_options);
+  if (_composeboxQueryController) {
+    _composeboxQueryController->StartFileUploadFlow(
+        token, std::move(input_data), image_options);
+  }
 }
 
 - (void)attachCurrentTabContent {
@@ -773,8 +779,10 @@ CreateInputDataFromAnnotatedPageContent(
   image_options.max_height = 1024;
   image_options.compression_quality = 80;
 
-  _composeboxQueryController->StartFileUploadFlow(
-      item.token, std::move(input_data), image_options);
+  if (_composeboxQueryController) {
+    _composeboxQueryController->StartFileUploadFlow(
+        item.token, std::move(input_data), image_options);
+  }
 }
 
 // Returns the item with the given `token` or nil if not found.

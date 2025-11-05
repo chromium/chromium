@@ -193,8 +193,6 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
   _voiceSearchController.dispatcher = nil;
   _voiceSearchController = nil;
   [_mediator disconnect];
-  _mediator.URLLoader = nil;
-  _mediator.consumer = nil;
   _mediator = nil;
   [_omniboxCoordinator endEditing];
   [_omniboxCoordinator stop];
