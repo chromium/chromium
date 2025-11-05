@@ -38,10 +38,10 @@
 #pragma mark - Public
 
 - (UISheetPresentationControllerDetentIdentifier)selectedDetentIdentifier {
-  if (_lensOverlayBottomSheet) {
-    return _lensOverlayBottomSheet.selectedDetentIdentifier;
-  } else {
+  if (_usesSystemPresentation) {
     return _sheetPresentationController.selectedDetentIdentifier;
+  } else {
+    return _lensOverlayBottomSheet.selectedDetentIdentifier;
   }
 }
 
@@ -49,11 +49,7 @@
             (UISheetPresentationControllerDetentIdentifier)
                 selectedDetentIdentifier
                            animated:(BOOL)animated {
-  if (_lensOverlayBottomSheet) {
-    [_lensOverlayBottomSheet
-        setSelectedDetentIdentifier:selectedDetentIdentifier
-                           animated:animated];
-  } else {
+  if (_usesSystemPresentation) {
     if (animated) {
       __weak __typeof(_sheetPresentationController) weakPresentationController =
           _sheetPresentationController;
@@ -65,24 +61,30 @@
       _sheetPresentationController.selectedDetentIdentifier =
           selectedDetentIdentifier;
     }
+  } else {
+    [_lensOverlayBottomSheet
+        setSelectedDetentIdentifier:selectedDetentIdentifier
+                           animated:animated];
   }
 }
 
 - (void)setDetents:(NSArray<LensOverlayBottomSheetDetentProxy*>*)detents {
-  if (_lensOverlayBottomSheet) {
+  if (_usesSystemPresentation) {
+    NSMutableArray<UISheetPresentationControllerDetent*>* systemDetents =
+        [NSMutableArray array];
+    for (LensOverlayBottomSheetDetentProxy* proxyDetent in detents) {
+      if (proxyDetent.systemDetent) {
+        [systemDetents addObject:proxyDetent.systemDetent];
+      }
+    }
+    _sheetPresentationController.detents = systemDetents;
+  } else {
     NSMutableArray<LensOverlayBottomSheetDetent*>* lensOverlayDetents =
         [NSMutableArray array];
     for (LensOverlayBottomSheetDetentProxy* proxyDetent in detents) {
       [lensOverlayDetents addObject:proxyDetent.lensOverlayDetent];
     }
     _lensOverlayBottomSheet.detents = lensOverlayDetents;
-  } else {
-    NSMutableArray<UISheetPresentationControllerDetent*>* systemDetents =
-        [NSMutableArray array];
-    for (LensOverlayBottomSheetDetentProxy* proxyDetent in detents) {
-      [systemDetents addObject:proxyDetent.systemDetent];
-    }
-    _sheetPresentationController.detents = systemDetents;
   }
 }
 
@@ -94,7 +96,7 @@
 }
 
 - (void)animateChanges:(ProceduralBlock)changes {
-  if (_sheetPresentationController) {
+  if (_usesSystemPresentation) {
     [_sheetPresentationController animateChanges:changes];
   } else {
     changes();
@@ -116,7 +118,7 @@
         (UISheetPresentationControllerDetentIdentifier)identifier
           heightResolver:(CGFloat (^)())heightResolver {
   CHECK(heightResolver);
-  if (_sheetPresentationController) {
+  if (_usesSystemPresentation) {
     auto infoMessageHeightResolver = ^CGFloat(
         id<UISheetPresentationControllerDetentResolutionContext> context) {
       return heightResolver();
