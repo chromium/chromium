@@ -61,7 +61,6 @@
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
-#include "chrome/browser/ui/thumbnails/thumbnail_tab_helper.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_translate_action_listener.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -416,12 +415,6 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
       std::make_unique<TabCreationMetricsController>(&tab);
 
   tab_ui_helper_ = std::make_unique<TabUIHelper>(tab);
-
-  if (base::FeatureList::IsEnabled(features::kTabHoverCardImages) ||
-      base::FeatureList::IsEnabled(features::kWebUITabStrip)) {
-    thumbnail_tab_helper_ =
-        GetUserDataFactory().CreateInstance<ThumbnailTabHelper>(tab, tab);
-  }
 
   task_manager::WebContentsTags::CreateForTabContents(tab.GetContents());
 

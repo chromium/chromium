@@ -4975,7 +4975,7 @@ void TabStripModel::OnActiveTabChanged(
     return;
   }
 
-  tabs::TabInterface* const old_tab = selection.old_tab;
+  const tabs::TabInterface* const old_tab = selection.old_tab;
   const tabs::TabInterface* const new_tab = selection.new_tab;
   const tabs::TabInterface* old_opener = nullptr;
   int reason = selection.reason;
@@ -4995,7 +4995,8 @@ void TabStripModel::OnActiveTabChanged(
       // It's possible this could be done with a separate TabStripModelObserver,
       // but then it would be possible for a different observer to jump in front
       // and modify the WebContents, so for now, do it here.
-      auto* const thumbnail_helper = ThumbnailTabHelper::From(old_tab);
+      auto* const thumbnail_helper =
+          ThumbnailTabHelper::FromWebContents(old_tab->GetContents());
       if (thumbnail_helper) {
         thumbnail_helper->CaptureThumbnailOnTabBackgrounded();
       }

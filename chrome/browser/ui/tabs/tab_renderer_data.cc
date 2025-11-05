@@ -112,7 +112,7 @@ TabRendererData TabRendererData::FromTabInModel(const TabStripModel* model,
   }
 
   ThumbnailTabHelper* const thumbnail_tab_helper =
-      ThumbnailTabHelper::From(tab);
+      ThumbnailTabHelper::FromWebContents(contents);
   if (thumbnail_tab_helper) {
     data.thumbnail = thumbnail_tab_helper->thumbnail();
   }

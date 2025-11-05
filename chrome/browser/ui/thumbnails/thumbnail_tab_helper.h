@@ -10,30 +10,23 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
-#include "chrome/browser/ui/tabs/contents_observing_tab_feature.h"
 #include "chrome/browser/ui/thumbnails/thumbnail_capture_info.h"
 #include "chrome/browser/ui/thumbnails/thumbnail_image.h"
 #include "content/public/browser/navigation_handle.h"
-#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
+#include "content/public/browser/web_contents_observer.h"
+#include "content/public/browser/web_contents_user_data.h"
 
 namespace viz {
 struct CopyOutputBitmapWithMetadata;
 }  // namespace viz
 
-namespace tabs {
-class TabInterface;
-}  // namespace tabs
-
 class BackgroundThumbnailCapturer;
 class ThumbnailScheduler;
 
-class ThumbnailTabHelper : public tabs::ContentsObservingTabFeature {
+class ThumbnailTabHelper
+    : public content::WebContentsUserData<ThumbnailTabHelper>,
+      public content::WebContentsObserver {
  public:
-  DECLARE_USER_DATA(ThumbnailTabHelper);
-
-  static ThumbnailTabHelper* From(tabs::TabInterface* tab_interface);
-  explicit ThumbnailTabHelper(tabs::TabInterface& tab_interface);
-
   ThumbnailTabHelper(const ThumbnailTabHelper&) = delete;
   ThumbnailTabHelper& operator=(const ThumbnailTabHelper&) = delete;
 
@@ -50,9 +43,12 @@ class ThumbnailTabHelper : public tabs::ContentsObservingTabFeature {
 
  private:
   class TabStateTracker;
+  friend class content::WebContentsUserData<ThumbnailTabHelper>;
 
   // Metrics enums and helper functions:
   enum class CaptureType;
+
+  explicit ThumbnailTabHelper(content::WebContents* contents);
 
   static ThumbnailScheduler& GetScheduler();
 
@@ -90,8 +86,8 @@ class ThumbnailTabHelper : public tabs::ContentsObservingTabFeature {
       float scale_factor,
       bool include_scrollbars_in_capture);
 
-  // content::WebContentsObserver:
   void AboutToBeDiscarded(content::WebContents* new_contents) override;
+
   void DidStartNavigation(
       content::NavigationHandle* navigation_handle) override;
 
@@ -106,12 +102,15 @@ class ThumbnailTabHelper : public tabs::ContentsObservingTabFeature {
   // Times for computing metrics.
   base::TimeTicks start_video_capture_time_;
 
+  // Whether the first frame has been received after StartVideoCapture().
+  bool got_first_frame_ = false;
+
   // The thumbnail maintained by this instance.
   scoped_refptr<ThumbnailImage> thumbnail_;
 
   bool is_tab_discarded_ = false;
 
-  ui::ScopedUnownedUserData<ThumbnailTabHelper> scoped_unowned_user_data_;
+  WEB_CONTENTS_USER_DATA_KEY_DECL();
 
   base::WeakPtrFactory<ThumbnailTabHelper>
       weak_factory_for_thumbnail_on_tab_hidden_{this};

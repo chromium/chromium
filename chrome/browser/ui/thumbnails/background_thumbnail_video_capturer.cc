@@ -16,7 +16,6 @@
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/browser/web_contents_observer.h"
 #include "media/capture/mojom/video_capture_buffer.mojom.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
@@ -25,9 +24,8 @@
 BackgroundThumbnailVideoCapturer::BackgroundThumbnailVideoCapturer(
     content::WebContents* contents,
     GotFrameCallback got_frame_callback)
-    : content::WebContentsObserver(contents),
-      got_frame_callback_(std::move(got_frame_callback)) {
-  DCHECK(web_contents());
+    : contents_(contents), got_frame_callback_(std::move(got_frame_callback)) {
+  DCHECK(contents_);
   DCHECK(got_frame_callback_);
 }
 
@@ -45,11 +43,11 @@ void BackgroundThumbnailVideoCapturer::Start(
     return;
   }
 
-  content::RenderWidgetHostView* const source_view = web_contents()
-                                                         ->GetPrimaryMainFrame()
-                                                         ->GetRenderViewHost()
-                                                         ->GetWidget()
-                                                         ->GetView();
+  content::RenderWidgetHostView* const source_view =
+      contents_->GetPrimaryMainFrame()
+          ->GetRenderViewHost()
+          ->GetWidget()
+          ->GetView();
   if (!source_view) {
     return;
   }
@@ -93,14 +91,6 @@ void BackgroundThumbnailVideoCapturer::Stop() {
   TRACE_EVENT_END("ui", perfetto::Track(cur_capture_num_));
   start_time_ = base::TimeTicks();
   cur_capture_num_ = 0;
-}
-
-void BackgroundThumbnailVideoCapturer::AboutToBeDiscarded(
-    content::WebContents* new_contents) {
-  if (video_capturer_) {
-    Stop();
-  }
-  Observe(new_contents);
 }
 
 void BackgroundThumbnailVideoCapturer::OnFrameCaptured(

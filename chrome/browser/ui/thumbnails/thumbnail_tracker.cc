@@ -10,7 +10,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/thumbnails/thumbnail_tab_helper.h"
-#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents_observer.h"
 
 // Handles requests for a given tab's thumbnail and watches for thumbnail
@@ -98,12 +97,8 @@ void ThumbnailTracker::ContentsClosed(content::WebContents* contents) {
 // static
 scoped_refptr<ThumbnailImage> ThumbnailTracker::GetThumbnailFromTabHelper(
     content::WebContents* contents) {
-  tabs::TabInterface* const tab_interface =
-      tabs::TabInterface::GetFromContents(contents);
-
-  ThumbnailTabHelper* const thumbnail_helper =
-      ThumbnailTabHelper::From(tab_interface);
-
+  ThumbnailTabHelper* thumbnail_helper =
+      ThumbnailTabHelper::FromWebContents(contents);
   // Gracefully handle when ThumbnailTabHelper isn't available.
   if (thumbnail_helper) {
     auto thumbnail = thumbnail_helper->thumbnail();

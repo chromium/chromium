@@ -8,11 +8,11 @@
 #include <stdint.h>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/thumbnails/background_thumbnail_capturer.h"
 #include "components/viz/host/client_frame_sink_video_capturer.h"
-#include "content/public/browser/web_contents_observer.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
 namespace content {
@@ -22,8 +22,7 @@ class WebContents;
 // A thumbnail capturer using viz::ClientFrameSinkVideoCapturer. Gets a
 // sequence of frames in the same way as streaming a tab.
 class BackgroundThumbnailVideoCapturer
-    : public content::WebContentsObserver,
-      public BackgroundThumbnailCapturer,
+    : public BackgroundThumbnailCapturer,
       public viz::mojom::FrameSinkVideoConsumer {
  public:
   // Client receives `SkBitmap` frames and `uin64_t` unique IDs for each
@@ -39,9 +38,6 @@ class BackgroundThumbnailVideoCapturer
   void Start(const ThumbnailCaptureInfo& capture_info) override;
   void Stop() override;
 
-  // content::WebContentsObserver:
-  void AboutToBeDiscarded(content::WebContents* new_contents) override;
-
  private:
   // viz::mojom::FrameSinkVideoConsumer:
   void OnFrameCaptured(
@@ -56,6 +52,7 @@ class BackgroundThumbnailVideoCapturer
   void OnStopped() override;
   void OnLog(const std::string& /*message*/) override;
 
+  const raw_ptr<content::WebContents> contents_;
   GotFrameCallback got_frame_callback_;
 
   ThumbnailCaptureInfo capture_info_;
