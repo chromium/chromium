@@ -99,11 +99,6 @@ class IOSIOThread : public web::WebThreadDelegate {
   // Can only be called on the IO thread.
   Globals* globals();
 
-  // Allows overriding Globals in tests where IOSIOThread::Init() and
-  // IOSIOThread::CleanUp() are not called.  This allows for injecting mocks
-  // into IOSIOThread global objects.
-  void SetGlobalsForTesting(Globals* globals);
-
   net::NetLog* net_log();
 
   // Handles changing to On The Record mode, discarding confidential data.

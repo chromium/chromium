@@ -196,12 +196,6 @@ void IOSIOThread::InitOnIO() {
   Init();
 }
 
-void IOSIOThread::SetGlobalsForTesting(Globals* globals) {
-  DCHECK_CURRENTLY_ON(web::WebThread::IO);
-  DCHECK(!globals || !globals_);
-  globals_ = globals;
-}
-
 net::NetLog* IOSIOThread::net_log() {
   return net_log_;
 }
