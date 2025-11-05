@@ -355,7 +355,7 @@ UIButton* CreateClearButton() {
   if (!userTextHeight) {
     userTextHeight = singleLineHeight;
   }
-  CGFloat newHeight = userTextHeight + verticalPadding;
+  CGFloat newHeight = ceilf(userTextHeight + verticalPadding);
 
   newHeight = MIN(newHeight, maxHeight);
   if (!_textInputHeightConstraint) {
@@ -425,7 +425,7 @@ UIButton* CreateClearButton() {
   UIFont* font = _textView.font ?: _textView.currentFont;
   // Create a sample attributed string for one line.
   NSAttributedString* singleLineSampler =
-      [[NSAttributedString alloc] initWithString:@"A"
+      [[NSAttributedString alloc] initWithString:@"T"
                                       attributes:@{NSFontAttributeName : font}];
   CGSize singleLineConstraint = CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX);
   NSStringDrawingOptions options =
