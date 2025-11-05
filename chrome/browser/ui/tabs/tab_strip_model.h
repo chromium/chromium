@@ -734,6 +734,7 @@ class TabStripModel {
 
   // View API //////////////////////////////////////////////////////////////////
 
+  // LINT.IfChange(TabContextMenuCommand)
   // Context menu functions. Tab groups uses command ids following CommandLast
   // for entries in the 'Add to existing group' submenu.
   enum ContextMenuCommand {
@@ -773,6 +774,7 @@ class TabStripModel {
 #endif
     CommandLast
   };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/tab/histograms.xml:TabContextMenuCommand)
 
   // Returns true if the specified command is enabled. If |context_index| is
   // selected the response applies to all selected tabs.

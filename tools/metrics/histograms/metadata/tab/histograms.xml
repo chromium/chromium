@@ -45,16 +45,45 @@ chromium-metrics-reviews@google.com.
   <variant name="Inactive" summary="inactive"/>
 </variants>
 
+<!-- LINT.IfChange(TabContextMenuCommand) -->
+
 <variants name="TabContextMenuCommand">
+  <variant name="AddToExistingGroup"
+      summary="the Add to Existing Group command"/>
+  <variant name="AddToNewComparisonTable"
+      summary="the Add to new comparison table command"/>
+  <variant name="AddToNewGroup" summary="the Add to New Group command"/>
+  <variant name="AddToNewGroupFromMenuItem"
+      summary="the Add to new group from menu item command"/>
   <variant name="AddToReadLater" summary="the Add to Read Later command"/>
+  <variant name="AddToSplit" summary="the Add to Split command"/>
+  <variant name="ArrangeSplit" summary="the Arrange Split command"/>
   <variant name="CloseAllTabs" summary="the Close All Tabs command"/>
+  <variant name="CloseOtherTabs" summary="the Close Other Tabs command"/>
   <variant name="CloseTab" summary="the Close Tab command"/>
+  <variant name="CloseTabsToRight"
+      summary="the Close Tabs to the Right command"/>
+  <variant name="CommerceProductSpecifications"
+      summary="the Commerce product specifications command"/>
   <variant name="CopyURL" summary="the Copy URL command"/>
   <variant name="Duplicate" summary="the Duplicate command"/>
+  <variant name="GoBack" summary="the Go Back command"/>
+  <variant name="MoveToExistingWindow"
+      summary="the Move to existing window command"/>
+  <variant name="MoveToNewWindow" summary="the Move to new window command"/>
   <variant name="NewTabToRight" summary="the New Tab To Right command"/>
+  <variant name="OrganizeTabs" summary="the Organize tabs command"/>
   <variant name="Reload" summary="the Reload command"/>
+  <variant name="RemoveFromGroup" summary="the Remove from Group command"/>
+  <variant name="SendTabToSelf" summary="the Send to Your Devices command"/>
+  <variant name="SwapWithActiveSplit"
+      summary="the Swap with Active Split command"/>
+  <variant name="ToggleGrouped" summary="the Toggle group command"/>
+  <variant name="ToggleMuted" summary="the Toggle muted command"/>
   <variant name="TogglePinned" summary="the Toggle Pinned command"/>
 </variants>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/tabs/tab_strip_model.h:TabContextMenuCommand) -->
 
 <variants name="TabDiscardReason">
   <variant name=".External"
@@ -368,7 +397,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Tab.ContextMenu.{TabContextMenuCommand}.SelectedTabsCount"
-    units="tabs" expires_after="2025-07-28">
+    units="tabs" expires_after="2026-07-28">
   <owner>dpenning@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
