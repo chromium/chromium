@@ -106,6 +106,12 @@ void TabletModeWindowDragDelegate::StartWindowDrag(
   initial_location_in_screen_ = location_in_screen;
 
   WindowBackdrop::Get(dragged_window_)->DisableBackdrop();
+
+  // Prevent the snap ratio from getting updated while the window is resized
+  // for dragging, as that could lead to an incorrect split divider position
+  // when the window is dragged in split view.
+  WindowState::Get(dragged_window_)->set_can_update_snap_ratio(false);
+
   // We don't really need to call SplitViewController::OnWindowDragStarted as
   // long as we don't allow dragging entire windows (and even then I'm not
   // sure). Do it anyways in order to match the later OnWindowDragEnded call.
@@ -138,6 +144,7 @@ void TabletModeWindowDragDelegate::ContinueWindowDrag(
 void TabletModeWindowDragDelegate::EndWindowDrag(
     ToplevelWindowEventHandler::DragResult result,
     const gfx::PointF& location_in_screen) {
+  WindowState::Get(dragged_window_)->set_can_update_snap_ratio(true);
   WindowBackdrop::Get(dragged_window_)->RestoreBackdrop();
 
   SnapPosition snap_position =
