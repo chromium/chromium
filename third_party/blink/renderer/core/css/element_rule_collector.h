@@ -131,6 +131,8 @@ namespace blink {
 
 using StyleRuleList = GCedHeapVector<Member<StyleRule>>;
 
+struct ContextWithStyleScopeFrame;
+
 // Manages the process of finding what rules in a RuleSet apply to a given
 // Element. These tend to be used several times in different contexts and should
 // have ClearMatchedRules called before use.
@@ -267,13 +269,12 @@ class CORE_EXPORT ElementRuleCollector {
   bool CollectMatchingRulesInternal(const MatchRequest&, PartNames* part_names);
 
   template <bool stop_at_first_match, bool perf_trace_enabled>
-  bool CollectMatchingRulesForListInternal(
-      base::span<const RuleData>,
-      const MatchRequest&,
-      const RuleSet*,
-      int,
-      const SelectorChecker&,
-      SelectorChecker::SelectorCheckingContext&);
+  bool CollectMatchingRulesForListInternal(base::span<const RuleData>,
+                                           const MatchRequest&,
+                                           const RuleSet*,
+                                           int,
+                                           const SelectorChecker&,
+                                           ContextWithStyleScopeFrame&);
 
   template <bool stop_at_first_match>
   bool CollectMatchingRulesForList(base::span<const RuleData>,
@@ -281,11 +282,8 @@ class CORE_EXPORT ElementRuleCollector {
                                    const RuleSet*,
                                    int,
                                    const SelectorChecker&,
-                                   SelectorChecker::SelectorCheckingContext&);
+                                   ContextWithStyleScopeFrame&);
 
-  bool Match(SelectorChecker&,
-             const SelectorChecker::SelectorCheckingContext&,
-             MatchResult&);
   void DidMatchRule(const RuleData*,
                     uint16_t layer_order,
                     const ContainerQuery*,
