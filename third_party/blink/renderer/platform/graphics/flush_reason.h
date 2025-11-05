@@ -102,20 +102,16 @@ enum class FlushReason {
   // This inhibits vector printing.
   kCreatePattern = 20,
 
-  // The canvas contents were copied to the clipboard.
-  // This inhibits vector printing.
-  kClipboard = 21,
-
   // The canvas was uploade to a WebGPU texture.
   // This inhibits vector printing.
-  kWebGPUTexture = 22,
+  kWebGPUTexture = 21,
 
   // The canvas was used as a source image in a call to
   // `CanvasRenderingContext2D.drawMesh`.
   // This inhibits vector printing.
-  kDrawMesh = 23,
+  kDrawMesh = 22,
 
-  kOther = 24,
+  kOther = 23,
 
   kMaxValue = kOther,
 };
