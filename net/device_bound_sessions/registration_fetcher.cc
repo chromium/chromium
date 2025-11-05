@@ -458,8 +458,40 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
   void AttemptChallengeSigning() {
     base::OnceCallback<void(
         std::optional<RegistrationFetcher::RegistrationToken>)>
-        callback = base::BindOnce(
-            &RegistrationFetcherImpl::OnRegistrationTokenCreated, GetWeakPtr());
+        callback =
+            base::BindOnce(&RegistrationFetcherImpl::OnRegistrationTokenCreated,
+                           GetWeakPtr(), *current_challenge_, *key_id_);
+
+    if (features::kDeviceBoundSessionsOriginTrialFeedback.Get() &&
+        base::FeatureList::IsEnabled(
+            features::kDeviceBoundSessionSigningQuotaAndCaching) &&
+        IsForRefreshRequest()) {
+      SessionKey session_key{SchemefulSite(fetcher_endpoint_),
+                             Session::Id(*session_identifier_)};
+      const SessionService::SignedRefreshChallenge* signed_refresh_challenge =
+          session_service_->GetLatestSignedRefreshChallenge(session_key);
+      // If we already have a matching signed refresh challenge, we can skip
+      // past the signing.
+      if (signed_refresh_challenge &&
+          signed_refresh_challenge->challenge == *current_challenge_ &&
+          signed_refresh_challenge->key_id == *key_id_) {
+        std::move(callback).Run(signed_refresh_challenge->signed_challenge);
+        // `this` may be deleted.
+        return;
+      }
+
+      // Now, right before signing, we check whether the refresh signing quota
+      // is exceeded. Note this callback is intentionally different from the one
+      // defined above.
+      if (session_service_->RefreshSigningQuotaExceeded(session_key.site)) {
+        RunCallback(RegistrationResult(
+            SessionError{SessionError::kRefreshSigningQuotaExceeded}));
+        // `this` may be deleted.
+        return;
+      }
+      // Track a new refresh signing attempt.
+      session_service_->AddRefreshSigningOccurrence(session_key.site);
+    }
 
     SignChallengeWithKey(IsForRefreshRequest(), *key_service_, *key_id_,
                          fetcher_endpoint_, *current_challenge_,
@@ -469,6 +501,8 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
   }
 
   void OnRegistrationTokenCreated(
+      std::string challenge,
+      unexportable_keys::UnexportableKeyId key_id,
       std::optional<RegistrationFetcher::RegistrationToken>
           registration_token) {
     if (!registration_token) {
@@ -484,6 +518,23 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
     url_fetcher_->request().SetExtraRequestHeaderByName(
         GetJwtSessionHeaderName(), registration_token.value(),
         /*overwrite*/ true);
+
+    // Cache the signed refresh challenge in case the same challenge is
+    // attempted next time (e.g. if refresh transiently fails).
+    if (features::kDeviceBoundSessionsOriginTrialFeedback.Get() &&
+        base::FeatureList::IsEnabled(
+            features::kDeviceBoundSessionSigningQuotaAndCaching) &&
+        IsForRefreshRequest()) {
+      SessionKey session_key{SchemefulSite(fetcher_endpoint_),
+                             Session::Id(*session_identifier_)};
+      SessionService::SignedRefreshChallenge signed_refresh_challenge = {
+          .signed_challenge = std::move(registration_token.value()),
+          .challenge = std::move(challenge),
+          .key_id = key_id,
+      };
+      session_service_->SetLatestSignedRefreshChallenge(
+          std::move(session_key), std::move(signed_refresh_challenge));
+    }
 
     // `this` owns `url_fetcher_`, so it's safe to use
     // `base::Unretained`

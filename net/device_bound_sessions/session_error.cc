@@ -66,6 +66,7 @@ std::optional<DeletionReason> SessionError::GetDeletionReason() const {
     case kProxyError:
     case kTransientHttpError:
     case kBoundCookieSetForbidden:
+    case kRefreshSigningQuotaExceeded:
       return std::nullopt;
     // Registration-only errors never trigger session deletion.
     case kSubdomainRegistrationWellKnownUnavailable:
@@ -98,6 +99,7 @@ bool SessionError::IsServerError() const {
     case kSigningError:
     case kNetError:
     case kProxyError:
+    case kRefreshSigningQuotaExceeded:
       return false;
     case kServerRequestedTermination:
     case kInvalidConfigJson:

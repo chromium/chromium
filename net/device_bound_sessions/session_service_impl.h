@@ -124,6 +124,13 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
                   SessionParams params,
                   base::span<const uint8_t> wrapped_key,
                   base::OnceCallback<void(bool)> callback) override;
+  const SignedRefreshChallenge* GetLatestSignedRefreshChallenge(
+      const SessionKey& session_key) override;
+  void SetLatestSignedRefreshChallenge(
+      SessionKey session_key,
+      SignedRefreshChallenge signed_refresh_challenge) override;
+  bool RefreshSigningQuotaExceeded(const SchemefulSite& site) override;
+  void AddRefreshSigningOccurrence(const SchemefulSite& site) override;
 
   // The `SessionService` implementation has a const-qualified accessor
   // for sessions. This overload allows for non-const access as well.
@@ -138,6 +145,8 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
   using DeferredRequestsMap =
       std::map<SessionKey, absl::InlinedVector<DeferredURLRequest, 1>>;
   using ProactiveRefreshMap = std::map<SessionKey, base::ElapsedTimer>;
+  using LatestSignedRefreshChallengesMap =
+      std::map<SessionKey, SignedRefreshChallenge>;
 
   struct Observer {
     Observer(const GURL& url,
@@ -295,11 +304,21 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
 
   // Per-site session refresh quota. In order to be robust across
   // session parameter changes, we enforce refresh quota for a site.
+  // This functionality is being replaced with `refresh_signing_times_`.
   std::map<net::SchemefulSite, std::vector<base::TimeTicks>> refresh_times_;
 
   // Per-site record of the most recent refresh result. This is used
   // for histograms.
   std::map<net::SchemefulSite, SessionError> refresh_last_result_;
+
+  // Per-site session signing quota. In order to be robust across
+  // session parameter changes, we enforce signing quota for a site.
+  // This is updated whenever a site triggers refresh signing.
+  std::map<net::SchemefulSite, std::vector<base::TimeTicks>>
+      refresh_signing_times_;
+
+  // The latest signed challenges per session.
+  LatestSignedRefreshChallengesMap latest_signed_refresh_challenges_;
 
   // Holds all currently live registration fetchers.
   std::set<std::unique_ptr<RegistrationFetcher>, base::UniquePtrComparator>

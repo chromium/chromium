@@ -56,6 +56,8 @@ const GURL kTestRefreshUrl2(kRefreshUrlString);
 const std::string kSessionId2 = "SessionId2";
 const std::string kOrigin2 = "https://example2.com";
 
+const std::string kSessionId3 = "SessionId3";
+
 const std::string kChallenge = "challenge";
 
 const char* GetSessionChallengeHeaderName() {
@@ -955,6 +957,9 @@ TEST_F(SessionServiceImplTest, RefreshUpdatesConfig) {
 }
 
 TEST_F(SessionServiceImplTest, SessionRefreshQuota) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kDeviceBoundSessionSigningQuotaAndCaching);
   AddSessionsForTesting({{kSessionId, kRefreshUrlString, kOrigin}});
   auto scoped_test_fetcher = ScopedTestRegistrationFetcher::CreateWithSuccess(
       kSessionId, kRefreshUrlString, kOrigin);
@@ -988,7 +993,8 @@ TEST_F(SessionServiceImplTest, SessionRefreshQuota) {
     service().DeferRequestForRefresh(
         request.get(), SessionService::DeferralParams(Session::Id(kSessionId)),
         future.GetCallback());
-    EXPECT_EQ(future.Take(), SessionService::RefreshResult::kQuotaExceeded);
+    EXPECT_EQ(future.Take(),
+              SessionService::RefreshResult::kRefreshQuotaExceeded);
   }
 
   // After five minutes, the quota is restored and the fourth refresh
@@ -1001,6 +1007,75 @@ TEST_F(SessionServiceImplTest, SessionRefreshQuota) {
         future.GetCallback());
     EXPECT_EQ(future.Take(), SessionService::RefreshResult::kRefreshed);
   }
+}
+
+TEST_F(SessionServiceImplTest, SessionRefreshSigningQuota) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kDeviceBoundSessionSigningQuotaAndCaching);
+  AddSessionsForTesting({{kSessionId, kRefreshUrlString, kOrigin}});
+  auto scoped_test_fetcher = ScopedTestRegistrationFetcher::CreateWithSuccess(
+      kSessionId, kRefreshUrlString, kOrigin);
+  SessionKey session_key{SchemefulSite(GURL(kRefreshUrlString)),
+                         Session::Id(kSessionId)};
+  net::TestDelegate delegate;
+  std::unique_ptr<URLRequest> request =
+      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
+  request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
+
+  // Repeated refreshes don't exceed the refresh signing quota if they don't
+  // trigger signing.
+  for (size_t i = 0; i < 5; i++) {
+    base::test::TestFuture<SessionService::RefreshResult> future;
+    service().DeferRequestForRefresh(
+        request.get(), SessionService::DeferralParams(Session::Id(kSessionId)),
+        future.GetCallback());
+    EXPECT_EQ(future.Take(), SessionService::RefreshResult::kRefreshed);
+  }
+
+  // At first, the refresh signing quota is not exceeded.
+  EXPECT_FALSE(service().RefreshSigningQuotaExceeded(session_key.site));
+  service().AddRefreshSigningOccurrence(session_key.site);
+  // After one refresh signing, refresh signing quota is not yet exceeded.
+  EXPECT_FALSE(service().RefreshSigningQuotaExceeded(session_key.site));
+  service().AddRefreshSigningOccurrence(session_key.site);
+  // After a second refresh signing, the refresh signing quota is exceeded.
+  EXPECT_TRUE(service().RefreshSigningQuotaExceeded(session_key.site));
+
+  // This affects other sessions on the same site, but not other sessions on a
+  // different site.
+  SessionKey session_key2{SchemefulSite(GURL(kRefreshUrlString)),
+                          Session::Id(kSessionId2)};
+  SessionKey session_key3{SchemefulSite(GURL(kRefreshUrlString2)),
+                          Session::Id(kSessionId3)};
+  EXPECT_TRUE(service().RefreshSigningQuotaExceeded(session_key2.site));
+  EXPECT_FALSE(service().RefreshSigningQuotaExceeded(session_key3.site));
+
+  // After five minutes, the quota is restored.
+  FastForwardBy(base::Minutes(5));
+  EXPECT_FALSE(service().RefreshSigningQuotaExceeded(session_key.site));
+}
+
+TEST_F(SessionServiceImplTest, LatestSignedRefreshChallenges) {
+  SessionKey session_key1{SchemefulSite(GURL(kRefreshUrlString)),
+                          Session::Id(kSessionId)};
+  SessionKey session_key2{SchemefulSite(GURL(kRefreshUrlString)),
+                          Session::Id(kSessionId2)};
+  EXPECT_EQ(service().GetLatestSignedRefreshChallenge(session_key1), nullptr);
+
+  SessionService::SignedRefreshChallenge signed_refresh_challenge = {
+      .signed_challenge = "signed_challenge",
+      .challenge = "challenge",
+      .key_id = unexportable_keys::UnexportableKeyId()};
+  service().SetLatestSignedRefreshChallenge(session_key1,
+                                            signed_refresh_challenge);
+  const SessionService::SignedRefreshChallenge* retrieved_challenge =
+      service().GetLatestSignedRefreshChallenge(session_key1);
+  EXPECT_EQ(retrieved_challenge->signed_challenge,
+            signed_refresh_challenge.signed_challenge);
+  EXPECT_EQ(retrieved_challenge->challenge, signed_refresh_challenge.challenge);
+  EXPECT_EQ(retrieved_challenge->key_id, signed_refresh_challenge.key_id);
+  EXPECT_EQ(service().GetLatestSignedRefreshChallenge(session_key2), nullptr);
 }
 
 TEST_F(SessionServiceImplNoRefreshQuotaTest, SessionRefreshQuotaDisabled) {
@@ -1086,6 +1161,7 @@ TEST_F(SessionServiceImplTest, RepeatedDeferral) {
 TEST_F(SessionServiceImplTest, AddsDebugHeader) {
   AddSessionsForTesting({{kSessionId, kRefreshUrlString, kOrigin}});
   AddSessionsForTesting({{kSessionId2, kRefreshUrlString, kOrigin}});
+  AddSessionsForTesting({{kSessionId3, kRefreshUrlString, kOrigin}});
 
   net::TestDelegate delegate;
   std::unique_ptr<URLRequest> request =
@@ -1101,7 +1177,10 @@ TEST_F(SessionServiceImplTest, AddsDebugHeader) {
       SessionService::RefreshResult::kUnreachable);
   request->AddDeviceBoundSessionDeferral(
       SessionKey{SchemefulSite(kTestUrl), Session::Id(kSessionId2)},
-      SessionService::RefreshResult::kQuotaExceeded);
+      SessionService::RefreshResult::kRefreshQuotaExceeded);
+  request->AddDeviceBoundSessionDeferral(
+      SessionKey{SchemefulSite(kTestUrl), Session::Id(kSessionId3)},
+      SessionService::RefreshResult::kRefreshSigningQuotaExceeded);
 
   HttpRequestHeaders extra_headers;
   std::optional<SessionService::DeferralParams> maybe_deferral =
@@ -1114,7 +1193,8 @@ TEST_F(SessionServiceImplTest, AddsDebugHeader) {
   EXPECT_TRUE(debug_header.has_value());
   EXPECT_EQ(*debug_header,
             "unreachable;session_identifier=\"SessionId\", "
-            "quota_exceeded;session_identifier=\"SessionId2\"");
+            "quota_exceeded;session_identifier=\"SessionId2\", "
+            "quota_exceeded;session_identifier=\"SessionId3\"");
 }
 
 TEST_F(SessionServiceImplTest, NoDebugHeaderOnSuccess) {
