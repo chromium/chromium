@@ -322,6 +322,7 @@ void GlicInstanceMetrics::OnToggle(glic::mojom::InvocationSource source,
                                    bool is_showing) {
   if (!is_showing) {
     invocation_start_time_ = base::TimeTicks::Now();
+    last_invocation_source_ = source;
   }
   base::RecordAction(base::UserMetricsAction("Glic.Instance.Toggle"));
   if (std::holds_alternative<FloatingShowOptions>(options.embedder_options)) {
@@ -568,6 +569,9 @@ void GlicInstanceMetrics::OnResponseStopped(mojom::ResponseStopCause cause) {
 
 void GlicInstanceMetrics::OnTurnCompleted(mojom::WebClientModel model,
                                           base::TimeDelta duration) {
+  base::UmaHistogramEnumeration("Glic.Turn.InvocationSource",
+                                last_invocation_source_);
+
   LogEvent(GlicInstanceEvent::kTurnCompleted);
   base::UmaHistogramMediumTimes(model == mojom::WebClientModel::kActor
                                     ? "Glic.Turn.Duration.Actor"

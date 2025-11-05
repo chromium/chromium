@@ -264,6 +264,9 @@ class GlicInstanceMetrics {
 
   // The last web ui state received.
   mojom::WebUiState last_web_ui_state_ = mojom::WebUiState::kUninitialized;
+  // The last invocation source that was used to show the panel.
+  mojom::InvocationSource last_invocation_source_ =
+      mojom::InvocationSource::kUnsupported;
   // Timestamp of last show start.
   base::TimeTicks invocation_start_time_;
   base::TimeTicks web_ui_load_start_time_;
