@@ -559,9 +559,8 @@ UkmParameters OffscreenCanvas::GetUkmParameters() {
 
 void OffscreenCanvas::NotifyGpuContextLost() {
   if (context_ && !context_->isContextLost()) {
-    // This code path is used only by 2D canvas, because NotifyGpuContextLost
-    // is called by Canvas2DLayerBridge and OffscreenCanvas itself, rather
-    // than the rendering context.
+    // This code path is used only by 2D canvas, where NotifyGpuContextLost is
+    // called by OffscreenCanvas itself rather than the rendering context.
     DCHECK(context_->IsRenderingContext2D());
     context_->LoseContext(CanvasRenderingContext::kRealLostContext);
   }
