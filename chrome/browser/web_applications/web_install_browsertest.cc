@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string_view>
+
 #include "base/command_line.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -28,9 +30,11 @@
 #include "components/ukm/test_ukm_recorder.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_renderer_host.h"
+#include "content/public/test/url_loader_interceptor.h"
 #include "net/base/url_util.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -40,6 +44,7 @@
 #include "ui/views/test/dialog_test.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/any_widget_observer.h"
+#include "url/gurl.h"
 #include "web_install_service_impl.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -142,7 +147,7 @@ class WebInstallCurrentDocumentBrowserTest : public WebAppBrowserTestBase {
     return EvalJs(contents, "webInstallError.name").ExtractString();
   }
 
- private:
+ protected:
   base::test::ScopedFeatureList scoped_feature_list_{
       blink::features::kWebAppInstallation};
 };
@@ -929,6 +934,162 @@ IN_PROC_BROWSER_TEST_F(WebInstallServiceImplBrowserTestBadInput,
   EXPECT_FALSE(ResultExists());
   EXPECT_TRUE(ErrorExists());
   EXPECT_EQ(GetErrorName(), kTypeError);
+}
+
+namespace {
+
+// Generate token with the command:
+// tools/origin_trials/generate_token.py http://127.0.0.1:443 WebAppInstallation
+// --expire-timestamp=2000000000
+constexpr std::string_view kOriginTrialToken =
+    "A0iVxYtTI+3evGiE8COguxtzdeXUTePiGuI4pnaJ5j1HZylRKFvMMsIpsDv0yBqrEyFNuT/"
+    "uOTKCoNgdg1dbLwMAAABZeyJvcmlnaW4iOiAiaHR0cDovLzEyNy4wLjAuMTo0NDMiLCAiZmVhd"
+    "HVyZSI6ICJXZWJBcHBJbnN0YWxsYXRpb24iLCAiZXhwaXJ5IjogMjAwMDAwMDAwMH0=";
+constexpr char kTestOrigin[] = "http://127.0.0.1:443";
+
+enum class BaseFeatureStatus {
+  kDisabled,
+  kEnabled,
+  kDefault,
+};
+
+}  // namespace
+
+// Test suite for navigator.install() availability via Origin Trial.
+class WebInstallOriginTrialBrowserTest
+    : public WebInstallCurrentDocumentBrowserTest,
+      public testing::WithParamInterface<BaseFeatureStatus> {
+ protected:
+  WebInstallOriginTrialBrowserTest() {
+    // The base class enables the WebAppInstallation feature by default;
+    // reset it so we can test Origin Trial enabling it.
+    scoped_feature_list_.Reset();
+    switch (GetParam()) {
+      case BaseFeatureStatus::kDisabled:
+        scoped_feature_list_.InitAndDisableFeature(
+            blink::features::kWebAppInstallation);
+        break;
+      case BaseFeatureStatus::kEnabled:
+        scoped_feature_list_.InitAndEnableFeature(
+            blink::features::kWebAppInstallation);
+        break;
+      case BaseFeatureStatus::kDefault:
+        // Do nothing, let the feature be at its default state.
+        break;
+    }
+  }
+
+  ~WebInstallOriginTrialBrowserTest() override = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    WebInstallCurrentDocumentBrowserTest::SetUpCommandLine(command_line);
+    // Add the public key following:
+    // https://chromium.googlesource.com/chromium/src/+/HEAD/docs/origin_trials_integration.md#manual-testing.
+    command_line->AppendSwitchASCII(
+        "origin-trial-public-key",
+        "dRCs+TocuKkocNKa0AtZ4awrt9XKH2SQCI6o4FY6BNA=");
+  }
+
+  void SetUpOnMainThread() override {
+    WebInstallCurrentDocumentBrowserTest::SetUpOnMainThread();
+    url_loader_interceptor_.emplace(
+        base::BindRepeating(&WebInstallOriginTrialBrowserTest::InterceptRequest,
+                            base::Unretained(this)));
+  }
+
+  void TearDownOnMainThread() override { url_loader_interceptor_.reset(); }
+
+  void LoadPage(bool with_origin_trial_token) {
+    const GURL page = with_origin_trial_token
+                          ? GURL(kTestOrigin).Resolve("/origin_trial")
+                          : GURL(kTestOrigin).Resolve("/");
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page));
+  }
+
+  bool IsWebInstallAvailable() {
+    return content::EvalJs(web_contents(),
+                           "typeof navigator.install === 'function'")
+        .ExtractBool();
+  }
+
+ private:
+  bool InterceptRequest(content::URLLoaderInterceptor::RequestParams* params) {
+    // Setting up origin trial header.
+    std::string headers =
+        "HTTP/1.1 200 OK\nContent-Type: text/html; charset=utf-8\n";
+    if (params->url_request.url.GetPath() == "/origin_trial") {
+      base::StrAppend(&headers, {"Origin-Trial: ", kOriginTrialToken, "\n"});
+    }
+    headers += '\n';
+    content::URLLoaderInterceptor::WriteResponse(headers, "",
+                                                 params->client.get());
+    return true;
+  }
+
+  std::optional<content::URLLoaderInterceptor> url_loader_interceptor_;
+};
+
+INSTANTIATE_TEST_SUITE_P(,
+                         WebInstallOriginTrialBrowserTest,
+                         testing::Values(BaseFeatureStatus::kDisabled,
+                                         BaseFeatureStatus::kEnabled,
+                                         BaseFeatureStatus::kDefault));
+
+IN_PROC_BROWSER_TEST_P(WebInstallOriginTrialBrowserTest,
+                       WithoutOriginTrialToken) {
+  LoadPage(/*with_origin_trial_token=*/false);
+
+  switch (GetParam()) {
+    case BaseFeatureStatus::kDisabled:
+      // Feature is disabled, navigator.install should not be available.
+      EXPECT_FALSE(IsWebInstallAvailable());
+      // Attempt to call navigator.install.
+      EXPECT_FALSE(TryInstallApp());
+      break;
+    case BaseFeatureStatus::kEnabled:
+      // Feature is enabled, navigator.install should be available.
+      // This simulates testing via command line flag only, without an OT token.
+      EXPECT_TRUE(IsWebInstallAvailable());
+      // Attempt to call navigator.install.
+      EXPECT_TRUE(TryInstallApp());
+      break;
+    case BaseFeatureStatus::kDefault:
+      // When the feature is in its default state, navigator.install
+      // availability depends on the presence of the token. In this case, there
+      // is no token, so it should *not* be available.
+      EXPECT_FALSE(IsWebInstallAvailable());
+      // Attempt to call navigator.install.
+      EXPECT_FALSE(TryInstallApp());
+      break;
+  }
+}
+
+IN_PROC_BROWSER_TEST_P(WebInstallOriginTrialBrowserTest, WithOriginTrialToken) {
+  LoadPage(/*with_origin_trial_token=*/true);
+
+  switch (GetParam()) {
+    case BaseFeatureStatus::kDisabled:
+      // Feature is disabled, navigator.install should not be available.
+      // Disabling via command line (or about:flags) should take precedence over
+      // the OT token. This lets the base::Feature flag act as a kill switch.
+      EXPECT_FALSE(IsWebInstallAvailable());
+      // Attempt to call navigator.install.
+      EXPECT_FALSE(TryInstallApp());
+      break;
+    case BaseFeatureStatus::kEnabled:
+      // Feature is enabled, navigator.install should be available.
+      EXPECT_TRUE(IsWebInstallAvailable());
+      // Attempt to call navigator.install.
+      EXPECT_TRUE(TryInstallApp());
+      break;
+    case BaseFeatureStatus::kDefault:
+      // When the feature is in its default state, navigator.install
+      // availability depends on the presence of the token. In this case, there
+      // is a valid token, so it should be available.
+      EXPECT_TRUE(IsWebInstallAvailable());
+      // Attempt to call navigator.install.
+      EXPECT_TRUE(TryInstallApp());
+  }
 }
 
 }  // namespace web_app

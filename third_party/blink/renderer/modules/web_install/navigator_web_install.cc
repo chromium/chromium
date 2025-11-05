@@ -6,6 +6,7 @@
 
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/common/scheme_registry.h"
 #include "third_party/blink/public/mojom/web_install/web_install.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
@@ -183,6 +184,8 @@ void NavigatorWebInstall::OnConnectionError() {
 bool NavigatorWebInstall::CheckPreconditionsMaybeThrow(
     ScriptState* script_state,
     ExceptionState& exception_state) {
+  CHECK(base::FeatureList::IsEnabled(blink::features::kWebAppInstallation));
+
   if (!ExecutionContext::From(script_state)
            ->IsFeatureEnabled(
                network::mojom::PermissionsPolicyFeature::kWebAppInstallation)) {
