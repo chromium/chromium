@@ -100,13 +100,12 @@ using testing::Ne;
 
 constexpr char kIwaName[] = "IsolatedWebApp";
 
-// TODO(crbug.com/428148477): rename to `kWebBundleId1` and `kPublicKeyPair1`.
-const SignedWebBundleId kWebBundleId = test::GetDefaultEd25519WebBundleId();
-const web_package::test::Ed25519KeyPair kPublicKeyPair =
+const SignedWebBundleId kWebBundleId1 = test::GetDefaultEd25519WebBundleId();
+const web_package::test::Ed25519KeyPair kKeyPair1 =
     test::GetDefaultEd25519KeyPair();
 
 const SignedWebBundleId kWebBundleId2 = test::GetDefaultEcdsaP256WebBundleId();
-const web_package::test::EcdsaP256KeyPair kPublicKeyPair2 =
+const web_package::test::EcdsaP256KeyPair kKeyPair2 =
     test::GetDefaultEcdsaP256KeyPair();
 
 const UpdateChannel kBetaChannel = UpdateChannel::Create("beta").value();
@@ -659,74 +658,73 @@ class IwaCacheOneAppTest : public IwaCacheBaseTest,
   IwaCacheOneAppTest()
       : IwaCacheBaseTest(
             GetParam(),
-            {IwaPolicyConfig{kWebBundleId}},
+            {IwaPolicyConfig{kWebBundleId1}},
             /*add_to_server_iwas=*/
-            {IwaServerConfig{kWebBundleId, GetBaseVersion(), kPublicKeyPair}}) {
-  }
+            {IwaServerConfig{kWebBundleId1, GetBaseVersion(), kKeyPair1}}) {}
 
   void SetUpOnMainThread() override {
     IwaCacheBaseTest::SetUpOnMainThread();
-    SetIwasAllowlist({kWebBundleId});
+    SetIwasAllowlist({kWebBundleId1});
   }
 };
 
 IN_PROC_BROWSER_TEST_P(IwaCacheOneAppTest, PRE_InstallIsolatedWebAppFromCache) {
-  LaunchSession(kWebBundleId);
-  AssertAppInstalledAtVersion(kWebBundleId, GetBaseVersion());
+  LaunchSession(kWebBundleId1);
+  AssertAppInstalledAtVersion(kWebBundleId1, GetBaseVersion());
 
   // Checks that bundle is copied to cache after the successful installation.
-  WaitUntilPathExists(GetCachedBundlePath(kWebBundleId, GetBaseVersion()));
+  WaitUntilPathExists(GetCachedBundlePath(kWebBundleId1, GetBaseVersion()));
 }
 
 IN_PROC_BROWSER_TEST_P(IwaCacheOneAppTest, InstallIsolatedWebAppFromCache) {
   // Checks that the bundle is still in cache from the PRE test.
-  CheckPathExists(GetCachedBundlePath(kWebBundleId, GetBaseVersion()));
+  CheckPathExists(GetCachedBundlePath(kWebBundleId1, GetBaseVersion()));
 
   // Make sure the IWA is installed from the cache.
   RemoveAllBundlesFromUpdateServer();
-  LaunchSession(kWebBundleId);
-  AssertAppInstalledAtVersion(kWebBundleId, GetBaseVersion());
+  LaunchSession(kWebBundleId1);
+  AssertAppInstalledAtVersion(kWebBundleId1, GetBaseVersion());
 }
 
 IN_PROC_BROWSER_TEST_P(IwaCacheOneAppTest,
                        PRE_UpdateApplyTaskFinishedOnSessionExit) {
-  LaunchSession(kWebBundleId);
-  AssertAppInstalledAtVersion(kWebBundleId, GetBaseVersion());
-  WaitUntilPathExists(GetCachedBundlePath(kWebBundleId, GetBaseVersion()));
+  LaunchSession(kWebBundleId1);
+  AssertAppInstalledAtVersion(kWebBundleId1, GetBaseVersion());
+  WaitUntilPathExists(GetCachedBundlePath(kWebBundleId1, GetBaseVersion()));
   if (IsManagedGuestSession()) {
     // Only open app in MGS, in kiosk app is always opened after the session
     // started.
-    OpenIwa(kWebBundleId);
+    OpenIwa(kWebBundleId1);
   }
   // When app is opened, the update cannot be applied, so it will be applied on
   // session exit.
-  EXPECT_THAT(GetNumOpenedWindows(kWebBundleId), Eq(1ul));
+  EXPECT_THAT(GetNumOpenedWindows(kWebBundleId1), Eq(1ul));
 
   // Before triggering new update, wait for the initial update check.
   WaitForInitialUpdateDiscoveryTasksToFinish();
   AddNewIwaToServer(
-      IwaServerConfig{kWebBundleId, GetUpdateVersion(), kPublicKeyPair});
+      IwaServerConfig{kWebBundleId1, GetUpdateVersion(), kKeyPair1});
 
-  EXPECT_THAT(DiscoverUpdateAndWaitForResult(kWebBundleId),
+  EXPECT_THAT(DiscoverUpdateAndWaitForResult(kWebBundleId1),
               ValueIs(DiscoveryTask::Success::kUpdateFoundAndSavedInDatabase));
-  CheckPathDoesNotExist(GetCachedBundlePath(kWebBundleId, GetUpdateVersion()));
+  CheckPathDoesNotExist(GetCachedBundlePath(kWebBundleId1, GetUpdateVersion()));
 }
 
 // Checks that on session exit in PRE_ test, pending update apply task is
 // successfully finished and it updated the cache.
 IN_PROC_BROWSER_TEST_P(IwaCacheOneAppTest,
                        UpdateApplyTaskFinishedOnSessionExit) {
-  CheckPathExists(GetCachedBundlePath(kWebBundleId, GetBaseVersion()));
-  CheckPathExists(GetCachedBundlePath(kWebBundleId, GetUpdateVersion()));
+  CheckPathExists(GetCachedBundlePath(kWebBundleId1, GetBaseVersion()));
+  CheckPathExists(GetCachedBundlePath(kWebBundleId1, GetUpdateVersion()));
 
   RemoveAllBundlesFromUpdateServer();
-  LaunchSession(kWebBundleId);
+  LaunchSession(kWebBundleId1);
 
-  AssertAppInstalledAtVersion(kWebBundleId, GetUpdateVersion());
+  AssertAppInstalledAtVersion(kWebBundleId1, GetUpdateVersion());
   // After session start the previously cached bundle version should be deleted.
   WaitUntilPathDoesNotExist(
-      GetCachedBundlePath(kWebBundleId, GetBaseVersion()));
-  CheckPathExists(GetCachedBundlePath(kWebBundleId, GetUpdateVersion()));
+      GetCachedBundlePath(kWebBundleId1, GetBaseVersion()));
+  CheckPathExists(GetCachedBundlePath(kWebBundleId1, GetUpdateVersion()));
   CheckCacheManagerDebugOperationResult(
       kRemoveObsoleteIwaVersionCache,
       "Successfully finished versions cleanup, number of removed obsolete "
@@ -734,41 +732,41 @@ IN_PROC_BROWSER_TEST_P(IwaCacheOneAppTest,
 }
 
 IN_PROC_BROWSER_TEST_P(IwaCacheOneAppTest, PRE_UpdateNotFound) {
-  LaunchSession(kWebBundleId);
-  AssertAppInstalledAtVersion(kWebBundleId, GetBaseVersion());
-  WaitUntilPathExists(GetCachedBundlePath(kWebBundleId, GetBaseVersion()));
+  LaunchSession(kWebBundleId1);
+  AssertAppInstalledAtVersion(kWebBundleId1, GetBaseVersion());
+  WaitUntilPathExists(GetCachedBundlePath(kWebBundleId1, GetBaseVersion()));
   if (IsManagedGuestSession()) {
     // Only open app in MGS, in kiosk app is always opened after the session
     // started.
-    OpenIwa(kWebBundleId);
+    OpenIwa(kWebBundleId1);
   }
   // When app is opened, the update cannot be applied, so it will be applied on
   // session exit.
-  EXPECT_THAT(GetNumOpenedWindows(kWebBundleId), Eq(1ul));
+  EXPECT_THAT(GetNumOpenedWindows(kWebBundleId1), Eq(1ul));
 
-  EXPECT_THAT(DiscoverUpdateAndWaitForResult(kWebBundleId),
+  EXPECT_THAT(DiscoverUpdateAndWaitForResult(kWebBundleId1),
               ValueIs(DiscoveryTask::Success::kNoUpdateFound));
 }
 
 // In PRE_ test, update discovery task did not find the update, check that the
 // cache was not updated on the session exit.
 IN_PROC_BROWSER_TEST_P(IwaCacheOneAppTest, UpdateNotFound) {
-  CheckPathExists(GetCachedBundlePath(kWebBundleId, GetBaseVersion()));
-  CheckPathDoesNotExist(GetCachedBundlePath(kWebBundleId, GetUpdateVersion()));
+  CheckPathExists(GetCachedBundlePath(kWebBundleId1, GetBaseVersion()));
+  CheckPathDoesNotExist(GetCachedBundlePath(kWebBundleId1, GetUpdateVersion()));
 
   RemoveAllBundlesFromUpdateServer();
-  LaunchSession(kWebBundleId);
+  LaunchSession(kWebBundleId1);
 
-  AssertAppInstalledAtVersion(kWebBundleId, GetBaseVersion());
+  AssertAppInstalledAtVersion(kWebBundleId1, GetBaseVersion());
 }
 
 // Install base version from the Internet.
 IN_PROC_BROWSER_TEST_P(IwaCacheOneAppTest,
                        PRE_PRE_UpdateTaskIsTriggeredAutomatically) {
-  LaunchSession(kWebBundleId);
-  AssertAppInstalledAtVersion(kWebBundleId, GetBaseVersion());
-  WaitUntilPathExists(GetCachedBundlePath(kWebBundleId, GetBaseVersion()));
-  CheckPathDoesNotExist(GetCachedBundlePath(kWebBundleId, GetUpdateVersion()));
+  LaunchSession(kWebBundleId1);
+  AssertAppInstalledAtVersion(kWebBundleId1, GetBaseVersion());
+  WaitUntilPathExists(GetCachedBundlePath(kWebBundleId1, GetBaseVersion()));
+  CheckPathDoesNotExist(GetCachedBundlePath(kWebBundleId1, GetUpdateVersion()));
 }
 
 // Add new version to the manifest, but the installation will be done from cache
@@ -779,34 +777,34 @@ IN_PROC_BROWSER_TEST_P(IwaCacheOneAppTest,
 IN_PROC_BROWSER_TEST_P(IwaCacheOneAppTest,
                        PRE_UpdateTaskIsTriggeredAutomatically) {
   AddNewIwaToServer(
-      IwaServerConfig{kWebBundleId, GetUpdateVersion(), kPublicKeyPair});
-  LaunchSession(kWebBundleId);
+      IwaServerConfig{kWebBundleId1, GetUpdateVersion(), kKeyPair1});
+  LaunchSession(kWebBundleId1);
 
-  AssertAppInstalledAtVersion(kWebBundleId, GetBaseVersion());
+  AssertAppInstalledAtVersion(kWebBundleId1, GetBaseVersion());
   if (IsManagedGuestSession()) {
     // Only open app in MGS, in kiosk app is always opened after the session
     // started.
-    OpenIwa(kWebBundleId);
+    OpenIwa(kWebBundleId1);
   }
 }
 
 IN_PROC_BROWSER_TEST_P(IwaCacheOneAppTest, UpdateTaskIsTriggeredAutomatically) {
-  CheckPathExists(GetCachedBundlePath(kWebBundleId, GetUpdateVersion()));
+  CheckPathExists(GetCachedBundlePath(kWebBundleId1, GetUpdateVersion()));
 
   RemoveAllBundlesFromUpdateServer();
-  LaunchSession(kWebBundleId);
+  LaunchSession(kWebBundleId1);
 
-  AssertAppInstalledAtVersion(kWebBundleId, GetUpdateVersion());
+  AssertAppInstalledAtVersion(kWebBundleId1, GetUpdateVersion());
   // After session start the previously cached bundle version should be deleted.
   WaitUntilPathDoesNotExist(
-      GetCachedBundlePath(kWebBundleId, GetBaseVersion()));
-  CheckPathExists(GetCachedBundlePath(kWebBundleId, GetUpdateVersion()));
+      GetCachedBundlePath(kWebBundleId1, GetBaseVersion()));
+  CheckPathExists(GetCachedBundlePath(kWebBundleId1, GetUpdateVersion()));
 }
 
 IN_PROC_BROWSER_TEST_P(IwaCacheOneAppTest, GetDebugValue) {
-  LaunchSession(kWebBundleId);
-  AssertAppInstalledAtVersion(kWebBundleId, GetBaseVersion());
-  WaitUntilPathExists(GetCachedBundlePath(kWebBundleId, GetBaseVersion()));
+  LaunchSession(kWebBundleId1);
+  AssertAppInstalledAtVersion(kWebBundleId1, GetBaseVersion());
+  WaitUntilPathExists(GetCachedBundlePath(kWebBundleId1, GetBaseVersion()));
 
   base::Value debug_value = provider().iwa_cache_manager().GetDebugValue();
   EXPECT_EQ(debug_value.GetDict().FindBool(kBundleCacheIsEnabled), true);
@@ -830,19 +828,19 @@ class IwaCacheNonConfiguredMgsSessionTest : public IwaCacheBaseTest {
 
   void SetUpOnMainThread() override {
     IwaCacheBaseTest::SetUpOnMainThread();
-    SetIwasAllowlist({kWebBundleId, kWebBundleId2});
+    SetIwasAllowlist({kWebBundleId1, kWebBundleId2});
   }
 };
 
 IN_PROC_BROWSER_TEST_F(IwaCacheNonConfiguredMgsSessionTest,
                        PRE_RemoveCachedBundleForUninstalledIwa) {
-  ConfigureSession(IwaPolicyConfig{kWebBundleId});
+  ConfigureSession(IwaPolicyConfig{kWebBundleId1});
   AddNewIwaToServer(
-      IwaServerConfig{kWebBundleId, GetBaseVersion(), kPublicKeyPair});
-  LaunchSession(kWebBundleId);
+      IwaServerConfig{kWebBundleId1, GetBaseVersion(), kKeyPair1});
+  LaunchSession(kWebBundleId1);
 
-  AssertAppInstalledAtVersion(kWebBundleId, GetBaseVersion());
-  WaitUntilPathExists(GetCachedBundlePath(kWebBundleId, GetBaseVersion()));
+  AssertAppInstalledAtVersion(kWebBundleId1, GetBaseVersion());
+  WaitUntilPathExists(GetCachedBundlePath(kWebBundleId1, GetBaseVersion()));
 }
 
 // When IWA is no longer in the policy list, `IwaCacheManager` will remove
@@ -850,15 +848,15 @@ IN_PROC_BROWSER_TEST_F(IwaCacheNonConfiguredMgsSessionTest,
 IN_PROC_BROWSER_TEST_F(IwaCacheNonConfiguredMgsSessionTest,
                        RemoveCachedBundleForUninstalledIwa) {
   AddNewIwaToServer(
-      IwaServerConfig{kWebBundleId2, GetBaseVersion(), kPublicKeyPair2});
+      IwaServerConfig{kWebBundleId2, GetBaseVersion(), kKeyPair2});
   ConfigureSession(IwaPolicyConfig{kWebBundleId2});
   LaunchSession(kWebBundleId2);
 
   AssertAppInstalledAtVersion(kWebBundleId2, GetBaseVersion());
 
-  // Cache for `kWebBundleId` should be removed.
+  // Cache for `kWebBundleId1` should be removed.
   WaitUntilPathDoesNotExist(
-      GetCachedBundlePath(kWebBundleId, GetBaseVersion()));
+      GetCachedBundlePath(kWebBundleId1, GetBaseVersion()));
   CheckCacheManagerDebugOperationResult(
       kCleanupManagedGuestSessionOrphanedIwas,
       "Successfully finished cleanup, number of cleaned up directories: 1");
@@ -866,36 +864,36 @@ IN_PROC_BROWSER_TEST_F(IwaCacheNonConfiguredMgsSessionTest,
 
 IN_PROC_BROWSER_TEST_F(IwaCacheNonConfiguredMgsSessionTest,
                        PRE_RemoveTwoCachedBundles) {
-  SetIwasAllowlist({kWebBundleId, kWebBundleId2});
+  SetIwasAllowlist({kWebBundleId1, kWebBundleId2});
 
   ConfigureSession(
-      {IwaPolicyConfig{kWebBundleId}, IwaPolicyConfig{kWebBundleId2}});
+      {IwaPolicyConfig{kWebBundleId1}, IwaPolicyConfig{kWebBundleId2}});
   AddNewIwaToServer(
-      IwaServerConfig{kWebBundleId, GetBaseVersion(), kPublicKeyPair});
+      IwaServerConfig{kWebBundleId1, GetBaseVersion(), kKeyPair1});
   AddNewIwaToServer(
-      IwaServerConfig{kWebBundleId2, GetBaseVersion(), kPublicKeyPair2});
+      IwaServerConfig{kWebBundleId2, GetBaseVersion(), kKeyPair2});
 
-  LaunchSession({kWebBundleId, kWebBundleId2});
+  LaunchSession({kWebBundleId1, kWebBundleId2});
 
-  AssertAppInstalledAtVersion(kWebBundleId, GetBaseVersion());
+  AssertAppInstalledAtVersion(kWebBundleId1, GetBaseVersion());
   AssertAppInstalledAtVersion(kWebBundleId2, GetBaseVersion());
 
-  WaitUntilPathExists(GetCachedBundlePath(kWebBundleId, GetBaseVersion()));
-  WaitUntilPathExists(GetCachedBundlePath(kWebBundleId, GetBaseVersion()));
+  WaitUntilPathExists(GetCachedBundlePath(kWebBundleId1, GetBaseVersion()));
+  WaitUntilPathExists(GetCachedBundlePath(kWebBundleId1, GetBaseVersion()));
 }
 
-// `kWebBundleId` is no longer in the policy list --> remove from cache.
+// `kWebBundleId1` is no longer in the policy list --> remove from cache.
 // `kWebBundleId2` is no longer in the allowlist --> remove from cache.
 IN_PROC_BROWSER_TEST_F(IwaCacheNonConfiguredMgsSessionTest,
                        RemoveTwoCachedBundles) {
-  SetIwasAllowlist({kWebBundleId});
+  SetIwasAllowlist({kWebBundleId1});
   AddNewIwaToServer(
-      IwaServerConfig{kWebBundleId2, GetBaseVersion(), kPublicKeyPair2});
+      IwaServerConfig{kWebBundleId2, GetBaseVersion(), kKeyPair2});
   ConfigureSession(IwaPolicyConfig{kWebBundleId2});
   LaunchSession(/*expected_iwas=*/{});
 
   WaitUntilPathDoesNotExist(
-      GetCachedBundlePath(kWebBundleId, GetBaseVersion()));
+      GetCachedBundlePath(kWebBundleId1, GetBaseVersion()));
   WaitUntilPathDoesNotExist(
       GetCachedBundlePath(kWebBundleId2, GetBaseVersion()));
 }
@@ -908,14 +906,13 @@ class IwaCacheMgsTest : public IwaCacheBaseTest {
   IwaCacheMgsTest()
       : IwaCacheBaseTest(
             SessionType::kManagedGuestSession,
-            {IwaPolicyConfig{kWebBundleId}},
+            {IwaPolicyConfig{kWebBundleId1}},
             /*add_to_server_iwas=*/
-            {IwaServerConfig{kWebBundleId, GetBaseVersion(), kPublicKeyPair}}) {
-  }
+            {IwaServerConfig{kWebBundleId1, GetBaseVersion(), kKeyPair1}}) {}
 
   void SetUpOnMainThread() override {
     IwaCacheBaseTest::SetUpOnMainThread();
-    SetIwasAllowlist({kWebBundleId});
+    SetIwasAllowlist({kWebBundleId1});
   }
 
   void CloseApp(const SignedWebBundleId& bundle_id) {
@@ -929,65 +926,65 @@ class IwaCacheMgsTest : public IwaCacheBaseTest {
 };
 
 IN_PROC_BROWSER_TEST_F(IwaCacheMgsTest, UpdateAppWhenAppNotOpened) {
-  LaunchSession(kWebBundleId);
-  AssertAppInstalledAtVersion(kWebBundleId, GetBaseVersion());
-  WaitUntilPathExists(GetCachedBundlePath(kWebBundleId, GetBaseVersion()));
+  LaunchSession(kWebBundleId1);
+  AssertAppInstalledAtVersion(kWebBundleId1, GetBaseVersion());
+  WaitUntilPathExists(GetCachedBundlePath(kWebBundleId1, GetBaseVersion()));
 
   WaitForInitialUpdateDiscoveryTasksToFinish();
   AddNewIwaToServer(
-      IwaServerConfig{kWebBundleId, GetUpdateVersion(), kPublicKeyPair});
+      IwaServerConfig{kWebBundleId1, GetUpdateVersion(), kKeyPair1});
   UpdateApplyTaskFuture apply_update_future;
   UpdateApplyTaskResultWaiter apply_update_waiter(
-      provider(), GetAppId(kWebBundleId), apply_update_future.GetCallback());
+      provider(), GetAppId(kWebBundleId1), apply_update_future.GetCallback());
   DiscoverUpdatesNow();
 
   EXPECT_THAT(apply_update_future.Get(), HasValue());
-  AssertAppInstalledAtVersion(kWebBundleId, GetUpdateVersion(),
+  AssertAppInstalledAtVersion(kWebBundleId1, GetUpdateVersion(),
                               /*wait_for_initial_installation=*/false);
-  CheckPathExists(GetCachedBundlePath(kWebBundleId, GetUpdateVersion()));
+  CheckPathExists(GetCachedBundlePath(kWebBundleId1, GetUpdateVersion()));
   ExpectSuccessCopyBundleAfterUpdateMetric();
 }
 
 IN_PROC_BROWSER_TEST_F(IwaCacheMgsTest, UpdateApplyTaskWhenAppClosed) {
-  LaunchSession(kWebBundleId);
-  AssertAppInstalledAtVersion(kWebBundleId, GetBaseVersion());
-  WaitUntilPathExists(GetCachedBundlePath(kWebBundleId, GetBaseVersion()));
+  LaunchSession(kWebBundleId1);
+  AssertAppInstalledAtVersion(kWebBundleId1, GetBaseVersion());
+  WaitUntilPathExists(GetCachedBundlePath(kWebBundleId1, GetBaseVersion()));
 
-  OpenIwa(kWebBundleId);
-  EXPECT_THAT(GetNumOpenedWindows(kWebBundleId), Eq(1ul));
+  OpenIwa(kWebBundleId1);
+  EXPECT_THAT(GetNumOpenedWindows(kWebBundleId1), Eq(1ul));
   WaitForInitialUpdateDiscoveryTasksToFinish();
   AddNewIwaToServer(
-      IwaServerConfig{kWebBundleId, GetUpdateVersion(), kPublicKeyPair});
+      IwaServerConfig{kWebBundleId1, GetUpdateVersion(), kKeyPair1});
 
   // Updates will be applied once the app's window is closed.
-  CloseApp(kWebBundleId);
+  CloseApp(kWebBundleId1);
 
   UpdateApplyTaskFuture apply_update_future;
   UpdateApplyTaskResultWaiter apply_update_waiter(
-      provider(), GetAppId(kWebBundleId), apply_update_future.GetCallback());
+      provider(), GetAppId(kWebBundleId1), apply_update_future.GetCallback());
   DiscoverUpdatesNow();
 
   EXPECT_THAT(apply_update_future.Get(), HasValue());
-  AssertAppInstalledAtVersion(kWebBundleId, GetUpdateVersion(),
+  AssertAppInstalledAtVersion(kWebBundleId1, GetUpdateVersion(),
                               /*wait_for_initial_installation=*/false);
-  CheckPathExists(GetCachedBundlePath(kWebBundleId, GetUpdateVersion()));
+  CheckPathExists(GetCachedBundlePath(kWebBundleId1, GetUpdateVersion()));
 }
 
 IN_PROC_BROWSER_TEST_F(IwaCacheMgsTest, CopyToCacheFailed) {
   ExpectEmptyCopyBundleAfterUpdateMetric();
-  LaunchSession(kWebBundleId);
-  AssertAppInstalledAtVersion(kWebBundleId, GetBaseVersion());
-  WaitUntilPathExists(GetCachedBundlePath(kWebBundleId, GetBaseVersion()));
+  LaunchSession(kWebBundleId1);
+  AssertAppInstalledAtVersion(kWebBundleId1, GetBaseVersion());
+  WaitUntilPathExists(GetCachedBundlePath(kWebBundleId1, GetBaseVersion()));
 
   WaitForInitialUpdateDiscoveryTasksToFinish();
   AddNewIwaToServer(
-      IwaServerConfig{kWebBundleId, GetUpdateVersion(), kPublicKeyPair});
+      IwaServerConfig{kWebBundleId1, GetUpdateVersion(), kKeyPair1});
   DestroyCacheDir();
 
   UpdateApplyTaskFuture apply_update_future;
   UpdateApplyTaskResultWaiter apply_update_waiter(
-      provider(), GetAppId(kWebBundleId), apply_update_future.GetCallback());
-  EXPECT_THAT(DiscoverUpdateAndWaitForResult(kWebBundleId),
+      provider(), GetAppId(kWebBundleId1), apply_update_future.GetCallback());
+  EXPECT_THAT(DiscoverUpdateAndWaitForResult(kWebBundleId1),
               ValueIs(DiscoveryTask::Success::kUpdateFoundAndSavedInDatabase));
 
   // The update is applied, but it was not saved to cache because of the error
@@ -995,9 +992,9 @@ IN_PROC_BROWSER_TEST_F(IwaCacheMgsTest, CopyToCacheFailed) {
   EXPECT_THAT(apply_update_future.Get(),
               ErrorIs(Field(&IsolatedWebAppApplyUpdateCommandError::message,
                             HasSubstr(ApplyTask::kCopyToCacheFailedMessage))));
-  AssertAppInstalledAtVersion(kWebBundleId, GetUpdateVersion(),
+  AssertAppInstalledAtVersion(kWebBundleId1, GetUpdateVersion(),
                               /*wait_for_initial_installation=*/false);
-  CheckPathDoesNotExist(GetCachedBundlePath(kWebBundleId, GetUpdateVersion()));
+  CheckPathDoesNotExist(GetCachedBundlePath(kWebBundleId1, GetUpdateVersion()));
   ExpectErrorCopyBundleAfterUpdateMetric(
       CopyBundleToCacheError::kFailedToCreateDir);
 }
@@ -1012,14 +1009,13 @@ class IwaCacheCrossSessionCleanupTest
   IwaCacheCrossSessionCleanupTest()
       : IwaCacheBaseTest(
             GetParam(),
-            {IwaPolicyConfig{kWebBundleId}},
+            {IwaPolicyConfig{kWebBundleId1}},
             /*add_to_server_iwas=*/
-            {IwaServerConfig{kWebBundleId, GetBaseVersion(), kPublicKeyPair}}) {
-  }
+            {IwaServerConfig{kWebBundleId1, GetBaseVersion(), kKeyPair1}}) {}
 
   void SetUpOnMainThread() override {
     IwaCacheBaseTest::SetUpOnMainThread();
-    SetIwasAllowlist({kWebBundleId, kWebBundleId2});
+    SetIwasAllowlist({kWebBundleId1, kWebBundleId2});
   }
 };
 
@@ -1028,7 +1024,7 @@ IN_PROC_BROWSER_TEST_P(IwaCacheCrossSessionCleanupTest,
   base::FilePath kiosk_bundle =
       CreateBundlePath(kWebBundleId2, GetUpdateVersion(), SessionType::kKiosk);
 
-  LaunchSession(kWebBundleId);
+  LaunchSession(kWebBundleId1);
 
   WaitUntilPathDoesNotExist(kiosk_bundle);
   CheckCacheManagerDebugOperationResult(
@@ -1043,7 +1039,7 @@ IN_PROC_BROWSER_TEST_P(IwaCacheCrossSessionCleanupTest,
   base::FilePath kiosk_bundle2 =
       CreateBundlePath(kWebBundleId2, GetUpdateVersion(), SessionType::kKiosk);
 
-  LaunchSession(kWebBundleId);
+  LaunchSession(kWebBundleId1);
 
   WaitUntilPathDoesNotExist(kiosk_bundle1);
   WaitUntilPathDoesNotExist(kiosk_bundle2);
@@ -1058,7 +1054,7 @@ IN_PROC_BROWSER_TEST_P(IwaCacheCrossSessionCleanupTest,
   base::FilePath mgs_bundle = CreateBundlePath(
       kWebBundleId2, GetUpdateVersion(), SessionType::kManagedGuestSession);
 
-  LaunchSession(kWebBundleId);
+  LaunchSession(kWebBundleId1);
 
   WaitUntilPathDoesNotExist(mgs_bundle);
   CheckCacheManagerDebugOperationResult(
@@ -1073,7 +1069,7 @@ IN_PROC_BROWSER_TEST_P(IwaCacheCrossSessionCleanupTest,
   base::FilePath kiosk_bundle =
       CreateBundlePath(kWebBundleId2, GetBaseVersion(), SessionType::kKiosk);
 
-  LaunchSession(kWebBundleId);
+  LaunchSession(kWebBundleId1);
 
   WaitUntilPathDoesNotExist(mgs_bundle);
   WaitUntilPathDoesNotExist(kiosk_bundle);
@@ -1092,10 +1088,9 @@ class IwaCacheKioskTest : public IwaCacheBaseTest {
   IwaCacheKioskTest()
       : IwaCacheBaseTest(
             SessionType::kKiosk,
-            {IwaPolicyConfig{kWebBundleId}},
+            {IwaPolicyConfig{kWebBundleId1}},
             /*add_to_server_iwas=*/
-            {IwaServerConfig{kWebBundleId, GetBaseVersion(), kPublicKeyPair}}) {
-  }
+            {IwaServerConfig{kWebBundleId1, GetBaseVersion(), kKeyPair1}}) {}
 
   void SetUpInProcessBrowserTestFixture() override {
     IwaCacheBaseTest::SetUpInProcessBrowserTestFixture();
@@ -1107,7 +1102,7 @@ class IwaCacheKioskTest : public IwaCacheBaseTest {
 
   void SetUpOnMainThread() override {
     IwaCacheBaseTest::SetUpOnMainThread();
-    SetIwasAllowlist({kWebBundleId});
+    SetIwasAllowlist({kWebBundleId1});
   }
 
   void DisableKioskOfflineLaunch() {
@@ -1128,19 +1123,19 @@ IN_PROC_BROWSER_TEST_F(IwaCacheKioskTest, PRE_OfflineLaunchFromCache) {
   ASSERT_TRUE(LaunchAppManually(TheKioskApp()));
 
   ASSERT_TRUE(WaitKioskLaunched());
-  AssertAppInstalledAtVersion(kWebBundleId, GetBaseVersion());
-  WaitUntilPathExists(GetCachedBundlePath(kWebBundleId, GetBaseVersion()));
+  AssertAppInstalledAtVersion(kWebBundleId1, GetBaseVersion());
+  WaitUntilPathExists(GetCachedBundlePath(kWebBundleId1, GetBaseVersion()));
 }
 
 IN_PROC_BROWSER_TEST_F(IwaCacheKioskTest, OfflineLaunchFromCache) {
-  CheckPathExists(GetCachedBundlePath(kWebBundleId, GetBaseVersion()));
+  CheckPathExists(GetCachedBundlePath(kWebBundleId1, GetBaseVersion()));
   network_state_.SimulateOffline();
   RemoveAllBundlesFromUpdateServer();
 
   ASSERT_TRUE(LaunchAppManually(TheKioskApp()));
 
   ASSERT_TRUE(WaitKioskLaunched());
-  AssertAppInstalledAtVersion(kWebBundleId, GetBaseVersion());
+  AssertAppInstalledAtVersion(kWebBundleId1, GetBaseVersion());
 }
 
 IN_PROC_BROWSER_TEST_F(IwaCacheKioskTest,
@@ -1149,8 +1144,8 @@ IN_PROC_BROWSER_TEST_F(IwaCacheKioskTest,
   ASSERT_TRUE(LaunchAppManually(TheKioskApp()));
 
   ASSERT_TRUE(WaitKioskLaunched());
-  AssertAppInstalledAtVersion(kWebBundleId, GetBaseVersion());
-  WaitUntilPathExists(GetCachedBundlePath(kWebBundleId, GetBaseVersion()));
+  AssertAppInstalledAtVersion(kWebBundleId1, GetBaseVersion());
+  WaitUntilPathExists(GetCachedBundlePath(kWebBundleId1, GetBaseVersion()));
 }
 
 // By default `KioskWebAppOfflineEnabled` policy is enabled, this test checks
@@ -1158,7 +1153,7 @@ IN_PROC_BROWSER_TEST_F(IwaCacheKioskTest,
 // installed from cache, but the device will show the network dialog.
 IN_PROC_BROWSER_TEST_F(IwaCacheKioskTest,
                        DoNotLaunchFromCacheWhenDisabledByPolicy) {
-  CheckPathExists(GetCachedBundlePath(kWebBundleId, GetBaseVersion()));
+  CheckPathExists(GetCachedBundlePath(kWebBundleId1, GetBaseVersion()));
   network_state_.SimulateOffline();
   RemoveAllBundlesFromUpdateServer();
   DisableKioskOfflineLaunch();
@@ -1173,7 +1168,7 @@ IN_PROC_BROWSER_TEST_F(IwaCacheKioskTest,
 // Cache is not available, the network dialog should be shown.
 IN_PROC_BROWSER_TEST_F(IwaCacheKioskTest,
                        ShowNetworkDialogWhenLaunchFromCacheFailed) {
-  CheckPathDoesNotExist(GetCachedBundlePath(kWebBundleId, GetBaseVersion()));
+  CheckPathDoesNotExist(GetCachedBundlePath(kWebBundleId1, GetBaseVersion()));
   network_state_.SimulateOffline();
   RemoveAllBundlesFromUpdateServer();
   ASSERT_TRUE(LaunchAppManually(TheKioskApp()));
@@ -1181,7 +1176,7 @@ IN_PROC_BROWSER_TEST_F(IwaCacheKioskTest,
   WaitNetworkScreen();
 
   AddNewIwaToServer(
-      IwaServerConfig{kWebBundleId, GetBaseVersion(), kPublicKeyPair});
+      IwaServerConfig{kWebBundleId1, GetBaseVersion(), kKeyPair1});
   network_state_.SimulateOnline();
   ASSERT_TRUE(WaitKioskLaunched());
 }
@@ -1191,43 +1186,42 @@ class IwaCacheMultipleAppsConfigurationMgs : public IwaCacheBaseTest {
   IwaCacheMultipleAppsConfigurationMgs()
       : IwaCacheBaseTest(
             SessionType::kManagedGuestSession,
-            {IwaPolicyConfig{kWebBundleId}, IwaPolicyConfig{kWebBundleId2}},
+            {IwaPolicyConfig{kWebBundleId1}, IwaPolicyConfig{kWebBundleId2}},
             /*add_to_server_iwas=*/
-            {IwaServerConfig{kWebBundleId, GetBaseVersion(), kPublicKeyPair},
-             IwaServerConfig{kWebBundleId2, GetBaseVersion(),
-                             kPublicKeyPair2}}) {}
+            {IwaServerConfig{kWebBundleId1, GetBaseVersion(), kKeyPair1},
+             IwaServerConfig{kWebBundleId2, GetBaseVersion(), kKeyPair2}}) {}
 };
 
 IN_PROC_BROWSER_TEST_F(IwaCacheMultipleAppsConfigurationMgs, TwoAppsAreCached) {
-  SetIwasAllowlist({kWebBundleId, kWebBundleId2});
-  LaunchSession({kWebBundleId, kWebBundleId2});
-  AssertAppInstalledAtVersion(kWebBundleId, GetBaseVersion());
+  SetIwasAllowlist({kWebBundleId1, kWebBundleId2});
+  LaunchSession({kWebBundleId1, kWebBundleId2});
+  AssertAppInstalledAtVersion(kWebBundleId1, GetBaseVersion());
   AssertAppInstalledAtVersion(kWebBundleId2, GetBaseVersion());
 
-  WaitUntilPathExists(GetCachedBundlePath(kWebBundleId, GetBaseVersion()));
+  WaitUntilPathExists(GetCachedBundlePath(kWebBundleId1, GetBaseVersion()));
   WaitUntilPathExists(GetCachedBundlePath(kWebBundleId2, GetBaseVersion()));
 }
 
 IN_PROC_BROWSER_TEST_F(IwaCacheMultipleAppsConfigurationMgs,
                        PRE_RemoveNotAllowlistedIwa) {
-  SetIwasAllowlist({kWebBundleId, kWebBundleId2});
-  LaunchSession({kWebBundleId, kWebBundleId2});
-  AssertAppInstalledAtVersion(kWebBundleId, GetBaseVersion());
+  SetIwasAllowlist({kWebBundleId1, kWebBundleId2});
+  LaunchSession({kWebBundleId1, kWebBundleId2});
+  AssertAppInstalledAtVersion(kWebBundleId1, GetBaseVersion());
   AssertAppInstalledAtVersion(kWebBundleId2, GetBaseVersion());
 
-  WaitUntilPathExists(GetCachedBundlePath(kWebBundleId, GetBaseVersion()));
+  WaitUntilPathExists(GetCachedBundlePath(kWebBundleId1, GetBaseVersion()));
   WaitUntilPathExists(GetCachedBundlePath(kWebBundleId2, GetBaseVersion()));
 }
 
 IN_PROC_BROWSER_TEST_F(IwaCacheMultipleAppsConfigurationMgs,
                        RemoveNotAllowlistedIwa) {
-  SetIwasAllowlist({kWebBundleId});
-  LaunchSession({kWebBundleId});
-  AssertAppInstalledAtVersion(kWebBundleId, GetBaseVersion());
+  SetIwasAllowlist({kWebBundleId1});
+  LaunchSession({kWebBundleId1});
+  AssertAppInstalledAtVersion(kWebBundleId1, GetBaseVersion());
 
   WaitUntilPathDoesNotExist(
       GetCachedBundlePath(kWebBundleId2, GetBaseVersion()));
-  CheckPathExists(GetCachedBundlePath(kWebBundleId, GetBaseVersion()));
+  CheckPathExists(GetCachedBundlePath(kWebBundleId1, GetBaseVersion()));
 }
 
 class IwaCacheMultipleAppsConfigurationKiosk : public IwaCacheBaseTest {
@@ -1235,40 +1229,39 @@ class IwaCacheMultipleAppsConfigurationKiosk : public IwaCacheBaseTest {
   IwaCacheMultipleAppsConfigurationKiosk()
       : IwaCacheBaseTest(
             SessionType::kKiosk,
-            {IwaPolicyConfig{kWebBundleId}, IwaPolicyConfig{kWebBundleId2}},
+            {IwaPolicyConfig{kWebBundleId1}, IwaPolicyConfig{kWebBundleId2}},
             /*add_to_server_iwas=*/
-            {IwaServerConfig{kWebBundleId, GetBaseVersion(), kPublicKeyPair},
-             IwaServerConfig{kWebBundleId2, GetBaseVersion(),
-                             kPublicKeyPair2}}) {}
+            {IwaServerConfig{kWebBundleId1, GetBaseVersion(), kKeyPair1},
+             IwaServerConfig{kWebBundleId2, GetBaseVersion(), kKeyPair2}}) {}
 };
 
 IN_PROC_BROWSER_TEST_F(IwaCacheMultipleAppsConfigurationKiosk,
                        PRE_TwoAppsAreCached) {
-  SetIwasAllowlist({kWebBundleId, kWebBundleId2});
-  LaunchSession(kWebBundleId);
-  AssertAppInstalledAtVersion(kWebBundleId, GetBaseVersion());
+  SetIwasAllowlist({kWebBundleId1, kWebBundleId2});
+  LaunchSession(kWebBundleId1);
+  AssertAppInstalledAtVersion(kWebBundleId1, GetBaseVersion());
 
-  WaitUntilPathExists(GetCachedBundlePath(kWebBundleId, GetBaseVersion()));
+  WaitUntilPathExists(GetCachedBundlePath(kWebBundleId1, GetBaseVersion()));
 }
 
 IN_PROC_BROWSER_TEST_F(IwaCacheMultipleAppsConfigurationKiosk,
                        TwoAppsAreCached) {
-  SetIwasAllowlist({kWebBundleId, kWebBundleId2});
+  SetIwasAllowlist({kWebBundleId1, kWebBundleId2});
   LaunchSession(kWebBundleId2);
   AssertAppInstalledAtVersion(kWebBundleId2, GetBaseVersion());
 
-  CheckPathExists(GetCachedBundlePath(kWebBundleId, GetBaseVersion()));
+  CheckPathExists(GetCachedBundlePath(kWebBundleId1, GetBaseVersion()));
   WaitUntilPathExists(GetCachedBundlePath(kWebBundleId2, GetBaseVersion()));
 }
 
 IN_PROC_BROWSER_TEST_F(IwaCacheMultipleAppsConfigurationKiosk,
                        PRE_RemoveNotAllowlistedIwa) {
-  SetIwasAllowlist({kWebBundleId});
+  SetIwasAllowlist({kWebBundleId1});
 
-  LaunchSession(kWebBundleId);
-  AssertAppInstalledAtVersion(kWebBundleId, GetBaseVersion());
+  LaunchSession(kWebBundleId1);
+  AssertAppInstalledAtVersion(kWebBundleId1, GetBaseVersion());
 
-  WaitUntilPathExists(GetCachedBundlePath(kWebBundleId, GetBaseVersion()));
+  WaitUntilPathExists(GetCachedBundlePath(kWebBundleId1, GetBaseVersion()));
 }
 
 IN_PROC_BROWSER_TEST_F(IwaCacheMultipleAppsConfigurationKiosk,
@@ -1279,7 +1272,7 @@ IN_PROC_BROWSER_TEST_F(IwaCacheMultipleAppsConfigurationKiosk,
   AssertAppInstalledAtVersion(kWebBundleId2, GetBaseVersion());
 
   WaitUntilPathDoesNotExist(
-      GetCachedBundlePath(kWebBundleId, GetBaseVersion()));
+      GetCachedBundlePath(kWebBundleId1, GetBaseVersion()));
   WaitUntilPathExists(GetCachedBundlePath(kWebBundleId2, GetBaseVersion()));
 }
 
@@ -1294,21 +1287,21 @@ class IwaCacheVersionManagementTest
 
   void SetUpOnMainThread() override {
     IwaCacheBaseTest::SetUpOnMainThread();
-    SetIwasAllowlist({kWebBundleId});
+    SetIwasAllowlist({kWebBundleId1});
   }
 };
 
 IN_PROC_BROWSER_TEST_P(IwaCacheVersionManagementTest,
                        PRE_InstallPinnedVersionFromCache) {
-  ConfigureSession(IwaPolicyConfig{kWebBundleId,
+  ConfigureSession(IwaPolicyConfig{kWebBundleId1,
                                    /*update_channel=*/std::nullopt,
                                    /*pinned_version=*/GetBaseVersion()});
   AddNewIwaToServer(
-      IwaServerConfig{kWebBundleId, GetBaseVersion(), kPublicKeyPair});
+      IwaServerConfig{kWebBundleId1, GetBaseVersion(), kKeyPair1});
 
-  LaunchSession(kWebBundleId, /*should_wait_for_initial_update=*/false);
-  AssertAppInstalledAtVersion(kWebBundleId, GetBaseVersion());
-  WaitUntilPathExists(GetCachedBundlePath(kWebBundleId, GetBaseVersion()));
+  LaunchSession(kWebBundleId1, /*should_wait_for_initial_update=*/false);
+  AssertAppInstalledAtVersion(kWebBundleId1, GetBaseVersion());
+  WaitUntilPathExists(GetCachedBundlePath(kWebBundleId1, GetBaseVersion()));
 }
 
 IN_PROC_BROWSER_TEST_P(IwaCacheVersionManagementTest,
@@ -1316,17 +1309,17 @@ IN_PROC_BROWSER_TEST_P(IwaCacheVersionManagementTest,
   // Add `GetUpdateVersion()` to cache to check that the
   // installation does not use `GetUpdateVersion()` version
   // from cache since it is not pinned.
-  CreateBundlePath(kWebBundleId, GetUpdateVersion(), session_type());
-  ConfigureSession(IwaPolicyConfig{kWebBundleId,
+  CreateBundlePath(kWebBundleId1, GetUpdateVersion(), session_type());
+  ConfigureSession(IwaPolicyConfig{kWebBundleId1,
                                    /*update_channel=*/std::nullopt,
                                    /*pinned_version=*/GetBaseVersion()});
 
   // When the version is pinned, the initial update is not performed, so do not
   // wait for the result as usual.
-  LaunchSession(kWebBundleId, /*should_wait_for_initial_update=*/false);
+  LaunchSession(kWebBundleId1, /*should_wait_for_initial_update=*/false);
 
   // Install pinned version from the cache.
-  AssertAppInstalledAtVersion(kWebBundleId, GetBaseVersion());
+  AssertAppInstalledAtVersion(kWebBundleId1, GetBaseVersion());
 }
 
 IN_PROC_BROWSER_TEST_P(IwaCacheVersionManagementTest,
@@ -1335,61 +1328,60 @@ IN_PROC_BROWSER_TEST_P(IwaCacheVersionManagementTest,
   // should choose `GetBaseVersion()` from the PRE_ test
   // because
   // `GetBaseVersion()` is pinned.
-  CreateBundlePath(kWebBundleId, GetUpdateVersion(), session_type());
-  ConfigureSession(IwaPolicyConfig{kWebBundleId,
+  CreateBundlePath(kWebBundleId1, GetUpdateVersion(), session_type());
+  ConfigureSession(IwaPolicyConfig{kWebBundleId1,
                                    /*update_channel=*/std::nullopt,
                                    /*pinned_version=*/GetBaseVersion()});
   AddNewIwaToServer(
-      IwaServerConfig{kWebBundleId, GetBaseVersion(), kPublicKeyPair});
+      IwaServerConfig{kWebBundleId1, GetBaseVersion(), kKeyPair1});
 
   // When the version is pinned, the initial update is not performed, so do not
   // wait for the result as usual.
-  LaunchSession(kWebBundleId, /*should_wait_for_initial_update=*/false);
+  LaunchSession(kWebBundleId1, /*should_wait_for_initial_update=*/false);
 
-  AssertAppInstalledAtVersion(kWebBundleId, GetBaseVersion());
+  AssertAppInstalledAtVersion(kWebBundleId1, GetBaseVersion());
 }
 
 IN_PROC_BROWSER_TEST_P(IwaCacheVersionManagementTest, PRE_IntallNewestVersion) {
-  ConfigureSession(IwaPolicyConfig{kWebBundleId});
+  ConfigureSession(IwaPolicyConfig{kWebBundleId1});
   AddNewIwaToServer(
-      IwaServerConfig{kWebBundleId, GetUpdateVersion(), kPublicKeyPair});
+      IwaServerConfig{kWebBundleId1, GetUpdateVersion(), kKeyPair1});
 
-  LaunchSession(kWebBundleId);
-  AssertAppInstalledAtVersion(kWebBundleId, GetUpdateVersion());
-  WaitUntilPathExists(GetCachedBundlePath(kWebBundleId, GetUpdateVersion()));
+  LaunchSession(kWebBundleId1);
+  AssertAppInstalledAtVersion(kWebBundleId1, GetUpdateVersion());
+  WaitUntilPathExists(GetCachedBundlePath(kWebBundleId1, GetUpdateVersion()));
 }
 
 IN_PROC_BROWSER_TEST_P(IwaCacheVersionManagementTest, IntallNewestVersion) {
   // Installation should use the newest version when the version is not pinned.
-  CreateBundlePath(kWebBundleId, GetBaseVersion(), session_type());
-  ConfigureSession(IwaPolicyConfig{kWebBundleId});
+  CreateBundlePath(kWebBundleId1, GetBaseVersion(), session_type());
+  ConfigureSession(IwaPolicyConfig{kWebBundleId1});
 
-  LaunchSession(kWebBundleId);
+  LaunchSession(kWebBundleId1);
 
-  AssertAppInstalledAtVersion(kWebBundleId, GetUpdateVersion());
+  AssertAppInstalledAtVersion(kWebBundleId1, GetUpdateVersion());
 }
 
 IN_PROC_BROWSER_TEST_P(IwaCacheVersionManagementTest, PRE_InstallBetaChannel) {
-  ConfigureSession(IwaPolicyConfig{kWebBundleId, kBetaChannel});
-  AddNewIwaToServer(
-      IwaServerConfig{kWebBundleId, GetBaseVersion(), kPublicKeyPair},
-      std::vector{kBetaChannel});
+  ConfigureSession(IwaPolicyConfig{kWebBundleId1, kBetaChannel});
+  AddNewIwaToServer(IwaServerConfig{kWebBundleId1, GetBaseVersion(), kKeyPair1},
+                    std::vector{kBetaChannel});
 
-  LaunchSession(kWebBundleId);
-  AssertAppInstalledAtVersion(kWebBundleId, GetBaseVersion());
-  WaitUntilPathExists(GetCachedBundlePath(kWebBundleId, GetBaseVersion()));
+  LaunchSession(kWebBundleId1);
+  AssertAppInstalledAtVersion(kWebBundleId1, GetBaseVersion());
+  WaitUntilPathExists(GetCachedBundlePath(kWebBundleId1, GetBaseVersion()));
 }
 
 IN_PROC_BROWSER_TEST_P(IwaCacheVersionManagementTest, InstallBetaChannel) {
-  ConfigureSession(IwaPolicyConfig{kWebBundleId, kBetaChannel});
+  ConfigureSession(IwaPolicyConfig{kWebBundleId1, kBetaChannel});
   // The updated version should not be used, since it is not from the beta
   // channel.
   AddNewIwaToServer(
-      IwaServerConfig{kWebBundleId, GetUpdateVersion(), kPublicKeyPair});
+      IwaServerConfig{kWebBundleId1, GetUpdateVersion(), kKeyPair1});
 
-  LaunchSession(kWebBundleId);
+  LaunchSession(kWebBundleId1);
 
-  AssertAppInstalledAtVersion(kWebBundleId, GetBaseVersion());
+  AssertAppInstalledAtVersion(kWebBundleId1, GetBaseVersion());
 }
 
 INSTANTIATE_TEST_SUITE_P(
