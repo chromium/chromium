@@ -130,6 +130,8 @@ class PartialTranslateBubbleView : public LocationBarBubbleDelegateView,
                            SourceLanguageTabSelectedLogged);
   FRIEND_TEST_ALL_PREFIXES(PartialTranslateBubbleViewTest,
                            TranslateFullPageButton);
+  FRIEND_TEST_ALL_PREFIXES(PartialTranslateBubbleViewTest,
+                           TranslatedTextIsSelectable);
 
   // views::TabbedPaneListener:
   void TabSelectedAt(int index) override;

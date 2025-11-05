@@ -557,6 +557,7 @@ std::unique_ptr<views::View> PartialTranslateBubbleView::CreateView() {
   partial_text_label->SizeToFit(tab_view_top_row_->GetPreferredSize().width());
   partial_text_label->SetHorizontalAlignment(
       gfx::HorizontalAlignment::ALIGN_LEFT);
+  partial_text_label->SetSelectable(true);
   partial_text_label->SetProperty(views::kMarginsKey,
                                   gfx::Insets::VH(vertical_spacing, 0));
   partial_text_label_ = view->AddChildView(std::move(partial_text_label));

@@ -214,3 +214,13 @@ TEST_F(PartialTranslateBubbleViewTest, TranslateFullPageButton) {
   PressButton(PartialTranslateBubbleView::BUTTON_ID_FULL_PAGE_TRANSLATE);
   EXPECT_TRUE(mock_model_->full_page_translate_called_);
 }
+
+TEST_F(PartialTranslateBubbleViewTest, TranslatedTextIsSelectable) {
+  CreateAndShowBubble();
+  // Switch to the translated view.
+  bubble_->SwitchView(PartialTranslateBubbleModel::VIEW_STATE_AFTER_TRANSLATE);
+
+  // Verify the translated text is selectable for copying.
+  ASSERT_NE(bubble_->partial_text_label_, nullptr);
+  EXPECT_TRUE(bubble_->partial_text_label_->GetSelectable());
+}
