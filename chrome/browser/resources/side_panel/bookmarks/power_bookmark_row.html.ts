@@ -10,7 +10,8 @@ export function getHtml(this: PowerBookmarkRowElement) {
   // clang-format off
   const urlListItem = html`
 <cr-url-list-item id="crUrlListItem"
-    role="listitem"
+    role="treeitem"
+    aria-level="${this.depth + 1}"
     .size="${this.listItemSize}"
     .url="${this.getUrl_()}"
     ?selected="${this.isSelected}"
@@ -76,6 +77,7 @@ export function getHtml(this: PowerBookmarkRowElement) {
     return html`<!--_html_template_start_-->
 <cr-expand-button no-hover id="expandButton"
     .expanded="${this.toggleExpand}"
+    aria-expanded="${this.toggleExpand}"
     tab-index="-1"
     collapse-icon="cr:expand-more"
     ?selected="${this.isSelected}"
