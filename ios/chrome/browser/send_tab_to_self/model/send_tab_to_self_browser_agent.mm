@@ -34,7 +34,6 @@ SendTabToSelfBrowserAgent::SendTabToSelfBrowserAgent(Browser* browser)
           SendTabToSelfSyncServiceFactory::GetForProfile(browser_->GetProfile())
               ->GetSendTabToSelfModel()) {
   model_observation_.Observe(model_.get());
-  browser_observation_.Observe(browser_.get());
 }
 
 SendTabToSelfBrowserAgent::~SendTabToSelfBrowserAgent() = default;
@@ -120,16 +119,6 @@ void SendTabToSelfBrowserAgent::WebStateDestroyed(web::WebState* web_state) {
 
   web_state_observation_.Reset();
   pending_web_state_ = nullptr;
-}
-
-void SendTabToSelfBrowserAgent::BrowserDestroyed(Browser* browser) {
-  model_observation_.Reset();
-
-  web_state_list_observation_.Reset();
-
-  web_state_observation_.Reset();
-
-  browser_observation_.Reset();
 }
 
 void SendTabToSelfBrowserAgent::DisplayInfoBar(

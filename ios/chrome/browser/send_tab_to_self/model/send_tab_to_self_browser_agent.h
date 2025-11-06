@@ -13,7 +13,6 @@
 #import "base/memory/raw_ptr.h"
 #import "base/scoped_observation.h"
 #import "components/send_tab_to_self/send_tab_to_self_model_observer.h"
-#import "ios/chrome/browser/shared/model/browser/browser_observer.h"
 #import "ios/chrome/browser/shared/model/browser/browser_user_data.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer.h"
 #import "ios/web/public/web_state_observer.h"
@@ -33,8 +32,7 @@ class SendTabToSelfBrowserAgent
     : public BrowserUserData<SendTabToSelfBrowserAgent>,
       public send_tab_to_self::SendTabToSelfModelObserver,
       public WebStateListObserver,
-      public web::WebStateObserver,
-      public BrowserObserver {
+      public web::WebStateObserver {
  public:
   ~SendTabToSelfBrowserAgent() override;
 
@@ -65,9 +63,6 @@ class SendTabToSelfBrowserAgent
 
   explicit SendTabToSelfBrowserAgent(Browser* browser);
 
-  // BrowserObserver::
-  void BrowserDestroyed(Browser* browser) override;
-
   // Display an infobar for `entry` on the specified `web_state`.
   void DisplayInfoBar(web::WebState* web_state,
                       const send_tab_to_self::SendTabToSelfEntry* entry);
@@ -84,8 +79,6 @@ class SendTabToSelfBrowserAgent
 
   // The WebState that is being observed for activation, if any.
   raw_ptr<web::WebState> pending_web_state_ = nullptr;
-
-  base::ScopedObservation<Browser, BrowserObserver> browser_observation_{this};
 
   base::ScopedObservation<WebStateList, WebStateListObserver>
       web_state_list_observation_{this};
