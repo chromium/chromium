@@ -13,8 +13,6 @@ namespace ash {
 
 // Base class for tests of the `HoldingSpaceController` that make sure it fires
 // all observer methods as appropriate.
-// TODO(http://b/260612195): Add all `HoldingSpaceControllerObserver` methods to
-// this test suite.
 using HoldingSpaceControllerObserverTest = testing::Test;
 
 // Tests -----------------------------------------------------------------------
