@@ -1316,4 +1316,8 @@ void InputType::AddWarningToConsole(const char* message_format,
                          JSONValue::QuoteString(value).Utf8().c_str())));
 }
 
+bool InputType::SupportsBaseAppearance(Element::BaseAppearanceValue) const {
+  return false;
+}
+
 }  // namespace blink

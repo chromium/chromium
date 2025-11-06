@@ -2497,4 +2497,9 @@ void HTMLInputElement::SetFocused(bool is_focused,
   }
 }
 
+bool HTMLInputElement::SupportsBaseAppearanceInternal(
+    BaseAppearanceValue value) const {
+  return input_type_->SupportsBaseAppearance(value);
+}
+
 }  // namespace blink

@@ -451,6 +451,24 @@ input, textarea, select, button {
     display: inline-block;
     text-align: start;
 }
+@supports blink-feature(AppearanceBase) {
+  /* TODO(crbug.com/450139531): Merge these styles with the above block when
+   * these styles can apply to textarea, select, and button as well. */
+  input {
+    margin: -internal-auto-base(0__qem, unset);
+    font: -internal-auto-base(-webkit-small-control, unset);
+    /* FIXME: Remove text-rendering:auto when tabs work with optimizeLegibility. */
+    text-rendering: -internal-auto-base(auto, unset);
+    color: -internal-auto-base(FieldText, unset);
+    letter-spacing: -internal-auto-base(normal, unset);
+    word-spacing: -internal-auto-base(normal, unset);
+    line-height: -internal-auto-base(normal, unset);
+    text-shadow: -internal-auto-base(none, unset);
+    /* text-transform, text-indent, and text-align are supposed to be set to
+     * initial. Since the auto appearance is also using the initial values, we
+     * don't need to use -internal-auto-base() on them. */
+  }
+}
 
 textarea {
   appearance: auto;
@@ -468,11 +486,19 @@ textarea {
 
 input {
     appearance: auto;
-    padding:1px 0;
-    border: 2px inset light-dark(#767676, #858585);
-    -webkit-rtl-ordering: logical;
     cursor: text;
-    background-color: Field;
+    @supports blink-feature(AppearanceBase) {
+        padding: -internal-auto-base(1px 0, unset);
+        border: -internal-auto-base(2px inset light-dark(#767676, #858585), 1px solid);
+        -webkit-rtl-ordering: -internal-auto-base(logical, unset);
+        background-color: -internal-auto-base(Field, unset);
+    }
+    @supports not blink-feature(AppearanceBase) {
+        padding: 1px 0;
+        border: 2px inset light-dark(#767676, #858585);
+        -webkit-rtl-ordering: logical;
+        background-color: Field;
+    }
 }
 
 input:not([type="file" i], [type="image" i], [type="checkbox" i], [type="radio" i]) {
@@ -538,8 +564,14 @@ input[type="search" i],
 input[type="tel" i],
 input[type="text" i],
 input[type="url" i] {
-  padding-block: 1px;
-  padding-inline: 2px;
+  @supports blink-feature(AppearanceBase) {
+    padding-block: -internal-auto-base(1px, unset);
+    padding-inline: -internal-auto-base(2px, unset);
+  }
+  @supports not blink-feature(AppearanceBase) {
+    padding-block: 1px;
+    padding-inline: 2px;
+  }
 }
 
 input[type="tel" i] {
