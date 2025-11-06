@@ -15,6 +15,7 @@
   --text-input-top-spacing: 10px;
   --text-input-inline-end-spacing: 80px;
   --text-input-inline-start-spacing: 16px;
+  --text-input-max-height: 190px;
   --expanded-border-radius: 26px;
   --brand-gradient: conic-gradient(
     rgba(52, 168, 82, 0) 0deg,
@@ -138,6 +139,7 @@
 
 #composebox {
   display: flex;
+  flex-direction: column;
   pointer-events: auto;
   position: relative;
   overflow: hidden;
@@ -263,7 +265,7 @@
   font-size: inherit;
   line-height: 24px;
   min-height: 48px;
-  max-height: 190px;
+  max-height: var(--text-input-max-height);
   padding-block: var(--text-input-top-spacing) 0;
   padding-inline: 12px var(--text-input-inline-end-spacing);
   scrollbar-width: none;
@@ -287,7 +289,7 @@
   color: var(--color-composebox-font-light);
   field-sizing: content;
   mask-image: linear-gradient(transparent 7px, black calc(var(--text-input-top-spacing) + 7px));
-  height: calc-size(fit-content, min(size + 4px, 190px));
+  height: calc-size(fit-content, min(size + 4px, var(--text-input-max-height)));
   outline: none;
   position: relative;
   resize: none;
@@ -690,7 +692,8 @@
 }
 
 :host([expanded_][show-file-carousel_][carousel-on-top_]) #inputContainer {
-  padding-top: 52px;
+  padding-top: 60px;
+  --text-input-max-height: 130px;
 }
 
 .carousel-divider {

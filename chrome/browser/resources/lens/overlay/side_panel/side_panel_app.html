@@ -365,12 +365,26 @@
     transition-duration: var(--expand-duration);
   }
 
-  #composebox[expanded_][show-file-carousel_]::part(input-container) {
-    padding-top: 52px;
+  #composebox::part(carousel-divider) {
+    display: none;
   }
 
   #composebox:not([expanded_])[show-file-carousel_]::part(cr-composebox-file-carousel) {
     pointer-events: none;
+  }
+
+  #composeboxFooter {
+    transition: height var(--emphasized-curve);
+    transition-duration: var(--collapse-duration);
+  }
+
+  #composeboxContainer:has(#composebox[expanded_]) #composeboxFooter {
+    transition-duration: var(--expand-duration);
+  }
+
+  #composeboxContainer:has(#composebox[expanded_]) #composeboxFooter {
+    height: 64px;
+    width: 100%;
   }
 
   #composebox::part(icon-container) {
@@ -580,5 +594,9 @@
     style$="--composebox-height: [[composeboxHeight_]]px;"
     lens-button-disabled_$="[[isOverlayShowing]]"
   >
+    <!-- Currently an empty div that has height to force the input textarea to
+         not flow behind the Lens icon. Eventually, this should contain the
+         submit button and the Lens icon. -->
+    <div id="composeboxFooter" slot="footer"></div>
   </cr-composebox>
 </div>
