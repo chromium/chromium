@@ -4,8 +4,11 @@
 
 #include "components/password_manager/content/browser/form_meta_data.h"
 
+#include <vector>
+
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/autofill/core/common/form_data.h"
+#include "components/autofill/core/common/form_field_data.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "content/public/browser/render_frame_host.h"
@@ -33,6 +36,15 @@ void SetFrameAndFormMetaData(content::RenderFrameHost* rfh,
   form.set_url(password_manager_util::StripAuthAndParams(url));
   form.set_full_url(autofill::StripAuth(url));
   form.set_main_frame_origin(rfh->GetMainFrame()->GetLastCommittedOrigin());
+
+  std::vector<autofill::FormFieldData> fields = form.ExtractFields();
+  for (auto& field : fields) {
+    field.set_host_frame(form.host_frame());
+    field.set_origin(rfh->GetLastCommittedOrigin());
+    field.set_host_form_id(form.renderer_id());
+    field.set_host_form_signature(CalculateFormSignature(form));
+  }
+  form.set_fields(std::move(fields));
 }
 
 autofill::FormData GetFormWithFrameAndFormMetaData(
