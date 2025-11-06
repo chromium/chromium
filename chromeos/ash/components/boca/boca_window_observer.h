@@ -27,16 +27,9 @@ class BocaWindowObserver : public base::CheckedObserver {
   // Notifies when tabs are removed.
   virtual void OnTabRemoved(const SessionID tab_id) {}
 
-  // Notifies when the active tab changes within the boca window. Just include
-  // basic tab info, tab model can't be carried into chromeos dir.
+  // Notifies when the active tab changes. Just include basic tab info, tab
+  // model can't be carried into chromeos dir.
   virtual void OnActiveTabChanged(const std::u16string& tab_title) {}
-
-  // Notifies when the boca window becomes active. Called with the title of the
-  // active tab in the boca window.
-  virtual void OnWindowActivated(const std::u16string& tab_title) {}
-
-  // Notifies when the boca window becomes inactive.
-  virtual void OnWindowDeactivated() {}
 
   // Notifies when the window tracker is cleaned up.
   virtual void OnWindowTrackerCleanedup() {}

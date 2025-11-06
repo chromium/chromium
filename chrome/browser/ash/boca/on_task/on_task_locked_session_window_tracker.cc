@@ -113,16 +113,6 @@ void LockedSessionWindowTracker::InitializeBrowserInfoForTracking(
     return;
   }
   browser_ = browser;
-  if (is_consumer_profile_) {
-    browser_did_become_active_subscription_ =
-        browser_->RegisterDidBecomeActive(base::BindRepeating(
-            &LockedSessionWindowTracker::OnBrowserDidBecomeActive,
-            base::Unretained(this)));
-    browser_did_become_inactive_subscription_ =
-        browser_->RegisterDidBecomeInactive(base::BindRepeating(
-            &LockedSessionWindowTracker::OnBrowserDidBecomeInactive,
-            base::Unretained(this)));
-  }
   browser_->tab_strip_model()->AddObserver(this);
 
   browser_close_subscriptions_[browser] = browser->RegisterBrowserDidClose(
@@ -273,9 +263,6 @@ void LockedSessionWindowTracker::CleanupWindowTracker() {
   immersive_mode_controller_observation_.Reset();
 
   browser_ = nullptr;
-  browser_did_become_active_subscription_ = {};
-  browser_did_become_inactive_subscription_ = {};
-
   can_open_new_popup_ = true;
   oauth_in_progress_ = false;
 
@@ -454,22 +441,24 @@ void LockedSessionWindowTracker::OnBrowserAdded(Browser* browser) {
   }
 }
 
-void LockedSessionWindowTracker::OnBrowserDidBecomeActive(
-    BrowserWindowInterface* browser) {
+void LockedSessionWindowTracker::OnBrowserSetLastActive(Browser* browser) {
+  if (!browser || !browser_) {
+    return;
+  }
+  if (browser != browser_) {
+    for (auto& observer : observers_) {
+      observer.OnActiveTabChanged(
+          l10n_util::GetStringUTF16(IDS_NOT_IN_CLASS_TOOLS));
+    }
+    return;
+  }
   if (!browser->GetActiveTabInterface() ||
       !browser->GetActiveTabInterface()->GetContents()) {
     return;
   }
   for (auto& observer : observers_) {
-    observer.OnWindowActivated(
+    observer.OnActiveTabChanged(
         browser->GetActiveTabInterface()->GetContents()->GetTitle());
-  }
-}
-
-void LockedSessionWindowTracker::OnBrowserDidBecomeInactive(
-    BrowserWindowInterface* browser) {
-  for (auto& observer : observers_) {
-    observer.OnWindowDeactivated();
   }
 }
 

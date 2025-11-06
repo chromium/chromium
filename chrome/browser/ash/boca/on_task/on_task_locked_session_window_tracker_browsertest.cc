@@ -84,11 +84,6 @@ class MockBocaWindowObserver : public ash::boca::BocaWindowObserver {
               (const std::u16string& title),
               (override));
   MOCK_METHOD(void,
-              OnWindowActivated,
-              (const std::u16string& title),
-              (override));
-  MOCK_METHOD(void, OnWindowDeactivated, (), (override));
-  MOCK_METHOD(void,
               OnTabAdded,
               (SessionID active_tab_id, SessionID tab_id, GURL url),
               (override));
@@ -173,16 +168,6 @@ class OnTaskLockedSessionWindowTrackerBrowserTest
         content::ExecJs(active_web_contents,
                         content::JsReplace("window.open($1, '_blank');", url)));
     navigation_observer.WaitForNavigationFinished();
-  }
-
-  void ActivateBocaAppBrowser(Browser* const boca_app_browser) {
-    boca_app_browser->DidBecomeActive();
-    browser()->DidBecomeInactive();
-  }
-
-  void DeactivateBocaAppBrowser(Browser* const boca_app_browser) {
-    browser()->DidBecomeActive();
-    boca_app_browser->DidBecomeInactive();
   }
 };
 
@@ -919,11 +904,10 @@ IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionWindowTrackerBrowserTest,
 
   // The first one triggered by boca no longer set active. The second triggered
   // due to browser closing.
-  EXPECT_CALL(window_observer, OnWindowDeactivated()).Times(1);
   EXPECT_CALL(
       window_observer,
       OnActiveTabChanged(l10n_util::GetStringUTF16(IDS_NOT_IN_CLASS_TOOLS)))
-      .Times(1);
+      .Times(2);
   EXPECT_CALL(window_observer, OnWindowTrackerCleanedup).Times(1);
 
   // Close the app and verify the window tracker stops tracking it.
@@ -987,7 +971,8 @@ IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionWindowTrackerBrowserTest,
   const GURL parent_tab_url =
       embedded_test_server()->GetURL(kTabUrl1Host, "/title1.html");
   Sequence s;
-  EXPECT_CALL(window_observer, OnTabAdded(SessionID::InvalidValue(), _, _))
+  EXPECT_CALL(window_observer,
+              OnTabAdded(SessionID::InvalidValue(), _, _))
       .Times(1)
       .InSequence(s);
   const SessionID parent_tab_id = CreateBackgroundTabAndWait(
@@ -1037,18 +1022,18 @@ IN_PROC_BROWSER_TEST_F(
   system_web_app_manager()->SetWindowTrackerForSystemWebAppWindow(
       window_id, /*observers=*/{&window_observer});
 
-  // Make sure the boca window is active to begin with.
-  ActivateBocaAppBrowser(boca_app_browser);
-
   // Switch out of boca SWA
-  EXPECT_CALL(window_observer, OnWindowDeactivated()).Times(1);
+  EXPECT_CALL(
+      window_observer,
+      OnActiveTabChanged(l10n_util::GetStringUTF16(IDS_NOT_IN_CLASS_TOOLS)))
+      .Times(1);
 
-  DeactivateBocaAppBrowser(boca_app_browser);
+  BrowserList::GetInstance()->SetLastActive(browser());
   testing::Mock::VerifyAndClearExpectations(&window_observer);
 
   // Switch back to Boca SWA
-  EXPECT_CALL(window_observer, OnWindowActivated(_)).Times(1);
-  ActivateBocaAppBrowser(boca_app_browser);
+  EXPECT_CALL(window_observer, OnActiveTabChanged(_)).Times(1);
+  BrowserList::GetInstance()->SetLastActive(boca_app_browser);
 
   testing::Mock::VerifyAndClearExpectations(&window_observer);
   auto* const window_tracker =

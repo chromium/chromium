@@ -123,6 +123,7 @@ class LockedSessionWindowTracker : public KeyedService,
 
   // BrowserListObserver Implementation
   void OnBrowserAdded(Browser* browser) override;
+  void OnBrowserSetLastActive(Browser* browser) override;
 
   // content::WebContentsObserver Impl
   void DidFinishNavigation(
@@ -131,12 +132,6 @@ class LockedSessionWindowTracker : public KeyedService,
   // ImmersiveModeController::Observer:
   void OnImmersiveRevealStarted() override;
   void OnImmersiveModeControllerDestroyed() override;
-
-  // Callback for browser activated events.
-  void OnBrowserDidBecomeActive(BrowserWindowInterface* browser);
-
-  // Callback for browser deactivated events.
-  void OnBrowserDidBecomeInactive(BrowserWindowInterface* browser);
 
   // Callback for browser closed events.
   void OnBrowserDidClose(BrowserWindowInterface* browser_window_interface);
@@ -158,10 +153,6 @@ class LockedSessionWindowTracker : public KeyedService,
   base::ScopedObservation<ImmersiveModeController, LockedSessionWindowTracker>
       immersive_mode_controller_observation_{this};
   base::ObserverList<ash::boca::BocaWindowObserver> observers_;
-
-  // Browser [de]activation subscriptions.
-  base::CallbackListSubscription browser_did_become_active_subscription_;
-  base::CallbackListSubscription browser_did_become_inactive_subscription_;
 
   // Map to track browser close callback subscriptions.
   absl::flat_hash_map<raw_ptr<BrowserWindowInterface>,

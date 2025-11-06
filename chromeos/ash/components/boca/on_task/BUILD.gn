@@ -53,8 +53,6 @@ static_library("activity") {
   deps = [
     "//base",
     "//chromeos/ash/components/boca",
-    "//chromeos/strings:strings_grit",
-    "//ui/base",
   ]
 }
 
