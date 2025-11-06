@@ -25,6 +25,7 @@
 #include "services/device/hid/hid_service.h"
 #include "services/device/public/cpp/device_features.h"
 #include "services/device/public/cpp/hid/hid_blocklist.h"
+#include "services/device/public/cpp/hid/hid_collection.h"
 #include "services/device/public/cpp/test/test_report_descriptors.h"
 #include "services/device/public/mojom/hid.mojom.h"
 #include "services/device/test/usb_test_gadget.h"
@@ -302,6 +303,27 @@ class HidConnectionProtectedReportTest : public testing::Test,
         report_descriptor);
   }
 
+  scoped_refptr<HidDeviceInfo> CreateHidDeviceInfo(
+      mojom::HidCollectionInfoPtr collection,
+      size_t max_input_report_size,
+      size_t max_output_report_size,
+      size_t max_feature_report_size,
+      uint16_t vendor_id = 0x1234,
+      uint16_t product_id = 0xabcd) {
+#if BUILDFLAG(IS_MAC)
+    const uint64_t kTestDeviceId = 0;
+#elif BUILDFLAG(IS_WIN)
+    const wchar_t* const kTestDeviceId = L"0";
+#else
+    const char* const kTestDeviceId = "0";
+#endif
+    return base::MakeRefCounted<HidDeviceInfo>(
+        kTestDeviceId, "physical-device-id", "interface-id", vendor_id,
+        product_id, "product-name", "serial-number",
+        mojom::HidBusType::kHIDBusTypeUSB, std::move(collection),
+        max_input_report_size, max_output_report_size, max_feature_report_size);
+  }
+
   void CreateConnection(scoped_refptr<HidDeviceInfo> device_info,
                         bool allow_protected_reports = false,
                         bool allow_fido_reports = false) {
@@ -529,6 +551,46 @@ TEST_F(HidConnectionProtectedReportTest,
   TestFuture<bool> write_future;
   connection().Write(buffer, write_future.GetCallback());
   EXPECT_TRUE(write_future.Get());
+
+  // Close the connection.
+  connection().Close();
+  EXPECT_TRUE(connection().closed());
+}
+
+TEST_F(HidConnectionProtectedReportTest, InvisibleConstFeatureReport) {
+  auto collection = HidCollection(nullptr, mojom::kPageGenericDesktop,
+                                  mojom::kGenericDesktopMouse,
+                                  mojom::kHIDCollectionTypeApplication);
+  auto device_info_size = CreateHidDeviceInfo(collection.ToMojo(), 0, 0,
+                                              /*max_feature_report_size=*/1);
+  CreateConnection(device_info_size);
+
+  // Read protected invisible input report.
+  TestFuture<bool, scoped_refptr<base::RefCountedBytes>, size_t> read_future;
+  auto buffer =
+      base::MakeRefCounted<base::RefCountedBytes>(std::vector<uint8_t>{0});
+  connection().SimulateInputReport(buffer);
+  connection().Read(read_future.GetCallback());
+  EXPECT_FALSE(read_future.Get<0>());
+
+  SetConnectionClient();
+
+  // Write protected invisible output report.
+  TestFuture<bool> write_future;
+  connection().Write(buffer, write_future.GetCallback());
+  EXPECT_FALSE(write_future.Get());
+
+  // Read unprotected invisible feature report.
+  TestFuture<bool, scoped_refptr<base::RefCountedBytes>, size_t>
+      get_feature_future;
+  connection().GetFeatureReport(/*report_id=*/0,
+                                get_feature_future.GetCallback());
+  EXPECT_TRUE(get_feature_future.Get<0>());
+
+  // Write unprotected invisible feature report.
+  TestFuture<bool> send_feature_future;
+  connection().SendFeatureReport(buffer, send_feature_future.GetCallback());
+  EXPECT_TRUE(send_feature_future.Get());
 
   // Close the connection.
   connection().Close();

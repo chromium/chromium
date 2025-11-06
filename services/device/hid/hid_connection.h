@@ -98,13 +98,16 @@ class HidConnection : public base::RefCountedThreadSafe<HidConnection> {
   void ProcessInputReport(scoped_refptr<base::RefCountedBytes> buffer,
                           size_t size);
   void ProcessReadQueue();
+  bool HasAlwaysProtectedCollectionFor(HidReportType report_type) const;
 
  private:
   scoped_refptr<HidDeviceInfo> device_info_;
   const bool allow_protected_reports_;
   const bool allow_fido_reports_;
   raw_ptr<Client> client_ = nullptr;
-  bool has_always_protected_collection_;
+  bool has_always_protected_collection_input_;
+  bool has_always_protected_collection_output_;
+  bool has_always_protected_collection_feature_;
   bool closed_;
 
   base::queue<std::tuple<scoped_refptr<base::RefCountedBytes>, size_t>>

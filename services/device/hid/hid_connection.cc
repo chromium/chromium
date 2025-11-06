@@ -19,12 +19,12 @@ namespace device {
 namespace {
 
 bool HasAlwaysProtectedCollection(
-    const std::vector<mojom::HidCollectionInfoPtr>& collections) {
-  return std::ranges::any_of(collections, [](const auto& collection) {
-    return IsAlwaysProtected(*collection->usage, HidReportType::kInput) ||
-           IsAlwaysProtected(*collection->usage, HidReportType::kOutput) ||
-           IsAlwaysProtected(*collection->usage, HidReportType::kFeature);
-  });
+    const std::vector<mojom::HidCollectionInfoPtr>& collections,
+    HidReportType report_type) {
+  return std::ranges::any_of(
+      collections, [report_type](const auto& collection) {
+        return IsAlwaysProtected(*collection->usage, report_type);
+      });
 }
 
 }  // namespace
@@ -36,8 +36,12 @@ HidConnection::HidConnection(scoped_refptr<HidDeviceInfo> device_info,
       allow_protected_reports_(allow_protected_reports),
       allow_fido_reports_(allow_fido_reports),
       closed_(false) {
-  has_always_protected_collection_ =
-      HasAlwaysProtectedCollection(device_info->collections());
+  has_always_protected_collection_input_ = HasAlwaysProtectedCollection(
+      device_info->collections(), HidReportType::kInput);
+  has_always_protected_collection_output_ = HasAlwaysProtectedCollection(
+      device_info->collections(), HidReportType::kOutput);
+  has_always_protected_collection_feature_ = HasAlwaysProtectedCollection(
+      device_info->collections(), HidReportType::kFeature);
 }
 
 HidConnection::~HidConnection() {
@@ -199,7 +203,7 @@ bool HidConnection::IsReportProtected(uint8_t report_id,
     return IsAlwaysProtected(*collection_info->usage, report_type);
   }
 
-  return has_always_protected_collection_;
+  return HasAlwaysProtectedCollectionFor(report_type);
 }
 
 void HidConnection::ProcessInputReport(
@@ -236,6 +240,18 @@ void HidConnection::ProcessReadQueue() {
     pending_reads_.pop();
     pending_reports_.pop();
     std::move(callback).Run(true, std::move(buffer), size);
+  }
+}
+
+bool HidConnection::HasAlwaysProtectedCollectionFor(
+    HidReportType report_type) const {
+  switch (report_type) {
+    case HidReportType::kInput:
+      return has_always_protected_collection_input_;
+    case HidReportType::kOutput:
+      return has_always_protected_collection_output_;
+    case HidReportType::kFeature:
+      return has_always_protected_collection_feature_;
   }
 }
 
