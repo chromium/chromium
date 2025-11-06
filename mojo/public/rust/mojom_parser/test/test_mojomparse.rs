@@ -267,20 +267,26 @@ static TWICE_NESTED_TY: LazyLock<TestType> = LazyLock::new(|| TestType {
             ("o".to_string(), ONCE_NESTED_TY.base_type.clone()),
             ("a".to_string(), MojomType::Int16),
             ("f".to_string(), FOUR_INTS_TY.base_type.clone()),
+            ("b".to_string(), MojomType::Int32),
+            ("c".to_string(), MojomType::Int32),
         ],
     },
     expected_packed_fields: vec![
         ("o".to_string(), ONCE_NESTED_TY.get_packed_type(0)),
         ("a".to_string(), MojomWireType::Leaf { ordinal: 1, leaf_type: PackedLeafType::Int16 }),
+        ("b".to_string(), MojomWireType::Leaf { ordinal: 3, leaf_type: PackedLeafType::Int32 }),
         ("f".to_string(), FOUR_INTS_TY.get_packed_type(2)),
+        ("c".to_string(), MojomWireType::Leaf { ordinal: 4, leaf_type: PackedLeafType::Int32 }),
     ],
 });
 
-fn twice_nested_mojom(o: MojomValue, a: i16, f: MojomValue) -> MojomValue {
+fn twice_nested_mojom(o: MojomValue, a: i16, f: MojomValue, b: i32, c: i32) -> MojomValue {
     MojomValue::Struct(vec![
         ("o".to_string(), o),
         ("a".to_string(), MojomValue::Int16(a)),
         ("f".to_string(), f),
+        ("b".to_string(), MojomValue::Int32(b)),
+        ("c".to_string(), MojomValue::Int32(c)),
     ])
 }
 
@@ -356,7 +362,7 @@ fn ten_bools_and_a_byte_mojom(
 // struct TenBoolsAndTwoBytes {
 //   bool b0; ... bool b4;
 //   uint16 n1;
-//   bool b5; ... bool b10;
+//   bool b5; ... bool b9;
 // };
 static TEN_BOOLS_AND_TWO_BYTES_TY: LazyLock<TestType> = LazyLock::new(|| TestType {
     type_name: "TenBoolsAndTwoBytes",
@@ -373,7 +379,6 @@ static TEN_BOOLS_AND_TWO_BYTES_TY: LazyLock<TestType> = LazyLock::new(|| TestTyp
             ("b7".to_string(), MojomType::Bool),
             ("b8".to_string(), MojomType::Bool),
             ("b9".to_string(), MojomType::Bool),
-            ("b10".to_string(), MojomType::Bool),
         ],
     },
     expected_packed_fields: vec![
@@ -386,7 +391,7 @@ static TEN_BOOLS_AND_TWO_BYTES_TY: LazyLock<TestType> = LazyLock::new(|| TestTyp
         (
             "b8".to_string(),
             MojomWireType::Bitfield {
-                ordinals: [Some(9), Some(10), Some(11), None, None, None, None, None],
+                ordinals: [Some(9), Some(10), None, None, None, None, None, None],
             },
         ),
         ("n1".to_string(), MojomWireType::Leaf { ordinal: 5, leaf_type: PackedLeafType::UInt16 }),
@@ -405,7 +410,6 @@ fn ten_bools_and_two_bytes_mojom(
     b7: bool,
     b8: bool,
     b9: bool,
-    b10: bool,
 ) -> MojomValue {
     MojomValue::Struct(vec![
         ("b0".to_string(), MojomValue::Bool(b0)),
@@ -419,7 +423,6 @@ fn ten_bools_and_two_bytes_mojom(
         ("b7".to_string(), MojomValue::Bool(b7)),
         ("b8".to_string(), MojomValue::Bool(b8)),
         ("b9".to_string(), MojomValue::Bool(b9)),
-        ("b10".to_string(), MojomValue::Bool(b10)),
     ])
 }
 
@@ -463,8 +466,14 @@ fn test_mojomparse() {
     ONCE_NESTED_TY.validate_mojomparse(once_nested_val.clone(), once_nested_mojom_val.clone());
 
     TWICE_NESTED_TY.validate_mojomparse(
-        TwiceNested { o: once_nested_val, a: 16, f: FourInts { a: 1, b: 2, c: 3, d: 4 } },
-        twice_nested_mojom(once_nested_mojom_val, 16, four_ints_mojom(1, 2, 3, 4)),
+        TwiceNested {
+            o: once_nested_val,
+            a: 16,
+            f: FourInts { a: 17, b: 18, c: 19, d: 20 },
+            b: 21,
+            c: 22,
+        },
+        twice_nested_mojom(once_nested_mojom_val, 16, four_ints_mojom(17, 18, 19, 20), 21, 22),
     );
 
     TEN_BOOLS_AND_A_BYTE_TY.validate_mojomparse(
@@ -498,10 +507,9 @@ fn test_mojomparse() {
             b7: false,
             b8: true,
             b9: false,
-            b10: true,
         },
         ten_bools_and_two_bytes_mojom(
-            true, false, true, false, true, 50000, false, true, false, true, false, true,
+            true, false, true, false, true, 50000, false, true, false, true, false,
         ),
     );
 }
@@ -526,29 +534,30 @@ fn test_bad_conversion() {
         15,
     );
 
-    let twice_nested = twice_nested_mojom(once_nested.clone(), 16, four_ints_mojom(1, 2, 3, 4));
+    let twice_nested =
+        twice_nested_mojom(once_nested.clone(), 16, four_ints_mojom(17, 18, 19, 20), 21, 22);
 
     let ten_bools_byte = ten_bools_and_a_byte_mojom(
         true, false, true, false, true, 200, false, true, false, true, false,
     );
     let ten_bools_bytes = ten_bools_and_two_bytes_mojom(
-        true, false, true, false, true, 50000, false, true, false, true, false, true,
+        true, false, true, false, true, 50000, false, true, false, true, false,
     );
 
     // There are far too many bad paths to test them all, so this is just an
     // arbitrary scattershot approach so we have _some_ coverage.
     // TODO(crbug.com/456214728) Replace with matchers from the googletest crate
     // if we switch to it.
-    expect_true!(matches!(FourInts::try_from(four_ints_reversed), Err(_)));
-    expect_true!(matches!(FourInts::try_from(once_nested), Err(_)));
-    expect_true!(matches!(FourInts::try_from(empty), Err(_)));
+    expect_true!(FourInts::try_from(four_ints_reversed).is_err());
+    expect_true!(FourInts::try_from(once_nested).is_err());
+    expect_true!(FourInts::try_from(empty).is_err());
 
-    expect_true!(matches!(TenBoolsAndAByte::try_from(ten_bools_bytes), Err(_)));
-    expect_true!(matches!(TenBoolsAndAByte::try_from(four_ints_intermixed), Err(_)));
+    expect_true!(TenBoolsAndAByte::try_from(ten_bools_bytes).is_err());
+    expect_true!(TenBoolsAndAByte::try_from(four_ints_intermixed).is_err());
 
-    expect_true!(matches!(OnceNested::try_from(twice_nested), Err(_)));
-    expect_true!(matches!(OnceNested::try_from(ten_bools_byte.clone()), Err(_)));
+    expect_true!(OnceNested::try_from(twice_nested).is_err());
+    expect_true!(OnceNested::try_from(ten_bools_byte.clone()).is_err());
 
-    expect_true!(matches!(Empty::try_from(ten_bools_byte), Err(_)));
-    expect_true!(matches!(Empty::try_from(four_ints), Err(_)));
+    expect_true!(Empty::try_from(ten_bools_byte).is_err());
+    expect_true!(Empty::try_from(four_ints).is_err());
 }
