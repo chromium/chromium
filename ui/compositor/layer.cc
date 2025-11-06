@@ -11,6 +11,7 @@
 #include <sstream>
 #include <utility>
 
+#include "base/check_deref.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
@@ -246,6 +247,9 @@ Layer::~Layer() {
   if (content_layer_)
     content_layer_->ClearClient();
   cc_layer_->RemoveFromParent();
+#if BUILDFLAG(IS_CHROMEOS)
+  cc_layer_->set_dump_stack_in_dtor(false);
+#endif
   if (transfer_release_callback_)
     std::move(transfer_release_callback_).Run(gpu::SyncToken(), false);
 
@@ -295,7 +299,11 @@ std::unique_ptr<Layer> Layer::Clone() const {
   } else if (type_ == LAYER_SOLID_COLOR) {
     clone->SetColor(GetTargetColor());
   }
-
+#if BUILDFLAG(IS_CHROMEOS)
+  if (cc_layer_->dump_stack_in_dtor()) {
+    clone->EnableDumpStackInDtor();
+  }
+#endif
   clone->SetTransform(GetTargetTransform());
   clone->SetBounds(bounds_);
   if (subpixel_position_offset_->has_explicit_subpixel_offset())
@@ -541,7 +549,7 @@ gfx::Rect Layer::GetTargetBounds() const {
 }
 
 void Layer::SetMasksToBounds(bool masks_to_bounds) {
-  cc_layer_->SetMasksToBounds(masks_to_bounds);
+  CHECK_DEREF(cc_layer_.get()).SetMasksToBounds(masks_to_bounds);
 }
 
 bool Layer::GetMasksToBounds() const {
@@ -969,6 +977,10 @@ void Layer::SwitchToLayer(scoped_refptr<cc::Layer> new_layer) {
   new_layer->SetIsFastRoundedCorner(cc_layer_->is_fast_rounded_corner());
   new_layer->SetMasksToBounds(cc_layer_->masks_to_bounds());
   new_layer->SetGradientMask(cc_layer_->gradient_mask());
+#if BUILDFLAG(IS_CHROMEOS)
+  new_layer->set_dump_stack_in_dtor(cc_layer_->dump_stack_in_dtor());
+  cc_layer_->set_dump_stack_in_dtor(false);
+#endif
 
   cc_layer_ = new_layer.get();
   if (content_layer_) {
@@ -1097,6 +1109,12 @@ base::WeakPtr<Layer> Layer::AsWeakPtr() {
 bool Layer::ContainsMirrorForTest(Layer* mirror) const {
   return base::Contains(mirrors_, mirror, &LayerMirror::dest);
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+void Layer::EnableDumpStackInDtor() {
+  cc_layer_->set_dump_stack_in_dtor(true);
+}
+#endif
 
 void Layer::SetTransferableResource(const viz::TransferableResource& resource,
                                     viz::ReleaseCallback release_callback,
@@ -1861,6 +1879,9 @@ void Layer::CreateCcLayer() {
     content_layer_ = cc::PictureLayer::Create(this);
     cc_layer_ = content_layer_.get();
   }
+#if BUILDFLAG(IS_CHROMEOS)
+  cc_layer_->set_dump_stack_in_dtor(false);
+#endif
   cc_layer_->SetTransformOrigin(gfx::Point3F());
   cc_layer_->SetIsDrawable(type_ != LAYER_NOT_DRAWN);
   cc_layer_->SetHitTestable(IsHitTestableForCC());

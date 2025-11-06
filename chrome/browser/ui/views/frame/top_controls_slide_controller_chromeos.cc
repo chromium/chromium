@@ -294,6 +294,8 @@ TopControlsSlideControllerChromeOS::TopControlsSlideControllerChromeOS(
 
   browser_view_->browser()->tab_strip_model()->AddObserver(this);
 
+  browser_view->browser_widget()->GetLayer()->EnableDumpStackInDtor();
+
   auto* accessibility_manager = ash::AccessibilityManager::Get();
   if (accessibility_manager) {
     accessibility_status_subscription_ =
