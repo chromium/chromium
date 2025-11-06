@@ -24,6 +24,8 @@
 #include "ui/webui/mojo_web_ui_controller.h"
 #include "ui/webui/resources/cr_components/composebox/composebox.mojom.h"
 
+class BrowserWindowInterface;
+
 namespace content {
 class BrowserContext;
 class WebContentsObserver;
@@ -74,6 +76,7 @@ class ContextualTasksUI : public TaskInfoDelegate,
     raw_ptr<contextual_tasks::ContextualTasksContextController>
         context_controller_;
     raw_ref<TaskInfoDelegate> task_info_delegate_;
+    raw_ptr<BrowserWindowInterface> browser_;
   };
 
   explicit ContextualTasksUI(content::WebUI* web_ui);

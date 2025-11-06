@@ -13,6 +13,7 @@
 #include "content/public/browser/frame_tree_node_id.h"
 #include "url/gurl.h"
 
+class BrowserWindowInterface;
 class Profile;
 
 namespace base {
@@ -79,8 +80,11 @@ class ContextualTasksUiService : public KeyedService {
   // loaded in the absence of any other context.
   virtual GURL GetDefaultAiPageUrl();
 
-  // Called when the side panel started showing a new task.
-  virtual void OnTaskChangedInPanel(const base::Uuid& task_id);
+  // Called when the side panel in a given browser window started showing a new
+  // task.
+  virtual void OnTaskChangedInPanel(
+      BrowserWindowInterface* browser_window_interface,
+      const base::Uuid& task_id);
 
   // Returns whether the provided URL is to an AI page.
   bool IsAiUrl(const GURL& url);

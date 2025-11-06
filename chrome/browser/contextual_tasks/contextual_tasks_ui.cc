@@ -16,7 +16,9 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/webui/searchbox/searchbox_handler.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/branded_strings.h"
@@ -35,6 +37,17 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/webui/webui_util.h"
+
+namespace {
+BrowserWindowInterface* FromWebContents(content::WebContents* web_contents) {
+  BrowserWindow* window =
+      BrowserWindow::FindBrowserWindowWithWebContents(web_contents);
+  if (window) {
+    return window->AsBrowserView()->browser();
+  }
+  return nullptr;
+}
+}  // namespace
 
 ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
     : TopChromeWebUIController(web_ui),
@@ -151,18 +164,10 @@ void ContextualTasksUI::SetThreadTitle(std::optional<std::string> title) {
 }
 
 void ContextualTasksUI::CloseSidePanel() {
-  // The WebUI should have a SessionTabHelper from
-  // ContextualTasksUiService. Use this to lookup the
-  // BrowserWindowInterface. This is necessary because this
-  // WebUIController does not have an Embedder like other WebUIs.
-  SessionID session_id = sessions::SessionTabHelper::IdForWindowContainingTab(
-      web_ui()->GetWebContents());
-  BrowserWindowInterface* browser =
-      BrowserWindowInterface::FromSessionID(session_id);
+  BrowserWindowInterface* browser = FromWebContents(web_ui()->GetWebContents());
   auto* coordinator =
       contextual_tasks::ContextualTasksSidePanelCoordinator::From(browser);
   CHECK(coordinator);
-
   coordinator->Close();
 }
 
@@ -223,7 +228,9 @@ ContextualTasksUI::FrameNavObserver::FrameNavObserver(
     : content::WebContentsObserver(web_contents),
       ui_service_(ui_service),
       context_controller_(context_controller),
-      task_info_delegate_(CHECK_DEREF(task_info_delegate)) {}
+      task_info_delegate_(CHECK_DEREF(task_info_delegate)) {
+  browser_ = FromWebContents(web_contents);
+}
 
 void ContextualTasksUI::FrameNavObserver::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
@@ -295,7 +302,8 @@ void ContextualTasksUI::FrameNavObserver::DidFinishNavigation(
       contextual_tasks::ThreadType::kAiMode, url_thread_id, mstk,
       task_info_delegate_->GetThreadTitle());
 
-  ui_service_->OnTaskChangedInPanel(task_info_delegate_->GetTaskId().value());
+  ui_service_->OnTaskChangedInPanel(browser_,
+                                    task_info_delegate_->GetTaskId().value());
 }
 
 ContextualTasksUI::InnerFrameCreationObvserver::InnerFrameCreationObvserver(

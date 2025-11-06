@@ -4,6 +4,8 @@
 
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 
+#include "base/containers/adapters.h"
+#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
@@ -266,12 +268,42 @@ GURL ContextualTasksUiService::GetDefaultAiPageUrl() {
   return AppendCommonUrlParams(GURL(GetContextualTasksAiPageUrl()));
 }
 
-void ContextualTasksUiService::OnTaskChangedInPanel(const base::Uuid& task_id) {
+void ContextualTasksUiService::OnTaskChangedInPanel(
+    BrowserWindowInterface* browser_window_interface,
+    const base::Uuid& task_id) {
   DCHECK(task_id.is_valid());
 
-  // TODO(https://crbug.com/451705724): Find the tabs associated with the task
-  // and open the most recently associated tab. If not found, close the panel
-  // and open the contextual task in the current tab.
+  std::vector<SessionID> session_ids =
+      context_controller_->GetTabsAssociatedWithTask(task_id);
+  if (session_ids.empty()) {
+    // If the thread is closed, there will be no tabs associated to it.
+    // TODO(https://crbug.com/451705724): close the panel and open the
+    // contextual task in the current tab.
+  } else {
+    // If the active tab is associated with the task, do nothing.
+    TabStripModel* tab_strip_model =
+        browser_window_interface->GetTabStripModel();
+    content::WebContents* active_contents =
+        tab_strip_model->GetActiveWebContents();
+    SessionID active_id = SessionTabHelper::IdForTab(active_contents);
+    if (base::Contains(session_ids, active_id)) {
+      return;
+    }
+
+    // Navigate to the most recently associated tab.
+    int tab_count = tab_strip_model->GetTabCount();
+    for (auto& session_id : base::Reversed(session_ids)) {
+      for (int i = 0; i < tab_count; ++i) {
+        tabs::TabInterface* tab = tab_strip_model->GetTabAtIndex(i);
+        if (session_id == SessionTabHelper::IdForTab(tab->GetContents())) {
+          tab_strip_model->ActivateTabAt(
+              i, TabStripUserGestureDetails(
+                     TabStripUserGestureDetails::GestureType::kOther));
+          return;
+        }
+      }
+    }
+  }
 }
 
 bool ContextualTasksUiService::IsAiUrl(const GURL& url) {
