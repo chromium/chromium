@@ -44,8 +44,6 @@ using page_load_metrics::PageAbortReason;
 namespace internal {
 
 #define HISTOGRAM_PREFIX "PageLoad.Clients.GoogleSearch."
-#define FINEGRAINED_HISTOGRAM_PREFIX \
-  "PageLoad.Clients.GoogleSearch.FineGrained."
 
 const char kHistogramGWSNavigationStartToFinalRequestStart[] =
     HISTOGRAM_PREFIX "NavigationTiming.NavigationStartToFinalRequestStart";
@@ -99,9 +97,6 @@ const char kHistogramGWSFirstContentfulPaint[] =
     HISTOGRAM_PREFIX "PaintTiming.NavigationToFirstContentfulPaint";
 const char kHistogramGWSLargestContentfulPaint[] =
     HISTOGRAM_PREFIX "PaintTiming.NavigationToLargestContentfulPaint";
-const char kFineGrainedHistogramGWSLargestContentfulPaint[] =
-    FINEGRAINED_HISTOGRAM_PREFIX
-    "PaintTiming.NavigationToLargestContentfulPaint";
 const char kHistogramGWSParseStart[] =
     HISTOGRAM_PREFIX "ParseTiming.NavigationToParseStart";
 const char kHistogramGWSConnectStart[] =
@@ -153,8 +148,6 @@ const char kHistogramGWSActivationToFirstContentfulPaint[] =
     HISTOGRAM_PREFIX "Prerender.ActivationToFirstContentfulPaint";
 const char kHistogramGWSActivationToLargestContentfulPaint[] =
     HISTOGRAM_PREFIX "Prerender.ActivationToLargestContentfulPaint";
-const char kFineGrainedHistogramGWSActivationToLargestContentfulPaint[] =
-    FINEGRAINED_HISTOGRAM_PREFIX "Prerender.ActivationToLargestContentfulPaint";
 
 const char kHistogramGWSWarmUpType[] = HISTOGRAM_PREFIX "WarmUpType";
 
@@ -656,9 +649,6 @@ void GWSPageLoadMetricsObserver::LogMetricsOnComplete() {
     PAGE_LOAD_HISTOGRAM(
         internal::kHistogramGWSActivationToLargestContentfulPaint,
         activation_to_lcp);
-    base::UmaHistogramCustomTimes(
-        internal::kFineGrainedHistogramGWSActivationToLargestContentfulPaint,
-        activation_to_lcp, base::Milliseconds(10), base::Seconds(10), 100);
 
     if (IsIncognitoProfile()) {
       PAGE_LOAD_HISTOGRAM(
@@ -666,12 +656,6 @@ void GWSPageLoadMetricsObserver::LogMetricsOnComplete() {
               {internal::kHistogramGWSActivationToLargestContentfulPaint,
                internal::kHistogramIncognitoSuffix}),
           activation_to_lcp);
-      base::UmaHistogramCustomTimes(
-          base::StrCat(
-              {internal::
-                   kFineGrainedHistogramGWSActivationToLargestContentfulPaint,
-               internal::kHistogramIncognitoSuffix}),
-          activation_to_lcp, base::Milliseconds(10), base::Seconds(10), 100);
     }
     return;
   }
@@ -717,15 +701,6 @@ void GWSPageLoadMetricsObserver::LogMetricsOnComplete() {
   RecordNavigationTimingHistograms();
   PAGE_LOAD_HISTOGRAM(internal::kHistogramGWSLargestContentfulPaint,
                       all_frames_largest_contentful_paint.Time().value());
-  // Record variant metrics in a range from 10ms to 10s with 100 buckets.
-  // Current PAGE_LOAD_HISTOGRAM macro does it from 10ms to 10 minutes with 100
-  // buckets, but it would not be suitable to monitor much faster pages living
-  // in the real world today, as the bucket size for median value is about 50ms
-  // in the current config.
-  base::UmaHistogramCustomTimes(
-      internal::kFineGrainedHistogramGWSLargestContentfulPaint,
-      all_frames_largest_contentful_paint.Time().value(),
-      base::Milliseconds(10), base::Seconds(10), 100);
 }
 
 void GWSPageLoadMetricsObserver::RecordNavigationTimingHistograms() {

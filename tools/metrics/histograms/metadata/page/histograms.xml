@@ -1832,6 +1832,24 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="PageLoad.Clients.GoogleSearch.PaintTiming.NavigationToLargestContentfulPaint"
+    units="ms" expires_after="2026-04-26">
+  <owner>spelchat@chromium.org</owner>
+  <owner>chrome-brapp-loading@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    Measures the time in milliseconds from navigation timing's navigation start
+    to the time when the page first paints the experimental largest content
+    (text or image) within viewport, for Google Search page loads. See
+    http://bit.ly/largest_contentful_paint_explainer for more details. Differs
+    from SubFrame.PaintTiming.NavigationToLargestContentfulPaint in that removed
+    content is still considered a valid candidate. Only recorded for Search
+    navigations that happen entirely in the foreground. The metric is emitted
+    when the navigation is completed or the app is backgrounded on Android.
+  </summary>
+</histogram>
+
+<histogram
     name="PageLoad.Clients.GoogleSearch.PaintTiming.{MileStone}{PageLoadType}{IncognitoSuffix}{SyntheticResponseSuffix}"
     units="ms" expires_after="2026-04-12">
   <owner>sisidovski@chromium.org</owner>
@@ -1899,6 +1917,20 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="PageLoad.Clients.GoogleSearch.Prerender.ActivationToLargestContentfulPaint{IncognitoSuffix}"
+    units="ms" expires_after="2026-08-17">
+  <owner>suzukikeita@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    Measures the time from when a prerendered page is activated to the largest
+    contentful paint, for GWS page loads for {IncognitoSuffix}. Only recorded
+    for GWS navigations that were prerendered and activated.
+  </summary>
+  <token key="IncognitoSuffix" variants="IncognitoSuffix"/>
+</histogram>
+
+<histogram
     name="PageLoad.Clients.GoogleSearch.Prerender.HostReused{IncognitoSuffix}"
     enum="Boolean" expires_after="2026-03-29">
   <owner>suzukikeita@chromium.org</owner>
@@ -1959,47 +1991,6 @@ chromium-metrics-reviews@google.com.
     Google search page. This metric is emitted when the navigation is completed
     or the app is backgrounded on Android.
   </summary>
-</histogram>
-
-<histogram
-    name="PageLoad.Clients.GoogleSearch{Granularity}.PaintTiming.NavigationToLargestContentfulPaint"
-    units="ms" expires_after="2026-04-26">
-  <owner>spelchat@chromium.org</owner>
-  <owner>chrome-brapp-loading@google.com</owner>
-  <improvement direction="LOWER_IS_BETTER"/>
-  <summary>
-    Measures the time in milliseconds from navigation timing's navigation start
-    to the time when the page first paints the experimental largest content
-    (text or image) within viewport, for Google Search page loads. See
-    http://bit.ly/largest_contentful_paint_explainer for more details. Differs
-    from SubFrame.PaintTiming.NavigationToLargestContentfulPaint in that removed
-    content is still considered a valid candidate. Only recorded for Search
-    navigations that happen entirely in the foreground. The metric is emitted
-    when the navigation is completed or the app is backgrounded on Android.
-    {Granularity}
-  </summary>
-  <token key="Granularity">
-    <variant name="" summary=""/>
-    <variant name=".FineGrained" summary="Metric is clipped to 10 seconds."/>
-  </token>
-</histogram>
-
-<histogram
-    name="PageLoad.Clients.GoogleSearch{Granularity}.Prerender.ActivationToLargestContentfulPaint{IncognitoSuffix}"
-    units="ms" expires_after="2026-08-17">
-  <owner>suzukikeita@chromium.org</owner>
-  <owner>chrome-loading@google.com</owner>
-  <improvement direction="LOWER_IS_BETTER"/>
-  <summary>
-    Measures the time from when a prerendered page is activated to the largest
-    contentful paint, for GWS page loads for {IncognitoSuffix}. Only recorded
-    for GWS navigations that were prerendered and activated.{Granularity}
-  </summary>
-  <token key="Granularity">
-    <variant name="" summary=""/>
-    <variant name=".FineGrained" summary="Metric is clipped to 10 seconds."/>
-  </token>
-  <token key="IncognitoSuffix" variants="IncognitoSuffix"/>
 </histogram>
 
 <histogram
