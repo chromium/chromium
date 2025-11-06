@@ -52,6 +52,11 @@ namespace features {
 
 BASE_FEATURE(kPreconnectFromKeyedService, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kPreconnectToSearch, base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Feature to control binding the receivers every time we attempt to
+// preconnect. This will trigger the destruction of the previous receiver
+// (and also the remote), and also the re-creation of the observer.
+BASE_FEATURE(kBindReceiversEverytime, base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace features
 
 WebContentVisibilityManager::WebContentVisibilityManager()
@@ -180,6 +185,15 @@ void SearchEnginePreconnector::PreconnectDSE() {
   mojo::PendingRemote<network::mojom::ConnectionChangeObserverClient> observer;
   if (SearchEnginePreconnect2Enabled()) {
     keepalive_config = GetConnectionKeepAliveConfig();
+
+    if (base::FeatureList::IsEnabled(features::kBindReceiversEverytime) &&
+        receiver_.is_bound()) {
+      // We clear the disconnect handler to avoid calling
+      // `OnReconnectObserverPipeDisconnected` when the pipe is intentionally
+      // reset, so that we will not start a new preconnect attempt.
+      receiver_.set_disconnect_handler(base::DoNothing());
+      receiver_.reset();
+    }
 
     if (!receiver_.is_bound()) {
       observer = receiver_.BindNewPipeAndPassRemote();

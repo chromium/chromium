@@ -24,6 +24,7 @@ class WebContents;
 namespace features {
 BASE_DECLARE_FEATURE(kPreconnectFromKeyedService);
 BASE_DECLARE_FEATURE(kPreconnectToSearch);
+BASE_DECLARE_FEATURE(kBindReceiversEverytime);
 }  // namespace features
 
 // Class to keep track of the current visibility. It is used to determine if the

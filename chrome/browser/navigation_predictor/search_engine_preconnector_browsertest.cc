@@ -141,12 +141,12 @@ class SearchEnginePreconnectorBrowserTest
  protected:
   std::map<GURL, int> preresolve_counts_;
   base::test::ScopedFeatureList feature_list_;
+  std::map<GURL, std::unique_ptr<base::RunLoop>> run_loops_;
 
   mojo::Remote<network::mojom::ConnectionChangeObserverClient> remote_;
 
  private:
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
-  std::map<GURL, std::unique_ptr<base::RunLoop>> run_loops_;
 };
 
 bool SearchEnginePreconnectorBrowserTest::PreconnectFromKeyedServiceEnabled()
@@ -1095,4 +1095,111 @@ IN_PROC_BROWSER_TEST_P(
   config = GetSearchEnginePreconnector()->GetConnectionKeepAliveConfig();
   EXPECT_FALSE(config.enable_connection_keep_alive);
   EXPECT_EQ(config.idle_timeout_in_seconds, 60);
+}
+
+class SearchEnginePreconnectorWithBindReceiversEverytimeFeatureBrowserTest
+    : public SearchEnginePreconnectorWithPreconnect2FeatureBrowserTest {
+ public:
+  SearchEnginePreconnectorWithBindReceiversEverytimeFeatureBrowserTest() {
+    feature_list_.Reset();
+    std::vector<base::test::FeatureRefAndParams> enabled_features{
+        {features::kPreconnectToSearch, {{"startup_delay_ms", "1000000"}}},
+        {net::features::kSearchEnginePreconnectInterval,
+         {{"preconnect_interval", "0"}}},
+        {net::features::kSearchEnginePreconnect2,
+         {{"FallbackInLowPowerMode", "true"}}},
+        {features::kBindReceiversEverytime, {}}};
+    battery::OverrideIsBatterySaverEnabledForTesting(false);
+
+    std::vector<base::test::FeatureRef> disabled_features;
+
+    if (PreconnectFromKeyedServiceEnabled()) {
+      enabled_features.push_back(
+          {features::kPreconnectFromKeyedService, {{"run_on_otr", "false"}}});
+    } else {
+      disabled_features.emplace_back(features::kPreconnectFromKeyedService);
+    }
+
+    feature_list_.InitWithFeaturesAndParameters(enabled_features,
+                                                disabled_features);
+  }
+
+  void OnPreresolveFinished(
+      const GURL& url,
+      const net::NetworkAnonymizationKey& network_anonymization_key,
+      mojo::PendingRemote<network::mojom::ConnectionChangeObserverClient>&
+          observer,
+      bool success) override {
+    if (observer.is_valid()) {
+      // This will disconnect the old remote if it is bound.
+      remote_.reset();
+      remote_.Bind(std::move(observer));
+    }
+
+    const GURL origin = url.DeprecatedGetOriginAsURL();
+    if (!base::Contains(preresolve_counts_, origin)) {
+      return;
+    }
+
+    EXPECT_EQ(origin == GetTestURL("/").DeprecatedGetOriginAsURL(), success);
+
+    ++preresolve_counts_[origin];
+    if (run_loops_[origin]) {
+      run_loops_[origin]->Quit();
+    }
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    SearchEnginePreconnectorWithBindReceiversEverytimeFeatureBrowserTest,
+    ::testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(
+    SearchEnginePreconnectorWithBindReceiversEverytimeFeatureBrowserTest,
+    BindNewRemoteOnEachPreconnect) {
+  constexpr char16_t kShortName[] = u"test";
+  TemplateURLService* model =
+      TemplateURLServiceFactory::GetForProfile(browser()->profile());
+  ASSERT_TRUE(model);
+  search_test_utils::WaitForTemplateURLServiceToLoad(model);
+  ASSERT_TRUE(model->loaded());
+
+  TemplateURLData data_allowed_search;
+  data_allowed_search.SetShortName(kShortName);
+  data_allowed_search.SetKeyword(data_allowed_search.short_name());
+  data_allowed_search.SetURL(kGoogleSearch);
+  data_allowed_search.preconnect_to_search_url = true;
+
+  auto* template_url =
+      model->Add(std::make_unique<TemplateURL>(data_allowed_search));
+  ASSERT_TRUE(template_url);
+  model->SetUserSelectedDefaultSearchProvider(template_url);
+
+  GetSearchEnginePreconnector()->StartPreconnecting(
+      /*with_startup_delay=*/false);
+
+  const GURL search_url = template_url->GenerateSearchURL({});
+  WaitForPreresolveCountForURL(search_url, 1);
+
+  ASSERT_TRUE(remote_.is_bound());
+  mojo::Remote<network::mojom::ConnectionChangeObserverClient> remote_1 =
+      std::move(remote_);
+
+  ASSERT_FALSE(remote_.is_bound());
+  ASSERT_TRUE(remote_1.is_bound());
+
+  base::RunLoop disconnect_run_loop;
+  remote_1.set_disconnect_handler(disconnect_run_loop.QuitClosure());
+
+  GetSearchEnginePreconnector()->OnSessionClosed();
+  WaitForPreresolveCountForURL(search_url, 2);
+
+  disconnect_run_loop.Run();
+  ASSERT_FALSE(remote_1.is_connected());
+
+  remote_1.reset_on_disconnect();
+
+  EXPECT_FALSE(remote_1.is_bound());
+  EXPECT_TRUE(remote_.is_bound());
 }
