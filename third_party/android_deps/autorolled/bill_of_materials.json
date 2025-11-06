@@ -627,7 +627,7 @@
     {
         "name": "lifecycle-process",
         "group": "androidx.lifecycle",
-        "version": "2.10.0-beta01"
+        "version": "2.10.0-rc01"
     },
     {
         "name": "lifecycle-runtime",
