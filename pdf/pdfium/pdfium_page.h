@@ -474,8 +474,8 @@ class PDFiumPage {
   // Calculate and caches all text runs and character information on the page.
   void CalculateTextRuns();
   // Calculates and return a text run that starts exactly at `start_char_index`.
-  AccessibilityTextRunInfo CalculateTextRunInfoAt(int start_char_index,
-                                                  int chars_count);
+  AccessibilityTextRunInfo CalculateTextRunInfoAt(uint32_t start_char_index,
+                                                  uint32_t chars_count);
 
   // Traverses a struct element and its sub-tree recursively and extracts the
   // text run type or the alt text from struct elements corresponding to the
