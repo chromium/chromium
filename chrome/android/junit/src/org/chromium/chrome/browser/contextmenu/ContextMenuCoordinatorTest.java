@@ -63,7 +63,7 @@ import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.dragdrop.DragStateTracker;
-import org.chromium.ui.hierarchicalmenu.FlyoutController.FlyoutPopupEntry;
+import org.chromium.ui.hierarchicalmenu.FlyoutController;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.listmenu.ListMenuSubmenuItemProperties;
 import org.chromium.ui.listmenu.MenuModelBridge;
@@ -472,9 +472,10 @@ public class ContextMenuCoordinatorTest {
 
         mCoordinator.displayMenu(windowAndroid, mWebContentsMock, params, items, null, null, null);
 
-        List<FlyoutPopupEntry<ContextMenuDialog>> dialogs = mCoordinator.getDialogsForTest();
-        Assert.assertEquals("mDialogs contains no windows.", 1, dialogs.size());
-        return dialogs.get(0).popupWindow;
+        FlyoutController<ContextMenuDialog> controller =
+                mCoordinator.getHierarchicalMenuControllerForTest().getFlyoutController();
+        Assert.assertEquals("mDialogs contains no windows.", 1, controller.getNumberOfPopups());
+        return controller.getMainPopup();
     }
 
     private ContextMenuDialog displayContextMenuDialogAtLocation(

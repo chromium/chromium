@@ -44,7 +44,7 @@ public class FlyoutController<T> implements Destroyable {
      *
      * @param <T> The type of the object representing the flyout popup.
      */
-    public static class FlyoutPopupEntry<T> {
+    static class FlyoutPopupEntry<T> {
         public final @Nullable ListItem parentItem;
         public final T popupWindow;
 
@@ -118,12 +118,22 @@ public class FlyoutController<T> implements Destroyable {
     }
 
     /**
-     * Gets the list of {@link FlyoutPopupEntry}.
+     * Returns the main popup window.
      *
-     * @return The list of {@link FlyoutPopupEntry}.
+     * @return The main popup window.
      */
-    public List<FlyoutPopupEntry<T>> getPopups() {
-        return mPopups;
+    public T getMainPopup() {
+        assert mPopups.size() > 0;
+        return mPopups.get(0).popupWindow;
+    }
+
+    /**
+     * Returns the number of open popups.
+     *
+     * @return The number of popups, including the main popup.
+     */
+    public int getNumberOfPopups() {
+        return mPopups.size();
     }
 
     /**
@@ -312,5 +322,9 @@ public class FlyoutController<T> implements Destroyable {
         for (int i = 0; i < mPopups.size(); i++) {
             mFlyoutHandler.dismissPopup(mPopups.get(i).popupWindow);
         }
+    }
+
+    public void setMainPopupForTest(T popupWindow) {
+        mPopups.set(0, new FlyoutPopupEntry(null, popupWindow));
     }
 }

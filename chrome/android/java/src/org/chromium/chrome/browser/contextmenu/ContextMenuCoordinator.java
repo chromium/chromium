@@ -44,7 +44,6 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.edge_to_edge.EdgeToEdgeStateProvider;
 import org.chromium.ui.hierarchicalmenu.FlyoutController;
 import org.chromium.ui.hierarchicalmenu.FlyoutController.FlyoutHandler;
-import org.chromium.ui.hierarchicalmenu.FlyoutController.FlyoutPopupEntry;
 import org.chromium.ui.hierarchicalmenu.HierarchicalMenuController;
 import org.chromium.ui.hierarchicalmenu.HierarchicalMenuController.AccessibilityListObserver;
 import org.chromium.ui.listmenu.ListMenuUtils;
@@ -252,13 +251,12 @@ public class ContextMenuCoordinator implements ContextMenuUi, FlyoutHandler<Cont
                     new ContextMenuChipController(mActivity, chipAnchorView, () -> dismiss());
             chipDelegate.getChipRenderParams(
                     (chipRenderParams) -> {
-                        FlyoutController controller =
+                        FlyoutController<ContextMenuDialog> controller =
                                 mHierarchicalMenuController.getFlyoutController();
                         assert controller != null;
-                        List<FlyoutPopupEntry<ContextMenuDialog>> popups = controller.getPopups();
-                        assert popups.size() > 0;
+
                         if (chipDelegate.isValidChipRenderParams(chipRenderParams)
-                                && popups.get(0).popupWindow.isShowing()) {
+                                && controller.getMainPopup().isShowing()) {
                             assert chipRenderParams != null;
                             assumeNonNull(mChipController).showChip(chipRenderParams);
                         }
@@ -533,13 +531,12 @@ public class ContextMenuCoordinator implements ContextMenuUi, FlyoutHandler<Cont
 
     Callback<ChipRenderParams> getChipRenderParamsCallbackForTesting(ChipDelegate chipDelegate) {
         return (chipRenderParams) -> {
-            FlyoutController controller = mHierarchicalMenuController.getFlyoutController();
+            FlyoutController<ContextMenuDialog> controller =
+                    mHierarchicalMenuController.getFlyoutController();
             assert controller != null;
-            List<FlyoutPopupEntry<ContextMenuDialog>> dialogs = controller.getPopups();
-            assert dialogs.size() > 0;
 
             if (chipDelegate.isValidChipRenderParams(chipRenderParams)
-                    && dialogs.get(0).popupWindow.isShowing()) {
+                    && controller.getMainPopup().isShowing()) {
                 assumeNonNull(mChipController).showChip(chipRenderParams);
             }
         };
@@ -651,12 +648,6 @@ public class ContextMenuCoordinator implements ContextMenuUi, FlyoutHandler<Cont
                 new LayoutViewBuilder(R.layout.context_menu_row),
                 ContextMenuItemViewBinder::bind);
         return adapter;
-    }
-
-    public List<FlyoutPopupEntry<ContextMenuDialog>> getDialogsForTest() {
-        FlyoutController controller = mHierarchicalMenuController.getFlyoutController();
-        assert controller != null;
-        return controller.getPopups();
     }
 
     public HierarchicalMenuController getHierarchicalMenuControllerForTest() {

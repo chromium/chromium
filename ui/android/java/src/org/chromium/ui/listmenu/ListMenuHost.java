@@ -22,14 +22,11 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.R;
 import org.chromium.ui.hierarchicalmenu.FlyoutController;
 import org.chromium.ui.hierarchicalmenu.FlyoutController.FlyoutHandler;
-import org.chromium.ui.hierarchicalmenu.FlyoutController.FlyoutPopupEntry;
 import org.chromium.ui.hierarchicalmenu.HierarchicalMenuController;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.widget.AnchoredPopupWindow;
 import org.chromium.ui.widget.FlyoutPopupSpecCalculator;
 import org.chromium.ui.widget.RectProvider;
-
-import java.util.List;
 
 /**
  * The host class that makes a view capable of triggering list menu. The core logic is extracted
@@ -136,12 +133,13 @@ public class ListMenuHost
 
     /** Returns whether the popup menu is currently showing. */
     public boolean isMenuShowing() {
-        FlyoutController controller = mHierarchicalMenuController.getFlyoutController();
+        FlyoutController<AnchoredPopupWindow> controller =
+                mHierarchicalMenuController.getFlyoutController();
         if (controller == null) {
             return false;
         }
 
-        return controller.getPopups().size() > 0;
+        return controller.getNumberOfPopups() > 0;
     }
 
     /** Shows a popupWindow built by ListMenuButton */
@@ -150,10 +148,10 @@ public class ListMenuHost
         dismiss();
         initPopupWindow();
 
-        FlyoutController flyoutController = mHierarchicalMenuController.getFlyoutController();
-        assert flyoutController != null;
-        List<FlyoutPopupEntry<AnchoredPopupWindow>> popups = flyoutController.getPopups();
-        popups.get(0).popupWindow.show();
+        FlyoutController<AnchoredPopupWindow> controller =
+                mHierarchicalMenuController.getFlyoutController();
+        assert controller != null;
+        controller.getMainPopup().show();
 
         notifyPopupListeners(true);
     }
@@ -233,7 +231,7 @@ public class ListMenuHost
                     sPopupMenuHelperForTesting.injectPopupMenu(popupMenu);
             FlyoutController flyoutController = mHierarchicalMenuController.getFlyoutController();
             assert flyoutController != null;
-            flyoutController.getPopups().set(0, new FlyoutPopupEntry(null, spiedPopupMenu));
+            flyoutController.setMainPopupForTest(spiedPopupMenu);
         }
     }
 
@@ -323,14 +321,12 @@ public class ListMenuHost
     @Override
     public void onPreLayoutChange(
             boolean positionBelow, int x, int y, int width, int height, Rect anchorRect) {
-        FlyoutController controller = mHierarchicalMenuController.getFlyoutController();
+        FlyoutController<AnchoredPopupWindow> controller =
+                mHierarchicalMenuController.getFlyoutController();
         assert controller != null;
 
-        List<FlyoutPopupEntry<AnchoredPopupWindow>> popups = controller.getPopups();
-        assert popups.size() > 0;
-
         // This animation style is only for the main pane, not for flyout popups.
-        AnchoredPopupWindow popupMenu = popups.get(0).popupWindow;
+        AnchoredPopupWindow popupMenu = controller.getMainPopup();
 
         if (mPositionedAtEnd) {
             popupMenu.setAnimationStyle(

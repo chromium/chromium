@@ -159,7 +159,7 @@ public class FlyoutControllerUnitTest {
         triggerHoverEnter(mSubmenuLevel0, 0, List.of(mSubmenuLevel0));
 
         // Verify that before the delay, no new window is added.
-        Assert.assertEquals("There should be 1 popup.", 1, mFlyoutController.getPopups().size());
+        Assert.assertEquals("There should be 1 popup.", 1, mFlyoutController.getNumberOfPopups());
         verify(mFlyoutHandler, never()).createAndShowFlyoutPopup(any(), any(), any());
 
         // Wait for the UI delay.
@@ -167,7 +167,7 @@ public class FlyoutControllerUnitTest {
 
         // Verify that the call to create a new popup (level 1) is called.
         verify(mFlyoutHandler).createAndShowFlyoutPopup(eq(mSubmenuLevel0), eq(mListView), any());
-        Assert.assertEquals("There should be 2 popups.", 2, mFlyoutController.getPopups().size());
+        Assert.assertEquals("There should be 2 popups.", 2, mFlyoutController.getNumberOfPopups());
 
         // Hover on an item inside the level 1 popup for long enough.
         triggerHoverEnter(mSubmenuLevel1, 1, List.of(mSubmenuLevel0, mSubmenuLevel1));
@@ -175,7 +175,7 @@ public class FlyoutControllerUnitTest {
 
         // Verify that the call to create another popup (level 2) is called.
         verify(mFlyoutHandler).createAndShowFlyoutPopup(eq(mSubmenuLevel1), eq(mListView), any());
-        Assert.assertEquals("There should be 3 popups.", 3, mFlyoutController.getPopups().size());
+        Assert.assertEquals("There should be 3 popups.", 3, mFlyoutController.getNumberOfPopups());
     }
 
     @Test
@@ -192,7 +192,7 @@ public class FlyoutControllerUnitTest {
         waitForUiDelay();
 
         // Popups of level 1 and 2 should be removed.
-        Assert.assertEquals("There should be 1 popup.", 1, mFlyoutController.getPopups().size());
+        Assert.assertEquals("There should be 1 popup.", 1, mFlyoutController.getNumberOfPopups());
 
         // Create level 1 and 2 popup windows.
         triggerHoverEnter(mSubmenuLevel0, 0, List.of(mSubmenuLevel0));
@@ -205,7 +205,7 @@ public class FlyoutControllerUnitTest {
         waitForUiDelay();
 
         // Level 2 popup should be removed, but level 1 popup should remain.
-        Assert.assertEquals("There should be 2 popups.", 2, mFlyoutController.getPopups().size());
+        Assert.assertEquals("There should be 2 popups.", 2, mFlyoutController.getNumberOfPopups());
     }
 
     @Test
@@ -221,7 +221,7 @@ public class FlyoutControllerUnitTest {
         waitForUiDelay();
 
         // Level 2 popup should be removed, but level 1 popup should remain.
-        Assert.assertEquals("There should be 2 popups.", 2, mFlyoutController.getPopups().size());
+        Assert.assertEquals("There should be 2 popups.", 2, mFlyoutController.getNumberOfPopups());
     }
 
     private void triggerHoverEnter(ListItem item, int level, List<ListItem> path) {
