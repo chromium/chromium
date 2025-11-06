@@ -308,9 +308,8 @@ BASE_FEATURE(kGlicActorUiNudgeRedesign, base::FEATURE_DISABLED_BY_DEFAULT);
 // Controls whether we ignore users preference of reduced motion enabled and
 // still show the tab indicator spinner. No-op if kGlicActorUiTabIndicator is
 // disabled.
-// TODO(crbug.com/457746083): Enable feature by default.
 BASE_FEATURE(kGlicActorUiTabIndicatorSpinnerIgnoreReducedMotion,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 const char kGlicActorUiTaskIconName[] = "glic-actor-ui-task-icon";
 const char kGlicActorUiOverlayName[] = "glic-actor-ui-overlay";
