@@ -13,6 +13,7 @@
 #include "base/check_deref.h"
 #include "base/check_is_test.h"
 #include "base/containers/contains.h"
+#include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -42,19 +43,67 @@ using ::country_codes::CountryId;
 namespace regional_capabilities {
 namespace {
 
-constexpr char kUnknownCountryIdStored[] =
-    "Search.ChoiceDebug.UnknownCountryIdStored";
-
-// LINT.IfChange(UnknownCountryIdStored)
-enum class UnknownCountryIdStored {
-  kValidCountryId = 0,
+// LINT.IfChange(CountryIdStoreStatus)
+enum class CountryIdStoreStatus {
+  kValidStaticCountryId = 0,
   // kDontClearInvalidCountry = 1, // Deprecated.
-  kClearedPref = 2,
+  kInvalidStaticPref = 2,
   kValidDynamicCountryId = 3,
-  kClearedDynamicPref = 4,
-  kMaxValue = kClearedDynamicPref,
+  kInvalidDynamicPref = 4,
+  kNoPersistedValue = 5,
+  kMaxValue = kNoPersistedValue,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/search/enums.xml:UnknownCountryIdStored)
+
+// Reads the country from preferences.
+// As we are going through a migration across prefs, the actual pref used will
+// depend on the local state. This function returns signals about the pref used,
+// and signals whether the checked prefs were invalid and might need to be
+// cleared.
+std::pair<CountryId, base::flat_set<CountryIdStoreStatus>>
+GetPersistedCountryIdAndSource(const PrefService& profile_prefs) {
+  // Prefer the dynamic `prefs::kCountryID` if available and valid, otherwise
+  // fallback to the static `prefs::kCountryIDAtInstall`.
+
+  base::flat_set<CountryIdStoreStatus> sources;
+
+  if (base::FeatureList::IsEnabled(switches::kDynamicProfileCountry) &&
+      profile_prefs.HasPrefPath(prefs::kCountryID)) {
+    const CountryId persisted_dynamic_country_id =
+        CountryId::Deserialize(profile_prefs.GetInteger(prefs::kCountryID));
+    // Even though invalid country ID should not be stored in prefs, it's safer
+    // to double check it.
+    //
+    // For example, there might be changes in country ID validator.
+    if (persisted_dynamic_country_id.IsValid()) {
+      sources.emplace(CountryIdStoreStatus::kValidDynamicCountryId);
+      return {persisted_dynamic_country_id, sources};
+    }
+
+    // Clear dynamic pref CountryID as it is invalid.
+    sources.emplace(CountryIdStoreStatus::kInvalidDynamicPref);
+  }
+
+  if (profile_prefs.HasPrefPath(prefs::kCountryIDAtInstall)) {
+    CountryId persisted_country_id = CountryId::Deserialize(
+        profile_prefs.GetInteger(prefs::kCountryIDAtInstall));
+
+    // Check and report on the validity of the initially persisted value.
+    if (persisted_country_id.IsValid()) {
+      sources.emplace(CountryIdStoreStatus::kValidStaticCountryId);
+      return {persisted_country_id, sources};
+    }
+
+    // Clear static pref CountryID as it is invalid.
+    sources.emplace(CountryIdStoreStatus::kInvalidStaticPref);
+  }
+
+  if (sources.empty()) {
+    sources.emplace(CountryIdStoreStatus::kNoPersistedValue);
+  }
+
+  return {CountryId(), sources};
+}
 
 // Helper to make it possible to check for the synchronous completion of the
 // `RegionalCapabilitiesService::Client::FetchCountryId()` call.
@@ -409,7 +458,17 @@ void RegionalCapabilitiesService::EnsureRegionalScopeCacheInitialized() {
     return;
   }
 
-  CountryId persisted_country_id = GetPersistedCountryId();
+  auto [persisted_country_id, sources] =
+      GetPersistedCountryIdAndSource(profile_prefs_.get());
+  for (const CountryIdStoreStatus& source : sources) {
+    base::UmaHistogramEnumeration("Search.ChoiceDebug.UnknownCountryIdStored",
+                                  source);
+    if (source == CountryIdStoreStatus::kInvalidStaticPref) {
+      profile_prefs_->ClearPref(prefs::kCountryIDAtInstall);
+    } else if (source == CountryIdStoreStatus::kInvalidDynamicPref) {
+      profile_prefs_->ClearPref(prefs::kCountryID);
+    }
+  }
 
   // Fetches the device country using `Client::FetchCountryId()`. Upon
   // completion, makes it available through `country_id_receiver` and also
@@ -519,49 +578,8 @@ RegionalCapabilitiesService::GetActiveProgramSettingsForTesting() {
   return GetActiveProgramSettings();
 }
 
-CountryId RegionalCapabilitiesService::GetPersistedCountryId() {
-  // Prefer `prefs::kCountryID` if available and valid, otherwise fallback to
-  // `prefs::kCountryIDAtInstall`.
-  if (base::FeatureList::IsEnabled(switches::kDynamicProfileCountry) &&
-      profile_prefs_->HasPrefPath(prefs::kCountryID)) {
-    const CountryId persisted_dynamic_country_id =
-        CountryId::Deserialize(profile_prefs_->GetInteger(prefs::kCountryID));
-    // Even though invalid country ID should not be stored in prefs, it's safer
-    // to double check it.
-    //
-    // For example, there might be changes in country ID validator.
-    if (persisted_dynamic_country_id.IsValid()) {
-      base::UmaHistogramEnumeration(
-          kUnknownCountryIdStored,
-          UnknownCountryIdStored::kValidDynamicCountryId);
-      return persisted_dynamic_country_id;
-    }
-
-    // Clear dynamic pref CountryID as it is invalid.
-    base::UmaHistogramEnumeration(kUnknownCountryIdStored,
-                                  UnknownCountryIdStored::kClearedDynamicPref);
-    profile_prefs_->ClearPref(prefs::kCountryID);
-  }
-
-  if (!profile_prefs_->HasPrefPath(prefs::kCountryIDAtInstall)) {
-    return CountryId();
-  }
-
-  CountryId persisted_country_id = CountryId::Deserialize(
-      profile_prefs_->GetInteger(prefs::kCountryIDAtInstall));
-
-  // Check and report on the validity of the initially persisted value.
-  if (persisted_country_id.IsValid()) {
-    base::UmaHistogramEnumeration(kUnknownCountryIdStored,
-                                  UnknownCountryIdStored::kValidCountryId);
-    return persisted_country_id;
-  }
-
-  // Clear static pref CountryID as it is invalid.
-  profile_prefs_->ClearPref(prefs::kCountryIDAtInstall);
-  base::UmaHistogramEnumeration(kUnknownCountryIdStored,
-                                UnknownCountryIdStored::kClearedPref);
-  return CountryId();
+CountryId RegionalCapabilitiesService::GetPersistedCountryId() const {
+  return GetPersistedCountryIdAndSource(profile_prefs_.get()).first;
 }
 
 void RegionalCapabilitiesService::TrySetPersistedCountryId(
@@ -574,14 +592,14 @@ void RegionalCapabilitiesService::TrySetPersistedCountryId(
     profile_prefs_->SetInteger(prefs::kCountryID, country_id.Serialize());
   }
 
-  if (profile_prefs_->HasPrefPath(prefs::kCountryIDAtInstall)) {
-    // Deliberately do not override the current value. This would be a
-    // dedicated feature like `kDynamicProfileCountryMetrics` for example.
-    return;
+  if (!profile_prefs_->HasPrefPath(prefs::kCountryIDAtInstall)) {
+    // Deliberately do not override the current value if it has already been
+    // set. Note that if we end up having to fall back to it and if the value
+    // turns out to be invalid, at that time it will be cleared. It might then
+    // be updated next time we try to persist the country.
+    profile_prefs_->SetInteger(prefs::kCountryIDAtInstall,
+                               country_id.Serialize());
   }
-
-  profile_prefs_->SetInteger(prefs::kCountryIDAtInstall,
-                             country_id.Serialize());
 }
 
 #if BUILDFLAG(IS_ANDROID)

@@ -534,16 +534,28 @@ chromium-metrics-reviews@google.com.
 <!-- LINT.IfChange(UnknownCountryIdStored) -->
 
 <enum name="UnknownCountryIdStored">
-  <int value="0" label="Valid country stored in the static pref"/>
-  <int value="1" label="Clearing feature disabled (Deprecated 07/2025)"/>
-  <int value="2" label="Cleared static pref due to invalid country ID"/>
-  <int value="3" label="Valid country stored in the dynamic pref"/>
-  <int value="4"
-      label="Cleared dynamic pref due to invalid country ID and fallen back
-             to the static pref"/>
+  <int value="0" label="ValidStaticCountryId">
+    Valid country stored in the static pref
+  </int>
+  <int value="1" label="DontClearInvalidCountry">
+    Clearing feature disabled (Deprecated 07/2025)
+  </int>
+  <int value="2" label="InvalidStaticPref">
+    Invalid country in static prefs, clearing it
+  </int>
+  <int value="3" label="ValidDynamicCountryId">
+    Valid country stored in the dynamic pref
+  </int>
+  <int value="4" label="InvalidDynamicPref">
+    Invalid country in dynamic pref, using legacy static prefs as fallback, and
+    clearing the dynamic pref
+  </int>
+  <int value="5" label="NoPersistedValue">
+    There is no persisted country ID in the prefs
+  </int>
 </enum>
 
-<!-- LINT.ThenChange(/components/regional_capabilities/regional_capabilities_service.cc:UnknownCountryIdStored) -->
+<!-- LINT.ThenChange(/components/regional_capabilities/regional_capabilities_service.cc:CountryIdStoreStatus) -->
 
 </enums>
 
