@@ -48,7 +48,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.tab.TabUtils.UseDesktopUserAgentCaller;
 import org.chromium.chrome.browser.tab_ui.TabThumbnailView;
 import org.chromium.chrome.test.OverrideContextWrapperTestRule;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
@@ -192,22 +191,18 @@ public class TabUtilsUnitTest {
     @Test
     public void testSwitchUserAgent() {
         // Test non-native tab.
-        TabUtils.switchUserAgent(mTab, false, UseDesktopUserAgentCaller.OTHER);
-        verify(mNavigationController)
-                .setUseDesktopUserAgent(false, true, UseDesktopUserAgentCaller.OTHER);
+        TabUtils.switchUserAgent(mTab, false);
+        verify(mNavigationController).setUseDesktopUserAgent(false, true);
 
-        TabUtils.switchUserAgent(mTab, true, UseDesktopUserAgentCaller.OTHER);
-        verify(mNavigationController)
-                .setUseDesktopUserAgent(true, true, UseDesktopUserAgentCaller.OTHER);
+        TabUtils.switchUserAgent(mTab, true);
+        verify(mNavigationController).setUseDesktopUserAgent(true, true);
 
         // Test native tab.
-        TabUtils.switchUserAgent(mTabNative, false, UseDesktopUserAgentCaller.OTHER);
-        verify(mNavigationController)
-                .setUseDesktopUserAgent(false, false, UseDesktopUserAgentCaller.OTHER);
+        TabUtils.switchUserAgent(mTabNative, false);
+        verify(mNavigationController).setUseDesktopUserAgent(false, false);
 
-        TabUtils.switchUserAgent(mTabNative, true, UseDesktopUserAgentCaller.OTHER);
-        verify(mNavigationController)
-                .setUseDesktopUserAgent(true, false, UseDesktopUserAgentCaller.OTHER);
+        TabUtils.switchUserAgent(mTabNative, true);
+        verify(mNavigationController).setUseDesktopUserAgent(true, false);
     }
 
     @Test

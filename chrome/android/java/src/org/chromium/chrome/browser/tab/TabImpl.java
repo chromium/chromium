@@ -67,7 +67,6 @@ import org.chromium.chrome.browser.pdf.PdfInfo;
 import org.chromium.chrome.browser.pdf.PdfUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.rlz.RevenueStats;
-import org.chromium.chrome.browser.tab.TabUtils.UseDesktopUserAgentCaller;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
@@ -1026,7 +1025,7 @@ class TabImpl implements Tab {
             loadUrl(mPendingLoadParams);
             mPendingLoadParams = null;
         } else {
-            restoreIfNeeded(caller);
+            restoreIfNeeded();
         }
 
         // If we are trying to share a tab, and it has never been loaded, then it will not have its
@@ -1066,14 +1065,14 @@ class TabImpl implements Tab {
             return;
         }
 
-        switchUserAgentIfNeeded(UseDesktopUserAgentCaller.RELOAD);
+        switchUserAgentIfNeeded();
         getWebContents().getNavigationController().reload(true);
     }
 
     @Override
     public void reloadIgnoringCache() {
         if (getWebContents() != null) {
-            switchUserAgentIfNeeded(UseDesktopUserAgentCaller.RELOAD_IGNORING_CACHE);
+            switchUserAgentIfNeeded();
             getWebContents().getNavigationController().reloadBypassingCache(true);
         }
     }
@@ -2300,7 +2299,7 @@ class TabImpl implements Tab {
      * the load codepath is the same (run in loadIfNecessary()) and the same caching policies of
      * history load are used.
      */
-    private void restoreIfNeeded(@TabLoadIfNeededCaller int caller) {
+    private void restoreIfNeeded() {
         // Attempts to display the Paint Preview representation of this Tab.
         if (isFrozen()) StartupPaintPreviewHelper.showPaintPreviewOnRestore(this);
 
@@ -2320,7 +2319,7 @@ class TabImpl implements Tab {
             if (mWebContents != null) {
                 // Invoke switchUserAgentIfNeeded() from restoreIfNeeded() instead of loadIfNeeded()
                 // to avoid reload without explicit user intent.
-                switchUserAgentIfNeeded(UseDesktopUserAgentCaller.LOAD_IF_NEEDED + caller);
+                switchUserAgentIfNeeded();
                 mWebContents.getNavigationController().loadIfNecessary();
             }
             mIsBeingRestored = true;
@@ -2728,14 +2727,14 @@ class TabImpl implements Tab {
                 "Android.RequestDesktopSite.UseDesktopUserAgent", value);
     }
 
-    private void switchUserAgentIfNeeded(int caller) {
+    private void switchUserAgentIfNeeded() {
         if (calculateUserAgentOverrideOption(null) == UserAgentOverrideOption.INHERIT
                 || getWebContents() == null) {
             return;
         }
         boolean usingDesktopUserAgent =
                 getWebContents().getNavigationController().getUseDesktopUserAgent();
-        TabUtils.switchUserAgent(this, /* switchToDesktop= */ !usingDesktopUserAgent, caller);
+        TabUtils.switchUserAgent(this, /* switchToDesktop= */ !usingDesktopUserAgent);
     }
 
     /** Sets the TabLaunchType for tabs launched with an unset launch type. */

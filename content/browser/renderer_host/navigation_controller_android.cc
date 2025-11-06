@@ -385,8 +385,7 @@ bool NavigationControllerAndroid::GetUseDesktopUserAgent(JNIEnv* env) {
 void NavigationControllerAndroid::SetUseDesktopUserAgent(
     JNIEnv* env,
     jboolean enabled,
-    jboolean reload_on_state_change,
-    jint source) {
+    jboolean reload_on_state_change) {
   SCOPED_CRASH_KEY_BOOL("nav_reentrancy_caller2", "SetUA_enabled",
                         (bool)enabled);
   if (GetUseDesktopUserAgent(env) == enabled) {
@@ -408,11 +407,6 @@ void NavigationControllerAndroid::SetUseDesktopUserAgent(
         base::BindOnce(
             &NavigationControllerAndroid::SetUseDesktopUserAgentInternal,
             weak_factory_.GetWeakPtr(), enabled, reload_on_state_change));
-    LOG(WARNING) << "NavigationControllerAndroid::SetUseDesktopUserAgent "
-                 << "triggers re-entrant navigation, override: "
-                 << (bool)enabled << ", source: " << (int)source;
-    SCOPED_CRASH_KEY_NUMBER("SetUseDesktopUserAgent", "caller", (int)source);
-    base::debug::DumpWithoutCrashing();
   } else {
     SetUseDesktopUserAgentInternal(enabled, reload_on_state_change);
   }

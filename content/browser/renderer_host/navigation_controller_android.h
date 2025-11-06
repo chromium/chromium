@@ -83,11 +83,9 @@ class CONTENT_EXPORT NavigationControllerAndroid {
       jboolean is_pdf);
   void ClearSslPreferences(JNIEnv* env);
   bool GetUseDesktopUserAgent(JNIEnv* env);
-  void SetUseDesktopUserAgent(
-      JNIEnv* env,
-      jboolean state,
-      jboolean reload_on_state_change,
-      jint source);
+  void SetUseDesktopUserAgent(JNIEnv* env,
+                              jboolean state,
+                              jboolean reload_on_state_change);
   base::android::ScopedJavaLocalRef<jobject> GetEntryAtIndex(JNIEnv* env,
                                                              int index);
   base::android::ScopedJavaLocalRef<jobject> GetVisibleEntry(JNIEnv* env);

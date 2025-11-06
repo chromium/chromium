@@ -22,7 +22,6 @@ import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
 
 import androidx.annotation.DrawableRes;
-import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
@@ -46,30 +45,10 @@ import org.chromium.ui.display.DisplayAndroidManager;
 import org.chromium.ui.display.DisplayUtil;
 import org.chromium.url.GURL;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-
 /** Collection of utility methods that operates on Tab. */
 @NullMarked
 public class TabUtils {
     @VisibleForTesting public static final float PORTRAIT_THUMBNAIL_ASPECT_RATIO = 0.85f;
-
-    /** Define the callers of NavigationControllerImpl#setUseDesktopUserAgent. */
-    @IntDef({
-        UseDesktopUserAgentCaller.ON_MENU_OR_KEYBOARD_ACTION,
-        UseDesktopUserAgentCaller.LOAD_IF_NEEDED,
-        UseDesktopUserAgentCaller.RELOAD,
-        UseDesktopUserAgentCaller.RELOAD_IGNORING_CACHE,
-        UseDesktopUserAgentCaller.OTHER
-    })
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface UseDesktopUserAgentCaller {
-        int ON_MENU_OR_KEYBOARD_ACTION = 0;
-        int LOAD_IF_NEEDED = 100;
-        int RELOAD = 200;
-        int RELOAD_IGNORING_CACHE = 300;
-        int OTHER = 400;
-    }
 
     // Do not instantiate this class.
     private TabUtils() {}
@@ -130,11 +109,11 @@ public class TabUtils {
      * @param switchToDesktop Whether switching the user agent to desktop.
      * @param caller The caller of this method.
      */
-    public static void switchUserAgent(Tab tab, boolean switchToDesktop, int caller) {
+    public static void switchUserAgent(Tab tab, boolean switchToDesktop) {
         final boolean reloadOnChange = !tab.isNativePage();
         assumeNonNull(tab.getWebContents())
                 .getNavigationController()
-                .setUseDesktopUserAgent(switchToDesktop, reloadOnChange, caller);
+                .setUseDesktopUserAgent(switchToDesktop, reloadOnChange);
     }
 
     /**

@@ -263,21 +263,19 @@ import org.chromium.url.Origin;
     }
 
     @Override
-    public void setUseDesktopUserAgent(boolean override, boolean reloadOnChange, int source) {
+    public void setUseDesktopUserAgent(boolean override, boolean reloadOnChange) {
         if (mNativeNavigationControllerAndroid != 0) {
             Log.i(
                     TAG,
                     "Thread dump for debugging, override: "
                             + override
                             + " reloadOnChange: "
-                            + reloadOnChange
-                            + " caller: "
-                            + source);
+                            + reloadOnChange);
             Thread.dumpStack();
 
             NavigationControllerImplJni.get()
                     .setUseDesktopUserAgent(
-                            mNativeNavigationControllerAndroid, override, reloadOnChange, source);
+                            mNativeNavigationControllerAndroid, override, reloadOnChange);
         }
     }
 
@@ -469,10 +467,7 @@ import org.chromium.url.Origin;
         boolean getUseDesktopUserAgent(long nativeNavigationControllerAndroid);
 
         void setUseDesktopUserAgent(
-                long nativeNavigationControllerAndroid,
-                boolean override,
-                boolean reloadOnChange,
-                int source);
+                long nativeNavigationControllerAndroid, boolean override, boolean reloadOnChange);
 
         NavigationEntry getEntryAtIndex(long nativeNavigationControllerAndroid, int index);
 

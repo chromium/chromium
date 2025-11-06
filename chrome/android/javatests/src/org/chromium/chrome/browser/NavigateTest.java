@@ -47,7 +47,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.Tab.LoadUrlResult;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabUtils;
-import org.chromium.chrome.browser.tab.TabUtils.UseDesktopUserAgentCaller;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
@@ -328,11 +327,7 @@ public class NavigateTest {
         navigateAndObserve(url2);
         if (overrideUserAgent) {
             ThreadUtils.runOnUiThreadBlocking(
-                    () ->
-                            TabUtils.switchUserAgent(
-                                    tab,
-                                    /* switchToDesktop= */ true,
-                                    UseDesktopUserAgentCaller.OTHER));
+                    () -> TabUtils.switchUserAgent(tab, /* switchToDesktop= */ true));
         }
         ChromeTabUtils.waitForTabPageLoaded(tab, url2);
         return tab;
@@ -351,9 +346,7 @@ public class NavigateTest {
         final Tab tab = mActivityTestRule.getActivityTab();
         navigateAndObserve(url);
         ThreadUtils.runOnUiThreadBlocking(
-                () ->
-                        TabUtils.switchUserAgent(
-                                tab, /* switchToDesktop= */ true, UseDesktopUserAgentCaller.OTHER));
+                () -> TabUtils.switchUserAgent(tab, /* switchToDesktop= */ true));
 
         ChromeTabUtils.waitForTabPageLoaded(tab, url);
         String content =
