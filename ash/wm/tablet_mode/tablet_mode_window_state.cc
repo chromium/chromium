@@ -404,8 +404,7 @@ void TabletModeWindowState::OnWMEvent(WindowState* window_state,
       // If an already snapped window or floated or pinned window gets added to
       // the workspace, the window should not be forced maximized, rather retain
       // its previous state.
-      UpdateWindow(window_state,
-                   AdjustStateForTabletMode(window_state, current_state_type_),
+      UpdateWindow(window_state, AdjustStateForTabletMode(window_state),
                    /*animate=*/true);
       break;
     case WM_EVENT_DISPLAY_METRICS_CHANGED:
@@ -528,12 +527,13 @@ void TabletModeWindowState::UpdateWindow(WindowState* window_state,
 }
 
 WindowStateType TabletModeWindowState::AdjustStateForTabletMode(
-    WindowState* window_state,
-    WindowStateType current_state_type) {
+    WindowState* window_state) {
+  auto current_state_type = window_state->GetStateType();
   if (chromeos::IsSnappedWindowStateType(current_state_type) ||
       chromeos::IsPinnedWindowStateType(current_state_type) ||
-      current_state_type == chromeos::WindowStateType::kFloated) {
-    return window_state->GetStateType();
+      current_state_type == chromeos::WindowStateType::kFloated ||
+      current_state_type == chromeos::WindowStateType::kFullscreen) {
+    return current_state_type;
   }
 
   return window_state->GetWindowTypeOnMaximizable();
