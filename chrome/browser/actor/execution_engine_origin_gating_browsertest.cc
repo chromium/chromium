@@ -72,32 +72,17 @@ constexpr char kHandleNavigationConfirmationTempl[] =
 
 }  // namespace
 
-class ExecutionEngineInteractiveUiTest
-    : public glic::NonInteractiveGlicTest,
-      public testing::WithParamInterface<bool> {
+class ExecutionEngineOriginGatingBrowserTestBase
+    : public glic::NonInteractiveGlicTest {
  public:
-  ExecutionEngineInteractiveUiTest() {
-    if (multi_instance_enabled()) {
-      scoped_feature_list_.InitWithFeatures(
-          /*enabled_features=*/{features::kGlic, features::kTabstripComboButton,
-                                features::kGlicActor,
-                                features::kGlicMultiInstance,
-                                kGlicCrossOriginNavigationGating,
-                                glic::mojom::features::kGlicMultiTab},
-          /*disabled_features=*/{features::kGlicWarming});
-    } else {
-      scoped_feature_list_.InitWithFeatures(
-          /*enabled_features=*/{features::kGlic, features::kTabstripComboButton,
-                                features::kGlicActor,
-                                kGlicCrossOriginNavigationGating,
-                                glic::mojom::features::kGlicMultiTab},
-          /*disabled_features=*/{features::kGlicWarming,
-                                 features::kGlicMultiInstance});
-    }
+  ExecutionEngineOriginGatingBrowserTestBase() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kGlic, features::kTabstripComboButton,
+                              features::kGlicActor,
+                              kGlicCrossOriginNavigationGating},
+        /*disabled_features=*/{features::kGlicWarming});
   }
-  ~ExecutionEngineInteractiveUiTest() override = default;
-
-  bool multi_instance_enabled() { return GetParam(); }
+  ~ExecutionEngineOriginGatingBrowserTestBase() override = default;
 
   void SetUpOnMainThread() override {
     glic::test::InteractiveGlicTest::SetUpOnMainThread();
@@ -120,6 +105,10 @@ class ExecutionEngineInteractiveUiTest
   void SetUpCommandLine(base::CommandLine* command_line) override {
     glic::test::InteractiveGlicTest::SetUpCommandLine(command_line);
     SetUpBlocklist(command_line, "blocked.example.com");
+  }
+
+  virtual bool multi_instance_enabled() {
+    return base::FeatureList::IsEnabled(features::kGlicMultiInstance);
   }
 
   content::WebContents* web_contents() {
@@ -229,12 +218,37 @@ class ExecutionEngineInteractiveUiTest
   base::HistogramTester histogram_tester_for_init_;
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
   TaskId task_id_;
   base::ScopedTempDir temp_dir_;
+};
+
+class ExecutionEngineOriginGatingBrowserTest
+    : public ExecutionEngineOriginGatingBrowserTestBase,
+      public testing::WithParamInterface<bool> {
+ public:
+  ExecutionEngineOriginGatingBrowserTest() {
+    if (multi_instance_enabled()) {
+      scoped_feature_list_.InitWithFeatures(
+          /*enabled_features=*/{features::kGlicMultiInstance,
+                                glic::mojom::features::kGlicMultiTab},
+          /*disabled_features=*/{});
+    } else {
+      scoped_feature_list_.InitWithFeatures(
+          /*enabled_features=*/{},
+          /*disabled_features=*/{features::kGlicMultiInstance,
+                                 glic::mojom::features::kGlicMultiTab});
+    }
+  }
+  ~ExecutionEngineOriginGatingBrowserTest() override = default;
+
+  bool multi_instance_enabled() override { return GetParam(); }
+
+ private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_P(ExecutionEngineInteractiveUiTest,
+IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
                        ConfirmNavigationToNewOrigin_Granted) {
   const GURL start_url =
       embedded_https_test_server().GetURL("example.com", "/actor/link.html");
@@ -280,7 +294,7 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineInteractiveUiTest,
       "Actor.NavigationGating.PermissionGranted", true, 1);
 }
 
-IN_PROC_BROWSER_TEST_P(ExecutionEngineInteractiveUiTest,
+IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
                        ConfirmNavigationToNewOrigin_Denied) {
   const GURL start_url =
       embedded_https_test_server().GetURL("example.com", "/actor/link.html");
@@ -310,7 +324,7 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineInteractiveUiTest,
       "Actor.NavigationGating.PermissionGranted", false, 1);
 }
 
-IN_PROC_BROWSER_TEST_P(ExecutionEngineInteractiveUiTest,
+IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
                        ConfirmBlockedOriginWithUser_Granted) {
   const GURL start_url =
       embedded_https_test_server().GetURL("example.com", "/actor/link.html");
@@ -354,7 +368,7 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineInteractiveUiTest,
       "Actor.NavigationGating.PermissionGranted", true, 1);
 }
 
-IN_PROC_BROWSER_TEST_P(ExecutionEngineInteractiveUiTest,
+IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
                        ConfirmBlockedOriginWithUser_Denied) {
   const GURL start_url =
       embedded_https_test_server().GetURL("example.com", "/actor/link.html");
@@ -384,7 +398,7 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineInteractiveUiTest,
       "Actor.NavigationGating.PermissionGranted", false, 1);
 }
 
-IN_PROC_BROWSER_TEST_P(ExecutionEngineInteractiveUiTest,
+IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
                        OriginGatingNavigateAction) {
   const GURL start_url =
       embedded_https_test_server().GetURL("foo.com", "/actor/blank.html");
@@ -437,7 +451,7 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineInteractiveUiTest,
                     mojom::ActionResultCode::kTriggeredNavigationBlocked);
 }
 
-IN_PROC_BROWSER_TEST_P(ExecutionEngineInteractiveUiTest,
+IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
                        AddWritableMainframeOrigins) {
   const GURL cross_origin_url =
       embedded_https_test_server().GetURL("bar.com", "/actor/blank.html");
@@ -470,7 +484,7 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineInteractiveUiTest,
   ExpectOkResult(result2);
 }
 
-IN_PROC_BROWSER_TEST_P(ExecutionEngineInteractiveUiTest,
+IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
                        BlockedNavigationNotAddedToAllowlist) {
   const GURL start_url =
       embedded_https_test_server().GetURL("example.com", "/actor/blank.html");
@@ -503,6 +517,7 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineInteractiveUiTest,
       "navigationOrigin",
       url::Origin::Create(blocked_origin_url).GetDebugString()));
 
+  // Trigger ExecutionEngine destructor for metrics.
   actor_keyed_service().ResetForTesting();
 
   // We should have applied the gate twice. Once for each navigation to blocked.
@@ -519,7 +534,7 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineInteractiveUiTest,
       "Actor.NavigationGating.AllowListSize", 2, 1);
 }
 
-IN_PROC_BROWSER_TEST_P(ExecutionEngineInteractiveUiTest,
+IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
                        ConfirmWithUserForMayActOnTab) {
   const GURL start_url = embedded_https_test_server().GetURL(
       "blocked.example.com", "/actor/blank.html");
@@ -551,11 +566,166 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineInteractiveUiTest,
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
-                         ExecutionEngineInteractiveUiTest,
+                         ExecutionEngineOriginGatingBrowserTest,
                          testing::Bool(),
                          [](auto& info) {
                            return info.param ? "MultiInstance"
                                              : "SingleInstance";
+                         });
+
+class ExecutionEngineOriginGatingParamBrowserTest
+    : public ExecutionEngineOriginGatingBrowserTestBase,
+      public testing::WithParamInterface<std::tuple<bool, bool, bool>> {
+ public:
+  ExecutionEngineOriginGatingParamBrowserTest() {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/
+        {
+            {kGlicCrossOriginNavigationGating,
+             {{
+                 {"prompt_user_for_sensitive_navigations",
+                  prompt_user_for_sensitive_navigations_enabled() ? "true"
+                                                                  : "false"},
+                 {"confirm_navigation_to_new_origins",
+                  confirm_navigation_to_new_origins_enabled() ? "true"
+                                                              : "false"},
+                 {"prompt_user_for_navigation_to_new_origins",
+                  prompt_user_for_navigation_to_new_origins_enabled()
+                      ? "true"
+                      : "false"},
+             }}},
+        },
+        /*disabled_features=*/{});
+  }
+  ~ExecutionEngineOriginGatingParamBrowserTest() override = default;
+
+  bool prompt_user_for_sensitive_navigations_enabled() {
+    return std::get<0>(GetParam());
+  }
+  bool confirm_navigation_to_new_origins_enabled() {
+    return std::get<1>(GetParam());
+  }
+  bool prompt_user_for_navigation_to_new_origins_enabled() {
+    return std::get<2>(GetParam());
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingParamBrowserTest,
+                       ConfirmBlockedOriginWithUserDisabled) {
+  if (prompt_user_for_sensitive_navigations_enabled()) {
+    GTEST_SKIP() << "prompt_user_for_sensitive_navigations enabled already "
+                    "tested in ExecutionEngineOriginGatingBrowserTest.";
+  }
+
+  const GURL start_url =
+      embedded_https_test_server().GetURL("example.com", "/actor/link.html");
+  const GURL blocked_url = embedded_https_test_server().GetURL(
+      "blocked.example.com", "/actor/blank.html");
+
+  OpenGlicAndCreateTask();
+  RunTestSequence(CreateMockWebClientRequest(
+      content::JsReplace(kHandleUserConfirmationDialogTempl, true)));
+
+  // Start on example.com.
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), start_url));
+
+  EXPECT_TRUE(content::ExecJs(web_contents(),
+                              content::JsReplace("setLink($1);", start_url)));
+  ClickTarget("#link", mojom::ActionResultCode::kOk);
+
+  EXPECT_TRUE(content::ExecJs(web_contents(),
+                              content::JsReplace("setLink($1);", blocked_url)));
+  ClickTarget("#link", mojom::ActionResultCode::kTriggeredNavigationBlocked);
+}
+
+IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingParamBrowserTest,
+                       NavigationConfirmationDisabled) {
+  if (confirm_navigation_to_new_origins_enabled()) {
+    GTEST_SKIP() << "confirm_navigation_to_new_origins enabled already tested "
+                    "in ExecutionEngineOriginGatingBrowserTest.";
+    ;
+  }
+
+  const GURL start_url =
+      embedded_https_test_server().GetURL("example.com", "/actor/link.html");
+  const GURL second_url =
+      embedded_https_test_server().GetURL("foo.com", "/actor/blank.html");
+
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), start_url));
+  OpenGlicAndCreateTask();
+
+  // Have navigation confirmations reject new origins. This should not stop the
+  // navigation when confirm_navigation_to_new_origins is disabled.
+  RunTestSequence(CreateMockWebClientRequest(
+      content::JsReplace(kHandleNavigationConfirmationTempl, false)));
+
+  EXPECT_TRUE(content::ExecJs(web_contents(),
+                              content::JsReplace("setLink($1);", start_url)));
+  ClickTarget("#link", mojom::ActionResultCode::kOk);
+
+  EXPECT_TRUE(content::ExecJs(web_contents(),
+                              content::JsReplace("setLink($1);", second_url)));
+  ClickTarget("#link", mojom::ActionResultCode::kOk);
+}
+
+IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingParamBrowserTest,
+                       PromptUserForNewOrigin) {
+  if (!prompt_user_for_navigation_to_new_origins_enabled()) {
+    GTEST_SKIP() << "prompt_user_for_navigation_to_new_origins disabled "
+                    "already tested in ExecutionEngineOriginGatingBrowserTest.";
+  }
+
+  const GURL start_url =
+      embedded_https_test_server().GetURL("example.com", "/actor/link.html");
+  const GURL second_url =
+      embedded_https_test_server().GetURL("foo.com", "/actor/blank.html");
+
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), start_url));
+  OpenGlicAndCreateTask();
+
+  // Now we expect the navigation to trigger a user confirmation instead.
+  RunTestSequence(CreateMockWebClientRequest(
+      content::JsReplace(kHandleUserConfirmationDialogTempl, true)));
+
+  EXPECT_TRUE(content::ExecJs(web_contents(),
+                              content::JsReplace("setLink($1);", start_url)));
+  ClickTarget("#link", mojom::ActionResultCode::kOk);
+
+  EXPECT_TRUE(content::ExecJs(web_contents(),
+                              content::JsReplace("setLink($1);", second_url)));
+  ClickTarget("#link", mojom::ActionResultCode::kOk);
+
+  // Trigger ExecutionEngine destructor for metrics.
+  actor_keyed_service().ResetForTesting();
+
+  // Should add the origin to the allowlist.
+  histogram_tester_for_init_.ExpectBucketCount(
+      "Actor.NavigationGating.AllowListSize", 1, 1);
+}
+
+// Tuple values are:
+// (prompt_user_for_sensitive_navigations,
+//  confirm_navigation_to_new_origins,
+//  prompt_user_for_navigation_to_new_origins).
+INSTANTIATE_TEST_SUITE_P(All,
+                         ExecutionEngineOriginGatingParamBrowserTest,
+                         testing::Values(std::make_tuple(false, true, false),
+                                         std::make_tuple(true, false, false),
+                                         std::make_tuple(true, true, true)),
+                         [](auto& info) {
+                           if (!std::get<0>(info.param)) {
+                             return "UserConfirmDisabled";
+                           }
+                           if (!std::get<1>(info.param)) {
+                             return "NavigationConfirmDisabled";
+                           }
+                           if (std::get<2>(info.param)) {
+                             return "PromptToConfirmNavigation";
+                           }
+                           NOTREACHED();
                          });
 
 }  // namespace actor

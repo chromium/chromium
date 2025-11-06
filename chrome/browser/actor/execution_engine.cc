@@ -301,16 +301,40 @@ void ExecutionEngine::OnNavigationBlocklistDecision(
   }
 
   // If the site is not on the blocklist, this is a novel origin and we should
-  // invoke SendNavigationConfirmationRequest.
+  // either confirm the navigation with the web client or prompt the user
+  // depending on the feature state.
   if (not_on_blocklist) {
-    SendNavigationConfirmationRequest(url::Origin::Create(navigation_url),
-                                      std::move(callback));
+    HandleNavigationToNewOrigin(url::Origin::Create(navigation_url),
+                                std::move(callback));
     return;
   }
+
+  // We use `kGlicPromptUserForSensitiveNavigations` to toggle user
+  // confirmations when navigationg to a URL on the optimization guide
+  // blocklist.
+  if (!kGlicPromptUserForSensitiveNavigations.Get()) {
+    std::move(callback).Run(/*may_continue=*/false);
+    return;
+  }
+
   // Otherwise if the site is blocked, present a user confirmation dialog to
   // continue.
   SendUserConfirmationDialogRequest(url::Origin::Create(navigation_url),
                                     std::move(callback));
+}
+
+void ExecutionEngine::HandleNavigationToNewOrigin(
+    const url::Origin& navigation_origin,
+    ExecutionEngine::NavigationDecisionCallback callback) {
+  if (!kGlicConfirmNavigationToNewOrigins.Get()) {
+    std::move(callback).Run(/*may_continue=*/true);
+    return;
+  }
+  if (kGlicPromptUserForNavigationToNewOrigins.Get()) {
+    SendUserConfirmationDialogRequest(navigation_origin, std::move(callback));
+    return;
+  }
+  SendNavigationConfirmationRequest(navigation_origin, std::move(callback));
 }
 
 void ExecutionEngine::SendNavigationConfirmationRequest(
