@@ -328,7 +328,10 @@ public class CronetLibraryLoader {
      */
     @CalledByNative
     private static String getDefaultUserAgent() {
-        return UserAgent.from(ContextUtils.getApplicationContext());
+        return UserAgent.from(
+                ContextUtils.getApplicationContext(),
+                NativeCronetEngineBuilderImpl.getCronetSource(),
+                ImplVersion.getCronetVersion());
     }
 
     /**

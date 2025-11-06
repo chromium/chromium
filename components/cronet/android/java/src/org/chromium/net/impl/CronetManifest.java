@@ -54,6 +54,10 @@ public final class CronetManifest {
     @VisibleForTesting
     public static final String USE_PERFETTO_META_DATA_KEY = "android.net.http.UsePerfetto";
 
+    @VisibleForTesting
+    public static final String USE_LEGACY_DEFAULT_USER_AGENT =
+            "android.net.http.UseLegacyDefaultUserAgent";
+
     /**
      * @return True if telemetry should be enabled, based on the {@link
      *     #ENABLE_TELEMETRY_META_DATA_KEY} meta-data entry in the Android manifest.
@@ -102,6 +106,10 @@ public final class CronetManifest {
 
     public static boolean shouldUsePerfetto(Context context) {
         return getMetaData(context).getBoolean(USE_PERFETTO_META_DATA_KEY, /* default= */ true);
+    }
+
+    public static boolean shouldUseLegacyDefaultUserAgent(Context context) {
+        return getMetaData(context).getBoolean(USE_LEGACY_DEFAULT_USER_AGENT, /* default= */ false);
     }
 
     private static final Object sLock = new Object();
