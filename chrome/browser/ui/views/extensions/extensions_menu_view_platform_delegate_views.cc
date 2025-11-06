@@ -434,8 +434,7 @@ void ExtensionsMenuViewPlatformDelegateViews::OnExtensionToggleSelected(
 }
 
 void ExtensionsMenuViewPlatformDelegateViews::OnReloadPageButtonClicked() {
-  GetActiveWebContents()->GetController().Reload(content::ReloadType::NORMAL,
-                                                 false);
+  menu_model_->ReloadWebContents();
 }
 
 void ExtensionsMenuViewPlatformDelegateViews::OnAllowExtensionClicked(

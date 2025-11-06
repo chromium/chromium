@@ -98,6 +98,9 @@ class ExtensionsMenuViewModel : public extensions::PermissionsManager::Observer,
   void UpdateSiteSetting(
       extensions::PermissionsManager::UserSiteSetting site_setting);
 
+  // Reloads the current web contents.
+  void ReloadWebContents();
+
   // Returns the menu item info for extension with `action_controller`.
   MenuItemInfo GetMenuItemInfo(ToolbarActionViewController* action_controller);
 

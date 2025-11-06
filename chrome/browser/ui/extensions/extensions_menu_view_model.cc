@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_view_platform_delegate_views.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
@@ -481,6 +482,11 @@ void ExtensionsMenuViewModel::UpdateSiteSetting(
       ->UpdateUserSiteSetting(origin, site_setting);
 
   LogSiteSettingsUpdate(site_setting);
+}
+
+void ExtensionsMenuViewModel::ReloadWebContents() {
+  GetActiveWebContents()->GetController().Reload(content::ReloadType::NORMAL,
+                                                 false);
 }
 
 ExtensionsMenuViewModel::MenuItemInfo ExtensionsMenuViewModel::GetMenuItemInfo(
