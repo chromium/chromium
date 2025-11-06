@@ -102,8 +102,6 @@ class CORE_EXPORT HTMLFormElement final : public HTMLElement {
 
   bool NoValidate() const;
 
-  const AtomicString& Action() const;
-
   String method() const;
   void setMethod(const AtomicString&);
   FormSubmission::SubmitMethod Method() const { return attributes_.Method(); }
