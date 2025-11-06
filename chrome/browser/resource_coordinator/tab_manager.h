@@ -108,9 +108,7 @@ class TabManager : public LifecycleUnitObserver,
 
   // Discards the less important LifecycleUnit that supports discarding under
   // |reason|.
-  content::WebContents* DiscardTabImpl(
-      LifecycleUnitDiscardReason reason,
-      TabDiscardDoneCB tab_discard_done = TabDiscardDoneCB(base::DoNothing()));
+  content::WebContents* DiscardTabImpl(LifecycleUnitDiscardReason reason);
 
   void OnSessionRestoreStartedLoadingTabs();
   void OnSessionRestoreFinishedLoadingTabs();

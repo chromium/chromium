@@ -151,8 +151,7 @@ bool TabManager::IsInternalPage(const GURL& url) {
 // such as tabs created with JavaScript window.open(). Potentially consider
 // discarding the entire set together, or use that in the priority computation.
 content::WebContents* TabManager::DiscardTabImpl(
-    LifecycleUnitDiscardReason reason,
-    TabDiscardDoneCB tab_discard_done) {
+    LifecycleUnitDiscardReason reason) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   for (LifecycleUnit* lifecycle_unit : GetSortedLifecycleUnits()) {

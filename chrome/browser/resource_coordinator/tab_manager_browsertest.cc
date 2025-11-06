@@ -445,32 +445,6 @@ IN_PROC_BROWSER_TEST_P(TabManagerTest, InvalidOrEmptyURL) {
       tab_manager()->DiscardTabImpl(LifecycleUnitDiscardReason::EXTERNAL));
 }
 
-// Makes sure that the TabDiscardDoneCB callback is called after
-// DiscardTabImpl() returns.
-IN_PROC_BROWSER_TEST_P(TabManagerTest, TabDiscardDoneCallback) {
-  // Open two tabs.
-  NavigateToURLWithDisposition(browser(), GURL(chrome::kChromeUIAboutURL),
-                               WindowOpenDisposition::CURRENT_TAB,
-                               ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
-
-  NavigateToURLWithDisposition(browser(), GURL(chrome::kChromeUICreditsURL),
-                               WindowOpenDisposition::NEW_BACKGROUND_TAB,
-                               ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
-
-  ASSERT_EQ(2, tsm()->count());
-
-  struct CallbackState {
-    bool called_ = false;
-    void Run() { called_ = true; }
-  } callback_state;
-
-  TabManager::TabDiscardDoneCB callback{
-      base::BindOnce(&CallbackState::Run, base::Unretained(&callback_state))};
-  EXPECT_TRUE(tab_manager()->DiscardTabImpl(
-      LifecycleUnitDiscardReason::EXTERNAL, std::move(callback)));
-  EXPECT_TRUE(callback_state.called_);
-}
-
 // Makes sure that PDF pages are protected.
 IN_PROC_BROWSER_TEST_P(TabManagerTest, ProtectPDFPages) {
   // Start the embedded test server so we can get served the required PDF page.
