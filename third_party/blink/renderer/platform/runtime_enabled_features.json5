@@ -1725,7 +1725,7 @@
     // https://crbug.com/448174611
     {
       name: "DeclarativeCSSModules",
-      status: "test",
+      status: "experimental",
     },
     {
       // https://crbug.com/393631108
