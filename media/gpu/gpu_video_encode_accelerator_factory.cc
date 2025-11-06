@@ -242,11 +242,26 @@ GpuVideoEncodeAcceleratorFactory::CreateVEA(
 
   EncoderStatus initialization_err{
       EncoderStatus::Codes::kEncoderInitializationError};
-  for (const auto& create_vea :
-       GetVEAFactoryFunctions(gpu_preferences, gpu_workarounds, gpu_device)) {
+  std::vector<VEAFactoryFunction> create_vea_functions =
+      GetVEAFactoryFunctions(gpu_preferences, gpu_workarounds, gpu_device);
+  for (const auto& create_vea : create_vea_functions) {
     std::unique_ptr<VideoEncodeAccelerator> vea = create_vea.Run();
     if (!vea)
       continue;
+
+    // If there are multiple VEA implementations, we need to ensure that the
+    // profile is supported before initializing VEA, otherwise it will lead to
+    // an unexpected initialization failure.
+    if (create_vea_functions.size() > 1) {
+      const auto profiles = vea->GetSupportedProfiles();
+      if (std::ranges::find(
+              profiles, config.output_profile,
+              &VideoEncodeAccelerator::SupportedProfile::profile) ==
+          profiles.end()) {
+        continue;
+      }
+    }
+
     if (!get_command_buffer_helper_cb.is_null()) {
       vea->SetCommandBufferHelperCB(get_command_buffer_helper_cb,
                                     gpu_task_runner);
