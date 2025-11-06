@@ -201,6 +201,19 @@ TEST_P(PersistentCacheTest, OverwritingChangesValue) {
       base::test::ValueIs(HasContents(base::byte_span_from_cstring("2"))));
 }
 
+TEST_P(PersistentCacheTest, OverwritingChangesValueVaryingSizes) {
+  auto cache = OpenCache();
+  EXPECT_THAT(cache->Insert(kKey, base::byte_span_from_cstring("1")),
+              base::test::HasValue());
+  EXPECT_THAT(
+      cache->Insert(kKey, base::as_byte_span(std::string(1024 * 7, 'b'))),
+      base::test::HasValue());
+
+  ASSERT_THAT(cache->Find(kKey),
+              base::test::ValueIs(
+                  HasContents(base::as_byte_span(std::string(1024 * 7, 'b')))));
+}
+
 TEST_P(PersistentCacheTest, MetadataIsRetrievable) {
   EntryMetadata metadata{.input_signature =
                              base::Time::Now().InMillisecondsSinceUnixEpoch()};
