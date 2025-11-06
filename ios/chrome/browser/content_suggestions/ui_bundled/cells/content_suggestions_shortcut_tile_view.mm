@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/content_suggestions/ui_bundled/cells/content_suggestions_cells_constants.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/cells/content_suggestions_most_visited_action_item.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_palette.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_image_background_trait.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_trait.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -44,7 +45,7 @@ const CGFloat kCountBorderWidth = 24;
 
     [self registerViewForTraitChanges];
     if (IsNTPBackgroundCustomizationEnabled()) {
-      [self applyBackgroundColors];
+      [self applyBackgroundTheme];
     } else {
       self.imageBackgroundView.tintColor = [UIColor colorNamed:kBlueHaloColor];
     }
@@ -156,8 +157,9 @@ const CGFloat kCountBorderWidth = 24;
   [self registerForTraitChanges:traits
                      withAction:@selector(updateTitleLabelFontOnTraitChange)];
   if (IsNTPBackgroundCustomizationEnabled()) {
-    [self registerForTraitChanges:@[ NewTabPageTrait.class ]
-                       withAction:@selector(applyBackgroundColors)];
+    [self registerForTraitChanges:
+              @[ NewTabPageTrait.class, NewTabPageImageBackgroundTrait.class ]
+                       withAction:@selector(applyBackgroundTheme)];
   }
 }
 
@@ -166,13 +168,18 @@ const CGFloat kCountBorderWidth = 24;
   self.titleLabel.font = [self titleLabelFont];
 }
 
-// Sets the background using the current color palette, or defaults if none is
-// set.
-- (void)applyBackgroundColors {
+// Sets the background using the current background image state, color palette,
+// or defaults if none is set.
+- (void)applyBackgroundTheme {
+  BOOL hasImageBackground =
+      [self.traitCollection boolForNewTabPageImageBackgroundTrait];
   NewTabPageColorPalette* colorPalette =
       [self.traitCollection objectForNewTabPageTrait];
 
-  if (colorPalette) {
+  if (hasImageBackground) {
+    self.imageBackgroundView.tintColor = [UIColor colorNamed:kGrey100Color];
+    self.iconView.tintColor = [UIColor colorNamed:kTextPrimaryColor];
+  } else if (colorPalette) {
     self.imageBackgroundView.tintColor = colorPalette.tertiaryColor;
     self.iconView.tintColor = colorPalette.tintColor;
   } else {
