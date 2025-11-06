@@ -38,7 +38,7 @@ class ProfilePickerFlowController : public ProfileManagementFlowControllerImpl {
       StepSwitchFinishedCallback switch_finished_callback,
       base::OnceCallback<void(const ForceSigninUIError&)> on_error_callback);
 
-  void CancelPostSignInFlow() override;
+  void CancelSigninFlow() override;
 
   std::u16string GetFallbackAccessibleWindowTitle() const override;
 

@@ -74,7 +74,7 @@ void OnManagementUserChoice(signin::SigninChoiceCallback callback,
   // - from main view: returns to the main view,
   // - from FRE: opens a signed out browser,
   // - from profile menu: closes the picker.
-  ProfilePicker::CancelSignedInFlow();
+  ProfilePicker::CancelSignInFlow();
 }
 
 }  //  namespace

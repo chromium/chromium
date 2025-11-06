@@ -44,7 +44,7 @@ class ProfilePickerGlicFlowController
 
  private:
   // ProfileManagementFlowController:
-  void CancelPostSignInFlow() override;
+  void CancelSigninFlow() override;
 
   // signin::IdentityManager::Observer:
   void OnRefreshTokensLoaded() override;

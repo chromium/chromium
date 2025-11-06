@@ -94,7 +94,7 @@ void ProfilePickerGlicFlowController::Clear() {
   ExitFlow();
 }
 
-void ProfilePickerGlicFlowController::CancelPostSignInFlow() {
+void ProfilePickerGlicFlowController::CancelSigninFlow() {
   NOTREACHED() << "The glic flow controller is not expected to support this "
                   "part of the flow as it does not support signing in.";
 }

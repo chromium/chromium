@@ -222,9 +222,9 @@ void ProfilePicker::PickProfile(
 }
 
 // static
-void ProfilePicker::CancelSignedInFlow() {
+void ProfilePicker::CancelSignInFlow() {
   if (g_profile_picker_view) {
-    g_profile_picker_view->flow_controller_.get()->CancelPostSignInFlow();
+    g_profile_picker_view->flow_controller_.get()->CancelSigninFlow();
   }
 }
 

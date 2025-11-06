@@ -92,9 +92,10 @@ class ProfileManagementFlowController {
 
   void OnReloadRequested();
 
-  // Cancel the signed-in profile setup and returns back to the main picker
-  // screen (if the original EntryPoint was to open the picker).
-  virtual void CancelPostSignInFlow() = 0;
+  // Cancel the signed-in profile setup or sign-in (because of an error) and
+  // returns back to the main picker screen (if the original EntryPoint was to
+  // open the picker).
+  virtual void CancelSigninFlow() = 0;
 
   // Picks the profile with `profile_path`.
   // `pick_profile_complete_callback` will be called on profile load.

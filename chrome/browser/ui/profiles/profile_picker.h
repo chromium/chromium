@@ -275,11 +275,11 @@ class ProfilePicker {
       ProfilePickingArgs args,
       base::OnceCallback<void(bool)> pick_profile_complete_callback);
 
-  // Cancel the signed-in flow and returns back to the main picker screen (if
+  // Cancel the sign-in flow and returns back to the main picker screen (if
   // the original EntryPoint was to open the picker). Must only be called from
-  // within the signed-in flow. This will delete the profile previously created
+  // within the sign-in flow. This will delete the profile previously created
   // for the signed-in flow.
-  static void CancelSignedInFlow();
+  static void CancelSignInFlow();
 
   // Returns the path of the default profile used for rendering the picker.
   static base::FilePath GetPickerProfilePath();

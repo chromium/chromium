@@ -522,7 +522,7 @@ void FirstRunFlowController::Init() {
                         PROMO_ACTION_NEW_ACCOUNT_NO_EXISTING_ACCOUNT);
 }
 
-void FirstRunFlowController::CancelPostSignInFlow() {
+void FirstRunFlowController::CancelSigninFlow() {
   // Called when the user declines enterprise management. Unfortunately, for
   // some technical and historical reasons, management is already marked as
   // accepted before we show the prompt. So here we need to revert it.

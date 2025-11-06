@@ -586,9 +586,7 @@ void ProfilePickerFlowController::OnProfilePickerStepShownReauthError(
   std::move(on_error_callback).Run(error);
 }
 
-// TODO(crbug.com/447585139): Rename this function as it is not longer
-// only in PostSigin flow
-void ProfilePickerFlowController::CancelPostSignInFlow() {
+void ProfilePickerFlowController::CancelSigninFlow() {
   // Triggered from either entreprise welcome or profile switch screens.
   DCHECK(current_step() == Step::kPostSignInFlow ||
          current_step() == Step::kAccountSelection);
@@ -619,8 +617,8 @@ void ProfilePickerFlowController::CancelPostSignInFlow() {
     }
     case ProfilePicker::EntryPoint::kFirstRun:
     case ProfilePicker::EntryPoint::kGlicManager:
-      NOTREACHED()
-          << "CancelPostSignInFlow() is not reachable from this entry point";
+      NOTREACHED() << "CancelSigninFlow() is not reachable from "
+                      "this entry point";
   }
 }
 

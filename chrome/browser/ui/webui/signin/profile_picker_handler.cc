@@ -598,7 +598,7 @@ void ProfilePickerHandler::HandleConfirmProfileSwitch(
 
 void ProfilePickerHandler::HandleCancelProfileSwitch(
     const base::Value::List& args) {
-  ProfilePicker::CancelSignedInFlow();
+  ProfilePicker::CancelSignInFlow();
 }
 
 void ProfilePickerHandler::HandleRecordSignInPromoImpression(

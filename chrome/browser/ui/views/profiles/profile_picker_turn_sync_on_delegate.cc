@@ -245,7 +245,7 @@ void ProfilePickerTurnSyncOnDelegate::HandleCancelSigninChoice(
   // what happens to sync as the signed-in profile creation gets cancelled
   // right after.
   FinishSyncConfirmation(LoginUIService::UI_CLOSED);
-  ProfilePicker::CancelSignedInFlow();
+  ProfilePicker::CancelSignInFlow();
 }
 
 void ProfilePickerTurnSyncOnDelegate::OnManagedUserNoticeClosed(
