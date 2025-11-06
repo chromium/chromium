@@ -311,6 +311,10 @@ BASE_FEATURE(kGlicActorUiNudgeRedesign, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kGlicActorUiTabIndicatorSpinnerIgnoreReducedMotion,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// If enabled, hides handoff button when the client is in control.
+BASE_FEATURE(kGlicHandoffButtonHiddenClientControl,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 const char kGlicActorUiTaskIconName[] = "glic-actor-ui-task-icon";
 const char kGlicActorUiOverlayName[] = "glic-actor-ui-overlay";
 const char kGlicActorUiOverlayMagicCursorName[] =

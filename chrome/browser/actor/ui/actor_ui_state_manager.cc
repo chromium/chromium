@@ -49,7 +49,9 @@ const UiTabState& GetActorControlledUiTabState() {
 const UiTabState& GetPausedUiTabState() {
   static const UiTabState kPausedState = {
       .actor_overlay = {.is_active = false, .border_glow_visible = false},
-      .handoff_button = {.is_active = true, .controller = kClient},
+      .handoff_button = {.is_active = !base::FeatureList::IsEnabled(
+                             features::kGlicHandoffButtonHiddenClientControl),
+                         .controller = kClient},
       .tab_indicator_visible = false,
       .border_glow_visible = false,
   };
@@ -251,11 +253,10 @@ void ActorUiStateManager::MaybeShowToast(BrowserWindowInterface* bwi) {
     return;
   }
 
-  auto ids =
-      actor_service_->FindTaskIdsInActive([](const ActorTask& task) {
-        return task.GetState() == ActorTask::State::kActing ||
-               task.GetState() == ActorTask::State::kReflecting;
-      });
+  auto ids = actor_service_->FindTaskIdsInActive([](const ActorTask& task) {
+    return task.GetState() == ActorTask::State::kActing ||
+           task.GetState() == ActorTask::State::kReflecting;
+  });
 
   if (!ids.empty() && MaybeShowToastViaController(bwi)) {
     pref_service->SetInteger(kToastShown, toast_shown_count + 1);
