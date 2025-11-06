@@ -1305,10 +1305,14 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTabAndPreloading,
   ContinueJsTest();
 }
 
-// Tests that both focused and arbitrary tab extraction are rejected
-// when the glic panel is hidden.
+// TODO(crbug.com/457010934): Flaky on Linux.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_testNoExtractionWhileHidden DISABLED_testNoExtractionWhileHidden
+#else
+#define MAYBE_testNoExtractionWhileHidden testNoExtractionWhileHidden
+#endif
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTabAndPreloading,
-                       testNoExtractionWhileHidden) {
+                       MAYBE_testNoExtractionWhileHidden) {
   // Attempt to extract focused tab context with the preloaded client.
   ExecuteJsTest();
 
