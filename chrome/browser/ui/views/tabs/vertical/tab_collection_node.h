@@ -69,6 +69,9 @@ class TabCollectionNode {
   base::CallbackListSubscription RegisterWillDestroyCallback(
       base::OnceClosure callback);
 
+  base::CallbackListSubscription RegisterDataChangedCallback(
+      base::RepeatingClosure callback);
+
   static void SetViewFactoryForTesting(ViewFactory factory);
   views::View* get_view_for_testing() { return node_view_; }
 
@@ -91,6 +94,7 @@ class TabCollectionNode {
                 size_t model_index);
 
   base::OnceClosureList on_will_destroy_callback_list_;
+  base::RepeatingClosureList on_data_changed_callback_list_;
 
   // the current collection_data object. provided by snapshot and updated
   // through TabObserver.

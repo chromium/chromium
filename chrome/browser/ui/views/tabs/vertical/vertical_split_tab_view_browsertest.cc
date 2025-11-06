@@ -82,9 +82,7 @@ IN_PROC_BROWSER_TEST_F(VerticalSplitTabViewTest, ProposedLayout_Unbounded) {
   auto children = split_tab_view->children();
   EXPECT_EQ(children.size(), 2);
   auto child1 = children[0];
-  child1->SetPreferredSize(gfx::Size(50, 50));
   auto child2 = children[1];
-  child2->SetPreferredSize(gfx::Size(50, 50));
 
   auto proposed_layout =
       split_tab_view->CalculateProposedLayout(views::SizeBounds());
@@ -120,10 +118,9 @@ IN_PROC_BROWSER_TEST_F(VerticalSplitTabViewTest, ProposedLayout_LargeBounds) {
   auto children = split_tab_view->children();
   EXPECT_EQ(children.size(), 2);
   auto child1 = children[0];
-  child1->SetPreferredSize(gfx::Size(50, 50));
   auto child2 = children[1];
-  child2->SetPreferredSize(gfx::Size(50, 50));
 
+  // Needs to be larger than 2 * kVerticalTabExpandedMinWidth.
   int available_width = 200;
   auto proposed_layout = split_tab_view->CalculateProposedLayout(
       views::SizeBounds(available_width, {}));
@@ -162,10 +159,9 @@ IN_PROC_BROWSER_TEST_F(VerticalSplitTabViewTest, ProposedLayout_LimitedBounds) {
   auto children = split_tab_view->children();
   EXPECT_EQ(children.size(), 2);
   auto child1 = children[0];
-  child1->SetPreferredSize(gfx::Size(50, 50));
   auto child2 = children[1];
-  child2->SetPreferredSize(gfx::Size(50, 50));
 
+  // Needs to be smaller than 2 * kVerticalTabExpandedMinWidth.
   int available_width = 75;
   auto proposed_layout = split_tab_view->CalculateProposedLayout(
       views::SizeBounds(available_width, {}));

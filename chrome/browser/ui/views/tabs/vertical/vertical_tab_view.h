@@ -12,6 +12,11 @@
 #include "ui/views/view.h"
 
 class TabCollectionNode;
+class VerticalTabIcon;
+
+namespace views {
+class Label;
+}
 
 // View for a vertical tabstrip's tab.
 class VerticalTabView : public views::View, public views::LayoutDelegate {
@@ -27,12 +32,20 @@ class VerticalTabView : public views::View, public views::LayoutDelegate {
   views::ProposedLayout CalculateProposedLayout(
       const views::SizeBounds& size_bounds) const override;
 
+  VerticalTabIcon* icon_for_testing() { return icon_; }
+
  private:
   void ResetCollectionNode();
+
+  void OnDataChanged();
 
   raw_ptr<TabCollectionNode> collection_node_ = nullptr;
 
   base::CallbackListSubscription node_destroyed_subscription_;
+  base::CallbackListSubscription data_changed_subscription_;
+
+  const raw_ptr<VerticalTabIcon> icon_;
+  const raw_ptr<views::Label> title_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_VERTICAL_VERTICAL_TAB_VIEW_H_

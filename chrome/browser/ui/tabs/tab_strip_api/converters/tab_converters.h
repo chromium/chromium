@@ -29,6 +29,11 @@ tabs_api::mojom::TabPtr BuildMojoTab(tabs::TabHandle handle,
 tabs_api::mojom::DataPtr BuildMojoTabCollectionData(
     tabs::TabCollectionHandle handle);
 
+// Converts mojom::NetworkState back to a TabNetworkState.
+// TODO(crbug.com/458095449): Consider using bimap or just static casting these
+// enums if maintaining both this and ToMojo gets out of hand.
+TabNetworkState FromMojo(mojom::NetworkState state);
+
 }  // namespace tabs_api::converters
 
 #endif  // CHROME_BROWSER_UI_TABS_TAB_STRIP_API_CONVERTERS_TAB_CONVERTERS_H_

@@ -156,4 +156,17 @@ tabs_api::mojom::DataPtr BuildMojoTabCollectionData(
   NOTREACHED();
 }
 
+TabNetworkState FromMojo(mojom::NetworkState state) {
+  switch (state) {
+    case mojom::NetworkState::kNone:
+      return TabNetworkState::kNone;
+    case mojom::NetworkState::kWaiting:
+      return TabNetworkState::kWaiting;
+    case mojom::NetworkState::kLoading:
+      return TabNetworkState::kLoading;
+    case mojom::NetworkState::kError:
+      return TabNetworkState::kError;
+  }
+}
+
 }  // namespace tabs_api::converters

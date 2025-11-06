@@ -41,6 +41,11 @@ base::CallbackListSubscription TabCollectionNode::RegisterWillDestroyCallback(
   return on_will_destroy_callback_list_.Add(std::move(callback));
 }
 
+base::CallbackListSubscription TabCollectionNode::RegisterDataChangedCallback(
+    base::RepeatingClosure callback) {
+  return on_data_changed_callback_list_.Add(std::move(callback));
+}
+
 // static
 void TabCollectionNode::SetViewFactoryForTesting(ViewFactory factory) {
   GetViewFactory() = std::move(factory);
@@ -99,7 +104,7 @@ std::unique_ptr<views::View> TabCollectionNode::Initialize(
 void TabCollectionNode::SetData(base::PassKey<TabCollectionNode> pass_key,
                                 tabs_api::mojom::DataPtr data) {
   data_ = std::move(data);
-  // TODO(crbug.com/439960283): Pipe data to node_view_.
+  on_data_changed_callback_list_.Notify();
 }
 
 // TODO(crbug.com/450976282): Consider having a map at the root level, or using

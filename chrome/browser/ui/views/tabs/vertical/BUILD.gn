@@ -50,6 +50,7 @@ source_set("impl") {
     "//chrome/browser/ui/actions:actions_headers",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/tabs/tab_strip_api",
+    "//chrome/browser/ui/tabs/tab_strip_api/converters",
     "//chrome/browser/ui/tabs/tab_strip_api/utilities",
   ]
 
