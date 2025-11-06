@@ -22,6 +22,9 @@ BASE_DECLARE_FEATURE(kAimServerEligibilityChangedNotification);
 // If enabled, makes a server request on service startup.
 BASE_DECLARE_FEATURE(kAimServerRequestOnStartupEnabled);
 
+// If enabled, delays the startup server request until the network is available.
+BASE_DECLARE_FEATURE(kAimStartupRequestDelayedUntilNetworkAvailableEnabled);
+
 // If enabled, makes a server request on identity changes.
 BASE_DECLARE_FEATURE(kAimServerRequestOnIdentityChangeEnabled);
 // Parameters that control whether to make a server request on cookie jar or

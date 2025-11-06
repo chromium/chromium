@@ -213,7 +213,12 @@ AimEligibilityService::AimEligibilityService(
   }
 }
 
-AimEligibilityService::~AimEligibilityService() = default;
+AimEligibilityService::~AimEligibilityService() {
+  if (base::FeatureList::IsEnabled(
+          omnibox::kAimStartupRequestDelayedUntilNetworkAvailableEnabled)) {
+    net::NetworkChangeNotifier::RemoveNetworkChangeObserver(this);
+  }
+}
 
 bool AimEligibilityService::IsCountry(const std::string& country) const {
   // Country codes are in lowercase ISO 3166-1 alpha-2 format; e.g., us, br, in.
@@ -333,8 +338,18 @@ void AimEligibilityService::Initialize() {
 
   LoadMostRecentResponse();
 
-  if (base::FeatureList::IsEnabled(
-          omnibox::kAimServerRequestOnStartupEnabled)) {
+  bool startup_request_enabled =
+      base::FeatureList::IsEnabled(omnibox::kAimServerRequestOnStartupEnabled);
+  bool startup_request_delayed_until_network_available_enabled =
+      base::FeatureList::IsEnabled(
+          omnibox::kAimStartupRequestDelayedUntilNetworkAvailableEnabled);
+  bool is_offline = net::NetworkChangeNotifier::IsOffline();
+
+  if (startup_request_enabled &&
+      startup_request_delayed_until_network_available_enabled && is_offline) {
+    net::NetworkChangeNotifier::AddNetworkChangeObserver(this);
+  } else if (startup_request_enabled) {
+    startup_request_sent_ = true;
     StartServerEligibilityRequest(RequestSource::kStartup);
   }
 
@@ -366,6 +381,22 @@ void AimEligibilityService::OnAccountsInCookieUpdated(
   // Change to the accounts in the cookie jar might affect AIM eligibility.
   // Refresh the server eligibility state.
   StartServerEligibilityRequest(RequestSource::kCookieChange);
+}
+
+void AimEligibilityService::OnNetworkChanged(
+    net::NetworkChangeNotifier::ConnectionType type) {
+  bool startup_request_enabled =
+      base::FeatureList::IsEnabled(omnibox::kAimServerRequestOnStartupEnabled);
+  bool startup_request_delayed_until_network_available_enabled =
+      base::FeatureList::IsEnabled(
+          omnibox::kAimStartupRequestDelayedUntilNetworkAvailableEnabled);
+  CHECK(startup_request_enabled);
+  CHECK(startup_request_delayed_until_network_available_enabled);
+  bool is_online = !net::NetworkChangeNotifier::IsOffline();
+  if (is_online && !startup_request_sent_) {
+    startup_request_sent_ = true;
+    StartServerEligibilityRequest(RequestSource::kNetworkChange);
+  }
 }
 
 void AimEligibilityService::OnEligibilityResponseChanged() {
@@ -481,6 +512,8 @@ std::string AimEligibilityService::GetHistogramNameSlicedByRequestSource(
         return ".CookieChange";
       case RequestSource::kPrimaryAccountChange:
         return ".PrimaryAccountChange";
+      case RequestSource::kNetworkChange:
+        return ".NetworkChange";
     }
     return "";
   };
