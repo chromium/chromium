@@ -362,8 +362,8 @@ final class ChromeAndroidTaskTrackerImpl implements ChromeAndroidTaskTracker {
         switch (createParams.getWindowType()) {
             case BrowserWindowType.NORMAL:
                 for (ChromeAndroidTask task : mTasks.values()) {
-                    // TODO(http://crbug.com/453777179): support an incognito window.
-                    var intent = task.createIntentForNormalBrowserWindow(/* isIncognito= */ false);
+                    boolean isIncognito = createParams.getProfile().isIncognitoBranded();
+                    var intent = task.createIntentForNormalBrowserWindow(isIncognito);
                     if (intent != null) {
                         return intent;
                     }
