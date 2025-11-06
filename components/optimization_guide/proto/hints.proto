@@ -357,6 +357,9 @@ enum OptimizationType {
   // Provides information about whether a page is eligible for walletable
   // loyalty pass detection.
   WALLETABLE_PASS_DETECTION_LOYALTY_ALLOWLIST = 108;
+  // Provides information about whether a page is eligible for walletable
+  // boarding pass detection.
+  WALLETABLE_PASS_DETECTION_BOARDING_PASS_ALLOWLIST = 109;
 }
 
 // Presents semantics for how page load URLs should be matched.
