@@ -102,7 +102,7 @@ CookieControlsBubbleViewController::CookieControlsBubbleViewController(
 }
 
 void CookieControlsBubbleViewController::OnUserClosedContentView() {
-  if (!controller_->StateChangedViaBypass() || controller_->ShowActFeatures()) {
+  if (!controller_->StateChangedViaBypass()) {
     CloseBubble();
     return;
   } else if (!web_contents_) {
