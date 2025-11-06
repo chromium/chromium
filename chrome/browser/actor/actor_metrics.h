@@ -38,10 +38,10 @@ void RecordToolTimings(std::string_view tool_name,
 void RecordActorTaskVisibilityDurationHistograms(
     base::TimeDelta visible_duration,
     base::TimeDelta non_visible_duration,
-    bool success);
+    ActorTask::StoppedReason stopped_reason);
 
 // Record task completion metrics.
-void RecordActorTaskCompletion(bool success,
+void RecordActorTaskCompletion(ActorTask::StoppedReason stopped_reason,
                                base::TimeDelta total_time,
                                base::TimeDelta controlled_time,
                                size_t interruptions_count,

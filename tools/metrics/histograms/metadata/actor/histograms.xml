@@ -38,6 +38,19 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/actor/actor_task.h:State) -->
 
+<!-- LINT.IfChange(StoppedReason) -->
+
+<variants name="StoppedReason">
+  <variant name="Cancelled" summary="Stopped by user."/>
+  <variant name="ChromeFailure"
+      summary="Some error in chrome caused the task to stop."/>
+  <variant name="Completed" summary="Completed."/>
+  <variant name="ModelError" summary="Model error."/>
+  <variant name="TabDetached" summary="The acting tab was closed."/>
+</variants>
+
+<!-- LINT.ThenChange(//chrome/browser/actor/actor_task.h:StoppedReason) -->
+
 <!-- LINT.IfChange(ToolRequest) -->
 
 <variants name="ToolRequest">
@@ -253,26 +266,16 @@ chromium-metrics-reviews@google.com.
   <summary>Number of tabs to observe in PerformActions response.</summary>
 </histogram>
 
-<histogram name="Actor.Task.Count.Cancelled" units="count"
+<histogram name="Actor.Task.Count.{StoppedReason}" units="count"
     expires_after="2026-08-11">
   <owner>dtapuska@google.com</owner>
   <owner>erikchen@google.com</owner>
   <owner>chrome-synapse-team@google.com</owner>
   <summary>
-    Recorded when a task is cancelled. This captures the number of the actions
-    in the task.
+    Recorded when a task is stopped with {StoppedReason}. This captures the
+    number of the actions in the task.
   </summary>
-</histogram>
-
-<histogram name="Actor.Task.Count.Completed" units="count"
-    expires_after="2026-08-11">
-  <owner>dtapuska@google.com</owner>
-  <owner>erikchen@google.com</owner>
-  <owner>chrome-synapse-team@google.com</owner>
-  <summary>
-    Recorded when a task is completed. This captures the number of actions in
-    the task.
-  </summary>
+  <token key="StoppedReason" variants="StoppedReason"/>
 </histogram>
 
 <histogram name="Actor.Task.Created" enum="Boolean" expires_after="2026-08-11">
@@ -285,124 +288,70 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Actor.Task.Duration.Cancelled" units="ms"
+<histogram name="Actor.Task.Duration.NotVisible.{StoppedReason}" units="ms"
+    expires_after="2026-08-11">
+  <owner>kenok@google.com</owner>
+  <owner>chrstne@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    Recorded when a task is stopped with {StoppedReason}. This captures the
+    total time the task was actuating while all of its controlled tabs are not
+    visible (when tab contents are OCCLUDED or HIDDEN).
+
+    This excludes time spent in paused states.
+  </summary>
+  <token key="StoppedReason" variants="StoppedReason"/>
+</histogram>
+
+<histogram name="Actor.Task.Duration.Visible.{StoppedReason}" units="ms"
+    expires_after="2026-08-11">
+  <owner>kenok@google.com</owner>
+  <owner>chrstne@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    Recorded when a task is stopped with {StoppedReason}. This captures the
+    total time the task was actuating while at least one of its controlled tabs
+    is visible.
+
+    This excludes time spent in paused states.
+  </summary>
+  <token key="StoppedReason" variants="StoppedReason"/>
+</histogram>
+
+<histogram name="Actor.Task.Duration.WallClock.{StoppedReason}" units="ms"
+    expires_after="2026-08-11">
+  <owner>dtapuska@google.com</owner>
+  <owner>bokan@google.com</owner>
+  <owner>chrome-synapse-team@google.com</owner>
+  <summary>
+    Recorded when a task is stopped with {StoppedReason}. This captures the
+    runtime of the task including any paused state.
+  </summary>
+  <token key="StoppedReason" variants="StoppedReason"/>
+</histogram>
+
+<histogram name="Actor.Task.Duration.{StoppedReason}" units="ms"
     expires_after="2026-08-11">
   <owner>dtapuska@google.com</owner>
   <owner>erikchen@google.com</owner>
   <owner>chrome-synapse-team@google.com</owner>
   <summary>
-    Recorded when a task is cancelled. This captures the runtime of the task
-    excluding any paused state.
+    Recorded when a task is stopped with {StoppedReason}. This captures the
+    runtime of the task excluding any paused state.
   </summary>
+  <token key="StoppedReason" variants="StoppedReason"/>
 </histogram>
 
-<histogram name="Actor.Task.Duration.Completed" units="ms"
-    expires_after="2026-08-11">
-  <owner>dtapuska@google.com</owner>
-  <owner>erikchen@google.com</owner>
-  <owner>chrome-synapse-team@google.com</owner>
-  <summary>
-    Recorded when a task is completed. This captures the runtime of the task
-    excluding any paused state.
-  </summary>
-</histogram>
-
-<histogram name="Actor.Task.Duration.NotVisible.Cancelled" units="ms"
-    expires_after="2026-08-11">
-  <owner>kenok@google.com</owner>
-  <owner>chrstne@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <summary>
-    Recorded when a task is cancelled. This captures the total time the task was
-    actuating while all of its controlled tabs are not visible (when tab
-    contents are OCCLUDED or HIDDEN).
-
-    This excludes time spent in paused states.
-  </summary>
-</histogram>
-
-<histogram name="Actor.Task.Duration.NotVisible.Completed" units="ms"
-    expires_after="2026-08-11">
-  <owner>kenok@google.com</owner>
-  <owner>chrstne@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <summary>
-    Recorded when a task is completed. This captures the total time the task was
-    actuating while all of its controlled tabs are not visible (when tab
-    contents are OCCLUDED or HIDDEN).
-
-    This excludes time spent in paused states.
-  </summary>
-</histogram>
-
-<histogram name="Actor.Task.Duration.Visible.Cancelled" units="ms"
-    expires_after="2026-08-11">
-  <owner>kenok@google.com</owner>
-  <owner>chrstne@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <summary>
-    Recorded when a task is cancelled. This captures the total time the task was
-    actuating while at least one of its controlled tabs is visible.
-
-    This excludes time spent in paused states.
-  </summary>
-</histogram>
-
-<histogram name="Actor.Task.Duration.Visible.Completed" units="ms"
-    expires_after="2026-08-11">
-  <owner>kenok@google.com</owner>
-  <owner>chrstne@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <summary>
-    Recorded when a task is completed. This captures the total time the task was
-    actuating while at least one of its controlled tabs is visible.
-
-    This excludes time spent in paused states.
-  </summary>
-</histogram>
-
-<histogram name="Actor.Task.Duration.WallClock.Cancelled" units="ms"
+<histogram name="Actor.Task.Interruptions.{StoppedReason}" units="count"
     expires_after="2026-08-11">
   <owner>dtapuska@google.com</owner>
   <owner>bokan@google.com</owner>
   <owner>chrome-synapse-team@google.com</owner>
   <summary>
-    Recorded when a task is cancelled. This captures the runtime of the task
-    including any paused state.
+    Recorded when a task is stopped with {StoppedReason}. This captures the
+    number of times the task was interrupted.
   </summary>
-</histogram>
-
-<histogram name="Actor.Task.Duration.WallClock.Completed" units="ms"
-    expires_after="2026-08-11">
-  <owner>dtapuska@google.com</owner>
-  <owner>bokan@google.com</owner>
-  <owner>chrome-synapse-team@google.com</owner>
-  <summary>
-    Recorded when a task is completed. This captures the runtime of the task
-    including any paused state.
-  </summary>
-</histogram>
-
-<histogram name="Actor.Task.Interruptions.Cancelled" units="count"
-    expires_after="2026-08-11">
-  <owner>dtapuska@google.com</owner>
-  <owner>bokan@google.com</owner>
-  <owner>chrome-synapse-team@google.com</owner>
-  <summary>
-    Recorded when a task is cancelled. This captures the number of times the
-    task was interrupted.
-  </summary>
-</histogram>
-
-<histogram name="Actor.Task.Interruptions.Completed" units="count"
-    expires_after="2026-08-11">
-  <owner>dtapuska@google.com</owner>
-  <owner>bokan@google.com</owner>
-  <owner>chrome-synapse-team@google.com</owner>
-  <summary>
-    Recorded when a task is completed. This captures the number of times the
-    task was interrupted.
-  </summary>
+  <token key="StoppedReason" variants="StoppedReason"/>
 </histogram>
 
 <histogram name="Actor.Task.StateTransition.ActionCount.{OldState}_{NewState}"

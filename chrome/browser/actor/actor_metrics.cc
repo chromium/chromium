@@ -12,8 +12,20 @@
 namespace actor {
 
 namespace {
-std::string_view ToCancelledOrCompleted(bool success) {
-  return success ? "Completed" : "Cancelled";
+std::string_view ToString(ActorTask::StoppedReason stopped_reason) {
+  switch (stopped_reason) {
+    case ActorTask::StoppedReason::kStoppedByUser:
+      return "Cancelled";
+    case ActorTask::StoppedReason::kTaskComplete:
+      return "Completed";
+    case ActorTask::StoppedReason::kModelError:
+      return "ModelError";
+    case ActorTask::StoppedReason::kChromeFailure:
+      return "ChromeFailure";
+    case ActorTask::StoppedReason::kTabDetached:
+      return "TabDetached";
+  }
+  NOTREACHED();
 }
 }  // namespace
 
@@ -47,35 +59,33 @@ void RecordToolTimings(std::string_view tool_name,
 void RecordActorTaskVisibilityDurationHistograms(
     base::TimeDelta visible_duration,
     base::TimeDelta non_visible_duration,
-    bool success) {
+    ActorTask::StoppedReason stopped_reason) {
   base::UmaHistogramLongTimes100(
-      base::StrCat(
-          {"Actor.Task.Duration.Visible.", ToCancelledOrCompleted(success)}),
+      base::StrCat({"Actor.Task.Duration.Visible.", ToString(stopped_reason)}),
       visible_duration);
 
   base::UmaHistogramLongTimes100(
       base::StrCat(
-          {"Actor.Task.Duration.NotVisible.", ToCancelledOrCompleted(success)}),
+          {"Actor.Task.Duration.NotVisible.", ToString(stopped_reason)}),
       non_visible_duration);
 }
 
-void RecordActorTaskCompletion(bool success,
+void RecordActorTaskCompletion(ActorTask::StoppedReason stopped_reason,
                                base::TimeDelta total_time,
                                base::TimeDelta controlled_time,
                                size_t interruptions_count,
                                size_t actions_count) {
+  base::UmaHistogramLongTimes100(base::StrCat({"Actor.Task.Duration.WallClock.",
+                                               ToString(stopped_reason)}),
+                                 total_time);
   base::UmaHistogramLongTimes100(
-      base::StrCat(
-          {"Actor.Task.Duration.WallClock.", ToCancelledOrCompleted(success)}),
-      total_time);
-  base::UmaHistogramLongTimes100(
-      base::StrCat({"Actor.Task.Duration.", ToCancelledOrCompleted(success)}),
+      base::StrCat({"Actor.Task.Duration.", ToString(stopped_reason)}),
       controlled_time);
-  base::UmaHistogramCounts1000(base::StrCat({"Actor.Task.Interruptions.",
-                                             ToCancelledOrCompleted(success)}),
-                               interruptions_count);
   base::UmaHistogramCounts1000(
-      base::StrCat({"Actor.Task.Count.", ToCancelledOrCompleted(success)}),
+      base::StrCat({"Actor.Task.Interruptions.", ToString(stopped_reason)}),
+      interruptions_count);
+  base::UmaHistogramCounts1000(
+      base::StrCat({"Actor.Task.Count.", ToString(stopped_reason)}),
       actions_count);
 }
 

@@ -231,11 +231,12 @@ void ActorTask::SetState(State new_state) {
   actor::ActorKeyedService::Get(profile_)->NotifyTaskStateChanged(*this);
 
   // If the state is to be finished/cancelled record a histogram.
-  if (state_ == kFinished || state_ == kCancelled) {
+  if (state_ == kFinished || state_ == kCancelled || state_ == kFailed) {
+    CHECK(stopped_reason_.has_value());
     RecordActorTaskVisibilityDurationHistograms(
-        total_time_visible_, total_time_not_visible_, state_ == kFinished);
+        total_time_visible_, total_time_not_visible_, stopped_reason_.value());
     RecordActorTaskCompletion(
-        state_ == kFinished, base::TimeTicks::Now() - create_time_,
+        stopped_reason_.value(), base::TimeTicks::Now() - create_time_,
         total_actor_controlled_active_time_, total_number_of_interruptions_,
         total_number_of_actions_);
   }
@@ -311,6 +312,7 @@ void ActorTask::Stop(StoppedReason stop_reason) {
       final_state = State::kFailed;
       break;
   }
+  stopped_reason_ = stop_reason;
   SetState(final_state);
 }
 

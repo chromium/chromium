@@ -60,6 +60,7 @@ using testing::Property;
 using testing::VariantWith;
 using ChangeTaskState = ui::UiEventDispatcher::ChangeTaskState;
 using AddTab = ui::UiEventDispatcher::AddTab;
+using enum ActorTask::StoppedReason;
 
 namespace {
 constexpr int kFakeContentNodeId = 123;
@@ -67,10 +68,6 @@ constexpr char kActionResultHistogram[] =
     "Actor.ExecutionEngine.Action.ResultCode";
 constexpr char kActorTaskDurationCompletedHistogram[] =
     "Actor.Task.Duration.Completed";
-constexpr char kActorTaskDurationCancelledHistogram[] =
-    "Actor.Task.Duration.Cancelled";
-constexpr char kActorTaskCountCancelledHistogram[] =
-    "Actor.Task.Count.Cancelled";
 constexpr char kActorTaskCountCompletedHistogram[] =
     "Actor.Task.Count.Completed";
 constexpr char kActorClickToolDurationSuccessHistogram[] =
@@ -81,17 +78,10 @@ constexpr char kActorTaskInterruptionCompletedHistogram[] =
     "Actor.Task.Interruptions.Completed";
 constexpr char kActorTaskDurationWallClockCompletedHistogram[] =
     "Actor.Task.Duration.WallClock.Completed";
-constexpr char kActorTaskDurationWallClockCancelledHistogram[] =
-    "Actor.Task.Duration.WallClock.Cancelled";
-
 constexpr char kActorTaskDurationVisibleCompletedHistogram[] =
     "Actor.Task.Duration.Visible.Completed";
 constexpr char kActorTaskDurationNotVisibleCompletedHistogram[] =
     "Actor.Task.Duration.NotVisible.Completed";
-constexpr char kActorTaskDurationVisibleCancelledHistogram[] =
-    "Actor.Task.Duration.Visible.Cancelled";
-constexpr char kActorTaskDurationNotVisibleCancelledHistogram[] =
-    "Actor.Task.Duration.NotVisible.Cancelled";
 
 class FakeChromeRenderFrame : public chrome::mojom::ChromeRenderFrame {
  public:
@@ -499,7 +489,7 @@ TEST_F(ExecutionEngineTest, ActorTaskCompletedHistogram) {
   const base::TimeDelta task_duration = base::Milliseconds(123);
   task_environment()->FastForwardBy(task_duration);
 
-  task_->Stop(ActorTask::StoppedReason::kTaskComplete);
+  task_->Stop(kTaskComplete);
   histograms_.ExpectTimeBucketCount(kActorTaskDurationCompletedHistogram,
                                     task_duration, 1);
   histograms_.ExpectBucketCount(kActorTaskCountCompletedHistogram, 4, 1);
@@ -535,7 +525,7 @@ TEST_F(ExecutionEngineTest, ActorTaskCompletedWithPauseHistogram) {
   const base::TimeDelta active_duration2 = base::Milliseconds(50);
   task_environment()->FastForwardBy(active_duration2);
 
-  task_->Stop(ActorTask::StoppedReason::kTaskComplete);
+  task_->Stop(kTaskComplete);
   histograms_.ExpectTimeBucketCount(kActorTaskDurationCompletedHistogram,
                                     active_duration1 + active_duration2, 1);
   histograms_.ExpectBucketCount(kActorTaskCountCompletedHistogram, 1, 1);
@@ -544,7 +534,15 @@ TEST_F(ExecutionEngineTest, ActorTaskCompletedWithPauseHistogram) {
       1);
 }
 
-TEST_F(ExecutionEngineTest, ActorTaskCancelledHistogram) {
+class ExecutionEngineStopReasonParamTest
+    : public ExecutionEngineTest,
+      public testing::WithParamInterface<
+          std::tuple<ActorTask::StoppedReason, const char*>> {
+ public:
+  ExecutionEngineStopReasonParamTest() = default;
+};
+
+TEST_P(ExecutionEngineStopReasonParamTest, ActorTaskStoppedHistogram) {
   content::NavigationSimulator::NavigateAndCommitFromBrowser(
       web_contents(), GURL("http://localhost/"));
 
@@ -562,12 +560,17 @@ TEST_F(ExecutionEngineTest, ActorTaskCancelledHistogram) {
   const base::TimeDelta task_duration = base::Milliseconds(456);
   task_environment()->FastForwardBy(task_duration);
 
-  task_->Stop(ActorTask::StoppedReason::kStoppedByUser);
-  histograms_.ExpectTimeBucketCount(kActorTaskDurationCancelledHistogram,
-                                    task_duration, 1);
-  histograms_.ExpectBucketCount(kActorTaskCountCancelledHistogram, 2, 1);
+  auto [stopped_reason, histogram_suffix] = GetParam();
+  task_->Stop(stopped_reason);
+
   histograms_.ExpectTimeBucketCount(
-      kActorTaskDurationWallClockCancelledHistogram, task_duration, 1);
+      base::StrCat({"Actor.Task.Duration.", histogram_suffix}), task_duration,
+      1);
+  histograms_.ExpectBucketCount(
+      base::StrCat({"Actor.Task.Count.", histogram_suffix}), 2, 1);
+  histograms_.ExpectTimeBucketCount(
+      base::StrCat({"Actor.Task.Duration.WallClock.", histogram_suffix}),
+      task_duration, 1);
 }
 
 TEST_F(ExecutionEngineTest, ActorTaskCountAndDurationHistograms) {
@@ -625,7 +628,7 @@ TEST_F(ExecutionEngineTest, ActorTaskCountAndDurationHistograms) {
 
   // Task in Finished state.
   task_environment()->FastForwardBy(reflecting_duration);
-  task_->Stop(ActorTask::StoppedReason::kTaskComplete);
+  task_->Stop(kTaskComplete);
   histograms_.ExpectTimeBucketCount(
       "Actor.Task.StateTransition.Duration.Reflecting", reflecting_duration, 2);
   histograms_.ExpectBucketCount(
@@ -702,7 +705,7 @@ TEST_F(ExecutionEngineTest, CompletedWithInterruptHistogram) {
   const base::TimeDelta active_duration2 = base::Milliseconds(50);
   task_environment()->FastForwardBy(active_duration2);
 
-  task_->Stop(ActorTask::StoppedReason::kTaskComplete);
+  task_->Stop(kTaskComplete);
   histograms_.ExpectTimeBucketCount(kActorTaskDurationCompletedHistogram,
                                     active_duration1 + active_duration2, 1);
   histograms_.ExpectBucketCount(kActorTaskCountCompletedHistogram, 1, 1);
@@ -729,7 +732,7 @@ TEST_F(ExecutionEngineTest, VisibleNotVisibleActuationCompletedHistogram) {
   const base::TimeDelta not_visible_duration = base::Milliseconds(50);
   task_environment()->FastForwardBy(not_visible_duration);
 
-  task_->Stop(ActorTask::StoppedReason::kTaskComplete);
+  task_->Stop(kTaskComplete);
 
   histograms_.ExpectTimeBucketCount(kActorTaskDurationVisibleCompletedHistogram,
                                     visible_duration, 1);
@@ -738,7 +741,8 @@ TEST_F(ExecutionEngineTest, VisibleNotVisibleActuationCompletedHistogram) {
       kActorTaskDurationNotVisibleCompletedHistogram, not_visible_duration, 1);
 }
 
-TEST_F(ExecutionEngineTest, VisibleNotVisibleActuationCancelledHistogram) {
+TEST_P(ExecutionEngineStopReasonParamTest,
+       VisibleNotVisibleActuationStoppedHistogram) {
   content::NavigationSimulator::NavigateAndCommitFromBrowser(
       web_contents(), GURL("http://localhost/"));
   task_->AddTab(GetTab()->GetHandle(), base::DoNothing());
@@ -755,12 +759,15 @@ TEST_F(ExecutionEngineTest, VisibleNotVisibleActuationCancelledHistogram) {
   const base::TimeDelta not_visible_duration = base::Milliseconds(50);
   task_environment()->FastForwardBy(not_visible_duration);
 
-  task_->Stop(ActorTask::StoppedReason::kStoppedByUser);
+  auto [stopped_reason, histogram_suffix] = GetParam();
+  task_->Stop(stopped_reason);
 
-  histograms_.ExpectTimeBucketCount(kActorTaskDurationVisibleCancelledHistogram,
-                                    visible_duration, 1);
   histograms_.ExpectTimeBucketCount(
-      kActorTaskDurationNotVisibleCancelledHistogram, not_visible_duration, 1);
+      base::StrCat({"Actor.Task.Duration.Visible.", histogram_suffix}),
+      visible_duration, 1);
+  histograms_.ExpectTimeBucketCount(
+      base::StrCat({"Actor.Task.Duration.NotVisible.", histogram_suffix}),
+      not_visible_duration, 1);
 }
 
 TEST_F(ExecutionEngineTest, VisibleNotVisibleActuationWithPauseHistogram) {
@@ -786,7 +793,7 @@ TEST_F(ExecutionEngineTest, VisibleNotVisibleActuationWithPauseHistogram) {
   const base::TimeDelta visible_duration2 = base::Milliseconds(50);
   task_environment()->FastForwardBy(visible_duration2);
 
-  task_->Stop(ActorTask::StoppedReason::kTaskComplete);
+  task_->Stop(kTaskComplete);
 
   histograms_.ExpectTimeBucketCount(kActorTaskDurationVisibleCompletedHistogram,
                                     visible_duration1 + visible_duration2, 1);
@@ -819,7 +826,7 @@ TEST_F(ExecutionEngineTest, VisibleNotVisibleActuationWithWaitingHistogram) {
   const base::TimeDelta visible_duration2 = base::Milliseconds(50);
   task_environment()->FastForwardBy(visible_duration2);
 
-  task_->Stop(ActorTask::StoppedReason::kTaskComplete);
+  task_->Stop(kTaskComplete);
 
   histograms_.ExpectTimeBucketCount(
       kActorTaskDurationVisibleCompletedHistogram,
@@ -858,6 +865,15 @@ TEST_F(ExecutionEngineTest,
       received_requests[0].requested_data,
       optimization_guide::proto::FormFillingRequest_RequestedData_ADDRESS);
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ExecutionEngineStopReasonParamTest,
+    testing::Values(std::make_tuple(kStoppedByUser, "Cancelled"),
+                    std::make_tuple(kTaskComplete, "Completed"),
+                    std::make_tuple(kModelError, "ModelError"),
+                    std::make_tuple(kChromeFailure, "ChromeFailure"),
+                    std::make_tuple(kTabDetached, "TabDetached")));
 
 }  // namespace
 
