@@ -403,8 +403,7 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
       performAction:grey_tap()];
   [ChromeEarlGrey
       waitForSufficientlyVisibleElementWithMatcher:chrome_test_util::Omnibox()];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-      performAction:grey_replaceText(URL)];
+  [ChromeEarlGreyUI replaceTextInOmnibox:URL];
 
   // The first suggestion is a search, the second suggestion is the URL.
   id<GREYMatcher> rowMatcher = grey_allOf(
@@ -811,8 +810,7 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
       assertWithMatcher:grey_sufficientlyVisible()];
 
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-      performAction:grey_replaceText(URL)];
+  [ChromeEarlGreyUI replaceTextInOmnibox:URL];
   // TODO(crbug.com/40916974): Use simulatePhysicalKeyboardEvent until
   // replaceText can properly handle \n.
   [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"\n" flags:0];
@@ -1256,7 +1254,7 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
   [self focusFakebox];
   NSString* omniboxText = @"Some text";
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-      performAction:grey_replaceText(omniboxText)];
+      performAction:grey_typeText(omniboxText)];
 
   // Check that the omnibox contains the inputted text.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
@@ -1277,7 +1275,7 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
   [self focusFakebox];
   NSString* omniboxText = @"Some text";
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-      performAction:grey_replaceText(omniboxText)];
+      performAction:grey_typeText(omniboxText)];
 
   // Check that the omnibox contains the inputted text.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
