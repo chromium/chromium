@@ -97,7 +97,6 @@ class BwgTabHelper : public web::WebStateObserver,
                           web::NavigationContext* navigation_context) override;
   void DidFinishNavigation(web::WebState* web_state,
                            web::NavigationContext* navigation_context) override;
-  void DidStartLoading(web::WebState* web_state) override;
   void PageLoaded(
       web::WebState* web_state,
       web::PageLoadCompletionStatus load_completion_status) override;
@@ -109,6 +108,12 @@ class BwgTabHelper : public web::WebStateObserver,
   explicit BwgTabHelper(web::WebState* web_state);
 
   friend class web::WebStateUserData<BwgTabHelper>;
+
+  // Callback for the OptimizationGuide with the result of whether the
+  // zero-state suggestions should be shown for the current URL.
+  void OnCanApplyZeroStateSuggestionsDecision(
+      optimization_guide::OptimizationGuideDecision decision,
+      const optimization_guide::OptimizationMetadata& metadata);
 
   // Callback from OptimizationGuide metadata request.
   void OnOptimizationGuideDecision(
@@ -193,6 +198,9 @@ class BwgTabHelper : public web::WebStateObserver,
 
   // Callback to be run when the page has finished loading.
   base::OnceClosure page_loaded_callback_;
+
+  // Whether zero-state suggestions can be applied for the current page.
+  bool can_apply_zero_state_suggestions_ = false;
 
   base::WeakPtrFactory<BwgTabHelper> weak_ptr_factory_{this};
 };

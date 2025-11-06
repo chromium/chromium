@@ -123,6 +123,13 @@ BwgTabHelper::~BwgTabHelper() {
 
 void BwgTabHelper::ExecuteZeroStateSuggestions(
     base::OnceCallback<void(NSArray<NSString*>* suggestions)> callback) {
+  CHECK(IsZeroStateSuggestionsEnabled());
+
+  if (!can_apply_zero_state_suggestions_) {
+    std::move(callback).Run(nil);
+    return;
+  }
+
   if (zero_state_suggestions_.has_value()) {
     std::move(callback).Run(
         ZeroStateSuggestionsAsNSArray(zero_state_suggestions_.value()));
@@ -301,12 +308,14 @@ void BwgTabHelper::DidStartNavigation(
   // Cancel the callback that runs on page load, since we're now going to a new
   // page.
   page_loaded_callback_.Reset();
+  zero_state_suggestions_ = std::nullopt;
+  can_apply_zero_state_suggestions_ = false;
 }
 
 void BwgTabHelper::DidFinishNavigation(
     web::WebState* web_state,
     web::NavigationContext* navigation_context) {
-  if (!IsAskGeminiChipEnabled()) {
+  if (!IsAskGeminiChipEnabled() && !IsZeroStateSuggestionsEnabled()) {
     return;
   }
 
@@ -323,14 +332,19 @@ void BwgTabHelper::DidFinishNavigation(
     return;
   }
 
-  optimization_guide_decider_->CanApplyOptimization(
-      current_url, optimization_guide::proto::GLIC_CONTEXTUAL_CUEING,
-      base::BindOnce(&BwgTabHelper::OnOptimizationGuideDecision,
-                     weak_ptr_factory_.GetWeakPtr(), current_url));
-}
+  if (IsAskGeminiChipEnabled()) {
+    optimization_guide_decider_->CanApplyOptimization(
+        current_url, optimization_guide::proto::GLIC_CONTEXTUAL_CUEING,
+        base::BindOnce(&BwgTabHelper::OnOptimizationGuideDecision,
+                       weak_ptr_factory_.GetWeakPtr(), current_url));
+  }
 
-void BwgTabHelper::DidStartLoading(web::WebState* web_state) {
-  zero_state_suggestions_ = std::nullopt;
+  if (IsZeroStateSuggestionsEnabled()) {
+    optimization_guide_decider_->CanApplyOptimization(
+        current_url, optimization_guide::proto::GLIC_ZERO_STATE_SUGGESTIONS,
+        base::BindOnce(&BwgTabHelper::OnCanApplyZeroStateSuggestionsDecision,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
 }
 
 void BwgTabHelper::PageLoaded(
@@ -476,6 +490,13 @@ void BwgTabHelper::OnOptimizationGuideDecision(
 
     [snackbar_commands_handler_ showSnackbarMessage:message];
   }
+}
+
+void BwgTabHelper::OnCanApplyZeroStateSuggestionsDecision(
+    optimization_guide::OptimizationGuideDecision decision,
+    const optimization_guide::OptimizationMetadata& metadata) {
+  can_apply_zero_state_suggestions_ =
+      decision == optimization_guide::OptimizationGuideDecision::kTrue;
 }
 
 void BwgTabHelper::ParseSuggestionsResponse(
