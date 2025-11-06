@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.omnibox.fusebox;
 
+import android.content.res.ColorStateList;
+import android.graphics.drawable.Drawable;
+
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
@@ -44,6 +47,22 @@ class NavigationAttachmentsProperties {
     /** Action to perform when the user clicks the Add button. */
     public static final WritableObjectPropertyKey<Runnable> BUTTON_ADD_CLICKED =
             new WritableObjectPropertyKey<>();
+
+    /** Action to perform when the user clicks the "add current tab" button */
+    public static final WritableObjectPropertyKey<Runnable> CURRENT_TAB_BUTTON_CLICKED =
+            new WritableObjectPropertyKey<>();
+
+    /** Thumbnail for the add current tab button */
+    public static final WritableObjectPropertyKey<Drawable> CURRENT_TAB_BUTTON_THUMBNAIL =
+            new WritableObjectPropertyKey<>();
+
+    /** Tint for the add current tab button */
+    public static final WritableObjectPropertyKey<ColorStateList> CURRENT_TAB_BUTTON_TINT =
+            new WritableObjectPropertyKey<>();
+
+    /** Whether the current tab button is visible. */
+    public static final WritableBooleanPropertyKey CURRENT_TAB_BUTTON_VISIBLE =
+            new WritableBooleanPropertyKey();
 
     /** Action to perform when the user clicks the AI Mode button in the popup. */
     public static final WritableObjectPropertyKey<Runnable> POPUP_AI_MODE_CLICKED =
@@ -90,6 +109,10 @@ class NavigationAttachmentsProperties {
         AUTOCOMPLETE_REQUEST_TYPE_CHANGEABLE,
         AUTOCOMPLETE_REQUEST_TYPE_CLICKED,
         BUTTON_ADD_CLICKED,
+        CURRENT_TAB_BUTTON_CLICKED,
+        CURRENT_TAB_BUTTON_THUMBNAIL,
+        CURRENT_TAB_BUTTON_TINT,
+        CURRENT_TAB_BUTTON_VISIBLE,
         POPUP_AI_MODE_CLICKED,
         POPUP_CAMERA_CLICKED,
         POPUP_CLIPBOARD_BUTTON_VISIBLE,

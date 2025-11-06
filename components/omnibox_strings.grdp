@@ -167,6 +167,9 @@
       <message name="IDS_OMNIBOX_NAVATTACH_TABS" desc="The text displayed in the omnibox attachments popup. When clicked - opens tabs picker." formatter_data="android_java">
         Tabs
       </message>
+      <message name="IDS_FUSEBOX_ADD_CURRENT_TAB" desc="The text displayed in the omnibox attachments popup. When clicked - adds the curernt tab as context." formatter_data="android_java">
+        Add current tab
+      </message>
     </if>
   </if>
   <if expr="is_android">

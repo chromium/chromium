@@ -22,11 +22,9 @@ import android.os.Build;
 import android.provider.MediaStore;
 import android.text.TextUtils;
 
+import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
-
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Ordering;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -53,7 +51,6 @@ import org.chromium.url.GURL;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 /** Mediator for the Navigation Attachments component. */
@@ -63,7 +60,6 @@ class NavigationAttachmentsMediator {
     private static final String CHROME_ITEM_PICKER_ACTIVITY_CLASS =
             "org.chromium.chrome.browser.chrome_item_picker.ChromeItemPickerActivity";
     private static final String MIMETYPE_IMAGE_ANY = "image/*";
-    private static final int MAX_RECENT_TABS_TO_PRESENT = 5;
     private final Context mContext;
     private final WindowAndroid mWindowAndroid;
     private final AndroidPermissionDelegate mPermissionDelegate;
@@ -71,11 +67,11 @@ class NavigationAttachmentsMediator {
     private final NavigationAttachmentsPopup mPopup;
     private final ModelList mModelList;
     private final ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
-    private final ModelList mTabAttachmentsModelList;
     private final Drawable mFallbackDrawable;
     private final ObservableSupplierImpl<@AutocompleteRequestType Integer>
             mAutocompleteRequestTypeSupplier;
     private final ComposeBoxQueryControllerBridge mComposeBoxQueryControllerBridge;
+    private final @Px int mPopupItemIconSizePx;
 
     NavigationAttachmentsMediator(
             Context context,
@@ -86,7 +82,6 @@ class NavigationAttachmentsMediator {
             ObservableSupplierImpl<@AutocompleteRequestType Integer>
                     autocompleteRequestTypeSupplier,
             ObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
-            ModelList tabAttachmentsModelList,
             ComposeBoxQueryControllerBridge composeBoxQueryControllerBridge) {
         mContext = context;
         mWindowAndroid = windowAndroid;
@@ -95,11 +90,12 @@ class NavigationAttachmentsMediator {
         mPopup = viewHolder.popup;
         mModelList = modelList;
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
-        mTabAttachmentsModelList = tabAttachmentsModelList;
         mFallbackDrawable =
                 AppCompatResources.getDrawable(mContext, R.drawable.ic_attach_file_24dp);
         mAutocompleteRequestTypeSupplier = autocompleteRequestTypeSupplier;
         mComposeBoxQueryControllerBridge = composeBoxQueryControllerBridge;
+        mPopupItemIconSizePx =
+                mContext.getResources().getDimensionPixelSize(R.dimen.fusebox_popup_item_icon_size);
 
         mAutocompleteRequestTypeSupplier.addObserver(
                 (type) ->
@@ -197,7 +193,7 @@ class NavigationAttachmentsMediator {
         if (mPopup.isShowing()) {
             mPopup.dismiss();
         } else {
-            buildModelListForRecentTabs();
+            updateModelForCurrentTab();
             mModel.set(
                     NavigationAttachmentsProperties.POPUP_CLIPBOARD_BUTTON_VISIBLE,
                     Clipboard.getInstance().hasImage());
@@ -205,56 +201,58 @@ class NavigationAttachmentsMediator {
         }
     }
 
-    private void buildModelListForRecentTabs() {
-        mTabAttachmentsModelList.clear();
-        if (mTabModelSelectorSupplier.get() == null) {
-            mModel.set(NavigationAttachmentsProperties.RECENT_TABS_HEADER_VISIBLE, false);
+    private void updateModelForCurrentTab() {
+        if (mTabModelSelectorSupplier.get() == null
+                || mTabModelSelectorSupplier.get().getCurrentTab() == null) {
+            mModel.set(NavigationAttachmentsProperties.CURRENT_TAB_BUTTON_VISIBLE, false);
             return;
         }
 
         TabModelSelector tabModelSelector = mTabModelSelectorSupplier.get();
         assumeNonNull(tabModelSelector);
-        Iterable<Tab> filteredTabs =
-                Iterables.filter(
-                        tabModelSelector.getCurrentModel(),
-                        (tab) ->
-                                !tab.isIncognitoBranded()
-                                        && tab.isInitialized()
-                                        && !tab.isFrozen()
-                                        && (tab.getUrl()
-                                                        .getScheme()
-                                                        .equals(UrlConstants.HTTP_SCHEME)
-                                                || tab.getUrl()
-                                                        .getScheme()
-                                                        .equals(UrlConstants.HTTPS_SCHEME)));
-        List<Tab> tabs =
-                Ordering.from(Comparator.comparingLong(Tab::getTimestampMillis))
-                        .greatestOf(filteredTabs, MAX_RECENT_TABS_TO_PRESENT);
-        for (Tab tab : tabs) {
-            PropertyModel tabProperties =
-                    new PropertyModel.Builder(TabAttachmentPopupChoiceProperties.ALL_KEYS)
-                            .with(
-                                    TabAttachmentPopupChoiceProperties.ON_CLICK_LISTENER,
-                                    (v) -> onTabAttachmentClicked(tab))
-                            .with(
-                                    TabAttachmentPopupChoiceProperties.THUMBNAIL,
-                                    new BitmapDrawable(
-                                            mContext.getResources(),
-                                            OmniboxResourceProvider.getFaviconBitmapForTab(tab)))
-                            .with(TabAttachmentPopupChoiceProperties.TITLE, tab.getTitle())
-                            .build();
-            ListItem listItem =
-                    new ListItem(
-                            TabAttachmentPopupChoicesRecyclerViewAdapter.TAB_ATTACHMENT_ITEM_TYPE,
-                            tabProperties);
-            mTabAttachmentsModelList.add(listItem);
+        Tab currentTab = assumeNonNull(tabModelSelector.getCurrentTab());
+        boolean tabIsEligible =
+                currentTab != null
+                        && !currentTab.isIncognitoBranded()
+                        && currentTab.isInitialized()
+                        && !currentTab.isFrozen()
+                        && (currentTab.getUrl().getScheme().equals(UrlConstants.HTTP_SCHEME)
+                                || currentTab
+                                        .getUrl()
+                                        .getScheme()
+                                        .equals(UrlConstants.HTTPS_SCHEME));
+
+        if (tabIsEligible) {
+            mModel.set(NavigationAttachmentsProperties.CURRENT_TAB_BUTTON_VISIBLE, true);
+            mModel.set(
+                    NavigationAttachmentsProperties.CURRENT_TAB_BUTTON_CLICKED,
+                    () -> onAddCurrentTab(currentTab));
+            Drawable drawable;
+            var favicon = OmniboxResourceProvider.getFaviconBitmapForTab(currentTab);
+            if (favicon != null) {
+                var bitmap =
+                        Bitmap.createScaledBitmap(
+                                favicon,
+                                mPopupItemIconSizePx,
+                                mPopupItemIconSizePx,
+                                /* filter= */ true);
+                drawable = new BitmapDrawable(mContext.getResources(), bitmap);
+                drawable.setBounds(0, 0, mPopupItemIconSizePx, mPopupItemIconSizePx);
+                mModel.set(NavigationAttachmentsProperties.CURRENT_TAB_BUTTON_TINT, null);
+            } else {
+                drawable = assumeNonNull(mContext.getDrawable(R.drawable.ic_globe_24dp));
+                mModel.set(
+                        NavigationAttachmentsProperties.CURRENT_TAB_BUTTON_TINT,
+                        mContext.getColorStateList(R.color.default_icon_color_tint_list));
+            }
+
+            mModel.set(NavigationAttachmentsProperties.CURRENT_TAB_BUTTON_THUMBNAIL, drawable);
+        } else {
+            mModel.set(NavigationAttachmentsProperties.CURRENT_TAB_BUTTON_VISIBLE, false);
         }
-        mModel.set(
-                NavigationAttachmentsProperties.RECENT_TABS_HEADER_VISIBLE,
-                !mTabAttachmentsModelList.isEmpty());
     }
 
-    private void onTabAttachmentClicked(Tab tab) {
+    private void onAddCurrentTab(Tab tab) {
         if (mComposeBoxQueryControllerBridge == null) return;
         activateAiMode();
         @Nullable String token = mComposeBoxQueryControllerBridge.addTabContext(tab);

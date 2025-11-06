@@ -10,6 +10,9 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,6 +28,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
@@ -34,7 +38,6 @@ import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.base.TestActivity;
-import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
@@ -63,8 +66,6 @@ public class NavigationAttachmentsViewBinderUnitTest {
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     private @Mock AnchoredPopupWindow mPopupWindow;
-
-    private final ModelList mPopupTabsModel = new ModelList();
     private final PropertyModel mModel =
             new PropertyModel(NavigationAttachmentsProperties.ALL_KEYS);
 
@@ -89,9 +90,7 @@ public class NavigationAttachmentsViewBinderUnitTest {
                                 .inflate(R.layout.fusebox_context_popup, null);
         doReturn(mPopupView).when(mPopupWindow).getContentView();
 
-        mPopup =
-                new NavigationAttachmentsPopup(
-                        mActivity, mPopupWindow, mPopupView, mPopupTabsModel);
+        mPopup = new NavigationAttachmentsPopup(mActivity, mPopupWindow, mPopupView);
         mViewHolder = new NavigationAttachmentsViewHolder(mParent, mPopup);
 
         // Initialize workable defaults.
@@ -210,14 +209,6 @@ public class NavigationAttachmentsViewBinderUnitTest {
     }
 
     @Test
-    public void recentTabsHeader() {
-        mModel.set(NavigationAttachmentsProperties.RECENT_TABS_HEADER_VISIBLE, true);
-        assertEquals(View.VISIBLE, mPopup.mRecentTabsHeader.getVisibility());
-        mModel.set(NavigationAttachmentsProperties.RECENT_TABS_HEADER_VISIBLE, false);
-        assertEquals(View.GONE, mPopup.mRecentTabsHeader.getVisibility());
-    }
-
-    @Test
     public void autocompleteRequestTypeClicked_setsListener() {
         Runnable runnable = mock(Runnable.class);
         mModel.set(NavigationAttachmentsProperties.AUTOCOMPLETE_REQUEST_TYPE_CLICKED, runnable);
@@ -292,5 +283,19 @@ public class NavigationAttachmentsViewBinderUnitTest {
         assertEquals(ConstraintSet.UNSET, lp.topToTop);
         assertEquals(R.id.location_bar_attachments, lp.topToBottom);
         assertEquals(ConstraintSet.PARENT_ID, lp.bottomToBottom);
+    }
+
+    @Test
+    public void addCurrentTabButton() {
+        mModel.set(NavigationAttachmentsProperties.CURRENT_TAB_BUTTON_VISIBLE, false);
+        assertEquals(View.GONE, mPopup.mAddCurrentTab.getVisibility());
+        mModel.set(NavigationAttachmentsProperties.CURRENT_TAB_BUTTON_VISIBLE, true);
+        assertEquals(View.VISIBLE, mPopup.mAddCurrentTab.getVisibility());
+
+        Drawable drawable = Mockito.spy(new ColorDrawable(Color.RED));
+        mModel.set(NavigationAttachmentsProperties.CURRENT_TAB_BUTTON_THUMBNAIL, drawable);
+        // Verifying via getCompoundDrawables is hard because it requires manipulating the view to
+        // resolve its visibility, layout direction, and drawables. This lets us check indirectly.
+        verify(drawable).setCallback(mPopup.mAddCurrentTab);
     }
 }

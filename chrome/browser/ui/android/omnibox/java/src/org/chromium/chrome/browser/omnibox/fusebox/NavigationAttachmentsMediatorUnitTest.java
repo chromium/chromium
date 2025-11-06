@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.omnibox.fusebox;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
@@ -17,6 +18,7 @@ import static org.mockito.Mockito.verify;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.view.LayoutInflater;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -39,7 +41,6 @@ import org.chromium.chrome.browser.omnibox.fusebox.AttachmentDetailsFetcher.Atta
 import org.chromium.chrome.browser.omnibox.fusebox.NavigationAttachmentsRecyclerViewAdapter.NavigationAttachmentItemType;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.content_public.browser.WebContents;
@@ -51,9 +52,6 @@ import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /** Unit tests for {@link NavigationAttachmentsMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class NavigationAttachmentsMediatorUnitTest {
@@ -64,11 +62,8 @@ public class NavigationAttachmentsMediatorUnitTest {
     private @Mock ComposeBoxQueryControllerBridge mComposeBoxQueryControllerBridge;
     private @Mock Clipboard mClipboard;
     private @Mock TabModelSelector mTabModelSelector;
-    private @Mock Bitmap mBitmap;
-    private @Mock TabModel mTabModel;
     private @Mock Tab mTab1;
     private @Mock Tab mTab2;
-    private @Mock Tab mTab3;
     private @Mock WebContents mWebContents;
 
     private Activity mActivity;
@@ -79,8 +74,7 @@ public class NavigationAttachmentsMediatorUnitTest {
     private ObservableSupplierImpl<TabModelSelector> mTabModelSelectorSupplier;
     private ObservableSupplierImpl<@AutocompleteRequestType Integer>
             mAutocompleteRequestTypeSupplier;
-    private final ModelList mTabAttachmentsModelList = new ModelList();
-    private final List<Tab> mTabs = new ArrayList<>();
+    private final Bitmap mBitmap = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
 
     @Before
     public void setUp() {
@@ -106,10 +100,7 @@ public class NavigationAttachmentsMediatorUnitTest {
                                 new ModelList(),
                                 mAutocompleteRequestTypeSupplier,
                                 mTabModelSelectorSupplier,
-                                mTabAttachmentsModelList,
                                 mComposeBoxQueryControllerBridge));
-        doReturn(mTabModel).when(mTabModelSelector).getCurrentModel();
-        doReturn(new ArrayList<>(mTabs).iterator()).when(mTabModel).iterator();
         Clipboard.setInstanceForTesting(mClipboard);
         OmniboxResourceProvider.setTabFaviconFactory((any) -> mBitmap);
     }
@@ -160,69 +151,35 @@ public class NavigationAttachmentsMediatorUnitTest {
 
     @Test
     public void popupAddsTabs() {
-        assertFalse(mModel.get(NavigationAttachmentsProperties.RECENT_TABS_HEADER_VISIBLE));
+        assertFalse(mModel.get(NavigationAttachmentsProperties.CURRENT_TAB_BUTTON_VISIBLE));
+        doReturn(mTab1).when(mTabModelSelector).getCurrentTab();
         doReturn("Title1").when(mTab1).getTitle();
         doReturn(new GURL("https://www.google.com")).when(mTab1).getUrl();
         doReturn(true).when(mTab1).isInitialized();
         doReturn(100L).when(mTab1).getTimestampMillis();
 
-        doReturn("Title2").when(mTab2).getTitle();
-        doReturn(new GURL("http://www.amazon.com")).when(mTab2).getUrl();
+        doReturn("Title3").when(mTab2).getTitle();
+        doReturn(new GURL("chrome://flags")).when(mTab2).getUrl();
         doReturn(true).when(mTab2).isInitialized();
-        doReturn(123L).when(mTab2).getTimestampMillis();
-
-        doReturn("Title3").when(mTab3).getTitle();
-        doReturn(new GURL("chrome://flags")).when(mTab3).getUrl();
-        doReturn(true).when(mTab3).isInitialized();
-        doReturn(true).when(mTab3).isFrozen();
-        doReturn(89L).when(mTab3).getTimestampMillis();
-        mTabs.add(mTab1);
-        mTabs.add(mTab2);
-        mTabs.add(mTab3);
-        doReturn(new ArrayList<>(mTabs).iterator()).when(mTabModel).iterator();
+        doReturn(true).when(mTab2).isFrozen();
+        doReturn(89L).when(mTab2).getTimestampMillis();
         doReturn(false).when(mPopup).isShowing();
         mMediator.onToggleAttachmentsPopup();
 
-        assertTrue(mModel.get(NavigationAttachmentsProperties.RECENT_TABS_HEADER_VISIBLE));
-        assertEquals(2, mTabAttachmentsModelList.size());
-        assertEquals(
-                TabAttachmentPopupChoicesRecyclerViewAdapter.TAB_ATTACHMENT_ITEM_TYPE,
-                mTabAttachmentsModelList.get(0).type);
-        assertEquals(
-                "Title2",
-                mTabAttachmentsModelList
-                        .get(0)
-                        .model
-                        .get(TabAttachmentPopupChoiceProperties.TITLE));
-        assertEquals(
-                TabAttachmentPopupChoicesRecyclerViewAdapter.TAB_ATTACHMENT_ITEM_TYPE,
-                mTabAttachmentsModelList.get(1).type);
-        assertEquals(
-                "Title1",
-                mTabAttachmentsModelList
-                        .get(1)
-                        .model
-                        .get(TabAttachmentPopupChoiceProperties.TITLE));
+        assertTrue(mModel.get(NavigationAttachmentsProperties.CURRENT_TAB_BUTTON_VISIBLE));
+        assertTrue(
+                mModel.get(NavigationAttachmentsProperties.CURRENT_TAB_BUTTON_THUMBNAIL)
+                        instanceof BitmapDrawable);
+        assertNull(mModel.get(NavigationAttachmentsProperties.CURRENT_TAB_BUTTON_TINT));
 
-        doReturn(false).when(mTab3).isFrozen();
-        doReturn(new ArrayList<>(mTabs).iterator()).when(mTabModel).iterator();
+        doReturn(mWebContents).when(mTab1).getWebContents();
+        doReturn("token").when(mComposeBoxQueryControllerBridge).addTabContext(mTab1);
+        mModel.get(NavigationAttachmentsProperties.CURRENT_TAB_BUTTON_CLICKED).run();
+        verify(mComposeBoxQueryControllerBridge).addTabContext(mTab1);
+
+        doReturn(mTab2).when(mTabModelSelector).getCurrentTab();
         mMediator.onToggleAttachmentsPopup();
-        assertEquals(2, mTabAttachmentsModelList.size());
-
-        doReturn(new GURL("https://www.yahoo.com")).when(mTab3).getUrl();
-        doReturn(new ArrayList<>(mTabs).iterator()).when(mTabModel).iterator();
-        mMediator.onToggleAttachmentsPopup();
-        assertEquals(3, mTabAttachmentsModelList.size());
-
-        doReturn(mWebContents).when(mTab3).getWebContents();
-        doReturn("token").when(mComposeBoxQueryControllerBridge).addTabContext(mTab3);
-        mTabAttachmentsModelList
-                .get(2)
-                .model
-                .get(TabAttachmentPopupChoiceProperties.ON_CLICK_LISTENER)
-                .onClick(null);
-        verify(mComposeBoxQueryControllerBridge).addTabContext(mTab3);
-        assertTrue(mModel.get(NavigationAttachmentsProperties.ATTACHMENTS_VISIBLE));
+        assertFalse(mModel.get(NavigationAttachmentsProperties.CURRENT_TAB_BUTTON_VISIBLE));
     }
 
     @Test
@@ -294,7 +251,6 @@ public class NavigationAttachmentsMediatorUnitTest {
                         modelList,
                         mAutocompleteRequestTypeSupplier,
                         mTabModelSelectorSupplier,
-                        mTabAttachmentsModelList,
                         mComposeBoxQueryControllerBridge);
         modelList.add(new MVCListAdapter.ListItem(0, new PropertyModel()));
         assertEquals(1, modelList.size());
@@ -335,7 +291,6 @@ public class NavigationAttachmentsMediatorUnitTest {
                         new ModelList(),
                         new ObservableSupplierImpl<>(),
                         mTabModelSelectorSupplier,
-                        mTabAttachmentsModelList,
                         mComposeBoxQueryControllerBridge);
 
         // The bridge is not initialized, so no native calls should be made.

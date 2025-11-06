@@ -8,13 +8,9 @@ import android.content.Context;
 import android.view.View;
 import android.widget.Button;
 
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.R;
-import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.widget.AnchoredPopupWindow;
 
 /** A popup for the Navigation Attachments component. */
@@ -22,7 +18,7 @@ import org.chromium.ui.widget.AnchoredPopupWindow;
 class NavigationAttachmentsPopup {
     private final AnchoredPopupWindow mPopupWindow;
     private final View mContentView;
-    /* package */ final RecyclerView mTabAttachmentView;
+    /* package */ final Button mAddCurrentTab;
     /* package */ final Button mTabButton;
     /* package */ final Button mCameraButton;
     /* package */ final Button mGalleryButton;
@@ -30,17 +26,10 @@ class NavigationAttachmentsPopup {
     /* package */ final Button mClipboardButton;
     /* package */ final Button mAiModeButton;
     /* package */ final View mAutocompleteRequestTypeGroup;
-    /* package */ final TabAttachmentPopupChoicesRecyclerViewAdapter mTabAttachmentsAdapter;
-    /* package */ final View mRecentTabsHeader;
 
-    NavigationAttachmentsPopup(
-            Context context,
-            AnchoredPopupWindow popupWindow,
-            View contentView,
-            ModelList tabAttachmentsModelList) {
+    NavigationAttachmentsPopup(Context context, AnchoredPopupWindow popupWindow, View contentView) {
         mPopupWindow = popupWindow;
         mContentView = contentView;
-
         // `match_parent` and `wrap_content` don't exactly work well in our case.
         // Marking buttons `wrap_content` always narrows down button area, producing inconsistent
         // sizing, and asking for `match_parent` results in text wrapping, as the parent is unable
@@ -48,7 +37,6 @@ class NavigationAttachmentsPopup {
         mPopupWindow.setDesiredContentSize(
                 context.getResources().getDimensionPixelSize(R.dimen.fusebox_popup_width), 0);
         mPopupWindow.setHorizontalOverlapAnchor(true);
-        mTabAttachmentView = mContentView.findViewById(R.id.tab_attachment_recycler_view);
         mTabButton = mContentView.findViewById(R.id.fusebox_pick_tabs_button);
         if (ChromeFeatureList.sChromeItemPickerUi.isEnabled()) {
             mTabButton.setVisibility(View.VISIBLE);
@@ -60,13 +48,7 @@ class NavigationAttachmentsPopup {
         mAiModeButton = mContentView.findViewById(R.id.fusebox_ai_mode_button);
         mAutocompleteRequestTypeGroup =
                 mContentView.findViewById(R.id.autocomplete_request_type_group);
-        mRecentTabsHeader = mContentView.findViewById(R.id.fusebox_recent_tabs_header);
-
-        mTabAttachmentsAdapter =
-                new TabAttachmentPopupChoicesRecyclerViewAdapter(tabAttachmentsModelList);
-        mTabAttachmentView.setAdapter(mTabAttachmentsAdapter);
-        mTabAttachmentView.setLayoutManager(
-                new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false));
+        mAddCurrentTab = mContentView.findViewById(R.id.fusebox_add_current_tab);
     }
 
     void show() {

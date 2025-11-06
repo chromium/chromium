@@ -51,7 +51,6 @@ public class NavigationAttachmentsCoordinator
     private final WindowAndroid mWindowAndroid;
     private final ModelList mModelList = new ModelList();
     private final ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
-    private final ModelList mTabAttachmentsModelList = new ModelList();
     private @Nullable NavigationAttachmentsMediator mMediator;
     private @Nullable ComposeBoxQueryControllerBridge mComposeBoxQueryControllerBridge;
     private boolean mDefaultSearchEngineIsGoogle = true;
@@ -94,9 +93,7 @@ public class NavigationAttachmentsCoordinator
                         popupView,
                         rectProvider);
 
-        var popup =
-                new NavigationAttachmentsPopup(
-                        mContext, popupWindow, popupView, mTabAttachmentsModelList);
+        var popup = new NavigationAttachmentsPopup(mContext, popupWindow, popupView);
         mViewHolder = new NavigationAttachmentsViewHolder(parent, popup);
 
         var adapter = new NavigationAttachmentsRecyclerViewAdapter(mModelList);
@@ -139,7 +136,6 @@ public class NavigationAttachmentsCoordinator
                         mModelList,
                         mAutocompleteRequestTypeSupplier,
                         mTabModelSelectorSupplier,
-                        mTabAttachmentsModelList,
                         mComposeBoxQueryControllerBridge);
     }
 

@@ -15,38 +15,23 @@ found in the LICENSE file.
     android:paddingTop="16dp"
     tools:ignore="MissingConstraints">
     <!-- Horizontal placement constraints supplied by styles for uniformity. -->
-    <TextView
-        style="@style/NavigationAttachments.PopupMenu.Header"
-        android:id="@+id/fusebox_recent_tabs_header"
-        android:visibility="gone"
-        android:paddingEnd="@dimen/omnibox_suggestion_content_padding"
-        android:text="@string/recent_tabs"
-        app:layout_constraintTop_toTopOf="parent"/>
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/tab_attachment_recycler_view"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:visibility="visible"
-        android:orientation="vertical"
-        android:fadingEdgeLength="8dp"
-        android:paddingStart="@dimen/omnibox_suggestion_content_padding"
-        android:paddingEnd="@dimen/omnibox_suggestion_content_padding"
-        android:focusable="false"
-        app:layout_constraintTop_toBottomOf="@id/fusebox_recent_tabs_header"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
-
     <!--
     TODO(crbug.com/436888404): either drop clipboard or use proper strings.
     -->
+    <org.chromium.ui.widget.ButtonCompat
+        style="@style/NavigationAttachments.PopupMenu.Item"
+        android:id="@+id/fusebox_add_current_tab"
+        android:visibility="gone"
+        android:text="@string/fusebox_add_current_tab"
+        app:layout_constraintTop_toTopOf="parent"/>
+
     <org.chromium.ui.widget.ButtonCompat
         style="@style/NavigationAttachments.PopupMenu.Item"
         android:id="@+id/fusebox_paste_from_clipboard_button"
         android:visibility="gone"
         android:drawableStart="@drawable/ic_content_copy"
         android:text="@string/clipboard_permission_title"
-        app:layout_constraintTop_toBottomOf="@id/tab_attachment_recycler_view"/>
+        app:layout_constraintTop_toBottomOf="@id/fusebox_add_current_tab"/>
 
     <org.chromium.ui.widget.ButtonCompat
         style="@style/NavigationAttachments.PopupMenu.Item"

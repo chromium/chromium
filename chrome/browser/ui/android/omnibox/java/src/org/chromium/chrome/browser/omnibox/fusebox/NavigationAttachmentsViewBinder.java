@@ -80,11 +80,25 @@ class NavigationAttachmentsViewBinder {
         } else if (propertyKey == NavigationAttachmentsProperties.POPUP_TAB_PICKER_CLICKED) {
             view.popup.mTabButton.setOnClickListener(
                     v -> model.get(NavigationAttachmentsProperties.POPUP_TAB_PICKER_CLICKED).run());
-        } else if (propertyKey == NavigationAttachmentsProperties.RECENT_TABS_HEADER_VISIBLE) {
-            view.popup.mRecentTabsHeader.setVisibility(
-                    model.get(NavigationAttachmentsProperties.RECENT_TABS_HEADER_VISIBLE)
+        } else if (propertyKey == NavigationAttachmentsProperties.CURRENT_TAB_BUTTON_VISIBLE) {
+            view.popup.mAddCurrentTab.setVisibility(
+                    model.get(NavigationAttachmentsProperties.CURRENT_TAB_BUTTON_VISIBLE)
                             ? View.VISIBLE
                             : View.GONE);
+        } else if (propertyKey == NavigationAttachmentsProperties.CURRENT_TAB_BUTTON_CLICKED) {
+            view.popup.mAddCurrentTab.setOnClickListener(
+                    v ->
+                            model.get(NavigationAttachmentsProperties.CURRENT_TAB_BUTTON_CLICKED)
+                                    .run());
+        } else if (propertyKey == NavigationAttachmentsProperties.CURRENT_TAB_BUTTON_THUMBNAIL) {
+            view.popup.mAddCurrentTab.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                    model.get(NavigationAttachmentsProperties.CURRENT_TAB_BUTTON_THUMBNAIL),
+                    null,
+                    null,
+                    null);
+        } else if (propertyKey == NavigationAttachmentsProperties.CURRENT_TAB_BUTTON_TINT) {
+            view.popup.mAddCurrentTab.setCompoundDrawableTintList(
+                    model.get(NavigationAttachmentsProperties.CURRENT_TAB_BUTTON_TINT));
         } else if (propertyKey == NavigationAttachmentsProperties.SHOW_DEDICATED_MODE_BUTTON) {
             updateModeSelectorVisibility(model, view);
         }
