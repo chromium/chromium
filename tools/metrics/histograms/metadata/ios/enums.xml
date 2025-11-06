@@ -1916,6 +1916,26 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/ios/chrome/browser/safari_data_import/public/safari_data_import_stage.h:SafariDataImportStage) -->
 
+<!-- LINT.IfChange(SyncedSetUpRemotePrefDifference) -->
+
+<enum name="SyncedSetUpRemotePrefDifference">
+  <int value="0" label="NoDifference">
+    No differences were found between remote prefs and the local device.
+  </int>
+  <int value="1" label="ProfilePrefsDiffered">
+    Only remote profile prefs differed from the local device.
+  </int>
+  <int value="2" label="LocalStatePrefsDiffered">
+    Only remote local-state prefs differed from the local device.
+  </int>
+  <int value="3" label="BothPrefsDiffered">
+    Both remote profile and remote local-state prefs differed from the local
+    device.
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(/ios/chrome/browser/synced_set_up/coordinator/synced_set_up_mediator.mm:SyncedSetUpRemotePrefDifference) -->
+
 <!-- LINT.IfChange(SyncedSetUpTriggerSource) -->
 
 <enum name="SyncedSetUpTriggerSource">

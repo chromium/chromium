@@ -6396,6 +6396,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.SyncedSetUp.Interstitial.RemotePrefDifference"
+    enum="SyncedSetUpRemotePrefDifference" expires_after="2026-05-06">
+  <owner>ericekey@google.com</owner>
+  <owner>bwwilliams@google.com</owner>
+  <owner>scottyoder@google.com</owner>
+  <summary>
+    Records the result of comparing appearance-related preferences from remote
+    devices against the current device. Logged once after the user completes the
+    First Run Experience.
+  </summary>
+</histogram>
+
 <histogram name="IOS.SyncedSetUp.Interstitial.Shown" enum="Boolean"
     expires_after="2026-11-05">
   <owner>ericekey@google.com</owner>

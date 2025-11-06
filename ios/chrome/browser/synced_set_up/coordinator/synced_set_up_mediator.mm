@@ -7,6 +7,7 @@
 #import <memory>
 
 #import "base/memory/raw_ptr.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/base/consent_level.h"
@@ -38,6 +39,27 @@
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
+
+// Logs the result of comparing a remote device's prefs (profile and
+// local-state) against the local device's prefs (profile and local-state).
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(SyncedSetUpRemotePrefDifference)
+enum class SyncedSetUpRemotePrefDifference {
+  // No pref differences were found between the remote and local device.
+  kNoDifference = 0,
+  // Only remote profile prefs differed from the local device.
+  kProfilePrefsDiffered = 1,
+  // Only remote local-state prefs differed from the local device.
+  kLocalStatePrefsDiffered = 2,
+  // Both remote profile and remote local-state prefs differed from the local
+  // device.
+  kBothPrefsDiffered = 3,
+  kMaxValue = kBothPrefsDiffered,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/ios/enums.xml:SyncedSetUpRemotePrefDifference)
 
 // Struct for caching the pref values that differ between a remote and local
 // device.
@@ -71,6 +93,25 @@ void CachePrefs(
       prefs_to_apply.insert({pref_name, std::move(value)});
     }
   }
+}
+
+// Helper to log pref differences found between a remote device and the local
+// device.
+void LogRemotePrefDifference(bool has_profile_prefs,
+                             bool has_local_state_prefs) {
+  SyncedSetUpRemotePrefDifference state =
+      SyncedSetUpRemotePrefDifference::kNoDifference;
+
+  if (has_profile_prefs && has_local_state_prefs) {
+    state = SyncedSetUpRemotePrefDifference::kBothPrefsDiffered;
+  } else if (has_profile_prefs) {
+    state = SyncedSetUpRemotePrefDifference::kProfilePrefsDiffered;
+  } else if (has_local_state_prefs) {
+    state = SyncedSetUpRemotePrefDifference::kLocalStatePrefsDiffered;
+  }
+
+  base::UmaHistogramEnumeration(
+      "IOS.SyncedSetUp.Interstitial.RemotePrefDifference", state);
 }
 
 }  // namespace
@@ -309,6 +350,8 @@ enum class SyncedSetUpState {
 
   // No remote prefs to apply.
   if (remoteDevicePrefs.empty()) {
+    LogRemotePrefDifference(/*has_profile_prefs=*/false,
+                            /*has_local_state_prefs=*/false);
     return;
   }
 
@@ -318,6 +361,9 @@ enum class SyncedSetUpState {
   CachePrefs(kCrossDeviceToLocalStatePrefMap,
              GetApplicationContext()->GetLocalState(), _localStatePrefsToApply,
              remoteDevicePrefs);
+
+  LogRemotePrefDifference(!_profilePrefsToApply.empty(),
+                          !_localStatePrefsToApply.empty());
 }
 
 // Sets the initial state of this mediator.
