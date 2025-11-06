@@ -1163,7 +1163,7 @@ bool H264Decoder::ProcessSPS(int sps_id, bool* need_new_buffers) {
   *need_new_buffers = false;
 
   if (sps->frame_mbs_only_flag == 0) {
-    DVLOG(1) << "frame_mbs_only_flag != 1 not supported";
+    DLOG(ERROR) << "Interlacing is not supported (frame_mbs_only_flag != 1)";
     return false;
   }
 

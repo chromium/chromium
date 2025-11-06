@@ -102,8 +102,15 @@ class MODULES_EXPORT VideoDecoderHelper {
                                           uint32_t* output_size,
                                           bool is_first_chunk);
 
+  // Returns true if the configuration data suggests that hardware decoding is
+  // unavailable for this type of content (e.g., interlacing).
+  bool RequiresSoftwareDecoder() const { return requires_software_decoder_; }
+
  private:
   Status Initialize(base::span<const uint8_t> configuration_record);
+
+  bool requires_software_decoder_ = false;
+
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
   std::unique_ptr<media::H264ToAnnexBBitstreamConverter> h264_converter_;
   std::unique_ptr<media::mp4::AVCDecoderConfigurationRecord> h264_avcc_;

@@ -339,7 +339,15 @@ ScriptPromise<VideoDecoderSupport> VideoDecoder::isConfigSupported(
 
 HardwarePreference VideoDecoder::GetHardwarePreference(
     const ConfigType& config) {
-  return GetHardwareAccelerationPreference(config);
+  auto config_pref = GetHardwareAccelerationPreference(config);
+  if (decoder_specific_data_.decoder_helper &&
+      decoder_specific_data_.decoder_helper->RequiresSoftwareDecoder()) {
+    // This should have already been verified by isConfigSupported().
+    DCHECK(config_pref == HardwarePreference::kNoPreference ||
+           config_pref == HardwarePreference::kPreferSoftware);
+    return HardwarePreference::kPreferSoftware;
+  }
+  return config_pref;
 }
 
 bool VideoDecoder::GetLowDelayPreference(const ConfigType& config) {
@@ -496,6 +504,15 @@ VideoDecoder::MakeMediaVideoDecoderConfigInternal(
             /*get_frame_buffer=*/nullptr,
             /*release_frame_buffer=*/nullptr,
             /*callback_private_data=*/nullptr);
+  }
+
+  if (decoder_specific_data.decoder_helper &&
+      decoder_specific_data.decoder_helper->RequiresSoftwareDecoder() &&
+      GetHardwareAccelerationPreference(config) ==
+          HardwarePreference::kPreferHardware) {
+    *js_error_message =
+        "This configuration is only supported by the software decoder.";
+    return std::nullopt;
   }
 
   // Guess 720p if no coded size hint is provided. This choice should result in
