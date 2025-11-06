@@ -281,13 +281,14 @@ class NET_EXPORT_PRIVATE HttpStreamPool
       const NetworkAnonymizationKey& network_anonymization_key) const;
 
   // Returns true when QUIC is broken for `destination`.
-  bool IsQuicBroken(const url::SchemeHostPort& destination,
-                    const NetworkAnonymizationKey& network_anonymization_key);
+  bool IsQuicBroken(
+      const url::SchemeHostPort& destination,
+      const NetworkAnonymizationKey& network_anonymization_key) const;
 
   // Returns true when QUIC can be used for `destination`.
   bool CanUseQuic(const url::SchemeHostPort& destination,
                   const NetworkAnonymizationKey& network_anonymization_key,
-                  bool enable_alternative_services);
+                  bool enable_alternative_services) const;
 
   // Returns the first quic::ParsedQuicVersion that has been advertised in
   // `alternative_service_info` and is supported, following the order of
@@ -359,9 +360,9 @@ class NET_EXPORT_PRIVATE HttpStreamPool
   // JobControllers), always return true.
   bool EnsureTotalActiveStreamCountBelowLimit() const;
 
-  Group& GetOrCreateGroup(
-      const HttpStreamKey& stream_key,
-      std::optional<QuicSessionAliasKey> quic_session_alias_key = std::nullopt);
+  Group& GetOrCreateGroup(const HttpStreamKey& stream_key,
+                          const std::optional<QuicSessionAliasKey>&
+                              quic_session_alias_key = std::nullopt);
 
   Group* GetGroup(const HttpStreamKey& stream_key);
 
@@ -415,7 +416,7 @@ class NET_EXPORT_PRIVATE HttpStreamPool
   // The total number of connecting streams in this pool.
   size_t total_connecting_stream_count_ = 0;
 
-  std::map<HttpStreamKey, std::unique_ptr<Group>> groups_;
+  std::map<HttpStreamKey, Group> groups_;
 
   std::set<std::unique_ptr<JobController>, base::UniquePtrComparator>
       job_controllers_;
