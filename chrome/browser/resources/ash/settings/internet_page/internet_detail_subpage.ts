@@ -257,17 +257,7 @@ export class SettingsInternetDetailPageElement extends
         value() {
           return loadTimeData.valueExists('showTechnologyBadge') &&
               loadTimeData.getBoolean('showTechnologyBadge');
-        },
-      },
 
-      /**
-       * Whether to show the Hidden toggle on configured wifi networks (flag).
-       */
-      showHiddenToggle_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.valueExists('showHiddenToggle') &&
-              loadTimeData.getBoolean('showHiddenToggle');
         },
       },
 
@@ -417,7 +407,6 @@ export class SettingsInternetDetailPageElement extends
   private proxyExpanded_: boolean;
   private shouldShowConfigureWhenNetworkLoaded_: boolean;
   private showConfigurableSections_: boolean;
-  private showHiddenToggle_: boolean;
   private showMeteredToggle_: boolean;
   private showTechnologyBadge_: string;
   private trafficCountersAdapter_: TrafficCountersAdapter;
@@ -1965,10 +1954,6 @@ export class SettingsInternetDetailPageElement extends
   }
 
   private showHiddenNetworkToggle_(): boolean {
-    if (!this.showHiddenToggle_) {
-      return false;
-    }
-
     if (!this.managedProperties_) {
       return false;
     }

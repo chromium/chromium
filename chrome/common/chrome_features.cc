@@ -1273,12 +1273,6 @@ constexpr base::FeatureParam<int> kLinuxLowMemoryMonitorCriticalLevel{
 BASE_FEATURE(kListWebAppsSwitch, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS)
-// Whether to show the Hidden toggle in Settings, allowing users to toggle
-// whether to treat a WiFi network as having a hidden ssid.
-BASE_FEATURE(kShowHiddenNetworkToggle, base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
-
 // Enables the use of system notification centers instead of using the Message
 // Center for displaying the toasts. The feature is hardcoded to enabled for
 // Chrome OS.
