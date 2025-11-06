@@ -3003,6 +3003,7 @@ test("content_unittests") {
     "../browser/webid/idp_network_request_manager_unittest.cc",
     "../browser/webid/mappers_unittest.cc",
     "../browser/webid/metrics_unittest.cc",
+    "../browser/webid/navigation_interceptor_unittest.cc",
     "../browser/webid/network_request_manager_unittest.cc",
     "../browser/webid/request_service_multiple_frames_unittest.cc",
     "../browser/webid/request_service_registry_unittest.cc",
