@@ -6,8 +6,11 @@
 
 #include <utility>
 
+#include "base/base_switches.h"
 #include "base/command_line.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_list_interface.h"
@@ -16,6 +19,16 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 class CreateBrowserWindowAndroidBrowserTest : public AndroidBrowserTest {
+ public:
+  CreateBrowserWindowAndroidBrowserTest() {
+    // Disable ChromeTabbedActivity instance limit so that the total number of
+    // windows created by the entire test suite won't be limited.
+    //
+    // See MultiWindowUtils#getMaxInstances() for the reason:
+    // https://source.chromium.org/chromium/chromium/src/+/main:chrome/android/java/src/org/chromium/chrome/browser/multiwindow/MultiWindowUtils.java;l=209;drc=0bcba72c5246a910240b311def40233f7d3f15af
+    feature_list_.InitAndEnableFeature(chrome::android::kDisableInstanceLimit);
+  }
+
   void SetUpDefaultCommandLine(base::CommandLine* command_line) override {
     AndroidBrowserTest::SetUpDefaultCommandLine(command_line);
 
@@ -23,7 +36,18 @@ class CreateBrowserWindowAndroidBrowserTest : public AndroidBrowserTest {
     // test launches an Intent for ChromeTabbedActivity, ChromeTabbedActivity
     // will be shown instead of FirstRunActivity.
     command_line->AppendSwitch("disable-fre");
+
+    // Force DeviceInfo#isDesktop() to be true so that the kDisableInstanceLimit
+    // flag in the constructor can be effective when running tests on an
+    // emulator without "--force-desktop-android".
+    //
+    // See MultiWindowUtils#getMaxInstances() for the reason:
+    // https://source.chromium.org/chromium/chromium/src/+/main:chrome/android/java/src/org/chromium/chrome/browser/multiwindow/MultiWindowUtils.java;l=213;drc=0bcba72c5246a910240b311def40233f7d3f15af
+    command_line->AppendSwitch(switches::kForceDesktopAndroid);
   }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(

@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.ui.browser_window;
 
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.mock;
@@ -258,7 +259,7 @@ public final class ChromeAndroidTaskUnitTestSupport {
         var mockTabModel = mock(TabModel.class);
         when(mockTabModel.getProfile()).thenReturn(profile);
 
-        var mockMultiInstanceManager = mock(MultiInstanceManager.class);
+        var mockMultiInstanceManager = createMockMultiInstanceManager();
 
         return new ChromeAndroidTask.ActivityScopedObjects(
                 activityWindowAndroid, mockTabModel, mockMultiInstanceManager);
@@ -339,13 +340,20 @@ public final class ChromeAndroidTaskUnitTestSupport {
     }
 
     /**
-     * Creates an {@link AndroidBrowserWindowCreateParams} mock.
-     *
-     * @return The {@link AndroidBrowserWindowCreateParams} mock.
+     * @see #createMockAndroidBrowserWindowCreateParams(int, Rect, int)
      */
     static AndroidBrowserWindowCreateParams createMockAndroidBrowserWindowCreateParams() {
         return createMockAndroidBrowserWindowCreateParams(
                 BrowserWindowType.NORMAL, new Rect(), WindowShowState.DEFAULT);
+    }
+
+    /**
+     * @see #createMockAndroidBrowserWindowCreateParams(int, Rect, int)
+     */
+    static AndroidBrowserWindowCreateParams createMockAndroidBrowserWindowCreateParams(
+            @BrowserWindowType int windowType) {
+        return createMockAndroidBrowserWindowCreateParams(
+                windowType, new Rect(), WindowShowState.DEFAULT);
     }
 
     /**
@@ -448,5 +456,22 @@ public final class ChromeAndroidTaskUnitTestSupport {
         when(maxWindowMetrics.getBounds()).thenReturn(fullScreenWindowBoundsInPx);
         when(maxWindowMetrics.getWindowInsets()).thenReturn(maxWindowInsets);
         when(mockWindowManager.getMaximumWindowMetrics()).thenReturn(maxWindowMetrics);
+    }
+
+    private static MultiInstanceManager createMockMultiInstanceManager() {
+        var mockMultiInstanceManager = mock(MultiInstanceManager.class);
+
+        // Unit tests don't need to care what the Intent is. They only need to verify the correct
+        // MultiInstanceManager API is called.
+        //
+        // The Intent here is the bare minimum to ensure unit tests pass:
+        // (1) The Intent is not null; and
+        // (2) The Intent has the FLAG_ACTIVITY_NEW_TASK flag to avoid the "background Activity
+        // launch" error in unit tests.
+        var intent = new Intent();
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+        when(mockMultiInstanceManager.createNewWindowIntent(anyBoolean())).thenReturn(intent);
+        return mockMultiInstanceManager;
     }
 }

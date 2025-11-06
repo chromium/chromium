@@ -64,7 +64,18 @@
                   android:taskAffinity=""
                   android:configChanges="orientation|keyboardHidden|keyboard|screenSize"
                   android:hardwareAccelerated="true"
-                  android:process=":test_process"/>
+                  android:process=":test_process">
+
+          <!--
+            Mirrors meta-data in the production manifest containing ChromeTabbedActivity.
+
+            This is needed to enable MultiInstanceManagerApi31 in browser tests.
+            See: https://source.chromium.org/chromium/chromium/src/+/main:chrome/android/java/src/org/chromium/chrome/browser/multiwindow/MultiWindowUtils.java;l=187-191;drc=0bcba72c5246a910240b311def40233f7d3f15af
+          -->
+          <meta-data
+                android:name="android.activity.launch_mode"
+                android:value="singleInstancePerTask"/>
+        </activity>
 
         <activity android:name="org.chromium.chrome.browser.media.MediaLauncherActivity"
                   android:theme="@android:style/Theme.NoDisplay"

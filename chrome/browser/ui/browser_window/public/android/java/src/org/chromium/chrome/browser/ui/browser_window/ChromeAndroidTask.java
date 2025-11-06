@@ -189,6 +189,15 @@ public interface ChromeAndroidTask {
     void addFeature(ChromeAndroidTaskFeature feature);
 
     /**
+     * Creates the {@link Intent} to open a new window of type {@link BrowserWindowType#NORMAL}.
+     *
+     * @param isIncognito Whether the new window should be in incognito mode.
+     * @return The {@link Intent} as described above, or {@code null} if a new window can't be
+     *     created.
+     */
+    @Nullable Intent createIntentForNormalBrowserWindow(boolean isIncognito);
+
+    /**
      * Returns the address of the native {@code BrowserWindowInterface}.
      *
      * <p>If the native object hasn't been created, this method will create it before returning its

@@ -277,6 +277,7 @@ if (is_android) {
     ]
     deps = [
       "//base",
+      "//chrome/browser/flags:flags_android",
       "//chrome/browser/profiles",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/browser_window:create_browser_window",

@@ -492,6 +492,38 @@ public class ChromeAndroidTaskImplUnitTest {
     }
 
     @Test
+    public void createIntentForNormalBrowserWindow_notIncognito_callsMultiInstanceManager() {
+        // Arrange.
+        var chromeAndroidTaskWithMockDeps = createChromeAndroidTaskWithMockDeps(/* taskId= */ 1);
+        var chromeAndroidTask = chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
+        var multiInstanceManager =
+                chromeAndroidTaskWithMockDeps.mActivityScopedObjects.mMultiInstanceManager;
+
+        // Act.
+        var intent = chromeAndroidTask.createIntentForNormalBrowserWindow(/* isIncognito= */ false);
+
+        // Assert.
+        assertNotNull(intent);
+        verify(multiInstanceManager, times(1)).createNewWindowIntent(/* isIncognito= */ false);
+    }
+
+    @Test
+    public void createIntentForNormalBrowserWindow_incognito_callsMultiInstanceManager() {
+        // Arrange.
+        var chromeAndroidTaskWithMockDeps = createChromeAndroidTaskWithMockDeps(/* taskId= */ 1);
+        var chromeAndroidTask = chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
+        var multiInstanceManager =
+                chromeAndroidTaskWithMockDeps.mActivityScopedObjects.mMultiInstanceManager;
+
+        // Act.
+        var intent = chromeAndroidTask.createIntentForNormalBrowserWindow(/* isIncognito= */ true);
+
+        // Assert.
+        assertNotNull(intent);
+        verify(multiInstanceManager, times(1)).createNewWindowIntent(/* isIncognito= */ true);
+    }
+
+    @Test
     public void getOrCreateNativeBrowserWindowPtr_returnsPtrValueForAliveTask() {
         // Arrange.
         var chromeAndroidTaskWithMockDeps = createChromeAndroidTaskWithMockDeps(/* taskId= */ 1);

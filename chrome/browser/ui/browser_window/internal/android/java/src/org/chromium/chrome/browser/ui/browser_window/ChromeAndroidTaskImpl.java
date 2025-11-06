@@ -11,6 +11,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Rect;
 import android.os.Build;
@@ -260,6 +261,22 @@ final class ChromeAndroidTaskImpl
             assertAlive();
             mFeatures.add(feature);
             feature.onAddedToTask();
+        }
+    }
+
+    @Override
+    public @Nullable Intent createIntentForNormalBrowserWindow(boolean isIncognito) {
+        synchronized (mActivityScopedObjectsLock) {
+            if (mActivityScopedObjects == null) {
+                return null;
+            }
+
+            var multiInstanceManager = mActivityScopedObjects.mMultiInstanceManager;
+            if (multiInstanceManager == null) {
+                return null;
+            }
+
+            return multiInstanceManager.createNewWindowIntent(isIncognito);
         }
     }
 

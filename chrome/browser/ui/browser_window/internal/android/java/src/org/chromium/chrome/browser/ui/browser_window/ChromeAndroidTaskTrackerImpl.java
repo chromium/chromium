@@ -13,7 +13,6 @@ import android.util.ArrayMap;
 import androidx.annotation.GuardedBy;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.IntentUtils;
 import org.chromium.base.JniOnceCallback;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
@@ -112,7 +111,7 @@ final class ChromeAndroidTaskTrackerImpl implements ChromeAndroidTaskTracker {
             AndroidBrowserWindowCreateParams createParams,
             @Nullable JniOnceCallback<Long> callback) {
         synchronized (mTasksLock) {
-            Intent newWindowIntent = createNewWindowIntent(createParams);
+            Intent newWindowIntent = createNewWindowIntentLocked(createParams);
             if (newWindowIntent == null) {
                 if (callback != null) {
                     callback.onResult(0L);
@@ -357,24 +356,19 @@ final class ChromeAndroidTaskTrackerImpl implements ChromeAndroidTaskTracker {
         }
     }
 
-    private static @Nullable Intent createNewWindowIntent(
+    @GuardedBy("mTasksLock")
+    private @Nullable Intent createNewWindowIntentLocked(
             AndroidBrowserWindowCreateParams createParams) {
         switch (createParams.getWindowType()) {
             case BrowserWindowType.NORMAL:
-                // TODO(http://crbug.com/453777179): use MultiInstanceManager to create the Intent.
-                try {
-                    Intent intent =
-                            new Intent(
-                                    ContextUtils.getApplicationContext(),
-                                    Class.forName(
-                                            "org.chromium.chrome.browser.ChromeTabbedActivity"));
-                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
-                    IntentUtils.addTrustedIntentExtras(intent);
-                    return intent;
-                } catch (ClassNotFoundException e) {
-                    return null;
+                for (ChromeAndroidTask task : mTasks.values()) {
+                    // TODO(http://crbug.com/453777179): support an incognito window.
+                    var intent = task.createIntentForNormalBrowserWindow(/* isIncognito= */ false);
+                    if (intent != null) {
+                        return intent;
+                    }
                 }
+                return null;
             default:
                 return null;
         }
