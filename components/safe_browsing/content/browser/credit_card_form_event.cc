@@ -24,13 +24,14 @@ CreditCardFormEvent GetCreditCardFormEvent(SiteVisit site_visit,
   return static_cast<CreditCardFormEvent>(ordinal);
 }
 
-void LogEvent(std::string_view event_name, SiteVisit site_visit) {
-  // Use these values until parameters are added to specify the correct values.
+void LogEvent(std::string_view event_name,
+              SiteVisit site_visit,
+              FieldDetectionHeuristic field_heuristic) {
+  // Use this value until parameters are added to specify the correct value.
   ReferringApp referring_app = kNoReferringApp;
-  FieldDetectionHeuristic heuristic = kNoDetectionHeuristic;
 
   CreditCardFormEvent event =
-      GetCreditCardFormEvent(site_visit, referring_app, heuristic);
+      GetCreditCardFormEvent(site_visit, referring_app, field_heuristic);
 
   base::UmaHistogramSparse(
       base::StrCat({"SBClientPhishing.CreditCardFormEvent.", event_name}),

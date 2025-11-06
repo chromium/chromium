@@ -30,6 +30,8 @@
 #include "base/trace_event/trace_event.h"
 #include "base/uuid.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
+#include "components/autofill/core/browser/autofill_server_prediction.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/foundations/scoped_autofill_managers_observation.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
@@ -968,7 +970,20 @@ void ClientSideDetectionHost::OnFieldTypesDetermined(
           autofill::FormType::kCreditCardForm)) {
     return;
   }
-  OnCreditCardFormEvent("OnFieldTypesDetermined");
+
+  const credit_card_form::FieldDetectionHeuristic field_heuristic = [&]() {
+    using enum autofill::AutofillManager::Observer::FieldTypeSource;
+    switch (source) {
+      case kAutofillAiModel:
+      case kAutofillServer:
+        return credit_card_form::FieldDetectionHeuristic::kAutofillServer;
+      case kHeuristicsOrAutocomplete:
+        return credit_card_form::FieldDetectionHeuristic::kAutofillLocal;
+    }
+    NOTREACHED();
+  }();
+
+  OnCreditCardFormEvent("OnFieldTypesDetermined", field_heuristic);
 }
 
 // OnBeforeFocusOnFormField is an Autofill observer callback that triggers a CSD
@@ -984,10 +999,28 @@ void ClientSideDetectionHost::OnBeforeFocusOnFormField(
           autofill::FormType::kCreditCardForm)) {
     return;
   }
-  OnCreditCardFormEvent("OnBeforeFocusOnFormField");
+
+  credit_card_form::FieldDetectionHeuristic field_heuristic =
+      credit_card_form::kNoDetectionHeuristic;
+  bool has_local_heuristic =
+      !manager
+           .GetHeuristicPredictionForForm(autofill::GetActiveHeuristicSource(),
+                                          form_id, {field_id})
+           .empty();
+  bool has_server_heuristic =
+      !manager.GetServerPredictionsForForm(form_id, {field_id}).empty();
+  if (has_server_heuristic) {
+    field_heuristic = credit_card_form::kAutofillServer;
+  } else if (has_local_heuristic) {
+    field_heuristic = credit_card_form::kAutofillLocal;
+  }
+
+  OnCreditCardFormEvent("OnBeforeFocusOnFormField", field_heuristic);
 }
 
-void ClientSideDetectionHost::OnCreditCardFormEvent(std::string event_name) {
+void ClientSideDetectionHost::OnCreditCardFormEvent(
+    std::string event_name,
+    credit_card_form::FieldDetectionHeuristic field_heuristic) {
   // Early exit if ESB is not enabled.
   if (!IsEnhancedProtectionEnabled(*delegate_->GetPrefs())) {
     return;
@@ -1007,19 +1040,21 @@ void ClientSideDetectionHost::OnCreditCardFormEvent(std::string event_name) {
         url,
         base::BindOnce(&ClientSideDetectionHost::OnCreditCardFormVisitCount,
                        weak_factory_.GetWeakPtr(), event_name,
-                       base::TimeTicks::Now()),
+                       base::TimeTicks::Now(), field_heuristic),
         &task_tracker_);
   } else {
     history::VisibleVisitCountToHostResult history_result =
         cached_history_result.value_or(
             history::VisibleVisitCountToHostResult{/*success=*/false});
-    OnCreditCardFormVisitCount(event_name, std::nullopt, history_result);
+    OnCreditCardFormVisitCount(event_name, std::nullopt, field_heuristic,
+                               history_result);
   }
 }
 
 void ClientSideDetectionHost::OnCreditCardFormVisitCount(
     std::string event_name,
     std::optional<base::TimeTicks> start_time,
+    credit_card_form::FieldDetectionHeuristic field_heuristic,
     history::VisibleVisitCountToHostResult history_result) {
   last_history_result_ = history_result;
   if (start_time.has_value()) {
@@ -1035,7 +1070,7 @@ void ClientSideDetectionHost::OnCreditCardFormVisitCount(
                      ? credit_card_form::kRepeatSiteVisit
                      : credit_card_form::kNewSiteVisit;
   }
-  credit_card_form::LogEvent(event_name, site_visit);
+  credit_card_form::LogEvent(event_name, site_visit, field_heuristic);
 
   // Early exit if preclassification has already been done for
   // CREDIT_CARD_FORM and this URL.

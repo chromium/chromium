@@ -141,36 +141,53 @@ TEST_P(GetCreditCardFormEventTest, GetExpectedEvent) {
 
 struct LogEventTestCase {
   SiteVisit site_visit;
+  FieldDetectionHeuristic field_heuristic;
   CreditCardFormEvent expected_event;
 
   static std::string GetTestName(
       const testing::TestParamInfo<LogEventTestCase>& test_case) {
-    return ToString(test_case.param.site_visit);
+    return base::StrCat({
+        ToString(test_case.param.site_visit),
+        ToString(test_case.param.field_heuristic),
+    });
   }
 };
 
 class LogEventTest : public testing::TestWithParam<LogEventTestCase> {};
 
-constexpr LogEventTestCase log_event_test_cases[] = {
-    {kUnknownSiteVisit, kUnknownSiteVisitNoReferringAppNoDetectionHeuristic},
-    {kNewSiteVisit, kNewSiteVisitNoReferringAppNoDetectionHeuristic},
-    {kRepeatSiteVisit, kRepeatSiteVisitNoReferringAppNoDetectionHeuristic},
-};
+std::vector<LogEventTestCase> GetLogEventTestCases() {
+  std::vector<LogEventTestCase> cases;
+  for (int sv = 0; sv <= kSiteVisitMaxValue; sv++) {
+    SiteVisit site_visit = static_cast<SiteVisit>(sv);
+    for (int fdh = 0; fdh <= kFieldDetectionHeuristicMaxValue; fdh++) {
+      FieldDetectionHeuristic field_heuristic =
+          static_cast<FieldDetectionHeuristic>(fdh);
+      CreditCardFormEvent event =
+          GetCreditCardFormEvent(site_visit, kNoReferringApp, field_heuristic);
+      LogEventTestCase test_case{site_visit, field_heuristic, event};
+      cases.emplace_back(test_case);
+    }
+  }
+  return cases;
+}
 
 INSTANTIATE_TEST_SUITE_P(All,
                          LogEventTest,
-                         testing::ValuesIn(log_event_test_cases),
+                         testing::ValuesIn(GetLogEventTestCases()),
                          LogEventTestCase::GetTestName);
 
 TEST_P(LogEventTest, LogExpectedHistogram) {
   const LogEventTestCase& test_case = GetParam();
+  SiteVisit site_visit = test_case.site_visit;
+  FieldDetectionHeuristic field_heuristic = test_case.field_heuristic;
+  CreditCardFormEvent expected_event = test_case.expected_event;
   base::HistogramTester histogram_tester;
   histogram_tester.ExpectTotalCount(
       "SBClientPhishing.CreditCardFormEvent.OnFieldTypesDetermined", 0);
-  LogEvent("OnFieldTypesDetermined", test_case.site_visit);
+  LogEvent("OnFieldTypesDetermined", site_visit, field_heuristic);
   histogram_tester.ExpectBucketCount(
       "SBClientPhishing.CreditCardFormEvent.OnFieldTypesDetermined",
-      test_case.expected_event, 1);
+      expected_event, 1);
 }
 
 }  // namespace safe_browsing::credit_card_form

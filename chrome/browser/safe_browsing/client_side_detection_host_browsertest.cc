@@ -1431,7 +1431,7 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostCreditCardFormTest,
       "SBClientPhishing.CreditCardFormEvent.OnFieldTypesDetermined", 1);
   histogram_tester.ExpectBucketCount(
       "SBClientPhishing.CreditCardFormEvent.OnFieldTypesDetermined",
-      credit_card_form::kNewSiteVisitNoReferringAppNoDetectionHeuristic, 1);
+      credit_card_form::kNewSiteVisitNoReferringAppAutofillLocalHeuristic, 1);
   histogram_tester.ExpectTotalCount(
       "SBClientPhishing.PreClassificationCheckResult.CreditCardForm", 1);
 
@@ -1443,7 +1443,7 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostCreditCardFormTest,
       "SBClientPhishing.CreditCardFormEvent.OnBeforeFocusOnFormField", 1);
   histogram_tester.ExpectBucketCount(
       "SBClientPhishing.CreditCardFormEvent.OnBeforeFocusOnFormField",
-      credit_card_form::kNewSiteVisitNoReferringAppNoDetectionHeuristic, 1);
+      credit_card_form::kNewSiteVisitNoReferringAppAutofillServerHeuristic, 1);
   histogram_tester.ExpectTotalCount(
       "SBClientPhishing.PreClassificationCheckResult.CreditCardForm", 1);
 }

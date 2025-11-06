@@ -94,7 +94,9 @@ CreditCardFormEvent GetCreditCardFormEvent(SiteVisit site_visit,
 
 // TODO: crbug.com/443098659 - Add parameters to determine the
 // appropriate CreditCardFormEvent permutation to use.
-void LogEvent(std::string_view event_name, SiteVisit site_visit);
+void LogEvent(std::string_view event_name,
+              SiteVisit site_visit,
+              FieldDetectionHeuristic field_heuristic);
 
 std::string ToString(SiteVisit site_visit);
 std::string ToString(ReferringApp referring_app);
