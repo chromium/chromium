@@ -315,6 +315,8 @@ const char* RequestResultToString(
       return "PERMISSION_DENIED_BY_USER";
     case blink::mojom::MediaStreamRequestResult::AUDIO_DEVICE_SOCKET_ERROR:
       return "AUDIO_DEVICE_SOCKET_ERROR";
+    case blink::mojom::MediaStreamRequestResult::NO_TRANSIENT_ACTIVATION:
+      return "NO_TRANSIENT_ACTIVATION";
     case blink::mojom::MediaStreamRequestResult::NUM_MEDIA_REQUEST_RESULTS:
       break;  // Not a valid enum value.
   }

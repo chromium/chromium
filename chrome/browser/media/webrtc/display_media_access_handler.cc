@@ -279,15 +279,11 @@ void DisplayMediaAccessHandler::HandleRequest(
     // before sending IPC, but just to be sure double check here as well. This
     // is not treated as a BadMessage because it is possible for the transient
     // user activation to expire between the renderer side check and this check.
-    //
-    // TODO(crbug.com/416448339): Introduce and use a new result value,
-    // MediaStreamRequestResult::NO_TRANSIENT_ACTIVATION. In JS, it should map
-    // to `InvalidStateError`, not to `NotAllowedError`.
     if (!rfh->HasTransientUserActivation() &&
         capture_policy::IsTransientActivationRequiredForGetDisplayMedia(
             web_contents)) {
       std::move(callback).Run(blink::mojom::StreamDevicesSet(),
-                              MediaStreamRequestResult::PERMISSION_DENIED,
+                              MediaStreamRequestResult::NO_TRANSIENT_ACTIVATION,
                               /*ui=*/nullptr);
       return;
     }

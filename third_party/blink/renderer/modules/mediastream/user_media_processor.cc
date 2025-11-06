@@ -150,6 +150,8 @@ const char* MediaStreamRequestResultToString(MediaStreamRequestResult value) {
       return "PERMISSION_DENIED_BY_USER";
     case MediaStreamRequestResult::AUDIO_DEVICE_SOCKET_ERROR:
       return "AUDIO_DEVICE_SOCKET_ERROR";
+    case MediaStreamRequestResult::NO_TRANSIENT_ACTIVATION:
+      return "NO_TRANSIENT_ACTIVATION";
     case MediaStreamRequestResult::NUM_MEDIA_REQUEST_RESULTS:
       break;
   }
@@ -345,6 +347,8 @@ String ErrorCodeToString(MediaStreamRequestResult result) {
       return "Permission denied by user";
     case MediaStreamRequestResult::AUDIO_DEVICE_SOCKET_ERROR:
       return "Audio device socket error";
+    case MediaStreamRequestResult::NO_TRANSIENT_ACTIVATION:
+      return "No transient activation";
     case MediaStreamRequestResult::NUM_MEDIA_REQUEST_RESULTS:
       break;  // Not a valid enum value.
   }
