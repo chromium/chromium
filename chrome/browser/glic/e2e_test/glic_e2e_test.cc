@@ -78,15 +78,17 @@ const char kIgnoreCertificateErrorsSPKIListValue[] =
 }  // namespace
 
 GlicE2ETest::GlicE2ETest() {
-  // TODO(https://crbug.com/440578183): ZeroStateSuggestionsV2 is enabled here
+  // TODO(crbug.com/440578183): ZeroStateSuggestionsV2 is enabled here
   // due to the associated bug and should be removed here once fixed.
+  // TODO(crbug.com/453696965): Broken in multi-instance.
   scoped_feature_list_.InitWithFeatures(
       /*enabled_features=*/{features::kGlic, features::kTabstripComboButton,
                             features::kGlicKeyboardShortcutNewBadge,
                             features::kGlicRollout,
                             contextual_cueing::kContextualCueing,
                             mojom::features::kZeroStateSuggestionsV2},
-      /*disabled_features=*/{syncer::kReplaceSyncPromosWithSignInPromos});
+      /*disabled_features=*/{syncer::kReplaceSyncPromosWithSignInPromos,
+                             features::kGlicMultiInstance});
 }
 
 GlicE2ETest::~GlicE2ETest() = default;
