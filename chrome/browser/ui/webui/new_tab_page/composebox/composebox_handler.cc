@@ -13,11 +13,83 @@
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
-#include "chrome/browser/ui/webui/new_tab_page/composebox/composebox_omnibox_client.h"
 #include "chrome/browser/ui/webui/searchbox/contextual_searchbox_handler.h"
+#include "components/lens/lens_url_utils.h"
+#include "components/metrics/metrics_provider.h"
+#include "components/omnibox/browser/autocomplete_match_type.h"
 #include "content/public/browser/page_navigator.h"
+#include "net/base/url_util.h"
+#include "third_party/metrics_proto/omnibox_event.pb.h"
+#include "ui/base/window_open_disposition.h"
 
 using composebox::SessionState;
+
+namespace {
+
+class ComposeboxOmniboxClient final : public ContextualOmniboxClient {
+ public:
+  ComposeboxOmniboxClient(Profile* profile,
+                          content::WebContents* web_contents,
+                          ComposeboxHandler* composebox_handler);
+
+  ~ComposeboxOmniboxClient() override;
+
+  // OmniboxClient:
+  metrics::OmniboxEventProto::PageClassification GetPageClassification(
+      bool is_prefetch) const override;
+
+  void OnAutocompleteAccept(
+      const GURL& destination_url,
+      TemplateURLRef::PostContent* post_content,
+      WindowOpenDisposition disposition,
+      ui::PageTransition transition,
+      AutocompleteMatchType::Type match_type,
+      base::TimeTicks match_selection_timestamp,
+      bool destination_url_entered_without_scheme,
+      bool destination_url_entered_with_http_scheme,
+      const std::u16string& text,
+      const AutocompleteMatch& match,
+      const AutocompleteMatch& alternative_nav_match) override;
+
+ private:
+  raw_ptr<ComposeboxHandler> composebox_handler_;
+};
+
+ComposeboxOmniboxClient::ComposeboxOmniboxClient(
+    Profile* profile,
+    content::WebContents* web_contents,
+    ComposeboxHandler* composebox_handler)
+    : ContextualOmniboxClient(profile, web_contents),
+      composebox_handler_(composebox_handler) {}
+
+ComposeboxOmniboxClient::~ComposeboxOmniboxClient() = default;
+
+metrics::OmniboxEventProto::PageClassification
+ComposeboxOmniboxClient::GetPageClassification(bool is_prefetch) const {
+  return metrics::OmniboxEventProto::NTP_COMPOSEBOX;
+}
+
+void ComposeboxOmniboxClient::OnAutocompleteAccept(
+    const GURL& destination_url,
+    TemplateURLRef::PostContent* post_content,
+    WindowOpenDisposition disposition,
+    ui::PageTransition transition,
+    AutocompleteMatchType::Type match_type,
+    base::TimeTicks match_selection_timestamp,
+    bool destination_url_entered_without_scheme,
+    bool destination_url_entered_with_http_scheme,
+    const std::u16string& text,
+    const AutocompleteMatch& match,
+    const AutocompleteMatch& alternative_nav_match) {
+  const std::map<std::string, std::string>& additional_params =
+      lens::GetParametersMapWithoutQuery(destination_url);
+
+  std::string query_text;
+  net::GetValueForKeyInQuery(destination_url, "q", &query_text);
+  composebox_handler_->SubmitQuery(query_text, disposition, additional_params);
+}
+
+}  // namespace
 
 ComposeboxHandler::ComposeboxHandler(
     mojo::PendingReceiver<composebox::mojom::PageHandler> pending_handler,
@@ -32,10 +104,9 @@ ComposeboxHandler::ComposeboxHandler(
           web_contents,
           std::make_unique<OmniboxController>(
               /*view=*/nullptr,
-              std::make_unique<composebox::ComposeboxOmniboxClient>(
-                  profile,
-                  web_contents,
-                  this))),
+              std::make_unique<ComposeboxOmniboxClient>(profile,
+                                                        web_contents,
+                                                        this))),
       web_contents_(web_contents),
       page_{std::move(pending_page)},
       handler_(this, std::move(pending_handler)) {
