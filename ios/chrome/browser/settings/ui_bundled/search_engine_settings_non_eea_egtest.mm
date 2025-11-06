@@ -41,8 +41,11 @@
       performAction:grey_tap()];
   [ChromeEarlGrey
       waitForSufficientlyVisibleElementWithMatcher:chrome_test_util::Omnibox()];
-  [ChromeEarlGreyUI replaceTextInOmnibox:@"firstsearch"];
-  [ChromeEarlGreyUI pressEnter];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
+      performAction:grey_replaceText(@"firstsearch")];
+  // TODO(crbug.com/40916974): Use simulatePhysicalKeyboardEvent until
+  // replaceText can properly handle \n.
+  [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"\n" flags:0];
 
   const std::string googleSearchEngineKeyword(
       base::UTF16ToUTF8(TemplateURLPrepopulateData::google.keyword));
@@ -72,8 +75,12 @@
       waitForSufficientlyVisibleElementWithMatcher:chrome_test_util::Omnibox()];
 
   // Search something different than the first search to make sure the omnibox
-  [ChromeEarlGreyUI replaceTextInOmnibox:@"secondsearch"];
-  [ChromeEarlGreyUI pressEnter];
+  // doesn't use the history instead of really searching.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
+      performAction:grey_replaceText(@"secondsearch")];
+  // TODO(crbug.com/40916974): Use simulatePhysicalKeyboardEvent until
+  // replaceText can properly handle \n.
+  [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"\n" flags:0];
 
   const std::string secondSearchEngineKeyword(
       base::UTF16ToUTF8(secondPrepopulatedSearchEngine->keyword));

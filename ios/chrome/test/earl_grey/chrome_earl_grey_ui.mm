@@ -350,25 +350,13 @@ const int kMaxNumberOfAttemptsAtTypingTextInOmnibox = 3;
   }
 }
 
-- (void)pressEnter {
-  // Press enter to navigate.
-  // TODO(crbug.com/40916974): Use simulatePhysicalKeyboardEvent until
-  // replaceText can properly handle \n.
-  [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"\n" flags:0];
-}
+- (void)focusOmniboxAndReplaceText:(NSString*)text {
+  [self focusOmnibox];
 
-- (void)replaceTextInOmnibox:(NSString*)text {
   if (text.length) {
-    [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-        performAction:chrome_test_util::NotifyChangeTextInRange(text)];
     [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
         performAction:grey_replaceText(text)];
   }
-}
-
-- (void)focusOmniboxAndReplaceText:(NSString*)text {
-  [self focusOmnibox];
-  [self replaceTextInOmnibox:text];
 }
 
 - (void)focusOmnibox {
@@ -635,7 +623,11 @@ const int kMaxNumberOfAttemptsAtTypingTextInOmnibox = 3;
   while (!textHasBeenTypedProperly &&
          numberOfAttemptsPerformed <
              kMaxNumberOfAttemptsAtTypingTextInOmnibox) {
-    [self focusOmniboxAndReplaceText:base::SysUTF8ToNSString(text)];
+    [ChromeEarlGreyUI focusOmnibox];
+
+    // Type the text.
+    [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
+        performAction:grey_replaceText(base::SysUTF8ToNSString(text))];
     numberOfAttemptsPerformed++;
 
     // Check that the omnibox contains the typed text.
@@ -661,7 +653,10 @@ const int kMaxNumberOfAttemptsAtTypingTextInOmnibox = 3;
   }
 
   if (textHasBeenTypedProperly && shouldPressEnter) {
-    [self pressEnter];
+    // Press enter to navigate.
+    // TODO(crbug.com/40916974): Use simulatePhysicalKeyboardEvent until
+    // replaceText can properly handle \n.
+    [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"\n" flags:0];
   }
 
   // Assert the text has been typed properly.

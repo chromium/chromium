@@ -330,37 +330,4 @@ NSString* kChromeActionsErrorDomain = @"ChromeActionsError";
           return YES;
         }];
 }
-
-+ (id<GREYAction>)notifyChangeTextInRange:(NSString*)text {
-  return [GREYActionBlock
-      actionWithName:@"Notifies the text view of an iminent change in content."
-         constraints:nil
-        performBlock:^(UIView* element, NSError* __strong* errorOrNil) {
-          if ([element isKindOfClass:[UITextField class]]) {
-            // For UITextField the action is NO-OP.
-            return YES;
-          }
-          if (![element isKindOfClass:[UITextView class]]) {
-            NSString* errorDescription =
-                [NSString stringWithFormat:
-                              @"Target view should be of kind UITextView:\n%@",
-                              [element grey_description]];
-            *errorOrNil = [NSError
-                errorWithDomain:@"Invalid element type"
-                           code:0
-                       userInfo:@{@"Failure Reason" : (errorDescription)}];
-            // Indicates that the action failed.
-            return NO;
-          }
-
-          UITextView* textView = (UITextView*)element;
-          NSRange selectedNSRange = NSMakeRange(0, [textView.text length]);
-          [textView.delegate textView:textView
-              shouldChangeTextInRange:selectedNSRange
-                      replacementText:text];
-          // Indicates that the action was executed successfully.
-          return YES;
-        }];
-}
-
 @end

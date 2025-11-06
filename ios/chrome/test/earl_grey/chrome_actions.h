@@ -86,14 +86,6 @@ id<GREYAction> AccessibilitySwipeRight();
 // not have a horizontal component.
 id<GREYAction> OverscrollSwipe(GREYDirection direction);
 
-// An action that notifies a `UITextView` that its content is about to change.
-//
-// The purpose of this custom action is to mitigate a shortcoming
-// of EarlGrey's `grey_replaceText`, that does not correctly invoke
-// `textView:shouldChangeTextInRange:replacementText:` before the text is
-// replaced.
-id<GREYAction> NotifyChangeTextInRange(NSString* text);
-
 }  // namespace chrome_test_util
 
 #endif  // IOS_CHROME_TEST_EARL_GREY_CHROME_ACTIONS_H_

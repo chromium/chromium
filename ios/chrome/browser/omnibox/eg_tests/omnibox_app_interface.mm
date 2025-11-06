@@ -21,7 +21,6 @@
 #import "ios/chrome/browser/omnibox/eg_tests/test_fake_suggestions_service.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_position/omnibox_position_browser_agent.h"
 #import "ios/chrome/browser/omnibox/ui/omnibox_text_field_ios.h"
-#import "ios/chrome/browser/omnibox/ui/omnibox_text_input.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
@@ -163,13 +162,14 @@ const base::FilePath& GetTestDataDir() {
   return [[GREYAssertionBlock alloc]
                  initWithName:name
       assertionBlockWithError:^BOOL(id element, __strong NSError** errorOrNil) {
-        if (![element conformsToProtocol:@protocol(OmniboxTextInput)]) {
+        if (![element isKindOfClass:OmniboxTextFieldIOS.class]) {
           *errorOrNil = testing::NSErrorWithLocalizedDescription(
-              @"Element should conform to OmniboxTextInput.");
+              @"Element should be of class OmniboxTextFieldIOS.");
           return NO;
         }
-        id<OmniboxTextInput> textInput = (id<OmniboxTextInput>)element;
-        return textInput.hasAutocompleteText == shouldHaveAutocompleteText;
+        OmniboxTextFieldIOS* textField =
+            base::apple::ObjCCastStrict<OmniboxTextFieldIOS>(element);
+        return textField.hasAutocompleteText == shouldHaveAutocompleteText;
       }];
 }
 
