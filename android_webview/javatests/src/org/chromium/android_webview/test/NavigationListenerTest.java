@@ -888,6 +888,7 @@ public class NavigationListenerTest extends AwParameterizedTest {
     @LargeTest
     @Feature({"AndroidWebView", "NavigationListener"})
     @CommandLineFlags.Add({"enable-features=EnableNavigationListener"})
+    @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO}) // crbug.com/458118167
     public void testNavigationHistoryNavigationBFCacheEnabled_ListenerDisablesBFCache()
             throws Throwable {
         mAwContents.getSettings().setBackForwardCacheEnabled(true);
