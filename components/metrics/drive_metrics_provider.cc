@@ -8,7 +8,6 @@
 #include "base/check_op.h"
 #include "base/files/drive_info.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"

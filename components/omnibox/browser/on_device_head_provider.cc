@@ -8,7 +8,6 @@
 
 #include "base/containers/contains.h"
 #include "base/files/file_enumerator.h"
-#include "base/files/file_util.h"
 #include "base/i18n/case_conversion.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/field_trial_params.h"

@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/byte_count.h"
-#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"

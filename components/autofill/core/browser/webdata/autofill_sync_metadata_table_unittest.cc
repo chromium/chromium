@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/protobuf_matchers.h"
 #include "components/sync/base/data_type.h"

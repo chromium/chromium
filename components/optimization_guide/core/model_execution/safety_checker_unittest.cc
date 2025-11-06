@@ -9,7 +9,6 @@
 #include <sstream>
 #include <string>
 
-#include "base/files/file_util.h"
 #include "base/files/scoped_temp_file.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"

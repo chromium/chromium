@@ -5,6 +5,7 @@
 #include "components/history/core/test/history_backend_db_base_test.h"
 
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"

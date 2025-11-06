@@ -4,7 +4,6 @@
 
 #import "components/language/ios/browser/ios_language_detection_tab_helper.h"
 
-#import "base/files/file_util.h"
 #import "base/metrics/metrics_hashes.h"
 #import "base/path_service.h"
 #import "base/run_loop.h"

@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"

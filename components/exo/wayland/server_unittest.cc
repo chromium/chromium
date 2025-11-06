@@ -10,14 +10,12 @@
 #include "components/exo/wayland/server.h"
 
 #include <stdlib.h>
-
-#include <memory>
-
 #include <wayland-client-core.h>
 #include <wayland-server-core.h>
 
+#include <memory>
+
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/run_loop.h"

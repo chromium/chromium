@@ -16,7 +16,6 @@
 #include "base/check.h"
 #include "base/check_deref.h"
 #include "base/containers/to_vector.h"
-#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/memory/raw_ptr.h"

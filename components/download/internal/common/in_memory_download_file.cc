@@ -10,7 +10,6 @@
 #include "components/download/internal/common/in_memory_download_file.h"
 
 #include "base/android/jni_string.h"
-#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/process/process_handle.h"
 #include "base/strings/stringprintf.h"

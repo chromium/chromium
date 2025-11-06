@@ -5,7 +5,6 @@
 #include "components/page_content_annotations/core/edu_classifier_model_handler.h"
 
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"

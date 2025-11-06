@@ -9,7 +9,6 @@
 #include <optional>
 #include <string>
 
-#include "base/files/file_util.h"
 #include "base/json/json_value_converter.h"
 #include "components/supervised_user/core/browser/proto/kidsmanagement_messages.pb.h"
 

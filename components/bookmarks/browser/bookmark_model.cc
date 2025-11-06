@@ -16,7 +16,6 @@
 #include "base/containers/contains.h"
 #include "base/debug/crash_logging.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/string_compare.h"
