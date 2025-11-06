@@ -150,7 +150,7 @@ public class HubCoordinator implements PaneHubController, BackPressHandler {
 
         // Dynamically add bottom toolbar if delegate is available and enabled
         if (bottomToolbarDelegate != null && bottomToolbarDelegate.isBottomToolbarEnabled()) {
-            ViewGroup mainContainer = mContainerView.findViewById(R.id.hub_main_container);
+            ViewGroup mainContainer = mContainerView.findViewById(R.id.hub_pane_host_container);
             mHubBottomToolbarCoordinator =
                     new HubBottomToolbarCoordinator(
                             context,

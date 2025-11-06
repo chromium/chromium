@@ -2409,7 +2409,8 @@ public class TabGridDialogTest {
 
     private void verifyBackgroundViewAccessibilityImportanceInSwitcher(
             ChromeTabbedActivity cta, boolean isDialogFullyVisible) {
-        View toolbarAndPaneContainer = (View) cta.findViewById(R.id.hub_pane_host).getParent();
+        View toolbarAndPaneContainer =
+                (View) cta.findViewById(R.id.hub_pane_host_container).getParent();
         assertEquals(
                 isDialogFullyVisible,
                 IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS

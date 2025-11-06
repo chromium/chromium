@@ -13,11 +13,18 @@ found in the LICENSE file.
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <include
-        layout="@layout/hub_pane_host_layout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="@dimen/toolbar_height_no_shadow"/>
+    <LinearLayout
+      android:id="@+id/hub_pane_host_container"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:orientation="vertical"
+      android:layout_marginTop="@dimen/toolbar_height_no_shadow">
+      <include
+          layout="@layout/hub_pane_host_layout"
+          android:layout_width="match_parent"
+          android:layout_height="0dp"
+          android:layout_weight="1" />
+    </LinearLayout>
 
     <include layout="@layout/hub_toolbar_layout" />
 

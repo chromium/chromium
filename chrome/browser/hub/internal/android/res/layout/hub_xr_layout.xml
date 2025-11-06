@@ -20,12 +20,19 @@ found in the LICENSE file.
       android:layout_height="@dimen/hub_xr_vertical_gap_between_toolbar_and_host_pane"
       android:layout_width="0dp" />
 
-    <include
-      layout="@layout/hub_pane_host_layout"
+    <LinearLayout
+      android:id="@+id/hub_pane_host_container"
       android:layout_width="match_parent"
       android:layout_height="0dp"
-      android:layout_weight="1" />
+      android:layout_weight="1"
+      android:orientation="vertical">
 
+      <include
+        layout="@layout/hub_pane_host_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    </LinearLayout>
   </LinearLayout>
 
   <!-- z-index above everything else. -->
