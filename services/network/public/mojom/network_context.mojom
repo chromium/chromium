@@ -171,7 +171,7 @@ interface TrustedHeaderClient {
   // used. If |preserve_fragment_on_redirect_url| is populated, and the
   // request is redirected to exactly that URL, then the fragment of the
   // original URL will not be copied to the redirect target URL.
-  OnHeadersReceived(string headers, IPEndPoint remote_endpoint)
+  OnHeadersReceived(string headers, IPEndPoint remote_endpoint, SSLInfo? ssl_info)
       => (int32 result,
           string? headers,
           url.mojom.Url? preserve_fragment_on_redirect_url);

@@ -294,6 +294,7 @@ void WebRequestProxyingWebSocket::OnBeforeSendHeaders(
 void WebRequestProxyingWebSocket::OnHeadersReceived(
     const std::string& headers,
     const net::IPEndPoint& endpoint,
+    const std::optional<net::SSLInfo>& ssl_info,
     OnHeadersReceivedCallback callback) {
   DCHECK(receiver_as_header_client_.is_bound());
 

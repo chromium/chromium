@@ -6778,10 +6778,13 @@ class TestURLLoaderHeaderClient : public mojom::TrustedURLLoaderHeaderClient {
 
     void OnHeadersReceived(const std::string& headers,
                            const net::IPEndPoint& endpoint,
+                           const std::optional<net::SSLInfo>& ssl_info,
                            OnHeadersReceivedCallback callback) override {
       auto new_headers =
           base::MakeRefCounted<net::HttpResponseHeaders>(headers);
       new_headers->SetHeader("baz", "qux");
+
+      on_headers_received_ssl_info_ = ssl_info;
       std::move(callback).Run(on_headers_received_result_,
                               new_headers->raw_headers(), GURL());
     }
@@ -6798,6 +6801,10 @@ class TestURLLoaderHeaderClient : public mojom::TrustedURLLoaderHeaderClient {
       request_headers_to_set_.emplace_back(std::move(name), std::move(value));
     }
 
+    std::optional<net::SSLInfo> get_on_headers_received_ssl_info() {
+      return on_headers_received_ssl_info_;
+    }
+
     void Bind(
         mojo::PendingReceiver<network::mojom::TrustedHeaderClient> receiver) {
       receiver_.reset();
@@ -6809,6 +6816,7 @@ class TestURLLoaderHeaderClient : public mojom::TrustedURLLoaderHeaderClient {
         {"foo", "bar"}};
     int on_before_send_headers_result_ = net::OK;
     int on_headers_received_result_ = net::OK;
+    std::optional<net::SSLInfo> on_headers_received_ssl_info_;
     mojo::Receiver<mojom::TrustedHeaderClient> receiver_{this};
   };
 
@@ -6839,6 +6847,10 @@ class TestURLLoaderHeaderClient : public mojom::TrustedURLLoaderHeaderClient {
 
   void set_on_headers_received_result(int result) {
     header_client_.set_on_headers_received_result(result);
+  }
+
+  std::optional<net::SSLInfo> get_on_headers_received_ssl_info() {
+    return header_client_.get_on_headers_received_ssl_info();
   }
 
   void AddRequestHeaderToSet(std::string name, std::string value) {
@@ -6916,6 +6928,79 @@ TEST_F(NetworkContextTest, HeaderClientModifiesHeaders) {
   }
 }
 
+TEST_F(NetworkContextTest, HeaderClientReceivesSslInfo) {
+  net::EmbeddedTestServer test_server(
+      net::test_server::EmbeddedTestServer::Type::TYPE_HTTPS);
+  test_server.SetSSLConfig(net::EmbeddedTestServer::CERT_OK);
+  net::test_server::RegisterDefaultHandlers(&test_server);
+  ASSERT_TRUE(test_server.Start());
+
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(CreateNetworkContextParamsForTesting());
+
+  ResourceRequest request;
+  request.url = test_server.GetURL("/echo");
+
+  // First, do a request with kURLLoadOptionUseHeaderClient set. ssl_info must
+  // be passed to headers client.
+  {
+    mojo::Remote<mojom::URLLoaderFactory> loader_factory;
+    mojom::URLLoaderFactoryParamsPtr params =
+        mojom::URLLoaderFactoryParams::New();
+    params->process_id = mojom::kBrowserProcessId;
+    params->is_orb_enabled = false;
+    TestURLLoaderHeaderClient header_client(
+        params->header_client.InitWithNewPipeAndPassReceiver());
+    network_context->CreateURLLoaderFactory(
+        loader_factory.BindNewPipeAndPassReceiver(), std::move(params));
+
+    mojo::PendingRemote<mojom::URLLoader> loader;
+    TestURLLoaderClient client;
+    loader_factory->CreateLoaderAndStart(
+        loader.InitWithNewPipeAndPassReceiver(), 0 /* request_id */,
+        mojom::kURLLoadOptionUseHeaderClient, request, client.CreateRemote(),
+        net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
+
+    client.RunUntilComplete();
+
+    // Make sure that ssl info is present.
+    std::optional<net::SSLInfo> ssl_info =
+        header_client.get_on_headers_received_ssl_info();
+
+    ASSERT_TRUE(ssl_info.has_value());
+    ASSERT_TRUE(ssl_info->is_valid());
+    ASSERT_FALSE(net::IsCertStatusError(ssl_info->cert_status));
+  }
+  // Do a request without kURLLoadOptionUseHeaderClient set, ssl_info must not
+  // be present.
+  {
+    mojo::Remote<mojom::URLLoaderFactory> loader_factory;
+    mojom::URLLoaderFactoryParamsPtr params =
+        mojom::URLLoaderFactoryParams::New();
+    params->process_id = mojom::kBrowserProcessId;
+    params->is_orb_enabled = false;
+    TestURLLoaderHeaderClient header_client(
+        params->header_client.InitWithNewPipeAndPassReceiver());
+    network_context->CreateURLLoaderFactory(
+        loader_factory.BindNewPipeAndPassReceiver(), std::move(params));
+
+    mojo::PendingRemote<mojom::URLLoader> loader;
+    TestURLLoaderClient client;
+    loader_factory->CreateLoaderAndStart(
+        loader.InitWithNewPipeAndPassReceiver(), 0 /* request_id */,
+        0 /* options */, request, client.CreateRemote(),
+        net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
+
+    client.RunUntilComplete();
+
+    // Make sure that ssl info is not present.
+    std::optional<net::SSLInfo> ssl_info =
+        header_client.get_on_headers_received_ssl_info();
+
+    ASSERT_FALSE(ssl_info.has_value());
+  }
+}
+
 TEST_F(NetworkContextTest, HeaderClientFailsRequest) {
   net::EmbeddedTestServer test_server;
   net::test_server::RegisterDefaultHandlers(&test_server);
@@ -6987,6 +7072,7 @@ class HangingTestURLLoaderHeaderClient
 
     void OnHeadersReceived(const std::string& headers,
                            const net::IPEndPoint& endpoint,
+                           const std::optional<::net::SSLInfo>& ssl_info,
                            OnHeadersReceivedCallback callback) override {
       saved_received_headers_ = headers;
       saved_on_headers_received_callback_ = std::move(callback);

@@ -134,14 +134,16 @@ int NetworkServiceNetworkDelegate::OnHeadersReceived(
     const net::HttpResponseHeaders* original_response_headers,
     scoped_refptr<net::HttpResponseHeaders>* override_response_headers,
     const net::IPEndPoint& endpoint,
-    std::optional<GURL>* preserve_fragment_on_redirect_url) {
+    std::optional<GURL>* preserve_fragment_on_redirect_url,
+    const std::optional<net::SSLInfo>& ssl_info) {
   auto chain = base::MakeRefCounted<PendingCallbackChain>(std::move(callback));
   URLLoader* url_loader = URLLoader::ForRequest(*request);
+
   if (url_loader) {
     chain->AddResult(url_loader->OnHeadersReceived(
         chain->CreateCallback(), original_response_headers,
-        override_response_headers, endpoint,
-        preserve_fragment_on_redirect_url));
+        override_response_headers, endpoint, preserve_fragment_on_redirect_url,
+        ssl_info));
   }
 
 #if BUILDFLAG(ENABLE_WEBSOCKETS)
@@ -149,7 +151,8 @@ int NetworkServiceNetworkDelegate::OnHeadersReceived(
   if (web_socket) {
     chain->AddResult(web_socket->OnHeadersReceived(
         chain->CreateCallback(), original_response_headers,
-        override_response_headers, preserve_fragment_on_redirect_url));
+        override_response_headers, preserve_fragment_on_redirect_url,
+        ssl_info));
   }
 #endif  // BUILDFLAG(ENABLE_WEBSOCKETS)
 

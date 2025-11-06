@@ -366,7 +366,8 @@ int TestNetworkDelegate::OnHeadersReceived(
     const HttpResponseHeaders* original_response_headers,
     scoped_refptr<HttpResponseHeaders>* override_response_headers,
     const IPEndPoint& endpoint,
-    std::optional<GURL>* preserve_fragment_on_redirect_url) {
+    std::optional<GURL>* preserve_fragment_on_redirect_url,
+    const std::optional<net::SSLInfo>& ssl_info) {
   EXPECT_FALSE(preserve_fragment_on_redirect_url->has_value());
   int req_id = GetRequestId(request);
   bool is_first_response =

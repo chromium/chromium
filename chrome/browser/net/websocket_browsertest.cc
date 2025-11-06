@@ -5,6 +5,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -56,6 +57,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "net/base/features.h"
+#include "net/base/net_errors.h"
 #include "net/base/network_isolation_key.h"
 #include "net/cookies/site_for_cookies.h"
 #include "net/dns/mock_host_resolver.h"
@@ -149,7 +151,9 @@ class WebSocketBrowserTest : public InProcessBrowserTest {
   void MakeWebSocketConnection(
       const GURL& url,
       mojo::PendingRemote<network::mojom::WebSocketHandshakeClient>
-          handshake_client) {
+          handshake_client,
+      mojo::PendingRemote<network::mojom::TrustedHeaderClient> header_client =
+          mojo::NullRemote()) {
     content::RenderFrameHost* const frame = browser()
                                                 ->tab_strip_model()
                                                 ->GetActiveWebContents()
@@ -175,8 +179,7 @@ class WebSocketBrowserTest : public InProcessBrowserTest {
         std::move(handshake_client),
         process->GetStoragePartition()->CreateURLLoaderNetworkObserverForFrame(
             process->GetDeprecatedID(), frame->GetRoutingID()),
-        /*auth_handler=*/mojo::NullRemote(),
-        /*header_client=*/mojo::NullRemote(),
+        /*auth_handler=*/mojo::NullRemote(), std::move(header_client),
         /*throttling_profile_id=*/std::nullopt);
   }
 
@@ -1018,6 +1021,60 @@ IN_PROC_BROWSER_TEST_F(WebSocketBrowserHTTPSConnectToTest,
   EXPECT_TRUE(message_queue.WaitForMessage(&message));
   EXPECT_THAT(message, HasSubstr("cookie=1"));
   EXPECT_EQ("PASS", WaitAndGetTitle());
+}
+
+class TestTrustedHeaderClient : public network::mojom::TrustedHeaderClient {
+ public:
+  explicit TestTrustedHeaderClient(base::OnceClosure quit)
+      : quit_(std::move(quit)) {}
+
+  // network::mojom::TrustedHeaderClient:
+  void OnBeforeSendHeaders(const net::HttpRequestHeaders& headers,
+                           OnBeforeSendHeadersCallback callback) override {
+    std::move(callback).Run(net::OK, std::nullopt);
+  }
+
+  // network::mojom::TrustedHeaderClient:
+  void OnHeadersReceived(const std::string& headers,
+                         const net::IPEndPoint& endpoint,
+                         const std::optional<net::SSLInfo>& ssl_info,
+                         OnHeadersReceivedCallback callback) override {
+    on_headers_received_ssl_info_ = ssl_info;
+    std::move(callback).Run(net::OK, std::nullopt, std::nullopt);
+    std::move(quit_).Run();
+  }
+
+  std::optional<net::SSLInfo> on_headers_received_ssl_info_;
+  base::OnceClosure quit_;
+};
+
+IN_PROC_BROWSER_TEST_F(WebSocketBrowserTest, TrustedHeaderClientSSLInfo) {
+  ASSERT_TRUE(wss_server_.Start());
+
+  base::RunLoop run_loop;
+  auto header_client_impl =
+      std::make_unique<TestTrustedHeaderClient>(run_loop.QuitClosure());
+  mojo::Receiver<network::mojom::TrustedHeaderClient> header_client_receiver(
+      header_client_impl.get());
+
+  // Just reuse any handshake client, nothing out of it is necessary.
+  auto handshake_client =
+      std::make_unique<FailureMonitoringHandshakeClient>(base::DoNothing());
+
+  MakeWebSocketConnection(
+      net::test_server::GetWebSocketURL(wss_server_, "/echo-with-no-extension"),
+      handshake_client->Bind(),
+      header_client_receiver.BindNewPipeAndPassRemote());
+
+  run_loop.Run();
+
+  // Make sure that ssl info is present.
+  std::optional<net::SSLInfo> ssl_info =
+      header_client_impl->on_headers_received_ssl_info_;
+
+  ASSERT_TRUE(ssl_info.has_value());
+  ASSERT_TRUE(ssl_info->is_valid());
+  ASSERT_FALSE(net::IsCertStatusError(ssl_info->cert_status));
 }
 
 }  // namespace

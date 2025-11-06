@@ -89,6 +89,7 @@ class WebRequestProxyingWebSocket
                            OnBeforeSendHeadersCallback callback) override;
   void OnHeadersReceived(const std::string& headers,
                          const net::IPEndPoint& endpoint,
+                         const std::optional<net::SSLInfo>& ssl_info,
                          OnHeadersReceivedCallback callback) override;
 
   // WebRequestAPI::Proxy:

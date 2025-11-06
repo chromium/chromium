@@ -24,6 +24,7 @@
 #include "mojo/public/cpp/system/data_pipe_producer.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
+#include "net/ssl/ssl_info.h"
 #include "services/network/public/cpp/cross_origin_resource_policy.h"
 #include "services/network/public/cpp/header_util.h"
 #include "services/network/public/cpp/orb/orb_api.h"
@@ -799,7 +800,7 @@ void WebBundleURLLoaderFactory::OnResponseParsed(
     return;
   }
   loader->trusted_header_client()->OnHeadersReceived(
-      header_string, net::IPEndPoint(),
+      header_string, net::IPEndPoint(), std::nullopt,
       base::BindOnce(&WebBundleURLLoaderFactory::OnHeadersReceivedComplete,
                      weak_ptr_factory_.GetWeakPtr(), loader->GetWeakPtr(),
                      header_string, response->payload_offset,

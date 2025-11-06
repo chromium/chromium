@@ -312,7 +312,8 @@ class TestNetworkDelegate : public NetworkDelegateImpl {
       const HttpResponseHeaders* original_response_headers,
       scoped_refptr<HttpResponseHeaders>* override_response_headers,
       const IPEndPoint& endpoint,
-      std::optional<GURL>* preserve_fragment_on_redirect_url) override;
+      std::optional<GURL>* preserve_fragment_on_redirect_url,
+      const std::optional<net::SSLInfo>& ssl_info) override;
   void OnBeforeRedirect(URLRequest* request, const GURL& new_location) override;
   void OnBeforeRetry(URLRequest* request) override;
   void OnResponseStarted(URLRequest* request, int net_error) override;

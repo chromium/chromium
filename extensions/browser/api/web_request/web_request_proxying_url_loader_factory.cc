@@ -635,6 +635,7 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::OnBeforeSendHeaders(
 void WebRequestProxyingURLLoaderFactory::InProgressRequest::OnHeadersReceived(
     const std::string& headers,
     const net::IPEndPoint& remote_endpoint,
+    const std::optional<net::SSLInfo>& ssl_info,
     OnHeadersReceivedCallback callback) {
   TRACE_EVENT_WITH_FLOW1(
       "extensions",
