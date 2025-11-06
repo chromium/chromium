@@ -1483,8 +1483,9 @@ chromium-metrics-reviews@google.com.
   <summary>
     This metric records if the checked app is present in the managed allowlist.
     The metric is recorded on
-    IwaKeyDistributionInfoProvider::IsManagedInstallPermitted() call, and gives
-    the same result if IsolatedWebAppAllowlistFlag is enabled.
+    IwaKeyDistributionInfoProvider::IsManagedInstallPermitted() call, and is
+    collected even if IsolatedWebAppAllowlistFlag is disabled (app is then
+    installed regardless of returned value).
 
     This is normally called when the policy is processed.
   </summary>
@@ -1516,8 +1517,9 @@ chromium-metrics-reviews@google.com.
   <summary>
     This metric records if the checked app is present in the managed allowlist.
     The metric is recorded on
-    IwaKeyDistributionInfoProvider::IsManagedUpdatePermitted() call, and gives
-    the same result if IsolatedWebAppAllowlistFlag is enabled.
+    IwaKeyDistributionInfoProvider::IsManagedUpdatePermitted() call, and is
+    collected even if IsolatedWebAppAllowlistFlag is disabled (app is then
+    updated regardless of returned value).
 
     This is called when the update manager check if apps require updates.
   </summary>
