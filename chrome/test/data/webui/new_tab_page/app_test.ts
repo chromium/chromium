@@ -2028,5 +2028,24 @@ suite('NewTabPageAppTest', () => {
           assertTrue(!!composebox);
           assertEquals(1, composeboxHandler.getCallCount('setDeepSearchMode'));
         });
+    test('Recent tab chip click opens composebox with context', async () => {
+      const actionChipsElement =
+          app.shadowRoot.querySelector('ntp-action-chips');
+      assertTrue(!!actionChipsElement);
+
+      // Setup.
+      const tabChip =
+          actionChipsElement.shadowRoot.getElementById('tab-context');
+      assertTrue(!!tabChip);
+      tabChip.click();
+      await microtasksFinished();
+
+      // Assert.
+      const composebox = app.shadowRoot.getElementById('composebox');
+      assertTrue(!!composebox);
+      assertEquals(1, searchboxHandler.getCallCount('addTabContext'));
+      const [_, delayUpload] = searchboxHandler.getArgs('addTabContext')[0];
+      assertEquals(true, delayUpload);
+    });
   });
 });
