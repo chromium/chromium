@@ -118,7 +118,8 @@ std::unique_ptr<GlicWindowController> CreateWindowController(
 std::unique_ptr<GlicSharingManager> CreateSharingManager(
     Profile* profile,
     GlicWindowController* window_controller,
-    GlicMetrics* metrics) {
+    GlicMetrics* metrics,
+    GlicEnabling* glic_enabling) {
   if (UseDefaultWindowController()) {
     return std::make_unique<GlicSharingManagerImpl>(
         profile, static_cast<GlicWindowControllerImpl*>(window_controller),
@@ -126,6 +127,7 @@ std::unique_ptr<GlicSharingManager> CreateSharingManager(
   }
 
   return std::make_unique<GlicActiveInstanceSharingManager>(
+      profile, glic_enabling,
       static_cast<GlicInstanceCoordinatorImpl*>(window_controller));
 }
 
@@ -150,8 +152,10 @@ GlicKeyedService::GlicKeyedService(
                                                 this,
                                                 enabling_.get(),
                                                 contextual_cueing_service)),
-      sharing_manager_(
-          CreateSharingManager(profile, &window_controller(), metrics_.get())),
+      sharing_manager_(CreateSharingManager(profile,
+                                            &window_controller(),
+                                            metrics_.get(),
+                                            enabling_.get())),
       region_capture_controller_(
           std::make_unique<GlicRegionCaptureController>()),
       auth_controller_(std::make_unique<AuthController>(profile,

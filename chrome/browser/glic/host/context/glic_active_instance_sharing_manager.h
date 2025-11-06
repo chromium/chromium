@@ -23,6 +23,8 @@ class GlicInstanceCoordinator;
 class GlicActiveInstanceSharingManager : public GlicDelegatingSharingManager {
  public:
   explicit GlicActiveInstanceSharingManager(
+      Profile* profile,
+      GlicEnabling* enabling,
       GlicInstanceCoordinator* instance_coordinator);
   ~GlicActiveInstanceSharingManager() override;
 
@@ -35,8 +37,23 @@ class GlicActiveInstanceSharingManager : public GlicDelegatingSharingManager {
   // Callback for changes to the last active GlicInstance.
   void OnActiveInstanceChanged(GlicInstance* instance);
 
+  // Callback for changes to profile consent state.
+  void OnProfileReadyStateChanged();
+
+  // Helper to re-evaluate and set the correct delegate.
+  void UpdateDelegate();
+
+  // The profile this manager belongs to.
+  const raw_ptr<Profile> profile_;
+
+  // Holds the potentially active instance while waiting for consent.
+  raw_ptr<GlicInstance> pending_active_instance_ = nullptr;
+
   // Subscription for last active instance changes.
   base::CallbackListSubscription active_instance_subscription_;
+
+  // Subscription for profile consent changes.
+  base::CallbackListSubscription profile_state_subscription_;
 };
 
 }  // namespace glic
