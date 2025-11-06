@@ -32,6 +32,7 @@ import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ProfileDependentSetting;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -223,7 +224,12 @@ public class PrivacyGuideFragment extends Fragment
     private void modifyAppBar() {
         AppCompatActivity settingsActivity = (AppCompatActivity) getActivity();
         settingsActivity.setTitle(R.string.privacy_guide_fragment_title);
-        assumeNonNull(settingsActivity.getSupportActionBar()).setDisplayHomeAsUpEnabled(false);
+
+        if (!ChromeFeatureList.sSettingsMultiColumn.isEnabled()) {
+            // Hides the back arrow button only when multi-column mode is disabled.
+            // In multi-column mode, the back button works to close the activity.
+            assumeNonNull(settingsActivity.getSupportActionBar()).setDisplayHomeAsUpEnabled(false);
+        }
     }
 
     private void nextStep() {
@@ -312,12 +318,18 @@ public class PrivacyGuideFragment extends Fragment
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         menu.clear();
-        inflater.inflate(R.menu.privacy_guide_toolbar_menu, menu);
+        if (!ChromeFeatureList.sSettingsMultiColumn.isEnabled()) {
+            // Hide the close button on multi-column mode.
+            // In multi-column mode, the back arrow button works to close the activity.
+            inflater.inflate(R.menu.privacy_guide_toolbar_menu, menu);
+        }
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.close_menu_id) {
+        if (item.getItemId() == R.id.close_menu_id
+                || (ChromeFeatureList.sSettingsMultiColumn.isEnabled()
+                        && item.getItemId() == android.R.id.home)) {
             getActivity().finish();
             return true;
         }
