@@ -13,8 +13,11 @@
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_i18n_api.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile_comparator.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/geo/alternative_state_name_map_test_utils.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -431,35 +434,52 @@ TEST_F(AddressTest, SetStreetAddressRejectsAddressesWithTrailingBlankLines) {
 // Verifies that the merging-related methods for structured addresses are
 // implemented correctly. This is not a test of the merging logic itself.
 TEST_F(AddressTest, TestMergeStructuredAddresses) {
-  Address address1(kLegacyHierarchyCountryCode);
-  Address address2(kLegacyHierarchyCountryCode);
-
-  // Two empty addresses are mergeable by default.
-  EXPECT_TRUE(address1.IsStructuredAddressMergeable(address2));
+  autofill::AutofillProfileComparator profile_comparator("en-US");
 
   // The two zip codes have a is-substring relation and are mergeable.
-  address1.SetRawInfo(ADDRESS_HOME_ZIP, u"12345");
-  address2.SetRawInfo(ADDRESS_HOME_ZIP, u"1234");
-  EXPECT_TRUE(address2.IsStructuredAddressMergeable(address1));
-  EXPECT_TRUE(address1.IsStructuredAddressMergeable(address2));
+  AutofillProfile profile1("1", AutofillProfile::RecordType::kAccount,
+                           AddressCountryCode(kLegacyHierarchyCountryCode));
+  AutofillProfile profile2("2", AutofillProfile::RecordType::kAccount,
+                           AddressCountryCode(kLegacyHierarchyCountryCode));
+  // Two empty profiles are mergeable by default.
+  EXPECT_TRUE(profile_comparator.AreMergeable(profile1, profile2));
+  // We use SetProfileInfo instead of SetRawInfo as it calls
+  // FinalizeAfterImport() making it more similar to how the tree is handled in
+  // prod - which is recommended as we're using tree's interfaces for merging.
+  test::SetProfileInfo(&profile1, "", "", "", "", "", "", "", "", "", "",
+                       /*zipcode=*/"12345", "", "");
+  test::SetProfileInfo(&profile2, "", "", "", "", "", "", "", "", "", "",
+                       /*zipcode=*/"1234", "", "");
 
-  // The merging should maintain the value because address2 is not more
+  EXPECT_TRUE(profile_comparator.AreMergeable(profile1, profile2));
+
+  base::Time old_time;
+  ASSERT_TRUE(
+      base::Time::FromString("Tue, 15 Nov 1994 12:45:26 GMT", &old_time));
+  base::Time new_time;
+  ASSERT_TRUE(
+      base::Time::FromString("Tue, 15 Nov 1996 12:45:26 GMT", &new_time));
+
+  profile1.usage_history().set_use_date(old_time);
+  profile2.usage_history().set_use_date(old_time);
+  // The merging should maintain the value because profile2 is not more
   // recently used.
-  address1.MergeStructuredAddress(address2,
-                                  /*newer_was_more_recently_used=*/false);
-  EXPECT_EQ(address1.GetRawInfo(ADDRESS_HOME_ZIP), u"12345");
-
-  // Once it is more recently used, the value from address2 should be copied
-  // into address1.
-  address1.MergeStructuredAddress(address2,
-                                  /*newer_was_more_recently_used=*/true);
-  EXPECT_EQ(address1.GetRawInfo(ADDRESS_HOME_ZIP), u"1234");
+  profile1.MergeDataFrom(profile2, "en-US");
+  EXPECT_EQ(profile1.GetRawInfo(ADDRESS_HOME_ZIP), u"12345");
+  // Once it is more recently used, the value from profile2 should be copied
+  // into profile1.
+  profile2.usage_history().set_use_date(new_time);
+  profile1.MergeDataFrom(profile2, "en-US");
+  EXPECT_EQ(profile1.GetRawInfo(ADDRESS_HOME_ZIP), u"1234");
 
   // With a second incompatible ZIP code the addresses are not mergeable
   // anymore.
-  Address address3(kLegacyHierarchyCountryCode);
-  address3.SetRawInfo(ADDRESS_HOME_ZIP, u"67890");
-  EXPECT_FALSE(address1.IsStructuredAddressMergeable(address3));
+  AutofillProfile profile3("3", AutofillProfile::RecordType::kAccount,
+                           AddressCountryCode(kLegacyHierarchyCountryCode));
+
+  test::SetProfileInfo(&profile3, "", "", "", "", "", "", "", "", "", "",
+                       "67890", "", "");
+  EXPECT_FALSE(profile_comparator.AreMergeable(profile1, profile3));
 }
 
 // Tests that if only one of the structured addresses in a merge operation has
