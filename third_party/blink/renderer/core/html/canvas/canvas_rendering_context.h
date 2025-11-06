@@ -185,6 +185,10 @@ class CORE_EXPORT CanvasRenderingContext
   virtual scoped_refptr<StaticBitmapImage> GetImage(FlushReason) = 0;
   virtual bool IsComposited() const = 0;
 
+  virtual gfx::Vector2dF PhysicalPixelToCanvasGridScaleFactor() const {
+    return gfx::Vector2dF(1., 1.);
+  }
+
   // Called when the entire tab is backgrounded or unbackgrounded.
   // The page's visibility status can be queried at any time via
   // Host()->IsPageVisible().

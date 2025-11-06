@@ -82,10 +82,10 @@
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context_host.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
-#include "third_party/blink/renderer/core/layout/layout_box.h"
-#include "third_party/blink/renderer/core/layout/layout_box_model_object.h"
+#include "third_party/blink/renderer/core/layout/layout_replaced.h"
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
 #include "third_party/blink/renderer/core/layout/map_coordinates_flags.h"
+#include "third_party/blink/renderer/core/resize_observer/resize_observer_utilities.h"
 #include "third_party/blink/renderer/core/scroll/scroll_alignment.h"
 #include "third_party/blink/renderer/core/scroll/scroll_into_view_util.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
@@ -146,7 +146,6 @@ class ExecutionContext;
 class FontSelector;
 class ImageData;
 class ImageDataSettings;
-class LayoutObject;
 class MemoryManagedPaintCanvas;
 class SVGResource;
 
@@ -836,8 +835,21 @@ void CanvasRenderingContext2D::DrawElementInternal(
   // immediately checks IsFilterResolved() and uses a null canvas if not.
   StateGetFilter();
 
-  auto box_rect =
-      gfx::Rect(ToCeiledSize(element->GetLayoutBox()->StitchedSize()));
+  gfx::SizeF box_size(element->GetLayoutBox()->StitchedSize());
+
+  gfx::RectF dst_rect(x, y, 0, 0);
+  if (dwidth && dheight) {
+    dst_rect.set_size(gfx::SizeF(*dwidth, *dheight));
+  } else {
+    // If no explicit destination size is given, default to the source content
+    // size scaled to canvas grid coordinates. This causes the element to have
+    // the same proportions when appearing inside the canvas as it would have
+    // were it painted outside the canvas.
+    gfx::SizeF src_size(box_size);
+    gfx::Vector2dF scale_factor = PhysicalPixelToCanvasGridScaleFactor();
+    src_size.Scale(scale_factor.x(), scale_factor.y());
+    dst_rect.set_size(src_size);
+  }
 
   // TODO(crbug.com/421834883): This code is based on image drawing. Maybe we
   // need a distinct paint_type: kImagePaintType seems to do the right thing
@@ -847,16 +859,11 @@ void CanvasRenderingContext2D::DrawElementInternal(
   // opaque so going with that for now.
   Draw<OverdrawOp::kNone>(
       /*draw_func=*/
-      [paint_record, x, y, dwidth, dheight, box_rect](
-          MemoryManagedPaintCanvas* c, const cc::PaintFlags* flags) {
+      [paint_record, dst_rect, box_size](MemoryManagedPaintCanvas* c,
+                                         const cc::PaintFlags* flags) {
         cc::RecordPaintCanvas::DisableFlushCheckScope disable_flush_check_scope(
             static_cast<cc::RecordPaintCanvas*>(c));
         int initial_save_count = c->getSaveCount();
-
-        gfx::RectF dst_rect(x, y, box_rect.width(), box_rect.height());
-        if (dwidth && dheight) {
-          dst_rect = gfx::RectF(x, y, *dwidth, *dheight);
-        }
 
         if (flags->getImageFilter() ||
             flags->getBlendMode() != SkBlendMode::kSrcOver ||
@@ -893,12 +900,11 @@ void CanvasRenderingContext2D::DrawElementInternal(
         }
 
         c->save();
-        c->translate(x, y);
-        if (dwidth && dheight) {
-          c->scale(*dwidth / box_rect.width(), *dheight / box_rect.height());
-        }
+        c->translate(dst_rect.x(), dst_rect.y());
+        c->scale(dst_rect.width() / box_size.width(),
+                 dst_rect.height() / box_size.height());
 
-        c->clipRect(SkRect::MakeWH(box_rect.width(), box_rect.height()));
+        c->clipRect(SkRect::MakeWH(box_size.width(), box_size.height()));
 
         c->drawPicture(paint_record.value(),
                        // use a save at the beginning of the record to keep
@@ -907,7 +913,7 @@ void CanvasRenderingContext2D::DrawElementInternal(
 
         c->restoreToCount(initial_save_count);
       },
-      NoOverdraw, /*bounds=*/gfx::RectF(box_rect.width(), box_rect.height()),
+      NoOverdraw, /*bounds=*/gfx::RectF(box_size.width(), box_size.height()),
       CanvasRenderingContext2DState::kImagePaintType,
       CanvasRenderingContext2DState::kNonOpaqueImage,
       CanvasPerformanceMonitor::DrawType::kElement);
@@ -1193,6 +1199,30 @@ HTMLCanvasElement* CanvasRenderingContext2D::HostAsHTMLCanvasElement() const {
 
 UniqueFontSelector* CanvasRenderingContext2D::GetFontSelector() const {
   return canvas()->GetFontSelector();
+}
+
+gfx::Vector2dF CanvasRenderingContext2D::PhysicalPixelToCanvasGridScaleFactor()
+    const {
+  LayoutBox* canvas_box = canvas()->GetLayoutBox();
+  CHECK(canvas_box);
+
+  // As a special case, if the canvas is sized to its devicePixelContentBox,
+  // make sure the element's physical pixels are mapped 1:1 to the canvas
+  // grid to avoid any inadverent fuzziness due to rounding.
+  gfx::Size canvas_size = Host()->Size();
+  gfx::Size device_pixel_content_box =
+      ResizeObserverUtilities::ComputeSnappedDevicePixelContentBox(
+          LogicalSize(canvas_box->ContentLogicalWidth(),
+                      canvas_box->ContentLogicalHeight()),
+          *canvas_box, canvas_box->StyleRef());
+  if (canvas_size == device_pixel_content_box) {
+    return gfx::Vector2dF(1., 1.);
+  }
+
+  PhysicalSize physical_size =
+      To<LayoutReplaced>(canvas_box)->ReplacedContentRect().size;
+  return gfx::Vector2dF(canvas_size.width() / physical_size.width.ToFloat(),
+                        canvas_size.height() / physical_size.height.ToFloat());
 }
 
 void CanvasRenderingContext2D::SizeChanged() {

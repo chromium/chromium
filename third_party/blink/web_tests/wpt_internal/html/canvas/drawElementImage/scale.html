@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html class="reftest-wait">
+  <title>drawElementImage no scaling to devicePixelContentRect.</title>
+  <meta charset="utf-8" />
+  <link rel="help" href="https://github.com/WICG/html-in-canvas" />
+  <link rel="match" href="scale-ref.html" />
+  <script src="/common/reftest-wait.js"></script>
+
+<style>
+ canvas {
+   width: 100.4px;
+   height: 100px;
+ }
+ .hello {
+   width: 100.4px;
+   height:100px;
+   background-image: radial-gradient(#f88, #88f);
+ }
+ .hello::before {
+   content: "Hello, world!";
+ }
+</style>
+
+<canvas layoutsubtree>
+  <div class="hello"></div>
+</canvas>
+
+<script>
+const observer = new ResizeObserver(async (entries) => {
+  entries.forEach(entry => {
+    const cvs = entry.target;
+    const div = cvs.firstElementChild;
+    cvs.width = entry.devicePixelContentBoxSize[0].inlineSize;
+    cvs.height = entry.devicePixelContentBoxSize[0].blockSize;
+    const ctx = cvs.getContext("2d");
+    ctx.drawElementImage(div, 0, 0);
+  });
+  await new Promise(requestAnimationFrame);
+  await new Promise(requestAnimationFrame);
+  takeScreenshot();
+});
+observer.observe(document.querySelector("canvas"));
+</script>

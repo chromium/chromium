@@ -36,8 +36,9 @@ gfx::SizeF ComputeZoomAdjustedSVGBox(ResizeObserverBoxOptions box_option,
       const ComputedStyle& style = layout_object.StyleRef();
       const gfx::SizeF scaled_bounding_box_size(
           gfx::ScaleSize(bounding_box_size, style.EffectiveZoom()));
-      return ResizeObserverUtilities::ComputeSnappedDevicePixelContentBox(
-          scaled_bounding_box_size, layout_object, style);
+      return gfx::SizeF(
+          ResizeObserverUtilities::ComputeSnappedDevicePixelContentBox(
+              scaled_bounding_box_size, layout_object, style));
     }
   }
 }

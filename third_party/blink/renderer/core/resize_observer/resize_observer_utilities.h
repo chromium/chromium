@@ -5,9 +5,11 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_RESIZE_OBSERVER_RESIZE_OBSERVER_UTILITIES_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_RESIZE_OBSERVER_RESIZE_OBSERVER_UTILITIES_H_
 
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/resize_observer/resize_observer_box_options.h"
 
 namespace gfx {
+class Size;
 class SizeF;
 }
 
@@ -21,7 +23,7 @@ struct LogicalSize;
 struct PhysicalRect;
 
 // Helper functions for ResizeObserverEntry and ResizeObservation.
-class ResizeObserverUtilities {
+class CORE_EXPORT ResizeObserverUtilities {
  public:
   // Given |box_option|, compute the appropriate box for use with
   // ResizeObserver. This takes the following factors into account: writing
@@ -33,11 +35,11 @@ class ResizeObserverUtilities {
 
   // Compute a scaled and pixel snapped device pixel content box for svg
   // bounding boxes.
-  static gfx::SizeF ComputeSnappedDevicePixelContentBox(
+  static gfx::Size ComputeSnappedDevicePixelContentBox(
       LogicalSize box_size,
       const LayoutObject& layout_object,
       const ComputedStyle& style);
-  static gfx::SizeF ComputeSnappedDevicePixelContentBox(
+  static gfx::Size ComputeSnappedDevicePixelContentBox(
       const gfx::SizeF& box_size,
       const LayoutObject& layout_object,
       const ComputedStyle& style);
