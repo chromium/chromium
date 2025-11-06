@@ -64,11 +64,9 @@ class ContextualTasksUiService : public KeyedService {
   // WebContents the navigation originated from is provided along with
   // `is_to_new_tab` which indicates whether the navigation would open in a
   // new tab or window.
-  virtual bool HandleNavigation(
-      const GURL& navigation_url,
-      const GURL& responsible_web_contents_url,
-      const content::FrameTreeNodeId& source_frame_tree_node_id,
-      bool is_to_new_tab);
+  virtual bool HandleNavigation(const GURL& navigation_url,
+                                content::WebContents* source_contents,
+                                bool is_to_new_tab);
 
   // Returns the URL that a task was created for. Once this is retrieved, the
   // entry is removed from the cache.

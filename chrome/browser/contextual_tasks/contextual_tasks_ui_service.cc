@@ -130,6 +130,7 @@ void ContextualTasksUiService::OnThreadLinkClicked(
     base::WeakPtr<tabs::TabInterface> tab) {
   // If the source contents is the panel, open the AI page in a new foreground
   // tab.
+  // TODO(crbug.com/458139141): Split this API so we can assume `tab` non-null.
   if (!tab) {
     NavigateParams params(profile_, url, ui::PAGE_TRANSITION_LINK);
 
@@ -189,8 +190,7 @@ void ContextualTasksUiService::OnThreadLinkClicked(
 
 bool ContextualTasksUiService::HandleNavigation(
     const GURL& navigation_url,
-    const GURL& responsible_web_contents_url,
-    const content::FrameTreeNodeId& source_frame_tree_node_id,
+    content::WebContents* source_contents,
     bool is_to_new_tab) {
   // Allow any navigation to the contextual tasks host.
   if (IsContextualTasksHost(navigation_url)) {
@@ -202,8 +202,6 @@ bool ContextualTasksUiService::HandleNavigation(
 
   // Try to get the active tab if there is one. This will be null if the link is
   // originating from the side panel.
-  content::WebContents* source_contents =
-      content::WebContents::FromFrameTreeNodeId(source_frame_tree_node_id);
   tabs::TabInterface* tab = nullptr;
   if (source_contents) {
     tab = tabs::TabInterface::MaybeGetFromContents(source_contents);
@@ -211,7 +209,7 @@ bool ContextualTasksUiService::HandleNavigation(
 
   // Intercept any navigation where the wrapping WebContents is the WebUI host
   // unless it is the AI page.
-  if (IsContextualTasksHost(responsible_web_contents_url)) {
+  if (IsContextualTasksHost(source_contents->GetLastCommittedURL())) {
     if (is_nav_to_ai) {
       return false;
     }
@@ -224,7 +222,7 @@ bool ContextualTasksUiService::HandleNavigation(
 
     base::Uuid task_id;
     if (source_contents) {
-      task_id = GetTaskIdFromHostURL(source_contents->GetURL());
+      task_id = GetTaskIdFromHostURL(source_contents->GetLastCommittedURL());
     }
 
     // This needs to be posted in case the called method triggers a navigation
