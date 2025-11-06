@@ -34,9 +34,6 @@
   self.image = [UIImage imageNamed:@"safari_data_import"];
   self.imageHasFixedSize = YES;
   self.topAlignedLayout = YES;
-  /// Create an empty title view to show in the navigation bar if dismiss
-  /// button would not be displayed.
-  self.titleView = [[UIView alloc] initWithFrame:CGRectZero];
   self.showDismissBarButton = NO;
   [super viewDidLoad];
   self.view.accessibilityIdentifier =

@@ -38,6 +38,8 @@
   SafariDataImportEntryPointMediator* _mediator;
   /// View controller for the entry point of the Ssafari data import workflow.
   SafariDataImportEntryPointViewController* _viewController;
+  /// The navigation controller for the view controller.
+  UINavigationController* _navigationController;
   /// Coordinator that displays the next step in the Safari data importing
   /// process. Its view controller will be presented on top of
   /// `_viewController`.
@@ -72,7 +74,9 @@
        initWithUIBlockerTarget:self.browser->GetSceneState()
                  promosManager:promosManager
       featureEngagementTracker:tracker];
-  [self.baseViewController presentViewController:_viewController
+  _navigationController = [[UINavigationController alloc]
+      initWithRootViewController:_viewController];
+  [self.baseViewController presentViewController:_navigationController
                                         animated:YES
                                       completion:nil];
 }
@@ -84,14 +88,15 @@
     [mediator disconnect];
     [UIHandler safariDataImportDidDismiss];
   };
-  if (_viewController.presentingViewController) {
-    [_viewController.presentingViewController
+  if (_navigationController.presentingViewController) {
+    [_navigationController.presentingViewController
         dismissViewControllerAnimated:YES
                            completion:dismissCompletionHandler];
   } else {
     dismissCompletionHandler();
   }
   _viewController = nil;
+  _navigationController = nil;
   [_exportCoordinator stop];
   self.delegate = nil;
 }
@@ -106,7 +111,7 @@
       SafariDataImportEntryPointAction::kImport, _entryPoint);
   [_mediator notifyUsedOrDismissed];
   _exportCoordinator = [[SafariDataImportExportCoordinator alloc]
-      initWithBaseViewController:_viewController
+      initWithBaseViewController:_navigationController
                          browser:self.browser];
   _exportCoordinator.delegate = self;
   [_exportCoordinator start];
