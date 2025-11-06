@@ -9,6 +9,7 @@
 #import "components/omnibox/browser/omnibox_pref_names.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
 #import "components/prefs/pref_service.h"
+#import "components/prefs/scoped_user_pref_update.h"
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #import "components/search_engines/template_url_service.h"
 #import "components/signin/public/base/signin_pref_names.h"
@@ -20,6 +21,7 @@
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/ntp/model/set_up_list_prefs.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
+#import "ios/chrome/browser/push_notification/model/constants.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -447,6 +449,21 @@ TEST_F(TipsNotificationCriteriaTest,
 TEST_F(TipsNotificationCriteriaTest,
        TestShouldSendEnhancedSafeBrowsing_NotAllowed) {
   profile_->GetPrefs()->SetBoolean(prefs::kAdvancedProtectionAllowed, false);
+  profile_->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnhanced, false);
+  EXPECT_FALSE(criteria_->ShouldSendNotification(
+      TipsNotificationType::kEnhancedSafeBrowsing));
+}
+
+// Tests that the Enhanced Safe Browsing notification should not be sent when
+// safety check is enabled.
+TEST_F(TipsNotificationCriteriaTest,
+       TestShouldSendEnhancedSafeBrowsing_SafetyCheckEnabled) {
+  ScopedDictPrefUpdate update(GetApplicationContext()->GetLocalState(),
+                              prefs::kAppLevelPushNotificationPermissions);
+
+  update->Set(kSafetyCheckNotificationKey, true);
+
+  profile_->GetPrefs()->SetBoolean(prefs::kAdvancedProtectionAllowed, true);
   profile_->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnhanced, false);
   EXPECT_FALSE(criteria_->ShouldSendNotification(
       TipsNotificationType::kEnhancedSafeBrowsing));

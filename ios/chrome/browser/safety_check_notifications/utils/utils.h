@@ -13,6 +13,8 @@
 #import "ios/chrome/browser/passwords/model/password_checkup_utils.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_constants.h"
 
+class PrefService;
+class ProfileIOS;
 enum class SafetyCheckNotificationType;
 enum class SafetyCheckNotificationsOptInSource;
 struct ScheduledNotificationRequest;
@@ -70,5 +72,11 @@ UNNotificationContent* NotificationForSafeBrowsingCheckState(
 // `std::nullopt` if the `request` is not a Safety Check notification.
 std::optional<SafetyCheckNotificationType> ParseSafetyCheckNotificationType(
     UNNotificationRequest* request);
+
+// Returns true if the user has enabled Safety Check notifications, either in
+// the Notifications Settings UI or through an opt-in prompt (e.g., Magic
+// Stack, Safety Check page, Password Checkup page).
+bool IsSafetyCheckNotificationPermitted(PrefService* local_state,
+                                        ProfileIOS* profile);
 
 #endif  // IOS_CHROME_BROWSER_SAFETY_CHECK_NOTIFICATIONS_UTILS_UTILS_H_

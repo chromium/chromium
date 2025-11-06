@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/lens/ui_bundled/lens_availability.h"
 #import "ios/chrome/browser/ntp/model/features.h"
 #import "ios/chrome/browser/ntp/model/set_up_list_prefs.h"
+#import "ios/chrome/browser/safety_check_notifications/utils/utils.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -192,6 +193,13 @@ bool TipsNotificationCriteria::ShouldSendLens() {
 }
 
 bool TipsNotificationCriteria::ShouldSendEnhancedSafeBrowsing() {
+  // If Safety Check notifications can be sent then it will send its own
+  // Enhanced Safe Browsing notification. To avoid redundant notifications skip
+  // Enhanced Safe Browsing notifications in this case.
+  if (IsSafetyCheckNotificationPermitted(local_state_, profile_)) {
+    return false;
+  }
+
   return profile_prefs_->GetBoolean(prefs::kAdvancedProtectionAllowed) &&
          !safe_browsing::IsEnhancedProtectionEnabled(*profile_prefs_);
 }

@@ -18,7 +18,6 @@
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_service.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_settings_util.h"
-#import "ios/chrome/browser/push_notification/model/push_notification_util.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_factory.h"
 #import "ios/chrome/browser/safety_check_notifications/utils/constants.h"
@@ -51,51 +50,6 @@ NSArray<UNNotificationRequest*>* NotificationsWithIdentifiers(
   }
 
   return matching_requests;
-}
-
-// Returns `true` if provisional Safety Check notifications are allowed based
-// on:
-//  - The existence of a compromised password notification.
-//  - The current notification authorization status (provisional or not yet
-//  determined).
-//  - The status of ProvisionalNotificationsAllowed policy.
-bool CanSendProvisionalNotifications(
-    PasswordSafetyCheckState password_check_state,
-    password_manager::InsecurePasswordCounts insecure_password_counts,
-    PrefService* local_pref_service,
-    Browser* browser) {
-  CHECK(local_pref_service);
-
-  if (!ProvisionalSafetyCheckNotificationsEnabled()) {
-    return false;
-  }
-
-  if (!browser ||
-      ![PushNotificationUtil
-          provisionalAllowedByPolicyForProfile:browser->GetProfile()]) {
-    return false;
-  }
-
-  // Only send provisional notifications for compromised passwords.
-  if (password_check_state !=
-      PasswordSafetyCheckState::kUnmutedCompromisedPasswords) {
-    return false;
-  }
-
-  UNNotificationContent* password_notification =
-      NotificationForPasswordCheckState(password_check_state,
-                                        insecure_password_counts);
-
-  // Only send provisional notifications if a password notification actually
-  // exists.
-  if (password_notification == nil) {
-    return false;
-  }
-
-  UNAuthorizationStatus auth_status =
-      [PushNotificationUtil getSavedPermissionSettings];
-
-  return auth_status == UNAuthorizationStatusProvisional;
 }
 
 NotificationType NotificationTypeForSafetyCheckNotificationType(
@@ -362,22 +316,9 @@ void SafetyCheckNotificationClient::GetPendingRequests(
 bool SafetyCheckNotificationClient::IsPermitted() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // TODO(crbug.com/362260014): Replace current opt-in state logic with
-  // `GetMobileNotificationPermissionStatusForClient()` once
-  // `PushNotificationClient` dependencies are refactored.
-
-  PrefService* local_pref_service = GetApplicationContext()->GetLocalState();
-
-  if (CanSendProvisionalNotifications(
-          password_check_state_, insecure_password_counts_, local_pref_service,
-          GetActiveForegroundBrowser())) {
-    return true;
-  }
-
-  return local_pref_service
-      ->GetDict(prefs::kAppLevelPushNotificationPermissions)
-      .FindBool(kSafetyCheckNotificationKey)
-      .value_or(false);
+  return IsSafetyCheckNotificationPermitted(
+      GetApplicationContext()->GetLocalState(),
+      GetActiveForegroundBrowser()->GetProfile());
 }
 
 bool SafetyCheckNotificationClient::IsSceneLevelForegroundActive() {

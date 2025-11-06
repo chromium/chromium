@@ -7,11 +7,18 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
+#import "components/prefs/pref_service.h"
 #import "google_apis/gaia/gaia_id.h"
+#import "ios/chrome/browser/push_notification/model/constants.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_settings_util.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_util.h"
+#import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager.h"
+#import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_factory.h"
 #import "ios/chrome/browser/safety_check_notifications/utils/constants.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
@@ -134,6 +141,50 @@ std::optional<ScheduledNotificationRequest> CreateScheduledNotificationRequest(
       .identifier = identifier,
       .content = content,
       .time_interval = InactiveThresholdForNotifications()};
+}
+
+// Returns `true` if provisional Safety Check notifications are allowed based
+// on:
+//  - The existence of a compromised password notification.
+//  - The current notification authorization status (provisional or not yet
+//  determined).
+//  - The status of ProvisionalNotificationsAllowed policy.
+bool CanSendProvisionalNotifications(
+    PasswordSafetyCheckState password_check_state,
+    password_manager::InsecurePasswordCounts insecure_password_counts,
+    PrefService* local_pref_service,
+    ProfileIOS* profile) {
+  CHECK(local_pref_service);
+
+  if (!ProvisionalSafetyCheckNotificationsEnabled()) {
+    return false;
+  }
+
+  if (!profile ||
+      ![PushNotificationUtil provisionalAllowedByPolicyForProfile:profile]) {
+    return false;
+  }
+
+  // Only send provisional notifications for compromised passwords.
+  if (password_check_state !=
+      PasswordSafetyCheckState::kUnmutedCompromisedPasswords) {
+    return false;
+  }
+
+  UNNotificationContent* password_notification =
+      NotificationForPasswordCheckState(password_check_state,
+                                        insecure_password_counts);
+
+  // Only send provisional notifications if a password notification actually
+  // exists.
+  if (password_notification == nil) {
+    return false;
+  }
+
+  UNAuthorizationStatus auth_status =
+      [PushNotificationUtil getSavedPermissionSettings];
+
+  return auth_status == UNAuthorizationStatusProvisional;
 }
 
 }  // namespace
@@ -259,4 +310,24 @@ std::optional<SafetyCheckNotificationType> ParseSafetyCheckNotificationType(
   }
 
   return std::nullopt;
+}
+
+bool IsSafetyCheckNotificationPermitted(PrefService* local_state,
+                                        ProfileIOS* profile) {
+  IOSChromeSafetyCheckManager* safety_check_manager =
+      IOSChromeSafetyCheckManagerFactory::GetForProfile(profile);
+
+  // TODO(crbug.com/362260014): Replace current opt-in state logic with
+  // `GetMobileNotificationPermissionStatusForClient()` once
+  // `PushNotificationClient` dependencies are refactored.
+  if (CanSendProvisionalNotifications(
+          safety_check_manager->GetPasswordCheckState(),
+          safety_check_manager->GetInsecurePasswordCounts(), local_state,
+          profile)) {
+    return true;
+  }
+
+  return local_state->GetDict(prefs::kAppLevelPushNotificationPermissions)
+      .FindBool(kSafetyCheckNotificationKey)
+      .value_or(false);
 }
