@@ -360,6 +360,8 @@ UIButton* CreateClearButton() {
 
   NSInteger numberOfLines = round(userTextHeight / singleLineHeight);
   [self.metricsRecorder setNumberOfLines:numberOfLines];
+  _textView.textContainer.maximumNumberOfLines = numberOfLines;
+  [self updateLastLineClipping];
 
   newHeight = MIN(newHeight, maxHeight);
   if (!_textInputHeightConstraint) {
@@ -371,6 +373,79 @@ UIButton* CreateClearButton() {
   }
   _textView.scrollEnabled = userTextHeight > maxHeight;
   [self.heightDelegate textFieldViewContaining:self didChangeHeight:newHeight];
+}
+
+/// Updates the paragraph style to clip the last line.
+- (void)updateLastLineClipping {
+  NSTextStorage* textStorage = _textView.textStorage;
+  NSRange fullRange = NSMakeRange(0, textStorage.length);
+
+  // Remove existing paragraph styles to ensure a clean slate
+  [textStorage removeAttribute:NSParagraphStyleAttributeName range:fullRange];
+
+  // Determine the appropriate line break mode based on content
+  BOOL containsWhitespace =
+      [textStorage.string
+          rangeOfCharacterFromSet:[NSCharacterSet
+                                      whitespaceAndNewlineCharacterSet]]
+          .location != NSNotFound;
+  NSLineBreakMode defaultLineBreakMode = containsWhitespace
+                                             ? NSLineBreakByWordWrapping
+                                             : NSLineBreakByCharWrapping;
+
+  // Apply default word wrapping to the entire text
+  NSMutableParagraphStyle* wordWrapParagraphStyle =
+      [[NSMutableParagraphStyle alloc] init];
+  wordWrapParagraphStyle.lineBreakMode = defaultLineBreakMode;
+  [textStorage addAttribute:NSParagraphStyleAttributeName
+                      value:wordWrapParagraphStyle
+                      range:fullRange];
+
+  NSLayoutManager* layoutManager = _textView.layoutManager;
+  NSUInteger numberOfGlyphs = [layoutManager numberOfGlyphs];
+  NSUInteger maxLines = _textView.textContainer.maximumNumberOfLines;
+
+  if (numberOfGlyphs == 0 || maxLines == 0) {
+    return;
+  }
+
+  // Determine the actual number of lines.
+  NSUInteger lineCount = 0;
+  NSRange lineRange;
+  for (NSUInteger glyphIndex = 0; glyphIndex < numberOfGlyphs; lineCount++) {
+    [layoutManager lineFragmentRectForGlyphAtIndex:glyphIndex
+                                    effectiveRange:&lineRange];
+    glyphIndex = NSMaxRange(lineRange);
+  }
+
+  if (lineCount >= maxLines) {
+    // Find the glyph index at the start of the line to be clipped.
+    NSUInteger clipStartGlyphIndex = 0;
+    for (NSUInteger i = 0; i < maxLines - 1; i++) {
+      if (clipStartGlyphIndex >= numberOfGlyphs) {
+        break;
+      }
+      [layoutManager lineFragmentRectForGlyphAtIndex:clipStartGlyphIndex
+                                      effectiveRange:&lineRange];
+      clipStartGlyphIndex = NSMaxRange(lineRange);
+    }
+
+    // Convert the glyph index to a character index.
+    NSUInteger clipStartCharIndex =
+        [layoutManager characterIndexForGlyphAtIndex:clipStartGlyphIndex];
+
+    // Apply clipping to the last line and beyond.
+    if (clipStartCharIndex < textStorage.length) {
+      NSMutableParagraphStyle* clipParagraphStyle =
+          [[NSMutableParagraphStyle alloc] init];
+      clipParagraphStyle.lineBreakMode = NSLineBreakByClipping;
+      NSRange clipRange = NSMakeRange(clipStartCharIndex,
+                                      textStorage.length - clipStartCharIndex);
+      [textStorage addAttribute:NSParagraphStyleAttributeName
+                          value:clipParagraphStyle
+                          range:clipRange];
+    }
+  }
 }
 
 #pragma mark - TextFieldViewContaining

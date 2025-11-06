@@ -473,15 +473,6 @@ using enum OmniboxKeyboardAction;
     [mutableText addAttribute:NSForegroundColorAttributeName
                         value:_defaultTextColor
                         range:foregroundColorRange];
-    NSMutableParagraphStyle* style = [[NSMutableParagraphStyle alloc] init];
-    // Text is char wrap to ensure URL is wrapped correctly and autocomplete is
-    // displayed on the same line without wrapping. TODO(crbug.com/456397231): A
-    // better behavior would be to word wrap search and char wrap URL and
-    // autocomplete, but mixing line break is not supported in a same paragraph.
-    [style setLineBreakMode:NSLineBreakByCharWrapping];
-    [mutableText addAttribute:NSParagraphStyleAttributeName
-                        value:style
-                        range:entireString];
   } else {
     NSMutableParagraphStyle* style = [[NSMutableParagraphStyle alloc] init];
     // URLs have their text direction set to to LTR (avoids RTL characters
