@@ -8,6 +8,8 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.content.Context;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
@@ -32,6 +34,7 @@ public class PartnerBookmarksReader {
     private static final String TAG = "PartnerBMReader";
     private static final Set<FaviconUpdateObserver> sFaviconUpdateObservers = new HashSet<>();
     private static final float DESIRED_FAVICON_SIZE_DP = 16.0f;
+    @VisibleForTesting static final long NULL_NATIVE_POINTER = 0;
 
     /** Root bookmark id reserved for the implied root of the bookmarks */
     static final long ROOT_FOLDER_ID = 0;
@@ -99,8 +102,25 @@ public class PartnerBookmarksReader {
      */
     public PartnerBookmarksReader(
             Context context, Profile profile, PartnerBrowserCustomizations browserCustomizations) {
+        this(
+                context,
+                profile,
+                browserCustomizations,
+                PartnerBookmarksReaderJni.get().init(profile));
+    }
+
+    public PartnerBookmarksReader(
+            Context context,
+            Profile profile,
+            PartnerBrowserCustomizations browserCustomizations,
+            long nativePartnerBookmarksReader) {
         mContext = context;
-        mNativePartnerBookmarksReader = PartnerBookmarksReaderJni.get().init(profile);
+        mNativePartnerBookmarksReader = nativePartnerBookmarksReader;
+        // Catch case where the underlying profile is null, bail out.
+        if (mNativePartnerBookmarksReader == NULL_NATIVE_POINTER) {
+            return;
+        }
+
         if (!browserCustomizations.isInitialized()) {
             browserCustomizations.initializeAsync(context);
         }

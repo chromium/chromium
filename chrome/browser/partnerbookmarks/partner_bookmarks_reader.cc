@@ -404,6 +404,10 @@ static void JNI_PartnerBookmarksReader_DisablePartnerBookmarksEditing(
 static jlong JNI_PartnerBookmarksReader_Init(JNIEnv* env, Profile* profile) {
   PartnerBookmarksShim* partner_bookmarks_shim =
       PartnerBookmarksShim::BuildForBrowserContext(profile);
+  if (!partner_bookmarks_shim) {
+    return 0;
+  }
+
   PartnerBookmarksReader* reader =
       new PartnerBookmarksReader(partner_bookmarks_shim, profile);
   return reinterpret_cast<intptr_t>(reader);

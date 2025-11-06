@@ -63,6 +63,9 @@ bool g_disable_partner_bookmarks_editing = false;
 PartnerBookmarksShim* PartnerBookmarksShim::BuildForBrowserContext(
     content::BrowserContext* browser_context) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (!browser_context) {
+    return nullptr;
+  }
 
   PartnerBookmarksShim* data = static_cast<PartnerBookmarksShim*>(
       browser_context->GetUserData(kPartnerBookmarksShimUserDataKey));

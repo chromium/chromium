@@ -29,15 +29,11 @@ public class PartnerBookmarksReaderTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock Context mContextMock;
-
-    @Mock PartnerBookmarksReader.Natives mJniMock;
-
-    @Mock PartnerBrowserCustomizations mBrowserCustomizations;
-
-    @Mock Profile mProfile;
-
-    @Captor ArgumentCaptor<Runnable> mBrowserCustomizationsInitCallback;
+    @Mock private Context mContextMock;
+    @Mock private PartnerBookmarksReader.Natives mJniMock;
+    @Mock private PartnerBrowserCustomizations mBrowserCustomizations;
+    @Mock private Profile mProfile;
+    @Captor private ArgumentCaptor<Runnable> mBrowserCustomizationsInitCallback;
 
     @Before
     public void setUp() {
@@ -47,13 +43,31 @@ public class PartnerBookmarksReaderTest {
                 .setOnInitializeAsyncFinished(mBrowserCustomizationsInitCallback.capture());
     }
 
+    /**
+     * Utility to decrease code duplication across the different tests in this suite.
+     *
+     * @param browserCustomizationsInitialized Whether the partner customizations is initialized.
+     *     Used to test the potential async initialization of the class.
+     * @param nativePartnerBookmarksReader The native partner bookmarks reader is null. Used to test
+     *     potential failure paths when the profile is null.
+     */
+    PartnerBookmarksReader createPartnerBookmarksReader(
+            boolean browserCustomizationsInitialized, boolean hasNullNativePointer) {
+        Mockito.when(mBrowserCustomizations.isInitialized())
+                .thenReturn(browserCustomizationsInitialized);
+        return new PartnerBookmarksReader(
+                mContextMock,
+                mProfile,
+                mBrowserCustomizations,
+                hasNullNativePointer
+                        ? PartnerBookmarksReader.NULL_NATIVE_POINTER
+                        : PartnerBookmarksReader.NULL_NATIVE_POINTER + 1);
+    }
+
     @Test
     public void partnerBrowserCustomizations_BookmarkEditingDisabled_AlreadyInitialized() {
-        Mockito.when(mBrowserCustomizations.isInitialized()).thenReturn(true);
-
-        @SuppressWarnings("unused")
-        PartnerBookmarksReader reader =
-                new PartnerBookmarksReader(mContextMock, mProfile, mBrowserCustomizations);
+        createPartnerBookmarksReader(
+                /* browserCustomizationsInitialized= */ true, /* hasNullNativePointer= */ false);
 
         Mockito.verify(mBrowserCustomizations, Mockito.never()).initializeAsync(mContextMock);
 
@@ -64,11 +78,8 @@ public class PartnerBookmarksReaderTest {
 
     @Test
     public void partnerBrowserCustomizations_BookmarkEditingDisabled_NotAlreadyInitialized() {
-        Mockito.when(mBrowserCustomizations.isInitialized()).thenReturn(false);
-
-        @SuppressWarnings("unused")
-        PartnerBookmarksReader reader =
-                new PartnerBookmarksReader(mContextMock, mProfile, mBrowserCustomizations);
+        createPartnerBookmarksReader(
+                /* browserCustomizationsInitialized= */ false, /* hasNullNativePointer= */ false);
 
         Mockito.verify(mBrowserCustomizations).initializeAsync(mContextMock);
 
@@ -79,11 +90,8 @@ public class PartnerBookmarksReaderTest {
 
     @Test
     public void partnerBrowserCustomizations_BookmarkEditingAllowed_AlreadyInitialized() {
-        Mockito.when(mBrowserCustomizations.isInitialized()).thenReturn(true);
-
-        @SuppressWarnings("unused")
-        PartnerBookmarksReader reader =
-                new PartnerBookmarksReader(mContextMock, mProfile, mBrowserCustomizations);
+        createPartnerBookmarksReader(
+                /* browserCustomizationsInitialized= */ true, /* hasNullNativePointer= */ false);
 
         Mockito.verify(mBrowserCustomizations, Mockito.never()).initializeAsync(mContextMock);
 
@@ -94,11 +102,8 @@ public class PartnerBookmarksReaderTest {
 
     @Test
     public void partnerBrowserCustomizations_BookmarkEditingAllowed_NotAlreadyInitialized() {
-        Mockito.when(mBrowserCustomizations.isInitialized()).thenReturn(false);
-
-        @SuppressWarnings("unused")
-        PartnerBookmarksReader reader =
-                new PartnerBookmarksReader(mContextMock, mProfile, mBrowserCustomizations);
+        createPartnerBookmarksReader(
+                /* browserCustomizationsInitialized= */ false, /* hasNullNativePointer= */ false);
 
         Mockito.verify(mBrowserCustomizations).initializeAsync(mContextMock);
 
@@ -109,11 +114,11 @@ public class PartnerBookmarksReaderTest {
 
     @Test
     public void partnerBookmarksCreationComplete_NotCalledWithoutBrowserCustomizations() {
-        Mockito.when(mBrowserCustomizations.isInitialized()).thenReturn(true);
 
-        @SuppressWarnings("unused")
         PartnerBookmarksReader reader =
-                new PartnerBookmarksReader(mContextMock, mProfile, mBrowserCustomizations);
+                createPartnerBookmarksReader(
+                        /* browserCustomizationsInitialized= */ true,
+                        /* hasNullNativePointer= */ false);
         reader.onBookmarksRead();
 
         Mockito.verify(mJniMock, Mockito.never())
@@ -122,11 +127,8 @@ public class PartnerBookmarksReaderTest {
 
     @Test
     public void partnerBookmarksCreationComplete_NotCalledWithoutBookmarksRead() {
-        Mockito.when(mBrowserCustomizations.isInitialized()).thenReturn(true);
-
-        @SuppressWarnings("unused")
-        PartnerBookmarksReader reader =
-                new PartnerBookmarksReader(mContextMock, mProfile, mBrowserCustomizations);
+        createPartnerBookmarksReader(
+                /* browserCustomizationsInitialized= */ true, /* hasNullNativePointer= */ false);
         Mockito.when(mBrowserCustomizations.isBookmarksEditingDisabled()).thenReturn(false);
         mBrowserCustomizationsInitCallback.getValue().run();
 
@@ -136,11 +138,10 @@ public class PartnerBookmarksReaderTest {
 
     @Test
     public void partnerBookmarksCreationComplete_Called_WithCustomizationsFirstThenBookmarks() {
-        Mockito.when(mBrowserCustomizations.isInitialized()).thenReturn(true);
-
-        @SuppressWarnings("unused")
         PartnerBookmarksReader reader =
-                new PartnerBookmarksReader(mContextMock, mProfile, mBrowserCustomizations);
+                createPartnerBookmarksReader(
+                        /* browserCustomizationsInitialized= */ true,
+                        /* hasNullNativePointer= */ false);
         Mockito.when(mBrowserCustomizations.isBookmarksEditingDisabled()).thenReturn(false);
         mBrowserCustomizationsInitCallback.getValue().run();
         reader.onBookmarksRead();
@@ -150,11 +151,10 @@ public class PartnerBookmarksReaderTest {
 
     @Test
     public void partnerBookmarksCreationComplete_Called_WithBookmarksFirstThenCustomizations() {
-        Mockito.when(mBrowserCustomizations.isInitialized()).thenReturn(true);
-
-        @SuppressWarnings("unused")
         PartnerBookmarksReader reader =
-                new PartnerBookmarksReader(mContextMock, mProfile, mBrowserCustomizations);
+                createPartnerBookmarksReader(
+                        /* browserCustomizationsInitialized= */ true,
+                        /* hasNullNativePointer= */ false);
         Mockito.when(mBrowserCustomizations.isBookmarksEditingDisabled()).thenReturn(false);
         reader.onBookmarksRead();
         mBrowserCustomizationsInitCallback.getValue().run();
