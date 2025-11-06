@@ -304,6 +304,10 @@ bool CookieControlsPageActionController::ShouldShowIcon() const {
 
 void CookieControlsPageActionController::UpdateIconVisibility() {
   if (!ShouldShowIcon()) {
+    // Hiding the page action will close the IPH, if any, which will be
+    // re-entrant into the page action system when removing activity in the
+    // handler. Reset IPH activity up front to avoid this.
+    iph_activity_.reset();
     page_action_controller_->HideSuggestionChip(kActionShowCookieControls);
     page_action_controller_->Hide(kActionShowCookieControls);
     return;
