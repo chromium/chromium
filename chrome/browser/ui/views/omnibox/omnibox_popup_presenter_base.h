@@ -28,6 +28,7 @@ class RoundedOmniboxResultsFrame;
 // work with OmniboxPopupViewWebUI directly.
 class OmniboxPopupPresenterBase {
  public:
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kRoundedResultsFrame);
   explicit OmniboxPopupPresenterBase(LocationBarView* location_bar_view);
   OmniboxPopupPresenterBase(const OmniboxPopupPresenterBase&) = delete;
   OmniboxPopupPresenterBase& operator=(const OmniboxPopupPresenterBase&) =
@@ -73,6 +74,7 @@ class OmniboxPopupPresenterBase {
 
  private:
   friend class OmniboxPopupViewWebUITest;
+  friend class OmniboxWebUiInteractiveTest;
 
   void OnWidgetClosed(views::Widget::ClosedReason closed_reason);
 
