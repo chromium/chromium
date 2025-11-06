@@ -103,6 +103,13 @@ class TestSharedImageInterface : public SharedImageInterface {
       const SyncToken& sync_token,
       scoped_refptr<ClientSharedImage> client_shared_image) override;
 
+  bool IsLost() const override { return false; }
+  bool AddGpuChannelLostObserver(GpuChannelLostObserver* observer) override {
+    return true;
+  }
+  void RemoveGpuChannelLostObserver(GpuChannelLostObserver* observer) override {
+  }
+
 #if BUILDFLAG(IS_FUCHSIA)
   void RegisterSysmemBufferCollection(zx::eventpair service_handle,
                                       zx::channel sysmem_token,

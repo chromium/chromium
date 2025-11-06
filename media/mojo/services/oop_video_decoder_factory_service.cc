@@ -8,10 +8,9 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "components/viz/common/switches.h"
+#include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/config/gpu_preferences.h"
-#include "gpu/ipc/client/client_shared_image_interface.h"
-#include "gpu/ipc/client/gpu_channel_host.h"
 #include "media/base/media_log.h"
 #include "media/base/media_switches.h"
 #include "media/base/media_util.h"
@@ -39,9 +38,8 @@ namespace {
 // like its |gpu_task_runner_| and |media_gpu_channel_manager_| members.
 class MojoMediaClientImpl : public MojoMediaClient {
  public:
-  explicit MojoMediaClientImpl(
-      const gpu::GpuFeatureInfo& gpu_feature_info,
-      scoped_refptr<gpu::ClientSharedImageInterface> sii)
+  explicit MojoMediaClientImpl(const gpu::GpuFeatureInfo& gpu_feature_info,
+                               scoped_refptr<gpu::SharedImageInterface> sii)
       : gpu_driver_bug_workarounds_(
             gpu_feature_info.enabled_gpu_driver_bug_workarounds),
         shared_image_interface_(std::move(sii)) {}
@@ -94,8 +92,7 @@ class MojoMediaClientImpl : public MojoMediaClient {
                   : std::make_unique<media::NullMediaLog>();
 
     CHECK_NE(GetDecoderImplementationType(), VideoDecoderType::kVda);
-    auto sii = shared_image_interface_ &&
-                       !shared_image_interface_->gpu_channel()->IsLost()
+    auto sii = shared_image_interface_ && !shared_image_interface_->IsLost()
                    ? shared_image_interface_
                    : nullptr;
     auto converter = base::FeatureList::IsEnabled(kUseSharedImageInOOPVDProcess)
@@ -114,20 +111,20 @@ class MojoMediaClientImpl : public MojoMediaClient {
   // a new sii ensures future `VideoDecoder`s can send buffers to the correct
   // gpu process.
   void OnGpuChannelReestablished(
-      scoped_refptr<gpu::ClientSharedImageInterface> new_sii) {
+      scoped_refptr<gpu::SharedImageInterface> new_sii) {
     shared_image_interface_ = new_sii;
   }
 
  private:
   const gpu::GpuDriverBugWorkarounds gpu_driver_bug_workarounds_;
-  scoped_refptr<gpu::ClientSharedImageInterface> shared_image_interface_;
+  scoped_refptr<gpu::SharedImageInterface> shared_image_interface_;
 };
 
 }  // namespace
 
 OOPVideoDecoderFactoryService::OOPVideoDecoderFactoryService(
     const gpu::GpuFeatureInfo& gpu_feature_info,
-    scoped_refptr<gpu::ClientSharedImageInterface> sii)
+    scoped_refptr<gpu::SharedImageInterface> sii)
     : receiver_(this),
       shared_image_interface_(sii),
       mojo_media_client_(
@@ -205,7 +202,7 @@ void OOPVideoDecoderFactoryService::CreateCdm(const CdmConfig& cdm_config,
 }
 
 void OOPVideoDecoderFactoryService::OnGpuChannelReestablished(
-    scoped_refptr<gpu::ClientSharedImageInterface> new_sii) {
+    scoped_refptr<gpu::SharedImageInterface> new_sii) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   shared_image_interface_ = new_sii;
   static_cast<MojoMediaClientImpl*>(mojo_media_client_.get())

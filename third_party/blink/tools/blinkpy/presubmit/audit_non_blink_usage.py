@@ -1485,6 +1485,14 @@ _CONFIG = [
     },
     {
         'paths': [
+            'third_party/blink/public/platform/web_video_frame_submitter.h',
+        ],
+        'allowed': [
+            'gpu::SharedImageInterface',
+        ],
+    },
+    {
+        'paths': [
             'third_party/blink/public/web/web_dom_activity_logger.h',
         ],
         'allowed': [

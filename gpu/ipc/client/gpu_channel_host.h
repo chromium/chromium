@@ -35,7 +35,7 @@ class Channel;
 }
 
 namespace gpu {
-class ClientSharedImageInterface;
+class SharedImageInterface;
 struct SyncToken;
 class GpuChannelHost;
 
@@ -164,7 +164,7 @@ class GPU_IPC_CLIENT_EXPORT GpuChannelHost
   void TerminateGpuProcessForTesting();
 
   // Virtual for testing.
-  virtual scoped_refptr<ClientSharedImageInterface>
+  virtual scoped_refptr<SharedImageInterface>
   CreateClientSharedImageInterface();
 
   // Calls ConnectionTracker::AddObserverIfNotAlreadyLost directly.

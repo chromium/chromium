@@ -30,6 +30,10 @@
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
+namespace gpu {
+class SharedImageInterface;
+}
+
 namespace blink {
 
 // This single-threaded class facilitates the communication between the media
@@ -94,7 +98,7 @@ class PLATFORM_EXPORT VideoFrameSubmitter
   void OnReceivedContextProvider(
       bool use_gpu_compositing,
       scoped_refptr<viz::RasterContextProvider> context_provider,
-      scoped_refptr<gpu::ClientSharedImageInterface> shared_image_interface);
+      scoped_refptr<gpu::SharedImageInterface> shared_image_interface);
 
   // Adopts `context_provider` if it's non-null and in a usable state. Returns
   // true on success and false on failure, implying that a new ContextProvider
@@ -163,7 +167,7 @@ class PLATFORM_EXPORT VideoFrameSubmitter
   raw_ptr<cc::VideoFrameProvider> video_frame_provider_ = nullptr;
   bool is_media_stream_ = false;
   scoped_refptr<viz::RasterContextProvider> context_provider_;
-  scoped_refptr<gpu::ClientSharedImageInterface> shared_image_interface_;
+  scoped_refptr<gpu::SharedImageInterface> shared_image_interface_;
   mojo::Remote<viz::mojom::blink::CompositorFrameSink> remote_frame_sink_;
   mojo::Remote<mojom::blink::SurfaceEmbedder> surface_embedder_;
   mojo::Receiver<viz::mojom::blink::CompositorFrameSinkClient> receiver_{this};

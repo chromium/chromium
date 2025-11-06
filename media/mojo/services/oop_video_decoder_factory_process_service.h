@@ -13,7 +13,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 
 namespace gpu {
-class ClientSharedImageInterface;
+class SharedImageInterface;
 }
 
 namespace viz {
@@ -55,9 +55,9 @@ class MEDIA_MOJO_EXPORT OOPVideoDecoderFactoryProcessService final
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   void OnGpuChannelLostTask();
-  scoped_refptr<gpu::ClientSharedImageInterface> GetSharedImageInterface();
+  scoped_refptr<gpu::SharedImageInterface> GetSharedImageInterface();
 
-  scoped_refptr<gpu::ClientSharedImageInterface> shared_image_interface_;
+  scoped_refptr<gpu::SharedImageInterface> shared_image_interface_;
   std::unique_ptr<viz::Gpu> viz_gpu_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;

@@ -110,7 +110,6 @@
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "gpu/config/gpu_switches.h"
-#include "gpu/ipc/client/client_shared_image_interface.h"
 #include "gpu/ipc/client/command_buffer_proxy_impl.h"
 #include "gpu/ipc/client/gpu_channel_host.h"
 #include "ipc/ipc_channel.h"
@@ -1071,10 +1070,9 @@ RenderThreadImpl::GetVideoFrameCompositorContextProvider(
   return video_frame_compositor_context_provider_;
 }
 
-scoped_refptr<gpu::ClientSharedImageInterface>
+scoped_refptr<gpu::SharedImageInterface>
 RenderThreadImpl::GetRenderThreadSharedImageInterface() {
-  if (shared_image_interface_ &&
-      !shared_image_interface_->gpu_channel()->IsLost()) {
+  if (shared_image_interface_ && !shared_image_interface_->IsLost()) {
     return shared_image_interface_;
   }
 

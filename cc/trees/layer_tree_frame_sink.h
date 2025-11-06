@@ -23,7 +23,7 @@
 #include "ui/gfx/color_space.h"
 
 namespace gpu {
-class ClientSharedImageInterface;
+class SharedImageInterface;
 }
 
 namespace viz {
@@ -64,7 +64,7 @@ class CC_EXPORT LayerTreeFrameSink : public viz::ContextLostObserver,
       scoped_refptr<viz::RasterContextProvider> context_provider,
       scoped_refptr<viz::RasterContextProvider> worker_context_provider,
       scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner,
-      scoped_refptr<gpu::ClientSharedImageInterface> shared_image_interface);
+      scoped_refptr<gpu::SharedImageInterface> shared_image_interface);
   LayerTreeFrameSink(const LayerTreeFrameSink&) = delete;
 
   ~LayerTreeFrameSink() override;
@@ -152,16 +152,13 @@ class CC_EXPORT LayerTreeFrameSink : public viz::ContextLostObserver,
 
   void GpuChannelLostOnClientThread();
 
-  // Causes gpu crash for testing.
-  void CrashGpuProcessForTesting();
-
  protected:
   raw_ptr<LayerTreeFrameSinkClient> client_ = nullptr;
 
   scoped_refptr<viz::RasterContextProvider> context_provider_;
   scoped_refptr<viz::RasterContextProvider> worker_context_provider_;
   scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner_;
-  scoped_refptr<gpu::ClientSharedImageInterface> shared_image_interface_;
+  scoped_refptr<gpu::SharedImageInterface> shared_image_interface_;
 
   std::unique_ptr<ContextLostForwarder> worker_context_lost_forwarder_;
 

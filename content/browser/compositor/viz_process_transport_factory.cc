@@ -446,7 +446,7 @@ void VizProcessTransportFactory::OnEstablishedGpuChannel(
   params.pipes.compositor_frame_sink_associated_remote = std::move(sink_remote);
   params.pipes.client_receiver = std::move(client_receiver);
 
-  scoped_refptr<gpu::ClientSharedImageInterface> shared_image_interface =
+  scoped_refptr<gpu::SharedImageInterface> shared_image_interface =
       gpu_channel_host->CreateClientSharedImageInterface();
 
   auto frame_sink =

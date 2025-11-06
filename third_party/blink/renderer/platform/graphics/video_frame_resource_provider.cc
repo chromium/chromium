@@ -17,7 +17,7 @@
 #include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
-#include "gpu/ipc/client/client_shared_image_interface.h"
+#include "gpu/command_buffer/client/shared_image_interface.h"
 #include "media/base/limits.h"
 #include "media/base/video_frame.h"
 #include "media/renderers/video_resource_updater.h"
@@ -38,7 +38,7 @@ VideoFrameResourceProvider::~VideoFrameResourceProvider() {
 
 void VideoFrameResourceProvider::Initialize(
     viz::RasterContextProvider* media_context_provider,
-    scoped_refptr<gpu::ClientSharedImageInterface> shared_image_interface) {
+    scoped_refptr<gpu::SharedImageInterface> shared_image_interface) {
   context_provider_ = media_context_provider;
   resource_provider_ = std::make_unique<viz::ClientResourceProvider>();
 

@@ -21,8 +21,7 @@
 #include "components/viz/common/resources/returned_resource.h"
 #include "components/viz/common/surfaces/frame_sink_bundle_id.h"
 #include "gpu/command_buffer/client/raster_interface.h"
-#include "gpu/ipc/client/client_shared_image_interface.h"
-#include "gpu/ipc/client/gpu_channel_host.h"
+#include "gpu/command_buffer/client/shared_image_interface.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_types.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -175,7 +174,7 @@ VideoFrameSubmitter::~VideoFrameSubmitter() {
     context_provider_->RemoveObserver(this);
 
   if (shared_image_interface_) {
-    shared_image_interface_->gpu_channel()->RemoveObserver(this);
+    shared_image_interface_->RemoveGpuChannelLostObserver(this);
   }
 
   resource_provider_.reset();
@@ -294,7 +293,7 @@ void VideoFrameSubmitter::OnContextLost() {
     context_provider_->RemoveObserver(this);
 
   if (shared_image_interface_) {
-    shared_image_interface_->gpu_channel()->RemoveObserver(this);
+    shared_image_interface_->RemoveGpuChannelLostObserver(this);
     shared_image_interface_.reset();
   }
 
@@ -541,7 +540,7 @@ void VideoFrameSubmitter::ReclaimResources(
 void VideoFrameSubmitter::OnReceivedContextProvider(
     bool use_gpu_compositing,
     scoped_refptr<viz::RasterContextProvider> context_provider,
-    scoped_refptr<gpu::ClientSharedImageInterface> shared_image_interface) {
+    scoped_refptr<gpu::SharedImageInterface> shared_image_interface) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   constexpr base::TimeDelta kGetContextProviderRetryTimeout =
       base::Milliseconds(150);
@@ -549,8 +548,7 @@ void VideoFrameSubmitter::OnReceivedContextProvider(
   if (!use_gpu_compositing) {
     shared_image_interface_ = std::move(shared_image_interface);
     if (!shared_image_interface_ ||
-        !shared_image_interface_->gpu_channel()->AddObserverIfNotAlreadyLost(
-            this)) {
+        !shared_image_interface_->AddGpuChannelLostObserver(this)) {
       base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
           FROM_HERE,
           base::BindOnce(

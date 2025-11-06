@@ -19,7 +19,6 @@
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 
 namespace gpu {
-class ClientSharedImageInterface;
 class GpuChannelHost;
 class SharedImageInterface;
 }  // namespace gpu
@@ -63,7 +62,7 @@ class CONTENT_EXPORT DCOMPTextureFactory
 
   scoped_refptr<gpu::GpuChannelHost> channel_;
   scoped_refptr<base::SequencedTaskRunner> media_task_runner_;
-  scoped_refptr<gpu::ClientSharedImageInterface> shared_image_interface_;
+  scoped_refptr<gpu::SharedImageInterface> shared_image_interface_;
 };
 
 }  // namespace content

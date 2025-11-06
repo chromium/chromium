@@ -39,7 +39,6 @@
 #include "content/renderer/media/renderer_web_media_player_delegate.h"
 #include "content/renderer/render_frame_impl.h"
 #include "content/renderer/render_thread_impl.h"
-#include "gpu/ipc/client/client_shared_image_interface.h"
 #include "media/base/cdm_factory.h"
 #include "media/base/decoder_factory.h"
 #include "media/base/demuxer.h"
@@ -182,8 +181,7 @@ void PostContextProviderToCallback(
             auto context_provider = rti->GetVideoFrameCompositorContextProvider(
                 std::move(unwanted_context_provider));
             bool is_gpu_composition_disabled = rti->IsGpuCompositingDisabled();
-            scoped_refptr<gpu::ClientSharedImageInterface>
-                shared_image_interface;
+            scoped_refptr<gpu::SharedImageInterface> shared_image_interface;
 
             if (is_gpu_composition_disabled) {
               shared_image_interface =

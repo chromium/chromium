@@ -5,7 +5,7 @@
 #include "content/renderer/media/win/dcomp_texture_factory.h"
 
 #include "base/task/sequenced_task_runner.h"
-#include "gpu/ipc/client/client_shared_image_interface.h"
+#include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/ipc/client/gpu_channel_host.h"
 #include "media/base/win/mf_helpers.h"
 #include "mojo/public/cpp/bindings/sync_call_restrictions.h"

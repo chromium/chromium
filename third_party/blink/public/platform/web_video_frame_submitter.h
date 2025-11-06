@@ -24,7 +24,7 @@ class RasterContextProvider;
 }  // namespace viz
 
 namespace gpu {
-class ClientSharedImageInterface;
+class SharedImageInterface;
 }  // namespace gpu
 
 namespace blink {
@@ -33,7 +33,7 @@ namespace blink {
 using WebSubmitterConfigurationCallback =
     base::OnceCallback<void(bool,
                             scoped_refptr<viz::RasterContextProvider>,
-                            scoped_refptr<gpu::ClientSharedImageInterface>)>;
+                            scoped_refptr<gpu::SharedImageInterface>)>;
 
 // Callback to obtain the media RasterContextProvider and a bool indicating
 // whether we are in software compositing mode.

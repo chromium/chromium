@@ -346,6 +346,20 @@ Mailbox ClientSharedImageInterface::AddMailbox(const gpu::Mailbox& mailbox) {
   return mailbox;
 }
 
+bool ClientSharedImageInterface::IsLost() const {
+  return gpu_channel_->IsLost();
+}
+
+bool ClientSharedImageInterface::AddGpuChannelLostObserver(
+    GpuChannelLostObserver* observer) {
+  return gpu_channel_->AddObserverIfNotAlreadyLost(observer);
+}
+
+void ClientSharedImageInterface::RemoveGpuChannelLostObserver(
+    GpuChannelLostObserver* observer) {
+  gpu_channel_->RemoveObserver(observer);
+}
+
 const SharedImageCapabilities& ClientSharedImageInterface::GetCapabilities() {
   return proxy_->GetCapabilities();
 }

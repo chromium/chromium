@@ -74,8 +74,8 @@ class TestGpuChannelHost : public gpu::GpuChannelHost {
             mojo::ScopedMessagePipeHandle(
                 mojo::MessagePipeHandle(mojo::kInvalidHandleValue))) {}
 
-  scoped_refptr<gpu::ClientSharedImageInterface>
-  CreateClientSharedImageInterface() override {
+  scoped_refptr<gpu::SharedImageInterface> CreateClientSharedImageInterface()
+      override {
     return base::MakeRefCounted<StubClientSharedImageInterface>();
   }
 

@@ -961,9 +961,6 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   // See CommitState::scrollers_clobbering_active_value_.
   void DropActiveScrollDeltaNextCommit(ElementId scroll_element);
 
-  // Causes gpu crash for testing.
-  void CrashGpuProcessForTesting();
-
  protected:
   LayerTreeHost(InitParams params, CompositorMode mode);
 

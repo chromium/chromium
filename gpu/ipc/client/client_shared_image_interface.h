@@ -125,6 +125,10 @@ class GPU_IPC_CLIENT_EXPORT ClientSharedImageInterface
       override;
   void DestroySharedImagePool(const SharedImagePoolId& pool_id) override;
 
+  bool IsLost() const override;
+  bool AddGpuChannelLostObserver(GpuChannelLostObserver* observer) override;
+  void RemoveGpuChannelLostObserver(GpuChannelLostObserver* observer) override;
+
   gpu::GpuChannelHost* gpu_channel() { return gpu_channel_.get(); }
 
  protected:

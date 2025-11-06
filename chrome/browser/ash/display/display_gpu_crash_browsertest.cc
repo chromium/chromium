@@ -7,6 +7,7 @@
 #include "ash/shell.h"
 #include "cc/trees/layer_tree_host.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "content/public/browser/gpu_utils.h"
 #include "content/public/test/browser_test.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
@@ -22,11 +23,7 @@
 namespace {
 
 void SimulateGpuCrash() {
-  const cc::LayerTreeHost* host = ash::Shell::GetPrimaryRootWindow()
-                                      ->layer()
-                                      ->GetCompositor()
-                                      ->host_for_testing();
-  const_cast<cc::LayerTreeHost*>(host)->CrashGpuProcessForTesting();
+  content::KillGpuProcess();
 }
 
 display::DisplayManager* GetDisplayManager() {

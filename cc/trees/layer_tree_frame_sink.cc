@@ -22,8 +22,7 @@
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/context_support.h"
 #include "gpu/command_buffer/client/raster_interface.h"
-#include "gpu/ipc/client/client_shared_image_interface.h"
-#include "gpu/ipc/client/gpu_channel_host.h"
+#include "gpu/command_buffer/client/shared_image_interface.h"
 
 namespace cc {
 
@@ -56,7 +55,7 @@ LayerTreeFrameSink::LayerTreeFrameSink(
     scoped_refptr<viz::RasterContextProvider> context_provider,
     scoped_refptr<viz::RasterContextProvider> worker_context_provider,
     scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner,
-    scoped_refptr<gpu::ClientSharedImageInterface> shared_image_interface)
+    scoped_refptr<gpu::SharedImageInterface> shared_image_interface)
     : context_provider_(std::move(context_provider)),
       worker_context_provider_(std::move(worker_context_provider)),
       compositor_task_runner_(std::move(compositor_task_runner)),
@@ -119,8 +118,7 @@ bool LayerTreeFrameSink::BindToClient(LayerTreeFrameSinkClient* client) {
     task_gpu_channel_lost_on_client_thread_ =
         base::BindPostTaskToCurrentDefault(base::BindOnce(
             &LayerTreeFrameSink::GpuChannelLostOnClientThread, GetWeakPtr()));
-    if (!shared_image_interface_->gpu_channel()->AddObserverIfNotAlreadyLost(
-            this)) {
+    if (!shared_image_interface_->AddGpuChannelLostObserver(this)) {
       task_gpu_channel_lost_on_client_thread_.Reset();
       shared_image_interface_ = nullptr;
       return false;
@@ -156,7 +154,7 @@ void LayerTreeFrameSink::DetachFromClient() {
   }
   if (shared_image_interface_) {
     if (task_gpu_channel_lost_on_client_thread_) {
-      shared_image_interface_->gpu_channel()->RemoveObserver(this);
+      shared_image_interface_->RemoveGpuChannelLostObserver(this);
     }
     shared_image_interface_.reset();
   }
@@ -165,13 +163,6 @@ void LayerTreeFrameSink::DetachFromClient() {
 std::unique_ptr<LayerContext> LayerTreeFrameSink::CreateLayerContext(
     LayerTreeHostImpl& host_impl) {
   return nullptr;
-}
-
-void LayerTreeFrameSink::CrashGpuProcessForTesting() {
-  if (shared_image_interface_) {
-    shared_image_interface_->gpu_channel()
-        ->CrashGpuProcessForTesting();  // IN-TEST
-  }
 }
 
 void LayerTreeFrameSink::OnContextLost() {

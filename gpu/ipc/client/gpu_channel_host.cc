@@ -347,7 +347,7 @@ void GpuChannelHost::TerminateGpuProcessForTesting() {
   GetGpuChannel().TerminateForTesting();
 }
 
-scoped_refptr<ClientSharedImageInterface>
+scoped_refptr<SharedImageInterface>
 GpuChannelHost::CreateClientSharedImageInterface() {
   return base::MakeRefCounted<ClientSharedImageInterface>(
       &shared_image_interface_, this);

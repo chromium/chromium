@@ -166,6 +166,20 @@ void SharedImageInterface::DestroySharedImagePool(
   NOTREACHED();
 }
 
+bool SharedImageInterface::IsLost() const {
+  NOTREACHED();
+}
+
+bool SharedImageInterface::AddGpuChannelLostObserver(
+    GpuChannelLostObserver* observer) {
+  NOTREACHED();
+}
+
+void SharedImageInterface::RemoveGpuChannelLostObserver(
+    GpuChannelLostObserver* observer) {
+  NOTREACHED();
+}
+
 SharedImageInterfaceHolder::SharedImageInterfaceHolder(
     SharedImageInterface* sii)
     : sii_(sii) {}

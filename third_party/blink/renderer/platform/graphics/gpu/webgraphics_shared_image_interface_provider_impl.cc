@@ -5,7 +5,7 @@
 #include "third_party/blink/renderer/platform/graphics/gpu/webgraphics_shared_image_interface_provider_impl.h"
 
 #include "base/task/bind_post_task.h"
-#include "gpu/ipc/client/client_shared_image_interface.h"
+#include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/ipc/client/gpu_channel_host.h"
 
 namespace blink {
@@ -37,7 +37,7 @@ WebGraphicsSharedImageInterfaceProviderImpl::TryCreate(
 // Created on the CrRendererMain or the DedicatedWorker thread.
 WebGraphicsSharedImageInterfaceProviderImpl::
     WebGraphicsSharedImageInterfaceProviderImpl(
-        scoped_refptr<gpu::ClientSharedImageInterface> shared_image_interface)
+        scoped_refptr<gpu::SharedImageInterface> shared_image_interface)
     : shared_image_interface_(std::move(shared_image_interface)) {
   DCHECK(shared_image_interface_);
 
@@ -54,7 +54,7 @@ WebGraphicsSharedImageInterfaceProviderImpl::
   // Observers are automatically removed after channel lost notification.
   // Here only RemoveObserver when there is no gpu channel lost.
   if (shared_image_interface_) {
-    shared_image_interface_->gpu_channel()->RemoveObserver(this);
+    shared_image_interface_->RemoveGpuChannelLostObserver(this);
   }
 }
 

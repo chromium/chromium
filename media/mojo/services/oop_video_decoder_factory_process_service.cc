@@ -5,7 +5,7 @@
 #include "media/mojo/services/oop_video_decoder_factory_process_service.h"
 
 #include "base/functional/bind.h"
-#include "gpu/ipc/client/client_shared_image_interface.h"
+#include "gpu/command_buffer/client/shared_image_interface.h"
 #include "media/base/media_switches.h"
 #include "services/viz/public/cpp/gpu/gpu.h"
 
@@ -22,9 +22,8 @@ OOPVideoDecoderFactoryProcessService::OOPVideoDecoderFactoryProcessService(
 
 OOPVideoDecoderFactoryProcessService::~OOPVideoDecoderFactoryProcessService() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (shared_image_interface_ &&
-      !shared_image_interface_->gpu_channel()->IsLost()) {
-    shared_image_interface_->gpu_channel()->RemoveObserver(this);
+  if (shared_image_interface_ && !shared_image_interface_->IsLost()) {
+    shared_image_interface_->RemoveGpuChannelLostObserver(this);
   }
 }
 
@@ -74,13 +73,12 @@ void OOPVideoDecoderFactoryProcessService::OnGpuChannelLostTask() {
   factory_->OnGpuChannelReestablished(GetSharedImageInterface());
 }
 
-scoped_refptr<gpu::ClientSharedImageInterface>
+scoped_refptr<gpu::SharedImageInterface>
 OOPVideoDecoderFactoryProcessService::GetSharedImageInterface() {
   if (!viz_gpu_) {
     return nullptr;
   }
-  if (shared_image_interface_ &&
-      !shared_image_interface_->gpu_channel()->IsLost()) {
+  if (shared_image_interface_ && !shared_image_interface_->IsLost()) {
     return shared_image_interface_;
   }
   shared_image_interface_.reset();

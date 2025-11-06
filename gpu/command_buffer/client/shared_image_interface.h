@@ -54,6 +54,7 @@ namespace gpu {
 class ArcSharedImageInterface;
 class ClientSharedImageInterface;
 struct ExportedSharedImage;
+class GpuChannelLostObserver;
 struct SharedImageCapabilities;
 class SharedImageInterfaceHolder;
 class SharedImageInterfaceInProcessBase;
@@ -365,6 +366,16 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT SharedImageInterface
       SharedImageUsageSet usage,
       uint32_t texture_target,
       std::string_view debug_label);
+
+  // Returns true if the backing context has been lost.
+  virtual bool IsLost() const;
+
+  // Adds an observer that will be notified when the backing GPU channel is
+  // lost. Returns true if the observer was added successfully.
+  virtual bool AddGpuChannelLostObserver(GpuChannelLostObserver* observer);
+
+  // Removes a GPU channel lost observer.
+  virtual void RemoveGpuChannelLostObserver(GpuChannelLostObserver* observer);
 
   virtual const SharedImageCapabilities& GetCapabilities() = 0;
 

@@ -25,7 +25,7 @@ class RasterContextProvider;
 }
 
 namespace gpu {
-class ClientSharedImageInterface;
+class SharedImageInterface;
 }
 
 namespace blink {
@@ -46,7 +46,7 @@ class PLATFORM_EXPORT VideoFrameResourceProvider {
 
   virtual void Initialize(
       viz::RasterContextProvider* media_context_provider,
-      scoped_refptr<gpu::ClientSharedImageInterface> shared_image_interface);
+      scoped_refptr<gpu::SharedImageInterface> shared_image_interface);
   virtual void AppendQuads(viz::CompositorRenderPass*,
                            scoped_refptr<media::VideoFrame>,
                            media::VideoTransformation,

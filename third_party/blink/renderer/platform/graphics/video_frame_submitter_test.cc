@@ -135,7 +135,7 @@ class MockVideoFrameResourceProvider
 
   MOCK_METHOD2(Initialize,
                void(viz::RasterContextProvider*,
-                    scoped_refptr<gpu::ClientSharedImageInterface>));
+                    scoped_refptr<gpu::SharedImageInterface>));
   MOCK_METHOD4(AppendQuads,
                void(viz::CompositorRenderPass*,
                     scoped_refptr<media::VideoFrame>,

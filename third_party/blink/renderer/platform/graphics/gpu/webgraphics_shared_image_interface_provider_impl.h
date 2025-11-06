@@ -13,7 +13,7 @@
 #include "base/functional/callback.h"
 
 namespace gpu {
-class ClientSharedImageInterface;
+class SharedImageInterface;
 class GpuChannelHost;
 }  // namespace gpu
 
@@ -46,11 +46,11 @@ class WebGraphicsSharedImageInterfaceProviderImpl
 
  private:
   explicit WebGraphicsSharedImageInterfaceProviderImpl(
-      scoped_refptr<gpu::ClientSharedImageInterface> shared_image_interface);
+      scoped_refptr<gpu::SharedImageInterface> shared_image_interface);
 
   base::OnceClosure task_gpu_channel_lost_on_worker_thread_;
 
-  scoped_refptr<gpu::ClientSharedImageInterface> shared_image_interface_;
+  scoped_refptr<gpu::SharedImageInterface> shared_image_interface_;
 
   // GpuChannelLost observed by CanvasResourceProviders
   Vector<BitmapGpuChannelLostObserver*> observer_list_;

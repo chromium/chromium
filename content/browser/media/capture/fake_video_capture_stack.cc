@@ -39,7 +39,7 @@ namespace content {
 
 namespace {
 
-scoped_refptr<gpu::ClientSharedImageInterface> GetSharedImageInterface() {
+scoped_refptr<gpu::SharedImageInterface> GetSharedImageInterface() {
   auto gpu_channel = GpuBrowsertestEstablishGpuChannelSyncRunLoop();
   return gpu_channel->CreateClientSharedImageInterface();
 }
@@ -296,7 +296,7 @@ class FakeVideoCaptureStackReceiver final : public media::VideoFrameReceiver {
   base::flat_map<int, media::mojom::VideoBufferHandlePtr> buffers_
       GUARDED_BY_CONTEXT(receiver_sequence_checker_);
 
-  scoped_refptr<gpu::ClientSharedImageInterface> sii_;
+  scoped_refptr<gpu::SharedImageInterface> sii_;
 
   // Task runner on which we should be calling into capture stack:
   scoped_refptr<base::SequencedTaskRunner> capture_stack_task_runner_;

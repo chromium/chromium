@@ -81,7 +81,7 @@ class RasterDarkModeFilter;
 
 namespace gpu {
 class GpuChannelHost;
-class ClientSharedImageInterface;
+class SharedImageInterface;
 }
 
 namespace media {
@@ -268,7 +268,7 @@ class CONTENT_EXPORT RenderThreadImpl
       GetVideoFrameCompositorContextProvider(
           scoped_refptr<viz::RasterContextProvider>);
 
-  scoped_refptr<gpu::ClientSharedImageInterface>
+  scoped_refptr<gpu::SharedImageInterface>
   GetRenderThreadSharedImageInterface();
 
   // Returns a worker context provider that will be bound on the compositor
@@ -524,7 +524,7 @@ class CONTENT_EXPORT RenderThreadImpl
 
   scoped_refptr<viz::RasterContextProvider> shared_worker_context_provider_;
 
-  scoped_refptr<gpu::ClientSharedImageInterface> shared_image_interface_;
+  scoped_refptr<gpu::SharedImageInterface> shared_image_interface_;
 
   HistogramCustomizer histogram_customizer_;
 

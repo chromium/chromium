@@ -23,7 +23,6 @@
 #include "components/viz/common/frame_timing_details_map.h"
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
 #include "components/viz/common/surfaces/surface_id.h"
-#include "gpu/ipc/client/client_shared_image_interface.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/direct_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
@@ -121,7 +120,7 @@ class CC_MOJO_EMBEDDER_EXPORT AsyncLayerTreeFrameSink
   AsyncLayerTreeFrameSink(
       scoped_refptr<viz::RasterContextProvider> context_provider,
       scoped_refptr<viz::RasterContextProvider> worker_context_provider,
-      scoped_refptr<gpu::ClientSharedImageInterface> shared_image_interface,
+      scoped_refptr<gpu::SharedImageInterface> shared_image_interface,
       InitParams* params);
 
   AsyncLayerTreeFrameSink(const AsyncLayerTreeFrameSink&) = delete;

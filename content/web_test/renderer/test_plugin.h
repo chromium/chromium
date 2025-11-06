@@ -32,7 +32,7 @@ struct WebPluginParams;
 namespace gpu {
 
 class ClientSharedImage;
-class ClientSharedImageInterface;
+class SharedImageInterface;
 
 namespace gles2 {
 class GLES2Interface;
@@ -174,7 +174,7 @@ class TestPlugin : public blink::WebPlugin, public cc::TextureLayerClient {
   raw_ptr<gpu::gles2::GLES2Interface> gl_;
   scoped_refptr<gpu::ClientSharedImage> shared_image_;
   gpu::SyncToken sync_token_;
-  scoped_refptr<gpu::ClientSharedImageInterface> shared_image_interface_;
+  scoped_refptr<gpu::SharedImageInterface> shared_image_interface_;
   bool content_changed_ = false;
   GLuint framebuffer_ = 0;
   Scene scene_;
