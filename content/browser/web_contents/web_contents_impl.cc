@@ -4567,9 +4567,7 @@ WebContentsImpl::GetInputEventRouter() {
     }
 
     if (secure_embed_connector_) {
-      return static_cast<WebContentsImpl*>(
-                 secure_embed_connector_->GetEmbedderWebContents())
-          ->GetInputEventRouter();
+      return secure_embed_connector_->GetInputEventRouter();
     }
 
     if (!rwh_input_event_router_.get()) {

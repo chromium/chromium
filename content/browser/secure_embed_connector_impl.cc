@@ -77,10 +77,21 @@ WebContents* SecureEmbedConnectorImpl::GetEmbedderWebContents() {
   return embedder_web_contents_.get();
 }
 
+input::RenderWidgetHostInputEventRouter*
+SecureEmbedConnectorImpl::GetInputEventRouter() {
+  return static_cast<WebContentsImpl*>(embedder_web_contents_.get())
+      ->GetInputEventRouter();
+}
+
 void SecureEmbedConnectorImpl::FocusInEmbedder(FocusOperation focus_op) {
   if (delegate_) {
     delegate_->FocusInEmbedder(focus_op);
   }
+}
+
+bool SecureEmbedConnectorImpl::IsConfiguredToBeEmbeddedIn(
+    WebContents* web_contents) {
+  return embedder_web_contents_.get() == web_contents;
 }
 
 void SecureEmbedConnectorImpl::SetDelegate(

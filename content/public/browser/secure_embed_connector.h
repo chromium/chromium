@@ -42,13 +42,13 @@ class CONTENT_EXPORT SecureEmbedConnector {
 
   virtual ~SecureEmbedConnector() = default;
 
-  // Returns the web contents that the WebContents owning this connector
-  // is supposed to be hosted in.
+  // Returns true if the WebContents this is owned by is configured to be
+  // embedded in `web_contents`.
   //
   // TODO(secure-embed): There needs to be a way of updating this for when
   // tabs are moved between windows (including potentially an in-between
   // windows detached tab state).
-  virtual WebContents* GetEmbedderWebContents() = 0;
+  virtual bool IsConfiguredToBeEmbeddedIn(WebContents* web_contents) = 0;
 
   // Set by the embedder side to help communicate back to it.
   // This can switch between a value and null, but not two delegates.

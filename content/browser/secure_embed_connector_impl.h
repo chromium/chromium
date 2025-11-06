@@ -22,6 +22,12 @@
 #include "ui/display/screen_infos.h"
 #include "ui/gfx/geometry/rect.h"
 
+namespace input {
+
+class RenderWidgetHostInputEventRouter;
+
+}  // namespace input
+
 namespace content {
 
 class RenderFrameHostImpl;
@@ -35,13 +41,18 @@ class SecureEmbedConnectorImpl : public SecureEmbedConnector,
                            WebContentsImpl* embedded_web_contents);
   ~SecureEmbedConnectorImpl() override;
 
-  WebContents* GetEmbedderWebContents() override;
+  WebContents* GetEmbedderWebContents();
+
+  // Returns the input event router that the WebContents this is owned by
+  // should register with.
+  input::RenderWidgetHostInputEventRouter* GetInputEventRouter();
 
   // Convenience wrapper for GetDelegate()->FocusInEmbedder that null-checks
   // the delegate.
   void FocusInEmbedder(FocusOperation focus_op);
 
   // SecureEmbedConnector:
+  bool IsConfiguredToBeEmbeddedIn(WebContents* web_contents) override;
   void SetDelegate(SecureEmbedConnector::Delegate* delegate) override;
   SecureEmbedConnector::Delegate* GetDelegate() override;
 

@@ -83,9 +83,9 @@ void SecureEmbedHost::Attach(int64_t content_id) {
     return;
   }
 
-  if (web_contents_to_attach->GetSecureEmbedConnector()
-          ->GetEmbedderWebContents() !=
-      content::WebContents::FromRenderFrameHost(render_frame_host_)) {
+  if (!web_contents_to_attach->GetSecureEmbedConnector()
+           ->IsConfiguredToBeEmbeddedIn(
+               content::WebContents::FromRenderFrameHost(render_frame_host_))) {
     LOG(ERROR) << "WebContents not configured to embed here";
     return;
   }
