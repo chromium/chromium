@@ -9,11 +9,11 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <array>
 #include <memory>
 
 #include "base/android/scoped_java_ref.h"
 #include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/container/inlined_vector.h"
 #include "ui/events/android/motion_event_android_source.h"
 #include "ui/events/events_export.h"
 #include "ui/events/velocity_tracker/motion_event.h"
@@ -154,15 +154,6 @@ class EVENTS_EXPORT MotionEventAndroid : public MotionEvent {
  protected:
   float pix_to_dip() const { return pix_to_dip_; }
 
-  // Cache pointer coords, id's and major lengths for the most common
-  // touch-related scenarios, i.e., scrolling and pinching.  This prevents
-  // redundant JNI fetches for the same bits.
-  enum { MAX_POINTERS_TO_CACHE = 2 };
-
-  // Returns true if the pointer at `pointer_index` is cached and its data
-  // should be retrieved from the cache.
-  bool IsPointerCacheable(size_t pointer_index) const;
-
   // Returns the id of the pointer at `pointer_index` from the cache.
   int GetCachedPointerId(size_t pointer_index) const;
 
@@ -205,7 +196,11 @@ class EVENTS_EXPORT MotionEventAndroid : public MotionEvent {
     ToolType tool_type = ToolType::UNKNOWN;
   };
 
-  std::array<CachedPointer, MAX_POINTERS_TO_CACHE> cached_pointers_;
+  // Cache pointer coords, id's and major lengths for the most common
+  // touch-related scenarios, i.e., scrolling and pinching which has at most two
+  // active pointers. This prevents redundant JNI fetches for the same bits.
+  static constexpr const size_t kDefaultCachedPointers = 2;
+  absl::InlinedVector<CachedPointer, kDefaultCachedPointers> cached_pointers_;
 
   CachedPointer FromAndroidPointer(const Pointer& pointer) const;
   CachedPointer CreateCachedPointer(const CachedPointer& pointer,

@@ -205,9 +205,10 @@ MotionEventAndroid::MotionEventAndroid(
   DCHECK_GT(cached_pointer_count_, 0U);
   DCHECK(cached_pointer_count_ == 1 || pointer1);
 
-  cached_pointers_[0] = FromAndroidPointer(*pointer0);
-  if (cached_pointer_count_ > 1)
-    cached_pointers_[1] = FromAndroidPointer(*pointer1);
+  cached_pointers_.push_back(FromAndroidPointer(*pointer0));
+  if (cached_pointer_count_ > 1) {
+    cached_pointers_.push_back(FromAndroidPointer(*pointer1));
+  }
 }
 
 MotionEventAndroid::MotionEventAndroid(const MotionEventAndroid& e,
@@ -231,13 +232,13 @@ MotionEventAndroid::MotionEventAndroid(const MotionEventAndroid& e,
       cached_raw_position_offset_(e.cached_raw_position_offset_),
       unique_event_id_(ui::GetNextTouchEventId()),
       source_(e.source_->Clone()) {
+  cached_pointers_.push_back(CreateCachedPointer(e.cached_pointers_[0], point));
   if (cached_pointer_count_ > 1) {
     gfx::Vector2dF diff =
         e.cached_pointers_[1].position - e.cached_pointers_[0].position;
-    cached_pointers_[1] =
-        CreateCachedPointer(e.cached_pointers_[1], point + diff);
+    cached_pointers_.push_back(
+        CreateCachedPointer(e.cached_pointers_[1], point + diff));
   }
-  cached_pointers_[0] = CreateCachedPointer(e.cached_pointers_[0], point);
 }
 
 //  static
@@ -284,7 +285,7 @@ float MotionEventAndroid::GetRawXPix(size_t pointer_index) const {
 
 float MotionEventAndroid::GetXPix(size_t pointer_index) const {
   DCHECK_LT(pointer_index, GetPointerCount());
-  if (IsPointerCacheable(pointer_index)) {
+  if (pointer_index < cached_pointers_.size()) {
     return GetCachedPointerPosition(pointer_index).x() / pix_to_dip();
   }
   return source()->GetXPix(pointer_index);
@@ -292,7 +293,7 @@ float MotionEventAndroid::GetXPix(size_t pointer_index) const {
 
 float MotionEventAndroid::GetYPix(size_t pointer_index) const {
   DCHECK_LT(pointer_index, GetPointerCount());
-  if (IsPointerCacheable(pointer_index)) {
+  if (pointer_index < cached_pointers_.size()) {
     return GetCachedPointerPosition(pointer_index).y() / pix_to_dip();
   }
   return source()->GetYPix(pointer_index);
@@ -318,7 +319,7 @@ size_t MotionEventAndroid::GetPointerCount() const {
 
 int MotionEventAndroid::GetPointerId(size_t pointer_index) const {
   DCHECK_LT(pointer_index, GetPointerCount());
-  if (IsPointerCacheable(pointer_index)) {
+  if (pointer_index < cached_pointers_.size()) {
     return GetCachedPointerId(pointer_index);
   }
   return source()->GetPointerId(pointer_index);
@@ -326,7 +327,7 @@ int MotionEventAndroid::GetPointerId(size_t pointer_index) const {
 
 float MotionEventAndroid::GetX(size_t pointer_index) const {
   DCHECK_LT(pointer_index, GetPointerCount());
-  if (IsPointerCacheable(pointer_index)) {
+  if (pointer_index < cached_pointers_.size()) {
     return GetCachedPointerPosition(pointer_index).x();
   }
   return ToDips(source()->GetXPix(pointer_index));
@@ -334,7 +335,7 @@ float MotionEventAndroid::GetX(size_t pointer_index) const {
 
 float MotionEventAndroid::GetY(size_t pointer_index) const {
   DCHECK_LT(pointer_index, GetPointerCount());
-  if (IsPointerCacheable(pointer_index)) {
+  if (pointer_index < cached_pointers_.size()) {
     return GetCachedPointerPosition(pointer_index).y();
   }
   return ToDips(source()->GetYPix(pointer_index));
@@ -350,7 +351,7 @@ float MotionEventAndroid::GetRawY(size_t pointer_index) const {
 
 float MotionEventAndroid::GetTouchMajor(size_t pointer_index) const {
   DCHECK_LT(pointer_index, GetPointerCount());
-  if (IsPointerCacheable(pointer_index)) {
+  if (pointer_index < cached_pointers_.size()) {
     return GetCachedPointerTouchMajor(pointer_index);
   }
   return ToDips(source()->GetTouchMajorPix(pointer_index));
@@ -358,7 +359,7 @@ float MotionEventAndroid::GetTouchMajor(size_t pointer_index) const {
 
 float MotionEventAndroid::GetTouchMinor(size_t pointer_index) const {
   DCHECK_LT(pointer_index, GetPointerCount());
-  if (IsPointerCacheable(pointer_index)) {
+  if (pointer_index < cached_pointers_.size()) {
     return GetCachedPointerTouchMinor(pointer_index);
   }
   return ToDips(source()->GetTouchMinorPix(pointer_index));
@@ -371,7 +372,7 @@ bool MotionEventAndroid::HasNativeTouchMajor(size_t pointer_index) const {
 
 float MotionEventAndroid::GetOrientation(size_t pointer_index) const {
   DCHECK_LT(pointer_index, GetPointerCount());
-  if (IsPointerCacheable(pointer_index)) {
+  if (pointer_index < cached_pointers_.size()) {
     return GetCachedPointerOrientation(pointer_index);
   }
   return ToValidFloat(source()->GetRawOrientation(pointer_index));
@@ -384,7 +385,7 @@ float MotionEventAndroid::GetTwist(size_t pointer_index) const {
 
 float MotionEventAndroid::GetTiltX(size_t pointer_index) const {
   DCHECK_LT(pointer_index, GetPointerCount());
-  if (IsPointerCacheable(pointer_index)) {
+  if (pointer_index < cached_pointers_.size()) {
     return GetCachedPointerTiltX(pointer_index);
   }
   float tilt_x, tilt_y;
@@ -397,7 +398,7 @@ float MotionEventAndroid::GetTiltX(size_t pointer_index) const {
 
 float MotionEventAndroid::GetTiltY(size_t pointer_index) const {
   DCHECK_LT(pointer_index, GetPointerCount());
-  if (IsPointerCacheable(pointer_index)) {
+  if (pointer_index < cached_pointers_.size()) {
     return GetCachedPointerTiltY(pointer_index);
   }
   float tilt_x, tilt_y;
@@ -415,7 +416,7 @@ base::TimeTicks MotionEventAndroid::GetRawDownTime() const {
 
 float MotionEventAndroid::GetPressure(size_t pointer_index) const {
   DCHECK_LT(pointer_index, GetPointerCount());
-  if (IsPointerCacheable(pointer_index)) {
+  if (pointer_index < cached_pointers_.size()) {
     return GetCachedPointerPressure(pointer_index);
   }
   return source()->GetPressure(pointer_index);
@@ -468,7 +469,7 @@ int MotionEventAndroid::GetSourceDeviceId(size_t pointer_index) const {
 ui::MotionEvent::ToolType MotionEventAndroid::GetToolType(
     size_t pointer_index) const {
   DCHECK_LT(pointer_index, GetPointerCount());
-  if (IsPointerCacheable(pointer_index)) {
+  if (pointer_index < cached_pointers_.size()) {
     return GetCachedPointerToolType(pointer_index);
   }
   return source()->GetToolType(pointer_index);
@@ -490,57 +491,44 @@ float MotionEventAndroid::ToDips(float pixels) const {
   return pixels * pix_to_dip_;
 }
 
-bool MotionEventAndroid::IsPointerCacheable(size_t pointer_index) const {
-  return pointer_index < MAX_POINTERS_TO_CACHE;
-}
-
 int MotionEventAndroid::GetCachedPointerId(size_t pointer_index) const {
-  CHECK(IsPointerCacheable(pointer_index));
   return cached_pointers_[pointer_index].id;
 }
 
 const gfx::PointF& MotionEventAndroid::GetCachedPointerPosition(
     size_t pointer_index) const {
-  CHECK(IsPointerCacheable(pointer_index));
   return cached_pointers_[pointer_index].position;
 }
 
 float MotionEventAndroid::GetCachedPointerTouchMajor(
     size_t pointer_index) const {
-  CHECK(IsPointerCacheable(pointer_index));
   return cached_pointers_[pointer_index].touch_major;
 }
 
 float MotionEventAndroid::GetCachedPointerTouchMinor(
     size_t pointer_index) const {
-  CHECK(IsPointerCacheable(pointer_index));
   return cached_pointers_[pointer_index].touch_minor;
 }
 
 float MotionEventAndroid::GetCachedPointerPressure(size_t pointer_index) const {
-  CHECK(IsPointerCacheable(pointer_index));
   return cached_pointers_[pointer_index].pressure;
 }
 
 float MotionEventAndroid::GetCachedPointerOrientation(
     size_t pointer_index) const {
-  CHECK(IsPointerCacheable(pointer_index));
   return cached_pointers_[pointer_index].orientation;
 }
 
 float MotionEventAndroid::GetCachedPointerTiltX(size_t pointer_index) const {
-  CHECK(IsPointerCacheable(pointer_index));
   return cached_pointers_[pointer_index].tilt_x;
 }
 
 float MotionEventAndroid::GetCachedPointerTiltY(size_t pointer_index) const {
-  CHECK(IsPointerCacheable(pointer_index));
   return cached_pointers_[pointer_index].tilt_y;
 }
 
 MotionEvent::ToolType MotionEventAndroid::GetCachedPointerToolType(
     size_t pointer_index) const {
-  CHECK(IsPointerCacheable(pointer_index));
   return cached_pointers_[pointer_index].tool_type;
 }
 
