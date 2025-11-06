@@ -75,7 +75,7 @@ struct SameSizeAsLayer : public base::RefCounted<SameSizeAsLayer>,
 #endif
   uint8_t bit_fields[2];
 #if BUILDFLAG(IS_CHROMEOS)
-  bool dump_stack_in_dtor_;
+  bool is_valid_to_destroy_;
 #endif
 };
 
@@ -135,11 +135,11 @@ Layer::~Layer() {
   // Remove the parent reference from all children and dependents.
   RemoveAllChildren();
 #if BUILDFLAG(IS_CHROMEOS)
-  // `dump_stack_in_dtor_` should never be true at this point.
+  // `is_valid_to_destroy_` should never be false at this point.
   // DCHECK to catch this issue in bots and reports the stack if this ever
   // happened in production.
-  DCHECK(!dump_stack_in_dtor_);
-  if (dump_stack_in_dtor_) {
+  DCHECK(is_valid_to_destroy_);
+  if (!is_valid_to_destroy_) {
     base::debug::DumpWithoutCrashing();
   }
 #endif

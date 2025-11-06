@@ -621,7 +621,7 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
   }
 
 #if BUILDFLAG(IS_CHROMEOS)
-  void EnableDumpStackInDtor();
+  void EnableLayerDestructionCheck();
 #endif
 
  private:

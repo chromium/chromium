@@ -875,9 +875,9 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
   virtual viz::ViewTransitionElementResourceId ViewTransitionResourceId() const;
 
 #if BUILDFLAG(IS_CHROMEOS)
-  bool dump_stack_in_dtor() const { return dump_stack_in_dtor_; }
+  bool is_valid_to_destroy() const { return is_valid_to_destroy_; }
 
-  void set_dump_stack_in_dtor(bool enable) { dump_stack_in_dtor_ = enable; }
+  void set_is_valid_to_destroy(bool enable) { is_valid_to_destroy_ = enable; }
 #endif
 
  protected:
@@ -1203,7 +1203,8 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
   ProtectedSequenceReadable<uint8_t> bitflags_;
   ProtectedSequenceWritable<uint8_t> changed_properties_;
 #if BUILDFLAG(IS_CHROMEOS)
-  bool dump_stack_in_dtor_ = false;
+  // TODO(crbug.com/443811562): Remove this once the crash is fixed.
+  bool is_valid_to_destroy_ = true;
 #endif
 
 #if DCHECK_IS_ON()

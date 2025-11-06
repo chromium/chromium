@@ -248,7 +248,7 @@ Layer::~Layer() {
     content_layer_->ClearClient();
   cc_layer_->RemoveFromParent();
 #if BUILDFLAG(IS_CHROMEOS)
-  cc_layer_->set_dump_stack_in_dtor(false);
+  cc_layer_->set_is_valid_to_destroy(true);
 #endif
   if (transfer_release_callback_)
     std::move(transfer_release_callback_).Run(gpu::SyncToken(), false);
@@ -300,8 +300,9 @@ std::unique_ptr<Layer> Layer::Clone() const {
     clone->SetColor(GetTargetColor());
   }
 #if BUILDFLAG(IS_CHROMEOS)
-  if (cc_layer_->dump_stack_in_dtor()) {
-    clone->EnableDumpStackInDtor();
+  // Propagate the destruction check to a cloned layer.
+  if (!cc_layer_->is_valid_to_destroy()) {
+    clone->EnableLayerDestructionCheck();
   }
 #endif
   clone->SetTransform(GetTargetTransform());
@@ -978,8 +979,8 @@ void Layer::SwitchToLayer(scoped_refptr<cc::Layer> new_layer) {
   new_layer->SetMasksToBounds(cc_layer_->masks_to_bounds());
   new_layer->SetGradientMask(cc_layer_->gradient_mask());
 #if BUILDFLAG(IS_CHROMEOS)
-  new_layer->set_dump_stack_in_dtor(cc_layer_->dump_stack_in_dtor());
-  cc_layer_->set_dump_stack_in_dtor(false);
+  new_layer->set_is_valid_to_destroy(cc_layer_->is_valid_to_destroy());
+  cc_layer_->set_is_valid_to_destroy(true);
 #endif
 
   cc_layer_ = new_layer.get();
@@ -1111,8 +1112,9 @@ bool Layer::ContainsMirrorForTest(Layer* mirror) const {
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
-void Layer::EnableDumpStackInDtor() {
-  cc_layer_->set_dump_stack_in_dtor(true);
+void Layer::EnableLayerDestructionCheck() {
+  // This should be set to true in the destructor.
+  cc_layer_->set_is_valid_to_destroy(false);
 }
 #endif
 
@@ -1880,7 +1882,7 @@ void Layer::CreateCcLayer() {
     cc_layer_ = content_layer_.get();
   }
 #if BUILDFLAG(IS_CHROMEOS)
-  cc_layer_->set_dump_stack_in_dtor(false);
+  cc_layer_->set_is_valid_to_destroy(true);
 #endif
   cc_layer_->SetTransformOrigin(gfx::Point3F());
   cc_layer_->SetIsDrawable(type_ != LAYER_NOT_DRAWN);
