@@ -137,6 +137,7 @@ class LockStateControllerTest : public PowerButtonTestBase {
   void TearDown() override {
     test_shutdown_controller_.reset();
     shutdown_controller_resetter_.reset();
+    test_animator_ = nullptr;
     PowerButtonTestBase::TearDown();
   }
 
@@ -360,8 +361,7 @@ class LockStateControllerTest : public PowerButtonTestBase {
   std::unique_ptr<ShutdownController::ScopedResetterForTest>
       shutdown_controller_resetter_;
   std::unique_ptr<TestShutdownController> test_shutdown_controller_;
-  raw_ptr<TestSessionStateAnimator, DanglingUntriaged> test_animator_ =
-      nullptr;  // not owned
+  raw_ptr<TestSessionStateAnimator> test_animator_ = nullptr;  // not owned
 
  private:
   // Histogram value verifier.
