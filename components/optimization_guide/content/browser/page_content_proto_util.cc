@@ -446,6 +446,11 @@ void ConvertFormData(const blink::mojom::AIPageContentFormData& mojom_form_data,
   if (mojom_form_data.form_name) {
     proto_form_data->set_form_name(*mojom_form_data.form_name);
   }
+  if (mojom_form_data.action_url) {
+    // The Blink agent passes a fully resolved action URL so downstream
+    // consumers can understand the destination of a form submission.
+    proto_form_data->set_action_url(mojom_form_data.action_url->spec());
+  }
 }
 
 optimization_guide::proto::FormControlType ConvertFormControlType(

@@ -1675,6 +1675,12 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
   EXPECT_EQ(form_node.content_attributes().attribute_type(),
             optimization_guide::proto::CONTENT_ATTRIBUTE_FORM);
 
+  ASSERT_TRUE(form_node.content_attributes().has_form_data());
+  const auto& form_data = form_node.content_attributes().form_data();
+  // The fixture sets the form action to an absolute-path relative URL, which
+  // should resolve against the document URL.
+  EXPECT_EQ(form_data.action_url(), https_server()->GetURL("/initial").spec());
+
   ASSERT_EQ(form_node.children_nodes().size(), 3);
 
   // Text input should have no redaction necessary
@@ -1712,12 +1718,17 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
   // redacted
   ASSERT_TRUE(content::ExecJs(
       web_contents(),
+      "const form = document.querySelector('form');"
+      "form.action = 'https://example.com/submit';"
       "document.getElementById('filled-password').type = 'text';"));
   LoadData();
 
-  // Re-examine the form after the type change
+  // Re-examine the form after updating both the action and field type.
   const auto& form_node_after = page_content().root_node().children_nodes()[0];
   ASSERT_EQ(form_node_after.children_nodes().size(), 3);
+  ASSERT_TRUE(form_node_after.content_attributes().has_form_data());
+  EXPECT_EQ(form_node_after.content_attributes().form_data().action_url(),
+            "https://example.com/submit");
   const auto& changed_field = form_node_after.children_nodes()[2];
   EXPECT_EQ(changed_field.content_attributes().attribute_type(),
             optimization_guide::proto::CONTENT_ATTRIBUTE_FORM_CONTROL);
@@ -1728,6 +1739,19 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
           .form_control_data()
           .redaction_decision(),
       optimization_guide::proto::REDACTION_DECISION_REDACTED_HAS_BEEN_PASSWORD);
+
+  // Finally, swap to a relative action path to confirm it resolves against the
+  // document URL rather than remaining relative.
+  ASSERT_TRUE(content::ExecJs(
+      web_contents(),
+      "document.querySelector('form').action = 'relative/next';"));
+  LoadData();
+
+  const auto& form_node_relative =
+      page_content().root_node().children_nodes()[0];
+  ASSERT_TRUE(form_node_relative.content_attributes().has_form_data());
+  EXPECT_EQ(form_node_relative.content_attributes().form_data().action_url(),
+            https_server()->GetURL("/relative/next").spec());
 }
 
 IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
