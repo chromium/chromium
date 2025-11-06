@@ -33,7 +33,6 @@ namespace gl {
 namespace {
 
 constexpr gfx::BufferUsage kUsage = gfx::BufferUsage::SCANOUT;
-constexpr gfx::BufferFormat kBufferFormat = gfx::BufferFormat::BGRA_8888;
 constexpr viz::SharedImageFormat kFormat = viz::SinglePlaneFormat::kBGRA_8888;
 
 bool SkipTest() {
@@ -104,7 +103,7 @@ class NativePixmapGLBindingTest : public testing::Test {
     EXPECT_TRUE(gl_ozone->CanImportNativePixmap(kFormat));
 
     auto binding = gl_ozone->ImportNativePixmap(
-        std::move(pixmap), kBufferFormat, gfx::BufferPlane::DEFAULT, size,
+        std::move(pixmap), kFormat, gfx::BufferPlane::DEFAULT, size,
         gfx::ColorSpace(), GL_TEXTURE_EXTERNAL_OES, texture_id_);
     EXPECT_TRUE(binding);
     return binding;
