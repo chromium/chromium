@@ -1,7 +1,7 @@
 Name: Compose Graphics
 Short Name: ui-graphics-android
-URL: https://androidx.dev/snapshots/builds/14390332/artifacts/repository/androidx/compose/ui/ui-graphics-android/1.10.0-SNAPSHOT/ui-graphics-android-1.10.0-20251105.203541-1.aar
-Version: 1.10.0-SNAPSHOT
+URL: https://androidx.dev/snapshots/builds/14393412/artifacts/repository/androidx/compose/ui/ui-graphics-android/1.11.0-SNAPSHOT/ui-graphics-android-1.11.0-20251106.060114-1.aar
+Version: 1.11.0-SNAPSHOT
 Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE
@@ -13,7 +13,7 @@ License Android Compatible: yes
 Description:
 Compose graphics
 
-See also: https://developer.android.com/jetpack/androidx/releases/compose-ui#1.10.0-SNAPSHOT
+See also: https://developer.android.com/jetpack/androidx/releases/compose-ui#1.11.0-SNAPSHOT
 
 
 Local Modifications:
