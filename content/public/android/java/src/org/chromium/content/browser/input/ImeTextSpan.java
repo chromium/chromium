@@ -18,16 +18,19 @@ public class ImeTextSpan {
     private final int mEndOffset;
     private final String[] mSuggestions;
     private final @ImeTextSpanType.EnumType int mType;
+    private final boolean mShouldHideSuggestionMenu;
 
     private ImeTextSpan(
             int startOffset,
             int endOffset,
             String[] suggestions,
-            @ImeTextSpanType.EnumType int type) {
+            @ImeTextSpanType.EnumType int type,
+            boolean shouldHideSuggestionMenu) {
         mStartOffset = startOffset;
         mEndOffset = endOffset;
         mSuggestions = suggestions;
         mType = type;
+        mShouldHideSuggestionMenu = shouldHideSuggestionMenu;
     }
 
     /**
@@ -52,6 +55,13 @@ public class ImeTextSpan {
     }
 
     /**
+     * @return The boolean value which indicates if the suggestion menu should be hidden.
+     */
+    public boolean shouldHideSuggestionMenu() {
+        return mShouldHideSuggestionMenu;
+    }
+
+    /**
      * @return The type for the span. See {@link ImeTextSpan.MojomImeTextSpanType}
      */
     public @ImeTextSpanType.EnumType int getType() {
@@ -63,7 +73,9 @@ public class ImeTextSpan {
             int startOffset,
             int endOffset,
             String[] suggestions,
-            @ImeTextSpanType.EnumType int type) {
-        return new ImeTextSpan(startOffset, endOffset, suggestions, type);
+            @ImeTextSpanType.EnumType int type,
+            boolean shouldHideeSuggestionMenu) {
+        return new ImeTextSpan(
+                startOffset, endOffset, suggestions, type, shouldHideeSuggestionMenu);
     }
 }

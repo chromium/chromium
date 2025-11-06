@@ -757,6 +757,13 @@ public class ImeAdapterImpl
                             flags = SuggestionSpan.FLAG_GRAMMAR_ERROR;
                         }
 
+                        // When we decide to show the system's suggestion menu, then we should use
+                        // FLAG_EASY_CORRECT to tell the IME not to show their custom suggestion
+                        // menu.
+                        if (!info.shouldHideSuggestionMenu()) {
+                            flags = flags | SuggestionSpan.FLAG_EASY_CORRECT;
+                        }
+
                         SuggestionSpan suggestionSpan =
                                 new SuggestionSpan(
                                         ContextUtils.getApplicationContext(),
