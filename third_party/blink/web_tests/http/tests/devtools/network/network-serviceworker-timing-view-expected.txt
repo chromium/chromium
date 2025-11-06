@@ -25,7 +25,6 @@ Waiting for server response
 Content Download
 ​
 4.19 ms
-CAUTION: request is not finished yet!
 Explanation
 
 10.91 ms

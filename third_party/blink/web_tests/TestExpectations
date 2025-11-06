@@ -124,9 +124,6 @@ crbug.com/895777 external/wpt/css/css-transforms/transform-flattening-001.html [
 crbug.com/895777 external/wpt/mathml/relations/html5-tree/dynamic-mozilla-162063.xhtml [ Timeout ]
 crbug.com/895777 external/wpt/css/css-break/ink-overflow-001-print.html [ Skip Timeout ]
 
-# Temporarily disabled for a devtools change
-crbug.com/444376779 http/tests/devtools/network/network-serviceworker-timing-view.js [ Failure Pass ]
-
 crbug.com/807686 crbug.com/24182 jquery/manipulation.html [ Pass Timeout ]
 
 # The following tests need to remove the assumption that user activation is
