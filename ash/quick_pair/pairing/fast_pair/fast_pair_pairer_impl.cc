@@ -78,8 +78,7 @@ bool ShouldBeEnabledForLoginStatus(ash::LoginStatus status) {
 
 }  // namespace
 
-namespace ash {
-namespace quick_pair {
+namespace ash::quick_pair {
 
 // static
 FastPairPairerImpl::Factory* FastPairPairerImpl::Factory::g_test_factory_ =
@@ -974,5 +973,4 @@ bool FastPairPairerImpl::StopCreateBondTimer(const std::string& callback_name) {
   return false;
 }
 
-}  // namespace quick_pair
-}  // namespace ash
+}  // namespace ash::quick_pair

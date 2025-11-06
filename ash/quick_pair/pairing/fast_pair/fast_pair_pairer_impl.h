@@ -28,8 +28,7 @@ class BluetoothAdapter;
 
 }  // namespace device
 
-namespace ash {
-namespace quick_pair {
+namespace ash::quick_pair {
 
 class Device;
 enum class AccountKeyFailure;
@@ -211,7 +210,6 @@ class FastPairPairerImpl : public FastPairPairer,
   base::WeakPtrFactory<FastPairPairerImpl> weak_ptr_factory_{this};
 };
 
-}  // namespace quick_pair
-}  // namespace ash
+}  // namespace ash::quick_pair
 
 #endif  // ASH_QUICK_PAIR_PAIRING_FAST_PAIR_FAST_PAIR_PAIRER_IMPL_H_
