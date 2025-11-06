@@ -42,6 +42,9 @@ using EmbedderOptions = std::variant<SidePanelShowOptions, FloatingShowOptions>;
 struct ShowOptions {
   explicit ShowOptions(EmbedderOptions panel_options);
   explicit ShowOptions(EmbedderOptions panel_options, bool focus);
+  ShowOptions(const ShowOptions&);
+  ShowOptions(ShowOptions&&);
+  ShowOptions& operator=(const ShowOptions&);
   ~ShowOptions();
 
   // Uses `anchor_browser` to get initial location. If `anchor_browser` is

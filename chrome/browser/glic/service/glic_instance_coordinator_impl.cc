@@ -433,6 +433,9 @@ void GlicInstanceCoordinatorImpl::SwitchConversation(
     const ShowOptions& options,
     glic::mojom::ConversationInfoPtr info,
     mojom::WebClientHandler::SwitchConversationCallback callback) {
+  ShowOptions mutable_options = options;
+  mutable_options.focus_on_show = source_instance.HasFocus();
+
   GlicInstanceImpl* target_instance = nullptr;
   if (info) {
     for (const auto& [id, instance] : instances_) {
@@ -454,8 +457,8 @@ void GlicInstanceCoordinatorImpl::SwitchConversation(
     target_instance->RegisterConversation(std::move(info), base::DoNothing());
   }
   CHECK(target_instance);
-  target_instance->Show(options);
-  target_instance->metrics()->OnSwitchToConversation(options);
+  target_instance->Show(mutable_options);
+  target_instance->metrics()->OnSwitchToConversation(mutable_options);
   std::move(callback).Run(std::nullopt);
 }
 

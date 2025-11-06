@@ -11,6 +11,9 @@ namespace glic {
 
 ShowOptions::ShowOptions(EmbedderOptions embedder_options_in)
     : embedder_options(embedder_options_in) {}
+ShowOptions::ShowOptions(const ShowOptions&) = default;
+ShowOptions::ShowOptions(ShowOptions&&) = default;
+ShowOptions& ShowOptions::operator=(const ShowOptions&) = default;
 ShowOptions::~ShowOptions() = default;
 
 // static

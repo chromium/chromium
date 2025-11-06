@@ -40,6 +40,7 @@
 #include "chrome/common/chrome_features.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
@@ -980,6 +981,15 @@ void GlicInstanceImpl::RequestToConfirmNavigation(
     actor::ActorTaskDelegate::NavigationConfirmationCallback callback) {
   host_.RequestToConfirmNavigation(task_id, navigation_origin,
                                    std::move(callback));
+}
+
+bool GlicInstanceImpl::HasFocus() {
+  if (auto* web_contents = host().webui_contents()) {
+    content::RenderWidgetHostView* rwhv =
+        web_contents->GetRenderWidgetHostView();
+    return rwhv->HasFocus();
+  }
+  return false;
 }
 
 }  // namespace glic

@@ -94,6 +94,9 @@ class GlicInstanceImpl : public GlicInstance,
 
   Profile* profile() { return profile_; }
 
+  // Returns whether host's webcontents are focused.
+  bool HasFocus();
+
   // GlicSharingManagerProvider implementation.
   GlicSharingManager& sharing_manager() override;
 
