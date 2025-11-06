@@ -760,9 +760,6 @@ class BlinkPerfWebGPU(_BlinkPerfBenchmark):
   def Name(cls):
     return 'blink_perf.webgpu'
 
-  def SetExtraBrowserOptions(self, options):
-    options.AppendExtraBrowserArgs(['--enable-unsafe-webgpu'])
-
 
 @benchmark.Info(emails=[
     'bokan@chromium.org', 'khushalsagar@chromium.org', 'vmpstr@chromium.org'
