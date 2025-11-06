@@ -3684,13 +3684,9 @@ const char kChromeAppStoreUrl[] =
     return;
   }
 
-  AppStartupParameters* startupParams =
-      self.sceneState.controller.startupParameters;
-
   _syncedSetUpCoordinator = [[SyncedSetUpCoordinator alloc]
       initWithBaseViewController:self.viewController
-                         browser:self.browser
-               startupParameters:startupParams];
+                         browser:self.browser];
   _syncedSetUpCoordinator.delegate = self;
   [_syncedSetUpCoordinator start];
 }

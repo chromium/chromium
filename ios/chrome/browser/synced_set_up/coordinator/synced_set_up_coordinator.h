@@ -7,7 +7,6 @@
 
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
-@class AppStartupParameters;
 @protocol SyncedSetUpCoordinatorDelegate;
 
 // Coordinator that orchestrates the Synced Set Up experience.
@@ -15,18 +14,6 @@
 
 // The delegate that receives events from this coordinator.
 @property(nonatomic, weak) id<SyncedSetUpCoordinatorDelegate> delegate;
-
-// Initializes the `SyncedSetUpCoordinator`, using the provided
-// `viewController`, `browser`, and `startupParameters` to adapt the Synced Set
-// Up flow to the application's launch context.
-- (instancetype)initWithBaseViewController:(UIViewController*)viewController
-                                   browser:(Browser*)browser
-                         startupParameters:
-                             (AppStartupParameters*)startupParameters
-    NS_DESIGNATED_INITIALIZER;
-
-- (instancetype)initWithBaseViewController:(UIViewController*)viewController
-                                   browser:(Browser*)browser NS_UNAVAILABLE;
 
 @end
 
