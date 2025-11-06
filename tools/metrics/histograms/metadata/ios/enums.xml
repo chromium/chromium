@@ -610,6 +610,7 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Unknown"/>
   <int value="7" label="Zero State Suggestions"/>
   <int value="8" label="What Can Gemini Do"/>
+  <int value="9" label="Discovery Card"/>
 </enum>
 
 <!-- LINT.ThenChange(/ios/chrome/browser/intelligence/bwg/metrics/bwg_metrics.h:IOSGeminiFirstPromptSubmissionMethod) -->

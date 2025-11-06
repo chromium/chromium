@@ -88,7 +88,8 @@ enum class IOSGeminiFirstPromptSubmissionMethod {
   kUnknown = 6,
   kZeroStateSuggestions = 7,
   kWhatCanGeminiDo = 8,
-  kMaxValue = kWhatCanGeminiDo,
+  kDiscoveryCard = 9,
+  kMaxValue = kDiscoveryCard,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:IOSGeminiFirstPromptSubmissionMethod)
 

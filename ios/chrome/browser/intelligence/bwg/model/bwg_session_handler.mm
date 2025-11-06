@@ -36,6 +36,8 @@ IOSGeminiFirstPromptSubmissionMethod ConvertBWGInputTypeToHistogramEnum(
       return IOSGeminiFirstPromptSubmissionMethod::kZeroStateSuggestions;
     case BWGInputTypeWhatCanGeminiDo:
       return IOSGeminiFirstPromptSubmissionMethod::kWhatCanGeminiDo;
+    case BWGInputTypeDiscoveryCard:
+      return IOSGeminiFirstPromptSubmissionMethod::kDiscoveryCard;
     case BWGInputTypeUnknown:
     default:
       return IOSGeminiFirstPromptSubmissionMethod::kUnknown;

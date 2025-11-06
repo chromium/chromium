@@ -28,6 +28,8 @@ typedef NS_ENUM(NSInteger, BWGInputType) {
   BWGInputTypeZeroStateModelSuggestion = 7,
   // 'What can Gemini do' input type.
   BWGInputTypeWhatCanGeminiDo = 8,
+  // Discovery card input type.
+  BWGInputTypeDiscoveryCard = 9,
 };
 
 // Delegate for BWG session events. Keep up to date with GCR's SessionDelegate.
