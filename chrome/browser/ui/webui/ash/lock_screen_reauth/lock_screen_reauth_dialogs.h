@@ -155,7 +155,7 @@ class LockScreenStartReauthDialog
   bool should_reload_gaia_ = false;
 
   base::ScopedObservation<NetworkStateInformer, NetworkStateInformerObserver>
-      scoped_observation_{this};
+      network_state_scoped_observation_{this};
 
   std::unique_ptr<LockScreenNetworkDialog> lock_screen_network_dialog_;
   raw_ptr<Profile> profile_ = nullptr;

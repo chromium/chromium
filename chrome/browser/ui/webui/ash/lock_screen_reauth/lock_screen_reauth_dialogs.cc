@@ -138,6 +138,10 @@ void LockScreenStartReauthDialog::OnProfileInitialized(Profile* profile) {
 
   profile_ = profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
   ShowSystemDialogForBrowserContext(profile_);
+  // Network state observation should start only after `profile_` is
+  // initialized, because in `UpdateState` we assume that `profile_` can be used
+  // as a browser context for the network dialog.
+  network_state_scoped_observation_.Observe(network_state_informer_.get());
   const NetworkStateInformer::State state = network_state_informer_->state();
   // Show network or captive portal screen if needed.
   // TODO(crbug.com/1237407): Handle other states in NetworkStateInformer
@@ -229,7 +233,7 @@ void LockScreenStartReauthDialog::ShowLockScreenNetworkDialog() {
   if (lock_screen_network_dialog_) {
     return;
   }
-  DCHECK(profile_);
+  CHECK(profile_);
   is_network_dialog_visible_ = true;
   lock_screen_network_dialog_ =
       std::make_unique<LockScreenNetworkDialog>(base::BindOnce(
@@ -240,6 +244,7 @@ void LockScreenStartReauthDialog::ShowLockScreenNetworkDialog() {
 
 void LockScreenStartReauthDialog::ShowLockScreenCaptivePortalDialog() {
   TerminateAutoReload();
+  CHECK(profile_);
   if (!captive_portal_dialog_) {
     captive_portal_dialog_ = std::make_unique<LockScreenCaptivePortalDialog>();
     OnCaptivePortalDialogReadyForTesting();
@@ -276,7 +281,6 @@ LockScreenStartReauthDialog::LockScreenStartReauthDialog()
                      CalculateOobeDialogSizeForPrimaryDisplay()),
       network_state_informer_(base::MakeRefCounted<NetworkStateInformer>()) {
   network_state_informer_->Init();
-  scoped_observation_.Observe(network_state_informer_.get());
 
   HttpAuthDialog::AddObserver(this);
 
@@ -291,7 +295,6 @@ LockScreenStartReauthDialog::LockScreenStartReauthDialog()
 LockScreenStartReauthDialog::~LockScreenStartReauthDialog() {
   DCHECK_EQ(this, g_dialog);
   HttpAuthDialog::RemoveObserver(this);
-  scoped_observation_.Reset();
   DeleteLockScreenNetworkDialog();
   g_dialog = nullptr;
 }
@@ -445,6 +448,7 @@ void LockScreenStartReauthDialog::RemoveObserver(
 }
 
 void LockScreenStartReauthDialog::TransferHttpAuthCaches() {
+  CHECK(profile_);
   content::StoragePartition* webview_storage_partition =
       login::SigninPartitionManager::Factory::GetForBrowserContext(profile_)
           ->GetCurrentStoragePartition();
