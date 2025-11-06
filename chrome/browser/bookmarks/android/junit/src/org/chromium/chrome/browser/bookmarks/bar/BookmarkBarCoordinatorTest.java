@@ -467,13 +467,9 @@ public class BookmarkBarCoordinatorTest {
         int topControlsHeight = 41;
         when(mBrowserControlsManager.getTopControlsHeight()).thenReturn(topControlsHeight);
 
-        // Simulate top controls height changed.
-        final var obs = ArgumentCaptor.forClass(BrowserControlsStateProvider.Observer.class);
-        verify(mBrowserControlsManager).addObserver(obs.capture());
-        obs.getValue()
-                .onTopControlsHeightChanged(
-                        mBrowserControlsManager.getTopControlsHeight(),
-                        mBrowserControlsManager.getTopControlsMinHeight());
+        mCoordinator.onTopControlLayerHeightChanged(
+                mBrowserControlsManager.getTopControlsHeight(),
+                mBrowserControlsManager.getTopControlsMinHeight());
 
         assertEquals(
                 "Verify view top margin.",
@@ -482,10 +478,10 @@ public class BookmarkBarCoordinatorTest {
 
         topControlsHeight = 51;
         when(mBrowserControlsManager.getTopControlsHeight()).thenReturn(topControlsHeight);
-        obs.getValue()
-                .onTopControlsHeightChanged(
-                        mBrowserControlsManager.getTopControlsHeight(),
-                        mBrowserControlsManager.getTopControlsMinHeight());
+        mCoordinator.onTopControlLayerHeightChanged(
+                mBrowserControlsManager.getTopControlsHeight(),
+                mBrowserControlsManager.getTopControlsMinHeight());
+
         assertEquals(
                 "Verify view top margin.",
                 10,
