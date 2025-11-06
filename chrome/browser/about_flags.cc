@@ -64,7 +64,7 @@
 #include "chrome/browser/task_manager/common/task_manager_features.h"
 #include "chrome/browser/tpcd/experiment/tpcd_experiment_features.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
-#include "chrome/browser/ui/omnibox/features.h"
+#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/tabs/tab_group_home/constants.h"
 #include "chrome/browser/ui/toasts/toast_features.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -916,6 +916,29 @@ const FeatureEntry::FeatureVariation
          std::size(kSearchPrefetchWithHoldback), nullptr}};
 
 #if !BUILDFLAG(IS_ANDROID)
+const FeatureEntry::FeatureParam kWebUIOmniboxAimPopupAddContextButtonNone[] = {
+    {"AddContextButtonVariant", "none"}};
+const FeatureEntry::FeatureParam
+    kWebUIOmniboxAimPopupAddContextButtonBelowResults[] = {
+        {"AddContextButtonVariant", "below_results"}};
+const FeatureEntry::FeatureParam
+    kWebUIOmniboxAimPopupAddContextButtonAboveResults[] = {
+        {"AddContextButtonVariant", "above_results"}};
+const FeatureEntry::FeatureParam kWebUIOmniboxAimPopupAddContextButtonInline[] =
+    {{"AddContextButtonVariant", "inline"}};
+const FeatureEntry::FeatureVariation kWebUIOmniboxAimPopupVariations[] = {
+    {"- No \"Add Context\" Button", kWebUIOmniboxAimPopupAddContextButtonNone,
+     std::size(kWebUIOmniboxAimPopupAddContextButtonNone), nullptr},
+    {"- \"Add Context\" Button below results (Variant 1)",
+     kWebUIOmniboxAimPopupAddContextButtonBelowResults,
+     std::size(kWebUIOmniboxAimPopupAddContextButtonBelowResults), nullptr},
+    {"- \"Add Context\" Button above results (Variant 2)",
+     kWebUIOmniboxAimPopupAddContextButtonAboveResults,
+     std::size(kWebUIOmniboxAimPopupAddContextButtonAboveResults), nullptr},
+    {"- \"Add Context\" Button inline (Variant 3)",
+     kWebUIOmniboxAimPopupAddContextButtonInline,
+     std::size(kWebUIOmniboxAimPopupAddContextButtonInline), nullptr}};
+
 const FeatureEntry::FeatureParam kWebUIOmniboxPopupDebugSxS[] = {
     {"SxS", "true"}};
 const FeatureEntry::FeatureVariation kWebUIOmniboxPopupDebugVariations[] = {
@@ -10266,7 +10289,9 @@ const FeatureEntry kFeatureEntries[] = {
 #if !BUILDFLAG(IS_ANDROID)
     {"webui-omnibox-aim-popup", flag_descriptions::kWebUIOmniboxAimPopupName,
      flag_descriptions::kWebUIOmniboxAimPopupDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(omnibox::kWebUIOmniboxAimPopup)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kWebUIOmniboxAimPopup,
+                                    kWebUIOmniboxAimPopupVariations,
+                                    "WebUIOmniboxAimPopupVariations")},
 
     {"webui-omnibox-full-popup", flag_descriptions::kWebUIOmniboxFullPopupName,
      flag_descriptions::kWebUIOmniboxFullPopupDescription, kOsDesktop,

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/omnibox/features.h"
+#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
@@ -14,9 +14,21 @@ constexpr base::FeatureState DISABLED = base::FEATURE_DISABLED_BY_DEFAULT;
 
 namespace omnibox {
 
+constexpr base::FeatureParam<AddContextButtonVariant>::Option
+    kAddContextButtonVariantOptions[] = {
+        {AddContextButtonVariant::kNone, "none"},
+        {AddContextButtonVariant::kBelowResults, "below_results"},
+        {AddContextButtonVariant::kAboveResults, "above_results"},
+        {AddContextButtonVariant::kInline, "inline"}};
+
 // If enabled, Omnibox popup will transition to AI-Mode with the compose-box
 // panel taking up the whole of the popup, covering the location bar completely.
 BASE_FEATURE(kWebUIOmniboxAimPopup, DISABLED);
+// Configures the placement of the "Add Context" button in the Omnibox popup.
+const base::FeatureParam<AddContextButtonVariant>
+    kWebUIOmniboxAimPopupAddContextButtonVariantParam{
+        &kWebUIOmniboxAimPopup, "AddContextButtonVariant",
+        AddContextButtonVariant::kNone, &kAddContextButtonVariantOptions};
 // If enabled, removes the cutout for the location bar and fills the entire
 // popup content with the WebUI WebView.
 BASE_FEATURE(kWebUIOmniboxFullPopup, DISABLED);
