@@ -12,6 +12,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
+#include "ui/color/color_variant.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/text_constants.h"
@@ -144,24 +145,12 @@ std::unique_ptr<views::Label> CreateUnthemedBubbleLabel(
 std::unique_ptr<views::Label> CreateBubbleLabel(
     const std::u16string& message,
     views::View* view_defining_max_width,
-    ui::ColorId color,
+    ui::ColorVariant color,
     const gfx::FontList& font_list,
     int line_height) {
   auto label = CreateUnthemedBubbleLabel(message, view_defining_max_width,
                                          font_list, line_height);
   label->SetEnabledColor(color);
-  return label;
-}
-
-std::unique_ptr<views::Label> CreateThemedBubbleLabel(
-    const std::u16string& message,
-    views::View* view_defining_max_width,
-    ui::ColorId enabled_color_type,
-    const gfx::FontList& font_list,
-    int line_height) {
-  auto label = CreateUnthemedBubbleLabel(message, view_defining_max_width,
-                                         font_list, line_height);
-  label->SetEnabledColor(enabled_color_type);
   return label;
 }
 

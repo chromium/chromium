@@ -88,8 +88,12 @@ ShelfShutdownConfirmationBubble::ShelfShutdownConfirmationBubble(
   layout->SetMainAxisAlignment(views::LayoutAlignment::kStart);
   layout->SetCrossAxisAlignment(views::LayoutAlignment::kStart);
 
+  SetBackgroundColor(ShelfConfig::Get()->GetDefaultShelfColorId());
+
   // Set up the icon.
   icon_ = AddChildView(std::make_unique<views::ImageView>());
+  icon_->SetImage(ui::ImageModel::FromVectorIcon(
+      vector_icons::kWarningOutlineIcon, cros_tokens::kColorPrimary));
   icon_->SetProperty(
       views::kMarginsKey,
       gfx::Insets::TLBR(0, 0,
@@ -101,6 +105,7 @@ ShelfShutdownConfirmationBubble::ShelfShutdownConfirmationBubble(
   title_ = AddChildView(std::make_unique<views::Label>());
   title_->SetMultiLine(true);
   title_->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
+  title_->SetEnabledColor(cros_tokens::kTextColorPrimary);
   title_->SetAutoColorReadabilityEnabled(false);
   TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosHeadline1,
                                         *title_);
@@ -128,6 +133,7 @@ ShelfShutdownConfirmationBubble::ShelfShutdownConfirmationBubble(
       PillButton::Type::kDefaultWithoutIcon,
       /*icon=*/nullptr);
   cancel_button->SetID(static_cast<int>(ButtonId::kCancel));
+  cancel_button->SetEnabledTextColors(cros_tokens::kColorPrimary);
   cancel_ = button_container->AddChildView(std::move(cancel_button));
 
   auto confirm_button = std::make_unique<PillButton>(
@@ -136,6 +142,7 @@ ShelfShutdownConfirmationBubble::ShelfShutdownConfirmationBubble(
       l10n_util::GetStringUTF16(IDS_ASH_SHUTDOWN_CONFIRM_BUTTON),
       PillButton::Type::kDefaultWithoutIcon, /*icon=*/nullptr);
   confirm_button->SetID(static_cast<int>(ButtonId::kShutdown));
+  confirm_button->SetEnabledTextColors(cros_tokens::kColorPrimary);
   confirm_ = button_container->AddChildView(std::move(confirm_button));
 
   CreateBubble();
@@ -174,18 +181,6 @@ ShelfShutdownConfirmationBubble::~ShelfShutdownConfirmationBubble() {
   if (cancel_callback_) {
     std::move(cancel_callback_).Run();
   }
-}
-
-void ShelfShutdownConfirmationBubble::OnThemeChanged() {
-  views::View::OnThemeChanged();
-
-  icon_->SetImage(ui::ImageModel::FromVectorIcon(
-      vector_icons::kWarningOutlineIcon, cros_tokens::kColorPrimary));
-  title_->SetEnabledColor(cros_tokens::kTextColorPrimary);
-
-  cancel_->SetEnabledTextColors(cros_tokens::kColorPrimary);
-  confirm_->SetEnabledTextColors(cros_tokens::kColorPrimary);
-  SetBackgroundColor(ShelfConfig::Get()->GetDefaultShelfColor(GetWidget()));
 }
 
 std::u16string ShelfShutdownConfirmationBubble::GetAccessibleWindowTitle()

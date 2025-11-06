@@ -157,11 +157,6 @@ gfx::Size FeaturePodLabelButton::CalculatePreferredSize(
   return gfx::Size(width, height);
 }
 
-void FeaturePodLabelButton::OnThemeChanged() {
-  views::Button::OnThemeChanged();
-  OnEnabledChanged();
-}
-
 void FeaturePodLabelButton::SetLabel(std::u16string_view label) {
   label_->SetText(label);
   InvalidateLayout();

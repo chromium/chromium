@@ -255,8 +255,7 @@ class UserAddingScreenIndicator : public views::View {
 
     std::u16string message =
         l10n_util::GetStringUTF16(IDS_ASH_LOGIN_USER_ADDING_BANNER);
-    label_ =
-        AddChildView(login_views_utils::CreateThemedBubbleLabel(message, this));
+    label_ = AddChildView(login_views_utils::CreateBubbleLabel(message, this));
     label_->SetText(message);
 
     SetPaintToLayer();

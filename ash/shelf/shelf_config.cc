@@ -466,6 +466,10 @@ SkColor ShelfConfig::GetDefaultShelfColor(const views::Widget* widget) const {
   return color_provider->GetColor(GetShelfBaseLayerColorId());
 }
 
+ui::ColorId ShelfConfig::GetDefaultShelfColorId() const {
+  return GetShelfBaseLayerColorId();
+}
+
 int ShelfConfig::GetShelfControlButtonBlurRadius() const {
   if (chromeos::features::IsSystemBlurEnabled() && in_tablet_mode_ &&
       !is_in_app_) {

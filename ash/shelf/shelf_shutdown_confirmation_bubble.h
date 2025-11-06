@@ -55,7 +55,6 @@ class ASH_EXPORT ShelfShutdownConfirmationBubble : public ShelfBubble {
   ~ShelfShutdownConfirmationBubble() override;
 
   // views::View:
-  void OnThemeChanged() override;
   std::u16string GetAccessibleWindowTitle() const override;
 
  protected:
