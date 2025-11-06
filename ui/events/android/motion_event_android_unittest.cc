@@ -380,6 +380,66 @@ TEST(MotionEventAndroidTest, ActionIndexForPointerDown) {
   EXPECT_EQ(action_index, event->GetActionIndex());
 }
 
+TEST(MotionEventAndroidTest, CreateFor) {
+  ui::test::ScopedEventTestTickClock clock;
+  clock.SetNowTicks(base::TimeTicks());
+
+  MotionEventAndroid::Pointer p0(1, 13.7f, -7.13f, 5.3f, 1.2f, 0.4f, 0.1f, 0.2f,
+                                 kAndroidToolTypeFinger);
+  int pointer_count = 1;
+  int history_size = 0;
+  int action_index = 0;
+
+  const jlong down_time_ms = base::TimeTicks::Now().ToUptimeMillis();
+  const jlong event_time_ms = down_time_ms;
+
+  JNIEnv* env = base::android::AttachCurrentThread();
+  base::android::ScopedJavaLocalRef<jobject> obj =
+      JNI_MotionEvent::Java_MotionEvent_obtain(env, /*downTime=*/down_time_ms,
+                                               /*eventTime=*/event_time_ms,
+                                               /*action=*/0, /*x=*/0, /*y=*/0,
+                                               /*metaState=*/0);
+  auto event = MotionEventAndroidFactory::CreateFromJava(
+      env, obj, kPixToDip,
+      /*ticks_x=*/0,
+      /*ticks_y=*/0,
+      /*tick_multiplier=*/0,
+      /*oldest_event_time=*/base::TimeTicks::FromUptimeMillis(event_time_ms),
+      /*latest_event_time=*/base::TimeTicks::FromUptimeMillis(event_time_ms),
+      /*down_time_ms=*/base::TimeTicks::FromUptimeMillis(down_time_ms),
+      /*android_action=*/kAndroidActionDown, pointer_count, history_size,
+      action_index,
+      /*android_action_button=*/0,
+      /*android_gesture_classification=*/0,
+      /*android_button_state=*/0,
+      /*raw_offset_x_pixels=*/0,
+      /*raw_offset_y_pixels=*/0,
+      /*for_touch_handle=*/false,
+      /*pointer0=*/&p0,
+      /*pointer1=*/nullptr,
+      /*is_latest_event_time_resampled=*/false);
+
+  const gfx::PointF new_point(12.3f, 45.6f);
+  auto new_event =
+      static_cast<MotionEventAndroid*>(event.get())->CreateFor(new_point);
+
+  EXPECT_EQ(event->GetAction(), new_event->GetAction());
+  EXPECT_EQ(new_point.x(), new_event->GetX(0));
+  EXPECT_EQ(new_point.y(), new_event->GetY(0));
+  EXPECT_EQ(event->GetPointerId(0), new_event->GetPointerId(0));
+  EXPECT_EQ(event->GetPressure(0), new_event->GetPressure(0));
+  EXPECT_EQ(event->GetOrientation(0), new_event->GetOrientation(0));
+  EXPECT_EQ(event->GetToolType(0), new_event->GetToolType(0));
+  EXPECT_EQ(event->GetButtonState(), new_event->GetButtonState());
+  EXPECT_EQ(event->GetFlags(), new_event->GetFlags());
+  EXPECT_EQ(event->GetPointerCount(), new_event->GetPointerCount());
+  EXPECT_EQ(event->GetHistorySize(), new_event->GetHistorySize());
+  EXPECT_EQ(event->GetEventTime(), new_event->GetEventTime());
+  EXPECT_EQ(event->GetRawDownTime(), new_event->GetRawDownTime());
+  EXPECT_EQ(event->IsLatestEventTimeResampled(),
+            new_event->IsLatestEventTimeResampled());
+}
+
 TEST(MotionEventAndroidTest, NativeBackedConstructor) {
   if (base::android::android_info::sdk_int() <
       base::android::android_info::SDK_VERSION_S) {
