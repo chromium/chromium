@@ -23,6 +23,13 @@ ci.defaults.set(
     builder_group = "chromium.memory",
     builder_config_settings = builder_config.ci_settings(
         retry_failed_shards = True,
+        # Shards of browser_tests and interactive_ui_tests are fundamentally
+        # flaky on various sanitizer builds, and end up timing out without any
+        # results. Such shards are considered "invalid". crbug.com/429435587 is
+        # on file to address the fundamental flakiness, but a proper fix is
+        # not likely. So just retry all such invalid shards on all memory
+        # builders.
+        retry_invalid_shards = True,
     ),
     pool = ci_constants.DEFAULT_POOL,
     cores = 8,
@@ -130,13 +137,6 @@ linux_memory_builder(
             target_bits = 64,
             target_platform = builder_config.target_platform.LINUX,
         ),
-    ),
-    builder_config_settings = builder_config.ci_settings(
-        # Some shards of browser_tests often encounter some slowdown, and end up
-        # timing out without any results. Such shards are considered "invalid".
-        # TODO(crbug.com/429435587): Fix the underlying flakiness.
-        retry_failed_shards = True,
-        retry_invalid_shards = True,
     ),
     targets = targets.bundle(
         targets = [
@@ -420,14 +420,6 @@ linux_memory_builder(
             target_platform = builder_config.target_platform.CHROMEOS,
         ),
     ),
-    builder_config_settings = builder_config.ci_settings(
-        # Some shards of interactive_ui_tests often encounter some slowdown, and
-        # end up timing out without any results. Such shards are considered
-        # "invalid".
-        # TODO(crbug.com/429435587): Fix the underlying flakiness.
-        retry_failed_shards = True,
-        retry_invalid_shards = True,
-    ),
     targets = targets.bundle(
         targets = [
             "linux_chromeos_gtests",
@@ -478,6 +470,11 @@ linux_memory_builder(
                 # crbug.com/1257927
                 swarming = targets.swarming(
                     shards = 8,
+                ),
+            ),
+            "sync_integration_tests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 6,
                 ),
             ),
             "unit_tests": targets.mixin(
@@ -596,7 +593,7 @@ linux_memory_builder(
                 # These are very slow on the Chrome OS MSAN trybot for some reason.
                 # crbug.com/865455
                 swarming = targets.swarming(
-                    shards = 5,
+                    shards = 8,
                 ),
             ),
             "net_unittests": targets.mixin(
@@ -716,7 +713,7 @@ linux_memory_builder(
             ),
             "interactive_ui_tests": targets.mixin(
                 swarming = targets.swarming(
-                    shards = 12,
+                    shards = 15,
                 ),
             ),
             "services_unittests": targets.remove(

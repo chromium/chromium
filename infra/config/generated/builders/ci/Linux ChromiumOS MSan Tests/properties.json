@@ -76,6 +76,7 @@
         }
       ],
       "retry_failed_shards": true,
+      "retry_invalid_shards": true,
       "targets_spec_directory": "src/infra/config/generated/builders/ci/Linux ChromiumOS MSan Tests/targets"
     }
   },
