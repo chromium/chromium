@@ -1183,12 +1183,6 @@ const CGFloat kIdentityDiscAvatarBackgroundSpacing = 5;
           self.traitCollection.preferredContentSizeCategory) {
     [self updateFakeboxDisplay];
   }
-  if (previousTraitCollection.userInterfaceStyle !=
-      self.traitCollection.userInterfaceStyle) {
-    [self.headerView
-        updateButtonsForUserInterfaceStyle:self.traitCollection
-                                               .userInterfaceStyle];
-  }
 }
 
 // Returns the omnibox placeholder text.
