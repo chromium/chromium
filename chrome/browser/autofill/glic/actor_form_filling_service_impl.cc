@@ -21,12 +21,14 @@
 #include "chrome/browser/ui/autofill/autofill_client_provider.h"
 #include "chrome/browser/ui/autofill/autofill_client_provider_factory.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
+#include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/filling/form_filler.h"
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #include "components/autofill/core/browser/foundations/scoped_autofill_managers_observation.h"
 #include "components/autofill/core/browser/integrators/glic/actor_form_filling_types.h"
 #include "components/autofill/core/browser/suggestions/addresses/address_suggestion_generator.h"
+#include "components/autofill/core/browser/suggestions/payments/payments_suggestion_generator.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/ui/autofill_external_delegate.h"
 #include "components/tabs/public/tab_interface.h"
@@ -74,19 +76,52 @@ std::optional<ActorSuggestionWithFillData> GetActorAddressSuggestion(
                                      std::move(fill_data)};
 }
 
+// Generates an `ActorSuggestion` to fill a credit card or returns
+// `std::nullopt` if it cannot generate a filling payload.
+std::optional<ActorSuggestionWithFillData> GetActorCreditCardSuggestion(
+    const PaymentsDataManager& paydm,
+    base::span<const FieldGlobalId> fields,
+    const Suggestion& suggestion) {
+  const Suggestion::Guid* const card_guid =
+      std::get_if<Suggestion::Guid>(&suggestion.payload);
+  if (!card_guid) {
+    return std::nullopt;
+  }
+  const CreditCard* const credit_card =
+      paydm.GetCreditCardByGUID(card_guid->value());
+  if (!credit_card) {
+    return std::nullopt;
+  }
+
+  // TOOD(crbug.com/455788947): Add the network/card art icon to the
+  // ActorSuggestion.
+  ActorSuggestion actor_suggestion;
+  actor_suggestion.title = base::UTF16ToUTF8(suggestion.main_text.value);
+  actor_suggestion.details =
+      (!suggestion.labels.empty() && !suggestion.labels[0].empty())
+          ? base::UTF16ToUTF8(suggestion.labels[0][0].value)
+          : "";
+  ActorFormFillingServiceImpl::FillData fill_data = {base::ToVector(fields),
+                                                     *credit_card};
+  return ActorSuggestionWithFillData{std::move(actor_suggestion),
+                                     std::move(fill_data)};
+}
+
 // Generates address suggestions and the accompanying data that is needed for
 // filling.
-// Note that this is a preliminary implementation that is deficient in a number
-// of ways:
+// Note that this is a preliminary implementation that is deficient in a
+// number of ways:
 // - The first entry in `fields` is used as the trigger field. This means that
 //   we only return suggestions that have a non-empty value for this field.
-// - Because only the first entry of `fields` is passed in, we may "deduplicate"
-//   suggestions that would fill the same values in the form section represented
-//   by the first field but that would fill different values in other sections.
+// - Because only the first entry of `fields` is passed in, we may
+// "deduplicate"
+//   suggestions that would fill the same values in the form section
+//   represented by the first field but that would fill different values in
+//   other sections.
 //
 // TODO(crbug.com/455788947): Improve suggestion generation.
 // TODO(crbug.com/455788947): Check that address Autofill is not turned off.
-std::vector<ActorSuggestionWithFillData> GetAddressSuggestions(
+[[nodiscard]] std::vector<ActorSuggestionWithFillData> GetAddressSuggestions(
     base::span<const FieldGlobalId> fields,
     const AutofillManager& autofill_manager) {
   if (fields.empty()) {
@@ -136,6 +171,60 @@ std::vector<ActorSuggestionWithFillData> GetAddressSuggestions(
   return result;
 }
 
+// Generates credit card suggestions and the data needed for filling them.
+//
+// Note that this is a preliminary version with the following traits:
+// - Only the first entry in `fields` is used for generating suggestions.
+// - VCN and BNPL suggestions are not supported.
+// - No optimizations for CVCs (e.g. searching the last 4 digits in the DOM)
+//   exist.
+//
+// TODO(crbug.com/455788947): Improve suggestion generation.
+[[nodiscard]] std::vector<ActorSuggestionWithFillData> GetCreditCardSuggestions(
+    base::span<const FieldGlobalId> fields,
+    const AutofillManager& autofill_manager) {
+  if (fields.empty()) {
+    return {};
+  }
+
+  // For now, we simply take the first field.
+  const FormStructure* const form_structure =
+      autofill_manager.FindCachedFormById(fields[0]);
+  if (!form_structure) {
+    return {};
+  }
+  const AutofillField* const autofill_field =
+      form_structure->GetFieldById(fields[0]);
+  if (!autofill_field) {
+    return {};
+  }
+
+  CreditCardSuggestionSummary summary;
+  std::vector<Suggestion> suggestions = GetCreditCardOrCvcFieldSuggestions(
+      autofill_manager.client(), *autofill_field,
+      /*four_digit_combinations_in_dom=*/{},
+      /*autofilled_last_four_digits_in_form_for_filtering=*/{},
+      autofill_field->Type().GetCreditCardType(),
+      /*should_show_scan_credit_card=*/false, summary,
+      /*is_card_number_field_empty=*/true);
+  std::erase_if(suggestions, [](const Suggestion& s) {
+    return s.type != SuggestionType::kCreditCardEntry;
+  });
+
+  std::vector<ActorSuggestionWithFillData> result;
+  result.reserve(suggestions.size());
+  const PaymentsDataManager& paydm = autofill_manager.client()
+                                         .GetPersonalDataManager()
+                                         .payments_data_manager();
+  for (const Suggestion& s : suggestions) {
+    if (std::optional<ActorSuggestionWithFillData> actor_suggestion =
+            GetActorCreditCardSuggestion(paydm, fields, s)) {
+      result.emplace_back(*std::move(actor_suggestion));
+    }
+  }
+  return result;
+}
+
 // Retrieves the `AutofillManager` of the `tab`'s primary main frame.
 [[nodiscard]] base::expected<std::reference_wrapper<BrowserAutofillManager>,
                              ActorFormFillingError>
@@ -154,7 +243,8 @@ GetAutofillManager(const tabs::TabInterface& tab) {
           .uses_platform_autofill()) {
     // This is currently only possible on Android platforms, but this check
     // guards against this becoming applicable for Desktop platforms as well.
-    // It is a requirement for the cast to `BrowserAutofillManager` to be safe.
+    // It is a requirement for the cast to `BrowserAutofillManager` to be
+    // safe.
     return base::unexpected(kAutofillNotAvailable);
   }
 
@@ -216,8 +306,8 @@ class FillingObserver final : public AutofillManager::Observer {
     if (callback_) {
       // TODO(crbug.com/455788947): Consider introducing a different type of
       // error.
-      // TODO(crbug.com/455788947): Consider not sending an error if some fields
-      // were filled.
+      // TODO(crbug.com/455788947): Consider not sending an error if some
+      // fields were filled.
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,
           base::BindOnce(std::move(callback_),
@@ -272,7 +362,7 @@ ActorFormFillingServiceImpl::FillData::FillData() = default;
 
 ActorFormFillingServiceImpl::FillData::FillData(
     std::vector<FieldGlobalId> field_ids,
-    std::variant<std::monostate, AutofillProfile> filling_payload)
+    Payload filling_payload)
     : field_ids(std::move(field_ids)),
       filling_payload(std::move(filling_payload)) {}
 
@@ -327,7 +417,8 @@ void ActorFormFillingServiceImpl::GetSuggestions(
         data = GetAddressSuggestions(representative_fields, autofill_manager);
         break;
       case FormFillingRequest_RequestedData_CREDIT_CARD:
-        // TODO(crbug.com/455788947): Add credit card suggestions.
+        data =
+            GetCreditCardSuggestions(representative_fields, autofill_manager);
         break;
       default:
         // Invalid request type.

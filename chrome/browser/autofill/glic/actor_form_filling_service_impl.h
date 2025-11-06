@@ -12,6 +12,7 @@
 #include "base/containers/flat_map.h"
 #include "chrome/browser/autofill/glic/actor_form_filling_service.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/payments/credit_card.h"
 
 namespace tabs {
 class TabInterface;
@@ -48,9 +49,10 @@ class ActorFormFillingServiceImpl : public ActorFormFillingService {
 
   // A record to keep track of the data that is backing an `ActorSuggestion`.
   struct FillData final {
+    using Payload = std::variant<std::monostate, AutofillProfile, CreditCard>;
+
     FillData();
-    FillData(std::vector<FieldGlobalId> field_ids,
-             std::variant<std::monostate, AutofillProfile> filling_payload);
+    FillData(std::vector<FieldGlobalId> field_ids, Payload filling_payload);
     FillData(const FillData&);
     FillData& operator=(const FillData&);
     FillData(FillData&&);
@@ -59,7 +61,6 @@ class ActorFormFillingServiceImpl : public ActorFormFillingService {
 
     // Fields that represents the form sections that are supposed to be filled.
     std::vector<FieldGlobalId> field_ids;
-    using Payload = std::variant<std::monostate, AutofillProfile>;
     Payload filling_payload;
   };
 

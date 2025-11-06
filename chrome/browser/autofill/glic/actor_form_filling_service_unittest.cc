@@ -80,6 +80,12 @@ FillRequest AddressFillRequest(std::vector<FieldGlobalId> field_ids) {
           std::move(field_ids)};
 }
 
+FillRequest CreditCardFillRequest(std::vector<FieldGlobalId> field_ids) {
+  return {ActorFormFillingRequest::RequestedData::
+              FormFillingRequest_RequestedData_CREDIT_CARD,
+          std::move(field_ids)};
+}
+
 class ActorFormFillingServiceTest : public ChromeRenderViewHostTestHarness {
  public:
   ActorFormFillingServiceTest() = default;
@@ -90,6 +96,8 @@ class ActorFormFillingServiceTest : public ChromeRenderViewHostTestHarness {
     NavigateAndCommit(GURL("about:blank"));
     client().GetPersonalDataManager().address_data_manager().AddProfile(
         test::GetFullProfile());
+    client().GetPersonalDataManager().payments_data_manager().AddCreditCard(
+        test::GetCreditCard());
   }
 
   FormData SeeForm(test::FormDescription form_description) {
@@ -163,6 +171,31 @@ TEST_F(ActorFormFillingServiceTest, SimpleAddressForm) {
               ValueIs(ElementsAre(IsActorFormFillingRequest(
                   ActorFormFillingRequest::RequestedData::
                       FormFillingRequest_RequestedData_ADDRESS))));
+
+  std::vector<ActorFormFillingRequest> requests = future.Take().value();
+  FillSuggestionsFuture fill_future;
+  service().FillSuggestions(
+      tab(), {ActorFormFillingSelection(requests[0].suggestions[0].id)},
+      fill_future.GetCallback());
+  EXPECT_THAT(fill_future.Get(), HasValue());
+}
+
+// Tests that a suggestion generation and filling work with simple credit card
+// forms.
+TEST_F(ActorFormFillingServiceTest, SimpleCreditCardForm) {
+  FormData form =
+      SeeForm({.fields = {{.server_type = CREDIT_CARD_NAME_FULL},
+                          {.server_type = CREDIT_CARD_NUMBER},
+                          {.server_type = CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR}}});
+
+  GetSuggestionsFuture future;
+  service().GetSuggestions(
+      tab(), {CreditCardFillRequest({form.fields()[0].global_id()})},
+      future.GetCallback());
+  EXPECT_THAT(future.Get(),
+              ValueIs(ElementsAre(IsActorFormFillingRequest(
+                  ActorFormFillingRequest::RequestedData::
+                      FormFillingRequest_RequestedData_CREDIT_CARD))));
 
   std::vector<ActorFormFillingRequest> requests = future.Take().value();
   FillSuggestionsFuture fill_future;
