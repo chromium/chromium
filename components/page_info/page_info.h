@@ -419,9 +419,6 @@ class PageInfo : private content_settings::CookieControlsObserver,
   // settings UI is closed or not.
   bool show_info_bar_;
 
-  // The type of reload the info bar should trigger when closed.
-  content::ReloadType info_bar_reload_type_ = content::ReloadType::NORMAL;
-
   // The Omnibox URL of the website for which to display site permissions and
   // site information.
   GURL site_url_;

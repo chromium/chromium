@@ -132,7 +132,6 @@ class PageInfoViewFactory {
       content::WebContents* web_contents);
   [[nodiscard]] std::unique_ptr<views::View> CreateAdPersonalizationPageView();
   [[nodiscard]] std::unique_ptr<views::View> CreateCookiesPageView();
-  [[nodiscard]] std::unique_ptr<views::View> CreatePrivacyAndSiteDataPageView();
   [[nodiscard]] std::unique_ptr<views::View> CreateMerchantTrustPageView();
 
  private:

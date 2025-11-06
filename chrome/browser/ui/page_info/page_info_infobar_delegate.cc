@@ -19,12 +19,12 @@
 
 // static
 void PageInfoInfoBarDelegate::Create(
-    infobars::ContentInfoBarManager* infobar_manager,
-    content::ReloadType reload_type) {
-  infobar_manager->AddInfoBar(
-      CreateConfirmInfoBar(std::unique_ptr<ConfirmInfoBarDelegate>(
-          new PageInfoInfoBarDelegate(reload_type))));
+    infobars::ContentInfoBarManager* infobar_manager) {
+  infobar_manager->AddInfoBar(CreateConfirmInfoBar(
+      base::WrapUnique<ConfirmInfoBarDelegate>(new PageInfoInfoBarDelegate())));
 }
+
+PageInfoInfoBarDelegate::PageInfoInfoBarDelegate() = default;
 
 PageInfoInfoBarDelegate::~PageInfoInfoBarDelegate() = default;
 
@@ -54,6 +54,6 @@ std::u16string PageInfoInfoBarDelegate::GetButtonLabel(
 bool PageInfoInfoBarDelegate::Accept() {
   content::WebContents* web_contents =
       infobars::ContentInfoBarManager::WebContentsFromInfoBar(infobar());
-  web_contents->GetController().Reload(reload_type_, true);
+  web_contents->GetController().Reload(content::ReloadType::NORMAL, true);
   return true;
 }

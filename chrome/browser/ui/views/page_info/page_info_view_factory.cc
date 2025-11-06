@@ -183,17 +183,6 @@ std::unique_ptr<views::View> PageInfoViewFactory::CreateCookiesPageView() {
 }
 
 std::unique_ptr<views::View>
-PageInfoViewFactory::CreatePrivacyAndSiteDataPageView() {
-  // Reuse `PageInfoCookiesContentView` for the "Privacy and site data" page
-  // as it has a similar UI to "Cookies and site data".
-  return std::make_unique<PageInfoSubpageView>(
-      CreateSubpageHeader(
-          l10n_util::GetStringUTF16(IDS_PAGE_INFO_PRIVACY_SITE_DATA_HEADER),
-          presenter_->GetSubjectNameForDisplay()),
-      std::make_unique<PageInfoCookiesContentView>(presenter_));
-}
-
-std::unique_ptr<views::View>
 PageInfoViewFactory::CreateMerchantTrustPageView() {
   return std::make_unique<PageInfoSubpageView>(
       CreateSubpageHeader(

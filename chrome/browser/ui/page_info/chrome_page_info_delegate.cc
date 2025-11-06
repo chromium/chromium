@@ -220,12 +220,11 @@ bool ChromePageInfoDelegate::IsRwsManaged(const GURL& site_url) {
       ->IsPartOfManagedRelatedWebsiteSet(net::SchemefulSite(site_url));
 }
 
-bool ChromePageInfoDelegate::CreateInfoBarDelegate(
-    content::ReloadType reload_type) {
+bool ChromePageInfoDelegate::CreateInfoBarDelegate() {
   infobars::ContentInfoBarManager* infobar_manager =
       infobars::ContentInfoBarManager::FromWebContents(web_contents_);
   if (infobar_manager) {
-    PageInfoInfoBarDelegate::Create(infobar_manager, reload_type);
+    PageInfoInfoBarDelegate::Create(infobar_manager);
     return true;
   }
   return false;

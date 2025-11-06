@@ -16,8 +16,6 @@
 #include "components/content_settings/core/common/cookie_controls_enforcement.h"
 #include "components/content_settings/core/common/cookie_controls_state.h"
 #include "components/content_settings/core/common/features.h"
-#include "components/privacy_sandbox/privacy_sandbox_features.h"
-#include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/strings/grit/privacy_sandbox_strings.h"
 #include "components/vector_icons/vector_icons.h"
@@ -44,7 +42,6 @@
 namespace {
 
 using ::content_settings::CookieControlsUtil;
-using ::privacy_sandbox::IsTrackingProtectionsUi;
 
 const ui::ImageModel GetThirdPartyCookiesIcon(
     bool third_party_cookies_enabled) {
@@ -238,13 +235,8 @@ void PageInfoCookiesContentView::SyncSettingsLinkClicked(
 }
 
 void PageInfoCookiesContentView::SetCookieInfo(const CookiesInfo& cookie_info) {
-  if (IsTrackingProtectionsUi(cookie_info.controls_state)) {
-    SetIncognitoTrackingProtectionsDescription(cookie_info.enforcement,
-                                               cookie_info.controls_state);
-  } else {
-    SetCookiesDescription(cookie_info.blocking_status, cookie_info.enforcement,
-                          cookie_info.is_incognito);
-  }
+  SetCookiesDescription(cookie_info.blocking_status, cookie_info.enforcement,
+                        cookie_info.is_incognito);
   SetThirdPartyCookiesInfo(cookie_info.controls_state, cookie_info.enforcement,
                            cookie_info.blocking_status, cookie_info.expiration);
 
@@ -302,16 +294,6 @@ void PageInfoCookiesContentView::SetThirdPartyCookiesTitleAndDescription(
             IDS_PAGE_INFO_TRACKING_PROTECTION_COOKIES_RESTART_DESCRIPTION;
       }
       break;
-    case CookieControlsState::kActiveTp:
-      title_text = l10n_util::GetStringUTF16(
-          IDS_PAGE_INFO_COOKIES_SITE_NOT_WORKING_TITLE);
-      description = IDS_TRACKING_PROTECTIONS_ACTIVE_PROTECTIONS_DESCRIPTION;
-      break;
-    case CookieControlsState::kPausedTp:
-      title_text = l10n_util::GetStringUTF16(
-          IDS_TRACKING_PROTECTIONS_PAUSED_PROTECTIONS_TITLE);
-      description = IDS_TRACKING_PROTECTIONS_PAUSED_PROTECTIONS_DESCRIPTION;
-      break;
     default:
       NOTREACHED();
   }
@@ -339,38 +321,6 @@ void PageInfoCookiesContentView::SetThirdPartyCookiesToggle(
       PageInfoViewFactory::VIEW_ID_PAGE_INFO_THIRD_PARTY_COOKIES_TOGGLE);
   third_party_cookies_toggle_->GetViewAccessibility().SetName(subtitle);
   third_party_cookies_toggle_subtitle_->SetText(subtitle);
-}
-
-void PageInfoCookiesContentView::SetTrackingProtectionButtonLabel(
-    CookieControlsState controls_state) {
-  auto label = l10n_util::GetStringUTF16(
-      controls_state == CookieControlsState::kPausedTp
-          ? IDS_TRACKING_PROTECTIONS_BUTTON_RESUME_PROTECTIONS_LABEL
-          : IDS_TRACKING_PROTECTIONS_BUTTON_PAUSE_PROTECTIONS_LABEL);
-  tracking_protection_button_->SetText(label);
-  tracking_protection_button_->GetViewAccessibility().SetName(label);
-}
-
-void PageInfoCookiesContentView::SetIncognitoTrackingProtectionsDescription(
-    CookieControlsEnforcement enforcement,
-    CookieControlsState controls_state) {
-  // No description exists for when protections are paused.
-  if (controls_state == CookieControlsState::kPausedTp) {
-    cookies_description_wrapper_->SetVisible(false);
-    return;
-  }
-  int description = IDS_PAGE_INFO_PRIVACY_SITE_DATA_DESCRIPTION;
-  if (enforcement == CookieControlsEnforcement::kEnforcedByCookieSetting) {
-    description = IDS_PAGE_INFO_PRIVACY_SITE_DATA_3PCS_USER_ALLOWED_DESCRIPTION;
-  } else if (enforcement == CookieControlsEnforcement::kEnforcedByPolicy) {
-    description =
-        IDS_PAGE_INFO_PRIVACY_SITE_DATA_3PCS_ENTERPRISE_ALLOWED_DESCRIPTION;
-  } else if (enforcement == CookieControlsEnforcement::kEnforcedByExtension) {
-    description =
-        IDS_PAGE_INFO_PRIVACY_SITE_DATA_3PCS_EXTENSION_ALLOWED_DESCRIPTION;
-  }
-  cookies_description_label_->SetText(l10n_util::GetStringUTF16(description));
-  cookies_description_wrapper_->SetVisible(true);
 }
 
 void PageInfoCookiesContentView::SetCookiesDescription(
@@ -427,27 +377,14 @@ void PageInfoCookiesContentView::SetThirdPartyCookiesInfo(
   third_party_cookies_row_->SetID(
       PageInfoViewFactory::VIEW_ID_PAGE_INFO_THIRD_PARTY_COOKIES_ROW);
 
-  SetTrackingProtectionButtonLabel(controls_state);
-  tracking_protection_button_->SetID(
-      PageInfoViewFactory::VIEW_ID_PAGE_INFO_ACT_PROTECTIONS_BUTTON);
-
-  if (IsTrackingProtectionsUi(controls_state)) {
-    third_party_cookies_row_->SetVisible(false);
-    tracking_protection_button_->SetVisible(true);
-    third_party_cookies_container_->SetCrossAxisAlignment(
-        views::BoxLayout::CrossAxisAlignment::kStart);
-    third_party_cookies_label_wrapper_->SetVisible(true);
-  } else {
-    third_party_cookies_row_->SetVisible(true);
-    tracking_protection_button_->SetVisible(false);
-    third_party_cookies_container_->SetCrossAxisAlignment(
-        views::BoxLayout::CrossAxisAlignment::kStretch);
-    bool show_controls_description =
-        enforcement == CookieControlsEnforcement::kNoEnforcement ||
-        (blocking_status != CookieBlocking3pcdStatus::kNotIn3pcd &&
-         enforcement == CookieControlsEnforcement::kEnforcedByCookieSetting);
-    third_party_cookies_label_wrapper_->SetVisible(show_controls_description);
-  }
+  third_party_cookies_row_->SetVisible(true);
+  third_party_cookies_container_->SetCrossAxisAlignment(
+      views::BoxLayout::CrossAxisAlignment::kStretch);
+  bool show_controls_description =
+      enforcement == CookieControlsEnforcement::kNoEnforcement ||
+      (blocking_status != CookieBlocking3pcdStatus::kNotIn3pcd &&
+       enforcement == CookieControlsEnforcement::kEnforcedByCookieSetting);
+  third_party_cookies_label_wrapper_->SetVisible(show_controls_description);
 
   if (enforcement == CookieControlsEnforcement::kNoEnforcement) {
     third_party_cookies_toggle_->SetVisible(true);
@@ -474,12 +411,6 @@ void PageInfoCookiesContentView::UpdateBlockingThirdPartyCookiesToggle(
 void PageInfoCookiesContentView::OnToggleButtonPressed() {
   presenter_->OnThirdPartyToggleClicked(
       /*block_third_party_cookies=*/!third_party_cookies_toggle_->GetIsOn());
-  third_party_cookies_container_->NotifyAccessibilityEventDeprecated(
-      ax::mojom::Event::kAlert, true);
-}
-
-void PageInfoCookiesContentView::OnTrackingProtectionButtonPressed() {
-  presenter_->OnTrackingProtectionButtonPressed();
   third_party_cookies_container_->NotifyAccessibilityEventDeprecated(
       ax::mojom::Event::kAlert, true);
 }
@@ -589,24 +520,6 @@ void PageInfoCookiesContentView::AddThirdPartyCookiesContainer() {
           base::Unretained(this))));
   third_party_cookies_enforced_icon_ = third_party_cookies_row_->AddControl(
       std::make_unique<views::ImageView>());
-
-  tracking_protection_button_ = third_party_cookies_container_->AddChildView(
-      std::make_unique<views::MdTextButton>(base::BindRepeating(
-          &PageInfoCookiesContentView::OnTrackingProtectionButtonPressed,
-          base::Unretained(this))));
-  tracking_protection_button_->SetProperty(views::kCrossAxisAlignmentKey,
-                                           views::LayoutAlignment::kStart);
-  third_party_cookies_container_->SetFlexForView(tracking_protection_button_,
-                                                 0);
-  tracking_protection_button_->SetEnabled(true);
-  const int controls_spacing = ChromeLayoutProvider::Get()->GetDistanceMetric(
-      views::DISTANCE_RELATED_CONTROL_VERTICAL);
-  ChromeLayoutProvider* layout_provider = ChromeLayoutProvider::Get();
-  const auto insets = layout_provider->GetInsetsMetric(
-      ChromeInsetsMetric::INSETS_PAGE_INFO_HOVER_BUTTON);
-  tracking_protection_button_->SetProperty(
-      views::kMarginsKey, gfx::Insets::TLBR(controls_spacing, insets.left(),
-                                            controls_spacing, insets.right()));
 }
 
 #if BUILDFLAG(IS_CHROMEOS)

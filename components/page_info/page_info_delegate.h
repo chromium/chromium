@@ -77,7 +77,7 @@ class PageInfoDelegate {
   // Creates an infobars::ContentInfoBarManager and an InfoBarDelegate using it,
   // if possible. Returns true if an InfoBarDelegate was created, false
   // otherwise.
-  virtual bool CreateInfoBarDelegate(content::ReloadType reload_type) = 0;
+  virtual bool CreateInfoBarDelegate() = 0;
 
   virtual std::unique_ptr<content_settings::CookieControlsController>
   CreateCookieControlsController() = 0;
