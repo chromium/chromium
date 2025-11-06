@@ -25,6 +25,13 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/variations/service/variations_service.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"  // nogncheck
+#include "chromeos/ash/components/browser_context_helper/browser_context_types.h"  // nogncheck
+#include "components/user_manager/user.h"       // nogncheck
+#include "components/user_manager/user_type.h"  // nogncheck
+#endif
+
 namespace glic {
 
 GlicEnabling::ProfileEnablement GlicEnabling::EnablementForProfile(
@@ -112,6 +119,33 @@ bool GlicEnabling::IsEnabledByFlags() {
 }
 
 bool GlicEnabling::IsProfileEligible(const Profile* profile) {
+#if BUILDFLAG(IS_CHROMEOS)
+  // Due to the tight coupling of the browser Profile and OS users in ChromeOS,
+  // we check the user session type to align with other desktop browser
+  // behavior.
+  if (!ash::IsUserBrowserContext(profile)) {
+    // We only allow regular user session profiles.
+    // E.g. disallowed on login screen.
+    return false;
+  }
+  auto* user = ash::BrowserContextHelper::Get()->GetUserByBrowserContext(
+      const_cast<Profile*>(profile));
+  switch (user->GetType()) {
+    case user_manager::UserType::kRegular:
+    case user_manager::UserType::kChild:
+      // These are ok to use glic.
+      break;
+    case user_manager::UserType::kGuest:
+    case user_manager::UserType::kPublicAccount:
+    case user_manager::UserType::kKioskChromeApp:
+    case user_manager::UserType::kKioskWebApp:
+    case user_manager::UserType::kKioskIWA:
+    case user_manager::UserType::kKioskArcvmApp:
+      // Disallows guest session, and device local account sessions.
+      return false;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
   // Glic is supported only in regular profiles, i.e. disable in incognito,
   // guest, system profile, etc.
   return IsEnabledByFlags() && profile && profile->IsRegularProfile();
