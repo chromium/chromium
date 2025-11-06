@@ -180,7 +180,8 @@ class PageActionUiTestBase {
 
   void ShowSuggestionChip(actions::ActionId action_id) const {
     EnsurePageActionEnabled(action_id);
-    page_action_controller()->ShowSuggestionChip(action_id);
+    page_action_controller()->ShowSuggestionChip(
+        action_id, {.should_animate = false, .should_announce_chip = false});
   }
 
   void HideSuggestionChip(actions::ActionId action_id) const {
@@ -425,41 +426,88 @@ IN_PROC_BROWSER_TEST_F(PageActionInteractiveUiTest,
   ASSERT_TRUE(initial_translate_index.has_value());
 
   // For this test, we assume that the translate page action appears before the
-  // memory saver page action.
+  // memory saver page action initially. This is crucial for the new logic,
+  // as the initial order determines the relative order of chips.
   EXPECT_LT(initial_translate_index.value(),
             initial_memory_saver_index.value());
 
   // Step 1: Activate suggestion chip for the translate action only.
+  // This should trigger PageActionContainerView::NormalizePageActionViewOrder.
   ShowTranslateSuggestionChip();
 
-  // Expect translate view to move to the front (index 0).
+  // Expect translate view to move to the front (index 0) as it's the only chip.
   {
     auto new_translate_index = container->GetIndexOf(translate_view);
     ASSERT_TRUE(new_translate_index.has_value());
     EXPECT_EQ(new_translate_index.value(), 0u);
   }
-  // The memory saver should at the initial index.
+  // The memory saver view, now a non-chip, should follow the chip.
+  // Since translate is at 0, memory saver (if it was initially at 1) should be
+  // at 1.
   {
     auto new_memory_saver_index = container->GetIndexOf(memory_saver_view);
     ASSERT_TRUE(new_memory_saver_index.has_value());
-    EXPECT_EQ(new_memory_saver_index.value(),
-              initial_memory_saver_index.value());
+    EXPECT_EQ(new_memory_saver_index.value(), 1u);
   }
 
   // Step 2: Activate suggestion chip for the memory saver page action as well.
+  // This should trigger PageActionContainerView::NormalizePageActionViewOrder
+  // again.
   ShowMemorySaverSuggestionChip();
 
-  // Now the memory saver view should move to the front.
+  // Now both are chips. The new logic sorts chips by their initial insertion
+  // order. Since translate was initially before memory saver, translate should
+  // remain at index 0.
+  {
+    auto new_translate_index = container->GetIndexOf(translate_view);
+    ASSERT_TRUE(new_translate_index.has_value());
+    EXPECT_EQ(new_translate_index.value(), 0u);
+  }
+  // And the memory saver view should now be at index 1, immediately after
+  // the translate chip, preserving its relative initial order among chips.
+  {
+    auto new_memory_saver_index = container->GetIndexOf(memory_saver_view);
+    ASSERT_TRUE(new_memory_saver_index.has_value());
+    EXPECT_EQ(new_memory_saver_index.value(), 1u);
+  }
+
+  // Step 3: Hide the translate suggestion chip.
+  // This should trigger PageActionContainerView::NormalizePageActionViewOrder.
+  // Only memory saver is a chip now.
+  HideSuggestionChip(kActionShowTranslate);
+
+  // Memory saver should now be the only active chip and move to index 0.
   {
     auto new_memory_saver_index = container->GetIndexOf(memory_saver_view);
     ASSERT_TRUE(new_memory_saver_index.has_value());
     EXPECT_EQ(new_memory_saver_index.value(), 0u);
   }
-  // And the translate view should now be at index 1.
+  // Translate is no longer a chip. It should be placed after the memory saver
+  // chip, maintaining its initial relative order among non-chips.
+  // In this case, it will be at index 1.
   {
     auto new_translate_index = container->GetIndexOf(translate_view);
     ASSERT_TRUE(new_translate_index.has_value());
     EXPECT_EQ(new_translate_index.value(), 1u);
+  }
+
+  // Step 4: Hide the memory saver suggestion chip.
+  // This should trigger PageActionContainerView::NormalizePageActionViewOrder.
+  // No chips are active.
+  HidePageAction(kActionShowMemorySaverChip);
+
+  // With no active chips, all icons should revert to their original relative
+  // order.
+  {
+    auto final_translate_index = container->GetIndexOf(translate_view);
+    ASSERT_TRUE(final_translate_index.has_value());
+    EXPECT_EQ(final_translate_index.value(), initial_translate_index.value());
+  }
+  {
+    auto final_memory_saver_index = container->GetIndexOf(memory_saver_view);
+    ASSERT_TRUE(final_memory_saver_index.has_value());
+    EXPECT_EQ(final_memory_saver_index.value(),
+              initial_memory_saver_index.value());
   }
 }
 
