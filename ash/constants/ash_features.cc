@@ -670,10 +670,6 @@ BASE_FEATURE(kExperimentalRgbKeyboardPatterns,
 // Enables extended updates opt-in functionality.
 BASE_FEATURE(kExtendedUpdatesOptInFeature, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables policy that controls feature to allow Family Link accounts on school
-// owned devices.
-BASE_FEATURE(kFamilyLinkOnSchoolDevice, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables the Fast Pair feature.
 BASE_FEATURE(kFastPair, base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -2679,10 +2675,6 @@ bool IsExtendedUpdatesOptInFeatureEnabled() {
 
 bool IsExternalKeyboardInDiagnosticsAppEnabled() {
   return base::FeatureList::IsEnabled(kEnableExternalKeyboardsInDiagnostics);
-}
-
-bool IsFamilyLinkOnSchoolDeviceEnabled() {
-  return base::FeatureList::IsEnabled(kFamilyLinkOnSchoolDevice);
 }
 
 bool IsFastInkForSoftwareCursorEnabled() {

@@ -389,9 +389,6 @@ TEST_F(CrosSettingsTest, FindEmailInListWildcard) {
 // DeviceFamilyLinkAccountsAllowed should not have any effect if allowlist is
 // not set.
 TEST_F(CrosSettingsTest, AllowFamilyLinkAccountsWithEmptyAllowlist) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kFamilyLinkOnSchoolDevice);
-
   device_policy_.payload().mutable_allow_new_users()->set_allow_new_users(
       false);
   device_policy_.payload().mutable_user_allowlist()->clear_user_allowlist();
@@ -410,38 +407,7 @@ TEST_F(CrosSettingsTest, AllowFamilyLinkAccountsWithEmptyAllowlist) {
   EXPECT_FALSE(IsUserAllowed(kUser1, user_manager::UserType::kRegular));
 }
 
-// DeviceFamilyLinkAccountsAllowed should not have any effect if the feature is
-// disabled.
-TEST_F(CrosSettingsTest, AllowFamilyLinkAccountsWithFeatureDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      features::kFamilyLinkOnSchoolDevice);
-
-  device_policy_.payload().mutable_allow_new_users()->set_allow_new_users(
-      false);
-  device_policy_.payload().mutable_user_allowlist()->add_user_allowlist(kOwner);
-  device_policy_.payload()
-      .mutable_family_link_accounts_allowed()
-      ->set_family_link_accounts_allowed(true);
-
-  StoreDevicePolicy();
-
-  base::Value::List allowlist;
-  allowlist.Append(kOwner);
-  ExpectPref(kAccountsPrefAllowNewUser, base::Value(false));
-  ExpectPref(kAccountsPrefUsers, base::Value(std::move(allowlist)));
-  ExpectPref(kAccountsPrefFamilyLinkAccountsAllowed, base::Value(false));
-
-  EXPECT_TRUE(IsUserAllowed(kOwner, std::nullopt));
-  EXPECT_FALSE(IsUserAllowed(kUser1, std::nullopt));
-  EXPECT_FALSE(IsUserAllowed(kUser1, user_manager::UserType::kChild));
-  EXPECT_FALSE(IsUserAllowed(kUser1, user_manager::UserType::kRegular));
-}
-
 TEST_F(CrosSettingsTest, AllowFamilyLinkAccountsWithAllowlist) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kFamilyLinkOnSchoolDevice);
-
   device_policy_.payload().mutable_allow_new_users()->set_allow_new_users(
       false);
   device_policy_.payload().mutable_user_allowlist()->add_user_allowlist(kOwner);

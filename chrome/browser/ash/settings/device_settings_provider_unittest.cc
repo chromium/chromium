@@ -1166,28 +1166,8 @@ TEST_F(DeviceSettingsProviderTestEnterprise,
   VerifyDeviceShowLowDiskSpaceNotification(false);
 }
 
-// Tests DeviceFamilyLinkAccountsAllowed policy with the feature disabled.
-// The policy should have no effect.
-TEST_F(DeviceSettingsProviderTest, DeviceFamilyLinkAccountsAllowedDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      features::kFamilyLinkOnSchoolDevice);
-
-  base::Value default_value(false);
-  VerifyPolicyValue(kAccountsPrefFamilyLinkAccountsAllowed, &default_value);
-
-  // Family Link allowed with allowlist set, but the feature is disabled.
-  SetDeviceFamilyLinkAccountsAllowed(true);
-  AddUserToAllowlist("*@managedchrome.com");
-  EXPECT_EQ(base::Value(false),
-            *provider_->Get(kAccountsPrefFamilyLinkAccountsAllowed));
-}
-
-// Tests DeviceFamilyLinkAccountsAllowed policy with the feature enabled.
-TEST_F(DeviceSettingsProviderTest, DeviceFamilyLinkAccountsAllowedEnabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kFamilyLinkOnSchoolDevice);
-
+// Tests DeviceFamilyLinkAccountsAllowed policy.
+TEST_F(DeviceSettingsProviderTest, DeviceFamilyLinkAccountsAllowed) {
   base::Value default_value(false);
   VerifyPolicyValue(kAccountsPrefFamilyLinkAccountsAllowed, &default_value);
 

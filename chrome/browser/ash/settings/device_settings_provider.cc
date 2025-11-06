@@ -367,9 +367,7 @@ void DecodeLoginPolicies(const em::ChromeDeviceSettingsProto& policy,
         policy.user_allowlist().user_allowlist_size() > 0));
   new_values_cache->SetBoolean(
       kAccountsPrefFamilyLinkAccountsAllowed,
-      features::IsFamilyLinkOnSchoolDeviceEnabled() &&
-          user_allowlist_enforced &&
-          policy.has_family_link_accounts_allowed() &&
+      user_allowlist_enforced && policy.has_family_link_accounts_allowed() &&
           policy.family_link_accounts_allowed()
               .has_family_link_accounts_allowed() &&
           policy.family_link_accounts_allowed().family_link_accounts_allowed());

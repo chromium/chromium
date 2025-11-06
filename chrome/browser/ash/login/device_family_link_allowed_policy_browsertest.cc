@@ -45,10 +45,7 @@ const char kSchoolAllowlist[] = "*@edu.com";
 // Integration test for DeviceFamilyLinkAllowedPolicy changes.
 class DeviceFamilyLinkAllowedPolicyTest : public LoginManagerTest {
  protected:
-  DeviceFamilyLinkAllowedPolicyTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kFamilyLinkOnSchoolDevice);
-  }
+  DeviceFamilyLinkAllowedPolicyTest() = default;
   DeviceFamilyLinkAllowedPolicyTest(const DeviceFamilyLinkAllowedPolicyTest&) =
       delete;
   DeviceFamilyLinkAllowedPolicyTest& operator=(
